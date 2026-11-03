@@ -515,7 +515,9 @@ asm
   pop   ecx          // restore EFactor
   add   eax,ecx      // add to exponent
   jz    @@NoPower
+  {$WARN SYMBOL_DEPRECATED OFF}
   call  FPower10     // multiply st(0) by eax^10
+  {$WARN SYMBOL_DEPRECATED ON}
 @@NoPower:
   mov   edx,1        // return Result=1
 {$IFOPT Q+}
@@ -974,7 +976,6 @@ Label BadArg, BadFormat, CopyStr, DoFloat;
       GotTemp, GotIndex : boolean;
   begin
     GotIndex:=False;
-    Temp:=0; // not really necessary, but this will suppress compiler's warning.
     repeat
       GotTemp:=False;
       if Fmt^='*' then begin  // Get indirect entry into Temp

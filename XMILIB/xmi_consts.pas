@@ -1191,7 +1191,7 @@ function SysExRoland(Data: array of byte): ansistring;
             Msg := '';
             for I := 7 to Length(Data) - 3 do
               Msg := Msg + AnsiChar(Data[I]);
-            Msg := Trim(Msg);
+            Msg := AnsiString(Trim(string(Msg)));
             Result := Result + ', write LCD: "' + Msg + '"';
           end;
           $030000..$03007F:
@@ -1274,7 +1274,7 @@ function SysExRoland(Data: array of byte): ansistring;
               Msg := '';
               for I := 7 to 16 do
                 Msg := Msg + AnsiChar(Data[I]);
-              Msg := Trim(Msg);
+              Msg := AnsiString(Trim(string(Msg)));
               Result := Result + ', write timbre temp #' + IntToStrA(
                 Offset div $F6) + ', tone name: "' + Msg + '"' + ', pt 1,2 = ' +
                 IntToStrA(Data[17]) + ', pt 3,4 = ' + IntToStrA(Data[18]) +
@@ -1338,7 +1338,7 @@ function SysExRoland(Data: array of byte): ansistring;
               Msg := '';
               for I := 7 to 16 do
                 Msg := Msg + AnsiChar(Data[I]);
-              Msg := Trim(Msg);
+              Msg := AnsiString(Trim(string(Msg)));
               Offset := Address mod $010000;
               Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
               Result := Result + ', write timbre #' + IntToStrA(Offset div

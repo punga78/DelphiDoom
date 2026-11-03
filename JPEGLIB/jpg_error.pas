@@ -329,7 +329,7 @@ procedure ERREXITS(cinfo: j_common_ptr;code: J_MESSAGE_CODE;
                    str: string);
 begin
   cinfo^.err^.msg_code := ord(code);
-  cinfo^.err^.msg_parm.s := str;  { string[JMSG_STR_PARM_MAX] }
+  cinfo^.err^.msg_parm.s := ShortString(str);  { string[JMSG_STR_PARM_MAX] }
   cinfo^.err^.error_exit (cinfo);
 end;
 
@@ -491,7 +491,7 @@ procedure TRACEMSS(cinfo: j_common_ptr; lvl: int;
                    code: J_MESSAGE_CODE; str: string);
 begin
   cinfo^.err^.msg_code := ord(code);
-  cinfo^.err^.msg_parm.s := str; { string JMSG_STR_PARM_MAX }
+  cinfo^.err^.msg_parm.s := ShortString(str); { string JMSG_STR_PARM_MAX }
   cinfo^.err^.emit_message (cinfo, lvl);
 end;
 
@@ -580,22 +580,22 @@ begin
   if (msg_code > JMSG_NOMESSAGE)
     and (msg_code <= J_MESSAGE_CODE(err^.last_jpeg_message)) then
   begin
-    msgtext := err^.jpeg_message_table^[msg_code];
+    msgtext := string(err^.jpeg_message_table^[msg_code]);
   end
   else
   if (err^.addon_message_table <> nil) and
      (msg_code >= err^.first_addon_message) and
      (msg_code <= err^.last_addon_message) then
   begin
-    msgtext := err^.addon_message_table^[J_MESSAGE_CODE
-           (ord(msg_code) - ord(err^.first_addon_message))];
+    msgtext := string(err^.addon_message_table^[J_MESSAGE_CODE
+           (ord(msg_code) - ord(err^.first_addon_message))]);
   end;
 
   { Defend against bogus message number }
   if (msgtext = '') then
   begin
     err^.msg_parm.i[0] := int(msg_code);
-    msgtext := err^.jpeg_message_table^[JMSG_NOMESSAGE];
+    msgtext := string(err^.jpeg_message_table^[JMSG_NOMESSAGE]);
   end;
 
   { Check for string parameter, as indicated by %s in the message text }
@@ -603,7 +603,7 @@ begin
 
   { Format the message into the passed buffer }
   if (isstring) then
-    buffer := Concat(msgtext, err^.msg_parm.s)
+    buffer := Concat(msgtext, string(err^.msg_parm.s))
   else
   begin
  {$IFDEF VER70}

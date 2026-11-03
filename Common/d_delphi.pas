@@ -104,7 +104,7 @@ type
   PObjectArray = ^TObjectArray;
 
 type
-  charset_t = set of char;
+  charset_t = set of AnsiChar;
 
   twobytes_t = packed record
     byte1, byte2: byte;
@@ -1818,19 +1818,19 @@ begin
   begin
     str := s;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := FormatSettings.DecimalSeparator;
     val(str, result, code);
     if code = 0 then
       exit;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := '.';
     val(str, result, code);
     if code = 0 then
       exit;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := ',';
     val(str, result, code);
     if code = 0 then
@@ -1858,19 +1858,19 @@ begin
   begin
     str := s;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := FormatSettings.DecimalSeparator;
     val(str, result, code);
     if code = 0 then
       exit;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := '.';
     val(str, result, code);
     if code = 0 then
       exit;
     for i := 1 to Length(str) do
-      if str[i] in ['.', ','] then
+      if CharInSet(str[i], ['.', ',']) then
         str[i] := ',';
     val(str, result, code);
     if code = 0 then
@@ -4220,7 +4220,7 @@ begin
   if (Index < 0) or (Index >= fNumItems) then
     result := ''
   else
-    result := fList[Index];
+    result := string(fList[Index]);
 end;
 
 //==============================================================================
@@ -4230,7 +4230,7 @@ end;
 //==============================================================================
 procedure TDTextList.Put(Index: Integer; const value: string);
 begin
-  fList[Index] := value;
+  fList[Index] := ShortString(value);
 end;
 
 //==============================================================================
@@ -4293,7 +4293,7 @@ var
   i: integer;
 begin
   for i := 0 to fNumItems - 1 do
-    if fList[i] = value then
+    if string(fList[i]) = value then
     begin
       result := i;
       exit;
@@ -4441,7 +4441,7 @@ begin
     begin
       S := Get(I);
       P := PChar(S);
-      while not (P^ in [#0..' ','"',',']) do P := CharNext(P);
+      while not (CharInSet(P^, [#0..' ','"',','])) do P := CharNext(P);
       if (P^ <> #0) then S := AnsiQuotedStr(S, '"');
       result := result + S + ',';
     end;
@@ -4802,7 +4802,7 @@ var
 begin
   Clear;
   P := PChar(Value);
-  while P^ in [#1..' '] do P := CharNext(P);
+  while CharInSet(P^, [#1..' ']) do P := CharNext(P);
   while P^ <> #0 do
   begin
     if P^ = '"' then
@@ -4814,11 +4814,11 @@ begin
       SetString(S, P1, P - P1);
     end;
     Add(S);
-    while P^ in [#1..' '] do P := CharNext(P);
+    while CharInSet(P^, [#1..' ']) do P := CharNext(P);
     if P^ = ',' then
       repeat
         P := CharNext(P);
-      until not (P^ in [#1..' ']);
+      until not (CharInSet(P^, [#1..' ']));
   end;
 end;
 
@@ -4848,7 +4848,7 @@ begin
     while P^ <> #0 do
     begin
       Start := P;
-      while not (P^ in [#0, #10, #13]) do inc(P);
+      while not (CharInSet(P^, [#0, #10, #13])) do inc(P);
       SetString(S, Start, P - Start);
       Add(S);
       if P^ = #13 then inc(P);
@@ -5894,7 +5894,7 @@ begin
   result := '';
   for i := Length(FileName) downto 1 do
   begin
-    if FileName[i] in ['\', '/'] then
+    if CharInSet(FileName[i], ['\', '/']) then
       break;
     result := FileName[i] + result;
   end;
@@ -6003,7 +6003,7 @@ begin
   inp1 := inp;
   p := 0;
   for i := 1 to Length(inp1) do
-    if inp1[i] in splitters then
+    if CharInSet(inp1[i], splitters) then
     begin
       p := i;
       break;
@@ -6279,7 +6279,7 @@ begin
   i := length(inp);
   while i > 0 do
   begin
-    if inp[i] in splitters then
+    if CharInSet(inp[i], splitters) then
       exit
     else
     begin
@@ -6379,7 +6379,7 @@ begin
     inc(src);
     if (src^ = #10) and (prev <> #13) then
       result := result + prev + #13#10
-    else if not (prev in [#10, #13]) then
+    else if not (CharInSet(prev, [#10, #13])) then
       result := result + prev;
   until src^ = #0;
 end;
@@ -6404,7 +6404,7 @@ begin
     inc(cnt);
     if (src^ = #10) and (prev <> #13) then
       result := result + prev + #13#10
-    else if not (prev in [#10, #13]) then
+    else if not (CharInSet(prev, [#10, #13])) then
       result := result + prev;
   until (cnt = maxsize) or (src^ = #0);
 end;
@@ -6425,9 +6425,9 @@ begin
     prev := src^;
     inc(src);
     if (src^ = #10) and (prev <> #13) then
-      result := result + prev + #13#10
+      result := result + Char(prev) + #13#10
     else if not (prev in [#10, #13]) then
-      result := result + prev;
+      result := result + Char(prev);
   until src^ = #0;
 end;
 
@@ -6450,9 +6450,9 @@ begin
     inc(src);
     inc(cnt);
     if (src^ = #10) and (prev <> #13) then
-      result := result + prev + #13#10
+      result := result + Char(prev) + #13#10
     else if not (prev in [#10, #13]) then
-      result := result + prev;
+      result := result + Char(prev);
   until (cnt = maxsize) or (src^ = #0);
 end;
 
@@ -6594,7 +6594,9 @@ begin
 {$IF CompilerVersion < 18}
   Result := AllocMemSize;
 {$ELSE}
+  {$WARN SYMBOL_PLATFORM OFF}
   GetMemoryManagerState(MemMgrState);
+  {$WARN SYMBOL_PLATFORM ON}
   Result := MemMgrState.TotalAllocatedMediumBlockSize +
     MemMgrState.TotalAllocatedLargeBlockSize;
   for I := 0 to High(MemMgrState.SmallBlockTypeStates) do
@@ -6818,7 +6820,7 @@ begin
   Result := False;
   for i := 1 to Length(s) do
   begin
-    if s[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] then
+    if CharInSet(s[i], ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
       Result := True
     else
     begin
@@ -6848,7 +6850,7 @@ begin
     delete(check, 1, 1);
   for i := 1 to Length(check) do
   begin
-    if check[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] then
+    if CharInSet(check[i], ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) then
       Result := True
     else if (check[i] = '.') or (check[i] = ',') or (check[i] = FormatSettings.DecimalSeparator) then
     begin
@@ -7052,7 +7054,7 @@ begin
   stmp := '';
   for i := 1 to length(inp) do
   begin
-    if inp[i] in splitters then
+    if CharInSet(inp[i], splitters) then
     begin
       trimproc(stmp);
       if stmp <> '' then
@@ -7094,7 +7096,7 @@ end;
 //==============================================================================
 function isdigit(const c: char): boolean;
 begin
-  result := c in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+  result := CharInSet(c, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
 end;
 
 //==============================================================================

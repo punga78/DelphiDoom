@@ -299,7 +299,7 @@ begin
     Dec(b);
   end;
   Temp[b]:='0';
-  Result:=Copy(Temp, b, 255);
+  Result:=string(Copy(Temp, b, 255));
 end;
 
 {Scanf unit}

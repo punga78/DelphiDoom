@@ -734,7 +734,7 @@ procedure _mystrdup; external;
 implementation
 
 uses
-  Windows, SysUtils, Math, DateUtils, scanf;
+  Windows, SysUtils, AnsiStrings, Math, DateUtils, scanf;
 
 //==============================================================================
 //
@@ -952,7 +952,7 @@ end;
 //==============================================================================
 function _malloc(Size: Cardinal): Pointer; cdecl;
 var
-  m: TMemoryManager;
+  m: TMemoryManagerEx;
 begin
   GetMemoryManager(m);
   Result := m.GetMem(Size);
@@ -966,7 +966,7 @@ end;
 //==============================================================================
 function _calloc(N: integer; Size: Cardinal): Pointer; cdecl;
 begin
-  Result := _malloc(N * Size);
+  Result := _malloc(Cardinal(N) * Size);
 end;
 
 //==============================================================================
@@ -976,7 +976,7 @@ end;
 //==============================================================================
 function _realloc(p: pointer; Size: Cardinal): Pointer; cdecl;
 var
-  m: TMemoryManager;
+  m: TMemoryManagerEx;
 begin
   GetMemoryManager(m);
   if p = nil then
@@ -992,7 +992,7 @@ end;
 //==============================================================================
 procedure _free(p: Pointer); cdecl;
 var
-  m: TMemoryManager;
+  m: TMemoryManagerEx;
 begin
   // For an ISO C compliant implementation it is ok to free a NULL pointer.
   if p <> nil then
@@ -1756,25 +1756,17 @@ var
 begin
   ma := a;
   mb := b;
-  while True do
+  Result := 0;
+  // Stop at the first difference or at the terminating zero
+  while (ma^ = mb^) and (ma^ <> 0) do
   begin
-    if ma^ <> mb^ then
-    begin
-      if ma^ < mb^ then
-        Result := -1
-      else
-        Result := 1;
-      exit;
-    end;
-    if ma^ = 0 then
-    begin
-      Result := 0;
-      exit;
-    end;
     Inc(ma);
     Inc(mb);
   end;
-  Result := 0;
+  if ma^ < mb^ then
+    Result := -1
+  else if ma^ > mb^ then
+    Result := 1;
 end;
 
 //==============================================================================
@@ -1787,7 +1779,7 @@ var
   p, i: integer;
   d, s: PAnsiChar;
 begin
-  p := StrLen(destination);
+  p := AnsiStrings.StrLen(destination);
   d := @destination[p];
   s := source;
   for i := 0 to num - 2 do
@@ -1859,8 +1851,8 @@ var
   s1, s2: string;
   p: integer;
 begin
-  s1 := str1;
-  s2 := str2;
+  s1 := string(str1);
+  s2 := string(str2);
   p := Pos(s2, s1);
   if p > 0 then
   begin
@@ -1883,7 +1875,7 @@ var
   s: string;
 begin
   c := Chr(ch);
-  s := str1;
+  s := string(str1);
   for i := Length(s) downto 1 do
     if s[i] = c then
     begin
@@ -1960,7 +1952,7 @@ end;
 //==============================================================================
 function _fileopenw(fname: PAnsiChar): Integer; cdecl;
 begin
-  Result := FileCreate(fname);
+  Result := FileCreate(string(AnsiString(fname)));
   if Result < 1 then
     Result := 0;
 end;
@@ -1972,7 +1964,7 @@ end;
 //==============================================================================
 function _fileopena(fname: PAnsiChar): Integer; cdecl;
 begin
-  Result := FileCreate(fname);
+  Result := FileCreate(string(AnsiString(fname)));
   if Result < 1 then
     Result := 0;
   _fileseek(Result, 0, 2);
@@ -1985,7 +1977,7 @@ end;
 //==============================================================================
 function _fileopenr(fname: PAnsiChar): Integer; cdecl;
 begin
-  Result := FileOpen(fname, 2);
+  Result := FileOpen(string(AnsiString(fname)), 2);
 end;
 
 //==============================================================================
@@ -1995,7 +1987,7 @@ end;
 //==============================================================================
 function _fileunlink(fname: PAnsiChar): Integer; cdecl;
 begin
-  if DeleteFile(fname) then
+  if DeleteFile(string(AnsiString(fname))) then
     Result := 0
   else
     Result := -1;
@@ -2323,7 +2315,7 @@ var
 //==============================================================================
 function _alloca(size: integer): Pointer; cdecl;
 var
-  m: TMemoryManager;
+  m: TMemoryManagerEx;
 begin
   _alloca_size := size;
   GetMemoryManager(m);

@@ -1139,7 +1139,7 @@ begin
       if Nodes[I + 1].Name <> 'MTrk' then
       begin
         LogOutput('[*] Warning: Track #' + IntToStr(I) +
-          ' has incorrect chunk name "' + Nodes[I + 1].Name + '", skipping.');
+          ' has incorrect chunk name "' + string(Nodes[I + 1].Name) + '", skipping.');
         Continue;
       end;
       SetLength(TracksInfo, Length(TracksInfo) + 1);
@@ -1165,7 +1165,7 @@ begin
       if Nodes[I].Name <> 'MTrk' then
       begin
         LogOutput('[*] Warning: Track #' + IntToStr(I) +
-          ' has incorrect chunk name "' + Nodes[I].Name + '", skipping.');
+          ' has incorrect chunk name "' + string(Nodes[I].Name) + '", skipping.');
         Continue;
       end;
       SetLength(TracksInfo, Length(TracksInfo) + 1);
@@ -1628,7 +1628,7 @@ begin
   if iOffsetTitle > 0 then
     sTitle := PAnsiChar(cardinal(F.Memory) + iOffsetTitle);
 
-  SongData_PutStr('CMF_Title', sTitle);
+  SongData_PutStr('CMF_Title', string(sTitle));
 
   if iOffsetComposer >= F.Size then
   begin
@@ -1638,7 +1638,7 @@ begin
   if iOffsetComposer > 0 then
     sComposer := PAnsiChar(cardinal(F.Memory) + iOffsetComposer);
 
-  SongData_PutStr('CMF_Composer', sComposer);
+  SongData_PutStr('CMF_Composer', string(sComposer));
 
   if iOffsetRemarks >= F.Size then
   begin
@@ -1648,7 +1648,7 @@ begin
   if iOffsetRemarks > 0 then
     sRemarks := PAnsiChar(cardinal(F.Memory) + iOffsetRemarks);
 
-  SongData_PutStr('CMF_Remarks', sRemarks);
+  SongData_PutStr('CMF_Remarks', string(sRemarks));
 
   if iOffsetMusic >= F.Size then
     iOffsetMusic := 0;
@@ -1820,7 +1820,7 @@ begin
     LogOutput('[-] Error: Wrong file header.');
     Exit;
   end;
-  SongData_PutStr('ROL_Signature', PAnsiChar(@Meta[0]));
+  SongData_PutStr('ROL_Signature', string(PAnsiChar(@Meta[0])));
   F.ReadBuffer(W, 2);
   SongData_PutInt('ROL_TicksPerBeat', W);
   SongData_PutInt('InitTempo', 60000000 div W);
@@ -2031,7 +2031,7 @@ begin
   for I := 0 to InstCnt - 1 do
   begin
     M.ReadBuffer(Name[0], 9);
-    SongData_PutStr('SND_Name#' + IntToStr(I), PAnsiChar(@Name[0]));
+    SongData_PutStr('SND_Name#' + IntToStr(I), string(PAnsiChar(@Name[0])));
   end;
   for I := 0 to InstCnt - 1 do
   begin
@@ -2085,7 +2085,7 @@ begin
   F.ReadBuffer(DW, 4);
   SongData_PutInt('MUS_ID', DW);
   F.ReadBuffer(tuneName[0], 30);
-  Title := PAnsiChar(@tuneName[0]);
+  Title := string(PAnsiChar(@tuneName[0]));
   SongData_PutStr('MUS_TuneName', Title);
 
   F.Seek($24, soFromBeginning);
@@ -2138,7 +2138,7 @@ begin
   end;
 
   SetLength(TrackData, 1);
-  TrackData[0].Title := Title;
+  TrackData[0].Title := AnsiString(Title);
   SetLength(TrackData[0].Data, 0);
   MIDIData := TMemoryStream.Create;
   MIDIData.SetSize(MIDILength);
@@ -2288,8 +2288,8 @@ begin
   fname[Length(fname) - 1] := #0;
   F.ReadBuffer(sname, SizeOf(sname));
   sname[Length(sname) - 1] := #0;
-  SongData_PutStr('SOP_FileName', PAnsiChar(@fname[0]));
-  SongData_PutStr('SOP_SongName', PAnsiChar(@sname[0]));
+  SongData_PutStr('SOP_FileName', string(PAnsiChar(@fname[0])));
+  SongData_PutStr('SOP_SongName', string(PAnsiChar(@sname[0])));
   F.ReadBuffer(B, 1);
   SongData_PutInt('SOP_Percussive', B);
   F.Seek(1, soCurrent);
@@ -2308,7 +2308,7 @@ begin
     SongData_PutDWord('InitTempo', 60000000 div B);
   F.ReadBuffer(fname, SizeOf(fname));
   fname[Length(fname) - 1] := #0;
-  SongData_PutStr('SOP_Comment', PAnsiChar(@fname[0]));
+  SongData_PutStr('SOP_Comment', string(PAnsiChar(@fname[0])));
   F.ReadBuffer(nTracks, 1);
   F.ReadBuffer(nInsts, 1);
   F.Seek(1, soCurrent);
@@ -2323,10 +2323,10 @@ begin
     SongData_PutInt('SOP_Inst#' + IntToStr(I), B);
     i1name[Length(i1name) - 1] := #0;
     F.ReadBuffer(i1name, SizeOf(i1name) - 1);
-    SongData_PutStr('SOP_SName#' + IntToStr(I), PAnsiChar(@i1name[0]));
+    SongData_PutStr('SOP_SName#' + IntToStr(I), string(PAnsiChar(@i1name[0])));
     i2name[Length(i2name) - 1] := #0;
     F.ReadBuffer(i2name, SizeOf(i2name) - 1);
-    SongData_PutStr('SOP_LName#' + IntToStr(I), PAnsiChar(@i2name[0]));
+    SongData_PutStr('SOP_LName#' + IntToStr(I), string(PAnsiChar(@i2name[0])));
     if B = 12 then // comment
       Continue
     else if B = 0 then // 4OP instrument
@@ -3341,7 +3341,7 @@ begin
                   if not (Trk.Data[Length(Trk.Data) - 1].Value in [0..15]) then
                   begin
                     LogOutput('[-] Error: MIDI Channel is wrong at offset ' +
-                      IntToStr(F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      IntToStr(F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                     Trk.Data[Length(Trk.Data) - 1].Len := 1;
                     Trk.Data[Length(Trk.Data) - 1].Value := 0;
                     LogOutput('[+] Fixed.');
@@ -3423,7 +3423,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 5 then
                     LogOutput(
                       '[-] Error: SMPTE Offset is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -3469,7 +3469,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 4 then
                     LogOutput(
                       '[-] Error: Time Signature is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -3515,7 +3515,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 2 then
                     LogOutput(
                       '[-] Error: Key Signature is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4046,7 +4046,7 @@ begin
                   if not (Trk.Data[Length(Trk.Data) - 1].Value in [0..15]) then
                   begin
                     LogOutput('[-] Error: MIDI Channel is wrong at offset ' +
-                      IntToStr(F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      IntToStr(F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                     Trk.Data[Length(Trk.Data) - 1].Len := 1;
                     Trk.Data[Length(Trk.Data) - 1].Value := 0;
                     LogOutput('[+] Fixed.');
@@ -4128,7 +4128,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 5 then
                     LogOutput(
                       '[-] Error: SMPTE Offset is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4174,7 +4174,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 4 then
                     LogOutput(
                       '[-] Error: Time Signature is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4220,7 +4220,7 @@ begin
                   if Trk.Data[Length(Trk.Data) - 1].Len <> 2 then
                     LogOutput(
                       '[-] Error: Key Signature is wrong formatted at offset ' + IntToStr(
-                      F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                      F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                   for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                   begin
                     SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4603,7 +4603,7 @@ begin
                       if not (Trk.Data[Length(Trk.Data) - 1].Value in [0..15]) then
                       begin
                         LogOutput('[-] Error: MIDI Channel is wrong at offset ' +
-                          IntToStr(F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                          IntToStr(F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                         Trk.Data[Length(Trk.Data) - 1].Len := 1;
                         Trk.Data[Length(Trk.Data) - 1].Value := 0;
                         LogOutput('[+] Fixed.');
@@ -4688,7 +4688,7 @@ begin
                       if Trk.Data[Length(Trk.Data) - 1].Len <> 5 then
                         LogOutput(
                           '[-] Error: SMPTE Offset is wrong formatted at offset ' + IntToStr(
-                          F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                          F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                       for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                       begin
                         SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4735,7 +4735,7 @@ begin
                       if Trk.Data[Length(Trk.Data) - 1].Len <> 4 then
                         LogOutput(
                           '[-] Error: Time Signature is wrong formatted at offset ' + IntToStr(
-                          F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                          F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                       for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                       begin
                         SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -4782,7 +4782,7 @@ begin
                       if Trk.Data[Length(Trk.Data) - 1].Len <> 2 then
                         LogOutput(
                           '[-] Error: Key Signature is wrong formatted at offset ' + IntToStr(
-                          F.Position - Trk.Data[Length(Trk.Data) - 1].Len) + '.');
+                          F.Position - Int64(Trk.Data[Length(Trk.Data) - 1].Len)) + '.');
                       for J := 0 to Trk.Data[Length(Trk.Data) - 1].Len - 1 do
                       begin
                         SetLength(Trk.Data[Length(Trk.Data) - 1].DataArray,
@@ -5650,7 +5650,7 @@ begin
   F.WriteBuffer(Pad, SizeOf(Pad));
   for I := 0 to Length(TrackData) - 1 do
   begin
-    S := TrackData[I].Title;
+    S := string(TrackData[I].Title);
     if Length(S) > SizeOf(Name) - 1 then
       SetLength(S, SizeOf(Name) - 1);
     FillChar(Name, SizeOf(Name), 0);
@@ -5812,7 +5812,7 @@ begin
   begin
     FillChar(Name, Length(Name), 0);
     SongData_GetStr('SND_Name#' + IntToStr(I), S);
-    A := S;
+    A := AnsiString(S);
     Move(A[1], Name[0], Length(A));
     M.WriteBuffer(Name, Length(Name));
   end;
@@ -5865,7 +5865,7 @@ begin
   SongData_GetStr('MUS_TuneName', S);
   if Length(S) > Length(tuneName) - 1 then
     SetLength(S, Length(tuneName) - 1);
-  A := S;
+  A := AnsiString(S);
   Move(A[1], tuneName[0], Length(A));
   F.WriteBuffer(tuneName[0], Length(tuneName));
 
@@ -7345,7 +7345,7 @@ begin
             SName) then
           begin // Insert instrument name
             NewEvent(I, J, $FF, $04);
-            TrackData[I].Data[J].DataString := SName;
+            TrackData[I].Data[J].DataString := AnsiString(SName);
             Inc(J);
           end;
         end;
@@ -7526,7 +7526,7 @@ begin
             TrackData[I].Data[J].BParm1 := $7F; // Sequencer-Specific
             TrackData[I].Data[J].Len := Length(TrackData[I].Data[J].DataArray);
             NewEvent(I, J, $FF, $04); // Insert instrument name
-            TrackData[I].Data[J].DataString := SName;
+            TrackData[I].Data[J].DataString := AnsiString(SName);
             Inc(J);
           end
           else
@@ -7965,7 +7965,7 @@ begin
                 3: // Track Name -> Tune Name
                 begin
                   if TuneName = '' then
-                    TuneName := TrackData[I].Data[J].DataString;
+                    TuneName := string(TrackData[I].Data[J].DataString);
                   DelEvent(I, J, True);
                   Continue;
                 end;
@@ -8127,13 +8127,13 @@ begin
                 3: // Track Name -> Tune Name
                 begin
                   if TuneName = '' then
-                    TuneName := TrackData[I].Data[J].DataString;
+                    TuneName := string(TrackData[I].Data[J].DataString);
                   DelEvent(I, J, True);
                   Continue;
                 end;
                 4: // Instrument Name
                 begin
-                  Instr := TrackData[I].Data[J].DataString;
+                  Instr := string(TrackData[I].Data[J].DataString);
                   DelEvent(I, J, True);
                   Continue;
                 end;
@@ -8310,7 +8310,7 @@ begin
             begin
               TrackData[I].Data[J].Status := $FF;
               TrackData[I].Data[J].BParm1 := $06;
-              TrackData[I].Data[J].DataString := IntToStr(TrackData[I].Data[J].BParm2);
+              TrackData[I].Data[J].DataString := AnsiString(IntToStr(TrackData[I].Data[J].BParm2));
               TrackData[I].Data[J].BParm2 := 0;
             end;
             $67: // Rhythm Mode
@@ -8482,7 +8482,7 @@ begin
             begin
               TrackData[I].Data[J].Status := $FF;
               TrackData[I].Data[J].BParm1 := $06;
-              TrackData[I].Data[J].DataString := IntToStr(TrackData[I].Data[J].BParm2);
+              TrackData[I].Data[J].DataString := AnsiString(IntToStr(TrackData[I].Data[J].BParm2));
               TrackData[I].Data[J].BParm2 := 0;
             end;
             $67: // Rhythm Mode
@@ -9048,9 +9048,9 @@ begin
               (Length(TrackData[I].Data[J].DataArray) >= 1 + 9 + 1 + 2) and
               (TrackData[I].Data[J].DataArray[0] = 1) then
             begin
-              K := Insts.IndexOf(PAnsiChar(@TrackData[I].Data[J].DataArray[1]));
+              K := Insts.IndexOf(string(PAnsiChar(@TrackData[I].Data[J].DataArray[1])));
               if K < 0 then
-                K := Insts.Add(PAnsiChar(@TrackData[I].Data[J].DataArray[1]));
+                K := Insts.Add(string(PAnsiChar(@TrackData[I].Data[J].DataArray[1])));
               TrackData[I].Data[J].Status := $C0 or (((I - 1) div 4) and $F);
               TrackData[I].Data[J].BParm1 := K;
             end;
@@ -11543,7 +11543,7 @@ begin
         ' |')
     else
       TrkCh.Items.Add(Format('%.' + IntToStr(Length(IntToStr(Length(TrackData)))) + 'd', [I]) +
-        ' | ' + TrackData[I].Title);
+        ' | ' + string(TrackData[I].Title));
 end;
 
 //==============================================================================
@@ -11967,7 +11967,7 @@ end;
 //==============================================================================
 procedure TXMICore.OnPlayerRefresh(var Msg: TMessage);
 begin
-  if Msg.WParam <> TrkCh.ItemIndex then
+  if Integer(Msg.WParam) <> TrkCh.ItemIndex then
     Exit;
   if Length(TrackData[TrkCh.ItemIndex].Data) > 0 then
     Events.RowCount := Length(TrackData[TrkCh.ItemIndex].Data) + 1;
@@ -13304,7 +13304,7 @@ begin
   if Container = '' then
   begin
     // Detect container by data
-    Container := DetectFile(M);
+    Container := AnsiString(DetectFile(M));
   end;
   EventViewProfile := EventProfile;
 
@@ -13481,7 +13481,7 @@ begin
   if Container = '' then
   begin
     // Detect container by data
-    Container := DetectFile(M);
+    Container := AnsiString(DetectFile(M));
   end;
   EventViewProfile := EventProfile;
 
@@ -14063,7 +14063,7 @@ begin
           Found := Ev.BParm1 = SearchEv.v2;
           if Found and (SearchEv.v2 in [1..7]) and
             (SearchEv.Text <> '') then
-            Found := Pos(SearchEv.Text, Ev.DataString) > 0;
+            Found := Pos(SearchEv.Text, string(Ev.DataString)) > 0;
         end;
       end;
 
@@ -14262,9 +14262,9 @@ end;
 function TXMICore.GetInstName(Prog: byte; Chn: byte): string;
 begin
   if Chn = 9 then
-    Result := DrumKits[Prog]
+    Result := string(DrumKits[Prog])
   else
-    Result := InstrumentTable[Prog];
+    Result := string(InstrumentTable[Prog]);
   if EventViewProfile = 'mus' then
   begin
     Result := '';
@@ -14396,7 +14396,7 @@ begin
             '), velocity = ' + IntToStr(TrackData[Idx].Data[I].BParm2)
         else
           Events.Cells[4, I + 1] := 'Note = ' + IntToStr(TrackData[Idx].Data[I].BParm1) +
-            ' (' + DrumTable[TrackData[Idx].Data[I].BParm1] +
+            ' (' + string(DrumTable[TrackData[Idx].Data[I].BParm1]) +
             '), velocity = ' + IntToStr(TrackData[Idx].Data[I].BParm2);
       end;
       9:
@@ -14411,7 +14411,7 @@ begin
             '), velocity = ' + IntToStr(TrackData[Idx].Data[I].BParm2)
         else
           Events.Cells[4, I + 1] := 'Note = ' + IntToStr(TrackData[Idx].Data[I].BParm1) +
-            ' (' + DrumTable[TrackData[Idx].Data[I].BParm1] +
+            ' (' + string(DrumTable[TrackData[Idx].Data[I].BParm1]) +
             '), velocity = ' + IntToStr(TrackData[Idx].Data[I].BParm2);
       end;
       10:
@@ -14423,12 +14423,12 @@ begin
             '), pressure = ' + IntToStr(TrackData[Idx].Data[I].BParm2)
         else
           Events.Cells[4, I + 1] := 'Note = ' + IntToStr(TrackData[Idx].Data[I].BParm1) +
-            ' (' + DrumTable[TrackData[Idx].Data[I].BParm1] +
+            ' (' + string(DrumTable[TrackData[Idx].Data[I].BParm1]) +
             '), pressure = ' + IntToStr(TrackData[Idx].Data[I].BParm2);
       end;
       11:
       begin // Control Change
-        Events.Cells[3, I + 1] := 'Control: ' + ControlTable[TrackData[Idx].Data[I].BParm1];
+        Events.Cells[3, I + 1] := 'Control: ' + string(ControlTable[TrackData[Idx].Data[I].BParm1]);
         case TrackData[Idx].Data[I].BParm1 of
           64..66, 67, 69:
           begin  // Switches
@@ -14453,7 +14453,7 @@ begin
             else
               Events.Cells[4, I + 1] :=
                 'Note = ' + IntToStr(TrackData[Idx].Data[I].BParm2) +
-                ' (' + DrumTable[TrackData[Idx].Data[I].BParm2] + ')';
+                ' (' + string(DrumTable[TrackData[Idx].Data[I].BParm2]) + ')';
           end;
           96..97, 120, 121, 123..125, 127:  // value ignored
             Events.Cells[4, I + 1] := '';
@@ -14510,12 +14510,12 @@ begin
       end;
       15:
       begin // System
-        Events.Cells[3, I + 1] := 'System: ' + SystemTable[TrackData[Idx].Data[I].Status
-          and 15];
+        Events.Cells[3, I + 1] := 'System: ' + string(SystemTable[TrackData[Idx].Data[I].Status
+          and 15]);
         case TrackData[Idx].Data[I].Status and 15 of
           0, 7:
           begin // SysEx and EOX
-            S := SysExProcess(TrackData[Idx].Data[I].DataArray);
+            S := string(SysExProcess(TrackData[Idx].Data[I].DataArray));
             if S <> '' then
               Events.Cells[4, I + 1] := S
             else
@@ -14539,7 +14539,7 @@ begin
           14: ; // ActiveSens
           15:
           begin  // Meta Event
-            Events.Cells[4, I + 1] := MetaTable[TrackData[Idx].Data[I].BParm1] +
+            Events.Cells[4, I + 1] := string(MetaTable[TrackData[Idx].Data[I].BParm1]) +
               ': ';
             case TrackData[Idx].Data[I].BParm1 of
               // Sequence Number
@@ -14547,7 +14547,7 @@ begin
                   Events.Cells[4, I + 1] + IntToStr(TrackData[Idx].Data[I].Value);
               // Strings
               1..7: Events.Cells[4, I + 1] := Events.Cells[4, I + 1] +
-                  TrackData[Idx].Data[I].DataString;
+                  string(TrackData[Idx].Data[I].DataString);
               // MIDI Channel
               32: Events.Cells[4, I + 1] :=
                   Events.Cells[4, I + 1] + IntToStr(TrackData[Idx].Data[I].Value + 1);
@@ -14603,7 +14603,7 @@ begin
               // Sequencer-Specific
               127:
               begin
-                S := SysExProcess(TrackData[Idx].Data[I].DataArray);
+                S := string(SysExProcess(TrackData[Idx].Data[I].DataArray));
                 if S = '' then
                   S := 'No data';
                 Events.Cells[4, I + 1] := Events.Cells[4, I + 1] + S;
@@ -15191,7 +15191,7 @@ begin
   if Title = '' then
     LogOutput('[*] Track ' + IntToStr(Idx) + ' deleted.')
   else
-    LogOutput('[*] Track ' + IntToStr(Idx) + ' (' + Title + ') deleted.');
+    LogOutput('[*] Track ' + IntToStr(Idx) + ' (' + string(Title) + ') deleted.');
 end;
 
 //==============================================================================
