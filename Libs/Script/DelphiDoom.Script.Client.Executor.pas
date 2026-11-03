@@ -69,6 +69,27 @@ type
 
     function GetGlobalInteger(const AName: AnsiString): Int64;
     procedure SetGlobalInteger(const AName: AnsiString; AValue: Int64);
+    function GetGlobalDouble(const AName: AnsiString): Double;
+    procedure SetGlobalDouble(const AName: AnsiString; AValue: Double);
+    function GetGlobalText(const AName: AnsiString): AnsiString;
+    procedure SetGlobalText(const AName, AValue: AnsiString);
+
+    /// <summary>
+    ///   Number of the globals reachable by name
+    /// </summary>
+    function GlobalCount: Integer;
+
+    /// <summary>
+    ///   Name (upper case) and kind (SCRIPT_GLOBAL_*) of global AIndex
+    /// </summary>
+    function GlobalName(AIndex: Integer): AnsiString;
+    function GlobalKind(AIndex: Integer): Integer;
+
+    /// <summary>
+    ///   Handlers called while the script runs; nil removes one
+    /// </summary>
+    procedure SetEventHandlers(ARunLine: TScriptRunLineHandler;
+      AException: TScriptExceptionHandler; AUserData: Pointer);
   end;
 
 implementation
@@ -219,6 +240,77 @@ end;
 function TScriptExecutorClient.GetGlobalInteger(const AName: AnsiString): Int64;
 begin
   Check(FExecutor.GetGlobalInteger(PAnsiChar(AName), Result));
+end;
+
+function TScriptExecutorClient.GetGlobalDouble(const AName: AnsiString): Double;
+begin
+  Check(FExecutor.GetGlobalDouble(PAnsiChar(AName), Result));
+end;
+
+procedure TScriptExecutorClient.SetGlobalDouble(const AName: AnsiString;
+  AValue: Double);
+begin
+  Check(FExecutor.SetGlobalDouble(PAnsiChar(AName), AValue));
+end;
+
+function TScriptExecutorClient.GetGlobalText(const AName: AnsiString): AnsiString;
+var
+  LBuffer: array[0..255] of AnsiChar;
+  LSize: Cardinal;
+  LCode: Integer;
+begin
+  LSize := SizeOf(LBuffer);
+  LCode := FExecutor.GetGlobalText(PAnsiChar(AName), @LBuffer[0], LSize);
+  if LCode = SCRIPT_ERROR_BUFFER then
+  begin
+    // LSize is now the size needed
+    SetLength(Result, LSize);
+    LCode := FExecutor.GetGlobalText(PAnsiChar(AName), PAnsiChar(Result), LSize);
+    Check(LCode);
+    Result := AnsiString(PAnsiChar(Result));
+    Exit;
+  end;
+  Check(LCode);
+  Result := AnsiString(PAnsiChar(@LBuffer[0]));
+end;
+
+procedure TScriptExecutorClient.SetGlobalText(const AName, AValue: AnsiString);
+begin
+  Check(FExecutor.SetGlobalText(PAnsiChar(AName), PAnsiChar(AValue)));
+end;
+
+function TScriptExecutorClient.GlobalCount: Integer;
+var
+  LCount: Cardinal;
+begin
+  Check(FExecutor.GetGlobalCount(LCount));
+  Result := Integer(LCount);
+end;
+
+function TScriptExecutorClient.GlobalName(AIndex: Integer): AnsiString;
+var
+  LKind: Integer;
+  LBuffer: array[0..255] of AnsiChar;
+  LSize: Cardinal;
+begin
+  LSize := SizeOf(LBuffer);
+  Check(FExecutor.GetGlobalInfo(Cardinal(AIndex), LKind, @LBuffer[0], LSize));
+  Result := AnsiString(PAnsiChar(@LBuffer[0]));
+end;
+
+function TScriptExecutorClient.GlobalKind(AIndex: Integer): Integer;
+var
+  LBuffer: array[0..255] of AnsiChar;
+  LSize: Cardinal;
+begin
+  LSize := SizeOf(LBuffer);
+  Check(FExecutor.GetGlobalInfo(Cardinal(AIndex), Result, @LBuffer[0], LSize));
+end;
+
+procedure TScriptExecutorClient.SetEventHandlers(ARunLine: TScriptRunLineHandler;
+  AException: TScriptExceptionHandler; AUserData: Pointer);
+begin
+  Check(FExecutor.SetEventHandlers(ARunLine, AException, AUserData));
 end;
 
 procedure TScriptExecutorClient.SetGlobalInteger(const AName: AnsiString;

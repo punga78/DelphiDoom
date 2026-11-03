@@ -45,11 +45,32 @@ const
   SCRIPT_CALL_STDCALL = 3;
   SCRIPT_CALL_SAFECALL = 4;
 
+  // Kinds of a global variable of the script (GetGlobalInfo)
+  SCRIPT_GLOBAL_OTHER = 0;
+  SCRIPT_GLOBAL_INTEGER = 1;
+  SCRIPT_GLOBAL_DOUBLE = 2;
+  SCRIPT_GLOBAL_TEXT = 3;
+
   // Name of the DLL and of its only export
   DDSCRIPT_LIBRARY_NAME = 'DDScript.dll';
   DDSCRIPT_CREATE_EXPORT = 'DDScriptCreate';
 
 type
+  /// <summary>
+  ///   Called by the interpreter before every line of the script (the
+  ///   application uses it to count instructions or to interrupt loops);
+  ///   AUserData is the pointer given to SetEventHandlers
+  /// </summary>
+  TScriptRunLineHandler = procedure(AUserData: Pointer); stdcall;
+
+  /// <summary>
+  ///   Called when the script raises an exception: ACode is the interpreter
+  ///   error number, AProcedure the number of the procedure and APosition the
+  ///   position in its code
+  /// </summary>
+  TScriptExceptionHandler = procedure(AUserData: Pointer; ACode: Integer;
+    AProcedure, APosition: Cardinal); stdcall;
+
   /// <summary>
   ///   Value exchanged with the script: argument of a call or its result.
   ///   The layout is fixed (packed) because it crosses the DLL boundary
@@ -218,9 +239,20 @@ type
     ///   Registers a function of the application. Must be called before
     ///   LoadBytecode, for every host function the bytecode uses
     /// </summary>
+    /// <remarks>
+    ///   Memory: when the library runs inside DDScript.dll, a function that
+    ///   returns a string, an array or a variant, or takes one as var or out,
+    ///   would allocate on one heap and free on the other, so it is refused.
+    ///   Give the strings by value (the Delphi parameter is const) and use
+    ///   Integer, Double and PAnsiChar for the results. The DLL accepts them if it is built
+    ///   with the symbol SCRIPT_SHARED_MEMORY, which requires the application
+    ///   and the DLL to share the memory manager (ShareMem or the same FastMM
+    ///   instance). The library linked into the executable has no limit
+    /// </remarks>
     /// <returns>
     ///   SCRIPT_OK; SCRIPT_ERROR_ARGUMENT for a nil text or address, an
-    ///   invalid declaration, an unknown convention or a duplicate name;
+    ///   invalid declaration, an unknown convention, a duplicate name or a
+    ///   function the DLL cannot call safely (see the remarks);
     ///   SCRIPT_ERROR_STATE if the bytecode is already loaded
     /// </returns>
     function AddHostFunction(ADeclaration: PAnsiChar; AAddress: Pointer;
@@ -276,6 +308,37 @@ type
     ///   Assigns the global variable AName of the script (any integer type)
     /// </summary>
     function SetGlobalInteger(AName: PAnsiChar; AValue: Int64): Integer; stdcall;
+
+    /// <summary>
+    ///   Number of the global variables the application can reach by name
+    /// </summary>
+    function GetGlobalCount(out ACount: Cardinal): Integer; stdcall;
+
+    /// <summary>
+    ///   Kind (SCRIPT_GLOBAL_*) and name (upper case) of global variable
+    ///   AIndex, zero based. ANameSize is the size of AName on input and the
+    ///   size needed (zero included) on output
+    /// </summary>
+    function GetGlobalInfo(AIndex: Cardinal; out AKind: Integer;
+      AName: PAnsiChar; var ANameSize: Cardinal): Integer; stdcall;
+
+    function GetGlobalDouble(AName: PAnsiChar; out AValue: Double): Integer; stdcall;
+    function SetGlobalDouble(AName: PAnsiChar; AValue: Double): Integer; stdcall;
+
+    /// <summary>
+    ///   Reads and assigns a global variable of type string or char; the
+    ///   buffer rules are those of GetResultText
+    /// </summary>
+    function GetGlobalText(AName: PAnsiChar; ABuffer: PAnsiChar;
+      var ABufferSize: Cardinal): Integer; stdcall;
+    function SetGlobalText(AName, AValue: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Sets the handlers called while the script runs; nil removes one. The
+    ///   handlers survive a new LoadBytecode
+    /// </summary>
+    function SetEventHandlers(ARunLine: TScriptRunLineHandler;
+      AException: TScriptExceptionHandler; AUserData: Pointer): Integer; stdcall;
 
     /// <summary>
     ///   Text of the last error of LoadBytecode, RunMain or CallProcedure,

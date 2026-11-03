@@ -592,6 +592,8 @@ type
     function GetProcNo(C: Cardinal): PIFProcRec;
     function GetProcCount: Cardinal;
     function GetVarCount: Longint;
+    function GetExportedVarCount: Longint;
+    function GetExportedVarName(C: Cardinal): TbtString;
     function GetTypeCount: Longint;
     constructor Create; virtual;
     destructor Destroy; Override;
@@ -14826,6 +14828,31 @@ end;
 function TPSExec.GetVarCount: Longint;
 begin
   Result := FGlobalVars.Count;
+end;
+
+//==============================================================================
+//
+// TPSExec.GetExportedVarCount
+//
+//==============================================================================
+function TPSExec.GetExportedVarCount: Longint;
+begin
+  Result := FExportedVars.Count;
+end;
+
+//==============================================================================
+//
+// TPSExec.GetExportedVarName
+//
+// Name (upper case) of the exported variable C, the index GetVar returns
+//
+//==============================================================================
+function TPSExec.GetExportedVarName(C: Cardinal): TbtString;
+begin
+  if C < Cardinal(FExportedVars.Count) then
+    Result := PPSExportedVar(FExportedVars.Data^[C])^.FName
+  else
+    Result := '';
 end;
 
 function TPSExec.FindSpecialProcImport(

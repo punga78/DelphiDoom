@@ -36,6 +36,15 @@ type
     class function IsIdentifier(const AName: TbtString): Boolean; static;
 
     /// <summary>
+    ///   True if a function with this declaration allocates memory that the
+    ///   script releases, or the other way round: it returns a string, an
+    ///   array or a variant, or it takes one as var or out (a parameter by
+    ///   value or const is only read). Such a function can be called from a
+    ///   DLL only if the DLL and the application share the memory manager
+    /// </summary>
+    class function NeedsSharedMemory(const ADeclaration: TbtString): Boolean; static;
+
+    /// <summary>
     ///   Converts SCRIPT_CALL_* into the convention of Pascal Script
     /// </summary>
     class function TryGetConvention(AValue: Integer;
@@ -57,6 +66,62 @@ type
 implementation
 
 { TScriptNative }
+
+class function TScriptNative.NeedsSharedMemory(
+  const ADeclaration: TbtString): Boolean;
+
+  function IsManaged(const ATypeName: string): Boolean;
+  var
+    LName: string;
+  begin
+    LName := LowerCase(Trim(ATypeName));
+    Result := (LName = 'string') or (LName = 'ansistring') or
+      (LName = 'widestring') or (LName = 'unicodestring') or
+      (LName = 'variant') or (Copy(LName, 1, 8) = 'array of');
+  end;
+
+var
+  LText: string;
+  LOpen: Integer;
+  LClose: Integer;
+  LParameters: TArray<string>;
+  LGroup: string;
+  LColon: Integer;
+  LModifier: string;
+  LTail: string;
+begin
+  Result := False;
+  LText := Trim(string(ADeclaration));
+
+  LOpen := Pos('(', LText);
+  LClose := LastDelimiter(')', LText);
+  if (LOpen > 0) and (LClose > LOpen) then
+  begin
+    LParameters := Copy(LText, LOpen + 1, LClose - LOpen - 1).Split([';']);
+    for LGroup in LParameters do
+    begin
+      LColon := Pos(':', LGroup);
+      if LColon = 0 then
+        Continue;
+      LModifier := LowerCase(Trim(LGroup));
+      if not IsManaged(Copy(LGroup, LColon + 1, MaxInt)) then
+        Continue;
+      // By value or const the function only reads the string it is given;
+      // with var or out it can replace it, and the new one is allocated by it
+      if (Copy(LModifier, 1, 4) = 'var ') or (Copy(LModifier, 1, 4) = 'out ') then
+        Exit(True);
+    end;
+    LTail := Copy(LText, LClose + 1, MaxInt);
+  end
+  else
+    LTail := LText;
+
+  // The result type follows the last colon after the parameters
+  LColon := LastDelimiter(':', LTail);
+  if LColon > 0 then
+    Result := IsManaged(StringReplace(Copy(LTail, LColon + 1, MaxInt), ';', '',
+      [rfReplaceAll]));
+end;
 
 class function TScriptNative.IsIdentifierChar(AChar: AnsiChar): Boolean;
 begin

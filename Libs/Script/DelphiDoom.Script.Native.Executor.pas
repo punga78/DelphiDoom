@@ -53,6 +53,12 @@ type
     FHostNames: TList<TbtString>;
     FLastError: TbtString;
     FResultText: TbtString;
+    FRunLine: TScriptRunLineHandler;
+    FExceptionHandler: TScriptExceptionHandler;
+    FEventData: Pointer;
+    procedure AttachEvents;
+    function FindGlobal(const AName: TbtString;
+      out AVariable: PPSVariant): Integer;
     function AssignArgument(AVariable: PPSVariant;
       const AArgument: TScriptNativeValue): Boolean;
     function ReadResult(AVariable: PPSVariant;
@@ -80,6 +86,20 @@ type
       out AResult: TScriptNativeValue): Integer;
     function GetGlobalInteger(const AName: TbtString; out AValue: Int64): Integer;
     function SetGlobalInteger(const AName: TbtString; AValue: Int64): Integer;
+    function GetGlobalDouble(const AName: TbtString; out AValue: Double): Integer;
+    function SetGlobalDouble(const AName: TbtString; AValue: Double): Integer;
+    function GetGlobalText(const AName: TbtString; out AValue: TbtString): Integer;
+    function SetGlobalText(const AName, AValue: TbtString): Integer;
+
+    /// <summary>
+    ///   The globals reachable by name, in the order of declaration
+    /// </summary>
+    function GetGlobalCount(out ACount: Cardinal): Integer;
+    function GetGlobalInfo(AIndex: Cardinal; out AKind: Integer;
+      out AName: TbtString): Integer;
+
+    procedure SetEventHandlers(ARunLine: TScriptRunLineHandler;
+      AException: TScriptExceptionHandler; AUserData: Pointer);
 
     property IsLoaded: Boolean read GetIsLoaded;
     /// <summary>Text of the last error of Load, RunMain or Call</summary>
@@ -95,6 +115,43 @@ uses
 
 const
   INVALID_INDEX = Cardinal(-1);
+
+// The events of the interpreter are plain procedures: it reaches this object
+// through its Id property
+
+procedure ScriptRunLine(Sender: TPSExec);
+var
+  LExecutor: TScriptNativeExecutor;
+begin
+  LExecutor := TScriptNativeExecutor(Sender.Id);
+  if Assigned(LExecutor) and Assigned(LExecutor.FRunLine) then
+    LExecutor.FRunLine(LExecutor.FEventData);
+end;
+
+procedure ScriptException(Sender: TPSExec; ExError: TPSError;
+  const ExParam: TbtString; ExObject: TObject; ProcNo, Position: Cardinal);
+var
+  LExecutor: TScriptNativeExecutor;
+begin
+  LExecutor := TScriptNativeExecutor(Sender.Id);
+  if Assigned(LExecutor) and Assigned(LExecutor.FExceptionHandler) then
+    LExecutor.FExceptionHandler(LExecutor.FEventData, Ord(ExError), ProcNo,
+      Position);
+end;
+
+function KindOfType(AType: PIFTypeRec): Integer;
+begin
+  case AType.BaseType of
+    btU8, btS8, btU16, btS16, btU32, btS32, btS64:
+      Result := SCRIPT_GLOBAL_INTEGER;
+    btSingle, btDouble, btExtended, btCurrency:
+      Result := SCRIPT_GLOBAL_DOUBLE;
+    btString, btChar, btUnicodeString, btWideString, btWideChar:
+      Result := SCRIPT_GLOBAL_TEXT;
+  else
+    Result := SCRIPT_GLOBAL_OTHER;
+  end;
+end;
 
 { TScriptNativeExecutor }
 
@@ -166,6 +223,8 @@ begin
   FResultText := '';
 
   FExec := TPSExec.Create;
+  FExec.Id := Self;
+  AttachEvents;
   for LIndex := 0 to FHostFunctions.Count - 1 do
     FExec.RegisterDelphiFunction(FHostFunctions[LIndex].Address,
       FHostFunctions[LIndex].Name, FHostFunctions[LIndex].Convention);
@@ -342,6 +401,156 @@ begin
       Result := SCRIPT_OK;
   finally
     FreePIFVariantList(LParameters);
+  end;
+end;
+
+procedure TScriptNativeExecutor.AttachEvents;
+begin
+  if not Assigned(FExec) then
+    Exit;
+
+  // Calling the line event costs, so the interpreter gets it only if wanted
+  if Assigned(FRunLine) then
+    FExec.OnRunLine := ScriptRunLine
+  else
+    FExec.OnRunLine := nil;
+  FExec.OnException := ScriptException;
+end;
+
+procedure TScriptNativeExecutor.SetEventHandlers(ARunLine: TScriptRunLineHandler;
+  AException: TScriptExceptionHandler; AUserData: Pointer);
+begin
+  FRunLine := ARunLine;
+  FExceptionHandler := AException;
+  FEventData := AUserData;
+  AttachEvents;
+end;
+
+function TScriptNativeExecutor.FindGlobal(const AName: TbtString;
+  out AVariable: PPSVariant): Integer;
+var
+  LIndex: Cardinal;
+begin
+  AVariable := nil;
+  if not Assigned(FExec) then
+    Exit(SCRIPT_ERROR_STATE);
+
+  LIndex := FExec.GetVar(AName);
+  if LIndex = INVALID_INDEX then
+    Exit(SCRIPT_ERROR_NOTFOUND);
+
+  AVariable := FExec.GetVarNo(LIndex);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeExecutor.GetGlobalCount(out ACount: Cardinal): Integer;
+begin
+  ACount := 0;
+  if not Assigned(FExec) then
+    Exit(SCRIPT_ERROR_STATE);
+
+  ACount := Cardinal(FExec.GetExportedVarCount);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeExecutor.GetGlobalInfo(AIndex: Cardinal;
+  out AKind: Integer; out AName: TbtString): Integer;
+var
+  LVariable: PPSVariant;
+begin
+  AKind := SCRIPT_GLOBAL_OTHER;
+  AName := '';
+  if not Assigned(FExec) then
+    Exit(SCRIPT_ERROR_STATE);
+  if AIndex >= Cardinal(FExec.GetExportedVarCount) then
+    Exit(SCRIPT_ERROR_NOTFOUND);
+
+  AName := FExec.GetExportedVarName(AIndex);
+  LVariable := FExec.GetVarNo(AIndex);
+  AKind := KindOfType(LVariable.FType);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeExecutor.GetGlobalDouble(const AName: TbtString;
+  out AValue: Double): Integer;
+var
+  LVariable: PPSVariant;
+begin
+  AValue := 0;
+  Result := FindGlobal(AName, LVariable);
+  if Result <> SCRIPT_OK then
+    Exit;
+
+  try
+    if KindOfType(LVariable.FType) <> SCRIPT_GLOBAL_DOUBLE then
+      Exit(SCRIPT_ERROR_TYPE);
+    AValue := PSGetReal(@PPSVariantData(LVariable).Data, LVariable.FType);
+  except
+    Result := SCRIPT_ERROR_TYPE;
+  end;
+end;
+
+function TScriptNativeExecutor.SetGlobalDouble(const AName: TbtString;
+  AValue: Double): Integer;
+var
+  LVariable: PPSVariant;
+  LValid: Boolean;
+begin
+  Result := FindGlobal(AName, LVariable);
+  if Result <> SCRIPT_OK then
+    Exit;
+
+  try
+    if KindOfType(LVariable.FType) <> SCRIPT_GLOBAL_DOUBLE then
+      Exit(SCRIPT_ERROR_TYPE);
+    LValid := True;
+    PSSetReal(@PPSVariantData(LVariable).Data, LVariable.FType, LValid, AValue);
+    if not LValid then
+      Result := SCRIPT_ERROR_TYPE;
+  except
+    Result := SCRIPT_ERROR_TYPE;
+  end;
+end;
+
+function TScriptNativeExecutor.GetGlobalText(const AName: TbtString;
+  out AValue: TbtString): Integer;
+var
+  LVariable: PPSVariant;
+begin
+  AValue := '';
+  Result := FindGlobal(AName, LVariable);
+  if Result <> SCRIPT_OK then
+    Exit;
+
+  try
+    if KindOfType(LVariable.FType) <> SCRIPT_GLOBAL_TEXT then
+      Exit(SCRIPT_ERROR_TYPE);
+    AValue := PSGetAnsiString(@PPSVariantData(LVariable).Data, LVariable.FType);
+  except
+    Result := SCRIPT_ERROR_TYPE;
+  end;
+end;
+
+function TScriptNativeExecutor.SetGlobalText(const AName,
+  AValue: TbtString): Integer;
+var
+  LVariable: PPSVariant;
+  LValid: Boolean;
+begin
+  Result := FindGlobal(AName, LVariable);
+  if Result <> SCRIPT_OK then
+    Exit;
+
+  try
+    if KindOfType(LVariable.FType) <> SCRIPT_GLOBAL_TEXT then
+      Exit(SCRIPT_ERROR_TYPE);
+    LValid := True;
+    PSSetAnsiString(@PPSVariantData(LVariable).Data, LVariable.FType, LValid,
+      AValue);
+    if not LValid then
+      Result := SCRIPT_ERROR_TYPE;
+  except
+    Result := SCRIPT_ERROR_TYPE;
   end;
 end;
 

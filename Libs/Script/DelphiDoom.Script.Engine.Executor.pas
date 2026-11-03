@@ -38,6 +38,16 @@ type
     function GetResultText(ABuffer: PAnsiChar; var ABufferSize: Cardinal): Integer; stdcall;
     function GetGlobalInteger(AName: PAnsiChar; out AValue: Int64): Integer; stdcall;
     function SetGlobalInteger(AName: PAnsiChar; AValue: Int64): Integer; stdcall;
+    function GetGlobalCount(out ACount: Cardinal): Integer; stdcall;
+    function GetGlobalInfo(AIndex: Cardinal; out AKind: Integer;
+      AName: PAnsiChar; var ANameSize: Cardinal): Integer; stdcall;
+    function GetGlobalDouble(AName: PAnsiChar; out AValue: Double): Integer; stdcall;
+    function SetGlobalDouble(AName: PAnsiChar; AValue: Double): Integer; stdcall;
+    function GetGlobalText(AName: PAnsiChar; ABuffer: PAnsiChar;
+      var ABufferSize: Cardinal): Integer; stdcall;
+    function SetGlobalText(AName, AValue: PAnsiChar): Integer; stdcall;
+    function SetEventHandlers(ARunLine: TScriptRunLineHandler;
+      AException: TScriptExceptionHandler; AUserData: Pointer): Integer; stdcall;
     function GetLastErrorText(ABuffer: PAnsiChar; var ABufferSize: Cardinal): Integer; stdcall;
   end;
 
@@ -69,6 +79,13 @@ function TScriptExecutorEngine.AddHostFunction(ADeclaration: PAnsiChar;
 begin
   if not Assigned(ADeclaration) or not Assigned(AAddress) then
     Exit(SCRIPT_ERROR_ARGUMENT);
+
+  {$IFNDEF SCRIPT_SHARED_MEMORY}
+  // Inside the DLL the memory manager is the DLL's own: a function that
+  // allocates or frees strings of the caller's heap would corrupt it
+  if IsLibrary and TScriptNative.NeedsSharedMemory(AnsiString(ADeclaration)) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+  {$ENDIF}
 
   try
     Result := FNative.AddHostFunction(AnsiString(ADeclaration), AAddress,
@@ -237,6 +254,115 @@ begin
   except
     on EOutOfMemory do
       Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.GetGlobalCount(out ACount: Cardinal): Integer;
+begin
+  ACount := 0;
+  try
+    Result := FNative.GetGlobalCount(ACount);
+  except
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.GetGlobalInfo(AIndex: Cardinal;
+  out AKind: Integer; AName: PAnsiChar; var ANameSize: Cardinal): Integer;
+var
+  LName: AnsiString;
+begin
+  AKind := SCRIPT_GLOBAL_OTHER;
+  try
+    Result := FNative.GetGlobalInfo(AIndex, AKind, LName);
+    if Result = SCRIPT_OK then
+      Result := TScriptNative.CopyText(LName, AName, ANameSize);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.GetGlobalDouble(AName: PAnsiChar;
+  out AValue: Double): Integer;
+begin
+  AValue := 0;
+  if not Assigned(AName) or (AName^ = #0) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    Result := FNative.GetGlobalDouble(AnsiString(AName), AValue);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.SetGlobalDouble(AName: PAnsiChar;
+  AValue: Double): Integer;
+begin
+  if not Assigned(AName) or (AName^ = #0) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    Result := FNative.SetGlobalDouble(AnsiString(AName), AValue);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.GetGlobalText(AName: PAnsiChar;
+  ABuffer: PAnsiChar; var ABufferSize: Cardinal): Integer;
+var
+  LValue: AnsiString;
+begin
+  if not Assigned(AName) or (AName^ = #0) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    Result := FNative.GetGlobalText(AnsiString(AName), LValue);
+    if Result = SCRIPT_OK then
+      Result := TScriptNative.CopyText(LValue, ABuffer, ABufferSize);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.SetGlobalText(AName, AValue: PAnsiChar): Integer;
+begin
+  if not Assigned(AName) or (AName^ = #0) or not Assigned(AValue) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    Result := FNative.SetGlobalText(AnsiString(AName), AnsiString(AValue));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptExecutorEngine.SetEventHandlers(ARunLine: TScriptRunLineHandler;
+  AException: TScriptExceptionHandler; AUserData: Pointer): Integer;
+begin
+  try
+    FNative.SetEventHandlers(ARunLine, AException, AUserData);
+    Result := SCRIPT_OK;
+  except
     on Exception do
       Result := SCRIPT_ERROR_INTERNAL;
   end;
