@@ -142,7 +142,7 @@ var
   dSlideY: array[0..MAXPLAYERS - 1] of fixed_t;
 
 const
-  KillersText: array[0..6] of char = ('K', 'I', 'L', 'L', 'E', 'R', 'S');
+  KillersText: array[0..6] of AnsiChar = ('K', 'I', 'L', 'L', 'E', 'R', 'S');
 
 type
   yahpt_t = record

@@ -887,10 +887,10 @@ begin
   if asize < 36 then
     Exit;
   pb := adata;
-  Head[0] := Chr(pb[0]);
-  Head[1] := Chr(pb[1]);
-  Head[2] := Chr(pb[2]);
-  Head[3] := Chr(pb[3]);
+  Head[0] := AnsiChar(pb[0]);
+  Head[1] := AnsiChar(pb[1]);
+  Head[2] := AnsiChar(pb[2]);
+  Head[3] := AnsiChar(pb[3]);
   Result := Head = 'CTMF';
 end;
 
@@ -5436,7 +5436,7 @@ begin
     F.Seek($E, soFromBeginning);
     F.WriteBuffer(W, 2);
     F.Seek(W, soFromBeginning);
-    F.WriteBuffer(PAnsiChar(S)^, Length(S) + 1);
+    F.WriteBuffer(PAnsiChar(AnsiString(S))^, Length(AnsiString(S)) + 1);
   end;
 
   if SongData_GetStr('CMF_Composer', S) and (Length(S) > 0) then
@@ -5445,7 +5445,7 @@ begin
     F.Seek($10, soFromBeginning);
     F.WriteBuffer(W, 2);
     F.Seek(W, soFromBeginning);
-    F.WriteBuffer(PAnsiChar(S)^, Length(S) + 1);
+    F.WriteBuffer(PAnsiChar(AnsiString(S))^, Length(AnsiString(S)) + 1);
   end;
 
   if SongData_GetStr('CMF_Remarks', S) and (Length(S) > 0) then
@@ -5454,7 +5454,7 @@ begin
     F.Seek($12, soFromBeginning);
     F.WriteBuffer(W, 2);
     F.Seek(W, soFromBeginning);
-    F.WriteBuffer(PAnsiChar(S)^, Length(S) + 1);
+    F.WriteBuffer(PAnsiChar(AnsiString(S))^, Length(AnsiString(S)) + 1);
   end;
 
   if iInstrumentCount > 0 then
@@ -11107,12 +11107,12 @@ begin
     NewEvent(0, 0, $FF, $51);
     TrackData[0].Data[0].Value := 60000000 div BT;
 
-    SetLength(TrackData[0].Data[J].DataArray, 3);
-    TrackData[0].Data[J].Len := 3;
+    SetLength(TrackData[0].Data[0].DataArray, 3);
+    TrackData[0].Data[0].Len := 3;
 
-    TrackData[0].Data[J].DataArray[0] := (TrackData[0].Data[J].Value shr 16) and $FF;
-    TrackData[0].Data[J].DataArray[1] := (TrackData[0].Data[J].Value shr 8) and $FF;
-    TrackData[0].Data[J].DataArray[2] := (TrackData[0].Data[J].Value) and $FF;
+    TrackData[0].Data[0].DataArray[0] := (TrackData[0].Data[0].Value shr 16) and $FF;
+    TrackData[0].Data[0].DataArray[1] := (TrackData[0].Data[0].Value shr 8) and $FF;
+    TrackData[0].Data[0].DataArray[2] := (TrackData[0].Data[0].Value) and $FF;
   end;
   // Insert file name as comment
   if SongData_GetStr('SOP_FileName', S) then

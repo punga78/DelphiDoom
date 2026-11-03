@@ -89,7 +89,7 @@ end;
 // TBaseEditorObject.GetData
 //
 //==============================================================================
-function TBaseEditorObject.GetData: string;
+function TBaseEditorObject.GetData: AnsiString;
 begin
   FieldsToData(fdata);
   Result := fdata;

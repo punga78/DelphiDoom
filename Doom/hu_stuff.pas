@@ -153,7 +153,7 @@ var
   destination_keys: array[0..MAXPLAYERS - 1] of string;
 
 var
-  shiftxform: array[0..127] of char;
+  shiftxform: array[0..127] of Char;
 
 //==============================================================================
 //
@@ -333,7 +333,7 @@ var
   w_leveltime: hu_textline_t;
   w_chat: hu_itext_t;
   always_off: boolean = false;
-  chat_dest: array[0..MAXPLAYERS - 1] of char;
+  chat_dest: array[0..MAXPLAYERS - 1] of Char;
   w_inputbuffer: array[0..MAXPLAYERS - 1] of hu_itext_t;
 
   w_message: hu_stext_t;
@@ -394,7 +394,7 @@ const
   HU_INPUTHEIGHT = 1;
 
 const
-  french_shiftxform: array[0..127] of char = (
+  french_shiftxform: array[0..127] of Char = (
     #0,
     #1, #2, #3, #4, #5, #6, #7, #8, #9, #10,
     #11, #12, #13, #14, #15, #16, #17, #18, #19, #20,
@@ -435,7 +435,7 @@ const
   );
 
 const
-  english_shiftxform: array[0..127] of char = (
+  english_shiftxform: array[0..127] of Char = (
     #0,
     #1, #2, #3, #4, #5, #6, #7, #8, #9, #10,
     #11, #12, #13, #14, #15, #16, #17, #18, #19, #20,
@@ -476,7 +476,7 @@ const
   );
 
 const
-  frenchKeyMap: array[0..127] of char = (
+  frenchKeyMap: array[0..127] of Char = (
     #0,
     #1,#2,#3,#4,#5,#6,#7,#8,#9,#10,
     #11,#12,#13,#14,#15,#16,#17,#18,#19,#20,
@@ -1081,7 +1081,7 @@ const
   QUEUESIZE = 128;
 
 var
-  chatchars: array[0..QUEUESIZE - 1] of char;
+  chatchars: array[0..QUEUESIZE - 1] of Char;
   head: integer = 0;
   tail: integer = 0;
 

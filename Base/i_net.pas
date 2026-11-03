@@ -183,7 +183,7 @@ end;
 //==============================================================================
 function GetLocalAddress: integer;
 var
-  hostname: array[0..1023] of char;
+  hostname: array[0..1023] of AnsiChar;
   hostentry: PHostEnt;    // host information entry
   v: integer;
 begin
@@ -313,12 +313,12 @@ begin
     if myargv[i][1] = '.' then
     begin
       printf('Node number %d address %s'#13#10, [doomcom.numnodes, Copy(myargv[i], 2, Length(myargv[i]) - 1)]);
-      sendaddress[doomcom.numnodes].sin_addr.s_addr := inet_addr(PChar(Copy(myargv[i], 2, Length(myargv[i]) - 1)));
+      sendaddress[doomcom.numnodes].sin_addr.s_addr := inet_addr(PAnsiChar(AnsiString(Copy(myargv[i], 2, Length(myargv[i]) - 1))));
     end
     else
     begin
       printf('Node number %d hostname %s'#13#10, [doomcom.numnodes, myargv[i]]);
-      hostentry := gethostbyname(PChar(myargv[i]));
+      hostentry := gethostbyname(PAnsiChar(AnsiString(myargv[i])));
       if hostentry = nil then
         I_Error('gethostbyname(): couldn''t find %s', [myargv[i]]);
       sendaddress[doomcom.numnodes].sin_addr.s_addr := PInteger(hostentry.h_addr_list^)^;

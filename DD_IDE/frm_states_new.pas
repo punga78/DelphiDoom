@@ -211,7 +211,7 @@ procedure TFrame_States.FillTreeView;
     Item: TTreeNode;
     i: integer;
     lst: TStringList;
-    fieldname, fieldvalue: string;
+    fieldname, fieldvalue: AnsiString;
     spr, stnum: integer;
     brightstr: string;
   begin
@@ -339,7 +339,7 @@ procedure TFrame_States.FillListView;
 
 var
   it: TTreeNode;
-  n, v: string;
+  n, v: AnsiString;
   i, stnum: integer;
   lst: TStringList;
 begin

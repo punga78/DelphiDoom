@@ -285,8 +285,8 @@ type
 
   TSF_FORMAT_INFO = record
     format: integer;
-    Name: PChar;
-    extention: PChar;
+    Name: PAnsiChar;
+    extention: PAnsiChar;
   end;
 
 {
@@ -308,7 +308,7 @@ type
   TSF_DITHER_INFO = record
     type_: integer;
     level: double;
-    Name: PChar;
+    Name: PAnsiChar;
   end;
 
 {
@@ -441,14 +441,14 @@ function _sf_open_1(path: string; mode: integer; var sfinfo: TSF_INFO): TSNDFILE
 // _sf_open
 //
 //==============================================================================
-function _sf_open(path: PChar; mode: integer; sfinfo: PSF_INFO): TSNDFILE_HANDLE; cdecl;
+function _sf_open(path: PAnsiChar; mode: integer; sfinfo: PSF_INFO): TSNDFILE_HANDLE; cdecl;
 
 //==============================================================================
 //
 // _sf_version_string
 //
 //==============================================================================
-function _sf_version_string: PChar; cdecl;
+function _sf_version_string: PAnsiChar; cdecl;
 
 //==============================================================================
 //
@@ -476,14 +476,14 @@ function _sf_error(sndfile: TSNDFILE_HANDLE): integer; cdecl;
 // _sf_strerror
 //
 //==============================================================================
-function _sf_strerror(sndfile: TSNDFILE_HANDLE): PChar; cdecl;
+function _sf_strerror(sndfile: TSNDFILE_HANDLE): PAnsiChar; cdecl;
 
 //==============================================================================
 //
 // _sf_error_number
 //
 //==============================================================================
-function _sf_error_number(errnum: integer): PChar; cdecl;
+function _sf_error_number(errnum: integer): PAnsiChar; cdecl;
 
 //==============================================================================
 //
@@ -497,7 +497,7 @@ function _sf_perror(sndfile: TSNDFILE_HANDLE): integer; cdecl;
 // _sf_error_str
 //
 //==============================================================================
-function _sf_error_str(sndfile: TSNDFILE_HANDLE; str: PChar; len: LongWord): integer; cdecl;
+function _sf_error_str(sndfile: TSNDFILE_HANDLE; str: PAnsiChar; len: LongWord): integer; cdecl;
 
 {
  In libsndfile there are 4 functions with the same name (sf_command), 3 of them use the parameter "overload".
@@ -586,14 +586,14 @@ function _sf_seek(sndfile: TSNDFILE_HANDLE; frame: Tuos_count_t; whence: integer
 // _sf_set_string
 //
 //==============================================================================
-function _sf_set_string(sndfile: TSNDFILE_HANDLE; str_type: integer; str: PChar): integer; cdecl;
+function _sf_set_string(sndfile: TSNDFILE_HANDLE; str_type: integer; str: PAnsiChar): integer; cdecl;
 
 //==============================================================================
 //
 // _sf_get_string
 //
 //==============================================================================
-function _sf_get_string(sndfile: TSNDFILE_HANDLE; str_type: integer): PChar; cdecl;
+function _sf_get_string(sndfile: TSNDFILE_HANDLE; str_type: integer): PAnsiChar; cdecl;
 
 //==============================================================================
 //
@@ -939,7 +939,7 @@ end;
 function _sf_open_1(path: string; mode: integer;
   var sfinfo: TSF_INFO): TSNDFILE_HANDLE;
 begin
-  Result := _sf_open(PChar(path), mode, @sfinfo);
+  Result := _sf_open(PAnsiChar(AnsiString(path)), mode, @sfinfo);
 end;
 
 //==============================================================================
@@ -957,14 +957,14 @@ end;
 // _sf_open
 //
 //==============================================================================
-function _sf_open(path: PChar; mode: integer; sfinfo: PSF_INFO): TSNDFILE_HANDLE; cdecl; external;
+function _sf_open(path: PAnsiChar; mode: integer; sfinfo: PSF_INFO): TSNDFILE_HANDLE; cdecl; external;
 
 //==============================================================================
 //
 // _sf_version_string
 //
 //==============================================================================
-function _sf_version_string: PChar; cdecl; external;
+function _sf_version_string: PAnsiChar; cdecl; external;
 
 //==============================================================================
 //
@@ -992,14 +992,14 @@ function _sf_error(sndfile: TSNDFILE_HANDLE): integer; cdecl; external;
 // _sf_strerror
 //
 //==============================================================================
-function _sf_strerror(sndfile: TSNDFILE_HANDLE): PChar; cdecl; external;
+function _sf_strerror(sndfile: TSNDFILE_HANDLE): PAnsiChar; cdecl; external;
 
 //==============================================================================
 //
 // _sf_error_number
 //
 //==============================================================================
-function _sf_error_number(errnum: integer): PChar; cdecl; external;
+function _sf_error_number(errnum: integer): PAnsiChar; cdecl; external;
 
 //==============================================================================
 //
@@ -1013,7 +1013,7 @@ function _sf_perror(sndfile: TSNDFILE_HANDLE): integer; cdecl; external;
 // _sf_error_str
 //
 //==============================================================================
-function _sf_error_str(sndfile: TSNDFILE_HANDLE; str: PChar; len: LongWord): integer; cdecl; external;
+function _sf_error_str(sndfile: TSNDFILE_HANDLE; str: PAnsiChar; len: LongWord): integer; cdecl; external;
 
 //==============================================================================
 //
@@ -1042,14 +1042,14 @@ function _sf_seek(sndfile: TSNDFILE_HANDLE; frame: Tuos_count_t; whence: integer
 // _sf_set_string
 //
 //==============================================================================
-function _sf_set_string(sndfile: TSNDFILE_HANDLE; str_type: integer; str: PChar): integer; cdecl; external;
+function _sf_set_string(sndfile: TSNDFILE_HANDLE; str_type: integer; str: PAnsiChar): integer; cdecl; external;
 
 //==============================================================================
 //
 // _sf_get_string
 //
 //==============================================================================
-function _sf_get_string(sndfile: TSNDFILE_HANDLE; str_type: integer): PChar; cdecl; external;
+function _sf_get_string(sndfile: TSNDFILE_HANDLE; str_type: integer): PAnsiChar; cdecl; external;
 
 //==============================================================================
 //

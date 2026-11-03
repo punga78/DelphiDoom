@@ -131,11 +131,11 @@ end;
 //
 //==============================================================================
 procedure TOBuffer_MCI.Append(Channel: Cardinal; Value: SmallInt);
-var Temp: PChar;
+var Temp: PAnsiChar;
 begin
   temp := PWAVEHDR(PPointerArray(FWaveHdrArr)[2]).lpData;
-  temp[FBuffer[channel]]   := chr(Value and $ff);
-  temp[FBuffer[channel]+1] := chr(Value shr 8);
+  temp[FBuffer[channel]]   := AnsiChar(Value and $ff);
+  temp[FBuffer[channel]+1] := AnsiChar(Value shr 8);
 
   FBuffer[channel] := FBuffer[channel] + (FChannels shl 1);
 end;

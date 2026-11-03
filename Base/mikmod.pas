@@ -133,7 +133,7 @@ type
  *)
 
 var
-  MikMod_strerror: function (err: integer): PChar; cdecl;
+  MikMod_strerror: function (err: integer): PAnsiChar; cdecl;
 
 (*
  *  ========== Library initialization and core functions
@@ -141,7 +141,7 @@ var
 
   MikMod_RegisterAllDrivers: procedure cdecl;
 
-  MikMod_InfoDriver: function: PChar; cdecl;
+  MikMod_InfoDriver: function: PAnsiChar; cdecl;
 
   MikMod_Init: function: BOOL; cdecl;
   MikMod_Exit: procedure cdecl;
@@ -197,7 +197,7 @@ const
  *)
 
 var
-  MikMod_InfoLoader: function: PChar; cdecl;
+  MikMod_InfoLoader: function: PAnsiChar; cdecl;
   MikMod_RegisterAllLoaders: procedure cdecl;
 
 (*
@@ -208,8 +208,8 @@ type
 
 var
   Player_LoadFP: function(f: integer; MaxVoices: integer; b: BOOL): PMODULE; cdecl;
-  Player_Load: function(Filename: PChar; MaxVoices: integer; b: BOOL): PMODULE; cdecl;
-  Player_LoadTitle: function(Title: PChar): PChar; cdecl;
+  Player_Load: function(Filename: PAnsiChar; MaxVoices: integer; b: BOOL): PMODULE; cdecl;
+  Player_LoadTitle: function(Title: PAnsiChar): PAnsiChar; cdecl;
   Player_Free: procedure(module: PMODULE); cdecl;
   Player_Start: procedure(module: PMODULE); cdecl;
   Player_Active: function: BOOL; cdecl;
@@ -288,7 +288,7 @@ var
 
   MikWin_Init: function(mixfreq: UWORD; stereo, bits16, interpolation: BOOL; wnd: THandle; buffersize: integer): BOOL; cdecl;
   MikWin_Free: procedure cdecl;
-  MikWin_Load: function(filename: PChar): BOOL; cdecl;
+  MikWin_Load: function(filename: PAnsiChar): BOOL; cdecl;
   MikWin_Play: procedure(loop: BOOL); cdecl;
   MikWin_Stop: procedure cdecl;
   MikWin_Pause: procedure cdecl;
@@ -296,7 +296,7 @@ var
   MikWin_Update: procedure cdecl;
   MikWin_Playing: function: BOOL; cdecl;
   MikWin_GetModule: function: PMODULE; cdecl;
-  MikWin_GetErrorText: function: PChar; cdecl;
+  MikWin_GetErrorText: function: PAnsiChar; cdecl;
 
 //==============================================================================
 //

@@ -905,6 +905,9 @@ begin
   end;
 end;
 
+type
+  PImageOptionalHeader = ^TImageOptionalHeader;
+
 const
   IMAGE_NT_OPTIONAL_HDR32_MAGIC = $10b;
 

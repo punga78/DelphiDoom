@@ -130,11 +130,11 @@ type
     giveitem: integer;                                    // item given when successful
     needitems: array[0..MDLG_MAXITEMS - 1] of integer;    // item needed for success
     needamounts: array[0..MDLG_MAXITEMS - 1] of integer;  // amount of items needed
-    txt: array[0..MDLG_CHOICELEN - 1] of char;            // normal text
-    txtok: array[0..MDLG_MSGLEN - 1] of char;             // message given on success
+    txt: array[0..MDLG_CHOICELEN - 1] of AnsiChar;            // normal text
+    txtok: array[0..MDLG_MSGLEN - 1] of AnsiChar;             // message given on success
     next: integer;                                        // next dialog?
     objective: integer;                                   // ???
-    txtno: array[0..MDLG_MSGLEN - 1] of char;             // message given on failure
+    txtno: array[0..MDLG_MSGLEN - 1] of AnsiChar;             // message given on failure
   end;
   mapdlgchoice_p = ^mapdlgchoice_t;
 
@@ -144,10 +144,10 @@ type
     dropitem: integer;                                    // item to drop if that thingtype is killed
     checkitem: array[0..MDLG_MAXITEMS - 1] of integer;    // item(s) needed to see this dialog
     jumptoconv: integer;                                  // conversation to jump to when... ?
-    name: array[0..MDLG_NAMELEN - 1] of char;             // name of speaker
-    voice: array[0..MDLG_LUMPLEN - 1] of char;            // voice file to play
-    backpic: array[0..MDLG_LUMPLEN - 1] of char;          // backdrop pic for character, if any
-    txt: array[0..MDLG_TEXTLEN - 1] of char;              // main message text
+    name: array[0..MDLG_NAMELEN - 1] of AnsiChar;             // name of speaker
+    voice: array[0..MDLG_LUMPLEN - 1] of AnsiChar;            // voice file to play
+    backpic: array[0..MDLG_LUMPLEN - 1] of AnsiChar;          // backdrop pic for character, if any
+    txt: array[0..MDLG_TEXTLEN - 1] of AnsiChar;              // main message text
     // options that this dialog gives the player
     choices: array[0..MDLG_MAXCHOICES - 1] of mapdlgchoice_t;
   end;
@@ -159,8 +159,8 @@ type
     speakerid: integer;                                   // script ID# for mobjtype that will use this dialog
     dropitem: integer;                                    // item to drop if that thingtype is killed
     voice: LongWord;                                      // voice file to play
-    name: array[0..MDLG_NAMELEN - 1] of char;             // name of speaker
-    txt: array[0..MDLG_TEXTLEN - 1] of char;              // main message text
+    name: array[0..MDLG_NAMELEN - 1] of AnsiChar;             // name of speaker
+    txt: array[0..MDLG_TEXTLEN - 1] of AnsiChar;              // main message text
     // options that this dialog gives the player
     choices: array[0..MDLG_MAXCHOICES - 1] of mapdlgchoice_t;
   end;
@@ -998,7 +998,7 @@ begin
       begin
         sprintf(voc, 'VOC%d', [olddialogs[i].voice]);
         for j := 1 to length(voc) do
-          dialogs[i].voice[j - 1] := voc[j];
+          dialogs[i].voice[j - 1] := AnsiChar(voc[j]);
         for j := length(voc) to MDLG_LUMPLEN - 1 do
           dialogs[i].voice[j] := #0;
       end;
@@ -1794,7 +1794,7 @@ begin
 
   if (choice <> dialogmenu.numitems - 1) and candochoice then
   begin
-    _message := PascalText(@currentchoice.txtok, SizeOf(currentchoice.txtok));
+    _message := PascalText(PAnsiChar(@currentchoice.txtok), SizeOf(currentchoice.txtok));
     if Ord(dialogtalkerstates.yes) <> 0 then
       P_SetMobjState(dialogtalker, dialogtalkerstates.yes);
 
@@ -1817,7 +1817,7 @@ begin
   else
   begin
     // not successful
-    _message := PascalText(@currentchoice.txtno, SizeOf(currentchoice.txtno));
+    _message := PascalText(PAnsiChar(@currentchoice.txtno), SizeOf(currentchoice.txtno));
     if Ord(dialogtalkerstates.no) <> 0 then
       P_SetMobjState(dialogtalker, dialogtalkerstates.no);
   end;
@@ -2042,7 +2042,7 @@ begin
     jumptoconv := currentdialog.jumptoconv;
   end;
 
-  stmp := PascalText(@currentdialog.txt, SizeOf(currentdialog.txt));
+  stmp := PascalText(PAnsiChar(@currentdialog.txt), SizeOf(currentdialog.txt));
   stmp := P_DialogGetMsg(stmp);
   dialogtext := M_DialogDimMsg(20, 28, stmp, false);
 
@@ -2054,7 +2054,7 @@ begin
     P_SetMobjState(dialogtalker, dialogtalkerstates.greet);
 
   // get talker's name
-  dialogname := PascalText(@currentdialog.name, SizeOf(currentdialog.name));
+  dialogname := PascalText(PAnsiChar(@currentdialog.name), SizeOf(currentdialog.name));
 
   if dialogname = '' then
   begin
@@ -2098,7 +2098,7 @@ begin
     V_DrawPatch(0, 0, SCN_TMP, pic, false);
 
   // get voice
-  S_StartVoice(PascalText(@currentdialog.voice, SizeOf(currentdialog.voice)));
+  S_StartVoice(PascalText(PAnsiChar(@currentdialog.voice), SizeOf(currentdialog.voice)));
 
   // get bye text
   if rnd = 2 then

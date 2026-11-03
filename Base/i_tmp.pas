@@ -107,7 +107,7 @@ var
   buf: array[0..1024] of char;
 begin
   ZeroMemory(@buf, SizeOf(buf));
-  GetTempPath(SizeOf(buf), buf);
+  GetTempPath(Length(buf), buf);
 
   result := M_SaveFileName('DATA\');
   MkDir(result);

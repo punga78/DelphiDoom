@@ -169,7 +169,7 @@ begin
     M_WriteFile(mikfilename, data, size);
   I_DeclareTempFile(mikfilename);
 
-  if not MikWin_Load(PChar(mikfilename)) then
+  if not MikWin_Load(PAnsiChar(AnsiString(mikfilename))) then
   begin
     if typ = m_s3m then
       I_PlayS3M(data, size)

@@ -574,7 +574,7 @@ begin
           43: begin
                 for j := 1 to length(token2) do
                 begin
-                  mobjinfo[mobj_no].name2[j - 1] := token2[j];
+                  mobjinfo[mobj_no].name2[j - 1] := AnsiChar(token2[j]);
                   if j = MOBJINFONAMESIZE then
                     break;
                 end;

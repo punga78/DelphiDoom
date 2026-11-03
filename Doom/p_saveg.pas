@@ -877,13 +877,13 @@ var
   function _get_char8: char8_t;
   var
     ii: integer;
-    ch: Char;
+    ch: AnsiChar;
   begin
     for ii := 0 to 7 do
       result[ii] := #0;
     for ii := 0 to 7 do
     begin
-      ch := Chr(save_p[0]);
+      ch := AnsiChar(save_p[0]);
       result[ii] := ch;
       save_p := @save_p[1];
       if ch = #0 then

@@ -276,7 +276,7 @@ uses
 
 // Purpose?
 const
-  snd_prefixen: array[0..11] of char =
+  snd_prefixen: array[0..11] of AnsiChar =
     ('P', 'P', 'A', 'S', 'S', 'S', 'M', 'M', 'M', 'S', 'S', 'S' );
 
   S_MAX_VOLUME = 127;

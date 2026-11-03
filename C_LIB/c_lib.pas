@@ -627,7 +627,7 @@ function _filerename(fin: PChar; fout: PChar): Integer; cdecl;
 // _sscanf
 //
 //==============================================================================
-function _sscanf(Str: PChar; Format: PChar; Pointers: array of Pointer): Integer; cdecl;
+function _sscanf(Str: PAnsiChar; Format: PAnsiChar; Pointers: array of Pointer): Integer; cdecl;
 
 //==============================================================================
 //
@@ -1119,7 +1119,7 @@ begin
     end;
 
   if pos_sep > 0 then
-    s[pos_sep] := DecimalSeparator;
+    s[pos_sep] := FormatSettings.DecimalSeparator;
   Result := StrToFloat(s);
 end;
 
@@ -2236,7 +2236,7 @@ end;
 // _sscanf
 //
 //==============================================================================
-function _sscanf(Str : PChar; Format : PChar; Pointers: array of Pointer): Integer; cdecl;
+function _sscanf(Str : PAnsiChar; Format: PAnsiChar; Pointers: array of Pointer): Integer; cdecl;
 begin
   Result := sscanf(Str, Format, Pointers);
 end;

@@ -145,9 +145,10 @@ end;
 //==============================================================================
 function firstword(const inp: AnsiString; const splitter: AnsiString): string;
 var
-  tmp: string;
+  tmp, res: AnsiString;
 begin
-  splitstring(inp, Result, tmp, splitter);
+  splitstring(inp, res, tmp, splitter);
+  Result := string(res);
 end;
 
 //==============================================================================
@@ -157,9 +158,10 @@ end;
 //==============================================================================
 function secondword(const inp: AnsiString; const splitter: AnsiString): string;
 var
-  tmp: string;
+  tmp, res: AnsiString;
 begin
-  splitstring(inp, tmp, Result, splitter);
+  splitstring(inp, tmp, res, splitter);
+  Result := string(res);
 end;
 
 //==============================================================================

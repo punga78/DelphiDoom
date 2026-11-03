@@ -42,7 +42,7 @@
 {$ENDIF}
 
 {$I Doom32.inc}
-{$D Hexen to Delphi Total Conversion}
+{$DESCRIPTION 'Hexen to Delphi Total Conversion'}
 
 library ddc_hexen;
 
@@ -51,6 +51,7 @@ library ddc_hexen;
 uses
   FastMM4 in 'FASTMM4\FastMM4.pas',
   FastMM4Messages in 'FASTMM4\FastMM4Messages.pas',
+{$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
   FastCode in 'FASTCODE\FastCode.pas',
   FastMove in 'FASTCODE\FastMove.pas',
   AnsiStringReplaceJOHIA32Unit12 in 'FASTCODE\AnsiStringReplaceJOHIA32Unit12.pas',
@@ -71,6 +72,7 @@ uses
   FastCodeStrLenUnit in 'FASTCODE\FastCodeStrLenUnit.pas',
   FastcodeStrToInt32Unit in 'FASTCODE\FastcodeStrToInt32Unit.pas',
   FastcodeUpperCaseUnit in 'FASTCODE\FastcodeUpperCaseUnit.pas',
+{$ENDIF}
   v_video in 'Base\v_video.pas',
   w_utils in 'Base\w_utils.pas',
   doomdef in 'Hexen\doomdef.pas',

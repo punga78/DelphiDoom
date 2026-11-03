@@ -839,7 +839,7 @@ begin
   {$I+}
   end;
 
-  weret := WinExec(PChar(cmd), SW_SHOWNORMAL);
+  weret := WinExec(PAnsiChar(AnsiString(cmd)), SW_SHOWNORMAL);
   if weret > 31 then
 //    Close
   else

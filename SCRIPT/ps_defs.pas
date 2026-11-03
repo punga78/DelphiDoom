@@ -30,6 +30,7 @@
 {$I Doom32.inc}
 
 unit ps_defs;
+{$I PascalScript.inc}
 
 interface
 

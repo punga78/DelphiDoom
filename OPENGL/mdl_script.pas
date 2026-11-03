@@ -53,6 +53,7 @@ uses
   mdl_script_functions,
   ps_keywords,
   ps_compiler,
+  ps_defs,
   ps_runtime;
 
 //==============================================================================
@@ -60,7 +61,7 @@ uses
 // ScriptOnUses
 //
 //==============================================================================
-function ScriptOnUses(Sender: TPSPascalCompiler; const Name: string): Boolean;
+function ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   uT_integer: TPSType;
   uT_longword: TPSType;
@@ -139,7 +140,7 @@ begin
 
   Compiler := TPSPascalCompiler.Create(@DDModelScriptLookupTable, DDMODELSCRIPT_KEYWORD_COUNT); // create an instance of the compiler.
   Compiler.OnUses := ScriptOnUses; // assign the OnUses event.
-  if not Compiler.Compile(Script) then  // Compile the Pascal script into bytecode.
+  if not Compiler.Compile(AnsiString(Script)) then  // Compile the Pascal script into bytecode.
   begin
     for i := 0 to Compiler.MsgCount - 1 do
       I_Warning(Format('MDL_ExecuteScript(): Pos: %.*d, "%s"', [6,  compiler.Msg[i].Pos, compiler.Msg[i].MessageToString]));

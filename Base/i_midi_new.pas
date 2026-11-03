@@ -1223,7 +1223,7 @@ begin
 
     // Copy from the input buffer to the parameter data buffer
     for idx := 0 to pteTemp^.dwEventLength - 1 do
-      if not GetTrackByte(ptsTrack, PByte(PChar(pteTemp^.pLongData) + idx)) then
+      if not GetTrackByte(ptsTrack, PByte(PAnsiChar(pteTemp^.pLongData) + idx)) then
       begin
         TrackError(ptsTrack, gteSysExTrunc);
         Result := False;
@@ -1271,7 +1271,7 @@ begin
 
       // Copy from the input buffer to the parameter data buffer
       for idx := 0 to pteTemp^.dwEventLength - 1 do
-        if not GetTrackByte(ptsTrack, PByte(PChar(pteTemp^.pLongData) + idx)) then
+        if not GetTrackByte(ptsTrack, PByte(PAnsiChar(pteTemp^.pLongData) + idx)) then
         begin
           TrackError(ptsTrack, gteMetaTrunc);
           Result := False;

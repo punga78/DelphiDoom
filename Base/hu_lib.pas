@@ -57,7 +57,7 @@ type
 
     font: Ppatch_tPArray; // font
     sc: integer; // start character
-    line: array[0..(HU_MAXLINELENGTH + 1) - 1] of char; // line of text
+    line: array[0..(HU_MAXLINELENGTH + 1) - 1] of AnsiChar; // line of text
     len: integer; // current line length
 
     // whether this line needs to be udpated
@@ -336,7 +336,7 @@ begin
     result := false
   else
   begin
-    t.line[t.len] := ch;
+    t.line[t.len] := AnsiChar(ch);
     inc(t.len);
     t.line[t.len] := Chr(0);
     t.needsupdate := 4;
@@ -373,7 +373,7 @@ var
   w: integer;
   x: integer;
   y: integer;
-  c: char;
+  c: AnsiChar;
 begin
   // draw the new stuff
   x := l.x;
@@ -590,7 +590,7 @@ begin
   len := s.lines[s.curline].len;
   ss := '';
   for i := 0 to len - 1 do
-    ss := ss + s.lines[s.curline].line[i];
+    ss := ss + Char(s.lines[s.curline].line[i]);
   sl := TDStringList.Create;
   try
     sl.Text := ss;
@@ -602,7 +602,7 @@ begin
         SetLength(ss, Length(ss) - 2);
     len := Length(ss);
     for i := 1 to len do
-      s.lines[s.curline].line[i - 1] := ss[i];
+      s.lines[s.curline].line[i - 1] := AnsiChar(ss[i]);
     s.lines[s.curline].len := len;
   finally
     sl.Free;

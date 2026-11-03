@@ -879,7 +879,7 @@ begin
     j := 0;
     while j < 8 do
     begin
-      name[j] := toupper(Chr(name_p[i * 8 + j]));
+      name[j] := toupper(AnsiChar(name_p[i * 8 + j]));
       if name[j] = #0 then
       begin
         inc(j);

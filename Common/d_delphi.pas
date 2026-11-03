@@ -774,7 +774,7 @@ type
     procedure AddStrings(Strings: TDStrings); virtual;
     procedure Clear; virtual; abstract;
     procedure Delete(Index: Integer); virtual; abstract;
-    function Equals(Strings: TDStrings): Boolean;
+    function Equals(Strings: TDStrings): Boolean; reintroduce;
     procedure Exchange(Index1, Index2: Integer); virtual;
     function GetText: PChar; virtual;
     function IndexOf(const S: string): Integer; virtual;
@@ -927,14 +927,16 @@ procedure strlowerproc(var S: string);
 // toupper
 //
 //==============================================================================
-function toupper(ch: Char): Char;
+function toupper(ch: Char): Char; overload;
+function toupper(ch: AnsiChar): AnsiChar; overload;
 
 //==============================================================================
 //
 // tolower
 //
 //==============================================================================
-function tolower(ch: Char): Char;
+function tolower(ch: Char): Char; overload;
+function tolower(ch: AnsiChar): AnsiChar; overload;
 
 //==============================================================================
 //
@@ -1039,7 +1041,14 @@ function _SHRW(const x: LongWord; const bits: LongWord): LongWord;
 // StringVal
 //
 //==============================================================================
-function StringVal(const Str: PChar): string;
+function StringVal(const Str: PChar): string; overload;
+
+//==============================================================================
+//
+// StringVal (8 bit text)
+//
+//==============================================================================
+function StringVal(const Str: PAnsiChar): string; overload;
 
 //==============================================================================
 //
@@ -1229,6 +1238,20 @@ function PascalText(src: PChar): string; overload;
 //
 //==============================================================================
 function PascalText(src: PChar; const maxsize: integer): string; overload;
+
+//==============================================================================
+//
+// PascalText (8 bit text)
+//
+//==============================================================================
+function PascalText(src: PAnsiChar): string; overload;
+
+//==============================================================================
+//
+// PascalText (8 bit text)
+//
+//==============================================================================
+function PascalText(src: PAnsiChar; const maxsize: integer): string; overload;
 
 //==============================================================================
 //
@@ -1574,9 +1597,14 @@ end;
 //
 //==============================================================================
 procedure fprintf(var f: file; const str: string);
+var
+  a: AnsiString;
 begin
+  a := AnsiString(str); // files are written as 8 bit text
+  if Length(a) = 0 then
+    exit;
   {$I-}
-  BlockWrite(f, (@str[1])^, Length(str));
+  BlockWrite(f, (@a[1])^, Length(a));
   {$I+}
 end;
 
@@ -1642,8 +1670,8 @@ end;
 //==============================================================================
 function ftoa(f: single): string;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   result := FloatToStr(f);
 end;
@@ -1655,8 +1683,8 @@ end;
 //==============================================================================
 function ftoafmt(const fmt: string; f: single): string;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   sprintf(result, '%' + fmt + 'f', [f]);
 end;
@@ -1782,8 +1810,8 @@ var
   i: integer;
   str: string;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   val(s, result, code);
   if code <> 0 then
@@ -1791,7 +1819,7 @@ begin
     str := s;
     for i := 1 to Length(str) do
       if str[i] in ['.', ','] then
-        str[i] := DecimalSeparator;
+        str[i] := FormatSettings.DecimalSeparator;
     val(str, result, code);
     if code = 0 then
       exit;
@@ -1822,8 +1850,8 @@ var
   i: integer;
   str: string;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   val(s, result, code);
   if code <> 0 then
@@ -1831,7 +1859,7 @@ begin
     str := s;
     for i := 1 to Length(str) do
       if str[i] in ['.', ','] then
-        str[i] := DecimalSeparator;
+        str[i] := FormatSettings.DecimalSeparator;
     val(str, result, code);
     if code = 0 then
       exit;
@@ -4480,7 +4508,7 @@ begin
     L := Length(S);
     if L <> 0 then
     begin
-      System.Move(Pointer(S)^, P^, L);
+      System.Move(Pointer(S)^, P^, L * SizeOf(Char));
       inc(P, L);
     end;
     P^ := #13;
@@ -4609,18 +4637,19 @@ function TDStrings.LoadFromFile(const FileName: string): boolean;
 var
   f: file;
   Size: Integer;
-  S, S2: string;
+  S, S2: AnsiString; // file contents are 8 bit text
   p: integer;
 begin
   if fopen(f, FileName, fOpenReadOnly) then
   begin
     {$I-}
     Size := FileSize(f);
-    SetString(S, nil, Size);
-    BlockRead(f, Pointer(S)^, Size);
+    SetLength(S, Size);
+    if Size > 0 then
+      BlockRead(f, Pointer(S)^, Size);
     if Size > 1 then
-      if S[1] = Chr($FF) then
-        if S[2] = Chr($FE) then
+      if S[1] = AnsiChar($FF) then
+        if S[2] = AnsiChar($FE) then
         begin
           S2 := '';
           p := 3;
@@ -4632,7 +4661,7 @@ begin
           S := S2;
         end;
 
-    SetTextStr(S);
+    SetTextStr(string(S));
     close(f);
     {$I+}
     result := IOresult = 0;
@@ -4735,13 +4764,14 @@ end;
 function TDStrings.SaveToFile(const FileName: string): boolean;
 var
   f: file;
-  S: string;
+  S: AnsiString; // files are written as 8 bit text
 begin
   if fopen(f, FileName, fCreate) then
   begin
     {$I-}
-    S := GetTextStr;
-    BlockWrite(f, Pointer(S)^, Length(S));
+    S := AnsiString(GetTextStr);
+    if Length(S) > 0 then
+      BlockWrite(f, Pointer(S)^, Length(S));
     close(f);
     {$I+}
     result := IOresult = 0;
@@ -4833,18 +4863,18 @@ end;
 //==============================================================================
 procedure TDStrings.SetByteStr(const A: PByteArray; const Size: integer);
 var
-  P, Start: PChar;
-  S: string;
+  P, Start: PAnsiChar;
+  S: AnsiString;
 begin
   Clear;
-  P := PChar(@A[0]);
+  P := PAnsiChar(@A[0]);
   if P <> nil then
     while (P^ <> #0) and (integer(P) <> integer(@A[Size])) do
     begin
       Start := P;
       while (not (P^ in [#0, #10, #13])) and (integer(P) <> integer(@A[Size])) do inc(P);
       SetString(S, Start, P - Start);
-      Add(S);
+      Add(string(S));
       if P^ = #13 then inc(P);
       if P^ = #10 then inc(P);
     end;
@@ -5417,7 +5447,25 @@ end;
 // toupper
 //
 //==============================================================================
-function toupper(ch: Char): Char;
+function toupper(ch: Char): Char; overload;
+asm
+{ ->    AL      Character       }
+{ <-    AL      result          }
+
+  cmp al, 'a'
+  jb  @@exit
+  cmp al, 'z'
+  ja  @@exit
+  sub al, 'a' - 'A'
+@@exit:
+end;
+
+//==============================================================================
+//
+// toupper (AnsiChar)
+//
+//==============================================================================
+function toupper(ch: AnsiChar): AnsiChar; overload;
 asm
 { ->    AL      Character       }
 { <-    AL      result          }
@@ -5435,7 +5483,25 @@ end;
 // tolower
 //
 //==============================================================================
-function tolower(ch: Char): Char;
+function tolower(ch: Char): Char; overload;
+asm
+{ ->    AL      Character       }
+{ <-    AL      result          }
+
+  cmp al, 'A'
+  jb  @@exit
+  cmp al, 'Z'
+  ja  @@exit
+  sub al, 'A' - 'a'
+@@exit:
+end;
+
+//==============================================================================
+//
+// tolower (AnsiChar)
+//
+//==============================================================================
+function tolower(ch: AnsiChar): AnsiChar; overload;
 asm
 { ->    AL      Character       }
 { <-    AL      result          }
@@ -5600,9 +5666,22 @@ end;
 // StringVal
 //
 //==============================================================================
-function StringVal(const Str: PChar): string;
+function StringVal(const Str: PChar): string; overload;
 begin
   sprintf(result, '%s', [Str]);
+end;
+
+//==============================================================================
+//
+// StringVal (8 bit text)
+//
+//==============================================================================
+function StringVal(const Str: PAnsiChar): string; overload;
+begin
+  if Str = nil then
+    Result := ''
+  else
+    Result := string(AnsiString(Str));
 end;
 
 //==============================================================================
@@ -6288,7 +6367,7 @@ end;
 // PascalText
 //
 //==============================================================================
-function PascalText(src: PChar): string;
+function PascalText(src: PChar): string; overload;
 var
   prev: char;
 begin
@@ -6310,9 +6389,56 @@ end;
 // PascalText
 //
 //==============================================================================
-function PascalText(src: PChar; const maxsize: integer): string;
+function PascalText(src: PChar; const maxsize: integer): string; overload;
 var
   prev: char;
+  cnt: integer;
+begin
+  result := '';
+  if src^ = #0 then
+    exit;
+  cnt := 0;
+  repeat
+    prev := src^;
+    inc(src);
+    inc(cnt);
+    if (src^ = #10) and (prev <> #13) then
+      result := result + prev + #13#10
+    else if not (prev in [#10, #13]) then
+      result := result + prev;
+  until (cnt = maxsize) or (src^ = #0);
+end;
+
+//==============================================================================
+//
+// PascalText (8 bit text)
+//
+//==============================================================================
+function PascalText(src: PAnsiChar): string; overload;
+var
+  prev: AnsiChar;
+begin
+  result := '';
+  if src^ = #0 then
+    exit;
+  repeat
+    prev := src^;
+    inc(src);
+    if (src^ = #10) and (prev <> #13) then
+      result := result + prev + #13#10
+    else if not (prev in [#10, #13]) then
+      result := result + prev;
+  until src^ = #0;
+end;
+
+//==============================================================================
+//
+// PascalText
+//
+//==============================================================================
+function PascalText(src: PAnsiChar; const maxsize: integer): string; overload;
+var
+  prev: AnsiChar;
   cnt: integer;
 begin
   result := '';
@@ -6724,7 +6850,7 @@ begin
   begin
     if check[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] then
       Result := True
-    else if check[i] in ['.', ',', DecimalSeparator] then
+    else if (check[i] = '.') or (check[i] = ',') or (check[i] = FormatSettings.DecimalSeparator) then
     begin
       if dot then
       begin
@@ -6895,6 +7021,7 @@ end;
 procedure logtofile(const fname: string; const str: string);
 var
   f: file;
+  astr: AnsiString;
 begin
   if not fexists(fname) then
     fopen(f, fname, fCreate)
@@ -6904,7 +7031,9 @@ begin
     system.Seek(f, FileSize(f));
   end;
   {$I-}
-  BlockWrite(f, Pointer(str)^, Length(str));
+  astr := AnsiString(str);
+  if Length(astr) > 0 then
+    BlockWrite(f, Pointer(astr)^, Length(astr));
   {$I+}
   close(f);
 end;

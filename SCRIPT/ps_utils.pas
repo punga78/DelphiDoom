@@ -623,8 +623,8 @@ var
   i: longint;
   str: TbtString;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   Val(string(s), Result, i);
   if i <> 0 then
@@ -632,7 +632,7 @@ begin
     str := s;
     for i := 1 to Length(str) do
       if str[i] in ['.', ','] then
-        str[i] := DecimalSeparator;
+        str[i] := TbtChar(FormatSettings.DecimalSeparator);
     Val(string(s), Result, i);
     if i <> 0 then
       raise Exception.Create(RPS_InvalidFloat);
@@ -648,8 +648,8 @@ function IntToStr(I: {$IFNDEF PS_NOINT64}Int64{$ELSE}LongInt{$ENDIF}): TbtString
 var
   s: TbtString;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   Str(i, s);
   IntToStr := s;
@@ -664,8 +664,8 @@ function FloatToStr(E: Extended): TbtString;
 var
   s: TbtString;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   Str(e:0:12, s);
   Result := s;
@@ -681,8 +681,8 @@ var
   e: Integer;
   Res: {$IFNDEF PS_NOINT64}Int64{$ELSE}LongInt{$ENDIF};
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   Val(string(S), Res, e);
   if e <> 0 then
@@ -701,8 +701,8 @@ var
   e: Integer;
   Res: {$IFNDEF PS_NOINT64}Int64{$ELSE}LongInt{$ENDIF};
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   Val(string(S), Res, e);
   if e <> 0 then

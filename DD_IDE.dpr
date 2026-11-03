@@ -24,11 +24,12 @@
 
 program DD_IDE;
 
-{$D DelphiDoom Script IDE}
+{$DESCRIPTION 'DelphiDoom Script IDE'}
 
 uses
   FastMM4 in 'FASTMM4\FastMM4.pas',
   FastMM4Messages in 'FASTMM4\FastMM4Messages.pas',
+{$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
   FastCode in 'FASTCODE\FastCode.pas',
   FastMove in 'FASTCODE\FastMove.pas',
   AnsiStringReplaceJOHIA32Unit12 in 'FASTCODE\AnsiStringReplaceJOHIA32Unit12.pas',
@@ -49,6 +50,7 @@ uses
   FastCodeStrLenUnit in 'FASTCODE\FastCodeStrLenUnit.pas',
   FastcodeStrToInt32Unit in 'FASTCODE\FastcodeStrToInt32Unit.pas',
   FastcodeUpperCaseUnit in 'FASTCODE\FastcodeUpperCaseUnit.pas',
+{$ENDIF}
   Forms,
   main in 'DD_IDE\main.pas' {Form1},
   ide_baseframe in 'DD_IDE\ide_baseframe.pas',

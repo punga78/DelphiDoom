@@ -2325,8 +2325,8 @@ const
 
 type
   mobjinfo_t = record
-    name: array[0..MOBJINFONAMESIZE - 1] of char;
-    name2: array[0..MOBJINFONAMESIZE - 1] of char;
+    name: array[0..MOBJINFONAMESIZE - 1] of AnsiChar;
+    name2: array[0..MOBJINFONAMESIZE - 1] of AnsiChar;
     inheritsfrom: integer;
     doomednum: integer;
     spawnstate: integer;

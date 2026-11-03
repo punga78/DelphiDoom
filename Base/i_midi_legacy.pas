@@ -159,7 +159,7 @@ begin
   // Open the device by specifying the device and filename.
   // MCI will attempt to choose the MIDI mapper as the output port.
   ZeroMemory(@mciOpenParms, SizeOf(MCI_OPEN_PARMS));
-  mciOpenParms.lpstrDeviceType := PAnsiChar(rssequencer);
+  mciOpenParms.lpstrDeviceType := PChar(rssequencer);
   mciOpenParms.lpstrElementName := PChar(lpszMIDIFileName);
   result := mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE or MCI_OPEN_ELEMENT, DWORD(@mciOpenParms));
   // Failed to open device. Don't close it; just return error.

@@ -1662,7 +1662,7 @@ begin
         h,
         sspoints[numsspoints].screenX,
         sspoints[numsspoints].screenY,
-        sspoints[numsspoints].screenZ,
+        sspoints[numsspoints].screenZ
       );
 
       sspoints[numsspoints].worldX := sX;
@@ -1674,7 +1674,7 @@ begin
         h + SLOPECOEFF,
         tX,
         tY,
-        tZ,
+        tZ
       );
 
       // Find best spot
@@ -1718,7 +1718,7 @@ begin
         h + SLOPECOEFF,
         tX,
         tY,
-        tZ,
+        tZ
       );
 
       // Find best spot

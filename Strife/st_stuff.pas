@@ -309,60 +309,60 @@ const
 //  to keep it from being easy to figure them out.
 // Yeah, right...
 
-  cheat_mus_seq: array[0..4] of char = (
+  cheat_mus_seq: array[0..4] of AnsiChar = (
     Chr(234), Chr(42), Chr(178), Chr(118), Chr($ff)
   );  // spin
 
-  cheat_god_seq: array[0..10] of char = (
+  cheat_god_seq: array[0..10] of AnsiChar = (
     Chr(246), Chr(182), Chr(118), Chr(178), Chr(42), Chr(246), Chr(46),
     Chr(166), Chr(118), Chr(46), Chr($ff) // omnipotent
   );
 
-  cheat_ammo_seq: array[0..8] of char = (
+  cheat_ammo_seq: array[0..8] of AnsiChar = (
     Chr(98), Chr(246), Chr(246), Chr(182), Chr(234), Chr(46), Chr(178),
     Chr(58), Chr($ff) // boomstix
   );
 
-  cheat_noclip_seq: array[0..5] of char = (
+  cheat_noclip_seq: array[0..5] of AnsiChar = (
     Chr(166), Chr(54), Chr(110), Chr(178), Chr(234), Chr($ff) // elvis
   );
 
-  cheat_clev_seq: array[0..4] of char = (
+  cheat_clev_seq: array[0..4] of AnsiChar = (
     Chr(106), Chr(178), Chr(102), Chr(46), Chr($ff) // rift
   );
 
-  cheat_mypos_seq: array[0..3] of char = (
+  cheat_mypos_seq: array[0..3] of AnsiChar = (
     Chr(230), Chr(42), Chr(234), Chr($ff) // gps
   );
 
-  cheat_scoot_seq: array[0..5] of char = (
+  cheat_scoot_seq: array[0..5] of AnsiChar = (
     Chr(234), Chr(226), Chr(246), Chr(246), Chr(46), Chr($ff) // scoot
   );
 
-  cheat_nuke_seq: array[0..9] of char = (
+  cheat_nuke_seq: array[0..9] of AnsiChar = (
     Chr(234), Chr(46), Chr(246), Chr(118), Chr(166), Chr(226), Chr(246),
     Chr(54), Chr(38), Chr($ff) // stonecold
   );
 
-  cheat_keys_seq: array[0..5] of char = (
+  cheat_keys_seq: array[0..5] of AnsiChar = (
     Chr(114), Chr(178), Chr(182), Chr(182), Chr(186), Chr($ff)  // jimmy
   );
 
-  cheat_stealth_seq: array[0..7] of char = (
+  cheat_stealth_seq: array[0..7] of AnsiChar = (
     Chr(230), Chr(106), Chr(178), Chr(42), Chr(42), Chr(166),
     Chr(106), Chr($ff)  // gripper
   );
 
-  cheat_midas_seq: array[0..10] of char = (
+  cheat_midas_seq: array[0..10] of AnsiChar = (
     Chr(38), Chr(246), Chr(118), Chr(118), Chr(186), Chr(46), Chr(106),
     Chr(174), Chr(182), Chr(42), Chr($ff) // donnytrump
   );
 
-  cheat_lego_seq: array[0..4] of char = (
+  cheat_lego_seq: array[0..4] of AnsiChar = (
     Chr(54), Chr(166), Chr(230), Chr(246), Chr($ff) // lego
   );
 
-  cheat_dots_seq: array[0..4] of char = (
+  cheat_dots_seq: array[0..4] of AnsiChar = (
     Chr(38), Chr(246), Chr(46), Chr(234), Chr($ff)  // dots
   );
 
@@ -395,14 +395,14 @@ const
   NUM_ST_PUMPUP = 8;
 
 const
-  cheat_pumpupb_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(98), Chr($ff) );// pumpupb
-  cheat_pumpupi_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(178), Chr($ff) );// pumpupi
-  cheat_pumpupm_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(182), Chr($ff) );// pumpupm
-  cheat_pumpuph_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(50), Chr($ff) );// pumpuph
-  cheat_pumpupp_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(42), Chr($ff) );// pumpupp
-  cheat_pumpups_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(234), Chr($ff) );// pumpups
-  cheat_pumpupt_seq: array[0..7] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(46), Chr($ff) );// pumpupt
-  cheat_pumpup_seq:  array[0..6] of char = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr($ff) );// pumpup
+  cheat_pumpupb_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(98), Chr($ff) );// pumpupb
+  cheat_pumpupi_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(178), Chr($ff) );// pumpupi
+  cheat_pumpupm_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(182), Chr($ff) );// pumpupm
+  cheat_pumpuph_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(50), Chr($ff) );// pumpuph
+  cheat_pumpupp_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(42), Chr($ff) );// pumpupp
+  cheat_pumpups_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(234), Chr($ff) );// pumpups
+  cheat_pumpupt_seq: array[0..7] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr(46), Chr($ff) );// pumpupt
+  cheat_pumpup_seq:  array[0..6] of AnsiChar = (Chr(42), Chr(174), Chr(182), Chr(42), Chr(174), Chr(42), Chr($ff) );// pumpup
 
 var
   cheat_powerup: array[0..NUM_ST_PUMPUP - 1] of cheatseq_t;

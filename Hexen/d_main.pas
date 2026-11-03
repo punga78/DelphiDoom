@@ -1252,6 +1252,7 @@ var
   myargv1: string;
   infile: string;
   filename: string;
+  afilename: AnsiString;
   s: TDStringList;
 begin
   s := TDStringList.Create;
@@ -1270,9 +1271,11 @@ begin
 
           size := FileSize(handle);
           seek(handle, 0);
-          SetLength(filename, size);
-          BlockRead(handle, (@filename[1])^, size);
+          SetLength(afilename, size);
+          if size > 0 then
+            BlockRead(handle, (@afilename[1])^, size);
           close(handle);
+          filename := string(afilename);
 
           infile := '';
           for index := 1 to Length(filename) do

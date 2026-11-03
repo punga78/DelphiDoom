@@ -298,7 +298,7 @@ procedure TFrame_Mobjinfo.FillTreeView;
     i: integer;
     lst: TStringList;
     stnum: integer;
-    sn, sv: string;
+    sn, sv: AnsiString;
   begin
     if id = 0 then
       Item := TreeView1.Items.AddFirst(nil, minfo.Strings[id])
@@ -409,7 +409,7 @@ procedure TFrame_Mobjinfo.FillListView;
 
 var
   it: TTreeNode;
-  n, v: string;
+  n, v: AnsiString;
   i, stnum: integer;
   lst: TStringList;
 begin

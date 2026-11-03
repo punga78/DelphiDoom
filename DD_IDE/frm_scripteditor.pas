@@ -591,7 +591,7 @@ var
   ret: boolean;
   p1, p2: integer;
   location: string;
-  sx, sy: string;
+  sx, sy: AnsiString;
 begin
   Screen.Cursor := crHourGlass;
   try
@@ -1009,7 +1009,7 @@ procedure TFrame_ScriptEditor.UpdateEventsMenuItems;
 var
   i: integer;
   cnt: integer;
-  s1, s2: string;
+  s1, s2: AnsiString;
 begin
   cnt := fEventsList.Count;
   if cnt > EventsPopupMenu.Items.Count then
@@ -1037,7 +1037,8 @@ procedure TFrame_ScriptEditor.OnEventsPopupMenuClick(Sender: TObject);
 var
   mitem: TMenuItem;
   id: integer;
-  skey, sevent, decl: string;
+  skey: string;
+  sevent, decl: AnsiString;
   fHighlighter: TSynDDScriptSyn;
   p: integer;
   found: boolean;

@@ -718,6 +718,21 @@ implementation
 
 //==============================================================================
 //
+// IntToHexA, IntToStrA (AnsiString flavours of the SysUtils functions)
+//
+//==============================================================================
+function IntToHexA(const Value: Int64; const Digits: Integer): ansistring;
+begin
+  Result := ansistring(IntToHex(Value, Digits));
+end;
+
+function IntToStrA(const Value: Int64): ansistring;
+begin
+  Result := ansistring(IntToStr(Value));
+end;
+
+//==============================================================================
+//
 // NoteNum
 //
 //==============================================================================
@@ -1110,21 +1125,21 @@ function SysExRoland(Data: array of byte): ansistring;
     case Data[3] of
       $11:
       begin
-        Result := Result + ', read from ' + IntToHex(Address, 6) +
-          ' size ' + IntToStr(Data[9] or (Data[8] shl 8) or (Data[7] shl 16));
+        Result := Result + ', read from ' + IntToHexA(Address, 6) +
+          ' size ' + IntToStrA(Data[9] or (Data[8] shl 8) or (Data[7] shl 16));
       end;
       $12:
       begin
-        Result := Result + ', write to ' + IntToHex(Address, 6) + ' data ';
+        Result := Result + ', write to ' + IntToHexA(Address, 6) + ' data ';
         for I := 7 to Length(Data) - 3 do
-          Result := Result + IntToHex(Data[I], 2);
+          Result := Result + IntToHexA(Data[I], 2);
       end;
       else
       begin
-        Result := Result + ', command = ' + IntToStr(Data[3]) +
-          ', address = ' + IntToHex(Address, 6) + ' data = ';
+        Result := Result + ', command = ' + IntToStrA(Data[3]) +
+          ', address = ' + IntToHexA(Address, 6) + ' data = ';
         for I := 7 to Length(Data) - 3 do
-          Result := Result + IntToHex(Data[I], 2);
+          Result := Result + IntToHexA(Data[I], 2);
       end;
     end;
     Checksum := 0;
@@ -1148,14 +1163,14 @@ function SysExRoland(Data: array of byte): ansistring;
     Offset := Address mod $010000;
     Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
     case Address of
-      $000000..$007F7F: AddrName := 'Patch Temp Area #' + IntToStr(Offset div 8);
+      $000000..$007F7F: AddrName := 'Patch Temp Area #' + IntToStrA(Offset div 8);
       $010000..$017F7F: AddrName := 'Set Up Temp Area / rhythm';
-      $020000..$027F7F: AddrName := 'Timbre Temp Area #' + IntToStr(Offset div $F6);
-      $030000..$03007F: AddrName := 'Patch Temp Area #' + IntToStr(Offset shr 4);
-      $030110..$037F7F: AddrName := 'Rhythm Set Up #' + IntToStr((Offset - 144) div 4);
-      $040000..$040F7F: AddrName := 'Timbre Temp Area #' + IntToStr(Offset div $F6);
-      $050000..$05077F: AddrName := 'Patch Memory #' + IntToStr(Offset div 8);
-      $080000..$087F7F: AddrName := 'Timbre Memory #' + IntToStr(Offset div $100);
+      $020000..$027F7F: AddrName := 'Timbre Temp Area #' + IntToStrA(Offset div $F6);
+      $030000..$03007F: AddrName := 'Patch Temp Area #' + IntToStrA(Offset shr 4);
+      $030110..$037F7F: AddrName := 'Rhythm Set Up #' + IntToStrA((Offset - 144) div 4);
+      $040000..$040F7F: AddrName := 'Timbre Temp Area #' + IntToStrA(Offset div $F6);
+      $050000..$05077F: AddrName := 'Patch Memory #' + IntToStrA(Offset div 8);
+      $080000..$087F7F: AddrName := 'Timbre Memory #' + IntToStrA(Offset div $100);
       $100000..$107F7F: AddrName := 'System Area';
       $200000..$200013: AddrName := 'Display';
       $7F0000..$7F7F7F: AddrName := 'All Parameters Reset';
@@ -1165,8 +1180,8 @@ function SysExRoland(Data: array of byte): ansistring;
     case Data[3] of
       $11:
       begin
-        Result := Result + ', read from ' + IntToHex(Address, 6) +
-          AddrName + ' size ' + IntToStr(Data[9] or (Data[8] shl 8) or (Data[7] shl 16));
+        Result := Result + ', read from ' + IntToHexA(Address, 6) +
+          AddrName + ' size ' + IntToStrA(Data[9] or (Data[8] shl 8) or (Data[7] shl 16));
       end;
       $12:
       begin
@@ -1185,7 +1200,7 @@ function SysExRoland(Data: array of byte): ansistring;
             Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
             if Offset mod $10 = 0 then
             begin
-              Result := Result + ', write patch temp #' + IntToStr(Offset div 8);
+              Result := Result + ', write patch temp #' + IntToStrA(Offset div 8);
               case Data[7] of
                 0: Msg := 'group A';
                 1: Msg := 'group B';
@@ -1194,11 +1209,11 @@ function SysExRoland(Data: array of byte): ansistring;
                 else
                   Msg := '?';
               end;
-              Result := Result + ', timbre #' + IntToStr(Data[8]) + ' (' + Msg + ')';
-              Result := Result + ', key shift ' + IntToStr(Data[9] - 24);
-              Result := Result + ', fine tune ' + IntToStr(Data[10] - 50);
-              Result := Result + ', bend range ' + IntToStr(Data[11]);
-              Result := Result + ', assign mode POLY' + IntToStr(Data[12] + 1);
+              Result := Result + ', timbre #' + IntToStrA(Data[8]) + ' (' + Msg + ')';
+              Result := Result + ', key shift ' + IntToStrA(Data[9] - 24);
+              Result := Result + ', fine tune ' + IntToStrA(Data[10] - 50);
+              Result := Result + ', bend range ' + IntToStrA(Data[11]);
+              Result := Result + ', assign mode POLY' + IntToStrA(Data[12] + 1);
               case Data[13] of
                 0: Msg := 'OFF';
                 1: Msg := 'ON';
@@ -1206,15 +1221,15 @@ function SysExRoland(Data: array of byte): ansistring;
                   Msg := '?';
               end;
               Result := Result + ', reverb ' + Msg;
-              Result := Result + ', out ' + IntToStr(Data[15]);
-              Result := Result + ', pan ' + IntToStr(7 - Data[16]);
+              Result := Result + ', out ' + IntToStrA(Data[15]);
+              Result := Result + ', pan ' + IntToStrA(7 - Data[16]);
             end
             else
             begin
               Result := Result + ', write to ' +
-                IntToHex(Address, 6) + AddrName + ' data ';
+                IntToHexA(Address, 6) + AddrName + ' data ';
               for I := 7 to Length(Data) - 3 do
-                Result := Result + IntToHex(Data[I], 2);
+                Result := Result + IntToHexA(Data[I], 2);
             end;
           end;
           $030110..$037F7F:
@@ -1223,17 +1238,17 @@ function SysExRoland(Data: array of byte): ansistring;
             begin
               Offset := Address mod $010000;
               Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
-              Result := Result + ', write rhythm #' + IntToStr((Offset - 144) div 4);
+              Result := Result + ', write rhythm #' + IntToStrA((Offset - 144) div 4);
               case Data[7] of
-                0..63: Msg := '#' + IntToStr(Data[7]) + ' (melodic)';
-                64..93: Msg := '#' + IntToStr(Data[7] - 64) + ' (drum)';
+                0..63: Msg := '#' + IntToStrA(Data[7]) + ' (melodic)';
+                64..93: Msg := '#' + IntToStrA(Data[7] - 64) + ' (drum)';
                 94..127: Msg := 'none';
                 else
                   Msg := '?';
               end;
               Result := Result + ', timbre ' + Msg;
-              Result := Result + ', out ' + IntToStr(Data[8]);
-              Result := Result + ', pan ' + IntToStr(7 - Data[9]);
+              Result := Result + ', out ' + IntToStrA(Data[8]);
+              Result := Result + ', pan ' + IntToStrA(7 - Data[9]);
               case Data[10] of
                 0: Msg := 'OFF';
                 1: Msg := 'ON';
@@ -1245,9 +1260,9 @@ function SysExRoland(Data: array of byte): ansistring;
             else
             begin
               Result := Result + ', write to ' +
-                IntToHex(Address, 6) + AddrName + ' data ';
+                IntToHexA(Address, 6) + AddrName + ' data ';
               for I := 7 to Length(Data) - 3 do
-                Result := Result + IntToHex(Data[I], 2);
+                Result := Result + IntToHexA(Data[I], 2);
             end;
           end;
           $020000..$027F7F, $040000..$040F7F:
@@ -1260,10 +1275,10 @@ function SysExRoland(Data: array of byte): ansistring;
               for I := 7 to 16 do
                 Msg := Msg + AnsiChar(Data[I]);
               Msg := Trim(Msg);
-              Result := Result + ', write timbre temp #' + IntToStr(
+              Result := Result + ', write timbre temp #' + IntToStrA(
                 Offset div $F6) + ', tone name: "' + Msg + '"' + ', pt 1,2 = ' +
-                IntToStr(Data[17]) + ', pt 3,4 = ' + IntToStr(Data[18]) +
-                ', pt mute = ' + IntToStr(Data[19]);
+                IntToStrA(Data[17]) + ', pt 3,4 = ' + IntToStrA(Data[18]) +
+                ', pt mute = ' + IntToStrA(Data[19]);
               case Data[20] of
                 0: Msg := 'normal';
                 1: Msg := 'no sustain';
@@ -1275,9 +1290,9 @@ function SysExRoland(Data: array of byte): ansistring;
             else
             begin
               Result := Result + ', write to ' +
-                IntToHex(Address, 6) + AddrName + ' data ';
+                IntToHexA(Address, 6) + AddrName + ' data ';
               for I := 7 to Length(Data) - 3 do
-                Result := Result + IntToHex(Data[I], 2);
+                Result := Result + IntToHexA(Data[I], 2);
             end;
           end;
           $050000..$05077F:
@@ -1286,7 +1301,7 @@ function SysExRoland(Data: array of byte): ansistring;
             begin
               Offset := Address mod $010000;
               Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
-              Result := Result + ', write patch #' + IntToStr(Offset div 8);
+              Result := Result + ', write patch #' + IntToStrA(Offset div 8);
               case Data[7] of
                 0: Msg := 'group A';
                 1: Msg := 'group B';
@@ -1295,11 +1310,11 @@ function SysExRoland(Data: array of byte): ansistring;
                 else
                   Msg := '?';
               end;
-              Result := Result + ', timbre #' + IntToStr(Data[8]) + ' (' + Msg + ')';
-              Result := Result + ', key shift ' + IntToStr(Data[9] - 24);
-              Result := Result + ', fine tune ' + IntToStr(Data[10] - 50);
-              Result := Result + ', bend range ' + IntToStr(Data[11]);
-              Result := Result + ', assign mode POLY' + IntToStr(Data[12] + 1);
+              Result := Result + ', timbre #' + IntToStrA(Data[8]) + ' (' + Msg + ')';
+              Result := Result + ', key shift ' + IntToStrA(Data[9] - 24);
+              Result := Result + ', fine tune ' + IntToStrA(Data[10] - 50);
+              Result := Result + ', bend range ' + IntToStrA(Data[11]);
+              Result := Result + ', assign mode POLY' + IntToStrA(Data[12] + 1);
               case Data[13] of
                 0: Msg := 'OFF';
                 1: Msg := 'ON';
@@ -1311,9 +1326,9 @@ function SysExRoland(Data: array of byte): ansistring;
             else
             begin
               Result := Result + ', write to ' +
-                IntToHex(Address, 6) + AddrName + ' data ';
+                IntToHexA(Address, 6) + AddrName + ' data ';
               for I := 7 to Length(Data) - 3 do
-                Result := Result + IntToHex(Data[I], 2);
+                Result := Result + IntToHexA(Data[I], 2);
             end;
           end;
           $080000..$087F7F:
@@ -1326,10 +1341,10 @@ function SysExRoland(Data: array of byte): ansistring;
               Msg := Trim(Msg);
               Offset := Address mod $010000;
               Offset := (Offset and $7F) or ((Offset and $7F00) shr 1);
-              Result := Result + ', write timbre #' + IntToStr(Offset div
+              Result := Result + ', write timbre #' + IntToStrA(Offset div
                 $100) + ', tone name: "' + Msg + '"' + ', pt 1,2 = ' +
-                IntToStr(Data[17]) + ', pt 3,4 = ' + IntToStr(Data[18]) +
-                ', pt mute = ' + IntToStr(Data[19]);
+                IntToStrA(Data[17]) + ', pt 3,4 = ' + IntToStrA(Data[18]) +
+                ', pt mute = ' + IntToStrA(Data[19]);
               case Data[20] of
                 0: Msg := 'normal';
                 1: Msg := 'no sustain';
@@ -1341,26 +1356,26 @@ function SysExRoland(Data: array of byte): ansistring;
             else
             begin
               Result := Result + ', write to ' +
-                IntToHex(Address, 6) + AddrName + ' data ';
+                IntToHexA(Address, 6) + AddrName + ' data ';
               for I := 7 to Length(Data) - 3 do
-                Result := Result + IntToHex(Data[I], 2);
+                Result := Result + IntToHexA(Data[I], 2);
             end;
           end;
           else
           begin
-            Result := Result + ', write to ' + IntToHex(Address, 6) +
+            Result := Result + ', write to ' + IntToHexA(Address, 6) +
               AddrName + ' data ';
             for I := 7 to Length(Data) - 3 do
-              Result := Result + IntToHex(Data[I], 2);
+              Result := Result + IntToHexA(Data[I], 2);
           end;
         end;
       end;
       else
       begin
-        Result := Result + ', command = ' + IntToStr(Data[3]) +
-          ', address = ' + IntToHex(Address, 6) + AddrName + ' data = ';
+        Result := Result + ', command = ' + IntToStrA(Data[3]) +
+          ', address = ' + IntToHexA(Address, 6) + AddrName + ' data = ';
         for I := 7 to Length(Data) - 3 do
-          Result := Result + IntToHex(Data[I], 2);
+          Result := Result + IntToHexA(Data[I], 2);
       end;
     end;
     Checksum := 0;
@@ -1377,7 +1392,7 @@ begin
   case Data[2] of
     $14:
     begin
-      Result := 'Roland D-50' + ', device = ' + IntToHex(Data[1], 2) + 'h';
+      Result := 'Roland D-50' + ', device = ' + IntToHexA(Data[1], 2) + 'h';
       SysExDefault;
     end;
     $16:
@@ -1387,18 +1402,18 @@ begin
     end;
     $42:
     begin
-      Result := 'Roland SCC-1/SC-88' + ', device = ' + IntToHex(Data[1], 2) + 'h';
+      Result := 'Roland SCC-1/SC-88' + ', device = ' + IntToHexA(Data[1], 2) + 'h';
       SysExDefault;
     end;
     $6A:
     begin
-      Result := 'Roland JV-1010' + ', device = ' + IntToHex(Data[1], 2) + 'h';
+      Result := 'Roland JV-1010' + ', device = ' + IntToHexA(Data[1], 2) + 'h';
       SysExDefault;
     end;
     else
     begin
-      Result := 'Roland model ' + IntToHex(Data[2], 2) + 'h' +
-        ', device = ' + IntToHex(Data[1], 2) + 'h';
+      Result := 'Roland model ' + IntToHexA(Data[2], 2) + 'h' +
+        ', device = ' + IntToHexA(Data[1], 2) + 'h';
       SysExDefault;
     end;
   end;
@@ -1455,36 +1470,36 @@ begin
         if chn > 15 then
           Result := Result + ', chn = ?'
         else
-          Result := Result + ', chn = ' + IntToStr(chn + 1);
+          Result := Result + ', chn = ' + IntToStrA(chn + 1);
         Move(Data[6], patch, 28);
-        Result := Result + ', mod = [' + IntToStr(patch.oplModulator.ksl) +
-          ' ' + IntToStr(patch.oplModulator.multiplier) + ' ' +
-          IntToStr(patch.oplModulator.feedback) + ' ' +
-          IntToStr(patch.oplModulator.attack) + ' ' +
-          IntToStr(patch.oplModulator.sustain) + ' ' +
-          IntToStr(patch.oplModulator.sustaining) + ' ' +
-          IntToStr(patch.oplModulator.decay) + ' ' +
-          IntToStr(patch.oplModulator.Release) + ' ' +
-          IntToStr(patch.oplModulator.output) + ' ' +
-          IntToStr(patch.oplModulator.vibam) + ' ' +
-          IntToStr(patch.oplModulator.vibfq) + ' ' +
-          IntToStr(patch.oplModulator.envscale) + ' ' +
-          IntToStr(patch.oplModulator.additive) + ' ' +
-          IntToStr(patch.iModWaveSel) + ']';
-        Result := Result + ', car = [' + IntToStr(patch.oplCarrier.ksl) +
-          ' ' + IntToStr(patch.oplCarrier.multiplier) + ' ' +
-          IntToStr(patch.oplCarrier.feedback) + ' ' +
-          IntToStr(patch.oplCarrier.attack) + ' ' +
-          IntToStr(patch.oplCarrier.sustain) + ' ' +
-          IntToStr(patch.oplCarrier.sustaining) + ' ' +
-          IntToStr(patch.oplCarrier.decay) + ' ' +
-          IntToStr(patch.oplCarrier.Release) + ' ' +
-          IntToStr(patch.oplCarrier.output) + ' ' +
-          IntToStr(patch.oplCarrier.vibam) + ' ' +
-          IntToStr(patch.oplCarrier.vibfq) + ' ' +
-          IntToStr(patch.oplCarrier.envscale) + ' ' +
-          IntToStr(patch.oplCarrier.additive) + ' ' +
-          IntToStr(patch.iCarWaveSel) + ']';
+        Result := Result + ', mod = [' + IntToStrA(patch.oplModulator.ksl) +
+          ' ' + IntToStrA(patch.oplModulator.multiplier) + ' ' +
+          IntToStrA(patch.oplModulator.feedback) + ' ' +
+          IntToStrA(patch.oplModulator.attack) + ' ' +
+          IntToStrA(patch.oplModulator.sustain) + ' ' +
+          IntToStrA(patch.oplModulator.sustaining) + ' ' +
+          IntToStrA(patch.oplModulator.decay) + ' ' +
+          IntToStrA(patch.oplModulator.Release) + ' ' +
+          IntToStrA(patch.oplModulator.output) + ' ' +
+          IntToStrA(patch.oplModulator.vibam) + ' ' +
+          IntToStrA(patch.oplModulator.vibfq) + ' ' +
+          IntToStrA(patch.oplModulator.envscale) + ' ' +
+          IntToStrA(patch.oplModulator.additive) + ' ' +
+          IntToStrA(patch.iModWaveSel) + ']';
+        Result := Result + ', car = [' + IntToStrA(patch.oplCarrier.ksl) +
+          ' ' + IntToStrA(patch.oplCarrier.multiplier) + ' ' +
+          IntToStrA(patch.oplCarrier.feedback) + ' ' +
+          IntToStrA(patch.oplCarrier.attack) + ' ' +
+          IntToStrA(patch.oplCarrier.sustain) + ' ' +
+          IntToStrA(patch.oplCarrier.sustaining) + ' ' +
+          IntToStrA(patch.oplCarrier.decay) + ' ' +
+          IntToStrA(patch.oplCarrier.Release) + ' ' +
+          IntToStrA(patch.oplCarrier.output) + ' ' +
+          IntToStrA(patch.oplCarrier.vibam) + ' ' +
+          IntToStrA(patch.oplCarrier.vibfq) + ' ' +
+          IntToStrA(patch.oplCarrier.envscale) + ' ' +
+          IntToStrA(patch.oplCarrier.additive) + ' ' +
+          IntToStrA(patch.iCarWaveSel) + ']';
       end;
     end;
     2:
@@ -1515,17 +1530,17 @@ begin
         else
         if pitchRange < 1 then
           pitchRange := 1;
-        Result := Result + ' = ' + IntToStr(pitchRange);
+        Result := Result + ' = ' + IntToStrA(pitchRange);
       end;
     end;
     else
     begin
-      Result := Result + ', opcode = ' + IntToStr(Opcode);
+      Result := Result + ', opcode = ' + IntToStrA(Opcode);
       if Length(Data) > 5 then
       begin
         Result := Result + ', data = ';
         for I := 5 to Length(Data) - 1 do
-          Result := Result + IntToHex(Data[I], 2);
+          Result := Result + IntToHexA(Data[I], 2);
       end;
     end;
   end;
@@ -1550,7 +1565,7 @@ var
     begin
       Result := 'Data = ';
       for I := 0 to Length(Data) - 1 do
-        Result := Result + IntToHex(Data[I], 2);
+        Result := Result + IntToHexA(Data[I], 2);
     end
     else
     begin
@@ -1559,7 +1574,7 @@ var
       begin
         Result := Result + ', data = ';
         for I := MfgLen to Length(Data) - 1 do
-          Result := Result + IntToHex(Data[I], 2);
+          Result := Result + IntToHexA(Data[I], 2);
       end;
     end;
   end;

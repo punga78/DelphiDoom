@@ -105,8 +105,8 @@ var
 
 type
   wad_switchlist_t = packed record
-    name1: array[0..8] of char;
-    name2: array[0..8] of char;
+    name1: array[0..8] of AnsiChar;
+    name2: array[0..8] of AnsiChar;
     episode: smallint;
   end;
   Pwad_switchlist_t = ^wad_switchlist_t;

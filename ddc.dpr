@@ -5,6 +5,7 @@ program ddc;
 uses
   FastMM4 in 'FASTMM4\FastMM4.pas',
   FastMM4Messages in 'FASTMM4\FastMM4Messages.pas',
+{$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
   AnsiStringReplaceJOHIA32Unit12 in 'FASTCODE\AnsiStringReplaceJOHIA32Unit12.pas',
   AnsiStringReplaceJOHPASUnit12 in 'FASTCODE\AnsiStringReplaceJOHPASUnit12.pas',
   Fastcode in 'FASTCODE\FastCode.pas',
@@ -25,6 +26,7 @@ uses
   FastcodeStrToInt32Unit in 'FASTCODE\FastcodeStrToInt32Unit.pas',
   FastcodeUpperCaseUnit in 'FASTCODE\FastcodeUpperCaseUnit.pas',
   FastMove in 'FASTCODE\FastMove.pas',
+{$ENDIF}
   cmdline_compiler in 'SCRIPT\cmdline_compiler.pas',
   d_delphi in 'Common\d_delphi.pas',
   ddc_base in 'SCRIPT\ddc_base.pas';

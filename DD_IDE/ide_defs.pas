@@ -121,7 +121,7 @@ function ide_LoadSettingFromFile(const fn: string): boolean;
 var
   s: TStringList;
   i, j: integer;
-  s1, s2: string;
+  s1, s2: AnsiString;
   itmp: integer;
 begin
   if not FileExists(fn) then

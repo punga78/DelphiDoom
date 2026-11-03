@@ -4450,18 +4450,23 @@ var
 {$ENDIF}
 begin
   maplump := W_GetNumForName(mapname);
+  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: maplump'#13#10);
   adler32 := GetMapAdler32(maplump);
+  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: adler32'#13#10);
 
   path := M_SaveFileName('DATA\');
   MkDir(path);
   path := path + 'BSP\';
+  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: path'#13#10);
   MkDir(path);
 
   gwafilename := fexpand(path + mapname + '_' + HextL(adler32) + '.gwa');
+  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: gwafilename'#13#10);
 
   if not fexists(gwafilename) then
   begin
     mapfilename := I_NewTempFile(mapname + '_' + HextL(adler32) + '.wad');
+    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: tempfile'#13#10);
 
     header.identification :=
       integer(Ord('P') or (Ord('W') shl 8) or (Ord('A') shl 16) or (Ord('D') shl 24));
@@ -4473,6 +4478,7 @@ begin
       ninfolumps := 11;
     header.numlumps := {$IFDEF HEXEN}12{$ELSE}ninfolumps{$ENDIF};
 
+    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: create'#13#10);
     f := TFile.Create(mapfilename, fCreate);
     f.Write(header, SizeOf(header));
 
@@ -4485,6 +4491,7 @@ begin
         Break;
 
       len := W_LumpLength(lump);
+      if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: lump %d'#13#10, [i]);
 
       infotable[i].filepos := f.Position;
       infotable[i].name := lumpinfo[lump].name;
@@ -4575,6 +4582,7 @@ begin
     f.Write(header, SizeOf(header));
     f.Free;
 
+    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: buildnodes'#13#10);
     gld_BuildNodes(mapfilename, gwafilename);
 
     if not fexists(gwafilename) then

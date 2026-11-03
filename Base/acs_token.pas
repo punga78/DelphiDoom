@@ -124,13 +124,13 @@ const
 type
   nestInfo_t = record
     name: string;
-    start: PChar;
-    finish: PChar;
-    position: PChar;
+    start: PAnsiChar;
+    finish: PAnsiChar;
+    position: PAnsiChar;
     size: integer;
     line: integer;
     incLineNumber: boolean;
-    lastChar: char;
+    lastChar: AnsiChar;
   end;
   PnestInfo_t = ^nestInfo_t;
 
@@ -237,10 +237,10 @@ uses
   acs_symbol;
 
 var
-  Ch: Char;
-  FileStart: PChar;
-  FilePtr: PChar;
-  FileEnd: PChar;
+  Ch: AnsiChar;
+  FileStart: PAnsiChar;
+  FilePtr: PAnsiChar;
+  FileEnd: PAnsiChar;
   SourceOpen: boolean;
   ASCIIToChrCode: array[0..255] of byte;
   ASCIIToHexDigit: array[0..255] of byte;
@@ -703,7 +703,7 @@ end;
 // Returns -1 if the digit is not allowed in the specified radix.
 //
 //==============================================================================
-function DigitValue(digit: char; const radix: integer): integer;
+function DigitValue(digit: AnsiChar; const radix: integer): integer;
 begin
   digit := toupper(digit);
   if (digit < '0') or ((digit > '9') and (digit < 'A')) or (digit > 'Z') then
@@ -712,9 +712,9 @@ begin
     exit;
   end;
   if digit > '9' then
-    digit := Chr(10 + Ord(digit) - Ord('A'))
+    digit := AnsiChar(10 + Ord(digit) - Ord('A'))
   else
-    digit := Chr(Ord(digit) - Ord('0'));
+    digit := AnsiChar(Ord(digit) - Ord('0'));
   if Ord(digit) >= radix then
     result := -1
   else
@@ -754,7 +754,7 @@ end;
 //==============================================================================
 procedure ProcessNumberToken;
 var
-  c: char;
+  c: AnsiChar;
 begin
   c := Ch;
   NextChr;
@@ -823,7 +823,7 @@ end;
 //==============================================================================
 procedure ProcessSpecialToken;
 var
-  c: char;
+  c: AnsiChar;
 begin
   c :=  Ch;
   NextChr;
@@ -1014,7 +1014,7 @@ end;
 //==============================================================================
 procedure SkipCPPComment;
 var
-  c: char;
+  c: AnsiChar;
 begin
   while FilePtr < FileEnd do
   begin

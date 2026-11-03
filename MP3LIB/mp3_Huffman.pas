@@ -72,14 +72,14 @@ type
 
   PHuffCodeTab = ^THuffCodeTab;
   THuffCodeTab = record
-    TableName: array[0..2] of char;  // string, containing table_description
+    TableName: array[0..2] of AnsiChar;  // string, containing table_description
     xlen: Cardinal;                  // max. x-index+
     ylen: Cardinal;                  // max. y-index+
     linbits: Cardinal;               // number of linbits
     linmax: Cardinal;                // max number to be stored in linbits
     ref: Integer;                    // a positive value indicates a reference
     table: PHuffBits;                // pointer to array[xlen][ylen]
-    hlen: PChar;                     // pointer to array[xlen][ylen]
+    hlen: PAnsiChar;                     // pointer to array[xlen][ylen]
     val: PPHTArray;                  // decoder tree
     treelen: Cardinal;               // length of decoder tree
   end;
@@ -100,6 +100,7 @@ function HuffmanDecoder(h: PHuffCodeTab; var x, y, v, w: Integer; br: TBitReserv
 implementation
 
 uses
+  AnsiStrings,
   d_delphi;
 
 const
@@ -561,10 +562,10 @@ end;
 // SetHuffTable
 //
 //==============================================================================
-procedure SetHuffTable(ht: PHuffCodeTab; Name: PChar; xlen, ylen, linbits, linmax, ref: Integer;
-                       table: PHuffBits; hlen: PChar; val: PPHTArray; treelen: Cardinal);
+procedure SetHuffTable(ht: PHuffCodeTab; Name: PAnsiChar; xlen, ylen, linbits, linmax, ref: Integer;
+                       table: PHuffBits; hlen: PAnsiChar; val: PPHTArray; treelen: Cardinal);
 begin
-  StrLCopy(ht.TableName, Name, sizeof(ht.TableName));
+  AnsiStrings.StrLCopy(ht.TableName, Name, sizeof(ht.TableName));
   ht.xlen := xlen;
   ht.ylen := ylen;
   ht.linbits := linbits;

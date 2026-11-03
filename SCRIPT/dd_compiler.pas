@@ -260,8 +260,8 @@ uses
 //==============================================================================
 procedure DD_InitDoomEngine;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   PS_InitProcLists;
   SC_DefaultStatedefLump;
@@ -293,12 +293,17 @@ function DD_Compile(const _inp: string; var _out: string; var _msgs: string): bo
 var
   c: TDoomCompiler;
   i: integer;
+  apcode: TbtString;
 begin
   try
     c := TDoomCompiler.CreateDoomCompiler;
     try
       c.OnExportCheck := ScriptOnExportCheck;
-      Result := c.CompileDoomScript(_inp, _out);
+      Result := c.CompileDoomScript(TbtString(_inp), apcode);
+      // bytecode is binary: map every byte to the character with the same code
+      SetLength(_out, Length(apcode));
+      for i := 1 to Length(apcode) do
+        _out[i] := Char(Ord(apcode[i]));
       _msgs := '';
 
       for i := 0 to c.MsgCount - 1 do
@@ -620,7 +625,7 @@ var
 // PS_ScriptOnUsesEx
 //
 //==============================================================================
-function PS_ScriptOnUsesEx(Sender: TPSPascalCompiler; const Name: string): Boolean;
+function PS_ScriptOnUsesEx(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   i: integer;
   fconst: TPSConstant;
@@ -663,7 +668,7 @@ end;
 // PS_ScriptOnUsesExClasses
 //
 //==============================================================================
-function PS_ScriptOnUsesExClasses(Sender: TPSPascalCompiler; const Name: string): Boolean;
+function PS_ScriptOnUsesExClasses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   i, j: integer;
   fclass: TPSCompileTimeClass;
@@ -737,7 +742,7 @@ procedure dd_getconstants_strife(
 {$ENDIF}
   var _out: PChar; var _outsize: Integer); stdcall;
 var
-  pcode: string;
+  pcode: TbtString;
   c: TDoomCompiler;
 begin
   try
@@ -767,7 +772,7 @@ procedure dd_getvariables_strife(
 {$ENDIF}
   var _out: PChar; var _outsize: Integer); stdcall;
 var
-  pcode: string;
+  pcode: TbtString;
   c: TDoomCompiler;
 begin
   try
@@ -797,7 +802,7 @@ procedure dd_gettypes_strife(
 {$ENDIF}
   var _out: PChar; var _outsize: Integer); stdcall;
 var
-  pcode: string;
+  pcode: TbtString;
   c: TDoomCompiler;
 begin
   try
@@ -827,7 +832,7 @@ procedure dd_getclasses_strife(
 {$ENDIF}
   var _out: PChar; var _outsize: Integer); stdcall;
 var
-  pcode: string;
+  pcode: TbtString;
   c: TDoomCompiler;
 begin
   try

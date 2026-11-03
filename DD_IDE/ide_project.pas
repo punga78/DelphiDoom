@@ -373,7 +373,7 @@ procedure TIDEProject.DataToFields(const adata: AnsiString);
 var
   s: TStringList;
   i: integer;
-  typ, path: string;
+  typ, path: AnsiString;
 begin
   Clear;
   s := TStringList.Create;

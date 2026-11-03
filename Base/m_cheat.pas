@@ -39,8 +39,8 @@ interface
 
 type
   cheatseq_t = record
-    sequence: string;
-    p: string;
+    sequence: AnsiString;
+    p: AnsiString;
   end;
   Pcheatseq_t = ^cheatseq_t;
 
@@ -65,21 +65,21 @@ procedure cht_GetParam(cht: Pcheatseq_t; var buffer: string);
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const A: array of char): string; overload; // JVAL
+function get_cheatseq_string(const A: array of AnsiChar): AnsiString; overload; // JVAL
 
 //==============================================================================
 //
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const A: string): string; overload; // JVAL
+function get_cheatseq_string(const A: AnsiString): AnsiString; overload; // JVAL
 
 //==============================================================================
 //
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const x: integer): string; overload; // JVAL
+function get_cheatseq_string(const x: integer): AnsiString; overload; // JVAL
 
 implementation
 
@@ -92,7 +92,7 @@ uses
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const A: array of char): string; // JVAL
+function get_cheatseq_string(const A: array of AnsiChar): AnsiString; // JVAL
 var
   i: integer;
 begin
@@ -101,7 +101,7 @@ begin
   repeat
     result := result + A[i];
     inc(i);
-  until A[i] = Chr($FF);
+  until A[i] = AnsiChar($FF);
 end;
 
 //==============================================================================
@@ -109,7 +109,7 @@ end;
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const A: string): string;  // JVAL
+function get_cheatseq_string(const A: AnsiString): AnsiString;  // JVAL
 var
   i: integer;
 begin
@@ -118,7 +118,7 @@ begin
   repeat
     result := result + A[i];
     inc(i);
-  until A[i] = Chr($FF);
+  until A[i] = AnsiChar($FF);
 end;
 
 //==============================================================================
@@ -126,7 +126,7 @@ end;
 // get_cheatseq_string
 //
 //==============================================================================
-function get_cheatseq_string(const x: integer): string; // JVAL
+function get_cheatseq_string(const x: integer): AnsiString; // JVAL
 begin
   result := '';
   if x <> 0 then
@@ -152,7 +152,7 @@ end;
 
 var
   firsttime: boolean = true;
-  cheat_xlate_table: array[0..255] of char;
+  cheat_xlate_table: array[0..255] of AnsiChar;
 
 //==============================================================================
 // cht_CheckCheat
@@ -171,17 +171,17 @@ begin
   begin
     firsttime := false;
     for i := 0 to 255 do
-      cheat_xlate_table[i] := Chr(SCRAMBLE(i));
+      cheat_xlate_table[i] := AnsiChar(SCRAMBLE(i));
   end;
 
   if (cht.p = '') then
     cht.p := cht.sequence; // initialize if first time
 
   if (cht.p[1] = #0) then
-    cht.p[1] := key
+    cht.p[1] := AnsiChar(key)
   else if (length(cht.p) > 1) and (cht.p[2] = #0) then
   begin
-    cht.p[2] := key;
+    cht.p[2] := AnsiChar(key);
     result := cht_acquired;
   end
   else if cheat_xlate_table[Ord(key)] = cht.p[1] then
@@ -196,7 +196,7 @@ begin
   begin
     if cht.p[1] = #1 then
       Delete(cht.p, 1, 1)
-    else if cht.p[1] = Chr($FF) then // end of sequence character
+    else if cht.p[1] = AnsiChar($FF) then // end of sequence character
     begin
       cht.p := cht.sequence;
       result := cht_acquired;
@@ -213,7 +213,7 @@ end;
 //==============================================================================
 procedure cht_GetParam(cht: Pcheatseq_t; var buffer: string);
 begin
-  buffer := cht.p;
+  buffer := string(cht.p);
 end;
 
 end.

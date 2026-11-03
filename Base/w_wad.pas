@@ -42,7 +42,7 @@ uses
 //
 
 type
-  char8_t = array[0..7] of char;
+  char8_t = array[0..7] of AnsiChar;
   Pchar8_t = ^char8_t;
 
   lumpindicator_t = record
@@ -429,7 +429,7 @@ begin
   i := 1;
   while (i <= len) do
   begin
-    result[i - 1] := src[i];
+    result[i - 1] := AnsiChar(src[i]);
     inc(i);
   end;
 
@@ -537,7 +537,7 @@ var
   storehandle: TCachedFile;
   ext: string;
   iswad: boolean;
-  c: char;
+  c: AnsiChar;
 begin
   // open the file and add to directory
   // handle reload indicator.
@@ -1117,7 +1117,7 @@ begin
 
   // make the name into two integers for easy compares
   for i := 1 to len do
-    name8.s[i - 1] := toupper(name[i]); // case insensitive
+    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
   for i := len to 7 do
     name8.s[i] := #0;
 
@@ -1184,7 +1184,7 @@ begin
 
   // make the name into two integers for easy compares
   for i := 1 to len do
-    name8.s[i - 1] := toupper(name[i]); // case insensitive
+    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
   for i := len to 7 do
     name8.s[i] := #0;
 
@@ -1234,7 +1234,7 @@ begin
 
   // make the name into two integers for easy compares
   for i := 1 to len do
-    name8.s[i - 1] := toupper(name[i]); // case insensitive
+    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
   for i := len to 7 do
     name8.s[i] := #0;
 

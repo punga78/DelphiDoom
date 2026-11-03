@@ -37,7 +37,7 @@ const
   BIGSTRINGSIZE = 1024;
 
 type
-  ubigstring_t = array[0..BIGSTRINGSIZE - 1] of char;
+  ubigstring_t = array[0..BIGSTRINGSIZE - 1] of AnsiChar;
 
 type
   bossaction_t = record
@@ -165,7 +165,7 @@ begin
   len := Length(s);
   while i < len do
   begin
-    result[i - 1] := s[i];
+    result[i - 1] := AnsiChar(s[i]);
     Inc(i);
     if i = BIGSTRINGSIZE - 1 then
       Break;

@@ -505,92 +505,92 @@ const
 // Massive bunches of cheat shit
 //  to keep it from being easy to figure them out.
 // Yeah, right...
-  cheat_mus_seq: array[0..8] of char = (
+  cheat_mus_seq: array[0..8] of AnsiChar = (
     Chr($b2), Chr($26), Chr($b6), Chr($ae), Chr($ea),
     Chr($1),  Chr($0),  Chr($0),  Chr($ff)
   ); // idmus
 
-  cheat_choppers_seq: array[0..10] of char = (
+  cheat_choppers_seq: array[0..10] of AnsiChar = (
     Chr($b2), Chr($26), Chr($e2), Chr($32), Chr($f6),
     Chr($2a), Chr($2a), Chr($a6), Chr($6a), Chr($ea),
     Chr($ff) // id...
   );
 
-  cheat_god_seq: array[0..5] of char = (
+  cheat_god_seq: array[0..5] of AnsiChar = (
     Chr($b2), Chr($26), Chr($26), Chr($aa), Chr($26),
     Chr($ff)  // iddqd
   );
 
-  cheat_ammo_seq: array[0..5] of char = (
+  cheat_ammo_seq: array[0..5] of AnsiChar = (
     Chr($b2), Chr($26), Chr($f2), Chr($66), Chr($a2),
     Chr($ff)  // idkfa
   );
 
-  cheat_ammonokey_seq: array[0..4] of char = (
+  cheat_ammonokey_seq: array[0..4] of AnsiChar = (
     Chr($b2), Chr($26), Chr($66), Chr($a2), Chr($ff) // idfa
   );
 
 // Smashing Pumpkins Into Samml Piles Of Putried Debris.
-  cheat_noclip_seq: array[0..10] of char = (
+  cheat_noclip_seq: array[0..10] of AnsiChar = (
     Chr($b2), Chr($26), Chr($ea), Chr($2a), Chr($b2), // idspispopd
     Chr($ea), Chr($2a), Chr($f6), Chr($2a), Chr($26),
     Chr($ff)
   );
 
 //
-  cheat_commercial_noclip_seq: array[0..6] of char = (
+  cheat_commercial_noclip_seq: array[0..6] of AnsiChar = (
     Chr($b2), Chr($26), Chr($e2), Chr($36), Chr($b2),
     Chr($2a), Chr($ff)  // idclip
   );
 
-  cheat_powerup_seq0: array[0..9] of char = (
+  cheat_powerup_seq0: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($6e), Chr($ff)  // beholdv
   );
 
-  cheat_powerup_seq1: array[0..9] of char = (
+  cheat_powerup_seq1: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($ea), Chr($ff)  // beholds
   );
 
-  cheat_powerup_seq2: array[0..9] of char = (
+  cheat_powerup_seq2: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($b2), Chr($ff)  // beholdi
   );
 
-  cheat_powerup_seq3: array[0..9] of char = (
+  cheat_powerup_seq3: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($6a), Chr($ff)  // beholdr
   );
 
-  cheat_powerup_seq4: array[0..9] of char = (
+  cheat_powerup_seq4: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($a2), Chr($ff)  // beholda
   );
 
-  cheat_powerup_seq5: array[0..9] of char = (
+  cheat_powerup_seq5: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($36), Chr($ff)  // beholdl
   );
 
-  cheat_powerup_seq6: array[0..8] of char = (
+  cheat_powerup_seq6: array[0..8] of AnsiChar = (
     Chr($b2), Chr($26), Chr($62), Chr($a6), Chr($32),
     Chr($f6), Chr($36), Chr($26), Chr($ff)  // behold
   );
 
-  cheat_clev_seq: array[0..9] of char = (
+  cheat_clev_seq: array[0..9] of AnsiChar = (
     Chr($b2), Chr($26), Chr($e2), Chr($36), Chr($a6),
     Chr($6e), Chr($1),  Chr($0),  Chr($0),  Chr($ff)  // idclev
   );
 
 // my position cheat
-  cheat_mypos_seq: array[0..7] of char = (
+  cheat_mypos_seq: array[0..7] of AnsiChar = (
     Chr($b2), Chr($26), Chr($b6), Chr($ba), Chr($2a),
     Chr($f6), Chr($ea), Chr($ff) // idmypos
   );
 
 // JVAL: Give All Keys cheat
-  cheat_idkeys_seq: array[0..6] of char = (
+  cheat_idkeys_seq: array[0..6] of AnsiChar = (
     Chr($b2), Chr($26), Chr($f2), Chr($a6), Chr($ba),
     Chr($ea), Chr($ff) // idkeys
   );

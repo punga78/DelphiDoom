@@ -324,7 +324,7 @@ end;
 function GET_CHAR8T: char8_t;
 var
   i: integer;
-  ch: Char;
+  ch: AnsiChar;
 begin
   if LOADVERSION >= VERSION207 then
   begin
@@ -332,7 +332,7 @@ begin
       result[i] := #0;
     for i := 0 to 7 do
     begin
-      ch := Chr(GET_BYTE);
+      ch := AnsiChar(GET_BYTE);
       result[i] := ch;
       if ch = #0 then
         exit;
@@ -341,7 +341,7 @@ begin
   else
   begin
     for i := 0 to 7 do
-      result[i] := Chr(GET_BYTE);
+      result[i] := AnsiChar(GET_BYTE);
   end;
 end;
 

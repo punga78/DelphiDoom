@@ -939,8 +939,8 @@ type
   // for ANIMATED lump (BOOM compatibility)
   wad_animdef_t = packed record
     istexture: byte; // if 0, it is a flat
-    endname: array[0..8] of char;
-    startname: array[0..8] of char;
+    endname: array[0..8] of AnsiChar;
+    startname: array[0..8] of AnsiChar;
     speed: integer;
   end;
   Pwad_animdef_t = ^wad_animdef_t;

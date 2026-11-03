@@ -2722,6 +2722,7 @@ procedure G_DoSaveGameInFile(name: string);
 var
   name2: string;
   description: string;
+  adesc: AnsiString;
   len: integer;
   i: integer;
   maxsize: integer;
@@ -2739,7 +2740,13 @@ begin
 
   save_p := savebuffer;
 
-  memcpy(save_p, @description[1], SAVESTRINGSIZE);
+  // The description is stored as 8 bit text, padded with zeroes
+  ZeroMemory(save_p, SAVESTRINGSIZE);
+  adesc := AnsiString(description);
+  if Length(adesc) > SAVESTRINGSIZE then
+    SetLength(adesc, SAVESTRINGSIZE);
+  if Length(adesc) > 0 then
+    memcpy(save_p, @adesc[1], Length(adesc));
 
   save_p := PByteArray(integer(save_p) + SAVESTRINGSIZE);
   name2 := '';

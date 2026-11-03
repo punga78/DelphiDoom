@@ -44,7 +44,7 @@ const
 
 type
   FPakHead = packed record // A PAK Directory Entry
-    Name: packed array[1..PAKHEADSTRINGSIZE] of char;
+    Name: packed array[1..PAKHEADSTRINGSIZE] of AnsiChar;
     Offs: integer;
     Fsize: integer;
   end;
@@ -59,7 +59,7 @@ type
     _type: char;
     compression: char;
     pad1, pad2: char;
-    name: packed array[1..16] of char; // must be null terminated
+    name: packed array[1..16] of AnsiChar; // must be null terminated
   end;
 
   TFWadHeadArray = packed array[0..$FFFF] of FWadHead;

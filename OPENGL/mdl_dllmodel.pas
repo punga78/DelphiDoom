@@ -136,9 +136,9 @@ begin
   begin
     if finitialprocname <> '' then
     begin
-      proc := GetProcAddress(handle, PAnsiChar(finitialprocname));
+      proc := GetProcAddress(handle, PAnsiChar(AnsiString(finitialprocname)));
       if not assigned(proc) then
-        proc := GetProcAddress(handle, PAnsiChar('_' + finitialprocname));
+        proc := GetProcAddress(handle, PAnsiChar(AnsiString('_' + finitialprocname)));
     end;
     if not assigned(proc) then
     begin

@@ -5953,8 +5953,8 @@ function TPSPascalCompiler.ReadReal(const s: TbtString): PIfRVariant;
 var
   C: Integer;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   New(Result);
   InitializeVariant(Result, FindBaseType(btExtended));

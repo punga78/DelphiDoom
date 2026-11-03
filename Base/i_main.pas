@@ -160,7 +160,7 @@ begin
   hMainWnd := CreateWindowEx(
     exStyle,
     WindowClass.lpszClassName,
-    PAnsiChar(caption),
+    PChar(caption),
     WINDOW_STYLE_FS,
     windowxpos, windowypos, 0, 0,
     0,

@@ -24,7 +24,7 @@ const
 // Scanf_core
 //
 //==============================================================================
-function Scanf_core(var Buffer: PChar; var Format : PChar;
+function Scanf_core(var Buffer: PAnsiChar; var Format : PAnsiChar;
                     Pointers : array of Pointer) : Integer;
 
 //==============================================================================
@@ -32,7 +32,7 @@ function Scanf_core(var Buffer: PChar; var Format : PChar;
 // Scanf_stream
 //
 //==============================================================================
-function Scanf_stream(Inp : TStream; var Format : PChar;
+function Scanf_stream(Inp : TStream; var Format : PAnsiChar;
                       Pointers : array of Pointer)
                       : Integer;
 
@@ -41,20 +41,20 @@ function Scanf_stream(Inp : TStream; var Format : PChar;
 // DeFormat_core
 //
 //==============================================================================
-function DeFormat_core(var Buffer : PChar; BufLen: Cardinal;
-                       var Format : PChar; FmtLen: Cardinal;
+function DeFormat_core(var Buffer : PAnsiChar; BufLen: Cardinal;
+                       var Format : PAnsiChar; FmtLen: Cardinal;
                        Args: array of const;
-                       DecSep, ThSep : char): Cardinal;
+                       DecSep, ThSep : AnsiChar): Cardinal;
 
 //==============================================================================
 //
 // StrToCurrF_core
 //
 //==============================================================================
-function StrToCurrF_core(var Buffer : PChar; BufLen : Cardinal;
+function StrToCurrF_core(var Buffer : PAnsiChar; BufLen : Cardinal;
                          var Res : Currency;
-                         CurrStr : PChar; CurrF, NegCurrF : byte;
-                         DecSep, ThSep : char) : Integer;
+                         CurrStr : PAnsiChar; CurrF, NegCurrF : byte;
+                         DecSep, ThSep : AnsiChar) : Integer;
 
 //==============================================================================
 // Ext_scanner
@@ -67,7 +67,7 @@ function StrToCurrF_core(var Buffer : PChar; BufLen : Cardinal;
 // In $Q+ mode, returns scOverflow bit is set on overflow, conversion result on st(0).
 //
 //==============================================================================
-function Ext_scanner(var Str : PChar; Width : cardinal; EShift : integer; DecSep, ThSep : char) : integer;
+function Ext_scanner(var Str : PAnsiChar; Width : cardinal; EShift : integer; DecSep, ThSep : AnsiChar) : integer;
 
 resourcestring
   SInvalidInteger = '''%s'' is not a valid integer value';
@@ -88,7 +88,7 @@ uses
 // Hex_scanner
 //
 //==============================================================================
-function Hex_scanner(var Str : PChar; var P : int64; Width : cardinal) : integer; register;
+function Hex_scanner(var Str : PAnsiChar; var P : int64; Width : cardinal) : integer; register;
 asm
 // Validity checks
         JECXZ   @@ret           {Width was 0}
@@ -109,7 +109,7 @@ asm
         XOR     EDI,EDI
 
 // Main loop start
-@@Loop: MOV     BL,[EAX]         {Get char}
+@@Loop: MOV     BL,[EAX]         {Get AnsiChar}
         CMP     BL,'a'
         JB      @@upcase
         SUB     BL,'a' - 'A'
@@ -119,7 +119,7 @@ asm
         JBE     @@digOk
         SUB     BL,'A' - '0'
         CMP     BL,5
-        JA      @@StopScan       {found illegal char}
+        JA      @@StopScan       {found illegal AnsiChar}
         ADD     BL,10
 //-------- Multiply and add start
 @@digOk:
@@ -171,7 +171,7 @@ end;
 // Oct_scanner
 //
 //==============================================================================
-function Oct_scanner(var Str : PChar; var P : int64; Width : cardinal) : integer; register;
+function Oct_scanner(var Str : PAnsiChar; var P : int64; Width : cardinal) : integer; register;
 asm
 // Validity checks
         JECXZ   @@ret           {Width was 0}
@@ -192,10 +192,10 @@ asm
         XOR     EDI,EDI
 
 // Main loop start
-@@loop: MOV     BL,[EAX]          {Get char}
+@@loop: MOV     BL,[EAX]          {Get AnsiChar}
         SUB     BL,'0'+8
         ADD     BL,8
-        JNC     @@StopScan        {found illegal char}
+        JNC     @@StopScan        {found illegal AnsiChar}
 
         SHLD    EDI,ESI,3         {64-bit unsigned multiplication by 8}
 {$IFOPT Q+}
@@ -245,7 +245,7 @@ end;
 // Dec_scanner
 //
 //==============================================================================
-function Dec_scanner(var Str : PChar; var P : int64; Width : cardinal) : integer; register;
+function Dec_scanner(var Str : PAnsiChar; var P : int64; Width : cardinal) : integer; register;
 asm
 // Validity checks
         JECXZ   @@ret           {Width was 0}
@@ -268,10 +268,10 @@ asm
         XOR     EAX,EAX
 
 // Main loop start
-@@loop: MOV     BL,[ESI]        {Get char}
+@@loop: MOV     BL,[ESI]        {Get AnsiChar}
         SUB     BL,'0'+10
         ADD     BL,10
-        JNC     @@StopScan      {found illegal char}
+        JNC     @@StopScan      {found illegal AnsiChar}
 //=== Unsigned multiplication by 10 start
 {$IFOPT Q+}
         CMP     EDI,$33333333   { $FFFFFFFF div 5}
@@ -340,7 +340,7 @@ const single10   : single =   10.0;
 // Ext_scanner
 //
 //==============================================================================
-function Ext_scanner(var Str : PChar; Width : cardinal; EShift : integer; DecSep, ThSep : char) : integer; register;
+function Ext_scanner(var Str : PAnsiChar; Width : cardinal; EShift : integer; DecSep, ThSep : AnsiChar) : integer; register;
 var
   Tmp: integer;
   SaveCW: word;
@@ -557,7 +557,7 @@ type
 
   TscRec = packed record  // Has size of an integer
     case byte of
-    0: ( Typ : byte; Size : char; Flags : word;);
+    0: ( Typ : byte; Size : AnsiChar; Flags : word;);
     1: ( SizeType : word; iFlags : smallInt;);
     end;
 
@@ -634,14 +634,14 @@ const
 // StrToCurrF_core
 //
 //==============================================================================
-function StrToCurrF_core(var Buffer: PChar; BufLen: Cardinal; var Res: currency;
-  CurrStr: PChar; CurrF, NegCurrF: byte; DecSep, ThSep: char): Integer;
+function StrToCurrF_core(var Buffer: PAnsiChar; BufLen: Cardinal; var Res: currency;
+  CurrStr: PAnsiChar; CurrF, NegCurrF: byte; DecSep, ThSep: AnsiChar): Integer;
 var
-  Fmt : string;
-  FPtr : PChar;
+  Fmt : AnsiString;
+  FPtr : PAnsiChar;
 begin
-  Fmt := Format(NegCurrFmts[NegCurrF], [CurrStr]); // Try negative first
-  FPtr := PChar(Fmt);
+  Fmt := AnsiString(Format(NegCurrFmts[NegCurrF], [CurrStr])); // Try negative first
+  FPtr := PAnsiChar(Fmt);
 {$IFDEF DEFORMAT_EXCEPTIONS}
   try
 {$ENDIF}
@@ -658,8 +658,8 @@ begin
       else Result:=0;  {Something gone wrong!}
     end;
   If (Result <> 1) then begin {negative did not work, try positive}
-    Fmt:=Format(CurrFmts[CurrF],[CurrStr]);
-    FPtr:=PChar(Fmt);
+    Fmt := AnsiString(Format(CurrFmts[CurrF], [CurrStr]));
+    FPtr:=PAnsiChar(Fmt);
     Result:=DeFormat_core(Buffer, Buflen, FPtr, Length(Fmt), [@Res], DecSep, ThSep);
   end;
 end;
@@ -669,15 +669,15 @@ end;
 //
 // *********** Common routines *******************************************//
 // Scan numerical string (float, decimal, $hex or 0x..)
-// Str    : points to the first char in a string
+// Str    : points to the first AnsiChar in a string
 // Width  : maximum length and assumed to not exceed actual length
 // FType  : type and length of result, see scXXXX constants
 // P      : where to put the conversion result if scNoAssign is not set.
 // Result : 0 on error, > 0 on success (e.g. scOverflow in $Q+ mode)
 //
 //==============================================================================
-function NumScan(var Str: PChar; Width: integer; FType: integer; P: Pointer;
-  DecSep, ThSep: char): integer;
+function NumScan(var Str: PAnsiChar; Width: integer; FType: integer; P: Pointer;
+  DecSep, ThSep: AnsiChar): integer;
 var
   X: extended;
   i64: int64 absolute X;
@@ -762,7 +762,7 @@ begin
               $00464e49 {'INF'#0}: begin if Negative then X:=-singleINF else X:=singleINF;   Inc(Str,3);  Result:=scOK; goto Cont; end;
             end;
           end;
-          Result:=Ext_Scanner(Str, Width, 0, DecSep, Char(Ord(ThSep)*Integer( (Flags and sc1000Sep) <> 0)));
+          Result:=Ext_Scanner(Str, Width, 0, DecSep, AnsiChar(Ord(ThSep)*Integer( (Flags and sc1000Sep) <> 0)));
           if (Result <= 0) or (FType < 0) then Exit else begin
             if Negative then asm fchs; end;
             asm fstp [X]; end;
@@ -800,7 +800,7 @@ end;
 // On error result is False
 //
 //==============================================================================
-function ParseSet(var Format : PChar; FmtEnd : PChar; var Res : TCharSet) : boolean;
+function ParseSet(var Format : PAnsiChar; FmtEnd : PAnsiChar; var Res : TCharSet) : boolean;
 type T32Int = array [0..7] of integer;
 var TI : T32Int absolute Res;
     i : integer;
@@ -847,7 +847,7 @@ end;
 // On error, scIllegal is returned
 //
 //==============================================================================
-function GetSizeType(var Format : PChar) : TscRec;
+function GetSizeType(var Format : PAnsiChar) : TscRec;
 var FType : TscRec;
     PW : ^word absolute Format;
 begin
@@ -915,19 +915,19 @@ end;
 // ***********  DeFormat ***********************************************//
 //
 //==============================================================================
-function DeFormat_core(var Buffer : PChar; BufLen: Cardinal;
-                       var Format : PChar; FmtLen: Cardinal;
+function DeFormat_core(var Buffer : PAnsiChar; BufLen: Cardinal;
+                       var Format : PAnsiChar; FmtLen: Cardinal;
                        Args: array of TVarRec;
-                       DecSep, ThSep : char): Cardinal;
+                       DecSep, ThSep : AnsiChar): Cardinal;
 var  // Many of these will be optimized out
   Count : cardinal;
   Index, Width : integer;
-  Buf, Marker, Fmt : PChar;
-  {$IFDEF DEFORMAT_EXCEPTIONS} FMarker : PChar; {$ENDIF}
+  Buf, Marker, Fmt : PAnsiChar;
+  {$IFDEF DEFORMAT_EXCEPTIONS} FMarker : PAnsiChar; {$ENDIF}
   Temp : integer;
   Ptr : Pointer;
-  BufEnd : PChar absolute BufLen;
-  FmtEnd : PChar absolute FmtLen;
+  BufEnd : PAnsiChar absolute BufLen;
+  FmtEnd : PAnsiChar absolute FmtLen;
   SCR : TscRec;
   FType : integer absolute SCR;
   theSet : TCharSet;
@@ -1084,8 +1084,8 @@ try
                           vtPointer, vtPChar, vtAnsiString :
                           begin
                             Move(Marker^, Ptr^, Buf-Marker); // this may fail on vtAnsiString!
-                            PChar(Ptr)[Buf-Marker]:=#0;
-                            if Args[Index].VType = vtAnsiString then PInt(PChar(Ptr)-4)^:=Buf-Marker; {SetLength}
+                            PAnsiChar(Ptr)[Buf-Marker]:=#0;
+                            if Args[Index].VType = vtAnsiString then PInt(PAnsiChar(Ptr)-4)^:=Buf-Marker; {SetLength}
                           end;
                           vtString : SetString(ShortString(Ptr^), Marker, Buf-Marker);
                           else goto BadArg;
@@ -1110,8 +1110,8 @@ try
                     {$ENDIF}
                   end;
       scCurrency : if (Flags and scFormatted) <> 0 then begin
-                     Temp:=StrToCurrF_core(Buf, Width, Currency(Ptr^), PChar(CurrencyString),
-                           CurrencyFormat, NegCurrFormat, DecSep, ThSep);
+                     Temp:=StrToCurrF_core(Buf, Width, Currency(Ptr^), PAnsiChar(AnsiString(FormatSettings.CurrencyString)),
+                           FormatSettings.CurrencyFormat, FormatSettings.NegCurrFormat, DecSep, ThSep);
                      if Temp <= 0 then begin
                      {$IFDEF DEFORMAT_EXCEPTIONS}
                        raise EConvertError.CreateFmt(SInvalidCurrency, [Copy(Marker, 0, Marker-Buf+1)]);
@@ -1173,10 +1173,10 @@ end;
 // ***********  scanf ************************************************//
 //
 //==============================================================================
-function scGetFType( var Fmt : PChar; var Width : cardinal)  : integer;
+function scGetFType( var Fmt : PAnsiChar; var Width : cardinal)  : integer;
 var Temp : integer;
     NoAssign : integer;
-    Marker : PChar;
+    Marker : PAnsiChar;
 begin
   Result:=scIllegal;
   If Fmt^='*' then begin
@@ -1197,14 +1197,14 @@ end;
 // scCopyStr
 //
 //==============================================================================
-procedure scCopyStr(Size : char; Dest : pointer; Src : PChar; Width : integer);
+procedure scCopyStr(Size : AnsiChar; Dest : pointer; Src : PAnsiChar; Width : integer);
 begin
   Case Size of
     'l' : SetString(AnsiString(Dest^), Src, Width);
     'h' : SetString(ShortString(Dest^), Src, Width);
     else begin
       Move(Src^, Dest^, Width);
-      PChar(Dest)[Width]:=#0
+      PAnsiChar(Dest)[Width]:=#0
     end;
   end;
 end;
@@ -1214,16 +1214,16 @@ end;
 // Scanf_core
 //
 //==============================================================================
-function Scanf_core(var Buffer: PChar; var Format : PChar;
+function Scanf_core(var Buffer: PAnsiChar; var Format : PAnsiChar;
                     Pointers : array of Pointer)
                     : Integer;
 
 var  // Many of these will be optimized out
   Width, Count, Index : cardinal;
-  Buf, Fmt, Marker : PChar;
-  {$IFDEF SCANF_EXCEPTIONS} FMarker : PChar; {$ENDIF}
+  Buf, Fmt, Marker : PAnsiChar;
+  {$IFDEF SCANF_EXCEPTIONS} FMarker : PAnsiChar; {$ENDIF}
   Temp : integer;
-  FmtEnd : PChar absolute Format;
+  FmtEnd : PAnsiChar absolute Format;
   SCR : TscRec;
   FType : integer absolute SCR;
   theSet : TCharSet;
@@ -1371,17 +1371,17 @@ end;
 // Scanf_stream
 //
 //==============================================================================
-function Scanf_stream(Inp : TStream; var Format : PChar;
+function Scanf_stream(Inp : TStream; var Format : PAnsiChar;
                       Pointers : array of Pointer)
                       : Integer;
 
 var
   Width, Count, Index : cardinal;
-  Buf, Fmt : PChar;
-  {$IFDEF SCANF_EXCEPTIONS} FMArker : PChar; {$ENDIF}
+  Buf, Fmt : PAnsiChar;
+  {$IFDEF SCANF_EXCEPTIONS} FMArker : PAnsiChar; {$ENDIF}
   NI, Pos, Marker : integer;
   Temp : integer;
-  FmtEnd : PChar absolute Format;
+  FmtEnd : PAnsiChar absolute Format;
   SCR : TscRec;
   FType : integer absolute SCR;
   theSet : TCharSet;
@@ -1403,7 +1403,7 @@ var
         '%' : begin
                 Inc(Fmt);
                   if (Fmt^='%') then begin // this is "%%", check for "%" in Buf
-                     if (Char(GetCh) = '%') then Inc(Fmt);
+                     if (AnsiChar(GetCh) = '%') then Inc(Fmt);
                    end
                 else begin
                   ScanToFormat:= (GetCh >=0); // Start of Fmt specifier found.
@@ -1412,14 +1412,14 @@ var
               end;
          #1..#32 : begin  // Skip blank space in Buf and Fmt
                      while (Fmt^>#0) and (Fmt^ <=' ') do Inc(Fmt);
-                     repeat until Char(GetCh) > ' ';
+                     repeat until AnsiChar(GetCh) > ' ';
                      If NI < 0 then Break else Inp.Seek(-1,soFromCurrent) {UnGetCh};
                    end;
         else begin
            {$IFNDEF SCANF_CASE_SENSITIVE}
-             if Char(GetCh) <> Fmt^ then Break;
+             if AnsiChar(GetCh) <> Fmt^ then Break;
            {$ELSE}
-             if UpCase(Char(GetCh)) <> UpCase(Fmt^) then Break;
+             if UpCase(AnsiChar(GetCh)) <> UpCase(Fmt^) then Break;
            {$ENDIF}
            Inc(Fmt);
         end;
@@ -1451,7 +1451,7 @@ begin
     end;
     Case Typ of
       scPChar, scFloat, scInteger, scCurrency : // Skip blank space for these formats
-            while (Char(NI) <= ' ') do GetCh;
+            while (AnsiChar(NI) <= ' ') do GetCh;
       scCharSet : begin
                     if not ParseSet(Fmt, FmtEnd, theSet) then FType:=scIllegal
                     else BSet:=BSet and $fe;  // Mask out #0
@@ -1470,12 +1470,12 @@ begin
                   'L'   : int64(ptr^):=Marker-Pos;
                 end;
       scChar    : for Count:=1 to Width do begin
-                    If (FType > 0) then begin PChar(Ptr)^:=Char(NI); Inc( PChar(Ptr)); end;
+                    If (FType > 0) then begin PAnsiChar(Ptr)^:=AnsiChar(NI); Inc( PAnsiChar(Ptr)); end;
                     if GetCh < 0 then Break;
                   end;
       scCharSet : begin
                     for Count:=1 to Width do
-                      if (Char(NI) in theSet) then begin
+                      if (AnsiChar(NI) in theSet) then begin
                         Mem.Write(NI,1); if GetCh < 0 then Break;
                        end else begin
                          Inp.Seek(-1,soFromCurrent) {UnGetCh}; Break;
@@ -1484,7 +1484,7 @@ begin
                   end;
       scPChar :   begin
                     for Count:=1 to Width do
-                      if (Char(NI) > ' ') then begin
+                      if (AnsiChar(NI) > ' ') then begin
                         Mem.Write(NI,1); if GetCh < 0 then Break;
                        end else begin
                          Inp.Seek(-1,soFromCurrent) {UnGetCh}; Break;
@@ -1493,23 +1493,23 @@ begin
                   end;
      scInteger :  begin
                    for Count:=1 to Width do
-                     if (Char(NI) in ['+','-','0'..'9']) then begin
+                     if (AnsiChar(NI) in ['+','-','0'..'9']) then begin
                        Mem.Write(NI,1); if GetCh < 0 then Break;
                       end else begin
                         Inp.Seek(-1,soFromCurrent) {UnGetCh}; Break;
                       end;
-                   Buf:=PChar(Mem.Memory);
+                   Buf:=PAnsiChar(Mem.Memory);
                    Temp:=NumScan(Buf, Width, FType, ptr,#0,#0);
-                   Inp.Seek(Buf-PChar(Mem.Memory)-Mem.Position, soFromCurrent);
+                   Inp.Seek(Buf-PAnsiChar(Mem.Memory)-Mem.Position, soFromCurrent);
                    if Temp <= 0 then begin
                    {$IFDEF SCANF_EXCEPTIONS}
-                     raise EConvertError.CreateFmt(SInvalidInteger, [Copy(PChar(Mem.Memory), 1, Buf-PChar(Mem.Memory)+1)]);
+                     raise EConvertError.CreateFmt(SInvalidInteger, [Copy(PAnsiChar(Mem.Memory), 1, Buf-PAnsiChar(Mem.Memory)+1)]);
                    {$ENDIF}
                      Break;
                    end;
                    {$IFOPT Q+}
                    if (Temp and scOverflow) <> 0 then begin
-                     raise EIntOverflow.Create(SOverflow + ' while scanning ' + Copy(PChar(Mem.Memory), 1, Buf-PChar(Mem.Memory)));
+                     raise EIntOverflow.Create(SOverflow + ' while scanning ' + Copy(PAnsiChar(Mem.Memory), 1, Buf-PAnsiChar(Mem.Memory)));
                      Break;
                    end;
                    {$ENDIF}
@@ -1517,23 +1517,23 @@ begin
      scFloat   : begin
                   if SizeType = scFloat then Size:='h';   // scanf default is single
                   for Count:=1 to Width do
-                    if (Char(NI) in['.','+','-','0'..'9','e','E']) then begin
+                    if (AnsiChar(NI) in['.','+','-','0'..'9','e','E']) then begin
                       Mem.Write(NI,1); if GetCh < 0 then Break;
                      end else begin
                        Inp.Seek(-1,soFromCurrent) {UnGetCh}; Break;
                      end;
-                  Buf:=PChar(Mem.Memory);
+                  Buf:=PAnsiChar(Mem.Memory);
                   Temp:=NumScan(Buf, Width, FType, ptr,'.',#0);
-                  Inp.Seek(Buf-PChar(Mem.Memory)-Mem.Position, soFromCurrent);
+                  Inp.Seek(Buf-PAnsiChar(Mem.Memory)-Mem.Position, soFromCurrent);
                   if Temp <=0 then begin
                   {$IFDEF SCANF_EXCEPTIONS}
-                    raise EConvertError.CreateFmt(SInvalidFloat, [Copy(PChar(Mem.Memory), 1, Buf-PChar(Mem.Memory)+1)]);
+                    raise EConvertError.CreateFmt(SInvalidFloat, [Copy(PAnsiChar(Mem.Memory), 1, Buf-PAnsiChar(Mem.Memory)+1)]);
                   {$ENDIF}
                     Break;
                   end;
                   {$IFOPT Q+}
                   if (Temp and scOverflow) <> 0 then begin
-                    raise EOverflow.Create(SOverflow + ' while scanning ' + Copy(PChar(Mem.Memory), 1, Buf-PChar(Mem.Memory)));
+                    raise EOverflow.Create(SOverflow + ' while scanning ' + Copy(PAnsiChar(Mem.Memory), 1, Buf-PAnsiChar(Mem.Memory)));
                     Break;
                   end;
                   {$ENDIF}

@@ -406,7 +406,7 @@ procedure R_InitSpriteDefs(namelist: PIntegerArray);
   end;
 
   // JVAL: Up to 32 sprite rotations
-  function rotationfromchar(const ch: char): integer;
+  function rotationfromchar(const ch: AnsiChar): integer;
   begin
     if ch in ['0'..'9'] then
     begin

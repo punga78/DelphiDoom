@@ -157,12 +157,16 @@ end;
 //
 //==============================================================================
 function TWadReader.EntryAsString(const id: integer): string;
+var
+  a: AnsiString;
 begin
   if (fs <> nil) and (id >= 0) and (id < h.numlumps) then
   begin
-    SetLength(Result, la[id].size);
+    SetLength(a, la[id].size);
     fs.Seek(la[id].filepos, sFromBeginning);
-    fs.Read((@Result[1])^, la[id].size);
+    if la[id].size > 0 then
+      fs.Read((@a[1])^, la[id].size);
+    Result := string(a);
   end
   else
     Result := '';

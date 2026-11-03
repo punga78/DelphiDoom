@@ -247,7 +247,7 @@ end;
 
 procedure I_GetNetComputeListWithOutLocal(List: TStrings);
 var
-  buff: array[0..1023] of char;
+  buff: array[0..1023] of AnsiChar;
   wsaData: TWSAData;
   local: string;
   i: integer;
@@ -262,7 +262,7 @@ begin
   else
     begin
       GetHostName(buff, 1024);
-      local := buff;
+      local := string(PAnsiChar(@buff[0]));
       WSACleanup;
     end;
   end;

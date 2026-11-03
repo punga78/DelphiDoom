@@ -248,7 +248,7 @@ procedure TFrame_Types.UpdateGameControls(const game: string);
 var
   i: integer;
   typlst: TStringList;
-  s1, s2: string;
+  s1, s2: AnsiString;
 begin
   if fgame = LowerCase(game) then
     Exit;

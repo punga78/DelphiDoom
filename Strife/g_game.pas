@@ -2242,7 +2242,7 @@ end;
 function G_WriteSaveName(slot: integer; charname: string): boolean;
 var
   tmpname: string;
-  buf: array[0..31] of char;
+  buf: array[0..31] of AnsiChar;
   i: integer;
 begin
   savegameslot := slot;
@@ -2260,7 +2260,7 @@ begin
   begin
     if i > 32 then
       break;
-    buf[i - 1] := character_name[i];
+    buf[i - 1] := AnsiChar(character_name[i]);
   end;
 
   for i := length(character_name) to 31 do
@@ -2280,6 +2280,7 @@ procedure G_DoSaveGame(path: string);
 var
   name2: string;
   description: string;
+  adesc: AnsiString;
   len: integer;
   i: integer;
   maxsize: integer;
@@ -2315,7 +2316,13 @@ begin
   while length(description) < SAVESTRINGSIZE do
     description := description + ' ';
 
-  memcpy(save_p, @description[1], SAVESTRINGSIZE);
+  // The description is stored as 8 bit text, padded with zeroes
+  ZeroMemory(save_p, SAVESTRINGSIZE);
+  adesc := AnsiString(description);
+  if Length(adesc) > SAVESTRINGSIZE then
+    SetLength(adesc, SAVESTRINGSIZE);
+  if Length(adesc) > 0 then
+    memcpy(save_p, @adesc[1], Length(adesc));
 
   save_p := PByteArray(integer(save_p) + SAVESTRINGSIZE);
   name2 := '';

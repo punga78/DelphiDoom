@@ -18,14 +18,14 @@ uses
 // sscanf
 //
 //==============================================================================
-function sscanf(Str : PChar; Format : PChar; Pointers : array of Pointer): Integer;
+function sscanf(Str : PAnsiChar; Format : PAnsiChar; Pointers : array of Pointer): Integer;
 
 //==============================================================================
 //
 // fscanf
 //
 //==============================================================================
-function fscanf(F : TStream; Format : PChar; Pointers : array of Pointer) : Integer;
+function fscanf(F : TStream; Format : PAnsiChar; Pointers : array of Pointer) : Integer;
 
 { Formatted scan  á la scanf, but using FormatBuf syntax.}
 
@@ -34,14 +34,14 @@ function fscanf(F : TStream; Format : PChar; Pointers : array of Pointer) : Inte
 // StrDeFmt
 //
 //==============================================================================
-function StrDeFmt(Buffer, Format : PChar; Args : array of const) : integer;
+function StrDeFmt(Buffer, Format : PAnsiChar; Args : array of const) : integer;
 
 //==============================================================================
 //
 // DeFormat
 //
 //==============================================================================
-function DeFormat(const Str : string; const Format: string; Args : array of const) : integer;
+function DeFormat(const Str: AnsiString; const Format: AnsiString; Args : array of const) : integer;
 
 //==============================================================================
 //
@@ -73,28 +73,28 @@ function int64ToHex(c: int64) : string; // for compatibility with scanf 1.0
 //==============================================================================
 function int64ToOct(c: int64) : string;
 
-{RTL extensions, accepting ThousandSeparator}
+{RTL extensions, accepting FormatSettings.ThousandSeparator}
 
 //==============================================================================
 //
 // TextToFloatS
 //
 //==============================================================================
-function TextToFloatS(Buffer: PChar; var Value; ValueType: TFloatValue): Boolean;
+function TextToFloatS(Buffer: PAnsiChar; var Value; ValueType: TFloatValue): Boolean;
 
 //==============================================================================
 //
 // StrToCurrS
 //
 //==============================================================================
-function StrToCurrS(const S: string): Currency;
+function StrToCurrS(const S: AnsiString): Currency;
 
 //==============================================================================
 //
 // StrToFloatS
 //
 //==============================================================================
-function StrToFloatS(const S: string): Extended;
+function StrToFloatS(const S: AnsiString): Extended;
 
 {RTL extension, accepting formatted currency string}
 
@@ -103,7 +103,7 @@ function StrToFloatS(const S: string): Extended;
 // StrToCurrF
 //
 //==============================================================================
-function StrToCurrF(const S: string): Currency;
+function StrToCurrF(const S: AnsiString): Currency;
 
 implementation
 
@@ -112,10 +112,10 @@ implementation
 // StrDeFmt
 //
 //==============================================================================
-function StrDeFmt(Buffer, Format : PChar; Args : array of const) : integer;
+function StrDeFmt(Buffer, Format : PAnsiChar; Args : array of const) : integer;
 begin
   StrDeFmt := DeFormat_core(Buffer, Length(Buffer), Format, Length(Format), Args,
-                          DecimalSeparator, ThousandSeparator);
+                          AnsiChar(FormatSettings.DecimalSeparator), AnsiChar(FormatSettings.ThousandSeparator));
 end;
 
 //==============================================================================
@@ -123,14 +123,14 @@ end;
 // DeFormat
 //
 //==============================================================================
-function DeFormat(const Str : string; const Format: string; Args : array of const) : integer;
+function DeFormat(const Str: AnsiString; const Format: AnsiString; Args : array of const) : integer;
 var
-  Buf, Fmt : PChar;
+  Buf, Fmt : PAnsiChar;
 begin
-  Buf := PChar(Str);
-  Fmt := PChar(Format);
+  Buf := PAnsiChar(Str);
+  Fmt := PAnsiChar(Format);
   DeFormat := DeFormat_core(Buf, Length(Str), Fmt, Length(Format), Args,
-    DecimalSeparator, ThousandSeparator);
+    AnsiChar(FormatSettings.DecimalSeparator), AnsiChar(FormatSettings.ThousandSeparator));
 end;
 
 //==============================================================================
@@ -140,11 +140,11 @@ end;
 //==============================================================================
 function DeFormatBuf(const Buffer; BufLen: Cardinal; const Format; FmtLen: Cardinal; const Args: array of const): integer;
 var
-  Buf, Fmt : PChar;
+  Buf, Fmt : PAnsiChar;
 begin
-  Buf := PChar(Buffer);
-  Fmt := PChar(Format);
-  DeFormatBuf := DeFormat_core(Buf, BufLen, Fmt, FmtLen, Args, DecimalSeparator, ThousandSeparator);
+  Buf := PAnsiChar(Buffer);
+  Fmt := PAnsiChar(Format);
+  DeFormatBuf := DeFormat_core(Buf, BufLen, Fmt, FmtLen, Args, AnsiChar(FormatSettings.DecimalSeparator), AnsiChar(FormatSettings.ThousandSeparator));
 end;
 
 //==============================================================================
@@ -176,14 +176,14 @@ end;
 function TextToFloatS;
 var
   EsRes: integer;
-  Buf: PChar;
+  Buf: PAnsiChar;
   {$IFOPT Q+} Save CW, NewCW: word; {$ENDIF}
   Neg: boolean;
 begin
   Buf := Buffer;
   while (Buf^ <= ' ') and (Buf^ > #0) do Inc(Buf);
   Neg:= (Buf^='-'); If Neg then Inc(Buf);
-  EsRes:=Ext_scanner(Buf, Maxlongint, Ord(ValueType)*4, DecimalSeparator, ThousandSeparator);
+  EsRes:=Ext_scanner(Buf, Maxlongint, Ord(ValueType)*4, AnsiChar(FormatSettings.DecimalSeparator), AnsiChar(FormatSettings.ThousandSeparator));
   if (EsRes and scOK) <> 0 then begin
     If Neg then asm fchs; end;
     Case ValueType of
@@ -221,7 +221,7 @@ end;
 //==============================================================================
 function StrToCurrS;
 begin
-  if not TextToFloatS(PChar(S), Result, fvCurrency) then
+  if not TextToFloatS(PAnsiChar(S), Result, fvCurrency) then
     raise EConvertError.CreateFmt(SInvalidFloat, [S]);
 end;
 
@@ -232,7 +232,7 @@ end;
 //==============================================================================
 function StrToFloatS;
 begin
-  if not TextToFloatS(PChar(S), Result, fvExtended) then
+  if not TextToFloatS(PAnsiChar(S), Result, fvExtended) then
     raise EConvertError.CreateFmt(SInvalidFloat, [S]);
 end;
 
@@ -242,11 +242,11 @@ end;
 //
 //==============================================================================
 function StrToCurrF;
-var Buf : PChar;
+var Buf : PAnsiChar;
 begin
-  Buf:=PChar(S);
-  If StrToCurrF_core(Buf, Length(S), Result, PChar(CurrencyString),
-     CurrencyFormat, NegCurrFormat, DecimalSeparator, ThousandSeparator) <=0
+  Buf:=PAnsiChar(S);
+  If StrToCurrF_core(Buf, Length(S), Result, PAnsiChar(AnsiString(FormatSettings.CurrencyString)),
+     FormatSettings.CurrencyFormat, FormatSettings.NegCurrFormat, AnsiChar(FormatSettings.DecimalSeparator), AnsiChar(FormatSettings.ThousandSeparator)) <=0
   then raise EConvertError.CreateFmt(SInvalidFloat, [S]);
 end;
 
@@ -289,7 +289,7 @@ begin
   SetLength(Temp,23);
   b:=23;
   while (i64.Lo <> 0) or (i64.Hi <> 0) do begin
-    Temp[b]:=Char( (i64.Lo and $07) + Ord('0') );
+    Temp[b]:=AnsiChar( (i64.Lo and $07) + Ord('0') );
     asm
       MOV     EAX,DWORD PTR [C+4];
       SHRD    DWORD PTR [C],EAX,3

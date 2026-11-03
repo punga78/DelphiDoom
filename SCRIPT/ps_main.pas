@@ -242,6 +242,7 @@ uses
   uPSR_dll,
   w_folders,
   w_pak,
+  ps_defs,
   ps_utils;
 
 type
@@ -499,6 +500,36 @@ end;
 
 //==============================================================================
 //
+// PS_BytesToStr
+// Compiled script bytecode is binary: keep a 1:1 mapping between byte values
+// and character codes, independently of the system code page.
+//
+//==============================================================================
+function PS_BytesToStr(const a: TbtString): string;
+var
+  i: integer;
+begin
+  SetLength(Result, Length(a));
+  for i := 1 to Length(a) do
+    Result[i] := Char(Ord(a[i]));
+end;
+
+//==============================================================================
+//
+// PS_StrToBytes
+//
+//==============================================================================
+function PS_StrToBytes(const s: string): TbtString;
+var
+  i: integer;
+begin
+  SetLength(Result, Length(s));
+  for i := 1 to Length(s) do
+    Result[i] := TbtChar(Ord(s[i]));
+end;
+
+//==============================================================================
+//
 // TPSExecManager.CompileScript
 //
 //==============================================================================
@@ -506,7 +537,7 @@ procedure TPSExecManager.CompileScript(const id: Integer);
 var
   clist: TDStringList;
   i: integer;
-  data: string;
+  data: TbtString;
   DE: TDoomExec;
 begin
   if fList[id].valid then
@@ -517,7 +548,7 @@ begin
     if fList[id].exec = nil then
       fList[id].exec := TDoomExec.CreateDoomExec(importer);
     DE := fList[id].exec;
-    fList[id].valid := DE.LoadData(fList[id].data.str); // Load the data from the Data string.
+    fList[id].valid := DE.LoadData(PS_StrToBytes(fList[id].data.str)); // Load the data from the Data string.
     if not fList[id].valid then
     begin
       { For some reason the script could not be loaded. This is usually the case when a
@@ -531,7 +562,7 @@ begin
 
   if compiler.CompileDoomScript(flist[id].source.str, data) then
   begin
-    fList[id].data := TString.Create(data);
+    fList[id].data := TString.Create(PS_BytesToStr(data));
     if fList[id].exec = nil then
       fList[id].exec := TDoomExec.CreateDoomExec(importer);
     DE := fList[id].exec;
@@ -713,7 +744,7 @@ begin
   if not fList[idx].valid then
     Exit;
 
-  if not feventsexec.LoadData(fList[idx].data.str) then
+  if not feventsexec.LoadData(PS_StrToBytes(fList[idx].data.str)) then
   begin
     I_Warning('TPSExecManager.LinkScriptEvents(): Internal error! Can not load script assembly.'#13#10);
     I_Warning(TIFErrorToString(feventsexec.ExceptionCode, feventsexec.ExceptionString) + #13#10);
@@ -787,7 +818,7 @@ var
 //==============================================================================
 procedure CmdCompileScript(const src, dest: string);
 var
-  data: string;
+  data: TbtString;
   f: TFile;
   i: integer;
   clist: TDStringList;

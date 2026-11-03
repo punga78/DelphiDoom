@@ -46,7 +46,7 @@ const
 type
   TScriptEngine = class
   private
-    sc_String: PChar;
+    sc_String: PAnsiChar;
     sc_Integer: integer;
     sc_Boolean: boolean;
     sc_Float: float;
@@ -55,10 +55,10 @@ type
     fNewLine: boolean;
     fBracketLevel: integer;
     fParenthesisLevel: integer;
-    ScriptBuffer: PChar;
-    ScriptPtr: PChar;
-    ScriptEndPtr: PChar;
-    StringBuffer: array [0..MAX_STRING_SIZE] of char;
+    ScriptBuffer: PAnsiChar;
+    ScriptPtr: PAnsiChar;
+    ScriptEndPtr: PAnsiChar;
+    StringBuffer: array [0..MAX_STRING_SIZE] of AnsiChar;
     ScriptSize: integer;
     AlreadyGot: boolean;
     ignonelist: TDStringList;
@@ -263,10 +263,13 @@ procedure TScriptEngine.SetText(const tx: string);
 var
   p: Pointer;
   size: integer;
+  atx: AnsiString;
 begin
-  size := Length(tx);
+  atx := AnsiString(tx); // script text is parsed as 8 bit characters
+  size := Length(atx);
   p := malloc(size);
-  Move(tx[1], p^, size);
+  if size > 0 then
+    Move(atx[1], p^, size);
 
   Clear;
   ScriptBuffer := p;
@@ -623,7 +626,7 @@ end;
 //==============================================================================
 function TScriptEngine.GetString: boolean;
 var
-  txt: PChar;
+  txt: PAnsiChar;
   foundToken: boolean;
 begin
   if AlreadyGot then
@@ -755,7 +758,7 @@ begin
 
     end;
   end;
-  txt^ := Chr(0);
+  txt^ := #0;
   if ignonelist.Count = 0 then
     result := true
   else if ignonelist.IndexOf(strupper(StringVal(sc_String))) < 0 then

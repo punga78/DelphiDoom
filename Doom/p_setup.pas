@@ -1254,14 +1254,17 @@ begin
   players[consoleplayer].viewz := 1;
 
   // Make sure all sounds are stopped before Z_FreeTags.
+  if devparm then printf('  S_Start'#13#10);
   S_Start;
 
 {$IFDEF OPENGL}
   gld_CleanMemory; // JVAL OPENGL
 {$ENDIF}
 
+  if devparm then printf('  MT_WaitTasks'#13#10);
   MT_WaitTasks;
 
+  if devparm then printf('  Z_FreeTags'#13#10);
   Z_FreeTags(PU_LEVEL, PU_PURGELEVEL - 1);
 
   po_NumPolyobjs := 0;
@@ -1278,12 +1281,16 @@ begin
 
   hasvanillanodes := false;
 
+  if devparm then printf('  R_SetupLevel'#13#10);
   R_SetupLevel;
 
+  if devparm then printf('  P_InitThinkers'#13#10);
   P_InitThinkers;
+  if devparm then printf('  P_InitIntercepts'#13#10);
   P_InitIntercepts;
 
   // if working with a devlopment map, reload it
+  if devparm then printf('  W_Reload'#13#10);
   W_Reload;
 
   // find map name
@@ -1294,10 +1301,14 @@ begin
   if spawnrandommonsters then
     printf(' Random monsters seed=%d'#13#10, [sysrndseed]);
 
+  if devparm then printf('  UDMF_Check'#13#10);
   UDMF_Check(lumpname);
+  if devparm then printf('  ND_NodesCheck'#13#10);
   ND_NodesCheck(lumpname);
+  if devparm then printf('  PS_LinkScriptEvents'#13#10);
   PS_LinkScriptEvents(lumpname);  // JVAL: Script Events
 
+  if devparm then printf('  W_GetNumForName'#13#10);
   lumpnum := W_GetNumForName(lumpname);
   gwaloaded := false;
 
@@ -1320,6 +1331,7 @@ begin
   gwa := nil;
   if not gwaloaded then
   begin
+    if devparm then printf('  ND_GetNodes'#13#10);
     gwaname := ND_GetNodes(lumpname);
     if gwaname <> '' then
       gwa := TGWAFile.Create(gwaname);
@@ -1337,11 +1349,17 @@ begin
   else
     ND_LoadVertexes(lumpnum + Ord(ML_VERTEXES), gwa);
   {$ENDIF}
+  if devparm then printf('  P_LoadSectors'#13#10);
   P_LoadSectors(lumpnum + Ord(ML_SECTORS));
+  if devparm then printf('  P_LoadSideDefs'#13#10);
   P_LoadSideDefs(lumpnum + Ord(ML_SIDEDEFS));
+  if devparm then printf('  UDMF_MakeSides'#13#10);
   UDMF_MakeSides;
+  if devparm then printf('  P_LoadLineDefs'#13#10);
   P_LoadLineDefs(lumpnum + Ord(ML_LINEDEFS));
+  if devparm then printf('  P_LoadBlockMap'#13#10);
   P_LoadBlockMap(lumpnum + Ord(ML_BLOCKMAP));
+  if devparm then printf('  P_InitVanillaBlockLinks'#13#10);
   P_InitVanillaBlockLinks;
   {$IFDEF OPENGL}
   if (glnodesver > 0) and (glmapnum <> - 1) then
@@ -1372,8 +1390,11 @@ begin
     {$IFDEF OPENGL}
       printf(' GL nodes not found, using standard nodes'#13#10);
     {$ENDIF}
+      if devparm then printf('  P_LoadSubsectors'#13#10);
       P_LoadSubsectors(lumpnum + Ord(ML_SSECTORS));
+      if devparm then printf('  P_LoadNodes'#13#10);
       P_LoadNodes(lumpnum + Ord(ML_NODES));
+      if devparm then printf('  P_LoadSegs'#13#10);
       P_LoadSegs(lumpnum + Ord(ML_SEGS));
     end;
   end;
@@ -1396,31 +1417,43 @@ begin
   rejectmatrix := W_CacheLumpNum(lumpnum + Ord(ML_REJECT), PU_LEVEL);
   rejectmatrixsize := W_LumpLength(lumpnum + Ord(ML_REJECT));
 
+  if devparm then printf('  UDMF_MakeLines'#13#10);
   UDMF_MakeLines;
+  if devparm then printf('  P_GroupLines'#13#10);
   P_GroupLines;
 
+  if devparm then printf('  UDMF_MakeSegs'#13#10);
   UDMF_MakeSegs;
 
+  if devparm then printf('  P_3dFloorSetupSegs'#13#10);
   P_3dFloorSetupSegs; // JVAL: 3d Floors
 
+  if devparm then printf('  P_RemoveSlimeTrails'#13#10);
   P_RemoveSlimeTrails;    // killough 10/98: remove slime trails from wad
 
 {$IFNDEF OPENGL}
+  if devparm then printf('  R_CalcSectors'#13#10);
   R_CalcSectors; // JVAL 20200105 - Check the map boundaries
+  if devparm then printf('  R_PrecalcSegs'#13#10);
   R_PrecalcSegs; // https://www.doomworld.com/forum/topic/70288-dynamic-wiggletall-sector-fix-for-fixed-point-software-renderer/?do=findComment&comment=1340433
 {$ENDIF}
 
+  if devparm then printf('  P_SlopesSetup'#13#10);
   P_SlopesSetup;// JVAL: Slopes
 
+  if devparm then printf('  UDMF_MakeSectors'#13#10);
   UDMF_MakeSectors;
 
+  if devparm then printf('  P_SetupSectorAffectees'#13#10);
   P_SetupSectorAffectees;
 
   if autoadjustmissingtextures then
     P_AdjustMissingTextures;
 
+  if devparm then printf('  P_CalcSubSectorsBridge'#13#10);
   P_CalcSubSectorsBridge;
 
+  if devparm then printf('  R_PrecalcPointInSubSector'#13#10);
   R_PrecalcPointInSubSector;
 
   bodyqueslot := 0;
@@ -1437,7 +1470,9 @@ begin
   // JVAL: 20220222 - Easy wind
   P_AdjustEasyWind;
 
+  if devparm then printf('  PO_Init'#13#10);
   PO_Init(lumpnum + Ord(ML_THINGS));            // Initialize the polyobjs
+  if devparm then printf('  P_LoadACScripts'#13#10);
   P_LoadACScripts(lumpnum + Ord(ML_BEHAVIOR));  // ACS object code
 
   // if deathmatch, randomly spawn the active players
@@ -1458,11 +1493,13 @@ begin
   // set up world state
   if devparm then
     printf('P_SpawnSpecials()'#13#10);
+  if devparm then printf('  P_SpawnSpecials'#13#10);
   P_SpawnSpecials;
 
   {$IFNDEF OPENGL}
   if devparm then
     printf('R_Clear32Cache()'#13#10);
+  if devparm then printf('  R_Clear32Cache'#13#10);
   R_Clear32Cache;
   {$ENDIF}
 
@@ -1473,9 +1510,11 @@ begin
   begin
     if devparm then
       printf('R_PrecacheLevel()'#13#10);
+    if devparm then printf('  R_PrecacheLevel'#13#10);
     R_PrecacheLevel;
     if devparm then
       printf('S_PrecacheSounds()'#13#10);
+    if devparm then printf('  S_PrecacheSounds'#13#10);
     S_PrecacheSounds;
   end;
 

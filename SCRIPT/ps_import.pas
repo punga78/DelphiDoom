@@ -30,6 +30,7 @@
 {$I Doom32.inc}
 
 unit ps_import;
+{$I PascalScript.inc}
 
 interface
 
@@ -61,7 +62,7 @@ type
     funitnames: TDStringList;
   public
     constructor CreateDoomCompiler; virtual;
-    function CompileDoomScript(const source: TbtString; var pcode: string): Boolean; virtual;
+    function CompileDoomScript(const source: TbtString; var pcode: TbtString): Boolean; virtual;
     destructor Destroy; override;
     property unitnames: TDStringList read funitnames;
   end;
@@ -92,7 +93,7 @@ function PS_ImportUnits: TObject;
 // PS_ScriptOnUses
 //
 //==============================================================================
-function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: string): Boolean;
+function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 
 implementation
 
@@ -843,7 +844,7 @@ end;
 // PS_ScriptOnUses
 //
 //==============================================================================
-function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: string): Boolean;
+function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   i: integer;
   lst: TDStringList;
@@ -1384,11 +1385,11 @@ end;
 // TDoomCompiler.CompileDoomScript
 //
 //==============================================================================
-function TDoomCompiler.CompileDoomScript(const source: TbtString; var pcode: string): Boolean;
+function TDoomCompiler.CompileDoomScript(const source: TbtString; var pcode: TbtString): Boolean;
 var
-  ppsrc: string;
-  ppout: string;
-  unitstr: string;
+  ppsrc: TbtString;
+  ppout: TbtString;
+  unitstr: TbtString;
   len: integer;
 begin
   PS_ResetProcLists;
@@ -1490,8 +1491,8 @@ end;
 //==============================================================================
 function TDoomExec.LoadData(const pcode: TbtString): Boolean;
 var
-  dta: string;
-  unitstr: string;
+  dta: TbtString;
+  unitstr: TbtString;
   len: integer;
   ver: integer;
   i, x: integer;

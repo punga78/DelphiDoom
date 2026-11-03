@@ -53,7 +53,7 @@ uses
 //==============================================================================
 function I_ExecProgram(const cmd: string; const quiet: boolean): boolean;
 var
-  chReadBuffer: array[0..1023] of char; // pipe read buffer
+  chReadBuffer: array[0..1023] of AnsiChar; // pipe read buffer (8 bit text)
   hReadPipe,
   hWritePipe,
   hWritePipe2: THandle;         // handles to the anonymous pipe
@@ -152,6 +152,7 @@ begin
 
   // Set up the command-line buffer for the child for CreateProcess()
   szArgs := cmd;
+  UniqueString(szArgs); // CreateProcess may modify the command line buffer
 
   (* If using the STARTUPINFO STARTF_USESTDHANDLES flag, be sure to
   set the CreateProcess fInheritHandles parameter too TRUE so that
@@ -212,7 +213,7 @@ begin
     if result and (cchReadBuffer > 0) and not quiet then
     begin
       for i := 0 to cchReadBuffer - 1 do
-        rsOutPut := rsOutPut + chReadBuffer[i];
+        rsOutPut := rsOutPut + Char(chReadBuffer[i]);
       printf(rsOutPut);
     end;
 

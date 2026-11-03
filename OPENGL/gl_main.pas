@@ -1015,7 +1015,7 @@ begin
   hMainWnd := CreateWindowEx(
     dwExStyle,      // Extended window styles
     WindowClass.lpszClassName,
-    PAnsiChar(caption),
+    PChar(caption),
     dwStyle,        // Window styles
     0, 0,           // Window position
     SCREENWIDTH,

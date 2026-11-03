@@ -698,7 +698,7 @@ begin
   if len > MOBJINFONAMESIZE then
     len := MOBJINFONAMESIZE;
   for i := 0 to len - 1 do
-    mobjinfo[mobj_no].name[i] := name[i + 1];
+    mobjinfo[mobj_no].name[i] := AnsiChar(name[i + 1]);
   for i := len to MOBJINFONAMESIZE - 1 do
     mobjinfo[mobj_no].name[i] := #0;
 end;
@@ -711,7 +711,7 @@ end;
 function Info_GetMobjName(const mobj_no: integer): string;
 var
   i: integer;
-  p: PChar;
+  p: PAnsiChar;
 begin
   result := '';
   p := @mobjinfo[mobj_no].name[0];
@@ -733,7 +733,7 @@ end;
 function Info_GetMobjName(const minfo: Pmobjinfo_t): string; overload;
 var
   i: integer;
-  p: PChar;
+  p: PAnsiChar;
 begin
   result := '';
   p := @minfo.name[0];

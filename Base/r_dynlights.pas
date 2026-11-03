@@ -668,7 +668,7 @@ begin
   result := numdlights;
   dlightslist[result] := l;
   for i := 1 to DLSTRLEN do
-    dlightslist[result].name[i] := toupper(dlightslist[result].name[i]);
+    dlightslist[result].name[i] := AnsiChar(toupper(Char(dlightslist[result].name[i])));
   inc(numdlights);
 end;
 

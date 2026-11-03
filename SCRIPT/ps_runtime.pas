@@ -2214,8 +2214,8 @@ function PSVariantToString(const p: TPSVariantIFC; const ClassProperties: TbtStr
 var
   i, n: Longint;
 begin
-  ThousandSeparator := #0;
-  DecimalSeparator := '.';
+  FormatSettings.ThousandSeparator := #0;
+  FormatSettings.DecimalSeparator := '.';
 
   if p.Dta = nil then
   begin
