@@ -175,7 +175,7 @@ const
 // CharPos
 //
 //==============================================================================
-function CharPos(const ch: Char; const s: string): integer;
+function CharPos(const ch: TbtChar; const s: TbtString): integer;
 var
   i: integer;
 begin
@@ -690,12 +690,12 @@ begin
         p := CharPos(TbtChar(' '), s);
         if p = 0 then
         begin
-          name := UpperCase(s);
+          name := FastUpperCase(s);
           s := '';
         end
         else
         begin
-          Name := UpperCase(Copy(s, 1, p - 1));
+          Name := FastUpperCase(Copy(s, 1, p - 1));
           Delete(s, 1, p);
         end;
 
@@ -721,36 +721,36 @@ begin
           begin
             if FDefineState.DoWrite then
             begin
-              if CharPos(' ', s) <> 0 then
+              if CharPos(TbtChar(' '), s) <> 0 then
                 raise EPSPreProcessor.CreateFmt(RPS_DefineTooManyParameters, [Parser.Row, Parser.Col]);
-              FCurrentDefines.Add(Uppercase(S));
+              FCurrentDefines.Add(string(FastUpperCase(s)));
             end;
           end
           else if (Name = 'UNDEF') then
           begin
             if FDefineState.DoWrite then
             begin
-              if CharPos(' ', s) <> 0 then
+              if CharPos(TbtChar(' '), s) <> 0 then
                 raise EPSPreProcessor.CreateFmt(RPS_DefineTooManyParameters, [Parser.Row, Parser.Col]);
-              i := FCurrentDefines.IndexOf(Uppercase(s));
+              i := FCurrentDefines.IndexOf(string(FastUpperCase(s)));
               if i <> - 1 then
                 FCurrentDefines.Delete(i);
             end;
           end
           else if (Name = 'IFDEF') then
           begin
-            if CharPos(' ', s) <> 0 then
+            if CharPos(TbtChar(' '), s) <> 0 then
               raise EPSPreProcessor.CreateFmt(RPS_DefineTooManyParameters, [Parser.Row, Parser.Col]);
             //JeromeWelsh - nesting fix
-            ADoWrite := (FCurrentDefines.IndexOf(Uppercase(s)) >= 0) and FDefineState.DoWrite;
+            ADoWrite := (FCurrentDefines.IndexOf(string(FastUpperCase(s))) >= 0) and FDefineState.DoWrite;
             FDefineState.Add.DoWrite := ADoWrite;
           end
           else if (Name = 'IFNDEF') then
           begin
-            if CharPos(' ', s) <> 0 then
+            if CharPos(TbtChar(' '), s) <> 0 then
               raise EPSPreProcessor.CreateFmt(RPS_DefineTooManyParameters, [Parser.Row, Parser.Col]);
             //JeromeWelsh - nesting fix
-            ADoWrite := (FCurrentDefines.IndexOf(Uppercase(s)) < 0) and FDefineState.DoWrite;
+            ADoWrite := (FCurrentDefines.IndexOf(string(FastUpperCase(s))) < 0) and FDefineState.DoWrite;
             FDefineState.Add.DoWrite := ADoWrite;
           end
           else if (Name = 'ENDIF') then
