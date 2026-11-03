@@ -99,7 +99,8 @@ uses
   m_argv,
   m_sha1,
   m_misc,
-  mikmod,
+  DelphiDoom.Mikmod.Intf,
+  DelphiDoom.Mikmod.Provider,
   i_modmusic,
   i_s3mmusic,
   i_system,
@@ -118,16 +119,17 @@ const
 //
 //==============================================================================
 procedure I_InitMik;
-var
-  errstr: string;
 begin
-  mik_init := MikWin_LoadLibrary;
-  if mik_init then
-    mik_init := MikWin_Init(MIK_FREQ, True, True, True, hMainWnd, 0);
-  if not mik_init then
-  begin
-    errstr := MikWin_GetErrorText;
-    I_Warning('I_InitMik(): %s'#13#10, [errstr]);
+  try
+    TMikModProvider.Client.Initialize(MIK_FREQ, True, True, True,
+      NativeUInt(hMainWnd), 0);
+    mik_init := True;
+  except
+    on E: EMikModException do
+    begin
+      mik_init := False;
+      I_Warning('I_InitMik(): %s'#13#10, [E.Message]);
+    end;
   end;
 end;
 
@@ -138,8 +140,8 @@ end;
 //==============================================================================
 procedure I_ShutDownMik;
 begin
-  MikWin_Free;
-  MikWin_FreeLibrary;
+  mik_init := False;
+  TMikModProvider.Release;
 end;
 
 //==============================================================================
@@ -169,17 +171,19 @@ begin
     M_WriteFile(mikfilename, data, size);
   I_DeclareTempFile(mikfilename);
 
-  if not MikWin_Load(PAnsiChar(AnsiString(mikfilename))) then
-  begin
-    if typ = m_s3m then
-      I_PlayS3M(data, size)
-    else if typ = m_mod then
-      I_PlayMOD(data, size);
-    mik_init := False;
-    Exit;
+  try
+    TMikModProvider.Client.LoadFromFile(mikfilename);
+    TMikModProvider.Client.Play(True);
+  except
+    on EMikModException do
+    begin
+      if typ = m_s3m then
+        I_PlayS3M(data, size)
+      else if typ = m_mod then
+        I_PlayMOD(data, size);
+      mik_init := False;
+    end;
   end;
-
-  MikWin_Play(True);
 end;
 
 //==============================================================================
@@ -198,8 +202,13 @@ begin
     Exit;
   end;
 
-  if not MikWin_Paused then
-    MikWin_Pause;
+  try
+    if not TMikModProvider.Client.IsPaused then
+      TMikModProvider.Client.Pause;
+  except
+    on EMikModException do
+      ; // Nothing is loaded: there is nothing to pause
+  end;
 end;
 
 //==============================================================================
@@ -218,8 +227,13 @@ begin
     Exit;
   end;
 
-  if MikWin_Paused then
-    MikWin_Pause;
+  try
+    if TMikModProvider.Client.IsPaused then
+      TMikModProvider.Client.Resume;
+  except
+    on EMikModException do
+      ; // Nothing is loaded: there is nothing to resume
+  end;
 end;
 
 //==============================================================================
@@ -238,7 +252,12 @@ begin
     Exit;
   end;
 
-  MikWin_Stop;
+  try
+    TMikModProvider.Client.Stop;
+  except
+    on EMikModException do
+      ; // Nothing is loaded: there is nothing to stop
+  end;
 end;
 
 const
@@ -265,7 +284,12 @@ begin
     Exit;
   end;
 
-  Player_SetVolume(MIK_VOLUME_CONTROL[ibetween(volume, 1, 15)]);
+  try
+    TMikModProvider.Client.SetVolume(MIK_VOLUME_CONTROL[ibetween(volume, 1, 15)]);
+  except
+    on EMikModException do
+      ; // Nothing is loaded yet: the volume is set when the music starts
+  end;
 end;
 
 //==============================================================================
@@ -284,7 +308,12 @@ begin
     Exit;
   end;
 
-  MikWin_Update;
+  try
+    TMikModProvider.Client.Update;
+  except
+    on EMikModException do
+      ; // Nothing is loaded: there is nothing to mix
+  end;
 end;
 
 end.

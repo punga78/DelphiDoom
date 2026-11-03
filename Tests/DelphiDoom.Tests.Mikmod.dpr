@@ -23,9 +23,11 @@ uses
   DelphiDoom.Mikmod.Engine in '..\Libs\Mikmod\DelphiDoom.Mikmod.Engine.pas',
   DelphiDoom.Mikmod.Client in '..\Libs\Mikmod\DelphiDoom.Mikmod.Client.pas',
   DelphiDoom.Mikmod.Loader in '..\Libs\Mikmod\DelphiDoom.Mikmod.Loader.pas',
+  DelphiDoom.Mikmod.Provider in '..\Libs\Mikmod\DelphiDoom.Mikmod.Provider.pas',
   DelphiDoom.Tests.Mikmod.Engine in 'Source\DelphiDoom.Tests.Mikmod.Engine.pas',
   DelphiDoom.Tests.Mikmod.Client in 'Source\DelphiDoom.Tests.Mikmod.Client.pas',
-  DelphiDoom.Tests.Mikmod.Loader in 'Source\DelphiDoom.Tests.Mikmod.Loader.pas';
+  DelphiDoom.Tests.Mikmod.Loader in 'Source\DelphiDoom.Tests.Mikmod.Loader.pas',
+  DelphiDoom.Tests.Mikmod.Provider in 'Source\DelphiDoom.Tests.Mikmod.Provider.pas';
 
 var
   Runner: ITestRunner;
