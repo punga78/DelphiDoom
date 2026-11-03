@@ -218,6 +218,7 @@ var
   LStartup: TStartupInfo;
   LInput: THandle;
   LCommandLine: string;
+  LPreviousMode: UINT;
 begin
   FillChar(AInfo, SizeOf(AInfo), 0);
 
@@ -248,8 +249,15 @@ begin
     LCommandLine := ACommandLine;
     UniqueString(LCommandLine);
 
-    Result := CreateProcess(nil, PChar(LCommandLine), nil, nil, True,
-      CREATE_NO_WINDOW, nil, nil, LStartup, AInfo);
+    // A file that is not a Win32 program must fail quietly instead of
+    // showing the system dialog ("16-bit application not supported")
+    LPreviousMode := SetErrorMode(SEM_FAILCRITICALERRORS or SEM_NOOPENFILEERRORBOX);
+    try
+      Result := CreateProcess(nil, PChar(LCommandLine), nil, nil, True,
+        CREATE_NO_WINDOW, nil, nil, LStartup, AInfo);
+    finally
+      SetErrorMode(LPreviousMode);
+    end;
     if not Result then
       FErrorText := 'Cannot start the process: ' + SysErrorMessage(GetLastError);
   finally
