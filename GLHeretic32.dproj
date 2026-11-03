@@ -33,6 +33,7 @@
         <DCC_UnsafeCast>false</DCC_UnsafeCast>
         <DCC_SymbolPlatform>false</DCC_SymbolPlatform>
         <DCC_Platform>x86</DCC_Platform>
+        <DCC_MapFile>3</DCC_MapFile>
         <SanitizedProjectName>GLHeretic32</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">

@@ -296,6 +296,13 @@ begin
   if flatcachesize32 = 0 then
     exit;
 
+  // Honor the 'usemultithread' setting: render all flats in this thread
+  if not usemultithread then
+  begin
+    R_RenderSingleThreadFlats32;
+    exit;
+  end;
+
   if force_numflatrenderingthreads_32bit > 0 then
   begin
     numthreads := force_numflatrenderingthreads_32bit;

@@ -451,7 +451,7 @@ begin
   // Just compare 4 characters as ints
   for i := 0 to numspritespresent - 1 do
   begin
-    spritename := Chr(namelist[i]) + Chr(namelist[i] shr 8) + Chr(namelist[i] shr 16) + Chr(namelist[i] shr 24);
+    spritename := Chr(namelist[i] and $FF) + Chr((namelist[i] shr 8) and $FF) + Chr((namelist[i] shr 16) and $FF) + Chr((namelist[i] shr 24) and $FF);
 
     sprtempreset;
 

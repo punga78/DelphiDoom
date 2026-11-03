@@ -45,6 +45,7 @@ program GLDoom32;
 uses
   FastMM4 in 'FASTMM4\FastMM4.pas',
   FastMM4Messages in 'FASTMM4\FastMM4Messages.pas',
+  i_crashlog in 'Base\i_crashlog.pas',
   SysUtils,
 {$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
   FastCode in 'FASTCODE\FastCode.pas',
@@ -420,6 +421,8 @@ var
   Saved8087CW: Word;
 
 begin
+  I_InstallCrashLogger;
+
   { Save the current FPU state and then disable FPU exceptions }
   Saved8087CW := Default8087CW;
   Set8087CW($133f); { Disable all fpu exceptions }
