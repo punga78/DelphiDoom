@@ -27,10 +27,15 @@ uses
   DelphiDoom.Sndfile.Engine in '..\Libs\Sndfile\DelphiDoom.Sndfile.Engine.pas',
   DelphiDoom.Sndfile.Client in '..\Libs\Sndfile\DelphiDoom.Sndfile.Client.pas',
   DelphiDoom.Sndfile.Loader in '..\Libs\Sndfile\DelphiDoom.Sndfile.Loader.pas',
+  DelphiDoom.Sndfile.Provider in '..\Libs\Sndfile\DelphiDoom.Sndfile.Provider.pas',
+  DelphiDoom.Audio.WavBuilder in '..\Base\DelphiDoom.Audio.WavBuilder.pas',
+  DelphiDoom.Audio.SoundConverter in '..\Base\DelphiDoom.Audio.SoundConverter.pas',
   DelphiDoom.Tests.Sndfile.Wav in 'Source\DelphiDoom.Tests.Sndfile.Wav.pas',
   DelphiDoom.Tests.Sndfile.Engine in 'Source\DelphiDoom.Tests.Sndfile.Engine.pas',
   DelphiDoom.Tests.Sndfile.Client in 'Source\DelphiDoom.Tests.Sndfile.Client.pas',
-  DelphiDoom.Tests.Sndfile.Loader in 'Source\DelphiDoom.Tests.Sndfile.Loader.pas';
+  DelphiDoom.Tests.Sndfile.Loader in 'Source\DelphiDoom.Tests.Sndfile.Loader.pas',
+  DelphiDoom.Tests.Audio.WavBuilder in 'Source\DelphiDoom.Tests.Audio.WavBuilder.pas',
+  DelphiDoom.Tests.Audio.SoundConverter in 'Source\DelphiDoom.Tests.Audio.SoundConverter.pas';
 
 var
   Runner: ITestRunner;
