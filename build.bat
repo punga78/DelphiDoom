@@ -8,8 +8,8 @@ rem    build.bat                    Doom32, Release
 rem    build.bat all                tutti i progetti
 rem    build.bat giochi             i 8 eseguibili di gioco (software + OpenGL)
 rem    build.bat strumenti          Launcher, DD_IDE, ddc e le 4 DLL ddc_*
-rem    build.bat librerie           le DLL delle librerie (DDZlib.dll -> bin\Libs)
-rem    build.bat tests              librerie + progetto di test DUnitX (bin\Tests)
+rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod -> bin\Libs)
+rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\Tests); li esegue
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
 rem    build.bat all Release clean  cancella tutta la cartella dcu prima di compilare
 rem
@@ -34,8 +34,8 @@ set "CLEAN=%~3"
 
 set "GIOCHI=Doom32 GLDoom32 Heretic32 GLHeretic32 Hexen32 GLHexen32 Strife32 GLStrife32"
 set "STRUMENTI=Launcher DD_IDE ddc ddc_doom ddc_heretic ddc_hexen ddc_strife"
-set "LIBRERIE=DDZlib"
-set "TESTS=Tests\DelphiDoom.Tests"
+set "LIBRERIE=DDZlib DDJpeg DDMp3 DDXmi DDSndfile DDMikmod"
+set "TESTS=Tests\DelphiDoom.Tests Tests\DelphiDoom.Tests.Jpeg Tests\DelphiDoom.Tests.Mp3 Tests\DelphiDoom.Tests.Xmi Tests\DelphiDoom.Tests.Sndfile Tests\DelphiDoom.Tests.Mikmod"
 
 set "LISTA="
 if /i "%WHAT%"=="all"        set "LISTA=%LIBRERIE% %GIOCHI% %STRUMENTI%"
@@ -111,6 +111,12 @@ for %%P in (%LISTA%) do (
   )
 )
 
+if /i "%WHAT%"=="tests" (
+  for %%T in (bin\Tests\DelphiDoom.Tests*.exe) do (
+    echo ===== esecuzione %%~nxT =====
+    "%%T" --exitbehavior:Continue | findstr /B /C:"Tests " /C:"  DelphiDoom" /C:"  Message"
+  )
+)
 echo ---------------------------------------------------------------
 if defined OK echo Riuscite :%OK%
 if defined KO echo Fallite  :%KO%

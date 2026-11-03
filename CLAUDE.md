@@ -39,6 +39,8 @@ Le librerie di uso comune si estraggono una alla volta in una DLL Delphi, con qu
 | `DelphiDoom.<Lib>.Client` | `T<Lib>Client`: la classe che il motore usa al posto della libreria; riceve un `I<Lib>` dal costruttore (funziona con la DLL, con l'engine in-process o con un finto nei test) |
 
 La DLL è un progetto `DDxxx.dpr/.dproj` alla radice (output in `bin\Libs`) che esporta `DDxxxCreate(out A: I<Lib>): Integer`. Test in `Tests\Source`, progetto `Tests\DelphiDoom.Tests.dproj` (`build.bat tests`, eseguibile in `bin\Tests`).
+Librerie già estratte (sorgenti in `Libs\<Lib>`, DLL in `bin\Libs`, un progetto di test per libreria in `Tests\`): `Zlib` (`DDZlib`), `Jpeg` (`DDJpeg`), `Mp3` (`DDMp3`), `Xmi` (`DDXmi`), `Sndfile` (`DDSndfile`), `Mikmod` (`DDMikmod`). Ogni libreria ha il proprio progetto di test (`DelphiDoom.Tests` per zlib, poi `DelphiDoom.Tests.Jpeg`, …) perché le unit di libreria possono avere lo stesso nome (gli shim di `d_delphi`) o simboli C in conflitto, e non vanno linkate nello stesso eseguibile.
+
 Il motore non è ancora collegato a `Libs\Zlib`: `TEXLIB\t_png.pas` (`CompressZLIB`/`DecompressZLIB`) e `ZLIB\z_files.pas` usano ancora il codice storico.
 
 ## Stile del codice
