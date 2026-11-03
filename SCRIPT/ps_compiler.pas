@@ -2242,7 +2242,6 @@ begin
   Parser := TPSPascalParser.Create(fkeywords, fnumkeywords);
   Parser.SetText(Header);
   Decl := TPSParametersDecl.Create;
-  x := nil;
   try
     if Parser.CurrTokenId = CSTII_Function then
       IsFunction := True
@@ -14926,7 +14925,6 @@ var
   i: Longint;
 begin
   pDecl := TPSParametersDecl.Create;
-  p := nil;
   try
     if not ParseMethod(Self, '', Decl, DOrgName, pDecl, FT) then
       raise EPSCompilerException.CreateFmt(RPS_UnableToRegisterFunction, [Decl]);
@@ -14977,7 +14975,6 @@ var
   i: Longint;
 begin
   pDecl := TPSParametersDecl.Create;
-  p := nil;
   try
     if not ParseMethod(Self, '', Decl, DOrgName, pDecl, FT) then
       raise EPSCompilerException.CreateFmt(RPS_UnableToRegisterFunction, [Decl]);

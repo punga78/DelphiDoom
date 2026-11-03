@@ -641,12 +641,6 @@ begin
                 TbtU16(res.dta^) := RealCall_Register(Address, EAX, EDX, ECX, @Stack[Length(Stack) - 3], Length(Stack) div 4, 2, nil);
               btClass:
                 begin
-                {$IF DEFINED (fpc) and (fpc_version < 3)}
-                  if IsConstructor or IsVirtualCons then
-                    tbtu32(res.dta^) := RealCall_Register(Address, EDX, EAX, ECX,
-                    @Stack[Length(Stack) - 3], Length(Stack) div 4, 4, nil)
-                  else
-               {$IFEND}
                     TbtU32(res.dta^) := RealCall_Register(Address, EAX, EDX, ECX,
                     @Stack[Length(Stack) - 3], Length(Stack) div 4, 4, nil);
                 end;

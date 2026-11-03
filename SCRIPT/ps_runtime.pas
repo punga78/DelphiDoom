@@ -10,7 +10,7 @@ Copyright (C) 2000-2009 by Carlo Kok (ck@carlo-kok.com)
 interface
 
 uses
-  SysUtils, ps_utils{$IFDEF DELPHI6UP}, variants{$ENDIF}
+  SysUtils, System.AnsiStrings, ps_utils{$IFDEF DELPHI6UP}, variants{$ENDIF}
   {$IFDEF MACOS},uPSCMac{$ELSE}{$IFNDEF PS_NOIDISPATCH}
   {$IFDEF DELPHI3UP}, ActiveX, Windows{$ELSE}, Ole2{$ENDIF}{$ENDIF}{$ENDIF},
   ps_defs;
@@ -2165,7 +2165,7 @@ begin
       {$IFDEF DELPHI2009UP}
       tkUString:
         begin
-          Result := '''' + TbtString(GetUnicodeStrProp(Instance, pp)) + '';
+          Result := '''' + TbtString(GetStrProp(Instance, pp)) + '';
         end;
       {$ENDIF}
       {$ENDIF}
@@ -12626,7 +12626,7 @@ end;
 //==============================================================================
 function ToString(p: PAnsiChar): TbtString;
 begin
-  SetString(Result, p, StrLen(p));
+  SetString(Result, p, System.AnsiStrings.StrLen(p));
 end;
 
 //==============================================================================
@@ -14093,7 +14093,7 @@ begin
           SetWideStrProp(TObject(FSelf), P.Ext1, TbtWideString(n.dta^));
         {$IFDEF DELPHI2009UP}
         btUnicodeString:
-          SetUnicodeStrProp(TObject(FSelf), P.Ext1, TbtUnicodeString(n.dta^));
+          SetStrProp(TObject(FSelf), P.Ext1, string(TbtUnicodeString(n.dta^)));
         {$ENDIF}
         {$ENDIF}
         {$ENDIF}
@@ -14165,7 +14165,7 @@ begin
         {$IFNDEF PS_NOWIDESTRING}
         {$IFDEF DELPHI2009UP}
         btUnicodeString:
-          TbtUnicodeString(n.dta^) := GetUnicodeStrProp(TObject(FSelf), P.Ext1);
+          TbtUnicodeString(n.dta^) := GetStrProp(TObject(FSelf), P.Ext1);
         {$ELSE}
         btUnicodeString,
         {$ENDIF}
