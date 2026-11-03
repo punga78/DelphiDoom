@@ -21,11 +21,13 @@ uses
   DelphiDoom.Glbsp.Engine in '..\Libs\Glbsp\DelphiDoom.Glbsp.Engine.pas',
   DelphiDoom.Glbsp.Client in '..\Libs\Glbsp\DelphiDoom.Glbsp.Client.pas',
   DelphiDoom.Glbsp.Loader in '..\Libs\Glbsp\DelphiDoom.Glbsp.Loader.pas',
+  DelphiDoom.Glbsp.Provider in '..\Libs\Glbsp\DelphiDoom.Glbsp.Provider.pas',
   DelphiDoom.Tests.Glbsp.Executable in 'Source\DelphiDoom.Tests.Glbsp.Executable.pas',
   DelphiDoom.Tests.Glbsp.Runner in 'Source\DelphiDoom.Tests.Glbsp.Runner.pas',
   DelphiDoom.Tests.Glbsp.Engine in 'Source\DelphiDoom.Tests.Glbsp.Engine.pas',
   DelphiDoom.Tests.Glbsp.Client in 'Source\DelphiDoom.Tests.Glbsp.Client.pas',
-  DelphiDoom.Tests.Glbsp.Loader in 'Source\DelphiDoom.Tests.Glbsp.Loader.pas';
+  DelphiDoom.Tests.Glbsp.Loader in 'Source\DelphiDoom.Tests.Glbsp.Loader.pas',
+  DelphiDoom.Tests.Glbsp.Provider in 'Source\DelphiDoom.Tests.Glbsp.Provider.pas';
 
 var
   Runner: ITestRunner;
