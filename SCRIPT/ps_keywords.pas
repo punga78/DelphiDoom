@@ -107,7 +107,6 @@ const
       (name: 'WITH'; c: CSTII_with),
       (name: 'XOR'; c: CSTII_xor));
 
-{$IFDEF OPENGL}
 const
   DDMODELSCRIPT_KEYWORD_COUNT = 48;
   DDModelScriptLookupTable: array[0..DDMODELSCRIPT_KEYWORD_COUNT - 1] of TRTab = (
@@ -159,7 +158,6 @@ const
       (name: 'WHILE'; c: CSTII_while),
       (name: 'WITH'; c: CSTII_with),
       (name: 'XOR'; c: CSTII_xor));
-{$ENDIF}
 
 implementation
 

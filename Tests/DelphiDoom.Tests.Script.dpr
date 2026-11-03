@@ -20,6 +20,7 @@ uses
   ps_keywords in '..\SCRIPT\ps_keywords.pas',
   ps_utils in '..\SCRIPT\ps_utils.pas',
   ps_compiler in '..\SCRIPT\ps_compiler.pas',
+  uPSPreProcessor in '..\SCRIPT\uPSPreProcessor.pas',
   ps_runtime in '..\SCRIPT\ps_runtime.pas',
   DelphiDoom.Script.Intf in '..\Libs\Script\DelphiDoom.Script.Intf.pas',
   DelphiDoom.Script.Native in '..\Libs\Script\DelphiDoom.Script.Native.pas',
@@ -40,7 +41,8 @@ uses
   DelphiDoom.Tests.Script.Declarations in 'Source\DelphiDoom.Tests.Script.Declarations.pas',
   DelphiDoom.Tests.Script.HostList in 'Source\DelphiDoom.Tests.Script.HostList.pas',
   DelphiDoom.Tests.Script.Memory in 'Source\DelphiDoom.Tests.Script.Memory.pas',
-  DelphiDoom.Tests.Script.Globals in 'Source\DelphiDoom.Tests.Script.Globals.pas';
+  DelphiDoom.Tests.Script.Globals in 'Source\DelphiDoom.Tests.Script.Globals.pas',
+  DelphiDoom.Tests.Script.Preprocessor in 'Source\DelphiDoom.Tests.Script.Preprocessor.pas';
 
 var
   Runner: ITestRunner;

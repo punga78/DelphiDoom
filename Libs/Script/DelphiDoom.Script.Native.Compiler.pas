@@ -11,8 +11,8 @@ unit DelphiDoom.Script.Native.Compiler;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, ps_defs, ps_utils, ps_keywords,
-  ps_compiler, DelphiDoom.Script.Intf;
+  System.SysUtils, System.Classes, System.Generics.Collections, ps_defs,
+  ps_utils, ps_keywords, ps_compiler, uPSPreProcessor, DelphiDoom.Script.Intf;
 
 const
   /// <summary>Name of the unit that every source sees</summary>
@@ -77,6 +77,10 @@ type
     FHostNames: TList<TbtString>;
     FMessages: TList<TScriptNativeMessage>;
     FBytecode: TbtString;
+    FPreprocess: Boolean;
+    FDefines: TStringList;
+    // Text of the files the sources include, by upper case name
+    FIncludes: TDictionary<TbtString, TbtString>;
     function GetMessageCount: Integer;
     function GetMessage(AIndex: Integer): TScriptNativeMessage;
     procedure CollectMessages;
@@ -89,8 +93,19 @@ type
     procedure RegisterDeclaration(ACompiler: TPSPascalCompiler;
       const ADeclaration: TScriptNativeDeclaration);
   public
-    constructor Create;
+    /// <param name="AKeywords">SCRIPT_KEYWORDS_*</param>
+    constructor Create(AKeywords: Integer = SCRIPT_KEYWORDS_STANDARD);
     destructor Destroy; override;
+
+    /// <summary>
+    ///   Called by the preprocessor for an included file. Not meant to be
+    ///   called by anyone else
+    /// </summary>
+    function FindInclude(const AName: TbtString; out AText: TbtString): Boolean;
+
+    function SetPreprocessor(AEnabled: Boolean): Integer;
+    function AddDefine(const AName: TbtString): Integer;
+    function AddInclude(const AName, AText: TbtString): Integer;
 
     /// <summary>
     ///   Called by the compiler for a unit: gives it what the application
@@ -143,6 +158,12 @@ begin
   Result := TScriptNativeCompiler(Sender.ID).RegisterUnit(Sender, Name);
 end;
 
+function ScriptNeedFile(Sender: TPSPreProcessor; const CallingFileName: TbtString;
+  var FileName, Output: TbtString): Boolean;
+begin
+  Result := TScriptNativeCompiler(Sender.ID).FindInclude(FileName, Output);
+end;
+
 function ScriptExportGlobals(Sender: TPSPascalCompiler): Boolean;
 var
   LIndex: Integer;
@@ -162,9 +183,11 @@ end;
 
 { TScriptNativeCompiler }
 
-constructor TScriptNativeCompiler.Create;
+constructor TScriptNativeCompiler.Create(AKeywords: Integer);
 begin
   inherited Create;
+  FDefines := TStringList.Create;
+  FIncludes := TDictionary<TbtString, TbtString>.Create;
   FUnits := TObjectDictionary<TbtString, TList<TScriptNativeDeclaration>>.Create(
     [doOwnsValues]);
   FCurrentUnit := SCRIPT_SYSTEM_UNIT;
@@ -172,8 +195,12 @@ begin
   FHostNames := TList<TbtString>.Create;
   FMessages := TList<TScriptNativeMessage>.Create;
 
-  FCompiler := TPSPascalCompiler.Create(PRTabArray(@DefaultLookupTable),
-    DEFAULT_KEYWORD_COUNT);
+  if AKeywords = SCRIPT_KEYWORDS_MODEL then
+    FCompiler := TPSPascalCompiler.Create(PRTabArray(@DDModelScriptLookupTable),
+      DDMODELSCRIPT_KEYWORD_COUNT)
+  else
+    FCompiler := TPSPascalCompiler.Create(PRTabArray(@DefaultLookupTable),
+      DEFAULT_KEYWORD_COUNT);
   FCompiler.ID := Self;
   FCompiler.OnUses := ScriptOnUses;
   FCompiler.OnBeforeOutput := ScriptExportGlobals;
@@ -185,7 +212,40 @@ begin
   FreeAndNil(FMessages);
   FreeAndNil(FHostNames);
   FreeAndNil(FUnits);
+  FreeAndNil(FIncludes);
+  FreeAndNil(FDefines);
   inherited;
+end;
+
+function TScriptNativeCompiler.FindInclude(const AName: TbtString;
+  out AText: TbtString): Boolean;
+begin
+  Result := FIncludes.TryGetValue(FastUpperCase(AName), AText);
+end;
+
+function TScriptNativeCompiler.SetPreprocessor(AEnabled: Boolean): Integer;
+begin
+  FPreprocess := AEnabled;
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddDefine(const AName: TbtString): Integer;
+begin
+  if not TScriptNative.IsIdentifier(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  if FDefines.IndexOf(string(FastUpperCase(AName))) < 0 then
+    FDefines.Add(string(FastUpperCase(AName)));
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddInclude(const AName, AText: TbtString): Integer;
+begin
+  if AName = '' then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  FIncludes.AddOrSetValue(FastUpperCase(AName), AText);
+  Result := SCRIPT_OK;
 end;
 
 function TScriptNativeCompiler.GetMessageCount: Integer;
@@ -456,19 +516,41 @@ end;
 function TScriptNativeCompiler.Compile(const ASource: TbtString): Boolean;
 var
   LFailure: string;
+  LPreProcessor: TPSPreProcessor;
+  LText: TbtString;
 begin
   FBytecode := '';
   LFailure := '';
+  LPreProcessor := nil;
   try
-    Result := FCompiler.Compile(ASource);
-    if Result then
-      Result := FCompiler.GetOutput(FBytecode);
-  except
-    on E: Exception do
-    begin
-      Result := False;
-      LFailure := E.Message;
+    try
+      LText := ASource;
+      if FPreprocess then
+      begin
+        LPreProcessor := TPSPreProcessor.Create;
+        LPreProcessor.ID := Self;
+        LPreProcessor.OnNeedFile := ScriptNeedFile;
+        LPreProcessor.Defines.AddStrings(FDefines);
+        LPreProcessor.MainFileName := 'main';
+        LPreProcessor.MainFile := ASource;
+        LPreProcessor.PreProcess('main', LText);
+      end;
+
+      Result := FCompiler.Compile(LText);
+      if Result then
+        Result := FCompiler.GetOutput(FBytecode);
+      // The messages refer to the preprocessed text: bring them back
+      if Assigned(LPreProcessor) then
+        LPreProcessor.AdjustMessages(FCompiler);
+    except
+      on E: Exception do
+      begin
+        Result := False;
+        LFailure := E.Message;
+      end;
     end;
+  finally
+    LPreProcessor.Free;
   end;
 
   CollectMessages;

@@ -81,6 +81,22 @@ type
     procedure AddConstant(const AName, AValue: AnsiString); overload;
 
     /// <summary>
+    ///   Turns the preprocessor of the sources on or off ({$DEFINE},
+    ///   {$IFDEF}, {$INCLUDE}...)
+    /// </summary>
+    procedure SetPreprocessor(AEnabled: Boolean);
+
+    /// <summary>
+    ///   Defines a symbol for the preprocessor
+    /// </summary>
+    procedure AddDefine(const AName: AnsiString);
+
+    /// <summary>
+    ///   Gives the preprocessor the text of an included file
+    /// </summary>
+    procedure AddInclude(const AName, AText: AnsiString);
+
+    /// <summary>
     ///   Compiles ASource and returns the bytecode. When the source has
     ///   errors raises EScriptException with SCRIPT_ERROR_COMPILE; in any
     ///   case Messages holds the messages of this compilation
@@ -175,6 +191,33 @@ var
   LCode: Integer;
 begin
   LCode := FCompiler.AddConstantString(PAnsiChar(AName), PAnsiChar(AValue));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
+end;
+
+procedure TScriptCompilerClient.SetPreprocessor(AEnabled: Boolean);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.SetPreprocessor(AEnabled);
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode);
+end;
+
+procedure TScriptCompilerClient.AddDefine(const AName: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddDefine(PAnsiChar(AName));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
+end;
+
+procedure TScriptCompilerClient.AddInclude(const AName, AText: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddInclude(PAnsiChar(AName), PAnsiChar(AText));
   if LCode <> SCRIPT_OK then
     raise EScriptException.CreateCode(LCode, string(AName));
 end;

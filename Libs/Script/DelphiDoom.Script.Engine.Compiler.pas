@@ -35,7 +35,7 @@ type
     function CompileSource(ASource: Pointer; ASourceSize: Cardinal;
       ADest: Pointer; var ADestSize: Cardinal): Integer;
   public
-    constructor Create;
+    constructor Create(AKeywords: Integer = SCRIPT_KEYWORDS_STANDARD);
     destructor Destroy; override;
 
     function AddHostFunction(ADeclaration: PAnsiChar): Integer; stdcall;
@@ -46,6 +46,9 @@ type
       ATypeName: PAnsiChar): Integer; stdcall;
     function AddConstantDouble(AName: PAnsiChar; AValue: Double): Integer; stdcall;
     function AddConstantString(AName, AValue: PAnsiChar): Integer; stdcall;
+    function SetPreprocessor(AEnabled: LongBool): Integer; stdcall;
+    function AddDefine(AName: PAnsiChar): Integer; stdcall;
+    function AddInclude(AName, AText: PAnsiChar): Integer; stdcall;
     function Compile(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
       var ADestSize: Cardinal): Integer; stdcall;
     function GetMessageCount(out ACount: Cardinal): Integer; stdcall;
@@ -63,10 +66,10 @@ const
 
 { TScriptCompilerEngine }
 
-constructor TScriptCompilerEngine.Create;
+constructor TScriptCompilerEngine.Create(AKeywords: Integer);
 begin
   inherited Create;
-  FNative := TScriptNativeCompiler.Create;
+  FNative := TScriptNativeCompiler.Create(AKeywords);
 end;
 
 destructor TScriptCompilerEngine.Destroy;
@@ -208,6 +211,49 @@ begin
   try
     ClearPending;
     Result := FNative.AddConstantString(AnsiString(AName), AnsiString(AValue));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.SetPreprocessor(AEnabled: LongBool): Integer;
+begin
+  try
+    ClearPending;
+    Result := FNative.SetPreprocessor(AEnabled);
+  except
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddDefine(AName: PAnsiChar): Integer;
+begin
+  if not Assigned(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.AddDefine(AnsiString(AName));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddInclude(AName, AText: PAnsiChar): Integer;
+begin
+  if not Assigned(AName) or not Assigned(AText) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.AddInclude(AnsiString(AName), AnsiString(AText));
   except
     on EOutOfMemory do
       Result := SCRIPT_ERROR_MEMORY;

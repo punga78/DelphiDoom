@@ -34,7 +34,7 @@ type
     /// <summary>
     ///   Creates a compiler; the caller owns it
     /// </summary>
-    function CreateCompiler: TScriptCompilerClient;
+    function CreateCompiler(AKeywords: Integer = SCRIPT_KEYWORDS_STANDARD): TScriptCompilerClient;
 
     /// <summary>
     ///   Creates an executor; the caller owns it
@@ -54,12 +54,12 @@ begin
   FLibrary := ALibrary;
 end;
 
-function TScriptClient.CreateCompiler: TScriptCompilerClient;
+function TScriptClient.CreateCompiler(AKeywords: Integer): TScriptCompilerClient;
 var
   LCompiler: IScriptCompiler;
   LCode: Integer;
 begin
-  LCode := FLibrary.CreateCompiler(LCompiler);
+  LCode := FLibrary.CreateCompilerEx(AKeywords, LCompiler);
   if (LCode <> SCRIPT_OK) or not Assigned(LCompiler) then
     raise EScriptException.CreateCode(LCode);
   Result := TScriptCompilerClient.Create(LCompiler);

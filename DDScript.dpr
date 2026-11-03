@@ -14,6 +14,7 @@ uses
   ps_keywords in 'SCRIPT\ps_keywords.pas',
   ps_utils in 'SCRIPT\ps_utils.pas',
   ps_compiler in 'SCRIPT\ps_compiler.pas',
+  uPSPreProcessor in 'SCRIPT\uPSPreProcessor.pas',
   ps_runtime in 'SCRIPT\ps_runtime.pas',
   DelphiDoom.Script.Intf in 'Libs\Script\DelphiDoom.Script.Intf.pas',
   DelphiDoom.Script.Native in 'Libs\Script\DelphiDoom.Script.Native.pas',

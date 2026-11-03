@@ -45,6 +45,11 @@ const
   SCRIPT_CALL_STDCALL = 3;
   SCRIPT_CALL_SAFECALL = 4;
 
+  // Keyword tables of the compiler (IScriptLibrary.CreateCompilerEx): the
+  // standard Pascal one and the reduced one of the scripts of the 3D models
+  SCRIPT_KEYWORDS_STANDARD = 0;
+  SCRIPT_KEYWORDS_MODEL = 1;
+
   // Kinds of a global variable of the script (GetGlobalInfo)
   SCRIPT_GLOBAL_OTHER = 0;
   SCRIPT_GLOBAL_INTEGER = 1;
@@ -176,6 +181,25 @@ type
     ///   Declares a string constant in the current unit
     /// </summary>
     function AddConstantString(AName, AValue: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Turns the preprocessor of the sources on or off. When on, the
+    ///   directives of the source ({$DEFINE}, {$IFDEF}, {$INCLUDE}...) are
+    ///   resolved before the compilation and the positions of the messages
+    ///   refer to the original text
+    /// </summary>
+    function SetPreprocessor(AEnabled: LongBool): Integer; stdcall;
+
+    /// <summary>
+    ///   Defines a symbol for the preprocessor, as {$DEFINE} would
+    /// </summary>
+    function AddDefine(AName: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Gives the preprocessor the text of a file the sources include: the
+    ///   library never reads the disk. AName is compared without regard to case
+    /// </summary>
+    function AddInclude(AName, AText: PAnsiChar): Integer; stdcall;
 
     /// <summary>
     ///   Compiles ASource (ANSI text, ASourceSize bytes, no terminator needed)
@@ -354,6 +378,13 @@ type
   IScriptLibrary = interface
     ['{9D3B6F28-1A47-4E05-8C92-F4E07B5A1D36}']
     function CreateCompiler(out ACompiler: IScriptCompiler): Integer; stdcall;
+
+    /// <summary>
+    ///   Like CreateCompiler, with the keyword table AKeywords
+    ///   (SCRIPT_KEYWORDS_*); SCRIPT_ERROR_ARGUMENT for an unknown one
+    /// </summary>
+    function CreateCompilerEx(AKeywords: Integer;
+      out ACompiler: IScriptCompiler): Integer; stdcall;
     function CreateExecutor(out AExecutor: IScriptExecutor): Integer; stdcall;
   end;
 
