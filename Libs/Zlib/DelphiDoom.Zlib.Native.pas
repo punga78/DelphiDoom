@@ -8,8 +8,8 @@
 {******************************************************************************}
 unit DelphiDoom.Zlib.Native;
 
-// The zlib objects (ZLIB\z128_*.obj) are linked with the L directive: the
-// folder ZLIB must be in the object path of the project. This unit has no
+// The zlib objects (Libs\Zlib\z128_*.obj) are linked with the L directive: the
+// folder Libs\Zlib must be in the object path of the project. This unit has no
 // dependency on the rest of the engine so that it can live inside a DLL.
 
 interface

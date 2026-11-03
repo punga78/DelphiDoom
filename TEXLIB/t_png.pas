@@ -235,7 +235,8 @@ uses
   windows,
   t_main,
   d_delphi,
-  z_files;
+  DelphiDoom.Zlib.Intf,
+  DelphiDoom.Zlib.Provider;
 
 const
   pngtransparentcolor: integer = $FF00FF;
@@ -727,10 +728,20 @@ type
     procedure Assign(Source: TChunk); override;
   end;
 
+  {State of one zlib stream: the buffers handed to the library and the stream}
+  TPngZlibStream = record
+    next_in: System.PByte;
+    avail_in: Longint;
+    next_out: System.PByte;
+    avail_out: Longint;
+    Inflater: IZlibInflater;
+    Deflater: IZlibDeflater;
+  end;
+
   {ZLIB Decompression extra information}
-  TZStreamRec2 = packed record
+  TZStreamRec2 = record
     {From ZLIB}
-    ZLIB: TZStreamRec;
+    ZLIB: TPngZlibStream;
     {Additional info}
     Data: Pointer;
     fStream: TDStream;
@@ -1024,6 +1035,7 @@ procedure PNG_FreeChunkClassList;
 implementation
 
 uses
+  System.SysUtils,
   i_system;
 
 var
@@ -1296,7 +1308,7 @@ begin
   end;
 
   {Init decompression}
-  InflateInit_(Result.zlib, zlib_version, SizeOf(TZStreamRec));
+  Result.zlib.Inflater := TZlibProvider.Client.CreateInflater(TZlibFormat.Zlib);
 end;
 
 {Initializes ZLIB for compression}
@@ -1322,7 +1334,7 @@ begin
   end;
 
   {Inits compression}
-  deflateInit_(Result.zlib, Level, zlib_version, SizeOf(TZStreamRec));
+  Result.zlib.Deflater := TZlibProvider.Client.CreateDeflater(Level);
 end;
 
 {Terminates ZLIB for compression}
@@ -1335,7 +1347,7 @@ end;
 procedure ZLIBTerminateDeflate(var ZLIBStream: TZStreamRec2);
 begin
   {Terminates decompression}
-  DeflateEnd(ZLIBStream.zlib);
+  ZLIBStream.zlib.Deflater := nil;
   {Free internal record}
   FreeMem(ZLIBStream.Data, ZLIBAllocate);
 end;
@@ -1350,9 +1362,55 @@ end;
 procedure ZLIBTerminateInflate(var ZLIBStream: TZStreamRec2);
 begin
   {Terminates decompression}
-  InflateEnd(ZLIBStream.zlib);
+  ZLIBStream.zlib.Inflater := nil;
   {Free internal record}
   FreeMem(ZLIBStream.Data, ZLIBAllocate);
+end;
+
+{Runs the inflater on the buffers of the stream}
+
+//==============================================================================
+//
+// inflate
+//
+//==============================================================================
+function inflate(var Stream: TPngZlibStream; Flush: Integer): Integer;
+var
+  Buffers: TZlibStreamBuffers;
+begin
+  FillChar(Buffers, SizeOf(Buffers), 0);
+  Buffers.NextIn := Stream.next_in;
+  Buffers.AvailIn := Cardinal(Stream.avail_in);
+  Buffers.NextOut := Stream.next_out;
+  Buffers.AvailOut := Cardinal(Stream.avail_out);
+  Result := Stream.Inflater.Inflate(Buffers, Flush);
+  Stream.next_in := Buffers.NextIn;
+  Stream.avail_in := Longint(Buffers.AvailIn);
+  Stream.next_out := Buffers.NextOut;
+  Stream.avail_out := Longint(Buffers.AvailOut);
+end;
+
+{Runs the deflater on the buffers of the stream}
+
+//==============================================================================
+//
+// deflate
+//
+//==============================================================================
+function deflate(var Stream: TPngZlibStream; Flush: Integer): Integer;
+var
+  Buffers: TZlibStreamBuffers;
+begin
+  FillChar(Buffers, SizeOf(Buffers), 0);
+  Buffers.NextIn := Stream.next_in;
+  Buffers.AvailIn := Cardinal(Stream.avail_in);
+  Buffers.NextOut := Stream.next_out;
+  Buffers.AvailOut := Cardinal(Stream.avail_out);
+  Result := Stream.Deflater.Deflate(Buffers, Flush);
+  Stream.next_in := Buffers.NextIn;
+  Stream.avail_in := Longint(Buffers.AvailIn);
+  Stream.next_out := Buffers.NextOut;
+  Stream.avail_out := Longint(Buffers.AvailOut);
 end;
 
 {Decompresses ZLIB into a memory address}
@@ -1366,57 +1424,30 @@ function DecompressZLIB(const Input: Pointer; InputSize: Integer;
   var Output: Pointer; var OutputSize: Integer;
   var ErrorOutput: String): Boolean;
 var
-  StreamRec: TZStreamRec;
-  Buffer: array[Byte] of Byte;
-  InflateRet: Integer;
+  Data: TBytes;
 begin
-  with StreamRec do
+  Result := true;
+  OutputSize := 0;
+  try
+    Data := TZlibProvider.Client.Uncompress(Input, InputSize, TZlibFormat.Zlib);
+  except
+    on E: EZlibException do
+    begin
+      ErrorOutput := E.Message;
+      Result := false;
+      Exit;
+    end;
+  end;
+
+  OutputSize := Length(Data);
+  if OutputSize > 0 then
   begin
-    {Initializes}
-    Result := true;
-    OutputSize := 0;
-
-    {Prepares the data to decompress}
-    FillChar(StreamRec, SizeOf(TZStreamRec), #0);
-    InflateInit_(StreamRec, zlib_version, SizeOf(TZStreamRec));
-    next_in := Input;
-    avail_in := InputSize;
-
-    {Decodes data}
-    repeat
-      {In case it needs an output buffer}
-      if (avail_out = 0) then
-      begin
-        next_out := @Buffer;
-        avail_out := SizeOf(Buffer);
-      end {if (avail_out = 0)};
-
-      {Decompress and put in output}
-      InflateRet := inflate(StreamRec, 0);
-      if (InflateRet = Z_STREAM_END) or (InflateRet = 0) then
-      begin
-        {Reallocates output buffer}
-        inc(OutputSize, total_out);
-        if Output = nil then
-          GetMem(Output, OutputSize) else ReallocMem(Output, OutputSize);
-        {Copies the new data}
-        memcpy({$IFDEF FPC}pointer{$ELSE}Ptr{$ENDIF}(Longint(Output) + OutputSize - total_out),
-          @Buffer, total_out);
-      end {if (InflateRet = Z_STREAM_END) or (InflateRet = 0)}
-      {Now tests for errors}
-      else if InflateRet < 0 then
-      begin
-        Result := false;
-        ErrorOutput := StreamRec.msg;
-        InflateEnd(StreamRec);
-        Exit;
-      end {if InflateRet < 0}
-    until InflateRet = Z_STREAM_END;
-
-    {Terminates decompression}
-    InflateEnd(StreamRec);
-  end {with StreamRec}
-
+    if Output = nil then
+      GetMem(Output, OutputSize)
+    else
+      ReallocMem(Output, OutputSize);
+    Move(Data[0], Output^, OutputSize);
+  end;
 end;
 
 {Compresses ZLIB into a memory address}
@@ -1430,62 +1461,30 @@ function CompressZLIB(Input: Pointer; InputSize, CompressionLevel: Integer;
   var Output: Pointer; var OutputSize: Integer;
   var ErrorOutput: String): Boolean;
 var
-  StreamRec: TZStreamRec;
-  Buffer: array[Byte] of Byte;
-  DeflateRet: Integer;
+  Data: TBytes;
 begin
-  with StreamRec do
-  begin
-    Result := true; {By default returns TRUE as everything might have gone ok}
-    OutputSize := 0; {Initialize}
-    {Prepares the data to compress}
-    FillChar(StreamRec, SizeOf(TZStreamRec), #0);
-    DeflateInit_(StreamRec, CompressionLevel,zlib_version, SizeOf(TZStreamRec));
-
-    next_in := Input;
-    avail_in := InputSize;
-
-    while avail_in > 0 do
+  Result := true; {By default returns TRUE as everything might have gone ok}
+  OutputSize := 0; {Initialize}
+  try
+    Data := TZlibProvider.Client.Compress(Input, InputSize, CompressionLevel);
+  except
+    on E: EZlibException do
     begin
-      {When it needs new buffer to stores the compressed data}
-      if avail_out = 0 then
-      begin
-        {Restore buffer}
-        next_out := @Buffer;
-        avail_out := SizeOf(Buffer);
-      end {if avail_out = 0};
+      ErrorOutput := E.Message;
+      Result := false;
+      Exit;
+    end;
+  end;
 
-      {Compresses}
-      DeflateRet := deflate(StreamRec, Z_FINISH);
-
-      if (DeflateRet = Z_STREAM_END) or (DeflateRet = 0) then
-      begin
-        {Updates the output memory}
-        inc(OutputSize, total_out);
-        if Output = nil then
-          GetMem(Output, OutputSize)
-        else
-          ReallocMem(Output, OutputSize);
-
-        {Copies the new data}
-        memcpy({$IFDEF FPC}pointer{$ELSE}Ptr{$ENDIF}(Longint(Output) + OutputSize - total_out),
-          @Buffer, total_out);
-      end {if (InflateRet = Z_STREAM_END) or (InflateRet = 0)}
-      {Now tests for errors}
-      else if DeflateRet < 0 then
-      begin
-        Result := false;
-        ErrorOutput := StreamRec.msg;
-        DeflateEnd(StreamRec);
-        Exit;
-      end {if InflateRet < 0}
-
-    end {while avail_in > 0};
-
-    {Finishes compressing}
-    DeflateEnd(StreamRec);
-  end {with StreamRec}
-
+  OutputSize := Length(Data);
+  if OutputSize > 0 then
+  begin
+    if Output = nil then
+      GetMem(Output, OutputSize)
+    else
+      ReallocMem(Output, OutputSize);
+    Move(Data[0], Output^, OutputSize);
+  end;
 end;
 
 {TPngPointerList implementation}

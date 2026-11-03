@@ -14,7 +14,7 @@
         <DCC_Define>$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>.\Libs\Zlib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>.\Libs\Zlib;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>.\ZLIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>.\Libs\Zlib;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
         <DCC_DcuOutput>dcu\Libs\DDZlib\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

@@ -15,7 +15,7 @@
         <DCC_UnitSearchPath>.\Strife;.\Base;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>.\Strife;.\Base;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>.\Strife;.\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>.\Strife;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>.\Libs\Zlib;.\Strife;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>bin\Tools</DCC_ExeOutput>
         <DCC_DcuOutput>dcu\ddc_strife\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

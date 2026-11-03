@@ -14,7 +14,7 @@
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Xmi;..\Libs\Xmi\Shim;..\XMILIB;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Libs\Xmi;..\XMILIB;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>..\XMILIB;..\ZLIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>..\XMILIB;..\Libs\Zlib;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ResourcePath>..\XMILIB;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Tests\Xmi\$(Config)</DCC_DcuOutput>

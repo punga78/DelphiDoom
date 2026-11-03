@@ -14,7 +14,7 @@
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Png;..\Libs\Zlib;.\Source;$(BDS)\source\DUnitX;$(BDS)\source\DUnitX\Source;$(BDSCOMMONDIR)\DUnitX\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Png;..\Libs\Zlib;.\Source;$(BDS)\source\DUnitX\Source;$(BDSCOMMONDIR)\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>..\ZLIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>..\Libs\Zlib;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Tests\Png\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

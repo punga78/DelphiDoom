@@ -43,7 +43,7 @@ Librerie già estratte (sorgenti in `Libs\<Lib>`, DLL in `bin\Libs`, un progetto
 
 `Png` non contiene uno zlib proprio: `DDPngCreate` riceve un `IZlib` dal chiamante (zlib in-process o `DDZlib.dll`). `Glbsp` per ora incapsula l'eseguibile glbsp incorporato (lancio del processo dietro `IGlbsp`); la conversione in Pascal dei sorgenti in `glbsp-2.24-source` è la issue #2 e sostituirà solo l'implementazione. `Script` è una fetta verticale di PascalScript (compilare, eseguire, funzioni host, globali): l'analisi di cosa resta nel motore è in `Libs\Script\README.md`.
 
-Il motore non è ancora collegato a `Libs\Zlib`: `TEXLIB\t_png.pas` (`CompressZLIB`/`DecompressZLIB`) e `ZLIB\z_files.pas` usano ancora il codice storico.
+Il motore usa già `Libs\Zlib` senza DLL: `TZlibProvider` (`DelphiDoom.Zlib.Provider`) dà a `TEXLIB\t_png.pas` e a `ZLIB\z_files.pas` un `TZlibClient` sopra `TZlibEngine` linkato nell'eseguibile; per usare `DDZlib.dll` basta `TZlibProvider.Use`. Gli `.obj` di zlib stanno in `Libs\Zlib`. Le altre librerie non sono ancora collegate (issue #4–#11).
 
 ## Stile del codice
 

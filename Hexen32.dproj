@@ -15,7 +15,7 @@
         <DCC_UnitSearchPath>.\Hexen;.\Base;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>.\Hexen;.\Base;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>.\Hexen;.\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>.\Hexen;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>.\Libs\Zlib;.\Hexen;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>bin\Hexen</DCC_ExeOutput>
         <DCC_DcuOutput>dcu\Hexen\soft\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

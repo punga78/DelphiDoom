@@ -22,9 +22,11 @@ uses
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Loader in '..\Libs\Zlib\DelphiDoom.Zlib.Loader.pas',
+  DelphiDoom.Zlib.Provider in '..\Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
   DelphiDoom.Tests.Zlib.Engine in 'Source\DelphiDoom.Tests.Zlib.Engine.pas',
   DelphiDoom.Tests.Zlib.Client in 'Source\DelphiDoom.Tests.Zlib.Client.pas',
-  DelphiDoom.Tests.Zlib.Loader in 'Source\DelphiDoom.Tests.Zlib.Loader.pas';
+  DelphiDoom.Tests.Zlib.Loader in 'Source\DelphiDoom.Tests.Zlib.Loader.pas',
+  DelphiDoom.Tests.Zlib.Provider in 'Source\DelphiDoom.Tests.Zlib.Provider.pas';
 
 var
   Runner: ITestRunner;

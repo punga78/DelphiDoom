@@ -87,229 +87,13 @@ type
     property FileCount: integer read GetFileCount;
   end;
 
-type
-  TZAlloc = function (opaque: Pointer; items, size: Integer): Pointer;
-  TZFree  = procedure (opaque, block: Pointer);
-
-  TZStreamRec = packed record
-    next_in  : PChar;     // next input byte
-    avail_in : Longint;   // number of bytes available at next_in
-    total_in : Longint;   // total nb of input bytes read so far
-
-    next_out : PChar;     // next output byte should be put here
-    avail_out: Longint;   // remaining free space at next_out
-    total_out: Longint;   // total nb of bytes output so far
-
-    msg      : PChar;     // last error message, NULL if no error
-    state    : Pointer;   // not visible by applications
-
-    zalloc   : TZAlloc;   // used to allocate the internal state
-    zfree    : TZFree;    // used to free the internal state
-    opaque   : Pointer;   // private data object passed to zalloc and zfree
-
-    data_type: Integer;   // best guess about the data type: ascii or binary
-    adler    : Longint;   // adler32 value of the uncompressed data
-    reserved : Longint;   // reserved for future use
-  end;
-
-//==============================================================================
-//
-// inflate
-//
-//==============================================================================
-function inflate(var strm: TZStreamRec; flush: Integer): Integer;
-
-//==============================================================================
-//
-// inflateInit2_
-//
-//==============================================================================
-function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
-  version: PChar; recsize: Integer): Integer;
-
-//==============================================================================
-//
-// deflateInit_
-//
-//==============================================================================
-function deflateInit_(var strm: TZStreamRec; level: Integer; version: PChar;
-  recsize: Integer): Integer;
-
-//==============================================================================
-//
-// deflate
-//
-//==============================================================================
-function deflate(var strm: TZStreamRec; flush: Integer): Integer;
-
-//==============================================================================
-//
-// deflateEnd
-//
-//==============================================================================
-function deflateEnd(var strm: TZStreamRec): Integer;
-
-//==============================================================================
-//
-// inflateInit_
-//
-//==============================================================================
-function inflateInit_(var strm: TZStreamRec; version: PChar;
-  recsize: Integer): Integer;
-
-//==============================================================================
-//
-// inflateEnd
-//
-//==============================================================================
-function inflateEnd(var strm: TZStreamRec): Integer;
-
-const
-  ZLIB_VERSION = '1.2.8';
-
 implementation
 
 uses
+  System.SysUtils,
+  DelphiDoom.Zlib.Intf,
+  DelphiDoom.Zlib.Provider,
   i_system;
-
-{$L z128_deflate}
-{$L z128_inflate}
-{$L z128_inftrees}
-{$L z128_infback}
-{$L z128_inffast}
-{$L z128_trees}
-{$L z128_compress}
-{$L z128_adler32}
-{$L z128_crc32}
-
-const
-  {** flush constants *******************************************************}
-
-  Z_NO_FLUSH      = 0;
-  Z_PARTIAL_FLUSH = 1;
-  Z_SYNC_FLUSH    = 2;
-  Z_FULL_FLUSH    = 3;
-  Z_FINISH        = 4;
-  Z_BLOCK         = 5;
-
-const
-  z_errmsg: Array [0..9] of String = (
-    'Need dictionary',      // Z_NEED_DICT      (2)
-    'Stream end',           // Z_STREAM_END     (1)
-    'OK',                   // Z_OK             (0)
-    'File error',           // Z_ERRNO          (-1)
-    'Stream error',         // Z_STREAM_ERROR   (-2)
-    'Data error',           // Z_DATA_ERROR     (-3)
-    'Insufficient memory',  // Z_MEM_ERROR      (-4)
-    'Buffer error',         // Z_BUF_ERROR      (-5)
-    'Incompatible version', // Z_VERSION_ERROR  (-6)
-    ''
-  );
-
-{** c function implementations **********************************************}
-
-//==============================================================================
-//
-// zcalloc
-//
-//==============================================================================
-function zcalloc(opaque: Pointer; items, size: Integer): Pointer;
-begin
-  GetMem(result, items * size);
-end;
-
-//==============================================================================
-//
-// zcfree
-//
-//==============================================================================
-procedure zcfree(opaque, block: Pointer);
-begin
-  FreeMem(block);
-end;
-
-//==============================================================================
-//
-// memcpy
-//
-//==============================================================================
-procedure memcpy(dest, source: Pointer; count: Integer); cdecl;
-begin
-  d_delphi.memcpy(dest, source, count);
-end;
-
-//==============================================================================
-//
-// memset
-//
-//==============================================================================
-function memset(p: Pointer; b: Byte; count: Integer): pointer; cdecl;
-begin
-  d_delphi.memset(p, b, count);
-  Result := p;
-end;
-
-//==============================================================================
-//
-// inflate
-//
-//==============================================================================
-function inflate(var strm: TZStreamRec; flush: Integer): Integer; external;
-
-//==============================================================================
-//
-// inflateInit2_
-//
-//==============================================================================
-function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
-  version: PChar; recsize: Integer): Integer; external;
-
-//==============================================================================
-//
-// deflateInit_
-//
-//==============================================================================
-function deflateInit_(var strm: TZStreamRec; level: Integer; version: PChar;
-  recsize: Integer): Integer; external;
-
-//==============================================================================
-//
-// deflate
-//
-//==============================================================================
-function deflate(var strm: TZStreamRec; flush: Integer): Integer; external;
-
-//==============================================================================
-//
-// deflateEnd
-//
-//==============================================================================
-function deflateEnd(var strm: TZStreamRec): Integer; external;
-
-//==============================================================================
-//
-// inflateInit_
-//
-//==============================================================================
-function inflateInit_(var strm: TZStreamRec; version: PChar;
-  recsize: Integer): Integer; external;
-
-//==============================================================================
-//
-// inflateEnd
-//
-//==============================================================================
-function inflateEnd(var strm: TZStreamRec): Integer; external;
-
-//==============================================================================
-//
-// InflateInit2
-//
-//==============================================================================
-function InflateInit2(var stream: TZStreamRec; windowBits: Integer): Integer;
-begin
-  result := inflateInit2_(stream, windowBits, ZLIB_VERSION, SizeOf(TZStreamRec));
-end;
 
 //==============================================================================
 //
@@ -319,29 +103,18 @@ end;
 procedure ZDecompress2(const inBuffer: Pointer; const inSize: Integer;
   const outSize: Integer; out outBuffer: Pointer);
 var
-  zstream: TZStreamRec;
-
-  procedure CheckErr(err: integer);
-  begin
-    if err < 0 then
-      I_Error('ZDecompress2(): Zip file error(%d)', [err]);
+  data: TBytes;
+begin
+  try
+    data := TZlibProvider.Client.Uncompress(inBuffer, inSize, outSize,
+      TZlibFormat.Raw);
+  except
+    on E: EZlibException do
+      I_Error('ZDecompress2(): Zip file error(%d)', [E.Code]);
   end;
 
-begin
-  FillChar(zstream, SizeOf(TZStreamRec), 0);
-
   outBuffer := malloc(outSize);
-
-  CheckErr(InflateInit2(zstream, -15));
-
-  zstream.next_in := inBuffer;
-  zstream.avail_in := inSize;
-  zstream.next_out := outBuffer;
-  zstream.avail_out := outSize;
-
-  CheckErr(inflate(zstream, Z_SYNC_FLUSH));
-
-  inflateEnd(zstream);
+  Move(data[0], outBuffer^, Length(data));
 end;
 
 //------------------------------------------------------------------------------
@@ -453,7 +226,7 @@ var
   Name2: string;
   i: integer;
 begin
-  Name2 := strupper(Name);
+  Name2 := d_delphi.strupper(Name);
   for i := 1 to Length(Name) do
     if Name2[i] = '/' then
       Name2[i] := '\';
@@ -551,19 +324,6 @@ function TZipFile.GetFileCount: integer;
 begin
   result := fFiles.Count;
 end;
-
-{$ifndef WIN64}
-
-//==============================================================================
-//
-// _llmod
-//
-//==============================================================================
-procedure _llmod;
-asm
-  jmp System.@_llmod;
-end;
-{$endif}
 
 end.
 

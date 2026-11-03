@@ -15,7 +15,7 @@
         <DCC_UnitSearchPath>.\Heretic;.\Base;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>.\Heretic;.\Base;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>.\Heretic;.\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>.\Heretic;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ObjPath>.\Libs\Zlib;.\Heretic;.\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>bin\Heretic</DCC_ExeOutput>
         <DCC_DcuOutput>dcu\Heretic\GL\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
