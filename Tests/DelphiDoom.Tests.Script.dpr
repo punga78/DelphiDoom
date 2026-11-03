@@ -35,7 +35,8 @@ uses
   DelphiDoom.Tests.Script.Samples in 'Source\DelphiDoom.Tests.Script.Samples.pas',
   DelphiDoom.Tests.Script.Engine in 'Source\DelphiDoom.Tests.Script.Engine.pas',
   DelphiDoom.Tests.Script.Client in 'Source\DelphiDoom.Tests.Script.Client.pas',
-  DelphiDoom.Tests.Script.Loader in 'Source\DelphiDoom.Tests.Script.Loader.pas';
+  DelphiDoom.Tests.Script.Loader in 'Source\DelphiDoom.Tests.Script.Loader.pas',
+  DelphiDoom.Tests.Script.Declarations in 'Source\DelphiDoom.Tests.Script.Declarations.pas';
 
 var
   Runner: ITestRunner;

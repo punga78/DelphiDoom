@@ -60,6 +60,27 @@ type
     procedure ClearHostFunctions;
 
     /// <summary>
+    ///   Chooses the unit the following declarations belong to: a source sees
+    ///   them when it names the unit in its uses clause. SYSTEM, the default,
+    ///   is always visible
+    /// </summary>
+    procedure SelectUnit(const AUnitName: AnsiString);
+
+    /// <summary>
+    ///   Declares a type, for example AddType('TIntegerArray', 'array of integer')
+    /// </summary>
+    procedure AddType(const AName, ADefinition: AnsiString);
+
+    /// <summary>
+    ///   Declares a constant of the current unit; ATypeName is the type of an
+    ///   integer constant (integer, longword, int64...)
+    /// </summary>
+    procedure AddConstant(const AName: AnsiString; AValue: Int64;
+      const ATypeName: AnsiString = 'integer'); overload;
+    procedure AddConstant(const AName: AnsiString; AValue: Double); overload;
+    procedure AddConstant(const AName, AValue: AnsiString); overload;
+
+    /// <summary>
     ///   Compiles ASource and returns the bytecode. When the source has
     ///   errors raises EScriptException with SCRIPT_ERROR_COMPILE; in any
     ///   case Messages holds the messages of this compilation
@@ -108,6 +129,54 @@ begin
   LCode := FCompiler.ClearHostFunctions;
   if LCode <> SCRIPT_OK then
     raise EScriptException.CreateCode(LCode);
+end;
+
+procedure TScriptCompilerClient.SelectUnit(const AUnitName: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.SelectUnit(PAnsiChar(AUnitName));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AUnitName));
+end;
+
+procedure TScriptCompilerClient.AddType(const AName, ADefinition: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddType(PAnsiChar(AName), PAnsiChar(ADefinition));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
+end;
+
+procedure TScriptCompilerClient.AddConstant(const AName: AnsiString;
+  AValue: Int64; const ATypeName: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddConstantInteger(PAnsiChar(AName), AValue,
+    PAnsiChar(ATypeName));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
+end;
+
+procedure TScriptCompilerClient.AddConstant(const AName: AnsiString;
+  AValue: Double);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddConstantDouble(PAnsiChar(AName), AValue);
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
+end;
+
+procedure TScriptCompilerClient.AddConstant(const AName, AValue: AnsiString);
+var
+  LCode: Integer;
+begin
+  LCode := FCompiler.AddConstantString(PAnsiChar(AName), PAnsiChar(AValue));
+  if LCode <> SCRIPT_OK then
+    raise EScriptException.CreateCode(LCode, string(AName));
 end;
 
 procedure TScriptCompilerClient.ReadMessages;

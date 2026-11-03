@@ -14,6 +14,10 @@ uses
   System.SysUtils, System.Generics.Collections, ps_defs, ps_utils, ps_keywords,
   ps_compiler, DelphiDoom.Script.Intf;
 
+const
+  /// <summary>Name of the unit that every source sees</summary>
+  SCRIPT_SYSTEM_UNIT: TbtString = 'SYSTEM';
+
 type
   /// <summary>
   ///   A message of the compiler, copied out of the compiler (which frees its
@@ -26,6 +30,29 @@ type
     Row: Cardinal;
     Col: Cardinal;
     Text: TbtString;
+  end;
+
+  /// <summary>
+  ///   What a declaration of the application declares
+  /// </summary>
+  TScriptNativeDeclarationKind = (sndFunction, sndType, sndConstantInteger,
+    sndConstantDouble, sndConstantString);
+
+  /// <summary>
+  ///   A declaration of the application, kept until the compiler asks for it
+  ///   (Pascal Script accepts them only while a compilation is running)
+  /// </summary>
+  TScriptNativeDeclaration = record
+    Kind: TScriptNativeDeclarationKind;
+    /// <summary>Name of the type or constant; unused for a function</summary>
+    Name: TbtString;
+    /// <summary>
+    ///   Declaration of a function, definition of a type, name of the type of
+    ///   an integer constant, value of a string constant
+    /// </summary>
+    Text: TbtString;
+    IntegerValue: Int64;
+    DoubleValue: Double;
   end;
 
   /// <summary>
@@ -43,7 +70,10 @@ type
   TScriptNativeCompiler = class
   private
     FCompiler: TPSPascalCompiler;
-    FHostDeclarations: TList<TbtString>;
+    // Declarations by unit (upper case name); SYSTEM always exists
+    FUnits: TObjectDictionary<TbtString, TList<TScriptNativeDeclaration>>;
+    FCurrentUnit: TbtString;
+    // Upper case names of everything declared, units apart
     FHostNames: TList<TbtString>;
     FMessages: TList<TScriptNativeMessage>;
     FBytecode: TbtString;
@@ -52,15 +82,23 @@ type
     procedure CollectMessages;
     procedure AddMessage(AKind: Integer; const AText: TbtString);
     function HasErrorMessage: Boolean;
+    function DeclarationsOf(const AUnitName: TbtString;
+      ACreate: Boolean): TList<TScriptNativeDeclaration>;
+    function Reserve(const AName: TbtString): Boolean;
+    procedure AddDeclaration(const ADeclaration: TScriptNativeDeclaration);
+    procedure RegisterDeclaration(ACompiler: TPSPascalCompiler;
+      const ADeclaration: TScriptNativeDeclaration);
   public
     constructor Create;
     destructor Destroy; override;
 
     /// <summary>
-    ///   Called by the compiler for the unit SYSTEM: declares the host
-    ///   functions. Not meant to be called by anyone else
+    ///   Called by the compiler for a unit: gives it what the application
+    ///   declared for it. Not meant to be called by anyone else
     /// </summary>
-    procedure RegisterHostFunctions(ACompiler: TPSPascalCompiler);
+    /// <returns>False if no declaration belongs to the unit</returns>
+    function RegisterUnit(ACompiler: TPSPascalCompiler;
+      const AUnitName: TbtString): Boolean;
 
     /// <summary>
     ///   Adds a host function declaration
@@ -68,6 +106,16 @@ type
     /// <returns>SCRIPT_OK, or SCRIPT_ERROR_ARGUMENT if invalid or duplicate</returns>
     function AddHostFunction(const ADeclaration: TbtString): Integer;
     procedure ClearHostFunctions;
+
+    /// <summary>
+    ///   Chooses the unit of the following declarations
+    /// </summary>
+    function SelectUnit(const AUnitName: TbtString): Integer;
+    function AddType(const AName, ADefinition: TbtString): Integer;
+    function AddConstantInteger(const AName: TbtString; AValue: Int64;
+      const ATypeName: TbtString): Integer;
+    function AddConstantDouble(const AName: TbtString; AValue: Double): Integer;
+    function AddConstantString(const AName, AValue: TbtString): Integer;
 
     /// <summary>
     ///   Compiles ASource. True if the bytecode is available in Bytecode;
@@ -90,10 +138,9 @@ uses
 
 function ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 begin
-  // No units: the sources use the language and the host functions only
-  Result := Name = 'SYSTEM';
-  if Result then
-    TScriptNativeCompiler(Sender.ID).RegisterHostFunctions(Sender);
+  // SYSTEM is always there, the others exist when the application declared
+  // something for them
+  Result := TScriptNativeCompiler(Sender.ID).RegisterUnit(Sender, Name);
 end;
 
 function ScriptExportGlobals(Sender: TPSPascalCompiler): Boolean;
@@ -118,7 +165,10 @@ end;
 constructor TScriptNativeCompiler.Create;
 begin
   inherited Create;
-  FHostDeclarations := TList<TbtString>.Create;
+  FUnits := TObjectDictionary<TbtString, TList<TScriptNativeDeclaration>>.Create(
+    [doOwnsValues]);
+  FCurrentUnit := SCRIPT_SYSTEM_UNIT;
+  DeclarationsOf(SCRIPT_SYSTEM_UNIT, True);
   FHostNames := TList<TbtString>.Create;
   FMessages := TList<TScriptNativeMessage>.Create;
 
@@ -134,7 +184,7 @@ begin
   FreeAndNil(FCompiler);
   FreeAndNil(FMessages);
   FreeAndNil(FHostNames);
-  FreeAndNil(FHostDeclarations);
+  FreeAndNil(FUnits);
   inherited;
 end;
 
@@ -148,18 +198,181 @@ begin
   Result := FMessages[AIndex];
 end;
 
-procedure TScriptNativeCompiler.RegisterHostFunctions(ACompiler: TPSPascalCompiler);
+function TScriptNativeCompiler.DeclarationsOf(const AUnitName: TbtString;
+  ACreate: Boolean): TList<TScriptNativeDeclaration>;
+begin
+  if not FUnits.TryGetValue(AUnitName, Result) then
+  begin
+    if not ACreate then
+      Exit(nil);
+    Result := TList<TScriptNativeDeclaration>.Create;
+    FUnits.Add(AUnitName, Result);
+  end;
+end;
+
+function TScriptNativeCompiler.Reserve(const AName: TbtString): Boolean;
 var
+  LName: TbtString;
+begin
+  Result := False;
+  if not TScriptNative.IsIdentifier(AName) then
+    Exit;
+
+  LName := FastUpperCase(AName);
+  if FHostNames.Contains(LName) then
+    Exit;
+
+  FHostNames.Add(LName);
+  Result := True;
+end;
+
+procedure TScriptNativeCompiler.AddDeclaration(
+  const ADeclaration: TScriptNativeDeclaration);
+begin
+  DeclarationsOf(FCurrentUnit, True).Add(ADeclaration);
+end;
+
+procedure TScriptNativeCompiler.RegisterDeclaration(ACompiler: TPSPascalCompiler;
+  const ADeclaration: TScriptNativeDeclaration);
+var
+  LType: TPSType;
+  LConstant: TPSConstant;
+begin
+  case ADeclaration.Kind of
+    sndFunction:
+      ACompiler.AddDelphiFunction(ADeclaration.Text);
+    sndType:
+      ACompiler.AddTypeS(ADeclaration.Name, ADeclaration.Text);
+    sndConstantInteger:
+      begin
+        LType := ACompiler.FindType(ADeclaration.Text);
+        if LType = nil then
+          raise EPSCompilerException.Create('Unknown type ' + string(ADeclaration.Text) +
+            ' for the constant ' + string(ADeclaration.Name));
+        LConstant := ACompiler.AddConstant(ADeclaration.Name, LType);
+        case LType.BaseType of
+          btU8: LConstant.Value.tu8 := Byte(ADeclaration.IntegerValue);
+          btS8: LConstant.Value.ts8 := ShortInt(ADeclaration.IntegerValue);
+          btU16: LConstant.Value.tu16 := Word(ADeclaration.IntegerValue);
+          btS16: LConstant.Value.ts16 := SmallInt(ADeclaration.IntegerValue);
+          btU32: LConstant.Value.tu32 := Cardinal(ADeclaration.IntegerValue);
+          btS32: LConstant.Value.ts32 := Integer(ADeclaration.IntegerValue);
+          btS64: LConstant.Value.ts64 := ADeclaration.IntegerValue;
+        else
+          raise EPSCompilerException.Create('The type ' + string(ADeclaration.Text) +
+            ' cannot hold an integer constant');
+        end;
+      end;
+    sndConstantDouble:
+      ACompiler.AddConstantN(ADeclaration.Name, 'extended').SetExtended(
+        ADeclaration.DoubleValue);
+    sndConstantString:
+      ACompiler.AddConstantN(ADeclaration.Name, 'string').SetString(
+        ADeclaration.Text);
+  end;
+end;
+
+function TScriptNativeCompiler.RegisterUnit(ACompiler: TPSPascalCompiler;
+  const AUnitName: TbtString): Boolean;
+var
+  LDeclarations: TList<TScriptNativeDeclaration>;
   LIndex: Integer;
 begin
-  for LIndex := 0 to FHostDeclarations.Count - 1 do
-    ACompiler.AddDelphiFunction(FHostDeclarations[LIndex]);
+  LDeclarations := DeclarationsOf(FastUpperCase(AUnitName), False);
+  Result := Assigned(LDeclarations);
+  if not Result then
+    Exit;
+
+  for LIndex := 0 to LDeclarations.Count - 1 do
+    RegisterDeclaration(ACompiler, LDeclarations[LIndex]);
+end;
+
+function TScriptNativeCompiler.SelectUnit(const AUnitName: TbtString): Integer;
+begin
+  if not TScriptNative.IsIdentifier(AUnitName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  FCurrentUnit := FastUpperCase(AUnitName);
+  DeclarationsOf(FCurrentUnit, True);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddType(const AName, ADefinition: TbtString): Integer;
+var
+  LDeclaration: TScriptNativeDeclaration;
+begin
+  if Trim(string(ADefinition)) = '' then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+  if not Reserve(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  LDeclaration := Default(TScriptNativeDeclaration);
+  LDeclaration.Kind := sndType;
+  LDeclaration.Name := AName;
+  LDeclaration.Text := ADefinition;
+  AddDeclaration(LDeclaration);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddConstantInteger(const AName: TbtString;
+  AValue: Int64; const ATypeName: TbtString): Integer;
+var
+  LDeclaration: TScriptNativeDeclaration;
+begin
+  if (ATypeName <> '') and not TScriptNative.IsIdentifier(ATypeName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+  if not Reserve(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  LDeclaration := Default(TScriptNativeDeclaration);
+  LDeclaration.Kind := sndConstantInteger;
+  LDeclaration.Name := AName;
+  if ATypeName = '' then
+    LDeclaration.Text := 'integer'
+  else
+    LDeclaration.Text := ATypeName;
+  LDeclaration.IntegerValue := AValue;
+  AddDeclaration(LDeclaration);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddConstantDouble(const AName: TbtString;
+  AValue: Double): Integer;
+var
+  LDeclaration: TScriptNativeDeclaration;
+begin
+  if not Reserve(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  LDeclaration := Default(TScriptNativeDeclaration);
+  LDeclaration.Kind := sndConstantDouble;
+  LDeclaration.Name := AName;
+  LDeclaration.DoubleValue := AValue;
+  AddDeclaration(LDeclaration);
+  Result := SCRIPT_OK;
+end;
+
+function TScriptNativeCompiler.AddConstantString(const AName,
+  AValue: TbtString): Integer;
+var
+  LDeclaration: TScriptNativeDeclaration;
+begin
+  if not Reserve(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  LDeclaration := Default(TScriptNativeDeclaration);
+  LDeclaration.Kind := sndConstantString;
+  LDeclaration.Name := AName;
+  LDeclaration.Text := AValue;
+  AddDeclaration(LDeclaration);
+  Result := SCRIPT_OK;
 end;
 
 function TScriptNativeCompiler.AddHostFunction(const ADeclaration: TbtString): Integer;
 var
   LName: TbtString;
   LDeclaration: TbtString;
+  LEntry: TScriptNativeDeclaration;
 begin
   LName := TScriptNative.ExtractFunctionName(ADeclaration);
   if LName = '' then
@@ -177,14 +390,20 @@ begin
     LDeclaration := LDeclaration + ';';
 
   FHostNames.Add(LName);
-  FHostDeclarations.Add(LDeclaration);
+  LEntry := Default(TScriptNativeDeclaration);
+  LEntry.Kind := sndFunction;
+  LEntry.Text := LDeclaration;
+  AddDeclaration(LEntry);
   Result := SCRIPT_OK;
 end;
 
 procedure TScriptNativeCompiler.ClearHostFunctions;
 begin
+  // Everything the application declared goes: the names are free again
   FHostNames.Clear;
-  FHostDeclarations.Clear;
+  FUnits.Clear;
+  DeclarationsOf(SCRIPT_SYSTEM_UNIT, True);
+  FCurrentUnit := SCRIPT_SYSTEM_UNIT;
 end;
 
 procedure TScriptNativeCompiler.AddMessage(AKind: Integer; const AText: TbtString);

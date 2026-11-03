@@ -112,9 +112,49 @@ type
     function AddHostFunction(ADeclaration: PAnsiChar): Integer; stdcall;
 
     /// <summary>
-    ///   Forgets every declared host function
+    ///   Forgets everything declared: functions, types and constants of
+    ///   every unit; the current unit goes back to SYSTEM
     /// </summary>
     function ClearHostFunctions: Integer; stdcall;
+
+    /// <summary>
+    ///   Chooses the unit the following declarations (functions, types and
+    ///   constants) belong to: a source sees them when it names the unit in
+    ///   its uses clause. The unit SYSTEM (the default) is always visible
+    /// </summary>
+    /// <returns>
+    ///   SCRIPT_OK; SCRIPT_ERROR_ARGUMENT if the name is nil or is not an
+    ///   identifier
+    /// </returns>
+    function SelectUnit(AUnitName: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Declares a type in the current unit: AName is the new name and
+    ///   ADefinition how the language would write it, for example
+    ///   'array of integer' or 'single'
+    /// </summary>
+    /// <returns>
+    ///   SCRIPT_OK; SCRIPT_ERROR_ARGUMENT for a nil or invalid name or
+    ///   definition, or a name already declared
+    /// </returns>
+    function AddType(AName, ADefinition: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Declares an integer constant in the current unit. ATypeName is the
+    ///   type of the constant (integer, longword, int64...); nil means integer
+    /// </summary>
+    function AddConstantInteger(AName: PAnsiChar; AValue: Int64;
+      ATypeName: PAnsiChar): Integer; stdcall;
+
+    /// <summary>
+    ///   Declares a floating point constant (extended) in the current unit
+    /// </summary>
+    function AddConstantDouble(AName: PAnsiChar; AValue: Double): Integer; stdcall;
+
+    /// <summary>
+    ///   Declares a string constant in the current unit
+    /// </summary>
+    function AddConstantString(AName, AValue: PAnsiChar): Integer; stdcall;
 
     /// <summary>
     ///   Compiles ASource (ANSI text, ASourceSize bytes, no terminator needed)

@@ -30,6 +30,12 @@ type
     class function ExtractFunctionName(const ADeclaration: TbtString): TbtString; static;
 
     /// <summary>
+    ///   True if AName is a Pascal identifier: a letter or underscore followed by
+    ///   letters, digits and underscores
+    /// </summary>
+    class function IsIdentifier(const AName: TbtString): Boolean; static;
+
+    /// <summary>
     ///   Converts SCRIPT_CALL_* into the convention of Pascal Script
     /// </summary>
     class function TryGetConvention(AValue: Integer;
@@ -55,6 +61,25 @@ implementation
 class function TScriptNative.IsIdentifierChar(AChar: AnsiChar): Boolean;
 begin
   Result := AChar in ['A'..'Z', 'a'..'z', '0'..'9', '_'];
+end;
+
+class function TScriptNative.IsIdentifier(const AName: TbtString): Boolean;
+var
+  LIndex: Integer;
+  LChar: AnsiChar;
+begin
+  Result := AName <> '';
+  if not Result then
+    Exit;
+
+  for LIndex := 1 to Length(AName) do
+  begin
+    LChar := AName[LIndex];
+    if not ((LChar = '_') or ((LChar >= 'A') and (LChar <= 'Z')) or
+            ((LChar >= 'a') and (LChar <= 'z')) or
+            ((LIndex > 1) and (LChar >= '0') and (LChar <= '9'))) then
+      Exit(False);
+  end;
 end;
 
 class function TScriptNative.ExtractFunctionName(

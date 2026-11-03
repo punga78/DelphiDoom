@@ -40,6 +40,12 @@ type
 
     function AddHostFunction(ADeclaration: PAnsiChar): Integer; stdcall;
     function ClearHostFunctions: Integer; stdcall;
+    function SelectUnit(AUnitName: PAnsiChar): Integer; stdcall;
+    function AddType(AName, ADefinition: PAnsiChar): Integer; stdcall;
+    function AddConstantInteger(AName: PAnsiChar; AValue: Int64;
+      ATypeName: PAnsiChar): Integer; stdcall;
+    function AddConstantDouble(AName: PAnsiChar; AValue: Double): Integer; stdcall;
+    function AddConstantString(AName, AValue: PAnsiChar): Integer; stdcall;
     function Compile(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
       var ADestSize: Cardinal): Integer; stdcall;
     function GetMessageCount(out ACount: Cardinal): Integer; stdcall;
@@ -116,6 +122,95 @@ begin
     FNative.ClearHostFunctions;
     Result := SCRIPT_OK;
   except
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.SelectUnit(AUnitName: PAnsiChar): Integer;
+begin
+  if not Assigned(AUnitName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.SelectUnit(AnsiString(AUnitName));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddType(AName, ADefinition: PAnsiChar): Integer;
+begin
+  if not Assigned(AName) or not Assigned(ADefinition) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.AddType(AnsiString(AName), AnsiString(ADefinition));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddConstantInteger(AName: PAnsiChar;
+  AValue: Int64; ATypeName: PAnsiChar): Integer;
+var
+  LTypeName: AnsiString;
+begin
+  if not Assigned(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    if Assigned(ATypeName) then
+      LTypeName := AnsiString(ATypeName)
+    else
+      LTypeName := '';
+    Result := FNative.AddConstantInteger(AnsiString(AName), AValue, LTypeName);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddConstantDouble(AName: PAnsiChar;
+  AValue: Double): Integer;
+begin
+  if not Assigned(AName) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.AddConstantDouble(AnsiString(AName), AValue);
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
+    on Exception do
+      Result := SCRIPT_ERROR_INTERNAL;
+  end;
+end;
+
+function TScriptCompilerEngine.AddConstantString(AName,
+  AValue: PAnsiChar): Integer;
+begin
+  if not Assigned(AName) or not Assigned(AValue) then
+    Exit(SCRIPT_ERROR_ARGUMENT);
+
+  try
+    ClearPending;
+    Result := FNative.AddConstantString(AnsiString(AName), AnsiString(AValue));
+  except
+    on EOutOfMemory do
+      Result := SCRIPT_ERROR_MEMORY;
     on Exception do
       Result := SCRIPT_ERROR_INTERNAL;
   end;
