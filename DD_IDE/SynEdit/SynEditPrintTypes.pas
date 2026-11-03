@@ -36,10 +36,12 @@ Known Issues:
   Wrapping across page boundaries is not supported
 -------------------------------------------------------------------------------}
 
+
 {-------------------------------------------------------------------------------
 CONTENTS:
   Misc types and procedures used in printing and previewing
 -------------------------------------------------------------------------------}
+
 
 {$IFNDEF QSYNEDITPRINTTYPES}
 unit SynEditPrintTypes;
@@ -48,11 +50,7 @@ unit SynEditPrintTypes;
 interface
 
 uses
-{$IFDEF SYN_CLX}
-  QSynUnicode,
-{$ELSE}
   SynUnicode,
-{$ENDIF}
   Classes, SysUtils;
 
 const

@@ -34,6 +34,7 @@ located at http://SynEdit.SourceForge.net
 Known Issues:
 -------------------------------------------------------------------------------}
 
+
 {-------------------------------------------------------------------------------
 CONTENTS:
   Class retrieving info about selected printer and paper size.
@@ -48,13 +49,8 @@ unit SynEditPrinterInfo;
 interface
 
 uses
-{$IFDEF SYN_CLX}
-  Qt,
-  QPrinters;
-{$ELSE}
   Windows,
   Printers;
-{$ENDIF}
 
 type
   //Printer info class - getting dimensions of paper
@@ -249,22 +245,16 @@ begin
     FillDefault;
     Exit;
   end;
-{$IFNDEF SYN_CLX}
   FPhysicalWidth := GetDeviceCaps(Printer.Handle, Windows.PhysicalWidth);
   FPhysicalHeight := GetDeviceCaps(Printer.Handle, Windows.PhysicalHeight);
-{$ENDIF}
   FPrintableWidth := Printer.PageWidth; {or GetDeviceCaps(Printer.Handle, HorzRes);}
   FPrintableHeight := Printer.PageHeight; {or GetDeviceCaps(Printer.Handle, VertRes);}
-{$IFNDEF SYN_CLX}
   FLeftGutter := GetDeviceCaps(Printer.Handle, PhysicalOffsetX);
   FTopGutter := GetDeviceCaps(Printer.Handle, PhysicalOffsetY);
-{$ENDIF}
   FRightGutter := FPhysicalWidth - FPrintableWidth - FLeftGutter;
   FBottomGutter := FPhysicalHeight - FPrintableHeight - FTopGutter;
-{$IFNDEF SYN_CLX}
   FXPixPrInch := GetDeviceCaps(Printer.Handle, LogPixelsX);
   FYPixPrInch := GetDeviceCaps(Printer.Handle, LogPixelsY);
-{$ENDIF}
   FXPixPrmm := FXPixPrInch / 25.4;
   FYPixPrmm := FYPixPrInch / 25.4;
 end;
