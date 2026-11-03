@@ -10,13 +10,13 @@ Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la
 | 1 | Mappa delle dipendenze, isolamento, stima | completa (questo file) |
 | 2 | `DDScript.dll`: compilare, eseguire per nome, funzioni host, globali | completa |
 | 3A (#18) | Tipi, costanti e dichiarazioni per unit (`SelectUnit`, `AddType`, `AddConstant`) | fatto, da provare |
-| 3B (#19) | `TScriptHostList` (equivalente di `ps_proclist`) fatto; **resta** il ponte verso `TPSRuntimeClassImporter` (classi Delphi, variabili-istanza, `!TOBJECT`) e la riscrittura di `ps_import`/`psi_*` | parziale |
-| 3C (#20) | Regola della memoria condivisa: la DLL rifiuta le funzioni host che restituiscono o cambiano stringhe/array/variant (`NeedsSharedMemory`), salvo `SCRIPT_SHARED_MEMORY` | fatto, da provare |
-| 3D (#21) | Enumerazione delle globali, reali e testo, gestori di riga ed eccezione; **resta** l'intestazione `DDPS`/versione/gioco di `LoadData` e l'uso da `ps_serializer` | parziale |
-| 3E (#22) | Tabella di parole chiave dei modelli e preprocessore con define/include dell'host | fatto, da provare |
-| 3F (#23) | Prove nel gioco e confronto prestazioni | da fare: richiede B e D completi |
+| 3B (#19) | `TScriptHostList` (equivalente di `ps_proclist`) fatto; il ponte verso `TPSRuntimeClassImporter` **non si fa** (vedi sotto) | chiusa, non pianificata |
+| 3C (#20) | Regola della memoria condivisa: la DLL rifiuta le funzioni host che restituiscono o cambiano stringhe/array/variant (`NeedsSharedMemory`), salvo `SCRIPT_SHARED_MEMORY` | fatto |
+| 3D (#21) | Enumerazione delle globali, reali e testo, gestori di riga ed eccezione | fatto |
+| 3E (#22) | Tabella di parole chiave dei modelli e preprocessore con define/include dell'host | fatto |
+| 3F (#23) | Prove nel gioco | non pianificata |
 
-Nessuna di queste fasi è stata ancora compilata né eseguita (Delphi è in una VM): si prova con `build.bat DDScript` e `build.bat tests`.
+**Decisione (#10)**: il motore resta su PascalScript in-process (`SCRIPT\ps_*`). Gli script del gioco usano classi Delphi vere (`Actors`, `Lines`, `MapStrings`…) registrate con `TPSRuntimeClassImporter` dal `TClass` e dai puntatori ai metodi, che non attraversano il confine di una DLL: `SCRIPT\ps_*` è il motore degli script, non codice storico da togliere. `DDScript` è la facciata per script semplici (funzioni, costanti, tipi, unit, globali, parole chiave, preprocessore).
 
 Build: `DDScript` (progetto alla radice, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
 
