@@ -51,9 +51,13 @@ uses
   DelphiDoom.Jpeg.Engine in '..\Libs\Jpeg\DelphiDoom.Jpeg.Engine.pas',
   DelphiDoom.Jpeg.Client in '..\Libs\Jpeg\DelphiDoom.Jpeg.Client.pas',
   DelphiDoom.Jpeg.Loader in '..\Libs\Jpeg\DelphiDoom.Jpeg.Loader.pas',
+  DelphiDoom.Jpeg.Provider in '..\Libs\Jpeg\DelphiDoom.Jpeg.Provider.pas',
+  DelphiDoom.Texture.JpegBitmap in '..\TEXLIB\DelphiDoom.Texture.JpegBitmap.pas',
   DelphiDoom.Tests.Jpeg.Engine in 'Source\DelphiDoom.Tests.Jpeg.Engine.pas',
   DelphiDoom.Tests.Jpeg.Client in 'Source\DelphiDoom.Tests.Jpeg.Client.pas',
-  DelphiDoom.Tests.Jpeg.Loader in 'Source\DelphiDoom.Tests.Jpeg.Loader.pas';
+  DelphiDoom.Tests.Jpeg.Loader in 'Source\DelphiDoom.Tests.Jpeg.Loader.pas',
+  DelphiDoom.Tests.Jpeg.Provider in 'Source\DelphiDoom.Tests.Jpeg.Provider.pas',
+  DelphiDoom.Tests.Texture.JpegBitmap in 'Source\DelphiDoom.Tests.Texture.JpegBitmap.pas';
 
 var
   Runner: ITestRunner;
