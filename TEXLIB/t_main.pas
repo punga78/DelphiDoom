@@ -1897,7 +1897,6 @@ begin
   TextureExtensions := TDStringList.Create;
   ImageFormats := nil;
 {$IFNDEF FPC}
-  PNG_RegisterCommonChunks(True);
   tm_png.Create;
   tm_pngsprite.Create;
 {$ENDIF}
@@ -1924,7 +1923,6 @@ begin
 {$IFNDEF FPC}
   tm_png.Destroy;
   tm_pngsprite.Destroy;
-  PNG_FreeChunkClassList;
 {$ENDIF}
   tm_jpg.Destroy;
   tm_jpeg.Destroy;

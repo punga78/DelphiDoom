@@ -19,6 +19,8 @@ type
   private
     function WordAt(const AWav: TBytes; AOffset: Integer): Integer;
     function CardinalAt(const AWav: TBytes; AOffset: Integer): Cardinal;
+    procedure BuildWithoutChannels;
+    procedure BuildWithoutSampleRate;
   public
     [Test]
     procedure TestTagsOfTheHeader;
@@ -95,9 +97,9 @@ var
   LWav: TBytes;
 begin
   LWav := TWavBuilder.Build(TArray<SmallInt>.Create(1, -2, 300), 1, 8000);
-  Assert.AreEqual(1, SmallInt(WordAt(LWav, WAV_HEADER_SIZE)));
-  Assert.AreEqual(-2, SmallInt(WordAt(LWav, WAV_HEADER_SIZE + 2)));
-  Assert.AreEqual(300, SmallInt(WordAt(LWav, WAV_HEADER_SIZE + 4)));
+  Assert.AreEqual(1, Integer(SmallInt(WordAt(LWav, WAV_HEADER_SIZE))));
+  Assert.AreEqual(-2, Integer(SmallInt(WordAt(LWav, WAV_HEADER_SIZE + 2))));
+  Assert.AreEqual(300, Integer(SmallInt(WordAt(LWav, WAV_HEADER_SIZE + 4))));
 end;
 
 procedure TTestWavBuilder.TestEmptySoundHasOnlyTheHeader;
@@ -109,25 +111,28 @@ begin
   Assert.AreEqual(Cardinal(0), CardinalAt(LWav, 40));
 end;
 
+procedure TTestWavBuilder.BuildWithoutChannels;
+begin
+  TWavBuilder.Build(nil, 0, 8000);
+end;
+
+procedure TTestWavBuilder.BuildWithoutSampleRate;
+begin
+  TWavBuilder.Build(nil, 1, 0);
+end;
+
 procedure TTestWavBuilder.TestInvalidChannelsRaise;
 begin
-  Assert.WillRaise(
-    procedure
-    begin
-      TWavBuilder.Build(nil, 0, 8000);
-    end, EArgumentException);
+  Assert.WillRaise(BuildWithoutChannels, EArgumentException);
 end;
 
 procedure TTestWavBuilder.TestInvalidSampleRateRaise;
 begin
-  Assert.WillRaise(
-    procedure
-    begin
-      TWavBuilder.Build(nil, 1, 0);
-    end, EArgumentException);
+  Assert.WillRaise(BuildWithoutSampleRate, EArgumentException);
 end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestWavBuilder);
 
 end.
+

@@ -33,6 +33,12 @@ type
     class function Client: TZlibClient; static;
 
     /// <summary>
+    ///   The IZlib behind the client, for the libraries that compress with it
+    ///   (PNG); created on first use
+    /// </summary>
+    class function Zlib: IZlib; static;
+
+    /// <summary>
     ///   Replaces the zlib implementation (DLL or fake). Pass nil to go back
     ///   to the engine linked in the executable
     /// </summary>
@@ -51,14 +57,17 @@ uses
 
 { TZlibProvider }
 
+class function TZlibProvider.Zlib: IZlib;
+begin
+  if not Assigned(FZlib) then
+    FZlib := TZlibEngine.Create;
+  Result := FZlib;
+end;
+
 class function TZlibProvider.Client: TZlibClient;
 begin
   if not Assigned(FClient) then
-  begin
-    if not Assigned(FZlib) then
-      FZlib := TZlibEngine.Create;
-    FClient := TZlibClient.Create(FZlib);
-  end;
+    FClient := TZlibClient.Create(Zlib);
   Result := FClient;
 end;
 

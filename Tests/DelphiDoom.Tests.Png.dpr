@@ -23,6 +23,8 @@ uses
   DelphiDoom.Zlib.Deflater in '..\Libs\Zlib\DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Loader in '..\Libs\Zlib\DelphiDoom.Zlib.Loader.pas',
+  DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
+  DelphiDoom.Zlib.Provider in '..\Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
   DelphiDoom.Png.Intf in '..\Libs\Png\DelphiDoom.Png.Intf.pas',
   DelphiDoom.Png.Crc in '..\Libs\Png\DelphiDoom.Png.Crc.pas',
   DelphiDoom.Png.ByteOrder in '..\Libs\Png\DelphiDoom.Png.ByteOrder.pas',
@@ -42,10 +44,14 @@ uses
   DelphiDoom.Png.Engine in '..\Libs\Png\DelphiDoom.Png.Engine.pas',
   DelphiDoom.Png.Client in '..\Libs\Png\DelphiDoom.Png.Client.pas',
   DelphiDoom.Png.Loader in '..\Libs\Png\DelphiDoom.Png.Loader.pas',
+  DelphiDoom.Png.Provider in '..\Libs\Png\DelphiDoom.Png.Provider.pas',
+  DelphiDoom.Texture.PngFileWriter in '..\TEXLIB\DelphiDoom.Texture.PngFileWriter.pas',
   DelphiDoom.Tests.Png.Samples in 'Source\DelphiDoom.Tests.Png.Samples.pas',
   DelphiDoom.Tests.Png.Engine in 'Source\DelphiDoom.Tests.Png.Engine.pas',
   DelphiDoom.Tests.Png.Client in 'Source\DelphiDoom.Tests.Png.Client.pas',
-  DelphiDoom.Tests.Png.Loader in 'Source\DelphiDoom.Tests.Png.Loader.pas';
+  DelphiDoom.Tests.Png.Loader in 'Source\DelphiDoom.Tests.Png.Loader.pas',
+  DelphiDoom.Tests.Png.Provider in 'Source\DelphiDoom.Tests.Png.Provider.pas',
+  DelphiDoom.Tests.Texture.PngFileWriter in 'Source\DelphiDoom.Tests.Texture.PngFileWriter.pas';
 
 var
   Runner: ITestRunner;

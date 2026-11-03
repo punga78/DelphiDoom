@@ -191,7 +191,7 @@ uses
   r_draw,
   r_plane,
   r_main,
-  t_png;
+  DelphiDoom.Texture.PngFileWriter;
 
 //==============================================================================
 //
@@ -649,17 +649,16 @@ end;
 //==============================================================================
 procedure DoExportZBuffer;
 var
-  png: TPngObject;
-  row, c: integer;
-  lpng: PByteArray;
-  bufsize: integer;
-  buf, lbuf: PLongWordArray;
   x, y: integer;
   z, maxz: LongWord;
-  grey: LongWord;
+  depths: PLongWordArray;
+  grey: PByteArray;
+  depthsize, greysize: integer;
 begin
-  bufsize := SCREENWIDTH * SCREENHEIGHT * 4;
-  buf := malloc(bufsize);
+  depthsize := SCREENWIDTH * SCREENHEIGHT * 4;
+  greysize := SCREENWIDTH * SCREENHEIGHT;
+  depths := malloc(depthsize);
+  grey := malloc(greysize);
 
   maxz := 0;
   for x := 0 to SCREENWIDTH - 1 do
@@ -668,28 +667,16 @@ begin
       z := R_ZBufferAt(x, y).depth;
       if z > maxz then
         maxz := z;
-      buf[y * SCREENWIDTH + x] := z;
+      depths[y * SCREENWIDTH + x] := z;
     end;
 
-  png := TPngObject.CreateBlank(COLOR_RGB, 8, SCREENWIDTH, SCREENHEIGHT);
-  try
-    for row := 0 to SCREENHEIGHT - 1 do
-    begin
-      lpng := png.Scanline[row];
-      lbuf := @buf[row * SCREENWIDTH];
-      for c := 0 to SCREENWIDTH - 1 do
-      begin
-        grey := Trunc(Sqrt(lbuf[c] / (maxz + 1)) * 255);
-        lpng[c * 3] := grey;
-        lpng[c * 3 + 1] := grey;
-        lpng[c * 3 + 2] := grey;
-      end;
-    end;
-    png.SaveToFile(export_zbuffer_path);
-  finally
-    png.Free;
-  end;
-  memfree(pointer(buf), bufsize);
+  for x := 0 to greysize - 1 do
+    grey[x] := Byte(Trunc(Sqrt(depths[x] / (maxz + 1)) * 255));
+
+  TPngFileWriter.SaveGray(export_zbuffer_path, grey, SCREENWIDTH, SCREENHEIGHT);
+
+  memfree(pointer(depths), depthsize);
+  memfree(pointer(grey), greysize);
 end;
 
 //==============================================================================

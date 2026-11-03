@@ -169,7 +169,7 @@ uses
   m_defs,
   i_system,
   m_sshot_jpg,
-  t_png,
+  DelphiDoom.Texture.PngFileWriter,
 {$IFDEF OPENGL}
   gl_main,
   gl_defs,
@@ -330,33 +330,14 @@ end;
 //==============================================================================
 function M_DoScreenShotPNG(const filename: string): boolean;
 var
-  png: TPngObject;
-  r, c: integer;
-  lpng, lsrc: PByteArray;
   bufsize: integer;
   buf: PByteArray;
 begin
   bufsize := SCREENWIDTH * SCREENHEIGHT * 4;
   buf := malloc(bufsize);
   I_ReadScreen32(buf);
-  png := TPngObject.CreateBlank(COLOR_RGB, 8, SCREENWIDTH, SCREENHEIGHT);
-  try
-    for r := 0 to SCREENHEIGHT - 1 do
-    begin
-      lpng := png.Scanline[{$IFDEF OPENGL}SCREENHEIGHT - 1 - {$ENDIF}r];
-      lsrc := @buf[r * SCREENWIDTH * 4];
-      for c := 0 to SCREENWIDTH - 1 do
-      begin
-        lpng[c * 3] := lsrc[c * 4];
-        lpng[c * 3 + 1] := lsrc[c * 4 + 1];
-        lpng[c * 3 + 2] := lsrc[c * 4 + 2];
-      end;
-    end;
-    png.SaveToFile(filename);
-    result := png.IOresult = '';
-  finally
-    png.Free;
-  end;
+  result := TPngFileWriter.SaveBgrx(filename, buf, SCREENWIDTH, SCREENHEIGHT,
+    {$IFDEF OPENGL}True{$ELSE}False{$ENDIF});
   memfree(pointer(buf), bufsize);
 end;
 
