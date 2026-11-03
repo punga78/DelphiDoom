@@ -83,11 +83,11 @@ implementation
 
 uses
   sounds,
-  mp3_OBuffer_MCI,
-  mp3_MPEGPlayer;
+  DelphiDoom.Mp3.Provider,
+  DelphiDoom.Audio.Mp3Player;
 
 var
-  mp3player: TMPEGPlayer;
+  mp3player: TMp3Player;
 
 //==============================================================================
 //
@@ -96,7 +96,7 @@ var
 //==============================================================================
 procedure I_InitMp3;
 begin
-  mp3player := TMPEGPlayer.Create;
+  mp3player := TMp3Player.Create(TMp3Provider.Mp3);
 end;
 
 //==============================================================================
@@ -108,8 +108,7 @@ procedure I_StopMP3;
 begin
   if mp3player <> nil then
   begin
-    if mp3player.IsPlaying then
-      mp3player.Stop;
+    mp3player.Stop;
     FreeAndNil(mp3player);
   end;
 end;
@@ -153,13 +152,22 @@ end;
 //
 //==============================================================================
 procedure I_PlayMP3(strm: TDStream);
+var
+  buffer: pointer;
+  size: integer;
 begin
   I_StopMP3;
   I_InitMp3;
-  mp3player.LoadStream(strm);
-  mp3player.SetOutput(CreateMCIOBffer(mp3player));
-  mp3player.DoRepeat := true;
-  mp3player.Play;
+
+  size := strm.Size;
+  buffer := malloc(size);
+  try
+    strm.Seek(0, sFromBeginning);
+    strm.Read(buffer^, size);
+    mp3player.Play(buffer, size, True);
+  finally
+    memfree(buffer, size);
+  end;
 end;
 
 end.

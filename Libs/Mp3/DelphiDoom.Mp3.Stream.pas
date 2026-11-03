@@ -43,7 +43,7 @@ type
     ///   Pointer to the first byte not consumed yet (nil when the buffer is
     ///   empty); valid until the next Append
     /// </summary>
-    function Peek: PByte;
+    function Peek: System.PByte;
 
     /// <summary>
     ///   Bytes appended and not consumed yet
@@ -88,7 +88,7 @@ begin
   LDropped := FPosition - RETAINED_BYTES;
   if LDropped > 0 then
   begin
-    Move((PByte(FData) + LDropped)^, PByte(FData)^, FCount - LDropped);
+    Move((System.PByte(FData) + LDropped)^, System.PByte(FData)^, FCount - LDropped);
     Dec(FCount, LDropped);
     Dec(FPosition, LDropped);
     Inc(FBase, LDropped);
@@ -116,16 +116,16 @@ begin
     end;
   end;
 
-  Move(AData^, (PByte(FData) + FCount)^, ASize);
+  Move(AData^, (System.PByte(FData) + FCount)^, ASize);
   Inc(FCount, ASize);
 end;
 
-function TMp3FeedStream.Peek: PByte;
+function TMp3FeedStream.Peek: System.PByte;
 begin
   if FCount = 0 then
     Result := nil
   else
-    Result := PByte(FData) + FPosition;
+    Result := System.PByte(FData) + FPosition;
 end;
 
 function TMp3FeedStream.Available: Integer;
@@ -150,7 +150,7 @@ begin
     Result := 0
   else
   begin
-    Move((PByte(FData) + FPosition)^, Buffer, Result);
+    Move((System.PByte(FData) + FPosition)^, Buffer, Result);
     Inc(FPosition, Result);
   end;
 end;

@@ -205,7 +205,7 @@ end;
 
 function TMp3Native.SkipTag: Boolean;
 var
-  LBytes: PByte;
+  LBytes: System.PByte;
   LSkipped: Integer;
 begin
   Result := True;

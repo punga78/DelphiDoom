@@ -38,10 +38,12 @@ uses
   DelphiDoom.Mp3.Engine in '..\Libs\Mp3\DelphiDoom.Mp3.Engine.pas',
   DelphiDoom.Mp3.Client in '..\Libs\Mp3\DelphiDoom.Mp3.Client.pas',
   DelphiDoom.Mp3.Loader in '..\Libs\Mp3\DelphiDoom.Mp3.Loader.pas',
+  DelphiDoom.Mp3.Provider in '..\Libs\Mp3\DelphiDoom.Mp3.Provider.pas',
   DelphiDoom.Tests.Mp3.Samples in 'Source\DelphiDoom.Tests.Mp3.Samples.pas',
   DelphiDoom.Tests.Mp3.Engine in 'Source\DelphiDoom.Tests.Mp3.Engine.pas',
   DelphiDoom.Tests.Mp3.Client in 'Source\DelphiDoom.Tests.Mp3.Client.pas',
-  DelphiDoom.Tests.Mp3.Loader in 'Source\DelphiDoom.Tests.Mp3.Loader.pas';
+  DelphiDoom.Tests.Mp3.Loader in 'Source\DelphiDoom.Tests.Mp3.Loader.pas',
+  DelphiDoom.Tests.Mp3.Provider in 'Source\DelphiDoom.Tests.Mp3.Provider.pas';
 
 var
   Runner: ITestRunner;

@@ -45,7 +45,7 @@ type
     FSyncVersionByte: Byte;
     FSyncFrequencyByte: Byte;
     FSingleChannel: Boolean;
-    function TryGetFrameSize(AHeader: PByte; out AFrameSize: Integer): Boolean;
+    function TryGetFrameSize(AHeader: System.PByte; out AFrameSize: Integer): Boolean;
   public
     /// <summary>
     ///   Forgets the first header: the next frame is accepted on the sync
@@ -58,14 +58,14 @@ type
     ///   position of its first byte and AFrameSize its length in bytes,
     ///   header included
     /// </summary>
-    function Locate(AData: PByte; ASize: Integer; out AOffset,
+    function Locate(AData: System.PByte; ASize: Integer; out AOffset,
       AFrameSize: Integer): TMp3LocateResult;
 
     /// <summary>
     ///   Records the four header bytes of the frame just read as the pattern
     ///   that the following frames must match
     /// </summary>
-    procedure Remember(AHeader: PByte);
+    procedure Remember(AHeader: System.PByte);
 
     property Synced: Boolean read FSynced;
   end;
@@ -106,7 +106,7 @@ begin
   FSingleChannel := False;
 end;
 
-function TMp3FrameLocator.TryGetFrameSize(AHeader: PByte;
+function TMp3FrameLocator.TryGetFrameSize(AHeader: System.PByte;
   out AFrameSize: Integer): Boolean;
 var
   LVersion, LLayer, LBitrateIndex, LFrequencyIndex, LPadding: Integer;
@@ -187,7 +187,7 @@ begin
   Result := True;
 end;
 
-function TMp3FrameLocator.Locate(AData: PByte; ASize: Integer; out AOffset,
+function TMp3FrameLocator.Locate(AData: System.PByte; ASize: Integer; out AOffset,
   AFrameSize: Integer): TMp3LocateResult;
 var
   LIndex: Integer;
@@ -219,7 +219,7 @@ begin
   Result := TMp3LocateResult.NeedMore;
 end;
 
-procedure TMp3FrameLocator.Remember(AHeader: PByte);
+procedure TMp3FrameLocator.Remember(AHeader: System.PByte);
 begin
   FSynced := True;
   FSyncVersionByte := AHeader[1] and $F8;

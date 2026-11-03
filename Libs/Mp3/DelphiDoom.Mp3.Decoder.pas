@@ -24,7 +24,7 @@ type
     FNative: TMp3Native;
     FStagedSize: Integer;
     FStagedOffset: Integer;
-    procedure DrainStaged(var ADestination: PByte; var ARoom: Cardinal;
+    procedure DrainStaged(var ADestination: System.PByte; var ARoom: Cardinal;
       var AWritten: Cardinal);
   public
     constructor Create(AChannels, AVolume: Integer);
@@ -58,7 +58,7 @@ begin
   inherited;
 end;
 
-procedure TMp3Decoder.DrainStaged(var ADestination: PByte; var ARoom: Cardinal;
+procedure TMp3Decoder.DrainStaged(var ADestination: System.PByte; var ARoom: Cardinal;
   var AWritten: Cardinal);
 var
   LCount: Integer;
@@ -68,7 +68,7 @@ begin
   begin
     if Cardinal(LCount) > ARoom then
       LCount := Integer(ARoom);
-    Move((PByte(FNative.PcmData) + FStagedOffset)^, ADestination^, LCount);
+    Move((System.PByte(FNative.PcmData) + FStagedOffset)^, ADestination^, LCount);
     Inc(FStagedOffset, LCount);
     Inc(ADestination, LCount);
     Dec(ARoom, Cardinal(LCount));
@@ -95,7 +95,7 @@ end;
 function TMp3Decoder.Decode(APcm: Pointer; APcmSize: Cardinal;
   out AWritten: Cardinal): Integer;
 var
-  LDestination: PByte;
+  LDestination: System.PByte;
   LRoom: Cardinal;
   LDone: Boolean;
 begin
