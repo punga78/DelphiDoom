@@ -8,6 +8,8 @@ rem    build.bat                    Doom32, Release
 rem    build.bat all                tutti i progetti
 rem    build.bat giochi             i 8 eseguibili di gioco (software + OpenGL)
 rem    build.bat strumenti          Launcher, DD_IDE, ddc e le 4 DLL ddc_*
+rem    build.bat librerie           le DLL delle librerie (DDZlib.dll -> bin\Libs)
+rem    build.bat tests              librerie + progetto di test DUnitX (bin\Tests)
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
 rem    build.bat all Release clean  cancella tutta la cartella dcu prima di compilare
 rem
@@ -32,9 +34,13 @@ set "CLEAN=%~3"
 
 set "GIOCHI=Doom32 GLDoom32 Heretic32 GLHeretic32 Hexen32 GLHexen32 Strife32 GLStrife32"
 set "STRUMENTI=Launcher DD_IDE ddc ddc_doom ddc_heretic ddc_hexen ddc_strife"
+set "LIBRERIE=DDZlib"
+set "TESTS=Tests\DelphiDoom.Tests"
 
 set "LISTA="
-if /i "%WHAT%"=="all"        set "LISTA=%GIOCHI% %STRUMENTI%"
+if /i "%WHAT%"=="all"        set "LISTA=%LIBRERIE% %GIOCHI% %STRUMENTI%"
+if /i "%WHAT%"=="librerie"   set "LISTA=%LIBRERIE%"
+if /i "%WHAT%"=="tests"      set "LISTA=%LIBRERIE% %TESTS%"
 if /i "%WHAT%"=="giochi"     set "LISTA=%GIOCHI%"
 if /i "%WHAT%"=="strumenti"  set "LISTA=%STRUMENTI%"
 if not defined LISTA set "LISTA=%WHAT%"
@@ -89,16 +95,16 @@ for %%P in (%LISTA%) do (
     set "KO=!KO! %%P"
     set "RCTOT=1"
   ) else (
-    echo ===== %%P =====
-    msbuild "%%P.dproj" /t:Build /p:Config=%CONFIG% /p:Platform=Win32 /nologo /v:n /nr:false > "logs\%%P.log" 2>&1
+    echo ===== %%~nxP =====
+    msbuild "%%P.dproj" /t:Build /p:Config=%CONFIG% /p:Platform=Win32 /nologo /v:n /nr:false > "logs\%%~nxP.log" 2>&1
     if errorlevel 1 (
-      findstr /R /B /C:"[A-Za-z].*: error [A-Z][0-9]" "logs\%%P.log" | sort /unique
-      echo [%%P] FALLITA - log: logs\%%P.log
+      findstr /R /B /C:"[A-Za-z].*: error [A-Z][0-9]" "logs\%%~nxP.log" | sort /unique
+      echo [%%~nxP] FALLITA - log: logs\%%~nxP.log
       set "KO=!KO! %%P"
       set "RCTOT=1"
     ) else (
-      findstr /B /C:"    Avvisi" /C:"    Warning(s)" "logs\%%P.log"
-      echo [%%P] OK
+      findstr /B /C:"    Avvisi" /C:"    Warning(s)" "logs\%%~nxP.log"
+      echo [%%~nxP] OK
       set "OK=!OK! %%P"
     )
     echo.

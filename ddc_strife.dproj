@@ -34,6 +34,7 @@
         <DCC_SymbolPlatform>false</DCC_SymbolPlatform>
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
+        <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
         <SanitizedProjectName>ddc_strife</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">

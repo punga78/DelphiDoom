@@ -1,0 +1,144 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: tests of TZlibClient                                            }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.Tests.Zlib.Client;
+
+interface
+
+uses
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Zlib.Intf,
+  DelphiDoom.Zlib.Client;
+
+type
+  [TestFixture]
+  [Category('zlib')]
+  TTestZlibClient = class(TObject)
+  private
+    FClient: TZlibClient;
+    function MakeSample(ASize: Integer): TBytes;
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+
+    [Test]
+    procedure TestCreateWithoutZlibRaises;
+    [Test]
+    procedure TestVersion;
+    [Test]
+    [TestCase('Vuoto', '0')]
+    [TestCase('Piccolo', '100')]
+    [TestCase('Grande', '300000')]
+    procedure TestRoundTripWithKnownSize(ASize: Integer);
+    [Test]
+    [TestCase('Piccolo', '100')]
+    [TestCase('Grande', '300000')]
+    procedure TestRoundTripWithUnknownSize(ASize: Integer);
+    [Test]
+    procedure TestUncompressGarbageRaisesDataError;
+    [Test]
+    procedure TestUncompressIntoTooSmallBufferRaisesBufError;
+  end;
+
+implementation
+
+uses
+  DelphiDoom.Zlib.Engine;
+
+{ TTestZlibClient }
+
+procedure TTestZlibClient.Setup;
+begin
+  FClient := TZlibClient.Create(TZlibEngine.Create);
+end;
+
+procedure TTestZlibClient.TearDown;
+begin
+  FreeAndNil(FClient);
+end;
+
+function TTestZlibClient.MakeSample(ASize: Integer): TBytes;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, ASize);
+  for LIndex := 0 to ASize - 1 do
+    Result[LIndex] := Byte((LIndex * 5 + (LIndex shr 9)) and $FF);
+end;
+
+procedure TTestZlibClient.TestCreateWithoutZlibRaises;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TZlibClient.Create(nil).Free;
+    end, EArgumentNilException);
+end;
+
+procedure TTestZlibClient.TestVersion;
+begin
+  Assert.AreEqual('1.2.8', FClient.Version);
+end;
+
+procedure TTestZlibClient.TestRoundTripWithKnownSize(ASize: Integer);
+var
+  LSample, LRestored: TBytes;
+begin
+  LSample := MakeSample(ASize);
+  LRestored := FClient.Uncompress(FClient.Compress(LSample), ASize);
+  Assert.AreEqual(ASize, Length(LRestored));
+  Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), ASize);
+end;
+
+procedure TTestZlibClient.TestRoundTripWithUnknownSize(ASize: Integer);
+var
+  LSample, LRestored: TBytes;
+begin
+  LSample := MakeSample(ASize);
+  LRestored := FClient.Uncompress(FClient.Compress(LSample));
+  Assert.AreEqual(ASize, Length(LRestored));
+  Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), ASize);
+end;
+
+procedure TTestZlibClient.TestUncompressGarbageRaisesDataError;
+var
+  LGarbage: TBytes;
+  LIndex: Integer;
+begin
+  SetLength(LGarbage, 64);
+  for LIndex := 0 to High(LGarbage) do
+    LGarbage[LIndex] := Byte(LIndex * 13 + 1);
+
+  try
+    FClient.Uncompress(LGarbage, 1000);
+    Assert.Fail('EZlibException expected');
+  except
+    on E: EZlibException do
+      Assert.AreEqual(ZLIB_DATA_ERROR, E.Code);
+  end;
+end;
+
+procedure TTestZlibClient.TestUncompressIntoTooSmallBufferRaisesBufError;
+var
+  LCompressed: TBytes;
+begin
+  LCompressed := FClient.Compress(MakeSample(10000));
+
+  try
+    FClient.Uncompress(LCompressed, 100);
+    Assert.Fail('EZlibException expected');
+  except
+    on E: EZlibException do
+      Assert.AreEqual(ZLIB_BUF_ERROR, E.Code);
+  end;
+end;
+
+initialization
+  TDUnitX.RegisterTestFixture(TTestZlibClient);
+
+end.
