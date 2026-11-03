@@ -52,6 +52,8 @@ type
     procedure TestUncompressRawDeflate;
     [Test]
     procedure TestUncompressAutoDetectsZlib;
+    [Test]
+    procedure TestStreamingRoundTrip;
   end;
 
 implementation
@@ -206,6 +208,75 @@ begin
   LSize := Length(LRestored);
   Assert.AreEqual(ZLIB_OK, FZlib.Uncompress(Pointer(LCompressed),
     Length(LCompressed), Pointer(LRestored), LSize, TZlibFormat.Auto));
+  Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), Length(LSample));
+end;
+
+procedure TTestZlibEngine.TestStreamingRoundTrip;
+const
+  CHUNK_IN = 97;
+  CHUNK_OUT = 61;
+var
+  LSample, LCompressed, LRestored: TBytes;
+  LDeflater: IZlibDeflater;
+  LInflater: IZlibInflater;
+  LBuffers: TZlibStreamBuffers;
+  LOutBuf: array[0..CHUNK_OUT - 1] of Byte;
+  LCode: Integer;
+  LUsed, LFeed: Cardinal;
+  LPos: Integer;
+begin
+  LSample := MakeSample(20000);
+
+  // Compress feeding the input in small pieces and collecting small outputs
+  Assert.AreEqual(ZLIB_OK, FZlib.CreateDeflater(ZLIB_DEFAULT_LEVEL, LDeflater));
+  FillChar(LBuffers, SizeOf(LBuffers), 0);
+  LPos := 0;
+  repeat
+    LFeed := Cardinal(Length(LSample) - LPos);
+    if LFeed > CHUNK_IN then
+      LFeed := CHUNK_IN;
+    LBuffers.NextIn := @LSample[LPos];
+    LBuffers.AvailIn := LFeed;
+    repeat
+      LBuffers.NextOut := @LOutBuf[0];
+      LBuffers.AvailOut := CHUNK_OUT;
+      if LPos + Integer(LFeed) >= Length(LSample) then
+        LCode := LDeflater.Deflate(LBuffers, ZLIB_FINISH)
+      else
+        LCode := LDeflater.Deflate(LBuffers, ZLIB_NO_FLUSH);
+      Assert.IsTrue((LCode = ZLIB_OK) or (LCode = ZLIB_STREAM_END) or (LCode = ZLIB_BUF_ERROR));
+      LUsed := CHUNK_OUT - LBuffers.AvailOut;
+      SetLength(LCompressed, Length(LCompressed) + Integer(LUsed));
+      if LUsed > 0 then
+        Move(LOutBuf[0], LCompressed[Length(LCompressed) - Integer(LUsed)], LUsed);
+    until (LBuffers.AvailOut > 0) or (LCode = ZLIB_STREAM_END);
+    Inc(LPos, Integer(LFeed));
+  until LCode = ZLIB_STREAM_END;
+
+  // Decompress it the same way
+  Assert.AreEqual(ZLIB_OK, FZlib.CreateInflater(TZlibFormat.Zlib, LInflater));
+  FillChar(LBuffers, SizeOf(LBuffers), 0);
+  LPos := 0;
+  repeat
+    LFeed := Cardinal(Length(LCompressed) - LPos);
+    if LFeed > CHUNK_IN then
+      LFeed := CHUNK_IN;
+    LBuffers.NextIn := @LCompressed[LPos];
+    LBuffers.AvailIn := LFeed;
+    repeat
+      LBuffers.NextOut := @LOutBuf[0];
+      LBuffers.AvailOut := CHUNK_OUT;
+      LCode := LInflater.Inflate(LBuffers, ZLIB_NO_FLUSH);
+      Assert.IsTrue((LCode = ZLIB_OK) or (LCode = ZLIB_STREAM_END) or (LCode = ZLIB_BUF_ERROR));
+      LUsed := CHUNK_OUT - LBuffers.AvailOut;
+      SetLength(LRestored, Length(LRestored) + Integer(LUsed));
+      if LUsed > 0 then
+        Move(LOutBuf[0], LRestored[Length(LRestored) - Integer(LUsed)], LUsed);
+    until (LBuffers.AvailOut > 0) or (LCode = ZLIB_STREAM_END);
+    Inc(LPos, Integer(LFeed));
+  until (LCode = ZLIB_STREAM_END) or (LPos >= Length(LCompressed));
+
+  Assert.AreEqual(Length(LSample), Length(LRestored));
   Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), Length(LSample));
 end;
 

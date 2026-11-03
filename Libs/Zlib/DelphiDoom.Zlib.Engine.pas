@@ -28,12 +28,16 @@ type
       var ADestSize: Cardinal; ALevel: Integer): Integer; stdcall;
     function Uncompress(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
       var ADestSize: Cardinal; AFormat: TZlibFormat): Integer; stdcall;
+    function CreateInflater(AFormat: TZlibFormat;
+      out AInflater: IZlibInflater): Integer; stdcall;
+    function CreateDeflater(ALevel: Integer;
+      out ADeflater: IZlibDeflater): Integer; stdcall;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Zlib.Native;
+  DelphiDoom.Zlib.Native, DelphiDoom.Zlib.Inflater, DelphiDoom.Zlib.Deflater;
 
 const
   MAX_STREAM_SIZE = Cardinal(High(Longint));
@@ -140,6 +144,34 @@ begin
   finally
     inflateEnd(LStream);
   end;
+end;
+
+function TZlibEngine.CreateInflater(AFormat: TZlibFormat;
+  out AInflater: IZlibInflater): Integer;
+var
+  LInflater: TZlibInflater;
+begin
+  AInflater := nil;
+  LInflater := TZlibInflater.Create;
+  Result := LInflater.Start(WindowBitsOf(AFormat));
+  if Result = Z_OK then
+    AInflater := LInflater
+  else
+    LInflater.Free;
+end;
+
+function TZlibEngine.CreateDeflater(ALevel: Integer;
+  out ADeflater: IZlibDeflater): Integer;
+var
+  LDeflater: TZlibDeflater;
+begin
+  ADeflater := nil;
+  LDeflater := TZlibDeflater.Create;
+  Result := LDeflater.Start(ALevel);
+  if Result = Z_OK then
+    ADeflater := LDeflater
+  else
+    LDeflater.Free;
 end;
 
 end.

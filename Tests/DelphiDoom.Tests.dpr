@@ -17,6 +17,8 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Zlib.Intf in '..\Libs\Zlib\DelphiDoom.Zlib.Intf.pas',
   DelphiDoom.Zlib.Native in '..\Libs\Zlib\DelphiDoom.Zlib.Native.pas',
+  DelphiDoom.Zlib.Inflater in '..\Libs\Zlib\DelphiDoom.Zlib.Inflater.pas',
+  DelphiDoom.Zlib.Deflater in '..\Libs\Zlib\DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Loader in '..\Libs\Zlib\DelphiDoom.Zlib.Loader.pas',

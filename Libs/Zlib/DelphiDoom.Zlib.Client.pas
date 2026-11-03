@@ -55,6 +55,15 @@ type
     /// </summary>
     function Uncompress(const ASource: TBytes;
       AFormat: TZlibFormat = TZlibFormat.Zlib): TBytes; overload;
+    function Uncompress(ASource: Pointer; ASourceSize: Cardinal;
+      AFormat: TZlibFormat = TZlibFormat.Zlib): TBytes; overload;
+
+    /// <summary>
+    ///   Streams for data that does not fit in one buffer. Raise
+    ///   EZlibException if the stream cannot be started
+    /// </summary>
+    function CreateInflater(AFormat: TZlibFormat = TZlibFormat.Zlib): IZlibInflater;
+    function CreateDeflater(ALevel: Integer = ZLIB_DEFAULT_LEVEL): IZlibDeflater;
   end;
 
 implementation
@@ -115,19 +124,25 @@ end;
 
 function TZlibClient.Uncompress(const ASource: TBytes;
   AFormat: TZlibFormat): TBytes;
+begin
+  Result := Uncompress(Pointer(ASource), Length(ASource), AFormat);
+end;
+
+function TZlibClient.Uncompress(ASource: Pointer; ASourceSize: Cardinal;
+  AFormat: TZlibFormat): TBytes;
 var
   LCapacity: Cardinal;
   LSize: Cardinal;
   LCode: Integer;
 begin
-  LCapacity := Length(ASource) * 4;
+  LCapacity := ASourceSize * 4;
   if LCapacity < 4096 then
     LCapacity := 4096;
 
   repeat
     SetLength(Result, LCapacity);
     LSize := LCapacity;
-    LCode := FZlib.Uncompress(Pointer(ASource), Length(ASource),
+    LCode := FZlib.Uncompress(ASource, ASourceSize,
       Pointer(Result), LSize, AFormat);
     if LCode = ZLIB_OK then
     begin
@@ -140,6 +155,16 @@ begin
       raise EZlibException.CreateCode(LCode);
     LCapacity := LCapacity * 2;
   until False;
+end;
+
+function TZlibClient.CreateInflater(AFormat: TZlibFormat): IZlibInflater;
+begin
+  Check(FZlib.CreateInflater(AFormat, Result));
+end;
+
+function TZlibClient.CreateDeflater(ALevel: Integer): IZlibDeflater;
+begin
+  Check(FZlib.CreateDeflater(ALevel, Result));
 end;
 
 end.

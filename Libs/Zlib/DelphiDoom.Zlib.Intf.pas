@@ -27,6 +27,11 @@ const
   ZLIB_BUF_ERROR = -5;
   ZLIB_VERSION_ERROR = -6;
 
+  // Flush modes of the streaming interfaces
+  ZLIB_NO_FLUSH = 0;
+  ZLIB_SYNC_FLUSH = 2;
+  ZLIB_FINISH = 4;
+
   // Compression levels
   ZLIB_DEFAULT_LEVEL = -1;
   ZLIB_BEST_SPEED = 1;
@@ -41,6 +46,47 @@ type
   ///   Container format of the compressed data
   /// </summary>
   TZlibFormat = (Zlib, Raw, Gzip, Auto);
+
+  /// <summary>
+  ///   Input and output buffers of a stream: the caller fills NextIn/AvailIn
+  ///   and NextOut/AvailOut before each call and the stream updates all of
+  ///   them (and the totals) when it returns
+  /// </summary>
+  TZlibStreamBuffers = record
+    NextIn: PByte;
+    AvailIn: Cardinal;
+    TotalIn: Cardinal;
+    NextOut: PByte;
+    AvailOut: Cardinal;
+    TotalOut: Cardinal;
+  end;
+
+  /// <summary>
+  ///   Incremental decompression. Releasing the interface ends the stream
+  /// </summary>
+  IZlibInflater = interface
+    ['{6C8449CE-16F7-456E-A536-C442664D05C0}']
+
+    /// <returns>
+    ///   ZLIB_OK (progress made), ZLIB_STREAM_END (all data decoded),
+    ///   ZLIB_BUF_ERROR (no progress possible) or an error code
+    /// </returns>
+    function Inflate(var ABuffers: TZlibStreamBuffers; AFlush: Integer): Integer; stdcall;
+  end;
+
+  /// <summary>
+  ///   Incremental compression (zlib format). Releasing the interface ends
+  ///   the stream
+  /// </summary>
+  IZlibDeflater = interface
+    ['{FCFE6757-74EB-4402-8488-1B1CCDF14B96}']
+
+    /// <returns>
+    ///   ZLIB_OK (progress made), ZLIB_STREAM_END (everything flushed with
+    ///   ZLIB_FINISH), ZLIB_BUF_ERROR (no progress possible) or an error code
+    /// </returns>
+    function Deflate(var ABuffers: TZlibStreamBuffers; AFlush: Integer): Integer; stdcall;
+  end;
 
   /// <summary>
   ///   Contract of the zlib DLL
@@ -84,6 +130,18 @@ type
     /// </returns>
     function Uncompress(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
       var ADestSize: Cardinal; AFormat: TZlibFormat): Integer; stdcall;
+
+    /// <summary>
+    ///   Starts an incremental decompression
+    /// </summary>
+    function CreateInflater(AFormat: TZlibFormat;
+      out AInflater: IZlibInflater): Integer; stdcall;
+
+    /// <summary>
+    ///   Starts an incremental compression (zlib format)
+    /// </summary>
+    function CreateDeflater(ALevel: Integer;
+      out ADeflater: IZlibDeflater): Integer; stdcall;
   end;
 
   /// <summary>
