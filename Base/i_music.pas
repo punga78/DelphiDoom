@@ -145,16 +145,13 @@ uses
   i_s3mmusic,
   i_modmusic,
   i_xmmusic,
-  {$IFNDEF DLL}
-  i_xmimusic,
-  {$ENDIF}
   i_itmusic,
   i_mikplay,
   i_tmp,
   libm2m,
   s_sound,
   {$IFNDEF DLL}
-  xmi_lib,
+  DelphiDoom.Xmi.Provider,
   {$ENDIF}
   z_zone;
 
@@ -618,9 +615,6 @@ begin
   I_InitMod;
   I_InitMik;
   I_InitS3M;
-  {$IFNDEF DLL}
-  XMI_Init;
-  {$ENDIF}
 end;
 
 //==============================================================================
@@ -725,7 +719,7 @@ begin
   I_StopMik(m_none);
   I_ShutDownMik;
   {$IFNDEF DLL}
-  XMI_ShutDown;
+  TXmiProvider.Release;
   {$ENDIF}
 end;
 
@@ -915,7 +909,7 @@ begin
   end
   else if PLongWordArray(data)[0] = ID3MAGIC then
   {$IFNDEF DLL}
-  else if IsXMIMusicFile(data, size) then
+  else if TXmiProvider.Client.IsXmiMusic(data, size) then
   begin
     if m_type <> m_midi then
     begin
@@ -925,7 +919,7 @@ begin
 
     MidiFileName := I_NewTempFile(_GAME + '.mid');
 
-    b := XMI_ConvertMemoryToFile(data, size, 0, MidiFileName);
+    b := TXmiProvider.Client.TryConvertToMidiFile(data, size, 0, MidiFileName);
 
     if not b then
     begin

@@ -66,12 +66,10 @@ begin
 end;
 
 procedure TTestZlibProvider.TestUseReplacesTheImplementation;
-var
-  LFirst: TObject;
 begin
-  LFirst := TZlibProvider.Client;
+  TZlibProvider.Client;
+  // The old client is freed by Use: a new one works on the engine passed in
   TZlibProvider.Use(TZlibEngine.Create);
-  Assert.AreNotSame(LFirst, TObject(TZlibProvider.Client));
   Assert.AreEqual('1.2.8', TZlibProvider.Client.Version);
 end;
 

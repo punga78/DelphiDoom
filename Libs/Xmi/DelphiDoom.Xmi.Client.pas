@@ -11,7 +11,7 @@ unit DelphiDoom.Xmi.Client;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xmi.Intf;
+  System.SysUtils, System.Classes, DelphiDoom.Xmi.Intf;
 
 const
   // Largest song ConvertToMidi accepts, and largest MIDI file it grows to
@@ -55,6 +55,13 @@ type
       ATrack: Cardinal = 0): TBytes; overload;
     function ConvertToMidi(ASource: Pointer; ASourceSize: Cardinal;
       ATrack: Cardinal = 0): TBytes; overload;
+
+    /// <summary>
+    ///   Converts track ATrack and writes the MIDI file; returns False
+    ///   instead of raising if the song or the file cannot be converted
+    /// </summary>
+    function TryConvertToMidiFile(ASource: Pointer; ASourceSize, ATrack: Cardinal;
+      const AFileName: string): Boolean;
   end;
 
 implementation
@@ -151,6 +158,29 @@ begin
       raise EXmiException.CreateCode(LCode);
     LCapacity := LSize;
   until False;
+end;
+
+function TXmiClient.TryConvertToMidiFile(ASource: Pointer; ASourceSize,
+  ATrack: Cardinal; const AFileName: string): Boolean;
+var
+  LMidi: TBytes;
+  LFile: TFileStream;
+begin
+  try
+    LMidi := ConvertToMidi(ASource, ASourceSize, ATrack);
+    LFile := TFileStream.Create(AFileName, fmCreate);
+    try
+      LFile.WriteBuffer(LMidi[0], Length(LMidi));
+    finally
+      LFile.Free;
+    end;
+    Result := True;
+  except
+    on EXmiException do
+      Result := False;
+    on EStreamError do
+      Result := False;
+  end;
 end;
 
 end.

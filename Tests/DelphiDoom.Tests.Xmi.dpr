@@ -24,10 +24,12 @@ uses
   DelphiDoom.Xmi.Engine in '..\Libs\Xmi\DelphiDoom.Xmi.Engine.pas',
   DelphiDoom.Xmi.Client in '..\Libs\Xmi\DelphiDoom.Xmi.Client.pas',
   DelphiDoom.Xmi.Loader in '..\Libs\Xmi\DelphiDoom.Xmi.Loader.pas',
+  DelphiDoom.Xmi.Provider in '..\Libs\Xmi\DelphiDoom.Xmi.Provider.pas',
   DelphiDoom.Tests.Xmi.Samples in 'Source\DelphiDoom.Tests.Xmi.Samples.pas',
   DelphiDoom.Tests.Xmi.Engine in 'Source\DelphiDoom.Tests.Xmi.Engine.pas',
   DelphiDoom.Tests.Xmi.Client in 'Source\DelphiDoom.Tests.Xmi.Client.pas',
-  DelphiDoom.Tests.Xmi.Loader in 'Source\DelphiDoom.Tests.Xmi.Loader.pas';
+  DelphiDoom.Tests.Xmi.Loader in 'Source\DelphiDoom.Tests.Xmi.Loader.pas',
+  DelphiDoom.Tests.Xmi.Provider in 'Source\DelphiDoom.Tests.Xmi.Provider.pas';
 
 var
   Runner: ITestRunner;
