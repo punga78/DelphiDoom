@@ -8,8 +8,15 @@ Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la
 | Fase | Contenuto | Stato |
 |---|---|---|
 | 1 | Mappa delle dipendenze, isolamento, stima | completa (questo file) |
-| 2 | `DDScript.dll`: compilare, eseguire per nome, funzioni host, variabili globali intere | completa come fetta verticale; **mai compilata** (Delphi è in una VM): vedi "Rischi" |
-| 3 | Collegamento del motore (`ps_import`, `psi_*`, `dd_compiler`, `mdl_script*`) alla DLL | non iniziata, per scelta (vedi "Cosa resta") |
+| 2 | `DDScript.dll`: compilare, eseguire per nome, funzioni host, globali | completa |
+| 3A (#18) | Tipi, costanti e dichiarazioni per unit (`SelectUnit`, `AddType`, `AddConstant`) | fatto, da provare |
+| 3B (#19) | `TScriptHostList` (equivalente di `ps_proclist`) fatto; **resta** il ponte verso `TPSRuntimeClassImporter` (classi Delphi, variabili-istanza, `!TOBJECT`) e la riscrittura di `ps_import`/`psi_*` | parziale |
+| 3C (#20) | Regola della memoria condivisa: la DLL rifiuta le funzioni host che restituiscono o cambiano stringhe/array/variant (`NeedsSharedMemory`), salvo `SCRIPT_SHARED_MEMORY` | fatto, da provare |
+| 3D (#21) | Enumerazione delle globali, reali e testo, gestori di riga ed eccezione; **resta** l'intestazione `DDPS`/versione/gioco di `LoadData` e l'uso da `ps_serializer` | parziale |
+| 3E (#22) | Tabella di parole chiave dei modelli e preprocessore con define/include dell'host | fatto, da provare |
+| 3F (#23) | Prove nel gioco e confronto prestazioni | da fare: richiede B e D completi |
+
+Nessuna di queste fasi è stata ancora compilata né eseguita (Delphi è in una VM): si prova con `build.bat DDScript` e `build.bat tests`.
 
 Build: `DDScript` (progetto alla radice, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
 
