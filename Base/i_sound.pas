@@ -123,7 +123,7 @@ implementation
 uses
   d_delphi,
 {$IFNDEF DLL}
-  audiolib, // JVAL: 20210117 - Search for various sound formats
+  DelphiDoom.Audio.SoundLibrary, // JVAL: 20210117 - Search for various sound formats
 {$ENDIF}
   MMSystem,
   z_zone,

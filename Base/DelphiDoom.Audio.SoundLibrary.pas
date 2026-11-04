@@ -29,7 +29,7 @@
 
 {$I Doom32.inc}
 
-unit audiolib;
+unit DelphiDoom.Audio.SoundLibrary;
 
 interface
 
