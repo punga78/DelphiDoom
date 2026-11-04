@@ -39,11 +39,11 @@ type
 implementation
 
 uses
-  DelphiDoom.Xmi.Iff, DelphiDoom.Xmi.Midi.Types, DelphiDoom.Xmi.Midi.ByteReader;
+  DelphiDoom.Xmi.Iff, DelphiDoom.Xmi.Midi.Types, DelphiDoom.Xmi.Midi.ByteReader,
+  DelphiDoom.Xmi.Reader.SystemEvent;
 
 const
   XMI_DIVISION = 60;
-  MAX_PARAMETER = 127;
 
 type
   TTrackLocation = record
@@ -60,217 +60,43 @@ var
   LEvent: TXmiEvent;
   LTicks: UInt64;
   LStatus: Byte;
-  LLength: UInt64;
-
-  function ReadParameter: Byte;
-  begin
-    Result := LReader.ReadByte;
-    if Result > MAX_PARAMETER then
-      Result := MAX_PARAMETER;
-  end;
-
-  function ReadByteOrZero: Byte;
-  begin
-    if LReader.AtEnd then
-      Result := 0
-    else
-      Result := LReader.ReadByte;
-  end;
-
-  // Reads the length that follows a note, a system exclusive or a meta
-  // event. False when the data ends in the middle of the event
-  function ReadLength(out AOverflow: Boolean): Boolean;
-  begin
-    Result := True;
-    AOverflow := False;
-    case LReader.ReadMidiNumber(LLength) of
-      TXmiVarLengthStatus.EndOfData:
-        Result := False;
-      TXmiVarLengthStatus.Overflow:
-        begin
-          AOverflow := True;
-          LLength := 0;
-        end;
-    end;
-  end;
-
-  // The bytes of a system exclusive or of an unknown meta event. The last
-  // byte of the track is not taken: the files that end an event there are
-  // damaged, and it has always been dropped
-  procedure ReadData;
-  var
-    LIndex: UInt64;
-    LByte: Byte;
-    LCount: Integer;
-  begin
-    LCount := 0;
-    LIndex := 0;
-    while LIndex < LLength do
-    begin
-      if LReader.AtEnd then
-        Break;
-      LByte := LReader.ReadByte;
-      if LReader.AtEnd then
-        Break;
-      SetLength(LEvent.Data, LCount + 1);
-      LEvent.Data[LCount] := LByte;
-      Inc(LCount);
-      Inc(LIndex);
-    end;
-  end;
-
-  // The bytes of a meta event with a number inside, most significant first
-  procedure ReadValue;
-  var
-    LIndex: UInt64;
-  begin
-    LIndex := 0;
-    while LIndex < LLength do
-    begin
-      if LIndex > 0 then
-        LEvent.Value := LEvent.Value shl 8;
-      LEvent.Value := LEvent.Value or ReadByteOrZero;
-      Inc(LIndex);
-    end;
-  end;
-
-  // A meta event of a fixed size: the bytes are kept, padded with zeros or cut
-  procedure ReadFixedData(ASize: Integer);
-  var
-    LIndex: UInt64;
-    LBytes: TBytes;
-  begin
-    SetLength(LBytes, 0);
-    LIndex := 0;
-    while LIndex < LLength do
-    begin
-      SetLength(LBytes, Length(LBytes) + 1);
-      LBytes[High(LBytes)] := ReadByteOrZero;
-      Inc(LIndex);
-    end;
-    SetLength(LBytes, ASize);
-    LEvent.Data := LBytes;
-  end;
-
-  procedure ReadText;
-  var
-    LBytes: TBytes;
-    LCount: Integer;
-    LTextLength: Integer;
-  begin
-    if LLength > UInt64(LReader.Remaining) then
-      LCount := LReader.Remaining
-    else
-      LCount := Integer(LLength);
-    SetLength(LBytes, LCount);
-    for LTextLength := 0 to LCount - 1 do
-      LBytes[LTextLength] := LReader.ReadByte;
-
-    // The text ends at the first zero
-    LTextLength := 0;
-    while (LTextLength < LCount) and (LBytes[LTextLength] <> 0) do
-      Inc(LTextLength);
-    if LTextLength > 0 then
-      SetString(LEvent.Text, PAnsiChar(@LBytes[0]), LTextLength);
-  end;
-
-  // Reads a meta event; False when the data ends in the middle of it
-  function ReadMeta: Boolean;
-  var
-    LOverflow: Boolean;
-  begin
-    Result := False;
-    LEvent.Param1 := ReadParameter;
-    if not ReadLength(LOverflow) then
-      Exit;
-    Result := True;
-    if LOverflow then
-      Exit;
-
-    case LEvent.Param1 of
-      XMI_META_SEQUENCE_NUMBER, XMI_META_PORT_PREFIX, XMI_META_TEMPO:
-        ReadValue;
-      1..7:
-        ReadText;
-      XMI_META_CHANNEL_PREFIX:
-        begin
-          ReadValue;
-          // A channel prefix is a channel
-          if (LEvent.Value < 0) or (LEvent.Value > 15) then
-          begin
-            LEvent.Value := 0;
-          end;
-        end;
-      XMI_META_SMPTE_OFFSET:
-        ReadFixedData(5);
-      XMI_META_TIME_SIGNATURE:
-        ReadFixedData(4);
-      XMI_META_KEY_SIGNATURE:
-        ReadFixedData(2);
-    else
-      ReadData;
-    end;
-  end;
-
-  // Reads what follows the status byte of a system event; False when the
-  // data ends in the middle of it
-  function ReadSystemEvent: Boolean;
-  var
-    LOverflow: Boolean;
-  begin
-    Result := True;
-    case LStatus and 15 of
-      0:
-        begin
-          if not ReadLength(LOverflow) then
-            Exit(False);
-          if not LOverflow then
-            ReadData;
-        end;
-      1, 3:
-        LEvent.Param1 := ReadParameter;
-      2:
-        begin
-          LEvent.Param1 := ReadParameter;
-          LEvent.Param2 := ReadParameter;
-          LEvent.Value := LEvent.Param1 * 128 + LEvent.Param2;
-        end;
-      15:
-        Result := ReadMeta;
-    end;
-  end;
 
   // Reads what follows the status byte; False when the data ends in the
   // middle of the event
   function ReadBody: Boolean;
   var
-    LOverflow: Boolean;
+    LDuration: UInt64;
   begin
     Result := True;
     case LStatus shr 4 of
       9:
         begin
-          LEvent.Param1 := ReadParameter;
-          LEvent.Param2 := ReadParameter;
-          if not ReadLength(LOverflow) then
-            Exit(False);
-          LEvent.Duration := LLength;
+          LEvent.Param1 := TXmiSystemEventReader.ReadParameter(LReader);
+          LEvent.Param2 := TXmiSystemEventReader.ReadParameter(LReader);
+          // The duration of the note; a number too long is taken as zero
+          case LReader.ReadMidiNumber(LDuration) of
+            TXmiVarLengthStatus.EndOfData:
+              Exit(False);
+            TXmiVarLengthStatus.Overflow:
+              LDuration := 0;
+          end;
+          LEvent.Duration := LDuration;
         end;
       10, 11:
         begin
-          LEvent.Param1 := ReadParameter;
-          LEvent.Param2 := ReadParameter;
+          LEvent.Param1 := TXmiSystemEventReader.ReadParameter(LReader);
+          LEvent.Param2 := TXmiSystemEventReader.ReadParameter(LReader);
         end;
       12, 13:
-        LEvent.Param1 := ReadParameter;
+        LEvent.Param1 := TXmiSystemEventReader.ReadParameter(LReader);
       14:
         begin
-          LEvent.Param1 := ReadParameter;
-          LEvent.Param2 := ReadParameter;
+          LEvent.Param1 := TXmiSystemEventReader.ReadParameter(LReader);
+          LEvent.Param2 := TXmiSystemEventReader.ReadParameter(LReader);
           LEvent.Value := LEvent.Param1 + LEvent.Param2 * 128;
         end;
       15:
-        Result := ReadSystemEvent;
+        Result := TXmiSystemEventReader.Read(LReader, LEvent, False);
     end;
   end;
 
@@ -302,12 +128,7 @@ begin
           Break;
       end;
 
-      // The first track name is the name of the song
-      if (LStatus = XMI_STATUS_META) and (LEvent.Param1 = XMI_META_TRACK_NAME) and
-         (ATrack.Title = '') and (LEvent.Text <> '') then
-        ATrack.Title := LEvent.Text;
-
-      ATrack.Add(LEvent);
+      ATrack.AddRead(LEvent);
     end;
   finally
     LReader.Free;

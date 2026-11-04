@@ -11,7 +11,8 @@ unit DelphiDoom.Xmi.Converter;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xmi.Intf, DelphiDoom.Xmi.Midi.Types;
+  System.SysUtils, DelphiDoom.Xmi.Intf, DelphiDoom.Xmi.Midi.Types,
+  DelphiDoom.Xmi.Midi.Song;
 
 type
   /// <summary>
@@ -21,6 +22,13 @@ type
   TXmiConverter = class
   private
     class function ToBytes(ASource: Pointer; ASourceSize: Integer): TBytes; static;
+
+    /// <summary>
+    ///   Reads the song; nil for a format that is not convertible
+    /// </summary>
+    class function ReadSong(AFormat: TXmiFormat; const AData: TBytes): TXmiSong; static;
+
+    class procedure ConvertSong(AFormat: TXmiFormat; ASong: TXmiSong); static;
   public
     class function DetectFormat(ASource: Pointer;
       ASourceSize: Integer): TXmiFormat; static;
@@ -41,9 +49,10 @@ type
 implementation
 
 uses
-  DelphiDoom.Xmi.Midi.Song, DelphiDoom.Xmi.Midi.Track,
-  DelphiDoom.Xmi.FormatDetector, DelphiDoom.Xmi.Reader.Xmi,
-  DelphiDoom.Xmi.Converter.XmiToMidi, DelphiDoom.Xmi.Writer.Midi;
+  DelphiDoom.Xmi.FormatDetector,
+  DelphiDoom.Xmi.Reader.Xmi, DelphiDoom.Xmi.Reader.Cmf,
+  DelphiDoom.Xmi.Converter.XmiToMidi, DelphiDoom.Xmi.Converter.CmfToMidi,
+  DelphiDoom.Xmi.Writer.Midi;
 
 { TXmiConverter }
 
@@ -58,6 +67,29 @@ begin
   Move(ASource^, Result[0], ASourceSize);
 end;
 
+class function TXmiConverter.ReadSong(AFormat: TXmiFormat;
+  const AData: TBytes): TXmiSong;
+begin
+  case AFormat of
+    TXmiFormat.Xmi:
+      Result := TXmiXmiReader.Read(AData);
+    TXmiFormat.Cmf:
+      Result := TXmiCmfReader.Read(AData);
+  else
+    Result := nil;
+  end;
+end;
+
+class procedure TXmiConverter.ConvertSong(AFormat: TXmiFormat; ASong: TXmiSong);
+begin
+  case AFormat of
+    TXmiFormat.Xmi:
+      TXmiXmiToMidiConverter.Convert(ASong);
+    TXmiFormat.Cmf:
+      TXmiCmfToMidiConverter.Convert(ASong);
+  end;
+end;
+
 class function TXmiConverter.DetectFormat(ASource: Pointer;
   ASourceSize: Integer): TXmiFormat;
 begin
@@ -68,25 +100,23 @@ class function TXmiConverter.CountTracks(ASource: Pointer; ASourceSize: Integer;
   out ATrackCount: Integer): TXmiConversionStatus;
 var
   LData: TBytes;
+  LFormat: TXmiFormat;
   LSong: TXmiSong;
 begin
   ATrackCount := 0;
   LData := ToBytes(ASource, ASourceSize);
   try
-    case TXmiFormatDetector.Detect(LData) of
-      TXmiFormat.Xmi:
-        begin
-          LSong := TXmiXmiReader.Read(LData);
-          try
-            ATrackCount := LSong.Tracks.Count;
-          finally
-            LSong.Free;
-          end;
-          Result := TXmiConversionStatus.Ok;
-        end;
-    else
-      Result := TXmiConversionStatus.UnknownFormat;
+    LFormat := TXmiFormatDetector.Detect(LData);
+    LSong := ReadSong(LFormat, LData);
+    if not Assigned(LSong) then
+      Exit(TXmiConversionStatus.UnknownFormat);
+
+    try
+      ATrackCount := LSong.Tracks.Count;
+    finally
+      LSong.Free;
     end;
+    Result := TXmiConversionStatus.Ok;
   except
     on EOutOfMemory do
       Result := TXmiConversionStatus.OutOfMemory;
@@ -100,44 +130,40 @@ class function TXmiConverter.ConvertToMidi(ASource: Pointer; ASourceSize,
   ATrack: Integer; out AMidi: TBytes): TXmiConversionStatus;
 var
   LData: TBytes;
+  LFormat: TXmiFormat;
   LSong: TXmiSong;
   LSelected: TXmiSong;
-  LTrack: TXmiTrack;
 begin
   AMidi := nil;
   LData := ToBytes(ASource, ASourceSize);
   try
-    case TXmiFormatDetector.Detect(LData) of
-      TXmiFormat.Xmi:
-        begin
-          LSong := TXmiXmiReader.Read(LData);
-          try
-            if (ATrack < 0) or (ATrack >= LSong.Tracks.Count) then
-              Exit(TXmiConversionStatus.TrackOutOfRange);
+    LFormat := TXmiFormatDetector.Detect(LData);
+    LSong := ReadSong(LFormat, LData);
+    if not Assigned(LSong) then
+      Exit(TXmiConversionStatus.UnknownFormat);
 
-            // The file that comes out has the song asked for and nothing else
-            LSelected := TXmiSong.Create;
-            try
-              LSelected.InitialTempo := LSong.InitialTempo;
-              LSelected.Division := LSong.Division;
-              LSelected.Smpte := LSong.Smpte;
-              LSelected.MidiType := LSong.MidiType;
-              LTrack := LSong.ExtractTrack(ATrack);
-              LSelected.AdoptTrack(LTrack);
+    try
+      if (ATrack < 0) or (ATrack >= LSong.Tracks.Count) then
+        Exit(TXmiConversionStatus.TrackOutOfRange);
 
-              TXmiXmiToMidiConverter.Convert(LSelected);
-              AMidi := TXmiMidiWriter.Write(LSelected);
-            finally
-              LSelected.Free;
-            end;
-          finally
-            LSong.Free;
-          end;
-          Result := TXmiConversionStatus.Ok;
-        end;
-    else
-      Result := TXmiConversionStatus.UnknownFormat;
+      // The file that comes out has the song asked for and nothing else
+      LSelected := TXmiSong.Create;
+      try
+        LSelected.InitialTempo := LSong.InitialTempo;
+        LSelected.Division := LSong.Division;
+        LSelected.Smpte := LSong.Smpte;
+        LSelected.MidiType := LSong.MidiType;
+        LSelected.AdoptTrack(LSong.ExtractTrack(ATrack));
+
+        ConvertSong(LFormat, LSelected);
+        AMidi := TXmiMidiWriter.Write(LSelected);
+      finally
+        LSelected.Free;
+      end;
+    finally
+      LSong.Free;
     end;
+    Result := TXmiConversionStatus.Ok;
   except
     on EOutOfMemory do
       Result := TXmiConversionStatus.OutOfMemory;

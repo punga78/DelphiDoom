@@ -19,6 +19,8 @@ type
   private
     function BuildRichXmi(const AEvents: array of Byte): TBytes;
     function RichEvents: TBytes;
+    function BuildRichCmf(const AEvents: array of Byte): TBytes;
+    function RichCmfEvents: TBytes;
     function ConvertWithTheOldCode(const ASource: TBytes; ATrack: Integer): TBytes;
   public
     [Test]
@@ -39,6 +41,14 @@ type
     procedure TestSimpleXmiMatchesTheOldConverter;
     [Test]
     procedure TestRichXmiMatchesTheOldConverter;
+    [Test]
+    procedure TestCmfIsConverted;
+    [Test]
+    procedure TestSimpleCmfMatchesTheOldConverter;
+    [Test]
+    procedure TestRichCmfMatchesTheOldConverter;
+    [Test]
+    procedure TestCmfDropsTheControllersMidiDoesNotKnow;
     [Test]
     procedure TestNoteWithoutDurationIsTurnedOffRightAway;
     [Test]
@@ -141,6 +151,67 @@ begin
     $64, $FF, $2F, $00);
 end;
 
+// The header of the sample CMF, then the events of a standard MIDI track
+function TTestXmiConverter.BuildRichCmf(const AEvents: array of Byte): TBytes;
+const
+  MUSIC_OFFSET = 37;
+var
+  LStream: TBytesStream;
+  LIndex: Integer;
+  LZero: Byte;
+
+  procedure WriteWord(AValue: Word);
+  begin
+    LStream.WriteBuffer(AValue, 2);
+  end;
+
+begin
+  LStream := TBytesStream.Create;
+  try
+    LStream.WriteBuffer(PAnsiChar('CTMF')^, 4);
+    WriteWord($0100);
+    WriteWord(0);
+    WriteWord(MUSIC_OFFSET);
+    WriteWord(48);
+    WriteWord(96);
+    WriteWord(0);
+    WriteWord(0);
+    WriteWord(0);
+    LZero := 0;
+    for LIndex := 0 to 15 do
+      LStream.WriteBuffer(LZero, 1);
+    LStream.WriteBuffer(LZero, 1);
+    if Length(AEvents) > 0 then
+      LStream.WriteBuffer(AEvents[0], Length(AEvents));
+
+    Result := Copy(LStream.Bytes, 0, LStream.Size);
+  finally
+    LStream.Free;
+  end;
+end;
+
+// Program change, the CMF controllers (marker, rhythm mode, AM and vibrato,
+// transpose), drum notes on the channel 11 and a program change on it, a
+// tempo, a note, running status, the end of the track
+function TTestXmiConverter.RichCmfEvents: TBytes;
+begin
+  Result := TBytes.Create(
+    $00, $C0, $05,
+    $00, $B0, $66, $05,
+    $00, $B0, $67, $01,
+    $00, $9B, $28, $64,
+    $10, $8B, $28, $40,
+    $00, $B0, $63, $01,
+    $00, $B0, $68, $05,
+    $08, $C0, $07,
+    $00, $CB, $03,
+    $00, $FF, $51, $03, $07, $A1, $20,
+    $20, $90, $3C, $64,
+    $10, $3E, $64,
+    $10, $80, $3C, $40,
+    $00, $FF, $2F, $00);
+end;
+
 function TTestXmiConverter.ConvertWithTheOldCode(const ASource: TBytes;
   ATrack: Integer): TBytes;
 var
@@ -219,8 +290,8 @@ begin
   Assert.AreEqual('MThd', TXmiSamples.TagAt(LMidi, 0));
   Assert.AreEqual('MTrk', TXmiSamples.TagAt(LMidi, MIDI_HEADER_SIZE));
   // One track, and the division of XMIDI
-  Assert.AreEqual(1, (LMidi[10] shl 8) or LMidi[11]);
-  Assert.AreEqual(XMI_DIVISION, (LMidi[12] shl 8) or LMidi[13]);
+  Assert.AreEqual(1, Integer((LMidi[10] shl 8) or LMidi[11]));
+  Assert.AreEqual(Integer(XMI_DIVISION), Integer((LMidi[12] shl 8) or LMidi[13]));
 end;
 
 procedure TTestXmiConverter.TestTrackOutOfRange;
@@ -266,6 +337,66 @@ begin
     Ord(TXmiConverter.ConvertToMidi(Pointer(LXmi), Length(LXmi), 0, LNew)));
   Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
   Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
+end;
+
+procedure TTestXmiConverter.TestCmfIsConverted;
+var
+  LCmf, LMidi: TBytes;
+  LCount: Integer;
+begin
+  LCmf := BuildRichCmf(RichCmfEvents);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.CountTracks(Pointer(LCmf), Length(LCmf), LCount)));
+  Assert.AreEqual(1, LCount);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LMidi)));
+  Assert.AreEqual('MThd', TXmiSamples.TagAt(LMidi, 0));
+  // Type 0, one track, 96 ticks per second
+  Assert.AreEqual(0, Integer((LMidi[8] shl 8) or LMidi[9]));
+  Assert.AreEqual(1, Integer((LMidi[10] shl 8) or LMidi[11]));
+  Assert.AreEqual(96, Integer((LMidi[12] shl 8) or LMidi[13]));
+end;
+
+procedure TTestXmiConverter.TestSimpleCmfMatchesTheOldConverter;
+var
+  LCmf, LNew, LOld: TBytes;
+begin
+  LCmf := TXmiSamples.BuildCmf;
+  LOld := ConvertWithTheOldCode(LCmf, 0);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LNew)));
+  Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
+  Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
+end;
+
+procedure TTestXmiConverter.TestRichCmfMatchesTheOldConverter;
+var
+  LCmf, LNew, LOld: TBytes;
+begin
+  LCmf := BuildRichCmf(RichCmfEvents);
+  LOld := ConvertWithTheOldCode(LCmf, 0);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LNew)));
+  Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
+  Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
+end;
+
+procedure TTestXmiConverter.TestCmfDropsTheControllersMidiDoesNotKnow;
+var
+  LCmf, LMidi: TBytes;
+  LIndex: Integer;
+  LControllers: Integer;
+begin
+  LCmf := BuildRichCmf(RichCmfEvents);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LMidi)));
+
+  // No Control Change of the CMF controllers is left in the file
+  LControllers := 0;
+  for LIndex := 22 to Length(LMidi) - 3 do
+    if (LMidi[LIndex] = $B0) and (LMidi[LIndex + 1] in [$63, $67, $68, $69]) then
+      Inc(LControllers);
+  Assert.AreEqual(0, LControllers);
 end;
 
 procedure TTestXmiConverter.TestNoteWithoutDurationIsTurnedOffRightAway;

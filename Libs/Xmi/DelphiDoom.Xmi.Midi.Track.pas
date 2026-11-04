@@ -29,6 +29,12 @@ type
     function Add(const AEvent: TXmiEvent): Integer;
 
     /// <summary>
+    ///   Adds an event read from a file: the first track name (meta event 3
+    ///   with a text) becomes the title of the track
+    /// </summary>
+    procedure AddRead(const AEvent: TXmiEvent);
+
+    /// <summary>
     ///   Inserts AEvent before the event AIndex (at the end if AIndex = Count)
     /// </summary>
     procedure Insert(AIndex: Integer; const AEvent: TXmiEvent);
@@ -89,6 +95,14 @@ begin
   FEvents[FCount] := AEvent;
   Result := FCount;
   Inc(FCount);
+end;
+
+procedure TXmiTrack.AddRead(const AEvent: TXmiEvent);
+begin
+  if (AEvent.Status = XMI_STATUS_META) and (AEvent.Param1 = XMI_META_TRACK_NAME) and
+     (FTitle = '') and (AEvent.Text <> '') then
+    FTitle := AEvent.Text;
+  Add(AEvent);
 end;
 
 procedure TXmiTrack.Insert(AIndex: Integer; const AEvent: TXmiEvent);

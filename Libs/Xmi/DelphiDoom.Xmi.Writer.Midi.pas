@@ -11,8 +11,8 @@ unit DelphiDoom.Xmi.Writer.Midi;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.Xmi.Midi.Song,
-  DelphiDoom.Xmi.Midi.Track;
+  System.SysUtils, System.Classes, DelphiDoom.Xmi.Midi.Types,
+  DelphiDoom.Xmi.Midi.Song, DelphiDoom.Xmi.Midi.Track;
 
 type
   /// <summary>
@@ -36,9 +36,6 @@ type
   end;
 
 implementation
-
-uses
-  DelphiDoom.Xmi.Midi.Types;
 
 const
   HEADER_TAG: array[0..3] of AnsiChar = 'MThd';
