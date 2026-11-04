@@ -145,3 +145,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestTrackerItDecompressor);
 
 end.
+

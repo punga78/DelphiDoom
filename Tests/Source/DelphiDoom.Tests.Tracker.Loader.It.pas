@@ -469,3 +469,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestTrackerItLoader);
 
 end.
+
