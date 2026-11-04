@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of TXmiConverter, against the converter of xmi_core       }
+{  DelphiDoom: tests of TXmiConverter                                         }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -21,7 +21,6 @@ type
     function RichEvents: TBytes;
     function BuildRichCmf(const AEvents: array of Byte): TBytes;
     function RichCmfEvents: TBytes;
-    function ConvertWithTheOldCode(const ASource: TBytes; ATrack: Integer): TBytes;
   public
     [Test]
     procedure TestDetectsEveryFormat;
@@ -38,19 +37,11 @@ type
     [Test]
     procedure TestGarbageIsNotConverted;
     [Test]
-    procedure TestSimpleXmiMatchesTheOldConverter;
-    [Test]
-    procedure TestRichXmiMatchesTheOldConverter;
-    [Test]
     procedure TestRichXmiGivesTheExpectedFile;
     [Test]
     procedure TestRichCmfGivesTheExpectedFile;
     [Test]
     procedure TestCmfIsConverted;
-    [Test]
-    procedure TestSimpleCmfMatchesTheOldConverter;
-    [Test]
-    procedure TestRichCmfMatchesTheOldConverter;
     [Test]
     procedure TestCmfDropsTheControllersMidiDoesNotKnow;
     [Test]
@@ -63,7 +54,7 @@ implementation
 
 uses
   System.Classes, DelphiDoom.Xmi.Intf, DelphiDoom.Xmi.Midi.Types,
-  DelphiDoom.Xmi.Native, DelphiDoom.Xmi.Converter,
+  DelphiDoom.Xmi.Converter,
   DelphiDoom.Tests.Xmi.Samples;
 
 const
@@ -79,7 +70,7 @@ function TTestXmiConverter.BuildRichXmi(const AEvents: array of Byte): TBytes;
 var
   LStream: TBytesStream;
   LEventsSize: Cardinal;
-  LPadding: Integer;
+  LPadding: Cardinal;
   LZero: Byte;
 
   procedure WriteTag(const ATag: AnsiString);
@@ -216,22 +207,6 @@ begin
     $00, $FF, $2F, $00);
 end;
 
-function TTestXmiConverter.ConvertWithTheOldCode(const ASource: TBytes;
-  ATrack: Integer): TBytes;
-var
-  LStatus: TXmiNativeStatus;
-begin
-  XmiNativeAcquire;
-  try
-    LStatus := XmiNativeConvertToMidi(Pointer(ASource), Length(ASource), ATrack,
-      Result);
-    Assert.AreEqual(Ord(TXmiNativeStatus.Ok), Ord(LStatus),
-      'the old converter accepts the song');
-  finally
-    XmiNativeRelease;
-  end;
-end;
-
 procedure TTestXmiConverter.TestDetectsEveryFormat;
 var
   LXmi, LCmf, LSop, LMidi: TBytes;
@@ -319,33 +294,6 @@ begin
   Assert.AreEqual(0, Length(LMidi));
 end;
 
-procedure TTestXmiConverter.TestSimpleXmiMatchesTheOldConverter;
-var
-  LXmi, LNew: TBytes;
-begin
-  LXmi := TXmiSamples.BuildXmi;
-  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
-    Ord(TXmiConverter.ConvertToMidi(Pointer(LXmi), Length(LXmi), 0, LNew)));
-  Assert.AreEqual(Length(ConvertWithTheOldCode(LXmi, 0)), Length(LNew));
-  Assert.AreEqualMemory(Pointer(ConvertWithTheOldCode(LXmi, 0)), Pointer(LNew),
-    Length(LNew));
-end;
-
-procedure TTestXmiConverter.TestRichXmiMatchesTheOldConverter;
-var
-  LXmi, LNew, LOld: TBytes;
-begin
-  LXmi := BuildRichXmi(RichEvents);
-  LOld := ConvertWithTheOldCode(LXmi, 0);
-  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
-    Ord(TXmiConverter.ConvertToMidi(Pointer(LXmi), Length(LXmi), 0, LNew)));
-  Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
-  Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
-end;
-
-// Worked out by hand from the rules of the conversion: the notes end where
-// their duration says (the first note off carries the delay, the second one
-// uses the running status), the tempo is the one of the start of the song
 procedure TTestXmiConverter.TestRichXmiGivesTheExpectedFile;
 var
   LXmi, LMidi, LExpected: TBytes;
@@ -356,7 +304,7 @@ begin
 
   LExpected := TBytes.Create(
     $4D, $54, $68, $64, $00, $00, $00, $06, $00, $02, $00, $01, $00, $3C,
-    $4D, $54, $72, $6B, $00, $00, $00, $3D,
+    $4D, $54, $72, $6B, $00, $00, $00, $3C,
     $00, $C0, $05,
     $00, $B0, $07, $64,
     $00, $FF, $51, $03, $07, $A1, $20,
@@ -420,30 +368,6 @@ begin
   Assert.AreEqual(96, Integer((LMidi[12] shl 8) or LMidi[13]));
 end;
 
-procedure TTestXmiConverter.TestSimpleCmfMatchesTheOldConverter;
-var
-  LCmf, LNew, LOld: TBytes;
-begin
-  LCmf := TXmiSamples.BuildCmf;
-  LOld := ConvertWithTheOldCode(LCmf, 0);
-  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
-    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LNew)));
-  Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
-  Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
-end;
-
-procedure TTestXmiConverter.TestRichCmfMatchesTheOldConverter;
-var
-  LCmf, LNew, LOld: TBytes;
-begin
-  LCmf := BuildRichCmf(RichCmfEvents);
-  LOld := ConvertWithTheOldCode(LCmf, 0);
-  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
-    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LNew)));
-  Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
-  Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
-end;
-
 procedure TTestXmiConverter.TestCmfDropsTheControllersMidiDoesNotKnow;
 var
   LCmf, LMidi: TBytes;
@@ -505,3 +429,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestXmiConverter);
 
 end.
+

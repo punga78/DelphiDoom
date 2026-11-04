@@ -12,10 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Xmi;.\Libs\Xmi\Shim;.\XMILIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Xmi;.\XMILIB;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ResourcePath>.\XMILIB;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>.\XMILIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_UnitSearchPath>.\Libs\Xmi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.\Libs\Xmi;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
         <DCC_DcuOutput>dcu\Libs\DDXmi\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

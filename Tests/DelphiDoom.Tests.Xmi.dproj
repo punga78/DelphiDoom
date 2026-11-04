@@ -12,10 +12,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Xmi;..\Libs\Xmi\Shim;..\XMILIB;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Xmi;..\XMILIB;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>..\XMILIB;..\Libs\Zlib;$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_ResourcePath>..\XMILIB;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Xmi;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Libs\Xmi;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Tests\Xmi\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>

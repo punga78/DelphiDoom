@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XMI/CMF - implementation of IXmi on top of xmi_core             }
+{  DelphiDoom: XMI/CMF - implementation of IXmi                                }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -51,23 +51,19 @@ type
 implementation
 
 uses
-  DelphiDoom.Xmi.Native;
+  DelphiDoom.Xmi.Midi.Types, DelphiDoom.Xmi.Converter;
 
 const
   MAX_BUFFER_SIZE = Cardinal(High(Integer));
 
-  FORMATS: array[TXmiNativeFormat] of TXmiFormat = (
-    TXmiFormat.Unknown, TXmiFormat.Xmi, TXmiFormat.Cmf, TXmiFormat.Sop,
-    TXmiFormat.Midi);
-
-function CodeOf(AStatus: TXmiNativeStatus): Integer;
+function CodeOf(AStatus: TXmiConversionStatus): Integer;
 begin
   case AStatus of
-    TXmiNativeStatus.Ok:              Result := XMI_OK;
-    TXmiNativeStatus.UnknownFormat:   Result := XMI_ERROR_FORMAT;
-    TXmiNativeStatus.BadData:         Result := XMI_ERROR_DATA;
-    TXmiNativeStatus.TrackOutOfRange: Result := XMI_ERROR_TRACK;
-    TXmiNativeStatus.OutOfMemory:     Result := XMI_ERROR_MEMORY;
+    TXmiConversionStatus.Ok:              Result := XMI_OK;
+    TXmiConversionStatus.UnknownFormat:   Result := XMI_ERROR_FORMAT;
+    TXmiConversionStatus.BadData:         Result := XMI_ERROR_DATA;
+    TXmiConversionStatus.TrackOutOfRange: Result := XMI_ERROR_TRACK;
+    TXmiConversionStatus.OutOfMemory:     Result := XMI_ERROR_MEMORY;
   else
     Result := XMI_ERROR_INTERNAL;
   end;
@@ -79,12 +75,10 @@ constructor TXmiEngine.Create;
 begin
   inherited Create;
   FLock := TCriticalSection.Create;
-  XmiNativeAcquire;
 end;
 
 destructor TXmiEngine.Destroy;
 begin
-  XmiNativeRelease;
   FreeAndNil(FLock);
   inherited;
 end;
@@ -126,7 +120,7 @@ begin
     Exit(Ord(TXmiFormat.Unknown));
 
   try
-    Result := Ord(FORMATS[XmiNativeDetectFormat(ASource, Integer(ASourceSize))]);
+    Result := Ord(TXmiConverter.DetectFormat(ASource, Integer(ASourceSize)));
   except
     Result := XMI_ERROR_INTERNAL;
   end;
@@ -142,7 +136,7 @@ begin
     Exit(XMI_ERROR_ARGUMENT);
 
   try
-    Result := CodeOf(XmiNativeCountTracks(ASource, Integer(ASourceSize), LCount));
+    Result := CodeOf(TXmiConverter.CountTracks(ASource, Integer(ASourceSize), LCount));
     if Result = XMI_OK then
       ATrackCount := Cardinal(LCount);
   except
@@ -154,14 +148,14 @@ function TXmiEngine.ConvertLocked(ASource: Pointer; ASourceSize,
   ATrack: Cardinal; ADest: Pointer; var ADestSize: Cardinal): Integer;
 var
   LMidi: TBytes;
-  LStatus: TXmiNativeStatus;
+  LStatus: TXmiConversionStatus;
 begin
   if not IsPending(ASource, ASourceSize, ATrack) then
   begin
     ClearPending;
-    LStatus := XmiNativeConvertToMidi(ASource, Integer(ASourceSize),
+    LStatus := TXmiConverter.ConvertToMidi(ASource, Integer(ASourceSize),
       Integer(ATrack), LMidi);
-    if LStatus <> TXmiNativeStatus.Ok then
+    if LStatus <> TXmiConversionStatus.Ok then
       Exit(CodeOf(LStatus));
     KeepPending(ASource, ASourceSize, ATrack, LMidi);
   end;
