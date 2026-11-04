@@ -77,6 +77,7 @@ var
     LDataOffset: Integer;
     LRaw: TBytes;
     LWord: Integer;
+    LSampleIndex: Integer;
   begin
     LInstrument := TTrackerInstrument.Create;
     Result.Instruments.Add(LInstrument);
@@ -119,25 +120,25 @@ var
     if (LSampleFlags and FLAG_16BIT) <> 0 then
     begin
       SetLength(LSample.Data, Length(LRaw) div 2);
-      for LRow := 0 to High(LSample.Data) do
+      for LSampleIndex := 0 to High(LSample.Data) do
       begin
-        LWord := LRaw[2 * LRow] or (LRaw[2 * LRow + 1] shl 8);
+        LWord := LRaw[2 * LSampleIndex] or (LRaw[2 * LSampleIndex + 1] shl 8);
         if LSampleFormat = 2 then
           LWord := LWord - 32768
         else if LWord >= 32768 then
           LWord := LWord - 65536;
-        LSample.Data[LRow] := LWord;
+        LSample.Data[LSampleIndex] := LWord;
       end;
     end
     else
     begin
       SetLength(LSample.Data, Length(LRaw));
-      for LRow := 0 to High(LRaw) do
+      for LSampleIndex := 0 to High(LRaw) do
       begin
         if LSampleFormat = 2 then
-          LSample.Data[LRow] := (Integer(LRaw[LRow]) - 128) * 256
+          LSample.Data[LSampleIndex] := (Integer(LRaw[LSampleIndex]) - 128) * 256
         else
-          LSample.Data[LRow] := ShortInt(LRaw[LRow]) * 256;
+          LSample.Data[LSampleIndex] := ShortInt(LRaw[LSampleIndex]) * 256;
       end;
     end;
 
@@ -301,3 +302,4 @@ begin
 end;
 
 end.
+
