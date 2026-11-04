@@ -12,3 +12,5 @@ Il confronto con un'altra implementazione **non può essere byte per byte**: glb
 ## glbsp_map01_normal.wad
 
 L'uscita dell'eseguibile glbsp incorporato (2.24) su `glbsp_map01.wad` con `-q -xp -n` (ricostruisce anche i nodi normali): `VERTEXES`, `SEGS`, `SSECTORS`, `NODES`, `BLOCKMAP`, `REJECT` e i lump GL. `Tests\Source\DelphiDoom.Tests.Glbsp.Wad.Builder.pas` confronta con questo file l'uscita del porting in Pascal, con la stessa tolleranza (±1 su vertici, angoli, distanze e coordinate dei nodi; tutto il resto identico).
+
+I riferimenti sono stati prodotti con l'eseguibile glbsp 2.24 che era incorporato nel motore (poi sostituito dal porting in Pascal, issue #2); i sorgenti C 2.24 sono nella storia di git.
