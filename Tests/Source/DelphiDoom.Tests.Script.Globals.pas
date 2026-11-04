@@ -143,7 +143,7 @@ var
   LIndex: Integer;
 begin
   for LIndex := 0 to FExecutor.GlobalCount - 1 do
-    if FExecutor.GlobalName(LIndex) = UpperCase(AName) then
+    if string(FExecutor.GlobalName(LIndex)) = UpperCase(AName) then
       Exit(LIndex);
 
   Result := -1;
