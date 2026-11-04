@@ -8,13 +8,13 @@
 {******************************************************************************}
 unit DelphiDoom.Sndfile.Native;
 
-// The libsndfile objects (AUDIOLIB\libsndfile\obj\*.obj) are linked with the L
+// The libsndfile objects (Libs\Sndfile\Native\libsndfile\obj\*.obj) are linked with the L
 // directive, together with the units libogg, libvorbis and libflac (codecs of
 // libsndfile) and C_LIB\c_lib, which emulates the C runtime the objects import.
-// The folders AUDIOLIB and C_LIB must be in the unit search path and in the
+// The folders Libs\Sndfile\Native and C_LIB must be in the unit search path and in the
 // object path of the project.
 //
-// This unit replaces AUDIOLIB\libsndfile.pas inside the DLL: that unit needs
+// This unit replaces the old AUDIOLIB\libsndfile.pas inside the DLL: that unit needs
 // d_delphi (only for the TDStream type of its callbacks), so it would drag the
 // whole engine in. Here the callbacks receive a plain Pointer. The two units
 // must never be compiled in the same program (they link the same objects).
@@ -204,7 +204,7 @@ function _sf_readf_double(AHandle: TSndfileHandle; ABuffer: Pointer;
   AFrames: TSfCount): TSfCount; cdecl; external;
 
 // Entry points of libsndfile that this unit does not use. They are declared like
-// in AUDIOLIB\libsndfile.pas so that the linker resolves the references between
+// in the old AUDIOLIB\libsndfile.pas so that the linker resolves the references between
 // the objects exactly as it does in the engine
 procedure _sf_open; external;
 procedure _sf_open_fd; external;
