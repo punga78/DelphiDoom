@@ -82,6 +82,7 @@ var
     LInstrument := TTrackerInstrument.Create;
     Result.Instruments.Add(LInstrument);
     LSample := TTrackerSample.Create;
+    Result.Samples.Add(LSample);
     LInstrument.Samples.Add(LSample);
     if AParagraph = 0 then
       Exit;

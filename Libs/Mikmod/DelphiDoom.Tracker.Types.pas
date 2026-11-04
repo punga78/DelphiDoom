@@ -102,19 +102,41 @@ type
     function Length: Integer;
   end;
 
+  /// <summary>What an IT instrument does to the note that is playing when a new one starts</summary>
+  TTrackerNewNoteAction = (nnaCut, nnaContinue, nnaOff, nnaFade);
+
   /// <summary>
   ///   An instrument: the samples it uses and, for XM and IT, the envelopes.
   ///   In MOD and S3M an instrument is a sample
   /// </summary>
+  /// <remarks>
+  ///   The samples belong to the module, because in IT several instruments
+  ///   can use the same sample
+  /// </remarks>
   TTrackerInstrument = class
   public
     Name: string;
-    Samples: TObjectList<TTrackerSample>;
+    Samples: TList<TTrackerSample>;
     /// <summary>For each note (0..119), the index in Samples</summary>
     SampleMap: array[0..119] of Byte;
+    /// <summary>For each note (0..119), the note that is played (IT; the note + 1 elsewhere)</summary>
+    NoteMap: array[0..119] of Byte;
     VolumeEnvelope: TTrackerEnvelope;
     PanningEnvelope: TTrackerEnvelope;
+    PitchEnvelope: TTrackerEnvelope;
     FadeOut: Word;
+    /// <summary>0..128</summary>
+    GlobalVolume: Byte;
+    /// <summary>-1 for none, otherwise 0..255</summary>
+    DefaultPanning: SmallInt;
+    NewNoteAction: TTrackerNewNoteAction;
+    /// <summary>IT: 0 off, 1 note, 2 sample, 3 instrument</summary>
+    DuplicateCheckType: Byte;
+    /// <summary>IT: 0 cut, 1 off, 2 fade</summary>
+    DuplicateCheckAction: Byte;
+    /// <summary>IT: panning change per note away from PitchPanCenter, -32..32</summary>
+    PitchPanSeparation: ShortInt;
+    PitchPanCenter: Byte;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -149,7 +171,11 @@ type
     Orders: TArray<Byte>;
     RestartPosition: Integer;
     Patterns: TObjectList<TTrackerPattern>;
+    /// <summary>All the samples of the module; the instruments refer to them</summary>
+    Samples: TObjectList<TTrackerSample>;
     Instruments: TObjectList<TTrackerInstrument>;
+    /// <summary>XM and IT: the slides are linear in frequency (otherwise as the Amiga)</summary>
+    LinearSlides: Boolean;
     /// <summary>Panning of each channel, -1 for none</summary>
     ChannelPanning: TArray<SmallInt>;
     constructor Create;
@@ -176,9 +202,15 @@ end;
 { TTrackerInstrument }
 
 constructor TTrackerInstrument.Create;
+var
+  LNote: Integer;
 begin
   inherited Create;
-  Samples := TObjectList<TTrackerSample>.Create(True);
+  Samples := TList<TTrackerSample>.Create;
+  GlobalVolume := 128;
+  DefaultPanning := TRACKER_NO_PANNING;
+  for LNote := 0 to 119 do
+    NoteMap[LNote] := LNote + 1;
 end;
 
 destructor TTrackerInstrument.Destroy;
@@ -217,6 +249,7 @@ constructor TTrackerModule.Create;
 begin
   inherited Create;
   Patterns := TObjectList<TTrackerPattern>.Create(True);
+  Samples := TObjectList<TTrackerSample>.Create(True);
   Instruments := TObjectList<TTrackerInstrument>.Create(True);
   InitialSpeed := 6;
   InitialTempo := 125;
@@ -226,6 +259,7 @@ end;
 destructor TTrackerModule.Destroy;
 begin
   Instruments.Free;
+  Samples.Free;
   Patterns.Free;
   inherited Destroy;
 end;

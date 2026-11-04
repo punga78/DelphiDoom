@@ -148,6 +148,7 @@ begin
       LInstrument := TTrackerInstrument.Create;
       Result.Instruments.Add(LInstrument);
       LSample := TTrackerSample.Create;
+      Result.Samples.Add(LSample);
       LInstrument.Samples.Add(LSample);
 
       LInstrument.Name := LReader.ReadText(22);
