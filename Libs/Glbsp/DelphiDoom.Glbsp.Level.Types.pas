@@ -12,6 +12,9 @@ unit DelphiDoom.Glbsp.Level.Types;
 
 interface
 
+uses
+  System.SysUtils;
+
 const
   /// <summary>Bit 30 of the index of a GL vertex</summary>
   IS_GL_VERTEX = 1 shl 30;
@@ -20,6 +23,9 @@ const
   SUPERBLOCK_LEAF_SIZE = 256;
 
 type
+  /// <summary>Raised when the data of a level is missing or inconsistent</summary>
+  EGlbspLevelException = class(Exception);
+
   TGlbspSector = class;
   TGlbspSidedef = class;
   TGlbspLinedef = class;
