@@ -9,10 +9,10 @@
 library DDGlbsp;
 
 uses
-  DelphiDoom.Glbsp.Intf in 'Libs\Glbsp\DelphiDoom.Glbsp.Intf.pas',
-  DelphiDoom.Glbsp.Executable in 'Libs\Glbsp\DelphiDoom.Glbsp.Executable.pas',
-  DelphiDoom.Glbsp.Runner in 'Libs\Glbsp\DelphiDoom.Glbsp.Runner.pas',
-  DelphiDoom.Glbsp.Engine in 'Libs\Glbsp\DelphiDoom.Glbsp.Engine.pas';
+  DelphiDoom.Glbsp.Intf in 'DelphiDoom.Glbsp.Intf.pas',
+  DelphiDoom.Glbsp.Executable in 'DelphiDoom.Glbsp.Executable.pas',
+  DelphiDoom.Glbsp.Runner in 'DelphiDoom.Glbsp.Runner.pas',
+  DelphiDoom.Glbsp.Engine in 'DelphiDoom.Glbsp.Engine.pas';
 
 function DDGlbspCreate(out AGlbsp: IGlbsp): Integer; stdcall;
 begin

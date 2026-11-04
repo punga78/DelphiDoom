@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{A3E51C74-92B8-5F0D-B6A1-4C7D2E8F9013}</ProjectGuid>
-        <MainSource>DDXmi.dpr</MainSource>
+        <ProjectGuid>{8E3B0F57-3A21-5C7E-9D44-2B6A1F0C7D93}</ProjectGuid>
+        <MainSource>DDMikmod.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -12,13 +12,12 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Xmi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Xmi;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\Libs\DDXmi\$(Config)</DCC_DcuOutput>
-        <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <DCC_ImageBase>00500000</DCC_ImageBase>
+        <DCC_UnitSearchPath>.;..\..\Base;..\..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.;..\..\Base;..\..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\Libs\DDMikmod\$(Config)</DCC_DcuOutput>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_E>false</DCC_E>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
@@ -28,7 +27,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
-        <SanitizedProjectName>DDXmi</SanitizedProjectName>
+        <SanitizedProjectName>DDMikmod</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{B7E2A4C1-3D85-5F96-8A10-4C7E9D2B6F53}</ProjectGuid>
-        <MainSource>DDMp3.dpr</MainSource>
+        <ProjectGuid>{7E2B4D16-DEAA-46C7-9B59-6242E892DFDA}</ProjectGuid>
+        <MainSource>DDGlbsp.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -12,10 +12,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Mp3;.\Libs\Mp3\Shim;.\MP3LIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Mp3\Shim;.\Libs\Mp3;.\MP3LIB;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\Libs\DDMp3\$(Config)</DCC_DcuOutput>
+        <DCC_UnitSearchPath>.;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\Libs\DDGlbsp\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_E>false</DCC_E>
@@ -27,7 +27,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
-        <SanitizedProjectName>DDMp3</SanitizedProjectName>
+        <SanitizedProjectName>DDGlbsp</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

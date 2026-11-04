@@ -9,12 +9,12 @@
 library DDMikmod;
 
 uses
-  DirectX in 'Common\DirectX.pas',
-  BTMemoryModule in 'Base\BTMemoryModule.pas',
-  mikmod in 'Base\mikmod.pas',
-  DelphiDoom.Mikmod.Intf in 'Libs\Mikmod\DelphiDoom.Mikmod.Intf.pas',
-  DelphiDoom.Mikmod.Player in 'Libs\Mikmod\DelphiDoom.Mikmod.Player.pas',
-  DelphiDoom.Mikmod.Engine in 'Libs\Mikmod\DelphiDoom.Mikmod.Engine.pas';
+  DirectX in '..\..\Common\DirectX.pas',
+  BTMemoryModule in '..\..\Base\BTMemoryModule.pas',
+  mikmod in '..\..\Base\mikmod.pas',
+  DelphiDoom.Mikmod.Intf in 'DelphiDoom.Mikmod.Intf.pas',
+  DelphiDoom.Mikmod.Player in 'DelphiDoom.Mikmod.Player.pas',
+  DelphiDoom.Mikmod.Engine in 'DelphiDoom.Mikmod.Engine.pas';
 
 function DDMikmodCreate(out AMikMod: IMikMod): Integer; stdcall;
 begin

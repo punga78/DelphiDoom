@@ -34,7 +34,7 @@ set "CLEAN=%~3"
 
 set "GIOCHI=Doom32 GLDoom32 Heretic32 GLHeretic32 Hexen32 GLHexen32 Strife32 GLStrife32"
 set "STRUMENTI=Launcher DD_IDE ddc ddc_doom ddc_heretic ddc_hexen ddc_strife"
-set "LIBRERIE=DDZlib DDJpeg DDMp3 DDXmi DDSndfile DDMikmod DDGlbsp DDPng DDScript"
+set "LIBRERIE=Libs\Zlib\DDZlib Libs\Jpeg\DDJpeg Libs\Mp3\DDMp3 Libs\Xmi\DDXmi Libs\Sndfile\DDSndfile Libs\Mikmod\DDMikmod Libs\Glbsp\DDGlbsp Libs\Png\DDPng Libs\Script\DDScript"
 set "TESTS=Tests\DelphiDoom.Tests Tests\DelphiDoom.Tests.Jpeg Tests\DelphiDoom.Tests.Mp3 Tests\DelphiDoom.Tests.Xmi Tests\DelphiDoom.Tests.Sndfile Tests\DelphiDoom.Tests.Mikmod Tests\DelphiDoom.Tests.Glbsp Tests\DelphiDoom.Tests.Png Tests\DelphiDoom.Tests.Script"
 
 set "LISTA="

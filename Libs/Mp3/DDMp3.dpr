@@ -14,27 +14,27 @@ library DDMp3;
 // (mp3_SubBand*, mp3_ScaleFac) are not part of the DLL.
 
 uses
-  d_delphi in 'Libs\Mp3\Shim\d_delphi.pas',
-  i_system in 'Libs\Mp3\Shim\i_system.pas',
-  mp3_Shared in 'MP3LIB\mp3_Shared.pas',
-  mp3_CRC in 'MP3LIB\mp3_CRC.pas',
-  mp3_BitReserve in 'MP3LIB\mp3_BitReserve.pas',
-  mp3_BitStream in 'MP3LIB\mp3_BitStream.pas',
-  mp3_Header in 'MP3LIB\mp3_Header.pas',
-  mp3_OBuffer in 'MP3LIB\mp3_OBuffer.pas',
-  mp3_SynthFilter in 'MP3LIB\mp3_SynthFilter.pas',
-  mp3_L3Type in 'MP3LIB\mp3_L3Type.pas',
-  mp3_L3Tables in 'MP3LIB\mp3_L3Tables.pas',
-  mp3_Huffman in 'MP3LIB\mp3_Huffman.pas',
-  mp3_InvMDT in 'MP3LIB\mp3_InvMDT.pas',
-  mp3_Layer3 in 'MP3LIB\mp3_Layer3.pas',
-  DelphiDoom.Mp3.Intf in 'Libs\Mp3\DelphiDoom.Mp3.Intf.pas',
-  DelphiDoom.Mp3.Stream in 'Libs\Mp3\DelphiDoom.Mp3.Stream.pas',
-  DelphiDoom.Mp3.FrameLocator in 'Libs\Mp3\DelphiDoom.Mp3.FrameLocator.pas',
-  DelphiDoom.Mp3.PcmBuffer in 'Libs\Mp3\DelphiDoom.Mp3.PcmBuffer.pas',
-  DelphiDoom.Mp3.Native in 'Libs\Mp3\DelphiDoom.Mp3.Native.pas',
-  DelphiDoom.Mp3.Decoder in 'Libs\Mp3\DelphiDoom.Mp3.Decoder.pas',
-  DelphiDoom.Mp3.Engine in 'Libs\Mp3\DelphiDoom.Mp3.Engine.pas';
+  d_delphi in 'Shim\d_delphi.pas',
+  i_system in 'Shim\i_system.pas',
+  mp3_Shared in '..\..\MP3LIB\mp3_Shared.pas',
+  mp3_CRC in '..\..\MP3LIB\mp3_CRC.pas',
+  mp3_BitReserve in '..\..\MP3LIB\mp3_BitReserve.pas',
+  mp3_BitStream in '..\..\MP3LIB\mp3_BitStream.pas',
+  mp3_Header in '..\..\MP3LIB\mp3_Header.pas',
+  mp3_OBuffer in '..\..\MP3LIB\mp3_OBuffer.pas',
+  mp3_SynthFilter in '..\..\MP3LIB\mp3_SynthFilter.pas',
+  mp3_L3Type in '..\..\MP3LIB\mp3_L3Type.pas',
+  mp3_L3Tables in '..\..\MP3LIB\mp3_L3Tables.pas',
+  mp3_Huffman in '..\..\MP3LIB\mp3_Huffman.pas',
+  mp3_InvMDT in '..\..\MP3LIB\mp3_InvMDT.pas',
+  mp3_Layer3 in '..\..\MP3LIB\mp3_Layer3.pas',
+  DelphiDoom.Mp3.Intf in 'DelphiDoom.Mp3.Intf.pas',
+  DelphiDoom.Mp3.Stream in 'DelphiDoom.Mp3.Stream.pas',
+  DelphiDoom.Mp3.FrameLocator in 'DelphiDoom.Mp3.FrameLocator.pas',
+  DelphiDoom.Mp3.PcmBuffer in 'DelphiDoom.Mp3.PcmBuffer.pas',
+  DelphiDoom.Mp3.Native in 'DelphiDoom.Mp3.Native.pas',
+  DelphiDoom.Mp3.Decoder in 'DelphiDoom.Mp3.Decoder.pas',
+  DelphiDoom.Mp3.Engine in 'DelphiDoom.Mp3.Engine.pas';
 
 function DDMp3Create(out AMp3: IMp3): Integer; stdcall;
 begin

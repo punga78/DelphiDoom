@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{8E3B0F57-3A21-5C7E-9D44-2B6A1F0C7D93}</ProjectGuid>
-        <MainSource>DDMikmod.dpr</MainSource>
+        <ProjectGuid>{64DD9A4B-5BE4-5A99-B0E7-60C98B05C01E}</ProjectGuid>
+        <MainSource>DDZlib.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -12,10 +12,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Mikmod;.\Base;.\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Mikmod;.\Base;.\Common;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\Libs\DDMikmod\$(Config)</DCC_DcuOutput>
+        <DCC_UnitSearchPath>.;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>.;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\Libs\DDZlib\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_E>false</DCC_E>
@@ -27,7 +28,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
-        <SanitizedProjectName>DDMikmod</SanitizedProjectName>
+        <SanitizedProjectName>DDZlib</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

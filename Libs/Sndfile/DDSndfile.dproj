@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{3A7C5E12-9B84-4D6F-A1E3-5C20D8B7F964}</ProjectGuid>
-        <MainSource>DDPng.dpr</MainSource>
+        <ProjectGuid>{B14AF870-EEAA-53EA-AE22-3AC607A0DA92}</ProjectGuid>
+        <MainSource>DDSndfile.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -12,10 +12,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Png;.\Libs\Zlib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Png;.\Libs\Zlib;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\Libs\DDPng\$(Config)</DCC_DcuOutput>
+        <DCC_UnitSearchPath>.;..\..\AUDIOLIB;..\..\C_LIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.;..\..\AUDIOLIB;..\..\C_LIB;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>..\..\AUDIOLIB;..\..\C_LIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\Libs\DDSndfile\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_E>false</DCC_E>
@@ -27,7 +28,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
-        <SanitizedProjectName>DDPng</SanitizedProjectName>
+        <SanitizedProjectName>DDSndfile</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

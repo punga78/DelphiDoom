@@ -9,11 +9,11 @@
 library DDZlib;
 
 uses
-  DelphiDoom.Zlib.Intf in 'Libs\Zlib\DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Native in 'Libs\Zlib\DelphiDoom.Zlib.Native.pas',
-  DelphiDoom.Zlib.Inflater in 'Libs\Zlib\DelphiDoom.Zlib.Inflater.pas',
-  DelphiDoom.Zlib.Deflater in 'Libs\Zlib\DelphiDoom.Zlib.Deflater.pas',
-  DelphiDoom.Zlib.Engine in 'Libs\Zlib\DelphiDoom.Zlib.Engine.pas';
+  DelphiDoom.Zlib.Intf in 'DelphiDoom.Zlib.Intf.pas',
+  DelphiDoom.Zlib.Native in 'DelphiDoom.Zlib.Native.pas',
+  DelphiDoom.Zlib.Inflater in 'DelphiDoom.Zlib.Inflater.pas',
+  DelphiDoom.Zlib.Deflater in 'DelphiDoom.Zlib.Deflater.pas',
+  DelphiDoom.Zlib.Engine in 'DelphiDoom.Zlib.Engine.pas';
 
 function DDZlibCreate(out AZlib: IZlib): Integer; stdcall;
 begin

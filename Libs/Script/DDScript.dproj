@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{7E2B4D16-DEAA-46C7-9B59-6242E892DFDA}</ProjectGuid>
-        <MainSource>DDGlbsp.dpr</MainSource>
+        <ProjectGuid>{7F2B9C41-5D83-4A6E-B170-3E8A1D95C2F6}</ProjectGuid>
+        <MainSource>DDScript.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -12,12 +12,15 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\Libs\Glbsp;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\Libs\Glbsp;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>bin\Libs</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\Libs\DDGlbsp\$(Config)</DCC_DcuOutput>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
-        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <DCC_UnitSearchPath>.;Shim;..\..\SCRIPT;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>Shim;.;..\..\SCRIPT;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ResourcePath>..\..\SCRIPT;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ObjPath>..\..\SCRIPT;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\Libs\DDScript\$(Config)</DCC_DcuOutput>
+        <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_ImageBase>00500000</DCC_ImageBase>
         <DCC_E>false</DCC_E>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
@@ -27,7 +30,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_AdditionalSwitches>-TX.dll $(DCC_AdditionalSwitches)</DCC_AdditionalSwitches>
-        <SanitizedProjectName>DDGlbsp</SanitizedProjectName>
+        <SanitizedProjectName>DDScript</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
