@@ -89,10 +89,10 @@ uses
   System.Generics.Collections,
   System.Generics.Defaults,
   System.Math,
-  System.ZLib,
   DelphiDoom.Glbsp.Level.Raw,
   DelphiDoom.Glbsp.Util,
-  DelphiDoom.Glbsp.Wad.Types;
+  DelphiDoom.Glbsp.Wad.Types,
+  DelphiDoom.Zlib.Provider;
 
 const
   MAX_VERTICES_16BIT = 32767;
@@ -898,8 +898,8 @@ begin
     PutZSegs(LStream);
     PutZNodes(ARoot, LStream);
 
-    // The same zlib stream as glbsp (default compression level)
-    ZCompress(Copy(LStream.Bytes, 0, LStream.Size), LPacked);
+    // The same zlib as glbsp (1.2.8), with the default compression level
+    LPacked := TZlibProvider.Client.Compress(Copy(LStream.Bytes, 0, LStream.Size));
   finally
     LStream.Free;
   end;

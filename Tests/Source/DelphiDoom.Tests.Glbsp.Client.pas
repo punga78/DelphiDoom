@@ -35,7 +35,6 @@ type
       ABufferSize: Cardinal): Cardinal; static;
   public
     constructor Create(ALog: TStrings);
-    function GetExecutableSize: Cardinal; stdcall;
     function BuildNodes(AWadPath, AGwaPath: PAnsiChar; AOptions,
       ATimeoutMs: Cardinal): Integer; stdcall;
     function GetExitCode: Cardinal; stdcall;
@@ -63,8 +62,6 @@ type
 
     [Test]
     procedure TestCreateWithoutGlbspRaises;
-    [Test]
-    procedure TestExecutableSizeIsForwarded;
     [Test]
     procedure TestDefaultOptionsAreQuietAndNoProgress;
     [Test]
@@ -113,11 +110,6 @@ begin
   if LCount > 0 then
     Move(PAnsiChar(AText)^, ABuffer^, LCount);
   ABuffer[LCount] := #0;
-end;
-
-function TFakeGlbsp.GetExecutableSize: Cardinal;
-begin
-  Result := 1234;
 end;
 
 function TFakeGlbsp.BuildNodes(AWadPath, AGwaPath: PAnsiChar; AOptions,
@@ -170,11 +162,6 @@ begin
     begin
       TGlbspClient.Create(nil).Free;
     end, EArgumentNilException);
-end;
-
-procedure TTestGlbspClient.TestExecutableSizeIsForwarded;
-begin
-  Assert.AreEqual(1234, Integer(FClient.ExecutableSize));
 end;
 
 procedure TTestGlbspClient.TestDefaultOptionsAreQuietAndNoProgress;

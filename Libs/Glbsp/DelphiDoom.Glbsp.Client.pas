@@ -45,11 +45,6 @@ type
     constructor Create(const AGlbsp: IGlbsp);
 
     /// <summary>
-    ///   Length in bytes of the glbsp program inside the library
-    /// </summary>
-    function ExecutableSize: Cardinal;
-
-    /// <summary>
     ///   Builds the GL-friendly nodes of AWadPath into AGwaPath. Both paths
     ///   must be representable in the ANSI code page. Raises EGlbspException
     ///   (with the detail of the failure in its message) if the WAD does not
@@ -106,11 +101,6 @@ begin
   // The buffer includes room for the terminator
   AReader(PAnsiChar(LText), LLength + 1);
   Result := string(LText);
-end;
-
-function TGlbspClient.ExecutableSize: Cardinal;
-begin
-  Result := FGlbsp.GetExecutableSize;
 end;
 
 procedure TGlbspClient.BuildNodes(const AWadPath, AGwaPath: string;

@@ -1,6 +1,7 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: glbsp - implementation of IGlbsp on top of the embedded program }
+{  DelphiDoom: glbsp - implementation of IGlbsp on top of the Pascal node      }
+{  builder                                                                     }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -15,44 +16,29 @@ uses
 
 type
   /// <summary>
-  ///   Implements IGlbsp by running the glbsp executable that is embedded in
-  ///   DelphiDoom.Glbsp.Executable (see TGlbspProcess)
+  ///   Implements IGlbsp with TGlbspWadBuilder: the nodes are built in the
+  ///   process, with no external program
   /// </summary>
   /// <remarks>
-  ///   Creating the engine is free: the program is written to disk only
-  ///   while BuildNodes runs. Not thread safe: the engine keeps the result of
-  ///   the last BuildNodes
+  ///   An output path that ends with ".gwa" gets only the new lumps (a GWA
+  ///   file), as with the glbsp program; any other output is the whole WAD
+  ///   with the new lumps. The output file is written only when the build
+  ///   succeeded. Not thread safe: the engine keeps the result of the last
+  ///   BuildNodes
   /// </remarks>
   TGlbspEngine = class(TInterfacedObject, IGlbsp)
   private
-    FExecutable: Pointer;
-    FExecutableSize: Cardinal;
     FExitCode: Cardinal;
     FOutput: AnsiString;
     FErrorText: AnsiString;
     class function IsValidPath(APath: PAnsiChar): Boolean; static;
     class function CopyText(const AText: AnsiString; ABuffer: PAnsiChar;
       ABufferSize: Cardinal): Cardinal; static;
-    class function BuildArguments(const AWadPath, AGwaPath: string;
-      AOptions: Cardinal): string; static;
     function Validate(AWadPath, AGwaPath: PAnsiChar; AOptions,
       ATimeoutMs: Cardinal): Integer;
-    function Run(const AWadPath, AGwaPath: string; AOptions,
-      ATimeoutMs: Cardinal): Integer;
+    function Run(const AWadPath, AGwaPath: string; AOptions: Cardinal): Integer;
   public
-    /// <summary>
-    ///   Uses the glbsp executable embedded in the DLL
-    /// </summary>
-    constructor Create; overload;
-
-    /// <summary>
-    ///   Uses another program in place of glbsp (for the tests); the bytes
-    ///   must stay valid for the whole life of the engine
-    /// </summary>
-    constructor Create(AExecutable: Pointer; AExecutableSize: Cardinal); overload;
-
     // IGlbsp
-    function GetExecutableSize: Cardinal; stdcall;
     function BuildNodes(AWadPath, AGwaPath: PAnsiChar; AOptions,
       ATimeoutMs: Cardinal): Integer; stdcall;
     function GetExitCode: Cardinal; stdcall;
@@ -63,25 +49,15 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Glbsp.Executable, DelphiDoom.Glbsp.Runner;
+  System.Classes,
+  System.IOUtils,
+  System.SysUtils,
+  DelphiDoom.Glbsp.Level.Types,
+  DelphiDoom.Glbsp.Options,
+  DelphiDoom.Glbsp.Wad.Builder,
+  DelphiDoom.Glbsp.Wad.Document;
 
 { TGlbspEngine }
-
-constructor TGlbspEngine.Create;
-begin
-  Create(GlbspExecutableData, GlbspExecutableSize);
-end;
-
-constructor TGlbspEngine.Create(AExecutable: Pointer; AExecutableSize: Cardinal);
-begin
-  inherited Create;
-  if not Assigned(AExecutable) then
-    raise EArgumentNilException.Create('AExecutable');
-  if AExecutableSize = 0 then
-    raise EArgumentException.Create('AExecutableSize must be greater than zero');
-  FExecutable := AExecutable;
-  FExecutableSize := AExecutableSize;
-end;
 
 class function TGlbspEngine.IsValidPath(APath: PAnsiChar): Boolean;
 var
@@ -95,7 +71,8 @@ begin
   LLength := 0;
   while APath[LLength] <> #0 do
   begin
-    // The path is written between double quotes in the command line
+    // The contract keeps the rules of the time when the paths were put in a
+    // command line: no quotes and no control characters
     if (APath[LLength] < #32) or (APath[LLength] = '"') then
       Exit;
     Inc(LLength);
@@ -105,8 +82,7 @@ begin
 
   if LLength = 0 then
     Exit;
-  // A leading dash would be read as an option by glbsp; a trailing backslash
-  // would escape the closing double quote
+  // A leading dash and a trailing backslash are refused for the same reason
   if (APath[0] = '-') or (APath[LLength - 1] = '\') then
     Exit;
   Result := True;
@@ -129,21 +105,6 @@ begin
   ABuffer[LCount] := #0;
 end;
 
-class function TGlbspEngine.BuildArguments(const AWadPath, AGwaPath: string;
-  AOptions: Cardinal): string;
-begin
-  // Same order as the command lines the engine has always used:
-  // "wad" -q -xp -o "gwa" -hexen
-  Result := '"' + AWadPath + '"';
-  if (AOptions and GLBSP_OPT_QUIET) <> 0 then
-    Result := Result + ' -q';
-  if (AOptions and GLBSP_OPT_NO_PROGRESS) <> 0 then
-    Result := Result + ' -xp';
-  Result := Result + ' -o "' + AGwaPath + '"';
-  if (AOptions and GLBSP_OPT_HEXEN) <> 0 then
-    Result := Result + ' -hexen';
-end;
-
 function TGlbspEngine.Validate(AWadPath, AGwaPath: PAnsiChar; AOptions,
   ATimeoutMs: Cardinal): Integer;
 begin
@@ -159,56 +120,76 @@ begin
     FErrorText := 'The timeout is out of range'
   else if SameText(ExpandFileName(string(AnsiString(AWadPath))),
     ExpandFileName(string(AnsiString(AGwaPath)))) then
-    // glbsp would overwrite its own input
+    // The input would be overwritten
     FErrorText := 'The output file cannot be the WAD file'
   else
     Result := GLBSP_OK;
 end;
 
-function TGlbspEngine.Run(const AWadPath, AGwaPath: string; AOptions,
-  ATimeoutMs: Cardinal): Integer;
+function TGlbspEngine.Run(const AWadPath, AGwaPath: string; AOptions: Cardinal): Integer;
 var
-  LProcess: TGlbspProcess;
-  LStatus: TGlbspRunStatus;
+  LOptions: TGlbspOptions;
+  LBuilder: TGlbspWadBuilder;
+  LInput: TFileStream;
+  LOutput: TBytesStream;
 begin
-  LProcess := TGlbspProcess.Create(FExecutable, FExecutableSize);
+  LOptions := TGlbspOptions.Default;
+  LOptions.ForceHexen := (AOptions and GLBSP_OPT_HEXEN) <> 0;
+  // A GWA file gets only the new lumps, as the glbsp program does
+  LOptions.GwaMode := SameText(ExtractFileExt(AGwaPath), '.gwa');
+
+  LBuilder := TGlbspWadBuilder.Create(LOptions);
   try
-    LStatus := LProcess.Run(BuildArguments(AWadPath, AGwaPath, AOptions),
-      ATimeoutMs);
-    FOutput := LProcess.Output;
-    FExitCode := LProcess.ExitCode;
-    FErrorText := AnsiString(LProcess.ErrorText);
+    LOutput := TBytesStream.Create;
+    try
+      try
+        LInput := TFileStream.Create(AWadPath, fmOpenRead or fmShareDenyNone);
+        try
+          LBuilder.Build(LInput, LOutput);
+        finally
+          LInput.Free;
+        end;
+      except
+        // The WAD or the level is not valid: the program would exit with an error
+        on E: EGlbspWadException do
+        begin
+          FExitCode := 2;
+          FErrorText := AnsiString(E.Message);
+          Exit(GLBSP_ERR_PROCESS_FAILED);
+        end;
+        on E: EGlbspLevelException do
+        begin
+          FExitCode := 2;
+          FErrorText := AnsiString(E.Message);
+          Exit(GLBSP_ERR_PROCESS_FAILED);
+        end;
+        on E: EGlbspBuildException do
+        begin
+          FExitCode := 2;
+          FErrorText := AnsiString(E.Message);
+          Exit(GLBSP_ERR_PROCESS_FAILED);
+        end;
+      end;
+
+      FOutput := AnsiString(LBuilder.Messages.Text);
+
+      // The output file exists only if the whole build succeeded
+      try
+        TFile.WriteAllBytes(AGwaPath, Copy(LOutput.Bytes, 0, LOutput.Size));
+      except
+        on E: Exception do
+        begin
+          FErrorText := AnsiString('Cannot write the output file: ' + E.Message);
+          Exit(GLBSP_ERR_NO_OUTPUT);
+        end;
+      end;
+    finally
+      LOutput.Free;
+    end;
   finally
-    LProcess.Free;
-  end;
-
-  case LStatus of
-    grsTempFileFailed:
-      Exit(GLBSP_ERR_TEMP_FILE);
-    grsLaunchFailed:
-      Exit(GLBSP_ERR_LAUNCH);
-    grsTimedOut:
-      Exit(GLBSP_ERR_TIMEOUT);
-  end;
-
-  // The process ran to its end: its verdict is the exit code, and the output
-  // file is what proves that the nodes were really written
-  if FExitCode <> 0 then
-  begin
-    FErrorText := AnsiString(Format('glbsp exited with code %d', [FExitCode]));
-    Exit(GLBSP_ERR_PROCESS_FAILED);
-  end;
-  if not FileExists(AGwaPath) then
-  begin
-    FErrorText := 'glbsp exited with code 0 but the output file does not exist';
-    Exit(GLBSP_ERR_NO_OUTPUT);
+    LBuilder.Free;
   end;
   Result := GLBSP_OK;
-end;
-
-function TGlbspEngine.GetExecutableSize: Cardinal;
-begin
-  Result := FExecutableSize;
 end;
 
 function TGlbspEngine.BuildNodes(AWadPath, AGwaPath: PAnsiChar; AOptions,
@@ -229,15 +210,15 @@ begin
     LWadPath := string(AnsiString(AWadPath));
     LGwaPath := string(AnsiString(AGwaPath));
 
-    // glbsp would fail on a missing input as well, but a precise error is
-    // better than the output of a process that could not do anything
     if not FileExists(LWadPath) then
     begin
       FErrorText := AnsiString('WAD file not found: ' + LWadPath);
       Exit(GLBSP_ERR_WAD_NOT_FOUND);
     end;
 
-    Result := Run(LWadPath, LGwaPath, AOptions, ATimeoutMs);
+    // The timeout is accepted, but the build runs in this process and is not
+    // interrupted
+    Result := Run(LWadPath, LGwaPath, AOptions);
   except
     // An exception must never cross the DLL boundary
     on E: Exception do

@@ -97,8 +97,7 @@ begin
     LGlbsp := LLoader.Glbsp;
     try
       Assert.IsTrue(Assigned(LGlbsp));
-      Assert.AreEqual(57404, Integer(LGlbsp.GetExecutableSize));
-      // Stops at the validation: no process is started
+      // Stops at the validation: nothing is built
       Assert.AreEqual(GLBSP_ERR_INVALID_ARGUMENT,
         LGlbsp.BuildNodes(nil, nil, GLBSP_OPT_NONE, GLBSP_DEFAULT_TIMEOUT_MS));
     finally

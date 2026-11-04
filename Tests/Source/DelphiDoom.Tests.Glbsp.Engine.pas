@@ -8,22 +8,10 @@
 unit DelphiDoom.Tests.Glbsp.Engine;
 
 {
-  NOT covered here, on purpose: glbsp building the nodes of a real map. It
-  needs a WAD (commercial or not) and takes time, which the tests must never
-  depend on; it is proved by running the game, see "Build e prove" in
-  CLAUDE.md.
-
-  What is covered is everything the engine decides by itself: validation of
-  the arguments, the errors for a missing input, and what happens when the
-  process is started on a file that is not a WAD.
-
-  What the code does with a missing WAD: BuildNodes checks the file before
-  starting anything and returns GLBSP_ERR_WAD_NOT_FOUND. The historical code
-  (gld_BuildNodes and I_ExecProgram) did not: I_ExecProgram only reports
-  whether the process could be started and the pipe drained, it never reads
-  the exit code, so a missing WAD would have been "successful" and the
-  failure would have shown only as a missing GWA file at the next load. The
-  engine reads the exit code and checks that the output file exists.
+  The engine builds the nodes in the process. The complete comparison with
+  the output of the glbsp program is in DelphiDoom.Tests.Glbsp.Wad.Builder;
+  here is what the engine decides by itself: validation of the arguments, the
+  errors for a missing or bad input, the files it writes and the texts.
 }
 
 interface
@@ -48,18 +36,12 @@ type
       ATimeoutMs: Cardinal): Integer;
     function OutputText: string;
     function ErrorText: string;
+    function SamplePath: string;
   public
     [Setup]
     procedure Setup;
     [TearDown]
     procedure TearDown;
-
-    [Test]
-    procedure TestExecutableSizeIsTheEmbeddedOne;
-    [Test]
-    procedure TestCreateWithoutExecutableRaises;
-    [Test]
-    procedure TestCreateWithEmptyExecutableRaises;
 
     [Test]
     procedure TestNilPathsAreRejected;
@@ -94,11 +76,13 @@ type
     procedure TestMissingWadErrorTextContainsThePath;
 
     [Test]
-    procedure TestEngineWithNotAnExecutableReturnsLaunchError;
+    procedure TestFileThatIsNotAWadFails;
     [Test]
-    procedure TestGlbspOnAFileThatIsNotAWadDoesNotSucceed;
+    procedure TestBuildsAGwaFile;
     [Test]
-    procedure TestVeryShortTimeoutNeverSucceeds;
+    procedure TestBuildsAWholeWadWhenTheOutputIsNotGwa;
+    [Test]
+    procedure TestOutputIsOverwritten;
 
     [Test]
     procedure TestTextsWithoutBufferReturnTheLength;
@@ -116,7 +100,7 @@ uses
   DelphiDoom.Glbsp.Engine;
 
 const
-  // Anything: the process is never run on a real map
+  // Anything: the timeout is only checked, the build is not interrupted
   SOME_TIMEOUT_MS = 30000;
 
 { TTestGlbspEngine }
@@ -178,32 +162,6 @@ begin
   if Length(LText) > 0 then
     FGlbsp.GetErrorText(PAnsiChar(LText), Length(LText) + 1);
   Result := string(LText);
-end;
-
-procedure TTestGlbspEngine.TestExecutableSizeIsTheEmbeddedOne;
-begin
-  Assert.AreEqual(57404, Integer(FGlbsp.GetExecutableSize));
-end;
-
-procedure TTestGlbspEngine.TestCreateWithoutExecutableRaises;
-begin
-  Assert.WillRaise(
-    procedure
-    begin
-      TGlbspEngine.Create(nil, 10);
-    end, EArgumentNilException);
-end;
-
-procedure TTestGlbspEngine.TestCreateWithEmptyExecutableRaises;
-var
-  LByte: Byte;
-begin
-  LByte := 0;
-  Assert.WillRaise(
-    procedure
-    begin
-      TGlbspEngine.Create(@LByte, 0);
-    end, EArgumentException);
 end;
 
 procedure TTestGlbspEngine.TestNilPathsAreRejected;
@@ -317,61 +275,76 @@ begin
   Assert.IsTrue(Pos(FWadPath, ErrorText) > 0);
 end;
 
-procedure TTestGlbspEngine.TestEngineWithNotAnExecutableReturnsLaunchError;
-var
-  LGarbage: TBytes;
-  LGlbsp: IGlbsp;
+procedure TTestGlbspEngine.TestFileThatIsNotAWadFails;
 begin
-  // The wad exists, so the engine gets to start the process; the bytes are
-  // not a program, so Windows refuses to run them
-  LGarbage := TEncoding.ASCII.GetBytes('this is not a Win32 program');
-  LGlbsp := TGlbspEngine.Create(Pointer(LGarbage), Length(LGarbage));
   FWadPath := CreateTextFile('.wad');
 
-  Assert.AreEqual(GLBSP_ERR_LAUNCH,
-    LGlbsp.BuildNodes(PAnsiChar(AnsiString(FWadPath)),
-    PAnsiChar(AnsiString(FGwaPath)), GLBSP_OPT_NONE, SOME_TIMEOUT_MS));
-  Assert.IsFalse(FileExists(FGwaPath));
-end;
-
-procedure TTestGlbspEngine.TestGlbspOnAFileThatIsNotAWadDoesNotSucceed;
-var
-  LCode: Integer;
-begin
-  // Runs the real glbsp on a text file. What is expected from glbsp is a
-  // non zero exit code (GLBSP_ERR_PROCESS_FAILED); a glbsp that exited with
-  // zero without writing the output would give GLBSP_ERR_NO_OUTPUT. Both are
-  // failures and either is accepted: the test pins down that the engine never
-  // reports success, never leaves an output behind and never hangs
-  FWadPath := CreateTextFile('.wad');
-
-  LCode := BuildAnsi(AnsiString(FWadPath), AnsiString(FGwaPath),
-    GLBSP_OPT_QUIET or GLBSP_OPT_NO_PROGRESS, SOME_TIMEOUT_MS);
-
-  Assert.IsTrue((LCode = GLBSP_ERR_PROCESS_FAILED) or
-    (LCode = GLBSP_ERR_NO_OUTPUT), 'Unexpected result ' + IntToStr(LCode));
+  Assert.AreEqual(GLBSP_ERR_PROCESS_FAILED, BuildAnsi(AnsiString(FWadPath),
+    AnsiString(FGwaPath), GLBSP_OPT_QUIET or GLBSP_OPT_NO_PROGRESS, SOME_TIMEOUT_MS));
   Assert.IsFalse(FileExists(FGwaPath));
   Assert.IsTrue(ErrorText <> '');
+  Assert.IsTrue(FGlbsp.GetExitCode <> 0);
 end;
 
-procedure TTestGlbspEngine.TestVeryShortTimeoutNeverSucceeds;
-var
-  LCode: Integer;
+function TTestGlbspEngine.SamplePath: string;
 begin
-  // One millisecond: the process is normally killed (GLBSP_ERR_TIMEOUT), or
-  // it is so quick to reject the file that it ends first
-  // (GLBSP_ERR_PROCESS_FAILED). The outcome depends on the speed of the
-  // machine, so only the impossible one is excluded. The deterministic test
-  // of the timeout is the one of TGlbspProcess
-  FWadPath := CreateTextFile('.wad');
+  Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
+    '..\..\Tests\Data\glbsp_map01.wad'));
+end;
 
-  LCode := BuildAnsi(AnsiString(FWadPath), AnsiString(FGwaPath), GLBSP_OPT_QUIET,
-    GLBSP_MIN_TIMEOUT_MS);
+procedure TTestGlbspEngine.TestBuildsAGwaFile;
+var
+  LBytes: TBytes;
+begin
+  if not TFile.Exists(SamplePath) then
+  begin
+    Assert.Pass('Tests\Data\glbsp_map01.wad not found');
+    Exit;
+  end;
 
-  Assert.IsTrue(LCode <> GLBSP_OK, 'Unexpected result ' + IntToStr(LCode));
-  Assert.IsTrue((LCode = GLBSP_ERR_TIMEOUT) or (LCode = GLBSP_ERR_PROCESS_FAILED) or
-    (LCode = GLBSP_ERR_NO_OUTPUT), 'Unexpected result ' + IntToStr(LCode));
-  Assert.IsFalse(FileExists(FGwaPath));
+  Assert.AreEqual(GLBSP_OK, BuildAnsi(AnsiString(SamplePath), AnsiString(FGwaPath),
+    GLBSP_OPT_QUIET or GLBSP_OPT_NO_PROGRESS, SOME_TIMEOUT_MS));
+
+  LBytes := TFile.ReadAllBytes(FGwaPath);
+  Assert.IsTrue(Length(LBytes) > 12);
+  Assert.AreEqual(Ord('P'), Integer(LBytes[0]));
+  // Only the six GL lumps: the original ones are not copied to a GWA
+  Assert.AreEqual(6, PInteger(@LBytes[4])^);
+  Assert.AreEqual(0, Integer(FGlbsp.GetExitCode));
+end;
+
+procedure TTestGlbspEngine.TestBuildsAWholeWadWhenTheOutputIsNotGwa;
+var
+  LBytes: TBytes;
+begin
+  if not TFile.Exists(SamplePath) then
+  begin
+    Assert.Pass('Tests\Data\glbsp_map01.wad not found');
+    Exit;
+  end;
+  FGwaPath := NewTempPath('.wad');
+
+  Assert.AreEqual(GLBSP_OK, BuildAnsi(AnsiString(SamplePath), AnsiString(FGwaPath),
+    GLBSP_OPT_NONE, SOME_TIMEOUT_MS));
+
+  // The 11 lumps of the level plus the GL marker and its 5 lumps
+  LBytes := TFile.ReadAllBytes(FGwaPath);
+  Assert.AreEqual(17, PInteger(@LBytes[4])^);
+end;
+
+procedure TTestGlbspEngine.TestOutputIsOverwritten;
+begin
+  if not TFile.Exists(SamplePath) then
+  begin
+    Assert.Pass('Tests\Data\glbsp_map01.wad not found');
+    Exit;
+  end;
+  TFile.WriteAllText(FGwaPath, 'old', TEncoding.ASCII);
+
+  Assert.AreEqual(GLBSP_OK, BuildAnsi(AnsiString(SamplePath), AnsiString(FGwaPath),
+    GLBSP_OPT_NONE, SOME_TIMEOUT_MS));
+
+  Assert.IsTrue(TFile.GetSize(FGwaPath) > 1000);
 end;
 
 procedure TTestGlbspEngine.TestTextsWithoutBufferReturnTheLength;

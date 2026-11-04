@@ -53,8 +53,8 @@ end;
 
 procedure TTestGlbspProvider.TestClientWorksWithoutTheDll;
 begin
-  // The program of glbsp is embedded: its size is the one of the executable
-  Assert.AreEqual(Cardinal(57404), TGlbspProvider.Client.ExecutableSize);
+  // The node builder is linked in the executable: no DLL is needed
+  Assert.IsNotNull(TGlbspProvider.Client);
 end;
 
 procedure TTestGlbspProvider.TestClientIsShared;
@@ -67,14 +67,14 @@ begin
   TGlbspProvider.Client;
   // The old client is freed by Use: a new one works on the engine passed in
   TGlbspProvider.Use(TGlbspEngine.Create);
-  Assert.AreEqual(Cardinal(57404), TGlbspProvider.Client.ExecutableSize);
+  Assert.IsNotNull(TGlbspProvider.Client);
 end;
 
 procedure TTestGlbspProvider.TestReleaseThenClientCreatesANewOne;
 begin
   TGlbspProvider.Client;
   TGlbspProvider.Release;
-  Assert.AreEqual(Cardinal(57404), TGlbspProvider.Client.ExecutableSize);
+  Assert.IsNotNull(TGlbspProvider.Client);
 end;
 
 procedure TTestGlbspProvider.TestMissingWadRaises;
