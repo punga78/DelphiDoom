@@ -16,6 +16,7 @@ uses
   DelphiDoom.Glbsp.Blockmap.Builder,
   DelphiDoom.Glbsp.Level.Data,
   DelphiDoom.Glbsp.Level.Types,
+  DelphiDoom.Glbsp.Node.Builder,
   DelphiDoom.Glbsp.Options,
   DelphiDoom.Glbsp.Wad.Document,
   DelphiDoom.Glbsp.Wad.Lump,
@@ -305,3 +306,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestGlbspBlockmapBuilder);
 
 end.
+
