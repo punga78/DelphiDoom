@@ -24,6 +24,12 @@ uses
   DelphiDoom.Mikmod.Client in '..\Libs\Mikmod\DelphiDoom.Mikmod.Client.pas',
   DelphiDoom.Mikmod.Loader in '..\Libs\Mikmod\DelphiDoom.Mikmod.Loader.pas',
   DelphiDoom.Mikmod.Provider in '..\Libs\Mikmod\DelphiDoom.Mikmod.Provider.pas',
+  DelphiDoom.Tracker.Types in '..\Libs\Mikmod\DelphiDoom.Tracker.Types.pas',
+  DelphiDoom.Tracker.ByteReader in '..\Libs\Mikmod\DelphiDoom.Tracker.ByteReader.pas',
+  DelphiDoom.Tracker.Loader.Mod in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.Mod.pas',
+  DelphiDoom.Tracker.Loader.S3m in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.S3m.pas',
+  DelphiDoom.Tests.Tracker.Loader.Mod in 'Source\DelphiDoom.Tests.Tracker.Loader.Mod.pas',
+  DelphiDoom.Tests.Tracker.Loader.S3m in 'Source\DelphiDoom.Tests.Tracker.Loader.S3m.pas',
   DelphiDoom.Tests.Mikmod.Engine in 'Source\DelphiDoom.Tests.Mikmod.Engine.pas',
   DelphiDoom.Tests.Mikmod.Client in 'Source\DelphiDoom.Tests.Mikmod.Client.pas',
   DelphiDoom.Tests.Mikmod.Loader in 'Source\DelphiDoom.Tests.Mikmod.Loader.pas',
@@ -63,3 +69,4 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
