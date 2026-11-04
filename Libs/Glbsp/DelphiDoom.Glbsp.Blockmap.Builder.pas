@@ -98,6 +98,7 @@ type
 implementation
 
 uses
+  System.Generics.Defaults,
   System.Math,
   DelphiDoom.Glbsp.Geometry,
   DelphiDoom.Glbsp.Level.Raw,
@@ -533,3 +534,4 @@ begin
 end;
 
 end.
+
