@@ -184,6 +184,7 @@ var
     LRaw: TBytes;
     LValue, LOld, LPosition: Integer;
   begin
+    LSampleHeaderSize := 0;
     LStart := LReader.Position;
     LHeaderSizeOfInstrument := Integer(LReader.ReadCardinal);
     if LHeaderSizeOfInstrument < MIN_INSTRUMENT_HEADER then

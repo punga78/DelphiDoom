@@ -189,7 +189,7 @@ function TTestGlbspWadBuilder.CompareWords(const AName: string; const AExpected,
   AActual: TLumpMap; const AWordsPerRecord: Integer; const AExactWords: Cardinal): string;
 var
   LExpected, LActual: TBytes;
-  LIndex, LDifference, LDifferent: Integer;
+  LIndex, LDifference: Integer;
   LSigned: SmallInt;
 begin
   Result := '';
@@ -200,14 +200,12 @@ begin
   if Length(LExpected) <> Length(LActual) then
     Exit(Format('%s: length %d instead of %d', [AName, Length(LActual), Length(LExpected)]));
 
-  LDifferent := 0;
   for LIndex := 0 to Length(LExpected) div 2 - 1 do
   begin
     LSigned := SmallInt(WordAt(LExpected, LIndex) - WordAt(LActual, LIndex));
     LDifference := Abs(LSigned);
     if LDifference = 0 then
       Continue;
-    Inc(LDifferent);
     if ((AExactWords shr (LIndex mod AWordsPerRecord)) and 1) <> 0 then
       Exit(Format('%s: word %d (field %d of record %d) is %d instead of %d', [AName, LIndex,
         LIndex mod AWordsPerRecord, LIndex div AWordsPerRecord, WordAt(LActual, LIndex),

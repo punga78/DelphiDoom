@@ -59,7 +59,7 @@ class function TTrackerS3mLoader.Load(const AData: TBytes): TTrackerModule;
 var
   LReader: TTrackerByteReader;
   LOrderCount, LInstrumentCount, LPatternCount, LIndex, LChannel: Integer;
-  LInitialSpeed, LInitialTempo, LMasterVolume, LDefaultPanning, LRow: Integer;
+  LInitialSpeed, LInitialTempo, LMasterVolume, LDefaultPanning: Integer;
   LInstrumentPointers, LPatternPointers: TArray<Integer>;
   LChannelSettings: array[0..CHANNEL_SETTINGS - 1] of Byte;
   LChannelMap: array[0..CHANNEL_SETTINGS - 1] of Boolean;
