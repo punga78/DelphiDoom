@@ -18,6 +18,9 @@ uses
   System.SysUtils,
   DelphiDoom.Glbsp.Level.Types;
 
+const
+  SNoSuchObject = 'No such %s number #%d';
+
 type
   /// <summary>
   ///   All the objects of the level: they are created through the New
@@ -91,9 +94,6 @@ type
   end;
 
 implementation
-
-const
-  SNoSuchObject = 'No such %s number #%d';
 
 { TGlbspLevelData }
 
