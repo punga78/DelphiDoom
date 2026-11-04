@@ -638,9 +638,9 @@ begin
   RecomputeDirectory;
 
   if FKind = wkIWad then
-    LHeader.MagicType := IWAD_MAGIC
+    Move(IWAD_MAGIC, LHeader.MagicType, SizeOf(IWAD_MAGIC))
   else
-    LHeader.MagicType := PWAD_MAGIC;
+    Move(PWAD_MAGIC, LHeader.MagicType, SizeOf(PWAD_MAGIC));
   LHeader.NumEntries := FNumEntries;
   LHeader.DirStart := FDirStart;
   AOutput.WriteBuffer(LHeader, SizeOf(LHeader));
