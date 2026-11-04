@@ -5,7 +5,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Tracker.Loader.Mod;
+unit DelphiDoom.Tests.Tracker.Loader.ProTracker;
 
 interface
 
@@ -13,7 +13,7 @@ uses
   System.Math,
   System.SysUtils,
   DUnitX.TestFramework,
-  DelphiDoom.Tracker.Loader.Mod,
+  DelphiDoom.Tracker.Loader.ProTracker,
   DelphiDoom.Tracker.Types;
 
 type

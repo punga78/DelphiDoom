@@ -6,7 +6,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tracker.Loader.Mod;
+unit DelphiDoom.Tracker.Loader.ProTracker;
 
 interface
 
