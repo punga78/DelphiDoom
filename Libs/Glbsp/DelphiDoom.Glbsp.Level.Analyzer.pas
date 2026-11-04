@@ -15,6 +15,7 @@ interface
 
 uses
   System.Classes,
+  System.Generics.Collections,
   System.SysUtils,
   DelphiDoom.Glbsp.Level.Data,
   DelphiDoom.Glbsp.Level.Types,
@@ -46,6 +47,8 @@ type
     function CompareLineEnds(const ALeft, ARight: Integer): Integer;
     function SortedIndices(const ACount: Integer;
       const ACompare: TFunc<Integer, Integer, Integer>): TArray<Integer>;
+    class procedure KeepOnly<T: class>(const AList: TObjectList<T>;
+      const AKept: TList<T>); static;
     class procedure CountWallTips(const AVertex: TGlbspVertex; out AOneSided,
       ATwoSided: Integer); static;
   public
@@ -93,7 +96,6 @@ type
 implementation
 
 uses
-  System.Generics.Collections,
   System.Generics.Defaults,
   System.Math,
   DelphiDoom.Glbsp.Geometry,
@@ -107,33 +109,6 @@ const
   SNoVertices = 'Couldn''t find any Vertices';
   SNoSidedefs = 'Couldn''t find any Sidedefs';
   SNoSectors = 'Couldn''t find any Sectors';
-
-// Replaces the content of AList with AKept, and frees what is left out
-procedure KeepOnly<T: class>(const AList: TObjectList<T>; const AKept: TList<T>);
-var
-  LItem: T;
-  LKeptSet: THashSet<T>;
-begin
-  LKeptSet := THashSet<T>.Create;
-  try
-    for LItem in AKept do
-      LKeptSet.Add(LItem);
-    AList.OwnsObjects := False;
-    try
-      for LItem in AList do
-      begin
-        if not LKeptSet.Contains(LItem) then
-          LItem.Free;
-      end;
-      AList.Clear;
-      AList.AddRange(AKept);
-    finally
-      AList.OwnsObjects := True;
-    end;
-  finally
-    LKeptSet.Free;
-  end;
-end;
 
 function LineVertexLowest(const ALine: TGlbspLinedef): Integer;
 begin
@@ -201,6 +176,34 @@ begin
 end;
 
 { TGlbspLevelAnalyzer }
+
+class procedure TGlbspLevelAnalyzer.KeepOnly<T>(const AList: TObjectList<T>;
+  const AKept: TList<T>);
+var
+  LItem: T;
+  LKept: TDictionary<T, Boolean>;
+begin
+  // Replaces the content of AList with AKept, and frees what is left out
+  LKept := TDictionary<T, Boolean>.Create;
+  try
+    for LItem in AKept do
+      LKept.AddOrSetValue(LItem, True);
+    AList.OwnsObjects := False;
+    try
+      for LItem in AList do
+      begin
+        if not LKept.ContainsKey(LItem) then
+          LItem.Free;
+      end;
+      AList.Clear;
+      AList.AddRange(AKept);
+    finally
+      AList.OwnsObjects := True;
+    end;
+  finally
+    LKept.Free;
+  end;
+end;
 
 constructor TGlbspLevelAnalyzer.Create(const AData: TGlbspLevelData;
   const AOptions: TGlbspOptions; const AMessages: TStrings);
