@@ -22,6 +22,12 @@ const
   /// <summary>Smallest degrees between two angles before they are the same</summary>
   ANG_EPSILON = 1.0 / 1024.0;
 
+  /// <summary>
+  ///   A line closer than this to the end of a seg is "iffy": splitting there
+  ///   would create a very short seg
+  /// </summary>
+  IFFY_LEN = 4.0;
+
   /// <summary>Bit 30 of the index of a GL vertex</summary>
   IS_GL_VERTEX = 1 shl 30;
 
@@ -164,6 +170,34 @@ type
     PPerp: Double;
     /// <summary>Linedef the seg comes from; for minisegs the partition line</summary>
     SourceLine: TGlbspLinedef;
+
+    /// <summary>Copies every field of ASource, as the C assignment of a seg</summary>
+    procedure Assign(const ASource: TGlbspSeg);
+    /// <summary>Distance of a point from the seg, along the seg's line</summary>
+    function ParallelDist(const AX, AY: Double): Double;
+    /// <summary>Distance of a point from the seg's line; positive on the right</summary>
+    function PerpDist(const AX, AY: Double): Double;
+  end;
+
+  /// <summary>
+  ///   Where a vertex touches a partition line (especially a vertex made by
+  ///   a seg split). The list is sorted by AlongDist
+  /// </summary>
+  TGlbspIntersection = class
+  public
+    Next: TGlbspIntersection;
+    Prev: TGlbspIntersection;
+    Vertex: TGlbspVertex;
+    /// <summary>
+    ///   Distance along the partition: zero at its start, positive in its
+    ///   direction
+    /// </summary>
+    AlongDist: Double;
+    /// <summary>The intersection was on a self-referencing linedef</summary>
+    SelfRef: Boolean;
+    /// <summary>Sector before/after the vertex along the partition; nil if not open</summary>
+    Before: TGlbspSector;
+    After: TGlbspSector;
   end;
 
   TGlbspSubsec = class
@@ -208,12 +242,58 @@ type
     MiniNum: Integer;
     Segs: TGlbspSeg;
 
+    /// <summary>Frees the sub-blocks; the segs are not owned by the block</summary>
+    destructor Destroy; override;
     function IsLeaf: Boolean;
   end;
 
 implementation
 
+{ TGlbspSeg }
+
+procedure TGlbspSeg.Assign(const ASource: TGlbspSeg);
+begin
+  Next := ASource.Next;
+  Start := ASource.Start;
+  EndVertex := ASource.EndVertex;
+  Linedef := ASource.Linedef;
+  Sector := ASource.Sector;
+  Side := ASource.Side;
+  Partner := ASource.Partner;
+  Index := ASource.Index;
+  Degenerate := ASource.Degenerate;
+  Block := ASource.Block;
+  PsX := ASource.PsX;
+  PsY := ASource.PsY;
+  PeX := ASource.PeX;
+  PeY := ASource.PeY;
+  PdX := ASource.PdX;
+  PdY := ASource.PdY;
+  PLength := ASource.PLength;
+  PAngle := ASource.PAngle;
+  PPara := ASource.PPara;
+  PPerp := ASource.PPerp;
+  SourceLine := ASource.SourceLine;
+end;
+
+function TGlbspSeg.ParallelDist(const AX, AY: Double): Double;
+begin
+  Result := (AX * PdX + AY * PdY + PPara) / PLength;
+end;
+
+function TGlbspSeg.PerpDist(const AX, AY: Double): Double;
+begin
+  Result := (AX * PdY - AY * PdX + PPerp) / PLength;
+end;
+
 { TGlbspSuperBlock }
+
+destructor TGlbspSuperBlock.Destroy;
+begin
+  Subs[0].Free;
+  Subs[1].Free;
+  inherited Destroy;
+end;
 
 function TGlbspSuperBlock.IsLeaf: Boolean;
 begin
