@@ -42,6 +42,10 @@ type
     [Test]
     procedure TestRichXmiMatchesTheOldConverter;
     [Test]
+    procedure TestRichXmiGivesTheExpectedFile;
+    [Test]
+    procedure TestRichCmfGivesTheExpectedFile;
+    [Test]
     procedure TestCmfIsConverted;
     [Test]
     procedure TestSimpleCmfMatchesTheOldConverter;
@@ -337,6 +341,65 @@ begin
     Ord(TXmiConverter.ConvertToMidi(Pointer(LXmi), Length(LXmi), 0, LNew)));
   Assert.AreEqual(Length(LOld), Length(LNew), 'same size');
   Assert.AreEqualMemory(Pointer(LOld), Pointer(LNew), Length(LOld));
+end;
+
+// Worked out by hand from the rules of the conversion: the notes end where
+// their duration says (the first note off carries the delay, the second one
+// uses the running status), the tempo is the one of the start of the song
+procedure TTestXmiConverter.TestRichXmiGivesTheExpectedFile;
+var
+  LXmi, LMidi, LExpected: TBytes;
+begin
+  LXmi := BuildRichXmi(RichEvents);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LXmi), Length(LXmi), 0, LMidi)));
+
+  LExpected := TBytes.Create(
+    $4D, $54, $68, $64, $00, $00, $00, $06, $00, $02, $00, $01, $00, $3C,
+    $4D, $54, $72, $6B, $00, $00, $00, $3D,
+    $00, $C0, $05,
+    $00, $B0, $07, $64,
+    $00, $FF, $51, $03, $07, $A1, $20,
+    $00, $90, $3C, $64,
+    $0A, $90, $40, $64,
+    $14, $E0, $00, $40,
+    $1C, $80, $40, $00,
+    $26, $3C, $00,
+    $42, $90, $43, $64,
+    $00, $80, $43, $00,
+    $00, $F0, $04, $7E, $7F, $09, $01,
+    $00, $FF, $03, $04, $54, $65, $73, $74,
+    $64, $FF, $2F, $00);
+  Assert.AreEqual(Length(LExpected), Length(LMidi), 'size');
+  Assert.AreEqualMemory(Pointer(LExpected), Pointer(LMidi), Length(LExpected));
+end;
+
+// The CMF controllers and the drums are changed or dropped, the tempo events
+// count double and a tempo of one second per quarter note opens the song
+procedure TTestXmiConverter.TestRichCmfGivesTheExpectedFile;
+var
+  LCmf, LMidi, LExpected: TBytes;
+begin
+  LCmf := BuildRichCmf(RichCmfEvents);
+  Assert.AreEqual(Ord(TXmiConversionStatus.Ok),
+    Ord(TXmiConverter.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0, LMidi)));
+
+  LExpected := TBytes.Create(
+    $4D, $54, $68, $64, $00, $00, $00, $06, $00, $00, $00, $01, $00, $60,
+    $4D, $54, $72, $6B, $00, $00, $00, $30,
+    $00, $FF, $51, $03, $0F, $42, $40,
+    $00, $C0, $05,
+    $00, $FF, $06, $01, $35,
+    $00, $99, $24, $64,
+    $10, $89, $24, $40,
+    $08, $C0, $07,
+    $00, $FF, $51, $03, $0F, $42, $40,
+    $20, $90, $3C, $64,
+    $10, $3E, $64,
+    $10, $80, $3C, $40,
+    $00, $FF, $2F, $00);
+  Assert.AreEqual(Length(LExpected), Length(LMidi), 'size');
+  Assert.AreEqualMemory(Pointer(LExpected), Pointer(LMidi), Length(LExpected));
 end;
 
 procedure TTestXmiConverter.TestCmfIsConverted;
