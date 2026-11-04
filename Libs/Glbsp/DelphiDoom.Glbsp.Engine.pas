@@ -55,7 +55,7 @@ uses
   DelphiDoom.Glbsp.Level.Types,
   DelphiDoom.Glbsp.Options,
   DelphiDoom.Glbsp.Wad.Builder,
-  DelphiDoom.Glbsp.Wad.Document;
+  DelphiDoom.Glbsp.Wad.Types;
 
 { TGlbspEngine }
 
@@ -247,3 +247,4 @@ begin
 end;
 
 end.
+
