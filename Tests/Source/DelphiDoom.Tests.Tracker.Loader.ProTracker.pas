@@ -22,6 +22,7 @@ type
   TTestTrackerModLoader = class(TObject)
   private
     FModule: TTrackerModule;
+    FBytes: TBytes;
     // A module of AChannels channels with AOrderCount orders and APatterns
     // patterns; the sample 1 has 8 bytes (0, 16, 32, ..., 112 as signed)
     function BuildMod(const ASignature: string; const AChannels, APatterns: Integer;
@@ -239,7 +240,7 @@ begin
   Assert.AreEqual(16 * 256, Integer(LSample.Data[1]));
   Assert.AreEqual(112 * 256, Integer(LSample.Data[7]));
   // The finetune is -8 eighths of a semitone: half a semitone lower
-  Assert.AreEqual(Round(8363 * Power(2, -8 / 96)), LSample.CenterFrequency);
+  Assert.AreEqual(Integer(Round(8363 * Power(2, -8 / 96))), LSample.CenterFrequency);
   Assert.AreEqual(8363, FModule.Instruments[1].Samples[0].CenterFrequency);
 end;
 
@@ -271,16 +272,14 @@ begin
 end;
 
 procedure TTestTrackerModLoader.TestPatternTroncatiSollevanoEccezione;
-var
-  LBytes: TBytes;
 begin
-  LBytes := BuildMod('M.K.', 4, 2);
-  SetLength(LBytes, HEADER_SIZE + PATTERN_SIZE_4 + 100);
+  FBytes := BuildMod('M.K.', 4, 2);
+  SetLength(FBytes, HEADER_SIZE + PATTERN_SIZE_4 + 100);
 
   Assert.WillRaise(
     procedure
     begin
-      TTrackerModLoader.Load(LBytes);
+      TTrackerModLoader.Load(FBytes);
     end, ETrackerException);
 end;
 
@@ -306,3 +305,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestTrackerModLoader);
 
 end.
+

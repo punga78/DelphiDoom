@@ -21,6 +21,7 @@ type
   TTestTrackerS3mLoader = class(TObject)
   private
     FModule: TTrackerModule;
+    FBytes: TBytes;
     // A module with 2 channels (one left, one right), one instrument of
     // 4 unsigned bytes and one pattern
     function BuildS3m: TBytes;
@@ -167,16 +168,14 @@ begin
 end;
 
 procedure TTestTrackerS3mLoader.TestFirmaMancanteSollevaEccezione;
-var
-  LBytes: TBytes;
 begin
-  LBytes := BuildS3m;
-  LBytes[$2C] := Ord('X');
+  FBytes := BuildS3m;
+  FBytes[$2C] := Ord('X');
 
   Assert.WillRaise(
     procedure
     begin
-      TTrackerS3mLoader.Load(LBytes);
+      TTrackerS3mLoader.Load(FBytes);
     end, ETrackerException);
 end;
 
@@ -295,16 +294,14 @@ begin
 end;
 
 procedure TTestTrackerS3mLoader.TestFileTroncatoSollevaEccezione;
-var
-  LBytes: TBytes;
 begin
-  LBytes := BuildS3m;
-  SetLength(LBytes, $50);
+  FBytes := BuildS3m;
+  SetLength(FBytes, $50);
 
   Assert.WillRaise(
     procedure
     begin
-      TTrackerS3mLoader.Load(LBytes);
+      TTrackerS3mLoader.Load(FBytes);
     end, ETrackerException);
 end;
 
@@ -312,3 +309,4 @@ initialization
   TDUnitX.RegisterTestFixture(TTestTrackerS3mLoader);
 
 end.
+
