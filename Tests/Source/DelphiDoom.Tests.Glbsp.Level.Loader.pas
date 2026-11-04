@@ -378,7 +378,6 @@ begin
 end;
 
 procedure TTestGlbspLevelLoader.TestIndiceDiVerticeInesistenteSollevaEccezione;
-var
 begin
   Assert.IsTrue(LoadTiny([]));
   FLoader.GetVertices;
