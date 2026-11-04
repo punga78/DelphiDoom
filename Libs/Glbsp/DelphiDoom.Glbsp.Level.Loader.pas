@@ -63,9 +63,6 @@ uses
   DelphiDoom.Glbsp.Level.Raw;
 
 const
-  // Two vertices closer than this are the same point
-  DIST_EPSILON = 1.0 / 128.0;
-
   SNoVertices = 'Couldn''t find any Vertices';
   SNoSectors = 'Couldn''t find any Sectors';
   SNoSidedefs = 'Couldn''t find any Sidedefs';

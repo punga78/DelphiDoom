@@ -16,6 +16,12 @@ uses
   System.SysUtils;
 
 const
+  /// <summary>Smallest distance between two points before they are the same</summary>
+  DIST_EPSILON = 1.0 / 128.0;
+
+  /// <summary>Smallest degrees between two angles before they are the same</summary>
+  ANG_EPSILON = 1.0 / 1024.0;
+
   /// <summary>Bit 30 of the index of a GL vertex</summary>
   IS_GL_VERTEX = 1 shl 30;
 
