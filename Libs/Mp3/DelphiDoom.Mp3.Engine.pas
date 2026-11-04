@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: mp3 - implementation of IMp3 on top of MP3LIB                   }
+{  DelphiDoom: mp3 - implementation of IMp3 on top of the decoder               }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

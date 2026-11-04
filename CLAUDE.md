@@ -7,7 +7,7 @@ Informazioni specifiche di questo repository. Le regole generali (commit, issue,
 Source port di Doom, Heretic, Hexen e Strife in Delphi (versione software e OpenGL), più Launcher, DD_IDE (editor degli script) e i compilatori `ddc*`.
 Il target di sviluppo è **Delphi 11 (XE11), Win32**. Il codice nasce per Delphi 7: non si mantiene più la compatibilità con Delphi 7 nelle parti toccate.
 
-- Cartelle di gioco: `Doom`, `Heretic`, `Hexen`, `Strife`; codice condiviso in `Base`, `Common`, `SCRIPT`, `OPENGL`, `AUDIOLIB`, `MP3LIB`, `TEXLIB`, `C_LIB`.
+- Cartelle di gioco: `Doom`, `Heretic`, `Hexen`, `Strife`; codice condiviso in `Base`, `Common`, `SCRIPT`, `OPENGL`, `AUDIOLIB`, `TEXLIB`, `C_LIB`.
 - Un `.dpr` + `.dproj` per ogni eseguibile (`Doom32`, `GLDoom32`, `Heretic32`, …). I define di gioco (`DOOM`, `HERETIC`, `HEXEN`, `STRIFE`, `OPENGL`) stanno nei `.dproj`.
 
 ## Build e prove

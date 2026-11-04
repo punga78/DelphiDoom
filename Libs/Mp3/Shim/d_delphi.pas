@@ -8,7 +8,7 @@
 {******************************************************************************}
 unit d_delphi;
 
-// The units of MP3LIB use d_delphi for a handful of declarations. The real
+// The units of Libs\Mp3\Decoder use d_delphi for a handful of declarations. The real
 // unit is huge and drags the whole engine, so the mp3 DLL and its tests
 // compile against this one instead (it must come first in the unit search
 // path, or be listed with its path in the project). Declarations here have

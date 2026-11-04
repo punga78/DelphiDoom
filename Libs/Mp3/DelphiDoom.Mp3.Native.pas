@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: mp3 - adapter to the decoder of MP3LIB (layer III)              }
+{  DelphiDoom: mp3 - adapter to the decoder of Libs\Mp3\Decoder (layer III)              }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -8,12 +8,12 @@
 {******************************************************************************}
 unit DelphiDoom.Mp3.Native;
 
-// The units mp3_* (MP3LIB) pull their data from a stream and write to an
+// The units mp3_* (Libs\Mp3\Decoder) pull their data from a stream and write to an
 // output buffer, one frame at a time, from a thread of their own player.
 // This unit drives them from the caller's thread instead: the input is a
 // TMp3FeedStream filled by Feed, the output a TMp3PcmBuffer, and a frame is
 // handed to the decoder only when all of its bytes have arrived. Besides
-// MP3LIB, it needs only the stand-ins of Libs\Mp3\Shim in place of d_delphi
+// Libs\Mp3\Decoder, it needs only the stand-ins of Libs\Mp3\Shim in place of d_delphi
 // and i_system, so that the DLL does not drag the rest of the engine.
 
 interface
@@ -40,7 +40,7 @@ type
     NeedData);
 
   /// <summary>
-  ///   One layer III decoding session over MP3LIB. Not thread safe
+  ///   One layer III decoding session over Libs\Mp3\Decoder. Not thread safe
   /// </summary>
   TMp3Native = class
   private

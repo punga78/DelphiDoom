@@ -8,7 +8,7 @@
 {******************************************************************************}
 unit i_system;
 
-// The units of MP3LIB call I_Error, I_Warning and I_Sleep. In the engine
+// The units of Libs\Mp3\Decoder call I_Error, I_Warning and I_Sleep. In the engine
 // I_Error ends the program; inside the DLL it must not, so here it raises an
 // exception that the decoder turns into an error code.
 

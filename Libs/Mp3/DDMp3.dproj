@@ -12,8 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.;Shim;..\..\MP3LIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>Shim;.;..\..\MP3LIB;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>.;Shim;..Decoder;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>Shim;.;..Decoder;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\Libs\DDMp3\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
