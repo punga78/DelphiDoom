@@ -91,6 +91,8 @@ type
     [Test]
     procedure TestIrcam;
     [Test]
+    procedure TestMat4;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -761,6 +763,43 @@ begin
   CheckSameFailure(TSoundTestContainerFile.BuildIrcam(BE_MARKER, True, 44100.0, 2, $2, LPayload), 'ircam big endian marker');
   CheckSameFailure(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 44100.0, 2, $99, LPayload), 'ircam unknown encoding');
   CheckSameFailure(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 44100.0, 0, $2, LPayload), 'ircam no channels');
+end;
+
+procedure TTestSoundParity.TestMat4;
+const
+  // The type of the matrix as the file has it, for a big endian then a little endian file
+  PCM16: array[Boolean, 0..3] of Byte = ((30, 0, 0, 0), (0, 0, 4, 6));
+  PCM32: array[Boolean, 0..3] of Byte = ((20, 0, 0, 0), (0, 0, 3, $FC));
+  FLOATS: array[Boolean, 0..3] of Byte = ((10, 0, 0, 0), (0, 0, 3, $F2));
+  DOUBLES: array[Boolean, 0..3] of Byte = ((0, 0, 0, 0), (0, 0, 3, $E8));
+  BAD: array[0..3] of Byte = (50, 0, 0, 0);
+var
+  LBig: Boolean;
+  LChannels: Cardinal;
+begin
+  for LBig := False to True do
+    for LChannels := 1 to 2 do
+    begin
+      CheckSame(TSoundTestContainerFile.BuildMat4(LBig, 44100.0, LChannels, 101, PCM16[LBig],
+        TSoundTestWavFile.RandomBytes(Integer(LChannels) * 2 * 101 + 1, 1)), 'mat4 16 bit');
+      CheckSame(TSoundTestContainerFile.BuildMat4(LBig, 22050.0, LChannels, 51, PCM32[LBig],
+        TSoundTestWavFile.RandomBytes(Integer(LChannels) * 4 * 51, 2)), 'mat4 32 bit');
+      CheckSame(TSoundTestContainerFile.BuildMat4(LBig, 8000.0, LChannels, 60, FLOATS[LBig],
+        TSoundTestWavFile.FloatPayload(Integer(LChannels) * 60, 3, False, LBig)), 'mat4 float');
+      CheckSame(TSoundTestContainerFile.BuildMat4(LBig, 11025.0, LChannels, 40, DOUBLES[LBig],
+        TSoundTestWavFile.FloatPayload(Integer(LChannels) * 40, 4, True, LBig)), 'mat4 double');
+    end;
+  // Fewer frames in the matrix than in the file, and more
+  CheckSame(TSoundTestContainerFile.BuildMat4(False, 8000.0, 1, 20, PCM16[False],
+    TSoundTestWavFile.RandomBytes(200, 5)), 'mat4 data after the matrix');
+  CheckSame(TSoundTestContainerFile.BuildMat4(True, 8000.0, 1, 500, PCM16[True],
+    TSoundTestWavFile.RandomBytes(200, 6)), 'mat4 truncated');
+  CheckSameFailure(TSoundTestContainerFile.BuildMat4(False, 8000.0, 0, 20, PCM16[False],
+    TSoundTestWavFile.RandomBytes(200, 7)), 'mat4 no channels');
+  CheckSameFailure(TSoundTestContainerFile.BuildMat4(False, 8000.0, 2000, 20, PCM16[False],
+    TSoundTestWavFile.RandomBytes(200, 7)), 'mat4 too many channels');
+  CheckSameFailure(TSoundTestContainerFile.BuildMat4(False, 8000.0, 1, 20, BAD,
+    TSoundTestWavFile.RandomBytes(200, 7)), 'mat4 unsigned 8 bit');
 end;
 
 procedure TTestSoundParity.TestAvr;

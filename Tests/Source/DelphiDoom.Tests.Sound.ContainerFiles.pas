@@ -94,7 +94,12 @@ type
     ///   the first four bytes
     /// </summary>
     class function BuildIrcam(const AMarker: array of Byte; ABigFields: Boolean;
-      ARate: Single; AChannels, AEncoding: Cardinal; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+      ARate: Single; AChannels, AEncoding: Cardinal; const APayload: TBytes): TBytes; static;    /// <summary>
+    ///   MAT4: AMarker is the type of the "wavedata" matrix, as the four bytes
+    ///   of the file; ACols the number of frames written in it
+    /// </summary>
+    class function BuildMat4(ABigEndian: Boolean; ARate: Double; AChannels, ACols: Cardinal;
+      const AMarker: array of Byte; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -412,6 +417,44 @@ begin
   LSink.AddNumber(AEncoding, 4, ABigFields);
   while Length(LSink.Bytes) < 1024 do
     LSink.Add(0);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.BuildMat4(ABigEndian: Boolean; ARate: Double;
+  AChannels, ACols: Cardinal; const AMarker: array of Byte;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LIndex: Integer;
+  LBits: Int64;
+begin
+  if ABigEndian then
+    LSink.AddNumber($000003E8, 4, True)
+  else
+    LSink.AddNumber(0, 4, False);
+  LSink.AddNumber(1, 4, ABigEndian);
+  LSink.AddNumber(1, 4, ABigEndian);
+  LSink.AddNumber(0, 4, ABigEndian);
+  LSink.AddNumber(11, 4, ABigEndian);
+  LSink.AddText('samplerate'#0);
+  Move(ARate, LBits, 8);
+  if ABigEndian then
+  begin
+    LSink.AddNumber(Cardinal(LBits shr 32), 4, True);
+    LSink.AddNumber(Cardinal(LBits and $FFFFFFFF), 4, True);
+  end
+  else
+  begin
+    LSink.AddNumber(Cardinal(LBits and $FFFFFFFF), 4, False);
+    LSink.AddNumber(Cardinal(LBits shr 32), 4, False);
+  end;
+  for LIndex := 0 to 3 do
+    LSink.Add(AMarker[LIndex]);
+  LSink.AddNumber(AChannels, 4, ABigEndian);
+  LSink.AddNumber(ACols, 4, ABigEndian);
+  LSink.AddNumber(0, 4, ABigEndian);
+  LSink.AddNumber(9, 4, ABigEndian);
+  LSink.AddText('wavedata'#0);
   LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;

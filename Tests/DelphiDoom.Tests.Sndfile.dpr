@@ -53,6 +53,7 @@ uses
   DelphiDoom.Sound.Format.Caf in '..\Libs\Sound\DelphiDoom.Sound.Format.Caf.pas',
   DelphiDoom.Sound.Format.Svx in '..\Libs\Sound\DelphiDoom.Sound.Format.Svx.pas',
   DelphiDoom.Sound.Format.Ircam in '..\Libs\Sound\DelphiDoom.Sound.Format.Ircam.pas',
+  DelphiDoom.Sound.Format.Mat4 in '..\Libs\Sound\DelphiDoom.Sound.Format.Mat4.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',
