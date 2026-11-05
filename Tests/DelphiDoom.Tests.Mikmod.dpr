@@ -43,6 +43,8 @@ uses
   DelphiDoom.Tests.Tracker.Mixer in 'Source\DelphiDoom.Tests.Tracker.Mixer.pas',
   DelphiDoom.Tests.Tracker.Player in 'Source\DelphiDoom.Tests.Tracker.Player.pas',
   DelphiDoom.Tracker.Effects in '..\Libs\Mikmod\DelphiDoom.Tracker.Effects.pas',
+  DelphiDoom.Tracker.EnvelopeCursor in '..\Libs\Mikmod\DelphiDoom.Tracker.EnvelopeCursor.pas',
+  DelphiDoom.Tests.Tracker.EnvelopeCursor in 'Source\DelphiDoom.Tests.Tracker.EnvelopeCursor.pas',
   DelphiDoom.Tracker.Channel in '..\Libs\Mikmod\DelphiDoom.Tracker.Channel.pas',
   DelphiDoom.Tests.Tracker.Effects in 'Source\DelphiDoom.Tests.Tracker.Effects.pas',
   DelphiDoom.Tests.Tracker.Channel in 'Source\DelphiDoom.Tests.Tracker.Channel.pas',

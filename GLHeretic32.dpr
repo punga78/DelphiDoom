@@ -436,6 +436,7 @@ uses
   DelphiDoom.Tracker.Voice in 'Libs\Mikmod\DelphiDoom.Tracker.Voice.pas',
   DelphiDoom.Tracker.Mixer in 'Libs\Mikmod\DelphiDoom.Tracker.Mixer.pas',
   DelphiDoom.Tracker.Effects in 'Libs\Mikmod\DelphiDoom.Tracker.Effects.pas',
+  DelphiDoom.Tracker.EnvelopeCursor in 'Libs\Mikmod\DelphiDoom.Tracker.EnvelopeCursor.pas',
   DelphiDoom.Tracker.Channel in 'Libs\Mikmod\DelphiDoom.Tracker.Channel.pas',
   DelphiDoom.Tracker.Player in 'Libs\Mikmod\DelphiDoom.Tracker.Player.pas',
   DelphiDoom.Tracker.WaveOut in 'Libs\Mikmod\DelphiDoom.Tracker.WaveOut.pas',

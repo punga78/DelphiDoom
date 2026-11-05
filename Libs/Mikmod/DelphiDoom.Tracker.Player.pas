@@ -24,8 +24,8 @@ type
   ///   the pattern)
   /// </summary>
   /// <remarks>
-  ///   Not done yet: the envelopes, the fade out and the new note actions of
-  ///   XM and IT, and the waveforms of the vibrato other than the sine
+  ///   Not done yet: the pitch envelope and the new note actions of IT, and
+  ///   the waveforms of the vibrato other than the sine
   /// </remarks>
   TTrackerPlayer = class
   private

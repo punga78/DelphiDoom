@@ -35,6 +35,8 @@ type
     function Right(const AFrame: Integer): Integer;
     function Increment: Double;
     class function AmigaFrequency(const APeriod: Double): Double; static;
+    class function MakeEnvelope(const ATicks, AValues: array of Integer): TTrackerEnvelope; static;
+    function VoiceVolume: Double;
   public
     [TearDown]
     procedure TearDown;
@@ -91,6 +93,22 @@ type
     procedure TestKeyOffDellXm;
     [Test]
     procedure TestPortamentoDellaColonnaDelVolumeDiIt;
+    [Test]
+    procedure TestInviluppoDelVolumeSegueITick;
+    [Test]
+    procedure TestInviluppoDelVolumeInTuttiITickDiUnaRiga;
+    [Test]
+    procedure TestKeyOffDellXmConInviluppoSfuma;
+    [Test]
+    procedure TestKeyOffDellXmSenzaInviluppoTaglia;
+    [Test]
+    procedure TestKeyOffDiItSenzaSfumaturaMantieneIlVolume;
+    [Test]
+    procedure TestKeyOffRilasciaIlSostegno;
+    [Test]
+    procedure TestInviluppoDelPanning;
+    [Test]
+    procedure TestNuovaNotaRiavviaGliInviluppi;
   end;
 
 implementation
@@ -492,6 +510,168 @@ begin
   Render(4);
 
   Assert.AreEqual(0, Left(0));
+end;
+
+class function TTestTrackerChannel.MakeEnvelope(const ATicks, AValues: array of Integer): TTrackerEnvelope;
+var
+  LIndex: Integer;
+begin
+  Result := Default(TTrackerEnvelope);
+  Result.Enabled := True;
+  SetLength(Result.Points, Length(ATicks));
+  for LIndex := 0 to High(ATicks) do
+  begin
+    Result.Points[LIndex].Tick := ATicks[LIndex];
+    Result.Points[LIndex].Value := AValues[LIndex];
+  end;
+end;
+
+function TTestTrackerChannel.VoiceVolume: Double;
+begin
+  Result := FPlayer.Mixer.Voices[0].Volume;
+end;
+
+procedure TTestTrackerChannel.TestInviluppoDelVolumeSegueITick;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  // From 64 at the first tick to 0 at the 12th
+  FModule.Instruments[0].VolumeEnvelope := MakeEnvelope([0, 12], [64, 0]);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  RenderTo(0, 3);
+
+  Assert.AreEqual(LBase * 0.75, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestInviluppoDelVolumeInTuttiITickDiUnaRiga;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  FModule.Instruments[0].VolumeEnvelope := MakeEnvelope([0, 12], [64, 0]);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  // The first tick of the second row is the 7th tick of the note
+  RenderTo(1, 0);
+
+  Assert.AreEqual(LBase * 0.5, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestKeyOffDellXmConInviluppoSfuma;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  FModule.Instruments[0].VolumeEnvelope := MakeEnvelope([0, 1000], [64, 64]);
+  // 1024 * 2 of 65536 in each tick
+  FModule.Instruments[0].FadeOut := 1024;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, TRACKER_NOTE_OFF, 0, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  RenderTo(1, 0);
+  Assert.AreEqual(LBase, VoiceVolume, 0.0001);
+  RenderTo(1, 3);
+
+  Assert.AreEqual(LBase * (65536 - 3 * 2048) / 65536, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestKeyOffDellXmSenzaInviluppoTaglia;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  FModule.Instruments[0].FadeOut := 1;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, TRACKER_NOTE_OFF, 0, 0, 0);
+  Start;
+
+  RenderTo(1, 0);
+
+  Assert.AreEqual(0.0, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestKeyOffDiItSenzaSfumaturaMantieneIlVolume;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, TRACKER_NOTE_OFF, 0, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  RenderTo(2, 0);
+
+  Assert.AreEqual(LBase, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestKeyOffRilasciaIlSostegno;
+var
+  LBase: Double;
+  LEnvelope: TTrackerEnvelope;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  // 64 for 6 ticks, then it goes down to 0 at the tick 18; sustained at the first point
+  LEnvelope := MakeEnvelope([0, 6, 18], [64, 64, 0]);
+  LEnvelope.Sustain := True;
+  LEnvelope.SustainStart := 1;
+  LEnvelope.SustainEnd := 1;
+  FModule.Instruments[0].VolumeEnvelope := LEnvelope;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 2, TRACKER_NOTE_OFF, 0, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  // The sustain holds the volume for the rows 1 and 2
+  RenderTo(2, 0);
+  Assert.AreEqual(LBase, VoiceVolume, 0.0001);
+  // After the key off the envelope goes down from the tick 6: 3 ticks later it is at 3/12 down
+  RenderTo(2, 3);
+
+  Assert.AreEqual(LBase * (1 - 3 / 12), VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestInviluppoDelPanning;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  // 64 is the full right
+  FModule.Instruments[0].PanningEnvelope := MakeEnvelope([0, 100], [64, 64]);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  Start;
+
+  RenderTo(0, 0);
+
+  Assert.AreEqual(1.0, FPlayer.Mixer.Voices[0].Panning, 0.01);
+end;
+
+procedure TTestTrackerChannel.TestNuovaNotaRiavviaGliInviluppi;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  FModule.Instruments[0].VolumeEnvelope := MakeEnvelope([0, 12], [64, 0]);
+  FModule.Instruments[0].FadeOut := 1024;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, TRACKER_NOTE_OFF, 0, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 2, 49, 1, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := VoiceVolume;
+
+  RenderTo(2, 0);
+
+  Assert.AreEqual(LBase, VoiceVolume, 0.0001);
 end;
 
 procedure TTestTrackerChannel.TestPortamentoDellaColonnaDelVolumeDiIt;

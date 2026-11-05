@@ -26,6 +26,8 @@ import struct
 import sys
 
 ROWS = 64
+# la nota 'key off' di XM e IT: gli altri formati non la scrivono
+NOTE_OFF = -1
 DOOM2_MUSIC = ['D_RUNNIN', 'D_STALKS', 'D_COUNTD', 'D_BETWEE']
 CHANNELS = 4
 NOTE_NAMES = {'C-': 0, 'C#': 1, 'D-': 2, 'D#': 3, 'E-': 4, 'F-': 5, 'F#': 6, 'G-': 7, 'G#': 8, 'A-': 9,
@@ -86,8 +88,10 @@ EFFECT_CODES = {
 }
 
 
-def build_song():
-    """Righe: song[row][channel] = (nota, strumento, volume, effetto, parametro) o None"""
+def build_song(with_key_off=False):
+    """Righe: song[row][channel] = (nota, strumento, volume, effetto, parametro) o None
+
+    with_key_off: la melodia ha un key off dopo sei e quattordici righe (XM e IT)"""
     song = [[None] * CHANNELS for _ in range(ROWS)]
     chords = [(('C-4', 'E-4', 'G-4'), 'C-3', (4, 7), ('E-5', 'G-5')),
               (('A-3', 'C-4', 'E-4'), 'A-3', (3, 7), ('E-5', 'C-5')),
@@ -103,6 +107,9 @@ def build_song():
         # melodia: due note per accordo, con il vibrato
         song[start][0] = (note(lead[0]), 1, 56, VIBRATO, 0x46)
         song[start + 8][0] = (note(lead[1]), 1, 56, VIBRATO, 0x46)
+        if with_key_off:
+            song[start + 6][0] = (NOTE_OFF, 0, 0, None, 0)
+            song[start + 14][0] = (NOTE_OFF, 0, 0, None, 0)
         # percussioni
         for beat in range(0, 16, 4):
             if beat % 8 == 0:
@@ -250,8 +257,15 @@ def write_s3m(path):
 
 # ---------------------------------------------------------------------- XM
 
+# Inviluppi degli strumenti sintetici di XM e IT: (tick, valore 0..64)
+# Il seno (la melodia) ha un attacco, il sostegno e un rilascio dopo il key off;
+# la sega (il basso) ha un inviluppo del panning che va da sinistra a destra e ritorna
+VOLUME_ENVELOPE = {0: ([(0, 0), (6, 64), (12, 48), (36, 0)], 2)}
+PANNING_ENVELOPE = {2: [(0, 0), (24, 64), (48, 0)]}
+
+
 def write_xm(path):
-    song = build_song()
+    song = build_song(True)
     out = bytearray()
     out += b'Extended Module: '
     out += b'DelphiDoom tracker test'[:20].ljust(20, b'\0')
@@ -267,21 +281,38 @@ def write_xm(path):
                 packed.append(0x80)
                 continue
             n, inst, vol, effect, param = cell
+            if n == NOTE_OFF:
+                packed += bytes([0x80 | 0x01, 97])
+                continue
             code, value = effect_for('xm', effect, param)
             packed.append(0x80 | 0x01 | 0x02 | 0x04 | 0x08 | 0x10)
             packed += bytes([n, inst, 0x10 + min(vol, 64), code, value])
     out += struct.pack('<IBHH', 9, 0, ROWS, len(packed)) + bytes(packed)
-    for name, wave, loop, volume in INSTRUMENTS:
-        envelope = bytearray(48)
-        struct.pack_into('<HHHH', envelope, 0, 0, 64, 20, 48)
+    for index, (name, wave, loop, volume) in enumerate(INSTRUMENTS):
+        volume_envelope = bytearray(48)
+        panning_envelope = bytearray(48)
         head = bytearray(263)
         struct.pack_into('<I', head, 0, 263)
         head[4:26] = name.encode('ascii').ljust(22, b'\0')
         struct.pack_into('<H', head, 27, 1)
         struct.pack_into('<I', head, 29, 40)
-        head[129:177] = bytes(envelope)
-        head[225] = 2
-        head[233] = 0
+        if index in VOLUME_ENVELOPE:
+            points, sustain = VOLUME_ENVELOPE[index]
+            for i, (tick, value) in enumerate(points):
+                struct.pack_into('<HH', volume_envelope, 4 * i, tick, value)
+            head[225] = len(points)
+            head[227] = sustain
+            head[233] = 1 | 2
+        if index in PANNING_ENVELOPE:
+            points = PANNING_ENVELOPE[index]
+            for i, (tick, value) in enumerate(points):
+                struct.pack_into('<HH', panning_envelope, 4 * i, tick, value)
+            head[226] = len(points)
+            head[231] = 0
+            head[232] = len(points) - 1
+            head[234] = 1 | 4
+        head[129:177] = bytes(volume_envelope)
+        head[177:225] = bytes(panning_envelope)
         struct.pack_into('<H', head, 239, 256)
         out += head
         sample = bytearray(40)
@@ -302,8 +333,20 @@ def write_xm(path):
 
 # ---------------------------------------------------------------------- IT
 
+def write_it_envelope(head, offset, points, flags, loop_start, loop_end, sustain, signed):
+    """Scrive un inviluppo di IT; nei panning il valore e' con segno (-32..32)"""
+    head[offset] = flags
+    head[offset + 1] = len(points)
+    head[offset + 2] = loop_start
+    head[offset + 3] = loop_end
+    head[offset + 4] = sustain
+    head[offset + 5] = sustain
+    for i, (tick, value) in enumerate(points):
+        struct.pack_into('<BH', head, offset + 6 + 3 * i, (value - 32) & 0xFF if signed else value, tick)
+
+
 def write_it(path):
-    song = build_song()
+    song = build_song(True)
     out = bytearray(192)
     out[0:4] = b'IMPM'
     out[4:30] = b'DelphiDoom tracker test'.ljust(26, b'\0')
@@ -329,7 +372,12 @@ def write_it(path):
         head = bytearray(554)
         head[0:4] = b'IMPI'
         head[17] = 0
-        struct.pack_into('<H', head, 20, 256)
+        struct.pack_into('<H', head, 20, 8)
+        if index in VOLUME_ENVELOPE:
+            write_it_envelope(head, 304, VOLUME_ENVELOPE[index][0], 1 | 4, 0, 0, VOLUME_ENVELOPE[index][1], False)
+        if index in PANNING_ENVELOPE:
+            points = PANNING_ENVELOPE[index]
+            write_it_envelope(head, 386, points, 1 | 2, 0, len(points) - 1, 0, True)
         head[24] = 128
         head[25] = 32
         head[32:32 + 26] = INSTRUMENTS[index][0].encode('ascii').ljust(26, b'\0')
@@ -347,6 +395,9 @@ def write_it(path):
             if cell is None:
                 continue
             n, inst, vol, effect, param = cell
+            if n == NOTE_OFF:
+                packed += bytes([(channel + 1) | 0x80, 0x01, 255])
+                continue
             code, value = effect_for('it', effect, param)
             mask = 0x01 | 0x02 | 0x04 | (0x08 if effect is not None else 0)
             packed += bytes([(channel + 1) | 0x80, mask, n - 1, inst, min(vol, 64)])

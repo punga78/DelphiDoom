@@ -12,6 +12,7 @@ interface
 
 uses
   DelphiDoom.Tracker.Effects,
+  DelphiDoom.Tracker.EnvelopeCursor,
   DelphiDoom.Tracker.Types,
   DelphiDoom.Tracker.Voice;
 
@@ -24,7 +25,7 @@ type
   /// <remarks>
   ///   The effects of the song flow (speed, tempo, jump, break, loop, delay of
   ///   the pattern, global volume) belong to the player. Not done yet: the
-  ///   waveforms other than the sine, the envelopes and the new note actions
+  ///   waveforms other than the sine, the pitch envelope and the new note actions
   /// </remarks>
   TTrackerChannel = class
   private
@@ -54,6 +55,11 @@ type
     FTremoloDelta: Integer;
     FArpeggioSemitones: Integer;
     FGlobalVolume: Double;
+    FVolumeCursor: TTrackerEnvelopeCursor;
+    FPanningCursor: TTrackerEnvelopeCursor;
+    FKeyOff: Boolean;
+    // 0..FADE_FULL, goes down after the key off
+    FFade: Integer;
     function Remember(const AMemory: TMemory; const AParam: Byte): Byte;
     function IsLinear: Boolean;
     procedure SlideUp(const ADelta: Double);
@@ -70,6 +76,10 @@ type
     procedure UpdateTremolo(const AAdvance: Boolean);
     function ClampVolume(const AValue: Integer): Integer;
     function IsTonePortamento(const AEffect: TTrackerEffect): Boolean;
+    procedure KeyOff;
+    procedure AdvanceEnvelopes;
+    function FadeStep: Integer;
+    function EnvelopedPanning: Double;
   public
     /// <param name="AModule">The module that is played</param>
     /// <param name="AVoice">The voice of the mixer that this channel drives</param>
@@ -77,6 +87,7 @@ type
     /// <param name="AIndex">Number of the channel</param>
     constructor Create(const AModule: TTrackerModule; const AVoice: TTrackerVoice;
       const ASampleRate, AIndex: Integer);
+    destructor Destroy; override;
 
     /// <summary>
     ///   Starts a row: the instrument and the note, and the effects that act
@@ -131,6 +142,12 @@ const
   VIBRATO_STEPS = 64;
   VIBRATO_HALF = 32;
   OFFSET_UNIT = 256;
+  FADE_FULL = 65536;
+  // The fade out of the instrument per tick, in 1/65536: XM counts 1/32768, IT 1/1024 of 128 steps
+  XM_FADE_UNIT = 2;
+  IT_FADE_UNIT = 64;
+  CENTER_ENVELOPE = 32;
+  PANNING_RANGE = 128;
 
   // sin(i * pi / 32) * 255, the table of the vibrato of ProTracker
   VIBRATO_TABLE: array[0..31] of Integer = (
@@ -155,6 +172,16 @@ begin
   FPanning := CENTER_PANNING;
   FGlobalVolume := 1;
   FDelayedNote := TRACKER_NOTE_NONE;
+  FFade := FADE_FULL;
+  FVolumeCursor := TTrackerEnvelopeCursor.Create;
+  FPanningCursor := TTrackerEnvelopeCursor.Create;
+end;
+
+destructor TTrackerChannel.Destroy;
+begin
+  FPanningCursor.Free;
+  FVolumeCursor.Free;
+  inherited Destroy;
 end;
 
 function TTrackerChannel.IsLinear: Boolean;
@@ -298,6 +325,10 @@ begin
 
   FVibratoPosition := 0;
   FTremoloPosition := 0;
+  FKeyOff := False;
+  FFade := FADE_FULL;
+  FVolumeCursor.Start(FInstrument.VolumeEnvelope);
+  FPanningCursor.Start(FInstrument.PanningEnvelope);
   FVoice.Start(FSample, FStartOffset);
   FStartOffset := 0;
 end;
@@ -332,6 +363,8 @@ procedure TTrackerChannel.StartRow(const ACell: TTrackerCell);
 var
   LNote: Integer;
 begin
+  // A new note starts the envelopes again, after this step
+  AdvanceEnvelopes;
   FEffect := TTrackerEffectMapper.Map(FModule.Format, ACell.Effect, ACell.Param);
   FVolumeEffect := TTrackerEffectMapper.MapVolumeColumn(FModule.Format, ACell.Volume);
   FVibratoDelta := 0;
@@ -359,7 +392,9 @@ begin
     else
       TriggerNote(LNote);
   end
-  else if (LNote = TRACKER_NOTE_OFF) or (LNote = TRACKER_NOTE_CUT) then
+  else if LNote = TRACKER_NOTE_OFF then
+    KeyOff
+  else if LNote = TRACKER_NOTE_CUT then
     Silence
   else if (ACell.Instrument > 0) and Assigned(FSample) then
     // An instrument without a note sets its volume again
@@ -452,7 +487,7 @@ begin
       if AEffect.Param = 0 then
         FVolume := 0;
     ekKeyOff:
-      Silence;
+      KeyOff;
   end;
 end;
 
@@ -570,6 +605,7 @@ end;
 
 procedure TTrackerChannel.ProcessTick(const ATick: Integer);
 begin
+  AdvanceEnvelopes;
   FVibratoDelta := 0;
   FTremoloDelta := 0;
   // The volume column acts on every tick too (the slides and the portamento)
@@ -581,6 +617,49 @@ end;
 procedure TTrackerChannel.Silence;
 begin
   FVoice.Stop;
+end;
+
+// The key off of XM and IT: the envelopes go on past the sustain and the
+// instrument fades out. The other formats have no such thing: the note stops
+procedure TTrackerChannel.KeyOff;
+begin
+  if not (FModule.Format in [tfXm, tfIt]) or not Assigned(FInstrument) then
+  begin
+    Silence;
+    Exit;
+  end;
+  FKeyOff := True;
+  FVolumeCursor.Release;
+  FPanningCursor.Release;
+  // XM: without the envelope of the volume the note ends at once
+  if (FModule.Format = tfXm) and not FVolumeCursor.Active then
+    FFade := 0;
+end;
+
+// One tick of the envelopes and of the fade out
+procedure TTrackerChannel.AdvanceEnvelopes;
+begin
+  FVolumeCursor.Advance;
+  FPanningCursor.Advance;
+  if FKeyOff and (FFade > 0) and Assigned(FInstrument) then
+    FFade := Max(0, FFade - FadeStep);
+end;
+
+function TTrackerChannel.FadeStep: Integer;
+begin
+  if FModule.Format = tfXm then
+    Result := FInstrument.FadeOut * XM_FADE_UNIT
+  else
+    Result := FInstrument.FadeOut * IT_FADE_UNIT;
+end;
+
+// The panning envelope moves the channel by up to half the way to the sides
+function TTrackerChannel.EnvelopedPanning: Double;
+begin
+  Result := FPanning;
+  if FPanningCursor.Active then
+    Result := Result + (FPanningCursor.Value - CENTER_ENVELOPE) *
+      (PANNING_RANGE - Abs(FPanning - PANNING_RANGE)) / CENTER_ENVELOPE;
 end;
 
 procedure TTrackerChannel.UpdateVoice;
@@ -602,8 +681,9 @@ begin
     LFrequency := LFrequency * Power(2, FArpeggioSemitones / 12);
 
   FVoice.Increment := LFrequency / FSampleRate;
-  FVoice.Volume := ClampVolume(FVolume + FTremoloDelta) / MAX_VOLUME * FGlobalVolume;
-  FVoice.Panning := Max(0, Min(1, FPanning / 255));
+  FVoice.Volume := ClampVolume(FVolume + FTremoloDelta) / MAX_VOLUME * FGlobalVolume *
+    (FVolumeCursor.Value / MAX_VOLUME) * (FFade / FADE_FULL);
+  FVoice.Panning := Max(0, Min(1, EnvelopedPanning / 255));
 end;
 
 end.
