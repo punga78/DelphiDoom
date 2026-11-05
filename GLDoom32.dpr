@@ -246,7 +246,7 @@ uses
   p_user in 'Doom\p_user.pas',
   r_bsp in 'Doom\r_bsp.pas',
   r_data in 'Base\r_data.pas',
-  r_defs in 'Doom\r_defs.pas',
+  r_defs in 'Base\r_defs.pas',
   r_draw in 'Doom\r_draw.pas',
   r_hires in 'Base\r_hires.pas',
   r_intrpl in 'Base\r_intrpl.pas',

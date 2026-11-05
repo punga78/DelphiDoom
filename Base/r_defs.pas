@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -55,6 +48,9 @@ uses
 // SECTORS do store MObjs anyway.
   p_mobj_h,
   p_udmf,
+{$IFDEF HEXEN}
+  s_sndseq,
+{$ENDIF}
 {$IFNDEF OPENGL}
   r_range,  // JVAL: 3d Floors
   r_visplanes, // JVAL: 3d Floors
@@ -73,6 +69,9 @@ const
 
 var
   needsbackscreen: boolean = false;
+{$IFDEF DOOM}
+  needsstatusbarback: boolean = true;
+{$ENDIF}
 
 const
   NUMCOLORMAPS = 32;
@@ -117,9 +116,11 @@ type
   Pline_t = ^line_t;
   Pline_tArray = ^line_tArray;
   Pline_tPArray = ^line_tPArray;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
   Pmsecnode_t = ^msecnode_t;
 
+{$ENDIF}
 //
 // The SECTORS record, at runtime.
 // Stores things/mobjs.
@@ -132,7 +133,9 @@ type
     ceilingpic: smallint;
     lightlevel: smallint;
     special: smallint;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     oldspecial: smallint;
+{$ENDIF}
     tag: smallint;
 
     // 0 = untraversed, 1,2 = sndlines -1
@@ -140,6 +143,11 @@ type
 
     // thing that made a sound (or null)
     soundtarget: Pmobj_t;
+{$IFDEF HEXEN}
+
+    // stone, metal, heavy, etc...
+    seqType: seqtype_t;
+{$ENDIF}
 
     // mapblock bounding box for height changes
     blockbox: array[0..3] of integer;
@@ -154,6 +162,9 @@ type
     thinglist: Pmobj_t;
 
     // thinker_t for reversable actions
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    specialdata: pointer;
+{$ELSE}
     floordata: pointer;    // jff 2/22/98 make thinkers on
     ceilingdata: pointer;  // floors, ceilings, lighting,
     lightingdata: pointer; // independent of one another
@@ -162,9 +173,11 @@ type
     stairlock: integer;   // -2 on first locked -1 after thinker done 0 normally
     prevsec: integer;     // -1 or number of sector for previous step
     nextsec: integer;     // -1 or number of next step sector
+{$ENDIF}
 
     linecount: integer;
     lines: Pline_tPArray; // [linecount] size
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
     floor_xoffs: fixed_t;
     floor_yoffs: fixed_t;
@@ -181,6 +194,7 @@ type
     topmap: integer;
     midmap: integer;
     bottommap: integer;
+{$ENDIF}
 
     renderflags: LongWord;
     flags: LongWord;
@@ -199,6 +213,10 @@ type
     saffectees: PIntegerArray;
     // JVAL: sector gravity (VERSION 204)
     gravity: fixed_t;
+{$IFDEF DOOM}
+    // JVAL: Lines 272, 272 (MBF) - Change sky (VERSION 205)
+    sky: integer;
+{$ENDIF}
     floorangle: angle_t; // JVAL: 20200221 - Texture angle
     flooranglex: fixed_t; // JVAL: 20201229 - Texture angle rover
     floorangley: fixed_t; // JVAL: 20201229 - Texture angle rover
@@ -206,6 +224,7 @@ type
     ceilinganglex: fixed_t; // JVAL: 20201229 - Texture angle rover
     ceilingangley: fixed_t; // JVAL: 20201229 - Texture angle rover
 {$IFDEF OPENGL}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     floorlightlevel: smallint;
     ceilinglightlevel: smallint;
     floor_validcount: integer;
@@ -216,6 +235,7 @@ type
     lowestceil_height: integer;
     lowestceil_lightlevel: integer;
     lowestceil_picnum: integer;
+{$ENDIF}
     no_toptextures: boolean;
     no_bottomtextures: boolean;
 {$ELSE}
@@ -227,9 +247,15 @@ type
     ceilingvisslope: integer;
 {$ENDIF}
     moreids: moreids_t;
+{$IF DEFINED(HERETIC)}
+    seqType: integer;
+    lightninglightlevel: integer;
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
     specialdata: Pointer;
     seqType: integer;
     lightninglightlevel: integer;
+{$ENDIF}
     rendervalidcount: integer;
     windthrust: integer;
     windangle: angle_t;
@@ -240,10 +266,12 @@ type
     next_floorheight: fixed_t;
     next_ceilingheight: fixed_t;
     next_lightlevel: smallint;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     next_floor_xoffs: fixed_t;
     next_floor_yoffs: fixed_t;
     next_ceiling_xoffs: fixed_t;
     next_ceiling_yoffs: fixed_t;
+{$ENDIF}
     next_floorangle: angle_t;
     next_flooranglex: fixed_t;
     next_floorangley: fixed_t;
@@ -254,10 +282,12 @@ type
     prev_floorheight: fixed_t;
     prev_ceilingheight: fixed_t;
     prev_lightlevel: smallint;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     prev_floor_xoffs: fixed_t;
     prev_floor_yoffs: fixed_t;
     prev_ceiling_xoffs: fixed_t;
     prev_ceiling_yoffs: fixed_t;
+{$ENDIF}
     prev_floorangle: angle_t;
     prev_flooranglex: fixed_t;
     prev_floorangley: fixed_t;
@@ -268,6 +298,9 @@ type
   end;
   sector_tArray = packed array[0..$FFFF] of sector_t;
   Psector_tArray = ^sector_tArray;
+{$IF DEFINED(DOOM)}
+  sector_tPArray = packed array[0..$FFFF] of Psector_t;
+  Psector_tPArray = ^sector_tPArray;
 
   msecnode_t = record
     m_sector: Psector_t;  // a sector containing this object
@@ -278,6 +311,18 @@ type
     m_snext: Pmsecnode_t; // next msecnode_t for this sector
     visited: boolean;     // killough 4/4/98, 4/7/98: used in search algorithms
   end;
+{$ELSEIF DEFINED(STRIFE)}
+
+  msecnode_t = record
+    m_sector: Psector_t;  // a sector containing this object
+    m_thing: Pmobj_t;     // this object
+    m_tprev: Pmsecnode_t; // prev msecnode_t for this thing
+    m_tnext: Pmsecnode_t; // next msecnode_t for this thing
+    m_sprev: Pmsecnode_t; // prev msecnode_t for this sector
+    m_snext: Pmsecnode_t; // next msecnode_t for this sector
+    visited: boolean;     // killough 4/4/98, 4/7/98: used in search algorithms
+  end;
+{$ENDIF}
 
 //
 // The SideDef.
@@ -334,8 +379,13 @@ type
 
     // Animation related.
     flags: word;
+{$IFDEF HEXEN}
+    special: byte;
+    arg1, arg2, arg3, arg4, arg5: byte;
+{$ELSE}
     special: smallint;
     tag: smallint;
+{$ENDIF}
 
     // Visual appearance: SideDefs.
     //  sidenum[1] will be -1 if one sided
@@ -364,12 +414,14 @@ type
     flslopestep: array[0..1] of float; // JVAL: Slopes
 
     // JVAL: 20220209 - UDMF support
+{$IFNDEF HEXEN}
     arg1: integer;
     arg2: integer;
     arg3: integer;
     arg4: integer;
     arg5: integer;
     activators: integer;
+{$ENDIF}
     moreids: moreids_t;
 
     {$IFNDEF OPENGL}
@@ -383,7 +435,9 @@ type
 const
   // Line rendering flags
   LRF_ISOLATED = 1;
+{$IFNDEF HEXEN}
   LRF_TRANSPARENT = 2;
+{$ENDIF}
   LRF_SLOPED = 4; // JVAL: Slopes
   LRF_IGNOREPASS = 8; // JVAL: 20220309 - Speed optimization
 
@@ -402,6 +456,11 @@ const
   SRF_SLOPEFLOOR = 32; // JVAL: Slopes
   SRF_SLOPECEILING = 64; // JVAL: Slopes
   SRF_SLOPED = SRF_SLOPEFLOOR + SRF_SLOPECEILING; // JVAL: Slopes
+{$IFDEF DOOM}
+  SRF_ROTATE_FLOOR = 128; // JVAL: 20201229 - Texture angle - UNUSED
+  SRF_ROTATE_CEILING = 256; // JVAL: 20201229 - Texture angle - UNUSED
+  SRF_ROTATE = SRF_ROTATE_FLOOR or SRF_ROTATE_CEILING;  // JVAL: 20201229 - Texture angle - UNUSED
+{$ENDIF}
   SRF_INTERPOLATE_ROTATE = 512;
   SRF_INTERPOLATE_FLOORSLOPE = 1024;
   SRF_INTERPOLATE_CEILINGSLOPE = 2048;
@@ -648,7 +707,9 @@ type
     texturemid: fixed_t;
     {$IFNDEF OPENGL}
     texturemid2: fixed_t; // JVAL For light boost
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     heightsec: integer;   // killough 3/27/98: height sector for underwater/fake ceiling support
+{$ENDIF}
     vx1, vx2: integer;    // JVAL voxel support
     ceilingz: fixed_t;    // JVAL 3d Floors
     cache: Pointer;
@@ -662,11 +723,19 @@ type
     colormap: PByteArray;
     renderflags: LongWord;
 {$ENDIF}
+{$IFDEF STRIFE}
     mobjflags: LongWord;
     mobjflags_ex: LongWord;
+{$ELSE}
+    mobjflags: integer;
+    mobjflags_ex: integer;
+{$ENDIF}
     mo: Pmobj_t;
 {$IFDEF OPENGL}
     flip: boolean;
+{$ENDIF}
+{$IFDEF HEXEN}
+    _class: integer;
 {$ENDIF}
     infoscale: fixed_t;
     fog: boolean; // JVAL: Mars fog sectors
@@ -730,6 +799,7 @@ type
     originx: smallint;
     originy: smallint;
     patch: smallint;
+{$IFDEF STRIFE}
   end;
   Pmappatch_t = ^mappatch_t;
 
@@ -737,25 +807,38 @@ type
     originx: smallint;
     originy: smallint;
     patch: smallint;
+{$ENDIF}
     stepdir: smallint;
     colormap: smallint;
   end;
+{$IFDEF STRIFE}
   Pmappatch2_t = ^mappatch2_t;
+{$ELSE}
+  Pmappatch_t = ^mappatch_t;
+{$ENDIF}
 
 //
 // Texture definition.
 // A DOOM wall texture is a list of patches
 // which are to be combined in a predefined order.
 //
+{$IFDEF STRIFE}
   maptexture_t = record
+{$ELSE}
+  maptexture_t = packed record
+{$ENDIF}
     name: char8_t;
     masked: integer;
     width: smallint;
     height: smallint;
+{$IFNDEF STRIFE}
+    filler: LongWord; // unused
+{$ENDIF}
     patchcount: smallint;
     patches: array[0..0] of mappatch_t;
   end;
   Pmaptexture_t = ^maptexture_t;
+{$IFDEF STRIFE}
 
   maptexture2_t = packed record
     name: char8_t;
@@ -767,6 +850,7 @@ type
     patches: array[0..0] of mappatch2_t;
   end;
   Pmaptexture2_t = ^maptexture2_t;
+{$ENDIF}
 
 // A single patch from a texture definition,
 //  basically a rectangular area within
@@ -821,6 +905,54 @@ type
   flatPArray = array[0..$FFFF] of Pflat_t;
   PflatPArray = ^flatPArray;
 
+{$IFDEF DOOM}
+type
+  // A SubSector.
+  // References a Sector.
+  // Basically, this is a list of LineSegs,
+  //  indicating the visible walls that define
+  //  (all or some) sides of a convex BSP leaf.
+  vanillasubsector_t = packed record
+    sector: Psector_t;
+    numlines: smallint;
+    firstline: smallint;
+  end;
+  Pvanillasubsector_t = ^vanillasubsector_t;
+  vanillasubsector_tArray = packed array[0..$FFFF] of vanillasubsector_t;
+  Pvanillasubsector_tArray = ^vanillasubsector_tArray;
+
+  // The LineSeg.
+  vanillaseg_t = packed record
+    v1, v2: Pvertex_t;
+    offset: fixed_t;
+    angle: angle_t;
+    sidedef: Pside_t;
+    linedef: Pline_t;
+    // Sector references.
+    // Could be retrieved from linedef, too.
+    // backsector is NULL for one sided lines
+    frontsector: Psector_t;
+    backsector: Psector_t;
+  end;
+  Pvanillaseg_t = ^vanillaseg_t;
+  vanillaseg_tArray = packed array[0..$FFFF] of vanillaseg_t;
+  Pvanillaseg_tArray = ^vanillaseg_tArray;
+
+  // BSP node.
+  vanillanode_t = packed record
+    // Partition line.
+    x, y: fixed_t;
+    dx, dy: fixed_t;
+    // Bounding box for each child.
+    bbox: packed array[0..1, 0..3] of fixed_t;
+    // If NF_SUBSECTOR its a subsector.
+    children: packed array[0..1] of word;
+  end;
+  Pvanillanode_t = ^vanillanode_t;
+  vanillanode_tArray = packed array[0..$FFFF] of vanillanode_t;
+  Pvanillanode_tArray = ^vanillanode_tArray;
+
+{$ENDIF}
 var
   numspritelumps: integer;
 
