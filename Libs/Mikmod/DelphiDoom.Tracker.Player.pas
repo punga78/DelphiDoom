@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tracker - plays a module: rows, ticks, notes and song flow      }
+{  DelphiDoom: tracker - plays a module: rows, ticks and song flow             }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -12,35 +12,26 @@ interface
 
 uses
   System.Generics.Collections,
+  DelphiDoom.Tracker.Channel,
   DelphiDoom.Tracker.Mixer,
   DelphiDoom.Tracker.Types;
 
 type
   /// <summary>
-  ///   The sequencer: it reads the rows of the patterns tick by tick, starts
-  ///   the notes on the voices of a mixer and follows the flow of the song
-  ///   (speed, tempo, position jump and pattern break)
+  ///   The sequencer: it reads the rows of the patterns tick by tick, gives
+  ///   each cell to its channel and follows the flow of the song (speed,
+  ///   tempo, global volume, position jump, pattern break, loop and delay of
+  ///   the pattern)
   /// </summary>
   /// <remarks>
-  ///   The effects that change a note while it plays (slides, vibrato,
-  ///   arpeggio, envelopes) are not done yet
+  ///   Not done yet: the envelopes, the fade out and the new note actions of
+  ///   XM and IT, and the waveforms of the vibrato other than the sine
   /// </remarks>
   TTrackerPlayer = class
   private
-    type
-      TChannelState = class
-      public
-        Instrument: TTrackerInstrument;
-        Sample: TTrackerSample;
-        /// <summary>0..64</summary>
-        Volume: Integer;
-        /// <summary>0 (left) to 255 (right); 127.5 is the middle</summary>
-        Panning: Double;
-      end;
-  private
     FModule: TTrackerModule;
     FMixer: TTrackerMixer;
-    FChannels: TObjectList<TChannelState>;
+    FChannels: TObjectList<TTrackerChannel>;
     FVisited: TDictionary<Integer, Boolean>;
     FLooping: Boolean;
     FFinished: Boolean;
@@ -49,18 +40,23 @@ type
     FTick: Integer;
     FSpeed: Integer;
     FTempo: Integer;
+    FGlobalVolume: Integer;
     FTickStarted: Boolean;
     FSamplesLeft: Integer;
     FPendingOrder: Integer;
     FPendingRow: Integer;
+    FLoopRow: Integer;
+    FLoopCount: Integer;
+    FLoopJump: Boolean;
+    FPatternDelay: Integer;
+    function GetChannel(const AIndex: Integer): TTrackerChannel;
     function CurrentPattern: TTrackerPattern;
     function TickLength: Integer;
+    function RowTicks: Integer;
     function NormalizeOrder(var AOrder: Integer): Boolean;
     procedure ProcessRow;
-    procedure TriggerCell(const AChannel: Integer; const ACell: TTrackerCell);
     procedure ApplyFlowEffect(const ACell: TTrackerCell);
-    procedure ApplyVolumeColumn(const AState: TChannelState; const ACell: TTrackerCell);
-    procedure UpdateVoice(const AChannel: Integer);
+    procedure SetGlobalVolume(const AValue: Integer);
     procedure EndTick;
     procedure AdvanceRow;
     procedure FinishSong;
@@ -80,12 +76,15 @@ type
     procedure Render(const AOutput: TArray<SmallInt>; const AFrames: Integer);
 
     property Mixer: TTrackerMixer read FMixer;
+    property Channels[const AIndex: Integer]: TTrackerChannel read GetChannel;
     property Finished: Boolean read FFinished;
     property Looping: Boolean read FLooping write FLooping;
     property OrderIndex: Integer read FOrderIndex;
     property Row: Integer read FRow;
     property Speed: Integer read FSpeed;
     property Tempo: Integer read FTempo;
+    /// <summary>0..128</summary>
+    property GlobalVolume: Integer read FGlobalVolume;
   end;
 
 implementation
@@ -93,25 +92,15 @@ implementation
 uses
   System.Math,
   System.SysUtils,
-  DelphiDoom.Tracker.Voice;
+  DelphiDoom.Tracker.Effects;
 
 const
   ORDER_SKIP = 254;
   ORDER_END = 255;
-  MAX_VOLUME = 64;
-  CENTER_PANNING = 127.5;
-  // Effects of MOD and XM
-  EFFECT_JUMP = $0B;
-  EFFECT_SET_VOLUME = $0C;
-  EFFECT_BREAK = $0D;
-  EFFECT_SPEED_TEMPO = $0F;
-  // Effects of S3M and IT (the letter, A = 1)
-  EFFECT_LETTER_SPEED = 1;
-  EFFECT_LETTER_JUMP = 2;
-  EFFECT_LETTER_BREAK = 3;
-  EFFECT_LETTER_TEMPO = 20;
+  MAX_GLOBAL_VOLUME = 128;
   MIN_TEMPO = 32;
   NOT_SET = -1;
+  ROW_KEY_SIZE = 512;
 
 { TTrackerPlayer }
 
@@ -124,15 +113,16 @@ begin
   FModule := AModule;
   FLooping := ALooping;
   FMixer := TTrackerMixer.Create(ASampleRate, AModule.Channels);
-  FChannels := TObjectList<TChannelState>.Create(True);
+  FChannels := TObjectList<TTrackerChannel>.Create(True);
   FVisited := TDictionary<Integer, Boolean>.Create;
   for LIndex := 0 to AModule.Channels - 1 do
-    FChannels.Add(TChannelState.Create);
+    FChannels.Add(TTrackerChannel.Create(AModule, FMixer.Voices[LIndex], ASampleRate, LIndex));
 
   FSpeed := Max(1, AModule.InitialSpeed);
   FTempo := Max(MIN_TEMPO, AModule.InitialTempo);
   FPendingOrder := NOT_SET;
   FPendingRow := NOT_SET;
+  SetGlobalVolume(AModule.GlobalVolume);
 
   FOrderIndex := 0;
   if not NormalizeOrder(FOrderIndex) then
@@ -147,6 +137,11 @@ begin
   inherited Destroy;
 end;
 
+function TTrackerPlayer.GetChannel(const AIndex: Integer): TTrackerChannel;
+begin
+  Result := FChannels[AIndex];
+end;
+
 function TTrackerPlayer.CurrentPattern: TTrackerPattern;
 begin
   Result := FModule.Patterns[FModule.Orders[FOrderIndex]];
@@ -156,6 +151,21 @@ function TTrackerPlayer.TickLength: Integer;
 begin
   // A tick lasts 2.5 / tempo seconds
   Result := Max(1, Integer(Round(FMixer.SampleRate * 2.5 / FTempo)));
+end;
+
+// The delay of the pattern repeats the row without playing its notes again
+function TTrackerPlayer.RowTicks: Integer;
+begin
+  Result := FSpeed * (1 + FPatternDelay);
+end;
+
+procedure TTrackerPlayer.SetGlobalVolume(const AValue: Integer);
+var
+  LChannel: TTrackerChannel;
+begin
+  FGlobalVolume := Max(0, Min(MAX_GLOBAL_VOLUME, AValue));
+  for LChannel in FChannels do
+    LChannel.GlobalVolume := FGlobalVolume / MAX_GLOBAL_VOLUME;
 end;
 
 // Moves AOrder to the first order that holds a pattern; False at the end of the song
@@ -190,146 +200,73 @@ begin
   if not NormalizeOrder(LOrder) then
   begin
     // The end of the song: it starts again or it finishes
-    if FLooping then
+    if not FLooping then
     begin
-      LOrder := Min(FModule.RestartPosition, Max(0, Length(FModule.Orders) - 1));
-      if not NormalizeOrder(LOrder) then
-        LOrder := 0;
-      if not NormalizeOrder(LOrder) then
-      begin
-        FinishSong;
-        Exit;
-      end;
-      FVisited.Clear;
-      FOrderIndex := LOrder;
-      FRow := 0;
-    end
-    else
       FinishSong;
+      Exit;
+    end;
+    LOrder := Min(FModule.RestartPosition, Max(0, Length(FModule.Orders) - 1));
+    if not NormalizeOrder(LOrder) then
+      LOrder := 0;
+    if not NormalizeOrder(LOrder) then
+    begin
+      FinishSong;
+      Exit;
+    end;
+    FVisited.Clear;
+    FOrderIndex := LOrder;
+    FRow := 0;
+    FLoopRow := 0;
+    FLoopCount := 0;
     Exit;
   end;
 
+  if LOrder <> FOrderIndex then
+  begin
+    FLoopRow := 0;
+    FLoopCount := 0;
+  end;
   FOrderIndex := LOrder;
   FRow := ARow;
   if FRow >= CurrentPattern.Rows then
     FRow := 0;
 end;
 
-procedure TTrackerPlayer.UpdateVoice(const AChannel: Integer);
-var
-  LState: TChannelState;
-  LVoice: TTrackerVoice;
-begin
-  LState := FChannels[AChannel];
-  LVoice := FMixer.Voices[AChannel];
-  LVoice.Volume := LState.Volume / MAX_VOLUME * FModule.GlobalVolume / 128;
-  LVoice.Panning := LState.Panning / 255;
-end;
-
-procedure TTrackerPlayer.ApplyVolumeColumn(const AState: TChannelState; const ACell: TTrackerCell);
-begin
-  if ACell.Volume < 0 then
-    Exit;
-  case FModule.Format of
-    tfS3m, tfIt:
-      if ACell.Volume <= MAX_VOLUME then
-        AState.Volume := ACell.Volume;
-    tfXm:
-      // $10..$50 sets the volume 0..64
-      if (ACell.Volume >= $10) and (ACell.Volume <= $50) then
-        AState.Volume := ACell.Volume - $10;
-  end;
-end;
-
-procedure TTrackerPlayer.TriggerCell(const AChannel: Integer; const ACell: TTrackerCell);
-var
-  LState: TChannelState;
-  LVoice: TTrackerVoice;
-  LSampleIndex, LPlayedNote: Integer;
-  LFrequency: Double;
-begin
-  LState := FChannels[AChannel];
-  LVoice := FMixer.Voices[AChannel];
-
-  if (ACell.Instrument > 0) and (ACell.Instrument <= FModule.Instruments.Count) then
-    LState.Instrument := FModule.Instruments[ACell.Instrument - 1];
-
-  if (ACell.Note >= TRACKER_NOTE_FIRST) and (ACell.Note <= TRACKER_NOTE_LAST) then
-  begin
-    if Assigned(LState.Instrument) then
-    begin
-      LSampleIndex := LState.Instrument.SampleMap[ACell.Note - 1];
-      LPlayedNote := LState.Instrument.NoteMap[ACell.Note - 1];
-      if LSampleIndex < LState.Instrument.Samples.Count then
-      begin
-        LState.Sample := LState.Instrument.Samples[LSampleIndex];
-        LFrequency := LState.Sample.CenterFrequency *
-          Power(2, (LPlayedNote - TRACKER_CENTER_NOTE) / 12);
-        LVoice.Increment := LFrequency / FMixer.SampleRate;
-        LState.Volume := LState.Sample.Volume;
-        if LState.Sample.Panning >= 0 then
-          LState.Panning := LState.Sample.Panning
-        else if (AChannel < Length(FModule.ChannelPanning)) and
-          (FModule.ChannelPanning[AChannel] >= 0) then
-          LState.Panning := FModule.ChannelPanning[AChannel]
-        else
-          LState.Panning := CENTER_PANNING;
-        LVoice.Start(LState.Sample);
-      end;
-    end;
-  end
-  else if (ACell.Note = TRACKER_NOTE_OFF) or (ACell.Note = TRACKER_NOTE_CUT) then
-    LVoice.Stop
-  else if (ACell.Instrument > 0) and Assigned(LState.Sample) then
-    // An instrument without a note sets its volume again
-    LState.Volume := LState.Sample.Volume;
-
-  ApplyVolumeColumn(LState, ACell);
-  if (FModule.Format in [tfMod, tfXm]) and (ACell.Effect = EFFECT_SET_VOLUME) then
-    LState.Volume := Min(ACell.Param, MAX_VOLUME);
-
-  UpdateVoice(AChannel);
-end;
-
 procedure TTrackerPlayer.ApplyFlowEffect(const ACell: TTrackerCell);
 var
-  LRow: Integer;
+  LEffect: TTrackerEffect;
 begin
-  case FModule.Format of
-    tfMod, tfXm:
-      case ACell.Effect of
-        EFFECT_JUMP:
-          FPendingOrder := ACell.Param;
-        EFFECT_BREAK:
-          FPendingRow := (ACell.Param shr 4) * 10 + (ACell.Param and $0F);
-        EFFECT_SPEED_TEMPO:
-          if ACell.Param = 0 then
-            Exit
-          else if ACell.Param < MIN_TEMPO then
-            FSpeed := ACell.Param
-          else
-            FTempo := ACell.Param;
+  LEffect := TTrackerEffectMapper.Map(FModule.Format, ACell.Effect, ACell.Param);
+  case LEffect.Kind of
+    ekPositionJump:
+      FPendingOrder := LEffect.Param;
+    ekPatternBreak:
+      FPendingRow := LEffect.Param;
+    ekSetSpeed:
+      FSpeed := Max(1, LEffect.Param);
+    ekSetTempo:
+      FTempo := Max(MIN_TEMPO, LEffect.Param);
+    ekSetGlobalVolume:
+      // XM and S3M count to 64, IT to 128
+      if FModule.Format in [tfXm, tfS3m] then
+        SetGlobalVolume(LEffect.Param * 2)
+      else
+        SetGlobalVolume(LEffect.Param);
+    ekPatternLoop:
+      if LEffect.Param = 0 then
+        FLoopRow := FRow
+      else
+      begin
+        if FLoopCount = 0 then
+          FLoopCount := LEffect.Param
+        else
+          Dec(FLoopCount);
+        if FLoopCount > 0 then
+          FLoopJump := True;
       end;
-    tfS3m, tfIt:
-      case ACell.Effect of
-        EFFECT_LETTER_SPEED:
-          if ACell.Param > 0 then
-            FSpeed := ACell.Param;
-        EFFECT_LETTER_TEMPO:
-          if ACell.Param >= MIN_TEMPO then
-            FTempo := ACell.Param;
-        EFFECT_LETTER_JUMP:
-          FPendingOrder := ACell.Param;
-        EFFECT_LETTER_BREAK:
-          begin
-            // S3M writes the row in decimal digits; IT in binary
-            if FModule.Format = tfS3m then
-              LRow := (ACell.Param shr 4) * 10 + (ACell.Param and $0F)
-            else
-              LRow := ACell.Param;
-            FPendingRow := LRow;
-          end;
-      end;
+    ekPatternDelay:
+      if FPatternDelay = 0 then
+        FPatternDelay := LEffect.Param;
   end;
 end;
 
@@ -339,7 +276,7 @@ var
   LPattern: TTrackerPattern;
   LCell: TTrackerCell;
 begin
-  LKey := FOrderIndex * 512 + FRow;
+  LKey := FOrderIndex * ROW_KEY_SIZE + FRow;
   if FVisited.ContainsKey(LKey) and not FLooping then
   begin
     // A row that is played twice: the song would never end
@@ -349,17 +286,31 @@ begin
   FVisited.AddOrSetValue(LKey, True);
 
   LPattern := CurrentPattern;
+  FPatternDelay := 0;
   for LChannel := 0 to Min(FModule.Channels, LPattern.Channels) - 1 do
   begin
     LCell := LPattern.Cells[FRow, LChannel];
-    TriggerCell(LChannel, LCell);
+    FChannels[LChannel].StartRow(LCell);
     ApplyFlowEffect(LCell);
   end;
+
+  // The flow effects can change the global volume
+  for LChannel := 0 to FChannels.Count - 1 do
+    FChannels[LChannel].UpdateVoice;
 end;
 
 procedure TTrackerPlayer.AdvanceRow;
+var
+  LRow: Integer;
 begin
-  if FPendingOrder <> NOT_SET then
+  if FLoopJump then
+  begin
+    // The rows of the loop will be played again: they are not "seen twice"
+    for LRow := FLoopRow to FRow do
+      FVisited.Remove(FOrderIndex * ROW_KEY_SIZE + LRow);
+    FRow := FLoopRow;
+  end
+  else if FPendingOrder <> NOT_SET then
     GoToOrder(FPendingOrder, Max(0, FPendingRow))
   else if FPendingRow <> NOT_SET then
     GoToOrder(FOrderIndex + 1, FPendingRow)
@@ -367,6 +318,7 @@ begin
     GoToOrder(FOrderIndex + 1, 0)
   else
     Inc(FRow);
+  FLoopJump := False;
   FPendingOrder := NOT_SET;
   FPendingRow := NOT_SET;
 end;
@@ -374,7 +326,7 @@ end;
 procedure TTrackerPlayer.EndTick;
 begin
   Inc(FTick);
-  if FTick >= FSpeed then
+  if FTick >= RowTicks then
   begin
     FTick := 0;
     AdvanceRow;
@@ -383,7 +335,7 @@ end;
 
 procedure TTrackerPlayer.Render(const AOutput: TArray<SmallInt>; const AFrames: Integer);
 var
-  LDone, LChunk: Integer;
+  LDone, LChunk, LChannel: Integer;
 begin
   LDone := 0;
   while LDone < AFrames do
@@ -397,7 +349,12 @@ begin
     if not FTickStarted then
     begin
       if FTick = 0 then
-        ProcessRow;
+        ProcessRow
+      else
+      begin
+        for LChannel := 0 to FChannels.Count - 1 do
+          FChannels[LChannel].ProcessTick(FTick);
+      end;
       if FFinished then
         Continue;
       FSamplesLeft := TickLength;
