@@ -205,7 +205,7 @@ uses
   p_map in 'Hexen\p_map.pas',
   p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Hexen\p_mobj.pas',
-  p_mobj_h in 'Hexen\p_mobj_h.pas',
+  p_mobj_h in 'Base\p_mobj_h.pas',
   udmf_plats in 'Base\udmf_plats.pas',
   p_pspr in 'Hexen\p_pspr.pas',
   p_pspr_h in 'Hexen\p_pspr_h.pas',

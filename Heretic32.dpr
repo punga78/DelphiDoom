@@ -222,7 +222,7 @@ uses
   p_map in 'Heretic\p_map.pas',
   p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Heretic\p_mobj.pas',
-  p_mobj_h in 'Heretic\p_mobj_h.pas',
+  p_mobj_h in 'Base\p_mobj_h.pas',
   p_plats in 'Heretic\p_plats.pas',
   p_pspr in 'Heretic\p_pspr.pas',
   p_pspr_h in 'Heretic\p_pspr_h.pas',
