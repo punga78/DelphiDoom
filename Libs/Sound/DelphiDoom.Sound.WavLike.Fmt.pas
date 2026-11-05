@@ -25,6 +25,10 @@ type
     Channels: Integer;
     SampleRate: Integer;
     BytesPerSample: Integer;
+    /// <summary>Block align of the chunk: the size of a block of ADPCM</summary>
+    BlockAlign: Integer;
+    /// <summary>Samples in a block of ADPCM</summary>
+    SamplesPerBlock: Integer;
   end;
 
   /// <summary>
@@ -35,9 +39,13 @@ type
   public
     const
       WAVE_FORMAT_PCM = $0001;
+      WAVE_FORMAT_MS_ADPCM = $0002;
       WAVE_FORMAT_IEEE_FLOAT = $0003;
       WAVE_FORMAT_ALAW = $0006;
       WAVE_FORMAT_MULAW = $0007;
+      WAVE_FORMAT_IMA_ADPCM = $0011;
+      WAVE_FORMAT_GSM610 = $0031;
+      WAVE_FORMAT_G721_ADPCM = $0040;
       WAVE_FORMAT_EXTENSIBLE = $FFFE;
     /// <summary>
     ///   Reads a chunk of ASize bytes from the position of AReader and leaves
@@ -67,7 +75,8 @@ var
   LMicrosoft, LAmbisonic: Boolean;
 begin
   AReader.ReadUInt16;    // extra bytes
-  AReader.ReadUInt16;    // valid bits
+  // libsndfile takes the samples per block of MS ADPCM from the valid bits
+  ALayout.SamplesPerBlock := AReader.ReadUInt16;
   AReader.ReadUInt32;    // channel mask
   LField1 := AReader.ReadUInt32;
   LField2 := AReader.ReadUInt16;
@@ -85,6 +94,10 @@ begin
   if (LMicrosoft and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_PCM)) or
      (LAmbisonic and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_PCM)) then
     ALayout.Encoding := SNDFILE_FORMAT_PCM_16 // the width decides, see ResolveEncoding
+  else if LMicrosoft and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_MS_ADPCM) then
+    ALayout.Encoding := SNDFILE_FORMAT_MS_ADPCM
+  else if LMicrosoft and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_MS_ADPCM) then
+    ALayout.Encoding := SNDFILE_FORMAT_MS_ADPCM
   else if (LMicrosoft and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_IEEE_FLOAT)) or
           (LAmbisonic and (LField1 = TWavLikeFmtChunk.WAVE_FORMAT_IEEE_FLOAT)) then
     ALayout.Encoding := SNDFILE_FORMAT_FLOAT
@@ -102,8 +115,9 @@ class function TWavLikeFmtChunk.Read(var AReader: TSoundByteReader;
   ASize: Cardinal; var ALayout: TWavLikeLayout): Integer;
 var
   LStart: Int64;
-  LChannels, LBitWidth: Word;
+  LChannels, LBitWidth, LBlockAlign, LCoefficients: Word;
   LSampleRate: Cardinal;
+  LIndex: Integer;
 begin
   if ASize < 16 then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
@@ -113,7 +127,7 @@ begin
   LChannels := AReader.ReadUInt16;
   LSampleRate := AReader.ReadUInt32;
   AReader.ReadUInt32;                       // bytes per second
-  AReader.ReadUInt16;                       // block align
+  LBlockAlign := AReader.ReadUInt16;
   LBitWidth := AReader.ReadUInt16;
 
   if AReader.Overrun then
@@ -122,6 +136,8 @@ begin
   ALayout.Channels := LChannels;
   ALayout.SampleRate := Integer(LSampleRate);
   ALayout.Container := SNDFILE_FORMAT_WAV;
+  ALayout.BlockAlign := LBlockAlign;
+  ALayout.SamplesPerBlock := 0;
   Result := SNDFILE_OK;
 
   case ALayout.Tag of
@@ -145,10 +161,61 @@ begin
         else
           ALayout.Encoding := SNDFILE_FORMAT_ULAW;
       end;
+    WAVE_FORMAT_IMA_ADPCM:
+      begin
+        if (LBitWidth <> 4) or (LChannels < 1) or (LChannels > 2) then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        AReader.ReadUInt16;                 // extra bytes
+        ALayout.SamplesPerBlock := AReader.ReadUInt16;
+        if ALayout.SamplesPerBlock < 1 then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        ALayout.Encoding := SNDFILE_FORMAT_IMA_ADPCM;
+        ALayout.BytesPerSample := 1;
+      end;
+    WAVE_FORMAT_MS_ADPCM:
+      begin
+        if (LBitWidth <> 4) or (LChannels < 1) or (LChannels > 2) then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        AReader.ReadUInt16;                 // extra bytes
+        ALayout.SamplesPerBlock := AReader.ReadUInt16;
+        LCoefficients := AReader.ReadUInt16;
+        if ALayout.SamplesPerBlock < 1 then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        // libsndfile keeps seven and decodes with its own, but it reads them
+        if LCoefficients > 7 then
+          LCoefficients := 7;
+        for LIndex := 1 to LCoefficients do
+          AReader.ReadUInt32;
+        ALayout.Encoding := SNDFILE_FORMAT_MS_ADPCM;
+        ALayout.BytesPerSample := 1;
+      end;
+    WAVE_FORMAT_GSM610:
+      begin
+        if (LChannels <> 1) or (LBlockAlign <> 65) then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        AReader.ReadUInt16;                 // extra bytes
+        ALayout.SamplesPerBlock := AReader.ReadUInt16;
+        if ALayout.SamplesPerBlock <> 320 then
+          Exit(SNDFILE_ERR_MALFORMED_FILE);
+        ALayout.Encoding := SNDFILE_FORMAT_GSM610;
+        ALayout.BytesPerSample := 0;
+      end;
+    WAVE_FORMAT_G721_ADPCM:
+      begin
+        if ASize >= 20 then
+        begin
+          AReader.ReadUInt16;
+          AReader.ReadUInt16;
+        end
+        else if ASize = 18 then
+          AReader.ReadUInt16;
+        ALayout.Encoding := SNDFILE_FORMAT_G721_32;
+        ALayout.BytesPerSample := 0;
+      end;
     WAVE_FORMAT_EXTENSIBLE:
       Result := ReadExtensible(AReader, LBitWidth, ALayout);
   else
-    // ADPCM, GSM and the other codecs are not read
+    // The other codecs of WAV are not read
     Result := SNDFILE_ERR_UNSUPPORTED_ENCODING;
   end;
 

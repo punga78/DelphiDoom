@@ -99,6 +99,10 @@ type
     [Test]
     procedure TestMpc2k;
     [Test]
+    procedure TestMsAdpcm;
+    [Test]
+    procedure TestImaAdpcm;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -858,6 +862,60 @@ begin
   CheckSame(TSoundTestContainerFile.BuildMpc2k(False, 44100, TSoundTestWavFile.RandomBytes(2 * 101 + 1, 1)), 'mpc2k mono');
   CheckSame(TSoundTestContainerFile.BuildMpc2k(True, 22050, TSoundTestWavFile.RandomBytes(4 * 101 + 2, 2)), 'mpc2k stereo');
   CheckSameFailure(TSoundTestContainerFile.BuildMpc2k(False, 0, TSoundTestWavFile.RandomBytes(100, 3)), 'mpc2k rate 0');
+end;
+
+procedure TTestSoundParity.TestMsAdpcm;
+var
+  LChannels: Word;
+  LBlock: Word;
+begin
+  for LChannels := 1 to 2 do
+  begin
+    for LBlock in [256, 512, 134] do
+    begin
+      // Whole blocks, and then a last one that is cut short
+      CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+        TSoundTestContainerFile.AdpcmFormat(2, LChannels, 22050, LBlock,
+          2 * (LBlock - 6 * LChannels) div LChannels),
+        TSoundTestWavFile.RandomBytes(LBlock * 5, LBlock), False),
+        Format('wav ms adpcm %d channels block %d', [LChannels, LBlock]));
+    end;
+    CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+      TSoundTestContainerFile.AdpcmFormat(2, LChannels, 11025, 256, 2 * (256 - 6 * LChannels) div LChannels),
+      TSoundTestWavFile.RandomBytes(256 * 3 + 100, 3), True), 'wav ms adpcm short last block');
+    CheckSame(TSoundTestContainerFile.BuildW64WithFormat(
+      TSoundTestContainerFile.AdpcmFormat(2, LChannels, 22050, 256, 2 * (256 - 6 * LChannels) div LChannels),
+      TSoundTestWavFile.RandomBytes(256 * 4, 4)), 'w64 ms adpcm');
+  end;
+  CheckSameFailure(TSoundTestContainerFile.BuildWavWithFormat(
+    TSoundTestContainerFile.AdpcmFormat(2, 1, 22050, 256, 100), TSoundTestWavFile.RandomBytes(512, 5), False),
+    'wav ms adpcm wrong samples per block');
+end;
+
+procedure TTestSoundParity.TestImaAdpcm;
+var
+  LChannels: Word;
+  LBlock: Word;
+begin
+  for LChannels := 1 to 2 do
+  begin
+    for LBlock in [256, 512, 1024] do
+      CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+        TSoundTestContainerFile.AdpcmFormat($11, LChannels, 22050, LBlock,
+          2 * (LBlock - 4 * LChannels) div LChannels + 1),
+        TSoundTestWavFile.RandomBytes(LBlock * 5, LBlock), False),
+        Format('wav ima adpcm %d channels block %d', [LChannels, LBlock]));
+    // With a chunk after the sound, the blocks are whole and the data goes on
+    CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+      TSoundTestContainerFile.AdpcmFormat($11, LChannels, 11025, 256, 2 * (256 - 4 * LChannels) div LChannels + 1),
+      TSoundTestWavFile.RandomBytes(256 * 3, 3), True), 'wav ima adpcm with a chunk after');
+    CheckSame(TSoundTestContainerFile.BuildW64WithFormat(
+      TSoundTestContainerFile.AdpcmFormat($11, LChannels, 22050, 256, 2 * (256 - 4 * LChannels) div LChannels + 1),
+      TSoundTestWavFile.RandomBytes(256 * 4, 4)), 'w64 ima adpcm');
+  end;
+  CheckSameFailure(TSoundTestContainerFile.BuildWavWithFormat(
+    TSoundTestContainerFile.AdpcmFormat($11, 1, 22050, 256, 100), TSoundTestWavFile.RandomBytes(512, 5), False),
+    'wav ima adpcm wrong samples per block');
 end;
 
 procedure TTestSoundParity.TestAvr;

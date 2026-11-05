@@ -39,6 +39,7 @@ type
     FPartialBytes: TBytes;
     FReadsDirectly: Boolean;
     FBigEndian: Boolean;
+    FZeroFillChunk: Integer;
   public
     /// <summary>
     ///   AData must hold exactly AInfo.Frames * AInfo.Channels samples of AKind
@@ -82,6 +83,14 @@ type
     ///   part past the end of the sound that it left untouched
     /// </summary>
     property BigEndian: Boolean read FBigEndian write FBigEndian;
+    /// <summary>
+    ///   For the codecs that decode through a buffer of this many items: a read
+    ///   that goes past the end of the sound has the buffers it used cleared,
+    ///   so the part of the caller's buffer past the end is zero up to the end
+    ///   of the chunk where the sound stopped (all of it for 16 bit reads).
+    ///   Zero for the formats that leave the buffer alone
+    /// </summary>
+    property ZeroFillChunk: Integer read FZeroFillChunk write FZeroFillChunk;
   end;
 
 implementation

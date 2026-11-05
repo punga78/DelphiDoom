@@ -29,6 +29,10 @@ type
 
 implementation
 
+uses
+  DelphiDoom.Sound.Codec.MsAdpcm, DelphiDoom.Sound.Codec.ImaAdpcm,
+  DelphiDoom.Sound.CodecSamples;
+
 const
   // Stages of the header
   HAVE_RIFF = 1;
@@ -40,6 +44,34 @@ const
 var
   MARKER_RIFF, MARKER_RIFX, MARKER_WAVE, MARKER_FMT, MARKER_DATA,
   MARKER_WVPK, MARKER_OGGS: Cardinal;
+
+/// <summary>
+///   MS and IMA ADPCM. The first measures the data by the header, the second
+///   (like the PCM ones) up to the end of the file or of the data chunk
+/// </summary>
+function DecodeAdpcm(const ASource: TBytes; const ALayout: TWavLikeLayout;
+  ADataOffset, AHeaderLength, ADataEnd: Int64; out ASamples: TSoundSamples): Integer;
+var
+  LData: TBytes;
+  LFrames, LLength: Int64;
+begin
+  if ALayout.Encoding = SNDFILE_FORMAT_MS_ADPCM then
+    Result := TMsAdpcmDecoder.Decode(ASource, ADataOffset, AHeaderLength,
+      ALayout.Channels, ALayout.BlockAlign, ALayout.SamplesPerBlock, LData, LFrames)
+  else
+  begin
+    if ADataEnd > 0 then
+      LLength := ADataEnd - ADataOffset
+    else
+      LLength := Length(ASource) - ADataOffset;
+    Result := TImaAdpcmDecoder.DecodeWavLike(ASource, ADataOffset, LLength,
+      ALayout.Channels, ALayout.BlockAlign, ALayout.SamplesPerBlock, LData, LFrames);
+  end;
+  if Result = SNDFILE_OK then
+    ASamples := TSoundCodecSamples.Wrap(ALayout.Container or ALayout.Encoding,
+      ALayout.Channels, ALayout.SampleRate, LFrames, LData,
+      (ALayout.Encoding = SNDFILE_FORMAT_MS_ADPCM) and (AHeaderLength mod ALayout.BlockAlign <> 0));
+end;
 
 { TWavFormat }
 
@@ -174,13 +206,16 @@ begin
   if (LMarker = MARKER_WVPK) or (LMarker = MARKER_OGGS) then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
 
-  LBlockWidth := LLayout.Channels * LLayout.BytesPerSample;
-  if LBlockWidth <= 0 then
-    Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
-
   LUsable := LFileLength - LDataOffset;
   if LUsable < LDataLength then
     LDataLength := LUsable;
+
+  if (LLayout.Encoding = SNDFILE_FORMAT_MS_ADPCM) or (LLayout.Encoding = SNDFILE_FORMAT_IMA_ADPCM) then
+    Exit(DecodeAdpcm(ASource, LLayout, LDataOffset, LDataLength, LDataEnd, ASamples));
+
+  LBlockWidth := LLayout.Channels * LLayout.BytesPerSample;
+  if LBlockWidth <= 0 then
+    Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
 
   // The decoders of libsndfile measure the data again, without the pad byte
   if LDataEnd > 0 then

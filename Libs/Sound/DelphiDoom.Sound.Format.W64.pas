@@ -30,7 +30,8 @@ implementation
 
 uses
   DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader,
-  DelphiDoom.Sound.WavLike.Fmt;
+  DelphiDoom.Sound.WavLike.Fmt, DelphiDoom.Sound.Codec.MsAdpcm,
+  DelphiDoom.Sound.Codec.ImaAdpcm, DelphiDoom.Sound.CodecSamples;
 
 const
   HAVE_RIFF = $01;
@@ -119,7 +120,9 @@ var
   LDataOffset: Int64;
   LPcm: TSoundPcmLayout;
   LCodec: Integer;
-  LStart: Int64;
+  LStart, LHeaderLength: Int64;
+  LData: TBytes;
+  LFrames: Int64;
 begin
   ASamples := nil;
   LFileLength := Length(ASource);
@@ -145,6 +148,7 @@ begin
   LStage := 0;
   LDone := False;
   LDataOffset := -1;
+  LHeaderLength := 0;
 
   while not LDone do
   begin
@@ -194,6 +198,9 @@ begin
       if (LStage and (HAVE_RIFF or HAVE_WAVE or HAVE_FMT)) <> (HAVE_RIFF or HAVE_WAVE or HAVE_FMT) then
         Exit(SNDFILE_ERR_MALFORMED_FILE);
       LDataOffset := LReader.Position;
+      LHeaderLength := LChunkSize - CHUNK_HEADER_SIZE;
+      if LHeaderLength > LFileLength - LDataOffset then
+        LHeaderLength := LFileLength - LDataOffset;
       if (LChunkSize mod 8) <> 0 then
         Inc(LChunkSize, 8 - (LChunkSize mod 8));
       LStage := LStage or HAVE_DATA;
@@ -226,7 +233,30 @@ begin
     Exit(SNDFILE_ERR_MALFORMED_FILE);
 
   FillChar(LPcm, SizeOf(LPcm), 0);
+  if LFileLength > LDataOffset then
+    LStart := LFileLength - LDataOffset
+  else
+    LStart := 0;
   case LLayout.Tag of
+    TWavLikeFmtChunk.WAVE_FORMAT_MS_ADPCM:
+      begin
+        Result := TMsAdpcmDecoder.Decode(ASource, LDataOffset, LHeaderLength,
+          LLayout.Channels, LLayout.BlockAlign, LLayout.SamplesPerBlock, LData, LFrames);
+        if Result = SNDFILE_OK then
+          ASamples := TSoundCodecSamples.Wrap(SNDFILE_FORMAT_W64 or SNDFILE_FORMAT_MS_ADPCM,
+            LLayout.Channels, LLayout.SampleRate, LFrames, LData,
+            LHeaderLength mod LLayout.BlockAlign <> 0);
+        Exit;
+      end;
+    TWavLikeFmtChunk.WAVE_FORMAT_IMA_ADPCM:
+      begin
+        Result := TImaAdpcmDecoder.DecodeWavLike(ASource, LDataOffset, LStart,
+          LLayout.Channels, LLayout.BlockAlign, LLayout.SamplesPerBlock, LData, LFrames);
+        if Result = SNDFILE_OK then
+          ASamples := TSoundCodecSamples.Wrap(SNDFILE_FORMAT_W64 or SNDFILE_FORMAT_IMA_ADPCM,
+            LLayout.Channels, LLayout.SampleRate, LFrames, LData);
+        Exit;
+      end;
     TWavLikeFmtChunk.WAVE_FORMAT_PCM, TWavLikeFmtChunk.WAVE_FORMAT_EXTENSIBLE:
       begin
         // Even an extensible file: whatever its GUID says, the width decides
@@ -271,11 +301,6 @@ begin
   LPcm.SampleRate := LLayout.SampleRate;
   LPcm.Format := SNDFILE_FORMAT_W64 or LCodec;
 
-  // The decoders measure the data again: up to the end of the file
-  if LFileLength > LDataOffset then
-    LStart := LFileLength - LDataOffset
-  else
-    LStart := 0;
   Result := TSoundPcmReader.Read(ASource, LPcm, LDataOffset, LStart, LFileLength,
     False, ASamples);
 end;

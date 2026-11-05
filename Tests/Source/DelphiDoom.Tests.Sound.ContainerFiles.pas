@@ -108,7 +108,17 @@ type
     class function BuildMat5(ABigEndian: Boolean; ARateKind: Integer; ARate: Cardinal;
       AChannels, ACols: Cardinal; ADataType: Cardinal; ASmallName, AUnterminatedText: Boolean;
       const APayload: TBytes): TBytes; static;    class function BuildWve(ADataLength: Int64; const APayload: TBytes): TBytes; static;
-    class function BuildMpc2k(AStereo: Boolean; ARate: Word; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+    class function BuildMpc2k(AStereo: Boolean; ARate: Word; const APayload: TBytes): TBytes; static;    /// <summary>
+    ///   The 'fmt ' chunk of an ADPCM WAV: ATag 2 (Microsoft) or 17 (IMA)
+    /// </summary>
+    class function AdpcmFormat(ATag, AChannels: Word; ARate: Cardinal;
+      ABlockAlign, ASamplesPerBlock: Word): TBytes; static;
+    /// <summary>A RIFF WAV with the given 'fmt ' chunk and data, and a chunk after the data if asked</summary>
+    class function BuildWavWithFormat(const AFormat, APayload: TBytes;
+      AChunkAfter: Boolean): TBytes; static;
+    /// <summary>The same for W64</summary>
+    class function BuildW64WithFormat(const AFormat, APayload: TBytes): TBytes; static;
+    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -618,6 +628,113 @@ begin
   LSink.Add(1);
   LSink.AddNumber(ARate, 2, False);
   LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.AdpcmFormat(ATag, AChannels: Word;
+  ARate: Cardinal; ABlockAlign, ASamplesPerBlock: Word): TBytes;
+const
+  COEFF_1: array[0..6] of SmallInt = (256, 512, 0, 192, 240, 460, 392);
+  COEFF_2: array[0..6] of SmallInt = (0, -256, 0, 64, 0, -208, -232);
+var
+  LSink: TSink;
+  LIndex: Integer;
+begin
+  LSink.AddNumber(ATag, 2, False);
+  LSink.AddNumber(AChannels, 2, False);
+  LSink.AddNumber(ARate, 4, False);
+  LSink.AddNumber(ARate * ABlockAlign div ASamplesPerBlock, 4, False);
+  LSink.AddNumber(ABlockAlign, 2, False);
+  LSink.AddNumber(4, 2, False);
+  if ATag = 2 then
+  begin
+    LSink.AddNumber(32, 2, False);
+    LSink.AddNumber(ASamplesPerBlock, 2, False);
+    LSink.AddNumber(7, 2, False);
+    for LIndex := 0 to 6 do
+    begin
+      LSink.AddNumber(Word(COEFF_1[LIndex]), 2, False);
+      LSink.AddNumber(Word(COEFF_2[LIndex]), 2, False);
+    end;
+  end
+  else
+  begin
+    LSink.AddNumber(2, 2, False);
+    LSink.AddNumber(ASamplesPerBlock, 2, False);
+  end;
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildWavWithFormat(const AFormat,
+  APayload: TBytes; AChunkAfter: Boolean): TBytes;
+var
+  LSink: TSink;
+begin
+  LSink.AddText('RIFF');
+  LSink.AddNumber(0, 4, False);
+  LSink.AddText('WAVE');
+  LSink.AddText('fmt ');
+  LSink.AddNumber(Cardinal(Length(AFormat)), 4, False);
+  LSink.AddBytes(AFormat);
+  if (Length(AFormat) and 1) <> 0 then
+    LSink.Add(0);
+  LSink.AddText('fact');
+  LSink.AddNumber(4, 4, False);
+  LSink.AddNumber(0, 4, False);
+  LSink.AddText('data');
+  LSink.AddNumber(Cardinal(Length(APayload)), 4, False);
+  LSink.AddBytes(APayload);
+  if (Length(APayload) and 1) <> 0 then
+    LSink.Add(0);
+  if AChunkAfter then
+  begin
+    LSink.AddText('LIST');
+    LSink.AddNumber(8, 4, False);
+    LSink.AddText('INFOabcd');
+  end;
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildW64WithFormat(const AFormat,
+  APayload: TBytes): TBytes;
+const
+  GUID_TAIL: array[0..11] of Byte = ($F3, $AC, $D3, $11, $8C, $D1, $00, $C0, $4F, $8E, $DB, $8A);
+  RIFF_TAIL: array[0..11] of Byte = ($2E, $91, $CF, $11, $A5, $D6, $28, $DB, $04, $C1, $00, $00);
+var
+  LSink: TSink;
+
+  procedure AddGuid(const AName: AnsiString; const ATail: array of Byte);
+  var
+    LTailIndex: Integer;
+  begin
+    LSink.AddText(AName);
+    for LTailIndex := 0 to High(ATail) do
+      LSink.Add(ATail[LTailIndex]);
+  end;
+
+  procedure AddInt64(AValue: Int64);
+  begin
+    LSink.AddNumber(Cardinal(AValue and $FFFFFFFF), 4, False);
+    LSink.AddNumber(Cardinal(AValue shr 32), 4, False);
+  end;
+
+  procedure Align;
+  begin
+    while (Length(LSink.Bytes) and 7) <> 0 do
+      LSink.Add(0);
+  end;
+
+begin
+  AddGuid('riff', RIFF_TAIL);
+  AddInt64(0);
+  AddGuid('wave', GUID_TAIL);
+  AddGuid('fmt ', GUID_TAIL);
+  AddInt64(24 + Length(AFormat));
+  LSink.AddBytes(AFormat);
+  Align;
+  AddGuid('data', GUID_TAIL);
+  AddInt64(24 + Length(APayload));
+  LSink.AddBytes(APayload);
+  Align;
   Result := LSink.Bytes;
 end;
 class function TSoundTestContainerFile.BuildAvr(AMono, AResolution, ASign: Word;

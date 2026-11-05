@@ -201,6 +201,25 @@ begin
     end;
     Inc(FPosition, AFramesRead);
 
+    // The codecs that convert through a buffer clear what they did not fill
+    if (AFramesRead < AFrames) and (FSamples.ZeroFillChunk <> 0) then
+    begin
+      case ATarget of
+        TTarget.Bits16: LItemSize := SizeOf(SmallInt);
+        TTarget.Bits32: LItemSize := SizeOf(Integer);
+      else
+        LItemSize := SizeOf(Double);
+      end;
+      LRemaining := Integer(AFrames * LChannels);
+      if (ATarget <> TTarget.Bits16) and (FSamples.ZeroFillChunk > 0) then
+      begin
+        LSwap := (LCount div FSamples.ZeroFillChunk + 1) * FSamples.ZeroFillChunk;
+        if LSwap < LRemaining then
+          LRemaining := LSwap;
+      end;
+      FillChar((PByte(ABuffer) + LCount * LItemSize)^, (LRemaining - LCount) * LItemSize, 0);
+    end;
+
     // A read that ran into what follows the sound has its tail cleared
     LDirect := FSamples.ReadsDirectly and
       (((ATarget = TTarget.Bits16) and (FSamples.Kind = TSoundSampleKind.Int16)) or
