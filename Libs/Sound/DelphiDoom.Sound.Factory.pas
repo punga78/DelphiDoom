@@ -29,13 +29,14 @@ type
 implementation
 
 uses
-  DelphiDoom.Sound.Engine, DelphiDoom.Sound.Format.Wav;
+  DelphiDoom.Sound.Engine, DelphiDoom.Sound.Format.Wav,
+  DelphiDoom.Sound.Format.Au, DelphiDoom.Sound.Format.Voc;
 
 { TSoundFactory }
 
 class function TSoundFactory.CreateFormats: TArray<ISoundFormat>;
 begin
-  Result := [TWavFormat.Create];
+  Result := [TWavFormat.Create, TAuFormat.Create, TVocFormat.Create];
 end;
 
 class function TSoundFactory.CreateEngine: ISndfile;

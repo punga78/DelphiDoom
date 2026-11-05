@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Sndfile.Intf, DelphiDoom.Sound.Samples,
-  DelphiDoom.Sound.Format, DelphiDoom.Sound.ByteReader;
+  DelphiDoom.Sound.Format, DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader;
 
 type
   /// <summary>
@@ -26,30 +26,24 @@ type
     type
       /// <summary>What the 'fmt ' chunk says about the samples</summary>
       TWavLayout = record
-        Encoding: Integer;     // SNDFILE_FORMAT_* of the samples
+        Encoding: Integer;     // SNDFILE_FORMAT_* of the samples (width not applied yet)
         Container: Integer;    // SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_WAVEX
         Channels: Integer;
         SampleRate: Integer;
         BytesPerSample: Integer;
       end;
   private
+    function ResolveEncoding(const ALayout: TWavLayout;
+      out AEncoding: Integer): Boolean;
     function ReadFormatChunk(var AReader: TSoundByteReader; ASize: Cardinal;
       var ALayout: TWavLayout): Integer;
     function ReadExtensible(var AReader: TSoundByteReader; ABitWidth: Integer;
       var ALayout: TWavLayout): Integer;
-    function BuildSamples(const ASource: TBytes; const ALayout: TWavLayout;
-      ADataOffset, ADataLength, AFileLength: Int64; ABigEndian: Boolean;
-      out ASamples: TSoundSamples): Integer;
   public
     function Decode(const ASource: TBytes; out ASamples: TSoundSamples): Integer;
   end;
 
 implementation
-
-{$POINTERMATH ON}
-
-uses
-  DelphiDoom.Sound.Companding;
 
 const
   WAVE_FORMAT_PCM = $0001;
@@ -182,149 +176,29 @@ begin
   AReader.Position := LStart + ASize;
 end;
 
-function TWavFormat.BuildSamples(const ASource: TBytes;
-  const ALayout: TWavLayout; ADataOffset, ADataLength, AFileLength: Int64;
-  ABigEndian: Boolean; out ASamples: TSoundSamples): Integer;
-var
-  LKind: TSoundSampleKind;
-  LEncoding: Integer;
-  LBlockWidth: Integer;
-  LFrames: Int64;
-  LCount: Integer;
-  LData: TBytes;
-  LIndex: Integer;
-  LInput: PByte;
-  LInfo: TSoundFileInfo;
-  LValue: Cardinal;
-  LItemBytes, LExtraItems, LTailItems: Integer;
-  LSampleBytes: Integer;
-
-  function Fetch16(AOffset: Integer): Word;
-  begin
-    if ABigEndian then
-      Result := (Word(LInput[AOffset]) shl 8) or LInput[AOffset + 1]
-    else
-      Result := (Word(LInput[AOffset + 1]) shl 8) or LInput[AOffset];
-  end;
-
-  function Fetch32(AOffset: Integer): Cardinal;
-  begin
-    if ABigEndian then
-      Result := (Cardinal(LInput[AOffset]) shl 24) or (Cardinal(LInput[AOffset + 1]) shl 16) or
-        (Cardinal(LInput[AOffset + 2]) shl 8) or LInput[AOffset + 3]
-    else
-      Result := (Cardinal(LInput[AOffset + 3]) shl 24) or (Cardinal(LInput[AOffset + 2]) shl 16) or
-        (Cardinal(LInput[AOffset + 1]) shl 8) or LInput[AOffset];
-  end;
-
+function TWavFormat.ResolveEncoding(const ALayout: TWavLayout;
+  out AEncoding: Integer): Boolean;
 begin
-  ASamples := nil;
-  LEncoding := ALayout.Encoding;
+  AEncoding := ALayout.Encoding;
+  Result := True;
 
   // The width of the sample picks the encoding of the PCM and float ones
-  if (LEncoding = SNDFILE_FORMAT_PCM_16) then
+  if AEncoding = SNDFILE_FORMAT_PCM_16 then
     case ALayout.BytesPerSample of
-      1: LEncoding := SNDFILE_FORMAT_PCM_U8;
-      2: LEncoding := SNDFILE_FORMAT_PCM_16;
-      3: LEncoding := SNDFILE_FORMAT_PCM_24;
-      4: LEncoding := SNDFILE_FORMAT_PCM_32;
+      1: AEncoding := SNDFILE_FORMAT_PCM_U8;
+      2: AEncoding := SNDFILE_FORMAT_PCM_16;
+      3: AEncoding := SNDFILE_FORMAT_PCM_24;
+      4: AEncoding := SNDFILE_FORMAT_PCM_32;
     else
-      Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
+      Result := False;
     end
-  else if LEncoding = SNDFILE_FORMAT_FLOAT then
+  else if AEncoding = SNDFILE_FORMAT_FLOAT then
     case ALayout.BytesPerSample of
-      4: LEncoding := SNDFILE_FORMAT_FLOAT;
-      8: LEncoding := SNDFILE_FORMAT_DOUBLE;
+      4: AEncoding := SNDFILE_FORMAT_FLOAT;
+      8: AEncoding := SNDFILE_FORMAT_DOUBLE;
     else
-      Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
+      Result := False;
     end;
-
-  case LEncoding of
-    SNDFILE_FORMAT_PCM_U8, SNDFILE_FORMAT_ULAW, SNDFILE_FORMAT_ALAW,
-    SNDFILE_FORMAT_PCM_16:
-      LKind := TSoundSampleKind.Int16;
-    SNDFILE_FORMAT_PCM_24, SNDFILE_FORMAT_PCM_32:
-      LKind := TSoundSampleKind.Int32;
-    SNDFILE_FORMAT_FLOAT:
-      LKind := TSoundSampleKind.Float32;
-  else
-    LKind := TSoundSampleKind.Float64;
-  end;
-
-  LBlockWidth := ALayout.Channels * ALayout.BytesPerSample;
-  if (LEncoding = SNDFILE_FORMAT_ULAW) or (LEncoding = SNDFILE_FORMAT_ALAW) then
-    LBlockWidth := ALayout.Channels;
-
-  LFrames := ADataLength div LBlockWidth;
-  LCount := Integer(LFrames * ALayout.Channels);
-
-  // What the file holds after the last frame: libsndfile reads it too
-  if LBlockWidth = ALayout.Channels then
-    LItemBytes := 1
-  else
-    LItemBytes := ALayout.BytesPerSample;
-  LExtraItems := Integer((AFileLength - ADataOffset - LFrames * LBlockWidth) div LItemBytes);
-  LTailItems := LExtraItems;
-  if LTailItems > ALayout.Channels then
-    LTailItems := ALayout.Channels;
-
-  LSampleBytes := TSoundSamples.BytesPerSample(LKind);
-  SetLength(LData, (LCount + LTailItems) * LSampleBytes);
-
-  if LCount + LTailItems > 0 then
-  begin
-    LInput := @ASource[Integer(ADataOffset)];
-    for LIndex := 0 to LCount + LTailItems - 1 do
-      case LEncoding of
-        SNDFILE_FORMAT_PCM_U8:
-          PSmallInt(LData)[LIndex] := SmallInt((Integer(LInput[LIndex]) - 128) shl 8);
-        SNDFILE_FORMAT_ULAW:
-          PSmallInt(LData)[LIndex] := ULAW_DECODE[LInput[LIndex]];
-        SNDFILE_FORMAT_ALAW:
-          PSmallInt(LData)[LIndex] := ALAW_DECODE[LInput[LIndex]];
-        SNDFILE_FORMAT_PCM_16:
-          PSmallInt(LData)[LIndex] := SmallInt(Fetch16(LIndex * 2));
-        SNDFILE_FORMAT_PCM_24:
-          begin
-            if ABigEndian then
-              LValue := (Cardinal(LInput[LIndex * 3]) shl 24) or
-                (Cardinal(LInput[LIndex * 3 + 1]) shl 16) or (Cardinal(LInput[LIndex * 3 + 2]) shl 8)
-            else
-              LValue := (Cardinal(LInput[LIndex * 3 + 2]) shl 24) or
-                (Cardinal(LInput[LIndex * 3 + 1]) shl 16) or (Cardinal(LInput[LIndex * 3]) shl 8);
-            PInteger(LData)[LIndex] := Integer(LValue);
-          end;
-        SNDFILE_FORMAT_PCM_32, SNDFILE_FORMAT_FLOAT:
-          PCardinal(LData)[LIndex] := Fetch32(LIndex * 4);
-      else
-        begin
-          // 64 bit: the two halves in the order of the file
-          if ABigEndian then
-            PCardinal(LData)[LIndex * 2] := Fetch32(LIndex * 8 + 4)
-          else
-            PCardinal(LData)[LIndex * 2] := Fetch32(LIndex * 8);
-          if ABigEndian then
-            PCardinal(LData)[LIndex * 2 + 1] := Fetch32(LIndex * 8)
-          else
-            PCardinal(LData)[LIndex * 2 + 1] := Fetch32(LIndex * 8 + 4);
-        end;
-      end;
-  end;
-
-  FillChar(LInfo, SizeOf(LInfo), 0);
-  LInfo.Frames := LFrames;
-  LInfo.SampleRate := ALayout.SampleRate;
-  LInfo.Channels := ALayout.Channels;
-  LInfo.Format := ALayout.Container or LEncoding;
-  if ABigEndian then
-    LInfo.Format := LInfo.Format or SNDFILE_FORMAT_ENDIAN_BIG;
-  LInfo.Sections := 1;
-  LInfo.Seekable := 1;
-
-  ASamples := TSoundSamples.Create(LInfo, LKind, Copy(LData, 0, LCount * LSampleBytes));
-  ASamples.ExtraItems := LExtraItems;
-  ASamples.Tail := Copy(LData, LCount * LSampleBytes, LTailItems * LSampleBytes);
-  Result := SNDFILE_OK;
 end;
 
 function TWavFormat.Decode(const ASource: TBytes;
@@ -336,6 +210,7 @@ var
   LStage: Integer;
   LDone: Boolean;
   LLayout: TWavLayout;
+  LPcm: TSoundPcmLayout;
   LDataOffset, LDataLength, LDataEnd: Int64;
   LBlockWidth: Integer;
   LUsable: Int64;
@@ -469,7 +344,19 @@ begin
   else
     LDataLength := LUsable;
 
-  Result := BuildSamples(ASource, LLayout, LDataOffset, LDataLength, LFileLength,
+  if not ResolveEncoding(LLayout, LPcm.Encoding) then
+    Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
+  LPcm.Channels := LLayout.Channels;
+  LPcm.SampleRate := LLayout.SampleRate;
+  if (LPcm.Encoding = SNDFILE_FORMAT_ULAW) or (LPcm.Encoding = SNDFILE_FORMAT_ALAW) then
+    LPcm.BytesPerSample := 1
+  else
+    LPcm.BytesPerSample := LLayout.BytesPerSample;
+  LPcm.Format := LLayout.Container or LPcm.Encoding;
+  if LReader.BigEndian then
+    LPcm.Format := LPcm.Format or SNDFILE_FORMAT_ENDIAN_BIG;
+
+  Result := TSoundPcmReader.Read(ASource, LPcm, LDataOffset, LDataLength, LFileLength,
     LReader.BigEndian, ASamples);
 end;
 

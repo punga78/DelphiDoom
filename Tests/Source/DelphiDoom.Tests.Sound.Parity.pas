@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
-  DelphiDoom.Tests.Sound.WavFile;
+  DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles;
 
 type
   /// <summary>
@@ -67,6 +67,20 @@ type
     procedure TestDamagedFiles;
     [Test]
     procedure TestNotASound;
+    [Test]
+    procedure TestAuPcm;
+    [Test]
+    procedure TestAuFloatAndCompanded;
+    [Test]
+    procedure TestAuSizes;
+    [Test]
+    procedure TestAuDamaged;
+    [Test]
+    procedure TestVocBlocks;
+    [Test]
+    procedure TestVocExtendedII;
+    [Test]
+    procedure TestVocDamaged;
   end;
 
 implementation
@@ -433,6 +447,184 @@ procedure TTestSoundParity.TestNotASound;
 begin
   CheckSameFailure(TSoundTestWavFile.RandomBytes(500, 1), 'noise');
   CheckSameFailure(TBytes.Create(1, 2, 3), 'three bytes');
+end;
+
+procedure TTestSoundParity.TestAuPcm;
+var
+  LBig: Boolean;
+  LCode, LChannels: Cardinal;
+  LOptions: TSoundTestAuOptions;
+  LBytes: Integer;
+begin
+  for LBig := False to True do
+    for LCode := 2 to 5 do
+      for LChannels := 1 to 2 do
+      begin
+        LOptions := TSoundTestAuOptions.Plain(LCode, LChannels);
+        LOptions.BigEndian := LBig;
+        // 1, 2, 3 and 4 bytes per sample; one byte more than a whole number of frames
+        if LCode = 2 then
+          LBytes := 1
+        else
+          LBytes := Integer(LCode) - 1;
+        CheckSame(TSoundTestContainerFile.BuildAu(LOptions,
+          TSoundTestWavFile.RandomBytes(Integer(LChannels) * LBytes * 150 + 1, LCode)),
+          Format('au pcm code %d channels %d big %s', [LCode, LChannels, BoolToStr(LBig, True)]));
+      end;
+end;
+
+procedure TTestSoundParity.TestAuFloatAndCompanded;
+var
+  LBig: Boolean;
+  LOptions: TSoundTestAuOptions;
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  for LBig := False to True do
+  begin
+    LOptions := TSoundTestAuOptions.Plain(6, 2);
+    LOptions.BigEndian := LBig;
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions,
+      TSoundTestWavFile.FloatPayload(200, 1, False, LBig)), 'au float');
+
+    LOptions := TSoundTestAuOptions.Plain(7, 1);
+    LOptions.BigEndian := LBig;
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions,
+      TSoundTestWavFile.FloatPayload(100, 2, True, LBig)), 'au double');
+
+    LOptions := TSoundTestAuOptions.Plain(1, 1);
+    LOptions.BigEndian := LBig;
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au mulaw');
+
+    LOptions := TSoundTestAuOptions.Plain(27, 2);
+    LOptions.BigEndian := LBig;
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au alaw');
+  end;
+end;
+
+procedure TTestSoundParity.TestAuSizes;
+var
+  LOptions: TSoundTestAuOptions;
+  LPayload: TBytes;
+begin
+  LPayload := TSoundTestWavFile.RandomBytes(2 * 101, 1);
+
+  LOptions := TSoundTestAuOptions.Plain(3, 1);
+  LOptions.BigEndian := True;
+  LOptions.DataSize := -1;
+  CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au unknown size');
+
+  LOptions.DataSize := 100;
+  CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au short size');
+
+  LOptions.DataSize := 100000;
+  CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au long size');
+
+  LOptions.DataSize := -2;
+  LOptions.Padding := 8;
+  CheckSame(TSoundTestContainerFile.BuildAu(LOptions, LPayload), 'au annotation field');
+end;
+
+procedure TTestSoundParity.TestAuDamaged;
+var
+  LOptions: TSoundTestAuOptions;
+begin
+  LOptions := TSoundTestAuOptions.Plain(3, 0);
+  CheckSameFailure(TSoundTestContainerFile.BuildAu(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'au zero channels');
+  LOptions := TSoundTestAuOptions.Plain(99, 1);
+  CheckSameFailure(TSoundTestContainerFile.BuildAu(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'au unknown encoding');
+  LOptions := TSoundTestAuOptions.Plain(3, 5000);
+  CheckSameFailure(TSoundTestContainerFile.BuildAu(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'au too many channels');
+end;
+
+procedure TTestSoundParity.TestVocBlocks;
+var
+  LOptions: TSoundTestVocOptions;
+begin
+  LOptions := TSoundTestVocOptions.Plain;
+  CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(200, 1)), 'voc block 1');
+
+  LOptions.TextBlockFirst := True;
+  CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(201, 2)), 'voc text block');
+
+  LOptions := TSoundTestVocOptions.Plain;
+  LOptions.Version := $0114;
+  CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(50, 3)), 'voc version 1.20');
+
+  LOptions := TSoundTestVocOptions.Plain;
+  LOptions.Extended := True;
+  CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 4)), 'voc extended mono');
+  LOptions.Stereo := True;
+  CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 5)), 'voc extended stereo');
+end;
+
+procedure TTestSoundParity.TestVocExtendedII;
+var
+  LOptions: TSoundTestVocOptions;
+  LChannels: Byte;
+begin
+  for LChannels := 1 to 2 do
+  begin
+    LOptions := TSoundTestVocOptions.Plain;
+    LOptions.ExtendedII := True;
+    LOptions.Channels := LChannels;
+
+    LOptions.Encoding := 0;
+    LOptions.BitsPerSample := 8;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 1)), 'voc ext2 u8');
+
+    LOptions.Encoding := 4;
+    LOptions.BitsPerSample := 16;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 2)), 'voc ext2 16 bit');
+
+    // SoX writes encoding 0 for 16 bit
+    LOptions.Encoding := 0;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 3)), 'voc ext2 sox 16 bit');
+
+    LOptions.BitsPerSample := 8;
+    LOptions.Encoding := 6;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 4)), 'voc ext2 alaw');
+    LOptions.Encoding := 7;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 5)), 'voc ext2 mulaw');
+
+    LOptions.OmitTerminator := True;
+    CheckSame(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(120, 6)), 'voc ext2 no terminator');
+  end;
+end;
+
+procedure TTestSoundParity.TestVocDamaged;
+var
+  LOptions: TSoundTestVocOptions;
+  LFile, LMore: TBytes;
+begin
+  LOptions := TSoundTestVocOptions.Plain;
+  LOptions.OmitTerminator := True;
+  CheckSameFailure(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 1)),
+    'voc truncated');
+
+  LOptions := TSoundTestVocOptions.Plain;
+  LOptions.Version := $0100;
+  CheckSameFailure(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 1)),
+    'voc version');
+
+  LOptions := TSoundTestVocOptions.Plain;
+  LFile := TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 1));
+  LMore := TSoundTestWavFile.RandomBytes(40, 9);
+  SetLength(LFile, Length(LFile) + Length(LMore));
+  Move(LMore[0], LFile[Length(LFile) - Length(LMore)], Length(LMore));
+  CheckSameFailure(LFile, 'voc more blocks after the sound');
+
+  LOptions := TSoundTestVocOptions.Plain;
+  LOptions.ExtendedII := True;
+  LOptions.Encoding := 3;
+  CheckSameFailure(TSoundTestContainerFile.BuildVoc(LOptions, TSoundTestWavFile.RandomBytes(100, 1)),
+    'voc unknown encoding');
 end;
 
 initialization

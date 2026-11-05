@@ -41,6 +41,7 @@ const
   SNDFILE_FORMAT_OGG = $200000;
 
   // Flag or'ed to Format when the samples are stored big endian
+  SNDFILE_FORMAT_ENDIAN_LITTLE = $10000000;
   SNDFILE_FORMAT_ENDIAN_BIG = $20000000;
 
   // Encodings (same values as SF_FORMAT_* of libsndfile)

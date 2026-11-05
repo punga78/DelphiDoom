@@ -39,9 +39,12 @@ uses
   DelphiDoom.Sound.Convert in '..\Libs\Sound\DelphiDoom.Sound.Convert.pas',
   DelphiDoom.Sound.Companding in '..\Libs\Sound\DelphiDoom.Sound.Companding.pas',
   DelphiDoom.Sound.ByteReader in '..\Libs\Sound\DelphiDoom.Sound.ByteReader.pas',
+  DelphiDoom.Sound.PcmReader in '..\Libs\Sound\DelphiDoom.Sound.PcmReader.pas',
   DelphiDoom.Sound.SoundFile in '..\Libs\Sound\DelphiDoom.Sound.SoundFile.pas',
   DelphiDoom.Sound.Format in '..\Libs\Sound\DelphiDoom.Sound.Format.pas',
   DelphiDoom.Sound.Format.Wav in '..\Libs\Sound\DelphiDoom.Sound.Format.Wav.pas',
+  DelphiDoom.Sound.Format.Au in '..\Libs\Sound\DelphiDoom.Sound.Format.Au.pas',
+  DelphiDoom.Sound.Format.Voc in '..\Libs\Sound\DelphiDoom.Sound.Format.Voc.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',
   DelphiDoom.Audio.WavBuilder in '..\Base\DelphiDoom.Audio.WavBuilder.pas',
@@ -53,6 +56,7 @@ uses
   DelphiDoom.Tests.Audio.WavBuilder in 'Source\DelphiDoom.Tests.Audio.WavBuilder.pas',
   DelphiDoom.Tests.Audio.SoundConverter in 'Source\DelphiDoom.Tests.Audio.SoundConverter.pas',
   DelphiDoom.Tests.Sound.WavFile in 'Source\DelphiDoom.Tests.Sound.WavFile.pas',
+  DelphiDoom.Tests.Sound.ContainerFiles in 'Source\DelphiDoom.Tests.Sound.ContainerFiles.pas',
   DelphiDoom.Tests.Sound.Parity in 'Source\DelphiDoom.Tests.Sound.Parity.pas';
 
 var
