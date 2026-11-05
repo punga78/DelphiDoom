@@ -81,6 +81,10 @@ type
     [Test]
     procedure TestAiffDamaged;
     [Test]
+    procedure TestW64;
+    [Test]
+    procedure TestRf64;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -188,8 +192,14 @@ begin
       Format('%s: code of the read %d (kind %d)', [AName, LRound, AKind]));
     Assert.AreEqual(LExpectedRead, LActualRead,
       Format('%s: frames of the read %d (kind %d)', [AName, LRound, AKind]));
-    Assert.IsTrue(CompareMem(@LExpectedBuffer[0], @LActualBuffer[0], Length(LExpectedBuffer)),
-      Format('%s: samples of the read %d (kind %d)', [AName, LRound, AKind]));
+    if not CompareMem(@LExpectedBuffer[0], @LActualBuffer[0], Length(LExpectedBuffer)) then
+    begin
+      for LItems := 0 to High(LExpectedBuffer) do
+        if LExpectedBuffer[LItems] <> LActualBuffer[LItems] then
+          Break;
+      Assert.Fail(Format('%s: samples of the read %d (kind %d): byte %d is $%.2x, expected $%.2x',
+        [AName, LRound, AKind, LItems, LActualBuffer[LItems], LExpectedBuffer[LItems]]));
+    end;
   end;
 end;
 
@@ -608,6 +618,66 @@ begin
   LOptions := TSoundTestAiffOptions.Compressed('raw ', 1, 16);
   CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
     'aifc raw with 16 bits');
+end;
+
+procedure TTestSoundParity.TestW64;
+var
+  LChannels, LBits: Word;
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  for LBits in [8, 16, 24, 32] do
+    for LChannels := 1 to 2 do
+      CheckSame(TSoundTestContainerFile.BuildW64(1, LChannels, LBits, 22050, False, False,
+        TSoundTestWavFile.RandomBytes(LChannels * (LBits div 8) * 101 + 1, LBits)),
+        Format('w64 pcm %d bits %d channels', [LBits, LChannels]));
+  CheckSame(TSoundTestContainerFile.BuildW64(3, 2, 32, 44100, True, False,
+    TSoundTestWavFile.FloatPayload(150, 1, False, False)), 'w64 float with fact');
+  CheckSame(TSoundTestContainerFile.BuildW64(3, 1, 64, 44100, True, True,
+    TSoundTestWavFile.FloatPayload(100, 2, True, False)), 'w64 double with junk');
+
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  CheckSame(TSoundTestContainerFile.BuildW64(7, 2, 8, 8000, False, False, LPayload), 'w64 mulaw');
+  CheckSame(TSoundTestContainerFile.BuildW64(6, 1, 8, 8000, True, False, LPayload), 'w64 alaw');
+  // Float with an odd width is still float
+  CheckSame(TSoundTestContainerFile.BuildW64(3, 1, 32, 8000, False, True,
+    TSoundTestWavFile.FloatPayload(50, 3, False, False)), 'w64 float with junk');
+  CheckSameFailure(TSoundTestContainerFile.BuildW64(1, 0, 16, 8000, False, False, LPayload), 'w64 no channels');
+  CheckSameFailure(TSoundTestContainerFile.BuildW64(1, 1, 40, 8000, False, False, LPayload), 'w64 40 bits');
+  CheckSameFailure(TSoundTestContainerFile.BuildW64(1, 1, 16, 0, False, False, LPayload), 'w64 rate 0');
+end;
+
+procedure TTestSoundParity.TestRf64;
+var
+  LChannels, LBits: Word;
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  for LBits in [8, 16, 24, 32] do
+    for LChannels := 1 to 2 do
+    begin
+      CheckSame(TSoundTestContainerFile.BuildRf64(1, LChannels, LBits, 22050, True, -2,
+        TSoundTestWavFile.RandomBytes(LChannels * (LBits div 8) * 101 + 1, LBits)),
+        Format('rf64 pcm %d bits %d channels', [LBits, LChannels]));
+    end;
+  CheckSame(TSoundTestContainerFile.BuildRf64(3, 2, 32, 44100, True, -2,
+    TSoundTestWavFile.FloatPayload(150, 1, False, False)), 'rf64 float');
+  CheckSame(TSoundTestContainerFile.BuildRf64(3, 1, 64, 44100, True, -2,
+    TSoundTestWavFile.FloatPayload(100, 2, True, False)), 'rf64 double');
+
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  CheckSame(TSoundTestContainerFile.BuildRf64(7, 2, 8, 8000, True, -2, LPayload), 'rf64 mulaw');
+  CheckSame(TSoundTestContainerFile.BuildRf64(6, 1, 8, 8000, True, -2, LPayload), 'rf64 alaw');
+  // Sizes that do not agree with the file
+  CheckSame(TSoundTestContainerFile.BuildRf64(1, 2, 16, 8000, True, 100, LPayload), 'rf64 short data');
+  CheckSame(TSoundTestContainerFile.BuildRf64(1, 2, 16, 8000, True, 100000, LPayload), 'rf64 long data');
+  // No ds64 chunk: the size of the data chunk is the real one
+  CheckSame(TSoundTestContainerFile.BuildRf64(1, 2, 16, 8000, False, -2, LPayload), 'rf64 without ds64');
+  CheckSameFailure(TSoundTestContainerFile.BuildRf64(1, 0, 16, 8000, True, -2, LPayload), 'rf64 no channels');
 end;
 
 procedure TTestSoundParity.TestAvr;

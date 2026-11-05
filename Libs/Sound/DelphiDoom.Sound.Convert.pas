@@ -19,8 +19,8 @@ type
   TSoundConvert = class
   public
     /// <summary>
-    ///   Round to nearest even, like lrint on a 32 bit long: a value that does
-    ///   not fit gives the "integer indefinite" of the FPU, $80000000
+    ///   Round to nearest even, like the _lrint of the C code (Round() of
+    ///   Delphi): the low 32 bits of a 64 bit result, 0 when even that overflows
     /// </summary>
     class function RoundToLong(const AValue: Extended): Integer; static;
 
@@ -44,9 +44,11 @@ implementation
 
 class function TSoundConvert.RoundToLong(const AValue: Extended): Integer;
 begin
-  if not ((AValue > -2147483649.0) and (AValue < 2147483648.0)) then
-    Exit(Low(Integer));
-  Result := Integer(Round(AValue));
+  // The C code calls _lrint of c_lib, which is Round() of Delphi: a 64 bit
+  // result, cut to its low 32 bits. Past 64 bits the FPU gives $8000000000000000
+  if not ((AValue >= -9223372036854775808.0) and (AValue < 9223372036854775808.0)) then
+    Exit(0);
+  Result := Integer(Int64(Round(AValue)) and $FFFFFFFF);
 end;
 
 class function TSoundConvert.SingleToShort(AValue: Single): SmallInt;

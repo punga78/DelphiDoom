@@ -67,6 +67,18 @@ type
   public
     class function BuildAiff(const AOptions: TSoundTestAiffOptions;
       const APayload: TBytes): TBytes; static;
+    /// <summary>
+    ///   W64 with a 'fmt ' chunk of ATag; AFact adds a 'fact' chunk before the
+    ///   data and AJunk a 'junk' chunk after it
+    /// </summary>
+    class function BuildW64(ATag, AChannels, ABits: Word; ARate: Cardinal;
+      AFact, AJunk: Boolean; const APayload: TBytes): TBytes; static;
+    /// <summary>
+    ///   RF64: ADs64 puts the sizes in a 'ds64' chunk (with ADataLength in it,
+    ///   -2 for the real one) and writes $FFFFFFFF as the size of the data
+    /// </summary>
+    class function BuildRf64(ATag, AChannels, ABits: Word; ARate: Cardinal;
+      ADs64: Boolean; ADataLength: Int64; const APayload: TBytes): TBytes; static;
     /// <summary>AVR: ARate hertz, AMono as in the header (0 mono, 65535 stereo)</summary>
     class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
@@ -170,6 +182,115 @@ end;
 
 { TSoundTestContainerFile }
 
+class function TSoundTestContainerFile.BuildW64(ATag, AChannels, ABits: Word;
+  ARate: Cardinal; AFact, AJunk: Boolean; const APayload: TBytes): TBytes;
+const
+  GUID_TAIL: array[0..11] of Byte = ($F3, $AC, $D3, $11, $8C, $D1, $00, $C0, $4F, $8E, $DB, $8A);
+  RIFF_TAIL: array[0..11] of Byte = ($2E, $91, $CF, $11, $A5, $D6, $28, $DB, $04, $C1, $00, $00);
+var
+  LSink: TSink;
+  LIndex: Integer;
+
+  procedure AddGuid(const AName: AnsiString; const ATail: array of Byte);
+  var
+    LTailIndex: Integer;
+  begin
+    LSink.AddText(AName);
+    for LTailIndex := 0 to High(ATail) do
+      LSink.Add(ATail[LTailIndex]);
+  end;
+
+  procedure AddInt64(AValue: Int64);
+  begin
+    LSink.AddNumber(Cardinal(AValue and $FFFFFFFF), 4, False);
+    LSink.AddNumber(Cardinal(AValue shr 32), 4, False);
+  end;
+
+  procedure Align;
+  begin
+    while (Length(LSink.Bytes) and 7) <> 0 do
+      LSink.Add(0);
+  end;
+
+begin
+  AddGuid('riff', RIFF_TAIL);
+  AddInt64(0);
+  AddGuid('wave', GUID_TAIL);
+
+  AddGuid('fmt ', GUID_TAIL);
+  AddInt64(24 + 16);
+  LSink.AddNumber(ATag, 2, False);
+  LSink.AddNumber(AChannels, 2, False);
+  LSink.AddNumber(ARate, 4, False);
+  LSink.AddNumber(ARate * AChannels * ((ABits + 7) div 8), 4, False);
+  LSink.AddNumber(AChannels * ((ABits + 7) div 8), 2, False);
+  LSink.AddNumber(ABits, 2, False);
+  Align;
+
+  if AFact then
+  begin
+    AddGuid('fact', GUID_TAIL);
+    AddInt64(24 + 8);
+    AddInt64(Length(APayload) div (AChannels * ((ABits + 7) div 8)));
+  end;
+
+  AddGuid('data', GUID_TAIL);
+  AddInt64(24 + Length(APayload));
+  LSink.AddBytes(APayload);
+  Align;
+
+  if AJunk then
+  begin
+    AddGuid('junk', GUID_TAIL);
+    AddInt64(24 + 16);
+    for LIndex := 1 to 16 do
+      LSink.Add($55);
+  end;
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildRf64(ATag, AChannels, ABits: Word;
+  ARate: Cardinal; ADs64: Boolean; ADataLength: Int64;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LLength: Int64;
+begin
+  if ADataLength = -2 then
+    LLength := Length(APayload)
+  else
+    LLength := ADataLength;
+  LSink.AddText('RF64');
+  LSink.AddNumber($FFFFFFFF, 4, False);
+  LSink.AddText('WAVE');
+  if ADs64 then
+  begin
+    LSink.AddText('ds64');
+    LSink.AddNumber(28, 4, False);
+    LSink.AddNumber(0, 4, False);
+    LSink.AddNumber(0, 4, False);
+    LSink.AddNumber(Cardinal(LLength and $FFFFFFFF), 4, False);
+    LSink.AddNumber(Cardinal(LLength shr 32), 4, False);
+    LSink.AddNumber(0, 4, False);
+    LSink.AddNumber(0, 4, False);
+    LSink.AddNumber(0, 4, False);
+  end;
+  LSink.AddText('fmt ');
+  LSink.AddNumber(16, 4, False);
+  LSink.AddNumber(ATag, 2, False);
+  LSink.AddNumber(AChannels, 2, False);
+  LSink.AddNumber(ARate, 4, False);
+  LSink.AddNumber(ARate * AChannels * ((ABits + 7) div 8), 4, False);
+  LSink.AddNumber(AChannels * ((ABits + 7) div 8), 2, False);
+  LSink.AddNumber(ABits, 2, False);
+  LSink.AddText('data');
+  if ADs64 then
+    LSink.AddNumber($FFFFFFFF, 4, False)
+  else
+    LSink.AddNumber(Cardinal(LLength), 4, False);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
 class function TSoundTestContainerFile.BuildAvr(AMono, AResolution, ASign: Word;
   ARate: Cardinal; const APayload: TBytes): TBytes;
 var
