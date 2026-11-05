@@ -181,7 +181,7 @@ uses
   g_game in 'Heretic\g_game.pas',
   h_strings in 'Heretic\h_strings.pas',
   hu_lib in 'Base\hu_lib.pas',
-  hu_stuff in 'Heretic\hu_stuff.pas',
+  hu_stuff in 'Base\hu_stuff.pas',
   i_input in 'Base\i_input.pas',
   i_io in 'Base\i_io.pas',
   i_main in 'Base\i_main.pas',

@@ -198,7 +198,7 @@ uses
   f_fade in 'Strife\f_fade.pas',
   g_game in 'Strife\g_game.pas',
   hu_lib in 'Base\hu_lib.pas',
-  hu_stuff in 'Strife\hu_stuff.pas',
+  hu_stuff in 'Base\hu_stuff.pas',
   i_input in 'Base\i_input.pas',
   i_io in 'Base\i_io.pas',
   i_main in 'Base\i_main.pas',

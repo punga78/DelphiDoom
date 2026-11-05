@@ -194,7 +194,7 @@ uses
   f_finale in 'Doom\f_finale.pas',
   g_game in 'Doom\g_game.pas',
   hu_lib in 'Base\hu_lib.pas',
-  hu_stuff in 'Doom\hu_stuff.pas',
+  hu_stuff in 'Base\hu_stuff.pas',
   i_input in 'Base\i_input.pas',
   i_io in 'Base\i_io.pas',
   i_midi in 'Base\i_midi.pas',

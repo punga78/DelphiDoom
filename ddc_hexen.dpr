@@ -101,7 +101,7 @@ uses
   g_demo in 'Hexen\g_demo.pas',
   g_game in 'Hexen\g_game.pas',
   hu_lib in 'Base\hu_lib.pas',
-  hu_stuff in 'Hexen\hu_stuff.pas',
+  hu_stuff in 'Base\hu_stuff.pas',
   i_input in 'Base\i_input.pas',
   i_io in 'Base\i_io.pas',
   i_main in 'Base\i_main.pas',

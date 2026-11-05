@@ -189,7 +189,7 @@ uses
   f_wipe in 'Base\f_wipe.pas',
   g_game in 'Doom\g_game.pas',
   hu_lib in 'Base\hu_lib.pas',
-  hu_stuff in 'Doom\hu_stuff.pas',
+  hu_stuff in 'Base\hu_stuff.pas',
   i_input in 'Base\i_input.pas',
   i_io in 'Base\i_io.pas',
   i_main in 'Base\i_main.pas',

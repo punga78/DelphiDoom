@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHexen is a source port of the game Hexen and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Hexen source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -18,8 +17,11 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
+//
+// DESCRIPTION:
+//    Head up display
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -36,32 +38,66 @@ uses
   d_event,
   r_defs;
 
+{$IFDEF HEXEN}
 //-----------------------------------------------------------------------------
 //
 // DESCRIPTION:  Head up display
 //
 //-----------------------------------------------------------------------------
 
+{$ENDIF}
 const
 //
 // Globally visible constants.
 //
   HU_FONTSTART = '!'; // the first font characters
+{$IF DEFINED(HERETIC)}
+  HU_FONTEND = '[';   // the last font characters
+  HU_FONT4END = ']';   // the last font characters
+  HU_CFONTEND = '_';  // the last console font character
+  HU_FONTCURSOR = 62; // Console cursor
+{$ELSEIF DEFINED(HEXEN)}
   HU_FONTEND = '[';   // the last font characters
   HU_CFONTEND = '_';  // the last console font character
   HU_FONTCURSOR = 62; // Console cursor
+{$ELSE}
+  HU_FONTEND = '_'; // the last font characters
+{$ENDIF}
 
 // Calculate # of glyphs in font.
   HU_FONTSIZE = (Ord(HU_FONTEND) - Ord(HU_FONTSTART)) + 1;
+{$IF DEFINED(HERETIC)}
+  HU_FONTSIZE4 = (Ord(HU_FONT4END) - Ord(HU_FONTSTART)) + 1;
   HU_CFONTSIZE = (Ord(HU_CFONTEND) - Ord(HU_FONTSTART)) + 1;
   HU_BROADCAST = 5;
+{$ELSEIF DEFINED(HEXEN)}
+  HU_CFONTSIZE = (Ord(HU_CFONTEND) - Ord(HU_FONTSTART)) + 1;
+  HU_BROADCAST = 5;
+{$ELSEIF DEFINED(STRIFE)}
+  HU_BROADCAST = 9;   // haleyjd [STRIFE] Changed 5 -> 9
+  HU_CHANGENAME = 10; // haleyjd [STRIFE] Special command
+{$ELSE}
+  HU_BROADCAST = 5;
+{$ENDIF}
 
+{$IFDEF STRIFE}
+  HU_MSGREFRESH = Ord('/');
+{$ELSE}
   HU_MSGREFRESH = KEY_ENTER;
+{$ENDIF}
   HU_MSGX = 0;
   HU_MSGY = 0;
+{$IFDEF STRIFE}
+  HU_MSGHEIGHT = 2; // in lines
+{$ELSE}
   HU_MSGHEIGHT = 1; // in lines
+{$ENDIF}
 
+{$IFDEF STRIFE}
+  HU_MSGTIMEOUT = 8 * TICRATE;  // haleyjd [STRIFE] Doubled message timeout
+{$ELSE}
   HU_MSGTIMEOUT = 4 * TICRATE;
+{$ENDIF}
 
 //==============================================================================
 // HU_Init
@@ -99,6 +135,18 @@ procedure HU_Ticker;
 //==============================================================================
 procedure HU_Drawer;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+{$IFDEF OPENGL}
+
+//==============================================================================
+//
+// HU_Height
+//
+//==============================================================================
+function HU_Height: integer;
+{$ENDIF}
+
+{$ENDIF}
 //==============================================================================
 //
 // HU_dequeueChatChar
@@ -115,9 +163,20 @@ procedure HU_Erase;
 
 var
   hu_font: array[0..HU_FONTSIZE - 1] of Ppatch_t;
+{$IF DEFINED(HERETIC)}
+  hu_font2: array[0..HU_FONTSIZE - 2] of Ppatch_t;
+  hu_font3: array[0..HU_CFONTSIZE - 1] of Ppatch_t; // Console font
+  hu_font4: array[0..HU_FONTSIZE4 - 1] of Ppatch_t;  // Menu secondary font
+{$ELSEIF DEFINED(HEXEN)}
   hu_fonty: array[0..HU_FONTSIZE - 1] of Ppatch_t;  // Yellow font
   hu_font2: array[0..HU_FONTSIZE - 1] of Ppatch_t;
   hu_font3: array[0..HU_CFONTSIZE - 1] of Ppatch_t; // Console font
+{$ELSEIF DEFINED(STRIFE)}
+  yfont: array[0..HU_FONTSIZE - 1] of Ppatch_t;  // haleyjd 09/18/10: [STRIFE]
+
+var
+  m_font3: array['A'..Chr(Ord('Z') + 1)] of Ppatch_t;
+{$ENDIF}
 
   chat_on: boolean;
 
@@ -125,14 +184,53 @@ var
   message_dontfuckwithme: boolean;
   message_nottobefuckedwith: boolean;
 
+{$IF DEFINED(HERETIC)}
+var
+// Heretic shareware/registered/extended names.
+  mapnames: array[0..44] of string;
+
+  player_names: array[0..3] of string;
+{$ELSEIF DEFINED(HEXEN)}
 var
   player_names: array[0..3] of string;
+{$ELSEIF DEFINED(STRIFE)}
+var
+// STRIFE MAP NAMES
+  mapnames: array[0..33] of string;
+
+  player_names: array[0..7] of string;
+{$ELSE}
+const
+  NUM_MAPNAMES = 45;
+  NUM_MAPNAMES2 = 33;
+  NUM_MAPNAMESP = 32;
+  NUM_MAPNAMEST = 32;
+
+var
+// DOOM shareware/registered/retail (Ultimate) names.
+  mapnames: array[0..NUM_MAPNAMES - 1] of string;
+
+// DOOM 2 map names.
+  mapnames2: array[0..NUM_MAPNAMES2 - 1] of string;
+
+// Plutonia WAD map names.
+  mapnamesp: array[0..NUM_MAPNAMESP - 1] of string;
+
+// TNT WAD map names.
+  mapnamest: array[0..NUM_MAPNAMEST - 1] of string;
+
+  player_names: array[0..3] of string;
+{$ENDIF}
 
 var
   chat_macros: array[0..9] of string;
 
 var
+{$IFDEF STRIFE}
+  key_multi_msgplayer: array[0..MAXPLAYERS - 1] of string;
+{$ELSE}
   destination_keys: array[0..MAXPLAYERS - 1] of string;
+{$ENDIF}
 
 var
   shiftxform: array[0..127] of Char;
@@ -154,6 +252,10 @@ function HU_FPS: integer;
 var
   drawfps: boolean;
   drawcrosshair: boolean;
+{$IF DEFINED(DOOM)}
+  amdrawstats: boolean; 
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
 
 //==============================================================================
 //
@@ -161,36 +263,72 @@ var
 //
 //==============================================================================
 function HU_TITLE: string;
+{$ENDIF}
 
 implementation
 
 uses
   d_delphi,
   c_cmds,
+{$IFNDEF HEXEN}
+  z_zone,
+  w_wad,
+{$ENDIF}
   i_system,
   doomstat,
   am_map,
+{$IF DEFINED(HERETIC)}
+  h_strings,
+{$ELSEIF DEFINED(HEXEN)}
   xn_strings,
+{$ELSE}
+  d_englsh,
+{$ENDIF}
   d_player,
+{$IFDEF STRIFE}
+  d_main,
+{$ENDIF}
   g_game,
   hu_lib,
   m_menu,
   m_fixed,
+{$IFNDEF DOOM}
   p_mobj_h,
+{$ENDIF}
   p_tick,
+{$IF DEFINED(DOOM)}
+  p_mobj_h,
+{$ELSEIF DEFINED(HEXEN)}
   p_mapinfo,
+{$ENDIF}
   r_draw,
   r_main,
+{$IF DEFINED(DOOM)}
+  s_sound,
+  st_stuff,
+  sounddata,
+{$ELSEIF DEFINED(STRIFE)}
+  s_sound,
+  sounddata,
+{$ENDIF}
   v_data,
+{$IFDEF HEXEN}
   v_video,
   w_wad,
   z_zone;
+{$ELSE}
+  v_video;
+{$ENDIF}
 
 // FPS Stuff
 
 const
   FPSSIZE = 128;
+{$IFDEF HEXEN}
   FPSSIZE2 = 128;
+{$ELSE}
+  FPSSIZE2 = 512;
+{$ENDIF}
 
 var
   FPSHISTORY: array[0..FPSSIZE - 1] of integer;
@@ -264,8 +402,63 @@ end;
 //
 //==============================================================================
 function HU_TITLE: string;
+{$IFDEF DOOM}
+var
+  x: integer;
+{$ENDIF}
 begin
+{$IF DEFINED(HERETIC)}
+  result := mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+{$ELSEIF DEFINED(HEXEN)}
   result := P_GetMapDescName(gamemap);
+{$ELSEIF DEFINED(STRIFE)}
+  result := mapnames[gamemap - 1];
+{$ELSE}
+  x := (gameepisode - 1) * 9 + gamemap - 1;
+  if IsIntegerInRange(x, 0, NUM_MAPNAMES - 1) then
+    result := mapnames[x]
+  else
+    sprintf(result, 'Episode %d - Map %d', [gameepisode, gamemap]);
+end;
+
+//==============================================================================
+//
+// HU_TITLE2
+//
+//==============================================================================
+function HU_TITLE2: string;
+begin
+  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMES2) then
+    result := mapnames2[gamemap - 1]
+  else
+    sprintf(result, 'Map %d', [gamemap]);
+end;
+
+//==============================================================================
+//
+// HU_TITLEP
+//
+//==============================================================================
+function HU_TITLEP: string;
+begin
+  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMESP) then
+    result := mapnamesp[gamemap - 1]
+  else
+    sprintf(result, 'Map %d', [gamemap]);
+end;
+
+//==============================================================================
+//
+// HU_TITLET
+//
+//==============================================================================
+function HU_TITLET: string;
+begin
+  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMEST) then
+    result := mapnamest[gamemap - 1]
+  else
+    sprintf(result, 'Map %d', [gamemap]);
+{$ENDIF}
 end;
 
 var
@@ -273,7 +466,11 @@ var
   w_title: hu_textline_t;
   w_leveltime: hu_textline_t;
   w_chat: hu_itext_t;
+{$IFDEF HERETIC}
+  always_off: boolean;
+{$ELSE}
   always_off: boolean = false;
+{$ENDIF}
   chat_dest: array[0..MAXPLAYERS - 1] of Char;
   w_inputbuffer: array[0..MAXPLAYERS - 1] of hu_itext_t;
 
@@ -282,19 +479,43 @@ var
 
   headsupactive: boolean = false;
 
+{$IFDEF STRIFE}
+  hu_setting_name: boolean = false;
+
+{$ENDIF}
 const
   HU_TITLEHEIGHT = 1;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   HU_TITLEX = 32;
   HU_LEVELTIMEX = 32;
+{$ELSE}
+  HU_TITLEX = 0;
+  HU_LEVELTIMEX = 0;
+{$ENDIF}
 
 //==============================================================================
-//
+{$IFDEF STRIFE}
 // HU_TITLEY
+{$ENDIF}
+//
+{$IFDEF STRIFE}
+// haleyjd 09/01/10: [STRIFE] 167 -> 160 to move up level name
+{$ELSE}
+// HU_TITLEY
+{$ENDIF}
 //
 //==============================================================================
 function HU_TITLEY: integer;
 begin
+{$IF DEFINED(HERETIC)}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 157 div 200{$ELSE}157{$ENDIF} - hu_font[0].height;
+{$ELSEIF DEFINED(HEXEN)}
   result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 150 div 200{$ELSE}150{$ENDIF} - hu_font[0].height;
+{$ELSEIF DEFINED(STRIFE)}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 160 div 200{$ELSE}160{$ENDIF} - hu_font[0].height;
+{$ELSE}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 167 div 200{$ELSE}167{$ENDIF} - hu_font[0].height;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -304,7 +525,15 @@ end;
 //==============================================================================
 function HU_LEVELTIMEY: integer;
 begin
+{$IF DEFINED(HERETIC)}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 157 div 200{$ELSE}157{$ENDIF} - 2 * hu_font[0].height;
+{$ELSEIF DEFINED(HEXEN)}
   result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 150 div 200{$ELSE}150{$ENDIF} - 2 * hu_font[0].height - 1;
+{$ELSEIF DEFINED(STRIFE)}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 160 div 200{$ELSE}160{$ENDIF} - 2 * hu_font[0].height;
+{$ELSE}
+  result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 167 div 200{$ELSE}167{$ENDIF} - 2 * hu_font[0].height;
+{$ENDIF}
 end;
 
 const
@@ -455,8 +684,15 @@ var
 procedure HU_Init;
 var
   i: integer;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   lump: integer;
+{$ELSE}
+  j: integer;
+{$ENDIF}
   buffer: string;
+{$IFDEF STRIFE}
+  c: char;
+{$ENDIF}
 begin
   if language = french then
   begin
@@ -470,8 +706,47 @@ begin
   end;
 
   // load the heads-up font
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   for i := 1 to HU_FONTSIZE do
+{$ELSE}
+  j := Ord(HU_FONTSTART);
+  for i := 0 to HU_FONTSIZE - 1 do
+{$ENDIF}
   begin
+{$IF DEFINED(HERETIC)}
+    buffer := 'FONTA' + IntToStrZfill(2, i);
+    hu_font[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+  end;
+
+  for i := 1 to HU_FONTSIZE - 1 do
+  begin
+    buffer := 'FONTB' + IntToStrZfill(2, i);
+    hu_font2[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+  end;
+
+  for i := 1 to HU_CFONTSIZE do
+  begin
+    buffer := 'FONTC' + IntToStrZfill(2, i);
+    lump := W_CheckNumForName(buffer);
+    if lump >= 0 then
+      hu_font3[i - 1] := W_CacheLumpNum(lump, PU_STATIC)
+    else if i < Ord(HU_FONTSIZE) then
+      hu_font3[i - 1] := hu_font[i - 1]
+    else if i = 59 then
+      hu_font3[58] := hu_font[7]
+    else if i = 60 then
+      hu_font3[59] := hu_font[14]
+    else if i = 61 then
+      hu_font3[60] := hu_font[8]
+    else
+      hu_font3[i - 1] := hu_font[HU_FONTSIZE - 1]
+  end;
+
+  for i := 1 to HU_FONTSIZE4 do
+  begin
+    buffer := 'STCFN' + IntToStrZfill(3, i + 32);
+    hu_font4[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+{$ELSEIF DEFINED(HEXEN)}
     buffer := 'FONTA' + IntToStrZfill(2, i);
     hu_font[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
   end;
@@ -505,10 +780,32 @@ begin
       hu_font3[60] := hu_font[8]
     else
       hu_font3[i - 1] := hu_font[HU_FONTSIZE - 1]
+{$ELSEIF DEFINED(STRIFE)}
+    buffer := 'STCFN' + IntToStrZfill(3, j);
+    inc(j);
+    hu_font[i] := W_CacheLumpName(buffer, PU_STATIC);
+    // haleyjd 09/18/10: load yfont as well; and yes, this is exactly
+    // how Rogue did it :P
+    buffer[3] := 'B';
+    yfont[i] := W_CacheLumpName(buffer, PU_STATIC);
+{$ELSE}
+    buffer := 'STCFN' + IntToStrZfill(3, j);
+    inc(j);
+    hu_font[i] := W_CacheLumpName(buffer, PU_STATIC);
+{$ENDIF}
   end;
+{$IFDEF STRIFE}
+
+  for c := 'A' to 'Z' do
+    m_font3[c] := W_CacheLumpName('FONT3_' + c, PU_STATIC);
+  m_font3[Chr(Ord('Z') + 1)] := W_CacheLumpName('FONT3_!', PU_STATIC);
+{$ENDIF}
 
   for i := 0 to FPSSIZE - 1 do
     FPSHISTORY[i] := 0;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+
+{$ENDIF}
   for i := 0 to FPSSIZE2 - 1 do
     FPSHISTORY2[i] := 0;
 
@@ -556,16 +853,79 @@ begin
 
   // create the map title widget
   HUlib_initTextLine(@w_title,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     HU_TITLEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF}, HU_TITLEY,
+{$ELSE}
+    HU_TITLEX, HU_TITLEY,
+{$ENDIF}
     @hu_font,
     Ord(HU_FONTSTART));
 
   HUlib_initTextLine(@w_leveltime,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     HU_LEVELTIMEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF}, HU_LEVELTIMEY,
+{$ELSE}
+    HU_LEVELTIMEX, HU_LEVELTIMEY,
+{$ENDIF}
     @hu_font,
     Ord(HU_FONTSTART));
 
+{$IF DEFINED(DOOM)}
+  if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
+  begin
+    if gamemapinfo.mlabel <> '' then
+      s := gamemapinfo.mlabel
+    else
+      s := gamemapinfo.mapname;
+
+    if (s = gamemapinfo.mapname) or (s <> '-') then
+    begin
+      for i := 1 to Length(s) do
+        HUlib_addCharToTextLine(@w_title, s[i]);
+
+      HUlib_addCharToTextLine(@w_title, ':');
+      HUlib_addCharToTextLine(@w_title, ' ');
+    end;
+    s := gamemapinfo.levelname;
+  end
+  else
+  begin
+    case gamemode of
+      shareware,
+      registered,
+      retail: s := HU_TITLE;
+    else
+      begin
+        case gamemission of
+          pack_tnt: s := HU_TITLET;
+          pack_plutonia: s := HU_TITLEP;
+        else
+          s := HU_TITLE2;
+        end;
+      end;
+    end;
+  end;
+{$ELSEIF DEFINED(HERETIC)}
+  if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
+  begin
+    if gamemapinfo.mlabel <> '' then
+      s := gamemapinfo.mlabel
+    else
+      s := gamemapinfo.mapname;
+    if (s = gamemapinfo.mapname) or (s <> '-') then
+    begin
+      for i := 1 to Length(s) do
+        HUlib_addCharToTextLine(@w_title, s[i]);
+      HUlib_addCharToTextLine(@w_title, ':');
+      HUlib_addCharToTextLine(@w_title, ' ');
+    end;
+    s := gamemapinfo.levelname;
+  end
+  else
+    s := HU_TITLE;
+{$ELSE}
   s := HU_TITLE;
+{$ENDIF}
 
   for i := 1 to Length(s) do
     HUlib_addCharToTextLine(@w_title, s[i]);
@@ -579,9 +939,36 @@ begin
   // create the inputbuffer widgets
   for i := 0 to MAXPLAYERS - 1 do
     HUlib_initIText(@w_inputbuffer[i], 0, 0, nil, 0, @always_off);
+{$IFDEF STRIFE}
+
+  // haleyjd 09/18/10: [STRIFE] nickname weirdness.
+  if nickname <> player_names[consoleplayer] then
+    if nickname <> '' then
+    begin
+      printf('have one'#13#10);
+      nickname := player_names[consoleplayer];
+    end;
+{$ENDIF}
 
   headsupactive := true;
 end;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+
+{$IFDEF OPENGL}
+var
+  hu_h: integer = 0;
+
+//==============================================================================
+//
+// HU_Height
+//
+//==============================================================================
+function HU_Height: integer;
+begin
+  result := hu_h;
+end;
+{$ENDIF}
+{$ENDIF}
 
 var
   m_fps: string = '';
@@ -612,16 +999,27 @@ begin
     else
       x := x - 4;
   end;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  hu_h := hu_h + 9;
+{$ENDIF}
 {$ELSE}
   if amstate = am_only then
   begin
     x := 311;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     y := 0;
+{$ELSE}
+    y := 1;
+{$ENDIF}
   end
   else
   begin
     x := (viewwindowx + viewwidth) * 320 div SCREENWIDTH - 9;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     y := viewwindowy * 200 div SCREENHEIGHT;
+{$ELSE}
+    y := viewwindowy * 200 div SCREENHEIGHT + 1;
+{$ENDIF}
   end;
   for i := length(m_fps) downto 1 do
   begin
@@ -660,18 +1058,28 @@ begin
   if plr.playerstate = PST_DEAD then
     exit;
 
+{$IFDEF HEXEN}
   if plr.morphTics <> 0 then
     exit;
 
+{$ENDIF}
   if plr.plinetarget = nil then
     cidx := 0
+{$IFDEF STRIFE}
+  else if plr.plinetarget.flags and MF_ALLY <> 0 then
+    cidx := 0
+{$ENDIF}
   else if plr.plinetarget.flags2_ex and MF2_EX_FRIEND <> 0 then
     cidx := 0
   else
     cidx := (((leveltime - plr.pcrosstic) div 8) mod 4) + 1;
 
   if plr.lookdir2 < 128 then
+{$IFDEF HEXEN}
     dx := plr.lookdir2 * viewwidth div 40
+{$ELSE}
+    dx := plr.lookdir2 * viewwidth div 40 
+{$ENDIF}
   else
     dx := - (255 - plr.lookdir2) * viewwidth div 40;
 
@@ -683,6 +1091,192 @@ begin
 end;
 
 //==============================================================================
+{$IF DEFINED(DOOM)}
+// HU_DrawDemoProgress
+//
+// 19/9/2009 JVAL: For drawing demo progress
+//
+//==============================================================================
+procedure HU_DrawDemoProgress;
+var
+  dp: Ppatch_t;
+  i: integer;
+  x, y: integer;
+begin
+  dp := W_CacheLumpName('DEMOTIME', PU_STATIC);
+  x := viewwindowx{$IFDEF OPENGL} * 320 div SCREENWIDTH{$ENDIF};
+  y := (viewwindowy + viewheight){$IFDEF OPENGL} * 200 div SCREENHEIGHT{$ENDIF};
+{$IFDEF OPENGL}
+  i := round(G_DemoProgress * viewwidth / SCREENWIDTH * 320 / FRACUNIT);
+{$ELSE}
+  i := G_DemoProgress * viewwidth div FRACUNIT;
+{$ENDIF}
+  while i > 0 do
+  begin
+    V_DrawPatchTransparent(x, y, SCN_FG, dp, {$IFDEF OPENGL}true{$ELSE}false{$ENDIF});
+    i := i - dp.width;
+    x := x + dp.width;
+  end;
+  Z_ChangeTag(dp, PU_CACHE);
+end;
+
+var
+  lump_trn: Integer = -2;
+
+//==============================================================================
+//
+// HU_WriteText
+// Write a string using the hu_font, use white for numeric characters
+//
+//==============================================================================
+function HU_WriteText(x, y: integer; const str: string; const highlightnums: boolean = false): menupos_t;
+var
+  w: integer;
+  ch: integer;
+  c: integer;
+  currchar: char;
+  cx: integer;
+  cy: integer;
+  len: integer;
+  oldtranslation, newtranslation: PByteArray;
+  dowhite: boolean;
+begin
+  len := Length(str);
+  if len = 0 then
+  begin
+    result.x := x;
+    result.y := y;
+    exit;
+  end;
+
+  ch := 1;
+  cx := x;
+  cy := y;
+
+  if lump_trn < 0 then
+    lump_trn := W_GetNumForName('TRN_MENU');
+
+  oldtranslation := v_translation;
+  newtranslation := W_CacheLumpNum(lump_trn, PU_STATIC);
+
+  dowhite := False;
+
+  while true do
+  begin
+    if ch > len then
+      break;
+
+    currchar := str[ch];
+    c := Ord(currchar);
+    inc(ch);
+
+    if highlightnums then
+      dowhite := dowhite or (currchar in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+
+    if c = 0 then
+      break;
+
+    if c = 10 then
+    begin
+      cx := x;
+      continue;
+    end;
+
+    if c = 13 then
+    begin
+      cy := cy + 12;
+      continue;
+    end;
+
+    c := Ord(toupper(Chr(c))) - Ord(HU_FONTSTART);
+    if (c < 0) or (c >= HU_FONTSIZE) then
+    begin
+      cx := cx + 4;
+      continue;
+    end;
+
+    w := hu_font[c].width;
+    if (cx + w) > 320 then
+      break;
+
+    if dowhite then
+      v_translation := newtranslation
+    else
+      v_translation := oldtranslation;
+
+    V_DrawPatch(cx, cy, SCN_FG, hu_font[c], true);
+
+    cx := cx + w;
+  end;
+
+  Z_ChangeTag(newtranslation, PU_CACHE);
+  v_translation := oldtranslation;
+
+  result.x := cx;
+  result.y := cy;
+end;
+
+procedure HU_DrawAMStats;
+const
+  XOFFS = 320 - 2;
+  YOFFS = ST_Y - 1;
+var
+  s1, s2, s3: string;
+  x, y: integer;
+begin
+  if not amdrawstats then
+    exit;
+
+  if plr = nil then
+    exit;
+
+  sprintf(s1, 'Kills: %d/%d', [plr.killcount, totalkills]);
+  sprintf(s2, 'Items: %d/%d', [plr.itemcount, totalitems]);
+  sprintf(s3, 'Secrets: %d/%d', [plr.secretcount, totalsecret]);
+
+  x := XOFFS - Max3I(M_StringWidth(s1), M_StringWidth(s2), M_StringWidth(s3));
+  y := YOFFS - M_StringHeight(s3);
+  HU_WriteText(x, y, s3, True);
+
+  y := y - M_StringHeight(s2);
+  HU_WriteText(x, y, s2, True);
+
+  y := y - M_StringHeight(s1);
+  HU_WriteText(x, y, s1, True);
+end;
+
+//==============================================================================
+{$ELSEIF DEFINED(STRIFE)}
+// HU_DrawDemoProgress
+//
+// 19/9/2009 JVAL: For drawing demo progress
+//
+//==============================================================================
+procedure HU_DrawDemoProgress;
+var
+  dp: Ppatch_t;
+  i: integer;
+  x, y: integer;
+begin
+  dp := W_CacheLumpName('DEMOTIME', PU_STATIC);
+  x := viewwindowx{$IFDEF OPENGL} * 320 div SCREENWIDTH{$ENDIF};
+  y := (viewwindowy + viewheight){$IFDEF OPENGL} * 200 div SCREENHEIGHT{$ENDIF};
+{$IFDEF OPENGL}
+  i := round(G_DemoProgress * viewwidth / SCREENWIDTH * 320 / FRACUNIT);
+{$ELSE}
+  i := G_DemoProgress * viewwidth div FRACUNIT;
+{$ENDIF}
+  while i > 0 do
+  begin
+    V_DrawPatchTransparent(x, y, SCN_FG, dp, {$IFDEF OPENGL}true{$ELSE}false{$ENDIF});
+    i := i - dp.width;
+    x := x + dp.width;
+  end;
+  Z_ChangeTag(dp, PU_CACHE);
+end;
+
+//==============================================================================
+{$ENDIF}
 //
 // HU_Drawer
 //
@@ -690,12 +1284,47 @@ end;
 procedure HU_Drawer;
 var
   i, t: integer;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+{$IFDEF OPENGL}
+  i2, idx, lines: integer;
+{$ENDIF}
+{$ENDIF}
   lt: string;
 begin
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+{$IFDEF OPENGL}
+  hu_h := 0;
+{$ENDIF}
+{$ENDIF}
   if drawfps then
     HU_DrawFPS;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  if demoplayback and showdemoplaybackprogress then
+    HU_DrawDemoProgress;
+
+{$ENDIF}
   HU_DrawCrossHair;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+
+{$ENDIF}
   HUlib_drawSText(@w_message);
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  {$IFDEF OPENGL}
+  if w_message._on^ then
+    for i := 0 to w_message.height - 1 do
+    begin
+      idx := w_message.curline - i;
+      if idx < 0 then
+        idx := idx + w_message.height; // handle queue of lines
+      lines := 0;
+      for i2 := 0 to w_message.lines[idx].len - 1 do
+        if w_message.lines[idx].line[i2] = #10 then
+          inc(lines);
+      if lines * 10 > hu_h then
+        hu_h := lines * 10;
+    end;
+  {$ENDIF}
+{$ENDIF}
   HUlib_drawIText(@w_chat);
   if amstate = am_only then
   begin
@@ -712,6 +1341,11 @@ begin
       HUlib_addCharToTextLine(@w_leveltime, lt[i]);
     HUlib_drawTextLine(@w_leveltime, false);
     HUlib_drawTextLine(@w_title, false);
+{$IFDEF DOOM}
+
+    // JVAL: 20220501 - Draw automap stats (https://www.doomworld.com/forum/topic/92113-delphidoom-207734-udmf-umapinfo-mbf21-apr-28-2022/?do=findComment&comment=2488715)
+    HU_DrawAMStats;
+{$ENDIF}
   end;
 end;
 
@@ -762,6 +1396,19 @@ begin
   if (showMessages <> 0) or message_dontfuckwithme then
   begin
     // display message if necessary
+{$IFDEF DOOM}
+    if plr <> nil then
+      if ((plr._message <> '') and not message_nottobefuckedwith) or
+         ((plr._message <> '') and message_dontfuckwithme) then
+      begin
+        HUlib_addMessageToSText2(@w_message, '', plr._message);
+        plr._message := '';
+        message_on := true;
+        message_counter := HU_MSGTIMEOUT;
+        message_nottobefuckedwith := message_dontfuckwithme;
+        message_dontfuckwithme := false;
+      end;
+{$ELSE}
     if ((plr._message <> '') and not message_nottobefuckedwith) or
        ((plr._message <> '') and message_dontfuckwithme) then
     begin
@@ -772,6 +1419,7 @@ begin
       message_nottobefuckedwith := message_dontfuckwithme;
       message_dontfuckwithme := false;
     end;
+{$ENDIF}
   end; // else message_on = false;
 
   // check for incoming chat characters
@@ -784,7 +1432,11 @@ begin
       c := Chr(players[i].cmd.chatchar);
       if (i <> consoleplayer) and (c <> #0) then
       begin
+{$IFDEF STRIFE}
+        if c <= Chr(HU_CHANGENAME) then // [STRIFE]: allow HU_CHANGENAME here
+{$ELSE}
         if c <= Chr(HU_BROADCAST) then
+{$ENDIF}
           chat_dest[i] := c
         else
         begin
@@ -803,6 +1455,14 @@ begin
               message_nottobefuckedwith := true;
               message_on := true;
               message_counter := HU_MSGTIMEOUT;
+{$IF DEFINED(DOOM)}
+              if gamemode = commercial then
+                S_StartSound(nil, Ord(sfx_radio))
+              else
+                S_StartSound(nil, Ord(sfx_tink));
+{$ELSEIF DEFINED(STRIFE)}
+              S_StartSound(nil, Ord(sfx_radio))
+{$ENDIF}
             end;
             HUlib_resetIText(@w_inputbuffer[i]);
           end;
@@ -911,9 +1571,17 @@ begin
     begin
       for i := 0 to MAXPLAYERS - 1 do
       begin
+{$IFDEF STRIFE}
+        if key_multi_msgplayer[i] <> '' then
+{$ELSE}
         if destination_keys[i] <> '' then
+{$ENDIF}
         begin
+{$IFDEF STRIFE}
+          if ev.data1 = Ord(key_multi_msgplayer[i][1]) then
+{$ELSE}
           if ev.data1 = Ord(destination_keys[i][1]) then
+{$ENDIF}
           begin
             if playeringame[i] and (i <> consoleplayer) then
             begin
@@ -1003,15 +1671,337 @@ initialization
   chat_macros[8] := HUSTR_CHATMACRO8;
   chat_macros[9] := HUSTR_CHATMACRO9;
 
+{$IFDEF STRIFE}
+  player_names[0] := HUSTR_PLAYER1;
+  player_names[1] := HUSTR_PLAYER2;
+  player_names[2] := HUSTR_PLAYER3;
+  player_names[3] := HUSTR_PLAYER4;
+  player_names[4] := HUSTR_PLAYER5;
+  player_names[5] := HUSTR_PLAYER6;
+  player_names[6] := HUSTR_PLAYER7;
+  player_names[7] := HUSTR_PLAYER8;
+{$ELSE}
   player_names[0] := HUSTR_PLRGREEN;
   player_names[1] := HUSTR_PLRINDIGO;
   player_names[2] := HUSTR_PLRBROWN;
   player_names[3] := HUSTR_PLRRED;
+{$ENDIF}
+
+{$IF DEFINED(HERETIC)}
+  always_off := false;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Builtin map names.
+// The actual names can be found in h_strings.pas
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// DOOM shareware/registered/retail (Ultimate) names.
+
+  mapnames[0] := HUSTR_E1M1;
+  mapnames[1] := HUSTR_E1M2;
+  mapnames[2] := HUSTR_E1M3;
+  mapnames[3] := HUSTR_E1M4;
+  mapnames[4] := HUSTR_E1M5;
+  mapnames[5] := HUSTR_E1M6;
+  mapnames[6] := HUSTR_E1M7;
+  mapnames[7] := HUSTR_E1M8;
+  mapnames[8] := HUSTR_E1M9;
+
+  mapnames[9] := HUSTR_E2M1;
+  mapnames[10] := HUSTR_E2M2;
+  mapnames[11] := HUSTR_E2M3;
+  mapnames[12] := HUSTR_E2M4;
+  mapnames[13] := HUSTR_E2M5;
+  mapnames[14] := HUSTR_E2M6;
+  mapnames[15] := HUSTR_E2M7;
+  mapnames[16] := HUSTR_E2M8;
+  mapnames[17] := HUSTR_E2M9;
+
+  mapnames[18] := HUSTR_E3M1;
+  mapnames[19] := HUSTR_E3M2;
+  mapnames[20] := HUSTR_E3M3;
+  mapnames[21] := HUSTR_E3M4;
+  mapnames[22] := HUSTR_E3M5;
+  mapnames[23] := HUSTR_E3M6;
+  mapnames[24] := HUSTR_E3M7;
+  mapnames[25] := HUSTR_E3M8;
+  mapnames[26] := HUSTR_E3M9;
+
+  mapnames[27] := HUSTR_E4M1;
+  mapnames[28] := HUSTR_E4M2;
+  mapnames[29] := HUSTR_E4M3;
+  mapnames[30] := HUSTR_E4M4;
+  mapnames[31] := HUSTR_E4M5;
+  mapnames[32] := HUSTR_E4M6;
+  mapnames[33] := HUSTR_E4M7;
+  mapnames[34] := HUSTR_E4M8;
+  mapnames[35] := HUSTR_E4M9;
+
+  mapnames[36] := HUSTR_E5M1;
+  mapnames[37] := HUSTR_E5M2;
+  mapnames[38] := HUSTR_E5M3;
+  mapnames[39] := HUSTR_E5M4;
+  mapnames[40] := HUSTR_E5M5;
+  mapnames[41] := HUSTR_E5M6;
+  mapnames[42] := HUSTR_E5M7;
+  mapnames[43] := HUSTR_E5M8;
+  mapnames[44] := HUSTR_E5M9;
+
+////////////////////////////////////////////////////////////////////////////////
 
   destination_keys[0] := HUSTR_KEYGREEN;
   destination_keys[1] := HUSTR_KEYINDIGO;
   destination_keys[2] := HUSTR_KEYBROWN;
   destination_keys[3] := HUSTR_KEYRED;
+{$ELSEIF DEFINED(HEXEN)}
+  destination_keys[0] := HUSTR_KEYGREEN;
+  destination_keys[1] := HUSTR_KEYINDIGO;
+  destination_keys[2] := HUSTR_KEYBROWN;
+  destination_keys[3] := HUSTR_KEYRED;
+{$ELSEIF DEFINED(STRIFE)}
+////////////////////////////////////////////////////////////////////////////////
+//
+// Builtin map names.
+// The actual names can be found in DStrings.h.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// STRIFE map names.
+
+  mapnames[0] := HUSTR_1;
+  mapnames[1] := HUSTR_2;
+  mapnames[2] := HUSTR_3;
+  mapnames[3] := HUSTR_4;
+  mapnames[4] := HUSTR_5;
+  mapnames[5] := HUSTR_6;
+  mapnames[6] := HUSTR_7;
+  mapnames[7] := HUSTR_8;
+  mapnames[8] := HUSTR_9;
+  mapnames[9] := HUSTR_10;
+  mapnames[10] := HUSTR_11;
+
+  mapnames[11] := HUSTR_12;
+  mapnames[12] := HUSTR_13;
+  mapnames[13] := HUSTR_14;
+  mapnames[14] := HUSTR_15;
+  mapnames[15] := HUSTR_16;
+  mapnames[16] := HUSTR_17;
+  mapnames[17] := HUSTR_18;
+  mapnames[18] := HUSTR_19;
+  mapnames[19] := HUSTR_20;
+
+  mapnames[20] := HUSTR_21;
+  mapnames[21] := HUSTR_22;
+  mapnames[22] := HUSTR_23;
+  mapnames[23] := HUSTR_24;
+  mapnames[24] := HUSTR_25;
+  mapnames[25] := HUSTR_26;
+  mapnames[26] := HUSTR_27;
+  mapnames[27] := HUSTR_28;
+  mapnames[28] := HUSTR_29;
+  mapnames[29] := HUSTR_30;
+  mapnames[30] := HUSTR_31;
+  mapnames[31] := HUSTR_32;
+  mapnames[32] := HUSTR_33;
+  mapnames[33] := HUSTR_34;
+
+////////////////////////////////////////////////////////////////////////////////
+
+  key_multi_msgplayer[0] := '1';
+  key_multi_msgplayer[1] := '2';
+  key_multi_msgplayer[2] := '3';
+  key_multi_msgplayer[3] := '4';
+  key_multi_msgplayer[4] := '5';
+  key_multi_msgplayer[5] := '6';
+  key_multi_msgplayer[6] := '7';
+  key_multi_msgplayer[7] := '8';
+{$ELSE}
+////////////////////////////////////////////////////////////////////////////////
+//
+// Builtin map names.
+// The actual names can be found in DStrings.h.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// DOOM shareware/registered/retail (Ultimate) names.
+
+  mapnames[0] := HUSTR_E1M1;
+  mapnames[1] := HUSTR_E1M2;
+  mapnames[2] := HUSTR_E1M3;
+  mapnames[3] := HUSTR_E1M4;
+  mapnames[4] := HUSTR_E1M5;
+  mapnames[5] := HUSTR_E1M6;
+  mapnames[6] := HUSTR_E1M7;
+  mapnames[7] := HUSTR_E1M8;
+  mapnames[8] := HUSTR_E1M9;
+
+  mapnames[9] := HUSTR_E2M1;
+  mapnames[10] := HUSTR_E2M2;
+  mapnames[11] := HUSTR_E2M3;
+  mapnames[12] := HUSTR_E2M4;
+  mapnames[13] := HUSTR_E2M5;
+  mapnames[14] := HUSTR_E2M6;
+  mapnames[15] := HUSTR_E2M7;
+  mapnames[16] := HUSTR_E2M8;
+  mapnames[17] := HUSTR_E2M9;
+
+  mapnames[18] := HUSTR_E3M1;
+  mapnames[19] := HUSTR_E3M2;
+  mapnames[20] := HUSTR_E3M3;
+  mapnames[21] := HUSTR_E3M4;
+  mapnames[22] := HUSTR_E3M5;
+  mapnames[23] := HUSTR_E3M6;
+  mapnames[24] := HUSTR_E3M7;
+  mapnames[25] := HUSTR_E3M8;
+  mapnames[26] := HUSTR_E3M9;
+
+  mapnames[27] := HUSTR_E4M1;
+  mapnames[28] := HUSTR_E4M2;
+  mapnames[29] := HUSTR_E4M3;
+  mapnames[30] := HUSTR_E4M4;
+  mapnames[31] := HUSTR_E4M5;
+  mapnames[32] := HUSTR_E4M6;
+  mapnames[33] := HUSTR_E4M7;
+  mapnames[34] := HUSTR_E4M8;
+  mapnames[35] := HUSTR_E4M9;
+
+  mapnames[36] := 'NEWLEVEL';
+  mapnames[37] := mapnames[36];
+  mapnames[38] := mapnames[36];
+  mapnames[39] := mapnames[36];
+  mapnames[40] := mapnames[36];
+  mapnames[41] := mapnames[36];
+  mapnames[42] := mapnames[36];
+  mapnames[43] := mapnames[36];
+  mapnames[44] := mapnames[36];
+
+////////////////////////////////////////////////////////////////////////////////
+
+// DOOM 2 map names.
+
+  mapnames2[0] := HUSTR_1;
+  mapnames2[1] := HUSTR_2;
+  mapnames2[2] := HUSTR_3;
+  mapnames2[3] := HUSTR_4;
+  mapnames2[4] := HUSTR_5;
+  mapnames2[5] := HUSTR_6;
+  mapnames2[6] := HUSTR_7;
+  mapnames2[7] := HUSTR_8;
+  mapnames2[8] := HUSTR_9;
+  mapnames2[9] := HUSTR_10;
+  mapnames2[10] := HUSTR_11;
+
+  mapnames2[11] := HUSTR_12;
+  mapnames2[12] := HUSTR_13;
+  mapnames2[13] := HUSTR_14;
+  mapnames2[14] := HUSTR_15;
+  mapnames2[15] := HUSTR_16;
+  mapnames2[16] := HUSTR_17;
+  mapnames2[17] := HUSTR_18;
+  mapnames2[18] := HUSTR_19;
+  mapnames2[19] := HUSTR_20;
+
+  mapnames2[20] := HUSTR_21;
+  mapnames2[21] := HUSTR_22;
+  mapnames2[22] := HUSTR_23;
+  mapnames2[23] := HUSTR_24;
+  mapnames2[24] := HUSTR_25;
+  mapnames2[25] := HUSTR_26;
+  mapnames2[26] := HUSTR_27;
+  mapnames2[27] := HUSTR_28;
+  mapnames2[28] := HUSTR_29;
+  mapnames2[29] := HUSTR_30;
+  mapnames2[30] := HUSTR_31;
+  mapnames2[31] := HUSTR_32;
+  mapnames2[32] := HUSTR_33;
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Plutonia WAD map names.
+
+  mapnamesp[0] := PHUSTR_1;
+  mapnamesp[1] := PHUSTR_2;
+  mapnamesp[2] := PHUSTR_3;
+  mapnamesp[3] := PHUSTR_4;
+  mapnamesp[4] := PHUSTR_5;
+  mapnamesp[5] := PHUSTR_6;
+  mapnamesp[6] := PHUSTR_7;
+  mapnamesp[7] := PHUSTR_8;
+  mapnamesp[8] := PHUSTR_9;
+  mapnamesp[9] := PHUSTR_10;
+  mapnamesp[10] := PHUSTR_11;
+
+  mapnamesp[11] := PHUSTR_12;
+  mapnamesp[12] := PHUSTR_13;
+  mapnamesp[13] := PHUSTR_14;
+  mapnamesp[14] := PHUSTR_15;
+  mapnamesp[15] := PHUSTR_16;
+  mapnamesp[16] := PHUSTR_17;
+  mapnamesp[17] := PHUSTR_18;
+  mapnamesp[18] := PHUSTR_19;
+  mapnamesp[19] := PHUSTR_20;
+
+  mapnamesp[20] := PHUSTR_21;
+  mapnamesp[21] := PHUSTR_22;
+  mapnamesp[22] := PHUSTR_23;
+  mapnamesp[23] := PHUSTR_24;
+  mapnamesp[24] := PHUSTR_25;
+  mapnamesp[25] := PHUSTR_26;
+  mapnamesp[26] := PHUSTR_27;
+  mapnamesp[27] := PHUSTR_28;
+  mapnamesp[28] := PHUSTR_29;
+  mapnamesp[29] := PHUSTR_30;
+  mapnamesp[30] := PHUSTR_31;
+  mapnamesp[31] := PHUSTR_32;
+
+////////////////////////////////////////////////////////////////////////////////
+
+// TNT WAD map names.
+
+  mapnamest[0] := THUSTR_1;
+  mapnamest[1] := THUSTR_2;
+  mapnamest[2] := THUSTR_3;
+  mapnamest[3] := THUSTR_4;
+  mapnamest[4] := THUSTR_5;
+  mapnamest[5] := THUSTR_6;
+  mapnamest[6] := THUSTR_7;
+  mapnamest[7] := THUSTR_8;
+  mapnamest[8] := THUSTR_9;
+  mapnamest[9] := THUSTR_10;
+  mapnamest[10] := THUSTR_11;
+
+  mapnamest[11] := THUSTR_12;
+  mapnamest[12] := THUSTR_13;
+  mapnamest[13] := THUSTR_14;
+  mapnamest[14] := THUSTR_15;
+  mapnamest[15] := THUSTR_16;
+  mapnamest[16] := THUSTR_17;
+  mapnamest[17] := THUSTR_18;
+  mapnamest[18] := THUSTR_19;
+  mapnamest[19] := THUSTR_20;
+
+  mapnamest[20] := THUSTR_21;
+  mapnamest[21] := THUSTR_22;
+  mapnamest[22] := THUSTR_23;
+  mapnamest[23] := THUSTR_24;
+  mapnamest[24] := THUSTR_25;
+  mapnamest[25] := THUSTR_26;
+  mapnamest[26] := THUSTR_27;
+  mapnamest[27] := THUSTR_28;
+  mapnamest[28] := THUSTR_29;
+  mapnamest[29] := THUSTR_30;
+  mapnamest[30] := THUSTR_31;
+  mapnamest[31] := THUSTR_32;
+
+////////////////////////////////////////////////////////////////////////////////
+
+  destination_keys[0] := HUSTR_KEYGREEN;
+  destination_keys[1] := HUSTR_KEYINDIGO;
+  destination_keys[2] := HUSTR_KEYBROWN;
+  destination_keys[3] := HUSTR_KEYRED;
+{$ENDIF}
 
 end.
 
