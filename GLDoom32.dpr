@@ -244,7 +244,7 @@ uses
   p_terrain in 'Doom\p_terrain.pas',
   p_tick in 'Base\p_tick.pas',
   p_user in 'Doom\p_user.pas',
-  r_bsp in 'Doom\r_bsp.pas',
+  r_bsp in 'Base\r_bsp.pas',
   r_data in 'Base\r_data.pas',
   r_defs in 'Base\r_defs.pas',
   r_draw in 'Base\r_draw.pas',

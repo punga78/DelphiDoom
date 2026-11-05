@@ -253,7 +253,7 @@ uses
   p_terrain in 'Heretic\p_terrain.pas',
   p_tick in 'Base\p_tick.pas',
   p_user in 'Heretic\p_user.pas',
-  r_bsp in 'Heretic\r_bsp.pas',
+  r_bsp in 'Base\r_bsp.pas',
   r_cache_main in 'Base\r_cache_main.pas',
   r_cache_walls in 'Base\r_cache_walls.pas',
   r_cache_flats in 'Base\r_cache_flats.pas',

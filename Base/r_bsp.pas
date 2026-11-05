@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -36,6 +35,9 @@ unit r_bsp;
 interface
 
 uses
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  d_delphi,
+{$ENDIF}
   r_defs;
 
 {$IFNDEF OPENGL}
@@ -61,8 +63,24 @@ procedure R_ClearDrawSegs;
 // R_RenderBSPNode
 //
 //==============================================================================
+{$IF DEFINED(HERETIC)}
 procedure R_RenderBSPNode(bspnum: integer);
 
+{$ELSEIF DEFINED(HEXEN)}
+procedure R_RenderBSPNode(const bspnum: integer);
+
+{$ELSE}
+procedure R_RenderBSPNode(bspnum: integer);
+
+//==============================================================================
+//
+// R_FakeFlat
+//
+//==============================================================================
+function R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
+  floorlightlevel, ceilinglightlevel: PSmallInt; back: boolean): Psector_t;
+
+{$ENDIF}
 type
   drawfunc_t = procedure(start: integer; stop: integer);
 
@@ -79,10 +97,21 @@ var
   drawsegs: array[0..MAXDRAWSEGS - 1] of Pdrawseg_t;
   doorclosed: boolean;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+//==============================================================================
+//
+// R_UnderWater
+//
+//==============================================================================
+function R_UnderWater: boolean;
+
+{$ENDIF}
 implementation
 
 uses
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   d_delphi,
+{$ENDIF}
   doomdata,
   m_fixed,
   tables,
@@ -108,6 +137,195 @@ uses
   r_plane,
   r_things,
   r_sky;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+
+//==============================================================================
+// R_FakeFlat
+//
+// killough 3/7/98: Hack floor/ceiling heights for deep water etc.
+//
+// If player's view height is underneath fake floor, lower the
+// drawn ceiling to be just under the floor height, and replace
+// the drawn floor and ceiling textures, and light level, with
+// the control sector's.
+//
+// Similar for ceiling, only reflected.
+//
+// killough 4/11/98, 4/13/98: fix bugs, add 'back' parameter
+//
+//==============================================================================
+function R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
+  floorlightlevel, ceilinglightlevel: PSmallInt; back: boolean): Psector_t;
+var
+  ss: Psector_t;
+  heightsec: integer;
+  underwater: boolean;
+
+  function notback1: boolean;
+  begin
+    tempsec.floorheight := sec.floorheight;
+    tempsec.ceilingheight := ss.floorheight - 1;
+    result := not back;
+  end;
+
+begin
+  if floorlightlevel <> nil then
+  begin
+    if sec.floorlightsec = -1 then
+      floorlightlevel^ := sec.lightlevel
+    else
+      floorlightlevel^ := sectors[sec.floorlightsec].lightlevel;
+  end;
+
+  if ceilinglightlevel <> nil then
+  begin
+    if sec.ceilinglightsec = -1 then
+      ceilinglightlevel^ := sec.lightlevel
+    else
+      ceilinglightlevel^ := sectors[sec.ceilinglightsec].lightlevel;
+  end;
+
+  if sec.heightsec <> -1 then
+  begin
+    ss := @sectors[sec.heightsec];
+    heightsec := Psubsector_t(viewplayer.mo.subsector).sector.heightsec;
+    underwater := (heightsec <> -1) and (viewz <= sectors[heightsec].floorheight);
+
+    // Replace sector being drawn, with a copy to be hacked
+    tempsec^ := sec^;
+
+    tempsec.floorheight := ss.floorheight;
+    tempsec.ceilingheight := ss.ceilingheight;
+
+    // Replace floor and ceiling height with other sector's heights.
+    if (underwater and notback1) or (viewz <= ss.floorheight) then
+    begin                   // head-below-floor hack
+      tempsec.floorpic := ss.floorpic;
+      tempsec.floor_xoffs := ss.floor_xoffs;
+      tempsec.floor_yoffs := ss.floor_yoffs;
+      tempsec.floorangle := ss.floorangle; // JVAL: 20201229 - Texture angle
+      tempsec.flooranglex := ss.flooranglex; // JVAL: 20201229 - Texture angle rover
+      tempsec.floorangley := ss.floorangley; // JVAL: 20201229 - Texture angle rover
+
+      if underwater then
+      begin
+        if ss.ceilingpic = skyflatnum then
+        begin
+          tempsec.floorheight := tempsec.ceilingheight + 1;
+          tempsec.ceilingpic := tempsec.floorpic;
+          tempsec.ceiling_xoffs := tempsec.floor_xoffs;
+          tempsec.ceiling_yoffs := tempsec.floor_yoffs;
+          tempsec.ceilingangle := ss.floorangle; // JVAL: 20201229 - Texture angle
+          tempsec.ceilinganglex := ss.flooranglex; // JVAL: 20201229 - Texture angle rover
+          tempsec.ceilingangley := ss.floorangley; // JVAL: 20201229 - Texture angle rover
+        end
+        else
+        begin
+          tempsec.ceilingpic := ss.ceilingpic;
+          tempsec.ceiling_xoffs := ss.ceiling_xoffs;
+          tempsec.ceiling_yoffs := ss.ceiling_yoffs;
+          tempsec.ceilingangle := ss.ceilingangle; // JVAL: 20201229 - Texture angle
+          tempsec.ceilinganglex := ss.flooranglex; // JVAL: 20201229 - Texture angle rover
+          tempsec.ceilingangley := ss.floorangley; // JVAL: 20201229 - Texture angle rover
+        end;
+      end;
+
+      tempsec.lightlevel := ss.lightlevel;
+
+      if floorlightlevel <> nil then
+      begin
+        if ss.floorlightsec = -1 then
+          floorlightlevel^ := ss.lightlevel
+        else
+          floorlightlevel^ := sectors[ss.floorlightsec].lightlevel; // killough 3/16/98
+      end;
+
+      if ceilinglightlevel <> nil then
+      begin
+        if ss.ceilinglightsec = -1 then
+          ceilinglightlevel^ := ss.lightlevel
+        else
+          ceilinglightlevel^ := sectors[ss.ceilinglightsec].lightlevel; // killough 4/11/98
+      end;
+
+    end
+    else
+    begin
+      if (heightsec <> -1) and (viewz >= sectors[heightsec].ceilingheight) and
+         (sec.ceilingheight > ss.ceilingheight) then
+      begin   // Above-ceiling hack
+        tempsec.ceilingheight := ss.ceilingheight;
+        tempsec.floorheight := ss.ceilingheight + 1;
+
+        tempsec.ceilingpic := ss.ceilingpic;
+        tempsec.ceiling_xoffs := ss.ceiling_xoffs;
+        tempsec.ceiling_yoffs := ss.ceiling_yoffs;
+        tempsec.ceilingangle := ss.ceilingangle; // JVAL: 20201229 - Texture angle
+        tempsec.ceilinganglex := ss.ceilinganglex; // JVAL: 20201229 - Texture angle rover
+        tempsec.ceilingangley := ss.ceilingangley; // JVAL: 20201229 - Texture angle rover
+
+        if ss.floorpic <> skyflatnum then
+        begin
+          tempsec.ceilingheight := sec.ceilingheight;
+          tempsec.floorpic := ss.floorpic;
+          tempsec.floor_xoffs := ss.floor_xoffs;
+          tempsec.floor_yoffs := ss.floor_yoffs;
+          tempsec.floorangle := ss.floorangle; // JVAL: 20201229 - Texture angle
+          tempsec.flooranglex := ss.flooranglex; // JVAL: 20201229 - Texture angle rover
+          tempsec.floorangley := ss.floorangley; // JVAL: 20201229 - Texture angle rover
+        end
+        else
+        begin
+          tempsec.floorpic := ss.ceilingpic;
+          tempsec.floor_xoffs := ss.ceiling_xoffs;
+          tempsec.floor_yoffs := ss.ceiling_yoffs;
+          tempsec.floorangle := ss.ceilingangle; // JVAL: 20201229 - Texture angle
+          tempsec.flooranglex := ss.ceilinganglex; // JVAL: 20201229 - Texture angle rover
+          tempsec.floorangley := ss.ceilingangley; // JVAL: 20201229 - Texture angle rover
+        end;
+
+        tempsec.lightlevel := ss.lightlevel;
+
+        if floorlightlevel <> nil then
+        begin
+          if ss.floorlightsec = -1 then
+            floorlightlevel^ := ss.lightlevel
+          else
+            floorlightlevel^ := sectors[ss.floorlightsec].lightlevel; // killough 3/16/98
+        end;
+
+        if ceilinglightlevel <> nil then
+        begin
+          if ss.ceilinglightsec = -1 then
+            ceilinglightlevel^ := ss.lightlevel
+          else
+            ceilinglightlevel^ := sectors[ss.ceilinglightsec].lightlevel; // killough 4/11/98
+        end;
+
+      end;
+    end;
+    sec := tempsec;               // Use other sector
+  end;
+  result := sec;
+end;
+
+//==============================================================================
+//
+// R_UnderWater
+//
+//==============================================================================
+function R_UnderWater: boolean;
+begin
+  if viewplayer <> nil then
+    if viewplayer.mo <> nil then
+    begin
+      result := (Psubsector_t(viewplayer.mo.subsector).sector.heightsec <> -1) and
+                (viewz <= sectors[Psubsector_t(viewplayer.mo.subsector).sector.heightsec].floorheight);
+      exit;
+    end;
+  result := false;
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -328,19 +546,43 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF OPENGL}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+var
+  ftempsec: sector_t;     // killough 3/8/98: ceiling/water hack
+{$IFNDEF OPENGL}
+  btempsec: sector_t;     // killough 3/8/98: ceiling/water hack
+{$ENDIF}
 
+{$ENDIF}
+{$IFDEF OPENGL}
+{$IF DEFINED(HERETIC)}
+
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
+var
+  tempsec_back, tempsec_front: sector_t;
+
+{$ENDIF}
 //==============================================================================
 //
 // R_CheckClip
 //
 //==============================================================================
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
 function R_CheckClip(seg: Pseg_t): boolean;
 var
   frontsector, backsector: Psector_t;
+{$ELSE}
+function R_CheckClip(seg: Pseg_t; frontsector, backsector: Psector_t): boolean;
+{$ENDIF}
 begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   backsector := seg.backsector;
   frontsector := seg.frontsector;
+{$ELSE}
+  backsector := R_FakeFlat(backsector, @tempsec_back, nil, nil, true);
+  frontsector := R_FakeFlat(frontsector, @tempsec_front, nil, nil, false);
+{$ENDIF}
 
   // check for closed sectors!
   if backsector.ceilingheight <= frontsector.floorheight then
@@ -450,6 +692,16 @@ begin
      (bsec.ceilingangle = fsec.ceilingangle) and
      (bsec.ceilinganglex = fsec.ceilinganglex) and
      (bsec.ceilingangley = fsec.ceilingangley) and
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+     // killough 3/7/98: Take flats offsets into account
+     (bsec.floor_xoffs = fsec.floor_xoffs) and
+     (bsec.floor_yoffs = fsec.floor_yoffs) and
+     (bsec.ceiling_xoffs = fsec.ceiling_xoffs) and
+     (bsec.ceiling_yoffs = fsec.ceiling_yoffs) and
+      // killough 4/16/98: consider altered lighting
+     (bsec.floorlightsec = fsec.floorlightsec) and
+     (bsec.ceilinglightsec = fsec.ceilinglightsec) and
+{$ENDIF}
      (bsec.midsec = fsec.midsec) then // JVAL: 3d Floors
   begin
     l.renderflags := l.renderflags or LRF_IGNOREPASS;
@@ -510,11 +762,19 @@ begin
     if line.frontsector = line.backsector then
       if texturetranslation[line.sidedef.midtexture] = NO_TEXTURE then
         exit; //e6y: nothing to do here!
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     if R_CheckClip(line) then
+{$ELSE}
+    if R_CheckClip(line, line.frontsector, line.backsector) then
+{$ENDIF}
       gld_clipper_SafeAddClipRange(angle2, angle1);
   end;
 
+{$IFDEF HEXEN}
+  gld_AddWall(line, false, nil); // JVAL OPENGL
+{$ELSE}
   gld_AddWall(line); // JVAL OPENGL
+{$ENDIF}
 {$ELSE}
 
   // Global angle needed by segcalc.
@@ -577,6 +837,10 @@ begin
     R_ClipSolidWallSegment(x1, x2 - 1);
     exit;
   end;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+
+  backsector := R_FakeFlat(backsector, @btempsec, nil, nil, true);
+{$ENDIF}
 
   doorclosed := false;       // killough 4/16/98
 
@@ -802,6 +1066,34 @@ end;
 
 //==============================================================================
 //
+{$IFDEF DOOM}
+// R_SectorFloorFlat
+//
+//==============================================================================
+function R_SectorFloorFlat(const sec: Psector_t): integer;
+begin
+  result := sec.floorpic;
+  if result = skyflatnum then
+    if sec.sky and PL_SKYFLAT <> 0 then
+      result := sec.sky;
+end;
+
+//==============================================================================
+//
+// R_SectorCeilingFlat
+//
+//==============================================================================
+function R_SectorCeilingFlat(const sec: Psector_t): integer;
+begin
+  result := sec.ceilingpic;
+  if result = skyflatnum then
+    if sec.sky and PL_SKYFLAT <> 0 then
+      result := sec.sky;
+end;
+
+//==============================================================================
+//
+{$ENDIF}
 // R_Subsector
 // Determine floor/ceiling planes.
 // Add sprites of things in sector.
@@ -816,13 +1108,21 @@ var
   sub: Psubsector_t;
   polyCount: integer;
   polySeg: PPseg_t;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   floorlightlevel: smallint;  // JVAL: 3d Floors
+{$ELSE}
+  floorlightlevel: smallint;     // killough 3/16/98: set floor lightlevel
+  ceilinglightlevel: smallint;   // killough 4/11/98
+{$ENDIF}
   floorrenderflags: LongWord;
 {$IFDEF OPENGL}
   i: integer;
   dummyfloorplane: visplane_t;
   dummyceilingplane: visplane_t;
   tmpline: Pline_t;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  tmpsec: Psector_t;
+{$ENDIF}
 {$ENDIF}
 begin
   sub := @subsectors[num];
@@ -834,13 +1134,30 @@ begin
   i_line := sub.firstline;
   line := @segs[i_line];
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   floorlightlevel := frontsector.lightlevel;
+{$ELSE}
+  frontsector := R_FakeFlat(frontsector, @ftempsec,
+    @floorlightlevel, @ceilinglightlevel, false);   // killough 4/11/98
+{$ENDIF}
 {$IFNDEF OPENGL}
   R_3dVisplaneFromSubsector(sub, @floorlightlevel);
   R_VisSlopesFromSubsector(sub);  // JVAL: Slopes
 {$ENDIF}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+{$IFDEF OPENGL}
+  frontsector.floorlightlevel := floorlightlevel;
+  frontsector.ceilinglightlevel := ceilinglightlevel;
+{$ENDIF}
+{$ENDIF}
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   if (P_FloorHeight(frontsector, viewx, viewy) < viewz) then  // JVAL: Slopes
+{$ELSE}
+  if (P_FloorHeight(frontsector, viewx, viewy) < viewz) or  // JVAL: Slopes
+     ((frontsector.heightsec <> -1) and
+     (sectors[frontsector.heightsec].ceilingpic = skyflatnum)) then
+{$ENDIF}
   begin
     if frontsector.midsec >= 0 then // JVAL: Mars fog sectors
     begin
@@ -854,8 +1171,24 @@ begin
 
     if frontsector.renderflags and SRF_SLOPEFLOOR <> 0 then // JVAL: Slopes
       floorplane := R_FindPlane(frontsector.floorheight,
+{$IF DEFINED(HERETIC)}
                                 frontsector.floorpic,
                                 floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
+{$ELSEIF DEFINED(HEXEN)}
+                                frontsector.floorpic,
+                                floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
+                                frontsector.special,
+{$ELSEIF DEFINED(STRIFE)}
+                                frontsector.floorpic,
+                                floorlightlevel,
+                                frontsector.floor_xoffs,
+                                frontsector.floor_yoffs,
+{$ELSE}
+                                R_SectorFloorFlat(frontsector),
+                                floorlightlevel,
+                                frontsector.floor_xoffs,
+                                frontsector.floor_yoffs,
+{$ENDIF}
                                 floorrenderflags and not (SRF_RIPPLE_CEILING or SRF_SLOPECEILING),
                                 true,
                                 frontsector.floorangle, // JVAL: 20200221 - Texture angle
@@ -867,8 +1200,24 @@ begin
                                 frontsector.iSectorID)  // JVAL: Slopes
     else
       floorplane := R_FindPlane(frontsector.floorheight,
+{$IF DEFINED(HERETIC)}
                                 frontsector.floorpic,
                                 floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
+{$ELSEIF DEFINED(HEXEN)}
+                                frontsector.floorpic,
+                                floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
+                                frontsector.special,
+{$ELSEIF DEFINED(STRIFE)}
+                                frontsector.floorpic,
+                                floorlightlevel,
+                                frontsector.floor_xoffs,
+                                frontsector.floor_yoffs,
+{$ELSE}
+                                R_SectorFloorFlat(frontsector),
+                                floorlightlevel,
+                                frontsector.floor_xoffs,
+                                frontsector.floor_yoffs,
+{$ENDIF}
                                 floorrenderflags and not (SRF_RIPPLE_CEILING or SRF_SLOPECEILING),
                                 true,
                                 frontsector.floorangle, // JVAL: 20200221 - Texture angle
@@ -883,12 +1232,33 @@ begin
     floorplane := nil;
 
   if (P_CeilingHeight(frontsector, viewx, viewy) > viewz) or  // JVAL: Slopes
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
      (frontsector.ceilingpic = skyflatnum) then
+{$ELSE}
+     (frontsector.ceilingpic = skyflatnum) or
+     ((frontsector.heightsec <> -1) and (sectors[frontsector.heightsec].floorpic = skyflatnum)) then
+{$ENDIF}
   begin
     if frontsector.renderflags and SRF_SLOPECEILING <> 0 then // JVAL: Slopes
       ceilingplane := R_FindPlane(frontsector.ceilingheight,
+{$IF DEFINED(HERETIC)}
                                   frontsector.ceilingpic,
                                   frontsector.lightlevel,
+{$ELSEIF DEFINED(HEXEN)}
+                                  frontsector.ceilingpic,
+                                  frontsector.lightlevel,
+                                  0,
+{$ELSEIF DEFINED(STRIFE)}
+                                  frontsector.ceilingpic,
+                                  ceilinglightlevel,
+                                  frontsector.ceiling_xoffs,
+                                  frontsector.ceiling_yoffs,
+{$ELSE}
+                                  R_SectorCeilingFlat(frontsector),
+                                  ceilinglightlevel,
+                                  frontsector.ceiling_xoffs,
+                                  frontsector.ceiling_yoffs,
+{$ENDIF}
                                   frontsector.renderflags and not (SRF_RIPPLE_FLOOR or SRF_SLOPEFLOOR),
                                   false,
                                   frontsector.ceilingangle, // JVAL: 20200221 - Texture angle
@@ -900,8 +1270,24 @@ begin
                                   frontsector.iSectorID)  // JVAL: Slopes
     else
       ceilingplane := R_FindPlane(frontsector.ceilingheight,
+{$IF DEFINED(HERETIC)}
                                   frontsector.ceilingpic,
                                   frontsector.lightlevel,
+{$ELSEIF DEFINED(HEXEN)}
+                                  frontsector.ceilingpic,
+                                  frontsector.lightlevel,
+                                  0,
+{$ELSEIF DEFINED(STRIFE)}
+                                  frontsector.ceilingpic,
+                                  ceilinglightlevel,
+                                  frontsector.ceiling_xoffs,
+                                  frontsector.ceiling_yoffs,
+{$ELSE}
+                                  R_SectorCeilingFlat(frontsector),
+                                  ceilinglightlevel,
+                                  frontsector.ceiling_xoffs,
+                                  frontsector.ceiling_yoffs,
+{$ENDIF}
                                   frontsector.renderflags and not (SRF_RIPPLE_FLOOR or SRF_SLOPEFLOOR),
                                   false,
                                   frontsector.ceilingangle, // JVAL: 20200221 - Texture angle
@@ -930,10 +1316,18 @@ begin
 
       i := frontsector.linecount;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+      //e6y: this gives a huge speedup on levels with sectors which have many lines
+{$ENDIF}
       dummyfloorplane.renderflags := 0;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       dummyfloorplane.height := MININT;
       while i > 0 do
+{$ELSE}
+      if frontsector.floor_validcount = validcount then
+{$ENDIF}
       begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
         dec(i);
         tmpline := frontsector.lines[i];
         if tmpline.backsector <> nil then
@@ -950,6 +1344,43 @@ begin
               dummyfloorplane.height := tmpline.frontsector.floorheight;
               dummyfloorplane.lightlevel := tmpline.frontsector.lightlevel;
             end;
+{$ELSE}
+        dummyfloorplane.height := frontsector.highestfloor_height;
+        dummyfloorplane.lightlevel := frontsector.highestfloor_lightlevel;
+        dummyfloorplane.picnum := frontsector.highestfloor_picnum;
+      end
+      else
+      begin
+        frontsector.floor_validcount := validcount;
+        dummyfloorplane.height := MININT;
+        while i > 0 do
+        begin
+          dec(i);
+          tmpline := frontsector.lines[i];
+          tmpsec := tmpline.backsector;
+          if tmpsec <> nil then
+            if tmpsec <> frontsector then
+              if tmpsec.floorheight > dummyfloorplane.height then
+              begin
+                dummyfloorplane.height := tmpsec.floorheight;
+                dummyfloorplane.lightlevel := tmpsec.lightlevel;
+                dummyfloorplane.picnum := tmpsec.floorpic;
+              end;
+          tmpsec := tmpline.frontsector;
+          if tmpsec <> nil then
+            if tmpsec <> frontsector then
+              if tmpsec.floorheight > dummyfloorplane.height then
+              begin
+                dummyfloorplane.height := tmpsec.floorheight;
+                dummyfloorplane.lightlevel := tmpsec.lightlevel;
+                dummyfloorplane.picnum := tmpsec.floorpic;
+              end;
+        end;
+        //e6y
+        frontsector.highestfloor_height := dummyfloorplane.height;
+        frontsector.highestfloor_lightlevel := dummyfloorplane.lightlevel;
+        frontsector.highestfloor_picnum := dummyfloorplane.picnum;
+{$ENDIF}
       end;
       if dummyfloorplane.height <> MININT then
         floorplane := @dummyfloorplane;
@@ -957,6 +1388,9 @@ begin
     // the same for ceilings. they will be set to the lowest ceilingheight
     if frontsector.no_toptextures or (ceilingplane = nil) then
     begin
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+      dummyfloorplane.picnum := frontsector.ceilingpic;
+{$ENDIF}
       i := frontsector.linecount;
 
       //e6y: this gives a huge speedup on levels with sectors which have many lines
@@ -964,9 +1398,14 @@ begin
       dummyceilingplane.anglex := 0;
       dummyceilingplane.angley := 0;
       dummyceilingplane.renderflags := 0;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       dummyceilingplane.height := MAXINT;
       while i > 0 do
+{$ELSE}
+      if frontsector.ceil_validcount = validcount then
+{$ENDIF}
       begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
         dec(i);
         tmpline := frontsector.lines[i];
         if tmpline.backsector <> nil then
@@ -983,15 +1422,58 @@ begin
               dummyceilingplane.height := tmpline.frontsector.ceilingheight;
               dummyceilingplane.lightlevel := tmpline.frontsector.lightlevel;
             end;
+{$ELSE}
+        dummyceilingplane.height := frontsector.lowestceil_height;
+        dummyceilingplane.lightlevel := frontsector.lowestceil_lightlevel;
+        dummyceilingplane.picnum := frontsector.lowestceil_picnum;
+      end
+      else
+      begin
+        frontsector.ceil_validcount := validcount;
+        dummyceilingplane.height := MAXINT;
+        while i > 0 do
+        begin
+          dec(i);
+          tmpline := frontsector.lines[i];
+          tmpsec := tmpline.backsector;
+          if tmpsec <> nil then
+            if tmpsec <> frontsector then
+              if tmpsec.ceilingheight < dummyceilingplane.height then
+              begin
+                dummyceilingplane.height := tmpsec.ceilingheight;
+                dummyceilingplane.lightlevel := tmpsec.lightlevel;
+                dummyceilingplane.picnum := tmpsec.ceilingpic;
+              end;
+          tmpsec := tmpline.frontsector;
+          if tmpsec <> nil then
+            if tmpsec <> frontsector then
+              if tmpsec.ceilingheight < dummyceilingplane.height then
+              begin
+                dummyceilingplane.height := tmpsec.ceilingheight;
+                dummyceilingplane.lightlevel := tmpsec.lightlevel;
+                dummyceilingplane.lightlevel := tmpsec.ceilingpic;
+              end;
+        end;
+        //e6y
+        frontsector.lowestceil_height := dummyceilingplane.height;
+        frontsector.lowestceil_lightlevel := dummyceilingplane.lightlevel;
+        frontsector.lowestceil_picnum := dummyceilingplane.picnum;
+{$ENDIF}
       end;
       if dummyceilingplane.height <> MAXINT then
         ceilingplane := @dummyceilingplane;
     end;
   end;
 {$ENDIF}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
 
   R_AddSprites(frontsector);
 
+{$ELSE}
+  R_AddSprites(sub.sector); //jff 9/11/98 passing frontsector here was
+                            //causing the underwater fireball medusa problem
+                            //when R_FakeFlat substituted a fake sector
+{$ENDIF}
   if sub.poly <> nil then
   begin // Render the polyobj in the subsector first
     polyCount := Ppolyobj_t(sub.poly).numsegs;
@@ -1020,7 +1502,11 @@ begin
       if not line.miniseg then
       begin
         if line.linedef.flags and ML_TWOSIDED = 0 then
+{$IFDEF HEXEN}
+          gld_AddWall(line, false, nil)
+{$ELSE}
           gld_AddWall(line)
+{$ENDIF}
         else
           R_AddLine(line);
       end;
@@ -1038,6 +1524,12 @@ begin
       dec(count);
     end;
   end;
+{$IFDEF HEXEN}
+  if floorplane <> nil then
+    R_CalcPlaneOffsets(floorplane);
+  if ceilingplane <> nil then
+    R_CalcPlaneOffsets(ceilingplane);
+{$ENDIF}
   gld_AddPlane(num, floorplane, ceilingplane); // JVAL OPENGL
 {$ELSE}
   while count <> 0 do
@@ -1059,25 +1551,73 @@ end;
 // Just call with BSP root.
 //
 //==============================================================================
+{$IFDEF HEXEN}
+procedure R_RenderBSPNode(const bspnum: integer);
+{$ELSE}
 procedure R_RenderBSPNode(bspnum: integer);
+{$ENDIF}
 var
   bsp: Pnode_t;
+{$IFNDEF HEXEN}
   side: integer;
+{$ENDIF}
 begin
+{$IFDEF HEXEN}
+  // Found a subsector?
+  if bspnum and NF_SUBSECTOR_V5 <> 0 then
+{$ELSE}
   while bspnum and NF_SUBSECTOR_V5 = 0 do  // Found a subsector?
+{$ENDIF}
   begin
+{$IFDEF HEXEN}
+    if bspnum = -1 then
+      R_Subsector(0)
+    else
+      R_Subsector(bspnum and not NF_SUBSECTOR_V5);
+    exit;
+  end;
+{$ELSE}
     bsp := @nodes[bspnum];
+{$ENDIF}
 
+{$IFDEF HEXEN}
+  bsp := @nodes[bspnum];
+
+  // Decide which side the view point is on.
+
+  if R_PointOnSide(viewx, viewy, bsp) then
+  begin
+{$ELSE}
     // Decide which side the view point is on.
     if R_PointOnSide(viewx, viewy, bsp) then
       side := 1
     else
       side := 0;
+{$ENDIF}
     // Recursively divide front space.
+{$IFDEF HEXEN}
+    R_RenderBSPNode(bsp.children[1]);
+{$ELSE}
     R_RenderBSPNode(bsp.children[side]);
+{$ENDIF}
 
     // Possibly divide back space.
+{$IFDEF HEXEN}
+    if R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 0) then
+      R_RenderBSPNode(bsp.children[0]);
+  end
+  else
+  begin
+    // Recursively divide front space.
+    R_RenderBSPNode(bsp.children[0]);
+{$ENDIF}
 
+{$IFDEF HEXEN}
+    // Possibly divide back space.
+    if R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 1) then
+      R_RenderBSPNode(bsp.children[1]);
+  end
+{$ELSE}
     side := side xor 1;
     if not R_CheckBBox(Pfixed_tArray(@bsp.bbox), side) then
       exit;
@@ -1088,6 +1628,7 @@ begin
     R_Subsector(0)
   else
     R_Subsector(bspnum and not NF_SUBSECTOR_V5);
+{$ENDIF}
 end;
 
 end.

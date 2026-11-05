@@ -211,7 +211,7 @@ uses
   p_tick in 'Base\p_tick.pas',
   p_user in 'Hexen\p_user.pas',
   po_man in 'Base\po_man.pas',
-  r_bsp in 'Hexen\r_bsp.pas',
+  r_bsp in 'Base\r_bsp.pas',
   r_camera in 'Base\r_camera.pas',
   r_data in 'Base\r_data.pas',
   r_defs in 'Base\r_defs.pas',
