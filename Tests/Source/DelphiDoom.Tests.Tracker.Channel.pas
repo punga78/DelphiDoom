@@ -125,6 +125,20 @@ type
     procedure TestControlloDuplicatiConNotaDiversaNonTaglia;
     [Test]
     procedure TestInviluppoDelPitchSpostaLaFrequenza;
+    [Test]
+    procedure TestVibratoConOndaQuadra;
+    [Test]
+    procedure TestVibratoConOndaARampa;
+    [Test]
+    procedure TestVibratoConOndaCheNonRipartePerOgniNota;
+    [Test]
+    procedure TestVibratoConOndaCheRipartePerOgniNota;
+    [Test]
+    procedure TestTremoloConOndaQuadra;
+    [Test]
+    procedure TestVibratoDellaColonnaDelVolumeDellXm;
+    [Test]
+    procedure TestVibratoCasualeSempreUguale;
   end;
 
 implementation
@@ -817,6 +831,109 @@ begin
 
   Assert.AreEqual(FPlayer.Channels[0].Frequency * Power(2, 16 / 12) / SAMPLE_RATE,
     FPlayer.Mixer.Voices[0].Increment, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestVibratoConOndaQuadra;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfMod, 1);
+  // E42: the square wave, then 4 8: speed 4, depth 8
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, $0E, $42);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, $04, $48);
+  Start;
+
+  RenderTo(1, 1);
+
+  // The square wave is 255 in all the first half: 255 * 8 / 128 = 15.9375
+  Assert.AreEqual(AMIGA_CONSTANT / (1712 + 255 * 8 / 128 * 4) / SAMPLE_RATE, Increment, 1E-6);
+end;
+
+procedure TTestTrackerChannel.TestVibratoConOndaARampa;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfMod, 1);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, $0E, $41);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, $04, $48);
+  Start;
+
+  RenderTo(1, 1);
+
+  // At the position 4 the ramp is 4 * 8 = 32
+  Assert.AreEqual(AMIGA_CONSTANT / (1712 + 32 * 8 / 128 * 4) / SAMPLE_RATE, Increment, 1E-6);
+end;
+
+procedure TTestTrackerChannel.TestVibratoConOndaCheNonRipartePerOgniNota;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfMod, 1);
+  // E44: the sine that does not start again with a note
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, $0E, $44);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, $04, $48);
+  TTestModuleBuilder.SetCell(FModule, 0, 2, 49, 1, $04, $48);
+  Start;
+
+  RenderTo(2, 1);
+
+  // 5 ticks of row 1 (position 20) and one of row 2: position 24, where the sine has 180
+  Assert.AreEqual(AMIGA_CONSTANT / (1712 + 180 * 8 / 128 * 4) / SAMPLE_RATE, Increment, 1E-6);
+end;
+
+procedure TTestTrackerChannel.TestVibratoConOndaCheRipartePerOgniNota;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfMod, 1);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, $0E, $40);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, $04, $48);
+  TTestModuleBuilder.SetCell(FModule, 0, 2, 49, 1, $04, $48);
+  Start;
+
+  RenderTo(2, 1);
+
+  // The note starts the wave again: position 4, where the sine has 97
+  Assert.AreEqual(AMIGA_CONSTANT / (1712 + 97 * 8 / 128 * 4) / SAMPLE_RATE, Increment, 1E-6);
+end;
+
+procedure TTestTrackerChannel.TestTremoloConOndaQuadra;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfS3m, 1);
+  // The volume 32 with S42 (the square wave of the tremolo), then R48
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 19, $42, 32);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, 18, $48);
+  Start;
+
+  RenderTo(1, 1);
+
+  // 255 * 8 div 64 = 31
+  Assert.AreEqual(Double((32 + 255 * 8 div 64) / 64), FPlayer.Mixer.Voices[0].Volume, 1E-9);
+end;
+
+procedure TTestTrackerChannel.TestVibratoDellaColonnaDelVolumeDellXm;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  // The column A4 sets the speed, B8 gives the depth and starts the vibrato
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0, $A4);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, 0, 0, $B8);
+  Start;
+
+  RenderTo(1, 1);
+
+  Assert.AreEqual(AMIGA_CONSTANT / (1712 + 97 * 8 / 128 * 4) / SAMPLE_RATE, Increment, 1E-6);
+end;
+
+procedure TTestTrackerChannel.TestVibratoCasualeSempreUguale;
+var
+  LFirst: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfMod, 1);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, $0E, $43);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 0, 0, $04, $4F);
+  Start;
+  RenderTo(1, 3);
+  LFirst := Increment;
+  FPlayer.Free;
+  FPlayer := nil;
+
+  Start;
+  RenderTo(1, 3);
+
+  Assert.AreEqual(LFirst, Increment, 1E-12);
+  Assert.IsTrue(LFirst <> AMIGA_CONSTANT / 1712 / SAMPLE_RATE);
 end;
 
 procedure TTestTrackerChannel.TestPortamentoDellaColonnaDelVolumeDiIt;

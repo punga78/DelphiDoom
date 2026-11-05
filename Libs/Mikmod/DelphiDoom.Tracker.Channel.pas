@@ -26,7 +26,7 @@ type
   /// <remarks>
   ///   The effects of the song flow (speed, tempo, jump, break, loop, delay of
   ///   the pattern, global volume) belong to the player. Not done yet: the
-  ///   waveforms other than the sine, the pitch envelope and the new note actions
+  ///   effects of IT that change the action of a single note (S70 to S76)
   /// </remarks>
   TTrackerChannel = class
   private
@@ -47,6 +47,11 @@ type
     FPortamentoTarget: Double;
     FVibratoPosition: Integer;
     FTremoloPosition: Integer;
+    // 0 sine, 1 ramp, 2 square, 3 random; 4 and more: a new note does not start the wave again
+    FVibratoWaveform: Integer;
+    FTremoloWaveform: Integer;
+    FNoiseState: Int64;
+    FNoise: Integer;
     FEffect: TTrackerEffect;
     FVolumeEffect: TTrackerEffect;
     FMemory: array[TMemory] of Byte;
@@ -73,6 +78,8 @@ type
     procedure RunTickZero(var AEffect: TTrackerEffect);
     procedure RunTick(const AEffect: TTrackerEffect; const ATick: Integer);
     procedure Retrigger(const AParam: Byte);
+    function WaveformValue(const AWaveform, APosition: Integer): Integer;
+    procedure AdvanceNoise;
     procedure UpdateVibrato(const AAdvance: Boolean);
     procedure UpdateTremolo(const AAdvance: Boolean);
     function ClampVolume(const AValue: Integer): Integer;
@@ -146,6 +153,18 @@ const
   VIBRATO_STEPS = 64;
   VIBRATO_HALF = 32;
   OFFSET_UNIT = 256;
+  WAVEFORM_CONTINUES = 4;
+  WAVEFORM_RAMP = 1;
+  WAVEFORM_SQUARE = 2;
+  WAVEFORM_RANDOM = 3;
+  WAVEFORM_KINDS = 3;
+  MAX_WAVEFORM = 7;
+  WAVE_PEAK = 255;
+  RAMP_STEP = 8;
+  NOISE_MULTIPLIER = 1103515245;
+  NOISE_INCREMENT = 12345;
+  NOISE_MASK = $7FFFFFFF;
+  NOISE_SHIFT = 16;
 
   // sin(i * pi / 32) * 255, the table of the vibrato of ProTracker
   VIBRATO_TABLE: array[0..31] of Integer = (
@@ -324,8 +343,10 @@ begin
   else
     FPanning := CENTER_PANNING;
 
-  FVibratoPosition := 0;
-  FTremoloPosition := 0;
+  if FVibratoWaveform < WAVEFORM_CONTINUES then
+    FVibratoPosition := 0;
+  if FTremoloWaveform < WAVEFORM_CONTINUES then
+    FTremoloPosition := 0;
   FEnvelopes.Start(FInstrument);
   FVoice.Start(FSample, FStartOffset);
   FStartOffset := 0;
@@ -453,6 +474,13 @@ begin
         AEffect.Param := Remember(mmVolumeSlide, AEffect.Param);
         SlideVolume(AEffect.Param, True);
       end;
+    ekVibratoWaveform:
+      FVibratoWaveform := AEffect.Param and MAX_WAVEFORM;
+    ekTremoloWaveform:
+      FTremoloWaveform := AEffect.Param and MAX_WAVEFORM;
+    ekSetVibratoSpeed:
+      if AEffect.Param <> 0 then
+        FMemory[mmVibratoSpeed] := AEffect.Param;
     ekVibrato:
       begin
         if (AEffect.Param shr 4) <> 0 then
@@ -507,22 +535,53 @@ begin
     FVoice.Start(FSample);
 end;
 
+// The shape of the wave at a position (0..63), from -255 to 255: positive in the first half
+function TTrackerChannel.WaveformValue(const AWaveform, APosition: Integer): Integer;
+var
+  LIndex: Integer;
+begin
+  LIndex := APosition mod VIBRATO_HALF;
+  case AWaveform and WAVEFORM_KINDS of
+    WAVEFORM_RAMP:
+      begin
+        Result := LIndex * RAMP_STEP;
+        if APosition >= VIBRATO_HALF then
+          Result := WAVE_PEAK - Result;
+      end;
+    WAVEFORM_SQUARE:
+      Result := WAVE_PEAK;
+    WAVEFORM_RANDOM:
+      Result := FNoise;
+  else
+    Result := VIBRATO_TABLE[LIndex];
+  end;
+  if APosition >= VIBRATO_HALF then
+    Result := -Result;
+end;
+
+// A new value of the random wave, always the same sequence
+procedure TTrackerChannel.AdvanceNoise;
+begin
+  FNoiseState := (FNoiseState * NOISE_MULTIPLIER + NOISE_INCREMENT) and NOISE_MASK;
+  FNoise := (FNoiseState shr NOISE_SHIFT) and WAVE_PEAK;
+end;
+
 procedure TTrackerChannel.UpdateVibrato(const AAdvance: Boolean);
 var
-  LSpeed, LDepth, LValue, LPosition: Integer;
+  LSpeed, LDepth: Integer;
 begin
   LSpeed := FMemory[mmVibratoSpeed];
   LDepth := FMemory[mmVibratoDepth];
   if AAdvance then
+  begin
     FVibratoPosition := (FVibratoPosition + LSpeed) mod VIBRATO_STEPS;
+    AdvanceNoise;
+  end;
 
-  LPosition := FVibratoPosition;
-  LValue := VIBRATO_TABLE[LPosition mod VIBRATO_HALF];
-  // ProTracker: the amplitude is table * depth / 128 in its units of period,
-  // four times that in the units of Scream Tracker. Positive in the first half
-  FVibratoDelta := LValue * LDepth / 128 * SLIDE_UNIT;
-  if LPosition >= VIBRATO_HALF then
-    FVibratoDelta := -FVibratoDelta;
+  // ProTracker: the amplitude is wave * depth / 128 in its units of period,
+  // four times that in the units of Scream Tracker. The same in XM, where the
+  // linear units are the same as these; IT is taken as the others
+  FVibratoDelta := WaveformValue(FVibratoWaveform, FVibratoPosition) * LDepth / 128 * SLIDE_UNIT;
 end;
 
 procedure TTrackerChannel.UpdateTremolo(const AAdvance: Boolean);
@@ -532,12 +591,13 @@ begin
   LSpeed := FMemory[mmTremoloSpeed];
   LDepth := FMemory[mmTremoloDepth];
   if AAdvance then
+  begin
     FTremoloPosition := (FTremoloPosition + LSpeed) mod VIBRATO_STEPS;
+    AdvanceNoise;
+  end;
 
-  LValue := VIBRATO_TABLE[FTremoloPosition mod VIBRATO_HALF];
+  LValue := WaveformValue(FTremoloWaveform, FTremoloPosition);
   FTremoloDelta := LValue * LDepth div 64;
-  if FTremoloPosition >= VIBRATO_HALF then
-    FTremoloDelta := -FTremoloDelta;
 end;
 
 procedure TTrackerChannel.RunTick(const AEffect: TTrackerEffect; const ATick: Integer);

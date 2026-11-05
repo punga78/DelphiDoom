@@ -43,6 +43,9 @@ type
     ekNoteDelay,
     ekKeyOff,
     ekSetGlobalVolume,
+    ekVibratoWaveform,
+    ekTremoloWaveform,
+    ekSetVibratoSpeed,
     // Song flow, done by the player
     ekPositionJump,
     ekPatternBreak,
@@ -162,7 +165,9 @@ begin
       case AParam shr 4 of
         $1: Result := Make(ekFinePortamentoUp, LLow);
         $2: Result := Make(ekFinePortamentoDown, LLow);
+        $4: Result := Make(ekVibratoWaveform, LLow);
         $6: Result := Make(ekPatternLoop, LLow);
+        $7: Result := Make(ekTremoloWaveform, LLow);
         $8: Result := Make(ekSetPanning, LLow * 17);
         $9: Result := Make(ekRetrigger, LLow);
         $A: Result := Make(ekFineVolumeSlideUp, LLow);
@@ -230,6 +235,8 @@ begin
     LETTER_R: Result := Make(ekTremolo, AParam);
     LETTER_S:
       case AParam shr 4 of
+        $3: Result := Make(ekVibratoWaveform, LLow);
+        $4: Result := Make(ekTremoloWaveform, LLow);
         $8: Result := Make(ekSetPanning, LLow * 17);
         $B: Result := Make(ekPatternLoop, LLow);
         $C: Result := Make(ekNoteCut, LLow);
@@ -285,6 +292,8 @@ begin
         $70..$7F: Result := Make(ekVolumeSlide, (AVolume and $0F) shl 4);
         $80..$8F: Result := Make(ekFineVolumeSlideDown, AVolume and $0F);
         $90..$9F: Result := Make(ekFineVolumeSlideUp, AVolume and $0F);
+        $A0..$AF: Result := Make(ekSetVibratoSpeed, AVolume and $0F);
+        $B0..$BF: Result := Make(ekVibrato, AVolume and $0F);
         $C0..$CF: Result := Make(ekSetPanning, (AVolume and $0F) * 17);
         $F0..$FF: Result := Make(ekTonePortamento, (AVolume and $0F) shl 4);
       end;

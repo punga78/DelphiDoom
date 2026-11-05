@@ -25,8 +25,8 @@ type
   ///   the pattern)
   /// </summary>
   /// <remarks>
-  ///   Not done yet: the pitch envelope and the new note actions of IT, and
-  ///   the waveforms of the vibrato other than the sine
+  ///   Not done yet: the effects of IT that change the action of a single
+  ///   note (S70 to S76) and the filters
   /// </remarks>
   TTrackerPlayer = class
   private

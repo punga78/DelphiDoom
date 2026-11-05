@@ -49,6 +49,10 @@ type
     procedure TestColonnaDelVolumeDiIt;
     [Test]
     procedure TestColonnaVuotaONonSupportata;
+    [Test]
+    procedure TestFormeDOndaDelVibratoEDelTremolo;
+    [Test]
+    procedure TestVibratoDellaColonnaDelVolumeDellXm;
   end;
 
 implementation
@@ -186,6 +190,24 @@ begin
   CheckColumn(tfS3m, 32, ekSetVolume, 32);
   CheckColumn(tfS3m, 0, ekSetVolume, 0);
   CheckColumn(tfS3m, 65, ekNone, 0);
+end;
+
+procedure TTestTrackerEffectMapper.TestFormeDOndaDelVibratoEDelTremolo;
+begin
+  Check(tfMod, $E, $42, ekVibratoWaveform, 2);
+  Check(tfMod, $E, $75, ekTremoloWaveform, 5);
+  Check(tfXm, $E, $41, ekVibratoWaveform, 1);
+  Check(tfXm, $E, $73, ekTremoloWaveform, 3);
+  Check(tfS3m, 19, $32, ekVibratoWaveform, 2);
+  Check(tfS3m, 19, $41, ekTremoloWaveform, 1);
+  Check(tfIt, 19, $34, ekVibratoWaveform, 4);
+  Check(tfIt, 19, $40, ekTremoloWaveform, 0);
+end;
+
+procedure TTestTrackerEffectMapper.TestVibratoDellaColonnaDelVolumeDellXm;
+begin
+  CheckColumn(tfXm, $A4, ekSetVibratoSpeed, 4);
+  CheckColumn(tfXm, $B8, ekVibrato, 8);
 end;
 
 procedure TTestTrackerEffectMapper.TestColonnaDelVolumeDellXm;
