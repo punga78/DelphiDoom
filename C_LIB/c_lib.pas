@@ -74,49 +74,49 @@ procedure _free(p: Pointer); cdecl;
 // _strcspn
 //
 //==============================================================================
-function _strcspn(s1, s2: PChar): Cardinal; cdecl;
+function _strcspn(s1, s2: PAnsiChar): Cardinal; cdecl;
 
 //==============================================================================
 //
 // _strchr
 //
 //==============================================================================
-function _strchr(const S: PChar; C: Integer): PChar; cdecl;
+function _strchr(const S: PAnsiChar; C: Integer): PAnsiChar; cdecl;
 
 //==============================================================================
 //
 // _strlen
 //
 //==============================================================================
-function _strlen(const Str: PChar): Cardinal; cdecl;
+function _strlen(const Str: PAnsiChar): Cardinal; cdecl;
 
 //==============================================================================
 //
 // _strncmp
 //
 //==============================================================================
-function _strncmp(S1, S2: PChar; MaxLen: Cardinal): Integer; cdecl;
+function _strncmp(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer; cdecl;
 
 //==============================================================================
 //
 // _strnicmp
 //
 //==============================================================================
-function _strnicmp(S1, S2: PChar; MaxLen: Cardinal): Integer; cdecl;
+function _strnicmp(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer; cdecl;
 
 //==============================================================================
 //
 // _strtod
 //
 //==============================================================================
-function _strtod(str: PChar; endptr: PPointer): Double; cdecl;
+function _strtod(str: PAnsiChar; endptr: PPointer): Double; cdecl;
 
 //==============================================================================
 //
 // _atof
 //
 //==============================================================================
-function _atof(const str: PChar): Double; cdecl;
+function _atof(const str: PAnsiChar): Double; cdecl;
 
 //==============================================================================
 //
@@ -445,7 +445,7 @@ function _strncpy(destination: PAnsiChar; const source: PAnsiChar; const num: In
 // _strtol
 //
 //==============================================================================
-function _strtol(const str: PChar; p: pointer; base: integer): Integer; cdecl;
+function _strtol(const str: PAnsiChar; p: pointer; base: integer): Integer; cdecl;
 
 //==============================================================================
 //
@@ -473,7 +473,7 @@ function _memmove(dest: Pointer; src: Pointer; n: Cardinal): Pointer; cdecl;
 // _remove
 //
 //==============================================================================
-function _remove(fname: PChar): integer; cdecl;
+function _remove(fname: PAnsiChar): integer; cdecl;
 
 //==============================================================================
 //
@@ -620,7 +620,7 @@ function _filepos(stream: Integer): Integer; cdecl;
 // _filerename
 //
 //==============================================================================
-function _filerename(fin: PChar; fout: PChar): Integer; cdecl;
+function _filerename(fin: PAnsiChar; fout: PAnsiChar): Integer; cdecl;
 
 //==============================================================================
 //
@@ -1007,9 +1007,9 @@ end;
 // _strlen
 //
 //==============================================================================
-function _strlen(const Str: PChar): Cardinal; cdecl;
+function _strlen(const Str: PAnsiChar): Cardinal; cdecl;
 begin
-  Result := StrLen(Str);
+  Result := System.AnsiStrings.StrLen(Str);
 end;
 
 //==============================================================================
@@ -1017,9 +1017,9 @@ end;
 // _strcspn
 //
 //==============================================================================
-function _strcspn(s1, s2: PChar): Cardinal; cdecl;
+function _strcspn(s1, s2: PAnsiChar): Cardinal; cdecl;
 var
-  SrchS2: PChar;
+  SrchS2: PAnsiChar;
 begin
   Result := 0;
   while S1^ <> #0 do
@@ -1041,9 +1041,9 @@ end;
 // _strchr
 //
 //==============================================================================
-function _strchr(const S: PChar; C: Integer): PChar; cdecl;
+function _strchr(const S: PAnsiChar; C: Integer): PAnsiChar; cdecl;
 begin
-  Result := StrScan(S, Chr(C));
+  Result := System.AnsiStrings.StrScan(S, AnsiChar(Byte(C)));
 end;
 
 //==============================================================================
@@ -1051,9 +1051,9 @@ end;
 // _strncmp
 //
 //==============================================================================
-function _strncmp(S1, S2: PChar; MaxLen: Cardinal): Integer; cdecl;
+function _strncmp(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer; cdecl;
 begin
-  Result := StrLComp(S1, S2, MaxLen);
+  Result := System.AnsiStrings.StrLComp(S1, S2, MaxLen);
 end;
 
 //==============================================================================
@@ -1061,9 +1061,9 @@ end;
 // _strnicmp
 //
 //==============================================================================
-function _strnicmp(S1, S2: PChar; MaxLen: Cardinal): Integer; cdecl;
+function _strnicmp(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer; cdecl;
 begin
-  Result := StrLIComp(S1, S2, MaxLen);
+  Result := System.AnsiStrings.StrLIComp(S1, S2, MaxLen);
 end;
 
 //==============================================================================
@@ -1071,13 +1071,13 @@ end;
 // _strtod
 //
 //==============================================================================
-function _strtod(str: PChar; endptr: PPointer): Double; cdecl;
+function _strtod(str: PAnsiChar; endptr: PPointer): Double; cdecl;
 var
   c: integer;
   s: string;
-  p: PChar;
+  p: PAnsiChar;
 begin
-  s := str;
+  s := string(AnsiString(str));
   val(s, Result, c);
   if endptr <> nil then
   begin
@@ -1094,13 +1094,13 @@ end;
 // _atof
 //
 //==============================================================================
-function _atof(const str: PChar): Double; cdecl;
+function _atof(const str: PAnsiChar): Double; cdecl;
 var
   pos_sep: integer;
   s: string;
   i, len: integer;
 begin
-  s := str;
+  s := string(AnsiString(str));
   s := Trim(s);
   if s = '' then
   begin
@@ -1779,7 +1779,7 @@ var
   p, i: integer;
   d, s: PAnsiChar;
 begin
-  p := AnsiStrings.StrLen(destination);
+  p := System.AnsiStrings.StrLen(destination);
   d := @destination[p];
   s := source;
   for i := 0 to num - 2 do
@@ -1826,12 +1826,12 @@ end;
 // _strtol
 //
 //==============================================================================
-function _strtol(const str: PChar; p: pointer; base: integer): Integer; cdecl;
+function _strtol(const str: PAnsiChar; p: pointer; base: integer): Integer; cdecl;
 var
   s: string;
   code: integer;
 begin
-  s := str;
+  s := string(AnsiString(str));
   if Pos('0x', s) = 1 then
   begin
     s[1] := ' ';
@@ -1902,11 +1902,11 @@ end;
 // _remove
 //
 //==============================================================================
-function _remove(fname: PChar): integer; cdecl;
+function _remove(fname: PAnsiChar): integer; cdecl;
 var
   s: string;
 begin
-  s := fname;
+  s := string(AnsiString(fname));
   if DeleteFile(s) then
     Result := 1
   else
@@ -2190,20 +2190,20 @@ end;
 // _filerename
 //
 //==============================================================================
-function _filerename(fin: PChar; fout: PChar): Integer; cdecl;
+function _filerename(fin: PAnsiChar; fout: PAnsiChar): Integer; cdecl;
 var
   FinF, FoutF: file;
   NumRead, NumWritten: Integer;
   Buf: array[1..8192] of Char;
   sname, dname: string;
 begin
-  sname := fin;
+  sname := string(AnsiString(fin));
   if FileExists(sname) then
   begin
   {$I-}
     AssignFile(FinF, sname);
     Reset(FinF, 1);
-    dname := fout;
+    dname := string(AnsiString(fout));
     AssignFile(FoutF, dname);
     Rewrite(FoutF, 1);
     repeat
