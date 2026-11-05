@@ -42,6 +42,19 @@ uses
 const
   MAX_SOURCE_SIZE = Cardinal(High(Integer));
 
+function HasId3Tag(const AData: TBytes): Boolean;
+begin
+  // The marker libsndfile looks for is "ID3" and the version 3 (4 bytes), with 12 bytes to read
+  Result := (Length(AData) >= 12) and (AData[0] = Ord('I')) and (AData[1] = Ord('D')) and
+    (AData[2] = Ord('3')) and (AData[3] = 3);
+end;
+
+function IsEmbeddable(AFormat: Integer): Boolean;
+begin
+  // libsndfile lets WAV, AIFF and AU follow a tag too, but this build fails to open them
+  Result := (AFormat and SNDFILE_FORMAT_TYPEMASK) = SNDFILE_FORMAT_FLAC;
+end;
+
 { TSoundEngine }
 
 constructor TSoundEngine.Create(const AFormats: TArray<ISoundFormat>);
@@ -61,6 +74,8 @@ var
   LData: TBytes;
   LFormat: ISoundFormat;
   LSamples: TSoundSamples;
+  LTagSize: Integer;
+  LEmbedded: Boolean;
 begin
   ASoundFile := nil;
   if (ASource = nil) or (ASourceSize = 0) or (ASourceSize > MAX_SOURCE_SIZE) then
@@ -70,13 +85,39 @@ begin
     SetLength(LData, ASourceSize);
     Move(ASource^, LData[0], ASourceSize);
 
-    Result := SNDFILE_ERR_UNRECOGNISED_FORMAT;
-    for LFormat in FFormats do
+    // A tag of ID3v2 in front of the sound: libsndfile skips one (a second tag
+    // after it is not understood)
+    LEmbedded := False;
+    if HasId3Tag(LData) then
     begin
-      LSamples := nil;
-      Result := LFormat.Decode(LData, LSamples);
-      if Result <> SNDFILE_ERR_UNRECOGNISED_FORMAT then
-        Break;
+      LTagSize := 10 + (((LData[6] and $7F) shl 21) or ((LData[7] and $7F) shl 14) or
+        ((LData[8] and $7F) shl 7) or (LData[9] and $7F));
+      // a tag that takes all the file leaves nothing to recognise
+      if LTagSize >= Length(LData) then
+        LData := nil
+      else
+      begin
+        LData := Copy(LData, LTagSize, Length(LData) - LTagSize);
+        LEmbedded := True;
+        if HasId3Tag(LData) then
+          LData := nil;
+      end;
+    end;
+    Result := SNDFILE_ERR_UNRECOGNISED_FORMAT;
+    if Length(LData) > 0 then
+      for LFormat in FFormats do
+      begin
+        LSamples := nil;
+        Result := LFormat.Decode(LData, LSamples);
+        if Result <> SNDFILE_ERR_UNRECOGNISED_FORMAT then
+          Break;
+      end;
+
+    // Only some containers can follow the tag
+    if LEmbedded and (Result = SNDFILE_OK) and not IsEmbeddable(LSamples.Info.Format) then
+    begin
+      LSamples.Free;
+      Result := SNDFILE_ERR_MALFORMED_FILE;
     end;
 
     // What sf_open checks once the format has been read

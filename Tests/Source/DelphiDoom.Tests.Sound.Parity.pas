@@ -120,6 +120,8 @@ type
     [Test]
     procedure TestFlacDamaged;
     [Test]
+    procedure TestId3Tag;
+    [Test]
     procedure TestXi;
     [Test]
     procedure TestSds;
@@ -1186,6 +1188,49 @@ begin
   LOptions.SampleRate := 11025;
   LOptions.ExtraMetadata := True;
   CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
+end;
+
+/// <summary>A tag of ID3v2.3 with ABodySize bytes after its header of ten</summary>
+function Id3Tag(ABodySize: Integer): TBytes;
+begin
+  SetLength(Result, 10 + ABodySize);
+  Result[0] := Ord('I');
+  Result[1] := Ord('D');
+  Result[2] := Ord('3');
+  Result[3] := 3;
+  Result[6] := (ABodySize shr 21) and $7F;
+  Result[7] := (ABodySize shr 14) and $7F;
+  Result[8] := (ABodySize shr 7) and $7F;
+  Result[9] := ABodySize and $7F;
+end;
+
+function WithTag(const ATag, ASound: TBytes): TBytes;
+begin
+  SetLength(Result, Length(ATag) + Length(ASound));
+  Move(ATag[0], Result[0], Length(ATag));
+  Move(ASound[0], Result[Length(ATag)], Length(ASound));
+end;
+
+procedure TTestSoundParity.TestId3Tag;
+var
+  LWav, LFlac, LPaf: TBytes;
+  LOptions: TSoundTestFlacOptions;
+begin
+  LWav := TSoundTestWavFile.Build(TSoundTestWavOptions.Plain(1, 2, 16),
+    TSoundTestWavFile.RandomBytes(2 * 2 * 301, 5));
+  LOptions := TSoundTestFlacOptions.Plain;
+  LFlac := TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 0));
+  LPaf := TSoundTestPafFile.Build(False, 0, 1, 22050, TSoundTestWavFile.RandomBytes(602, 1));
+
+  CheckSame(WithTag(Id3Tag(0), LFlac), 'id3 flac, empty tag');
+  CheckSame(WithTag(Id3Tag(20000), LFlac), 'id3 flac');
+  // a tag after a tag is not understood
+  CheckSameFailure(WithTag(Id3Tag(25), WithTag(Id3Tag(77), LFlac)), 'id3 twice');
+  // the other containers do not open after a tag (in this build of libsndfile)
+  CheckSameFailure(WithTag(Id3Tag(40), LWav), 'id3 wav');
+  CheckSameFailure(WithTag(Id3Tag(300), LPaf), 'id3 paf');
+  // and a tag that is all there is
+  CheckSameFailure(Id3Tag(100), 'id3 alone');
 end;
 
 procedure TTestSoundParity.TestXi;
