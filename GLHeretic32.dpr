@@ -252,7 +252,7 @@ uses
   r_sky in 'Base\r_sky.pas',
   r_things in 'Base\r_things.pas',
   rtl_types in 'Base\rtl_types.pas',
-  s_sound in 'Heretic\s_sound.pas',
+  s_sound in 'Base\s_sound.pas',
   sb_bar in 'Heretic\sb_bar.pas',
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',

@@ -226,7 +226,7 @@ uses
   r_things in 'Base\r_things.pas',
   rtl_types in 'Base\rtl_types.pas',
   s_sndseq in 'Hexen\s_sndseq.pas',
-  s_sound in 'Hexen\s_sound.pas',
+  s_sound in 'Base\s_sound.pas',
   sb_bar in 'Hexen\sb_bar.pas',
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',

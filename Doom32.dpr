@@ -273,7 +273,7 @@ uses
   r_span32 in 'Base\r_span32.pas',
   r_things in 'Base\r_things.pas',
   rtl_types in 'Base\rtl_types.pas',
-  s_sound in 'Doom\s_sound.pas',
+  s_sound in 'Base\s_sound.pas',
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',
   sc_params in 'Base\sc_params.pas',

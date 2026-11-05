@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHexen is a source port of the game Hexen and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Hexen source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -18,7 +17,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
@@ -45,7 +44,20 @@ uses
 //  allocates channel buffer, sets S_sfx lookup.
 //
 //==============================================================================
+{$IF DEFINED(DOOM)}
 procedure S_Init(sfxVolume: integer; musicVolume: integer);
+
+//==============================================================================
+//
+// S_InitDEHExtraSounds
+//
+//==============================================================================
+procedure S_InitDEHExtraSounds;
+{$ELSEIF DEFINED(STRIFE)}
+procedure S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer);
+{$ELSE}
+procedure S_Init(sfxVolume: integer; musicVolume: integer);
+{$ENDIF}
 
 //==============================================================================
 //
@@ -87,6 +99,23 @@ procedure S_StartSound(origin: pointer; const sndname: string); overload;
 //
 //==============================================================================
 procedure S_StartSoundAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
+{$IFDEF STRIFE}
+
+//==============================================================================
+// S_StartVoice
+//
+// Voice volume
+//
+//==============================================================================
+procedure S_StartVoice(const sndname: string);
+
+//==============================================================================
+//
+// S_StartVoiceAtVolume
+//
+//==============================================================================
+procedure S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
+{$ENDIF}
 
 //==============================================================================
 //
@@ -102,6 +131,7 @@ procedure S_UnlinkSound(origin: Pmobj_t);
 //
 //==============================================================================
 procedure S_StopSound(origin: pointer);
+{$IFDEF HEXEN}
 
 //==============================================================================
 // S_StopAllSounds
@@ -110,6 +140,7 @@ procedure S_StopSound(origin: pointer);
 //
 //==============================================================================
 procedure S_StopAllSounds;
+{$ENDIF}
 
 //==============================================================================
 // S_StartMusic
@@ -175,6 +206,15 @@ procedure S_SetSfxVolume(volume: integer);
 
 //==============================================================================
 //
+{$IFDEF STRIFE}
+// S_SetVoiceVolume
+//
+//==============================================================================
+procedure S_SetVoiceVolume(volume: integer);
+
+//==============================================================================
+//
+{$ENDIF}
 // S_PrecacheSounds
 //
 //==============================================================================
@@ -189,15 +229,51 @@ var
 // Maximum volume of music. Useless so far.
   snd_MusicVolume: integer = 15;
 
+{$IFDEF STRIFE}
+  snd_VoiceVolume: integer = 15;
+
+{$ENDIF}
 // following is set
 //  by the defaults code in M_misc:
 // number of channels available
   numChannels: integer;
+{$IFDEF STRIFE}
+
+var
+  disable_voices: boolean = false;
+{$ENDIF}
 
 const
   MIN_NUMCHANNELS = 8;
   MAX_NUMCHANNELS = 64;
 
+{$IF DEFINED(HERETIC)}
+type
+  chaninfo_t = record
+    id: integer;
+    priority: integer;
+    name: string;
+    mo: Pmobj_t;
+    distance: integer;
+  end;
+  Pchaninfo_t = ^chaninfo_t;
+
+  soundinfo_t = record
+    numchannels: integer;
+    musicvolume: integer;
+    soundvolume: integer;
+    chan: array[0..MAX_NUMCHANNELS - 1] of chaninfo_t;
+  end;
+  Psoundinfo_t = ^soundinfo_t;
+
+//==============================================================================
+//
+// S_GetChannelInfo
+//
+//==============================================================================
+procedure S_GetChannelInfo(s: Psoundinfo_t);
+
+{$ELSEIF DEFINED(HEXEN)}
 type
   chaninfo_t = record
     id: integer;
@@ -230,12 +306,17 @@ procedure S_GetChannelInfo(s: Psoundinfo_t);
 //==============================================================================
 function S_GetSoundPlayingInfo(mobj: Pmobj_t; sound_id: integer): boolean;
 
+{$ENDIF}
 //==============================================================================
 //
 // S_DefaultMusicForMap
 //
 //==============================================================================
+{$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
 function S_DefaultMusicForMap(const map: integer): integer;
+{$ELSE}
+function S_DefaultMusicForMap(const episode, map: integer): integer;
+{$ENDIF}
 
 var
   full_sounds: boolean = true;
@@ -253,18 +334,25 @@ uses
   i_music,
   i_mp3,
   info_h,
+{$IFDEF DOOM}
+  m_argv,
+{$ENDIF}
   m_fixed,
   m_rnd,
   m_misc,
   p_mobj,
   p_tick,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   p_local,
   p_maputl,
+{$ENDIF}
   r_defs,
   sounddata,
   sounds,
   s_externalmusic,
+{$IFDEF HEXEN}
   s_sndseq,
+{$ENDIF}
   z_zone,
   w_folders,
   w_wad,
@@ -299,6 +387,9 @@ const
   NORM_PRIORITY = 64;
   NORM_SEP = 128;
 
+{$IFDEF STRIFE}
+  S_PITCH_PERTURB = 1;
+{$ENDIF}
   S_STEREO_SWING = 96 * $10000;
 
 type
@@ -441,13 +532,26 @@ end;
 //  allocates channel buffer, sets S_sfx lookup.
 //
 //==============================================================================
+{$IFDEF STRIFE}
+procedure S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer);
+{$ELSE}
 procedure S_Init(sfxVolume: integer; musicVolume: integer);
+{$ENDIF}
 var
   i: integer;
 begin
+{$IF DEFINED(DOOM)}
+  printf('S_Init: default sfx volume %d'#13#10, [sfxVolume]);
+{$ELSEIF DEFINED(STRIFE)}
+  printf('S_Init:'#13#10);
+  printf('  default sfx volume %d'#13#10, [sfxVolume]);
+  printf('  default voice volume %d'#13#10, [voiceVolume]);
+  printf('  default music volume %d'#13#10, [musicVolume]);
+{$ELSE}
   printf('S_Init:'#13#10);
   printf('  default sfx volume %d'#13#10, [sfxVolume]);
   printf('  default music volume %d'#13#10, [musicVolume]);
+{$ENDIF}
 
   S_ExternalMusicInit;
 
@@ -457,6 +561,10 @@ begin
   S_SetSfxVolume(sfxVolume);
   // No music with Linux - another dummy.
   S_SetMusicVolume(musicVolume);
+{$IFDEF STRIFE}
+
+  S_SetVoiceVolume(voiceVolume);
+{$ENDIF}
 
   // Allocating the internal channels for mixing
   // (the maximum numer of sounds rendered
@@ -473,10 +581,14 @@ begin
 
   // Free all channels for use
   for i := 0 to numChannels - 1 do
+{$IFDEF HEXEN}
   begin
+{$ENDIF}
     channels[i].sfxinfo := nil;
+{$IFDEF HEXEN}
     channels[i].origin := nil;
   end;
+{$ENDIF}
 
   // no sounds are playing, and they are not mus_paused
   mus_paused := false;
@@ -495,6 +607,30 @@ end;
 
 //==============================================================================
 //
+{$IFDEF DOOM}
+// S_InitDEHExtraSounds
+//
+//==============================================================================
+procedure S_InitDEHExtraSounds;
+var
+  i: integer;
+begin
+  // JVAL: 20210109 - DEHEXTRA sounds 500-699
+  if M_CheckParm('-NODEHEXTRA') = 0 then
+  begin
+    for i := 500 to 699 do
+    begin
+      S_sfx[i].name := 'fre' + IntToStrZfill(3, i - 500);
+      S_sfx[i].priority := 127;
+      S_sfx[i].lumpnum := -1;
+    end;
+    numsfx := 700;
+  end;
+end;
+
+//==============================================================================
+//
+{$ENDIF}
 // S_ShutDownSound
 //
 //==============================================================================
@@ -509,9 +645,77 @@ end;
 // S_DefaultMusicForMap
 //
 //==============================================================================
+{$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
 function S_DefaultMusicForMap(const map: integer): integer;
+{$ELSE}
+function S_DefaultMusicForMap(const episode, map: integer): integer;
+{$ENDIF}
 begin
+{$IF DEFINED(HERETIC)}
+  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
+    result := gamemapinfo.musicnum
+  else if episode < 6 then
+  // JVAL: Use DEH files to specify new sounds for E4
+    result := Ord(mus_e1m1) + (episode - 1) * 9 + map - 1
+  else  // JVAL Game episode > 5 ????
+  begin
+    case map of
+      1: result := Ord(mus_e1m1);
+      2: result := Ord(mus_e1m2);
+      3: result := Ord(mus_e1m3);
+      4: result := Ord(mus_e1m4);
+      5: result := Ord(mus_e1m5);
+      6: result := Ord(mus_e1m6);
+      7: result := Ord(mus_e1m7);
+      8: result := Ord(mus_e1m8);
+      9: result := Ord(mus_e1m9);
+    else
+      result := Ord(mus_e1m1); // JVAL ?????
+    end;
+  end;
+{$ELSEIF DEFINED(HEXEN)}
   result := Ord(mus_map01) + map - 1;
+{$ELSEIF DEFINED(STRIFE)}
+  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
+    result := gamemapinfo.musicnum
+  // [STRIFE] Some interesting math here ;)
+  else if map <= 31 then
+    result := map + 1
+  else
+    result := map - 30;
+{$ELSE}
+  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
+    result := gamemapinfo.musicnum
+  else if gamemode = commercial then
+  begin
+    if map = 99 then
+      result := Ord(mus_runnin)
+    else
+      result := Ord(mus_runnin) + map - 1;
+  end
+  else
+  begin
+    // JVAL: Use DEH files to specify new sounds for E4
+    if episode < 5 then
+      result := Ord(mus_e1m1) + (episode - 1) * 9 + map - 1
+    else  // JVAL Game episode > 4 ????
+    begin
+      case map of
+        1: result := Ord(mus_e3m4); // American   e4m1
+        2: result := Ord(mus_e3m2); // Romero     e4m2
+        3: result := Ord(mus_e3m3); // Shawn      e4m3
+        4: result := Ord(mus_e1m5); // American   e4m4
+        5: result := Ord(mus_e2m7); // Tim        e4m5
+        6: result := Ord(mus_e2m4); // Romero     e4m6
+        7: result := Ord(mus_e2m6); // J.Anderson e4m7 CHIRON.WAD
+        8: result := Ord(mus_e2m5); // Shawn      e4m8
+        9: result := Ord(mus_e1m9); // Tim        e4m9
+      else
+        result := Ord(mus_e1m1); // JVAL ?????
+      end;
+    end;
+  end;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -536,7 +740,11 @@ begin
   // start new music for the level
   mus_paused := false;
 
+{$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
   mnum := S_DefaultMusicForMap(gamemap);
+{$ELSE}
+  mnum := S_DefaultMusicForMap(gameepisode, gamemap);
+{$ENDIF}
 
   S_ChangeMusic(mnum, true);
 end;
@@ -568,8 +776,28 @@ begin
   sfx := @S_sfx[sfx_id];
 
   // Initialize sound parameters
+{$IFDEF HEXEN}
   pitch := NORM_PITCH;
   priority := sfx.priority;
+{$ELSE}
+  if sfx.link <> nil then
+  begin
+    pitch := sfx.pitch;
+    priority := sfx.priority;
+    volume := volume + sfx.volume;
+
+    if volume < 1 then
+      exit;
+
+    if volume > snd_SfxVolume then
+      volume := snd_SfxVolume;
+  end
+  else
+  begin
+    pitch := NORM_PITCH;
+    priority := NORM_PRIORITY;
+  end;
+{$ENDIF}
 
   // Check to see if it is audible,
   //  and if not, modify the params
@@ -589,9 +817,51 @@ begin
   end
   else
     sep := NORM_SEP;
+{$IF DEFINED(DOOM)}
+
+  // hacks to vary the sfx pitches
+  if (sfx_id >= Ord(sfx_sawup)) and
+     (sfx_id <= Ord(sfx_sawhit)) then
+  begin
+    pitch := pitch + 8 - (M_Random and 15);
+
+    if pitch < 0 then
+      pitch := 0
+    else if pitch > 255 then
+      pitch := 255
+  end
+  else if (sfx_id <> Ord(sfx_itemup)) and
+          (sfx_id <> Ord(sfx_tink)) then
+  begin
+    pitch := pitch + 16 - (M_Random and 31);
+
+    if pitch < 0 then
+      pitch := 0
+    else if pitch > 255 then
+      pitch := 255;
+  end;
 
   // kill old sound
   S_StopSound(origin);
+{$ELSEIF DEFINED(STRIFE)}
+
+  if sfx_id <> Ord(sfx_itemup) then
+  begin
+    pitch := pitch + 16 - (M_Random and 31);
+
+    if pitch < 0 then
+      pitch := 0
+    else if pitch > 255 then
+      pitch := 255;
+  end;
+
+  // kill old sound  [STRIFE] - nope!
+//  S_StopSound(origin);
+{$ELSE}
+
+  // kill old sound
+  S_StopSound(origin);
+{$ENDIF}
 
   // try to find a channel
   cnum := S_GetChannel(origin, sfx);
@@ -629,7 +899,9 @@ begin
 
   // Assigns the handle to one of the channels in the
   //  mix/output buffer.
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pitch := 127 - (M_Random and 3) + (M_Random and 3);
+{$ENDIF}
   channels[cnum].handle := I_StartSound(sfx_id, volume, sep, pitch, priority);
 end;
 
@@ -651,6 +923,142 @@ end;
 procedure S_StartSound(origin: pointer; const sndname: string);
 begin
   S_StartSoundAtVolume(origin, S_GetSoundNumForName(sndname), snd_SfxVolume);
+{$IFDEF STRIFE}
+end;
+
+//==============================================================================
+//
+// S_StartVoiceAtVolume
+//
+//==============================================================================
+procedure S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
+var
+  rc: boolean;
+  sep: integer;
+  pitch: integer;
+  priority: integer;
+  sfx: Psfxinfo_t;
+  cnum: integer;
+  origin: Pmobj_t;
+begin
+  if disable_voices then
+    exit;
+
+// Disable voices in net game
+  if deathmatch <> 0 then
+    exit;
+
+  origin := Pmobj_t(origin_p);
+
+  // check for bogus sound #
+  if (sfx_id < 1) or (sfx_id > numsfx) then
+  begin
+    I_DevWarning('S_StartVoiceAtVolume(): Bad sfx #: %d'#13#10, [sfx_id]);
+    exit;
+  end;
+
+  sfx := @S_sfx[sfx_id];
+
+  // Initialize sound parameters
+  if sfx.link <> nil then
+  begin
+    pitch := sfx.pitch;
+    priority := sfx.priority;
+    volume := volume + sfx.volume;
+
+    if volume < 1 then
+      exit;
+
+    if volume > snd_VoiceVolume then
+      volume := snd_VoiceVolume;
+  end
+  else
+  begin
+    pitch := NORM_PITCH;
+    priority := sfx.priority;
+  end;
+
+  // Check to see if it is audible,
+  //  and if not, modify the params
+  if (origin <> nil) and (origin <> players[consoleplayer].mo) then
+  begin
+    rc := S_AdjustSoundParams(players[consoleplayer].mo, origin,
+           @volume,
+           @sep,
+           @pitch);
+
+    if (origin.x = players[consoleplayer].mo.x) and
+       (origin.y = players[consoleplayer].mo.y) then
+      sep := NORM_SEP;
+
+    if not rc then
+      exit;
+  end
+  else
+    sep := NORM_SEP;
+
+  // kill old sound
+  S_StopSound(origin);
+
+  // try to find a channel
+  cnum := S_GetChannel(origin, sfx);
+
+  if cnum < 0 then
+    exit;
+
+  //
+  // This is supposed to handle the loading/caching.
+  // For some odd reason, the caching is done nearly
+  //  each time the sound is needed?
+  //
+
+  // get lumpnum if necessary
+  if sfx.lumpnum < 0 then
+  begin
+    sfx.lumpnum := I_GetSfxLumpNum(sfx);
+
+    // JVAL
+    // Prevent crash, simply don't play the sound
+    if sfx.lumpnum < 0 then
+    begin
+      I_Warning('S_StartVoiceAtVolume(): Sfx #: %d not found.'#13#10, [sfx_id]);
+      exit;
+    end;
+  end;
+
+  // increase the usefulness
+  if sfx.usefulness < 0 then
+    sfx.usefulness := 0; // JVAL ??? original was := 1
+  sfx.usefulness := sfx.usefulness + 1;
+
+  // Assigns the handle to one of the channels in the
+  //  mix/output buffer.
+  channels[cnum].handle := I_StartSound(sfx_id, volume, sep, pitch, priority);
+end;
+
+//==============================================================================
+//
+// S_StartVoice
+//
+//==============================================================================
+procedure S_StartVoice(const sndname: string);
+var
+  id: integer;
+begin
+  if disable_voices then
+    exit;
+
+  id := S_GetSoundNumForName(sndname);
+  if (id < 0) or (id > numsfx) then
+    exit;
+
+  if W_CheckNumForName(S_sfx[id].name) < 0 then
+    exit;
+
+  S_sfx[id].priority := 2;
+
+  S_StartSoundAtVolume(nil, id, snd_voiceVolume);
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -697,6 +1105,7 @@ begin
 end;
 
 //==============================================================================
+{$IFDEF HEXEN}
 //
 // S_StopAllSounds
 //
@@ -710,6 +1119,7 @@ begin
 end;
 
 //==============================================================================
+{$ENDIF}
 // S_PauseSound
 //
 // Stop and resume music, during game PAUSE.
@@ -751,18 +1161,30 @@ var
   volume: integer;
   sep: integer;
   pitch: integer;
+{$IFNDEF HEXEN}
+  sfx: Psfxinfo_t;
+{$ENDIF}
   c: Pchannel_t;
   listener: Pmobj_t;
 begin
+{$IFDEF HEXEN}
   S_UpdateActiveSequences;
 
+{$ENDIF}
   listener := Pmobj_t(listener_p);
 
   for cnum := 0 to numChannels - 1 do
   begin
     c := @channels[cnum];
+{$IFNDEF HEXEN}
+    sfx := c.sfxinfo;
+{$ENDIF}
 
+{$IFDEF HEXEN}
     if c.sfxinfo <> nil then
+{$ELSE}
+    if sfx <> nil then
+{$ENDIF}
     begin
       if I_SoundIsPlaying(c.handle) then
       begin
@@ -770,6 +1192,23 @@ begin
         volume := snd_SfxVolume;
         pitch := NORM_PITCH;
         sep := NORM_SEP;
+{$IFNDEF HEXEN}
+
+        if sfx.link <> nil then
+        begin
+          pitch := sfx.pitch;
+          volume := volume + sfx.volume;
+          if volume < 1 then
+          begin
+            S_StopChannel(cnum);
+            continue;
+          end
+          else if volume > snd_SfxVolume then
+          begin
+            volume := snd_SfxVolume;
+          end;
+        end;
+{$ENDIF}
 
         // check non-local sounds for distance clipping
         //  or modify their params
@@ -819,13 +1258,39 @@ end;
 //==============================================================================
 procedure S_SetSfxVolume(volume: integer);
 begin
+{$IFDEF DOOM}
+  if (volume < 0) or (volume > 15) then
+{$ELSE}
   if (volume < 0) or (volume > 127) then
+{$ENDIF}
   begin
     I_Warning('S_SetSfxVolume(): Attempt to set sfx volume at %d', [volume]);
+{$IFDEF DOOM}
+    snd_SfxVolume := 15;
+{$ELSE}
     snd_SfxVolume := 64;
+{$ENDIF}
   end
   else
     snd_SfxVolume := volume;
+{$IFDEF STRIFE}
+end;
+
+//==============================================================================
+//
+// S_SetVoiceVolume
+//
+//==============================================================================
+procedure S_SetVoiceVolume(volume: integer);
+begin
+  if (volume < 0) or (volume > 127) then
+  begin
+    I_Warning('S_SetVoiceVolume(): Attempt to set voice volume at %d', [volume]);
+    snd_VoiceVolume := 64;
+  end
+  else
+    snd_VoiceVolume := volume;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -841,6 +1306,34 @@ end;
 
 //==============================================================================
 //
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+// S_GetListFromAlias
+//
+//==============================================================================
+function S_GetListFromAlias(const s: string): TDStringList;
+var
+  stmp: string;
+  i: integer;
+begin
+  result := TDStringList.Create;
+  if s <> '' then
+  begin
+    stmp := '';
+    for i := 1 to Length(s) do
+      if s[i] in [' ', ','] then
+        stmp := stmp + #13#10
+      else
+        stmp := stmp + toupper(s[i]);
+    result.Text := stmp;
+    for i := result.count - 1 downto 0 do
+      if result.strings[i] = '' then
+        result.Delete(i);
+  end;
+end;
+
+//==============================================================================
+//
+{$ENDIF}
 // S_DoChangeMusic
 //
 //==============================================================================
@@ -850,22 +1343,42 @@ var
   namebuf: char8_t;
   mp3filename: string;
   mp3header: Pmp3header_t;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   externalmusicfilenames: TDStringList;
+{$ELSE}
+  aliases, externalmusicfilenames: TDStringList;
+{$ENDIF}
   mp3error: boolean;
 begin
   // shutdown old music
   S_StopMusic;
 
   // get lumpnum if neccessary
+{$IFDEF HEXEN}
   if music.lumpnum <= 0 then
+{$ELSE}
+  if music.lumpnum = 0 then
+{$ENDIF}
   begin
+{$IF DEFINED(HERETIC)}
+    namebuf := stringtochar8('MUS_' + music.name);
+    music.lumpnum := W_CheckNumForName(namebuf);
+{$ELSEIF DEFINED(HEXEN)}
     if Length(music.name) <= 4 then
     begin
       namebuf := stringtochar8('MUS_' + music.name);
       music.lumpnum := W_CheckNumForName(namebuf);
     end;
+{$ELSE}
+    namebuf := stringtochar8('d_' + music.name);
+    music.lumpnum := W_CheckNumForName(namebuf);
+{$ENDIF}
     if music.lumpnum <= 0 then
     begin
+{$IF DEFINED(HERETIC)}
+      namebuf := stringtochar8(music.name);
+      music.lumpnum := W_GetNumForName(namebuf);
+{$ELSEIF DEFINED(HEXEN)}
       namebuf := stringtochar8(music.name);
       music.lumpnum := W_CheckNumForName(namebuf);
     end;
@@ -880,6 +1393,21 @@ begin
         namebuf :=  stringtochar8(music.name);
         music.lumpnum := W_GetNumForName(namebuf);
       end;
+{$ELSE}
+      namebuf := stringtochar8('d_' + music.alias);
+      music.lumpnum := W_CheckNumForName(namebuf);
+      if music.lumpnum <= 0 then
+      begin
+        namebuf := stringtochar8(music.name);
+        music.lumpnum := W_CheckNumForName(namebuf);
+      end;
+    end;
+
+    if music.lumpnum <= 0 then
+    begin
+      namebuf := stringtochar8(music.alias);
+      music.lumpnum := W_GetNumForName(namebuf);
+{$ENDIF}
     end;
   end;
 
@@ -893,10 +1421,27 @@ begin
       if music.mapname <> '' then
       begin
         externalmusicfilenames.Add(music.mapname + '.mp3');
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
         externalmusicfilenames.Add('MUS_' + music.mapname + '.mp3');
+{$ELSE}
+        externalmusicfilenames.Add('d_' + music.mapname + '.mp3');
+{$ENDIF}
       end;
       externalmusicfilenames.Add(music.name + '.mp3');
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       externalmusicfilenames.Add('MUS_' + music.name + '.mp3');
+{$ELSE}
+      externalmusicfilenames.Add('d_' + music.name + '.mp3');
+
+    // JVAL: Add aliases in check list
+      aliases := S_GetListFromAlias(music.alias);
+      for i := 0 to aliases.Count - 1 do
+      begin
+        externalmusicfilenames.Add(aliases.strings[i] + '.mp3');
+        externalmusicfilenames.Add('d_' + aliases.strings[i] + '.mp3');
+      end;
+      aliases.Free;
+{$ENDIF}
 
       for i := 0 to externalmusicfilenames.Count - 1 do
       begin
@@ -1077,7 +1622,15 @@ begin
     exit;
   end;
 
+{$IF DEFINED(DOOM)}
+  if ((gamemap <> 8) or not G_NeedsCompatibilityMode) and
+     (approx_dist > S_CLIPPING_DIST) then
+{$ELSEIF DEFINED(HERETIC)}
+  if (gamemap <> 8) and
+     (approx_dist > S_CLIPPING_DIST) then
+{$ELSE}
   if approx_dist > S_CLIPPING_DIST then
+{$ENDIF}
   begin
     result := false;
     exit;
@@ -1105,6 +1658,25 @@ begin
   if approx_dist < S_CLOSE_DIST then
   begin
     vol^ := snd_SfxVolume;
+{$IF DEFINED(DOOM)}
+  end
+  else if (gamemap = 8) and G_NeedsCompatibilityMode then
+  begin
+    if approx_dist > S_CLIPPING_DIST then
+      approx_dist := S_CLIPPING_DIST;
+
+    vol^ := 15 + ((snd_SfxVolume - 15) *
+      ((S_CLIPPING_DIST - approx_dist) div FRACUNIT)) div S_ATTENUATOR;
+{$ELSEIF DEFINED(HERETIC)}
+  end
+  else if gamemap = 8 then
+  begin
+    if approx_dist > S_CLIPPING_DIST then
+      approx_dist := S_CLIPPING_DIST;
+
+    vol^ := 15 + ((snd_SfxVolume - 15) *
+      ((S_CLIPPING_DIST - approx_dist) div FRACUNIT)) div S_ATTENUATOR;
+{$ENDIF}
   end
   else
   begin
@@ -1205,6 +1777,46 @@ end;
 
 //==============================================================================
 //
+{$IF DEFINED(HERETIC)}
+// S_GetChannelInfo
+//
+//==============================================================================
+procedure S_GetChannelInfo(s: Psoundinfo_t);
+var
+  i: integer;
+  c: Pchaninfo_t;
+begin
+  s.numchannels := numChannels;
+  s.musicVolume := snd_MusicVolume;
+  s.soundVolume := snd_SfxVolume;
+  for i := 0 to numChannels - 1 do
+  begin
+    c := @s.chan[i];
+    if channels[i].sfxinfo <> nil then
+    begin
+      c.id := channels[i].sfxinfo.lumpnum;  // JVAL: check!
+      c.priority := channels[i].sfxinfo.priority;
+      c.name := channels[i].sfxinfo.name;
+      c.mo := channels[i].origin;
+      if c.mo <> nil then
+        c.distance := P_AproxDistance(c.mo.x - viewx, c.mo.y - viewy) div FRACUNIT
+      else
+        c.distance := 0;
+      end
+    else
+    begin
+      c.id := 0;
+      c.priority := 0;
+      c.name := '(NULL)';
+      c.mo := nil;
+      c.distance := 0;
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+{$ELSEIF DEFINED(HEXEN)}
 // S_GetChannelInfo
 //
 //==============================================================================
@@ -1269,6 +1881,7 @@ end;
 
 //==============================================================================
 //
+{$ENDIF}
 // S_PrecacheSounds
 //
 //==============================================================================
