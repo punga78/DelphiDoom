@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -43,12 +36,31 @@ unit doomdata;
 interface
 
 uses
+{$IF DEFINED(HERETIC)}
+// The most basic types we use, portability.
+  doomtype,
+// Some global defines, that configure the game.
+  doomdef,
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
 // The most basic types we use, portability.
 
 // Some global defines, that configure the game.
 
+{$ENDIF}
 // char8_t
   w_wad;
+{$IFDEF HEXEN}
+
+//-----------------------------------------------------------------------------
+//
+// DESCRIPTION:
+//  all external data is defined here
+//  most of the data is loaded into different structures at run time
+//  some internal structures shared by many modules are here
+//
+//-----------------------------------------------------------------------------
+{$ENDIF}
 
 type
 //
@@ -75,8 +87,13 @@ type
   );
 
   mapvertex_t = record
+{$IFDEF STRIFE}
     x : smallint;
     y : smallint;
+{$ELSE}
+    x: smallint;
+    y: smallint;
+{$ENDIF}
   end;
   Pmapvertex_t = ^mapvertex_t;
   mapvertex_tArray = array[0..$FFFF] of mapvertex_t;
@@ -103,8 +120,17 @@ type
     v1: smallint;
     v2: smallint;
     flags: smallint;
+{$IFDEF HEXEN}
+    special: byte;
+    arg1: byte;
+    arg2: byte;
+    arg3: byte;
+    arg4: byte;
+    arg5: byte;
+{$ELSE}
     special: smallint;
     tag: smallint;
+{$ENDIF}
   // sidenum[1] will be -1 if one sided
     sidenum: array[0..1] of smallint;
   end;
@@ -153,6 +179,37 @@ const
 
 // Set if already seen, thus drawn in automap.
   ML_MAPPED = 256;
+{$IF DEFINED(HERETIC)}
+//JVAL: Script Events
+//line triggers
+  ML_TRIGGERSCRIPTS = 512;
+// Do not clip
+  ML_NOCLIP = 1024;
+// Block monsters without the INFLOAT flag
+  ML_BLOCKLANDMONSTERS = 2048;
+// Block players
+  ML_BLOCKPLAYERS = 4096;
+{$ELSEIF DEFINED(HEXEN)}
+
+// special is repeatable
+  ML_REPEAT_SPECIAL = $0200;
+
+  ML_SPAC_SHIFT = 10;
+  ML_SPAC_MASK = $1C00;
+
+  ML_TRIGGERSCRIPTS = 16384;
+
+  ML_NOCLIP = 32768;
+
+const
+// Special activation types
+  SPAC_CROSS = 0;   // when player crosses line
+  SPAC_USE = 1;     // when player uses line
+  SPAC_MCROSS = 2;  // when monster crosses line
+  SPAC_IMPACT = 3;  // when projectile hits line
+  SPAC_PUSH = 4;    // when player/monster pushes line
+  SPAC_PCROSS = 5;  // when projectile crosses line
+{$ELSEIF DEFINED(STRIFE)}
 
 // villsa [STRIFE] jump over rails?
   ML_JUMPOVER = 512;
@@ -174,6 +231,21 @@ const
   ML_TRIGGERSCRIPTS = 16384;
 //
   ML_NOCLIP = 32768;
+{$ELSE}
+
+//jff 3/21/98 Set if line absorbs use by player
+//allow multiple push/switch triggers to be used on one push
+  ML_PASSUSE = 512;
+//JVAL: Script Events
+//line triggers
+  ML_TRIGGERSCRIPTS = 1024;
+// Do not clip
+  ML_NOCLIP = 2048;
+// Block monsters without the INFLOAT flag
+  ML_BLOCKLANDMONSTERS = 4096;
+// Block players
+  ML_BLOCKPLAYERS = 8192;
+{$ENDIF}
 
 type
 // Sector definition, from editing.
@@ -211,8 +283,10 @@ type
     offset: smallint;
   end;
   Pmapseg_t = ^mapseg_t;
+{$IFDEF STRIFE}
   mapseg_tArray = array[0..$FFFF] of mapseg_t;
   Pmapseg_tArray = ^mapseg_tArray;
+{$ENDIF}
 
 // BSP node structure.
 
@@ -244,11 +318,25 @@ type
 // Thing definition, position, orientation and type,
 // plus skill/visibility flags and attributes.
   mapthing_t = record
+{$IFDEF HEXEN}
+    tid: smallint;
+{$ENDIF}
     x: smallint;
     y: smallint;
+{$IFDEF HEXEN}
+    height: smallint;
+{$ENDIF}
     angle: smallint;
     _type: word;
     options: smallint;
+{$IFDEF HEXEN}
+    special: byte;
+    arg1: byte;
+    arg2: byte;
+    arg3: byte;
+    arg4: byte;
+    arg5: byte;
+{$ENDIF}
   end;
   Pmapthing_t = ^mapthing_t;
   mapthing_tArray = array[0..$FFFF] of mapthing_t;

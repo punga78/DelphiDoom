@@ -87,7 +87,7 @@ uses
   d_ticcmd in 'Base\d_ticcmd.pas',
   deh_main in 'Hexen\deh_main.pas',
   DirectX in 'Common\DirectX.pas',
-  doomdata in 'Hexen\doomdata.pas',
+  doomdata in 'Base\doomdata.pas',
   doomstat in 'Hexen\doomstat.pas',
   doomtype in 'Base\doomtype.pas',
   f_finale in 'Hexen\f_finale.pas',

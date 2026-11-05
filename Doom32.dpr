@@ -179,7 +179,7 @@ uses
   d_think in 'Base\d_think.pas',
   d_ticcmd in 'Base\d_ticcmd.pas',
   deh_main in 'Doom\deh_main.pas',
-  doomdata in 'Doom\doomdata.pas',
+  doomdata in 'Base\doomdata.pas',
   doomdef in 'Doom\doomdef.pas',
   doomstat in 'Doom\doomstat.pas',
   doomtype in 'Base\doomtype.pas',
