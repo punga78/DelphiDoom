@@ -2279,6 +2279,7 @@ end;
 procedure G_DoSaveGame(path: string);
 var
   name2: string;
+  aversion: AnsiString;
   description: string;
   adesc: AnsiString;
   len: integer;
@@ -2329,7 +2330,12 @@ begin
 
   savegameversion := VERSION;
   sprintf(name2, 'version %d', [VERSION]);
-  memcpy(save_p, @name2[1], VERSIONSIZE);
+  while length(name2) < VERSIONSIZE do
+    name2 := name2 + ' ';
+
+  // The version is stored as 8 bit text
+  aversion := AnsiString(name2);
+  memcpy(save_p, @aversion[1], VERSIONSIZE);
   save_p := PByteArray(integer(save_p) + VERSIONSIZE);
 
   save_p[0] := Ord(gameskill);

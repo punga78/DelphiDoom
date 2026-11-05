@@ -2602,6 +2602,7 @@ end;
 procedure G_DoSaveGameInFile(name: string);
 var
   name2: string;
+  aversion: AnsiString;
   description: string;
   adesc: AnsiString;
   len: integer;
@@ -2637,7 +2638,9 @@ begin
   while length(name2) < SAVEVERSIONSIZE do
     name2 := name2 + ' ';
 
-  memcpy(save_p, @name2[1], SAVEVERSIONSIZE);
+  // The version is stored as 8 bit text
+  aversion := AnsiString(name2);
+  memcpy(save_p, @aversion[1], SAVEVERSIONSIZE);
   save_p := PByteArray(integer(save_p) + SAVEVERSIONSIZE);
   P_ArchiveScreenShot;
 
