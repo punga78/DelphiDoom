@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
-  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile;
+  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile;
 
 type
   /// <summary>
@@ -119,6 +119,8 @@ type
     procedure TestFlac;
     [Test]
     procedure TestFlacDamaged;
+    [Test]
+    procedure TestPaf;
     [Test]
     procedure TestVorbis;
     [Test]
@@ -1180,6 +1182,43 @@ begin
   LOptions.SampleRate := 11025;
   LOptions.ExtraMetadata := True;
   CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
+end;
+
+procedure TTestSoundParity.TestPaf;
+var
+  LLittle: Boolean;
+  LFormat, LChannels: Integer;
+  LBytes: Integer;
+begin
+  for LLittle := False to True do
+    for LFormat in [2, 0] do
+      for LChannels := 1 to 3 do
+      begin
+        LBytes := 1 + Ord(LFormat = 0);
+        CheckSame(TSoundTestPafFile.Build(LLittle, LFormat, LChannels, 22050,
+          TSoundTestWavFile.RandomBytes(LChannels * LBytes * 301 + 1, LChannels + LFormat)),
+          Format('paf format %d, %d channels, little %s', [LFormat, LChannels, BoolToStr(LLittle)]));
+      end;
+
+  // 24 bit: blocks of 32 bytes that hold 10 samples of a channel
+  for LLittle := False to True do
+    for LChannels := 1 to 3 do
+    begin
+      CheckSameBulk(TSoundTestPafFile.Build(LLittle, 1, LChannels, 44100,
+        TSoundTestWavFile.RandomBytes(5 * 32 * LChannels, 40 + LChannels)),
+        Format('paf 24 bit, %d channels, little %s', [LChannels, BoolToStr(LLittle)]));
+      // a file that stops in the middle of a block
+      CheckSameBulk(TSoundTestPafFile.Build(LLittle, 1, LChannels, 44100,
+        TSoundTestWavFile.RandomBytes(4 * 32 * LChannels + 17, 50 + LChannels)),
+        Format('paf 24 bit truncated, %d channels, little %s', [LChannels, BoolToStr(LLittle)]));
+    end;
+
+  // headers that are wrong
+  CheckSameFailure(TSoundTestPafFile.Build(False, 0, 1, 22050, TSoundTestWavFile.RandomBytes(100, 1), 1), 'paf version');
+  CheckSameFailure(TSoundTestPafFile.Build(False, 0, 0, 22050, TSoundTestWavFile.RandomBytes(100, 1)), 'paf no channels');
+  CheckSameFailure(TSoundTestPafFile.Build(True, 7, 1, 22050, TSoundTestWavFile.RandomBytes(100, 1)), 'paf unknown format');
+  CheckSameFailure(TSoundTestPafFile.Build(False, 0, 1, 0, TSoundTestWavFile.RandomBytes(100, 1)), 'paf rate 0');
+  CheckSameFailure(Copy(TSoundTestPafFile.Build(False, 0, 1, 22050, TSoundTestWavFile.RandomBytes(100, 1)), 0, 1000), 'paf short header');
 end;
 
 procedure TTestSoundParity.TestVorbis;
