@@ -50,6 +50,7 @@ uses
   DelphiDoom.Sound.WavLike.Fmt in '..\Libs\Sound\DelphiDoom.Sound.WavLike.Fmt.pas',
   DelphiDoom.Sound.Format.W64 in '..\Libs\Sound\DelphiDoom.Sound.Format.W64.pas',
   DelphiDoom.Sound.Format.Rf64 in '..\Libs\Sound\DelphiDoom.Sound.Format.Rf64.pas',
+  DelphiDoom.Sound.Format.Caf in '..\Libs\Sound\DelphiDoom.Sound.Format.Caf.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',

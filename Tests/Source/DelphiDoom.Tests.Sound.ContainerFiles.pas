@@ -80,7 +80,13 @@ type
     class function BuildRf64(ATag, AChannels, ABits: Word; ARate: Cardinal;
       ADs64: Boolean; ADataLength: Int64; const APayload: TBytes): TBytes; static;
     /// <summary>AVR: ARate hertz, AMono as in the header (0 mono, 65535 stereo)</summary>
-    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+    /// <summary>
+    ///   CAF with a 'desc' chunk of the given kind; AFree adds a 'free' chunk
+    ///   before the data and AInfoAfter an 'info' chunk after it
+    /// </summary>
+    class function BuildCaf(const AFormatId: AnsiString; AFlags, APacketBytes,
+      AChannels, ABits: Cardinal; ARate: Double; AFree, AInfoAfter: Boolean;
+      const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -289,6 +295,55 @@ begin
   else
     LSink.AddNumber(Cardinal(LLength), 4, False);
   LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.BuildCaf(const AFormatId: AnsiString;
+  AFlags, APacketBytes, AChannels, ABits: Cardinal; ARate: Double; AFree,
+  AInfoAfter: Boolean; const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LBits: Int64;
+  LIndex: Integer;
+begin
+  LSink.AddText('caff');
+  LSink.AddNumber(1, 2, True);
+  LSink.AddNumber(0, 2, True);
+  LSink.AddText('desc');
+  LSink.AddNumber(0, 4, True);
+  LSink.AddNumber(32, 4, True);
+  Move(ARate, LBits, 8);
+  LSink.AddNumber(Cardinal(LBits shr 32), 4, True);
+  LSink.AddNumber(Cardinal(LBits and $FFFFFFFF), 4, True);
+  LSink.AddText(AFormatId);
+  LSink.AddNumber(AFlags, 4, True);
+  LSink.AddNumber(APacketBytes, 4, True);
+  LSink.AddNumber(1, 4, True);
+  LSink.AddNumber(AChannels, 4, True);
+  LSink.AddNumber(ABits, 4, True);
+
+  if AFree then
+  begin
+    LSink.AddText('free');
+    LSink.AddNumber(0, 4, True);
+    LSink.AddNumber(10, 4, True);
+    for LIndex := 1 to 10 do
+      LSink.Add(0);
+  end;
+
+  LSink.AddText('data');
+  LSink.AddNumber(0, 4, True);
+  LSink.AddNumber(Cardinal(Length(APayload) + 4), 4, True);
+  LSink.AddNumber(0, 4, True);
+  LSink.AddBytes(APayload);
+
+  if AInfoAfter then
+  begin
+    LSink.AddText('info');
+    LSink.AddNumber(0, 4, True);
+    LSink.AddNumber(12, 4, True);
+    LSink.AddNumber(0, 4, True);
+    LSink.AddText('abcdefgh');
+  end;
   Result := LSink.Bytes;
 end;
 class function TSoundTestContainerFile.BuildAvr(AMono, AResolution, ASign: Word;

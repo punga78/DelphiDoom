@@ -85,6 +85,8 @@ type
     [Test]
     procedure TestRf64;
     [Test]
+    procedure TestCaf;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -678,6 +680,38 @@ begin
   // No ds64 chunk: the size of the data chunk is the real one
   CheckSame(TSoundTestContainerFile.BuildRf64(1, 2, 16, 8000, False, -2, LPayload), 'rf64 without ds64');
   CheckSameFailure(TSoundTestContainerFile.BuildRf64(1, 0, 16, 8000, True, -2, LPayload), 'rf64 no channels');
+end;
+
+procedure TTestSoundParity.TestCaf;
+var
+  LChannels, LBits, LFlags: Cardinal;
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  for LFlags in [0, 2] do
+    for LBits in [8, 16, 24, 32] do
+      for LChannels := 1 to 2 do
+        CheckSame(TSoundTestContainerFile.BuildCaf('lpcm', LFlags, LChannels * (LBits div 8),
+          LChannels, LBits, 44100.0, LBits = 16, LBits = 24,
+          TSoundTestWavFile.RandomBytes(Integer(LChannels * (LBits div 8)) * 101 + 1, LBits)),
+          Format('caf pcm %d bits %d channels flags %d', [LBits, LChannels, LFlags]));
+  CheckSame(TSoundTestContainerFile.BuildCaf('lpcm', 1, 8, 2, 32, 22050.0, False, False,
+    TSoundTestWavFile.FloatPayload(150, 1, False, True)), 'caf float');
+  CheckSame(TSoundTestContainerFile.BuildCaf('lpcm', 3, 8, 1, 64, 48000.0, True, True,
+    TSoundTestWavFile.FloatPayload(100, 2, True, False)), 'caf double little endian');
+
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  CheckSame(TSoundTestContainerFile.BuildCaf('ulaw', 0, 2, 2, 8, 8000.0, False, False, LPayload), 'caf ulaw');
+  CheckSame(TSoundTestContainerFile.BuildCaf('alaw', 0, 1, 1, 8, 8000.0, False, False, LPayload), 'caf alaw');
+  // A rate that is not an integer is rounded
+  CheckSame(TSoundTestContainerFile.BuildCaf('lpcm', 0, 2, 1, 16, 11025.6, False, False, LPayload), 'caf rate');
+
+  CheckSameFailure(TSoundTestContainerFile.BuildCaf('lpcm', 0, 2, 0, 16, 8000.0, False, False, LPayload), 'caf no channels');
+  CheckSameFailure(TSoundTestContainerFile.BuildCaf('lpcm', 0, 3, 1, 16, 8000.0, False, False, LPayload), 'caf bad packet');
+  CheckSameFailure(TSoundTestContainerFile.BuildCaf('zzzz', 0, 2, 1, 16, 8000.0, False, False, LPayload), 'caf unknown');
+  CheckSameFailure(TSoundTestContainerFile.BuildCaf('lpcm', 0, 2, 1, 16, 0.0, False, False, LPayload), 'caf rate 0');
 end;
 
 procedure TTestSoundParity.TestAvr;
