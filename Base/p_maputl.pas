@@ -128,6 +128,29 @@ function P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean;
 function P_PathTraverse(x1, y1, x2, y2: fixed_t; flags: integer;
   trav: traverser_t): boolean;
 
+{$IFDEF HEXEN}
+//==============================================================================
+//
+// P_PointOnDivlineSide
+//
+//==============================================================================
+function P_PointOnDivlineSide(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
+
+//==============================================================================
+//
+// P_MakeDivline
+//
+//==============================================================================
+procedure P_MakeDivline(li: Pline_t; dl: Pdivline_t);
+
+//==============================================================================
+//
+// P_RoughMonsterSearch
+//
+//==============================================================================
+function P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t;
+
+{$ENDIF}
 var
   opentop: fixed_t;
   openbottom: fixed_t;
@@ -145,6 +168,19 @@ procedure P_InitIntercepts;
 
 //==============================================================================
 //
+{$IFDEF HEXEN}
+// P_GrowIntercepts
+//
+//==============================================================================
+procedure P_GrowIntercepts;
+
+var
+  intercepts: Pintercept_tArray;
+  intercept_p: integer;
+
+//==============================================================================
+//
+{$ENDIF}
 // P_LineTrace
 //
 //==============================================================================
@@ -154,15 +190,28 @@ implementation
 
 uses
   d_delphi,
+{$IF DEFINED(DOOM)}
   doomdef,
   g_game,
+{$ELSEIF DEFINED(HEXEN)}
+  g_game,
+{$ENDIF}
   i_system,
+{$IFDEF HEXEN}
+  info_h,
+{$ENDIF}
   p_setup,
   p_3dfloors,
   p_slopes,
   p_map,
+{$IFDEF HEXEN}
+  p_sight,
+{$ENDIF}
   po_man,
   r_main,
+{$IFDEF HEXEN}
+  tables,
+{$ENDIF}
   z_zone;
 
 //==============================================================================
@@ -846,9 +895,11 @@ end;
 procedure P_UnsetThingPosition(thing: Pmobj_t);
 var
   link: Pblocklinkitem_t;
+{$IFDEF DOOM}
 //  i: integer;
   blockx: integer;
   blocky: integer;
+{$ENDIF}
 begin
   if thing.flags and MF_NOSECTOR = 0 then
   begin
@@ -861,6 +912,7 @@ begin
       thing.sprev.snext := thing.snext
     else
       Psubsector_t(thing.subsector).sector.thinglist := thing.snext;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
     // phares 3/14/98
     //
@@ -878,12 +930,14 @@ begin
     sector_list := thing.touching_sectorlist;
     thing.touching_sectorlist := nil; //to be restored by P_SetThingPosition
 
+{$ENDIF}
   end;
 
   if thing.flags and MF_NOBLOCKMAP = 0 then
   begin
     // inert things don't need to be in blockmap
     // unlink from block map
+{$IFDEF DOOM}
     if G_PlayingEngineVersion < VERSION110 then // JVAL: 20210130 - Vanilla demo compatibility
     begin
       if thing.bnext <> nil then
@@ -911,6 +965,7 @@ begin
 
     end;
 
+{$ENDIF}
     if (thing.bpos >= 0) and (thing.bpos < bmapsize) then
     begin
       link := @blocklinks[thing.bpos];
@@ -947,7 +1002,9 @@ var
   blockx: integer;
   blocky: integer;
   link: Pblocklinkitem_t;
+{$IFDEF DOOM}
   mlink: ^Pmobj_t;
+{$ENDIF}
 begin
   // link into subsector
   ss := R_PointInSubsector(thing.x, thing.y);
@@ -965,6 +1022,7 @@ begin
       sec.thinglist.sprev := thing;
 
     sec.thinglist := thing;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
     // phares 3/16/98
     //
@@ -983,6 +1041,7 @@ begin
     thing.touching_sectorlist := sector_list; // Attach to Thing's mobj_t
     sector_list := nil; // clear for next time
 
+{$ENDIF}
   end;
 
   // link into blockmap
@@ -999,6 +1058,7 @@ begin
       blockx := MapBlockInt(thing.x - bmaporgx);
       blocky := MapBlockInt(thing.y - bmaporgy);
     end;
+{$IFDEF DOOM}
 
     // inert things don't need to be in blockmap
     if G_PlayingEngineVersion < VERSION110 then // JVAL: 20210130 - Vanilla demo compatibility
@@ -1023,6 +1083,7 @@ begin
       end;
     end;
 
+{$ENDIF}
     if (blockx >= 0) and (blockx < bmapwidth) and
        (blocky >= 0) and (blocky < bmapheight) then
     begin
@@ -1064,6 +1125,11 @@ end;
 // so increment validcount before the first call
 // to P_BlockLinesIterator, then make one or more calls
 // to it.
+{$IFDEF STRIFE}
+//
+// haleyjd 20110203:
+// [STRIFE] Modified to track blockingline
+{$ENDIF}
 //
 //==============================================================================
 function P_BlockLinesIterator(x, y: integer; func: ltraverser_t): boolean;
@@ -1117,6 +1183,12 @@ begin
   begin
     ld := @lines[offset^];
     inc(offset);
+{$IFDEF STRIFE}
+
+    // [STRIFE]: set blockingline (see P_XYMovement @ p_mobj.c)
+    blockingline := ld;
+
+{$ENDIF}
     if ld.validcount = validcount then
       continue; // line has already been checked
 
@@ -1141,7 +1213,9 @@ function P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean;
 var
   i: integer;
   link: Pblocklinkitem_t;
+{$IFDEF DOOM}
   mobj: Pmobj_t;
+{$ENDIF}
 begin
   if (x < 0) or (y < 0) or (x >= bmapwidth) or (y >= bmapheight) then
   begin
@@ -1149,19 +1223,31 @@ begin
     exit;
   end;
 
+{$IFDEF DOOM}
   if G_PlayingEngineVersion < VERSION110 then // JVAL: 20210130 - Vanilla demo compatibility
   begin
     mobj := vanillablocklinks[y * bmapwidth + x];
 
     while mobj <> nil do
+{$ELSE}
+  link := @blocklinks[y * bmapwidth + x];
+  for i := 0 to link.size - 1 do
+    if not func(link.links[i]) then
+{$ENDIF}
     begin
+{$IFDEF DOOM}
       if not func(mobj) then
       begin
         Result := False;
         exit;
       end;
       mobj := mobj.bnext;
+{$ELSE}
+      result := false;
+      exit;
+{$ENDIF}
     end;
+{$IFDEF DOOM}
   end
   else
   begin
@@ -1173,6 +1259,7 @@ begin
         exit;
       end;
   end;
+{$ENDIF}
 
   result := true;
 end;
@@ -1181,8 +1268,10 @@ end;
 // INTERCEPT ROUTINES
 //
 var
+{$IFNDEF HEXEN}
   intercepts: Pintercept_tArray;
   intercept_p: integer;
+{$ENDIF}
   numintercepts: integer = 0;
 
   earlyout: boolean;
@@ -1816,5 +1905,283 @@ begin
   end;
 end;
 
+{$IFDEF HEXEN}
+//==============================================================================
+//
+// P_RoughBlockCheck
+//
+//==============================================================================
+function P_RoughBlockCheck(mo: Pmobj_t; index: integer): Pmobj_t;
+var
+  mobj: Pmobj_t;
+  master: Pmobj_t;
+  angle: angle_t;
+  link: Pblocklinkitem_t;
+  i: integer;
+begin
+  link := @blocklinks[index];
+
+  for i := 0 to link.size - 1 do
+  begin
+    mobj := link.links[i];
+    if mo.player <> nil then  // Minotaur looking around player
+    begin
+      if (mobj.flags and MF_COUNTKILL <> 0) or
+         ((mobj.player <> nil) and (mobj <> mo)) then
+      begin
+        if mobj.flags and MF_SHOOTABLE = 0 then
+        begin
+          continue;
+        end;
+
+        if mobj.flags2 and MF2_DORMANT <> 0 then
+        begin
+          continue;
+        end;
+
+        if (mobj._type = Ord(MT_MINOTAUR)) and
+           (Pmobj_t(mobj.special1) = mo) then
+        begin
+          continue;
+        end;
+
+        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        begin
+          continue;
+        end;
+
+        if P_CheckSight(mo, mobj) then
+        begin
+          result := mobj;
+          exit;
+        end;
+
+      end;
+    end
+
+    else if mo._type = Ord(MT_MINOTAUR) then  // looking around minotaur
+    begin
+      master := Pmobj_t(mo.special1);
+      if (mobj.flags and MF_COUNTKILL <> 0) or
+         ((mobj.player <> nil) and (mobj <> master)) then
+      begin
+        if mobj.flags and MF_SHOOTABLE = 0 then
+        begin
+          continue;
+        end;
+
+        if mobj.flags2 and MF2_DORMANT <> 0 then
+        begin
+          continue;
+        end;
+
+        if (mobj._type = Ord(MT_MINOTAUR)) and
+           (mobj.special1 = mo.special1) then
+        begin
+          continue;
+        end;
+
+        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        begin
+          continue;
+        end;
+
+        if P_CheckSight(mo, mobj) then
+        begin
+          result := mobj;
+          exit;
+        end;
+      end;
+    end
+
+    else if mo._type = Ord(MT_MSTAFF_FX2) then  // bloodscourge
+    begin
+      if (mobj.flags and MF_COUNTKILL <> 0) or
+         ((mobj.player <> nil) and (mobj <> mo.target)) and
+         (mobj.flags2 and MF2_DORMANT = 0) then
+      begin
+        if mobj.flags and MF_SHOOTABLE = 0 then
+        begin
+          continue;
+        end;
+
+        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        begin
+          continue;
+        end;
+
+        if P_CheckSight(mo, mobj) then
+        begin
+          master := mo.target;
+          angle := R_PointToAngle2(master.x, master.y, mobj.x, mobj.y) - master.angle;
+          angle := angle shr 24;
+          if (angle > 226) or (angle < 30) then
+          begin
+            result := mobj;
+            exit;
+          end;
+        end;
+      end;
+    end
+
+    else  // spirits
+    begin
+      if ((mobj.flags and MF_COUNTKILL <> 0) or
+          ((mobj.player <> nil) and (mobj <> mo.target))) and
+         (mobj.flags2 and MF2_DORMANT = 0) then
+      begin
+        if mobj.flags and MF_SHOOTABLE = 0 then
+        begin
+          continue;
+        end;
+
+        if netgame and (deathmatch = 0) and (mobj.player = nil) then
+        begin
+          continue;
+        end;
+
+        if mobj = mo.target then
+        begin
+          continue;
+        end;
+
+        if P_CheckSight(mo, mobj) then
+        begin
+          result := mobj;
+          exit;
+        end;
+      end;
+    end;
+  end;
+
+  result := nil;
+end;
+
+//==============================================================================
+//
+// P_RoughMonsterSearch
+//
+// Searches though the surrounding mapblocks for monsters/players
+//    distance is in MAPBLOCKUNITS
+//
+//==============================================================================
+function P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t;
+var
+  blockX: integer;
+  blockY: integer;
+  startX, startY: integer;
+  blockIndex: integer;
+  firstStop: integer;
+  secondStop: integer;
+  thirdStop: integer;
+  finalStop: integer;
+  count: integer;
+begin
+  if internalblockmapformat then
+  begin
+    startX := MapBlockIntX(int64(mo.x) - int64(bmaporgx));
+    startY := MapBlockIntY(int64(mo.y) - int64(bmaporgy));
+  end
+  else
+  begin
+    startX := MapBlockInt(mo.x - bmaporgx);
+    startY := MapBlockInt(mo.y - bmaporgy);
+  end;
+
+  if (startX >= 0) and (startX < bmapwidth) and (startY >= 0) and (startY < bmapheight) then
+  begin
+    result := P_RoughBlockCheck(mo, startY * bmapwidth + startX);
+    if result <> nil then
+    begin // found a target right away
+      exit;
+    end;
+  end;
+
+  for count := 1 to distance do
+  begin
+    blockX := startX - count;
+    blockY := startY - count;
+
+    if blockY < 0 then
+      blockY := 0
+    else if blockY >= bmapheight then
+      blockY := bmapheight - 1;
+
+    if blockX < 0 then
+      blockX := 0
+    else if blockX >= bmapwidth then
+      blockX := bmapwidth - 1;
+
+    blockIndex := blockY * bmapwidth + blockX;
+    firstStop := startX + count;
+    if firstStop < 0 then
+      continue;
+
+    if firstStop >= bmapwidth then
+      firstStop := bmapwidth - 1;
+
+    secondStop := startY + count;
+    if secondStop < 0 then
+      continue;
+
+    if secondStop >= bmapheight then
+      secondStop := bmapheight - 1;
+
+    thirdStop := secondStop * bmapwidth + blockX;
+    secondStop := secondStop * bmapwidth + firstStop;
+    firstStop := firstStop + blockY * bmapwidth;
+    finalStop := blockIndex;
+
+    // Trace the first block section (along the top)
+    while blockIndex <= firstStop do
+    begin
+      result := P_RoughBlockCheck(mo, blockIndex);
+      if result <> nil then
+      begin
+        exit;
+      end;
+      inc(blockIndex);
+    end;
+
+    // Trace the second block section (right edge)
+    dec(blockIndex);
+    while blockIndex <= secondStop do
+    begin
+      result := P_RoughBlockCheck(mo, blockIndex);
+      if result <> nil then
+      begin
+        exit;
+      end;
+      blockIndex := blockIndex + bmapwidth;
+    end;
+
+    // Trace the third block section (bottom edge)
+    blockIndex := blockIndex - bmapwidth;
+    while blockIndex >= thirdStop do
+    begin
+      result := P_RoughBlockCheck(mo, blockIndex);
+      if result <> nil then
+      begin
+        exit;
+      end;
+      dec(blockIndex);
+    end;
+
+    // Trace the final block section (left edge)
+    inc(blockindex);
+    while blockIndex > finalStop do
+    begin
+      result := P_RoughBlockCheck(mo, blockIndex);
+      if result <> nil then
+      begin
+        exit;
+      end;
+      blockIndex := blockIndex - bmapwidth;
+    end;
+  end;
+  result := nil;
+end;
+
+{$ENDIF}
 end.
 

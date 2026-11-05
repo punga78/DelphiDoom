@@ -195,7 +195,7 @@ uses
   udmf_lights in 'Base\udmf_lights.pas',
   p_local in 'Hexen\p_local.pas',
   p_map in 'Hexen\p_map.pas',
-  p_maputl in 'Hexen\p_maputl.pas',
+  p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Hexen\p_mobj.pas',
   p_mobj_h in 'Hexen\p_mobj_h.pas',
   udmf_plats in 'Base\udmf_plats.pas',

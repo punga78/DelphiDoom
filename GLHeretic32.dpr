@@ -223,7 +223,7 @@ uses
   p_lights in 'Heretic\p_lights.pas',
   p_local in 'Heretic\p_local.pas',
   p_map in 'Heretic\p_map.pas',
-  p_maputl in 'Heretic\p_maputl.pas',
+  p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Heretic\p_mobj.pas',
   p_mobj_h in 'Heretic\p_mobj_h.pas',
   p_plats in 'Heretic\p_plats.pas',
