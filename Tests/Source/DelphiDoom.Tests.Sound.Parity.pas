@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
-  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile;
+  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile, DelphiDoom.Tests.Sound.SdsFile;
 
 type
   /// <summary>
@@ -119,6 +119,8 @@ type
     procedure TestFlac;
     [Test]
     procedure TestFlacDamaged;
+    [Test]
+    procedure TestSds;
     [Test]
     procedure TestPaf;
     [Test]
@@ -1182,6 +1184,25 @@ begin
   LOptions.SampleRate := 11025;
   LOptions.ExtraMetadata := True;
   CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
+end;
+
+procedure TTestSoundParity.TestSds;
+var
+  LWidth: Integer;
+begin
+  // 2, 3 and 4 bytes for each sample; the frames are of whole packets or not
+  for LWidth in [8, 12, 14, 16, 20, 21, 24, 28] do
+  begin
+    CheckSameBulk(TSoundTestSdsFile.Build(LWidth, 22675, 240, 4, LWidth), Format('sds %d bits whole', [LWidth]));
+    CheckSameBulk(TSoundTestSdsFile.Build(LWidth, 22675, 200, 4, LWidth), Format('sds %d bits partial', [LWidth]));
+    CheckSameBulk(TSoundTestSdsFile.Build(LWidth, 0, 180, 5, LWidth), Format('sds %d bits period 0', [LWidth]));
+  end;
+  // a file that has less packets than it says, and a sound of a single packet
+  CheckSameBulk(TSoundTestSdsFile.Build(16, 22675, 400, 3, 3), 'sds missing packets');
+  CheckSameBulk(TSoundTestSdsFile.Build(16, 22675, 30, 1, 3), 'sds one packet');
+  CheckSameFailure(TSoundTestSdsFile.Build(1, 22675, 240, 4, 1), 'sds 1 bit');
+  CheckSameFailure(TSoundTestSdsFile.Build(5, 22675, 240, 4, 1), 'sds 5 bits');
+  CheckSameFailure(TSoundTestSdsFile.Build(30, 22675, 240, 4, 1), 'sds 30 bits');
 end;
 
 procedure TTestSoundParity.TestPaf;

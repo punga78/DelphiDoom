@@ -78,6 +78,7 @@ uses
   DelphiDoom.Sound.Codec.Vorbis in '..\Libs\Sound\DelphiDoom.Sound.Codec.Vorbis.pas',
   DelphiDoom.Sound.Format.Ogg in '..\Libs\Sound\DelphiDoom.Sound.Format.Ogg.pas',
   DelphiDoom.Sound.Format.Paf in '..\Libs\Sound\DelphiDoom.Sound.Format.Paf.pas',
+  DelphiDoom.Sound.Format.Sds in '..\Libs\Sound\DelphiDoom.Sound.Format.Sds.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',
@@ -93,6 +94,7 @@ uses
   DelphiDoom.Tests.Sound.FlacFile in 'Source\DelphiDoom.Tests.Sound.FlacFile.pas',
   DelphiDoom.Tests.Sound.VorbisFile in 'Source\DelphiDoom.Tests.Sound.VorbisFile.pas',
   DelphiDoom.Tests.Sound.PafFile in 'Source\DelphiDoom.Tests.Sound.PafFile.pas',
+  DelphiDoom.Tests.Sound.SdsFile in 'Source\DelphiDoom.Tests.Sound.SdsFile.pas',
   DelphiDoom.Tests.Sound.ContainerFiles in 'Source\DelphiDoom.Tests.Sound.ContainerFiles.pas',
   DelphiDoom.Tests.Sound.Parity in 'Source\DelphiDoom.Tests.Sound.Parity.pas';
 
