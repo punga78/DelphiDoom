@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils, System.IOUtils, DUnitX.TestFramework,
-  DelphiDoom.Mikmod.Intf, DelphiDoom.Mikmod.Loader;
+  DelphiDoom.Mikmod.Intf, DelphiDoom.Mikmod.Loader, DelphiDoom.Mikmod.TrackerEngine;
 
 type
   [TestFixture]
@@ -78,7 +78,7 @@ begin
 
   LLoader := TMikModLoader.Create(LPath);
   try
-    Assert.AreEqual($030105, Integer(LLoader.MikMod.GetVersion));
+    Assert.AreEqual(Integer(TRACKER_VERSION), Integer(LLoader.MikMod.GetVersion));
     Assert.IsFalse(LLoader.MikMod.IsInitialized);
     Assert.AreEqual(MIKMOD_ERR_NOT_INITIALIZED,
       LLoader.MikMod.CreatePlayer(LPlayer));

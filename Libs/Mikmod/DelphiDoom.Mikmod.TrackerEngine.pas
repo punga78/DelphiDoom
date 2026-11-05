@@ -13,6 +13,10 @@ interface
 uses
   DelphiDoom.Mikmod.Intf;
 
+const
+  // The version of the library that the tracker replaces (3.1.x)
+  TRACKER_VERSION = $030107;
+
 type
   /// <summary>
   ///   The IMikMod contract, with the modules played by the
@@ -42,10 +46,6 @@ implementation
 uses
   System.SysUtils,
   DelphiDoom.Mikmod.TrackerPlayer;
-
-const
-  // The version of the library that this engine replaces (3.1.x)
-  TRACKER_VERSION = $030107;
 
 { TTrackerMikModEngine }
 

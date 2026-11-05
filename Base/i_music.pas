@@ -134,6 +134,7 @@ implementation
 
 uses
   Windows,
+  SysUtils,
   messages,
   MMSystem,
   m_argv,
@@ -145,7 +146,8 @@ uses
   DelphiDoom.Audio.ModuleDetector,
   i_mikplay,
   i_tmp,
-  libm2m,
+  DelphiDoom.M2m.Intf,
+  DelphiDoom.M2m.Provider,
   s_sound,
   {$IFNDEF DLL}
   DelphiDoom.Xmi.Provider,
@@ -463,9 +465,8 @@ end;
 //
 //==============================================================================
 function I_MidToMus(MidData: PByteArray; MidDataSize: integer; song: Psonginfo_t): boolean;
-const
-  MAXOUTBUFFERSIZE = $40000;
 var
+  mus: TBytes;
   outbuffer: pointer;
   outbuffersize: integer;
   oldnumevents: integer;
@@ -482,19 +483,20 @@ begin
     exit;
   end;
 
-  outbuffer := mallocz(MAXOUTBUFFERSIZE);
-
-  outbuffersize := 0;
-  if _convertm2m(MidData, MidDataSize, outbuffer, @outbuffersize) <> 0 then
-  begin
-    memfree(outbuffer, MAXOUTBUFFERSIZE);
-    result := false;
-    exit;
+  try
+    mus := TM2mProvider.Client.ConvertMidiToMus(MidData, MidDataSize);
+  except
+    on EM2mException do
+    begin
+      result := false;
+      exit;
+    end;
   end;
 
-  if (PLongWord(outbuffer)^ <> MUSMAGIC) or (outbuffersize < 4) then
+  outbuffer := @mus[0];
+  outbuffersize := Length(mus);
+  if (outbuffersize < 4) or (PLongWord(outbuffer)^ <> MUSMAGIC) then
   begin
-    memfree(outbuffer, MAXOUTBUFFERSIZE);
     result := false;
     exit;
   end;
@@ -517,8 +519,6 @@ begin
     song.midievents := Z_Malloc(song.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
     song.originalmidievents := Z_Malloc(song.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
   end;
-
-  memfree(outbuffer, MAXOUTBUFFERSIZE);
 end;
 
 //==============================================================================
