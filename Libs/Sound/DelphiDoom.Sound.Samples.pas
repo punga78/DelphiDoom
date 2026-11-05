@@ -52,6 +52,8 @@ type
     FAvailableFrames: Int64;
     FRewindOnly: Boolean;
     FSeekLimit: Int64;
+    FFullScaleFloats: Boolean;
+    FSeekStopsAtData: Boolean;
     FTrailingItem: Integer;
     FHasTrailingItem: Boolean;
     FReadsUnimplemented: Boolean;
@@ -122,6 +124,13 @@ type
     ///   end the header promises (FLAC with less data than STREAMINFO says)
     /// </summary>
     property SeekLimit: Int64 read FSeekLimit write FSeekLimit;
+    /// <summary>
+    ///   The single precision samples are fractions of the full scale: they become
+    ///   integers by 32767 (16 bit) or 2^31 (32 bit), as the Ogg reader of libsndfile does
+    /// </summary>
+    property FullScaleFloats: Boolean read FFullScaleFloats write FFullScaleFloats;
+    /// <summary>A seek past the frames that could be decoded ends at the last of them</summary>
+    property SeekStopsAtData: Boolean read FSeekStopsAtData write FSeekStopsAtData;
     /// <summary>
     ///   A 32 bit item that libsndfile leaves in the buffer of the caller right
     ///   after the last sample of the sound (DWVW); see ZeroFillChunk -4

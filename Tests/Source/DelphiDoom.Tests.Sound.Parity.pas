@@ -10,9 +10,9 @@ unit DelphiDoom.Tests.Sound.Parity;
 interface
 
 uses
-  System.SysUtils, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
+  System.SysUtils, System.Classes, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
-  DelphiDoom.Tests.Sound.FlacFile;
+  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile;
 
 type
   /// <summary>
@@ -119,6 +119,8 @@ type
     procedure TestFlac;
     [Test]
     procedure TestFlacDamaged;
+    [Test]
+    procedure TestVorbis;
     [Test]
     procedure TestAvr;
     [Test]
@@ -1180,6 +1182,46 @@ begin
   CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
 end;
 
+procedure TTestSoundParity.TestVorbis;
+var
+  LOptions: TSoundTestVorbisOptions;
+  LFirst, LSecond: TBytes;
+  LChannels, LResidue: Integer;
+begin
+  for LChannels := 1 to 2 do
+    for LResidue := 0 to 2 do
+    begin
+      LOptions := TSoundTestVorbisOptions.Plain;
+      LOptions.Channels := LChannels;
+      LOptions.ResidueType := LResidue;
+      LOptions.Seed := 100 + LChannels * 10 + LResidue;
+      CheckSame(TSoundTestVorbisFile.Build(LOptions), Format('vorbis %d channels residue %d', [LChannels, LResidue]));
+    end;
+
+  // the end of the last page cuts the last block
+  LOptions := TSoundTestVorbisOptions.Plain;
+  LOptions.TrimEnd := 300;
+  CheckSame(TSoundTestVorbisFile.Build(LOptions), 'vorbis trimmed end');
+
+  // two sounds one after the other: the length is of both, the audio of the first
+  LFirst := TSoundTestVorbisFile.Build(LOptions);
+  LOptions.Serial := 99;
+  LOptions.Seed := 777;
+  LOptions.Packets := 12;
+  LSecond := TSoundTestVorbisFile.Build(LOptions);
+  CheckSame(TSoundTestVorbisFile.Chain(LFirst, LSecond), 'vorbis chained');
+
+  // a file cut in the middle of the audio: the length is of the last page that is whole
+  LOptions := TSoundTestVorbisOptions.Plain;
+  LFirst := TSoundTestVorbisFile.Build(LOptions);
+  SetLength(LFirst, Length(LFirst) * 2 div 3);
+  CheckSame(LFirst, 'vorbis cut');
+
+  // a file without the setup header
+  LFirst := TSoundTestVorbisFile.Build(LOptions);
+  SetLength(LFirst, 120);
+  CheckSameFailure(LFirst, 'vorbis without headers');
+end;
 procedure TTestSoundParity.TestFlacDamaged;
 var
   LOptions: TSoundTestFlacOptions;

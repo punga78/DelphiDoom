@@ -93,8 +93,12 @@ begin
       for LIndex := 0 to ACount - 1 do
         LOut[LIndex] := SmallInt(PInteger(ASource)[LIndex] shr 16);
     TSoundSampleKind.Float32:
-      for LIndex := 0 to ACount - 1 do
-        LOut[LIndex] := TSoundConvert.SingleToShort(PSingle(ASource)[LIndex]);
+      if FSamples.FullScaleFloats then
+        for LIndex := 0 to ACount - 1 do
+          LOut[LIndex] := TSoundConvert.SingleToShort(Single(PSingle(ASource)[LIndex] * Single(32767.0)))
+      else
+        for LIndex := 0 to ACount - 1 do
+          LOut[LIndex] := TSoundConvert.SingleToShort(PSingle(ASource)[LIndex]);
     TSoundSampleKind.Float64:
       for LIndex := 0 to ACount - 1 do
         LOut[LIndex] := TSoundConvert.DoubleToShort(PDouble(ASource)[LIndex]);
@@ -115,8 +119,13 @@ begin
     TSoundSampleKind.Int32:
       Move(ASource^, ADestination^, ACount * SizeOf(Integer));
     TSoundSampleKind.Float32:
-      for LIndex := 0 to ACount - 1 do
-        LOut[LIndex] := TSoundConvert.SingleToInt(PSingle(ASource)[LIndex]);
+      if FSamples.FullScaleFloats then
+        // 2147483647.0f is 2^31 as a single precision number
+        for LIndex := 0 to ACount - 1 do
+          LOut[LIndex] := TSoundConvert.SingleToInt(Single(PSingle(ASource)[LIndex] * Single(2147483648.0)))
+      else
+        for LIndex := 0 to ACount - 1 do
+          LOut[LIndex] := TSoundConvert.SingleToInt(PSingle(ASource)[LIndex]);
     TSoundSampleKind.Float64:
       for LIndex := 0 to ACount - 1 do
         LOut[LIndex] := TSoundConvert.DoubleToInt(PDouble(ASource)[LIndex]);
@@ -401,6 +410,11 @@ begin
   if (FSamples.SeekLimit >= 0) and (LTarget >= FSamples.SeekLimit) and
      (LTarget <> FSamples.Info.Frames) then
     Exit(SNDFILE_ERR_INVALID_ARGUMENT);
+
+  // the Ogg reader reads on to the target and stops where the data stops
+  if FSamples.SeekStopsAtData and (FSamples.AvailableFrames >= 0) and
+     (LTarget > FSamples.AvailableFrames) then
+    LTarget := FSamples.AvailableFrames;
 
   FPosition := LTarget;
   FEndEventReported := False;
