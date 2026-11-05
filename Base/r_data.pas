@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -130,6 +123,7 @@ function R_SafeFlatNumForName(const name: string): integer;
 
 //==============================================================================
 //
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 // R_NewFlatNumForLump
 //
 //==============================================================================
@@ -137,6 +131,7 @@ function R_NewFlatNumForLump(const lump: integer): integer;
 
 //==============================================================================
 //
+{$ENDIF}
 // R_CacheFlat
 //
 //==============================================================================
@@ -192,11 +187,16 @@ var
   spritetopoffset: Pfixed_tArray;
   spritepresent: PBooleanArray;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   def_colormaps: PByteArray;
+{$ENDIF}
   fog_colormaps: PByteArray;  // JVAL: Mars fog sectors
   colormaps: PByteArray;
   colormaps32: PLongWordArray;
   fog_colormaps32: PLongWordArray;  // JVAL: Mars fog sectors
+{$IFDEF DOOM}
+  inversecolormap32: array[0..255] of LongWord;
+{$ENDIF}
 
 var
   firstflat: integer;
@@ -215,8 +215,32 @@ var
   numtextures: integer;
   textures: Ptexture_tPArray;
   flats: PflatPArray;
+{$IF DEFINED(HERETIC)}
+  aprox_black: byte = 254;
+  aprox_red: byte = 160;
+{$ELSEIF DEFINED(HEXEN)}
+  aprox_black: byte = 186;
+  aprox_red: byte = 181;
+  LevelUseFog: boolean;
+  fogmaplump: integer = -1;
+  colormaplump: integer = -1;
+
+var
+  enableflatscrolling: boolean;
+
+//==============================================================================
+//
+// R_ChangeColormap
+//
+//==============================================================================
+procedure R_ChangeColormap(const lumpname: string);
+{$ELSEIF DEFINED(STRIFE)}
   aprox_black: byte = 239;
   aprox_red: byte = 234;
+{$ELSE}
+  aprox_black: byte = 247;
+  aprox_red: byte = 176;
+{$ENDIF}
 
 implementation
 
@@ -225,7 +249,9 @@ uses
   d_fpc,
 {$ENDIF}
   d_think,
+{$IFDEF STRIFE}
   d_check,
+{$ENDIF}
   m_hash,
   i_system,
   p_setup,
@@ -233,11 +259,16 @@ uses
   p_mobj_h,
   p_mobj,
   p_terrain,
+{$IFDEF HEXEN}
+  p_anim,
+{$ENDIF}
   r_sky,
   r_things,
   r_bsp,
   r_hires,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   r_colormaps,
+{$ENDIF}
   r_pk3textures,
 {$IFNDEF OPENGL}
   r_column,
@@ -245,11 +276,17 @@ uses
   r_span,
   r_cache_walls,
   r_cache_flats,
+{$IFNDEF STRIFE}
+  r_col_fz,
+{$ENDIF}
   r_3dfloors, // JVAL: 3d Floors
   r_slopes, // JVAL: Slopes
   r_patch,
 {$ENDIF}
   r_flatinfo,
+{$IFDEF HEXEN}
+  r_main,
+{$ENDIF}
   v_data,
   v_video,
   vx_voxelsprite,
@@ -632,6 +669,13 @@ begin
   for i := 0 to texture.patchcount - 1 do
   begin
     pat := patch.patch;
+{$IFDEF DOOM}
+    if (pat < 0) or (lumpinfo[pat].flags and (TYPE_PATCH or TYPE_SPRITE) = 0) then
+    begin
+      inc(patch);
+      Continue;
+    end;
+{$ENDIF}
     realpatch := W_CacheLumpNum(pat, PU_STATIC);
     x1 := patch.originx;
     x2 := x1 + realpatch.width;
@@ -826,11 +870,14 @@ end;
 {$ENDIF}
 
 //==============================================================================
+{$IFDEF STRIFE}
 // R_InitTexturesOld
+{$ENDIF}
 //
 // R_InitTextures
 // Initializes the texture list
 //  with the textures from the world map.
+{$IFDEF STRIFE}
 //
 //==============================================================================
 procedure R_InitTexturesOld;
@@ -1128,6 +1175,7 @@ end;
 //==============================================================================
 //
 // R_InitTextures
+{$ENDIF}
 //
 //==============================================================================
 procedure R_InitTextures;
@@ -1197,9 +1245,16 @@ begin
       I_DevWarning('R_InitTextures(): Can not find patch "%s" inside patch or sprite markers, retrying...'#13#10, [pname]);
       patchlookup[i] := W_CheckNumForName(pname);
       if patchlookup[i] = -1 then
+{$IFDEF STRIFE}
       // JVAL: Display warning only if not teaser
         if teaser = 0 then
           I_Warning('R_InitTextures(): Can not find patch "%s"'#13#10, [pname]);
+{$ELSE}
+      begin
+        I_Warning('R_InitTextures(): Can not find patch "%s"'#13#10, [pname]);
+        patchlookup[i] := W_CheckNumForName('NULLA0');
+      end;
+{$ENDIF}
     end;
   end;
   Z_Free(names);
@@ -1443,7 +1498,11 @@ begin
   numflats := lastflat - firstflat + 1;
 
   // Create translation table for global animation.
+{$IFDEF STRIFE}
   flats := malloc(numflats * SizeOf(pointer));
+{$ELSE}
+  flats := mallocz(numflats * SizeOf(pointer));
+{$ENDIF}
 
   for i := 0 to numflats - 1 do
   begin
@@ -1666,30 +1725,101 @@ begin
 
   // Load in the light tables,
   //  256 byte align tables.
+{$IFDEF HEXEN}
+  fogmaplump := W_GetNumForName('FOGMAP');
+{$ENDIF}
   lump := W_GetNumForName('COLORMAP');
+{$IFDEF HEXEN}
+  colormaplump := lump;
+{$ENDIF}
   length := W_LumpLength(lump);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  colormaps := Z_Malloc(length, PU_STATIC, nil);
+{$ELSE}
   def_colormaps := Z_Malloc(length, PU_STATIC, nil);
+{$ENDIF}
   colormaps32 := Z_Malloc(length * SizeOf(LongWord), PU_STATIC, nil);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  W_ReadLump(lump, colormaps);
+{$ELSE}
   W_ReadLump(lump, def_colormaps);
+{$ENDIF}
   for i := 0 to length - 1 do
+{$IF DEFINED(DOOM)}
     if def_colormaps[i] = 0 then
       def_colormaps[i] := aprox_black;
   v_translation := def_colormaps;
+  for i := 0 to 255 do
+    inversecolormap32[i] := cpal[def_colormaps[NUMCOLORMAPS * 256 + i]];
+{$ELSEIF DEFINED(STRIFE)}
+    if def_colormaps[i] = 0 then
+      def_colormaps[i] := aprox_black;
+  v_translation := def_colormaps;
+{$ELSE}
+    if colormaps[i] = 0 then
+      colormaps[i] := aprox_black;
+  v_translation := colormaps;
+{$ENDIF}
 
   // JVAL: Mars fog sectors
+{$IFDEF HEXEN}
+  length := W_LumpLength(fogmaplump);
+{$ELSE}
   lump := W_GetNumForName('FOGMAP');
   length := W_LumpLength(lump);
+{$ENDIF}
   fog_colormaps := Z_Malloc(length, PU_STATIC, nil);
   fog_colormaps32 := Z_Malloc(length * SizeOf(LongWord), PU_STATIC, nil);
+{$IFDEF HEXEN}
+  W_ReadLump(fogmaplump, fog_colormaps);
+{$ELSE}
   W_ReadLump(lump, fog_colormaps);
+{$ENDIF}
   for i := 0 to length - 1 do
   begin
     if fog_colormaps[i] = 0 then
       fog_colormaps[i] := aprox_black;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    if colormaps[i] = aprox_black then
+{$ELSE}
     if def_colormaps[i] = aprox_black then
+{$ENDIF}
       fog_colormaps[i] := aprox_black;
     fog_colormaps32[i] := cpal[fog_colormaps[i]]; // JVAL: Mars fog sectors
   end;
+{$IFDEF HEXEN}
+end;
+
+//==============================================================================
+//
+// R_ChangeColormap
+//
+//==============================================================================
+procedure R_ChangeColormap(const lumpname: string);
+var
+  lump: integer;
+  length: integer;
+  i: integer;
+begin
+  // Load in the light tables,
+  //  256 byte align tables.
+  lump := W_GetNumForName(lumpname);
+  LevelUseFog := lump = fogmaplump;
+  length := W_LumpLength(lump);
+  W_ReadLump(lump, colormaps);
+  for i := 0 to length - 1 do
+    if colormaps[i] = 0 then
+      colormaps[i] := aprox_black;
+  v_translation := colormaps;
+  {$IFNDEF OPENGL}
+  R_SetRenderingFunctions;
+  R_SetPalette64;
+  if usemultithread then
+    R_CalcHiResTables_MultiThread
+  else
+    R_CalcHiResTables_SingleThread;
+  {$ENDIF}
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -1703,13 +1833,22 @@ end;
 procedure R_InitData;
 begin
   R_InitHiRes;
+{$IFDEF STRIFE}
   if D_UseOldTexture1 then
     R_InitTexturesOld
   else
     R_InitTextures;
+{$ELSE}
+  R_InitTextures;
+{$ENDIF}
   R_InitFlats;
   R_InitSpriteLumps;
   R_InitColormaps;
+{$IFNDEF STRIFE}
+{$IFNDEF OPENGL}
+  R_InitFuzzTable;
+{$ENDIF}
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -1723,7 +1862,11 @@ var
   i: integer;
   s: string;
 begin
+{$IFDEF STRIFE}
   i := W_CheckNumForName(name, TYPE_FLOOR);
+{$ELSE}
+  i := W_CheckNumForName2(name, firstflat, lastflat);
+{$ENDIF}
   if i > -1 then
     result := i - firstflat
   else
@@ -1832,6 +1975,7 @@ end;
 
 //==============================================================================
 //
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 // R_NewFlatNumForLump
 //
 //==============================================================================
@@ -1864,6 +2008,7 @@ end;
 
 //==============================================================================
 //
+{$ENDIF}
 // R_CheckTextureNumForName
 // Check whether texture is available.
 // Filter out NoTexture indicator.
@@ -1924,14 +2069,22 @@ begin
   if name = '' then
   begin
     I_Warning('R_SafeTextureNumForName(): Texture name is null.'#13#10);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    result := -1;
+{$ELSE}
     result := 0;
+{$ENDIF}
     exit;
   end;
 
   // "NoTexture" marker.
   if name[1] = '-' then
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    result := -1;
+{$ELSE}
     result := 0;
+{$ENDIF}
     exit;
   end;
 
@@ -1953,9 +2106,14 @@ begin
         exit;
       end;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  I_Warning('R_SafeTextureNumForName(): %s not found.'#13#10, [name]);
+  result := -1;
+{$ELSE}
   if R_CustomColorMapForName(name) < 0 then
     I_Warning('R_SafeTextureNumForName(): %s not found.'#13#10, [name]);
   result := 0;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -1983,12 +2141,19 @@ begin
   ZeroMemory(@result, SizeOf(Result));
   Result[0] := '-';
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  if sn < 0 then
+{$ELSE}
   if sn = 0 then
+{$ENDIF}
     exit;
 
   if sn >= numtextures then
     exit;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  Result := textures[sn].name;
+{$ELSE}
   if sn > 0 then
   begin
     Result := textures[sn].name;
@@ -1998,6 +2163,7 @@ begin
   if sn < -numcustomcolormaps then
     exit;
   Result := stringtochar8(customcolormaps[- sn - 1].name);
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -2047,6 +2213,11 @@ begin
     flatpresent[sectors[i].floorpic] := 1;
     flatpresent[sectors[i].ceilingpic] := 1;
   end;
+{$IFDEF HEXEN}
+  // JVAL: Precaching animated flats
+  for i := 0 to animatedflatslist.Count - 1 do
+    flatpresent[animatedflatslist[i]] := 1;
+{$ENDIF}
 
   flatmemory := 0;
   allocmemory := GetAllocMemSize;
@@ -2082,6 +2253,11 @@ begin
     texturepresent[sd.midtexture] := 1;
     texturepresent[sd.bottomtexture] := 1;
   end;
+{$IFDEF HEXEN}
+  // JVAL: Precaching animated textures
+  for i := 0 to animatedtextureslist.Count - 1 do
+    texturepresent[animatedtextureslist[i]] := 1;
+{$ENDIF}
 
   // Sky texture is always present.
   // Note that F_SKY1 is the name used to
@@ -2089,7 +2265,12 @@ begin
   //  while the sky texture is stored like
   //  a wall texture, with an episode dependend
   //  name.
+{$IFDEF HEXEN}
+  texturepresent[SkyTexture] := 1;
+  texturepresent[Sky2Texture] := 1;
+{$ELSE}
   texturepresent[skytexture] := 1;
+{$ENDIF}
 
   texturememory := 0;
   allocmemory := GetAllocMemSize;

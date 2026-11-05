@@ -217,7 +217,7 @@ uses
   r_col_sk in 'Base\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',
   r_column in 'Base\r_column.pas',
-  r_data in 'Hexen\r_data.pas',
+  r_data in 'Base\r_data.pas',
   r_defs in 'Hexen\r_defs.pas',
   r_draw in 'Hexen\r_draw.pas',
   r_fake3d in 'Base\r_fake3d.pas',

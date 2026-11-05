@@ -245,7 +245,7 @@ uses
   p_tick in 'Base\p_tick.pas',
   p_user in 'Strife\p_user.pas',
   r_bsp in 'Strife\r_bsp.pas',
-  r_data in 'Strife\r_data.pas',
+  r_data in 'Base\r_data.pas',
   r_defs in 'Strife\r_defs.pas',
   r_draw in 'Strife\r_draw.pas',
   r_hires in 'Base\r_hires.pas',
