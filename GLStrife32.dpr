@@ -265,7 +265,7 @@ uses
   st_lib in 'Strife\st_lib.pas',
   st_stuff in 'Strife\st_stuff.pas',
   tables in 'Base\tables.pas',
-  v_data in 'Strife\v_data.pas',
+  v_data in 'Base\v_data.pas',
   v_video in 'Base\v_video.pas',
   w_pak in 'Base\w_pak.pas',
   w_utils in 'Base\w_utils.pas',

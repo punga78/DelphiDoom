@@ -273,7 +273,7 @@ uses
   sc_params in 'Base\sc_params.pas',
   sounds in 'Heretic\sounds.pas',
   tables in 'Base\tables.pas',
-  v_data in 'Heretic\v_data.pas',
+  v_data in 'Base\v_data.pas',
   v_video in 'Base\v_video.pas',
   w_pak in 'Base\w_pak.pas',
   w_utils in 'Base\w_utils.pas',

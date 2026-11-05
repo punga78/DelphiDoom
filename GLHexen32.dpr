@@ -234,7 +234,7 @@ uses
   sounds in 'Hexen\sounds.pas',
   sv_save in 'Hexen\sv_save.pas',
   tables in 'Base\tables.pas',
-  v_data in 'Hexen\v_data.pas',
+  v_data in 'Base\v_data.pas',
   z_files in 'ZLIB\z_files.pas',
   DelphiDoom.Zlib.Intf in 'Libs\Zlib\DelphiDoom.Zlib.Intf.pas',
   DelphiDoom.Zlib.Inflater in 'Libs\Zlib\DelphiDoom.Zlib.Inflater.pas',

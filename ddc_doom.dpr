@@ -299,7 +299,7 @@ uses
   st_lib in 'Doom\st_lib.pas',
   st_stuff in 'Doom\st_stuff.pas',
   tables in 'Base\tables.pas',
-  v_data in 'Doom\v_data.pas',
+  v_data in 'Base\v_data.pas',
   v_video in 'Base\v_video.pas',
   w_pak in 'Base\w_pak.pas',
   w_utils in 'Base\w_utils.pas',

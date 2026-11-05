@@ -46,18 +46,32 @@ const
   SCN_FG = 0;
   SCN_BG = 1;
   SCN_CON = 2;    // Console Screen Buffer
+{$IF DEFINED(DOOM)}
   SCN_TMP = 3;    // Temporary Screen Buffer 320x200
   SCN_TMP426 = 4; // Temporary Screen Buffer 426x200
   SCN_ST426 = 5;  // Status Bar Screen Buffer (426x32)
   SCN_ST2 = 6;    // Status Bar Back Buffer (320x32)
   SCN_ST = 7;     // Status Bar Screen Buffer (320x32)
+{$ELSEIF DEFINED(STRIFE)}
+  SCN_TMP426 = 3; // Temporary Screen Buffer 426x200
+  SCN_TMP = 4;    // Temporary Screen Buffer 320x200
+  SCN_ST = 5;     // Status Bar Screen Buffer (320x200)
+{$ELSE}
+  SCN_SB = 3;     // Status Bar Screen Buffer (320x32)
+  SCN_TMP426 = 4; // Temporary Screen Buffer 426x200
+  SCN_TMP = 5;    // Temporary Screen Buffer 320x200
+{$ENDIF}
 
 var
 // Screen 0 is the screen updated by I_Update screen.
 // Screen 1 is an extra buffer.
 // Screen 4 is an extra buffer for finale.
 // Screen 5 is used by status line
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  screens: array[SCN_FG..SCN_TMP] of PByteArray;
+{$ELSE}
   screens: array[SCN_FG..SCN_ST] of PByteArray;
+{$ENDIF}
   screen32: PLongWordArray;
 
 type
@@ -69,14 +83,25 @@ type
 
 {$IFDEF OPENGL}
 var
+{$IFDEF STRIFE}
+  GLDRAWWIDTH: integer;
+  GLDRAWHEIGHT: integer;
+  GLDRAWTEXWIDTH: integer;
+  GLDRAWTEXHEIGHT: integer;
+{$ELSE}
   GLDRAWWIDTH: integer = 1024;
   GLDRAWHEIGHT: integer = 768;
   GLDRAWTEXWIDTH: integer = 1024;
   GLDRAWTEXHEIGHT: integer = 1024;
 {$ENDIF}
+{$ENDIF}
 
 const
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  FIXED_DIMENTIONS: array[SCN_320x200..SCN_TMP] of screendimention_t = (
+{$ELSE}
   FIXED_DIMENTIONS: array[SCN_320x200..SCN_ST] of screendimention_t = (
+{$ENDIF}
     (width: 320; height: 200; depth: 1),
     {$IFDEF OPENGL}
     (width: -1; height: -1; depth: 1),
@@ -87,15 +112,29 @@ const
     (width:  -1; height:  -1; depth: 1),
     (width:  -1; height:  -1; depth: 1),
     {$ENDIF}
+{$IFDEF STRIFE}
+    (width: 426; height: 200; depth: 1),
+{$ENDIF}
     (width: 320; height: 200; depth: 1),
+{$IF DEFINED(DOOM)}
     (width: 426; height: 200; depth: 1),
     (width: 426; height:  32; depth: 1),
     (width: 320; height:  32; depth: 1),
     (width: 320; height:  32; depth: 1)
+{$ELSEIF DEFINED(STRIFE)}
+    (width: 320; height: 200; depth: 1)
+{$ELSE}
+    (width: 426; height: 200; depth: 1),
+    (width: 320; height: 200; depth: 1)
+{$ENDIF}
   );
 
 var
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  screendimentions: array[SCN_FG..SCN_TMP] of screendimention_t;
+{$ELSE}
   screendimentions: array[SCN_FG..SCN_ST] of screendimention_t;
+{$ENDIF}
 
 const
   PLAYPAL = 'PLAYPAL';
@@ -109,13 +148,27 @@ function V_ReadPalette(tag: integer): PByteArray;
 
 var
   pg_CREDIT: string = 'CREDIT';
+{$IF DEFINED(HERETIC)}
+  pg_TITLE: string = 'TITLE';
+  pg_ORDER: string = 'ORDER';
+{$ELSEIF DEFINED(HEXEN)}
+  pg_TITLE: string = 'TITLE';
+{$ELSE}
   pg_HELP: string = 'HELP';
+{$ENDIF}
   pg_HELP1: string = 'HELP1';
   pg_HELP2: string = 'HELP2';
+{$IF DEFINED(DOOM)}
   pg_VICTORY2: string = 'VICTORY2';
   pg_ENDPIC: string = 'ENDPIC';
   pg_TITLE: string = 'TITLEPIC';
   pg_DMENUPIC: string = 'DMENUPIC';
+{$ELSEIF DEFINED(STRIFE)}
+  pg_HELP3: string = 'HELP3';
+  pg_VICTORY2: string = 'VICTORY2';
+  pg_ENDPIC: string = 'ENDPIC';
+  pg_TITLE: string = 'TITLEPIC';
+{$ENDIF}
 
 implementation
 
