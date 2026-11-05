@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  S3M & MOD music file playback using mikwin.dll
+//  MOD, S3M, XM and IT music playback with the tracker written in Pascal
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -33,43 +33,33 @@ unit i_mikplay;
 
 interface
 
-uses
-  i_music;
-
 //==============================================================================
 //
 // I_PlayMik
 //
 //==============================================================================
-procedure I_PlayMik(const data: pointer; const size: integer; const typ: music_t);
+procedure I_PlayMik(const data: pointer; const size: integer);
 
 //==============================================================================
 //
 // I_PauseMik
 //
 //==============================================================================
-procedure I_PauseMik(const typ: music_t);
+procedure I_PauseMik;
 
 //==============================================================================
 //
 // I_ResumeMik
 //
 //==============================================================================
-procedure I_ResumeMik(const typ: music_t);
+procedure I_ResumeMik;
 
 //==============================================================================
 //
 // I_StopMik
 //
 //==============================================================================
-procedure I_StopMik(const typ: music_t);
-
-//==============================================================================
-//
-// I_MikUsesTracker
-//
-//==============================================================================
-function I_MikUsesTracker: boolean;
+procedure I_StopMik;
 
 //==============================================================================
 //
@@ -90,28 +80,22 @@ procedure I_ShutDownMik;
 // I_SetMusicVolumeMik
 //
 //==============================================================================
-procedure I_SetMusicVolumeMik(volume: integer; const typ: music_t);
+procedure I_SetMusicVolumeMik(volume: integer);
 
 //==============================================================================
 //
 // I_ProcessMik
 //
 //==============================================================================
-procedure I_ProcessMik(const typ: music_t);
+procedure I_ProcessMik;
 
 implementation
 
 uses
   d_delphi,
-  m_argv,
-  m_sha1,
-  m_misc,
   DelphiDoom.Mikmod.Intf,
   DelphiDoom.Mikmod.Provider,
-  i_modmusic,
-  i_s3mmusic,
   i_system,
-  i_tmp,
   i_mainwindow;
 
 var
@@ -122,23 +106,11 @@ const
 
 //==============================================================================
 //
-// I_MikUsesTracker
-//
-//==============================================================================
-function I_MikUsesTracker: boolean;
-begin
-  result := mik_init and TMikModProvider.UseTracker;
-end;
-
-//==============================================================================
-//
 // I_InitMik
 //
 //==============================================================================
 procedure I_InitMik;
 begin
-  // The tracker written in Pascal in place of the embedded MikWin library
-  TMikModProvider.UseTracker := M_CheckParm('-tracker') > 0;
   try
     TMikModProvider.Client.Initialize(MIK_FREQ, True, True, True,
       NativeUInt(hMainWnd), 0);
@@ -168,53 +140,18 @@ end;
 // I_PlayMik
 //
 //==============================================================================
-procedure I_PlayMik(const data: pointer; const size: integer; const typ: music_t);
-var
-  mikfilename: string;
+procedure I_PlayMik(const data: pointer; const size: integer);
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_PlayS3M(data, size)
-    else if typ = m_mod then
-      I_PlayMod(data, size);
     Exit;
-  end;
 
-  // The tracker written in Pascal reads the module from memory: no temporary file
-  if TMikModProvider.UseTracker then
-  begin
-    try
-      TMikModProvider.Client.LoadFromMemory(data, size);
-      TMikModProvider.Client.Play(True);
-    except
-      on E: EMikModException do
-        I_Warning('I_PlayMik(): %s'#13#10, [E.Message]);
-    end;
-    Exit;
-  end;
-
-  mikfilename := M_SaveFileName('DATA\');
-  MkDir(mikfilename);
-  mikfilename := mikfilename + 'TMP\';
-  MkDir(mikfilename);
-  mikfilename := mikfilename + 'mik_' + readablestring(SHA1_CalcSHA1Buf(data^, size)) + '.s3m';
-  if not fexists(mikfilename) or (fsize(mikfilename) <> size) then
-    M_WriteFile(mikfilename, data, size);
-  I_DeclareTempFile(mikfilename);
-
+  // The tracker reads the module from memory: no temporary file
   try
-    TMikModProvider.Client.LoadFromFile(mikfilename);
+    TMikModProvider.Client.LoadFromMemory(data, size);
     TMikModProvider.Client.Play(True);
   except
-    on EMikModException do
-    begin
-      if typ = m_s3m then
-        I_PlayS3M(data, size)
-      else if typ = m_mod then
-        I_PlayMOD(data, size);
-      mik_init := False;
-    end;
+    on E: EMikModException do
+      I_Warning('I_PlayMik(): %s'#13#10, [E.Message]);
   end;
 end;
 
@@ -223,16 +160,10 @@ end;
 // I_PauseMik
 //
 //==============================================================================
-procedure I_PauseMik(const typ: music_t);
+procedure I_PauseMik;
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_PauseS3M
-    else if typ = m_mod then
-      I_PauseMod;
     Exit;
-  end;
 
   try
     if not TMikModProvider.Client.IsPaused then
@@ -248,16 +179,10 @@ end;
 // I_ResumeMik
 //
 //==============================================================================
-procedure I_ResumeMik(const typ: music_t);
+procedure I_ResumeMik;
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_ResumeS3M
-    else if typ = m_mod then
-      I_ResumeMod;
     Exit;
-  end;
 
   try
     if TMikModProvider.Client.IsPaused then
@@ -273,16 +198,10 @@ end;
 // I_StopMik
 //
 //==============================================================================
-procedure I_StopMik(const typ: music_t);
+procedure I_StopMik;
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_StopS3M
-    else if typ = m_mod then
-      I_StopMod;
     Exit;
-  end;
 
   try
     TMikModProvider.Client.Stop;
@@ -305,16 +224,10 @@ const
 // I_SetMusicVolumeMik
 //
 //==============================================================================
-procedure I_SetMusicVolumeMik(volume: integer; const typ: music_t);
+procedure I_SetMusicVolumeMik(volume: integer);
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_SetMusicVolumeS3M(volume)
-    else if typ = m_mod then
-      I_SetMusicVolumeMod(volume);
     Exit;
-  end;
 
   try
     TMikModProvider.Client.SetVolume(MIK_VOLUME_CONTROL[ibetween(volume, 1, 15)]);
@@ -329,16 +242,10 @@ end;
 // I_ProcessMik
 //
 //==============================================================================
-procedure I_ProcessMik(const typ: music_t);
+procedure I_ProcessMik;
 begin
   if not mik_init then
-  begin
-    if typ = m_s3m then
-      I_ProcessS3M
-    else if typ = m_mod then
-      I_ProcessMod;
     Exit;
-  end;
 
   try
     TMikModProvider.Client.Update;

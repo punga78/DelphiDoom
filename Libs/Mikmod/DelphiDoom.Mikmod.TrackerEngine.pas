@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   The same contract as TMikModEngine, but the modules are played by the
+  ///   The IMikMod contract, with the modules played by the
   ///   tracker written in Pascal: there is no embedded MikWin library
   /// </summary>
   TTrackerMikModEngine = class(TInterfacedObject, IMikMod)
