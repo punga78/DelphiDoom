@@ -236,7 +236,7 @@ uses
   p_pspr_h in 'Strife\p_pspr_h.pas',
   p_saveg in 'Strife\p_saveg.pas',
   p_setup in 'Base\p_setup.pas',
-  p_sight in 'Strife\p_sight.pas',
+  p_sight in 'Base\p_sight.pas',
   p_sounds in 'Base\p_sounds.pas',
   p_spec in 'Strife\p_spec.pas',
   p_switch in 'Strife\p_switch.pas',
