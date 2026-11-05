@@ -880,9 +880,20 @@ begin
 
   if IsModMusicFile(data, size) then
   begin
-    m_type := m_mod;
-    I_PlayMod(data, size);
-    I_SetMusicVolumeMod(snd_MusicVolume);
+    if I_MikUsesTracker then
+    begin
+      // The tracker written in Pascal plays the MOD too; the type only says
+      // which routines to call, and those of m_xm go to MikMod
+      m_type := m_xm;
+      I_PlayMik(data, size, m_xm);
+      I_SetMusicVolumeMik(snd_MusicVolume, m_xm);
+    end
+    else
+    begin
+      m_type := m_mod;
+      I_PlayMod(data, size);
+      I_SetMusicVolumeMod(snd_MusicVolume);
+    end;
   end
   else if IsS3MMusicFile(data, size) then
   begin
