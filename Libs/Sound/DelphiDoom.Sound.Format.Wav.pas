@@ -31,7 +31,8 @@ implementation
 
 uses
   DelphiDoom.Sound.Codec.MsAdpcm, DelphiDoom.Sound.Codec.ImaAdpcm,
-  DelphiDoom.Sound.Codec.Gsm610, DelphiDoom.Sound.CodecSamples;
+  DelphiDoom.Sound.Codec.Gsm610, DelphiDoom.Sound.Codec.G72x,
+  DelphiDoom.Sound.CodecSamples;
 
 const
   // Stages of the header
@@ -212,6 +213,21 @@ begin
   if LUsable < LDataLength then
     LDataLength := LUsable;
 
+  if LLayout.Encoding = SNDFILE_FORMAT_G721_32 then
+  begin
+    // The decoders measure the data again
+    if LLayout.Channels <> 1 then
+      Exit(SNDFILE_ERR_MALFORMED_FILE);
+    if LDataEnd > 0 then
+      LGsmFrames := LDataEnd - LDataOffset
+    else
+      LGsmFrames := LUsable;
+    Result := TG72xDecoder.Decode(ASource, LDataOffset, LGsmFrames, 4, LGsmData, LGsmFrames);
+    if Result = SNDFILE_OK then
+      ASamples := TSoundCodecSamples.WrapG72x(LLayout.Container or SNDFILE_FORMAT_G721_32,
+        1, LLayout.SampleRate, LGsmFrames, LGsmData);
+    Exit;
+  end;
   if LLayout.Encoding = SNDFILE_FORMAT_GSM610 then
   begin
     Result := TGsm610Decoder.Decode(ASource, LDataOffset, LDataLength, True, LGsmData, LGsmFrames);

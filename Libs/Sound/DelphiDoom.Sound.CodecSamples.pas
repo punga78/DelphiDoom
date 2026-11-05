@@ -28,6 +28,9 @@ type
     ///   the end. AChannels may be more than one (AIFF): the decoded samples
     ///   then fill the start and zeros the rest
     /// </summary>
+    /// <summary>G.721 / G.723: cannot be seeked, reads are cleared to the end</summary>
+    class function WrapG72x(AFormat, AChannels, ASampleRate: Integer; AFrames: Int64;
+      const AData: TBytes): TSoundSamples; static;
     class function WrapGsm(AFormat, AChannels, ASampleRate: Integer; AFrames: Int64;
       const AData: TBytes): TSoundSamples; static;
   end;
@@ -59,6 +62,17 @@ begin
     Result.ZeroFillChunk := -1
   else
     Result.ZeroFillChunk := CODEC_BUFFER_ITEMS;
+end;
+
+class function TSoundCodecSamples.WrapG72x(AFormat, AChannels, ASampleRate: Integer;
+  AFrames: Int64; const AData: TBytes): TSoundSamples;
+var
+  LInfo: TSoundFileInfo;
+begin
+  Result := Wrap(AFormat, AChannels, ASampleRate, AFrames, AData, True);
+  LInfo := Result.Info;
+  LInfo.Seekable := 0;
+  Result.ReplaceInfo(LInfo);
 end;
 
 class function TSoundCodecSamples.WrapGsm(AFormat, AChannels, ASampleRate: Integer;

@@ -61,6 +61,7 @@ uses
   DelphiDoom.Sound.Codec.MsAdpcm in '..\Libs\Sound\DelphiDoom.Sound.Codec.MsAdpcm.pas',
   DelphiDoom.Sound.Codec.ImaAdpcm in '..\Libs\Sound\DelphiDoom.Sound.Codec.ImaAdpcm.pas',
   DelphiDoom.Sound.Codec.Gsm610 in '..\Libs\Sound\DelphiDoom.Sound.Codec.Gsm610.pas',
+  DelphiDoom.Sound.Codec.G72x in '..\Libs\Sound\DelphiDoom.Sound.Codec.G72x.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',

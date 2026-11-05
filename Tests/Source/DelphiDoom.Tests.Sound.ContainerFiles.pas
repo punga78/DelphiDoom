@@ -113,6 +113,8 @@ type
     /// </summary>
     /// <summary>The 'fmt ' chunk of a GSM 6.10 WAV: 65 byte blocks of 320 samples</summary>
     class function GsmFormat: TBytes; static;
+    /// <summary>The 'fmt ' chunk of a G.721 WAV</summary>
+    class function G721Format: TBytes; static;
     class function AdpcmFormat(ATag, AChannels: Word; ARate: Cardinal;
       ABlockAlign, ASamplesPerBlock: Word): TBytes; static;
     /// <summary>A RIFF WAV with the given 'fmt ' chunk and data, and a chunk after the data if asked</summary>
@@ -632,6 +634,21 @@ begin
   LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;
+class function TSoundTestContainerFile.G721Format: TBytes;
+var
+  LSink: TSink;
+begin
+  LSink.AddNumber($40, 2, False);
+  LSink.AddNumber(1, 2, False);
+  LSink.AddNumber(8000, 4, False);
+  LSink.AddNumber(4000, 4, False);
+  LSink.AddNumber(0, 2, False);
+  LSink.AddNumber(4, 2, False);
+  LSink.AddNumber(2, 2, False);
+  LSink.AddNumber(1, 2, False);
+  Result := LSink.Bytes;
+end;
+
 class function TSoundTestContainerFile.GsmFormat: TBytes;
 var
   LSink: TSink;

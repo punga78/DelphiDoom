@@ -105,6 +105,8 @@ type
     [Test]
     procedure TestGsm610;
     [Test]
+    procedure TestG72x;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -947,6 +949,33 @@ begin
   CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc gsm 610 bad frame');
   LOptions := TSoundTestAiffOptions.Compressed('GSM ', 2, 16);
   CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc gsm 610 two channels');
+end;
+
+procedure TTestSoundParity.TestG72x;
+var
+  LOptions: TSoundTestAuOptions;
+  LBits: Integer;
+begin
+  // 120 samples make 60, 45 or 75 bytes
+  for LBits in [3, 4, 5] do
+  begin
+    LOptions := TSoundTestAuOptions.Plain(22 + LBits - 2 + Ord(LBits = 5) - Ord(LBits = 4) * 0, 1);
+    case LBits of
+      3: LOptions := TSoundTestAuOptions.Plain(25, 1);
+      4: LOptions := TSoundTestAuOptions.Plain(23, 1);
+    else
+      LOptions := TSoundTestAuOptions.Plain(26, 1);
+    end;
+    LOptions.BigEndian := True;
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions,
+      TSoundTestWavFile.RandomBytes(LBits * 15 * 5, LBits)), Format('au g72x %d bits', [LBits]));
+    CheckSame(TSoundTestContainerFile.BuildAu(LOptions,
+      TSoundTestWavFile.RandomBytes(LBits * 15 * 3 + 7, LBits)), Format('au g72x %d bits cut block', [LBits]));
+  end;
+  CheckSame(TSoundTestContainerFile.BuildWavWithFormat(TSoundTestContainerFile.G721Format,
+    TSoundTestWavFile.RandomBytes(60 * 6, 9), False), 'wav g721');
+  LOptions := TSoundTestAuOptions.Plain(23, 2);
+  CheckSameFailure(TSoundTestContainerFile.BuildAu(LOptions, TSoundTestWavFile.RandomBytes(120, 1)), 'au g721 stereo');
 end;
 
 procedure TTestSoundParity.TestAvr;
