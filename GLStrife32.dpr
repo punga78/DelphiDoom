@@ -226,7 +226,7 @@ uses
   p_floor in 'Strife\p_floor.pas',
   p_inter in 'Strife\p_inter.pas',
   p_lights in 'Strife\p_lights.pas',
-  p_local in 'Strife\p_local.pas',
+  p_local in 'Base\p_local.pas',
   p_map in 'Strife\p_map.pas',
   p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Strife\p_mobj.pas',

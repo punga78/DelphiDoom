@@ -193,7 +193,7 @@ uses
   p_inter in 'Hexen\p_inter.pas',
   udmf_telept in 'Base\udmf_telept.pas',
   udmf_lights in 'Base\udmf_lights.pas',
-  p_local in 'Hexen\p_local.pas',
+  p_local in 'Base\p_local.pas',
   p_map in 'Hexen\p_map.pas',
   p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Hexen\p_mobj.pas',

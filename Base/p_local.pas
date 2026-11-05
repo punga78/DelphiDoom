@@ -43,10 +43,18 @@ const
   TOCENTER = -8;
   TOFORWARD = -8;
 
+{$IFDEF STRIFE}
+  FLOATSPEED = FRACUNIT * 5;
+{$ELSE}
   FLOATSPEED = FRACUNIT * 4;
+{$ENDIF}
 
 // Player VIEWHEIGHT
+{$IFDEF HEXEN}
+  PVIEWHEIGHT = 48 * FRACUNIT;
+{$ELSE}
   PVIEWHEIGHT = 41 * FRACUNIT;
+{$ENDIF}
 
 // JVAL: 20211101 - Crouch
   PMAXCROUCHHEIGHT = 18 * FRACUNIT;
@@ -73,19 +81,68 @@ const
   USETHINGRANGEINT = 96;
   USETHINGRANGE = USETHINGRANGEINT * FRACUNIT;
   MELEERANGE = 64 * FRACUNIT;
+{$IFDEF STRIFE}
+  PLAYERMELEERANGE = 80 * FRACUNIT;
+{$ENDIF}
   MISSILERANGE = (32 * 64) * FRACUNIT;
 
 // follow a player exlusively for 3 seconds
   BASETHRESHOLD = 100;
 
+{$IF DEFINED(HERETIC)}
+const
+  FLOOR_SOLID = 0;
+  FLOOR_WATER = 1;
+  FLOOR_LAVA = 2;
+  FLOOR_SLUDGE = 3;
+{$ELSEIF DEFINED(HEXEN)}
+const
+  FLOOR_SOLID = 0;
+  FLOOR_ICE = 1;
+  FLOOR_LIQUID = 2;
+  FLOOR_WATER = 3;
+  FLOOR_LAVA = 4;
+  FLOOR_SLUDGE = 5;
+{$ELSE}
   ONFLOORZ = MININT;
 
   ONCEILINGZ = MAXINT;
 
   ONFLOATZ = MAXINT - 1;
+{$ENDIF}
 
 const
+{$IF DEFINED(HERETIC)}
+  STARTREDPALS = 1;
+  STARTBONUSPALS = 9;
+  NUMREDPALS = 8;
+  NUMBONUSPALS = 4;
+
+const
+  ONFLOORZ = MININT;
+  ONCEILINGZ = MAXINT;
+  FLOATRANDZ = MAXINT - 1;
+  ONFLOATZ = MAXINT - 2;
+{$ELSEIF DEFINED(HEXEN)}
+  STARTREDPALS = 1;
+  STARTBONUSPALS = 9;
+  STARTPOISONPALS = 13;
+  STARTICEPAL = 21;
+  STARTHOLYPAL = 22;
+  STARTSCOURGEPAL = 25;
+  NUMREDPALS = 8;
+  NUMBONUSPALS = 4;
+  NUMPOISONPALS = 8;
+
+const
+  ONFLOORZ = MININT;
+  ONCEILINGZ = MAXINT;
+  FLOATRANDZ = MAXINT - 1;
+{$ELSEIF DEFINED(STRIFE)}
+  FOOTCLIPSIZE = 13 * FRACUNIT;
+{$ELSE}
   FOOTCLIPSIZE = 10 * FRACUNIT;
+{$ENDIF}
 
 type
   divline_t = record
@@ -126,6 +183,29 @@ const
   PT_ADDTHINGS = 2;
   PT_EARLYOUT = 4;
 
+{$IF DEFINED(HERETIC)}
+const
+  FOOTCLIPSIZE = 10 * FRACUNIT;
+
+{$ELSEIF DEFINED(HEXEN)}
+const
+  USE_GWND_AMMO_1 = 1;
+  USE_GWND_AMMO_2 = 1;
+  USE_CBOW_AMMO_1 = 1;
+  USE_CBOW_AMMO_2 = 1;
+  USE_BLSR_AMMO_1 = 1;
+  USE_BLSR_AMMO_2 = 5;
+  USE_SKRD_AMMO_1 = 1;
+  USE_SKRD_AMMO_2 = 5;
+  USE_PHRD_AMMO_1 = 1;
+  USE_PHRD_AMMO_2 = 1;
+  USE_MACE_AMMO_1 = 1;
+  USE_MACE_AMMO_2 = 5;
+
+const
+  FOOTCLIPSIZE = 10 * FRACUNIT;
+
+{$ENDIF}
 //==============================================================================
 //
 // MapBlockInt
@@ -154,9 +234,21 @@ function MapBlockIntY(const y: int64): integer;
 //==============================================================================
 function MapToFrac(const x: integer): integer;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+//==============================================================================
+//
+// HITDICE
+//
+//==============================================================================
+function HITDICE(a: integer): integer;
+
+{$ENDIF}
 implementation
 
 uses
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  m_rnd,
+{$ENDIF}
   p_setup;
 
 //==============================================================================
@@ -203,5 +295,17 @@ asm
   sar eax, MAPBTOFRAC
 end;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+//==============================================================================
+//
+// HITDICE
+//
+//==============================================================================
+function HITDICE(a: integer): integer;
+begin
+  result :=  (1 + (P_Random and 7)) * a;
+end;
+
+{$ENDIF}
 end.
 

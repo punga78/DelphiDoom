@@ -218,7 +218,7 @@ uses
   p_floor in 'Heretic\p_floor.pas',
   p_inter in 'Heretic\p_inter.pas',
   p_lights in 'Heretic\p_lights.pas',
-  p_local in 'Heretic\p_local.pas',
+  p_local in 'Base\p_local.pas',
   p_map in 'Heretic\p_map.pas',
   p_maputl in 'Base\p_maputl.pas',
   p_mobj in 'Heretic\p_mobj.pas',
