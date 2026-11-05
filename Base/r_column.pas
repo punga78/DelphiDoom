@@ -397,7 +397,12 @@ var
   frac: fixed_t;
   fracstep: fixed_t;
   fraclimit: fixed_t;
+{$IF DEFINED(DOOM)}
   fraclimit2: fixed_t;
+{$ELSEIF DEFINED(STRIFE)}
+  fraclimit2: fixed_t;
+  destlimit: integer;
+{$ENDIF}
   spot: integer;
   swidth: integer;
 
@@ -439,6 +444,9 @@ begin
       R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);
       {$UNDEF INVERSECOLORMAPS}
       {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+      {$UNDEF FOG}
+{$ENDIF}
       {$UNDEF SMALLSTEPOPTIMIZER}
       {$I ..\Base\R_DrawColumnHi.inc}
     end
@@ -446,11 +454,18 @@ begin
     begin
       {$DEFINE INVERSECOLORMAPS}
       {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+      {$UNDEF FOG}
+{$ENDIF}
       {$UNDEF SMALLSTEPOPTIMIZER}
       {$I ..\Base\R_DrawColumnHi.inc}
     end;
   end
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  else
+{$ELSE}
   else if fracstep > FRACUNIT div 6 then
+{$ENDIF}
   begin
     lspot := MININT;
     ldest := 0;
@@ -459,6 +474,9 @@ begin
       R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);
       {$UNDEF INVERSECOLORMAPS}
       {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+      {$UNDEF FOG}
+{$ENDIF}
       {$DEFINE SMALLSTEPOPTIMIZER}
       {$I ..\Base\R_DrawColumnHi.inc}
     end
@@ -466,8 +484,12 @@ begin
     begin
       {$DEFINE INVERSECOLORMAPS}
       {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+      {$UNDEF FOG}
+{$ENDIF}
       {$DEFINE SMALLSTEPOPTIMIZER}
       {$I ..\Base\R_DrawColumnHi.inc}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
     end;
   end
   else
@@ -495,6 +517,7 @@ begin
       begin
       {$I R_DrawColumnHi_SmallStepLoop.inc}
       end;
+{$ENDIF}
     end;
   end;
 end;
@@ -554,12 +577,20 @@ begin
     R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);
     {$UNDEF INVERSECOLORMAPS}
     {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+    {$UNDEF FOG}
+    {$UNDEF SMALLSTEPOPTIMIZER}
+{$ENDIF}
     {$I ..\Base\R_DrawColumnUltra.inc}
   end
   else
   begin
     {$DEFINE INVERSECOLORMAPS}
     {$UNDEF MASKEDCOLUMN}
+{$IFDEF HEXEN}
+    {$UNDEF FOG}
+    {$UNDEF SMALLSTEPOPTIMIZER}
+{$ENDIF}
     {$I ..\Base\R_DrawColumnUltra.inc}
   end;
 end;

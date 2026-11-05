@@ -254,7 +254,7 @@ uses
   r_col_ms in 'Doom\r_col_ms.pas',
   r_col_sk in 'Doom\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',
-  r_column in 'Doom\r_column.pas',
+  r_column in 'Base\r_column.pas',
   r_data in 'Doom\r_data.pas',
   r_defs in 'Doom\r_defs.pas',
   r_draw in 'Doom\r_draw.pas',

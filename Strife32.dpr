@@ -258,7 +258,7 @@ uses
   r_col_ms in 'Strife\r_col_ms.pas',
   r_col_sk in 'Strife\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',
-  r_column in 'Strife\r_column.pas',
+  r_column in 'Base\r_column.pas',
   r_data in 'Strife\r_data.pas',
   r_defs in 'Strife\r_defs.pas',
   r_draw in 'Strife\r_draw.pas',
