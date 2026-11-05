@@ -120,6 +120,8 @@ const
 //==============================================================================
 procedure I_InitMik;
 begin
+  // The tracker written in Pascal in place of the embedded MikWin library
+  TMikModProvider.UseTracker := M_CheckParm('-tracker') > 0;
   try
     TMikModProvider.Client.Initialize(MIK_FREQ, True, True, True,
       NativeUInt(hMainWnd), 0);

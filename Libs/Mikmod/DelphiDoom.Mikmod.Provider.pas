@@ -26,11 +26,18 @@ type
   private
     class var FMikMod: IMikMod;
     class var FClient: TMikModClient;
+    class var FUseTracker: Boolean;
   public
     /// <summary>
     ///   The client shared by the engine; created on first use
     /// </summary>
     class function Client: TMikModClient; static;
+
+    /// <summary>
+    ///   True to play the modules with the tracker written in Pascal instead of
+    ///   the embedded MikWin library; it must be set before the first use
+    /// </summary>
+    class property UseTracker: Boolean read FUseTracker write FUseTracker;
 
     /// <summary>
     ///   Replaces the MikMod implementation (DLL or fake). Pass nil to go back
@@ -47,7 +54,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Mikmod.Engine;
+  System.SysUtils, DelphiDoom.Mikmod.Engine, DelphiDoom.Mikmod.TrackerEngine;
 
 { TMikModProvider }
 
@@ -56,7 +63,12 @@ begin
   if not Assigned(FClient) then
   begin
     if not Assigned(FMikMod) then
-      FMikMod := TMikModEngine.Create;
+    begin
+      if FUseTracker then
+        FMikMod := TTrackerMikModEngine.Create
+      else
+        FMikMod := TMikModEngine.Create;
+    end;
     FClient := TMikModClient.Create(FMikMod);
   end;
   Result := FClient;
