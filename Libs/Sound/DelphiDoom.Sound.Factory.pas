@@ -33,7 +33,8 @@ uses
   DelphiDoom.Sound.Format.Aiff, DelphiDoom.Sound.Format.Au,
   DelphiDoom.Sound.Format.Voc, DelphiDoom.Sound.Format.Avr,
   DelphiDoom.Sound.Format.Htk, DelphiDoom.Sound.Format.W64,
-  DelphiDoom.Sound.Format.Rf64, DelphiDoom.Sound.Format.Caf;
+  DelphiDoom.Sound.Format.Rf64, DelphiDoom.Sound.Format.Caf,
+  DelphiDoom.Sound.Format.Svx, DelphiDoom.Sound.Format.Ircam;
 
 { TSoundFactory }
 
@@ -42,7 +43,8 @@ begin
   Result := [TWavFormat.Create, TAiffFormat.Create, TAuFormat.Create,
     TVocFormat.Create, TAvrFormat.Create, THtkFormat.Create,
     TW64Format.Create, TRf64Format.Create,
-    TCafFormat.Create];
+    TCafFormat.Create,
+    TSvxFormat.Create, TIrcamFormat.Create];
 end;
 
 class function TSoundFactory.CreateEngine: ISndfile;

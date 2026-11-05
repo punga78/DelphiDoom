@@ -87,6 +87,10 @@ type
     [Test]
     procedure TestCaf;
     [Test]
+    procedure TestSvx;
+    [Test]
+    procedure TestIrcam;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -712,6 +716,51 @@ begin
   CheckSameFailure(TSoundTestContainerFile.BuildCaf('lpcm', 0, 3, 1, 16, 8000.0, False, False, LPayload), 'caf bad packet');
   CheckSameFailure(TSoundTestContainerFile.BuildCaf('zzzz', 0, 2, 1, 16, 8000.0, False, False, LPayload), 'caf unknown');
   CheckSameFailure(TSoundTestContainerFile.BuildCaf('lpcm', 0, 2, 1, 16, 0.0, False, False, LPayload), 'caf rate 0');
+end;
+
+procedure TTestSoundParity.TestSvx;
+begin
+  CheckSame(TSoundTestContainerFile.BuildSvx(False, 8000, 0, False, False,
+    TSoundTestWavFile.RandomBytes(301, 1)), 'svx 8 bit');
+  CheckSame(TSoundTestContainerFile.BuildSvx(True, 22050, 0, False, False,
+    TSoundTestWavFile.RandomBytes(301, 2)), 'svx 16 bit');
+  CheckSame(TSoundTestContainerFile.BuildSvx(True, 22050, 0, True, True,
+    TSoundTestWavFile.RandomBytes(400, 3)), 'svx stereo with chunks');
+  CheckSame(TSoundTestContainerFile.BuildSvx(False, 8000, 0, False, True,
+    TSoundTestWavFile.RandomBytes(100, 4)), 'svx with name');
+  CheckSameFailure(TSoundTestContainerFile.BuildSvx(False, 8000, 1, False, False,
+    TSoundTestWavFile.RandomBytes(100, 5)), 'svx fibonacci');
+  CheckSameFailure(TSoundTestContainerFile.BuildSvx(False, 0, 0, False, False,
+    TSoundTestWavFile.RandomBytes(100, 5)), 'svx rate 0');
+end;
+
+procedure TTestSoundParity.TestIrcam;
+const
+  LE_MARKER: array[0..3] of Byte = ($00, $01, $A3, $64);
+  LE_MARKER_4: array[0..3] of Byte = ($00, $04, $A3, $64);
+  BE_MARKER: array[0..3] of Byte = ($64, $A3, $02, $00);
+var
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 44100.0, 2, $2,
+    TSoundTestWavFile.RandomBytes(4 * 101 + 1, 1)), 'ircam 16 bit');
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER_4, False, 22050.5, 1, $40004,
+    TSoundTestWavFile.RandomBytes(4 * 101, 2)), 'ircam 32 bit');
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 8000.0, 2, $4,
+    TSoundTestWavFile.FloatPayload(100, 3, False, False)), 'ircam float');
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 8000.0, 2, $10001, LPayload), 'ircam alaw');
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 8000.0, 1, $20001, LPayload), 'ircam ulaw');
+  // Fields that are big endian: the channel count tells
+  CheckSame(TSoundTestContainerFile.BuildIrcam(LE_MARKER, True, 44100.0, 2, $2,
+    TSoundTestWavFile.RandomBytes(4 * 100, 4)), 'ircam big endian fields');
+
+  CheckSameFailure(TSoundTestContainerFile.BuildIrcam(BE_MARKER, True, 44100.0, 2, $2, LPayload), 'ircam big endian marker');
+  CheckSameFailure(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 44100.0, 2, $99, LPayload), 'ircam unknown encoding');
+  CheckSameFailure(TSoundTestContainerFile.BuildIrcam(LE_MARKER, False, 44100.0, 0, $2, LPayload), 'ircam no channels');
 end;
 
 procedure TTestSoundParity.TestAvr;

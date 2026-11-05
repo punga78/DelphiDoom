@@ -97,6 +97,8 @@ var
 begin
   ASamples := nil;
   LEncoding := ALayout.Encoding;
+  if (ALayout.Channels < 1) or (ALayout.BytesPerSample < 1) then
+    Exit(SNDFILE_ERR_MALFORMED_FILE);
 
   case LEncoding of
     SNDFILE_FORMAT_PCM_S8, SNDFILE_FORMAT_PCM_U8, SNDFILE_FORMAT_ULAW,

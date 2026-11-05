@@ -86,7 +86,15 @@ type
     /// </summary>
     class function BuildCaf(const AFormatId: AnsiString; AFlags, APacketBytes,
       AChannels, ABits: Cardinal; ARate: Double; AFree, AInfoAfter: Boolean;
-      const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+      const APayload: TBytes): TBytes; static;    /// <summary>SVX: 8SVX or 16SV, with optional NAME, ANNO and CHAN chunks before the BODY</summary>
+    class function BuildSvx(A16Bit: Boolean; ARate: Word; ACompression: Byte;
+      AChannelChunk, AExtraChunks: Boolean; const APayload: TBytes): TBytes; static;
+    /// <summary>
+    ///   IRCAM: the fields are written big endian when ABigFields; AMarker are
+    ///   the first four bytes
+    /// </summary>
+    class function BuildIrcam(const AMarker: array of Byte; ABigFields: Boolean;
+      ARate: Single; AChannels, AEncoding: Cardinal; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -344,6 +352,67 @@ begin
     LSink.AddNumber(0, 4, True);
     LSink.AddText('abcdefgh');
   end;
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.BuildSvx(A16Bit: Boolean; ARate: Word;
+  ACompression: Byte; AChannelChunk, AExtraChunks: Boolean;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+begin
+  LSink.AddText('FORM');
+  LSink.AddNumber(0, 4, True);
+  if A16Bit then
+    LSink.AddText('16SV')
+  else
+    LSink.AddText('8SVX');
+  LSink.AddText('VHDR');
+  LSink.AddNumber(20, 4, True);
+  LSink.AddNumber(Cardinal(Length(APayload)), 4, True);
+  LSink.AddNumber(0, 4, True);
+  LSink.AddNumber(32, 4, True);
+  LSink.AddNumber(ARate, 2, True);
+  LSink.Add(1);
+  LSink.Add(ACompression);
+  LSink.AddNumber($10000, 4, True);
+  if AExtraChunks then
+  begin
+    LSink.AddText('NAME');
+    LSink.AddNumber(4, 4, True);
+    LSink.AddText('abcd');
+    LSink.AddText('ANNO');
+    LSink.AddNumber(8, 4, True);
+    LSink.AddText('libsndfi');
+  end;
+  if AChannelChunk then
+  begin
+    LSink.AddText('CHAN');
+    LSink.AddNumber(4, 4, True);
+    LSink.AddNumber(6, 4, True);
+  end;
+  LSink.AddText('BODY');
+  LSink.AddNumber(Cardinal(Length(APayload)), 4, True);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildIrcam(const AMarker: array of Byte;
+  ABigFields: Boolean; ARate: Single; AChannels, AEncoding: Cardinal;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LIndex: Integer;
+  LBits: Cardinal;
+begin
+  for LIndex := 0 to 3 do
+    LSink.Add(AMarker[LIndex]);
+  Move(ARate, LBits, 4);
+  LSink.AddNumber(LBits, 4, ABigFields);
+  LSink.AddNumber(AChannels, 4, ABigFields);
+  LSink.AddNumber(AEncoding, 4, ABigFields);
+  while Length(LSink.Bytes) < 1024 do
+    LSink.Add(0);
+  LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;
 class function TSoundTestContainerFile.BuildAvr(AMono, AResolution, ASign: Word;
