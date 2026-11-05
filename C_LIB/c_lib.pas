@@ -751,7 +751,7 @@ var
   o: PByte;
   r: PByte;
 
-  procedure Append(const p: String);
+  procedure Append(const p: AnsiString);
   var
     q: Integer;
   begin
@@ -768,7 +768,7 @@ var
       else
         Inc(o, Width - Length(p));
     end;
-    if buffer <> nil then CopyMemory(o, PChar(p), Length(p));
+    if buffer <> nil then CopyMemory(o, PAnsiChar(p), Length(p));
     Inc(o, Length(p));
   end;
 
@@ -1371,12 +1371,12 @@ end;
 //==============================================================================
 function _memchr(const p: Pointer; value: integer; num: integer): Pointer; cdecl;
 var
-  pc: PChar;
-  c: char;
+  pc: PByte;
+  c: Byte;
   i: integer;
 begin
   pc := p;
-  c := Chr(value);
+  c := Byte(value);
   for i := 0 to num - 1 do
   begin
     if pc^ = c then
@@ -1483,8 +1483,8 @@ end;
 function _printf(format: Pointer; arguments: Pointer): Integer; cdecl;
 var
   m: Integer;
-  n: PChar;
-  s: string;
+  n: PAnsiChar;
+  s: AnsiString;
 begin
   m := sprintfsec(nil, format, @arguments);
   GetMem(n, m + 1);
@@ -1931,7 +1931,7 @@ begin
 end;
 
 var
-  _getenvbuf: packed array[0..512] of char;
+  _getenvbuf: packed array[0..512] of AnsiChar;
 
 //==============================================================================
 //
@@ -1941,7 +1941,7 @@ var
 function _getenv(const env: PAnsiChar): PAnsiChar; cdecl;
 begin
   ZeroMemory(@_getenvbuf, SizeOf(_getenvbuf));
-  GetEnvironmentVariable(PChar(env), _getenvbuf, SizeOf(_getenvbuf));
+  GetEnvironmentVariableA(env, @_getenvbuf[0], SizeOf(_getenvbuf));
   result := @_getenvbuf[0];
 end;
 
