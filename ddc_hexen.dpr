@@ -229,7 +229,7 @@ uses
   r_col_fog in 'Hexen\r_col_fog.pas',
   r_col_fz in 'Hexen\r_col_fz.pas',
   r_col_l in 'Base\r_col_l.pas',
-  r_col_ms in 'Hexen\r_col_ms.pas',
+  r_col_ms in 'Base\r_col_ms.pas',
   r_col_ms_fog in 'Hexen\r_col_ms_fog.pas',
   r_col_sk in 'Base\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',

@@ -60,6 +60,9 @@ procedure R_DrawMaskedColumnHi32;
 procedure R_DrawMaskedColumnUltra32;
 
 implementation
+{$IFDEF HEXEN}
+{$UNDEF FOG}
+{$ENDIF}
 
 uses
   d_delphi,
@@ -69,7 +72,9 @@ uses
   r_draw,
   r_main,
   r_column,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   r_colormaps,
+{$ENDIF}
   r_hires,
   v_video;
 
@@ -106,8 +111,17 @@ begin
 
   swidth := SCREENWIDTH32PITCH;
   lfactor := dc_lightlevel;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  if lfactor >= 0 then
+{$ELSE}
   if customcolormap = nil then
+{$ENDIF}
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);  // JVAL: Mars fog sectors
+    {$UNDEF INVERSECOLORMAPS}
+    {$I ..\Base\R_DrawMaskedColumnNormal.inc}
+{$ELSE}
     if lfactor >= 0 then
     begin
       R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);  // JVAL: Mars fog sectors
@@ -121,9 +135,14 @@ begin
       {$UNDEF CUSTOMCOLORMAP}
       {$I ..\Base\R_DrawMaskedColumnNormal.inc}
     end;
+{$ENDIF}
   end
   else
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    {$DEFINE INVERSECOLORMAPS}
+    {$I ..\Base\R_DrawMaskedColumnNormal.inc}
+{$ELSE}
     if lfactor >= 0 then
     begin
       R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);  // JVAL: Mars fog sectors
@@ -137,6 +156,7 @@ begin
       {$DEFINE CUSTOMCOLORMAP}
       {$I ..\Base\R_DrawMaskedColumnNormal.inc}
     end;
+{$ENDIF}
   end;
 end;
 
@@ -157,7 +177,11 @@ var
   fraclimit: fixed_t;
   swidth: integer;
   r1, g1, b1: byte;
+{$IFDEF DOOM}
   c: LongWord;
+{$ELSE}
+  c, c1, r, g, b: LongWord;
+{$ENDIF}
   lfactor: integer;
   bf_r: PIntegerArray;
   bf_g: PIntegerArray;
