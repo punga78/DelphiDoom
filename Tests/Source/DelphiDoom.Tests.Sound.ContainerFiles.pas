@@ -111,6 +111,8 @@ type
     class function BuildMpc2k(AStereo: Boolean; ARate: Word; const APayload: TBytes): TBytes; static;    /// <summary>
     ///   The 'fmt ' chunk of an ADPCM WAV: ATag 2 (Microsoft) or 17 (IMA)
     /// </summary>
+    /// <summary>The 'fmt ' chunk of a GSM 6.10 WAV: 65 byte blocks of 320 samples</summary>
+    class function GsmFormat: TBytes; static;
     class function AdpcmFormat(ATag, AChannels: Word; ARate: Cardinal;
       ABlockAlign, ASamplesPerBlock: Word): TBytes; static;
     /// <summary>A RIFF WAV with the given 'fmt ' chunk and data, and a chunk after the data if asked</summary>
@@ -630,6 +632,21 @@ begin
   LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;
+class function TSoundTestContainerFile.GsmFormat: TBytes;
+var
+  LSink: TSink;
+begin
+  LSink.AddNumber($31, 2, False);
+  LSink.AddNumber(1, 2, False);
+  LSink.AddNumber(8000, 4, False);
+  LSink.AddNumber(1625, 4, False);
+  LSink.AddNumber(65, 2, False);
+  LSink.AddNumber(0, 2, False);
+  LSink.AddNumber(2, 2, False);
+  LSink.AddNumber(320, 2, False);
+  Result := LSink.Bytes;
+end;
+
 class function TSoundTestContainerFile.AdpcmFormat(ATag, AChannels: Word;
   ARate: Cardinal; ABlockAlign, ASamplesPerBlock: Word): TBytes;
 const

@@ -31,7 +31,9 @@ type
 implementation
 
 uses
-  DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader;
+  DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader,
+  DelphiDoom.Sound.Codec.Gsm610, DelphiDoom.Sound.Codec.ImaAdpcm,
+  DelphiDoom.Sound.CodecSamples;
 
 const
   HAVE_FORM = $01;
@@ -56,6 +58,7 @@ type
   TAiffComm = record
     Size: Cardinal;
     Channels: SmallInt;
+    Frames: Cardinal;
     SampleSize: SmallInt;
     SampleRate: array[0..9] of Byte;
     Encoding: Cardinal;
@@ -116,7 +119,7 @@ var
   LIndex: Integer;
 begin
   AComm.Channels := SmallInt(AReader.ReadUInt16);
-  AReader.ReadUInt32;
+  AComm.Frames := AReader.ReadUInt32;
   AComm.SampleSize := SmallInt(AReader.ReadUInt16);
   for LIndex := 0 to High(AComm.SampleRate) do
     AComm.SampleRate[LIndex] := AReader.ReadByte;
@@ -199,9 +202,19 @@ begin
   end
   else if AComm.Encoding = MARKER_RAW then
     LCodec := SNDFILE_FORMAT_PCM_U8
-  else if (AComm.Encoding = MARKER_DWVW) or (AComm.Encoding = MARKER_GSM) or
-          (AComm.Encoding = MARKER_IMA4) then
-    // Compressed encodings: not read yet
+  else if AComm.Encoding = MARKER_GSM then
+  begin
+    // The samples are made by the codec, whatever the sample size says
+    LCodec := SNDFILE_FORMAT_GSM610;
+    LByteWidth := 0;
+  end
+  else if AComm.Encoding = MARKER_IMA4 then
+  begin
+    LCodec := SNDFILE_FORMAT_IMA_ADPCM;
+    LByteWidth := 0;
+  end
+  else if AComm.Encoding = MARKER_DWVW then
+    // Not read yet
     Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING)
   else
     Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
@@ -213,7 +226,7 @@ begin
         Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
     SNDFILE_FORMAT_PCM_16, SNDFILE_FORMAT_PCM_24, SNDFILE_FORMAT_PCM_32,
     SNDFILE_FORMAT_FLOAT, SNDFILE_FORMAT_DOUBLE, SNDFILE_FORMAT_ULAW,
-    SNDFILE_FORMAT_ALAW:
+    SNDFILE_FORMAT_ALAW, SNDFILE_FORMAT_GSM610, SNDFILE_FORMAT_IMA_ADPCM:
       ;
   else
     Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
@@ -245,6 +258,8 @@ var
   LPascalLength: Byte;
   LStringLength: Word;
   LSkipped: Integer;
+  LData: TBytes;
+  LFrames: Int64;
 begin
   ASamples := nil;
   LFileLength := Length(ASource);
@@ -466,6 +481,36 @@ begin
     Exit(SNDFILE_ERR_MALFORMED_FILE);
   if (LFound and HAVE_SSND) = 0 then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
+
+  if LLayout.Encoding = SNDFILE_FORMAT_GSM610 then
+  begin
+    if LDataLength < 0 then
+      LDataLength := 0;
+    Result := TGsm610Decoder.Decode(ASource, LDataOffset, LDataLength, False, LData, LFrames);
+    // libsndfile keeps the number of frames of the COMM chunk if it is smaller
+    if LFrames > LComm.Frames then
+      LFrames := LComm.Frames;
+    if Result = SNDFILE_OK then
+      ASamples := TSoundCodecSamples.WrapGsm(LLayout.Format, LLayout.Channels,
+        LLayout.SampleRate, LFrames, LData);
+    Exit;
+  end;
+
+  if LLayout.Encoding = SNDFILE_FORMAT_IMA_ADPCM then
+  begin
+    if LDataEnd > 0 then
+      LDataLength := LDataEnd - LDataOffset
+    else if LFileLength > LDataOffset then
+      LDataLength := LFileLength - LDataOffset
+    else
+      LDataLength := 0;
+    Result := TImaAdpcmDecoder.DecodeAiff(ASource, LDataOffset, LDataLength,
+      LLayout.Channels, LData, LFrames);
+    if Result = SNDFILE_OK then
+      ASamples := TSoundCodecSamples.Wrap(LLayout.Format, LLayout.Channels,
+        LLayout.SampleRate, LFrames, LData);
+    Exit;
+  end;
 
   // The decoders measure the data again: up to the end of the file or of the SSND chunk
   if LFileLength > LDataOffset then

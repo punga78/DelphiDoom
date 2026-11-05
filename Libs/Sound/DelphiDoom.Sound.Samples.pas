@@ -40,12 +40,15 @@ type
     FReadsDirectly: Boolean;
     FBigEndian: Boolean;
     FZeroFillChunk: Integer;
+    FAvailableFrames: Int64;
   public
     /// <summary>
     ///   AData must hold exactly AInfo.Frames * AInfo.Channels samples of AKind
     /// </summary>
     constructor Create(const AInfo: TSoundFileInfo; AKind: TSoundSampleKind;
       const AData: TBytes);
+    /// <summary>Changes the description, for what only the codec knows (can the sound be seeked)</summary>
+    procedure ReplaceInfo(const AInfo: TSoundFileInfo);
 
     class function BytesPerSample(AKind: TSoundSampleKind): Integer; static;
 
@@ -91,11 +94,22 @@ type
     ///   Zero for the formats that leave the buffer alone
     /// </summary>
     property ZeroFillChunk: Integer read FZeroFillChunk write FZeroFillChunk;
+    /// <summary>
+    ///   How many frames the codec really has when that is less than Info.Frames
+    ///   (GSM with more channels than it decodes); a read stops there. -1 when
+    ///   the sound has all of Info.Frames
+    /// </summary>
+    property AvailableFrames: Int64 read FAvailableFrames write FAvailableFrames;
   end;
 
 implementation
 
 { TSoundSamples }
+
+procedure TSoundSamples.ReplaceInfo(const AInfo: TSoundFileInfo);
+begin
+  FInfo := AInfo;
+end;
 
 constructor TSoundSamples.Create(const AInfo: TSoundFileInfo;
   AKind: TSoundSampleKind; const AData: TBytes);
@@ -108,6 +122,7 @@ begin
   FInfo := AInfo;
   FKind := AKind;
   FData := AData;
+  FAvailableFrames := -1;
 end;
 
 class function TSoundSamples.BytesPerSample(AKind: TSoundSampleKind): Integer;

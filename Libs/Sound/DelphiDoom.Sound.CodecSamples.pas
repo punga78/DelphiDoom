@@ -23,6 +23,13 @@ type
   public
     class function Wrap(AFormat, AChannels, ASampleRate: Integer; AFrames: Int64;
       const AData: TBytes; AZeroAll: Boolean = False): TSoundSamples; static;
+    /// <summary>
+    ///   GSM 6.10: a sound that cannot be seeked, whose reads are cleared to
+    ///   the end. AChannels may be more than one (AIFF): the decoded samples
+    ///   then fill the start and zeros the rest
+    /// </summary>
+    class function WrapGsm(AFormat, AChannels, ASampleRate: Integer; AFrames: Int64;
+      const AData: TBytes): TSoundSamples; static;
   end;
 
 implementation
@@ -52,6 +59,24 @@ begin
     Result.ZeroFillChunk := -1
   else
     Result.ZeroFillChunk := CODEC_BUFFER_ITEMS;
+end;
+
+class function TSoundCodecSamples.WrapGsm(AFormat, AChannels, ASampleRate: Integer;
+  AFrames: Int64; const AData: TBytes): TSoundSamples;
+var
+  LData: TBytes;
+  LInfo: TSoundFileInfo;
+begin
+  LData := AData;
+  SetLength(LData, AFrames * AChannels * SizeOf(SmallInt));
+  Result := Wrap(AFormat, AChannels, ASampleRate, AFrames, LData, True);
+  // Its reads convert chunk after chunk, offset by what was really decoded
+  Result.ZeroFillChunk := -2;
+  // Only what the codec decoded is there: more channels do not make more samples
+  Result.AvailableFrames := Length(AData) div SizeOf(SmallInt) div AChannels;
+  LInfo := Result.Info;
+  LInfo.Seekable := 0;
+  Result.ReplaceInfo(LInfo);
 end;
 
 end.

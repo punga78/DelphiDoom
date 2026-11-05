@@ -31,7 +31,7 @@ implementation
 uses
   DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader,
   DelphiDoom.Sound.WavLike.Fmt, DelphiDoom.Sound.Codec.MsAdpcm,
-  DelphiDoom.Sound.Codec.ImaAdpcm, DelphiDoom.Sound.CodecSamples;
+  DelphiDoom.Sound.Codec.ImaAdpcm, DelphiDoom.Sound.Codec.Gsm610, DelphiDoom.Sound.CodecSamples;
 
 const
   HAVE_RIFF = $01;
@@ -238,6 +238,14 @@ begin
   else
     LStart := 0;
   case LLayout.Tag of
+    TWavLikeFmtChunk.WAVE_FORMAT_GSM610:
+      begin
+        Result := TGsm610Decoder.Decode(ASource, LDataOffset, LHeaderLength, True, LData, LFrames);
+        if Result = SNDFILE_OK then
+          ASamples := TSoundCodecSamples.WrapGsm(SNDFILE_FORMAT_W64 or SNDFILE_FORMAT_GSM610,
+            1, LLayout.SampleRate, LFrames, LData);
+        Exit;
+      end;
     TWavLikeFmtChunk.WAVE_FORMAT_MS_ADPCM:
       begin
         Result := TMsAdpcmDecoder.Decode(ASource, LDataOffset, LHeaderLength,

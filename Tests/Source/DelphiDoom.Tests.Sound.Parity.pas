@@ -103,6 +103,8 @@ type
     [Test]
     procedure TestImaAdpcm;
     [Test]
+    procedure TestGsm610;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -916,6 +918,35 @@ begin
   CheckSameFailure(TSoundTestContainerFile.BuildWavWithFormat(
     TSoundTestContainerFile.AdpcmFormat($11, 1, 22050, 256, 100), TSoundTestWavFile.RandomBytes(512, 5), False),
     'wav ima adpcm wrong samples per block');
+end;
+
+procedure TTestSoundParity.TestGsm610;
+var
+  LPayload: TBytes;
+  LIndex: Integer;
+  LOptions: TSoundTestAiffOptions;
+begin
+  // WAV: blocks of 65 bytes
+  CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+    TSoundTestContainerFile.GsmFormat, TSoundTestWavFile.RandomBytes(65 * 6, 1), False), 'wav gsm 610');
+  CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+    TSoundTestContainerFile.GsmFormat, TSoundTestWavFile.RandomBytes(65 * 3 + 20, 2), False), 'wav gsm 610 cut block');
+  CheckSame(TSoundTestContainerFile.BuildWavWithFormat(
+    TSoundTestContainerFile.GsmFormat, TSoundTestWavFile.RandomBytes(65 * 3, 3), True), 'wav gsm 610 chunk after');
+  CheckSame(TSoundTestContainerFile.BuildW64WithFormat(
+    TSoundTestContainerFile.GsmFormat, TSoundTestWavFile.RandomBytes(65 * 4, 4)), 'w64 gsm 610');
+
+  // AIFF-C: frames of 33 bytes that start with the magic number $D
+  LPayload := TSoundTestWavFile.RandomBytes(33 * 7, 5);
+  for LIndex := 0 to 6 do
+    LPayload[LIndex * 33] := Byte($D0 or (LPayload[LIndex * 33] and $0F));
+  LOptions := TSoundTestAiffOptions.Compressed('GSM ', 1, 16);
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc gsm 610');
+  // A frame without the magic number repeats the one before
+  LPayload[33 * 3] := $00;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc gsm 610 bad frame');
+  LOptions := TSoundTestAiffOptions.Compressed('GSM ', 2, 16);
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc gsm 610 two channels');
 end;
 
 procedure TTestSoundParity.TestAvr;

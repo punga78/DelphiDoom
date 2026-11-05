@@ -184,20 +184,31 @@ begin
     if AFramesRead > AFrames then
       AFramesRead := AFrames;
     if AFramesRead <= 0 then
-    begin
       AFramesRead := 0;
-      Exit(SNDFILE_OK);
+    // A codec may have fewer frames than the sound claims
+    if FSamples.AvailableFrames >= 0 then
+    begin
+      LCount := 0;
+      if FSamples.AvailableFrames > FPosition then
+        LCount := Integer(FSamples.AvailableFrames - FPosition);
+      if AFramesRead > LCount then
+        AFramesRead := LCount;
     end;
+    if (AFramesRead = 0) and (FSamples.ZeroFillChunk = 0) then
+      Exit(SNDFILE_OK);
 
     LChannels := FSamples.Info.Channels;
     LCount := Integer(AFramesRead * LChannels);
-    LSource := @FSamples.Data[Integer(FPosition * LChannels *
-      TSoundSamples.BytesPerSample(FSamples.Kind))];
-    case ATarget of
-      TTarget.Bits16:  ConvertToShort(LSource, ABuffer, LCount);
-      TTarget.Bits32:    ConvertToInt(LSource, ABuffer, LCount);
-    else
-      ConvertToDouble(LSource, ABuffer, LCount);
+    if LCount > 0 then
+    begin
+      LSource := @FSamples.Data[Integer(FPosition * LChannels *
+        TSoundSamples.BytesPerSample(FSamples.Kind))];
+      case ATarget of
+        TTarget.Bits16:  ConvertToShort(LSource, ABuffer, LCount);
+        TTarget.Bits32:    ConvertToInt(LSource, ABuffer, LCount);
+      else
+        ConvertToDouble(LSource, ABuffer, LCount);
+      end;
     end;
     Inc(FPosition, AFramesRead);
 
@@ -214,6 +225,17 @@ begin
       if (ATarget <> TTarget.Bits16) and (FSamples.ZeroFillChunk > 0) then
       begin
         LSwap := (LCount div FSamples.ZeroFillChunk + 1) * FSamples.ZeroFillChunk;
+        if LSwap < LRemaining then
+          LRemaining := LSwap;
+      end
+      else if (ATarget <> TTarget.Bits16) and (FSamples.ZeroFillChunk = -2) then
+      begin
+        // Chunks of 4096 items, each written after what was really decoded
+        LSwap := ((LRemaining + 4095) div 4096 - 1) * 4096;
+        if LCount < LSwap then
+          LSwap := LCount + LRemaining - ((LRemaining + 4095) div 4096 - 1) * 4096
+        else
+          LSwap := LSwap + LRemaining - LSwap;
         if LSwap < LRemaining then
           LRemaining := LSwap;
       end;
@@ -307,6 +329,9 @@ var
   LTarget: Int64;
 begin
   APosition := 0;
+  // The sounds that cannot be seeked (GSM 6.10) refuse whatever the request
+  if FSamples.Info.Seekable = 0 then
+    Exit(SNDFILE_ERR_INVALID_ARGUMENT);
   case AWhence of
     SNDFILE_SEEK_SET: LTarget := AFrame;
     SNDFILE_SEEK_CUR: LTarget := FPosition + AFrame;
