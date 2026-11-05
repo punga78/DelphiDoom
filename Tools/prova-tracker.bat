@@ -7,7 +7,8 @@ rem Genera i brani di prova (o usa il modulo indicato), li mette in un WAD che s
 rem la musica del livello 1 (o dei livelli 1..4) e avvia il gioco con -tracker.
 rem Nessuno dei WAD originali contiene moduli: servono questi.
 rem
-rem   Brani di prova: livello 1 = MOD, 2 = S3M, 3 = XM, 4 = IT (E1M1..E1M4).
+rem   Brani di prova: livello 1 = MOD, 2 = S3M, 3 = XM, 4 = IT.
+rem   Doom usa Freedoom II (lo shareware non accetta file esterni); Heretic parte con -devparm.
 rem   Con un file, il livello 1 suona quel file.
 rem Per confrontare con MikWin basta avviare il gioco senza -tracker.
 setlocal
@@ -49,13 +50,13 @@ goto raccogli
 if /i "%GIOCO%"=="heretic" goto heretic
 cd /d "%RADICE%\bin\Doom"
 echo Doom: livello %LIVELLO%
-start "" Doom32.exe -iwad doom1.wad -file ..\Tracker\TRACKER_DOOM.WAD -tracker -warp 1 %LIVELLO% -nomonsters%ALTRI%
+start "" Doom32.exe -iwad freedoom2.wad -file ..\Tracker\TRACKER_DOOM.WAD -tracker -warp %LIVELLO% -nomonsters%ALTRI%
 goto fine
 
 :heretic
 cd /d "%RADICE%\bin\Heretic"
 echo Heretic: livello %LIVELLO%
-start "" Heretic32.exe -iwad heretic1.wad -file ..\Tracker\TRACKER_HERETIC.WAD -tracker -warp 1 %LIVELLO% -nomonsters%ALTRI%
+start "" Heretic32.exe -iwad heretic1.wad -devparm -file ..\Tracker\TRACKER_HERETIC.WAD -tracker -warp 1 %LIVELLO% -nomonsters%ALTRI%
 
 :fine
 endlocal

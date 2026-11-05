@@ -10,9 +10,10 @@ Uso:
     python MakeTestSongs.py <cartella-di-uscita> brano1 [brano2 brano3 brano4]
         usa i moduli indicati (MOD, S3M, XM, IT) al posto di quelli sintetici
 
-Nei WAD i brani sostituiscono la musica dei livelli 1..4 del primo episodio
-(Doom: D_E1M1..D_E1M4; Heretic: MUS_E1M1..MUS_E1M4), nell'ordine in cui sono
-indicati; i sintetici sono MOD, S3M, XM, IT.
+Nei WAD i brani sostituiscono la musica dei livelli 1..4, nell'ordine in cui
+sono indicati; i sintetici sono MOD, S3M, XM, IT. Doom: i livelli di Doom II
+(Freedoom II, perche' lo shareware non accetta file esterni): D_RUNNIN, D_STALKS,
+D_COUNTD, D_BETWEE. Heretic: MUS_E1M1..MUS_E1M4.
 
 I moduli sintetici usano quattro strumenti (seno, quadra, dente di sega,
 rumore) e gli effetti piu' comuni: arpeggio, vibrato, scorrimento di volume,
@@ -25,6 +26,7 @@ import struct
 import sys
 
 ROWS = 64
+DOOM2_MUSIC = ['D_RUNNIN', 'D_STALKS', 'D_COUNTD', 'D_BETWEE']
 CHANNELS = 4
 NOTE_NAMES = {'C-': 0, 'C#': 1, 'D-': 2, 'D#': 3, 'E-': 4, 'F-': 5, 'F#': 6, 'G-': 7, 'G#': 8, 'A-': 9,
               'A#': 10, 'B-': 11}
@@ -403,7 +405,7 @@ def main(argv):
             paths.append(path)
     songs = [open(path, 'rb').read() for path in paths]
     write_wad(os.path.join(folder, 'TRACKER_DOOM.WAD'),
-              [('D_E1M%d' % (i + 1), song) for i, song in enumerate(songs)])
+              [(name, song) for name, song in zip(DOOM2_MUSIC, songs)])
     write_wad(os.path.join(folder, 'TRACKER_HERETIC.WAD'),
               [('MUS_E1M%d' % (i + 1), song) for i, song in enumerate(songs)])
     for index, path in enumerate(paths):
