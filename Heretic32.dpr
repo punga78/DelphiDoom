@@ -158,7 +158,7 @@ uses
   DelphiDoom.Texture.PngFileWriter in 'TEXLIB\DelphiDoom.Texture.PngFileWriter.pas',
   d_delphi in 'Common\d_delphi.pas',
   DirectX in 'Common\DirectX.pas',
-  am_map in 'Heretic\am_map.pas',
+  am_map in 'Base\am_map.pas',
   c_cmds in 'Base\c_cmds.pas',
   c_con in 'Base\c_con.pas',
   c_utils in 'Base\c_utils.pas',

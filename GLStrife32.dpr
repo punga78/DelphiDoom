@@ -169,7 +169,7 @@ uses
   DelphiDoom.Zlib.Engine in 'Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in 'Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Provider in 'Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
-  am_map in 'Strife\am_map.pas',
+  am_map in 'Base\am_map.pas',
   c_cmds in 'Base\c_cmds.pas',
   c_con in 'Base\c_con.pas',
   c_utils in 'Base\c_utils.pas',

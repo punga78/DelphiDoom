@@ -78,7 +78,7 @@ uses
   doomdef in 'Hexen\doomdef.pas',
   xn_strings in 'Hexen\xn_strings.pas',
   a_action in 'Hexen\a_action.pas',
-  am_map in 'Hexen\am_map.pas',
+  am_map in 'Base\am_map.pas',
   c_cmds in 'Base\c_cmds.pas',
   c_con in 'Base\c_con.pas',
   c_utils in 'Base\c_utils.pas',

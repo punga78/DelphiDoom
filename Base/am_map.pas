@@ -41,11 +41,28 @@ uses
   d_player,
   r_defs,
   d_event,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   st_stuff,
+{$ENDIF}
   p_local,
+{$IFDEF STRIFE}
+  tables,
+{$ENDIF}
   w_wad,
   m_cheat,
+{$IF DEFINED(HERETIC)}
+  i_system,
+  h_strings,
   tables,
+{$ELSEIF DEFINED(HEXEN)}
+  i_system,
+  xn_strings,
+  tables,
+{$ELSEIF DEFINED(STRIFE)}
+  i_system,
+{$ELSE}
+  tables,
+{$ENDIF}
   m_fixed;
 
 const
@@ -54,6 +71,40 @@ const
   AM_MSGEXITED = AM_MSGHEADER or (Ord('x') shl 8);
 
 const
+{$IF DEFINED(HERETIC)}
+  REDS = 12 * 8;
+  REDRANGE = 1;
+  BLUES = (256 - (4 * 16)) + 8;
+  BLUERANGE = 1;
+  GREENS = 216;
+  GREENRANGE = 8;
+  GRAYS = 5 * 8;
+  GRAYSRANGE = 1;
+  BROWNS = 14 * 8;
+  BROWNRANGE = 1;
+  YELLOWS = 10 * 8;
+  YELLOWRANGE = 1;
+  WHITE = 35;
+{$ELSEIF DEFINED(HEXEN)}
+  REDS = 12 * 8;
+  REDRANGE = 1;
+  BLUES = (256 - (4 * 16)) + 8;
+  BLUERANGE = 1;
+  GREENS = 215;
+  GREENRANGE = 2;
+  TRACEGREEN = 211;
+  GRAYS = 5 * 8;
+  GRAYSRANGE = 1;
+  BROWNS = 14 * 8;
+  BROWNRANGE = 1;
+  YELLOWS = 10 * 8;
+  YELLOWRANGE = 1;
+  WHITE = 255;
+{$ELSEIF DEFINED(STRIFE)}
+
+  GRAYS = 1;
+  GRAYSRANGE = 15;
+{$ELSE}
   REDS = 256 - (5 * 16);
   REDRANGE = 16;
   BLUES = (256 - (4 * 16)) + 8;
@@ -67,8 +118,38 @@ const
   YELLOWS = (256 - 32) + 7;
   YELLOWRANGE = 1;
   WHITE = 256 - 47;
+{$ENDIF}
 
   { Automap colors }
+{$IF DEFINED(HEXEN)}
+  YOURCOLORS = WHITE;
+  WALLCOLORS = 83;
+  WALLRANGE = 8;
+  TSWALLCOLORS = 40;
+  TSWALLRANGE = 8;
+  FDWALLCOLORS = 96;
+  FDWALLRANGE = 8;
+  CDWALLCOLORS = 107;
+  CDWALLRANGE = 8;
+  THINGCOLORS = GREENS;
+  THINGRANGE = GREENRANGE;
+  SECRETWALLCOLORS = WALLCOLORS;
+  SECRETWALLRANGE = WALLRANGE;
+{$ELSEIF DEFINED(STRIFE)}
+  BACKGROUND = 240;         // haleyjd [STRIFE]
+  WALLCOLORS = 5;           // villsa [STRIFE]
+  WALLRANGE = 16;
+  TSWALLCOLORS = 16;
+  FDWALLCOLORS = 122;       // villsa [STRIFE]
+  CDWALLCOLORS = 116;
+  CTWALLCOLORS = 19;        // villsa [STRIFE]
+  SPWALLCOLORS = 243;       // villsa [STRIFE]
+  THINGCOLORS = 233;        // villsa [STRIFE]
+  MISSILECOLORS = 227;      // villsa [STRIFE]
+  SHOOTABLECOLORS = 235;    // villsa [STRIFE]
+
+// JVAL: We keep grid in DelphiStrife
+{$ELSE}
   YOURCOLORS = WHITE;
   WALLCOLORS = REDS;
   WALLRANGE = REDRANGE;
@@ -82,6 +163,7 @@ const
   THINGRANGE = GREENRANGE;
   SECRETWALLCOLORS = WALLCOLORS;
   SECRETWALLRANGE = WALLRANGE;
+{$ENDIF}
   GRIDCOLORS = GRAYS + (GRAYSRANGE div 2);
   GRIDRANGE = 0;
   XHAIRCOLORS = GRAYS;
@@ -214,7 +296,11 @@ type
 //   starting from the middle.
 //
 const
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  NUMPLYRLINES = 10;
+{$ELSE}
   NUMPLYRLINES = 7;
+{$ENDIF}
 
 var
   player_arrow: array[0..NUMPLYRLINES - 1] of mline_t;
@@ -242,6 +328,14 @@ const
 
 var
   traceplayer_guy: array[0..NUMTTRACEPLAYERLINES - 1] of mline_t;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+
+const
+  NUMKEYSQUARELINES = 8;
+
+var
+  keysquare: array[0..NUMKEYSQUARELINES - 1] of mline_t;
+{$ENDIF}
 
 type
   automapstate_t = (am_inactive, am_only, am_overlay, AM_NUMSTATES);
@@ -314,6 +408,12 @@ var
 var
   marknums: array[0..9] of Ppatch_t;  // numbers used for marking by the automap
   marknumsid: array[0..9] of integer; // numbers used for marking by the automap
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+
+  maplump: PByteArray;
+  maplumpsize: integer;
+  maplumpheight: integer;
+{$ENDIF}
 
   markpoints: array[0..AM_NUMMARKPOINTS - 1] of mpoint_t; // where the points are
 
@@ -322,7 +422,11 @@ var
   followplayer: boolean = true; // specifies whether to follow the player around
 
 const
+{$IFDEF STRIFE}
+  cheat_amap_seq: string = Chr($2e) + Chr($f6) + Chr($2a) + Chr($f6) + Chr($ff); // topo
+{$ELSE}
   cheat_amap_seq: string = Chr($b2) + Chr($26) + Chr($26) + Chr($2e) + Chr($ff); // iddt
+{$ENDIF}
 
 var
   cheat_amap: cheatseq_t;
@@ -400,7 +504,9 @@ implementation
 uses
   am_textured,
   c_cmds,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   d_englsh,
+{$ENDIF}
   g_game,
   mt_utils,
   p_mobj_h,
@@ -408,12 +514,22 @@ uses
   p_maputl,
   p_playertrace,
   p_tick,
+{$IF DEFINED(HERETIC)}
   r_data,
+  info_h,
+{$ELSEIF DEFINED(HEXEN)}
+  info_h,
+{$ELSE}
+  r_data,
+{$ENDIF}
 {$IFNDEF OPENGL}
   r_draw,
   r_hires,
 {$ELSE}
   gl_automap,
+{$ENDIF}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  sb_bar,
 {$ENDIF}
   v_data,
   v_video;
@@ -750,7 +866,11 @@ begin
   old_m_h := m_h;
 
   // inform the status bar of the change
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  SB_Responder(@st_notify_AM_initVariables);
+{$ELSE}
   ST_Responder(@st_notify_AM_initVariables);
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -761,13 +881,58 @@ procedure AM_loadPics;
 var
   i: integer;
   namebuf: string;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  lump: integer;
+{$ENDIF}
 begin
+{$IFDEF STRIFE}
+  if W_CheckNumForName('PLMNUM0') >= 0 then
+{$ELSE}
   for i := 0 to AM_NUMMARKPOINTS - 1 do
+{$ENDIF}
   begin
+{$IF DEFINED(DOOM)}
     sprintf(namebuf, 'AMMNUM%d', [i]);
     marknumsid[i] := W_GetNumForName(namebuf);
     marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
   end;
+{$ELSEIF DEFINED(STRIFE)}
+    for i := 0 to AM_NUMMARKPOINTS - 1 do
+    begin
+      sprintf(namebuf, 'PLMNUM%d', [i]);
+      marknumsid[i] := W_GetNumForName(namebuf);
+      marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+    end;
+  end
+  else  // JVAL: support for the old demo version
+  begin
+    for i := 0 to AM_NUMMARKPOINTS - 1 do
+    begin
+      sprintf(namebuf, 'AMMNUM%d', [i]);
+      marknumsid[i] := W_GetNumForName(namebuf);
+      marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+    end;
+  end
+{$ELSE}
+    sprintf(namebuf, 'SMALLIN%d', [i]);
+    marknumsid[i] := W_GetNumForName(namebuf);
+    marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+  end;
+  lump := W_CheckNumForName('AUTOPAGE');
+  if lump >= 0 then
+  begin
+    maplump := W_CacheLumpNum(lump, PU_STATIC);
+    maplumpsize := W_LumpLength(lump);
+    maplumpheight := maplumpsize div 320;
+  end
+  else
+  begin
+    maplump := nil;
+    maplumpsize := 0;
+    maplumpheight := 0;
+    I_Warning('AM_loadPics(): "AUTOPAGE" lump not found, using background color'#13#10);
+  end;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -811,7 +976,13 @@ begin
   f_x := 0;
   f_y := 0;
   f_w := SCREENWIDTH;
+{$IF DEFINED(DOOM)}
   f_h := ST_Y * SCREENHEIGHT div 200;
+{$ELSEIF DEFINED(STRIFE)}
+  f_h := ST_Y * SCREENHEIGHT div 200; //V_PreserveY(ST_Y);
+{$ELSE}
+  f_h := SB_Y * SCREENHEIGHT div 200;
+{$ENDIF}
 
   AM_clearMarks;
 
@@ -838,7 +1009,11 @@ begin
   if not stopped then
   begin
     AM_unloadPics;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    SB_Responder(@st_notify_AM_Stop);
+{$ELSE}
     ST_Responder(@st_notify_AM_Stop);
+{$ENDIF}
     stopped := true;
   end;
 end;
@@ -848,7 +1023,9 @@ end;
 //
 var
   lastlevel: integer = -1;
+{$IFNDEF STRIFE}
   lastepisode: integer = -1;
+{$ENDIF}
   lastscreenwidth: integer = -1;
   lastscreenheight: integer = -1;
 
@@ -863,12 +1040,18 @@ begin
 
   stopped := false;
 
+{$IFDEF STRIFE}
+  if (lastlevel <> gamemap) or
+{$ELSE}
   if (lastlevel <> gamemap) or (lastepisode <> gameepisode) or
+{$ENDIF}
      (lastscreenwidth <> SCREENWIDTH) or (lastscreenheight <> SCREENHEIGHT) then
   begin
     AM_LevelInit;
     lastlevel := gamemap;
+{$IFNDEF STRIFE}
     lastepisode := gameepisode;
+{$ENDIF}
     lastscreenwidth := SCREENWIDTH;
     lastscreenheight := SCREENHEIGHT;
   end;
@@ -1194,14 +1377,68 @@ end;
 procedure AM_clearFB(color: integer);
 var
   c: LongWord;
+{$IF DEFINED(HERETIC)}
+  dest: PLongWord;
+  deststop: PLongWord;
+{$ELSEIF DEFINED(HEXEN)}
+  dest: PLongWord;
+  deststop: PLongWord;
+  remain: integer;
+  actual: integer;
+  y: integer;
+{$ENDIF}
 begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  if (maplump <> nil) and (maplumpsize > 0) then
+{$ELSE}
   if videomode = vm32bit then
+{$ENDIF}
   begin
+{$IF DEFINED(HERETIC)}
+    memcpy(screens[SCN_TMP], maplump, maplumpsize);
+    V_CopyRect(0, 0, SCN_TMP, 320, maplumpheight, 0, 0, SCN_FG, true);
+{$ELSEIF DEFINED(HEXEN)}
+    remain := SB_Y;
+    memcpy(screens[SCN_TMP], maplump, maplumpsize);
+    y := 0;
+    while remain > 0 do
+    begin
+      actual := remain;
+      if actual > maplumpheight then
+      begin
+        actual := maplumpheight;
+        remain := remain - maplumpheight;
+      end
+      else
+        remain := 0;
+      V_CopyRect(0, 0, SCN_TMP, 320, actual, 0, y, SCN_FG, true);
+      y := y + actual;
+    end;
+{$ELSE}
     c := videopal[color];
     MT_memseti(fb32, c, f_w * f_h);
+{$ENDIF}
   end
   else
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  begin
+    if videomode = vm32bit then
+    begin
+      c := videopal[color];
+      dest := @fb32[0];
+      deststop := @fb32[f_w * f_h];
+      while integer(dest) < integer(deststop) do
+      begin
+        dest^ := c;
+        inc(dest);
+      end;
+    end
+    else
+      MT_memset(fb, color, f_w * f_h);
+  end;
+{$ELSE}
     MT_memset(fb, color, f_w * f_h);
+{$ENDIF}
 end;
 {$ENDIF}
 
@@ -1599,6 +1836,13 @@ begin
   x^ := tmpx;
 end;
 
+{$IFDEF HERETIC}
+const
+  BLUEKEYCOLOR = 197;
+  YELLOWKEYCOLOR = 144;
+  GREENKEYCOLOR = 220;
+
+{$ENDIF}
 //==============================================================================
 // AM_drawWalls
 //
@@ -1638,41 +1882,99 @@ begin
         inc(pl);
         continue;
       end;
+{$IFDEF STRIFE}
+      if (pl.special = 145) or (pl.special = 186) then
+{$ELSE}
       if pl.backsector = nil then
+{$ENDIF}
       begin
+{$IFDEF STRIFE}
+        AM_drawMline(@l, SPWALLCOLORS);
+      end
+      else if pl.backsector = nil then
+      begin
+        AM_drawMline(@l, WALLCOLORS);
+{$ELSE}
         AM_drawMline(@l, WALLCOLORS + lightlev);
+{$ENDIF}
       end
       else
       begin
+{$IFDEF HEXEN}
+        if (pl.special = 13) or (pl.special = 83) then
+        begin // Locked door line -- all locked doors are greed
+          AM_drawMline(@l, 198);
+        end
+        else if (pl.special = 70) or (pl.special = 71) then
+        begin // intra-level teleports are blue
+          AM_drawMline(@l, 157);
+        end
+        else if (pl.special = 74) or (pl.special = 75) then
+        begin // intra-level teleports are blue
+          AM_drawMline(@l, 177);
+{$ELSE}
         if pl.special = 39 then
         begin // teleporters
           AM_drawMline(@l, WALLCOLORS + WALLRANGE div 2);
+{$ENDIF}
         end
         else if pl.flags and ML_SECRET <> 0 then // secret door
         begin
+{$IFDEF STRIFE}
+          AM_drawMline(@l, WALLCOLORS + lightlev);
+{$ELSE}
           if am_cheating <> 0 then
             AM_drawMline(@l, SECRETWALLCOLORS + lightlev)
           else
             AM_drawMline(@l, WALLCOLORS + lightlev);
+{$ENDIF}
         end
+{$IFDEF HERETIC}
+        else if (pl.special = 26) or (pl.special = 32) then
+          AM_drawMline(@l, BLUEKEYCOLOR)
+        else if (pl.special = 27) or (pl.special = 34) then
+          AM_drawMline(@l, YELLOWKEYCOLOR)
+        else if (pl.special = 28) or (pl.special = 33) then
+          AM_drawMline(@l, GREENKEYCOLOR)
+{$ENDIF}
         else if pl.backsector.floorheight <> pl.frontsector.floorheight then
         begin
+{$IFDEF STRIFE}
+          AM_drawMline(@l, FDWALLCOLORS); // floor level change
+{$ELSE}
           AM_drawMline(@l, FDWALLCOLORS + lightlev); // floor level change
+{$ENDIF}
         end
         else if pl.backsector.ceilingheight <> pl.frontsector.ceilingheight then
         begin
+{$IFDEF STRIFE}
+          AM_drawMline(@l, CDWALLCOLORS); // ceiling level change
+{$ELSE}
           AM_drawMline(@l, CDWALLCOLORS + lightlev); // ceiling level change
+{$ENDIF}
         end
         else if am_cheating <> 0 then
         begin
+{$IFDEF STRIFE}
+          AM_drawMline(@l, TSWALLCOLORS);
+{$ELSE}
           AM_drawMline(@l, TSWALLCOLORS + lightlev);
+{$ENDIF}
         end;
       end;
     end
+{$IFDEF STRIFE}
+    else if (plr.powers[Ord(pw_allmap)] <> 0) or (gamemap = 15) then
+{$ELSE}
     else if plr.powers[Ord(pw_allmap)] <> 0 then
+{$ENDIF}
     begin
       if pl.flags and LINE_NEVERSEE = 0 then
+{$IFDEF STRIFE}
+        AM_drawMline(@l, CTWALLCOLORS);
+{$ELSE}
         AM_drawMline(@l, GRAYS + 3);
+{$ENDIF}
     end;
     inc(pl);
   end;
@@ -1739,7 +2041,11 @@ end;
 //==============================================================================
 procedure AM_drawPlayerTrace(const p: Pplayer_t; const color1: Integer);
 const
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  PTRACECOLORRANGE = 4;
+{$ELSE}
   PTRACECOLORRANGE = 8;
+{$ENDIF}
 var
   i: integer;
   x, y, x2, y2: fixed_t;
@@ -1794,6 +2100,26 @@ begin
   end;
 end;
 
+{$IFDEF HEXEN}
+const
+  AM_PLR1_COLOR = 157; // Blue
+  AM_PLR2_COLOR = 177; // Red
+  AM_PLR3_COLOR = 137; // Yellow
+  AM_PLR4_COLOR = 198; // Green
+  AM_PLR5_COLOR = 215; // Jade
+  AM_PLR6_COLOR =  32; // White
+  AM_PLR7_COLOR = 106; // Hazel
+  AM_PLR8_COLOR = 234; // Purple
+  AM_TR1_COLOR = 154; // Blue
+  AM_TR2_COLOR = 176; // Red
+  AM_TR3_COLOR = 136; // Yellow
+  AM_TR4_COLOR = 197; // Green
+  AM_TR5_COLOR = 211; // Jade
+  AM_TR6_COLOR =  25; // White
+  AM_TR7_COLOR = 106; // Hazel
+  AM_TR8_COLOR = 233; // Purple
+
+{$ENDIF}
 //==============================================================================
 //
 // AM_drawPlayers
@@ -1801,11 +2127,40 @@ end;
 //==============================================================================
 procedure AM_drawPlayers;
 const
+{$IF DEFINED(HEXEN)}
+  their_colors: array[0..MAXPLAYERS - 1] of integer = (
+    AM_PLR1_COLOR,
+    AM_PLR2_COLOR,
+    AM_PLR3_COLOR,
+    AM_PLR4_COLOR,
+    AM_PLR5_COLOR,
+    AM_PLR6_COLOR,
+    AM_PLR7_COLOR,
+    AM_PLR8_COLOR
+  );
+  trace_colors: array[0..MAXPLAYERS - 1] of integer = (
+    AM_TR1_COLOR,
+    AM_TR2_COLOR,
+    AM_TR3_COLOR,
+    AM_TR4_COLOR,
+    AM_TR5_COLOR,
+    AM_TR6_COLOR,
+    AM_TR7_COLOR,
+    AM_TR8_COLOR
+  );
+{$ELSEIF DEFINED(STRIFE)}
+  their_colors: array[0..MAXPLAYERS] of integer = ($80, $40, $B0, $10, $30, $50, $A0, $60, $90);
+{$ELSE}
   their_colors: array[0..MAXPLAYERS - 1] of integer = (GREENS, GRAYS, BROWNS, REDS);
+{$ENDIF}
 var
   i: integer;
   p: Pplayer_t;
+{$IFDEF HEXEN}
+  their_color, color, trcolor: integer;
+{$ELSE}
   their_color, color: integer;
+{$ENDIF}
   x, y: fixed_t;
 begin
   if not netgame then
@@ -1813,12 +2168,24 @@ begin
     if am_cheating <> 0 then
       AM_drawLineCharacter
         (@cheat_player_arrow, NUMCHEATPLYRLINES, 0,
+{$IFDEF STRIFE}
+        plr.mo.angle, 224, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT)
+{$ELSE}
         plr.mo.angle, WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT)
+{$ENDIF}
     else
       AM_drawLineCharacter
         (@player_arrow, NUMPLYRLINES, 0, plr.mo.angle,
+{$IF DEFINED(HEXEN)}
+        WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
+    AM_drawPlayerTrace(plr, TRACEGREEN);
+{$ELSEIF DEFINED(STRIFE)}
+        224, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
+    AM_drawPlayerTrace(plr, 224);
+{$ELSE}
         WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
     AM_drawPlayerTrace(plr, GREENS);
+{$ENDIF}
     exit;
   end;
 
@@ -1834,10 +2201,31 @@ begin
     if not playeringame[i] then
       continue;
 
+{$IF DEFINED(HERETIC)}
+    if p.powers[Ord(pw_invisibility)] <> 0 then
+      color := 99 // *close* to background
+    else
+      color := their_colors[their_color];
+{$ELSEIF DEFINED(HEXEN)}
+    color := their_colors[their_color];
+    trcolor := trace_colors[their_color];
+    if p.mo <> nil then
+      if p.mo.flags and (MF_SHADOW or MF_ALTSHADOW) <> 0 then
+      begin
+        color := 111; // *close* to background
+        trcolor := 111;
+      end;
+{$ELSEIF DEFINED(STRIFE)}
+    if p.powers[Ord(pw_invisibility)] <> 0 then
+      color := 27 // *close* to black
+    else
+      color := their_colors[their_color];
+{$ELSE}
     if p.powers[Ord(pw_invisibility)] <> 0 then
       color := 246 // *close* to black
     else
       color := their_colors[their_color];
+{$ENDIF}
 
     x := p.mo.x;
     y := p.mo.y;
@@ -1849,7 +2237,11 @@ begin
       (@player_arrow, NUMPLYRLINES, 0, p.mo.angle,
        color, x div FRACTOMAPUNIT, y div FRACTOMAPUNIT);
 
+{$IFDEF HEXEN}
+    AM_drawPlayerTrace(p, trcolor);
+{$ELSE}
     AM_drawPlayerTrace(p, color);
+{$ENDIF}
   end;
 end;
 
@@ -1858,14 +2250,24 @@ end;
 // AM_drawThings
 //
 //==============================================================================
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+procedure AM_drawThings(colors: integer; colorrange: integer);
+{$ELSE}
 procedure AM_drawThings;
+{$ENDIF}
 var
   i: integer;
   t: Pmobj_t;
   x, y: fixed_t;
+{$IFDEF STRIFE}
+  colors: integer;
+  radius: fixed_t;
+{$ENDIF}
   plrx, plry: fixed_t;
   plra: angle_t;
+{$IFDEF DOOM}
   color: integer;
+{$ENDIF}
 begin
   plrx := plr.mo.x div FRACTOMAPUNIT;
   plry := plr.mo.y div FRACTOMAPUNIT;
@@ -1875,12 +2277,67 @@ begin
     t := sectors[i].thinglist;
     while t <> nil do
     begin
+{$IFDEF STRIFE}
+      radius := t.radius;
+{$ENDIF}
       x := t.x div FRACTOMAPUNIT;
       y := t.y div FRACTOMAPUNIT;
 
       if allowautomaprotate then
         AM_rotate(@x, @y, plra, plrx, plry);
 
+{$IF DEFINED(HERETIC)}
+      if t._type = Ord(MT_CKEY) then
+        AM_drawLineCharacter(
+          @keysquare, NUMKEYSQUARELINES,
+          0, ANGLE_MAX - plra, YELLOWKEYCOLOR, x, y)
+      else if t._type = Ord(MT_AKYY) then
+        AM_drawLineCharacter(
+          @keysquare, NUMKEYSQUARELINES,
+          0, ANGLE_MAX - plra, GREENKEYCOLOR, x, y)
+      else if t._type = Ord(MT_BKYY) then
+        AM_drawLineCharacter(
+          @keysquare, NUMKEYSQUARELINES,
+          0, ANGLE_MAX - plra, BLUEKEYCOLOR, x, y)
+      else if (t.flags2_ex and MF2_EX_FRIEND <> 0) or (t.player <> nil) then
+        AM_drawLineCharacter
+          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+          16 * FRACUNIT, t.angle, WHITE, x, y)
+      else
+        AM_drawLineCharacter
+          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+          16 * FRACUNIT, t.angle, colors + lightlev, x, y);
+{$ELSEIF DEFINED(HEXEN)}
+      if (t.sprite >= Ord(SPR_KEY1)) and (t.sprite <= Ord(SPR_KEYB)) then
+        AM_drawLineCharacter(
+          @keysquare, NUMKEYSQUARELINES,
+          0, ANGLE_MAX - plra, colors + lightlev, x, y)
+      else if (t.flags2_ex and MF2_EX_FRIEND <> 0) or (t.player <> nil) then
+        AM_drawLineCharacter
+          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+          16 * FRACUNIT, t.angle, WHITE, x, y)
+      else
+        AM_drawLineCharacter
+          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+          16 * FRACUNIT, t.angle, colors + lightlev, x, y);
+{$ELSEIF DEFINED(STRIFE)}
+      if t.flags and (MF_MISSILE or MF_SPECIAL) <> 0 then
+        colors := MISSILECOLORS
+      else if t.flags and MF_COUNTKILL <> 0 then
+        colors := SHOOTABLECOLORS
+      else
+      begin
+        colors := THINGCOLORS;
+        radius := 16 * FRACUNIT;
+      end;
+
+      if t.flags2_ex and MF2_EX_FRIEND <> 0 then
+        colors := GRAYS;
+
+      AM_drawLineCharacter
+        (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+        radius, t.angle, colors, x, y);
+{$ELSE}
       if t.flags2_ex and MF2_EX_FRIEND <> 0 then
         color := WHITE
       else if t.flags and MF_SHOOTABLE <> 0 then
@@ -1898,6 +2355,7 @@ begin
         AM_drawLineCharacter
           (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
           16 * FRACUNIT, t.angle, color, x, y);
+{$ENDIF}
       t := t.snext;
     end;
   end;
@@ -1976,9 +2434,25 @@ begin
   if amstate = am_only then
   begin
     {$IFDEF OPENGL}
+{$IF DEFINED(HERETIC)}
+    gld_ClearAMBuffer(f_w, f_h, videopal[104]);
+{$ELSEIF DEFINED(HEXEN)}
+    gld_ClearAMBuffer(f_w, f_h, videopal[90]);
+{$ELSEIF DEFINED(STRIFE)}
+    gld_ClearAMBuffer(f_w, f_h, videopal[BACKGROUND]);
+{$ELSE}
     gld_ClearAMBuffer(f_w, f_h, $080808);
+{$ENDIF}
     {$ELSE}
+{$IF DEFINED(HERETIC)}
+    AM_clearFB(104);
+{$ELSEIF DEFINED(HEXEN)}
+    AM_clearFB(90);
+{$ELSEIF DEFINED(STRIFE)}
+    AM_clearFB(BACKGROUND);
+{$ELSE}
     AM_clearFB(aprox_black);
+{$ENDIF}
     {$ENDIF}
     if texturedautomap then
     begin
@@ -1993,8 +2467,16 @@ begin
   AM_drawMarks;
 
   AM_drawPlayers;
+{$IF DEFINED(DOOM)}
   if am_cheating = 2 then
     AM_drawThings;
+{$ELSEIF DEFINED(STRIFE)}
+  if (am_cheating = 2) or (plr.powers[Ord(pw_allmap)] <> 0) then
+    AM_drawThings;
+{$ELSE}
+  if am_cheating = 2 then
+    AM_drawThings(THINGCOLORS, THINGRANGE);
+{$ENDIF}
   AM_drawCrosshair(XHAIRCOLORS);
 
   {$IFDEF OPENGL}
@@ -2014,46 +2496,112 @@ begin
   AM_InitTextured;
 
   pl := @player_arrow[0];
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
   pl.a.y := 0;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.x := 0;
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
   pl.b.x := ((8 * PLAYERRADIUS) div 7);
   pl.b.y := 0;
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
   pl.a.x := ((8 * PLAYERRADIUS) div 7);
   pl.a.y := 0;
   pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
   pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
 
   inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7);
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
   pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
 
   inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
   pl.a.y := 0;
+{$ENDIF}
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+{$ENDIF}
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
   pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -2194,6 +2742,57 @@ begin
   pl.b.y := round(-0.7 * MAPUNIT);
 
 ////////////////////////////////////////////////////////////////////////////////
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl := @keysquare[0];
+  pl.a.x := 0;
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);  // handle part type thing
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := 0;
+  pl.b.y := 0;
+
+  inc(pl);  // stem
+  pl.a.x := 0;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);  // end lockpick part
+  pl.a.x := -((8 * PLAYERRADIUS) div 7);
+  pl.a.y :=  0;
+  pl.b.x :=  -((8 * PLAYERRADIUS) div 7);
+  pl.b.y :=  -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := -3 * ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := 0;
+  pl.b.x := -3 * ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+
+////////////////////////////////////////////////////////////////////////////////
+{$ENDIF}
 
   pl := @traceplayer_guy[0];
   pl.a.x := 0;
