@@ -57,7 +57,7 @@ begin
 
   LLoader := TZlibLoader.Create(LPath);
   try
-    Assert.AreEqual('1.2.8', string(AnsiString(LLoader.Zlib.GetVersion)));
+    Assert.AreEqual('System.ZLib', string(AnsiString(LLoader.Zlib.GetVersion)));
   finally
     LLoader.Free;
   end;

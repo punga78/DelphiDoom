@@ -18,7 +18,6 @@ uses
   // zlib: the PNG code compresses with an IZlib, the tests give it an engine
   // linked in the executable (and, in the loader tests, the one of DDZlib.dll)
   DelphiDoom.Zlib.Intf in '..\Libs\Zlib\DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Native in '..\Libs\Zlib\DelphiDoom.Zlib.Native.pas',
   DelphiDoom.Zlib.Inflater in '..\Libs\Zlib\DelphiDoom.Zlib.Inflater.pas',
   DelphiDoom.Zlib.Deflater in '..\Libs\Zlib\DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',

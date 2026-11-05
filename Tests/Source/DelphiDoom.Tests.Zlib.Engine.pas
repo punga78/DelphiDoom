@@ -95,7 +95,7 @@ end;
 
 procedure TTestZlibEngine.TestVersion;
 begin
-  Assert.AreEqual('1.2.8', string(AnsiString(FZlib.GetVersion)));
+  Assert.AreEqual('System.ZLib', string(AnsiString(FZlib.GetVersion)));
 end;
 
 procedure TTestZlibEngine.TestCompressBoundIsNotSmallerThanSource(ASize: Integer);

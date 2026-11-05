@@ -11,7 +11,7 @@ unit DelphiDoom.Zlib.Deflater;
 interface
 
 uses
-  DelphiDoom.Zlib.Intf, DelphiDoom.Zlib.Native;
+  System.ZLib, DelphiDoom.Zlib.Intf;
 
 type
   /// <summary>
@@ -46,15 +46,15 @@ end;
 function TZlibDeflater.Start(ALevel: Integer): Integer;
 begin
   FillChar(FStream, SizeOf(FStream), 0);
-  Result := deflateInit_(FStream, ALevel, ZLIB_VERSION_TEXT, SizeOf(FStream));
-  FStarted := Result = Z_OK;
+  Result := deflateInit_(FStream, ALevel, ZLIB_API_VERSION, SizeOf(FStream));
+  FStarted := Result = ZLIB_OK;
 end;
 
 function TZlibDeflater.Deflate(var ABuffers: TZlibStreamBuffers;
   AFlush: Integer): Integer;
 begin
   if not FStarted then
-    Exit(Z_STREAM_ERROR);
+    Exit(ZLIB_STREAM_ERROR);
 
   FStream.next_in := ABuffers.NextIn;
   FStream.avail_in := Longint(ABuffers.AvailIn);
@@ -62,7 +62,7 @@ begin
   FStream.avail_out := Longint(ABuffers.AvailOut);
 
   // Qualified: inside this class "deflate" would resolve to the method Deflate
-  Result := DelphiDoom.Zlib.Native.deflate(FStream, AFlush);
+  Result := System.ZLib.deflate(FStream, AFlush);
 
   ABuffers.NextIn := FStream.next_in;
   ABuffers.AvailIn := Cardinal(FStream.avail_in);

@@ -37,10 +37,12 @@ type
 implementation
 
 uses
-  DelphiDoom.Zlib.Native, DelphiDoom.Zlib.Inflater, DelphiDoom.Zlib.Deflater;
+  System.ZLib, DelphiDoom.Zlib.Inflater, DelphiDoom.Zlib.Deflater;
 
 const
   MAX_STREAM_SIZE = Cardinal(High(Longint));
+  // What GetVersion answers: the code is the one of the RTL of Delphi
+  ZLIB_LIBRARY_NAME: PAnsiChar = 'System.ZLib';
 
 { TZlibEngine }
 
@@ -58,7 +60,7 @@ end;
 
 function TZlibEngine.GetVersion: PAnsiChar;
 begin
-  Result := ZLIB_VERSION_TEXT;
+  Result := ZLIB_LIBRARY_NAME;
 end;
 
 function TZlibEngine.CompressBound(ASourceSize: Cardinal): Cardinal;
@@ -74,13 +76,13 @@ var
   LStream: TZStreamRec;
 begin
   if (ADest = nil) or ((ASource = nil) and (ASourceSize > 0)) then
-    Exit(Z_STREAM_ERROR);
+    Exit(ZLIB_STREAM_ERROR);
   if (ASourceSize > MAX_STREAM_SIZE) or (ADestSize > MAX_STREAM_SIZE) then
-    Exit(Z_BUF_ERROR);
+    Exit(ZLIB_BUF_ERROR);
 
   FillChar(LStream, SizeOf(LStream), 0);
-  Result := deflateInit_(LStream, ALevel, ZLIB_VERSION_TEXT, SizeOf(LStream));
-  if Result <> Z_OK then
+  Result := deflateInit_(LStream, ALevel, ZLIB_API_VERSION, SizeOf(LStream));
+  if Result <> ZLIB_OK then
     Exit;
 
   try
@@ -89,15 +91,15 @@ begin
     LStream.next_out := ADest;
     LStream.avail_out := Longint(ADestSize);
 
-    Result := deflate(LStream, Z_FINISH);
-    if Result = Z_STREAM_END then
+    Result := deflate(LStream, ZLIB_FINISH);
+    if Result = ZLIB_STREAM_END then
     begin
       ADestSize := Cardinal(LStream.total_out);
-      Result := Z_OK;
+      Result := ZLIB_OK;
     end
-    else if Result = Z_OK then
-      // Z_FINISH not completed: the destination buffer is too small
-      Result := Z_BUF_ERROR;
+    else if Result = ZLIB_OK then
+      // ZLIB_FINISH not completed: the destination buffer is too small
+      Result := ZLIB_BUF_ERROR;
   finally
     deflateEnd(LStream);
   end;
@@ -111,14 +113,14 @@ var
 begin
   if ((ADest = nil) and (ADestSize > 0)) or
      ((ASource = nil) and (ASourceSize > 0)) then
-    Exit(Z_STREAM_ERROR);
+    Exit(ZLIB_STREAM_ERROR);
   if (ASourceSize > MAX_STREAM_SIZE) or (ADestSize > MAX_STREAM_SIZE) then
-    Exit(Z_BUF_ERROR);
+    Exit(ZLIB_BUF_ERROR);
 
   FillChar(LStream, SizeOf(LStream), 0);
-  Result := inflateInit2_(LStream, WindowBitsOf(AFormat), ZLIB_VERSION_TEXT,
+  Result := inflateInit2_(LStream, WindowBitsOf(AFormat), ZLIB_API_VERSION,
     SizeOf(LStream));
-  if Result <> Z_OK then
+  if Result <> ZLIB_OK then
     Exit;
 
   try
@@ -131,16 +133,16 @@ begin
       LStream.next_out := @LNoOutput;
     LStream.avail_out := Longint(ADestSize);
 
-    Result := inflate(LStream, Z_FINISH);
-    if Result = Z_STREAM_END then
+    Result := inflate(LStream, ZLIB_FINISH);
+    if Result = ZLIB_STREAM_END then
     begin
       ADestSize := Cardinal(LStream.total_out);
-      Result := Z_OK;
+      Result := ZLIB_OK;
     end
-    else if Result = Z_NEED_DICT then
-      Result := Z_DATA_ERROR
-    else if Result = Z_OK then
-      Result := Z_BUF_ERROR;
+    else if Result = ZLIB_NEED_DICT then
+      Result := ZLIB_DATA_ERROR
+    else if Result = ZLIB_OK then
+      Result := ZLIB_BUF_ERROR;
   finally
     inflateEnd(LStream);
   end;
@@ -154,7 +156,7 @@ begin
   AInflater := nil;
   LInflater := TZlibInflater.Create;
   Result := LInflater.Start(WindowBitsOf(AFormat));
-  if Result = Z_OK then
+  if Result = ZLIB_OK then
     AInflater := LInflater
   else
     LInflater.Free;
@@ -168,7 +170,7 @@ begin
   ADeflater := nil;
   LDeflater := TZlibDeflater.Create;
   Result := LDeflater.Start(ALevel);
-  if Result = Z_OK then
+  if Result = ZLIB_OK then
     ADeflater := LDeflater
   else
     LDeflater.Free;

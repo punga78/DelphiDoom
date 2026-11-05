@@ -37,6 +37,10 @@ const
   ZLIB_BEST_SPEED = 1;
   ZLIB_BEST_COMPRESSION = 9;
 
+  // The version of the zlib API that the engine asks for when it starts a stream: zlib only
+  // checks the first digit
+  ZLIB_API_VERSION: PAnsiChar = '1.2.8';
+
   // Name of the DLL and of its only export
   DDZLIB_LIBRARY_NAME = 'DDZlib.dll';
   DDZLIB_CREATE_EXPORT = 'DDZlibCreate';
@@ -101,7 +105,7 @@ type
     ['{69C08C8C-EBE9-46FD-9EF1-A0103A08893D}']
 
     /// <summary>
-    ///   Version of the zlib code inside the DLL (zero terminated, ANSI)
+    ///   Name of the zlib code behind the interface (zero terminated, ANSI)
     /// </summary>
     function GetVersion: PAnsiChar; stdcall;
 

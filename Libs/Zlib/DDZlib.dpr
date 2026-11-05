@@ -10,7 +10,6 @@ library DDZlib;
 
 uses
   DelphiDoom.Zlib.Intf in 'DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Native in 'DelphiDoom.Zlib.Native.pas',
   DelphiDoom.Zlib.Inflater in 'DelphiDoom.Zlib.Inflater.pas',
   DelphiDoom.Zlib.Deflater in 'DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in 'DelphiDoom.Zlib.Engine.pas';

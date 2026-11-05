@@ -82,7 +82,7 @@ end;
 
 procedure TTestZlibClient.TestVersion;
 begin
-  Assert.AreEqual('1.2.8', FClient.Version);
+  Assert.AreEqual('System.ZLib', FClient.Version);
 end;
 
 procedure TTestZlibClient.TestRoundTripWithKnownSize(ASize: Integer);

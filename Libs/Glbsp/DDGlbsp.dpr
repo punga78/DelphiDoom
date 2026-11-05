@@ -10,7 +10,6 @@ library DDGlbsp;
 
 uses
   DelphiDoom.Zlib.Intf in '..\Zlib\DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Native in '..\Zlib\DelphiDoom.Zlib.Native.pas',
   DelphiDoom.Zlib.Inflater in '..\Zlib\DelphiDoom.Zlib.Inflater.pas',
   DelphiDoom.Zlib.Deflater in '..\Zlib\DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in '..\Zlib\DelphiDoom.Zlib.Engine.pas',

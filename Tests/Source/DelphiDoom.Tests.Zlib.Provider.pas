@@ -70,14 +70,14 @@ begin
   TZlibProvider.Client;
   // The old client is freed by Use: a new one works on the engine passed in
   TZlibProvider.Use(TZlibEngine.Create);
-  Assert.AreEqual('1.2.8', TZlibProvider.Client.Version);
+  Assert.AreEqual('System.ZLib', TZlibProvider.Client.Version);
 end;
 
 procedure TTestZlibProvider.TestReleaseThenClientCreatesANewOne;
 begin
   TZlibProvider.Client;
   TZlibProvider.Release;
-  Assert.AreEqual('1.2.8', TZlibProvider.Client.Version);
+  Assert.AreEqual('System.ZLib', TZlibProvider.Client.Version);
 end;
 
 initialization

@@ -237,7 +237,6 @@ uses
   v_data in 'Hexen\v_data.pas',
   z_files in 'ZLIB\z_files.pas',
   DelphiDoom.Zlib.Intf in 'Libs\Zlib\DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Native in 'Libs\Zlib\DelphiDoom.Zlib.Native.pas',
   DelphiDoom.Zlib.Inflater in 'Libs\Zlib\DelphiDoom.Zlib.Inflater.pas',
   DelphiDoom.Zlib.Deflater in 'Libs\Zlib\DelphiDoom.Zlib.Deflater.pas',
   DelphiDoom.Zlib.Engine in 'Libs\Zlib\DelphiDoom.Zlib.Engine.pas',

@@ -11,7 +11,7 @@ unit DelphiDoom.Zlib.Inflater;
 interface
 
 uses
-  DelphiDoom.Zlib.Intf, DelphiDoom.Zlib.Native;
+  System.ZLib, DelphiDoom.Zlib.Intf;
 
 type
   /// <summary>
@@ -46,15 +46,15 @@ end;
 function TZlibInflater.Start(AWindowBits: Integer): Integer;
 begin
   FillChar(FStream, SizeOf(FStream), 0);
-  Result := inflateInit2_(FStream, AWindowBits, ZLIB_VERSION_TEXT, SizeOf(FStream));
-  FStarted := Result = Z_OK;
+  Result := inflateInit2_(FStream, AWindowBits, ZLIB_API_VERSION, SizeOf(FStream));
+  FStarted := Result = ZLIB_OK;
 end;
 
 function TZlibInflater.Inflate(var ABuffers: TZlibStreamBuffers;
   AFlush: Integer): Integer;
 begin
   if not FStarted then
-    Exit(Z_STREAM_ERROR);
+    Exit(ZLIB_STREAM_ERROR);
 
   FStream.next_in := ABuffers.NextIn;
   FStream.avail_in := Longint(ABuffers.AvailIn);
@@ -62,7 +62,7 @@ begin
   FStream.avail_out := Longint(ABuffers.AvailOut);
 
   // Qualified: inside this class "inflate" would resolve to the method Inflate
-  Result := DelphiDoom.Zlib.Native.inflate(FStream, AFlush);
+  Result := System.ZLib.inflate(FStream, AFlush);
 
   ABuffers.NextIn := FStream.next_in;
   ABuffers.AvailIn := Cardinal(FStream.avail_in);
@@ -71,8 +71,8 @@ begin
   ABuffers.AvailOut := Cardinal(FStream.avail_out);
   ABuffers.TotalOut := Cardinal(FStream.total_out);
 
-  if Result = Z_NEED_DICT then
-    Result := Z_DATA_ERROR;
+  if Result = ZLIB_NEED_DICT then
+    Result := ZLIB_DATA_ERROR;
 end;
 
 end.
