@@ -245,7 +245,7 @@ uses
   r_col_fz in 'Heretic\r_col_fz.pas',
   r_col_l in 'Base\r_col_l.pas',
   r_col_ms in 'Heretic\r_col_ms.pas',
-  r_col_sk in 'Heretic\r_col_sk.pas',
+  r_col_sk in 'Base\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',
   r_column in 'Base\r_column.pas',
   r_data in 'Heretic\r_data.pas',

@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -18,7 +17,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
 //------------------------------------------------------------------------------
@@ -96,15 +95,27 @@ begin
   dest := @((ylookup[dc_yl]^)[columnofs[dc_x]]);
 
   fracstep := 3 * dc_iscale;
+{$IFDEF HEXEN}
+  frac := dc_yl * dc_iscale + skytopy * FRACUNIT;
+{$ELSE}
   frac := dc_texturemid + (dc_yl - centery) * dc_iscale;
+{$ENDIF}
   swidth := SCREENWIDTH;
 
   for i := 0 to count - 1 do
   begin
   // Invert Sky Texture if below horizont level
+{$IF DEFINED(HEXEN)}
+    spot := LongWord(frac) shr FRACBITS;
+    if spot > 199 then
+      spot := 399 - spot;
+{$ELSEIF DEFINED(STRIFE)}
+    spot := (LongWord(frac) shr FRACBITS) and 127;
+{$ELSE}
     spot := LongWord(frac) shr FRACBITS;
     if spot > 127 then
       spot := 127 - (spot and 127);
+{$ENDIF}
 
     bdest := dc_source[spot];
     dest^ := bdest;
@@ -123,11 +134,21 @@ begin
   fracstep := dc_iscale;
   for i := 0 to count do
   begin
+{$IF DEFINED(HEXEN)}
+  // Invert Sky Texture if below horizont level
+    spot := LongWord(frac) shr FRACBITS;
+    if spot > 199 then
+      spot := 399 - spot;
+
+{$ELSEIF DEFINED(STRIFE)}
+    spot := (LongWord(frac) shr FRACBITS) and 127;
+{$ELSE}
   // Invert Sky Texture if below horizont level
     spot := LongWord(frac) shr FRACBITS;
     if spot > 127 then
       spot := 127 - (spot and 127);
 
+{$ENDIF}
     dest^ := dc_source[spot];
     inc(dest, swidth);
     inc(frac, fracstep);
@@ -158,7 +179,11 @@ begin
   dest := @((ylookup[dc_yl]^)[columnofs[dc_x]]);
 
   fracstep := dc_iscale;
+{$IFDEF HEXEN}
+  frac := dc_yl * fracstep + skytopy * FRACUNIT;
+{$ELSE}
   frac := dc_texturemid + (dc_yl - centery) * fracstep;
+{$ENDIF}
   swidth := SCREENWIDTH;
 
   {$I ..\Base\R_DrawSkyColumnMedium.inc}
@@ -178,8 +203,16 @@ var
   fraclimit: fixed_t;
   spot: integer;
   swidth: integer;
+{$IF DEFINED(HERETIC)}
   and_mask: integer;
   factor: integer;
+{$ELSEIF DEFINED(HEXEN)}
+  sky_max: integer;
+  sky_sub: integer;
+  shift: integer;
+{$ELSE}
+  and_mask: integer;
+{$ENDIF}
 begin
   count := dc_yh - dc_yl;
 
@@ -188,6 +221,7 @@ begin
 
   destl := @((ylookupl[dc_yl]^)[columnofs[dc_x]]);
 
+{$IF DEFINED(HERETIC)}
   fracstep := dc_iscale;
   frac := dc_texturemid + (dc_yl - centery) * fracstep;
 
@@ -195,8 +229,25 @@ begin
   fracstep := fracstep * factor;
   frac := frac * factor;
   and_mask := 128 * factor - 1;
+{$ELSEIF DEFINED(HEXEN)}
+  shift := (1 shl dc_texturefactorbits);
+  fracstep := dc_iscale * shift;
+  frac := dc_yl * fracstep + skytopy * (FRACUNIT * 61 div 50) * shift;
+  sky_max := 256 * shift - 1;
+  sky_sub := 512 * shift - 1;
+{$ELSE}
+  fracstep := dc_iscale;
+  frac := dc_texturemid + (dc_yl - centery) * fracstep;
+
+  fracstep := fracstep * (1 shl dc_texturefactorbits);
+  frac := frac * (1 shl dc_texturefactorbits);
+  and_mask := 128 * (1 shl dc_texturefactorbits) - 1;
+{$ENDIF}
 
   swidth := SCREENWIDTH32PITCH;
+{$IFDEF HEXEN}
+
+{$ENDIF}
   {$I ..\Base\R_DrawSkyColumnHi.inc}
 end;
 
@@ -215,8 +266,13 @@ var
   fraclimit: fixed_t;
   spot: integer;
   swidth: integer;
+{$IF DEFINED(HERETIC)}
   and_mask: integer;
   factor: integer;
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
+  and_mask: integer;
+{$ENDIF}
 
 // For inline color averaging
   r1, g1, b1: byte;
@@ -224,6 +280,11 @@ var
   c1, c2, r, g, b: LongWord;
   factor1: fixed_t;
 
+{$IFDEF HEXEN}
+  sky_max: integer;
+  sky_sub: integer;
+  shift: integer;
+{$ENDIF}
 begin
   count := dc_yh - dc_yl;
 
@@ -232,6 +293,7 @@ begin
 
   destl := @((ylookupl[dc_yl]^)[columnofs[dc_x]]);
 
+{$IF DEFINED(HERETIC)}
   fracstep := dc_iscale;
   frac := dc_texturemid + (dc_yl - centery) * fracstep - FRACUNIT div 2;
 
@@ -239,6 +301,20 @@ begin
   fracstep := fracstep * factor;
   frac := frac * factor;
   and_mask := 128 * factor - 1;
+{$ELSEIF DEFINED(HEXEN)}
+  shift := (1 shl dc_texturefactorbits);
+  fracstep := dc_iscale * shift;
+  frac := dc_yl * fracstep + skytopy * (FRACUNIT * 61 div 50) * shift;
+  sky_max := 256 * shift - 1;
+  sky_sub := 512 * shift - 1;
+{$ELSE}
+  fracstep := dc_iscale;
+  frac := dc_texturemid + (dc_yl - centery) * fracstep - FRACUNIT div 2;
+
+  fracstep := fracstep * (1 shl dc_texturefactorbits);
+  frac := frac * (1 shl dc_texturefactorbits);
+  and_mask := 128 * (1 shl dc_texturefactorbits) - 1;
+{$ENDIF}
 
   swidth := SCREENWIDTH32PITCH;
 

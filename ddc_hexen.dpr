@@ -231,7 +231,7 @@ uses
   r_col_l in 'Base\r_col_l.pas',
   r_col_ms in 'Hexen\r_col_ms.pas',
   r_col_ms_fog in 'Hexen\r_col_ms_fog.pas',
-  r_col_sk in 'Hexen\r_col_sk.pas',
+  r_col_sk in 'Base\r_col_sk.pas',
   r_col_tr in 'Base\r_col_tr.pas',
   r_column in 'Base\r_column.pas',
   r_data in 'Hexen\r_data.pas',
