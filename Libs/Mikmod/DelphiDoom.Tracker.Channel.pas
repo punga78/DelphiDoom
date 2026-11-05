@@ -12,7 +12,8 @@ interface
 
 uses
   DelphiDoom.Tracker.Effects,
-  DelphiDoom.Tracker.EnvelopeCursor,
+  DelphiDoom.Tracker.GhostPool,
+  DelphiDoom.Tracker.NoteEnvelopes,
   DelphiDoom.Tracker.Types,
   DelphiDoom.Tracker.Voice;
 
@@ -55,11 +56,11 @@ type
     FTremoloDelta: Integer;
     FArpeggioSemitones: Integer;
     FGlobalVolume: Double;
-    FVolumeCursor: TTrackerEnvelopeCursor;
-    FPanningCursor: TTrackerEnvelopeCursor;
-    FKeyOff: Boolean;
-    // 0..FADE_FULL, goes down after the key off
-    FFade: Integer;
+    FEnvelopes: TTrackerNoteEnvelopes;
+    FGhosts: TTrackerGhostPool;
+    // The note that sounds: its number, its instrument (the sample is FSample)
+    FNoteNumber: Integer;
+    FNoteInstrument: TTrackerInstrument;
     function Remember(const AMemory: TMemory; const AParam: Byte): Byte;
     function IsLinear: Boolean;
     procedure SlideUp(const ADelta: Double);
@@ -77,9 +78,7 @@ type
     function ClampVolume(const AValue: Integer): Integer;
     function IsTonePortamento(const AEffect: TTrackerEffect): Boolean;
     procedure KeyOff;
-    procedure AdvanceEnvelopes;
-    function FadeStep: Integer;
-    function EnvelopedPanning: Double;
+    procedure ReleaseOldNote(const ANote: Integer; const ANewSample: TTrackerSample);
   public
     /// <param name="AModule">The module that is played</param>
     /// <param name="AVoice">The voice of the mixer that this channel drives</param>
@@ -104,7 +103,7 @@ type
     /// </summary>
     procedure UpdateVoice;
 
-    /// <summary>Silences the channel (key off)</summary>
+    /// <summary>Silences the channel</summary>
     procedure Silence;
 
     /// <summary>0..64</summary>
@@ -116,12 +115,17 @@ type
     property Sample: TTrackerSample read FSample;
     /// <summary>Scale 0..1 of the global volume of the module</summary>
     property GlobalVolume: Double read FGlobalVolume write FGlobalVolume;
+    /// <summary>
+    ///   Where the notes that a new one pushes away go on (IT); not owned, nil for none
+    /// </summary>
+    property Ghosts: TTrackerGhostPool read FGhosts write FGhosts;
   end;
 
 implementation
 
 uses
-  System.Math;
+  System.Math,
+  DelphiDoom.Tracker.Ghost;
 
 const
   // The period of a note, in the units of Scream Tracker: 8363 * 1712 / frequency
@@ -142,12 +146,6 @@ const
   VIBRATO_STEPS = 64;
   VIBRATO_HALF = 32;
   OFFSET_UNIT = 256;
-  FADE_FULL = 65536;
-  // The fade out of the instrument per tick, in 1/65536: XM counts 1/32768, IT 1/1024 of 128 steps
-  XM_FADE_UNIT = 2;
-  IT_FADE_UNIT = 64;
-  CENTER_ENVELOPE = 32;
-  PANNING_RANGE = 128;
 
   // sin(i * pi / 32) * 255, the table of the vibrato of ProTracker
   VIBRATO_TABLE: array[0..31] of Integer = (
@@ -172,15 +170,12 @@ begin
   FPanning := CENTER_PANNING;
   FGlobalVolume := 1;
   FDelayedNote := TRACKER_NOTE_NONE;
-  FFade := FADE_FULL;
-  FVolumeCursor := TTrackerEnvelopeCursor.Create;
-  FPanningCursor := TTrackerEnvelopeCursor.Create;
+  FEnvelopes := TTrackerNoteEnvelopes.Create(AModule.Format);
 end;
 
 destructor TTrackerChannel.Destroy;
 begin
-  FPanningCursor.Free;
-  FVolumeCursor.Free;
+  FEnvelopes.Free;
   inherited Destroy;
 end;
 
@@ -313,7 +308,13 @@ begin
   if LSampleIndex >= FInstrument.Samples.Count then
     Exit;
 
+  // The note that sounds goes on in the background, or ends (IT)
+  if Assigned(FGhosts) and (FModule.Format = tfIt) then
+    ReleaseOldNote(ANote, FInstrument.Samples[LSampleIndex]);
+
   FSample := FInstrument.Samples[LSampleIndex];
+  FNoteNumber := ANote;
+  FNoteInstrument := FInstrument;
   FFrequency := NoteFrequency(LPlayedNote);
   FVolume := FSample.Volume;
   if FSample.Panning >= 0 then
@@ -325,10 +326,7 @@ begin
 
   FVibratoPosition := 0;
   FTremoloPosition := 0;
-  FKeyOff := False;
-  FFade := FADE_FULL;
-  FVolumeCursor.Start(FInstrument.VolumeEnvelope);
-  FPanningCursor.Start(FInstrument.PanningEnvelope);
+  FEnvelopes.Start(FInstrument);
   FVoice.Start(FSample, FStartOffset);
   FStartOffset := 0;
 end;
@@ -364,7 +362,7 @@ var
   LNote: Integer;
 begin
   // A new note starts the envelopes again, after this step
-  AdvanceEnvelopes;
+  FEnvelopes.Advance;
   FEffect := TTrackerEffectMapper.Map(FModule.Format, ACell.Effect, ACell.Param);
   FVolumeEffect := TTrackerEffectMapper.MapVolumeColumn(FModule.Format, ACell.Volume);
   FVibratoDelta := 0;
@@ -605,7 +603,7 @@ end;
 
 procedure TTrackerChannel.ProcessTick(const ATick: Integer);
 begin
-  AdvanceEnvelopes;
+  FEnvelopes.Advance;
   FVibratoDelta := 0;
   FTremoloDelta := 0;
   // The volume column acts on every tick too (the slides and the portamento)
@@ -623,43 +621,58 @@ end;
 // instrument fades out. The other formats have no such thing: the note stops
 procedure TTrackerChannel.KeyOff;
 begin
-  if not (FModule.Format in [tfXm, tfIt]) or not Assigned(FInstrument) then
-  begin
-    Silence;
-    Exit;
-  end;
-  FKeyOff := True;
-  FVolumeCursor.Release;
-  FPanningCursor.Release;
-  // XM: without the envelope of the volume the note ends at once
-  if (FModule.Format = tfXm) and not FVolumeCursor.Active then
-    FFade := 0;
-end;
-
-// One tick of the envelopes and of the fade out
-procedure TTrackerChannel.AdvanceEnvelopes;
-begin
-  FVolumeCursor.Advance;
-  FPanningCursor.Advance;
-  if FKeyOff and (FFade > 0) and Assigned(FInstrument) then
-    FFade := Max(0, FFade - FadeStep);
-end;
-
-function TTrackerChannel.FadeStep: Integer;
-begin
-  if FModule.Format = tfXm then
-    Result := FInstrument.FadeOut * XM_FADE_UNIT
+  if not (FModule.Format in [tfXm, tfIt]) or not Assigned(FNoteInstrument) then
+    Silence
   else
-    Result := FInstrument.FadeOut * IT_FADE_UNIT;
+    FEnvelopes.KeyOff;
 end;
 
-// The panning envelope moves the channel by up to half the way to the sides
-function TTrackerChannel.EnvelopedPanning: Double;
+// What happens to the note that sounds when a new one starts (IT): the new
+// instrument can ask to check the duplicates, and the instrument of the old
+// note says what to do with it (cut, continue in the background, key off, fade)
+procedure TTrackerChannel.ReleaseOldNote(const ANote: Integer; const ANewSample: TTrackerSample);
+var
+  LCheck: TTrackerDuplicateCheck;
+  LDuplicateAction: TTrackerDuplicateAction;
+  LAction: TTrackerNewNoteAction;
+  LGhost: TTrackerGhost;
 begin
-  Result := FPanning;
-  if FPanningCursor.Active then
-    Result := Result + (FPanningCursor.Value - CENTER_ENVELOPE) *
-      (PANNING_RANGE - Abs(FPanning - PANNING_RANGE)) / CENTER_ENVELOPE;
+  LCheck := TTrackerDuplicateCheck(Min(FInstrument.DuplicateCheckType, Ord(High(TTrackerDuplicateCheck))));
+  LDuplicateAction := TTrackerDuplicateAction(Min(FInstrument.DuplicateCheckAction,
+    Ord(High(TTrackerDuplicateAction))));
+  FGhosts.ApplyDuplicateCheck(FIndex, LCheck, LDuplicateAction, ANote, ANewSample, FInstrument);
+
+  if not FVoice.Active or not Assigned(FNoteInstrument) then
+    Exit;
+
+  LAction := FNoteInstrument.NewNoteAction;
+  if TTrackerGhostPool.IsDuplicate(LCheck, FNoteNumber, FSample, FNoteInstrument, ANote, ANewSample,
+    FInstrument) then
+  begin
+    case LDuplicateAction of
+      daCut:
+        LAction := nnaCut;
+      daOff:
+        LAction := nnaOff;
+      daFade:
+        LAction := nnaFade;
+    end;
+  end;
+  if LAction = nnaCut then
+    Exit;
+
+  LGhost := FGhosts.Capture(FVoice, FEnvelopes, FIndex, FNoteNumber, FNoteInstrument, FSample,
+    ClampVolume(FVolume) / MAX_VOLUME, FFrequency, FPanning);
+  if not Assigned(LGhost) then
+    Exit;
+  // The envelopes went with the note: the channel starts with new ones
+  FEnvelopes := TTrackerNoteEnvelopes.Create(FModule.Format);
+  case LAction of
+    nnaOff:
+      LGhost.Envelopes.KeyOff;
+    nnaFade:
+      LGhost.Envelopes.StartFade;
+  end;
 end;
 
 procedure TTrackerChannel.UpdateVoice;
@@ -679,11 +692,12 @@ begin
   end;
   if FArpeggioSemitones <> 0 then
     LFrequency := LFrequency * Power(2, FArpeggioSemitones / 12);
+  LFrequency := LFrequency * FEnvelopes.PitchFactor;
 
   FVoice.Increment := LFrequency / FSampleRate;
   FVoice.Volume := ClampVolume(FVolume + FTremoloDelta) / MAX_VOLUME * FGlobalVolume *
-    (FVolumeCursor.Value / MAX_VOLUME) * (FFade / FADE_FULL);
-  FVoice.Panning := Max(0, Min(1, EnvelopedPanning / 255));
+    FEnvelopes.VolumeFactor;
+  FVoice.Panning := Max(0, Min(1, FEnvelopes.AdjustPanning(FPanning) / 255));
 end;
 
 end.

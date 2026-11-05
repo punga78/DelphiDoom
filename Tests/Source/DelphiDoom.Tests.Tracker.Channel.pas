@@ -109,6 +109,22 @@ type
     procedure TestInviluppoDelPanning;
     [Test]
     procedure TestNuovaNotaRiavviaGliInviluppi;
+    [Test]
+    procedure TestNnaTagliaDiDefaultLaNotaPrecedente;
+    [Test]
+    procedure TestNnaContinuaLasciaLaNotaInSottofondo;
+    [Test]
+    procedure TestNnaSfumaFaScendereIlVolumeDellaNotaInSottofondo;
+    [Test]
+    procedure TestNnaInSottofondoNonSegueLeNoteDelCanale;
+    [Test]
+    procedure TestNnaSoloInIt;
+    [Test]
+    procedure TestControlloDuplicatiDiNotaTagliaLaNotaPrecedente;
+    [Test]
+    procedure TestControlloDuplicatiConNotaDiversaNonTaglia;
+    [Test]
+    procedure TestInviluppoDelPitchSpostaLaFrequenza;
   end;
 
 implementation
@@ -672,6 +688,135 @@ begin
   RenderTo(2, 0);
 
   Assert.AreEqual(LBase, VoiceVolume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestNnaTagliaDiDefaultLaNotaPrecedente;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 0, 0);
+  Start;
+
+  RenderTo(1, 0);
+
+  Assert.IsTrue(FPlayer.Mixer.Voices[0].Active);
+  Assert.IsFalse(FPlayer.Mixer.Voices[1].Active);
+end;
+
+procedure TTestTrackerChannel.TestNnaContinuaLasciaLaNotaInSottofondo;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  FModule.Instruments[0].NewNoteAction := nnaContinue;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 0, 0);
+  Start;
+  RenderTo(0, 0);
+
+  RenderTo(1, 0);
+
+  Assert.IsTrue(FPlayer.Mixer.Voices[0].Active);
+  Assert.IsTrue(FPlayer.Mixer.Voices[1].Active);
+  // The old note goes on at its own frequency, the new one is a minor third higher
+  Assert.AreEqual(FPlayer.Mixer.Voices[0].Increment * Power(2, -3 / 12), FPlayer.Mixer.Voices[1].Increment,
+    0.0001);
+end;
+
+procedure TTestTrackerChannel.TestNnaSfumaFaScendereIlVolumeDellaNotaInSottofondo;
+var
+  LBase: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  FModule.Instruments[0].NewNoteAction := nnaFade;
+  // 16 * 64 of 65536 in each tick
+  FModule.Instruments[0].FadeOut := 16;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 0, 0);
+  Start;
+  RenderTo(0, 0);
+  LBase := FPlayer.Mixer.Voices[0].Volume;
+
+  RenderTo(1, 3);
+
+  Assert.AreEqual(LBase * (65536 - 3 * 1024) / 65536, FPlayer.Mixer.Voices[1].Volume, 0.0001);
+  Assert.AreEqual(LBase, FPlayer.Mixer.Voices[0].Volume, 0.0001);
+end;
+
+procedure TTestTrackerChannel.TestNnaInSottofondoNonSegueLeNoteDelCanale;
+var
+  LBackground: Double;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  FModule.LinearSlides := True;
+  FModule.Instruments[0].NewNoteAction := nnaContinue;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  // The second note slides up (F08): the first does not
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 6, 8);
+  Start;
+  RenderTo(1, 0);
+  LBackground := FPlayer.Mixer.Voices[1].Increment;
+
+  RenderTo(1, 5);
+
+  Assert.AreEqual(LBackground, FPlayer.Mixer.Voices[1].Increment, 0.0001);
+  Assert.IsTrue(FPlayer.Mixer.Voices[0].Increment > LBackground * Power(2, 3 / 12));
+end;
+
+procedure TTestTrackerChannel.TestNnaSoloInIt;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfXm, 1);
+  FModule.Instruments[0].NewNoteAction := nnaContinue;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 0, 0);
+  Start;
+
+  RenderTo(1, 0);
+
+  Assert.IsFalse(FPlayer.Mixer.Voices[1].Active);
+end;
+
+procedure TTestTrackerChannel.TestControlloDuplicatiDiNotaTagliaLaNotaPrecedente;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  FModule.Instruments[0].NewNoteAction := nnaContinue;
+  // Check of the notes, action cut: the same note twice leaves nothing in the background
+  FModule.Instruments[0].DuplicateCheckType := 1;
+  FModule.Instruments[0].DuplicateCheckAction := 0;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 49, 1, 0, 0);
+  Start;
+
+  RenderTo(1, 0);
+
+  Assert.IsFalse(FPlayer.Mixer.Voices[1].Active);
+end;
+
+procedure TTestTrackerChannel.TestControlloDuplicatiConNotaDiversaNonTaglia;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  FModule.Instruments[0].NewNoteAction := nnaContinue;
+  FModule.Instruments[0].DuplicateCheckType := 1;
+  FModule.Instruments[0].DuplicateCheckAction := 0;
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  TTestModuleBuilder.SetCell(FModule, 0, 1, 52, 1, 0, 0);
+  Start;
+
+  RenderTo(1, 0);
+
+  Assert.IsTrue(FPlayer.Mixer.Voices[1].Active);
+end;
+
+procedure TTestTrackerChannel.TestInviluppoDelPitchSpostaLaFrequenza;
+begin
+  FModule := TTestModuleBuilder.SquareWave(tfIt, 1);
+  // 64 is the top of the envelope: sixteen semitones up
+  FModule.Instruments[0].PitchEnvelope := MakeEnvelope([0, 100], [64, 64]);
+  TTestModuleBuilder.SetCell(FModule, 0, 0, 49, 1, 0, 0);
+  Start;
+
+  RenderTo(0, 0);
+
+  Assert.AreEqual(FPlayer.Channels[0].Frequency * Power(2, 16 / 12) / SAMPLE_RATE,
+    FPlayer.Mixer.Voices[0].Increment, 0.0001);
 end;
 
 procedure TTestTrackerChannel.TestPortamentoDellaColonnaDelVolumeDiIt;

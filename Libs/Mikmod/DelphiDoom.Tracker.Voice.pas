@@ -37,6 +37,9 @@ type
     procedure Start(const ASample: TTrackerSample; const AStart: Integer = 0);
     procedure Stop;
 
+    /// <summary>Takes everything of AOther: the sound goes on from where it is</summary>
+    procedure CopyFrom(const AOther: TTrackerVoice);
+
     /// <summary>
     ///   Adds ACount frames of the voice to the buffers, from AOffset; the
     ///   voice stops by itself at the end of a sample without a loop
@@ -78,6 +81,17 @@ end;
 procedure TTrackerVoice.Stop;
 begin
   FActive := False;
+end;
+
+procedure TTrackerVoice.CopyFrom(const AOther: TTrackerVoice);
+begin
+  FSample := AOther.FSample;
+  FPosition := AOther.FPosition;
+  FIncrement := AOther.FIncrement;
+  FVolume := AOther.FVolume;
+  FPanning := AOther.FPanning;
+  FActive := AOther.FActive;
+  FBackward := AOther.FBackward;
 end;
 
 function TTrackerVoice.ValueAt(const AIndex: Integer): Double;

@@ -181,7 +181,7 @@ var
     end;
   end;
 
-  function ReadEnvelope(const AIsSigned: Boolean): TTrackerEnvelope;
+  function ReadEnvelope(const AIsSigned: Boolean; const AMayBeFilter: Boolean = False): TTrackerEnvelope;
   var
     LEnvelopeFlags, LNodes, LNode, LValue: Integer;
   begin
@@ -192,6 +192,9 @@ var
     Result.SustainStart := LReader.ReadByte;
     Result.SustainEnd := LReader.ReadByte;
     Result.Enabled := (LEnvelopeFlags and $01) <> 0;
+    // The third envelope is the pitch or, with this flag, the cutoff of the filter
+    if AMayBeFilter and ((LEnvelopeFlags and $80) <> 0) then
+      Result.Enabled := False;
     Result.Loop := (LEnvelopeFlags and $02) <> 0;
     Result.Sustain := (LEnvelopeFlags and $04) <> 0;
     SetLength(Result.Points, LNodes);
@@ -250,7 +253,7 @@ var
     end;
     LInstrument.VolumeEnvelope := ReadEnvelope(False);
     LInstrument.PanningEnvelope := ReadEnvelope(True);
-    LInstrument.PitchEnvelope := ReadEnvelope(True);
+    LInstrument.PitchEnvelope := ReadEnvelope(True, True);
 
     // The samples that the instrument uses, in order of first use
     SetLength(LUsed, 0);

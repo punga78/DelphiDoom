@@ -13,6 +13,7 @@ interface
 uses
   System.Generics.Collections,
   DelphiDoom.Tracker.Channel,
+  DelphiDoom.Tracker.GhostPool,
   DelphiDoom.Tracker.Mixer,
   DelphiDoom.Tracker.Types;
 
@@ -31,6 +32,7 @@ type
   private
     FModule: TTrackerModule;
     FMixer: TTrackerMixer;
+    FGhosts: TTrackerGhostPool;
     FChannels: TObjectList<TTrackerChannel>;
     FVisited: TDictionary<Integer, Boolean>;
     FLooping: Boolean;
@@ -101,6 +103,8 @@ const
   MIN_TEMPO = 32;
   NOT_SET = -1;
   ROW_KEY_SIZE = 512;
+  // Voices for the notes that go on in the background (IT)
+  GHOST_VOICES = 64;
 
 { TTrackerPlayer }
 
@@ -112,11 +116,17 @@ begin
   inherited Create;
   FModule := AModule;
   FLooping := ALooping;
-  FMixer := TTrackerMixer.Create(ASampleRate, AModule.Channels);
+  // The voices after those of the channels are for the notes that go on in the background
+  FMixer := TTrackerMixer.Create(ASampleRate, AModule.Channels + GHOST_VOICES);
+  FMixer.Gain := 1 / Sqrt(Max(1, AModule.Channels));
+  FGhosts := TTrackerGhostPool.Create(FMixer, AModule.Channels);
   FChannels := TObjectList<TTrackerChannel>.Create(True);
   FVisited := TDictionary<Integer, Boolean>.Create;
   for LIndex := 0 to AModule.Channels - 1 do
+  begin
     FChannels.Add(TTrackerChannel.Create(AModule, FMixer.Voices[LIndex], ASampleRate, LIndex));
+    FChannels[LIndex].Ghosts := FGhosts;
+  end;
 
   FSpeed := Max(1, AModule.InitialSpeed);
   FTempo := Max(MIN_TEMPO, AModule.InitialTempo);
@@ -133,6 +143,7 @@ destructor TTrackerPlayer.Destroy;
 begin
   FVisited.Free;
   FChannels.Free;
+  FGhosts.Free;
   FMixer.Free;
   inherited Destroy;
 end;
@@ -164,6 +175,7 @@ var
   LChannel: TTrackerChannel;
 begin
   FGlobalVolume := Max(0, Min(MAX_GLOBAL_VOLUME, AValue));
+  FGhosts.GlobalVolume := FGlobalVolume / MAX_GLOBAL_VOLUME;
   for LChannel in FChannels do
     LChannel.GlobalVolume := FGlobalVolume / MAX_GLOBAL_VOLUME;
 end;
@@ -348,6 +360,8 @@ begin
 
     if not FTickStarted then
     begin
+      // The notes in the background go first: the ones that the channels leave now start next tick
+      FGhosts.ProcessTick;
       if FTick = 0 then
         ProcessRow
       else
