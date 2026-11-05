@@ -246,7 +246,7 @@ uses
   r_hires in 'Base\r_hires.pas',
   r_intrpl in 'Base\r_intrpl.pas',
   r_lights in 'Base\r_lights.pas',
-  r_main in 'Heretic\r_main.pas',
+  r_main in 'Base\r_main.pas',
   r_mmx in 'Base\r_mmx.pas',
   r_plane in 'Heretic\r_plane.pas',
   r_sky in 'Heretic\r_sky.pas',

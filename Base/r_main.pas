@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -90,8 +83,19 @@ const
 
   DISTMAP = 2;
 
+{$IFDEF HEXEN}
+// Fog base ( < FRACUNIT ) for FOGMAP calculation
+  FOGBASE = 55000;
+
+{$ENDIF}
 var
   forcecolormaps: boolean;
+{$IF DEFINED(HEXEN)}
+  useclassicfuzzeffect: boolean;
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
+  use32bitfuzzeffect: boolean;
+{$ENDIF}
   diher8bittransparency: boolean;
 
 //==============================================================================
@@ -108,6 +112,15 @@ procedure R_ApplyColormap(const ofs, count: integer; const scrn: integer; const 
 //
 //==============================================================================
 function R_PointOnSide(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
+{$IFDEF DOOM}
+
+//==============================================================================
+//
+// R_PointOnSideVanilla
+//
+//==============================================================================
+function R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -226,12 +239,26 @@ procedure R_SetViewAngleOffset(const angle: angle_t);
 //==============================================================================
 function R_FullStOn: boolean;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+//==============================================================================
+//
+// R_StOff
+//
+//==============================================================================
+function R_StOff: boolean;
+
+{$ENDIF}
 var
   {$IFNDEF OPENGL}
   basebatchcolfunc: PProcedure;
   batchcolfunc: PProcedure;
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
   batchfuzzcolfunc1: PProcedure;
   batchfuzzcolfunc2: PProcedure;
+{$ELSE}
+  batchfuzzcolfunc: PProcedure;
+{$ENDIF}
   batchlightcolfunc: PProcedure;
   batchwhitelightcolfunc: PProcedure;
   batchredlightcolfunc: PProcedure;
@@ -239,7 +266,9 @@ var
   batchbluelightcolfunc: PProcedure;
   batchyellowlightcolfunc: PProcedure;
   batchtranscolfunc: PProcedure;
+{$IFDEF STRIFE}
   batchfuzztranscolfunc: PProcedure;
+{$ENDIF}
   batchtaveragecolfunc: PProcedure;
   batchtalphacolfunc: PProcedure;
   batchaddcolfunc: PProcedure;
@@ -266,7 +295,9 @@ var
   tallwallcolfunc: PProcedure;
   skycolfunc: PProcedure;
   transcolfunc: PProcedure;
+{$IFDEF STRIFE}
   fuzztranscolfunc: PProcedure;
+{$ENDIF}
   averagecolfunc: PProcedure;
   alphacolfunc: PProcedure;
   addcolfunc: PProcedure;
@@ -274,8 +305,12 @@ var
   subtractcolfunc: PProcedure;
   maskedcolfunc: PProcedure;
   maskedcolfunc2: PProcedure; // For hi res textures
+{$IFDEF STRIFE}
   fuzzcolfunc1: PProcedure;
   fuzzcolfunc2: PProcedure;
+{$ELSE}
+  fuzzcolfunc: PProcedure;
+{$ENDIF}
   lightcolfunc: PProcedure;
   whitelightcolfunc: PProcedure;
   redlightcolfunc: PProcedure;
@@ -324,6 +359,9 @@ var
 
   centerx: integer;
   centery: integer;
+{$IFDEF HEXEN}
+  skytopy: integer;
+{$ENDIF}
 
   fixedcolormap: PByteArray;
   fixedcolormapnum: integer = 0;
@@ -339,9 +377,15 @@ type
   Pscalelight_t = ^scalelight_t;
 
 var
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   def_scalelight: scalelight_t;
+{$ENDIF}
   fog_scalelight: scalelight_t; // JVAL: Mars fog sectors
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  scalelight: scalelight_t;
+{$ELSE}
   scalelight: Pscalelight_t;
+{$ENDIF}
 
 var
   scalelightlevels: array[0..LIGHTLEVELS - 1, 0..HLL_MAXLIGHTSCALE - 1] of fixed_t;
@@ -352,9 +396,15 @@ type
   Pzlight_t = ^zlight_t;
 
 var
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   def_zlight: zlight_t;
+{$ENDIF}
   fog_zlight: zlight_t;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  zlight: zlight_t;
+{$ELSE}
   zlight: Pzlight_t;
+{$ENDIF}
   renderlightscale: integer;
 
 var
@@ -412,6 +462,18 @@ function R_GetColormapLightLevel(const cmap: PByteArray): fixed_t;
 //==============================================================================
 function R_GetColormap32(const cmap: PByteArray): PLongWordArray;
 
+{$IFDEF HEXEN}
+{$IFNDEF OPENGL}
+
+//==============================================================================
+//
+// R_SetPalette64
+//
+//==============================================================================
+procedure R_SetPalette64;
+{$ENDIF}
+
+{$ENDIF}
 //==============================================================================
 //
 // R_Ticker
@@ -454,16 +516,28 @@ uses
   d_net,
   mt_utils,
   mn_screenshot,
+{$IFDEF HEXEN}
+  g_game,
+{$ENDIF}
   m_bbox,
   m_misc,
+{$IFDEF HEXEN}
+  m_rnd,
+  a_action,
+{$ENDIF}
   p_setup,
+{$IFDEF HEXEN}
+  p_user,
+{$ENDIF}
    // JVAL: 3d floors
   {$IFNDEF OPENGL}
   i_threads,
   i_video,
   i_system,
   {$ENDIF}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   r_colormaps,
+{$ENDIF}
   r_aspect,
   r_draw,
   r_bsp,
@@ -507,6 +581,10 @@ uses
   r_span,
   r_span32,
   r_span32_ripple,
+{$IFDEF HEXEN}
+  r_span32_fog,
+  r_span32_fog_ripple,
+{$ENDIF}
   r_column,
   r_tallcolumn,
   r_batchcolumn,
@@ -517,6 +595,10 @@ uses
   r_draw_average,
   r_draw_alpha,
   r_col_tr,
+{$IFDEF HEXEN}
+  r_col_fog,
+  r_col_ms_fog,
+{$ENDIF}
   r_draw_additive,
   r_draw_subtractive,
   r_depthbuffer,  // JVAL: 3d Floors
@@ -526,7 +608,14 @@ uses
   r_subsectors,
   r_translations,
   v_data,
+{$IF DEFINED(HERETIC)}
+  sb_bar,
+{$ELSEIF DEFINED(HEXEN)}
+  sb_bar,
+  w_sprite,
+{$ELSE}
   st_stuff,
+{$ENDIF}
   z_zone;
 
 var
@@ -547,7 +636,11 @@ begin
   src := PByte(screens[scrn]);
   inc(src, ofs);
   cnt := count;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  colormap := @colormaps[cmap * 256];
+{$ELSE}
   colormap := @def_colormaps[cmap * 256];
+{$ENDIF}
 
   while cnt > 0 do
   begin
@@ -676,6 +769,54 @@ begin
     result := R_PointOnSide64(x, y, node)
   else
     result := R_PointOnSide32(x, y, node);
+{$IFDEF DOOM}
+end;
+
+//==============================================================================
+//
+// R_PointOnSideVanilla
+//
+//==============================================================================
+function R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean;
+var
+  dx: fixed_t;
+  dy: fixed_t;
+  left: fixed_t;
+  right: fixed_t;
+begin
+  if node.dx = 0 then
+  begin
+    if x <= node.x then
+      result := node.dy > 0
+    else
+      result := node.dy < 0;
+    exit;
+  end;
+
+  if node.dy = 0 then
+  begin
+    if y <= node.y then
+      result := node.dx < 0
+    else
+      result := node.dx > 0;
+    exit;
+  end;
+
+  dx := x - node.x;
+  dy := y - node.y;
+
+  // Try to quickly decide by looking at sign bits.
+  if ((node.dy xor node.dx xor dx xor dy) and $80000000) <> 0 then
+  begin
+    result := ((node.dy xor dx) and $80000000) <> 0;
+    exit;
+  end;
+
+  left := IntFixedMul(node.dy, dx);
+  right := FixedIntMul(dy, node.dx);
+
+  result := right >= left;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -1360,7 +1501,11 @@ begin
       else if level >= NUMCOLORMAPS then
         level := NUMCOLORMAPS - 1;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+      zlight[i][j] := @colormaps[level * 256];
+{$ELSE}
       def_zlight[i][j] := @def_colormaps[level * 256];
+{$ENDIF}
       fog_zlight[i][j] := @fog_colormaps[level * 256];
     end;
 
@@ -1449,8 +1594,13 @@ begin
       begin
         basebatchcolfunc := R_DrawColumnLow_Batch;
         batchcolfunc := R_DrawColumnLow_Batch;
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         batchfuzzcolfunc1 := R_DrawFuzzColumn1_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2_Batch;
+{$ELSE}
+        batchfuzzcolfunc := R_DrawFuzzColumn_Batch;
+{$ENDIF}
         batchlightcolfunc := nil;
         batchwhitelightcolfunc := nil;
         batchredlightcolfunc := nil;
@@ -1458,9 +1608,11 @@ begin
         batchbluelightcolfunc := nil;
         batchyellowlightcolfunc := nil;
         batchtranscolfunc := R_DrawTranslatedColumn_Batch;
+{$IFDEF STRIFE}
 
         fuzztranscolfunc := R_DrawFuzzColumnTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnTL_Batch;
+{$ENDIF}
 
         if usemultithread then
         begin
@@ -1552,6 +1704,18 @@ begin
           rippleslopefunc := R_DrawSpanLow;
         end;
 
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ELSEIF DEFINED(STRIFE)}
         fuzzcolfunc1 := R_DrawFuzzColumn1;
         fuzzcolfunc2 := R_DrawFuzzColumn2;
         lightcolfunc := R_DrawFuzzColumn1;
@@ -1560,6 +1724,15 @@ begin
         greenlightcolfunc := R_DrawFuzzColumn1;
         bluelightcolfunc := R_DrawFuzzColumn1;
         yellowlightcolfunc := R_DrawFuzzColumn1;
+{$ELSE}
+        fuzzcolfunc := R_DrawFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ENDIF}
         skycolfunc := R_DrawSkyColumnLow;
         videomode := vm8bit;
       end;
@@ -1567,8 +1740,13 @@ begin
       begin
         basebatchcolfunc := R_DrawColumnLow_Batch;
         batchcolfunc := R_DrawColumnLow_Batch;
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         batchfuzzcolfunc1 := R_DrawFuzzColumn1_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2_Batch;
+{$ELSE}
+        batchfuzzcolfunc := R_DrawFuzzColumn_Batch;
+{$ENDIF}
         batchlightcolfunc := nil;
         batchwhitelightcolfunc := nil;
         batchredlightcolfunc := nil;
@@ -1576,9 +1754,11 @@ begin
         batchbluelightcolfunc := nil;
         batchyellowlightcolfunc := nil;
         batchtranscolfunc := R_DrawTranslatedColumn_Batch;
+{$IFDEF STRIFE}
 
         fuzztranscolfunc := R_DrawFuzzColumnTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnTL_Batch;
+{$ENDIF}
 
         if usemultithread then
         begin
@@ -1670,6 +1850,18 @@ begin
           rippleslopefunc := R_DrawSpanLow;
         end;
 
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ELSEIF DEFINED(STRIFE)}
         fuzzcolfunc1 := R_DrawFuzzColumn1;
         fuzzcolfunc2 := R_DrawFuzzColumn2;
         lightcolfunc := R_DrawFuzzColumn1;
@@ -1678,6 +1870,15 @@ begin
         greenlightcolfunc := R_DrawFuzzColumn1;
         bluelightcolfunc := R_DrawFuzzColumn1;
         yellowlightcolfunc := R_DrawFuzzColumn1;
+{$ELSE}
+        fuzzcolfunc := R_DrawFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ENDIF}
         skycolfunc := R_DrawSkyColumnLow;
         videomode := vm8bit;
       end;
@@ -1685,8 +1886,13 @@ begin
       begin
         basebatchcolfunc := R_DrawColumnMedium_Batch;
         batchcolfunc := R_DrawColumnMedium_Batch;
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         batchfuzzcolfunc1 := R_DrawFuzzColumn1_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2_Batch;
+{$ELSE}
+        batchfuzzcolfunc := R_DrawFuzzColumn_Batch;
+{$ENDIF}
         batchlightcolfunc := nil;
         batchwhitelightcolfunc := nil;
         batchredlightcolfunc := nil;
@@ -1694,9 +1900,11 @@ begin
         batchbluelightcolfunc := nil;
         batchyellowlightcolfunc := nil;
         batchtranscolfunc := R_DrawTranslatedColumn_Batch;
+{$IFDEF STRIFE}
 
         fuzztranscolfunc := R_DrawFuzzColumnTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnTL_Batch;
+{$ENDIF}
 
         if usemultithread then
         begin
@@ -1788,6 +1996,18 @@ begin
           rippleslopefunc := R_DrawSlopeMedium_Ripple;
         end;
 
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ELSEIF DEFINED(STRIFE)}
         fuzzcolfunc1 := R_DrawFuzzColumn1;
         fuzzcolfunc2 := R_DrawFuzzColumn2;
         lightcolfunc := R_DrawFuzzColumn1;
@@ -1796,15 +2016,38 @@ begin
         greenlightcolfunc := R_DrawFuzzColumn1;
         bluelightcolfunc := R_DrawFuzzColumn1;
         yellowlightcolfunc := R_DrawFuzzColumn1;
+{$ELSE}
+        fuzzcolfunc := R_DrawFuzzColumn;
+        lightcolfunc := R_DrawFuzzColumn;
+        whitelightcolfunc := R_DrawFuzzColumn;
+        redlightcolfunc := R_DrawFuzzColumn;
+        greenlightcolfunc := R_DrawFuzzColumn;
+        bluelightcolfunc := R_DrawFuzzColumn;
+        yellowlightcolfunc := R_DrawFuzzColumn;
+{$ENDIF}
         skycolfunc := R_DrawSkyColumn;
         videomode := vm8bit;
       end;
+{$IFDEF DOOM}
+    DL_NORMAL:  // JVAL: 32 bit color - Default
+{$ELSE}
     DL_NORMAL:
+{$ENDIF}
       begin
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         basebatchcolfunc := R_DrawColumnHi_Batch;
         batchcolfunc := R_DrawColumnHi_Batch;
         batchfuzzcolfunc1 := R_DrawFuzzColumn1Hi_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2Hi_Batch;
+{$ELSE}
+        basebatchcolfunc := R_DrawColumnHi_Batch;
+        batchcolfunc := R_DrawColumnHi_Batch;
+        if use32bitfuzzeffect then
+          batchfuzzcolfunc := R_DrawFuzzColumn32_Batch
+        else
+          batchfuzzcolfunc := R_DrawFuzzColumnHi_Batch;
+{$ENDIF}
         batchlightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchwhitelightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchredlightcolfunc := R_DrawRedLightColumnHi_Batch;
@@ -1817,7 +2060,11 @@ begin
         batchaddcolfunc := R_DrawColumnAddHi_Batch;
         batchsubtractcolfunc := R_DrawColumnSubtractHi_Batch;
 
+{$IFDEF HEXEN}
+        if usemultithread and not LevelUseFog then
+{$ELSE}
         if usemultithread then
+{$ENDIF}
         begin
           basebatchcolfunc_mt := R_DrawColumnHi_BatchMT;
           batchcolfunc_mt := R_DrawColumnHi_BatchMT;
@@ -1850,6 +2097,26 @@ begin
           subtractcolfunc_mt := nil;
         end;
 
+{$IF DEFINED(HEXEN)}
+        if LevelUseFog then
+        begin
+          basebatchcolfunc := nil;
+          batchcolfunc := nil;
+          colfunc := R_DrawColumnHi_Fog;
+          wallcolfunc := R_DrawColumnHi_Fog;
+          basewallcolfunc := R_DrawColumnHi_Fog;
+          tallwallcolfunc := R_DrawTallColumnHi_Fog;
+        end
+        else
+        begin
+          basebatchcolfunc := R_DrawColumnHi_Batch;
+          batchcolfunc := R_DrawColumnHi_Batch;
+          colfunc := R_DrawColumnHi;
+          wallcolfunc := R_DrawColumnHi;
+          basewallcolfunc := R_DrawColumnHi;
+          tallwallcolfunc := R_DrawTallColumnHi;
+        end;
+{$ELSEIF DEFINED(STRIFE)}
         fuzztranscolfunc := R_DrawFuzzColumnHiTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnHiTL_Batch;
 
@@ -1857,17 +2124,39 @@ begin
         wallcolfunc := R_DrawColumnHi;
         basewallcolfunc := R_DrawColumnHi;
         tallwallcolfunc := R_DrawTallColumnHi;
+{$ELSE}
+        colfunc := R_DrawColumnHi;
+        wallcolfunc := R_DrawColumnHi;
+        basewallcolfunc := R_DrawColumnHi;
+        tallwallcolfunc := R_DrawTallColumnHi;
+{$ENDIF}
         transcolfunc := R_DrawTranslatedColumnHi;
         averagecolfunc := R_DrawColumnAverageHi;
         alphacolfunc := R_DrawColumnAlphaHi;
         addcolfunc := R_DrawColumnAddHi;
         addcolfunc_smallstep := R_DrawColumnAddHi_SmallStep;
         subtractcolfunc := R_DrawColumnSubtractHi;
+{$IFNDEF HEXEN}
         maskedcolfunc := R_DrawMaskedColumnNormal;
         maskedcolfunc2 := R_DrawMaskedColumnHi32;
+{$ENDIF}
 
+{$IFDEF HEXEN}
+        if LevelUseFog then
+{$ELSE}
         if usemultithread then
+{$ENDIF}
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnNormal_Fog;
+          maskedcolfunc2 := R_DrawMaskedColumnHi32_Fog;
+          spanfunc := R_DrawSpanNormal_Fog;
+          basespanfunc := R_DrawSpanNormal_Fog;
+          ripplespanfunc := R_DrawSpanNormal_Fog_Ripple;
+          slopefunc := R_DrawSpanNormal_Fog;  // JVAL: Slopes
+          baseslopefunc := R_DrawSpanNormal_Fog;
+          rippleslopefunc := R_DrawSpanNormal_Fog_Ripple;
+{$ELSE}
           spanfunc := R_StoreFlatSpan32;
           basespanfunc := R_StoreFlatSpan32;
           ripplespanfunc := R_StoreFlatSpan32;
@@ -1881,19 +2170,63 @@ begin
           slopefuncMT := R_DrawSpanNormalMT;
           baseslopefuncMT := R_DrawSpanNormalMT;
           rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+{$ENDIF}
         end
         else
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnNormal;
+          maskedcolfunc2 := R_DrawMaskedColumnHi32;
+
+          if usemultithread then
+          begin
+            spanfunc := R_StoreFlatSpan32;
+            basespanfunc := R_StoreFlatSpan32;
+            ripplespanfunc := R_StoreFlatSpan32;
+            slopefunc := R_StoreFlatSpan32;
+            baseslopefunc := R_StoreFlatSpan32;
+            rippleslopefunc := R_StoreFlatSpan32;
+
+            spanfuncMT := R_DrawSpanNormalMT;
+            basespanfuncMT := R_DrawSpanNormalMT;
+            ripplespanfuncMT := R_DrawSpanNormal_RippleMT;
+            slopefuncMT := R_DrawSpanNormalMT;
+            baseslopefuncMT := R_DrawSpanNormalMT;
+            rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+          end
+          else
+          begin
+            spanfunc := R_DrawSpanNormal;
+            basespanfunc := R_DrawSpanNormal;
+            ripplespanfunc := R_DrawSpanNormal_Ripple;
+            slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
+            baseslopefunc := R_DrawSpanNormal;
+            rippleslopefunc := R_DrawSpanNormal_Ripple;
+          end;
+{$ELSE}
           spanfunc := R_DrawSpanNormal;
           basespanfunc := R_DrawSpanNormal;
           ripplespanfunc := R_DrawSpanNormal_Ripple;
           slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
           baseslopefunc := R_DrawSpanNormal;
           rippleslopefunc := R_DrawSpanNormal_Ripple;
+{$ENDIF}
         end;
 
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumnHi;
+{$ELSEIF DEFINED(STRIFE)}
         fuzzcolfunc1 := R_DrawFuzzColumn1Hi;
         fuzzcolfunc2 := R_DrawFuzzColumn2Hi;
+{$ELSE}
+        if use32bitfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawFuzzColumnHi;
+{$ENDIF}
         lightcolfunc := R_DrawWhiteLightColumnHi;
         whitelightcolfunc := R_DrawWhiteLightColumnHi;
         redlightcolfunc := R_DrawRedLightColumnHi;
@@ -1905,10 +2238,20 @@ begin
       end;
     DL_HIRES:
       begin
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         basebatchcolfunc := R_DrawColumnHi_Batch;
         batchcolfunc := R_DrawColumnHi_Batch;
         batchfuzzcolfunc1 := R_DrawFuzzColumn1Hi_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2Hi_Batch;
+{$ELSE}
+        basebatchcolfunc := R_DrawColumnHi_Batch;
+        batchcolfunc := R_DrawColumnHi_Batch;
+        if use32bitfuzzeffect then
+          batchfuzzcolfunc := R_DrawFuzzColumn32_Batch
+        else
+          batchfuzzcolfunc := R_DrawFuzzColumnHi_Batch;
+{$ENDIF}
         batchlightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchwhitelightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchredlightcolfunc := R_DrawRedLightColumnHi_Batch;
@@ -1920,11 +2263,17 @@ begin
         batchtalphacolfunc := R_DrawColumnAlphaHi_Batch;
         batchaddcolfunc := R_DrawColumnAddHi_Batch;
         batchsubtractcolfunc := R_DrawColumnSubtractHi_Batch;
+{$IFDEF STRIFE}
 
         fuzztranscolfunc := R_DrawFuzzColumnHiTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnHiTL_Batch;
+{$ENDIF}
 
+{$IFDEF HEXEN}
+        if usemultithread and not LevelUseFog then
+{$ELSE}
         if usemultithread then
+{$ENDIF}
         begin
           basebatchcolfunc_mt := R_DrawColumnHi_BatchMT;
           batchcolfunc_mt := R_DrawColumnHi_BatchMT;
@@ -1957,21 +2306,58 @@ begin
           subtractcolfunc_mt := nil;
         end;
 
+{$IFDEF HEXEN}
+        if LevelUseFog then
+        begin
+          basebatchcolfunc := nil;
+          batchcolfunc := nil;
+          colfunc := R_DrawColumnHi_Fog;
+          wallcolfunc := R_DrawColumnUltra_Fog;
+          basewallcolfunc := R_DrawColumnUltra_Fog;
+          tallwallcolfunc := R_DrawTallColumnUltra_Fog;
+        end
+        else
+        begin
+          basebatchcolfunc := R_DrawColumnHi_Batch;
+          batchcolfunc := R_DrawColumnHi_Batch;
+          colfunc := R_DrawColumnHi;
+          wallcolfunc := R_DrawColumnUltra;
+          basewallcolfunc := R_DrawColumnUltra;
+          tallwallcolfunc := R_DrawTallColumnUltra;
+        end;
+{$ELSE}
         colfunc := R_DrawColumnHi;
         wallcolfunc := R_DrawColumnUltra;
         basewallcolfunc := R_DrawColumnUltra;
         tallwallcolfunc := R_DrawTallColumnUltra;
+{$ENDIF}
         transcolfunc := R_DrawTranslatedColumnHi;
         averagecolfunc := R_DrawColumnAverageHi;
         alphacolfunc := R_DrawColumnAlphaHi;
         addcolfunc := R_DrawColumnAddHi;
         addcolfunc_smallstep := R_DrawColumnAddHi_SmallStep;
         subtractcolfunc := R_DrawColumnSubtractHi;
+{$IFNDEF HEXEN}
         maskedcolfunc := R_DrawMaskedColumnHi;
         maskedcolfunc2 := R_DrawMaskedColumnHi32;
+{$ENDIF}
 
+{$IFDEF HEXEN}
+        if LevelUseFog then
+{$ELSE}
         if usemultithread then
+{$ENDIF}
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnHi_Fog;
+          maskedcolfunc2 := R_DrawMaskedColumnHi32_Fog;
+          spanfunc := R_DrawSpanNormal_Fog;
+          basespanfunc := R_DrawSpanNormal_Fog;
+          ripplespanfunc := R_DrawSpanNormal_Fog_Ripple;
+          slopefunc := R_DrawSpanNormal_Fog;  // JVAL: Slopes
+          baseslopefunc := R_DrawSpanNormal_Fog;
+          rippleslopefunc := R_DrawSpanNormal_Fog_Ripple;
+{$ELSE}
           spanfunc := R_StoreFlatSpan32;
           basespanfunc := R_StoreFlatSpan32;
           ripplespanfunc := R_StoreFlatSpan32;
@@ -1985,19 +2371,64 @@ begin
           slopefuncMT := R_DrawSpanNormalMT;
           baseslopefuncMT := R_DrawSpanNormalMT;
           rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+{$ENDIF}
         end
         else
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnHi;
+          maskedcolfunc2 := R_DrawMaskedColumnHi32;
+
+          if usemultithread then
+          begin
+            spanfunc := R_StoreFlatSpan32;
+            basespanfunc := R_StoreFlatSpan32;
+            ripplespanfunc := R_StoreFlatSpan32;
+            slopefunc := R_StoreFlatSpan32;
+            baseslopefunc := R_StoreFlatSpan32;
+            rippleslopefunc := R_StoreFlatSpan32;
+
+            spanfuncMT := R_DrawSpanNormalMT;
+            basespanfuncMT := R_DrawSpanNormalMT;
+            ripplespanfuncMT := R_DrawSpanNormal_RippleMT;
+            slopefuncMT := R_DrawSpanNormalMT;
+            baseslopefuncMT := R_DrawSpanNormalMT;
+            rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+          end
+          else
+          begin
+            spanfunc := R_DrawSpanNormal;
+            basespanfunc := R_DrawSpanNormal;
+            ripplespanfunc := R_DrawSpanNormal_Ripple;
+            slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
+            baseslopefunc := R_DrawSpanNormal;
+            rippleslopefunc := R_DrawSpanNormal_Ripple;
+          end;
+{$ELSE}
           spanfunc := R_DrawSpanNormal;
           basespanfunc := R_DrawSpanNormal;
           ripplespanfunc := R_DrawSpanNormal_Ripple;
           slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
           baseslopefunc := R_DrawSpanNormal;
           rippleslopefunc := R_DrawSpanNormal_Ripple;
+{$ENDIF}
         end;
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumnHi;
+{$ELSEIF DEFINED(STRIFE)}
 
         fuzzcolfunc1 := R_DrawFuzzColumn1Hi;
         fuzzcolfunc2 := R_DrawFuzzColumn2Hi;
+{$ELSE}
+
+        if use32bitfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawFuzzColumnHi;
+{$ENDIF}
         lightcolfunc := R_DrawWhiteLightColumnHi;
         whitelightcolfunc := R_DrawWhiteLightColumnHi;
         redlightcolfunc := R_DrawRedLightColumnHi;
@@ -2009,10 +2440,20 @@ begin
       end;
     DL_ULTRARES:
       begin
+{$IF DEFINED(HEXEN)}
+{$ELSEIF DEFINED(STRIFE)}
         basebatchcolfunc := R_DrawColumnHi_Batch;
         batchcolfunc := R_DrawColumnHi_Batch;
         batchfuzzcolfunc1 := R_DrawFuzzColumn1Hi_Batch;
         batchfuzzcolfunc2 := R_DrawFuzzColumn2Hi_Batch;
+{$ELSE}
+        basebatchcolfunc := R_DrawColumnHi_Batch;
+        batchcolfunc := R_DrawColumnHi_Batch;
+        if use32bitfuzzeffect then
+          batchfuzzcolfunc := R_DrawFuzzColumn32_Batch
+        else
+          batchfuzzcolfunc := R_DrawFuzzColumnHi_Batch;
+{$ENDIF}
         batchlightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchwhitelightcolfunc := R_DrawWhiteLightColumnHi_Batch;
         batchredlightcolfunc := R_DrawRedLightColumnHi_Batch;
@@ -2024,11 +2465,17 @@ begin
         batchtalphacolfunc := R_DrawColumnAlphaHi_Batch;
         batchaddcolfunc := R_DrawColumnAddHi_Batch;
         batchsubtractcolfunc := R_DrawColumnSubtractHi_Batch;
+{$IFDEF STRIFE}
 
         fuzztranscolfunc := R_DrawFuzzColumnHiTL;
         batchfuzztranscolfunc := R_DrawFuzzColumnHiTL_Batch;
+{$ENDIF}
 
+{$IFDEF HEXEN}
+        if usemultithread and not LevelUseFog then
+{$ELSE}
         if usemultithread then
+{$ENDIF}
         begin
           basebatchcolfunc_mt := R_DrawColumnHi_BatchMT;
           batchcolfunc_mt := R_DrawColumnHi_BatchMT;
@@ -2061,21 +2508,56 @@ begin
           subtractcolfunc_mt := nil;
         end;
 
+{$IFDEF HEXEN}
+        if LevelUseFog then
+        begin
+          basebatchcolfunc := nil;
+          batchcolfunc := nil;
+          colfunc := R_DrawColumnUltra_Fog;
+          wallcolfunc := R_DrawColumnUltra_Fog;
+          basewallcolfunc := R_DrawColumnUltra_Fog;
+          tallwallcolfunc := R_DrawTallColumnUltra_Fog;
+        end
+        else
+        begin
+          basebatchcolfunc := R_DrawColumnHi_Batch;
+          batchcolfunc := R_DrawColumnHi_Batch;
+          colfunc := R_DrawColumnUltra;
+          wallcolfunc := R_DrawColumnUltra;
+          basewallcolfunc := R_DrawColumnUltra;
+          tallwallcolfunc := R_DrawTallColumnUltra;
+        end;
+{$ELSE}
         colfunc := R_DrawColumnUltra;
         wallcolfunc := R_DrawColumnUltra;
         basewallcolfunc := R_DrawColumnUltra;
         tallwallcolfunc := R_DrawTallColumnUltra;
+{$ENDIF}
         transcolfunc := R_DrawTranslatedColumnHi;
         averagecolfunc := R_DrawColumnAverageUltra;
         addcolfunc := R_DrawColumnAddHi;
         addcolfunc_smallstep := R_DrawColumnAddHi_SmallStep;
         subtractcolfunc := R_DrawColumnSubtractHi;
         alphacolfunc := R_DrawColumnAlphaHi;
+{$IFDEF HEXEN}
+        if LevelUseFog then
+{$ELSE}
         maskedcolfunc := R_DrawMaskedColumnHi;
         maskedcolfunc2 := R_DrawMaskedColumnUltra32;
 
         if usemultithread then
+{$ENDIF}
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnHi_Fog;
+          maskedcolfunc2 := R_DrawMaskedColumnUltra32_Fog;
+          spanfunc := R_DrawSpanNormal_Fog;
+          basespanfunc := R_DrawSpanNormal_Fog;
+          ripplespanfunc := R_DrawSpanNormal_Fog_Ripple;
+          slopefunc := R_DrawSpanNormal_Fog;  // JVAL: Slopes
+          baseslopefunc := R_DrawSpanNormal_Fog;
+          rippleslopefunc := R_DrawSpanNormal_Fog_Ripple;
+{$ELSE}
           spanfunc := R_StoreFlatSpan32;
           basespanfunc := R_StoreFlatSpan32;
           ripplespanfunc := R_StoreFlatSpan32;
@@ -2089,19 +2571,64 @@ begin
           slopefuncMT := R_DrawSpanNormalMT;
           baseslopefuncMT := R_DrawSpanNormalMT;
           rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+{$ENDIF}
         end
         else
         begin
+{$IFDEF HEXEN}
+          maskedcolfunc := R_DrawMaskedColumnHi;
+          maskedcolfunc2 := R_DrawMaskedColumnUltra32;
+
+          if usemultithread then
+          begin
+            spanfunc := R_StoreFlatSpan32;
+            basespanfunc := R_StoreFlatSpan32;
+            ripplespanfunc := R_StoreFlatSpan32;
+            slopefunc := R_StoreFlatSpan32;
+            baseslopefunc := R_StoreFlatSpan32;
+            rippleslopefunc := R_StoreFlatSpan32;
+
+            spanfuncMT := R_DrawSpanNormalMT;
+            basespanfuncMT := R_DrawSpanNormalMT;
+            ripplespanfuncMT := R_DrawSpanNormal_RippleMT;
+            slopefuncMT := R_DrawSpanNormalMT;
+            baseslopefuncMT := R_DrawSpanNormalMT;
+            rippleslopefuncMT := R_DrawSpanNormal_RippleMT;
+          end
+          else
+          begin
+            spanfunc := R_DrawSpanNormal;
+            basespanfunc := R_DrawSpanNormal;
+            ripplespanfunc := R_DrawSpanNormal_Ripple;
+            slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
+            baseslopefunc := R_DrawSpanNormal;
+            rippleslopefunc := R_DrawSpanNormal_Ripple;
+          end;
+{$ELSE}
           spanfunc := R_DrawSpanNormal; //R_DrawSpanUltra;
           basespanfunc := R_DrawSpanNormal;
           ripplespanfunc := R_DrawSpanNormal_Ripple;
           slopefunc := R_DrawSpanNormal;  // JVAL: Slopes
           baseslopefunc := R_DrawSpanNormal;
           rippleslopefunc := R_DrawSpanNormal_Ripple;
+{$ENDIF}
         end;
+{$IF DEFINED(HEXEN)}
+        if useclassicfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawNewFuzzColumnHi;
+{$ELSEIF DEFINED(STRIFE)}
 
         fuzzcolfunc1 := R_DrawFuzzColumn1Hi;
         fuzzcolfunc2 := R_DrawFuzzColumn2Hi;
+{$ELSE}
+
+        if use32bitfuzzeffect then
+          fuzzcolfunc := R_DrawFuzzColumn32
+        else
+          fuzzcolfunc := R_DrawFuzzColumnHi;
+{$ENDIF}
         lightcolfunc := R_DrawWhiteLightColumnHi;
         whitelightcolfunc := R_DrawWhiteLightColumnHi;
         redlightcolfunc := R_DrawRedLightColumnHi;
@@ -2149,15 +2676,33 @@ begin
       scaledviewwidth := (setblocks * SCREENWIDTH div 10) and not 7;
     if setblocks = 10 then
     {$IFDEF OPENGL}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+      viewheight := trunc(SB_Y * SCREENHEIGHT / 200)
+{$ELSE}
       viewheight := trunc(ST_Y * SCREENHEIGHT / 200)
+{$ENDIF}
     {$ELSE}
+{$IF DEFINED(DOOM)}
+      viewheight := V_PreserveY(ST_Y)
+{$ELSEIF DEFINED(STRIFE)}
       viewheight := SCREENHEIGHT - V_PreserveY(ST_HEIGHT)
+{$ELSE}
+      viewheight := V_PreserveY(SB_Y)
+{$ENDIF}
     {$ENDIF}
     else
     {$IFDEF OPENGL}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+      viewheight := (setblocks * trunc(SB_Y * SCREENHEIGHT / 2000)) and not 7;
+{$ELSE}
       viewheight := (setblocks * trunc(ST_Y * SCREENHEIGHT / 2000)) and not 7;
+{$ENDIF}
     {$ELSE}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+      viewheight := (setblocks * V_PreserveY(SB_Y) div 10) and not 7;
+{$ELSE}
       viewheight := (setblocks * V_PreserveY(ST_Y) div 10) and not 7;
+{$ENDIF}
     {$ENDIF}
   end;
 
@@ -2247,7 +2792,11 @@ begin
           level := NUMCOLORMAPS - 1;
       end;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+      scalelight[i][j] := @colormaps[level * 256];
+{$ELSE}
       def_scalelight[i][j] := @def_colormaps[level * 256];
+{$ENDIF}
       fog_scalelight[i][j] := @fog_colormaps[level * 256];
     end;
   end;
@@ -2258,7 +2807,11 @@ begin
       startmaphi := ((LIGHTLEVELS - 1 - i) * 2 * FRACUNIT) div LIGHTLEVELS;
       for j := 0 to HLL_MAXLIGHTSCALE - 1 do
       begin
+{$IFDEF DOOM}
+        levelhi := startmaphi - (j * SCREENWIDTH) div viewwidth * 16;
+{$ELSE}
         levelhi := startmaphi - j * 16 * SCREENWIDTH div viewwidth;
+{$ENDIF}
 
         if levelhi < 0 then
           scalelightlevels[i][j] := FRACUNIT
@@ -2269,7 +2822,9 @@ begin
       end;
     end;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   R_RecalcColormaps;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -2321,6 +2876,62 @@ begin
     setsizeneeded := true;
   end;
   R_CmdUseFake3D;
+end;
+{$ENDIF}
+{$IF DEFINED(HEXEN)}
+
+//==============================================================================
+//
+// R_CmdUseClassicFuzzEffect
+//
+//==============================================================================
+procedure R_CmdUseClassicFuzzEffect(const parm1: string = '');
+var
+  newusefz: boolean;
+begin
+  if parm1 = '' then
+  begin
+    printf('Current setting: useclassicfuzzeffect = %s.'#13#10, [truefalseStrings[useclassicfuzzeffect]]);
+    exit;
+  end;
+
+  newusefz := C_BoolEval(parm1, useclassicfuzzeffect);
+  if newusefz <> useclassicfuzzeffect then
+  begin
+    useclassicfuzzeffect := newusefz;
+{$IFNDEF OPENGL}
+    R_SetRenderingFunctions;
+{$ENDIF}
+  end;
+  R_CmdUseClassicFuzzEffect;
+end;
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
+
+//==============================================================================
+//
+// R_CmdUse32bitfuzzeffect
+//
+//==============================================================================
+procedure R_CmdUse32bitfuzzeffect(const parm1: string = '');
+var
+  newusefz: boolean;
+begin
+  if parm1 = '' then
+  begin
+    printf('Current setting: use32bitfuzzeffect = %s.'#13#10, [truefalseStrings[use32bitfuzzeffect]]);
+    exit;
+  end;
+
+  newusefz := C_BoolEval(parm1, use32bitfuzzeffect);
+  if newusefz <> use32bitfuzzeffect then
+  begin
+    use32bitfuzzeffect := newusefz;
+{$IFNDEF OPENGL}
+    R_SetRenderingFunctions;
+{$ENDIF}
+  end;
+  R_CmdUse32bitfuzzeffect;
 end;
 {$ENDIF}
 
@@ -2425,8 +3036,10 @@ begin
   R_InitAspect;
   printf('R_InitData'#13#10);
   R_InitData;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   printf('R_InitCustomColormaps'#13#10);
   R_InitCustomColormaps;
+{$ENDIF}
   printf('R_InitRippleEffects'#13#10);
   R_InitRippleEffects;
   printf('R_InitInterpolations'#13#10);
@@ -2490,6 +3103,12 @@ begin
   C_AddCmd('extremeflatfiltering', @R_CmdExtremeflatfiltering);
   C_AddCmd('32bittexturepaletteeffects, use32bittexturepaletteeffects', @R_Cmd32bittexturepaletteeffects);
   C_AddCmd('useexternaltextures', @R_CmdUseExternalTextures);
+{$IF DEFINED(HEXEN)}
+  C_AddCmd('useclassicfuzzeffect', @R_CmdUseClassicFuzzEffect);
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
+  C_AddCmd('use32bitfuzzeffect', @R_CmdUse32bitfuzzeffect);
+{$ENDIF}
   C_AddCmd('diher8bittransparency', @R_CmdDiher8bitTransparency);
   C_AddCmd('lightboostfactor', @R_CmdLightBoostFactor);
   C_AddCmd('screenwidth', @R_CmdScreenWidth);
@@ -2535,8 +3154,10 @@ begin
   printf(#13#10 + 'R_ShutDownFlatsCache32');
   R_ShutDownFlatsCache32;
 {$ENDIF}
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   printf(#13#10 + 'R_ShutDownCustomColormaps');
   R_ShutDownCustomColormaps;
+{$ENDIF}
   printf(#13#10 + 'R_ShutDownSprites');
   R_ShutDownSprites;
   printf(#13#10 + 'R_FreeMemory');
@@ -2602,9 +3223,11 @@ begin
     result := R_PointInSubSectorClassic(x, y);
 end;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 var
   lastcm: integer = -2;
 
+{$ENDIF}
 //==============================================================================
 //
 // R_SetupFrame
@@ -2613,19 +3236,34 @@ var
 procedure R_SetupFrame(player: Pplayer_t);
 var
   i: integer;
+{$IFDEF HEXEN}
+  intensity: integer;
+{$ENDIF}
   cy: fixed_t;
 {$IFNDEF OPENGL}
   dy, dy1: fixed_t;
 {$ENDIF}
   sblocks: integer;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   sec: Psector_t;
   cm: integer;
+{$ENDIF}
   vangle: angle_t;
 begin
   viewplayer := player;
 
   viewx := player.mo.x;
   viewy := player.mo.y;
+{$IFDEF HEXEN}
+
+  if (localQuakeHappening[P_GetPlayerNum(player)] <> 0) and not paused then
+  begin
+    intensity := localQuakeHappening[displayplayer];
+    viewx := viewx + ((P_RandomFromSeed(gametic) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
+    viewy := viewy + ((P_RandomFromSeed(gametic + 1) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
+  end;
+
+{$ENDIF}
   shiftangle := player.lookdir2;
   viewangle := player.mo.angle + shiftangle * DIR256TOANGLEUNIT + viewangleoffset;
   extralight := player.extralight;
@@ -2651,6 +3289,10 @@ begin
   viewpitch := 0;
   absviewpitch := 0;
   {$ENDIF}
+{$IFDEF HEXEN}
+
+  skytopy := MAXLOOKDIR - player.lookdir;
+{$ENDIF}
 //******************************
 // JVAL Enabled z axis shift
   if zaxisshift and ((player.lookdir16 <> 0) or p_justspawned) and (viewangleoffset = 0) then
@@ -2703,6 +3345,7 @@ begin
   planerelativeaspect := 320 / 200 * SCREENHEIGHT / SCREENWIDTH * monitor_relative_aspect;
 {$ENDIF}
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   cm := -1;
   if Psubsector_t(player.mo.subsector).sector.heightsec > -1 then
   begin
@@ -2747,15 +3390,21 @@ begin
     end;
   end;
 
+{$ENDIF}
   fixedcolormapnum := player.fixedcolormap;
   if fixedcolormapnum <> 0 then
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    fixedcolormap := PByteArray(
+      integer(colormaps) + fixedcolormapnum * 256);
+{$ELSE}
     if customcolormap <> nil then
       fixedcolormap := PByteArray(
         integer(customcolormap.colormap) + fixedcolormapnum * 256)
     else
       fixedcolormap := PByteArray(
         integer(colormaps) + fixedcolormapnum * 256);
+{$ENDIF}
 
     {$IFNDEF OPENGL}
     walllights := @scalelightfixed;
@@ -2795,6 +3444,18 @@ end;
 
 //==============================================================================
 //
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+// R_StOff
+//
+//==============================================================================
+function R_StOff: boolean;
+begin
+  result := setblocks = 12;
+end;
+
+//==============================================================================
+//
+{$ENDIF}
 // R_GetColormapLightLevel
 //
 //==============================================================================
@@ -2824,7 +3485,13 @@ function R_GetColormap32(const cmap: PByteArray): PLongWordArray;
 var
   m: integer;
 begin
+{$IFDEF DOOM}
+  if fixedcolormapnum = INVERSECOLORMAP then
+    result := @inversecolormap32
+  else if cmap = nil then
+{$ELSE}
   if cmap = nil then
+{$ENDIF}
     result := @colormaps32[6 * 256] // FuzzLight
   else
   begin

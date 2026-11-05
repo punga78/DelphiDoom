@@ -226,7 +226,7 @@ uses
   r_intrpl in 'Base\r_intrpl.pas',
   r_lights in 'Base\r_lights.pas',
   r_dynlights in 'Base\r_dynlights.pas',
-  r_main in 'Hexen\r_main.pas',
+  r_main in 'Base\r_main.pas',
   r_mmx in 'Base\r_mmx.pas',
   r_plane in 'Hexen\r_plane.pas',
   r_segs in 'Base\r_segs.pas',
