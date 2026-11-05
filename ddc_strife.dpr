@@ -289,7 +289,7 @@ uses
   r_mmx in 'Base\r_mmx.pas',
   r_plane in 'Base\r_plane.pas',
   r_segs in 'Base\r_segs.pas',
-  r_sky in 'Strife\r_sky.pas',
+  r_sky in 'Base\r_sky.pas',
   r_span in 'Base\r_span.pas',
   r_span32 in 'Base\r_span32.pas',
   r_things in 'Base\r_things.pas',

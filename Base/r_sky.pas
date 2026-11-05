@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -40,9 +33,20 @@ unit r_sky;
 
 interface
 
+{$IFDEF HEXEN}
+uses
+  m_fixed;
+
+{$ENDIF}
 // SKY, store the number for name.
 const
+{$IF DEFINED(HEXEN)}
+  SKYFLATNAME = 'F_SKY';
+{$ELSEIF DEFINED(STRIFE)}
   SKYFLATNAME = 'F_SKY001';
+{$ELSE}
+  SKYFLATNAME = 'F_SKY1';
+{$ENDIF}
 
 // The sky map is 256*128*4 maps.
   ANGLETOSKYSHIFT = 22;
@@ -50,10 +54,21 @@ const
 
 var
   skyflatnum: integer;
+{$IFNDEF HEXEN}
   skytexture: integer;
   skytexture1: integer;
   skytexture2: integer;
+{$ENDIF}
   skytexturemid: integer;
+{$IFDEF HEXEN}
+  SkyTexture: integer;
+  Sky2Texture: integer;
+  Sky1ColumnOffset: fixed_t;
+  Sky2ColumnOffset: fixed_t;
+  Sky1ScrollDelta: fixed_t;
+  Sky2ScrollDelta: fixed_t;
+  DoubleSky: boolean;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -62,10 +77,23 @@ var
 //==============================================================================
 procedure R_InitSkyMap;
 
+{$IFDEF HEXEN}
+//==============================================================================
+//
+// R_InitSky
+//
+//==============================================================================
+procedure R_InitSky(map: integer);
+
+{$ENDIF}
 implementation
 
 uses
+{$IFDEF HEXEN}
+  p_mapinfo;
+{$ELSE}
   m_fixed; // Needed for FRACUNIT.
+{$ENDIF}
 
 //==============================================================================
 //
@@ -75,7 +103,35 @@ uses
 //==============================================================================
 procedure R_InitSkyMap;
 begin
+{$IF DEFINED(HEXEN)}
+  skytexturemid := 200 * FRACUNIT;
+end;
+
+//==============================================================================
+//
+// R_InitSky
+//
+// Called at level load.
+//
+//==============================================================================
+procedure R_InitSky(map: integer);
+begin
+  SkyTexture := P_GetMapSky1Texture(map);
+  Sky2Texture := P_GetMapSky2Texture(map);
+  Sky1ScrollDelta := P_GetMapSky1ScrollDelta(map);
+  Sky2ScrollDelta := P_GetMapSky2ScrollDelta(map);
+  Sky1ColumnOffset := 0;
+  Sky2ColumnOffset := 0;
+  DoubleSky := P_GetMapDoubleSky(map);
+{$ELSEIF DEFINED(STRIFE)}
   skytexturemid := 199 * FRACUNIT;
+{$ELSE}
+  skytexturemid := 100 * FRACUNIT;
+{$ENDIF}
 end;
 
 end.
+
+{$IFDEF HEXEN}
+
+{$ENDIF}

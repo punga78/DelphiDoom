@@ -230,7 +230,7 @@ uses
   r_mmx in 'Base\r_mmx.pas',
   r_plane in 'Base\r_plane.pas',
   r_segs in 'Base\r_segs.pas',
-  r_sky in 'Hexen\r_sky.pas',
+  r_sky in 'Base\r_sky.pas',
   r_cache_sky1 in 'Hexen\r_cache_sky1.pas',
   r_cache_sky2 in 'Hexen\r_cache_sky2.pas',
   r_cache_sky in 'Hexen\r_cache_sky.pas',

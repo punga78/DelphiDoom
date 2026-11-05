@@ -254,7 +254,7 @@ uses
   r_main in 'Base\r_main.pas',
   r_mmx in 'Base\r_mmx.pas',
   r_plane in 'Base\r_plane.pas',
-  r_sky in 'Strife\r_sky.pas',
+  r_sky in 'Base\r_sky.pas',
   r_things in 'Base\r_things.pas',
   rtl_types in 'Base\rtl_types.pas',
   s_sound in 'Strife\s_sound.pas',
