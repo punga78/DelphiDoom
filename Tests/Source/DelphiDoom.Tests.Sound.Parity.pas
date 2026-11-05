@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
-  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile, DelphiDoom.Tests.Sound.SdsFile;
+  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile, DelphiDoom.Tests.Sound.SdsFile, DelphiDoom.Tests.Sound.XiFile;
 
 type
   /// <summary>
@@ -119,6 +119,8 @@ type
     procedure TestFlac;
     [Test]
     procedure TestFlacDamaged;
+    [Test]
+    procedure TestXi;
     [Test]
     procedure TestSds;
     [Test]
@@ -1184,6 +1186,29 @@ begin
   LOptions.SampleRate := 11025;
   LOptions.ExtraMetadata := True;
   CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
+end;
+
+procedure TTestSoundParity.TestXi;
+var
+  LSixteen: Boolean;
+  LData: TBytes;
+  LSize: Integer;
+begin
+  for LSixteen := False to True do
+  begin
+    LSize := 600 + Ord(LSixteen) * 601;
+    LData := TSoundTestWavFile.RandomBytes(LSize, 9 + Ord(LSixteen));
+    CheckSame(TSoundTestXiFile.Build(LSixteen, 1, [LSize], LData), Format('xi sample, 16 bit %s', [BoolToStr(LSixteen)]));
+    // other samples with nothing in them, and a size that is not the real one
+    CheckSame(TSoundTestXiFile.Build(LSixteen, 3, [LSize, 0, 0], LData), Format('xi empty samples, 16 bit %s', [BoolToStr(LSixteen)]));
+    CheckSame(TSoundTestXiFile.Build(LSixteen, 1, [1000000], LData), Format('xi truncated, 16 bit %s', [BoolToStr(LSixteen)]));
+  end;
+  CheckSame(TSoundTestXiFile.Build(False, 2, [600, 10], LData), 'xi two samples');
+  CheckSameFailure(TSoundTestXiFile.Build(False, 3, [10, 10, 10], LData), 'xi three samples');
+  CheckSameFailure(TSoundTestXiFile.Build(False, 17, [10], LData), 'xi too many samples');
+  CheckSameFailure(TSoundTestXiFile.Build(False, 0, [], LData), 'xi no samples');
+  CheckSameFailure(TSoundTestXiFile.Build(False, 1, [10], LData, Ord(';')), 'xi bad signature');
+  CheckSameFailure(TSoundTestXiFile.Build(False, 1, [10], LData, Ord(':'), $1B), 'xi bad name end');
 end;
 
 procedure TTestSoundParity.TestSds;
