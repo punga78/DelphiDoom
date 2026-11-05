@@ -417,17 +417,26 @@ end;
 //
 //==============================================================================
 function IsS3MMusicFile(const buf: pointer; const size: integer): boolean;
+const
+  // The header is 96 bytes; "SCRM" is at byte 44. The record of libs3m cannot be
+  // used here: its fields are declared with Char, which is two bytes in Unicode
+  S3M_HEADER_SIZE = 96;
+  S3M_SIGNATURE_OFFSET = 44;
 var
-  h: Ps3m_header_t;
+  b: PByteArray;
 begin
-  if size < SizeOf(s3m_header_t) then
+  if size < S3M_HEADER_SIZE then
   begin
     result := false;
     exit;
   end;
 
-  h := buf;
-  Result := (h.id[0] = 'S') and (h.id[1] = 'C') and (h.id[2] = 'R') and (h.id[3] = 'M')
+  b := buf;
+  Result :=
+    (b[S3M_SIGNATURE_OFFSET] = Ord('S')) and
+    (b[S3M_SIGNATURE_OFFSET + 1] = Ord('C')) and
+    (b[S3M_SIGNATURE_OFFSET + 2] = Ord('R')) and
+    (b[S3M_SIGNATURE_OFFSET + 3] = Ord('M'));
 end;
 
 end.

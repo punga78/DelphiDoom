@@ -181,6 +181,19 @@ begin
     Exit;
   end;
 
+  // The tracker written in Pascal reads the module from memory: no temporary file
+  if TMikModProvider.UseTracker then
+  begin
+    try
+      TMikModProvider.Client.LoadFromMemory(data, size);
+      TMikModProvider.Client.Play(True);
+    except
+      on E: EMikModException do
+        I_Warning('I_PlayMik(): %s'#13#10, [E.Message]);
+    end;
+    Exit;
+  end;
+
   mikfilename := M_SaveFileName('DATA\');
   MkDir(mikfilename);
   mikfilename := mikfilename + 'TMP\';

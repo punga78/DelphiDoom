@@ -254,7 +254,7 @@ def write_xm(path):
     song = build_song()
     out = bytearray()
     out += b'Extended Module: '
-    out += b'DelphiDoom tracker test'.ljust(20, b'\0')
+    out += b'DelphiDoom tracker test'[:20].ljust(20, b'\0')
     out += bytes([0x1A])
     out += b'MakeTestSongs'.ljust(20, b'\0')
     out += struct.pack('<H', 0x0104)
