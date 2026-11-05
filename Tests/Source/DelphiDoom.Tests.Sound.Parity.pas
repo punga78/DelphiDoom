@@ -10,8 +10,9 @@ unit DelphiDoom.Tests.Sound.Parity;
 interface
 
 uses
-  System.SysUtils, System.StrUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
-  DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles;
+  System.SysUtils, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
+  DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
+  DelphiDoom.Tests.Sound.FlacFile;
 
 type
   /// <summary>
@@ -28,6 +29,7 @@ type
     FCurrentName: string;
     procedure CheckSame(const ASource: TBytes; const AName: string);
     procedure CheckSameFailure(const ASource: TBytes; const AName: string);
+    procedure CheckSameStream(const ASource: TBytes; const AName: string);
     /// <summary>
     ///   For sounds whose last samples depend on how the reads are cut (DWVW):
     ///   the same description and the same samples read in big chunks
@@ -113,6 +115,10 @@ type
     procedure TestG72x;
     [Test]
     procedure TestDwvw;
+    [Test]
+    procedure TestFlac;
+    [Test]
+    procedure TestFlacDamaged;
     [Test]
     procedure TestAvr;
     [Test]
@@ -1031,6 +1037,185 @@ begin
     TSoundTestAiffOptions.Compressed('DWVW', 1, 4), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 4 bits');
   CheckSameFailure(TSoundTestContainerFile.BuildAiff(
     TSoundTestAiffOptions.Compressed('DWVW', 1, 28), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 28 bits');
+end;
+
+procedure TTestSoundParity.CheckSameStream(const ASource: TBytes; const AName: string);
+var
+  LExpected, LActual: ISoundFile;
+  LExpectedInfo, LActualInfo: TSoundFileInfo;
+  LKind, LRound: Integer;
+  LExpectedBuffer, LActualBuffer: array[0..2047] of Double;
+  LExpectedRead, LActualRead: Int64;
+begin
+  // A sound of unknown length: read it until it has nothing more, in chunks of 100 frames
+  for LKind := KIND_SHORT to KIND_DOUBLE do
+  begin
+    FCurrentName := AName;
+    LExpected := Open(FReference, ASource);
+    LActual := Open(FCandidate, ASource);
+    LExpected.GetInfo(LExpectedInfo);
+    LActual.GetInfo(LActualInfo);
+    Assert.AreEqual(LExpectedInfo.Frames, LActualInfo.Frames, AName + ': frames');
+    Assert.AreEqual(Integer(LExpectedInfo.Format), Integer(LActualInfo.Format), AName + ': format');
+    for LRound := 0 to 5000 do
+    begin
+      FillChar(LExpectedBuffer, SizeOf(LExpectedBuffer), $5A);
+      FillChar(LActualBuffer, SizeOf(LActualBuffer), $5A);
+      ReadKind(LExpected, LKind, @LExpectedBuffer, 100, LExpectedRead);
+      ReadKind(LActual, LKind, @LActualBuffer, 100, LActualRead);
+      Assert.AreEqual(LExpectedRead, LActualRead, Format('%s: frames of the read %d (kind %d)', [AName, LRound, LKind]));
+      Assert.IsTrue(CompareMem(@LExpectedBuffer, @LActualBuffer, SizeOf(LExpectedBuffer)),
+        Format('%s: samples of the read %d (kind %d)', [AName, LRound, LKind]));
+      if LExpectedRead = 0 then
+        Break;
+    end;
+  end;
+end;
+
+function FlacSignals(AChannels, ACount, ABits, AWasted: Integer): TArray<TArray<Integer>>;
+var
+  LChannel, LIndex: Integer;
+begin
+  SetLength(Result, AChannels);
+  for LChannel := 0 to AChannels - 1 do
+  begin
+    Result[LChannel] := TSoundTestFlacFile.Signal(ACount, ABits - AWasted, LChannel + 1);
+    for LIndex := 0 to ACount - 1 do
+      Result[LChannel][LIndex] := Result[LChannel][LIndex] * (1 shl AWasted);
+  end;
+end;
+
+procedure TTestSoundParity.TestFlac;
+var
+  LReal: TBytes;
+  LSound: ISoundFile;
+  LCode: Integer;
+  LInfo2: TSoundFileInfo;
+  LText: string;
+  LVariant: Integer;
+  LOptions: TSoundTestFlacOptions;
+  LBits, LChannels, LAssignment, LOrder: Integer;
+  LSignals: TArray<TArray<Integer>>;
+  LKind: TSoundTestFlacSubframe;
+begin
+  // Depths, channels and the ways to code two channels
+  for LBits in [8, 16, 24] do
+  begin
+    for LChannels := 1 to 3 do
+    begin
+      LOptions := TSoundTestFlacOptions.Plain;
+      LOptions.Channels := LChannels;
+      LOptions.BitsPerSample := LBits;
+      CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(LChannels, 3000, LBits, 0)),
+        Format('flac %d bits %d channels', [LBits, LChannels]));
+    end;
+    for LAssignment := 1 to 3 do
+    begin
+      LOptions := TSoundTestFlacOptions.Plain;
+      LOptions.Channels := 2;
+      LOptions.BitsPerSample := LBits;
+      LOptions.Assignment := LAssignment;
+      CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 2500, LBits, 0)),
+        Format('flac %d bits assignment %d', [LBits, LAssignment]));
+    end;
+  end;
+
+  // Every kind of subframe
+  for LOrder := 0 to 4 do
+  begin
+    LOptions := TSoundTestFlacOptions.Plain;
+    LOptions.Order := LOrder;
+    CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 2400, 16, 0)), Format('flac fixed %d', [LOrder]));
+  end;
+  for LOrder in [1, 2, 4, 8, 12, 32] do
+  begin
+    LOptions := TSoundTestFlacOptions.Plain;
+    LOptions.Subframe := TSoundTestFlacSubframe.Lpc;
+    LOptions.Order := LOrder;
+    LOptions.BlockSize := 4096;
+    CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 9000, 16, 0)), Format('flac lpc %d', [LOrder]));
+  end;
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.Subframe := TSoundTestFlacSubframe.Verbatim;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 2000, 16, 0)), 'flac verbatim');
+  LOptions.Subframe := TSoundTestFlacSubframe.Constant;
+  LSignals := FlacSignals(2, 2000, 16, 0);
+  for LChannels := 0 to 1 do
+    for LOrder := 0 to 1999 do
+      LSignals[LChannels][LOrder] := 1234 * (LChannels + 1);
+  CheckSame(TSoundTestFlacFile.Build(LOptions, LSignals), 'flac constant');
+
+  // Residual coding
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.Rice2 := True;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 0)), 'flac rice 2');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.UseEscape := True;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 0)), 'flac escape');
+  for LOrder in [0, 3, 5] do
+  begin
+    LOptions := TSoundTestFlacOptions.Plain;
+    LOptions.PartitionOrder := LOrder;
+    // A multiple of 32 samples: the partitions of an uneven block leave samples unwritten
+    CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3072, 16, 0)), Format('flac partitions %d', [LOrder]));
+  end;
+
+  // Wasted bits, headers that defer to STREAMINFO, odd block sizes and rates
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.WastedBits := 3;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 3)), 'flac wasted bits');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.HeaderFromStreamInfo := True;
+  LOptions.BlockSize := 700;
+  LOptions.SampleRate := 37800;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3001, 16, 0)), 'flac header from streaminfo');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.BlockSize := 300;
+  LOptions.SampleRate := 16000;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3001, 16, 0)), 'flac block size 300');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.BlockSize := 4096;
+  LOptions.SampleRate := 11025;
+  LOptions.ExtraMetadata := True;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 9000, 16, 0)), 'flac more metadata');
+end;
+
+procedure TTestSoundParity.TestFlacDamaged;
+var
+  LOptions: TSoundTestFlacOptions;
+  LBytes: TBytes;
+begin
+  // A frame with the wrong CRC is silence, one with a bad header is lost
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.BadCrcFrame := 1;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 6000, 16, 0)), 'flac bad crc');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.BadHeaderFrame := 2;
+  // In chunks: a single read across the resync and the end of the sound is not emulated
+  CheckSameStream(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 6000, 16, 0)), 'flac bad header');
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.Garbage := 7;
+  CheckSameStream(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 6000, 16, 0)), 'flac garbage between frames');
+
+  // The numbers in STREAMINFO do not agree with the frames
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.TotalSamples := 5000;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 0)), 'flac more samples promised');
+  LOptions.TotalSamples := 2000;
+  CheckSame(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 3000, 16, 0)), 'flac fewer samples promised');
+  LOptions.TotalSamples := 0;
+  CheckSameStream(TSoundTestFlacFile.Build(LOptions, FlacSignals(2, 3000, 16, 0)), 'flac unknown length');
+
+  // A file that stops in the middle of a frame
+  LOptions := TSoundTestFlacOptions.Plain;
+  LBytes := TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 6000, 16, 0));
+  SetLength(LBytes, Length(LBytes) - 300);
+  CheckSameBulk(LBytes, 'flac cut');
+
+  // A bit depth libsndfile does not read
+  LOptions := TSoundTestFlacOptions.Plain;
+  LOptions.BitsPerSample := 12;
+  CheckSameFailure(TSoundTestFlacFile.Build(LOptions, FlacSignals(1, 2000, 12, 0)), 'flac 12 bits');
 end;
 
 procedure TTestSoundParity.TestAvr;

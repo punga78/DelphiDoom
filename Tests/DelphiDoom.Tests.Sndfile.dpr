@@ -63,6 +63,8 @@ uses
   DelphiDoom.Sound.Codec.Gsm610 in '..\Libs\Sound\DelphiDoom.Sound.Codec.Gsm610.pas',
   DelphiDoom.Sound.Codec.G72x in '..\Libs\Sound\DelphiDoom.Sound.Codec.G72x.pas',
   DelphiDoom.Sound.Codec.Dwvw in '..\Libs\Sound\DelphiDoom.Sound.Codec.Dwvw.pas',
+  DelphiDoom.Sound.Codec.Flac in '..\Libs\Sound\DelphiDoom.Sound.Codec.Flac.pas',
+  DelphiDoom.Sound.Format.Flac in '..\Libs\Sound\DelphiDoom.Sound.Format.Flac.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',
@@ -75,6 +77,7 @@ uses
   DelphiDoom.Tests.Audio.WavBuilder in 'Source\DelphiDoom.Tests.Audio.WavBuilder.pas',
   DelphiDoom.Tests.Audio.SoundConverter in 'Source\DelphiDoom.Tests.Audio.SoundConverter.pas',
   DelphiDoom.Tests.Sound.WavFile in 'Source\DelphiDoom.Tests.Sound.WavFile.pas',
+  DelphiDoom.Tests.Sound.FlacFile in 'Source\DelphiDoom.Tests.Sound.FlacFile.pas',
   DelphiDoom.Tests.Sound.ContainerFiles in 'Source\DelphiDoom.Tests.Sound.ContainerFiles.pas',
   DelphiDoom.Tests.Sound.Parity in 'Source\DelphiDoom.Tests.Sound.Parity.pas';
 

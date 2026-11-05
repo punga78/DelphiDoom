@@ -29,6 +29,15 @@ type
   ///   The result of decoding a sound: its description and all its samples,
   ///   interleaved. Produced by an ISoundFormat, consumed by TSoundFile
   /// </summary>
+  /// <summary>
+  ///   An error that libsndfile reports from the read that decodes the frame
+  ///   starting at sample Frame (FLAC)
+  /// </summary>
+  TSoundErrorEvent = record
+    Frame: Int64;
+    Code: Integer;
+  end;
+
   TSoundSamples = class
   private
     FInfo: TSoundFileInfo;
@@ -42,9 +51,11 @@ type
     FZeroFillChunk: Integer;
     FAvailableFrames: Int64;
     FRewindOnly: Boolean;
+    FSeekLimit: Int64;
     FTrailingItem: Integer;
     FHasTrailingItem: Boolean;
     FReadsUnimplemented: Boolean;
+    FErrorEvents: TArray<TSoundErrorEvent>;
   public
     /// <summary>
     ///   AData must hold exactly AInfo.Frames * AInfo.Channels samples of AKind
@@ -107,6 +118,11 @@ type
     /// <summary>The sound can only be taken back to its start (DWVW)</summary>
     property RewindOnly: Boolean read FRewindOnly write FRewindOnly;
     /// <summary>
+    ///   When not negative, a seek works only to a frame before it or to the
+    ///   end the header promises (FLAC with less data than STREAMINFO says)
+    /// </summary>
+    property SeekLimit: Int64 read FSeekLimit write FSeekLimit;
+    /// <summary>
     ///   A 32 bit item that libsndfile leaves in the buffer of the caller right
     ///   after the last sample of the sound (DWVW); see ZeroFillChunk -4
     /// </summary>
@@ -117,6 +133,11 @@ type
     ///   DWVW): a read inside the sound fails
     /// </summary>
     property ReadsUnimplemented: Boolean read FReadsUnimplemented write FReadsUnimplemented;
+    /// <summary>
+    ///   Errors found while decoding, in order: a read that goes to the sample
+    ///   of an event (and starts at or before it) returns its code
+    /// </summary>
+    property ErrorEvents: TArray<TSoundErrorEvent> read FErrorEvents write FErrorEvents;
   end;
 
 implementation
@@ -134,6 +155,7 @@ var
   LFrames: Int64;
 begin
   inherited Create;
+  FSeekLimit := -1;
   // The frames the data holds: all of them, unless the codec ran out
   if AAvailableFrames >= 0 then
     LFrames := AAvailableFrames

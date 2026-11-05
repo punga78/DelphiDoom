@@ -29,6 +29,7 @@ type
   private
     FSamples: TSoundSamples;
     FPosition: Int64;
+    FEndEventReported: Boolean;
     function Read(ATarget: TTarget; ABuffer: Pointer; AFrames: Int64;
       out AFramesRead: Int64): Integer;
     procedure ConvertToShort(ASource, ADestination: Pointer; ACount: Integer);
@@ -150,6 +151,7 @@ end;
 function TSoundFile.Read(ATarget: TTarget; ABuffer: Pointer; AFrames: Int64;
   out AFramesRead: Int64): Integer;
 var
+  LEvent: Integer;
   LChannels: Integer;
   LSource: PByte;
   LCount: Integer;
@@ -199,7 +201,19 @@ begin
         AFramesRead := LCount;
     end;
     if (AFramesRead = 0) and (FSamples.ZeroFillChunk = 0) then
-      Exit(SNDFILE_OK);
+    begin
+      // Nothing to give, but the decoder may have met an error looking for more
+      Result := SNDFILE_OK;
+      if not FEndEventReported then
+        for LEvent := 0 to High(FSamples.ErrorEvents) do
+          if (FSamples.ErrorEvents[LEvent].Frame >= FPosition) and
+             (FSamples.ErrorEvents[LEvent].Frame < FPosition + AFrames) then
+          begin
+            Result := FSamples.ErrorEvents[LEvent].Code;
+            FEndEventReported := True;
+          end;
+      Exit;
+    end;
 
     LChannels := FSamples.Info.Channels;
     LCount := Integer(AFramesRead * LChannels);
@@ -327,6 +341,16 @@ begin
       end;
     end;
     Result := SNDFILE_OK;
+    // An error met while decoding what this read asked for
+    for LEvent := 0 to High(FSamples.ErrorEvents) do
+      if (FSamples.ErrorEvents[LEvent].Frame >= FPosition - AFramesRead) and
+         (FSamples.ErrorEvents[LEvent].Frame < FPosition - AFramesRead + AFrames) then
+      begin
+        Result := FSamples.ErrorEvents[LEvent].Code;
+        // The error found past the last frame comes once
+        if LEvent = High(FSamples.ErrorEvents) then
+          FEndEventReported := True;
+      end;
   except
     AFramesRead := 0;
     Result := SNDFILE_ERR_UNEXPECTED;
@@ -374,8 +398,12 @@ begin
   // DWVW can only be taken back to its start
   if FSamples.RewindOnly and (LTarget <> 0) then
     Exit(SNDFILE_ERR_INVALID_ARGUMENT);
+  if (FSamples.SeekLimit >= 0) and (LTarget >= FSamples.SeekLimit) and
+     (LTarget <> FSamples.Info.Frames) then
+    Exit(SNDFILE_ERR_INVALID_ARGUMENT);
 
   FPosition := LTarget;
+  FEndEventReported := False;
   APosition := LTarget;
   Result := SNDFILE_OK;
 end;
