@@ -204,7 +204,7 @@ uses
   i_video in 'Base\i_video.pas',
   info in 'Doom\info.pas',
   info_h in 'Doom\info_h.pas',
-  info_rnd in 'Doom\info_rnd.pas',
+  info_rnd in 'Base\info_rnd.pas',
   m_argv in 'Base\m_argv.pas',
   m_base in 'Base\m_base.pas',
   m_bbox in 'Base\m_bbox.pas',

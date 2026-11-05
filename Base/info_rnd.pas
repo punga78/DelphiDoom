@@ -68,9 +68,15 @@ implementation
 uses
   d_delphi,
   doomdef,
+{$IFDEF HERETIC}
+  g_game,
+{$ENDIF}
   info,
   m_rnd,
   p_setup,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  p_mobj,
+{$ENDIF}
   p_mobj_h;
 
 type
@@ -100,10 +106,36 @@ begin
   if rnd_monstersinitialized then
     exit;
 
+{$IF DEFINED(HERETIC)}
+  if G_PlayingEngineVersion > VERSION110 then
+  begin
+    rnd_monsters[0].check := 90;
+    rnd_monsters[1].check := 120;
+    rnd_monsters[2].check := 220;
+    rnd_monsters[3].check := 1000;
+  end
+  else
+  begin
+    rnd_monsters[0].check := 80;
+    rnd_monsters[1].check := 400;
+    rnd_monsters[2].check := 1200;
+    rnd_monsters[3].check := 2500;
+  end;
+{$ELSEIF DEFINED(HEXEN)}
+{  rnd_monsters[0].check := 290;
+  rnd_monsters[1].check := 360;
+  rnd_monsters[2].check := 400;
+  rnd_monsters[3].check := 2000;}
+  rnd_monsters[0].check := 1000000;
+  rnd_monsters[1].check := 1000000;
+  rnd_monsters[2].check := 1000000;
+  rnd_monsters[3].check := 1000000;
+{$ELSE}
   rnd_monsters[0].check := 80;
   rnd_monsters[1].check := 400;
   rnd_monsters[2].check := 1200;
   rnd_monsters[3].check := 2500;
+{$ENDIF}
   rnd_monsters[4].check := MAXINT;
 
   for i := 0 to NUMMONSTERSCATEGORIES - 1 do
@@ -149,15 +181,19 @@ function Info_SelectRandomMonster(_type: integer): integer;
 var
   idx: integer;
   check: integer;
+{$IFNDEF HEXEN}
   i: integer;
+{$ENDIF}
 begin
   check := mobjinfo[_type].spawnhealth;
   idx := 0;
   while (idx < NUMMONSTERSCATEGORIES) and (check >= rnd_monsters[idx].check) do
     inc(idx);
+{$IFNDEF HEXEN}
 
   for i := 0 to sysrndseed - 1 do
     N_Random;
+{$ENDIF}
 
   result := rnd_monsters[idx].list[N_Random mod rnd_monsters[idx].list.Count];
 end;
@@ -189,9 +225,19 @@ end;
 //==============================================================================
 function Info_IsMonster(_type: integer): boolean;
 begin
+{$IFDEF HEXEN}
+  result := (mobjinfo[_type].doomednum > MAXPLAYERS) and      // Not player
+            (mobjinfo[_type].doomednum <> 9100) and           // Not player
+            (mobjinfo[_type].doomednum <> 9101) and           // Not player
+            (mobjinfo[_type].doomednum <> 9102) and           // Not player
+            (mobjinfo[_type].doomednum <> 9103) and           // Not player
+            (mobjinfo[_type].flags and MF_SHOOTABLE <> 0) and // Shootable
+            (mobjinfo[_type].flags and MF_COUNTKILL <> 0);    // Count kill or can attack
+{$ELSE}
   result := (mobjinfo[_type].doomednum > MAXPLAYERS) and // Not player
             (mobjinfo[_type].flags and MF_SHOOTABLE <> 0) and  // Shootable
             ((mobjinfo[_type].flags and MF_COUNTKILL <> 0) or (mobjinfo[_type].missilestate <> 0) or (mobjinfo[_type].meleestate <> 0));  // Count kill or can attack
+{$ENDIF}
 end;
 
 end.

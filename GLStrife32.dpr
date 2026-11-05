@@ -207,7 +207,7 @@ uses
   i_system in 'Base\i_system.pas',
   info in 'Strife\info.pas',
   info_h in 'Strife\info_h.pas',
-  info_rnd in 'Strife\info_rnd.pas',
+  info_rnd in 'Base\info_rnd.pas',
   m_argv in 'Base\m_argv.pas',
   m_base in 'Base\m_base.pas',
   m_bbox in 'Base\m_bbox.pas',

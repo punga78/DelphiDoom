@@ -129,7 +129,7 @@ uses
   in_stuff in 'Hexen\in_stuff.pas',
   info in 'Hexen\info.pas',
   info_h in 'Hexen\info_h.pas',
-  info_rnd in 'Hexen\info_rnd.pas',
+  info_rnd in 'Base\info_rnd.pas',
   jpg_utils in 'JPEGLIB\jpg_utils.pas',
   jpg_comapi in 'JPEGLIB\jpg_comapi.pas',
   jpg_dapimin in 'JPEGLIB\jpg_dapimin.pas',

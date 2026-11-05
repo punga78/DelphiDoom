@@ -198,7 +198,7 @@ uses
   in_stuff in 'Heretic\in_stuff.pas',
   info in 'Heretic\info.pas',
   info_h in 'Heretic\info_h.pas',
-  info_rnd in 'Heretic\info_rnd.pas',
+  info_rnd in 'Base\info_rnd.pas',
   m_argv in 'Base\m_argv.pas',
   m_base in 'Base\m_base.pas',
   m_bbox in 'Base\m_bbox.pas',
