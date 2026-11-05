@@ -843,7 +843,7 @@ begin
             case Modifier of
               0:
               begin
-                Append(IntToStr(PInteger(n)^));
+                Append(AnsiString(IntToStr(PInteger(n)^)));
                 Inc(m);
                 Inc(n, SizeOf(Integer));
               end;
@@ -858,7 +858,7 @@ begin
             case Modifier of
               0, 4:
               begin
-                Append(IntToStr(PCardinal(n)^));
+                Append(AnsiString(IntToStr(PCardinal(n)^)));
                 Inc(m);
                 Inc(n, SizeOf(Cardinal));
               end;
@@ -871,7 +871,7 @@ begin
             case Modifier of
               0, 4:
               begin
-                Append(IntToHex(PCardinal(n)^, 8));
+                Append(AnsiString(IntToHex(PCardinal(n)^, 8)));
                 Inc(m);
                 Inc(n, SizeOf(Cardinal));
               end;
@@ -887,7 +887,7 @@ begin
             case Modifier of
               0:
               begin
-                Append(FloatToStr(PSingle(n)^));
+                Append(AnsiString(FloatToStr(PSingle(n)^)));
                 Inc(m);
                 Inc(n,SizeOf(Single));
               end;
