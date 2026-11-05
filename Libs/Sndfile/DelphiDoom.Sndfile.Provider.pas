@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Sndfile.Engine;
+  System.SysUtils, DelphiDoom.Sound.Factory;
 
 { TSndfileProvider }
 
@@ -56,7 +56,8 @@ begin
   if not Assigned(FClient) then
   begin
     if not Assigned(FSndfile) then
-      FSndfile := TSndfileEngine.Create;
+      // the decoders in Pascal; TSndfileProvider.Use gives another engine (the C one, a fake)
+      FSndfile := TSoundFactory.CreateEngine;
     FClient := TSndfileClient.Create(FSndfile);
   end;
   Result := FClient;
