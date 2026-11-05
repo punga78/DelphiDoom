@@ -72,6 +72,8 @@ var
   LValue: Cardinal;
   LItemBytes, LExtraItems, LTailItems: Integer;
   LSampleBytes: Integer;
+  LPartialCount: Integer;
+  LPartial: TBytes;
 
   function Fetch16(AOffset: Integer): Word;
   begin
@@ -180,6 +182,21 @@ begin
   ASamples := TSoundSamples.Create(LInfo, LKind, Copy(LData, 0, LCount * LSampleBytes));
   ASamples.ExtraItems := LExtraItems;
   ASamples.Tail := Copy(LData, LCount * LSampleBytes, LTailItems * LSampleBytes);
+
+  // 16 and 32 bit samples are read straight into a buffer of the same width
+  if (LEncoding = SNDFILE_FORMAT_PCM_16) or (LEncoding = SNDFILE_FORMAT_PCM_32) then
+  begin
+    ASamples.ReadsDirectly := True;
+    ASamples.BigEndian := ABigEndian;
+    LPartialCount := Integer((AFileLength - ADataOffset - LFrames * LBlockWidth) mod LItemBytes);
+    if LPartialCount > 0 then
+    begin
+      SetLength(LPartial, LPartialCount);
+      Move(ASource[Integer(ADataOffset + LFrames * LBlockWidth) + LExtraItems * LItemBytes],
+        LPartial[0], LPartialCount);
+      ASamples.PartialBytes := LPartial;
+    end;
+  end;
   Result := SNDFILE_OK;
 end;
 

@@ -155,6 +155,9 @@ var
   LCount: Integer;
   LItemSize: Integer;
   LTarget: PByte;
+  LDirect: Boolean;
+  LRemaining, LSwap: Integer;
+  LByte: Byte;
 begin
   AFramesRead := 0;
   if (AFrames < 0) or ((AFrames > 0) and (ABuffer = nil)) then
@@ -199,7 +202,12 @@ begin
     Inc(FPosition, AFramesRead);
 
     // A read that ran into what follows the sound has its tail cleared
-    if (AFramesRead < AFrames) and (FSamples.ExtraItems > 0) then
+    LDirect := FSamples.ReadsDirectly and
+      (((ATarget = TTarget.Bits16) and (FSamples.Kind = TSoundSampleKind.Int16)) or
+       ((ATarget = TTarget.Bits32) and (FSamples.Kind = TSoundSampleKind.Int32)));
+    if (AFramesRead < AFrames) and
+      ((FSamples.ExtraItems > 0) or (LDirect and
+       (FSamples.BigEndian or (Length(FSamples.PartialBytes) > 0)))) then
     begin
       case ATarget of
         TTarget.Bits16: LItemSize := SizeOf(SmallInt);
@@ -213,13 +221,39 @@ begin
       else
       begin
         // Less than a frame: what was read past the end stays in the buffer
-        LSource := @FSamples.Tail[0];
         LTarget := PByte(ABuffer) + LCount * LItemSize;
-        case ATarget of
-          TTarget.Bits16: ConvertToShort(LSource, LTarget, Integer(FSamples.ExtraItems));
-          TTarget.Bits32: ConvertToInt(LSource, LTarget, Integer(FSamples.ExtraItems));
-        else
-          ConvertToDouble(LSource, LTarget, Integer(FSamples.ExtraItems));
+        if FSamples.ExtraItems > 0 then
+        begin
+          LSource := @FSamples.Tail[0];
+          case ATarget of
+            TTarget.Bits16: ConvertToShort(LSource, LTarget, Integer(FSamples.ExtraItems));
+            TTarget.Bits32: ConvertToInt(LSource, LTarget, Integer(FSamples.ExtraItems));
+          else
+            ConvertToDouble(LSource, LTarget, Integer(FSamples.ExtraItems));
+          end;
+          Inc(LTarget, FSamples.ExtraItems * LItemSize);
+        end;
+        // Same width as the file: libsndfile reads into the buffer itself
+        if LDirect then
+        begin
+          if Length(FSamples.PartialBytes) > 0 then
+            Move(FSamples.PartialBytes[0], LTarget^, Length(FSamples.PartialBytes));
+          if FSamples.BigEndian then
+          begin
+            // It swaps all the items it was asked for, those it did not fill too
+            LRemaining := Integer(AFrames * LChannels) - LCount - Integer(FSamples.ExtraItems);
+            while LRemaining > 0 do
+            begin
+              for LSwap := 0 to LItemSize div 2 - 1 do
+              begin
+                LByte := LTarget[LSwap];
+                LTarget[LSwap] := LTarget[LItemSize - 1 - LSwap];
+                LTarget[LItemSize - 1 - LSwap] := LByte;
+              end;
+              Inc(LTarget, LItemSize);
+              Dec(LRemaining);
+            end;
+          end;
         end;
       end;
     end;

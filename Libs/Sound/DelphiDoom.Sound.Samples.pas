@@ -36,6 +36,9 @@ type
     FData: TBytes;
     FExtraItems: Int64;
     FTail: TBytes;
+    FPartialBytes: TBytes;
+    FReadsDirectly: Boolean;
+    FBigEndian: Boolean;
   public
     /// <summary>
     ///   AData must hold exactly AInfo.Frames * AInfo.Channels samples of AKind
@@ -60,6 +63,25 @@ type
     ///   The first extra samples, up to one frame, decoded like the others
     /// </summary>
     property Tail: TBytes read FTail write FTail;
+    /// <summary>
+    ///   Bytes of a sample cut short by the end of the source, as stored in
+    ///   the file. When libsndfile reads samples of the same width as the
+    ///   caller's buffer it reads straight into it, so these bytes end up
+    ///   there raw, right after the extra samples. Empty when the read goes
+    ///   through a conversion buffer
+    /// </summary>
+    property PartialBytes: TBytes read FPartialBytes write FPartialBytes;
+    /// <summary>
+    ///   True for 16 and 32 bit integer samples, which libsndfile reads
+    ///   straight into a buffer of the same width
+    /// </summary>
+    property ReadsDirectly: Boolean read FReadsDirectly write FReadsDirectly;
+    /// <summary>
+    ///   With ReadsDirectly, the file stores the samples big endian: libsndfile
+    ///   then swaps the bytes of the whole buffer it was given, including the
+    ///   part past the end of the sound that it left untouched
+    /// </summary>
+    property BigEndian: Boolean read FBigEndian write FBigEndian;
   end;
 
 implementation

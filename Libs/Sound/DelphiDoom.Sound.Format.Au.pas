@@ -140,7 +140,7 @@ begin
     LLayout.Format := LLayout.Format or SNDFILE_FORMAT_ENDIAN_LITTLE;
 
   Result := TSoundPcmReader.Read(ASource, LLayout, LDataOffset,
-    LFileLength - LDataOffset, LFileLength, LBigEndian, ASamples);
+    LFileLength - LDataOffset, Length(ASource), LBigEndian, ASamples);
 end;
 
 end.
