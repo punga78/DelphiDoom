@@ -79,6 +79,14 @@ begin
         Break;
     end;
 
+    // What sf_open checks once the format has been read
+    if (Result = SNDFILE_OK) and ((LSamples.Info.SampleRate < 1) or
+       (LSamples.Info.Frames < 0) or (LSamples.Info.Channels < 1)) then
+    begin
+      LSamples.Free;
+      Result := SNDFILE_ERR_MALFORMED_FILE;
+    end;
+
     if Result = SNDFILE_OK then
       ASoundFile := TSoundFile.Create(LSamples);
   except

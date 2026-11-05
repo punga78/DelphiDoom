@@ -46,6 +46,8 @@ uses
   DelphiDoom.Sound.Format.Aiff in '..\Libs\Sound\DelphiDoom.Sound.Format.Aiff.pas',
   DelphiDoom.Sound.Format.Au in '..\Libs\Sound\DelphiDoom.Sound.Format.Au.pas',
   DelphiDoom.Sound.Format.Voc in '..\Libs\Sound\DelphiDoom.Sound.Format.Voc.pas',
+  DelphiDoom.Sound.Format.Avr in '..\Libs\Sound\DelphiDoom.Sound.Format.Avr.pas',
+  DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',
   DelphiDoom.Audio.WavBuilder in '..\Base\DelphiDoom.Audio.WavBuilder.pas',

@@ -67,6 +67,12 @@ type
   public
     class function BuildAiff(const AOptions: TSoundTestAiffOptions;
       const APayload: TBytes): TBytes; static;
+    /// <summary>AVR: ARate hertz, AMono as in the header (0 mono, 65535 stereo)</summary>
+    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+      const APayload: TBytes): TBytes; static;
+    /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
+    class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
+      const APayload: TBytes): TBytes; static;
     class function BuildAu(const AOptions: TSoundTestAuOptions;
       const APayload: TBytes): TBytes; static;
     class function BuildVoc(const AOptions: TSoundTestVocOptions;
@@ -163,6 +169,44 @@ begin
 end;
 
 { TSoundTestContainerFile }
+
+class function TSoundTestContainerFile.BuildAvr(AMono, AResolution, ASign: Word;
+  ARate: Cardinal; const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LIndex: Integer;
+begin
+  LSink.AddText('2BIT');
+  LSink.AddText('sample'#0#0);
+  LSink.AddNumber(AMono, 2, True);
+  LSink.AddNumber(AResolution, 2, True);
+  LSink.AddNumber(ASign, 2, True);
+  LSink.AddNumber(0, 2, True);
+  LSink.AddNumber($FFFF, 2, True);
+  LSink.AddNumber(ARate, 4, True);
+  LSink.AddNumber(Cardinal(Length(APayload) div 2), 4, True);
+  LSink.AddNumber(0, 4, True);
+  LSink.AddNumber(0, 4, True);
+  // Reserved words, extended name and the user text: up to 128 bytes
+  for LIndex := Length(LSink.Bytes) + 1 to 128 do
+    LSink.Add(0);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildHtk(ACount: Int64; APeriod,
+  AKind: Cardinal; const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+begin
+  if ACount < 0 then
+    ACount := Length(APayload) div 2;
+  LSink.AddNumber(Cardinal(ACount), 4, True);
+  LSink.AddNumber(APeriod, 4, True);
+  LSink.AddNumber(AKind, 4, True);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
 
 class function TSoundTestContainerFile.BuildAiff(
   const AOptions: TSoundTestAiffOptions; const APayload: TBytes): TBytes;

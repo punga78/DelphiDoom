@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Sound.Parity;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
+  System.SysUtils, System.StrUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles;
 
 type
@@ -25,6 +25,7 @@ type
   private
     FReference: ISndfile;
     FCandidate: ISndfile;
+    FCurrentName: string;
     procedure CheckSame(const ASource: TBytes; const AName: string);
     procedure CheckSameFailure(const ASource: TBytes; const AName: string);
     procedure CompareReads(const ASource: TBytes; AKind, AChunk: Integer;
@@ -79,6 +80,14 @@ type
     procedure TestAiffSizes;
     [Test]
     procedure TestAiffDamaged;
+    [Test]
+    procedure TestAvr;
+    [Test]
+    procedure TestHtk;
+    [Test]
+    procedure TestSimpleFormatsDamaged;
+    [Test]
+    procedure TestInvalidSampleRate;
     [Test]
     procedure TestAuPcm;
     [Test]
@@ -143,7 +152,8 @@ end;
 function TTestSoundParity.Open(const AEngine: ISndfile;
   const ASource: TBytes): ISoundFile;
 begin
-  Assert.AreEqual(SNDFILE_OK, AEngine.OpenMemory(@ASource[0], Length(ASource), Result));
+  Assert.AreEqual(SNDFILE_OK, AEngine.OpenMemory(@ASource[0], Length(ASource), Result),
+    'open: ' + FCurrentName + IfThen(AEngine = FReference, ' (C engine)', ' (Pascal engine)'));
   Assert.IsNotNull(Result);
 end;
 
@@ -227,6 +237,7 @@ var
   LExpectedInfo, LActualInfo: TSoundFileInfo;
   LKind: Integer;
 begin
+  FCurrentName := AName;
   LExpected := Open(FReference, ASource);
   LActual := Open(FCandidate, ASource);
   LExpected.GetInfo(LExpectedInfo);
@@ -597,6 +608,50 @@ begin
   LOptions := TSoundTestAiffOptions.Compressed('raw ', 1, 16);
   CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
     'aifc raw with 16 bits');
+end;
+
+procedure TTestSoundParity.TestAvr;
+var
+  LStereo: Word;
+begin
+  for LStereo := 0 to 1 do
+  begin
+    CheckSame(TSoundTestContainerFile.BuildAvr(LStereo * $FFFF, 8, 0, 11025,
+      TSoundTestWavFile.RandomBytes(301, 1)), 'avr unsigned 8 bit');
+    CheckSame(TSoundTestContainerFile.BuildAvr(LStereo * $FFFF, 8, $FFFF, 22050,
+      TSoundTestWavFile.RandomBytes(301, 2)), 'avr signed 8 bit');
+    CheckSame(TSoundTestContainerFile.BuildAvr(LStereo * $FFFF, 16, $FFFF, 44100,
+      TSoundTestWavFile.RandomBytes(4 * 150 + 1, 3)), 'avr 16 bit');
+  end;
+end;
+
+procedure TTestSoundParity.TestHtk;
+begin
+  CheckSame(TSoundTestContainerFile.BuildHtk(-1, 625, $20000, TSoundTestWavFile.RandomBytes(400, 1)),
+    'htk 16 kHz');
+  CheckSame(TSoundTestContainerFile.BuildHtk(-1, 0, $20000, TSoundTestWavFile.RandomBytes(400, 2)),
+    'htk no period');
+  CheckSame(TSoundTestContainerFile.BuildHtk(-1, 1250, $20000, TSoundTestWavFile.RandomBytes(2, 3)),
+    'htk one sample');
+end;
+
+procedure TTestSoundParity.TestSimpleFormatsDamaged;
+begin
+  CheckSameFailure(TSoundTestContainerFile.BuildAvr(0, 12, 0, 8000,
+    TSoundTestWavFile.RandomBytes(100, 1)), 'avr bad resolution');
+  CheckSameFailure(TSoundTestContainerFile.BuildAvr(0, 16, 0, 8000,
+    TSoundTestWavFile.RandomBytes(100, 1)), 'avr unsigned 16 bit');
+  CheckSameFailure(TSoundTestContainerFile.BuildHtk(-1, 625, $20001,
+    TSoundTestWavFile.RandomBytes(400, 1)), 'htk not a waveform');
+  CheckSameFailure(TSoundTestContainerFile.BuildHtk(50, 625, $20000,
+    TSoundTestWavFile.RandomBytes(400, 1)), 'htk wrong length');
+end;
+
+procedure TTestSoundParity.TestInvalidSampleRate;
+begin
+  // sf_open refuses a sound whose rate is not positive, whatever the format
+  CheckSameFailure(TSoundTestContainerFile.BuildAvr(0, 8, 0, 0,
+    TSoundTestWavFile.RandomBytes(100, 1)), 'avr rate 0');
 end;
 
 procedure TTestSoundParity.TestAuPcm;
