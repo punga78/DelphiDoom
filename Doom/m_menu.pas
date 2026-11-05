@@ -1573,6 +1573,7 @@ var
   handle: file;
   i: integer;
   name: string;
+  adesc: AnsiString;
   numread: integer;
 begin
   for i := 0 to Ord(load_end) - 1 do
@@ -1586,8 +1587,10 @@ begin
       LoadMenu[i].status := 0;
       continue;
     end;
-    SetLength(savegamestrings[i], SAVESTRINGSIZE);
-    BlockRead(handle, (@savegamestrings[i][1])^, SAVESTRINGSIZE);
+    // The description is stored as 8 bit text
+    SetLength(adesc, SAVESTRINGSIZE);
+    BlockRead(handle, (@adesc[1])^, SAVESTRINGSIZE);
+    savegamestrings[i] := string(adesc);
     seek(handle, SAVESTRINGSIZE + SAVEVERSIONSIZE);
     BlockRead(handle, savegameshots[i], SizeOf(menuscreenbuffer_t), numread);
     if numread <> SizeOf(menuscreenbuffer_t) then
