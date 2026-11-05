@@ -63,11 +63,6 @@ var
   MARKER_RIFF, MARKER_RIFX, MARKER_WAVE, MARKER_FMT, MARKER_DATA,
   MARKER_WVPK, MARKER_OGGS: Cardinal;
 
-function IsPrintable(AValue: Cardinal): Boolean;
-begin
-  Result := (AValue >= 32) and (AValue <= 126);
-end;
-
 { TWavFormat }
 
 function TWavFormat.ReadExtensible(var AReader: TSoundByteReader;
@@ -300,8 +295,10 @@ begin
       // are skipped too when they look like a chunk
       if LChunkSize >= $FFFF0000 then
         LDone := True
-      else if IsPrintable(LMarker shr 24) and IsPrintable((LMarker shr 16) and $FF) and
-              IsPrintable((LMarker shr 8) and $FF) and IsPrintable(LMarker and $FF) then
+      else if TSoundByteReader.IsPrintable(LMarker shr 24) and
+              TSoundByteReader.IsPrintable((LMarker shr 16) and $FF) and
+              TSoundByteReader.IsPrintable((LMarker shr 8) and $FF) and
+              TSoundByteReader.IsPrintable(LMarker and $FF) then
         LReader.Skip(LChunkSize)
       else if (LReader.Position and 3) <> 0 then
         LReader.Skip(-3)

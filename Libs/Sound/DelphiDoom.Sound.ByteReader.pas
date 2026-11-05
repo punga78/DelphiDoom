@@ -38,6 +38,8 @@ type
 
     /// <summary>The integer of a marker such as 'RIFF'</summary>
     class function MarkerOf(const AText: AnsiString): Cardinal; static;
+    /// <summary>True for the characters libsndfile accepts in a chunk name: 32 to 126</summary>
+    class function IsPrintable(AValue: Cardinal): Boolean; static;
 
     property BigEndian: Boolean read FBigEndian write FBigEndian;
     property Overrun: Boolean read FOverrun;
@@ -126,6 +128,11 @@ class function TSoundByteReader.MarkerOf(const AText: AnsiString): Cardinal;
 begin
   Result := (Cardinal(Byte(AText[1])) shl 24) or (Cardinal(Byte(AText[2])) shl 16) or
     (Cardinal(Byte(AText[3])) shl 8) or Byte(AText[4]);
+end;
+
+class function TSoundByteReader.IsPrintable(AValue: Cardinal): Boolean;
+begin
+  Result := (AValue >= 32) and (AValue <= 126);
 end;
 
 end.

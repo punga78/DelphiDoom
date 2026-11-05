@@ -68,6 +68,18 @@ type
     [Test]
     procedure TestNotASound;
     [Test]
+    procedure TestAiffPcm;
+    [Test]
+    procedure TestAiffCompressedPcm;
+    [Test]
+    procedure TestAiffFloatAndCompanded;
+    [Test]
+    procedure TestAiffChunks;
+    [Test]
+    procedure TestAiffSizes;
+    [Test]
+    procedure TestAiffDamaged;
+    [Test]
     procedure TestAuPcm;
     [Test]
     procedure TestAuFloatAndCompanded;
@@ -447,6 +459,144 @@ procedure TTestSoundParity.TestNotASound;
 begin
   CheckSameFailure(TSoundTestWavFile.RandomBytes(500, 1), 'noise');
   CheckSameFailure(TBytes.Create(1, 2, 3), 'three bytes');
+end;
+
+procedure TTestSoundParity.TestAiffPcm;
+var
+  LChannels, LBits: Word;
+begin
+  for LBits := 1 to 4 do
+    for LChannels := 1 to 2 do
+      // Whole frames plus one byte
+      CheckSame(TSoundTestContainerFile.BuildAiff(
+        TSoundTestAiffOptions.Plain(LChannels, LBits * 8),
+        TSoundTestWavFile.RandomBytes(LChannels * LBits * 150 + 1, LBits)),
+        Format('aiff pcm %d bits %d channels', [LBits * 8, LChannels]));
+  // A sample size between the usual ones is stored in the next width
+  CheckSame(TSoundTestContainerFile.BuildAiff(TSoundTestAiffOptions.Plain(2, 12),
+    TSoundTestWavFile.RandomBytes(2 * 2 * 60, 9)), 'aiff 12 bits');
+end;
+
+procedure TTestSoundParity.TestAiffCompressedPcm;
+const
+  ENCODINGS: array[0..6] of AnsiString = ('NONE', 'twos', 'sowt', 'in24', '42ni', 'in32', '23ni');
+  BITS: array[0..6] of Word = (16, 16, 16, 24, 24, 32, 32);
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(ENCODINGS) do
+    CheckSame(TSoundTestContainerFile.BuildAiff(
+      TSoundTestAiffOptions.Compressed(ENCODINGS[LIndex], 2, BITS[LIndex]),
+      TSoundTestWavFile.RandomBytes(2 * (BITS[LIndex] div 8) * 90 + 3, LIndex)),
+      'aifc ' + string(ENCODINGS[LIndex]));
+end;
+
+procedure TTestSoundParity.TestAiffFloatAndCompanded;
+var
+  LOptions: TSoundTestAiffOptions;
+  LPayload: TBytes;
+  LIndex: Integer;
+  LEncoding: AnsiString;
+begin
+  CheckSame(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('fl32', 2, 32),
+    TSoundTestWavFile.FloatPayload(200, 1, False, True)), 'aifc fl32');
+  // Files that say 16 bits for a float
+  CheckSame(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('FL32', 1, 16),
+    TSoundTestWavFile.FloatPayload(100, 2, False, True)), 'aifc FL32 wrong size');
+  CheckSame(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('fl64', 1, 64),
+    TSoundTestWavFile.FloatPayload(100, 3, True, True)), 'aifc fl64');
+  CheckSame(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('FL64', 2, 8),
+    TSoundTestWavFile.FloatPayload(100, 4, True, True)), 'aifc FL64 wrong size');
+
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  for LEncoding in ['ulaw', 'ULAW', 'alaw', 'ALAW'] do
+  begin
+    LOptions := TSoundTestAiffOptions.Compressed(LEncoding, 2, 8);
+    CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc ' + string(LEncoding));
+  end;
+  CheckSame(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('raw ', 1, 8), LPayload), 'aifc raw');
+end;
+
+procedure TTestSoundParity.TestAiffChunks;
+var
+  LOptions: TSoundTestAiffOptions;
+  LPayload: TBytes;
+begin
+  LPayload := TSoundTestWavFile.RandomBytes(2 * 101, 1);
+
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.ChunksBeforeData := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff chunks before the data');
+
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.ChunkAfterData := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff chunk after the data');
+
+  LOptions := TSoundTestAiffOptions.Plain(2, 16);
+  LOptions.ChunksBeforeData := True;
+  LOptions.ChunkAfterData := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(4 * 50, 2)),
+    'aiff chunks around the data');
+
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.SsndOffset := 6;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff ssnd offset');
+end;
+
+procedure TTestSoundParity.TestAiffSizes;
+var
+  LOptions: TSoundTestAiffOptions;
+  LPayload: TBytes;
+begin
+  LPayload := TSoundTestWavFile.RandomBytes(2 * 101, 1);
+
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.SsndSize := 8 + 100;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff short ssnd');
+
+  LOptions.SsndSize := 100000;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff long ssnd');
+
+  LOptions.SsndSize := 3;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff tiny ssnd');
+
+  LOptions := TSoundTestAiffOptions.Plain(2, 24);
+  LOptions.SsndSize := 8 + 6 * 20;
+  LOptions.ChunkAfterData := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(6 * 40, 3)),
+    'aiff short ssnd with a chunk after');
+end;
+
+procedure TTestSoundParity.TestAiffDamaged;
+var
+  LOptions: TSoundTestAiffOptions;
+begin
+  LOptions := TSoundTestAiffOptions.Plain(0, 16);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aiff zero channels');
+  LOptions := TSoundTestAiffOptions.Plain(5000, 16);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aiff too many channels');
+  LOptions := TSoundTestAiffOptions.Plain(1, 4);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aiff 4 bits');
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.OmitComm := True;
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aiff without COMM');
+  LOptions := TSoundTestAiffOptions.Compressed('xxxx', 1, 16);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aifc unknown encoding');
+  LOptions := TSoundTestAiffOptions.Compressed('raw ', 1, 16);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
+    'aifc raw with 16 bits');
 end;
 
 procedure TTestSoundParity.TestAuPcm;

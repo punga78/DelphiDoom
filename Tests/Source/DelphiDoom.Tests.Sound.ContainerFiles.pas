@@ -41,8 +41,32 @@ type
     class function Plain: TSoundTestVocOptions; static;
   end;
 
+  TSoundTestAiffOptions = record
+    /// <summary>FORM type AIFC, with the encoding in the COMM chunk</summary>
+    Aifc: Boolean;
+    /// <summary>Four characters, only for AIFC</summary>
+    Encoding: AnsiString;
+    Channels: Word;
+    SampleSize: Word;
+    /// <summary>Chunks between the COMM and the SSND chunk: NAME (odd length) and an unknown one</summary>
+    ChunksBeforeData: Boolean;
+    /// <summary>An ANNO chunk of odd length after the data</summary>
+    ChunkAfterData: Boolean;
+    /// <summary>Bytes of the SSND chunk between its header and the sound</summary>
+    SsndOffset: Cardinal;
+    /// <summary>Size written in the SSND chunk; -2 for the real one</summary>
+    SsndSize: Int64;
+    OmitComm: Boolean;
+    OmitSsnd: Boolean;
+    class function Plain(AChannels, ASampleSize: Word): TSoundTestAiffOptions; static;
+    class function Compressed(const AEncoding: AnsiString; AChannels,
+      ASampleSize: Word): TSoundTestAiffOptions; static;
+  end;
+
   TSoundTestContainerFile = class
   public
+    class function BuildAiff(const AOptions: TSoundTestAiffOptions;
+      const APayload: TBytes): TBytes; static;
     class function BuildAu(const AOptions: TSoundTestAuOptions;
       const APayload: TBytes): TBytes; static;
     class function BuildVoc(const AOptions: TSoundTestVocOptions;
@@ -118,7 +142,103 @@ begin
   Result.BitsPerSample := 8;
 end;
 
+{ TSoundTestAiffOptions }
+
+class function TSoundTestAiffOptions.Plain(AChannels,
+  ASampleSize: Word): TSoundTestAiffOptions;
+begin
+  FillChar(Result, SizeOf(Result), 0);
+  Result.Encoding := '';
+  Result.Channels := AChannels;
+  Result.SampleSize := ASampleSize;
+  Result.SsndSize := -2;
+end;
+
+class function TSoundTestAiffOptions.Compressed(const AEncoding: AnsiString;
+  AChannels, ASampleSize: Word): TSoundTestAiffOptions;
+begin
+  Result := Plain(AChannels, ASampleSize);
+  Result.Aifc := True;
+  Result.Encoding := AEncoding;
+end;
+
 { TSoundTestContainerFile }
+
+class function TSoundTestContainerFile.BuildAiff(
+  const AOptions: TSoundTestAiffOptions; const APayload: TBytes): TBytes;
+const
+  // 44100 as an 80 bit float
+  RATE: array[0..9] of Byte = ($40, $0E, $AC, $44, 0, 0, 0, 0, 0, 0);
+var
+  LBody, LComm, LSsnd: TSink;
+  LIndex: Integer;
+  LSsndSize: Cardinal;
+begin
+  LBody.AddText('FORM');
+  LBody.AddNumber(0, 4, True);
+  if AOptions.Aifc then
+    LBody.AddText('AIFC')
+  else
+    LBody.AddText('AIFF');
+
+  if not AOptions.OmitComm then
+  begin
+    LComm.AddNumber(AOptions.Channels, 2, True);
+    LComm.AddNumber(1000, 4, True);
+    LComm.AddNumber(AOptions.SampleSize, 2, True);
+    for LIndex := 0 to 9 do
+      LComm.Add(RATE[LIndex]);
+    if AOptions.Aifc then
+    begin
+      LComm.AddText(AOptions.Encoding);
+      // An empty name: a Pascal string padded to an even length
+      LComm.Add(0);
+      LComm.Add(0);
+    end;
+    LBody.AddText('COMM');
+    LBody.AddNumber(Cardinal(Length(LComm.Bytes)), 4, True);
+    LBody.AddBytes(LComm.Bytes);
+  end;
+
+  if AOptions.ChunksBeforeData then
+  begin
+    LBody.AddText('NAME');
+    LBody.AddNumber(3, 4, True);
+    LBody.AddText('abc');
+    LBody.Add(0);
+    LBody.AddText('ZZZZ');
+    LBody.AddNumber(4, 4, True);
+    LBody.AddNumber($01020304, 4, True);
+  end;
+
+  if not AOptions.OmitSsnd then
+  begin
+    LSsnd.AddNumber(AOptions.SsndOffset, 4, True);
+    LSsnd.AddNumber(0, 4, True);
+    for LIndex := 1 to Integer(AOptions.SsndOffset) do
+      LSsnd.Add(0);
+    LSsnd.AddBytes(APayload);
+    if AOptions.SsndSize = -2 then
+      LSsndSize := Cardinal(Length(LSsnd.Bytes))
+    else
+      LSsndSize := Cardinal(AOptions.SsndSize);
+    LBody.AddText('SSND');
+    LBody.AddNumber(LSsndSize, 4, True);
+    LBody.AddBytes(LSsnd.Bytes);
+    // A chunk of odd length is followed by a pad byte
+    if (Length(LSsnd.Bytes) and 1) <> 0 then
+      LBody.Add(0);
+  end;
+
+  if AOptions.ChunkAfterData then
+  begin
+    LBody.AddText('ANNO');
+    LBody.AddNumber(5, 4, True);
+    LBody.AddText('hello');
+    LBody.Add(0);
+  end;
+  Result := LBody.Bytes;
+end;
 
 class function TSoundTestContainerFile.BuildAu(const AOptions: TSoundTestAuOptions;
   const APayload: TBytes): TBytes;

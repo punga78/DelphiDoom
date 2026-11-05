@@ -43,6 +43,7 @@ uses
   DelphiDoom.Sound.SoundFile in '..\Libs\Sound\DelphiDoom.Sound.SoundFile.pas',
   DelphiDoom.Sound.Format in '..\Libs\Sound\DelphiDoom.Sound.Format.pas',
   DelphiDoom.Sound.Format.Wav in '..\Libs\Sound\DelphiDoom.Sound.Format.Wav.pas',
+  DelphiDoom.Sound.Format.Aiff in '..\Libs\Sound\DelphiDoom.Sound.Format.Aiff.pas',
   DelphiDoom.Sound.Format.Au in '..\Libs\Sound\DelphiDoom.Sound.Format.Au.pas',
   DelphiDoom.Sound.Format.Voc in '..\Libs\Sound\DelphiDoom.Sound.Format.Voc.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',

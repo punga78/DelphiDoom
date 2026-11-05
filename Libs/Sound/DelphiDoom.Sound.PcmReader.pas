@@ -74,6 +74,7 @@ var
   LSampleBytes: Integer;
   LPartialCount: Integer;
   LPartial: TBytes;
+  LRemaining: Int64;
 
   function Fetch16(AOffset: Integer): Word;
   begin
@@ -121,7 +122,10 @@ begin
     LItemBytes := 1
   else
     LItemBytes := ALayout.BytesPerSample;
-  LExtraItems := Integer((AFileLength - ADataOffset - LFrames * LBlockWidth) div LItemBytes);
+  LRemaining := AFileLength - ADataOffset - LFrames * LBlockWidth;
+  if LRemaining < 0 then
+    LRemaining := 0;
+  LExtraItems := Integer(LRemaining div LItemBytes);
   LTailItems := LExtraItems;
   if LTailItems > ALayout.Channels then
     LTailItems := ALayout.Channels;
@@ -188,7 +192,7 @@ begin
   begin
     ASamples.ReadsDirectly := True;
     ASamples.BigEndian := ABigEndian;
-    LPartialCount := Integer((AFileLength - ADataOffset - LFrames * LBlockWidth) mod LItemBytes);
+    LPartialCount := Integer(LRemaining mod LItemBytes);
     if LPartialCount > 0 then
     begin
       SetLength(LPartial, LPartialCount);
