@@ -33,7 +33,7 @@ implementation
 uses
   DelphiDoom.Sound.ByteReader, DelphiDoom.Sound.PcmReader,
   DelphiDoom.Sound.Codec.Gsm610, DelphiDoom.Sound.Codec.ImaAdpcm,
-  DelphiDoom.Sound.CodecSamples;
+  DelphiDoom.Sound.Codec.Dwvw, DelphiDoom.Sound.CodecSamples;
 
 const
   HAVE_FORM = $01;
@@ -214,8 +214,17 @@ begin
     LByteWidth := 0;
   end
   else if AComm.Encoding = MARKER_DWVW then
-    // Not read yet
-    Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING)
+  begin
+    case AComm.SampleSize of
+      12: LCodec := SNDFILE_FORMAT_DWVW_12;
+      16: LCodec := SNDFILE_FORMAT_DWVW_16;
+      24: LCodec := SNDFILE_FORMAT_DWVW_24;
+    else
+      LCodec := SNDFILE_FORMAT_DWVW_N;
+    end;
+    // The width of the words is what the decoder needs
+    LByteWidth := AComm.SampleSize;
+  end
   else
     Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
 
@@ -226,7 +235,9 @@ begin
         Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
     SNDFILE_FORMAT_PCM_16, SNDFILE_FORMAT_PCM_24, SNDFILE_FORMAT_PCM_32,
     SNDFILE_FORMAT_FLOAT, SNDFILE_FORMAT_DOUBLE, SNDFILE_FORMAT_ULAW,
-    SNDFILE_FORMAT_ALAW, SNDFILE_FORMAT_GSM610, SNDFILE_FORMAT_IMA_ADPCM:
+    SNDFILE_FORMAT_ALAW, SNDFILE_FORMAT_GSM610, SNDFILE_FORMAT_IMA_ADPCM,
+    SNDFILE_FORMAT_DWVW_12, SNDFILE_FORMAT_DWVW_16, SNDFILE_FORMAT_DWVW_24,
+    SNDFILE_FORMAT_DWVW_N:
       ;
   else
     Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
@@ -237,6 +248,76 @@ begin
   ALayout.Channels := AComm.Channels;
   ALayout.SampleRate := TenByteFloatToInt(AComm.SampleRate);
   ALayout.Format := SNDFILE_FORMAT_AIFF or LCodec or LEndianFlag;
+  Result := SNDFILE_OK;
+end;
+
+/// <summary>
+///   DWVW. The 12 bit one opens, but libsndfile has no function to read it:
+///   the sound is there and nothing can be read from it
+/// </summary>
+function DecodeDwvw(const ASource: TBytes; const ALayout: TSoundPcmLayout;
+  ADataOffset, ADataLength: Int64; ACommFrames: Cardinal; out ASamples: TSoundSamples): Integer;
+var
+  LInfo: TSoundFileInfo;
+  LData: TArray<Integer>;
+  LBytes: TBytes;
+  LFrames, LDecoded: Int64;
+  LBits: Integer;
+  LMoreThanThere, LHasTrailing: Boolean;
+  LTrailing: Integer;
+begin
+  LMoreThanThere := False;
+  FillChar(LInfo, SizeOf(LInfo), 0);
+  LInfo.SampleRate := ALayout.SampleRate;
+  LInfo.Channels := ALayout.Channels;
+  LInfo.Format := ALayout.Format;
+  LInfo.Sections := 1;
+  LInfo.Seekable := 1;
+  LDecoded := 0;
+  LFrames := ACommFrames;
+  case ALayout.Encoding of
+    SNDFILE_FORMAT_DWVW_12: LBits := 0;
+    SNDFILE_FORMAT_DWVW_16: LBits := 16;
+    SNDFILE_FORMAT_DWVW_24: LBits := 24;
+  else
+    begin
+      LBits := ALayout.BytesPerSample;
+      if (LBits < 8) or (LBits >= 24) then
+        Exit(SNDFILE_ERR_UNSUPPORTED_ENCODING);
+    end;
+  end;
+  if LBits > 0 then
+  begin
+    Result := TDwvwDecoder.Decode(ASource, ADataOffset, ADataLength, LBits,
+      ALayout.Channels, LData, LFrames, LTrailing, LHasTrailing);
+    if Result <> SNDFILE_OK then
+      Exit;
+    LDecoded := Length(LData) div ALayout.Channels;
+    // libsndfile keeps the number of frames of the COMM chunk if it is smaller
+    if LFrames > ACommFrames then
+      LFrames := ACommFrames;
+    if LDecoded > LFrames then
+    begin
+      LDecoded := LFrames;
+      LMoreThanThere := True;
+    end;
+  end;
+  LInfo.Frames := LFrames;
+  SetLength(LBytes, LDecoded * ALayout.Channels * SizeOf(Integer));
+  if LDecoded > 0 then
+    Move(LData[0], LBytes[0], Length(LBytes));
+  ASamples := TSoundSamples.Create(LInfo, TSoundSampleKind.Int32, LBytes, LDecoded);
+  ASamples.RewindOnly := True;
+  ASamples.ReadsUnimplemented := LBits = 0;
+  // Decoded past the frames it keeps: libsndfile clears what follows them
+  if LMoreThanThere then
+    ASamples.ZeroFillChunk := -1
+  else if LBits > 0 then
+  begin
+    ASamples.ZeroFillChunk := -4;
+    ASamples.HasTrailingItem := LHasTrailing and (LDecoded > 0);
+    ASamples.TrailingItem := LTrailing;
+  end;
   Result := SNDFILE_OK;
 end;
 
@@ -496,6 +577,10 @@ begin
     Exit;
   end;
 
+  case LLayout.Encoding of
+    SNDFILE_FORMAT_DWVW_12, SNDFILE_FORMAT_DWVW_16, SNDFILE_FORMAT_DWVW_24, SNDFILE_FORMAT_DWVW_N:
+      Exit(DecodeDwvw(ASource, LLayout, LDataOffset, LDataLength, LComm.Frames, ASamples));
+  end;
   if LLayout.Encoding = SNDFILE_FORMAT_IMA_ADPCM then
   begin
     if LDataEnd > 0 then

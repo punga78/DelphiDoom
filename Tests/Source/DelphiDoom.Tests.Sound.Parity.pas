@@ -28,6 +28,11 @@ type
     FCurrentName: string;
     procedure CheckSame(const ASource: TBytes; const AName: string);
     procedure CheckSameFailure(const ASource: TBytes; const AName: string);
+    /// <summary>
+    ///   For sounds whose last samples depend on how the reads are cut (DWVW):
+    ///   the same description and the same samples read in big chunks
+    /// </summary>
+    procedure CheckSameBulk(const ASource: TBytes; const AName: string);
     procedure CompareReads(const ASource: TBytes; AKind, AChunk: Integer;
       const AName: string);
     procedure CompareSeeks(const ASource: TBytes; const AName: string);
@@ -106,6 +111,8 @@ type
     procedure TestGsm610;
     [Test]
     procedure TestG72x;
+    [Test]
+    procedure TestDwvw;
     [Test]
     procedure TestAvr;
     [Test]
@@ -213,7 +220,7 @@ begin
     Assert.AreEqual(LExpectedCode, LActualCode,
       Format('%s: code of the read %d (kind %d)', [AName, LRound, AKind]));
     Assert.AreEqual(LExpectedRead, LActualRead,
-      Format('%s: frames of the read %d (kind %d)', [AName, LRound, AKind]));
+      Format('%s: frames of the read %d (kind %d), sound of %d frames', [AName, LRound, AKind, LInfo.Frames]));
     if not CompareMem(@LExpectedBuffer[0], @LActualBuffer[0], Length(LExpectedBuffer)) then
     begin
       for LItems := 0 to High(LExpectedBuffer) do
@@ -291,6 +298,29 @@ begin
     CompareReads(ASource, LKind, 4096, AName);
   end;
   CompareSeeks(ASource, AName);
+end;
+
+procedure TTestSoundParity.CheckSameBulk(const ASource: TBytes;
+  const AName: string);
+var
+  LExpected, LActual: ISoundFile;
+  LExpectedInfo, LActualInfo: TSoundFileInfo;
+  LKind: Integer;
+begin
+  FCurrentName := AName;
+  LExpected := Open(FReference, ASource);
+  LActual := Open(FCandidate, ASource);
+  LExpected.GetInfo(LExpectedInfo);
+  LActual.GetInfo(LActualInfo);
+  Assert.AreEqual(LExpectedInfo.Frames, LActualInfo.Frames, AName + ': frames');
+  Assert.AreEqual(LExpectedInfo.SampleRate, LActualInfo.SampleRate, AName + ': sample rate');
+  Assert.AreEqual(LExpectedInfo.Channels, LActualInfo.Channels, AName + ': channels');
+  Assert.AreEqual(Integer(LExpectedInfo.Format), Integer(LActualInfo.Format), AName + ': format');
+  LExpected := nil;
+  LActual := nil;
+  for LKind := KIND_SHORT to KIND_DOUBLE do
+    // Exactly the sound: what a longer read leaves past it is whatever the C buffers held
+    CompareReads(ASource, LKind, Integer(LExpectedInfo.Frames), AName);
 end;
 
 procedure TTestSoundParity.CheckSameFailure(const ASource: TBytes;
@@ -976,6 +1006,31 @@ begin
     TSoundTestWavFile.RandomBytes(60 * 6, 9), False), 'wav g721');
   LOptions := TSoundTestAuOptions.Plain(23, 2);
   CheckSameFailure(TSoundTestContainerFile.BuildAu(LOptions, TSoundTestWavFile.RandomBytes(120, 1)), 'au g721 stereo');
+end;
+
+procedure TTestSoundParity.TestDwvw;
+var
+  LBits: Word;
+  LChannels: Word;
+  LCode: AnsiString;
+begin
+  for LBits in [16, 24, 8, 12, 20] do
+    for LChannels := 1 to 2 do
+    begin
+      case LBits of
+        16, 24, 12: LCode := 'DWVW';
+      else
+        LCode := 'DWVW';
+      end;
+      // Any bytes are a stream for DWVW: the end of it is what shows
+      CheckSameBulk(TSoundTestContainerFile.BuildAiff(
+        TSoundTestAiffOptions.Compressed(LCode, LChannels, LBits),
+        TSoundTestWavFile.RandomBytes(400 + LBits, LBits)), Format('aifc dwvw %d bits %d channels', [LBits, LChannels]));
+    end;
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('DWVW', 1, 4), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 4 bits');
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(
+    TSoundTestAiffOptions.Compressed('DWVW', 1, 28), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 28 bits');
 end;
 
 procedure TTestSoundParity.TestAvr;

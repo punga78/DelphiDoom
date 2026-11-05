@@ -41,12 +41,16 @@ type
     FBigEndian: Boolean;
     FZeroFillChunk: Integer;
     FAvailableFrames: Int64;
+    FRewindOnly: Boolean;
+    FTrailingItem: Integer;
+    FHasTrailingItem: Boolean;
+    FReadsUnimplemented: Boolean;
   public
     /// <summary>
     ///   AData must hold exactly AInfo.Frames * AInfo.Channels samples of AKind
     /// </summary>
     constructor Create(const AInfo: TSoundFileInfo; AKind: TSoundSampleKind;
-      const AData: TBytes);
+      const AData: TBytes; AAvailableFrames: Int64 = -1);
     /// <summary>Changes the description, for what only the codec knows (can the sound be seeked)</summary>
     procedure ReplaceInfo(const AInfo: TSoundFileInfo);
 
@@ -100,6 +104,19 @@ type
     ///   the sound has all of Info.Frames
     /// </summary>
     property AvailableFrames: Int64 read FAvailableFrames write FAvailableFrames;
+    /// <summary>The sound can only be taken back to its start (DWVW)</summary>
+    property RewindOnly: Boolean read FRewindOnly write FRewindOnly;
+    /// <summary>
+    ///   A 32 bit item that libsndfile leaves in the buffer of the caller right
+    ///   after the last sample of the sound (DWVW); see ZeroFillChunk -4
+    /// </summary>
+    property TrailingItem: Integer read FTrailingItem write FTrailingItem;
+    property HasTrailingItem: Boolean read FHasTrailingItem write FHasTrailingItem;
+    /// <summary>
+    ///   The sound opens but libsndfile has no function to read it (12 bit
+    ///   DWVW): a read inside the sound fails
+    /// </summary>
+    property ReadsUnimplemented: Boolean read FReadsUnimplemented write FReadsUnimplemented;
   end;
 
 implementation
@@ -112,17 +129,24 @@ begin
 end;
 
 constructor TSoundSamples.Create(const AInfo: TSoundFileInfo;
-  AKind: TSoundSampleKind; const AData: TBytes);
+  AKind: TSoundSampleKind; const AData: TBytes; AAvailableFrames: Int64);
+var
+  LFrames: Int64;
 begin
   inherited Create;
-  if (AInfo.Frames < 0) or (AInfo.Channels < 1) or
-     (Int64(Length(AData)) <> AInfo.Frames * AInfo.Channels * BytesPerSample(AKind)) then
+  // The frames the data holds: all of them, unless the codec ran out
+  if AAvailableFrames >= 0 then
+    LFrames := AAvailableFrames
+  else
+    LFrames := AInfo.Frames;
+  if (AInfo.Frames < 0) or (AInfo.Channels < 1) or (LFrames > AInfo.Frames) or
+     (Int64(Length(AData)) <> LFrames * AInfo.Channels * BytesPerSample(AKind)) then
     raise EArgumentException.Create('Size of the samples does not match the description of the sound');
 
   FInfo := AInfo;
   FKind := AKind;
   FData := AData;
-  FAvailableFrames := -1;
+  FAvailableFrames := AAvailableFrames;
 end;
 
 class function TSoundSamples.BytesPerSample(AKind: TSoundSampleKind): Integer;

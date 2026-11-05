@@ -180,6 +180,10 @@ begin
       Exit(SNDFILE_OK);
     end;
 
+    // libsndfile has nothing to read this with (the error is SFE_UNIMPLEMENTED)
+    if FSamples.ReadsUnimplemented then
+      Exit(18);
+
     AFramesRead := FSamples.Info.Frames - FPosition;
     if AFramesRead > AFrames then
       AFramesRead := AFrames;
@@ -239,7 +243,31 @@ begin
         if LSwap < LRemaining then
           LRemaining := LSwap;
       end;
-      FillChar((PByte(ABuffer) + LCount * LItemSize)^, (LRemaining - LCount) * LItemSize, 0);
+      if FSamples.ZeroFillChunk = -4 then
+      begin
+        // DWVW: the converters write the whole buffer they decoded through
+        // (chunks of 2048), the decoder one item past the sound
+        if ATarget <> TTarget.Bits32 then
+        begin
+          LSwap := (LCount div 2048 + 1) * 2048;
+          if LSwap > LRemaining then
+            LSwap := LRemaining;
+          if LSwap > LCount then
+            FillChar((PByte(ABuffer) + LCount * LItemSize)^, (LSwap - LCount) * LItemSize, 0);
+        end;
+        if FSamples.HasTrailingItem and (LCount < LRemaining) then
+          case ATarget of
+            TTarget.Bits16:
+              PSmallInt(PByte(ABuffer) + LCount * LItemSize)^ :=
+                SmallInt(Integer(FSamples.TrailingItem div 65536) - Ord((FSamples.TrailingItem < 0) and ((FSamples.TrailingItem mod 65536) <> 0)));
+            TTarget.Bits32:
+              PInteger(PByte(ABuffer) + LCount * LItemSize)^ := FSamples.TrailingItem;
+          else
+            PDouble(PByte(ABuffer) + LCount * LItemSize)^ := FSamples.TrailingItem * (1.0 / 2147483648.0);
+          end;
+      end
+      else
+        FillChar((PByte(ABuffer) + LCount * LItemSize)^, (LRemaining - LCount) * LItemSize, 0);
     end;
 
     // A read that ran into what follows the sound has its tail cleared
@@ -342,6 +370,9 @@ begin
 
   // libsndfile refuses to move outside of the sound
   if (LTarget < 0) or (LTarget > FSamples.Info.Frames) then
+    Exit(SNDFILE_ERR_INVALID_ARGUMENT);
+  // DWVW can only be taken back to its start
+  if FSamples.RewindOnly and (LTarget <> 0) then
     Exit(SNDFILE_ERR_INVALID_ARGUMENT);
 
   FPosition := LTarget;
