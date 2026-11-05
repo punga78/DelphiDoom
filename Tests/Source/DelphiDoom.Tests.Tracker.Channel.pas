@@ -112,6 +112,9 @@ end;
 
 procedure TTestTrackerChannel.Start;
 begin
+  // DUnitX uses one instance of the fixture for all the tests
+  FRendered := 0;
+  FOutput := nil;
   FPlayer := TTrackerPlayer.Create(FModule, SAMPLE_RATE, False);
 end;
 
