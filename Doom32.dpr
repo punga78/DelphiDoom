@@ -234,7 +234,7 @@ uses
   p_pspr_h in 'Doom\p_pspr_h.pas',
   p_saveg in 'Doom\p_saveg.pas',
   p_scroll in 'Doom\p_scroll.pas',
-  p_setup in 'Doom\p_setup.pas',
+  p_setup in 'Base\p_setup.pas',
   p_sight in 'Doom\p_sight.pas',
   p_sounds in 'Base\p_sounds.pas',
   p_spec in 'Doom\p_spec.pas',

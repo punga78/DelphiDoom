@@ -227,7 +227,7 @@ uses
   p_pspr in 'Heretic\p_pspr.pas',
   p_pspr_h in 'Heretic\p_pspr_h.pas',
   p_saveg in 'Heretic\p_saveg.pas',
-  p_setup in 'Heretic\p_setup.pas',
+  p_setup in 'Base\p_setup.pas',
   p_sight in 'Heretic\p_sight.pas',
   p_sounds in 'Base\p_sounds.pas',
   p_spec in 'Heretic\p_spec.pas',
