@@ -257,7 +257,7 @@ uses
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',
   sc_params in 'Base\sc_params.pas',
-  sounds in 'Heretic\sounds.pas',
+  sounds in 'Base\sounds.pas',
   tables in 'Base\tables.pas',
   v_data in 'Base\v_data.pas',
   v_video in 'Base\v_video.pas',

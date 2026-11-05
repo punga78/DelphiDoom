@@ -295,7 +295,7 @@ uses
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',
   sc_params in 'Base\sc_params.pas',
-  sounds in 'Doom\sounds.pas',
+  sounds in 'Base\sounds.pas',
   st_lib in 'Doom\st_lib.pas',
   st_stuff in 'Doom\st_stuff.pas',
   tables in 'Base\tables.pas',

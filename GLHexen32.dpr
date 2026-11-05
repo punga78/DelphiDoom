@@ -231,7 +231,7 @@ uses
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',
   sc_params in 'Base\sc_params.pas',
-  sounds in 'Hexen\sounds.pas',
+  sounds in 'Base\sounds.pas',
   sv_save in 'Hexen\sv_save.pas',
   tables in 'Base\tables.pas',
   v_data in 'Base\v_data.pas',

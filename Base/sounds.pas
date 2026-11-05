@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -18,7 +17,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
@@ -88,6 +87,11 @@ uses
   sc_actordef,
   w_wad;
 
+{$IFDEF DOOM}
+var
+  lastfreesfx: integer = 1;
+
+{$ENDIF}
 //==============================================================================
 //
 // S_GetSoundNumForName
@@ -97,37 +101,121 @@ function S_GetSoundNumForName(const sfx_name: string): integer;
 var
   i: integer;
   name: string;
+{$IFNDEF HEXEN}
   check: string;
+{$ENDIF}
   sfx: Psfxinfo_t;
+{$IFDEF DOOM}
+  isnumber: boolean;
+{$ENDIF}
 begin
   result := atoi(sfx_name, -1);
+{$IFDEF DOOM}
+  isnumber := itoa(result) = sfx_name;
+  if isnumber then
+  begin
+    if (result >= 0) and (result < numsfx) and isnumber then
+      if S_sfx[result].name <> '' then
+        exit;
+
+    if (result >= 500) and (result < 700) then
+      if S_sfx[result].name = 'fre' + IntToStrZfill(3, result) then // DEHEXTRA
+      begin
+        if numsfx <= result then
+          numsfx := result + 1;
+        sfx := @S_sfx[result];
+        sfx.name := 'fre' + IntToStrZfill(3, result);
+        sfx.singularity := false;
+        sfx.priority := 72;
+        sfx.link := nil;
+        sfx.pitch := -1;
+        sfx.volume := -1;
+        sfx.data := nil;
+        sfx.usefulness := 0;
+        sfx.lumpnum := -1; // JVAL: was = 0;
+        sfx.randomsoundlist := nil;
+        exit;
+      end;
+  end;
+{$ELSE}
   if (result >= 0) and (result < numsfx) and (itoa(result) = sfx_name) then
     exit;
+{$ENDIF}
 
   if sfx_name = '' then
   begin
     I_Warning('S_GetSoundNumForName(): No sound name specified, using default'#13#10);
+{$IF DEFINED(HERETIC)}
     result := Ord(sfx_gldhit);
+{$ELSEIF DEFINED(HEXEN)}
+    result := Ord(SFX_CHAT);
+{$ELSEIF DEFINED(STRIFE)}
+    result := Ord(sfx_mtalht);
+{$ELSE}
+    result := Ord(sfx_pistol);
+{$ENDIF}
     exit;
   end;
 
   name := strupper(SC_SoundAlias(sfx_name));
   for i := 1 to numsfx - 1 do
   begin
+{$IFDEF HEXEN}
+    sfx := @S_sfx[i];
+    if (strupper(sfx.tagname) = name) or (strupper(sfx.name) = name) or ('DS' + strupper(sfx.name) = name) then
+{$ELSE}
     check := strupper(S_sfx[i].name);
     if (check = name) or ('DS' + check = name) then
+{$ENDIF}
     begin
       result := i;
       exit;
     end;
   end;
 
+{$IFDEF DOOM}
+  // JVAL: Not found, trying to find an empty slot
+  for i := lastfreesfx to numsfx - 1 do
+    if S_sfx[i].name = '' then
+    begin
+      result := i;
+      lastfreesfx := i + 1;
+      sfx := @S_sfx[result];
+      sfx.name := name;
+      sfx.singularity := false;
+      sfx.priority := 72;
+      sfx.link := nil;
+      sfx.pitch := -1;
+      sfx.volume := -1;
+      sfx.data := nil;
+      sfx.usefulness := 0;
+      sfx.lumpnum := -1; // JVAL: was = 0;
+      sfx.randomsoundlist := nil;
+      exit;
+    end;
+{$ELSE}
   // JVAL: Not found, we will add a new sound
+{$ENDIF}
 
+{$IF DEFINED(DOOM)}
+  // JVAL: Not found, we will add a new sound
+  if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default pistol sound :(
+{$ELSEIF DEFINED(STRIFE)}
+  if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default pistol sound :(
+{$ELSE}
   if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default sound :(
+{$ENDIF}
   begin
     I_Warning('S_GetSoundNumForName(): Can not add %s sound, limit of %d sounds exceeded'#13#10, [sfx_name, numsfx]);
+{$IF DEFINED(HERETIC)}
     result := Ord(sfx_gldhit);
+{$ELSEIF DEFINED(HEXEN)}
+    result := Ord(SFX_CHAT);
+{$ELSEIF DEFINED(STRIFE)}
+    result := Ord(sfx_mtalht);
+{$ELSE}
+    result := Ord(sfx_pistol);
+{$ENDIF}
     exit;
   end;
 
@@ -138,21 +226,42 @@ begin
   if name = '' then // JVAL: Normally this should not happen!
   begin
     I_Warning('S_GetSoundNumForName(): No sound name specified, using default'#13#10);
+{$IF DEFINED(HERETIC)}
     result := Ord(sfx_gldhit);
+{$ELSEIF DEFINED(HEXEN)}
+    result := Ord(SFX_CHAT);
+{$ELSEIF DEFINED(STRIFE)}
+    result := Ord(sfx_mtalht);
+{$ELSE}
+    result := Ord(sfx_pistol);
+{$ENDIF}
     exit;
   end;
 
   result := numsfx;
   sfx := @S_sfx[result];
+{$IFDEF HEXEN}
+  sfx.tagname := sfx_name;
+{$ENDIF}
   sfx.name := name;
+{$IFNDEF HEXEN}
   sfx.singularity := false;
+{$ENDIF}
   sfx.priority := 72;
+{$IFNDEF HEXEN}
   sfx.link := nil;
+{$ENDIF}
   sfx.pitch := -1;
+{$IFNDEF HEXEN}
   sfx.volume := -1;
+{$ENDIF}
   sfx.data := nil;
   sfx.usefulness := 0;
   sfx.lumpnum := -1; // JVAL: was = 0;
+{$IFDEF HEXEN}
+  sfx.numchannels := 1;
+  sfx.changePitch := false;
+{$ENDIF}
   sfx.randomsoundlist := nil;
   inc(numsfx);
 end;

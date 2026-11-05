@@ -261,7 +261,7 @@ uses
   sc_actordef in 'Base\sc_actordef.pas',
   sc_engine in 'Base\sc_engine.pas',
   sc_params in 'Base\sc_params.pas',
-  sounds in 'Strife\sounds.pas',
+  sounds in 'Base\sounds.pas',
   st_lib in 'Strife\st_lib.pas',
   st_stuff in 'Strife\st_stuff.pas',
   tables in 'Base\tables.pas',
