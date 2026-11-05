@@ -34,18 +34,35 @@ uses
   am_map,
   c_con,
   doomdef,
+{$IF DEFINED(HERETIC)}
+  h_strings,
+{$ELSEIF DEFINED(HEXEN)}
+  xn_strings,
+{$ELSEIF DEFINED(STRIFE)}
+  d_englsh,
+{$ELSE}
   dstrings,
   d_englsh,
+{$ENDIF}
   d_main,
   g_game,
   hu_stuff,
   p_mobj_h,
+{$IF DEFINED(DOOM)}
   p_terrain,
   p_enemy,
   p_map,
+{$ELSEIF DEFINED(STRIFE)}
+  p_terrain,
+{$ENDIF}
   p_setup,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   p_user,
+{$ENDIF}
   p_adjust,
+{$IFDEF STRIFE}
+  p_dialog,
+{$ENDIF}
   p_obituaries,
   i_system,
   i_mainwindow,
@@ -70,7 +87,9 @@ uses
   r_voxels,
   r_softlights,
 {$ENDIF}
+{$IFNDEF HEXEN}
   e_endoom,
+{$ENDIF}
   m_menu,
   m_misc,
   r_aspect,
@@ -84,6 +103,9 @@ uses
   r_slopes, // JVAL: Slopes
 {$ENDIF}
   r_camera,
+{$IFDEF HEXEN}
+  r_data,
+{$ENDIF}
   r_draw,
 {$IFNDEF OPENGL}
   r_segs,
@@ -176,7 +198,15 @@ type
   Pdefault_t = ^default_t;
 
 const
+{$IF DEFINED(HERETIC)}
+  NUMDEFAULTS = 224;
+{$ELSEIF DEFINED(HEXEN)}
+  NUMDEFAULTS = 220;
+{$ELSEIF DEFINED(STRIFE)}
+  NUMDEFAULTS = 235;
+{$ELSE}
   NUMDEFAULTS = {$IFDEF FPC}231{$ELSE}233{$ENDIF};
+{$ENDIF}
 
 // JVAL
 // Note: All setable defaults must be in lowercase, don't ask why. Just do it. :)
@@ -348,8 +378,13 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF DOOM}
      defaultivalue: 0;
      defaultbvalue: false;
+{$ELSE}
+     defaultivalue: 1;
+     defaultbvalue: true;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'usefake3d';
@@ -387,6 +422,7 @@ const
      defaultivalue: 16;
      defaultbvalue: false;
      _type: tInteger),
+{$IFDEF DOOM}
 
     (name: 'p_confcoloredblood';
      location: @p_confcoloredblood;
@@ -396,6 +432,7 @@ const
      defaultivalue: 0;
      defaultbvalue: false;
      _type: tBoolean),
+{$ENDIF}
 
     (name: 'drawfps';
      location: @drawfps;
@@ -435,6 +472,28 @@ const
 
     (name: 'displaydiskbusyicon';
      location: @displaydiskbusyicon;
+{$IF DEFINED(HERETIC)}
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+     _type: tBoolean),
+
+    (name: 'displayendscreen';
+     location: @displayendscreen;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: false;
+{$ELSEIF DEFINED(HEXEN)}
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+{$ELSE}
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -458,6 +517,7 @@ const
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: true;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'screenblocks';
@@ -465,7 +525,11 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: 10;
+{$ELSE}
      defaultivalue: 9;
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -523,6 +587,7 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$IFDEF DOOM}
     (name: 'uselightboostgodmode';
      location: @uselightboostgodmode;
      oldlocation: nil;
@@ -532,6 +597,7 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$ENDIF}
     (name: 'lightboostfactor';
      location: @lightboostfactor;
      oldlocation: nil;
@@ -559,6 +625,18 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$IF DEFINED(HEXEN)}
+    (name: 'useclassicfuzzeffect';
+     location: @useclassicfuzzeffect;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: false;
+     _type: tBoolean),
+
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
     (name: 'use32bitfuzzeffect';
      location: @use32bitfuzzeffect;
      oldlocation: nil;
@@ -568,6 +646,7 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$ENDIF}
     (name: 'usetransparentsprites';
      location: @usetransparentsprites;
      oldlocation: nil;
@@ -584,6 +663,7 @@ const
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: false;
+{$IF DEFINED(DOOM)}
      _type: tBoolean),
 
     (name: 'hidedoublicatedbarrels';
@@ -595,6 +675,22 @@ const
      defaultbvalue: true;
      _type: tBoolean),
 
+{$ELSEIF DEFINED(HEXEN)}
+     _type: tBoolean),
+
+    (name: 'enableflatscrolling';
+     location: @enableflatscrolling;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+     _type: tBoolean),
+
+{$ELSE}
+     _type: tBoolean),
+
+{$ENDIF}
     (name: 'autoadjustmissingtextures';
      location: @autoadjustmissingtextures;
      oldlocation: nil;
@@ -615,6 +711,7 @@ const
 
     (name: 'intermissionstretch';
      location: @intermissionstretch;
+{$IFDEF DOOM}
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -631,13 +728,26 @@ const
      defaultbvalue: true;
      _type: tBoolean),
 
+{$ELSE}
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+     _type: tBoolean),
+
+{$ENDIF}
     (name: 'excludewidescreenplayersprites';
      location: @excludewidescreenplayersprites;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
      defaultivalue: 0;
+{$IFDEF HEXEN}
+     defaultbvalue: true;
+{$ELSE}
      defaultbvalue: false;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'forcedaspect';
@@ -755,7 +865,11 @@ const
      setable: DFS_ALWAYS;
      defaultsvalue: '0.00';
      defaultivalue: 0;
+{$IFDEF HEXEN}
+     defaultbvalue: false;
+{$ELSE}
      defaultbvalue: true;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'OpenGL';
@@ -1082,6 +1196,7 @@ const
      defaultbvalue: false;
      _type: tInteger),
 
+{$IFDEF DOOM}
     (name: 'amdrawstats';
      location: @amdrawstats;
      oldlocation: nil;
@@ -1091,6 +1206,7 @@ const
      defaultbvalue: true;
      _type: tBoolean),
 
+{$ENDIF}
      // Textures
     (name: 'Textures';
      location: nil;
@@ -1137,6 +1253,35 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    (name: 'pngtransparentcolor';
+     location: @pngtransparentcolor;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: $0;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'pngtransparentcolor2';
+     location: @pngtransparentcolor2;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: $0;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'assumecommontranspantcolors';
+     location: @assumecommontranspantcolors;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: false;
+     _type: tBoolean),
+
+{$ELSE}
 {$IFNDEF FPC}
     (name: 'pngtransparentcolor';
      location: @pngtransparentcolor;
@@ -1164,6 +1309,7 @@ const
      defaultivalue: 0;
      defaultbvalue: false;
      _type: tBoolean),
+{$ENDIF}
 {$ENDIF}
      // Compatibility
     (name: 'Compatibility';
@@ -1207,6 +1353,7 @@ const
      location: @allowplayercrouch;
      oldlocation: nil;
      setable: DFS_SINGLEPLAYER;
+{$IF DEFINED(DOOM)}
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: true;
@@ -1270,6 +1417,26 @@ const
      location: @allowvanillademos;
      oldlocation: nil;
      setable: DFS_ALWAYS;
+{$ELSEIF DEFINED(STRIFE)}
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+     _type: tBoolean),
+
+    (name: 'allowplayerbreath';
+     location: @allowplayerbreath;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: false;
+     _type: tBoolean),
+
+    (name: 'allowterrainsplashes';
+     location: @allowterrainsplashes;
+     oldlocation: nil;
+     setable: DFS_SINGLEPLAYER;
+{$ENDIF}
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: true;
@@ -1289,7 +1456,11 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: 1;
+{$ELSE}
      defaultivalue: 2;
+{$ENDIF}
      defaultbvalue: true;
      _type: tInteger),
 
@@ -1418,7 +1589,11 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: Ord('s');
+{$ELSE}
      defaultivalue: Ord('z');
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -1464,7 +1639,11 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: KEY_PAGEUP;
+{$ELSE}
      defaultivalue: KEY_PAGEDOWN;
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -1473,7 +1652,11 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: KEY_PAGEDOWN;
+{$ELSE}
      defaultivalue: KEY_DELETE;
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -1482,6 +1665,106 @@ const
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IF DEFINED(HERETIC)}
+     defaultivalue: KEY_INS;
+     defaultbvalue: false;
+
+     _type: tInteger),
+
+     // Fly movement
+    (name: 'key_flyup';
+     location: @key_flyup;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_PAGEUP;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_flydown';
+     location: @key_flydown;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_HOME;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_flycenter';
+     location: @key_flycenter;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_END;
+     defaultbvalue: false;
+     _type: tInteger),
+
+     // JVAL Look LEFT/RIGHT
+    (name: 'key_lookright';
+     location: @key_lookright;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('*');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_lookleft';
+     location: @key_lookleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('/');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_lookforward';
+     location: @key_lookforward;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_ENTER;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invleft';
+     location: @key_invleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('[');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invright';
+     location: @key_invright;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord(']');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_useartifact';
+     location: @key_useartifact;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_ENTER;
+     defaultbvalue: false;
+     _type: tInteger),
+
+{$ELSEIF DEFINED(HEXEN)}
+     defaultivalue: KEY_INS;
+     defaultbvalue: false;
+     _type: tInteger),
+
+{$ELSEIF DEFINED(STRIFE)}
+     defaultivalue: Ord('*');
+     defaultbvalue: false;
+     _type: tInteger),
+
+{$ELSE}
      defaultivalue: KEY_INS;
      defaultbvalue: false;
      _type: tInteger),
@@ -1514,6 +1797,7 @@ const
      defaultbvalue: false;
      _type: tInteger),
 
+{$ENDIF}
     (name: 'key_weapon0';
      location: @key_weapon0;
      oldlocation: nil;
@@ -1550,39 +1834,262 @@ const
      defaultbvalue: false;
      _type: tInteger),
 
+{$IFDEF HEXEN}
+     // Fly movement
+    (name: 'key_flyup';
+     location: @key_flyup;
+{$ELSE}
     (name: 'key_weapon4';
      location: @key_weapon4;
+{$ENDIF}
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF HEXEN}
+     defaultivalue: KEY_PAGEUP;
+{$ELSE}
      defaultivalue: Ord('5');
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
+{$IFDEF HEXEN}
+    (name: 'key_flydown';
+     location: @key_flydown;
+{$ELSE}
     (name: 'key_weapon5';
      location: @key_weapon5;
+{$ENDIF}
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF HEXEN}
+     defaultivalue: KEY_HOME;
+{$ELSE}
      defaultivalue: Ord('6');
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
+{$IFDEF HEXEN}
+    (name: 'key_flycenter';
+     location: @key_flycenter;
+{$ELSE}
     (name: 'key_weapon6';
      location: @key_weapon6;
+{$ENDIF}
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IFDEF HEXEN}
+     defaultivalue: KEY_END;
+{$ELSE}
      defaultivalue: Ord('7');
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
+{$IFDEF HEXEN}
+     // JVAL Look LEFT/RIGHT
+    (name: 'key_lookright';
+     location: @key_lookright;
+{$ELSE}
     (name: 'key_weapon7';
      location: @key_weapon7;
+{$ENDIF}
      oldlocation: nil;
      setable: DFS_NEVER;
      defaultsvalue: '';
+{$IF DEFINED(HEXEN)}
+     defaultivalue: Ord('*');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_lookleft';
+     location: @key_lookleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('/');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_lookforward';
+     location: @key_lookforward;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_ENTER;
+     defaultbvalue: false;
+
+     _type: tInteger),
+
+    (name: 'key_invleft';
+     location: @key_invleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('[');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invright';
+     location: @key_invright;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord(']');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_useartifact';
+     location: @key_useartifact;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_ENTER;
+{$ELSEIF DEFINED(STRIFE)}
      defaultivalue: Ord('8');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_weapon8';
+     location: @key_weapon8;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('9');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_weapon9';
+     location: @key_weapon9;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('0');
+     defaultbvalue: false;
+     _type: tInteger),
+
+     // JVAL Look LEFT/RIGHT
+    (name: 'key_lookright';
+     location: @key_lookright;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord(']');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_lookleft';
+     location: @key_lookleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('[');
+     defaultbvalue: false;
+     _type: tInteger),
+
+     // JVAL Inventory
+    (name: 'key_invuse';
+     location: @key_invuse;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_ENTER;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invdrop';
+     location: @key_invdrop;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_BACKSPACE;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_usehealth';
+     location: @key_usehealth;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('h');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_mission';       // 1
+     location: @key_mission;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('w');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invpop';       // 2
+     location: @key_invpop;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('z');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invkey';       // 3
+     location: @key_invkey;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('k');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invhome';       // 4
+     location: @key_invhome;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_HOME;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invend';       // 5
+     location: @key_invend;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_END;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invleft';       // 6
+     location: @key_invleft;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_INS;//Ord('h');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invright';       // 7
+     location: @key_invright;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: KEY_DELETE;//Ord('h');
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'key_invquery';       // 8
+     location: @key_invquery;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: Ord('q');
+{$ELSE}
+     defaultivalue: Ord('8');
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -1666,6 +2173,7 @@ const
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: true;
+{$IFDEF DOOM}
      _type: tBoolean),
 
     (name: 'mousemove';
@@ -1675,6 +2183,7 @@ const
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: false;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'mouse_sensitivity';
@@ -1874,7 +2383,20 @@ const
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
+{$IFDEF STRIFE}
+     defaultivalue: 13;
+     defaultbvalue: false;
+     _type: tInteger),
+
+    (name: 'voice_volume';
+     location: @snd_VoiceVolume;
+     oldlocation: nil;
+     setable: DFS_ALWAYS;
+     defaultsvalue: '';
+     defaultivalue: 15;
+{$ELSE}
      defaultivalue: 8;
+{$ENDIF}
      defaultbvalue: false;
      _type: tInteger),
 
@@ -2006,6 +2528,7 @@ const
      defaultbvalue: true;
      _type: tInteger),
 
+{$IFDEF DOOM}
     (name: 'vulgarquitmessages';
      location: @vulgarquitmessages;
      oldlocation: nil;
@@ -2015,6 +2538,7 @@ const
      defaultbvalue: false;
      _type: tBoolean),
 
+{$ENDIF}
     (name: 'show_obituaries';
      location: @show_obituaries;
      oldlocation: nil;
@@ -2022,6 +2546,26 @@ const
      defaultsvalue: '';
      defaultivalue: 0;
      defaultbvalue: false;
+{$IFDEF STRIFE}
+     _type: tBoolean),
+
+    (name: 'Dialogs';
+     location: nil;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: false;
+     _type: tGroup),
+
+    (name: 'show_talk';
+     location: @dialogshowtext;
+     oldlocation: nil;
+     setable: DFS_NEVER;
+     defaultsvalue: '';
+     defaultivalue: 0;
+     defaultbvalue: true;
+{$ENDIF}
      _type: tBoolean),
 
     (name: 'Chat strings';

@@ -146,7 +146,7 @@ uses
   m_base in 'Base\m_base.pas',
   m_bbox in 'Base\m_bbox.pas',
   m_cheat in 'Base\m_cheat.pas',
-  m_defs in 'Hexen\m_defs.pas',
+  m_defs in 'Base\m_defs.pas',
   m_fixed in 'Base\m_fixed.pas',
   m_menu in 'Hexen\m_menu.pas',
   m_misc in 'Base\m_misc.pas',
