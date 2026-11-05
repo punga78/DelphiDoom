@@ -55,6 +55,8 @@ uses
   DelphiDoom.Sound.Format.Ircam in '..\Libs\Sound\DelphiDoom.Sound.Format.Ircam.pas',
   DelphiDoom.Sound.Format.Mat4 in '..\Libs\Sound\DelphiDoom.Sound.Format.Mat4.pas',
   DelphiDoom.Sound.Format.Mat5 in '..\Libs\Sound\DelphiDoom.Sound.Format.Mat5.pas',
+  DelphiDoom.Sound.Format.Wve in '..\Libs\Sound\DelphiDoom.Sound.Format.Wve.pas',
+  DelphiDoom.Sound.Format.Mpc2k in '..\Libs\Sound\DelphiDoom.Sound.Format.Mpc2k.pas',
   DelphiDoom.Sound.Format.Htk in '..\Libs\Sound\DelphiDoom.Sound.Format.Htk.pas',
   DelphiDoom.Sound.Engine in '..\Libs\Sound\DelphiDoom.Sound.Engine.pas',
   DelphiDoom.Sound.Factory in '..\Libs\Sound\DelphiDoom.Sound.Factory.pas',

@@ -107,7 +107,8 @@ type
     /// </summary>
     class function BuildMat5(ABigEndian: Boolean; ARateKind: Integer; ARate: Cardinal;
       AChannels, ACols: Cardinal; ADataType: Cardinal; ASmallName, AUnterminatedText: Boolean;
-      const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+      const APayload: TBytes): TBytes; static;    class function BuildWve(ADataLength: Int64; const APayload: TBytes): TBytes; static;
+    class function BuildMpc2k(AStereo: Boolean; ARate: Word; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -571,6 +572,51 @@ begin
     AddName('wavedata');
   LSink.AddNumber(ADataType, 4, ABigEndian);
   LSink.AddNumber(Cardinal(Length(APayload)), 4, ABigEndian);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.BuildWve(ADataLength: Int64;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LIndex: Integer;
+begin
+  LSink.AddText('ALawSoundFile**'#0);
+  LSink.AddNumber(3856, 2, True);
+  if ADataLength = -2 then
+    LSink.AddNumber(Cardinal(Length(APayload)), 4, True)
+  else
+    LSink.AddNumber(Cardinal(ADataLength), 4, True);
+  for LIndex := 1 to 5 do
+    LSink.AddNumber(0, 2, True);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+
+class function TSoundTestContainerFile.BuildMpc2k(AStereo: Boolean; ARate: Word;
+  const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LIndex: Integer;
+begin
+  LSink.Add(1);
+  LSink.Add(4);
+  LSink.AddText('SAMPLE');
+  for LIndex := 1 to 11 do
+    LSink.Add(Ord(' '));
+  LSink.Add(100);
+  LSink.Add(0);
+  if AStereo then
+    LSink.Add(1)
+  else
+    LSink.Add(0);
+  LSink.AddNumber(0, 4, False);
+  LSink.AddNumber(Cardinal(Length(APayload) div 2), 4, False);
+  LSink.AddNumber(Cardinal(Length(APayload) div 2), 4, False);
+  LSink.AddNumber(Cardinal(Length(APayload) div 2), 4, False);
+  LSink.Add(0);
+  LSink.Add(1);
+  LSink.AddNumber(ARate, 2, False);
   LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;

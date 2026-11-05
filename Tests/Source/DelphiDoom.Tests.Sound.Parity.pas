@@ -95,6 +95,10 @@ type
     [Test]
     procedure TestMat5;
     [Test]
+    procedure TestWve;
+    [Test]
+    procedure TestMpc2k;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -833,6 +837,27 @@ begin
     TSoundTestWavFile.RandomBytes(100, 9)), 'mat5 unknown type');
   CheckSameFailure(TSoundTestContainerFile.BuildMat5(False, 0, 44100, 1, 50, 3, False, True,
     TSoundTestWavFile.RandomBytes(100, 9)), 'mat5 text without end');
+end;
+
+procedure TTestSoundParity.TestWve;
+var
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  SetLength(LPayload, 256);
+  for LIndex := 0 to 255 do
+    LPayload[LIndex] := Byte(LIndex);
+  CheckSame(TSoundTestContainerFile.BuildWve(-2, LPayload), 'wve');
+  // A length in the header that is not the real one
+  CheckSame(TSoundTestContainerFile.BuildWve(100, LPayload), 'wve wrong length');
+  CheckSame(TSoundTestContainerFile.BuildWve(-2, Copy(LPayload, 0, 1)), 'wve one sample');
+end;
+
+procedure TTestSoundParity.TestMpc2k;
+begin
+  CheckSame(TSoundTestContainerFile.BuildMpc2k(False, 44100, TSoundTestWavFile.RandomBytes(2 * 101 + 1, 1)), 'mpc2k mono');
+  CheckSame(TSoundTestContainerFile.BuildMpc2k(True, 22050, TSoundTestWavFile.RandomBytes(4 * 101 + 2, 2)), 'mpc2k stereo');
+  CheckSameFailure(TSoundTestContainerFile.BuildMpc2k(False, 0, TSoundTestWavFile.RandomBytes(100, 3)), 'mpc2k rate 0');
 end;
 
 procedure TTestSoundParity.TestAvr;
