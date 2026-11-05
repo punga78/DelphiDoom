@@ -262,7 +262,7 @@ uses
   p_switch in 'Strife\p_switch.pas',
   p_telept in 'Strife\p_telept.pas',
   p_terrain in 'Strife\p_terrain.pas',
-  p_tick in 'Strife\p_tick.pas',
+  p_tick in 'Base\p_tick.pas',
   p_user in 'Strife\p_user.pas',
   r_bsp in 'Strife\r_bsp.pas',
   r_cache_main in 'Base\r_cache_main.pas',

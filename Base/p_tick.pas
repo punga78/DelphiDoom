@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -18,7 +17,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
@@ -87,6 +86,9 @@ function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
 
 var
   leveltime: integer;
+{$IFDEF HEXEN}
+  TimerGame: integer;
+{$ENDIF}
   isgamesuspended: boolean = true;
   isgamefreezed: boolean = false;
 
@@ -96,15 +98,25 @@ uses
   doomdef,
   c_con,
   d_player,
+{$IFDEF HEXEN}
+  g_demo,
+{$ENDIF}
   g_game,
   m_menu,
+{$IFNDEF HEXEN}
   p_animdefs,
+{$ENDIF}
   p_user,
   p_spec,
   p_mobj,
   p_mobj_h,
   p_mobjlist,
+{$IF DEFINED(HERETIC)}
   p_ambient,
+{$ELSEIF DEFINED(HEXEN)}
+  p_mapinfo,
+  p_anim,
+{$ENDIF}
   ps_main,  // JVAL: Script Events
   z_zone;
 
@@ -267,6 +279,15 @@ begin
     if playeringame[i] then
       P_PlayerThink(@players[i]);
 
+{$IFDEF HEXEN}
+  if TimerGame <> 0 then
+  begin
+    dec(TimerGame);
+    if TimerGame = 0 then
+      G_Completed(P_TranslateMap(P_GetMapNextMap(gamemap)), 0);
+  end;
+
+{$ENDIF}
   if demoplayback or demorecording then
     isgamefreezed := false;
 
@@ -275,8 +296,13 @@ begin
   begin
     P_UpdateSpecials;
     P_AnimateSurfaces;
+{$IF DEFINED(HERETIC)}
     P_RespawnSpecials;
     P_AmbientSound;
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
+    P_RespawnSpecials;
+{$ENDIF}
 
     // JVAL: Script Events
     PS_EventTick(leveltime);

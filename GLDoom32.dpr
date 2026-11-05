@@ -242,7 +242,7 @@ uses
   p_switch in 'Doom\p_switch.pas',
   p_telept in 'Doom\p_telept.pas',
   p_terrain in 'Doom\p_terrain.pas',
-  p_tick in 'Doom\p_tick.pas',
+  p_tick in 'Base\p_tick.pas',
   p_user in 'Doom\p_user.pas',
   r_bsp in 'Doom\r_bsp.pas',
   r_data in 'Doom\r_data.pas',

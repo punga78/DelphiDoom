@@ -217,7 +217,7 @@ uses
   udmf_telept in 'Base\udmf_telept.pas',
   p_terrain in 'Hexen\p_terrain.pas',
   p_things in 'Hexen\p_things.pas',
-  p_tick in 'Hexen\p_tick.pas',
+  p_tick in 'Base\p_tick.pas',
   p_user in 'Hexen\p_user.pas',
   po_man in 'Base\po_man.pas',
   r_bsp in 'Hexen\r_bsp.pas',
