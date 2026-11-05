@@ -29,253 +29,242 @@ unit libogg;
 {$Z+}
 {$H+}
 
+// The functions of libogg that the C objects of libvorbis, libflac and libsndfile call, with
+// the names and the calling convention of the C ones (cdecl, underscore in front). They are
+// thin: the work is done by the classes of Libs\Ogg. This unit goes away with the last
+// of those objects
+
 interface
 
-//==============================================================================
-//
-// _ogg_page_bos
-//
-//==============================================================================
-procedure _ogg_page_bos; external;
+uses
+  DelphiDoom.Ogg.Types;
 
 //==============================================================================
-//
-// _ogg_page_continued
-//
+// Pages
 //==============================================================================
-procedure _ogg_page_continued; external;
+function _ogg_page_bos(og: POggPage): Integer; cdecl;
+function _ogg_page_continued(og: POggPage): Integer; cdecl;
+function _ogg_page_eos(og: POggPage): Integer; cdecl;
+function _ogg_page_granulepos(og: POggPage): Int64; cdecl;
+function _ogg_page_serialno(og: POggPage): Integer; cdecl;
+procedure _ogg_page_checksum_set(og: POggPage); cdecl;
 
 //==============================================================================
-//
-// _ogg_page_eos
-//
+// Streams
 //==============================================================================
-procedure _ogg_page_eos; external;
+function _ogg_stream_init(os: POggStreamState; serialno: Integer): Integer; cdecl;
+function _ogg_stream_clear(os: POggStreamState): Integer; cdecl;
+function _ogg_stream_reset(os: POggStreamState): Integer; cdecl;
+function _ogg_stream_reset_serialno(os: POggStreamState; serialno: Integer): Integer; cdecl;
+function _ogg_stream_pagein(os: POggStreamState; og: POggPage): Integer; cdecl;
+function _ogg_stream_packetout(os: POggStreamState; op: POggPacket): Integer; cdecl;
+function _ogg_stream_packetpeek(os: POggStreamState; op: POggPacket): Integer; cdecl;
+function _ogg_stream_packetin(os: POggStreamState; op: POggPacket): Integer; cdecl;
+function _ogg_stream_flush(os: POggStreamState; og: POggPage): Integer; cdecl;
+function _ogg_stream_pageout(os: POggStreamState; og: POggPage): Integer; cdecl;
 
 //==============================================================================
-//
-// _ogg_page_granulepos
-//
+// Physical streams
 //==============================================================================
-procedure _ogg_page_granulepos; external;
+function _ogg_sync_init(oy: POggSyncState): Integer; cdecl;
+function _ogg_sync_clear(oy: POggSyncState): Integer; cdecl;
+function _ogg_sync_reset(oy: POggSyncState): Integer; cdecl;
+function _ogg_sync_buffer(oy: POggSyncState; size: Longint): PByte; cdecl;
+function _ogg_sync_wrote(oy: POggSyncState; bytes: Longint): Integer; cdecl;
+function _ogg_sync_pageseek(oy: POggSyncState; og: POggPage): Longint; cdecl;
+function _ogg_sync_pageout(oy: POggSyncState; og: POggPage): Integer; cdecl;
 
 //==============================================================================
-//
-// _ogg_page_serialno
-//
+// Bits
 //==============================================================================
-procedure _ogg_page_serialno; external;
-
-//==============================================================================
-//
-// _ogg_stream_clear
-//
-//==============================================================================
-procedure _ogg_stream_clear; external;
-
-//==============================================================================
-//
-// _ogg_stream_init
-//
-//==============================================================================
-procedure _ogg_stream_init; external;
-
-//==============================================================================
-//
-// _ogg_stream_packetout
-//
-//==============================================================================
-procedure _ogg_stream_packetout; external;
-
-//==============================================================================
-//
-// _ogg_stream_packetpeek
-//
-//==============================================================================
-procedure _ogg_stream_packetpeek; external;
-
-//==============================================================================
-//
-// _ogg_stream_pagein
-//
-//==============================================================================
-procedure _ogg_stream_pagein; external;
-
-//==============================================================================
-//
-// _ogg_stream_reset
-//
-//==============================================================================
-procedure _ogg_stream_reset; external;
-
-//==============================================================================
-//
-// _ogg_stream_reset_serialno
-//
-//==============================================================================
-procedure _ogg_stream_reset_serialno; external;
-
-//==============================================================================
-//
-// _ogg_sync_buffer
-//
-//==============================================================================
-procedure _ogg_sync_buffer; external;
-
-//==============================================================================
-//
-// _ogg_sync_clear
-//
-//==============================================================================
-procedure _ogg_sync_clear; external;
-
-//==============================================================================
-//
-// _ogg_sync_init
-//
-//==============================================================================
-procedure _ogg_sync_init; external;
-
-//==============================================================================
-//
-// _ogg_sync_pageseek
-//
-//==============================================================================
-procedure _ogg_sync_pageseek; external;
-
-//==============================================================================
-//
-// _ogg_sync_reset
-//
-//==============================================================================
-procedure _ogg_sync_reset; external;
-
-//==============================================================================
-//
-// _ogg_sync_wrote
-//
-//==============================================================================
-procedure _ogg_sync_wrote; external;
-
-//==============================================================================
-//
-// _oggpack_adv
-//
-//==============================================================================
-procedure _oggpack_adv; external;
-
-//==============================================================================
-//
-// _oggpack_bytes
-//
-//==============================================================================
-procedure _oggpack_bytes; external;
-
-//==============================================================================
-//
-// _oggpack_get_buffer
-//
-//==============================================================================
-procedure _oggpack_get_buffer; external;
-
-//==============================================================================
-//
-// _oggpack_look
-//
-//==============================================================================
-procedure _oggpack_look; external;
-
-//==============================================================================
-//
-// _oggpack_read
-//
-//==============================================================================
-procedure _oggpack_read; external;
-
-//==============================================================================
-//
-// _oggpack_readinit
-//
-//==============================================================================
-procedure _oggpack_readinit; external;
-
-//==============================================================================
-//
-// _oggpack_reset
-//
-//==============================================================================
-procedure _oggpack_reset; external;
-
-//==============================================================================
-//
-// _oggpack_write
-//
-//==============================================================================
-procedure _oggpack_write; external;
-
-//==============================================================================
-//
-// _oggpack_writeclear
-//
-//==============================================================================
-procedure _oggpack_writeclear; external;
-
-//==============================================================================
-//
-// _oggpack_writeinit
-//
-//==============================================================================
-procedure _oggpack_writeinit; external;
-
-//==============================================================================
-//
-// _oggpack_writetrunc
-//
-//==============================================================================
-procedure _oggpack_writetrunc; external;
-
-//==============================================================================
-//
-// _ogg_sync_pageout
-//
-//==============================================================================
-procedure _ogg_sync_pageout; external;
-
-//==============================================================================
-//
-// _ogg_stream_packetin
-//
-//==============================================================================
-procedure _ogg_stream_packetin; external;
-
-//==============================================================================
-//
-// _ogg_stream_flush
-//
-//==============================================================================
-procedure _ogg_stream_flush; external;
-
-//==============================================================================
-//
-// _ogg_stream_pageout
-//
-//==============================================================================
-procedure _ogg_stream_pageout; external;
-
-//==============================================================================
-//
-// _ogg_page_checksum_set
-//
-//==============================================================================
-procedure _ogg_page_checksum_set; external;
+procedure _oggpack_writeinit(b: POggPackBuffer); cdecl;
+procedure _oggpack_writetrunc(b: POggPackBuffer; bits: Longint); cdecl;
+procedure _oggpack_write(b: POggPackBuffer; value: Cardinal; bits: Integer); cdecl;
+procedure _oggpack_reset(b: POggPackBuffer); cdecl;
+procedure _oggpack_writeclear(b: POggPackBuffer); cdecl;
+procedure _oggpack_readinit(b: POggPackBuffer; buf: PByte; bytes: Integer); cdecl;
+function _oggpack_look(b: POggPackBuffer; bits: Integer): Longint; cdecl;
+procedure _oggpack_adv(b: POggPackBuffer; bits: Integer); cdecl;
+function _oggpack_read(b: POggPackBuffer; bits: Integer): Longint; cdecl;
+function _oggpack_bytes(b: POggPackBuffer): Longint; cdecl;
+function _oggpack_get_buffer(b: POggPackBuffer): PByte; cdecl;
 
 implementation
 
 uses
-  c_lib;
+  DelphiDoom.Ogg.BitPacker,
+  DelphiDoom.Ogg.PageReader,
+  DelphiDoom.Ogg.Stream,
+  DelphiDoom.Ogg.Sync;
 
-// libogg
-{$L libogg\obj\bitwise.obj}
-{$L libogg\obj\framing.obj}
+function _ogg_page_bos(og: POggPage): Integer;
+begin
+  Result := TOggPageReader.BeginningOfStream(og);
+end;
+
+function _ogg_page_continued(og: POggPage): Integer;
+begin
+  Result := TOggPageReader.Continued(og);
+end;
+
+function _ogg_page_eos(og: POggPage): Integer;
+begin
+  Result := TOggPageReader.EndOfStream(og);
+end;
+
+function _ogg_page_granulepos(og: POggPage): Int64;
+begin
+  Result := TOggPageReader.GranulePosition(og);
+end;
+
+function _ogg_page_serialno(og: POggPage): Integer;
+begin
+  Result := TOggPageReader.SerialNumber(og);
+end;
+
+procedure _ogg_page_checksum_set(og: POggPage);
+begin
+  TOggPageReader.SetChecksum(og);
+end;
+
+function _ogg_stream_init(os: POggStreamState; serialno: Integer): Integer;
+begin
+  Result := TOggStream.Init(os, serialno);
+end;
+
+function _ogg_stream_clear(os: POggStreamState): Integer;
+begin
+  Result := TOggStream.Clear(os);
+end;
+
+function _ogg_stream_reset(os: POggStreamState): Integer;
+begin
+  Result := TOggStream.Reset(os);
+end;
+
+function _ogg_stream_reset_serialno(os: POggStreamState; serialno: Integer): Integer;
+begin
+  Result := TOggStream.ResetSerialNumber(os, serialno);
+end;
+
+function _ogg_stream_pagein(os: POggStreamState; og: POggPage): Integer;
+begin
+  Result := TOggStream.PageIn(os, og);
+end;
+
+function _ogg_stream_packetout(os: POggStreamState; op: POggPacket): Integer;
+begin
+  Result := TOggStream.PacketOut(os, op);
+end;
+
+function _ogg_stream_packetpeek(os: POggStreamState; op: POggPacket): Integer;
+begin
+  Result := TOggStream.PacketPeek(os, op);
+end;
+
+function _ogg_stream_packetin(os: POggStreamState; op: POggPacket): Integer;
+begin
+  Result := TOggStream.PacketIn(os, op);
+end;
+
+function _ogg_stream_flush(os: POggStreamState; og: POggPage): Integer;
+begin
+  Result := TOggStream.Flush(os, og);
+end;
+
+function _ogg_stream_pageout(os: POggStreamState; og: POggPage): Integer;
+begin
+  Result := TOggStream.PageOut(os, og);
+end;
+
+function _ogg_sync_init(oy: POggSyncState): Integer;
+begin
+  Result := TOggSync.Init(oy);
+end;
+
+function _ogg_sync_clear(oy: POggSyncState): Integer;
+begin
+  Result := TOggSync.Clear(oy);
+end;
+
+function _ogg_sync_reset(oy: POggSyncState): Integer;
+begin
+  Result := TOggSync.Reset(oy);
+end;
+
+function _ogg_sync_buffer(oy: POggSyncState; size: Longint): PByte;
+begin
+  Result := TOggSync.Buffer(oy, size);
+end;
+
+function _ogg_sync_wrote(oy: POggSyncState; bytes: Longint): Integer;
+begin
+  Result := TOggSync.Wrote(oy, bytes);
+end;
+
+function _ogg_sync_pageseek(oy: POggSyncState; og: POggPage): Longint;
+begin
+  Result := TOggSync.PageSeek(oy, og);
+end;
+
+function _ogg_sync_pageout(oy: POggSyncState; og: POggPage): Integer;
+begin
+  Result := TOggSync.PageOut(oy, og);
+end;
+
+procedure _oggpack_writeinit(b: POggPackBuffer);
+begin
+  TOggBitPacker.WriteInit(b);
+end;
+
+procedure _oggpack_writetrunc(b: POggPackBuffer; bits: Longint);
+begin
+  TOggBitPacker.WriteTruncate(b, bits);
+end;
+
+procedure _oggpack_write(b: POggPackBuffer; value: Cardinal; bits: Integer);
+begin
+  TOggBitPacker.Write(b, value, bits);
+end;
+
+procedure _oggpack_reset(b: POggPackBuffer);
+begin
+  TOggBitPacker.Reset(b);
+end;
+
+procedure _oggpack_writeclear(b: POggPackBuffer);
+begin
+  TOggBitPacker.WriteClear(b);
+end;
+
+procedure _oggpack_readinit(b: POggPackBuffer; buf: PByte; bytes: Integer);
+begin
+  TOggBitPacker.ReadInit(b, buf, bytes);
+end;
+
+function _oggpack_look(b: POggPackBuffer; bits: Integer): Longint;
+begin
+  Result := TOggBitPacker.Look(b, bits);
+end;
+
+procedure _oggpack_adv(b: POggPackBuffer; bits: Integer);
+begin
+  TOggBitPacker.Advance(b, bits);
+end;
+
+function _oggpack_read(b: POggPackBuffer; bits: Integer): Longint;
+begin
+  Result := TOggBitPacker.Read(b, bits);
+end;
+
+function _oggpack_bytes(b: POggPackBuffer): Longint;
+begin
+  Result := TOggBitPacker.Bytes(b);
+end;
+
+function _oggpack_get_buffer(b: POggPackBuffer): PByte;
+begin
+  Result := TOggBitPacker.GetBuffer(b);
+end;
 
 end.
