@@ -93,6 +93,8 @@ type
     [Test]
     procedure TestMat4;
     [Test]
+    procedure TestMat5;
+    [Test]
     procedure TestAvr;
     [Test]
     procedure TestHtk;
@@ -800,6 +802,37 @@ begin
     TSoundTestWavFile.RandomBytes(200, 7)), 'mat4 too many channels');
   CheckSameFailure(TSoundTestContainerFile.BuildMat4(False, 8000.0, 1, 20, BAD,
     TSoundTestWavFile.RandomBytes(200, 7)), 'mat4 unsigned 8 bit');
+end;
+
+procedure TTestSoundParity.TestMat5;
+var
+  LBig, LSmall: Boolean;
+  LChannels, LKind: Cardinal;
+begin
+  for LBig := False to True do
+    for LChannels := 1 to 2 do
+    begin
+      CheckSame(TSoundTestContainerFile.BuildMat5(LBig, 0, 44100, LChannels, 101, 3, False, False,
+        TSoundTestWavFile.RandomBytes(Integer(LChannels) * 2 * 101 + 1, 1)), 'mat5 16 bit');
+      CheckSame(TSoundTestContainerFile.BuildMat5(LBig, 0, 22050, LChannels, 51, 5, False, False,
+        TSoundTestWavFile.RandomBytes(Integer(LChannels) * 4 * 51, 2)), 'mat5 32 bit');
+      CheckSame(TSoundTestContainerFile.BuildMat5(LBig, 0, 8000, LChannels, 60, 2, False, False,
+        TSoundTestWavFile.RandomBytes(Integer(LChannels) * 60, 3)), 'mat5 8 bit');
+      CheckSame(TSoundTestContainerFile.BuildMat5(LBig, 0, 8000, LChannels, 60, 7, False, False,
+        TSoundTestWavFile.FloatPayload(Integer(LChannels) * 60, 3, False, LBig)), 'mat5 float');
+      CheckSame(TSoundTestContainerFile.BuildMat5(LBig, 0, 11025, LChannels, 40, 9, False, False,
+        TSoundTestWavFile.FloatPayload(Integer(LChannels) * 40, 4, True, LBig)), 'mat5 double');
+    end;
+  for LKind := 0 to 3 do
+    for LSmall := False to True do
+      CheckSame(TSoundTestContainerFile.BuildMat5(False, Integer(LKind), 32000, 2, 50, 3, LSmall, False,
+        TSoundTestWavFile.RandomBytes(200, 8)), Format('mat5 sample rate kind %d small names %s', [LKind, BoolToStr(LSmall, True)]));
+  CheckSameFailure(TSoundTestContainerFile.BuildMat5(False, 0, 44100, 0, 0, 3, False, False,
+    TSoundTestWavFile.RandomBytes(100, 9)), 'mat5 empty');
+  CheckSameFailure(TSoundTestContainerFile.BuildMat5(False, 0, 44100, 1, 50, 8, False, False,
+    TSoundTestWavFile.RandomBytes(100, 9)), 'mat5 unknown type');
+  CheckSameFailure(TSoundTestContainerFile.BuildMat5(False, 0, 44100, 1, 50, 3, False, True,
+    TSoundTestWavFile.RandomBytes(100, 9)), 'mat5 text without end');
 end;
 
 procedure TTestSoundParity.TestAvr;

@@ -99,7 +99,15 @@ type
     ///   of the file; ACols the number of frames written in it
     /// </summary>
     class function BuildMat4(ABigEndian: Boolean; ARate: Double; AChannels, ACols: Cardinal;
-      const AMarker: array of Byte; const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
+      const AMarker: array of Byte; const APayload: TBytes): TBytes; static;    /// <summary>
+    ///   MAT5: ARateKind is 0 for a double, 1 for a short packed in the tag, 2
+    ///   for a number packed in the tag, 3 for no sample rate matrix at all;
+    ///   ADataType the type of the samples (2, 3, 5, 7 or 9); ASmallName packs
+    ///   the names in four bytes
+    /// </summary>
+    class function BuildMat5(ABigEndian: Boolean; ARateKind: Integer; ARate: Cardinal;
+      AChannels, ACols: Cardinal; ADataType: Cardinal; ASmallName, AUnterminatedText: Boolean;
+      const APayload: TBytes): TBytes; static;    class function BuildAvr(AMono, AResolution, ASign: Word; ARate: Cardinal;
       const APayload: TBytes): TBytes; static;
     /// <summary>HTK: ACount is the sample count written; -1 for the real one</summary>
     class function BuildHtk(ACount: Int64; APeriod, AKind: Cardinal;
@@ -455,6 +463,114 @@ begin
   LSink.AddNumber(0, 4, ABigEndian);
   LSink.AddNumber(9, 4, ABigEndian);
   LSink.AddText('wavedata'#0);
+  LSink.AddBytes(APayload);
+  Result := LSink.Bytes;
+end;
+class function TSoundTestContainerFile.BuildMat5(ABigEndian: Boolean;
+  ARateKind: Integer; ARate: Cardinal; AChannels, ACols, ADataType: Cardinal;
+  ASmallName, AUnterminatedText: Boolean; const APayload: TBytes): TBytes;
+var
+  LSink: TSink;
+  LText: AnsiString;
+  LIndex: Integer;
+  LBits: Int64;
+  LRate: Double;
+
+  procedure AddName(const AName: AnsiString);
+  var
+    LNameIndex: Integer;
+  begin
+    if ASmallName then
+    begin
+      LSink.AddNumber(1 or (Cardinal(Length(AName)) shl 16), 4, ABigEndian);
+      for LNameIndex := 1 to 4 do
+        if LNameIndex <= Length(AName) then
+          LSink.Add(Byte(AName[LNameIndex]))
+        else
+          LSink.Add(0);
+    end
+    else
+    begin
+      LSink.AddNumber(1, 4, ABigEndian);
+      LSink.AddNumber(Cardinal(Length(AName)), 4, ABigEndian);
+      LSink.AddText(AName);
+      for LNameIndex := 1 to (8 - (Length(AName) mod 8)) mod 8 do
+        LSink.Add(0);
+    end;
+  end;
+
+  procedure AddArrayHead(ARows, AColumns: Cardinal);
+  begin
+    LSink.AddNumber($E, 4, ABigEndian);
+    LSink.AddNumber(0, 4, ABigEndian);
+    LSink.AddNumber(6, 4, ABigEndian);
+    LSink.AddNumber(8, 4, ABigEndian);
+    LSink.AddNumber(6, 4, ABigEndian);
+    LSink.AddNumber(0, 4, ABigEndian);
+    LSink.AddNumber(5, 4, ABigEndian);
+    LSink.AddNumber(8, 4, ABigEndian);
+    LSink.AddNumber(ARows, 4, ABigEndian);
+    LSink.AddNumber(AColumns, 4, ABigEndian);
+  end;
+
+begin
+  LText := 'MATLAB 5.0 MAT-file, written by the tests';
+  LSink.AddText(LText);
+  while Length(LSink.Bytes) < 124 do
+    if AUnterminatedText then
+      LSink.Add(Ord(' '))
+    else
+      LSink.Add(0);
+  LSink.AddNumber($0100, 2, ABigEndian);
+  if ABigEndian then
+    LSink.AddText('MI')
+  else
+    LSink.AddText('IM');
+
+  if ARateKind <> 3 then
+  begin
+    AddArrayHead(1, 1);
+    if ASmallName then
+      AddName('rate')
+    else
+      AddName('samplerate');
+    case ARateKind of
+      0:
+        begin
+          LRate := ARate;
+          Move(LRate, LBits, 8);
+          LSink.AddNumber(9, 4, ABigEndian);
+          LSink.AddNumber(8, 4, ABigEndian);
+          if ABigEndian then
+          begin
+            LSink.AddNumber(Cardinal(LBits shr 32), 4, True);
+            LSink.AddNumber(Cardinal(LBits and $FFFFFFFF), 4, True);
+          end
+          else
+          begin
+            LSink.AddNumber(Cardinal(LBits and $FFFFFFFF), 4, False);
+            LSink.AddNumber(Cardinal(LBits shr 32), 4, False);
+          end;
+        end;
+      1:
+        begin
+          LSink.AddNumber($00020004, 4, ABigEndian);
+          LSink.AddNumber(ARate, 2, ABigEndian);
+          LSink.AddNumber(0, 2, ABigEndian);
+        end;
+    else
+      LSink.AddNumber($00040006, 4, ABigEndian);
+      LSink.AddNumber(ARate, 4, ABigEndian);
+    end;
+  end;
+
+  AddArrayHead(AChannels, ACols);
+  if ASmallName then
+    AddName('data')
+  else
+    AddName('wavedata');
+  LSink.AddNumber(ADataType, 4, ABigEndian);
+  LSink.AddNumber(Cardinal(Length(APayload)), 4, ABigEndian);
   LSink.AddBytes(APayload);
   Result := LSink.Bytes;
 end;

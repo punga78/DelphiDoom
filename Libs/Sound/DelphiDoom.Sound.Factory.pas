@@ -34,7 +34,8 @@ uses
   DelphiDoom.Sound.Format.Voc, DelphiDoom.Sound.Format.Avr,
   DelphiDoom.Sound.Format.Htk, DelphiDoom.Sound.Format.W64,
   DelphiDoom.Sound.Format.Rf64, DelphiDoom.Sound.Format.Caf,
-  DelphiDoom.Sound.Format.Svx, DelphiDoom.Sound.Format.Ircam, DelphiDoom.Sound.Format.Mat4;
+  DelphiDoom.Sound.Format.Svx, DelphiDoom.Sound.Format.Ircam, DelphiDoom.Sound.Format.Mat4,
+  DelphiDoom.Sound.Format.Mat5;
 
 { TSoundFactory }
 
@@ -45,7 +46,7 @@ begin
     TW64Format.Create, TRf64Format.Create,
     TCafFormat.Create,
     TSvxFormat.Create, TIrcamFormat.Create,
-    TMat4Format.Create];
+    TMat4Format.Create, TMat5Format.Create];
 end;
 
 class function TSoundFactory.CreateEngine: ISndfile;
