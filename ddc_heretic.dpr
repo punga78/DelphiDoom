@@ -267,7 +267,7 @@ uses
   r_column in 'Base\r_column.pas',
   r_data in 'Base\r_data.pas',
   r_defs in 'Base\r_defs.pas',
-  r_draw in 'Heretic\r_draw.pas',
+  r_draw in 'Base\r_draw.pas',
   r_fake3d in 'Base\r_fake3d.pas',
   r_grow in 'Base\r_grow.pas',
   r_hires in 'Base\r_hires.pas',

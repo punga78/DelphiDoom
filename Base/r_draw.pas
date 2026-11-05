@@ -17,7 +17,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
 //------------------------------------------------------------------------------
@@ -81,7 +81,20 @@ procedure R_InitTranslationTables;
 //
 //==============================================================================
 procedure R_FillBackScreen;
+{$IFDEF DOOM}
 
+{$IFNDEF OPENGL}
+//==============================================================================
+//
+// R_FillBackStatusbar
+//
+//==============================================================================
+procedure R_FillBackStatusbar;
+{$ENDIF}
+
+{$ELSE}
+
+{$ENDIF}
 //==============================================================================
 // R_DrawViewBorder
 //
@@ -102,6 +115,9 @@ var
   displaydiskbusyicon: boolean = true;
 
   translationtables: PByteArray;
+{$IFDEF HEXEN}
+  tinttable: PByteArray;
+{$ENDIF}
   dc_translation: PByteArray;
 
   viewwidth: integer;
@@ -110,6 +126,10 @@ var
 
   viewwindowx: integer;
   viewwindowy: integer;
+{$IFDEF HEXEN}
+
+  borderneedsrefresh: boolean = false;
+{$ENDIF}
 
 //
 // All drawing to the view buffer is accomplished in this file.
@@ -156,26 +176,50 @@ type
 
 var
   colorregions: array[0..Ord(CR_LIMIT) - 1] of PByteArray;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 {$IFDEF OPENGL}
   diskbusy_height: integer = 0;
 {$ENDIF}
+{$ENDIF}
 
+{$IFDEF STRIFE}
 var
   xlatab: PByteArray;
 
+{$ENDIF}
 implementation
 
 uses
   am_map,
   m_argv,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  r_hires,
+{$ENDIF}
   w_wad,
   z_zone,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  sb_bar,
+{$ELSE}
   st_stuff,
+{$ENDIF}
   i_system,
+{$IF DEFINED(DOOM)}
 {$IFDEF OPENGL}
   gl_render,
 {$ELSE}
   r_hires,
+{$ENDIF}
+  r_main,
+{$ELSEIF DEFINED(STRIFE)}
+{$IFDEF OPENGL}
+  gl_render,
+{$ELSE}
+  r_hires,
+{$ENDIF}
+{$ELSE}
+{$IFDEF OPENGL}
+  gl_render,
+{$ENDIF}
 {$ENDIF}
 // State.
   doomstat,
@@ -193,12 +237,59 @@ uses
 procedure R_InitTranslationTables;
 var
   i, j: integer;
+{$IFDEF HEXEN}
+  transLump: PByteArray;
+  trlmp: integer;
+  idx: integer;
+{$ENDIF}
   lump: integer;
   lump2: integer;
+{$IFDEF STRIFE}
   col1, col2: byte;
+{$ENDIF}
 begin
+{$IF DEFINED(HEXEN)}
+  tinttable := W_CacheLumpName('TINTTAB', PU_STATIC);
+{$ELSEIF DEFINED(STRIFE)}
   xlatab := W_CacheLumpName('XLATAB', PU_STATIC);
+{$ELSE}
+  translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
+  translationtables := PByteArray((integer(translationtables) + 255 ) and not 255);
+{$ENDIF}
 
+{$IF DEFINED(HERETIC)}
+  // translate just the 16 green colors
+  for i := 0 to 255 do
+    if (i >= 255) and (i <= 240) then
+    begin
+      // map green ramp to gray, brown, red
+      translationtables[i] := 114 + (i - 225);  // yellow
+      translationtables[i + 256] := 145 + (i - 225);  // red
+      translationtables[i + 512] := 190 + (i - 225);  // blue
+    end
+    else
+    begin
+      // Keep all other colors as is.
+      translationtables[i] := i;
+      translationtables[i + 256] := i;
+      translationtables[i + 512] := i;
+    end;
+{$ELSEIF DEFINED(HEXEN)}
+  translationtables := Z_Malloc(256 * 3 * (MAXPLAYERS - 1), PU_STATIC, nil);
+
+  trlmp := W_GetNumForName('TRANTBL0');
+  idx := trlmp;
+  for i := 0 to 3 * (MAXPLAYERS - 1) - 1 do
+  begin
+    transLump := W_CacheLumpNum(idx, PU_STATIC);
+    memcpy(@translationtables[i * 256], transLump, 256);
+    Z_Free(transLump);
+    // JVAL: Circle thru translation tables
+    inc(idx);
+    if Pos('TRANTBL', strupper(char8tostring(W_GetNameForNum(idx)))) = 0 then
+      idx := trlmp;
+  end;
+{$ELSEIF DEFINED(STRIFE)}
   translationtables := Z_Malloc(256 * 8, PU_STATIC, nil);
 
   col1 := $FA;
@@ -293,6 +384,24 @@ begin
     inc(col1);
     inc(col2);
   end;
+{$ELSE}
+  // translate just the 16 green colors
+  for i := 0 to 255 do
+    if (i >= $70) and (i <= $7f) then
+    begin
+      // map green ramp to gray, brown, red
+      translationtables[i] := $60 + (i and $f);
+      translationtables[i + 256] := $40 + (i and $f);
+      translationtables[i + 512] := $20 + (i and $f);
+    end
+    else
+    begin
+      // Keep all other colors as is.
+      translationtables[i] := i;
+      translationtables[i + 256] := i;
+      translationtables[i + 512] := i;
+    end;
+{$ENDIF}
 
   // JVAL: Initialize ColorRegions
   lump := W_CheckNumForName('CR_START');
@@ -351,9 +460,17 @@ begin
   else
   begin
   {$IFDEF OPENGL}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    viewwindowy := (trunc(SB_Y * SCREENHEIGHT / 200) - height) div 2;
+{$ELSE}
     viewwindowy := (trunc(ST_Y * SCREENHEIGHT / 200) - height) div 2;
+{$ENDIF}
   {$ELSE}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    viewwindowy := (V_PreserveY(SB_Y) - height) div 2;
+{$ELSE}
     viewwindowy := (V_PreserveY(ST_Y) - height) div 2;
+{$ENDIF}
   {$ENDIF}
   end;
 
@@ -393,6 +510,20 @@ end;
 //
 //==============================================================================
 procedure R_FillBackScreen;
+{$IFDEF HEXEN}
+{$IFNDEF OPENGL}
+var
+  src: PByteArray;
+  dest: PByteArray;
+  x: integer;
+  y: integer;
+  patch: Ppatch_t;
+  tviewwindowx: integer;
+  tviewwindowy: integer;
+  tviewheight: integer;
+  tscaledviewwidth: integer;
+{$ENDIF}
+{$ELSE}
 var
 {$IFNDEF OPENGL}
   src: PByteArray;
@@ -406,23 +537,66 @@ var
   tscaledviewwidth: integer;
 {$ENDIF}
   name: string;
+{$ENDIF}
 begin
+{$IF DEFINED(DOOM)}
+  {$IFDEF OPENGL}
+  if not statusbarstretch then
+  {$ENDIF}
+    if scaledviewwidth = SCREENWIDTH then
+      exit;
+{$ELSEIF DEFINED(STRIFE)}
+  if scaledviewwidth = SCREENWIDTH then
+    exit;
+{$ELSE}
+  needsbackscreen := false;
+{$ENDIF}
+
+{$IF DEFINED(HERETIC)}
   if scaledviewwidth = SCREENWIDTH then
     exit;
 
+  if gamemode = shareware then
+    name := 'FLOOR04'   // Shareware border patch.
+  else
+    name := 'FLAT513';  // Register border patch.
+{$ELSEIF DEFINED(HEXEN)}
+  if scaledviewwidth = SCREENWIDTH then
+    exit;
+{$ELSEIF DEFINED(STRIFE)}
   name := 'F_PAVE01'; // Border patch
+{$ELSE}
+  if gamemode = commercial then
+    name := 'GRNROCK'   // DOOM II border patch.
+  else
+    name := 'FLOOR7_2'; // DOOM border patch.
+{$ENDIF}
 
 {$IFDEF OPENGL}
+{$IFDEF HEXEN}
+  gld_DrawBackground('F_022');
+{$ELSE}
   gld_DrawBackground(name);
+{$ENDIF}
+{$ELSE}
+{$IF DEFINED(HERETIC)}
+  src := W_CacheLumpName(name, PU_CACHE);
+{$ELSEIF DEFINED(HEXEN)}
+  src := W_CacheLumpName('F_022', PU_CACHE);
 {$ELSE}
 
   needsbackscreen := false;
 
   src := W_CacheLumpName(name, PU_STATIC);
+{$ENDIF}
 
   dest := screens[SCN_TMP];
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  for y := 0 to 200 - SB_HEIGHT do
+{$ELSE}
   for y := 0 to 200 - ST_HEIGHT do
+{$ENDIF}
   begin
     for x := 0 to 320 div 64 - 1 do
     begin
@@ -436,70 +610,197 @@ begin
     end;
   end;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   Z_ChangeTag(src, PU_CACHE);
 
+{$ENDIF}
   tviewwindowx := viewwindowx * 320 div SCREENWIDTH + 1;
   tviewwindowy := viewwindowy * 200 div SCREENHEIGHT + 1;
   tviewheight := viewheight * 200 div SCREENHEIGHT - 2;
   tscaledviewwidth := scaledviewwidth * 320 div SCREENWIDTH - 2;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  patch := W_CacheLumpName('bordt', PU_STATIC);
+{$ELSE}
   patch := W_CacheLumpName('brdr_t', PU_STATIC);
+{$ENDIF}
   x := 0;
   while x < tscaledviewwidth do
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    V_DrawPatch(tviewwindowx + x, tviewwindowy - 4, SCN_TMP, patch, false);
+    x := x + 16;
+{$ELSE}
     V_DrawPatch(tviewwindowx + x, tviewwindowy - 8, SCN_TMP, patch, false);
     x := x + 8;
+{$ENDIF}
   end;
   Z_ChangeTag(patch, PU_CACHE);
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  patch := W_CacheLumpName('bordb', PU_STATIC);
+{$ELSE}
   patch := W_CacheLumpName('brdr_b', PU_STATIC);
+{$ENDIF}
   x := 0;
   while x < tscaledviewwidth do
   begin
     V_DrawPatch(tviewwindowx + x, tviewwindowy + tviewheight, SCN_TMP, patch, false);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    x := x + 16;
+{$ELSE}
     x := x + 8;
+{$ENDIF}
   end;
   Z_ChangeTag(patch, PU_CACHE);
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  patch := W_CacheLumpName('bordl', PU_STATIC);
+{$ELSE}
   patch := W_CacheLumpName('brdr_l', PU_STATIC);
+{$ENDIF}
   y := 0;
   while y < tviewheight do
   begin
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    V_DrawPatch(tviewwindowx - 4, tviewwindowy + y, SCN_TMP, patch, false);
+    y := y + 16;
+{$ELSE}
     V_DrawPatch(tviewwindowx - 8, tviewwindowy + y, SCN_TMP, patch, false);
     y := y + 8;
+{$ENDIF}
   end;
   Z_ChangeTag(patch, PU_CACHE);
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  patch := W_CacheLumpName('bordr', PU_STATIC);
+{$ELSE}
   patch := W_CacheLumpName('brdr_r', PU_STATIC);
+{$ENDIF}
   y := 0;
   while y < tviewheight do
   begin
     V_DrawPatch(tviewwindowx + tscaledviewwidth, tviewwindowy + y, SCN_TMP, patch, false);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    y := y + 16;
+{$ELSE}
     y := y + 8;
+{$ENDIF}
   end;
   Z_ChangeTag(patch, PU_CACHE);
 
   // Draw beveled edge.
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  V_DrawPatch(tviewwindowx - 4, tviewwindowy - 4, SCN_TMP,
+    'bordtl', false);
+{$ELSE}
   V_DrawPatch(tviewwindowx - 8, tviewwindowy - 8, SCN_TMP,
     'brdr_tl', false);
+{$ENDIF}
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  V_DrawPatch(tviewwindowx + tscaledviewwidth, tviewwindowy - 4, SCN_TMP,
+    'bordtr', false);
+{$ELSE}
   V_DrawPatch(tviewwindowx + tscaledviewwidth, tviewwindowy - 8, SCN_TMP,
     'brdr_tr', false);
+{$ENDIF}
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  V_DrawPatch(tviewwindowx - 4, tviewwindowy + tviewheight, SCN_TMP,
+    'bordbl', false);
+{$ELSE}
   V_DrawPatch(tviewwindowx - 8, tviewwindowy + tviewheight, SCN_TMP,
     'brdr_bl', false);
+{$ENDIF}
 
   V_DrawPatch(tviewwindowx + tscaledviewwidth, tviewwindowy + tviewheight, SCN_TMP,
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    'bordbr', false);
+{$ELSE}
     'brdr_br', false);
+{$ENDIF}
 
   V_RemoveTransparency(SCN_TMP, 0, -1);
   V_CopyRect(0, 0, SCN_TMP, V_GetScreenWidth(SCN_TMP), V_GetScreenHeight(SCN_TMP), 0, 0, SCN_BG, true);
 
   R_ScreenBlanc(SCN_BG);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  x := V_PreserveY(SB_Y) * SCREENWIDTH;
+  R_VideoBlanc(SCN_BG, x, (SCREENHEIGHT - V_PreserveY(SB_Y)) * SCREENWIDTH);
+{$ELSE}
   x := V_PreserveY(ST_Y) * V_GetScreenWidth(SCN_BG); //SCREENWIDTH;
   R_VideoBlanc(SCN_BG, x, (V_GetScreenHeight(SCN_BG) - V_PreserveY(ST_Y)) * V_GetScreenWidth(SCN_BG));
 {$ENDIF}
+{$ENDIF}
 end;
+{$IFDEF DOOM}
+
+{$IFNDEF OPENGL}
+var
+  oldstatusbarfillblocks: integer = -1;
+
+//==============================================================================
+//
+// R_FillBackStatusbar
+//
+//==============================================================================
+procedure R_FillBackStatusbar;
+var
+  src: PByteArray;
+  dest: PByteArray;
+  x: integer;
+  y: integer;
+  patch: Ppatch_t;
+  name: string;
+begin
+  if (oldstatusbarfillblocks <> 10) <> (screenblocks <> 10) then
+  begin
+    oldstatusbarfillblocks := screenblocks;
+    needsstatusbarback := true;
+  end;
+
+  if not needsstatusbarback then
+    exit;
+
+  needsstatusbarback := false;
+
+  if gamemode = commercial then
+    name := 'GRNROCK'   // DOOM II border patch.
+  else
+    name := 'FLOOR7_2'; // DOOM border patch.
+
+  src := W_CacheLumpName(name, PU_STATIC);
+
+  dest := screens[SCN_ST2];
+
+  for y := 200 - ST_HEIGHT + 1 to 200 do
+  begin
+    for x := 0 to 320 div 64 - 1 do
+    begin
+      memcpy(dest, PByteArray(integer(src) + _SHL(y and 63, 6)), 64);
+      dest := @dest[64];
+    end;
+  end;
+
+  Z_ChangeTag(src, PU_CACHE);
+
+  if screenblocks = 10 then
+  begin
+    patch := W_CacheLumpName('brdr_b', PU_STATIC);
+    x := 0;
+    while x < 320 do
+    begin
+      V_DrawPatch(x, patch.topoffset, SCN_ST2, patch, false);
+      x := x + 8;
+    end;
+    Z_ChangeTag(patch, PU_CACHE);
+  end;
+
+  V_RemoveTransparency(SCN_ST2, 0, -1);
+end;
+{$ENDIF}
+{$ENDIF}
 
 //==============================================================================
 // R_VideoErase
@@ -601,13 +902,25 @@ var
 //==============================================================================
 procedure R_DrawDiskBusy;
 begin
+{$IFDEF DOOM}
+  {$IFDEF OPENGL}
+  diskbusy_height := 0;
+  {$ENDIF}
+{$ENDIF}
   if not displaydiskbusyicon then
     exit;
 
 // Draw disk busy patch
   if disklump = -2 then
   begin
+{$IFDEF STRIFE}
     disklump := W_CheckNumForName('STDISK');
+{$ELSE}
+    if M_CheckParmCDROM then
+      disklump := W_CheckNumForName('STCDROM');
+    if disklump < 0 then
+      disklump := W_CheckNumForName('STDISK');
+{$ENDIF}
     if disklump >= 0 then
       diskpatch := W_CacheLumpNum(disklump, PU_STATIC)
     else
@@ -620,9 +933,16 @@ begin
   if diskpatch <> nil then
     V_DrawPatch(318 - diskpatch.width, 2, SCN_FG,
       diskpatch, true);
+{$IF DEFINED(DOOM)}
+  {$IFDEF OPENGL}
+  if diskpatch <> nil then
+    diskbusy_height := diskpatch.height + 3;
+  {$ENDIF}
+{$ELSEIF DEFINED(STRIFE)}
   {$IFDEF OPENGL}
   diskbusy_height := diskpatch.height + 3;
   {$ENDIF}
+{$ENDIF}
 end;
 
 end.
