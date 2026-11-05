@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -103,11 +102,26 @@ procedure R_DoDrawPlane(const pl: Pvisplane_t); // JVAL: 3d Floors
 
 //==============================================================================
 //
+{$IFDEF HEXEN}
+// R_CalcPlaneOffsets
+//
+//==============================================================================
+procedure R_CalcPlaneOffsets(const pl: Pvisplane_t);
+
+//==============================================================================
+//
+{$ENDIF}
 // R_FindPlane
 //
 //==============================================================================
 function R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
+{$IF DEFINED(HERETIC)}
   flags: LongWord; const floor_or_ceiling: boolean;
+{$ELSEIF DEFINED(HEXEN)}
+  special: integer; flags: LongWord; const floor_or_ceiling: boolean;
+{$ELSE}
+  xoffs, yoffs: fixed_t; flags: LongWord; const floor_or_ceiling: boolean;
+{$ENDIF}
   angle: angle_t; anglex, angley: fixed_t;
   {$IFNDEF OPENGL}slope: Pvisslope_t; {$ENDIF} slopeSID: integer = -1): Pvisplane_t;
 
@@ -172,6 +186,7 @@ var
   visplanes: array[0..MAXVISPLANES - 1] of visplane_t;
   lastvisplane: integer;
 
+{$IF DEFINED(HERETIC)}
 {$IFNDEF OPENGL}
 // JVAL: Slopes - Move to interface
 var
@@ -185,6 +200,41 @@ var
 
 // Speed up check
   checkfake3dspanpresent: Boolean;
+{$ENDIF}
+{$ELSEIF DEFINED(HEXEN)}
+// JVAL: Slopes - Move to interface
+var
+  // JVAL: for scrolling textures
+  ds_xoffset: fixed_t;    // JVAL SOS
+  ds_yoffset: fixed_t;
+
+{$IFNDEF OPENGL}
+//
+// texture mapping
+//
+  planezlight: PBytePArray;
+  planeheight: fixed_t;
+  planeheightz: fixed_t;
+
+// Speed up check
+  checkfake3dspanpresent: Boolean;
+{$ENDIF}
+{$ELSE}
+{$IFNDEF OPENGL}
+// JVAL: Slopes - Move to interface
+var
+  xoffs, yoffs: fixed_t;
+
+//
+// texture mapping
+//
+  planezlight: PBytePArray;
+  planeheight: fixed_t;
+  planeheightz: fixed_t;
+
+// Speed up check
+  checkfake3dspanpresent: Boolean;
+{$ENDIF}
 {$ENDIF}
 
 {$IFNDEF OPENGL}
@@ -204,15 +254,41 @@ procedure R_InitializeVisplanes;
 procedure R_ClearVisPlanes;
 {$ENDIF}
 
+{$IFDEF DOOM}
+const
+  PL_SKYFLAT = $80000000;
+
+{$ENDIF}
 implementation
 
 uses
+{$IFDEF HEXEN}
+  doomstat,
+  d_player,
+{$ENDIF}
   i_system,
+{$IFDEF HEXEN}
+  p_tick,
+{$ENDIF}
   r_sky,
   r_main,
+{$IFDEF HEXEN}
+  r_things,
+{$ENDIF}
   r_draw,
+{$IFDEF DOOM}
+{$IFDEF DEBUG}
+  r_debug,
+{$ENDIF}
+{$ENDIF}
 {$IFNDEF OPENGL}
+{$IF DEFINED(DOOM)}
+  p_setup,
   r_batchsky,
+{$ELSEIF DEFINED(HEXEN)}
+{$ELSE}
+  r_batchsky,
+{$ENDIF}
   r_ripple,
   r_span,
   r_span32,
@@ -226,7 +302,12 @@ uses
   r_patch,
   r_zbuffer,
 {$ENDIF}
+{$IFDEF HEXEN}
+  z_zone,
+  w_wad;
+{$ELSE}
   z_zone;
+{$ENDIF}
 
 //
 // spanstart holds the start of a plane span
@@ -258,6 +339,10 @@ end;
 // Uses global vars:
 //  planeheight
 //  ds_source
+{$IFDEF STRIFE}
+//  basexscale
+//  baseyscale
+{$ENDIF}
 //  viewx
 //  viewy
 //
@@ -309,8 +394,16 @@ begin
     ds_ystep := cachedystep[y];
   end;
 
+{$IF DEFINED(HERETIC)}
   ds_xfrac :=  viewx + FixedMul(viewcos, distance) + (x1 - centerx) * ds_xstep;
   ds_yfrac := -viewy - FixedMul(viewsin, distance) + (x1 - centerx) * ds_ystep;
+{$ELSEIF DEFINED(HEXEN)}
+  ds_xfrac :=  viewx + FixedMul(viewcos, distance) + ds_xoffset + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -viewy - FixedMul(viewsin, distance) + ds_yoffset + (x1 - centerx) * ds_ystep;
+{$ELSE}
+  ds_xfrac :=  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -viewy + yoffs - FixedMul(viewsin, distance) + (x1 - centerx) * ds_ystep;
+{$ENDIF}
 
   if fixedcolormap <> nil then
   begin
@@ -409,8 +502,16 @@ begin
   ds_xstep := round(pviewsin * slope);
   ds_ystep := round(pviewcos * slope);
 
+{$IF DEFINED(HERETIC)}
   ds_xfrac :=  ds_tviewx + round(pviewcos * distance) + (x1 - centerx) * ds_xstep;
   ds_yfrac := -ds_tviewy - round(pviewsin * distance) + (x1 - centerx) * ds_ystep;
+{$ELSEIF DEFINED(HEXEN)}
+  ds_xfrac :=  ds_tviewx + round(pviewcos * distance) + ds_xoffset + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -ds_tviewy - round(pviewsin * distance) + ds_yoffset + (x1 - centerx) * ds_ystep;
+{$ELSE}
+  ds_xfrac :=  ds_tviewx + xoffs + round(pviewcos * distance) + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -ds_tviewy + yoffs - round(pviewsin * distance) + (x1 - centerx) * ds_ystep;
+{$ENDIF}
 
   if fixedcolormap <> nil then
   begin
@@ -577,6 +678,16 @@ begin
   end;
 
   result := @visplanes[lastvisplane];
+{$IFDEF DOOM}
+  {$IFDEF DEBUG}
+  {$IFNDEF OPENGL}
+  result.minx := 0;
+  result.maxx := viewwidth - 1;
+  R_DebugCheckVisPlane(result);
+  {$ENDIF}
+  {$ENDIF}
+
+{$ENDIF}
   inc(lastvisplane);
 end;
 
@@ -586,15 +697,40 @@ end;
 //
 //==============================================================================
 function R_VisplaneHash(height: fixed_t; picnum: integer; lightlevel: integer;
+{$IF DEFINED(HERETIC)}
   angle: angle_t; anglex, angley: fixed_t;
+{$ELSEIF DEFINED(HEXEN)}
+  special: integer; angle: angle_t; anglex, angley: fixed_t;
+{$ELSE}
+  xoffs, yoffs: fixed_t; angle: angle_t; anglex, angley: fixed_t;
+{$ENDIF}
   flags: LongWord; slopeSID: integer): LongWord;
 begin
+{$IF DEFINED(HERETIC)}
   result := (((LongWord(flags) * 3 +
                LongWord(lightlevel)) * 19 +
                LongWord(height)) * 233 +
                LongWord(picnum)) * 3 +
                LongWord(height div FRACUNIT) +
                LongWord(height and (FRACUNIT - 1));
+{$ELSEIF DEFINED(HEXEN)}
+  result := ((((LongWord(flags) * 3 +
+                LongWord(special)) * 1296727 +
+                LongWord(lightlevel)) * 1 +
+                LongWord(height)) * 233 +
+                LongWord(picnum)) * 3 +
+                LongWord(height div FRACUNIT) +
+                LongWord(height and (FRACUNIT - 1));
+{$ELSE}
+  result := (((((LongWord(flags) * 3 +
+                 LongWord(xoffs)) * 1296727 +
+                 LongWord(yoffs)) * 1297139 +
+                 LongWord(lightlevel)) * 1 +
+                 LongWord(height)) * 233 +
+                 LongWord(picnum)) * 3 +
+                 LongWord(height div FRACUNIT) +
+                 LongWord(height and (FRACUNIT - 1));
+{$ENDIF}
   if slopeSID <> -1 then
     result := result + LongWord(slopeSID + 1) * 7;  // JVAL: Slopes
   if angle <> 0 then
@@ -611,7 +747,13 @@ end;
 //
 //==============================================================================
 function R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
+{$IF DEFINED(HERETIC)}
   flags: LongWord; const floor_or_ceiling: boolean;
+{$ELSEIF DEFINED(HEXEN)}
+  special: integer; flags: LongWord; const floor_or_ceiling: boolean;
+{$ELSE}
+  xoffs, yoffs: fixed_t; flags: LongWord; const floor_or_ceiling: boolean;
+{$ENDIF}
   angle: angle_t; anglex, angley: fixed_t;
   {$IFNDEF OPENGL}slope: Pvisslope_t; {$ENDIF} slopeSID: integer = -1): Pvisplane_t;
 var
@@ -619,21 +761,48 @@ var
   hash: LongWord;
   p: LongWord;
 begin
+{$IF DEFINED(DOOM)}
+  if (picnum = skyflatnum) or (picnum and PL_SKYFLAT <> 0) then
+{$ELSEIF DEFINED(HEXEN)}
+  if special < 150 then
+  begin // Don't let low specials affect search
+    special := 0;
+  end;
+
   if picnum = skyflatnum then
+{$ELSE}
+  if picnum = skyflatnum then
+{$ENDIF}
   begin
     if floor_or_ceiling then
       height := 1  // all skies map together
     else
       height := 0; // all skies map together
     lightlevel := 0;
+{$IF DEFINED(DOOM)}
+    xoffs := 0;
+    yoffs := 0;
+    flags := flags and not SRF_SLOPED; // JVAL: Sloped surface do not have sky
+{$ELSEIF DEFINED(STRIFE)}
+    xoffs := 0;
+    yoffs := 0;
     flags := flags and not SRF_SLOPED; // JVAL: Sloped surface do not have sky (why not ?) -> Just copy the sky code to R_DoDrawSlope from R_DoDrawPlane
+{$ELSE}
+    flags := flags and not SRF_SLOPED; // JVAL: Sloped surface do not have sky (why not ?) -> Just copy the sky code to R_DoDrawSlope from R_DoDrawPlane
+{$ENDIF}
     slopeSID := -1; // JVAL: Slopes
     angle := 0; // JVAL: 20200221 - Texture angle
     anglex := 0; // JVAL: 20201230 - Texture angle
     angley := 0; // JVAL: 20201230 - Texture angle
   end;
 
+{$IF DEFINED(HERETIC)}
   hash := R_VisplaneHash(height, picnum, lightlevel, angle, anglex, angley, flags, slopeSID);
+{$ELSEIF DEFINED(HEXEN)}
+  hash := R_VisplaneHash(height, picnum, lightlevel, special, angle, anglex, angley, flags, slopeSID);
+{$ELSE}
+  hash := R_VisplaneHash(height, picnum, lightlevel, xoffs, yoffs, angle, anglex, angley, flags, slopeSID);
+{$ENDIF}
   check := hash;
   while check < hash + VISPLANEHASHOVER do
   begin
@@ -649,6 +818,13 @@ begin
       result.minx := viewwidth;
       result.maxx := -1;
       {$ENDIF}
+{$IF DEFINED(HERETIC)}
+{$ELSEIF DEFINED(HEXEN)}
+      result.special := special;
+{$ELSE}
+      result.xoffs := xoffs;
+      result.yoffs := yoffs;
+{$ENDIF}
       result.renderflags := flags;
       result.slopeSID := slopeSID;  // JVAL: Slopes
       result.angle := angle;    // JVAL: 20200221 - Texture angle
@@ -668,6 +844,13 @@ begin
     result := @visplanes[p];
     if (height = result.height) and
        (picnum = result.picnum) and
+{$IF DEFINED(HERETIC)}
+{$ELSEIF DEFINED(HEXEN)}
+       (special = result.special) and
+{$ELSE}
+       (xoffs = result.xoffs) and
+       (yoffs = result.yoffs) and
+{$ENDIF}
        (lightlevel = result.lightlevel) and
        (slopeSID = result.slopeSID) and // JVAL: Slopes
        (angle = result.angle) and // JVAL: 20200225 - Texture angle
@@ -684,6 +867,13 @@ begin
   begin
     if (height = result.height) and
        (picnum = result.picnum) and
+{$IF DEFINED(HERETIC)}
+{$ELSEIF DEFINED(HEXEN)}
+       (special = result.special) and
+{$ELSE}
+       (xoffs = result.xoffs) and
+       (yoffs = result.yoffs) and
+{$ENDIF}
        (lightlevel = result.lightlevel) and
        (slopeSID = result.slopeSID) and // JVAL: Slopes
        (angle = result.angle) and // JVAL: 20200221 - Texture angle
@@ -712,6 +902,13 @@ begin
   result.minx := viewwidth;
   result.maxx := -1;
   {$ENDIF}
+{$IF DEFINED(HERETIC)}
+{$ELSEIF DEFINED(HEXEN)}
+  result.special := special;
+{$ELSE}
+  result.xoffs := xoffs;
+  result.yoffs := yoffs;
+{$ENDIF}
   result.renderflags := flags;
   result.slopeSID := slopeSID;  // JVAL: Slopes
   result.angle := angle;  // JVAL: 20200221 - Texture angle
@@ -753,6 +950,13 @@ begin
   pll.height := pl.height;
   pll.picnum := pl.picnum;
   pll.lightlevel := pl.lightlevel;
+{$IF DEFINED(HERETIC)}
+{$ELSEIF DEFINED(HEXEN)}
+  pll.special := pl.special;
+{$ELSE}
+  pll.xoffs := pl.xoffs;
+  pll.yoffs := pl.yoffs;
+{$ENDIF}
   pll.renderflags := pl.renderflags;
   pll.slopeSID := pl.slopeSID;  // JVAL: Slopes
   pll.angle := pl.angle; // JVAL: 20200221 - Texture angle
@@ -766,7 +970,13 @@ begin
 
   R_NewVisPlane;
   visplanehash[R_VisplaneHash(pl.height, pl.picnum, pl.lightlevel,
+{$IF DEFINED(HERETIC)}
     pl.angle, pl.anglex, pl.angley, pl.renderflags, pl.slopeSID)] := lastvisplane;
+{$ELSEIF DEFINED(HEXEN)}
+    pl.special, pl.angle, pl.anglex, pl.angley, pl.renderflags, pl.slopeSID)] := lastvisplane;
+{$ELSE}
+    pl.xoffs, pl.yoffs, pl.angle, pl.anglex, pl.angley, pl.renderflags, pl.slopeSID)] := lastvisplane;
+{$ENDIF}
 
   pl.minx := start;
   pl.maxx := stop;
@@ -902,6 +1112,93 @@ begin
 end;
 {$ENDIF}
 
+{$IFDEF HEXEN}
+//==============================================================================
+//
+// R_CalcPlaneOffsets
+//
+//==============================================================================
+procedure R_CalcPlaneOffsets(const pl: Pvisplane_t);
+var
+  scrollOffset: integer;
+begin
+  if enableflatscrolling then
+  begin
+    // Handle scrolling flats
+    case pl.special of
+      201, 202, 203: // Scroll_North_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := 0;
+          ds_yoffset := ((scrollOffset * _SHL(1, pl.special - 201)) and 63) * FRACUNIT;
+        end;
+      204, 205, 206: // Scroll_East_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 204)) and 63) * FRACUNIT;
+          ds_yoffset := 0;
+        end;
+      207, 208, 209: // Scroll_South_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := 0;
+          ds_yoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 207)) and 63) * FRACUNIT;
+        end;
+      210, 211, 212: // Scroll_West_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 210)) and 63) * FRACUNIT;
+          ds_yoffset := 0;
+        end;
+      213, 214, 215: // Scroll_NorthWest_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 213)) and 63) * FRACUNIT;
+          ds_yoffset := ds_xoffset;
+        end;
+      216, 217, 218: // Scroll_NorthEast_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 216)) and 63) * FRACUNIT;
+          ds_yoffset := ((scrollOffset * _SHL(1, pl.special - 216)) and 63) * FRACUNIT;
+        end;
+      219, 220, 221: // Scroll_SouthEast_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 219)) and 63) * FRACUNIT;
+          ds_yoffset := ds_xoffset;
+        end;
+      222, 223, 224: // Scroll_SouthWest_xxx
+        begin
+          scrollOffset := (leveltime div 2) and 63;
+          ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 222)) and 63) * FRACUNIT;
+          ds_yoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 222)) and 63) * FRACUNIT;
+        end;
+      else
+        begin
+          ds_xoffset := 0;
+          ds_yoffset := 0;
+        end;
+    end;
+  end
+  else
+  begin
+    ds_xoffset := 0;
+    ds_yoffset := 0;
+  end;
+{$IFDEF OPENGL}
+  pl.xoffs := ds_xoffset;
+  pl.yoffs := ds_yoffset;
+{$ENDIF}
+end;
+
+{$IFNDEF OPENGL}
+// Static buffer for double sky
+var
+  tempsource: array[0..MAXTEXTUREHEIGHT] of LongWord;
+{$ENDIF}
+
+{$ENDIF}
 //
 // R_DrawPlanes
 // At the end of each frame.
@@ -936,24 +1233,57 @@ end;
 //==============================================================================
 procedure R_DoDrawPlane(const pl: Pvisplane_t); // JVAL: 3d Floors
 var
+{$IFDEF HEXEN}
+  k, sksize: integer;
+{$ENDIF}
   light: integer;
   x: integer;
   stop: integer;
   angle: integer;
+{$IF DEFINED(DOOM)}
+  customskyflat: boolean;
+  skytexture1: integer;
+  l: Pline_t;
+  s: Pside_t;
+  deltaangle: angle_t;
+  flip: boolean;
+{$ELSEIF DEFINED(HEXEN)}
+  offset, offset2: LongWord;
+  skytex: integer;
+  destb: PByte;
+  destl: PLongWord;
+{$ENDIF}
 begin
   if pl.minx > pl.maxx then
     exit; // JVAL: 3d Floors
 
   // sky flat
+{$IFDEF DOOM}
+  customskyflat := pl.picnum and PL_SKYFLAT <> 0;
+  if (pl.picnum = skyflatnum) or customskyflat then
+{$ELSE}
   if pl.picnum = skyflatnum then
+{$ENDIF}
   begin
+{$IFDEF HEXEN}
+    if videomode = vm8bit then
+      dc_iscale := (FRACUNIT * 200 * 61 div 50) div viewheight
+    else
+      dc_iscale := (FRACUNIT * 256 * 61 div 50) div viewheight;
+{$ELSE}
     R_DisableFixedColumn;
+{$ENDIF}
 
+{$IFDEF HEXEN}
+    dc_texturemid := skytexturemid;
+{$ELSE}
     if zaxisshift and (viewangleoffset = 0) then
       dc_iscale := FRACUNIT * 93 div viewheight // JVAL adjust z axis shift also
     else
       dc_iscale := FRACUNIT * 200 div viewheight;
+{$ENDIF}
 
+{$IF DEFINED(HERETIC)}
     dc_texturemid := skytexturemid;
     if optimizedcolumnrendering then
     begin
@@ -1014,27 +1344,233 @@ begin
     end
     else
     begin
+{$ELSEIF DEFINED(HEXEN)}
+    if DoubleSky then
+    begin // Render 2 layers, sky 1 in front
+      R_DisableFixedColumn;
+      offset := Sky1ColumnOffset * 64;
+      offset2 := Sky2ColumnOffset * 64;
+{$ELSEIF DEFINED(STRIFE)}
+    dc_texturemid := skytexturemid;
+    if optimizedcolumnrendering then
+    begin
+      if videomode = vm32bit then
+      begin
+        for x := pl.minx to pl.maxx do
+        begin
+          dc_yl := pl.top[x];
+          if dc_yl < viewheight then
+          begin
+            dc_yh := pl.bottom[x];
+
+            if dc_yl <= dc_yh then
+            begin
+              angle := (viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
+              if detaillevel = DL_NORMAL then
+              begin
+                dc_texturemod := 0;
+                dc_mod := 0;
+              end
+              else
+              begin
+                dc_texturemod := (((viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+                dc_mod := dc_texturemod;
+              end;
+              dc_x := x;
+              R_ReadDC32Cache(skytexture, angle);
+              // JVAL
+              //  Store columns to buffer
+              R_StoreSkyColumn32;
+            end;
+          end;
+        end;
+        R_FlashSkyColumns32;
+      end
+      else
+      begin
+        for x := pl.minx to pl.maxx do
+        begin
+          dc_yl := pl.top[x];
+          if dc_yl < viewheight then
+          begin
+            dc_yh := pl.bottom[x];
+
+            if dc_yl <= dc_yh then
+            begin
+              angle := (viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
+              dc_x := x;
+              dc_source := R_GetColumn(skytexture, angle);
+              // JVAL
+              //  Store columns to buffer
+              R_StoreSkyColumn8;
+            end;
+          end;
+        end;
+        R_FlashSkyColumns8;
+      end;
+    end
+    else
+    begin
+{$ELSE}
+    if customskyflat then
+    begin
+      // Sky Linedef
+      l := @lines[pl.picnum and not PL_SKYFLAT];
+
+      // Sky transferred from first sidedef
+      s := @sides[l.sidenum[0]];
+
+      // Texture comes from upper texture of reference sidedef
+      skytexture1 := texturetranslation[s.toptexture];
+
+      // Horizontal offset is turned into an angle offset,
+      // to allow sky rotation as well as careful positioning.
+      // However, the offset is scaled very small, so that it
+      // allows a long-period of sky rotation.
+      deltaangle := s.textureoffset;
+
+      // Vertical offset allows careful sky positioning.
+      dc_texturemid := skytexturemid + s.rowoffset;// - 28 * FRACUNIT;
+
+      flip := l.special = 271;
+    end
+    else
+    begin
+      skytexture1 := skytexture;
+      dc_texturemid := skytexturemid;
+      deltaangle := 0;
+      flip := false;
+    end;
+
+    if optimizedcolumnrendering then
+    begin
+      if videomode = vm32bit then
+      begin
+        for x := pl.minx to pl.maxx do
+        begin
+          dc_yl := pl.top[x];
+          if dc_yl < viewheight then
+          begin
+            dc_yh := pl.bottom[x];
+
+            if dc_yl <= dc_yh then
+            begin
+              if flip then
+                angle := (ANGLE_MAX - deltaangle - viewangle - xtoviewangle[x]) div ANGLETOSKYUNIT
+              else
+                angle := (deltaangle + viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
+              if detaillevel = DL_NORMAL then
+              begin
+                dc_texturemod := 0;
+                dc_mod := 0;
+              end
+              else
+              begin
+                if flip then
+                  dc_texturemod := (((ANGLE_MAX - deltaangle - viewangle - xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT
+                else
+                  dc_texturemod := (((deltaangle + viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+                dc_mod := dc_texturemod;
+              end;
+              dc_x := x;
+              R_ReadDC32Cache(skytexture1, angle);
+              // JVAL
+              //  Store columns to buffer
+              R_StoreSkyColumn32;
+            end;
+          end;
+        end;
+        R_FlashSkyColumns32;
+      end
+      else
+      begin
+        for x := pl.minx to pl.maxx do
+        begin
+          dc_yl := pl.top[x];
+          if dc_yl < viewheight then
+          begin
+            dc_yh := pl.bottom[x];
+
+            if dc_yl <= dc_yh then
+            begin
+              if flip then
+                angle := (ANGLE_MAX - deltaangle - viewangle - xtoviewangle[x]) div ANGLETOSKYUNIT
+              else
+                angle := (deltaangle + viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
+              dc_x := x;
+              dc_source := R_GetColumn(skytexture1, angle);
+              // JVAL
+              //  Store columns to buffer
+              R_StoreSkyColumn8;
+            end;
+          end;
+        end;
+        R_FlashSkyColumns8;
+      end;
+    end
+    else
+    begin
+{$ENDIF}
       for x := pl.minx to pl.maxx do
       begin
         dc_yl := pl.top[x];
         if dc_yl < viewheight then
         begin
           dc_yh := pl.bottom[x];
+{$IFNDEF HEXEN}
 
+{$ENDIF}
           if dc_yl <= dc_yh then
           begin
+{$IF DEFINED(DOOM)}
+            if flip then
+              angle := (ANGLE_MAX - deltaangle - viewangle - xtoviewangle[x]) div ANGLETOSKYUNIT
+            else
+              angle := (deltaangle + viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
+            if detaillevel <= DL_NORMAL then
+{$ELSEIF DEFINED(HEXEN)}
+            angle := (viewangle + xtoviewangle[x] + offset) div ANGLETOSKYUNIT;
+            dc_texturemod := 0;
+            dc_mod := 0;
+            dc_x := x;
+            R_GetDCs(SkyTexture, angle);
+            if videomode = vm32bit then
+{$ELSE}
             angle := (viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
             if detaillevel <= DL_NORMAL then
+{$ENDIF}
             begin
+{$IFDEF HEXEN}
+              sksize := dc_columnsize;
+              memcpy(@tempsource, dc_source32, (dc_columnsize + 1) * 4)
+{$ELSE}
               dc_texturemod := 0;
               dc_mod := 0;
+{$ENDIF}
             end
             else
             begin
+{$IF DEFINED(DOOM)}
+              if flip then
+                dc_texturemod := (((ANGLE_MAX - deltaangle - deltaangle - viewangle - xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT
+              else
+                dc_texturemod := (((deltaangle + deltaangle + viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+{$ELSEIF DEFINED(HEXEN)}
+              sksize := 200;
+              memcpy(@tempsource, dc_source, 200);
+            end;
+
+            angle := (viewangle + xtoviewangle[x] + offset2) div ANGLETOSKYUNIT;
+            if detaillevel > DL_NORMAL then
+            begin
               dc_texturemod := (((viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+{$ELSE}
+              dc_texturemod := (((viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+{$ENDIF}
               dc_mod := dc_texturemod;
             end;
             dc_x := x;
+{$IF DEFINED(HERETIC)}
             R_GetDCs(skytexture, angle);
             // Sky is allways drawn full bright,
             //  i.e. colormaps[0] is used.
@@ -1042,8 +1578,101 @@ begin
             //  by INVUL inverse mapping.
             // JVAL
             //  call skycolfunc(), not colfunc(), does not use colormaps!
+{$ELSEIF DEFINED(HEXEN)}
+            R_GetDCs(Sky2Texture, angle);
+
+            if videomode = vm32bit then
+            begin
+              destl := @tempsource[0];
+              for k := 0 to sksize do
+              begin
+                if destl^ = 0 then
+                  destl^ := dc_source32[k];
+                inc(destl);
+              end;
+              dc_source32 := @tempsource;
+            end
+            else
+              begin
+              destb := @tempsource[0];
+              for k := 0 to 199 do
+              begin
+                if destb^ = 0 then
+                  destb^ := dc_source[k];
+                inc(destb);
+              end;
+              dc_source := @tempsource;
+            end;
+
+{$ELSEIF DEFINED(STRIFE)}
+            R_GetDCs(skytexture, angle);
+            // Sky is always drawn full bright,
+            //  i.e. colormaps[0] is used.
+            //  Because of this hack, sky is not affected
+            //  by INVUL inverse mapping.
+            // JVAL
+            //  call skycolfunc(), not colfunc(), does not use colormaps!
+{$ELSE}
+            R_GetDCs(skytexture1, angle);
+            // Sky is always drawn full bright,
+            //  i.e. colormaps[0] is used.
+            //  Because of this hack, sky is not affected
+            //  by INVUL inverse mapping.
+            // JVAL
+            //  call skycolfunc(), not colfunc(), does not use colormaps!
+{$ENDIF}
             skycolfunc;
           end;
+{$IFDEF HEXEN}
+        end;
+      end;
+      R_EnableFixedColumn;
+      exit; // Next visplane
+    end;
+
+    R_DisableFixedColumn;
+
+    if pl.special = 200 then
+    begin
+      offset := Sky2ColumnOffset * 64;
+      skytex := Sky2Texture;
+    end
+    else
+    begin
+      offset := Sky1ColumnOffset * 64;
+      skytex := SkyTexture;
+    end;
+
+    for x := pl.minx to pl.maxx do
+    begin
+      dc_yl := pl.top[x];
+      if dc_yl < viewheight then
+      begin
+        dc_yh := pl.bottom[x];
+
+        if dc_yl <= dc_yh then
+        begin
+          angle := (viewangle + xtoviewangle[x] + offset) div ANGLETOSKYUNIT;
+          if detaillevel <= DL_NORMAL then
+          begin
+            dc_texturemod := 0;
+            dc_mod := 0;
+          end
+          else
+          begin
+            dc_texturemod := (((viewangle + xtoviewangle[x]) mod ANGLETOSKYUNIT) * DC_HIRESFACTOR) div ANGLETOSKYUNIT;
+            dc_mod := dc_texturemod;
+          end;
+          dc_x := x;
+          R_GetDCs(skytex, angle);
+          // Sky is always drawn full bright,
+          //  i.e. colormaps[0] is used.
+          //  Because of this hack, sky is not affected
+          //  by INVUL inverse mapping.
+          // JVAL
+          //  call skycolfunc(), not colfunc(), does not use colormaps!
+          skycolfunc;
+{$ENDIF}
         end;
       end;
     end;
@@ -1053,6 +1682,10 @@ begin
 
   // regular flat
   R_GetDSs(pl.picnum);
+{$IFDEF HEXEN}
+  // JVAL SOS
+  R_CalcPlaneOffsets(pl);
+{$ENDIF}
 
   planeheightz := pl.height - viewz;
   planeheight := abs(planeheightz);
@@ -1080,6 +1713,10 @@ begin
 
   pl.top[stop] := VISEND;
   pl.top[pl.minx - 1] := VISEND;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  xoffs := pl.xoffs;
+  yoffs := pl.yoffs;
+{$ENDIF}
 
   if pl.renderflags and SRF_RIPPLE <> 0 then
   begin
@@ -1138,6 +1775,11 @@ begin
   begin
     memset(@visplanes[i].top[-1], iVISEND, (2 + SCREENWIDTH) * SizeOf(visindex_t));
     memset(@visplanes[i].bottom[-1], 0, (2 + SCREENWIDTH) * SizeOf(visindex_t));
+{$IFDEF DOOM}
+    {$IFDEF DEBUG}
+    R_DebugCheckVisPlane(@visplanes[i]);
+    {$ENDIF}
+{$ENDIF}
   end;
 end;
 {$ENDIF}

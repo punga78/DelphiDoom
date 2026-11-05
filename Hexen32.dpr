@@ -228,7 +228,7 @@ uses
   r_dynlights in 'Base\r_dynlights.pas',
   r_main in 'Base\r_main.pas',
   r_mmx in 'Base\r_mmx.pas',
-  r_plane in 'Hexen\r_plane.pas',
+  r_plane in 'Base\r_plane.pas',
   r_segs in 'Base\r_segs.pas',
   r_sky in 'Hexen\r_sky.pas',
   r_cache_sky1 in 'Hexen\r_cache_sky1.pas',
