@@ -36,8 +36,12 @@ const
   SNDFILE_FORMAT_AU = $030000;
   SNDFILE_FORMAT_RAW = $040000;
   SNDFILE_FORMAT_VOC = $080000;
+  SNDFILE_FORMAT_WAVEX = $130000;
   SNDFILE_FORMAT_FLAC = $170000;
   SNDFILE_FORMAT_OGG = $200000;
+
+  // Flag or'ed to Format when the samples are stored big endian
+  SNDFILE_FORMAT_ENDIAN_BIG = $20000000;
 
   // Encodings (same values as SF_FORMAT_* of libsndfile)
   SNDFILE_FORMAT_PCM_S8 = $0001;
