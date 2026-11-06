@@ -31,6 +31,19 @@ uses
   DelphiDoom.Wad.LumpCache in '..\Libs\Wad\DelphiDoom.Wad.LumpCache.pas',
   DelphiDoom.Wad.Level.Types in '..\Libs\Wad\DelphiDoom.Wad.Level.Types.pas',
   DelphiDoom.Wad.Factory in '..\Libs\Wad\DelphiDoom.Wad.Factory.pas',
+  DelphiDoom.Wad.Dll.Intf in '..\Libs\Wad\DelphiDoom.Wad.Dll.Intf.pas',
+  DelphiDoom.Wad.Dll.Text in '..\Libs\Wad\DelphiDoom.Wad.Dll.Text.pas',
+  DelphiDoom.Wad.Dll.ErrorSink in '..\Libs\Wad\DelphiDoom.Wad.Dll.ErrorSink.pas',
+  DelphiDoom.Wad.Dll.SourceAdapter in '..\Libs\Wad\DelphiDoom.Wad.Dll.SourceAdapter.pas',
+  DelphiDoom.Wad.Dll.DirectoryAdapter in '..\Libs\Wad\DelphiDoom.Wad.Dll.DirectoryAdapter.pas',
+  DelphiDoom.Wad.Dll.BuilderAdapter in '..\Libs\Wad\DelphiDoom.Wad.Dll.BuilderAdapter.pas',
+  DelphiDoom.Wad.Dll.Engine in '..\Libs\Wad\DelphiDoom.Wad.Dll.Engine.pas',
+  DelphiDoom.Wad.Dll.ClientCheck in '..\Libs\Wad\DelphiDoom.Wad.Dll.ClientCheck.pas',
+  DelphiDoom.Wad.Dll.ClientSource in '..\Libs\Wad\DelphiDoom.Wad.Dll.ClientSource.pas',
+  DelphiDoom.Wad.Dll.ClientDirectory in '..\Libs\Wad\DelphiDoom.Wad.Dll.ClientDirectory.pas',
+  DelphiDoom.Wad.Dll.ClientBuilder in '..\Libs\Wad\DelphiDoom.Wad.Dll.ClientBuilder.pas',
+  DelphiDoom.Wad.Dll.Client in '..\Libs\Wad\DelphiDoom.Wad.Dll.Client.pas',
+  DelphiDoom.Wad.Dll.Loader in '..\Libs\Wad\DelphiDoom.Wad.Dll.Loader.pas',
   DelphiDoom.Tests.Wad.Helpers in 'Source\DelphiDoom.Tests.Wad.Helpers.pas',
   DelphiDoom.Tests.Wad.Name in 'Source\DelphiDoom.Tests.Wad.Name.pas',
   DelphiDoom.Tests.Wad.Sources in 'Source\DelphiDoom.Tests.Wad.Sources.pas',
@@ -38,6 +51,7 @@ uses
   DelphiDoom.Tests.Wad.Builder in 'Source\DelphiDoom.Tests.Wad.Builder.pas',
   DelphiDoom.Tests.Wad.LumpCache in 'Source\DelphiDoom.Tests.Wad.LumpCache.pas',
   DelphiDoom.Tests.Wad.Level in 'Source\DelphiDoom.Tests.Wad.Level.pas',
+  DelphiDoom.Tests.Wad.Dll in 'Source\DelphiDoom.Tests.Wad.Dll.pas',
   DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas';
 
 var

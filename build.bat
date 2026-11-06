@@ -8,7 +8,7 @@ rem    build.bat                    Doom32, Release
 rem    build.bat all                tutti i progetti
 rem    build.bat giochi             i 8 eseguibili di gioco (software + OpenGL)
 rem    build.bat strumenti          Launcher, DD_IDE, ddc e le 4 DLL ddc_*
-rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod, DDGlbsp, DDPng, DDScript -> bin\Libs)
+rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod, DDGlbsp, DDPng, DDScript, DDWad -> bin\Libs)
 rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\Tests); li esegue
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
 rem    build.bat all Release clean  cancella tutta la cartella dcu prima di compilare
@@ -34,7 +34,7 @@ set "CLEAN=%~3"
 
 set "GIOCHI=Doom32 GLDoom32 Heretic32 GLHeretic32 Hexen32 GLHexen32 Strife32 GLStrife32"
 set "STRUMENTI=Launcher DD_IDE ddc ddc_doom ddc_heretic ddc_hexen ddc_strife"
-set "LIBRERIE=Libs\Zlib\DDZlib Libs\Jpeg\DDJpeg Libs\Mp3\DDMp3 Libs\Xmi\DDXmi Libs\Sndfile\DDSndfile Libs\Mikmod\DDMikmod Libs\Glbsp\DDGlbsp Libs\Png\DDPng Libs\Script\DDScript"
+set "LIBRERIE=Libs\Zlib\DDZlib Libs\Jpeg\DDJpeg Libs\Mp3\DDMp3 Libs\Xmi\DDXmi Libs\Sndfile\DDSndfile Libs\Mikmod\DDMikmod Libs\Glbsp\DDGlbsp Libs\Png\DDPng Libs\Script\DDScript Libs\Wad\DDWad"
 set "TESTS=Tests\DelphiDoom.Tests Tests\DelphiDoom.Tests.Jpeg Tests\DelphiDoom.Tests.Mp3 Tests\DelphiDoom.Tests.Xmi Tests\DelphiDoom.Tests.Sndfile Tests\DelphiDoom.Tests.Mikmod Tests\DelphiDoom.Tests.Glbsp Tests\DelphiDoom.Tests.M2m Tests\DelphiDoom.Tests.Ogg Tests\DelphiDoom.Tests.Png Tests\DelphiDoom.Tests.Script Tests\DelphiDoom.Tests.Wad"
 
 set "LISTA="
