@@ -33,6 +33,9 @@ unit m_argv;
 
 interface
 
+uses
+  DelphiDoom.CommandLine.Intf;
+
 //
 // MISC
 //
@@ -67,6 +70,15 @@ function M_CheckParmCDROM: boolean;
 //
 //==============================================================================
 procedure M_InitArgv;
+
+//==============================================================================
+//
+// M_ConfigureArgv
+// Gives the unit what it builds the command line with. The composition root calls it
+// before M_InitArgv
+//
+//==============================================================================
+procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder);
 
 //==============================================================================
 //
@@ -109,13 +121,18 @@ uses
   d_delphi,
   c_cmds,
   m_base,
-  i_system;
+  i_system,
+  DelphiDoom.CommandLine.DefaultFile;
 
 var
   cdchecked: integer = -1;
 
 var
   cmdparams: TDStringList;
+  // given by the composition root (M_ConfigureArgv)
+  argv_builder: ICommandLineBuilder = nil;
+  // what M_InitArgv built: myargv/myargc are a copy of it for the code that reads them
+  commandline: ICommandLine = nil;
 
 //==============================================================================
 //
@@ -123,19 +140,14 @@ var
 //
 //==============================================================================
 function M_CheckParm(const check: string): integer;
-var
-  i: integer;
 begin
   if cmdparams.IndexOf(check) < 0 then
     cmdparams.Add(check);
 
-  for i := 1 to myargc - 1 do
-    if strupper(check) = myargv[i] then
-    begin
-      result := i;
-      exit;
-    end;
-  result := 0;
+  if commandline <> nil then
+    result := commandline.IndexOf(check)
+  else
+    result := 0;
 end;
 
 //==============================================================================
@@ -159,6 +171,16 @@ end;
 
 //==============================================================================
 //
+// M_ConfigureArgv
+//
+//==============================================================================
+procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder);
+begin
+  argv_builder := ABuilder;
+end;
+
+//==============================================================================
+//
 // M_InitArgv
 //
 //==============================================================================
@@ -167,60 +189,25 @@ var
   i: integer;
   defargv: string;
   cmdln: string;
+  programname: string;
+  argument: string;
 
   procedure LoadFromDefaultCMD(trywrite: boolean);
   var
-    i: integer;
     str: TDStringList;
-    tmp: string;
-    defargs, defargs2: string;
-    p: integer;
   begin
     str := TDStringList.Create;
     try
       if fexists(defargv) then
       begin
         str.LoadFromFile(defargv);
-        for i := str.Count - 1 downto 0 do
-        begin
-          tmp := str[i];
-          p := Pos('// ', tmp);
-          if p = 1 then
-            str.Delete(i)
-          else if p > 0 then
-          begin
-            tmp := Copy(tmp, 1, p - 1);
-            str[i] := tmp;
-          end;
-        end;
-        defargs := str.Text;
-        defargs2 := '';
-        for i := 1 to Length(defargs) do
-        begin
-          if defargs[i] = ' ' then
-            defargs2 := defargs2 + #13#10
-          else
-            defargs2 := defargs2 + toupper(defargs[i]);
-        end;
-        str.Text := defargs2;
-        myargv[myargc] := '-DEFAULTCMDMARKER';
-        inc(myargc);
-        for i := 0 to str.Count - 1 do
-        begin
-          if myargc > MAXARGS then
-            break;
-          if strtrim(str[i]) <> '' then
-          begin
-            myargv[myargc] := strtrim(str[i]);
-            inc(myargc);
-          end;
-        end;
+        argv_builder.AddDefaultFile(str.Text);
       end
       else if trywrite then
       begin
-        str.Add('// Add default command line parameters to this file.');
-        str.Add('// These command line parameters will be appended everytime you run ' + APPNAME + '.');
-        str.Add(strlower(fname(myargv[0])) + ' ');
+        str.Text := TDefaultArgumentsFile.Template(APPNAME, fname(programname));
+        if (str.Count > 0) and (str[str.Count - 1] = '') then
+          str.Delete(str.Count - 1);
         str.SaveToFile(defargv);
       end;
     finally
@@ -229,19 +216,19 @@ var
   end;
 
 begin
-  myargc := ParamCount + 1;
-  for i := 0 to myargc - 1 do
+  if argv_builder = nil then
+    I_Error('M_InitArgv(): the command line was not configured (M_ConfigureArgv)');
+
+  for i := 0 to ParamCount do
   begin
-    myargv[i] := strupper(ParamStr(i));
-    if i = MAXARGS then
-    begin
-      myargc := i + 1;
-      exit;
-    end;
-    if myargv[i] <> '' then
-      if myargv[i][1] <> '-' then
-        if fexists(myargv[i]) then
-          myargv[i] := fexpand(myargv[i]);
+    argument := strupper(ParamStr(i));
+    if argument <> '' then
+      if argument[1] <> '-' then
+        if fexists(argument) then
+          argument := fexpand(argument);
+    if i = 0 then
+      programname := argument;
+    argv_builder.Add(argument);
   end;
 
   defargv := DEFARGVFILENAME;
@@ -253,6 +240,12 @@ begin
     LoadFromDefaultCMD(not I_IsCDRomDrive(defargv[1]));
   end;
 
+  commandline := argv_builder.Build;
+
+  // myargv/myargc: the copy that the older code reads
+  myargc := commandline.Count;
+  for i := 0 to myargc - 1 do
+    myargv[i] := commandline[i];
   for i := myargc to MAXARGS do
     myargv[i] := '';
 
@@ -263,7 +256,6 @@ begin
 
   ChDir(fpath(myargv[0]));
 end;
-
 //==============================================================================
 //
 // M_CmdShowCommandLineParams

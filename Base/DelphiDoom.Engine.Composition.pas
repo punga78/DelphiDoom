@@ -20,6 +20,7 @@ procedure ComposeEngine;
 implementation
 
 uses
+  DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.IdTech.Factory,
   DelphiDoom.Engine.Wad.Intf,
@@ -29,7 +30,8 @@ uses
   w_wadwriter,
   w_pak,
   doomdef,
-  d_main;
+  d_main,
+  m_argv;
 
 procedure ComposeEngine;
 var
@@ -39,6 +41,7 @@ begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
+  M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
