@@ -44,7 +44,8 @@ interface
 uses
   d_delphi,
   d_think,
-  info_h;
+  info_h,
+  DelphiDoom.Dehacked.Intf;
 
 //==============================================================================
 //
@@ -52,6 +53,13 @@ uses
 //
 //==============================================================================
 procedure DEH_Parse(const s: TDStringList);
+
+//==============================================================================
+//
+// DEH_Configure
+//
+//==============================================================================
+procedure DEH_Configure(const AParser: IDehackedParser);
 
 //==============================================================================
 //
@@ -159,6 +167,8 @@ implementation
 
 uses
   TypInfo,
+  DelphiDoom.Dehacked.Types,
+  DelphiDoom.Dehacked.Section,
   c_cmds,
   doomdef,
   deh_base,
@@ -194,17 +204,6 @@ uses
   sc_engine,
   sc_states,
   v_data;
-
-var
-  mobj_tokens_hash: TDEHStringsHashTable;
-  mobj_flags_hash: TDEHStringsHashTable;
-  mobj_flags_ex_hash: TDEHStringsHashTable;
-  mobj_flags2_ex_hash: TDEHStringsHashTable;
-  mobj_flags3_ex_hash: TDEHStringsHashTable;
-  mobj_flags4_ex_hash: TDEHStringsHashTable;
-  mobj_flags5_ex_hash: TDEHStringsHashTable;
-  mobj_flags6_ex_hash: TDEHStringsHashTable;
-  mobj_flags_mbf21_hash: TDEHStringsHashTable;
 
 var
   stringhash: array[0..255] of TDNumberList;
@@ -248,74 +247,798 @@ end;
 
 var
   deh_initialized: boolean = false;
+  deh_parser: IDehackedParser;
 
 //==============================================================================
 //
-// DEH_Parse
+// DEH_Configure
 //
 //==============================================================================
-procedure DEH_Parse(const s: TDStringList);
+procedure DEH_Configure(const AParser: IDehackedParser);
+begin
+  deh_parser := AParser;
+end;
+
+//==============================================================================
+//
+// DEH_Apply
+// Applies a patch that the parser of Libs\Dehacked has read: the sections come
+// in the order of the file and are applied in that order
+//
+//==============================================================================
+procedure DEH_Apply(const APatch: IDehackedPatch);
 var
+  sectionindex: integer;
+  section: TDehackedSection;
+  entry: TDehackedEntry;
+  entryindex: integer;
   i, j: integer;
-  str: string;
   stmp: string;
   token1: string;
   token2: string;
-  token3: string;
-  token4: string;
-  token5: string;
-  group: integer; // MBF21
-  fw: string;
-  settext: string;
-  mustnextline: boolean;
 
   mobj_no: integer;
-  mobj_idx: integer;
   mobj_val: integer;
-  mobj_fval: float;
-
-  mobj_flag: integer;
-  mobj_setflag: integer;
-
   state_no: integer;
-  state_idx: integer;
-  state_val: integer;
-  state_flag: integer;
-  state_setflag: integer;
   newstate: boolean;
-
   ammo_no: integer;
-  ammo_idx: integer;
-  ammo_val: integer;
-
   weapon_no: integer;
-  weapon_idx: integer;
   weapon_val: integer;
-  weapon_flag: integer;
-
   sound_no: integer;
-  sound_idx: integer;
-  sound_val: integer;
-
   music_idx: integer;
-
   sprite_idx: integer;
   sprite_val: integer;
-
-  misc_idx: integer;
-  misc_val: integer;
-
+  group: integer; // MBF21
+  foundtext: boolean;
+  len1, len2: integer;
+  settext: string;
+  did_max_soulsphere: boolean;
   par_episode: integer;
   par_map: integer;
   par_time: integer;
 
-  len1, len2: integer;
-  foundtext: boolean;
-  foundaction: boolean;
-
   deh_initialstates: integer;
-
   code_ptrs: Pactionf_tArray;
+
+  function StateValue(const ent: TDehackedEntry): integer;
+  begin
+    case ent.StateRef.Kind of
+      srNew: result := ent.StateRef.Number + deh_initialstates;
+    else
+      result := ent.StateRef.Number;
+    end;
+  end;
+
+  procedure SetActionParams(const stnum: integer; const args: string);
+  begin
+    if states[stnum].params <> nil then
+      begin
+        states[stnum].params.Free;
+        states[stnum].params := nil;
+      end;
+    if args <> '' then
+      states[stnum].params := TCustomParamList.Create(SC_FixParenthesisLevel(args));
+  end;
+
+  function FindActionByName(const aname: string): integer;
+  var
+    k: integer;
+  begin
+    result := DEH_SearchActionFromHash(aname);
+    if result >= 0 then
+      exit;
+    for k := 0 to dehnumactions - 1 do
+      if (aname = deh_actions[k].name) or (aname = 'A_' + deh_actions[k].name) then
+      begin
+        result := k;
+        exit;
+      end;
+  end;
+
+  procedure ApplyThing;
+  var
+    entryindex: integer;
+    j: integer;
+  begin
+    if section.Reference.IsNew then
+    begin
+      if devparm then
+      begin
+        printf('DEH_Parse(): Expanding mobjinfo table...'#13#10);
+        if section.Reference.Name <> '' then
+          printf('             Adding %s mobj'#13#10, [section.Reference.Name]);
+      end;
+      mobj_no := Info_GetNewMobjInfo;
+      Info_SetMobjName(mobj_no, section.Reference.Name);
+    end
+    else
+    begin
+      mobj_no := section.Reference.Number;
+      if (mobj_no <= 0) or (mobj_no > nummobjtypes) then
+      begin
+        I_Warning('DEH_Parse(): Wrong think number = %d'#13#10, [mobj_no]);
+        exit;
+      end;
+      dec(mobj_no); // JVAL DEH patches start Think numbers from 1
+    end;
+
+    for entryindex := 0 to section.Count - 1 do
+    begin
+      entry := section[entryindex];
+      token2 := entry.Text;
+      mobj_val := entry.Number;
+      if entry.Mbf21 then
+        ismbf21 := true;
+
+      case entry.Field of
+         0: mobjinfo[mobj_no].doomednum := mobj_val;
+         1: mobjinfo[mobj_no].spawnstate := StateValue(entry);
+         2: mobjinfo[mobj_no].spawnhealth := mobj_val;
+         3: mobjinfo[mobj_no].seestate := StateValue(entry);
+         4: mobjinfo[mobj_no].seesound := S_GetSoundNumForName(token2);
+         5: mobjinfo[mobj_no].reactiontime := mobj_val;
+         6: mobjinfo[mobj_no].attacksound := S_GetSoundNumForName(token2);
+         7: mobjinfo[mobj_no].painstate := StateValue(entry);
+         8: mobjinfo[mobj_no].painchance := mobj_val;
+         9: mobjinfo[mobj_no].painsound := S_GetSoundNumForName(token2);
+        10: mobjinfo[mobj_no].meleestate := StateValue(entry);
+        11: mobjinfo[mobj_no].missilestate := StateValue(entry);
+        12: mobjinfo[mobj_no].deathstate := StateValue(entry);
+        13: mobjinfo[mobj_no].xdeathstate := StateValue(entry);
+        14: mobjinfo[mobj_no].deathsound := S_GetSoundNumForName(token2);
+        15: mobjinfo[mobj_no].speed := mobj_val;
+        16: mobjinfo[mobj_no].radius := mobj_val;
+        17: mobjinfo[mobj_no].height := mobj_val;
+        18: mobjinfo[mobj_no].mass := mobj_val;
+        19: mobjinfo[mobj_no].damage := mobj_val;
+        20: mobjinfo[mobj_no].activesound := S_GetSoundNumForName(token2);
+        21: if entry.HasFlags then
+              mobjinfo[mobj_no].flags := entry.Flags;
+        23: mobjinfo[mobj_no].raisestate := StateValue(entry);
+        24: if entry.HasFlags then
+              mobjinfo[mobj_no].flags_ex := entry.Flags;
+        25: mobjinfo[mobj_no].customsound1 := S_GetSoundNumForName(token2); // DelphiDoom specific
+        26: mobjinfo[mobj_no].customsound2 := S_GetSoundNumForName(token2); // DelphiDoom specific
+        27: mobjinfo[mobj_no].customsound3 := S_GetSoundNumForName(token2); // DelphiDoom specific
+        28: mobjinfo[mobj_no].explosiondamage := mobj_val;
+        29: mobjinfo[mobj_no].explosionradius := mobj_val;
+        30: mobjinfo[mobj_no].meleedamage := mobj_val;
+        31: begin
+              mobjinfo[mobj_no].inheritsfrom := Info_GetMobjNumForName(token2);
+              if mobjinfo[mobj_no].inheritsfrom = mobj_no then
+                mobjinfo[mobj_no].inheritsfrom := -1;
+            end;
+        32: Info_SetMobjName(mobj_no, token2);
+        33: mobjinfo[mobj_no].meleesound := S_GetSoundNumForName(token2);
+        34: begin
+              if mobj_val >= 0 then
+              begin
+                if mobj_val < Ord(NUMMOBJRENDERSTYLES) then
+                  mobjinfo[mobj_no].renderstyle := mobjrenderstyle_t(mobj_val)
+                else
+                  I_Warning('DEH_Parse(): Wrong renderstyle = %s (Think number = %d).'#13#10, [token2, mobj_no]);
+              end
+              else
+              begin
+                mobj_val := Ord(R_GetRenderstyleForName(token2));
+                if mobj_val >= 0 then
+                  mobjinfo[mobj_no].renderstyle := mobjrenderstyle_t(mobj_val)
+                else
+                  I_Warning('DEH_Parse(): Wrong renderstyle = %s (Think number = %d).'#13#10, [token2, mobj_no])
+              end;
+            end;
+        35: mobjinfo[mobj_no].alpha := mobj_val;
+        36: mobjinfo[mobj_no].dropitem := Info_GetMobjNumForName(token2);
+        37: mobjinfo[mobj_no].missiletype := Info_GetMobjNumForName(token2);
+        38: mobjinfo[mobj_no].healstate := StateValue(entry);
+        39: if entry.HasFlags then
+              mobjinfo[mobj_no].flags2_ex := entry.Flags;
+        40: mobjinfo[mobj_no].crashstate := StateValue(entry);
+        41: mobjinfo[mobj_no].interactstate := StateValue(entry);
+        42: mobjinfo[mobj_no].missileheight := mobj_val;
+        43: begin
+              for j := 1 to length(token2) do
+              begin
+                mobjinfo[mobj_no].name2[j - 1] := AnsiChar(token2[j]);
+                if j = MOBJINFONAMESIZE then
+                  break;
+              end;
+              for j := length(token2) to MOBJINFONAMESIZE - 1 do
+                mobjinfo[mobj_no].name2[j] := #0;
+            end;
+        44: mobjinfo[mobj_no].vspeed := mobj_val;
+        45: mobjinfo[mobj_no].pushfactor := entry.Fixed;
+        46: mobjinfo[mobj_no].scale := entry.Fixed;
+        47: mobjinfo[mobj_no].gravity := entry.Fixed;
+        48: if entry.HasFlags then
+              mobjinfo[mobj_no].flags3_ex := entry.Flags;
+        49: if entry.HasFlags then
+              mobjinfo[mobj_no].flags4_ex := entry.Flags;
+        50: mobjinfo[mobj_no].minmissilechance := mobj_val;
+        51: mobjinfo[mobj_no].floatspeed := mobj_val;
+        52: mobjinfo[mobj_no].normalspeed := mobj_val;
+        53: mobjinfo[mobj_no].fastspeed := mobj_val;
+        54: mobjinfo[mobj_no].obituary := token2;
+        55: mobjinfo[mobj_no].hitobituary := token2;
+        56: begin
+              if mobj_val >= 0 then
+              begin
+                if mobj_val < Ord(NUMGENDERS) then
+                  mobjinfo[mobj_no].gender := gender_t(mobj_val)
+                else
+                  I_Warning('DEH_Parse(): Wrong gender = %s (Think number = %d).'#13#10, [token2, mobj_no]);
+              end
+              else
+              begin
+                mobj_val := Ord(R_GetGenderForName(token2));
+                if mobj_val >= 0 then
+                  mobjinfo[mobj_no].gender := gender_t(mobj_val)
+                else
+                  I_Warning('DEH_Parse(): Wrong gender = %s (Think number = %d).'#13#10, [token2, mobj_no])
+              end;
+            end;
+        57: mobjinfo[mobj_no].meleerange := mobj_val;
+        58: mobjinfo[mobj_no].maxstepheight := entry.Fixed;
+        59: mobjinfo[mobj_no].maxdropoffheight := entry.Fixed;
+        60: mobjinfo[mobj_no].gibhealth := mobj_val;
+        61: mobjinfo[mobj_no].maxtargetrange := mobj_val;
+        62: mobjinfo[mobj_no].WeaveIndexXY := mobj_val;
+        63: mobjinfo[mobj_no].WeaveIndexZ := mobj_val;
+        64: mobjinfo[mobj_no].friction := entry.Fixed;
+        65: mobjinfo[mobj_no].spriteDX := entry.Fixed;
+        66: mobjinfo[mobj_no].spriteDY := entry.Fixed;
+        67: if entry.HasFlags then
+              mobjinfo[mobj_no].flags5_ex := entry.Flags;
+        68: if entry.HasFlags then
+              mobjinfo[mobj_no].flags6_ex := entry.Flags;
+        69: if entry.HasFlags then // .mbf21flags
+              mobjinfo[mobj_no].mbf21bits := entry.Flags;
+        70: begin // .infighting_group (MBF21)
+              group := Info_InfightingGroupToInt(token2);
+              if group <> IG_INVALID then
+                mobjinfo[mobj_no].infighting_group := group;
+            end;
+        71: begin // .projectile_group (MBF21)
+              group := Info_ProjectileGroupToInt(token2);
+              if group <> PG_INVALID then
+                mobjinfo[mobj_no].projectile_group := group;
+            end;
+        72: begin // .splash_group (MBF21)
+              group := Info_SplashGroupToInt(token2);
+              if group <> SG_INVALID then
+                mobjinfo[mobj_no].splash_group := group;
+            end;
+        73: mobjinfo[mobj_no].ripsound := S_GetSoundNumForName(token2); // .ripsound (MBF21)
+        74: mobjinfo[mobj_no].crushstate := StateValue(entry);
+        77: mobjinfo[mobj_no].bloodcolor := R_GetBloodTranslationIdForName(token2);
+        78: mobjinfo[mobj_no].translationname := strupper(token2);
+        80: mobjinfo[mobj_no].meleethreshold := mobj_val;
+      end;
+    end;
+
+    P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
+  end;
+
+  procedure ApplyFrame;
+  var
+    fidx: integer;
+    ent: TDehackedEntry;
+    act: integer;
+  begin
+    newstate := section.Reference.IsNew;
+    if newstate then
+    begin
+      state_no := section.Reference.Number + deh_initialstates;
+      if devparm then
+        printf('DEH_Parse(): Expanding states table, new state number found: %d'#13#10, [state_no]);
+    end
+    else
+    begin
+      state_no := section.Reference.Number;
+      if state_no < 0 then
+        state_no := statenames.IndexOfToken(section.Reference.Name);
+      if state_no < 0 then
+      begin
+        I_Warning('DEH_Parse(): Wrong state number = %s'#13#10, [section.Reference.Name]);
+        exit;
+      end;
+    end;
+    while numstates <= state_no do
+      Info_GetNewState;
+    SC_FillStateNames;
+
+    for fidx := 0 to section.Count - 1 do
+    begin
+      ent := section[fidx];
+      case ent.Field of
+         0: states[state_no].sprite := Info_GetSpriteNumForName(ent.Text);
+         1: if ent.Bright then
+              states[state_no].frame := FF_FULLBRIGHT + ent.Number
+            else
+              states[state_no].frame := ent.Number;
+         2: states[state_no].tics := ent.Number;
+         3: begin
+              if ent.StateRef.Kind = srOriginal then
+                states[state_no].nextstate := statenum_t(ent.StateRef.Number)
+              else if ent.StateRef.Kind = srNew then
+                states[state_no].nextstate := statenum_t(deh_initialstates + ent.StateRef.Number)
+              else if statenames.IndexOfToken(ent.Text) >= 0 then
+                states[state_no].nextstate := statenum_t(statenames.IndexOfToken(ent.Text))
+              else if newstate then
+                states[state_no].nextstate := statenum_t(deh_initialstates + ent.Number)
+              else
+                states[state_no].nextstate := statenum_t(ent.Number);
+            end;
+         4: begin
+              if ent.Number >= 0 then
+              begin
+                if ent.Number < dehnumactions then
+                  states[state_no].action.acp1 := deh_actions[ent.Number].action.acp1
+                else
+                  I_Warning('DEH_Parse(): Wrong action number = %d in state %d (Must be in [0..%d])'#13#10, [ent.Number, state_no, dehnumactions]);
+              end
+              else
+              begin
+                act := FindActionByName(ent.ActionName);
+                if act >= 0 then
+                begin
+                  states[state_no].action.acp1 := deh_actions[act].action.acp1;
+                  SetActionParams(state_no, ent.ActionArguments);
+                end
+                else
+                  I_Warning('DEH_Parse(): Unknown action function = "%s" in state %d'#13#10, [ent.ActionName, state_no]);
+              end;
+            end;
+         5: states[state_no].misc1 := ent.Number;
+         6: states[state_no].misc2 := ent.Number;
+         7: if ent.HasFlags then
+              states[state_no].flags_ex := ent.Flags;
+         8: Info_AddStateOwner(@states[state_no], Info_GetMobjNumForName(ent.Text));
+         9: states[state_no].tics2 := ent.Number;
+        10: begin
+              states[state_no].args[0] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG1_DEFINED;
+            end;
+        11: begin
+              states[state_no].args[1] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG2_DEFINED;
+            end;
+        12: begin
+              states[state_no].args[2] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG3_DEFINED;
+            end;
+        13: begin
+              states[state_no].args[3] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG4_DEFINED;
+            end;
+        14: begin
+              states[state_no].args[4] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG5_DEFINED;
+            end;
+        15: begin
+              states[state_no].args[5] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG6_DEFINED;
+            end;
+        16: begin
+              states[state_no].args[6] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG7_DEFINED;
+            end;
+        17: begin
+              states[state_no].args[7] := ent.Number;  // MBF21
+              states[state_no].argsdefined := states[state_no].argsdefined or ARG8_DEFINED;
+            end;
+        18: if ent.HasFlags then // MBF21
+              states[state_no].mbf21bits := ent.Flags;
+      end;
+    end;
+
+    // MBF21
+    if states[state_no].mbf21bits <> 0 then
+      ismbf21 := true;
+  end;
+
+  procedure ApplyText;
+  var
+    j: integer;
+  begin
+    len1 := section.OldLength;
+    len2 := section.NewLength;
+    settext := section.OldText;
+    token1 := DEH_StringValue(settext);
+    token2 := section.NewText;
+
+    foundtext := false;
+    for j := 0 to deh_strings.numstrings - 1 do
+      if DEH_StringValue(deh_strings._array[j].pstr^) = token1 then
+      begin
+        foundtext := true;
+        deh_strings._array[j].pstr^ := DEH_CStringToString(token2);
+        break;
+      end;
+
+    if not foundtext then
+    begin
+      for j := 1 to nummusic - 1 do // First music is dummy
+      begin
+        stmp := strupper(S_music[j].name);
+        if stmp = token1 then
+        begin
+          foundtext := true;
+          S_music[j].name := token2;
+          break;
+        end
+        else if 'D_' + stmp = token1 then // JVAL Allow D_ prefix for checking
+        begin
+          foundtext := true;
+          S_music[j].name := token2;
+          break;
+        end
+        else if strupper(S_music[j].mapname) = token1 then
+        begin
+          foundtext := true;
+          S_music[j].name := token2;
+          break;
+        end
+      end;
+
+      if not foundtext and (len1 = 4) and (len2 = 4) then
+      begin
+        for j := 0 to numsprites - 1 do
+        begin
+          stmp := Chr(sprnames[j] and $FF) +
+                  Chr(sprnames[j] shr 8 and $FF) +
+                  Chr(sprnames[j] shr 16 and $FF) +
+                  Chr(sprnames[j] shr 24 and $FF);
+          if stmp = token1 then
+          begin
+            sprnames[j] := Ord(toupper(token2[1])) +
+                           Ord(toupper(token2[2])) shl 8 +
+                           Ord(toupper(token2[3])) shl 16 +
+                           Ord(toupper(token2[4])) shl 24;
+            foundtext := true;
+            break;
+          end;
+        end;
+      end;
+    end;
+
+    if not foundtext then
+      I_Warning('DEH_Parse(): Can not find setable text "%s" - should be changed to "%s"'#13#10, [settext, token2]);
+  end;
+
+  procedure ApplyPointer;
+  var
+    frame_no: integer;
+    value: integer;
+  begin
+    frame_no := section.Reference.Number;
+    value := section[0].Number;
+    if (value >= 0) and (value < numstates) then
+    begin
+      if (frame_no >= numstates) then
+        exit;
+      // JVAL: 20201203 - Preserve initial actions
+      if value < deh_initialstates then
+        states[frame_no].action.acp1 := code_ptrs[value].acp1
+      else
+        states[frame_no].action.acp1 := states[value].action.acp1;
+    end
+    else
+      I_Warning('DEH_Parse(): Invalid state number "%s" while parsing CODEP FRAME'#13#10, [section[0].Text]);
+  end;
+
+  procedure ApplySound;
+  var
+    sidx: integer;
+    ent: TDehackedEntry;
+  begin
+    stmp := section.Reference.Name;
+    if stmp = '' then
+      exit;
+    if not (stmp[1] in ['1'..'9', '0']) then
+      sound_no := S_GetSoundNumForName(stmp)
+    else
+    begin
+      sound_no := section.Reference.Number;
+      if (sound_no < 0) or (sound_no >= numsfx) then
+      begin
+        I_Warning('DEH_Parse(): Wrong sound number = %s'#13#10, [stmp]);
+        if sound_no >= numsfx then
+          I_Warning('DEH_Parse(): New sounds can only specified in things definition!'#13#10);
+        exit;
+      end;
+    end;
+
+    for sidx := 0 to section.Count - 1 do
+    begin
+      ent := section[sidx];
+      case ent.Field of
+        0: S_sfx[sound_no].singularity := ent.Number <> 0;
+        1: S_sfx[sound_no].priority := ent.Number;
+        2: S_sfx[sound_no].name := ent.Text;
+      end;
+    end;
+  end;
+
+  procedure ApplyAmmo;
+  var
+    aidx: integer;
+    ent: TDehackedEntry;
+  begin
+    ammo_no := section.Reference.Number;
+    if (ammo_no < 0) or (ammo_no >= Ord(NUMAMMO)) then
+    begin
+      I_Warning('DEH_Parse(): Wrong ammo number = %s'#13#10, [itoa(ammo_no)]);
+      exit;
+    end;
+    for aidx := 0 to section.Count - 1 do
+    begin
+      ent := section[aidx];
+      case ent.Field of
+        0: maxammo[ammo_no] := ent.Number;
+        1: clipammo[ammo_no] := ent.Number;
+      end;
+    end;
+  end;
+
+  procedure ApplyWeapon;
+  var
+    widx: integer;
+    ent: TDehackedEntry;
+  begin
+    stmp := section.Reference.Name;
+    weapon_no := section.Reference.Number;
+    if weapon_no < 0 then
+      weapon_no := DEH_WeaponType(stmp);
+    if (weapon_no < 0) or (weapon_no >= Ord(NUMWEAPONS)) then
+    begin
+      if stmp = '' then
+        stmp := itoa(section.Reference.Number);
+      I_Warning('DEH_Parse(): Wrong weapon number = %s'#13#10, [stmp]);
+      exit;
+    end;
+
+    for widx := 0 to section.Count - 1 do
+    begin
+      ent := section[widx];
+      case ent.Field of
+        0: begin
+             weapon_val := ent.Number;
+             if weapon_val < 0 then
+               weapon_val := DEH_AmmoType(ent.Text);
+             if weapon_val < 0 then
+               I_Warning('DEH_Parse(): After %s keyword found invalid ammo %s (Weapon number = %d)'#13#10, [ent.FieldName, ent.Text, weapon_no]);
+             weaponinfo[weapon_no].ammo := ammotype_t(weapon_val);
+           end;
+        1: weaponinfo[weapon_no].upstate := StateValue(ent);
+        2: weaponinfo[weapon_no].downstate := StateValue(ent);
+        3: weaponinfo[weapon_no].readystate := StateValue(ent);
+        4: weaponinfo[weapon_no].atkstate := StateValue(ent);
+        6: weaponinfo[weapon_no].holdatkstate := StateValue(ent);
+        5: weaponinfo[weapon_no].flashstate := StateValue(ent);
+        7: begin
+             weaponinfo[weapon_no].ammopershot := ent.Number;  // MBF21
+             weaponinfo[weapon_no].intflags := weaponinfo[weapon_no].intflags or WIF_ENABLEAPS;
+           end;
+        8: if ent.HasFlags then // MBF21
+             weaponinfo[weapon_no].mbf21bits := ent.Flags;
+      end;
+    end;
+  end;
+
+  procedure ApplySprites;
+  var
+    j: integer;
+    pidx: integer;
+    ent: TDehackedEntry;
+  begin
+    for pidx := 0 to section.Count - 1 do
+    begin
+      ent := section[pidx];
+      token1 := ent.Key;
+      token2 := ent.Text;
+
+      sprite_idx := -1;
+      sprite_val := ent.Number;
+      if IsIntegerInRange(sprite_val, 0, Ord(DO_NUMSPRITES) - 1) then
+      begin
+        sprite_idx := sprite_val;
+        token1 := DO_sprnames[sprite_idx];
+      end
+      else if (numsprites >= Ord(DO_NUMSPRITES)) and IsIntegerInRange(sprite_val, Ord(DO_NUMSPRITES), numsprites) then
+      begin
+        sprite_idx := sprite_val;
+        token1 := Chr(sprnames[sprite_idx] and $FF) +
+                  Chr(sprnames[sprite_idx] shr 8 and $FF) +
+                  Chr(sprnames[sprite_idx] shr 16 and $FF) +
+                  Chr(sprnames[sprite_idx] shr 24 and $FF);
+      end;
+
+      if length(token1) <> 4 then
+      begin
+        I_Warning('DEH_Parse(): Sprite name with %d characters = %s'#13#10, [length(token1), token1]);
+        Continue;
+      end;
+
+      strupperproc(token1);
+      strupperproc(token2);
+
+      // JVAL: Check the original sprite names (https://eternity.youfailit.net/wiki/DeHackEd_/_BEX_Reference/Eternity_Extension:_SPRITES_Block)
+      if sprite_idx < 0 then
+      begin
+        for j := 0 to Ord(DO_NUMSPRITES) - 1 do
+          if DO_sprnames[j] = token1 then
+          begin
+            sprite_idx := j;
+            break;
+          end;
+        if sprite_idx < 0 then
+          for j := Ord(DO_NUMSPRITES) to numsprites - 1 do
+            if Chr(sprnames[j] and $FF) + Chr(sprnames[j] shr 8 and $FF) +
+              Chr(sprnames[j] shr 16 and $FF) + Chr(sprnames[j] shr 24 and $FF) = token1 then
+            begin
+              sprite_idx := j;
+              break;
+            end;
+      end;
+
+      if sprite_idx < 0 then
+      begin
+        I_Warning('DEH_Parse(): Can not find sprite = %s'#13#10, [token1]);
+        Continue;
+      end;
+
+      sprnames[sprite_idx] :=
+        Ord(token2[1]) +
+        Ord(token2[2]) shl 8 +
+        Ord(token2[3]) shl 16 +
+        Ord(token2[4]) shl 24;
+    end;
+  end;
+
+  procedure ApplyMisc;
+  var
+    midx: integer;
+    ent: TDehackedEntry;
+  begin
+    for midx := 0 to section.Count - 1 do
+    begin
+      ent := section[midx];
+      case ent.Field of
+        0: p_maxhealth := ent.Number;
+        1: p_soulspherehealth := ent.Number;
+        2: p_megaspherehealth := ent.Number;
+        3: p_medikithealth := ent.Number;
+        4: p_stimpackhealth := ent.Number;
+        5: p_bonushealth := ent.Number;
+        6: p_maxarmor := ent.Number;
+        7: p_greenarmorclass := ent.Number;
+        8: p_bluearmorclass := ent.Number;
+      end;
+    end;
+  end;
+
+  procedure ApplyStrings;
+  var
+    j: integer;
+    sidx: integer;
+    ent: TDehackedEntry;
+  begin
+    for sidx := 0 to section.Count - 1 do
+    begin
+      ent := section[sidx];
+      for j := 0 to deh_strings.numstrings - 1 do
+        if deh_strings._array[j].name = ent.Key then
+        begin
+          deh_strings._array[j].pstr^ := DEH_CStringToString(ent.Text);
+          break;
+        end;
+    end;
+  end;
+
+  procedure ApplyCodePointers;
+  var
+    cidx: integer;
+    ent: TDehackedEntry;
+    act: integer;
+  begin
+    for cidx := 0 to section.Count - 1 do
+    begin
+      ent := section[cidx];
+      state_no := ent.Numbers[0];
+      if state_no >= numstates then
+        continue;
+
+      if ent.Number >= 0 then
+      begin
+        if ent.Number < dehnumactions then
+          states[state_no].action.acp1 := deh_actions[ent.Number].action.acp1;
+      end
+      else
+      begin
+        act := DEH_SearchActionFromHash(ent.Text);
+        if act < 0 then
+          act := FindActionByName(ent.ActionName);
+        if act >= 0 then
+          states[state_no].action.acp1 := deh_actions[act].action.acp1;
+        SetActionParams(state_no, ent.ActionArguments);
+      end;
+    end;
+  end;
+
+  procedure ApplyMusic;
+  var
+    j: integer;
+    midx: integer;
+    ent: TDehackedEntry;
+  begin
+    for midx := 0 to section.Count - 1 do
+    begin
+      ent := section[midx];
+      token1 := ent.Key;
+      token2 := ent.Text;
+      music_idx := ent.Number;
+      if (music_idx >= 1) and (music_idx < nummusic) then
+        S_music[music_idx].name := token2
+      else
+      begin
+        for j := 1 to nummusic - 1 do // First music is dummy
+        begin
+          stmp := strupper(S_music[j].name);
+          if stmp = token1 then
+          begin
+            S_music[j].name := token2;
+            break;
+          end
+          else if 'D_' + stmp = token1 then // JVAL Allow D_ prefix for checking
+          begin
+            S_music[j].name := token2;
+            break;
+          end
+          else if strupper(S_music[j].mapname) = token1 then
+          begin
+            S_music[j].name := token2;
+            break;
+          end
+        end;
+      end;
+    end;
+  end;
+
+  procedure ApplySounds;
+  var
+    j: integer;
+    sidx: integer;
+    ent: TDehackedEntry;
+  begin
+    for sidx := 0 to section.Count - 1 do
+    begin
+      ent := section[sidx];
+      token1 := ent.Key;
+      token2 := ent.Text;
+      sound_no := ent.Number;
+      if (sound_no >= 1) and (sound_no < numsfx) then
+        S_sfx[sound_no].name := token2
+      else
+      begin
+        for j := 1 to numsfx - 1 do // First sfx is dummy
+        begin
+          stmp := strupper(S_sfx[j].name);
+          if stmp = token1 then
+          begin
+            S_sfx[j].name := token2;
+            break;
+          end
+          else if 'DS' + stmp = token1 then // JVAL, check the 'DS' prefix
+          begin
+            S_sfx[j].name := token2;
+            break;
+          end;
+        end;
+      end;
+    end;
+  end;
+
 begin
   if not deh_initialized then
     DEH_Init;
@@ -327,1414 +1050,59 @@ begin
   for i := 0 to numstates - 1 do
     code_ptrs[i] := states[i].action;
 
-  i := 0;
-  mustnextline := true;
-  while i < s.Count do
+  for sectionindex := 0 to APatch.SectionCount - 1 do
   begin
-    if mustnextline then
-      if not DEH_NextLine(s, str, i) then
-        break;
-    mustnextline := true;
-
-    splitstring_ch(str, token1, token2);
-
-    ////////////////////////////////////////////////////////////////////////////
-    if (token1 = 'THING') or (token1 = 'NEWTHING') then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse a thing ///////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := parsefirstword(token2);
-
-      if (token1 = 'NEWTHING') or (stmp = '') or (itoa(atoi(stmp)) <> stmp) then
-      begin
-        if devparm then
+    section := APatch.Section(sectionindex);
+    case section.Kind of
+      dskThing: ApplyThing;
+      dskFrame: ApplyFrame;
+      dskText: ApplyText;
+      dskPointer: ApplyPointer;
+      dskSound: ApplySound;
+      dskAmmo: ApplyAmmo;
+      dskWeapon: ApplyWeapon;
+      dskSprites: ApplySprites;
+      dskCheat: ;
+      dskMisc: ApplyMisc;
+      dskPars: ;
+      dskStrings: ApplyStrings;
+      dskCodePointers: ApplyCodePointers;
+      dskMusic: ApplyMusic;
+      dskSounds: ApplySounds;
+      dskSubmitNewStates:
         begin
-          printf('DEH_Parse(): Expanding mobjinfo table...'#13#10);
-          if stmp <> '' then
-            printf('             Adding %s mobj'#13#10, [stmp]);
+          // JVAL: 20201203 - Preserve initial actions
+          realloc(pointer(code_ptrs), deh_initialstates * SizeOf(actionf_t), numstates * SizeOf(actionf_t));
+          for j := 0 to numstates - 1 do
+            code_ptrs[j] := states[j].action;
+
+          // Resetting internal states counter
+          deh_initialstates := numstates;
         end;
-        mobj_no := Info_GetNewMobjInfo;
-        Info_SetMobjName(mobj_no, stmp);
-      end
-      else
-      begin
-        // Retrieve think number
-        mobj_no := atoi(stmp, -1);
-
-        if stmp = '' then
-        begin
-          I_Warning('DEH_Parse(): Thing number unspecified after THING keyword'#13#10);
-          continue;
-        end;
-
-        if (mobj_no <= 0) or (mobj_no > nummobjtypes) then
-        begin
-          I_Warning('DEH_Parse(): Wrong think number = %d'#13#10, [mobj_no]);
-          continue;
-        end;
-        dec(mobj_no); // JVAL DEH patches start Think numbers from 1
-      end;
-
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-      // Retrieve current think field index
-        splitstring_ch(str, token1, token2, '=');
-        token2 := RemoveQuotesFromString(token2);
-        mobj_idx := mobj_tokens_hash.IndexOf(token1);
-
-        if mobj_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong think field = %s (Think number = %d)'#13#10, [token1, mobj_no]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        mobj_val := atoi(token2, -1);
-
-        if mobj_idx in [1, 3, 7, 10, 11, 12, 13, 23, 38, 40, 41, 74, 81] then
-        begin
-          stmp := firstword_ch(token2);
-          if (stmp = 'NEWFRAME') or (stmp = 'NEWSTATE') then  // JVAL: a new defined state
-          begin
-            mobj_val := atoi(secondword(token2), -1);
-            if mobj_val < 0 then
-            begin
-              I_Warning('DEH_Parse(): After %s keyword found invalid numeric %s (Think number = %d)'#13#10, [stmp, secondword(token2), mobj_no]);
-              continue;
-            end;
-            mobj_val := mobj_val + deh_initialstates;
-          end
-          else if (stmp = 'ORIGINALFRAME') or (stmp = 'ORIGINALSTATE') then  // JVAL: an original defined state
-          begin
-            mobj_val := atoi(secondword(token2), -1);
-            if mobj_val < 0 then
-            begin
-              I_Warning('DEH_Parse(): After %s keyword found invalid numeric %s (Think number = %d)'#13#10, [stmp, secondword(token2), mobj_no]);
-              continue;
-            end;
-          end
-        end;
-
-        case mobj_idx of
-           0: mobjinfo[mobj_no].doomednum := mobj_val;
-           1: mobjinfo[mobj_no].spawnstate := mobj_val;
-           2: mobjinfo[mobj_no].spawnhealth := mobj_val;
-           3: mobjinfo[mobj_no].seestate := mobj_val;
-           4: mobjinfo[mobj_no].seesound := S_GetSoundNumForName(token2);
-           5: mobjinfo[mobj_no].reactiontime := mobj_val;
-           6: mobjinfo[mobj_no].attacksound := S_GetSoundNumForName(token2);
-           7,
-          81: mobjinfo[mobj_no].painstate := mobj_val;
-           8: mobjinfo[mobj_no].painchance := mobj_val;
-           9: mobjinfo[mobj_no].painsound := S_GetSoundNumForName(token2);
-          10: mobjinfo[mobj_no].meleestate := mobj_val;
-          11: mobjinfo[mobj_no].missilestate := mobj_val;
-          12: mobjinfo[mobj_no].deathstate := mobj_val;
-          13: mobjinfo[mobj_no].xdeathstate := mobj_val;
-          14: mobjinfo[mobj_no].deathsound := S_GetSoundNumForName(token2);
-          15: mobjinfo[mobj_no].speed := mobj_val;
-          16,
-          76: mobjinfo[mobj_no].radius := mobj_val;
-          17: mobjinfo[mobj_no].height := mobj_val;
-          18: mobjinfo[mobj_no].mass := mobj_val;
-          19: mobjinfo[mobj_no].damage := mobj_val;
-          20,
-          75: mobjinfo[mobj_no].activesound := S_GetSoundNumForName(token2);
-          21: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags := mobj_val
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    token3 := strtrim(token3);
-                    mobj_flag := mobj_flags_hash.IndexOf('MF_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := strtrim(token4);
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags := mobj_setflag;
-
-                end;
-              end;
-          22: begin
-                I_Warning('DEH_Parse(): Unsupported Doom field: "%s".'#13#10, [mobj_tokens[mobj_idx]]);
-              end;
-          23: mobjinfo[mobj_no].raisestate := mobj_val;
-          24: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags_ex := mobj_val  // DelphiStrife specific (lighting, transparency, etc)
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    token3 := strtrim(token3);
-                    mobj_flag := mobj_flags_ex_hash.IndexOf('MF_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags_ex_hash.IndexOf('MF_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := strtrim(token4);
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags_ex := mobj_setflag;
-
-                end;
-              end;
-          25: mobjinfo[mobj_no].customsound1 := S_GetSoundNumForName(token2); // DelphiDoom specific
-          26: mobjinfo[mobj_no].customsound2 := S_GetSoundNumForName(token2); // DelphiDoom specific
-          27: mobjinfo[mobj_no].customsound3 := S_GetSoundNumForName(token2); // DelphiDoom specific
-          28: mobjinfo[mobj_no].explosiondamage := mobj_val;
-          29: mobjinfo[mobj_no].explosionradius := mobj_val;
-          30: mobjinfo[mobj_no].meleedamage := mobj_val;
-          31: begin
-                mobjinfo[mobj_no].inheritsfrom := Info_GetMobjNumForName(token2);
-                if mobjinfo[mobj_no].inheritsfrom = mobj_no then
-                  mobjinfo[mobj_no].inheritsfrom := -1;
-              end;
-          32: Info_SetMobjName(mobj_no, token2);
-          33: mobjinfo[mobj_no].meleesound := S_GetSoundNumForName(token2);
-          34: begin
-                if mobj_val >= 0 then
-                begin
-                  if mobj_val < Ord(NUMMOBJRENDERSTYLES) then
-                    mobjinfo[mobj_no].renderstyle := mobjrenderstyle_t(mobj_val)
-                  else
-                    I_Warning('DEH_Parse(): Wrong renderstyle = %s (Think number = %d).'#13#10, [token2, mobj_no]);
-                end
-                else
-                begin
-                  mobj_val := Ord(R_GetRenderstyleForName(token2));
-                  if mobj_val >= 0 then
-                    mobjinfo[mobj_no].renderstyle := mobjrenderstyle_t(mobj_val)
-                  else
-                    I_Warning('DEH_Parse(): Wrong renderstyle = %s (Think number = %d).'#13#10, [token2, mobj_no])
-                end;
-              end;
-          35: mobjinfo[mobj_no].alpha := mobj_val;
-          36,
-          79: mobjinfo[mobj_no].dropitem := Info_GetMobjNumForName(token2);
-          37: mobjinfo[mobj_no].missiletype := Info_GetMobjNumForName(token2);
-          38: mobjinfo[mobj_no].healstate := mobj_val;
-          39: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags2_ex := mobj_val  // DelphiStrife specific
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    mobj_flag := mobj_flags2_ex_hash.IndexOf('MF2_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags2_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags2_ex := mobj_setflag;
-
-                end;
-              end;
-          40: mobjinfo[mobj_no].crashstate := mobj_val;
-          41: mobjinfo[mobj_no].interactstate := mobj_val;
-          42: mobjinfo[mobj_no].missileheight := mobj_val;
-          43: begin
-                for j := 1 to length(token2) do
-                begin
-                  mobjinfo[mobj_no].name2[j - 1] := AnsiChar(token2[j]);
-                  if j = MOBJINFONAMESIZE then
-                    break;
-                end;
-                for j := length(token2) to MOBJINFONAMESIZE - 1 do
-                  mobjinfo[mobj_no].name2[j] := #0;
-              end;
-          44: mobjinfo[mobj_no].vspeed := mobj_val;
-          45: mobjinfo[mobj_no].pushfactor := DEH_FixedOrFloat(token2, 64);
-          46: mobjinfo[mobj_no].scale := DEH_FixedOrFloat(token2, 64);
-          47: mobjinfo[mobj_no].gravity := DEH_FixedOrFloat(token2, 64);
-          48: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags3_ex := mobj_val  // DelphiDoom specific
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    mobj_flag := mobj_flags3_ex_hash.IndexOf('MF3_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags3_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags3_ex := mobj_setflag;
-
-                end;
-              end;
-          49: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags4_ex := mobj_val  // DelphiDoom specific
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    mobj_flag := mobj_flags4_ex_hash.IndexOf('MF4_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags4_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags4_ex := mobj_setflag;
-
-                end;
-              end;
-          50: mobjinfo[mobj_no].minmissilechance := mobj_val;
-          51: mobjinfo[mobj_no].floatspeed := mobj_val;
-          52: mobjinfo[mobj_no].normalspeed := mobj_val;
-          53: mobjinfo[mobj_no].fastspeed := mobj_val;
-          54: mobjinfo[mobj_no].obituary := token2;
-          55: mobjinfo[mobj_no].hitobituary := token2;
-          56: begin
-                if mobj_val >= 0 then
-                begin
-                  if mobj_val < Ord(NUMGENDERS) then
-                    mobjinfo[mobj_no].gender := gender_t(mobj_val)
-                  else
-                    I_Warning('DEH_Parse(): Wrong gender = %s (Think number = %d).'#13#10, [token2, mobj_no]);
-                end
-                else
-                begin
-                  mobj_val := Ord(R_GetGenderForName(token2));
-                  if mobj_val >= 0 then
-                    mobjinfo[mobj_no].gender := gender_t(mobj_val)
-                  else
-                    I_Warning('DEH_Parse(): Wrong gender = %s (Think number = %d).'#13#10, [token2, mobj_no])
-                end;
-              end;
-          57: mobjinfo[mobj_no].meleerange := mobj_val;
-          58: mobjinfo[mobj_no].maxstepheight := DEH_FixedOrFloat(token2, 64);
-          59: mobjinfo[mobj_no].maxdropoffheight := DEH_FixedOrFloat(token2, 64);
-          60: mobjinfo[mobj_no].gibhealth := mobj_val;
-          61: mobjinfo[mobj_no].maxtargetrange := mobj_val;
-          62: mobjinfo[mobj_no].WeaveIndexXY := mobj_val;
-          63: mobjinfo[mobj_no].WeaveIndexZ := mobj_val;
-          64: mobjinfo[mobj_no].friction := DEH_FixedOrFloat(token2, 64);
-          65: mobjinfo[mobj_no].spriteDX := DEH_FixedOrFloat(token2, 256);
-          66: mobjinfo[mobj_no].spriteDY := DEH_FixedOrFloat(token2, 256);
-          67: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags5_ex := mobj_val  // DelphiDoom specific
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    mobj_flag := mobj_flags5_ex_hash.IndexOf('MF5_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags5_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags5_ex := mobj_setflag;
-
-                end;
-              end;
-          68: begin
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].flags6_ex := mobj_val  // DelphiDoom specific
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    mobj_flag := mobj_flags6_ex_hash.IndexOf('MF6_EX_' + token3);
-                    if mobj_flag = -1 then
-                      mobj_flag := mobj_flags6_ex_hash.IndexOf(token3);
-                    if mobj_flag >= 0 then
-                    begin
-                      if mobj_setflag = -1 then
-                        mobj_setflag := 0;
-                      mobj_flag := _SHL(1, mobj_flag);
-                      mobj_setflag := mobj_setflag or mobj_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].flags6_ex := mobj_setflag;
-
-                end;
-              end;
-          69: begin // .mbf21flags
-                ismbf21 := true;
-                if itoa(mobj_val) = token2 then
-                  mobjinfo[mobj_no].mbf21bits := mobj_val
-                else
-                begin
-                  mobj_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    if Pos1('MF2_', token3) then
-                      Delete(token3, 1, 4);
-                    if Pos1('MBM21_', token3) then
-                      Delete(token3, 1, 6);
-                    if token3 <> '' then
-                    begin
-                      mobj_flag := mobj_flags_mbf21_hash.IndexOf(token3);
-                      if mobj_flag >= 0 then
-                      begin
-                        if mobj_setflag = -1 then
-                          mobj_setflag := 0;
-                        mobj_flag := _SHL(1, mobj_flag);
-                        mobj_setflag := mobj_setflag or mobj_flag;
-                      end;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if mobj_setflag <> -1 then
-                    mobjinfo[mobj_no].mbf21bits := mobj_setflag;
-                end;
-              end;
-          70: begin // .infighting_group (MBF21)
-                group := Info_InfightingGroupToInt(token2);
-                if group <> IG_INVALID then
-                  mobjinfo[mobj_no].infighting_group := group;
-              end;
-          71: begin // .projectile_group (MBF21)
-                group := Info_ProjectileGroupToInt(token2);
-                if group <> PG_INVALID then
-                  mobjinfo[mobj_no].projectile_group := group;
-              end;
-          72: begin // .splash_group (MBF21)
-                group := Info_SplashGroupToInt(token2);
-                if group <> SG_INVALID then
-                  mobjinfo[mobj_no].splash_group := group;
-              end;
-          73: mobjinfo[mobj_no].ripsound := S_GetSoundNumForName(token2); // .ripsound (MBF21)
-          74: mobjinfo[mobj_no].crushstate := mobj_val;
-          77: mobjinfo[mobj_no].bloodcolor := R_GetBloodTranslationIdForName(token2);
-          78: mobjinfo[mobj_no].translationname := strupper(token2);
-          80: mobjinfo[mobj_no].meleethreshold := mobj_val;
-        end;
-      end;
-
-      P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = 'FRAME') or (token1 = 'STATE') then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse a frame ///////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := firstword_ch(token2);
-      if stmp = '' then
-      begin
-        I_Warning('DEH_Parse(): State number unspecified after %s keyword'#13#10, [token1]);
-        continue;
-      end;
-
-      newstate := false;
-      // Retrieve state number
-      if (stmp = 'NEW') or (stmp = 'NEWFRAME') or (stmp = 'NEWSTATE') then
-      begin
-        stmp := secondword(token2);
-        state_no := atoi(stmp, -1);
-        if stmp = '' then
-        begin
-          I_Warning('DEH_Parse(): New state number unspecified after %s keyword'#13#10, [firstword_ch(token2)]);
-          continue;
-        end;
-        if state_no < 0 then
-        begin
-          I_Warning('DEH_Parse(): Wrong new state number = %s'#13#10, [stmp]);
-          continue;
-        end;
-        state_no := state_no + deh_initialstates;
-        newstate := true;
-        if devparm then
-          printf('DEH_Parse(): Expanding states table, new state number found: %d'#13#10, [state_no]);
-        while numstates <= state_no do
-          Info_GetNewState;
-      end
-      else
-      begin
-        state_no := atoi(stmp, -1);
-        if state_no < 0 then
-          state_no := statenames.IndexOfToken(token2);
-        if state_no < 0 then
-        begin
-          I_Warning('DEH_Parse(): Wrong state number = %s'#13#10, [token2]);
-          continue;
-        end;
-        while numstates <= state_no do
-          Info_GetNewState;
-      end;
-      SC_FillStateNames;
-
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-        state_idx := state_tokens.IndexOf(token1);
-
-        if state_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong state field = %s (State number = %d)'#13#10, [token1, state_no]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        state_val := atoi(token2, -1);
-
-        case state_idx of
-           0: states[state_no].sprite := Info_GetSpriteNumForName(token2);
-           1:
-            begin
-              if firstword_ch(token2) = 'BRIGHT' then
-                states[state_no].frame := FF_FULLBRIGHT + atoi(secondword(token2))
-              else
-                states[state_no].frame := state_val;
-            end;
-           2: states[state_no].tics := state_val;
-           3:
-            begin
-              fw := firstword_ch(token2);
-              if (fw = 'ORIGINALSTATE') or (fw = 'ORIGINALFRAME') or (fw = 'ORIGINAL') then
-              begin
-                state_val := atoi(secondword(token2));
-                states[state_no].nextstate := statenum_t(state_val);
-              end
-              else if (fw = 'NEWSTATE') or (fw = 'NEWFRAME') or (fw = 'NEW') then
-              begin
-                state_val := atoi(secondword(token2));
-                states[state_no].nextstate := statenum_t(deh_initialstates + state_val)
-              end
-              else if statenames.IndexOfToken(token2) >= 0 then
-                states[state_no].nextstate := statenum_t(statenames.IndexOfToken(token2))
-              else if newstate then
-                states[state_no].nextstate := statenum_t(deh_initialstates + state_val)
-              else
-                states[state_no].nextstate := statenum_t(state_val);
-            end;
-           4:
-            begin
-              if state_val >= 0 then
-              begin
-                if state_val < dehnumactions then
-                  states[state_no].action.acp1 := deh_actions[state_val].action.acp1
-                else
-                  I_Warning('DEH_Parse(): Wrong action number = %d in state %d (Must be in [0..%d])'#13#10, [state_val, state_no, dehnumactions]);
-              end
-              else
-              begin
-                splitstring(token2, token3, token4, [' ', '(']);
-                foundaction := false;
-
-                j := DEH_SearchActionFromHash(token3);
-                if j >= 0 then
-                begin
-                  states[state_no].action.acp1 := deh_actions[j].action.acp1;
-                  foundaction := True;
-                end
-                else
-                begin
-                  for j := 0 to dehnumactions - 1 do
-                    if (token3 = deh_actions[j].name) or (token3 = 'A_' + deh_actions[j].name) then
-                    begin
-                      states[state_no].action.acp1 := deh_actions[j].action.acp1;
-                      foundaction := True;
-                      break;
-                    end;
-                end;
-
-                if foundaction then
-                begin
-                  if states[state_no].params <> nil then
-                    states[state_no].params.Free;
-                  if token4 <> '' then
-                    states[state_no].params := TCustomParamList.Create(SC_FixParenthesisLevel(token4));
-                end
-                else
-                  I_Warning('DEH_Parse(): Unknown action function = "%s" in state %d'#13#10, [token3, state_no]);
-              end;
-            end;
-           5: states[state_no].misc1 := state_val;
-           6: states[state_no].misc2 := state_val;
-           7: begin
-                if itoa(state_val) = token2 then
-                  states[state_no].flags_ex := state_val  // DelphiDoom specific (lighting, transparency, etc)
-                else
-                begin
-                  state_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    state_flag := state_flags_ex.IndexOf('MF_EX_' + token3);
-                    if state_flag = -1 then
-                      state_flag := state_flags_ex.IndexOf('MF_' + token3);
-                    if state_flag = -1 then
-                      state_flag := state_flags_ex.IndexOf(token3);
-                    if state_flag >= 0 then
-                    begin
-                      if state_setflag = -1 then
-                        state_setflag := 0;
-                      state_flag := _SHL(1, state_flag);
-                      state_setflag := state_setflag or state_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if state_setflag <> -1 then
-                    states[state_no].flags_ex := state_setflag;
-
-                end;
-              end;
-           8: Info_AddStateOwner(@states[state_no], Info_GetMobjNumForName(token2));
-           9: states[state_no].tics2 := state_val;
-          10: begin
-                states[state_no].args[0] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG1_DEFINED;
-              end;
-          11: begin
-                states[state_no].args[1] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG2_DEFINED;
-              end;
-          12: begin
-                states[state_no].args[2] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG3_DEFINED;
-              end;
-          13: begin
-                states[state_no].args[3] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG4_DEFINED;
-              end;
-          14: begin
-                states[state_no].args[4] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG5_DEFINED;
-              end;
-          15: begin
-                states[state_no].args[5] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG6_DEFINED;
-              end;
-          16: begin
-                states[state_no].args[6] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG7_DEFINED;
-              end;
-          17: begin
-                states[state_no].args[7] := state_val;  // MBF21
-                states[state_no].argsdefined := states[state_no].argsdefined or ARG8_DEFINED;
-              end;
-          18: begin // MBF21
-                if itoa(state_val) = token2 then
-                  states[state_no].mbf21bits := state_val
-                else
-                begin
-                  state_setflag := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    state_flag := state_flags_mbf21.IndexOf(token3);
-                    if state_flag >= 0 then
-                    begin
-                      if state_setflag = -1 then
-                        state_setflag := 0;
-                      state_flag := _SHL(1, state_flag);
-                      state_setflag := state_setflag or state_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if state_setflag <> -1 then
-                    states[state_no].mbf21bits := state_setflag;
-
-                end;
-              end;
-        end;
-      end;
-
-      // MBF21
-      if states[state_no].mbf21bits <> 0 then
-        ismbf21 := true;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'TEXT' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse a text ////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := token2;
-      splitstring_ch(stmp, token1, token2);
-
-      len1 := atoi(token1, -1);
-      if len1 <= 0 then
-        continue;
-
-      len2 := atoi(token2, -1);
-      if len2 <= 0 then
-        continue;
-
-      stmp := '';
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i, false) then
-          break;
-
-        stmp := stmp + str;
-        if length(stmp) >= len1 + len2 then
-          break;
-
-        stmp := stmp + #10;
-        if length(stmp) >= len1 + len2 then
-          break;
-      end;
-      len2 := Length(stmp) - len1;
-      if len2 <= 0 then
-        continue;
-
-      settext := Copy(stmp, 1, len1);
-      token1 := DEH_StringValue(settext);
-      token2 := Copy(stmp, len1 + 1, len2);
-
-      foundtext := false;
-      for j := 0 to deh_strings.numstrings - 1 do
-        if DEH_StringValue(deh_strings._array[j].pstr^) = token1 then
-        begin
-          foundtext := true;
-          deh_strings._array[j].pstr^ := DEH_CStringToString(token2);
-          break;
-        end;
-
-      if not foundtext then
-      begin
-        for j := 1 to nummusic - 1 do // First music is dummy
-        begin
-          stmp := strupper(S_music[j].name);
-          if stmp = token1 then
-          begin
-            foundtext := true;
-            S_music[j].name := token2;
-            break;
-          end
-          else if 'D_' + stmp = token1 then // JVAL Allow D_ prefix for checking
-          begin
-            foundtext := true;
-            S_music[j].name := token2;
-            break;
-          end
-          else if strupper(S_music[j].mapname) = token1 then
-          begin
-            foundtext := true;
-            S_music[j].name := token2;
-            break;
-          end
-        end;
-
-        if not foundtext and (len1 = 4) and (len2 = 4) then
-        begin
-          for j := 0 to numsprites - 1 do
-          begin
-            stmp := Chr(sprnames[j] and $FF) +
-                    Chr(sprnames[j] shr 8 and $FF) +
-                    Chr(sprnames[j] shr 16 and $FF) +
-                    Chr(sprnames[j] shr 24 and $FF);
-            if stmp = token1 then
-            begin
-              sprnames[j] := Ord(toupper(token2[1])) +
-                             Ord(toupper(token2[2])) shl 8 +
-                             Ord(toupper(token2[3])) shl 16 +
-                             Ord(toupper(token2[4])) shl 24;
-              foundtext := true;
-              break;
-            end;
-          end;
-        end;
-      end;
-
-      if not foundtext then
-        I_Warning('DEH_Parse(): Can not find setable text "%s" - should be changed to "%s"'#13#10, [settext, token2]);
-
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'POINTER' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse a code pointer ////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := secondword(token2, '(');
-      if length(stmp) < 7 then
-        continue;
-      if stmp[length(stmp)] <> ')' then
-        continue;
-
-      SetLength(stmp, length(stmp) - 1);
-      splitstring_ch(stmp, token1, token2);
-      if token1 <> 'FRAME' then
-        continue;
-
-      state_no := atoi(token2, -1);
-      if state_no < 0 then
-        continue;
-
-      if not DEH_NextLine(s, str, i) then
-        break;
-
-      if CharPos('=', str) = 0 then
-      begin
-        mustnextline := false; // Already got line
-        continue;
-      end;
-
-      splitstring_ch(str, token1, token2, '=');
-      if token1 <> 'CODEP FRAME' then
-      begin
-        mustnextline := false; // Already got line
-        continue;
-      end;
-
-      state_val := atoi(token2, -1);
-      if (state_val >= 0) and (state_val < numstates) then
-      begin
-        // JVAL: 20201203 - Preserve initial actions
-        if state_val < deh_initialstates then
-          states[state_no].action.acp1 := code_ptrs[state_val].acp1
-        else
-          states[state_no].action.acp1 := states[state_val].action.acp1;
-      end
-      else
-        I_Warning('DEH_Parse(): Invalid state number "%s" while parsing CODEP FRAME'#13#10, [token2]);
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'SOUND' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse a sound ///////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := firstword_ch(token2);
-      if stmp = '' then
-        continue;
-
-      if not (stmp[1] in  ['1'..'9', '0']) then
-        sound_no := S_GetSoundNumForName(stmp)
-      else
-      begin
-        // Retrieve think number
-        sound_no := atoi(stmp, -1);
-        if (sound_no < 0) or (sound_no >= numsfx) then
-        begin
-          I_Warning('DEH_Parse(): Wrong sound number = %s'#13#10, [stmp]);
-          if sound_no >= numsfx then
-            I_Warning('DEH_Parse(): New sounds can only specified in things definition!'#13#10);
-          continue;
-        end;
-      end;
-
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-      // Retrieve current think field index
-        splitstring_ch(str, token1, token2, '=');
-        sound_idx := sound_tokens.IndexOf(token1);
-
-        if sound_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong sound field = %s (Sound number = %d)'#13#10, [token1, sound_no]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        sound_val := atoi(token2);
-
-        case sound_idx of
-           0: S_sfx[sound_no].singularity := sound_val <> 0;
-           1: S_sfx[sound_no].priority := sound_val;
-           2: S_sfx[sound_no].name := token2;
-        end;
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'AMMO' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse ammo //////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := firstword_ch(token2);
-      if stmp = '' then
-        continue;
-
-      ammo_no := atoi(stmp, -1);
-
-      if (ammo_no < 0) or (ammo_no >= Ord(NUMAMMO)) then
-      begin
-        I_Warning('DEH_Parse(): Wrong ammo number = %s'#13#10, [stmp]);
-        continue;
-      end;
-
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-        ammo_idx := ammo_tokens.IndexOf(token1);
-
-        if ammo_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong ammo field = %s (Ammo number = %d)'#13#10, [token1, ammo_no]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        ammo_val := atoi(token2);
-
-        case ammo_idx of
-           0: maxammo[ammo_no] := ammo_val;
-           1: clipammo[ammo_no] := ammo_val;
-        end;
-
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'WEAPON' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse weapon ////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      stmp := firstword_ch(token2);
-      if stmp = '' then
-        continue;
-
-      // Retrieve think number
-      weapon_no := atoi(stmp, -1);
-      if weapon_no < 0 then
-        weapon_no := DEH_WeaponType(stmp);
-      if (weapon_no < 0) or (weapon_no >= Ord(NUMWEAPONS)) then
-      begin
-        I_Warning('DEH_Parse(): Wrong weapon number = %s'#13#10, [stmp]);
-        continue;
-      end;
-
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-      // Retrieve current think field index
-        splitstring_ch(str, token1, token2, '=');
-        weapon_idx := weapon_tokens.IndexOf(token1);
-
-        if weapon_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong weapon field = %s (Weapon number = %d)'#13#10, [token1, weapon_no]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        weapon_val := atoi(token2, -1);
-
-        if weapon_idx = 0 then
-        begin
-          if weapon_val < 0 then
-            weapon_val := DEH_AmmoType(token2);
-          if weapon_val < 0 then
-            I_Warning('DEH_Parse(): After %s keyword found invalid ammo %s (Weapon number = %d)'#13#10, [weapon_tokens.Strings[weapon_idx], token2, weapon_no]);
-        end
-        else if weapon_val < 0 then
-        begin
-          if weapon_idx in [1, 2, 3, 4, 5, 6] then
-          begin
-            stmp := firstword_ch(token2);
-            if (stmp = 'NEWFRAME') or (stmp = 'NEWSTATE') then  // JVAL: a new defined state
-            begin
-              weapon_val := atoi(secondword(token2), -1);
-              if weapon_val < 0 then
-              begin
-                I_Warning('DEH_Parse(): After %s keyword found invalid numeric %s (Weapon number = %d)'#13#10, [stmp, secondword(token2), weapon_no]);
-                continue;
-              end;
-              weapon_val := weapon_val + deh_initialstates;
-            end
-            else if (stmp = 'ORIGINALFRAME') or (stmp = 'ORIGINALSTATE') then  // JVAL: an original defined state
-            begin
-              weapon_val := atoi(secondword(token2), -1);
-              if weapon_val < 0 then
-              begin
-                I_Warning('DEH_Parse(): After %s keyword found invalid numeric %s (Weapon number = %d)'#13#10, [stmp, secondword(token2), weapon_no]);
-                continue;
-              end;
-            end;
-          end
-          else if weapon_idx = 7 then
-          begin
-            I_Warning('DEH_Parse(): Positive number expected after keyword (%s) - (%s) (Weapon number = %d)'#13#10, [token1, token2, weapon_no]);
-            continue;
-          end;
-        end;
-
-        case weapon_idx of
-           0: weaponinfo[weapon_no].ammo := ammotype_t(weapon_val);
-           1: weaponinfo[weapon_no].upstate := weapon_val;
-           2: weaponinfo[weapon_no].downstate := weapon_val;
-           3: weaponinfo[weapon_no].readystate := weapon_val;
-           4: weaponinfo[weapon_no].atkstate := weapon_val;
-           6: weaponinfo[weapon_no].holdatkstate := weapon_val;
-           5: weaponinfo[weapon_no].flashstate := weapon_val;
-           7: begin
-                weaponinfo[weapon_no].ammopershot := weapon_val;  // MBF21
-                weaponinfo[weapon_no].intflags := weaponinfo[weapon_no].intflags or WIF_ENABLEAPS;
-              end;
-           8: begin // MBF21
-                if itoa(weapon_val) = token2 then
-                  weaponinfo[weapon_no].mbf21bits := weapon_val
-                else
-                begin
-                  weapon_val := -1;
-                  repeat
-                    splitstring(token2, token3, token4, [' ', '|', ',', '+']);
-                    weapon_flag := weapon_flags_mbf21.IndexOf(token3);
-                    if weapon_flag >= 0 then
-                    begin
-                      if weapon_val = -1 then
-                        weapon_val := 0;
-                      weapon_flag := _SHL(1, weapon_flag);
-                      weapon_val := weapon_val or weapon_flag;
-                    end;
-                    token2 := token4;
-                  until token2 = '';
-                  if weapon_val <> -1 then
-                    weaponinfo[weapon_no].mbf21bits := weapon_val;
-
-                end;
-              end;
-
-        end;
-      end;
-
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = '[SPRITES]') or (token1 = 'SPRITES') then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse sprite ////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-
-        sprite_idx := -1;
-        sprite_val := atoi(token1, -1);
-        if IsIntegerInRange(sprite_val, 0, Ord(DO_NUMSPRITES) - 1) then
-        begin
-          sprite_idx := sprite_val;
-          token1 := DO_sprnames[sprite_idx];
-        end
-        else if (numsprites >= Ord(DO_NUMSPRITES)) and IsIntegerInRange(sprite_val, Ord(DO_NUMSPRITES), numsprites) then
-        begin
-          sprite_idx := sprite_val;
-          token1 := Chr(sprnames[sprite_idx] and $FF) +
-                    Chr(sprnames[sprite_idx] shr 8 and $FF) +
-                    Chr(sprnames[sprite_idx] shr 16 and $FF) +
-                    Chr(sprnames[sprite_idx] shr 24 and $FF);
-        end;
-
-        if length(token1) <> 4 then
-        begin
-          I_Warning('DEH_Parse(): Sprite name with %d characters = %s'#13#10, [length(token1), token1]);
-          Continue;
-        end;
-
-        if length(token2) <> 4 then
-        begin
-          I_Warning('DEH_Parse(): Sprite name with %d characters = %s'#13#10, [length(token2), token2]);
-          Continue;
-        end;
-
-        strupperproc(token1);
-        strupperproc(token2);
-
-        // JVAL: Check the original sprite names (https://eternity.youfailit.net/wiki/DeHackEd_/_BEX_Reference/Eternity_Extension:_SPRITES_Block)
-        if sprite_idx < 0 then
-        begin
-          for j := 0 to Ord(DO_NUMSPRITES) - 1 do
-            if DO_sprnames[j] = token1 then
-            begin
-              sprite_idx := j;
-              break;
-            end;
-          if sprite_idx < 0 then
-            for j := Ord(DO_NUMSPRITES) to numsprites - 1 do
-              if Chr(sprnames[j] and $FF) + Chr(sprnames[j] shr 8 and $FF) +
-                Chr(sprnames[j] shr 16 and $FF) + Chr(sprnames[j] shr 24 and $FF) = token1 then
-              begin
-                sprite_idx := j;
-                break;
-              end;
-        end;
-
-        if sprite_idx < 0 then
-        begin
-          I_Warning('DEH_Parse(): Can not find sprite = %s'#13#10, [token1]);
-          Continue;
-        end;
-
-        sprnames[sprite_idx] :=
-          Ord(token2[1]) +
-          Ord(token2[2]) shl 8 +
-          Ord(token2[3]) shl 16 +
-          Ord(token2[4]) shl 24;
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'CHEAT' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse cheat /////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if token1 = 'MISC' then
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse misc //////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-      // Retrieve current think field index
-        splitstring_ch(str, token1, token2, '=');
-
-        misc_idx := misc_tokens.IndexOf(token1);
-
-        if misc_idx = -1 then
-        begin
-          I_Warning('DEH_Parse(): Wrong misc field = %s'#13#10, [token1]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        misc_val := atoi(token2, -1);
-        if misc_val < 0 then // Allow Zero!!
-        begin
-          I_Warning('DEH_Parse(): Wrong misc value %s, field = %s'#13#10, [token2, token1]);
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        case misc_idx of
-          0: p_maxhealth := misc_val;
-          1: p_soulspherehealth := misc_val;
-          2: p_megaspherehealth := misc_val;
-          3: p_medikithealth := misc_val;
-          4: p_stimpackhealth := misc_val;
-          5: p_bonushealth := misc_val;
-          6: p_maxarmor := misc_val;
-          7: p_greenarmorclass := misc_val;
-          8: p_bluearmorclass := misc_val;
-        end;
-      end;
-
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = '[STRINGS]') or (token1 = 'STRINGS') then // BEX
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse strings ///////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        while str[length(str)] = '\' do  // Multiple lines devide by '\' char
-        begin
-          str[Length(str)] := #10; // Replace '\' with new line indicator
-          if not DEH_NextLine(s, stmp, i) then
-            break;
-          str := str + stmp;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-
-        for j := 0 to deh_strings.numstrings - 1 do
-          if deh_strings._array[j].name = token1 then
-          begin
-            deh_strings._array[j].pstr^ := DEH_CStringToString(token2);
-            break;
-          end;
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = '[CODEPTR]') or (token1 = 'CODEPTR') then // BEX
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse code pointer //////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, stmp, token3, '=');
-        splitstring_ch(stmp, token1, token2);
-
-        if token1 <> 'FRAME' then
-          continue;
-
-        state_no := atoi(token2, -1);
-        if state_no < 0 then
-          continue;
-
-        state_val := atoi(token3, -1);
-
-        if state_val >= 0 then
-        begin
-          if state_val < dehnumactions then
-            states[state_no].action.acp1 := deh_actions[state_val].action.acp1;
-        end
-        else
-        begin
-          splitstring(token3, token4, token5, [' ', '(']);
-
-          j := DEH_SearchActionFromHash(token3);
-          if j >= 0 then
-            states[state_no].action.acp1 := deh_actions[j].action.acp1
-          else
-          begin
-            for j := 0 to dehnumactions - 1 do
-              if (token4 = deh_actions[j].name) or (token4 = 'A_' + deh_actions[j].name) then
-              begin
-                states[state_no].action.acp1 := deh_actions[j].action.acp1;
-                break;
-              end;
-          end;
-
-          if states[state_no].params <> nil then
-            states[state_no].params.Free;
-          if token5 <> '' then
-            states[state_no].params := TCustomParamList.Create(SC_FixParenthesisLevel(token5));
-        end;
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = '[MUSIC]') or (token1 = 'MUSIC') then // BEX
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse music /////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-        token2 := firstword_ch(token2);
-
-        music_idx := atoi(token1, -1);
-        if (music_idx >= 1) and (music_idx < nummusic) then
-          S_music[music_idx].name := token2
-        else
-        begin
-          for j := 1 to nummusic - 1 do // First music is dummy
-          begin
-            stmp := strupper(S_music[j].name);
-            if stmp = token1 then
-            begin
-              S_music[j].name := token2;
-              break;
-            end
-            else if 'D_' + stmp = token1 then // JVAL Allow D_ prefix for checking
-            begin
-              S_music[j].name := token2;
-              break;
-            end
-            else if strupper(S_music[j].mapname) = token1 then
-            begin
-              S_music[j].name := token2;
-              break;
-            end
-          end;
-        end
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = '[SOUND]') or (token1 = '[SOUNDS]') then // BEX
-    begin
-    ////////////////////////////////////////////////////////////////////////////
-    // Parse music /////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      while true do
-      begin
-        if not DEH_NextLine(s, str, i) then
-          break;
-        if CharPos('=', str) = 0 then
-        begin
-          mustnextline := false; // Already got line
-          break;
-        end;
-
-        splitstring_ch(str, token1, token2, '=');
-
-        sound_idx := atoi(token1, -1);
-        if (sound_idx >= 1) and (sound_idx < numsfx) then
-          S_sfx[sound_idx].name := token2
-        else
-        begin
-          for j := 1 to numsfx - 1 do // First sfx is dummy
-          begin
-            stmp := strupper(S_sfx[j].name);
-            if stmp = token1 then
-            begin
-              S_sfx[j].name := token2;
-              break;
-            end
-            else if 'DS' + stmp = token1 then // JVAL, check the 'DS' prefix
-            begin
-              S_sfx[j].name := token2;
-              break;
-            end;
-          end;
-        end;
-
-      end;
-    end
-
-    ////////////////////////////////////////////////////////////////////////////
-    else if (token1 = 'SUBMITNEWSTATES') or (token1 = 'SUBMITNEWFRAMES') then // DelphiDoom specific
-    begin
-    // JVAL: 20201203 - Preserve initial actions
-      realloc(pointer(code_ptrs), deh_initialstates * SizeOf(actionf_t), numstates * SizeOf(actionf_t));
-      for j := 0 to numstates - 1 do
-        code_ptrs[j] := states[j].action;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Resetting internal states counter ///////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-      deh_initialstates := numstates;
-
     end;
-
   end;
 
   // JVAL: 20201203 - Preserve initial actions
   memfree(pointer(code_ptrs), numstates * SizeOf(actionf_t));
+end;
+
+//==============================================================================
+//
+// DEH_Parse
+//
+//==============================================================================
+procedure DEH_Parse(const s: TDStringList);
+var
+  lines: TArray<string>;
+  i: integer;
+begin
+  if deh_parser = nil then
+    I_Error('DEH_Parse(): the DEHACKED parser is not configured (ComposeEngine was not called)');
+
+  SetLength(lines, s.Count);
+  for i := 0 to s.Count - 1 do
+    lines[i] := s[i];
+  DEH_Apply(deh_parser.ParseLines(lines));
 end;
 
 //==============================================================================
@@ -2268,8 +1636,6 @@ begin
   mobj_tokens.Add('MELEE THRESHOLD');    // .meleethreshold           // 80
   mobj_tokens.Add('PAIN FRAME');         // .painstate                // 81 - Alias for 7
 
-  mobj_tokens_hash := TDEHStringsHashTable.Create;
-  mobj_tokens_hash.AssignList(mobj_tokens);
 
   mobj_flags := TDTextList.Create;
   mobj_flags.Add('MF_SPECIAL');
@@ -2305,8 +1671,6 @@ begin
   mobj_flags.Add('MF_COLORSWAP3');
   mobj_flags.Add('MF_SPECTRAL');
 
-  mobj_flags_hash := TDEHStringsHashTable.Create;
-  mobj_flags_hash.AssignList(mobj_flags);
 
   mobj_flags_ex := TDTextList.Create;
   mobj_flags_ex.Add('MF_EX_TRANSPARENT');
@@ -2341,8 +1705,6 @@ begin
   mobj_flags_ex.Add('MF_EX_THRUGHOST');
   mobj_flags_ex.Add('MF_EX_LOOKALLAROUND');
 
-  mobj_flags_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags_ex_hash.AssignList(mobj_flags_ex);
 
   mobj_flags2_ex := TDTextList.Create;
   mobj_flags2_ex.Add('MF2_EX_MEDIUMGRAVITY');
@@ -2377,8 +1739,6 @@ begin
   mobj_flags2_ex.Add('MF2_EX_DONTBLOCKPLAYER');
   mobj_flags2_ex.Add('MF2_EX_FRIEND'); // JVAL: VERSION 207
 
-  mobj_flags2_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags2_ex_hash.AssignList(mobj_flags2_ex);
 
   mobj_flags3_ex := TDTextList.Create;
   mobj_flags3_ex.Add('MF3_EX_FLOORBOUNCE');
@@ -2414,8 +1774,6 @@ begin
   mobj_flags3_ex.Add('MF3_EX_NOFLAMEDAMAGE');
   mobj_flags3_ex.Add('MF3_EX_MELEECHECKZ');
 
-  mobj_flags3_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags3_ex_hash.AssignList(mobj_flags3_ex);
 
   mobj_flags4_ex := TDTextList.Create;
   mobj_flags4_ex.Add('MF4_EX_FLAMEDAMAGERESIST');
@@ -2443,8 +1801,6 @@ begin
   mobj_flags4_ex.Add('MF4_EX_BACKINGMELEE');
   mobj_flags4_ex.Add('MF4_EX_WINDTHRUST');
 
-  mobj_flags4_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags4_ex_hash.AssignList(mobj_flags4_ex);
 
   mobj_flags5_ex := TDTextList.Create;
   mobj_flags5_ex.Add('MF5_EX_PUSHWALL');
@@ -2452,13 +1808,9 @@ begin
   mobj_flags5_ex.Add('MF5_EX_PCROSS');
   mobj_flags5_ex.Add('MF5_EX_IMPACT');
 
-  mobj_flags5_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags5_ex_hash.AssignList(mobj_flags5_ex);
 
   mobj_flags6_ex := TDTextList.Create;
 
-  mobj_flags6_ex_hash := TDEHStringsHashTable.Create;
-  mobj_flags6_ex_hash.AssignList(mobj_flags6_ex);
 
   // MBF21
   mobj_flags_mbf21 := TDTextList.Create;
@@ -2482,8 +1834,6 @@ begin
   mobj_flags_mbf21.Add('RIP');
   mobj_flags_mbf21.Add('FULLVOLSOUNDS');
 
-  mobj_flags_mbf21_hash := TDEHStringsHashTable.Create;
-  mobj_flags_mbf21_hash.AssignList(mobj_flags_mbf21);
 
   infighting_groups := TDTextList.Create;
   infighting_groups.Add('IG_DEFAULT');
@@ -3288,15 +2638,6 @@ begin
   FreeAndNil(projectile_groups);
   FreeAndNil(splash_groups);
 
-  FreeAndNil(mobj_tokens_hash);
-  FreeAndNil(mobj_flags_hash);
-  FreeAndNil(mobj_flags_ex_hash);
-  FreeAndNil(mobj_flags2_ex_hash);
-  FreeAndNil(mobj_flags3_ex_hash);
-  FreeAndNil(mobj_flags4_ex_hash);
-  FreeAndNil(mobj_flags5_ex_hash);
-  FreeAndNil(mobj_flags6_ex_hash);
-  FreeAndNil(mobj_flags_mbf21_hash); // MBF21
 
   DEH_ShutDownActionsHash;
 

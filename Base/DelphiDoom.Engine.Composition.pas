@@ -42,6 +42,9 @@ uses
   p_umapinfo,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
+  DelphiDoom.Dehacked.Games,
+  DelphiDoom.Dehacked.Factory,
+  deh_main,
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.ActorDef.Profiles,
@@ -191,6 +194,15 @@ begin
 end;
 {$ENDIF}
 
+procedure ComposeDehacked(const ALog: ILog);
+var
+  LGame: TDehackedGame;
+begin
+  if not TDehackedGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
+  DEH_Configure(TDehackedFactory.CreateParser(LGame, ALog));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -256,6 +268,7 @@ begin
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic;
+  ComposeDehacked(LLog);
   ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 

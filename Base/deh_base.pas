@@ -37,13 +37,6 @@ uses
 
 //==============================================================================
 //
-// DEH_NextLine
-//
-//==============================================================================
-function DEH_NextLine(const s: TDStringList; var str: string; var counter: integer; const skipblanc: boolean = true): boolean;
-
-//==============================================================================
-//
 // DEH_ParseText
 //
 //==============================================================================
@@ -184,13 +177,6 @@ procedure DEH_PrintActions;
 
 //==============================================================================
 //
-// DEH_FixedOrFloat
-//
-//==============================================================================
-function DEH_FixedOrFloat(const token: string; const tolerance: integer): fixed_t;
-
-//==============================================================================
-//
 // DEH_MobjInfoCSV
 //
 //==============================================================================
@@ -303,24 +289,6 @@ procedure DEH_AddAction(const acp1: actionf_p1; const desc: string; const def_ar
 //==============================================================================
 function DEH_PlayerClass(const str: string): integer;
 {$ENDIF}
-
-const
-  DEH_STRINGLIST_HASH_SIZE = 64;
-
-type
-  // Assuming the assigned TDStringList is in UpperCase
-  TDEHStringsHashTable = class(TObject)
-  private
-    positions: array[0..DEH_STRINGLIST_HASH_SIZE - 1] of TDNumberList;
-    fList: TDTextList;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    procedure AssignList(const s: TDTextList);
-    function IndexOf(const value: string): integer;
-    property List: TDTextList read fList;
-  end;
-
 implementation
 
 uses
@@ -339,42 +307,6 @@ uses
   w_folders,
   w_pak,
   w_wad;
-
-//==============================================================================
-//
-// DEH_NextLine
-//
-//==============================================================================
-function DEH_NextLine(const s: TDStringList; var str: string; var counter: integer; const skipblanc: boolean = true): boolean;
-var
-  trimmed: string;
-begin
-  result := counter < s.Count;
-  if not result then
-    exit;
-
-  str := s[counter];
-  trimmed := strtrim(str);
-  if skipblanc then
-    str := trimmed;
-  inc(counter);
-  if skipblanc and (str = '') then
-  begin
-    result := DEH_NextLine(s, str, counter);
-    exit;
-  end;
-  if CharPos('#', trimmed) = 1 then
-  begin
-    result := DEH_NextLine(s, str, counter);
-    exit;
-  end;
-  if Pos1('//', trimmed) then // JVAL: Allow // as comments also
-  begin
-    result := DEH_NextLine(s, str, counter);
-    exit;
-  end;
-  strupperproc(str);
-end;
 
 //==============================================================================
 //
@@ -900,27 +832,6 @@ end;
 
 //==============================================================================
 //
-// DEH_FixedOrFloat
-//
-//==============================================================================
-function DEH_FixedOrFloat(const token: string; const tolerance: integer): fixed_t;
-var
-  fv: float;
-begin
-  if (Pos('.', token) > 0) or (Pos(',', token) > 0) then
-  begin
-    fv := atof(token, 0);
-    if fabs(fv) > tolerance then
-      result := round(fv)
-    else
-      result := round(fv * FRACUNIT);
-  end
-  else
-    result := atoi(token);
-end;
-
-//==============================================================================
-//
 // DEH_MobjInfoCSV
 //
 //==============================================================================
@@ -1319,112 +1230,6 @@ begin
     end;
 
   result := -1;
-end;
-
-//==============================================================================
-//
-// dehstringhash
-//
-//==============================================================================
-function dehstringhash(const s: string): LongWord;
-var
-  i: integer;
-begin
-  if s = '' then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  result := 5381 * 33 + Ord(toupper(s[Length(s)]));
-
-  for i := Length(s) - 1 downto 1 do
-    result := result * 33 + Ord(toupper(s[i]));
-
-  result := result and (DEH_STRINGLIST_HASH_SIZE - 1);
-end;
-
-//==============================================================================
-//
-// TDEHStringsHashTable.Create
-//
-//==============================================================================
-constructor TDEHStringsHashTable.Create;
-var
-  i: integer;
-begin
-  Inherited Create;
-  for i := 0 to DEH_STRINGLIST_HASH_SIZE - 1 do
-    positions[i] := TDNumberList.Create;
-  fList := nil;
-end;
-
-//==============================================================================
-//
-// TDEHStringsHashTable.Destroy
-//
-//==============================================================================
-destructor TDEHStringsHashTable.Destroy;
-var
-  i: integer;
-begin
-  for i := 0 to DEH_STRINGLIST_HASH_SIZE - 1 do
-    positions[i].Free;
-  Inherited Destroy;
-end;
-
-//==============================================================================
-//
-// TDEHStringsHashTable.AssignList
-//
-//==============================================================================
-procedure TDEHStringsHashTable.AssignList(const s: TDTextList);
-var
-  i: integer;
-  h: LongWord;
-begin
-  for i := 0 to DEH_STRINGLIST_HASH_SIZE - 1 do
-    positions[i].Clear;
-  fList := s;
-  for i := 0 to fList.Count - 1 do
-  begin
-    h := dehstringhash(fList.Strings[i]);
-    positions[h].Add(i);
-  end;
-end;
-
-//==============================================================================
-//
-// TDEHStringsHashTable.IndexOf
-//
-//==============================================================================
-function TDEHStringsHashTable.IndexOf(const value: string): integer;
-var
-  h: integer;
-  i: integer;
-  n: integer;
-  check: string;
-begin
-  if flist = nil then
-  begin
-    result := -1;
-    exit;
-  end;
-
-  check := strupper(value);
-  h := dehstringhash(check);
-  for i := 0 to positions[h].Count - 1 do
-  begin
-    n := positions[h].Numbers[i];
-    if (n >= 0) and (n < fList.Count) then
-      if fList.Strings[n] = check then
-      begin
-        result := n;
-        exit;
-      end;
-  end;
-
-  result := fList.IndexOf(check);
 end;
 
 //==============================================================================
