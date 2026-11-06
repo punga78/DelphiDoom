@@ -1,0 +1,864 @@
+@@@ point_basic
+@@ lump LIGHTDEF
+pointlight BARREL1
+{
+  color 1.0 0.5 0.25
+  size 64
+  offset 4 8 32
+}
+object ZOMBIEMAN
+{
+  frame POSSA { light BARREL1 }
+}
+@@ find BARREL1
+@@ times 0 1 35 70
+@@@ flicker_full
+@@ lump LIGHTDEF
+flickerlight TORCH
+{
+  color 1.0 0.8 0.2
+  color2 0.5 0.4 0.1
+  size 48
+  size2 40
+  interval 0.5
+  chance 0.3
+  colorinterval 2
+  colorchance 0.25
+}
+object IMP
+{
+  frame TROOA { light TORCH }
+}
+@@ find torch
+@@ times 0 1 2 35 36 70 71 105 106 1000
+@@@ flicker2_keyword
+@@ lump LIGHTDEF
+flickerlight2 FL2
+{
+  color 1 1 1
+  size 20
+  size2 30
+  interval 2
+}
+object BARREL
+{
+  frame BAR1 { light FL2 }
+}
+@@ times 0 1 20 35 36 100
+@@@ pulse_full
+@@ lump LIGHTDEF
+pulselight PULSE1
+{
+  color 1 0 0
+  color2 0 0 1
+  size 10
+  size2 50
+  interval 2
+  colorinterval 4
+}
+object PLAYER
+{
+  frame PLAYA { light PULSE1 }
+}
+@@ times 0 1 2 17 35 36 70 100 101 1000 5000
+@@@ pulse_variants
+@@ lump LIGHTDEF
+pulselight P_NOINT
+{
+  color 1 1 1
+  color2 0 0 0
+  size 10
+  size2 20
+}
+pulselight P_CHANCE
+{
+  color 1 1 0
+  color2 0 1 1
+  size 10
+  size2 20
+  chance 0.5
+  colorchance 0.5
+}
+pulselight P_INT_ONLY
+{
+  color 1 0 1
+  color2 1 1 0
+  size 12
+  size2 36
+  interval 1.5
+}
+pulselight P_COLINT_ONLY
+{
+  color 0 1 0
+  color2 1 0 0
+  size 12
+  size2 36
+  colorinterval 3
+}
+object ZOMBIEMAN
+@@ times 0 1 7 35 36 71 200
+@@@ flicker_variants
+@@ lump LIGHTDEF
+flickerlight F_NONE
+{
+  color 1 0 0
+  size 10
+}
+flickerlight F_CHANCE
+{
+  color 1 0 0
+  color2 0 1 0
+  size 10
+  size2 20
+  chance 0.5
+  colorchance 0.75
+}
+flickerlight F_INT
+{
+  color 1 0 0
+  color2 0 1 0
+  size 10
+  size2 20
+  interval 4
+  colorinterval 3
+}
+flickerlight F_COLINT_ONLY
+{
+  color 1 0 0
+  color2 0 1 0
+  size 10
+  size2 20
+  colorinterval 1
+}
+object IMP
+@@ times 0 1 2 3 34 35 36 70 140 141 400
+@@@ point_random_offset
+@@ lump LIGHTDEF
+pointlight PRO
+{
+  color 1 1 1
+  size 16
+  offset 10 20 30
+  offset2 -10 -20 -30
+  randomoffset
+}
+pointlight PRO_NOOFF2
+{
+  color 1 1 1
+  size 16
+  offset 10 20 30
+  randomoffset
+}
+pointlight PNO
+{
+  color 1 1 1
+  size 16
+  offset 1 2 3
+  offset2 7 8 9
+}
+object IMP
+@@ times 0 0 1 1 2 35
+@@@ flicker_random_offset
+@@ lump LIGHTDEF
+flickerlight FRO
+{
+  color 1 1 0
+  size 16
+  size2 32
+  interval 1
+  offset 0 0 0
+  offset2 16 16 16
+  randomoffset
+}
+object IMP
+@@ times 0 1 35 36 70
+@@@ pulse_random_offset
+@@ lump LIGHTDEF
+pulselight PRO2
+{
+  color 1 1 0
+  color2 0 0 1
+  size 16
+  size2 32
+  interval 1
+  colorinterval 1
+  offset 0 0 0
+  offset2 16 16 16
+  randomoffset
+}
+object IMP
+@@ times 0 1 2 35 36 70
+@@@ aliases_primary_secondary
+@@ lump LIGHTDEF
+pointlight A1
+{
+  color1 0.1 0.2 0.3
+  size1 10
+  offset1 1 2 3
+}
+pointlight A2
+{
+  primarycolor 0.4 0.5 0.6
+  primarysize 20
+  primaryoffset 4 5 6
+  secondarycolor 0.7 0.8 0.9
+  secondarysize 25
+  secondaryoffset 7 8 9
+}
+flickerlight A3
+{
+  secondarycolor 0.7 0.8 0.9
+  secondarysize 25
+}
+object IMP
+@@@ interval_values
+@@ lump LIGHTDEF
+flickerlight I0
+{
+  color 1 1 1
+  interval 0
+  colorinterval 0
+}
+flickerlight INEG
+{
+  color 1 1 1
+  interval -1
+  colorinterval -2.5
+}
+flickerlight I2
+{
+  interval 2
+  colorinterval 0.25
+}
+flickerlight I3
+{
+  interval 3
+  colorinterval 7
+}
+flickerlight I01
+{
+  interval 0.1
+  colorinterval 0.3
+}
+object IMP
+@@@ chance_clamp
+@@ lump LIGHTDEF
+flickerlight C2
+{
+  chance 2
+  colorchance 3
+}
+flickerlight CNEG
+{
+  chance -1
+  colorchance -0.5
+}
+flickerlight CHALF
+{
+  chance 0.5
+  colorchance 1
+}
+flickerlight CTINY
+{
+  chance 0.001
+  colorchance 0.002
+}
+object IMP
+@@@ float_comma
+@@ lump LIGHTDEF
+pointlight COMMA
+{
+  color 0,5 0.25 1,0
+}
+object IMP
+@@@ bad_float
+@@ lump LIGHTDEF
+pointlight BADF
+{
+  color abc 1 1
+  size 8
+}
+object IMP
+@@@ bad_integer
+@@ lump LIGHTDEF
+pointlight BADI
+{
+  color 1 1 1
+  size 32.5
+  offset 1 x 3
+}
+object IMP
+@@@ light_at_eof_dropped
+@@ lump LIGHTDEF
+pointlight ONE
+{
+  color 1 0 0
+  size 8
+}
+pointlight TWO
+{
+  color 0 1 0
+  size 8
+}
+@@@ light_before_object_kept
+@@ lump LIGHTDEF
+pointlight ONE
+{
+  color 1 0 0
+  size 8
+}
+object IMP
+{
+  frame TROOA { light ONE }
+}
+@@@ name_missing
+@@ lump LIGHTDEF
+pointlight
+@@@ new_light_ends_previous
+@@ lump LIGHTDEF
+pointlight L1 color 1 0 0 size 5 flickerlight L2 color 0 1 0 size 6 pulselight L3 color 0 0 1 size 7 object IMP
+@@@ unknown_token_ends_light
+@@ lump LIGHTDEF
+pointlight L1
+{
+  color 1 0 0
+  size 5
+  brightmap yes
+  color 0 1 0
+}
+pointlight L2
+{
+  color 0 0 1
+}
+object IMP
+@@@ junk_before_lights
+@@ lump LIGHTDEF
+// a comment
+foo bar baz
+pointlight L1 color 1 0 0
+object IMP
+@@@ quoted_name
+@@ lump LIGHTDEF
+pointlight "My Light"
+{
+  color 1 0 0
+  size 5
+}
+object IMP
+@@ find MY LIGHT
+@@ find My
+@@@ long_name
+@@ lump LIGHTDEF
+pointlight ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD
+{
+  color 1 1 1
+  size 5
+}
+object IMP
+{
+  frame TROOA { light ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD }
+}
+@@ find ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD
+@@ find ABCDEFGHIJKLMNOPQRSTUVWXYZ012345
+@@@ duplicate_names
+@@ lump LIGHTDEF
+pointlight DUP
+{
+  color 1 0 0
+}
+pointlight DUP
+{
+  color 0 1 0
+}
+object IMP
+{
+  frame TROOA { light DUP }
+}
+@@ find DUP
+@@@ case_insensitive
+@@ lump LIGHTDEF
+PointLight MixedCase
+{
+  COLOR 1 0 0
+  Size 7
+  OFFSET 1 2 3
+}
+OBJECT imp
+{
+  Frame trooa { Light mixedcase }
+}
+@@ find MIXEDCASE
+@@@ keywords_in_other_lumps
+@@ lump GLDEFS
+pointlight FROMGL
+{
+  color 1 0 0
+  size 5
+}
+object IMP
+@@ lump LIGHTDEF
+pointlight FROMLD
+{
+  color 0 1 0
+  size 6
+}
+object IMP
+@@ find FROMGL
+@@ find FROMLD
+@@@ gldefs_disabled
+@@ opt gldefs 0
+@@ lump GLDEFS
+pointlight FROMGL
+{
+  color 1 0 0
+  size 5
+}
+object IMP
+@@ lump LIGHTDEF
+pointlight FROMLD
+{
+  color 0 1 0
+  size 6
+}
+object IMP
+@@ find FROMGL
+@@ find FROMLD
+@@@ only_gldefs_disabled
+@@ opt gldefs 0
+@@ lump GLDEFS
+pointlight FROMGL
+{
+  color 1 0 0
+}
+object IMP
+@@@ only_gldefs_enabled
+@@ lump GLDEFS
+pointlight FROMGL
+{
+  color 1 0 0
+}
+object IMP
+@@@ pak_entries
+@@ pak LIGHTDEF
+pointlight P1
+{
+  color 1 0 0
+}
+object IMP
+@@ pak LIGHTDEF.txt
+pointlight P2
+{
+  color 0 1 0
+}
+object IMP
+@@ pak GLDEFS
+pointlight P3
+{
+  color 0 0 1
+}
+object IMP
+@@ pak GLDEFS.txt
+pointlight P4
+{
+  color 1 1 1
+}
+object IMP
+@@ find P1
+@@ find P2
+@@ find P3
+@@ find P4
+@@@ pak_gldefs_disabled
+@@ opt gldefs 0
+@@ pak LIGHTDEF
+pointlight P1
+{
+  color 1 0 0
+}
+object IMP
+@@ pak GLDEFS
+pointlight P3
+{
+  color 0 0 1
+}
+object IMP
+@@ pak GLDEFS.txt
+pointlight P4
+{
+  color 1 1 1
+}
+object IMP
+@@ find P1
+@@ find P3
+@@@ order_wad_then_pak
+@@ lump LIGHTDEF
+pointlight W1
+{
+  color 1 0 0
+}
+object IMP
+@@ lump LIGHTDEF
+pointlight W2
+{
+  color 0 1 0
+}
+object IMP
+@@ pak LIGHTDEF
+pointlight K1
+{
+  color 0 0 1
+}
+object IMP
+@@ lump GLDEFS
+pointlight G1
+{
+  color 1 1 0
+}
+object IMP
+@@@ no_lumps
+@@@ pak_only_marks_present
+@@ pak LIGHTDEF
+object IMP
+@@@ frame_with_letter
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+pointlight LB
+{
+  color 0 1 0
+}
+object ZOMBIEMAN
+{
+  frame POSSA { light LA }
+  frame POSSB { light LB }
+}
+@@@ frame_without_letter_all_frames
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object ZOMBIEMAN
+{
+  frame POSS { light LA }
+}
+@@@ frame_flagged_state_masked
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object ZOMBIEMAN
+{
+  frame POSSA { light LA }
+}
+@@@ frame_fallback_to_all_states
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object ZOMBIEMAN
+{
+  frame MISLA { light LA }
+  frame BAR1 { light LA }
+}
+@@@ frame_no_state_found
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object ZOMBIEMAN
+{
+  frame POSSZ { light LA }
+}
+object -1
+{
+  frame POSSZ { light LA }
+}
+@@@ frame_object_minus_one
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object -1
+{
+  frame TROOA { light LA }
+}
+@@@ frame_before_any_object
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+frame TROOB { light LA }
+@@@ frame_unknown_object
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object NOSUCHTHING
+{
+  frame TROOA { light LA }
+}
+@@@ object_without_name
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object
+@@@ frame_unknown_light
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+{
+  frame TROOA { light NOSUCHLIGHT }
+}
+@@@ frame_unknown_sprite
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+{
+  frame ZZZZA { light LA }
+}
+@@@ frame_short_sprite
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+{
+  frame TRO { light LA }
+}
+@@@ frame_not_light
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+{
+  frame TROOA { dark LA }
+}
+@@@ frame_truncated
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+frame TROOA
+@@@ frame_light_without_name
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object IMP
+frame TROOA light
+@@@ frame_before_light_defined
+@@ lump LIGHTDEF
+object IMP
+{
+  frame TROOA { light LATE }
+}
+pointlight LATE
+{
+  color 1 0 0
+}
+object IMP
+@@@ rebind_across_texts
+@@ lump LIGHTDEF
+pointlight FIRST
+{
+  color 1 0 0
+}
+object IMP
+{
+  frame TROOA { light FIRST }
+}
+@@ lump LIGHTDEF
+pointlight SECOND
+{
+  color 0 1 0
+}
+object IMP
+{
+  frame TROOA { light SECOND }
+}
+object BARREL
+{
+  frame BAR1 { light SECOND }
+}
+@@@ same_state_two_objects
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+pointlight LB
+{
+  color 0 1 0
+}
+object IMP
+{
+  frame TROOA { light LA }
+}
+object -1
+{
+  frame TROOA { light LB }
+}
+@@@ same_text_two_frames_same_state
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+pointlight LB
+{
+  color 0 1 0
+}
+object IMP
+{
+  frame TROOA { light LA }
+  frame TROOA { light LB }
+}
+@@@ frames_with_tabs_and_spaces
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object	IMP
+{
+	frame   TROOA   {   light   LA   }
+    frame TROOB { light LA }
+}
+@@@ numeric_object
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0
+}
+object 2
+{
+  frame TROOA { light LA }
+}
+@@@ stray_closing_bracket
+@@ lump LIGHTDEF
+}
+pointlight LA
+{
+  color 1 0 0
+}
+}
+object IMP
+@@@ stray_closing_parenthesis
+@@ lump LIGHTDEF
+pointlight LA
+{
+  color 1 0 0 )
+}
+object IMP
+@@@ devparm_listing
+@@ opt devparm 1
+@@ lump LIGHTDEF
+pointlight DEV
+{
+  color 1 0 0
+}
+object IMP
+@@ lump GLDEFS
+pointlight DEV2
+{
+  color 0 1 0
+}
+object IMP
+@@@ devparm_empty_lump
+@@ opt devparm 1
+@@ lump LIGHTDEF
+@@@ empty_lump
+@@ lump LIGHTDEF
+@@@ comments_only
+@@ lump LIGHTDEF
+// nothing
+// at all
+@@@ many_lights_random_seeds
+@@ lump LIGHTDEF
+pointlight S1 color 1 0 0 object IMP
+pointlight S2 color 1 0 0 object IMP
+pointlight S3 color 1 0 0 object IMP
+pointlight S4 color 1 0 0 object IMP
+@@ times 0
+@@@ time_overflow
+@@ lump LIGHTDEF
+pulselight PO
+{
+  color 1 0 0
+  color2 0 0 1
+  size 10
+  size2 20
+  interval 3
+  colorinterval 5
+}
+flickerlight FO
+{
+  color 1 0 0
+  color2 0 1 0
+  size 10
+  size2 20
+  interval 2
+  colorinterval 3
+}
+object IMP
+@@ times 0 32767 32768 40000 65535 65536 100000 5000000
+@@@ negative_time
+@@ lump LIGHTDEF
+pulselight PN
+{
+  color 1 0 0
+  color2 0 0 1
+  size 10
+  size2 20
+  interval 3
+  colorinterval 5
+}
+object IMP
+@@ times -1 -35 -1000
+@@@ size_zero_and_negative
+@@ lump LIGHTDEF
+pointlight SZ
+{
+  color 1 0 0
+  size 0
+  offset -5 -6 -7
+}
+pointlight SN
+{
+  color -1 2 3
+  size -8
+}
+object IMP
+@@ times 0 1
+@@@ colors_beyond_one
+@@ lump LIGHTDEF
+pointlight CB
+{
+  color 5 0.000001 1e0
+  size 1000000
+}
+object IMP
+@@ times 0
