@@ -1502,7 +1502,7 @@ function readablestring(const s: string): string;
 //==============================================================================
 // CharPos
 //
-// Idea from "The Tomes of Delphi™ Algorithms and Data Structures - Pg 18
+// Idea from "The Tomes of Delphiï¿½ Algorithms and Data Structures - Pg 18
 //
 //==============================================================================
 function CharPos(const ch: Char; const s: string): integer;
@@ -7195,40 +7195,18 @@ end;
 //==============================================================================
 function Pos1(const subs, s: string): boolean;
 var
-  len1, len1b, len2: integer;
-  i: integer;
+  len1: integer;
 begin
   len1 := Length(subs);
-  len2 := Length(s);
-  if len2 < len1 then
+  if Length(s) < len1 then
   begin
     Result := False;
     Exit;
   end;
 
-  len1b := len1 - 4;
-  i := 1;
-  while i <= len1b do
-  begin
-    if PLongWord(@subs[i])^ <> PLongWord(@s[i])^ then
-    begin
-      Result := False;
-      Exit;
-    end;
-    Inc(i, 4);
-  end;
-
-  while i <= len1 do
-  begin
-    if subs[i] <> s[i] then
-    begin
-      Result := False;
-      Exit;
-    end;
-    Inc(i);
-  end;
-
-  Result := True;
+  // all the characters of the prefix, whatever its length (an earlier version compared two
+  // characters out of every four)
+  Result := CompareMem(PChar(subs), PChar(s), len1 * SizeOf(Char));
 end;
 
 //==============================================================================
