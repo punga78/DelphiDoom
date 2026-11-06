@@ -31,6 +31,7 @@ type
     FLumps: TList<TLumpRef>;
     FNames: TArray<string>;
     FSizes: TArray<Integer>;
+    FOffsets: TArray<Integer>;
     FFlags: TArray<Cardinal>;
     FByName: TDictionary<string, TList<Integer>>;
     procedure Rebuild;
@@ -45,8 +46,10 @@ type
     function GetSource(AIndex: Integer): IWadSource;
     procedure AddSource(const ASource: IWadSource);
     procedure Truncate(ASourceCount: Integer);
+    procedure ReplaceSource(AIndex: Integer; const ASource: IWadSource);
     function LumpName(ALump: Integer): string;
     function LumpSize(ALump: Integer): Integer;
+    function LumpOffset(ALump: Integer): Integer;
     function LumpFlags(ALump: Integer): Cardinal;
     function LumpSourceIndex(ALump: Integer): Integer;
 
@@ -72,6 +75,8 @@ const
   SNoSuchLump = 'Lump %d does not exist (there are %d)';
   SNameNotFound = 'Lump "%s" not found';
   SBadSourceCount = 'Cannot keep %d sources (there are %d)';
+  SBadSourceIndex = 'Source %d does not exist (there are %d)';
+  SOtherLumpCount = 'The new source has %d lumps, the one it replaces %d';
 
 { TWadDirectory }
 
@@ -101,12 +106,14 @@ begin
   FByName.Clear;
   SetLength(FNames, FLumps.Count);
   SetLength(FSizes, FLumps.Count);
+  SetLength(FOffsets, FLumps.Count);
   for LIndex := 0 to FLumps.Count - 1 do
   begin
     LRef := FLumps[LIndex];
     LEntry := FSources[LRef.SourceIndex].Entries[LRef.EntryIndex];
     FNames[LIndex] := LEntry.Name;
     FSizes[LIndex] := LEntry.Size;
+    FOffsets[LIndex] := LEntry.Offset;
     if not FByName.TryGetValue(LEntry.Name, LList) then
     begin
       LList := TList<Integer>.Create;
@@ -168,6 +175,18 @@ begin
   Rebuild;
 end;
 
+procedure TWadDirectory.ReplaceSource(AIndex: Integer; const ASource: IWadSource);
+begin
+  if (AIndex < 0) or (AIndex >= FSources.Count) then
+    raise EWadException.CreateFmt(SBadSourceIndex, [AIndex, FSources.Count]);
+  if ASource = nil then
+    raise EWadException.Create('The source is nil');
+  if ASource.Count <> FSources[AIndex].Count then
+    raise EWadException.CreateFmt(SOtherLumpCount, [ASource.Count, FSources[AIndex].Count]);
+  FSources[AIndex] := ASource;
+  Rebuild;
+end;
+
 function TWadDirectory.LumpName(ALump: Integer): string;
 begin
   CheckLump(ALump);
@@ -178,6 +197,12 @@ function TWadDirectory.LumpSize(ALump: Integer): Integer;
 begin
   CheckLump(ALump);
   Result := FSizes[ALump];
+end;
+
+function TWadDirectory.LumpOffset(ALump: Integer): Integer;
+begin
+  CheckLump(ALump);
+  Result := FOffsets[ALump];
 end;
 
 function TWadDirectory.LumpFlags(ALump: Integer): Cardinal;

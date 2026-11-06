@@ -61,6 +61,12 @@ type
     procedure TestLumpKnowsItsSource;
     [Test]
     procedure TestAddNilSource;
+    [Test]
+    procedure TestReplaceSourceKeepsTheLumpNumbers;
+    [Test]
+    procedure TestReplaceSourceWithAnotherLumpCount;
+    [Test]
+    procedure TestLumpOffset;
   end;
 
 implementation
@@ -251,6 +257,38 @@ end;
 procedure TTestWadDirectory.TestAddNilSource;
 begin
   Assert.WillRaise(procedure begin FDirectory.AddSource(nil); end, EWadException);
+end;
+
+procedure TTestWadDirectory.TestReplaceSourceKeepsTheLumpNumbers;
+begin
+  AddWad(['A', 'B'], ['a1', 'b1']);
+  AddWad(['C'], ['c1']);
+  FDirectory.ReplaceSource(0, TWadFactory.OpenBytes('again',
+    H.MakeWad(['A', 'B'], [H.Bytes('a2'), H.Bytes('bbbb')])));
+  Assert.AreEqual(3, FDirectory.Count);
+  Assert.AreEqual(4, FDirectory.LumpSize(1));
+  Assert.AreEqual('bbbb', FReader.TextLump(1));
+  Assert.AreEqual('c1', FReader.TextLump(2));
+  Assert.AreEqual('again', FDirectory.Sources[0].Name);
+end;
+
+procedure TTestWadDirectory.TestReplaceSourceWithAnotherLumpCount;
+begin
+  AddWad(['A', 'B'], ['a1', 'b1']);
+  Assert.WillRaise(procedure begin FDirectory.ReplaceSource(0,
+    TWadFactory.OpenBytes('x', H.MakeWad(['A'], [H.Bytes('a')]))); end, EWadException);
+  Assert.WillRaise(procedure begin FDirectory.ReplaceSource(1,
+    TWadFactory.OpenBytes('x', H.MakeWad(['A', 'B'], [H.Bytes('a'), H.Bytes('b')]))); end, EWadException);
+  Assert.WillRaise(procedure begin FDirectory.ReplaceSource(0, nil); end, EWadException);
+  Assert.AreEqual(2, FDirectory.Count);
+end;
+
+procedure TTestWadDirectory.TestLumpOffset;
+begin
+  AddWad(['A', 'B'], ['abc', 'de']);
+  Assert.AreEqual(12, FDirectory.LumpOffset(0));
+  Assert.AreEqual(15, FDirectory.LumpOffset(1));
+  Assert.WillRaise(procedure begin FDirectory.LumpOffset(2); end, EWadException);
 end;
 
 end.

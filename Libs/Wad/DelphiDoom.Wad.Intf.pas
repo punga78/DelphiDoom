@@ -44,8 +44,15 @@ type
     procedure AddSource(const ASource: IWadSource);
     /// <summary>Forgets the sources after the first ASourceCount (reload of a runtime WAD)</summary>
     procedure Truncate(ASourceCount: Integer);
+    /// <summary>
+    ///   Puts ASource in the place of the source AIndex (a file read again); it must have as many
+    ///   lumps as the one it replaces, so that the lump numbers stay the same
+    /// </summary>
+    procedure ReplaceSource(AIndex: Integer; const ASource: IWadSource);
     function LumpName(ALump: Integer): string;
     function LumpSize(ALump: Integer): Integer;
+    /// <summary>Where the lump starts in its source (0 for the sources that are not one file)</summary>
+    function LumpOffset(ALump: Integer): Integer;
     /// <summary>TYPE_* bits of the marker pairs that enclose the lump</summary>
     function LumpFlags(ALump: Integer): Cardinal;
     function LumpSourceIndex(ALump: Integer): Integer;

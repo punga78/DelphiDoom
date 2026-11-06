@@ -45,14 +45,7 @@ type
   char8_t = array[0..7] of AnsiChar;
   Pchar8_t = ^char8_t;
 
-  lumpindicator_t = record
-    _START: char8_t;
-    _END: char8_t;
-    _type: byte;
-  end;
-
 const
-  NUMINDICATORS = 38;
   IND_FLOOR = 1;
   IND_SPRITE = 2;
   IND_PATCH = 3;
@@ -65,46 +58,6 @@ const
   TYPE_VOXEL = 1 shl IND_VOXEL;
   TYPE_HIRES = 1 shl IND_HIRES;
 
-  lumpindicators: array[0..NUMINDICATORS - 1] of lumpindicator_t = (
-    (_START: 'F_START';  _END: 'F_END';    _type: IND_FLOOR),
-    (_START: 'F1_START'; _END: 'F1_END';   _type: IND_FLOOR),
-    (_START: 'F2_START'; _END: 'F2_END';   _type: IND_FLOOR),
-    (_START: 'F3_START'; _END: 'F3_END';   _type: IND_FLOOR),
-    (_START: 'F4_START'; _END: 'F4_END';   _type: IND_FLOOR),
-    (_START: 'F5_START'; _END: 'F5_END';   _type: IND_FLOOR),
-    (_START: 'F6_START'; _END: 'F6_END';   _type: IND_FLOOR),
-    (_START: 'F7_START'; _END: 'F7_END';   _type: IND_FLOOR),
-    (_START: 'F8_START'; _END: 'F8_END';   _type: IND_FLOOR),
-    (_START: 'F9_START'; _END: 'F9_END';   _type: IND_FLOOR),
-    (_START: 'F0_START'; _END: 'F0_END';   _type: IND_FLOOR),
-    (_START: 'FF_START'; _END: 'FF_END';   _type: IND_FLOOR),
-    (_START: 'S_START';  _END: 'S_END';    _type: IND_SPRITE),
-    (_START: 'S1_START'; _END: 'S1_END';   _type: IND_SPRITE),
-    (_START: 'S2_START'; _END: 'S2_END';   _type: IND_SPRITE),
-    (_START: 'S3_START'; _END: 'S3_END';   _type: IND_SPRITE),
-    (_START: 'S4_START'; _END: 'S4_END';   _type: IND_SPRITE),
-    (_START: 'S5_START'; _END: 'S5_END';   _type: IND_SPRITE),
-    (_START: 'S6_START'; _END: 'S6_END';   _type: IND_SPRITE),
-    (_START: 'S7_START'; _END: 'S7_END';   _type: IND_SPRITE),
-    (_START: 'S8_START'; _END: 'S8_END';   _type: IND_SPRITE),
-    (_START: 'S9_START'; _END: 'S9_END';   _type: IND_SPRITE),
-    (_START: 'S0_START'; _END: 'S0_END';   _type: IND_SPRITE),
-    (_START: 'SS_START'; _END: 'SS_END';   _type: IND_SPRITE),
-    (_START: 'P_START';  _END: 'P_END';    _type: IND_PATCH),
-    (_START: 'P1_START'; _END: 'P1_END';   _type: IND_PATCH),
-    (_START: 'P2_START'; _END: 'P2_END';   _type: IND_PATCH),
-    (_START: 'P3_START'; _END: 'P3_END';   _type: IND_PATCH),
-    (_START: 'P4_START'; _END: 'P4_END';   _type: IND_PATCH),
-    (_START: 'P5_START'; _END: 'P5_END';   _type: IND_PATCH),
-    (_START: 'P6_START'; _END: 'P6_END';   _type: IND_PATCH),
-    (_START: 'P7_START'; _END: 'P7_END';   _type: IND_PATCH),
-    (_START: 'P8_START'; _END: 'P8_END';   _type: IND_PATCH),
-    (_START: 'P9_START'; _END: 'P9_END';   _type: IND_PATCH),
-    (_START: 'P0_START'; _END: 'P0_END';   _type: IND_PATCH),
-    (_START: 'PP_START'; _END: 'PP_END';   _type: IND_PATCH),
-    (_START: 'VX_START'; _END: 'VX_END';   _type: IND_VOXEL),
-    (_START: 'HI_START'; _END: 'HI_END';   _type: IND_HIRES)
-  );
 
 type
   wadinfo_t = packed record
@@ -333,62 +286,31 @@ implementation
 uses
   i_system,
   w_pak,
-  z_zone;
+  z_zone,
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Intf,
+  DelphiDoom.Wad.Factory,
+  DelphiDoom.Wad.Source.Wad,
+  DelphiDoom.Wad.Source.SingleFile,
+  DelphiDoom.Wad.DStreamAdapter;
 
+//
+// The directory of the lumps is kept by the WAD library (Libs\Wad): it reads the
+// directories of the files, orders the lumps, finds them by name and knows which
+// ones are between the F_START/F_END, S_START/S_END, ... marker pairs.
+// lumpinfo[] is a view of it that W_SyncLumpInfo makes again whenever the
+// directory changes: the rest of the engine reads it, nobody else writes it.
+// The bytes of the lumps are still read through the streams of the engine.
+//
 var
   lumpcache: PPointerArray;
   numlumps: integer = 0;
+  lumpinfoalloc: integer = 0; // lumps that lumpinfo has room for
 
-const
-  LUMPHASHBITS = 14;
-  LUMPHASHSIZE = 1 shl LUMPHASHBITS;
-
-type
-  lumphash_t = record
-    name: name8_t;
-    position: integer;
-  end;
-  Plumphash_t = ^lumphash_t;
-  lumphash_tArray = array[0..LUMPHASHSIZE - 1] of lumphash_t;
-  Plumphash_tArray = ^lumphash_tArray;
-
-var
-  lumphash: Plumphash_tArray = nil;
-
-// djb2Hash()
-//
-// Implements djb2 hash function
-//
-// This algorithm (k=33) was first reported by Dan Bernstein many years ago in comp.lang.c.
-// Another version of this algorithm (now favored by bernstein) uses xor: hash(i) = hash(i - 1) * 33 ^ str[i];
-// The magic of number 33 (why it works better than many other constants, prime or not)
-// has never been adequately explained.
-//
-//==============================================================================
-function djb2Hash(const name: char8_t): integer;
-var
-  b: PByte;
-  i: integer;
-begin
-  b := PByte(@name[0]);
-
-  result := 5381 * 33 + b^;
-  inc(b);
-
-  for i := 0 to 6 do
-  begin
-    if b^ = 0 then
-      break;
-    result := result * 33 + b^;
-    inc(b);
-  end;
-
-  result := result and (LUMPHASHSIZE - 1);
-end;
-
-//
-// GLOBALS
-//
+  wad_directory: IWadDirectory = nil;
+  wad_finder: IWadFinder = nil;
+  // The engine stream of each source of the directory (nil for a reloadable file)
+  wad_handles: array of TDStream;
 
 // Location of each lump on disk.
 var
@@ -497,6 +419,60 @@ begin
   dest := stringtochar8(dst);
 end;
 
+//==============================================================================
+//
+// W_SyncLumpInfo
+// Makes lumpinfo[] again from the directory of the library
+//
+//==============================================================================
+procedure W_SyncLumpInfo;
+var
+  i: integer;
+  count: integer;
+  lump_p: Plumpinfo_t;
+begin
+  count := wad_directory.Count;
+  if count <> lumpinfoalloc then
+  begin
+    realloc(pointer(lumpinfo), lumpinfoalloc * SizeOf(lumpinfo_t), count * SizeOf(lumpinfo_t));
+    lumpinfoalloc := count;
+  end;
+
+  if (lumpinfo = nil) and (count > 0) then
+    I_Error('W_SyncLumpInfo(): Couldn''t realloc lumpinfo');
+
+  for i := 0 to count - 1 do
+  begin
+    lump_p := @lumpinfo[i];
+    lump_p.handle := wad_handles[wad_directory.LumpSourceIndex(i)];
+    lump_p.position := wad_directory.LumpOffset(i);
+    lump_p.size := wad_directory.LumpSize(i);
+    lump_p.flags := wad_directory.LumpFlags(i);
+    lump_p.name := stringtochar8(wad_directory.LumpName(i));
+  end;
+
+  numlumps := count;
+end;
+
+//==============================================================================
+//
+// W_CreateWadSource
+// A source of the library over a stream of the engine. The source owns the
+// adapter, not the stream
+//
+//==============================================================================
+function W_CreateWadSource(const aname: string; handle: TDStream; const singlelump: boolean): IWadSource;
+var
+  adapter: TDStreamAdapter;
+begin
+  adapter := TDStreamAdapter.Create(handle);
+  if singlelump then
+    result := TSingleFileSource.Create(aname, adapter, True)
+  else
+    result := TWadFileSource.Create(aname, adapter, True);
+end;
+
+//==============================================================================
 //
 // LUMP BASED ROUTINES.
 //
@@ -515,6 +491,7 @@ end;
 // But: the reload feature is a fragile hack...
 var
   reloadlump: integer;
+  reloadsource: integer;
   reloadname: string;
 
 //==============================================================================
@@ -525,19 +502,11 @@ var
 function W_AddFile(var filename: string): TDStream;
 var
   header: wadinfo_t;
-  lump_p: Plumpinfo_t;
-  i: integer;
-  j: integer;
   handle: TCachedFile;
-  len: integer;
-  startlump: integer;
-  fileinfo: Pfilelump_tArray;
-  pfi: Pfilelump_t;
-  singleinfo: filelump_t;
-  storehandle: TCachedFile;
   ext: string;
   iswad: boolean;
-  c: AnsiChar;
+  source: IWadSource;
+  base8: char8_t;
 begin
   // open the file and add to directory
   // handle reload indicator.
@@ -546,6 +515,7 @@ begin
     reloadname := Copy(filename, 2, Length(filename) - 1);
     Delete(filename, 1, 1);
     reloadlump := numlumps;
+    reloadsource := wad_directory.SourceCount;
   end
   else
     reloadname := '';
@@ -569,8 +539,6 @@ begin
 
   handle.OnBeginBusy := I_BeginDiskBusy;
 
-  startlump := numlumps;
-
   ext := strupper(fext(filename));
 
   iswad := false;
@@ -587,128 +555,35 @@ begin
 
   if not iswad and (ext <> '.WAD') and (ext <> '.IWAD') and (ext <> '.SWD') {$IFDEF OPENGL} and (ext <> '.GWA'){$ENDIF} then
   begin
-    // single lump file
-    len := 0;
-    fileinfo := @singleinfo;
-    singleinfo.filepos := 0;
-    singleinfo.size := filelength(handle);
-    ExtractFileBase8(filename, singleinfo.name);
-    inc(numlumps);
+    // single lump file, named after the file
+    ZeroMemory(@base8, SizeOf(base8));
+    ExtractFileBase8(filename, base8);
+    source := W_CreateWadSource(char8tostring(base8) + '.lmp', handle, true);
     printf(' adding %s'#13#10, [filename]);
   end
   else
   begin
-    // WAD file
-    handle.Read(header, SizeOf(header));
-    if header.identification <> IWAD then
-      // Homebrew levels?
-      if header.identification <> PWAD then
-        // DelphiDoom system ?
-        if header.identification <> DWAD then
-          I_Error('W_AddFile(): Wad file %s doesn''t have IWAD, PWAD or DWAD id'#13#10, [filename]);
-
-    len := header.numlumps * SizeOf(filelump_t);
-    fileinfo := malloc(len);
-    handle.Seek(header.infotableofs, sFromBeginning);
-    handle.Read(fileinfo^, len);
-    numlumps := numlumps + header.numlumps;
-    printf(' adding %s (%d lump' + decide(header.numlumps = 1, '', 's') + ')'#13#10, [filename, header.numlumps]);
-  end;
-
-  // Fill in lumpinfo
-  realloc(pointer(lumpinfo), startlump * SizeOf(lumpinfo_t), numlumps * SizeOf(lumpinfo_t));
-
-  if lumpinfo = nil then
-    I_Error('W_AddFile(): Couldn''t realloc lumpinfo');
-
-  if reloadname <> '' then
-    storehandle := nil
-  else
-    storehandle := handle;
-
-  for i := startlump to numlumps - 1 do
-  begin
-    lump_p := @lumpinfo[i];
-    lump_p.handle := storehandle;
-
-    pfi := @fileinfo[i - startlump];
-    lump_p.position := pfi.filepos;
-    lump_p.size := pfi.size;
-    c := #255;
-    for j := 0 to 7 do
-    begin
-      // Prevent non null charactes after ending #0
-      if c <> #0 then
-        c := toupper(pfi.name[j]);
-      lump_p.name[j] := c;
+    // WAD file: IWAD, PWAD or the DelphiDoom system DWAD
+    try
+      source := W_CreateWadSource(filename, handle, false);
+    except
+      on E: EWadException do
+        I_Error('W_AddFile(): Wad file %s doesn''t have IWAD, PWAD or DWAD id, or is damaged: %s'#13#10, [filename, E.Message]);
     end;
+    printf(' adding %s (%d lump' + decide(source.Count = 1, '', 's') + ')'#13#10, [filename, source.Count]);
   end;
 
+  wad_directory.AddSource(source);
+  SetLength(wad_handles, wad_directory.SourceCount);
   if reloadname <> '' then
+  begin
+    wad_handles[High(wad_handles)] := nil;
     handle.Free;
+  end
+  else
+    wad_handles[High(wad_handles)] := handle;
 
-  if len > 0 then
-    memfree(pointer(fileinfo), len);
-
-end;
-
-//==============================================================================
-//
-// W_InitLumpHash
-//
-//==============================================================================
-procedure W_InitLumpHash;
-var
-  i, j: integer;
-  hash: integer;
-  lumphit: integer;
-  ind_A: array[0..IND_MAX - 1] of integer;
-
-  procedure _check_indicator;
-  var
-    x: integer;
-  begin
-    for x := 0 to NUMINDICATORS - 1 do
-    begin
-      if char8tostring(lumpinfo[i].name) = char8tostring(lumpindicators[x]._START) then
-      begin
-        dec(ind_A[lumpindicators[x]._type]);
-        if ind_A[lumpindicators[x]._type] < 0 then
-          I_Warning('W_InitLumpHash(): Lump indicators misplaced, lump #%d (%s)'#13#10, [i, char8tostring(lumpindicators[x]._START)]);
-        Break;
-      end;
-      if char8tostring(lumpinfo[i].name) = char8tostring(lumpindicators[x]._END) then
-      begin
-        inc(ind_A[lumpindicators[x]._type]);
-        Break;
-      end;
-    end;
-  end;
-
-begin
-  ZeroMemory(lumphash, SizeOf(lumphash_tArray));
-  ZeroMemory(@ind_A, SizeOf(ind_A));
-  for i := 0 to LUMPHASHSIZE - 1 do
-    lumphash[i].position := -1;
-
-  lumphit := 0;
-  for i := numlumps - 1 downto 0 do
-  begin
-    _check_indicator;
-    lumpinfo[i].flags := 0;
-    for j := 0 to IND_MAX - 1 do
-      if ind_A[j] > 0 then
-        lumpinfo[i].flags := lumpinfo[i].flags or (1 shl j);
-    hash := djb2Hash(lumpinfo[i].name);
-    if lumphash[hash].position = -1 then
-    begin
-      inc(lumphit);
-      lumphash[hash].position := i;
-      lumphash[hash].name.x[0] := lumpinfo[i].v1;
-      lumphash[hash].name.x[1] := lumpinfo[i].v2;
-    end
-  end;
-  printf('W_InitLumpHash: Hash table indexed %d out of %d lumps.'#13#10, [lumphit, numlumps]);
+  W_SyncLumpInfo;
 end;
 
 //==============================================================================
@@ -720,13 +595,10 @@ end;
 //==============================================================================
 procedure W_Reload;
 var
-  header: wadinfo_t;
   lumpcount: integer;
-  lump_p: Plumpinfo_t;
   i: integer;
   handle: TCachedFile;
-  length: integer;
-  fileinfo: Pfilelump_tArray;
+  source: IWadSource;
 begin
   if reloadname = '' then
     exit;
@@ -744,28 +616,28 @@ begin
 
   handle.OnBeginBusy := I_BeginDiskBusy;
 
-  handle.Read(header, SizeOf(header));
-  lumpcount := header.numlumps;
-  length := lumpcount * SizeOf(filelump_t);
-  fileinfo := malloc(length);
-  handle.Seek(header.infotableofs, sFromBeginning);
-  handle.Read(fileinfo^, length);
+  try
+    source := W_CreateWadSource(reloadname, handle, false);
+    lumpcount := source.Count;
+    if lumpcount <> wad_directory.Sources[reloadsource].Count then
+      I_Error('W_Reload(): File %s has %d lumps, it had %d'#13#10,
+        [reloadname, lumpcount, wad_directory.Sources[reloadsource].Count]);
 
-  // Fill in lumpinfo
+    // Flush the lumps that change
+    for i := reloadlump to reloadlump + lumpcount - 1 do
+      if lumpcache[i] <> nil then
+        Z_Free(lumpcache[i]);
 
-  for i := reloadlump to reloadlump + lumpcount - 1 do
-  begin
-    lump_p := @lumpinfo[i];
-    if lumpcache[i] <> nil then
-      Z_Free(lumpcache[i]);
-
-    lump_p.position := fileinfo[i - reloadlump].filepos;
-    lump_p.size := fileinfo[i - reloadlump].size;
+    wad_directory.ReplaceSource(reloadsource, source);
+  except
+    on E: EWadException do
+      I_Error('W_Reload(): %s'#13#10, [E.Message]);
   end;
 
+  // The file is opened again whenever a lump is read
   handle.Free;
 
-  W_InitLumpHash;
+  W_SyncLumpInfo;
 end;
 
 var
@@ -776,6 +648,7 @@ type
     filename: string;
     startlump: integer;
     numlumps: integer;
+    sourceindex: integer;
     stream: TDStream;
     constructor Create(const aname: string); virtual;
     destructor Destroy; override;
@@ -791,6 +664,7 @@ begin
   filename := aname;
   startlump := -1;
   numlumps := -1;
+  sourceindex := -1;
   stream := nil;
 end;
 
@@ -820,13 +694,9 @@ type
 //==============================================================================
 procedure W_RuntimeLoad(fname: string; const origin: integer);
 var
-  header: wadinfo_t;
   lumpcount: integer;
-  lump_p: Plumpinfo_t;
-  i, j: integer;
+  i: integer;
   handle: TDStream;
-  len: integer;
-  fileinfo: Pfilelump_tArray;
   idx: integer;
   rtlinf: rtlinfo_t;
   start, finish: integer;
@@ -834,6 +704,7 @@ var
   p1, p2, p3: integer;
   numA: integer;
   ioret: integer;
+  source: IWadSource;
 begin
   printf('W_RuntimeLoad(): adding %s'#13#10, [fname]);
 
@@ -869,6 +740,20 @@ begin
     exit;
   end;
 
+  handle.OnBeginBusy := I_BeginDiskBusy;
+
+  try
+    source := W_CreateWadSource(fname, handle, false);
+  except
+    on E: EWadException do
+    begin
+      I_Warning('W_RuntimeLoad(): %s is not a valid WAD: %s'#13#10, [fname, E.Message]);
+      handle.Free;
+      exit;
+    end;
+  end;
+  lumpcount := source.Count;
+
   idx := rtllist.IndexOf(fname);
   if idx < 0 then
   begin
@@ -879,27 +764,16 @@ begin
   else
     rtlinf := rtllist.Objects[idx] as rtlinfo_t;
 
-  handle.OnBeginBusy := I_BeginDiskBusy;
-
-  handle.Read(header, SizeOf(header));
-  lumpcount := header.numlumps;
-  len := lumpcount * SizeOf(filelump_t);
-  fileinfo := malloc(len);
-  handle.Seek(header.infotableofs, sFromBeginning);
-  handle.Read(fileinfo^, len);
-
   if (rtlinf.startlump >= 0) and (rtlinf.numlumps = lumpcount) then
   begin
+    // The same file again: the lumps keep their numbers
     start := rtlinf.startlump;
     finish := start + lumpcount - 1;
-    for i := start to finish do
-      lumpinfo[i].handle.Free;
+    wad_directory.ReplaceSource(rtlinf.sourceindex, source);
+    wad_handles[rtlinf.sourceindex] := handle;
   end
   else
   begin
-    // Resize lumpinfo
-    realloc(pointer(lumpinfo), numlumps * SizeOf(lumpinfo_t), (numlumps + lumpcount) * SizeOf(lumpinfo_t));
-
     if lumpcacherealsize < numlumps + lumpcount then
     begin
       A := mallocz(numlumps * SizeOf(oldlumpcache_t));
@@ -933,34 +807,23 @@ begin
     for i := start to finish do
       lumpcache[i] := nil;
 
-    inc(numlumps, lumpcount);
-
     rtlinf.startlump := start;
     rtlinf.numlumps := lumpcount;
+    rtlinf.sourceindex := wad_directory.SourceCount;
+    wad_directory.AddSource(source);
+    SetLength(wad_handles, wad_directory.SourceCount);
+    wad_handles[High(wad_handles)] := handle;
   end;
   if rtlinf.stream <> nil then
     rtlinf.stream.Free;
   rtlinf.stream := handle;
 
-  // Fill in lumpinfo
-
+  // The lumps that were in memory are not the new ones
   for i := start to finish do
-  begin
-    lump_p := @lumpinfo[i];
-    lump_p.handle := handle;
     if lumpcache[i] <> nil then
       Z_Free(lumpcache[i]);
 
-    lump_p.position := fileinfo[i - start].filepos;
-    lump_p.size := fileinfo[i - start].size;
-    for j := 0 to 7 do
-      lump_p.name[j] := toupper(fileinfo[i - start].name[j]);
-    lump_p.flags := 0;
-  end;
-
-  W_InitLumpHash;
-  memfree(pointer(fileinfo), len);
-
+  W_SyncLumpInfo;
 end;
 
 var
@@ -1001,6 +864,11 @@ var
 begin
   if rtllist <> nil then
     rtllist := TDStringList.Create;
+
+  wad_directory := TWadFactory.CreateDirectory;
+  wad_finder := TWadFactory.CreateFinder(wad_directory);
+  SetLength(wad_handles, 0);
+
   // open all the files, load headers, and count lumps
   numlumps := 0;
 
@@ -1025,10 +893,6 @@ begin
 
   end;
 
-  lumphash := malloc(SizeOf(lumphash_tArray));
-
-  W_InitLumpHash;
-
   if pendingwadsfrompak <> nil then
   begin
     for i := 0 to pendingwadsfrompak.Count - 1 do
@@ -1050,8 +914,11 @@ begin
     pendingwadsfrompak.Free;
 
   memfree(pointer(lumpcache), lumpcacherealsize * SizeOf(pointer));
-  memfree(pointer(lumpinfo), numlumps * SizeOf(lumpinfo_t));
-  memfree(pointer(lumphash), SizeOf(lumphash_tArray));
+  memfree(pointer(lumpinfo), lumpinfoalloc * SizeOf(lumpinfo_t));
+  lumpinfoalloc := 0;
+  wad_finder := nil;
+  wad_directory := nil;
+  SetLength(wad_handles, 0);
   if rtllist <> nil then
   begin
     for i := 0 to rtllist.Count - 1 do
@@ -1099,65 +966,17 @@ end;
 //==============================================================================
 function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
 var
-  name8: name8_t;
-  v1: integer;
-  v2: integer;
-  lump_p: Plumpinfo_t;
-  len: integer;
-  i: integer;
-  lfirst: Plumpinfo_t;
-  hash: integer;
+  lname: string;
 begin
-  len := Length(name);
-  if len > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
+  lname := name;
+  if Length(lname) > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
   begin
     I_Warning('W_CheckNumForName(): name string has more than 8 characters: %s'#13#10, [name]);
-    len := 8;
+    SetLength(lname, 8);
   end;
 
-  // make the name into two integers for easy compares
-  for i := 1 to len do
-    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
-  for i := len to 7 do
-    name8.s[i] := #0;
-
-  v1 := name8.x[0];
-  v2 := name8.x[1];
-
-  // JVAL
-  // Hash hit factor is at about 80% for standard WADs, good
-  hash := djb2Hash(name8.s);
-  if (lumphash[hash].name.x[0] = v1) and
-     (lumphash[hash].name.x[1] = v2) then
-    if (flags = 0) or (lumpinfo[lumphash[hash].position].flags and flags <> 0) then
-    begin
-      result := lumphash[hash].position;
-      exit;
-    end;
-
-  // JVAL: If hash position is -1 then the lump does not exist!
-  result := lumphash[hash].position;
-  if result = -1 then
-    exit;
-
-  // scan backwards so patch lump files take precedence
-  lfirst := @lumpinfo[0];
-  // JVAL: Check only the smaller lumps (see W_InitLumpHash)
-  lump_p := @lumpinfo[result];
-
-  while integer(lump_p) > integer(lfirst) do
-  begin
-    dec(lump_p);
-    if (lump_p.v1 = v1) and (lump_p.v2 = v2) then
-      if (flags = 0) or (lump_p.flags and flags <> 0) then
-      begin
-        result := (integer(lump_p) - integer(lumpinfo)) div SizeOf(lumpinfo_t);
-        exit;
-      end;
-  end;
-
-  // TFB. Not found.
-  result := -1;
+  // the last lump with the name takes precedence (case insensitive)
+  result := wad_finder.CheckNumForName(lname, flags);
 end;
 
 //==============================================================================
@@ -1167,46 +986,16 @@ end;
 //==============================================================================
 function W_CheckFirstNumForName(const name: string): integer;
 var
-  name8: name8_t;
-  v1: integer;
-  v2: integer;
-  lump_p: Plumpinfo_t;
-  len: integer;
-  i: integer;
-  llast: Plumpinfo_t;
+  lname: string;
 begin
-  len := Length(name);
-  if len > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
+  lname := name;
+  if Length(lname) > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
   begin
     I_DevError('W_CheckNumForName(): name string has more than 8 characters: %s'#13#10, [name]);
-    len := 8;
+    SetLength(lname, 8);
   end;
 
-  // make the name into two integers for easy compares
-  for i := 1 to len do
-    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
-  for i := len to 7 do
-    name8.s[i] := #0;
-
-  v1 := name8.x[0];
-  v2 := name8.x[1];
-
-  // scan forward
-  llast := @lumpinfo[numlumps];
-  lump_p := @lumpinfo[0];
-
-  while integer(lump_p) <> integer(llast) do
-  begin
-    if (lump_p.v1 = v1) and (lump_p.v2 = v2) then
-    begin
-      result := (integer(lump_p) - integer(lumpinfo)) div SizeOf(lumpinfo_t);
-      exit;
-    end;
-    inc(lump_p);
-  end;
-
-  // TFB. Not found.
-  result := -1;
+  result := wad_finder.CheckFirstNumForName(lname);
 end;
 
 //==============================================================================
@@ -1216,62 +1005,16 @@ end;
 //==============================================================================
 function W_CheckNumForName2(const name: string; first: integer; last: integer): integer;
 var
-  name8: name8_t;
-  v1: integer;
-  v2: integer;
-  lump_p: Plumpinfo_t;
-  len: integer;
-  i: integer;
-  lfirst: Plumpinfo_t;
-  hash: integer;
+  lname: string;
 begin
-  len := Length(name);
-  if len > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
+  lname := name;
+  if Length(lname) > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
   begin
     I_DevError('W_CheckNumForName(): name string has more than 8 characters: %s'#13#10, [name]);
-    len := 8;
+    SetLength(lname, 8);
   end;
 
-  // make the name into two integers for easy compares
-  for i := 1 to len do
-    name8.s[i - 1] := toupper(AnsiChar(name[i])); // case insensitive
-  for i := len to 7 do
-    name8.s[i] := #0;
-
-  v1 := name8.x[0];
-  v2 := name8.x[1];
-
-  hash := djb2Hash(name8.s);
-  if (lumphash[hash].name.x[0] = v1) and
-     (lumphash[hash].name.x[1] = v2) then
-  begin
-    result := lumphash[hash].position;
-    if (result >= first) and (result <= last) then
-      exit;
-    if result < first then
-    begin
-    // JVAL: Hash table returns the higher value of lump position
-      result := -1;
-      exit;
-    end;
-  end;
-
-  // scan backwards so patch lump files take precedence
-  lfirst := @lumpinfo[first];
-  lump_p := @lumpinfo[last + 1];
-
-  while integer(lump_p) <> integer(lfirst) do
-  begin
-    dec(lump_p);
-    if (lump_p.v1 = v1) and (lump_p.v2 = v2) then
-    begin
-      result := (integer(lump_p) - integer(lumpinfo)) div SizeOf(lumpinfo_t);
-      exit;
-    end;
-  end;
-
-  // TFB. Not found.
-  result := -1;
+  result := wad_finder.CheckNumForNameInRange(lname, first, last);
 end;
 
 //==============================================================================

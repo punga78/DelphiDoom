@@ -24,12 +24,15 @@ Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_
 
 ## #46 — Libreria Libs\Wad (in corso)
 
-- **Fatto (passo 1)**: `Libs\Wad` con lettura di WAD, PAK, ZIP, cartelle e file singoli, directory con precedenza dell'ultimo lump, ricerca per nome con flag dei marcatori e per intervallo, cache a due livelli, scrittura e modifica di WAD (`IWadBuilder`), record dei lump di livello senza puntatori. 78 test in `Tests\DelphiDoom.Tests.Wad`, anche su `DOOM1.WAD`, `FREEDOOM2.WAD`, `HERETIC1.WAD`, `HEXEN.WAD`, `STRIFE0.WAD` (directory confrontata con una seconda lettura indipendente; riscrittura di DOOM1.WAD con gli stessi lump).
-- **Manca (passi 2–4 e criteri "Fatto quando")**:
-  1. `Base\w_wad.pas` come facciata con le stesse firme `W_*`. Ostacoli trovati: `lumpinfo[]` è letto direttamente da `nd_main`, `p_setup`, `p_udmf`, `r_data`, `r_things`, `s_externalmusic` (32 accessi); i lump possono venire da stream di PAK (`W_RuntimeLoad`, `W_AddPendingWADfromPAK`) e dal reload con `~`, che oggi non passano da un percorso di file; la cache usa i tag dello zone memory (`PU_STATIC`, `PU_CACHE`).
-  2. Passare i chiamanti uno alla volta all'interfaccia e cancellare la facciata.
-  3. Scrittura di WAD dal motore e dagli strumenti (`ddc*`, DD_IDE, `w_wadwriter.pas`), parità con `w_wadreader`.
+- **Fatto**:
+  - Passo 1: `Libs\Wad` (sorgenti WAD, PAK, PK3, cartella, file singolo; directory con precedenza dell'ultimo lump; ricerca per nome con flag dei marcatori e per intervallo; cache; `IWadBuilder`; record dei lump di livello). 81 test, anche sui WAD reali.
+  - Passo 2 (parziale): `Base\w_wad.pas` usa la libreria per la directory. `W_AddFile`, `W_RuntimeLoad` e `W_Reload` costruiscono le sorgenti con `TWadFileSource`/`TSingleFileSource` sopra un adattatore degli stream del motore; `lumpinfo[]` è una vista di sola lettura rifatta da `W_SyncLumpInfo`; `W_CheckNumForName`, `W_CheckFirstNumForName` e `W_CheckNumForName2` chiamano il finder; sono spariti la tabella hash e i 38 marcatori duplicati. Verificato: `lumpinfo[]` (nome, posizione, dimensione, flag, handle) identico al vecchio codice per Doom, Heretic, Hexen e Strife, e per Doom con due WAD caricati a runtime; i giochi girano fino al livello (`-warp`); `W_Reload` esercitato con un file `~`.
+  - Difetto del vecchio codice non riprodotto: caricare due volte a runtime lo stesso WAD con lo stesso numero di lump liberava più volte lo stesso stream (il gioco si fermava). Ora si sostituisce la sorgente e si libera lo stream una volta; non l'ho provato nel gioco (nessun percorso lo raggiunge nelle prove fatte).
+- **Manca**:
+  1. La lettura dei byte dei lump dalla libreria (`W_ReadLump` legge ancora da `lumpinfo[].handle`, `position`, `size`) e la cache di `ILumpCache` al posto dello zone memory (`lumpcache[]`, tag `PU_STATIC`/`PU_CACHE`): è la parte con più rischio.
+  2. Passare i chiamanti da `lumpinfo[]` (32 accessi in `nd_main`, `p_setup`, `p_udmf`, `r_data`, `r_things`, `s_externalmusic`) all'interfaccia, poi cancellare la facciata.
+  3. PAK e cartelle: `w_pak.pas`, `w_wadreader.pas`, `w_wadwriter.pas` non usano ancora `Libs\Wad` (scrittura dal motore e dagli strumenti `ddc*`, DD_IDE).
   4. Contratto attraverso una DLL (solo buffer e interi): oggi le interfacce usano `TBytes` e `string`.
-  5. Prova a runtime dei quattro giochi dopo il collegamento e build a 64 bit (#40).
-- **Domanda per una persona**: va bene tenere `lumpinfo[]` come vista di sola lettura generata dalla libreria (meno rischio) o si vuole cambiare subito i 32 accessi diretti?
-- **Prossima azione**: collegare `W_AddFile` per i file WAD alla libreria, tenendo `lumpinfo[]` popolato, e provare i giochi.
+  5. Build a 64 bit (#40).
+- **Domanda per una persona**: nessuna per ora.
+- **Prossima azione**: leggere i byte dei lump attraverso `IWadDirectory` mantenendo gli stream del motore (reload e `OnBeginBusy`), poi i chiamanti di `lumpinfo[]` uno alla volta.
