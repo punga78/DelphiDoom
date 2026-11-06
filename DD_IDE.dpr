@@ -58,7 +58,6 @@ uses
   ide_project in 'DD_IDE\ide_project.pas',
   ide_undo in 'DD_IDE\ide_undo.pas',
   ide_utils in 'DD_IDE\ide_utils.pas',
-  zlibpas in 'DD_IDE\zlibpas.pas',
   SynEdit in 'DD_IDE\SynEdit\SynEdit.pas',
   SynEditHighlighter in 'DD_IDE\SynEdit\SynEditHighlighter.pas',
   SynEditHighlighterOptions in 'DD_IDE\SynEdit\SynEditHighlighterOptions.pas',

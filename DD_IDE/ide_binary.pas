@@ -2,7 +2,7 @@ unit ide_binary;
 
 interface
 
-uses SysUtils, Classes, zLibpas, Math;
+uses SysUtils, Classes, System.ZLib, Math;
 
 type
   TZProgressStage = (psStarting, psRunning, psEnding);

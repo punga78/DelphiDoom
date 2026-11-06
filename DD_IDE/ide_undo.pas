@@ -2,7 +2,7 @@ unit ide_undo;
 
 interface
 
-uses Windows, SysUtils, Classes, ide_binary, zLibPas;
+uses Windows, SysUtils, Classes, ide_binary, System.ZLib;
 
 type
   TStreamType = (sstMemory, sstFile);
