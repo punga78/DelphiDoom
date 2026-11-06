@@ -20,10 +20,21 @@ procedure ComposeEngine;
 implementation
 
 uses
+  System.SysUtils,
   DelphiDoom.Logging.Factory,
   DelphiDoom.Logging.Intf,
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
+  DelphiDoom.Input.Intf,
+  DelphiDoom.Input.Factory,
+  DelphiDoom.Engine.Input.KeyMap,
+  DelphiDoom.Engine.Input.Sink,
+  DelphiDoom.Engine.Input.Gate,
+  DelphiDoom.Engine.Input.ScreenSize,
+  DelphiDoom.Engine.Input.DirectKeyboard,
+  d_event,
+  i_mainwindow,
+  i_input,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -39,6 +50,31 @@ uses
   m_argv,
   m_misc,
   i_system;
+
+procedure ComposeInput(const ALog: ILog);
+var
+  LWindow: TFunc<THandle>;
+begin
+  LWindow :=
+    function: THandle
+    begin
+      Result := hMainWnd;
+    end;
+  I_ConfigureInput(
+    function(AUseDirectInput: Boolean): IInputPoller
+    var
+      LKeyboard: IKeyboardDevice;
+    begin
+      if AUseDirectInput then
+        LKeyboard := TDirectKeyboard.Create(LWindow, ALog)
+      else
+        LKeyboard := TInputFactory.CreateWindowsKeyboard;
+      Result := TInputFactory.CreatePoller(LKeyboard, TInputFactory.CreateWindowsMouse,
+        TInputFactory.CreateWindowsJoystick(LWindow), TEngineInputGate.Create,
+        TEngineScreenSize.Create, TEngineKeyMap.Create, TEngineInputSink.Create, ALog,
+        NUMJOYBUTTONS);
+    end);
+end;
 
 procedure ComposeEngine;
 var
@@ -58,6 +94,7 @@ begin
     end);
   I_ConfigureLog(LLog);
   I_ConfigureClock(TClockFactory.CreateClock(LLog));
+  ComposeInput(LLog);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
