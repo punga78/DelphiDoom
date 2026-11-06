@@ -33,7 +33,8 @@ interface
 
 uses
   d_delphi,
-  DelphiDoom.Wad.Intf;
+  DelphiDoom.Wad.Intf,
+  DelphiDoom.Engine.Wad.Intf;
 
 type
   /// <summary>
@@ -46,7 +47,10 @@ type
     FDirectory: IWadDirectory;
     FFinder: IWadFinder;
     ffilename: string;
+    class var FServices: IEngineWadServices;
   public
+    /// <summary>The services the readers work on; the composition root calls it once</summary>
+    class procedure Configure(const AServices: IEngineWadServices); static;
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear; virtual;
@@ -69,8 +73,17 @@ implementation
 uses
   System.SysUtils,
   DelphiDoom.Wad.Types,
-  DelphiDoom.Wad.Factory,
   i_system;
+
+//==============================================================================
+//
+// TWadReader.Create
+//
+//==============================================================================
+class procedure TWadReader.Configure(const AServices: IEngineWadServices);
+begin
+  FServices := AServices;
+end;
 
 //==============================================================================
 //
@@ -80,6 +93,8 @@ uses
 constructor TWadReader.Create;
 begin
   inherited Create;
+  if FServices = nil then
+    I_Error('TWadReader.Create(): the WAD services were not configured (TWadReader.Configure)');
   ffilename := '';
 end;
 
@@ -126,7 +141,7 @@ begin
   end;
 
   try
-    source := TWadFactory.OpenPath(aname);
+    source := FServices.OpenPath(aname);
   except
     on E: EWadException do
     begin
@@ -141,9 +156,9 @@ begin
   end;
 
   FSource := source;
-  FDirectory := TWadFactory.CreateDirectory;
+  FDirectory := FServices.CreateDirectory;
   FDirectory.AddSource(source);
-  FFinder := TWadFactory.CreateFinder(FDirectory);
+  FFinder := FServices.CreateFinder(FDirectory);
   ffilename := aname;
 end;
 

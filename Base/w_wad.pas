@@ -35,7 +35,9 @@ unit w_wad;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Wad.Intf,
+  DelphiDoom.Engine.Wad.Intf;
 
 //
 // TYPES
@@ -116,6 +118,15 @@ function char8tostring(src: char8_t): string;
 //
 //==============================================================================
 function stringtochar8(src: string): char8_t;
+
+//==============================================================================
+//
+// W_Configure
+// Gives the unit the WAD services it works on. The composition root calls it
+// before anything else of this unit
+//
+//==============================================================================
+procedure W_Configure(const AServices: IEngineWadServices);
 
 //==============================================================================
 //
@@ -300,13 +311,7 @@ uses
   i_system,
   w_pak,
   z_zone,
-  DelphiDoom.Wad.Types,
-  DelphiDoom.Wad.Intf,
-  DelphiDoom.Wad.Factory,
-  DelphiDoom.Wad.Source.Wad,
-  DelphiDoom.Wad.Source.SingleFile,
-  DelphiDoom.Wad.DStreamAdapter,
-  DelphiDoom.Wad.ReloadableSource;
+  DelphiDoom.Wad.Types;
 
 //
 // The directory of the lumps is kept by the WAD library (Libs\Wad): it reads the
@@ -322,6 +327,7 @@ var
   numlumps: integer = 0;
   lumpinfoalloc: integer = 0; // lumps that lumpinfo has room for
 
+  wad_services: IEngineWadServices = nil;
   wad_directory: IWadDirectory = nil;
   wad_finder: IWadFinder = nil;
   wad_reader: ILumpReader = nil;
@@ -478,14 +484,8 @@ end;
 //
 //==============================================================================
 function W_CreateWadSource(const aname: string; handle: TDStream; const singlelump: boolean): IWadSource;
-var
-  adapter: TDStreamAdapter;
 begin
-  adapter := TDStreamAdapter.Create(handle);
-  if singlelump then
-    result := TSingleFileSource.Create(aname, adapter, True)
-  else
-    result := TWadFileSource.Create(aname, adapter, True);
+  result := wad_services.OpenStream(aname, handle, singlelump);
 end;
 
 //==============================================================================
@@ -591,7 +591,7 @@ begin
 
   if reloadname <> '' then
     // the file is not kept open: it is opened again whenever a lump is read
-    source := TReloadableWadSource.Create(filename, source);
+    source := wad_services.MakeReloadable(filename, source);
 
   wad_directory.AddSource(source);
   SetLength(wad_handles, wad_directory.SourceCount);
@@ -648,7 +648,7 @@ begin
       if lumpcache[i] <> nil then
         Z_Free(lumpcache[i]);
 
-    wad_directory.ReplaceSource(reloadsource, TReloadableWadSource.Create(reloadname, source));
+    wad_directory.ReplaceSource(reloadsource, wad_services.MakeReloadable(reloadname, source));
   except
     on E: EWadException do
       I_Error('W_Reload(): %s'#13#10, [E.Message]);
@@ -861,6 +861,15 @@ begin
   pendingwadsfrompak.Add(fname);
 end;
 
+//==============================================================================
+//
+// W_Configure
+//
+//==============================================================================
+procedure W_Configure(const AServices: IEngineWadServices);
+begin
+  wad_services := AServices;
+end;
 
 //==============================================================================
 //
@@ -886,9 +895,11 @@ begin
   if rtllist <> nil then
     rtllist := TDStringList.Create;
 
-  wad_directory := TWadFactory.CreateDirectory;
-  wad_finder := TWadFactory.CreateFinder(wad_directory);
-  wad_reader := TWadFactory.CreateReader(wad_directory);
+  if wad_services = nil then
+    I_Error('W_InitMultipleFiles(): the WAD services were not configured (W_Configure)');
+  wad_directory := wad_services.CreateDirectory;
+  wad_finder := wad_services.CreateFinder(wad_directory);
+  wad_reader := wad_services.CreateReader(wad_directory);
   SetLength(wad_handles, 0);
 
   // open all the files, load headers, and count lumps

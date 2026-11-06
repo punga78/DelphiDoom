@@ -325,6 +325,9 @@ uses
   DelphiDoom.Wad.Factory in 'Libs\Wad\DelphiDoom.Wad.Factory.pas',
   DelphiDoom.Wad.DStreamAdapter in 'Base\DelphiDoom.Wad.DStreamAdapter.pas',
   DelphiDoom.Pak.EntryReader in 'Base\DelphiDoom.Pak.EntryReader.pas',
+  DelphiDoom.Engine.Wad.Intf in 'Base\DelphiDoom.Engine.Wad.Intf.pas',
+  DelphiDoom.Engine.Wad.Services in 'Base\DelphiDoom.Engine.Wad.Services.pas',
+  DelphiDoom.Engine.Composition in 'Base\DelphiDoom.Engine.Composition.pas',
   DelphiDoom.Wad.ReloadableSource in 'Base\DelphiDoom.Wad.ReloadableSource.pas',
   w_wad in 'Base\w_wad.pas',
   i_startup in 'Base\i_startup.pas' {StartUpConsoleForm},
@@ -540,5 +543,5 @@ exports
   dd_getactordef_hexen;
 
 begin
-
+  ComposeEngine;
 end.

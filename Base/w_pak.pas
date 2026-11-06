@@ -33,6 +33,7 @@ interface
 uses
   d_delphi,
   DelphiDoom.Wad.Intf,
+  DelphiDoom.Engine.Wad.Intf,
   DelphiDoom.Pak.EntryReader;
 
 type
@@ -141,6 +142,15 @@ type
 
 //==============================================================================
 //
+// PAK_Configure
+// Gives the unit the WAD services it works on. The composition root calls it
+// before PAK_InitFileSystem
+//
+//==============================================================================
+procedure PAK_Configure(const AServices: IEngineWadServices);
+
+//==============================================================================
+//
 // PAK_InitFileSystem
 //
 //==============================================================================
@@ -230,8 +240,11 @@ uses
   t_patch,
   t_flat,
   w_wad,
-  DelphiDoom.Wad.Types,
-  DelphiDoom.Wad.Factory;
+  DelphiDoom.Wad.Types;
+
+var
+  // the WAD services of the engine, given by the composition root (PAK_Configure)
+  pak_services: IEngineWadServices = nil;
 
 //==============================================================================
 //
@@ -488,7 +501,7 @@ begin
   SetLength(Sources, PAKS.Count);
 
   try
-    source := TWadFactory.OpenPath(Fn);
+    source := pak_services.OpenPath(Fn);
   except
     on E: EWadException do
     begin
@@ -1390,11 +1403,23 @@ end;
 
 //==============================================================================
 //
+// PAK_Configure
+//
+//==============================================================================
+procedure PAK_Configure(const AServices: IEngineWadServices);
+begin
+  pak_services := AServices;
+end;
+
+//==============================================================================
+//
 // PAK_InitFileSystem
 //
 //==============================================================================
 procedure PAK_InitFileSystem;
 begin
+  if pak_services = nil then
+    I_Error('PAK_InitFileSystem(): the WAD services were not configured (PAK_Configure)');
   pakmanager := TPakManager.Create;
 end;
 

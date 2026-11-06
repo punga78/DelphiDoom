@@ -280,6 +280,9 @@ uses
   DelphiDoom.Wad.Factory in 'Libs\Wad\DelphiDoom.Wad.Factory.pas',
   DelphiDoom.Wad.DStreamAdapter in 'Base\DelphiDoom.Wad.DStreamAdapter.pas',
   DelphiDoom.Pak.EntryReader in 'Base\DelphiDoom.Pak.EntryReader.pas',
+  DelphiDoom.Engine.Wad.Intf in 'Base\DelphiDoom.Engine.Wad.Intf.pas',
+  DelphiDoom.Engine.Wad.Services in 'Base\DelphiDoom.Engine.Wad.Services.pas',
+  DelphiDoom.Engine.Composition in 'Base\DelphiDoom.Engine.Composition.pas',
   DelphiDoom.Wad.ReloadableSource in 'Base\DelphiDoom.Wad.ReloadableSource.pas',
   w_wad in 'Base\w_wad.pas',
   z_zone in 'Base\z_zone.pas',
@@ -582,6 +585,7 @@ var
 
 begin
   I_InstallCrashLogger;
+  ComposeEngine;
 
   { Save the current FPU state and then disable FPU exceptions }
   Saved8087CW := Default8087CW;

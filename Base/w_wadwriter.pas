@@ -33,7 +33,8 @@ interface
 
 uses
   d_delphi,
-  DelphiDoom.Wad.Intf;
+  DelphiDoom.Wad.Intf,
+  DelphiDoom.Engine.Wad.Intf;
 
 type
   /// <summary>
@@ -45,7 +46,10 @@ type
   TWadWriter = class(TObject)
   private
     FBuilder: IWadBuilder;
+    class var FServices: IEngineWadServices;
   public
+    /// <summary>The services the writers work on; the composition root calls it once</summary>
+    class procedure Configure(const AServices: IEngineWadServices); static;
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear; virtual;
@@ -68,8 +72,17 @@ implementation
 uses
   System.SysUtils,
   DelphiDoom.Wad.Types,
-  DelphiDoom.Wad.Factory,
   i_system;
+
+//==============================================================================
+//
+// TWadWriter.Create
+//
+//==============================================================================
+class procedure TWadWriter.Configure(const AServices: IEngineWadServices);
+begin
+  FServices := AServices;
+end;
 
 //==============================================================================
 //
@@ -79,7 +92,9 @@ uses
 constructor TWadWriter.Create;
 begin
   inherited Create;
-  FBuilder := TWadFactory.CreateBuilder(TWadKind.PWad);
+  if FServices = nil then
+    I_Error('TWadWriter.Create(): the WAD services were not configured (TWadWriter.Configure)');
+  FBuilder := FServices.CreateBuilder(TWadKind.PWad);
 end;
 
 //==============================================================================
