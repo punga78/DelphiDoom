@@ -25,6 +25,9 @@ uses
   DelphiDoom.Logging.Intf,
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
+  DelphiDoom.Video.Factory,
+  DelphiDoom.GameState.Intf,
+  DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
   DelphiDoom.Input.Factory,
   DelphiDoom.Engine.Input.KeyMap,
@@ -81,19 +84,22 @@ var
   LWadServices: IEngineWadServices;
   LEngine: IIdTechEngine;
   LLog: ILog;
+  LContext: IGameContext;
 begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
   M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
+  LContext := TEngineGameContext.Create;
   LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
     function: Boolean
     begin
-      Result := devparm;
+      Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
   I_ConfigureClock(TClockFactory.CreateClock(LLog));
+  I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeInput(LLog);
 
   LWadServices := TEngineWadServices.Create;

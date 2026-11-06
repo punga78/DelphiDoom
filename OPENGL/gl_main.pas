@@ -773,24 +773,8 @@ end;
 //
 //==============================================================================
 procedure I_SetPalette(const palette: PByteArray);
-var
-  dest: PLongWord;
-  src: PByteArray;
-  limit: integer;
-  curgamma: PByteArray;
 begin
-  dest := @curpal[0];
-  src := palette;
-  curgamma := @gammatable[usegamma];
-  limit := integer(@palette[256 * 3]);
-  while integer(src) < limit do
-  begin
-    dest^ := (LongWord(curgamma[src[0]]) shl 16) or
-             (LongWord(curgamma[src[1]]) shl 8) or
-             (LongWord(curgamma[src[2]]));
-    inc(dest);
-    src := PByteArray(integer(src) + 3);
-  end;
+  I_VideoServices.Palette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), System.PCardinal(@curpal[0]));
 end;
 
 //==============================================================================
@@ -800,17 +784,7 @@ end;
 //==============================================================================
 function I_AdjustWindowMode: boolean;
 begin
-  result := false;
-  if SCREENWIDTH > GetSystemMetrics(SM_CXSCREEN) then
-  begin
-    SCREENWIDTH := GetSystemMetrics(SM_CXSCREEN);
-    result := true;
-  end;
-  if SCREENHEIGHT > GetSystemMetrics(SM_CYSCREEN) then
-  begin
-    SCREENHEIGHT := GetSystemMetrics(SM_CYSCREEN);
-    result := true;
-  end;
+  result := I_VideoServices.SizeLimiter.Limit(SCREENWIDTH, SCREENHEIGHT);
 end;
 
 const

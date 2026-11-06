@@ -37,7 +37,8 @@ uses
   d_delphi,
   d_ticcmd,
   DelphiDoom.Logging.Intf,
-  DelphiDoom.Clock.Intf;
+  DelphiDoom.Clock.Intf,
+  DelphiDoom.Video.Intf;
 
 //==============================================================================
 //
@@ -175,6 +176,23 @@ procedure I_ConfigureLog(const ALog: ILog);
 //
 //==============================================================================
 procedure I_ConfigureClock(const AClock: IClock);
+
+//==============================================================================
+//
+// I_ConfigureVideo
+// Gives the units of the video (software and OpenGL) the services that do not depend on the
+// graphics API: the palette, the limit of the window, the memory stall hack.
+// The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureVideo(const AServices: IVideoServices);
+
+//==============================================================================
+//
+// I_VideoServices
+//
+//==============================================================================
+function I_VideoServices: IVideoServices;
 
 //==============================================================================
 //
@@ -564,6 +582,30 @@ var
 procedure I_ConfigureClock(const AClock: IClock);
 begin
   engine_clock := AClock;
+end;
+
+var
+  // given by the composition root (I_ConfigureVideo)
+  engine_video: IVideoServices = nil;
+
+//==============================================================================
+//
+// I_ConfigureVideo
+//
+//==============================================================================
+procedure I_ConfigureVideo(const AServices: IVideoServices);
+begin
+  engine_video := AServices;
+end;
+
+//==============================================================================
+//
+// I_VideoServices
+//
+//==============================================================================
+function I_VideoServices: IVideoServices;
+begin
+  result := engine_video;
 end;
 
 //==============================================================================

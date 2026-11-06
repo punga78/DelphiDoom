@@ -634,22 +634,8 @@ end;
 //
 //==============================================================================
 procedure I_SetPalette(const palette: PByteArray);
-var
-  dest: PLongWord;
-  src: PByteArray;
-  curgamma: PByteArray;
 begin
-  dest := @curpal[0];
-  src := palette;
-  curgamma := @gammatable[usegamma];
-  while integer(src) < integer(@palette[256 * 3]) do
-  begin
-    dest^ := (LongWord(curgamma[src[0]]) shl 16) or
-             (LongWord(curgamma[src[1]]) shl 8) or
-             (LongWord(curgamma[src[2]]));
-    inc(dest);
-    src := PByteArray(integer(src) + 3);
-  end;
+  I_VideoServices.Palette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), System.PCardinal(@curpal[0]));
   if videomode = vm8bit then
     I_SetPalette64;
 end;
@@ -660,22 +646,8 @@ end;
 //
 //==============================================================================
 procedure IV_SetPalette(const palette: PByteArray);
-var
-  dest: PLongWord;
-  src: PByteArray;
-  curgamma: PByteArray;
 begin
-  dest := @curpal[0];
-  src := palette;
-  curgamma := @gammatable[usegamma];
-  while integer(src) < integer(@palette[256 * 3]) do
-  begin
-    dest^ := (LongWord(curgamma[src[0]]) shl 16) or
-             (LongWord(curgamma[src[1]]) shl 8) or
-             (LongWord(curgamma[src[2]]));
-    inc(dest);
-    src := PByteArray(integer(src) + 3);
-  end;
+  I_VideoServices.Palette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), System.PCardinal(@curpal[0]));
   if videomode = vm8bit then
     I_SetPalette64;
   V_SetPalette(palette);
@@ -688,17 +660,7 @@ end;
 //==============================================================================
 function I_AdjustWindowMode: boolean;
 begin
-  result := false;
-  if WINDOWWIDTH > GetSystemMetrics(SM_CXSCREEN) then
-  begin
-    WINDOWWIDTH := GetSystemMetrics(SM_CXSCREEN);
-    result := true;
-  end;
-  if WINDOWHEIGHT > GetSystemMetrics(SM_CYSCREEN) then
-  begin
-    WINDOWHEIGHT := GetSystemMetrics(SM_CYSCREEN);
-    result := true;
-  end;
+  result := I_VideoServices.SizeLimiter.Limit(WINDOWWIDTH, WINDOWHEIGHT);
 end;
 
 //==============================================================================
@@ -717,17 +679,8 @@ function I_MemoryStallHack: boolean;
 //  add esi, [esp]
 // It's crazy!
 begin
-  if (SCREENWIDTH = 1024) or (SCREENWIDTH = 1152) or (SCREENWIDTH = 1280) then
-  begin
-    if fixstallhack then
-    begin
-      dec(SCREENWIDTH, 2);
-      stallhack := true;
-    end;
-  end
-  else
-    stallhack := false;
-  result := stallhack;
+  result := I_VideoServices.StallHack.Apply(SCREENWIDTH, fixstallhack);
+  stallhack := result;
 end;
 
 const
