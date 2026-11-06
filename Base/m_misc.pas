@@ -514,7 +514,6 @@ var
   i: integer;
   pd: Pdefault_t;
   cname: string;
-  cmd: cmd_t;
   clist: TDStringList;
   rlist: TDStringList;
   setflags: byte;
@@ -602,8 +601,8 @@ begin
     inc(pd);
   end;
 
-  if C_GetCmd(name, cmd) then
-    if C_ExecuteCmd(@cmd, value) then
+  if C_CmdExists(name) then
+    if C_ExecuteCmd(name, value, '') then
       exit;
 
   C_UnknowCommandMsg;
@@ -619,7 +618,6 @@ var
   i: integer;
   pd: Pdefault_t;
   cname: string;
-  cmd: cmd_t;
   clist: TDStringList;
   rlist: TDStringList;
 begin
@@ -688,8 +686,8 @@ begin
     inc(pd);
   end;
 
-  if C_GetCmd(name, cmd) then
-    if C_ExecuteCmd(@cmd) then
+  if C_CmdExists(name) then
+    if C_ExecuteCmd(name, '', '') then
       exit;
 
   C_UnknowCommandMsg;

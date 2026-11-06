@@ -45,6 +45,9 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.Console.Intf,
+  DelphiDoom.Console.Factory,
+  c_cmds,
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.TextureDefs.Factory,
@@ -334,6 +337,14 @@ begin
   R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create);
 end;
 
+procedure ComposeConsole;
+var
+  LRegistry: ICommandRegistry;
+begin
+  LRegistry := TConsoleFactory.CreateRegistry;
+  C_ConfigureCommands(LRegistry, TConsoleFactory.CreateInterpreter(LRegistry));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -394,6 +405,7 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  ComposeConsole;
   I_ConfigureClock(TClockFactory.CreateClock(LLog));
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeInput(LLog);

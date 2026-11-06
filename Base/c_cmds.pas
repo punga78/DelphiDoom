@@ -31,16 +31,19 @@ unit c_cmds;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Console.Intf;
 
 type
   cmdproc_t = procedure(const parm1, parm2: string);
 
-  cmd_t = record
-    name: string[255];
-    command: cmdproc_t;
-  end;
-  Pcmd_t = ^cmd_t;
+//==============================================================================
+//
+// C_ConfigureCommands
+// The registry and the interpreter of Libs\Console, given by the composition root
+//
+//==============================================================================
+procedure C_ConfigureCommands(const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter);
 
 //==============================================================================
 //
@@ -51,25 +54,10 @@ procedure C_AddCmd(const name: string; proc: cmdproc_t);
 
 //==============================================================================
 //
-// C_GetCmd
-//
-//==============================================================================
-function C_GetCmd(name: string; var cmd: cmd_t): boolean;
-
-//==============================================================================
-//
 // C_CmdExists
 //
 //==============================================================================
 function C_CmdExists(name: string): boolean;
-
-//==============================================================================
-//
-// C_ExecuteCmd
-//
-//==============================================================================
-function C_ExecuteCmd(const cmd: Pcmd_t;
-  const parm1: string = ''; const parm2: string = ''): boolean; overload;
 
 //==============================================================================
 //
@@ -123,18 +111,30 @@ procedure C_UnknowCommandMsg;
 implementation
 
 uses
-  i_system;
-
-const
-  MAXCMDS = 300;
+  i_system,
+  DelphiDoom.Console.Numbers,
+  DelphiDoom.Console.MaskMatcher;
 
 var
-  CMDS: array[0..MAXCMDS - 1] of cmd_t;
-  numcmds: integer = 0;
-  cmdssorted: boolean = false;
+  cmd_registry: ICommandRegistry;
+  cmd_interpreter: IConsoleInterpreter;
 
-const
-  CMDSPLITSTR = ',';
+//==============================================================================
+//
+// C_ConfigureCommands
+//
+//==============================================================================
+procedure C_ConfigureCommands(const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter);
+begin
+  cmd_registry := ARegistry;
+  cmd_interpreter := AInterpreter;
+end;
+
+procedure C_CheckConfigured;
+begin
+  if cmd_registry = nil then
+    I_Error('The console is not configured (ComposeEngine was not called)');
+end;
 
 //==============================================================================
 //
@@ -142,138 +142,17 @@ const
 //
 //==============================================================================
 procedure C_AddCmd(const name: string; proc: cmdproc_t);
-var
-  name1, name2: string;
 begin
   if name = '' then
     exit;
+  C_CheckConfigured;
 
-  if numcmds = MAXCMDS then
-  begin
-    I_Error('C_AddCmd(): Can''t add %s, commands limit (%d) exceeded'#13#10, [name, MAXCMDS]);
-    exit;
-  end;
-
-  if CharPos(CMDSPLITSTR, name) = 0 then
-  begin
-    CMDS[numcmds].name := strupper(name);
-    CMDS[numcmds].command := proc;
-    inc(numcmds);
-    cmdssorted := false;
-  end
-  else
-  begin
-    splitstring_ch(name, name1, name2, CMDSPLITSTR);
-    C_AddCmd(name1, proc);
-    C_AddCmd(name2, proc);
-  end;
-end;
-
-//==============================================================================
-//
-// C_ExecuteCmd
-//
-//==============================================================================
-function C_ExecuteCmd(const name: string): boolean;
-var
-  name1,
-  parm: string;
-begin
-  splitstring_ch(name, name1, parm);
-  result := C_ExecuteCmd(name1, parm);
-end;
-
-//==============================================================================
-//
-// C_ExecuteCmd
-//
-//==============================================================================
-function C_ExecuteCmd(const name: string; const parm: string): boolean;
-var
-  parm1,
-  parm2: string;
-begin
-  splitstring_ch(parm, parm1, parm2);
-  result := C_ExecuteCmd(name, parm1, parm2);
-end;
-
-//==============================================================================
-//
-// C_QuickSortCmds
-//
-//==============================================================================
-procedure C_QuickSortCmds;
-
-  procedure qsort(l, r: Integer);
-  var
-    i, j: Integer;
-    t: cmd_t;
-    p: cmd_t;
-  begin
-    repeat
-      i := l;
-      j := r;
-      p := CMDS[(l + r) shr 1];
-      repeat
-        while CMDS[i].name < p.name do
-          inc(i);
-        while CMDS[j].name > p.name do
-          dec(j);
-        if i <= j then
-        begin
-          t := CMDS[i];
-          CMDS[i] := CMDS[j];
-          CMDS[j] := t;
-          inc(i);
-          dec(j);
-        end;
-      until i > j;
-      if l < j then
-        qsort(l, j);
-      l := i;
-    until i >= r;
-  end;
-
-begin
-  if numcmds > 1 then
-    qsort(0, numcmds - 1);
-  cmdssorted := true;
-end;
-
-//==============================================================================
-//
-// C_GetCmd
-//
-//==============================================================================
-function C_GetCmd(name: string; var cmd: cmd_t): boolean;
-var
-  l, h, i: integer;
-  c: Pcmd_t;
-begin
-  if not cmdssorted then
-    C_QuickSortCmds;
-
-  strupperproc(name);
-  l := 0;
-  h := numcmds - 1;
-  while l <= h do
-  begin
-    i := (l + h) shr 1;
-    c := @CMDs[i];
-    if c.name < name then
-      l := i + 1
-    else
+  // The commands have always been called with both parameters, whatever their own declaration
+  cmd_registry.Add(name,
+    procedure(const aparm1, aparm2: string)
     begin
-      if c.name = name then
-      begin
-        result := true;
-        cmd := c^;
-        exit;
-      end;
-      h := i - 1;
-    end;
-  end;
-  result := false;
+      proc(aparm1, aparm2);
+    end);
 end;
 
 //==============================================================================
@@ -282,10 +161,9 @@ end;
 //
 //==============================================================================
 function C_CmdExists(name: string): boolean;
-var
-  c: cmd_t;
 begin
-  result := C_GetCmd(name, c);
+  C_CheckConfigured;
+  result := cmd_registry.Contains(name);
 end;
 
 //==============================================================================
@@ -293,19 +171,21 @@ end;
 // C_ExecuteCmd
 //
 //==============================================================================
-function C_ExecuteCmd(const cmd: Pcmd_t;
-  const parm1: string = ''; const parm2: string = ''): boolean;
+function C_ExecuteCmd(const name: string): boolean;
 begin
-  result := false;
+  C_CheckConfigured;
+  result := cmd_interpreter.Execute(name);
+end;
 
-  if cmd = nil then
-    exit;
-
-  if not Assigned(cmd.command) then
-    exit;
-
-  cmd.command(parm1, parm2);
-  result := true;
+//==============================================================================
+//
+// C_ExecuteCmd
+//
+//==============================================================================
+function C_ExecuteCmd(const name: string; const parm: string): boolean;
+begin
+  C_CheckConfigured;
+  result := cmd_interpreter.Execute(name, parm);
 end;
 
 //==============================================================================
@@ -314,60 +194,10 @@ end;
 //
 //==============================================================================
 function C_ExecuteCmd(name: string; const parm1, parm2: string): boolean;
-var
-  l, h, i: integer;
-  c: Pcmd_t;
 begin
-  if not cmdssorted then
-    C_QuickSortCmds;
-
-  strupperproc(name);
-  l := 0;
-  h := numcmds - 1;
-  while l <= h do
-  begin
-    i := (l + h) shr 1;
-    c := @CMDs[i];
-    if c.name < name then
-      l := i + 1
-    else
-    begin
-      if c.name = name then
-      begin
-        result := true;
-        c.command(parm1, parm2);
-        exit;
-      end;
-      h := i - 1;
-    end;
-  end;
-  if (name <> 'GET') and (name <> 'SET') then
-  begin
-    if parm1 = '' then
-      result := C_ExecuteCmd('GET', name)
-    else if parm2 = '' then
-      result := C_ExecuteCmd('SET', name, parm1)
-    else
-      result := false;
-  end
-  else
-    result := false;
+  C_CheckConfigured;
+  result := cmd_interpreter.Execute(name, parm1, parm2);
 end;
-
-const
-  TRUE_VALUES: array[0..3] of string = (
-    'TRUE',
-    'ON',
-    'YES',
-    '1'
-  );
-
-  FALSE_VALUES: array[0..3] of string = (
-    'FALSE',
-    'OFF',
-    'NO',
-    '0'
-  );
 
 //==============================================================================
 //
@@ -375,27 +205,8 @@ const
 //
 //==============================================================================
 function C_BoolEval(parm: string; const default: boolean): boolean;
-var
-  i: integer;
 begin
-  strupperproc(parm);
-
-  for i := low(TRUE_VALUES) to high(TRUE_VALUES) do
-    if parm = TRUE_VALUES[i] then
-    begin
-      result := true;
-      exit;
-    end;
-
-  for i := low(FALSE_VALUES) to high(FALSE_VALUES) do
-    if parm = FALSE_VALUES[i] then
-    begin
-      result := false;
-      exit;
-    end;
-
-  result := default;
-
+  result := TConsoleNumbers.EvaluateBoolean(parm, default);
 end;
 
 //==============================================================================
@@ -405,66 +216,19 @@ end;
 //==============================================================================
 function C_GetMachingList(const src: TDStringList; const mask: string): TDStringList;
 var
-  i, j: integer;
-  lst: TDStringList;
-  str: string;
-  p: integer;
-  last_p: integer;
-  fits: boolean;
-  first: boolean;
-  check: string;
+  names: TArray<string>;
+  matching: TArray<string>;
+  i: integer;
 begin
+  SetLength(names, src.Count);
+  for i := 0 to src.Count - 1 do
+    names[i] := src[i];
+
+  matching := TConsoleMaskMatcher.Filter(names, mask);
+
   result := TDStringList.Create;
-
-  str := '';
-  lst := TDStringList.Create;
-  try
-    first := true;
-    for i := 1 to Length(mask) do
-    begin
-      if mask[i] = '*' then
-      begin
-        if i = 1 then
-          first := false;
-        if str <> '' then
-        begin
-          lst.Add(str);
-          str := '';
-        end;
-      end
-      else
-        str := str + upcase(mask[i]);
-    end;
-    if str <> '' then
-      lst.Add(str);
-
-    for i := 0 to src.Count - 1 do
-    begin
-      last_p := 0;
-      fits := true;
-      check := strupper(src[i]);
-      for j := 0 to lst.Count - 1 do
-      begin
-        p := Pos(lst[j], check);
-        if first and (j = 0) and (p <> 1) then
-          fits := false
-        else if p = 0 then
-          fits := false
-        else if p + Length(lst[j]) > last_p then
-          last_p := p + Length(lst[j])
-        else
-          fits := false;
-        if not fits then
-          break;
-      end;
-      if fits then
-        result.Add(src[i]);
-    end;
-
-  finally
-    lst.Free;
-  end;
-
+  for i := 0 to Length(matching) - 1 do
+    result.Add(matching[i]);
 end;
 
 //==============================================================================
@@ -474,37 +238,16 @@ end;
 //==============================================================================
 procedure C_CmdList(const mask: string);
 var
+  names: TArray<string>;
   i: integer;
-  clist: TDStringList;
-  rlist: TDStringList;
-  count: integer;
 begin
-  if mask = '' then
-  begin
-    count := numcmds;
-    for i := 0 to count - 1 do
-      printf('%s'#13#10, [CMDS[i].name]);
-  end
-  else
-  begin
-    clist := TDStringList.Create;
-    try
-      for i := 0 to numcmds - 1 do
-        clist.Add(CMDS[i].name);
-
-      rlist := C_GetMachingList(clist, mask);
-      try
-        count := rlist.Count;
-        for i := 0 to rlist.Count - 1 do
-          printf('%s'#13#10, [rlist[i]]);
-      finally
-        rlist.Free;
-      end;
-    finally
-      clist.Free;
-    end;
-  end;
-  printf('%d total commands.'#13#10, [count]);
+  C_CheckConfigured;
+  names := cmd_registry.Names;
+  if mask <> '' then
+    names := TConsoleMaskMatcher.Filter(names, mask);
+  for i := 0 to Length(names) - 1 do
+    printf('%s'#13#10, [names[i]]);
+  printf('%d total commands.'#13#10, [Length(names)]);
 end;
 
 const
