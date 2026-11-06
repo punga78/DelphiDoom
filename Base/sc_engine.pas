@@ -24,6 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
+
 {$I Doom32.inc}
 
 unit sc_engine;
@@ -31,42 +32,25 @@ unit sc_engine;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Scanner.Scanner;
 
 //
 // JVAL
 //
 // Script Engine
 //
+// The scanning is done by TScriptScanner (Libs\Scanner): this class keeps the API that the
+// rest of the engine uses and turns the lists of the scanner into TDStringList
+//
 
-// TScriptEngine
 const
   MAX_STRING_SIZE = 1024;
 
 type
   TScriptEngine = class
   private
-    sc_String: PAnsiChar;
-    sc_Integer: integer;
-    sc_Boolean: boolean;
-    sc_Float: float;
-    sc_Line: integer;
-    sc_End: boolean;
-    fNewLine: boolean;
-    fBracketLevel: integer;
-    fParenthesisLevel: integer;
-    ScriptBuffer: PAnsiChar;
-    ScriptPtr: PAnsiChar;
-    ScriptEndPtr: PAnsiChar;
-    StringBuffer: array [0..MAX_STRING_SIZE] of AnsiChar;
-    ScriptSize: integer;
-    AlreadyGot: boolean;
-    ignonelist: TDStringList;
-    fquotedtoken: boolean;
-    faliases: TDStringList;
-  protected
-    function fToken: string;
-    function fuToken: string; // Upercase token
+    FScanner: TScriptScanner;
   public
     constructor Create(const tx: string); virtual;
     destructor Destroy; override;
@@ -98,16 +82,26 @@ type
     function Compare(const txt: string; const scmp: string): boolean; overload;
     procedure AddAlias(const src, dest: string);
     procedure ClearAliases;
-    property _Integer: integer read sc_Integer;
-    property _Float: float read sc_Float;
-    property _String: string read fToken;
-    property _Boolean: boolean read sc_boolean;
-    property _Finished: boolean read sc_End;
-    property _Line: integer read sc_Line;
-    property NewLine: boolean read fNewLine;
-    property BracketLevel: integer read fBracketLevel;
-    property ParenthesisLevel: integer read fParenthesisLevel;
-    property QuotedToken: boolean read fquotedtoken;
+    function GetInteger_: integer;
+    function GetFloat_: float;
+    function GetString_: string;
+    function GetBoolean_: boolean;
+    function GetFinished_: boolean;
+    function GetLine_: integer;
+    function GetNewLine_: boolean;
+    function GetBracketLevel_: integer;
+    function GetParenthesisLevel_: integer;
+    function GetQuotedToken_: boolean;
+    property _Integer: integer read GetInteger_;
+    property _Float: float read GetFloat_;
+    property _String: string read GetString_;
+    property _Boolean: boolean read GetBoolean_;
+    property _Finished: boolean read GetFinished_;
+    property _Line: integer read GetLine_;
+    property NewLine: boolean read GetNewLine_;
+    property BracketLevel: integer read GetBracketLevel_;
+    property ParenthesisLevel: integer read GetParenthesisLevel_;
+    property QuotedToken: boolean read GetQuotedToken_;
   end;
 
 //==============================================================================
@@ -155,12 +149,36 @@ function SC_TokensToList(const inp: string): TDStringList;
 implementation
 
 uses
-  i_system;
+  DelphiDoom.Engine.Scanner.Log,
+  DelphiDoom.Scanner.Text;
 
-const
-  ASCII_QUOTE = '"';
-  ASCII_COMMENT1 = '/';
-  ASCII_COMMENT = $2F2F; // = '//'
+//==============================================================================
+//
+// WordsOf
+//
+//==============================================================================
+function WordsOf(const strs: TDStringList): TArray<string>;
+var
+  i: integer;
+begin
+  SetLength(Result, strs.Count);
+  for i := 0 to strs.Count - 1 do
+    Result[i] := strs.Strings[i];
+end;
+
+//==============================================================================
+//
+// ListOf
+//
+//==============================================================================
+function ListOf(const words: TArray<string>): TDStringList;
+var
+  i: integer;
+begin
+  result := TDStringList.Create;
+  for i := 0 to High(words) do
+    result.Add(words[i]);
+end;
 
 //==============================================================================
 // TScriptEngine.Create
@@ -171,13 +189,7 @@ const
 constructor TScriptEngine.Create(const tx: string);
 begin
   Inherited Create;
-  ignonelist := TDStringList.Create;
-  faliases := TDStringList.Create;
-  fBracketLevel := 0;
-  fParenthesisLevel := 0;
-  fNewLine := false;
-  Clear;
-  SetText(tx);
+  FScanner := TScriptScanner.Create(tx, TEngineScannerLog.Create);
 end;
 
 //==============================================================================
@@ -187,9 +199,7 @@ end;
 //==============================================================================
 destructor TScriptEngine.Destroy;
 begin
-  Clear;
-  ignonelist.Free;
-  faliases.Free;
+  FScanner.Free;
   Inherited;
 end;
 
@@ -200,37 +210,7 @@ end;
 //==============================================================================
 procedure TScriptEngine.AddIgnoreToken(const s: string);
 begin
-  ignonelist.Add(strupper(s));
-end;
-
-//==============================================================================
-//
-// TScriptEngine.fToken
-//
-//==============================================================================
-function TScriptEngine.fToken: string;
-var
-  idx: integer;
-begin
-  result := StringVal(sc_String);
-  idx := faliases.IndexOfName(strupper(result));
-  if idx >= 0 then
-    result := faliases.ValuesIdx[idx];
-end;
-
-//==============================================================================
-//
-// TScriptEngine.fuToken
-//
-//==============================================================================
-function TScriptEngine.fuToken: string; // Upercase token
-var
-  idx: integer;
-begin
-  result := strupper(StringVal(sc_String));
-  idx := faliases.IndexOfName(result);
-  if idx >= 0 then
-    result := faliases.ValuesIdx[idx];
+  FScanner.AddIgnoreToken(s);
 end;
 
 //==============================================================================
@@ -240,18 +220,7 @@ end;
 //==============================================================================
 procedure TScriptEngine.Clear;
 begin
-  if ScriptSize > 0 then
-    memfree(pointer(ScriptBuffer), ScriptSize);
-
-  ScriptBuffer := nil;
-  ScriptSize := 0;
-  ScriptPtr := ScriptBuffer;
-  ScriptEndPtr := ScriptPtr + ScriptSize;
-  sc_Line := 1;
-  sc_End := false;
-  fquotedtoken := false;
-  sc_String := @StringBuffer[0];
-  AlreadyGot := false;
+  FScanner.SetText('');
 end;
 
 //==============================================================================
@@ -260,26 +229,8 @@ end;
 //
 //==============================================================================
 procedure TScriptEngine.SetText(const tx: string);
-var
-  p: Pointer;
-  size: integer;
-  atx: AnsiString;
 begin
-  atx := AnsiString(tx); // script text is parsed as 8 bit characters
-  size := Length(atx);
-  p := malloc(size);
-  if size > 0 then
-    Move(atx[1], p^, size);
-
-  Clear;
-  ScriptBuffer := p;
-  ScriptSize := size;
-  ScriptPtr := ScriptBuffer;
-  ScriptEndPtr := ScriptPtr + ScriptSize;
-  sc_Line := 1;
-  sc_End := false;
-  sc_String := @StringBuffer[0];
-  AlreadyGot := false;
+  FScanner.SetText(tx);
 end;
 
 //==============================================================================
@@ -289,7 +240,7 @@ end;
 //==============================================================================
 procedure TScriptEngine.ScriptError(const err: string);
 begin
-  I_Warning('%s'#13#10, [err]);
+  FScanner.Warn(err);
 end;
 
 //==============================================================================
@@ -311,33 +262,8 @@ end;
 //
 //==============================================================================
 procedure TScriptEngine.ScriptPrintLineError(const lnno, offs: integer);
-var
-  lst: TDStringList;
-  i: integer;
-  x1, x2: integer;
-  stmp: string;
 begin
-  lst := TDStringList.Create;
-  lst.Text := StringVal(ScriptBuffer);
-  x1 := lnno - offs - 1;
-  x2 := lnno + offs - 1;
-  if x1 < 0 then
-    x1 := 0;
-  if x2 >= lst.Count - 1 then
-    x2 := lst.Count;
-  I_Warning('=========================================================================='#13#10);
-  for i := x1 to x2 do
-  begin
-    stmp := IntToStrZfill(5, i);
-    if i = lnno - 1 then
-      stmp := stmp + ' *** '
-    else
-      stmp := stmp + '     ';
-    I_Warning(stmp + lst.Strings[i] + #13#10);
-  end;
-  I_Warning('=========================================================================='#13#10);
-  I_Warning(#13#10);
-  lst.Free;
+  FScanner.PrintLineError(lnno, offs);
 end;
 
 //==============================================================================
@@ -347,12 +273,7 @@ end;
 //==============================================================================
 function TScriptEngine.MustGetString: boolean;
 begin
-  result := GetString;
-  if not result then
-  begin
-    ScriptError('TScriptEngine.MustGetString(): Missing string at Line %d', [sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-  end;
+  result := FScanner.MustGetString;
 end;
 
 //==============================================================================
@@ -362,13 +283,7 @@ end;
 //==============================================================================
 function TScriptEngine.MustGetStringName(const name: string): boolean;
 begin
-  result := MustGetString;
-  if not result or not Compare(name) then
-  begin
-    ScriptError('TScriptEngine.MustGetStringName(): "%s" expected at Line %d', [name, sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-    result := false;
-  end;
+  result := FScanner.MustGetStringName(name);
 end;
 
 //==============================================================================
@@ -377,25 +292,8 @@ end;
 //
 //==============================================================================
 function TScriptEngine.GetInteger: boolean;
-var
-  code: integer;
 begin
-  if GetString then
-  begin
-    val(StringVal(sc_String), sc_Integer, code);
-    if code <> 0 then
-    begin
-      ScriptError(
-          'TScriptEngine.GetInteger(): Bad numeric constant "%s" at Line %d',
-          [sc_String, sc_Line]);
-      ScriptPrintLineError(sc_Line, 2);
-      result := false;
-      exit;
-    end;
-    result := true;
-  end
-  else
-    result := false;
+  result := FScanner.GetInteger;
 end;
 
 //==============================================================================
@@ -405,12 +303,7 @@ end;
 //==============================================================================
 function TScriptEngine.MustGetInteger: boolean;
 begin
-  result := GetInteger;
-  if not result then
-  begin
-    ScriptError('TScriptEngine.MustGetInteger(): Missing integer at Line %d', [sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-  end;
+  result := FScanner.MustGetInteger;
 end;
 
 //==============================================================================
@@ -419,42 +312,8 @@ end;
 //
 //==============================================================================
 function TScriptEngine.GetFloat: boolean;
-var
-  code: integer;
-  i: integer;
-  str: string;
 begin
-  if GetString then
-  begin
-    str := StringVal(sc_String);
-    val(str, sc_Float, code);
-    if code <> 0 then
-    begin
-      for i := 1 to Length(str) do
-        if str[i] = ',' then
-          str[i] := '.';
-      val(str, sc_Float, code);
-      if code <> 0 then
-      begin
-        for i := 1 to Length(str) do
-          if str[i] = '.' then
-            str[i] := ',';
-        val(str, sc_Float, code);
-        if code <> 0 then
-        begin
-          ScriptError(
-              'TScriptEngine.GetFloat(): Bad numeric constant "%s" at Line %d',
-              [sc_String, sc_Line]);
-          ScriptPrintLineError(sc_Line, 2);
-          result := false;
-          exit;
-        end;
-      end;
-    end;
-    result := true;
-  end
-  else
-    result := false;
+  result := FScanner.GetFloat;
 end;
 
 //==============================================================================
@@ -464,12 +323,7 @@ end;
 //==============================================================================
 function TScriptEngine.MustGetFloat: boolean;
 begin
-  result := GetFloat;
-  if not result then
-  begin
-    ScriptError('TScriptEngine.MustGetFloat(): Missing float at Line %d', [sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-  end;
+  result := FScanner.MustGetFloat;
 end;
 
 //==============================================================================
@@ -478,17 +332,8 @@ end;
 //
 //==============================================================================
 function TScriptEngine.GetBoolean: boolean;
-var
-  ustr: string;
 begin
-  if GetString then
-  begin
-    ustr := strupper(sc_string);
-    result := (ustr = 'TRUE') or (ustr = 'FALSE');
-    sc_boolean := ustr = 'TRUE';
-  end
-  else
-    result := false;
+  result := FScanner.GetBoolean;
 end;
 
 //==============================================================================
@@ -498,12 +343,7 @@ end;
 //==============================================================================
 function TScriptEngine.MustGetBoolean: boolean;
 begin
-  result := GetBoolean;
-  if not result then
-  begin
-    ScriptError('TScriptEngine.MustGetBoolean(): Missing boolean at Line %d', [sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-  end;
+  result := FScanner.MustGetBoolean;
 end;
 
 //==============================================================================
@@ -512,9 +352,8 @@ end;
 //
 //==============================================================================
 procedure TScriptEngine.UnGet;
-// Assumes there is a valid string in sc_String.
 begin
-  AlreadyGot := true;
+  FScanner.UnGet;
 end;
 
 //==============================================================================
@@ -524,31 +363,20 @@ end;
 //==============================================================================
 function TScriptEngine.MatchString(const str: string): boolean;
 begin
-  result := Compare(str);
+  result := FScanner.MatchString(str);
 end;
 
 //==============================================================================
 //
 // TScriptEngine.MatchString
 //
+// Returns the index of the first match to the current word from the passed
+// list of strings, or -1 if not found.
+//
 //==============================================================================
 function TScriptEngine.MatchString(const strs: TDStringList): integer;
-// Returns the index of the first match to sc_String from the passed
-// array of strings, or -1 if not found.
-var
-  i: integer;
-  scmp: string;
 begin
-  scmp := fuToken;
-  for i := 0 to strs.Count - 1 do
-  begin
-    if Compare(strs.Strings[i], scmp) then
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-  result := -1;
+  result := FScanner.MatchString(WordsOf(strs));
 end;
 
 //==============================================================================
@@ -558,7 +386,7 @@ end;
 //==============================================================================
 function TScriptEngine.MatchPosString(const str: string): boolean;
 begin
-  result := Pos(strupper(str), strupper(StringVal(sc_String))) > 0;
+  result := FScanner.MatchPosString(str);
 end;
 
 //==============================================================================
@@ -567,16 +395,8 @@ end;
 //
 //==============================================================================
 function TScriptEngine.MustMatchString(strs: TDStringList): integer;
-var
-  i: integer;
 begin
-  i := MatchString(strs);
-  if i = -1 then
-  begin
-    ScriptError('TScriptEngine.MustMatchString(): List'#13#10'%s'#13#10'expected at Line %d',  [strs.Text, sc_Line]);
-    ScriptPrintLineError(sc_Line, 2);
-  end;
-  result := i;
+  result := FScanner.MustMatchString(WordsOf(strs));
 end;
 
 //==============================================================================
@@ -586,7 +406,7 @@ end;
 //==============================================================================
 function TScriptEngine.Compare(const txt: string): boolean;
 begin
-  result := strupper(txt) = fuToken;
+  result := FScanner.Compare(txt);
 end;
 
 //==============================================================================
@@ -596,7 +416,7 @@ end;
 //==============================================================================
 function TScriptEngine.Compare(const txt: string; const scmp: string): boolean;
 begin
-  result := strupper(txt) = scmp;
+  result := FScanner.Compare(txt, scmp);
 end;
 
 //==============================================================================
@@ -606,7 +426,7 @@ end;
 //==============================================================================
 procedure TScriptEngine.AddAlias(const src, dest: string);
 begin
-  faliases.Add(strupper(src + '=' + dest));
+  FScanner.AddAlias(src, dest);
 end;
 
 //==============================================================================
@@ -616,7 +436,7 @@ end;
 //==============================================================================
 procedure TScriptEngine.ClearAliases;
 begin
-  faliases.Clear;
+  FScanner.ClearAliases;
 end;
 
 //==============================================================================
@@ -625,146 +445,8 @@ end;
 //
 //==============================================================================
 function TScriptEngine.GetString: boolean;
-var
-  txt: PAnsiChar;
-  foundToken: boolean;
 begin
-  if AlreadyGot then
-  begin
-    AlreadyGot := false;
-    result := true;
-    exit;
-  end;
-
-  fquotedtoken := false;
-
-  fNewLine := false;
-  foundToken := false;
-  if ScriptPtr >= ScriptEndPtr then
-  begin
-    sc_End := true;
-    result := false;
-    exit;
-  end;
-
-  while not foundToken do
-  begin
-    while (ScriptPtr^ <= Chr(32)) or (ScriptPtr^ in ['{', '}', '(', ')', ',']) do
-    begin
-      if ScriptPtr >= ScriptEndPtr then
-      begin
-        sc_End := true;
-        result := false;
-        exit;
-      end;
-      if ScriptPtr^ = '{' then
-        inc(fBracketLevel)
-      else if ScriptPtr^ = '}' then
-      begin
-        dec(fBracketLevel);
-        if fBracketLevel < 0 then
-        begin
-          ScriptError('TScriptEngine.GetString(): Closing bracket "}" found at line %d without opening bracket "{"', [sc_Line]);
-          ScriptPrintLineError(sc_Line, 2);
-          fBracketLevel := 0;
-        end;
-      end
-      else if ScriptPtr^ = '(' then
-        inc(fParenthesisLevel)
-      else if ScriptPtr^ = ')' then
-      begin
-        dec(fParenthesisLevel);
-        if fParenthesisLevel < 0 then
-        begin
-          ScriptError('TScriptEngine.GetString(): Closing parenthesis ")" found at line %d without opening parenthesis "("', [sc_Line]);
-          ScriptPrintLineError(sc_Line, 2);
-          fParenthesisLevel := 0;
-        end;
-      end
-      else if ScriptPtr^ = Chr(10) then
-      begin
-        inc(sc_Line);
-        fNewLine := true;
-      end;
-      inc(ScriptPtr);
-    end;
-
-    if ScriptPtr >= ScriptEndPtr then
-    begin
-      sc_End := true;
-      result := false;
-      exit;
-    end;
-
-    if ScriptPtr^ <> ASCII_COMMENT1 then
-    begin // Found a token
-      foundToken := true;
-    end
-    else
-    begin // Skip comment
-
-      if ScriptPtr >= ScriptEndPtr then
-      begin
-        sc_End := true;
-        result := false;
-        exit;
-      end;
-      inc(ScriptPtr);
-      if ScriptPtr^ = ASCII_COMMENT1 then
-      begin
-        while (ScriptPtr^ <> Chr(13)) and (ScriptPtr^ <> Chr(10)) do
-        begin
-          if ScriptPtr >= ScriptEndPtr then
-          begin
-            sc_End := true;
-            result := false;
-            exit;
-          end;
-          inc(ScriptPtr);
-        end;
-        inc(sc_Line);
-        fNewLine := true;
-      end;
-    end;
-  end;
-
-  txt := sc_String;
-  if ScriptPtr^ = ASCII_QUOTE then
-  begin // Quoted string
-    fquotedtoken := true;
-    inc(ScriptPtr);
-    while ScriptPtr^ <> ASCII_QUOTE do
-    begin
-      txt^ := ScriptPtr^;
-      inc(txt);
-      inc(ScriptPtr);
-      if (ScriptPtr = ScriptEndPtr) or
-         (txt = @sc_String[MAX_STRING_SIZE - 1]) then
-        break;
-    end;
-    inc(ScriptPtr);
-  end
-  else
-  begin // Normal string
-    while (ScriptPtr^ > Chr(32)) and (ScriptPtr < ScriptEndPtr) and
-          (PWord(ScriptPtr)^ <> ASCII_COMMENT) and not (ScriptPtr^ in ['{', '}', '(', ')', ',']) do
-    begin
-      txt^ := ScriptPtr^;
-      inc(txt);
-      inc(ScriptPtr);
-      if (ScriptPtr = ScriptEndPtr) or
-         (txt = @sc_String[MAX_STRING_SIZE - 1]) then
-        break;
-
-    end;
-  end;
-  txt^ := #0;
-  if ignonelist.Count = 0 then
-    result := true
-  else if ignonelist.IndexOf(strupper(StringVal(sc_String))) < 0 then
-    result := true
-  else
-    Result := GetString;
+  result := FScanner.GetString;
 end;
 
 //==============================================================================
@@ -774,26 +456,7 @@ end;
 //==============================================================================
 function TScriptEngine.GetStringEOL: string;
 begin
-  result := '';
-  if not GetString then
-    exit;
-
-  if fNewLine then
-  begin
-    AlreadyGot := true;
-    exit;
-  end;
-  result := StringVal(sc_string);
-  while not sc_End and not fNewLine do
-  begin
-    GetString;
-    if fNewLine then
-    begin
-      AlreadyGot := true;
-      exit;
-    end;
-    result := result + ' ' + StringVal(sc_string);
-  end;
+  result := FScanner.GetStringEOL;
 end;
 
 //==============================================================================
@@ -803,26 +466,7 @@ end;
 //==============================================================================
 function TScriptEngine.GetStringEOLWithQuotes: string;
 begin
-  result := '';
-  if not GetString then
-    exit;
-
-  if fNewLine then
-  begin
-    AlreadyGot := true;
-    exit;
-  end;
-  result := '"' + StringVal(sc_string) + '"';
-  while not sc_End and not fNewLine do
-  begin
-    GetString;
-    if fNewLine then
-    begin
-      AlreadyGot := true;
-      exit;
-    end;
-    result := result + ' ' + '"' + StringVal(sc_string) + '"';
-  end;
+  result := FScanner.GetStringEOLWithQuotes;
 end;
 
 //==============================================================================
@@ -832,26 +476,7 @@ end;
 //==============================================================================
 function TScriptEngine.GetTokensEOL: TDStringList;
 begin
-  result := TDStringList.Create;
-  if not GetString then
-    exit;
-
-  if fNewLine then
-  begin
-    AlreadyGot := true;
-    exit;
-  end;
-  result.Add(sc_string);
-  while not sc_End and not fNewLine do
-  begin
-    GetString;
-    if fNewLine then
-    begin
-      AlreadyGot := true;
-      exit;
-    end;
-    result.Add(sc_string);
-  end;
+  result := ListOf(FScanner.GetTokensEOL);
 end;
 
 //==============================================================================
@@ -861,27 +486,107 @@ end;
 //==============================================================================
 function TScriptEngine.GetStringEOLUnChanged: string;
 begin
-  result := '';
-  if ScriptPtr < ScriptEndPtr then
-    if ScriptPtr^ = #10 then
-    begin
-      Inc(ScriptPtr);
-      if ScriptPtr < ScriptEndPtr then
-      begin
-        result := ScriptPtr^;
-      end;
-    end;
-  while ScriptPtr^ <> #10 do
-  begin
-    Inc(ScriptPtr);
-    if ScriptPtr >= ScriptEndPtr then
-    begin
-      sc_End := true;
-      exit;
-    end;
-    if not (ScriptPtr^ in [#10, #13]) then
-      result := result + ScriptPtr^;
-  end;
+  result := FScanner.GetStringEOLUnchanged;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetInteger_
+//
+//==============================================================================
+function TScriptEngine.GetInteger_: integer;
+begin
+  result := FScanner.AsInteger;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetFloat_
+//
+//==============================================================================
+function TScriptEngine.GetFloat_: float;
+begin
+  result := FScanner.AsFloat;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetString_
+//
+//==============================================================================
+function TScriptEngine.GetString_: string;
+begin
+  result := FScanner.AsString;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetBoolean_
+//
+//==============================================================================
+function TScriptEngine.GetBoolean_: boolean;
+begin
+  result := FScanner.AsBoolean;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetFinished_
+//
+//==============================================================================
+function TScriptEngine.GetFinished_: boolean;
+begin
+  result := FScanner.Finished;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetLine_
+//
+//==============================================================================
+function TScriptEngine.GetLine_: integer;
+begin
+  result := FScanner.Line;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetNewLine_
+//
+//==============================================================================
+function TScriptEngine.GetNewLine_: boolean;
+begin
+  result := FScanner.NewLine;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetBracketLevel_
+//
+//==============================================================================
+function TScriptEngine.GetBracketLevel_: integer;
+begin
+  result := FScanner.BracketLevel;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetParenthesisLevel_
+//
+//==============================================================================
+function TScriptEngine.GetParenthesisLevel_: integer;
+begin
+  result := FScanner.ParenthesisLevel;
+end;
+
+//==============================================================================
+//
+// TScriptEngine.GetQuotedToken_
+//
+//==============================================================================
+function TScriptEngine.GetQuotedToken_: boolean;
+begin
+  result := FScanner.QuotedToken;
 end;
 
 //==============================================================================
@@ -890,30 +595,8 @@ end;
 //
 //==============================================================================
 function SC_RemoveLineQuotes(const sctext: string): string;
-var
-  stmp: string;
-  s: TDStringList;
-  i, p: integer;
 begin
-  result := '';
-  s := TDStringList.Create;
-  try
-    s.Text := sctext;
-    for i := 0 to s.Count - 1 do
-    begin
-      stmp := strtrim(s[i]);
-      p := Pos('//', stmp);
-      if p > 0 then
-        stmp := Copy(stmp, 1, p - 1);
-      p := CharPos(';', stmp);
-      if p > 0 then
-        stmp := Copy(stmp, 1, p - 1);
-      if stmp <> '' then
-        result := result + stmp + #13#10;
-    end;
-  finally
-    s.Free;
-  end;
+  result := TScannerText.RemoveLineQuotes(sctext);
 end;
 
 //==============================================================================
@@ -922,22 +605,8 @@ end;
 //
 //==============================================================================
 function SC_RemoveLineComments(const inp: string): string;
-var
-  i: integer;
-  inquotes: boolean;
 begin
-  result := '';
-  inquotes := false;
-  for i := 1 to Length(inp) do
-  begin
-    if inp[i] = '"' then
-      inquotes := not inquotes;
-    if not inquotes then
-      if i < length(inp) then
-        if (inp[i] = '/') and (inp[i + 1] = '/') then
-          break;
-    result := result + inp[i];
-  end;
+  result := TScannerText.RemoveLineComments(inp);
 end;
 
 //==============================================================================
@@ -946,28 +615,8 @@ end;
 //
 //==============================================================================
 function SC_FixParenthesisLevel(const inp: string): string;
-var
-  i: integer;
-  pleft, pright: integer;
 begin
-  result := inp;
-  pleft := 0;
-  pright := 0;
-  for i := 1 to length(result) do
-    if result[i] = '(' then
-      inc(pleft)
-    else if result[i] = ')' then
-      inc(pright);
-  while pright < pleft do
-  begin
-    result := result + ')';
-    inc(pright);
-  end;
-  while pright > pleft do
-  begin
-    result := '(' + result;
-    inc(pleft);
-  end;
+  result := TScannerText.FixParenthesisLevel(inp);
 end;
 
 //==============================================================================
@@ -976,79 +625,8 @@ end;
 //
 //==============================================================================
 function SC_ParamsToList(inp: string): TDStringList;
-var
-  stmp: string;
-  i: integer;
-  parenthesislevel: integer;
-  inquotes: boolean;
-  allinparenthesis: boolean;
 begin
-  result := TDStringList.Create;
-  trimproc(inp);
-  if inp = '' then
-    exit;
-
-  if (inp[1] = '(') and (inp[length(inp)] = ')') then
-  begin
-    allinparenthesis := true;
-    parenthesislevel := 0;
-    for i := 2 to length(inp) - 1 do
-    begin
-      if inp[i] = '(' then
-        inc(parenthesislevel)
-      else if inp[i] = ')' then
-        dec(parenthesislevel);
-      if parenthesislevel < 0 then
-      begin
-        allinparenthesis := false;
-        break;
-      end;
-    end;
-    if allinparenthesis then
-    begin
-      inp[1] := ' ';
-      inp[length(inp)] := ' ';
-      trimproc(inp);
-      if inp = '' then
-        exit;
-    end;
-  end;
-
-  parenthesislevel := 0;
-  inquotes := false;
-  stmp := '';
-
-  for i := 1 to Length(inp) do
-  begin
-    if inp[i] = ',' then
-      if not inquotes and (parenthesislevel = 0) then
-      begin
-        trimproc(stmp);
-        if stmp <> '' then
-        begin
-          result.Add(stmp);
-          stmp := '';
-        end;
-        continue;
-      end;
-    stmp := stmp + inp[i];
-    if inp[i] = '(' then
-      inc(parenthesislevel)
-    else if inp[i] = ')' then
-    begin
-      dec(parenthesislevel);
-      if parenthesislevel < 0 then
-      begin
-        //I_Warning ....
-        parenthesislevel := 0;
-      end;
-    end
-    else if inp[i] = '"' then
-      inquotes := not inquotes;
-  end;
-  trimproc(stmp);
-  if stmp <> '' then
-    result.Add(stmp);
+  result := ListOf(TScannerText.ParamsToList(inp));
 end;
 
 //==============================================================================
@@ -1057,31 +635,8 @@ end;
 //
 //==============================================================================
 function SC_IsStringInQuotes(const s: string): boolean;
-var
-  i: integer;
 begin
-  if Length(s) < 2 then
-  begin
-    result := false;
-    exit;
-  end;
-  if not (s[1] in ['''', '"']) then
-  begin
-    result := false;
-    exit;
-  end;
-  if s[1] <> s[length(s)] then
-  begin
-    result := false;
-    exit;
-  end;
-  for i := 2 to Length(s) - 1 do
-    if s[i] = s[1] then
-    begin
-      result := false;
-      exit;
-    end;
-  result := true;
+  result := TScannerText.IsStringInQuotes(s);
 end;
 
 //==============================================================================
@@ -1090,14 +645,8 @@ end;
 //
 //==============================================================================
 function SC_TokensToList(const inp: string): TDStringList;
-var
-  sc: TScriptEngine;
 begin
-  result := TDStringList.Create;
-  sc := TScriptEngine.Create(inp);
-  while sc.GetString do
-    result.Add(sc._string);
-  sc.Free;
+  result := ListOf(TScannerText.TokensToList(inp, TEngineScannerLog.Create));
 end;
 
 end.

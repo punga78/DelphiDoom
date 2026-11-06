@@ -36,14 +36,6 @@ type
 
     // scanner and preprocessor
     [Test]
-    procedure TestScannerSplitsOnSpacesAndBracesAndCommas;
-    [Test]
-    procedure TestScannerKeepsTheTextInQuotes;
-    [Test]
-    procedure TestScannerSkipsLineCommentsAndDropsALoneSlash;
-    [Test]
-    procedure TestScannerCutsAWordAt1023Characters;
-    [Test]
     procedure TestPreprocessorMakesBlocksAndRemovesCommentsAndSemicolons;
     [Test]
     procedure TestPreprocessorLeavesTheEndOfABlockCommentBehind;
@@ -157,7 +149,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Udmf.Scanner, DelphiDoom.Udmf.Preprocessor, DelphiDoom.Udmf.Text,
+  DelphiDoom.Udmf.Preprocessor, DelphiDoom.Udmf.Text,
   DelphiDoom.Udmf.Factory, DelphiDoom.Logging.Types, DelphiDoom.Logging.Factory;
 
 { TTestUdmfBehavior }
@@ -209,73 +201,6 @@ end;
 function TTestUdmfBehavior.Warnings: string;
 begin
   Result := FRecorder.TextOf(TLogChannel.ErrorFile);
-end;
-
-procedure TTestUdmfBehavior.TestScannerSplitsOnSpacesAndBracesAndCommas;
-var
-  LScanner: TUdmfScanner;
-  LWords: string;
-begin
-  LScanner := TUdmfScanner.Create('one two{three}(four),five'#13#10'six');
-  try
-    LWords := '';
-    while LScanner.GetString do
-      LWords := LWords + LScanner.Value + '|';
-  finally
-    LScanner.Free;
-  end;
-  Assert.AreEqual('one|two|three|four|five|six|', LWords);
-end;
-
-procedure TTestUdmfBehavior.TestScannerKeepsTheTextInQuotes;
-var
-  LScanner: TUdmfScanner;
-begin
-  LScanner := TUdmfScanner.Create('name "with spaces, braces { } and // slashes" end');
-  try
-    Assert.IsTrue(LScanner.GetString);
-    Assert.AreEqual('name', LScanner.Value);
-    Assert.IsTrue(LScanner.GetString);
-    Assert.AreEqual('with spaces, braces { } and // slashes', LScanner.Value);
-    Assert.IsTrue(LScanner.GetString);
-    Assert.AreEqual('end', LScanner.Value);
-    Assert.IsFalse(LScanner.GetString);
-  finally
-    LScanner.Free;
-  end;
-end;
-
-procedure TTestUdmfBehavior.TestScannerSkipsLineCommentsAndDropsALoneSlash;
-var
-  LScanner: TUdmfScanner;
-  LWords: string;
-begin
-  LScanner := TUdmfScanner.Create('a // hidden words'#13#10'b / c d//e'#13#10'f');
-  try
-    LWords := '';
-    while LScanner.GetString do
-      LWords := LWords + LScanner.Value + '|';
-  finally
-    LScanner.Free;
-  end;
-  // the lone slash is gone, and d stops at the //
-  Assert.AreEqual('a|b|c|d|f|', LWords);
-end;
-
-procedure TTestUdmfBehavior.TestScannerCutsAWordAt1023Characters;
-var
-  LScanner: TUdmfScanner;
-begin
-  LScanner := TUdmfScanner.Create(StringOfChar('x', 1500) + ' next');
-  try
-    Assert.IsTrue(LScanner.GetString);
-    Assert.AreEqual(1023, Length(LScanner.Value));
-    // the rest of the word is the next word
-    Assert.IsTrue(LScanner.GetString);
-    Assert.AreEqual(StringOfChar('x', 477), LScanner.Value);
-  finally
-    LScanner.Free;
-  end;
 end;
 
 procedure TTestUdmfBehavior.TestPreprocessorMakesBlocksAndRemovesCommentsAndSemicolons;

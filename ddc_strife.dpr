@@ -390,7 +390,6 @@ uses
   DelphiDoom.Udmf.BinaryWriter in 'Libs\Udmf\DelphiDoom.Udmf.BinaryWriter.pas',
   DelphiDoom.Udmf.Intf in 'Libs\Udmf\DelphiDoom.Udmf.Intf.pas',
   DelphiDoom.Udmf.Text in 'Libs\Udmf\DelphiDoom.Udmf.Text.pas',
-  DelphiDoom.Udmf.Scanner in 'Libs\Udmf\DelphiDoom.Udmf.Scanner.pas',
   DelphiDoom.Udmf.Preprocessor in 'Libs\Udmf\DelphiDoom.Udmf.Preprocessor.pas',
   DelphiDoom.Udmf.ValueReader in 'Libs\Udmf\DelphiDoom.Udmf.ValueReader.pas',
   DelphiDoom.Udmf.ThingFormat.Base in 'Libs\Udmf\DelphiDoom.Udmf.ThingFormat.Base.pas',
@@ -411,6 +410,9 @@ uses
   DelphiDoom.Udmf.Factory in 'Libs\Udmf\DelphiDoom.Udmf.Factory.pas',
   DelphiDoom.Engine.Udmf.SoundResolver in 'Base\DelphiDoom.Engine.Udmf.SoundResolver.pas',
 
+  DelphiDoom.Scanner.Scanner in 'Libs\Scanner\DelphiDoom.Scanner.Scanner.pas',
+  DelphiDoom.Scanner.Text in 'Libs\Scanner\DelphiDoom.Scanner.Text.pas',
+  DelphiDoom.Engine.Scanner.Log in 'Base\DelphiDoom.Engine.Scanner.Log.pas',
   DelphiDoom.Specials.Intf in 'Libs\Specials\DelphiDoom.Specials.Intf.pas',
   DelphiDoom.Specials.Registry in 'Libs\Specials\DelphiDoom.Specials.Registry.pas',
   DelphiDoom.Specials.Factory in 'Libs\Specials\DelphiDoom.Specials.Factory.pas',

@@ -1,0 +1,6 @@
+alpha // first comment
+beta
+// whole line
+gamma // last
+delta//glued
+  epsilon

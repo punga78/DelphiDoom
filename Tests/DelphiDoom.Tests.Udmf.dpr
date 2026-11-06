@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the UDMF library (DUnitX)                         }
 {                                                                              }
@@ -23,8 +23,8 @@ uses
   DelphiDoom.Udmf.Types in '..\Libs\Udmf\DelphiDoom.Udmf.Types.pas',
   DelphiDoom.Udmf.BinaryWriter in '..\Libs\Udmf\DelphiDoom.Udmf.BinaryWriter.pas',
   DelphiDoom.Udmf.Intf in '..\Libs\Udmf\DelphiDoom.Udmf.Intf.pas',
+  DelphiDoom.Scanner.Scanner in '..\Libs\Scanner\DelphiDoom.Scanner.Scanner.pas',
   DelphiDoom.Udmf.Text in '..\Libs\Udmf\DelphiDoom.Udmf.Text.pas',
-  DelphiDoom.Udmf.Scanner in '..\Libs\Udmf\DelphiDoom.Udmf.Scanner.pas',
   DelphiDoom.Udmf.Preprocessor in '..\Libs\Udmf\DelphiDoom.Udmf.Preprocessor.pas',
   DelphiDoom.Udmf.ValueReader in '..\Libs\Udmf\DelphiDoom.Udmf.ValueReader.pas',
   DelphiDoom.Udmf.ThingFormat.Base in '..\Libs\Udmf\DelphiDoom.Udmf.ThingFormat.Base.pas',

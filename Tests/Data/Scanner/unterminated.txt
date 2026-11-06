@@ -1,0 +1,2 @@
+say "never closed and goes on
+to the end

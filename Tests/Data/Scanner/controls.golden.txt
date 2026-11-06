@@ -1,0 +1,45 @@
+S|tab|0|1|0|0|0
+S|separated|0|1|0|0|0
+S|values|0|1|0|0|0
+S|and|0|1|0|0|0
+S|vertical|0|1|0|0|0
+END|1|1|0|0
+E|tab separated values and vertical vertical|1|1
+E||1|1
+Q|"tab" "separated" "values" "and" "vertical" "vertical"|1|1
+Q||1|1
+T|6|~tab~separated~values~and~vertical~vertical|1|1
+T|0||1|1
+D|tab|0|0|-1|1
+D|separated|0|0|-1|1
+D|values|0|0|-1|1
+D|and|0|0|-1|1
+D|vertical|0|0|-1|1
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|1
+W|E|I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "tab" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "separated" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "values" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "and" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "vertical" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|1
+W|F|I_Warning: TScriptEngine.GetFloat(): Bad numeric constant "tab" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "separated" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "values" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "and" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "vertical" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|1
+M|1
+M|0
+M|0
+M|0
+M|0
+U|1|vertical
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "values" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "and" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** tab\x09separated\x09values   and\x0Bvertical\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

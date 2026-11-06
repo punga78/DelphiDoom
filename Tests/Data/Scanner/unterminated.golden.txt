@@ -1,0 +1,30 @@
+S|say|0|1|0|0|0
+S|never closed and goes on\x0Ato the end|1|1|0|0|0
+END|1|1|0|0
+E|say never closed and goes on\x0Ato the end never closed and goes on\x0Ato the end|1|1
+E||1|1
+Q|"say" "never closed and goes on\x0Ato the end" "never closed and goes on\x0Ato the end"|1|1
+Q||1|1
+T|3|~say~never closed and goes on\x0Ato the end~never closed and goes on\x0Ato the end|1|1
+T|0||1|1
+D|say|0|0|-1|1
+D|never closed and goes on\x0Ato the end|0|0|-1|1
+I|0|0
+I|0|0
+I|0|1
+W|E|I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "say" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "never closed and goes on\x0Ato the end" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+F|0|0
+F|0|0
+F|0|1
+W|F|I_Warning: TScriptEngine.GetFloat(): Bad numeric constant "say" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "never closed and goes on\x0Ato the end" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+B|0|0|0
+B|0|0|0
+B|0|0|1
+M|1
+M|0
+M|0
+M|0
+M|0
+U|1|never closed and goes on\x0Ato the end
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** say "never closed and goes on\x0D\x0AI_Warning: 00001     to the end\x0D\x0AI_Warning: 00002     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

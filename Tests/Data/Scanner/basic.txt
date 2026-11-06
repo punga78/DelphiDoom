@@ -1,0 +1,6 @@
+actor Zombie 3004
+{
+  health 20
+  speed 8
+  states { Spawn: POSS A 10 A_Look }
+}

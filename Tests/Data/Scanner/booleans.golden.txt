@@ -1,0 +1,55 @@
+S|true|0|1|0|0|0
+S|FALSE|0|1|0|0|0
+S|True|0|1|0|0|0
+S|maybe|0|1|0|0|0
+S|1|0|1|0|0|0
+S|0|0|1|0|0|0
+S|tRuE|0|1|0|0|0
+END|1|1|0|0
+E|true FALSE True maybe 1 0 tRuE tRuE|1|1
+E||1|1
+Q|"true" "FALSE" "True" "maybe" "1" "0" "tRuE" "tRuE"|1|1
+Q||1|1
+T|8|~true~FALSE~True~maybe~1~0~tRuE~tRuE|1|1
+T|0||1|1
+D|true|0|0|-1|0
+D|FALSE|0|0|-1|1
+D|True|0|0|-1|0
+D|maybe|0|0|-1|1
+D|1|0|0|-1|0
+D|0|0|0|-1|0
+D|tRuE|0|0|-1|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|1|1
+I|1|0
+I|0|0
+I|0|1
+W|E|I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "true" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "FALSE" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "True" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "maybe" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "tRuE" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|1|3F800000
+F|1|00000000
+F|0|0
+F|0|1
+W|F|I_Warning: TScriptEngine.GetFloat(): Bad numeric constant "true" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "FALSE" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "True" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "maybe" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "tRuE" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+B|1|1|0
+B|1|0|0
+B|1|1|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|1|1|0
+B|0|1|1
+M|1
+M|0
+M|0
+M|0
+M|0
+U|1|0
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "True" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "maybe" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** true FALSE True maybe 1 0 tRuE\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

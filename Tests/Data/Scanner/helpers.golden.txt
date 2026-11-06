@@ -1,0 +1,125 @@
+L|(a, b, c)
+RC|(a, b, c)
+FP|(a, b, c)
+IQ|0
+PL|3|a~b~c
+TL|3
+TK|a
+TK|b
+TK|c
+L|a, b, "c, d", (e, f)
+RC|a, b, "c, d", (e, f)
+FP|a, b, "c, d", (e, f)
+IQ|0
+PL|4|a~b~"c, d"~(e, f)
+TL|5
+TK|a
+TK|b
+TK|c, d
+TK|e
+TK|f
+L|((a), (b))
+RC|((a), (b))
+FP|((a), (b))
+IQ|0
+PL|2|(a)~(b)
+TL|2
+TK|a
+TK|b
+L|  x , , y
+RC|  x , , y
+FP|  x , , y
+IQ|0
+PL|2|x~y
+TL|2
+TK|x
+TK|y
+L|foo(bar) // comment
+RC|foo(bar) 
+FP|foo(bar) // comment
+IQ|0
+PL|1|foo(bar) // comment
+TL|2
+TK|foo
+TK|bar
+L|"quoted // not" // real
+RC|"quoted // not" 
+FP|"quoted // not" // real
+IQ|0
+PL|1|"quoted // not" // real
+TL|1
+TK|quoted // not
+L|'single'
+RC|'single'
+FP|'single'
+IQ|1
+PL|1|'single'
+TL|1
+TK|'single'
+L|"double"
+RC|"double"
+FP|"double"
+IQ|1
+PL|1|"double"
+TL|1
+TK|double
+L|"mixed'
+RC|"mixed'
+FP|"mixed'
+IQ|0
+PL|1|"mixed'
+TL|1
+TK|mixed'
+L|((open
+RC|((open
+FP|((open))
+IQ|0
+PL|1|((open
+TL|1
+TK|open
+L|close))
+RC|close))
+FP|((close))
+IQ|0
+PL|1|close))
+TL|1
+TK|close
+L|a(b
+RC|a(b
+FP|a(b)
+IQ|0
+PL|1|a(b
+TL|2
+TK|a
+TK|b
+L|RANGE(1,2),x
+RC|RANGE(1,2),x
+FP|RANGE(1,2),x
+IQ|0
+PL|2|RANGE(1,2)~x
+TL|4
+TK|RANGE
+TK|1
+TK|2
+TK|x
+L|// only comment
+RC|
+FP|// only comment
+IQ|0
+PL|1|// only comment
+TL|0
+L|abc;def // c
+RC|abc;def 
+FP|abc;def // c
+IQ|0
+PL|1|abc;def // c
+TL|1
+TK|abc;def
+L|
+RC|
+FP|
+IQ|0
+PL|0|
+TL|0
+RQ|(a, b, c)\x0D\x0Aa, b, "c, d", (e, f)\x0D\x0A((a), (b))\x0D\x0Ax , , y\x0D\x0Afoo(bar) \x0D\x0A"quoted \x0D\x0A'single'\x0D\x0A"double"\x0D\x0A"mixed'\x0D\x0A((open\x0D\x0Aclose))\x0D\x0Aa(b\x0D\x0ARANGE(1,2),x\x0D\x0Aabc\x0D\x0A
+W|Helpers|I_Warning: TScriptEngine.GetString(): Closing parenthesis ")" found at line 1 without opening parenthesis "("\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** close))\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetString(): Closing parenthesis ")" found at line 1 without opening parenthesis "("\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** close))\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

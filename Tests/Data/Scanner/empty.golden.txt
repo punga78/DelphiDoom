@@ -1,0 +1,15 @@
+END|1|1|0|0
+E||1|1
+Q||1|1
+T|0||1|1
+I|0|1
+F|0|1
+B|0|0|1
+M|0
+M|0
+M|0
+M|0
+M|0
+U|1|
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetString(): Missing string at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetString(): Missing string at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

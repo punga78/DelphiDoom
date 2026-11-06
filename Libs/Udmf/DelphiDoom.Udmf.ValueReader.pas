@@ -11,7 +11,7 @@ unit DelphiDoom.Udmf.ValueReader;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Udmf.Intf, DelphiDoom.Udmf.Scanner, DelphiDoom.Logging.Intf;
+  System.SysUtils, DelphiDoom.Udmf.Intf, DelphiDoom.Scanner.Scanner, DelphiDoom.Logging.Intf;
 
 type
   /// <summary>
@@ -20,7 +20,7 @@ type
   /// </summary>
   TUdmfValueReader = class(TInterfacedObject, IUdmfValueReader)
   private
-    FScanner: TUdmfScanner;
+    FScanner: TScriptScanner;
     FLog: ILog;
     FToken: string;
     FRaw: string;
@@ -55,7 +55,7 @@ uses
 constructor TUdmfValueReader.Create(const AText: string; const ALog: ILog);
 begin
   inherited Create;
-  FScanner := TUdmfScanner.Create(AText);
+  FScanner := TScriptScanner.Create(AText, nil);
   FLog := ALog;
 end;
 
@@ -87,7 +87,7 @@ begin
   Result := FScanner.GetString;
   if Result then
   begin
-    FRaw := FScanner.Value;
+    FRaw := FScanner.AsString;
     FToken := TUdmfText.ToUpper(FRaw);
   end
   else
@@ -135,7 +135,7 @@ end;
 
 function TUdmfValueReader.ReadIntegerList: TArray<Integer>;
 var
-  LScanner: TUdmfScanner;
+  LScanner: TScriptScanner;
   LValue: Integer;
 begin
   Result := nil;
@@ -145,9 +145,9 @@ begin
     Exit;
   end;
   // the integers up to the first word that is not one
-  LScanner := TUdmfScanner.Create(FRaw);
+  LScanner := TScriptScanner.Create(FRaw, nil);
   try
-    while LScanner.GetString and TUdmfText.TryParseInteger(LScanner.Value, LValue) do
+    while LScanner.GetString and TUdmfText.TryParseInteger(LScanner.AsString, LValue) do
     begin
       SetLength(Result, Length(Result) + 1);
       Result[High(Result)] := LValue;

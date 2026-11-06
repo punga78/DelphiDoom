@@ -1,0 +1,53 @@
+S|foo|0|1|0|0|0
+S|bar|0|1|0|0|0
+S|IGNOREME|0|1|0|0|0
+S|baz|0|1|0|0|0
+S|Foo|0|1|0|0|0
+S|ignoreme|0|1|0|0|0
+S|qux|0|1|0|0|0
+END|1|1|0|0
+E|foo bar IGNOREME baz Foo ignoreme qux qux|1|1
+E||1|1
+Q|"foo" "bar" "IGNOREME" "baz" "Foo" "ignoreme" "qux" "qux"|1|1
+Q||1|1
+T|8|~foo~bar~IGNOREME~baz~Foo~ignoreme~qux~qux|1|1
+T|0||1|1
+D|BAZZ|1|0|0|0
+D|bar|0|1|-1|1
+D|baz|0|0|-1|1
+D|BAZZ|1|0|0|0
+D|qux|0|0|1|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|1
+W|E|I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "foo" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "bar" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "IGNOREME" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "baz" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "Foo" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "ignoreme" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "qux" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|1
+W|F|I_Warning: TScriptEngine.GetFloat(): Bad numeric constant "foo" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "bar" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "IGNOREME" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "baz" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "Foo" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "ignoreme" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "qux" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|1
+M|1
+M|0
+M|0
+M|0
+M|0
+U|1|ignoreme
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "IGNOREME" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "baz" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** foo bar IGNOREME baz Foo ignoreme qux\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A

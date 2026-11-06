@@ -1,0 +1,55 @@
+S|name|0|1|0|0|0
+S|hello world|1|1|0|0|0
+S|other|0|1|0|0|0
+S||1|1|0|0|0
+S|last|0|1|0|0|0
+S|with // not a comment|1|1|0|0|0
+S|end|0|1|0|0|0
+END|1|1|0|0
+E|name hello world other  last with // not a comment end end|1|1
+E||1|1
+Q|"name" "hello world" "other" "" "last" "with // not a comment" "end" "end"|1|1
+Q||1|1
+T|8|~name~hello world~other~~last~with // not a comment~end~end|1|1
+T|0||1|1
+D|name|0|0|-1|1
+D|hello world|0|0|-1|0
+D|other|0|0|-1|0
+D||0|0|-1|0
+D|last|0|0|-1|1
+D|with // not a comment|0|0|-1|1
+D|end|0|0|-1|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|0
+I|0|1
+W|E|I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "name" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "hello world" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "other" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "last" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "with // not a comment" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "end" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|0
+F|0|1
+W|F|I_Warning: TScriptEngine.GetFloat(): Bad numeric constant "name" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "hello world" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "other" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "last" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "with // not a comment" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "end" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|0
+B|0|0|1
+M|1
+M|0
+M|0
+M|0
+M|0
+U|1|with // not a comment
+R|1|fresh|1
+W|H|I_Warning: TScriptEngine.MustGetStringName(): "x" expected at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetInteger(): Bad numeric constant "other" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetInteger(): Missing integer at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.GetFloat(): Bad numeric constant "" at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetFloat(): Missing float at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0AI_Warning: TScriptEngine.MustGetBoolean(): Missing boolean at Line 1\x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: 00000 *** name "hello world" other "" last "with // not a comment" end\x0D\x0AI_Warning: 00001     \x0D\x0AI_Warning: ==========================================================================\x0D\x0AI_Warning: \x0D\x0A
