@@ -1,0 +1,24 @@
+namespace = "doom";
+
+vertex // 0
+{
+x = 1.5;
+y = -2.5;
+zfloor = 10.0;
+zceiling = 100.25;
+}
+
+vertex // 1
+{
+x = 32767.4;
+y = -32768.6;
+zfloor = -8.0;
+}
+
+vertex // 2
+{
+x = 0;
+y = 0;
+zceiling = 64;
+comment = "just a vertex";
+}

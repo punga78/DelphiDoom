@@ -1,0 +1,24 @@
+namespace = "doom";
+
+sector // 0
+{
+heightfloor = 32;
+heightceiling = 64;
+lightlevel = 0x64;
+special = +7;
+id = $10;
+}
+
+thing // 0
+{
+x = 1e1;
+y = .5;
+type = 0x7D0;
+angle = -90;
+}
+
+vertex // 0
+{
+x = 2.5e2;
+y = -.25;
+}

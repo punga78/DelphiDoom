@@ -1,0 +1,30 @@
+// leading comment
+namespace = "doom"; // trailing
+
+/* block
+   comment */
+thing // 0
+{
+x = 1.0; // x
+y = 2.0;
+type = 1;
+comment = "text with // slashes and ; semicolons and { braces }";
+}
+
+thing // 1
+{
+type = 3004; y = 5; x = 6;
+UNKNOWNKEY = 12;
+Skill1 = TRUE;
+}
+
+unknownblock // 2
+{
+x = 99;
+}
+
+sector // 0
+{
+HeightFloor = 4;
+TextureFloor = "mixedCase";
+}

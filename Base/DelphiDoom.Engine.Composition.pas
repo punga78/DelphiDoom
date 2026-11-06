@@ -27,6 +27,11 @@ uses
   DelphiDoom.Clock.Factory,
   DelphiDoom.Video.Factory,
   DelphiDoom.Acs.Factory,
+  DelphiDoom.Udmf.Games,
+  DelphiDoom.Udmf.Factory,
+  DelphiDoom.Engine.Udmf.SoundResolver,
+  m_base,
+  p_udmf,
   DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
@@ -139,6 +144,7 @@ var
   LEngine: IIdTechEngine;
   LLog: ILog;
   LContext: IGameContext;
+  LGame: TUdmfGame;
 begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
@@ -164,6 +170,9 @@ begin
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   PAK_Configure(LWadServices);
+  if not TUdmfGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
+  P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);
 end;
 
 end.

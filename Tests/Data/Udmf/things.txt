@@ -1,0 +1,63 @@
+namespace = "doom";
+
+thing // 0
+{
+x = 10.5;
+y = -20.25;
+z = 8.0;
+height = 8.0;
+id = 77;
+angle = 135;
+type = 3004;
+skill1 = true;
+skill2 = false;
+skill3 = true;
+skill4 = false;
+skill5 = true;
+ambush = true;
+single = true;
+coop = false;
+dm = true;
+}
+
+thing // 1
+{
+x = 100;
+y = 200;
+type = 2001;
+onmiddlefloor = true;
+notriggerscripts = true;
+friend = true;
+dormant = true;
+class1 = true;
+class2 = true;
+class3 = true;
+strifeally = true;
+}
+
+thing // 2
+{
+x = 300.75;
+y = 400.125;
+type = 9;
+special = 80;
+arg0 = 1;
+arg1 = 2;
+arg2 = 3;
+arg3 = 4;
+arg4 = 5;
+gravity = 0.5;
+health = 250.0;
+comment = "a commented thing";
+}
+
+thing // 3
+{
+x = -32768;
+y = 32767;
+z = -4.5;
+type = 3001;
+skill1 = true;
+coop = true;
+coop = false;
+}

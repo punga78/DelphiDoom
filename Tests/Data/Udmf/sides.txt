@@ -1,0 +1,30 @@
+namespace = "doom";
+
+sidedef // 0
+{
+sector = 3;
+offsetx = 8.5;
+offsety = -4.25;
+offsetx_top = 1.5;
+offsety_top = 2.5;
+offsetx_mid = 3.5;
+offsety_mid = 4.5;
+offsetx_bottom = 5.5;
+offsety_bottom = 6.5;
+texturetop = "BIGDOOR2";
+texturebottom = "STARTAN3";
+texturemiddle = "DOORTRAK";
+nofakecontrast = true;
+}
+
+sidedef // 1
+{
+sector = 0;
+}
+
+sidedef // 2
+{
+sector = 1;
+texturetop = "LONGNAMEXYZ";
+comment = "name too long";
+}

@@ -1,0 +1,56 @@
+namespace = "doom";
+
+sector // 0
+{
+heightfloor = 8;
+heightceiling = 136.5;
+texturefloor = "FLAT1";
+textureceiling = "F_SKY1";
+lightlevel = 255;
+special = 9;
+id = 12;
+moreids = "13 14 15 270";
+xpanningfloor = 1.5;
+ypanningfloor = 2.5;
+xpanningceiling = 3.5;
+ypanningceiling = 4.5;
+rotationfloor = 45.0;
+rotationfloorx = 8.0;
+rotationfloory = 16.0;
+rotationceiling = 90.5;
+rotationceilingx = 24.0;
+rotationceilingy = 32.0;
+gravity = 0.75;
+ceilingplane_a = 0.1;
+ceilingplane_b = 0.2;
+ceilingplane_c = 0.9;
+ceilingplane_d = -128.0;
+floorplane_a = 0.01;
+floorplane_b = 0.02;
+floorplane_c = 0.98;
+floorplane_d = 8.0;
+rippleceiling = true;
+ripplefloor = true;
+fog = true;
+hidden = true;
+nojump = true;
+nocrouch = true;
+sound = "dsdoropn";
+windthrust = 1.5;
+windangle = 270.0;
+}
+
+sector // 1
+{
+texturefloor = "FLOOR4_8";
+textureceiling = "CEIL3_5";
+ceilingplane_a = 1.0;
+floorplane_d = 4.0;
+windangle = -45.0;
+rotationfloor = -30.0;
+comment = "defaults for the rest";
+}
+
+sector // 2
+{
+}
