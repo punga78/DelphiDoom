@@ -35,6 +35,9 @@ unit m_misc;
 
 interface
 
+uses
+  DelphiDoom.IdTech.Intf;
+
 //
 // MISC
 //
@@ -107,6 +110,14 @@ procedure M_SaveDefaults;
 
 //==============================================================================
 //
+// M_Configure
+// Gives the unit the engine it reads its version from. The composition root calls it
+//
+//==============================================================================
+procedure M_Configure(const AEngine: IIdTechEngine);
+
+//==============================================================================
+//
 // M_ForceDefaultBoolean
 //
 //==============================================================================
@@ -156,6 +167,7 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.IdTech.Types,
   c_cmds,
   doomdef,
   {$IFDEF  DOOM}
@@ -177,6 +189,10 @@ uses
   i_video,
 {$ENDIF}
   z_zone;
+
+var
+  // The engine this port runs on, given by the composition root (M_Configure)
+  idtech_engine: IIdTechEngine = nil;
 
 //==============================================================================
 //
@@ -759,6 +775,30 @@ var
 
 //==============================================================================
 //
+// M_Configure
+//
+//==============================================================================
+procedure M_Configure(const AEngine: IIdTechEngine);
+begin
+  idtech_engine := AEngine;
+end;
+
+//==============================================================================
+//
+// M_EngineVersion
+// The version number of the engine (207 for 2.07)
+//
+//==============================================================================
+function M_EngineVersion: integer;
+begin
+  if idtech_engine <> nil then
+    result := idtech_engine.Version.Number
+  else
+    result := VERSION;
+end;
+
+//==============================================================================
+//
 // M_SaveDefaults
 //
 //==============================================================================
@@ -771,7 +811,7 @@ var
 begin
   s := TDStringList.Create;
   try
-    sprintf(verstr, '[' + AppTitle + ' ' + VERFMT + ']', [VERSION div 100, 2, VERSION mod 100]);
+    sprintf(verstr, '[' + AppTitle + ' ' + VERFMT + ']', [M_EngineVersion div 100, 2, M_EngineVersion mod 100]);
     s.Add(verstr);
     pd := @defaults[0];
     for i := 0 to NUMDEFAULTS - 1 do
@@ -941,7 +981,7 @@ begin
     if s.Count > 1 then
     begin
       acceptablever := False;
-      for ver := VERSION + 1 downto 110 do  // JVAL: 20210122 - Accept next version config
+      for ver := M_EngineVersion + 1 downto 110 do  // JVAL: 20210122 - Accept next version config
       begin
         sprintf(verstr, VERFMT, [ver div 100, 2, ver mod 100]);
         if Pos(verstr, s[0]) > 0 then
