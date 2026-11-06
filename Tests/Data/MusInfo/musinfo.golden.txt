@@ -1,0 +1,242 @@
+=== basic_doom1
+warnings=
+count=2
+entry[0] map=E1M1 id=1 name=D_ONE num=1501
+entry[1] map=E1M2 id=2 name=D_TWO num=1525
+find 1 E1M1=1501
+find 2 E1M2=1525
+find 1 E1M2=-1
+=== basic_doom2
+warnings=
+count=3
+entry[0] map=MAP01 id=1 name=D_FIRST num=1770
+entry[1] map=MAP01 id=2 name=D_SECOND num=1825
+entry[2] map=MAP02 id=1 name=D_THIRD num=1757
+find 1 MAP01=1770
+find 2 MAP01=1825
+find 1 MAP02=1757
+find 3 MAP02=-1
+=== lowercase_names
+warnings=
+count=2
+entry[0] map=E1M1 id=1 name=D_ONE num=1501
+entry[1] map=MAP05 id=2 name=D_FIVE num=1673
+find 1 e1m1=1501
+find 1 E1M1=1501
+find 2 Map05=1673
+=== one_map_many_music
+warnings=P_InitMusInfo(): Invalid music id "65" found, expected number in range [0, 64]\r\n
+count=4
+entry[0] map=MAP10 id=0 name=D_ZERO num=1695
+entry[1] map=MAP10 id=1 name=D_ONE num=1501
+entry[2] map=MAP10 id=2 name=D_TWO num=1525
+entry[3] map=MAP10 id=64 name=D_LAST num=1683
+find 0 MAP10=1695
+find 64 MAP10=1683
+find 65 MAP10=-1
+=== duplicate_replaces
+warnings=
+count=3
+entry[0] map=MAP01 id=1 name=D_SECOND num=1825
+entry[1] map=MAP02 id=1 name=D_OTHER num=1764
+entry[2] map=MAP01 id=2 name=D_THIRD num=1757
+find 1 MAP01=1825
+find 1 MAP02=1764
+=== same_id_other_map
+warnings=
+count=3
+entry[0] map=E1M1 id=5 name=D_A num=1334
+entry[1] map=E1M2 id=5 name=D_B num=1335
+entry[2] map=E2M1 id=5 name=D_C num=1336
+find 5 E1M2=1335
+find 5 E2M1=1336
+find 5 E3M1=-1
+=== id_before_map
+warnings=P_InitMusInfo(): Map name expected but token "1" found\r\n
+count=0
+find 1 MAP01=-1
+=== unknown_token_first
+warnings=P_InitMusInfo(): Map name expected but token "FOO" found\r\n
+count=0
+=== negative_id
+warnings=P_InitMusInfo(): Invalid music id "-1" found, expected number in range [0, 64]\r\n
+count=1
+entry[0] map=MAP01 id=2 name=D_OK num=1426
+find 2 MAP01=1426
+=== not_a_number_id
+warnings=P_InitMusInfo(): Invalid music id "abc" found, expected number in range [0, 64]\r\n
+count=1
+entry[0] map=MAP01 id=2 name=D_OK num=1426
+find 2 MAP01=1426
+=== numeric_forms
+warnings=P_InitMusInfo(): Invalid music id "-0x1" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "5.0" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "1e1" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "0x" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "99999999999" found, expected number in range [0, 64]\r\n
+count=7
+entry[0] map=MAP01 id=16 name=D_HEX num=1504
+entry[1] map=MAP01 id=17 name=D_DOLLAR num=1827
+entry[2] map=MAP01 id=12 name=D_HASH num=1667
+entry[3] map=MAP01 id=13 name=D_PLUS num=1602
+entry[4] map=MAP01 id=7 name=D_ZEROS num=1781
+entry[5] map=MAP01 id=20 name=D_UPPERX num=1865
+entry[6] map=MAP01 id=21 name=D_X num=1357
+find 16 MAP01=1504
+find 17 MAP01=1827
+find 18 MAP01=-1
+find 13 MAP01=1602
+find 7 MAP01=1781
+find 20 MAP01=1865
+find 21 MAP01=1357
+=== empty_text
+warnings=
+count=0
+find 1 MAP01=-1
+=== blank_lines_only
+warnings=
+count=0
+=== comments
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP03 id=3 name=D_THREE num=1754
+find 1 MAP01=1501
+find 2 MAP02=-1
+find 3 MAP03=1754
+=== missing_lump
+warnings=
+count=0
+find 1 MAP01=-1
+=== missing_music_name_at_eof
+warnings=TScriptEngine.MustGetString(): Missing string at Line 3\r\n==========================================================================\r\n00000     MAP01 1 D_ONE\r\n00001     MAP02 2\r\n00002 *** \r\n==========================================================================\r\n\r\n
+count=2
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=2 name=2 num=-1
+find 1 MAP01=1501
+find 2 MAP02=-1
+=== missing_music_name_at_eof_nocr
+warnings=TScriptEngine.MustGetString(): Missing string at Line 1\r\n==========================================================================\r\n00000 *** MAP01 7\r\n00001     \r\n==========================================================================\r\n\r\n
+count=1
+entry[0] map=MAP01 id=7 name=7 num=-1
+find 7 MAP01=-1
+=== only_map_name
+warnings=
+count=0
+=== quoted_names
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_QUOTED num=1847
+entry[1] map=MAP02 id=2 name=D_ANOTHE num=1828
+find 1 MAP01=1847
+find 2 MAP02=1828
+=== empty_quoted_name_stops
+warnings=
+count=0
+find 2 MAP01=-1
+=== empty_quoted_token_stops
+warnings=
+count=1
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+find 1 MAP01=1501
+find 2 MAP01=-1
+=== extra_token_is_taken_as_id
+warnings=P_InitMusInfo(): Invalid music id "D_B" found, expected number in range [0, 64]\r\n
+count=2
+entry[0] map=MAP01 id=1 name=D_A num=1334
+entry[1] map=MAP01 id=3 name=D_D num=1337
+find 1 MAP01=1334
+find 3 MAP01=1337
+=== music_name_looks_like_map
+warnings=
+count=2
+entry[0] map=E1M1 id=1 name=E1M2 num=-1
+entry[1] map=E1M2 id=2 name=MAP03 num=-1
+find 1 E1M1=-1
+find 2 E1M2=-1
+=== map_followed_by_map
+warnings=
+count=1
+entry[0] map=MAP02 id=1 name=D_ONE num=1501
+find 1 MAP02=1501
+find 1 MAP01=-1
+=== map_name_shapes
+warnings=P_InitMusInfo(): Map name expected but token "E1M10" found\r\n
+count=0
+=== map_name_shapes_after_map
+warnings=P_InitMusInfo(): Invalid music id "MAP1" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "D_B" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "EXM1" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "D_D" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "E1X1" found, expected number in range [0, 64]\r\nP_InitMusInfo(): Invalid music id "D_F" found, expected number in range [0, 64]\r\n
+count=5
+entry[0] map=MAP01 id=1 name=D_A num=1334
+entry[1] map=MAP01 id=3 name=D_C num=1336
+entry[2] map=MAP01 id=5 name=D_E num=1338
+entry[3] map=MAP01 id=7 name=D_G num=1340
+entry[4] map=MAP02 id=8 name=D_H num=1341
+find 1 MAP01=1334
+find 3 MAP01=1336
+find 8 MAP02=1341
+find 4 MAP01=-1
+=== unknown_music_name
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=UNKNOWN num=-1
+entry[1] map=MAP01 id=2 name=D_UP num=1437
+find 1 MAP01=-1
+find 2 MAP01=1437
+=== lf_line_breaks
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=2 name=D_TWO num=1525
+find 1 MAP01=1501
+find 2 MAP02=1525
+=== cr_line_breaks
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=2 name=D_TWO num=1525
+find 2 MAP02=1525
+=== no_trailing_break
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=2 name=D_TWO num=1525
+find 2 MAP02=1525
+=== two_runs_accumulate
+warnings=
+count=3
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=1 name=D_THREE num=1754
+entry[2] map=MAP03 id=1 name=D_FOUR num=1691
+find 1 MAP01=1501
+find 1 MAP02=1754
+find 1 MAP03=1691
+=== run_then_missing_lump
+warnings=
+count=1
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+find 1 MAP01=1501
+=== separators
+warnings=
+count=3
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+entry[1] map=MAP02 id=2 name=D_TWO num=1525
+entry[2] map=MAP03 id=3 name=D_THREE num=1754
+find 1 MAP01=1501
+find 2 MAP02=1525
+=== eight_char_name
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_8CHARS num=1806
+entry[1] map=MAP01 id=2 name=D_EIGHTC num=1817
+find 2 MAP01=1817
+=== high_chars
+warnings=
+count=2
+entry[0] map=MAP01 id=1 name=D_\xC3?\xC3?\xC3? num=1864
+entry[1] map=MAP01 id=2 name=D_\xC3\xA0\xC3\xA9\xC3\xAE num=1887
+find 1 MAP01=1864
+find 2 MAP01=1887
+=== find_unknown
+warnings=
+count=1
+entry[0] map=MAP01 id=1 name=D_ONE num=1501
+find 1 MAP99=-1
+find 0 MAP01=-1
+find -1 MAP01=-1
+find 1 map01=1501

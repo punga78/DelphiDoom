@@ -1,0 +1,243 @@
+@@@ basic_doom1
+@@ run
+E1M1 1 D_ONE
+E1M2 2 D_TWO
+@@ find 1 E1M1
+@@ find 2 E1M2
+@@ find 1 E1M2
+@@@ basic_doom2
+@@ run
+MAP01
+  1 D_FIRST
+  2 D_SECOND
+MAP02
+  1 D_THIRD
+@@ find 1 MAP01
+@@ find 2 MAP01
+@@ find 1 MAP02
+@@ find 3 MAP02
+@@@ lowercase_names
+@@ run
+e1m1 1 d_one
+map05 2 d_Five
+@@ find 1 e1m1
+@@ find 1 E1M1
+@@ find 2 Map05
+@@@ one_map_many_music
+@@ run
+MAP10
+0 D_ZERO
+1 D_ONE
+2 D_TWO
+64 D_LAST
+65 D_TOOMANY
+@@ find 0 MAP10
+@@ find 64 MAP10
+@@ find 65 MAP10
+@@@ duplicate_replaces
+@@ run
+MAP01 1 D_FIRST
+MAP01 1 D_SECOND
+MAP02 1 D_OTHER
+MAP01 2 D_THIRD
+@@ find 1 MAP01
+@@ find 1 MAP02
+@@@ same_id_other_map
+@@ run
+E1M1 5 D_A
+E1M2 5 D_B
+E2M1 5 D_C
+@@ find 5 E1M2
+@@ find 5 E2M1
+@@ find 5 E3M1
+@@@ id_before_map
+@@ run
+1 D_ONE
+MAP01 1 D_TWO
+@@ find 1 MAP01
+@@@ unknown_token_first
+@@ run
+FOO 1 D_ONE
+@@@ negative_id
+@@ run
+MAP01 -1 D_NEG
+MAP01 2 D_OK
+@@ find 2 MAP01
+@@@ not_a_number_id
+@@ run
+MAP01 abc D_BAD
+MAP01 2 D_OK
+@@ find 2 MAP01
+@@@ numeric_forms
+@@ run
+MAP01
+0x10 D_HEX
+$11 D_DOLLAR
+#12 D_HASH
++13 D_PLUS
+007 D_ZEROS
+-0x1 D_NEGHEX
+0X14 D_UPPERX
+x15 D_X
+5.0 D_FLOAT
+1e1 D_EXP
+0x D_NOHEX
+99999999999 D_BIG
+@@ find 16 MAP01
+@@ find 17 MAP01
+@@ find 18 MAP01
+@@ find 13 MAP01
+@@ find 7 MAP01
+@@ find 20 MAP01
+@@ find 21 MAP01
+@@@ empty_text
+@@ run notrail
+@@ find 1 MAP01
+@@@ blank_lines_only
+@@ run
+
+
+
+@@@ comments
+@@ run
+// the first map
+MAP01 1 D_ONE // trailing comment
+// MAP02 2 D_NO
+MAP03 3 D_THREE
+@@ find 1 MAP01
+@@ find 2 MAP02
+@@ find 3 MAP03
+@@@ missing_lump
+@@ missing
+@@ find 1 MAP01
+@@@ missing_music_name_at_eof
+@@ run
+MAP01 1 D_ONE
+MAP02 2
+@@ find 1 MAP01
+@@ find 2 MAP02
+@@@ missing_music_name_at_eof_nocr
+@@ run notrail
+MAP01 7
+@@ find 7 MAP01
+@@@ only_map_name
+@@ run
+MAP01
+@@@ quoted_names
+@@ run
+"MAP01" "1" "D_QUOTED"
+MAP02 2 "D_ANOTHE"
+@@ find 1 MAP01
+@@ find 2 MAP02
+@@@ empty_quoted_name_stops
+@@ run
+MAP01 1 ""
+MAP01 2 D_TWO
+@@ find 2 MAP01
+@@@ empty_quoted_token_stops
+@@ run
+MAP01 1 D_ONE
+""
+MAP01 2 D_TWO
+@@ find 1 MAP01
+@@ find 2 MAP01
+@@@ extra_token_is_taken_as_id
+@@ run
+MAP01 1 D_A D_B D_C
+MAP01 3 D_D
+@@ find 1 MAP01
+@@ find 3 MAP01
+@@@ music_name_looks_like_map
+@@ run
+E1M1 1 E1M2
+E1M2 2 MAP03
+@@ find 1 E1M1
+@@ find 2 E1M2
+@@@ map_followed_by_map
+@@ run
+MAP01
+MAP02 1 D_ONE
+MAP03
+@@ find 1 MAP02
+@@ find 1 MAP01
+@@@ map_name_shapes
+@@ run
+E1M10 1 D_A
+@@@ map_name_shapes_after_map
+@@ run
+MAP01 1 D_A
+MAP1 2 D_B
+MAP100 3 D_C
+EXM1 4 D_D
+E1M 5 D_E
+E1X1 6 D_F
+MAP0A 7 D_G
+MAP02 8 D_H
+@@ find 1 MAP01
+@@ find 3 MAP01
+@@ find 8 MAP02
+@@ find 4 MAP01
+@@@ unknown_music_name
+@@ run
+MAP01 1 UNKNOWN
+MAP01 2 d_up
+@@ find 1 MAP01
+@@ find 2 MAP01
+@@@ lf_line_breaks
+@@ run lf
+MAP01
+1 D_ONE
+MAP02 2 D_TWO
+@@ find 1 MAP01
+@@ find 2 MAP02
+@@@ cr_line_breaks
+@@ run cr
+MAP01
+1 D_ONE
+MAP02 2 D_TWO
+@@ find 2 MAP02
+@@@ no_trailing_break
+@@ run notrail
+MAP01 1 D_ONE
+MAP02 2 D_TWO
+@@ find 2 MAP02
+@@@ two_runs_accumulate
+@@ run
+MAP01 1 D_ONE
+MAP02 1 D_TWO
+@@ run
+MAP02 1 D_THREE
+MAP03 1 D_FOUR
+@@ find 1 MAP01
+@@ find 1 MAP02
+@@ find 1 MAP03
+@@@ run_then_missing_lump
+@@ run
+MAP01 1 D_ONE
+@@ missing
+@@ find 1 MAP01
+@@@ separators
+@@ run
+MAP01,1,D_ONE
+MAP02(2)D_TWO
+MAP03{3}D_THREE
+@@ find 1 MAP01
+@@ find 2 MAP02
+@@@ eight_char_name
+@@ run
+MAP01 1 D_8CHARS
+MAP01 2 D_EIGHTC
+@@ find 2 MAP01
+@@@ high_chars
+@@ run
+MAP01 1 D_ÀÉÎ
+MAP01 2 d_àéî
+@@ find 1 MAP01
+@@ find 2 MAP01
+@@@ find_unknown
+@@ run
+MAP01 1 D_ONE
+@@ find 1 MAP99
+@@ find 0 MAP01
+@@ find -1 MAP01
+@@ find 1 map01
