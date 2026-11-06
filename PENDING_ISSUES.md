@@ -39,7 +39,6 @@ Le librerie sono state costruite da agenti in parallelo, ognuna con golden dal v
 | Fetta | Issue | Libreria | Collegata al motore |
 |---|---|---|---|
 | UMAPINFO | #69 | `Libs\MapInfo` (23 test) | **sì**: `p_umapinfo` rifà i record dal catalogo, vecchio parser cancellato |
-| Luci dinamiche GLDEFS | #69 | `Libs\DynLights` (28 test) | no: i consumatori (`r_softlights`, `r_things`, `gl_lightmaps`, `gl_render`, `gl_shadows`) usano il puntatore di `R_GetDynamicLight`; `GetRender` copia la definizione a ogni chiamata nel percorso caldo del renderer. Difetto conservato probabile da correggere: l'ultima luce di un testo si perde se dopo non c'è nessuna parola. Dettagli in `Libs\DynLights\WIRING.md` |
 | Rete | #70 | `Libs\Net` (130 test) | no: riscrive `NetUpdate`, `D_CheckNetGame`, `D_RunMultipleTicks` e la lettura dei comandi in `G_Ticker` dei quattro giochi; il multiplayer reale non è provabile qui e `-timedemo` non ha dato un riferimento. Provare demo e due macchine prima di collegarla (`Libs\Net\WIRING.md`) |
 
 - **MapInfo**: non provati i `G_ValidateMapName`/`S_GetMusicNumForName` veri nei golden (provati a runtime con un UMAPINFO di prova su Freedoom: valori, avvisi e `bossaction = clear` corretti).

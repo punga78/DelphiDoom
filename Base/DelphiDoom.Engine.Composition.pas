@@ -45,6 +45,14 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.DynLights.Types,
+  DelphiDoom.DynLights.Intf,
+  DelphiDoom.DynLights.Factory,
+  DelphiDoom.Engine.DynLights.Services,
+  r_dynlights,
+{$IFDEF OPENGL}
+  gl_defs,
+{$ENDIF}
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.ActorDef.Profiles,
@@ -203,6 +211,35 @@ begin
   DEH_Configure(TDehackedFactory.CreateParser(LGame, ALog));
 end;
 
+procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext);
+var
+  LServices: TEngineDynLightServices;
+  LServicesRef: IInterface;
+  LRegistry: IDynLightRegistry;
+  LParserServices: TDynLightParserServices;
+  LCoefficient: Double;
+begin
+  LServices := TEngineDynLightServices.Create;
+  LServicesRef := LServices;
+  LRegistry := TDynLightFactory.CreateRegistry;
+  LParserServices.Registry := LRegistry;
+  LParserServices.Random := LServices;
+  LParserServices.Objects := LServices;
+  LParserServices.Sprites := LServices;
+  LParserServices.Binder := TDynLightFactory.CreateBinder(LServices);
+  LParserServices.Context := AContext;
+{$IFDEF OPENGL}
+  LCoefficient := MAP_COEFF;
+{$ELSE}
+  LCoefficient := 1;
+{$ENDIF}
+  R_ConfigureDynamicLights(
+    TDynLightFactory.CreateLoader(LServices, LServices,
+      TDynLightFactory.CreateParser(LParserServices, ALog, LCoefficient)),
+    LRegistry,
+    TDynLightFactory.CreateAnimator(LRegistry, LServices));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -269,6 +306,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 

@@ -31,6 +31,8 @@ type
     /// <summary>The time a light was computed for (-1: never)</summary>
     FValidCount: TArray<Integer>;
     FRender: TArray<TDynLightRender>;
+    // the definitions are read once for each light: GetRender runs for every visible light at every frame
+    FDefinitions: TArray<TDynLightDefinition>;
     procedure EnsureState(AIndex: Integer);
     procedure CalcOffset(const ALight: TDynLightDefinition; var ARender: TDynLightRender;
       ARecalc: Boolean);
@@ -78,10 +80,12 @@ begin
     Exit;
   SetLength(FValidCount, AIndex + 1);
   SetLength(FRender, AIndex + 1);
+  SetLength(FDefinitions, AIndex + 1);
   for LIndex := LOld to AIndex do
   begin
     FValidCount[LIndex] := -1;
     FRender[LIndex] := Default(TDynLightRender);
+    FDefinitions[LIndex] := FRegistry.Get(LIndex);
   end;
 end;
 
@@ -244,24 +248,23 @@ procedure TDynLightAnimator.Reset;
 begin
   FValidCount := nil;
   FRender := nil;
+  FDefinitions := nil;
 end;
 
 function TDynLightAnimator.GetRender(AIndex, ALevelTime: Integer): TDynLightRender;
 var
-  LLight: TDynLightDefinition;
   LRender: TDynLightRender;
 begin
   EnsureState(AIndex);
-  LLight := FRegistry.Get(AIndex);
   LRender := FRender[AIndex];
   LRender.Shadow := False;
-  case LLight.Kind of
+  case FDefinitions[AIndex].Kind of
     TDynLightKind.Point:
-      AnimatePoint(AIndex, LLight, LRender, ALevelTime);
+      AnimatePoint(AIndex, FDefinitions[AIndex], LRender, ALevelTime);
     TDynLightKind.Flicker:
-      AnimateFlicker(AIndex, LLight, LRender, ALevelTime);
+      AnimateFlicker(AIndex, FDefinitions[AIndex], LRender, ALevelTime);
     TDynLightKind.Pulse:
-      AnimatePulse(AIndex, LLight, LRender, ALevelTime);
+      AnimatePulse(AIndex, FDefinitions[AIndex], LRender, ALevelTime);
   end;
   FRender[AIndex] := LRender;
   Result := LRender;
