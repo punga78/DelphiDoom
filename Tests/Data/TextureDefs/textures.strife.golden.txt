@@ -1,0 +1,21 @@
+=== strife-basic
+T|STARTAN|128|128|0|1
+P|0|WALL1|0|0
+T|BIGDOOR|128|96|0|2
+P|1|WALL2|0|0
+P|2|DOOR|64|0
+=== strife-three-lumps
+T|ONE|64|64|0|1
+P|0|P0|0|0
+T|TWO|128|64|1|2
+P|2|P2|3|4
+P|1|P1|5|6
+T|THREE|32|32|0|1
+P|1|P1|-4|5
+=== strife-pk3
+T|ONE|64|64|0|1
+P|0|P0|0|0
+K|PK3A|64|32|0|6|7|PK3A
+K|PK3B|16|16|0|8|9|PK3B
+=== strife-bad-directory
+E|bad texture directory

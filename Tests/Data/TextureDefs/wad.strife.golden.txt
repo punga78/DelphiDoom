@@ -1,0 +1,5 @@
+=== STRIFE0.WAD
+count|804
+fnv|1929249146
+first|T|AASTINKY|128|128|0|1
+last|P|261|P_WODNAL|0|0

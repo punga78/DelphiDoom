@@ -1,0 +1,193 @@
+# Casi di Tests\Data\TextureDefs: una sezione per caso.
+# Grammatica (vedi Tests\Source\DelphiDoom.Tests.TextureDefs.Corpus.pas):
+#   format standard|strife     layout dei lump TEXTUREx (default standard)
+#   kind textures|flats        che cosa prova il caso (default textures)
+#   pnames N1 N2 ...           lump PNAMES ('~' = spazio)
+#   tex1|tex2|tex3 NOME L A MASKED idx,ox,oy ...   una texture del lump (nessun patch = nessun gruppo)
+#   empty2|empty3              il lump esiste ma e' vuoto
+#   badoffset1 N               la voce N della directory di TEXTURE1 punta oltre la fine
+#   pk3 NOME L A CONTAPATCH ox oy                  una voce di TEXTURE0
+#   flats N1 N2 ...            i flat del motore (kind flats)
+#   text TESTO                 testo di FLATINFO ('|' = CR LF)
+
+=== basic
+pnames WALL1 WALL2 DOOR
+tex1 STARTAN 128 128 0 0,0,0
+tex1 BIGDOOR 128 96 0 1,0,0 2,64,0
+tex1 STARGATE 64 72 1 2,0,-8
+
+=== lowercase-names
+pnames wall1 pAtCh
+tex1 sTaRtAn 64 64 0 0,0,0 1,32,32
+
+=== padded-patch-names
+pnames ~AB~ ~~C
+tex1 T1 16 16 0 0,0,0 1,0,0
+
+=== eight-characters
+pnames ABCDEFGH
+tex1 LONGNAME 256 128 0 0,0,0
+
+=== three-lumps
+pnames P0 P1 P2 P3
+tex1 ONE 64 64 0 0,0,0
+tex1 ONEB 64 64 0 1,0,0
+tex2 TWO 128 64 0 2,0,0
+tex3 THREE 32 32 0 3,-4,5
+tex3 THREEB 32 32 0 3,0,0 0,16,16
+
+=== second-lump-empty
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+empty2
+tex3 THREE 8 8 0 0,0,0
+
+=== empty-first-lump
+pnames P0
+
+=== no-patches
+pnames P0
+tex1 EMPTYTEX 64 64 0
+tex1 AFTER 64 64 0 0,0,0
+
+=== many-patches
+pnames P0 P1 P2 P3 P4 P5
+tex1 MANY 256 128 0 0,0,0 1,32,0 2,64,0 3,96,0 4,128,0 5,160,0 0,192,0 1,224,0
+
+=== extreme-values
+pnames P0 P1
+tex1 NEG 32767 -1 -5 0,-32768,32767 1,32767,-32768
+
+=== pk3-textures
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+pk3 PK3A 64 32 1 0 0
+pk3 PK3B 256 256 1 -5 7
+
+=== pk3-count-ignored
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+pk3 PK3A 64 32 0 1 2
+pk3 PK3B 64 32 9 3 4
+
+=== pk3-lowercase
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+pk3 pk3a 16 16 1 0 0
+
+=== bad-directory
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+tex1 TWO 64 64 0 0,0,0
+badoffset1 1
+
+=== strife-basic
+format strife
+pnames WALL1 WALL2 DOOR
+tex1 STARTAN 128 128 0 0,0,0
+tex1 BIGDOOR 128 96 0 1,0,0 2,64,0
+
+=== strife-three-lumps
+format strife
+pnames P0 P1 P2
+tex1 ONE 64 64 0 0,0,0
+tex2 TWO 128 64 1 2,3,4 1,5,6
+tex3 THREE 32 32 0 1,-4,5
+
+=== strife-pk3
+format strife
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+pk3 PK3A 64 32 1 6 7
+pk3 PK3B 16 16 1 8 9
+
+=== strife-bad-directory
+format strife
+pnames P0
+tex1 ONE 64 64 0 0,0,0
+badoffset1 0
+
+=== flats-basic
+kind flats
+flats F1 F2 F3
+text FLAT F1 SIZE 128|FLAT F2 SIZE 256|FLAT F3 SIZE 512
+
+=== flats-all-sizes
+kind flats
+flats A B C D E F G H
+text FLAT A SIZE 64|FLAT B SIZE 128|FLAT C SIZE 256|FLAT D SIZE 512|FLAT E SIZE 1024|FLAT F SIZE 2048|FLAT G SIZE 4096|FLAT H SIZE 100
+
+=== flats-lowercase
+kind flats
+flats FLOOR0_1 CEIL3_1
+text flat floor0_1 size 128|Flat Ceil3_1 SIZE 1024
+
+=== flats-quoted-and-comments
+kind flats
+flats F1 F2
+text // un commento|FLAT "F1" SIZE 256 // altro|FLAT F2 SIZE 128
+
+=== flats-unknown-flat
+kind flats
+flats F1
+text FLAT NOPE SIZE 128|FLAT F1 SIZE 256
+
+=== flats-unknown-flat-then-numbers
+kind flats
+flats F1 F2
+text FLAT NOPE SIZE 128 FLAT F2 SIZE 512
+
+=== flats-unknown-token
+kind flats
+flats F1
+text SOMETHING|FLAT F1 SIZE 128|ELSE
+
+=== flats-without-size
+kind flats
+flats F1 F2
+text FLAT F1 OTHER|FLAT F2 SIZE 256
+
+=== flats-without-size-followed-by-flat
+kind flats
+flats F1 F2
+text FLAT F1 FLAT F2 SIZE 512
+
+=== flats-duplicate-flat
+kind flats
+flats F1 F2
+text FLAT F1 SIZE 128|FLAT F1 SIZE 512|FLAT F2 SIZE 256
+
+=== flats-same-name-twice-in-catalog
+kind flats
+flats F1 F2 F1
+text FLAT F1 SIZE 256
+
+=== flats-eof-after-flat
+kind flats
+flats F1
+text FLAT
+
+=== flats-eof-after-name
+kind flats
+flats F1
+text FLAT F1
+
+=== flats-size-without-number
+kind flats
+flats F1 F2
+text FLAT F1 SIZE 512|FLAT F2 SIZE
+
+=== flats-size-not-a-number
+kind flats
+flats F1 F2
+text FLAT F1 SIZE 512|FLAT F2 SIZE abc
+
+=== flats-empty-text
+kind flats
+flats F1
+text
+
+=== flats-negative-and-large
+kind flats
+flats F1 F2 F3
+text FLAT F1 SIZE -128|FLAT F2 SIZE 8192|FLAT F3 SIZE 0
