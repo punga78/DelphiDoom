@@ -40,7 +40,8 @@ uses
   d_delphi,
   m_fixed,
   r_defs,
-  w_wad;
+  w_wad,
+  DelphiDoom.TextureDefs.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -89,6 +90,13 @@ procedure R_GetDCs(const tex: integer; const col: integer);
 //
 //==============================================================================
 procedure R_InitData;
+
+//==============================================================================
+//
+// R_ConfigureTextureDefs
+//
+//==============================================================================
+procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
 
 //==============================================================================
 //
@@ -245,6 +253,7 @@ procedure R_ChangeColormap(const lumpname: string);
 implementation
 
 uses
+  DelphiDoom.TextureDefs.Types,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -292,6 +301,9 @@ uses
   vx_voxelsprite,
   w_sprite,
   z_zone;
+
+var
+  texturedefs_loader: ITextureDefsLoader;
 
 //==============================================================================
 //
@@ -1180,65 +1192,80 @@ end;
 //==============================================================================
 procedure R_InitTextures;
 var
-  mtexture: Pmaptexture_t;
   texture: Ptexture_t;
-  mpatch: Pmappatch_t;
   patch: Ptexpatch_t;
   i: integer;
   j: integer;
-  maptex: PIntegerArray;
-  maptex0: PIntegerArray;
-  maptex1: PIntegerArray;
-  maptex2: PIntegerArray;
-  maptex3: PIntegerArray;
-  name: char8_t;
-  names: PByteArray;
-  name_p: PByteArray;
   patchlookup: PIntegerArray;
-  nummappatches: integer;
-  offset: integer;
-  maxoff: integer;
-  maxoff2: integer;
-  maxoff3: integer;
+  numpatchnames: integer;
+  texdefs: TTextureDefsSet;
+  texdef: TTextureDefsTexture;
   numtextures0: integer;
-  numtextures1: integer;
-  numtextures2: integer;
-  numtextures3: integer;
-  directory: PIntegerArray;
-  t2lump: integer;
-  t3lump: integer;
+  firstpk3: integer;
   pname: string;
+
+  // The tables of the textures: the ones of the textures of the WADs and the ones of the PK3
+  procedure _SetTextureTables(const idx: integer; const w, h: integer);
+  begin
+    texturecolumnlump[idx] := malloc(w * SizeOf(texturecolumnlump[0][0]));
+    texturecolumnofs[idx] := malloc(w * SizeOf(texturecolumnofs[0][0]));
+
+    texturewidth[idx] := w;
+    textureheight[idx] := h * FRACUNIT;
+    // JVAL: 20200112 - For tall textures
+    texturecolumnheight[idx] := h;
+    if texturecolumnheight[idx] < 128 then
+      texturecolumnheight[idx] := 128;
+    texturecolumnheightfrac[idx] := texturecolumnheight[idx] * FRACUNIT;
+  end;
+
+  procedure _SetTextureName(const tex: Ptexture_t; const aname: string);
+  var
+    k: integer;
+  begin
+    k := 0;
+    while (k < 8) and (k < Length(aname)) do
+    begin
+      tex.name[k] := toupper(AnsiChar(aname[k + 1]));
+      inc(k);
+    end;
+    while k < 8 do
+    begin
+      tex.name[k] := #0;
+      inc(k);
+    end;
+  end;
+
+  function _Load(const withpk3: boolean): TTextureDefsSet;
+  begin
+    try
+      result := texturedefs_loader.Load(withpk3);
+    except
+      on E: ETextureDefsException do
+        if E.Code = TTextureDefsError.BadDirectory then
+          I_Error('R_InitTextures(): bad texture directory')
+        else
+          I_Error('R_InitTextures(): %s', [E.Message]);
+    end;
+  end;
+
 begin
+  if texturedefs_loader = nil then
+    I_Error('R_InitTextures(): the texture definitions are not configured (ComposeEngine was not called)');
+
   {$IFNDEF OPENGL}
   R_InitFixedColumn;
   {$ENDIF}
-  // Load the patch names from pnames.lmp.
-  ZeroMemory(@name, SizeOf(char8_t));
-  names := W_CacheLumpName('PNAMES', PU_STATIC);
-  nummappatches := PInteger(names)^;
-  name_p := PByteArray(integer(names) + 4);
 
-  patchlookup := malloc(nummappatches * SizeOf(integer));
+  // The patch names from PNAMES and the definitions from TEXTURE1, TEXTURE2 and TEXTURE3
+  texdefs := _Load(false);
 
-  for i := 0 to nummappatches - 1 do
+  numpatchnames := Length(texdefs.PatchNames);
+  patchlookup := malloc(numpatchnames * SizeOf(integer));
+
+  for i := 0 to numpatchnames - 1 do
   begin
-    j := 0;
-    while j < 8 do
-    begin
-      name[j] := toupper(AnsiChar(name_p[i * 8 + j]));
-      if name[j] = #0 then
-      begin
-        inc(j);
-        break;
-      end;
-      inc(j);
-    end;
-    while j < 8 do
-    begin
-      name[j] := #0;
-      inc(j);
-    end;
-    pname := strtrim(char8tostring(name));
+    pname := texdefs.PatchNames[i];
     patchlookup[i] := W_CheckNumForName(pname, TYPE_PATCH or TYPE_SPRITE);
     if patchlookup[i] = -1 then
     begin
@@ -1257,47 +1284,8 @@ begin
 {$ENDIF}
     end;
   end;
-  Z_Free(names);
 
-  // Load the map texture definitions from textures.lmp.
-  // The data is contained in one or two lumps,
-  //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
-  // JVAL: TEXTURE3 for more textures
-  maptex1 := W_CacheLumpName('TEXTURE1', PU_STATIC);
-  maptex := maptex1;
-  numtextures1 := maptex[0];
-  maxoff := W_LumpLength(W_GetNumForName('TEXTURE1'));
-  directory := PintegerArray(integer(maptex) + SizeOf(integer));
-
-  t2lump := W_CheckNumForName('TEXTURE2');
-  if t2lump <> -1 then
-  begin
-    maptex2 := W_CacheLumpNum(t2lump, PU_STATIC);
-    numtextures2 := maptex2[0];
-    maxoff2 := W_LumpLength(t2lump);
-  end
-  else
-  begin
-    maptex2 := nil;
-    numtextures2 := 0;
-    maxoff2 := 0;
-  end;
-
-  t3lump := W_CheckNumForName('TEXTURE3');
-  if t3lump <> -1 then
-  begin
-    maptex3 := W_CacheLumpNum(t3lump, PU_STATIC);
-    numtextures3 := maptex3[0];
-    maxoff3 := W_LumpLength(t3lump);
-  end
-  else
-  begin
-    maptex3 := nil;
-    numtextures3 := 0;
-    maxoff3 := 0;
-  end;
-
-  numtextures := numtextures1 + numtextures2 + numtextures3;
+  numtextures := Length(texdefs.Textures);
 
   textures := mallocz(numtextures * SizeOf(Ptexture_t));
   texturecolumnlump := mallocz(numtextures * SizeOf(PSmallIntArray));
@@ -1312,93 +1300,41 @@ begin
 
   for i := 0 to numtextures - 1 do
   begin
-    if i = numtextures1 then
-    begin
-      // Start looking in second texture file.
-      maptex := maptex2;
-      maxoff := maxoff2;
-      directory := PIntegerArray(integer(maptex) + SizeOf(integer));
-    end;
-    if i = numtextures1 + numtextures2 then
-    begin
-      // Start looking in third texture file.
-      maptex := maptex3;
-      maxoff := maxoff3;
-      directory := PIntegerArray(integer(maptex) + SizeOf(integer));
-    end;
+    texdef := texdefs.Textures[i];
 
-    offset := directory[0];
-
-    if offset > maxoff then
-      I_Error('R_InitTextures(): bad texture directory');
-
-    mtexture := Pmaptexture_t(integer(maptex) + offset);
-
-    textures[i] := malloc(SizeOf(texture_t) + SizeOf(texpatch_t) * (mtexture.patchcount - 1));
+    textures[i] := malloc(SizeOf(texture_t) + SizeOf(texpatch_t) * (Length(texdef.Patches) - 1));
     texture := textures[i];
 
-    texture.width := mtexture.width;
-    texture.height := mtexture.height;
-    texture.patchcount := mtexture.patchcount;
+    texture.width := texdef.Width;
+    texture.height := texdef.Height;
+    texture.patchcount := Length(texdef.Patches);
     {$IFNDEF OPENGL}
     texture.texture32 := nil;
     {$ENDIF}
+    _SetTextureName(texture, texdef.Name);
 
-    j := 0;
-    while j < 8 do
-    begin
-      if mtexture.name[j] = #0 then
-        break;
-      texture.name[j] := toupper(mtexture.name[j]);
-      inc(j);
-    end;
-    while j < 8 do
-    begin
-      texture.name[j] := #0;
-      inc(j);
-    end;
-
-    mpatch := @mtexture.patches[0];
     patch := @texture.patches[0];
-
     for j := 0 to texture.patchcount - 1 do
     begin
-      patch.originx := mpatch.originx;
-      patch.originy := mpatch.originy;
-      patch.patch := patchlookup[mpatch.patch];
+      patch.originx := texdef.Patches[j].OriginX;
+      patch.originy := texdef.Patches[j].OriginY;
+      patch.patch := patchlookup[texdef.Patches[j].PatchIndex];
       if patch.patch = -1 then
         I_Error('R_InitTextures(): Missing patch in texture %s', [char8tostring(texture.name)]);
-      inc(mpatch);
       inc(patch);
     end;
-    texturecolumnlump[i] := malloc(texture.width * SizeOf(texturecolumnlump[0][0]));
-    texturecolumnofs[i] := malloc(texture.width * SizeOf(texturecolumnofs[0][0]));
 
-    texturewidth[i] := texture.width;
-    textureheight[i] := texture.height * FRACUNIT;
-    // JVAL: 20200112 - For tall textures
-    texturecolumnheight[i] := texture.height;
-    if texturecolumnheight[i] < 128 then
-      texturecolumnheight[i] := 128;
-    texturecolumnheightfrac[i] := texturecolumnheight[i] * FRACUNIT;
-
-    incp(pointer(directory), SizeOf(integer));
+    _SetTextureTables(i, texture.width, texture.height);
   end;
 
-  memfree(pointer(patchlookup), nummappatches * SizeOf(integer));
-
-  Z_Free(maptex1);
-  if maptex2 <> nil then
-    Z_Free(maptex2);
-  if maptex3 <> nil then
-    Z_Free(maptex3);
+  memfree(pointer(patchlookup), numpatchnames * SizeOf(integer));
 
   if R_InitPK3Textures then
   begin
     // Load the map textures directly from PK3
-    maptex0 := W_CacheLumpName('TEXTURE0', PU_STATIC);
-    maptex := maptex0;
-    numtextures0 := maptex[0];
+    firstpk3 := numtextures;
+    texdefs := _Load(true);
+    numtextures0 := Length(texdefs.Textures) - firstpk3;
 
     realloc(pointer(textures), numtextures * SizeOf(Ptexture_t), (numtextures0 + numtextures) * SizeOf(Ptexture_t));
     realloc(pointer(texturecolumnlump), numtextures * SizeOf(PSmallIntArray), (numtextures0 + numtextures) * SizeOf(PSmallIntArray));
@@ -1411,57 +1347,30 @@ begin
     realloc(pointer(texturecolumnheight), numtextures * SizeOf(integer), (numtextures0 + numtextures) * SizeOf(integer));
     realloc(pointer(texturecolumnheightfrac), numtextures * SizeOf(integer), (numtextures0 + numtextures) * SizeOf(integer));
 
-    mtexture := Pmaptexture_t(integer(maptex) + SizeOf(integer));
     for i := numtextures to numtextures0 + numtextures - 1 do
     begin
+      texdef := texdefs.Textures[i];
+
       textures[i] := malloc(SizeOf(texture_t) + SizeOf(texpatch_t));
       texture := textures[i];
 
-      texture.width := mtexture.width;
-      texture.height := mtexture.height;
+      texture.width := texdef.Width;
+      texture.height := texdef.Height;
       texture.patchcount := 1;
       {$IFNDEF OPENGL}
       texture.texture32 := nil;
       {$ENDIF}
+      _SetTextureName(texture, texdef.Name);
 
-      j := 0;
-      while j < 8 do
-      begin
-        if mtexture.name[j] = #0 then
-          break;
-        texture.name[j] := toupper(mtexture.name[j]);
-        inc(j);
-      end;
-      while j < 8 do
-      begin
-        texture.name[j] := #0;
-        inc(j);
-      end;
-
-      mpatch := @mtexture.patches[0];
       patch := @texture.patches[0];
-
-      patch.originx := mpatch.originx;
-      patch.originy := mpatch.originy;
+      patch.originx := texdef.Patches[0].OriginX;
+      patch.originy := texdef.Patches[0].OriginY;
       patch.patch := W_CheckNumForName(char8tostring(texture.name), TYPE_PATCH);
 
-      texturecolumnlump[i] := malloc(texture.width * SizeOf(texturecolumnlump[0][0]));
-      texturecolumnofs[i] := malloc(texture.width * SizeOf(texturecolumnofs[0][0]));
-
-      texturewidth[i] := texture.width;
-      textureheight[i] := texture.height * FRACUNIT;
-      // JVAL: 20200112 - For tall textures
-      texturecolumnheight[i] := texture.height;
-      if texturecolumnheight[i] < 128 then
-        texturecolumnheight[i] := 128;
-      texturecolumnheightfrac[i] := texturecolumnheight[i] * FRACUNIT;
-
-      inc(mtexture);
+      _SetTextureTables(i, texture.width, texture.height);
     end;
 
     numtextures := numtextures + numtextures0;
-
-    Z_Free(maptex0);
   end;
 
   // Precalculate whatever possible.
@@ -1473,6 +1382,16 @@ begin
 
   for i := 0 to numtextures - 1 do
     texturetranslation[i] := i;
+end;
+
+//==============================================================================
+//
+// R_ConfigureTextureDefs
+//
+//==============================================================================
+procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
+begin
+  texturedefs_loader := ALoader;
 end;
 
 //==============================================================================

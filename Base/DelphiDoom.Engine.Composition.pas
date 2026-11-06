@@ -45,6 +45,13 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.TextureDefs.Types,
+  DelphiDoom.TextureDefs.Intf,
+  DelphiDoom.TextureDefs.Factory,
+  DelphiDoom.Engine.TextureDefs.LumpSource,
+  DelphiDoom.Engine.TextureDefs.FlatCatalog,
+  r_data,
+  r_flatinfo,
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Profiles,
@@ -288,6 +295,19 @@ begin
   R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
 end;
 
+procedure ComposeTextureDefs(const ALog: ILog);
+var
+  LFormat: TTextureDefsFormat;
+begin
+{$IFDEF STRIFE}
+  LFormat := TTextureDefsFormat.Strife;
+{$ELSE}
+  LFormat := TTextureDefsFormat.Standard;
+{$ENDIF}
+  R_ConfigureTextureDefs(TTextureDefsFactory.CreateLoader(TEngineTextureLumpSource.Create, LFormat));
+  R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create);
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -354,6 +374,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);
   ComposeMusInfo(LLog);

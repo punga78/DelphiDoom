@@ -33,12 +33,23 @@ unit r_flatinfo;
 
 interface
 
+uses
+  DelphiDoom.TextureDefs.Types,
+  DelphiDoom.TextureDefs.Intf;
+
 //==============================================================================
 //
 // R_ParseFlatInfoLumps
 //
 //==============================================================================
 procedure R_ParseFlatInfoLumps;
+
+//==============================================================================
+//
+// R_ConfigureFlatInfo
+//
+//==============================================================================
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
 
 //==============================================================================
 //
@@ -111,9 +122,13 @@ uses
   i_system,
   r_defs,
   r_data,
-  sc_engine,
+
   w_pak,
   w_wad;
+
+var
+  flatinfo_parser: ITextureDefsFlatInfoParser;
+  flatinfo_catalog: ITextureDefsFlatCatalog;
 
 //==============================================================================
 //
@@ -122,59 +137,28 @@ uses
 //==============================================================================
 procedure R_ParseFlatInfoText(const in_text: string);
 var
-  sc: TScriptEngine;
-  token: string;
-  flat: Pflat_t;
+  sizes: TArray<TTextureDefsFlatSize>;
   i: integer;
 begin
-  sc := TScriptEngine.Create(in_text);
-  try
-    while sc.GetString do
-    begin
-      token := strupper(sc._String);
+  if flatinfo_parser = nil then
+    I_Error('R_ParseFlatInfoText(): FLATINFO is not configured (ComposeEngine was not called)');
 
-      if token = 'FLAT' then
-      begin
-        sc.MustGetString;
-        token := strupper(sc._String);
-        flat := nil;
-        for i := numflats - 1 downto 0 do
-        begin
-          if token = char8tostring(flats[i].name) then
-          begin
-            flat := flats[i];
-            break;
-          end;
-        end;
-
-        if flat = nil then
-        begin
-          I_Warning('R_ParseFlatInfo(): Unknown flat "%s"'#13#10, [token]);
-          Continue;
-        end;
-
-        sc.MustGetString;
-        token := strupper(sc._String);
-
-        if token = 'SIZE' then
-        begin
-          sc.MustGetInteger;
-          flat.size := R_FlatSizeFromSize(sc._Integer);
-        end
-        else
-        begin
-          sc.UnGet;
-          Continue;
-        end;
-
-      end
-      else
-        I_Warning('R_ParseFlatInfo(): Unknown token "%s"'#13#10, [token]);
-    end;
-  finally
-    sc.Free;
-  end;
+  sizes := flatinfo_parser.Parse(in_text, flatinfo_catalog);
+  for i := 0 to Length(sizes) - 1 do
+    flats[sizes[i].FlatIndex].size := sizes[i].SizeCode;
 end;
+
+//==============================================================================
+//
+// R_ConfigureFlatInfo
+//
+//==============================================================================
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
+begin
+  flatinfo_parser := AParser;
+  flatinfo_catalog := ACatalog;
+end;
+
 
 const
   FLATINFOLUMPNAME = 'FLATINFO';
