@@ -46,6 +46,10 @@ type
     [Test]
     procedure TestEntryIndexOutOfRange;
     [Test]
+    procedure TestReadEntryIntoFillsTheBuffer;
+    [Test]
+    procedure TestEmptyLumpNeedsNoValidPosition;
+    [Test]
     procedure TestPakListsItsFiles;
     [Test]
     procedure TestPakDirectoryOutsideTheFileIsRefused;
@@ -182,6 +186,37 @@ begin
   LSource := TWadFactory.OpenBytes('x', H.MakeWad(['A'], [H.Bytes('x')]));
   Assert.WillRaise(procedure begin LSource.Entries[1]; end, EWadException);
   Assert.WillRaise(procedure begin LSource.ReadEntry(-1); end, EWadException);
+end;
+
+procedure TTestWadSources.TestReadEntryIntoFillsTheBuffer;
+var
+  LSource: IWadSource;
+  LBuffer: array[0..9] of AnsiChar;
+begin
+  LSource := TWadFactory.OpenBytes('x', H.MakeWad(['A', 'B'], [H.Bytes('abc'), H.Bytes('defg')]));
+  FillChar(LBuffer, SizeOf(LBuffer), '.');
+  LBuffer[9] := #0;
+  LSource.ReadEntryInto(1, @LBuffer);
+  Assert.AreEqual('defg.....', string(AnsiString(PAnsiChar(@LBuffer))), 'exactly the size of the lump');
+  Assert.WillRaise(procedure begin LSource.ReadEntryInto(2, @LBuffer); end, EWadException);
+end;
+
+procedure TTestWadSources.TestEmptyLumpNeedsNoValidPosition;
+var
+  LBytes: TBytes;
+  LSource: IWadSource;
+  LBuffer: Byte;
+begin
+  LBytes := H.MakeWad(['MARK', 'A'], [nil, H.Bytes('xy')]);
+  // the position of the empty lump points far outside the file
+  LBytes[Length(LBytes) - 32] := $FF;
+  LBytes[Length(LBytes) - 32 + 1] := $FF;
+  LBytes[Length(LBytes) - 32 + 2] := $0F;
+  LSource := TWadFactory.OpenBytes('x', LBytes);
+  Assert.AreEqual(0, Length(LSource.ReadEntry(0)));
+  LBuffer := 7;
+  LSource.ReadEntryInto(0, @LBuffer);
+  Assert.AreEqual(7, Integer(LBuffer), 'nothing written');
 end;
 
 procedure TTestWadSources.TestPakListsItsFiles;

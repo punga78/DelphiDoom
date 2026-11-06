@@ -26,6 +26,11 @@ type
     function GetEntry(AIndex: Integer): TWadEntry;
     /// <summary>The bytes of the lump; raises EWadException when it lies outside the file</summary>
     function ReadEntry(AIndex: Integer): TBytes;
+    /// <summary>
+    ///   Reads the lump straight into ADestination, which must hold Size bytes: no copy in between
+    ///   (the engine reads into its own memory). Same errors as ReadEntry
+    /// </summary>
+    procedure ReadEntryInto(AIndex: Integer; ADestination: Pointer);
     property Name: string read GetName;
     property Kind: TWadSourceKind read GetKind;
     property Count: Integer read GetCount;

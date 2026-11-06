@@ -284,13 +284,12 @@ end;
 
 procedure TWadDirectory.ReadLumpInto(ALump: Integer; ADestination: Pointer);
 var
-  LBytes: TBytes;
+  LRef: TLumpRef;
 begin
-  LBytes := ReadLump(ALump);
-  if Length(LBytes) > 0 then
-    Move(LBytes[0], ADestination^, Length(LBytes));
+  CheckLump(ALump);
+  LRef := FLumps[ALump];
+  FSources[LRef.SourceIndex].ReadEntryInto(LRef.EntryIndex, ADestination);
 end;
-
 function TWadDirectory.TextLump(ALump: Integer): string;
 var
   LBytes: TBytes;

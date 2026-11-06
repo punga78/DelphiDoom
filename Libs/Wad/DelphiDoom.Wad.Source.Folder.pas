@@ -32,6 +32,7 @@ type
     function GetCount: Integer;
     function GetEntry(AIndex: Integer): TWadEntry;
     function ReadEntry(AIndex: Integer): TBytes;
+    procedure ReadEntryInto(AIndex: Integer; ADestination: Pointer);
   end;
 
 implementation
@@ -119,6 +120,15 @@ function TFolderSource.ReadEntry(AIndex: Integer): TBytes;
 begin
   GetEntry(AIndex);
   Result := TFile.ReadAllBytes(FFiles[AIndex]);
+end;
+
+procedure TFolderSource.ReadEntryInto(AIndex: Integer; ADestination: Pointer);
+var
+  LBytes: TBytes;
+begin
+  LBytes := ReadEntry(AIndex);
+  if Length(LBytes) > 0 then
+    Move(LBytes[0], ADestination^, Length(LBytes));
 end;
 
 end.

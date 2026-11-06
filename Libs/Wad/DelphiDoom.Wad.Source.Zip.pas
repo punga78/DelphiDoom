@@ -33,6 +33,7 @@ type
     function GetCount: Integer;
     function GetEntry(AIndex: Integer): TWadEntry;
     function ReadEntry(AIndex: Integer): TBytes;
+    procedure ReadEntryInto(AIndex: Integer; ADestination: Pointer);
   end;
 
 implementation
@@ -110,6 +111,15 @@ function TZipFileSource.ReadEntry(AIndex: Integer): TBytes;
 begin
   GetEntry(AIndex);
   FZip.Read(FZipIndex[AIndex], Result);
+end;
+
+procedure TZipFileSource.ReadEntryInto(AIndex: Integer; ADestination: Pointer);
+var
+  LBytes: TBytes;
+begin
+  LBytes := ReadEntry(AIndex);
+  if Length(LBytes) > 0 then
+    Move(LBytes[0], ADestination^, Length(LBytes));
 end;
 
 end.

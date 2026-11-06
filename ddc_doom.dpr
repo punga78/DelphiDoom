@@ -318,6 +318,7 @@ uses
   DelphiDoom.Wad.LumpCache in 'Libs\Wad\DelphiDoom.Wad.LumpCache.pas',
   DelphiDoom.Wad.Factory in 'Libs\Wad\DelphiDoom.Wad.Factory.pas',
   DelphiDoom.Wad.DStreamAdapter in 'Base\DelphiDoom.Wad.DStreamAdapter.pas',
+  DelphiDoom.Wad.ReloadableSource in 'Base\DelphiDoom.Wad.ReloadableSource.pas',
   w_wad in 'Base\w_wad.pas',
   wi_stuff in 'Doom\wi_stuff.pas',
   z_zone in 'Base\z_zone.pas',

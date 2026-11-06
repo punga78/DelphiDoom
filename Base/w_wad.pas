@@ -292,7 +292,8 @@ uses
   DelphiDoom.Wad.Factory,
   DelphiDoom.Wad.Source.Wad,
   DelphiDoom.Wad.Source.SingleFile,
-  DelphiDoom.Wad.DStreamAdapter;
+  DelphiDoom.Wad.DStreamAdapter,
+  DelphiDoom.Wad.ReloadableSource;
 
 //
 // The directory of the lumps is kept by the WAD library (Libs\Wad): it reads the
@@ -309,6 +310,7 @@ var
 
   wad_directory: IWadDirectory = nil;
   wad_finder: IWadFinder = nil;
+  wad_reader: ILumpReader = nil;
   // The engine stream of each source of the directory (nil for a reloadable file)
   wad_handles: array of TDStream;
 
@@ -573,6 +575,10 @@ begin
     printf(' adding %s (%d lump' + decide(source.Count = 1, '', 's') + ')'#13#10, [filename, source.Count]);
   end;
 
+  if reloadname <> '' then
+    // the file is not kept open: it is opened again whenever a lump is read
+    source := TReloadableWadSource.Create(filename, source);
+
   wad_directory.AddSource(source);
   SetLength(wad_handles, wad_directory.SourceCount);
   if reloadname <> '' then
@@ -628,7 +634,7 @@ begin
       if lumpcache[i] <> nil then
         Z_Free(lumpcache[i]);
 
-    wad_directory.ReplaceSource(reloadsource, source);
+    wad_directory.ReplaceSource(reloadsource, TReloadableWadSource.Create(reloadname, source));
   except
     on E: EWadException do
       I_Error('W_Reload(): %s'#13#10, [E.Message]);
@@ -841,6 +847,7 @@ begin
   pendingwadsfrompak.Add(fname);
 end;
 
+
 //==============================================================================
 //
 // W_InitMultipleFiles
@@ -867,6 +874,7 @@ begin
 
   wad_directory := TWadFactory.CreateDirectory;
   wad_finder := TWadFactory.CreateFinder(wad_directory);
+  wad_reader := TWadFactory.CreateReader(wad_directory);
   SetLength(wad_handles, 0);
 
   // open all the files, load headers, and count lumps
@@ -916,6 +924,7 @@ begin
   memfree(pointer(lumpcache), lumpcacherealsize * SizeOf(pointer));
   memfree(pointer(lumpinfo), lumpinfoalloc * SizeOf(lumpinfo_t));
   lumpinfoalloc := 0;
+  wad_reader := nil;
   wad_finder := nil;
   wad_directory := nil;
   SetLength(wad_handles, 0);
@@ -1074,42 +1083,17 @@ end;
 //
 //==============================================================================
 procedure W_ReadLump(const lump: integer; dest: pointer);
-var
-  c: integer;
-  l: Plumpinfo_t;
-  handle: TDStream;
 begin
   if lump >= numlumps then
     I_Error('W_ReadLump(): %d >= numlumps', [lump]);
 
-  l := @lumpinfo[lump];
-
-  if l.handle = nil then
-  begin
-    // reloadable file, so use open / read / close
-    if not fexists(reloadname) then
-      I_Error('W_ReadLump(): couldn''t open %s', [reloadname]);
-
-    try
-      handle := TCachedFile.Create(reloadname, fOpenReadOnly);
-    except
-      handle := nil;
-      I_Error('W_ReadLump(): couldn''t open %s', [reloadname]);
-    end
-  end
-  else
-    handle := l.handle;
-
-  handle.OnBeginBusy := I_BeginDiskBusy;
-
-  handle.Seek(l.position, sFromBeginning);
-  c := handle.Read(dest^, l.size);
-
-  if c < l.size then
-    I_Error('W_ReadLump(): only read %d of %d on lump %d', [c, l.size, lump]);
-
-  if l.handle = nil then
-    handle.Free;
+  // straight from the source of the lump into dest: the library checks that the lump is in the file
+  try
+    wad_reader.ReadLumpInto(lump, dest);
+  except
+    on E: EWadException do
+      I_Error('W_ReadLump(): lump %d: %s', [lump, E.Message]);
+  end;
 end;
 
 //==============================================================================

@@ -38,6 +38,7 @@ type
     function GetCount: Integer;
     function GetEntry(AIndex: Integer): TWadEntry;
     function ReadEntry(AIndex: Integer): TBytes;
+    procedure ReadEntryInto(AIndex: Integer; ADestination: Pointer);
   end;
 
 implementation
@@ -93,19 +94,26 @@ begin
 end;
 
 function TWadStreamSource.ReadEntry(AIndex: Integer): TBytes;
+begin
+  SetLength(Result, GetEntry(AIndex).Size);
+  if Length(Result) > 0 then
+    ReadEntryInto(AIndex, @Result[0]);
+end;
+
+procedure TWadStreamSource.ReadEntryInto(AIndex: Integer; ADestination: Pointer);
 var
   LEntry: TWadEntry;
 begin
   LEntry := GetEntry(AIndex);
+  // a lump with no bytes needs no valid position: some tools write any
+  if LEntry.Size = 0 then
+    Exit;
   if (LEntry.Size < 0) or (LEntry.Offset < 0) or
      (Int64(LEntry.Offset) + LEntry.Size > FStream.Size) then
     raise EWadException.CreateFmt(SOutsideFile, [LEntry.Name, FName]);
-  SetLength(Result, LEntry.Size);
-  if LEntry.Size > 0 then
-  begin
-    FStream.Position := LEntry.Offset;
-    FStream.ReadBuffer(Result[0], LEntry.Size);
-  end;
+  FStream.Position := LEntry.Offset;
+  if FStream.Read(ADestination^, LEntry.Size) <> LEntry.Size then
+    raise EWadException.CreateFmt(SOutsideFile, [LEntry.Name, FName]);
 end;
 
 end.
