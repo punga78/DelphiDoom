@@ -27,7 +27,7 @@ type
     ///   the path does not exist or the container is damaged
     /// </summary>
     class function OpenPath(const APath: string): IWadSource; static;
-    /// <summary>A WAD or a PAK held in memory; AName only names it in messages</summary>
+    /// <summary>A WAD, a WAD2/WAD3 or a PAK held in memory; AName only names it in messages</summary>
     class function OpenBytes(const AName: string; const ABytes: TBytes): IWadSource; static;
     class function CreateDirectory: IWadDirectory; static;
     class function CreateFinder(const ADirectory: IWadDirectory): IWadFinder; static;
@@ -40,7 +40,7 @@ implementation
 
 uses
   DelphiDoom.Wad.Directory, DelphiDoom.Wad.LumpCache, DelphiDoom.Wad.Builder,
-  DelphiDoom.Wad.Source.Wad, DelphiDoom.Wad.Source.Pak, DelphiDoom.Wad.Source.Zip,
+  DelphiDoom.Wad.Source.Wad, DelphiDoom.Wad.Source.Wad2, DelphiDoom.Wad.Source.Pak, DelphiDoom.Wad.Source.Zip,
   DelphiDoom.Wad.Source.Folder, DelphiDoom.Wad.Source.SingleFile;
 
 const
@@ -73,6 +73,8 @@ begin
     Result := TWadFileSource.Create(APath, LStream, True)
   else if LId = PAK_ID then
     Result := TPakFileSource.Create(APath, LStream, True)
+  else if (LId = WAD2_ID) or (LId = WAD3_ID) then
+    Result := TWad2FileSource.Create(APath, LStream, True)
   else if LId = ZIP_ID then
   begin
     // TZipFile opens the file by itself
@@ -91,11 +93,14 @@ begin
   LId := 0;
   if Length(ABytes) >= SizeOf(LId) then
     Move(ABytes[0], LId, SizeOf(LId));
-  if (LId <> WAD_ID_IWAD) and (LId <> WAD_ID_PWAD) and (LId <> WAD_ID_DWAD) and (LId <> PAK_ID) then
+  if (LId <> WAD_ID_IWAD) and (LId <> WAD_ID_PWAD) and (LId <> WAD_ID_DWAD) and (LId <> PAK_ID) and
+     (LId <> WAD2_ID) and (LId <> WAD3_ID) then
     raise EWadException.CreateFmt(SUnknownContainer, [AName]);
   LStream := TBytesStream.Create(ABytes);
   if LId = PAK_ID then
     Result := TPakFileSource.Create(AName, LStream, True)
+  else if (LId = WAD2_ID) or (LId = WAD3_ID) then
+    Result := TWad2FileSource.Create(AName, LStream, True)
   else
     Result := TWadFileSource.Create(AName, LStream, True);
 end;

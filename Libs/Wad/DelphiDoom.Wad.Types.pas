@@ -10,6 +10,8 @@ unit DelphiDoom.Wad.Types;
 
 interface
 
+{$SCOPEDENUMS ON}
+
 uses
   System.SysUtils;
 
@@ -20,6 +22,9 @@ const
   WAD_ID_DWAD = Integer($44415744);
   /// <summary>'PACK' of the Quake PAK files</summary>
   PAK_ID = Integer($4B434150);
+  /// <summary>'WAD2' (Quake) and 'WAD3' (Half-Life)</summary>
+  WAD2_ID = Integer($32444157);
+  WAD3_ID = Integer($33444157);
   /// <summary>'PK' 03 04 of the first local header of a ZIP (PK3)</summary>
   ZIP_ID = Integer($04034B50);
 

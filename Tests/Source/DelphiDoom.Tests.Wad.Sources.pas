@@ -54,6 +54,10 @@ type
     [Test]
     procedure TestPakDirectoryOutsideTheFileIsRefused;
     [Test]
+    procedure TestWad2ListsItsEntries;
+    [Test]
+    procedure TestWad2DirectoryOutsideTheFileIsRefused;
+    [Test]
     procedure TestFolderListsFilesBelowIt;
     [Test]
     procedure TestMissingFolderIsRefused;
@@ -238,6 +242,29 @@ var
 begin
   LBytes := H.MakePak(['a'], [H.Bytes('x')]);
   LBytes[8] := $FF;
+  Assert.WillRaise(procedure begin TWadFactory.OpenBytes('x', LBytes); end, EWadException);
+end;
+
+procedure TTestWadSources.TestWad2ListsItsEntries;
+var
+  LSource: IWadSource;
+begin
+  LSource := TWadFactory.OpenBytes('test.wad',
+    H.MakeWad2(['gfx/Wall', 'sky'], [H.Bytes('texture!'), H.Bytes('cloud')], True));
+  Assert.AreEqual(2, LSource.Count);
+  Assert.AreEqual('GFX/WALL', LSource.Entries[0].Name);
+  Assert.AreEqual(8, LSource.Entries[0].Size);
+  Assert.AreEqual('cloud', TEncoding.ANSI.GetString(LSource.ReadEntry(1)));
+  Assert.AreEqual(1, TWadFactory.OpenBytes('q.wad', H.MakeWad2(['a'], [H.Bytes('x')])).Count, 'WAD2');
+end;
+
+procedure TTestWadSources.TestWad2DirectoryOutsideTheFileIsRefused;
+var
+  LBytes: TBytes;
+begin
+  LBytes := H.MakeWad2(['a'], [H.Bytes('x')]);
+  LBytes[4] := $10;
+  LBytes[5] := $27;
   Assert.WillRaise(procedure begin TWadFactory.OpenBytes('x', LBytes); end, EWadException);
 end;
 

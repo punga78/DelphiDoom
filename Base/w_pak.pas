@@ -31,68 +31,19 @@ unit w_pak;
 interface
 
 uses
-  d_delphi{$IFNDEF FPC},
-  z_files{$ENDIF};
-
-const
-  Pakid: integer = $4B434150;   // 'PACK' In Hex!
-  WAD2id: integer = $32444157;  // 'WAD2' in Hex!
-  WAD3id: integer = $33444157;  // 'WAD3' in Hex!
-
-const
-  PAKHEADSTRINGSIZE = 56;
+  d_delphi,
+  DelphiDoom.Wad.Intf,
+  DelphiDoom.Pak.EntryReader;
 
 type
-  FPakHead = packed record // A PAK Directory Entry
-    Name: packed array[1..PAKHEADSTRINGSIZE] of AnsiChar;
-    Offs: integer;
-    Fsize: integer;
-  end;
-
-  TFPakHeadArray = packed array[0..$FFFF] of FPakHead;
-  PFPakHeadArray = ^TFPakHeadArray;
-
-  FWadHead = packed record // A WAD2/WAD3 Directory Entry
-    Offs: integer;
-    disksize: integer;
-    size: integer;  // uncompressed
-    _type: char;
-    compression: char;
-    pad1, pad2: char;
-    name: packed array[1..16] of AnsiChar; // must be null terminated
-  end;
-
-  TFWadHeadArray = packed array[0..$FFFF] of FWadHead;
-  PFWadHeadArray = ^TFWadHeadArray;
-
-type
-  {$IFNDEF FPC}
-  TCompressorCache = class(TObject)
-  private
-    fZip: TZipFile;
-    fID: integer;
-    fPosition: integer;
-    fSize: integer;
-    data: pointer;
-  public
-    constructor Create(aZip: TZipFile; aID: integer); virtual;
-    destructor Destroy; override;
-    function Read(var Buf; Sz: Integer): integer;
-    function Seek(pos: integer): boolean;
-    property Position: integer read fPosition;
-    property Size: integer read fSize;
-  end;
-  {$ENDIF}
-
+  /// <summary>One file of the PAK file system, from a PAK, a ZIP (PK3/PK4), a WAD or a WAD2/WAD3</summary>
   TPakEntry = record // A Directory Entry Memory Image
     Pak: string[255];
     Name: string[255];
     ShortName: string[64];
-    Offset, Size: Integer;
+    Offset, Size: Integer; // Offset: the number of the entry in its source
     Hash: Integer;
-  {$IFNDEF FPC}
-    ZIP: TZipFile;
-  {$ENDIF}
+    Source: Integer; // the source of the entries: the number of the file in the manager
   end;
   PPakEntry = ^TPakEntry;
 
@@ -100,11 +51,9 @@ type
   PPakEntries = ^TPakEntries;
 
   TPakFile = record
-    Entry: Integer;
+    Entry: Integer; // -1: a file on disk, F is open; else Z has the bytes of the entry
     F: file;
-  {$IFNDEF FPC}
-    Z: TCompressorCache;
-  {$ENDIF}
+    Z: TPakEntryReader;
   end;
   PPakFile = ^TPakFile;
 
@@ -127,15 +76,12 @@ type
     NumEntries: Integer;
     MaxEntries: Integer;
     PAKS: TDStringList;
+    Sources: array of IWadSource; // by the number of the file in PAKS
     HashTable: PPakHashPArray;
     fGlobalHash: LongWord;
     procedure Grow;
-    procedure AddEntry(var H: FPakHead; const Pakn: string); overload;
-    procedure AddEntry(var HD: FWADhead; const Pakn: string); overload;
-    procedure AddEntry(const aPos, aSize: integer; const aname: string; const Pakn: string); overload;
-  {$IFNDEF FPC}
-    procedure AddEntry(ZIPFILE: TZipFile; const ZIPFileName, EntryName: string; const index: integer); overload;
-  {$ENDIF}
+    procedure AddEntry(const aname, Pakn: string; const asource, aentry, asize: integer);
+    function PLoadEntry(var F: TPakFile; pe: PPakEntry): boolean;
     function HashToHashTableIndex(const hash: integer): integer;
     procedure AddEntryToHashTable(const idx: integer);
     function POpenPreferedFileNameSearch(var F: TPakFile; const aName: string; prefdirs: TDStringList): boolean;
@@ -283,68 +229,9 @@ uses
   t_pcx,
   t_patch,
   t_flat,
-  w_wad;
-
-{$IFNDEF FPC}
-{******** TCompressorCache ********}
-
-//==============================================================================
-//
-// TCompressorCache.Create
-//
-//==============================================================================
-constructor TCompressorCache.Create(aZip: TZipFile; aID: integer);
-begin
-  Inherited Create;
-  fZip := aZip;
-  fID := aID;
-  fZip.GetZipFileData(fID, data, fSize);
-  fPosition := 0;
-end;
-
-//==============================================================================
-//
-// TCompressorCache.Destroy
-//
-//==============================================================================
-destructor TCompressorCache.Destroy;
-begin
-  memfree(data, fSize);
-  Inherited Destroy;
-end;
-
-//==============================================================================
-//
-// TCompressorCache.Read
-//
-//==============================================================================
-function TCompressorCache.Read(var Buf; Sz: Integer): integer;
-begin
-  if fPosition + Sz > Size then
-    result := Size - fPosition
-  else
-    result := Sz;
-
-  memcpy(@buf, pointer(integer(data) + fPosition), result);
-  fPosition := fPosition + result;
-end;
-
-//==============================================================================
-//
-// TCompressorCache.Seek
-//
-//==============================================================================
-function TCompressorCache.Seek(pos: integer): boolean;
-begin
-  if (pos < 0) or (pos > Size) then
-    result := false
-  else
-  begin
-    fPosition := pos;
-    result := true;
-  end;
-end;
-{$ENDIF}
+  w_wad,
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Factory;
 
 //==============================================================================
 //
@@ -435,127 +322,52 @@ begin
   end;
 end;
 
-{$IFNDEF FPC}
-
-//==============================================================================
-// TPakManager.AddEntry
-//
-// Add a ZIP file entry (ZIP/PK3/PK4)
-//
-//==============================================================================
-procedure TPakManager.AddEntry(ZIPFILE: TZipFile; const ZIPFileName, EntryName: string; const index: integer);
-var
-  e: PPakEntry;
-begin
-  Grow;
-  e := @Entries[NumEntries - 1];
-  e.Pak := ZIPFileName;
-  e.Name := fixpathname(strupper(EntryName));
-  e.ShortName := fshortname(e.Name);
-  e.Hash := MkHash(e.ShortName);
-  e.Offset := index; // offset -> index to ZIP file
-  e.Size := 0;
-  e.ZIP := ZIPFILE;
-
-  AddEntryToHashTable(NumEntries - 1);
-end;
-{$ENDIF}
-
-//==============================================================================
-// TPakManager.AddEntry
-//
-// Add an entry from Quake PAK file
-//
-//==============================================================================
-procedure TPakManager.AddEntry(var H: FPakHead; const Pakn: string); // Add A Pak Entry to Memory List
-var
-  S: string;
-  I: Integer;
-  e: PPakEntry;
-begin
-  Grow;
-
-  S := '';
-  for I := 1 to PAKHEADSTRINGSIZE do
-    if H.Name[I] <> #0 then
-      S := S + toupper(H.Name[I])
-    else
-      break;
-
-  e := @Entries[NumEntries - 1];
-  e.Pak := Pakn;
-  e.Name := fixpathname(S);
-  e.ShortName := fshortname(e.Name);
-  e.Hash := MkHash(e.ShortName);
-  e.Offset := H.Offs;
-  e.Size := H.Fsize;
-{$IFNDEF FPC}
-  e.ZIP := nil;
-{$ENDIF}
-
-  AddEntryToHashTable(NumEntries - 1);
-end;
-
-//==============================================================================
-// TPakManager.AddEntry
-//
-// Add an entry from a WAD file (new WAD version)
-//
-//==============================================================================
-procedure TPakManager.AddEntry(var HD: FWADhead; const Pakn: string);
-var
-  S: string;
-  I: Integer;
-  e: PPakEntry;
-begin
-  Grow;
-
-  S := '';
-  for I := 1 to 16 do
-    if HD.Name[I] <> #0 then
-      S := S + UpCase(HD.Name[I])
-    else
-      break;
-
-  e := @Entries[NumEntries - 1];
-  e.Pak := Pakn;
-  e.Name := fixpathname(S);
-  e.ShortName := fshortname(e.Name);
-  e.Hash := MkHash(e.ShortName);
-  e.Offset := HD.Offs;
-  e.Size := HD.size;
-{$IFNDEF FPC}
-  e.ZIP := nil;
-{$ENDIF}
-
-  AddEntryToHashTable(NumEntries - 1);
-end;
-
 //==============================================================================
 //
 // TPakManager.AddEntry
+// Adds the entry number aentry (of asize bytes) of the file number asource
 //
 //==============================================================================
-procedure TPakManager.AddEntry(const aPos, aSize: integer; const aname: string; const Pakn: string);
+procedure TPakManager.AddEntry(const aname, Pakn: string; const asource, aentry, asize: integer);
 var
   e: PPakEntry;
 begin
   Grow;
 
   e := @Entries[NumEntries - 1];
+  // the global hash reads the bytes of the strings: no leftovers after their end
+  ZeroMemory(e, SizeOf(TPakEntry));
   e.Pak := Pakn;
   e.Name := fixpathname(strupper(aname));
   e.ShortName := fshortname(e.Name);
   e.Hash := MkHash(e.ShortName);
-  e.Offset := aPos;
-  e.Size := aSize;
-{$IFNDEF FPC}
-  e.ZIP := nil;
-{$ENDIF}
+  e.Offset := aentry;
+  e.Size := asize;
+  e.Source := asource;
 
   AddEntryToHashTable(NumEntries - 1);
 end;
 
+//==============================================================================
+//
+// TPakManager.PLoadEntry
+// Reads the bytes of an entry of the PAK file system
+//
+//==============================================================================
+function TPakManager.PLoadEntry(var F: TPakFile; pe: PPakEntry): boolean;
+begin
+  try
+    F.Z := TPakEntryReader.Create(Sources[pe.Source], pe.Offset);
+    result := true;
+  except
+    on E: EWadException do
+    begin
+      I_Warning('TPakManager.PLoadEntry(): %s'#13#10, [E.Message]);
+      F.Z := nil;
+      result := false;
+    end;
+  end;
+end;
 //==============================================================================
 //
 // TPakManager.HashToHashTableIndex
@@ -604,26 +416,24 @@ end;
 //==============================================================================
 function TPakManager.PAddFile(const FileName: string): boolean; // Add A Pak file
 var
-  Nr: Integer;
-  N, Id, Ofs: Integer;
+  N, Id: Integer;
   F: file;
-  P: Pointer;
   I, J: Integer;
-{$IFNDEF FPC}
-  z: TZipFile;
-{$ENDIF}
-  pkid: integer;
+  pkid: Integer;
   Fn: string;
   inHIRES: boolean;
   inTX: boolean;
-  wadlump: filelump_t;
   b4: packed array[0..127] of byte;
   pk3lumps: TDStringList;
   pk3lump: string;
+  lumpbytes: TArray<Byte>;
   wadlumpname: string;
   pc: integer;
   stmp: string;
   wads: TDStringList;
+  source: IWadSource;
+  ent: TWadEntry;
+  iswad: boolean;
 
   procedure CheckWadEntry(const wadname: string);
   var
@@ -636,18 +446,6 @@ var
         wads := TDStringList.Create;
       wads.Add(wadname);
     end;
-  end;
-
-  function _GetPakNameFromPakHead(const p: FPakHead): string;
-  var
-    x: integer;
-  begin
-    result := '';
-    for x := 1 to PAKHEADSTRINGSIZE do
-      if p.Name[x] = #0 then
-        break
-      else
-        result := result + p.Name[x];
   end;
 
 begin
@@ -672,89 +470,67 @@ begin
     I_Warning('TPakManager.PAddFile(): Can not read file "%s"'#13#10, [FileName]);
     exit;
   end;
-  if (Id <> Pakid) and (Id <> WAD2Id) and (Id <> WAD3Id){$IFNDEF FPC} and (id <> ZIPFILESIGNATURE) {$ENDIF} and
-     (Id <> IWAD) and (Id <> PWAD) and (Id <> DWAD) then
+  iswad := (Id = IWAD) or (Id = PWAD) or (Id = DWAD);
+  if (Id <> PAK_ID) and (Id <> WAD2_ID) and (Id <> WAD3_ID) and (Id <> ZIP_ID) and not iswad then
   begin
-    result := false;
     close(F);
     I_Warning('TPakManager.PAddFile(): Unknown file type "%s"'#13#10, [FileName]);
     exit;
   end;
 
+  // The directory of the file is read by the WAD library; F is kept open only for a WAD,
+  // to look at the first bytes of its textures
+  if not iswad then
+    close(F);
+
   pkid := PAKS.Add(Fn);
   PAKS.Objects[pkid] := nil;
+  SetLength(Sources, PAKS.Count);
+
+  try
+    source := TWadFactory.OpenPath(Fn);
+  except
+    on E: EWadException do
+    begin
+      if iswad then
+        close(F);
+      I_Warning('TPakManager.PAddFile(): Can not read file "%s": %s'#13#10, [FileName, E.Message]);
+      exit;
+    end;
+  end;
+  Sources[pkid] := source;
 
   wads := nil;
 
-  if Id = Pakid then // PAK file
+  if not iswad then
   begin
-    BlockRead(F, Ofs, 4, N);
-    if N <> 4 then
+    // PAK, ZIP (PK3/PK4), WAD2/WAD3: the entries are the files
+    for i := 0 to source.Count - 1 do
     begin
-      close(F);
-      exit;
-    end;
-    BlockRead(F, Nr, 4, N);
-    if N <> 4 then
-    begin
-      close(F);
-      exit;
-    end;
-    Nr := Nr div SizeOf(FPakHead);
-    Seek(F, Ofs);
-    P := malloc(Nr * SizeOf(FPakHead));
-    Blockread(f, P^, Nr * SizeOf(FPakHead), N);
-    for i := 0 to N div SizeOf(FPakHead) - 1 do
-    begin
-      AddEntry(PFPakHeadArray(P)[i], Fn);
-      CheckWadEntry(_GetPakNameFromPakHead(PFPakHeadArray(P)[i]));
-    end;
-    memfree(P, Nr * SizeOf(FPakHead));
-  end
-{$IFNDEF FPC}
-  else if id = ZIPFILESIGNATURE then // zip, pk3, pk4 file
-  begin
-    z := TZipFile.Create(Fn);
-    PAKS.Objects[pkid] := z;
-    for i := 0 to z.FileCount - 1 do
-    begin
-      AddEntry(z, Fn, z.Files[i], i);
-      CheckWadEntry(z.Files[i]);
+      ent := source.Entries[i];
+      AddEntry(ent.Name, Fn, pkid, i, ent.Size);
+      CheckWadEntry(ent.Name);
     end;
   end
-{$ENDIF}
-  else if (Id = IWAD) or (Id = PWAD) or (Id = DWAD) then  // DOOM WAD
+  else
   begin
-    BlockRead(F, Nr, 4, N);
-    if N <> 4 then
-    begin
-      close(F);
-      exit;
-    end;
-    BlockRead(F, Ofs, 4, N);
-    if N <> 4 then
-    begin
-      close(F);
-      exit;
-    end;
-    seek(F, Ofs);
+    // DOOM WAD
     inHIRES := false;
     inTX := false;
     pk3lumps := TDStringList.Create;
-    for i := 0 to Nr - 1 do
+    for i := 0 to source.Count - 1 do
     begin
-      BlockRead(F, wadlump, SizeOf(filelump_t), N);
+      ent := source.Entries[i];
       // 'PK3ENTRY' wad lump contains aliases for wad lumps (8 characters - short filename)
       // to the PK3/PAK filesystem (long filenames).
-      wadlumpname := char8tostring(wadlump.name);
+      wadlumpname := ent.Name;
       if wadlumpname = 'PK3ENTRY' then
       begin
-        Seek(F, wadlump.filepos);
-        SetLength(pk3lump, wadlump.size);
-        for j := 1 to wadlump.size do
-          BlockRead(F, pk3lump[j], SizeOf(Char));
+        lumpbytes := source.ReadEntry(i);
+        SetLength(pk3lump, Length(lumpbytes));
+        for j := 1 to Length(lumpbytes) do
+          pk3lump[j] := Chr(lumpbytes[j - 1]);
         pk3lumps.Text := pk3lumps.Text + pk3lump + #13#10;
-        Seek(F, Ofs + (i + 1) * SizeOf(filelump_t));
       end
       else if wadlumpname = 'HI_START' then
         inHIRES := True
@@ -766,25 +542,23 @@ begin
         inTX := False
       else if inHIRES or inTX then
       begin
-        Seek(F, wadlump.filepos);
+        Seek(F, ent.Offset);
         ZeroMemory(@b4, SizeOf(b4));
         BlockRead(F, b4, 128, N);
         if (b4[0] = 0) and (b4[1] = 0) and (b4[2] = 2) and (b4[3] = 0) then // TGA
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.TGA', Fn)
+          AddEntry(s_TEX_PATH + wadlumpname + '.TGA', Fn, pkid, i, ent.Size)
         else if (b4[1] = $50) and (b4[2] = $4E) and (b4[3] = $47) then // PNG
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.PNG', Fn)
+          AddEntry(s_TEX_PATH + wadlumpname + '.PNG', Fn, pkid, i, ent.Size)
         else if (b4[0] = $42) and (b4[1] = $4D) then // BMP
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.BMP', Fn)
+          AddEntry(s_TEX_PATH + wadlumpname + '.BMP', Fn, pkid, i, ent.Size)
         else if (b4[6] = $4A) and (b4[7] = $46) and (b4[8] = $49) and (b4[9] = $46) then // JPEG
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.JPG', Fn)
+          AddEntry(s_TEX_PATH + wadlumpname + '.JPG', Fn, pkid, i, ent.Size)
         else if (N >= 128) and T_IsValidPCXHeader(@b4) then // PCX detection
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.PCX', Fn)
-        else if (N >= 4) and T_IsValidPatchImage(f, wadlump.filepos, wadlump.size) then
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.PATCH', Fn)
-        else if T_IsValidFlatImage(f, wadlump.filepos, wadlump.size) then
-          AddEntry(wadlump.filepos, wadlump.size, s_TEX_PATH + wadlumpname + '.FLAT', Fn);
-
-        Seek(F, Ofs + (i + 1) * SizeOf(filelump_t));
+          AddEntry(s_TEX_PATH + wadlumpname + '.PCX', Fn, pkid, i, ent.Size)
+        else if (N >= 4) and T_IsValidPatchImage(f, ent.Offset, ent.Size) then
+          AddEntry(s_TEX_PATH + wadlumpname + '.PATCH', Fn, pkid, i, ent.Size)
+        else if T_IsValidFlatImage(f, ent.Offset, ent.Size) then
+          AddEntry(s_TEX_PATH + wadlumpname + '.FLAT', Fn, pkid, i, ent.Size);
       end;
     end;
     // JVAL: 20190913 Allow comments inside PK3ENTRY lumps
@@ -805,41 +579,16 @@ begin
       if pk3lumps.Strings[i] = '' then
         pk3lumps.Delete(i);
     if pk3lumps.Count > 0 then
-    begin
-      seek(F, Ofs);
-      for i := 0 to Nr - 1 do
+      for i := 0 to source.Count - 1 do
       begin
-        BlockRead(F, wadlump, SizeOf(filelump_t), N);
-        wadlumpname := char8tostring(wadlump.name);
-        if pk3lumps.IndexOfName(wadlumpname) > -1 then
-          AddEntry(wadlump.filepos, wadlump.size, pk3lumps.Values[wadlumpname], Fn)
+        ent := source.Entries[i];
+        if pk3lumps.IndexOfName(ent.Name) > -1 then
+          AddEntry(pk3lumps.Values[ent.Name], Fn, pkid, i, ent.Size);
       end;
-    end;
     pk3lumps.Free;
-  end
-  else // WAD2 or WAD3
-  begin
-    BlockRead(F, Nr, 4, N);
-    if N <> 4 then
-    begin
-      close(F);
-      exit;
-    end;
-    BlockRead(F, Ofs, 4, N);
-    if N <> 4 then
-    begin
-      close(F);
-      exit;
-    end;
-    seek(F, Ofs);
-    P := malloc(Nr * SizeOf(FWadHead));
-    Blockread(f, P^, Nr * SizeOf(FWadHead), N);
-    for i := 0 to N div SizeOf(FWadHead) - 1 do
-      AddEntry(PFWadHeadArray(P)[i], Fn);
-    memfree(P, Nr * SizeOf(FWadHead));
-
+    close(F);
   end;
-  close(F);
+
   result := true;
   printf(' adding %s'#13#10, [FileName]);
 
@@ -850,7 +599,6 @@ begin
     wads.Free;
   end;
 end;
-
 //==============================================================================
 //
 // TPakManager.GetEntries
@@ -907,9 +655,7 @@ var
   hashcheck: PPakHash;
 begin
   result := false;
-{$IFNDEF FPC}
   F.Z := nil;
-{$ENDIF}
 
   if fopen(F.F, Name, fOpenReadOnly) then
   begin
@@ -928,16 +674,8 @@ begin
     if hcode = pe.Hash then   // Fast compare the hash values
       if pe.Name = Name then  // Slow compare strings
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then // It's a zip (pk3/pk4) file
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin // Standard Quake1/2 pak file
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := hashcheck.index;
         result := true;
         exit;
@@ -952,16 +690,8 @@ begin
     if hcode = pe.Hash then   // Fast compare the hash values
       if pe.Name = Name then  // Slow compare strings
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then // It's a zip (pk3/pk4) file
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin // Standard Quake1/2 pak file
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := i;
         result := true;
         exit;
@@ -987,16 +717,8 @@ begin
     exit;
 
   pe := @Entries[idx];
-  {$IFNDEF FPC}
-  if pe.ZIP <> nil then // It's a zip (pk3/pk4) file
-    F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-  else
-  {$ENDIF}
-  begin // Standard Quake1/2 pak file
-    if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-      exit;
-    Seek(F.F, pe.Offset);
-  end;
+  if not PLoadEntry(F, pe) then
+    exit;
   F.Entry := idx;
   result := true;
 end;
@@ -1015,9 +737,7 @@ var
   hashcheck: PPakHash;
 begin
   result := false;
-{$IFNDEF FPC}
   F.Z := nil;
-{$ENDIF}
 
   if fopen(F.F, Name, fOpenReadOnly) then
   begin
@@ -1036,16 +756,8 @@ begin
     if hcode = pe.Hash then   // Fast compare the hash values
       if pe.ShortName = Name then  // Slow compare strings
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then // It's a zip (pk3/pk4) file
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin // Standard Quake1/2 pak file
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := hashcheck.index;
         result := true;
         exit;
@@ -1060,16 +772,8 @@ begin
     if hcode = pe.Hash then
       if pe.ShortName = Name then
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := I;
         result := true;
         Exit;
@@ -1107,9 +811,7 @@ begin
   if Name = '' then
     Exit;
 
-{$IFNDEF FPC}
   F.Z := nil;
-{$ENDIF}
 
   if fopen(F.F, Name, fOpenReadOnly) then
   begin
@@ -1128,16 +830,8 @@ begin
     if hcode = pe.Hash then   // Fast compare the hash values
       if (pe.Name = Name) or (RightStr(pe.Name, Length(Name) + 1) =  '\' + Name) then
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then // It's a zip (pk3/pk4) file
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin // Standard Quake1/2 pak file
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := hashcheck.index;
         result := true;
         exit;
@@ -1152,16 +846,8 @@ begin
     if hcode = pe.Hash then
       if (pe.Name = Name) or (RightStr(pe.Name, Length(Name) + 1) =  '\' + Name) then
       begin // Found In Pak
-      {$IFNDEF FPC}
-        if pe.ZIP <> nil then
-          F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-        else
-      {$ENDIF}
-        begin
-          if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-            exit;
-          Seek(F.F, pe.Offset);
-        end;
+        if not PLoadEntry(F, pe) then
+          exit;
         F.Entry := I;
         result := true;
         Exit;
@@ -1210,9 +896,7 @@ var
   Name: string;
 begin
   result := false;
-{$IFNDEF FPC}
   F.Z := nil;
-{$ENDIF}
 
   pref_head := malloc(SizeOf(pref_rec));
   pref_head.index := -1;
@@ -1262,16 +946,8 @@ begin
     exit;
 
   pe := @Entries[i];
-  {$IFNDEF FPC}
-  if pe.ZIP <> nil then
-    F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-  else
-  {$ENDIF}
-  begin
-    if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-      exit;
-    Seek(F.F, pe.Offset);
-  end;
+  if not PLoadEntry(F, pe) then
+    exit;
   F.Entry := I;
   result := true;
 end;
@@ -1296,9 +972,7 @@ var
   hashcheck: PPakHash;
 begin
   result := false;
-{$IFNDEF FPC}
   F.Z := nil;
-{$ENDIF}
 
   if fopen(F.F, aName, fOpenReadOnly) then
   begin
@@ -1365,16 +1039,8 @@ begin
     exit;
 
   pe := @Entries[i];
-  {$IFNDEF FPC}
-  if pe.ZIP <> nil then
-    F.Z := TCompressorCache.Create(pe.ZIP, pe.Offset)
-  else
-  {$ENDIF}
-  begin
-    if not fopen(F.F, string(pe.Pak), fOpenReadOnly) then
-      exit;
-    Seek(F.F, pe.Offset);
-  end;
+  if not PLoadEntry(F, pe) then
+    exit;
   F.Entry := I;
   result := true;
 end;
@@ -1398,7 +1064,6 @@ end;
 //==============================================================================
 function TPakManager.PClosefile(var F: TPakFile): boolean;
 begin
-{$IFNDEF FPC}
   if F.Z <> nil then
   begin
     F.Z.Free;
@@ -1406,7 +1071,6 @@ begin
     result := true;
   end
   else
-{$ENDIF}
   begin
     {$I-}
     Close(F.F);
@@ -1422,11 +1086,9 @@ end;
 //==============================================================================
 function TPakManager.PBlockRead(var F: TPakFile; var Buf; const Size: Integer): integer;
 begin
-{$IFNDEF FPC}
   if F.Z <> nil then
     result := F.Z.Read(Buf, Size)
   else
-{$ENDIF}
   begin
     {$I-}
     Blockread(F.F, Buf, Size, result);
@@ -1441,17 +1103,12 @@ end;
 //==============================================================================
 function TPakManager.PSeek(var F: TPakFile; const Pos: Integer): boolean;
 begin
-{$IFNDEF FPC}
   if F.Z <> nil then
-    result := F.Z.Seek(pos)
+    result := F.Z.Seek(Pos)
   else
-{$ENDIF}
   begin
-  {$I-}
-    if F.Entry = -1 then
-      Seek(F.F, Pos)
-    else
-      Seek(F.F, Entries[F.Entry].Offset + Pos);
+    {$I-}
+    Seek(F.F, Pos);
     {$I+}
     result := IOResult = 0;
   end;
@@ -1464,16 +1121,10 @@ end;
 //==============================================================================
 function TPakManager.PFilePos(var F: TPakFile): Integer;
 begin
-{$IFNDEF FPC}
   if F.Z <> nil then
     result := F.Z.Position
   else
-{$ENDIF}
-  begin
     result := FilePos(F.F);
-    if F.Entry <> -1 then
-      result := result - Entries[F.Entry].Offset;
-  end;
 end;
 
 //==============================================================================
@@ -1483,11 +1134,8 @@ end;
 //==============================================================================
 function TPakManager.PFileSize(var F: TPakFile): Integer;
 begin
-{$IFNDEF FPC}
   if F.Z <> nil then
     result := F.Z.Size
-  else {$ENDIF} if F.Entry <> -1 then
-    result := Entries[F.Entry].Size
   else
   begin
   {$I-}
@@ -1497,7 +1145,6 @@ begin
       result := 0;
   end;
 end;
-
 //==============================================================================
 //
 // TPakManager.Destroy
@@ -1523,10 +1170,7 @@ begin
 
   realloc(pointer(Entries), MaxEntries * Sizeof(TPakentry), 0);
 
-  for i := 0 to PAKS.Count - 1 do
-    if PAKS.Objects[i] <> nil then
-      PAKS.Objects[i].Free;
-
+  Sources := nil;
   PAKS.Free;
 end;
 

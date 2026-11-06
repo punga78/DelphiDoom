@@ -21,6 +21,8 @@ type
       AKind: TWadKind = TWadKind.PWad): TBytes; static;
     /// <summary>A PAK made by hand: 'PACK', the directory at the end</summary>
     class function MakePak(const ANames: array of string; const AData: array of TBytes): TBytes; static;
+    /// <summary>A WAD2 (Quake) or WAD3 made by hand: 'WAD2'/'WAD3', the directory at the end</summary>
+    class function MakeWad2(const ANames: array of string; const AData: array of TBytes; AWad3: Boolean = False): TBytes; static;
     /// <summary>A new empty folder in the temporary files; the caller deletes it</summary>
     class function NewTempFolder: string; static;
   end;
@@ -110,6 +112,52 @@ begin
         LRecord.Name[LNameIndex - 1] := AnsiChar(Ord(ANames[LIndex][LNameIndex]));
       LRecord.FilePos := LOffset;
       LRecord.Size := Length(AData[LIndex]);
+      Inc(LOffset, LRecord.Size);
+      LStream.WriteBuffer(LRecord, SizeOf(LRecord));
+    end;
+    Result := Copy(LStream.Bytes, 0, LStream.Size);
+  finally
+    LStream.Free;
+  end;
+end;
+
+class function TWadTestHelpers.MakeWad2(const ANames: array of string;
+  const AData: array of TBytes; AWad3: Boolean): TBytes;
+var
+  LStream: TBytesStream;
+  LId, LCount, LOffset, LIndex, LCharIndex: Integer;
+  LRecord: packed record
+    Offset, DiskSize, Size: Integer;
+    EntryType, Compression: AnsiChar;
+    Padding: array[0..1] of AnsiChar;
+    Name: array[0..15] of AnsiChar;
+  end;
+begin
+  LStream := TBytesStream.Create;
+  try
+    if AWad3 then
+      LId := WAD3_ID
+    else
+      LId := WAD2_ID;
+    LCount := Length(ANames);
+    LOffset := 12;
+    for LIndex := 0 to High(AData) do
+      Inc(LOffset, Length(AData[LIndex]));
+    LStream.WriteBuffer(LId, 4);
+    LStream.WriteBuffer(LCount, 4);
+    LStream.WriteBuffer(LOffset, 4);
+    for LIndex := 0 to High(AData) do
+      if Length(AData[LIndex]) > 0 then
+        LStream.WriteBuffer(AData[LIndex][0], Length(AData[LIndex]));
+    LOffset := 12;
+    for LIndex := 0 to High(ANames) do
+    begin
+      FillChar(LRecord, SizeOf(LRecord), 0);
+      for LCharIndex := 1 to Length(ANames[LIndex]) do
+        LRecord.Name[LCharIndex - 1] := AnsiChar(Ord(ANames[LIndex][LCharIndex]));
+      LRecord.Offset := LOffset;
+      LRecord.Size := Length(AData[LIndex]);
+      LRecord.DiskSize := LRecord.Size;
       Inc(LOffset, LRecord.Size);
       LStream.WriteBuffer(LRecord, SizeOf(LRecord));
     end;
