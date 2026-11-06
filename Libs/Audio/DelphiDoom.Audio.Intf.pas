@@ -67,6 +67,48 @@ type
     procedure ForgetSounds;
   end;
 
+  /// <summary>One way of playing music: a format of songs and what plays them</summary>
+  IMusicBackend = interface
+    ['{5E91B3D8-A247-4C06-9F5A-3D80E1C72B94}']
+    /// <summary>Starts the device of the backend, if it has one</summary>
+    procedure Initialize;
+    procedure Shutdown;
+    /// <summary>
+    ///   Looks at the bytes. If they are a song of this backend it prepares it (some backends
+    ///   start to play at once, the others at Play). AContext is the song, for the next calls
+    /// </summary>
+    function Register(AData: Pointer; ASize: Integer; out AContext: NativeInt): TMusicRegisterResult;
+    procedure Play(AContext: NativeInt; ALooping: Boolean);
+    procedure Stop(AContext: NativeInt);
+    procedure Pause(AContext: NativeInt);
+    procedure Resume(AContext: NativeInt);
+    /// <summary>The song is not needed any more</summary>
+    procedure Unregister(AContext: NativeInt);
+    procedure SetVolume(AVolume: Integer);
+    /// <summary>Called every tic</summary>
+    procedure Process;
+    /// <summary>A new song is coming: what this backend is playing has to stop</summary>
+    procedure PrepareForNewSong;
+  end;
+
+  /// <summary>
+  ///   Songs are given by their handle, a number that is never 0 and never used twice. The
+  ///   backends are asked in order, the first one that recognizes the song plays it
+  /// </summary>
+  IMusicPlayer = interface
+    ['{C2A760F4-8B3D-4E19-A5C7-91D4E3B08F62}']
+    procedure Initialize;
+    procedure Shutdown;
+    /// <summary>The handle of the song, 0 if it cannot be played</summary>
+    function Register(AData: Pointer; ASize: Integer): Integer;
+    procedure Play(AHandle: Integer; ALooping: Boolean);
+    procedure Pause(AHandle: Integer);
+    procedure Resume(AHandle: Integer);
+    procedure Unregister(AHandle: Integer);
+    procedure SetVolume(AVolume: Integer);
+    procedure Process;
+  end;
+
 implementation
 
 end.

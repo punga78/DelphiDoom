@@ -31,7 +31,9 @@ unit i_music;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Audio.Types,
+  DelphiDoom.Audio.Intf;
 
 //==============================================================================
 // I_InitMusic
@@ -120,15 +122,95 @@ type
 var
   miditempo: integer = 160;
 
-type
-  music_t = (m_none, m_mus, m_midi, m_mp3, m_module);
-
 //==============================================================================
 //
 // I_SelectDefaultMidiDevice
 //
 //==============================================================================
 function I_SelectDefaultMidiDevice: LongWord;
+
+//==============================================================================
+//
+// I_ConfigureMusic
+// Gives the unit the player of the music. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureMusic(const APlayer: IMusicPlayer);
+
+// The songs of the midi stream (MUS, and MIDI files converted to MUS): the legacy code that
+// the backend of the engine uses
+
+//==============================================================================
+//
+// I_InitMus
+//
+//==============================================================================
+procedure I_InitMus;
+
+//==============================================================================
+//
+// I_StopMus
+// Closes the midi stream
+//
+//==============================================================================
+procedure I_StopMus;
+
+//==============================================================================
+//
+// I_RegisterMus
+// NotRecognized if the data is neither MUS nor a MIDI file that is converted to MUS
+//
+//==============================================================================
+function I_RegisterMus(data: pointer; size: integer; out song: pointer): TMusicRegisterResult;
+
+//==============================================================================
+//
+// I_PlayMus
+//
+//==============================================================================
+procedure I_PlayMus(song: pointer);
+
+//==============================================================================
+//
+// I_StopSongMus
+//
+//==============================================================================
+procedure I_StopSongMus(song: pointer);
+
+//==============================================================================
+//
+// I_UnRegisterSongMus
+//
+//==============================================================================
+procedure I_UnRegisterSongMus(song: pointer);
+
+//==============================================================================
+//
+// I_PauseSongMus
+//
+//==============================================================================
+procedure I_PauseSongMus(handle: integer);
+
+//==============================================================================
+//
+// I_ResumeSongMus
+//
+//==============================================================================
+procedure I_ResumeSongMus(handle: integer);
+
+//==============================================================================
+//
+// I_SetMusicVolumeMus
+//
+//==============================================================================
+procedure I_SetMusicVolumeMus(volume: integer);
+
+//==============================================================================
+//
+// I_ProcessMusicMus
+//
+//==============================================================================
+procedure I_ProcessMusicMus;
 
 implementation
 
@@ -142,16 +224,9 @@ uses
   i_system,
   i_sound,
   i_midi,
-  i_mp3,
-  DelphiDoom.Audio.ModuleDetector,
-  i_mikplay,
-  i_tmp,
   DelphiDoom.M2m.Intf,
   DelphiDoom.M2m.Provider,
   s_sound,
-  {$IFNDEF DLL}
-  DelphiDoom.Xmi.Provider,
-  {$ENDIF}
   z_zone;
 
 const
@@ -162,8 +237,6 @@ var
   hMidiStream: HMIDISTRM = 0;
   MidiDevice: LongWord;
   midicaps: MIDIOUTCAPS;
-  m_type: music_t = m_none;
-  MidiFileName: string;
 
 type
   MidiEvent_t = packed record
@@ -220,6 +293,7 @@ const
     (0, 0, 1, 7, 10, 11, 91, 93, 64, 67);
 
 var
+  setmusvolume: integer = -1;
   musicstarted: boolean = false;
   CurrentSong: Psonginfo_t = nil;
 
@@ -601,21 +675,7 @@ end;
 
 //==============================================================================
 //
-// I_InitMusic
-//
-//==============================================================================
-procedure I_InitMusic;
-begin
-  I_InitMus;
-  I_InitMidi;
-  I_InitMP3;
-  I_InitMik;
-end;
-
-//==============================================================================
 // I_StopMusicMus
-//
-// I_StopMusic
 //
 //==============================================================================
 procedure I_StopMusicMus(song: Psonginfo_t);
@@ -655,21 +715,6 @@ end;
 
 //==============================================================================
 //
-// I_StopMusic
-//
-//==============================================================================
-procedure I_StopMusic(song: Psonginfo_t);
-begin
-  case m_type of
-    m_midi: I_StopMidi;
-    m_mus: I_StopMusicMus(song);
-    m_mp3: I_StopMP3;
-    m_module: I_StopMik;
-  end;
-end;
-
-//==============================================================================
-//
 // I_StopMus
 //
 //==============================================================================
@@ -695,39 +740,7 @@ end;
 
 //==============================================================================
 //
-// I_ShutDownMusic
-//
-//==============================================================================
-procedure I_ShutDownMusic;
-begin
-  I_StopMus;
-  I_StopMidi;
-  I_ShutDownMidi;
-  I_ShutDownMP3;
-  I_StopMik;
-  I_ShutDownMik;
-  {$IFNDEF DLL}
-  TXmiProvider.Release;
-  {$ENDIF}
-end;
-
-//==============================================================================
-//
-// I_PlaySong
-//
-//==============================================================================
-procedure I_PlaySong(handle: integer; looping: boolean);
-begin
-  if (handle <> 0) and (hMidiStream <> 0) then
-  begin
-    CurrentSong := Psonginfo_t(handle);
-  end;
-end;
-
-//==============================================================================
 // I_PauseSongMus
-//
-// I_PauseSong
 //
 //==============================================================================
 procedure I_PauseSongMus(handle: integer);
@@ -744,23 +757,7 @@ end;
 
 //==============================================================================
 //
-// I_PauseSong
-//
-//==============================================================================
-procedure I_PauseSong(handle: integer);
-begin
-  case m_type of
-    m_midi: I_PauseMidi;
-    m_mus: I_PauseSongMus(handle);
-    m_mp3: I_PauseMP3;
-    m_module: I_PauseMik;
-  end;
-end;
-
-//==============================================================================
 // I_ResumeSongMus
-//
-// I_ResumeSong
 //
 //==============================================================================
 procedure I_ResumeSongMus(handle: integer);
@@ -777,197 +774,7 @@ end;
 
 //==============================================================================
 //
-// I_ResumeSong
-//
-//==============================================================================
-procedure I_ResumeSong(handle: integer);
-begin
-  case m_type of
-    m_midi: I_ResumeMidi;
-    m_mus: I_ResumeSongMus(handle);
-    m_mp3: I_ResumeMP3;
-    m_module: I_ResumeMik;
-  end;
-end;
-
-//==============================================================================
-// I_StopSong
-//
-// Stops a song over 3 seconds.
-//
-//==============================================================================
-procedure I_StopSong(handle: integer);
-var
-  song: Psonginfo_t;
-begin
-  if (handle <> 0) and (hMidiStream <> 0) then
-  begin
-
-    song := Psonginfo_t(handle);
-
-    I_StopMusic(song);
-
-    if song = CurrentSong then
-      CurrentSong := nil;
-  end;
-end;
-
-//==============================================================================
-//
-// I_UnRegisterSong
-//
-//==============================================================================
-procedure I_UnRegisterSong(handle: integer);
-var
-  song: Psonginfo_t;
-begin
-  if (handle <> 0) and (hMidiStream <> 0) then
-  begin
-
-    I_StopSong(handle);
-
-    song := Psonginfo_t(handle);
-    Z_Free(song.midievents);
-    Z_Free(song.originalmidievents);
-
-    Z_Free(song);
-  end;
-end;
-
-var
-  setmusvolume: integer = -1;
-
-//==============================================================================
-//
-// I_RegisterSong
-//
-//==============================================================================
-function I_RegisterSong(data: pointer; size: integer): integer;
-var
-  song: Psonginfo_t;
-  i: integer;
-  f: file;
-  b: boolean;
-begin
-  song := Z_Malloc(SizeOf(songinfo_t), PU_STATIC, nil);
-  song.numevents := GetSongLength(PByteArray(data), size);
-  song.nextevent := 0;
-  song.midievents := Z_Malloc(song.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
-  song.originalmidievents := Z_Malloc(song.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
-
-  if m_type = m_midi then
-    I_StopMidi
-  else if m_type = m_mp3 then
-    I_StopMP3;
-
-  if TModuleDetector.IsModule(data, size) then
-  begin
-    m_type := m_module;
-    I_PlayMik(data, size);
-    I_SetMusicVolumeMik(snd_MusicVolume);
-  end
-  else if Pmp3header_t(data).ID = MP3MAGIC then
-  begin
-    m_type := m_mp3;
-    I_PlayMP3(Pmp3header_t(data).Stream);
-  end
-  else if PLongWordArray(data)[0] = ID3MAGIC then
-  {$IFNDEF DLL}
-  else if TXmiProvider.Client.IsXmiMusic(data, size) then
-  begin
-    if m_type <> m_midi then
-    begin
-      I_StopMus;
-      m_type := m_midi;
-    end;
-
-    MidiFileName := I_NewTempFile(_GAME + '.mid');
-
-    b := TXmiProvider.Client.TryConvertToMidiFile(data, size, 0, MidiFileName);
-
-    if not b then
-    begin
-      I_Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
-      m_type := m_none;
-      result := 0;
-      exit;
-    end;
-
-    I_PlayMidi(MidiFileName);
-    I_SetMusicVolumeMidi(snd_MusicVolume);
-  end
-  {$ENDIF}
-  else if I_MidToMus(data, size, song) or I_MusToMidi(data, size, song.midievents) then
-  begin
-    setmusvolume := -1; // Force music update
-    memcpy(song.originalmidievents, song.midievents, song.numevents * SizeOf(MidiEvent_t));
-
-    I_InitMus;
-    m_type := m_mus;
-
-    if hMidiStream = 0 then
-    begin
-      I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
-      m_type := m_none;
-      result := 0;
-      exit;
-    end;
-
-    for i := 0 to NUMMIDIHEADERS - 1 do
-    begin
-      song.header[i].lpData := nil;
-      song.header[i].dwFlags := MHDR_ISSTRM or MHDR_DONE;
-    end;
-  end
-  else if (size > 4) and (PLongWord(data)^ = MThd) then
-  begin
-    if m_type <> m_midi then
-    begin
-      I_StopMus;
-      m_type := m_midi;
-    end;
-
-    MidiFileName := I_NewTempFile(_GAME + '.mid');
-
-    b := fopen(f, MidiFileName, fCreate);
-    if b then
-    begin
-      {$I-}
-      BlockWrite(f, data^, size);
-      close(f);
-      {$I+}
-      b := IOResult = 0;
-    end;
-
-    if not b then
-    begin
-      I_Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
-      m_type := m_none;
-      result := 0;
-      exit;
-    end;
-
-    I_PlayMidi(MidiFileName);
-    I_SetMusicVolumeMidi(snd_MusicVolume);
-  end;
-  result := integer(song);
-end;
-
-//==============================================================================
-// I_QrySongPlaying
-//
-// Is the song playing?
-//
-//==============================================================================
-function I_QrySongPlaying(handle: integer): boolean;
-begin
-  result := CurrentSong <> nil;
-end;
-
-//==============================================================================
 // I_SetMusicVolumeMus
-//
-// I_SetMusicVolume
 //
 //==============================================================================
 procedure I_SetMusicVolumeMus(volume: integer);
@@ -981,7 +788,7 @@ begin
   snd_MusicVolume := volume;
 // Set volume on output device.
   if (CurrentSong <> nil) and (snd_MusicVolume = 0) and musicstarted then
-    I_StopMusic(CurrentSong);
+    I_StopMusicMus(CurrentSong);
 
   if win_vista_or_newer and (CurrentSong <> nil) then
   begin
@@ -1009,21 +816,6 @@ begin
     end
     else
       I_Warning('I_SetMusicVolume(): Midi device dos not support volume control'#13#10);
-  end;
-end;
-
-//==============================================================================
-//
-// I_SetMusicVolume
-//
-//==============================================================================
-procedure I_SetMusicVolume(volume: integer);
-begin
-  case m_type of
-    m_mus: I_SetMusicVolumeMus(volume);
-    m_midi: I_SetMusicVolumeMidi(volume);
-    m_mp3: ; // unsupported :(
-    m_module: I_SetMusicVolumeMik(volume);
   end;
 end;
 
@@ -1090,6 +882,111 @@ begin
   end;
 end;
 
+var
+  // given by the composition root (I_ConfigureMusic)
+  music_player: IMusicPlayer = nil;
+
+//==============================================================================
+//
+// I_ConfigureMusic
+//
+//==============================================================================
+procedure I_ConfigureMusic(const APlayer: IMusicPlayer);
+begin
+  music_player := APlayer;
+end;
+
+//==============================================================================
+//
+// I_InitMusic
+//
+//==============================================================================
+procedure I_InitMusic;
+begin
+  if music_player = nil then
+    I_Error('I_InitMusic(): the music was not configured');
+  music_player.Initialize;
+end;
+
+//==============================================================================
+//
+// I_ShutDownMusic
+//
+//==============================================================================
+procedure I_ShutDownMusic;
+begin
+  if music_player <> nil then
+    music_player.Shutdown;
+end;
+
+//==============================================================================
+//
+// I_PlaySong
+//
+//==============================================================================
+procedure I_PlaySong(handle: integer; looping: boolean);
+begin
+  if music_player <> nil then
+    music_player.Play(handle, looping);
+end;
+
+//==============================================================================
+//
+// I_PauseSong
+//
+//==============================================================================
+procedure I_PauseSong(handle: integer);
+begin
+  if music_player <> nil then
+    music_player.Pause(handle);
+end;
+
+//==============================================================================
+//
+// I_ResumeSong
+//
+//==============================================================================
+procedure I_ResumeSong(handle: integer);
+begin
+  if music_player <> nil then
+    music_player.Resume(handle);
+end;
+
+//==============================================================================
+//
+// I_UnRegisterSong
+//
+//==============================================================================
+procedure I_UnRegisterSong(handle: integer);
+begin
+  if music_player <> nil then
+    music_player.Unregister(handle);
+end;
+
+//==============================================================================
+//
+// I_RegisterSong
+//
+//==============================================================================
+function I_RegisterSong(data: pointer; size: integer): integer;
+begin
+  if music_player <> nil then
+    result := music_player.Register(data, size)
+  else
+    result := 0;
+end;
+
+//==============================================================================
+//
+// I_SetMusicVolume
+//
+//==============================================================================
+procedure I_SetMusicVolume(volume: integer);
+begin
+  if music_player <> nil then
+    music_player.SetVolume(volume);
+end;
+
 //==============================================================================
 //
 // I_ProcessMusic
@@ -1097,12 +994,117 @@ end;
 //==============================================================================
 procedure I_ProcessMusic;
 begin
-  case m_type of
-    m_mus: I_ProcessMusicMus;
-    m_midi: I_ProcessMidi;
-    m_mp3: ; // nothing to do
-    m_module: I_ProcessMik;
+  if music_player <> nil then
+    music_player.Process;
+end;
+
+//==============================================================================
+//
+// I_RegisterMus
+//
+//==============================================================================
+function I_RegisterMus(data: pointer; size: integer; out song: pointer): TMusicRegisterResult;
+var
+  info: Psonginfo_t;
+  i: integer;
+begin
+  song := nil;
+  info := Z_Malloc(SizeOf(songinfo_t), PU_STATIC, nil);
+  info.numevents := GetSongLength(PByteArray(data), size);
+  info.nextevent := 0;
+  info.midievents := Z_Malloc(info.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
+  info.originalmidievents := Z_Malloc(info.numevents * SizeOf(MidiEvent_t), PU_STATIC, nil);
+
+  if not (I_MidToMus(data, size, info) or I_MusToMidi(data, size, info.midievents)) then
+  begin
+    Z_Free(info.midievents);
+    Z_Free(info.originalmidievents);
+    Z_Free(info);
+    result := TMusicRegisterResult.NotRecognized;
+    exit;
   end;
+
+  setmusvolume := -1; // Force music update
+  memcpy(info.originalmidievents, info.midievents, info.numevents * SizeOf(MidiEvent_t));
+
+  I_InitMus;
+
+  if hMidiStream = 0 then
+  begin
+    I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
+    Z_Free(info.midievents);
+    Z_Free(info.originalmidievents);
+    Z_Free(info);
+    result := TMusicRegisterResult.Failed;
+    exit;
+  end;
+
+  for i := 0 to NUMMIDIHEADERS - 1 do
+  begin
+    info.header[i].lpData := nil;
+    info.header[i].dwFlags := MHDR_ISSTRM or MHDR_DONE;
+  end;
+
+  song := info;
+  result := TMusicRegisterResult.Registered;
+end;
+
+//==============================================================================
+//
+// I_PlayMus
+//
+//==============================================================================
+procedure I_PlayMus(song: pointer);
+begin
+  if (song <> nil) and (hMidiStream <> 0) then
+    CurrentSong := Psonginfo_t(song);
+end;
+
+//==============================================================================
+//
+// I_StopSongMus
+// Stops a song over 3 seconds.
+//
+//==============================================================================
+procedure I_StopSongMus(song: pointer);
+begin
+  if (song <> nil) and (hMidiStream <> 0) then
+  begin
+    I_StopMusicMus(Psonginfo_t(song));
+
+    if Psonginfo_t(song) = CurrentSong then
+      CurrentSong := nil;
+  end;
+end;
+
+//==============================================================================
+//
+// I_UnRegisterSongMus
+//
+//==============================================================================
+procedure I_UnRegisterSongMus(song: pointer);
+var
+  info: Psonginfo_t;
+begin
+  if song = nil then
+    exit;
+
+  info := Psonginfo_t(song);
+  if info = CurrentSong then
+    CurrentSong := nil;
+  Z_Free(info.midievents);
+  Z_Free(info.originalmidievents);
+  Z_Free(info);
+end;
+
+//==============================================================================
+//
+// I_QrySongPlaying
+//
+//==============================================================================
+function I_QrySongPlaying(handle: integer): boolean;
+begin
+  result := CurrentSong <> nil;
 end;
 
 end.

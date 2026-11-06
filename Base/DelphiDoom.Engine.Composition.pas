@@ -31,6 +31,12 @@ uses
   DelphiDoom.Audio.Factory,
   DelphiDoom.Engine.Audio.DirectSoundDevice,
   DelphiDoom.Engine.Audio.SfxSampleSource,
+  DelphiDoom.Engine.Music.ModuleBackend,
+  DelphiDoom.Engine.Music.Mp3Backend,
+  DelphiDoom.Engine.Music.Id3Backend,
+  DelphiDoom.Engine.Music.XmiBackend,
+  DelphiDoom.Engine.Music.MusBackend,
+  DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -44,6 +50,7 @@ uses
   i_mainwindow,
   i_input,
   i_sound,
+  i_music,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -111,6 +118,18 @@ begin
     end);
 end;
 
+procedure ComposeMusic;
+begin
+  // the order is the one in which a song is looked at: the first backend that knows it plays it
+  I_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
+    TModuleMusicBackend.Create,
+    TMp3MusicBackend.Create,
+    TId3MusicBackend.Create,
+    TXmiMusicBackend.Create,
+    TMusMusicBackend.Create,
+    TMidiFileMusicBackend.Create)));
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -134,6 +153,7 @@ begin
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeInput(LLog);
   ComposeSound(LLog);
+  ComposeMusic;
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

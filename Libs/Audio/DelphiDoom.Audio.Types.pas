@@ -44,6 +44,15 @@ type
     IsExternal: Boolean;
   end;
 
+  /// <summary>What a music backend says about the bytes of a song</summary>
+  TMusicRegisterResult = (
+    /// <summary>It is not a song of this backend: another one may take it</summary>
+    NotRecognized,
+    /// <summary>It is a song of this backend, but it cannot be played (the player was told why)</summary>
+    Failed,
+    Registered
+  );
+
   /// <summary>
   ///   A sound that could not start, in a way that is a problem of the developer: the engine
   ///   decides whether it is a warning or an error
