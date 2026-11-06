@@ -1493,7 +1493,7 @@ begin
         if pl.mo <> nil then
           consistency[i][buf] := pl.mo.x
         else
-          consistency[i][buf] := rndindex;
+          consistency[i][buf] := M_GetMenuRandomIndex;
       end;
     end;
   end;
@@ -2949,7 +2949,7 @@ begin
   demo_p[0] := intval(spawnrandommonsters);
   demo_p := @demo_p[1];
 
-  demo_p[0] := sysrndseed;
+  demo_p[0] := M_GetSystemRandomSeed;
   demo_p := @demo_p[1];
 
   demo_p[0] := consoleplayer;
@@ -3144,7 +3144,7 @@ begin
   oldspawnrandommonsters := spawnrandommonsters;
   spawnrandommonsters := demo_p[0] <> 0;
   demo_p := @demo_p[1];
-  sysrndseed := demo_p[0];
+  M_SetSystemRandomSeed(demo_p[0]);
   demo_p := @demo_p[1];
 
   consoleplayer := demo_p[0];

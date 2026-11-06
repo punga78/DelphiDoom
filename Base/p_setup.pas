@@ -1587,7 +1587,7 @@ begin
   isgamefreezed := false;
 
   if not preparingdemoplayback then
-    sysrndseed := I_Random;
+    M_SetSystemRandomSeed(I_Random);
 
 {$IFNDEF STRIFE}
   wminfo.maxfrags := 0;
@@ -1688,7 +1688,7 @@ begin
   printf(#13#10'-------------'#13#10);
   printf('Loading %s (%s)'#13#10, [lumpname, P_GetMapTitle(episode, map)]);
   if spawnrandommonsters then
-    printf(' Random monsters seed=%d'#13#10, [sysrndseed]);
+    printf(' Random monsters seed=%d'#13#10, [M_GetSystemRandomSeed]);
 {$ELSEIF DEFINED(HEXEN)}
   printf(#13#10'-----------------------'#13#10);
   printf('Loading %s (%s)'#13#10, [lumpname, P_GetMapDescName(map)]);
@@ -1696,7 +1696,7 @@ begin
   printf(#13#10'-------------'#13#10);
   printf('Loading %s'#13#10, [lumpname]);
   if spawnrandommonsters then
-    printf(' Random monsters seed=%d'#13#10, [sysrndseed]);
+    printf(' Random monsters seed=%d'#13#10, [M_GetSystemRandomSeed]);
 {$ENDIF}
 
 {$IFDEF DOOM}

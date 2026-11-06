@@ -191,7 +191,7 @@ begin
     inc(idx);
 {$IFNDEF HEXEN}
 
-  for i := 0 to sysrndseed - 1 do
+  for i := 0 to M_GetSystemRandomSeed - 1 do
     N_Random;
 {$ENDIF}
 

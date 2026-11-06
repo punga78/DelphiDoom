@@ -1702,7 +1702,7 @@ begin
         if pl.mo <> nil then
           consistency[i][buf] := pl.mo.x
         else
-          consistency[i][buf] := rndindex;
+          consistency[i][buf] := M_GetMenuRandomIndex;
       end;
     end;
   end;
@@ -3312,7 +3312,7 @@ begin
   demo_p[0] := intval(spawnrandommonsters);
   demo_p := @demo_p[1];
 
-  demo_p[0] := sysrndseed;
+  demo_p[0] := M_GetSystemRandomSeed;
   demo_p := @demo_p[1];
 
   // JVAL: Version 205 - Dogs
@@ -3535,7 +3535,7 @@ begin
     demo_p := @demo_p[1];
   end;
 
-  sysrndseed := 0;
+  M_SetSystemRandomSeed(0);
   oldspawnrandommonsters := spawnrandommonsters;
   if demoversion >= VERSION114 then
   begin
@@ -3543,7 +3543,7 @@ begin
     demo_p := @demo_p[1];
     if demoversion >= VERSION120 then
     begin
-      sysrndseed := demo_p[0];
+      M_SetSystemRandomSeed(demo_p[0]);
       demo_p := @demo_p[1];
     end;
   end

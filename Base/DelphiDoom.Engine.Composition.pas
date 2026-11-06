@@ -45,6 +45,10 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.MathCore.Intf,
+  DelphiDoom.MathCore.Factory,
+  m_rnd,
+  m_hash,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
 {$IFNDEF OPENGL}
@@ -358,6 +362,12 @@ begin
   R_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
 end;
 
+procedure ComposeMathCore;
+begin
+  M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
+  M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -418,6 +428,7 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  ComposeMathCore;
   ComposeConsole;
   I_ConfigureClock(TClockFactory.CreateClock(LLog));
   I_ConfigureVideo(TVideoFactory.CreateServices);

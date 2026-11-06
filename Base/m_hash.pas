@@ -34,6 +34,17 @@ unit m_hash;
 
 interface
 
+uses
+  DelphiDoom.MathCore.Intf;
+
+//==============================================================================
+//
+// M_ConfigureHash
+// The hash table of Libs\MathCore, given by the composition root
+//
+//==============================================================================
+procedure M_ConfigureHash(const ATable: IStringHashTable);
+
 //==============================================================================
 //
 // M_HashIndex
@@ -50,70 +61,17 @@ procedure M_HashUpdate(const s: string; const idx: integer);
 
 implementation
 
-uses
-  d_delphi;
-
-const
-  SDBMHASHSIZE = $10000;
-
-type
-  TSDBMHash = class
-  private
-    htable: array[0..SDBMHASHSIZE - 1] of Integer;
-  public
-    constructor Create; virtual;
-    function Hash(const s: string): LongWord;
-    function GetHashIndex(const h: integer): integer;
-    procedure SetHashIndex(const h: integer; const idx: integer);
-  end;
-
 var
-  globalhashmanager: TSDBMHash;
+  globalhashmanager: IStringHashTable;
 
 //==============================================================================
 //
-// TSDBMHash.Create
+// M_ConfigureHash
 //
 //==============================================================================
-constructor TSDBMHash.Create;
+procedure M_ConfigureHash(const ATable: IStringHashTable);
 begin
-  inherited;
-  ZeroMemory(@htable, SizeOf(htable));
-end;
-
-//==============================================================================
-//
-// TSDBMHash.Hash
-//
-//==============================================================================
-function TSDBMHash.Hash(const s: string): LongWord;
-var
-  i: integer;
-begin
-  Result := 0;
-  for i := 1 to Length(s) do
-    Result := Ord(s[i]) + (Result shl 6) + (Result shl 16) - Result;
-  Result := Result and (SDBMHASHSIZE - 1);
-end;
-
-//==============================================================================
-//
-// TSDBMHash.GetHashIndex
-//
-//==============================================================================
-function TSDBMHash.GetHashIndex(const h: integer): integer;
-begin
-  result := htable[h];
-end;
-
-//==============================================================================
-//
-// TSDBMHash.SetHashIndex
-//
-//==============================================================================
-procedure TSDBMHash.SetHashIndex(const h: integer; const idx: integer);
-begin
-  htable[h] := idx;
+  globalhashmanager := ATable;
 end;
 
 //==============================================================================
@@ -122,11 +80,8 @@ end;
 //
 //==============================================================================
 function M_HashIndex(const s: string): integer;
-var
-  h: integer;
 begin
-  h := globalhashmanager.Hash(s);
-  Result := globalhashmanager.htable[h];
+  result := globalhashmanager.IndexOf(s);
 end;
 
 //==============================================================================
@@ -135,18 +90,8 @@ end;
 //
 //==============================================================================
 procedure M_HashUpdate(const s: string; const idx: integer);
-var
-  h: integer;
 begin
-  h := globalhashmanager.Hash(s);
-  globalhashmanager.htable[h] := idx;
+  globalhashmanager.Update(s, idx);
 end;
 
-initialization
-  globalhashmanager := TSDBMHash.Create;
-
-finalization
-  globalhashmanager.Free;
-
 end.
-

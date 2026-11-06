@@ -444,7 +444,7 @@ begin
   demo_p[0] := intval(spawnrandommonsters);
   demo_p := @demo_p[1];
 
-  demo_p[0] := sysrndseed;
+  demo_p[0] := M_GetSystemRandomSeed;
   demo_p := @demo_p[1];
 
   demo_p[0] := consoleplayer;
@@ -642,11 +642,11 @@ begin
 
   if demoversion >= VERSION207 then
   begin
-    sysrndseed := demo_p[0];
+    M_SetSystemRandomSeed(demo_p[0]);
     demo_p := @demo_p[1];
   end
   else
-    sysrndseed := 0;
+    M_SetSystemRandomSeed(0);
 
   consoleplayer := demo_p[0];
   demo_p := @demo_p[1];

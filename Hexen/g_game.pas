@@ -2622,7 +2622,7 @@ begin
         if pl.mo <> nil then
           consistency[i][buf] := pl.mo.x
         else
-          consistency[i][buf] := rndindex;
+          consistency[i][buf] := M_GetMenuRandomIndex;
       end;
     end;
   end;
