@@ -1,0 +1,31 @@
+ACTOR StatesSyntax 20054
+{
+  States
+  {
+  Spawn:
+    TROO ABCDEFGH 3
+    TROO A 5 BRIGHT
+    TROO B 5 Bright A_Look
+    TROO C 5 A_Look BRIGHT
+    TROO D 5 FAST
+    TROO E 5 FAST A_Chase
+    TROO F 5 A_Chase FAST
+    TROO G 5 BRIGHT FAST A_Chase
+    TROO H 5 FAST BRIGHT A_Chase
+    TROO I 5 A_Chase BRIGHT FAST
+    TROO J 5 A_Chase(1, 2)
+    TROO K 5 A_Chase (3, 4)
+    TROO L 5 A_Chase( 5 , 6 )
+    TROO M 5 BRIGHT A_Chase(7)
+    TROO N 5 A_Chase // comment
+    TROO O 5 // only comment
+    TROO P 5
+    TROO Q RANDOMSELECT 3 9
+    TROO R RANDOMRANGE 2 6 A_Look
+    TROO S 5 A_JumpIfHealthLower(50, "Pain")
+    TROO T 5 A_Spawn("Foo", 1, 2, 3)
+    TROO U 0 A_Something(A, B)
+    TROO V -1
+    Stop
+  }
+}

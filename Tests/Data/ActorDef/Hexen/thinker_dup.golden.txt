@@ -1,0 +1,2 @@
+@ THINKER Thinker6|S6|-1|4|1
+@ SCRIPT S6b|normal|%20%20INTERVAL%203

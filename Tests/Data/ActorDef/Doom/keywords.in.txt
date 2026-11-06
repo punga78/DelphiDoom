@@ -1,0 +1,67 @@
+ACTOR KwMonster 20007
+{
+  MONSTER
+  Health 50
+  States
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}
+ACTOR KwMonster2 20008
+{
+  +MONSTER
+  Health 50
+  States
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}
+ACTOR KwProjectile 20009
+{
+  +PROJECTILE
+  States
+  {
+  Spawn:
+    MISL A 1
+    Loop
+  }
+}
+ACTOR KwDefaults 20010
+{
+  DefaultMissile
+  DefaultTransparent
+  FullVolSounds
+  States
+  {
+  Spawn:
+    MISL A 1
+    Loop
+  }
+}
+ACTOR KwDefaults2 20011
+{
+  +DEFAULTMISSILE
+  +DEFAULTADDITIVE
+  +FULLVOLSOUND
+  States
+  {
+  Spawn:
+    MISL A 1
+    Loop
+  }
+}
+ACTOR KwDefaults3 20012
+{
+  DEFAULTADDITIVE
+  DEFAULTTRANSPARENT
+  States
+  {
+  Spawn:
+    MISL A 1
+    Loop
+  }
+}

@@ -1,0 +1,32 @@
+ACTOR StateAlias 20058
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+  Top:
+    TROO B 5
+    TROO C 5
+  Middle:
+    TROO D 5
+    Goto Top
+  See:
+    TROO E 5
+    Goto Middle+1
+  Death:
+    TROO F 5
+    Goto Spawn
+  }
+}
+ACTOR StateAlias2 20059
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+    Goto StateAlias::Top
+  See:
+    TROO B 5
+    Goto StateAlias::Middle + 1
+  }
+}

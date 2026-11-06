@@ -1,0 +1,21 @@
+ACTOR Junk 20100
+{
+  Health 10
+  Whatever 5
+  +NOTAFLAG
+  Radius 20 Bogus
+  Height 30
+  States
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}
+BLAH BLAH
+ACTOR Junk2 20101
+{
+  FooBar
+  Health 3
+}
+STUFF

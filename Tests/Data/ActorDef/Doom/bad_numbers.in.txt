@@ -1,0 +1,16 @@
+ACTOR BadNumbers 20130
+{
+  Health abc
+  Radius 1.5
+  Speed x
+  Scale abc
+  Alpha foo
+  PainChance 5
+  States
+  {
+  Spawn:
+    TROO A abc
+    TROO B 5
+    Loop
+  }
+}

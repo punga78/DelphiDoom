@@ -1,0 +1,40 @@
+ACTOR LoopWait 20055
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+    TROO B 5
+    Wait
+  See:
+    TROO C 5
+    TROO D 5
+    Loop
+  Death:
+    TROO E 5
+    TROO F 5
+    Stop
+  }
+}
+ACTOR NoTerminator 20056
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+    TROO B 5
+  }
+}
+ACTOR NoTerminator2 20057
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+    TROO B 5
+    Loop
+  See:
+    TROO C 5
+    TROO D 5
+  }
+}

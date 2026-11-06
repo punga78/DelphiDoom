@@ -1,0 +1,7 @@
+ACTOR EofStates 20122
+{
+  Health 10
+  States
+  {
+  Spawn:
+    TROO A 5

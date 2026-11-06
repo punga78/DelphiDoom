@@ -1,0 +1,16 @@
+my/sight dssight
+my/attack dsattack
+$random/pain { pain1 pain2 }
+$random pain2 dspain2
+pain2 dspn2
+my/death dsdeath
+my\active dsact
+my/far my/far2
+my/far2 dsfar
+my/loop my/loop
+my/long dsabcdefghij
+$MAP 1 Song01
+$MAP 0 Zero
+$MAP 99999 Big
+$MAP x Bad
+$MAP 2

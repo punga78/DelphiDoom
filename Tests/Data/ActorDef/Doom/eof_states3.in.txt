@@ -1,0 +1,6 @@
+ACTOR EofStates3 20124
+{
+  States
+  {
+  Spawn:
+    TROO A

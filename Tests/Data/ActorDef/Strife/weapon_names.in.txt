@@ -1,0 +1,22 @@
+WEAPON WP_FIST
+{
+  Ammo 1
+  States
+  {
+  Up:
+    SHTG A 1
+    Goto Ready
+  Ready:
+    SHTG A 1 A_WeaponReady
+    Loop
+  Down:
+    SHTG A 1
+    Goto Down
+  Attack:
+    SHTG A 3
+    Goto Ready
+  Hold:
+    SHTG B 3
+    Goto Attack
+  }
+}

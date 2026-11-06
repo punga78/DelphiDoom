@@ -1,0 +1,8 @@
+DEH_PARSE one.deh two.deh
+DEH_PARSE_ALL *.bex
+DEH_PARSE
+DEH_PARSE "quoted name.deh"
+ACTOR AfterDeh 20090
+{
+  Health 1
+}

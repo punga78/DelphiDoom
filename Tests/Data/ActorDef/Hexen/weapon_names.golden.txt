@@ -1,0 +1,73 @@
+@ DEH-BEGIN
+WEAPON 0 0
+Ammo Type = 1
+DESELECT Frame = NewFrame 0
+SELECT Frame = NewFrame 2
+BOBBING Frame = NewFrame 1
+SHOOTING Frame = NewFrame 3
+HOLD SHOOTING Frame = NewFrame 4
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = 
+AMMO PER SHOT = 0
+
+Frame NewFrame 0
+Sprite Number = SHTG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 1
+Sprite Number = SHTG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 1
+Codep Frame = A_WeaponReady
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 2
+Sprite Number = SHTG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 2
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 3
+Sprite Number = SHTG
+Sprite Subnumber = 0
+Duration = 3
+Duration 2 = 3
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 4
+Sprite Number = SHTG
+Sprite Subnumber = 1
+Duration = 3
+Duration 2 = 3
+Next Frame = NewFrame 3
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

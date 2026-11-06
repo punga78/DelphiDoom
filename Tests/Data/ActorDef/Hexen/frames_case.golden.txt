@@ -1,0 +1,452 @@
+@ DEH-BEGIN
+NewThing "FramesCase"
+Inheritsfrom = -1
+Id # = 20063
+Initial Frame = NewFrame 0
+Hit Points = 0
+First Moving Frame = OriginalFrame 0
+Alert Sound = 0
+Reaction Time = 0
+Attack Sound = 0
+Injury Frame = OriginalFrame 0
+Pain Chance = 0
+Pain Sound = 0
+Close Attack Frame = OriginalFrame 0
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 0
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 0
+Speed = 0
+VSpeed = 0
+MinMissileChance = 0
+Pushfactor = 16384
+Friction = 59392
+Width = 0
+Height = 0
+Mass = 0
+Missile Damage = 0
+Action Sound = 0
+Respawn Frame = OriginalFrame 0
+Bits = 0
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 0
+Melee Sound = 0
+Explosion Damage = 0
+Explosion Radius = 0
+Dropitem = 
+Missiletype = 
+Renderstyle = NORMAL
+Alpha = 0
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 0
+melee threshold = 0
+Scale = 65536
+Gravity = 65536
+Float Speed = 0
+Normal Speed = 0
+Fast Speed = 0
+Obituary = ""
+Hit Obituary = ""
+Gender = DEFAULT
+Melee Range = 0
+Max Step Height = 0
+Max DropOff Height = 0
+Gib Health = 0
+Max Target Range = 0
+Weave Index XY = 0
+Weave Index Z = 0
+Sprite DX = 0
+Sprite DY = 0
+flags5_ex = 0
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = 
+Translation = 
+
+Frame NewFrame 0
+Sprite Number = TROO
+Sprite Subnumber = 32
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 1
+Sprite Number = TROO
+Sprite Subnumber = 33
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 2
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 2
+Sprite Number = TROO
+Sprite Subnumber = 34
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 3
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 3
+Sprite Number = TROO
+Sprite Subnumber = 26
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 4
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 4
+Sprite Number = TROO
+Sprite Subnumber = 28
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 5
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 5
+Sprite Number = TROO
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 6
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 6
+Sprite Number = TROO
+Sprite Subnumber = 1
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 7
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 7
+Sprite Number = TROO
+Sprite Subnumber = 2
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 8
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 8
+Sprite Number = TROO
+Sprite Subnumber = 3
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 9
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 9
+Sprite Number = TROO
+Sprite Subnumber = 4
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 10
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 10
+Sprite Number = TROO
+Sprite Subnumber = 5
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 11
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 11
+Sprite Number = TROO
+Sprite Subnumber = 6
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 12
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 12
+Sprite Number = TROO
+Sprite Subnumber = 7
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 13
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 13
+Sprite Number = TROO
+Sprite Subnumber = 8
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 14
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 14
+Sprite Number = TROO
+Sprite Subnumber = 9
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 15
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 15
+Sprite Number = TROO
+Sprite Subnumber = 10
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 16
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 16
+Sprite Number = TROO
+Sprite Subnumber = 11
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 17
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 17
+Sprite Number = TROO
+Sprite Subnumber = 12
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 18
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 18
+Sprite Number = TROO
+Sprite Subnumber = 13
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 19
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 19
+Sprite Number = TROO
+Sprite Subnumber = 14
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 20
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 20
+Sprite Number = TROO
+Sprite Subnumber = 15
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 21
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 21
+Sprite Number = TROO
+Sprite Subnumber = 16
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 22
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 22
+Sprite Number = TROO
+Sprite Subnumber = 17
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 23
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 23
+Sprite Number = TROO
+Sprite Subnumber = 18
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 24
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 24
+Sprite Number = TROO
+Sprite Subnumber = 19
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 25
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 25
+Sprite Number = TROO
+Sprite Subnumber = 20
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 26
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 26
+Sprite Number = TROO
+Sprite Subnumber = 21
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 27
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 27
+Sprite Number = TROO
+Sprite Subnumber = 22
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 28
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 28
+Sprite Number = TROO
+Sprite Subnumber = 23
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 29
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 29
+Sprite Number = TROO
+Sprite Subnumber = 24
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 30
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+Frame NewFrame 30
+Sprite Number = TROO
+Sprite Subnumber = 25
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 0
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = FramesCase
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END
