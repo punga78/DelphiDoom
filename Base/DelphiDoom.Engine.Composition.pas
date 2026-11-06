@@ -26,6 +26,11 @@ uses
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
   DelphiDoom.Video.Factory,
+  DelphiDoom.Audio.Types,
+  DelphiDoom.Audio.Intf,
+  DelphiDoom.Audio.Factory,
+  DelphiDoom.Engine.Audio.DirectSoundDevice,
+  DelphiDoom.Engine.Audio.SfxSampleSource,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -38,6 +43,7 @@ uses
   d_event,
   i_mainwindow,
   i_input,
+  i_sound,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -79,6 +85,32 @@ begin
     end);
 end;
 
+procedure ComposeSound(const ALog: ILog);
+var
+  LWindow: TFunc<THandle>;
+begin
+  LWindow :=
+    function: THandle
+    begin
+      Result := hMainWnd;
+    end;
+  I_ConfigureSound(
+    function(AWithDevice: Boolean): ISfxPlayer
+    var
+      LDevice: ISoundDevice;
+    begin
+      LDevice := nil;
+      if AWithDevice then
+      begin
+        LDevice := TDirectSoundDevice.Create(LWindow, ALog);
+        // no sound card: the game goes on without sound
+        if not LDevice.Initialize then
+          LDevice := nil;
+      end;
+      Result := TAudioFactory.CreateSfxPlayer(LDevice, TEngineSfxSampleSource.Create, ALog);
+    end);
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -101,6 +133,7 @@ begin
   I_ConfigureClock(TClockFactory.CreateClock(LLog));
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeInput(LLog);
+  ComposeSound(LLog);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

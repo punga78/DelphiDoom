@@ -34,7 +34,9 @@ unit i_sound;
 interface
 
 uses
-  sounddata;
+  sounddata,
+  DelphiDoom.Audio.Types,
+  DelphiDoom.Audio.Intf;
 
 //==============================================================================
 // I_InitSound
@@ -118,6 +120,48 @@ var
 //==============================================================================
 procedure I_SetUseExternalWav(const newu: boolean);
 
+type
+  /// <summary>Makes the player of the sound effects; false: no sound card, only handles</summary>
+  TSfxPlayerFactory = reference to function(AWithDevice: Boolean): ISfxPlayer;
+
+//==============================================================================
+//
+// I_ConfigureSound
+// Gives the unit the way to make its player. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureSound(const AFactory: TSfxPlayerFactory);
+
+//==============================================================================
+//
+// I_GetSfxSample
+// The sample of a sound effect, cached if it was not
+//
+//==============================================================================
+function I_GetSfxSample(const id: integer): TSfxSample;
+
+//==============================================================================
+//
+// I_DiscardExternalSfx
+// The external sample of a sound caused a problem: it will not be used again
+//
+//==============================================================================
+procedure I_DiscardExternalSfx(const id: integer);
+
+//==============================================================================
+//
+// I_StoreSfxAverageBytes
+//
+//==============================================================================
+procedure I_StoreSfxAverageBytes(const id: integer; const avgbytes: LongWord);
+
+//==============================================================================
+//
+// I_SfxName
+//
+//==============================================================================
+function I_SfxName(const id: integer): string;
+
 implementation
 
 uses
@@ -129,29 +173,11 @@ uses
   z_zone,
   m_argv,
   i_system,
-  i_mainwindow,
-  DirectX,
   s_sound,
   w_wad,
   w_folders,
   w_pak,
   doomdef;
-
-// The number of internal mixing channels,
-//  the samples calculated for each mixing step,
-//  the size of the 16bit, 2 hardware channel (stereo)
-//  mixing buffer, and the samplerate of the raw data.
-
-// Needed for calling the actual sound output.
-const
-  NUM_CHANNELS = 32;
-
-var
-  pDS: IDirectSound;
-  pDSBPrimary: IDirectSoundBuffer;
-  HandleCount: integer;
-
-  SampleFormat: TWAVEFORMATEX;
 
 type
   wavestatus_t = (ws_nowave, ws_internalwave, ws_externalwave, ws_wavefailed);
@@ -200,21 +226,6 @@ type
     freq: word;
   end;
   Psoundheader_t = ^soundheader_t;
-
-var
-// The sound in channel handles,
-//  determined on registration,
-//  might be used to unregister/stop/modify,
-//  currently unused.
-  channelhandles: array[0..NUM_CHANNELS - 1] of integer;
-
-// SFX id of the playing sound effect.
-// Used to catch duplicates (like chainsaw).
-  channelids: array[0..NUM_CHANNELS - 1] of integer;
-
-//actual data buffers
-  ChannelBuffers: array[0..NUM_CHANNELS - 1] of IDirectSoundBuffer;
-  ChannelActive: packed array[0..NUM_CHANNELS - 1] of boolean;
 
 //==============================================================================
 // I_GetSfxLumpNum
@@ -555,23 +566,6 @@ begin
 end;
 
 //==============================================================================
-//
-// I_SetSfxFormat
-//
-//==============================================================================
-procedure I_SetSfxFormat(const sfxid: integer);
-var
-  sparm: Psoundparam_t;
-begin
-  sparm := GetSoundParam(sfxid);
-  SampleFormat.wFormatTag := sparm.wavformat;
-  SampleFormat.nSamplesPerSec := sparm.freq;
-  SampleFormat.nAvgBytesPerSec := sparm.avgfreq;
-  SampleFormat.wBitsPerSample := sparm.samples;
-  SampleFormat.nChannels := sparm.channels;
-end;
-
-//==============================================================================
 // I_SetChannels
 //
 // SFX API
@@ -602,146 +596,73 @@ begin
   snd_SfxVolume := volume;
 end;
 
-//==============================================================================
-//
-// I_ChannelPlaying
-//
-//==============================================================================
-function I_ChannelPlaying(channel: integer): boolean;
 var
-  status: LongWord;
+  // given by the composition root (I_ConfigureSound)
+  sfx_factory: TSfxPlayerFactory = nil;
+  sfx_player: ISfxPlayer = nil;
+
+//==============================================================================
+//
+// I_ConfigureSound
+//
+//==============================================================================
+procedure I_ConfigureSound(const AFactory: TSfxPlayerFactory);
 begin
-  if pDS = nil then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if ChannelBuffers[channel] = nil then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if not ChannelActive[channel] then
-  begin
-    result := false;
-    exit;
-  end;
-
-  ChannelBuffers[channel].GetStatus(status);
-  if status and DSBSTATUS_PLAYING <> 0 then
-    result := true
-  else
-  begin
-    ChannelActive[channel] := false;
-    result := false;
-  end;
+  sfx_factory := AFactory;
 end;
 
 //==============================================================================
 //
-// I_KillChannel
+// I_GetSfxSample
 //
 //==============================================================================
-procedure I_KillChannel(channel: integer);
-begin
-  if pDS <> nil then
-  begin
-    if ChannelBuffers[channel] <> nil then
-    begin
-      ChannelBuffers[channel].Stop;
-      I_ClearInterface(IInterface(ChannelBuffers[channel]));
-    end;
-  end;
-end;
-
-const
-  vulumetrans: array[0..15] of integer = (
-      0,  96, 128, 168, 186, 200, 212, 222,
-    230, 237, 243, 248, 250, 252, 254, 255
-  );
-
-  vulumetransshift = 8;
-
-//==============================================================================
-//
-// I_SepToDSPan
-//
-//==============================================================================
-function I_SepToDSPan(const sep: integer): integer;
-begin
-  result := DSBPAN_CENTER +
-    (DSBPAN_RIGHT - DSBPAN_LEFT) * (sep * sep - 128 * 128) div
-      (16 * 128 * 128);
-end;
-
-//==============================================================================
-//
-// I_VolToDSVol
-//
-//==============================================================================
-function I_VolToDSVol(const vol: integer): integer;
-begin
-  result := DSBVOLUME_MIN +
-    _SHR((DSBVOLUME_MAX - DSBVOLUME_MIN) * (vulumetrans[vol] + 1), vulumetransshift);
-end;
-
-//==============================================================================
-//
-// I_UpdateSoundParams
-//
-//==============================================================================
-procedure I_UpdateSoundParams(handle: integer; vol: integer; sep: integer;
-  pitch: integer);
+function I_GetSfxSample(const id: integer): TSfxSample;
 var
-  channel: integer;
-  dsb: IDirectSoundBuffer;
+  sparm: Psoundparam_t;
 begin
-  if pDS = nil then
-    exit;
-
-  for channel := 0 to NUM_CHANNELS - 1 do
-  begin
-    if I_ChannelPlaying(channel) and (channelhandles[channel] = handle) then
-    begin
-      dsb := ChannelBuffers[channel];
-      dsb.SetPan(I_SepToDSPan(sep));
-      dsb.SetVolume(I_VolToDSVol(vol));
-      exit;
-    end;
-  end;
+  I_CacheSFX(id);
+  sparm := GetSoundParam(id);
+  result.Format.Tag := sparm.wavformat;
+  result.Format.Channels := sparm.channels;
+  result.Format.SamplesPerSecond := sparm.freq;
+  result.Format.AverageBytesPerSecond := sparm.avgfreq;
+  result.Format.BitsPerSample := sparm.samples;
+  result.Data := System.PByte(S_sfx[id].data);
+  result.Offset := sparm.offset;
+  result.Length := sparm.length;
+  result.IsExternal := sparm.wavestatus = ws_externalwave;
 end;
 
 //==============================================================================
 //
-// I_RestartChannel
+// I_DiscardExternalSfx
 //
 //==============================================================================
-function I_RestartChannel(channel: integer; vol: integer; sep: integer): integer;
-var
-  dsb: IDirectSoundBuffer;
+procedure I_DiscardExternalSfx(const id: integer);
 begin
-  if pDS = nil then
-  begin
-    result := HandleCount;
-    inc(HandleCount);
-    exit;
-  end;
+  GetSoundParam(id).wavestatus := ws_wavefailed;
+  Z_Free(S_sfx[id].data);
+  S_sfx[id].data := nil;
+end;
 
-  ChannelActive[channel] := true;
-  dsb := ChannelBuffers[channel];
-  if dsb = nil then
-    I_Error('I_RestartChannel(): Restarting dead sound at channel %d', [channel]);
+//==============================================================================
+//
+// I_StoreSfxAverageBytes
+//
+//==============================================================================
+procedure I_StoreSfxAverageBytes(const id: integer; const avgbytes: LongWord);
+begin
+  GetSoundParam(id).avgfreq := avgbytes;
+end;
 
-  dsb.Stop;
-  dsb.SetCurrentPosition(0);
-  dsb.SetPan(I_SepToDSPan(sep));
-  dsb.SetVolume(I_VolToDSVol(vol));
-  dsb.Play(0, 0, 0);
-  channelhandles[channel] := HandleCount;
-  result := HandleCount;
-  inc(HandleCount);
+//==============================================================================
+//
+// I_SfxName
+//
+//==============================================================================
+function I_SfxName(const id: integer): string;
+begin
+  result := S_sfx[id].name;
 end;
 
 //==============================================================================
@@ -761,153 +682,22 @@ end;
 //==============================================================================
 function I_StartSound(id: integer; vol: integer; sep: integer;
   pitch: integer; priority: integer): integer;
-var
-  channel: integer;
-  dsb: IDirectSoundBuffer;
-  hres: HRESULT;
-  dsbd: DSBUFFERDESC;
-  oldchannel: integer;
-  oldhandle: integer;
-  freechannel: integer;
-  p: pointer;
-  p2: pointer;
-  s: LongWord;
-  s2: LongWord;
-  sparm: Psoundparam_t;
-
-  procedure I_ErrorStartSound(const procname: string);
-  begin
-    I_DevError('I_StartSound(): %s failed, result = %d. Sound id = %d (%s).'#13#10, [procname, hres, id, S_sfx[id].name]);
-  end;
-
 begin
-  if pDS = nil then
-  begin
-    result := HandleCount;
-    inc(HandleCount);
+  result := 0;
+  if sfx_player = nil then
     exit;
-  end;
 
-  oldhandle := 0;
-  oldchannel := 0;
-  freechannel := NUM_CHANNELS;
-  for channel := 0 to NUM_CHANNELS - 1 do
-  begin
-    if ChannelBuffers[channel] <> nil then
+  try
+    result := sfx_player.Start(id, vol, sep);
+  except
+    on E: ESfxStartException do
     begin
-      if (channelids[channel] = id) and not I_ChannelPlaying(channel) then
-      begin
-        result := I_RestartChannel(channel, vol, sep);
-        exit;
-      end;
-      if HandleCount - channelhandles[channel] > oldhandle then
-      begin
-        oldhandle := HandleCount - channelhandles[channel];
-        oldchannel := channel;
-      end
-    end
-    else
-      freechannel := channel;
-  end;
-
-  if freechannel <> 0 then
-    channel := freechannel
-  else
-    channel := oldchannel;
-  I_CacheSFX(id);
-  I_SetSfxFormat(id);
-  ZeroMemory(@dsbd, SizeOf(DSBUFFERDESC));
-  dsbd.dwSize := Sizeof(DSBUFFERDESC);
-  dsbd.dwFlags := DSBCAPS_CTRLVOLUME or DSBCAPS_CTRLFREQUENCY or
-                  DSBCAPS_CTRLPAN or DSBCAPS_GETCURRENTPOSITION2 or DSBCAPS_STATIC;
-  sparm := GetSoundParam(id);
-  if sparm.length = 0 then
-  begin
-    I_Warning('I_StartSound(): Sound %d(%s) has zero length.'#13#10, [id, S_sfx[id].name]);
-    result := HandleCount;
-    exit;
-  end;
-
-  dsbd.dwBufferBytes := sparm.length;
-  SampleFormat.nBlockAlign := SampleFormat.nChannels * SampleFormat.wBitsPerSample div 8;
-  SampleFormat.cbSize := 0;
-  dsbd.lpwfxFormat := @SampleFormat;
-
-  hres := pDS.CreateSoundBuffer(dsbd, dsb, nil);
-  if hres <> DS_OK then
-  begin
-    if sparm.wavestatus = ws_externalwave then
-    begin
-      I_Warning('I_StartSound(): External sound %d caused a problem and will be discarded'#13#10, [id]);
-      sparm.wavestatus := ws_wavefailed;
-      Z_Free(S_sfx[id].data);
-      S_sfx[id].data := nil;
-      I_CacheSFX(id);
-      I_SetSfxFormat(id);
-      ZeroMemory(@dsbd, SizeOf(DSBUFFERDESC));
-      dsbd.dwSize := Sizeof(DSBUFFERDESC);
-      dsbd.dwFlags := DSBCAPS_CTRLVOLUME or DSBCAPS_CTRLFREQUENCY or
-                      DSBCAPS_CTRLPAN or DSBCAPS_GETCURRENTPOSITION2 or DSBCAPS_STATIC;
-      dsbd.dwBufferBytes := sparm.length;
-      SampleFormat.nBlockAlign := SampleFormat.nChannels * SampleFormat.wBitsPerSample div 8;
-      SampleFormat.cbSize := 0;
-      dsbd.lpwfxFormat := @SampleFormat;
-
-      hres := pDS.CreateSoundBuffer(dsbd, dsb, nil);
-      if hres <> DS_OK then
-      begin
-        SampleFormat.nAvgBytesPerSec := SampleFormat.nSamplesPerSec * SampleFormat.nChannels * SampleFormat.wBitsPerSample div 8;
-        dsbd.lpwfxFormat := @SampleFormat;
-
-        hres := pDS.CreateSoundBuffer(dsbd, dsb, nil);
-        if hres <> DS_OK then
-        begin
-          I_ErrorStartSound('CreateSoundBuffer()');
-          result := 0;
-          exit;
-        end
-        else
-          sparm.avgfreq := SampleFormat.nAvgBytesPerSec;
-      end;
-
-    end
-    else
-    begin
-      SampleFormat.nAvgBytesPerSec := SampleFormat.nSamplesPerSec * SampleFormat.nChannels * SampleFormat.wBitsPerSample div 8;
-      dsbd.lpwfxFormat := @SampleFormat;
-
-      hres := pDS.CreateSoundBuffer(dsbd, dsb, nil);
-      if hres <> DS_OK then
-      begin
-        I_ErrorStartSound('CreateSoundBuffer()');
-        result := 0;
-        exit;
-      end
-      else
-        sparm.avgfreq := SampleFormat.nAvgBytesPerSec;
+      I_DevError('%s', [E.Message]);
+      result := 0;
     end;
+    on E: ESfxFatalException do
+      I_Error('%s', [E.Message]);
   end;
-
-  hres := dsb.Lock(0, sparm.length - sparm.offset, p, s, p2, s2, 0);
-  if hres <> DS_OK then
-  begin
-    I_ErrorStartSound('SoundBuffer.Lock()');
-    result := 0;
-    exit;
-  end;
-
-  memcpy(p, pointer(integer(S_sfx[id].data) + sparm.offset), s);
-  hres := dsb.Unlock(p, s, p2, s2);
-  if hres <> DS_OK then
-  begin
-    I_ErrorStartSound('SoundBuffer.Unlock()');
-    result := 0;
-    exit;
-  end;
-
-  ChannelBuffers[channel] := dsb;
-  channelids[channel] := id;
-  result := I_RestartChannel(channel, vol, sep);
 end;
 
 //==============================================================================
@@ -916,20 +706,9 @@ end;
 //
 //==============================================================================
 procedure I_StopSound(handle: integer);
-var
-  channel: integer;
 begin
-  if pDS = nil then
-    exit;
-
-  for channel := 0 to NUM_CHANNELS - 1 do
-  begin
-    if I_ChannelPlaying(channel) and (channelhandles[channel] = handle) then
-    begin
-      ChannelBuffers[channel].Stop;
-      ChannelActive[channel] := false;
-    end;
-  end;
+  if sfx_player <> nil then
+    sfx_player.Stop(handle);
 end;
 
 //==============================================================================
@@ -938,24 +717,20 @@ end;
 //
 //==============================================================================
 function I_SoundIsPlaying(handle: integer): boolean;
-var
-  channel: integer;
 begin
-  if pDS = nil then
-  begin
-    result := false;
-    exit;
-  end;
+  result := (sfx_player <> nil) and sfx_player.IsPlaying(handle);
+end;
 
-  for channel := 0 to NUM_CHANNELS - 1 do
-  begin
-    if (channelhandles[channel] = handle) and I_ChannelPlaying(channel) then
-    begin
-      result := true;
-      exit;
-    end;
-  end;
-  result := false;
+//==============================================================================
+//
+// I_UpdateSoundParams
+//
+//==============================================================================
+procedure I_UpdateSoundParams(handle: integer; vol: integer; sep: integer;
+  pitch: integer);
+begin
+  if sfx_player <> nil then
+    sfx_player.UpdateParams(handle, vol, sep);
 end;
 
 //==============================================================================
@@ -964,20 +739,12 @@ end;
 //
 //==============================================================================
 procedure I_ShutDownSound;
-var
-  i: integer;
 begin
-  if pDS <> nil then
+  if sfx_player <> nil then
   begin
-    for i := 0 to NUM_CHANNELS - 1 do
-      I_KillChannel(i);
+    sfx_player.Shutdown;
+    sfx_player := nil;
   end;
-
-  if pDSBPrimary <> nil then
-    I_ClearInterface(IInterface(pDSBPrimary));
-
-  if pDS <> nil then
-    I_ClearInterface(IInterface(pDS));
 
   memfree(pointer(soundparams), numsoundparams * SizeOf(soundparam_t));
 
@@ -991,59 +758,20 @@ end;
 //==============================================================================
 procedure I_InitSound;
 var
-  hres: HRESULT;
-  dsbd: DSBUFFERDESC;
   i: integer;
 begin
-  if M_CheckParm('-nosound') <> 0 then
-    exit;
+  if not Assigned(sfx_factory) then
+    I_Error('I_InitSound(): the sound was not configured');
 
-  hres := DirectSoundCreate(nil, pDS, nil);
-  if hres <> DS_OK then
-  begin
-    pDS := nil;
-    printf('I_InitSound(): DirectSoundCreate Failed, result = %d', [hres]);
-    exit;
+  try
+    sfx_player := sfx_factory(M_CheckParm('-nosound') = 0);
+  except
+    on E: EAudioDeviceException do
+      I_Error('%s', [E.Message]);
   end;
-
-  hres := pDS.SetCooperativeLevel(hMainWnd, DSSCL_PRIORITY);
-  if hres <> DS_OK then
-    I_Error('I_InitSound(): DirectSound.SetCooperativeLevel Failed, result = %d', [hres]);
-
-  SampleFormat.wFormatTag := WAVE_FORMAT_PCM;
-  SampleFormat.nChannels := 1;
-  SampleFormat.cbSize := 0;
-  SampleFormat.nBlockAlign := 1;
-  SampleFormat.nSamplesPerSec := 11025;
-  SampleFormat.nAvgBytesPerSec := 11025;
-  SampleFormat.wBitsPerSample := 8;
-
-  ZeroMemory(@dsbd, SizeOf(DSBUFFERDESC));
-  dsbd.dwSize := SizeOf(DSBUFFERDESC);
-  dsbd.dwFlags := DSBCAPS_PRIMARYBUFFER;
-  dsbd.dwBufferBytes := 0;
-  dsbd.lpwfxFormat := nil;
-
-  hres := pDS.CreateSoundBuffer(dsbd, pDSBPrimary, nil);
-  if hres <> DS_OK then
-  begin
-    I_Warning('I_InitSound(): Unable to access primary sound buffer, result = %d', [hres]);
-    pDSBPrimary := nil;
-  end
-  else
-  begin
-    hres := pDSBPrimary.SetFormat(SampleFormat);
-    if hres <> DS_OK then
-      I_Warning('I_InitSound(): Unable to set primary sound buffer format, result = %d', [hres]);
-    pDSBPrimary.Play(0, 0, DSBPLAY_LOOPING);
-  end;
-
-  for i := 0 to NUM_CHANNELS - 1 do
-    ChannelBuffers[i] := nil;
 
   for i := 0 to numsfx - 1 do
     S_sfx[i].data := nil;
-
 end;
 
 //==============================================================================
@@ -1064,14 +792,9 @@ begin
         Z_Free(S_sfx[i].data);
         S_sfx[i].data := nil;
       end;
-    for i := 0 to NUM_CHANNELS - 1 do
-      channelids[i] := -1;
+    if sfx_player <> nil then
+      sfx_player.ForgetSounds;
   end;
 end;
-
-initialization
-  pDS := nil;
-  pDSBPrimary := nil;
-  HandleCount := 1;
 
 end.
