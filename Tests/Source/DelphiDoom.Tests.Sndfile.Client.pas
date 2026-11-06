@@ -59,13 +59,13 @@ type
 implementation
 
 uses
-  DelphiDoom.Sndfile.Engine, DelphiDoom.Tests.Sndfile.Wav;
+  DelphiDoom.Sound.Factory, DelphiDoom.Tests.Sndfile.Wav;
 
 { TTestSndfileClient }
 
 procedure TTestSndfileClient.Setup;
 begin
-  FClient := TSndfileClient.Create(TSndfileEngine.Create);
+  FClient := TSndfileClient.Create(TSoundFactory.CreateEngine);
 end;
 
 procedure TTestSndfileClient.TearDown;

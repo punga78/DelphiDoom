@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of TSndfileEngine                                         }
+{  DelphiDoom: tests of the sound engine                                       }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -66,13 +66,13 @@ type
 implementation
 
 uses
-  DelphiDoom.Sndfile.Engine, DelphiDoom.Tests.Sndfile.Wav;
+  DelphiDoom.Sound.Factory, DelphiDoom.Tests.Sndfile.Wav;
 
 { TTestSndfileEngine }
 
 procedure TTestSndfileEngine.Setup;
 begin
-  FSndfile := TSndfileEngine.Create;
+  FSndfile := TSoundFactory.CreateEngine;
 end;
 
 procedure TTestSndfileEngine.TearDown;

@@ -12,21 +12,31 @@ interface
 uses
   System.SysUtils, System.Classes, System.StrUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Sndfile.Intf,
   DelphiDoom.Tests.Sound.WavFile, DelphiDoom.Tests.Sound.ContainerFiles,
-  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile, DelphiDoom.Tests.Sound.SdsFile, DelphiDoom.Tests.Sound.XiFile;
+  DelphiDoom.Tests.Sound.FlacFile, DelphiDoom.Tests.Sound.VorbisFile, DelphiDoom.Tests.Sound.PafFile, DelphiDoom.Tests.Sound.SdsFile, DelphiDoom.Tests.Sound.XiFile,
+  DelphiDoom.Tests.Sound.Digest, DelphiDoom.Tests.Sound.Golden;
+
 
 type
   /// <summary>
-  ///   Opens the same bytes with the C engine and with the Pascal one and
-  ///   requires the same description of the sound, the same samples (bit by
-  ///   bit) through every Read method, and the same results of Seek
+  ///   Opens test sounds with the Pascal engine and requires the same
+  ///   description of the sound, the same samples (bit by bit) through every
+  ///   Read method and the same results of Seek that libsndfile (C) gave: the
+  ///   answers are kept as fingerprints in Tests\Data\sound_golden.txt
   /// </summary>
   [TestFixture]
   [Category('sound')]
   TTestSoundParity = class(TObject)
   private
-    FReference: ISndfile;
     FCandidate: ISndfile;
-    FCurrentName: string;
+    FGolden: TSoundGolden;
+    procedure Match(const AKey: string; const AObserve: TFunc<ISndfile, UInt64>);
+    function ObserveInfo(const AEngine: ISndfile; const ASource: TBytes): UInt64;
+    function ObserveReads(const AEngine: ISndfile; const ASource: TBytes;
+      AKind, AChunk: Integer): UInt64;
+    function ObserveSeeks(const AEngine: ISndfile; const ASource: TBytes): UInt64;
+    function ObserveStream(const AEngine: ISndfile; const ASource: TBytes;
+      AKind: Integer): UInt64;
+    function KeyOf(const AName: string; const ASource: TBytes): string;
     procedure CheckSame(const ASource: TBytes; const AName: string);
     procedure CheckSameFailure(const ASource: TBytes; const AName: string);
     procedure CheckSameStream(const ASource: TBytes; const AName: string);
@@ -35,11 +45,11 @@ type
     ///   the same description and the same samples read in big chunks
     /// </summary>
     procedure CheckSameBulk(const ASource: TBytes; const AName: string);
-    procedure CompareReads(const ASource: TBytes; AKind, AChunk: Integer;
-      const AName: string);
-    procedure CompareSeeks(const ASource: TBytes; const AName: string);
-    function Open(const AEngine: ISndfile; const ASource: TBytes): ISoundFile;
   public
+    [SetupFixture]
+    procedure SetupFixture;
+    [TearDownFixture]
+    procedure TearDownFixture;
     [Setup]
     procedure Setup;
     [TearDown]
@@ -156,7 +166,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Sndfile.Engine, DelphiDoom.Sound.Factory;
+  DelphiDoom.Sound.Factory;
 
 const
   KIND_SHORT = 0;
@@ -186,70 +196,104 @@ end;
 
 { TTestSoundParity }
 
+procedure TTestSoundParity.SetupFixture;
+begin
+  FGolden := TSoundGolden.Create;
+end;
+
+procedure TTestSoundParity.TearDownFixture;
+begin
+  FreeAndNil(FGolden);
+end;
+
 procedure TTestSoundParity.Setup;
 begin
-  FReference := TSndfileEngine.Create;
   FCandidate := TSoundFactory.CreateEngine;
 end;
 
 procedure TTestSoundParity.TearDown;
 begin
   FCandidate := nil;
-  FReference := nil;
 end;
 
-function TTestSoundParity.Open(const AEngine: ISndfile;
-  const ASource: TBytes): ISoundFile;
-begin
-  Assert.AreEqual(SNDFILE_OK, AEngine.OpenMemory(@ASource[0], Length(ASource), Result),
-    'open: ' + FCurrentName + IfThen(AEngine = FReference, ' (C engine)', ' (Pascal engine)'));
-  Assert.IsNotNull(Result);
-end;
-
-procedure TTestSoundParity.CompareReads(const ASource: TBytes; AKind,
-  AChunk: Integer; const AName: string);
+function TTestSoundParity.KeyOf(const AName: string; const ASource: TBytes): string;
 var
-  LExpected, LActual: ISoundFile;
-  LInfo: TSoundFileInfo;
-  LExpectedBuffer, LActualBuffer: TBytes;
-  LExpectedRead, LActualRead: Int64;
-  LExpectedCode, LActualCode: Integer;
-  LItems: Integer;
-  LRound: Integer;
+  LDigest: TSoundDigest;
 begin
-  LExpected := Open(FReference, ASource);
-  LActual := Open(FCandidate, ASource);
-  LExpected.GetInfo(LInfo);
+  // Several tests give the same name to sounds that differ
+  LDigest := TSoundDigest.Start;
+  if Length(ASource) > 0 then
+    LDigest.AddBuffer(@ASource[0], Length(ASource));
+  Result := AName + '#' + IntToHex(LDigest.Value shr 32, 8);
+end;
 
-  LItems := AChunk * LInfo.Channels;
-  SetLength(LExpectedBuffer, LItems * BytesPerItem(AKind));
-  SetLength(LActualBuffer, Length(LExpectedBuffer));
+procedure TTestSoundParity.Match(const AKey: string;
+  const AObserve: TFunc<ISndfile, UInt64>);
+var
+  LActual, LExpected: UInt64;
+begin
+  LActual := AObserve(FCandidate);
+  LExpected := FGolden.Get(AKey);
+  Assert.IsTrue(LExpected = LActual,
+    Format('%s: the sound differs from the one libsndfile gives (%s, expected %s)',
+      [AKey, IntToHex(LActual, 16), IntToHex(LExpected, 16)]));
+end;
 
+function TTestSoundParity.ObserveInfo(const AEngine: ISndfile;
+  const ASource: TBytes): UInt64;
+var
+  LSound: ISoundFile;
+  LInfo: TSoundFileInfo;
+  LDigest: TSoundDigest;
+  LCode: Integer;
+begin
+  LDigest := TSoundDigest.Start;
+  LCode := AEngine.OpenMemory(@ASource[0], Length(ASource), LSound);
+  LDigest.AddInt64(LCode);
+  if LCode = SNDFILE_OK then
+  begin
+    LSound.GetInfo(LInfo);
+    LDigest.AddInt64(LInfo.Frames);
+    LDigest.AddInt64(LInfo.SampleRate);
+    LDigest.AddInt64(LInfo.Channels);
+    LDigest.AddInt64(Integer(LInfo.Format));
+    LDigest.AddInt64(LInfo.Sections);
+    LDigest.AddInt64(LInfo.Seekable);
+  end;
+  Result := LDigest.Value;
+end;
+
+function TTestSoundParity.ObserveReads(const AEngine: ISndfile;
+  const ASource: TBytes; AKind, AChunk: Integer): UInt64;
+var
+  LSound: ISoundFile;
+  LInfo: TSoundFileInfo;
+  LBuffer: TBytes;
+  LDigest: TSoundDigest;
+  LRead: Int64;
+  LCode, LRound: Integer;
+begin
+  LDigest := TSoundDigest.Start;
+  LCode := AEngine.OpenMemory(@ASource[0], Length(ASource), LSound);
+  LDigest.AddInt64(LCode);
+  if LCode <> SNDFILE_OK then
+    Exit(LDigest.Value);
+  LSound.GetInfo(LInfo);
+  SetLength(LBuffer, AChunk * LInfo.Channels * BytesPerItem(AKind));
   // Always one more read than needed, to see the end of the sound
   for LRound := 0 to Integer(LInfo.Frames div AChunk) + 1 do
   begin
-    FillChar(LExpectedBuffer[0], Length(LExpectedBuffer), $5A);
-    FillChar(LActualBuffer[0], Length(LActualBuffer), $5A);
-    LExpectedCode := ReadKind(LExpected, AKind, @LExpectedBuffer[0], AChunk, LExpectedRead);
-    LActualCode := ReadKind(LActual, AKind, @LActualBuffer[0], AChunk, LActualRead);
-
-    Assert.AreEqual(LExpectedCode, LActualCode,
-      Format('%s: code of the read %d (kind %d)', [AName, LRound, AKind]));
-    Assert.AreEqual(LExpectedRead, LActualRead,
-      Format('%s: frames of the read %d (kind %d), sound of %d frames', [AName, LRound, AKind, LInfo.Frames]));
-    if not CompareMem(@LExpectedBuffer[0], @LActualBuffer[0], Length(LExpectedBuffer)) then
-    begin
-      for LItems := 0 to High(LExpectedBuffer) do
-        if LExpectedBuffer[LItems] <> LActualBuffer[LItems] then
-          Break;
-      Assert.Fail(Format('%s: samples of the read %d (kind %d): byte %d is $%.2x, expected $%.2x',
-        [AName, LRound, AKind, LItems, LActualBuffer[LItems], LExpectedBuffer[LItems]]));
-    end;
+    FillChar(LBuffer[0], Length(LBuffer), $5A);
+    LCode := ReadKind(LSound, AKind, @LBuffer[0], AChunk, LRead);
+    LDigest.AddInt64(LCode);
+    LDigest.AddInt64(LRead);
+    LDigest.AddBuffer(@LBuffer[0], Length(LBuffer));
   end;
+  Result := LDigest.Value;
 end;
 
-procedure TTestSoundParity.CompareSeeks(const ASource: TBytes;
-  const AName: string);
+function TTestSoundParity.ObserveSeeks(const AEngine: ISndfile;
+  const ASource: TBytes): UInt64;
 const
   CASES: array[0..9, 0..1] of Integer = (
     (0, SNDFILE_SEEK_SET), (3, SNDFILE_SEEK_SET), (1, SNDFILE_SEEK_CUR),
@@ -257,99 +301,124 @@ const
     (1, SNDFILE_SEEK_END), (-1, SNDFILE_SEEK_SET), (1000000, SNDFILE_SEEK_SET),
     (0, 7));
 var
-  LExpected, LActual: ISoundFile;
-  LIndex: Integer;
-  LExpectedPosition, LActualPosition: Int64;
-  LExpectedCode, LActualCode: Integer;
-  LShortExpected, LShortActual: array[0..15] of SmallInt;
-  LExpectedRead, LActualRead: Int64;
+  LSound: ISoundFile;
+  LDigest: TSoundDigest;
+  LIndex, LCode: Integer;
+  LPosition, LRead: Int64;
+  LShort: array[0..15] of SmallInt;
 begin
-  LExpected := Open(FReference, ASource);
-  LActual := Open(FCandidate, ASource);
+  LDigest := TSoundDigest.Start;
+  LCode := AEngine.OpenMemory(@ASource[0], Length(ASource), LSound);
+  LDigest.AddInt64(LCode);
+  if LCode <> SNDFILE_OK then
+    Exit(LDigest.Value);
   for LIndex := 0 to High(CASES) do
   begin
-    LExpectedCode := LExpected.Seek(CASES[LIndex, 0], CASES[LIndex, 1], LExpectedPosition);
-    LActualCode := LActual.Seek(CASES[LIndex, 0], CASES[LIndex, 1], LActualPosition);
-    Assert.AreEqual(LExpectedCode = SNDFILE_OK, LActualCode = SNDFILE_OK,
-      Format('%s: seek %d (%d, %d) success', [AName, LIndex, CASES[LIndex, 0], CASES[LIndex, 1]]));
-    Assert.AreEqual(LExpectedPosition, LActualPosition,
-      Format('%s: seek %d position', [AName, LIndex]));
-
+    LCode := LSound.Seek(CASES[LIndex, 0], CASES[LIndex, 1], LPosition);
+    LDigest.AddInt64(Ord(LCode = SNDFILE_OK));
+    LDigest.AddInt64(LPosition);
     // And what is read afterwards (when the sound is mono or stereo)
-    FillChar(LShortExpected, SizeOf(LShortExpected), 0);
-    FillChar(LShortActual, SizeOf(LShortActual), 0);
-    LExpected.ReadShort(@LShortExpected, 1, LExpectedRead);
-    LActual.ReadShort(@LShortActual, 1, LActualRead);
-    Assert.AreEqual(LExpectedRead, LActualRead, Format('%s: read after seek %d', [AName, LIndex]));
-    Assert.IsTrue(CompareMem(@LShortExpected, @LShortActual, SizeOf(LShortExpected)),
-      Format('%s: samples after seek %d', [AName, LIndex]));
+    FillChar(LShort, SizeOf(LShort), 0);
+    LSound.ReadShort(@LShort, 1, LRead);
+    LDigest.AddInt64(LRead);
+    LDigest.AddBuffer(@LShort, SizeOf(LShort));
   end;
+  Result := LDigest.Value;
+end;
+
+function TTestSoundParity.ObserveStream(const AEngine: ISndfile;
+  const ASource: TBytes; AKind: Integer): UInt64;
+var
+  LSound: ISoundFile;
+  LInfo: TSoundFileInfo;
+  LDigest: TSoundDigest;
+  LBuffer: array[0..2047] of Double;
+  LRead: Int64;
+  LCode, LRound: Integer;
+begin
+  LDigest := TSoundDigest.Start;
+  LCode := AEngine.OpenMemory(@ASource[0], Length(ASource), LSound);
+  LDigest.AddInt64(LCode);
+  if LCode <> SNDFILE_OK then
+    Exit(LDigest.Value);
+  LSound.GetInfo(LInfo);
+  LDigest.AddInt64(LInfo.Frames);
+  LDigest.AddInt64(Integer(LInfo.Format));
+  // A sound of unknown length: read it until it has nothing more, in chunks of 100 frames
+  for LRound := 0 to 5000 do
+  begin
+    FillChar(LBuffer, SizeOf(LBuffer), $5A);
+    ReadKind(LSound, AKind, @LBuffer, 100, LRead);
+    LDigest.AddInt64(LRead);
+    LDigest.AddBuffer(@LBuffer, SizeOf(LBuffer));
+    if LRead = 0 then
+      Break;
+  end;
+  Result := LDigest.Value;
 end;
 
 procedure TTestSoundParity.CheckSame(const ASource: TBytes; const AName: string);
 var
-  LExpected, LActual: ISoundFile;
-  LExpectedInfo, LActualInfo: TSoundFileInfo;
-  LKind: Integer;
+  LKind, LChunk: Integer;
 begin
-  FCurrentName := AName;
-  LExpected := Open(FReference, ASource);
-  LActual := Open(FCandidate, ASource);
-  LExpected.GetInfo(LExpectedInfo);
-  LActual.GetInfo(LActualInfo);
-
-  Assert.AreEqual(LExpectedInfo.Frames, LActualInfo.Frames, AName + ': frames');
-  Assert.AreEqual(LExpectedInfo.SampleRate, LActualInfo.SampleRate, AName + ': sample rate');
-  Assert.AreEqual(LExpectedInfo.Channels, LActualInfo.Channels, AName + ': channels');
-  Assert.AreEqual(Integer(LExpectedInfo.Format), Integer(LActualInfo.Format), AName + ': format');
-  Assert.AreEqual(LExpectedInfo.Sections, LActualInfo.Sections, AName + ': sections');
-  Assert.AreEqual(LExpectedInfo.Seekable, LActualInfo.Seekable, AName + ': seekable');
-
-  LExpected := nil;
-  LActual := nil;
+  Match(KeyOf(AName, ASource) + '|info', function(AEngine: ISndfile): UInt64
+    begin
+      Result := ObserveInfo(AEngine, ASource);
+    end);
   for LKind := KIND_SHORT to KIND_DOUBLE do
-  begin
-    CompareReads(ASource, LKind, 1, AName);
-    CompareReads(ASource, LKind, 7, AName);
-    CompareReads(ASource, LKind, 4096, AName);
-  end;
-  CompareSeeks(ASource, AName);
+    for LChunk in [1, 7, 4096] do
+      Match(Format('%s|reads %d %d', [KeyOf(AName, ASource), LKind, LChunk]), function(AEngine: ISndfile): UInt64
+        begin
+          Result := ObserveReads(AEngine, ASource, LKind, LChunk);
+        end);
+  Match(KeyOf(AName, ASource) + '|seeks', function(AEngine: ISndfile): UInt64
+    begin
+      Result := ObserveSeeks(AEngine, ASource);
+    end);
 end;
 
 procedure TTestSoundParity.CheckSameBulk(const ASource: TBytes;
   const AName: string);
 var
-  LExpected, LActual: ISoundFile;
-  LExpectedInfo, LActualInfo: TSoundFileInfo;
+  LSound: ISoundFile;
+  LInfo: TSoundFileInfo;
   LKind: Integer;
 begin
-  FCurrentName := AName;
-  LExpected := Open(FReference, ASource);
-  LActual := Open(FCandidate, ASource);
-  LExpected.GetInfo(LExpectedInfo);
-  LActual.GetInfo(LActualInfo);
-  Assert.AreEqual(LExpectedInfo.Frames, LActualInfo.Frames, AName + ': frames');
-  Assert.AreEqual(LExpectedInfo.SampleRate, LActualInfo.SampleRate, AName + ': sample rate');
-  Assert.AreEqual(LExpectedInfo.Channels, LActualInfo.Channels, AName + ': channels');
-  Assert.AreEqual(Integer(LExpectedInfo.Format), Integer(LActualInfo.Format), AName + ': format');
-  LExpected := nil;
-  LActual := nil;
+  Match(KeyOf(AName, ASource) + '|info', function(AEngine: ISndfile): UInt64
+    begin
+      Result := ObserveInfo(AEngine, ASource);
+    end);
+  Assert.AreEqual(SNDFILE_OK, FCandidate.OpenMemory(@ASource[0], Length(ASource), LSound), AName + ': open');
+  LSound.GetInfo(LInfo);
+  LSound := nil;
   for LKind := KIND_SHORT to KIND_DOUBLE do
     // Exactly the sound: what a longer read leaves past it is whatever the C buffers held
-    CompareReads(ASource, LKind, Integer(LExpectedInfo.Frames), AName);
+    Match(Format('%s|bulk %d', [KeyOf(AName, ASource), LKind]), function(AEngine: ISndfile): UInt64
+      begin
+        Result := ObserveReads(AEngine, ASource, LKind, Integer(LInfo.Frames));
+      end);
+end;
+
+procedure TTestSoundParity.CheckSameStream(const ASource: TBytes;
+  const AName: string);
+var
+  LKind: Integer;
+begin
+  for LKind := KIND_SHORT to KIND_DOUBLE do
+    Match(Format('%s|stream %d', [KeyOf(AName, ASource), LKind]), function(AEngine: ISndfile): UInt64
+      begin
+        Result := ObserveStream(AEngine, ASource, LKind);
+      end);
 end;
 
 procedure TTestSoundParity.CheckSameFailure(const ASource: TBytes;
   const AName: string);
 var
   LSound: ISoundFile;
-  LExpectedCode, LActualCode: Integer;
 begin
-  LExpectedCode := FReference.OpenMemory(@ASource[0], Length(ASource), LSound);
-  Assert.AreNotEqual(SNDFILE_OK, LExpectedCode, AName + ': the C engine should refuse the file');
   LSound := nil;
-  LActualCode := FCandidate.OpenMemory(@ASource[0], Length(ASource), LSound);
-  Assert.AreNotEqual(SNDFILE_OK, LActualCode, AName + ': the Pascal engine should refuse the file');
+  Assert.AreNotEqual(SNDFILE_OK, FCandidate.OpenMemory(@ASource[0], Length(ASource), LSound),
+    AName + ': the Pascal engine should refuse the file');
   Assert.IsNull(LSound, AName + ': no sound for a refused file');
 end;
 
@@ -1047,39 +1116,6 @@ begin
     TSoundTestAiffOptions.Compressed('DWVW', 1, 4), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 4 bits');
   CheckSameFailure(TSoundTestContainerFile.BuildAiff(
     TSoundTestAiffOptions.Compressed('DWVW', 1, 28), TSoundTestWavFile.RandomBytes(100, 1)), 'aifc dwvw 28 bits');
-end;
-
-procedure TTestSoundParity.CheckSameStream(const ASource: TBytes; const AName: string);
-var
-  LExpected, LActual: ISoundFile;
-  LExpectedInfo, LActualInfo: TSoundFileInfo;
-  LKind, LRound: Integer;
-  LExpectedBuffer, LActualBuffer: array[0..2047] of Double;
-  LExpectedRead, LActualRead: Int64;
-begin
-  // A sound of unknown length: read it until it has nothing more, in chunks of 100 frames
-  for LKind := KIND_SHORT to KIND_DOUBLE do
-  begin
-    FCurrentName := AName;
-    LExpected := Open(FReference, ASource);
-    LActual := Open(FCandidate, ASource);
-    LExpected.GetInfo(LExpectedInfo);
-    LActual.GetInfo(LActualInfo);
-    Assert.AreEqual(LExpectedInfo.Frames, LActualInfo.Frames, AName + ': frames');
-    Assert.AreEqual(Integer(LExpectedInfo.Format), Integer(LActualInfo.Format), AName + ': format');
-    for LRound := 0 to 5000 do
-    begin
-      FillChar(LExpectedBuffer, SizeOf(LExpectedBuffer), $5A);
-      FillChar(LActualBuffer, SizeOf(LActualBuffer), $5A);
-      ReadKind(LExpected, LKind, @LExpectedBuffer, 100, LExpectedRead);
-      ReadKind(LActual, LKind, @LActualBuffer, 100, LActualRead);
-      Assert.AreEqual(LExpectedRead, LActualRead, Format('%s: frames of the read %d (kind %d)', [AName, LRound, LKind]));
-      Assert.IsTrue(CompareMem(@LExpectedBuffer, @LActualBuffer, SizeOf(LExpectedBuffer)),
-        Format('%s: samples of the read %d (kind %d)', [AName, LRound, LKind]));
-      if LExpectedRead = 0 then
-        Break;
-    end;
-  end;
 end;
 
 function FlacSignals(AChannels, ACount, ABits, AWasted: Integer): TArray<TArray<Integer>>;

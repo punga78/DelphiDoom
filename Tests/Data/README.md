@@ -14,3 +14,9 @@ Il confronto con un'altra implementazione **non può essere byte per byte**: glb
 L'uscita dell'eseguibile glbsp incorporato (2.24) su `glbsp_map01.wad` con `-q -xp -n` (ricostruisce anche i nodi normali): `VERTEXES`, `SEGS`, `SSECTORS`, `NODES`, `BLOCKMAP`, `REJECT` e i lump GL. `Tests\Source\DelphiDoom.Tests.Glbsp.Wad.Builder.pas` confronta con questo file l'uscita del porting in Pascal, con la stessa tolleranza (±1 su vertici, angoli, distanze e coordinate dei nodi; tutto il resto identico).
 
 I riferimenti sono stati prodotti con l'eseguibile glbsp 2.24 che era incorporato nel motore (poi sostituito dal porting in Pascal, issue #2); i sorgenti C 2.24 sono nella storia di git.
+
+## sound_golden.txt
+
+Le risposte di libsndfile (C) per i suoni di prova di `Tests\Source\DelphiDoom.Tests.Sound.Parity.pas`, una riga per scenario: `nome#impronta-dei-byte|scenario<TAB>impronta a 64 bit` (FNV-1a di `DelphiDoom.Tests.Sound.Digest` su codici di ritorno, frame letti e byte dei buffer). Sono state scritte con il motore C `TSndfileEngine` (libsndfile 1.x + libvorbis 1.3.7 + libFLAC) quando era ancora nel repository, confrontandolo prima con il motore Pascal (105 test, 3900 scenari identici).
+
+Il C è nell'ultimo commit che lo contiene (`a449cacd`); per aggiungere un caso nuovo si può ricostruire da quel commit un progetto con `TSndfileEngine` e registrare l'impronta con la stessa funzione `Observe*`, oppure, se il comportamento voluto è quello del decoder Pascal già verificato, aggiungere la riga con il valore calcolato dal Pascal e motivarlo nel commit.

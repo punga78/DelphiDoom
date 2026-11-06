@@ -18,7 +18,7 @@ type
   ///   Gives the rest of the engine one shared TSndfileClient
   /// </summary>
   /// <remarks>
-  ///   By default the client works on TSndfileEngine linked in the executable, so
+  ///   By default the client works on the Pascal engine (TSoundFactory) linked in the executable, so
   ///   no DLL is needed. To use DDSndfile.dll (or a fake in the tests) call Use
   ///   with the ISndfile obtained from TSndfileLoader before the first use
   /// </remarks>

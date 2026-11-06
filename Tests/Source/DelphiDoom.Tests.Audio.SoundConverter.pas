@@ -45,7 +45,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Sndfile.Intf, DelphiDoom.Sndfile.Engine,
+  DelphiDoom.Sndfile.Intf, DelphiDoom.Sound.Factory,
   DelphiDoom.Sndfile.Provider, DelphiDoom.Audio.SoundConverter,
   DelphiDoom.Audio.WavBuilder, DelphiDoom.Tests.Sndfile.Wav;
 
@@ -76,7 +76,7 @@ procedure TTestSoundConverter.TestProviderUseReplacesTheImplementation;
 begin
   TSndfileProvider.Client;
   // The old client is freed by Use: a new one works on the engine passed in
-  TSndfileProvider.Use(TSndfileEngine.Create);
+  TSndfileProvider.Use(TSoundFactory.CreateEngine);
   Assert.IsTrue(TSndfileProvider.Client.Version <> '');
 end;
 

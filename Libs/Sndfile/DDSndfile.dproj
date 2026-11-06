@@ -12,9 +12,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.;Native;..\..\C_LIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.;Native;..\..\C_LIB;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>Native;..\..\C_LIB;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_UnitSearchPath>.;..\..\C_LIB;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>.;..\..\C_LIB;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>..\..\C_LIB;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\Libs\DDSndfile\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
