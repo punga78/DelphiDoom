@@ -1,0 +1,1321 @@
+=== empty
+LF
+LT
+=== only_comments
+LF
+LT
+=== flat_basic
+A flat NUKAGE1 index=4 frames=3
+F 4 8
+F 5 8
+F 6 8
+LF 4 4 5 6
+LT
+=== texture_basic
+A texture BLODGR1 index=0 frames=4
+F 0 8
+F 1 16
+F 2 24
+F 3 8
+LF
+LT 0 0 1 2 3
+=== two_animations
+A flat FWATER1 index=0 frames=4
+F 0 8
+F 1 8
+F 2 8
+F 3 8
+A texture SLADRIP1 index=4 frames=3
+F 4 4
+F 5 4
+F 6 4
+LF 0 0 1 2 3
+LT 4 4 5 6
+=== rand
+A flat LAVA1 index=7 frames=3
+F 7 329216
+F 8 524544
+F 9 4
+LF 7 7 8 9
+LT
+=== rand_max_below_min
+A flat LAVA1 index=7 frames=2
+F 7 654336
+F 8 4
+LF 7 7 8
+LT
+=== tics_above_255
+A flat LAVA2 index=8 frames=3
+F 8 300
+F 9 255
+F 10 256
+LF 8 8 9 10
+LT
+=== negative_and_zero
+A flat NUKAGE2 index=5 frames=2
+F 4 0
+F 2 -5
+LF 5 4 2
+LT
+=== comments_and_semicolons
+A flat FWATER2 index=1 frames=2
+F 1 8
+F 2 8
+LF 1 1 2
+LT
+=== case_insensitive
+A flat nukage3 index=6 frames=2
+F 6 8
+F 7 8
+LF 6 6 7
+LT
+=== quoted_name
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== lowercase_texture_name
+A texture blodgr2 index=1 frames=2
+F 1 8
+F 2 8
+LF
+LT 1 1 2
+=== ignored_flat
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== ignored_texture
+A texture BLODGR1 index=0 frames=2
+F 0 8
+F 1 8
+LF
+LT 0 0 1
+=== ignored_with_one_frame_is_fine
+LF
+LT
+=== ignored_with_rand_and_garbage
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 5\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 3\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 1\r\n\r\n
+W TScriptEngine.MustGetString(): Missing string at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NOSUCH pic 1 rand 2 4 pic 2 foo 5 pic 3 tics 1\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+LF
+LT
+=== flat_name_is_a_texture
+LF
+LT
+=== texture_name_is_a_flat
+LF
+LT
+=== one_frame_error
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== no_frames_error
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== no_frames_before_next
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== unknown_kind_first
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== unknown_kind_after_ignored_texture
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+A texture BLODGR1 index=0 frames=2
+F 0 8
+F 1 8
+LF
+LT 0 0 1
+=== unknown_kind_after_kept_animation
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+A texture BLODGR1 index=0 frames=2
+F 0 8
+F 1 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT 0 0 1
+=== unknown_kind_after_ignored_flat
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+LF
+LT
+=== unknown_frame_keyword
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== unknown_frame_keyword_last
+W P_InitFTAnims(): Unknown animation type: foo\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 9\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: FWATER1\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 1\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 8\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 2\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: 8\r\n\r\n
+W TScriptEngine.MustGetString(): Missing string at Line 6\r\n
+W ==========================================================================\r\n
+W 00003     pic 5 foo 9\r\n
+W 00004     flat FWATER1 pic 1 tics 8 pic 2 tics 8\r\n
+W 00005 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5 8
+LT
+=== missing_pic_number
+W TScriptEngine.GetInteger(): Bad numeric constant "tics" at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001 *** pic tics 8\r\n
+W 00002     pic 2 tics 8\r\n
+W 00003     \r\n
+W ==========================================================================\r\n
+W \r\n
+W TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001 *** pic tics 8\r\n
+W 00002     pic 2 tics 8\r\n
+W 00003     \r\n
+W ==========================================================================\r\n
+W \r\n
+W P_InitFTAnims(): Unknown animation type: 8\r\n\r\n
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== missing_pic_number_after_value
+W TScriptEngine.GetInteger(): Bad numeric constant "foo" at Line 3\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001     pic 4 tics 8\r\n
+W 00002 *** pic foo tics 8\r\n
+W 00003     pic 2 tics 8\r\n
+W 00004     \r\n
+W ==========================================================================\r\n
+W \r\n
+W TScriptEngine.MustGetInteger(): Missing integer at Line 3\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001     pic 4 tics 8\r\n
+W 00002 *** pic foo tics 8\r\n
+W 00003     pic 2 tics 8\r\n
+W 00004     \r\n
+W ==========================================================================\r\n
+W \r\n
+A flat NUKAGE1 index=4 frames=3
+F 7 8
+F 3 8
+F 5 8
+LF 4 7 3 5
+LT
+=== bad_tics_number
+W TScriptEngine.GetInteger(): Bad numeric constant "xyz" at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001 *** pic 1 tics xyz\r\n
+W 00002     pic 2 tics 8\r\n
+W 00003     pic 3 tics 8\r\n
+W 00004     \r\n
+W ==========================================================================\r\n
+W \r\n
+W TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1\r\n
+W 00001 *** pic 1 tics xyz\r\n
+W 00002     pic 2 tics 8\r\n
+W 00003     pic 3 tics 8\r\n
+W 00004     \r\n
+W ==========================================================================\r\n
+W \r\n
+A flat NUKAGE1 index=4 frames=3
+F 4 0
+F 5 8
+F 6 8
+LF 4 4 5 6
+LT
+=== eof_after_tics
+W TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1 pic 1 tics 8 pic 2 tics\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 2
+LF 4 4 5
+LT
+=== eof_after_name
+W TScriptEngine.MustGetString(): Missing string at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+LF
+LT
+=== eof_after_pic
+W TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1 pic 1 tics 8 pic\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+W TScriptEngine.MustGetString(): Missing string at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1 pic 1 tics 8 pic\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+W P_InitFTAnims(): Unknown animation type: pic\r\n\r\n
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== eof_in_rand
+W TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1 pic 1 tics 8 pic 2 rand 3\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 196864
+LF 4 4 5
+LT
+=== eof_after_pic_number
+W TScriptEngine.MustGetString(): Missing string at Line 2\r\n
+W ==========================================================================\r\n
+W 00000     flat NUKAGE1 pic 1 tics 8 pic 2\r\n
+W 00001 *** \r\n
+W ==========================================================================\r\n
+W \r\n
+W P_InitFTAnims(): Unknown animation type: 2\r\n\r\n
+E P_InitFTAnims(): AnimDef has framecount < 2.
+=== pic_before_any_animation
+W P_InitFTAnims(): Unknown animation type: pic\r\n\r\n
+W P_InitFTAnims(): Unknown animation type: tics\r\n\r\n
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== braces_and_commas
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== long_name
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== same_flat_twice
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 4
+F 6 4
+LF 4 4 5 4 4 6
+LT
+=== pics_out_of_order
+A flat FWATER1 index=0 frames=4
+F 3 8
+F 0 8
+F 2 8
+F 1 8
+LF 0 3 0 2 1
+LT
+=== many_blank_lines
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== crlf_line_endings
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5
+LT
+=== gen_animations_limit
+E P_InitFTAnims(): too many AnimDefs (128).
+=== gen_animations_at_limit
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+A flat NUKAGE1 index=4 frames=2
+F 4 8
+F 5 8
+LF 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5 4 4 5
+LT
+=== gen_frames_limit
+E P_InitFTAnims(): too many FrameDefs (512).
+=== gen_frames_at_limit
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+A flat NUKAGE1 index=4 frames=8
+F 4 8
+F 5 8
+F 6 8
+F 7 8
+F 8 8
+F 9 8
+F 10 8
+F 11 8
+LF 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11 4 4 5 6 7 8 9 10 11
+LT
+=== gen_frames_just_over
+E P_InitFTAnims(): too many FrameDefs (512).
