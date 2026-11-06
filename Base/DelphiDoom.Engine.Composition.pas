@@ -45,6 +45,11 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.Imaging.Intf,
+  DelphiDoom.Imaging.Factory,
+{$IFNDEF OPENGL}
+  r_grow,
+{$ENDIF}
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   c_cmds,
@@ -345,6 +350,14 @@ begin
   C_ConfigureCommands(LRegistry, TConsoleFactory.CreateInterpreter(LRegistry));
 end;
 
+procedure ComposeImaging;
+begin
+{$IFNDEF OPENGL}
+  R_ConfigureGrow(TImagingFactory.CreateSpanGrower);
+{$ENDIF}
+  R_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -412,6 +425,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposeImaging;
   ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);

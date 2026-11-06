@@ -25,7 +25,6 @@
 //------------------------------------------------------------------------------
 
 {$I Doom32.inc}
-
 unit r_grow;
 
 interface
@@ -33,7 +32,16 @@ interface
 uses
   r_cache_walls,
   r_cache_flats,
-  r_hires;
+  r_hires,
+  DelphiDoom.Imaging.Intf;
+
+//==============================================================================
+//
+// R_ConfigureGrow
+// The grower of spans of Libs\Imaging, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureGrow(const AGrower: IImagingSpanGrower);
 
 //==============================================================================
 //
@@ -51,121 +59,6 @@ procedure R_GrowSpan64to256(const p: Pds32cacheinfo_t);
 
 //==============================================================================
 //
-// R_GrowSpan64to512
-//
-//==============================================================================
-procedure R_GrowSpan64to512(const p: Pds32cacheinfo_t);
-
-var
-  spanpixels_left: array[0..4095] of integer;
-  spanpixels_down: array[0..4095] of integer;
-  spanpixels_leftdown: array[0..4095] of integer;
-
-//==============================================================================
-//
-// R_InitSpanTables
-//
-//==============================================================================
-procedure R_InitSpanTables;
-
-implementation
-
-uses
-  d_delphi,
-  m_fixed,
-  r_flatinfo;
-
-//==============================================================================
-//
-// R_GrowSpan64to128
-//
-//==============================================================================
-procedure R_GrowSpan64to128(const p: Pds32cacheinfo_t);
-var
-  i: integer;
-  dest: PLongWord;
-  cA, cB, cC, cD: LongWord;
-  p1, p2: Pds32_t;
-begin
-  if p.scale <> ds64x64 then
-    exit;
-  p1 := R_Get_ds32(p);
-  p.scale := ds128x128;
-  p2 := R_Get_ds32(p);
-  dest := @p2[0];
-  for i := 0 to 4095 do
-  begin
-    cA := p1[i];
-    cB := p1[spanpixels_left[i]];
-    cC := p1[spanpixels_down[i]];
-    cD := p1[spanpixels_leftdown[i]];
-    dest^ := cA;
-    inc(dest);
-    dest^ := R_ColorMidAverage(cA, cB);
-    inc(dest, 127);
-    dest^ := R_ColorMidAverage(cA, cC);
-    cA := dest^;
-    inc(dest);
-    dest^ := R_ColorMidAverage(cA, R_ColorMidAverage(cB, cD));
-    if i and 63 = 63 then
-      inc(dest)
-    else
-      dec(dest, 127);
-  end;
-end;
-
-//==============================================================================
-//
-// R_GrowSpan64to256
-//
-//==============================================================================
-procedure R_GrowSpan64to256(const p: Pds32cacheinfo_t);
-var
-  i: integer;
-  dest: PLongWord;
-  cA, cB, cC, cD: LongWord;
-  cx, cy: LongWord;
-  p1, p2: Pds32_t;
-  xmod, ymod: integer;
-  spot, lspot: integer;
-  xfrac, yfrac: integer;
-begin
-  if p.scale <> ds64x64 then
-    exit;
-  p1 := R_Get_ds32(p);
-  p.scale := ds256x256;
-  p2 := R_Get_ds32(p);
-  dest := @p2[0];
-  lspot := 0;
-  cA := p1[0];
-  cB := p1[spanpixels_left[0]];
-  cC := p1[spanpixels_down[0]];
-  cD := p1[spanpixels_leftdown[0]];
-  for i := 0 to $FFFF do
-  begin
-    xfrac := i and 255;
-    yfrac := i shr 8;
-    spot := xfrac shr 2 + (yfrac shr 2) * 64;
-    if spot <> lspot then
-    begin
-      cA := p1[spot];
-      cB := p1[spanpixels_left[spot]];
-      cC := p1[spanpixels_down[spot]];
-      cD := p1[spanpixels_leftdown[spot]];
-      lspot := spot;
-    end;
-    xmod := (i and 3) * $4000;
-    ymod := (yfrac) and 3 * $4000;
-
-    cx := R_ColorAverage(cA, cB, xmod);
-    cy := R_ColorAverage(cC, cD, xmod);
-
-    dest^ := R_ColorAverage(cx, cy, ymod);
-    inc(dest);
-  end;
-end;
-
-//==============================================================================
 // R_GrowSpan64to512
 //
 // JVAL
@@ -174,93 +67,99 @@ end;
 //
 //==============================================================================
 procedure R_GrowSpan64to512(const p: Pds32cacheinfo_t);
+
+implementation
+
+uses
+  d_delphi,
+  i_system,
+  r_flatinfo,
+  DelphiDoom.Imaging.Types;
+
 var
-  i: integer;
-  dest: PLongWord;
-  cA, cB, cC, cD: LongWord;
-  cx, cy: LongWord;
+  span_grower: IImagingSpanGrower;
+
+//==============================================================================
+//
+// R_ConfigureGrow
+//
+//==============================================================================
+procedure R_ConfigureGrow(const AGrower: IImagingSpanGrower);
+begin
+  span_grower := AGrower;
+end;
+
+type
+  growfunc_t = reference to function(const source: TImagingPixels): TImagingPixels;
+
+// The cache keeps the pixels: a 64x64 span goes in, the bigger one goes out
+procedure R_GrowSpan(const p: Pds32cacheinfo_t; const newscale: dsscale_t; const count: integer;
+  const grow: growfunc_t);
+var
+  source: TImagingPixels;
+  grown: TImagingPixels;
   p1, p2: Pds32_t;
-  xmod, ymod: integer;
-  spot, lspot: integer;
-  xfrac, yfrac: integer;
 begin
   if p.scale <> ds64x64 then
     exit;
+
+  SetLength(source, 4096);
   p1 := R_Get_ds32(p);
-  p.scale := ds512x512;
+  Move(p1[0], source[0], 4096 * SizeOf(LongWord));
+
+  grown := grow(source);
+
+  p.scale := newscale;
   p2 := R_Get_ds32(p);
-  dest := @p2[0];
-  lspot := 0;
-  cA := p1[0];
-  cB := p1[spanpixels_left[0]];
-  cC := p1[spanpixels_down[0]];
-  cD := p1[spanpixels_leftdown[0]];
-  for i := 0 to $3FFFF do
-  begin
-    xfrac := i and 511;
-    yfrac := i shr 9;
-    spot := xfrac shr 3 + (yfrac shr 3) * 64;
-    if spot <> lspot then
-    begin
-      cA := p1[spot];
-      cB := p1[spanpixels_left[spot]];
-      cC := p1[spanpixels_down[spot]];
-      cD := p1[spanpixels_leftdown[spot]];
-      lspot := spot;
-    end;
-    xmod := (i and 7) * $2000;
-    ymod := (yfrac) and 7 * $2000;
-
-    cx := R_ColorAverage(cA, cB, xmod);
-    cy := R_ColorAverage(cC, cD, xmod);
-
-    dest^ := R_ColorAverage(cx, cy, ymod);
-    inc(dest);
-  end;
+  Move(grown[0], p2[0], count * SizeOf(LongWord));
 end;
 
 //==============================================================================
 //
-// R_ExpandColumn
-// Asuming factor < DC_HIRESFACTOR
+// R_GrowSpan64to128
 //
 //==============================================================================
-procedure R_ExpandColumn(const dc32: Pdc32_t; const factor: integer);
-var
-  i, j: integer;
+procedure R_GrowSpan64to128(const p: Pds32cacheinfo_t);
 begin
-  for i := 128 downto 0 do
-  begin
-    for j := 0 to factor - 1 do
+  if span_grower = nil then
+    I_Error('R_GrowSpan64to128(): the images are not configured (ComposeEngine was not called)');
+  R_GrowSpan(p, ds128x128, 128 * 128,
+    function(const source: TImagingPixels): TImagingPixels
     begin
-      dc32[i * factor + j] := R_ColorAverage(dc32[i and 127], dc32[(i + 1) and 127], j * FRACUNIT div factor);
-    end;
-  end;
+      result := span_grower.Grow64to128(source);
+    end);
 end;
 
 //==============================================================================
 //
-// R_InitSpanTables
+// R_GrowSpan64to256
 //
 //==============================================================================
-procedure R_InitSpanTables;
-var
-  i: integer;
+procedure R_GrowSpan64to256(const p: Pds32cacheinfo_t);
 begin
-  for i := 0 to 4095 do
-    if (i + 1) mod 64 = 0 then
-      spanpixels_left[i] := (i - 63) and 4095
-    else
-      spanpixels_left[i] := (i + 1) and 4095;
+  if span_grower = nil then
+    I_Error('R_GrowSpan64to256(): the images are not configured (ComposeEngine was not called)');
+  R_GrowSpan(p, ds256x256, 256 * 256,
+    function(const source: TImagingPixels): TImagingPixels
+    begin
+      result := span_grower.Grow64to256(source);
+    end);
+end;
 
-  for i := 0 to 4095 do
-    spanpixels_down[i] := (i + 64) and 4095;
-
-  for i := 0 to 4095 do
-    if (i + 65) mod 64 = 0 then
-      spanpixels_leftdown[i] := (i + 1) and 4095
-    else
-      spanpixels_leftdown[i] := (i + 65) and 4095;
+//==============================================================================
+//
+// R_GrowSpan64to512
+//
+//==============================================================================
+procedure R_GrowSpan64to512(const p: Pds32cacheinfo_t);
+begin
+  if span_grower = nil then
+    I_Error('R_GrowSpan64to512(): the images are not configured (ComposeEngine was not called)');
+  R_GrowSpan(p, ds512x512, 512 * 512,
+    function(const source: TImagingPixels): TImagingPixels
+    begin
+      result := span_grower.Grow64to512(source);
+    end);
 end;
 
 end.

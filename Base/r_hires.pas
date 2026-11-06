@@ -1534,7 +1534,6 @@ begin
   R_InitLightBoost;
 {$IFNDEF OPENGL}
   R_InitLightTexture;
-  R_InitSpanTables;
 {$ENDIF}
 end;
 
