@@ -1,0 +1,227 @@
+# Corpus of the console lines (Libs\Console, issue #76).
+# One line = one input of C_ExecuteCmd. "@net 0|1" switches the game to single player / network.
+# "@text ..." runs C_ExecCommands on a text (\r \n \t are escapes). A line that starts with "#" is a comment.
+# The commands and the variables are the ones registered by the harness and by the test (see README.md).
+@net 0
+# --- parameters: none, one, two, many, spaces, tabs, case
+echo
+echo hello
+echo hello world
+echo hello world again
+ECHO Hello
+eChO MiXed Case
+  echo   padded   args\s\s\s
+echo\s\s\s\s
+echo\tx
+\techo x
+say hi there
+# --- aliases registered with commas and spaces
+multi1 a
+multi2 b c
+multi3 d e f
+Multi1
+spaced
+  spaced\s\s
+mixedcase x
+MIXEDCASE
+lead x
+trail x
+a x
+b x
+, x
+,
+a,b
+# --- unknown commands: nothing to run, GET / SET fallback
+unknown
+unknown a
+unknown a b
+unknown a b c
+unknown a b c d
+GET
+SET
+get a b
+# --- list of the commands
+list
+cmdlist
+listcmds
+list e*
+list *o
+list *cho*
+list echo
+list e
+list zz*
+list m*1
+list *
+list **
+list mu*i*
+list a*a
+list *a*b*
+list ECHO
+# --- get
+get
+get fraglimit
+get FRAGLIMIT
+get FragLimit
+get showfps
+get autorun
+get playername
+get version
+get screenwidth
+get skill
+get f*
+get s*
+get *
+get *e
+get *r*
+get nosuch
+get nosuch*
+get echo
+get dir
+get get
+get set
+get fr*mit
+get f*a*
+# --- variables used as commands
+fraglimit
+FRAGLIMIT
+fraglimit 7
+fraglimit 8 9
+showfps
+showfps on
+showfps off
+playername
+playername Bob
+playername Bob Smith
+version
+version 2
+screenwidth
+# --- set: usage, masks, missing value
+set
+set fraglimit
+set showfps
+set f*
+set s*
+set *
+set *e
+set nosuch*
+set nosuch
+set nosuch 1
+set nosuch 1 2
+# --- set: integers
+set fraglimit 5
+set fraglimit abc
+set fraglimit 0x10
+set fraglimit 0X10
+set fraglimit -0x10
+set fraglimit -0X10
+set fraglimit #12
+set fraglimit #-12
+set fraglimit #abc
+set fraglimit $ff
+set fraglimit 0x
+set fraglimit 0xZZ
+set fraglimit -5
+set fraglimit +5
+set fraglimit 007
+set fraglimit 99999999999
+set fraglimit 2147483647
+set fraglimit 2147483648
+set fraglimit -2147483648
+set fraglimit 1.5
+set fraglimit 12 extra
+set fraglimit 12   extra   words
+set skill 4
+set SKILL 1
+# --- set: booleans
+set showfps on
+set showfps ON
+set showfps yes
+set showfps true
+set showfps 1
+set showfps off
+set showfps no
+set showfps false
+set showfps 0
+set showfps maybe
+set showfps on
+set showfps maybe
+set showfps 2
+# --- set: strings, with spaces
+set playername Bob
+set playername Bob Smith
+set playername  spaced   out\s\s
+set playername 123
+set playername 0x10
+# --- set: read only and by game mode
+set version v2
+set screenwidth 800
+set autorun off
+set autorun on
+# --- set: a command with the name of the variable
+set echo foo
+set echo foo bar
+set dir x
+set get fraglimit
+# --- typeof
+typeof
+typeof fraglimit
+typeof FRAGLIMIT
+typeof showfps
+typeof playername
+typeof nosuch
+typeof f*
+typeof *
+typeof nosuch*
+typeof echo
+# --- printf
+printf
+printf hello
+printf hello world
+printf 50% sure
+write a b c
+writeln
+# --- the same in a network game
+@net 1
+get autorun
+set autorun off
+get autorun
+set autorun on
+set fraglimit 3
+get fraglimit
+set skill 3
+set showfps off
+set version v3
+set screenwidth 1
+set f*
+set *
+set
+autorun
+autorun off
+fraglimit 9
+@net 0
+set autorun off
+get autorun
+set fraglimit 11
+get fraglimit
+# --- texts of commands (C_ExecCommands)
+@text echo one\necho two
+@text echo one\r\necho two\r\n
+@text   echo one  \n\n// echo hidden\n   // echo hidden\n\techo tab
+@text set fraglimit 21\nget fraglimit\nunknown x
+@text echo a\recho b
+@text
+@text // only a comment
+@text echo x\n    \n  echo y
+# --- command files (C_ExecCommandFile): the paths are relative to the folder of the corpus
+exec
+exec scripts/a
+exec scripts/a.con
+exec SCRIPTS/A
+exec scripts/b
+exec scripts/rec1
+exec scripts/self
+exec scripts/empty
+exec scripts/crlf
+exec scripts/missing
+execcommandfile scripts/a extra
+get fraglimit

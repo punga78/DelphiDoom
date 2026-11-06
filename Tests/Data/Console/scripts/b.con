@@ -1,0 +1,3 @@
+echo from b
+exec scripts/a
+echo back in b

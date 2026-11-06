@@ -1,0 +1,3 @@
+echo r1
+exec scripts/rec2
+echo r1 end

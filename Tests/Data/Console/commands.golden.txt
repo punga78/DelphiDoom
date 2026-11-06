@@ -1,0 +1,643 @@
+@net 0
+> echo
+echo<|>\n
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=player version=v1 screenwidth=640
+> echo hello
+echo<hello|>\n
+=> True
+> echo hello world
+echo<hello|world>\n
+=> True
+> echo hello world again
+echo<hello|world again>\n
+=> True
+> ECHO Hello
+echo<Hello|>\n
+=> True
+> eChO MiXed Case
+echo<MiXed|Case>\n
+=> True
+>   echo   padded   args\s\s\s
+
+=> False
+> echo\s\s\s\s
+echo<|>\n
+=> True
+> echo\tx
+Unknown command\n
+=> True
+> \techo x
+echo<x|>\n
+=> True
+> say hi there
+echo<hi|there>\n
+=> True
+> multi1 a
+multi<a|>\n
+=> True
+> multi2 b c
+multi<b|c>\n
+=> True
+> multi3 d e f
+multi<d|e f>\n
+=> True
+> Multi1
+multi<|>\n
+=> True
+> spaced
+Unknown command\n
+=> True
+>   spaced\s\s
+Usage is:\nset [name] [value]\n Configures the following settings:\n  fraglimit\n  skill\n  showfps\n  playername\n
+=> True
+> mixedcase x
+edge<x|>\n
+=> True
+> MIXEDCASE
+edge<|>\n
+=> True
+> lead x
+edge<x|>\n
+=> True
+> trail x
+edge<x|>\n
+=> True
+> a x
+edge<x|>\n
+=> True
+> b x
+edge<x|>\n
+=> True
+> , x
+Unknown command\n
+=> True
+> ,
+Unknown command\n
+=> True
+> a,b
+Unknown command\n
+=> True
+> unknown
+Unknown command\n
+=> True
+> unknown a
+Unknown command\n
+=> True
+> unknown a b
+
+=> False
+> unknown a b c
+
+=> False
+> unknown a b c d
+
+=> False
+> GET
+Usage is:\nget [name]\n Display the current settings of:\n  fraglimit\n  skill\n  showfps\n  autorun\n  playername\n  version\n  screenwidth\n
+=> True
+> SET
+Usage is:\nset [name] [value]\n Configures the following settings:\n  fraglimit\n  skill\n  showfps\n  playername\n
+=> True
+> get a b
+edge<|>\n
+=> True
+> list
+  SPACED  \nA\nB\nCMDLIST\nDIR\nECHO\nEXEC\nEXECCOMMANDFILE\nGET\nLEAD\nLIST\nLISTCMDS\nLS\nMIXEDCASE\nMULTI1\nMULTI2\nMULTI3\nPRINTF\nSAY\nSET\nTRAIL\nTYPEOF\nWRITE\nWRITELN\n24 total commands.\n
+=> True
+> cmdlist
+  SPACED  \nA\nB\nCMDLIST\nDIR\nECHO\nEXEC\nEXECCOMMANDFILE\nGET\nLEAD\nLIST\nLISTCMDS\nLS\nMIXEDCASE\nMULTI1\nMULTI2\nMULTI3\nPRINTF\nSAY\nSET\nTRAIL\nTYPEOF\nWRITE\nWRITELN\n24 total commands.\n
+=> True
+> listcmds
+  SPACED  \nA\nB\nCMDLIST\nDIR\nECHO\nEXEC\nEXECCOMMANDFILE\nGET\nLEAD\nLIST\nLISTCMDS\nLS\nMIXEDCASE\nMULTI1\nMULTI2\nMULTI3\nPRINTF\nSAY\nSET\nTRAIL\nTYPEOF\nWRITE\nWRITELN\n24 total commands.\n
+=> True
+> list e*
+ECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+> list *o
+ECHO\nEXECCOMMANDFILE\nTYPEOF\n3 total commands.\n
+=> True
+> list *cho*
+ECHO\n1 total commands.\n
+=> True
+> list echo
+ECHO\n1 total commands.\n
+=> True
+> list e
+ECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+> list zz*
+0 total commands.\n
+=> True
+> list m*1
+MULTI1\n1 total commands.\n
+=> True
+> list *
+  SPACED  \nA\nB\nCMDLIST\nDIR\nECHO\nEXEC\nEXECCOMMANDFILE\nGET\nLEAD\nLIST\nLISTCMDS\nLS\nMIXEDCASE\nMULTI1\nMULTI2\nMULTI3\nPRINTF\nSAY\nSET\nTRAIL\nTYPEOF\nWRITE\nWRITELN\n24 total commands.\n
+=> True
+> list **
+  SPACED  \nA\nB\nCMDLIST\nDIR\nECHO\nEXEC\nEXECCOMMANDFILE\nGET\nLEAD\nLIST\nLISTCMDS\nLS\nMIXEDCASE\nMULTI1\nMULTI2\nMULTI3\nPRINTF\nSAY\nSET\nTRAIL\nTYPEOF\nWRITE\nWRITELN\n24 total commands.\n
+=> True
+> list mu*i*
+MULTI1\nMULTI2\nMULTI3\n3 total commands.\n
+=> True
+> list a*a
+0 total commands.\n
+=> True
+> list *a*b*
+0 total commands.\n
+=> True
+> list ECHO
+ECHO\n1 total commands.\n
+=> True
+> get
+Usage is:\nget [name]\n Display the current settings of:\n  fraglimit\n  skill\n  showfps\n  autorun\n  playername\n  version\n  screenwidth\n
+=> True
+> get fraglimit
+fraglimit=0\n
+=> True
+> get FRAGLIMIT
+FRAGLIMIT=0\n
+=> True
+> get FragLimit
+FragLimit=0\n
+=> True
+> get showfps
+showfps=OFF\n
+=> True
+> get autorun
+autorun=ON\n
+=> True
+> get playername
+playername=player\n
+=> True
+> get version
+version=v1\n
+=> True
+> get screenwidth
+screenwidth=640\n
+=> True
+> get skill
+skill=2\n
+=> True
+> get f*
+fraglimit=0\n
+=> True
+> get s*
+skill=2\nshowfps=OFF\nscreenwidth=640\n
+=> True
+> get *
+fraglimit=0\nskill=2\nshowfps=OFF\nautorun=ON\nplayername=player\nversion=v1\nscreenwidth=640\n
+=> True
+> get *e
+playername=player\nversion=v1\nscreenwidth=640\n
+=> True
+> get *r*
+fraglimit=0\nautorun=ON\nplayername=player\nversion=v1\nscreenwidth=640\n
+=> True
+> get nosuch
+Unknown command\n
+=> True
+> get nosuch*
+
+=> True
+> get echo
+echo<|>\n
+=> True
+> get dir
+dir<|>\n
+=> True
+> get get
+Usage is:\nget [name]\n Display the current settings of:\n  fraglimit\n  skill\n  showfps\n  autorun\n  playername\n  version\n  screenwidth\n
+=> True
+> get set
+Usage is:\nset [name] [value]\n Configures the following settings:\n  fraglimit\n  skill\n  showfps\n  playername\n
+=> True
+> get fr*mit
+fraglimit=0\n
+=> True
+> get f*a*
+fraglimit=0\n
+=> True
+> fraglimit
+FRAGLIMIT=0\n
+=> True
+> FRAGLIMIT
+FRAGLIMIT=0\n
+=> True
+> fraglimit 7
+
+=> True
+vars: fraglimit=7 skill=2 showfps=0 autorun=1 playername=player version=v1 screenwidth=640
+> fraglimit 8 9
+
+=> False
+> showfps
+SHOWFPS=OFF\n
+=> True
+> showfps on
+
+=> True
+vars: fraglimit=7 skill=2 showfps=1 autorun=1 playername=player version=v1 screenwidth=640
+> showfps off
+
+=> True
+vars: fraglimit=7 skill=2 showfps=0 autorun=1 playername=player version=v1 screenwidth=640
+> playername
+PLAYERNAME=player\n
+=> True
+> playername Bob
+
+=> True
+vars: fraglimit=7 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> playername Bob Smith
+
+=> False
+> version
+VERSION=v1\n
+=> True
+> version 2
+[warn] Can not set readonly variable: VERSION\n
+=> True
+> screenwidth
+SCREENWIDTH=640\n
+=> True
+> set
+Usage is:\nset [name] [value]\n Configures the following settings:\n  fraglimit\n  skill\n  showfps\n  playername\n
+=> True
+> set fraglimit
+Please give the value to set fraglimit\n
+=> True
+> set showfps
+Please give the value to set showfps\n
+=> True
+> set f*
+fraglimit\n
+=> True
+> set s*
+skill\nshowfps\n
+=> True
+> set *
+fraglimit\nskill\nshowfps\nplayername\n
+=> True
+> set *e
+playername\n
+=> True
+> set nosuch*
+
+=> True
+> set nosuch
+Please give the value to set nosuch\n
+=> True
+> set nosuch 1
+Unknown command\n
+=> True
+> set nosuch 1 2
+Unknown command\n
+=> True
+> set fraglimit 5
+
+=> True
+vars: fraglimit=5 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit abc
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 0x10
+
+=> True
+vars: fraglimit=16 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 0X10
+
+=> True
+> set fraglimit -0x10
+
+=> True
+vars: fraglimit=-16 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit -0X10
+
+=> True
+> set fraglimit #12
+
+=> True
+vars: fraglimit=12 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit #-12
+
+=> True
+vars: fraglimit=-12 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit #abc
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit $ff
+
+=> True
+vars: fraglimit=255 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 0x
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 0xZZ
+
+=> True
+> set fraglimit -5
+
+=> True
+vars: fraglimit=-5 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit +5
+
+=> True
+vars: fraglimit=5 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 007
+
+=> True
+vars: fraglimit=7 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 99999999999
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 2147483647
+
+=> True
+vars: fraglimit=2147483647 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 2147483648
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit -2147483648
+
+=> True
+vars: fraglimit=-2147483648 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 1.5
+
+=> True
+vars: fraglimit=0 skill=2 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set fraglimit 12 extra
+
+=> True
+> set fraglimit 12   extra   words
+
+=> True
+> set skill 4
+
+=> True
+vars: fraglimit=0 skill=4 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set SKILL 1
+
+=> True
+vars: fraglimit=0 skill=1 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set showfps on
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=Bob version=v1 screenwidth=640
+> set showfps ON
+
+=> True
+> set showfps yes
+
+=> True
+> set showfps true
+
+=> True
+> set showfps 1
+
+=> True
+> set showfps off
+
+=> True
+vars: fraglimit=0 skill=1 showfps=0 autorun=1 playername=Bob version=v1 screenwidth=640
+> set showfps no
+
+=> True
+> set showfps false
+
+=> True
+> set showfps 0
+
+=> True
+> set showfps maybe
+
+=> True
+> set showfps on
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=Bob version=v1 screenwidth=640
+> set showfps maybe
+
+=> True
+> set showfps 2
+
+=> True
+> set playername Bob
+
+=> True
+> set playername Bob Smith
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=Bob Smith version=v1 screenwidth=640
+> set playername  spaced   out\s\s
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=spaced   out version=v1 screenwidth=640
+> set playername 123
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=123 version=v1 screenwidth=640
+> set playername 0x10
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=0x10 version=v1 screenwidth=640
+> set version v2
+[warn] Can not set readonly variable: version\n
+=> True
+> set screenwidth 800
+[warn] Can not set readonly variable: screenwidth\n
+=> True
+> set autorun off
+
+=> True
+> set autorun on
+
+=> True
+> set echo foo
+echo<foo|>\n
+=> True
+> set echo foo bar
+echo<foo bar|>\n
+=> True
+> set dir x
+dir<x|>\n
+=> True
+> set get fraglimit
+fraglimit=0\n
+=> True
+> typeof
+Usage is:\ntypeof [name]\n Display the type of variable.\nUnknown variable: \n
+=> True
+> typeof fraglimit
+fraglimit is integer\n
+=> True
+> typeof FRAGLIMIT
+FRAGLIMIT is integer\n
+=> True
+> typeof showfps
+showfps is boolean\n
+=> True
+> typeof playername
+playername is string\n
+=> True
+> typeof nosuch
+Unknown variable: nosuch\n
+=> True
+> typeof f*
+fraglimit is integer\n
+=> True
+> typeof *
+fraglimit is integer\nskill is integer\nshowfps is boolean\nautorun is boolean\nplayername is string\nversion is string\nscreenwidth is integer\n
+=> True
+> typeof nosuch*
+
+=> True
+> typeof echo
+Unknown variable: echo\n
+=> True
+> printf
+\n
+=> True
+> printf hello
+hello\n
+=> True
+> printf hello world
+hello world\n
+=> True
+> printf 50% sure
+50% sure\n
+=> True
+> write a b c
+a b c\n
+=> True
+> writeln
+\n
+=> True
+@net 1
+> get autorun
+autorun=ON\n
+=> True
+> set autorun off
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=0 playername=0x10 version=v1 screenwidth=640
+> get autorun
+autorun=OFF\n
+=> True
+> set autorun on
+
+=> True
+vars: fraglimit=0 skill=1 showfps=1 autorun=1 playername=0x10 version=v1 screenwidth=640
+> set fraglimit 3
+[warn] Can not set variable: fraglimit during network game\n
+=> True
+> get fraglimit
+fraglimit=0\n
+=> True
+> set skill 3
+
+=> True
+vars: fraglimit=0 skill=3 showfps=1 autorun=1 playername=0x10 version=v1 screenwidth=640
+> set showfps off
+
+=> True
+vars: fraglimit=0 skill=3 showfps=0 autorun=1 playername=0x10 version=v1 screenwidth=640
+> set version v3
+[warn] Can not set readonly variable: version\n
+=> True
+> set screenwidth 1
+[warn] Can not set readonly variable: screenwidth\n
+=> True
+> set f*
+
+=> True
+> set *
+skill\nshowfps\nautorun\nplayername\n
+=> True
+> set
+Usage is:\nset [name] [value]\n Configures the following settings:\n  skill\n  showfps\n  autorun\n  playername\n
+=> True
+> autorun
+AUTORUN=ON\n
+=> True
+> autorun off
+
+=> True
+vars: fraglimit=0 skill=3 showfps=0 autorun=0 playername=0x10 version=v1 screenwidth=640
+> fraglimit 9
+[warn] Can not set variable: FRAGLIMIT during network game\n
+=> True
+@net 0
+> set autorun off
+
+=> True
+> get autorun
+autorun=OFF\n
+=> True
+> set fraglimit 11
+
+=> True
+vars: fraglimit=11 skill=3 showfps=0 autorun=0 playername=0x10 version=v1 screenwidth=640
+> get fraglimit
+fraglimit=11\n
+=> True
+@text echo one\necho two
+echo<one|>\necho<two|>\n
+@text echo one\r\necho two\r\n
+echo<one|>\necho<two|>\n
+@text   echo one  \n\n// echo hidden\n   // echo hidden\n\techo tab
+echo<one|>\necho<tab|>\n
+@text set fraglimit 21\nget fraglimit\nunknown x
+fraglimit=21\nUnknown command\n
+@text echo a\recho b
+echo<a|>\necho<b|>\n
+@text
+
+@text // only a comment
+
+@text echo x\n    \n  echo y
+echo<x|>\necho<y|>\n
+> exec
+Usage:\n exec [command file(*.con)]\n
+=> True
+vars: fraglimit=21 skill=3 showfps=0 autorun=0 playername=0x10 version=v1 screenwidth=640
+> exec scripts/a
+ Running command file: <DIR>\SCRIPTS\A.CON\necho<from|a>\nfraglimit=31\nUnknown command\nECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+vars: fraglimit=31 skill=3 showfps=0 autorun=0 playername=0x10 version=v1 screenwidth=640
+> exec scripts/a.con
+ Running command file: <DIR>\SCRIPTS\A.CON\necho<from|a>\nfraglimit=31\nUnknown command\nECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+> exec SCRIPTS/A
+ Running command file: <DIR>\SCRIPTS\A.CON\necho<from|a>\nfraglimit=31\nUnknown command\nECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+> exec scripts/b
+ Running command file: <DIR>\SCRIPTS\B.CON\necho<from|b>\n Running command file: <DIR>\SCRIPTS\A.CON\necho<from|a>\nfraglimit=31\nUnknown command\nECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\necho<back|in b>\n
+=> True
+> exec scripts/rec1
+ Running command file: <DIR>\SCRIPTS\REC1.CON\necho<r1|>\n Running command file: <DIR>\SCRIPTS\REC2.CON\necho<r2|>\n[warn]  Recursive calls of con files are not allowed(scripts/rec1)\necho<r2|end>\necho<r1|end>\n
+=> True
+> exec scripts/self
+ Running command file: <DIR>\SCRIPTS\SELF.CON\n[warn]  Recursive calls of con files are not allowed(scripts/self)\n
+=> True
+> exec scripts/empty
+ Running command file: <DIR>\SCRIPTS\EMPTY.CON\n
+=> True
+> exec scripts/crlf
+ Running command file: <DIR>\SCRIPTS\CRLF.CON\necho<first|>\necho<second|>\necho<last|>\n
+=> True
+> exec scripts/missing
+ Command file not found: scripts/missing\n
+=> True
+> execcommandfile scripts/a extra
+ Running command file: <DIR>\SCRIPTS\A.CON\necho<from|a>\nfraglimit=31\nUnknown command\nECHO\nEXEC\nEXECCOMMANDFILE\n3 total commands.\n
+=> True
+> get fraglimit
+fraglimit=31\n
+=> True

@@ -1,0 +1,8 @@
+// comment
+echo from a
+   set fraglimit 31
+get fraglimit
+
+   // indented comment
+unknown thing
+list e*

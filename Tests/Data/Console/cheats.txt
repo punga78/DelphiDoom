@@ -1,0 +1,72 @@
+# Corpus of the cheat sequences (Libs\Console, issue #76).
+# "seq <name> <hex bytes>": a sequence as it is written in st_stuff (scrambled bytes, ending with ff).
+# "feed <name> <keys>": a new cheat (nothing typed yet) receives the keys, one after the other.
+# "more <name> <keys>": the same cheat goes on with more keys. A key can be written \xNN.
+# Per key: the byte in hex, U (unknown), P (pending) or A (acquired, with the parameter in hex between []).
+seq iddqd b2 26 26 aa 26 ff
+seq idmus b2 26 b6 ae ea 01 00 00 ff
+seq idclev b2 26 e2 36 a6 6e 01 00 00 ff
+seq idmypos b2 26 b6 ba 2a f6 ea ff
+seq beholdv b2 26 62 a6 32 f6 36 26 6e ff
+seq idspispopd b2 26 ea 2a b2 ea 2a f6 2a 26 ff
+seq idkfa b2 26 f2 66 a2 ff
+seq idfa b2 26 66 a2 ff
+seq idclip b2 26 e2 36 b2 2a ff
+seq idchoppers b2 26 e2 32 f6 2a 2a a6 6a ea ff
+seq one b2 ff
+# --- a cheat without parameters
+feed iddqd iddqd
+feed iddqd xiddqd
+feed iddqd iiddqd
+feed iddqd iddiddqd
+feed iddqd iddqdiddqd
+feed iddqd iddqdxiddqd
+feed iddqd IDDQD
+feed iddqd iddq
+feed iddqd id
+more iddqd dqd
+more iddqd iddqd
+feed iddqd idd\x00qd
+feed iddqd id\xe2dqd
+feed iddqd i\x80d\xffdqd
+feed iddqd iddqd\x01\x02
+feed iddqd
+# --- sequences that share the first keys
+feed idkfa idkfa
+feed idkfa idfa
+feed idfa idfa
+feed idfa idkfa
+feed idclip idclip
+feed idclip idclev
+feed idspispopd idspispopd
+feed idspispopd idspispopdidspispopd
+feed idspispopd idspidspispopd
+feed idchoppers idchoppers
+feed idmypos idmypos
+feed beholdv idbeholdv
+feed beholdv idbeholdvidbeholdv
+feed one i
+feed one
+feed one \x00
+# --- a cheat with a parameter of two keys
+feed idmus idmus12
+feed idmus idmus1
+more idmus 2
+more idmus 34
+feed idmus idmus99idmus00
+feed idmus idmusab
+feed idmus idmus\x00\x01
+feed idmus idmus12x
+feed idmus idmus12idmus34
+feed idmus idmus1idmus
+feed idmus idmusidmus12
+feed idmus idmu
+feed idmus xidmus12
+feed idmus idmus\x80\xff
+feed idclev idclev3a
+feed idclev idclev01idclev02
+feed idclev idcle
+feed idclev idclev1
+more idclev 2
+more idclev iddqd
+feed idclev idclev12iddqd
