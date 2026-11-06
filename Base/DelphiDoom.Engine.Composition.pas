@@ -32,6 +32,10 @@ uses
   DelphiDoom.Engine.Udmf.SoundResolver,
   m_base,
   p_udmf,
+{$IFNDEF HEXEN}
+  udmf_spec,
+  DelphiDoom.Specials.Factory,
+{$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
@@ -173,6 +177,10 @@ begin
   if not TUdmfGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
   P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);
+{$IFNDEF HEXEN}
+  // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
+  P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
+{$ENDIF}
 end;
 
 end.

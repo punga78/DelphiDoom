@@ -394,6 +394,9 @@ uses
   DelphiDoom.Udmf.Factory in 'Libs\Udmf\DelphiDoom.Udmf.Factory.pas',
   DelphiDoom.Engine.Udmf.SoundResolver in 'Base\DelphiDoom.Engine.Udmf.SoundResolver.pas',
 
+  DelphiDoom.Specials.Intf in 'Libs\Specials\DelphiDoom.Specials.Intf.pas',
+  DelphiDoom.Specials.Registry in 'Libs\Specials\DelphiDoom.Specials.Registry.pas',
+  DelphiDoom.Specials.Factory in 'Libs\Specials\DelphiDoom.Specials.Factory.pas',
   DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
   DelphiDoom.Configuration.Types in 'Libs\Configuration\DelphiDoom.Configuration.Types.pas',
   DelphiDoom.Configuration.Intf in 'Libs\Configuration\DelphiDoom.Configuration.Intf.pas',

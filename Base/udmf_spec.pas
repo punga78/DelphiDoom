@@ -37,7 +37,8 @@ uses
   d_delphi,
   p_mobj_h,
   r_defs,
-  udmf_doors;
+  udmf_doors,
+  DelphiDoom.Specials.Intf;
 
 //==============================================================================
 //
@@ -59,6 +60,15 @@ function P_FindSectorFromTag2(tag: integer; var start: integer): integer;
 //
 //==============================================================================
 function P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t;
+
+//==============================================================================
+//
+// P_ConfigureLineSpecials
+//
+// Gives the registry that runs the line specials (the composition root creates it)
+//
+//==============================================================================
+procedure P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
 
 //==============================================================================
 //
@@ -145,6 +155,7 @@ uses
   m_fixed,
   m_rnd,
   tables,
+  i_system,
   p_acs,
   p_common,
   p_inter,
@@ -167,6 +178,27 @@ uses
   udmf_plats,
   udmf_telept,
   udmf_things;
+
+type
+  /// <summary>A special with the types of the engine</summary>
+  TLineSpecial = reference to function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean;
+
+var
+  lineSpecials: ISpecialRegistry;
+
+//==============================================================================
+//
+// RegisterLineSpecial
+//
+//==============================================================================
+procedure RegisterLineSpecial(const ARegistry: ISpecialRegistry; ANumber: integer; const AHandler: TLineSpecial);
+begin
+  ARegistry.Register(ANumber,
+    function(const AContext: TSpecialContext): Boolean
+    begin
+      result := AHandler(PByteArray(AContext.Args), Pline_t(AContext.Line), AContext.Side, Pmobj_t(AContext.Actor));
+    end);
+end;
 
 //==============================================================================
 //
@@ -568,471 +600,737 @@ end;
 
 //==============================================================================
 //
-// P_ExecuteLineSpecial
+// P_RegisterLineSpecials
 //
 //==============================================================================
-function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
-  side: integer; mo: Pmobj_t): boolean;
+procedure P_RegisterLineSpecials(const ARegistry: ISpecialRegistry);
 begin
-  result := false;
 
-  case special of
+  // Poly Start Line
+  RegisterLineSpecial(ARegistry, 1,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+    end);
 
-    1: // Poly Start Line
-      begin
-      end;
+  // Poly Rotate Left
+  RegisterLineSpecial(ARegistry, 2,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_RotatePoly(line, args, 1, false);
+    end);
 
-    2: // Poly Rotate Left
-      begin
-        result := EVH_RotatePoly(line, args, 1, false);
-      end;
+  // Poly Rotate Right
+  RegisterLineSpecial(ARegistry, 3,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_RotatePoly(line, args, -1, false);
+    end);
 
-    3: // Poly Rotate Right
-      begin
-        result := EVH_RotatePoly(line, args, -1, false);
-      end;
+  // Poly Move
+  RegisterLineSpecial(ARegistry, 4,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_MovePoly(line, args, false, false);
+    end);
 
-    4: // Poly Move
-      begin
-        result := EVH_MovePoly(line, args, false, false);
-      end;
+  // Poly Explicit Line:  Only used in initialization
+  RegisterLineSpecial(ARegistry, 5,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+    end);
 
-    5: // Poly Explicit Line:  Only used in initialization
-      begin
-      end;
+  // Poly Move Times 8
+  RegisterLineSpecial(ARegistry, 6,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_MovePoly(line, args, true, false);
+    end);
 
-    6: // Poly Move Times 8
-      begin
-        result := EVH_MovePoly(line, args, true, false);
-      end;
+  // Poly Door Swing
+  RegisterLineSpecial(ARegistry, 7,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_OpenPolyDoor(line, args, PODOOR_SWING);
+    end);
 
-    7: // Poly Door Swing
-      begin
-        result := EVH_OpenPolyDoor(line, args, PODOOR_SWING);
-      end;
+  // Poly Door Slide
+  RegisterLineSpecial(ARegistry, 8,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
+    end);
 
-    8: // Poly Door Slide
-      begin
-        result := EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
-      end;
+  // Door Close
+  RegisterLineSpecial(ARegistry, 10,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoDoor(line, args, DREV_CLOSE);
+    end);
 
-    10: // Door Close
-      begin
-        result := EVH_DoDoor(line, args, DREV_CLOSE);
-      end;
+  // Door Open
+  RegisterLineSpecial(ARegistry, 11,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if args[0] = 0 then
+        result := EVH_VerticalDoor(line, mo)
+      else
+        result := EVH_DoDoor(line, args, DREV_OPEN);
+    end);
 
-    11: // Door Open
-      begin
-        if args[0] = 0 then
-          result := EVH_VerticalDoor(line, mo)
-        else
-          result := EVH_DoDoor(line, args, DREV_OPEN);
-      end;
+  // Door Raise
+  RegisterLineSpecial(ARegistry, 12,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if args[0] = 0 then
+        result := EVH_VerticalDoor(line, mo)
+      else
+        result := EVH_DoDoor(line, args, DREV_NORMAL);
+    end);
 
-    12: // Door Raise
+  // Door Locked_Raise
+  RegisterLineSpecial(ARegistry, 13,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if CheckedLockedDoor(mo, args[3]) then
       begin
         if args[0] = 0 then
           result := EVH_VerticalDoor(line, mo)
         else
           result := EVH_DoDoor(line, args, DREV_NORMAL);
       end;
+    end);
 
-    13: // Door Locked_Raise
+  // Floor Lower by Value
+  RegisterLineSpecial(ARegistry, 20,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
+    end);
+
+  // Floor Lower to Lowest
+  RegisterLineSpecial(ARegistry, 21,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
+    end);
+
+  // Floor Lower to Nearest
+  RegisterLineSpecial(ARegistry, 22,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
+    end);
+
+  // Floor Raise by Value
+  RegisterLineSpecial(ARegistry, 23,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
+    end);
+
+  // Floor Raise to Highest
+  RegisterLineSpecial(ARegistry, 24,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
+    end);
+
+  // Floor Raise to Nearest
+  RegisterLineSpecial(ARegistry, 25,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
+    end);
+
+  // Stairs Build Down Normal
+  RegisterLineSpecial(ARegistry, 26,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
+    end);
+
+  // Build Stairs Up Normal
+  RegisterLineSpecial(ARegistry, 27,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
+    end);
+
+  // Floor Raise and Crush
+  RegisterLineSpecial(ARegistry, 28,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
+    end);
+
+  // Build Pillar (no crushing)
+  RegisterLineSpecial(ARegistry, 29,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildPillar(line, args, false);
+    end);
+
+  // Open Pillar
+  RegisterLineSpecial(ARegistry, 30,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_OpenPillar(line, args);
+    end);
+
+  // Stairs Build Down Sync
+  RegisterLineSpecial(ARegistry, 31,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
+    end);
+
+  // Build Stairs Up Sync
+  RegisterLineSpecial(ARegistry, 32,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
+    end);
+
+  // Raise Floor by Value Times 8
+  RegisterLineSpecial(ARegistry, 35,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
+    end);
+
+  // Lower Floor by Value Times 8
+  RegisterLineSpecial(ARegistry, 36,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
+    end);
+
+  // Ceiling Lower by Value
+  RegisterLineSpecial(ARegistry, 40,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+    end);
+
+  // Ceiling Raise by Value
+  RegisterLineSpecial(ARegistry, 41,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+    end);
+
+  // Ceiling Crush and Raise
+  RegisterLineSpecial(ARegistry, 42,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
+    end);
+
+  // Ceiling Lower and Crush
+  RegisterLineSpecial(ARegistry, 43,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
+    end);
+
+  // Ceiling Crush Stop
+  RegisterLineSpecial(ARegistry, 44,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_CeilingCrushStop(line, args);
+    end);
+
+  // Ceiling Crush Raise and Stay
+  RegisterLineSpecial(ARegistry, 45,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
+    end);
+
+  // Floor Crush Stop
+  RegisterLineSpecial(ARegistry, 46,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_FloorCrushStop(line, args);
+    end);
+
+  // Plat Perpetual Raise
+  RegisterLineSpecial(ARegistry, 60,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+    end);
+
+  // Plat Stop
+  RegisterLineSpecial(ARegistry, 61,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      EVH_StopPlat(line, args);
+    end);
+
+  // Plat Down-Wait-Up-Stay
+  RegisterLineSpecial(ARegistry, 62,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+    end);
+
+  // Plat Down-by-Value*8-Wait-Up-Stay
+  RegisterLineSpecial(ARegistry, 63,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
+    end);
+
+  // Plat Up-Wait-Down-Stay
+  RegisterLineSpecial(ARegistry, 64,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+    end);
+
+  // Plat Up-by-Value*8-Wait-Down-Stay
+  RegisterLineSpecial(ARegistry, 65,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
+    end);
+
+  // Floor Lower Instant * 8
+  RegisterLineSpecial(ARegistry, 66,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
+    end);
+
+  // Floor Raise Instant * 8
+  RegisterLineSpecial(ARegistry, 67,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
+    end);
+
+  // Floor Move to Value * 8
+  RegisterLineSpecial(ARegistry, 68,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
+    end);
+
+  // Ceiling Move to Value * 8
+  RegisterLineSpecial(ARegistry, 69,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
+    end);
+
+  // Teleport
+  RegisterLineSpecial(ARegistry, 70,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if side = 0 then
+      begin // Only teleport when crossing the front side of a line
+        result := EVH_Teleport(args[0], mo, true);
+      end;
+    end);
+
+  // Teleport, no fog
+  RegisterLineSpecial(ARegistry, 71,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if side = 0 then
+      begin // Only teleport when crossing the front side of a line
+        result := EVH_Teleport(args[0], mo, false);
+      end;
+    end);
+
+  // Thrust Mobj
+  RegisterLineSpecial(ARegistry, 72,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if side = 0 then // Only thrust on side 0
       begin
-        if CheckedLockedDoor(mo, args[3]) then
+        P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
+        result := true;
+      end;
+    end);
+
+  // Damage Mobj
+  RegisterLineSpecial(ARegistry, 73,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if args[0] <> 0 then
+        P_DamageMobj(mo, nil, nil, args[0])
+      else  // If arg1 is zero, then guarantee a kill
+        P_DamageMobj(mo, nil, nil, 10000);
+      result := true;
+    end);
+
+  {$IFDEF STRIFE}
+  // Teleport_NewMap
+  RegisterLineSpecial(ARegistry, 74,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if side = 0 then
+      begin // Only teleport when crossing the front side of a line
+        if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
         begin
-          if args[0] = 0 then
-            result := EVH_VerticalDoor(line, mo)
-          else
-            result := EVH_DoDoor(line, args, DREV_NORMAL);
-        end;
-      end;
-
-    20: // Floor Lower by Value
-      begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
-      end;
-
-    21: // Floor Lower to Lowest
-      begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
-      end;
-
-    22: // Floor Lower to Nearest
-      begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
-      end;
-
-    23: // Floor Raise by Value
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
-      end;
-
-    24: // Floor Raise to Highest
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
-      end;
-
-    25: // Floor Raise to Nearest
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
-      end;
-
-    26: // Stairs Build Down Normal
-      begin
-        result := EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
-      end;
-
-    27: // Build Stairs Up Normal
-      begin
-        result := EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
-      end;
-
-    28: // Floor Raise and Crush
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
-      end;
-
-    29: // Build Pillar (no crushing)
-      begin
-        result := EVH_BuildPillar(line, args, false);
-      end;
-
-    30: // Open Pillar
-      begin
-        result := EVH_OpenPillar(line, args);
-      end;
-
-    31: // Stairs Build Down Sync
-      begin
-        result := EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
-      end;
-
-    32: // Build Stairs Up Sync
-      begin
-        result := EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
-      end;
-
-    35: // Raise Floor by Value Times 8
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
-      end;
-
-    36: // Lower Floor by Value Times 8
-      begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
-      end;
-
-    40: // Ceiling Lower by Value
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
-      end;
-
-    41: // Ceiling Raise by Value
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
-      end;
-
-    42: // Ceiling Crush and Raise
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
-      end;
-
-    43: // Ceiling Lower and Crush
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
-      end;
-
-    44: // Ceiling Crush Stop
-      begin
-        result := EVH_CeilingCrushStop(line, args);
-      end;
-
-    45: // Ceiling Crush Raise and Stay
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
-      end;
-
-    46: // Floor Crush Stop
-      begin
-        result := EVH_FloorCrushStop(line, args);
-      end;
-
-    60: // Plat Perpetual Raise
-      begin
-        result := EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
-      end;
-
-    61: // Plat Stop
-      begin
-        EVH_StopPlat(line, args);
-      end;
-
-    62: // Plat Down-Wait-Up-Stay
-      begin
-        result := EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
-      end;
-
-    63: // Plat Down-by-Value*8-Wait-Up-Stay
-      begin
-        result := EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
-      end;
-
-    64: // Plat Up-Wait-Down-Stay
-      begin
-        result := EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
-      end;
-
-    65: // Plat Up-by-Value*8-Wait-Down-Stay
-      begin
-        result := EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
-      end;
-
-    66: // Floor Lower Instant * 8
-      begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
-      end;
-
-    67: // Floor Raise Instant * 8
-      begin
-        result := EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
-      end;
-
-    68: // Floor Move to Value * 8
-      begin
-        result := EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
-      end;
-
-    69: // Ceiling Move to Value * 8
-      begin
-        result := EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
-      end;
-
-    70: // Teleport
-      begin
-        if side = 0 then
-        begin // Only teleport when crossing the front side of a line
-          result := EVH_Teleport(args[0], mo, true);
-        end;
-      end;
-
-    71: // Teleport, no fog
-      begin
-        if side = 0 then
-        begin // Only teleport when crossing the front side of a line
-          result := EVH_Teleport(args[0], mo, false);
-        end;
-      end;
-
-    72: // Thrust Mobj
-      begin
-        if side = 0 then // Only thrust on side 0
-        begin
-          P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
           result := true;
+          G_RiftExitLevel(args[0], args[1], args[2] * ANGLEMAX_DIV_256);
         end;
       end;
+    end);
+  {$ENDIF}
 
-    73: // Damage Mobj
-      begin
-        if args[0] <> 0 then
-          P_DamageMobj(mo, nil, nil, args[0])
-        else  // If arg1 is zero, then guarantee a kill
-          P_DamageMobj(mo, nil, nil, 10000);
-        result := true;
-      end;
-
-    {$IFDEF STRIFE}
-    74: // Teleport_NewMap
-      begin
-        if side = 0 then
-        begin // Only teleport when crossing the front side of a line
-          if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
-          begin
-            result := true;
-            G_RiftExitLevel(args[0], args[1], args[2] * ANGLEMAX_DIV_256);
-          end;
+  // Teleport_EndGame
+  RegisterLineSpecial(ARegistry, 75,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      if side = 0 then
+      begin // Only teleport when crossing the front side of a line
+        if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
+        begin
+          result := true;
+          G_ExitLevel{$IFDEF STRIFE}(args[0]){$ENDIF};
         end;
       end;
-    {$ENDIF}
+    end);
 
-    75: // Teleport_EndGame
-      begin
-        if side = 0 then
-        begin // Only teleport when crossing the front side of a line
-          if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
-          begin
-            result := true;
-            G_ExitLevel{$IFDEF STRIFE}(args[0]){$ENDIF};
-          end;
-        end;
-      end;
+  // ACS_Execute
+  RegisterLineSpecial(ARegistry, 80,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := P_StartACS(args[0], args[1], @args[2], mo, line, side);
+    end);
 
-    80: // ACS_Execute
-      begin
-        result := P_StartACS(args[0], args[1], @args[2], mo, line, side);
-      end;
+  // ACS_Suspend
+  RegisterLineSpecial(ARegistry, 81,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := P_SuspendACS(args[0], args[1]);
+    end);
 
-    81: // ACS_Suspend
-      begin
-        result := P_SuspendACS(args[0], args[1]);
-      end;
+  // ACS_Terminate
+  RegisterLineSpecial(ARegistry, 82,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := P_TerminateACS(args[0], args[1]);
+    end);
 
-    82: // ACS_Terminate
-      begin
-        result := P_TerminateACS(args[0], args[1]);
-      end;
+  // ACS_LockedExecute
+  RegisterLineSpecial(ARegistry, 83,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := P_StartLockedACS(line, args, mo, side);
+    end);
 
-    83: // ACS_LockedExecute
-      begin
-        result := P_StartLockedACS(line, args, mo, side);
-      end;
+  // Poly Rotate Left Override
+  RegisterLineSpecial(ARegistry, 90,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_RotatePoly(line, args, 1, true);
+    end);
 
-    90: // Poly Rotate Left Override
-      begin
-        result := EVH_RotatePoly(line, args, 1, true);
-      end;
+  // Poly Rotate Right Override
+  RegisterLineSpecial(ARegistry, 91,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_RotatePoly(line, args, -1, true);
+    end);
 
-    91: // Poly Rotate Right Override
-      begin
-        result := EVH_RotatePoly(line, args, -1, true);
-      end;
+  // Poly Move Override
+  RegisterLineSpecial(ARegistry, 92,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_MovePoly(line, args, false, true);
+    end);
 
-    92: // Poly Move Override
-      begin
-        result := EVH_MovePoly(line, args, false, true);
-      end;
+  // Poly Move Times 8 Override
+  RegisterLineSpecial(ARegistry, 93,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_MovePoly(line, args, true, true);
+    end);
 
-    93: // Poly Move Times 8 Override
-      begin
-        result := EVH_MovePoly(line, args, true, true);
-      end;
+  // Build Pillar Crush
+  RegisterLineSpecial(ARegistry, 94,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_BuildPillar(line, args, true);
+    end);
 
-    94: // Build Pillar Crush
-      begin
-        result := EVH_BuildPillar(line, args, true);
-      end;
+  // Lower Floor and Ceiling
+  RegisterLineSpecial(ARegistry, 95,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloorAndCeiling(line, args, false);
+    end);
 
-    95: // Lower Floor and Ceiling
-      begin
-        result := EVH_DoFloorAndCeiling(line, args, false);
-      end;
+  // Raise Floor and Ceiling
+  RegisterLineSpecial(ARegistry, 96,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_DoFloorAndCeiling(line, args, true);
+    end);
 
-    96: // Raise Floor and Ceiling
-      begin
-        result := EVH_DoFloorAndCeiling(line, args, true);
-      end;
+  // Force Lightning
+  RegisterLineSpecial(ARegistry, 109,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := true;
+      P_ForceLightning(args[0]);
+    end);
 
-    109: // Force Lightning
-      begin
-        result := true;
-        P_ForceLightning(args[0]);
-      end;
+  // Light Raise by Value
+  RegisterLineSpecial(ARegistry, 110,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
+    end);
 
-    110: // Light Raise by Value
-      begin
-        result := EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
-      end;
+  // Light Lower by Value
+  RegisterLineSpecial(ARegistry, 111,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
+    end);
 
-    111: // Light Lower by Value
-      begin
-        result := EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
-      end;
+  // Light Change to Value
+  RegisterLineSpecial(ARegistry, 112,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
+    end);
 
-    112: // Light Change to Value
-      begin
-        result := EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
-      end;
+  // Light Fade
+  RegisterLineSpecial(ARegistry, 113,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_FADE);
+    end);
 
-    113: // Light Fade
-      begin
-        result := EVH_SpawnLight(line, args, LITE_FADE);
-      end;
+  // Light Glow
+  RegisterLineSpecial(ARegistry, 114,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_GLOW);
+    end);
 
-    114: // Light Glow
-      begin
-        result := EVH_SpawnLight(line, args, LITE_GLOW);
-      end;
+  // Light Flicker
+  RegisterLineSpecial(ARegistry, 115,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_FLICKER);
+    end);
 
-    115: // Light Flicker
-      begin
-        result := EVH_SpawnLight(line, args, LITE_FLICKER);
-      end;
+  // Light Strobe
+  RegisterLineSpecial(ARegistry, 116,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SpawnLight(line, args, LITE_STROBE);
+    end);
 
-    116: // Light Strobe
-      begin
-        result := EVH_SpawnLight(line, args, LITE_STROBE);
-      end;
+  // Quake Tremor
+  RegisterLineSpecial(ARegistry, 120,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := U_LocalQuake(args, mo);
+    end);
 
-    120: // Quake Tremor
-      begin
-        result := U_LocalQuake(args, mo);
-      end;
-
-{    129: // UsePuzzleItem
+  {  129: // UsePuzzleItem
       begin
         result := EVH_LineSearchForPuzzleItem(line, args, mo);
       end;}
 
-    130: // Thing_Activate
-      begin
-        result := EVH_ThingActivate(args[0]);
-      end;
+  // Thing_Activate
+  RegisterLineSpecial(ARegistry, 130,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingActivate(args[0]);
+    end);
 
-    131: // Thing_Deactivate
-      begin
-        result := EVH_ThingDeactivate(args[0]);
-      end;
+  // Thing_Deactivate
+  RegisterLineSpecial(ARegistry, 131,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingDeactivate(args[0]);
+    end);
 
-    132: // Thing_Remove
-      begin
-        result := EVH_ThingRemove(args[0]);
-      end;
+  // Thing_Remove
+  RegisterLineSpecial(ARegistry, 132,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingRemove(args[0]);
+    end);
 
-    133: // Thing_Destroy
-      begin
-        result := EVH_ThingDestroy(args[0]);
-      end;
+  // Thing_Destroy
+  RegisterLineSpecial(ARegistry, 133,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingDestroy(args[0]);
+    end);
 
-    134: // Thing_Projectile
-      begin
-        result := EVH_ThingProjectile(args, false);
-      end;
+  // Thing_Projectile
+  RegisterLineSpecial(ARegistry, 134,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingProjectile(args, false);
+    end);
 
-    135: // Thing_Spawn
-      begin
-        result := EVH_ThingSpawn(args, true);
-      end;
+  // Thing_Spawn
+  RegisterLineSpecial(ARegistry, 135,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingSpawn(args, true);
+    end);
 
-    136: // Thing_ProjectileGravity
-      begin
-        result := EVH_ThingProjectile(args, true);
-      end;
+  // Thing_ProjectileGravity
+  RegisterLineSpecial(ARegistry, 136,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingProjectile(args, true);
+    end);
 
-    137: // Thing_SpawnNoFog
-      begin
-        result := EVH_ThingSpawn(args, false);
-      end;
+  // Thing_SpawnNoFog
+  RegisterLineSpecial(ARegistry, 137,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_ThingSpawn(args, false);
+    end);
 
-    138: // Floor_Waggle
-      begin
-        result := EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
-      end;
+  // Floor_Waggle
+  RegisterLineSpecial(ARegistry, 138,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
+    end);
 
-    140: // Sector_SoundChange
-      begin
-        result := EVH_SectorSoundChange(args);
-      end;
+  // Sector_SoundChange
+  RegisterLineSpecial(ARegistry, 140,
+    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
+    begin
+      result := false;
+      result := EVH_SectorSoundChange(args);
+    end);
 
-    // Line specials only processed during level initialization
-    // 100: Scroll_Texture_Left
-    // 101: Scroll_Texture_Right
-    // 102: Scroll_Texture_Up
-    // 103: Scroll_Texture_Down
-    // 121: Line_SetIdentification
+  // Line specials only processed during level initialization
+  // 100: Scroll_Texture_Left
+  // 101: Scroll_Texture_Right
+  // 102: Scroll_Texture_Up
+  // 103: Scroll_Texture_Down
+  // 121: Line_SetIdentification
 
-    // Inert Line specials
-  end;
+  // Inert Line specials
+end;
+
+//==============================================================================
+//
+// P_ExecuteLineSpecial
+//
+//==============================================================================
+function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
+  side: integer; mo: Pmobj_t): boolean;
+var
+  context: TSpecialContext;
+begin
+  if lineSpecials = nil then
+    I_Error('P_ExecuteLineSpecial(): the specials were not configured (P_ConfigureLineSpecials)');
+  context.Special := special;
+  context.Args := System.PByte(args);
+  context.Line := line;
+  context.Side := side;
+  context.Actor := mo;
+  result := lineSpecials.Execute(context);
+end;
+
+//==============================================================================
+//
+// P_ConfigureLineSpecials
+//
+//==============================================================================
+procedure P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
+begin
+  P_RegisterLineSpecials(ARegistry);
+  lineSpecials := ARegistry;
 end;
 
 //==============================================================================
