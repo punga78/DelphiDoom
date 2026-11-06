@@ -1,0 +1,24 @@
+[numstates]
+4000
+[warnings]
+
+[changes]
+Thing 4|Pushfactor=32768
+Thing 4|Scale=131072
+Thing 4|Gravity=16384
+Thing 4|Max Step Height=1343488
+Thing 4|Friction=58982
+Thing 4|Sprite Dx=229376
+Thing 4|Sprite Dy=-147456
+Thing 5|Pushfactor=100
+Thing 5|Scale=1000
+Thing 5|Gravity=70000
+Thing 5|Max Dropoff Height=4194304
+Thing 5|Friction=65000
+Thing 5|Sprite Dx=300
+Thing 5|Sprite Dy=12
+Thing 6|Pushfactor=4187750
+Thing 6|Scale=64
+Thing 6|Gravity=0
+Thing 6|Friction=0
+[old]

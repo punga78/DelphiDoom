@@ -1,0 +1,26 @@
+[numstates]
+2846
+[warnings]
+I_Warning: DEH_Parse(): After NEWFRAME keyword found invalid numeric X (Think number = 22)
+I_Warning: DEH_Parse(): After ORIGINALFRAME keyword found invalid numeric -3 (Think number = 22)
+I_Warning: DEH_Parse(): After ORIGINALFRAME keyword found invalid numeric  (Think number = 22)
+I_Warning: DEH_Parse(): Wrong think field = NO SUCH FIELD (Think number = 24)
+I_Warning: DEH_Parse(): Wrong think field = WRONG (Think number = 25)
+I_Warning: DEH_Parse(): Wrong think number = 0
+I_Warning: DEH_Parse(): Wrong think number = -3
+
+[changes]
+Thing 23|Initial Frame=2851
+Thing 23|First Moving Frame=2852
+Thing 23|Injury Frame=7
+Thing 23|Close Attack Frame=8
+Thing 23|Far Attack Frame=9
+Thing 23|Speed=21
+Thing 23|Heal Frame=2846
+Thing 23|Crash Frame=2856
+Thing 24|Hit Points=3131
+Thing 24|Speed=-1
+Thing 24|Mass=-1
+Thing 25|Speed=22
+Thing 26|Speed=24
+[old]

@@ -1,0 +1,51 @@
+[numstates]
+1567
+[warnings]
+I_Warning: DEH_Parse(): After NEWFRAME keyword found invalid numeric X (Weapon number = 1)
+I_Warning: DEH_Parse(): Positive number expected after keyword (AMMO PER SHOT) - (-1) (Weapon number = 2)
+I_Warning: DEH_Parse(): Positive number expected after keyword (AMMO PER SHOT) - (ABC) (Weapon number = 3)
+I_Warning: DEH_Parse(): Wrong weapon field = BOGUS (Weapon number = 4)
+I_Warning: DEH_Parse(): Wrong weapon number = -1
+I_Warning: DEH_Parse(): Wrong ammo field = BOGUS (Ammo number = 2)
+I_Warning: DEH_Parse(): Wrong ammo number = 7
+I_Warning: DEH_Parse(): Wrong ammo number = -1
+I_Warning: DEH_Parse(): Wrong misc field = INITIAL BULLETS
+I_Warning: DEH_Parse(): Wrong misc field = MAX SOULSPHERE
+I_Warning: DEH_Parse(): Wrong misc value -5, field = MAX HEALTH
+I_Warning: DEH_Parse(): Wrong misc field = NONEXISTENT
+
+[changes]
+Weapon WP_FIST|Ammo Type=AM_CELL
+Weapon WP_FIST|Deselect Frame=301
+Weapon WP_FIST|Select Frame=302
+Weapon WP_FIST|Bobbing Frame=303
+Weapon WP_FIST|Shooting Frame=304
+Weapon WP_FIST|Hold Shooting Frame=306
+Weapon WP_FIST|Firing Frame=305
+Weapon WP_FIST|Ammo Per Shot=7
+Weapon WP_FIST|Mbf21 Bits=NOTHRUST, SILENT
+Weapon WP_ELECBOW|Deselect Frame=1568
+Weapon WP_ELECBOW|Select Frame=2
+Weapon WP_ELECBOW|Bobbing Frame=1570
+Weapon WP_ELECBOW|Shooting Frame=4
+Weapon WP_ELECBOW|Hold Shooting Frame=99
+Weapon WP_RIFLE|Select Frame=12
+Weapon WP_MISSILE|Select Frame=13
+Weapon WP_MISSILE|Mbf21 Bits=NOTHRUST, SILENT
+Weapon WP_HEGRENADE|Mbf21 Bits=NOAUTOFIRE, FLEEMELEE
+Weapon WP_WPGRENADE|Select Frame=15
+Ammo 0|Max Ammo=301
+Ammo 0|Per Ammo=21
+Ammo 1|Max Ammo=0
+Ammo 1|Per Ammo=22
+Ammo 2|Per Ammo=23
+Misc|Max Health=311
+Misc|Soulsphere Health=321
+Misc|Megasphere Health=331
+Misc|Medikit Health=341
+Misc|Stimpack Health=351
+Misc|Healthbonus Health=361
+Misc|Max Armor=105
+Misc|Green Armor Class=381
+Misc|Blue Armor Class=391
+[old]

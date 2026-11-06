@@ -1,0 +1,64 @@
+[numstates]
+1206
+[warnings]
+I_Warning: DEH_Parse(): Can not find setable text "PICKED UP A STIMPACK." - should be changed to "PICKED UP STIMPACK!!!!"
+I_Warning: DEH_Parse(): Can not find setable text "PICKED UP THE ARMOR." - should be changed to "ARMOR
+LINE TWO"
+I_Warning: DEH_Parse(): Can not find setable text "YOU NEED A BLUE KEY TO ACTIVATE THIS OBJECT" - should be changed to "BLUE KEY NEEDED"
+I_Warning: DEH_Parse(): Can not find setable text "TROO" - should be changed to "ABCD"
+I_Warning: DEH_Parse(): Can not find setable text "SHTG" - should be changed to "WXYZ"
+I_Warning: DEH_Parse(): Can not find setable text "ZZZ" - should be changed to "
+YYY"
+I_Warning: DEH_Parse(): Can not find setable text "NO MATCH
+" - should be changed to "HELLO"
+I_Warning: DEH_Parse(): Can not find setable text "ABC" - should be changed to "
+DE"
+I_Warning: DEH_Parse(): Invalid state number "99999" while parsing CODEP FRAME
+I_Warning: DEH_Parse(): Wrong sound field = BOGUS (Sound number = 6)
+I_Warning: DEH_Parse(): Wrong sound number = 999
+I_Warning: DEH_Parse(): New sounds can only specified in things definition!
+
+[changes]
+Frame 19|Codep Frame=NULL
+Frame 30|Codep Frame=CHASE
+Frame 31|Codep Frame=LOOK
+Frame 32|Codep Frame=CHICLOOK
+Frame 35|Codep Frame=EXPLODE (128)
+Weapon WP_STAFF|Level=1
+Weapon WP_STAFF|Deselect Frame=239
+Weapon WP_STAFF|Select Frame=238
+Weapon WP_STAFF|Bobbing Frame=237
+Weapon WP_STAFF|Shooting Frame=245
+Weapon WP_STAFF|Hold Shooting Frame=245
+Weapon WP_GOLDWAND|Level=1
+Weapon WP_GOLDWAND|Shooting Frame=452
+Weapon WP_GOLDWAND|Hold Shooting Frame=452
+Weapon WP_CROSSBOW|Level=1
+Weapon WP_CROSSBOW|Shooting Frame=536
+Weapon WP_CROSSBOW|Hold Shooting Frame=536
+Weapon WP_BLASTER|Level=1
+Weapon WP_BLASTER|Shooting Frame=301
+Weapon WP_BLASTER|Hold Shooting Frame=303
+Weapon WP_BLASTER|Ammo Per Shot=1
+Weapon WP_SKULLROD|Level=1
+Weapon WP_SKULLROD|Shooting Frame=381
+Weapon WP_SKULLROD|Hold Shooting Frame=381
+Weapon WP_SKULLROD|Ammo Per Shot=1
+Weapon WP_PHOENIXROD|Level=1
+Weapon WP_PHOENIXROD|Shooting Frame=477
+Weapon WP_PHOENIXROD|Hold Shooting Frame=477
+Weapon WP_MACE|Level=1
+Weapon WP_MACE|Shooting Frame=349
+Weapon WP_MACE|Hold Shooting Frame=350
+Weapon WP_MACE|Ammo Per Shot=1
+Weapon WP_GAUNTLETS|Level=1
+Weapon WP_GAUNTLETS|Deselect Frame=269
+Weapon WP_GAUNTLETS|Select Frame=268
+Weapon WP_GAUNTLETS|Bobbing Frame=267
+Weapon WP_GAUNTLETS|Shooting Frame=275
+Weapon WP_GAUNTLETS|Hold Shooting Frame=277
+Weapon WP_BEAK|Level=1
+Weapon WP_BEAK|Shooting Frame=264
+Weapon WP_BEAK|Hold Shooting Frame=264
+[SOUND]|5=NEWNAME
+[old]

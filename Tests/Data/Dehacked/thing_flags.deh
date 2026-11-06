@@ -1,0 +1,73 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Thing 7
+Bits = 4611
+Flags_ex = 65
+
+Thing 8
+Bits = SPECIAL+SOLID+SHOOTABLE
+Flags_ex = MF_EX_WHITELIGHT | MF_EX_REDLIGHT
+Flags2_ex = MF2_EX_NOHITFLOOR,MF2_EX_GREENBLOOD
+Flags3_ex = FLOORBOUNCE CEILINGBOUNCE
+Flags4_ex = MF4_EX_THRUMONSTERS + MF4_EX_RIP
+Flags5_ex = PUSHWALL | IMPACT
+
+Thing 9
+Bits = MF_SOLID, MF_SHOOTABLE, NOSUCHFLAG
+Flags_ex = BLUELIGHT
+Flags2_ex = NOSUCHFLAG
+
+Thing 10
+Bits = NOSUCHFLAG
+Flags_ex = NOSUCHFLAG
+
+Thing 11
+Bits = SOLID+TRANSLUCENT
+Flags_ex = REDLIGHT
+
+Thing 12
+Bits = SOLID+UNUSED4
+Flags_ex = GREENLIGHT
+
+Thing 13
+Bits = SOLID+UNUSED3
+
+Thing 14
+Bits = SOLID+UNUSED2
+
+Thing 15
+Bits = -2147483647
+
+Thing 16
+Bits = 1073741825
+
+Thing 17
+Bits = 536870913
+
+Thing 18
+Bits = 268435457
+Flags2_ex = 12
+Flags3_ex = 5
+Flags4_ex = 6
+Flags5_ex = 9
+
+Thing 19
+Bits = solid shootable
+Flags_ex = whitelight, floatbob
+Flags2_ex = mediumgravity redblood pushable
+
+Thing 20
+MBF21 Bits = LOGRAV
+Bits = SOLID
+
+Thing 21
+MBF21 Bits = MBF21_BOSS + MF2_RIP | FULLVOLSOUNDS
+Speed = 33
+
+Thing 22
+MBF21 Bits = 4
+Infighting group = IG_DEFAULT
+Projectile group = PG_BARON
+Splash group = SG_DEFAULT

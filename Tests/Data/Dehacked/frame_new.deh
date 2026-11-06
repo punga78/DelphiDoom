@@ -1,0 +1,38 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+# new frames: they get the numbers from the end of the table
+Frame NEW 0
+Duration = 5
+Next frame = NEWFRAME 1
+Sprite number = 3
+
+Frame NEWSTATE 1
+Duration = 6
+Next frame = NEW 0
+
+Frame NEWFRAME x
+Duration = 7
+
+Frame NEW
+Duration = 8
+
+Frame NEW -1
+Duration = 9
+
+Thing 28
+Initial frame = NEWFRAME 0
+Death frame = NEWSTATE 1
+Speed = 29
+
+SUBMITNEWSTATES
+
+# after the submit the new states are original ones
+Frame NEW 0
+Duration = 10
+Next frame = ORIGINALFRAME 5
+
+Thing 29
+Initial frame = NEWFRAME 0
+Speed = 30

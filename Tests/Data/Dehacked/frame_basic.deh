@@ -1,0 +1,71 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Frame 10
+Sprite number = 5
+Sprite subnumber = 3
+Duration = 17
+Next frame = 411
+Codep frame = A_Chase
+Unknown 1 = 31
+Unknown 2 = 32
+Flags_ex = 3
+Duration 2 = 5
+Args1 = 11
+Args2 = 12
+Args3 = 13
+Args4 = 14
+Args5 = 15
+Args6 = 16
+Args7 = 17
+Args8 = 18
+MBF21 Bits = 1
+
+Frame 11
+Sprite subnumber = BRIGHT 4
+Duration = -7
+Next frame = ORIGINALFRAME 4012
+Codep frame = CHASE
+Flags_ex = MF_EX_TRANSPARENT | MF_EX_REDLIGHT
+
+Frame 12
+Sprite subnumber = 32768
+Next frame = ORIGINAL 21
+Codep frame = a_look
+Flags_ex = WHITELIGHT STATE_RANDOM_SELECT
+
+Frame 13
+Next frame = NEW 14
+Codep frame = 0
+Flags_ex = NOSUCHFLAG
+MBF21 Bits = STATEF_SKILL5FAST
+
+Frame 14
+Next frame = NEWFRAME 15
+Sprite number = 0x10
+Duration = #6
+
+Frame 15
+Next frame = 0x20
+Duration = 0x1F
+Unknown 1 = 0x7777
+
+Frame 16
+Next frame = 77
+Bogus = 1
+Duration = 8
+
+Frame 17
+Duration = 9
+Codep frame = A_NoSuchAction
+Sprite number = 6
+
+Frame
+Duration = 100
+
+Frame 99999999999
+Duration = 101
+
+Frame -4
+Duration = 102

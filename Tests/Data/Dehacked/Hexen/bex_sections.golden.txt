@@ -1,0 +1,18 @@
+[numstates]
+2846
+[warnings]
+I_Warning: DEH_Parse(): Can not find sprite = TROO
+I_Warning: DEH_Parse(): Sprite name with 3 characters = ABC
+I_Warning: DEH_Parse(): Sprite name with 11 characters = TOOLONGNAME
+I_Warning: DEH_Parse(): Can not find sprite = NOSU
+
+[changes]
+Thing 27|Speed=26
+[Strings]|GGSAVED=TEXT WITH  REMOVED
+[MUSIC]|1=D_TESTA
+[MUSIC]|2=D_TESTB
+[SOUND]|3=DSTESTA
+[SOUND]|5=DSTESTC MORE WORDS
+[SPRITES]|2=EFGH
+[old]
+[Strings]|GGSAVED=game saved.

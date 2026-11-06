@@ -1,0 +1,16 @@
+[numstates]
+4000
+[warnings]
+
+[changes]
+Thing 30|Injury Frame=301
+Thing 30|Width=1300000
+Thing 30|Mass=31
+Thing 30|Action Sound=3
+Thing 30|Dropitem=3
+Thing 30|Melee Threshold=12
+Thing 31|Name=TESTNAME
+Thing 31|Hit Points=33
+Thing 31|Mass=32
+Thing 32|Speed=35
+[old]

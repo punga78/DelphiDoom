@@ -1,0 +1,72 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Thing 1
+ID # = 3333
+Initial frame = 101
+Hit points = 1234
+First moving frame = 102
+Alert sound = 5
+Reaction time = 12
+Attack sound = 6
+Injury frame = 103
+Pain chance = 211
+Pain sound = 7
+Close attack frame = 104
+Far attack frame = 105
+Death frame = 106
+Exploding frame = 107
+Death sound = 8
+Speed = 13
+Width = 1500000
+Height = 5500000
+Mass = 321
+Missile damage = 9
+Action sound = 9
+Respawn frame = 108
+
+Thing 2
+Pain frame = 201
+Radius = 1400000
+Active sound = 10
+Custom sound 1 = 11
+Custom sound 2 = 12
+Custom sound 3 = 13
+Explosion damage = 44
+Explosion radius = 45
+Melee damage = 46
+Melee sound = 14
+Alpha = 77
+Heal frame = 202
+Crash frame = 203
+Interact frame = 204
+Missileheight = 4600000
+Vspeed = 3
+Minmissilechance = 55
+Float speed = 5
+Normal speed = 6
+Fast speed = 7
+Melee range = 70000
+Gib health = -88
+Max target range = 99
+Weave index xy = 4
+Weave index z = 5
+Crush frame = 205
+Ripsound = 15
+Melee threshold = 33
+
+Thing 3
+Hit points = 0x10
+Speed = #7
+Mass = -5
+Pain chance = 0X20
+Reaction time = 12abc
+Width = 1,5
+Height = "4200000"
+Obituary = "was shot by a test"
+Hit obituary = "was hit by a test"
+Translation = "TESTTRAN"
+Gender = 1
+Max step height = 24
+Max dropoff height = 25
