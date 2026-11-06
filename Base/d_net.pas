@@ -675,7 +675,7 @@ begin
         continue;
       if netbuffer.checksum and NCMD_SETUP <> 0 then
       begin
-        if netbuffer.player <> VERSION then
+        if netbuffer.player <> D_EngineVersion then
           I_Error('D_ArbitrateNetStart(): ' + S_ERR_DIF_NET);
         startskill := skill_t(netbuffer.retransmitfrom and 15);
         deathmatch := _SHR((netbuffer.retransmitfrom and $C0), 6);
@@ -717,7 +717,7 @@ begin
         if respawnparm then
           netbuffer.retransmitfrom := netbuffer.retransmitfrom or $10;
         netbuffer.starttic := {$IFNDEF STRIFE}startepisode * 64 + {$ENDIF}startmap;
-        netbuffer.player := VERSION;
+        netbuffer.player := D_EngineVersion;
         netbuffer.numtics := 0;
 
         netbuffer.flags := 0;

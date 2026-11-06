@@ -48,7 +48,8 @@ interface
 
 uses
   d_event,
-  doomdef;
+  doomdef,
+  DelphiDoom.IdTech.Intf;
 
 const
 {$IFNDEF FPC}
@@ -171,6 +172,22 @@ var
 
 // villsa [STRIFE] stonecold cheat variable
   stonecold: boolean = false;
+
+//==============================================================================
+//
+// D_Configure
+// Gives the unit the engine this port runs on. The composition root calls it
+//
+//==============================================================================
+procedure D_Configure(const AEngine: IIdTechEngine);
+
+//==============================================================================
+//
+// D_EngineVersion
+// The version number of the engine (207 for 2.07)
+//
+//==============================================================================
+function D_EngineVersion: integer;
 
 //==============================================================================
 //
@@ -1455,6 +1472,33 @@ begin
 end;
 {$ENDIF}
 
+var
+  // The engine this port runs on, given by the composition root (D_Configure)
+  idtech_engine: IIdTechEngine = nil;
+
+//==============================================================================
+//
+// D_Configure
+//
+//==============================================================================
+procedure D_Configure(const AEngine: IIdTechEngine);
+begin
+  idtech_engine := AEngine;
+end;
+
+//==============================================================================
+//
+// D_EngineVersion
+//
+//==============================================================================
+function D_EngineVersion: integer;
+begin
+  if idtech_engine <> nil then
+    result := idtech_engine.Version.Number
+  else
+    result := VERSION;
+end;
+
 //==============================================================================
 //
 // D_Version
@@ -1462,7 +1506,7 @@ end;
 //==============================================================================
 function D_Version: string;
 begin
-  sprintf(result, Apptitle + ' version %d.%.*d', [VERSION div 100, 2, VERSION mod 100]);
+  sprintf(result, Apptitle + ' version %d.%.*d', [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
 end;
 
 //==============================================================================
@@ -2105,7 +2149,7 @@ begin
            '                            ' +
            'Strife Shareware (DEMO) Startup v%d.%.*d' +
            '                           '#13#10,
-            [VERSION div 100, 2, VERSION mod 100]);
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
       end;
     registered:
       begin
@@ -2113,14 +2157,14 @@ begin
            '                            ' +
            'STRIFE Registered Startup v%d.%.*d' +
            '                           '#13#10,
-            [VERSION div 100, 2, VERSION mod 100]);
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
       end;
   else
     printf(
            '                         ' +
            'Public STRIFE - v%d.%.*d' +
            '                           '#13#10,
-            [VERSION div 100, 2, VERSION mod 100]);
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
   end;
 
   if devparm then

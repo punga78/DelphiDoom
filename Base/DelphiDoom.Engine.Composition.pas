@@ -29,7 +29,7 @@ uses
   w_wadwriter,
   w_pak,
   doomdef,
-  m_misc;
+  d_main;
 
 procedure ComposeEngine;
 var
@@ -38,7 +38,7 @@ var
 begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
-  M_Configure(LEngine);
+  D_Configure(LEngine);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
