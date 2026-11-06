@@ -1,0 +1,53 @@
+ACTOR PropsAll 20002
+{
+  Health 70
+  Radius 24
+  Height 64
+  Width 18
+  Speed 12
+  VSpeed 2.5
+  Mass 300
+  Damage 7
+  PainChance 99
+  ReactionTime 5
+  MinMissileChance 40
+  PushFactor 0.75
+  Friction 0.8
+  Scale 2
+  Gravity 0.25
+  Alpha 0.75
+  MissileHeight 24
+  MeleeThreshold 90
+  MeleeRange 96
+  MaxStepHeight 24
+  MaxDropoffHeight 32
+  GibHealth 40
+  MaxTargetRange 800
+  WeaveIndexXY 3
+  WeaveIndexZ 4
+  SpriteDX 1.5
+  SpriteDY 2.25
+  ExplosionDamage 128
+  ExplosionRadius 64
+  MeleeDamage 5
+  FloatSpeed 5
+  NormalSpeed 10
+  FastSpeed 20
+  DropItem Clip
+  MissileType ImpFireball
+  Obituary "%o was burned by an imp"
+  HitObituary "%o was clawed"
+  Gender Female
+  BloodColor Red
+  Translation Gray
+  RenderStyle Add
+  SeeSound "imp/sight"
+  AttackSound "imp/attack"
+  PainSound "imp/pain"
+  DeathSound "imp/death"
+  ActiveSound "imp/active"
+  MeleeSound "imp/melee"
+  RipSound "imp/rip"
+  CustomSound1 "imp/c1"
+  CustomSound2 "imp/c2"
+ 

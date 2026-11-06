@@ -1,0 +1,33 @@
+// a plain actor with every common property and a few states
+ACTOR MyThing 20001
+{
+  Health 100
+  Radius 20
+  Height 56
+  Speed 8
+  Mass 400
+  Damage 3
+  PainChance 128
+  ReactionTime 8
+  Scale 1.5
+  Gravity 0.5
+  Alpha 0.5
+  RenderStyle Translucent
+  +SOLID
+  States
+  +SHOOTABLE
+  {
+  Spawn:
+    TROO A 10 A_Look
+    TROO B 10
+    Loop
+  See:
+    TROO ABCD 4 A_Chase
+    Loop
+  Death:
+    TROO I 8
+    TROO J 8 A_Scream
+    TROO KLM 8
+    Stop
+  }
+}

@@ -1,0 +1,9 @@
+WEAPON 1
+{
+  Ammo AM_BULLETS
+  AmmoPerShot 2
+  States
+  {
+DEH_PARSE
+  Up:
+    P

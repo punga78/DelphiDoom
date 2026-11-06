@@ -1,0 +1,10 @@
+@ SCRIPT Hello|normal|void%20main;%0D%0Abegin%0D%0A%20%20Writeln('hi');%0D%0Aend;%0D%0ACOMPILED%0D%0ALoop%0D%0AGLOBAL%20SCRIPT%20GlobalOne%0D%0Aprocedure%20foo;%0D%0Abegin%0D%0Aend;
+@ EXTSCRIPT ExtOne|ext/one.pas|normal
+@ EXTSCRIPT ExtGlobal|ext/global.pas|global
+@ COMPILEDSCRIPT Comp1|compiled/one.bin
+@ COMPILEDSCRIPT Comp2|compiled/two.bin
+I_Warning: SC_ActordefToDEH(): Unknown token "NotScript" found, "SCRIPT" expected
+I_Warning: SC_ActordefToDEH(): Unknown token "NotScript" found, "SCRIPT" expected
+I_Warning: SC_ActordefToDEH(): Unknown token "z" found, "SCRIPT" expected
+I_Warning: SC_ActordefToDEH(): Unknown token "NotScript" found, "SCRIPT" expected
+@ SCRIPT Unterminated|normal|begin%0D%0Aend;

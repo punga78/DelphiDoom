@@ -1,0 +1,3 @@
+@ DEHFILE one.deh|0
+@ DEHFILE two.deh|0
+@ DEHFILE *.bex|1

@@ -1,0 +1,12 @@
+ACTOR Dup 20174
+{
+  Health 1
+RANDOMSELECT
+ACTOR Dup 20175
+{
+  Health 2
+}
+ACTOR DupChild : Dup 20176
+{
+}
+  Health 3

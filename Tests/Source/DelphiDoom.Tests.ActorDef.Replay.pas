@@ -50,6 +50,7 @@ type
     FFindPosition: Integer;
     FEvents: TDictionary<string, TList<TArray<string>>>;
     FPositions: TDictionary<string, Integer>;
+    FNumMusic: Integer;
     procedure LoadVocabulary(const AFileName: string);
     procedure LoadEngine(const AFileName: string);
     procedure ApplyField(var AActor: TActorDefActor; const AKey, AValue: string);
@@ -60,6 +61,8 @@ type
     destructor Destroy; override;
     /// <summary>What was recorded and the library did not ask; empty if it asked everything</summary>
     function Remaining: string;
+    /// <summary>The number of songs of Hexen (the number of the last map that has one is below it)</summary>
+    property NumMusic: Integer read FNumMusic;
     function Flags(ACategory: TActorDefFlagCategory): TArray<string>;
     function WeaponType(const AName: string): Integer;
     function AmmoType(const AName: string): Integer;
@@ -183,18 +186,27 @@ var
   LLine: string;
   LCategory: TActorDefFlagCategory;
   LHasCategory: Boolean;
+  LInNumMusic: Boolean;
   LName: string;
 begin
   LHasCategory := False;
+  LInNumMusic := False;
   LCategory := TActorDefFlagCategory.Flags;
   for LLine in TReplayText.ReadAnsi(AFileName).Split([#10]) do
   begin
     if LLine = '' then
       Continue;
+    if LInNumMusic and (LLine[1] <> '[') then
+    begin
+      FNumMusic := StrToInt(LLine);
+      LInNumMusic := False;
+      Continue;
+    end;
     if LLine[1] = '[' then
     begin
       LName := Copy(LLine, 2, Length(LLine) - 2);
       LHasCategory := True;
+      LInNumMusic := LName = 'nummusic';
       if LName = 'flags' then
         LCategory := TActorDefFlagCategory.Flags
       else if LName = 'flags2' then
@@ -339,7 +351,7 @@ begin
   begin
     LLine := LLines[LIndex];
     Inc(LIndex);
-    if LLine = '' then
+    if (LLine = '') or (LLine[1] = '#') then
       Continue;
     LPosition := Pos(' ', LLine);
     LKind := Copy(LLine, 1, LPosition - 1);

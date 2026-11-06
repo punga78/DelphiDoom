@@ -1,0 +1,193 @@
+I_Warning: SC_ActordefToDEH(): Unknown token "+NOTAFLAG" found while parsing mobj "Junk" (doomednum=20100)
+I_Warning: SC_ActordefToDEH(): Unknown token "Whatever" found while parsing mobj "Junk" (doomednum=20100)
+I_Warning: SC_ActordefToDEH(): Unknown token "5" found while parsing mobj "Junk" (doomednum=20100)
+I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "-SOLID" at Line 6
+I_Warning: ==========================================================================
+I_Warning: 00003       +NOTAFLAG
+I_Warning: 00004       Whatever 5
+I_Warning: 00005 ***   Radius -SOLID Bogus
+I_Warning: 00006       Height 30
+I_Warning: 00007       States
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: SC_ActordefToDEH(): Unknown token "Bogus" found while parsing mobj "Junk" (doomednum=20100)
+@ DEH-BEGIN
+NewThing "Junk"
+Inheritsfrom = -1
+Id # = 20100
+Initial Frame = NewFrame 0
+Hit Points = 10
+First Moving Frame = OriginalFrame 0
+Alert Sound = 0
+Reaction Time = 0
+Attack Sound = 0
+Injury Frame = OriginalFrame 0
+Pain Chance = 0
+Pain Sound = 0
+Close Attack Frame = OriginalFrame 0
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 0
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 0
+Speed = 0
+VSpeed = 0
+MinMissileChance = 0
+Pushfactor = 16384
+Friction = 59392
+Width = 0
+Height = 1966080
+Mass = 0
+Missile Damage = 0
+Action Sound = 0
+Respawn Frame = OriginalFrame 0
+Bits = 0
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 0
+Melee Sound = 0
+Explosion Damage = 0
+Explosion Radius = 0
+Dropitem = 
+Missiletype = 
+Renderstyle = NORMAL
+Alpha = 0
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 0
+melee threshold = 0
+Scale = 65536
+Gravity = 65536
+Float Speed = 0
+Normal Speed = 0
+Fast Speed = 0
+Obituary = ""
+Hit Obituary = ""
+Gender = DEFAULT
+Melee Range = 0
+Max Step Height = 0
+Max DropOff Height = 0
+Gib Health = 0
+Max Target Range = 0
+Weave Index XY = 0
+Weave Index Z = 0
+Sprite DX = 0
+Sprite DY = 0
+flags5_ex = 0
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = 
+Translation = 
+
+Frame NewFrame 0
+Sprite Number = TROO
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 0
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = Junk
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END
+I_Warning: SC_ActordefToDEH(): Unknown token "FooBar" found while parsing mobj "Junk2" (doomednum=20101)
+I_Warning: TScriptEngine.GetString(): Closing bracket "}" found at line 21 without opening bracket "{"
+I_Warning: ==========================================================================
+I_Warning: 00018       Health 3
+I_Warning: 00019     }
+I_Warning: 00020 *** }
+I_Warning: 00021     STUFF
+I_Warning: 00022     
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: SC_ActordefToDEH(): Unknown token "STUFF" found while parsing mobj "Junk2" (doomednum=20101)
+@ DEH-BEGIN
+NewThing "Junk2"
+Inheritsfrom = -1
+Id # = 20101
+Initial Frame = OriginalFrame 0
+Hit Points = 3
+First Moving Frame = OriginalFrame 0
+Alert Sound = 0
+Reaction Time = 0
+Attack Sound = 0
+Injury Frame = OriginalFrame 0
+Pain Chance = 0
+Pain Sound = 0
+Close Attack Frame = OriginalFrame 0
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 0
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 0
+Speed = 0
+VSpeed = 0
+MinMissileChance = 0
+Pushfactor = 16384
+Friction = 59392
+Width = 0
+Height = 0
+Mass = 0
+Missile Damage = 0
+Action Sound = 0
+Respawn Frame = OriginalFrame 0
+Bits = 0
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 0
+Melee Sound = 0
+Explosion Damage = 0
+Explosion Radius = 0
+Dropitem = 
+Missiletype = 
+Renderstyle = NORMAL
+Alpha = 0
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 0
+melee threshold = 0
+Scale = 65536
+Gravity = 65536
+Float Speed = 0
+Normal Speed = 0
+Fast Speed = 0
+Obituary = ""
+Hit Obituary = ""
+Gender = DEFAULT
+Melee Range = 0
+Max Step Height = 0
+Max DropOff Height = 0
+Gib Health = 0
+Max Target Range = 0
+Weave Index XY = 0
+Weave Index Z = 0
+Sprite DX = 0
+Sprite DY = 0
+flags5_ex = 0
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = 
+Translation = 
+
+
+
+@ DEH-END

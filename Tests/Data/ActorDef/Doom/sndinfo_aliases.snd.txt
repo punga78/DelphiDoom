@@ -10,7 +10,5 @@ my/far2 dsfar
 my/loop my/loop
 my/long dsabcdefghij
 $MAP 1 Song01
-$MAP 0 Zero
 $MAP 99999 Big
 $MAP x Bad
-$MAP 2

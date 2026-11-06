@@ -1,0 +1,22 @@
+ACTOR 20050
+{
+  Health 100
+  States
+  {
+  Spawn:
+    TROO A 10
+    Loop
+  See:
+    TROO B 10
+    Loop
+  Melee:
+    TROO C 8 A_FaceTarget
+    TROO D 8 A_CustomMeleeAttack
+    Goto See
+  Missile:
+    TROO E 8 A_FaceTarget
+    TROO F 8 BRIGHT A_CustomMissile
+    Goto See
+  Pain:
+    TROO G 2
+    TROO G 2 A

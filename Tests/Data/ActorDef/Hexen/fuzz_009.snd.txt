@@ -1,0 +1,8 @@
+foo/bar dsfoo
+foo/baz foo/bar
+{ x }
+BAD
+a=b
+c d e f
+"q q" dsqq
+TAG1 dstag

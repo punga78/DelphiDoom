@@ -1,0 +1,4 @@
+WEAPONTYPE WP_PISTOL|1
+AMMOTYPE 1|1
+STATEADD S_WEAPON1_0
+# DEH-EXCEPTION EAccessViolation: Access violation at address 008CC7B8 in module 'H_Doom.exe'. Read of address 00000000

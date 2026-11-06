@@ -15,6 +15,18 @@ uses
   DelphiDoom.ActorDef.Intf;
 
 type
+  /// <summary>The songs of the maps that the engine of Hexen would take from SNDINFO (the ones that it has)</summary>
+  TMusicListener = class(TInterfacedObject, IActorDefSoundInfoListener)
+  private
+    FNumMusic: Integer;
+  public
+    Songs: TStringList;
+    constructor Create(ANumMusic: Integer);
+    destructor Destroy; override;
+    procedure SongForMap(AMapId: Integer; const ASongName: string);
+    procedure AliasDeclared(const AName, AValue: string);
+  end;
+
   /// <summary>
   ///   Tests\Data\ActorDef\<game> has the texts of ACTORDEF (*.in.txt) and of SNDINFO (*.snd.txt) that
   ///   the old parser of sc_actordef.pas read, in a harness that compiled the old unit with the
@@ -32,6 +44,7 @@ type
     function Transcript(const AGame, ACase: string; out AMismatch: string): string;
     function FirstDifference(const AExpected, AActual: string): string;
     function CheckCase(const AGame, ACase: string): string;
+    function CheckMutants(const AGame: string): string;
   public
     [Test]
     [TestCase('aliases', 'aliases')]
@@ -96,6 +109,14 @@ type
     [TestCase('weapon_nonsense', 'weapon_nonsense')]
     [TestCase('weapon_noflags', 'weapon_noflags')]
     procedure TestSameResultAsTheOldParser(const ACase: string);
+    [Test]
+    procedure TestMutantsOfDoom;
+    [Test]
+    procedure TestMutantsOfHeretic;
+    [Test]
+    procedure TestMutantsOfHexen;
+    [Test]
+    procedure TestMutantsOfStrife;
   end;
 
 implementation
@@ -106,6 +127,40 @@ uses
 
 const
   GAMES: array[0..3] of string = ('Doom', 'Heretic', 'Hexen', 'Strife');
+
+{ TMusicListener }
+
+constructor TMusicListener.Create(ANumMusic: Integer);
+begin
+  inherited Create;
+  FNumMusic := ANumMusic;
+  Songs := TStringList.Create;
+  Songs.Sorted := True;
+  Songs.Duplicates := dupIgnore;
+end;
+
+destructor TMusicListener.Destroy;
+begin
+  Songs.Free;
+  inherited Destroy;
+end;
+
+procedure TMusicListener.SongForMap(AMapId: Integer; const ASongName: string);
+var
+  LIndex: Integer;
+begin
+  // as the engine does: the map has to have a song, and the last name wins
+  if (AMapId <= 0) or (AMapId >= FNumMusic) then
+    Exit;
+  LIndex := Songs.IndexOfName(Format('%.6d', [AMapId]));
+  if LIndex >= 0 then
+    Songs.Delete(LIndex);
+  Songs.Add(Format('%.6d', [AMapId]) + '=' + ASongName);
+end;
+
+procedure TMusicListener.AliasDeclared(const AName, AValue: string);
+begin
+end;
 
 { TTestActorDefParity }
 
@@ -136,6 +191,9 @@ var
   LSink: IActorDefDefinitionSink;
   LParser: IActorDefParser;
   LLine: string;
+  LMusic: TMusicListener;
+  LMusicRef: IActorDefSoundInfoListener;
+  LIndex: Integer;
 begin
   AMismatch := '';
   LDir := DataDir(AGame);
@@ -155,16 +213,21 @@ begin
   LScripts := LEvents;
   LConsumer := LEvents;
   LAliases := TActorDefFactory.CreateSoundAliases(LLog);
+  LMusic := TMusicListener.Create(LEngine.NumMusic);
+  LMusicRef := LMusic;
 
   try
     if TFile.Exists(TPath.Combine(LDir, ACase + '.snd.txt')) then
     begin
       TActorDefFactory.ParseSoundInfo(LProfile,
         TReplayText.ToLump(TReplayText.ReadAnsi(TPath.Combine(LDir, ACase + '.snd.txt'))),
-        LAliases, nil);
+        LAliases, LMusicRef);
       LLog.Info('@ ALIASES ' + IntToStr(Length(LAliases.Lines)) + #13#10);
       for LLine in LAliases.Lines do
         LLog.Info('@ ALIASENTRY ' + TReplayText.Encode(LLine) + #13#10);
+      for LIndex := 0 to LMusic.Songs.Count - 1 do
+        LLog.Info('@ MUSIC ' + IntToStr(StrToInt(LMusic.Songs.Names[LIndex])) + '|' +
+          TReplayText.Encode(LMusic.Songs.ValueFromIndex[LIndex]) + #13#10);
     end;
     LSink := TActorDefFactory.CreateDehSink(LProfile, LActors, LStates, LAliases, LConsumer, LLog);
     LParser := TActorDefFactory.CreateParser(LProfile, LLog, LFlags, LNames, LActors, LSink,
@@ -227,6 +290,44 @@ begin
   for LGame in GAMES do
     LProblems := LProblems + CheckCase(LGame, ACase);
   Assert.AreEqual('', LProblems, ACase);
+end;
+
+function TTestActorDefParity.CheckMutants(const AGame: string): string;
+var
+  LFile: string;
+  LCase: string;
+  LCount: Integer;
+begin
+  Result := '';
+  LCount := 0;
+  for LFile in TDirectory.GetFiles(DataDir(AGame), 'fuzz_*.in.txt') do
+  begin
+    LCase := TPath.GetFileName(LFile);
+    LCase := Copy(LCase, 1, Length(LCase) - Length('.in.txt'));
+    Result := Result + CheckCase(AGame, LCase).Replace('. ', ' [' + LCase + ']. ');
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0, 'there are no mutants of ' + AGame);
+end;
+
+procedure TTestActorDefParity.TestMutantsOfDoom;
+begin
+  Assert.AreEqual('', CheckMutants('Doom'));
+end;
+
+procedure TTestActorDefParity.TestMutantsOfHeretic;
+begin
+  Assert.AreEqual('', CheckMutants('Heretic'));
+end;
+
+procedure TTestActorDefParity.TestMutantsOfHexen;
+begin
+  Assert.AreEqual('', CheckMutants('Hexen'));
+end;
+
+procedure TTestActorDefParity.TestMutantsOfStrife;
+begin
+  Assert.AreEqual('', CheckMutants('Strife'));
 end;
 
 initialization

@@ -1,0 +1,12 @@
+ACTOR FramesCase 20063
+{
+  States
+  {
+ Spawn:  Spawn:
+    TROO abc 5
+    TROO [ 5
+    TROO ] 5
+    TROO ABCDEFGHIJKLMNOPQRSTUVWXYZ 1
+    Loop
+}
+  }

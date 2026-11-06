@@ -1,0 +1,16 @@
+WEAPON 5
+{
+  Ammo 0
+  AmmoPerShot 1
+  Level 2
+ States  States
+  {
+  Up:
+    PISG A 1
+    Stop
+  }
+}
+ACTOR AfterWeapon 20070
+{
+  Health 1
+}

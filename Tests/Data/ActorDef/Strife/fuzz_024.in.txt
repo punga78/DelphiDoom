@@ -1,0 +1,10 @@
+WEAPON 3
+{
+  AmmoPerShot 5
+  Flags
+  States
+DEH_PARSE
+  {
+  Up:
+    PISG A 1
+    

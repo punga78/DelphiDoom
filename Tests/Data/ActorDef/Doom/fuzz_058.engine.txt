@@ -1,0 +1,4 @@
+STATEADD S_SOUNDS0
+STATEADD S_SOUNDS1
+STATEADD S_SOUNDS2
+# DEH-EXCEPTION EAccessViolation: Access violation at address 008CC7B8 in module 'H_Doom.exe'. Read of address 00000000

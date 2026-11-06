@@ -1,0 +1,20 @@
+ACTOR Flags2Games 20171
+{
+  +LOGRAV
+  +WINDTHRUST
+  +MF2_FLY
+  FOOTCLIP
+  +MF2_FLOORBOUNCE
+  -MF2_FLY
+Goto See+1
+  -MF2_FLOORBOUNCE
+  +MF2_THRUGHOST
+  +MF_SOLID
+  States
+  {
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}

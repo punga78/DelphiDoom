@@ -10,6 +10,7 @@
 @ ALIASENTRY MY/FAR2=DSFAR
 @ ALIASENTRY MY/LOOP=MY/LOOP
 @ ALIASENTRY MY/LONG=DSABCDEFGHIJ
+@ MUSIC 1|SONG01
 I_Warning: SC_SoundAlias(): Sound PAIN1 PAIN2 has length 11 > 8.
 I_Warning: SC_SoundAlias(): Sound MY/LOOP has length 7 > 8.
 I_Warning: SC_SoundAlias(): Sound unknown/sound does not have a corresponding alias.

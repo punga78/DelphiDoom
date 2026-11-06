@@ -1,0 +1,289 @@
+I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "99999999999" at Line 4
+I_Warning: ==========================================================================
+I_Warning: 00001     {
+I_Warning: 00002       Radius -5
+I_Warning: 00003 ***   Health 99999999999
+I_Warning: 00004       Height 0x20
+I_Warning: 00005     BRIGHT
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: SC_ActordefToDEH(): Unknown token "BRIGHT" found while parsing mobj "NumbersEdge" (doomednum=20173)
+I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "#12" at Line 7
+I_Warning: ==========================================================================
+I_Warning: 00004       Height 0x20
+I_Warning: 00005     BRIGHT
+I_Warning: 00006 ***   Speed #12
+I_Warning: 00007       Scale 1,5
+I_Warning: 00008       Alpha 1.0
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: SC_ActordefToDEH(): Unknown token "5" found while parsing mobj "NumbersEdge" (doomednum=20173)
+I_Warning: TScriptEngine.GetInteger(): Bad numeric constant "12.5" at Line 15
+I_Warning: ==========================================================================
+I_Warning: 00012       Mass 007
+I_Warning: 00013       Damage +3
+I_Warning: 00014 ***   PainChance 12.5
+I_Warning: 00015       States
+I_Warning: 00016       {
+I_Warning: ==========================================================================
+I_Warning: 
+@ DEH-BEGIN
+NewThing "NumbersEdge"
+Inheritsfrom = -1
+Id # = 20173
+Initial Frame = NewFrame 0
+Hit Points = 999999999
+First Moving Frame = OriginalFrame 0
+Alert Sound = 0
+Reaction Time = 0
+Attack Sound = 0
+Injury Frame = OriginalFrame 0
+Pain Chance = 12
+Pain Sound = 0
+Close Attack Frame = OriginalFrame 0
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 0
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 0
+Speed = 0
+VSpeed = 6553600
+MinMissileChance = 0
+Pushfactor = 70
+Friction = 59392
+Width = -327680
+Height = 2097152
+Mass = 7
+Missile Damage = 3
+Action Sound = 0
+Respawn Frame = OriginalFrame 0
+Bits = 0
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 0
+Melee Sound = 0
+Explosion Damage = 0
+Explosion Radius = 0
+Dropitem = 
+Missiletype = 
+Renderstyle = NORMAL
+Alpha = 65536
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 0
+melee threshold = 0
+Scale = 65536
+Gravity = -65536
+Float Speed = 0
+Normal Speed = 0
+Fast Speed = 0
+Obituary = ""
+Hit Obituary = ""
+Gender = DEFAULT
+Melee Range = 0
+Max Step Height = 0
+Max DropOff Height = 0
+Gib Health = 0
+Max Target Range = 0
+Weave Index XY = 0
+Weave Index Z = 0
+Sprite DX = 0
+Sprite DY = 0
+flags5_ex = 0
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = 
+Translation = 
+
+Frame NewFrame 0
+Sprite Number = TROO
+Sprite Subnumber = 0
+Duration = 16
+Duration 2 = 16
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = NumbersEdge
+
+Frame NewFrame 1
+Sprite Number = TROO
+Sprite Subnumber = 1
+Duration = -5
+Duration 2 = -5
+Next Frame = NewFrame 2
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = NumbersEdge
+
+Frame NewFrame 2
+Sprite Number = TROO
+Sprite Subnumber = 2
+Duration = 3
+Duration 2 = 3
+Next Frame = NewFrame 0
+Codep Frame = A_Look
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = NumbersEdge
+
+Frame NewFrame 3
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 17
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 4
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 4
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 0
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 5
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 5
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 13
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 6
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 6
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 3
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 7
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 7
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 14
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 8
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 8
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 12
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 9
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 9
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 18
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 10
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 10
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 4
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 11
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 11
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 11
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 12
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 12
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 4
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 13
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 13
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 2
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 14
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+Frame NewFrame 14
+Sprite Number = RANDOMSELECT
+Sprite Subnumber = 19
+Duration = 12
+Duration 2 = 12
+Next Frame = NewFrame 14
+Codep Frame = RANDOMSELECT
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 64
+Owner = NumbersEdge
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

@@ -1,0 +1,9 @@
+ACTOR NoStates 20102
+{
+ 33  Health 33
+  Speed 5
+}
+ACTOR NoStates2 20103
+-MF_SOLID
+  Health 34
+}

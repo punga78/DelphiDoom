@@ -1,0 +1,12 @@
+ACTORALIAS NewName Zombie
+ACTORALIAS A = B
+ACTORALIAS Zombie = Alias1 = Alias2
+ACTORALIAS OnlyOne
+ACTORALIAS Foo // comment
+ACTORALIAS
+ACTORALIAS Bar Baz // comment
+ACTOR UsesAlias : NewName 20080
+{
+{ RANDOMSELECT
+  Health 5
+}

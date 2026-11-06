@@ -102,6 +102,8 @@ type
     [Test]
     procedure TestTheStatesOfAWeaponDoNotKeepTheGotoOfTheActorBefore;
     [Test]
+    procedure TestAnActorCutInItsHeadHasNoStatesOfTheActorBefore;
+    [Test]
     procedure TestMoreThan1024StatesAreCutWithAWarning;
     [Test]
     procedure TestHexenKeywordsSetTheBitsOfTheFlags2;
@@ -537,6 +539,16 @@ begin
   Assert.AreEqual(1, FEngine.Weapons.Count);
   Assert.IsFalse(FEngine.Weapons[0].States[0].GotoNeedsCalc);
   Assert.AreEqual(-1, FEngine.Weapons[0].States[0].NextState);
+end;
+
+procedure TTestActorDefModel.TestAnActorCutInItsHeadHasNoStatesOfTheActorBefore;
+begin
+  // the old parser kept the number of states of the actor before: it wrote states that did not exist
+  Parse('ACTOR First 3001'#10'{'#10'  States'#10'  {'#10'  Spawn:'#10'    TROO A 1'#10'    TROO B 1'#10'  }'#10'}'#10'ACTOR Second : Imp 3002'#10);
+  Assert.AreEqual(3, FEngine.Actors.Count);
+  Assert.AreEqual(2, Length(FEngine.Actors[1].States));
+  Assert.AreEqual(0, Length(FEngine.Actors[2].States));
+  Assert.AreEqual(3002, FEngine.Actors[2].DoomedNum);
 end;
 
 procedure TTestActorDefModel.TestMoreThan1024StatesAreCutWithAWarning;

@@ -1,0 +1,21 @@
+WEAPON 2
+{
+  AmmoPerShot 1
+  +MF_SOLID
+  +MF_SHOOTABLE
+  MF_NOSECTOR
+  +NOTHRUST
+  +SILENT
+  -MF_SOLID
+  -NOTHRUST
+  -WPF_SILENT
+  +WPF_NOAUTOFIRE
+  NOAUTOFIRE
+  States
+  {
+  Up:
+    PISG A 1
+    Goto Ready
+  Ready:
+    Loop
+  }

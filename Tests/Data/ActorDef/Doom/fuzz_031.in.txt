@@ -1,0 +1,7 @@
+WEAPON WP_PISTOL
+{
+  Ammo 1
+  States
+  {
+ Up:  Up:
+    S

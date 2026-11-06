@@ -367,6 +367,8 @@ begin
   Result := True;
   FPending := True;
   InitActor;
+  // the states of the actor before are not the ones of this actor if the text ends in its head
+  FStates.Start(FOwner);
   FScanner.GetString;
   FActor.Name := FScanner.AsString;
   LIsReplace := False;

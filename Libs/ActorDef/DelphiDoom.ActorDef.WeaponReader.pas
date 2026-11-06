@@ -107,6 +107,8 @@ begin
   FWeapon.HoldAttackState := -1;
   FWeapon.FlashState := -1;
   FWeapon.Flags := '';
+  // the states of the thing before are not the ones of this weapon if the text ends in its head
+  FStates.Start(FOwner);
 
   if not FScanner.GetString then
     Exit(False);

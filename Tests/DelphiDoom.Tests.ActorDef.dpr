@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: unit tests of the ActorDef library (DUnitX)                         }
+{  DelphiDoom: unit tests of the ActorDef library (DUnitX)                     }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

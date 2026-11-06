@@ -1,0 +1,8 @@
+WEAPON Nonsense
+{
+  {
+  Up:
+    PISG A 1
+    Stop
+  }
+}

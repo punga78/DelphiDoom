@@ -1,0 +1,10 @@
+ACTOR NoStates 20102
+{
+THINKER
+  Health 33
+  Speed 5
+}
+ACTOR NoStates2 20103
+{
+}
+  Health 34 Ammo

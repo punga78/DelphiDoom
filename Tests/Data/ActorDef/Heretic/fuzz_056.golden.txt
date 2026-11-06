@@ -1,0 +1,56 @@
+I_Warning: SC_ActordefToDEH(): Unknown token "Radius" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "+NOTHRUST" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "+SILENT" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "-MF_SOLID" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "-WPF_SILENT" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "+WPF_NOAUTOFIRE" found while parsing weapon "2"
+I_Warning: SC_ActordefToDEH(): Unknown token "NOAUTOFIRE" found while parsing weapon "2"
+I_Warning: TScriptEngine.GetString(): Closing bracket "}" found at line 24 without opening bracket "{"
+I_Warning: ==========================================================================
+I_Warning: 00021       }
+I_Warning: 00022     }
+I_Warning: 00023 *** }
+I_Warning: 00024     
+I_Warning: ==========================================================================
+I_Warning: 
+@ DEH-BEGIN
+WEAPON 2
+Level 1
+Ammo Type = 0
+DESELECT Frame = NewFrame 0
+SELECT Frame = OriginalFrame 0
+BOBBING Frame = NewFrame 1
+SHOOTING Frame = OriginalFrame 0
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = MF_SOLID MF_SHOOTABLE MF_NOSECTOR 
+AMMO PER SHOT = 1
+
+Frame NewFrame 0
+Sprite Number = PISG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 1
+Sprite Number = PISG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

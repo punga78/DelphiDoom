@@ -1,0 +1,1 @@
+I_Warning: SC_ActordefToDEH(): "THINKER" Th does not have script

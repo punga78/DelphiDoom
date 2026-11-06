@@ -1,0 +1,140 @@
+@ DEH-BEGIN
+WEAPON 1
+Level 1
+Ammo Type = 0
+DESELECT Frame = NewFrame 0
+SELECT Frame = NewFrame 1
+BOBBING Frame = NewFrame 2
+SHOOTING Frame = NewFrame 3
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = NewFrame 6
+MBF21 BITS = 
+AMMO PER SHOT = 2
+
+Frame NewFrame 0
+Sprite Number = PISG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 2
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 1
+Sprite Number = PISG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 1
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 2
+Sprite Number = PISG
+Sprite Subnumber = 0
+Duration = 1
+Duration 2 = 1
+Next Frame = NewFrame 2
+Codep Frame = A_WeaponReady
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 3
+Sprite Number = B
+Sprite Subnumber = -13
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 4
+Codep Frame = C 6 A_FirePistol
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 4
+Sprite Number = PISG
+Sprite Subnumber = 3
+Duration = 4
+Duration 2 = 4
+Next Frame = NewFrame 5
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 5
+Sprite Number = PISG
+Sprite Subnumber = 1
+Duration = 5
+Duration 2 = 5
+Next Frame = NewFrame 2
+Codep Frame = A_ReFire
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 6
+Sprite Number = PISF
+Sprite Subnumber = Bright 0
+Duration = 7
+Duration 2 = 7
+Next Frame = NewFrame 7
+Codep Frame = A_Light1
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 7
+Sprite Number = RANDOMRANGE
+Sprite Subnumber = 6
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 8
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 8
+Sprite Number = RANDOMRANGE
+Sprite Subnumber = 46
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 9
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 9
+Sprite Number = RANDOMRANGE
+Sprite Subnumber = 51
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 10
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+Frame NewFrame 10
+Sprite Number = RANDOMRANGE
+Sprite Subnumber = 46
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 10
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

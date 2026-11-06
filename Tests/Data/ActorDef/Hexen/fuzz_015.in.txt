@@ -1,0 +1,21 @@
+ACTOR RepA replaces Centaur
+{
+  Health 77
+  States
+  {
+  Spawn:
+    TROO A 5
+  }
+    Loop
+}
+ACTOR RepB 20040
+{
+  replaces Barrel
+  Health 78
+}
+ACTOR RepC 20041
+{
+  replaces NoSuchThing
+  Health 79
+}
+ACTO

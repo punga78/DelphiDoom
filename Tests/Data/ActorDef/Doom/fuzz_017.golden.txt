@@ -1,0 +1,30 @@
+@ DEH-BEGIN
+WEAPON -1
+Ammo Type = 0
+DESELECT Frame = OriginalFrame 0
+SELECT Frame = OriginalFrame 0
+BOBBING Frame = OriginalFrame 0
+SHOOTING Frame = OriginalFrame 0
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = 
+AMMO PER SHOT = 0
+
+
+
+@ DEH-END
+@ DEH-BEGIN
+WEAPON -1
+Ammo Type = 0
+DESELECT Frame = OriginalFrame 0
+SELECT Frame = OriginalFrame 0
+BOBBING Frame = OriginalFrame 0
+SHOOTING Frame = OriginalFrame 0
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = 
+AMMO PER SHOT = 0
+
+
+
+@ DEH-END

@@ -1,0 +1,103 @@
+I_Warning: SC_ActordefToDEH(): Unknown token "ENDSCRIPT" found while parsing mobj "PropsAll" (doomednum=20002)
+I_Warning: SC_SoundAlias(): Sound imp/sight does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/attack does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/pain does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/death does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/active does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/c1 does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/c2 does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/c3 does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/melee does not have a corresponding alias.
+I_Warning: SC_SoundAlias(): Sound imp/rip does not have a corresponding alias.
+@ DEH-BEGIN
+NewThing "PropsAll"
+Inheritsfrom = -1
+Id # = 20002
+Initial Frame = NewFrame 0
+Hit Points = 70
+First Moving Frame = OriginalFrame 0
+Alert Sound = 0
+Reaction Time = 5
+Attack Sound = 0
+Injury Frame = OriginalFrame 0
+Pain Chance = 99
+Pain Sound = 0
+Close Attack Frame = OriginalFrame 0
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 0
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 0
+Speed = 12
+VSpeed = 163840
+MinMissileChance = 40
+Pushfactor = 49152
+Friction = 52429
+Width = 1179648
+Height = 4194304
+Mass = 300
+Missile Damage = 7
+Action Sound = 0
+Respawn Frame = OriginalFrame 0
+Bits = 0
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 5
+Melee Sound = 0
+Explosion Damage = 128
+Explosion Radius = 64
+Dropitem = Clip
+Missiletype = ImpFireball
+Renderstyle = ADD
+Alpha = 49152
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 24
+melee threshold = 90
+Scale = 131072
+Gravity = 16384
+Float Speed = 5
+Normal Speed = 20
+Fast Speed = 0
+Obituary = "%o was burned by an imp"
+Hit Obituary = "%o was clawed"
+Gender = Female
+Melee Range = 96
+Max Step Height = 1572864
+Max DropOff Height = 2097152
+Gib Health = 40
+Max Target Range = 800
+Weave Index XY = 3
+Weave Index Z = 4
+Sprite DX = 98304
+Sprite DY = 147456
+flags5_ex = 0
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = Red
+Translation = Gray
+
+Frame NewFrame 0
+Sprite Number = TROO
+Sprite Subnumber = 0
+Duration = 10
+Duration 2 = 10
+Next Frame = NewFrame 0
+Codep Frame = A_Null
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+Owner = PropsAll
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

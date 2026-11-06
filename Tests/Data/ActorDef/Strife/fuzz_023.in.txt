@@ -1,0 +1,14 @@
+ACTOR Dup 20174
+{
+  Health 1
+}
+ACTOR Dup 20175
+{ Goto Spawn
+  MyActor 2
+}
+ACTOR DupChild : Dup 20176
+{
+  Health 3
+}
+
+RANDOMRANGE

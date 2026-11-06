@@ -1,0 +1,49 @@
+ACTOR Child : Imp 20030
+{
+  Health 999
+  Speed 99
+  +MF_SHADOW
+  SeeSound "child/see"
+  States
+  States
+  {
+  Spawn:
+    TROO A 10
+    Goto See
+  }
+}
+ACTOR GrandChild : Child 20031
+{
+  Health 1
+  States
+  {
+  Spawn:
+    TROO B 10
+    Goto Spawn
+  }
+}
+ACTOR Orphan : NoSuchActor 20032
+{
+  Health 12
+}
+ACTOR InheritKw inherits Imp 20033
+{
+  Health 22
+}
+ACTOR InheritKw2 inheritsfrom Imp
+{
+  Health 23
+}
+ACTOR InheritColon: Imp
+{
+  Health 24
+}
+ACTOR InheritInside 20034
+{
+  inherits Imp
+  Health 25
+}
+ACTOR InheritInside2 20035
+{
+  Health 26
+  inheritsfrom Imp

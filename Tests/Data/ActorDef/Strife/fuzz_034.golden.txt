@@ -1,0 +1,2 @@
+@ THINKER Thinker6|S6|-1|4|1
+I_Warning: DoParseActorAlias(): Invalid alias declaration ""S6b""

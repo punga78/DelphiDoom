@@ -1,0 +1,5 @@
+ACTOR EofProps 20121
+ACTOR EofProps 20121
+{
+  Health 10
+  Radius

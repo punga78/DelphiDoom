@@ -1,0 +1,3 @@
+STATEADD S_SOUNDS0
+STATEADD S_SOUNDS1
+# DEH-EXCEPTION EAccessViolation: Access violation at address 006BFCF8 in module 'H_Strife.exe'. Read of address 00000000

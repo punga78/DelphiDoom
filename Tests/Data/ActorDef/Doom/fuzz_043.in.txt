@@ -1,0 +1,14 @@
+actor FlagsCase 20022
+{
+  +solid
+  +ShootAble
+  +mf_noblood
+  -SOLID
+  -SOLID
+  states
+  {
+  spawn:
+    troo a 1
+    loop
+  }
+}

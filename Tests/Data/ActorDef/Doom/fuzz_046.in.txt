@@ -1,0 +1,5 @@
+ACTOR Sounds 20140
+{
+  SeeSound "weird/sound"
+  AttackSound "toolongsoundname"
+  PainSou

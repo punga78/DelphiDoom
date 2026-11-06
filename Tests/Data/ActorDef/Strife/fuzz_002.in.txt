@@ -1,0 +1,8 @@
+// flags added and removed on top of the flags of the parent
+ACTOR FlagsInh : Zombie 20021
+{
+  "
+  -MF_SHOOTABLE
+  -COUNTKILL
+  +MF_NOCLIP
+  -

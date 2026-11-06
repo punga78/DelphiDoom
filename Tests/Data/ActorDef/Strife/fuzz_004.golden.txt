@@ -1,0 +1,1 @@
+I_Warning: SC_ActordefToDEH(): "THINKER" Foo does not have script

@@ -1,0 +1,51 @@
+ACTOR AllStates 20050
+{
+  Health 100
+  States
+  {
+  Spawn:
+    TROO A 10
+    Loop
+  See:
+    TROO B 10
+    Loop
+  Melee:
+    TROO C 8 A_FaceTarget
+    TROO D 8 A_CustomMeleeAttack
+    Goto See
+  Missile:
+    TROO F 8 BRIGHT A_CustomMissile
+    Goto See
+  Pain:
+    TROO G 2
+    TROO G 2 A_Pain
+    Goto See
+  Death:
+    TROO H 8
+    TROO I 8 A_Scream
+    TROO J 8 A_Fall
+    TROO K -1
+    Stop
+  XDeath:
+    TROO L 5
+    TROO M 5 A_XScream
+    TROO N -1
+    Stop
+  Raise:
+    TROO MLK 8
+    Goto See
+  Heal:
+    TROO A 5
+    Goto Spawn
+  Crash:
+    TROO B 5
+    Goto Death
+  Crush:
+    TROO C 5
+    Stop
+  Interact:
+    TROO D 5
+    Goto Spawn
+  }
+}
+

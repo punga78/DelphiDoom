@@ -1,0 +1,23 @@
+// values that look like fixed point are scaled back
+ACTOR PropsNorm 20003
+{
+  16384
+  Friction 59392
+  Scale 65536
+  Gravity 32768
+  SpriteDX 131072
+  SpriteDX 131072
+  SpriteDY -131072
+  MaxStepHeight 24.5
+  MaxDropoffHeight -8
+  Alpha 0.67
+  VSpeed -3
+  Speed 40
+  Health -5
+  States
+  {
+  Spawn:
+    PLAY A 1
+    Stop
+  }
+}
