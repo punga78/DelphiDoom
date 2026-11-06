@@ -1,0 +1,44 @@
+[numstates]
+2846
+[warnings]
+I_Warning: DEH_Parse(): Wrong new state number = X
+I_Warning: DEH_Parse(): New state number unspecified after NEW keyword
+I_Warning: DEH_Parse(): Wrong new state number = -1
+
+[changes]
+Thing 28|Initial Frame=2846
+Thing 28|Death Frame=2847
+Thing 28|Speed=29
+Thing 29|Initial Frame=2848
+Thing 29|Speed=30
+Frame 2846|Sprite Number=3
+Frame 2846|Sprite Subnumber=0
+Frame 2846|Duration=5
+Frame 2846|Duration 2=-1
+Frame 2846|Next Frame=2847
+Frame 2846|Codep Frame=NULL
+Frame 2846|Unknown 1=0
+Frame 2846|Unknown 2=0
+Frame 2846|Flags_ex=0
+Frame 2846|Mbf21 Bits=0
+Frame 2847|Sprite Number=301
+Frame 2847|Sprite Subnumber=0
+Frame 2847|Duration=6
+Frame 2847|Duration 2=-1
+Frame 2847|Next Frame=2846
+Frame 2847|Codep Frame=NULL
+Frame 2847|Unknown 1=0
+Frame 2847|Unknown 2=0
+Frame 2847|Flags_ex=0
+Frame 2847|Mbf21 Bits=0
+Frame 2848|Sprite Number=301
+Frame 2848|Sprite Subnumber=0
+Frame 2848|Duration=10
+Frame 2848|Duration 2=-1
+Frame 2848|Next Frame=5
+Frame 2848|Codep Frame=NULL
+Frame 2848|Unknown 1=0
+Frame 2848|Unknown 2=0
+Frame 2848|Flags_ex=0
+Frame 2848|Mbf21 Bits=0
+[old]

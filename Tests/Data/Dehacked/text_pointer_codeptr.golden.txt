@@ -1,0 +1,31 @@
+[numstates]
+4000
+[warnings]
+I_Warning: DEH_Parse(): Can not find setable text "ZZZ" - should be changed to "
+YYY"
+I_Warning: DEH_Parse(): Can not find setable text "NO MATCH
+" - should be changed to "HELLO"
+I_Warning: DEH_Parse(): Can not find setable text "ABC" - should be changed to "
+DE"
+I_Warning: DEH_Parse(): Invalid state number "99999" while parsing CODEP FRAME
+I_Warning: DEH_Parse(): Wrong sound field = BOGUS (Sound number = 6)
+I_Warning: DEH_Parse(): Wrong sound number = 999
+I_Warning: DEH_Parse(): New sounds can only specified in things definition!
+
+[changes]
+Frame 17|Codep Frame=WEAPONREADY
+Frame 19|Codep Frame=RAISE
+Frame 30|Codep Frame=CHASE
+Frame 31|Codep Frame=LOOK
+Frame 32|Codep Frame=SAW
+Frame 35|Codep Frame=EXPLODE (128)
+[Strings]|GOTARMOR=ARMOR\nLINE TWO
+[Strings]|GOTSTIM=PICKED UP STIMPACK!!!!
+[Strings]|PD_BLUEO=BLUE KEY NEEDED
+[SOUND]|5=NEWNAME
+[SPRITES]|1=ABCD
+[SPRITES]|2=WXYZ
+[old]
+[Strings]|GOTARMOR=Picked up the armor.
+[Strings]|GOTSTIM=Picked up a stimpack.
+[Strings]|PD_BLUEO=You need a blue key to activate this object

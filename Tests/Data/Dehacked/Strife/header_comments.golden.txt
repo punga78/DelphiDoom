@@ -1,0 +1,14 @@
+[numstates]
+1567
+[warnings]
+
+[changes]
+Thing 2|Hit Points=4321
+Thing 2|Speed=17
+Thing 2|Mass=1111
+Thing 3|Hit Points=777
+Thing 3|Width=1900000
+Thing 3|Height=4800000
+Misc|Max Health=321
+Misc|Max Armor=222
+[old]

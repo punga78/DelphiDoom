@@ -1,0 +1,93 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Text 21 22
+Picked up a stimpack.Picked up stimpack!!!!
+
+Text 20 14
+Picked up the armor.Armor
+line two
+
+Text 43 15
+You need a blue key to activate this objectBlue key needed
+
+Text 4 4
+TROOABCD
+
+Text 4 4
+SHTGWXYZ
+
+Text 0 5
+x
+
+Text 5 0
+x
+
+Text 3 3
+ZZZ
+YYY
+
+Text 4
+abcd
+
+Text
+abcd
+
+Text 9 5
+NO MATCH
+HELLO
+
+Text 3 2
+abc
+# comment inside text
+de
+
+Pointer 7 (Frame 17)
+Codep Frame = 18
+
+Pointer 8 (Frame 18)
+Codep Frame = 99999
+
+Pointer 9 (Frame 19)
+Codep Frame = 20
+
+Pointer 10 (Frame 20)
+Duration = 4
+
+Pointer 11
+Codep Frame = 18
+
+Pointer 12 (Weapon 3)
+Codep Frame = 18
+
+[CODEPTR]
+Frame 30 = Chase
+Frame 31 = A_Look
+Frame 32 = 19
+Frame 33 = 99999
+Frame x = Look
+Thing 3 = Look
+Frame -2 = Chase
+Frame 34 = NoSuchAction
+Frame 35 = Explode(128)
+
+Cheat 0
+Change music = idmus
+Chainsaw = idchoppers
+
+Sound 5
+Zero/One = 1
+Value = 77
+Name = NEWNAME
+
+Sound 6
+Value = 78
+Bogus = 1
+Value = 79
+
+Sound 999
+Value = 80
+
+Sound
+Value = 82

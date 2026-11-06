@@ -1,0 +1,68 @@
+[numstates]
+1567
+[warnings]
+I_Warning: DEH_Parse(): Wrong think field = RIPSOUND (Think number = 1)
+
+[changes]
+Thing 1|Id #=3333
+Thing 1|Initial Frame=101
+Thing 1|Hit Points=1234
+Thing 1|First Moving Frame=102
+Thing 1|Alert Sound=5
+Thing 1|Reaction Time=12
+Thing 1|Attack Sound=6
+Thing 1|Injury Frame=103
+Thing 1|Pain Chance=211
+Thing 1|Pain Sound=7
+Thing 1|Close Attack Frame=104
+Thing 1|Far Attack Frame=105
+Thing 1|Death Frame=106
+Thing 1|Exploding Frame=107
+Thing 1|Death Sound=8
+Thing 1|Speed=13
+Thing 1|Width=1500000
+Thing 1|Height=5500000
+Thing 1|Mass=321
+Thing 1|Missile Damage=9
+Thing 1|Action Sound=9
+Thing 1|Respawn Frame=108
+Thing 2|Injury Frame=201
+Thing 2|Width=1400000
+Thing 2|Action Sound=10
+Thing 2|Custom Sound 1=11
+Thing 2|Custom Sound 2=12
+Thing 2|Custom Sound 3=13
+Thing 2|Explosion Damage=44
+Thing 2|Explosion Radius=45
+Thing 2|Melee Damage=46
+Thing 2|Melee Sound=14
+Thing 2|Alpha=77
+Thing 2|Heal Frame=202
+Thing 2|Crash Frame=203
+Thing 2|Interact Frame=204
+Thing 2|Missileheight=4600000
+Thing 2|Vspeed=3
+Thing 2|Minmissilechance=55
+Thing 2|Float Speed=5
+Thing 2|Normal Speed=6
+Thing 2|Fast Speed=7
+Thing 2|Melee Range=70000
+Thing 2|Gib Health=-88
+Thing 2|Max Target Range=99
+Thing 2|Weave Index Xy=4
+Thing 2|Weave Index Z=5
+Thing 2|Crush Frame=205
+Thing 3|Hit Points=16
+Thing 3|Reaction Time=-1
+Thing 3|Pain Chance=32
+Thing 3|Speed=7
+Thing 3|Width=-1
+Thing 3|Height=4200000
+Thing 3|Mass=-5
+Thing 3|Obituary="WAS SHOT BY A TEST"
+Thing 3|Hit Obituary="WAS HIT BY A TEST"
+Thing 3|Gender=Male
+Thing 3|Max Step Height=24
+Thing 3|Max Dropoff Height=25
+Thing 3|Translation="TESTTRAN"
+[old]

@@ -1,0 +1,34 @@
+[numstates]
+4000
+[warnings]
+I_Warning: DEH_Parse(): Sprite name with 3 characters = ABC
+I_Warning: DEH_Parse(): Sprite name with 11 characters = TOOLONGNAME
+I_Warning: DEH_Parse(): Can not find sprite = NOSU
+
+[changes]
+Thing 27|Speed=26
+[PARS]|PAR 1 1=111
+[PARS]|PAR 2 3=222
+[PARS]|PAR 3 9=333
+[PARS]|PAR 5=66
+[PARS]|PAR 7=77
+[PARS]|PAR 32=880
+[Strings]|GOTARMOR=PICKED UP THE TEST ARMOR.
+[Strings]|GOTMEDIKIT=PICKED UP A MEDIKIT THAT YOU\n REALLY NEED!
+[Strings]|GOTBLUECARD=PICKED UP\nA BLUE \nKEYCARD.
+[Strings]|GOTMAP="QUOTED TEXT"
+[Strings]|GGSAVED=TEXT WITH  REMOVED
+[MUSIC]|1=D_TESTA
+[MUSIC]|2=D_TESTB
+[MUSIC]|3=D_TESTD
+[SOUND]|1=DSTESTB
+[SOUND]|3=DSTESTA
+[SOUND]|5=DSTESTC MORE WORDS
+[SPRITES]|1=ABCD
+[SPRITES]|2=EFGH
+[old]
+[Strings]|GOTARMOR=Picked up the armor.
+[Strings]|GOTMEDIKIT=Picked up a medikit.
+[Strings]|GOTBLUECARD=Picked up a blue keycard.
+[Strings]|GOTMAP=Computer Area Map
+[Strings]|GGSAVED=game saved.

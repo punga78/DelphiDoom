@@ -1,0 +1,41 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+# state references with the keywords of DelphiDoom
+Thing 23
+Initial frame = NEWFRAME 5
+First moving frame = NEWSTATE 6
+Injury frame = ORIGINALFRAME 7
+Close attack frame = ORIGINALSTATE 8
+Far attack frame = 9
+Death frame = NEWFRAME x
+Exploding frame = ORIGINALFRAME -3
+Respawn frame = ORIGINALFRAME
+Heal frame = NEWFRAME 0
+Crash frame = newframe 10
+Speed = 21
+
+# the same keywords where a state is not expected
+Thing 24
+Speed = NEWFRAME 5
+Mass = ORIGINALFRAME 5
+Hit points = 3131
+
+# a field that does not exist ends the section: the line is read again as a header
+Thing 25
+Speed = 22
+No such field = 5
+Mass = 23
+
+Thing 26
+Speed = 24
+# a thing that does not exist is a field error too
+Wrong = 3
+Hit points = 25
+
+# thing number errors
+Thing 0
+Speed = 91
+Thing -3
+Speed = 92

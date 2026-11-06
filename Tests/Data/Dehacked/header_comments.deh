@@ -1,0 +1,24 @@
+Patch File for DeHackEd v3.0
+# Header, comments and blank lines: a section goes on across them
+Doom version = 21
+Patch format = 6
+
+// a DelphiDoom comment
+Thing 2 (Trooper)
+# a comment inside the section
+Hit points = 4321
+
+   // an indented comment
+   Speed = 17
+#Mass = 99999
+Mass = 1111
+// Mass = 2222
+
+Thing 3
+   Width   =   1900000
+height=4800000
+HIT POINTS=777
+
+Misc
+Max Health = 321
+Max Armor = 222

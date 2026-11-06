@@ -1,0 +1,28 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+# aliases and fields that are read in a different way
+Thing 30
+Pain frame = 301
+Radius = 1300000
+Active sound = 3
+Melee threshold = 12
+Dropped item = 3
+Mass = 31
+
+Thing 31
+Mass = 32
+Name = TESTNAME
+Hit points = 33
+
+# unknown headers are ignored, and so are their lines
+Foo bar
+baz = 3
+Mass = 34
+Cheat 0
+Change music = idmus
+Chainsaw = idchoppers
+
+Thing 32
+Speed = 35

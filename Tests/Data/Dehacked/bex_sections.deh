@@ -1,0 +1,52 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+[PARS]
+par 1 1 111
+PAR 2 3 222
+par 3 9 333
+par 4 1 44
+par 1 10 55
+par 1 2 -1
+par 1
+par 5 66
+par 7 77
+PAR 32 880
+par 33 99
+par 0 98
+par 3 3 abc
+# a line that is not a par ends the section
+Thing 27
+Speed = 26
+
+[STRINGS]
+GOTARMOR = Picked up the test armor.
+GOTMEDIKIT = Picked up a medikit that you\n really need!
+GOTBLUECARD = Picked up\
+ a blue \
+keycard.
+NOSUCHSTRING = whatever
+GOTMAP = "quoted text"
+GGSAVED = text with \r removed
+
+[MUSIC]
+1 = D_TESTA
+2 = d_testb extra words
+E1M2 = D_TESTC
+D_E1M3 = D_TESTD
+99999 = D_NOPE
+0 = D_ZERO
+
+[SOUNDS]
+3 = DSTESTA
+dspistol = DSTESTB
+5 = dstestc more words
+99999 = DSNOPE
+
+[SPRITES]
+TROO = ABCD
+1 = EFGH
+SHTG = abc
+TOOLONGNAME = ABCD
+NOSU = WXYZ

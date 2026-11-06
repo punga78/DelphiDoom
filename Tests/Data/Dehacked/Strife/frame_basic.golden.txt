@@ -1,0 +1,43 @@
+[numstates]
+1567
+[warnings]
+I_Warning: DEH_Parse(): Wrong state field = BOGUS (State number = 16)
+I_Warning: DEH_Parse(): Unknown action function = "A_NOSUCHACTION" in state 17
+I_Warning: DEH_Parse(): State number unspecified after FRAME keyword
+I_Warning: DEH_Parse(): Wrong state number = 99999999999
+I_Warning: DEH_Parse(): Wrong state number = -4
+
+[changes]
+Frame 10|Sprite Number=5
+Frame 10|Sprite Subnumber=3
+Frame 10|Duration=17
+Frame 10|Duration 2=5
+Frame 10|Next Frame=411
+Frame 10|Codep Frame=CHASE
+Frame 10|Unknown 1=31
+Frame 10|Unknown 2=32
+Frame 10|Flags_ex=MF_EX_TRANSPARENT, MF_EX_WHITELIGHT
+Frame 10|Mbf21 Bits=STATEF_SKILL5FAST
+Frame 11|Sprite Subnumber=32772
+Frame 11|Duration=-7
+Frame 11|Next Frame=4012
+Frame 11|Codep Frame=CHASE
+Frame 11|Flags_ex=MF_EX_TRANSPARENT, MF_EX_REDLIGHT
+Frame 12|Sprite Subnumber=32768
+Frame 12|Next Frame=21
+Frame 12|Codep Frame=LOOK
+Frame 12|Flags_ex=MF_EX_WHITELIGHT, MF_EX_STATE_RANDOM_SELECT
+Frame 13|Next Frame=1581
+Frame 13|Codep Frame=NULL
+Frame 13|Mbf21 Bits=STATEF_SKILL5FAST
+Frame 14|Sprite Number=271
+Frame 14|Duration=6
+Frame 14|Next Frame=1582
+Frame 15|Duration=31
+Frame 15|Next Frame=32
+Frame 15|Unknown 1=30583
+Frame 16|Next Frame=77
+Frame 17|Sprite Number=6
+Frame 17|Duration=9
+[SPRITES]|272=0X10
+[old]

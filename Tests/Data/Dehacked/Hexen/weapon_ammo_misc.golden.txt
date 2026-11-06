@@ -1,0 +1,13 @@
+[numstates]
+2846
+[warnings]
+I_Warning: DEH_Parse(): Wrong weapon number = 4
+I_Warning: DEH_Parse(): Wrong weapon number = 9
+I_Warning: DEH_Parse(): Wrong weapon number = -1
+I_Warning: DEH_Parse(): Wrong misc field = MAX HEALTH
+I_Warning: DEH_Parse(): Wrong misc field = MAX SOULSPHERE
+I_Warning: DEH_Parse(): Wrong misc field = MAX HEALTH
+I_Warning: DEH_Parse(): Wrong misc field = MAX ARMOR
+
+[changes]
+[old]

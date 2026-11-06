@@ -1,0 +1,58 @@
+[numstates]
+4000
+[warnings]
+I_Warning: DEH_Parse(): After NEWFRAME keyword found invalid numeric X (Weapon number = 1)
+I_Warning: DEH_Parse(): Positive number expected after keyword (AMMO PER SHOT) - (-1) (Weapon number = 2)
+I_Warning: DEH_Parse(): Positive number expected after keyword (AMMO PER SHOT) - (ABC) (Weapon number = 3)
+I_Warning: DEH_Parse(): Wrong weapon field = BOGUS (Weapon number = 4)
+I_Warning: DEH_Parse(): Wrong weapon number = 9
+I_Warning: DEH_Parse(): Wrong weapon number = -1
+I_Warning: DEH_Parse(): Wrong ammo field = BOGUS (Ammo number = 2)
+I_Warning: DEH_Parse(): Wrong ammo number = 7
+I_Warning: DEH_Parse(): Wrong ammo number = -1
+I_Warning: DEH_Parse(): Wrong misc value -5, field = MAX HEALTH
+I_Warning: DEH_Parse(): Wrong misc field = NONEXISTENT
+
+[changes]
+Weapon WP_FIST|Ammo Type=AM_MISL
+Weapon WP_FIST|Deselect Frame=301
+Weapon WP_FIST|Select Frame=302
+Weapon WP_FIST|Bobbing Frame=303
+Weapon WP_FIST|Shooting Frame=304
+Weapon WP_FIST|Hold Shooting Frame=306
+Weapon WP_FIST|Firing Frame=305
+Weapon WP_FIST|Ammo Per Shot=7
+Weapon WP_FIST|Mbf21 Bits=NOTHRUST, SILENT
+Weapon WP_PISTOL|Ammo Type=AM_SHELL
+Weapon WP_PISTOL|Deselect Frame=4001
+Weapon WP_PISTOL|Select Frame=2
+Weapon WP_PISTOL|Bobbing Frame=4003
+Weapon WP_PISTOL|Shooting Frame=4
+Weapon WP_PISTOL|Hold Shooting Frame=99
+Weapon WP_SHOTGUN|Ammo Type=AM_CLIP
+Weapon WP_SHOTGUN|Select Frame=12
+Weapon WP_CHAINGUN|Select Frame=13
+Weapon WP_CHAINGUN|Mbf21 Bits=NOTHRUST, SILENT
+Weapon WP_MISSILE|Mbf21 Bits=NOAUTOFIRE, FLEEMELEE
+Ammo 0|Max Ammo=301
+Ammo 0|Per Ammo=21
+Ammo 1|Max Ammo=0
+Ammo 1|Per Ammo=22
+Ammo 2|Per Ammo=23
+Misc|Max Health=481
+Misc|Soulsphere Health=321
+Misc|Megasphere Health=331
+Misc|Medikit Health=341
+Misc|Stimpack Health=351
+Misc|Healthbonus Health=361
+Misc|Max Armor=105
+Misc|Green Armor Class=381
+Misc|Blue Armor Class=391
+Misc|Initial Bullets=401
+Misc|Bfg Cells/shot=411
+Misc|Idfa Armor=421
+Misc|Idfa Armor Class=431
+Misc|Idkfa Armor=441
+Misc|Idkfa Armor Class=451
+Misc|Max Soulsphere=471
+[old]

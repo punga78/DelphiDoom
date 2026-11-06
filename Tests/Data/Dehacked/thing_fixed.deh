@@ -1,0 +1,27 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Thing 4
+Pushfactor = 0.5
+Scale = 2.0
+Gravity = 0,25
+Friction = 0.9
+Sprite DX = 3.5
+Sprite DY = -2.25
+Max step height = 20.5
+
+Thing 5
+Pushfactor = 100
+Scale = 1000
+Gravity = 70000
+Friction = 65000.0
+Sprite DX = 300.5
+Sprite DY = 12
+Max dropoff height = 64.0
+
+Thing 6
+Pushfactor = 63.9
+Scale = 64.5
+Gravity = abc
+Friction = 0.0

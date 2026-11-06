@@ -1,0 +1,27 @@
+[numstates]
+2846
+[warnings]
+I_Warning: DEH_Parse(): Can not find setable text "PICKED UP A STIMPACK." - should be changed to "PICKED UP STIMPACK!!!!"
+I_Warning: DEH_Parse(): Can not find setable text "PICKED UP THE ARMOR." - should be changed to "ARMOR
+LINE TWO"
+I_Warning: DEH_Parse(): Can not find setable text "YOU NEED A BLUE KEY TO ACTIVATE THIS OBJECT" - should be changed to "BLUE KEY NEEDED"
+I_Warning: DEH_Parse(): Can not find setable text "TROO" - should be changed to "ABCD"
+I_Warning: DEH_Parse(): Can not find setable text "SHTG" - should be changed to "WXYZ"
+I_Warning: DEH_Parse(): Can not find setable text "ZZZ" - should be changed to "
+YYY"
+I_Warning: DEH_Parse(): Can not find setable text "NO MATCH
+" - should be changed to "HELLO"
+I_Warning: DEH_Parse(): Can not find setable text "ABC" - should be changed to "
+DE"
+I_Warning: DEH_Parse(): Invalid state number "99999" while parsing CODEP FRAME
+I_Warning: DEH_Parse(): Wrong sound field = ZERO/ONE (Sound number = 5)
+I_Warning: DEH_Parse(): Wrong sound field = BOGUS (Sound number = 6)
+I_Warning: DEH_Parse(): Wrong sound number = 999
+I_Warning: DEH_Parse(): New sounds can only specified in things definition!
+
+[changes]
+Frame 30|Codep Frame=CHASE
+Frame 31|Codep Frame=LOOK
+Frame 32|Codep Frame=BRIDGEORBIT
+Frame 35|Codep Frame=EXPLODE (128)
+[old]

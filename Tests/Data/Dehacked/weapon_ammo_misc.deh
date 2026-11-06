@@ -1,0 +1,97 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+Weapon 0
+Ammo type = 3
+Deselect frame = 301
+Select frame = 302
+Bobbing frame = 303
+Shooting frame = 304
+Firing frame = 305
+Hold shooting frame = 306
+Ammo per shot = 7
+MBF21 Bits = NOTHRUST + SILENT
+
+Weapon 1
+Ammo type = 1
+Deselect frame = NEWFRAME 1
+Select frame = ORIGINALFRAME 2
+Bobbing frame = NEWSTATE 3
+Shooting frame = ORIGINALSTATE 4
+Firing frame = NEWFRAME x
+Hold shooting frame = 99
+
+Weapon 2
+Ammo type = 0
+Ammo per shot = -1
+Select frame = 12
+
+Weapon 3
+Ammo per shot = abc
+MBF21 Bits = 3
+Select frame = 13
+
+Weapon 4
+MBF21 Bits = NOAUTOFIRE, FLEEMELEE
+Bogus = 7
+Select frame = 14
+
+Weapon 9
+Select frame = 15
+
+Weapon -1
+Select frame = 16
+
+Weapon
+Select frame = 17
+
+Ammo 0
+Max ammo = 301
+Per ammo = 21
+
+Ammo 1
+Max ammo = abc
+Per ammo = 22
+
+Ammo 2
+Per ammo = 23
+Bogus = 5
+Max ammo = 302
+
+Ammo 7
+Max ammo = 5
+
+Ammo -1
+Max ammo = 6
+
+Misc
+Max Health = 311
+Soulsphere Health = 321
+Megasphere Health = 331
+Medikit Health = 341
+Stimpack Health = 351
+Healthbonus Health = 361
+Max Armor = 371
+Green Armor Class = 381
+Blue Armor Class = 391
+Initial Bullets = 401
+BFG Cells/Shot = 411
+IDFA Armor = 421
+IDFA Armor Class = 431
+IDKFA Armor = 441
+IDKFA Armor Class = 451
+Max Soulsphere = 461
+
+Misc
+Max Soulsphere = 471
+Max Health = 481
+
+Misc
+Max Health = -5
+Max Armor = 100
+
+Misc
+Max Armor = 105
+Nonexistent = 3
+Max Health = 106
