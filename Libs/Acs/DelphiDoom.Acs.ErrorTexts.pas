@@ -30,7 +30,7 @@ type
   end;
 
 const
-  ERROR_TEXTS: array[0..69] of TAcsErrorText = (
+  ERROR_TEXTS: array[0..70] of TAcsErrorText = (
     (Code: ERR_MISSING_SEMICOLON; Text: 'Missing semicolon.'),
     (Code: ERR_MISSING_LPAREN; Text: 'Missing ''(''.'),
     (Code: ERR_MISSING_RPAREN; Text: 'Missing '')''.'),
@@ -100,7 +100,8 @@ const
     (Code: ERR_TOO_MANY_STRINGS; Text: 'Too many strings.'),
     (Code: ERR_UNKNOWN_PRTYPE; Text: 'Unknown cast type in print statement.'),
     (Code: ERR_ALLOC_SCRIPT_BUFFER; Text: 'Can not allocate script buffer.'),
-    (Code: ERR_STATEMENT_NOT_IMPLEMENTED; Text: 'This statement is not implemented by the compiler.')
+    (Code: ERR_STATEMENT_NOT_IMPLEMENTED; Text: 'This statement is not implemented by the compiler.'),
+    (Code: ERR_DIVISION_BY_ZERO; Text: 'Division by zero in a constant expression.')
   );
 
 { TAcsErrorTexts }

@@ -17,7 +17,9 @@ type
   /// <summary>
   ///   Every script in Tests\Data\Acs was compiled by the old compiler (acs_*.pas of the engine):
   ///   the .o files are the bytes it made and the .err files the text of its errors. The new
-  ///   compiler has to give the same bytes and the same errors
+  ///   compiler has to give the same bytes and the same errors. The exceptions are consteval and define:
+  ///   the old compiler folded some constant expressions wrongly (issue 61), their .o were
+  ///   rebuilt with the values calculated by hand
   /// </summary>
   [TestFixture]
   [Category('acs')]
@@ -83,6 +85,50 @@ type
     [TestCase('world_var_index', 'e_world_var_index')]
     procedure TestSameErrorAsTheOldCompiler(const AName: string);
 
+    [Test]
+    [TestCase('lt true', '3 < 5,1')]
+    [TestCase('lt false', '5 < 3,0')]
+    [TestCase('lt equal', '3 < 3,0')]
+    [TestCase('le equal', '3 <= 3,1')]
+    [TestCase('le false', '4 <= 3,0')]
+    [TestCase('le true', '3 <= 5,1')]
+    [TestCase('gt true', '5 > 3,1')]
+    [TestCase('gt equal', '3 > 3,0')]
+    [TestCase('gt false', '3 > 5,0')]
+    [TestCase('ge equal', '3 >= 3,1')]
+    [TestCase('ge false', '2 >= 3,0')]
+    [TestCase('ge true', '5 >= 3,1')]
+    [TestCase('eq true', '3 == 3,1')]
+    [TestCase('eq false', '3 == 4,0')]
+    [TestCase('ne false', '3 != 3,0')]
+    [TestCase('ne true', '3 != 4,1')]
+    [TestCase('shift left', '1 << 4,16')]
+    [TestCase('shift left zero', '1 << 0,1')]
+    [TestCase('shift right', '256 >> 2,64')]
+    [TestCase('shift right negative', '(0 - 8) >> 1,-4')]
+    [TestCase('not zero', '!0,1')]
+    [TestCase('not five', '!5,0')]
+    [TestCase('not comparison', '!(3 < 5),0')]
+    [TestCase('and both', '2 && 1,1')]
+    [TestCase('and one', '2 && 0,0')]
+    [TestCase('and none', '0 && 0,0')]
+    [TestCase('or one', '2 || 0,1')]
+    [TestCase('or none', '0 || 0,0')]
+    [TestCase('or second', '0 || 4,1')]
+    [TestCase('bit and', '6 & 3,2')]
+    [TestCase('bit or', '6 | 3,7')]
+    [TestCase('bit xor', '6 ^ 3,5')]
+    [TestCase('subtract chain', '7 - 2 - 1,4')]
+    [TestCase('divide', '20 / 3,6')]
+    [TestCase('modulus', '20 % 3,2')]
+    [TestCase('precedence', '2 + 3 * 4,14')]
+    procedure TestConstantExpressionIsFolded(const AExpression: string; AExpected: Integer);
+
+    [Test]
+    [TestCase('divide', '10 / 0')]
+    [TestCase('modulus', '10 % 0')]
+    [TestCase('inside', '2 + 10 / (3 - 3)')]
+    procedure TestDivisionByZeroInAConstantIsAnError(const AExpression: string);
     [Test]
     procedure TestForIsReportedInsteadOfLoopingForever;
     [Test]
@@ -229,6 +275,33 @@ begin
     end;
     Assert.IsNotNull(LError, AName + ' compiled');
     Assert.AreEqual(LExpected, LError.Message.Trim, 'the text of the error of ' + AName);
+  finally
+    LError.Free;
+  end;
+end;
+
+procedure TTestAcsCompiler.TestConstantExpressionIsFolded(const AExpression: string;
+  AExpected: Integer);
+var
+  LObject: TBytes;
+begin
+  // the argument after const: is a constant expression that the compiler calculates;
+  // the code starts at 8 with the command, the special and then the argument
+  LObject := Compile('special 70:Foldme(1);'#10'script 1 (void) { Foldme(const: ' + AExpression +
+    '); }');
+  Assert.AreEqual(AExpected, Integer(LongAt(LObject, 16)), AExpression);
+end;
+
+procedure TTestAcsCompiler.TestDivisionByZeroInAConstantIsAnError(const AExpression: string);
+var
+  LError: EAcsCompileException;
+begin
+  LError := Failure('special 70:Foldme(1);'#10'script 1 (void) { Foldme(const: ' + AExpression +
+    '); }');
+  try
+    Assert.IsNotNull(LError, AExpression);
+    Assert.AreEqual(ERR_DIVISION_BY_ZERO, LError.Code);
+    Assert.AreEqual(2, LError.Line);
   finally
     LError.Free;
   end;

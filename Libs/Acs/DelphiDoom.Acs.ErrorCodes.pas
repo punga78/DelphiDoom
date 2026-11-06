@@ -85,6 +85,8 @@ const
   ERR_ALLOC_SCRIPT_BUFFER = 79;
   /// <summary>A statement that the compiler does not implement (new in this library: the old one looped forever)</summary>
   ERR_STATEMENT_NOT_IMPLEMENTED = 80;
+  /// <summary>A division or a modulus by zero in a constant expression (new in this library: the old compiler raised a runtime error)</summary>
+  ERR_DIVISION_BY_ZERO = 81;
 
 implementation
 

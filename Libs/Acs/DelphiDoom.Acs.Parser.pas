@@ -238,6 +238,20 @@ const
   );
 
 
+// the count of a shift is taken modulo 32, and a shift to the right keeps the sign: like the
+// commands that the interpreter runs
+function ShiftLeft(AValue, ACount: Integer): Integer;
+begin
+  Result := AValue shl (ACount and 31);
+end;
+
+function ShiftRight(AValue, ACount: Integer): Integer;
+begin
+  if AValue >= 0 then
+    Result := AValue shr (ACount and 31)
+  else
+    Result := not ((not AValue) shr (ACount and 31));
+end;
 function IntVal(AValue: Boolean): Integer;
 begin
   if AValue then
@@ -1612,6 +1626,7 @@ end;
 //==============================================================================
 procedure TAcsParser.SendExprCommand(const pcd: integer);
 var
+  operand1: integer;
   operand2: integer;
 begin
   if not FConstantExpression then
@@ -1620,67 +1635,84 @@ begin
     exit;
   end;
 
+  // the expression is folded: the operands are on the stack, the second one on top
   case pcd of
-    PCD_ADD:
-      PushExStk(PopExStk + PopExStk);
-    PCD_SUBTRACT:
-      begin
-        operand2 := PopExStk;
-        PushExStk(PopExStk - operand2);
-      end;
-    PCD_MULTIPLY:
-      PushExStk(PopExStk * PopExStk);
-    PCD_DIVIDE:
-      begin
-        operand2 := PopExStk;
-        PushExStk(PopExStk div operand2);
-      end;
-    PCD_MODULUS:
-      begin
-        operand2 := PopExStk;
-        PushExStk(PopExStk mod operand2);
-      end;
-    PCD_EQ:
-      PushExStk(IntVal(PopExStk = PopExStk));
-    PCD_NE:
-      PushExStk(IntVal(PopExStk <> PopExStk));
-    PCD_LT:
-      PushExStk(IntVal(PopExStk >= PopExStk));
-    PCD_GT:
-      PushExStk(IntVal(PopExStk <= PopExStk));
-    PCD_LE:
-      PushExStk(IntVal(PopExStk > PopExStk));
-    PCD_GE:
-      PushExStk(IntVal(PopExStk < PopExStk));
-    PCD_ANDLOGICAL:
-      PushExStk(PopExStk and PopExStk);
-    PCD_ORLOGICAL:
-      PushExStk(PopExStk or PopExStk);
-    PCD_ANDBITWISE:
-      PushExStk(PopExStk and PopExStk);
-    PCD_ORBITWISE:
-      PushExStk(PopExStk or PopExStk);
-    PCD_EORBITWISE:
-      PushExStk(PopExStk xor PopExStk);
     PCD_NEGATELOGICAL:
-      PushExStk(not PopExStk);
-    PCD_LSHIFT:
-      begin
-        operand2 := PopExStk;
-        PushExStk(PopExStk shr operand2);
-      end;
+      PushExStk(IntVal(PopExStk = 0));
+    PCD_UNARYMINUS:
+      PushExStk(-PopExStk);
+    PCD_ADD,
+    PCD_SUBTRACT,
+    PCD_MULTIPLY,
+    PCD_DIVIDE,
+    PCD_MODULUS,
+    PCD_EQ,
+    PCD_NE,
+    PCD_LT,
+    PCD_GT,
+    PCD_LE,
+    PCD_GE,
+    PCD_ANDLOGICAL,
+    PCD_ORLOGICAL,
+    PCD_ANDBITWISE,
+    PCD_ORBITWISE,
+    PCD_EORBITWISE,
+    PCD_LSHIFT,
     PCD_RSHIFT:
       begin
         operand2 := PopExStk;
-        PushExStk(PopExStk shl operand2);
+        operand1 := PopExStk;
+        case pcd of
+          PCD_ADD:
+            PushExStk(operand1 + operand2);
+          PCD_SUBTRACT:
+            PushExStk(operand1 - operand2);
+          PCD_MULTIPLY:
+            PushExStk(operand1 * operand2);
+          PCD_DIVIDE:
+            begin
+              if operand2 = 0 then
+                FDiagnostics.Fail(ERR_DIVISION_BY_ZERO, True);
+              PushExStk(operand1 div operand2);
+            end;
+          PCD_MODULUS:
+            begin
+              if operand2 = 0 then
+                FDiagnostics.Fail(ERR_DIVISION_BY_ZERO, True);
+              PushExStk(operand1 mod operand2);
+            end;
+          PCD_EQ:
+            PushExStk(IntVal(operand1 = operand2));
+          PCD_NE:
+            PushExStk(IntVal(operand1 <> operand2));
+          PCD_LT:
+            PushExStk(IntVal(operand1 < operand2));
+          PCD_GT:
+            PushExStk(IntVal(operand1 > operand2));
+          PCD_LE:
+            PushExStk(IntVal(operand1 <= operand2));
+          PCD_GE:
+            PushExStk(IntVal(operand1 >= operand2));
+          PCD_ANDLOGICAL:
+            PushExStk(IntVal((operand1 <> 0) and (operand2 <> 0)));
+          PCD_ORLOGICAL:
+            PushExStk(IntVal((operand1 <> 0) or (operand2 <> 0)));
+          PCD_ANDBITWISE:
+            PushExStk(operand1 and operand2);
+          PCD_ORBITWISE:
+            PushExStk(operand1 or operand2);
+          PCD_EORBITWISE:
+            PushExStk(operand1 xor operand2);
+          PCD_LSHIFT:
+            PushExStk(ShiftLeft(operand1, operand2));
+          PCD_RSHIFT:
+            PushExStk(ShiftRight(operand1, operand2));
+        end;
       end;
-    PCD_UNARYMINUS:
-      PushExStk(-PopExStk);
   else
     FDiagnostics.Fail(ERR_UNKNOWN_CONST_EXPR_PCD, True, '', []);
   end;
 end;
-
 //==============================================================================
 //
 // PushExStk
