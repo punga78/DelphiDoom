@@ -1,0 +1,170 @@
+=== basic
+T|STARTAN|128|128|0|1
+P|0|WALL1|0|0
+T|BIGDOOR|128|96|0|2
+P|1|WALL2|0|0
+P|2|DOOR|64|0
+T|STARGATE|64|72|1|1
+P|2|DOOR|0|-8
+=== lowercase-names
+T|STARTAN|64|64|0|2
+P|0|WALL1|0|0
+P|1|PATCH|32|32
+=== padded-patch-names
+T|T1|16|16|0|2
+P|0|AB|0|0
+P|1|C|0|0
+=== eight-characters
+T|LONGNAME|256|128|0|1
+P|0|ABCDEFGH|0|0
+=== three-lumps
+T|ONE|64|64|0|1
+P|0|P0|0|0
+T|ONEB|64|64|0|1
+P|1|P1|0|0
+T|TWO|128|64|0|1
+P|2|P2|0|0
+T|THREE|32|32|0|1
+P|3|P3|-4|5
+T|THREEB|32|32|0|2
+P|3|P3|0|0
+P|0|P0|16|16
+=== second-lump-empty
+T|ONE|64|64|0|1
+P|0|P0|0|0
+T|THREE|8|8|0|1
+P|0|P0|0|0
+=== empty-first-lump
+=== no-patches
+T|EMPTYTEX|64|64|0|0
+T|AFTER|64|64|0|1
+P|0|P0|0|0
+=== many-patches
+T|MANY|256|128|0|8
+P|0|P0|0|0
+P|1|P1|32|0
+P|2|P2|64|0
+P|3|P3|96|0
+P|4|P4|128|0
+P|5|P5|160|0
+P|0|P0|192|0
+P|1|P1|224|0
+=== extreme-values
+T|NEG|32767|-1|-5|2
+P|0|P0|-32768|32767
+P|1|P1|32767|-32768
+=== pk3-textures
+T|ONE|64|64|0|1
+P|0|P0|0|0
+K|PK3A|64|32|0|0|0|PK3A
+K|PK3B|256|256|0|-5|7|PK3B
+=== pk3-count-ignored
+T|ONE|64|64|0|1
+P|0|P0|0|0
+K|PK3A|64|32|0|1|2|PK3A
+K|PK3B|64|32|0|3|4|PK3B
+=== pk3-lowercase
+T|ONE|64|64|0|1
+P|0|P0|0|0
+K|PK3A|16|16|0|0|0|PK3A
+=== bad-directory
+E|bad texture directory
+=== flats-basic
+S|0|1
+S|1|2
+S|2|3
+=== flats-all-sizes
+S|0|0
+S|1|1
+S|2|2
+S|3|3
+S|4|4
+S|5|5
+S|6|6
+S|7|0
+=== flats-lowercase
+S|0|1
+S|1|4
+=== flats-quoted-and-comments
+S|0|2
+S|1|1
+=== flats-unknown-flat
+S|0|2
+W|R_ParseFlatInfo(): Unknown flat "NOPE"\r\n
+W|R_ParseFlatInfo(): Unknown token "SIZE"\r\n
+W|R_ParseFlatInfo(): Unknown token "128"\r\n
+=== flats-unknown-flat-then-numbers
+S|0|0
+S|1|3
+W|R_ParseFlatInfo(): Unknown flat "NOPE"\r\n
+W|R_ParseFlatInfo(): Unknown token "SIZE"\r\n
+W|R_ParseFlatInfo(): Unknown token "128"\r\n
+=== flats-unknown-token
+S|0|1
+W|R_ParseFlatInfo(): Unknown token "SOMETHING"\r\n
+W|R_ParseFlatInfo(): Unknown token "ELSE"\r\n
+=== flats-without-size
+S|0|0
+S|1|2
+W|R_ParseFlatInfo(): Unknown token "OTHER"\r\n
+=== flats-without-size-followed-by-flat
+S|0|0
+S|1|3
+=== flats-duplicate-flat
+S|0|3
+S|1|2
+=== flats-same-name-twice-in-catalog
+S|0|0
+S|1|0
+S|2|2
+=== flats-eof-after-flat
+S|0|0
+W|TScriptEngine.MustGetString(): Missing string at Line 1\r\n
+W|==========================================================================\r\n
+W|00000 *** FLAT\r\n
+W|00001     \r\n
+W|==========================================================================\r\n
+W|\r\n
+W|R_ParseFlatInfo(): Unknown flat "FLAT"\r\n
+=== flats-eof-after-name
+S|0|0
+W|TScriptEngine.MustGetString(): Missing string at Line 1\r\n
+W|==========================================================================\r\n
+W|00000 *** FLAT F1\r\n
+W|00001     \r\n
+W|==========================================================================\r\n
+W|\r\n
+W|R_ParseFlatInfo(): Unknown token "F1"\r\n
+=== flats-size-without-number
+S|0|3
+S|1|3
+W|TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W|==========================================================================\r\n
+W|00000     FLAT F1 SIZE 512\r\n
+W|00001 *** FLAT F2 SIZE\r\n
+W|00002     \r\n
+W|==========================================================================\r\n
+W|\r\n
+=== flats-size-not-a-number
+S|0|3
+S|1|0
+W|TScriptEngine.GetInteger(): Bad numeric constant "abc" at Line 2\r\n
+W|==========================================================================\r\n
+W|00000     FLAT F1 SIZE 512\r\n
+W|00001 *** FLAT F2 SIZE abc\r\n
+W|00002     \r\n
+W|==========================================================================\r\n
+W|\r\n
+W|TScriptEngine.MustGetInteger(): Missing integer at Line 2\r\n
+W|==========================================================================\r\n
+W|00000     FLAT F1 SIZE 512\r\n
+W|00001 *** FLAT F2 SIZE abc\r\n
+W|00002     \r\n
+W|==========================================================================\r\n
+W|\r\n
+=== flats-empty-text
+S|0|0
+=== flats-negative-and-large
+S|0|0
+S|1|0
+S|2|0
