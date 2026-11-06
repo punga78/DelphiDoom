@@ -62,6 +62,11 @@ uses
   DelphiDoom.Definitions.Intf,
   DelphiDoom.Definitions.Factory,
   DelphiDoom.Engine.Definitions.AnimCatalog,
+  DelphiDoom.Engine.Definitions.TextureLookup,
+  p_terrain,
+{$IFDEF DOOM}
+  p_switch,
+{$ENDIF}
   p_animdefs,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
@@ -276,8 +281,29 @@ begin
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
+var
+  LGame: TDefGame;
 begin
   P_ConfigureAnimDefs(TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
+{$IFDEF DOOM}
+  LGame := TDefGame.Doom;
+{$ENDIF}
+{$IFDEF HERETIC}
+  LGame := TDefGame.Heretic;
+{$ENDIF}
+{$IFDEF HEXEN}
+  LGame := TDefGame.Hexen;
+{$ENDIF}
+{$IFDEF STRIFE}
+  LGame := TDefGame.Strife;
+{$ENDIF}
+  P_ConfigureTerrain(TDefinitionsFactory.CreateTerrainTable(LGame));
+{$IFDEF DOOM}
+  // The switches of Heretic, Hexen and Strife keep their own tables: they are used after the start
+  P_ConfigureSwitches(TDefinitionsFactory.CreateSwitchLumpReader(False),
+    TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
+    TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom));
+{$ENDIF}
 end;
 
 procedure ComposePalette;

@@ -36,7 +36,9 @@ interface
 uses
   r_defs,
   p_mobj_h,
-  p_spec;
+  p_spec,
+  DelphiDoom.Definitions.Types,
+  DelphiDoom.Definitions.Intf;
 
 //==============================================================================
 //
@@ -44,6 +46,14 @@ uses
 //
 //==============================================================================
 procedure P_InitSwitchList;
+
+//==============================================================================
+//
+// P_ConfigureSwitches
+//
+//==============================================================================
+procedure P_ConfigureSwitches(const AReader: IDefSwitchLumpReader; const ASelector: IDefSwitchSelector;
+  const ADefaultTable: TArray<TDefSwitchPair>);
 
 //==============================================================================
 //
@@ -85,90 +95,29 @@ uses
 // Data
   sounddata,
 // State
-  doomstat;
-
-type
-//
-// P_SWITCH
-//
-  switchlist_t = record
-    name1: string[8];
-    name2: string[8];
-    episode: smallint;
-  end;
-  Pswitchlist_t = ^switchlist_t;
-  switchlist_tArray = array[0..$FFFF] of switchlist_t;
-  Pswitchlist_tArray = ^switchlist_tArray;
-
-var
-  alphSwitchList: Pswitchlist_tArray;
-
-type
-  wad_switchlist_t = packed record
-    name1: array[0..8] of AnsiChar;
-    name2: array[0..8] of AnsiChar;
-    episode: smallint;
-  end;
-  Pwad_switchlist_t = ^wad_switchlist_t;
-  wad_switchlist_tArray = array[0..$FFFF] of wad_switchlist_t;
-  Pwad_switchlist_tArray = ^wad_switchlist_tArray;
-
-const
-  NUMSWITCHLIST = 40;
-
-  fixedalphSwitchList: array[0..NUMSWITCHLIST] of switchlist_t = (
-    // Doom shareware episode 1 switches
-    (name1: 'SW1BRCOM'; name2: 'SW2BRCOM'; episode: 1),
-    (name1: 'SW1BRN1';  name2: 'SW2BRN1';  episode: 1),
-    (name1: 'SW1BRN2';  name2: 'SW2BRN2';  episode: 1),
-    (name1: 'SW1BRNGN'; name2: 'SW2BRNGN'; episode: 1),
-    (name1: 'SW1BROWN'; name2: 'SW2BROWN'; episode: 1),
-    (name1: 'SW1COMM';  name2: 'SW2COMM';  episode: 1),
-    (name1: 'SW1COMP';  name2: 'SW2COMP';  episode: 1),
-    (name1: 'SW1DIRT';  name2: 'SW2DIRT';  episode: 1),
-    (name1: 'SW1EXIT';  name2: 'SW2EXIT';  episode: 1),
-    (name1: 'SW1GRAY';  name2: 'SW2GRAY';  episode: 1),
-    (name1: 'SW1GRAY1'; name2: 'SW2GRAY1'; episode: 1),
-    (name1: 'SW1METAL'; name2: 'SW2METAL'; episode: 1),
-    (name1: 'SW1PIPE';  name2: 'SW2PIPE';  episode: 1),
-    (name1: 'SW1SLAD';  name2: 'SW2SLAD';  episode: 1),
-    (name1: 'SW1STARG'; name2: 'SW2STARG'; episode: 1),
-    (name1: 'SW1STON1'; name2: 'SW2STON1'; episode: 1),
-    (name1: 'SW1STON2'; name2: 'SW2STON2'; episode: 1),
-    (name1: 'SW1STONE'; name2: 'SW2STONE'; episode: 1),
-    (name1: 'SW1STRTN'; name2: 'SW2STRTN'; episode: 1),
-
-    // Doom registered episodes 2&3 switches
-    (name1: 'SW1BLUE';  name2: 'SW2BLUE';  episode: 2),
-    (name1: 'SW1CMT';   name2: 'SW2CMT';   episode: 2),
-    (name1: 'SW1GARG';  name2: 'SW2GARG';  episode: 2),
-    (name1: 'SW1GSTON'; name2: 'SW2GSTON'; episode: 2),
-    (name1: 'SW1HOT';   name2: 'SW2HOT';   episode: 2),
-    (name1: 'SW1LION';  name2: 'SW2LION';  episode: 2),
-    (name1: 'SW1SATYR'; name2: 'SW2SATYR'; episode: 2),
-    (name1: 'SW1SKIN';  name2: 'SW2SKIN';  episode: 2),
-    (name1: 'SW1VINE';  name2: 'SW2VINE';  episode: 2),
-    (name1: 'SW1WOOD';  name2: 'SW2WOOD';  episode: 2),
-
-    // Doom II switches
-    (name1: 'SW1PANEL'; name2: 'SW2PANEL'; episode: 3),
-    (name1: 'SW1ROCK';  name2: 'SW2ROCK';  episode: 3),
-    (name1: 'SW1MET2';  name2: 'SW2MET2';  episode: 3),
-    (name1: 'SW1WDMET'; name2: 'SW2WDMET'; episode: 3),
-    (name1: 'SW1BRIK';  name2: 'SW2BRIK';  episode: 3),
-    (name1: 'SW1MOD1';  name2: 'SW2MOD1';  episode: 3),
-    (name1: 'SW1ZIM';   name2: 'SW2ZIM';   episode: 3),
-    (name1: 'SW1STON6'; name2: 'SW2STON6'; episode: 3),
-    (name1: 'SW1TEK';   name2: 'SW2TEK';   episode: 3),
-    (name1: 'SW1MARB';  name2: 'SW2MARB';  episode: 3),
-    (name1: 'SW1SKULL'; name2: 'SW2SKULL'; episode: 3),
-
-    (name1: '';         name2: '';         episode: -1)
-  );
-
+doomstat;
 var
   switchlist: PIntegerArray;
   numswitches: integer;
+
+var
+  switch_reader: IDefSwitchLumpReader;
+  switch_selector: IDefSwitchSelector;
+  switch_defaulttable: TArray<TDefSwitchPair>;
+
+//==============================================================================
+//
+// P_ConfigureSwitches
+//
+//==============================================================================
+procedure P_ConfigureSwitches(const AReader: IDefSwitchLumpReader; const ASelector: IDefSwitchSelector;
+  const ADefaultTable: TArray<TDefSwitchPair>);
+begin
+  switch_reader := AReader;
+  switch_selector := ASelector;
+  switch_defaulttable := ADefaultTable;
+end;
+
 
 //==============================================================================
 //
@@ -179,13 +128,14 @@ var
 procedure P_InitSwitchList;
 var
   i: integer;
-  index: integer;
   episode: integer;
   lump: integer;
-  len: integer;
-  wad_switchlist: Pwad_switchlist_tArray;
-  tex1, tex2: integer;
+  bytes: TArray<Byte>;
+  table: TArray<TDefSwitchPair>;
+  resolved: TArray<TDefResolvedSwitch>;
 begin
+  if switch_selector = nil then
+    I_Error('P_InitSwitchList(): the switches are not configured (ComposeEngine was not called)');
 
   if (gamemode = registered) or (gamemode = retail) then
     episode := 2
@@ -198,56 +148,26 @@ begin
   lump := W_CheckNumForName('SWITCHES');
   if lump >= 0 then
   begin
-    wad_switchlist := W_CacheLumpNum(lump, PU_STATIC);
-    len := W_LumpLength(lump);
-    len := len div SizeOf(wad_switchlist_t);
-    alphSwitchList := Z_Malloc((len + 1) * SizeOf(switchlist_t), PU_STATIC, nil);
-    for i := 0 to len - 1 do
-    begin
-      alphSwitchList[i].name1 := wad_switchlist[i].name1;
-      alphSwitchList[i].name2 := wad_switchlist[i].name2;
-      alphSwitchList[i].episode := wad_switchlist[i].episode;
-    end;
-    Z_Free(wad_switchlist);
-    alphSwitchList[len].name1 := '';
-    alphSwitchList[len].name2 := '';
-    alphSwitchList[len].episode := -1;
+    SetLength(bytes, W_LumpLength(lump));
+    if Length(bytes) > 0 then
+      W_ReadLump(lump, @bytes[0]);
+    table := switch_reader.Read(bytes);
   end
   else
-  begin
-    len := NUMSWITCHLIST;
-    alphSwitchList := Z_Malloc(SizeOf(fixedalphSwitchList), PU_STATIC, nil);
-    memcpy(alphSwitchList, @fixedalphSwitchList, SizeOf(fixedalphSwitchList));
-  end;
+    table := switch_defaulttable;
 
-  index := 0;
-  i := 0;
+  // The pairs of the textures that exist, for the episode
+  resolved := switch_selector.Select(table, episode);
+
   // JVAL: Removed size of switchlist limit
-  switchlist := Z_Malloc((len + 1) * 2 * SizeOf(integer), PU_STATIC, nil);
-  while (alphSwitchList[i].episode <> -1) and (alphSwitchList[i].name1 <> '') and (alphSwitchList[i].name2 <> '') do
+  switchlist := Z_Malloc((Length(resolved) * 2 + 1) * SizeOf(integer), PU_STATIC, nil);
+  for i := 0 to Length(resolved) - 1 do
   begin
-    if alphSwitchList[i].episode <= episode then
-    begin
-      tex1 := R_CheckTextureNumForName(alphSwitchList[i].name1);
-      if tex1 < 0 then
-        I_Warning('P_InitSwitchList(): Unknown texture "%s"'#13#10, [alphSwitchList[i].name1]);
-      tex2 := R_CheckTextureNumForName(alphSwitchList[i].name2);
-      if tex2 < 0 then
-        I_Warning('P_InitSwitchList(): Unknown texture "%s"'#13#10, [alphSwitchList[i].name2]);
-      if (tex1 >= 0) and (tex2 >= 0) then
-      begin
-        switchlist[index] := tex1;
-        inc(index);
-        switchlist[index] := tex2;
-        inc(index);
-      end;
-    end;
-    inc(i);
+    switchlist[i * 2] := resolved[i].Texture1;
+    switchlist[i * 2 + 1] := resolved[i].Texture2;
   end;
-  numswitches := index div 2;
-  switchlist[index] := -1;
-  // JVAL: Resize to needed size
-  switchlist := Z_ReAlloc(switchlist, (index + 1) * SizeOf(integer), PU_STATIC, nil);
+  numswitches := Length(resolved);
+  switchlist[numswitches * 2] := -1;
 end;
 
 //==============================================================================

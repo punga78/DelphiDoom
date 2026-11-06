@@ -31,55 +31,47 @@ unit p_terrain;
 
 interface
 
+uses
+  DelphiDoom.Definitions.Intf;
+
 //==============================================================================
 //
 // P_TerrainTypeForName
 //
 //==============================================================================
 function P_TerrainTypeForName(flatname: string): integer;
+
+procedure P_ConfigureTerrain(const ATable: IDefTerrainTable);
 
 implementation
 
 uses
   d_delphi,
-  p_local;
-
-type
-  terraintypedef_t = record
-    name: string;
-    _type: integer;
-  end;
+  i_system,
+  p_local,
+  DelphiDoom.Definitions.Types;
 
 var
-  terraintypedefs: array[0..4] of terraintypedef_t = (
-    (name: 'X_005'; _type: FLOOR_WATER),
-    (name: 'X_001'; _type: FLOOR_LAVA),
-    (name: 'X_009'; _type: FLOOR_SLUDGE),
-    (name: 'F_033'; _type: FLOOR_ICE),
-    (name: 'END'; _type: -1)
-  );
+  terrain_table: IDefTerrainTable;
 
-//==============================================================================
-//
-// P_TerrainTypeForName
-//
-//==============================================================================
-function P_TerrainTypeForName(flatname: string): integer;
-var
-  i: integer;
+procedure P_ConfigureTerrain(const ATable: IDefTerrainTable);
 begin
-  flatname := strupper(flatname);
-  i := 0;
-  while terraintypedefs[i]._type <> -1 do
-  begin
-    if terraintypedefs[i].name = flatname then
-    begin
-      result := terraintypedefs[i]._type;
-      exit;
-    end;
-    inc(i);
+  terrain_table := ATable;
+end;
+
+function P_TerrainTypeForName(flatname: string): integer;
+begin
+  if terrain_table = nil then
+    I_Error('P_TerrainTypeForName(): the terrain table is not configured (ComposeEngine was not called)');
+
+  case terrain_table.KindForName(strupper(flatname)) of
+    TDefTerrainKind.Water: result := FLOOR_WATER;
+    TDefTerrainKind.Lava: result := FLOOR_LAVA;
+    TDefTerrainKind.Sludge: result := FLOOR_SLUDGE;
+    TDefTerrainKind.Ice: result := FLOOR_ICE;
+  else
+    result := FLOOR_SOLID;
   end;
-  result := FLOOR_SOLID;
 end;
 
 end.

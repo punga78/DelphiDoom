@@ -38,7 +38,8 @@ unit p_terrain;
 interface
 
 uses
-  p_mobj_h;
+  p_mobj_h,
+  DelphiDoom.Definitions.Intf;
 
 //==============================================================================
 //
@@ -64,65 +65,41 @@ const
   FLOOR_SLUDGE = 3;
   FLOOR_NUKAGE = 4;
 
+procedure P_ConfigureTerrain(const ATable: IDefTerrainTable);
+
 implementation
 
 uses
   d_delphi,
+  i_system,
   r_data,
   r_defs,
-  w_wad;
-
-type
-  terraintypedef_t = record
-    name: string;
-    _type: integer;
-  end;
+  w_wad,
+  DelphiDoom.Definitions.Types;
 
 var
-  terraintypedefs: array[0..12] of terraintypedef_t = (
-    (name: 'F_WATR03'; _type: FLOOR_WATER),
-    (name: 'F_WATR02'; _type: FLOOR_WATER),
-    (name: 'F_WATR01'; _type: FLOOR_WATER),
-    (name: 'F_VWATR3'; _type: FLOOR_WATER),
-    (name: 'F_VWATR2'; _type: FLOOR_WATER),
-    (name: 'P_VWATR1'; _type: FLOOR_WATER),
-    (name: 'F_HWATR3'; _type: FLOOR_WATER),
-    (name: 'F_HWATR2'; _type: FLOOR_WATER),
-    (name: 'F_HWATR1'; _type: FLOOR_WATER),
-    (name: 'F_PWATR3'; _type: FLOOR_SLUDGE),
-    (name: 'F_PWATR2'; _type: FLOOR_SLUDGE),
-    (name: 'F_PWATR1'; _type: FLOOR_SLUDGE),
-    (name: 'END'; _type: -1)
-  );
+  terrain_table: IDefTerrainTable;
 
-//==============================================================================
-//
-// P_TerrainTypeForName
-//
-//==============================================================================
-function P_TerrainTypeForName(flatname: string): integer;
-var
-  i: integer;
+procedure P_ConfigureTerrain(const ATable: IDefTerrainTable);
 begin
-  i := 0;
-  flatname := strupper(flatname);
-  while terraintypedefs[i]._type <> -1 do
-  begin
-    if terraintypedefs[i].name = flatname then
-    begin
-      result := terraintypedefs[i]._type;
-      exit;
-    end;
-    inc(i);
-  end;
-  result := 0;
+  terrain_table := ATable;
 end;
 
-//==============================================================================
-//
-// P_GetTerrainType
-//
-//==============================================================================
+function P_TerrainTypeForName(flatname: string): integer;
+begin
+  if terrain_table = nil then
+    I_Error('P_TerrainTypeForName(): the terrain table is not configured (ComposeEngine was not called)');
+
+  case terrain_table.KindForName(strupper(flatname)) of
+    TDefTerrainKind.Water: result := FLOOR_WATER;
+    TDefTerrainKind.Lava: result := FLOOR_LAVA;
+    TDefTerrainKind.Sludge: result := FLOOR_SLUDGE;
+    TDefTerrainKind.Nukage: result := FLOOR_NUKAGE;
+  else
+    result := FLOOR_SOLID;
+  end;
+end;
+
 function P_GetTerrainType(mobj: Pmobj_t): integer;
 var
   ss: Psubsector_t;

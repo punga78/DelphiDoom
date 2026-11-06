@@ -610,6 +610,7 @@ uses
   DelphiDoom.TextureDefs.Factory in 'Libs\TextureDefs\DelphiDoom.TextureDefs.Factory.pas',
   DelphiDoom.Engine.TextureDefs.LumpSource in 'Base\DelphiDoom.Engine.TextureDefs.LumpSource.pas',
   DelphiDoom.Engine.TextureDefs.FlatCatalog in 'Base\DelphiDoom.Engine.TextureDefs.FlatCatalog.pas',
+  DelphiDoom.Engine.Definitions.TextureLookup in 'Base\DelphiDoom.Engine.Definitions.TextureLookup.pas',
   DelphiDoom.ActorDef.Types in 'Libs\ActorDef\DelphiDoom.ActorDef.Types.pas',
   DelphiDoom.ActorDef.Intf in 'Libs\ActorDef\DelphiDoom.ActorDef.Intf.pas',
   DelphiDoom.ActorDef.Profiles in 'Libs\ActorDef\DelphiDoom.ActorDef.Profiles.pas',
