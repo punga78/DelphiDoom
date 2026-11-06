@@ -45,6 +45,11 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.Definitions.Types,
+  DelphiDoom.Definitions.Intf,
+  DelphiDoom.Definitions.Factory,
+  DelphiDoom.Engine.Definitions.AnimCatalog,
+  p_animdefs,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
@@ -257,6 +262,11 @@ begin
     TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
 end;
 
+procedure ComposeDefinitions(const ALog: ILog);
+begin
+  P_ConfigureAnimDefs(TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -323,6 +333,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposeDefinitions(LLog);
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);

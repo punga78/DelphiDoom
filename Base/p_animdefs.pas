@@ -34,7 +34,8 @@ unit p_animdefs;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Definitions.Intf;
 
 //==============================================================================
 //
@@ -42,6 +43,13 @@ uses
 //
 //==============================================================================
 procedure P_InitFTAnims;
+
+//==============================================================================
+//
+// P_ConfigureAnimDefs
+//
+//==============================================================================
+procedure P_ConfigureAnimDefs(const AParser: IDefAnimDefsParser);
 
 //==============================================================================
 //
@@ -76,7 +84,7 @@ uses
   i_system,
   r_data,
   r_defs,
-  sc_engine,
+  DelphiDoom.Definitions.Types,
   w_wad;
 
 const
@@ -85,11 +93,6 @@ const
   MAX_FRAME_DEFS = 512;
   ANIM_FLAT = 0;
   ANIM_TEXTURE = 1;
-  SCI_FLAT = 'flat';
-  SCI_TEXTURE = 'texture';
-  SCI_PIC = 'pic';
-  SCI_TICS = 'tics';
-  SCI_RAND = 'rand';
 
 // TYPES -------------------------------------------------------------------
 
@@ -115,6 +118,7 @@ var
   AnimDefs: array[0..MAX_ANIM_DEFS - 1] of animDef_t;
   FrameDefs: array[0..MAX_FRAME_DEFS - 1] of frameDef_t;
   AnimDefCount: integer;
+  animdefs_parser: IDefAnimDefsParser;
 
 //==========================================================================
 //
@@ -168,137 +172,82 @@ end;
 //==============================================================================
 procedure P_InitFTAnims;
 var
-  base: integer;
-  _mod: integer;
   fd: integer;
   ad: PanimDef_t;
-  ignore: boolean;
-  done: boolean;
-  sc: TScriptEngine;
   animlump: integer;
+  anims: TArray<TDefAnimation>;
+  anim: TDefAnimation;
+  frame: TDefAnimFrame;
+  base: integer;
+  i, j: integer;
 begin
   animlump := W_CheckNumForName(ANIM_SCRIPT_NAME);
   if animlump < 0 then
     exit;
+
+  if animdefs_parser = nil then
+    I_Error('P_InitFTAnims(): ANIMDEFS is not configured (ComposeEngine was not called)');
 
   animatedflatslist.Clear;
   animatedtextureslist.Clear;
   fd := 0;
   ad := @AnimDefs[0];
   AnimDefCount := 0;
-  sc := TScriptEngine.Create(SC_RemoveLineQuotes(W_TextLumpNum(animlump)));
-  while sc.GetString do
-  begin
-    if AnimDefCount = MAX_ANIM_DEFS then
-      I_Error('P_InitFTAnims(): too many AnimDefs (%d).', [AnimDefCount]);
 
-    if sc.Compare(SCI_FLAT) then
-    begin
-      ad._type := ANIM_FLAT
-    end
-    else if sc.Compare(SCI_TEXTURE) then
-    begin
-      ad._type := ANIM_TEXTURE
-    end
-    else
-    begin
-      sc.ScriptError('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc._String]);
-    end;
-    sc.MustGetString; // Name
-    ignore := false;
-    if ad._type = ANIM_FLAT then
-    begin
-      if W_CheckNumForName(sc._String) = -1 then
-      begin
-        ignore := true;
-      end
-      else
-      begin
-        ad.index := R_FlatNumForName(sc._String);
-        animatedflatslist.Add(ad.index);
-      end;
-    end
-    else
-    begin // Texture
-      if R_CheckTextureNumForName(sc._String) = -1 then
-      begin
-        ignore := true;
-      end
-      else
-      begin
-        ad.index := R_TextureNumForName(sc._String);
-        animatedtextureslist.Add(ad.index);
-      end;
-    end;
-    ad.startFrameDef := fd;
-    done := false;
-    while not done do
-    begin
-      if sc.GetString then
-      begin
-        if sc.Compare(SCI_PIC) then
-        begin
-          if fd = MAX_FRAME_DEFS then
-            I_Error('P_InitFTAnims(): too many FrameDefs (%d).', [fd]);
-
-          sc.MustGetInteger;
-          if not ignore then
-          begin
-            FrameDefs[fd].index := ad.index + sc._Integer - 1;
-            if ad._type = ANIM_FLAT then
-              animatedflatslist.Add(FrameDefs[fd].index)
-            else
-              animatedtextureslist.Add(FrameDefs[fd].index);
-          end;
-
-          sc.MustGetString;
-          if sc.Compare(SCI_TICS) then
-          begin
-            sc.MustGetInteger;
-            if not ignore then
-            begin
-              FrameDefs[fd].tics := sc._Integer;
-              inc(fd);
-            end;
-          end
-          else if sc.Compare(SCI_RAND) then
-          begin
-            sc.MustGetInteger;
-            base := sc._Integer;
-            sc.MustGetInteger;
-            if not ignore then
-            begin
-              _mod := sc._Integer - base + 1;
-              FrameDefs[fd].tics := (base * FRACUNIT) + (_mod * 256);
-              inc(fd);
-            end;
-          end
-          else
-            sc.ScriptError('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc._String]);
-        end
-        else
-        begin
-          sc.UnGet;
-          done := true;
-        end;
-      end
-      else
-      begin
-        done := true;
-      end;
-    end;
-    if not ignore and (fd - ad.startFrameDef < 2) then
-      I_Error('P_InitFTAnims(): AnimDef has framecount < 2.');
-    if not ignore then
-    begin
-      ad.endFrameDef := fd - 1;
-      ad.currentFrameDef := ad.endFrameDef;
-      ad.tics := 1; // Force 1st game tic to animate
-      inc(AnimDefCount);
-      inc(ad);
-    end;
+  // The parser leaves out the animations of flats and textures that do not exist
+  try
+    anims := animdefs_parser.Parse(W_TextLumpNum(animlump));
+  except
+    on E: EDefinitionsException do
+      I_Error('%s', [E.Message]);
   end;
-  sc.Free;
+
+  for i := 0 to Length(anims) - 1 do
+  begin
+    anim := anims[i];
+    if anim.Kind = TDefAnimKind.Flat then
+    begin
+      ad._type := ANIM_FLAT;
+      base := R_FlatNumForName(anim.Name);
+    end
+    else
+    begin
+      ad._type := ANIM_TEXTURE;
+      base := R_TextureNumForName(anim.Name);
+    end;
+    ad.index := base;
+
+    // The list of the animated pictures: the first one and the one of every pic line
+    for j := 0 to Length(anim.AnimatedOffsets) - 1 do
+      if ad._type = ANIM_FLAT then
+        animatedflatslist.Add(base + anim.AnimatedOffsets[j])
+      else
+        animatedtextureslist.Add(base + anim.AnimatedOffsets[j]);
+
+    ad.startFrameDef := fd;
+    for j := 0 to Length(anim.Frames) - 1 do
+    begin
+      frame := anim.Frames[j];
+      FrameDefs[fd].index := base + frame.PicNumber - 1;
+      FrameDefs[fd].tics := frame.PackedTics;
+      inc(fd);
+    end;
+    ad.endFrameDef := fd - 1;
+    ad.currentFrameDef := ad.endFrameDef;
+    ad.tics := 1; // Force 1st game tic to animate
+    inc(AnimDefCount);
+    inc(ad);
+  end;
+end;
+
+//==============================================================================
+//
+// P_ConfigureAnimDefs
+//
+//==============================================================================
+procedure P_ConfigureAnimDefs(const AParser: IDefAnimDefsParser);
+begin
+  animdefs_parser := AParser;
 end;
 
 //==============================================================================
