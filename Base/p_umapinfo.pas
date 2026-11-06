@@ -21,7 +21,8 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  UMAPINFO support
+//  UMAPINFO support: the text is read by Libs\MapInfo, here the records that the rest
+//  of the engine reads are made from what the library found
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -32,6 +33,9 @@
 unit p_umapinfo;
 
 interface
+
+uses
+  DelphiDoom.MapInfo.Intf;
 
 const
   BIGSTRINGSIZE = 1024;
@@ -116,21 +120,37 @@ procedure U_FreeMapInfo;
 //==============================================================================
 function ubigstringtostring(const ub: ubigstring_t): string;
 
+//==============================================================================
+//
+// U_ConfigureMapInfo
+// The loader and the catalog of the UMAPINFO library, given by the composition root
+//
+//==============================================================================
+procedure U_ConfigureMapInfo(const ALoader: IMapInfoLoader; const ACatalog: IMapInfoCatalog);
+
+
 implementation
 
 uses
   d_delphi,
-  doomdef,
-  g_game,
-  info_common,
-  m_menu,
-  p_uactornames,
-  sounds,
-  sc_engine,
-  sc_utils,
-  w_pak,
-  w_wad,
+  DelphiDoom.MapInfo.Types,
+  i_system,
   z_zone;
+
+var
+  map_loader: IMapInfoLoader = nil;
+  map_catalog: IMapInfoCatalog = nil;
+
+//==============================================================================
+//
+// U_ConfigureMapInfo
+//
+//==============================================================================
+procedure U_ConfigureMapInfo(const ALoader: IMapInfoLoader; const ACatalog: IMapInfoCatalog);
+begin
+  map_loader := ALoader;
+  map_catalog := ACatalog;
+end;
 
 //==============================================================================
 //
@@ -155,22 +175,19 @@ end;
 //==============================================================================
 //
 // stringtoubigstring
+// The whole text, up to what fits with the terminator
 //
 //==============================================================================
 function stringtoubigstring(const s: string): ubigstring_t;
 var
   i, len: integer;
 begin
-  i := 1;
+  ZeroMemory(@result, SizeOf(result));
   len := Length(s);
-  while i < len do
-  begin
+  if len > BIGSTRINGSIZE - 1 then
+    len := BIGSTRINGSIZE - 1;
+  for i := 1 to len do
     result[i - 1] := AnsiChar(s[i]);
-    Inc(i);
-    if i = BIGSTRINGSIZE - 1 then
-      Break;
-  end;
-  result[i] := #0;
 end;
 
 //==============================================================================
@@ -183,706 +200,111 @@ begin
   mape.mapname := '';
   mape.levelname := '';
   mape.mlabel := '';
-  mape.intertext := '';
-  mape.intertextsecret := '';
+  if mape.bossactions <> nil then
+    Z_Free(mape.bossactions);
+  mape.bossactions := nil;
 end;
 
 //==============================================================================
 //
-// UpdateMapEntry
+// FreeMaps
 //
 //==============================================================================
-procedure UpdateMapEntry(mape: Pmapentry_t; newe: Pmapentry_t);
-begin
-  if newe.mapname <> '' then
-    mape.mapname := newe.mapname;
-  if newe.levelname <> '' then
-    mape.levelname := newe.levelname;
-  if newe.mlabel <> '' then
-    mape.mlabel := newe.mlabel;
-  if newe.intertext <> '' then
-    mape.intertext := newe.intertext;
-  if newe.intertextsecret <> '' then
-    mape.intertextsecret := newe.intertextsecret;
-  if newe.levelpic <> '' then
-    mape.levelpic := newe.levelpic;
-  if newe.nextmap <> '' then
-    mape.nextmap := newe.nextmap;
-  if newe.music <> '' then
-  begin
-    mape.music := newe.music;
-    mape.musicnum := S_GetMusicNumForName(mape.music);
-  end;
-  if newe.skytexture <> '' then
-    mape.skytexture := newe.skytexture;
-  if newe.skytexture2 <> '' then
-    mape.skytexture2 := newe.skytexture2;
-  if newe.endpic <> '' then
-    mape.endpic := newe.endpic;
-  if newe.exitpic <> '' then
-    mape.exitpic := newe.exitpic;
-  if newe.enterpic <> '' then
-    mape.enterpic := newe.enterpic;
-  if newe.interbackdrop <> '' then
-    mape.interbackdrop := newe.interbackdrop;
-  if newe.intermusic <> '' then
-  begin
-    mape.intermusic := newe.intermusic;
-    mape.intermusicnum := S_GetMusicNumForName(mape.intermusic);
-  end;
-  if newe.partime <> 0 then
-    mape.partime := newe.partime;
-  if newe.lightning then
-    mape.lightning := newe.lightning;
-  if newe.nojump then
-    mape.nojump := newe.nojump;
-  if newe.nocrouch then
-    mape.nocrouch := newe.nocrouch;
-  if newe.nointermission then
-    mape.nointermission := newe.nointermission;
-  if newe.numbossactions <> 0 then
-  begin
-    mape.numbossactions := newe.numbossactions;
-    if mape.numbossactions = -1 then
-    begin
-      if mape.bossactions <> nil then
-        Z_Free(mape.bossactions);
-      mape.bossactions := nil;
-    end
-    else
-    begin
-      mape.bossactions := Z_Realloc(mape.bossactions, SizeOf(bossaction_t) * mape.numbossactions, PU_STATIC, nil);
-      memcpy(mape.bossactions, newe.bossactions, Sizeof(bossaction_t) * mape.numbossactions);
-    end;
-  end;
-end;
-
-//==============================================================================
-// U_ParseMultiString
-//
-// -----------------------------------------------
-// Parses a set of string and concatenates them
-// Returns a pointer to the string (must be freed)
-// -----------------------------------------------
-//
-//==============================================================================
-function U_ParseMultiString(sc: TScriptEngine): string;
+procedure FreeMaps(var info: umapinfo_t);
 var
   i: integer;
 begin
-  sc.MustGetString;
-  if not sc.QuotedToken then
-    if strupper(sc._String) = 'CLEAR' then
-    begin
-      result := '-';  // this was explicitly deleted to override the default.
-      exit;
-    end
-    else
-    begin
-      sc.ScriptError('UMAPINO.U_ParseMultiString(): Either ''clear'' or string constant expected');
-      result := '';
-      exit;
-    end;
-  result := sc._String;
-
-  while sc.GetString do
-  begin
-    if not sc.QuotedToken then
-    begin
-      sc.UnGet;
-      break;
-    end;
-    result := result + #13#10 + sc._String;
-  end;
-
-  // Translate "C" style string
-  for i := 2 to Length(result) do
-    if result[i] = 'n' then
-      if result[i - 1] = '\' then
-      begin
-        result[i - 1] := #13;
-        result[i] := #10;
-      end;
+  for i := 0 to info.mapcount - 1 do
+    FreeMap(@info.maps[i]);
+  if info.maps <> nil then
+    Z_Free(info.maps);
+  info.maps := nil;
+  info.mapcount := 0;
 end;
 
 //==============================================================================
-// ParseLumpName
 //
-// -----------------------------------------------
-// Parses a lump name. The buffer must be at least 9 characters.
-// If parsed name is longer than 8 chars, sets NULL pointer.
-//
-// returns 1 on successfully parsing an element
-//         0 on parse error in last read token
-// -----------------------------------------------
+// MakeMapEntry
+// The record of the engine from the entry of the library
 //
 //==============================================================================
-function ParseLumpName(sc: TScriptEngine; var buffer: ulumpname_t): boolean;
-begin
-  if not sc.GetString then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if Length(sc._String) > 8 then
-  begin
-    sc.ScriptError('UMAPINO.ParseLumpName(): String ''%s'' is too long. Maximum size is 8 characters.', [sc._String]);
-    result := true; // not a parse error
-    exit;
-  end;
-
-  buffer := strupper(sc._String);
-  result := true;
-end;
-
-//==============================================================================
-// U_ParseStandardProperty
-//
-// -----------------------------------------------
-// Parses a standard property that is already known
-// These do not get stored in the property list
-// but in dedicated struct member variables.
-//
-// returns 1 on successfully parsing an element
-//         0 on parse error in last read token
-// -----------------------------------------------
-//
-//==============================================================================
-function U_ParseStandardProperty(sc: TScriptEngine; mape: Pmapentry_t): boolean;
+procedure MakeMapEntry(const e: TMapInfoEntry; mape: Pmapentry_t);
 var
-  pname: string;
-  {$IFNDEF STRIFE}
-  lumpname: ulumpname_t;
-  alttext: string;
-  key: char;
-  {$ENDIF}
-  lname: string;
-  aname: string;
-  i, special, tag, typ: integer;
+  i: integer;
 begin
-  if not sc.GetString then
-  begin
-    result := false;
-    exit;
-  end;
-
-  pname := strupper(sc._String);
-
-  if pname = '_ENDBLOCK' then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if not sc.GetString then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if sc._String <> '=' then
-  begin
-    sc.ScriptError('UMAPINO.U_ParseStandardProperty(): ''='' expected but ''%s'' found.', [sc._String]);
-    result := false;
-    exit;
-  end;
-
-  result := true;
-
-  if pname = 'LEVELNAME' then
-  begin
-    if sc.MustGetString then
-      mape.levelname := sc._String;
-  end
-  else if pname = 'LABEL' then
-  begin
-    if sc.MustGetString then
-    begin
-      if sc.QuotedToken then
-        mape.mlabel := sc._String
-      else if strupper(sc._String) = 'CLEAR' then
-        mape.mlabel := '-'
-      else
-        sc.ScriptError('UMAPINFO.U_ParseStandardProperty(): Either ''clear'' or string constant expected after ''label'' keyword');
-    end
-  end
-  {$IFNDEF STRIFE}
-  else if pname = 'EPISODE' then
-  begin
-    if sc.MustGetString then
-    begin
-      if not sc.QuotedToken then
-      begin
-        if strupper(sc._String) = 'CLEAR' then
-          M_ClearEpisodes
-        else
-          sc.ScriptError('UMAPINFO.U_ParseStandardProperty(): Either ''clear'' or string constant expected after ''episode'' keyword');
-      end
-      else
-      begin
-        sc.UnGet;
-
-        lumpname := '';
-        alttext := '';
-        key := #0;
-
-        ParseLumpName(sc, lumpname);
-
-        if sc.MustGetString then
-        begin
-          if sc.QuotedToken then
-          begin
-            alttext := sc._String;
-            if sc.MustGetString then
-              if sc.QuotedToken and (sc._String <> '') then
-                key := sc._String[1]
-              else
-                sc.UnGet;
-          end
-          else
-            sc.UnGet;
-        end;
-        M_AddEpisode(mape.mapname, lumpname, alttext, key);
-      end;
-    end;
-  end
-  {$ENDIF}
-  else if pname = 'NEXT' then
-  begin
-    result := ParseLumpName(sc, mape.nextmap);
-    if not G_ValidateMapName(mape.nextmap, nil, nil) then
-    begin
-      sc.ScriptError('UMAPINFO.U_ParseStandardProperty(): Invalid map name ''%s''', [mape.nextmap]);
-      result := false;
-    end;
-  end
-  else if pname = 'NEXTSECRET' then
-  begin
-    result := ParseLumpName(sc, mape.nextsecret);
-    if not G_ValidateMapName(mape.nextsecret, nil, nil) then
-    begin
-      sc.ScriptError('UMAPINFO.U_ParseStandardProperty(): Invalid map name ''%s''', [mape.nextsecret]);
-      result := false;
-    end;
-  end
-  else if pname = 'LEVELPIC' then
-  begin
-    result := ParseLumpName(sc, mape.levelpic);
-  end
-  else if (pname = 'SKYTEXTURE')  or (pname = 'SKYTEXTURE1') then
-  begin
-    result := ParseLumpName(sc, mape.skytexture);
-  end
-  else if pname = 'SKYTEXTURE2' then
-  begin
-    result := ParseLumpName(sc, mape.skytexture2);
-  end
-  else if pname = 'MUSIC' then
-  begin
-    result := ParseLumpName(sc, mape.music);
-    if result then
-    begin
-      if W_CheckNumForName(mape.music) >= 0 then
-        mape.musicnum := S_GetMusicNumForName(mape.music)
-      else
-      begin
-        mape.music := '';
-        mape.musicnum := 0;
-      end;
-    end;
-  end
-  else if pname = 'ENDPIC' then
-  begin
-    result := ParseLumpName(sc, mape.endpic);
-  end
-  else if pname = 'ENDCAST' then
-  begin
-    if sc.MustGetBoolean then
-    begin
-      if sc._Boolean then
-        mape.endpic := '$CAST'
-      else
-        mape.endpic := '-';
-    end;
-  end
-  else if pname = 'ENDBUNNY' then
-  begin
-    if sc.MustGetBoolean then
-    begin
-      if sc._Boolean then
-        mape.endpic := '$BUNNY'
-      else
-        mape.endpic := '-';
-    end;
-  end
-  else if pname = 'ENDGAME' then
-  begin
-    if sc.MustGetBoolean then
-    begin
-      if sc._Boolean then
-        mape.endpic := '!'
-      else
-        mape.endpic := '-';
-    end;
-  end
-  else if pname = 'EXITPIC' then
-  begin
-    result := ParseLumpName(sc, mape.exitpic);
-  end
-  else if pname = 'ENTERPIC' then
-  begin
-    result := ParseLumpName(sc, mape.enterpic);
-  end
-  else if pname = 'LIGHTNING' then
-  begin
-    if sc.MustGetBoolean then
-      mape.lightning := sc._Boolean;
-  end
-  else if pname = 'NOJUMP' then
-  begin
-    if sc.MustGetBoolean then
-      mape.nojump := sc._Boolean;
-  end
-  else if pname = 'NOCROUCH' then
-  begin
-    if sc.MustGetBoolean then
-      mape.nocrouch := sc._Boolean;
-  end
-  else if pname = 'NOINTERMISSION' then
-  begin
-    if sc.MustGetBoolean then
-      mape.nointermission := sc._Boolean;
-  end
-  else if pname = 'PARTIME' then
-  begin
-    if sc.MustGetInteger then
-      mape.partime := TICRATE * sc._Integer;
-  end
-  else if pname = 'INTERTEXT' then
-  begin
-    lname := U_ParseMultiString(sc);
-    if lname = '' then
-    begin
-      result := false;
-      exit;
-    end;
-    mape.intertext := stringtoubigstring(lname);
-  end
-  else if pname = 'INTERTEXTSECRET' then
-  begin
-    lname := U_ParseMultiString(sc);
-    if lname = '' then
-    begin
-      result := false;
-      exit;
-    end;
-    mape.intertextsecret := stringtoubigstring(lname);
-  end
-  else if pname = 'INTERBACKDROP' then
-  begin
-    result := ParseLumpName(sc, mape.interbackdrop);
-  end
-  else if pname = 'INTERMUSIC' then
-  begin
-    result := ParseLumpName(sc, mape.intermusic);
-    if result then
-    begin
-      if W_CheckNumForName(mape.intermusic) >= 0 then
-        mape.intermusicnum := S_GetMusicNumForName(mape.intermusic)
-      else
-      begin
-        mape.intermusic := '';
-        mape.intermusicnum := 0;
-      end;
-    end;
-  end
-  else if pname = 'BOSSACTION' then
-  begin
-    if sc.MustGetString then
-    begin
-      if (strupper(sc._String) = 'CLEAR') then
-      begin
-        // mark level free of boss actions
-        mape.bossactions := Z_Realloc(mape.bossactions, 0, PU_STATIC, nil);
-        mape.numbossactions := -1;
-      end
-      else
-      begin
-        typ := -1;
-        aname := strupper(sc._String);
-        for i := 0 to NUMACTORNAMES - 1 do
-          if aname = strupper(ActorNames[i]) then
-          begin
-            typ := i;
-            break;
-          end;
-        if typ = -1 then
-          typ := Info_GetMobjNumForName(aname);
-        if typ < 0 then
-        begin
-          sc.ScriptError('UMAPINO.U_ParseStandardProperty(): bossaction: unknown thing type ''%s''', [sc._String]);
-          result := False;
-          exit;
-        end;
-        sc.MustGetInteger;
-        special := sc._Integer;
-        sc.MustGetInteger;
-        tag := sc._Integer;
-        // allow no 0-tag specials here, unless a level exit.
-        {$IFDEF DOOM}
-        if (tag <> 0) or (special = 11) or (special = 51) or (special = 52) or (special = 124) then
-        {$ENDIF}
-        {$IFDEF HERETIC}
-        if (tag <> 0) or (special = 11) or (special = 51) or (special = 52) or (special = 105) then
-        {$ENDIF}
-        begin
-          if mape.numbossactions = -1 then
-            mape.numbossactions := 1
-          else
-            Inc(mape.numbossactions);
-          mape.bossactions := Z_Realloc(mape.bossactions, SizeOf(bossaction_t) * mape.numbossactions, PU_STATIC, nil);
-          mape.bossactions[mape.numbossactions - 1].typ := typ;
-          mape.bossactions[mape.numbossactions - 1].special := special;
-          mape.bossactions[mape.numbossactions - 1].tag := tag;
-        end;
-      end;
-    end;
-  end
-  // If no known property name was given, skip all comma-separated values after the = sign
+  ZeroMemory(mape, SizeOf(mapentry_t));
+  mape.mapname := e.MapName;
+  mape.levelname := e.LevelName;
+  mape.mlabel := e.MapLabel;
+  mape.intertext := stringtoubigstring(e.InterText);
+  mape.intertextsecret := stringtoubigstring(e.InterTextSecret);
+  mape.levelpic := e.LevelPic;
+  mape.nextmap := e.NextMap;
+  mape.nextsecret := e.NextSecret;
+  mape.music := e.Music;
+  mape.musicnum := e.MusicNumber;
+  mape.skytexture := e.SkyTexture;
+  mape.skytexture2 := e.SkyTexture2;
+  mape.endpic := e.EndPic;
+  mape.exitpic := e.ExitPic;
+  mape.enterpic := e.EnterPic;
+  mape.interbackdrop := e.InterBackdrop;
+  mape.intermusic := e.InterMusic;
+  mape.intermusicnum := e.InterMusicNumber;
+  mape.partime := e.ParTime;
+  mape.nointermission := e.NoIntermission;
+  mape.lightning := e.Lightning;
+  mape.nojump := e.NoJump;
+  mape.nocrouch := e.NoCrouch;
+  if e.BossActionsCleared then
+    mape.numbossactions := -1
   else
-    sc.GetStringEOLUnChanged;
-end;
-
-//==============================================================================
-// ParseMapEntry
-//
-// -----------------------------------------------
-//
-// Parses a complete map entry
-//
-// -----------------------------------------------
-//
-//==============================================================================
-function ParseMapEntry(const sc: TScriptEngine; const entry: Pmapentry_t): boolean;
-begin
-  entry.mapname := '';
-
-  sc.GetString;
-  if sc._String = '_ENDBLOCK' then
-    sc.GetString;
-
-  if sc._Finished then
+    mape.numbossactions := Length(e.BossActions);
+  if mape.numbossactions > 0 then
   begin
-    result := false;
-    exit;
-  end;
-  sc.UnGet;
-
-  if not sc.MustGetStringName('map') then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if sc.MustGetString then
-    if not G_ValidateMapName(sc._String, nil, nil) then
+    mape.bossactions := Z_Malloc(SizeOf(bossaction_t) * mape.numbossactions, PU_STATIC, nil);
+    for i := 0 to mape.numbossactions - 1 do
     begin
-      sc.ScriptError('UMAPINFO.ParseMapEntry(): Invalid map name ''%s''', [sc._String]);
-      result := false;
-      exit;
-    end;
-
-  entry.mapname := strupper(sc._String);
-  if sc.MustGetString then
-    if sc.MatchString('_BEGINBLOCK') then
-      while not sc.MatchString('_ENDBLOCK') and not sc._Finished do
-        U_ParseStandardProperty(sc, entry);
-
-  result := true;
-end;
-
-// -----------------------------------------------
-//
-// Parses a complete UMAPINFO lump
-//
-// -----------------------------------------------
-var
-  uis_default: boolean;
-
-//==============================================================================
-//
-// U_DoParseMapInfoLump
-//
-//==============================================================================
-procedure U_DoParseMapInfoLump(const in_text: string);
-var
-  i: integer;
-  sc: TScriptEngine;
-  parsed: mapentry_t;
-begin
-  sc := TScriptEngine.Create(in_text);
-
-  while not sc._Finished do
-  begin
-    ZeroMemory(@parsed, SizeOf(mapentry_t));
-    if not ParseMapEntry(sc, @parsed) then
-    begin
-      if sc._Finished then
-        Break;
-      sc.ScriptError('UMAPINFO.U_DoParseMapInfoLump(): Skipping entry: ''%s''', [sc._String]);
-      Continue;
-    end;
-
-    if uis_default then
-    begin
-      Inc(default_mapinfo.mapcount);
-      default_mapinfo.maps := Z_Realloc(default_mapinfo.maps, SizeOf(mapentry_t) * default_mapinfo.mapcount, PU_LEVEL, nil);
-      default_mapinfo.maps[default_mapinfo.mapcount - 1] := parsed;
-      Continue;
-    end;
-
-    // Does this property already exist? If yes, replace it.
-    i := 0;
-    while i < u_mapinfo.mapcount do
-    begin
-      if parsed.mapname = u_mapinfo.maps[i].mapname then
-      begin
-        FreeMap(@u_mapinfo.maps[i]);
-        if default_mapinfo.mapcount > i then
-        begin
-          ZeroMemory(@u_mapinfo.maps[i], SizeOf(mapentry_t));
-          UpdateMapEntry(@u_mapinfo.maps[i], @default_mapinfo.maps[i]);
-          UpdateMapEntry(@u_mapinfo.maps[i], @parsed);
-          FreeMap(@parsed);
-        end
-        else
-          u_mapinfo.maps[i] := parsed;
-        break;
-      end;
-      Inc(i);
-    end;
-
-    // Not found so create a new one.
-    if i = u_mapinfo.mapcount then
-    begin
-      Inc(u_mapinfo.mapcount);
-      u_mapinfo.maps := Z_Realloc(u_mapinfo.maps, SizeOf(mapentry_t) * u_mapinfo.mapcount, PU_STATIC, nil);
-
-      if default_mapinfo.mapcount > i then
-      begin
-        ZeroMemory(@u_mapinfo.maps[i], SizeOf(mapentry_t));
-        UpdateMapEntry(@u_mapinfo.maps[i], @default_mapinfo.maps[i]);
-        UpdateMapEntry(@u_mapinfo.maps[i], @parsed);
-        FreeMap(@parsed);
-      end
-      else
-        u_mapinfo.maps[u_mapinfo.mapcount - 1] := parsed;
+      mape.bossactions[i].typ := e.BossActions[i].ActorType;
+      mape.bossactions[i].special := e.BossActions[i].Special;
+      mape.bossactions[i].tag := e.BossActions[i].Tag;
     end;
   end;
-  sc.Free;
-end;
-
-//==============================================================================
-//
-// U_Preproccessor
-//
-//==============================================================================
-function U_Preproccessor(in_text: string): string;
-var
-  i: integer;
-  len: integer;
-  inquotes: boolean;
-  incomments: boolean;
-  inLcomments: boolean;
-begin
-  in_text := in_text + #13#10;
-  result := '';
-  inquotes := false;
-  incomments := false;
-  inLcomments := false;
-  i := 1;
-  len := Length(in_text);
-  while i < len do
-  begin
-    if in_text[i] = '"' then
-      if not (incomments or inLcomments) then
-        inquotes := not inquotes;
-    if not inquotes then
-    begin
-      if in_text[i] = '/' then
-      begin
-        if in_text[i + 1] = '/' then
-          inLcomments := true
-        else if in_text[i + 1] = '*' then
-          incomments := true;
-      end;
-      if in_text[i] in [#13, #10] then
-        inLcomments := false;
-      if in_text[i] = '*' then
-        if in_text[i + 1] = '/' then
-          incomments := false;
-    end;
-    if not (incomments or inLcomments) then
-    begin
-      if inquotes then
-        result := result + in_text[i]
-      else if in_text[i] = ',' then
-      else if in_text[i] = '=' then
-        result := result + ' = '
-      else if in_text[i] = '{' then
-        result := result + #13#10'_BEGINBLOCK'#13#10
-      else if in_text[i] = '}' then
-        result := result + #13#10'_ENDBLOCK'#13#10
-      else
-        result := result + in_text[i]
-    end;
-    inc(i);
-  end;
-end;
-
-//==============================================================================
-//
-// U_ParseMapInfoLump
-//
-//==============================================================================
-procedure U_ParseMapInfoLump(const in_text: string);
-begin
-  U_DoParseMapInfoLump(U_Preproccessor(SC_Preprocess(in_text, false)));
 end;
 
 //==============================================================================
 //
 // U_ParseMapInfo
+// The library reads the text and merges the maps; the records are made again from
+// its catalog (the pointers to a record are taken afterwards, when a level starts)
 //
 //==============================================================================
 procedure U_ParseMapInfo(const is_default: boolean; const lumppname: string);
 var
   i: integer;
-  u_text: string;
-  ulumpname: string;
 begin
-  uis_default := is_default;
+  if map_loader = nil then
+    I_Error('U_ParseMapInfo(): the UMAPINFO loader was not configured (U_ConfigureMapInfo)');
 
-  ulumpname := strupper(lumppname);
-  u_text := '';
+  map_loader.Load(lumppname, is_default);
 
-  for i := 0 to W_NumLumps - 1 do
+  FreeMaps(default_mapinfo);
+  default_mapinfo.mapcount := map_catalog.DefaultCount;
+  if default_mapinfo.mapcount > 0 then
   begin
-    if char8tostring(W_GetNameForNum(i)) = ulumpname then
-    begin
-      if u_text = '' then
-        u_text := W_TextLumpNum(i)
-      else
-        u_text := u_text + #13#10 + W_TextLumpNum(i);
-    end;
+    default_mapinfo.maps := Z_Malloc(SizeOf(mapentry_t) * default_mapinfo.mapcount, PU_LEVEL, nil);
+    for i := 0 to default_mapinfo.mapcount - 1 do
+      MakeMapEntry(map_catalog.GetDefault(i), @default_mapinfo.maps[i]);
   end;
 
-  if u_text <> '' then
-    U_ParseMapInfoLump(u_text);
-
-  PAK_StringIterator(lumppname, @U_ParseMapInfoLump);
-  PAK_StringIterator(lumppname + '.txt', @U_ParseMapInfoLump);
+  FreeMaps(u_mapinfo);
+  u_mapinfo.mapcount := map_catalog.MapCount;
+  if u_mapinfo.mapcount > 0 then
+  begin
+    u_mapinfo.maps := Z_Malloc(SizeOf(mapentry_t) * u_mapinfo.mapcount, PU_STATIC, nil);
+    for i := 0 to u_mapinfo.mapcount - 1 do
+      MakeMapEntry(map_catalog.GetMap(i), @u_mapinfo.maps[i]);
+  end;
 end;
 
 //==============================================================================
@@ -891,15 +313,10 @@ end;
 //
 //==============================================================================
 procedure U_FreeMapInfo;
-var
-  i: integer;
 begin
-  for i := 0 to u_mapinfo.mapcount - 1 do
-    FreeMap(@u_mapinfo.maps[i]);
-  if u_mapinfo.maps <> nil then
-    Z_Free(u_mapinfo.maps);
-  u_mapinfo.maps := nil;
-  u_mapinfo.mapcount := 0;
+  FreeMaps(u_mapinfo);
+  if map_catalog <> nil then
+    map_catalog.ClearMaps;
 end;
 
 end.

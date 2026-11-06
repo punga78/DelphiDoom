@@ -35,6 +35,11 @@ uses
 {$IFNDEF HEXEN}
   udmf_spec,
   DelphiDoom.Specials.Factory,
+  DelphiDoom.MapInfo.Intf,
+  DelphiDoom.MapInfo.Factory,
+  DelphiDoom.Engine.MapInfo.Services,
+  DelphiDoom.Engine.MapInfo.TextSource,
+  p_umapinfo,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Audio.Types,
@@ -142,6 +147,42 @@ begin
     TMidiFileMusicBackend.Create)));
 end;
 
+{$IFNDEF HEXEN}
+procedure ComposeMapInfo(const ALog: ILog);
+var
+  LServices: TEngineMapInfoServices;
+  LTextSource: TEngineMapInfoTextSource;
+  LMapServices: TMapInfoServices;
+  LCatalog: IMapInfoCatalog;
+begin
+  LServices := TEngineMapInfoServices.Create;
+  LTextSource := TEngineMapInfoTextSource.Create;
+  LMapServices.Validator := LServices;
+  LMapServices.Lumps := LServices;
+  LMapServices.Music := LServices;
+  LMapServices.Actors := LServices;
+  // the exit specials that a boss action may use depend on the game
+{$IFDEF DOOM}
+  LMapServices.BossRule := TMapInfoFactory.CreateTaggedBossActionRule(TArray<Integer>.Create(11, 51, 52, 124));
+  LMapServices.Episodes := LServices;
+{$ENDIF}
+{$IFDEF HERETIC}
+  LMapServices.BossRule := TMapInfoFactory.CreateTaggedBossActionRule(TArray<Integer>.Create(11, 51, 52, 105));
+  LMapServices.Episodes := LServices;
+{$ENDIF}
+{$IFDEF STRIFE}
+  // Strife has no episodes and a boss action may use any special
+  LMapServices.BossRule := TMapInfoFactory.CreateOpenBossActionRule;
+  LMapServices.Episodes := nil;
+{$ENDIF}
+  LCatalog := TMapInfoFactory.CreateCatalog(LServices);
+  U_ConfigureMapInfo(
+    TMapInfoFactory.CreateLoader(LTextSource, LTextSource,
+      TMapInfoFactory.CreateParser(LMapServices, ALog), LCatalog),
+    LCatalog);
+end;
+{$ENDIF}
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -180,6 +221,7 @@ begin
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
   P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
+  ComposeMapInfo(LLog);
 {$ENDIF}
 end;
 
