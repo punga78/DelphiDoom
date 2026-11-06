@@ -35,6 +35,9 @@ unit m_misc;
 
 interface
 
+uses
+  DelphiDoom.Configuration.Intf;
+
 //
 // MISC
 //
@@ -104,6 +107,14 @@ procedure M_LoadDefaults;
 //
 //==============================================================================
 procedure M_SaveDefaults;
+
+//==============================================================================
+//
+// M_ConfigureDefaults
+// Gives the unit the format of the configuration file. The composition root calls it
+//
+//==============================================================================
+procedure M_ConfigureDefaults(const AFormat: IConfigurationFormat);
 
 
 //==============================================================================
@@ -758,6 +769,20 @@ const
 var
   defaultfile: string;
 
+var
+  // given by the composition root (M_ConfigureDefaults)
+  config_format: IConfigurationFormat = nil;
+
+//==============================================================================
+//
+// M_ConfigureDefaults
+//
+//==============================================================================
+procedure M_ConfigureDefaults(const AFormat: IConfigurationFormat);
+begin
+  config_format := AFormat;
+end;
+
 //==============================================================================
 //
 // M_SaveDefaults
@@ -768,36 +793,37 @@ var
   i: integer;
   pd: Pdefault_t;
   s: TDStringList;
-  verstr: string;
+  writer: IConfigurationWriter;
+  lines: TArray<string>;
 begin
+  if config_format = nil then
+    exit;
+
+  writer := config_format.CreateWriter(config_format.FormatHeader(AppTitle, D_EngineVersion));
+  pd := @defaults[0];
+  for i := 0 to NUMDEFAULTS - 1 do
+  begin
+    if pd._type = tInteger then
+      writer.AddValue(pd.name, config_format.FormatInteger(PInteger(pd.location)^))
+    else if pd._type = tString then
+      writer.AddValue(pd.name, PString(pd.location)^)
+    else if pd._type = tBoolean then
+      writer.AddValue(pd.name, config_format.FormatBoolean(PBoolean(pd.location)^))
+    else if pd._type = tGroup then
+      writer.AddGroup(pd.name);
+    inc(pd);
+  end;
+
   s := TDStringList.Create;
   try
-    sprintf(verstr, '[' + AppTitle + ' ' + VERFMT + ']', [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
-    s.Add(verstr);
-    pd := @defaults[0];
-    for i := 0 to NUMDEFAULTS - 1 do
-    begin
-      if pd._type = tInteger then
-        s.Add(pd.name + '=' + itoa(PInteger(pd.location)^))
-      else if pd._type = tString then
-        s.Add(pd.name + '=' + PString(pd.location)^)
-      else if pd._type = tBoolean then
-        s.Add(pd.name + '=' + itoa(intval(PBoolean(pd.location)^)))
-      else if pd._type = tGroup then
-      begin
-        s.Add('');
-        s.Add('[' + pd.name + ']');
-      end;
-      inc(pd);
-    end;
-
+    lines := writer.Lines;
+    for i := 0 to High(lines) do
+      s.Add(lines[i]);
     s.SaveToFile(defaultfile);
-
   finally
     s.Free;
   end;
 end;
-
 //==============================================================================
 //
 // M_SetDefaults
@@ -906,11 +932,12 @@ var
   pd: Pdefault_t;
   s: TDStringList;
   n: string;
-  verstr: string;
-  ver: integer;
-  acceptablever: Boolean;
-  stmp: string;
+  doc: IConfigurationDocument;
+  lines: TArray<string>;
 begin
+  if config_format = nil then
+    I_Error('M_LoadDefaults(): the configuration format was not given (M_ConfigureDefaults)');
+
   // set everything to base values
   for i := 0 to NUMDEFAULTS - 1 do
     if defaults[i]._type = tInteger then
@@ -941,25 +968,18 @@ begin
 
     if s.Count > 1 then
     begin
-      acceptablever := False;
-      for ver := D_EngineVersion + 1 downto 110 do  // JVAL: 20210122 - Accept next version config
+      SetLength(lines, s.Count);
+      for i := 0 to s.Count - 1 do
+        lines[i] := s[i];
+      doc := config_format.Parse(lines);
+      if config_format.AcceptsHeader(doc.Header, D_EngineVersion) then
       begin
-        sprintf(verstr, VERFMT, [ver div 100, 2, ver mod 100]);
-        if Pos(verstr, s[0]) > 0 then
-        begin
-          acceptablever := True;
-          break;
-        end;
-      end;
-      if acceptablever then
-      begin
-        s.Delete(0);
         confignotfound := False;
 
-        for i := 0 to s.Count - 1 do
+        for i := 0 to doc.Count - 1 do
         begin
           idx := -1;
-          n := strlower(s.Names[i]);
+          n := doc.NameAt(i);
           for j := 0 to NUMDEFAULTS - 1 do
             if defaults[j].name = n then
             begin
@@ -971,32 +991,15 @@ begin
           begin
             pd := @defaults[idx];
             if pd._type = tInteger then
-            begin
-              stmp := s.Values[n];
-              PInteger(pd.location)^ := atoi(stmp);
-              // JVAL: 20151116 hack to easy set key values inside config file
-              if length(stmp) = 3 then
-                if (stmp[1] in ['''', '"']) and (stmp[3] in ['''', '"']) then
-                  if stmp[1] = stmp[3] then // JVAL 20180101 Same container quotes
-                  begin
-                    if stmp[2] in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] then
-                      PInteger(pd.location)^ := atoi(stmp[2])
-                    else
-                      PInteger(pd.location)^ := Ord(stmp[2]);
-                  end;
-              if length(stmp) = 1 then
-                if not (stmp[1] in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']) then
-                  PInteger(pd.location)^ := Ord(stmp[1]);
-            end
+              PInteger(pd.location)^ := config_format.ParseInteger(doc.ValueOf(n))
             else if pd._type = tBoolean then
-              PBoolean(pd.location)^ := atoi(s.Values[n]) <> 0
+              PBoolean(pd.location)^ := config_format.ParseBoolean(doc.ValueOf(n))
             else if pd._type = tString then
-              PString(pd.location)^ := s.Values[n];
+              PString(pd.location)^ := doc.ValueOf(n);
           end;
         end;
       end;
     end;
-
   finally
     s.Free;
   end;

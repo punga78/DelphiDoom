@@ -20,6 +20,7 @@ procedure ComposeEngine;
 implementation
 
 uses
+  DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.IdTech.Factory,
@@ -31,7 +32,8 @@ uses
   w_pak,
   doomdef,
   d_main,
-  m_argv;
+  m_argv,
+  m_misc;
 
 procedure ComposeEngine;
 var
@@ -42,6 +44,7 @@ begin
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
+  M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

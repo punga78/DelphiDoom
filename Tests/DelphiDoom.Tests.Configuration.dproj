@@ -1,0 +1,61 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{6E1B94C8-3F07-4A52-8D6B-C21A0E57F983}</ProjectGuid>
+        <MainSource>DelphiDoom.Tests.Configuration.dpr</MainSource>
+        <ProjectVersion>19.5</ProjectVersion>
+        <FrameworkType>None</FrameworkType>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Release</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Console</AppType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Configuration;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\Tests\Configuration\$(Config)</DCC_DcuOutput>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
+        <DCC_E>false</DCC_E>
+        <DCC_F>false</DCC_F>
+        <DCC_K>false</DCC_K>
+        <DCC_N>false</DCC_N>
+        <DCC_S>false</DCC_S>
+        <DCC_SymbolPlatform>false</DCC_SymbolPlatform>
+        <DCC_Platform>x86</DCC_Platform>
+        <DCC_MapFile>3</DCC_MapFile>
+        <SanitizedProjectName>DelphiDoom.Tests.Configuration</SanitizedProjectName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug'">
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_DebugInformation>2</DCC_DebugInformation>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release'">
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_DebugInformation>0</DCC_DebugInformation>
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+</Project>
