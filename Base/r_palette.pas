@@ -37,7 +37,8 @@ unit r_palette;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Palette.Intf;
 
 type
   palette_t = array[0..255] of LongWord;
@@ -50,15 +51,34 @@ type
 //==============================================================================
 function R_DefaultPalette: palette_p;
 
+//==============================================================================
+//
+// R_ConfigurePalette
+//
+//==============================================================================
+procedure R_ConfigurePalette(const AUnpacker: IPaletteUnpacker);
+
 implementation
 
 uses
+  i_system,
   v_data,
   z_zone;
 
 var
   dpal: palette_t;
   flag: boolean = false;
+  pal_unpacker: IPaletteUnpacker;
+
+//==============================================================================
+//
+// R_ConfigurePalette
+//
+//==============================================================================
+procedure R_ConfigurePalette(const AUnpacker: IPaletteUnpacker);
+begin
+  pal_unpacker := AUnpacker;
+end;
 
 //==============================================================================
 //
@@ -68,8 +88,8 @@ var
 function R_DefaultPalette: palette_p;
 var
   palette: PByteArray;
-  src: PByteArray;
-  dest: PLongWord;
+  source: TArray<Byte>;
+  colors: TArray<Cardinal>;
 begin
   if flag then
   begin
@@ -77,19 +97,16 @@ begin
     exit;
   end;
 
-  palette := V_ReadPalette(PU_STATIC);
+  if pal_unpacker = nil then
+    I_Error('R_DefaultPalette(): the palette is not configured (ComposeEngine was not called)');
 
-  dest := @dpal[0];
-  src := palette;
-  while integer(src) < integer(@palette[256 * 3]) do
-  begin
-    dest^ := (LongWord(src[0]) shl 16) or
-             (LongWord(src[1]) shl 8) or
-             (LongWord(src[2]));
-    inc(dest);
-    src := PByteArray(integer(src) + 3);
-  end;
+  palette := V_ReadPalette(PU_STATIC);
+  SetLength(source, 256 * 3);
+  Move(palette^, source[0], 256 * 3);
   Z_ChangeTag(palette, PU_CACHE);
+
+  colors := pal_unpacker.Unpack(source);
+  Move(colors[0], dpal[0], SizeOf(palette_t));
 
   flag := True;
   result := @dpal;

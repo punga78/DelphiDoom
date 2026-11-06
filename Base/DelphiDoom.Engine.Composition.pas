@@ -45,6 +45,12 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.Palette.Types,
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Palette.Profiles,
+  DelphiDoom.Palette.Factory,
+  v_palettes,
+  r_palette,
   DelphiDoom.Definitions.Types,
   DelphiDoom.Definitions.Intf,
   DelphiDoom.Definitions.Factory,
@@ -267,6 +273,21 @@ begin
   P_ConfigureAnimDefs(TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
 end;
 
+procedure ComposePalette;
+var
+  LMatcher: IColorMatcher;
+begin
+  LMatcher := TPaletteFactory.CreateColorMatcher;
+{$IFDEF HEXEN}
+  V_ConfigurePalettes(TPaletteFactory.CreatePaletteBuilder(LMatcher, TPaletteProfiles.Hexen),
+    TPaletteFactory.CreateTranslationBuilder(LMatcher));
+{$ELSE}
+  V_ConfigurePalettes(TPaletteFactory.CreatePaletteBuilder(LMatcher, TPaletteProfiles.Doom),
+    TPaletteFactory.CreateTranslationBuilder(LMatcher));
+{$ENDIF}
+  R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -333,6 +354,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposePalette;
   ComposeDefinitions(LLog);
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
