@@ -1,0 +1,75 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: unit tests of the Wad library (DUnitX)                          }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+program DelphiDoom.Tests.Wad;
+
+{$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
+
+uses
+  System.SysUtils,
+  DUnitX.Loggers.Console,
+  DUnitX.Loggers.Xml.NUnit,
+  DUnitX.TestFramework,
+  DelphiDoom.Wad.Types in '..\Libs\Wad\DelphiDoom.Wad.Types.pas',
+  DelphiDoom.Wad.Name in '..\Libs\Wad\DelphiDoom.Wad.Name.pas',
+  DelphiDoom.Wad.Intf in '..\Libs\Wad\DelphiDoom.Wad.Intf.pas',
+  DelphiDoom.Wad.Indicators in '..\Libs\Wad\DelphiDoom.Wad.Indicators.pas',
+  DelphiDoom.Wad.Source.Base in '..\Libs\Wad\DelphiDoom.Wad.Source.Base.pas',
+  DelphiDoom.Wad.Source.Wad in '..\Libs\Wad\DelphiDoom.Wad.Source.Wad.pas',
+  DelphiDoom.Wad.Source.Pak in '..\Libs\Wad\DelphiDoom.Wad.Source.Pak.pas',
+  DelphiDoom.Wad.Source.Zip in '..\Libs\Wad\DelphiDoom.Wad.Source.Zip.pas',
+  DelphiDoom.Wad.Source.Folder in '..\Libs\Wad\DelphiDoom.Wad.Source.Folder.pas',
+  DelphiDoom.Wad.Source.SingleFile in '..\Libs\Wad\DelphiDoom.Wad.Source.SingleFile.pas',
+  DelphiDoom.Wad.Directory in '..\Libs\Wad\DelphiDoom.Wad.Directory.pas',
+  DelphiDoom.Wad.Builder in '..\Libs\Wad\DelphiDoom.Wad.Builder.pas',
+  DelphiDoom.Wad.LumpCache in '..\Libs\Wad\DelphiDoom.Wad.LumpCache.pas',
+  DelphiDoom.Wad.Level.Types in '..\Libs\Wad\DelphiDoom.Wad.Level.Types.pas',
+  DelphiDoom.Wad.Factory in '..\Libs\Wad\DelphiDoom.Wad.Factory.pas',
+  DelphiDoom.Tests.Wad.Helpers in 'Source\DelphiDoom.Tests.Wad.Helpers.pas',
+  DelphiDoom.Tests.Wad.Name in 'Source\DelphiDoom.Tests.Wad.Name.pas',
+  DelphiDoom.Tests.Wad.Sources in 'Source\DelphiDoom.Tests.Wad.Sources.pas',
+  DelphiDoom.Tests.Wad.Directory in 'Source\DelphiDoom.Tests.Wad.Directory.pas',
+  DelphiDoom.Tests.Wad.Builder in 'Source\DelphiDoom.Tests.Wad.Builder.pas',
+  DelphiDoom.Tests.Wad.LumpCache in 'Source\DelphiDoom.Tests.Wad.LumpCache.pas',
+  DelphiDoom.Tests.Wad.Level in 'Source\DelphiDoom.Tests.Wad.Level.pas',
+  DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas';
+
+var
+  Runner: ITestRunner;
+  Results: IRunResults;
+  Logger: ITestLogger;
+  NUnitLogger: ITestLogger;
+
+begin
+  try
+    TDUnitX.CheckCommandLine;
+    Runner := TDUnitX.CreateRunner;
+    Runner.UseRTTI := True;
+    Runner.FailsOnNoAsserts := False;
+
+    Logger := TDUnitXConsoleLogger.Create(True);
+    Runner.AddLogger(Logger);
+    NUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
+    Runner.AddLogger(NUnitLogger);
+
+    Results := Runner.Execute;
+    if not Results.AllPassed then
+      System.ExitCode := EXIT_ERRORS;
+
+    {$IFNDEF CI}
+    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
+    begin
+      System.Write('Done.. press <Enter> key to quit.');
+      System.Readln;
+    end;
+    {$ENDIF}
+  except
+    on E: Exception do
+      System.Writeln(E.ClassName, ': ', E.Message);
+  end;
+end.
