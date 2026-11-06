@@ -45,6 +45,10 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.MusInfo.Intf,
+  DelphiDoom.MusInfo.Factory,
+  DelphiDoom.Engine.MusInfo.Services,
+  p_musinfo,
   DelphiDoom.DynLights.Types,
   DelphiDoom.DynLights.Intf,
   DelphiDoom.DynLights.Factory,
@@ -240,6 +244,19 @@ begin
     TDynLightFactory.CreateAnimator(LRegistry, LServices));
 end;
 
+procedure ComposeMusInfo(const ALog: ILog);
+var
+  LServices: TEngineMusInfoServices;
+  LServicesRef: IInterface;
+  LCatalog: IMusInfoCatalog;
+begin
+  LServices := TEngineMusInfoServices.Create;
+  LServicesRef := LServices;
+  LCatalog := TMusInfoFactory.CreateCatalog(LServices, ALog);
+  P_ConfigureMusInfo(LCatalog,
+    TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -306,6 +323,7 @@ begin
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
+  ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
