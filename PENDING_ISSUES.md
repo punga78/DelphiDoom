@@ -15,9 +15,12 @@ Il C è stato cancellato (ultimo commit che lo contiene: `a449cacd`). Queste dif
 
 ## #12 — Cancellare i sorgenti inutili dopo il collegamento alle DLL
 
-- **Stato**: parziale. Sono già spariti `C_LIB`, `Libs\Sndfile\Native` e `AUDIOLIB`. Restano da verificare le altre cartelle storiche elencate nella issue (`ZLIB`, `JPEGLIB`, `MP3LIB`, `XMILIB`, `MIKWIN`, `SCRIPT`, `FASTCODE`) e le unit orfane.
-- **Dipende da**: le issue #3–#11 e #2 (array `glbsp` in `Base\nd_main.pas`), che non ho verificato.
-- **Prossima azione**: censire con `grep` quali di quelle cartelle sono ancora referenziate da un `.dpr`.
+- **Stato**: quasi fatta. Sono spariti `C_LIB`, `Libs\Sndfile\Native`, `AUDIOLIB`, `MP3LIB`, `XMILIB`, `MIKWIN` e l'unica unit orfana (`OPENGL\gl_skybox.pas`, mai compilata). Le issue #2–#11 sono chiuse. `ZLIB` (`z_files.pas`), `JPEGLIB`, `SCRIPT` e `FASTCODE` sono ancora referenziate dai `.dpr` e restano (JPEGLIB e SCRIPT sono l'implementazione dietro `TJpegEngine` e il motore degli script, come descritto in `CLAUDE.md`). `build.bat all Release clean` e `build.bat tests` sono verdi, tutti i test passano.
+- **Mancano**:
+  1. La prova a runtime di Doom, Heretic, Hexen e Strife richiesta dai criteri di accettazione: nel repository non ci sono WAD (`bin\<Gioco>` non li contiene) e nessun `*.swd`; partono ma non si può arrivare al livello né sentire l'audio.
+  2. `DD_IDE\zlibpas.pas` e `DD_IDE\obj\*.obj` (zlib 1.1.4 in OMF) sono ancora linkati da `ide_binary.pas` e `ide_zipfile.pas` (undo compresso e file zip): sostituirli con `System.ZLib` cambia il comportamento dell'editor, è lavoro della #42 (Win64: niente `.obj` OMF).
+- **Domanda per una persona**: i WAD per la prova (Doom, Heretic, Hexen, Strife) e un parere se `DD_IDE` va migrato a `System.ZLib` dentro la #12 o resta alla #42.
+- **Prossima azione**: prova a runtime con i WAD; poi chiudere la #12.
 
 ## #1 — Porting a Delphi 11 (XE11) e build da riga di comando
 
