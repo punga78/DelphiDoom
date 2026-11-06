@@ -23,6 +23,7 @@ uses
   DelphiDoom.Logging.Factory,
   DelphiDoom.Logging.Intf,
   DelphiDoom.Engine.Log.Sink,
+  DelphiDoom.Clock.Factory,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -43,17 +44,20 @@ procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
   LEngine: IIdTechEngine;
+  LLog: ILog;
 begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
   M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
-  I_ConfigureLog(TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
+  LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
     function: Boolean
     begin
       Result := devparm;
-    end));
+    end);
+  I_ConfigureLog(LLog);
+  I_ConfigureClock(TClockFactory.CreateClock(LLog));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

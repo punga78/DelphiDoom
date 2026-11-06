@@ -36,7 +36,8 @@ interface
 uses
   d_delphi,
   d_ticcmd,
-  DelphiDoom.Logging.Intf;
+  DelphiDoom.Logging.Intf,
+  DelphiDoom.Clock.Intf;
 
 //==============================================================================
 //
@@ -166,6 +167,14 @@ procedure I_FlashCachedOutput;
 //
 //==============================================================================
 procedure I_ConfigureLog(const ALog: ILog);
+
+//==============================================================================
+//
+// I_ConfigureClock
+// Gives the unit the clock behind I_GetTime and the waits. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureClock(const AClock: IClock);
 
 //==============================================================================
 //
@@ -544,8 +553,18 @@ end;
 // returns time in 1/70th second tics
 //
 var
-  basetime: int64 = 0;
-  Freq: int64;
+  // given by the composition root (I_ConfigureClock)
+  engine_clock: IClock = nil;
+
+//==============================================================================
+//
+// I_ConfigureClock
+//
+//==============================================================================
+procedure I_ConfigureClock(const AClock: IClock);
+begin
+  engine_clock := AClock;
+end;
 
 //==============================================================================
 //
@@ -553,24 +572,8 @@ var
 //
 //==============================================================================
 function I_GetSysTime: extended;
-var
-  _time: int64;
 begin
-  if Freq = 1000 then
-    _time := GetTickCount
-  else
-  begin
-    if not QueryPerformanceCounter(_time) then
-    begin
-      _time := GetTickCount;
-      Freq := 1000;
-      basetime := 0;
-      I_Warning('QueryPerformanceCounter() failed, basetime reset.'#13#10);
-    end;
-  end;
-  if basetime = 0 then
-    basetime := _time;
-  result := (_time - basetime) / Freq;
+  result := engine_clock.Seconds;
 end;
 
 //==============================================================================
@@ -580,7 +583,7 @@ end;
 //==============================================================================
 function I_GetTime: integer;
 begin
-  result := trunc(I_GetSysTime * TICRATE);
+  result := engine_clock.Steps(TICRATE);
 end;
 
 //==============================================================================
@@ -590,7 +593,7 @@ end;
 //==============================================================================
 function I_GetFracTime: integer;
 begin
-  result := trunc(I_GetSysTime * TICRATE * FRACUNIT);
+  result := engine_clock.ScaledSteps(TICRATE, FRACUNIT);
 end;
 
 //==============================================================================
@@ -863,13 +866,8 @@ end;
 //
 //==============================================================================
 procedure I_WaitVBL(const count: integer);
-var
-  waituntil: extended;
 begin
-  waituntil := I_GetSysTime + count / 1000;
-  repeat
-    sleep(0);
-  until I_GetSysTime >= waituntil;
+  engine_clock.Wait(count);
 end;
 
 //==============================================================================
@@ -879,7 +877,7 @@ end;
 //==============================================================================
 procedure I_Sleep(const msecs: integer);
 begin
-  sleep(msecs);
+  engine_clock.Sleep(msecs);
 end;
 
 //==============================================================================
@@ -1393,9 +1391,6 @@ begin
 end;
 
 initialization
-  if not QueryPerformanceFrequency(Freq) then
-    Freq := 1000;
-
   hThread := GetCurrentThread;
 
 end.
