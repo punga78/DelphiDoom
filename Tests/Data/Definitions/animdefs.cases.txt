@@ -1,0 +1,161 @@
+@flats FWATER1 FWATER2 FWATER3 FWATER4 NUKAGE1 NUKAGE2 NUKAGE3 LAVA1 LAVA2 SLIME01
+@textures BLODGR1 BLODGR2 BLODGR3 BLODGR4 SLADRIP1 SLADRIP2 SLADRIP3 FIREBLU1 FIREBLU2 SW1BRCOM
+@@@ empty
+@@@ only_comments
+// nothing here
+; and here
+@@@ flat_basic
+flat NUKAGE1
+  pic 1 tics 8
+  pic 2 tics 8
+  pic 3 tics 8
+@@@ texture_basic
+texture BLODGR1
+  pic 1 tics 8
+  pic 2 tics 16
+  pic 3 tics 24
+  pic 4 tics 8
+@@@ two_animations
+flat FWATER1 pic 1 tics 8 pic 2 tics 8 pic 3 tics 8 pic 4 tics 8
+texture SLADRIP1 pic 1 tics 4 pic 2 tics 4 pic 3 tics 4
+@@@ rand
+flat LAVA1
+  pic 1 rand 5 10
+  pic 2 rand 8 8
+  pic 3 tics 4
+@@@ rand_max_below_min
+flat LAVA1
+  pic 1 rand 10 5
+  pic 2 tics 4
+@@@ tics_above_255
+flat LAVA2
+  pic 1 tics 300
+  pic 2 tics 255
+  pic 3 tics 256
+@@@ negative_and_zero
+flat NUKAGE2
+  pic 0 tics 0
+  pic -2 tics -5
+@@@ comments_and_semicolons
+// the water
+flat FWATER2 // trailing
+  pic 1 tics 8 ; trailing semicolon text
+  pic 2 tics 8
+  // pic 3 tics 8
+@@@ case_insensitive
+FLAT nukage3 PIC 1 TICS 8 Pic 2 Tics 8
+@@@ quoted_name
+flat "NUKAGE1" pic 1 tics 8 pic 2 tics 8
+@@@ lowercase_texture_name
+texture blodgr2 pic 1 tics 8 pic 2 tics 8
+@@@ ignored_flat
+flat NOSUCH pic 1 tics 8 pic 2 tics 8
+flat NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ ignored_texture
+texture NOSUCH pic 1 tics 8
+texture BLODGR1 pic 1 tics 8 pic 2 tics 8
+@@@ ignored_with_one_frame_is_fine
+flat NOSUCH pic 1 tics 8
+@@@ ignored_with_rand_and_garbage
+flat NOSUCH pic 1 rand 2 4 pic 2 foo 5 pic 3 tics 1
+@@@ flat_name_is_a_texture
+flat BLODGR1 pic 1 tics 8 pic 2 tics 8
+@@@ texture_name_is_a_flat
+texture NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ one_frame_error
+flat NUKAGE1 pic 1 tics 8
+@@@ no_frames_error
+flat NUKAGE1
+@@@ no_frames_before_next
+flat NUKAGE1
+flat FWATER1 pic 1 tics 8 pic 2 tics 8
+@@@ unknown_kind_first
+foo NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ unknown_kind_after_ignored_texture
+texture NOSUCH pic 1 tics 8
+foo BLODGR1 pic 1 tics 8 pic 2 tics 8
+@@@ unknown_kind_after_kept_animation
+texture BLODGR1 pic 1 tics 8 pic 2 tics 8
+foo NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ unknown_kind_after_ignored_flat
+flat NOSUCH pic 1 tics 8
+foo SLADRIP1 pic 1 tics 8 pic 2 tics 8
+@@@ unknown_frame_keyword
+flat NUKAGE1
+  pic 1 tics 8
+  pic 2 foo 9
+  pic 3 tics 8
+@@@ unknown_frame_keyword_last
+flat NUKAGE1
+  pic 1 tics 8
+  pic 2 tics 8
+  pic 5 foo 9
+flat FWATER1 pic 1 tics 8 pic 2 tics 8
+@@@ missing_pic_number
+flat NUKAGE1
+  pic tics 8
+  pic 2 tics 8
+@@@ missing_pic_number_after_value
+flat NUKAGE1
+  pic 4 tics 8
+  pic foo tics 8
+  pic 2 tics 8
+@@@ bad_tics_number
+flat NUKAGE1
+  pic 1 tics xyz
+  pic 2 tics 8
+  pic 3 tics 8
+@@@ eof_after_tics
+flat NUKAGE1 pic 1 tics 8 pic 2 tics
+@@@ eof_after_name
+flat
+@@@ eof_after_pic
+flat NUKAGE1 pic 1 tics 8 pic
+@@@ eof_in_rand
+flat NUKAGE1 pic 1 tics 8 pic 2 rand 3
+@@@ eof_after_pic_number
+flat NUKAGE1 pic 1 tics 8 pic 2
+@@@ pic_before_any_animation
+pic 1 tics 8
+flat NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ braces_and_commas
+flat NUKAGE1 { pic 1 tics 8, pic 2 tics 8 }
+@@@ long_name
+flat ABCDEFGHIJKLMNOP pic 1 tics 8
+flat NUKAGE1 pic 1 tics 8 pic 2 tics 8
+@@@ same_flat_twice
+flat NUKAGE1 pic 1 tics 8 pic 2 tics 8
+flat NUKAGE1 pic 1 tics 4 pic 3 tics 4
+@@@ pics_out_of_order
+flat FWATER1
+  pic 4 tics 8
+  pic 1 tics 8
+  pic 3 tics 8
+  pic 2 tics 8
+@@@ many_blank_lines
+
+
+flat NUKAGE1
+
+
+  pic 1 tics 8
+
+
+  pic 2 tics 8
+
+
+@@@ crlf_line_endings
+@crlf
+flat NUKAGE1
+pic 1 tics 8
+pic 2 tics 8
+@@@ gen_animations_limit
+@gen 129 2
+@@@ gen_animations_at_limit
+@gen 128 2
+@@@ gen_frames_limit
+@gen 100 6
+@@@ gen_frames_at_limit
+@gen 64 8
+@@@ gen_frames_just_over
+@gen 64 9

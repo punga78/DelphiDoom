@@ -1,0 +1,116 @@
+@textures SW1BRCOM SW2BRCOM SW1BRN1 SW2BRN1 SW1EXIT SW2EXIT SW1BLUE SW2BLUE SW1PANEL SW2PANEL SWKNOB01 SWKNOB02 GLASS01 GLASS02 COMP01 COMP04B ABCDEFGH
+@@@ empty_lump
+@@@ one_entry
+entry SW1BRCOM SW2BRCOM 1
+@@@ one_entry_and_terminator
+entry SW1BRCOM SW2BRCOM 1
+entry - - -1
+@@@ terminator_in_the_middle
+entry SW1BRCOM SW2BRCOM 1
+entry - - -1
+entry SW1EXIT SW2EXIT 1
+@@@ empty_names_stop_the_table
+entry SW1BRCOM SW2BRCOM 1
+entry - - 1
+entry SW1EXIT SW2EXIT 1
+@@@ empty_first_name_stops
+entry SW1BRCOM SW2BRCOM 1
+entry - SW2EXIT 1
+entry SW1EXIT SW2EXIT 1
+@@@ empty_second_name_stops
+entry SW1BRCOM SW2BRCOM 1
+entry SW1EXIT - 1
+entry SW1BLUE SW2BLUE 1
+@@@ episode_filter_default
+entry SW1BRCOM SW2BRCOM 1
+entry SW1BLUE SW2BLUE 2
+entry SW1PANEL SW2PANEL 3
+@@@ episode_filter_1
+@episode 1
+entry SW1BRCOM SW2BRCOM 1
+entry SW1BLUE SW2BLUE 2
+entry SW1PANEL SW2PANEL 3
+@@@ episode_filter_2
+@episode 2
+entry SW1BRCOM SW2BRCOM 1
+entry SW1BLUE SW2BLUE 2
+entry SW1PANEL SW2PANEL 3
+@@@ episode_zero_and_negative
+@episode 1
+entry SW1BRCOM SW2BRCOM 0
+entry SW1BLUE SW2BLUE -2
+entry SW1PANEL SW2PANEL 32767
+entry SW1EXIT SW2EXIT -32768
+@@@ unknown_first_texture
+entry NOSUCH1 SW2BRCOM 1
+entry SW1EXIT SW2EXIT 1
+@@@ unknown_second_texture
+entry SW1BRCOM NOSUCH2 1
+entry SW1EXIT SW2EXIT 1
+@@@ unknown_both_textures
+entry NOSUCH1 NOSUCH2 1
+entry SW1EXIT SW2EXIT 1
+@@@ unknown_texture_above_the_episode_is_silent
+@episode 1
+entry NOSUCH1 NOSUCH2 3
+entry SW1EXIT SW2EXIT 1
+@@@ lowercase_names
+entry sw1brcom sw2brcom 1
+@@@ nine_character_name
+entry ABCDEFGHI SW2BRCOM 1
+entry SW1EXIT SW2EXIT 1
+@@@ eight_character_name
+entry ABCDEFGH SW2BRCOM 1
+@@@ short_names_with_zero_padding
+entry SW1EXIT SW2EXIT 1
+entry S S 1
+@@@ duplicate_pairs
+entry SW1BRCOM SW2BRCOM 1
+entry SW1BRCOM SW2BRCOM 1
+entry SW2BRCOM SW1BRCOM 1
+@@@ same_texture_twice
+entry SW1BRCOM SW1BRCOM 1
+@@@ trailing_partial_entry
+entry SW1BRCOM SW2BRCOM 1
+hex 53 57 31
+@@@ only_garbage_bytes
+hex 01 02
+@@@ nul_inside_name_and_beyond
+hex 53 57 31 00 58 59 5A 00 00   53 57 32 42 52 43 4F 4D 00   01 00
+@@@ high_bytes_in_names
+hex 53 57 80 FF E9 00 00 00 00   53 57 32 00 00 00 00 00 00   01 00
+@@@ strife_sound
+entry SW1BRCOM SW2BRCOM 1 7
+entry SW1EXIT SW2EXIT 1 -1
+entry SW1BLUE SW2BLUE 2 2147483647
+entry SW1PANEL SW2PANEL 1 305419896
+@@@ many_entries
+entry SW1BRCOM SW2BRCOM 1
+entry SW1BRN1 SW2BRN1 1
+entry SW1EXIT SW2EXIT 1
+entry SW1BLUE SW2BLUE 2
+entry SW1PANEL SW2PANEL 2
+entry SWKNOB01 SWKNOB02 1
+entry GLASS01 GLASS02 1
+entry COMP01 COMP04B 1
+@@@ fixed_table_all_textures
+@nolump
+@textures @fixed
+@@@ fixed_table_episode_1
+@nolump
+@textures @fixed
+@episode 1
+@@@ fixed_table_episode_2
+@nolump
+@textures @fixed
+@episode 2
+@@@ fixed_table_episode_0
+@nolump
+@textures @fixed
+@episode 0
+@@@ fixed_table_missing_textures
+@nolump
+@textures @fixed
+@missing SW2BRN1 SW1EXIT SW2EXIT GLASS01 SW2PANEL
+@@@ fixed_table_with_the_default_textures
+@nolump
