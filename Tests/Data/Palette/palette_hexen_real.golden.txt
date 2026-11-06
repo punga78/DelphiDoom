@@ -1,0 +1,12 @@
+real.hexen.playpal.in=0EEF4045023092FC:768
+real.hexen.base=0EEF4045023092FC:768
+real.hexen.playpal=E76CE8DE28BEF386:21504
+real.hexen.colormap=D8742DB7D780C001:8704
+real.hexen.fogmap=2ECAFF9ECDEF71B3:8704
+real.hexen.black=1
+real.hexen.red=181
+real.hexen.unpack=6889A3613A8F7A5A:1024
+real.hexen.lump.colormap=9153F8EF017B7A83:8704
+real.hexen.lump.inverse=577454C27BA926C9:1024
+real.hexen.lump.fog=B42FDD040E631FE9:8704
+real.hexen.lump.fogcolors=7B015BDA6A57CDB7:34816
