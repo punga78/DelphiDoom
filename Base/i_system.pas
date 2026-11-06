@@ -35,7 +35,8 @@ interface
 
 uses
   d_delphi,
-  d_ticcmd;
+  d_ticcmd,
+  DelphiDoom.Logging.Intf;
 
 //==============================================================================
 //
@@ -157,6 +158,14 @@ procedure I_Destroy(const code: integer);
 //
 //==============================================================================
 procedure I_FlashCachedOutput;
+
+//==============================================================================
+//
+// I_ConfigureLog
+// Gives the unit the log it writes warnings and errors to. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureLog(const ALog: ILog);
 
 //==============================================================================
 //
@@ -701,6 +710,20 @@ begin
     stdoutbuffer.SaveToFile({$IFDEF OPENGL}'GL' + {$ENDIF}_GAME + '_stdout.cachedbuffer.txt');
 end;
 
+var
+  // given by the composition root (I_ConfigureLog)
+  engine_log: ILog = nil;
+
+//==============================================================================
+//
+// I_ConfigureLog
+//
+//==============================================================================
+procedure I_ConfigureLog(const ALog: ILog);
+begin
+  engine_log := ALog;
+end;
+
 //==============================================================================
 //
 // I_Error
@@ -708,7 +731,7 @@ end;
 //==============================================================================
 procedure I_Error(const error: string; const Args: array of const);
 var
-  soutproc: TOutProc;
+  msg: string;
 begin
 // JVAL: Avoid recursive calls
   if in_i_error then
@@ -718,22 +741,21 @@ begin
 
   in_i_error := true;
 
-  fprintf(stderr, 'I_Error: ' + error + #13#10, Args);
+  sprintf(msg, error, Args);
 
   // ShutDown. Here might be other errors.
   if demorecording then
     G_CheckDemoStatus;
 
-  soutproc := outproc;
   I_IOSetWindowHandle({$IFDEF FPC}0{$ELSE}SUC_GetHandle{$ENDIF});
-  outproc := I_IOErrorMessageBox;
-  printf(error, Args);
-  outproc := soutproc;
-  printf('I_Error: ' + error + #13#10, Args);
+  // the error file, the message box and the output
+  if engine_log <> nil then
+    engine_log.Error(msg)
+  else
+    printf('I_Error: ' + msg + #13#10);
 
   I_Destroy(1);
 end;
-
 //==============================================================================
 //
 // I_Error
@@ -786,12 +808,11 @@ end;
 //
 //==============================================================================
 procedure I_Warning(const warning: string);
-var
-  wrstr: string;
 begin
-  wrstr := 'I_Warning: ' + warning;
-  fprintf(stderr, wrstr);
-  printf(wrstr);
+  if engine_log <> nil then
+    engine_log.Warning(warning)
+  else
+    printf('I_Warning: ' + warning);
 end;
 
 //==============================================================================

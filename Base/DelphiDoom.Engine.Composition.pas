@@ -20,6 +20,9 @@ procedure ComposeEngine;
 implementation
 
 uses
+  DelphiDoom.Logging.Factory,
+  DelphiDoom.Logging.Intf,
+  DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -33,7 +36,8 @@ uses
   doomdef,
   d_main,
   m_argv,
-  m_misc;
+  m_misc,
+  i_system;
 
 procedure ComposeEngine;
 var
@@ -45,6 +49,11 @@ begin
   D_Configure(LEngine);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
   M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
+  I_ConfigureLog(TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
+    function: Boolean
+    begin
+      Result := devparm;
+    end));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
