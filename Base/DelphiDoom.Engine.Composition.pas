@@ -42,6 +42,14 @@ uses
   p_umapinfo,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
+  DelphiDoom.ActorDef.Types,
+  DelphiDoom.ActorDef.Intf,
+  DelphiDoom.ActorDef.Profiles,
+  DelphiDoom.ActorDef.Factory,
+  DelphiDoom.Engine.ActorDef.Catalog,
+  DelphiDoom.Engine.ActorDef.Hooks,
+  DelphiDoom.Engine.ActorDef.SoundInfoListener,
+  sc_actordef,
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
@@ -183,6 +191,46 @@ begin
 end;
 {$ENDIF}
 
+procedure ComposeActorDef(const ALog: ILog);
+var
+  LGame: TActorDefGame;
+  LProfile: TActorDefProfile;
+  LCatalog: TEngineActorDefCatalog;
+  LCatalogRef: IInterface;
+  LHooks: TEngineActorDefHooks;
+  LHooksRef: IInterface;
+  LAliases: IActorDefSoundAliasTable;
+  LListener: IActorDefSoundInfoListener;
+begin
+  if not TActorDefProfiles.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of ACTORDEF', [_GAME]);
+  LProfile := TActorDefProfiles.ForGame(LGame);
+  LCatalog := TEngineActorDefCatalog.Create;
+  LCatalogRef := LCatalog;
+  // a thinker is an actor written as text: it goes back to the parser through the facade
+  LHooks := TEngineActorDefHooks.Create(ALog,
+    procedure(AText: string)
+    begin
+      SC_ParseActordefLump(AText);
+    end);
+  LHooksRef := LHooks;
+  LAliases := TActorDefFactory.CreateSoundAliases(ALog);
+{$IFDEF HEXEN}
+  LListener := TEngineSoundInfoListener.Create;
+{$ELSE}
+  LListener := nil;
+{$ENDIF}
+  SC_ConfigureActorDef(
+    TActorDefFactory.CreateParser(LProfile, ALog, LCatalog, LCatalog, LCatalog,
+      TActorDefFactory.CreateDehSink(LProfile, LCatalog, LCatalog, LAliases, LHooks, ALog),
+      LHooks, LHooks, LHooks),
+    procedure(AText: string)
+    begin
+      TActorDefFactory.ParseSoundInfo(LProfile, AText, LAliases, LListener);
+    end,
+    LAliases);
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -208,6 +256,7 @@ begin
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic;
+  ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
