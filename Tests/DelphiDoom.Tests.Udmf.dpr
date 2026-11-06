@@ -23,6 +23,7 @@ uses
   DelphiDoom.Udmf.Types in '..\Libs\Udmf\DelphiDoom.Udmf.Types.pas',
   DelphiDoom.Udmf.BinaryWriter in '..\Libs\Udmf\DelphiDoom.Udmf.BinaryWriter.pas',
   DelphiDoom.Udmf.Intf in '..\Libs\Udmf\DelphiDoom.Udmf.Intf.pas',
+  DelphiDoom.Scanner.Strings in '..\Libs\Scanner\DelphiDoom.Scanner.Strings.pas',
   DelphiDoom.Scanner.Scanner in '..\Libs\Scanner\DelphiDoom.Scanner.Scanner.pas',
   DelphiDoom.Udmf.Text in '..\Libs\Udmf\DelphiDoom.Udmf.Text.pas',
   DelphiDoom.Udmf.Preprocessor in '..\Libs\Udmf\DelphiDoom.Udmf.Preprocessor.pas',

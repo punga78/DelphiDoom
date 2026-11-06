@@ -1,0 +1,3 @@
+rec1 start
+#include rec2.txt
+rec1 end

@@ -1,0 +1,14 @@
+start
+#include a.txt
+{$INCLUDE b.txt}
+{$INCLUDE} c.txt
+#include "a.txt" // twice, with quotes
+#include_all all
+#include_wad MYLUMP
+#include missing.txt
+#include
+#include <>
+included word
+#include rec1.txt
+#include self.txt
+end

@@ -1,0 +1,21 @@
+x
+#cvarforce BOOLVAR true
+#cvarforce BOOLVAR off
+#cvarforce BOOLVAR maybe
+#cvarforce INTVAR 0x10
+#cvarforce INTVAR -0x10
+#cvarforce INTVAR #12
+#cvarforce STRVAR some words here
+#cvarforce OTHER 1
+#cvarforce NOVALUE
+#cvarforce
+#cvarforce  
+#createpalette gray 1 2
+#createpalette
+#createpaletteX foo
+  #CreatePalette  spaced  
+vanilla_demo_off
+#vanilla_demo_off
+{$vanilla_demo_off}
+#cvarforce BOOLVAR true // comment
+y

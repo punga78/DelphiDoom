@@ -1,0 +1,8 @@
+R0|before\x0D\x0Ain one\x0D\x0Ano two\x0D\x0Agame defined\x0D\x0Anested yes\x0D\x0Aelse after ifndef\x0D\x0Aafter\x0D\x0A
+W0|
+C0|
+V0|0
+R1|before\x0D\x0Ain one\x0D\x0Ano two\x0D\x0Agame defined\x0D\x0Anested yes\x0D\x0Aelse after ifndef\x0D\x0Aafter\x0D\x0A
+W1|
+C1|
+V1|0

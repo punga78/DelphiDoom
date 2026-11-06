@@ -32,63 +32,14 @@ type
     class function IsStringInQuotes(const AText: string): Boolean; static;
     /// <summary>The words of the text, as the scanner reads them</summary>
     class function TokensToList(const AText: string; const ALog: ILog): TArray<string>; static;
-    /// <summary>Removes the characters up to #32 at both ends</summary>
-    class function Trim(const AText: string): string; static;
-    /// <summary>The lines of a text, like TStringList.Text: CR LF, LF or CR end a line; a last line break does not add an empty one</summary>
-    class function SplitLines(const AText: string): TArray<string>; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Scanner.Scanner;
+  DelphiDoom.Scanner.Scanner, DelphiDoom.Scanner.Strings;
 
 { TScannerText }
-
-class function TScannerText.Trim(const AText: string): string;
-var
-  LFirst: Integer;
-  LLast: Integer;
-begin
-  LFirst := 1;
-  LLast := Length(AText);
-  while (LFirst <= LLast) and (AText[LFirst] <= ' ') do
-    Inc(LFirst);
-  if LFirst > LLast then
-    Exit('');
-  while AText[LLast] <= ' ' do
-    Dec(LLast);
-  Result := Copy(AText, LFirst, LLast - LFirst + 1);
-end;
-
-class function TScannerText.SplitLines(const AText: string): TArray<string>;
-var
-  LIndex: Integer;
-  LStart: Integer;
-  LCount: Integer;
-begin
-  Result := nil;
-  LStart := 1;
-  LIndex := 1;
-  LCount := Length(AText);
-  while LIndex <= LCount do
-  begin
-    if (AText[LIndex] = #13) or (AText[LIndex] = #10) then
-    begin
-      SetLength(Result, Length(Result) + 1);
-      Result[High(Result)] := Copy(AText, LStart, LIndex - LStart);
-      if (AText[LIndex] = #13) and (LIndex < LCount) and (AText[LIndex + 1] = #10) then
-        Inc(LIndex);
-      LStart := LIndex + 1;
-    end;
-    Inc(LIndex);
-  end;
-  if LStart <= LCount then
-  begin
-    SetLength(Result, Length(Result) + 1);
-    Result[High(Result)] := Copy(AText, LStart, LCount - LStart + 1);
-  end;
-end;
 
 class function TScannerText.RemoveLineQuotes(const AText: string): string;
 var
@@ -97,9 +48,9 @@ var
   LPosition: Integer;
 begin
   Result := '';
-  for LLine in SplitLines(AText) do
+  for LLine in TScannerStrings.SplitLines(AText) do
   begin
-    LText := Trim(LLine);
+    LText := TScannerStrings.Trim(LLine);
     LPosition := Pos('//', LText);
     if LPosition > 0 then
       LText := Copy(LText, 1, LPosition - 1);
@@ -166,7 +117,7 @@ var
   LAllInParenthesis: Boolean;
 begin
   Result := nil;
-  LInput := Trim(AText);
+  LInput := TScannerStrings.Trim(AText);
   if LInput = '' then
     Exit;
 
@@ -190,7 +141,7 @@ begin
     begin
       LInput[1] := ' ';
       LInput[Length(LInput)] := ' ';
-      LInput := Trim(LInput);
+      LInput := TScannerStrings.Trim(LInput);
       if LInput = '' then
         Exit;
     end;
@@ -204,7 +155,7 @@ begin
     if LInput[LIndex] = ',' then
       if not LInQuotes and (LLevel = 0) then
       begin
-        LCurrent := Trim(LCurrent);
+        LCurrent := TScannerStrings.Trim(LCurrent);
         if LCurrent <> '' then
         begin
           SetLength(Result, Length(Result) + 1);
@@ -225,7 +176,7 @@ begin
     else if LInput[LIndex] = '"' then
       LInQuotes := not LInQuotes;
   end;
-  LCurrent := Trim(LCurrent);
+  LCurrent := TScannerStrings.Trim(LCurrent);
   if LCurrent <> '' then
   begin
     SetLength(Result, Length(Result) + 1);

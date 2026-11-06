@@ -1,0 +1,8 @@
+R0|caf first\x0D\x0Atext of a\x0D\x0A\x0D\x0Alast \x0D\x0A
+W0|
+C0|
+V0|0
+R1|caf first\x0D\x0A//---->#include a.txt \x0D\x0Atext of a\x0D\x0A\x0D\x0A//---->#include a.txt  + <--- end of include\x0D\x0Alast \x0D\x0A
+W1|
+C1|
+V1|0

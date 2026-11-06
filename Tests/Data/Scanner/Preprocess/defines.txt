@@ -1,0 +1,37 @@
+before
+#define ONE
+#ifdef ONE
+in one
+#else
+not one
+#endif
+#ifndef TWO
+no two
+#endif
+#ifdef GAMEDEF
+game defined
+#ifdef ONE
+nested yes
+#else
+nested no
+#endif
+#else
+game not defined
+#endif
+#undef ONE
+#ifdef ONE
+still one
+#endif
+#IFDEF one
+lower define name
+#ENDIF
+#ifdef TWO
+#define TWO
+#endif
+#ifndef GAMEDEF
+#else
+else after ifndef
+#endif
+after
+#exitif GAMEDEF
+never written

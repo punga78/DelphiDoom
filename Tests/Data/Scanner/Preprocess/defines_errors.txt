@@ -1,0 +1,15 @@
+a
+#define
+#undef
+#undef NOTDEFINED
+#endif
+#else
+#ifdef X
+#else
+#else
+#endif
+#ifdef Y
+#else extra
+#endif
+#ifdef Z
+unclosed

@@ -1,0 +1,4 @@
+text of c
+#ifdef FROMA
+froma is defined after the include
+#endif

@@ -99,6 +99,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.Scanner.Strings;
+
 { TScriptScanner }
 
 constructor TScriptScanner.Create(const AText: string; const ALog: ILog);
@@ -149,7 +152,7 @@ var
   LIndex: Integer;
 begin
   Result := FWord;
-  LIndex := AliasIndexOf(UpperCase(Result));
+  LIndex := AliasIndexOf(TScannerStrings.UpperAscii(Result));
   if LIndex >= 0 then
     Result := FAliasValues[LIndex];
 end;
@@ -158,7 +161,7 @@ function TScriptScanner.GetUpperWord: string;
 var
   LIndex: Integer;
 begin
-  Result := UpperCase(FWord);
+  Result := TScannerStrings.UpperAscii(FWord);
   LIndex := AliasIndexOf(Result);
   if LIndex >= 0 then
     Result := FAliasValues[LIndex];
@@ -177,7 +180,7 @@ end;
 procedure TScriptScanner.AddIgnoreToken(const AWord: string);
 begin
   SetLength(FIgnored, Length(FIgnored) + 1);
-  FIgnored[High(FIgnored)] := UpperCase(AWord);
+  FIgnored[High(FIgnored)] := TScannerStrings.UpperAscii(AWord);
 end;
 
 procedure TScriptScanner.AddAlias(const ASource, ADestination: string);
@@ -185,8 +188,8 @@ begin
   // the old list stored "SOURCE=DESTINATION" in upper case
   SetLength(FAliasNames, Length(FAliasNames) + 1);
   SetLength(FAliasValues, Length(FAliasValues) + 1);
-  FAliasNames[High(FAliasNames)] := UpperCase(ASource);
-  FAliasValues[High(FAliasValues)] := UpperCase(ADestination);
+  FAliasNames[High(FAliasNames)] := TScannerStrings.UpperAscii(ASource);
+  FAliasValues[High(FAliasValues)] := TScannerStrings.UpperAscii(ADestination);
 end;
 
 procedure TScriptScanner.ClearAliases;
@@ -384,7 +387,7 @@ begin
   if Length(FIgnored) = 0 then
     Exit(True);
   for LCount := 0 to High(FIgnored) do
-    if FIgnored[LCount] = UpperCase(FWord) then
+    if FIgnored[LCount] = TScannerStrings.UpperAscii(FWord) then
       Exit(GetString);
   Result := True;
 end;
@@ -480,7 +483,7 @@ var
 begin
   if not GetString then
     Exit(False);
-  LUpper := UpperCase(FWord);
+  LUpper := TScannerStrings.UpperAscii(FWord);
   Result := (LUpper = 'TRUE') or (LUpper = 'FALSE');
   FBoolean := LUpper = 'TRUE';
 end;
@@ -520,7 +523,7 @@ end;
 
 function TScriptScanner.MatchPosString(const AWord: string): Boolean;
 begin
-  Result := UpperCase(FWord).Contains(UpperCase(AWord));
+  Result := TScannerStrings.UpperAscii(FWord).Contains(TScannerStrings.UpperAscii(AWord));
 end;
 
 function TScriptScanner.MustMatchString(const AWords: TArray<string>): Integer;
@@ -536,12 +539,12 @@ end;
 
 function TScriptScanner.Compare(const AWord: string): Boolean;
 begin
-  Result := UpperCase(AWord) = GetUpperWord;
+  Result := TScannerStrings.UpperAscii(AWord) = GetUpperWord;
 end;
 
 function TScriptScanner.Compare(const AWord: string; const AUpperCurrent: string): Boolean;
 begin
-  Result := UpperCase(AWord) = AUpperCurrent;
+  Result := TScannerStrings.UpperAscii(AWord) = AUpperCurrent;
 end;
 
 function TScriptScanner.GetStringEOL: string;

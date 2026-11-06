@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework,
-  DelphiDoom.Scanner.Text, DelphiDoom.Logging.Intf, DelphiDoom.Logging.Recorder;
+  DelphiDoom.Scanner.Text, DelphiDoom.Scanner.Strings, DelphiDoom.Logging.Intf, DelphiDoom.Logging.Recorder;
 
 type
   /// <summary>
@@ -103,7 +103,7 @@ begin
       for LItem in LParams do
         LText := LText + LItem + #13#10;
       LOut.Add('PL|' + IntToStr(Length(LParams)) + '|' +
-        Quote(TScannerText.Trim(LText).Replace(#13#10, '~')));
+        Quote(TScannerStrings.Trim(LText).Replace(#13#10, '~')));
       LTokens := TScannerText.TokensToList(LLine, LLog);
       LOut.Add('TL|' + IntToStr(Length(LTokens)));
       for LItem in LTokens do
@@ -130,19 +130,19 @@ procedure TTestScannerText.TestSplitLinesLikeAStringList;
 var
   LLines: TArray<string>;
 begin
-  LLines := TScannerText.SplitLines('a'#13#10'b'#10'c'#13'd'#13#10);
+  LLines := TScannerStrings.SplitLines('a'#13#10'b'#10'c'#13'd'#13#10);
   Assert.AreEqual(4, Integer(Length(LLines)));
   Assert.AreEqual('c', LLines[2]);
-  LLines := TScannerText.SplitLines('x'#10#10'y');
+  LLines := TScannerStrings.SplitLines('x'#10#10'y');
   Assert.AreEqual(3, Integer(Length(LLines)));
   Assert.AreEqual('', LLines[1]);
-  Assert.AreEqual(0, Integer(Length(TScannerText.SplitLines(''))));
+  Assert.AreEqual(0, Integer(Length(TScannerStrings.SplitLines(''))));
 end;
 
 procedure TTestScannerText.TestTrim;
 begin
-  Assert.AreEqual('a b', TScannerText.Trim(#9'  a b '#13#10));
-  Assert.AreEqual('', TScannerText.Trim('   '));
+  Assert.AreEqual('a b', TScannerStrings.Trim(#9'  a b '#13#10));
+  Assert.AreEqual('', TScannerStrings.Trim('   '));
 end;
 
 initialization

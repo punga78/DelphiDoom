@@ -1,0 +1,6 @@
+// #include a.txt
+text // #include b.txt
+   // #define X
+#ifdef X
+hidden
+#endif

@@ -1,0 +1,2 @@
+text of a
+#define FROMA

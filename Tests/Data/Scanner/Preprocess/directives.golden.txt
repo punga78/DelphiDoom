@@ -1,0 +1,8 @@
+R0|x\x0D\x0A#cvarforce\x0D\x0A#cvarforce  \x0D\x0Ay\x0D\x0A
+W0|I_Warning: SC_Preprocess(): Can not set cvar "OTHER" to "1"\x0D\x0AI_Warning: SC_Preprocess(): Can not set cvar "NOVALUE", no value specified\x0D\x0AI_Warning: SC_Preprocess(): Unknown directive #CREATEPALETTEX\x0D\x0A
+C0|BOOL BOOLVAR True\x0D\x0ABOOL BOOLVAR False\x0D\x0ABOOL BOOLVAR True\x0D\x0AINT INTVAR 16\x0D\x0AINT INTVAR -16\x0D\x0AINT INTVAR 12\x0D\x0ASTR STRVAR SOME WORDS HERE\x0D\x0APAL GRAY 1 2\x0D\x0APAL \x0D\x0APAL SPACED\x0D\x0ABOOL BOOLVAR True\x0D\x0A
+V0|1
+R1|x\x0D\x0A#cvarforce\x0D\x0A#cvarforce  \x0D\x0Ay\x0D\x0A
+W1|I_Warning: SC_Preprocess(): Can not set cvar "OTHER" to "1"\x0D\x0AI_Warning: SC_Preprocess(): Can not set cvar "NOVALUE", no value specified\x0D\x0AI_Warning: SC_Preprocess(): Unknown directive #CREATEPALETTEX\x0D\x0A
+C1|BOOL BOOLVAR True\x0D\x0ABOOL BOOLVAR False\x0D\x0ABOOL BOOLVAR True\x0D\x0AINT INTVAR 16\x0D\x0AINT INTVAR -16\x0D\x0AINT INTVAR 12\x0D\x0ASTR STRVAR SOME WORDS HERE\x0D\x0APAL GRAY 1 2\x0D\x0APAL \x0D\x0APAL SPACED\x0D\x0ABOOL BOOLVAR True\x0D\x0A
+V1|1

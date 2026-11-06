@@ -1,0 +1,8 @@
+R0|line one\x0D\x0Aline two // comment\x0D\x0A\x0D\x0A  indented\x0D\x0A
+W0|
+C0|
+V0|0
+R1|line one\x0D\x0Aline two // comment\x0D\x0A\x0D\x0A  indented\x0D\x0A
+W1|
+C1|
+V1|0
