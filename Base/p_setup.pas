@@ -1832,11 +1832,11 @@ begin
   if preparingdemoplayback and (G_PlayingEngineVersion < VERSION110) and (numlines < 32768) and (numsides < 32768) and not hasudmfdata then
   begin
     // JVAL: 20210131 - Load vanilla nodes
-    if char8tostring(lumpinfo[lumpnum + Ord(ML_SSECTORS)].name) = 'SSECTORS' then
+    if char8tostring(W_GetNameForNum(lumpnum + Ord(ML_SSECTORS))) = 'SSECTORS' then
       P_LoadVanillaSubsectors(lumpnum + Ord(ML_SSECTORS));
-    if char8tostring(lumpinfo[lumpnum + Ord(ML_NODES)].name) = 'NODES' then
+    if char8tostring(W_GetNameForNum(lumpnum + Ord(ML_NODES))) = 'NODES' then
       P_LoadVanillaNodes(lumpnum + Ord(ML_NODES));
-    if char8tostring(lumpinfo[lumpnum + Ord(ML_SEGS)].name) = 'SEGS' then
+    if char8tostring(W_GetNameForNum(lumpnum + Ord(ML_SEGS))) = 'SEGS' then
       P_LoadVanillaSegs(lumpnum + Ord(ML_SEGS));
     hasvanillanodes := (vanillasubsectors <> nil) and (vanillanodes <> nil) and (vanillasegs <> nil);
   end;

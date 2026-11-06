@@ -207,6 +207,22 @@ function W_GetNameForNum(const lump: integer): char8_t;
 
 //==============================================================================
 //
+// W_LumpIsNamed
+// True when the lump has exactly that name
+//
+//==============================================================================
+function W_LumpIsNamed(const lump: integer; const name: name8_t): boolean;
+
+//==============================================================================
+//
+// W_LumpFlags
+// TYPE_* bits of the marker pairs (F_START/F_END, S_START/S_END, ...) around the lump
+//
+//==============================================================================
+function W_LumpFlags(const lump: integer): LongWord;
+
+//==============================================================================
+//
 // W_LumpLength
 //
 //==============================================================================
@@ -261,9 +277,6 @@ function W_TextLumpName(const name: string): string;
 //==============================================================================
 procedure ExtractFileBase8(const path: string; var dest: char8_t);
 
-var
-  lumpinfo: Plumpinfo_tArray = nil;
-
 const
   IWAD = integer(Ord('I') or
                 (Ord('W') shl 8) or
@@ -304,6 +317,7 @@ uses
 // The bytes of the lumps are still read through the streams of the engine.
 //
 var
+  lumpinfo: Plumpinfo_tArray = nil; // a view of wad_directory, written only by W_SyncLumpInfo
   lumpcache: PPointerArray;
   numlumps: integer = 0;
   lumpinfoalloc: integer = 0; // lumps that lumpinfo has room for
@@ -1063,8 +1077,31 @@ end;
 
 //==============================================================================
 //
+// W_LumpIsNamed
+// True when the lump has exactly that name
+//
+//==============================================================================
+function W_LumpIsNamed(const lump: integer; const name: name8_t): boolean;
+begin
+  result := (lumpinfo[lump].v1 = name.x[0]) and (lumpinfo[lump].v2 = name.x[1]);
+end;
+
+//==============================================================================
+//
+// W_LumpFlags
+//
+//==============================================================================
+function W_LumpFlags(const lump: integer): LongWord;
+begin
+  if (lump < 0) or (lump >= numlumps) then
+    I_Error('W_LumpFlags(): %d is not a lump (numlumps = %d)', [lump, numlumps]);
+
+  result := lumpinfo[lump].flags;
+end;
+
+//==============================================================================
+//
 // W_LumpLength
-// Returns the buffer size needed to load the given lump.
 //
 //==============================================================================
 function W_LumpLength(const lump: integer): integer;

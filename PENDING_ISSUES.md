@@ -28,11 +28,11 @@ Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_
   - Passo 1: `Libs\Wad` (sorgenti WAD, PAK, PK3, cartella, file singolo; directory con precedenza dell'ultimo lump; ricerca per nome con flag dei marcatori e per intervallo; cache; `IWadBuilder`; record dei lump di livello). 83 test, anche sui WAD reali.
   - Passo 2: `Base\w_wad.pas` usa la libreria per la directory (`lumpinfo[]` è una vista di sola lettura rifatta da `W_SyncLumpInfo`), per la ricerca per nome e per i flag dei marcatori, e ora anche per leggere i byte: `W_ReadLump` chiama `ILumpReader.ReadLumpInto` (nuovo `IWadSource.ReadEntryInto`, lettura nel buffer senza copie). I file `~` sono `TReloadableWadSource` (riaperti a ogni lettura, come prima). Un lump vuoto non richiede una posizione valida (come nel vecchio codice). Verificato con un controllo temporaneo (tolto): per ogni lump di Doom, Heretic, Hexen e Strife (1507, 1576, 2984, 2135) la lettura della libreria coincide byte per byte con la lettura diretta dallo stream; lettura di un lump di un file `~` corretta; i giochi arrivano al livello (`-warp`) senza crash.
   - Difetto del vecchio codice non riprodotto: caricare due volte a runtime lo stesso WAD con lo stesso numero di lump liberava più volte lo stesso stream. Ora la sorgente viene sostituita e lo stream liberato una volta (percorso non raggiunto nelle prove).
+  - Passo 3: i 32 accessi a `lumpinfo[]` fuori da `w_wad.pas` (`nd_main`, `p_setup`, `p_udmf`, `r_data`, `r_things`, `s_externalmusic`) usano `W_GetNameForNum`, `W_LumpLength`, `W_LumpFlags` e `W_LumpIsNamed`; `lumpinfo[]` ora è privato di `w_wad.pas`. Decisione presa: la cache dei lump resta lo zone memory del motore.
 - **Manca**:
-  1. La cache: `W_CacheLumpNum` usa ancora `lumpcache[]` e lo zone memory (`Z_Malloc`, `PU_STATIC`, `PU_CACHE`) del motore; `ILumpCache` non è collegata. Spostarla richiede di cambiare lo zone memory, che è condiviso con tutto il motore.
-  2. Passare i chiamanti da `lumpinfo[]` (32 accessi in `nd_main`, `p_setup`, `p_udmf`, `r_data`, `r_things`, `s_externalmusic`) all'interfaccia, poi cancellare la facciata.
-  3. PAK e cartelle: `w_pak.pas`, `w_wadreader.pas`, `w_wadwriter.pas` non usano ancora `Libs\Wad` (scrittura dal motore e dagli strumenti `ddc*`, DD_IDE).
-  4. Contratto attraverso una DLL (solo buffer e interi): oggi le interfacce usano `TBytes` e `string`.
-  5. Build a 64 bit (#40).
-- **Domanda per una persona**: la cache va spostata nella libreria (`ILumpCache`, con una politica dei tag mappata sullo zone memory) oppure lo zone memory resta del motore e la libreria si ferma alla lettura? Io proporrei di lasciarlo al motore.
-- **Prossima azione**: passare i chiamanti di `lumpinfo[]` all'interfaccia uno alla volta.
+  1. `w_pak.pas`, `w_wadreader.pas`, `w_wadwriter.pas` non usano ancora `Libs\Wad` (PAK/PK3 e scrittura di WAD dal motore e dagli strumenti `ddc*`, DD_IDE); parità con `w_wadreader`.
+  2. Cancellare la facciata `W_*` quando i chiamanti usano l'interfaccia (`wad_directory`/`wad_finder`/`wad_reader` sono ancora globali di `w_wad.pas`: servono un composition root e chiamanti che ricevano le interfacce).
+  3. Contratto attraverso una DLL (solo buffer e interi): oggi le interfacce usano `TBytes` e `string`.
+  4. Build a 64 bit (#40).
+- **Domanda per una persona**: nessuna per ora.
+- **Prossima azione**: portare `w_wadwriter.pas`/`w_wadreader.pas` e il PAK su `Libs\Wad`.

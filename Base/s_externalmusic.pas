@@ -137,7 +137,7 @@ var
   minfo: TExternalMusicInfo;
   strm: TPakStream;
 begin
-  mname := char8tostring(lumpinfo[music.lumpnum].name);
+  mname := char8tostring(W_GetNameForNum(music.lumpnum));
   idx := externalmusic.IndexOf(mname);
   if idx >= 0 then
   begin

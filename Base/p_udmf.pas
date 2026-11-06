@@ -1699,40 +1699,40 @@ begin
     exit;
   end;
 
-  if strupper(stringtochar8(lumpinfo[lumpnum + 1].name)) <> 'TEXTMAP' then
+  if strupper(char8tostring(W_GetNameForNum(lumpnum + 1))) <> 'TEXTMAP' then
   begin
     if lumpnum + ML_THINGS2 < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_THINGS2].name)) = MLN_THINGS2 then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_THINGS2))) = MLN_THINGS2 then
       begin
         udmfthings := W_CacheLumpNum(lumpnum + ML_THINGS2, PU_LEVEL);
         numudmfthings := W_LumpLength(lumpnum + ML_THINGS2) div SizeOf(extrathing_t);
       end;
     if lumpnum + ML_SECTORS2 < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_SECTORS2].name)) = MLN_SECTORS2 then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_SECTORS2))) = MLN_SECTORS2 then
       begin
         udmfsectors := W_CacheLumpNum(lumpnum + ML_SECTORS2, PU_LEVEL);
         numudmfsectors := W_LumpLength(lumpnum + ML_SECTORS2) div SizeOf(extrasector_t);
       end;
     if lumpnum + ML_VERTEX2 < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_VERTEX2].name)) = MLN_VERTEX2 then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_VERTEX2))) = MLN_VERTEX2 then
       begin
         udmfvertexes := W_CacheLumpNum(lumpnum + ML_VERTEX2, PU_LEVEL);
         numudmfvertexes := W_LumpLength(lumpnum + ML_VERTEX2) div SizeOf(extravertex_t);
       end;
     if lumpnum + ML_LINEDEF2 < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_LINEDEF2].name)) = MLN_LINEDEF2 then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_LINEDEF2))) = MLN_LINEDEF2 then
       begin
         udmflinedefs := W_CacheLumpNum(lumpnum + ML_LINEDEF2, PU_LEVEL);
         numudmflinedefs := W_LumpLength(lumpnum + ML_LINEDEF2) div SizeOf(extraline_t);
       end;
     if lumpnum + ML_SIDEDEF2 < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_SIDEDEF2].name)) = MLN_SIDEDEF2 then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_SIDEDEF2))) = MLN_SIDEDEF2 then
       begin
         udmfsidedefs := W_CacheLumpNum(lumpnum + ML_SIDEDEF2, PU_LEVEL);
         numudmfsidedefs := W_LumpLength(lumpnum + ML_SIDEDEF2) div SizeOf(extraside_t);
       end;
     if lumpnum + ML_NSPACE < W_NumLumps then
-      if strupper(stringtochar8(lumpinfo[lumpnum + ML_NSPACE].name)) = MLN_NSPACE then
+      if strupper(char8tostring(W_GetNameForNum(lumpnum + ML_NSPACE))) = MLN_NSPACE then
       begin
         udmfnamespace := W_TextLumpNum(lumpnum + ML_NSPACE);
         udmflinetranslate := (udmfnamespace <> strupper(_GAME)) and (udmfnamespace <> 'ZDOOMTRANSLATED');
@@ -1747,9 +1747,9 @@ begin
   begin
     if i >= W_NumLumps then
       break;
-    if strupper(stringtochar8(lumpinfo[i].name)) = 'ENDMAP' then
+    if strupper(char8tostring(W_GetNameForNum(i))) = 'ENDMAP' then
       break;
-    if strupper(stringtochar8(lumpinfo[i].name)) = 'BEHAVIOR' then
+    if strupper(char8tostring(W_GetNameForNum(i))) = 'BEHAVIOR' then
     begin
       behav_lump := i;
       break;
@@ -1761,7 +1761,7 @@ begin
   begin
     if i >= W_NumLumps then
       break;
-    if strupper(stringtochar8(lumpinfo[i].name)) = 'ENDMAP' then
+    if strupper(char8tostring(W_GetNameForNum(i))) = 'ENDMAP' then
       break;
     if acc_isscriptlump(i) then
     begin

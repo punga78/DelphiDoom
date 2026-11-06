@@ -693,8 +693,7 @@ begin
     end;
   // Check all the lumps after the map
     for i := maplump + Ord(ML_BLOCKMAP) + 1 to W_NumLumps - 1 do
-      if (lumpinfo[i].v1 = glmapname8.x[0]) and
-         (lumpinfo[i].v2 = glmapname8.x[1]) then
+      if W_LumpIsNamed(i, glmapname8) then
         if i <> glmaplump then // We've already checked this!
         begin
           if GetGLMapAdler32(i, glmapname) = adler32 then
@@ -708,8 +707,7 @@ begin
   // Check for GL_LEVEL lumps
   defglmapname8.s := stringtochar8('GL_LEVEL');
   for i := 0 to W_NumLumps - 1 do
-    if (lumpinfo[i].v1 = glmapname8.x[0]) and
-       (lumpinfo[i].v2 = glmapname8.x[1]) then
+    if W_LumpIsNamed(i, glmapname8) then
       begin
         if GetGLMapAdler32(i, glmapname) = adler32 then
         begin
@@ -721,8 +719,7 @@ begin
   // No luck so far? Look for the lumps previous to map
   // Check all the lumps after the map
   for i := 0 to maplump - 1 do
-    if (lumpinfo[i].v1 = glmapname8.x[0]) and
-       (lumpinfo[i].v2 = glmapname8.x[1]) then
+    if W_LumpIsNamed(i, glmapname8) then
       begin
         if GetGLMapAdler32(i, glmapname) = adler32 then
         begin
@@ -917,7 +914,7 @@ begin
       if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: lump %d'#13#10, [i]);
 
       infotable[i].filepos := f.Position;
-      infotable[i].name := lumpinfo[lump].name;
+      infotable[i].name := W_GetNameForNum(lump);
 
       {$IFNDEF HEXEN}
       if hasbehavior and (i = Ord(ML_THINGS)) then

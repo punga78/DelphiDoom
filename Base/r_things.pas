@@ -425,6 +425,7 @@ var
   i: integer;
   l: integer;
   intname: integer;
+  lname8: name8_t;
   frame: integer;
   rotation: integer;
   start: integer;
@@ -464,22 +465,23 @@ begin
     begin
       if spritepresent[l - firstspritelump] then
 
-        if lumpinfo[l].v1 = intname then // JVAL
+        lname8.s := W_GetNameForNum(l);
+        if lname8.x[0] = intname then // JVAL
         begin
-          frame := Ord(lumpinfo[l].name[4]) - Ord('A');
-          rotation := rotationfromchar(lumpinfo[l].name[5]); // JVAL: Up to 32 sprite rotations
+          frame := Ord(lname8.s[4]) - Ord('A');
+          rotation := rotationfromchar(lname8.s[5]); // JVAL: Up to 32 sprite rotations
 
           if modifiedgame then
-            patched := W_GetNumForName(lumpinfo[l].name)
+            patched := W_GetNumForName(lname8.s)
           else
             patched := l;
 
           R_InstallSpriteLump(patched, frame, rotation, false);
 
-          if lumpinfo[l].name[6] <> #0 then
+          if lname8.s[6] <> #0 then
           begin
-            frame := Ord(lumpinfo[l].name[6]) - Ord('A');
-            rotation := rotationfromchar(lumpinfo[l].name[7]); // JVAL: Up to 32 sprite rotations
+            frame := Ord(lname8.s[6]) - Ord('A');
+            rotation := rotationfromchar(lname8.s[7]); // JVAL: Up to 32 sprite rotations
             R_InstallSpriteLump(l, frame, rotation, true);
           end;
         end;

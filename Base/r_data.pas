@@ -670,7 +670,7 @@ begin
   begin
     pat := patch.patch;
 {$IFDEF DOOM}
-    if (pat < 0) or (lumpinfo[pat].flags and (TYPE_PATCH or TYPE_SPRITE) = 0) then
+    if (pat < 0) or (W_LumpFlags(pat) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
     begin
       inc(patch);
       Continue;
@@ -2235,7 +2235,7 @@ begin
       R_ReadDS32Cache(i);
       Z_ChangeTag(flat, PU_CACHE);
 {$ENDIF}
-      flatmemory := flatmemory + lumpinfo[lump].size;
+      flatmemory := flatmemory + W_LumpLength(lump);
     end;
   end;
 
@@ -2290,7 +2290,7 @@ begin
     for j := 0 to texture.patchcount - 1 do
     begin
       lump := texture.patches[j].patch;
-      texturememory := texturememory + lumpinfo[lump].size;
+      texturememory := texturememory + W_LumpLength(lump);
       W_CacheLumpNum(lump, PU_CACHE);
     end;
 {$IFNDEF OPENGL}
@@ -2325,7 +2325,7 @@ begin
         for k := 0 to 7 do
         begin
           lump := firstspritelump + sf.lump[k];
-          spritememory := spritememory + lumpinfo[lump].size;
+          spritememory := spritememory + W_LumpLength(lump);
           W_CacheLumpNum(lump, PU_CACHE);
         end;
       end;
