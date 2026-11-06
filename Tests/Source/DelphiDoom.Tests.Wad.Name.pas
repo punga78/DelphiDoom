@@ -85,7 +85,7 @@ var
 begin
   Assert.WillRaise(procedure begin TWadLumpName.ToRecord('', LRecord); end, EWadException);
   Assert.WillRaise(procedure begin TWadLumpName.ToRecord('NINECHARS', LRecord); end, EWadException);
-  Assert.WillRaise(procedure begin TWadLumpName.ToRecord('A B', LRecord); end, EWadException);
+  Assert.WillRaise(procedure begin TWadLumpName.ToRecord('A'#0'B', LRecord); end, EWadException);
 end;
 
 procedure TTestWadName.TestIsValid;
@@ -95,6 +95,9 @@ begin
   Assert.IsFalse(TWadLumpName.IsValid(''));
   Assert.IsFalse(TWadLumpName.IsValid('123456789'));
   Assert.IsFalse(TWadLumpName.IsValid('A'#0'B'));
+  Assert.IsFalse(TWadLumpName.IsValid('A'#$100));
+  Assert.IsTrue(TWadLumpName.IsValid('MY TEX'), 'a space is allowed');
+  Assert.IsTrue(TWadLumpName.IsValid(#$E9'LAN'), '8 bit characters are allowed');
 end;
 
 procedure TTestWadName.TestFromFileName;

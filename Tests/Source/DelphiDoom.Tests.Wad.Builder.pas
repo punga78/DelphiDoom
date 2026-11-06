@@ -149,7 +149,7 @@ procedure TTestWadBuilder.TestBadNamesAreRefused;
 begin
   Assert.WillRaise(procedure begin FBuilder.AddLump('', nil); end, EWadException);
   Assert.WillRaise(procedure begin FBuilder.AddLump('TOOLONGNAME', nil); end, EWadException);
-  Assert.WillRaise(procedure begin FBuilder.AddLump('A B', nil); end, EWadException);
+  Assert.WillRaise(procedure begin FBuilder.AddLump('A'#0'B', nil); end, EWadException);
   Assert.AreEqual(0, FBuilder.Count);
 end;
 

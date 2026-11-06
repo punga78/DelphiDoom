@@ -26,42 +26,50 @@
 
 {$I Doom32.inc}
 
+
 unit w_wadreader;
 
 interface
 
 uses
   d_delphi,
-  w_wad;
+  DelphiDoom.Wad.Intf;
 
 type
+  /// <summary>
+  ///   Reads the lumps of one WAD file, apart from the lumps the game has loaded.
+  ///   It is the API the engine had, kept on top of the WAD library (Libs\Wad)
+  /// </summary>
   TWadReader = class
   private
-    h: wadinfo_t;
-    la: Pfilelump_tArray;
-    fs: TFile;
+    FSource: IWadSource;
+    FDirectory: IWadDirectory;
+    FFinder: IWadFinder;
     ffilename: string;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear; virtual;
+    /// <summary>Opens the file; a missing or damaged file leaves the reader empty and warns</summary>
     procedure OpenWadFile(const aname: string);
     function EntryAsString(const id: integer): string; overload;
     function EntryAsString(const aname: string): string; overload;
+    /// <summary>Gives a buffer made with malloc: the caller frees it with memfree</summary>
     function ReadEntry(const id: integer; var buf: pointer; var bufsize: integer): boolean; overload;
     function ReadEntry(const aname: string; var buf: pointer; var bufsize: integer): boolean; overload;
     function EntryName(const id: integer): string;
+    /// <summary>The last lump with that name (-1 when none)</summary>
     function EntryId(const aname: string): integer;
-    function EntryInfo(const id: integer): Pfilelump_t; overload;
-    function EntryInfo(const aname: string): Pfilelump_t; overload;
     function NumEntries: integer;
-    function FileSize: integer;
     property FileName: string read ffilename;
   end;
 
 implementation
 
 uses
+  System.SysUtils,
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Factory,
   i_system;
 
 //==============================================================================
@@ -71,13 +79,8 @@ uses
 //==============================================================================
 constructor TWadReader.Create;
 begin
-  h.identification := 0;
-  h.numlumps := 0;
-  h.infotableofs := 0;
-  la := nil;
-  fs := nil;
+  inherited Create;
   ffilename := '';
-  Inherited;
 end;
 
 //==============================================================================
@@ -88,7 +91,7 @@ end;
 destructor TWadReader.Destroy;
 begin
   Clear;
-  Inherited;
+  inherited Destroy;
 end;
 
 //==============================================================================
@@ -98,25 +101,10 @@ end;
 //==============================================================================
 procedure TWadReader.Clear;
 begin
-  if h.numlumps > 0 then
-  begin
-    MemFree(pointer(la), h.numlumps * SizeOf(filelump_t));
-    h.identification := 0;
-    h.numlumps := 0;
-    h.infotableofs := 0;
-    la := nil;
-    ffilename := '';
-  end
-  else
-  begin
-    h.identification := 0;
-    h.infotableofs := 0;
-  end;
-  if fs <> nil then
-  begin
-    fs.Free;
-    fs := nil;
-  end;
+  FFinder := nil;
+  FDirectory := nil;
+  FSource := nil;
+  ffilename := '';
 end;
 
 //==============================================================================
@@ -125,30 +113,38 @@ end;
 //
 //==============================================================================
 procedure TWadReader.OpenWadFile(const aname: string);
+var
+  source: IWadSource;
 begin
   if aname = '' then
     Exit;
-  {$IFDEF DEBUG}
-  print('Opening WAD file ' + aname + #13#10);
-  {$ENDIF}
   Clear;
-  if fexists(aname) then
+  if not fexists(aname) then
   begin
-    fs := TFile.Create(aname, fOpenReadOnly);
-
-    fs.Read(h, SizeOf(wadinfo_t));
-    if (h.numlumps > 0) and (h.infotableofs < fs.Size) and ((h.identification = IWAD) or (h.identification = PWAD)) then
-    begin
-      fs.Seek(h.infotableofs, sFromBeginning);
-      la := malloc(h.numlumps * SizeOf(filelump_t));
-      fs.Read(la^, h.numlumps * SizeOf(filelump_t));
-      ffilename := aname;
-    end
-    else
-      I_Warning('TWadReader.OpenWadFile(): Invalid WAD file ' + aname + #13#10);
-  end
-  else
     I_Warning('TWadReader.OpenWadFile(): Can not find WAD file ' + aname + #13#10);
+    Exit;
+  end;
+
+  try
+    source := TWadFactory.OpenPath(aname);
+  except
+    on E: EWadException do
+    begin
+      I_Warning('TWadReader.OpenWadFile(): Invalid WAD file ' + aname + #13#10);
+      Exit;
+    end;
+  end;
+  if source.Kind <> TWadSourceKind.Wad then
+  begin
+    I_Warning('TWadReader.OpenWadFile(): Invalid WAD file ' + aname + #13#10);
+    Exit;
+  end;
+
+  FSource := source;
+  FDirectory := TWadFactory.CreateDirectory;
+  FDirectory.AddSource(source);
+  FFinder := TWadFactory.CreateFinder(FDirectory);
+  ffilename := aname;
 end;
 
 //==============================================================================
@@ -160,16 +156,14 @@ function TWadReader.EntryAsString(const id: integer): string;
 var
   a: AnsiString;
 begin
-  if (fs <> nil) and (id >= 0) and (id < h.numlumps) then
+  Result := '';
+  if (FSource <> nil) and (id >= 0) and (id < FSource.Count) then
   begin
-    SetLength(a, la[id].size);
-    fs.Seek(la[id].filepos, sFromBeginning);
-    if la[id].size > 0 then
-      fs.Read((@a[1])^, la[id].size);
+    SetLength(a, FSource.Entries[id].Size);
+    if Length(a) > 0 then
+      FSource.ReadEntryInto(id, @a[1]);
     Result := string(a);
-  end
-  else
-    Result := '';
+  end;
 end;
 
 //==============================================================================
@@ -195,12 +189,11 @@ end;
 //==============================================================================
 function TWadReader.ReadEntry(const id: integer; var buf: pointer; var bufsize: integer): boolean;
 begin
-  if (fs <> nil) and (id >= 0) and (id < h.numlumps) then
+  if (FSource <> nil) and (id >= 0) and (id < FSource.Count) then
   begin
-    fs.Seek(la[id].filepos, sFromBeginning);
-    bufsize := la[id].size;
+    bufsize := FSource.Entries[id].Size;
     buf := malloc(bufsize);
-    fs.Read(buf^, bufsize);
+    FSource.ReadEntryInto(id, buf);
     Result := true;
   end
   else
@@ -230,8 +223,8 @@ end;
 //==============================================================================
 function TWadReader.EntryName(const id: integer): string;
 begin
-  if (id >= 0) and (id < h.numlumps) then
-    Result := char8tostring(la[id].name)
+  if (FSource <> nil) and (id >= 0) and (id < FSource.Count) then
+    Result := FSource.Entries[id].Name
   else
     Result := '';
 end;
@@ -242,41 +235,11 @@ end;
 //
 //==============================================================================
 function TWadReader.EntryId(const aname: string): integer;
-var
-  i: integer;
-  uname: string;
 begin
-  uname := strupper(aname);
-  for i := h.numlumps - 1 downto 0 do
-    if char8tostring(la[i].name) = uname then
-    begin
-      Result := i;
-      Exit;
-    end;
-  Result := -1;
-end;
-
-//==============================================================================
-//
-// TWadReader.EntryInfo
-//
-//==============================================================================
-function TWadReader.EntryInfo(const id: integer): Pfilelump_t;
-begin
-  if (id >= 0) and (id < h.numlumps) then
-    Result := @la[id]
+  if FFinder <> nil then
+    Result := FFinder.CheckNumForName(aname)
   else
-    Result := nil;
-end;
-
-//==============================================================================
-//
-// TWadReader.EntryInfo
-//
-//==============================================================================
-function TWadReader.EntryInfo(const aname: string): Pfilelump_t;
-begin
-  result := EntryInfo(EntryId(aname));
+    Result := -1;
 end;
 
 //==============================================================================
@@ -286,18 +249,8 @@ end;
 //==============================================================================
 function TWadReader.NumEntries: integer;
 begin
-  Result := h.numlumps;
-end;
-
-//==============================================================================
-//
-// TWadReader.FileSize
-//
-//==============================================================================
-function TWadReader.FileSize: integer;
-begin
-  if fs <> nil then
-    Result := fs.Size
+  if FSource <> nil then
+    Result := FSource.Count
   else
     Result := 0;
 end;

@@ -26,7 +26,7 @@ type
     class function FromRecord(const ARecord: TWadDirectoryRecord): string; static;
     /// <summary>
     ///   Fills the 8 characters of a directory record; raises when AName is
-    ///   empty, longer than 8 or has characters that are not ASCII printable
+    ///   empty, longer than 8 or has a #0 or a character above $FF
     /// </summary>
     class procedure ToRecord(const AName: string; var ARecord: TWadDirectoryRecord); static;
     /// <summary>True when AName can be the name of a lump of a WAD</summary>
@@ -73,13 +73,13 @@ class function TWadLumpName.IsValid(const AName: string): Boolean;
 var
   LIndex: Integer;
 begin
+  // any byte but #0 (a name ends there on disk): the tools of the community use spaces and 8 bit characters
   Result := (Length(AName) >= 1) and (Length(AName) <= WAD_LUMP_NAME_SIZE);
   if Result then
     for LIndex := 1 to Length(AName) do
-      if (AName[LIndex] <= ' ') or (AName[LIndex] > '~') then
+      if (AName[LIndex] = #0) or (Ord(AName[LIndex]) > $FF) then
         Exit(False);
 end;
-
 class procedure TWadLumpName.ToRecord(const AName: string; var ARecord: TWadDirectoryRecord);
 var
   LName: string;

@@ -32,35 +32,44 @@ unit w_wadwriter;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Wad.Intf;
 
 type
+  /// <summary>
+  ///   Makes a PWAD in memory and writes it to a stream or a file. It is the
+  ///   API the engine had, kept on top of the WAD library (Libs\Wad): the
+  ///   lumps are in an IWadBuilder. The WAD has the layout of the library (data
+  ///   aligned to 4 bytes, directory at the end)
+  /// </summary>
   TWadWriter = class(TObject)
   private
-    lumps: TDStringList;
+    FBuilder: IWadBuilder;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear; virtual;
+    /// <summary>Appends a lump of size bytes; the name is cut to upper case, 1 to 8 characters</summary>
     procedure AddData(const lumpname: string; const data: pointer; const size: integer);
+    /// <summary>Appends a lump with the characters of the string, one byte each</summary>
     procedure AddString(const lumpname: string; const data: string);
+    /// <summary>Appends an empty lump (S_START, F_END ...)</summary>
     procedure AddSeparator(const lumpname: string);
     procedure SaveToStream(const strm: TDStream);
     procedure SaveToFile(const fname: string);
     function NumEntries: integer;
   end;
 
-//==============================================================================
-//
 // AddDataToWAD
-//
-//==============================================================================
 function AddDataToWAD(const wad: TWADWriter; const lumpname, data: string): boolean;
 
 implementation
 
 uses
-  w_wad;
+  System.SysUtils,
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Factory,
+  i_system;
 
 //==============================================================================
 //
@@ -69,8 +78,8 @@ uses
 //==============================================================================
 constructor TWadWriter.Create;
 begin
-  lumps := TDStringList.Create;
-  Inherited;
+  inherited Create;
+  FBuilder := TWadFactory.CreateBuilder(TWadKind.PWad);
 end;
 
 //==============================================================================
@@ -79,14 +88,9 @@ end;
 //
 //==============================================================================
 destructor TWadWriter.Destroy;
-var
-  i: integer;
 begin
-  for i := 0 to lumps.Count - 1 do
-    if lumps.Objects[i] <> nil then
-      lumps.Objects[i].Free;
-  lumps.Free;
-  Inherited;
+  FBuilder := nil;
+  inherited Destroy;
 end;
 
 //==============================================================================
@@ -95,13 +99,8 @@ end;
 //
 //==============================================================================
 procedure TWadWriter.Clear;
-var
-  i: integer;
 begin
-  for i := 0 to lumps.Count - 1 do
-    if lumps.Objects[i] <> nil then
-      lumps.Objects[i].Free;
-  lumps.Clear;
+  FBuilder.Clear;
 end;
 
 //==============================================================================
@@ -111,11 +110,17 @@ end;
 //==============================================================================
 procedure TWadWriter.AddData(const lumpname: string; const data: pointer; const size: integer);
 var
-  m: TDMemoryStream;
+  bytes: TBytes;
 begin
-  m := TDMemoryStream.Create;
-  m.Write(data^, size);
-  lumps.AddObject(strupper(lumpname), m);
+  SetLength(bytes, size);
+  if size > 0 then
+    Move(data^, bytes[0], size);
+  try
+    FBuilder.AddLump(lumpname, bytes);
+  except
+    on E: EWadException do
+      I_Error('TWadWriter.AddData(): %s'#13#10, [E.Message]);
+  end;
 end;
 
 //==============================================================================
@@ -125,13 +130,18 @@ end;
 //==============================================================================
 procedure TWadWriter.AddString(const lumpname: string; const data: string);
 var
-  m: TDMemoryStream;
+  bytes: TBytes;
   i: integer;
 begin
-  m := TDMemoryStream.Create;
+  SetLength(bytes, Length(data));
   for i := 1 to Length(data) do
-    m.Write(data[i], SizeOf(char));
-  lumps.AddObject(strupper(lumpname), m);
+    bytes[i - 1] := Byte(Ord(data[i]));
+  try
+    FBuilder.AddLump(lumpname, bytes);
+  except
+    on E: EWadException do
+      I_Error('TWadWriter.AddString(): %s'#13#10, [E.Message]);
+  end;
 end;
 
 //==============================================================================
@@ -141,7 +151,7 @@ end;
 //==============================================================================
 procedure TWadWriter.AddSeparator(const lumpname: string);
 begin
-  lumps.Add(strupper(lumpname));
+  AddData(lumpname, nil, 0);
 end;
 
 //==============================================================================
@@ -151,40 +161,10 @@ end;
 //==============================================================================
 procedure TWadWriter.SaveToStream(const strm: TDStream);
 var
-  h: wadinfo_t;
-  la: Pfilelump_tArray;
-  i: integer;
-  p, ssize: integer;
-  m: TDMemoryStream;
+  bytes: TBytes;
 begin
-  p := strm.Position;
-  h.identification := PWAD;
-  h.numlumps := lumps.Count;
-  h.infotableofs := p + SizeOf(wadinfo_t);
-  strm.Write(h, SizeOf(h));
-  p := strm.Position;
-  GetMem(la, lumps.Count * SizeOf(filelump_t));
-  strm.Write(la^, lumps.Count * SizeOf(filelump_t));
-
-  for i := 0 to lumps.Count - 1 do
-  begin
-    la[i].filepos := strm.Position;
-    m := lumps.Objects[i] as TDMemoryStream;
-    if m <> nil then
-    begin
-      la[i].size := m.Size;
-      m.Seek(0, sFromBeginning);
-      strm.Write(m.Memory^, m.Size);
-    end
-    else
-      la[i].size := 0;
-    la[i].name := stringtochar8(lumps.Strings[i]);
-  end;
-  ssize := strm.Position;
-  strm.Seek(p, sFromBeginning);
-  strm.Write(la^, lumps.Count * SizeOf(filelump_t));
-  FreeMem(la, lumps.Count * SizeOf(filelump_t));
-  strm.Seek(ssize, sFromBeginning);
+  bytes := FBuilder.ToBytes;
+  strm.Write(bytes[0], Length(bytes));
 end;
 
 //==============================================================================
@@ -193,15 +173,8 @@ end;
 //
 //==============================================================================
 procedure TWadWriter.SaveToFile(const fname: string);
-var
-  fs: TFile;
 begin
-  fs := TFile.Create(fname, fCreate);
-  try
-    SaveToStream(fs);
-  finally
-    fs.Free;
-  end;
+  FBuilder.SaveToFile(fname);
 end;
 
 //==============================================================================
@@ -211,13 +184,7 @@ end;
 //==============================================================================
 function TWadWriter.NumEntries: integer;
 begin
-  if lumps = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := lumps.Count;
+  Result := FBuilder.Count;
 end;
 
 //==============================================================================
@@ -237,4 +204,3 @@ begin
 end;
 
 end.
-
