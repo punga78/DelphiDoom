@@ -1,0 +1,19 @@
+I_Warning: TScriptEngine.MustGetString(): Missing string at Line 2
+I_Warning: ==========================================================================
+I_Warning: 00000     THINKER
+I_Warning: 00001 *** 
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: TScriptEngine.MustGetString(): Missing string at Line 2
+I_Warning: ==========================================================================
+I_Warning: 00000     THINKER
+I_Warning: 00001 *** 
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: TScriptEngine.MustGetString(): Missing string at Line 2
+I_Warning: ==========================================================================
+I_Warning: 00000     THINKER
+I_Warning: 00001 *** 
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: SC_ActordefToDEH(): "THINKER" THINKER does not have script

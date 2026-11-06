@@ -1,0 +1,8 @@
+WEAPON 5
+  Mana MA
+{
+  Ammo 0
+  AmmoPerShot 1
+  Mana MA
+Up:
+  Mana MA

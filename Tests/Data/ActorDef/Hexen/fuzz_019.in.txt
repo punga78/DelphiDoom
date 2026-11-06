@@ -1,0 +1,16 @@
+ACTOR BadNumbers 20130
+{
+  Health inherits
+  Radius 1.5
+  Speed x
+  Scale abc
+  Alpha foo
+  PainChance 5
+  States
+  -SOLID
+  Spawn:
+    TROO A abc
+    TROO B 5
+    Loop
+  }
+}

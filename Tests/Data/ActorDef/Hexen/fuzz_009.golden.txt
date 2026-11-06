@@ -1,0 +1,15 @@
+@ ALIASES 6
+@ ALIASENTRY FOO/BAR=DSFOO
+@ ALIASENTRY FOO/BAZ=FOO/BAR
+@ ALIASENTRY A=B
+@ ALIASENTRY C=D%20E%20F
+@ ALIASENTRY Q=Q%20%20DSQQ
+@ ALIASENTRY TAG1=DSTAG
+I_Warning: TScriptEngine.GetString(): Closing bracket "}" found at line 2 without opening bracket "{"
+I_Warning: ==========================================================================
+I_Warning: 00000     
+I_Warning: 00001 *** }
+I_Warning: 00002     Up:
+I_Warning: 00003     
+I_Warning: ==========================================================================
+I_Warning: 

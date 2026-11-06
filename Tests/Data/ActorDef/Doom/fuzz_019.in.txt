@@ -1,0 +1,20 @@
+ACTOR SndAlias 20141
+{
+  AttackSound "my/attack"
+Stop
+  PainSound "$random/pain"
+  DeathSound "my/death"
+  ActiveSound "my\active"
+  CustomSound1 "my/far"
+  CustomSound2 "my/loop"
+  CustomSound3 "unknown/sound"
+  MeleeSound "my/long"
+  RipSound "nothing"
+  States
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}
+ENDSCRIPT

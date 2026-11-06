@@ -1,0 +1,16 @@
+I_Warning: SC_ActordefToDEH(): Unknown token "Flags" found while parsing weapon "3"
+@ DEH-BEGIN
+WEAPON 3
+Ammo Type = 0
+DESELECT Frame = OriginalFrame 0
+SELECT Frame = OriginalFrame 0
+BOBBING Frame = OriginalFrame 0
+SHOOTING Frame = OriginalFrame 0
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = 
+AMMO PER SHOT = 5
+
+
+
+@ DEH-END

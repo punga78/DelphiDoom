@@ -1,0 +1,29 @@
+ACTOR Fmt1 20177 { Health 5 Speed 3 States { Spawn: TROO A 1 Loop } }
+ACTOR Fmt2 // comment after the name
+{
+  Health 6 // comment
+  Speed 4
+  States // comment
+  {
+    Spawn: // comment
+      TROO A 1 // comment
+      TROO B 1 A_Look // comment
+      Loop // comment
+  }
+}
+ACTOR Fmt3 20178
+{
+  States
+  Health 7
+  {
+  Spawn:
+    TROO A 1 A_Look(1, 2, 3)
+    TROO B 1 A_Chase ( 4 , 5 )
+    TROO C 1 BRIGHT A_Chase(6)
+    TROO D 1 Bright
+    TROO E 1 Fast
+    TROO F 1 A_Chase Fast
+    Goto Spawn
+  }
+}
+ Speed 3

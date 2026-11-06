@@ -1,0 +1,27 @@
+WEAPON 1
+{
+  Ammo AM_GOLDWAND
+  AmmoPerShot 2
+  States
+  {
+  Up:
+    PISG A 1
+    Goto Ready
+  Down:
+    PISG A 1
+    Goto Down
+  Ready:
+    PISG A 1 A_WeaponReady
+    Loop
+  Attack:
+    B 4
+    PISG C 6 A_FirePistol
+    PISG D 4
+    PISG B 5 A_ReFire
+    Goto Ready
+  Flash:
+    PISF A 7 BRIGHT A_Light1
+RANDOMRANGE
+    Goto Ready+1
+  }
+}

@@ -1,0 +1,2 @@
+ACTOR EofActor2 20120
+ Goto See+1

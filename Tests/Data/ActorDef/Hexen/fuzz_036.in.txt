@@ -1,0 +1,43 @@
+ACTOR GotoTest2 20052
+{
+  States
+  {
+ 5 Spawn:
+    TROO A 10
+    Goto Death
+  See:
+    TROO B 10
+    Goto Death + 1
+  Missile:
+    TROO C 10
+    Goto SeeFoo
+  Death:
+    TROO D 4
+    TROO E 4
+    Goto Spawn // a comment on the goto line
+  XDeath:
+    TROO F 4
+    Goto Death+2
+  }
+}
+ACTOR GotoToOther 20053
+{
+  States
+  {
+  Spawn:
+    TROO A 10
+    Goto GotoTest2::Death
+  See:
+    TROO B 10
+    Goto GotoTest2::Spawn+1
+  Missile:
+    TROO C 10
+    Goto GotoTest2::Nothing
+  Death:
+    TROO D 10
+    Goto Centaur::See
+  XDeath:
+    TROO E 10
+    Goto super::melee
+  }
+}

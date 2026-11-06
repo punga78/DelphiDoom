@@ -1,0 +1,48 @@
+ACTOR GotoTest : Imp 20051
+{
+  States
+  {
+  Spawn:
+    TROO A 10
+    TROO B 10
+    Goto See
+  See:
+    TROO C 4
+    TROO D 4
+    Goto Spawn+1
+  Melee:
+    TROO E 4
+    Goto Spawn + 1
+  Missile:
+    TROO F 4
+    Goto See-1
+  Pain:
+    TROO G 4
+    Goto Missile + 0
+  Death:
+    TROO H 4
+    Goto MyAlias
+  MyAlias:
+    TROO I 4
+    TROO J 4
+    Goto MyAlias+1
+  XDeath:
+    TROO K 4
+    Goto Super::Spawn
+  Raise:
+    TROO L 4
+    Goto Self::Spawn
+  Crash:
+    TROO M 4
+    Goto Unknown::Spawn
+  Heal:
+    TROO N 4
+    Goto Nowhere
+  Crush:
+    TROO O 4
+    Goto ::Death
+  Interact:
+    TROO P 4
+    Goto Imp::Death
+  }
+}

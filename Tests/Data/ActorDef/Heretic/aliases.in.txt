@@ -1,0 +1,11 @@
+ACTORALIAS NewName Golem
+ACTORALIAS A = B
+ACTORALIAS Golem = Alias1 = Alias2
+ACTORALIAS OnlyOne
+ACTORALIAS
+ACTORALIAS Foo // comment
+ACTORALIAS Bar Baz // comment
+ACTOR UsesAlias : NewName 20080
+{
+  Health 5
+}

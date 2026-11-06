@@ -1,0 +1,31 @@
+ACTOR StatesExtra : Zombie 20060
+{
+  States
+  {
+  Spawn:
+    TROO A 10
+    Goto Spawn
+  Death:
+    TROO B 10
+    Goto Death
+  See:
+    TROO C 10
+    Goto Melee
+  XDeath:
+    TROO D 10
+    Goto Raise
+  }
+}
+ACTOR StatesNoGoto : Zombie 20061
+{
+  Health 11
+}
+ACTOR StatesJustSpawn : Zombie 20062
+{
+  States
+  {
+  Spawn:
+    TROO A -1
+    Stop
+  }
+}

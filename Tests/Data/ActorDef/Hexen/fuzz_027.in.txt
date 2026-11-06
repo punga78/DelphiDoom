@@ -1,0 +1,3 @@
+ACTOR EofInherit :
+
+A_Look

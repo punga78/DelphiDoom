@@ -1,0 +1,32 @@
+// a missile with a small speed gets scaled
+ACTOR MissileSmall 20004
+{
+  Speed 10
+  Radius 6
+  Height 8
+  Damage 3
+  PROJECTILE
+  States
+  {
+  Spawn:
+    MISL A 4 BRIGHT
+    Loop
+  Death:
+    MISL B 8 BRIGHT
+    Stop
+  }
+}
+ACTOR MissileBig 20005
+{
+  Speed 20480
+  +MISSILE
+  States
+  {
+  Spawn:
+    MISL A 4
+    Loop
+  }
+}
+ACTOR MissileInherit : Zombie 20006
+{
+  Speed

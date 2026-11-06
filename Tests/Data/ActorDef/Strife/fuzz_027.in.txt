@@ -1,0 +1,18 @@
+ACTOR Sounds 20140
+{
+  SeeSound "weird/sound"
+  AttackSound "toolongsoundname"
+  PainSound ""
+  DeathSound "dsvilact"
+  ActiveSound dsdmact
+  CustomSound1 12
+  CustomSound2 "random/thing"
+  RipSound "$random/x"
+  MeleeSound alias1
+  FAST
+  {
+  Spawn:
+   TROO A 1
+    Loop
+  }
+}

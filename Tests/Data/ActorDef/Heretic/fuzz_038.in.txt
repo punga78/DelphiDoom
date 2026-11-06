@@ -1,0 +1,7 @@
+ACTOR EofStates3 20124
+{
+  States
+  {
+ ABC Spawn:
+Health
+    TROO A

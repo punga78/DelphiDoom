@@ -1,0 +1,7 @@
+ACTOR EofStates2 20123
+{
+  States
+  {
+  Spawn:
+    TROO A 5
+    Goto

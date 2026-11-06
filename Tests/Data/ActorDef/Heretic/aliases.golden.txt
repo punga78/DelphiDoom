@@ -1,0 +1,83 @@
+I_Warning: DoParseActorAlias(): Can not match aliases "A" and " "
+I_Warning: DoParseActorAlias(): Can not match aliases " " and "B"
+I_Warning: DoParseActorAlias(): Invalid alias declaration ""OnlyOne""
+I_Warning: DoParseActorAlias(): Invalid alias declaration ""
+I_Warning: DoParseActorAlias(): Invalid alias declaration ""Foo""
+I_Warning: DoParseActorAlias(): Can not match aliases "Bar" and "Baz"
+@ DEH-BEGIN
+NewThing "UsesAlias"
+Inheritsfrom = "NewName"
+Id # = 20080
+Initial Frame = OriginalFrame 657
+Hit Points = 5
+First Moving Frame = OriginalFrame 659
+Alert Sound = 28
+Reaction Time = 8
+Attack Sound = 29
+Injury Frame = OriginalFrame 672
+Pain Chance = 128
+Pain Sound = 33
+Close Attack Frame = OriginalFrame 663
+Far Attack Frame = OriginalFrame 0
+Death Frame = OriginalFrame 674
+Exploding Frame = OriginalFrame 0
+Heal Frame = OriginalFrame 0
+Crash Frame = OriginalFrame 0
+Crush Frame = OriginalFrame 0
+Interact Frame = OriginalFrame 0
+Death Sound = 31
+Speed = 12
+VSpeed = 0
+MinMissileChance = 0
+Pushfactor = 16384
+Friction = 59392
+Width = 1441792
+Height = 4063232
+Mass = 75
+Missile Damage = 0
+Action Sound = 32
+Respawn Frame = OriginalFrame 0
+Bits = MF_SOLID MF_SHOOTABLE MF_COUNTKILL 
+flags_ex = 0
+Custom Sound 1 = 0
+Custom Sound 2 = 0
+Custom Sound 3 = 0
+Melee Damage = 0
+Melee Sound = 0
+Explosion Damage = 0
+Explosion Radius = 0
+Dropitem = 0
+Missiletype = 0
+Renderstyle = 0
+Alpha = 0
+flags2_ex = 0
+flags3_ex = 0
+flags4_ex = 0
+missileheight = 0
+melee threshold = 0
+Scale = 65536
+Gravity = 65536
+Float Speed = 0
+Normal Speed = 12
+Fast Speed = 0
+Obituary = ""
+Hit Obituary = ""
+Gender = 0
+Melee Range = 0
+Max Step Height = 0
+Max DropOff Height = 0
+Gib Health = 0
+Max Target Range = 0
+Weave Index XY = 0
+Weave Index Z = 0
+Sprite DX = 0
+Sprite DY = 0
+flags5_ex = MF5_EX_PUSHWALL MF5_EX_MCROSS 
+flags6_ex = 0
+Rip Sound = 0
+Blood Color = 0
+Translation = 
+
+
+
+@ DEH-END

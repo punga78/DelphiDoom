@@ -1,0 +1,12 @@
+weird/sound  dsweird
+alias1 dsalias1
+dsdmact dsdmact2
+// comment
+random/thing = dsrandom ; trailing comment
+toolong dsthisisnotvalidname
+chain1 chain2
+chain2 dsc2
+"quoted/name" dsq
+  indented	tabbed
+single
+dsdeath dsdths

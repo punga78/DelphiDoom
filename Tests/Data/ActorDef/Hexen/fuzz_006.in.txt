@@ -1,0 +1,2 @@
+DEH_PARSE one.deh two.deh
+DEH_PARSE_ALL *.bex

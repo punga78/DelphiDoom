@@ -1,0 +1,29 @@
+@ DEH-BEGIN
+WEAPON 1
+Ammo Type = 1
+DESELECT Frame = NewFrame 0
+SELECT Frame = OriginalFrame 0
+BOBBING Frame = OriginalFrame 0
+SHOOTING Frame = OriginalFrame 0
+HOLD SHOOTING Frame = OriginalFrame 0
+FIRING Frame = OriginalFrame 0
+MBF21 BITS = 
+AMMO PER SHOT = 0
+
+Frame NewFrame 0
+Sprite Number = S
+Sprite Subnumber = 18
+Duration = 0
+Duration 2 = 0
+Next Frame = NewFrame 0
+Codep Frame = S
+Unknown 1 = 0
+Unknown 2 = 0
+Flags_ex = 0
+
+
+
+SubmitNewFrames
+
+
+@ DEH-END

@@ -1,0 +1,5 @@
+ACTOR EofStates2 20123
+{
+  States A
+  {
+  Spawn:

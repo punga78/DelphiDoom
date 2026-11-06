@@ -1,0 +1,20 @@
+// flags added and removed on top of the flags of the parent
+ACTOR FlagsInh : Zombie 20021
+{
+  -SOLID
+  -MF_SHOOTABLE
+  -COUNTKILL
+  +MF_NOCLIP
+  -PUSHWALL
+  -MF5_EX_MCROSS
+  -MF_EX_FLOATBOB
+  +FLOATBOB
+  -SHADOW
+  -TRANSLATION1
+  States
+  {
+  Spawn:
+    TROO A 1
+    Loop
+  }
+}

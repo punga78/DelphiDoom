@@ -1,0 +1,26 @@
+SCRIPT Semi;
+begin
+  x := 1;
+end;
+ENDSCRIPT
+SCRIPT Empty 1.5
+ENDSCRIPT
+SCRIPT Dotted
+a := 1;
+ENDSCRIPT.
+SCRIPT Tabbed
+b := 2;
+	ENDSCRIPT
+SCRIPT Lower
+SCRIPT Lower
+c := 3;
+endscript
+GLOBAL SCRIPT G1
+d := 4;
+ENDSCRIPT
+GLOBAL BAD
+EXTERNAL SCRIPT EX ex.pas
+ACTOR AfterScripts 20172
+{
+  Health 7
+}

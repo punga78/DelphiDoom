@@ -1,0 +1,8 @@
+ACTOR EofStates 20122
+{
+  Health 10
+  States
+A_Chase(1,2)
+  {
+  Spawn:
+    TROO A 5 Up:

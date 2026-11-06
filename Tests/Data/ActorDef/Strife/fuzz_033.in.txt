@@ -1,0 +1,8 @@
+ACTOR Sounds 20140
+{
+  SeeSound "weird/sound"
+  AttackSound "toolongsoundname"
+  PainSound ""
+  REPEAT "dsvilact"
+  ActiveSound dsdmact
+  CustomSound1 

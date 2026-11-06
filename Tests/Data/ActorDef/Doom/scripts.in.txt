@@ -1,0 +1,24 @@
+SCRIPT Hello
+void main;
+begin
+  Writeln('hi');
+end;
+ENDSCRIPT
+
+GLOBAL SCRIPT GlobalOne
+procedure foo;
+begin
+end;
+ENDSCRIPT
+
+EXTERNAL SCRIPT ExtOne ext/one.pas
+GLOBAL EXTERNAL SCRIPT ExtGlobal ext/global.pas
+COMPILED SCRIPT Comp1 compiled/one.bin
+PRECOMPILED SCRIPT Comp2 compiled/two.bin
+COMPILED NotScript x
+EXTERNAL NotScript y
+GLOBAL NotScript z
+GLOBAL EXTERNAL NotScript w
+SCRIPT Unterminated
+begin
+end;

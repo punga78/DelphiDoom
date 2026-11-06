@@ -1,0 +1,4 @@
+@ DEHFILE one.deh|0
+@ DEHFILE two.deh|0
+@ DEHFILE *.bex|1
+@ DEHFILE quoted%20name.deh|0

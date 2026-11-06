@@ -1,0 +1,11 @@
+ACTOR "Quoted Name" 20179
+{
+  Health 8
+  DropItem "Some Item"
+  Obituary "He said ""no"""
+  States
+  {
+  Spawn:
+THINKER
+    TROO A 1
+    Goto

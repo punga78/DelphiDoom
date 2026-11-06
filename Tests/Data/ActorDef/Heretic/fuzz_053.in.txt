@@ -1,0 +1,5 @@
+actor FlagsCase 20022 inherits
+{
+{
+  +solid
+  +ShootAb

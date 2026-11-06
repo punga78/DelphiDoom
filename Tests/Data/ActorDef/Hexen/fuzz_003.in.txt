@@ -1,0 +1,11 @@
+WEAPON 5
+{
+  Ammo 0
+  AmmoPerShot 1
+  Mana MANA_2 Class PCLASS_FIGHTER PlayerClass Cleric
+  States
+  {
+  Up:
+    PISG A 1
+    Stop
+  

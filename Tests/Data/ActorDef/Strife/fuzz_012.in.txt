@@ -1,0 +1,12 @@
+WEAPON 3
+
+States
+  AmmoPerShot 5
+  Flags
+  States
+  {
+  Up:
+    PISG A 1
+    Stop
+  }
+}

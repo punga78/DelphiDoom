@@ -1,0 +1,13 @@
+1.5 StrifeName 20170
+{
+  Name "Foo Bar"
+  Health 1
+  StrifeName Baz
+  States
+  {
+  Spawn:
+  Spawn:
+    TROO A 1
+  }
+    Loop
+}

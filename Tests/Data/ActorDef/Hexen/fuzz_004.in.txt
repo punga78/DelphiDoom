@@ -1,0 +1,18 @@
+// several actors, formatting variants
+actor Multi1 20110 { health 10 radius 20 height 30
+  states { spawn: troo a 5 loop } }
+Actor Multi2 : Multi1 20111
+{
+  Health 20 states { Spawn: TROO B 5 Loop See: TROO C 5 Loop }
+}
+ACTOR   Multi3   :   Multi2   20112   {   Health   30   }
+ACTOR Multi4 20113
+MyActor
+	Health	40
+	States
+	{
+	Spawn:
+		TROO	D	5
+		Loop
+	}
+}

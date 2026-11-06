@@ -1,0 +1,32 @@
+ACTOR StatesExtra : Golem 20060
+{
+  States
+  {
+  Spawn:
+    TROO A 10
+    Goto Spawn
+  Death:
+    TROO B 10
+    Goto Death
+  See:
+    TROO C 10
+    Goto Melee
+  XDeath:
+    TROO D 10
+    Goto Raise
+    Goto Raise
+  }
+}
+ACTOR StatesNoGoto : Golem 20061
+{
+}
+  Health 11
+ACTOR StatesJustSpawn : Golem 20062
+{
+  States
+  {
+  Spawn:
+    TROO A -1
+    Stop
+  }
+}

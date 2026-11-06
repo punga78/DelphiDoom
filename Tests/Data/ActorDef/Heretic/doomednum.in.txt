@@ -1,0 +1,16 @@
+ACTOR NoNum
+{
+  Health 1
+}
+ACTOR NoNumInherit : Golem
+{
+  Health 2
+}
+ACTOR NumNeg -5
+{
+  Health 3
+}
+ACTOR NumHex 0x4E21
+{
+  Health 4
+}

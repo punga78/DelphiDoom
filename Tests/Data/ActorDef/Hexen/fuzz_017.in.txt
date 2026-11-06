@@ -1,0 +1,6 @@
+actor FlagsCase 20022
+{
+  +solid
+  +ShootAble
+  +mf_noblood
+  -

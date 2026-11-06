@@ -1,0 +1,9 @@
+ACTOR SndAlias 20141
+{
+  SeeSound "my/sight"
+  AttackSound "my/attack"
+  PainSound "$random/pain"
+  DeathSound "my/death"
+  ActiveSound "my\active"
+  CustomSound1 "my/far"
+  CustomSound2 

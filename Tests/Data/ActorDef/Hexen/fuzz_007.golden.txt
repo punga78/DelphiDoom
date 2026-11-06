@@ -1,0 +1,22 @@
+@ THINKER Thinker1|MyScript|-1|3|5
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker2|Other|7|0|1
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker3|S3|4|0|2
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker4|S4|4|1|1
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+I_Warning: SC_ActordefToDEH(): "THINKER" Thinker5 does not have script
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+I_Warning: SC_ActordefToDEH(): "THINKER" NoScript does not have script
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker7|S7|4|5|1
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker8|S8|-3|0|0
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker9|S9|4|0|1
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker10|S10|4|-2|1
+I_Warning: DoParseActorAlias(): Can not match aliases "sep1" and "sep2"
+@ THINKER Thinker11|S11|4|2|-1
+@ SCRIPT S12|normal|ACTOR%20AfterThinker%2020160%0D%0A{%0D%0A%20%20Health%201%0D%0A}

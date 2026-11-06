@@ -1,0 +1,13 @@
+I_Warning: TScriptEngine.MustGetString(): Missing string at Line 2
+I_Warning: ==========================================================================
+I_Warning: 00000     THINKER Foo SCRIPT
+I_Warning: 00001 *** 
+I_Warning: ==========================================================================
+I_Warning: 
+I_Warning: TScriptEngine.MustGetString(): Missing string at Line 2
+I_Warning: ==========================================================================
+I_Warning: 00000     THINKER Foo SCRIPT
+I_Warning: 00001 *** 
+I_Warning: ==========================================================================
+I_Warning: 
+@ THINKER Foo|SCRIPT|0|0|1

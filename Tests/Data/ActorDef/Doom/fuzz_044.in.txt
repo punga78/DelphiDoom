@@ -1,0 +1,12 @@
+ACTOR Name" 20179
+{
+  Health 8
+  DropItem "Some Item"
+  Obituary "He said ""no"""
+  States
+  {
+  Spawn:
+    TROO A 1
+    Goto "Spawn"
+  }
+}

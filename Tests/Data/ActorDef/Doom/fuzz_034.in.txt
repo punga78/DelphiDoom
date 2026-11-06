@@ -1,0 +1,24 @@
+ACTOR NumbersEdge 20173
+{ 5
+  Health 99999999999
+  Radius -5
+  Height 0x20
+  Speed #12
+  Scale 1,5
+  Alpha 1.0
+  Gravity -1
+  PushFactor 70
+  VSpeed 1e2
+A_Chase(1,2)
+  Mass 007
+  Damage +3
+  PainChance 12.5
+  States
+  {
+  Spawn:
+    TROO A 0x10
+    TROO B -5
+    TROO C 3 A_Look
+    Loop
+  }
+} -MF_SOLID

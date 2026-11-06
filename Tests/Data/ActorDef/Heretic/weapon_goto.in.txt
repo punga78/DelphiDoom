@@ -1,0 +1,27 @@
+WEAPON 4
+{
+  States
+  {
+  Up:
+    CHGG A 1
+    Goto Ready
+  Down:
+    CHGG A 1
+    Goto Up+0
+  Ready:
+    CHGG A 1
+  Mid:
+    CHGG B 1
+    CHGG C 1
+    Goto Ready
+  Attack:
+    CHGG D 1
+    Goto Mid
+  Hold:
+    CHGG E 1
+    Goto Mid + 1
+  Flash:
+    CHGF A 1
+    Goto Nowhere
+  }
+}

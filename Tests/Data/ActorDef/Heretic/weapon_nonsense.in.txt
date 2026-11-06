@@ -1,0 +1,9 @@
+WEAPON Nonsense
+{
+  States
+  {
+  Up:
+    PISG A 1
+    Stop
+  }
+}

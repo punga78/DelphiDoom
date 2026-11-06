@@ -1,0 +1,6 @@
+ACTOR EofProps 20121
++SOLID
+{
+  Health 10
+}
+  R

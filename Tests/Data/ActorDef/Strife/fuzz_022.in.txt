@@ -1,0 +1,26 @@
+ACTOR RepA replaces Zombie
+{
+  Health 77
+  States
+  States
+ Health {
+  Spawn:
+    TROO A 5
+    Loop
+  }
+}
+ACTOR RepB 20040
+{
+  replaces "Beggar 1"
+  Health 78
+}
+ACTOR RepC 20041
+{
+  NoSuchThing
+  Health 79
+}
+ACTOR RepD
+{
+  replaces Zombie
+  Health 80
+}
