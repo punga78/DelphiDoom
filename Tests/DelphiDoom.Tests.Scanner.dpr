@@ -23,6 +23,11 @@ uses
   DelphiDoom.Scanner.Strings in '..\Libs\Scanner\DelphiDoom.Scanner.Strings.pas',
   DelphiDoom.Scanner.Scanner in '..\Libs\Scanner\DelphiDoom.Scanner.Scanner.pas',
   DelphiDoom.Scanner.Text in '..\Libs\Scanner\DelphiDoom.Scanner.Text.pas',
+  DelphiDoom.Scanner.Numbers in '..\Libs\Scanner\DelphiDoom.Scanner.Numbers.pas',
+  DelphiDoom.Scanner.Expression.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Intf.pas',
+  DelphiDoom.Scanner.Expression.Node in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Node.pas',
+  DelphiDoom.Scanner.Expression.Builtins in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Builtins.pas',
+  DelphiDoom.Scanner.Expression.Evaluator in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Evaluator.pas',
   DelphiDoom.Scanner.Preprocessor.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.Preprocessor.Intf.pas',
   DelphiDoom.Scanner.Defines in '..\Libs\Scanner\DelphiDoom.Scanner.Defines.pas',
   DelphiDoom.Scanner.Preprocessor in '..\Libs\Scanner\DelphiDoom.Scanner.Preprocessor.pas',
@@ -31,7 +36,8 @@ uses
   DelphiDoom.Scanner.Directive.CreatePalette in '..\Libs\Scanner\DelphiDoom.Scanner.Directive.CreatePalette.pas',
   DelphiDoom.Tests.Scanner.Parity in 'Source\DelphiDoom.Tests.Scanner.Parity.pas',
   DelphiDoom.Tests.Scanner.Text in 'Source\DelphiDoom.Tests.Scanner.Text.pas',
-  DelphiDoom.Tests.Scanner.Preprocessor in 'Source\DelphiDoom.Tests.Scanner.Preprocessor.pas';
+  DelphiDoom.Tests.Scanner.Preprocessor in 'Source\DelphiDoom.Tests.Scanner.Preprocessor.pas',
+  DelphiDoom.Tests.Scanner.Expression in 'Source\DelphiDoom.Tests.Scanner.Expression.pas';
 
 var
   Runner: ITestRunner;

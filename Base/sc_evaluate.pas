@@ -24,6 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
+
 {$I Doom32.inc}
 
 unit sc_evaluate;
@@ -31,7 +32,14 @@ unit sc_evaluate;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Scanner.Expression.Intf,
+  DelphiDoom.Scanner.Expression.Evaluator;
+
+//
+// The evaluation is done by TExpressionEvaluator (Libs\Scanner); this class keeps the API
+// that the engine uses: the variables are two events, the functions take a TDStrings
+//
 
 type
   TFindVar = function(v: string): boolean of object;
@@ -40,124 +48,18 @@ type
   TExtFunc = function(p: TDStrings): string;
 
 type
-  TEvalFunction = class(TObject)
+  TEvaluator = class(TObject)
   private
-    FName: string;
-    FNumParams: integer;
-    FEvalObjFunc: TObjFunc;
-    FEvalFunc: TExtFunc;
-    procedure SetName(v: string);
-  public
-    property Name: string read FName write SetName;
-    constructor Create(aname: string; afunc: TObjFunc; anum: integer); overload;
-    constructor Create(aname: string; afunc: TExtFunc; anum: integer); overload;
-    function Value(p: TDStrings): string; overload;
-    function Value(v: string): string; overload;
-  end;
-
-type
-  TEvalList = class(TObject)
-  private
-    fList: PObjectArray;
-    fNumItems: integer;
-    fRealNumItems: integer;
-  protected
-    procedure Grow; virtual;
-    function Get(Index: Integer): TObject; virtual;
-    procedure Put(Index: Integer; const value: TObject); virtual;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    function Add(const value: TObject): integer; virtual;
-    procedure Insert(Index: Integer; Item: TObject);
-    function Delete(const Index: integer): boolean;
-    function IndexOf(const value: TObject): integer; virtual;
-    procedure Clear;
-    property Count: integer read fNumItems;
-    property Objects[Index: Integer]: TObject read Get write Put;
-    property List: PObjectArray read fList;
-  end;
-
-  TEvalNode = class(TEvalList)
-  private
-    FOperator: char;
-    FExpr: string;
-    FFunction: TEvalFunction;
-    function GetNode(index: integer): TEvalNode;
-  public
-    property Node[index: integer]: TEvalNode read GetNode; default;
-    constructor Create; override;
-    function AddNode: TEvalNode;
-  end;
-
-  TEvaluator = class(TEvalList)
-  private
-    FRoot: TEvalNode;
-    FExpr: string;
+    FImpl: TExpressionEvaluator;
     FFindVar: TFindVar;
     FVarValue: TVarValue;
-    procedure ClearTree;
-    procedure SetExpr(v: string);
-    procedure Rebuild;
-    function EvalTree(p: TEvalNode): string;
-    function ValidateExpression(v: string): string;
-    procedure ProcessExpression(v: string; p: TEvalNode);
-    function FindFunc(AName: string): TEvalFunction;
-    function FindPos(v: string): integer;
-    procedure _err_incompatible_types(const callfunc: string; const s1, s2: string);
-    // operators
-    function OP_Add(v1, v2: string): string;
-    function OP_Subtract(v1, v2: string): string;
-    function OP_Multiply(v1, v2: string): string;
-    function OP_Divide(v1, v2: string): string;
-    function OP_And(v1, v2: string): string;
-    function OP_Or(v1, v2: string): string;
-    function OP_XOR(v1, v2: string): string;
-    function OP_Equal(v1, v2: string): string;
-    function OP_Less(v1, v2: string): string;
-    function OP_Greater(v1, v2: string): string;
-    function OP_Not(v1, v2: string): string;
-    // built-in functions
-    function PF_str_cat(p: TDStrings): string;
-    function PF_str_len(p: TDStrings): string;
-    function PF_str_insert(p: TDStrings): string;
-    function PF_str_delete(p: TDStrings): string;
-    function PF_str_pos(p: TDStrings): string;
-    function PF_if(p: TDStrings): string;
-    // Math functions
-    function PF_val(p: TDStrings): string;
-    function PF_abs(p: TDStrings): string;
-    function PF_min(p: TDStrings): string;
-    function PF_max(p: TDStrings): string;
-    function PF_exp(p: TDStrings): string;
-    function PF_log(p: TDStrings): string;
-    function PF_log10(p: TDStrings): string;
-    function PF_log2(p: TDStrings): string;
-    function PF_ceil(p: TDStrings): string;
-    function PF_floor(p: TDStrings): string;
-    function PF_round(p: TDStrings): string;
-    function PF_trunc(p: TDStrings): string;
-    function PF_sqr(p: TDStrings): string;
-    function PF_sqrt(p: TDStrings): string;
-    function PF_frac(p: TDStrings): string;
-    function PF_power(p: TDStrings): string;
-    // Triginometry functions
-    function PF_sin(p: TDStrings): string;
-    function PF_cos(p: TDStrings): string;
-    function PF_tan(p: TDStrings): string;
-    function PF_asin(p: TDStrings): string;
-    function PF_acos(p: TDStrings): string;
-    function PF_atan(p: TDStrings): string;
-    function PF_sinh(p: TDStrings): string;
-    function PF_cosh(p: TDStrings): string;
-    function PF_tanh(p: TDStrings): string;
-    function PF_atan2(p: TDStrings): string;
-    function PF_VectorAngle(p: TDStrings): string;
+    function GetExpr: string;
+    procedure SetExpr(const v: string);
   public
-    property Expr: string read FExpr write SetExpr;
+    property Expr: string read GetExpr write SetExpr;
     property FindVar: TFindVar read FFindVar write FFindVar;
     property VarValue: TVarValue read FVarValue write FVarValue;
-    constructor Create; override;
+    constructor Create; virtual;
     destructor Destroy; override;
     function Value: string;
     function EvaluateExpression(const aexpr: string): string;
@@ -165,16 +67,6 @@ type
     procedure AddFunc(aname: string; afunc: TExtFunc; anump: integer); overload; virtual;
   end;
 
-const
-  AllowedFirstChar: charset_t = ['a'..'z', 'A'..'Z', '_'];
-  AllowedChar: charset_t = ['a'..'z', 'A'..'Z', '_', '0'..'9', '(', ')', ',',
-  '"', ' '];
-  HighMarks: charset_t = ['/', '*'];
-  LowMarks: charset_t = ['+', '-'];
-  BoolMarks: charset_t = ['&', '|', '^', '=', '<', '>', '!']; // AND, OR, XOR
-  Marks: charset_t = ['/', '*', '+', '-', '&', '|', '^', '=', '<', '>', '!'];
-  InputMarks: charset_t = ['/', '*', '+', '-', '=', '<', '>', '&', '|', '^', '!'];
-
 //==============================================================================
 //
 // StrIsBool
@@ -199,6 +91,8 @@ function StrToBool(v: string): boolean;
 //==============================================================================
 //
 // StripStr
+//
+// removes leading and trailing quote marks
 //
 //==============================================================================
 function StripStr(v: string): string;
@@ -206,160 +100,61 @@ function StripStr(v: string): string;
 implementation
 
 uses
-  Math,
+  SysUtils,
+  DelphiDoom.Engine.Scanner.Log,
+  DelphiDoom.Scanner.Expression.Builtins,
   i_system;
 
+type
+  // the variables of the expressions are the events of the evaluator
+  TEvaluatorVariables = class(TInterfacedObject, IExpressionVariables)
+  private
+    FOwner: TEvaluator;
+  public
+    constructor Create(const AOwner: TEvaluator);
+    function Contains(const AName: string): Boolean;
+    function ValueOf(const AName: string): string;
+  end;
+
 //==============================================================================
-// StripStr
 //
-////////////////////////////////////////////////////////////////////////////////
-// helper functions
-// removes leading and trailing quote marks
+// TEvaluatorVariables.Create
+//
+//==============================================================================
+constructor TEvaluatorVariables.Create(const AOwner: TEvaluator);
+begin
+  inherited Create;
+  FOwner := AOwner;
+end;
+
+//==============================================================================
+//
+// TEvaluatorVariables.Contains
+//
+//==============================================================================
+function TEvaluatorVariables.Contains(const AName: string): Boolean;
+begin
+  Result := Assigned(FOwner.FFindVar) and FOwner.FFindVar(AName);
+end;
+
+//==============================================================================
+//
+// TEvaluatorVariables.ValueOf
+//
+//==============================================================================
+function TEvaluatorVariables.ValueOf(const AName: string): string;
+begin
+  Result := FOwner.FVarValue(AName);
+end;
+
+//==============================================================================
+//
+// StripStr
 //
 //==============================================================================
 function StripStr(v: string): string;
 begin
-  Delete(v, 1, 1);
-  Delete(v, Length(v), 1);
-  Result := v;
-end;
-
-// splits a string at the first position of a semicolon, cares about
-// quoted parts
-//
-//==============================================================================
-procedure Split(var s, r: string);
-var
-  i, p, l, bracket: integer;
-  quote: boolean;
-begin
-  p := 0;
-  i := 1;
-  l := System.Length(r);
-  quote := false;
-  bracket := 0;
-  while (p = 0) and (i < l) do
-  begin
-    if r[i] = '"' then
-      quote := not quote
-    else if r[i] = '(' then
-      Inc(bracket)
-    else if r[i] = ')' then
-      Dec(bracket);
-    if not quote and (bracket = 0) and (r[i] = ',') then
-      p := i;
-    Inc(i);
-  end;
-  if p = 0 then
-  begin
-    s := r;
-    r := '';
-  end
-  else
-  begin
-    s := System.Copy(r, 1, p - 1);
-    System.Delete(r, 1, p);
-  end;
-end;
-
-//==============================================================================
-// SplitToList
-//
-// splits a string at the position of semicolons into a list
-//
-//==============================================================================
-procedure SplitToList(s: string; l: TDStrings);
-var
-  h: string;
-begin
-  while s <> '' do
-  begin
-    Split(h, s);
-    if h <> '' then
-      l.Add(h);
-  end;
-end;
-
-//==============================================================================
-// SubstituteMarks
-//
-// substitutes symbols, except when quoted
-//
-//==============================================================================
-function SubstituteMarks(s, sout, sin: string): string;
-var
-  quote: boolean;
-  i: integer;
-  a, b, hs: string;
-begin
-  quote := false;
-  i := 1;
-  while i < System.Length(s) do
-  begin
-    if s[i] = '"' then
-      quote := not quote;
-    if not quote then
-    begin
-      hs := System.Copy(s, i, System.Length(sout));
-      if hs = sout then
-      begin
-        a := System.Copy(s, 1, i - 1);
-        b := System.Copy(s, i + System.Length(sout), System.Length(s));
-        s := a + sin + b;
-      end;
-    end;
-    Inc(i);
-  end;
-  Result := s;
-end;
-
-//==============================================================================
-// SubstituteWords
-//
-// substitutes words, these must be separated by brackets or spaces
-//
-//==============================================================================
-function SubstituteWords(s, sout, sin: string): string;
-var
-  p: integer;
-  b: boolean;
-  v: string;
-begin
-  // simple case
-  if s = sout then
-  begin
-    Result := sin;
-    exit;
-  end;
-
-  v := s;
-  Result := '';
-  repeat
-    p := System.Pos(sout, v);
-    b := false;
-    if p > 0 then
-    begin
-      // divided with spaces at beginning and end
-      b := (p = 1) and (v[p + System.Length(sout)] = ' ');
-      b := b or ((p = System.Length(v) - System.Length(sout) + 1) and
-        (v[p - 1] = ' '));
-      // divided with spaces or brackets, that must be an eben number
-      if not b then
-      begin
-        b := (v[p - 1] = '(') and (v[p + System.Length(sout)] = ')');
-        b := b or (v[p - 1] = ')') and (v[p + System.Length(sout)] = '(');
-        b := b or (v[p - 1] = ' ') and (v[p + System.Length(sout)] = ' ');
-      end;
-    end;
-    if b then
-    begin
-      System.Delete(v, p, System.Length(sout));
-      System.Insert(sin, v, p);
-      Result := Result + System.Copy(v, 1, p + System.Length(sin));
-      System.Delete(v, 1, p + System.Length(sin));
-    end;
-  until not b;
-  Result := Result + v;
+  result := TExpressionBuiltins.StripQuotes(v);
 end;
 
 //==============================================================================
@@ -368,11 +163,8 @@ end;
 //
 //==============================================================================
 function StrIsBool(const s: string): boolean;
-var
-  v: string;
 begin
-  v := strupper(s);
-  result := (v = 'FALSE') or (v = 'TRUE');
+  result := TExpressionEvaluator.IsBoolean(s);
 end;
 
 //==============================================================================
@@ -382,10 +174,7 @@ end;
 //==============================================================================
 function BoolToStr(v: boolean): string;
 begin
-  if v then
-    result := 'TRUE'
-  else
-    result := 'FALSE';
+  result := TExpressionEvaluator.BooleanToText(v);
 end;
 
 //==============================================================================
@@ -395,301 +184,21 @@ end;
 //==============================================================================
 function StrToBool(v: string): boolean;
 begin
-  result := strupper(v) = 'TRUE';
-end;
-
-//==============================================================================
-// TEvalFunction.Create
-//
-////////////////////////////////////////////////////////////////////////////////
-// TEvalFunction
-//
-//==============================================================================
-constructor TEvalFunction.Create(aname: string; afunc: TObjFunc; anum: integer);
-begin
-  Inherited Create;
-  Name := aname;
-  FEvalObjFunc := afunc;
-  FEvalFunc := nil;
-  FNumParams := anum;
-end;
-
-//==============================================================================
-//
-// TEvalFunction.Create
-//
-//==============================================================================
-constructor TEvalFunction.Create(aname: string; afunc: TExtFunc; anum: integer);
-begin
-  Inherited Create;
-  Name := aname;
-  FEvalObjFunc := nil;
-  FEvalFunc := afunc;
-  FNumParams := anum;
-end;
-
-//==============================================================================
-//
-// TEvalFunction.Value
-//
-//==============================================================================
-function TEvalFunction.Value(p: TDStrings): string;
-begin
-  if not Assigned(FEvalObjFunc) and not Assigned(FEvalFunc) then
-    I_Error('TEvalFunction.Value(): No function assigned for %s()', [FName]);
-  if (p.Count <> FNumParams) and (FNumParams > -1) then
-  begin
-    I_Warning('TEvalFunction.Value(): Wrong number of parameters in function %s'#13#10, [FName]);
-    result := '';
-    exit;
-  end;
-  if Assigned(FEvalObjFunc) then
-    result := FEvalObjFunc(p)
-  else if Assigned(FEvalFunc) then
-    result := FEvalFunc(p);
-end;
-
-//==============================================================================
-//
-// TEvalFunction.Value
-//
-//==============================================================================
-function TEvalFunction.Value(v: string): string;
-var
-  h: TDStringList;
-begin
-  h := TDStringList.Create;
-  SplitToList(v, h);
-  Result := Value(h);
-  h.Free;
-end;
-
-//==============================================================================
-//
-// TEvalFunction.SetName
-//
-//==============================================================================
-procedure TEvalFunction.SetName(v: string);
-begin
-  FName := strupper(v);
-end;
-
-//==============================================================================
-// TEvalList.Create
-//
-////////////////////////////////////////////////////////////////////////////////
-// TEvalList
-//
-//==============================================================================
-constructor TEvalList.Create;
-begin
-  Inherited;
-  fList := nil;
-  fNumItems := 0;
-  fRealNumItems := 0;
-end;
-
-//==============================================================================
-//
-// TEvalList.Destroy
-//
-//==============================================================================
-destructor TEvalList.Destroy;
-begin
-  Clear;
-  Inherited;
-end;
-
-//==============================================================================
-//
-// TEvalList.Get
-//
-//==============================================================================
-function TEvalList.Get(Index: Integer): TObject;
-begin
-  if (Index < 0) or (Index >= fNumItems) then
-    result := nil
-  else
-    result := fList[Index];
-end;
-
-//==============================================================================
-//
-// TEvalList.Put
-//
-//==============================================================================
-procedure TEvalList.Put(Index: Integer; const value: TObject);
-begin
-  fList[Index] := value;
-end;
-
-//==============================================================================
-//
-// TEvalList.Grow
-//
-//==============================================================================
-procedure TEvalList.Grow;
-var
-  newrealitems: integer;
-begin
-  if fNumItems >= fRealNumItems then
-  begin
-    if fRealNumItems < 8 then
-      newrealitems := 8
-    else if fRealNumItems < 32 then
-      newrealitems := 32
-    else if fRealNumItems < 128 then
-      newrealitems := fRealNumItems + 32
-    else
-      newrealitems := fRealNumItems + 64;
-    realloc(pointer(fList), fRealNumItems * SizeOf(TObject), newrealitems * SizeOf(TObject));
-    fRealNumItems := newrealitems;
-  end;
-end;
-
-//==============================================================================
-//
-// TEvalList.Add
-//
-//==============================================================================
-function TEvalList.Add(const value: TObject): integer;
-begin
-  Grow;
-  Put(fNumItems, value);
-  result := fNumItems;
-  inc(fNumItems);
-end;
-
-//==============================================================================
-//
-// TEvalList.Insert
-//
-//==============================================================================
-procedure TEvalList.Insert(Index: Integer; Item: TObject);
-begin
-  if (Index < 0) or (Index > fNumItems) then
-  begin
-    I_Error('TEvalList.Insert(): Index (%d) out of bounds', [index]);
-    exit;
-  end;
-  Grow;
-  if Index < fNumItems then
-    Move(FList^[Index], FList^[Index + 1], (fNumItems - Index) * SizeOf(Pointer));
-  fList^[Index] := Item;
-  Inc(fNumItems);
-end;
-
-//==============================================================================
-//
-// TEvalList.Delete
-//
-//==============================================================================
-function TEvalList.Delete(const Index: integer): boolean;
-var
-  i: integer;
-begin
-  if (Index < 0) or (Index >= fNumItems) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  fList[index].Free;
-  for i := Index + 1 to fNumItems - 1 do
-    fList[i - 1] := fList[i];
-
-  dec(fNumItems);
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// TEvalList.IndexOf
-//
-//==============================================================================
-function TEvalList.IndexOf(const value: TObject): integer;
-var
-  i: integer;
-begin
-  for i := 0 to fNumItems - 1 do
-    if fList[i] = value then
-    begin
-      result := i;
-      exit;
-    end;
-  result := -1;
-end;
-
-//==============================================================================
-//
-// TEvalList.Clear
-//
-//==============================================================================
-procedure TEvalList.Clear;
-var
-  i: integer;
-begin
-  for i := 0 to fNumItems - 1 do
-    fList[i].Free;
-  realloc(pointer(fList), fRealNumItems * SizeOf(TObject), 0);
-  fList := nil;
-  fNumItems := 0;
-  fRealNumItems := 0;
+  result := TExpressionEvaluator.TextToBoolean(v);
 end;
 
 //==============================================================================
 // TEvaluator.Create
 //
-////////////////////////////////////////////////////////////////////////////////
 // TEvaluator
 //
 //==============================================================================
 constructor TEvaluator.Create;
 begin
   inherited Create;
-  FRoot := nil;
-  FExpr := '';
   FFindVar := nil;
   FVarValue := nil;
-  // built-in functions
-  AddFunc('STRCAT', PF_str_cat, 2);
-  AddFunc('STRLEN', PF_str_len, 1);
-  AddFunc('STRINS', PF_str_insert, 3);
-  AddFunc('STRDEF', PF_str_delete, 3);
-  AddFunc('STRPOS', PF_str_pos, 2);
-  AddFunc('IF', PF_if, 3);
-  AddFunc('IFF', PF_if, 3);
-  // Math Functions
-  AddFunc('VAL', PF_val, 1);
-  AddFunc('ABS', PF_abs, 1);
-  AddFunc('MIN', PF_min, -1);
-  AddFunc('MAX', PF_max, -1);
-  AddFunc('EXP', PF_exp, 1);
-  AddFunc('LOG', PF_log, 1);
-  AddFunc('LOG10', PF_log10, 1);
-  AddFunc('LOG2', PF_log2, 1);
-  AddFunc('CEIL', PF_ceil, 1);
-  AddFunc('FLOOR', PF_floor, 1);
-  AddFunc('ROUND', PF_round, 1);
-  AddFunc('TRUNC', PF_trunc, 1);
-  AddFunc('INT', PF_trunc, 1);
-  AddFunc('SQR', PF_sqr, 1);
-  AddFunc('SQRT', PF_sqrt, 1);
-  AddFunc('FRAC', PF_frac, 1);
-  AddFunc('POWER', PF_power, 1);
-  // Trigonometry Functions
-  AddFunc('SIN', PF_sin, 1);
-  AddFunc('COS', PF_cos, 1);
-  AddFunc('TAN', PF_tan, 1);
-  AddFunc('ASIN', PF_asin, 1);
-  AddFunc('ACOS', PF_acos, 1);
-  AddFunc('ATAN', PF_atan, 1);
-  AddFunc('SINH', PF_sinh, 1);
-  AddFunc('COSH', PF_cosh, 1);
-  AddFunc('TANH', PF_tanh, 1);
-  AddFunc('ATAN2', PF_atan2, 2);
-  AddFunc('VECTORANGLE', PF_VectorAngle, 2);
+  FImpl := TExpressionEvaluator.Create(TEngineScannerLog.Create, TEvaluatorVariables.Create(Self));
 end;
 
 //==============================================================================
@@ -699,32 +208,28 @@ end;
 //==============================================================================
 destructor TEvaluator.Destroy;
 begin
-  ClearTree;
+  FImpl.Free;
   inherited Destroy;
 end;
 
 //==============================================================================
 //
-// TEvaluator.ClearTree
+// TEvaluator.GetExpr
 //
 //==============================================================================
-procedure TEvaluator.ClearTree;
-
-  procedure DoClear(v: TEvalNode);
-  var
-    i: integer;
-  begin
-    if not Assigned(v) then
-      exit;
-    for i := 0 to v.Count - 1 do
-      DoClear(v[i]);
-    while v.Count > 0 do
-      v.Delete(0);
-  end;
-
+function TEvaluator.GetExpr: string;
 begin
-  DoClear(FRoot);
-  FreeAndNil(FRoot);
+  result := FImpl.Expression;
+end;
+
+//==============================================================================
+//
+// TEvaluator.SetExpr
+//
+//==============================================================================
+procedure TEvaluator.SetExpr(const v: string);
+begin
+  FImpl.Expression := v;
 end;
 
 //==============================================================================
@@ -734,7 +239,7 @@ end;
 //==============================================================================
 function TEvaluator.Value: string;
 begin
-  Result := EvalTree(FRoot);
+  result := FImpl.Value;
 end;
 
 //==============================================================================
@@ -744,27 +249,7 @@ end;
 //==============================================================================
 function TEvaluator.EvaluateExpression(const aexpr: string): string;
 begin
-  SetExpr(aexpr);
-  Result := EvalTree(FRoot);
-end;
-
-//==============================================================================
-// ValidIdent
-//
-// List of functions is sorted to speed up search. No duplicate entries allowed
-//
-//==============================================================================
-function ValidIdent(const Ident: string): Boolean;
-const
-  Alpha = ['A'..'Z', 'a'..'z', '_'];
-  AlphaNumeric = Alpha + ['0'..'9'];
-var
-  I: Integer;
-begin
-  Result := False;
-  if (Length(Ident) = 0) or not (Ident[1] in Alpha) then Exit;
-  for I := 2 to Length(Ident) do if not (Ident[I] in AlphaNumeric) then Exit;
-  Result := True;
+  result := FImpl.Evaluate(aexpr);
 end;
 
 //==============================================================================
@@ -774,12 +259,26 @@ end;
 //==============================================================================
 procedure TEvaluator.AddFunc(aname: string; afunc: TObjFunc; anump: integer);
 begin
-  strupperproc(aname);
-  if not ValidIdent(aname) then
-    I_Error('TEvaluator.AddFunc(): Invalid function name "%s"', [aname]);
-  if Assigned(FindFunc(aname)) then
-    I_Error('TEvaluator.AddFunc(): Function name "%s" already used', [aname]);
-  Insert(FindPos(aname), TEvalFunction.Create(aname, afunc, anump));
+  try
+    FImpl.AddFunction(aname,
+      function(const AParams: TArray<string>): string
+      var
+        l: TDStringList;
+        i: integer;
+      begin
+        l := TDStringList.Create;
+        try
+          for i := 0 to High(AParams) do
+            l.Add(AParams[i]);
+          result := afunc(l);
+        finally
+          l.Free;
+        end;
+      end, anump);
+  except
+    on E: EExpressionException do
+      I_Error(E.Message);
+  end;
 end;
 
 //==============================================================================
@@ -789,913 +288,26 @@ end;
 //==============================================================================
 procedure TEvaluator.AddFunc(aname: string; afunc: TExtFunc; anump: integer);
 begin
-  strupperproc(aname);
-  if not ValidIdent(aname) then
-    I_Error('TEvaluator.AddFunc(): Invalid function name "%s"', [aname]);
-  if Assigned(FindFunc(aname)) then
-    I_Error('TEvaluator.AddFunc(): Function name "%s" already used', [aname]);
-  Insert(FindPos(aname), TEvalFunction.Create(aname, afunc, anump));
-end;
-
-//==============================================================================
-// TEvaluator.SetExpr
-//
-// private methods
-//
-//==============================================================================
-procedure TEvaluator.SetExpr(v: string);
-begin
-  FExpr := ValidateExpression(v);
-  Rebuild;
-end;
-
-//==============================================================================
-//
-// TEvaluator.EvalTree
-//
-//==============================================================================
-function TEvaluator.EvalTree(p: TEvalNode): string;
-var
-  s: string;
-  i: integer;
-begin
-  Result := p.FExpr;
-  if p.FOperator <> '' then
-  begin
-    case p.FOperator of
-      '/': Result := OP_Divide(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '*': Result := OP_Multiply(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '+': Result := OP_Add(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '-': Result := OP_Subtract(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '&': Result := OP_AND(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '|': Result := OP_OR(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '^': Result := OP_XOR(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '=': Result := OP_Equal(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '<': Result := OP_Less(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '>': Result := OP_Greater(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-      '!': Result := OP_Not(EvalTree(p.Node[0]), EvalTree(p.Node[1]));
-    end;
-  end;
-  if Assigned(p.FFunction) then
-  begin
-    // build argument list
-    s := '';
-    for i := 0 to p.Count - 1 do
-      s := s + ',' + EvalTree(p.Node[i]);
-    System.Delete(s, 1, 1);
-    // evaluate function
-    Result := p.FFunction.Value(s);
-  end;
-end;
-
-//==============================================================================
-//
-// TEvaluator.Rebuild
-//
-//==============================================================================
-procedure TEvaluator.Rebuild;
-begin
-  ClearTree;
-  FRoot := TEvalNode.Create;
-  ProcessExpression(FExpr, FRoot);
-end;
-
-//==============================================================================
-//
-// TEvaluator.ProcessExpression
-//
-//==============================================================================
-procedure TEvaluator.ProcessExpression(v: string; p: TEvalNode);
-
-  function MarkPos(s: string; c: charset_t): integer;
-  var
-    i, bracket: integer;
-    quote: boolean;
-    ch: integer;
-  begin
-    Result := -1;
-    i := Length(s);
-    bracket := 0;
-    quote := false;
-    while (Result < 0) and (i > 0) do
-    begin
-      ch := Ord(s[i]);
-      if ch = Ord('"') then
-        quote := not quote;
-      if not quote then
+  try
+    FImpl.AddFunction(aname,
+      function(const AParams: TArray<string>): string
+      var
+        l: TDStringList;
+        i: integer;
       begin
-        if ch = Ord('(') then
-          inc(bracket)
-        else if ch = Ord(')') then
-          dec(bracket);
-        if bracket = 0 then
-          if Chr(ch) in c then
-            Result := i;
-      end;
-      dec(i);
-    end;
-  end;
-
-  function StrIsFunc(s: string): boolean;
-  begin
-    Result := v[1] in AllowedFirstChar;
-  end;
-
-  function StrIsVar(s: string): boolean;
-  begin
-    Result := false;
-    if Assigned(FFindVar) then
-      Result := FFindVar(s);
-  end;
-
-var
-  h: integer;
-  fn, fp, s: string;
-begin
-  if v = '' then
-    exit;
-  // remove enclosing brackets
-  if MarkPos(v, Marks) < 0 then
-  begin
-    repeat
-      if (v[1] = '(') and (v[Length(v)] = ')') then
-        v := System.Copy(v, 2, Length(v) - 2);
-    until (v[1] <> '(') or (v[Length(v)] <> ')');
-  end;
-  h := MarkPos(v, LowMarks);
-  if h = 1 then
-  begin
-    v := '0' + v;
-    h := 2;
-  end;
-  if h < 0 then
-    h := MarkPos(v, BoolMarks);
-  if h < 0 then
-    h := MarkPos(v, HighMarks);
-  if h = System.Length(v) then
-    I_Warning('TEvaluator.ProcessExpression(): Invalid expression "%s"'#13#10, [v]);
-  if h > -1 then
-  begin
-    p.FOperator := v[h];
-    ProcessExpression(System.Copy(v, 1, h - 1), p.AddNode);
-    ProcessExpression(System.Copy(v, h + 1, System.Length(v)), p.AddNode);
-  end
-  else
-  begin
-    if StrIsVar(v) then
-      v := fVarValue(v);
-    if StrIsFunc(v) then
-    begin
-      // divide in name and parameters
-      fn := v;
-      fp := '';
-      h := System.Pos('(', fn);
-      if h > 0 then
-      begin
-        fn := System.Copy(v, 1, h - 1);
-        fp := System.Copy(v, h + 1, System.Length(v));
-        System.Delete(fp, System.Length(fp), 1);
-      end;
-      if (fp = '') and ((fn = 'TRUE') or (fn = 'FALSE') or (fn = 'INF')) then
-        p.FExpr := fn
-      else
-      begin
-        p.FFunction := FindFunc(fn);
-        if not Assigned(p.FFunction) then
-          I_Warning('TEvaluator.ProcessExpression(): Unknown function "%s"'#13#10, [fn]);
-        // one node for each argument
-        while fp <> '' do
-        begin
-          Split(s, fp);
-          ProcessExpression(s, p.AddNode);
+        l := TDStringList.Create;
+        try
+          for i := 0 to High(AParams) do
+            l.Add(AParams[i]);
+          result := afunc(l);
+        finally
+          l.Free;
         end;
-      end;
-    end
-    else
-      p.FExpr := v
+      end, anump);
+  except
+    on E: EExpressionException do
+      I_Error(E.Message);
   end;
-end;
-
-//==============================================================================
-//
-// TEvaluator.ValidateExpression
-//
-//==============================================================================
-function TEvaluator.ValidateExpression(v: string): string;
-var
-  braclevel, i: Integer;
-  quote: boolean;
-begin
-  Result := '0';
-  quote := false;
-  braclevel := 0;
-  for i := 1 to Length(v) do
-  begin
-    if v[i] = '"' then
-      quote := not quote;
-    if (not quote) and (v[i] = '(') then
-      inc(braclevel);
-    if (not quote) and (v[i] = ')') then
-      dec(braclevel);
-    if not quote then
-    begin
-      if not ((v[i] in AllowedChar) or (v[i] in InputMarks) or (v[i] = '.')) then
-      begin
-        I_Warning('TEvaluator.ValidateExpression(): Illegal character ' + v[i] + ' while validating "%s"'#13#10, [v]);
-        v[i] := '_';
-      end
-      else
-        v[i] := toupper(v[i]);
-    end;
-  end;
-  if braclevel <> 0 then
-    I_Warning('TEvaluator.ValidateExpression(): Wrong number of brackets "%s"'#13#10, [v]);
-
-  // substitute boolean and multi-character operators
-  v := SubstituteWords(v, 'AND', '&');
-  v := SubstituteWords(v, 'XOR', '^');
-  v := SubstituteWords(v, 'OR', '|');
-  v := SubstituteWords(v, 'NOT', 'TRUE^');
-  v := SubstituteMarks(v, '<>', '!');
-  v := SubstituteMarks(v, '!=', '!');
-  v := SubstituteMarks(v, '==', '=');
-
-  // remove spaces
-  i := 0;
-  quote := false;
-  while i < Length(v) do
-  begin
-    inc(i);
-    if v[i] = '"' then
-      quote := not quote;
-    if (not quote) and (v[i] = ' ') then
-    begin
-      System.Delete(v, i, 1);
-      dec(i);
-    end;
-  end;
-  Result := v;
-end;
-
-//==============================================================================
-//
-// TEvaluator.FindFunc
-//
-//==============================================================================
-function TEvaluator.FindFunc(AName: string): TEvalFunction;
-var
-  a, b, m: integer;
-begin
-  Result := nil;
-  if Count = 0 then
-    exit;
-  a := 0;
-  b := Count - 1;
-  while (b - a > 1) do
-  begin
-    m := (a + b) div 2;
-    if AName > TEvalFunction(Objects[m]).Name then
-      a := m
-    else
-      b := m;
-  end;
-
-  if TEvalFunction(Objects[a]).Name = AName then
-    Result := TEvalFunction(Objects[a]);
-  if TEvalFunction(Objects[b]).Name = AName then
-    Result := TEvalFunction(Objects[b]);
-end;
-
-//==============================================================================
-// TEvaluator.FindPos
-//
-// looks for insert position
-//
-//==============================================================================
-function TEvaluator.FindPos(v: string): integer;
-var
-  a, b, m: integer;
-begin
-  Result := 0;
-  if Count = 0 then
-    exit;
-  if v < TEvalFunction(Objects[0]).Name then
-    exit;
-  if v > TEvalFunction(Objects[Count - 1]).Name then
-  begin
-    Result := Count;
-    exit;
-  end;
-  a := 0;
-  b := Count - 1;
-  while b - a > 1 do
-  begin
-    m := (a + b) div 2;
-    if v < TEvalFunction(Objects[m]).Name then
-      b := m
-    else
-      a := m;
-  end;
-  Result := b;
-end;
-
-//==============================================================================
-// TEvaluator._err_incompatible_types
-//
-////////////////////////////////////////////////////////////////////////////////
-// arithmetic operators
-////////////////////////////////////////////////////////////////////////////////
-//
-//==============================================================================
-procedure TEvaluator._err_incompatible_types(const callfunc: string; const s1, s2: string);
-begin
-  I_Warning('TEvaluator.' + callfunc + '(): Incompatible types ("%s", "%s)'#13#10, [s1, s2]);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Add
-//
-//==============================================================================
-function TEvaluator.OP_Add(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := ftoa(atof(v1) + atof(v2))
-  else if (v1 = 'INF') or (v2 = 'INF') then
-    Result := 'INF'
-  else
-    _err_incompatible_types('OP_Add', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Subtract
-//
-//==============================================================================
-function TEvaluator.OP_Subtract(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := ftoa(atof(v1) - atof(v2))
-  else if v1 = 'INF' then
-  begin
-    if v2 <> 'INF' then
-      Result := 'INF'
-    else
-      Result := '0';
-  end
-  else
-    _err_incompatible_types('OP_Subtract', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Multiply
-//
-//==============================================================================
-function TEvaluator.OP_Multiply(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := ftoa(atof(v1) * atof(v2))
-  else if (v1 = 'INF') or (v2 = 'INF') then
-    Result := 'INF'
-  else
-    _err_incompatible_types('OP_Multiply', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Divide
-//
-//==============================================================================
-function TEvaluator.OP_Divide(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := ftoa(atof(v1) / atof(v2))
-  else if (v1 = 'INF') and (v2 = 'INF') then
-    Result := '1'
-  else if v1 = 'INF' then
-    Result := 'INF'
-  else if v2 = 'INF' then
-    Result := '0'
-  else
-    _err_incompatible_types('OP_Divide', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_And
-//
-//==============================================================================
-function TEvaluator.OP_And(v1, v2: string): string;
-begin
-  if StrIsBool(v1) and StrIsBool(v2) then
-    Result := BoolToStr(StrToBool(v1) and StrToBool(v2))
-  else if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := itoa(round(atof(v1)) and round(atof(v2)))
-  else
-    _err_incompatible_types('OP_And', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Or
-//
-//==============================================================================
-function TEvaluator.OP_Or(v1, v2: string): string;
-begin
-  if StrIsBool(v1) and StrIsBool(v2) then
-    Result := BoolToStr(StrToBool(v1) or StrToBool(v2))
-  else if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := itoa(round(atof(v1)) or round(atof(v2)))
-  else
-    _err_incompatible_types('OP_OR', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_XOR
-//
-//==============================================================================
-function TEvaluator.OP_XOR(v1, v2: string): string;
-begin
-  if StrIsBool(v1) and StrIsBool(v2) then
-    Result := BoolToStr(StrToBool(v1) xor StrToBool(v2))
-  else if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := itoa(round(atof(v1)) xor round(atof(v2)))
-  else if StrIsBool(v1) and StrIsFloat(v2) then
-  begin
-    if v1 = 'TRUE' then
-      Result := itoa($FFFFFFFF xor round(atof(v2)))
-    else
-      Result := itoa(round(atof(v2)))
-  end
-  else if StrIsFloat(v1) and StrIsBool(v2) then
-  begin
-    if v2 = 'TRUE' then
-      Result := itoa(round(atof(v1)) xor $FFFFFFFF)
-    else
-      Result := itoa(round(atof(v1)))
-  end
-  else
-    _err_incompatible_types('OP_XOR', v1, v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Equal
-//
-//==============================================================================
-function TEvaluator.OP_Equal(v1, v2: string): string;
-begin
-  Result := BoolToStr(v1 = v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Less
-//
-//==============================================================================
-function TEvaluator.OP_Less(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := BoolToStr(atof(v1) < atof(v2))
-  else
-    Result := BoolToStr(v1 < v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Greater
-//
-//==============================================================================
-function TEvaluator.OP_Greater(v1, v2: string): string;
-begin
-  if StrIsFloat(v1) and StrIsFloat(v2) then
-    Result := BoolToStr(atof(v1) > atof(v2))
-  else
-    Result := BoolToStr(v1 > v2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.OP_Not
-//
-//==============================================================================
-function TEvaluator.OP_Not(v1, v2: string): string;
-begin
-  Result := BoolToStr(v1 <> v2);
-end;
-
-//==============================================================================
-// TEvaluator.PF_str_cat
-//
-////////////////////////////////////////////////////////////////////////////////
-// TMParser built-in functions
-////////////////////////////////////////////////////////////////////////////////
-//
-//==============================================================================
-function TEvaluator.PF_str_cat(p: TDStrings): string;
-begin
-  Result := p[0] + p[1];
-  System.Delete(Result, System.Length(p[0]), 2);
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_str_len
-//
-//==============================================================================
-function TEvaluator.PF_str_len(p: TDStrings): string;
-begin
-  Result := itoa(System.Length(p[0]) - 2);
-end;
-
-//==============================================================================
-// TEvaluator.PF_str_insert
-//
-// merges p[0] into p[1] at position p[2]
-//
-//==============================================================================
-function TEvaluator.PF_str_insert(p: TDStrings): string;
-begin
-  Result := StripStr(p[1]);
-  System.Insert(StripStr(p[0]), Result, atoi(p[2]));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_str_delete
-//
-//==============================================================================
-function TEvaluator.PF_str_delete(p: TDStrings): string;
-begin
-  Result := StripStr(p[0]);
-  System.Delete(Result, atoi(p[1]), atoi(p[2]));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_str_pos
-//
-//==============================================================================
-function TEvaluator.PF_str_pos(p: TDStrings): string;
-begin
-  Result := itoa(System.Pos(StripStr(p[0]), StripStr(p[1])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_if
-//
-//==============================================================================
-function TEvaluator.PF_if(p: TDStrings): string;
-begin
-  if StrIsBool(p[0]) then
-  begin
-    if StrToBool(p[0]) then
-      result := p[1]
-    else
-      result := p[2];
-  end
-  else if atof(p[0]) <> 0 then
-    result := p[1]
-  else
-    result := p[2];
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_val
-//
-//==============================================================================
-function TEvaluator.PF_val(p: TDStrings): string;
-begin
-  Result := p[0];
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_abs
-//
-//==============================================================================
-function TEvaluator.PF_abs(p: TDStrings): string;
-begin
-  Result := p[0];
-  if p[0][1] = '-' then
-    System.Delete(Result, 1, 1);
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_min
-//
-//==============================================================================
-function TEvaluator.PF_min(p: TDStrings): string;
-var
-  fmin, f1: float;
-  i: integer;
-begin
-  if p.Count < 2 then
-    I_Warning('TEvaluator.PF_min(): At least 2 parameters expected'#13#10);
-  fmin := 3E38;
-  for i := 0 to p.Count - 1 do
-  begin
-    f1 := atof(p[i]);
-    if f1 < fmin then
-      fmin := f1;
-  end;
-  result := ftoa(fmin);
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_max
-//
-//==============================================================================
-function TEvaluator.PF_max(p: TDStrings): string;
-var
-  fmax, f1: float;
-  i: integer;
-begin
-  if p.Count < 2 then
-    I_Warning('TEvaluator.PF_max(): At least 2 parameters expected'#13#10);
-  fmax := -3E38;
-  for i := 0 to p.Count - 1 do
-  begin
-    f1 := atof(p[i]);
-    if f1 > fmax then
-      fmax := f1;
-  end;
-  result := ftoa(fmax);
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_exp
-//
-//==============================================================================
-function TEvaluator.PF_exp(p: TDStrings): string;
-begin
-  result := ftoa(exp(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_log
-//
-//==============================================================================
-function TEvaluator.PF_log(p: TDStrings): string;
-begin
-  result := ftoa(ln(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_log10
-//
-//==============================================================================
-function TEvaluator.PF_log10(p: TDStrings): string;
-begin
-  result := ftoa(ln(atof(p[0]) * 0.4342944819032518));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_log2
-//
-//==============================================================================
-function TEvaluator.PF_log2(p: TDStrings): string;
-begin
-  result := ftoa(ln(atof(p[0]) * 1.4426950408889634));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_ceil
-//
-//==============================================================================
-function TEvaluator.PF_ceil(p: TDStrings): string;
-begin
-  result := ftoa(ceil(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_floor
-//
-//==============================================================================
-function TEvaluator.PF_floor(p: TDStrings): string;
-begin
-  result := ftoa(floor(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_round
-//
-//==============================================================================
-function TEvaluator.PF_round(p: TDStrings): string;
-begin
-  result := ftoa(round(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_trunc
-//
-//==============================================================================
-function TEvaluator.PF_trunc(p: TDStrings): string;
-begin
-  result := ftoa(trunc(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_sqr
-//
-//==============================================================================
-function TEvaluator.PF_sqr(p: TDStrings): string;
-begin
-  result := ftoa(sqr(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_sqrt
-//
-//==============================================================================
-function TEvaluator.PF_sqrt(p: TDStrings): string;
-begin
-  result := ftoa(sqrt(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_frac
-//
-//==============================================================================
-function TEvaluator.PF_frac(p: TDStrings): string;
-begin
-  result := ftoa(frac(atof(p[0])));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_power
-//
-//==============================================================================
-function TEvaluator.PF_power(p: TDStrings): string;
-begin
-  if (p[0] = 'INF') or (p[1] = 'INF') then
-    Result := 'INF'
-  else
-    Result := ftoa(Exp(atof(p[1]) * ln(atof(p[0]))));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_sin
-//
-//==============================================================================
-function TEvaluator.PF_sin(p: TDStrings): string;
-begin
-  result := ftoa(sin(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_cos
-//
-//==============================================================================
-function TEvaluator.PF_cos(p: TDStrings): string;
-begin
-  result := ftoa(cos(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_tan
-//
-//==============================================================================
-function TEvaluator.PF_tan(p: TDStrings): string;
-begin
-  result := ftoa(tan(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_asin
-//
-//==============================================================================
-function TEvaluator.PF_asin(p: TDStrings): string;
-begin
-  result := ftoa(arcsin(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_acos
-//
-//==============================================================================
-function TEvaluator.PF_acos(p: TDStrings): string;
-begin
-  result := ftoa(arccos(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_atan
-//
-//==============================================================================
-function TEvaluator.PF_atan(p: TDStrings): string;
-begin
-  result := ftoa(arctan(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_sinh
-//
-//==============================================================================
-function TEvaluator.PF_sinh(p: TDStrings): string;
-begin
-  result := ftoa(sinh(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_cosh
-//
-//==============================================================================
-function TEvaluator.PF_cosh(p: TDStrings): string;
-begin
-  result := ftoa(cosh(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_tanh
-//
-//==============================================================================
-function TEvaluator.PF_tanh(p: TDStrings): string;
-begin
-  result := ftoa(tanh(atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_atan2
-//
-//==============================================================================
-function TEvaluator.PF_atan2(p: TDStrings): string;
-begin
-  result := ftoa(arctan2(atof(p[0]) / 360 * 2 * pi, atof(p[1]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-//
-// TEvaluator.PF_VectorAngle
-//
-//==============================================================================
-function TEvaluator.PF_VectorAngle(p: TDStrings): string;
-begin
-  result := ftoa(arctan2(atof(p[1]) / 360 * 2 * pi, atof(p[0]) / 360 * 2 * pi));
-end;
-
-//==============================================================================
-// TEvalNode.Create
-//
-////////////////////////////////////////////////////////////////////////////////
-// TEvalNode
-//
-//==============================================================================
-constructor TEvalNode.Create;
-begin
-  FOperator := chr(0);
-  FExpr := '';
-  FFunction := nil;
-  Inherited;
-end;
-
-//==============================================================================
-//
-// TEvalNode.AddNode
-//
-//==============================================================================
-function TEvalNode.AddNode: TEvalNode;
-begin
-  Result := Node[Add(TEvalNode.Create)];
-end;
-
-//==============================================================================
-//
-// TEvalNode.GetNode
-//
-//==============================================================================
-function TEvalNode.GetNode(index: integer): TEvalNode;
-begin
-  Result := Objects[index] as TEvalNode;
 end;
 
 end.
-

@@ -1,0 +1,186 @@
+X|1+2|3
+X|1 + 2 * 3|7
+X|(1 + 2) * 3|9
+X|10 / 4|2.5
+X|10 / 3|3.33333325386047
+X|2 * 3 * 4|24
+X|10 - 3 - 2|5
+X|-5 + 3|-2
+X|-5|-5
+X|- 5|-5
+X|3 - -2|
+W|I_Warning: TEvaluator.ProcessExpression(): Invalid expression "3-"\x0D\x0AI_Warning: TEvaluator.OP_Subtract(): Incompatible types ("3", ")\x0D\x0AI_Warning: TEvaluator.OP_Subtract(): Incompatible types ("", "2)\x0D\x0A
+X|((4))|4
+X|(((4 + 1)))|5
+X|(1 + 2) * (3 + 4)|21
+X|1.5 + 2.25|3.75
+X|1,5 + 2|3.5
+X|.5 + .5|1
+X|0.1 + 0.2|0.300000011920929
+X|100000 * 100000|10000000000
+X|1 / 0|EXCEPTION
+X|0 / 0|EXCEPTION
+X|7 = 7|TRUE
+X|7 = 8|FALSE
+X|7 == 7|TRUE
+X|7 != 8|TRUE
+X|7 <> 7|FALSE
+X|3 < 4|TRUE
+X|4 < 3|FALSE
+X|3 > 2|TRUE
+X|2 > 3|FALSE
+X|"a" < "b"|TRUE
+X|"b" < "a"|FALSE
+X|"abc" = "abc"|TRUE
+X|"abc" = "ABC"|FALSE
+X|TRUE|TRUE
+X|FALSE|FALSE
+X|true|TRUE
+X|INF|INF
+X|INF + 1|INF
+X|INF - 1|INF
+X|1 - INF|
+W|I_Warning: TEvaluator.OP_Subtract(): Incompatible types ("1", "INF)\x0D\x0A
+X|INF - INF|0
+X|INF * 2|INF
+X|INF / INF|1
+X|INF / 2|INF
+X|2 / INF|0
+X|TRUE & FALSE|FALSE
+X|TRUE and FALSE|FALSE
+X|TRUE | FALSE|TRUE
+X|TRUE or FALSE|TRUE
+X|TRUE ^ TRUE|FALSE
+X|TRUE xor TRUE|FALSE
+X|not TRUE|FALSE
+X|not FALSE|TRUE
+X|6 & 3|2
+X|6 | 3|7
+X|6 ^ 3|5
+X|TRUE ^ 5|-6
+X|5 ^ TRUE|-6
+X|FALSE ^ 5|5
+X|5 ^ FALSE|5
+X|1 + "a"|
+W|I_Warning: TEvaluator.OP_Add(): Incompatible types ("1", ""a")\x0D\x0A
+X|"a" + "b"|
+W|I_Warning: TEvaluator.OP_Add(): Incompatible types (""a"", ""b")\x0D\x0A
+X|speed|8
+X|speed * 2|16
+X|speed + half|8.5
+X|name|"zombie"
+X|strcat(name, "!")|"zombie!"
+X|strlen(name)|6
+X|strlen("hello")|5
+X|strcat("ab", "cd")|"abcd"
+X|strins("XY", "abcd", 3)|abXYcd
+X|strdef("abcdef", 2, 3)|aef
+X|strpos("lo", "hello")|4
+X|strpos("zz", "hello")|0
+X|if(TRUE, 1, 2)|1
+X|if(FALSE, 1, 2)|2
+X|if(0, 1, 2)|2
+X|if(3, 1, 2)|1
+X|iff(1 < 2, "yes", "no")|"yes"
+X|if(speed > 5, speed * 2, 0)|16
+X|val(12)|12
+X|abs(-5)|5
+X|abs(5)|5
+X|abs(-2.5)|2.5
+X|min(3, 1, 2)|1
+X|max(3, 1, 2)|3
+X|min(4)|4
+W|I_Warning: TEvaluator.PF_min(): At least 2 parameters expected\x0D\x0A
+X|max(4)|4
+W|I_Warning: TEvaluator.PF_max(): At least 2 parameters expected\x0D\x0A
+X|exp(1)|2.71828174591064
+X|exp(0)|1
+X|log(1)|0
+X|log(10)|2.30258512496948
+X|log10(100)|3.77113771438599
+X|log2(8)|2.44595456123352
+X|ceil(2.1)|3
+X|ceil(-2.1)|-2
+X|floor(2.9)|2
+X|floor(-2.1)|-3
+X|round(2.5)|2
+X|round(3.5)|4
+X|round(-2.5)|-2
+X|trunc(2.9)|2
+X|int(-2.9)|-2
+X|sqr(3)|9
+X|sqrt(16)|4
+X|sqrt(2)|1.41421353816986
+X|frac(2.75)|0.75
+X|sin(30)|0.5
+X|sin(90)|1
+X|cos(60)|0.5
+X|cos(0)|1
+X|tan(45)|1
+X|asin(0.5)|0.00872675701975822
+X|acos(0.5)|1.56206953525543
+X|atan(1)|0.0174515210092068
+X|sinh(1)|0.0174541790038347
+X|cosh(1)|1.00015234947205
+X|tanh(1)|0.0174515210092068
+X|atan2(1, 1)|0.785398185253143
+X|vectorangle(1, 1)|0.785398185253143
+X|vectorangle(0, 1)|1.57079637050629
+X|double(21)|42
+X|double(speed)|16
+X|join(1, 2, 3)|[1][2][3]
+X|join()|
+X|double(1, 2)|
+W|I_Warning: TEvalFunction.Value(): Wrong number of parameters in function DOUBLE\x0D\x0A
+X|unknownfunc(1)|
+W|I_Warning: TEvaluator.ProcessExpression(): Unknown function "UNKNOWNFUNC"\x0D\x0A
+X|unknownfunc|
+W|I_Warning: TEvaluator.ProcessExpression(): Unknown function "UNKNOWNFUNC"\x0D\x0A
+X|foo + 1|
+W|I_Warning: TEvaluator.ProcessExpression(): Unknown function "FOO"\x0D\x0AI_Warning: TEvaluator.OP_Add(): Incompatible types ("", "1)\x0D\x0A
+X|2 $ 3|2_3
+W|I_Warning: TEvaluator.ValidateExpression(): Illegal character $ while validating "2 $ 3"\x0D\x0A
+X|2 # 3|2_3
+W|I_Warning: TEvaluator.ValidateExpression(): Illegal character # while validating "2 # 3"\x0D\x0A
+X|"quoted + text" = "quoted + text"|TRUE
+X|strcat("a,b", "c")|"a,bc"
+X|strlen("a,b")|3
+X|(1 + 2|
+W|I_Warning: TEvaluator.ValidateExpression(): Wrong number of brackets "(1 + 2"\x0D\x0AI_Warning: TEvaluator.OP_Add(): Incompatible types ("(1", "2)\x0D\x0A
+X|1 + 2)|1+2)
+W|I_Warning: TEvaluator.ValidateExpression(): Wrong number of brackets "1 + 2)"\x0D\x0A
+X|1 +|
+W|I_Warning: TEvaluator.ProcessExpression(): Invalid expression "1+"\x0D\x0AI_Warning: TEvaluator.OP_Add(): Incompatible types ("1", ")\x0D\x0A
+X|* 3|
+W|I_Warning: TEvaluator.OP_Multiply(): Incompatible types ("", "3)\x0D\x0A
+X|2 and 3|2
+X|4 or 1|5
+X|OR|
+W|I_Warning: TEvaluator.ProcessExpression(): Invalid expression "|"\x0D\x0AI_Warning: TEvaluator.OP_OR(): Incompatible types ("", ")\x0D\x0A
+X|AND|
+W|I_Warning: TEvaluator.ProcessExpression(): Invalid expression "&"\x0D\x0AI_Warning: TEvaluator.OP_And(): Incompatible types ("", ")\x0D\x0A
+X|andy|
+W|I_Warning: TEvaluator.ProcessExpression(): Unknown function "ANDY"\x0D\x0A
+X|orange|
+W|I_Warning: TEvaluator.ProcessExpression(): Unknown function "ORANGE"\x0D\x0A
+X|(and)|
+W|I_Warning: TEvaluator.ProcessExpression(): Invalid expression "&"\x0D\x0AI_Warning: TEvaluator.OP_And(): Incompatible types ("", ")\x0D\x0A
+X|1 and (2)|0
+X|(1) or (2)|3
+X|sin(30) + cos(60)|1
+X|min(1, max(2, 3))|1
+X|if(1 < 2, if(2 < 3, "a", "b"), "c")|"a"
+X|speed * (half + 1)|12
+X| 1 + 1|2
+X|1 +1|2
+X|1+ 1|2
+X|10 - 2.5|7.5
+X|2.5e2|2.5E2
+X|0.000001|0.000001
+X|123456789|123456789
+X|1234567890123|1234567890123
+X|100 / 3|33.3333320617676
+X|2 / 3|0.666666686534882
+X|1 / 3|0.333333343267441
+A|exception
+A|exception
