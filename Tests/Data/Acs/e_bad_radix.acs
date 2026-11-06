@@ -1,0 +1,6 @@
+int m;
+
+script 1 (void)
+{
+    m = 1_5;
+}

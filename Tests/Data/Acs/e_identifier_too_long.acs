@@ -1,0 +1,5 @@
+int abcdefghijklmnopqrstuvwxyzabcdefghijk;
+
+script 1 (void)
+{
+}

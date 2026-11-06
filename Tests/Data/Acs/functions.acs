@@ -1,0 +1,36 @@
+script 1 (int a, int b)
+{
+    int r;
+
+    delay(35);
+    delay(const:35);
+    delay(a + 1);
+    tagwait(a);
+    tagwait(const:3);
+    polywait(const:2);
+    polywait(b);
+    scriptwait(const:7);
+    scriptwait(a);
+    r = random(1, 10);
+    r = random(const:1, 10);
+    r = thingcount(a, b);
+    r = thingcount(const:1, 2);
+    changefloor(a, "FLAT20");
+    changefloor(const:5, "FLAT22");
+    changeceiling(b, "F_SKY");
+    changeceiling(const:5, "FLAT23");
+    r = lineside();
+    clearlinespecial();
+    r = playercount();
+    r = gametype();
+    r = gameskill();
+    r = timer();
+    sectorsound("DoorOpen", 127);
+    ambientsound("Wind", a);
+    soundsequence("Platform");
+    setlinetexture(1, 2, 3, "TEX1");
+    setlineblocking(a, 1);
+    setlinespecial(1, 2, 3, 4, 5, 6, 7);
+    thingsound(a, "Bell", 100);
+    r = random(1, 6) + thingcount(1, 2) * playercount();
+}

@@ -1,0 +1,5 @@
+world int 99:toomany;
+
+script 1 (void)
+{
+}

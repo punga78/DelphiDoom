@@ -1,0 +1,8 @@
+script 1 (int a)
+{
+    switch (a)
+    {
+        default: a = 1; break;
+        default: a = 2; break;
+    }
+}

@@ -1,0 +1,1 @@
+int m;script 1(void){m=1;if(m==1){m++;}else m--;}script 2 open{while(m<5)m++;}

@@ -1,0 +1,14 @@
+#include "include_defs.acs"
+
+int m;
+
+script 1 (void)
+{
+    m = INCLUDED_VALUE;
+    print(s:INCLUDED_TEXT);
+}
+
+script 2 (void)
+{
+    m = INCLUDED_VALUE * 2;
+}

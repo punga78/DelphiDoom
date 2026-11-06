@@ -1,0 +1,78 @@
+// the statements: if, loops and switch (for is not implemented in the compiler)
+int count;
+
+script 1 (int a)
+{
+    int i;
+
+    if (a > 1)
+        count = 1;
+
+    if (a == 2)
+    {
+        count = 2;
+    }
+    else
+    {
+        count = 3;
+    }
+
+    if (a == 3)
+        count = 4;
+    else if (a == 4)
+        count = 5;
+    else
+        count = 6;
+
+    while (i < 10)
+    {
+        i++;
+        if (i == 5) continue;
+        if (i == 8) break;
+    }
+
+    until (i == 0)
+        i--;
+
+    do
+    {
+        i++;
+        if (i > 20) break;
+    }
+    while (i < 15);
+
+    do
+        i--;
+    until (i < 5);
+
+    switch (a)
+    {
+        case 1:
+            count = 10;
+            break;
+        case 2:
+        case 3:
+            count = 20;
+        case 4:
+            count = 30;
+            break;
+        default:
+            count = 40;
+            break;
+    }
+
+    switch (count)
+    {
+        case 100:
+            while (i < 3)
+            {
+                i++;
+                switch (i)
+                {
+                    case 1: break;
+                    case 2: continue;
+                }
+            }
+            break;
+    }
+}

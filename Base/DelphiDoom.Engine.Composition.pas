@@ -26,6 +26,8 @@ uses
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
   DelphiDoom.Video.Factory,
+  DelphiDoom.Acs.Factory,
+  DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
@@ -50,6 +52,7 @@ uses
   i_mainwindow,
   i_input,
   i_sound,
+  p_acs,
   i_music,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
@@ -154,6 +157,7 @@ begin
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic;
+  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

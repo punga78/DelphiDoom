@@ -1,0 +1,8 @@
+SCRIPT 1 (VOID)
+{
+    INT A;
+    A = 5;
+    If (A == 5)
+        PRINT(s:"UP");
+    WHILE (A > 0) A--;
+}

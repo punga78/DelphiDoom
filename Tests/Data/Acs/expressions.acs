@@ -1,0 +1,34 @@
+// every operator, the precedence and the forms of the numbers
+int m;
+
+script 1 (int a, int b)
+{
+    int r;
+
+    r = a + b * 2 - (a - b) / 3 % 4;
+    r = a << 2 >> 1;
+    r = a == b;
+    r = a != b;
+    r = a < b;
+    r = a > b;
+    r = a <= b;
+    r = a >= b;
+    r = a & b | a ^ b;
+    r = a && b || !a;
+    r = (a + b) * (a - b);
+    r = -a;
+    r = -(a + b);
+    r = 0x1F + 0xabc;
+    r = 1.5 + 2.25;
+    r = 10 + 2_101 + 16_FF;
+    r = ++m;
+    r = m++;
+    r = --m;
+    r = m--;
+    r = a++ + --b;
+    r = a * b + a / b - a % b;
+    r = a << b;
+    r = a >> b;
+    r = !(a == b);
+    r = a < b == b < a;
+}

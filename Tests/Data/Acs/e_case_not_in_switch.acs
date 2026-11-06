@@ -1,0 +1,5 @@
+script 1 (int a)
+{
+    case 1:
+        a = 2;
+}

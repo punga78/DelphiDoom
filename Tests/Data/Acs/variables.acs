@@ -1,0 +1,46 @@
+// map variables, world variables and script variables
+int mapa, mapb;
+int mapc;
+world int 0:wa, 5:wb;
+world str 7:ws;
+
+script 1 (int x, int y, int z)
+{
+    int local1, local2;
+    int local3;
+
+    local1 = x;
+    mapa = y;
+    wa = z;
+    ws = 3;
+    mapb = wb;
+    local2 = mapb;
+    local3 = local1 + mapa + wa;
+}
+
+script 2 (void)
+{
+    int i;
+    i = 10;
+    i += 5;
+    i -= 2;
+    i *= 3;
+    i /= 4;
+    i %= 7;
+    mapa += 1;
+    mapa -= 1;
+    mapa *= 2;
+    mapa /= 2;
+    mapa %= 3;
+    wa += 1;
+    wa -= 1;
+    wa *= 2;
+    wa /= 2;
+    wa %= 3;
+    i++;
+    i--;
+    mapc++;
+    mapc--;
+    wb++;
+    wb--;
+}

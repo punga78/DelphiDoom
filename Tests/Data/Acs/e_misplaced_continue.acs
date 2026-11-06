@@ -1,0 +1,4 @@
+script 1 (void)
+{
+    if (1) continue;
+}

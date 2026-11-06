@@ -1,0 +1,13 @@
+special 80:ACS_Execute(5), 70:Teleport(3), 10:Door_Open(2), 1:Plain(1);
+special 20:NoArgs(1);
+
+script 1 (int a, int b)
+{
+    ACS_Execute(const:1, 2, 3, 4, 5);
+    Teleport(a, 1, b);
+    Teleport(const:5, 6, 7);
+    Door_Open(a + b, b * 2);
+    Door_Open(const:16, 32);
+    Plain(7);
+    NoArgs(const:1);
+}

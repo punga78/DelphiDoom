@@ -1,0 +1,4 @@
+// this file is included
+#define INCLUDED_VALUE 99
+#define INCLUDED_TEXT "included"
+special 90:Included_Special(1);

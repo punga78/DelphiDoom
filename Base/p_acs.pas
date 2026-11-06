@@ -35,7 +35,8 @@ uses
   d_delphi,
   d_think,
   p_mobj_h,
-  r_defs;
+  r_defs,
+  DelphiDoom.Acs.Intf;
 
 const
   MAX_ACS_SCRIPT_VARS = 10;
@@ -183,10 +184,19 @@ procedure P_ACSInit;
 //==============================================================================
 procedure P_ACSShutDown;
 
+//==============================================================================
+//
+// P_ConfigureAcs
+// Gives the unit the compiler of the scripts of the maps. The composition root calls it
+//
+//==============================================================================
+procedure P_ConfigureAcs(const ACompiler: IAcsCompiler);
+
 implementation
 
 uses
   acs,
+  DelphiDoom.Acs.Types,
   doomdata,
   d_player,
   i_system,
@@ -350,16 +360,52 @@ end;
 // P_CompileACSScript
 //
 //==============================================================================
-function P_CompileACSScript(const lump: integer): pointer;
 var
-  args: TDStringList;
+  // given by the composition root (P_ConfigureAcs)
+  acs_compiler: IAcsCompiler = nil;
+
+//==============================================================================
+//
+// P_ConfigureAcs
+//
+//==============================================================================
+procedure P_ConfigureAcs(const ACompiler: IAcsCompiler);
 begin
-  args := TDStringList.Create;
-  args.Add(itoa(lump));
-  Result := acc_main(args.Count, args);
-  args.Free;
+  acs_compiler := ACompiler;
 end;
 
+//==============================================================================
+//
+// P_CompileACSScript
+// The text of the lump becomes the object code of the script. A wrong script is a fatal
+// error, as it was with the old compiler
+//
+//==============================================================================
+function P_CompileACSScript(const lump: integer): pointer;
+var
+  src: string;
+  source: System.TArray<Byte>;
+  obj: System.TArray<Byte>;
+  i: integer;
+begin
+  if acs_compiler = nil then
+    I_Error('P_CompileACSScript(): the ACS compiler was not configured');
+
+  src := W_TextLumpNum(lump);
+  SetLength(source, Length(src));
+  for i := 1 to Length(src) do
+    source[i - 1] := Byte(Ord(src[i]));
+
+  try
+    obj := acs_compiler.Compile(itoa(lump) + '.acs', source);
+  except
+    on E: EAcsCompileException do
+      I_Error('%s', [E.Message]);
+  end;
+
+  Result := Z_Malloc(Length(obj), PU_LEVEL, nil);
+  Move(obj[0], Result^, Length(obj));
+end;
 const
   ACS_MAGIC = $534341;
 

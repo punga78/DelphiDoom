@@ -1,0 +1,12 @@
+/* a block comment
+   on several lines */
+int m; // a line comment
+
+script 1 (void) // after the header
+{
+    /* comment */ m = 1; // one
+    m = /* inside */ 2;
+    // m = 3;
+    m = 4; /* last */
+}
+/* the end of the file without a new line */

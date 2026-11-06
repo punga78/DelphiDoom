@@ -1,0 +1,45 @@
+// constant expressions: every operator is folded by the compiler
+#define A (3 < 5)
+#define B (5 < 3)
+#define C (3 <= 3)
+#define D (4 >= 5)
+#define E (7 > 2)
+#define F (2 > 7)
+#define G (3 == 3)
+#define H (3 != 3)
+#define I (20 / 3)
+#define J (20 % 3)
+#define K (20 - 3 - 2)
+#define L (1 << 4)
+#define M (256 >> 2)
+#define N (6 & 3)
+#define O (6 | 3)
+#define P (6 ^ 3)
+#define Q (1 && 0)
+#define R (1 || 0)
+#define S (!0)
+#define T (!5)
+#define U (2 + 3 * 4 - 6 / 2)
+#define V ((2 + 3) * (4 - 6 / 2))
+#define W (100 - 7 - 3)
+#define X (100 / 5 / 2)
+#define Y (1 < 2 == 1)
+#define Z (9 >= 9 && 4 <= 3 || 7 > 6)
+
+special 70:Teleport(3), 71:Many(5);
+
+int total;
+
+script 1 (void)
+{
+    total = A + B + C + D + E + F + G + H;
+    total = I + J + K + L + M + N + O + P;
+    total = Q + R + S + T + U + V + W + X + Y + Z;
+    Teleport(const:A, B, C);
+    Teleport(const:I, J, K);
+    Many(const:W, X, Y, Z, U);
+    Many(const:1 - 2, 3, 4, 5, 6);
+    Many(const:10 % 4, 12 / 5, 1 << 2, 8 >> 1, 5 & 3);
+    Many(const:3 < 5, 5 < 3, 3 <= 3, 4 >= 5, 7 > 2);
+    Many(const:2 > 7, 3 == 3, 3 != 3, !0, !5);
+}

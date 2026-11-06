@@ -1,0 +1,6 @@
+special 80:ACS_Execute(5);
+
+script 1 (void)
+{
+    ACS_Execute(1, 2);
+}

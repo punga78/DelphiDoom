@@ -1,0 +1,10 @@
+script 1 (int a)
+{
+    print(s:"hello");
+    print(i:a);
+    print(d:a + 1);
+    print(c:65);
+    print(s:"hello", s:"world", i:1, d:2, c:66);
+    printbold(s:"bold text");
+    printbold(s:"hello", i:a);
+}

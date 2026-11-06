@@ -1,0 +1,19 @@
+// the string table: a string is stored once
+world str 1:s1;
+
+script 1 (void)
+{
+    print(s:"first");
+    print(s:"second");
+    print(s:"first");
+    print(s:"third string");
+    s1 = "second";
+    print(s:s1);
+}
+
+script 2 (void)
+{
+    print(s:"third string");
+    print(s:"");
+    print(s:"a longer string, with punctuation: ok!");
+}
