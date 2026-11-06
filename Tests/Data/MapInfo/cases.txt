@@ -1,0 +1,365 @@
+@@@ basic
+@@ lump UMAPINFO
+map MAP01
+{
+  levelname = "Entryway"
+  label = "ENT"
+  next = "MAP02"
+  nextsecret = "MAP31"
+  levelpic = "CWILV00"
+  skytexture = "SKY1"
+  music = "D_RUNNIN"
+  endpic = "ENDPIC"
+  exitpic = "WIMAP0"
+  enterpic = "WIMAP1"
+  interbackdrop = "FLOOR4_8"
+  intermusic = "D_INTER"
+  partime = 30
+  lightning = true
+  nojump = true
+  nocrouch = true
+  nointermission = true
+}
+@@@ flags_false
+@@ lump UMAPINFO
+map MAP02
+{
+  lightning = false
+  nojump = FALSE
+  nocrouch = False
+  nointermission = false
+  partime = 0
+}
+@@@ sky_aliases
+@@ lump UMAPINFO
+map MAP03 { skytexture1 = "SKYA" skytexture2 = "SKYB" }
+map MAP04 { skytexture = "SKYC" skytexture1 = "SKYD" }
+@@@ end_variants
+@@ lump UMAPINFO
+map MAP05 { endcast = true }
+map MAP06 { endbunny = true }
+map MAP07 { endgame = true }
+map MAP08 { endcast = false }
+map MAP09 { endbunny = false }
+map MAP10 { endgame = false }
+map MAP11 { endpic = "ENDPIC" endcast = true }
+map MAP12 { endcast = true endpic = "VICTORY" }
+@@@ music_missing_lump
+@@ lump UMAPINFO
+map MAP01 { music = "MYMUSIC" intermusic = "OTHER" }
+map MAP02 { music = "D_ONE" intermusic = "D_TWO" }
+@@@ music_too_long
+@@ lump UMAPINFO
+map MAP01 { music = "D_VERYLONGNAME" levelpic = "ABCDEFGHI" }
+@@@ case_and_unquoted
+@@ lump UMAPINFO
+map map01
+{
+  next = map02
+  levelpic = cwilv00
+  skytexture = sky1
+  music = d_runnin
+}
+@@@ intertext_single
+@@ lump UMAPINFO
+map MAP01 { intertext = "You have won." }
+@@@ intertext_multi
+@@ lump UMAPINFO
+map MAP01
+{
+  intertext = "Line one", "Line two", "Line three"
+  intertextsecret = "Secret one",
+              "Secret two"
+}
+@@@ intertext_escapes
+@@ lump UMAPINFO
+map MAP01 { intertext = "First\nSecond\nThird", "Next line" }
+@@@ intertext_clear
+@@ lump UMAPINFO
+map MAP01 { intertext = clear intertextsecret = CLEAR }
+@@@ intertext_unquoted_error
+@@ lump UMAPINFO
+map MAP01 { intertext = hello levelname = "After" }
+@@@ intertext_empty_string
+@@ lump UMAPINFO
+map MAP01 { intertext = "" levelname = "After" }
+@@@ intertext_long
+@@ lump UMAPINFO
+map MAP01 { intertext = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" }
+@@@ intertext_one_char
+@@ lump UMAPINFO
+map MAP01 { intertext = "X" intertextsecret = "AB" }
+@@@ levelname_long
+@@ lump UMAPINFO
+map MAP01 { levelname = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" label = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" }
+@@@ label_variants
+@@ lump UMAPINFO
+map MAP01 { label = clear }
+map MAP02 { label = "Lab" }
+map MAP03 { label = unquoted }
+@@@ bossaction_basic
+@@ lump UMAPINFO
+map MAP07
+{
+  bossaction = ZombieMan, 11, 0
+  bossaction = "SPIDERMASTERMIND", 52, 0
+  bossaction = Cyberdemon, 108, 666
+}
+@@@ bossaction_tag_filter
+@@ lump UMAPINFO
+map MAP01
+{
+  bossaction = ZombieMan, 108, 0
+  bossaction = ZombieMan, 51, 0
+  bossaction = ZombieMan, 124, 0
+  bossaction = ZombieMan, 105, 0
+  bossaction = ZombieMan, 108, 5
+}
+@@@ bossaction_clear_then_add
+@@ lump UMAPINFO
+map MAP01
+{
+  bossaction = ZombieMan, 11, 0
+  bossaction = clear
+  bossaction = MANCUBUS, 52, 0
+}
+@@@ bossaction_clear_only
+@@ lump UMAPINFO
+map MAP01 { bossaction = ZombieMan, 11, 0 bossaction = clear }
+map MAP02 { bossaction = Clear }
+@@@ bossaction_unknown
+@@ lump UMAPINFO
+map MAP01 { bossaction = NoSuchThing, 11, 0 levelname = "X" }
+@@@ bossaction_bad_numbers
+@@ lump UMAPINFO
+map MAP01 { bossaction = ZombieMan, x, y levelname = "X" }
+@@@ episode_variants
+@@ lump UMAPINFO
+map MAP01
+{
+  episode = clear
+  episode = "M_EPI1", "Knee-Deep", "k"
+  episode = "M_EPI2", "Shores"
+  episode = "M_EPI3"
+  episode = "M_EPI4", "", "z"
+  episode = "ABCDEFGHIJ", "toolong", "t"
+}
+@@@ episode_unquoted_error
+@@ lump UMAPINFO
+map MAP01 { episode = notclear levelname = "X" }
+@@@ episode_empty_key
+@@ lump UMAPINFO
+map MAP02 { episode = "M_EPI9", "Alt text", "" levelname = "X" }
+@@@ unknown_property_skipped
+@@ lump UMAPINFO
+map MAP01
+{
+  mystery = 1, 2, 3
+  levelname = "Known"
+  other = "x" "y"
+  partime = 10
+}
+@@@ missing_equals
+@@ lump UMAPINFO
+map MAP01 { levelname "Entryway" partime = 5 }
+@@@ invalid_next
+@@ lump UMAPINFO
+map MAP01 { next = "FOO" nextsecret = "MAP100" levelname = "After" }
+@@@ valid_next_episode_style
+@@ lump UMAPINFO
+map E1M1 { next = "E1M2" nextsecret = "E1M9" }
+map E9M1 { next = "E1M2" }
+@@@ bad_integer
+@@ lump UMAPINFO
+map MAP01 { partime = abc levelname = "After" }
+@@@ bad_boolean
+@@ lump UMAPINFO
+map MAP01 { lightning = maybe nojump = 1 nocrouch = yes levelname = "After" }
+@@@ partime_values
+@@ lump UMAPINFO
+map MAP01 { partime = 30 }
+map MAP02 { partime = -5 }
+map MAP03 { partime = 3600 }
+@@@ missing_map_keyword
+@@ lump UMAPINFO
+garbage here
+map MAP01 { levelname = "After garbage" }
+@@@ invalid_map_name
+@@ lump UMAPINFO
+map FOO { levelname = "bad" }
+map MAP01 { levelname = "good" }
+@@@ missing_block_start
+@@ lump UMAPINFO
+map MAP01
+levelname = "no braces"
+map MAP02 { levelname = "ok" }
+@@@ unterminated_block
+@@ lump UMAPINFO
+map MAP01 { levelname = "open" partime = 4
+@@@ truncated_after_map
+@@ lump UMAPINFO
+map
+@@@ truncated_after_name
+@@ lump UMAPINFO
+map MAP01
+@@@ truncated_value
+@@ lump UMAPINFO
+map MAP01 { levelname =
+@@@ empty_text
+@@ lump UMAPINFO
+@@@ whitespace_only
+@@ lump UMAPINFO
+
+
+@@@ comments_only
+@@ lump UMAPINFO
+// nothing here
+/* nor here */
+@@@ comments_everywhere
+@@ lump UMAPINFO
+// header comment
+map MAP01 /* inline */ {
+  levelname = "http://example.com/a//b" // trailing
+  /* multi
+     line */
+  label = "a /* not a comment */ b"
+  partime = 12 // seconds
+}
+@@@ quotes_with_specials
+@@ lump UMAPINFO
+map MAP01 { levelname = "a { b } c = d , e" label = "x=y" }
+@@@ comma_unquoted_value
+@@ lump UMAPINFO
+map MAP01 { levelname = Foo, bar }
+@@@ value_on_next_line
+@@ lump UMAPINFO
+map MAP01
+{
+  levelname =
+    "Spread"
+  partime =
+    7
+}
+@@@ many_maps
+@@ lump UMAPINFO
+map MAP01 { levelname = "One" next = "MAP02" }
+map MAP02 { levelname = "Two" next = "MAP03" }
+map MAP03 { levelname = "Three" }
+@@@ duplicate_replaces
+@@ lump UMAPINFO
+map MAP01 { levelname = "First" partime = 10 music = "D_ONE" }
+map MAP01 { levelname = "Second" }
+@@@ defaults_merge
+@@ lump UMAPDEF
+map MAP01 { levelname = "Default One" partime = 10 music = "D_DEF" skytexture = "SKYDEF" lightning = true nextsecret = "MAP31" intertext = "Def text" }
+map MAP02 { levelname = "Default Two" next = "MAP03" }
+@@ lump UMAPINFO
+map MAP01 { levelname = "Override" lightning = false nojump = true }
+map MAP02 { partime = 5 }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_only_new_map
+@@ lump UMAPDEF
+map MAP01 { levelname = "Default One" }
+@@ lump UMAPINFO
+map MAP05 { levelname = "Only new" }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_index_mismatch
+@@ lump UMAPDEF
+map MAP01 { levelname = "Default One" partime = 1 }
+map MAP02 { levelname = "Default Two" partime = 2 }
+@@ lump UMAPINFO
+map MAP02 { next = "MAP03" }
+map MAP01 { next = "MAP02" }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_music_and_intermusic
+@@ lump UMAPDEF
+map MAP01 { music = "D_DEF" intermusic = "D_INT" }
+@@ lump UMAPINFO
+map MAP01 { music = "D_NEW" }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_bossactions
+@@ lump UMAPDEF
+map MAP01 { bossaction = ZombieMan, 11, 0 bossaction = Cyberdemon, 52, 0 }
+map MAP02 { bossaction = ZombieMan, 11, 0 }
+map MAP03 { bossaction = ZombieMan, 11, 0 }
+@@ lump UMAPINFO
+map MAP01 { bossaction = MANCUBUS, 51, 0 }
+map MAP02 { bossaction = clear }
+map MAP03 { levelname = "No bossaction here" }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_texts_and_pics
+@@ lump UMAPDEF
+map MAP01 { levelpic = "LP1" nextsecret = "MAP31" skytexture = "S1" skytexture2 = "S2" endpic = "E1" exitpic = "X1" enterpic = "N1" interbackdrop = "B1" intertextsecret = "Def secret" label = "DL" nocrouch = true nointermission = true }
+@@ lump UMAPINFO
+map MAP01 { levelname = "Over" }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@@ defaults_run_twice_normal
+@@ lump UMAPDEF
+map MAP01 { levelname = "Default One" }
+@@ lump UMAPINFO
+map MAP01 { partime = 2 }
+@@ run default UMAPDEF
+@@ run normal UMAPINFO
+@@ run normal UMAPINFO
+@@@ loader_two_lumps_concatenated
+@@ lump UMAPINFO
+map MAP01 { levelname = "First lump" }
+@@ lump OTHER
+map MAP09 { levelname = "Not read" }
+@@ lump UMAPINFO
+map MAP02 { levelname = "Second lump" }
+@@ run normal UMAPINFO
+@@@ loader_pak_entries
+@@ pak UMAPINFO
+map MAP01 { levelname = "From pak" }
+@@ pak UMAPINFO.txt
+map MAP02 { levelname = "From pak txt" }
+@@ pak OTHER
+map MAP03 { levelname = "Not read" }
+@@ run normal UMAPINFO
+@@@ loader_lump_then_pak
+@@ lump UMAPINFO
+map MAP01 { levelname = "Lump" }
+@@ pak UMAPINFO
+map MAP01 { levelname = "Pak wins" }
+@@ pak UMAPINFO.txt
+map MAP02 { levelname = "Pak txt" }
+@@ run normal UMAPINFO
+@@@ loader_block_split_between_lumps
+@@ lump UMAPINFO
+map MAP01 {
+ levelname = "Split"
+@@ lump UMAPINFO
+ partime = 9
+}
+@@ run normal UMAPINFO
+@@@ loader_lowercase_request
+@@ lump UMAPINFO
+map MAP01 { levelname = "Lump" }
+@@ pak umapinfo
+map MAP02 { levelname = "pak lower" }
+@@ run normal umapinfo
+@@@ loader_nothing
+@@ lump OTHER
+map MAP01 { levelname = "Never" }
+@@ run normal UMAPINFO
+@@@ stray_endblock
+@@ lump UMAPINFO
+}
+map MAP01 { levelname = "After stray" }
+@@@ two_blocks_same_line
+@@ lump UMAPINFO
+map MAP01 { levelname = "A" } map MAP02 { levelname = "B" }
+@@@ crlf_text
+@@ lump UMAPINFO
+map MAP01
+{
+  levelname = "Crlf"
+  partime = 3
+}
