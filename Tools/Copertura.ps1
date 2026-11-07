@@ -10,11 +10,13 @@
 
   -Test           nome del progetto di test senza il prefisso: "Zone" = Tests\DelphiDoom.Tests.Zone,
                   "" o "Zlib" = Tests\DelphiDoom.Tests (il progetto di zlib).
-  -Cartella       cartella dei sorgenti da misurare (default: Libs\<Test>; per "IdLib.Hashing" prova
-                  Libs\IdLib\Hashing). Le unit misurate sono tutte quelle *.pas della cartella.
+  -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le
+                  unit che il .dpr di test compila da Libs\ (anche piu' cartelle: Sndfile prova Libs\Sound e
+                  Libs\Ogg); se non ne compila nessuna (Common), quelle fuori da Tests\.
   -Tutti          esegue tutti i progetti di test elencati in build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
-  -SenzaCompilare usa l'eseguibile gia' in bin\Tests (altrimenti lo ricompila con build.bat).
+  -SenzaCompilare usa l'eseguibile gia' in bin\Tests, che deve essere compilato in Debug (senza questa
+                  opzione lo script lo ricompila con build.bat in Debug: la mappa di Release non ha i numeri di riga).
   -SoloComando    stampa il comando di CodeCoverage senza eseguirlo.
   -CodeCoverage   percorso di CodeCoverage.exe. Se omesso: variabile d'ambiente DELPHI_CODECOVERAGE,
                   poi Tools\CodeCoverage\CodeCoverage.exe, poi il PATH.
@@ -46,53 +48,63 @@ function Find-CodeCoverage([string]$Explicit) {
   if ($Explicit -ne '') { $candidates += $Explicit }
   if ($env:DELPHI_CODECOVERAGE) { $candidates += $env:DELPHI_CODECOVERAGE }
   $candidates += (Join-Path $root 'Tools\CodeCoverage\CodeCoverage.exe')
+  $candidates += 'C:\Strumenti\DelphiCodeCoverage\Win32\CodeCoverage.exe'
   foreach ($c in $candidates) { if (Test-Path -LiteralPath $c) { return (Resolve-Path -LiteralPath $c).Path } }
   $cmd = Get-Command 'CodeCoverage.exe' -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
   return $null
 }
 
-function Get-SourceFolder([string]$TestName, [string]$Explicit) {
-  if ($Explicit -ne '') { return $Explicit }
-  if ($TestName -eq '' -or $TestName -eq 'Zlib') { return 'Libs\Zlib' }
-  $parts = $TestName.Split('.')
-  $flat = 'Libs\' + $TestName
-  if (Test-Path -LiteralPath $flat) { return $flat }
-  $nested = 'Libs\' + ($parts -join '\')
-  if (Test-Path -LiteralPath $nested) { return $nested }
-  throw "Cartella dei sorgenti non trovata per '$TestName': indicala con -Cartella"
+# The source files to measure: with -Cartella every .pas of that folder; otherwise every unit the test
+# project compiles from Libs\ (a project often tests more than one folder: Sndfile tests Libs\Sound and
+# Libs\Ogg too). A project that compiles nothing from Libs\ (Common) measures its units outside Source\.
+function Get-SourceFiles([string]$Project, [string]$Explicit) {
+  if ($Explicit -ne '') {
+    return @(Get-ChildItem -LiteralPath (Join-Path $root $Explicit) -Filter *.pas -File -Recurse |
+      ForEach-Object { $_.FullName })
+  }
+  $dpr = Join-Path $root "Tests\$Project.dpr"
+  if (-not (Test-Path -LiteralPath $dpr)) { throw "Progetto non trovato: $dpr" }
+  $paths = [regex]::Matches((Get-Content -LiteralPath $dpr -Raw), "in\s+'([^']+\.pas)'") |
+    ForEach-Object { [IO.Path]::GetFullPath((Join-Path (Join-Path $root 'Tests') $_.Groups[1].Value)) }
+  $libs = Join-Path $root 'Libs'
+  $fromLibs = @($paths | Where-Object { $_.StartsWith($libs + '\', [StringComparison]::OrdinalIgnoreCase) })
+  if ($fromLibs.Count -gt 0) { return $fromLibs }
+  $tests = Join-Path $root 'Tests'
+  return @($paths | Where-Object { -not $_.StartsWith($tests + '\', [StringComparison]::OrdinalIgnoreCase) })
 }
 
 function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   $project = if ($TestName -eq '' -or $TestName -eq 'Zlib') { 'DelphiDoom.Tests' } else { 'DelphiDoom.Tests.' + $TestName }
   $exe = Join-Path $root "bin\Tests\$project.exe"
   $map = Join-Path $root "bin\Tests\$project.map"
-  $folder = Get-SourceFolder $TestName $Explicit
+  $files = @(Get-SourceFiles $project $Explicit)
+  if ($files.Count -eq 0) { throw "Nessuna unit da misurare per $project" }
   $label = if ($TestName -eq '') { 'Zlib' } else { $TestName }
   $out = Join-Path $root "logs\copertura\$label"
 
   if (-not $SenzaCompilare) {
     Write-Host "Compilazione di Tests\$project ..."
-    & cmd.exe /c "build.bat Tests\$project Release" | Select-Object -Last 3 | ForEach-Object { Write-Host $_ }
+    # Debug: the map of Release has no line numbers; full path because cmd.exe does not see Set-Location
+    & cmd.exe /c "`"$root\build.bat`" Tests\$project Debug" | Select-Object -Last 3 | ForEach-Object { Write-Host $_ }
     if ($LASTEXITCODE -ne 0) { throw "Compilazione fallita: vedi logs\$project.log" }
   }
   if (-not (Test-Path -LiteralPath $exe)) { throw "Eseguibile non trovato: $exe (compila senza -SenzaCompilare)" }
   if (-not (Test-Path -LiteralPath $map)) { throw "File .map non trovato: $map (serve DCC_MapFile = 3, Detailed)" }
 
-  $units = Get-ChildItem -LiteralPath (Join-Path $root $folder) -Filter *.pas -File -Recurse |
-    ForEach-Object { $_.BaseName } | Sort-Object -Unique
-  if ($units.Count -eq 0) { throw "Nessuna unit .pas in $folder" }
+  $units = @($files | ForEach-Object { Split-Path -Leaf $_ } | Sort-Object -Unique)
+  $folders = @($files | ForEach-Object { Split-Path -Parent $_ } | Sort-Object -Unique)
   New-Item -ItemType Directory -Force $out | Out-Null
   $unitsFile = Join-Path $out 'unit.txt'
   Set-Content -LiteralPath $unitsFile -Value $units -Encoding ascii
 
-  $args = @(
-    '-e', $exe, '-m', $map,
-    '-uf', $unitsFile,
-    '-spd', (Join-Path $root $folder),
+  # -sp wants every folder that holds a source (it does not recurse). The tool cuts a unit name at its last dot
+  # (it treats it as a file name), so the list has the .pas extension and the default -efe takes it away again
+  $args = @('-e', $exe, '-m', $map, '-uf', $unitsFile, '-sp') + $folders + @(
     '-od', $out,
-    '-html', '-xml',
-    '-a', '--exitbehavior:Continue'
+    '-html', '-xml', '-xmllines',
+    '-tec',
+    '-a', '^-^-exitbehavior:Continue'
   )
 
   if ($SoloComando) {
@@ -105,12 +117,18 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
     throw "CodeCoverage.exe non trovato. Scaricalo da https://github.com/DelphiCodeCoverage/DelphiCodeCoverage/releases e copialo in Tools\CodeCoverage\ (oppure imposta DELPHI_CODECOVERAGE o usa -CodeCoverage)."
   }
 
-  Write-Host "Misura di ${label}: $($units.Count) unit in $folder"
+  Write-Host "Misura di ${label}: $($units.Count) unit in $($folders.Count) cartelle"
   $log = Join-Path $out 'codecoverage.log'
-  & $tool @args 2>&1 | Tee-Object -FilePath $log | Out-Null
-  $summary = Select-String -LiteralPath $log -Pattern 'covered|coverage' -SimpleMatch:$false |
-    Select-Object -Last 3 | ForEach-Object { $_.Line.Trim() }
-  $line = "{0}: {1}" -f $label, ($summary -join ' | ')
+  $output = & $tool @args 2>&1 | ForEach-Object { "$_" }
+  Set-Content -LiteralPath $log -Value $output -Encoding utf8
+  # the tool ends with a table: | lines | covered | covered % |
+  $totals = $output | Where-Object { $_ -match '^\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*%' } | Select-Object -Last 1
+  $tests = $output | Where-Object { $_ -match '^Tests (Passed|Failed|Errored)' } | ForEach-Object { $_.Trim() }
+  if ($totals -match '^\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*%') {
+    $line = "{0}: {1}% ({2} righe coperte su {3}); {4}" -f $label, $Matches[3], $Matches[2], $Matches[1], ($tests -join ', ')
+  } else {
+    $line = "{0}: nessun riepilogo, vedi {1}" -f $label, $log
+  }
   Write-Host $line
   Write-Host "Report: $out\CodeCoverage_Summary.html"
   return $line
