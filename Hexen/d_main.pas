@@ -43,7 +43,8 @@ interface
 uses
   d_event,
   doomdef,
-  DelphiDoom.IdTech.Intf;
+  DelphiDoom.IdTech.Intf,
+  DelphiDoom.Iwad.Intf;
 
 const
 {$IFNDEF FPC}
@@ -211,6 +212,13 @@ var
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
 
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+
 var
   hexdd_pack: boolean = false; // Death Kings of the Dark Citadel pack
 
@@ -252,7 +260,7 @@ uses
   i_io,
   i_tmp,
   i_startup,
-  i_steam,
+  DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
   nd_main,
@@ -1023,8 +1031,21 @@ begin
   D_PaksAutoload(s2);
 end;
 
-const
-  PATH_SEPARATOR = ';';
+var
+  // given by the composition root (D_ConfigureIwad)
+  iwad_locator: IIwadLocator = nil;
+  iwad_identifier: IIwadIdentifier = nil;
+
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+begin
+  iwad_locator := ALocator;
+  iwad_identifier := AIdentifier;
+end;
 
 //==============================================================================
 //
@@ -1032,129 +1053,10 @@ const
 //
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
-var
-  doomwaddir: string;
-  doomwadpath: string;
-  paths: TDStringList;
-  i: integer;
-  tmp: string;
 begin
-  if fexists(fn) then
-  begin
-    result := fn;
-    exit;
-  end;
-
-  paths := TDStringList.Create;
-
-  if searchdoomwaddir then
-  begin
-    doomwaddir := getenv('HEXENWADDIR');
-    if doomwaddir <> '' then
-      paths.Add(doomwaddir);
-    doomwaddir := getenv('DOOMWADDIR');
-    if doomwaddir <> '' then
-      paths.Add(doomwaddir);
-  end;
-
-  if searchdoomwadpath then
-  begin
-    doomwadpath := getenv('HEXENWADPATH');
-    if doomwadpath <> '' then
-    begin
-      tmp := '';
-      for i := 1 to length(doomwadpath) do
-      begin
-        if doomwadpath[i] = PATH_SEPARATOR then
-        begin
-          if tmp <> '' then
-          begin
-            paths.Add(tmp);
-            tmp := '';
-          end;
-        end
-        else
-          tmp := tmp + doomwadpath[i];
-      end;
-      if tmp <> '' then
-        paths.Add(tmp);
-    end;
-    doomwadpath := getenv('DOOMWADPATH');
-    if doomwadpath <> '' then
-    begin
-      tmp := '';
-      for i := 1 to length(doomwadpath) do
-      begin
-        if doomwadpath[i] = PATH_SEPARATOR then
-        begin
-          if tmp <> '' then
-          begin
-            paths.Add(tmp);
-            tmp := '';
-          end;
-        end
-        else
-          tmp := tmp + doomwadpath[i];
-      end;
-      if tmp <> '' then
-        paths.Add(tmp);
-    end;
-  end;
-
-  if additionalwadpaths <> '' then
-  begin
-    tmp := '';
-    for i := 1 to length(additionalwadpaths) do
-    begin
-      if additionalwadpaths[i] = PATH_SEPARATOR then
-      begin
-        if tmp <> '' then
-        begin
-          paths.Add(tmp);
-          tmp := '';
-        end;
-      end
-      else
-        tmp := tmp + additionalwadpaths[i];
-    end;
-    if tmp <> '' then
-      paths.Add(tmp);
-  end;
-
-  if searchsteampaths then
-  begin
-    tmp := QuerySteamDirectory(2360);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads\');
-    end;
-
-    tmp := QuerySteamDirectory(2370);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads\');
-    end;
-  end;
-
-  result := fname(fn);
-  for i := 0 to paths.Count - 1 do
-  begin
-    tmp := fixslashpath(paths.Strings[i]);
-    if tmp[length(tmp)] <> '\' then
-      tmp := tmp + '\';
-    if fexists(tmp + result) then
-    begin
-      result := tmp + result;
-      paths.free;
-      exit;
-    end;
-  end;
-  result := fn;
-  paths.free;
+  if iwad_locator = nil then
+    I_Error('D_FileInDoomPath(): the IWAD locator was not given (D_ConfigureIwad)');
+  result := iwad_locator.Locate(fn);
 end;
 
 const
@@ -1176,9 +1078,6 @@ begin
     I_Warning('D_AddSystemWAD(): System WAD %s not found.'#13#10, [SYSWAD]);
 end;
 
-var
-  custiwad: string = ''; // Custom main WAD
-
 //==============================================================================
 //
 // IdentifyVersion
@@ -1189,67 +1088,47 @@ var
 //==============================================================================
 procedure IdentifyVersion;
 var
-  hexendemwad: string;
-  hexen1wad: string;
-  hexenwad: string;
+  customname: string;
+  ident: TIwadIdentification;
   p: integer;
+  i: integer;
 begin
-  // Shareware
-  hexen1wad := D_FileInDoomPath('hexen1.wad');
-  hexendemwad := D_FileInDoomPath('hexendem.wad');
+  if iwad_identifier = nil then
+    I_Error('IdentifyVersion(): the IWAD identifier was not given (D_ConfigureIwad)');
 
-  // Registered
-  hexenwad := D_FileInDoomPath('hexen.wad');
-
+  // the file that the player chose
+  customname := '';
   p := M_CheckParm('-mainwad');
   if p = 0 then
     p := M_CheckParm('-iwad');
   if (p > 0) and (p < myargc - 1) then
+    customname := myargv[p + 1];
+  if iwad_identifier.TryIdentifyCustom(customname, ident) then
   begin
-    inc(p);
-    custiwad := D_FileInDoomPath(myargv[p]);
-    if strupper(fname(custiwad)) = 'HEXDD.WAD' then
-    begin
-      D_AddFile(hexenwad);
-      printf(' External main wad in use: %s'#13#10, [custiwad]);
-      D_AddFile(custiwad);
-      exit;
-    end;
-    if fexists(custiwad) then
-    begin
-      printf(' External main wad in use: %s'#13#10, [custiwad]);
+    // Deathkings of the Dark Citadel does not tell the game mode: Hexen is added before it
+    if ident.Mode <> igmUnchanged then
       gamemode := indetermined;
-      D_AddFile(custiwad);
-      exit;
-    end
-    else
-      custiwad := '';
+    for i := 0 to High(ident.Files) do
+    begin
+      if i = High(ident.Files) then
+        printf(' External main wad in use: %s'#13#10, [ident.CustomPath]);
+      D_AddFile(ident.Files[i]);
+    end;
+    exit;
   end;
-
-  if fexists(hexenwad) then
+  ident := iwad_identifier.IdentifyKnown;
+  if not ident.Found then
   begin
-    gamemode := indetermined; // Will check if register or extended wad later
-    D_AddFile(hexenwad);
+    printf('Game mode indeterminate.'#13#10);
+    gamemode := indetermined;
     exit;
   end;
 
-  if fexists(hexen1wad) then
-  begin
-    gamemode := shareware;
-    D_AddFile(hexen1wad);
-    exit;
+  case ident.Mode of
+    igmShareware: gamemode := shareware;
+    igmIndetermined: gamemode := indetermined; // Will check if register or extended wad later
   end;
-
-  if fexists(hexendemwad) then
-  begin
-    gamemode := shareware;
-    D_AddFile(hexendemwad);
-    exit;
-  end;
-
-  printf('Game mode indeterminate.'#13#10);
-  gamemode := indetermined;
-
+  D_AddFile(ident.Files[0]);
 end;
 
 //==============================================================================
