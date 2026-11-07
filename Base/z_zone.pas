@@ -25,6 +25,9 @@
 //  Remark: this was the only stuff that, according
 //   to John Carmack, might have been useful for
 //   Quake.
+//  The allocator is the class TZoneAllocator of Libs\Zone, given by
+//  the composition root (Z_ConfigureZone): the functions here are
+//  its facade for the rest of the engine.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -38,7 +41,8 @@ interface
 
 uses
   d_delphi,
-  z_memmgr;
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Zone.Types;
 
 //
 // ZONE MEMORY
@@ -47,16 +51,24 @@ uses
 
 const
   PU_LOTAG = 1;
-  PU_STATIC = 1;    // static entire execution time
-  PU_SOUND = 2;     // static while playing
-  PU_MUSIC = 3;     // static while playing
-  PU_DAVE = 4;      // anything else Dave wants static
-  PU_LEVEL = 50;    // static until level exited
-  PU_LEVSPEC = 51;  // a special thinker in a level
+  PU_STATIC = ZONE_TAG_STATIC;    // static entire execution time
+  PU_SOUND = ZONE_TAG_SOUND;      // static while playing
+  PU_MUSIC = ZONE_TAG_MUSIC;      // static while playing
+  PU_DAVE = ZONE_TAG_DAVE;        // anything else Dave wants static
+  PU_LEVEL = ZONE_TAG_LEVEL;      // static until level exited
+  PU_LEVSPEC = ZONE_TAG_LEVSPEC;  // a special thinker in a level
   // Tags >= 100 are purgable whenever needed.
-  PU_PURGELEVEL = 100;
-  PU_CACHE = 101;
+  PU_PURGELEVEL = ZONE_TAG_PURGELEVEL;
+  PU_CACHE = ZONE_TAG_CACHE;
   PU_HITAG = 101;
+
+//==============================================================================
+//
+// Z_ConfigureZone
+// Gives the allocator (the composition root does it, before anything allocates).
+//
+//==============================================================================
+procedure Z_ConfigureZone(const AAllocator: IZoneAllocator);
 
 //==============================================================================
 //
@@ -116,6 +128,14 @@ function Z_FreeTags(lowtag: integer; hightag: integer): boolean;
 
 //==============================================================================
 //
+// Z_MoveUsers
+// A table of user pointers has been moved: the blocks follow it.
+//
+//==============================================================================
+procedure Z_MoveUsers(oldstart: pointer; bytecount: integer; newstart: pointer);
+
+//==============================================================================
+//
 // Z_DumpHeap
 //
 //==============================================================================
@@ -158,37 +178,10 @@ procedure Z_ChangeTag(ptr: pointer; tag: integer);
 
 //==============================================================================
 //
-// Z_FreeMemory
-//
-//==============================================================================
-function Z_FreeMemory: integer;
-
-//==============================================================================
-//
 // Z_CacheMemory
 //
 //==============================================================================
 function Z_CacheMemory: integer;
-
-// including the header and possibly tiny fragments
-// NULL if a free block
-// purgelevel
-// should be ZONEID
-
-type
-  Pmemblock_t = ^memblock_t;
-
-  memblock_t = record
-    size: integer;  // including the header and possibly tiny fragments
-    user: PPointer; // NULL if a free block
-    tag: integer;   // purgelevel
-    id: integer;    // should be ZONEID
-    next: Pmemblock_t;
-    prev: Pmemblock_t;
-  end;
-
-var
-  memmanager: TMemManager;
 
 implementation
 
@@ -196,51 +189,28 @@ uses
   c_cmds,
   i_system;
 
-//
-// ZONE MEMORY ALLOCATION
-//
-// There is never any space between memblocks,
-//  and there will never be two contiguous free memblocks.
-// The rover can be left pointing at a non-empty block.
-//
-// It is of no value to free a cachable block,
-//  because it will get overwritten automatically if needed.
-//
-
-const
-  ZONEID = $1d4a11;
-
-type
-  memzone_t = record
-    // total bytes malloced, including header
-    size: integer;
-    // start / end cap for linked list
-    blocklist: memblock_t;
-    rover: Pmemblock_t;
-  end;
-  Pmemzone_t = ^memzone_t;
-
 var
-  mainzone: Pmemzone_t;
+  // given by the composition root (Z_ConfigureZone)
+  zone_allocator: IZoneAllocator = nil;
 
 //==============================================================================
 //
-// Z_FreeMemory
+// Z_NotConfigured
 //
 //==============================================================================
-function Z_FreeMemory: integer;
-var
-  block: Pmemblock_t;
+procedure Z_NotConfigured;
 begin
-  result := 0;
+  I_Error('Z_ConfigureZone(): the zone allocator was not given');
+end;
 
-  block := mainzone.blocklist.next;
-  while block <> @mainzone.blocklist do
-  begin
-    if (block.user = nil) or (block.tag >= PU_PURGELEVEL) then
-      result := result + block.size;
-    block := block.next;
-  end;
+//==============================================================================
+//
+// Z_ConfigureZone
+//
+//==============================================================================
+procedure Z_ConfigureZone(const AAllocator: IZoneAllocator);
+begin
+  zone_allocator := AAllocator;
 end;
 
 //==============================================================================
@@ -249,18 +219,10 @@ end;
 //
 //==============================================================================
 function Z_CacheMemory: integer;
-var
-  block: Pmemblock_t;
 begin
-  result := 0;
-
-  block := mainzone.blocklist.next;
-  while block <> @mainzone.blocklist do
-  begin
-    if block.tag >= PU_PURGELEVEL then
-      result := result + block.size;
-    block := block.next;
-  end;
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  result := zone_allocator.Statistics.PurgableBytes;
 end;
 
 //==============================================================================
@@ -270,17 +232,15 @@ end;
 //==============================================================================
 procedure Z_CmdZoneMem;
 var
-  fr: integer;
-  cache: integer;
+  stat: TZoneStatistics;
 begin
-  printf('%6d KB memory allocated for zone.'#13#10, [mainzone.size div 1024]);
-  fr := Z_FreeMemory;
-  cache := Z_CacheMemory;
-  printf('%6d KB zone memory in use.'#13#10, [(mainzone.size - fr + cache) div 1024]);
-  printf('%6d KB zone memory used for static memory allocation.'#13#10, [(mainzone.size - fr) div 1024]);
-  printf('%6d KB zone memory used for cache.'#13#10, [(cache) div 1024]);
-  printf('%6d KB free zone memory.'#13#10, [(fr - cache) div 1024]);
-  printf('%6d KB zone memory available for Z_Malloc().'#13#10, [fr div 1024]);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  stat := zone_allocator.Statistics;
+  printf('%6d      blocks allocated in the zone.'#13#10, [stat.BlockCount]);
+  printf('%6d KB memory taken by the zone, headers included.'#13#10, [stat.TotalBytes div 1024]);
+  printf('%6d KB zone memory used for static memory allocation.'#13#10, [(stat.TotalBytes - stat.PurgableBytes) div 1024]);
+  printf('%6d KB zone memory used for cache.'#13#10, [stat.PurgableBytes div 1024]);
 end;
 
 //==============================================================================
@@ -300,9 +260,7 @@ begin
   {$ENDIF}
   printf('%6d KB total memory dynamically allocated.'#13#10, [memoryusage div 1024]);
   printf(#13#10);
-  printf('%6d KB external memory allocated.'#13#10, [(memoryusage - mainzone.size) div 1024]);
   Z_CmdZoneMem;
-  I_Warning('Z_CmdMem(): Old zone code is obsolete.'#13#10);
 end;
 
 //==============================================================================
@@ -337,37 +295,14 @@ end;
 //
 //==============================================================================
 procedure Z_Init;
-var
-  block: Pmemblock_t;
-  size: integer;
 begin
-  memmanager := TMemManager.Create;
-
-  mainzone := Pmemzone_t(I_ZoneBase(size));
-  mainzone.size := size;
-
-  // set the entire zone to one free block
-  block := Pmemblock_t(integer(mainzone) + SizeOf(memzone_t));
-  mainzone.blocklist.next := block;
-  mainzone.blocklist.prev := block;
-
-  mainzone.blocklist.user := PPointer(mainzone);
-  mainzone.blocklist.tag := PU_STATIC;
-  mainzone.rover := block;
-
-  block.prev := @mainzone.blocklist;
-  block.next := block.prev;
-
-  // NULL indicates a free block.
-  block.user := nil;
-
-  block.size := mainzone.size - SizeOf(memzone_t);
+  if zone_allocator = nil then
+    Z_NotConfigured;
 
   C_AddCmd('mem', @Z_CmdMem);
   C_AddCmd('zonemem', @Z_CmdZoneMem);
   C_AddCmd('zonedump', @Z_CmdZoneMemDump);
   C_AddCmd('zonefiledump', @Z_FileDumpHeap);
-
 end;
 
 //==============================================================================
@@ -377,8 +312,7 @@ end;
 //==============================================================================
 procedure Z_ShutDown;
 begin
-  memmanager.Free;
-  I_ZoneFree(pointer(mainzone));
+  zone_allocator := nil;
 end;
 
 //==============================================================================
@@ -388,7 +322,14 @@ end;
 //==============================================================================
 procedure Z_Free(ptr: pointer);
 begin
-  memmanager.M_Free(ptr);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    zone_allocator.FreeBlock(ptr);
+  except
+    on E: EZoneException do
+      I_Error('Z_Free(): %s', [E.Message]);
+  end;
 end;
 
 //==============================================================================
@@ -398,7 +339,17 @@ end;
 //==============================================================================
 function Z_Size(ptr: pointer): integer;
 begin
-  result := memmanager.M_Size(ptr);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    result := zone_allocator.BlockSize(ptr);
+  except
+    on E: EZoneException do
+    begin
+      result := 0;
+      I_Error('Z_Size(): %s', [E.Message]);
+    end;
+  end;
 end;
 
 //==============================================================================
@@ -409,7 +360,9 @@ end;
 //==============================================================================
 function Z_Malloc(size: integer; tag: integer; user: pointer): pointer;
 begin
-  result := memmanager.M_Malloc(size, tag, user);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  result := zone_allocator.Allocate(size, tag, System.PPointer(user));
 end;
 
 //==============================================================================
@@ -419,7 +372,9 @@ end;
 //==============================================================================
 function Z_Malloc2(size: integer; tag: integer; user: pointer): pointer;
 begin
-  result := memmanager.M_Malloc(size, tag, user);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  result := zone_allocator.Allocate(size, tag, System.PPointer(user));
 end;
 
 //==============================================================================
@@ -429,7 +384,17 @@ end;
 //==============================================================================
 function Z_Realloc(ptr: pointer; size: integer; tag: integer; user: pointer): pointer;
 begin
-  result := memmanager.M_Realloc(ptr, size, tag, user);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    result := zone_allocator.Reallocate(ptr, size, tag, System.PPointer(user));
+  except
+    on E: EZoneException do
+    begin
+      result := nil;
+      I_Error('Z_Realloc(): %s', [E.Message]);
+    end;
+  end;
 end;
 
 //==============================================================================
@@ -439,51 +404,39 @@ end;
 //==============================================================================
 function Z_FreeTags(lowtag: integer; hightag: integer): boolean;
 begin
-  memmanager.M_FreeTags(lowtag, hightag);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  zone_allocator.FreeTags(lowtag, hightag);
   result := True;
 end;
 
 //==============================================================================
 //
+// Z_MoveUsers
+//
+//==============================================================================
+procedure Z_MoveUsers(oldstart: pointer; bytecount: integer; newstart: pointer);
+begin
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  zone_allocator.MoveUsers(oldstart, bytecount, newstart);
+end;
+
+//==============================================================================
+//
 // Z_DumpHeap
-// Note: TFileDumpHeap( stdout ) ?
 //
 //==============================================================================
 procedure Z_DumpHeap(lowtag: integer; hightag: integer);
 var
-  block: Pmemblock_t;
+  lines: TArray<string>;
+  i: integer;
 begin
-  printf('zone size: %d  location: %s'#13#10,
-    [mainzone.size, IntToStrZfill(8, integer(mainzone))]);
-
-  printf('tag range: %s to %s'#13#10,
-    [IntToStrZfill(3, lowtag), IntToStrZfill(3, hightag)]);
-
-  block := mainzone.blocklist.next;
-  while true do
-  begin
-    if (block.tag >= lowtag) and (block.tag <= hightag) then
-      printf('block:%s    size:%s    user:%s    tag:%s'#13#10,
-        [IntToStrZfill(8, integer(block)), IntToStrZfill(7, block.size),
-         IntToStrZfill(8, integer(block.user)), IntToStrZfill(3, block.tag)]);
-    if block.next = @mainzone.blocklist then
-    begin
-      // all blocks have been hit
-      break;
-    end;
-
-    if integer(block) + block.size <> integer(block.next) then
-      printf('ERROR: block size does not touch the next block'#13#10);
-
-    if block.next.prev <> block then
-      printf('ERROR: next block doesn''t have proper back link'#13#10);
-
-    if (block.user = nil) and (block.next.user = nil) then
-      printf('ERROR: two consecutive free blocks'#13#10);
-
-    block := block.next;
-  end;
-  I_Warning('Z_DumpHeap(): Old zone code is obsolete.'#13#10);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  lines := zone_allocator.Describe(lowtag, hightag);
+  for i := 0 to Length(lines) - 1 do
+    printf('%s'#13#10, [lines[i]]);
 end;
 
 //==============================================================================
@@ -493,35 +446,14 @@ end;
 //==============================================================================
 procedure Z_FileDumpHeapf(var f: file);
 var
-  block: Pmemblock_t;
+  lines: TArray<string>;
+  i: integer;
 begin
-  fprintf(f, 'zone size: %d  location: %s'#13#10,
-    [mainzone.size, IntToStrZfill(8, integer(mainzone))]);
-
-  block := mainzone.blocklist.next;
-  while true do
-  begin
-    fprintf(f, 'block:%s    size:%s    user:%s    tag:%s'#13#10,
-      [IntToStrZfill(8, integer(block)), IntToStrZfill(7, block.size),
-       IntToStrZfill(8, integer(block.user)), IntToStrZfill(3, block.tag)]);
-    if block.next = @mainzone.blocklist then
-    begin
-      // all blocks have been hit
-      break;
-    end;
-
-    if integer(block) + block.size <> integer(block.next) then
-      fprintf(f, 'ERROR: block size does not touch the next block'#13#10);
-
-    if block.next.prev <> block then
-      fprintf(f, 'ERROR: next block doesn''t have proper back link'#13#10);
-
-    if (block.user = nil) and (block.next.user = nil) then
-      fprintf(f, 'ERROR: two consecutive free blocks'#13#10);
-
-    block := block.next;
-  end;
-  I_Warning('Z_DumpHeap(): Old zone code is obsolete.'#13#10);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  lines := zone_allocator.Describe(Low(integer), High(integer));
+  for i := 0 to Length(lines) - 1 do
+    fprintf(f, '%s'#13#10, [lines[i]]);
 end;
 
 //==============================================================================
@@ -554,15 +486,14 @@ end;
 //
 //==============================================================================
 procedure Z_CheckMemory;
-var
-  block: Pmemblock_t;
 begin
-  block := mainzone.blocklist.next;
-  while block <> @mainzone.blocklist do
-  begin
-    if (integer(block.user) > 100) and (integer(block.user) < $10000) then
-      I_Error('Z_CheckMemory(): User is invalid pointer ($%.*x)', [4, integer(block.user)]);
-    block := block.next;
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    zone_allocator.CheckUsers;
+  except
+    on E: EZoneException do
+      I_Error('Z_CheckMemory(): %s', [E.Message]);
   end;
 end;
 
@@ -572,28 +503,14 @@ end;
 //
 //==============================================================================
 procedure Z_CheckHeap;
-var
-  block: Pmemblock_t;
 begin
-  block := mainzone.blocklist.next;
-  while true do
-  begin
-    if block.next = @mainzone.blocklist then
-    begin
-      // all blocks have been hit
-      break;
-    end;
-
-    if integer(block) + block.size <> integer(block.next) then
-      I_Error('Z_CheckHeap(): block size does not touch the next block, block=%d, block size=%d, next block = %d', [integer(block), block.size, integer(block.next)]);
-
-    if block.next.prev <> block then
-      I_Error('Z_CheckHeap(): next block doesn''t have proper back link');
-
-    if (block.user = nil) and (block.next.user = nil) then
-      I_Error('Z_CheckHeap(): two consecutive free blocks');
-
-    block := block.next
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    zone_allocator.CheckHeap;
+  except
+    on E: EZoneException do
+      I_Error('Z_CheckHeap(): %s', [E.Message]);
   end;
 end;
 
@@ -604,8 +521,14 @@ end;
 //==============================================================================
 procedure Z_ChangeTag(ptr: pointer; tag: integer);
 begin
-  memmanager.M_ChangeTag(ptr, tag);
+  if zone_allocator = nil then
+    Z_NotConfigured;
+  try
+    zone_allocator.ChangeTag(ptr, tag);
+  except
+    on E: EZoneException do
+      I_Error('Z_ChangeTag(): %s', [E.Message]);
+  end;
 end;
 
 end.
-
