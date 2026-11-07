@@ -37,7 +37,14 @@ type
     ///   Fails the test at the first line that differs from the golden file (or if the number of
     ///   lines differs); <c>AMaxUlps</c> is the tolerance of the '#' tokens
     /// </summary>
-    procedure Compare(const AActual: TStrings; const AMaxUlps: Integer = 0);
+    procedure Compare(const AActual: TStrings; const AMaxUlps: Integer = 0); overload;
+    /// <summary>
+    ///   As above, but the tolerance applies only to the lines whose first token is one of 
+    ///   <c>ALooseNames</c> (the results of the transcendental functions of the C library, which the
+    ///   two compilers do not round the same way); every other line must be identical
+    /// </summary>
+    procedure Compare(const AActual: TStrings; const AMaxUlps: Integer; const ALooseNames: array of string;
+      const AAbsTolerance: Single = 0); overload;
     /// <summary>The bit pattern of a float as a '#' token</summary>
     class function FloatToken(const AValue: Single): string; static;
     /// <summary>The full path of a file of Tests\Data\IdLib</summary>
@@ -66,6 +73,11 @@ uses
 function BitsOf(const AValue: Single): Cardinal; inline;
 begin
   Result := PCardinal(@AValue)^;
+end;
+
+function BitsToSingle(const ABits: Cardinal): Single; inline;
+begin
+  Result := PSingle(@ABits)^;
 end;
 
 function OrderedBits(const ABits: Cardinal): Int64;
@@ -143,8 +155,15 @@ begin
 end;
 
 procedure TIdLibGolden.Compare(const AActual: TStrings; const AMaxUlps: Integer);
+begin
+  Compare(AActual, AMaxUlps, []);
+end;
+
+procedure TIdLibGolden.Compare(const AActual: TStrings; const AMaxUlps: Integer; const ALooseNames: array of string;
+  const AAbsTolerance: Single);
 var
-  LIndex, LToken: Integer;
+  LIndex, LToken, LName, LUlps: Integer;
+  LLoose: Boolean;
   LExpected, LActual: TArray<string>;
   LDistance: Int64;
 begin
@@ -156,18 +175,30 @@ begin
       Continue;
     LExpected := FLines[LIndex].Split([' ']);
     LActual := AActual[LIndex].Split([' ']);
+    LLoose := Length(ALooseNames) = 0;
+    for LName := 0 to High(ALooseNames) do
+      if LExpected[0] = ALooseNames[LName] then
+        LLoose := True;
+    if LLoose then
+      LUlps := AMaxUlps
+    else
+      LUlps := 0;
     Assert.AreEqual(Length(LExpected), Length(LActual), Format('riga %d: attesa "%s", ottenuta "%s"',
       [LIndex + 1, FLines[LIndex], AActual[LIndex]]));
     for LToken := 0 to High(LExpected) do
     begin
       if LExpected[LToken] = LActual[LToken] then
         Continue;
-      if (AMaxUlps > 0) and (Length(LExpected[LToken]) = 9) and (LExpected[LToken][1] = '#') and
+      if (LUlps > 0) and (Length(LExpected[LToken]) = 9) and (LExpected[LToken][1] = '#') and
         (Length(LActual[LToken]) = 9) and (LActual[LToken][1] = '#') then
       begin
         LDistance := Abs(OrderedBits(Cardinal(StrToInt64('$' + Copy(LExpected[LToken], 2, 8)))) -
           OrderedBits(Cardinal(StrToInt64('$' + Copy(LActual[LToken], 2, 8)))));
-        if LDistance <= AMaxUlps then
+        if LDistance <= LUlps then
+          Continue;
+        // a result that is almost zero (sin of 2*pi) can be far in ULPs and close in value
+        if LLoose and (AAbsTolerance > 0) and (System.Abs(BitsToSingle(Cardinal(StrToInt64('$' + Copy(LExpected[LToken], 2, 8)))) -
+          BitsToSingle(Cardinal(StrToInt64('$' + Copy(LActual[LToken], 2, 8))))) <= AAbsTolerance) then
           Continue;
       end;
       Assert.Fail(Format('riga %d: attesa "%s", ottenuta "%s"', [LIndex + 1, FLines[LIndex], AActual[LIndex]]));
