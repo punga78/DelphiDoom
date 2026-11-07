@@ -114,3 +114,18 @@ tasti oltre 255, completamento TAB nuovo, `Param` senza la tabella dei caratteri
 - l'ordine dell'elenco `list` ora e' sempre alfabetico;
 - il nome dato a `get`/`set` dal ripiego `nome valore` e' in maiuscolo anche nei nuovi messaggi, come nel vecchio (e' nel golden): non "correggerlo" senza rifare il golden;
 - `TConsoleInputLine` libera `TConsoleHistory` e `TConsoleCompleter` che riceve.
+
+## 6. Stato dopo la #145 (fase 2, ondata 2)
+
+`c_con.pas` non è più una facciata: la console sullo schermo (testo, scorrimento, tasti, disegno, comandi `closeconsole`,
+`openconsole`, `consolecolormap`, `cls`, `pause_console`, `use`, `freeze`) è la classe `TEngineConsoleScreen`
+(`Base\DelphiDoom.Engine.Console.Screen.pas`, contratto `IEngineConsole` in `DelphiDoom.Engine.Console.Intf`). Riceve dal
+costruttore registro, interprete e gli oggetti della libreria (comandi standard, autoexec, variabili, coda, riga di input), che
+possiede e libera in `Shutdown`; `ComposeConsole` la crea e la dà a `d_main` (quattro giochi), `gl_main`/`v_displaymode`,
+`p_tick`, `p_common`, `psi_system` e al ciclo della rete (`TEngineNetGame`). `outproc` di `d_delphi` resta una procedura
+semplice: la classe ha un `class var` con la console che riceve il testo. `c_con.pas` tiene solo le opzioni lette dalla tabella
+dei default (`ConsoleColormap`, `mirror_stdout`, `autoexecfile`, `DEFAUTOEXEC`). I comandi `defaults/setdefaults` e
+`default/setdefault` li registra `TEngineDefaults` (non più i quattro `m_menu`). Verifica: il file `.con` di prova (cmdlist,
+list, get/set/typeof con maschere, consolecolormap, exec inesistente e senza argomenti, comandi sconosciuti, use, freeze,
+closeconsole/openconsole) dà in Doom32 la stessa uscita del vecchio codice. `c_cmds.pas` resta la facciata di `C_AddCmd`
+(circa 300 chiamate).

@@ -37,6 +37,7 @@ unit r_main;
 interface
 
 uses
+  DelphiDoom.Engine.Net.Intf,
   d_delphi,
   doomdef,
   d_player,
@@ -537,6 +538,14 @@ procedure R_SetRenderingFunctions;
 var
   rendervalidcount: integer = 0; // Don't bother reseting this // version 205
 
+//==============================================================================
+//
+// R_ConfigureNetGame
+// The network, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
 implementation
 
 uses
@@ -655,6 +664,33 @@ uses
   st_stuff,
 {$ENDIF}
   z_zone;
+
+var
+  // given by the composition root
+  r_netgame_ref: IEngineNetGame = nil;
+
+//==============================================================================
+//
+// R_ConfigureNetGame
+//
+//==============================================================================
+procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  r_netgame_ref := ANetGame;
+end;
+
+//==============================================================================
+//
+// R_NetGame
+//
+//==============================================================================
+function R_NetGame: IEngineNetGame;
+begin
+  if r_netgame_ref = nil then
+    I_Error('R_ConfigureNetGame() was not called: the network is missing');
+  result := r_netgame_ref;
+end;
+
 
 var
 // just for profiling purposes
@@ -3673,7 +3709,7 @@ begin
   TestActiveThreads;
 
   // check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   R_ClearWallsCache8;
 
@@ -3717,14 +3753,14 @@ begin
   TestActiveThreads;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   R_Execute3DTransform;
 
   R_DrawPlayer;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);
   MT_ExecutePendingTask(task_clearplanes);
@@ -3753,7 +3789,7 @@ begin
   TestActiveThreads;
 
   // check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   R_ClearWallsCache32;
 
@@ -3796,14 +3832,14 @@ begin
   TestActiveThreads;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   R_Execute3DTransform;
 
   R_DrawPlayer;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);
   MT_ExecutePendingTask(task_clearplanes);
@@ -3843,7 +3879,7 @@ begin
 {$ENDIF}
 
   // check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
 {$IFDEF OPENGL}
   gld_ClipperAddViewRange;
@@ -3855,12 +3891,12 @@ begin
   R_ProjectAdditionalThings;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
 {$IFDEF OPENGL}
   gld_DrawScene(player);
 
-  NetUpdate;
+  R_NetGame.Update;
 
   gld_EndDrawScene;
 
@@ -3870,7 +3906,7 @@ begin
   R_DrawPlanes;
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
   R_DrawFFloors;  // JVAL: 3d Floors
 
@@ -3882,7 +3918,7 @@ begin
 {$ENDIF}
 
   // Check for new console commands.
-  NetUpdate;
+  R_NetGame.Update;
 
 {$IFNDEF OPENGL}
   task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);

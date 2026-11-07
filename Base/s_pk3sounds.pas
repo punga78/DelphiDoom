@@ -33,6 +33,19 @@ unit s_pk3sounds;
 
 interface
 
+uses
+  DelphiDoom.Platform.Intf;
+
+//==============================================================================
+//
+// S_ConfigurePK3Sounds
+//
+// The temporary files where the WAD of the sounds of the PK3 goes, given by the
+// composition root (ComposeEngine); without them W_InitPK3Sounds stops with I_Error.
+//
+//==============================================================================
+procedure S_ConfigurePK3Sounds(const ATempFiles: ITempFiles);
+
 //==============================================================================
 //
 // W_InitPK3Sounds
@@ -44,7 +57,7 @@ implementation
 
 uses
   d_delphi,
-  i_tmp,
+  i_system,
   m_argv,
   DelphiDoom.MathCore.Sha1,
   w_pak,
@@ -53,6 +66,18 @@ uses
 
 var
   s_names: TDStringList;
+  // given by the composition root (S_ConfigurePK3Sounds)
+  s_tempfiles: ITempFiles = nil;
+
+//==============================================================================
+//
+// S_ConfigurePK3Sounds
+//
+//==============================================================================
+procedure S_ConfigurePK3Sounds(const ATempFiles: ITempFiles);
+begin
+  s_tempfiles := ATempFiles;
+end;
 
 const
   DSSTUBLUMP: array[0..149] of Byte = (
@@ -120,6 +145,9 @@ var
   i: integer;
   mem: TDMemoryStream;
 begin
+  if s_tempfiles = nil then
+    I_Error('W_InitPK3Sounds(): the temporary files were not configured');
+
   s_names := TDStringList.Create;
 
   PAK_FileNameIterator(@S_AddFileName);
@@ -148,7 +176,7 @@ begin
 
     W_RuntimeLoad(wadfilename, F_ORIGIN_WAD);
 
-    I_DeclareTempFile(wadfilename);
+    s_tempfiles.Declare(wadfilename);
   end;
 
   s_names.Free;

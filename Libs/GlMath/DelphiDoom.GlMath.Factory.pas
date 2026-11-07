@@ -17,8 +17,6 @@ type
   /// <summary>The only place that knows the classes behind the interfaces of the OpenGL math library</summary>
   TGlMathFactory = class
   public
-    /// <summary>A view frustum with no planes yet (call Calculate)</summary>
-    class function CreateFrustum: IGlFrustum; static;
     /// <summary>A clipper with an empty set of ranges</summary>
     class function CreateAngleClipper: IGlAngleClipper; static;
   end;
@@ -26,15 +24,9 @@ type
 implementation
 
 uses
-  DelphiDoom.GlMath.Frustum,
   DelphiDoom.GlMath.AngleClipper;
 
 { TGlMathFactory }
-
-class function TGlMathFactory.CreateFrustum: IGlFrustum;
-begin
-  Result := TGlFrustum.Create;
-end;
 
 class function TGlMathFactory.CreateAngleClipper: IGlAngleClipper;
 begin

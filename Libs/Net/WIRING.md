@@ -126,3 +126,14 @@ Vanno catturati in un solo punto gli `ENetException` (e derivate: `ENetVersionMi
 - **Tempo**: `I_GetTime` è `engine_clock.Steps(TICRATE)`; se un giorno cambia, `TNetTicSync` va con lui solo se resta lo stesso `IClock` (non c'è una seconda sorgente).
 - **`NetUpdate` rientrante**: chiamata dal renderer in mezzo al disegno: non tocca nulla del renderer, ma `IsGameFinished` e `PollInput` sono chiamati lì dentro come prima.
 - **Multiplayer reale**: non provato (nessuna seconda macchina). Provare prima due istanze su due macchine con `-net 1 <host>` / `-net 2 <host>` e una demo di prova, poi `-extratic` e `-dup 2`.
+
+## 8. Stato dopo la #145 (fase 2, ondata 2)
+
+`d_net.pas` non è più una facciata: `NetUpdate`, `D_CheckNetGame`, `D_RunMultipleTicks`, `D_RunSingleTick`, `D_QuitNetGame`,
+`D_ShutDownNetGame` e la consistenza sono i metodi di `TEngineNetGame` (`Base\DelphiDoom.Engine.Net.Game.pas`, contratto
+`IEngineNetGame` in `DelphiDoom.Engine.Net.Intf`), che riceve dal costruttore clock, log, `IGameContext`, la console e il tic
+della schermata di fine. `ComposeNetGame` la dà a `d_main` (`D_ConfigureNetGame`), `g_game` (consistenza e comandi degli
+altri giocatori), `r_main` (gli 11 `NetUpdate` durante il disegno) e `i_system` (uscita e chiusura). `d_net.pas` tiene solo i
+dati letti dal gioco (`ticdup`, `firstinterpolation`, `S_ERR_DIF_NET`); `isinterpolateddisplay` non lo leggeva nessuno ed è
+sparito, `I_ShutDownNetwork` di `i_net` anche (lo fa `IEngineNetGame.Shutdown`). Verifica: `-timedemo demo1/2/3` di Doom
+(shareware) dà gametic e posizione, angolo e salute del giocatore identici al vecchio eseguibile. Non provato in rete vera.

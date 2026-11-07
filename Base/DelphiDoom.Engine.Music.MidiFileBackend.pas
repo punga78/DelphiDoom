@@ -14,6 +14,7 @@ interface
 uses
   DelphiDoom.Audio.Types,
   DelphiDoom.Platform.Intf,
+  DelphiDoom.Engine.Music.Intf,
   DelphiDoom.Engine.Music.BackendBase;
 
 type
@@ -24,14 +25,20 @@ type
   TMidiFileMusicBackend = class(TEngineMusicBackendBase)
   strict private
     FTempFiles: ITempFiles;
+    FMidiStream: IEngineMidiStream;
   protected
     /// <summary>A new temporary file for a song, deleted when the engine shuts down</summary>
     function NewSongFile: string;
     /// <summary>Plays a file; false if the file could not be made</summary>
     procedure PlayFile(const AFileName: string);
+    /// <summary>Closes the midi stream of the MUS songs before a file plays</summary>
+    procedure CloseMidiStream;
   public
-    /// <summary>ATempFiles gives the file a song is written to</summary>
-    constructor Create(const ATempFiles: ITempFiles);
+    /// <summary>
+    ///   ATempFiles gives the file a song is written to; AMidiStream is the stream of the MUS songs.
+    ///   EArgumentNilException if one of them is nil
+    /// </summary>
+    constructor Create(const ATempFiles: ITempFiles; const AMidiStream: IEngineMidiStream);
     procedure Initialize; override;
     procedure Shutdown; override;
     function Register(AData: Pointer; ASize: Integer;
@@ -52,17 +59,25 @@ uses
   m_base,
   i_system,
   i_midi,
-  i_music,
   s_sound;
 
 { TMidiFileMusicBackend }
 
-constructor TMidiFileMusicBackend.Create(const ATempFiles: ITempFiles);
+constructor TMidiFileMusicBackend.Create(const ATempFiles: ITempFiles;
+  const AMidiStream: IEngineMidiStream);
 begin
   inherited Create;
   if not Assigned(ATempFiles) then
     raise EArgumentNilException.Create('TMidiFileMusicBackend.Create(): ATempFiles is nil');
+  if not Assigned(AMidiStream) then
+    raise EArgumentNilException.Create('TMidiFileMusicBackend.Create(): AMidiStream is nil');
   FTempFiles := ATempFiles;
+  FMidiStream := AMidiStream;
+end;
+
+procedure TMidiFileMusicBackend.CloseMidiStream;
+begin
+  FMidiStream.Close;
 end;
 
 function TMidiFileMusicBackend.NewSongFile: string;
@@ -101,7 +116,7 @@ begin
     Exit;
   end;
 
-  I_StopMus;
+  CloseMidiStream;
 
   LFileName := NewSongFile;
 

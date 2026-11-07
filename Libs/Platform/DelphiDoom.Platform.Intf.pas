@@ -61,17 +61,6 @@ type
     property Names[AIndex: Integer]: string read GetName;
   end;
 
-  /// <summary>Runs a program in the background and gives its output back</summary>
-  IProcessRunner = interface
-    ['{7A90D5C8-1E3F-4B26-A8D4-F6C20B93E571}']
-    /// <summary>
-    ///   Runs a command line (the window is hidden), waits until the program is done and gives
-    ///   its text (standard output and error together) to AOutput as it comes; AOutput may be
-    ///   nil. False if the program could not be started or the output could not be read
-    /// </summary>
-    function Run(const ACommandLine: string; const AOutput: TProcessOutputEvent): Boolean;
-  end;
-
   /// <summary>Where the version numbers of the operating system come from</summary>
   IOperatingSystemSource = interface
     ['{B4C8E1F3-6D27-49A0-85B2-3E7D90A1C654}']

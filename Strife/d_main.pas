@@ -47,10 +47,17 @@ unit d_main;
 interface
 
 uses
+  DelphiDoom.Engine.Level.Intf,
   d_event,
   doomdef,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Configuration.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Engine.ActorDef.Intf,
   DelphiDoom.Scanner.AutoLoad.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
@@ -232,6 +239,26 @@ procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwad
 
 //==============================================================================
 //
+// D_ConfigureGameDefines
+//
+// The defines of the game (D_FillGameDefines adds them), that the script
+// preprocessor reads: given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+// The reader of the ACTORDEF, DECORATE and SNDINFO lumps, given by the
+// composition root; without it the start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+//==============================================================================
+//
 // D_ConfigureAutoLoad
 //
 // The reader of the AUTOLOAD lumps, given by the composition root; without it the
@@ -239,6 +266,43 @@ procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwad
 //
 //==============================================================================
 procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
+//==============================================================================
+//
+// D_ConfigureConsole
+//
+// The console, given by the composition root: D_DoomMain starts it, the loop gives it
+// the keys and draws it, D_ShutDown frees it.
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+// The loop of the game around the network, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+// The defaults of the configuration file, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+// The screenshots (-shot), given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
 
 //==============================================================================
 //
@@ -261,6 +325,16 @@ var
 {$IFNDEF OPENGL}
   showfullhdlogo: boolean = false;
 {$ENDIF}
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+// The loading of the levels, given by the composition root: D_DoomMain starts it and frees it.
+// Without it the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
 
 implementation
 
@@ -290,7 +364,6 @@ uses
   info_common,
   info_rnd,
   i_system,
-  i_sound,
   i_io,
   i_startup,
   DelphiDoom.Iwad.Types,
@@ -325,8 +398,6 @@ uses
   sounddata,
   s_sound,
   s_pk3sounds,
-  sc_actordef,
-  sc_defines,
   sc_states,
   sv_strife,
   m_saves,
@@ -337,6 +408,57 @@ uses
   w_pak,
   z_zone;
 
+var
+  // given by the composition root (D_ConfigureGameDefines)
+  main_gamedefines: IScriptGameDefines = nil;
+
+//==============================================================================
+//
+// D_ConfigureGameDefines
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+begin
+  main_gamedefines := ADefines;
+end;
+
+//==============================================================================
+//
+// D_GameDefines
+//
+//==============================================================================
+function D_GameDefines: IScriptGameDefines;
+begin
+  if main_gamedefines = nil then
+    I_Error('D_ConfigureGameDefines() was not called: the defines of the game are missing');
+  result := main_gamedefines;
+end;
+
+var
+  // given by the composition root (D_ConfigureActorDef)
+  main_actordef: IEngineActorDefLumps = nil;
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+begin
+  main_actordef := ALumps;
+end;
+
+//==============================================================================
+//
+// D_ActorDef
+//
+//==============================================================================
+function D_ActorDef: IEngineActorDefLumps;
+begin
+  if main_actordef = nil then
+    I_Error('D_ConfigureActorDef() was not called: the ACTORDEF lumps cannot be read');
+  result := main_actordef;
+end;
 var
   // given by the composition root (D_ConfigureAutoLoad)
   main_autoload: IAutoLoadReader = nil;
@@ -361,6 +483,102 @@ begin
   if main_autoload = nil then
     I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
   result := main_autoload;
+end;
+
+var
+  // given by the composition root (D_ConfigureConsole, D_ConfigureNetGame,
+  // D_ConfigureDefaults, D_ConfigureScreenshot)
+  main_console: IEngineConsole = nil;
+  main_netgame: IEngineNetGame = nil;
+  main_defaults: IEngineDefaults = nil;
+  main_screenshot: IEngineScreenshot = nil;
+
+//==============================================================================
+//
+// D_ConfigureConsole
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  main_console := AConsole;
+end;
+
+//==============================================================================
+//
+// D_Console
+//
+//==============================================================================
+function D_Console: IEngineConsole;
+begin
+  if main_console = nil then
+    I_Error('D_ConfigureConsole() was not called: the console is missing');
+  result := main_console;
+end;
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  main_netgame := ANetGame;
+end;
+
+//==============================================================================
+//
+// D_NetGame
+//
+//==============================================================================
+function D_NetGame: IEngineNetGame;
+begin
+  if main_netgame = nil then
+    I_Error('D_ConfigureNetGame() was not called: the network is missing');
+  result := main_netgame;
+end;
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+begin
+  main_defaults := ADefaults;
+end;
+
+//==============================================================================
+//
+// D_Defaults
+//
+//==============================================================================
+function D_Defaults: IEngineDefaults;
+begin
+  if main_defaults = nil then
+    I_Error('D_ConfigureDefaults() was not called: the defaults are missing');
+  result := main_defaults;
+end;
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  main_screenshot := AScreenshot;
+end;
+
+//==============================================================================
+//
+// D_Screenshot
+//
+//==============================================================================
+function D_Screenshot: IEngineScreenshot;
+begin
+  if main_screenshot = nil then
+    I_Error('D_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := main_screenshot;
 end;
 
 var
@@ -437,7 +655,7 @@ begin
   while eventtail <> eventhead do
   begin
     ev := @events[eventtail];
-    if C_Responder(ev) then
+    if D_Console.Respond(ev) then
       // console ate the event
     else if M_Responder(ev) then
       // menu ate the event
@@ -490,7 +708,7 @@ begin
     shotnumber := I_GetTime;
     if shotnumber <> lastshotnumber then
     begin
-      M_ScreenShot(IntToStrZFill(8, shotnumber), true);
+      D_Screenshot.Take(IntToStrZFill(8, shotnumber), true);
       inc(shotnumber);
     end;
   end;
@@ -683,7 +901,7 @@ begin
     begin
       if scaledviewwidth <> SCREENWIDTH then
       begin
-        if menuactive or menuactivestate or not viewactivestate or C_IsConsoleActive then
+        if menuactive or menuactivestate or not viewactivestate or D_Console.IsActive then
         begin
           borderdrawcount := 3;
           popupactivestate := false;
@@ -748,7 +966,7 @@ begin
     M_Drawer; // Menu is drawn even on top of everything
 
     // Console goes directly to the screen
-    C_Drawer;   // Console is drawn even on top of menus
+    D_Console.Draw;   // Console is drawn even on top of menus
 
     // Draw disk busy patch
     R_DrawDiskBusy; // Draw disk busy on top of console
@@ -765,7 +983,7 @@ begin
     // JVAL: Overlay Drawer before menus
     OVR_Drawer;
     M_Drawer;
-    C_Drawer;
+    D_Console.Draw;
     diskbusyend := -1;
   end
   else
@@ -777,10 +995,10 @@ begin
     OVR_Drawer;
 
     M_Drawer;
-    C_Drawer;
+    D_Console.Draw;
   end;
 
-  NetUpdate; // send out any new accumulation
+  D_NetGame.Update; // send out any new accumulation
 
   {$IFNDEF OPENGL}
   // normal update
@@ -806,7 +1024,7 @@ begin
     wipestart := nowtime;
     done := fade_Ticker(tics);
     M_Drawer;         // Menu is drawn even on top of wipes
-    C_Drawer;         // Console draw on top of wipes and menus
+    D_Console.Draw;         // Console draw on top of wipes and menus
     D_FinishUpdate;   // page flip or blit buffer
     HU_DoFPSStuff;
   until done;
@@ -875,9 +1093,9 @@ begin
 
     // process one or more tics
     if singletics then
-      D_RunSingleTick // will run only one tick
+      D_NetGame.RunSingleTic // will run only one tick
     else
-      D_RunMultipleTicks; // will run at least one tick
+      D_NetGame.RunMultipleTics; // will run at least one tick
 
 {$IFNDEF DEBUG}
     if iscritical then
@@ -1988,15 +2206,15 @@ end;
 //==============================================================================
 procedure D_FillGameDefines;
 begin
-  SC_AddDefine('strife');
-  if (teaser = 1) or (teaser = 2) then SC_AddDefine('teaser');
+  D_GameDefines.Add('strife');
+  if (teaser = 1) or (teaser = 2) then D_GameDefines.Add('teaser');
   if gamemode = shareware then
-    SC_AddDefine('shareware')
+    D_GameDefines.Add('shareware')
   else
-    SC_AddDefine('registered');
+    D_GameDefines.Add('registered');
 
   {$IFDEF OPENGL}
-  SC_AddDefine('OPENGL');
+  D_GameDefines.Add('OPENGL');
   {$ENDIF}
 end;
 
@@ -2014,6 +2232,32 @@ begin
   end
   else
     basedefault := {$IFDEF FPC}'Strife32f.ini'{$ELSE}'Strife32.ini'{$ENDIF};
+end;
+
+var
+  // given by the composition root (D_ConfigureLevel)
+  main_levelloader: ILevelLoader = nil;
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+begin
+  main_levelloader := ALoader;
+end;
+
+//==============================================================================
+//
+// D_LevelLoader
+//
+//==============================================================================
+function D_LevelLoader: ILevelLoader;
+begin
+  if main_levelloader = nil then
+    I_Error('D_ConfigureLevel() was not called: the loading of the levels is missing');
+  result := main_levelloader;
 end;
 
 //==============================================================================
@@ -2069,7 +2313,7 @@ begin
 
   printf('M_LoadDefaults: Load system defaults.'#13#10);
   M_FindDefaultFile;
-  M_LoadDefaults;              // load before initing other systems
+  D_Defaults.Load;              // load before initing other systems
 
   D_AddSystemWAD; // Add system wad first
 
@@ -2320,7 +2564,7 @@ begin
   SUC_Progress(38);
 
   printf('SC_InitGameDefines: Determine global defines.'#13#10);
-  SC_InitGameDefines;
+  D_GameDefines.Clear;
   D_FillGameDefines;
 
   SUC_Progress(39);
@@ -2331,7 +2575,7 @@ begin
   SUC_Progress(40);
 
   printf('SC_Init: Initializing script engine.'#13#10);
-  SC_Init;
+  D_ActorDef.Initialize;
 
   SUC_Progress(41);
 
@@ -2360,7 +2604,7 @@ begin
   SUC_Progress(43);
 
   printf('SC_ParseSndInfoLumps: Parsing SNDINFO lumps.'#13#10);
-  SC_ParseSndInfoLumps;
+  D_ActorDef.ParseSoundInfoLumps;
 
   SUC_Progress(44);
 
@@ -2368,7 +2612,7 @@ begin
   if p <= 0 then
   begin
     printf('SC_ParseActordefLumps: Parsing ACTORDEF lumps.'#13#10);
-    SC_ParseActordefLumps;
+    D_ActorDef.ParseActorDefLumps;
   end;
 
   SUC_Progress(45);
@@ -2555,12 +2799,12 @@ begin
   SUC_Progress(80);
 
   printf('P_Init: Init Playloop state.'#13#10);
-  P_Init;
+  D_LevelLoader.Initialize;
 
   SUC_Progress(81);
 
   printf('D_CheckNetGame: Checking network game status.'#13#10);
-  D_CheckNetGame;
+  D_NetGame.Start;
 
   SUC_Progress(85);
 
@@ -2621,7 +2865,7 @@ begin
   SUC_Progress(97);
 
   printf('C_Init: Initializing console.'#13#10);
-  C_Init;
+  D_Console.Initialize;
 
   p := M_CheckParm('-keyboardmode');
   if (p > 0) and (p < myargc - 1) then
@@ -2703,9 +2947,10 @@ begin
   printf('M_ShutDownMenus: Shut down menus.'#13#10);
   M_ShutDownMenus;
   printf('C_ShutDown: Shut down console.'#13#10);
-  C_ShutDown;
+  if main_console <> nil then
+    main_console.Shutdown;
   printf('P_ShutDown: Shut down Playloop state.'#13#10);
-  P_ShutDown;
+  D_LevelLoader.ShutDown;
   printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);
   R_ShutDown;
   printf('Info_ShutDownRandom: Shut down randomizers.'#13#10);
@@ -2715,9 +2960,9 @@ begin
   printf('T_ShutDown: Shut down texture manager.'#13#10);
   T_ShutDownDrawTextures;
   printf('SC_ShutDown: Shut down script engine.'#13#10);
-  SC_ShutDown;
+  D_ActorDef.ShutDown;
   printf('SC_ShutDownGameDefines: Shut down global defines.'#13#10);
-  SC_ShutDownGameDefines;
+  D_GameDefines.Clear;
   // JVAL: PascalScript
   printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
   PS_ShutDown;

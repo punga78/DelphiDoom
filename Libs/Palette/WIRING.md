@@ -82,7 +82,7 @@ La libreria **dà solo byte e indici**; chi possiede la memoria resta il motore 
   prova prima `_dotry_pk3(c)` poi `_dotry_wad(c)` (il motore carica con `TPakStream`/`W_CheckNumForName`, lunghezza 256) e, se una riesce,
   `slot := names.AddSlot(chiave)` e memorizza la tabella. Attenzione all'ordine del vecchio `_try_load`: per ogni candidato si prova **pk3 e poi wad**
   su tutta la lista pk3, e solo se nessuno riesce la lista wad (`if not _try_load(name, pk3) then _try_load(name, wad)`): non alternati.
-  I colori del sangue sono `TTranslationBlood` (statica, senza stato): `deh_main` dei quattro giochi, `p_common`, `psi_game` e
+  I colori del sangue sono `TTranslationBlood` (statica, senza stato): `TEngineDehackedApplier` dei quattro giochi, `p_common`, `psi_game` e
   `TEngineExportNames` la chiamano direttamente (issue #146); `R_BloodTranslation` non aveva chiamanti ed e stata cancellata. La tabella
   di un file del PK3 arriva da `IPakFileSystem` (`R_ConfigureTranslations(nomi, file system)`).
 * **Colori dei giocatori**: `ComposeEngine` sceglie `CreateDoomPlayerTranslations`, `CreateHereticPlayerTranslations` o
@@ -128,6 +128,8 @@ del byte di Strife, le regole strane di `CR_`/`CR` nei nomi.
   la direttiva `#CREATEPALETTE`), che riceve `IPaletteBuilder` dal costruttore. Finché `sc_utils.pas` assembla da sé le
   direttive del preprocessore resta anche un costruttore senza argomenti che crea il costruttore del profilo del gioco.
   Verifica nello stesso eseguibile: PLAYPAL, COLORMAP e FOGMAP del WAD generato identici al vecchio codice negli otto giochi.
-* **Restano** `r_palette.pas` (`R_DefaultPalette` è un servizio con stato, la palette letta una volta; tra i chiamanti c'è
-  `r_voxels.pas`, fuori da questa ondata) e `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
+* `r_palette.pas` è cancellata (#145): la palette di base (letta una volta) è `TEngineDefaultPalette`
+  (`Base\DelphiDoom.Engine.Palette.DefaultPalette.pas`, `IEngineDefaultPalette`, sopra `IPaletteUnpacker`), che `ComposePalette`
+  dà a `R_ConfigureColormaps` (`r_data`), `R_ConfigureCustomColormaps` (`r_colormaps`) e `R_ConfigureVoxelPalette` (`r_voxels`).
+* **Resta** `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
   `p_saveg`: sono dati del motore).

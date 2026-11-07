@@ -34,26 +34,10 @@ unit p_switch;
 interface
 
 uses
+  d_delphi,
   r_defs,
   p_mobj_h,
-  p_spec,
-  DelphiDoom.Definitions.Types,
-  DelphiDoom.Definitions.Intf;
-
-//==============================================================================
-//
-// P_InitSwitchList
-//
-//==============================================================================
-procedure P_InitSwitchList;
-
-//==============================================================================
-//
-// P_ConfigureSwitches
-//
-//==============================================================================
-procedure P_ConfigureSwitches(const AReader: IDefSwitchLumpReader; const ASelector: IDefSwitchSelector;
-  const ADefaultTable: TArray<TDefSwitchPair>);
+  p_spec;
 
 //==============================================================================
 //
@@ -72,10 +56,15 @@ function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bo
 var
   buttonlist: array[0..MAXBUTTONS - 1] of button_t;
 
+// The pairs of the textures of the switches, ended by -1: TEngineSwitchListLoader writes them at
+// the start
+var
+  switchlist: PIntegerArray;
+  numswitches: integer;
+
 implementation
 
 uses
-  d_delphi,
   doomdata,
   p_setup,
   p_lights,
@@ -96,79 +85,6 @@ uses
   sounddata,
 // State
 doomstat;
-var
-  switchlist: PIntegerArray;
-  numswitches: integer;
-
-var
-  switch_reader: IDefSwitchLumpReader;
-  switch_selector: IDefSwitchSelector;
-  switch_defaulttable: TArray<TDefSwitchPair>;
-
-//==============================================================================
-//
-// P_ConfigureSwitches
-//
-//==============================================================================
-procedure P_ConfigureSwitches(const AReader: IDefSwitchLumpReader; const ASelector: IDefSwitchSelector;
-  const ADefaultTable: TArray<TDefSwitchPair>);
-begin
-  switch_reader := AReader;
-  switch_selector := ASelector;
-  switch_defaulttable := ADefaultTable;
-end;
-
-
-//==============================================================================
-//
-// P_InitSwitchList
-// Only called at game initialization.
-//
-//==============================================================================
-procedure P_InitSwitchList;
-var
-  i: integer;
-  episode: integer;
-  lump: integer;
-  bytes: TArray<Byte>;
-  table: TArray<TDefSwitchPair>;
-  resolved: TArray<TDefResolvedSwitch>;
-begin
-  if switch_selector = nil then
-    I_Error('P_InitSwitchList(): the switches are not configured (ComposeEngine was not called)');
-
-  if (gamemode = registered) or (gamemode = retail) then
-    episode := 2
-  else if gamemode = commercial then
-    episode := 3
-  else
-    episode := 1;
-
-  // JVAL: Check for 'SWITCHES' lump (BOOM compatibility)
-  lump := W_CheckNumForName('SWITCHES');
-  if lump >= 0 then
-  begin
-    SetLength(bytes, W_LumpLength(lump));
-    if Length(bytes) > 0 then
-      W_ReadLump(lump, @bytes[0]);
-    table := switch_reader.Read(bytes);
-  end
-  else
-    table := switch_defaulttable;
-
-  // The pairs of the textures that exist, for the episode
-  resolved := switch_selector.Select(table, episode);
-
-  // JVAL: Removed size of switchlist limit
-  switchlist := Z_Malloc((Length(resolved) * 2 + 1) * SizeOf(integer), PU_STATIC, nil);
-  for i := 0 to Length(resolved) - 1 do
-  begin
-    switchlist[i * 2] := resolved[i].Texture1;
-    switchlist[i * 2 + 1] := resolved[i].Texture2;
-  end;
-  numswitches := Length(resolved);
-  switchlist[numswitches * 2] := -1;
-end;
 
 //==============================================================================
 // P_StartButton

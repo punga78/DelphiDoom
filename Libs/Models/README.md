@@ -98,9 +98,8 @@ chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel
 
 | Unit | Ruolo |
 |---|---|
-| `DelphiDoom.GlMath.Types` | `TGlMatrix4`, `TGlAngle`, `TGlFrustumSide`, costanti, `EGlMathException` |
-| `DelphiDoom.GlMath.Intf` | `IGlFrustum` (piani e test punto/sfera/scatola/cubo), `IGlAngleClipper` |
-| `DelphiDoom.GlMath.Frustum` | `TGlFrustum`: gli stessi calcoli del vecchio `gl_frustum` senza `glGetFloatv` (le matrici le dà il chiamante) |
+| `DelphiDoom.GlMath.Types` | `TGlAngle`, costanti, `EGlMathException` |
+| `DelphiDoom.GlMath.Intf` | `IGlAngleClipper` |
 | `DelphiDoom.GlMath.AngleClipper` | `TGlAngleClipper`: lista ordinata di intervalli (nodi in un array con indici al posto dei puntatori, lista libera) |
 | `DelphiDoom.GlMath.ViewAngle` | `TGlViewAngle.FrustumAngle`: il vecchio `gld_FrustumAngle` (mezza ampiezza della vista) |
 | `DelphiDoom.GlMath.Factory` | `TGlMathFactory` |
@@ -111,7 +110,7 @@ Collegamento: `ComposeOpenGl` (in `ComposeEngine`, solo build OpenGL) dà `GL_Co
 `monitor_relative_aspect` e `viewangle`. Resta una facciata perché i chiamanti sono il giro del BSP (`r_bsp`, per ogni muro) e
 `r_main`: diventeranno classi con il renderer. `gl_frustum.pas` è stata cancellata (#134): `fr_CalculateFrustum` leggeva due
 matrici con `glGetFloatv` a ogni fotogramma e calcolava piani che nessuno leggeva, e i test `fr_*InFrustum` non avevano
-chiamanti; `TGlFrustum` resta nella libreria (con i suoi test) senza chiamanti nel motore. **Costo misurato** del clipper (una chiamata a interfaccia in più per ogni controllo, per muro): in un
+chiamanti; `TGlFrustum`, rimasto nella libreria senza chiamanti, è stato cancellato con i suoi test dalla #145. **Costo misurato** del clipper (una chiamata a interfaccia in più per ogni controllo, per muro): in un
 fotogramma tipico (64 intervalli, 2000 controlli) il vecchio è circa 80-100 ns per operazione e il nuovo circa 110-130 ns,
 cioè meno di 0,1 ms per fotogramma.
 

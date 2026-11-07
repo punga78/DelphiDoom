@@ -67,8 +67,6 @@ uses
   i_system,
   i_mainwindow,
   i_midi,
-  i_music,
-  i_sound,
   i_threads,
 {$IFDEF OPENGL}
   gl_main,
@@ -111,7 +109,7 @@ uses
   r_dynlights,
   r_pk3textures,
   s_sound,
-  sc_actordef,
+  sc_states,
   t_png,
   v_video;
 

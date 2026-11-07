@@ -17,7 +17,6 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.GlMath.Types in '..\Libs\GlMath\DelphiDoom.GlMath.Types.pas',
   DelphiDoom.GlMath.Intf in '..\Libs\GlMath\DelphiDoom.GlMath.Intf.pas',
-  DelphiDoom.GlMath.Frustum in '..\Libs\GlMath\DelphiDoom.GlMath.Frustum.pas',
   DelphiDoom.GlMath.AngleClipper in '..\Libs\GlMath\DelphiDoom.GlMath.AngleClipper.pas',
   DelphiDoom.GlMath.ViewAngle in '..\Libs\GlMath\DelphiDoom.GlMath.ViewAngle.pas',
   DelphiDoom.GlMath.Factory in '..\Libs\GlMath\DelphiDoom.GlMath.Factory.pas',
@@ -25,7 +24,6 @@ uses
   DelphiDoom.Tests.GlMath.Golden in 'Source\DelphiDoom.Tests.GlMath.Golden.pas',
   DelphiDoom.Tests.GlMath.Scenarios in 'Source\DelphiDoom.Tests.GlMath.Scenarios.pas',
   DelphiDoom.Tests.GlMath.Subject in 'Source\DelphiDoom.Tests.GlMath.Subject.pas',
-  DelphiDoom.Tests.GlMath.Frustum in 'Source\DelphiDoom.Tests.GlMath.Frustum.pas',
   DelphiDoom.Tests.GlMath.AngleClipper in 'Source\DelphiDoom.Tests.GlMath.AngleClipper.pas',
   DelphiDoom.Tests.GlMath.ViewAngle in 'Source\DelphiDoom.Tests.GlMath.ViewAngle.pas';
 

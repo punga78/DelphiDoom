@@ -46,7 +46,7 @@ implementation
 uses
   System.SysUtils,
   d_delphi,
-  i_music,
+  s_sound,
   sounds;
 
 const

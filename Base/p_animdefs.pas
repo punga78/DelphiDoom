@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  ANIMDEFS lump
+//  The animations of ANIMDEFS played at every tic (TEngineAnimDefsLoader reads the lump)
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -34,22 +34,7 @@ unit p_animdefs;
 interface
 
 uses
-  d_delphi,
-  DelphiDoom.Definitions.Intf;
-
-//==============================================================================
-//
-// P_InitFTAnims
-//
-//==============================================================================
-procedure P_InitFTAnims;
-
-//==============================================================================
-//
-// P_ConfigureAnimDefs
-//
-//==============================================================================
-procedure P_ConfigureAnimDefs(const AParser: IDefAnimDefsParser);
+  d_delphi;
 
 //==============================================================================
 //
@@ -72,23 +57,7 @@ procedure P_InitAnimations;
 //==============================================================================
 procedure P_ShutDownAnimations;
 
-var
-  animatedflatslist: TDNumberList;
-  animatedtextureslist: TDNumberList;
-
-implementation
-
-uses
-  m_rnd,
-  m_fixed,
-  i_system,
-  r_data,
-  r_defs,
-  DelphiDoom.Definitions.Types,
-  w_wad;
-
 const
-  ANIM_SCRIPT_NAME = 'ANIMDEFS';
   MAX_ANIM_DEFS = 128;
   MAX_FRAME_DEFS = 512;
   ANIM_FLAT = 0;
@@ -113,12 +82,22 @@ type
   end;
   PanimDef_t = ^animDef_t;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
+// The animations of ANIMDEFS: TEngineAnimDefsLoader writes them at the start, P_AnimateSurfaces
+// plays them at every tic
 var
+  animatedflatslist: TDNumberList;
+  animatedtextureslist: TDNumberList;
   AnimDefs: array[0..MAX_ANIM_DEFS - 1] of animDef_t;
   FrameDefs: array[0..MAX_FRAME_DEFS - 1] of frameDef_t;
   AnimDefCount: integer;
-  animdefs_parser: IDefAnimDefsParser;
+
+implementation
+
+uses
+  m_rnd,
+  m_fixed,
+  r_data,
+  r_defs;
 
 //==========================================================================
 //
@@ -161,95 +140,6 @@ begin
 
 end;
 
-//==========================================================================
-//
-// P_InitFTAnims
-//
-// Initialize flat and texture animation lists.
-//
-//==========================================================================
-//
-//==============================================================================
-procedure P_InitFTAnims;
-var
-  fd: integer;
-  ad: PanimDef_t;
-  animlump: integer;
-  anims: TArray<TDefAnimation>;
-  anim: TDefAnimation;
-  frame: TDefAnimFrame;
-  base: integer;
-  i, j: integer;
-begin
-  animlump := W_CheckNumForName(ANIM_SCRIPT_NAME);
-  if animlump < 0 then
-    exit;
-
-  if animdefs_parser = nil then
-    I_Error('P_InitFTAnims(): ANIMDEFS is not configured (ComposeEngine was not called)');
-
-  animatedflatslist.Clear;
-  animatedtextureslist.Clear;
-  fd := 0;
-  ad := @AnimDefs[0];
-  AnimDefCount := 0;
-
-  // The parser leaves out the animations of flats and textures that do not exist
-  try
-    anims := animdefs_parser.Parse(W_TextLumpNum(animlump));
-  except
-    on E: EDefinitionsException do
-      I_Error('%s', [E.Message]);
-  end;
-
-  for i := 0 to Length(anims) - 1 do
-  begin
-    anim := anims[i];
-    if anim.Kind = TDefAnimKind.Flat then
-    begin
-      ad._type := ANIM_FLAT;
-      base := R_FlatNumForName(anim.Name);
-    end
-    else
-    begin
-      ad._type := ANIM_TEXTURE;
-      base := R_TextureNumForName(anim.Name);
-    end;
-    ad.index := base;
-
-    // The list of the animated pictures: the first one and the one of every pic line
-    for j := 0 to Length(anim.AnimatedOffsets) - 1 do
-      if ad._type = ANIM_FLAT then
-        animatedflatslist.Add(base + anim.AnimatedOffsets[j])
-      else
-        animatedtextureslist.Add(base + anim.AnimatedOffsets[j]);
-
-    ad.startFrameDef := fd;
-    for j := 0 to Length(anim.Frames) - 1 do
-    begin
-      frame := anim.Frames[j];
-      FrameDefs[fd].index := base + frame.PicNumber - 1;
-      FrameDefs[fd].tics := frame.PackedTics;
-      inc(fd);
-    end;
-    ad.endFrameDef := fd - 1;
-    ad.currentFrameDef := ad.endFrameDef;
-    ad.tics := 1; // Force 1st game tic to animate
-    inc(AnimDefCount);
-    inc(ad);
-  end;
-end;
-
-//==============================================================================
-//
-// P_ConfigureAnimDefs
-//
-//==============================================================================
-procedure P_ConfigureAnimDefs(const AParser: IDefAnimDefsParser);
-begin
-  animdefs_parser := AParser;
-end;
-
 //==============================================================================
 //
 // P_InitAnimations
@@ -273,4 +163,3 @@ begin
 end;
 
 end.
-

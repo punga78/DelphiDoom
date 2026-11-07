@@ -29,8 +29,11 @@ type
 implementation
 
 uses
-  d_delphi,
-  i_music;
+  d_delphi;
+
+const
+  // "ID3"#4: the first bytes of an ID3 tag of version 2.4
+  ID3MAGIC = 70468681;
 
 { TId3MusicBackend }
 

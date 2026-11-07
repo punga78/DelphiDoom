@@ -34,6 +34,8 @@ unit i_system;
 interface
 
 uses
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Configuration.Intf,
   d_delphi,
   d_ticcmd,
   DelphiDoom.Logging.Intf,
@@ -439,6 +441,22 @@ function I_GetTickCount: LongWord;
 //==============================================================================
 procedure I_ConfigurePlatform(const AServices: IPlatformServices);
 
+//==============================================================================
+//
+// I_ConfigureNetGame
+// The network, given by the composition root
+//
+//==============================================================================
+procedure I_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// I_ConfigureDefaults
+// The defaults, given by the composition root
+//
+//==============================================================================
+procedure I_ConfigureDefaults(const ADefaults: IEngineDefaults);
+
 implementation
 
 uses
@@ -453,11 +471,9 @@ uses
   m_argv,
   m_misc,
   m_fixed,
-  i_sound,
-  i_music,
+  s_sound,
   i_io,
   DelphiDoom.Input.Types,
-  i_net,
   i_tmp,
 {$IFNDEF FPC}
   i_startup,
@@ -469,12 +485,37 @@ uses
 {$ENDIF}
   i_mainwindow,
   d_main,
-  d_net,
 {$IFDEF HEXEN}
   g_demo,
 {$ENDIF}
   g_game,
   m_base;
+
+var
+  // given by the composition root; they can be missing when an error stops the start
+  // before ComposeEngine is done: I_Destroy then skips them, as the old code did
+  i_netgame_ref: IEngineNetGame = nil;
+  i_defaults_ref: IEngineDefaults = nil;
+
+//==============================================================================
+//
+// I_ConfigureNetGame
+//
+//==============================================================================
+procedure I_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  i_netgame_ref := ANetGame;
+end;
+
+//==============================================================================
+//
+// I_ConfigureDefaults
+//
+//==============================================================================
+procedure I_ConfigureDefaults(const ADefaults: IEngineDefaults);
+begin
+  i_defaults_ref := ADefaults;
+end;
 
 var
   finished: boolean = false;
@@ -511,7 +552,7 @@ end;
 procedure I_StartFrame;
 begin
   I_ProcessWindows;
-  I_ProcessMusic;
+  S_ProcessMusic;
   // the poller reads nothing before I_Init
   if system_input <> nil then
     system_input.Process;
@@ -678,9 +719,9 @@ begin
   printf('I_DetectOS: Detecting operating system.'#13#10);
   I_DetectOS;
   printf('I_InitSound: Initializing DirectSound.'#13#10);
-  I_InitSound;
+  S_InitSoundDevice;
   printf('I_InitMusic: Initializing music.'#13#10);
-  I_InitMusic;
+  S_InitMusicDevice;
   printf('I_InitInput: Initializing Input Devices.'#13#10);
   if system_input = nil then
     I_Error('I_InitInput(): the input was not configured');
@@ -724,25 +765,28 @@ begin
   printf(#13#10'I_Destroy: Game finished.'#13#10#13#10);
   finished := true;
   printf('D_QuitNetGame: Quit network game.'#13#10);
-  D_QuitNetGame;
+  if i_netgame_ref <> nil then
+    i_netgame_ref.Quit;
   printf('I_ShutDownSound: Shut down sound.'#13#10);
-  I_ShutDownSound;
+  S_ShutDownSoundDevice;
   printf('I_ShutDownMusic: Shut down music.'#13#10);
-  I_ShutDownMusic;
+  S_ShutDownMusicDevice;
   printf('I_ShutDownInput: Shut down input.'#13#10);
   if system_input <> nil then
     system_input.Shutdown;
   if M_CheckParm('-dontsavedefaults') = 0 then
   begin
     printf('M_SaveDefaults: Saving defaults.'#13#10);
-    M_SaveDefaults;
+    if i_defaults_ref <> nil then
+      i_defaults_ref.Save;
   end;
   printf('I_ShutDownGraphics: Shut down graphics.'#13#10);
   I_ShutDownGraphics;
   printf('D_ShutDown: Shut down doom engine.'#13#10);
   D_ShutDown;
   printf('I_ShutDownNetwork: Shut down network.'#13#10);
-  I_ShutDownNetwork;
+  if i_netgame_ref <> nil then
+    i_netgame_ref.Shutdown;
   printf('I_RestoreDesktop: Restoring desktop.'#13#10);
   I_RestoreDesktop;
   printf('I_ShutDownTempFiles: Shut down temporary file managment.'#13#10);
@@ -1091,7 +1135,7 @@ begin
   if numcpus > 1 then
     printf(' Multi-core system detected (%d CPUs)'#13#10, [numcpus]);
 
-  if confignotfound then
+  if (i_defaults_ref = nil) or i_defaults_ref.ConfigNotFound then
     usemultithread := numcpus > 1;
 
   if usemultithread then

@@ -36,6 +36,7 @@ interface
 
 uses
   DelphiDoom.Video.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
   d_delphi,
   d_event,
   m_fixed;
@@ -255,6 +256,14 @@ var
 //==============================================================================
 procedure M_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 
+//==============================================================================
+//
+// M_ConfigureScreenshot
+// The screenshots, given by the composition root
+//
+//==============================================================================
+procedure M_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+
 implementation
 
 uses
@@ -274,7 +283,6 @@ uses
   mt_utils,
   i_system,
   i_threads,
-  i_sound,
   DelphiDoom.Video.Types,
 {$IFDEF OPENGL}
   gl_main,
@@ -316,13 +324,39 @@ uses
   v_data,
   v_video,
   hu_stuff,
-  sc_actordef,
+  sc_states,
   s_sound,
   sounddata,
   sb_bar,
   w_wad,
   sv_save,
   z_zone;
+
+var
+  // given by the composition root
+  m_screenshot_ref: IEngineScreenshot = nil;
+
+//==============================================================================
+//
+// M_ConfigureScreenshot
+//
+//==============================================================================
+procedure M_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  m_screenshot_ref := AScreenshot;
+end;
+
+//==============================================================================
+//
+// M_Screenshot
+//
+//==============================================================================
+function M_Screenshot: IEngineScreenshot;
+begin
+  if m_screenshot_ref = nil then
+    I_Error('M_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := m_screenshot_ref;
+end;
 
 var
   // given by the composition root (M_ConfigureDisplayModes)
@@ -2567,7 +2601,7 @@ var
 begin
   M_WriteCenterText2('System', 15);
 
-  M_FixScreenshotFormat;
+  M_Screenshot.FixFormat;
   ppos := M_WriteText3(SystemDef.x, SystemDef.y + SystemDef.itemheight * Ord(sys_screenshottype), 'Screenshot format: ');
   M_WriteWhiteText3(ppos.x, ppos.y, screenshotformat);
 end;
@@ -3951,7 +3985,7 @@ end;
 //==============================================================================
 procedure M_ScreenShotCmd(choice: integer);
 begin
-  M_FixScreenshotFormat;
+  M_Screenshot.FixFormat;
   if strupper(screenshotformat) = 'PNG' then
     screenshotformat := 'JPG'
   else if strupper(screenshotformat) = 'JPG' then
@@ -5293,8 +5327,6 @@ begin
   C_AddCmd('exit, quit', @M_CmdQuit);
   C_AddCmd('halt', @I_Quit);
   C_AddCmd('endgame', @M_CmdEndGame);
-  C_AddCmd('defaults, setdefaults', @M_SetDefaults);
-  C_AddCmd('default, setdefault', @M_SetDefaults);
   C_AddCmd('menu_main', @M_CmdMenuMainDef);
   C_AddCmd('menu_newgame, menu_new', @M_CmdMenuNewDef);
   C_AddCmd('menu_options', @M_CmdMenuOptionsDef);

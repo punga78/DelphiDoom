@@ -28,6 +28,8 @@ type
     procedure DovrebbeAumentareLAngoloConLaLarghezzaDelloSchermo;
     [Test]
     procedure DovrebbeDareCirca47GradiConLoSchermoQuadratoEIlViso;
+    [Test]
+    procedure DovrebbeVedereTuttoIntornoConUnoSchermoMoltoLargo;
   end;
 
 implementation
@@ -74,6 +76,13 @@ begin
   // straight ahead and aspect 1: 2 + 45 = 47 degrees
   LDegrees := TGlViewAngle.FrustumAngle(0, 1.0) / GLMATH_ANG1;
   Assert.AreEqual(47.0, LDegrees, 0.001);
+end;
+
+procedure TTestGlMathViewAngle.DovrebbeVedereTuttoIntornoConUnoSchermoMoltoLargo;
+begin
+  // aspect 4: 2 + 45 * 4 = 182 degrees, more than half a turn: the whole circle is kept
+  Assert.AreEqual<Cardinal>(GLMATH_ANGLE_MAX, TGlViewAngle.FrustumAngle(0, 4.0));
+  Assert.IsTrue(TGlViewAngle.FrustumAngle(0, 3.9) < GLMATH_ANG180);
 end;
 
 end.

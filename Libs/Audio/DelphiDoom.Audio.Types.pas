@@ -44,6 +44,42 @@ type
     IsExternal: Boolean;
   end;
 
+  /// <summary>
+  ///   What the WAV parser found in the bytes of a sound. FormatDone and DataDone are also an
+  ///   input: a lump does not look again for a part that the file out of the WAD already gave
+  ///   (that is how the old I_CacheSFX of i_sound went on from the file to the lump)
+  /// </summary>
+  TSfxWaveChunks = record
+    /// <summary>A fmt chunk was read (now or before)</summary>
+    FormatDone: Boolean;
+    /// <summary>A data chunk was read (now or before)</summary>
+    DataDone: Boolean;
+    /// <summary>This call read a format: Format is the last one</summary>
+    FormatFound: Boolean;
+    Format: TSfxFormat;
+    /// <summary>This call read the samples: DataOffset and DataLength say where they are</summary>
+    DataFound: Boolean;
+    DataOffset: Integer;
+    DataLength: Integer;
+  end;
+
+  /// <summary>
+  ///   An event of the midi stream of Windows (MIDIEVENT without the parameters): 12 bytes
+  /// </summary>
+  TMusMidiEvent = packed record
+    /// <summary>Ticks since the last event</summary>
+    Time: Cardinal;
+    /// <summary>Always zero</summary>
+    StreamId: Cardinal;
+    case Integer of
+      0: (Data: packed array[0..2] of Byte; EventType: Byte);
+      1: (Event: Cardinal);
+  end;
+  PMusMidiEvent = ^TMusMidiEvent;
+
+  /// <summary>A MUS song that cannot become midi events (the old code stopped with I_Error)</summary>
+  EMusConversionException = class(Exception);
+
   /// <summary>What a music backend says about the bytes of a song</summary>
   TMusicRegisterResult = (
     /// <summary>It is not a song of this backend: another one may take it</summary>

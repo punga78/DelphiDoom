@@ -19,7 +19,6 @@ uses
   DelphiDoom.Platform.Intf in '..\Libs\Platform\DelphiDoom.Platform.Intf.pas',
   DelphiDoom.Platform.FileStore in '..\Libs\Platform\DelphiDoom.Platform.FileStore.pas',
   DelphiDoom.Platform.TempFiles in '..\Libs\Platform\DelphiDoom.Platform.TempFiles.pas',
-  DelphiDoom.Platform.ProcessRunner in '..\Libs\Platform\DelphiDoom.Platform.ProcessRunner.pas',
   DelphiDoom.Platform.WindowsVersionSource in '..\Libs\Platform\DelphiDoom.Platform.WindowsVersionSource.pas',
   DelphiDoom.Platform.OperatingSystemInfo in '..\Libs\Platform\DelphiDoom.Platform.OperatingSystemInfo.pas',
   DelphiDoom.Platform.WindowsCpuInfo in '..\Libs\Platform\DelphiDoom.Platform.WindowsCpuInfo.pas',
@@ -36,7 +35,6 @@ uses
   DelphiDoom.Tests.Platform.OperatingSystemInfo in 'Source\DelphiDoom.Tests.Platform.OperatingSystemInfo.pas',
   DelphiDoom.Tests.Platform.PeImageReader in 'Source\DelphiDoom.Tests.Platform.PeImageReader.pas',
   DelphiDoom.Tests.Platform.ExecutableInfo in 'Source\DelphiDoom.Tests.Platform.ExecutableInfo.pas',
-  DelphiDoom.Tests.Platform.ProcessRunner in 'Source\DelphiDoom.Tests.Platform.ProcessRunner.pas',
   DelphiDoom.Tests.Platform.Machine in 'Source\DelphiDoom.Tests.Platform.Machine.pas';
 
 var

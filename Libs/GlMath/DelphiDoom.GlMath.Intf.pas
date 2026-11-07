@@ -14,26 +14,6 @@ uses
   DelphiDoom.GlMath.Types;
 
 type
-  /// <summary>The six planes of the view frustum and the tests of what is inside</summary>
-  IGlFrustum = interface
-    ['{4B7C0E52-6D1F-4F0A-9B36-5A2E8C13D741}']
-    /// <summary>
-    ///   Takes the planes from the projection and the model view matrices (the caller reads them
-    ///   from OpenGL) and normalizes them
-    /// </summary>
-    procedure Calculate(const AProjection, AModelView: TGlMatrix4);
-    /// <summary>The value of a plane: A, B, C, D (index 0..3) of a side</summary>
-    function GetPlane(const ASide: TGlFrustumSide; const AIndex: Integer): Single;
-    /// <summary>True if the point is in front of all the planes</summary>
-    function ContainsPoint(const AX, AY, AZ: Single): Boolean;
-    /// <summary>True if the sphere is not entirely behind a plane</summary>
-    function ContainsSphere(const AX, AY, AZ, ARadius: Single): Boolean;
-    /// <summary>True if a corner of the box is in front of each plane (min and max points)</summary>
-    function ContainsBox(const AX, AY, AZ, ASizeX, ASizeY, ASizeZ: Single): Boolean;
-    /// <summary>True if a corner of the cube (the center and half its length) is in front of each plane</summary>
-    function ContainsCube(const AX, AY, AZ, ASize: Single): Boolean;
-  end;
-
   /// <summary>
   ///   The set of angles already hidden by walls (the clipper of the OpenGL renderer): a range
   ///   that is all in it is not visible. Angles wrap around, so a range can pass over the zero

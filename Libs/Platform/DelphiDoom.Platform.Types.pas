@@ -44,9 +44,6 @@ type
     Lines: TArray<string>;
   end;
 
-  /// <summary>A function that gets text printed as it arrives from a program</summary>
-  TProcessOutputEvent = reference to procedure(const AText: AnsiString);
-
 resourcestring
   SPlatformFileNotRead = 'Could not read file %s';
 

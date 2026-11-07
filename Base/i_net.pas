@@ -39,20 +39,13 @@ uses
 //==============================================================================
 //
 // I_InitNetwork
-// Called by D_CheckNetGame: reads the options of the network game from the command line
+// Called by TEngineNetGame.Start: reads the options of the network game from the command line
 //   -dup <n>, -extratic, -port <n>, -left, -right, -back, -drone and
 //   -net <consoleplayer> <host> <host> ...
 // The sockets are not opened here: they belong to the network library
 //
 //==============================================================================
 procedure I_InitNetwork;
-
-//==============================================================================
-//
-// I_ShutDownNetwork
-//
-//==============================================================================
-procedure I_ShutDownNetwork;
 
 var
   // What the command line says: this node is node 0 and the hosts are the other nodes
@@ -67,7 +60,6 @@ implementation
 
 uses
   d_delphi,
-  d_net,
   g_game,
   i_system,
   m_argv,
@@ -159,16 +151,6 @@ begin
     else
       printf('Node number %d hostname %s'#13#10, [nodeno + 1, net_peers[nodeno].Host]);
   printf('Total number of players : %d'#13#10, [net_numnodes]);
-end;
-
-//==============================================================================
-//
-// I_ShutDownNetwork
-//
-//==============================================================================
-procedure I_ShutDownNetwork;
-begin
-  D_ShutDownNetGame;
 end;
 
 end.

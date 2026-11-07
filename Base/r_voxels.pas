@@ -39,7 +39,8 @@ uses
   r_defs,
   p_mobj_h,
   DelphiDoom.Voxel.Types,
-  DelphiDoom.Voxel.Intf;
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Engine.Palette.Intf;
 
 var
   r_drawvoxels: boolean = true;
@@ -70,6 +71,14 @@ type
 
 //==============================================================================
 //
+// R_ConfigureVoxelPalette
+// The default palette, that gives the colors of the voxels: given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette);
+
+//==============================================================================
+//
 // R_InitVoxels
 //
 //==============================================================================
@@ -97,7 +106,6 @@ uses
   g_game,
   mt_utils,
   r_renderstyle,
-  r_palette,
   r_utils,
   r_main,
   r_draw,
@@ -181,6 +189,20 @@ type
 const
   MAXMIP = 3;
 
+var
+  // given by the composition root (R_ConfigureVoxelPalette)
+  voxel_palette: IEngineDefaultPalette = nil;
+
+//==============================================================================
+//
+// R_ConfigureVoxelPalette
+//
+//==============================================================================
+procedure R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette);
+begin
+  voxel_palette := APalette;
+end;
+
 //==============================================================================
 //
 // JVAL
@@ -193,7 +215,7 @@ var
   i, j: integer;
   rover: voxelcolumn_p;
   r1, parent: voxelcolumn_p;
-  pal: palette_p;
+  pal: PEnginePalette;
   source: array[0..MAXMIP * MAXVOXELSIZE] of byte;
   source32: array[0..MAXMIP * MAXVOXELSIZE] of LongWord;
   lastc: byte;
@@ -207,7 +229,9 @@ var
   c: LongWord;
   maxlistsize: integer;
 begin
-  pal := R_DefaultPalette;
+  if voxel_palette = nil then
+    I_Error('R_VoxelColumnFromBuffer(): R_ConfigureVoxelPalette() was not called');
+  pal := voxel_palette.Colors;
 
   if mip <> 1 then
   begin

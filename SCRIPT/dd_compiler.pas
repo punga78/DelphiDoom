@@ -247,7 +247,7 @@ uses
   info,
   info_h,
   info_common,
-  sc_actordef,
+  sc_consts,
   sc_states,
   ps_events,
   ps_import,
@@ -272,7 +272,8 @@ begin
   SC_DefaultStatedefLump;
   Info_Init(true);
   DEH_Init;
-  SC_Init;
+  // the constants of the scripts (the console commands of the game are not needed here)
+  SC_InitConsts;
   SC_ParseStatedefLump;
 end;
 
@@ -283,7 +284,8 @@ end;
 //==============================================================================
 procedure DD_ShutDownDoomEngine;
 begin
-  SC_ShutDown;
+  statenames.Free;
+  SC_ShutDownConsts;
   DEH_ShutDown;
   Info_ShutDown;
   PS_ShutDownProcLists;
@@ -1032,7 +1034,7 @@ begin
   try
     if IsIntegerInRange(m, 0, Ord(DO_NUMMOBJTYPES) - 1) then
     begin
-      actorstr := SC_GetActordefDeclaration(@mobjinfo[m]);
+      actorstr := DEH_ActorDeclaration(m);
       DD_CopyStringToPChar(actorstr, _out, _outsize);
     end
     else

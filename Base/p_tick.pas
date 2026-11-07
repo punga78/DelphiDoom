@@ -35,6 +35,7 @@ unit p_tick;
 interface
 
 uses
+  DelphiDoom.Engine.Console.Intf,
   d_think;
 
 //
@@ -92,11 +93,19 @@ var
   isgamesuspended: boolean = true;
   isgamefreezed: boolean = false;
 
+//==============================================================================
+//
+// P_ConfigureTickerConsole
+// The console, given by the composition root
+//
+//==============================================================================
+procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
+
 implementation
 
 uses
   doomdef,
-  c_con,
+  i_system,
   d_player,
 {$IFDEF HEXEN}
   g_demo,
@@ -119,6 +128,33 @@ uses
 {$ENDIF}
   ps_main,  // JVAL: Script Events
   z_zone;
+
+var
+  // given by the composition root
+  p_tickerconsole_ref: IEngineConsole = nil;
+
+//==============================================================================
+//
+// P_ConfigureTickerConsole
+//
+//==============================================================================
+procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
+begin
+  p_tickerconsole_ref := AConsole;
+end;
+
+//==============================================================================
+//
+// P_TickerConsole
+//
+//==============================================================================
+function P_TickerConsole: IEngineConsole;
+begin
+  if p_tickerconsole_ref = nil then
+    I_Error('P_ConfigureTickerConsole() was not called: the console is missing');
+  result := p_tickerconsole_ref;
+end;
+
 
 //==============================================================================
 //
@@ -261,7 +297,7 @@ begin
      not demoplayback and (players[consoleplayer].viewz <> 1) then
     exit;
 
-  if not demoplayback and not demorecording and C_IsConsoleActive and not netgame and (leveltime <> 0) then
+  if not demoplayback and not demorecording and P_TickerConsole.IsActive and not netgame and (leveltime <> 0) then
     exit;
 
   isgamesuspended := false;

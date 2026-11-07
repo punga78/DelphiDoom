@@ -149,6 +149,30 @@ begin
   Assert.WillRaise(
     procedure
     begin
+      TPlatformServices.Create(FServices.OperatingSystem, nil, FServices.Executable,
+        FServices.Drives, FServices.Dpi, FServices.Priority);
+    end, EArgumentNilException);
+  Assert.WillRaise(
+    procedure
+    begin
+      TPlatformServices.Create(FServices.OperatingSystem, FServices.Cpu, nil,
+        FServices.Drives, FServices.Dpi, FServices.Priority);
+    end, EArgumentNilException);
+  Assert.WillRaise(
+    procedure
+    begin
+      TPlatformServices.Create(FServices.OperatingSystem, FServices.Cpu, FServices.Executable,
+        nil, FServices.Dpi, FServices.Priority);
+    end, EArgumentNilException);
+  Assert.WillRaise(
+    procedure
+    begin
+      TPlatformServices.Create(FServices.OperatingSystem, FServices.Cpu, FServices.Executable,
+        FServices.Drives, nil, FServices.Priority);
+    end, EArgumentNilException);
+  Assert.WillRaise(
+    procedure
+    begin
       TPlatformServices.Create(FServices.OperatingSystem, FServices.Cpu, FServices.Executable,
         FServices.Drives, FServices.Dpi, nil);
     end, EArgumentNilException);
