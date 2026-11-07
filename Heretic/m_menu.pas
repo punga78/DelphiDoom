@@ -319,7 +319,7 @@ uses
 {$ENDIF}
   r_camera,
   r_draw,
-  t_main,
+  t_png,
   v_data,
   v_video,
   hu_stuff,

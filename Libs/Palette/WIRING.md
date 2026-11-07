@@ -56,7 +56,8 @@ Il progetto di test (`Tests\DelphiDoom.Tests.Palette.dpr/.dproj`) cerca `..\Libs
 | `R_InitPrecalc`, `R_GetPrecalc32Tables` (indice) | `IPrecalcTables` (`Multiply`, `Fog`, `ByteToLong`, `ByteToWord`, `InverseColor`, `Average`, `AddClamp`, `LightIndex`) |
 | `gammatable` (`v_video.pas`) | `IGammaTables.Table(livello)` (i dati sono `GAMMA_DATA`, copiati byte per byte) |
 | `R_InitTranslationTables` | `IPlayerTranslations.Build` (Doom: 3 tabelle; Heretic: 3; Strife: 7) |
-| nomi di `R_GetTranslationTable`, `R_GetBloodTranslationIdForName`, `R_GetBloodName`, `R_BloodTranslation` | `ITranslationNames` (`FindSlot`, `AddSlot`, `LumpCandidates`, `BloodIdForName`, `BloodName`, `BloodRegion`) |
+| nomi di `R_GetTranslationTable` | `ITranslationNames` (`FindSlot`, `AddSlot`, `LumpCandidates`) |
+| `R_GetBloodTranslationIdForName`, `R_GetBloodName`, `R_BloodTranslation` (cancellate, #146) | `TTranslationBlood` (`IdForName`, `NameOf`, `Region`: statiche, i chiamanti la usano direttamente) |
 
 ## 3. Come il motore passa i parametri e riceve i buffer
 
@@ -81,7 +82,9 @@ La libreria **dà solo byte e indici**; chi possiede la memoria resta il motore 
   prova prima `_dotry_pk3(c)` poi `_dotry_wad(c)` (il motore carica con `TPakStream`/`W_CheckNumForName`, lunghezza 256) e, se una riesce,
   `slot := names.AddSlot(chiave)` e memorizza la tabella. Attenzione all'ordine del vecchio `_try_load`: per ogni candidato si prova **pk3 e poi wad**
   su tutta la lista pk3, e solo se nessuno riesce la lista wad (`if not _try_load(name, pk3) then _try_load(name, wad)`): non alternati.
-  `R_BloodTranslation(bt)` = `colorregions[names.BloodRegion(bt)]` (nil se -1). `R_GetBloodTranslationIdForName`, `R_GetBloodName`: chiamate dirette.
+  I colori del sangue sono `TTranslationBlood` (statica, senza stato): `TEngineDehackedApplier` dei quattro giochi, `p_common`, `psi_game` e
+  `TEngineExportNames` la chiamano direttamente (issue #146); `R_BloodTranslation` non aveva chiamanti ed e stata cancellata. La tabella
+  di un file del PK3 arriva da `IPakFileSystem` (`R_ConfigureTranslations(nomi, file system)`).
 * **Colori dei giocatori**: `ComposeEngine` sceglie `CreateDoomPlayerTranslations`, `CreateHereticPlayerTranslations` o
   `CreateStrifePlayerTranslations` (il gioco di `_GAME`) e `R_InitTranslationTables` copia `Build` in `translationtables` (allineato a 256, come ora).
   Hexen: **non portato** (legge le tabelle dai lump `TRANTBL0`..: sono dati del WAD, nessun algoritmo).

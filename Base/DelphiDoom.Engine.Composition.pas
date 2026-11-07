@@ -90,7 +90,16 @@ uses
   DelphiDoom.Engine.Texture.PngSettings,
   DelphiDoom.Engine.Texture.JpegConverter,
   DelphiDoom.Engine.Texture.Resolver,
-  t_main,
+  DelphiDoom.Engine.Texture.Intf,
+  DelphiDoom.Engine.Texture.Files,
+  t_draw,
+  w_sprite,
+  r_pk3textures,
+{$IFDEF OPENGL}
+  gl_tex,
+{$ELSE}
+  r_cache_walls,
+{$ENDIF}
 {$IFNDEF OPENGL}
   r_cache_flats,
   r_patch,
@@ -279,6 +288,8 @@ uses
   w_wadreader,
   w_wadwriter,
   w_pak,
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Pak.FileSystem,
   DelphiDoom.Scanner.AutoLoad,
   DelphiDoom.Engine.Wad.AutoLoadLumps,
   DelphiDoom.Engine.Wad.AutoLoadSink,
@@ -529,7 +540,7 @@ begin
 end;
 
 procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext;
-  const APreprocessor: IScriptTextPreprocessor);
+  const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem);
 var
   LServices: TEngineDynLightServices;
   LServicesRef: IInterface;
@@ -538,7 +549,7 @@ var
   LCoefficient: Double;
   LCache: IDynLightRenderCache;
 begin
-  LServices := TEngineDynLightServices.Create(APreprocessor);
+  LServices := TEngineDynLightServices.Create(APreprocessor, APakFiles);
   LServicesRef := LServices;
   LRegistry := TDynLightFactory.CreateRegistry;
   LParserServices.Registry := LRegistry;
@@ -654,7 +665,7 @@ begin
   D_ConfigureLevel(LLoader);
 end;
 
-procedure ComposePalette;
+procedure ComposePalette(const APakFiles: IPakFileSystem);
 var
   LMatcher: IColorMatcher;
   LDefaultPalette: IEngineDefaultPalette;
@@ -670,7 +681,7 @@ begin
 {$IFNDEF OPENGL}
   R_ConfigureVoxelPalette(LDefaultPalette);
 {$ENDIF}
-  R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames);
+  R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames, APakFiles);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
   R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
   R_ConfigurePrecalc(TPaletteFactory.CreatePrecalcTables);
@@ -683,7 +694,7 @@ begin
 {$ENDIF}
 end;
 
-procedure ComposeTextureDefs(const ALog: ILog);
+procedure ComposeTextureDefs(const ALog: ILog; const APakFiles: IPakFileSystem);
 var
   LFormat: TTextureDefsFormat;
 begin
@@ -693,7 +704,7 @@ begin
   LFormat := TTextureDefsFormat.Standard;
 {$ENDIF}
   R_ConfigureTextureDefs(TTextureDefsFactory.CreateLoader(TEngineTextureLumpSource.Create, LFormat));
-  R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create);
+  R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create, APakFiles);
 end;
 
 // The console on the screen; it owns the objects of Libs\Console. ARegistry and AInterpreter
@@ -770,17 +781,31 @@ begin
   M_ConfigureScreenshot(LScreenshot);
 end;
 
-procedure ComposeTexture(const ALog: ILog);
+procedure ComposeTexture(const ALog: ILog; const APakFiles: IPakFileSystem);
 var
   LServices: TTextureServices;
+  LResolver: TEngineTextureResolver;
+  LFiles: IEngineTextureFiles;
 begin
   LServices.Palette := TEngineTexturePaletteSource.Create;
-  LServices.Resolver := TEngineTextureResolver.Create;
+  LResolver := TEngineTextureResolver.Create;
+  LServices.Resolver := LResolver;
   LServices.PngReader := TEngineTexturePngReader.Create;
   LServices.PngSettings := TEngineTexturePngSettings.Create;
   LServices.JpegConverter := TEngineTextureJpegConverter.Create;
   LServices.Log := ALog;
-  T_ConfigureTextures(TTextureFactory.CreateFormats(LServices));
+  LFiles := TEngineTextureFiles.Create(TTextureFactory.CreateFormats(LServices), APakFiles);
+  // a material asks the files for the images it names: the resolver keeps them weakly
+  LResolver.Attach(LFiles);
+  T_ConfigureDrawTextures(LFiles);
+  W_ConfigureSpriteTextures(LFiles);
+  R_ConfigurePK3Textures(LFiles, APakFiles);
+{$IFDEF OPENGL}
+  gld_ConfigureTextureFiles(LFiles);
+{$ELSE}
+  R_ConfigureFlatTextures(LFiles);
+  R_ConfigureWallTextures(LFiles);
+{$ENDIF}
 end;
 
 // The temporary files are one object for the whole engine: who makes one receives it, and
@@ -929,13 +954,14 @@ begin
   D_ConfigureIwad(LServices.Locator, LServices.Identifier);
 end;
 
-procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
+procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
+  const APakFiles: IPakFileSystem);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
   LLumps: IVoxelLumpNames;
 begin
-  LLoader := TVoxelFactory.CreateLoader(TEngineVoxelFileSource.Create, ALog);
+  LLoader := TVoxelFactory.CreateLoader(TEngineVoxelFileSource.Create(APakFiles), ALog);
   LCubes := TVoxelFactory.CreateCubeBuilder;
   LLumps := TEngineVoxelLumpNames.Create;
   R_ConfigureVoxelSprites(TEngineVoxelSpriteGenerator.Create(LLoader, LCubes,
@@ -948,11 +974,23 @@ begin
     begin
       // the option is read at each call: the .ini is read after the composition
       Result := r_generatespritesfromvoxels;
-    end));
+    end, APakFiles));
   // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
     TEngineVoxelDefinitionSink.Create(LLoader, LCubes), APreprocessor);
+end;
+
+// The PAK file system is one object: the facade w_pak and the classes that read files share it
+procedure ComposePak(const AServices: IEngineWadServices; out AFiles: IPakFileSystem;
+  out AContainers: IPakContainers);
+var
+  LFileSystem: TPakFileSystem;
+begin
+  LFileSystem := TPakFileSystem.Create(AServices);
+  AFiles := LFileSystem;
+  AContainers := LFileSystem;
+  PAK_Configure(AFiles, AContainers);
 end;
 
 procedure ComposeEngine;
@@ -966,6 +1004,8 @@ var
   LPreprocessor: IScriptTextPreprocessor;
   LEvaluator: IContextExpressionEvaluator;
   LTempFiles: ITempFiles;
+  LPakFiles: IPakFileSystem;
+  LPakContainers: IPakContainers;
   LRegistry: ICommandRegistry;
   LInterpreter: IConsoleInterpreter;
   LConsole: IEngineConsole;
@@ -986,6 +1026,9 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  // The WAD services and the PAK file system: the classes that read files receive them
+  LWadServices := TEngineWadServices.Create;
+  ComposePak(LWadServices, LPakFiles, LPakContainers);
   // the console before anyone registers a command; the defaults after it (#CVARFORCE uses them)
   LConsole := ComposeConsole(LLog, LContext, LRegistry, LInterpreter);
   LDefaults := ComposeDefaults(LRegistry, LInterpreter);
@@ -1007,11 +1050,11 @@ begin
   ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;
   ComposeScreenshot;
-  ComposeTexture(LLog);
-  ComposeTextureDefs(LLog);
-  ComposePalette;
+  ComposeTexture(LLog, LPakFiles);
+  ComposeTextureDefs(LLog, LPakFiles);
+  ComposePalette(LPakFiles);
   LMusInfo := ComposeMusInfo(LLog);
-  ComposeDynLights(LLog, LContext, LPreprocessor);
+  ComposeDynLights(LLog, LContext, LPreprocessor, LPakFiles);
   ComposeAutomap;
   ComposeActorDef(LLog, LPreprocessor);
   ComposeTableExport;
@@ -1019,15 +1062,13 @@ begin
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
   LEndScreenTick := ComposeEndoom();
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick);
-  ComposeVoxels(LLog, LPreprocessor);
+  ComposeVoxels(LLog, LPreprocessor, LPakFiles);
 
-  LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
-  PAK_Configure(LWadServices);
   D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
-    TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
+    TEngineAutoLoadSink.Create(LPakContainers), TEngineScannerLog.Create));
   ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo);
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games

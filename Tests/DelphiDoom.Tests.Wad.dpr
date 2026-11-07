@@ -30,6 +30,11 @@ uses
   DelphiDoom.Wad.Builder in '..\Libs\Wad\DelphiDoom.Wad.Builder.pas',
   DelphiDoom.Wad.LumpCache in '..\Libs\Wad\DelphiDoom.Wad.LumpCache.pas',
   DelphiDoom.Wad.Level.Types in '..\Libs\Wad\DelphiDoom.Wad.Level.Types.pas',
+  DelphiDoom.Wad.Pak.Types in '..\Libs\Wad\DelphiDoom.Wad.Pak.Types.pas',
+  DelphiDoom.Wad.Pak.Intf in '..\Libs\Wad\DelphiDoom.Wad.Pak.Intf.pas',
+  DelphiDoom.Wad.Pak.Names in '..\Libs\Wad\DelphiDoom.Wad.Pak.Names.pas',
+  DelphiDoom.Wad.Pak.Index in '..\Libs\Wad\DelphiDoom.Wad.Pak.Index.pas',
+  DelphiDoom.Wad.Pak.PathResolver in '..\Libs\Wad\DelphiDoom.Wad.Pak.PathResolver.pas',
   DelphiDoom.Wad.Factory in '..\Libs\Wad\DelphiDoom.Wad.Factory.pas',
   DelphiDoom.Wad.Dll.Intf in '..\Libs\Wad\DelphiDoom.Wad.Dll.Intf.pas',
   DelphiDoom.Wad.Dll.Text in '..\Libs\Wad\DelphiDoom.Wad.Dll.Text.pas',
@@ -52,7 +57,10 @@ uses
   DelphiDoom.Tests.Wad.LumpCache in 'Source\DelphiDoom.Tests.Wad.LumpCache.pas',
   DelphiDoom.Tests.Wad.Level in 'Source\DelphiDoom.Tests.Wad.Level.pas',
   DelphiDoom.Tests.Wad.Dll in 'Source\DelphiDoom.Tests.Wad.Dll.pas',
-  DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas';
+  DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas',
+  DelphiDoom.Tests.Wad.PakNames in 'Source\DelphiDoom.Tests.Wad.PakNames.pas',
+  DelphiDoom.Tests.Wad.PakIndex in 'Source\DelphiDoom.Tests.Wad.PakIndex.pas',
+  DelphiDoom.Tests.Wad.PakPathResolver in 'Source\DelphiDoom.Tests.Wad.PakPathResolver.pas';
 
 var
   Runner: ITestRunner;
