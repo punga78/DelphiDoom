@@ -29,6 +29,8 @@ type
     constructor Create(const AFileName: string);
     destructor Destroy; override;
     property Lines: TStringList read FLines;
+    /// <summary>Keeps only the section that starts with the line "== name" (up to the next "== " line)</summary>
+    procedure SelectSection(const AName: string);
     /// <summary>Keeps only the lines whose first token is one of the given ones</summary>
     procedure Select(const AFirstTokens: array of string);
     /// <summary>
@@ -88,6 +90,27 @@ destructor TIdLibGolden.Destroy;
 begin
   FLines.Free;
   inherited Destroy;
+end;
+
+procedure TIdLibGolden.SelectSection(const AName: string);
+var
+  LIndex, LStart, LEnd: Integer;
+begin
+  LStart := -1;
+  LEnd := FLines.Count;
+  for LIndex := 0 to FLines.Count - 1 do
+    if FLines[LIndex] = '== ' + AName then
+      LStart := LIndex
+    else if (LStart >= 0) and (LIndex > LStart) and (Copy(FLines[LIndex], 1, 3) = '== ') then
+    begin
+      LEnd := LIndex;
+      Break;
+    end;
+  Assert.IsTrue(LStart >= 0, 'sezione assente nel file golden: ' + AName);
+  for LIndex := FLines.Count - 1 downto LEnd do
+    FLines.Delete(LIndex);
+  for LIndex := LStart - 1 downto 0 do
+    FLines.Delete(LIndex);
 end;
 
 procedure TIdLibGolden.Select(const AFirstTokens: array of string);
