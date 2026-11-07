@@ -77,4 +77,10 @@ bin/
 dcu/
 logs/
 
-.claude/worktrees/
+.claude/
+# Media di prova scaricati da Tools\Media\scarica_media.py (si rigenerano)
+Media/
+
+# Sorgenti di riferimento di altri motori id Tech (solo consultazione, non fanno parte del progetto)
+Reference/
+
