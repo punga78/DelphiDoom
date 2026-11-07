@@ -77,7 +77,7 @@ var
 begin
   check := strupper(filename);
   ext := fext(check);
-  if TextureExtensions.IndexOf(ext) >= 0 then
+  if T_IsTextureExtension(ext) then
     if Pos(s_TEX_PATH, fixpathname(check)) > 0 then
     begin
       check := fname(check);

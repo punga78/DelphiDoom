@@ -1,0 +1,10 @@
+inspect-patch-cases=3600
+inspect-flat-flat-64x64=True
+inspect-flat-flat-64x128=True
+inspect-flat-flat-128x128=True
+inspect-flat-flat-256x256=True
+inspect-flat-flat-512x512=True
+inspect-flat-flat-1024x1024=True
+inspect-flat-flat-not-a-flat-5000=False
+inspect-flat-flat-not-a-flat-4095=False
+inspect-flat-flat-empty=False

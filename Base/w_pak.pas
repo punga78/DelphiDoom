@@ -236,9 +236,7 @@ implementation
 
 uses
   i_system,
-  t_pcx,
-  t_patch,
-  t_flat,
+  t_detect,
   w_wad,
   DelphiDoom.Wad.Types;
 

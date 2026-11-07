@@ -53,6 +53,14 @@ uses
   m_hash,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
+  DelphiDoom.Texture.Intf,
+  DelphiDoom.Texture.Factory,
+  DelphiDoom.Engine.Texture.PaletteSource,
+  DelphiDoom.Engine.Texture.PngReader,
+  DelphiDoom.Engine.Texture.PngSettings,
+  DelphiDoom.Engine.Texture.JpegConverter,
+  DelphiDoom.Engine.Texture.Resolver,
+  t_main,
 {$IFNDEF OPENGL}
   r_grow,
   r_patch,
@@ -420,6 +428,19 @@ begin
 {$ENDIF}
 end;
 
+procedure ComposeTexture(const ALog: ILog);
+var
+  LServices: TTextureServices;
+begin
+  LServices.Palette := TEngineTexturePaletteSource.Create;
+  LServices.Resolver := TEngineTextureResolver.Create;
+  LServices.PngReader := TEngineTexturePngReader.Create;
+  LServices.PngSettings := TEngineTexturePngSettings.Create;
+  LServices.JpegConverter := TEngineTextureJpegConverter.Create;
+  LServices.Log := ALog;
+  T_ConfigureTextures(TTextureFactory.CreateFormats(LServices));
+end;
+
 procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
@@ -514,6 +535,7 @@ begin
   ComposeMusic;
   ComposeDehacked(LLog);
   ComposeImaging;
+  ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);

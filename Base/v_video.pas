@@ -531,7 +531,7 @@ uses
   {$ENDIF}
   r_flatinfo,
   r_aspect,
-  t_patch,
+  t_detect,
   t_draw,
   w_wad,
   z_zone;
