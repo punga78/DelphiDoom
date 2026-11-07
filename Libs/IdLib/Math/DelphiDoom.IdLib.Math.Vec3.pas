@@ -385,6 +385,8 @@ begin
       Exit(False);
     end;
   end;
+  // the axial vectors returned above, so here the other two components are never both zero: the
+  // "return false" of the original after each of the three tests below cannot be reached
   if TIdMath.Fabs(X) = 1.0 then
   begin
     if (Y <> 0.0) or (Z <> 0.0) then
@@ -393,7 +395,6 @@ begin
       Z := 0.0;
       Exit(True);
     end;
-    Exit(False);
   end
   else if TIdMath.Fabs(Y) = 1.0 then
   begin
@@ -403,7 +404,6 @@ begin
       Z := 0.0;
       Exit(True);
     end;
-    Exit(False);
   end
   else if TIdMath.Fabs(Z) = 1.0 then
   begin
@@ -413,7 +413,6 @@ begin
       Y := 0.0;
       Exit(True);
     end;
-    Exit(False);
   end;
   Result := False;
 end;

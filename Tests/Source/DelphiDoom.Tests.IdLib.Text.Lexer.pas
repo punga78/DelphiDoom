@@ -38,6 +38,10 @@ type
     procedure DovrebbeSegnalareUnErroreFatale;
     [Test]
     procedure DovrebbeRestituireIlTokenRimessoConUnreadToken;
+    [Test]
+    procedure IlTokenDovrebbeDireSeHaSpazioDavantiEDimenticarlo;
+    [Test]
+    procedure IlTokenDovrebbeDareInfinitoIndefinitoENanDaiFlag;
   end;
 
 implementation
@@ -138,6 +142,55 @@ begin
   finally
     LLexer.Free;
   end;
+end;
+
+procedure TTestIdLibLexer.IlTokenDovrebbeDireSeHaSpazioDavantiEDimenticarlo;
+var
+  LLexer: TIdLexer;
+  LToken: TIdToken;
+begin
+  // idToken::WhiteSpaceBeforeToken is whiteSpaceEnd_p > whiteSpaceStart_p; ClearTokenWhiteSpace
+  // clears both pointers and linesCrossed
+  LToken := TIdToken.Create;
+  LLexer := TIdLexer.Create;
+  try
+    LLexer.LoadMemory('alpha'#10#10'   beta', 'white');
+    LLexer.ReadToken(LToken);
+    Assert.IsFalse(LToken.WhiteSpaceBeforeToken, 'nothing before the first token');
+    LLexer.ReadToken(LToken);
+    Assert.IsTrue(LToken.WhiteSpaceBeforeToken);
+    Assert.AreEqual(2, LToken.LinesCrossed);
+    LToken.ClearTokenWhiteSpace;
+    Assert.IsFalse(LToken.WhiteSpaceBeforeToken);
+    Assert.AreEqual(-1, LToken.WhiteSpaceStart);
+    Assert.AreEqual(-1, LToken.WhiteSpaceEnd);
+    Assert.AreEqual(0, LToken.LinesCrossed);
+  finally
+    LLexer.Free;
+  end;
+end;
+
+procedure TTestIdLibLexer.IlTokenDovrebbeDareInfinitoIndefinitoENanDaiFlag;
+
+  function BitsOf(const ASubType: Integer): UInt64;
+  var
+    LToken: TIdToken;
+    LValue: Double;
+  begin
+    LToken := TIdToken.Create;
+    LToken.TokenType := TT_NUMBER;
+    LToken.SubType := TT_FLOAT or ASubType;
+    LValue := LToken.GetDoubleValue;
+    Result := PUInt64(@LValue)^;
+  end;
+
+begin
+  // idToken::NumberValue: the floats 0x7f800000, 0xffc00000 and 0x7fc00000 widened to double (the
+  // lexer never sets these flags, see Libs\IdLib\README.md; a caller of the token can)
+  Assert.IsTrue(BitsOf(TT_INFINITE) = UInt64($7FF0000000000000));
+  Assert.IsTrue(BitsOf(TT_INDEFINITE) = UInt64($FFF8000000000000));
+  Assert.IsTrue(BitsOf(TT_NAN) = UInt64($7FF8000000000000));
+  Assert.IsTrue(BitsOf(TT_INFINITE or TT_NAN) = UInt64($7FF0000000000000), 'infinite wins');
 end;
 
 end.

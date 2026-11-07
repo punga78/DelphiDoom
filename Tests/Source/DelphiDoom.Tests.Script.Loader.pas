@@ -23,6 +23,12 @@ type
     procedure TestMissingLibraryRaises;
 
     /// <summary>
+    ///   A DLL that exists but is not DDScript (kernel32.dll): the export is missing
+    /// </summary>
+    [Test]
+    procedure DovrebbeRifiutareUnaDllSenzaLaFunzioneDiCreazione;
+
+    /// <summary>
     ///   Needs bin\Libs\DDScript.dll (build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
@@ -54,6 +60,20 @@ begin
 end;
 
 { TTestScriptLoader }
+
+procedure TTestScriptLoader.DovrebbeRifiutareUnaDllSenzaLaFunzioneDiCreazione;
+var
+  LMessage: string;
+begin
+  LMessage := '';
+  try
+    TScriptLoader.Create('kernel32.dll').Free;
+  except
+    on E: EScriptException do
+      LMessage := E.Message;
+  end;
+  Assert.IsTrue(Pos(DDSCRIPT_CREATE_EXPORT, LMessage) > 0, 'the message names the export: ' + LMessage);
+end;
 
 procedure TTestScriptLoader.TestMissingLibraryRaises;
 begin

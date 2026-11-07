@@ -65,7 +65,6 @@ type
     function ReadName(var AToken: TIdToken): Boolean;
     function ReadNumber(var AToken: TIdToken): Boolean;
     function ReadPunctuation(var AToken: TIdToken): Boolean;
-    function CheckString(const AText: AnsiString): Boolean;
     procedure ResetLexerFields;
     function PrintPrefix(const AText: string): string;
   public
@@ -551,16 +550,6 @@ begin
   Result := True;
 end;
 
-function TIdLexer.CheckString(const AText: AnsiString): Boolean;
-var
-  LIndex: Integer;
-begin
-  for LIndex := 0 to System.Length(AText) - 1 do
-    if Ch(LIndex) <> ShortInt(Byte(AText[LIndex + 1])) then
-      Exit(False);
-  Result := True;
-end;
-
 function TIdLexer.ReadNumber(var AToken: TIdToken): Boolean;
 var
   LIndex, LDot, LChar, LChar2: Integer;
@@ -674,23 +663,10 @@ begin
       // check for floating point exception infinite 1.#INF or indefinite 1.#IND or NaN
       else if LChar = Ord('#') then
       begin
+        // the original tests CheckString( "INF" ), "IND", "NAN", "QNAN" and "SNAN" here, but the
+        // position is still on the '#', so none of them can match (a defect kept, see README): the
+        // flags TT_INFINITE, TT_INDEFINITE and TT_NAN are never set and four characters are taken
         LChar2 := 4;
-        if CheckString('INF') then
-          AToken.SubType := AToken.SubType or TT_INFINITE
-        else if CheckString('IND') then
-          AToken.SubType := AToken.SubType or TT_INDEFINITE
-        else if CheckString('NAN') then
-          AToken.SubType := AToken.SubType or TT_NAN
-        else if CheckString('QNAN') then
-        begin
-          AToken.SubType := AToken.SubType or TT_NAN;
-          Inc(LChar2);
-        end
-        else if CheckString('SNAN') then
-        begin
-          AToken.SubType := AToken.SubType or TT_NAN;
-          Inc(LChar2);
-        end;
         for LIndex := 0 to LChar2 - 1 do
         begin
           Take(LChar);

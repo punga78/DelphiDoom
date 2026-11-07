@@ -42,7 +42,8 @@ uses
   DelphiDoom.Tests.Script.HostList in 'Source\DelphiDoom.Tests.Script.HostList.pas',
   DelphiDoom.Tests.Script.Memory in 'Source\DelphiDoom.Tests.Script.Memory.pas',
   DelphiDoom.Tests.Script.Globals in 'Source\DelphiDoom.Tests.Script.Globals.pas',
-  DelphiDoom.Tests.Script.Preprocessor in 'Source\DelphiDoom.Tests.Script.Preprocessor.pas';
+  DelphiDoom.Tests.Script.Preprocessor in 'Source\DelphiDoom.Tests.Script.Preprocessor.pas',
+  DelphiDoom.Tests.Script.ErrorCodes in 'Source\DelphiDoom.Tests.Script.ErrorCodes.pas';
 
 var
   Runner: ITestRunner;

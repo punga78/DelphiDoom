@@ -64,7 +64,6 @@ type
     function ReadResult(AVariable: PPSVariant;
       out AResult: TScriptNativeValue): Integer;
     function RuntimeErrorText: TbtString;
-    function GetIsLoaded: Boolean;
     procedure Unload;
   public
     constructor Create;
@@ -101,7 +100,6 @@ type
     procedure SetEventHandlers(ARunLine: TScriptRunLineHandler;
       AException: TScriptExceptionHandler; AUserData: Pointer);
 
-    property IsLoaded: Boolean read GetIsLoaded;
     /// <summary>Text of the last error of Load, RunMain or Call</summary>
     property LastError: TbtString read FLastError;
     /// <summary>Text result of the last Call</summary>
@@ -173,11 +171,6 @@ end;
 procedure TScriptNativeExecutor.Unload;
 begin
   FreeAndNil(FExec);
-end;
-
-function TScriptNativeExecutor.GetIsLoaded: Boolean;
-begin
-  Result := Assigned(FExec);
 end;
 
 function TScriptNativeExecutor.RuntimeErrorText: TbtString;

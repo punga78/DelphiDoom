@@ -37,9 +37,9 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 | Golden | Righe | Test |
 |---|---|---|
 | `hashing.golden.txt` | 168 | `Tests\DelphiDoom.Tests.IdLib.Hashing` (6) |
-| `str.golden.txt`, `lexer.golden.txt` (+ `lexer.input.txt`), `codec.golden.txt` | 2271, 6156, 156 | `Tests\DelphiDoom.Tests.IdLib.Text` (11) |
-| `containers.golden.txt` | 3999 | `Tests\DelphiDoom.Tests.IdLib.Containers` (8) |
-| `math.golden.txt` (+ `math.input.txt`) | 11035 | `Tests\DelphiDoom.Tests.IdLib.Math` (7) |
+| `str.golden.txt`, `lexer.golden.txt` (+ `lexer.input.txt`), `codec.golden.txt` | 2271, 6156, 156 | `Tests\DelphiDoom.Tests.IdLib.Text` (15) |
+| `containers.golden.txt` | 3999 | `Tests\DelphiDoom.Tests.IdLib.Containers` (16) |
+| `math.golden.txt` (+ `math.input.txt`) | 11035 | `Tests\DelphiDoom.Tests.IdLib.Math` (18) |
 
 ## Classe idLib -> soluzione Delphi
 
@@ -137,7 +137,7 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 | `idVec3::Cross(a, b)` con `a` o `b` uguale a `this` | sovrascrive prima di leggere (risultato sbagliato) | calcola le tre componenti prima |
 | `idStr::Mid` con inizio negativo | legge prima del buffer | taglia la parte prima dell'inizio |
 | `"%f"` | `printf` della libreria C | `TIdStrings.FormatFixed`: stesso arrotondamento (valore binario esatto, pari al pari, segno meno sullo zero negativo) |
-| lexer: `1.#INF` con `LEXFL_ALLOWFLOATEXCEPTIONS` | `CheckString("INF")` confronta da `#` (difetto: la bandiera non e mai messa) | **conservato**: il token ha lo stesso valore sbagliato (e nei golden) |
+| lexer: `1.#INF` con `LEXFL_ALLOWFLOATEXCEPTIONS` | `CheckString("INF")` confronta da `#` (difetto: la bandiera non e mai messa) | **conservato**: il token ha lo stesso valore sbagliato (e nei golden); i cinque `CheckString` mai veri sono stati tolti (issue #141), restano i quattro caratteri presi dopo il `#` |
 | lexer: stringa con `\0` dentro | `idStr::ReAllocate` usa `strcpy` e perde il resto | non coperto dai golden (comportamento indefinito) |
 | lexer: lettura oltre la fine del testo (`1.#X` in fondo) | legge i byte dopo il terminatore | legge `#0` |
 
