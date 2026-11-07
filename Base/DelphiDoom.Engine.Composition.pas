@@ -173,6 +173,17 @@ uses
   DelphiDoom.Engine.ActorDef.Hooks,
   DelphiDoom.Engine.ActorDef.SoundInfoListener,
   sc_actordef,
+  DelphiDoom.TableExport.Types,
+  DelphiDoom.TableExport.Intf,
+  DelphiDoom.TableExport.Profile,
+  DelphiDoom.TableExport.Profiles,
+  DelphiDoom.TableExport.Factory,
+  DelphiDoom.Engine.TableExport.Things,
+  DelphiDoom.Engine.TableExport.States,
+  DelphiDoom.Engine.TableExport.Weapons,
+  DelphiDoom.Engine.TableExport.Settings,
+  DelphiDoom.Engine.TableExport.Names,
+  info_export,
   DelphiDoom.Voxel.Intf,
   DelphiDoom.Voxel.Factory,
   DelphiDoom.Engine.Voxel.FileSource,
@@ -642,6 +653,34 @@ begin
     LAliases);
 end;
 
+procedure ComposeTableExport;
+var
+  LGame: TExportGame;
+  LThings: IExportThingSource;
+  LStates: IExportStateSource;
+  LWeapons: IExportWeaponSource;
+  LNames: TEngineExportNames;
+  LNamesRef: IInterface;
+begin
+  if not TExportProfiles.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of the table exports', [_GAME]);
+  LThings := TEngineExportThings.Create(False);
+  LStates := TEngineExportStates.Create;
+  LWeapons := TEngineExportWeapons.Create;
+  LNames := TEngineExportNames.Create;
+  LNamesRef := LNames;
+  DEH_ConfigureExport(
+    TTableExportFactory.CreateDehWriter(LGame, LThings, LStates, LWeapons, TEngineExportSettings.Create,
+      LNames, LNames),
+    TTableExportFactory.CreateCsvWriter(LStates, LNames),
+    TTableExportFactory.CreateActorDefWriter(LThings, LStates, LNames, LNames, LNames),
+    TTableExportFactory.CreateWeaponDefWriter(LGame, LWeapons, LStates, LNames, LNames),
+    TTableExportFactory.CreateStateOwnersWriter(LStates, LNames));
+  Info_ConfigureExport(
+    TTableExportFactory.CreatePascalWriter(LGame, LThings, TEngineExportThings.Create(True), LStates,
+      LNames, LNames, LNames));
+end;
+
 procedure ComposeIwad;
 var
   LGame: TIwadGame;
@@ -737,6 +776,7 @@ begin
   ComposeDynLights(LLog, LContext);
   ComposeAutomap;
   ComposeActorDef(LLog);
+  ComposeTableExport;
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
 {$IFNDEF HEXEN}

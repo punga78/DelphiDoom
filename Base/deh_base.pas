@@ -34,8 +34,34 @@ uses
   d_delphi,
   d_think,
   m_fixed,
-  DelphiDoom.Actions.Intf;
+  DelphiDoom.Actions.Intf,
+  DelphiDoom.TableExport.Intf;
 
+//==============================================================================
+//
+// DEH_ConfigureExport
+//
+// The writers of the current tables (patch, ACTORDEF, WEAPONDEF, owners of the
+// states and CSV): ComposeEngine gives them
+//
+//==============================================================================
+procedure DEH_ConfigureExport(const ADeh: IExportDehWriter; const ACsv: IExportCsvWriter;
+  const AActorDef: IExportActorDefWriter; const AWeaponDef: IExportWeaponDefWriter;
+  const AOwners: IExportStateOwnersWriter);
+
+//==============================================================================
+//
+// DEH_CurrentSettings
+//
+//==============================================================================
+function DEH_CurrentSettings: TDStringList;
+
+//==============================================================================
+//
+// DEH_ActorDeclaration
+//
+//==============================================================================
+function DEH_ActorDeclaration(const index: integer): string;
 //==============================================================================
 //
 // DEH_ParseText
@@ -364,6 +390,82 @@ begin
   dehactions := ARegistry;
 end;
 
+var
+  GDehWriter: IExportDehWriter;
+  GCsvWriter: IExportCsvWriter;
+  GActorDefWriter: IExportActorDefWriter;
+  GWeaponDefWriter: IExportWeaponDefWriter;
+  GOwnersWriter: IExportStateOwnersWriter;
+
+//==============================================================================
+//
+// DEH_ConfigureExport
+//
+//==============================================================================
+procedure DEH_ConfigureExport(const ADeh: IExportDehWriter; const ACsv: IExportCsvWriter;
+  const AActorDef: IExportActorDefWriter; const AWeaponDef: IExportWeaponDefWriter;
+  const AOwners: IExportStateOwnersWriter);
+begin
+  GDehWriter := ADeh;
+  GCsvWriter := ACsv;
+  GActorDefWriter := AActorDef;
+  GWeaponDefWriter := AWeaponDef;
+  GOwnersWriter := AOwners;
+end;
+
+//==============================================================================
+//
+// LinesToList
+//
+//==============================================================================
+function LinesToList(const ALines: TArray<string>): TDStringList;
+var
+  i: integer;
+begin
+  result := TDStringList.Create;
+  for i := 0 to Length(ALines) - 1 do
+    result.Add(ALines[i]);
+end;
+
+//==============================================================================
+//
+// ListToLines
+//
+//==============================================================================
+function ListToLines(const AList: TDStringList): TArray<string>;
+var
+  i: integer;
+begin
+  SetLength(result, AList.Count);
+  for i := 0 to AList.Count - 1 do
+    result[i] := AList.Strings[i];
+end;
+
+//==============================================================================
+//
+// DEH_CurrentSettings
+//
+//==============================================================================
+function DEH_CurrentSettings: TDStringList;
+begin
+  if not Assigned(GDehWriter) then
+    I_Error('DEH_CurrentSettings(): the export is not configured (ComposeEngine was not called)');
+  DEH_Init;
+  result := LinesToList(GDehWriter.Write);
+end;
+
+//==============================================================================
+//
+// DEH_ActorDeclaration
+//
+//==============================================================================
+function DEH_ActorDeclaration(const index: integer): string;
+begin
+  if not Assigned(GActorDefWriter) then
+    I_Error('DEH_ActorDeclaration(): the export is not configured (ComposeEngine was not called)');
+  result := GActorDefWriter.Write(index);
+end;
+
 //==============================================================================
 //
 // DEH_ParseText
@@ -658,12 +760,10 @@ end;
 //
 //==============================================================================
 function DEH_CurrentActordef: string;
-var
-  m: integer;
 begin
-  result := '';
-  for m := 0 to nummobjtypes - 1 do
-    result := result + SC_GetActordefDeclaration(@mobjinfo[m]);
+  if not Assigned(GActorDefWriter) then
+    I_Error('DEH_CurrentActordef(): the export is not configured (ComposeEngine was not called)');
+  result := GActorDefWriter.WriteAll;
 end;
 
 //==============================================================================
@@ -725,21 +825,10 @@ end;
 //
 //==============================================================================
 function DEH_CurrentWeapondef: string;
-var
-  w: integer;
-{$IFDEF HERETIC_OR_HEXEN}
-  i: integer;
-{$ENDIF}
 begin
-  result := '';
-{$IFDEF HERETIC}
-  for i := 1 to 2 do
-{$ENDIF}
-{$IFDEF HEXEN}
-  for i := 0 to Ord(NUMCLASSES) - 1 do
-{$ENDIF}
-    for w := 0 to Ord(NUMWEAPONS) - 1 do
-      result := result + SC_GetWeapondefDeclaration(w{$IFDEF HERETIC_OR_HEXEN}, i{$ENDIF});
+  if not Assigned(GWeaponDefWriter) then
+    I_Error('DEH_CurrentWeapondef(): the export is not configured (ComposeEngine was not called)');
+  result := GWeaponDefWriter.WriteAll;
 end;
 
 //==============================================================================
@@ -801,23 +890,10 @@ end;
 //
 //==============================================================================
 function DEH_CurrentStateOwners: string;
-var
-  i, j: integer;
-  s1, s2: string;
 begin
-  result := '';
-  for i := 0 to numstates - 1 do
-  begin
-    s1 := statenames.Strings[i];
-    s2 := '';
-    if states[i].owners <> nil then
-    begin
-      for j := 0 to states[i].owners.Count - 1 do
-        s2 := s2 + '"' + strtrim(mobjinfo[states[i].owners.Numbers[j]].name) + '" ';
-      trimproc(s2);
-    end;
-    result := result + s1 + '=' + s2 + #13#10;
-  end;
+  if not Assigned(GOwnersWriter) then
+    I_Error('DEH_CurrentStateOwners(): the export is not configured (ComposeEngine was not called)');
+  result := GOwnersWriter.Write;
 end;
 
 //==============================================================================
@@ -893,69 +969,15 @@ end;
 //==============================================================================
 function DEH_MobjInfoCSV: TDStringList;
 var
-  i, idx1, idx2: integer;
-  s1, s2, headstr, datstr: string;
-  csstring: string;
   cs: TDStringList;
 begin
   DEH_Init;
-
   cs := DEH_CurrentSettings;
-  idx1 := cs.IndexOf('# Things');
-  idx2 := cs.IndexOf('# States');
-
-  headstr := '';
-  for i := idx1 + 1 to idx2 - 1 do
-  begin
-    csstring := strtrim(cs.Strings[i]);
-    if csstring <> '' then
-      if CharPos('#', csstring) <> 1 then
-        if Pos('//', csstring) < 1 then
-        begin
-          if Pos1('THING ', strupper(csstring)) then
-          begin
-            if headstr = '' then
-              headstr := '"id"'
-            else
-              break;
-          end
-          else if headstr <> '' then
-          begin
-            splitstring_ch(csstring, s1, s2, '=');
-            trimproc(s1);
-            headstr := headstr + ';' + '"' + s1 + '"';
-          end;
-        end;
+  try
+    result := LinesToList(GCsvWriter.MobjInfo(ListToLines(cs)));
+  finally
+    cs.Free;
   end;
-
-  result := TDStringList.Create;
-  result.Add(headstr);
-
-  datstr := '';
-  for i := idx1 + 1 to idx2 - 1 do
-  begin
-    csstring := strtrim(cs.Strings[i]);
-    if csstring <> '' then
-      if CharPos('#', csstring) <> 1 then
-        if Pos('//', csstring) < 1 then
-          if Pos('THING ', strupper(csstring)) < 1 then
-          begin
-            splitstring_ch(csstring, s1, s2, '=');
-            trimproc(s2);
-            if s2 = '' then
-              s2 := '-';
-            datstr := datstr + ';' + '"' + s2 + '"';
-          end
-          else
-          begin
-            if datstr <> '' then
-              result.Add(datstr);
-            datstr := '"' + itoa(result.Count - 1) + '"';
-          end;
-  end;
-  if datstr <> '' then
-    result.Add(datstr);
-  cs.Free;
 end;
 
 //==============================================================================
@@ -997,78 +1019,15 @@ end;
 //==============================================================================
 function DEH_StatesCSV: TDStringList;
 var
-  i, j, idx1, idx2: integer;
-  s1, s2, headstr, datstr: string;
-  csstring: string;
   cs: TDStringList;
-
-  function _statename(const x: integer): string;
-  begin
-    if x < Ord(DO_NUMSTATES) then
-      result := strupper(GetENumName(TypeInfo(statenum_t), x))
-    else
-      result := 'S_STATE_' + itoa(x);
-  end;
-
 begin
   DEH_Init;
-
   cs := DEH_CurrentSettings;
-  idx1 := cs.IndexOf('# States');
-  idx2 := cs.IndexOf('# Weapons');
-
-  headstr := '';
-  for i := idx1 + 1 to idx2 - 1 do
-  begin
-    csstring := strtrim(cs.Strings[i]);
-    if csstring <> '' then
-      if CharPos('#', csstring) <> 1 then
-        if Pos('//', csstring) < 1 then
-        begin
-          if Pos1('FRAME ', strupper(csstring)) then
-          begin
-            if headstr = '' then
-              headstr := '"Name";"id"'
-            else
-              break;
-          end
-          else if headstr <> '' then
-          begin
-            splitstring_ch(csstring, s1, s2, '=');
-            headstr := headstr + ';' + '"' + strtrim(s1) + '"';
-          end;
-        end;
+  try
+    result := LinesToList(GCsvWriter.States(ListToLines(cs)));
+  finally
+    cs.Free;
   end;
-
-  result := TDStringList.Create;
-  result.Add(headstr);
-  result.Add('"S_NULL";"0";"0";"0";"0";"-1";"0";"NULL";"0";"0";"0";"0"');
-
-  datstr := '';
-  for i := idx1 + 1 to idx2 - 1 do
-  begin
-    csstring := strtrim(cs.Strings[i]);
-    if csstring <> '' then
-      if CharPos('#', csstring) <> 1 then
-        if Pos('//', csstring) < 1 then
-          if not Pos1('FRAME ', strupper(csstring)) then
-          begin
-            splitstring_ch(csstring, s1, s2, '=');
-            for j := 1 to length(s2) do
-              if s2[j] = '"' then
-                s2[j] := ' ';
-            datstr := datstr + ';' + '"' + strtrim(s2) + '"';
-          end
-          else
-          begin
-            if datstr <> '' then
-              result.Add('"' + _statename(result.Count - 1) + '";' + datstr);
-            datstr := '"' + itoa(result.Count - 1) + '"';
-          end;
-  end;
-  if datstr <> '' then
-    result.Add('"' + _statename(result.Count - 1) + '";' + datstr);
-  cs.Free;
 end;
 
 //==============================================================================
@@ -1109,19 +1068,10 @@ end;
 //
 //==============================================================================
 function DEH_SpritesCSV: TDStringList;
-var
-  i: integer;
-  p: PByteArray;
 begin
-  result := TDStringList.Create;
-
-  result.Add('"id";"Sprite"');
-
-  for i := 0 to numsprites - 1 do
-  begin
-    p := @sprnames[i];
-    result.Add(itoa(i + 1) + ';' + '"' + Chr(p[0]) + Chr(p[1]) + Chr(p[2]) + Chr(p[3]) + '"');
-  end;
+  if not Assigned(GCsvWriter) then
+    I_Error('DEH_SpritesCSV(): the export is not configured (ComposeEngine was not called)');
+  result := LinesToList(GCsvWriter.Sprites);
 end;
 
 //==============================================================================
