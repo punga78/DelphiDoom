@@ -122,6 +122,9 @@ uses
   DelphiDoom.Models.Factory,
   mdl_base,
 {$ENDIF}
+  DelphiDoom.Automap.Intf,
+  DelphiDoom.Automap.Factory,
+  am_map,
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.ActorDef.Profiles,
@@ -460,6 +463,15 @@ begin
 end;
 {$ENDIF}
 
+procedure ComposeAutomap;
+var
+  LView: IAutomapView;
+  LNavigator: IAutomapNavigator;
+begin
+  TAutomapFactory.CreateView(LView, LNavigator);
+  AM_Configure(LView, LNavigator, TAutomapFactory.CreateMarks);
+end;
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -541,6 +553,7 @@ begin
   ComposeDefinitions(LLog);
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
+  ComposeAutomap;
   ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
