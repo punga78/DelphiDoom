@@ -28,106 +28,34 @@
 
 unit m_crc32;
 
+// What is left of the facade of the CRC-32 (issue #133): the engine computes the
+// checksums with TCrc32 of Libs\MathCore (W_LumpCRC32 for a lump, TCrc32.CalculateStream
+// for a file). GetLumpCRC32 stays only for p_udmf, which another piece of work of the
+// same wave changes: when p_udmf calls W_LumpCRC32 this unit can be deleted.
 
 interface
 
 //==============================================================================
 //
-// GetCRC32
-//
-//==============================================================================
-function GetCRC32(const FileName: string): string;
-
-//==============================================================================
-//
 // GetLumpCRC32
+// The same as W_LumpCRC32 of w_wad
 //
 //==============================================================================
-function GetLumpCRC32(const LumpName: string): string; overload;
-
-//==============================================================================
-//
-// GetLumpCRC32
-//
-//==============================================================================
-function GetLumpCRC32(const LumpNum: integer): string; overload;
+function GetLumpCRC32(const LumpNum: integer): string;
 
 implementation
 
 uses
-  d_delphi,
-  w_wad,
-  z_zone,
-  DelphiDoom.MathCore.Crc32;
-
-//==============================================================================
-//
-// GetCRC32
-// The CRC of the bytes of a file, 'DEADDEAD' if it does not exist
-//
-//==============================================================================
-function GetCRC32(const FileName: string): string;
-var
-  f: File of Byte;
-  b: array[0..255] of Byte;
-  e: Integer;
-  crc: TCrc32;
-begin
-  if not fexists(FileName) then
-  begin
-    result := 'DEADDEAD';
-    exit;
-  end;
-
-  crc := TCrc32.Create;
-  try
-    {$I-}
-    AssignFile(f, FileName);
-    FileMode := 0;
-    Reset(f);
-    repeat
-      FillChar(b, SizeOf(b), 0);
-      BlockRead(f, b, SizeOf(b), e);
-      if e > 0 then
-        crc.Update(b, e);
-    until (e < 255) or (IOresult <> 0);
-    CloseFile(f);
-    {$I+}
-    result := TCrc32.ToHex(crc.Value);
-  finally
-    crc.Free;
-  end;
-end;
+  w_wad;
 
 //==============================================================================
 //
 // GetLumpCRC32
 //
 //==============================================================================
-function GetLumpCRC32(const LumpName: string): string;
+function GetLumpCRC32(const LumpNum: integer): string;
 begin
-  result := GetLumpCRC32(W_CheckNumForName(LumpName));
-end;
-
-//==============================================================================
-//
-// GetLumpCRC32
-//
-//==============================================================================
-function GetLumpCRC32(const LumpNum: integer): string; overload;
-var
-  b: PByteArray;
-  len: integer;
-begin
-  if LumpNum < 0 then
-  begin
-    result := 'DEADDEAD';
-    exit;
-  end;
-  b := W_CacheLumpNum(LumpNum, PU_STATIC);
-  len := W_LumpLength(LumpNum);
-  result := TCrc32.ToHex(TCrc32.Calculate(b^, len));
-  Z_ChangeTag(b, PU_CACHE);
+  result := W_LumpCRC32(LumpNum);
 end;
 
 end.

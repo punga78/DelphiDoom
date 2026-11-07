@@ -260,7 +260,8 @@ uses
   d_player,
   d_think,
   d_main,
-  m_vectors,
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.VectorMath,
   g_game,
   i_system,
   z_zone,
@@ -2059,7 +2060,7 @@ function P_SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _ty
 var
   flags_ex: integer;
   th: Pmobj_t;
-  velocity: vec3_t;
+  velocity: TVec3;
   speed: float;
   an: angle_t;
 begin
@@ -2111,7 +2112,7 @@ begin
       velocity[2] := velocity[2] + dest.height - z + source.z;
   end;
 
-  VectorNormalize(@velocity);
+  TVectorMath.Normalize3(velocity);
   th.momx := round(velocity[0] * speed);
   th.momy := round(velocity[1] * speed);
   th.momz := round(velocity[2] * speed);

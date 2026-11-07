@@ -116,7 +116,7 @@ uses
   m_fixed,
   tables,
   doomdef,
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   p_setup,
   p_slopes, // JVAL: Slopes
   {$IFDEF OPENGL}
@@ -951,16 +951,16 @@ begin
 
   // Find the corners of the box
   // that define the edges from current viewpoint.
-  if viewx <= bspcoord[BOXLEFT] then
+  if viewx <= bspcoord[BOX_LEFT] then
     boxx := 0
-  else if viewx < bspcoord[BOXRIGHT] then
+  else if viewx < bspcoord[BOX_RIGHT] then
     boxx := 1
   else
     boxx := 2;
 
-  if viewy >= bspcoord[BOXTOP] then
+  if viewy >= bspcoord[BOX_TOP] then
     boxy := 0
-  else if viewy > bspcoord[BOXBOTTOM] then
+  else if viewy > bspcoord[BOX_BOTTOM] then
     boxy := 1
   else
     boxy := 2;

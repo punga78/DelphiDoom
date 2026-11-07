@@ -2413,7 +2413,8 @@ uses
   d_items,
   {$ENDIF}
   d_think,
-  m_vectors,
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.VectorMath,
   i_system,
   c_con,
   g_game,
@@ -4883,7 +4884,7 @@ var
   ang: angle_t;
   x, y, z: fixed_t;
   vx, vz: fixed_t;
-  velocity: vec3_t;
+  velocity: TVec3;
   missilespeed: fixed_t;
   owner: Pmobj_t;
   pitchang: angle_t;
@@ -4947,7 +4948,7 @@ begin
       velocity[1] := missile.momy;
       velocity[2] := 0.0;
 
-      missilespeed := round(VectorLength(@velocity));
+      missilespeed := round(TVectorMath.Length3(velocity));
 
       missile.angle := missile.angle + angle;
       ang := missile.angle shr ANGLETOFINESHIFT;
@@ -5032,7 +5033,7 @@ var
   missile: Pmobj_t;
   ang: angle_t;
   x, y, z: fixed_t;
-  velocity: vec3_t;
+  velocity: TVec3;
   missilespeed: fixed_t;
   owner: Pmobj_t;
 begin
@@ -5084,7 +5085,7 @@ begin
       velocity[1] := missile.momy;
       velocity[2] := 0.0;
 
-      missilespeed := round(VectorLength(@velocity));
+      missilespeed := round(TVectorMath.Length3(velocity));
 
       missile.angle := missile.angle + angle;
       ang := missile.angle shr ANGLETOFINESHIFT;

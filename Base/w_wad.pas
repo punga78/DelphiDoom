@@ -240,6 +240,13 @@ function W_LumpLength(const lump: integer): integer;
 
 //==============================================================================
 //
+// W_LumpCRC32
+//
+//==============================================================================
+function W_LumpCRC32(const lump: integer): string;
+
+//==============================================================================
+//
 // W_ReadLump
 //
 //==============================================================================
@@ -310,6 +317,7 @@ uses
   i_system,
   w_pak,
   z_zone,
+  DelphiDoom.MathCore.Crc32,
   DelphiDoom.Wad.Types;
 
 //
@@ -1093,6 +1101,27 @@ begin
     I_Error('W_LumpLength(): %d >= numlumps', [lump]);
 
   result := lumpinfo[lump].size;
+end;
+
+//==============================================================================
+//
+// W_LumpCRC32
+// The CRC-32 of the bytes of a lump (TCrc32 of Libs\MathCore) in 8 hexadecimal
+// digits in lower case; 'DEADDEAD' if lump < 0 (the old GetLumpCRC32 of m_crc32)
+//
+//==============================================================================
+function W_LumpCRC32(const lump: integer): string;
+var
+  data: pointer;
+begin
+  if lump < 0 then
+  begin
+    result := 'DEADDEAD';
+    exit;
+  end;
+  data := W_CacheLumpNum(lump, PU_STATIC);
+  result := TCrc32.ToHex(TCrc32.Calculate(data^, W_LumpLength(lump)));
+  Z_ChangeTag(data, PU_CACHE);
 end;
 
 //==============================================================================

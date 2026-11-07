@@ -13,10 +13,13 @@ unit DelphiDoom.MathCore.Crc32;
 
 interface
 
+uses
+  System.Classes;
+
 type
   /// <summary>
-  ///   The CRC-32 (the one of zip and PNG) of the old m_crc32, on a buffer or a series of
-  ///   buffers. It does not read files or lumps: who has the bytes gives them.
+  ///   The CRC-32 (the one of zip and PNG) of the old m_crc32, on a buffer, a series of
+  ///   buffers or a stream. It does not open files or lumps: who has the bytes gives them.
   /// </summary>
   TCrc32 = class
   private
@@ -30,6 +33,11 @@ type
     property Value: Cardinal read GetValue;
     /// <summary>The checksum of a buffer</summary>
     class function Calculate(const ABuffer; const ASize: Integer): Cardinal; static;
+    /// <summary>
+    ///   The checksum of the bytes of a stream from its position to its end (the old
+    ///   GetCRC32 of a file, that read it in pieces)
+    /// </summary>
+    class function CalculateStream(const AStream: TStream): Cardinal; static;
     /// <summary>The checksum as 8 hexadecimal digits in lower case, as the old GetCRC32 gave it</summary>
     class function ToHex(const AValue: Cardinal): string; static;
   end;
@@ -38,6 +46,9 @@ implementation
 
 uses
   System.SysUtils, DelphiDoom.MathCore.TableCrc32;
+
+resourcestring
+  SStreamIsNil = 'The stream of the checksum is nil';
 
 { TCrc32 }
 
@@ -77,6 +88,30 @@ begin
   LCrc := TCrc32.Create;
   try
     LCrc.Update(ABuffer, ASize);
+    Result := LCrc.Value;
+  finally
+    LCrc.Free;
+  end;
+end;
+
+class function TCrc32.CalculateStream(const AStream: TStream): Cardinal;
+const
+  BUFFER_SIZE = 65536;
+var
+  LCrc: TCrc32;
+  LBuffer: TBytes;
+  LRead: Integer;
+begin
+  if not Assigned(AStream) then
+    raise EArgumentNilException.Create(SStreamIsNil);
+  SetLength(LBuffer, BUFFER_SIZE);
+  LCrc := TCrc32.Create;
+  try
+    repeat
+      LRead := AStream.Read(LBuffer[0], BUFFER_SIZE);
+      if LRead > 0 then
+        LCrc.Update(LBuffer[0], LRead);
+    until LRead <= 0;
     Result := LCrc.Value;
   finally
     LCrc.Free;

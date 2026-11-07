@@ -44,7 +44,8 @@ uses
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Palette.Intf,
-  DelphiDoom.Engine.Voxel.Intf;
+  DelphiDoom.Engine.Voxel.Intf,
+  DelphiDoom.MathCore.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -123,6 +124,13 @@ procedure R_ConfigureComposite(const APainter: IImagingColumnPainter;
 //
 //==============================================================================
 procedure R_ConfigureVoxelSprites(const ASprites: IEngineVoxelSprites);
+
+//==============================================================================
+//
+// R_ConfigureNameHash
+//
+//==============================================================================
+procedure R_ConfigureNameHash(const ATable: IStringHashTable);
 
 //==============================================================================
 //
@@ -290,7 +298,6 @@ uses
 {$IFDEF STRIFE}
   d_check,
 {$ENDIF}
-  m_hash,
   i_system,
   p_setup,
   p_tick,
@@ -337,6 +344,32 @@ var
   texturedefs_loader: ITextureDefsLoader;
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
+  // the last index found for a name of a flat or of a texture (one table for both, as the
+  // old global hash of m_hash): every answer is checked against flats[] or textures[]
+  name_hash: IStringHashTable = nil;
+
+//==============================================================================
+//
+// R_ConfigureNameHash
+// The hash table of the names of Libs\MathCore, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureNameHash(const ATable: IStringHashTable);
+begin
+  name_hash := ATable;
+end;
+
+//==============================================================================
+//
+// R_NameHash
+//
+//==============================================================================
+function R_NameHash: IStringHashTable;
+begin
+  if not Assigned(name_hash) then
+    I_Error('R_NameHash(): R_ConfigureNameHash() was not called');
+  result := name_hash;
+end;
 
 //==============================================================================
 //
@@ -1646,7 +1679,7 @@ begin
     end;
 
     s := strupper(name);
-    result := M_HashIndex(s);
+    result := R_NameHash.IndexOf(s);
     if result >= 0 then
       if result < numflats then
         if flats[result].lump = i then
@@ -1658,7 +1691,7 @@ begin
       dec(result);
       if flats[result].lump = i then
       begin
-        M_HashUpdate(s, result);
+        R_NameHash.Update(s, result);
         exit;
       end;
     end;
@@ -1677,7 +1710,7 @@ begin
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
     flats[result].terraintype := P_TerrainTypeForName(flats[result].name);
-    M_HashUpdate(s, result);
+    R_NameHash.Update(s, result);
   end;
 end;
 
@@ -1704,7 +1737,7 @@ begin
     end;
 
     s := strupper(name);
-    result := M_HashIndex(s);
+    result := R_NameHash.IndexOf(s);
     if result >= 0 then
       if result < numflats then
         if flats[result].lump = i then
@@ -1716,7 +1749,7 @@ begin
       dec(result);
       if flats[result].lump = i then
       begin
-        M_HashUpdate(s, result);
+        R_NameHash.Update(s, result);
         exit;
       end;
     end;
@@ -1735,7 +1768,7 @@ begin
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
     flats[result].terraintype := P_TerrainTypeForName(flats[result].name);
-    M_HashUpdate(s, result);
+    R_NameHash.Update(s, result);
   end
 end;
 
@@ -1802,7 +1835,7 @@ begin
 
   s := strupper(name);
   check.s := stringtochar8(s);
-  result := M_HashIndex(s);
+  result := R_NameHash.IndexOf(s);
   if result >= 0 then
     if result < numtextures then
       if name8_t(textures[result].name).x[0] = check.x[0] then
@@ -1814,7 +1847,7 @@ begin
       if name8_t(textures[i].name).x[1] = check.x[1] then
       begin
         result := i;
-        M_HashUpdate(s, result);
+        R_NameHash.Update(s, result);
         exit;
       end;
 
@@ -1856,7 +1889,7 @@ begin
 
   s := strupper(name);
   check.s := stringtochar8(s);
-  result := M_HashIndex(s);
+  result := R_NameHash.IndexOf(s);
   if result >= 0 then
     if result < numtextures then
       if name8_t(textures[result].name).x[0] = check.x[0] then
@@ -1868,7 +1901,7 @@ begin
       if name8_t(textures[i].name).x[1] = check.x[1] then
       begin
         result := i;
-        M_HashUpdate(s, result);
+        R_NameHash.Update(s, result);
         exit;
       end;
 

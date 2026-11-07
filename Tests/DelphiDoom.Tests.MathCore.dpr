@@ -50,7 +50,9 @@ uses
   DelphiDoom.Tests.MathCore.IntegerStack in 'Source\DelphiDoom.Tests.MathCore.IntegerStack.pas',
   DelphiDoom.Tests.MathCore.IntegerQueue in 'Source\DelphiDoom.Tests.MathCore.IntegerQueue.pas',
   DelphiDoom.Tests.MathCore.Crc32 in 'Source\DelphiDoom.Tests.MathCore.Crc32.pas',
-  DelphiDoom.Tests.MathCore.Sha1 in 'Source\DelphiDoom.Tests.MathCore.Sha1.pas';
+  DelphiDoom.Tests.MathCore.Sha1 in 'Source\DelphiDoom.Tests.MathCore.Sha1.pas',
+  DelphiDoom.Tests.MathCore.SystemEntropySource in 'Source\DelphiDoom.Tests.MathCore.SystemEntropySource.pas',
+  DelphiDoom.Tests.MathCore.Factory in 'Source\DelphiDoom.Tests.MathCore.Factory.pas';
 
 var
   Runner: ITestRunner;

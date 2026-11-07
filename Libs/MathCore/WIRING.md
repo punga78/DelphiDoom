@@ -113,3 +113,10 @@ Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`:
   **a 32 bit** (provato); a 64 bit `Extended` vale `Double` e l'arrotondamento può differire all'ultimo bit in rari casi. Per il resto la libreria è in interi.
 - **`TVectorMath`**: `Single` con espressioni in `Extended` a 32 bit; a 64 bit (SSE, `Single` puro) i bit possono cambiare. I golden sono a 32 bit.
 - I test `TestFixture` leggono `..\..\Tests\Data\MathCore` rispetto a `bin\Tests`.
+
+## 6. Stato dopo la issue #133 (fase 2, ondata 1)
+
+- `m_hash.pas`, `m_bbox.pas` e `m_vectors.pas` sono cancellate: `r_data` riceve l'`IStringHashTable` da `ComposeMathCore` con `R_ConfigureNameHash`, `p_setup` chiama `TBoundingBoxMath`, le costanti delle bbox sono `BOX_TOP`, `BOX_BOTTOM`, `BOX_LEFT`, `BOX_RIGHT` di `DelphiDoom.MathCore.Types` (stessi valori di `BOXTOP`...), e i chiamanti dei vettori usano `TVec2`/`TVec3` con `TVectorMath`.
+- Il CRC di un file è `TCrc32.CalculateStream` (dalla posizione dello stream alla fine, letto a pezzi di 64 KB): la libreria continua a non aprire file né lump. Il CRC di un lump lo calcola il motore (`W_LumpCRC32` in `w_wad`, `ND_LumpCRC32` in `nd_main`).
+- Restano `m_sha1.pas` e `m_crc32.pas`, ridotte a una funzione ciascuna per `vx_voxelsprite` e `p_udmf`, file di altri lavori della stessa ondata.
+- `Tests\DelphiDoom.Tests.MathCore.dproj` in Debug compila con `DCC_Inlining=off`: le funzioni `inline` (virgola fissa, bbox, tabelle) vengono chiamate e la copertura le vede (dall'86% al 98%); in Release i test le provano espanse.

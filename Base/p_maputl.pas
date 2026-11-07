@@ -37,7 +37,7 @@ unit p_maputl;
 interface
 
 uses
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   p_local,
   p_mobj_h,
   m_fixed,
@@ -317,8 +317,8 @@ begin
   case ld.slopetype of
     ST_HORIZONTAL:
       begin
-        p1 := intval(tmbox[BOXTOP] > ld.v1.y);
-        p2 := intval(tmbox[BOXBOTTOM] > ld.v1.y);
+        p1 := intval(tmbox[BOX_TOP] > ld.v1.y);
+        p2 := intval(tmbox[BOX_BOTTOM] > ld.v1.y);
         if ld.dx < 0 then
         begin
           p1 := p1 xor 1;
@@ -327,8 +327,8 @@ begin
       end;
     ST_VERTICAL:
       begin
-        p1 := intval(tmbox[BOXRIGHT] < ld.v1.x);
-        p2 := intval(tmbox[BOXLEFT] < ld.v1.x);
+        p1 := intval(tmbox[BOX_RIGHT] < ld.v1.x);
+        p2 := intval(tmbox[BOX_LEFT] < ld.v1.x);
         if ld.dy < 0 then
         begin
           p1 := p1 xor 1;
@@ -337,13 +337,13 @@ begin
       end;
     ST_POSITIVE:
       begin
-        p1 := P_PointOnLineSide(tmbox[BOXLEFT], tmbox[BOXTOP], ld);
-        p2 := P_PointOnLineSide(tmbox[BOXRIGHT], tmbox[BOXBOTTOM], ld);
+        p1 := P_PointOnLineSide(tmbox[BOX_LEFT], tmbox[BOX_TOP], ld);
+        p2 := P_PointOnLineSide(tmbox[BOX_RIGHT], tmbox[BOX_BOTTOM], ld);
       end;
     ST_NEGATIVE:
       begin
-        p1 := P_PointOnLineSide(tmbox[BOXRIGHT], tmbox[BOXTOP], ld);
-        p2 := P_PointOnLineSide(tmbox[BOXLEFT], tmbox[BOXBOTTOM], ld);
+        p1 := P_PointOnLineSide(tmbox[BOX_RIGHT], tmbox[BOX_TOP], ld);
+        p2 := P_PointOnLineSide(tmbox[BOX_LEFT], tmbox[BOX_BOTTOM], ld);
       end;
   else
     begin
@@ -1693,10 +1693,10 @@ begin
     exit;
   end;
 
-  if (LTbbox[BOXRIGHT] <= ld.bbox[BOXLEFT]) or
-     (LTbbox[BOXLEFT] >= ld.bbox[BOXRIGHT]) or
-     (LTbbox[BOXTOP] <= ld.bbox[BOXBOTTOM]) or
-     (LTbbox[BOXBOTTOM] >= ld.bbox[BOXTOP]) then
+  if (LTbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (LTbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (LTbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (LTbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
@@ -1749,15 +1749,15 @@ var
   by: integer;
   floor, ceiling: fixed_t;
 begin
-  LTbbox[BOXLEFT] := MinI(fromx, tox);
-  LTbbox[BOXRIGHT] := MaxI(fromx, tox);
-  LTbbox[BOXBOTTOM] := MinI(fromy, toy);
-  LTbbox[BOXTOP] := MaxI(fromy, toy);
+  LTbbox[BOX_LEFT] := MinI(fromx, tox);
+  LTbbox[BOX_RIGHT] := MaxI(fromx, tox);
+  LTbbox[BOX_BOTTOM] := MinI(fromy, toy);
+  LTbbox[BOX_TOP] := MaxI(fromy, toy);
 
-  xl := MapBlockIntX(int64(LTbbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-  xh := MapBlockIntX(int64(LTbbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
-  yl := MapBlockIntY(int64(LTbbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-  yh := MapBlockIntY(int64(LTbbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+  xl := MapBlockIntX(int64(LTbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+  xh := MapBlockIntX(int64(LTbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+  yl := MapBlockIntY(int64(LTbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+  yh := MapBlockIntY(int64(LTbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
 
   LTfromx := fromx;
   LTfromy := fromy;

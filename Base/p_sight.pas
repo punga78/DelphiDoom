@@ -99,7 +99,7 @@ uses
 {$IFDEF HEXEN}
   g_demo,
 {$ELSE}
-  m_bbox,
+  DelphiDoom.MathCore.Types,
 {$ENDIF}
   p_local,
 {$IFDEF HEXEN}
@@ -314,10 +314,10 @@ begin
     line.validcount := validcount;
 
     // OPTIMIZE: killough 4/20/98: Added quick bounding-box rejection test
-    if (line.bbox[BOXLEFT] > los.bbox[BOXRIGHT]) or
-       (line.bbox[BOXRIGHT] < los.bbox[BOXLEFT]) or
-       (line.bbox[BOXBOTTOM] > los.bbox[BOXTOP]) or
-       (line.bbox[BOXTOP] < los.bbox[BOXBOTTOM]) then
+    if (line.bbox[BOX_LEFT] > los.bbox[BOX_RIGHT]) or
+       (line.bbox[BOX_RIGHT] < los.bbox[BOX_LEFT]) or
+       (line.bbox[BOX_BOTTOM] > los.bbox[BOX_TOP]) or
+       (line.bbox[BOX_TOP] < los.bbox[BOX_BOTTOM]) then
     begin
       inc(polySeg);
       continue;
@@ -557,10 +557,10 @@ begin
 
     // JVAL: 3d Floors
     if G_PlayingEngineVersion >= VERSION115 then
-      if (line.bbox[BOXLEFT] > los.bbox[BOXRIGHT]) or
-         (line.bbox[BOXRIGHT] < los.bbox[BOXLEFT]) or
-         (line.bbox[BOXBOTTOM] > los.bbox[BOXTOP]) or
-         (line.bbox[BOXTOP] < los.bbox[BOXBOTTOM]) then
+      if (line.bbox[BOX_LEFT] > los.bbox[BOX_RIGHT]) or
+         (line.bbox[BOX_RIGHT] < los.bbox[BOX_LEFT]) or
+         (line.bbox[BOX_BOTTOM] > los.bbox[BOX_TOP]) or
+         (line.bbox[BOX_TOP] < los.bbox[BOX_BOTTOM]) then
         continue;
 
     v1 := line.v1;
@@ -598,10 +598,10 @@ begin
 
     // JVAL: 3d Floors
     if G_PlayingEngineVersion >= VERSION122 then
-      if (line.bbox[BOXLEFT] > los.bbox[BOXRIGHT]) or
-         (line.bbox[BOXRIGHT] < los.bbox[BOXLEFT]) or
-         (line.bbox[BOXBOTTOM] > los.bbox[BOXTOP]) or
-         (line.bbox[BOXTOP] < los.bbox[BOXBOTTOM]) then
+      if (line.bbox[BOX_LEFT] > los.bbox[BOX_RIGHT]) or
+         (line.bbox[BOX_RIGHT] < los.bbox[BOX_LEFT]) or
+         (line.bbox[BOX_BOTTOM] > los.bbox[BOX_TOP]) or
+         (line.bbox[BOX_TOP] < los.bbox[BOX_BOTTOM]) then
         continue;
 
     v1 := line.v1;
@@ -1557,24 +1557,24 @@ begin
 
   if t1.x > t2.x then
   begin
-    los.bbox[BOXRIGHT] := t1.x;
-    los.bbox[BOXLEFT] := t2.x;
+    los.bbox[BOX_RIGHT] := t1.x;
+    los.bbox[BOX_LEFT] := t2.x;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := t2.x;
-    los.bbox[BOXLEFT] := t1.x;
+    los.bbox[BOX_RIGHT] := t2.x;
+    los.bbox[BOX_LEFT] := t1.x;
   end;
 
   if t1.y > t2.y then
   begin
-    los.bbox[BOXTOP] := t1.y;
-    los.bbox[BOXBOTTOM] := t2.y;
+    los.bbox[BOX_TOP] := t1.y;
+    los.bbox[BOX_BOTTOM] := t2.y;
   end
   else
   begin
-    los.bbox[BOXTOP] := t2.y;
-    los.bbox[BOXBOTTOM] := t1.y;
+    los.bbox[BOX_TOP] := t2.y;
+    los.bbox[BOX_BOTTOM] := t1.y;
   end;
 
   // the head node is the last node output
@@ -1618,24 +1618,24 @@ begin
 
   if camx > mo.x then
   begin
-    los.bbox[BOXRIGHT] := camx;
-    los.bbox[BOXLEFT] := mo.x;
+    los.bbox[BOX_RIGHT] := camx;
+    los.bbox[BOX_LEFT] := mo.x;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := mo.x;
-    los.bbox[BOXLEFT] := camx;
+    los.bbox[BOX_RIGHT] := mo.x;
+    los.bbox[BOX_LEFT] := camx;
   end;
 
   if camy > mo.y then
   begin
-    los.bbox[BOXTOP] := camy;
-    los.bbox[BOXBOTTOM] := mo.y;
+    los.bbox[BOX_TOP] := camy;
+    los.bbox[BOX_BOTTOM] := mo.y;
   end
   else
   begin
-    los.bbox[BOXTOP] := mo.y;
-    los.bbox[BOXBOTTOM] := camy;
+    los.bbox[BOX_TOP] := mo.y;
+    los.bbox[BOX_BOTTOM] := camy;
   end;
 
   // the head node is the last node output
@@ -1656,24 +1656,24 @@ begin
 
   if t1.x > t2.x then
   begin
-    los.bbox[BOXRIGHT] := t1.x;
-    los.bbox[BOXLEFT] := t2.x;
+    los.bbox[BOX_RIGHT] := t1.x;
+    los.bbox[BOX_LEFT] := t2.x;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := t2.x;
-    los.bbox[BOXLEFT] := t1.x;
+    los.bbox[BOX_RIGHT] := t2.x;
+    los.bbox[BOX_LEFT] := t1.x;
   end;
 
   if t1.y > t2.y then
   begin
-    los.bbox[BOXTOP] := t1.y;
-    los.bbox[BOXBOTTOM] := t2.y;
+    los.bbox[BOX_TOP] := t1.y;
+    los.bbox[BOX_BOTTOM] := t2.y;
   end
   else
   begin
-    los.bbox[BOXTOP] := t2.y;
-    los.bbox[BOXBOTTOM] := t1.y;
+    los.bbox[BOX_TOP] := t2.y;
+    los.bbox[BOX_BOTTOM] := t1.y;
   end;
 
   // the head node is the last node output
@@ -1714,24 +1714,24 @@ begin
 
   if camx > mo.x then
   begin
-    los.bbox[BOXRIGHT] := camx;
-    los.bbox[BOXLEFT] := mo.x;
+    los.bbox[BOX_RIGHT] := camx;
+    los.bbox[BOX_LEFT] := mo.x;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := mo.x;
-    los.bbox[BOXLEFT] := camx;
+    los.bbox[BOX_RIGHT] := mo.x;
+    los.bbox[BOX_LEFT] := camx;
   end;
 
   if camy > mo.y then
   begin
-    los.bbox[BOXTOP] := camy;
-    los.bbox[BOXBOTTOM] := mo.y;
+    los.bbox[BOX_TOP] := camy;
+    los.bbox[BOX_BOTTOM] := mo.y;
   end
   else
   begin
-    los.bbox[BOXTOP] := mo.y;
-    los.bbox[BOXBOTTOM] := camy;
+    los.bbox[BOX_TOP] := mo.y;
+    los.bbox[BOX_BOTTOM] := camy;
   end;
 
   // the head node is the last node output
@@ -1842,24 +1842,24 @@ begin
 
   if x > t2.x then
   begin
-    los.bbox[BOXRIGHT] := x;
-    los.bbox[BOXLEFT] := t2.x;
+    los.bbox[BOX_RIGHT] := x;
+    los.bbox[BOX_LEFT] := t2.x;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := t2.x;
-    los.bbox[BOXLEFT] := x;
+    los.bbox[BOX_RIGHT] := t2.x;
+    los.bbox[BOX_LEFT] := x;
   end;
 
   if y > t2.y then
   begin
-    los.bbox[BOXTOP] := y;
-    los.bbox[BOXBOTTOM] := t2.y;
+    los.bbox[BOX_TOP] := y;
+    los.bbox[BOX_BOTTOM] := t2.y;
   end
   else
   begin
-    los.bbox[BOXTOP] := t2.y;
-    los.bbox[BOXBOTTOM] := y;
+    los.bbox[BOX_TOP] := t2.y;
+    los.bbox[BOX_BOTTOM] := y;
   end;
 
   // the head node is the last node output
@@ -1894,24 +1894,24 @@ begin
 
   if viewx > atx then
   begin
-    los.bbox[BOXRIGHT] := viewx;
-    los.bbox[BOXLEFT] := atx;
+    los.bbox[BOX_RIGHT] := viewx;
+    los.bbox[BOX_LEFT] := atx;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := atx;
-    los.bbox[BOXLEFT] := viewx;
+    los.bbox[BOX_RIGHT] := atx;
+    los.bbox[BOX_LEFT] := viewx;
   end;
 
   if viewy > aty then
   begin
-    los.bbox[BOXTOP] := viewy;
-    los.bbox[BOXBOTTOM] := aty;
+    los.bbox[BOX_TOP] := viewy;
+    los.bbox[BOX_BOTTOM] := aty;
   end
   else
   begin
-    los.bbox[BOXTOP] := aty;
-    los.bbox[BOXBOTTOM] := viewy;
+    los.bbox[BOX_TOP] := aty;
+    los.bbox[BOX_BOTTOM] := viewy;
   end;
 
   // the head node is the last node output
@@ -1974,24 +1974,24 @@ begin
 
   if viewx > atx then
   begin
-    los.bbox[BOXRIGHT] := viewx;
-    los.bbox[BOXLEFT] := atx;
+    los.bbox[BOX_RIGHT] := viewx;
+    los.bbox[BOX_LEFT] := atx;
   end
   else
   begin
-    los.bbox[BOXRIGHT] := atx;
-    los.bbox[BOXLEFT] := viewx;
+    los.bbox[BOX_RIGHT] := atx;
+    los.bbox[BOX_LEFT] := viewx;
   end;
 
   if viewy > aty then
   begin
-    los.bbox[BOXTOP] := viewy;
-    los.bbox[BOXBOTTOM] := aty;
+    los.bbox[BOX_TOP] := viewy;
+    los.bbox[BOX_BOTTOM] := aty;
   end
   else
   begin
-    los.bbox[BOXTOP] := aty;
-    los.bbox[BOXBOTTOM] := viewy;
+    los.bbox[BOX_TOP] := aty;
+    los.bbox[BOX_BOTTOM] := viewy;
   end;
 
   // the head node is the last node output

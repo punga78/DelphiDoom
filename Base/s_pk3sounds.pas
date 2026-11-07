@@ -46,7 +46,7 @@ uses
   d_delphi,
   i_tmp,
   m_argv,
-  m_sha1,
+  DelphiDoom.MathCore.Sha1,
   w_pak,
   w_wad,
   w_wadwriter;
@@ -139,7 +139,7 @@ begin
     MkDir(wadfilename);
     wadfilename := wadfilename + 'TMP\';
     MkDir(wadfilename);
-    wadfilename := wadfilename + 'pk3sounds_' + readablestring(SHA1_CalcSHA1Buf(mem.memory^, mem.Size)) + '.wad';
+    wadfilename := wadfilename + 'pk3sounds_' + readablestring(TSha1.ToRawString(TSha1.Calculate(mem.memory^, mem.Size))) + '.wad';
     mem.Free;
 
     wad.SaveToFile(wadfilename);

@@ -48,7 +48,8 @@ implementation
 
 uses
   m_fixed,
-  m_vectors,
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.VectorMath,
   p_map,
   r_main;
 
@@ -115,7 +116,7 @@ end;
 procedure P_WallBounceMobj(const mo: Pmobj_t; const line: Pline_t);
 var
   s1, s2: boolean;
-  d, wall, reflect: vec2_t;
+  d, wall, reflect: TVec2;
   dist1, dist2: integer;
   newx, newy: fixed_t;
 begin
@@ -129,7 +130,7 @@ begin
     d[1] := mo.momy / FRACUNIT;
     wall[0] := line.dx / FRACUNIT;
     wall[1] := line.dy / FRACUNIT;
-    CalculateReflect2(d, wall, reflect);
+    TVectorMath.CalculateReflect2(d, wall, reflect);
     mo.momx := Round(reflect[0] * FRACUNIT);
     mo.momy := Round(reflect[1] * FRACUNIT);
     mo.angle := R_PointToAngle2(0, 0, mo.momx, mo.momy);

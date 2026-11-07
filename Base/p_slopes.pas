@@ -117,7 +117,8 @@ implementation
 
 uses
   doomdata,
-  m_vectors,
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.VectorMath,
   p_gravity,
   p_map,
   p_setup,
@@ -246,7 +247,7 @@ var
   refvert: Pvertex_t;
   refline: Pline_t;
   srcheight, destheight: fixed_t;
-  v1, v2, cross: vec3_t;
+  v1, v2, cross: TVec3;
   vert: Pvertex_t;
   sid: integer;
   zvertexes: Pzvertex_tArray;
@@ -349,8 +350,8 @@ begin
     v2[1] := (refvert.y - line.v1.y) / FRACUNIT;
     v2[2] := (srcheight - destheight) / FRACUNIT;
 
-    CrossProduct(@v1, @v2, @cross);
-    VectorNormalize(@cross);
+    TVectorMath.Cross3(v1, v2, cross);
+    TVectorMath.Normalize3(cross);
 
     if ((cross[2] < 0) and (flag = SRF_SLOPEFLOOR)) or ((cross[2] > 0) and (flag = SRF_SLOPECEILING)) then
     begin

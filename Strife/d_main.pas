@@ -263,7 +263,6 @@ uses
   f_finale,
   m_argv,
   m_base,
-  m_crc32,
   m_misc,
   m_menu,
   mt_utils,
@@ -273,7 +272,6 @@ uses
   i_system,
   i_sound,
   i_io,
-  i_tmp,
   i_startup,
   DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
@@ -1995,9 +1993,6 @@ begin
   printf('I_InitializeIO: Initializing input/output streams.'#13#10);
   I_InitializeIO;
 
-  printf('I_InitTempFiles: Initializing temporary file managment.'#13#10);
-  I_InitTempFiles;
-
   SUC_Progress(3);
 
   printf('M_LoadDefaults: Load system defaults.'#13#10);
@@ -2277,7 +2272,7 @@ begin
     lump := W_CheckNumForName('GAMEDEF');
     if lump >= 0 then
     begin
-      if strupper(GetLumpCRC32(lump)) <> '562E0D0D' then
+      if strupper(W_LumpCRC32(lump)) <> '562E0D0D' then
         DEH_ParseLumpNum(lump);
     end
     else

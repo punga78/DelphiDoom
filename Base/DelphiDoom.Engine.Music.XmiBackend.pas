@@ -37,7 +37,6 @@ uses
   m_base,
   i_system,
   i_music,
-  i_tmp,
 {$ENDIF}
   d_delphi;
 
@@ -73,7 +72,7 @@ begin
 
   I_StopMus;
 
-  LFileName := I_NewTempFile(_GAME + '.mid');
+  LFileName := NewSongFile;
   if not TXmiProvider.Client.TryConvertToMidiFile(AData, ASize, 0, LFileName) then
   begin
     I_Warning('I_RegisterSong(): Could not initialize MCI'#13#10);

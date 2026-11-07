@@ -49,7 +49,6 @@ implementation
 uses
   d_delphi,
   m_argv,
-  m_sha1,
   mt_utils,
   r_data,
   r_defs,
