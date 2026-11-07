@@ -27,12 +27,7 @@ type
   public
     /// <param name="ABuilder">Makes the palettes of the game (profile Doom or Hexen)</param>
     /// <param name="AWithFogmap">False in Hexen, which has no FOGMAP</param>
-    constructor Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean); overload;
-    /// <summary>
-    ///   The builder of the game of the executable. It stays while the directives of the
-    ///   preprocessor are assembled by sc_utils.pas and not by the composition root
-    /// </summary>
-    constructor Create; overload;
+    constructor Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean);
     /// <param name="AArgument">The palette lump (empty: PLAYPAL)</param>
     procedure Generate(const AArgument: string);
   end;
@@ -42,8 +37,6 @@ implementation
 uses
   System.SysUtils,
   DelphiDoom.Palette.Types,
-  DelphiDoom.Palette.Profiles,
-  DelphiDoom.Palette.Factory,
   d_delphi,
   i_system,
   i_tmp,
@@ -63,17 +56,6 @@ begin
     raise EArgumentNilException.Create('ABuilder');
   FBuilder := ABuilder;
   FWithFogmap := AWithFogmap;
-end;
-
-constructor TEnginePaletteGenerator.Create;
-begin
-{$IFDEF HEXEN}
-  Create(TPaletteFactory.CreatePaletteBuilder(TPaletteFactory.CreateColorMatcher,
-    TPaletteProfiles.Hexen), False);
-{$ELSE}
-  Create(TPaletteFactory.CreatePaletteBuilder(TPaletteFactory.CreateColorMatcher,
-    TPaletteProfiles.Doom), True);
-{$ENDIF}
 end;
 
 procedure TEnginePaletteGenerator.Generate(const AArgument: string);

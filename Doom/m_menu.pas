@@ -310,7 +310,7 @@ uses
   v_data,
   v_video,
   hu_stuff,
-  sc_actordef,
+  sc_states,
   s_sound,
   sounddata,
   w_wad,

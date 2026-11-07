@@ -60,6 +60,18 @@ type
   end;
 
   /// <summary>
+  ///   The defines of the game (DOOM, SHAREWARE, OPENGL ...): the engine adds them while the
+  ///   game starts and the preprocessor reads them at every script
+  /// </summary>
+  IScriptGameDefines = interface(IScriptDefinesSource)
+    ['{0B7E4D29-61C3-4F8A-9E15-A2D8C6F30B71}']
+    /// <summary>Adds a name in upper case; a name that is already there is not added again</summary>
+    procedure Add(const AName: string);
+    /// <summary>Forgets every name</summary>
+    procedure Clear;
+  end;
+
+  /// <summary>
   ///   Prepares the text of a script: includes, directives and defines. Two calls do not share
   ///   anything (the defines of a script do not stay for the next one)
   /// </summary>

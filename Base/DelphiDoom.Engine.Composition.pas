@@ -52,8 +52,8 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   DelphiDoom.Actions.Factory,
+  DelphiDoom.Engine.Dehacked.Applier,
   deh_base,
-  deh_main,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Iwad.Intf,
   DelphiDoom.Iwad.Games,
@@ -119,6 +119,7 @@ uses
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Factory,
+  DelphiDoom.Palette.Profiles,
   r_palette,
   DelphiDoom.Definitions.Types,
   DelphiDoom.Definitions.Intf,
@@ -162,7 +163,9 @@ uses
   DelphiDoom.Engine.ActorDef.Catalog,
   DelphiDoom.Engine.ActorDef.Hooks,
   DelphiDoom.Engine.ActorDef.SoundInfoListener,
-  sc_actordef,
+  DelphiDoom.Engine.ActorDef.Intf,
+  DelphiDoom.Engine.ActorDef.Lumps,
+  sounds,
   DelphiDoom.TableExport.Types,
   DelphiDoom.TableExport.Intf,
   DelphiDoom.TableExport.Profile,
@@ -247,11 +250,9 @@ uses
   DelphiDoom.Engine.Scanner.IncludeSource,
   DelphiDoom.Engine.Scanner.CvarSetter,
   DelphiDoom.Engine.Scanner.PaletteGenerator,
-  DelphiDoom.Engine.Scanner.DefinesSource,
+  DelphiDoom.Scanner.GameDefines,
   DelphiDoom.Engine.Scanner.ActorVariables,
   DelphiDoom.Engine.Scanner.ActorFunctions,
-  sc_utils,
-  sc_params,
   doomdef,
   d_main,
   m_argv,
@@ -262,14 +263,24 @@ uses
   DelphiDoom.Platform.Factory,
   DelphiDoom.Engine.Platform.TempDirectory;
 
-// The script preprocessor (given back: ActorDef, MapInfo, DynLights and MODELDEF use it)
-// and the evaluator of the expressions in the parameters of the actors
-function ComposeScanner(const ALog: ILog): IScriptTextPreprocessor;
+// The script preprocessor (given back: ActorDef, MapInfo, DynLights, VOXELDEF and MODELDEF use
+// it), the defines of the game that it reads, and the evaluator of the expressions in the
+// parameters of the actors (given back: the DEHACKED applier gives it to the parameter lists)
+function ComposeScanner(const ALog: ILog; out AEvaluator: IContextExpressionEvaluator): IScriptTextPreprocessor;
 var
   LDirectives: TArray<IScriptDirective>;
   LEvaluator: TContextExpressionEvaluator;
-  LEvaluatorRef: IContextExpressionEvaluator;
+  LGameDefines: IScriptGameDefines;
+  LPalettes: IPaletteGenerator;
 begin
+  // #CREATEPALETTE makes the palettes of the profile of the game; Hexen has no FOGMAP
+{$IFDEF HEXEN}
+  LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False);
+{$ELSE}
+  LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True);
+{$ENDIF}
 {$IFDEF DOOM}
   LDirectives := TArray<IScriptDirective>.Create(
     TFlagDirective.Create(TArray<string>.Create('VANILLA_DEMO_OFF', '#VANILLA_DEMO_OFF', '{$VANILLA_DEMO_OFF}'),
@@ -278,21 +289,21 @@ begin
         vanilla_demo_off := true;
       end),
     TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
-    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
+    TCreatePaletteDirective.Create(LPalettes, ALog));
 {$ELSE}
   LDirectives := TArray<IScriptDirective>.Create(
     TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
-    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
+    TCreatePaletteDirective.Create(LPalettes, ALog));
 {$ENDIF}
+  // the game fills its defines while it starts (D_FillGameDefines), the preprocessor reads them
+  LGameDefines := TScriptGameDefines.Create;
+  D_ConfigureGameDefines(LGameDefines);
   Result := TScriptTextPreprocessor.Create(TEngineIncludeSource.Create, LDirectives,
-    TEngineScriptDefinesSource.Create, ALog);
-  // VOXELDEF (vx_base) still goes through the facade
-  SC_ConfigurePreprocessor(Result);
+    LGameDefines, ALog);
 
   LEvaluator := TContextExpressionEvaluator.Create(ALog, TEngineActorExpressionVariables.Create);
-  LEvaluatorRef := LEvaluator;
+  AEvaluator := LEvaluator;
   TEngineActorExpressionFunctions.Register(LEvaluator);
-  SC_ConfigureParams(LEvaluatorRef);
 end;
 
 procedure ComposeDisplayModes;
@@ -431,13 +442,15 @@ begin
 end;
 {$ENDIF}
 
-procedure ComposeDehacked(const ALog: ILog);
+procedure ComposeDehacked(const ALog: ILog; const AEvaluator: IContextExpressionEvaluator);
 var
   LGame: TDehackedGame;
 begin
   if not TDehackedGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
-  DEH_Configure(TDehackedFactory.CreateParser(LGame, ALog));
+  // TEngineDehackedApplier is the class of the game (one unit with this name in each folder)
+  DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog),
+    AEvaluator));
   DEH_ConfigureActions(TActionsFactory.CreateRegistry);
 end;
 
@@ -671,17 +684,22 @@ var
   LHooksRef: IInterface;
   LAliases: IActorDefSoundAliasTable;
   LListener: IActorDefSoundInfoListener;
+  LLumps: IEngineActorDefLumps;
+  LLumpsObject: TEngineActorDefLumps;
 begin
   if not TActorDefProfiles.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of ACTORDEF', [_GAME]);
   LProfile := TActorDefProfiles.ForGame(LGame);
   LCatalog := TEngineActorDefCatalog.Create;
   LCatalogRef := LCatalog;
-  // a thinker is an actor written as text: it goes back to the parser through the facade
+  // a thinker is an actor written as text: it goes back to the parser through the reader of
+  // the lumps. The closure holds the object without a reference (d_main keeps it alive): with
+  // the interface the reader, the parser and the hooks would hold each other
+  LLumpsObject := nil;
   LHooks := TEngineActorDefHooks.Create(ALog,
     procedure(AText: string)
     begin
-      SC_ParseActordefLump(AText);
+      LLumpsObject.ParseText(AText);
     end, APreprocessor);
   LHooksRef := LHooks;
   LAliases := TActorDefFactory.CreateSoundAliases(ALog);
@@ -690,7 +708,7 @@ begin
 {$ELSE}
   LListener := nil;
 {$ENDIF}
-  SC_ConfigureActorDef(
+  LLumpsObject := TEngineActorDefLumps.Create(
     TActorDefFactory.CreateParser(LProfile, ALog, LCatalog, LCatalog, LCatalog,
       TActorDefFactory.CreateDehSink(LProfile, LCatalog, LCatalog, LAliases, LHooks, ALog),
       LHooks, LHooks, LHooks),
@@ -698,7 +716,10 @@ begin
     begin
       TActorDefFactory.ParseSoundInfo(LProfile, AText, LAliases, LListener);
     end,
-    LAliases, APreprocessor);
+    APreprocessor);
+  LLumps := LLumpsObject;
+  D_ConfigureActorDef(LLumps);
+  S_ConfigureSoundAliases(LAliases);
 end;
 
 procedure ComposeTableExport;
@@ -740,7 +761,7 @@ begin
   D_ConfigureIwad(LServices.Locator, LServices.Identifier);
 end;
 
-procedure ComposeVoxels(const ALog: ILog);
+procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
@@ -763,7 +784,7 @@ begin
   // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
-    TEngineVoxelDefinitionSink.Create(LLoader, LCubes));
+    TEngineVoxelDefinitionSink.Create(LLoader, LCubes), APreprocessor);
 end;
 
 procedure ComposeUdmfApply;
@@ -786,6 +807,7 @@ var
   LClock: IClock;
   LGame: TUdmfGame;
   LPreprocessor: IScriptTextPreprocessor;
+  LEvaluator: IContextExpressionEvaluator;
   LTempFiles: ITempFiles;
 begin
   // The zone first: whatever is built next can already allocate from it
@@ -803,7 +825,7 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
-  LPreprocessor := ComposeScanner(LLog);
+  LPreprocessor := ComposeScanner(LLog, LEvaluator);
   LTempFiles := ComposePlatform;
   ComposeMathCore;
   ComposeSerializer;
@@ -819,7 +841,7 @@ begin
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic(LTempFiles);
-  ComposeDehacked(LLog);
+  ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;
   ComposeScreenshot;
   ComposeTexture(LLog);
@@ -837,7 +859,7 @@ begin
 {$IFNDEF HEXEN}
   ComposeEndoom;
 {$ENDIF}
-  ComposeVoxels(LLog);
+  ComposeVoxels(LLog, LPreprocessor);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

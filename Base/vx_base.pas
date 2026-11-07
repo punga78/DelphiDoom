@@ -36,6 +36,7 @@ interface
 uses
   DelphiDoom.Voxel.Types,
   DelphiDoom.Voxel.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf,
 {$IFDEF OPENGL}
   gl_defs,
   gl_voxels,
@@ -101,9 +102,12 @@ procedure VX_VoxelsDone;
 //==============================================================================
 //
 // VX_ConfigureVoxels
+// The parser of VOXELDEF, what it gives the voxels to, and the script
+// preprocessor of the VOXELDEF texts: the composition root gives them
 //
 //==============================================================================
-procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink);
+procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink;
+  const APreprocessor: IScriptTextPreprocessor);
 
 //==============================================================================
 //
@@ -144,7 +148,6 @@ implementation
 uses
   d_main,
   i_system,
-  sc_utils,
   info,
   {$IFNDEF OPENGL}
   r_softgl,
@@ -156,6 +159,7 @@ uses
 var
   vx_definitionparser: IVoxelDefinitionParser = nil;
   vx_definitionsink: IVoxelDefinitionSink = nil;
+  vx_preprocessor: IScriptTextPreprocessor = nil;
 
 //==============================================================================
 //
@@ -296,10 +300,12 @@ end;
 // VX_ConfigureVoxels
 //
 //==============================================================================
-procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink);
+procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink;
+  const APreprocessor: IScriptTextPreprocessor);
 begin
   vx_definitionparser := AParser;
   vx_definitionsink := ASink;
+  vx_preprocessor := APreprocessor;
 end;
 
 //==============================================================================
@@ -309,7 +315,9 @@ end;
 //==============================================================================
 procedure SC_ParseVoxelDefinition(const in_text: string);
 begin
-  SC_DoParseVoxelDefinition(SC_Preprocess(in_text, false));
+  if vx_preprocessor = nil then
+    I_Error('SC_ParseVoxelDefinition(): the preprocessor of VOXELDEF is not configured (ComposeEngine was not called)');
+  SC_DoParseVoxelDefinition(vx_preprocessor.Preprocess(in_text, false));
 end;
 
 //==============================================================================

@@ -10442,7 +10442,8 @@ begin
       sargs := sargs + ', ' + itoa(tmpargs[i]);
   end;
 
-  state.params := TCustomParamList.Create(sargs);
+  // only numbers (the default arguments): the list never asks the evaluator
+  state.params := TCustomParamList.Create(sargs, nil);
   result := state.params.Count = deh_argcount;
 end;
 
