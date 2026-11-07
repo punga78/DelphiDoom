@@ -699,14 +699,6 @@ begin
   inherited;
 end;
 
-type
-  oldlumpcache_t = record
-    memmgr_id: integer;
-    lumpcache_id: integer;
-  end;
-  oldlumpcache_tArray = array[0..$1FFF] of oldlumpcache_t;
-  Poldlumpcache_tArray = ^oldlumpcache_tArray;
-
 //==============================================================================
 //
 // W_RuntimeLoad
@@ -720,9 +712,7 @@ var
   idx: integer;
   rtlinf: rtlinfo_t;
   start, finish: integer;
-  A: Poldlumpcache_tArray;
-  p1, p2, p3: integer;
-  numA: integer;
+  oldcache: pointer;
   ioret: integer;
   source: IWadSource;
 begin
@@ -796,30 +786,13 @@ begin
   begin
     if lumpcacherealsize < numlumps + lumpcount then
     begin
-      A := mallocz(numlumps * SizeOf(oldlumpcache_t));
-      numA := 0;
-      p2 := Integer(@lumpcache[0]);
-      p3 := Integer(@lumpcache[numlumps]);
-      for i := 0 to memmanager.numitems - 1 do
-      begin
-        p1 := Integer(memmanager.items[i].user);
-        if p1 >= p2 then
-          if p1 < p3 then
-          begin
-            idx := (p1 - p2) div SizeOf(Pointer);
-            A[numA].memmgr_id := i;
-            A[numA].lumpcache_id := idx;
-            Inc(numA);
-          end;
-      end;
-
+      oldcache := @lumpcache[0];
       realloc(pointer(lumpcache), lumpcacherealsize * SizeOf(pointer), (numlumps + lumpcount + 1024) * SizeOf(pointer));
       lumpcacherealsize := numlumps + lumpcount + 1024;
 
-      if Integer(@lumpcache[0]) <> p2 then
-        for i := 0 to numA - 1 do
-          memmanager.items[A[i].memmgr_id].user := @lumpcache[A[i].lumpcache_id];
-      memfree(Pointer(A), numlumps * SizeOf(oldlumpcache_t));
+      // The blocks of the zone that are used by the lumps follow the table if it moved
+      if @lumpcache[0] <> oldcache then
+        Z_MoveUsers(oldcache, numlumps * SizeOf(pointer), @lumpcache[0]);
     end;
 
     start := numlumps;

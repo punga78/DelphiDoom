@@ -46,6 +46,9 @@ uses
   DelphiDoom.Dehacked.Factory,
   deh_main,
   DelphiDoom.Clock.Intf,
+  DelphiDoom.Zone.Factory,
+  DelphiDoom.Engine.Zone.Memory,
+  z_zone,
   d_net,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
@@ -509,6 +512,8 @@ var
   LClock: IClock;
   LGame: TUdmfGame;
 begin
+  // The zone first: whatever is built next can already allocate from it
+  Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
