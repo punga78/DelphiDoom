@@ -37,6 +37,8 @@ type
     function OutputText: string;
     function ErrorText: string;
     function SamplePath: string;
+    // A PWAD with the given lumps, each four zero bytes long (markers empty)
+    function CreateWad(const ANames: array of AnsiString): string;
   public
     [Setup]
     procedure Setup;
@@ -92,6 +94,12 @@ type
     procedure TestErrorTextTruncatesTheBuffer;
     [Test]
     procedure TestResultIsClearedByTheNextCall;
+    [Test]
+    procedure TestWadSenzaLivelliFallisce;
+    [Test]
+    procedure TestLivelloSenzaSettoriFallisce;
+    [Test]
+    procedure TestUscitaNonScrivibileDaNoOutput;
   end;
 
 implementation
@@ -398,7 +406,82 @@ begin
   Assert.IsTrue(ErrorText <> '');
 end;
 
-initialization
-  TDUnitX.RegisterTestFixture(TTestGlbspEngine);
+function TTestGlbspEngine.CreateWad(const ANames: array of AnsiString): string;
+var
+  LStream: TBytesStream;
+  LIndex, LStart, LLength: Integer;
+  LName: array[0..7] of AnsiChar;
+  LZero: Integer;
+begin
+  Result := NewTempPath('.wad');
+  LStream := TBytesStream.Create;
+  try
+    LStream.WriteBuffer(AnsiString('PWAD')[1], 4);
+    LIndex := Length(ANames);
+    LStream.WriteBuffer(LIndex, 4);
+    LStart := 12 + 4 * Length(ANames);
+    LStream.WriteBuffer(LStart, 4);
+    LZero := 0;
+    for LIndex := 0 to High(ANames) do
+      LStream.WriteBuffer(LZero, 4);
+    for LIndex := 0 to High(ANames) do
+    begin
+      LStart := 12 + 4 * LIndex;
+      LLength := 4;
+      if Copy(ANames[LIndex], 1, 3) = 'MAP' then
+        LLength := 0;
+      LStream.WriteBuffer(LStart, 4);
+      LStream.WriteBuffer(LLength, 4);
+      FillChar(LName, SizeOf(LName), 0);
+      Move(ANames[LIndex][1], LName[0], Length(ANames[LIndex]));
+      LStream.WriteBuffer(LName, SizeOf(LName));
+    end;
+    TFile.WriteAllBytes(Result, Copy(LStream.Bytes, 0, LStream.Size));
+  finally
+    LStream.Free;
+  end;
+end;
+
+procedure TTestGlbspEngine.TestWadSenzaLivelliFallisce;
+begin
+  FWadPath := CreateWad(['DEMO1', 'ENDOOM']);
+
+  Assert.AreEqual(GLBSP_ERR_PROCESS_FAILED, BuildAnsi(AnsiString(FWadPath),
+    AnsiString(FGwaPath), GLBSP_OPT_QUIET, SOME_TIMEOUT_MS));
+  Assert.AreEqual('No levels found in wad !', ErrorText);
+  Assert.AreEqual(2, Integer(FGlbsp.GetExitCode));
+  Assert.IsFalse(FileExists(FGwaPath));
+end;
+
+procedure TTestGlbspEngine.TestLivelloSenzaSettoriFallisce;
+begin
+  // Every lump holds 4 bytes: one vertex, but less than one sector
+  FWadPath := CreateWad(['MAP01', 'THINGS', 'LINEDEFS', 'SIDEDEFS', 'VERTEXES', 'SEGS',
+    'SSECTORS', 'NODES', 'SECTORS']);
+
+  Assert.AreEqual(GLBSP_ERR_PROCESS_FAILED, BuildAnsi(AnsiString(FWadPath),
+    AnsiString(FGwaPath), GLBSP_OPT_QUIET, SOME_TIMEOUT_MS));
+  Assert.AreEqual('Couldn''t find any Sectors', ErrorText);
+  Assert.AreEqual(2, Integer(FGlbsp.GetExitCode));
+end;
+
+procedure TTestGlbspEngine.TestUscitaNonScrivibileDaNoOutput;
+var
+  LOutput: string;
+begin
+  if not TFile.Exists(SamplePath) then
+  begin
+    Assert.Pass('Tests\Data\glbsp_map01.wad not found');
+    Exit;
+  end;
+  // A folder that does not exist
+  LOutput := TPath.Combine(NewTempPath(''), 'out.gwa');
+
+  Assert.AreEqual(GLBSP_ERR_NO_OUTPUT, BuildAnsi(AnsiString(SamplePath), AnsiString(LOutput),
+    GLBSP_OPT_QUIET, SOME_TIMEOUT_MS));
+  Assert.IsTrue(ErrorText.StartsWith('Cannot write the output file: '));
+end;
+
+initialization  TDUnitX.RegisterTestFixture(TTestGlbspEngine);
 
 end.

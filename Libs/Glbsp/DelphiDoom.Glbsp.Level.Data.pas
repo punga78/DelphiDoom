@@ -66,14 +66,7 @@ type
     function LookupLinedef(const AIndex: Integer): TGlbspLinedef;
     function LookupSidedef(const AIndex: Integer): TGlbspSidedef;
     function LookupSector(const AIndex: Integer): TGlbspSector;
-    function LookupThing(const AIndex: Integer): TGlbspThing;
-    function LookupSeg(const AIndex: Integer): TGlbspSeg;
-    function LookupSubsec(const AIndex: Integer): TGlbspSubsec;
-    function LookupNode(const AIndex: Integer): TGlbspNode;
     function LookupStaleNode(const AIndex: Integer): TGlbspNode;
-
-    /// <summary>Frees everything and resets the counters</summary>
-    procedure Clear;
 
     property Vertices: TObjectList<TGlbspVertex> read FVertices;
     property Linedefs: TObjectList<TGlbspLinedef> read FLinedefs;
@@ -125,23 +118,6 @@ begin
   FLinedefs.Free;
   FVertices.Free;
   inherited Destroy;
-end;
-
-procedure TGlbspLevelData.Clear;
-begin
-  FVertices.Clear;
-  FSidedefs.Clear;
-  FLinedefs.Clear;
-  FSectors.Clear;
-  FThings.Clear;
-  FSegs.Clear;
-  FSubsecs.Clear;
-  FNodes.Clear;
-  FStaleNodes.Clear;
-  FWallTips.Clear;
-  FNumNormalVert := 0;
-  FNumGlVert := 0;
-  FNumCompleteSeg := 0;
 end;
 
 function TGlbspLevelData.Lookup<T>(const AList: TObjectList<T>; const AIndex: Integer;
@@ -230,26 +206,6 @@ end;
 function TGlbspLevelData.LookupSector(const AIndex: Integer): TGlbspSector;
 begin
   Result := Lookup<TGlbspSector>(FSectors, AIndex, 'sector');
-end;
-
-function TGlbspLevelData.LookupThing(const AIndex: Integer): TGlbspThing;
-begin
-  Result := Lookup<TGlbspThing>(FThings, AIndex, 'thing');
-end;
-
-function TGlbspLevelData.LookupSeg(const AIndex: Integer): TGlbspSeg;
-begin
-  Result := Lookup<TGlbspSeg>(FSegs, AIndex, 'seg');
-end;
-
-function TGlbspLevelData.LookupSubsec(const AIndex: Integer): TGlbspSubsec;
-begin
-  Result := Lookup<TGlbspSubsec>(FSubsecs, AIndex, 'subsector');
-end;
-
-function TGlbspLevelData.LookupNode(const AIndex: Integer): TGlbspNode;
-begin
-  Result := Lookup<TGlbspNode>(FNodes, AIndex, 'node');
 end;
 
 function TGlbspLevelData.LookupStaleNode(const AIndex: Integer): TGlbspNode;

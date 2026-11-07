@@ -780,8 +780,9 @@ begin
       LLen := LNext.AlongDist - LCur.AlongDist;
 
       if LLen < -0.1 then
-        raise EGlbspLevelException.CreateFmt(
-          'Bad order in intersect list: %.3f > %.3f', [LCur.AlongDist, LNext.AlongDist]);
+        raise EGlbspLevelException.Create(Format(
+          'Bad order in intersect list: %.3f > %.3f', [LCur.AlongDist, LNext.AlongDist],
+          TFormatSettings.Invariant));
 
       if LLen > 0.2 then
       begin
@@ -792,7 +793,7 @@ begin
 
       if LLen > DIST_EPSILON then
         MiniWarn(Format('Skipping very short seg (len=%.3f) near (%.1f,%.1f)',
-          [LLen, LCur.Vertex.X, LCur.Vertex.Y]));
+          [LLen, LCur.Vertex.X, LCur.Vertex.Y], TFormatSettings.Invariant));
 
       // The two intersections are merged into one
       if LCur.SelfRef and not LNext.SelfRef then
@@ -830,7 +831,7 @@ begin
           begin
             MiniWarn(Format('Sector #%d is unclosed near (%.1f,%.1f)',
               [LCur.After.Index, (LCur.Vertex.X + LNext.Vertex.X) / 2.0,
-              (LCur.Vertex.Y + LNext.Vertex.Y) / 2.0]));
+              (LCur.Vertex.Y + LNext.Vertex.Y) / 2.0], TFormatSettings.Invariant));
             LCur.After.WarnedUnclosed := True;
           end;
           Continue;
@@ -841,7 +842,7 @@ begin
           begin
             MiniWarn(Format('Sector #%d is unclosed near (%.1f,%.1f)',
               [LNext.Before.Index, (LCur.Vertex.X + LNext.Vertex.X) / 2.0,
-              (LCur.Vertex.Y + LNext.Vertex.Y) / 2.0]));
+              (LCur.Vertex.Y + LNext.Vertex.Y) / 2.0], TFormatSettings.Invariant));
             LNext.Before.WarnedUnclosed := True;
           end;
           Continue;
@@ -853,7 +854,7 @@ begin
           if not LCur.SelfRef and not LNext.SelfRef then
             MiniWarn(Format('Sector mismatch: #%d (%.1f,%.1f) != #%d (%.1f,%.1f)',
               [LCur.After.Index, LCur.Vertex.X, LCur.Vertex.Y, LNext.Before.Index,
-              LNext.Vertex.X, LNext.Vertex.Y]));
+              LNext.Vertex.X, LNext.Vertex.Y], TFormatSettings.Invariant));
 
           // The sector that is not self-referencing is preferred
           if LCur.SelfRef and not LNext.SelfRef then
