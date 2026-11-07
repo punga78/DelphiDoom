@@ -150,10 +150,11 @@ uses
   DelphiDoom.Definitions.Factory,
   DelphiDoom.Engine.Definitions.AnimCatalog,
   DelphiDoom.Engine.Definitions.TextureLookup,
+  DelphiDoom.Engine.Definitions.Intf,
+  DelphiDoom.Engine.Definitions.AnimDefsLoader,
 {$IFDEF DOOM}
-  p_switch,
+  DelphiDoom.Engine.Definitions.SwitchListLoader,
 {$ENDIF}
-  p_animdefs,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
@@ -161,7 +162,24 @@ uses
   DelphiDoom.Nodes.Intf,
   DelphiDoom.Nodes.Factory,
   DelphiDoom.Engine.Nodes.LumpSource,
-  nd_main,
+  DelphiDoom.Blockmap.Factory,
+  DelphiDoom.Engine.Udmf.MapLoader,
+  DelphiDoom.Engine.Level.Intf,
+  DelphiDoom.Engine.Level.Loader,
+  DelphiDoom.Engine.Level.MapReader,
+  DelphiDoom.Engine.Level.Things,
+  DelphiDoom.Engine.Level.Nodes,
+  DelphiDoom.Engine.Level.Blockmap,
+{$IF DEFINED(DOOM)}
+  DelphiDoom.Engine.Level.VanillaNodes,
+  DelphiDoom.Engine.Level.DoomRules,
+{$ELSEIF DEFINED(HERETIC)}
+  DelphiDoom.Engine.Level.HereticRules,
+{$ELSEIF DEFINED(HEXEN)}
+  DelphiDoom.Engine.Level.HexenRules,
+{$ELSE}
+  DelphiDoom.Engine.Level.StrifeRules,
+{$ENDIF}
   DelphiDoom.DynLights.Types,
   DelphiDoom.DynLights.Intf,
   DelphiDoom.DynLights.Factory,
@@ -547,7 +565,9 @@ begin
 {$ENDIF}
 end;
 
-procedure ComposeMusInfo(const ALog: ILog);
+// The catalog goes to A_MusicChanger (p_musinfo); the loader is given back for the loading of
+// the levels, that reads MUSINFO at the start
+function ComposeMusInfo(const ALog: ILog): IMusInfoLoader;
 var
   LServices: TEngineMusInfoServices;
   LServicesRef: IInterface;
@@ -556,37 +576,82 @@ begin
   LServices := TEngineMusInfoServices.Create;
   LServicesRef := LServices;
   LCatalog := TMusInfoFactory.CreateCatalog(LServices, ALog);
-  P_ConfigureMusInfo(LCatalog,
-    TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
+  P_ConfigureMusInfo(LCatalog);
+  Result := TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog);
 end;
 
-procedure ComposeNodes(const ATempFiles: ITempFiles);
+// The rules of the game for the loading of the levels: ANIMDEFS (not Hexen, that has p_anim) and,
+// in Doom, the switches of Libs\Definitions and the nodes of the old engine. The switches of
+// Heretic, Hexen and Strife keep their own tables: they are used after the start
+function ComposeLevelRules(const ALog: ILog; const AContext: IGameContext;
+  const ANodesSource: INodesLumpSource): ILevelGameRules;
+{$IFNDEF HEXEN}
 var
-  LSource: INodesLumpSource;
-  LHexen: Boolean;
+  LAnimDefs: IEngineAnimDefsLoader;
+{$ENDIF}
 begin
+{$IFNDEF HEXEN}
+  LAnimDefs := TEngineAnimDefsLoader.Create(
+    TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
+{$ENDIF}
+{$IF DEFINED(DOOM)}
+  Result := TDoomLevelRules.Create(
+    TEngineSwitchListLoader.Create(TDefinitionsFactory.CreateSwitchLumpReader(False),
+      TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
+      TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)),
+    LAnimDefs, TEngineVanillaNodes.Create(ANodesSource), AContext);
+{$ELSEIF DEFINED(HERETIC)}
+  Result := THereticLevelRules.Create(LAnimDefs);
+{$ELSEIF DEFINED(HEXEN)}
+  Result := THexenLevelRules.Create;
+{$ELSE}
+  Result := TStrifeLevelRules.Create(LAnimDefs);
+{$ENDIF}
+end;
+
+// The loading of the levels (TLevelLoader) for g_game and d_main, with the text maps of the
+// game, the nodes, the blockmap and the rules of the game
+procedure ComposeLevel(const ALog: ILog; const AContext: IGameContext; const ATempFiles: ITempFiles;
+  const AWadServices: IEngineWadServices; const AMusInfo: IMusInfoLoader);
+var
+  LGame: TUdmfGame;
+  LNodesSource: INodesLumpSource;
+  LHexen: Boolean;
+  LRules: ILevelGameRules;
+  LUdmf: ILevelUdmf;
+  LLoader: ILevelLoader;
+begin
+  if not TUdmfGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
+  LUdmf := TEngineUdmfMapLoader.Create(
+    TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, ALog), AWadServices,
+    TEngineUdmfSectorApplier.Create(
+      TUdmfApplyFactory.CreateSectorInterpreter, TUdmfApplyFactory.CreateTriangleSlopes),
+    TEngineUdmfLineApplier.Create(
+      TUdmfApplyFactory.CreateLineSpecialTranslator(UDMF_SPECIAL_START, UDMF_NORMAL_ADD)),
+    TEngineUdmfSideApplier.Create,
+    TEngineUdmfSegApplier.Create(TUdmfApplyFactory.CreateFakeContrast));
+
   // the maps of Hexen are already in the Hexen format: the other games convert them for the node builder
 {$IFDEF HEXEN}
   LHexen := True;
 {$ELSE}
   LHexen := False;
 {$ENDIF}
-  LSource := TEngineNodesLumpSource.Create;
-  ND_Configure(LSource, TNodesFactory.CreateGlDetector(LSource),
-    TNodesFactory.CreateGlMapFinder(LSource),
-    TNodesFactory.CreateGlbspInputBuilder(LSource, LHexen), ATempFiles, LHexen);
-end;
+  LNodesSource := TEngineNodesLumpSource.Create;
+  LRules := ComposeLevelRules(ALog, AContext, LNodesSource);
 
-procedure ComposeDefinitions(const ALog: ILog);
-begin
-  P_ConfigureAnimDefs(TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
-  // the terrain of the flats has no state: r_data calls TTerrainTables directly
-{$IFDEF DOOM}
-  // The switches of Heretic, Hexen and Strife keep their own tables: they are used after the start
-  P_ConfigureSwitches(TDefinitionsFactory.CreateSwitchLumpReader(False),
-    TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
-    TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom));
-{$ENDIF}
+  LLoader := TLevelLoader.Create(AContext, LRules,
+    TEngineLevelMapReader.Create(LRules as ILevelGeometryRules, AContext),
+    TEngineLevelThings.Create(LRules as ILevelThingRules),
+    TEngineLevelNodes.Create(LNodesSource, TNodesFactory.CreateGlDetector(LNodesSource),
+      TNodesFactory.CreateGlMapFinder(LNodesSource),
+      TNodesFactory.CreateGlbspInputBuilder(LNodesSource, LHexen), ATempFiles, LHexen),
+    TEngineLevelBlockmap.Create(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
+      TBlockmapFactory.CreateSlimeTrailRemover),
+    LUdmf, AMusInfo);
+  G_ConfigureLevel(LLoader);
+  D_ConfigureLevel(LLoader);
 end;
 
 procedure ComposePalette;
@@ -890,17 +955,6 @@ begin
     TEngineVoxelDefinitionSink.Create(LLoader, LCubes), APreprocessor);
 end;
 
-procedure ComposeUdmfApply;
-begin
-  P_ConfigureUdmfApply(
-    TEngineUdmfSectorApplier.Create(
-      TUdmfApplyFactory.CreateSectorInterpreter, TUdmfApplyFactory.CreateTriangleSlopes),
-    TEngineUdmfLineApplier.Create(
-      TUdmfApplyFactory.CreateLineSpecialTranslator(UDMF_SPECIAL_START, UDMF_NORMAL_ADD)),
-    TEngineUdmfSideApplier.Create,
-    TEngineUdmfSegApplier.Create(TUdmfApplyFactory.CreateFakeContrast));
-end;
-
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -908,7 +962,7 @@ var
   LLog: ILog;
   LContext: IGameContext;
   LClock: IClock;
-  LGame: TUdmfGame;
+  LMusInfo: IMusInfoLoader;
   LPreprocessor: IScriptTextPreprocessor;
   LEvaluator: IContextExpressionEvaluator;
   LTempFiles: ITempFiles;
@@ -956,9 +1010,7 @@ begin
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
   ComposePalette;
-  ComposeDefinitions(LLog);
-  ComposeMusInfo(LLog);
-  ComposeNodes(LTempFiles);
+  LMusInfo := ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext, LPreprocessor);
   ComposeAutomap;
   ComposeActorDef(LLog, LPreprocessor);
@@ -976,10 +1028,7 @@ begin
   PAK_Configure(LWadServices);
   D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
     TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
-  if not TUdmfGames.TryFromName(_GAME, LGame) then
-    I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
-  P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);
-  ComposeUdmfApply;
+  ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo);
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
   P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
