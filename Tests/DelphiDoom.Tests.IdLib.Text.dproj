@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{17DE8A8F-69B6-47DF-B0EA-937B14DFF715}</ProjectGuid>
+        <ProjectGuid>{12F0C1DD-6BD7-4F62-945B-6B85FC7C9DD5}</ProjectGuid>
         <MainSource>DelphiDoom.Tests.IdLib.Text.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>

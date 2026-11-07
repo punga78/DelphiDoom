@@ -29,6 +29,12 @@ type
     procedure Warning(const AMessage: string);
   end;
 
+  /// <summary>The console variables, as far as idLib needs them (idCVarSystem::GetCVarString)</summary>
+  IIdLibCVars = interface
+    ['{0B6E6A1C-5C0F-4F5B-9E58-2A3D6E7C1F03}']
+    function GetCVarString(const AName: AnsiString): AnsiString;
+  end;
+
   /// <summary>A file that idLib read: the bytes, the name the file system resolved and its time</summary>
   TIdLibFileData = record
     Data: TBytes;

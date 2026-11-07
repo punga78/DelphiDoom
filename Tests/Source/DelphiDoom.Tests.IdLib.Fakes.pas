@@ -27,6 +27,12 @@ type
     property Entries: TStringList read FEntries;
   end;
 
+  /// <summary>Console variables that answer with the name they are asked (as the C++ harness does)</summary>
+  TIdLibEchoCVars = class(TInterfacedObject, IIdLibCVars)
+  public
+    function GetCVarString(const AName: AnsiString): AnsiString;
+  end;
+
   /// <summary>A file system in memory: files by name, the full path is the name, the time is 1234</summary>
   TIdLibMemoryFileSystem = class(TInterfacedObject, IIdLibFileSystem)
   private
@@ -41,6 +47,13 @@ type
   end;
 
 implementation
+
+{ TIdLibEchoCVars }
+
+function TIdLibEchoCVars.GetCVarString(const AName: AnsiString): AnsiString;
+begin
+  Result := AName;
+end;
 
 { TIdLibLogRecorder }
 
