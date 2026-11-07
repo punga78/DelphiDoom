@@ -87,7 +87,8 @@ uses
   info_h,
   info,
   info_common,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   sc_params,
   w_wad;
 
@@ -124,7 +125,7 @@ end;
 procedure SC_ParseStatedefLump;
 var
   i: integer;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
   found: boolean;
   x: integer;
 
@@ -149,14 +150,14 @@ begin
     if char8tostring(W_GetNameForNum(i)) = STATEDEFLUMPNAME then
     begin
       found := true;
-      sc := TScriptEngine.Create(W_TextLumpNum(i));
+      sc := TScriptScanner.Create(W_TextLumpNum(i), TEngineScannerLog.Create);
       x := 0;
       while sc.GetString do
       begin
-        _newstatealias(x, strupper(sc._String));
+        _newstatealias(x, strupper(sc.AsString));
         inc(x);
       end;
-//        statenames.Add(strupper(sc._String));
+//        statenames.Add(strupper(sc.AsString));
       sc.Free;
       break;
     end;

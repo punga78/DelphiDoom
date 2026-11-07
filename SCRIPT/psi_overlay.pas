@@ -374,7 +374,8 @@ uses
   mt_utils,
   p_common,
   p_tick,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   sc_params,
   {$IFNDEF OPENGL}
   r_hires,
@@ -2194,7 +2195,7 @@ var
   ticks: Integer;
   x1, y1, x2, y2: Integer;
   red, green, blue: byte;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
 begin
   if gamestate <> GS_LEVEL then
   begin
@@ -2215,22 +2216,22 @@ begin
     Exit;
   end;
 
-  sc := TScriptEngine.Create(s2);
+  sc := TScriptScanner.Create(s2, TEngineScannerLog.Create);
 
   sc.MustGetInteger;
-  x1 := sc._Integer;
+  x1 := sc.AsInteger;
   sc.MustGetInteger;
-  y1 := sc._Integer;
+  y1 := sc.AsInteger;
   sc.MustGetInteger;
-  x2 := sc._Integer;
+  x2 := sc.AsInteger;
   sc.MustGetInteger;
-  y2 := sc._Integer;
+  y2 := sc.AsInteger;
   sc.MustGetInteger;
-  red := sc._Integer;
+  red := sc.AsInteger;
   sc.MustGetInteger;
-  green := sc._Integer;
+  green := sc.AsInteger;
   sc.MustGetInteger;
-  blue := sc._Integer;
+  blue := sc.AsInteger;
   sc.Free;
 
   overlay.AddRect(ticks, red, green, blue, x1, y1, x2, y2);
@@ -2246,7 +2247,7 @@ var
   ticks: Integer;
   x1, y1, x2, y2: Integer;
   red, green, blue: byte;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
 begin
   if gamestate <> GS_LEVEL then
   begin
@@ -2267,22 +2268,22 @@ begin
     Exit;
   end;
 
-  sc := TScriptEngine.Create(s2);
+  sc := TScriptScanner.Create(s2, TEngineScannerLog.Create);
 
   sc.MustGetInteger;
-  x1 := sc._Integer;
+  x1 := sc.AsInteger;
   sc.MustGetInteger;
-  y1 := sc._Integer;
+  y1 := sc.AsInteger;
   sc.MustGetInteger;
-  x2 := sc._Integer;
+  x2 := sc.AsInteger;
   sc.MustGetInteger;
-  y2 := sc._Integer;
+  y2 := sc.AsInteger;
   sc.MustGetInteger;
-  red := sc._Integer;
+  red := sc.AsInteger;
   sc.MustGetInteger;
-  green := sc._Integer;
+  green := sc.AsInteger;
   sc.MustGetInteger;
-  blue := sc._Integer;
+  blue := sc.AsInteger;
   sc.Free;
 
   overlay.AddLine(ticks, red, green, blue, x1, y1, x2, y2);
@@ -2298,7 +2299,7 @@ var
   ticks: Integer;
   x, y: Integer;
   patchname: string;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
 begin
   if gamestate <> GS_LEVEL then
   begin
@@ -2319,14 +2320,14 @@ begin
     Exit;
   end;
 
-  sc := TScriptEngine.Create(s2);
+  sc := TScriptScanner.Create(s2, TEngineScannerLog.Create);
 
   sc.MustGetInteger;
-  x := sc._Integer;
+  x := sc.AsInteger;
   sc.MustGetInteger;
-  y := sc._Integer;
+  y := sc.AsInteger;
   sc.MustGetString;
-  patchname := sc._String;
+  patchname := sc.AsString;
   sc.Free;
 
   overlay.AddPatch(ticks, patchname, x, y);
@@ -2342,7 +2343,7 @@ var
   ticks: Integer;
   x1, y1, x2, y2: Integer;
   patchname: string;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
 begin
   if gamestate <> GS_LEVEL then
   begin
@@ -2363,18 +2364,18 @@ begin
     Exit;
   end;
 
-  sc := TScriptEngine.Create(s2);
+  sc := TScriptScanner.Create(s2, TEngineScannerLog.Create);
 
   sc.MustGetInteger;
-  x1 := sc._Integer;
+  x1 := sc.AsInteger;
   sc.MustGetInteger;
-  y1 := sc._Integer;
+  y1 := sc.AsInteger;
   sc.MustGetInteger;
-  x2 := sc._Integer;
+  x2 := sc.AsInteger;
   sc.MustGetInteger;
-  y2 := sc._Integer;
+  y2 := sc.AsInteger;
   sc.MustGetString;
-  patchname := sc._String;
+  patchname := sc.AsString;
   sc.Free;
 
   overlay.AddPatchStretched(ticks, patchname, x1, y1, x2, y2);

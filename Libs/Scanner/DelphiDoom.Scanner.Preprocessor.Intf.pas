@@ -52,6 +52,23 @@ type
     procedure Generate(const AArgument: string);
   end;
 
+  /// <summary>The names that every script finds defined before its first line (the defines of the game)</summary>
+  IScriptDefinesSource = interface
+    ['{6F1C2B94-8E37-4A05-9D62-B4E0A71C3D58}']
+    /// <summary>Asked at each script: the list can change while the game starts</summary>
+    function Defines: TArray<string>;
+  end;
+
+  /// <summary>
+  ///   Prepares the text of a script: includes, directives and defines. Two calls do not share
+  ///   anything (the defines of a script do not stay for the next one)
+  /// </summary>
+  IScriptTextPreprocessor = interface
+    ['{C3A85E17-4D92-4B6F-A0E8-2F71D95B6C04}']
+    /// <summary>AAddComment puts a // comment before and after the text of each include</summary>
+    function Preprocess(const AText: string; AAddComment: Boolean): string;
+  end;
+
 implementation
 
 end.

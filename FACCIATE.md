@@ -11,7 +11,7 @@ Elenco delle unit storiche rimaste come facciata (hanno una `*_Configure*` o son
 
 ### `Base\sc_evaluate.pas` - 1 funzioni pubbliche, 0 chiamate
 
-Per toglierla: `TEvaluator` e usato da `sc_evaluate_actor` e DD_IDE: sostituibile con `TExpressionEvaluator` cambiando i due chiamanti.
+**Tolta (#132)**: nessun chiamante (DD_IDE non la usava); `TEvaluator` non esiste piu.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -186,11 +186,11 @@ Per toglierla: servirebbe che `m_menu` ricevesse il servizio screenshot da Libs\
 
 ### `Base\sc_utils.pas` - 1 funzioni pubbliche, 6 chiamate
 
-Per toglierla: `SC_Preprocess` ha pochi chiamanti: iniettare `IScriptPreprocessor`.
+**#132**: i chiamanti ricevono `IScriptTextPreprocessor` da `ComposeEngine`; resta solo `vx_base` (file della fetta voxel): cambiato quello, la unit si cancella.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `SC_Preprocess` | 6 | DelphiDoom.Engine.ActorDef.Hooks, DelphiDoom.Engine.DynLights.Services, DelphiDoom.Engine.MapInfo.TextSource, gl_models, sc_actordef, vx_base |
+| `SC_Preprocess` | 1 | vx_base |
 
 ### `Base\p_obituaries.pas` - 2 funzioni pubbliche, 6 chiamate
 
@@ -252,7 +252,7 @@ Per toglierla: voxel: poche chiamate, iniettare il servizio.
 
 ### `Base\sc_evaluate_actor.pas` - 5 funzioni pubbliche, 9 chiamate
 
-Per toglierla: un solo chiamante nel motore: portare a classe con `IExpressionVariables`.
+**Tolta (#132)**: `TContextExpressionEvaluator` (`Libs\Scanner`) con `TEngineActorExpressionFunctions` e `TEngineActorExpressionVariables`, dato da `ComposeEngine` a `SC_ConfigureParams` di `sc_params`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -295,7 +295,7 @@ Per toglierla: poche chiamate: iniettare il caricatore di voxel.
 
 ### `Base\sc_engine.pas` - 4 funzioni pubbliche, 9 chiamate
 
-Per toglierla: `TScriptEngine` e `SC_*` hanno decine di chiamanti (MAPINFO, sndinfo, deh): migrarli a `TScriptScanner` uno per uno.
+**Tolta (#132)**: i chiamanti usano `TScriptScanner` e `TScannerText` di `Libs\Scanner`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1210,7 +1210,7 @@ Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiam
 | `P_RandomFromSeed` | 2 | r_main (2) |
 | `P_RandomHitscanAngle` | 2 | p_common (2) |
 | `P_RandomHitscanSlope` | 2 | p_common (2) |
-| `Sys_Random` | 3 | sc_evaluate_actor (3) |
+| `Sys_Random` | 3 | DelphiDoom.Engine.Scanner.ActorFunctions (3) |
 | `M_ClearRandom` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
 | `M_GetMenuRandomIndex` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
 | `C_Random` | 7 | DelphiDoom.Engine.DynLights.Services, Doom\p_user, r_earthquake (4), Strife\p_user |
@@ -1288,7 +1288,6 @@ Nessun chiamante fuori dalla unit (nemmeno test o librerie), non cancellate perc
 - `Base\r_translations.pas`: R_BloodTranslation
 - `Base\r_utils.pas`: R_ColumnToScreenBuffer, R_PointToScreen, R_PointToScreenBufferEx2
 - `Base\r_zbuffer.pas`: R_StartZBuffer
-- `Base\sc_evaluate.pas`: BoolToStr
 - `Base\tables.pas`: AngleToFixed
 - `Base\v_palettes.pas`: V_FixBufferPalette
 - `Base\v_video.pas`: V_DrawBlock, V_DrawLongBlock, V_GetBlock
@@ -1330,7 +1329,6 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Base\r_translations.pas`: R_GetTranslationTable
 - `Base\r_zbuffer.pas`: R_ClearZBuffer, R_DrawVoxelColumnToZBuffer
 - `Base\s_sound.pas`: S_StartVoiceAtVolume, S_StopMusic
-- `Base\sc_evaluate_actor.pas`: SC_DeclareActorEvaluatorSingleToken
 - `Base\udmf_plats.pas`: PH_RemoveActivePlat
 - `Base\udmf_spec.pas`: P_ArgsToLine, P_LineToArgs
 - `Base\v_displaymode.pas`: V_DoSetDisplayMode

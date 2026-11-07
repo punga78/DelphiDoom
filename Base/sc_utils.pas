@@ -25,18 +25,32 @@
 //  Defines preprocessor
 //
 
+
 {$I Doom32.inc}
 
 unit sc_utils;
 
 interface
 
+uses
+  DelphiDoom.Scanner.Preprocessor.Intf;
+
+//==============================================================================
+//
+// SC_ConfigurePreprocessor
+//
+// The script preprocessor of the engine (TScriptTextPreprocessor of Libs\Scanner),
+// given by ComposeEngine
+//
+//==============================================================================
+procedure SC_ConfigurePreprocessor(const APreprocessor: IScriptTextPreprocessor);
+
 //==============================================================================
 //
 // SC_Preprocess
 //
-// The work is done by TScriptPreprocessor (Libs\Scanner); here the engine gives it the
-// files and lumps for the includes, the console variables and the palettes
+// Kept only for vx_base (VOXELDEF); the other callers receive the
+// IScriptTextPreprocessor from ComposeEngine
 //
 //==============================================================================
 function SC_Preprocess(const inp_text: string; const addcomment: boolean): string;
@@ -44,21 +58,20 @@ function SC_Preprocess(const inp_text: string; const addcomment: boolean): strin
 implementation
 
 uses
-  SysUtils,
-  {$IFDEF DOOM}
-  g_game,
-  {$ENDIF}
-  sc_defines,
-  DelphiDoom.Engine.Scanner.CvarSetter,
-  DelphiDoom.Engine.Scanner.IncludeSource,
-  DelphiDoom.Engine.Scanner.Log,
-  DelphiDoom.Engine.Scanner.PaletteGenerator,
-  DelphiDoom.Scanner.Directive.CreatePalette,
-  DelphiDoom.Scanner.Directive.CvarForce,
-  DelphiDoom.Scanner.Directive.Flag,
-  DelphiDoom.Scanner.Preprocessor,
-  DelphiDoom.Logging.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  i_system;
+
+var
+  script_preprocessor: IScriptTextPreprocessor;
+
+//==============================================================================
+//
+// SC_ConfigurePreprocessor
+//
+//==============================================================================
+procedure SC_ConfigurePreprocessor(const APreprocessor: IScriptTextPreprocessor);
+begin
+  script_preprocessor := APreprocessor;
+end;
 
 //==============================================================================
 //
@@ -66,39 +79,10 @@ uses
 //
 //==============================================================================
 function SC_Preprocess(const inp_text: string; const addcomment: boolean): string;
-var
-  logintf: ILog;
-  preprocessor: TScriptPreprocessor;
-  directives: TArray<IScriptDirective>;
-  defines: TArray<string>;
-  i: integer;
 begin
-  logintf := TEngineScannerLog.Create;
-  {$IFDEF DOOM}
-  directives := TArray<IScriptDirective>.Create(
-    TFlagDirective.Create(TArray<string>.Create('VANILLA_DEMO_OFF', '#VANILLA_DEMO_OFF', '{$VANILLA_DEMO_OFF}'),
-      procedure
-      begin
-        vanilla_demo_off := true;
-      end),
-    TCvarForceDirective.Create(TEngineCvarSetter.Create, logintf),
-    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, logintf));
-  {$ELSE}
-  directives := TArray<IScriptDirective>.Create(
-    TCvarForceDirective.Create(TEngineCvarSetter.Create, logintf),
-    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, logintf));
-  {$ENDIF}
-
-  SetLength(defines, gamedefines.Count);
-  for i := 0 to gamedefines.Count - 1 do
-    defines[i] := gamedefines.Strings[i];
-
-  preprocessor := TScriptPreprocessor.Create(TEngineIncludeSource.Create, directives, logintf);
-  try
-    result := preprocessor.Preprocess(inp_text, addcomment, defines);
-  finally
-    preprocessor.Free;
-  end;
+  if script_preprocessor = nil then
+    I_Error('SC_Preprocess(): the preprocessor is not configured (ComposeEngine was not called)');
+  result := script_preprocessor.Preprocess(inp_text, addcomment);
 end;
 
 end.

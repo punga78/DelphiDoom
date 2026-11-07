@@ -333,7 +333,8 @@ implementation
 
 uses
   c_cmds,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   d_player,
   d_think,
   d_main,
@@ -3266,7 +3267,7 @@ end;
 //==============================================================================
 procedure CmdSpawnMobj(const parm1, parm2: string);
 var
-  sc: TScriptEngine;
+  sc: TScriptScanner;
   x, y, z: fixed_t;
   mobjno, dn: integer;
   angle: angle_t;
@@ -3286,13 +3287,13 @@ begin
     exit;
   end;
 
-  sc := TScriptEngine.Create(parm);
+  sc := TScriptScanner.Create(parm, TEngineScannerLog.Create);
   sc.MustGetInteger;
-  x := sc._Integer * FRACUNIT;
+  x := sc.AsInteger * FRACUNIT;
   sc.MustGetInteger;
-  y := sc._Integer * FRACUNIT;
+  y := sc.AsInteger * FRACUNIT;
   sc.MustGetString;
-  tmp := strupper(sc._String);
+  tmp := strupper(sc.AsString);
   if (tmp = 'ONFLOORZ') or (tmp = 'FLOORZ') then
     z := ONFLOORZ
   else if (tmp = 'ONFLOATZ') or (tmp = 'FLOATZ') or (tmp = 'FLOATRANDZRAND') or (tmp = 'ONFLOATRANDZRAND') then
@@ -3303,11 +3304,11 @@ begin
     z := atoi(tmp, ONFLOORZ) * FRACUNIT;
 
   sc.MustGetInteger;
-  angle := sc._Integer * ANG1;
+  angle := sc.AsInteger * ANG1;
 
   tmp := '';
   while sc.GetString do
-    tmp := tmp + sc._String + ' ';
+    tmp := tmp + sc.AsString + ' ';
   trimprocU(tmp);
 
   dn := atoi(tmp, 0);

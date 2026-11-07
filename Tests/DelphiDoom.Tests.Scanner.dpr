@@ -36,11 +36,16 @@ uses
   DelphiDoom.Scanner.Directive.CreatePalette in '..\Libs\Scanner\DelphiDoom.Scanner.Directive.CreatePalette.pas',
   DelphiDoom.Scanner.AutoLoad.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.AutoLoad.Intf.pas',
   DelphiDoom.Scanner.AutoLoad in '..\Libs\Scanner\DelphiDoom.Scanner.AutoLoad.pas',
+  DelphiDoom.Scanner.ContextEvaluator.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.ContextEvaluator.Intf.pas',
+  DelphiDoom.Scanner.ContextEvaluator in '..\Libs\Scanner\DelphiDoom.Scanner.ContextEvaluator.pas',
+  DelphiDoom.Scanner.TextPreprocessor in '..\Libs\Scanner\DelphiDoom.Scanner.TextPreprocessor.pas',
   DelphiDoom.Tests.Scanner.Parity in 'Source\DelphiDoom.Tests.Scanner.Parity.pas',
   DelphiDoom.Tests.Scanner.Text in 'Source\DelphiDoom.Tests.Scanner.Text.pas',
   DelphiDoom.Tests.Scanner.Preprocessor in 'Source\DelphiDoom.Tests.Scanner.Preprocessor.pas',
   DelphiDoom.Tests.Scanner.AutoLoad in 'Source\DelphiDoom.Tests.Scanner.AutoLoad.pas',
-  DelphiDoom.Tests.Scanner.Expression in 'Source\DelphiDoom.Tests.Scanner.Expression.pas';
+  DelphiDoom.Tests.Scanner.Expression in 'Source\DelphiDoom.Tests.Scanner.Expression.pas',
+  DelphiDoom.Tests.Scanner.TextPreprocessor in 'Source\DelphiDoom.Tests.Scanner.TextPreprocessor.pas',
+  DelphiDoom.Tests.Scanner.ContextEvaluator in 'Source\DelphiDoom.Tests.Scanner.ContextEvaluator.pas';
 
 var
   Runner: ITestRunner;

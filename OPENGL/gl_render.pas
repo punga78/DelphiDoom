@@ -246,7 +246,8 @@ uses
   r_things,
   r_lights,
   r_renderstyle,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   w_wad,
   z_zone;
 
@@ -573,7 +574,7 @@ var
 //==============================================================================
 procedure gld_InitLightTable;
 var
-  sc: TScriptEngine;
+  sc: TScriptScanner;
   lump: integer;
   i, j: integer;
 begin
@@ -584,12 +585,12 @@ begin
   if lump > 0 then
   begin
 
-    sc := TScriptEngine.Create(W_TextLumpNum(lump));
+    sc := TScriptScanner.Create(W_TextLumpNum(lump), TEngineScannerLog.Create);
     for i := 0 to GAMMASIZE - 1 do
       for j := 0 to 255 do
       begin
         sc.MustGetFloat;
-        gl_lighttable[i, j] := sc._Float;
+        gl_lighttable[i, j] := sc.AsFloat;
       end;
     sc.Free;
   end;

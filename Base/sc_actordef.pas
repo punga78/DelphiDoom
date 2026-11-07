@@ -39,7 +39,8 @@ uses
   System.SysUtils,
   d_delphi,
   info_h,
-  DelphiDoom.ActorDef.Intf;
+  DelphiDoom.ActorDef.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf;
 
 //==============================================================================
 //
@@ -82,7 +83,7 @@ procedure SC_ShutDown;
 //
 //==============================================================================
 procedure SC_ConfigureActorDef(const AParser: IActorDefParser; const AParseSoundInfo: TProc<string>;
-  const ASounds: IActorDefSoundResolver);
+  const ASounds: IActorDefSoundResolver; const APreprocessor: IScriptTextPreprocessor);
 
 //==============================================================================
 //
@@ -131,11 +132,8 @@ uses
   {$ENDIF}
   sounds,
   sc_consts,
-  sc_engine,
   sc_states,
   sc_tokens,
-  sc_evaluate_actor,
-  sc_utils,
   p_pspr,
   p_spec,
   p_mobj_h,
@@ -153,6 +151,7 @@ var
   GActorDefParser: IActorDefParser;
   GParseSoundInfo: TProc<string>;
   GSounds: IActorDefSoundResolver;
+  GPreprocessor: IScriptTextPreprocessor;
   sound_tx: string;
 
 //==============================================================================
@@ -161,11 +160,12 @@ var
 //
 //==============================================================================
 procedure SC_ConfigureActorDef(const AParser: IActorDefParser; const AParseSoundInfo: TProc<string>;
-  const ASounds: IActorDefSoundResolver);
+  const ASounds: IActorDefSoundResolver; const APreprocessor: IScriptTextPreprocessor);
 begin
   GActorDefParser := AParser;
   GParseSoundInfo := AParseSoundInfo;
   GSounds := ASounds;
+  GPreprocessor := APreprocessor;
 end;
 
 //==============================================================================
@@ -201,7 +201,7 @@ procedure SC_RetrieveSndInfo(const in_text: string);
 var
   LText: string;
 begin
-  LText := SC_Preprocess(in_text, false);
+  LText := GPreprocessor.Preprocess(in_text, false);
   if sound_tx = '' then
     sound_tx := LText
   else
@@ -304,7 +304,6 @@ end;
 //==============================================================================
 procedure SC_Init;
 begin
-  SC_InitActorEvaluator;
   SC_InitConsts;
   C_AddCmd('DEH_PrintActordef, PrintActordef', @DEH_PrintActordef);
   C_AddCmd('DEH_SaveActordef, SaveActordef', @DEH_SaveActordef);
@@ -323,7 +322,6 @@ procedure SC_ShutDown;
 begin
   statenames.Free;
   SC_ShutDownConsts;
-  SC_ShutDownActorEvaluator;
 end;
 
 //==============================================================================

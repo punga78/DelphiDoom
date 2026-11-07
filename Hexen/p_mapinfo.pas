@@ -140,7 +140,9 @@ implementation
 uses
   d_delphi,
   r_data,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Scanner.Text,
+  DelphiDoom.Engine.Scanner.Log,
   w_wad;
 
 const
@@ -242,27 +244,27 @@ var
   mapMax: integer;
   mcmdValue: integer;
   info: Pmapinfo_t;
-  sc: TScriptEngine;
-  MapCmdNames: TDStringList;
+  sc: TScriptScanner;
+  MapCmdNames: TArray<string>;
 begin
-  MapCmdNames := TDStringList.Create;
-  MapCmdNames.Add('SKY1');
-  MapCmdNames.Add('SKY2');
-  MapCmdNames.Add('DOUBLESKY');
-  MapCmdNames.Add('LIGHTNING');
-  MapCmdNames.Add('FADETABLE');
-  MapCmdNames.Add('CLUSTER');
-  MapCmdNames.Add('WARPTRANS');
-  MapCmdNames.Add('NEXT');
-  MapCmdNames.Add('CDTRACK');
-  MapCmdNames.Add('CD_START_TRACK');
-  MapCmdNames.Add('CD_END1_TRACK');
-  MapCmdNames.Add('CD_END2_TRACK');
-  MapCmdNames.Add('CD_END3_TRACK');
-  MapCmdNames.Add('CD_INTERMISSION_TRACK');
-  MapCmdNames.Add('CD_TITLE_TRACK');
-  MapCmdNames.Add('NOJUMP');
-  MapCmdNames.Add('NOCROUCH');
+  MapCmdNames := nil;
+  MapCmdNames := MapCmdNames + ['SKY1'];
+  MapCmdNames := MapCmdNames + ['SKY2'];
+  MapCmdNames := MapCmdNames + ['DOUBLESKY'];
+  MapCmdNames := MapCmdNames + ['LIGHTNING'];
+  MapCmdNames := MapCmdNames + ['FADETABLE'];
+  MapCmdNames := MapCmdNames + ['CLUSTER'];
+  MapCmdNames := MapCmdNames + ['WARPTRANS'];
+  MapCmdNames := MapCmdNames + ['NEXT'];
+  MapCmdNames := MapCmdNames + ['CDTRACK'];
+  MapCmdNames := MapCmdNames + ['CD_START_TRACK'];
+  MapCmdNames := MapCmdNames + ['CD_END1_TRACK'];
+  MapCmdNames := MapCmdNames + ['CD_END2_TRACK'];
+  MapCmdNames := MapCmdNames + ['CD_END3_TRACK'];
+  MapCmdNames := MapCmdNames + ['CD_INTERMISSION_TRACK'];
+  MapCmdNames := MapCmdNames + ['CD_TITLE_TRACK'];
+  MapCmdNames := MapCmdNames + ['NOJUMP'];
+  MapCmdNames := MapCmdNames + ['NOCROUCH'];
 
   mapMax := 1;
 
@@ -282,19 +284,19 @@ begin
   info.fadetable := W_GetNumForName(DEFAULT_FADE_TABLE);
   info.name := UNKNOWN_MAP_NAME;
 
-  sc := TScriptEngine.Create(SC_RemoveLineQuotes(W_TextLumpName(MAPINFO_SCRIPT_NAME)));
+  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(W_TextLumpName(MAPINFO_SCRIPT_NAME)), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if not sc.Compare('MAP') then
     begin
-      sc.ScriptError('"MAP" expected'#13#10);
+      sc.Warn('"MAP" expected'#13#10);
     end;
     sc.MustGetInteger;
-    if (sc._Integer < 1) or (sc._Integer > 99) then
+    if (sc.AsInteger < 1) or (sc.AsInteger > 99) then
     begin //
-      sc.ScriptError('Map number (%d) must be in [1..99] range'#13#10, [sc._Integer]);
+      sc.Warn('Map number (%d) must be in [1..99] range'#13#10, [sc.AsInteger]);
     end;
-    map := sc._Integer;
+    map := sc.AsInteger;
 
     info := @MapInfo[map];
 
@@ -306,7 +308,7 @@ begin
 
     // Map name must follow the number
     sc.MustGetString;
-    info.name := sc._String;
+    info.name := sc.AsString;
 
     // Process optional tokens
     while sc.GetString do
@@ -321,36 +323,36 @@ begin
         MCMD_CLUSTER:
           begin
             sc.MustGetInteger;
-            info.cluster := sc._Integer;
+            info.cluster := sc.AsInteger;
           end;
         MCMD_WARPTRANS:
           begin
             sc.MustGetInteger;
-            info.warpTrans := sc._Integer;
+            info.warpTrans := sc.AsInteger;
           end;
         MCMD_NEXT:
           begin
             sc.MustGetInteger;
-            info.nextMap := sc._Integer;
+            info.nextMap := sc.AsInteger;
           end;
         MCMD_CDTRACK:
           begin
             sc.MustGetInteger;
-            info.cdTrack := sc._Integer;
+            info.cdTrack := sc.AsInteger;
           end;
         MCMD_SKY1:
           begin
             sc.MustGetString;
-            info.sky1Texture := R_TextureNumForName(sc._String);
+            info.sky1Texture := R_TextureNumForName(sc.AsString);
             sc.MustGetInteger;
-            info.sky1ScrollDelta := sc._Integer * 256;
+            info.sky1ScrollDelta := sc.AsInteger * 256;
           end;
         MCMD_SKY2:
           begin
             sc.MustGetString;
-            info.sky2Texture := R_TextureNumForName(sc._String);
+            info.sky2Texture := R_TextureNumForName(sc.AsString);
             sc.MustGetInteger;
-            info.sky2ScrollDelta := sc._Integer * 256;
+            info.sky2ScrollDelta := sc.AsInteger * 256;
           end;
         MCMD_DOUBLESKY:
           begin
@@ -371,7 +373,7 @@ begin
         MCMD_FADETABLE:
           begin
             sc.MustGetString;
-            info.fadetable := W_GetNumForName(sc._String);
+            info.fadetable := W_GetNumForName(sc.AsString);
           end;
         MCMD_CD_STARTTRACK,
         MCMD_CD_END1TRACK,
@@ -381,7 +383,7 @@ begin
         MCMD_CD_TITLETRACK:
           begin
             sc.MustGetInteger;
-            cd_NonLevelTracks[mcmdValue - MCMD_CD_STARTTRACK] := sc._Integer;
+            cd_NonLevelTracks[mcmdValue - MCMD_CD_STARTTRACK] := sc.AsInteger;
           end;
       end;
     end;
@@ -389,7 +391,6 @@ begin
       mapMax := map;
   end;
   sc.Free;
-  MapCmdNames.Free;
   MapCount := mapMax;
 end;
 

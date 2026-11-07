@@ -35,7 +35,8 @@ unit sc_params;
 interface
 
 uses
-  m_fixed;
+  m_fixed,
+  DelphiDoom.Scanner.ContextEvaluator.Intf;
 
 const
   GLBF_MAP_STRING = 1;
@@ -112,6 +113,15 @@ type
 //==============================================================================
 function SC_EvalString(const token: string): string;
 
+//==============================================================================
+//
+// SC_ConfigureParams
+//
+// The evaluator of the expressions in the parameters (given by ComposeEngine)
+//
+//==============================================================================
+procedure SC_ConfigureParams(const AEvaluator: IContextExpressionEvaluator);
+
 implementation
 
 uses
@@ -120,8 +130,33 @@ uses
   psi_globals,
   p_mobj_h,
   p_params,
-  sc_engine,
-  sc_evaluate_actor;
+  i_system,
+  DelphiDoom.Scanner.Text;
+
+var
+  actor_evaluator: IContextExpressionEvaluator;
+
+//==============================================================================
+//
+// SC_ConfigureParams
+//
+//==============================================================================
+procedure SC_ConfigureParams(const AEvaluator: IContextExpressionEvaluator);
+begin
+  actor_evaluator := AEvaluator;
+end;
+
+//==============================================================================
+//
+// SC_ActorEvaluator
+//
+//==============================================================================
+function SC_ActorEvaluator: IContextExpressionEvaluator;
+begin
+  if actor_evaluator = nil then
+    I_Error('SC_ActorEvaluator(): the evaluator of the parameters is not configured (ComposeEngine was not called)');
+  result := actor_evaluator;
+end;
 
 //==============================================================================
 //
@@ -134,16 +169,17 @@ var
   ok: boolean;
   token: string;
   utoken: string;
-  lst, lstparam: TDStringList;
+  lst: TArray<string>;
+  lstparam: TDStringList;
 begin
   fList := nil;
   fNumItems := 0;
   fActor := nil;
   fdeclaration := tx;
 
-  lst := SC_ParamsToList(tx);
+  lst := TScannerText.ParamsToList(tx);
 
-  for i := 0 to lst.Count - 1 do
+  for i := 0 to High(lst) do
   begin
     if StrIsInteger(lst[i]) then
     begin
@@ -153,7 +189,7 @@ begin
     begin
       AddParam(0, lst[i])
     end
-    else if SC_IsStringInQuotes(lst[i]) then
+    else if TScannerText.IsStringInQuotes(lst[i]) then
     begin
       AddParam(0, Copy(lst[i], 2, length(lst[i]) - 2));
     end
@@ -210,7 +246,7 @@ begin
         begin
           ok := false;
           if lstparam.Count = 2 then
-            if SC_IsStringInQuotes(lstparam[1]) then
+            if TScannerText.IsStringInQuotes(lstparam[1]) then
               ok := true;
           if ok then
           begin
@@ -242,7 +278,7 @@ begin
         end
         else
         begin
-          if (lstparam.Count = 1) and not SC_IsActorEvaluatorSingleToken(lstparam[0]) then
+          if (lstparam.Count = 1) and not SC_ActorEvaluator.IsSingleToken(lstparam[0]) then
             AddParam(0, lstparam[0])
           else
             AddParam(GLBF_EVALUATE, lst[i]);
@@ -253,8 +289,6 @@ begin
       lstparam.Free;
     end;
   end;
-
-  lst.Free;
 
 end;
 
@@ -459,7 +493,7 @@ begin
         result := round(fList[index].f_parm1 + (N_Random * (fList[index].f_parm2 - fList[index].f_parm1 + 1)) / 256);
       GLBF_EVALUATE,
       GLBF_FORCE_EVALUATE:
-        result := round(atof(SC_EvaluateActorExpression(fActor, string(fList[index].s_param))));
+        result := round(atof(SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param))));
       GLBF_MAP_STRING:
         result := atoi(PS_GetMapStr(string(fList[index].s_param)), 0);
       GLBF_MAP_INTEGER:
@@ -561,7 +595,7 @@ begin
         result := (fList[index].f_parm1 * FRACUNIT + N_Random * (fList[index].f_parm2 - fList[index].f_parm1 + 1) * 256) / FRACUNIT;
       GLBF_EVALUATE,
       GLBF_FORCE_EVALUATE:
-        result := atof(SC_EvaluateActorExpression(fActor, string(fList[index].s_param)));
+        result := atof(SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param)));
       GLBF_MAP_STRING:
         result := atof(PS_GetMapStr(string(fList[index].s_param)), 0.0);
       GLBF_MAP_INTEGER:
@@ -664,7 +698,7 @@ begin
         result := round(fList[index].f_parm1 * FRACUNIT + N_Random * (fList[index].f_parm2 - fList[index].f_parm1 + 1) * 256);
       GLBF_EVALUATE,
       GLBF_FORCE_EVALUATE:
-        result := round(atof(SC_EvaluateActorExpression(fActor, string(fList[index].s_param))) * FRACUNIT);
+        result := round(atof(SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param))) * FRACUNIT);
       GLBF_MAP_STRING:
         result := round(atof(PS_GetMapStr(string(fList[index].s_param)), 0.0) * FRACUNIT);
       GLBF_MAP_INTEGER:
@@ -757,7 +791,7 @@ var
 begin
   if (index >= 0) and (index < fNumItems) then
   begin
-    ret := SC_EvaluateActorExpression(fActor, string(fList[index].s_param));
+    ret := SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param));
     result := strupper(RemoveQuotesFromString(ret)) = 'TRUE';
   end
   else
@@ -777,7 +811,7 @@ begin
   begin
     case fList[index].globalidx of
       GLBF_FORCE_EVALUATE:
-        result := RemoveQuotesFromString(SC_EvaluateActorExpression(fActor, string(fList[index].s_param)));
+        result := RemoveQuotesFromString(SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param)));
       GLBF_MAP_STRING:
         result := PS_GetMapStr(string(fList[index].s_param));
       GLBF_MAP_INTEGER:
@@ -855,7 +889,7 @@ begin
     case fList[index].globalidx of
       GLBF_EVALUATE,
       GLBF_FORCE_EVALUATE:
-        result := RemoveQuotesFromString(SC_EvaluateActorExpression(fActor, string(fList[index].s_param)));
+        result := RemoveQuotesFromString(SC_ActorEvaluator.Evaluate(fActor, string(fList[index].s_param)));
       GLBF_MAP_STRING:
         result := PS_GetMapStr(string(fList[index].s_param));
       GLBF_MAP_INTEGER:

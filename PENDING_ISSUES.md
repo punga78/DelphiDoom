@@ -49,3 +49,11 @@ Da fare fuori dalla #45: Win64 (#40–#44), prova dei percorsi PK3 (#48), warnin
 ## #130 — Codice storico senza chiamanti
 
 Cancellate 76 funzioni pubbliche e 117 dichiarazioni (var, const, puntatori) senza usi (analisi statica sui 12 `.dpr`, DD_IDE, DLL e stringhe PascalScript). `FACCIATE.md` elenca le facciate con i chiamanti. Restano di proposito: renderer, `FixedMul`/angoli, `W_*`, `r_clipper` (libreria di terzi), le funzioni usate solo dentro la propria unit (da rendere locali) e quelle con riferimenti omonimi in test o librerie (`BoolToStr`, `IsZeroes`, `parsefirstword`, `A_Fall`, `AngleToFixed`, `FloatMul`, `DEG2RAD`). `Tests.Scanner` ha 19 test che falliscono in questo worktree (i golden letti come una riga sola, line ending dei file): non dipendono da questo lavoro.
+
+## #132 — Facciate dello scanner (in corso)
+
+Cancellate `sc_engine.pas`, `sc_evaluate.pas` e `sc_evaluate_actor.pas`. Resta:
+
+- `Base\sc_utils.pas` (`SC_Preprocess`) per il solo `vx_base` (VOXELDEF), che appartiene alla fetta voxel della stessa ondata: quando `vx_base` riceve l'`IScriptTextPreprocessor` (per esempio da `VX_ConfigureVoxels`, o con `SC_ParseVoxelDefinition` dentro `TEngineVoxelDefinitionSink`), `sc_utils.pas` si cancella con le sue righe nei 12 `.dpr`.
+- I 12 moduli che leggono un testo con `TScriptScanner` (`sc_states`, i quattro `p_mobj` per `spawnmobj`/`summon`, `p_common`, `Hexen\p_anim`, `Hexen\p_mapinfo`, `Hexen\s_sndseq`, `gl_models`, `gl_render`, quattro funzioni di `psi_overlay`) creano il log con `TEngineScannerLog` invece di riceverlo: sono procedure storiche (comandi di console, parser di Hexen, funzioni host di PascalScript). Per riceverlo ognuno dovrebbe diventare una classe (o i parser di Hexen passare a `Libs\Definitions`/`Libs\MapInfo`, circa 1 giorno per parser) e le funzioni di PascalScript un oggetto host registrato: fuori da questa ondata.
+- `sc_params` (`TCustomParamList`) riceve il valutatore con `SC_ConfigureParams`: le liste sono create da `DEH_Apply` dei quattro `deh_main` e da `p_common`, procedurali; per passarlo dal costruttore servirebbe portare `DEH_Apply` a classe.
