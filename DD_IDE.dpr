@@ -53,11 +53,55 @@ uses
 {$ENDIF}
   Forms,
   main in 'DD_IDE\main.pas' {Form1},
-  ide_baseframe in 'DD_IDE\ide_baseframe.pas',
-  ide_binary in 'DD_IDE\ide_binary.pas',
-  ide_project in 'DD_IDE\ide_project.pas',
-  ide_undo in 'DD_IDE\ide_undo.pas',
-  ide_utils in 'DD_IDE\ide_utils.pas',
+  DelphiDoom.Ide.Types in 'Libs\Ide\DelphiDoom.Ide.Types.pas',
+  DelphiDoom.Ide.Messages in 'Libs\Ide\DelphiDoom.Ide.Messages.pas',
+  DelphiDoom.Ide.Intf in 'Libs\Ide\DelphiDoom.Ide.Intf.pas',
+  DelphiDoom.Ide.Text in 'Libs\Ide\DelphiDoom.Ide.Text.pas',
+  DelphiDoom.Ide.ItemKinds in 'Libs\Ide\DelphiDoom.Ide.ItemKinds.pas',
+  DelphiDoom.Ide.Games in 'Libs\Ide\DelphiDoom.Ide.Games.pas',
+  DelphiDoom.Ide.ProjectFormat in 'Libs\Ide\DelphiDoom.Ide.ProjectFormat.pas',
+  DelphiDoom.Ide.UncountedObject in 'Libs\Ide\DelphiDoom.Ide.UncountedObject.pas',
+  DelphiDoom.Ide.UndoHistory in 'Libs\Ide\DelphiDoom.Ide.UndoHistory.pas',
+  DelphiDoom.Ide.Document in 'Libs\Ide\DelphiDoom.Ide.Document.pas',
+  DelphiDoom.Ide.ProjectItem in 'Libs\Ide\DelphiDoom.Ide.ProjectItem.pas',
+  DelphiDoom.Ide.Project in 'Libs\Ide\DelphiDoom.Ide.Project.pas',
+  DelphiDoom.Ide.Pk3Builder in 'Libs\Ide\DelphiDoom.Ide.Pk3Builder.pas',
+  DelphiDoom.Ide.CompilerMessages in 'Libs\Ide\DelphiDoom.Ide.CompilerMessages.pas',
+  DelphiDoom.Ide.PCodeFile in 'Libs\Ide\DelphiDoom.Ide.PCodeFile.pas',
+  DelphiDoom.Ide.CompileCommand in 'Libs\Ide\DelphiDoom.Ide.CompileCommand.pas',
+  DelphiDoom.Ide.Csv in 'Libs\Ide\DelphiDoom.Ide.Csv.pas',
+  DelphiDoom.Ide.Outline in 'Libs\Ide\DelphiDoom.Ide.Outline.pas',
+  DelphiDoom.Ide.RowSorter in 'Libs\Ide\DelphiDoom.Ide.RowSorter.pas',
+  DelphiDoom.Ide.LibraryTable in 'Libs\Ide\DelphiDoom.Ide.LibraryTable.pas',
+  DelphiDoom.Ide.NameValueTable in 'Libs\Ide\DelphiDoom.Ide.NameValueTable.pas',
+  DelphiDoom.Ide.ActorDefFunctionTable in 'Libs\Ide\DelphiDoom.Ide.ActorDefFunctionTable.pas',
+  DelphiDoom.Ide.UnitFunctionTable in 'Libs\Ide\DelphiDoom.Ide.UnitFunctionTable.pas',
+  DelphiDoom.Ide.FieldFormatter in 'Libs\Ide\DelphiDoom.Ide.FieldFormatter.pas',
+  DelphiDoom.Ide.StateTables in 'Libs\Ide\DelphiDoom.Ide.StateTables.pas',
+  DelphiDoom.Ide.StateCatalog in 'Libs\Ide\DelphiDoom.Ide.StateCatalog.pas',
+  DelphiDoom.Ide.MobjinfoCatalog in 'Libs\Ide\DelphiDoom.Ide.MobjinfoCatalog.pas',
+  DelphiDoom.Ide.ClassCatalog in 'Libs\Ide\DelphiDoom.Ide.ClassCatalog.pas',
+  DelphiDoom.Ide.SpriteCatalog in 'Libs\Ide\DelphiDoom.Ide.SpriteCatalog.pas',
+  DelphiDoom.Ide.ExampleStore in 'Libs\Ide\DelphiDoom.Ide.ExampleStore.pas',
+  DelphiDoom.Ide.ParameterHints in 'Libs\Ide\DelphiDoom.Ide.ParameterHints.pas',
+  DelphiDoom.Ide.SearchHistory in 'Libs\Ide\DelphiDoom.Ide.SearchHistory.pas',
+  DelphiDoom.Ide.SearchSettings in 'Libs\Ide\DelphiDoom.Ide.SearchSettings.pas',
+  DelphiDoom.Ide.SearchPlan in 'Libs\Ide\DelphiDoom.Ide.SearchPlan.pas',
+  DelphiDoom.Ide.MessageLog in 'Libs\Ide\DelphiDoom.Ide.MessageLog.pas',
+  DelphiDoom.Ide.ProjectOutline in 'Libs\Ide\DelphiDoom.Ide.ProjectOutline.pas',
+  DelphiDoom.Ide.EventSnippets in 'Libs\Ide\DelphiDoom.Ide.EventSnippets.pas',
+  DelphiDoom.Ide.Views.Intf in 'Libs\Ide\DelphiDoom.Ide.Views.Intf.pas',
+  DelphiDoom.Ide.MainPresenter in 'Libs\Ide\DelphiDoom.Ide.MainPresenter.pas',
+  DelphiDoom.Ide.ScriptEditorPresenter in 'Libs\Ide\DelphiDoom.Ide.ScriptEditorPresenter.pas',
+  DelphiDoom.Ide.Win.FileSystem in 'DD_IDE\DelphiDoom.Ide.Win.FileSystem.pas',
+  DelphiDoom.Ide.Win.Services in 'DD_IDE\DelphiDoom.Ide.Win.Services.pas',
+  DelphiDoom.Ide.Win.DdcLibrary in 'DD_IDE\DelphiDoom.Ide.Win.DdcLibrary.pas',
+  DelphiDoom.Ide.Win.Archive in 'DD_IDE\DelphiDoom.Ide.Win.Archive.pas',
+  DelphiDoom.Ide.Win.FileDialogs in 'DD_IDE\DelphiDoom.Ide.Win.FileDialogs.pas',
+  DelphiDoom.Ide.Vcl.ExampleEdit in 'DD_IDE\DelphiDoom.Ide.Vcl.ExampleEdit.pas',
+  DelphiDoom.Ide.Vcl.ListPanel in 'DD_IDE\DelphiDoom.Ide.Vcl.ListPanel.pas',
+  DelphiDoom.Ide.Vcl.TreePanel in 'DD_IDE\DelphiDoom.Ide.Vcl.TreePanel.pas',
+  DelphiDoom.Ide.Composition in 'DD_IDE\DelphiDoom.Ide.Composition.pas',
   SynEdit in 'DD_IDE\SynEdit\SynEdit.pas',
   SynEditHighlighter in 'DD_IDE\SynEdit\SynEditHighlighter.pas',
   SynEditHighlighterOptions in 'DD_IDE\SynEdit\SynEditHighlighterOptions.pas',
@@ -90,12 +134,10 @@ uses
   frm_GotoLine in 'DD_IDE\frm_GotoLine.pas' {frmGotoLine},
   ide_version in 'DD_IDE\ide_version.pas',
   ide_zipfile in 'DD_IDE\ide_zipfile.pas',
-  ide_defs in 'DD_IDE\ide_defs.pas',
   frm_SearchText in 'DD_IDE\frm_SearchText.pas' {TextSearchDialog},
   frm_ReplaceText in 'DD_IDE\frm_ReplaceText.pas' {TextReplaceDialog},
   frm_ConfirmReplace in 'DD_IDE\frm_ConfirmReplace.pas' {ConfirmReplaceDialog},
   frm_message in 'DD_IDE\frm_message.pas' {frmMessage},
-  ide_tmpfiles in 'DD_IDE\ide_tmpfiles.pas',
   ddc_base in 'SCRIPT\ddc_base.pas',
   frm_unitfunctions in 'DD_IDE\frm_unitfunctions.pas' {Frame_UnitFunctions: TFrame},
   frm_PageSetup in 'DD_IDE\SynEdit\frm_PageSetup.pas' {PageSetupDlg},
@@ -112,11 +154,21 @@ uses
 
 {$R *.res}
 
+var
+  CommandLineProject: string;
+
 begin
   Application.Initialize;
   Application.Title := 'DelphiDOOM Script IDE';
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TPageSetupDlg, PageSetupDlg);
   Application.CreateForm(TScriptPrintPreviewDlg, ScriptPrintPreviewDlg);
+  // the composition root: the main window owns the services from here on
+  Form1.Configure(TIdeServices.Create(Application.Title));
+  if ParamCount > 0 then
+    CommandLineProject := ParamStr(1)
+  else
+    CommandLineProject := '';
+  Form1.Start(CommandLineProject);
   Application.Run;
 end.

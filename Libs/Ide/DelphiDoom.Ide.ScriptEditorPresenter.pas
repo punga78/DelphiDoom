@@ -35,7 +35,7 @@ type
     FCompiler: IIdeScriptCompiler;
     FLibrary: IIdeGameLibrary;
     FFileSystem: IIdeFileSystem;
-    FFiles: IIdeFileDialogs;
+    FFiles: IIdePCodeDialog;
     FBusy: IIdeBusy;
     FLog: IIdeLog;
     FCommand: TIdeCompileCommand;
@@ -47,7 +47,7 @@ type
   public
     constructor Create(const AItem: TIdeProjectItem; const AView: IIdeScriptEditorView;
       const ACompiler: IIdeScriptCompiler; const ALibrary: IIdeGameLibrary;
-      const AFileSystem: IIdeFileSystem; const AFiles: IIdeFileDialogs; const ABusy: IIdeBusy;
+      const AFileSystem: IIdeFileSystem; const AFiles: IIdePCodeDialog; const ABusy: IIdeBusy;
       const ALog: IIdeLog);
     destructor Destroy; override;
     /// <summary>The file asks the editor to show its text (it was loaded, renamed or changed)</summary>
@@ -83,7 +83,7 @@ uses
 constructor TIdeScriptEditorPresenter.Create(const AItem: TIdeProjectItem;
   const AView: IIdeScriptEditorView; const ACompiler: IIdeScriptCompiler;
   const ALibrary: IIdeGameLibrary; const AFileSystem: IIdeFileSystem;
-  const AFiles: IIdeFileDialogs; const ABusy: IIdeBusy; const ALog: IIdeLog);
+  const AFiles: IIdePCodeDialog; const ABusy: IIdeBusy; const ALog: IIdeLog);
 begin
   inherited Create;
   if not Assigned(AItem) then

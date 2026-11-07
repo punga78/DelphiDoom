@@ -33,7 +33,7 @@ type
   end;
 
   /// <summary>The file the user "picks" in each dialog is set by the test; an empty name means cancel</summary>
-  TFakeIdeFileDialogs = class(TInterfacedObject, IIdeFileDialogs)
+  TFakeIdeFileDialogs = class(TInterfacedObject, IIdeFileDialogs, IIdePCodeDialog)
   public
     ProjectToOpen: string;
     ProjectToSave: string;
@@ -215,7 +215,10 @@ end;
 
 procedure TFakeIdeMainView.ShowProject(const AProject: TIdeProject);
 begin
-  Calls.Add('ShowProject ' + AProject.Game);
+  if AProject = nil then
+    Calls.Add('ShowProject nil')
+  else
+    Calls.Add('ShowProject ' + AProject.Game);
 end;
 
 procedure TFakeIdeMainView.SetCaptions(const AWindowCaption, ATabCaption: string);

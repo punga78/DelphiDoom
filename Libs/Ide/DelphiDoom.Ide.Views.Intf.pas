@@ -21,7 +21,10 @@ type
     ['{2D6A9B41-7C03-4E85-A1F9-B30E58D4C711}']
     /// <summary>Closes the tabs of all the scripts that are open</summary>
     procedure CloseAllEditors;
-    /// <summary>The project manager shows this project from now on (and shows it at once)</summary>
+    /// <summary>
+    ///   The project manager shows this project from now on (and shows it at once). A nil project
+    ///   makes it let go of the old one, which is about to be freed
+    /// </summary>
     procedure ShowProject(const AProject: TIdeProject);
     /// <summary>The title of the window and the caption of the tab of the project</summary>
     procedure SetCaptions(const AWindowCaption, ATabCaption: string);

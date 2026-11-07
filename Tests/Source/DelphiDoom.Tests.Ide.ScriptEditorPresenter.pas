@@ -41,7 +41,7 @@ type
     FLibrary: TFakeIdeGameLibrary;
     FLibraryIntf: IIdeGameLibrary;
     FFiles: TFakeIdeFileDialogs;
-    FFilesIntf: IIdeFileDialogs;
+    FFilesIntf: IIdePCodeDialog;
     FBusy: TFakeIdeBusy;
     FBusyIntf: IIdeBusy;
     FView: TFakeIdeScriptEditorView;

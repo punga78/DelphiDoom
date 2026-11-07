@@ -7,13 +7,20 @@ uses
   SynEdit, SynHighlighterMulti, SynHighlighterDDScript, SynHighlighterActorDef,
   SynHighlighterDDDisasm, SynEditSearch, SynEditRegexSearch, SynEditPrint,
   SynEditPrintTypes, SynCompletionProposal, SynUnicode,
-  ide_baseframe, ide_project, Buttons, Dialogs, Menus, Messages;
+  Buttons, Dialogs, Menus, Messages,
+  DelphiDoom.Ide.Types, DelphiDoom.Ide.Intf, DelphiDoom.Ide.ProjectItem,
+  DelphiDoom.Ide.ScriptEditorPresenter, DelphiDoom.Ide.Views.Intf,
+  DelphiDoom.Ide.Composition;
 
 type
 
   { TFrame_ScriptEditor }
 
-  TFrame_ScriptEditor = class(TFrame)
+  /// <summary>
+  ///   One tab of the script editor: the SynEdit, the buttons and the dialogs. What the buttons do
+  ///   (compile, save, the events, the hint of the parameters) is decided by its presenter
+  /// </summary>
+  TFrame_ScriptEditor = class(TFrame, IIdeScriptEditorView)
     Panel7: TPanel;
     Timer1: TTimer;
     Panel1: TPanel;
@@ -67,32 +74,36 @@ type
     SynActordefSyn1: TSynActordefSyn;
     SynDDDisasmSyn1: TSynDDDisasmSyn;
     scpParams: TSynCompletionProposal;
-    scpParamsHintList: TStringList;
     fSearchFromCaret: boolean;
-    fEventsList: TStringList;
-    lastgame: string;
-    procedure CompileCmd(const dosave: Boolean);
-    procedure SavePCodeCmd(const pcode: string);
+    FServices: TIdeServices;
+    FPresenter: TIdeScriptEditorPresenter;
+    FItem: TIdeProjectItem;
+    FPCodeDialog: IIdePCodeDialog;
     procedure ShowSearchReplaceDialog(AReplace: boolean);
-    procedure DoSearchReplaceText(AReplace: boolean; ABackwards: boolean);
+    procedure DoSearchReplaceText(AReplace: boolean);
     procedure OnEditorChange(Sender: TObject);
     procedure scpParamsExecute(Kind: SynCompletionType; Sender: TObject;
       var AString: UnicodeString; var x, y: Integer; var CanExecute: Boolean);
-    procedure GenerateParameterHintList(const gamestr: string);
     procedure UpdateEventsMenuItems;
-    procedure UpdateControls;
+    procedure UpdateNotFound(const AText: string; const AKind: TIdeMessageKind;
+      const ABackwards: Boolean);
   public
     { public declarations }
-    obj: TBaseEditorObject;
-    pcode: string;
     SynEditPrint: TSynEditPrint;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure AdjustLayout(const adata: AnsiString);
+    /// <summary>Makes the editor follow a file of the project (the tab is built by the main window)</summary>
+    procedure Configure(const AServices: TIdeServices; const AItem: TIdeProjectItem);
     procedure ShowSearchDialog;
     procedure SearchAgain;
     procedure ShowReplaceDialog;
     procedure GoToLineNumber;
+    { IIdeScriptEditorView }
+    function EditorText: string;
+    procedure MoveCaretTo(const ALocation: TIdeSourceLocation);
+    procedure ShowText(const AText: string);
+    procedure ShowTools(const AKind: TIdeItemKind);
+    property Item: TIdeProjectItem read FItem;
   end;
 
 implementation
@@ -100,55 +111,34 @@ implementation
 uses
   Windows,
   SynEditTypes,
-  ide_utils,
-  ddc_base,
+  DelphiDoom.Ide.Messages,
+  DelphiDoom.Ide.SearchPlan,
+  DelphiDoom.Ide.SearchSettings,
+  DelphiDoom.Ide.Win.FileDialogs,
   frm_GotoLine, frm_SearchText, frm_ReplaceText, frm_ConfirmReplace,
   frm_PrintPreview, frm_PageSetup;
 
 {$R *.dfm}
 
-var
-  gbSearchBackwards: boolean;
-  gbSearchCaseSensitive: boolean;
-  gbSearchFromCaret: boolean;
-  gbSearchSelectionOnly: boolean;
-  gbSearchTextAtCaret: boolean;
-  gbSearchWholeWords: boolean;
-  gbSearchRegex: boolean;
-  gsSearchText: string;
-  gsSearchTextHistory: string;
-  gsReplaceText: string;
-  gsReplaceTextHistory: string;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.AdjustLayout
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.AdjustLayout(const adata: AnsiString);
-var
-  it: TIDEProjectItem;
-  prj: TIDEProject;
+function ToSynOptions(const AFlags: TIdeSearchFlags): TSynSearchOptions;
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    if obj <> nil then
-      if obj is TIDEProjectItem then
-      begin
-        it := obj as TIDEProjectItem;
-        if it.ItemType in [pi_script, pi_actor] then
-          SynEdit1.Lines.Text := adata
-        else if it.ItemType = pi_compiledscript then
-        begin
-          prj := it.Parent as TIDEProject;
-          LogOutput(LOG_NORMAL, 'Disassembling %s compiled script "%s"', [prj.Game, it.FileName]);
-          SynEdit1.Lines.Text := dll_getdisassembly(prj.Game, adata);
-        end;
-      end;
-    UpdateControls;
-  finally
-    Screen.Cursor := crDefault;
-  end;
+  Result := [];
+  if sfPrompt in AFlags then
+    Include(Result, ssoPrompt);
+  if sfReplace in AFlags then
+    Include(Result, ssoReplace);
+  if sfReplaceAll in AFlags then
+    Include(Result, ssoReplaceAll);
+  if sfBackwards in AFlags then
+    Include(Result, ssoBackwards);
+  if sfMatchCase in AFlags then
+    Include(Result, ssoMatchCase);
+  if sfEntireScope in AFlags then
+    Include(Result, ssoEntireScope);
+  if sfSelectedOnly in AFlags then
+    Include(Result, ssoSelectedOnly);
+  if sfWholeWord in AFlags then
+    Include(Result, ssoWholeWord);
 end;
 
 //==============================================================================
@@ -161,8 +151,6 @@ var
   AFont: TFont;
 begin
   inherited;
-  obj := nil;
-  pcode := '';
 
   SynEditRegexSearch1 := TSynEditRegexSearch.Create(Self);
   SynEditSearch1 := TSynEditSearch.Create(Self);
@@ -235,10 +223,6 @@ begin
   SynEditPrint.Footer.Add('Print Date: $DATE$. Time: $TIME$', AFont, taRightJustify, 2);
   AFont.Free;
 
-  lastgame := '';
-
-  scpParamsHintList := TStringList.Create;
-
   scpParams := TSynCompletionProposal.Create(self);
   scpParams.DefaultType := ctParams;
   scpParams.Options := [scoLimitToMatchedText, scoUsePrettyText, scoUseBuiltInTimer];
@@ -261,8 +245,6 @@ begin
   scpParams.Editor := SynEdit1;
   scpParams.TimerInterval := 1000;
   scpParams.EndOfTokenChr := '';
-
-  fEventsList := TStringList.Create;
 end;
 
 //==============================================================================
@@ -272,14 +254,83 @@ end;
 //==============================================================================
 destructor TFrame_ScriptEditor.Destroy;
 begin
-  if obj <> nil then
-    obj.Editor := nil;
-
-  FreeStringList(scpParamsHintList);
-
-  fEventsList.Free;
-
+  // the presenter stops following the file
+  FreeAndNil(FPresenter);
   inherited;
+end;
+
+//==============================================================================
+//
+// TFrame_ScriptEditor.Configure
+//
+//==============================================================================
+procedure TFrame_ScriptEditor.Configure(const AServices: TIdeServices;
+  const AItem: TIdeProjectItem);
+begin
+  FServices := AServices;
+  FItem := AItem;
+  FPCodeDialog := TVclIdePCodeDialog.Create(SavePCodeDialog1);
+  // the presenter asks the editor to show the text as soon as it is made
+  FPresenter := TIdeScriptEditorPresenter.Create(AItem, Self, AServices.Compiler,
+    AServices.GameLibrary, AServices.FileSystem, FPCodeDialog, AServices.Busy, AServices.LogIntf);
+end;
+
+//==============================================================================
+//
+// IIdeScriptEditorView
+//
+//==============================================================================
+function TFrame_ScriptEditor.EditorText: string;
+begin
+  Result := SynEdit1.Text;
+end;
+
+procedure TFrame_ScriptEditor.MoveCaretTo(const ALocation: TIdeSourceLocation);
+begin
+  SynEdit1.CaretX := ALocation.Column;
+  SynEdit1.CaretY := ALocation.Line;
+  SynEdit1.SetFocus;
+end;
+
+procedure TFrame_ScriptEditor.ShowText(const AText: string);
+begin
+  SynEdit1.Lines.Text := AText;
+end;
+
+procedure TFrame_ScriptEditor.ShowTools(const AKind: TIdeItemKind);
+begin
+  case AKind of
+    ikScript:
+      begin
+        SaveButton1.Visible := True;
+        SynEdit1.Highlighter := SynPasSyn1;
+        SynEditPrint.Highlighter := SynPasSyn1;
+        CompileButton1.Visible := True;
+        CompileAndSaveButton1.Visible := True;
+        EventsSpeedButton.Visible := True;
+        SynEdit1.ReadOnly := False;
+      end;
+    ikActor:
+      begin
+        SaveButton1.Visible := True;
+        SynEdit1.Highlighter := SynActordefSyn1;
+        SynEditPrint.Highlighter := SynActordefSyn1;
+        SynEdit1.ReadOnly := False;
+      end;
+    ikCompiledScript:
+      begin
+        SaveButton1.Visible := False;
+        SynEdit1.Highlighter := SynDDDisasmSyn1;
+        SynEditPrint.Highlighter := SynDDDisasmSyn1;
+        SynEdit1.ReadOnly := True;
+      end;
+  else
+    begin
+      SynEdit1.Highlighter := nil;
+      SynEditPrint.Highlighter := nil;
+    end;
+  end;
+  Timer1.Enabled := False;
 end;
 
 //==============================================================================
@@ -312,56 +363,8 @@ end;
 //==============================================================================
 procedure TFrame_ScriptEditor.Timer1Timer(Sender: TObject);
 begin
-  UpdateControls;
-end;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.UpdateControls
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.UpdateControls;
-begin
-  fEventsList.Text := '';
-  if obj = nil then
-    SynEdit1.Highlighter := nil
-  else if obj is TIDEProjectItem then
-  begin
-    if (obj as TIDEProjectItem).ItemType = pi_script then
-    begin
-      SaveButton1.Visible := True;
-      SynEdit1.Highlighter := SynPasSyn1;
-      SynEditPrint.Highlighter := SynPasSyn1;
-      CompileButton1.Visible := True;
-      CompileAndSaveButton1.Visible := True;
-      EventsSpeedButton.Visible := True;
-      fEventsList.Text := dll_getevents((obj as TIDEProjectItem).Parent.Game);
-      SynEdit1.ReadOnly := False;
-    end
-    else if (obj as TIDEProjectItem).ItemType = pi_actor then
-    begin
-      SaveButton1.Visible := True;
-      SynEdit1.Highlighter := SynActordefSyn1;
-      SynEditPrint.Highlighter := SynActordefSyn1;
-      SynEdit1.ReadOnly := False;
-    end
-    else if (obj as TIDEProjectItem).ItemType = pi_compiledscript then
-    begin
-      SaveButton1.Visible := False;
-      SynEdit1.Highlighter := SynDDDisasmSyn1;
-      SynEditPrint.Highlighter := SynDDDisasmSyn1;
-      SynEdit1.ReadOnly := True;
-    end
-    else
-    begin
-      SynEdit1.Highlighter := nil;
-      SynEditPrint.Highlighter := nil;
-    end;
-    GenerateParameterHintList((obj as TIDEProjectItem).Parent.Game);
-    Timer1.Enabled := False;
-  end
-  else
-    SynEdit1.Highlighter := nil;
+  if FPresenter <> nil then
+    FPresenter.UpdateControls;
 end;
 
 //==============================================================================
@@ -382,28 +385,22 @@ end;
 //
 //==============================================================================
 procedure TFrame_ScriptEditor.OnEditorChange(Sender: TObject);
-var
-  sw: WideString;
 begin
-  if SynEdit1.Modified then
-    if obj <> nil then
-      if obj is TIDEProjectItem then
-        if (obj as TIDEProjectItem).ItemType in [pi_script, pi_actor] then
-        begin
-          sw := SynEdit1.Text;
-          obj.data := AnsiString(sw);
-        end;
+  if FPresenter <> nil then
+    FPresenter.EditorChanged(SynEdit1.Text, SynEdit1.Modified);
 end;
 
 //==============================================================================
 //
-// TFrame_ScriptEditor.ShowSearchReplaceDialog
+// the search and replace dialogs
 //
 //==============================================================================
 procedure TFrame_ScriptEditor.ShowSearchReplaceDialog(AReplace: boolean);
 var
   dlg: TTextSearchDialog;
+  LSettings: TIdeSearchSettings;
 begin
+  LSettings := FServices.Search;
   if AReplace then
     dlg := TTextReplaceDialog.Create(Self)
   else
@@ -411,13 +408,13 @@ begin
   with dlg do
   try
     // assign search options
-    SearchBackwards := gbSearchBackwards;
-    SearchCaseSensitive := gbSearchCaseSensitive;
-    SearchFromCursor := gbSearchFromCaret;
-    SearchInSelectionOnly := gbSearchSelectionOnly;
+    SearchBackwards := LSettings.Backwards;
+    SearchCaseSensitive := LSettings.CaseSensitive;
+    SearchFromCursor := LSettings.FromCaret;
+    SearchInSelectionOnly := LSettings.SelectionOnly;
     // start with last search text
-    SearchText := gsSearchText;
-    if gbSearchTextAtCaret then
+    SearchText := LSettings.SearchText;
+    if LSettings.TextAtCaret then
     begin
       // if something is selected search for that text
       if SynEdit1.SelAvail and (SynEdit1.BlockBegin.Line = SynEdit1.BlockEnd.Line) //Birb (fix at SynEdit's SearchReplaceDemo)
@@ -426,33 +423,33 @@ begin
       else
         SearchText := SynEdit1.GetWordAtRowCol(SynEdit1.CaretXY);
     end;
-    SearchTextHistory := gsSearchTextHistory;
+    SearchTextHistory := LSettings.SearchHistory.AsText;
     if AReplace then with dlg as TTextReplaceDialog do
     begin
-      ReplaceText := gsReplaceText;
-      ReplaceTextHistory := gsReplaceTextHistory;
+      ReplaceText := LSettings.ReplaceText;
+      ReplaceTextHistory := LSettings.ReplaceHistory.AsText;
     end;
-    SearchWholeWords := gbSearchWholeWords;
+    SearchWholeWords := LSettings.WholeWords;
     if ShowModal = mrOK then
     begin
-      gbSearchBackwards := SearchBackwards;
-      gbSearchCaseSensitive := SearchCaseSensitive;
-      gbSearchFromCaret := SearchFromCursor;
-      gbSearchSelectionOnly := SearchInSelectionOnly;
-      gbSearchWholeWords := SearchWholeWords;
-      gbSearchRegex := SearchRegularExpression;
-      gsSearchText := SearchText;
-      gsSearchTextHistory := SearchTextHistory;
+      LSettings.Backwards := SearchBackwards;
+      LSettings.CaseSensitive := SearchCaseSensitive;
+      LSettings.FromCaret := SearchFromCursor;
+      LSettings.SelectionOnly := SearchInSelectionOnly;
+      LSettings.WholeWords := SearchWholeWords;
+      LSettings.RegularExpression := SearchRegularExpression;
+      LSettings.SearchText := SearchText;
+      LSettings.SearchHistory.LoadFromText(SearchTextHistory);
       if AReplace then
         with dlg as TTextReplaceDialog do
         begin
-          gsReplaceText := ReplaceText;
-          gsReplaceTextHistory := ReplaceTextHistory;
+          LSettings.ReplaceText := ReplaceText;
+          LSettings.ReplaceHistory.LoadFromText(ReplaceTextHistory);
         end;
-      fSearchFromCaret := gbSearchFromCaret;
-      if gsSearchText <> '' then
+      fSearchFromCaret := LSettings.FromCaret;
+      if LSettings.SearchText <> '' then
       begin
-        DoSearchReplaceText(AReplace, gbSearchBackwards);
+        DoSearchReplaceText(AReplace);
         fSearchFromCaret := True;
       end;
     end;
@@ -461,106 +458,66 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.DoSearchReplaceText
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.DoSearchReplaceText(AReplace: boolean; ABackwards: boolean);
-var
-  Options: TSynSearchOptions;
+procedure TFrame_ScriptEditor.UpdateNotFound(const AText: string; const AKind: TIdeMessageKind;
+  const ABackwards: Boolean);
 begin
-  if AReplace then
-    Options := [ssoPrompt, ssoReplace, ssoReplaceAll]
-  else
-    Options := [];
+  MessageBeep(MB_ICONASTERISK);
+  FServices.LogIntf.WriteFormat(AKind, SSearchNotFound, [AText]);
   if ABackwards then
-    Include(Options, ssoBackwards);
-  if gbSearchCaseSensitive then
-    Include(Options, ssoMatchCase);
-  if not fSearchFromCaret then
-    Include(Options, ssoEntireScope);
-  if gbSearchSelectionOnly then
-    Include(Options, ssoSelectedOnly);
-  if gbSearchWholeWords then
-    Include(Options, ssoWholeWord);
-  if gbSearchRegex then
+    SynEdit1.BlockEnd := SynEdit1.BlockBegin
+  else
+    SynEdit1.BlockBegin := SynEdit1.BlockEnd;
+  SynEdit1.CaretXY := SynEdit1.BlockBegin;
+end;
+
+procedure TFrame_ScriptEditor.DoSearchReplaceText(AReplace: boolean);
+var
+  LPlan: TIdeSearchPlan;
+  LSettings: TIdeSearchSettings;
+begin
+  LSettings := FServices.Search;
+  LPlan := TIdeSearchPlans.ForDialog(LSettings, AReplace, fSearchFromCaret);
+  if LPlan.UseRegularExpression then
     SynEdit1.SearchEngine := SynEditRegexSearch1
   else
     SynEdit1.SearchEngine := SynEditSearch1;
-  if SynEdit1.SearchReplace(gsSearchText, gsReplaceText, Options) = 0 then
-  begin
-    MessageBeep(MB_ICONASTERISK);
-    LogOutput(LOG_INFO, '"%s" not found'#13#10, [gsSearchText]);
-    if ssoBackwards in Options then
-      SynEdit1.BlockEnd := SynEdit1.BlockBegin
-    else
-      SynEdit1.BlockBegin := SynEdit1.BlockEnd;
-    SynEdit1.CaretXY := SynEdit1.BlockBegin;
-  end;
+  if SynEdit1.SearchReplace(LSettings.SearchText, LSettings.ReplaceText,
+    ToSynOptions(LPlan.Flags)) = 0 then
+    UpdateNotFound(LSettings.SearchText, mkInfo, sfBackwards in LPlan.Flags);
 
   if ConfirmReplaceDialog <> nil then
     ConfirmReplaceDialog.Free;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.ShowSearchDialog
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.ShowSearchDialog;
 begin
   ShowSearchReplaceDialog(False);
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.SearchAgain
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.SearchAgain;
 var
-  Options: TSynSearchOptions;
+  LPlan: TIdeSearchPlan;
+  LSettings: TIdeSearchSettings;
 begin
-  if gsSearchText = '' then
+  LSettings := FServices.Search;
+  if LSettings.SearchText = '' then
   begin
     ShowSearchDialog;
     Exit;
   end;
 
-  Options := [];
-  if gbSearchBackwards then
-    Include(Options, ssoBackwards);
-  if gbSearchCaseSensitive then
-    Include(Options, ssoMatchCase);
-  if gbSearchSelectionOnly then
-    Include(Options, ssoSelectedOnly);
-  if gbSearchWholeWords then
-    Include(Options, ssoWholeWord);
-  if gbSearchRegex then
+  LPlan := TIdeSearchPlans.ForSearchAgain(LSettings);
+  if LPlan.UseRegularExpression then
     SynEdit1.SearchEngine := SynEditRegexSearch1
   else
     SynEdit1.SearchEngine := SynEditSearch1;
-  if SynEdit1.SearchReplace(gsSearchText, '', Options) = 0 then
-  begin
-    MessageBeep(MB_ICONASTERISK);
-    LogOutput(LOG_NORMAL, '"%s" not found'#13#10, [gsSearchText]);
-    if ssoBackwards in Options then
-      SynEdit1.BlockEnd := SynEdit1.BlockBegin
-    else
-      SynEdit1.BlockBegin := SynEdit1.BlockEnd;
-    SynEdit1.CaretXY := SynEdit1.BlockBegin;
-  end;
+  if SynEdit1.SearchReplace(LSettings.SearchText, '', ToSynOptions(LPlan.Flags)) = 0 then
+    UpdateNotFound(LSettings.SearchText, mkNormal, sfBackwards in LPlan.Flags);
 
   if ConfirmReplaceDialog <> nil then
     ConfirmReplaceDialog.Free;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.ShowReplaceDialog
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.ShowReplaceDialog;
 begin
   ShowSearchReplaceDialog(True);
@@ -568,194 +525,43 @@ end;
 
 //==============================================================================
 //
-// TFrame_ScriptEditor.CompileButton1Click
+// the buttons
 //
 //==============================================================================
 procedure TFrame_ScriptEditor.CompileButton1Click(Sender: TObject);
 begin
-  CompileCmd(False);
+  FPresenter.Compile(False);
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.CompileCmd
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.CompileCmd(const dosave: Boolean);
-var
-  it: TIDEProjectItem;
-  prj: TIDEProject;
-  code, msgs: string;
-  i: integer;
-  mList: TStringList;
-  ret: boolean;
-  p1, p2: integer;
-  location: string;
-  sx, sy: AnsiString;
+procedure TFrame_ScriptEditor.CompileAndSaveButton1Click(Sender: TObject);
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    if obj <> nil then
-      if obj is TIDEProjectItem then
-      begin
-        it := obj as TIDEProjectItem;
-        if it.ItemType = pi_script then
-        begin
-          prj := it.Parent as TIDEProject;
-          LogOutput(LOG_NORMAL, 'Compiling %s script "%s"', [prj.Game, it.RelativePath]);
-          code := AnsiString(SynEdit1.Text);
-          msgs := '';
-          pcode := '';
-          ret := dll_compile(prj.Game, code, pcode, msgs);
-          mList := TStringList.Create;
-          try
-            mList.Text := msgs;
-            if ret then
-            begin
-              for i := 0 to mList.Count - 1 do
-                LogOutput(LOG_WARNING, mList.Strings[i]);
-              LogOutput(LOG_NORMAL, 'Compile successful');
-              if dosave then
-                SavePCodeCmd(pcode);
-            end
-            else
-            begin
-              for i := 0 to mList.Count - 1 do
-                LogOutput(LOG_ERROR, mList.Strings[i]);
-            end;
-            if msgs <> '' then
-            begin
-              p1 := Pos('[Error]', msgs);
-              p2 := Pos('):', msgs);
-              if p2 > p1 then
-              begin
-                location := '';
-                for i := p1 to p2 do
-                  if msgs[i] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] then
-                    location := location + msgs[i]
-                  else
-                    location := location + ' ';
-                 splitstring(Trim(location), sx, sy, ' ');
-                 p1 := StrToIntDef(sx, -1);
-                 p2 := StrToIntDef(sy, -1);
-                 if (p1 >= 0) and (p2 >= 0) then
-                 begin
-                  SynEdit1.CaretX := p2;
-                  SynEdit1.CaretY := p1;
-                  SynEdit1.SetFocus;
-                 end;
-              end;
-            end;
-          finally
-            mList.Free;
-          end;
-        end;
-      end;
-  finally
-    Screen.Cursor := crDefault;
-  end;
+  FPresenter.Compile(True);
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.SavePCodeCmd
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.SavePCodeCmd(const pcode: string);
-var
-  i: integer;
-  fs: TFileStream;
-  it: TIDEProjectItem;
-begin
-  if obj <> nil then
-    if obj is TIDEProjectItem then
-    begin
-      it := obj as TIDEProjectItem;
-      SavePCodeDialog1.FileName := ChangeFileExt(it.FileName, '.ddout');
-      if SavePCodeDialog1.Execute then
-      begin
-        fs := TFileStream.Create(SavePCodeDialog1.FileName, fmCreate or fmShareExclusive);
-        try
-          for i := 1 to Length(pcode) do
-            fs.Write(pcode[i], SizeOf(Char));
-        finally
-          fs.Free;
-        end;
-      end;
-    end;
-end;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.SaveButton1Click
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.SaveButton1Click(Sender: TObject);
-var
-  it: TIDEProjectItem;
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    if obj <> nil then
-      if obj is TIDEProjectItem then
-      begin
-        it := obj as TIDEProjectItem;
-        if it.ItemType in [pi_script, pi_actor] then
-          it.SaveToFile(it.FileName);
-      end;
-  finally
-    Screen.Cursor := crDefault;
+  FPresenter.Save;
+end;
+
+procedure TFrame_ScriptEditor.PrintButton1Click(Sender: TObject);
+begin
+  if PrintDialog.Execute then
+  begin
+    SynEditPrint.SynEdit := SynEdit1;
+    SynEditPrint.Title := FItem.FileName;
+    SynEditPrint.Print;
   end;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.PrintButton1Click
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.PrintButton1Click(Sender: TObject);
-var
-  it: TIDEProjectItem;
-begin
-  if obj <> nil then
-    if obj is TIDEProjectItem then
-    begin
-      it := obj as TIDEProjectItem;
-      if PrintDialog.Execute then
-      begin
-        SynEditPrint.SynEdit := SynEdit1;
-        SynEditPrint.Title := it.FileName;
-        SynEditPrint.Print;
-      end;
-    end;
-end;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.PrintPreviewButton1Click
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.PrintPreviewButton1Click(Sender: TObject);
-var
-  it: TIDEProjectItem;
 begin
-  if obj <> nil then
-    if obj is TIDEProjectItem then
-    begin
-      it := obj as TIDEProjectItem;
-      SynEditPrint.SynEdit := SynEdit1;
-      SynEditPrint.Title := it.FileName;
-      ScriptPrintPreviewDlg.Caption := 'Print Preview - ' + it.FileName;
-      ScriptPrintPreviewDlg.SynEditPrintPreview.SynEditPrint := SynEditPrint;
-      ScriptPrintPreviewDlg.ShowModal;
-    end;
+  SynEditPrint.SynEdit := SynEdit1;
+  SynEditPrint.Title := FItem.FileName;
+  ScriptPrintPreviewDlg.Caption := 'Print Preview - ' + FItem.FileName;
+  ScriptPrintPreviewDlg.SynEditPrintPreview.SynEditPrint := SynEditPrint;
+  ScriptPrintPreviewDlg.ShowModal;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.PageSetupButton1Click
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.PageSetupButton1Click(Sender: TObject);
 begin
   PageSetupDlg.SetValues(SynEditPrint);
@@ -765,95 +571,31 @@ end;
 
 //==============================================================================
 //
-// TFrame_ScriptEditor.scpParamsExecute
+// the hint with the parameters of a function
 //
 //==============================================================================
 procedure TFrame_ScriptEditor.scpParamsExecute(Kind: SynCompletionType; Sender: TObject;
   var AString: UnicodeString; var x, y: Integer; var CanExecute: Boolean);
 var
-  locline, lookup: UnicodeString;
-  TmpX, savepos, StartX,
-  ParenCounter,
-  TmpLocation: Integer;
-  FoundMatch: Boolean;
-  idx: integer;
+  LName, LParameters: string;
+  LIndex: Integer;
 begin
-  idx := -1;
-  with TSynCompletionProposal(Sender).Editor do
-  begin
-    locLine := LineText;
-
-    //go back from the cursor and find the first open paren
-    TmpX := CaretX;
-    if TmpX > Length(locLine) then
-      TmpX := Length(locLine)
-    else
-      Dec(TmpX);
-    FoundMatch := False;
-    TmpLocation := 0;
-    while (TmpX > 0) and not FoundMatch do
-    begin
-      if LocLine[TmpX] = ',' then
+  CanExecute := False;
+  if FPresenter <> nil then
+    CanExecute := FPresenter.FindCall(TSynCompletionProposal(Sender).Editor.LineText,
+      TSynCompletionProposal(Sender).Editor.CaretX,
+      function(AChar: Char): Boolean
       begin
-        Inc(TmpLocation);
-        Dec(TmpX);
-      end
-      else if LocLine[TmpX] = ')' then
-      begin
-        //We found a close, go till it's opening paren
-        ParenCounter := 1;
-        Dec(TmpX);
-        while (TmpX > 0) and (ParenCounter > 0) do
-        begin
-          if LocLine[TmpX] = ')' then
-            Inc(ParenCounter)
-          else if LocLine[TmpX] = '(' then
-            Dec(ParenCounter);
-          Dec(TmpX);
-        end;
-        if TmpX > 0 then
-          Dec(TmpX);  //eat the open paren
-      end
-      else
-      if locLine[TmpX] = '(' then
-      begin
-        //we have a valid open paren, lets see what the word before it is
-        StartX := TmpX;
-        while (TmpX > 0) and not SynEdit1.IsIdentChar(locLine[TmpX]) do
-          Dec(TmpX);
-        if TmpX > 0 then
-        begin
-          SavePos := TmpX;
-          while (TmpX > 0) and SynEdit1.IsIdentChar(locLine[TmpX]) do
-            Dec(TmpX);
-          Inc(TmpX);
-          lookup := UpperCase(Copy(LocLine, TmpX, SavePos - TmpX + 1));
-          idx := scpParamsHintList.IndexOf(Lookup);
-          FoundMatch := idx > -1;
-          if not FoundMatch then
-          begin
-            TmpX := StartX;
-            Dec(TmpX);
-          end;
-        end;
-      end
-      else
-        Dec(TmpX)
-    end;
-  end;
-
-  CanExecute := FoundMatch;
+        Result := SynEdit1.IsIdentChar(AChar);
+      end, LName, LIndex, LParameters);
 
   if CanExecute then
   begin
-    TSynCompletionProposal(Sender).Form.CurrentIndex := TmpLocation;
-    if Lookup <> TSynCompletionProposal(Sender).PreviousToken then
+    TSynCompletionProposal(Sender).Form.CurrentIndex := LIndex;
+    if LName <> TSynCompletionProposal(Sender).PreviousToken then
     begin
-      if idx > -1 then
-      begin
-        TSynCompletionProposal(Sender).ItemList.Clear;
-        TSynCompletionProposal(Sender).ItemList.Add((scpParamsHintList.Objects[idx] as TSimpleString).str);
-      end;
+      TSynCompletionProposal(Sender).ItemList.Clear;
+      TSynCompletionProposal(Sender).ItemList.Add(LParameters);
     end;
   end
   else
@@ -862,132 +604,7 @@ end;
 
 //==============================================================================
 //
-// TFrame_ScriptEditor.GenerateParameterHintList
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.GenerateParameterHintList(const gamestr: string);
-var
-  i, j, k: integer;
-  units: TStringList;
-  actordeffuncs: TStringList;
-  lst: TStringList;
-  decl, stmp, params: string;
-  afuncname: string;
-  pos1, pos2: integer;
-  it: TIDEProjectItem;
-begin
-  if LowerCase(lastgame) = LowerCase(gamestr) then
-    Exit;
-
-  lastgame := LowerCase(gamestr);
-
-  units := dll_getuntisfuncdeclarations(lastgame);
-
-  if units = nil then
-    Exit;
-
-  FreeStringList(scpParamsHintList);
-  scpParamsHintList := TStringList.Create;
-
-  for i := 0 to units.Count - 1 do
-  begin
-    lst := units.Objects[i] as TStringList;
-    for j := 0 to lst.Count - 1 do
-    begin
-      decl := lst.Strings[j];
-      stmp := decl;
-      for k := 1 to Length(decl) do
-        if stmp[k] in ['(', ';', ':'] then
-          stmp[k] := ' ';
-      pos1 := Pos('(', decl);
-      pos2 := Pos(')', decl);
-      params := '';
-      if (pos1 > 1) and (pos2 > pos1) then
-      begin
-        params := '"' + Trim(Copy(decl, pos1 + 1, pos2 - pos1 - 1)) + '"';
-        if params = '""' then
-          params := ''
-        else
-        begin
-          params := StringReplace(params, ',', ',","', [rfReplaceAll]);
-          params := StringReplace(params, ';', ',","', [rfReplaceAll]);
-        end;
-      end;
-      if params = '' then
-        params := '** No parameters expected';
-      scpParamsHintList.AddObject(UpperCase(firstword(secondword(stmp, ' '), ' ')), TSimpleString.Create(params));
-    end;
-  end;
-
-  actordeffuncs := nil;
-  if obj <> nil then
-    if obj is TIDEProjectItem then
-    begin
-      it := obj as TIDEProjectItem;
-      if it.ItemType = pi_actor then
-        actordeffuncs := dll_getactordeffunctions(lastgame);
-    end;
-
-  if actordeffuncs <> nil then
-  begin
-    for j := 0 to actordeffuncs.Count - 1 do
-    begin
-      decl := actordeffuncs.Strings[j];
-      stmp := decl;
-      for k := 1 to Length(decl) do
-        if stmp[k] in ['(', ';', ':'] then
-          stmp[k] := ' ';
-      pos1 := Pos('(', decl);
-      pos2 := Pos(')', decl);
-      params := '';
-      if (pos1 > 1) and (pos2 > pos1) then
-      begin
-        params := '"' + Trim(Copy(decl, pos1 + 1, pos2 - pos1 - 1)) + '"';
-        if params = '""' then
-          params := ''
-        else
-        begin
-          params := StringReplace(params, ',', ',","', [rfReplaceAll]);
-          params := StringReplace(params, ';', ',","', [rfReplaceAll]);
-        end;
-      end;
-      if params = '' then
-        params := '** No parameters expected';
-      afuncname := Trim(UpperCase(firstword(stmp, ' ')));
-      if afuncname <> '' then
-      begin
-        scpParamsHintList.AddObject(afuncname, TSimpleString.Create(params));
-        if Pos('A_', afuncname) = 1 then
-        begin
-          afuncname[1] := ' ';
-          afuncname[2] := ' ';
-          afuncname := Trim(afuncname);
-          if afuncname <> '' then
-            scpParamsHintList.AddObject(afuncname, TSimpleString.Create(params));
-        end;
-      end;
-    end;
-    actordeffuncs.Free;
-  end;
-
-  scpParamsHintList.Sorted := True;
-
-  FreeStringList(units);
-end;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.CompileAndSaveButton1Click
-//
-//==============================================================================
-procedure TFrame_ScriptEditor.CompileAndSaveButton1Click(Sender: TObject);
-begin
-  CompileCmd(True);
-end;
-
-//==============================================================================
-//
-// TFrame_ScriptEditor.EventsSpeedButtonClick
+// the menu of the events
 //
 //==============================================================================
 procedure TFrame_ScriptEditor.EventsSpeedButtonClick(Sender: TObject);
@@ -1000,25 +617,18 @@ begin
   EventsSpeedButton.Down := False;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.UpdateEventsMenuItems
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.UpdateEventsMenuItems;
 var
   i: integer;
   cnt: integer;
-  s1, s2: AnsiString;
 begin
-  cnt := fEventsList.Count;
+  cnt := FPresenter.EventCount;
   if cnt > EventsPopupMenu.Items.Count then
     cnt := EventsPopupMenu.Items.Count;
   for i := 0 to cnt - 1 do
   begin
-    splitstring(fEventsList.Strings[i], s1, s2, '|');
     EventsPopupMenu.Items[i].Visible := True;
-    EventsPopupMenu.Items[i].Caption := s1;
+    EventsPopupMenu.Items[i].Caption := FPresenter.EventCaption(i);
     EventsPopupMenu.Items[i].Tag := i;
   end;
   for i := cnt to EventsPopupMenu.Items.Count - 1 do
@@ -1028,29 +638,26 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// TFrame_ScriptEditor.OnEventsPopupMenuClick
-//
-//==============================================================================
 procedure TFrame_ScriptEditor.OnEventsPopupMenuClick(Sender: TObject);
 var
   mitem: TMenuItem;
   id: integer;
-  skey: string;
-  sevent, decl: AnsiString;
+  skey, sevent: string;
   fHighlighter: TSynDDScriptSyn;
   p: integer;
   found: boolean;
-  len: integer;
+  newtext: string;
+  caretoffset: integer;
 begin
   mitem := Sender as TMenuItem;
   id := mitem.tag;
-  if mitem.tag < fEventsList.Count then
-  begin
-    splitstring(fEventsList.Strings[id], sevent, decl, '|');
-    sevent := UpperCase(sevent);
-    fHighlighter := TSynDDScriptSyn.Create(nil);
+  if id >= FPresenter.EventCount then
+    Exit;
+
+  // is the event in the script already? The highlighter finds the "event Name" words
+  sevent := FPresenter.EventScriptName(id);
+  fHighlighter := TSynDDScriptSyn.Create(nil);
+  try
     fHighlighter.ResetRange;
     fHighlighter.SetLine(SynEdit1.Lines.Text, 1);
     p := -1;
@@ -1087,33 +694,23 @@ begin
       end;
       fHighlighter.Next;
     end;
-
+  finally
     fHighlighter.Free;
-
-    if found then
-    begin
-      SynEdit1.SelStart := p;
-      SynEdit1.SelEnd := p;
-      SynEdit1.SetFocus;
-      Exit;
-    end;
-
-    len := Length(SynEdit1.Lines.Text);
-
-    decl := #13#10 + #13#10 + StringReplace(decl, '|', #13#10, [rfReplaceAll]);
-    if Trim(SynEdit1.Lines.Text) = '' then
-      decl := 'uses'#13#10'  all;'#13#10 + decl;
-    p := Pos('end;', decl);
-    if p > 3 then
-      p := p - 3
-    else
-      p := 0;
-    SynEdit1.Lines.Text := SynEdit1.Lines.Text + decl;
-    SynEdit1.SelStart := len + p;
-    SynEdit1.SelEnd := len + p;
-    SynEdit1.SetFocus;
   end;
+
+  if found then
+  begin
+    SynEdit1.SelStart := p;
+    SynEdit1.SelEnd := p;
+    SynEdit1.SetFocus;
+    Exit;
+  end;
+
+  newtext := FPresenter.AppendEvent(id, SynEdit1.Lines.Text, caretoffset);
+  SynEdit1.Lines.Text := newtext;
+  SynEdit1.SelStart := caretoffset;
+  SynEdit1.SelEnd := caretoffset;
+  SynEdit1.SetFocus;
 end;
 
 end.
-

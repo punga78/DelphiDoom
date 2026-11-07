@@ -148,7 +148,10 @@ end;
 destructor TIdeMainPresenter.Destroy;
 begin
   if Assigned(FView) then
+  begin
     FView.CloseAllEditors;
+    FView.ShowProject(nil);
+  end;
   FProject.Free;
   inherited Destroy;
 end;
@@ -194,6 +197,8 @@ end;
 procedure TIdeMainPresenter.CreateProject(const AFileName: string; const AIsNew: Boolean);
 begin
   FView.CloseAllEditors;
+  // the project manager must let go of the old project before it is freed
+  FView.ShowProject(nil);
   FreeAndNil(FProject);
   FProject := TIdeProject.Create(FFileSystem, FLogIntf, FClock, AFileName);
   FProject.OnQueryModifiedItem :=

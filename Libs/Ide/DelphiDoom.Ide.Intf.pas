@@ -80,6 +80,11 @@ type
     function PickItemsToAdd(const AKind: TIdeItemKind; out AFileNames: TArray<string>): Boolean;
     function PickPk3ToSave(out AFileName: string): Boolean;
     function PickMessagesFileToSave(out AFileName: string): Boolean;
+  end;
+
+  /// <summary>The file picker of the compiled code of a script (each editor has its own)</summary>
+  IIdePCodeDialog = interface
+    ['{F1A47C8E-2D95-4B03-86E7-0C5B3D9A1E0F}']
     function PickPCodeFileToSave(const ADefaultName: string; out AFileName: string): Boolean;
   end;
 

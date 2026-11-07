@@ -277,7 +277,8 @@ begin
   end;
 
   clen := Length(code);
-  GetMem(_inp, clen);
+  // the buffers hold characters of the dll's PChar (two bytes each since Delphi 2009)
+  GetMem(_inp, clen * SizeOf(Char));
   for i := 1 to clen do
     _inp[i - 1] := code[i];
 
@@ -287,16 +288,16 @@ begin
   mlen := plen1;
   mlen1 := plen1;
 
-  GetMem(_out, plen);
-  GetMem(_msgs, mlen);
+  GetMem(_out, plen * SizeOf(Char));
+  GetMem(_msgs, mlen * SizeOf(Char));
 
   Result := func(_inp, clen, _out, plen, _msgs, mlen);
   if (plen > plen1) or (mlen > mlen1) then
   begin
     FreeMem(_out, plen1);
     FreeMem(_msgs, mlen1);
-    GetMem(_out, plen);
-    GetMem(_msgs, mlen);
+    GetMem(_out, plen * SizeOf(Char));
+    GetMem(_msgs, mlen * SizeOf(Char));
     plen1 := plen;
     mlen1 := mlen;
     Result := func(_inp, clen, _out, plen, _msgs, mlen);
@@ -380,8 +381,8 @@ begin
 
   Result := TStringList.Create;
 
-  GetMem(unitnames, MAXALLOCSIZE);
-  GetMem(unitdecls, MAXALLOCSIZE);
+  GetMem(unitnames, MAXALLOCSIZE * SizeOf(Char));
+  GetMem(unitdecls, MAXALLOCSIZE * SizeOf(Char));
 
   unitnameslen := MAXALLOCSIZE;
   funcunits(unitnames, unitnameslen);
@@ -456,7 +457,7 @@ begin
 
   Result := TStringList.Create;
 
-  GetMem(outp, MAXALLOCSIZE);
+  GetMem(outp, MAXALLOCSIZE * SizeOf(Char));
   outlen := MAXALLOCSIZE;
   func(outp, outlen);
 
@@ -593,10 +594,10 @@ begin
   end;
 
   inplen := Length(pcode);
-  GetMem(inpp, inplen);
+  GetMem(inpp, inplen * SizeOf(Char));
   for i := 0 to inplen - 1 do
     inpp[i] := pcode[i + 1];
-  GetMem(outp, MAXALLOCSIZE);
+  GetMem(outp, MAXALLOCSIZE * SizeOf(Char));
   outlen := MAXALLOCSIZE;
   func(inpp, inplen, outp, outlen);
 
