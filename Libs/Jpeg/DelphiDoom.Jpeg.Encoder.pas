@@ -8,8 +8,9 @@
 {******************************************************************************}
 unit DelphiDoom.Jpeg.Encoder;
 
-// JPEGLIB is the decoder half of the IJG library only (there is no compressor
-// in the folder), so this unit writes the other direction: a JFIF baseline
+// The decoder of the library is a port of the decompressor of libjpeg 6b (see
+// TJpegDecompressor); there is no compressor, so this unit writes the other
+// direction, which the engine does not use: a JFIF baseline
 // stream with the standard Huffman tables of the JPEG specification (annex K)
 // and the quantization tables scaled by quality as libjpeg does. Colors are
 // converted to YCbCr and are not subsampled (4:4:4), which keeps the pixels
