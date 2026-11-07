@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: JPEG - implementation of IJpeg on top of JPEGLIB                }
+{  DelphiDoom: JPEG - implementation of IJpeg                                  }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -36,7 +36,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Jpeg.Native, DelphiDoom.Jpeg.Encoder;
+  System.SysUtils, DelphiDoom.Jpeg.Decoder, DelphiDoom.Jpeg.Encoder;
 
 { TJpegEngine }
 
@@ -50,14 +50,14 @@ end;
 
 function TJpegEngine.GetVersion: PAnsiChar;
 begin
-  Result := JPEG_NATIVE_VERSION_TEXT;
+  Result := TJpegDecoder.Version;
 end;
 
 function TJpegEngine.GetInfo(ASource: Pointer; ASourceSize: Cardinal;
   out AInfo: TJpegInfo): Integer;
 begin
   try
-    Result := JpegReadInfo(ASource, ASourceSize, AInfo);
+    Result := TJpegDecoder.ReadInfo(ASource, ASourceSize, AInfo);
   except
     on E: Exception do
     begin
@@ -71,7 +71,7 @@ function TJpegEngine.Decode(ASource: Pointer; ASourceSize: Cardinal;
   ADest: Pointer; ADestSize: Cardinal; out AInfo: TJpegInfo): Integer;
 begin
   try
-    Result := JpegDecode(ASource, ASourceSize, ADest, ADestSize, AInfo);
+    Result := TJpegDecoder.Decode(ASource, ASourceSize, ADest, ADestSize, AInfo);
   except
     on E: Exception do
     begin
