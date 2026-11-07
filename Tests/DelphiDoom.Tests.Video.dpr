@@ -15,14 +15,18 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
+  DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
   DelphiDoom.Video.Intf in '..\Libs\Video\DelphiDoom.Video.Intf.pas',
   DelphiDoom.Video.PaletteConverter in '..\Libs\Video\DelphiDoom.Video.PaletteConverter.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',
   DelphiDoom.Video.WindowsDisplayMetrics in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayMetrics.pas',
+  DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+  DelphiDoom.Video.WindowsDisplayModeSource in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayModeSource.pas',
   DelphiDoom.Video.Services in '..\Libs\Video\DelphiDoom.Video.Services.pas',
   DelphiDoom.Video.Factory in '..\Libs\Video\DelphiDoom.Video.Factory.pas',
-  DelphiDoom.Tests.Video.Services in 'Source\DelphiDoom.Tests.Video.Services.pas';
+  DelphiDoom.Tests.Video.Services in 'Source\DelphiDoom.Tests.Video.Services.pas',
+  DelphiDoom.Tests.Video.DisplayModeCatalog in 'Source\DelphiDoom.Tests.Video.DisplayModeCatalog.pas';
 
 var
   Runner: ITestRunner;

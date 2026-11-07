@@ -21,6 +21,9 @@ type
     class function CreateSizeLimiter(const AMetrics: IDisplayMetrics): ISizeLimiter; static;
     class function CreateMemoryStallHack: IMemoryStallHack; static;
     class function CreateWindowsDisplayMetrics: IDisplayMetrics; static;
+    class function CreateWindowsDisplayModeSource: IDisplayModeSource; static;
+    /// <summary>The catalog of the screen modes that ASource gives</summary>
+    class function CreateDisplayModeCatalog(const ASource: IDisplayModeSource): IDisplayModeCatalog; static;
     /// <summary>The services on the screen of Windows</summary>
     class function CreateServices: IVideoServices; static;
   end;
@@ -30,7 +33,8 @@ implementation
 uses
   DelphiDoom.Video.PaletteConverter, DelphiDoom.Video.SizeLimiter,
   DelphiDoom.Video.MemoryStallHack, DelphiDoom.Video.WindowsDisplayMetrics,
-  DelphiDoom.Video.Services;
+  DelphiDoom.Video.Services, DelphiDoom.Video.DisplayModeCatalog,
+  DelphiDoom.Video.WindowsDisplayModeSource;
 
 { TVideoFactory }
 
@@ -52,6 +56,17 @@ end;
 class function TVideoFactory.CreateWindowsDisplayMetrics: IDisplayMetrics;
 begin
   Result := TWindowsDisplayMetrics.Create;
+end;
+
+class function TVideoFactory.CreateWindowsDisplayModeSource: IDisplayModeSource;
+begin
+  Result := TWindowsDisplayModeSource.Create;
+end;
+
+class function TVideoFactory.CreateDisplayModeCatalog(
+  const ASource: IDisplayModeSource): IDisplayModeCatalog;
+begin
+  Result := TDisplayModeCatalog.Create(ASource);
 end;
 
 class function TVideoFactory.CreateServices: IVideoServices;

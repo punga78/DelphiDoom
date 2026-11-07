@@ -26,6 +26,7 @@ uses
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
   DelphiDoom.Video.Factory,
+  i_displaymodes,
   DelphiDoom.Acs.Factory,
   DelphiDoom.Udmf.Games,
   DelphiDoom.Udmf.Factory,
@@ -141,6 +142,8 @@ uses
   DelphiDoom.Engine.Music.XmiBackend,
   DelphiDoom.Engine.Music.MusBackend,
   DelphiDoom.Engine.Music.MidiFileBackend,
+  DelphiDoom.Engine.Music.ExternalSource,
+  s_externalmusic,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -166,6 +169,11 @@ uses
   w_wadreader,
   w_wadwriter,
   w_pak,
+  w_autoload,
+  DelphiDoom.Scanner.AutoLoad,
+  DelphiDoom.Engine.Wad.AutoLoadLumps,
+  DelphiDoom.Engine.Wad.AutoLoadSink,
+  DelphiDoom.Engine.Scanner.Log,
   doomdef,
   d_main,
   m_argv,
@@ -233,6 +241,8 @@ begin
     TXmiMusicBackend.Create,
     TMusMusicBackend.Create,
     TMidiFileMusicBackend.Create)));
+  S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
+    TEngineExternalMusicSource.Create));
 end;
 
 {$IFNDEF HEXEN}
@@ -530,6 +540,8 @@ begin
   I_ConfigureClock(LClock);
   D_ConfigureNet(LClock, LLog, LContext);
   I_ConfigureVideo(TVideoFactory.CreateServices);
+  I_ConfigureDisplayModes(TVideoFactory.CreateDisplayModeCatalog(
+    TVideoFactory.CreateWindowsDisplayModeSource));
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic;
@@ -549,6 +561,8 @@ begin
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   PAK_Configure(LWadServices);
+  W_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
+    TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
   if not TUdmfGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
   P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);

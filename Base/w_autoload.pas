@@ -33,6 +33,19 @@ unit w_autoload;
 
 interface
 
+uses
+  DelphiDoom.Scanner.AutoLoad.Intf;
+
+//==============================================================================
+//
+// W_ConfigureAutoLoad
+//
+// The reader of the AUTOLOAD lumps is given by the composition root (ComposeEngine);
+// without it W_AutoLoadPakFiles stops with I_Error.
+//
+//==============================================================================
+procedure W_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
 //==============================================================================
 //
 // W_AutoLoadPakFiles
@@ -43,29 +56,20 @@ procedure W_AutoLoadPakFiles;
 implementation
 
 uses
-  w_pak,
-  w_wad,
-  sc_engine;
+  i_system;
 
-const
-  AUTOLOADLUMPNAME = 'AUTOLOAD';
-
-//==============================================================================
-//
-// W_ParseAutoLoad
-//
-//==============================================================================
-procedure W_ParseAutoLoad(const in_text: string);
 var
-  sc: TScriptEngine;
+  // given by the composition root (W_ConfigureAutoLoad)
+  engine_autoload: IAutoLoadReader = nil;
+
+//==============================================================================
+//
+// W_ConfigureAutoLoad
+//
+//==============================================================================
+procedure W_ConfigureAutoLoad(const AReader: IAutoLoadReader);
 begin
-  sc := TScriptEngine.Create(in_text);
-  try
-    while sc.GetString do
-      PAK_AddFile(sc._String)
-  finally
-    sc.Free;
-  end;
+  engine_autoload := AReader;
 end;
 
 //==============================================================================
@@ -74,13 +78,10 @@ end;
 //
 //==============================================================================
 procedure W_AutoLoadPakFiles;
-var
-  i: integer;
 begin
-// Retrive "AUTOLOAD" lumps
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = AUTOLOADLUMPNAME then
-      W_ParseAutoLoad(W_TextLumpNum(i));
+  if engine_autoload = nil then
+    I_Error('W_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
+  engine_autoload.Load;
 end;
 
 end.
