@@ -36,7 +36,6 @@ uses
   DelphiDoom.Xmi.Provider,
   m_base,
   i_system,
-  i_music,
 {$ENDIF}
   d_delphi;
 
@@ -70,7 +69,7 @@ begin
     Exit;
   end;
 
-  I_StopMus;
+  CloseMidiStream;
 
   LFileName := NewSongFile;
   if not TXmiProvider.Client.TryConvertToMidiFile(AData, ASize, 0, LFileName) then

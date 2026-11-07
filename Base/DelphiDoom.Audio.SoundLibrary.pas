@@ -57,7 +57,7 @@ implementation
 uses
   doomdef,
   i_system,
-  i_sound,
+  s_sound,
   DelphiDoom.Sndfile.Intf,
   DelphiDoom.Audio.SoundConverter,
   w_folders,

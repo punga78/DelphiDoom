@@ -290,7 +290,6 @@ uses
   info_common,
   info_rnd,
   i_system,
-  i_sound,
   i_io,
   i_startup,
   DelphiDoom.Iwad.Types,

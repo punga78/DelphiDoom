@@ -67,8 +67,6 @@ uses
   i_system,
   i_mainwindow,
   i_midi,
-  i_music,
-  i_sound,
   i_threads,
 {$IFDEF OPENGL}
   gl_main,

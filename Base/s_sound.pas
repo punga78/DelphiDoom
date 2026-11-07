@@ -34,8 +34,92 @@ unit s_sound;
 interface
 
 uses
+  d_delphi,
   DelphiDoom.Audio.Intf,
   p_mobj_h;
+
+type
+  /// <summary>Makes the player of the sound effects; false: no sound card, only handles</summary>
+  TSfxPlayerFactory = reference to function(AWithDevice: Boolean): ISfxPlayer;
+
+//==============================================================================
+//
+// S_ConfigureSound
+//
+// The way to make the player of the sound effects, given by the composition root
+// (ComposeEngine); without it S_InitSoundDevice stops with I_Error.
+//
+//==============================================================================
+procedure S_ConfigureSound(const AFactory: TSfxPlayerFactory);
+
+//==============================================================================
+//
+// S_ConfigureMusic
+//
+// The player of the music, given by the composition root (ComposeEngine); without it
+// S_InitMusicDevice stops with I_Error.
+//
+//==============================================================================
+procedure S_ConfigureMusic(const APlayer: IMusicPlayer);
+
+//==============================================================================
+//
+// S_InitSoundDevice
+//
+// Makes the player of the sound effects (without a device with -nosound). Called by
+// I_Init at program start (it was I_InitSound).
+//
+//==============================================================================
+procedure S_InitSoundDevice;
+
+//==============================================================================
+//
+// S_ShutDownSoundDevice
+//
+// Releases the player of the sound effects and the cache of the samples at program
+// termination (it was I_ShutDownSound).
+//
+//==============================================================================
+procedure S_ShutDownSoundDevice;
+
+//==============================================================================
+//
+// S_InitMusicDevice
+//
+// Starts the backends of the music (it was I_InitMusic).
+//
+//==============================================================================
+procedure S_InitMusicDevice;
+
+//==============================================================================
+//
+// S_ShutDownMusicDevice
+//
+// Stops the backends of the music (it was I_ShutDownMusic).
+//
+//==============================================================================
+procedure S_ShutDownMusicDevice;
+
+//==============================================================================
+//
+// S_ProcessMusic
+//
+// Gives the playing song its time, every frame (it was I_ProcessMusic).
+//
+//==============================================================================
+procedure S_ProcessMusic;
+
+const
+  MP3MAGIC = $1A33504D; //"MP3"<EOF>
+
+type
+  // The song that S_DoChangeMusic gives to the music player for an external mp3 file
+  mp3header_t = packed record
+    ID: LongWord; // MP3MAGIC "MP3" 0x1A
+    Stream: TDStream;
+    foo: array[0..1] of LongWord;
+  end;
+  Pmp3header_t = ^mp3header_t;
 
 //==============================================================================
 //
@@ -333,22 +417,21 @@ var
   full_sounds: boolean = true;
   usemp3: boolean;
   preferemp3namesingamedirectory: boolean;
+  useexternalwav: boolean;
+  preferewavnamesingamedirectory: boolean;
+  miditempo: integer = 160;
 
 implementation
 
 uses
-  d_delphi,
   c_cmds,
   d_player,
   d_think,
   g_game,
   i_system,
-  i_sound,
-  i_music,
   info_h,
-{$IFDEF DOOM}
+  DelphiDoom.Audio.Types,
   m_argv,
-{$ENDIF}
   m_fixed,
   m_rnd,
   m_misc,
@@ -376,6 +459,211 @@ uses
 var
   // given by the composition root (S_ConfigureExternalMusic)
   sound_externalmusic: IExternalMusicCache = nil;
+  // given by the composition root (S_ConfigureSound, S_ConfigureMusic)
+  sound_sfxfactory: TSfxPlayerFactory = nil;
+  sound_music: IMusicPlayer = nil;
+  // made by S_InitSoundDevice
+  sound_sfx: ISfxPlayer = nil;
+
+//==============================================================================
+//
+// S_ConfigureSound
+//
+//==============================================================================
+procedure S_ConfigureSound(const AFactory: TSfxPlayerFactory);
+begin
+  sound_sfxfactory := AFactory;
+end;
+
+//==============================================================================
+//
+// S_ConfigureMusic
+//
+//==============================================================================
+procedure S_ConfigureMusic(const APlayer: IMusicPlayer);
+begin
+  sound_music := APlayer;
+end;
+
+//==============================================================================
+//
+// S_InitSoundDevice
+//
+//==============================================================================
+procedure S_InitSoundDevice;
+var
+  i: integer;
+begin
+  if not Assigned(sound_sfxfactory) then
+    I_Error('I_InitSound(): the sound was not configured');
+
+  try
+    sound_sfx := sound_sfxfactory(M_CheckParm('-nosound') = 0);
+  except
+    on E: EAudioDeviceException do
+      I_Error('%s', [E.Message]);
+  end;
+
+  for i := 0 to numsfx - 1 do
+    S_sfx[i].data := nil;
+end;
+
+//==============================================================================
+//
+// S_ShutDownSoundDevice
+//
+//==============================================================================
+procedure S_ShutDownSoundDevice;
+begin
+  if sound_sfx <> nil then
+  begin
+    sound_sfx.Shutdown;
+    // the cache of the samples goes with the player
+    sound_sfx := nil;
+  end;
+
+  S_ShutDownSound;
+end;
+
+//==============================================================================
+//
+// S_InitMusicDevice
+//
+//==============================================================================
+procedure S_InitMusicDevice;
+begin
+  if sound_music = nil then
+    I_Error('I_InitMusic(): the music was not configured');
+  sound_music.Initialize;
+end;
+
+//==============================================================================
+//
+// S_ShutDownMusicDevice
+//
+//==============================================================================
+procedure S_ShutDownMusicDevice;
+begin
+  if sound_music <> nil then
+    sound_music.Shutdown;
+end;
+
+//==============================================================================
+//
+// S_ProcessMusic
+//
+//==============================================================================
+procedure S_ProcessMusic;
+begin
+  if sound_music <> nil then
+    sound_music.Process;
+end;
+
+//==============================================================================
+//
+// S_RegisterSong
+//
+// The handle of a song; 0 before the music is configured (as I_RegisterSong did)
+//
+//==============================================================================
+function S_RegisterSong(data: pointer; size: integer): integer;
+begin
+  if sound_music <> nil then
+    result := sound_music.Register(data, size)
+  else
+    result := 0;
+end;
+
+//==============================================================================
+//
+// S_GetSfxLumpNum
+//
+// Retrieve the raw data lump index for a given SFX name (it was I_GetSfxLumpNum).
+//
+//==============================================================================
+function S_GetSfxLumpNum(sfxinfo: Psfxinfo_t): integer;
+var
+  namebuf: string;
+begin
+{$IFNDEF HEXEN}
+  // JVAL: 20171216 - Fix links
+  if sfxinfo.link <> nil then
+    sfxinfo := sfxinfo.link;
+{$ENDIF}
+
+  result := -1;
+
+  sprintf(namebuf, 'ds%s', [sfxinfo.name]);
+  if Length(namebuf) <= 8 then
+    result := W_CheckNumForName(namebuf);
+
+  if result = -1 then // JVAL, search without the ds prefix
+    result := W_CheckNumForName(sfxinfo.name);
+end;
+
+//==============================================================================
+//
+// S_StartSfx
+//
+// Starts a sound in a channel of the player (it was I_StartSound): a problem of the
+// developer is a I_DevError, an impossible state of the player a I_Error. Pitch and
+// priority are not used by the mixing, as before.
+//
+//==============================================================================
+function S_StartSfx(id: integer; vol: integer; sep: integer; pitch: integer;
+  priority: integer): integer;
+begin
+  result := 0;
+  if sound_sfx = nil then
+    exit;
+
+  try
+    result := sound_sfx.Start(id, vol, sep);
+  except
+    on E: ESfxStartException do
+    begin
+      I_DevError('%s', [E.Message]);
+      result := 0;
+    end;
+    on E: ESfxFatalException do
+      I_Error('%s', [E.Message]);
+  end;
+end;
+
+//==============================================================================
+//
+// S_SfxIsPlaying
+//
+//==============================================================================
+function S_SfxIsPlaying(handle: integer): boolean; inline;
+begin
+  result := (sound_sfx <> nil) and sound_sfx.IsPlaying(handle);
+end;
+
+//==============================================================================
+//
+// S_SetUseExternalWav
+//
+// The samples that were read change source: all of them are read again
+//
+//==============================================================================
+procedure S_SetUseExternalWav(const newu: boolean);
+var
+  i: integer;
+begin
+  if newu <> useexternalwav then
+  begin
+    useexternalwav := newu;
+    for i := 0 to numsfx - 1 do
+      if S_sfx[i].data <> nil then
+      begin
+        Z_Free(S_sfx[i].data);
+        S_sfx[i].data := nil;
+      end;
+    if sound_sfx <> nil then
+      sound_sfx.ForgetSounds;
+  end;
+end;
 
 //==============================================================================
 //
@@ -418,7 +706,7 @@ begin
   end;
 
   music.data := clip.Data;
-  music.handle := I_RegisterSong(music.data, clip.Size);
+  music.handle := S_RegisterSong(music.data, clip.Size);
   result := true;
 end;
 
@@ -549,7 +837,7 @@ begin
     exit;
   end;
 
-  I_SetUseExternalWav(C_BoolEval(parm, useexternalwav));
+  S_SetUseExternalWav(C_BoolEval(parm, useexternalwav));
   S_CmdUseExternalWav;
 end;
 
@@ -614,9 +902,6 @@ begin
 {$ENDIF}
 
   S_ExternalMusicCache.Clear;
-
-  // Whatever these did with DMX, these are rather dummies now.
-  I_SetChannels;
 
   S_SetSfxVolume(sfxVolume);
   // No music with Linux - another dummy.
@@ -942,7 +1227,7 @@ begin
   // get lumpnum if necessary
   if sfx.lumpnum < 0 then
   begin
-    sfx.lumpnum := I_GetSfxLumpNum(sfx);
+    sfx.lumpnum := S_GetSfxLumpNum(sfx);
 
     // JVAL
     // Prevent crash, simply don't play the sound
@@ -963,7 +1248,7 @@ begin
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pitch := 127 - (M_Random and 3) + (M_Random and 3);
 {$ENDIF}
-  channels[cnum].handle := I_StartSound(sfx_id, volume, sep, pitch, priority);
+  channels[cnum].handle := S_StartSfx(sfx_id, volume, sep, pitch, priority);
 end;
 
 //==============================================================================
@@ -1076,7 +1361,7 @@ begin
   // get lumpnum if necessary
   if sfx.lumpnum < 0 then
   begin
-    sfx.lumpnum := I_GetSfxLumpNum(sfx);
+    sfx.lumpnum := S_GetSfxLumpNum(sfx);
 
     // JVAL
     // Prevent crash, simply don't play the sound
@@ -1094,7 +1379,7 @@ begin
 
   // Assigns the handle to one of the channels in the
   //  mix/output buffer.
-  channels[cnum].handle := I_StartSound(sfx_id, volume, sep, pitch, priority);
+  channels[cnum].handle := S_StartSfx(sfx_id, volume, sep, pitch, priority);
 end;
 
 //==============================================================================
@@ -1190,7 +1475,8 @@ procedure S_PauseSound;
 begin
   if (mus_playing <> nil) and not mus_paused then
   begin
-    I_PauseSong(mus_playing.handle);
+    if sound_music <> nil then
+      sound_music.Pause(mus_playing.handle);
     mus_paused := true;
   end;
 end;
@@ -1204,7 +1490,8 @@ procedure S_ResumeSound;
 begin
   if (mus_playing <> nil) and mus_paused then
   begin
-    I_ResumeSong(mus_playing.handle);
+    if sound_music <> nil then
+      sound_music.Resume(mus_playing.handle);
     mus_paused := false;
   end;
 end;
@@ -1247,7 +1534,7 @@ begin
     if sfx <> nil then
 {$ENDIF}
     begin
-      if I_SoundIsPlaying(c.handle) then
+      if S_SfxIsPlaying(c.handle) then
       begin
         // initialize parameters
         volume := snd_SfxVolume;
@@ -1282,7 +1569,7 @@ begin
             S_StopChannel(cnum);
           end
           else
-            I_UpdateSoundParams(c.handle, volume, sep, pitch);
+            sound_sfx.UpdateParams(c.handle, volume, sep);
         end
       end
       else
@@ -1308,7 +1595,8 @@ begin
     volume := 8;
   end;
 
-  I_SetMusicVolume(volume);
+  if sound_music <> nil then
+    sound_music.SetVolume(volume);
   snd_MusicVolume := volume;
 end;
 
@@ -1530,7 +1818,7 @@ begin
     mp3header.ID := MP3MAGIC;
     mp3header.Stream := music.mp3stream;
     music.data := mp3header;
-    music.handle := I_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+    music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
   end
   else
   begin
@@ -1538,12 +1826,13 @@ begin
     begin
       // load & register it
       music.data := W_CacheLumpNum(music.lumpnum, PU_MUSIC);
-      music.handle := I_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+      music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
     end;
   end;
 
   // play it
-  I_PlaySong(music.handle, looping);
+  if sound_music <> nil then
+    sound_music.Play(music.handle, looping);
 
   mus_playing := music;
   looping_playing := looping;
@@ -1584,9 +1873,11 @@ begin
   if mus_playing <> nil then
   begin
     if mus_paused then
-      I_ResumeSong(mus_playing.handle);
+      if sound_music <> nil then
+        sound_music.Resume(mus_playing.handle);
 
-    I_UnRegisterSong(mus_playing.handle);
+    if sound_music <> nil then
+      sound_music.Unregister(mus_playing.handle);
     if mus_playing.mp3stream <> nil then
     begin
       FreeAndNil(mus_playing.mp3stream);
@@ -1615,9 +1906,9 @@ begin
   if c.sfxinfo <> nil then
   begin
     // stop the sound playing
-    if I_SoundIsPlaying(c.handle) then
+    if S_SfxIsPlaying(c.handle) then
     begin
-      I_StopSound(c.handle);
+      sound_sfx.Stop(c.handle);
     end;
 
     // check to see
@@ -1930,7 +2221,7 @@ begin
     begin
       c_id := (integer(channels[i].sfxinfo) - integer(@S_sfx[0])) div SizeOf(sfxinfo_t); // JVAL SOS
       if c_id = sound_id then
-        if I_SoundIsPlaying(channels[i].handle) then
+        if S_SfxIsPlaying(channels[i].handle) then
         begin
           result := true;
           exit;
@@ -1989,7 +2280,7 @@ begin
   for i := 1 to numsfx - 1 do
     if hitlist[i] then
     begin
-      S_sfx[i].lumpnum := I_GetSfxLumpNum(@S_sfx[i]);
+      S_sfx[i].lumpnum := S_GetSfxLumpNum(@S_sfx[i]);
       if S_sfx[i].lumpnum >= 0 then
       begin
         W_CacheLumpNum(S_sfx[i].lumpnum, PU_SOUND);

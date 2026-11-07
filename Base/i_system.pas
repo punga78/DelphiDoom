@@ -453,8 +453,7 @@ uses
   m_argv,
   m_misc,
   m_fixed,
-  i_sound,
-  i_music,
+  s_sound,
   i_io,
   DelphiDoom.Input.Types,
   i_net,
@@ -511,7 +510,7 @@ end;
 procedure I_StartFrame;
 begin
   I_ProcessWindows;
-  I_ProcessMusic;
+  S_ProcessMusic;
   // the poller reads nothing before I_Init
   if system_input <> nil then
     system_input.Process;
@@ -678,9 +677,9 @@ begin
   printf('I_DetectOS: Detecting operating system.'#13#10);
   I_DetectOS;
   printf('I_InitSound: Initializing DirectSound.'#13#10);
-  I_InitSound;
+  S_InitSoundDevice;
   printf('I_InitMusic: Initializing music.'#13#10);
-  I_InitMusic;
+  S_InitMusicDevice;
   printf('I_InitInput: Initializing Input Devices.'#13#10);
   if system_input = nil then
     I_Error('I_InitInput(): the input was not configured');
@@ -726,9 +725,9 @@ begin
   printf('D_QuitNetGame: Quit network game.'#13#10);
   D_QuitNetGame;
   printf('I_ShutDownSound: Shut down sound.'#13#10);
-  I_ShutDownSound;
+  S_ShutDownSoundDevice;
   printf('I_ShutDownMusic: Shut down music.'#13#10);
-  I_ShutDownMusic;
+  S_ShutDownMusicDevice;
   printf('I_ShutDownInput: Shut down input.'#13#10);
   if system_input <> nil then
     system_input.Shutdown;

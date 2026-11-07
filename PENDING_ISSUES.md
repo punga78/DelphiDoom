@@ -72,3 +72,12 @@ Cancellate `v_palettes.pas` e `r_grow.pas`; `r_flatinfo.pas` e `mn_screenshot.pa
 - `r_palette.pas`: `R_DefaultPalette` è un servizio con stato (palette letta una volta) chiamato da `r_colormaps`, `r_data` e `r_voxels` (quest'ultimo fuori da questa ondata, voxel). Per toglierla: un `IDefaultPalette` (classe del motore sopra `IPaletteUnpacker` e `V_ReadPalette`) dato da `ComposeEngine` ai tre chiamanti con i loro `*_Configure*`, e `palette_t` spostato in `r_defs`; circa mezza giornata.
 - `r_colormaps.pas` e `r_patch.pas`: sono le cache del motore (colormap personalizzate in zone memory lette dal renderer e da `p_saveg`; `fixedcolumns[]` in `PU_LEVEL`), che restano del motore per decisione; chiamano già la libreria.
 - `TEnginePaletteGenerator` ha ancora un costruttore senza argomenti perché lo crea `sc_utils.pas` (ondata dello scanner): quando le direttive saranno assemblate da `ComposeEngine` va tolto e il costruttore delle palette passato dal composition root.
+## #143 — Facciate dell'audio (fase 2, ondata 2)
+
+Cancellate `Base\i_sound.pas` e `Base\i_music.pas`; `s_pk3sounds` riceve `ITempFiles` (`S_ConfigurePK3Sounds`). Resta `Base\i_tmp.pas`, con chiamanti fuori dall'audio:
+
+- i savegame (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file temporaneo, `I_NewTempFile`) e `SCRIPT\ps_dll` (una DLL in un PAK copiata su file prima di `LoadLibrary`): procedure storiche senza un oggetto a cui darlo. Servirebbe un `ITempFiles` passato a `G_DoSaveGame`/`G_DoLoadGame` (o un oggetto dello stato degli script di mappa) e alla registrazione delle funzioni di PascalScript; circa mezza giornata, fuori dall'ondata (savegame).
+- `DelphiDoom.Engine.Scanner.PaletteGenerator` (creato da `sc_utils`, fetta dello scanner) e `DelphiDoom.Engine.Voxel.SpriteGenerator` (fetta voxel): classi del motore che possono riceverlo dal costruttore quando il loro chiamante è assemblato da `ComposeEngine`; poche righe ciascuna.
+- `i_system` (`I_ShutDownTempFiles`) e i quattro `d_main` (`I_InitTempFiles`): il ciclo di vita, resta finché restano i chiamanti sopra.
+
+`s_sound.pas` non è diventato una classe: tiene il player degli effetti, quello della musica e la cache delle musiche esterne ricevuti da `ComposeEngine` (`S_ConfigureSound`, `S_ConfigureMusic`, `S_ConfigureExternalMusic`) e li chiama direttamente. Portarlo a classe vuol dire portare i canali (`channels[]`, `sobjs`) e le circa 40 procedure `S_*` chiamate da tutto il gioco (azioni, thinker, menu, ACS): stima L, fuori dall'ondata.

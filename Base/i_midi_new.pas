@@ -98,7 +98,6 @@ uses
   d_delphi,
   d_main,
   i_system,
-  i_music,
   i_midi,
   i_io,
   Messages,
