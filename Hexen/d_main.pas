@@ -300,7 +300,7 @@ uses
   sc_states,
   sv_save,
   sv_hexen,
-  t_main,
+  t_draw,
   v_data,
   v_video,
   w_wad,
@@ -2211,7 +2211,7 @@ begin
   SUC_Progress(53);
 
   printf('T_Init: Initializing texture manager.'#13#10);
-  T_Init;
+  T_InitDrawTextures;
 
   SUC_Progress(55);
 
@@ -2494,7 +2494,7 @@ begin
   printf('P_ACSShutDown: Shut down ACS script.'#13#10);
   P_ACSShutDown;
   printf('T_ShutDown: Shut down texture manager.'#13#10);
-  T_ShutDown;
+  T_ShutDownDrawTextures;
   printf('SC_ShutDown: Shut down script engine.'#13#10);
   SC_ShutDown;
   printf('SC_ShutDownGameDefines: Shut down global defines.'#13#10);

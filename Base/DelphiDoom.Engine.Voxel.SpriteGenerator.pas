@@ -21,7 +21,8 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Voxel.Intf,
-  DelphiDoom.Engine.Voxel.Intf;
+  DelphiDoom.Engine.Voxel.Intf,
+  DelphiDoom.Pak.Intf;
 
 type
   /// <summary>
@@ -38,14 +39,16 @@ type
     FPatches: IVoxelPatchBuilder;
     FNewNames: TFunc<IVoxelSpriteNames>;
     FGenerateOption: TFunc<Boolean>;
+    FPakFiles: IPakFileSystem;
     function CollectNames: IVoxelSpriteNames;
     function BuildWadFile(const ANames: IVoxelSpriteNames; const AGenerate: Boolean): string;
   public
     /// <param name="ANewNames">An empty list of names for each call of Generate</param>
     /// <param name="AGenerateOption">The option r_generatespritesfromvoxels, read at each call</param>
+    /// <param name="APakFiles">The PAK file system whose files are looked at</param>
     constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder;
       const APatches: IVoxelPatchBuilder; const ANewNames: TFunc<IVoxelSpriteNames>;
-      const AGenerateOption: TFunc<Boolean>);
+      const AGenerateOption: TFunc<Boolean>; const APakFiles: IPakFileSystem);
     procedure Generate;
   end;
 
@@ -58,7 +61,6 @@ uses
   m_argv,
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
-  w_pak,
   w_wad,
   w_wadwriter;
 
@@ -96,23 +98,17 @@ const
     $C2, $B3, $80, $00, $00, $00, $00, $49, $45, $4E, $44, $AE, $42, $60, $82
   );
 
-var
-  // PAK_FileNameIterator takes a plain procedure: the list being filled is here only during
-  // CollectNames
-  collecting_names: IVoxelSpriteNames = nil;
-
-procedure CollectFileName(const AFileName: string);
-begin
-  collecting_names.AddFileName(AFileName);
-end;
-
 { TEngineVoxelSpriteGenerator }
 
 constructor TEngineVoxelSpriteGenerator.Create(const ALoader: IVoxelLoader;
   const ACubes: IVoxelCubeBuilder; const APatches: IVoxelPatchBuilder;
-  const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>);
+  const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>;
+  const APakFiles: IPakFileSystem);
 begin
   inherited Create;
+  if not Assigned(APakFiles) then
+    raise EArgumentNilException.Create('APakFiles');
+  FPakFiles := APakFiles;
   if not Assigned(ALoader) then
     raise EArgumentNilException.Create('ALoader');
   if not Assigned(ACubes) then
@@ -131,14 +127,12 @@ begin
 end;
 
 function TEngineVoxelSpriteGenerator.CollectNames: IVoxelSpriteNames;
+var
+  LIndex: Integer;
 begin
   Result := FNewNames();
-  collecting_names := Result;
-  try
-    PAK_FileNameIterator(@CollectFileName);
-  finally
-    collecting_names := nil;
-  end;
+  for LIndex := 0 to FPakFiles.EntryCount - 1 do
+    Result.AddFileName(FPakFiles.EntryName(LIndex));
 end;
 
 function TEngineVoxelSpriteGenerator.BuildWadFile(const ANames: IVoxelSpriteNames;

@@ -151,7 +151,7 @@ uses
   p_simpledialog,
   psi_overlay,
   r_renderstyle,
-  r_translations,
+  DelphiDoom.Palette.TranslationBlood,
   st_stuff,
   sounddata,
   sounds,
@@ -430,7 +430,7 @@ var
             end;
         72: mobjinfo[mobj_no].ripsound := S_GetSoundNumForName(token2); // .ripsound (MBF21)
         73: mobjinfo[mobj_no].crushstate := StateValue(entry);
-        76: mobjinfo[mobj_no].bloodcolor := R_GetBloodTranslationIdForName(token2);
+        76: mobjinfo[mobj_no].bloodcolor := TTranslationBlood.IdForName(token2);
         77: mobjinfo[mobj_no].translationname := strupper(token2);
         79: mobjinfo[mobj_no].meleethreshold := mobj_val;
       end;

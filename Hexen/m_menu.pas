@@ -312,7 +312,7 @@ uses
 {$IFNDEF OPENGL}
   r_segs,
 {$ENDIF}
-  t_main,
+  t_png,
   v_data,
   v_video,
   hu_stuff,

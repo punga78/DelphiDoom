@@ -37,7 +37,7 @@ uses
   d_delphi,
   tables,
 {$IFNDEF OPENGL}
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
 {$ENDIF}
 // Some more or less basic data types
 // we depend on.

@@ -14,7 +14,8 @@ interface
 
 uses
   DelphiDoom.DynLights.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Pak.Intf;
 
 type
   /// <summary>
@@ -29,9 +30,11 @@ type
     // JVAL: random index for the light animation, don't bother resetting it
     FRandomIndex: Integer;
     FPreprocessor: IScriptTextPreprocessor;
+    FPakFiles: IPakFileSystem;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
-    constructor Create(const APreprocessor: IScriptTextPreprocessor);
+    /// <param name="APakFiles">The PAK file system that has the GLDEFS and LIGHTDEF files</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -59,30 +62,24 @@ uses
   m_rnd,
   System.SysUtils,
   p_pspr,
-  w_pak,
   w_wad;
-
-var
-  // PAK_StringIterator takes a plain procedure: what it gives is kept here until it returns
-  GCollectedTexts: TArray<string>;
-
-procedure CollectText(const AText: string);
-begin
-  SetLength(GCollectedTexts, Length(GCollectedTexts) + 1);
-  GCollectedTexts[High(GCollectedTexts)] := AText;
-end;
 
 const
   SPreprocessorMissing = 'TEngineDynLightServices: the preprocessor is nil';
+  SPakFilesMissing = 'TEngineDynLightServices: the PAK file system is nil';
 
 { TEngineDynLightServices }
 
-constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor);
+constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor;
+  const APakFiles: IPakFileSystem);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
     raise EArgumentNilException.Create(SPreprocessorMissing);
+  if not Assigned(APakFiles) then
+    raise EArgumentNilException.Create(SPakFilesMissing);
   FPreprocessor := APreprocessor;
+  FPakFiles := APakFiles;
 end;
 
 function TEngineDynLightServices.NextByte: Integer;
@@ -173,10 +170,7 @@ end;
 
 function TEngineDynLightServices.PakTexts(const AFileName: string): TArray<string>;
 begin
-  GCollectedTexts := nil;
-  PAK_StringIterator(AFileName, @CollectText);
-  Result := GCollectedTexts;
-  GCollectedTexts := nil;
+  Result := FPakFiles.Texts(AFileName);
 end;
 
 function TEngineDynLightServices.Filter(const AText: string): string;

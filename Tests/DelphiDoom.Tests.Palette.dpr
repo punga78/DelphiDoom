@@ -36,6 +36,7 @@ uses
   DelphiDoom.Palette.ColormapPreparer in '..\Libs\Palette\DelphiDoom.Palette.ColormapPreparer.pas',
   DelphiDoom.Palette.LightTables in '..\Libs\Palette\DelphiDoom.Palette.LightTables.pas',
   DelphiDoom.Palette.TranslationNames in '..\Libs\Palette\DelphiDoom.Palette.TranslationNames.pas',
+  DelphiDoom.Palette.TranslationBlood in '..\Libs\Palette\DelphiDoom.Palette.TranslationBlood.pas',
   DelphiDoom.Palette.PrecalcTables in '..\Libs\Palette\DelphiDoom.Palette.PrecalcTables.pas',
   DelphiDoom.Palette.BufferFixer in '..\Libs\Palette\DelphiDoom.Palette.BufferFixer.pas',
   DelphiDoom.Palette.Unpacker in '..\Libs\Palette\DelphiDoom.Palette.Unpacker.pas',
@@ -44,7 +45,8 @@ uses
   DelphiDoom.Tests.Palette.Fixtures in 'Source\DelphiDoom.Tests.Palette.Fixtures.pas',
   DelphiDoom.Tests.Palette.Fakes in 'Source\DelphiDoom.Tests.Palette.Fakes.pas',
   DelphiDoom.Tests.Palette.Parity in 'Source\DelphiDoom.Tests.Palette.Parity.pas',
-  DelphiDoom.Tests.Palette.Behavior in 'Source\DelphiDoom.Tests.Palette.Behavior.pas';
+  DelphiDoom.Tests.Palette.Behavior in 'Source\DelphiDoom.Tests.Palette.Behavior.pas',
+  DelphiDoom.Tests.Palette.TranslationBlood in 'Source\DelphiDoom.Tests.Palette.TranslationBlood.pas';
 
 var
   Runner: ITestRunner;
