@@ -36,7 +36,8 @@ unit m_misc;
 interface
 
 uses
-  DelphiDoom.Configuration.Intf;
+  DelphiDoom.Configuration.Intf,
+  DelphiDoom.Platform.Intf;
 
 //
 // MISC
@@ -65,6 +66,15 @@ function M_AppendFile(const name: string; source: pointer; len: integer): intege
 //
 //==============================================================================
 function M_ReadFile(const name: string; var buffer: Pointer): integer;
+
+//==============================================================================
+//
+// M_ConfigureFiles
+// Gives the unit the store of whole files behind M_WriteFile, M_AppendFile and M_ReadFile.
+// The composition root calls it
+//
+//==============================================================================
+procedure M_ConfigureFiles(const AStore: IFileStore);
 
 //==============================================================================
 //
@@ -146,6 +156,7 @@ var
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   c_cmds,
   doomdef,
@@ -167,7 +178,34 @@ uses
 {$ELSE}
   i_video,
 {$ENDIF}
-  z_zone;
+  z_zone,
+  DelphiDoom.Platform.Types;
+
+var
+  // given by the composition root (M_ConfigureFiles)
+  engine_files: IFileStore = nil;
+
+//==============================================================================
+//
+// M_ConfigureFiles
+//
+//==============================================================================
+procedure M_ConfigureFiles(const AStore: IFileStore);
+begin
+  engine_files := AStore;
+end;
+
+//==============================================================================
+//
+// M_FileStore
+//
+//==============================================================================
+function M_FileStore: IFileStore;
+begin
+  if not Assigned(engine_files) then
+    I_Error('The store of files was not given (M_ConfigureFiles)');
+  Result := engine_files;
+end;
 
 //==============================================================================
 //
@@ -175,20 +213,8 @@ uses
 //
 //==============================================================================
 function M_WriteFile(const name: string; source: pointer; len: integer): boolean;
-var
-  handle: file;
-  count: integer;
 begin
-  if not fopen(handle, name, fCreate) then
-  begin
-    Result := false;
-    exit;
-  end;
-
-  BlockWrite(handle, source^, len, count);
-  close(handle);
-
-  Result := count > 0;
+  Result := M_FileStore.Write(name, source, len);
 end;
 
 //==============================================================================
@@ -197,27 +223,8 @@ end;
 //
 //==============================================================================
 function M_AppendFile(const name: string; source: pointer; len: integer): integer;
-var
-  handle: TFile;
 begin
-  if not fexists(name) then
-  begin
-    if M_WriteFile(name, source, len) then
-      Result := len
-    else
-      Result := 0;
-    exit;
-  end;
-
-  if len > 0 then
-  begin
-    handle := TFile.Create(name, fOpenReadWrite);
-    handle.Seek(handle.Size, sFromBeginning);
-    Result := handle.Write(source^, len);
-    handle.Free;
-  end
-  else
-    Result := 0;
+  Result := M_FileStore.Append(name, source, len);
 end;
 
 //==============================================================================
@@ -227,21 +234,21 @@ end;
 //==============================================================================
 function M_ReadFile(const name: string; var buffer: Pointer): integer;
 var
-  handle: file;
-  count: integer;
+  data: TBytes;
 begin
-  if not fopen(handle, name, fOpenReadOnly) then
-    I_Error('M_ReadFile(): Could not read file %s', [name]);
+  try
+    data := M_FileStore.Read(name);
+  except
+    on EPlatformException do
+      I_Error('M_ReadFile(): Could not read file %s', [name]);
+  end;
 
-  Result := FileSize(handle);
+  Result := Length(data);
   // JVAL
   // If Z_Malloc changed to malloc() a lot of changes must be made....
   buffer := Z_Malloc(Result, PU_STATIC, nil);
-  BlockRead(handle, buffer^, Result, count);
-  close(handle);
-
-  if count < Result then
-    I_Error('M_ReadFile(): Could not read file %s', [name]);
+  if Result > 0 then
+    Move(data[0], buffer^, Result);
 end;
 
 type

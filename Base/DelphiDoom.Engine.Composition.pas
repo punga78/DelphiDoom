@@ -182,7 +182,12 @@ uses
   d_main,
   m_argv,
   m_misc,
-  i_system;
+  i_system,
+  i_tmp,
+  i_exec,
+  DelphiDoom.Platform.Intf,
+  DelphiDoom.Platform.Factory,
+  DelphiDoom.Engine.Platform.TempDirectory;
 
 procedure ComposeInput(const ALog: ILog);
 var
@@ -462,6 +467,17 @@ begin
   T_ConfigureTextures(TTextureFactory.CreateFormats(LServices));
 end;
 
+procedure ComposePlatform;
+var
+  LStore: IFileStore;
+begin
+  LStore := TPlatformFactory.CreateFileStore;
+  M_ConfigureFiles(LStore);
+  I_ConfigureTempFiles(TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore));
+  I_ConfigureExec(TPlatformFactory.CreateProcessRunner);
+  I_ConfigurePlatform(TPlatformFactory.CreateServices);
+end;
+
 procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
@@ -556,6 +572,7 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  ComposePlatform;
   ComposeMathCore;
 {$IFDEF OPENGL}
   ComposeOpenGl;
