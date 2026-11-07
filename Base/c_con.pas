@@ -35,7 +35,31 @@ unit c_con;
 interface
 
 uses
-  d_event;
+  d_event,
+  DelphiDoom.Console.AutoExec,
+  DelphiDoom.Console.StandardCommands,
+  DelphiDoom.Console.VariableCommands,
+  DelphiDoom.Console.CommandQueue,
+  DelphiDoom.Console.InputLine;
+
+//==============================================================================
+//
+// C_ConfigureScripts
+// The standard commands (cmdlist, exec, printf), the autoexec and the commands set, get and
+// typeof of Libs\Console, given by the composition root. The console owns them
+//
+//==============================================================================
+procedure C_ConfigureScripts(const AStandard: TConsoleStandardCommands; const AAutoExec: TConsoleAutoExec;
+  const AVariables: TConsoleVariableCommands);
+
+//==============================================================================
+//
+// C_ConfigureInput
+// The queue of the commands and the line of input of Libs\Console, given by the
+// composition root. The console owns them
+//
+//==============================================================================
+procedure C_ConfigureInput(const AQueue: TConsoleCommandQueue; const AInput: TConsoleInputLine);
 
 //==============================================================================
 //
@@ -175,11 +199,9 @@ uses
   z_zone;
 
 const
-  CONSOLE_PROMPTCHAR: string = ']';
   MAX_CONSOLE_INPUT_LEN = 1024;
   MAX_CONSOLE_LINES = 256; //must be power of 2
   CONSOLETEXT_MASK = MAX_CONSOLE_LINES - 1;
-  CMD_HISTORY_SIZE = 64;
 
 type
   conline_t = record
@@ -209,11 +231,8 @@ var
   ConsoleYFrac: integer = 0;
   ConsoleLineBuffer: string = '';
   ConsoleState: consolestate_t;
-  ConsoleInputBuff: string;
-  CommandsHistory: array[0..CMD_HISTORY_SIZE - 1] of string;
-  PrevCommandHead: integer;
-  NextCommand: integer;
-  con_needsupdate: boolean;
+  console_queue: TConsoleCommandQueue = nil;
+  console_input: TConsoleInputLine = nil;
   divideline: string;
 
 var
@@ -254,8 +273,7 @@ end;
 //==============================================================================
 procedure C_ResetInputBuff;
 begin
-  ConsoleInputBuff := CONSOLE_PROMPTCHAR;
-  con_needsupdate := true;
+  console_input.Reset;
 end;
 
 //==============================================================================
@@ -265,7 +283,7 @@ end;
 //==============================================================================
 function C_IsInputBuffEmpty: boolean;
 begin
-  result := ConsoleInputBuff = CONSOLE_PROMPTCHAR;
+  result := console_input.IsEmpty;
 end;
 
 //==============================================================================
@@ -335,80 +353,6 @@ begin
 end;
 
 var
-  execs: TDStringList = nil;
-
-//==============================================================================
-//
-// C_ExecCommandFile
-//
-//==============================================================================
-procedure C_ExecCommandFile(const filename: string);
-var
-  fname: string;
-  cmd: string;
-  t: text;
-begin
-  if filename = '' then
-  begin
-    printf('Usage:'#13#10' exec [command file(*.con)]'#13#10);
-    exit;
-  end;
-
-  fname := fexpand(filename);
-  if not fexists(fname) then
-  begin
-    fname := fname + '.CON';
-    if not fexists(fname) then
-    begin
-      printf(' Command file not found: %s'#13#10, [filename]);
-      exit;
-    end;
-  end;
-
-  strupperproc(fname);
-
-  if execs = nil then
-    execs := TDStringList.Create
-  else if execs.IndexOf(fname) >= 0 then
-  begin
-    I_Warning(' Recursive calls of con files are not allowed(%s)'#13#10, [filename]);
-    exit;
-  end;
-  execs.Add(fname);
-
-  printf(' Running command file: %s'#13#10, [fname]);
-
-  {$I-}
-  assign(t, fname);
-  FileMode := 0;
-  reset(t);
-  while not EOF(t) and (IOResult = 0) do
-  begin
-    readln(t, cmd);
-    trimproc(cmd);
-    if cmd <> '' then
-      if not Pos1('//', cmd) then
-        C_ExecuteCmd(cmd);
-  end;
-  close(t);
-  {$I+}
-  execs.Delete(execs.IndexOf(fname));
-end;
-
-//==============================================================================
-//
-// C_CmdPrintf
-//
-//==============================================================================
-procedure C_CmdPrintf(const parm1, parm2: string);
-begin
-  if parm2 = '' then
-    printf(parm1 + #13#10)
-  else
-    printf(parm1 + ' ' + parm2 + #13#10);
-end;
-
-var
   console_paused: boolean = false;
 
 //==============================================================================
@@ -463,6 +407,35 @@ end;
 // C_Init
 //
 var
+  console_standard: TConsoleStandardCommands = nil;
+  console_autoexec: TConsoleAutoExec = nil;
+  console_variables: TConsoleVariableCommands = nil;
+
+//==============================================================================
+//
+// C_ConfigureScripts
+//
+//==============================================================================
+procedure C_ConfigureScripts(const AStandard: TConsoleStandardCommands; const AAutoExec: TConsoleAutoExec;
+  const AVariables: TConsoleVariableCommands);
+begin
+  console_standard := AStandard;
+  console_autoexec := AAutoExec;
+  console_variables := AVariables;
+end;
+
+//==============================================================================
+//
+// C_ConfigureInput
+//
+//==============================================================================
+procedure C_ConfigureInput(const AQueue: TConsoleCommandQueue; const AInput: TConsoleInputLine);
+begin
+  console_queue := AQueue;
+  console_input := AInput;
+end;
+
+var
   pendingcommands: TDStringList;
   consolebuffer: TDStringList;
 
@@ -478,7 +451,6 @@ procedure C_Init;
 var
   i: integer;
 begin
-  pendingcommands := TDStringList.Create;
   consolebuffer := TDStringList.Create;
   ConsoleHead := 0;
   ConsoleState := CST_UP;
@@ -490,11 +462,8 @@ begin
   for i := 1 to ConsoleWidth do
     divideline := divideline + '-';
   divideline := divideline + #13#10;
-  for i := 0 to CMD_HISTORY_SIZE - 1 do
-    CommandsHistory[i] := '';
-  PrevCommandHead := 0;
-  NextCommand := 0;
   ConsoleInitialized := true;
+  console_queue.Enabled := true;
 
   C_AddText(stdoutbuffer.Text);
   outproc := C_AddText;
@@ -503,7 +472,6 @@ begin
   C_AddCmd('openconsole', @C_CmdOpenConsole); // For autoexec
   C_AddCmd('consolecolormap', @C_CmdConsoleColormap);
   C_AddCmd('cls, clearscreen', @C_CmdCls);
-  C_AddCmd('cmdlist, list, listcmds', @C_CmdList);
   C_AddCmd('screenshot', @G_ScreenShot);
   C_AddCmd('playdemo', @G_CmdPlayDemo);
   C_AddCmd('start, playgame, engage, visit'{$IFDEF STRIFE} + ', rift'{$ENDIF}, @G_CmdNewGame);
@@ -512,8 +480,8 @@ begin
   {$ENDIF}
   C_AddCmd('load, loadgame', @G_LoadGame);
   C_AddCmd('save, savegame', @G_CmdSaveGame);
-  C_AddCmd('exec, execcommandfile', @C_ExecCommandFile);
-  C_AddCmd('printf, write, writeln', @C_CmdPrintf);  // Mostly for autoexec
+  console_standard.Register; // cmdlist, exec and printf
+  console_variables.Register; // set, get and typeof
   C_AddCmd('pause_console, pauseconsole', @C_CmdPauseConsole);
   C_AddCmd('commandlineparams', @M_CmdShowCommandLineParams);
   C_AddCmd('cmdline', @M_CmdShowCmdline);
@@ -531,9 +499,17 @@ end;
 procedure C_ShutDown;
 begin
   ConsoleInitialized := False;
-  if execs <> nil then
-    execs.Free;
-  pendingcommands.Free;
+  console_queue.Enabled := false;
+  console_autoexec.Free;
+  console_autoexec := nil;
+  console_standard.Free;
+  console_standard := nil;
+  console_variables.Free;
+  console_variables := nil;
+  console_queue.Free;
+  console_queue := nil;
+  console_input.Free;
+  console_input := nil;
   consolebuffer.Free;
 end;
 
@@ -559,7 +535,7 @@ procedure C_AddCommand(const cmd: string);
 begin
   if not ConsoleInitialized then
     exit;
-  pendingcommands.Add(cmd);
+  console_queue.Enqueue(cmd);
 end;
 
 var
@@ -639,7 +615,7 @@ begin
         consolebuffer.Delete(0);
     i := (ConsoleHead + CONSOLETEXT_MASK) and CONSOLETEXT_MASK;
     ConsoleText[i].line := '';
-    con_needsupdate := true;
+    console_input.NeedsUpdate := true;
   end;
 end;
 
@@ -679,7 +655,7 @@ begin
   end;
   i := (ConsoleHead + CONSOLETEXT_MASK) and CONSOLETEXT_MASK;
   ConsoleText[i].line := '';
-  con_needsupdate := true;
+  console_input.NeedsUpdate := true;
 end;
 
 //==============================================================================
@@ -707,7 +683,7 @@ begin
   begin
     C_RestoreFromBuffer;
     ConsolePgUpDown := -1;
-    con_needsupdate := true;
+    console_input.NeedsUpdate := true;
     Exit;
   end;
 
@@ -724,7 +700,7 @@ begin
   end;
   i := (ConsoleHead + CONSOLETEXT_MASK) and CONSOLETEXT_MASK;
   ConsoleText[i].line := '';
-  con_needsupdate := true;
+  console_input.NeedsUpdate := true;
 end;
 
 //==============================================================================
@@ -755,68 +731,6 @@ begin
   end;
 end;
 
-const
-  AUTOEXECLUMPNAME = 'AUTOEXEC';
-
-//==============================================================================
-//
-// C_ExecCommands
-//
-//==============================================================================
-procedure C_ExecCommands(const commands: string);
-var
-  l: TDStringList;
-  cmd: string;
-  i: integer;
-begin
-  l := TDStringList.Create;
-  l.Text := commands;
-  for i := 0 to l.Count - 1 do
-  begin
-    cmd := strtrim(l.Strings[i]);
-    if cmd <> '' then
-      if not Pos1('//', cmd) then
-        C_ExecuteCmd(cmd);
-  end;
-  l.Free;
-end;
-
-//==============================================================================
-//
-// C_RunAutoExec
-//
-//==============================================================================
-procedure C_RunAutoExec;
-var
-  str: TDstringList;
-  deffile: string;
-  i: integer;
-  p: integer;
-begin
-  printf('C_RunAutoExec()'#13#10);
-  if not fexists(DEFAUTOEXEC) then
-  begin
-    str := TDStringList.Create;
-    try
-      str.Add('// Add autoexec console commands in this file.');
-      str.Add('// These console commands will be executed everytime you start ' + AppTitle);
-      deffile := M_SaveFileName(DEFAUTOEXEC);
-      str.SaveToFile(deffile);
-    finally
-      str.Free;
-    end;
-  end;
-  C_ExecCommandFile(autoexecfile);
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = AUTOEXECLUMPNAME then
-      C_ExecCommands(W_TextLumpNum(i));
-  p := M_CheckParm('-con');
-  if p > 0 then
-    if p < myargc - 1 then
-      C_ExecCommandFile(myargv[p + 1]);
-
-end;
-
 var
   shiftdown: boolean = false;
   firsttime: boolean = true;
@@ -838,13 +752,11 @@ begin
 
   if firsttime then
   begin
-    C_RunAutoExec;
+    console_autoexec.Run;
     firsttime := false;
   end;
 
-  for c := 0 to pendingcommands.Count - 1 do
-    C_ExecuteCmd(pendingcommands.Strings[c]);
-  pendingcommands.Clear;
+  console_queue.ExecutePending;
 
   if (ev._type <> ev_keyup) and (ev._type <> ev_keydown) then
   begin
@@ -883,50 +795,16 @@ begin
               end;
             KEY_ENTER:
               begin
-                if not C_IsInputBuffEmpty then
-                begin
-                  C_AddText(ConsoleInputBuff + #13#10);
-                  CommandsHistory[PrevCommandHead] := ConsoleInputBuff;
-                  inc(PrevCommandHead);
-                  NextCommand := PrevCommandHead;
-                  if PrevCommandHead >= CMD_HISTORY_SIZE then
-                    PrevCommandHead := 0;
-                  CommandsHistory[PrevCommandHead] := '';
-                  if not C_ExecuteCmd(Copy(ConsoleInputBuff, Length(CONSOLE_PROMPTCHAR) + 1, Length(ConsoleInputBuff) - Length(CONSOLE_PROMPTCHAR))) then
-                    C_UnknowCommandMsg;
-                  C_ResetInputBuff;
-                end;
+                console_input.Submit;
               end;
-            KEY_UPARROW,
+            KEY_UPARROW:
+              console_input.HistoryPrevious;
             KEY_DOWNARROW:
-              begin
-                if c = KEY_UPARROW then
-                begin
-                  c := NextCommand - 1;
-                  if c < 0 then
-                    c := CMD_HISTORY_SIZE - 1
-                end
-                else
-                begin
-                  c := NextCommand + 1;
-                  if c >= CMD_HISTORY_SIZE then
-                    c := 0;
-                end;
-                if CommandsHistory[c] <> '' then
-                begin
-                  ConsoleInputBuff := CommandsHistory[c];
-                  NextCommand := c;
-                  con_needsupdate := true;
-                end;
-              end;
+              console_input.HistoryNext;
+            KEY_TAB:
+              console_input.Complete;
             KEY_BACKSPACE:
-              begin
-                if not C_IsInputBuffEmpty then
-                begin
-                  SetLength(ConsoleInputBuff, Length(ConsoleInputBuff) - 1);
-                  con_needsupdate := true;
-                end;
-              end;
+              console_input.Backspace;
             KEY_PAGEUP:
               C_DoPageUp;
             KEY_PAGEDOWN:
@@ -939,8 +817,7 @@ begin
               begin
                 if shiftdown then
                   c := Ord(shiftxform[c]);
-                ConsoleInputBuff := ConsoleInputBuff + Chr(c);
-                con_needsupdate := true;
+                console_input.AppendChar(Chr(c));
               end;
             end;
           end;
@@ -1019,7 +896,7 @@ begin
         end
         else
           ConsoleHeight := ConsolePos div C_FONTHEIGHT;
-        con_needsupdate := true;
+        console_input.NeedsUpdate := true;
       end;
     CST_RAISE:
       begin
@@ -1035,7 +912,7 @@ begin
         end
         else
           ConsoleHeight := ConsolePos div C_FONTHEIGHT;
-        con_needsupdate := true;
+        console_input.NeedsUpdate := true;
       end;
   end;
 
@@ -1048,7 +925,7 @@ begin
     if cursonon then
       cursor_needs_update := true
     else
-      con_needsupdate := true;
+      console_input.NeedsUpdate := true;
   end;
 
 end;
@@ -1104,7 +981,7 @@ begin
 
   xmax := (ConsoleWidth{$IFDEF DOOM} + 1{$ENDIF}) * C_FONTWIDTH;
 
-  if con_needsupdate then
+  if console_input.NeedsUpdate then
   begin
 
     C_DrawConsoleBackground;
@@ -1177,9 +1054,9 @@ begin
 
     x := C_FONTWIDTH;
     y := V_GetScreenHeight(SCN_CON) - C_FONTHEIGHT;
-    for i := 1 to Length(ConsoleInputBuff) do
+    for i := 1 to Length(console_input.Buffer) do
     begin
-      c := toupper(ConsoleInputBuff[i]);
+      c := toupper(console_input.Buffer[i]);
       if (c >= HU_FONTSTART) and (c <= {$IFDEF DOOM_OR_STRIFE}HU_FONTEND{$ELSE}HU_CFONTEND{$ENDIF}) and (x < xmax) then
       begin
         patch := {$IFDEF DOOM_OR_STRIFE}hu_font{$ELSE}hu_font3{$ENDIF}[Ord(c) - Ord(HU_FONTSTART)];
@@ -1206,7 +1083,7 @@ begin
     cursor_x := x;
     cursor_y := y;
 
-    con_needsupdate := false;
+    console_input.NeedsUpdate := false;
     cursor_needs_update := false;
 
   end

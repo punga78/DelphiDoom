@@ -58,7 +58,12 @@ uses
 {$ENDIF}
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
+  DelphiDoom.Engine.Console.Output,
+  DelphiDoom.Engine.Console.FileSystem,
+  DelphiDoom.Engine.Console.Startup,
+  DelphiDoom.Engine.Console.VariableSource,
   c_cmds,
+  c_con,
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.TextureDefs.Factory,
@@ -348,12 +353,29 @@ begin
   R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create);
 end;
 
-procedure ComposeConsole;
+procedure ComposeConsole(const ALog: ILog; const AGame: IGameContext);
 var
   LRegistry: ICommandRegistry;
+  LInterpreter: IConsoleInterpreter;
+  LOutput: IConsoleOutput;
+  LRunner: IConsoleScriptRunner;
+  LVariables: IConsoleVariableSource;
 begin
   LRegistry := TConsoleFactory.CreateRegistry;
-  C_ConfigureCommands(LRegistry, TConsoleFactory.CreateInterpreter(LRegistry));
+  LInterpreter := TConsoleFactory.CreateInterpreter(LRegistry);
+  C_ConfigureCommands(LRegistry, LInterpreter);
+  LOutput := TEngineConsoleOutput.Create;
+  LRunner := TConsoleFactory.CreateScriptRunner(LInterpreter, TEngineConsoleFileSystem.Create,
+    LOutput, ALog);
+  LVariables := TEngineConsoleVariableSource.Create;
+  C_ConfigureScripts(
+    TConsoleFactory.CreateStandardCommands(LRegistry, LOutput, LRunner),
+    TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create, LRunner, LOutput, AppTitle),
+    TConsoleFactory.CreateVariableCommands(LRegistry, LVariables, LOutput, ALog, AGame));
+  C_ConfigureInput(
+    TConsoleFactory.CreateCommandQueue(LInterpreter),
+    TConsoleFactory.CreateInputLine(']', LInterpreter, LOutput, TConsoleFactory.CreateHistory,
+      TConsoleFactory.CreateCompleter(LRegistry, LVariables)));
 end;
 
 procedure ComposeImaging;
@@ -432,7 +454,7 @@ begin
     end);
   I_ConfigureLog(LLog);
   ComposeMathCore;
-  ComposeConsole;
+  ComposeConsole(LLog, LContext);
   LClock := TClockFactory.CreateClock(LLog);
   I_ConfigureClock(LClock);
   D_ConfigureNet(LClock, LLog, LContext);

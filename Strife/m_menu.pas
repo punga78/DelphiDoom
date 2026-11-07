@@ -5210,9 +5210,6 @@ begin
   extrahelpscreens_idx := 0;
   C_AddCmd('exit, quit', @M_CmdQuit);
   C_AddCmd('halt', @I_Quit);
-  C_AddCmd('set', @Cmd_Set);
-  C_AddCmd('get', @Cmd_Get);
-  C_AddCmd('typeof', @Cmd_TypeOf);
   C_AddCmd('endgame', @M_CmdEndGame);
   C_AddCmd('defaults, setdefaults', @M_SetDefaults);
   C_AddCmd('default, setdefault', @M_SetDefaults);

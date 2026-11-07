@@ -89,13 +89,6 @@ function C_BoolEval(parm: string; const default: boolean): boolean;
 
 //==============================================================================
 //
-// C_CmdList
-//
-//==============================================================================
-procedure C_CmdList(const mask: string);
-
-//==============================================================================
-//
 // C_GetMachingList
 //
 //==============================================================================
@@ -229,25 +222,6 @@ begin
   result := TDStringList.Create;
   for i := 0 to Length(matching) - 1 do
     result.Add(matching[i]);
-end;
-
-//==============================================================================
-//
-// C_CmdList
-//
-//==============================================================================
-procedure C_CmdList(const mask: string);
-var
-  names: TArray<string>;
-  i: integer;
-begin
-  C_CheckConfigured;
-  names := cmd_registry.Names;
-  if mask <> '' then
-    names := TConsoleMaskMatcher.Filter(names, mask);
-  for i := 0 to Length(names) - 1 do
-    printf('%s'#13#10, [names[i]]);
-  printf('%d total commands.'#13#10, [Length(names)]);
 end;
 
 const
