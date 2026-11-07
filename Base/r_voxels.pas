@@ -37,7 +37,9 @@ uses
   d_delphi,
   m_fixed,
   r_defs,
-  p_mobj_h;
+  p_mobj_h,
+  DelphiDoom.Voxel.Types,
+  DelphiDoom.Voxel.Intf;
 
 var
   r_drawvoxels: boolean = true;
@@ -83,6 +85,13 @@ procedure R_VoxelsDone;
 //==============================================================================
 procedure R_DrawVoxel(const vis: Pvissprite_t);
 
+//==============================================================================
+//
+// R_ConfigureVoxelLoading
+//
+//==============================================================================
+procedure R_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
+
 implementation
 
 uses
@@ -114,11 +123,7 @@ uses
   info_h,
   vx_base,
   i_system,
-  sc_engine,
   v_video,
-  w_folders,
-  w_pak,
-  w_wad,
   z_zone;
 
 type
@@ -159,6 +164,8 @@ type
 
 var
   vx_membuffer: PByteArray = nil;
+  r_voxelloader: IVoxelLoader = nil;
+  r_voxelcubes: IVoxelCubeBuilder = nil;
 
 type
   voxelitem_t = packed record
@@ -1001,545 +1008,65 @@ end;
 
 //==============================================================================
 //
-// SwapRGB
+// R_LoadVoxelColumns
+// The file is read by the loader of Libs\Voxel, the model is put in a cube and the cube
+// in the buffer of the renderer
 //
 //==============================================================================
-function SwapRGB(const c: LongWord): LongWord;
+function R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t): voxelcolumns_p;
 var
-  r, g, b: byte;
-begin
-  r := c shr 16;
-  g := c shr 8;
-  b := c;
-  result := b shl 16 + g shl 8 + r;
-end;
-
-//==============================================================================
-//
-// R_LoadDDVOX
-//
-//==============================================================================
-function R_LoadDDVOX(const fname: string; const offset, scale: fixed_t): voxelcolumns_p;
-var
-  buf: TDStringList;
-  sc: TScriptEngine;
+  model: IVoxelModel;
+  cube: IVoxelCube;
+  cells: TArray<LongWord>;
+  voxelbuffer: voxelbuffer_p;
+  voxelsize: integer;
   xx, yy, zz: integer;
-  strm: TPakStream;
-  voxelbuffer: voxelbuffer_p;
-  voxelsize: integer;
-begin
-  strm := TPakStream.Create(fname, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  buf := TDStringList.Create;
-  buf.LoadFromStream(strm);
-  strm.Free;
-  sc := TScriptEngine.Create(buf.Text);
-  buf.free;
-
-  sc.MustGetInteger;
-  voxelsize := sc._Integer;
-
-  voxelbuffer := @vx_membuffer[0];
-  R_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  xx := 0;
-  yy := 0;
-  zz := 0;
-  while sc.GetString do
-  begin
-    if sc.MatchString('skip') then
-    begin
-      sc.MustGetInteger;
-      inc(zz, sc._Integer);
-    end
-    else
-    begin
-      sc.UnGet;
-      sc.MustGetInteger;
-      voxelbuffer[xx, yy, zz].color := SwapRGB(sc._Integer);
-      inc(zz);
-    end;
-    if zz = voxelsize then
-    begin
-      zz := 0;
-      inc(yy);
-      if yy = voxelsize then
-      begin
-        yy := 0;
-        inc(xx);
-        if xx = voxelsize then
-          Break;
-      end;
-    end;
-  end;
-
-  sc.Free;
-
-  R_OptimizeVoxelBuffer(voxelbuffer, voxelsize);
-  R_PrepareVoxelColumns(voxelbuffer, voxelsize);
-  result := R_VoxelColumnsFromBuffer(voxelbuffer, voxelsize, offset, scale);
-end;
-
-type
-  ddmeshitem_t = packed record
-    x, y, z: byte;
-    color: LongWord;
-  end;
-  ddmeshitem_p = ^ddmeshitem_t;
-  ddmeshitem_a = array[0..$FFF] of ddmeshitem_t;
-  ddmeshitem_pa = ^ddmeshitem_a;
-
-//==============================================================================
-//
-// R_LoadDDMESH
-//
-//==============================================================================
-function R_LoadDDMESH(const fname: string; const offset, scale: fixed_t): voxelcolumns_p;
-var
-  strm: TPakStream;
-  voxelbuffer: voxelbuffer_p;
-  voxelsize: integer;
-  i: integer;
-  HDR: LongWord;
-  version: integer;
-  numquads: integer;
-  fnumvoxels: Integer;
-  buf: ddmeshitem_pa;
-  item: ddmeshitem_p;
-begin
-  strm := TPakStream.Create(fname, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  strm.Read(HDR, SizeOf(LongWord));
-  if HDR <> Ord('D') + Ord('D') shl 8 + Ord('M') shl 16 + Ord('S') shl 24 then
-  begin
-    I_Warning('R_LoadDDMESH(): File %s does not have DDMESH magic header!', [fname]);
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  strm.Read(version, SizeOf(integer));
-  if version <> 1 then
-  begin
-    I_Warning('R_LoadDDMESH(): File %s is from unsupported version = %d!', [fname, version]);
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  strm.Read(voxelsize, SizeOf(integer));
-
-  strm.Read(numquads, SizeOf(integer));
-
-  voxelbuffer := @vx_membuffer[0];
-  R_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  // Skip OpenGL data
-  strm.Seek(16 + numquads * (4 * 3 * SizeOf(Integer) + SizeOf(LongWord)), sFromBeginning);
-
-  strm.Read(fnumvoxels, SizeOf(integer));
-
-  buf := malloc(fnumvoxels * SizeOf(ddmeshitem_t));
-
-  strm.Read(buf^, fnumvoxels * SizeOf(ddmeshitem_t));
-  strm.Free;
-
-  item := @buf[0];
-  for i := 0 to fnumvoxels - 1 do
-  begin
-    voxelbuffer[item.x, item.y, item.z].color := SwapRGB(item.color);
-    Inc(item);
-  end;
-
-  memfree(pointer(buf), fnumvoxels * SizeOf(ddmeshitem_t));
-
-  // We don't call R_OptimizeVoxelBuffer(), mesh is already optimized
-  R_PrepareVoxelColumns(voxelbuffer, voxelsize);
-  result := R_VoxelColumnsFromBuffer(voxelbuffer, voxelsize, offset, scale);
-end;
-
-const
-  MAXKVXSIZE = 256;
-
-type
-  kvxbuffer_t = array[0..MAXKVXSIZE - 1, 0..MAXKVXSIZE - 1, 0..MAXKVXSIZE - 1] of word;
-  kvxbuffer_p = ^kvxbuffer_t;
-
-type
-  kvxslab_t = record
-    ztop: byte;     // starting z coordinate of top of slab
-    zleng: byte;    // # of bytes in the color array - slab height
-    backfacecull: byte;  // low 6 bits tell which of 6 faces are exposed
-    col: array[0..255] of byte;// color data from top to bottom
-  end;
-  kvxslab_p = ^kvxslab_t;
-
-//==============================================================================
-//
-// R_LoadKVX
-//
-//==============================================================================
-function R_LoadKVX(const fn: string; const offset, scale: fixed_t): voxelcolumns_p;
-var
-  strm: TDStream;
-  pal: array[0..255] of LongWord;
-  i: integer;
-  x1, y1, z1: integer;
-  r, g, b: byte;
-  buf: PByteArray;
-  numbytes: integer;
-  xsiz, ysiz, zsiz, xpivot, ypivot, zpivot: integer;
-  xoffset: PIntegerArray;
-  xyoffset: PSmallIntPArray;
-  voxdata: PByteArray;
-  xx, yy, zz: integer;
-  slab: kvxslab_p;
-  kvxbuffer: kvxbuffer_p;
-  voxdatasize: integer;
-  offs: integer;
-  endptr: PByte;
-  voxelbuffer: voxelbuffer_p;
-  voxelsize: integer;
+  vp: voxelitem_p;
   idx: integer;
-  maxpal: integer;
-  cc: integer;
-  palfactor: double;
-  lump: integer;
-  len: integer;
-  s1, s2, s3: string;
 begin
-  strm := TPakStream.Create(fn, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    strm := TPakStream.Create(fn, pm_directory, '', FOLDER_VOXELS);
-  end;
-  if strm.IOResult <> 0 then
-    if CharPos('.', fn) = 0 then
-    begin
-      s1 := fn + '.KVX';
-      strm.Free;
-      strm := TPakStream.Create(s1, pm_prefered, gamedirectories, FOLDER_VOXELS);
-      if strm.IOResult <> 0 then
-      begin
-        strm.Free;
-        strm := TPakStream.Create(s1, pm_directory, '', FOLDER_VOXELS);
-      end;
-    end;
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    s1 := fname(fn);
-    splitstring_ch(s1, s2, s3, '.');
-    lump := W_CheckNumForName(s2, TYPE_VOXEL);
-    if lump < 0 then
-    begin
-      result := nil;
-      Exit;
-    end;
-    len := W_LumpLength(lump);
-    buf := malloc(len);
-    W_ReadLump(lump, buf);
-    strm := TDMemoryStream.Create;
-    strm.Write(buf^, len);
-    strm.Seek(0, sFromBeginning);
-    memfree(pointer(buf), len);
-  end;
+  result := nil;
+  if (r_voxelloader = nil) or (r_voxelcubes = nil) then
+    I_Error('R_LoadVoxelColumns(): The voxel loader is not configured');
 
-  if strm.Size < 768 + 28 then
-  begin
-    strm.Free;
-    result := nil;
+  model := r_voxelloader.Load(name);
+  if model = nil then
     Exit;
-  end;
 
-  strm.Seek(768, sFromEnd);
-  maxpal := 0;
-  for i := 0 to 255 do
-  begin
-    strm.Read(r, SizeOf(Byte));
-    if r > maxpal then
-      maxpal := r;
-    strm.Read(g, SizeOf(Byte));
-    if g > maxpal then
-      maxpal := g;
-    strm.Read(b, SizeOf(Byte));
-    if b > maxpal then
-      maxpal := b;
-    pal[i] := r shl 16 + g shl 8 + b;
-    if pal[i] = 0 then
-      pal[i] := $01;
-  end;
-  if (maxpal < 255) and (maxpal > 0) then
-  begin
-    palfactor := 255 / maxpal;
-    if palfactor > 4.0 then
-      palfactor := 4.0;
-    for i := 0 to 255 do
+  cube := r_voxelcubes.Build(model, cfRenderer);
+  voxelsize := cube.Size;
+  cells := cube.Cells;
+
+  voxelbuffer := @vx_membuffer[0];
+  R_ClearVoxelBuffer(voxelbuffer, voxelsize);
+  idx := 0;
+  for xx := 0 to voxelsize - 1 do
+    for yy := 0 to voxelsize - 1 do
     begin
-      r := pal[i] shr 16;
-      g := pal[i] shr 8;
-      b := pal[i];
-      cc := round(palfactor * r);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      r := cc;
-      cc := round(palfactor * g);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      g := cc;
-      cc := round(palfactor * b);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      b := cc;
-      pal[i] := r shl 16 + g shl 8 + b;
-    end;
-  end;
-
-  strm.Seek(0, sFromBeginning);
-  strm.Read(numbytes, SizeOf(Integer));
-  strm.Read(xsiz, SizeOf(Integer));
-  strm.Read(ysiz, SizeOf(Integer));
-  strm.Read(zsiz, SizeOf(Integer));
-  strm.Read(xpivot, SizeOf(Integer));
-  strm.Read(ypivot, SizeOf(Integer));
-  strm.Read(zpivot, SizeOf(Integer));
-  xoffset := malloc((xsiz + 1) * SizeOf(Integer));
-  xyoffset := malloc(xsiz * SizeOf(PSmallIntArray));
-  for i := 0 to xsiz - 1 do
-    xyoffset[i] := malloc((ysiz + 1) * SizeOf(SmallInt));
-  strm.Read(xoffset^, (xsiz + 1) * SizeOf(Integer));
-  for i := 0 to xsiz - 1 do
-    strm.Read(xyoffset[i]^, (ysiz + 1) * SizeOf(SmallInt));
-  offs := xoffset[0];
-  voxdatasize := numbytes - 24 - (xsiz + 1) * 4 - xsiz * (ysiz + 1) * 2;
-  voxdata := malloc(voxdatasize);
-  strm.Read(voxdata^, voxdatasize);
-  strm.Free;
-
-  kvxbuffer := @vx_membuffer[0];
-
-  for xx := 0 to xsiz - 1 do
-    for yy := 0 to ysiz - 1 do
-      for zz := 0 to zsiz - 1 do
-        kvxbuffer[xx, yy, zz] := $FFFF;
-
-  for xx := 0 to xsiz - 1 do
-  begin
-    for yy := 0 to ysiz - 1 do
-    begin
-      endptr := @voxdata[xoffset[xx] + xyoffset[xx][yy + 1] - offs];
-      slab := @voxdata[xoffset[xx] + xyoffset[xx][yy] - offs];
-      while Integer(slab) < integer(endptr) do
+      vp := @voxelbuffer[xx, yy, 0];
+      for zz := 0 to voxelsize - 1 do
       begin
-        for zz := slab.ztop to slab.zleng + slab.ztop - 1 do
-          kvxbuffer[xx, yy, zz] := slab.col[zz - slab.ztop];
-        slab := kvxslab_p(integer(slab) + slab.zleng + 3);
+        vp.color := cells[idx];
+        Inc(idx);
+        Inc(vp);
       end;
     end;
-  end;
 
-  voxelsize := xsiz;
-  if voxelsize < ysiz then
-    voxelsize := ysiz;
-  if voxelsize < zsiz then
-    voxelsize := zsiz;
-  if voxelsize < 256 then
-    inc(voxelsize);
-{  if voxelsize < 256 then
-  begin
-    inc(voxelsize, 2);
-    voxelsize := voxelsize and not 1;
-  end;}
-
-  idx := SizeOf(kvxbuffer_t);
-  voxelbuffer := @vx_membuffer[idx];
-  R_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  x1 := voxelsize div 2 - xpivot div 256;
-  y1 := voxelsize div 2 - ypivot div 256;
-  z1 := voxelsize - zpivot div 256; // JVAL: Align down
-  if x1 < 0 then
-    x1 := 0;
-  if y1 < 0 then
-    y1 := 0;
-  if z1 < 0 then
-    z1 := 0;
-  while x1 + xsiz >= voxelsize do
-    dec(x1);
-  while y1 + ysiz >= voxelsize do
-    dec(y1);
-  while z1 + zsiz >= voxelsize do
-    dec(z1);
-
-  for xx := x1 to x1 + xsiz - 1 do
-    for yy := y1 to y1 + ysiz - 1 do
-      for zz := z1 to z1 + zsiz - 1 do
-        if kvxbuffer[xx - x1, yy - y1, zz - z1] <> $FFFF then
-          voxelbuffer[xx, zz, voxelsize - yy - 1].color := pal[kvxbuffer[xx - x1, yy - y1, zz - z1]];
-
-  R_OptimizeVoxelBuffer(voxelbuffer, voxelsize);
+  // a DDMESH is already optimized
+  if model.Format <> vfDdmesh then
+    R_OptimizeVoxelBuffer(voxelbuffer, voxelsize);
   R_PrepareVoxelColumns(voxelbuffer, voxelsize);
   result := R_VoxelColumnsFromBuffer(voxelbuffer, voxelsize, offset, scale);
-
-  for i := 0 to xsiz - 1 do
-    memfree(pointer(xyoffset[i]), (ysiz + 1) * SizeOf(SmallInt));
-  memfree(pointer(xoffset), (xsiz + 1) * SizeOf(Integer));
-  memfree(pointer(xyoffset), xsiz * SizeOf(PSmallIntArray));
-  memfree(pointer(voxdata), voxdatasize);
 end;
 
 //==============================================================================
 //
-// R_LoadSlab6VOX
-// JVAL 20191004 Support for slab6 VOX files
+// R_ConfigureVoxelLoading
 //
 //==============================================================================
-function R_LoadSlab6VOX(const fn: string; const offset, scale: fixed_t): voxelcolumns_p;
-var
-  strm: TDStream;
-  pal: array[0..255] of LongWord;
-  i: integer;
-  r, g, b: byte;
-  xsiz, ysiz, zsiz: integer;
-  voxdatasize: integer;
-  voxdata: PByteArray;
-  voxelbuffer: voxelbuffer_p;
-  voxelsize: integer;
-  xx, yy, zz: integer;
-  x1, y1, z1: integer;
-  maxpal: integer;
-  cc: integer;
-  palfactor: double;
+procedure R_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
 begin
-  strm := TPakStream.Create(fn, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  if strm.Size < 768 + 12 then
-  begin
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  strm.Seek(768, sFromEnd);
-  maxpal := 0;
-  for i := 0 to 255 do
-  begin
-    strm.Read(r, SizeOf(Byte));
-    if r > maxpal then
-      maxpal := r;
-    strm.Read(g, SizeOf(Byte));
-    if g > maxpal then
-      maxpal := g;
-    strm.Read(b, SizeOf(Byte));
-    if b > maxpal then
-      maxpal := b;
-    pal[i] := r shl 16 + g shl 8 + b;
-    if pal[i] = 0 then
-      pal[i] := $01;
-  end;
-  if (maxpal < 255) and (maxpal > 0) then
-  begin
-    palfactor := 255 / maxpal;
-    if palfactor > 4.0 then
-      palfactor := 4.0;
-    for i := 0 to 255 do
-    begin
-      r := pal[i] shr 16;
-      g := pal[i] shr 8;
-      b := pal[i];
-      cc := round(palfactor * r);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      r := cc;
-      cc := round(palfactor * g);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      g := cc;
-      cc := round(palfactor * b);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      b := cc;
-      pal[i] := r shl 16 + g shl 8 + b;
-    end;
-  end;
-
-  strm.Seek(0, sFromBeginning);
-  strm.Read(xsiz, SizeOf(Integer));
-  strm.Read(ysiz, SizeOf(Integer));
-  strm.Read(zsiz, SizeOf(Integer));
-
-  if (xsiz <= 0) or (xsiz > 256) or
-     (ysiz <= 0) or (ysiz > 256) or
-     (zsiz <= 0) or (zsiz > 256) then
-  begin
-    strm.Free;
-    result := nil;
-    Exit;
-  end;
-
-  voxelsize := xsiz;
-  if voxelsize < ysiz then
-    voxelsize := ysiz;
-  if voxelsize < zsiz then
-    voxelsize := zsiz;
-
-  voxdatasize := xsiz * ysiz * zsiz;
-  GetMem(voxdata, voxdatasize);
-  strm.Read(voxdata^, voxdatasize);
-  strm.Free;
-
-  x1 := (voxelsize - xsiz) div 2;
-  y1 := (voxelsize - ysiz) div 2;
-  z1 := (voxelsize - zsiz) div 2;
-
-  voxelbuffer := @vx_membuffer[0];
-  R_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  i := 0;
-  for xx := x1 to x1 + xsiz - 1 do
-    for yy := y1 to y1 + ysiz - 1 do
-      for zz := z1 to z1 + zsiz - 1 do
-      begin
-        if voxdata[i] <> 255 then
-          voxelbuffer[xx, zz, voxelsize - yy - 1].color := pal[voxdata[i]];
-        inc(i);
-      end;
-  memfree(pointer(voxdata), voxdatasize);
-
-  R_OptimizeVoxelBuffer(voxelbuffer, voxelsize);
-  R_PrepareVoxelColumns(voxelbuffer, voxelsize);
-  result := R_VoxelColumnsFromBuffer(voxelbuffer, voxelsize, offset, scale);
+  r_voxelloader := ALoader;
+  r_voxelcubes := ACubes;
 end;
 
 //==============================================================================
@@ -1560,32 +1087,18 @@ begin
   fscale := scale;
   fflags := flags;
 
-  if ext = '.DDMESH' then
+  if (r_voxelloader <> nil) and r_voxelloader.IsSupported(name) then
   begin
     fnumframes := 1;
-    frames.Add(integer(R_LoadDDMESH(name, offset, scale)));
-  end
-  else if ext = '.DDVOX' then
-  begin
-    fnumframes := 1;
-    frames.Add(integer(R_LoadDDVOX(name, offset, scale)));
-  end
-  else if (ext = '.KVX') or (ext = '') then
-  begin
-    fnumframes := 1;
-    frames.Add(integer(R_LoadKVX(name, offset, scale)));
-  end
-  else if ext = '.VOX' then
-  begin
-    fnumframes := 1;
-    frames.Add(integer(R_LoadSlab6VOX(name, offset, scale)));
+    frames.Add(integer(R_LoadVoxelColumns(name, offset, scale)));
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);
 
   fradius := 0;
   for i := 0 to frames.Count - 1 do
-    if voxelcolumns_p(frames.Numbers[i]).range > fradius then
+    if frames.Numbers[i] <> 0 then // a voxel file that is not there has no columns
+      if voxelcolumns_p(frames.Numbers[i]).range > fradius then
       fradius := voxelcolumns_p(frames.Numbers[i]).range;
 end;
 
@@ -1636,7 +1149,7 @@ procedure R_InitVoxels;
 var
   size: integer;
 begin
-  size := SizeOf(voxelbuffer_t) + SizeOf(kvxbuffer_t);
+  size := SizeOf(voxelbuffer_t);
   vx_membuffer := malloc(size);
   VX_InitVoxels;
   memfree(pointer(vx_membuffer), size);

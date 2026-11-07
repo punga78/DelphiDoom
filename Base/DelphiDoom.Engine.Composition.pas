@@ -130,6 +130,19 @@ uses
   DelphiDoom.Engine.ActorDef.Hooks,
   DelphiDoom.Engine.ActorDef.SoundInfoListener,
   sc_actordef,
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Voxel.Factory,
+  DelphiDoom.Engine.Voxel.FileSource,
+  DelphiDoom.Engine.Voxel.ColorMapper,
+  DelphiDoom.Engine.Voxel.DefinitionLookup,
+  DelphiDoom.Engine.Voxel.DefinitionSink,
+  vx_base,
+  vx_voxelsprite,
+{$IFDEF OPENGL}
+  gl_voxels,
+{$ELSE}
+  r_voxels,
+{$ENDIF}
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
@@ -500,6 +513,25 @@ begin
     LAliases);
 end;
 
+procedure ComposeVoxels(const ALog: ILog);
+var
+  LLoader: IVoxelLoader;
+  LCubes: IVoxelCubeBuilder;
+begin
+  LLoader := TVoxelFactory.CreateLoader(TEngineVoxelFileSource.Create, ALog);
+  LCubes := TVoxelFactory.CreateCubeBuilder;
+{$IFDEF OPENGL}
+  gld_ConfigureVoxelLoading(LLoader, LCubes);
+{$ELSE}
+  R_ConfigureVoxelLoading(LLoader, LCubes);
+{$ENDIF}
+  VX_ConfigureVoxelSprites(LLoader, LCubes,
+    TVoxelFactory.CreatePatchBuilder(TEngineVoxelColorMapper.Create));
+  VX_ConfigureVoxels(
+    TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
+    TEngineVoxelDefinitionSink.Create);
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -542,6 +574,7 @@ begin
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);
+  ComposeVoxels(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
