@@ -1,0 +1,8 @@
+uses
+  all;
+
+event OnTick(const tick: Integer);
+begin
+  if tick > 3 then
+  begin
+    Exit;

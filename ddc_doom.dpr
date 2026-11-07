@@ -884,5 +884,6 @@ exports
 
 begin
   ComposeEngine;
+  DD_InitDoomEngine;
 end.
 

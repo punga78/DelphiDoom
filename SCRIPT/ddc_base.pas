@@ -73,95 +73,10 @@ function dll_getpcharfunc(const game: string; const funcpr: string): TStringList
 
 //==============================================================================
 //
-// dll_getconstants
-//
-//==============================================================================
-function dll_getconstants(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_getvariables
-//
-//==============================================================================
-function dll_getvariables(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_gettypes
-//
-//==============================================================================
-function dll_gettypes(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_getclassesdeclarations
-//
-//==============================================================================
-function dll_getclassesdeclarations(const game: string): TStringList;
-
-//==============================================================================
-//
 // dll_getdisassembly
 //
 //==============================================================================
 function dll_getdisassembly(const game: string; const pcode: string): string;
-
-//==============================================================================
-//
-// dll_getevents
-//
-//==============================================================================
-function dll_getevents(const game: string): string;
-
-//==============================================================================
-//
-// dll_getactordeffunctions
-//
-//==============================================================================
-function dll_getactordeffunctions(const game: string): TStringList;
-
-//==============================================================================
-//
-// csvlinetolist
-//
-//==============================================================================
-function csvlinetolist(const s: string): TStringList;
-
-//==============================================================================
-//
-// dll_getmobjinfodeclarations
-//
-//==============================================================================
-function dll_getmobjinfodeclarations(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_getstatesdeclarations
-//
-//==============================================================================
-function dll_getstatesdeclarations(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_getspritenames
-//
-//==============================================================================
-function dll_getspritenames(const game: string): TStringList;
-
-//==============================================================================
-//
-// dll_getstatesdeclarations2
-//
-//==============================================================================
-function dll_getstatesdeclarations2(const game: string): TStringList;
-
-//==============================================================================
-//
-// getcolumnfromcsv
-//
-//==============================================================================
-function getcolumnfromcsv(const csv: TStringList; const cname: string): TStringList;
-
 implementation
 
 uses
@@ -277,7 +192,8 @@ begin
   end;
 
   clen := Length(code);
-  GetMem(_inp, clen);
+  // the buffers hold characters of the dll's PChar (two bytes each since Delphi 2009)
+  GetMem(_inp, clen * SizeOf(Char));
   for i := 1 to clen do
     _inp[i - 1] := code[i];
 
@@ -287,16 +203,16 @@ begin
   mlen := plen1;
   mlen1 := plen1;
 
-  GetMem(_out, plen);
-  GetMem(_msgs, mlen);
+  GetMem(_out, plen * SizeOf(Char));
+  GetMem(_msgs, mlen * SizeOf(Char));
 
   Result := func(_inp, clen, _out, plen, _msgs, mlen);
   if (plen > plen1) or (mlen > mlen1) then
   begin
     FreeMem(_out, plen1);
     FreeMem(_msgs, mlen1);
-    GetMem(_out, plen);
-    GetMem(_msgs, mlen);
+    GetMem(_out, plen * SizeOf(Char));
+    GetMem(_msgs, mlen * SizeOf(Char));
     plen1 := plen;
     mlen1 := mlen;
     Result := func(_inp, clen, _out, plen, _msgs, mlen);
@@ -380,8 +296,8 @@ begin
 
   Result := TStringList.Create;
 
-  GetMem(unitnames, MAXALLOCSIZE);
-  GetMem(unitdecls, MAXALLOCSIZE);
+  GetMem(unitnames, MAXALLOCSIZE * SizeOf(Char));
+  GetMem(unitdecls, MAXALLOCSIZE * SizeOf(Char));
 
   unitnameslen := MAXALLOCSIZE;
   funcunits(unitnames, unitnameslen);
@@ -456,7 +372,7 @@ begin
 
   Result := TStringList.Create;
 
-  GetMem(outp, MAXALLOCSIZE);
+  GetMem(outp, MAXALLOCSIZE * SizeOf(Char));
   outlen := MAXALLOCSIZE;
   func(outp, outlen);
 
@@ -471,85 +387,6 @@ begin
 
   FreeMem(outp, MAXALLOCSIZE);
   localFreeLibrary(inst);
-end;
-
-//==============================================================================
-//
-// dll_getconstants
-//
-//==============================================================================
-function dll_getconstants(const game: string): TStringList;
-begin
-  Result := dll_getpcharfunc(game, 'dd_getconstants_');
-end;
-
-//==============================================================================
-//
-// dll_getvariables
-//
-//==============================================================================
-function dll_getvariables(const game: string): TStringList;
-begin
-  Result := dll_getpcharfunc(game, 'dd_getvariables_');
-end;
-
-//==============================================================================
-//
-// dll_gettypes
-//
-//==============================================================================
-function dll_gettypes(const game: string): TStringList;
-begin
-  Result := dll_getpcharfunc(game, 'dd_gettypes_');
-end;
-
-//==============================================================================
-//
-// dll_getclassesdeclarations
-//
-//==============================================================================
-function dll_getclassesdeclarations(const game: string): TStringList;
-var
-  lst: TStringList;
-  i, j, k: integer;
-  b: boolean;
-  s, s1, s2: string;
-  decl: TStringList;
-  declu: TStringList;
-begin
-  lst := dll_getpcharfunc(game, 'dd_getclasses_');
-  if lst = nil then
-  begin
-    Result := nil;
-    Exit;
-  end;
-  decl := TStringList.Create;
-  Result := TStringList.Create;
-  for i := 0 to lst.Count - 1 do
-  begin
-    s := lst.Strings[i];
-    s1 := '';
-    s2 := '';
-    b := False;
-    for j := 1 to Length(s) do
-    begin
-      if b then
-        s2 := s2 + s[j]
-      else if s[j] = '=' then
-        b := True
-      else
-        s1 := s1 + s[j];
-    end;
-    s2 := StringReplace(s2, '|', #13#10, [rfReplaceAll]);
-    decl.Text := s2;
-    declu := TStringList.Create;
-    for k := 0 to decl.Count - 1 do
-      if declu.IndexOf(decl.Strings[k]) < 0 then
-        declu.Add(decl.Strings[k]);
-    Result.AddObject(s1, declu);
-  end;
-  lst.Free;
-  decl.Free;
 end;
 
 type
@@ -593,10 +430,10 @@ begin
   end;
 
   inplen := Length(pcode);
-  GetMem(inpp, inplen);
+  GetMem(inpp, inplen * SizeOf(Char));
   for i := 0 to inplen - 1 do
     inpp[i] := pcode[i + 1];
-  GetMem(outp, MAXALLOCSIZE);
+  GetMem(outp, MAXALLOCSIZE * SizeOf(Char));
   outlen := MAXALLOCSIZE;
   func(inpp, inplen, outp, outlen);
 
@@ -612,338 +449,5 @@ begin
   localFreeLibrary(inst);
 end;
 
-//==============================================================================
-//
-// dll_getevents
-//
-//==============================================================================
-function dll_getevents(const game: string): string;
-var
-  lst: TStringList;
-begin
-  lst := dll_getpcharfunc(game, 'dd_getevents_');
-  if lst = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := lst.Text;
-  lst.Free;
-end;
-
-//==============================================================================
-//
-// dll_getactordeffunctions
-//
-//==============================================================================
-function dll_getactordeffunctions(const game: string): TStringList;
-begin
-  Result := dll_getpcharfunc(game, 'dd_getactordeffunctions_');
-end;
-
-//==============================================================================
-//
-// stripquotes
-//
-//==============================================================================
-function stripquotes(const s: string): string;
-begin
-  if Length(s) < 2 then
-  begin
-    Result := s;
-    Exit;
-  end;
-  if (s[1] = '"') and (s[Length(s)] = '"') then
-    Result := Copy(s, 2, Length(s) - 2)
-  else
-    Result := s;
-end;
-
-//==============================================================================
-//
-// csvlinetolist
-//
-//==============================================================================
-function csvlinetolist(const s: string): TStringList;
-var
-  i: integer;
-  token: string;
-begin
-  Result := TStringList.Create;
-  token := '';
-  for i := 1 to Length(s) do
-  begin
-    if s[i] = ';' then
-    begin
-      Result.Add(stripquotes(token));
-      token := '';
-    end
-    else
-      token := token + s[i];
-  end;
-  token := stripquotes(token);
-  if token <> '' then
-    Result.Add(token);
-end;
-
-//==============================================================================
-//
-// csvexpandfracunit
-//
-//==============================================================================
-function csvexpandfracunit(const s: string): string;
-var
-  check: string;
-  num: integer;
-begin
-  num := StrToIntDef(s, -1);
-  if num < 65536 then
-  begin
-    Result := s;
-    Exit;
-  end;
-
-  check := IntToStr(num);
-  if check <> s then
-  begin
-    Result := s;
-    Exit;
-  end;
-
-  if num mod 65536 <> 0 then
-  begin
-    Result := s;
-    Exit;
-  end;
-
-  if num = 65536 then
-    Result := 'FRACUNIT'
-  else
-    Result := IntToStr(num div 65536) + ' * FRACUNIT';
-end;
-
-//==============================================================================
-//
-// dll_getmobjinfodeclarations
-//
-//==============================================================================
-function dll_getmobjinfodeclarations(const game: string): TStringList;
-var
-  mlst: TStringList;
-  i, j: integer;
-  declu: TStringList;
-  mheader: TStringList;
-  mline: TStringList;
-begin
-  mlst := dll_getpcharfunc(game, 'dd_getmobjinfocsv_');
-  if mlst = nil then
-  begin
-    Result := nil;
-    Exit;
-  end;
-  if mlst.Count = 0 then
-  begin
-    mlst.Free;
-    Result := nil;
-    Exit;
-  end;
-
-  Result := TStringList.Create;
-  mheader := csvlinetolist(mlst.Strings[0]);
-
-  for i := 1 to mlst.Count - 1 do
-  begin
-    mline := csvlinetolist(mlst.Strings[i]);
-    if mline.Count = mheader.Count then
-    begin
-      declu := TStringList.Create;
-      for j := 0 to mline.Count - 1 do
-        declu.Add(mheader[j] + ': ' + csvexpandfracunit(mline[j]));
-      Result.AddObject(mline[1], declu);
-    end;
-    mline.Free;
-  end;
-  mlst.Free;
-  mheader.Free;
-end;
-
-//==============================================================================
-//
-// dll_getstatesdeclarations
-//
-//==============================================================================
-function dll_getstatesdeclarations(const game: string): TStringList;
-var
-  slst: TStringList;
-  i, j: integer;
-  declu: TStringList;
-  sheader: TStringList;
-  sline: TStringList;
-begin
-  slst := dll_getpcharfunc(game, 'dd_getstatescsv_');
-  if slst = nil then
-  begin
-    Result := nil;
-    Exit;
-  end;
-  if slst.Count = 0 then
-  begin
-    slst.Free;
-    Result := nil;
-    Exit;
-  end;
-
-  Result := TStringList.Create;
-  sheader := csvlinetolist(slst.Strings[0]);
-
-  for i := 1 to slst.Count - 1 do
-  begin
-    sline := csvlinetolist(slst.Strings[i]);
-    if sline.Count = sheader.Count then
-    begin
-      declu := TStringList.Create;
-      for j := 0 to sline.Count - 1 do
-        declu.Add(sheader[j] + ': ' + sline[j]);
-      Result.AddObject('State #' + sline[0], declu);
-    end;
-    sline.Free;
-  end;
-  slst.Free;
-  sheader.Free;
-end;
-
-//==============================================================================
-//
-// dll_getspritenames
-//
-//==============================================================================
-function dll_getspritenames(const game: string): TStringList;
-var
-  sprlst: TStringList;
-  i: integer;
-  sprheader: TStringList;
-  sprline: TStringList;
-begin
-  sprlst := dll_getpcharfunc(game, 'dd_getspritescsv_');
-  if sprlst = nil then
-  begin
-    Result := nil;
-    Exit;
-  end;
-  if sprlst.Count = 0 then
-  begin
-    sprlst.Free;
-    Result := nil;
-    Exit;
-  end;
-
-  Result := TStringList.Create;
-  sprheader := csvlinetolist(sprlst.Strings[0]);
-
-  for i := 1 to sprlst.Count - 1 do
-  begin
-    sprline := csvlinetolist(sprlst.Strings[i]);
-    if sprline.Count = sprheader.Count then
-      if sprline.Count = 2 then
-        Result.Add(sprline.Strings[1]);
-    sprline.Free;
-  end;
-  sprlst.Free;
-  sprheader.Free;
-end;
-
-//==============================================================================
-//
-// dll_getstatesdeclarations2
-//
-//==============================================================================
-function dll_getstatesdeclarations2(const game: string): TStringList;
-var
-  slst: TStringList;
-  i, j: integer;
-  declu: TStringList;
-  sheader: TStringList;
-  sline: TStringList;
-begin
-  slst := dll_getpcharfunc(game, 'dd_getstatescsv_');
-  if slst = nil then
-  begin
-    Result := nil;
-    Exit;
-  end;
-  if slst.Count = 0 then
-  begin
-    slst.Free;
-    Result := nil;
-    Exit;
-  end;
-
-  Result := TStringList.Create;
-  sheader := csvlinetolist(slst.Strings[0]);
-
-  for i := 1 to slst.Count - 1 do
-  begin
-    sline := csvlinetolist(slst.Strings[i]);
-    if sline.Count = sheader.Count then
-    begin
-      declu := TStringList.Create;
-      for j := 0 to sline.Count - 1 do
-        declu.Add(sheader[j] + ': ' + sline[j]);
-      Result.AddObject(sline[0], declu);
-    end;
-    sline.Free;
-  end;
-  slst.Free;
-  sheader.Free;
-end;
-
-//==============================================================================
-//
-// getcolumnfromcsv
-//
-//==============================================================================
-function getcolumnfromcsv(const csv: TStringList; const cname: string): TStringList;
-var
-  i, idx: integer;
-  sheader: TStringList;
-  lst: TStringList;
-begin
-  Result := TStringList.Create;
-
-  if csv = nil then
-    Exit;
-
-  if csv.Count = 0 then
-    Exit;
-
-  sheader := csvlinetolist(csv.Strings[0]);
-
-  if sheader = nil then
-    Exit;
-
-  idx := -1;
-  for i := 0 to sheader.Count - 1 do
-    if UpperCase(cname) = UpperCase(sheader.Strings[i]) then
-    begin
-      idx := i;
-      Break;
-    end;
-
-  sheader.Free;
-
-  if idx = -1 then
-    Exit;
-
-  for i := 1 to csv.Count - 1 do
-  begin
-    lst := csvlinetolist(csv.Strings[i]);
-    if idx < lst.Count then
-      Result.Add(lst.Strings[idx])
-    else
-      Result.Add('');
-    lst.Free;
-  end;
-end;
 
 end.
-

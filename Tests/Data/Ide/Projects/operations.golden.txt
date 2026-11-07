@@ -1,0 +1,21 @@
+count after add=3
+data=version|1.0\r\ngame|doom\r\nscript|one.ddscript\r\nactor|two.txt\r\ncompiledscript|three.ddout\r\n
+count after delete=2
+count after bad deletes=2
+game=heretic
+game after unknown=heretic
+can rename missing=False
+exec rename empty=False
+rename new=True
+rename onto existing item=False
+item=script|renamed.ddscript
+item=compiledscript|three.ddout
+-- log
+NORMAL|Loading "<dir>\ops.ddide"\r\n
+NORMAL|Loading "<dir>\one.ddscript"\r\n
+NORMAL|Loading "<dir>\two.txt"\r\n
+NORMAL|Loading "<dir>\three.ddout"\r\n
+WARNING|Unknown game type "nothing"\r\n
+NORMAL|Saving "<dir>\renamed.ddscript"\r\n
+INFO|File "one.ddscript" saved in new file "renamed.ddscript"\r\n
+ERROR|TIDEProject.ExecRename(): Can not rename "renamed.ddscript" to "three.ddout". "three.ddout" already in project\r\n

@@ -1,0 +1,28 @@
+game=heretic
+count=2
+item=none|Level.ddscript
+item=none|Things.txt
+data=version|1.0\r\ngame|heretic\r\nnone|Level.ddscript\r\nnone|Things.txt\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\Level.ddscript"\r\n
+NORMAL|Loading "<dir>\Things.txt"\r\n
+NORMAL|Loading "<dir>\heretic_mixed_case.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|heretic\r\nnone|Level.ddscript\r\nnone|Things.txt\r\n
+file=heretic_mixed_case.ddide
+file=level.ddscript
+file=level.ddscript_<date>
+file=saved.ddide
+file=things.txt
+file=things.txt_<date>
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\Level.ddscript"\r\n
+NORMAL|Saving "<dir>\Things.txt"\r\n

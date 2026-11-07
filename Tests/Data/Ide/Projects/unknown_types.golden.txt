@@ -1,0 +1,33 @@
+game=doom
+count=3
+item=none|bar.txt
+item=project|nested.ddide
+item=script|ok.ddscript
+data=version|1.0\r\ngame|doom\r\nnone|bar.txt\r\nproject|nested.ddide\r\nscript|ok.ddscript\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\bar.txt"\r\n
+NORMAL|Loading "<dir>\nested.ddide"\r\n
+NORMAL|Loading "<dir>\ok.ddscript"\r\n
+NORMAL|Loading "<dir>\unknown_types.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\nnone|bar.txt\r\nproject|nested.ddide\r\nscript|ok.ddscript\r\n
+file=bar.txt
+file=bar.txt_<date>
+file=nested.ddide
+file=nested.ddide_<date>
+file=ok.ddscript
+file=ok.ddscript_<date>
+file=saved.ddide
+file=unknown_types.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\bar.txt"\r\n
+NORMAL|Saving "<dir>\nested.ddide"\r\n
+NORMAL|Saving "<dir>\ok.ddscript"\r\n

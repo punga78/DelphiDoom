@@ -1,0 +1,15 @@
+uses
+  all;
+
+var
+  counter: Integer;
+
+event OnTick(const tick: Integer);
+begin
+  counter := counter + tick;
+end;
+
+event OnTimerEverySecond(const second: Integer);
+begin
+  counter := second * 2;
+end;

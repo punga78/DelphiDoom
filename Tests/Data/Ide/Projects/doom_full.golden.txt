@@ -1,0 +1,32 @@
+game=doom
+count=4
+item=script|main.ddscript
+item=script|scripts\second.ddscript
+item=actor|actors\monsters.txt
+item=compiledscript|compiled\main.ddout
+data=version|1.0\r\ngame|doom\r\nscript|main.ddscript\r\nscript|scripts\second.ddscript\r\nactor|actors\monsters.txt\r\ncompiledscript|compiled\main.ddout\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=True
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\main.ddscript"\r\n
+ERROR|Can not create file "<dir>\scripts\second.ddscript"\r\n
+ERROR|Can not create file "<dir>\actors\monsters.txt"\r\n
+ERROR|Can not create file "<dir>\compiled\main.ddout"\r\n
+NORMAL|Loading "<dir>\doom_full.ddide"\r\n
+save=False
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\nscript|main.ddscript\r\nscript|scripts\second.ddscript\r\nactor|actors\monsters.txt\r\ncompiledscript|compiled\main.ddout\r\n
+file=doom_full.ddide
+file=main.ddscript
+file=main.ddscript_<date>
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\main.ddscript"\r\n
+ERROR|Can not write file "<dir>\scripts\second.ddscript"\r\n
+ERROR|Can not write file "<dir>\actors\monsters.txt"\r\n
+ERROR|Can not write file "<dir>\compiled\main.ddout"\r\n

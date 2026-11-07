@@ -1,0 +1,24 @@
+game=doom
+count=1
+item=script|a.ddscript
+data=version|1.0\r\ngame|doom\r\nscript|a.ddscript\r\n
+modified=False
+find a.ddscript=True
+find main.ddscript=False
+find A.DDSCRIPT=True
+find missing=False
+find empty=False
+-- log
+WARNING|Unknown game type "quake"\r\n
+NORMAL|Loading "<dir>\a.ddscript"\r\n
+NORMAL|Loading "<dir>\unknown_game.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\nscript|a.ddscript\r\n
+file=a.ddscript
+file=a.ddscript_<date>
+file=saved.ddide
+file=unknown_game.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\a.ddscript"\r\n

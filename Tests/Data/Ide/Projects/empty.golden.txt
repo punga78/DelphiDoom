@@ -1,0 +1,18 @@
+game=doom
+count=0
+data=version|1.0\r\ngame|doom\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\empty.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\n
+file=empty.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n

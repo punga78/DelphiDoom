@@ -4,13 +4,22 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Buttons, ComCtrls, Menus, ActnList, ImgList, ide_project,
-  frm_projectmanager, AppEvnts, StdActns, StdCtrls, Clipbrd,
+  Dialogs, ExtCtrls, Buttons, ComCtrls, Menus, ActnList, ImgList,
+  frm_projectmanager, AppEvnts, StdActns, StdCtrls,
   frm_unitfunctions, frm_constants, frm_variables, frm_classes, frm_types,
-  frm_actordef, frm_mobjinfo, frm_states, frm_sprites;
+  frm_actordef, frm_mobjinfo, frm_states, frm_sprites,
+  frm_scripteditor,
+  DelphiDoom.Ide.Types, DelphiDoom.Ide.Intf, DelphiDoom.Ide.Project,
+  DelphiDoom.Ide.ProjectItem, DelphiDoom.Ide.MainPresenter, DelphiDoom.Ide.Views.Intf,
+  DelphiDoom.Ide.Composition;
 
 type
-  TForm1 = class(TForm)
+  /// <summary>
+  ///   The main window of the ide. It shows the project, the tabs of the editors, the panels of
+  ///   the library and the messages; what happens when the user asks something is decided by
+  ///   TIdeMainPresenter, which this window gives the names the user chose
+  /// </summary>
+  TForm1 = class(TForm, IIdeMainView)
     AboutButton1: TSpeedButton;
     ActionQuit: TAction;
     ActionAbout: TAction;
@@ -168,34 +177,29 @@ type
       State: TDragState; var Accept: Boolean);
     procedure Frame_ProjectManager1GameTypeComboBoxChange(Sender: TObject);
   private
-    { private declarations }
-    project: TIDEProject;
-    procedure CreateProjectObject(const fname: string);
-    procedure DoNewProject;
-    procedure DoOpenProject(const fname: string);
-    procedure NewProject;
-    procedure OpenProject;
-    procedure DoSave(const fname: string);
-    procedure Save;
-    procedure SaveAs;
-    procedure Quit;
-    procedure About;
-    procedure Undo;
-    procedure Redo;
-    function CheckCanClose: boolean;
-    function CheckCanCloseProjectItem(const x: TIDEProjectItem): boolean;
-    procedure ChangeGame(const newgame: string);
+    FServices: TIdeServices;
+    FPresenter: TIdeMainPresenter;
+    FFileDialogs: IIdeFileDialogs;
     function ActiveEditorFrame: TFrame;
-    function ProjectEditorFrame: TFrame;
-    procedure UpdateCaption;
-    procedure CloseAllProjectEditors;
-    procedure DoEditProjectItem(const it: TIDEProjectItem);
-    procedure DoDeleteProjectItem(const it: TIDEProjectItem);
-    function FindSelectedProjectItem: TIDEProjectItem;
-    function FindItemEditor(const pctrl: TPageControl; const obj: TIDEProjectItem): TFrame;
-    procedure LogOutput(const c: TColor; const s: string);
+    function FindItemEditor(const AItem: TIdeProjectItem): TFrame_ScriptEditor;
+    procedure SyncMessages;
+    { IIdeMainView }
+    procedure CloseAllEditors;
+    procedure ShowProject(const AProject: TIdeProject);
+    procedure SetCaptions(const AWindowCaption, ATabCaption: string);
+    procedure OpenEditor(const AItem: TIdeProjectItem);
+    procedure CloseEditor(const AItem: TIdeProjectItem);
+    function HasEditor(const AItem: TIdeProjectItem): Boolean;
+    procedure ActivateEditor(const AItem: TIdeProjectItem; const ACaption: string);
+    procedure UpdateLibraryGame(const AGame: string);
   public
-    { public declarations }
+    /// <summary>
+    ///   Gives the window the services it needs, and the window owns them from now on (it frees
+    ///   them when it is destroyed). It must be called before Start
+    /// </summary>
+    procedure Configure(const AServices: TIdeServices);
+    /// <summary>Opens the project of the command line, or starts a new one</summary>
+    procedure Start(const ACommandLineProject: string);
   end;
 
 var
@@ -208,99 +212,58 @@ implementation
 { TForm1 }
 
 uses
-  frm_scripteditor, ide_version, ide_utils, frm_message, ddc_base;
+  DelphiDoom.Ide.Win.FileDialogs;
 
-resourcestring
-  rsTitle = 'DelphiDOOM Script IDE';
+const
+  MESSAGE_COLORS: array[TIdeMessageKind] of TColor = (
+    TColor($100020), // normal
+    TColor($208020), // info
+    TColor($4040FF), // warning
+    TColor($2020FF)  // error
+  );
 
 //==============================================================================
 //
-// TForm1.ActionNewProjectExecute
+// TForm1.Configure
 //
 //==============================================================================
-procedure TForm1.ActionNewProjectExecute(Sender: TObject);
+procedure TForm1.Configure(const AServices: TIdeServices);
 begin
-  NewProject;
+  FServices := AServices;
+  FFileDialogs := TVclIdeFileDialogs.Create(OpenProjectDialog, SaveProjectDialog,
+    AddNewActorDialog1, AddNewScriptDialog1, AddNewCompiledScriptDialog1,
+    GeneratePK3SaveDialog, SaveMessagesDialog);
+  FServices.Log.OnChanged :=
+    procedure
+    begin
+      SyncMessages;
+    end;
+  FPresenter := TIdeMainPresenter.Create(Self, FServices.FileSystem, FServices.Log,
+    FServices.Clock, FServices.MessageDialogs, FFileDialogs, FServices.Busy, FServices.Clipboard,
+    FServices.GameLibrary, FServices.Pk3Builder,
+    function: string
+    begin
+      Result := FServices.VersionText;
+    end, FServices.Title);
+  Frame_UnitFunctions1.Configure(FServices);
+  Frame_Constants1.Configure(FServices);
+  Frame_Variables1.Configure(FServices);
+  Frame_Classes1.Configure(FServices);
+  Frame_Types1.Configure(FServices);
+  Frame_Actordef1.Configure(FServices);
+  Frame_Mobjinfo1.Configure(FServices);
+  Frame_States1.Configure(FServices);
+  Frame_Sprites1.Configure(FServices);
 end;
 
 //==============================================================================
 //
-// TForm1.ActionAboutExecute
+// TForm1.Start
 //
 //==============================================================================
-procedure TForm1.ActionAboutExecute(Sender: TObject);
+procedure TForm1.Start(const ACommandLineProject: string);
 begin
-  About;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionOpenProjectExecute
-//
-//==============================================================================
-procedure TForm1.ActionOpenProjectExecute(Sender: TObject);
-begin
-  OpenProject;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionQuitExecute
-//
-//==============================================================================
-procedure TForm1.ActionQuitExecute(Sender: TObject);
-begin
-  Quit;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionRedoExecute
-//
-//==============================================================================
-procedure TForm1.ActionRedoExecute(Sender: TObject);
-begin
-  Redo;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionSaveAsExecute
-//
-//==============================================================================
-procedure TForm1.ActionSaveAsExecute(Sender: TObject);
-begin
-  SaveAs;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionSaveExecute
-//
-//==============================================================================
-procedure TForm1.ActionSaveExecute(Sender: TObject);
-begin
-  Save;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionUndoExecute
-//
-//==============================================================================
-procedure TForm1.ActionUndoExecute(Sender: TObject);
-begin
-  Undo;
-end;
-
-//==============================================================================
-//
-// TForm1.FormCloseQuery
-//
-//==============================================================================
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-begin
-  CanClose := CheckCanClose;
+  FPresenter.Start(ACommandLineProject);
 end;
 
 //==============================================================================
@@ -314,266 +277,74 @@ begin
   LibraryPanel.Width := 16;
   LibraryPageControl.ActivePageIndex := 0;
   MessagesListBox.Style := lbOwnerDrawFixed;
-  outproc := LogOutput;
-  project := nil;
-
-  if ParamCount > 1 then
-    DoOpenProject(ParamStr(1))
-  else
-    DoNewProject;
 end;
 
 //==============================================================================
 //
-// TForm1.CreateProjectObject
+// TForm1.FormDestroy
 //
 //==============================================================================
-procedure TForm1.CreateProjectObject(const fname: string);
+procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  if project <> nil then
-    project.Free;
-
-  project := TIDEProject.Create(fname);
-  project.projectquerymodifieditem := CheckCanCloseProjectItem;
-  project.projectonchangegame := ChangeGame;
-  project.Game := 'doom';
-  project.Editor := ProjectEditorFrame;
+  if FServices <> nil then
+    FServices.Log.OnChanged := nil;
+  FreeAndNil(FPresenter);
+  FreeAndNil(FServices);
 end;
 
 //==============================================================================
 //
-// TForm1.DoNewProject
+// TForm1.FormCloseQuery
 //
 //==============================================================================
-procedure TForm1.DoNewProject;
-var
-  TabSheet: TTabSheet;
+procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  CloseAllProjectEditors;
-
-  TabSheet := PageControl2.ActivePage;
-  if TabSheet = nil then
-    Exit;
-
-  CreateProjectObject('');
-  UpdateCaption;
+  CanClose := FPresenter.CheckCanClose;
 end;
 
 //==============================================================================
 //
-// TForm1.NewProject
+// the actions
 //
 //==============================================================================
-procedure TForm1.NewProject;
+procedure TForm1.ActionNewProjectExecute(Sender: TObject);
 begin
-  if not CheckCanClose then
-    Exit;
-
-  DoNewProject;
+  FPresenter.NewProject;
 end;
 
-//==============================================================================
-//
-// TForm1.DoOpenProject
-//
-//==============================================================================
-procedure TForm1.DoOpenProject(const fname: string);
-var
-  TabSheet: TTabSheet;
+procedure TForm1.ActionAboutExecute(Sender: TObject);
 begin
-  CloseAllProjectEditors;
-
-  TabSheet := PageControl2.ActivePage;
-  if TabSheet = nil then
-    Exit;
-
-  CreateProjectObject(fname);
-  UpdateCaption;
+  FPresenter.About;
 end;
 
-//==============================================================================
-//
-// TForm1.OpenProject
-//
-//==============================================================================
-procedure TForm1.OpenProject;
+procedure TForm1.ActionOpenProjectExecute(Sender: TObject);
 begin
-  if not CheckCanClose then
-    Exit;
-
-  if OpenProjectDialog.Execute then
-    DoOpenProject(OpenProjectDialog.FileName);
+  FPresenter.OpenProject;
 end;
 
-//==============================================================================
-//
-// TForm1.DoSave
-//
-//==============================================================================
-procedure TForm1.DoSave(const fname: string);
-begin
-  if project = nil then
-    Exit;
-
-  Screen.Cursor := crHourGlass;
-  try
-    project.SaveToFile(fname);
-    UpdateCaption;
-  finally
-    Screen.Cursor := crDefault;
-  end;
-end;
-
-//==============================================================================
-//
-// TForm1.Save
-//
-//==============================================================================
-procedure TForm1.Save;
-begin
-  if project = nil then
-    Exit;
-
-  if project.FileName = '' then
-  begin
-    SaveAs;
-    Exit;
-  end;
-
-  DoSave(project.FileName);
-end;
-
-//==============================================================================
-//
-// TForm1.SaveAs
-//
-//==============================================================================
-procedure TForm1.SaveAs;
-begin
-  if project = nil then
-    Exit;
-
-  if SaveProjectDialog.Execute then
-    DoSave(SaveProjectDialog.FileName);
-end;
-
-//==============================================================================
-//
-// TForm1.Undo
-//
-//==============================================================================
-procedure TForm1.Undo;
-begin
-  if project = nil then
-    Exit;
-
-  if project.CanUndo then
-    project.Undo;
-end;
-
-//==============================================================================
-//
-// TForm1.Redo
-//
-//==============================================================================
-procedure TForm1.Redo;
-begin
-  if project = nil then
-    Exit;
-
-  if project.CanRedo then
-    project.Redo;
-end;
-
-//==============================================================================
-//
-// TForm1.Quit
-//
-//==============================================================================
-procedure TForm1.Quit;
+procedure TForm1.ActionQuitExecute(Sender: TObject);
 begin
   Close;
 end;
 
-//==============================================================================
-//
-// TForm1.About
-//
-//==============================================================================
-procedure TForm1.About;
+procedure TForm1.ActionRedoExecute(Sender: TObject);
 begin
-  IDEMessage(
-    Format(
-      '%s'#13#10'Version ' + I_VersionBuilt +
-      #13#10#13#10'A tool for creating SCRIPTS for the DelphiDoom engine.'#13#10'© 2016 - 2022, jvalavanis@gmail.com',
-      [rsTitle]));
+  FPresenter.Redo;
 end;
 
-//==============================================================================
-//
-// TForm1.CheckCanClose
-//
-//==============================================================================
-function TForm1.CheckCanClose: boolean;
-var
-  ret: integer;
+procedure TForm1.ActionSaveAsExecute(Sender: TObject);
 begin
-  if project <> nil then
-    if project.Modified then
-    begin
-      ret := MessageBox(Handle, 'Do you want to save changes?', PChar(rsTitle), MB_YESNOCANCEL or MB_ICONQUESTION or MB_APPLMODAL);
-      if ret = IDCANCEL then
-      begin
-        Result := false;
-        Exit;
-      end;
-      if ret = IDNO then
-      begin
-        Result := True;
-        Exit;
-      end;
-      if ret = IDYES then
-      begin
-        ActionSaveExecute(self);
-        Result := not project.Modified;
-        Exit;
-      end;
-    end;
-  Result := True;
+  FPresenter.SaveAs;
 end;
 
-//==============================================================================
-//
-// TForm1.CheckCanCloseProjectItem
-//
-//==============================================================================
-function TForm1.CheckCanCloseProjectItem(const x: TIDEProjectItem): boolean;
-var
-  ret: integer;
+procedure TForm1.ActionSaveExecute(Sender: TObject);
 begin
-  if project <> nil then
-  begin
-    ret := MessageBox(Handle,
-      PChar('Do you want to save changes to "' + x.RelativePath + '"?'),
-      PChar(rsTitle), MB_YESNOCANCEL or MB_ICONQUESTION or MB_APPLMODAL);
-    if ret = IDCANCEL then
-    begin
-      Result := false;
-      Exit;
-    end;
-    if ret = IDNO then
-    begin
-      Result := True;
-      Exit;
-    end;
-    if ret = IDYES then
-    begin
-      x.SaveToFile(x.Filename);
-      Result := not x.Modified;
-      Exit;
-    end;
-  end;
-  Result := True;
+  FPresenter.Save;
+end;
+
+procedure TForm1.ActionUndoExecute(Sender: TObject);
+begin
+  FPresenter.Undo;
 end;
 
 //==============================================================================
@@ -603,427 +374,99 @@ begin
   Result := nil;
 end;
 
-//==============================================================================
-//
-// TForm1.ProjectEditorFrame
-//
-//==============================================================================
-function TForm1.ProjectEditorFrame: TFrame;
-begin
-  Result := Frame_ProjectManager1;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionGoToLineNumberExecute
-//
-//==============================================================================
 procedure TForm1.ActionGoToLineNumberExecute(Sender: TObject);
 var
   frm: TFrame;
 begin
   frm := ActiveEditorFrame;
-  if frm = nil then
-    Exit;
-
   if frm is TFrame_ScriptEditor then
     (frm as TFrame_ScriptEditor).GoToLineNumber;
 end;
 
-//==============================================================================
-//
-// TForm1.UpdateCaption
-//
-//==============================================================================
-procedure TForm1.UpdateCaption;
-var
-  TabSheet: TTabSheet;
-begin
-  TabSheet := PageControl2.ActivePage;
-  if TabSheet = nil then
-    Exit;
-
-  if project = nil then
-    Exit;
-
-  TabSheet.Caption := DefItemName(project.ShortFileName);
-
-  Caption := rsTitle + ' - ' + TabSheet.Caption;
-end;
-
-//==============================================================================
-//
-// TForm1.ApplicationEvents1Hint
-//
-//==============================================================================
-procedure TForm1.ApplicationEvents1Hint(Sender: TObject);
-begin
-  StatusBar1.Panels[0].Text := Application.Hint;
-end;
-
-procedure TForm1.Frame_ProjectManager1AddActorButton1Click(
-  Sender: TObject);
-var
-  i: integer;
-begin
-  if AddNewActorDialog1.Execute then
-  begin
-    for i := 0 to AddNewActorDialog1.Files.Count - 1 do
-      project.Add(AddNewActorDialog1.Files[i], pi_actor);
-    project.AdjustLayout(project.data);
-  end;
-end;
-
-//==============================================================================
-//
-// TForm1.CloseAllProjectEditors
-//
-//==============================================================================
-procedure TForm1.CloseAllProjectEditors;
-var
-  i: integer;
-begin
-  for i := PageControl1.PageCount - 1 downto 0 do
-    PageControl1.Pages[i].Free;
-end;
-
-//==============================================================================
-//
-// TForm1.DoEditProjectItem
-//
-//==============================================================================
-procedure TForm1.DoEditProjectItem(const it: TIDEProjectItem);
-var
-  frm: TFrame;
-  TabSheet: TTabSheet;
-begin
-  if not (it.ItemType in [pi_script, pi_compiledscript, pi_actor, pi_project]) then
-    Exit;
-
-  frm := FindItemEditor(PageControl1, it);
-  if frm <> nil then
-  begin
-    if frm.Parent is TTabSheet then
-    begin
-      PageControl1.ActivePage := (frm.Parent as TTabSheet);
-      Exit;
-    end;
-  end;
-
-  TabSheet := TTabSheet.Create(self);
-
-  TabSheet.PageControl := PageControl1;
-  TabSheet.Align := alClient;
-  TabSheet.Caption := it.RelativePath;
-  PageControl1.ActivePage := TabSheet;
-
-  frm := TFrame_ScriptEditor.Create(TabSheet);
-  frm.Parent := TabSheet;
-  frm.Align := alClient;
-  (frm as TFrame_ScriptEditor).obj := it;
-  it.Edit(frm);
-end;
-
-//==============================================================================
-//
-// TForm1.DoDeleteProjectItem
-//
-//==============================================================================
-procedure TForm1.DoDeleteProjectItem(const it: TIDEProjectItem);
-var
-  frm: TFrame;
-begin
-  frm := FindItemEditor(PageControl1, it);
-  if frm <> nil then
-    if frm.Parent is TTabSheet then
-      (frm.Parent as TTabSheet).Free;
-
-  if project <> nil then
-    project.Delete(it);
-end;
-
-//==============================================================================
-//
-// TForm1.FindItemEditor
-//
-//==============================================================================
-function TForm1.FindItemEditor(const pctrl: TPageControl; const obj: TIDEProjectItem): TFrame;
-var
-  TabSheet: TTabSheet;
-  i, j: integer;
-  frm: TFrame;
-begin
-  for i := pctrl.PageCount - 1 downto 0 do
-  begin
-    TabSheet := pctrl.Pages[i];
-    for j := 0 to TabSheet.ComponentCount - 1 do
-      if TabSheet.Components[j] is TFrame then
-      begin
-        frm := TabSheet.Components[j] as TFrame;
-        if frm.Parent = TabSheet then
-        begin
-          if frm is TFrame_ScriptEditor then
-            if (frm as TFrame_ScriptEditor).obj = obj then
-            begin
-              Result := frm;
-              Exit;
-            end;
-        end;
-      end;
-  end;
-
-  Result := nil;
-end;
-
-//==============================================================================
-//
-// TForm1.FindSelectedProjectItem
-//
-//==============================================================================
-function TForm1.FindSelectedProjectItem: TIDEProjectItem;
-var
-  node: TTreeNode;
-begin
-  Result := nil;
-
-  if project = nil then
-    Exit;
-
-  node := Frame_ProjectManager1.TreeView1.Selected;
-  if node = nil then
-    Exit;
-
-  Result := project.Find(node.Text);
-end;
-
-//==============================================================================
-//
-// TForm1.Frame_ProjectManager1TreeView1DblClick
-//
-//==============================================================================
-procedure TForm1.Frame_ProjectManager1TreeView1DblClick(Sender: TObject);
-var
-  it: TIDEProjectItem;
-begin
-  it := FindSelectedProjectItem;
-  if it = nil then
-    Exit;
-
-  DoEditProjectItem(it);
-end;
-
-procedure TForm1.Frame_ProjectManager1AddScriptButton1Click(
-  Sender: TObject);
-var
-  i: integer;
-begin
-  if AddNewScriptDialog1.Execute then
-  begin
-    for i := 0 to AddNewScriptDialog1.Files.Count - 1 do
-      project.Add(AddNewScriptDialog1.Files[i], pi_script);
-    project.AdjustLayout(project.data);
-  end;
-end;
-
-procedure TForm1.Frame_ProjectManager1AddCompiledScriptButton1Click(
-  Sender: TObject);
-var
-  i: integer;
-begin
-  if AddNewCompiledScriptDialog1.Execute then
-  begin
-    for i := 0 to AddNewCompiledScriptDialog1.Files.Count - 1 do
-      project.Add(AddNewCompiledScriptDialog1.Files[i], pi_compiledscript);
-    project.AdjustLayout(project.data);
-  end;
-end;
-
-//==============================================================================
-//
-// TForm1.ApplicationEvents1Idle
-//
-//==============================================================================
-procedure TForm1.ApplicationEvents1Idle(Sender: TObject;
-  var Done: Boolean);
-var
-  i: integer;
-begin
-  for i := PageControl1.PageCount - 1 downto 0 do
-    if not PageControl1.Pages[i].Enabled then
-      PageControl1.Pages[i].Free;
-  Done := True;
-end;
-
-//==============================================================================
-//
-// TForm1.LogOutput
-//
-//==============================================================================
-procedure TForm1.LogOutput(const c: TColor; const s: string);
-var
-  i: integer;
-  l: TStringList;
-begin
-  l := TStringList.Create;
-  try
-    l.Text := s;
-
-    while MessagesListBox.Items.Count >= 256 do
-      MessagesListBox.Items.Delete(0);
-
-    for i := 0 to l.Count - 1 do
-      MessagesListBox.Items.AddObject(l.Strings[i], Pointer(c));
-
-    MessagesListBox.ItemIndex := MessagesListBox.Items.Count - 1;
-  finally
-    l.Free;
-  end;
-end;
-
-//==============================================================================
-//
-// TForm1.ActionFindExecute
-//
-//==============================================================================
 procedure TForm1.ActionFindExecute(Sender: TObject);
 var
   frm: TFrame;
 begin
   frm := ActiveEditorFrame;
-  if frm = nil then
-    Exit;
-
   if frm is TFrame_ScriptEditor then
     (frm as TFrame_ScriptEditor).ShowSearchDialog;
 end;
 
-//==============================================================================
-//
-// TForm1.ActionReplaceExecute
-//
-//==============================================================================
 procedure TForm1.ActionReplaceExecute(Sender: TObject);
 var
   frm: TFrame;
 begin
   frm := ActiveEditorFrame;
-  if frm = nil then
-    Exit;
-
   if frm is TFrame_ScriptEditor then
     (frm as TFrame_ScriptEditor).ShowReplaceDialog;
 end;
 
-//==============================================================================
-//
-// TForm1.ActionSearchAgainExecute
-//
-//==============================================================================
 procedure TForm1.ActionSearchAgainExecute(Sender: TObject);
 var
   frm: TFrame;
 begin
   frm := ActiveEditorFrame;
-  if frm = nil then
-    Exit;
-
   if frm is TFrame_ScriptEditor then
     (frm as TFrame_ScriptEditor).SearchAgain;
 end;
 
+procedure TForm1.ApplicationEvents1Hint(Sender: TObject);
+begin
+  StatusBar1.Panels[0].Text := Application.Hint;
+end;
+
 //==============================================================================
 //
-// TForm1.Frame_ProjectManager1TreeView1Editing
+// the buttons and the tree of the project manager
 //
 //==============================================================================
+procedure TForm1.Frame_ProjectManager1AddActorButton1Click(Sender: TObject);
+begin
+  FPresenter.AddItems(ikActor);
+end;
+
+procedure TForm1.Frame_ProjectManager1AddScriptButton1Click(Sender: TObject);
+begin
+  FPresenter.AddItems(ikScript);
+end;
+
+procedure TForm1.Frame_ProjectManager1AddCompiledScriptButton1Click(Sender: TObject);
+begin
+  FPresenter.AddItems(ikCompiledScript);
+end;
+
+procedure TForm1.Frame_ProjectManager1TreeView1DblClick(Sender: TObject);
+begin
+  if Frame_ProjectManager1.TreeView1.Selected <> nil then
+    FPresenter.EditItem(Frame_ProjectManager1.TreeView1.Selected.Text);
+end;
+
+procedure TForm1.ActionProjectDeleteItemExecute(Sender: TObject);
+begin
+  if Frame_ProjectManager1.TreeView1.Selected <> nil then
+    FPresenter.DeleteItem(Frame_ProjectManager1.TreeView1.Selected.Text);
+end;
+
 procedure TForm1.Frame_ProjectManager1TreeView1Editing(Sender: TObject;
   Node: TTreeNode; var AllowEdit: Boolean);
 begin
-  if project = nil then
-  begin
-    AllowEdit := False;
-    Exit;
-  end;
-
-  if Node.Parent = nil then
-  begin
-    AllowEdit := False;
-    Exit;
-  end;
-
-  AllowEdit := project.CanRename(Node.Text);
+  AllowEdit := FPresenter.CanRename(Node.Text, Node.Parent = nil);
 end;
 
-//==============================================================================
-//
-// TForm1.Frame_ProjectManager1TreeView1Edited
-//
-//==============================================================================
 procedure TForm1.Frame_ProjectManager1TreeView1Edited(Sender: TObject;
   Node: TTreeNode; var S: String);
-var
-  it: TIDEProjectItem;
-  frm: TFrame;
 begin
-  if project = nil then
-    Exit;
+  S := FPresenter.Rename(Node.Text, S, Node.Parent = nil);
+end;
 
-  if S = Node.Text then
-    Exit;
-
-  if Node.Parent = nil then
-    Exit;
-
-  it := project.Find(Node.Text);
-  if it = nil then
-    Exit;
-
-  frm := FindItemEditor(PageControl1, it);
-
-  if project.Rename(Node.Text, S) then
-  begin
-    if frm <> nil then
-    begin
-      if frm.Parent is TTabSheet then
-      begin
-        PageControl1.ActivePage := (frm.Parent as TTabSheet);
-        PageControl1.ActivePage.Caption := it.RelativePath;
-        Exit;
-      end;
-    end;
-    S := it.RelativePath;
-  end
-  else
-    S := Node.Text;
+procedure TForm1.Frame_ProjectManager1GameTypeComboBoxChange(Sender: TObject);
+begin
+  Frame_ProjectManager1.GameTypeComboBoxChange(Sender);
 end;
 
 //==============================================================================
 //
-// TForm1.MessagesListBoxDrawItem
-//
-//==============================================================================
-procedure TForm1.MessagesListBoxDrawItem(Control: TWinControl;
-  Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var
-  log_color: TColor;
-begin
-  with Control as TListBox do
-  begin
-    log_color := TColor(Items.Objects[Index]);
-    if log_color = LOG_ERROR then
-      Canvas.Font.Style := [fsBold]
-    else
-      Canvas.Font.Style := [];
-
-    Canvas.FillRect(Rect);
-    Canvas.Font.Color := log_color;
-    Canvas.TextOut(Rect.Left + 2, Rect.Top, Items[Index]);
-  end;
-end;
-
-//==============================================================================
-//
-// TForm1.MenuItem3Click
+// the menus
 //
 //==============================================================================
 procedure TForm1.MenuItem3Click(Sender: TObject);
@@ -1037,117 +480,204 @@ begin
   ActionSearchAgain.Enabled := b;
 end;
 
-//==============================================================================
-//
-// TForm1.ActionProjectDeleteItemExecute
-//
-//==============================================================================
-procedure TForm1.ActionProjectDeleteItemExecute(Sender: TObject);
-var
-  it: TIDEProjectItem;
-begin
-  if project = nil then
-    Exit;
-
-  it := FindSelectedProjectItem;
-  if it = nil then
-    Exit;
-
-  DoDeleteProjectItem(it);
-
-  project.AdjustLayout(project.data);
-end;
-
-//==============================================================================
-//
-// TForm1.MenuItem10Click
-//
-//==============================================================================
 procedure TForm1.MenuItem10Click(Sender: TObject);
 begin
-  GeneratePK31.Enabled := (project <> nil) and (project.Count > 0);
+  GeneratePK31.Enabled := FPresenter.CanGeneratePk3;
 end;
 
-//==============================================================================
-//
-// TForm1.GeneratePK31Click
-//
-//==============================================================================
 procedure TForm1.GeneratePK31Click(Sender: TObject);
 begin
-  if project = nil then
-    Exit;
-
-  if project.Count = 0 then
-    Exit;
-
-  if GeneratePK3SaveDialog.Execute then
-    project.GeneratePK3(GeneratePK3SaveDialog.FileName);
+  FPresenter.GeneratePk3;
 end;
 
 //==============================================================================
 //
-// TForm1.Copy1Click
+// the tabs of the editors
 //
 //==============================================================================
-procedure TForm1.Copy1Click(Sender: TObject);
+procedure TForm1.ApplicationEvents1Idle(Sender: TObject; var Done: Boolean);
 var
-  idx: integer;
+  i: integer;
 begin
-  idx := MessagesListBox.ItemIndex;
-  if idx >= 0 then
-    Clipboard.AsText := MessagesListBox.Items[idx];
+  for i := PageControl1.PageCount - 1 downto 0 do
+    if not PageControl1.Pages[i].Enabled then
+      PageControl1.Pages[i].Free;
+  Done := True;
 end;
 
-//==============================================================================
-//
-// TForm1.Clearmessages1Click
-//
-//==============================================================================
-procedure TForm1.Clearmessages1Click(Sender: TObject);
+function TForm1.FindItemEditor(const AItem: TIdeProjectItem): TFrame_ScriptEditor;
+var
+  TabSheet: TTabSheet;
+  i, j: integer;
+  frm: TFrame;
 begin
-  MessagesListBox.Items.Clear;
+  for i := PageControl1.PageCount - 1 downto 0 do
+  begin
+    TabSheet := PageControl1.Pages[i];
+    for j := 0 to TabSheet.ComponentCount - 1 do
+      if TabSheet.Components[j] is TFrame then
+      begin
+        frm := TabSheet.Components[j] as TFrame;
+        if (frm.Parent = TabSheet) and (frm is TFrame_ScriptEditor) then
+          if (frm as TFrame_ScriptEditor).Item = AItem then
+          begin
+            Result := frm as TFrame_ScriptEditor;
+            Exit;
+          end;
+      end;
+  end;
+  Result := nil;
 end;
 
-//==============================================================================
-//
-// TForm1.SaveMessages1Click
-//
-//==============================================================================
-procedure TForm1.SaveMessages1Click(Sender: TObject);
+procedure TForm1.CloseAllEditors;
+var
+  i: integer;
 begin
-  if SaveMessagesDialog.Execute then
-    MessagesListBox.Items.SaveToFile(SaveMessagesDialog.FileName);
+  for i := PageControl1.PageCount - 1 downto 0 do
+    PageControl1.Pages[i].Free;
 end;
 
-//==============================================================================
-//
-// TForm1.ChangeGame
-//
-//==============================================================================
-procedure TForm1.ChangeGame(const newgame: string);
+procedure TForm1.ShowProject(const AProject: TIdeProject);
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    dll_loadlibrary(LowerCase(newgame));
-    Frame_UnitFunctions1.UpdateGameControls(LowerCase(newgame));
-    Frame_Constants1.UpdateGameControls(LowerCase(newgame));
-    Frame_Variables1.UpdateGameControls(LowerCase(newgame));
-    Frame_Classes1.UpdateGameControls(LowerCase(newgame));
-    Frame_Types1.UpdateGameControls(LowerCase(newgame));
-    Frame_Actordef1.UpdateGameControls(LowerCase(newgame));
-    Frame_Mobjinfo1.UpdateGameControls(LowerCase(newgame));
-    Frame_States1.UpdateGameControls(LowerCase(newgame));
-    Frame_Sprites1.UpdateGameControls(LowerCase(newgame));
-    dll_freelibrary;
-  finally
-    Screen.Cursor := crDefault;
+  Frame_ProjectManager1.AttachProject(AProject);
+end;
+
+procedure TForm1.SetCaptions(const AWindowCaption, ATabCaption: string);
+begin
+  if PageControl2.ActivePage = nil then
+    Exit;
+  PageControl2.ActivePage.Caption := ATabCaption;
+  Caption := AWindowCaption;
+end;
+
+procedure TForm1.OpenEditor(const AItem: TIdeProjectItem);
+var
+  frm: TFrame_ScriptEditor;
+  TabSheet: TTabSheet;
+begin
+  frm := FindItemEditor(AItem);
+  if frm <> nil then
+  begin
+    if frm.Parent is TTabSheet then
+    begin
+      PageControl1.ActivePage := (frm.Parent as TTabSheet);
+      Exit;
+    end;
+  end;
+
+  TabSheet := TTabSheet.Create(self);
+  TabSheet.PageControl := PageControl1;
+  TabSheet.Align := alClient;
+  TabSheet.Caption := AItem.RelativePath;
+  PageControl1.ActivePage := TabSheet;
+
+  frm := TFrame_ScriptEditor.Create(TabSheet);
+  frm.Parent := TabSheet;
+  frm.Align := alClient;
+  frm.Configure(FServices, AItem);
+end;
+
+procedure TForm1.CloseEditor(const AItem: TIdeProjectItem);
+var
+  frm: TFrame_ScriptEditor;
+begin
+  frm := FindItemEditor(AItem);
+  if frm <> nil then
+    if frm.Parent is TTabSheet then
+      (frm.Parent as TTabSheet).Free;
+end;
+
+function TForm1.HasEditor(const AItem: TIdeProjectItem): Boolean;
+var
+  frm: TFrame_ScriptEditor;
+begin
+  frm := FindItemEditor(AItem);
+  Result := (frm <> nil) and (frm.Parent is TTabSheet);
+end;
+
+procedure TForm1.ActivateEditor(const AItem: TIdeProjectItem; const ACaption: string);
+var
+  frm: TFrame_ScriptEditor;
+begin
+  frm := FindItemEditor(AItem);
+  if (frm <> nil) and (frm.Parent is TTabSheet) then
+  begin
+    PageControl1.ActivePage := (frm.Parent as TTabSheet);
+    PageControl1.ActivePage.Caption := ACaption;
   end;
 end;
 
+procedure TForm1.UpdateLibraryGame(const AGame: string);
+begin
+  Frame_UnitFunctions1.UpdateGameControls(AGame);
+  Frame_Constants1.UpdateGameControls(AGame);
+  Frame_Variables1.UpdateGameControls(AGame);
+  Frame_Classes1.UpdateGameControls(AGame);
+  Frame_Types1.UpdateGameControls(AGame);
+  Frame_Actordef1.UpdateGameControls(AGame);
+  Frame_Mobjinfo1.UpdateGameControls(AGame);
+  Frame_States1.UpdateGameControls(AGame);
+  Frame_Sprites1.UpdateGameControls(AGame);
+end;
+
 //==============================================================================
 //
-// TForm1.LibraryButton1Click
+// the message list
+//
+//==============================================================================
+procedure TForm1.SyncMessages;
+var
+  i: integer;
+begin
+  MessagesListBox.Items.BeginUpdate;
+  try
+    MessagesListBox.Items.Clear;
+    for i := 0 to FServices.Log.Count - 1 do
+      MessagesListBox.Items.AddObject(FServices.Log[i].Text,
+        Pointer(MESSAGE_COLORS[FServices.Log[i].Kind]));
+    MessagesListBox.ItemIndex := MessagesListBox.Items.Count - 1;
+  finally
+    MessagesListBox.Items.EndUpdate;
+  end;
+end;
+
+procedure TForm1.MessagesListBoxDrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+  log_color: TColor;
+begin
+  with Control as TListBox do
+  begin
+    log_color := TColor(Items.Objects[Index]);
+    if log_color = MESSAGE_COLORS[mkError] then
+      Canvas.Font.Style := [fsBold]
+    else
+      Canvas.Font.Style := [];
+
+    Canvas.FillRect(Rect);
+    Canvas.Font.Color := log_color;
+    Canvas.TextOut(Rect.Left + 2, Rect.Top, Items[Index]);
+  end;
+end;
+
+procedure TForm1.Copy1Click(Sender: TObject);
+begin
+  FPresenter.CopyMessage(MessagesListBox.ItemIndex);
+end;
+
+procedure TForm1.Clearmessages1Click(Sender: TObject);
+begin
+  FPresenter.ClearMessages;
+end;
+
+procedure TForm1.SaveMessages1Click(Sender: TObject);
+begin
+  FPresenter.SaveMessages;
+end;
+
+//==============================================================================
+//
+// the layout of the window
 //
 //==============================================================================
 procedure TForm1.LibraryButton1Click(Sender: TObject);
@@ -1173,45 +703,17 @@ begin
     LibraryPanel.Width := 16;
 end;
 
-//==============================================================================
-//
-// TForm1.LibraryPanelResize
-//
-//==============================================================================
 procedure TForm1.LibraryPanelResize(Sender: TObject);
 begin
   LibraryButton1.Down := LibraryPanel.Width >= 128;
 end;
 
-//==============================================================================
-//
-// TForm1.FormDestroy
-//
-//==============================================================================
-procedure TForm1.FormDestroy(Sender: TObject);
-begin
-  CloseAllProjectEditors;
-
-  if project <> nil then
-    project.Free;
-end;
-
-//==============================================================================
-//
-// TForm1.PageControl1MouseDown
-//
-//==============================================================================
 procedure TForm1.PageControl1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
    PageControl1.BeginDrag(False);
 end;
 
-//==============================================================================
-//
-// TForm1.PageControl1DragDrop
-//
-//==============================================================================
 procedure TForm1.PageControl1DragDrop(Sender, Source: TObject; X,
   Y: Integer);
 const
@@ -1234,22 +736,10 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// TForm1.PageControl1DragOver
-//
-//==============================================================================
 procedure TForm1.PageControl1DragOver(Sender, Source: TObject; X,
   Y: Integer; State: TDragState; var Accept: Boolean);
 begin
   Accept := Sender = PageControl1;
 end;
 
-procedure TForm1.Frame_ProjectManager1GameTypeComboBoxChange(
-  Sender: TObject);
-begin
-  Frame_ProjectManager1.GameTypeComboBoxChange(Sender);
-end;
-
 end.
-

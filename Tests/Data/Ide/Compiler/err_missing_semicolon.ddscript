@@ -1,0 +1,11 @@
+uses
+  all;
+
+var
+  a: Integer;
+
+event OnTick(const tick: Integer);
+begin
+  a := tick
+  a := a + 1;
+end;

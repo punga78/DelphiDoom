@@ -1,0 +1,23 @@
+game=hexen
+count=1
+item=script|last.ddscript
+data=version|1.0\r\ngame|hexen\r\nscript|last.ddscript\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\last.ddscript"\r\n
+NORMAL|Loading "<dir>\no_trailing_newline.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|hexen\r\nscript|last.ddscript\r\n
+file=last.ddscript
+file=last.ddscript_<date>
+file=no_trailing_newline.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\last.ddscript"\r\n

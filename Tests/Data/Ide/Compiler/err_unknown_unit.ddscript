@@ -1,0 +1,6 @@
+uses
+  nonexistentunit;
+
+event OnTick(const tick: Integer);
+begin
+end;
