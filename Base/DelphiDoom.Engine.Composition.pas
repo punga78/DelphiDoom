@@ -217,6 +217,8 @@ uses
   DelphiDoom.Audio.Factory,
   DelphiDoom.Engine.Audio.DirectSoundDevice,
   DelphiDoom.Engine.Audio.SfxSampleSource,
+  DelphiDoom.M2m.Engine,
+  DelphiDoom.Engine.Music.Intf,
   DelphiDoom.Engine.Music.ModuleBackend,
   DelphiDoom.Engine.Music.Mp3Backend,
   DelphiDoom.Engine.Music.Id3Backend,
@@ -226,6 +228,7 @@ uses
   DelphiDoom.Engine.Music.ExternalSource,
   DelphiDoom.Mp3.Provider,
   s_sound,
+  s_pk3sounds,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -244,9 +247,7 @@ uses
   m_menu,
   d_event,
   i_mainwindow,
-  i_sound,
   p_acs,
-  i_music,
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
@@ -412,7 +413,7 @@ begin
     begin
       Result := hMainWnd;
     end;
-  I_ConfigureSound(
+  S_ConfigureSound(
     function(AWithDevice: Boolean): ISfxPlayer
     var
       LDevice: ISoundDevice;
@@ -425,20 +426,26 @@ begin
         if not LDevice.Initialize then
           LDevice := nil;
       end;
-      Result := TAudioFactory.CreateSfxPlayer(LDevice, TEngineSfxSampleSource.Create, ALog);
+      Result := TAudioFactory.CreateSfxPlayer(LDevice, TEngineSfxSampleSource.Create(ALog), ALog);
     end);
 end;
 
 procedure ComposeMusic(const ATempFiles: ITempFiles);
+var
+  LMidiStream: IEngineMidiStream;
+  LMus: IMusicBackend;
 begin
+  // the midi stream of the MUS songs is closed by the backends of the MIDI files
+  LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create);
+  LMus := LMidiStream as IMusicBackend;
   // the order is the one in which a song is looked at: the first backend that knows it plays it
-  I_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
+  S_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
     TModuleMusicBackend.Create,
     TMp3MusicBackend.Create(TMp3Provider.Mp3),
     TId3MusicBackend.Create,
-    TXmiMusicBackend.Create(ATempFiles),
-    TMusMusicBackend.Create,
-    TMidiFileMusicBackend.Create(ATempFiles))));
+    TXmiMusicBackend.Create(ATempFiles, LMidiStream),
+    LMus,
+    TMidiFileMusicBackend.Create(ATempFiles, LMidiStream))));
   S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
     TEngineExternalMusicSource.Create));
 end;
@@ -919,6 +926,7 @@ begin
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic(LTempFiles);
+  S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog);
   ComposeImaging;
   ComposeScreenshot;

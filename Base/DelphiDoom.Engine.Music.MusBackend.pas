@@ -12,16 +12,49 @@ unit DelphiDoom.Engine.Music.MusBackend;
 interface
 
 uses
+  Winapi.MMSystem,
   DelphiDoom.Audio.Types,
+  DelphiDoom.M2m.Intf,
+  DelphiDoom.M2m.Client,
+  DelphiDoom.Engine.Music.Intf,
   DelphiDoom.Engine.Music.BackendBase;
 
 type
   /// <summary>
-  ///   MUS songs and the MIDI files that are converted to MUS, played with the midi stream of
-  ///   Windows. The song is the pointer that i_music gives; the song starts at Play
+  ///   MUS songs and the MIDI files that are converted to MUS (snd_uselegacymidiplayer = 2),
+  ///   played with the midi stream of Windows: the code of the old i_music (I_RegisterMus,
+  ///   I_*Mus). The events of a song come from TMusConverter; the stream is opened at the start
+  ///   and at every song, and the backends of the MIDI files close it through IEngineMidiStream
   /// </summary>
-  TMusMusicBackend = class(TEngineMusicBackendBase)
+  TMusMusicBackend = class(TEngineMusicBackendBase, IEngineMidiStream)
+  strict private
+    const
+      HEADER_COUNT = 2;
+    type
+      /// <summary>A song: its events, the events before the volume, and the two headers</summary>
+      TMusSong = record
+        Events: TArray<TMusMidiEvent>;
+        OriginalEvents: TArray<TMusMidiEvent>;
+        NextEvent: Integer;
+        Headers: array[0..HEADER_COUNT - 1] of TMidiHdr;
+      end;
+      PMusSong = ^TMusSong;
+    var
+      FConverter: TM2mClient;
+      FStream: HMIDISTRM;
+      FDevice: Cardinal;
+      FCapabilities: TMidiOutCaps;
+      FStarted: Boolean;
+      FVolumeSet: Integer;
+      FCurrent: PMusSong;
+    procedure Open;
+    procedure StopSong(ASong: PMusSong);
+    function TryConvertMidiFile(AData: Pointer; ASize: Integer; ASong: PMusSong): Boolean;
+    function TryConvert(AData: Pointer; ASize: Integer; ASong: PMusSong): Boolean;
   public
+    /// <summary>AM2m converts the MIDI files to MUS; EArgumentNilException if it is nil</summary>
+    constructor Create(const AM2m: IM2m);
+    destructor Destroy; override;
     procedure Initialize; override;
     procedure Shutdown; override;
     function Register(AData: Pointer; ASize: Integer;
@@ -33,67 +66,402 @@ type
     procedure Unregister(AContext: NativeInt); override;
     procedure SetVolume(AVolume: Integer); override;
     procedure Process; override;
+    /// <summary>IEngineMidiStream: the old I_StopMus</summary>
+    procedure Close;
   end;
 
 implementation
 
 uses
-  i_music;
+  System.SysUtils,
+  Winapi.Windows,
+  d_delphi,
+  m_argv,
+  i_system,
+  i_midi,
+  s_sound,
+  DelphiDoom.Audio.MusConverter;
+
+const
+  SM2mIsNil = 'TMusMusicBackend.Create(): AM2m is nil';
+  // the events given to the stream at a time
+  MAX_MIDI_EVENTS = 512;
 
 { TMusMusicBackend }
 
+constructor TMusMusicBackend.Create(const AM2m: IM2m);
+begin
+  inherited Create;
+  if not Assigned(AM2m) then
+    raise EArgumentNilException.Create(SM2mIsNil);
+  FConverter := TM2mClient.Create(AM2m);
+  FVolumeSet := -1;
+end;
+
+destructor TMusMusicBackend.Destroy;
+begin
+  FConverter.Free;
+  inherited Destroy;
+end;
+
 procedure TMusMusicBackend.Initialize;
 begin
-  I_InitMus;
+  Open;
 end;
 
 procedure TMusMusicBackend.Shutdown;
 begin
-  I_StopMus;
+  Close;
 end;
 
+// The old I_InitMus
+procedure TMusMusicBackend.Open;
+var
+  rc: MMRESULT;
+  numdev: LongWord;
+  i: integer;
+begin
+  if M_CheckParm('-nomusic') <> 0 then
+    exit;
+
+  if FStream <> 0 then
+    exit;
+
+  ZeroMemory(@FCapabilities, SizeOf(FCapabilities));
+  FDevice := I_SelectDefaultMidiDevice;
+
+  // First try midi mapper
+  rc := midiOutGetDevCaps(FDevice, @FCapabilities, SizeOf(FCapabilities));
+  if rc <> MMSYSERR_NOERROR then
+    I_Error('I_InitMusic(): midiOutGetDevCaps failed, return value = %d', [rc]);
+
+  // midiStreamOut not supported (should not happen with MIDI MAPPER...)
+  // Try to enumurate all midi devices
+  if FCapabilities.dwSupport and MIDICAPS_STREAM = 0 then
+  begin
+    numdev := midiOutGetNumDevs;
+    if numdev = 0 then // fatal
+      exit;
+
+    for i := -1 to numdev - 1 do
+    begin
+      rc := midiOutGetDevCaps(i, @FCapabilities, SizeOf(FCapabilities));
+      if rc <> MMSYSERR_NOERROR then
+        I_Error('I_InitMusic(): midiOutGetDevCaps failed, return value = %d', [rc]);
+
+      if FCapabilities.dwSupport and MIDICAPS_STREAM <> 0 then
+      begin
+        FDevice := i;
+        break;
+      end;
+    end;
+  end;
+
+  if FDevice = MIDI_MAPPER then
+    printf(' Using midi mapper'#13#10)
+  else
+    printf(' Using midi device %d'#13#10, [FDevice]);
+
+  rc := midiStreamOpen(@FStream, @FDevice, 1, 0, 0, CALLBACK_NULL);
+  if rc <> MMSYSERR_NOERROR then
+  begin
+    FStream := 0;
+    I_Warning('I_InitMusic(): midiStreamOpen failed, result = %d'#13#10, [rc]);
+  end;
+
+  FStarted := false;
+end;
+
+// The old I_StopMus
+procedure TMusMusicBackend.Close;
+var
+  rc: MMRESULT;
+begin
+  if FStream <> 0 then
+  begin
+    rc := midiStreamStop(FStream);
+    if rc <> MMSYSERR_NOERROR then
+      I_Warning('I_ShutDownMusic(): midiStreamStop failed, result = %d'#13#10, [rc]);
+
+    FStarted := false;
+    rc := midiStreamClose(FStream);
+    if rc <> MMSYSERR_NOERROR then
+      I_Warning('I_ShutDownMusic(): midiStreamClose failed, result = %d'#13#10, [rc]);
+
+    FStream := 0;
+  end;
+end;
+
+// The old I_StopMusicMus
+procedure TMusMusicBackend.StopSong(ASong: PMusSong);
+var
+  i: integer;
+  rc: MMRESULT;
+begin
+  if not ((ASong <> nil) and (FStream <> 0)) then
+    exit;
+
+  rc := midiOutReset(HMIDIOUT(FStream));
+  if rc <> MMSYSERR_NOERROR then
+    I_Warning('I_StopMusic(): midiOutReset failed, result = %d'#13#10, [rc]);
+
+  FStarted := false;
+
+  for i := 0 to HEADER_COUNT - 1 do
+  begin
+    if ASong.Headers[i].lpData <> nil then
+    begin
+      rc := midiOutUnprepareHeader(HMIDIOUT(FStream), @ASong.Headers[i], SizeOf(TMidiHdr));
+      if rc <> MMSYSERR_NOERROR then
+        I_Warning('I_StopMusic(): midiOutUnprepareHeader failed, result = %d'#13#10, [rc]);
+
+      ASong.Headers[i].lpData := nil;
+      ASong.Headers[i].dwFlags := MHDR_DONE or MHDR_ISSTRM;
+    end;
+  end;
+  ASong.NextEvent := 0;
+end;
+
+// The old I_MidToMus: a MIDI file converted to MUS, and the MUS to events
+function TMusMusicBackend.TryConvertMidiFile(AData: Pointer; ASize: Integer;
+  ASong: PMusSong): Boolean;
+var
+  LMus: TBytes;
+begin
+  Result := False;
+  if snd_uselegacymidiplayer <> 2 then
+    Exit;
+  if not TMusConverter.IsMidiFile(AData, ASize) then
+    Exit;
+
+  try
+    LMus := FConverter.ConvertMidiToMus(AData, ASize);
+  except
+    on EM2mException do
+      Exit;
+  end;
+
+  if not TMusConverter.IsMus(System.PByte(LMus), Length(LMus)) then
+    Exit;
+  Result := TryConvert(System.PByte(LMus), Length(LMus), ASong);
+end;
+
+// The old I_MusToMidi: an error of the song stops the game, as before
+function TMusMusicBackend.TryConvert(AData: Pointer; ASize: Integer; ASong: PMusSong): Boolean;
+begin
+  try
+    Result := TMusConverter.TryConvert(AData, ASize, miditempo, nil, ASong.Events);
+  except
+    on E: EMusConversionException do
+    begin
+      I_Error('%s', [E.Message]);
+      Result := False;
+    end;
+  end;
+  // the old code wrote the warning with I_Warning
+  if not Result and not TMusConverter.IsMidiFile(AData, ASize) then
+    I_Warning('I_MusToMidi(): Not a MUS file'#13#10);
+end;
+
+// The old I_RegisterMus
 function TMusMusicBackend.Register(AData: Pointer; ASize: Integer;
   out AContext: NativeInt): TMusicRegisterResult;
 var
-  LSong: Pointer;
+  LSong: PMusSong;
+  i: integer;
 begin
-  Result := I_RegisterMus(AData, ASize, LSong);
+  AContext := 0;
+  New(LSong);
+  LSong.NextEvent := 0;
+  ZeroMemory(@LSong.Headers, SizeOf(LSong.Headers));
+
+  if not (TryConvertMidiFile(AData, ASize, LSong) or TryConvert(AData, ASize, LSong)) then
+  begin
+    Dispose(LSong);
+    Result := TMusicRegisterResult.NotRecognized;
+    exit;
+  end;
+
+  FVolumeSet := -1; // Force music update
+  LSong.OriginalEvents := Copy(LSong.Events);
+
+  Open;
+
+  if FStream = 0 then
+  begin
+    // with -nomusic the midi stream is never opened: it is not worth a warning for each song
+    if M_CheckParm('-nomusic') = 0 then
+      I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
+    Dispose(LSong);
+    Result := TMusicRegisterResult.Failed;
+    exit;
+  end;
+
+  for i := 0 to HEADER_COUNT - 1 do
+  begin
+    LSong.Headers[i].lpData := nil;
+    LSong.Headers[i].dwFlags := MHDR_ISSTRM or MHDR_DONE;
+  end;
+
   AContext := NativeInt(LSong);
+  Result := TMusicRegisterResult.Registered;
 end;
 
 procedure TMusMusicBackend.Play(AContext: NativeInt; ALooping: Boolean);
 begin
-  I_PlayMus(Pointer(AContext));
+  if (AContext <> 0) and (FStream <> 0) then
+    FCurrent := PMusSong(AContext);
 end;
 
+// Stops a song over 3 seconds.
 procedure TMusMusicBackend.Stop(AContext: NativeInt);
 begin
-  I_StopSongMus(Pointer(AContext));
+  if (AContext <> 0) and (FStream <> 0) then
+  begin
+    StopSong(PMusSong(AContext));
+
+    if PMusSong(AContext) = FCurrent then
+      FCurrent := nil;
+  end;
 end;
 
 procedure TMusMusicBackend.Pause(AContext: NativeInt);
+var
+  rc: MMRESULT;
 begin
-  I_PauseSongMus(0);
+  if FStream = 0 then
+    exit;
+
+  rc := midiStreamPause(FStream);
+  if rc <> MMSYSERR_NOERROR then
+    I_Error('I_PauseSong(): midiStreamRestart failed, return value = %d', [rc]);
 end;
 
 procedure TMusMusicBackend.Resume(AContext: NativeInt);
+var
+  rc: MMRESULT;
 begin
-  I_ResumeSongMus(0);
+  if FStream = 0 then
+    exit;
+
+  rc := midiStreamRestart(FStream);
+  if rc <> MMSYSERR_NOERROR then
+    I_Error('I_ResumeSong(): midiStreamRestart failed, return value = %d', [rc]);
 end;
 
 procedure TMusMusicBackend.Unregister(AContext: NativeInt);
+var
+  LSong: PMusSong;
 begin
-  I_UnRegisterSongMus(Pointer(AContext));
+  if AContext = 0 then
+    exit;
+
+  LSong := PMusSong(AContext);
+  if LSong = FCurrent then
+    FCurrent := nil;
+  Dispose(LSong);
 end;
 
+// The old I_SetMusicVolumeMus. It wrote AVolume in snd_MusicVolume too: S_SetMusicVolume, the
+// only one that sets the volume, writes it at once after
 procedure TMusMusicBackend.SetVolume(AVolume: Integer);
+var
+  rc: MMRESULT;
+  dwEvent: DWORD;
+  vol100: integer;
+  ch: DWORD;
+  i: integer;
 begin
-  I_SetMusicVolumeMus(AVolume);
+// Set volume on output device.
+  if (FCurrent <> nil) and (AVolume = 0) and FStarted then
+    StopSong(FCurrent);
+
+  if win_vista_or_newer and (FCurrent <> nil) then
+  begin
+    vol100 := midivolumecontrol[ibetween(AVolume, 0, 15)];
+
+    for ch := 0 to 15 do
+    begin
+      dwEvent := MIDI_CTRLCHANGE or ch or (DWORD(MIDICTRL_VOLUME) shl 8) or (DWORD(vol100) shl 16);
+      midiOutShortMsg(HMIDIOUT(FStream), dwEvent);
+    end;
+
+    for i := 0 to Length(FCurrent.Events) - 1 do
+      if FCurrent.Events[i].Event and $000000F0 = MIDI_CTRLCHANGE then
+        if (FCurrent.Events[i].Event and $0000FF00) shr 8 = MIDICTRL_VOLUME then
+          FCurrent.Events[i].Event := (FCurrent.OriginalEvents[i].Event and $FF80FFFF) or (Cardinal(vol100) shl 16);
+  end
+  else
+  begin
+    if FCapabilities.dwSupport and MIDICAPS_VOLUME <> 0 then
+    begin
+      rc := midiOutSetVolume(HMIDIOUT(FStream),
+        _SHLW($FFFF * AVolume div 16, 16) or _SHLW(($FFFF * AVolume div 16), 0));
+      if rc <> MMSYSERR_NOERROR then
+        I_Warning('I_SetMusicVolume(): midiOutSetVolume failed, return value = %d'#13#10, [rc]);
+    end
+    else
+      I_Warning('I_SetMusicVolume(): Midi device dos not support volume control'#13#10);
+  end;
 end;
 
+// The old I_ProcessMusicMus: the headers that the stream has played get the next events
 procedure TMusMusicBackend.Process;
+var
+  header: PMidiHdr;
+  length: integer;
+  i: integer;
+  rc: MMRESULT;
 begin
-  I_ProcessMusicMus;
+  if (snd_MusicVolume = 0) or (FCurrent = nil) then
+    exit;
+
+  for i := 0 to HEADER_COUNT - 1 do
+  begin
+    header := @FCurrent.Headers[i];
+    if header.dwFlags and MHDR_DONE <> 0 then
+    begin
+      if header.lpData <> nil then
+      begin
+        rc := midiOutUnprepareHeader(HMIDIOUT(FStream), header, SizeOf(TMidiHdr));
+        if rc <> MMSYSERR_NOERROR then
+          I_Warning('I_ProcessMusic(): midiOutUnprepareHeader failed, result = %d'#13#10, [rc]);
+      end;
+
+      if FVolumeSet <> snd_MusicVolume then
+      begin
+        SetVolume(snd_MusicVolume);
+        FVolumeSet := snd_MusicVolume;
+      end;
+
+      header.lpData := PAnsiChar(@FCurrent.Events[FCurrent.NextEvent]);
+      length := System.Length(FCurrent.Events) - FCurrent.NextEvent;
+      if length > MAX_MIDI_EVENTS then
+      begin
+        length := MAX_MIDI_EVENTS;
+        FCurrent.NextEvent := FCurrent.NextEvent + MAX_MIDI_EVENTS;
+      end
+      else
+        FCurrent.NextEvent := 0;
+      length := length * SizeOf(TMusMidiEvent);
+      header.dwBufferLength := length;
+      header.dwBytesRecorded := length;
+      header.dwFlags := MHDR_ISSTRM;
+      rc := midiOutPrepareHeader(HMIDIOUT(FStream), header, SizeOf(TMidiHdr));
+      if rc <> MMSYSERR_NOERROR then
+        I_Error('I_ProcessMusic(): midiOutPrepareHeader failed, return value = %d', [rc]);
+      if not FStarted then
+      begin
+        rc := midiStreamRestart(FStream);
+        if rc <> MMSYSERR_NOERROR then
+          I_Error('I_ProcessMusic(): midiStreamRestart failed, return value = %d', [rc]);
+        FStarted := true;
+      end;
+      rc := midiStreamOut(FStream, header, SizeOf(TMidiHdr));
+      if rc <> MMSYSERR_NOERROR then
+        I_Error('I_ProcessMusic(): midiStreamOut failed, return value = %d', [rc]);
+    end;
+  end;
 end;
 
 end.

@@ -82,3 +82,12 @@ Tolte come facciate: `c_con.pas` (`TEngineConsoleScreen`), `m_misc.pas` (`TEngin
 - La tabella `TCheatTable` e `TCheatSequenceReader` di `Libs\Console` restano nella libreria senza chiamanti nel motore (già documentato come "non collegato"); tolte dai 12 `.dpr` insieme a `DelphiDoom.Logging.Recorder` (serve solo ai test).
 - `i_net.pas` resta: legge la riga di comando della rete per `TEngineNetGame.Start`.
 - Non verificati a runtime: il disegno dell'automap testurizzato (`am_textured` riceve la finestra come parametro: stessa aritmetica per costruzione), la rete con due macchine, gli screenshot da tasto e da `-shot` (stesso codice spostato nella classe), i salvataggi di Strife e Hexen con `TEngineFiles` (stesso codice).
+## #143 — Facciate dell'audio (fase 2, ondata 2)
+
+Cancellate `Base\i_sound.pas` e `Base\i_music.pas`; `s_pk3sounds` riceve `ITempFiles` (`S_ConfigurePK3Sounds`). Resta `Base\i_tmp.pas`, con chiamanti fuori dall'audio:
+
+- i savegame (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file temporaneo, `I_NewTempFile`) e `SCRIPT\ps_dll` (una DLL in un PAK copiata su file prima di `LoadLibrary`): procedure storiche senza un oggetto a cui darlo. Servirebbe un `ITempFiles` passato a `G_DoSaveGame`/`G_DoLoadGame` (o un oggetto dello stato degli script di mappa) e alla registrazione delle funzioni di PascalScript; circa mezza giornata, fuori dall'ondata (savegame).
+- `DelphiDoom.Engine.Scanner.PaletteGenerator` (creato da `sc_utils`, fetta dello scanner) e `DelphiDoom.Engine.Voxel.SpriteGenerator` (fetta voxel): classi del motore che possono riceverlo dal costruttore quando il loro chiamante è assemblato da `ComposeEngine`; poche righe ciascuna.
+- `i_system` (`I_ShutDownTempFiles`) e i quattro `d_main` (`I_InitTempFiles`): il ciclo di vita, resta finché restano i chiamanti sopra.
+
+`s_sound.pas` non è diventato una classe: tiene il player degli effetti, quello della musica e la cache delle musiche esterne ricevuti da `ComposeEngine` (`S_ConfigureSound`, `S_ConfigureMusic`, `S_ConfigureExternalMusic`) e li chiama direttamente. Portarlo a classe vuol dire portare i canali (`channels[]`, `sobjs`) e le circa 40 procedure `S_*` chiamate da tutto il gioco (azioni, thinker, menu, ACS): stima L, fuori dall'ondata.

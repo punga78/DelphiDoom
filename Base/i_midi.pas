@@ -102,6 +102,14 @@ procedure I_SetMusicVolumeMidi(volume: integer);
 //==============================================================================
 procedure I_ProcessMidi;
 
+//==============================================================================
+//
+// I_SelectDefaultMidiDevice
+// The midi device of -mididevice, or the midi mapper
+//
+//==============================================================================
+function I_SelectDefaultMidiDevice: LongWord;
+
 var
   snd_uselegacymidiplayer: integer = 2;
 
@@ -235,6 +243,21 @@ begin
     I_ProcessMidi_Legacy
   else
     I_ProcessMidi_New;
+end;
+
+//==============================================================================
+//
+// I_SelectDefaultMidiDevice
+//
+//==============================================================================
+function I_SelectDefaultMidiDevice: LongWord;
+var
+  p: integer;
+begin
+  result := MIDI_MAPPER;
+  p := M_CheckParm('-mididevice');
+  if (p > 0) and (p < myargc) then
+    result := atoui(myargv[p + 1], MIDI_MAPPER);
 end;
 
 end.

@@ -341,7 +341,6 @@ uses
   mt_utils,
   i_system,
   i_threads,
-  i_sound,
   DelphiDoom.Video.Types,
 {$IFDEF OPENGL}
   gl_main,
