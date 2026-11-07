@@ -46,6 +46,8 @@ uses
   DelphiDoom.Engine.Acs.Host,
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
+  DelphiDoom.Actions.Factory,
+  deh_base,
   deh_main,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Iwad.Intf,
@@ -325,6 +327,7 @@ begin
   if not TDehackedGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
   DEH_Configure(TDehackedFactory.CreateParser(LGame, ALog));
+  DEH_ConfigureActions(TActionsFactory.CreateRegistry);
 end;
 
 procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext);
