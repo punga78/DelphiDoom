@@ -25,12 +25,17 @@ uses
 type
   /// <summary>
   ///   Gives what the VOXELDEF parser finds to the voxel manager of vx_base (voxels, states and
-  ///   the names of the sprites that a voxel replaces). The renderers keep the offset and the
-  ///   scale as they have always done: fixed point in the software one (the offset in map
-  ///   units), floats in OpenGL.
+  ///   the names of the sprites that a voxel replaces). A voxel that is not there yet is read by
+  ///   the loader and becomes the model of the renderer (columns in the software one, a display
+  ///   list in OpenGL). The renderers keep the offset and the scale as they have always done:
+  ///   fixed point in the software one (the offset in map units), floats in OpenGL.
   /// </summary>
   TEngineVoxelDefinitionSink = class(TInterfacedObject, IVoxelDefinitionSink)
+  strict private
+    FLoader: IVoxelLoader;
+    FCubes: IVoxelCubeBuilder;
   public
+    constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
     function AddVoxel(const AItem: TVoxelDefinitionItem): Integer;
     procedure AddState(const AState: TVoxelDefinitionState);
     procedure CheckSprite(const ASpriteName, AVoxelName: string);
@@ -39,19 +44,39 @@ type
 implementation
 
 uses
-  {$IFNDEF OPENGL}
+  System.SysUtils,
+  {$IFDEF OPENGL}
+  gl_voxels,
+  {$ELSE}
   m_fixed,
   r_softgl,
+  r_voxels,
   {$ENDIF}
   vx_base;
 
 { TEngineVoxelDefinitionSink }
+
+constructor TEngineVoxelDefinitionSink.Create(const ALoader: IVoxelLoader;
+  const ACubes: IVoxelCubeBuilder);
+begin
+  inherited Create;
+  if not Assigned(ALoader) then
+    raise EArgumentNilException.Create('ALoader');
+  if not Assigned(ACubes) then
+    raise EArgumentNilException.Create('ACubes');
+  FLoader := ALoader;
+  FCubes := ACubes;
+end;
 
 function TEngineVoxelDefinitionSink.AddVoxel(const AItem: TVoxelDefinitionItem): Integer;
 var
   LItem: voxelmanageritem_t;
 begin
   LItem.name := ShortString(AItem.Name);
+  Result := VX_FindVoxel(string(LItem.name));
+  if Result >= 0 then
+    Exit;
+
   {$IFDEF OPENGL}
   LItem.offset := AItem.Offset;
   LItem.scale := AItem.Scale;
@@ -63,7 +88,13 @@ begin
   LItem.droppedspin := AItem.DroppedSpin;
   LItem.placedspin := AItem.PlacedSpin;
   LItem.flags := AItem.Flags;
-  LItem.voxel := nil;
+  // the name of the model is the one the manager keeps (64 characters at most)
+  {$IFDEF OPENGL}
+  LItem.voxel := TVoxelModel.Create(string(LItem.name), LItem.offset, LItem.scale, FLoader, FCubes);
+  {$ELSE}
+  LItem.voxel := TVoxelModel.Create(string(LItem.name), LItem.offset, LItem.scale, LItem.flags,
+    FLoader, FCubes);
+  {$ENDIF}
   Result := VX_AddVoxel(LItem);
 end;
 

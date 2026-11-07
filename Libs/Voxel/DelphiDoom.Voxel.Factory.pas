@@ -29,6 +29,8 @@ type
     /// <summary>The parser of the VOXELDEF lump; ALookup knows the states and the sprites of the game</summary>
     class function CreateDefinitionParser(const ALookup: IVoxelDefinitionLookup;
       const ALog: ILog): IVoxelDefinitionParser; static;
+    /// <summary>An empty list of the voxel files that become sprites; ALumps are the lumps of the game</summary>
+    class function CreateSpriteNames(const ALumps: IVoxelLumpNames): IVoxelSpriteNames; static;
   end;
 
 implementation
@@ -41,7 +43,8 @@ uses
   DelphiDoom.Voxel.Loader,
   DelphiDoom.Voxel.CubeBuilder,
   DelphiDoom.Voxel.PatchBuilder,
-  DelphiDoom.Voxel.DefinitionParser;
+  DelphiDoom.Voxel.DefinitionParser,
+  DelphiDoom.Voxel.SpriteNames;
 
 { TVoxelFactory }
 
@@ -73,6 +76,11 @@ class function TVoxelFactory.CreateDefinitionParser(const ALookup: IVoxelDefinit
   const ALog: ILog): IVoxelDefinitionParser;
 begin
   Result := TVoxelDefinitionParser.Create(ALookup, ALog);
+end;
+
+class function TVoxelFactory.CreateSpriteNames(const ALumps: IVoxelLumpNames): IVoxelSpriteNames;
+begin
+  Result := TVoxelSpriteNames.Create(ALumps);
 end;
 
 end.

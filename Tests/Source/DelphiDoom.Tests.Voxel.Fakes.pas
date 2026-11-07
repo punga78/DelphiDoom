@@ -78,6 +78,18 @@ type
     property Lines: TStringList read FLines;
   end;
 
+  /// <summary>A WAD directory in memory that counts how many times it is read</summary>
+  TVoxelFakeLumpNames = class(TInterfacedObject, IVoxelLumpNames)
+  strict private
+    FNames: TArray<string>;
+    FCountCalls: Integer;
+  public
+    constructor Create(const ANames: array of string);
+    function LumpCount: Integer;
+    function LumpName(const AIndex: Integer): string;
+    property CountCalls: Integer read FCountCalls;
+  end;
+
 implementation
 
 uses
@@ -258,6 +270,29 @@ end;
 procedure TVoxelFakeSink.CheckSprite(const ASpriteName, AVoxelName: string);
 begin
   FLines.Add(Format('C %s|%s', [ASpriteName, AVoxelName]));
+end;
+
+{ TVoxelFakeLumpNames }
+
+constructor TVoxelFakeLumpNames.Create(const ANames: array of string);
+var
+  LIndex: Integer;
+begin
+  inherited Create;
+  SetLength(FNames, Length(ANames));
+  for LIndex := 0 to High(ANames) do
+    FNames[LIndex] := ANames[LIndex];
+end;
+
+function TVoxelFakeLumpNames.LumpCount: Integer;
+begin
+  Inc(FCountCalls);
+  Result := Length(FNames);
+end;
+
+function TVoxelFakeLumpNames.LumpName(const AIndex: Integer): string;
+begin
+  Result := FNames[AIndex];
 end;
 
 end.

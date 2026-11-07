@@ -75,6 +75,7 @@ uses
   w_folders,
   w_pak,
   DelphiDoom.Models.Types,
+  DelphiDoom.Models.Factory,
   DelphiDoom.Engine.Models.Renderer;
 
 //==============================================================================
@@ -99,7 +100,8 @@ begin
   fyscale := yscale / MAP_COEFF;
   fzscale := zscale / MAP_COEFF;
 
-  fmdl := MDL_NewCommandStream;
+  // an empty list of commands of Libs\Models: a value of this model, without dependencies
+  fmdl := TModelsFactory.CreateCommandStream;
   fRenderer := TEngineModelRenderer.Create;
   fNumFrames := 0;
   precalc := nil;

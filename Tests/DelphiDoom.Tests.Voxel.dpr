@@ -34,6 +34,7 @@ uses
   DelphiDoom.Voxel.Loader in '..\Libs\Voxel\DelphiDoom.Voxel.Loader.pas',
   DelphiDoom.Voxel.PatchBuilder in '..\Libs\Voxel\DelphiDoom.Voxel.PatchBuilder.pas',
   DelphiDoom.Voxel.DefinitionParser in '..\Libs\Voxel\DelphiDoom.Voxel.DefinitionParser.pas',
+  DelphiDoom.Voxel.SpriteNames in '..\Libs\Voxel\DelphiDoom.Voxel.SpriteNames.pas',
   DelphiDoom.Voxel.Factory in '..\Libs\Voxel\DelphiDoom.Voxel.Factory.pas',
   DelphiDoom.Tests.Voxel.Fingerprint in 'Source\DelphiDoom.Tests.Voxel.Fingerprint.pas',
   DelphiDoom.Tests.Voxel.Golden in 'Source\DelphiDoom.Tests.Voxel.Golden.pas',
@@ -54,7 +55,8 @@ uses
   DelphiDoom.Tests.Voxel.Loader in 'Source\DelphiDoom.Tests.Voxel.Loader.pas',
   DelphiDoom.Tests.Voxel.PatchBuilder in 'Source\DelphiDoom.Tests.Voxel.PatchBuilder.pas',
   DelphiDoom.Tests.Voxel.DefinitionParser in 'Source\DelphiDoom.Tests.Voxel.DefinitionParser.pas',
-  DelphiDoom.Tests.Voxel.Factory in 'Source\DelphiDoom.Tests.Voxel.Factory.pas';
+  DelphiDoom.Tests.Voxel.Factory in 'Source\DelphiDoom.Tests.Voxel.Factory.pas',
+  DelphiDoom.Tests.Voxel.SpriteNames in 'Source\DelphiDoom.Tests.Voxel.SpriteNames.pas';
 
 var
   Runner: ITestRunner;
