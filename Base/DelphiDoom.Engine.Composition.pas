@@ -51,6 +51,8 @@ uses
   DelphiDoom.MathCore.Factory,
   m_rnd,
   m_hash,
+  DelphiDoom.Blockmap.Factory,
+  p_blockmap,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
   DelphiDoom.Texture.Intf,
@@ -447,6 +449,12 @@ begin
   M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
 end;
 
+procedure ComposeBlockmap;
+begin
+  P_ConfigureBlockmap(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
+    TBlockmapFactory.CreateSlimeTrailRemover);
+end;
+
 {$IFDEF OPENGL}
 procedure ComposeOpenGl;
 begin
@@ -522,6 +530,7 @@ begin
     end);
   I_ConfigureLog(LLog);
   ComposeMathCore;
+  ComposeBlockmap;
 {$IFDEF OPENGL}
   ComposeOpenGl;
 {$ENDIF}
