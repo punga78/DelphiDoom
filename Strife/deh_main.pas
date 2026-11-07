@@ -82,25 +82,6 @@ procedure DEH_Init;
 //==============================================================================
 procedure DEH_ShutDown;
 
-const
-  DEHMAXACTIONS = 500;
-
-var
-  dehnumactions: integer = 0;
-
-type
-  deh_action_t = record
-    action: actionf_t;
-    originalname: string;
-    name: string;
-    argcount: integer;
-    default_args: array[0..MAX_STATE_ARGS - 1] of integer; // mbf21
-    {$IFDEF DLL}
-    decl: string;
-    {$ENDIF}
-  end;
-  Pdeh_action_t = ^deh_action_t;
-
 type
   deh_string_t = record
     pstr: PString;
@@ -143,18 +124,10 @@ var
   projectile_groups: TDTextList;
   splash_groups: TDTextList;
 
-  deh_actions: array[0..DEHMAXACTIONS - 1] of deh_action_t;
   deh_strings: deh_strings_t;
 
 var
   ismbf21: boolean = false; // MBF21
-
-//==============================================================================
-//
-// Deh_ActionName
-//
-//==============================================================================
-function Deh_ActionName(action: actionf_t): string;
 
 //==============================================================================
 //
@@ -321,18 +294,8 @@ var
   end;
 
   function FindActionByName(const aname: string): integer;
-  var
-    k: integer;
   begin
-    result := DEH_SearchActionFromHash(aname);
-    if result >= 0 then
-      exit;
-    for k := 0 to dehnumactions - 1 do
-      if (aname = deh_actions[k].name) or (aname = 'A_' + deh_actions[k].name) then
-      begin
-        result := k;
-        exit;
-      end;
+    result := DEH_FindActionByName(aname);
   end;
 
   procedure ApplyThing;
@@ -572,17 +535,17 @@ var
          4: begin
               if ent.Number >= 0 then
               begin
-                if ent.Number < dehnumactions then
-                  states[state_no].action.acp1 := deh_actions[ent.Number].action.acp1
+                if ent.Number < DEH_ActionCount then
+                  states[state_no].action.acp1 := DEH_ActionProc(ent.Number)
                 else
-                  I_Warning('DEH_Parse(): Wrong action number = %d in state %d (Must be in [0..%d])'#13#10, [ent.Number, state_no, dehnumactions]);
+                  I_Warning('DEH_Parse(): Wrong action number = %d in state %d (Must be in [0..%d])'#13#10, [ent.Number, state_no, DEH_ActionCount]);
               end
               else
               begin
                 act := FindActionByName(ent.ActionName);
                 if act >= 0 then
                 begin
-                  states[state_no].action.acp1 := deh_actions[act].action.acp1;
+                  states[state_no].action.acp1 := DEH_ActionProc(act);
                   SetActionParams(state_no, ent.ActionArguments);
                 end
                 else
@@ -951,8 +914,8 @@ var
 
       if ent.Number >= 0 then
       begin
-        if ent.Number < dehnumactions then
-          states[state_no].action.acp1 := deh_actions[ent.Number].action.acp1;
+        if ent.Number < DEH_ActionCount then
+          states[state_no].action.acp1 := DEH_ActionProc(ent.Number);
       end
       else
       begin
@@ -960,7 +923,7 @@ var
         if act < 0 then
           act := FindActionByName(ent.ActionName);
         if act >= 0 then
-          states[state_no].action.acp1 := deh_actions[act].action.acp1;
+          states[state_no].action.acp1 := DEH_ActionProc(act);
         SetActionParams(state_no, ent.ActionArguments);
       end;
     end;
@@ -1355,13 +1318,7 @@ begin
     result.Add('%s = %d', [capitalizedstring(state_tokens[9]), states[i].tics2]);
     result.Add('%s = %d', [capitalizedstring(state_tokens[3]), Ord(states[i].nextstate)]);
 
-    str := '';
-    for j := 0 to dehnumactions - 1 do
-      if @states[i].action.acp1 = @deh_actions[j].action.acp1 then
-      begin
-        str := deh_actions[j].name;
-        break;
-      end;
+    str := DEH_ActionName(states[i].action);
     if str <> '' then
     begin
       if states[i].params <> nil then
@@ -1545,8 +1502,6 @@ begin
     exit;
 
   deh_initialized := true;
-
-  DEH_InitActionsHash;
 
   for i := 0 to 255 do
     stringhash[i] := TDNumberList.Create;
@@ -1880,12 +1835,7 @@ begin
   state_tokens.Add('ARGS8');            // 17 // .args[7]
   state_tokens.Add('MBF21 BITS');       // 18 // .mbf21bits
 
-  deh_actions[0].action.acp1 := nil;
-  deh_actions[0].name := 'NULL';
-  deh_actions[0].originalname := 'NULL';
-  {$IFDEF DLL}deh_actions[0].decl := '';{$ENDIF}
-
-  dehnumactions := 1;
+  DEH_AddNullAction;
 
   DEH_AddAction(@A_Light0, 'A_Light0()'); // 1
   DEH_AddAction(@A_WeaponReady, 'A_WeaponReady()'); // 2
@@ -2343,9 +2293,6 @@ begin
   DEH_AddAction(@A_SetTranslation, 'A_SetTranslation(trans: string);');
   DEH_AddAction(@A_SetBloodColor, 'A_SetBloodColor(color: string);');
 
-  for i := 0 to dehnumactions - 1 do
-    DEH_AddActionToHash(deh_actions[i].name, i);
-
   weapontype_tokens := TDTextList.Create;
   for i := 0 to Ord(NUMWEAPONS) do
     weapontype_tokens.Add(strupper(GetENumName(TypeInfo(weapontype_t), i)));
@@ -2639,32 +2586,11 @@ begin
   FreeAndNil(splash_groups);
 
 
-  DEH_ShutDownActionsHash;
 
   realloc(pointer(deh_strings._array), deh_strings.realnumstrings * SizeOf(deh_string_t), 0);
 
   for i := 0 to 255 do
     stringhash[i].Free;
-end;
-
-//==============================================================================
-//
-// Deh_ActionName
-//
-//==============================================================================
-function Deh_ActionName(action: actionf_t): string;
-var
-  i: integer;
-begin
-  for i := 0 to dehnumactions - 1 do
-  begin
-    if @deh_actions[i].action.acp1 = @action.acp1 then
-    begin
-      result := deh_actions[i].name;
-      Exit;
-    end;
-  end;
-  result := '';
 end;
 
 //==============================================================================

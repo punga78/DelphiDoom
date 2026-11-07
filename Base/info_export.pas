@@ -66,6 +66,7 @@ uses
   c_cmds,
   d_think,
   deh_main,
+  deh_base,
   info,
   info_h,
   info_common,
@@ -268,18 +269,13 @@ end;
 //==============================================================================
 function _action_name(const action: actionf_t): string;
 var
-  i: integer;
+  aname: string;
 begin
-  for i := 0 to dehnumactions - 1 do
-    if @deh_actions[i].action.acp1 = @action.acp1 then
-    begin
-      Result := '@A_' + capitalizedstring(deh_actions[i].name);
-      if Result = '@A_Null' then
-        Result := 'nil';
-      Exit;
-    end;
-
-  Result := 'nil';
+  aname := DEH_ActionName(action);
+  if (aname = '') or (aname = 'NULL') then
+    Result := 'nil'
+  else
+    Result := '@A_' + capitalizedstring(aname);
 end;
 
 //==============================================================================

@@ -923,8 +923,8 @@ var
 begin
   try
     afstr := '';
-    for i := 0 to DEHNUMACTIONS - 1 do
-      afstr := afstr + deh_actions[i].decl + #13#10;
+    for i := 0 to DEH_ActionCount - 1 do
+      afstr := afstr + DEH_ActionDeclaration(i) + #13#10;
     DD_CopyStringToPChar(afstr, _out, _outsize);
   finally
   end;

@@ -2406,6 +2406,8 @@ uses
   doomdata,
   doomdef,
   deh_main,
+  deh_base,
+  DelphiDoom.Actions.Intf,
   d_event,
   {$IFDEF DOOM_OR_STRIFE}
   d_items,
@@ -10363,7 +10365,8 @@ end;
 //==============================================================================
 function P_CheckStateArgs(state: Pstate_t): boolean;
 var
-  deh_action: Pdeh_action_t;
+  deh_action: TActionEntry;
+  deh_argcount: integer;
   i: integer;
   tmpargs: array[0..MAX_STATE_ARGS - 1] of integer;
   sargs: string;
@@ -10382,12 +10385,7 @@ begin
 
   state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_CHECKED;
 
-  deh_action := nil;
-  for i := 0 to dehnumactions - 1 do
-    if @deh_actions[i].action.acp1 = @state.action.acp1 then
-      deh_action := @deh_actions[i];
-
-  if deh_action = nil then
+  if not DEH_ActionEntry(state.action, deh_action) then
   begin
     I_Warning('P_CheckStateArgs(): Unregistered function found in state "%d"'#13#10, [(Integer(state) - Integer(states)) div SizeOf(state_t)]);
     state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
@@ -10395,25 +10393,27 @@ begin
     exit;
   end;
 
+  deh_argcount := Length(deh_action.DefaultArguments);
+
   if state.params <> nil then
   begin
-    if state.params.Count = deh_action.argcount then
+    if state.params.Count = deh_argcount then
     begin
       result := true;
       exit;
     end
     else if state.argsdefined <> 0 then
     begin
-      if state.params.Count >= deh_action.argcount then
+      if state.params.Count >= deh_argcount then
       begin
-        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. more than %d parameters in state "%d"'#13#10, [state.params.Count, deh_action.argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
+        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. more than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
         state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
         result := false;
         exit;
       end
       else
       begin
-        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. less than %d parameters in state "%d"'#13#10, [state.params.Count, deh_action.argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
+        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. less than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
         state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
         result := true;
         exit;
@@ -10421,19 +10421,19 @@ begin
     end;
   end;
 
-  if deh_action.argcount = 0 then
+  if deh_argcount = 0 then
   begin
     result := true;
     exit;
   end;
 
   sargs := '';
-  for i := 0 to deh_action.argcount - 1 do
+  for i := 0 to deh_argcount - 1 do
   begin
     if state.argsdefined and (1 shl i) <> 0 then
       tmpargs[i] := state.args[i]
     else
-      tmpargs[i] := deh_action.default_args[i];
+      tmpargs[i] := deh_action.DefaultArguments[i];
     if i = 0 then
       sargs := itoa(tmpargs[i])
     else
@@ -10441,7 +10441,7 @@ begin
   end;
 
   state.params := TCustomParamList.Create(sargs);
-  result := state.params.Count = deh_action.argcount;
+  result := state.params.Count = deh_argcount;
 end;
 
 //==============================================================================
