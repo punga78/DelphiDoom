@@ -161,6 +161,7 @@ uses
   DelphiDoom.Models.Intf,
   DelphiDoom.Models.Factory,
   mdl_base,
+  gl_models,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -240,6 +241,24 @@ uses
   DelphiDoom.Engine.Wad.AutoLoadLumps,
   DelphiDoom.Engine.Wad.AutoLoadSink,
   DelphiDoom.Engine.Scanner.Log,
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Scanner.TextPreprocessor,
+  DelphiDoom.Scanner.Directive.Flag,
+  DelphiDoom.Scanner.Directive.CvarForce,
+  DelphiDoom.Scanner.Directive.CreatePalette,
+  DelphiDoom.Scanner.ContextEvaluator.Intf,
+  DelphiDoom.Scanner.ContextEvaluator,
+  DelphiDoom.Engine.Scanner.IncludeSource,
+  DelphiDoom.Engine.Scanner.CvarSetter,
+  DelphiDoom.Engine.Scanner.PaletteGenerator,
+  DelphiDoom.Engine.Scanner.DefinesSource,
+  DelphiDoom.Engine.Scanner.ActorVariables,
+  DelphiDoom.Engine.Scanner.ActorFunctions,
+  sc_utils,
+  sc_params,
+{$IFDEF DOOM}
+  g_game,
+{$ENDIF}
   doomdef,
   d_main,
   m_argv,
@@ -250,6 +269,39 @@ uses
   DelphiDoom.Platform.Intf,
   DelphiDoom.Platform.Factory,
   DelphiDoom.Engine.Platform.TempDirectory;
+
+// The script preprocessor (given back: ActorDef, MapInfo, DynLights and MODELDEF use it)
+// and the evaluator of the expressions in the parameters of the actors
+function ComposeScanner(const ALog: ILog): IScriptTextPreprocessor;
+var
+  LDirectives: TArray<IScriptDirective>;
+  LEvaluator: TContextExpressionEvaluator;
+  LEvaluatorRef: IContextExpressionEvaluator;
+begin
+{$IFDEF DOOM}
+  LDirectives := TArray<IScriptDirective>.Create(
+    TFlagDirective.Create(TArray<string>.Create('VANILLA_DEMO_OFF', '#VANILLA_DEMO_OFF', '{$VANILLA_DEMO_OFF}'),
+      procedure
+      begin
+        vanilla_demo_off := true;
+      end),
+    TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
+    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
+{$ELSE}
+  LDirectives := TArray<IScriptDirective>.Create(
+    TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
+    TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
+{$ENDIF}
+  Result := TScriptTextPreprocessor.Create(TEngineIncludeSource.Create, LDirectives,
+    TEngineScriptDefinesSource.Create, ALog);
+  // VOXELDEF (vx_base) still goes through the facade
+  SC_ConfigurePreprocessor(Result);
+
+  LEvaluator := TContextExpressionEvaluator.Create(ALog, TEngineActorExpressionVariables.Create);
+  LEvaluatorRef := LEvaluator;
+  TEngineActorExpressionFunctions.Register(LEvaluator);
+  SC_ConfigureParams(LEvaluatorRef);
+end;
 
 procedure ComposeInput(const ALog: ILog);
 var
@@ -317,7 +369,7 @@ begin
 end;
 
 {$IFNDEF HEXEN}
-procedure ComposeMapInfo(const ALog: ILog);
+procedure ComposeMapInfo(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
 var
   LServices: TEngineMapInfoServices;
   LTextSource: TEngineMapInfoTextSource;
@@ -325,7 +377,7 @@ var
   LCatalog: IMapInfoCatalog;
 begin
   LServices := TEngineMapInfoServices.Create;
-  LTextSource := TEngineMapInfoTextSource.Create;
+  LTextSource := TEngineMapInfoTextSource.Create(APreprocessor);
   LMapServices.Validator := LServices;
   LMapServices.Lumps := LServices;
   LMapServices.Music := LServices;
@@ -362,7 +414,8 @@ begin
   DEH_ConfigureActions(TActionsFactory.CreateRegistry);
 end;
 
-procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext);
+procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext;
+  const APreprocessor: IScriptTextPreprocessor);
 var
   LServices: TEngineDynLightServices;
   LServicesRef: IInterface;
@@ -370,7 +423,7 @@ var
   LParserServices: TDynLightParserServices;
   LCoefficient: Double;
 begin
-  LServices := TEngineDynLightServices.Create;
+  LServices := TEngineDynLightServices.Create(APreprocessor);
   LServicesRef := LServices;
   LRegistry := TDynLightFactory.CreateRegistry;
   LParserServices.Registry := LRegistry;
@@ -592,8 +645,9 @@ begin
 end;
 
 {$IFDEF OPENGL}
-procedure ComposeOpenGl;
+procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
+  gld_ConfigureModelDefinitions(APreprocessor);
   GL_ConfigureFrustum(TGlMathFactory.CreateFrustum);
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
   MDL_ConfigureModels(TModelsFactory.CreateMd2Parser,
@@ -613,7 +667,7 @@ begin
   AM_Configure(LView, LNavigator, TAutomapFactory.CreateMarks);
 end;
 
-procedure ComposeActorDef(const ALog: ILog);
+procedure ComposeActorDef(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
 var
   LGame: TActorDefGame;
   LProfile: TActorDefProfile;
@@ -634,7 +688,7 @@ begin
     procedure(AText: string)
     begin
       SC_ParseActordefLump(AText);
-    end);
+    end, APreprocessor);
   LHooksRef := LHooks;
   LAliases := TActorDefFactory.CreateSoundAliases(ALog);
 {$IFDEF HEXEN}
@@ -650,7 +704,7 @@ begin
     begin
       TActorDefFactory.ParseSoundInfo(LProfile, AText, LAliases, LListener);
     end,
-    LAliases);
+    LAliases, APreprocessor);
 end;
 
 procedure ComposeTableExport;
@@ -730,6 +784,7 @@ var
   LContext: IGameContext;
   LClock: IClock;
   LGame: TUdmfGame;
+  LPreprocessor: IScriptTextPreprocessor;
 begin
   // The zone first: whatever is built next can already allocate from it
   Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
@@ -746,12 +801,13 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  LPreprocessor := ComposeScanner(LLog);
   ComposePlatform;
   ComposeMathCore;
   ComposeBlockmap;
   ComposeSerializer;
 {$IFDEF OPENGL}
-  ComposeOpenGl;
+  ComposeOpenGl(LPreprocessor);
 {$ENDIF}
   ComposeConsole(LLog, LContext);
   LClock := TClockFactory.CreateClock(LLog);
@@ -773,9 +829,9 @@ begin
   ComposeObituary;
   ComposeMusInfo(LLog);
   ComposeNodes;
-  ComposeDynLights(LLog, LContext);
+  ComposeDynLights(LLog, LContext, LPreprocessor);
   ComposeAutomap;
-  ComposeActorDef(LLog);
+  ComposeActorDef(LLog, LPreprocessor);
   ComposeTableExport;
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
@@ -798,7 +854,7 @@ begin
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
   P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
-  ComposeMapInfo(LLog);
+  ComposeMapInfo(LLog, LPreprocessor);
 {$ENDIF}
 end;
 

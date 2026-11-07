@@ -154,7 +154,7 @@ uses
   sounddata,
   sounds,
   sc_params,
-  sc_engine,
+  DelphiDoom.Scanner.Text,
   sc_states,
   v_data,
   sv_save;
@@ -252,7 +252,7 @@ var
         states[stnum].params := nil;
       end;
     if args <> '' then
-      states[stnum].params := TCustomParamList.Create(SC_FixParenthesisLevel(args));
+      states[stnum].params := TCustomParamList.Create(TScannerText.FixParenthesisLevel(args));
   end;
 
   function FindActionByName(const aname: string): integer;

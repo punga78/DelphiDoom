@@ -2442,7 +2442,8 @@ uses
   r_defs,
   r_main,
   r_translations,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   sc_params,
   sc_tokens,
   sc_states,
@@ -6606,7 +6607,7 @@ var
   sina, cosa: fixed_t;
   flags: integer;
   stmp: string;
-  sc: TSCriptEngine;
+  sc: TScriptScanner;
   i: integer;
 begin
   if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
@@ -6623,9 +6624,9 @@ begin
       if stmp[i] = '|' then
         stmp[i] := ' ';
     flags := 0;
-    sc := TSCriptEngine.Create(stmp);
+    sc := TScriptScanner.Create(stmp, TEngineScannerLog.Create);
     while sc.GetString do
-      flags := flags or (SC_EvalueateIntToken(sc._String, ['CVF_RELATIVE', 'CVF_REPLACE']) + 1);
+      flags := flags or (SC_EvalueateIntToken(sc.AsString, ['CVF_RELATIVE', 'CVF_REPLACE']) + 1);
     sc.Free;
     actor.state.params.IntVal[3] := flags;
   end

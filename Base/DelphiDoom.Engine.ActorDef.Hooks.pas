@@ -14,7 +14,8 @@ uses
   System.SysUtils,
   DelphiDoom.Logging.Intf,
   DelphiDoom.ActorDef.Types,
-  DelphiDoom.ActorDef.Intf;
+  DelphiDoom.ActorDef.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf;
 
 type
   /// <summary>
@@ -27,9 +28,12 @@ type
   private
     FLog: ILog;
     FParseText: TProc<string>;
+    FPreprocessor: IScriptTextPreprocessor;
   public
     /// <param name="AParseText">Reads a text of ACTORDEF: a thinker is an actor written as text</param>
-    constructor Create(const ALog: ILog; const AParseText: TProc<string>);
+    /// <param name="APreprocessor">The script preprocessor (includes, directives, defines)</param>
+    constructor Create(const ALog: ILog; const AParseText: TProc<string>;
+      const APreprocessor: IScriptTextPreprocessor);
     procedure SubmitThinker(const AThinker: TActorDefThinker);
     procedure AddSourceScript(const AName, ASource: string; AType: TActorDefScriptType);
     procedure AddExternalScript(const AName, AFileName: string; AType: TActorDefScriptType);
@@ -46,14 +50,20 @@ uses
   d_delphi,
   deh_base,
   ps_main,
-  sc_utils,
   w_pak;
+
+const
+  SPreprocessorMissing = 'TEngineActorDefHooks: the preprocessor is nil';
 
 { TEngineActorDefHooks }
 
-constructor TEngineActorDefHooks.Create(const ALog: ILog; const AParseText: TProc<string>);
+constructor TEngineActorDefHooks.Create(const ALog: ILog; const AParseText: TProc<string>;
+  const APreprocessor: IScriptTextPreprocessor);
 begin
   inherited Create;
+  if not Assigned(APreprocessor) then
+    raise EArgumentNilException.Create(SPreprocessorMissing);
+  FPreprocessor := APreprocessor;
   FLog := ALog;
   FParseText := AParseText;
 end;
@@ -149,7 +159,7 @@ end;
 
 function TEngineActorDefHooks.Process(const AText: string): string;
 begin
-  Result := SC_Preprocess(AText, False);
+  Result := FPreprocessor.Preprocess(AText, False);
 end;
 
 end.

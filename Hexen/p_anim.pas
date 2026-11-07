@@ -100,7 +100,9 @@ uses
   r_sky,
   s_sound,
   sounddata,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Scanner.Text,
+  DelphiDoom.Engine.Scanner.Log,
   doomdef,
   w_wad,
   z_zone;
@@ -397,14 +399,14 @@ var
   ad: PanimDef_t;
   ignore: boolean;
   done: boolean;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
 begin
   animatedflatslist.Clear;
   animatedtextureslist.Clear;
   fd := 0;
   ad := @AnimDefs[0];
   AnimDefCount := 0;
-  sc := TScriptEngine.Create(SC_RemoveLineQuotes(W_TextLumpName(ANIM_SCRIPT_NAME)));
+  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(W_TextLumpName(ANIM_SCRIPT_NAME)), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if AnimDefCount = MAX_ANIM_DEFS then
@@ -420,31 +422,31 @@ begin
     end
     else
     begin
-      sc.ScriptError('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc._String]);
+      sc.Warn('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc.AsString]);
     end;
     sc.MustGetString; // Name
     ignore := false;
     if ad._type = ANIM_FLAT then
     begin
-      if W_CheckNumForName(sc._String) = -1 then
+      if W_CheckNumForName(sc.AsString) = -1 then
       begin
         ignore := true;
       end
       else
       begin
-        ad.index := R_FlatNumForName(sc._String);
+        ad.index := R_FlatNumForName(sc.AsString);
         animatedflatslist.Add(ad.index);
       end;
     end
     else
     begin // Texture
-      if R_CheckTextureNumForName(sc._String) = -1 then
+      if R_CheckTextureNumForName(sc.AsString) = -1 then
       begin
         ignore := true;
       end
       else
       begin
-        ad.index := R_TextureNumForName(sc._String);
+        ad.index := R_TextureNumForName(sc.AsString);
         animatedtextureslist.Add(ad.index);
       end;
     end;
@@ -462,7 +464,7 @@ begin
           sc.MustGetInteger;
           if not ignore then
           begin
-            FrameDefs[fd].index := ad.index + sc._Integer - 1;
+            FrameDefs[fd].index := ad.index + sc.AsInteger - 1;
             if ad._type = ANIM_FLAT then
               animatedflatslist.Add(FrameDefs[fd].index)
             else
@@ -475,24 +477,24 @@ begin
             sc.MustGetInteger;
             if not ignore then
             begin
-              FrameDefs[fd].tics := sc._Integer;
+              FrameDefs[fd].tics := sc.AsInteger;
               inc(fd);
             end;
           end
           else if sc.Compare(SCI_RAND) then
           begin
             sc.MustGetInteger;
-            base := sc._Integer;
+            base := sc.AsInteger;
             sc.MustGetInteger;
             if not ignore then
             begin
-              _mod := sc._Integer - base + 1;
+              _mod := sc.AsInteger - base + 1;
               FrameDefs[fd].tics := (base * FRACUNIT) + (_mod * 256);
               inc(fd);
             end;
           end
           else
-            sc.ScriptError('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc._String]);
+            sc.Warn('P_InitFTAnims(): Unknown animation type: %s'#13#10, [sc.AsString]);
         end
         else
         begin

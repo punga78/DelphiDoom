@@ -13,7 +13,8 @@ unit DelphiDoom.Engine.MapInfo.TextSource;
 interface
 
 uses
-  DelphiDoom.MapInfo.Intf;
+  DelphiDoom.MapInfo.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf;
 
 type
   /// <summary>
@@ -22,7 +23,11 @@ type
   ///   cleans each of them
   /// </summary>
   TEngineMapInfoTextSource = class(TInterfacedObject, IMapInfoTextSource, IMapInfoTextFilter)
+  strict private
+    FPreprocessor: IScriptTextPreprocessor;
   public
+    /// <param name="APreprocessor">The script preprocessor of Filter</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor);
     function WadLumpTexts(const AUpperName: string): TArray<string>;
     function PakTexts(const AFileName: string): TArray<string>;
     function Filter(const AText: string): string;
@@ -31,8 +36,8 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
-  sc_utils,
   w_pak,
   w_wad;
 
@@ -46,7 +51,18 @@ begin
   GCollectedTexts[High(GCollectedTexts)] := AText;
 end;
 
+const
+  SPreprocessorMissing = 'TEngineMapInfoTextSource: the preprocessor is nil';
+
 { TEngineMapInfoTextSource }
+
+constructor TEngineMapInfoTextSource.Create(const APreprocessor: IScriptTextPreprocessor);
+begin
+  inherited Create;
+  if not Assigned(APreprocessor) then
+    raise EArgumentNilException.Create(SPreprocessorMissing);
+  FPreprocessor := APreprocessor;
+end;
 
 function TEngineMapInfoTextSource.WadLumpTexts(const AUpperName: string): TArray<string>;
 var
@@ -79,7 +95,7 @@ end;
 
 function TEngineMapInfoTextSource.Filter(const AText: string): string;
 begin
-  Result := SC_Preprocess(AText, False);
+  Result := FPreprocessor.Preprocess(AText, False);
 end;
 
 {$ELSE}

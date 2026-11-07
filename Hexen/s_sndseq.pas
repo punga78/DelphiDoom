@@ -157,7 +157,8 @@ uses
   m_rnd,
   sounddata,
   s_sound,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   w_wad,
   z_zone;
 // HEADER FILES ------------------------------------------------------------
@@ -283,7 +284,7 @@ var
   freeSequence: integer;
   tempDataStart: PIntegerArray;
   tempDataPtr: PInteger;
-  sc: TScriptEngine;
+  sc: TScriptScanner;
   tmp_str: string;
   datasize: integer;
 begin
@@ -296,10 +297,10 @@ begin
   for i := 0 to SS_MAX_SCRIPTS - 1 do
     SequenceData[i] := nil;
 
-  sc := TScriptEngine.Create(W_TextLumpName(SS_SCRIPT_NAME));
+  sc := TScriptScanner.Create(W_TextLumpName(SS_SCRIPT_NAME), TEngineScannerLog.Create);
   while sc.GetString do
   begin
-    if sc._String[1] = ':' then
+    if sc.AsString[1] = ':' then
     begin
       if inSequence <> -1 then
         I_Warning('S_InitSequenceScript():  Nested Script Error'#13#10);
@@ -321,7 +322,7 @@ begin
       if i = SS_MAX_SCRIPTS then
         I_Error('S_InitSequenceScript(): Number of SS Scripts >= SS_MAX_SCRIPTS');
 
-      tmp_str := strupper(Copy(sc._String, 2, Length(sc._String) - 1));
+      tmp_str := strupper(Copy(sc.AsString, 2, Length(sc.AsString) - 1));
       for j := 0 to Ord(SEQ_NUMSEQ) - 1 do
       begin
         if strupper(SequenceTranslate[j].name) = tmp_str then
@@ -343,7 +344,7 @@ begin
       SC.MustGetString;
       tempDataPtr^ := Ord(SS_CMD_PLAY);
       inc(tempDataPtr);
-      tempDataPtr^ := GetSoundOffset(sc._String);
+      tempDataPtr^ := GetSoundOffset(sc.AsString);
       inc(tempDataPtr);
       tempDataPtr^ := Ord(SS_CMD_WAITUNTILDONE);
       inc(tempDataPtr);
@@ -354,7 +355,7 @@ begin
       sc.MustGetString;
       tempDataPtr^ := Ord(SS_CMD_PLAY);
       inc(tempDataPtr);
-      tempDataPtr^ := GetSoundOffset(sc._String);
+      tempDataPtr^ := GetSoundOffset(sc.AsString);
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_PLAYTIME) then
@@ -363,12 +364,12 @@ begin
       sc.MustGetString;
       tempDataPtr^ := Ord(SS_CMD_PLAY);
       inc(tempDataPtr);
-      tempDataPtr^ := GetSoundOffset(sc._String);
+      tempDataPtr^ := GetSoundOffset(sc.AsString);
       inc(tempDataPtr);
       sc.MustGetInteger;
       tempDataPtr^ := Ord(SS_CMD_DELAY);
       inc(tempDataPtr);
-      tempDataPtr^ := sc._Integer;
+      tempDataPtr^ := sc.AsInteger;
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_PLAYREPEAT) then
@@ -377,7 +378,7 @@ begin
       sc.MustGetString;
       tempDataPtr^ := Ord(SS_CMD_PLAYREPEAT);
       inc(tempDataPtr);
-      tempDataPtr^ := GetSoundOffset(sc._String);
+      tempDataPtr^ := GetSoundOffset(sc.AsString);
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_DELAY) then
@@ -386,7 +387,7 @@ begin
       tempDataPtr^ := Ord(SS_CMD_DELAY);
       inc(tempDataPtr);
       sc.MustGetInteger;
-      tempDataPtr^ := sc._Integer;
+      tempDataPtr^ := sc.AsInteger;
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_DELAYRAND) then
@@ -395,10 +396,10 @@ begin
       tempDataPtr^ := Ord(SS_CMD_DELAYRAND);
       inc(tempDataPtr);
       sc.MustGetInteger;
-      tempDataPtr^ := sc._Integer;
+      tempDataPtr^ := sc.AsInteger;
       inc(tempDataPtr);
       sc.MustGetInteger;
-      tempDataPtr^ := sc._Integer;
+      tempDataPtr^ := sc.AsInteger;
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_VOLUME) then
@@ -407,7 +408,7 @@ begin
       tempDataPtr^ := Ord(SS_CMD_VOLUME);
       inc(tempDataPtr);
       sc.MustGetInteger;
-      tempDataPtr^ := sc._Integer;
+      tempDataPtr^ := sc.AsInteger;
       inc(tempDataPtr);
     end
     else if sc.Compare(SS_STRING_END) then
@@ -423,7 +424,7 @@ begin
     else if sc.Compare(SS_STRING_STOPSOUND) then
     begin
       sc.MustGetString;
-      SequenceTranslate[inSequence].stopSound := GetSoundOffset(sc._String);
+      SequenceTranslate[inSequence].stopSound := GetSoundOffset(sc.AsString);
       tempDataPtr^ := Ord(SS_CMD_STOPSOUND);
       inc(tempDataPtr);
     end

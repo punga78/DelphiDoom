@@ -13,7 +13,8 @@ unit DelphiDoom.Engine.DynLights.Services;
 interface
 
 uses
-  DelphiDoom.DynLights.Intf;
+  DelphiDoom.DynLights.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf;
 
 type
   /// <summary>
@@ -27,7 +28,10 @@ type
   private
     // JVAL: random index for the light animation, don't bother resetting it
     FRandomIndex: Integer;
+    FPreprocessor: IScriptTextPreprocessor;
   public
+    /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -53,8 +57,8 @@ uses
   info,
   info_common,
   m_rnd,
+  System.SysUtils,
   p_pspr,
-  sc_utils,
   w_pak,
   w_wad;
 
@@ -68,7 +72,18 @@ begin
   GCollectedTexts[High(GCollectedTexts)] := AText;
 end;
 
+const
+  SPreprocessorMissing = 'TEngineDynLightServices: the preprocessor is nil';
+
 { TEngineDynLightServices }
+
+constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor);
+begin
+  inherited Create;
+  if not Assigned(APreprocessor) then
+    raise EArgumentNilException.Create(SPreprocessorMissing);
+  FPreprocessor := APreprocessor;
+end;
 
 function TEngineDynLightServices.NextByte: Integer;
 begin
@@ -166,7 +181,7 @@ end;
 
 function TEngineDynLightServices.Filter(const AText: string): string;
 begin
-  Result := SC_Preprocess(AText, False);
+  Result := FPreprocessor.Preprocess(AText, False);
 end;
 
 end.

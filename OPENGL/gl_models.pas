@@ -39,7 +39,8 @@ uses
   d_delphi,
   m_fixed,
   dglOpenGL,
-  mdl_base;
+  mdl_base,
+  DelphiDoom.Scanner.Preprocessor.Intf;
 
 var
   gl_drawmodels: boolean = true;
@@ -91,6 +92,15 @@ procedure gld_CleanModelTextures;
 //
 //==============================================================================
 procedure gld_ModelsDone;
+
+//==============================================================================
+//
+// gld_ConfigureModelDefinitions
+//
+// The script preprocessor that MODELDEF goes through (given by ComposeEngine)
+//
+//==============================================================================
+procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor);
 
 const
   MDSTRLEN = 64;
@@ -166,12 +176,25 @@ uses
   mdl_ddmodel,
   mdl_dllmodel,
   gl_tex,
-  sc_engine,
+  DelphiDoom.Scanner.Scanner,
+  DelphiDoom.Engine.Scanner.Log,
   sc_tokens,
   sc_states,
-  sc_utils,
   w_pak,
   w_wad;
+
+var
+  modeldef_preprocessor: IScriptTextPreprocessor;
+
+//==============================================================================
+//
+// gld_ConfigureModelDefinitions
+//
+//==============================================================================
+procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor);
+begin
+  modeldef_preprocessor := APreprocessor;
+end;
 
 //==============================================================================
 //
@@ -279,7 +302,7 @@ const
 //==============================================================================
 procedure SC_DoParseModelDefinition(const in_text: string);
 var
-  sc: TScriptEngine;
+  sc: TScriptScanner;
   tokens: TTokenList;
   slist: TDStringList;
   token: string;
@@ -326,14 +349,14 @@ begin
     printf('--------'#13#10);
   end;
 
-  sc := TScriptEngine.Create(in_text);
+  sc := TScriptScanner.Create(in_text, TEngineScannerLog.Create);
 
   modelpending := false;
   statepending := false;
 
   while sc.GetString do
   begin
-    token := strupper(sc._String);
+    token := strupper(sc.AsString);
     token_idx := tokens.IndexOfToken(token);
     case token_idx of
       0: // MODEL DEFINITION
@@ -350,62 +373,62 @@ begin
           modelitem.framemerge.Clear;
           if not sc.GetString then
           begin
-            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc._Line]);
+            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc.Line]);
             break;
           end;
-          modelitem.name := strupper(sc._String);
+          modelitem.name := strupper(sc.AsString);
 
           while sc.GetString do
           begin
-            token := strupper(sc._String);
+            token := strupper(sc.AsString);
             token_idx := tokens.IndexOfToken(token);
             case token_idx of
               2:  // Offset / zoffset
                 begin
                   sc.MustGetFloat;
-                  modelitem.zoffset := sc._Float;
+                  modelitem.zoffset := sc.AsFloat;
                 end;
              10:  // xoffset
                 begin
                   sc.MustGetFloat;
-                  modelitem.xoffset := sc._Float;
+                  modelitem.xoffset := sc.AsFloat;
                 end;
              11:  // yoffset
                 begin
                   sc.MustGetFloat;
-                  modelitem.xoffset := sc._Float;
+                  modelitem.xoffset := sc.AsFloat;
                 end;
               3:  // Scale
                 begin
                   sc.MustGetFloat;
-                  modelitem.xscale := sc._Float;
-                  modelitem.yscale := sc._Float;
-                  modelitem.zscale := sc._Float;
+                  modelitem.xscale := sc.AsFloat;
+                  modelitem.yscale := sc.AsFloat;
+                  modelitem.zscale := sc.AsFloat;
                 end;
              12:  // xscale
                 begin
                   sc.MustGetFloat;
-                  modelitem.xscale := sc._Float;
+                  modelitem.xscale := sc.AsFloat;
                 end;
              13:  // yscale
                 begin
                   sc.MustGetFloat;
-                  modelitem.yscale := sc._Float;
+                  modelitem.yscale := sc.AsFloat;
                 end;
              14:  // zscale
                 begin
                   sc.MustGetFloat;
-                  modelitem.zscale := sc._Float;
+                  modelitem.zscale := sc.AsFloat;
                 end;
               8:  // FRAMEMERGE
                 begin
                   sc.MustGetString;
-                  modelitem.framemerge.Add(strupper(sc._String));
+                  modelitem.framemerge.Add(strupper(sc.AsString));
                 end;
              15:  // PROC
                 begin
                   sc.MustGetString;
-                  modelitem.proc := sc._String;
+                  modelitem.proc := sc.AsString;
                 end;
             else
               begin
@@ -438,25 +461,25 @@ begin
           modelstate.transparency := 1.0;
           if not sc.GetString then
           begin
-            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc._Line]);
+            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc.Line]);
             break;
           end;
-          modelstate.state := statenames.IndexOfToken(strupper(sc._String));
+          modelstate.state := statenames.IndexOfToken(strupper(sc.AsString));
           if modelstate.state < 0 then
           begin
-            I_Warning('SC_ParseModelDefinition(): Unknown state "%s" at line %d'#13#10, [sc._String, sc._Line]);
+            I_Warning('SC_ParseModelDefinition(): Unknown state "%s" at line %d'#13#10, [sc.AsString, sc.Line]);
             modelstate.state := 0; // S_NULL
           end;
 
           while sc.GetString do
           begin
-            token := strupper(sc._String);
+            token := strupper(sc.AsString);
             token_idx := tokens.IndexOfToken(token);
             case token_idx of
               7:  // Model
                 begin
                   sc.MustGetString;
-                  modelitem.name := strupper(sc._String);
+                  modelitem.name := strupper(sc.AsString);
                   modelitem.proc := '';
                   modelitem.xoffset := 0.0;
                   modelitem.yoffset := 0.0;
@@ -469,24 +492,24 @@ begin
               4:  // Texture
                 begin
                   sc.MustGetString;
-                  modelstate.texture := gld_AddModelTexture(strupper(sc._String));
+                  modelstate.texture := gld_AddModelTexture(strupper(sc.AsString));
                 end;
               5:  // startframe
                 begin
                   sc.MustGetInteger;
-                  modelstate.startframe := sc._Integer;
+                  modelstate.startframe := sc.AsInteger;
                   if modelstate.endframe < 0 then
                     modelstate.endframe := modelstate.startframe;
                 end;
               6:  // endframe
                 begin
                   sc.MustGetInteger;
-                  modelstate.endframe := sc._Integer;
+                  modelstate.endframe := sc.AsInteger;
                 end;
               9:  // transparency
                 begin
                   sc.MustGetFloat;
-                  modelstate.transparency := sc._Float;
+                  modelstate.transparency := sc.AsFloat;
                 end;
             else
               begin
@@ -501,7 +524,7 @@ begin
 
       else
         begin
-          I_Warning('SC_ParseModelDefinition(): Unknown token "%s" at line %d'#13#10, [token, sc._Line]);
+          I_Warning('SC_ParseModelDefinition(): Unknown token "%s" at line %d'#13#10, [token, sc.Line]);
         end;
     end;
   end;
@@ -523,7 +546,9 @@ end;
 //==============================================================================
 procedure SC_ParseModelDefinition(const in_text: string);
 begin
-  SC_DoParseModelDefinition(SC_Preprocess(in_text, false));
+  if modeldef_preprocessor = nil then
+    I_Error('SC_ParseModelDefinition(): the preprocessor is not configured (ComposeEngine was not called)');
+  SC_DoParseModelDefinition(modeldef_preprocessor.Preprocess(in_text, false));
 end;
 
 //==============================================================================
