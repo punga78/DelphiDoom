@@ -31,6 +31,7 @@ unit p_obituaries;
 interface
 
 uses
+  DelphiDoom.Obituary.Intf,
   p_mobj_h;
 
 //==============================================================================
@@ -39,6 +40,13 @@ uses
 //
 //==============================================================================
 procedure P_Obituary(const victim, inflictor, attacker: Pmobj_t);
+
+//==============================================================================
+//
+// P_ConfigureObituaries
+//
+//==============================================================================
+procedure P_ConfigureObituaries(const AFormatter: IObituaryFormatter);
 
 var
   show_obituaries: boolean = false;
@@ -49,9 +57,23 @@ uses
   SysUtils,
   d_delphi,
   d_player,
+  DelphiDoom.Obituary.Types,
+  i_system,
   p_common,
-  p_gender,
   w_wad;
+
+var
+  obituary_formatter: IObituaryFormatter = nil;
+
+//==============================================================================
+//
+// P_ConfigureObituaries
+//
+//==============================================================================
+procedure P_ConfigureObituaries(const AFormatter: IObituaryFormatter);
+begin
+  obituary_formatter := AFormatter;
+end;
 
 //==============================================================================
 //
@@ -63,7 +85,6 @@ var
   pv, pif, pa: Pplayer_t;
   messagefmt: string;
   vname, aname: string;
-  agender: gender_t;
   lst: TDStringList;
   lump: integer;
   i: integer;
@@ -137,16 +158,11 @@ begin
   else
     aname := attacker.info.name;
 
-  messagefmt := StringReplace(messagefmt, '%o', vname, [rfReplaceAll, rfIgnoreCase]);
-  messagefmt := StringReplace(messagefmt, '%k', aname, [rfReplaceAll, rfIgnoreCase]);
+  if obituary_formatter = nil then
+    I_Error('P_Obituary(): the obituaries are not configured (ComposeEngine was not called)');
 
-  messagefmt := StringReplace(messagefmt, '%g', GENDERINFO[Ord(victim.info.gender)].ob_g, [rfReplaceAll, rfIgnoreCase]);
-
-  agender := attacker.info.gender;
-  messagefmt := StringReplace(messagefmt, '%h', GENDERINFO[Ord(agender)].ob_h, [rfReplaceAll, rfIgnoreCase]);
-  messagefmt := StringReplace(messagefmt, '%p', GENDERINFO[Ord(agender)].ob_p, [rfReplaceAll, rfIgnoreCase]);
-  messagefmt := StringReplace(messagefmt, '%s', GENDERINFO[Ord(agender)].ob_s, [rfReplaceAll, rfIgnoreCase]);
-  messagefmt := StringReplace(messagefmt, '%r', GENDERINFO[Ord(agender)].ob_r, [rfReplaceAll, rfIgnoreCase]);
+  messagefmt := obituary_formatter.Compose(messagefmt, vname, aname,
+    TObituaryGender(victim.info.gender), TObituaryGender(attacker.info.gender));
 
   pv._message := messagefmt;
 end;

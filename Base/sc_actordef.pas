@@ -613,7 +613,7 @@ begin
       AddLn('Alpha ' + ftoafmt('2.4', m.alpha / FRACUNIT));
   end;
   if m.gender <> gender_Default then
-    AddLn('Gender ' + GENDERINFO[Ord(m.gender)].name);
+    AddLn('Gender ' + R_GenderName(m.gender));
   if m.meleerange <> 0 then
     AddLn('MeleeRange ' + itoa(m.meleerange));
   if m.maxstepheight <> 0 then
