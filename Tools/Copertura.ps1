@@ -84,6 +84,40 @@ function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit)
   })
 }
 
+# A copy of the map without the line of the closing "end." of the units that have no initialization or
+# finalization. The compiler gives that line the address that follows the last routine, and there it often
+# writes the RTTI of the unit (the type info of a TArray<T> used in the unit): CodeCoverage would put its
+# breakpoint, an INT3, on a byte of that data and never take it away, because data is not run. That is how
+# the name length of TArray<PSingle> in DelphiDoom.Sound.Vorbis.Residue became $CC and SetLength allocated
+# the wrong size under coverage only (issue #138).
+function New-CodeOnlyMap([string]$Map, [string[]]$Sources, [string]$Target) {
+  $byName = @{}
+  foreach ($s in $Sources) { $byName[(Split-Path -Leaf $s).ToLowerInvariant()] = $s }
+  $drop = 0
+  $lines = Get-Content -LiteralPath $Map
+  for ($i = 0; $i -lt $lines.Count; $i++) {
+    if ($lines[$i] -notmatch '^Line numbers for [^(]+\(([^)]+)\)') { continue }
+    $source = $byName[$Matches[1].ToLowerInvariant()]
+    if (-not $source) { continue }
+    $text = Get-Content -LiteralPath $source
+    if (@($text | Where-Object { $_ -match '^\s*(initialization|finalization)\b' }).Count -gt 0) { continue }
+    $endLine = 0
+    for ($k = $text.Count - 1; $k -ge 0; $k--) { if ($text[$k].Trim() -ieq 'end.') { $endLine = $k + 1; break } }
+    if ($endLine -eq 0) { continue }
+    for ($j = $i + 1; $j -lt $lines.Count -and $lines[$j] -notmatch '^Line numbers for '; $j++) {
+      $before = $lines[$j]
+      $lines[$j] = [regex]::Replace($before, "\s+$endLine 0001:[0-9A-F]{8}", '')
+      if ($lines[$j] -ne $before) {
+        $drop++
+        # a row left empty would end the section for the reader of the map
+        if ($lines[$j].Trim() -eq '') { $lines[$j] = $null }
+      }
+    }
+  }
+  Set-Content -LiteralPath $Target -Value @($lines | Where-Object { $null -ne $_ }) -Encoding ascii
+  return $drop
+}
+
 function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   $project = if ($TestName -eq '' -or $TestName -eq 'Zlib') { 'DelphiDoom.Tests' } else { 'DelphiDoom.Tests.' + $TestName }
   $exe = Join-Path $root "bin\Tests\$project.exe"
@@ -107,6 +141,9 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   New-Item -ItemType Directory -Force $out | Out-Null
   $unitsFile = Join-Path $out 'unit.txt'
   Set-Content -LiteralPath $unitsFile -Value $units -Encoding ascii
+  $codeMap = Join-Path $out 'codice.map'
+  $null = New-CodeOnlyMap $map $files $codeMap
+  $map = $codeMap
 
   # -sp wants every folder that holds a source (it does not recurse). The tool cuts a unit name at its last dot
   # (it treats it as a file name), so the list has the .pas extension and the default -efe takes it away again

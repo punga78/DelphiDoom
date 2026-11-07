@@ -1,6 +1,6 @@
 # Libs\DynLights - come collegarla al motore (issue #69)
 
-La libreria non è collegata: `Base\r_dynlights.pas` è com'era. Questo file dice cosa fare per collegarla.
+**Stato attuale (issue #137): collegata.** `ComposeDynLights` (in `DelphiDoom.Engine.Composition`) crea registro, parser, loader, animatore e il `IDynLightRenderCache` (`TDynLightRenderCache`: un record stabile per luce, calcolato al più una volta per tic) e lo dà a `r_main` (`R_ConfigureDynamicLights`) e `r_softlights` (`R_ConfigureSoftLights`) nel software, a `gl_render` (`gld_ConfigureDynamicLights`) in OpenGL. `Base\r_dynlights.pas` non ha più funzioni della libreria: tiene i buffer da ordinare dei renderer (`dlbuffer`, `dlsortitem_t`, `R_FreeDynamicLightItems`), `lightdeflumppresent`, `gldefs_as_lightdef`, `DLIGHTSDRAWRANGE` e `GLDRenderLight = TDynLightRender` (stesso layout del vecchio record). Il resto di questo file è il piano di collegamento originale.
 
 ## 1. Unit da aggiungere ai `.dpr` (tutti gli eseguibili che linkano `r_dynlights`: Doom, Heretic, Hexen, Strife, software e OpenGL)
 
