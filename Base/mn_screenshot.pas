@@ -33,6 +33,9 @@ unit mn_screenshot;
 
 interface
 
+uses
+  DelphiDoom.Imaging.Intf;
+
 const
   MN_SCREENSHOTWIDTH = 80;
   MN_SCREENSHOTHEIGHT = 50;
@@ -54,6 +57,13 @@ type
 var
   mn_screenshotbuffer: menuscreenbuffer_t;
   mn_makescreenshot: boolean = false;
+
+//==============================================================================
+//
+// MN_ConfigureScreenShot
+//
+//==============================================================================
+procedure MN_ConfigureScreenShot(const ABuilder: IImagingThumbnailBuilder);
 
 //==============================================================================
 //
@@ -79,8 +89,11 @@ function MN_ValidScreenShot(const mnbuf: Pmenuscreenbuffer_t): boolean;
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   doomdef,
+  i_system,
+  DelphiDoom.Imaging.Types,
   {$IFDEF OPENGL}
   gl_main,
   {$ELSE}
@@ -89,6 +102,20 @@ uses
   r_draw,
   v_video;
 
+var
+  // given by the composition root (MN_ConfigureScreenShot)
+  mn_thumbnails: IImagingThumbnailBuilder = nil;
+
+//==============================================================================
+//
+// MN_ConfigureScreenShot
+//
+//==============================================================================
+procedure MN_ConfigureScreenShot(const ABuilder: IImagingThumbnailBuilder);
+begin
+  mn_thumbnails := ABuilder;
+end;
+
 //==============================================================================
 //
 // MN_ScreenShotFromBlitBuffer
@@ -96,43 +123,41 @@ uses
 //==============================================================================
 procedure MN_ScreenShotFromBlitBuffer;
 var
-  i, x, y: integer;
-  bufsize: integer;
-  buf: PByteArray;
-  xlinesource: PByteArray;
-  c: LongWord;
-  xpos, ypos: integer;
+  i: integer;
+  settings: TImagingThumbnailSettings;
+  buf: TBytes;
+  palette: TImagingPixels;
+  thumbnail: TBytes;
 begin
+  if mn_thumbnails = nil then
+    I_Error('MN_ScreenShotFromBlitBuffer(): the thumbnails are not configured (MN_ConfigureScreenShot)');
+
   {$IFNDEF OPENGL}
   I_BlitBuffer;
   {$ENDIF}
-  bufsize := SCREENWIDTH * SCREENHEIGHT * 4;
-  buf := malloc(bufsize);
-  I_ReadScreen32(buf);
+  SetLength(buf, SCREENWIDTH * SCREENHEIGHT * 4);
+  I_ReadScreen32(Pointer(buf));
+
+  settings.ScreenWidth := SCREENWIDTH;
+  settings.ScreenHeight := SCREENHEIGHT;
+  settings.ViewX := viewwindowx;
+  settings.ViewY := viewwindowy;
+  settings.ViewWidth := viewwidth;
+  settings.ViewHeight := viewheight;
+  settings.Width := MN_SCREENSHOTWIDTH;
+  settings.Height := MN_SCREENSHOTHEIGHT;
+  settings.BottomUp := {$IFDEF OPENGL}True{$ELSE}False{$ENDIF};
+
+  SetLength(palette, IMAGING_PALETTE_SIZE);
+  Move(videopal, palette[0], SizeOf(videopal));
+
+  thumbnail := mn_thumbnails.Build(settings, Pointer(buf), palette);
 
   for i := 0 to MNSCREENSHOT_MAGIC_SIZE - 1 do
     mn_screenshotbuffer.header[i] := MNSCREENSHOT_MAGIC[i];
-
-  for y := 0 to MN_SCREENSHOTHEIGHT - 1 do
-  begin
-    ypos := viewwindowy + ((y * viewheight) div MN_SCREENSHOTHEIGHT);
-    {$IFDEF OPENGL}
-    ypos := SCREENHEIGHT - ypos - 1;
-    {$ENDIF}
-    ypos := GetIntegerInRange(ypos, 0, SCREENHEIGHT - 1);
-    xlinesource := @buf[ypos * SCREENWIDTH * 4];
-    for x := 0 to MN_SCREENSHOTWIDTH - 1 do
-    begin
-      xpos := viewwindowx + ((x * viewwidth) div MN_SCREENSHOTWIDTH);
-      xpos := GetIntegerInRange(xpos, 0, SCREENWIDTH - 1);
-      c := xlinesource[xpos * 4 + 2] shl 16 + xlinesource[xpos * 4 + 1] shl 8 + xlinesource[xpos * 4];
-      mn_screenshotbuffer.data[y * MN_SCREENSHOTWIDTH + x] := V_FindAproxColorIndex(@videopal, c, 1, 255);
-    end;
-  end;
-  memfree(pointer(buf), bufsize);
+  Move(thumbnail[0], mn_screenshotbuffer.data[0], MN_SCREENSHOTSIZE);
   mn_makescreenshot := false;
 end;
-
 //==============================================================================
 //
 // MN_ScreenShotFromSaveGame

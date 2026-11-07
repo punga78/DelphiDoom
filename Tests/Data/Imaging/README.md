@@ -41,3 +41,5 @@ Sono elencati in `Libs\Imaging\WIRING.md` (sezioni 5 e 6). Qui solo ciò che rig
 L'harness non è nel repository. Per rifarli si ricompila il vecchio codice come sopra (le funzioni sono quelle
 dei file elencati, una per una) e si fa girare sugli ingressi di `DelphiDoom.Tests.Imaging.Samples.pas`; se
 si cambiano i campioni vanno rifatti tutti i file.
+
+`thumbnail.golden.txt` (issue #89): gli indici (80x50) che il vecchio `MN_ScreenShotFromBlitBuffer` dava a schermi sintetici, con finestre di vista diverse e con le righe dal basso (OpenGL).

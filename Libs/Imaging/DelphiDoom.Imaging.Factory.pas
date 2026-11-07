@@ -33,6 +33,8 @@ type
     class function CreateSineTable: IImagingSineTable; static;
     /// <param name="ASines">The sines to use (nil: the computed table of the engine)</param>
     class function CreateWallScale(const ASines: IImagingSineTable = nil): IImagingWallScale; static;
+    /// <param name="AColors">The search of the nearest color of the palette</param>
+    class function CreateThumbnailBuilder(const AColors: IImagingColorIndex): IImagingThumbnailBuilder; static;
   end;
 
 implementation
@@ -43,7 +45,8 @@ uses
   DelphiDoom.Imaging.FlatReader, DelphiDoom.Imaging.FlatShrinker,
   DelphiDoom.Imaging.SpanGrower, DelphiDoom.Imaging.ColumnExpander,
   DelphiDoom.Imaging.HiResTables, DelphiDoom.Imaging.MeltWipe,
-  DelphiDoom.Imaging.SineTable, DelphiDoom.Imaging.WallScale;
+  DelphiDoom.Imaging.SineTable, DelphiDoom.Imaging.WallScale,
+  DelphiDoom.Imaging.ThumbnailBuilder;
 
 { TImagingFactory }
 
@@ -112,6 +115,12 @@ begin
     Result := TImagingWallScale.Create(ASines)
   else
     Result := TImagingWallScale.Create(TImagingFixedSineTable.Create);
+end;
+
+class function TImagingFactory.CreateThumbnailBuilder(
+  const AColors: IImagingColorIndex): IImagingThumbnailBuilder;
+begin
+  Result := TImagingThumbnailBuilder.Create(AColors);
 end;
 
 end.

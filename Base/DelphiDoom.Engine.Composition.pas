@@ -68,6 +68,12 @@ uses
   m_hash,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
+  DelphiDoom.Engine.Imaging.ColorIndex,
+  DelphiDoom.Screenshot.Factory,
+  DelphiDoom.Engine.Screenshot.Folders,
+  DelphiDoom.Png.Provider,
+  DelphiDoom.Jpeg.Provider,
+  mn_screenshot,
   DelphiDoom.Texture.Intf,
   DelphiDoom.Texture.Factory,
   DelphiDoom.Engine.Texture.PaletteSource,
@@ -485,6 +491,14 @@ begin
 {$IFNDEF OPENGL}
   R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
 {$ENDIF}
+  MN_ConfigureScreenShot(TImagingFactory.CreateThumbnailBuilder(
+    TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
+end;
+
+procedure ComposeScreenshot;
+begin
+  M_ConfigureScreenshot(TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
+    TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create));
 end;
 
 procedure ComposeTexture(const ALog: ILog);
@@ -650,6 +664,7 @@ begin
   ComposeMusic;
   ComposeDehacked(LLog);
   ComposeImaging;
+  ComposeScreenshot;
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
   ComposePalette;
