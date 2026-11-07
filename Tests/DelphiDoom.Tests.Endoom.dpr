@@ -18,10 +18,12 @@ uses
   DelphiDoom.Endoom.Types in '..\Libs\Endoom\DelphiDoom.Endoom.Types.pas',
   DelphiDoom.Endoom.Intf in '..\Libs\Endoom\DelphiDoom.Endoom.Intf.pas',
   DelphiDoom.Endoom.Renderer in '..\Libs\Endoom\DelphiDoom.Endoom.Renderer.pas',
+  DelphiDoom.Endoom.Session in '..\Libs\Endoom\DelphiDoom.Endoom.Session.pas',
   DelphiDoom.Endoom.Factory in '..\Libs\Endoom\DelphiDoom.Endoom.Factory.pas',
   DelphiDoom.Tests.Endoom.Digest in 'Source\DelphiDoom.Tests.Endoom.Digest.pas',
   DelphiDoom.Tests.Endoom.Fixtures in 'Source\DelphiDoom.Tests.Endoom.Fixtures.pas',
-  DelphiDoom.Tests.Endoom.Renderer in 'Source\DelphiDoom.Tests.Endoom.Renderer.pas';
+  DelphiDoom.Tests.Endoom.Renderer in 'Source\DelphiDoom.Tests.Endoom.Renderer.pas',
+  DelphiDoom.Tests.Endoom.Session in 'Source\DelphiDoom.Tests.Endoom.Session.pas';
 
 var
   Runner: ITestRunner;

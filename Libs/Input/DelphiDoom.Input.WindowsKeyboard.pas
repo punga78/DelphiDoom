@@ -16,7 +16,11 @@ uses
 type
   /// <summary>GetKeyboardState: the keys as the thread of the window sees them</summary>
   TWindowsKeyboard = class(TInterfacedObject, IKeyboardDevice)
+  private
+    FSystem: IKeyboardSystem;
   public
+    /// <summary>Raises EArgumentNilException if ASystem is nil</summary>
+    constructor Create(const ASystem: IKeyboardSystem);
     procedure Initialize;
     procedure Shutdown;
     function ReadState(var AStates: TKeyStates): Boolean;
@@ -27,9 +31,20 @@ type
 implementation
 
 uses
-  Winapi.Windows;
+  System.SysUtils, Winapi.Windows;
+
+const
+  SSystemIsNil = 'TWindowsKeyboard: the system is nil';
 
 { TWindowsKeyboard }
+
+constructor TWindowsKeyboard.Create(const ASystem: IKeyboardSystem);
+begin
+  inherited Create;
+  if not Assigned(ASystem) then
+    raise EArgumentNilException.Create(SSystemIsNil);
+  FSystem := ASystem;
+end;
 
 procedure TWindowsKeyboard.Initialize;
 begin
@@ -40,11 +55,9 @@ begin
 end;
 
 function TWindowsKeyboard.ReadState(var AStates: TKeyStates): Boolean;
-var
-  LState: TKeyboardState;
 begin
-  GetKeyboardState(LState);
-  Move(LState, AStates, SizeOf(AStates));
+  // as before: the table is used even if the system refuses to fill it
+  FSystem.ReadKeyboardState(AStates);
   Result := True;
 end;
 
@@ -54,7 +67,7 @@ end;
 
 function TWindowsKeyboard.IsCapsLockOn: Boolean;
 begin
-  Result := (GetKeyState(VK_CAPITAL) and 1) <> 0;
+  Result := (FSystem.GetKeyState(VK_CAPITAL) and 1) <> 0;
 end;
 
 end.

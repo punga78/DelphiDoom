@@ -26,9 +26,12 @@ uses
   DelphiDoom.Input.WindowsKeyboard in '..\Libs\Input\DelphiDoom.Input.WindowsKeyboard.pas',
   DelphiDoom.Input.WindowsMouse in '..\Libs\Input\DelphiDoom.Input.WindowsMouse.pas',
   DelphiDoom.Input.WindowsJoystick in '..\Libs\Input\DelphiDoom.Input.WindowsJoystick.pas',
+  DelphiDoom.Input.WindowsSystem in '..\Libs\Input\DelphiDoom.Input.WindowsSystem.pas',
   DelphiDoom.Input.Factory in '..\Libs\Input\DelphiDoom.Input.Factory.pas',
   DelphiDoom.Tests.Input.Fakes in 'Source\DelphiDoom.Tests.Input.Fakes.pas',
-  DelphiDoom.Tests.Input.Poller in 'Source\DelphiDoom.Tests.Input.Poller.pas';
+  DelphiDoom.Tests.Input.Poller in 'Source\DelphiDoom.Tests.Input.Poller.pas',
+  DelphiDoom.Tests.Input.Devices in 'Source\DelphiDoom.Tests.Input.Devices.pas',
+  DelphiDoom.Tests.Input.WindowsSystem in 'Source\DelphiDoom.Tests.Input.WindowsSystem.pas';
 
 var
   Runner: ITestRunner;

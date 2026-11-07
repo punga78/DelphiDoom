@@ -29,11 +29,13 @@ uses
   DelphiDoom.DynLights.StateBinder in '..\Libs\DynLights\DelphiDoom.DynLights.StateBinder.pas',
   DelphiDoom.DynLights.Parser in '..\Libs\DynLights\DelphiDoom.DynLights.Parser.pas',
   DelphiDoom.DynLights.Loader in '..\Libs\DynLights\DelphiDoom.DynLights.Loader.pas',
+  DelphiDoom.DynLights.RenderCache in '..\Libs\DynLights\DelphiDoom.DynLights.RenderCache.pas',
   DelphiDoom.DynLights.Factory in '..\Libs\DynLights\DelphiDoom.DynLights.Factory.pas',
   DelphiDoom.Tests.DynLights.Fakes in 'Source\DelphiDoom.Tests.DynLights.Fakes.pas',
   DelphiDoom.Tests.DynLights.Corpus in 'Source\DelphiDoom.Tests.DynLights.Corpus.pas',
   DelphiDoom.Tests.DynLights.Parity in 'Source\DelphiDoom.Tests.DynLights.Parity.pas',
-  DelphiDoom.Tests.DynLights.Behavior in 'Source\DelphiDoom.Tests.DynLights.Behavior.pas';
+  DelphiDoom.Tests.DynLights.Behavior in 'Source\DelphiDoom.Tests.DynLights.Behavior.pas',
+  DelphiDoom.Tests.DynLights.RenderCache in 'Source\DelphiDoom.Tests.DynLights.RenderCache.pas';
 
 var
   Runner: ITestRunner;

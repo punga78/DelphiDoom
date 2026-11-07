@@ -127,7 +127,6 @@ uses
   deh_base,
   d_main,
   h_strings,
-  e_endoom,
   f_finale,
   g_game,
   hu_stuff,

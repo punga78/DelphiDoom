@@ -128,7 +128,6 @@ uses
   d_items,
   d_englsh,
   dstrings,
-  e_endoom,
   f_finale,
   g_game,
   hu_stuff,

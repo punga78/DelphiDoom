@@ -34,7 +34,18 @@ unit s_sound;
 interface
 
 uses
+  DelphiDoom.Audio.Intf,
   p_mobj_h;
+
+//==============================================================================
+//
+// S_ConfigureExternalMusic
+//
+// The cache of the external songs (MOD, S3M, IT, XM next to the WAD) is given by the
+// composition root (ComposeEngine); without it S_Init stops with I_Error.
+//
+//==============================================================================
+procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
 
 //==============================================================================
 // S_Init
@@ -320,6 +331,8 @@ function S_DefaultMusicForMap(const episode, map: integer): integer;
 
 var
   full_sounds: boolean = true;
+  usemp3: boolean;
+  preferemp3namesingamedirectory: boolean;
 
 implementation
 
@@ -332,7 +345,6 @@ uses
   i_system,
   i_sound,
   i_music,
-  i_mp3,
   info_h,
 {$IFDEF DOOM}
   m_argv,
@@ -349,7 +361,6 @@ uses
   r_defs,
   sounddata,
   sounds,
-  s_externalmusic,
 {$IFDEF HEXEN}
   s_sndseq,
 {$ENDIF}
@@ -361,6 +372,55 @@ uses
   r_main,
   tables,
   doomstat;
+
+var
+  // given by the composition root (S_ConfigureExternalMusic)
+  sound_externalmusic: IExternalMusicCache = nil;
+
+//==============================================================================
+//
+// S_ConfigureExternalMusic
+//
+//==============================================================================
+procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
+begin
+  sound_externalmusic := ACache;
+end;
+
+//==============================================================================
+//
+// S_ExternalMusicCache
+//
+//==============================================================================
+function S_ExternalMusicCache: IExternalMusicCache;
+begin
+  if sound_externalmusic = nil then
+    I_Error('S_ConfigureExternalMusic() was not called: the external music cannot be loaded');
+  result := sound_externalmusic;
+end;
+
+//==============================================================================
+//
+// S_TryLoadExternalMusic
+//
+// A MOD, S3M, IT or XM file with the name of the lump: the cache finds it and keeps it
+//
+//==============================================================================
+function S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean;
+var
+  clip: IExternalMusicClip;
+begin
+  clip := S_ExternalMusicCache.Find(char8tostring(W_GetNameForNum(music.lumpnum)));
+  if clip = nil then
+  begin
+    result := false;
+    exit;
+  end;
+
+  music.data := clip.Data;
+  music.handle := I_RegisterSong(music.data, clip.Size);
+  result := true;
+end;
 
 // Purpose?
 const
@@ -553,7 +613,7 @@ begin
   printf('  default music volume %d'#13#10, [musicVolume]);
 {$ENDIF}
 
-  S_ExternalMusicInit;
+  S_ExternalMusicCache.Clear;
 
   // Whatever these did with DMX, these are rather dummies now.
   I_SetChannels;
@@ -637,7 +697,8 @@ end;
 procedure S_ShutDownSound;
 begin
   S_FreeRandomSoundLists;
-  S_ShutDownExternalMusic;
+  if sound_externalmusic <> nil then
+    sound_externalmusic.Clear;
 end;
 
 //==============================================================================

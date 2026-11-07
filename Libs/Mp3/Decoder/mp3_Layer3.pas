@@ -408,6 +408,7 @@ var
   g_gain: Single;
   xr1d: PSingleArray;
   abv, idx: Cardinal;
+  mixed_long_bands: Integer;
 begin
   gr_info := @FSI.ch[ch].gr[gr];
   cb := 0;
@@ -415,6 +416,13 @@ begin
   cb_begin := 0;
   cb_width := 0;
   xr1d := @xr[0, 0];
+  // The long part of a mixed block is the first 36 lines: 8 long bands in MPEG-1, 6 in MPEG-2.
+  // The old code took 8 for both, so a mixed block of MPEG-2 never reached its short part and
+  // divided by a band of width 0
+  if FHeader.Version = MPEG1 then
+    mixed_long_bands := 8
+  else
+    mixed_long_bands := 6;
 
   // choose correct scalefactor band per block type, initalize boundary
   if (gr_info.window_switching_flag <> 0) and (gr_info.block_type = 2) then
@@ -457,7 +465,7 @@ begin
       begin
         if gr_info.mixed_block_flag <> 0 then
         begin
-          if index = sfBandIndex[FSFreq].l[8] then
+          if index = sfBandIndex[FSFreq].l[mixed_long_bands] then
           begin
             next_cb_boundary := sfBandIndex[FSFreq].s[4];
             next_cb_boundary := (next_cb_boundary shl 2) - next_cb_boundary;
@@ -466,7 +474,7 @@ begin
             cb_begin := sfBandIndex[FSFreq].s[3];
             cb_begin := (cb_begin shl 2) - cb_begin;
           end
-          else if index < sfBandIndex[FSFreq].l[8] then
+          else if index < sfBandIndex[FSFreq].l[mixed_long_bands] then
           begin
             inc(cb);
             next_cb_boundary := sfBandIndex[FSFreq].l[cb + 1];

@@ -82,6 +82,16 @@ type
     procedure TestShutdownStopsTheDevices;
     [Test]
     procedure TestCapsLockComesFromTheKeyboard;
+    [Test]
+    procedure DovrebbeNonLeggereNullaPrimaDellAvvio;
+    [Test]
+    procedure DovrebbeIgnorareSincronizzazioneEFermataPrimaDellAvvio;
+    [Test]
+    procedure DovrebbeDareCapsLockSpentoPrimaDellAvvio;
+    [Test]
+    procedure DovrebbeTornareInattivoDopoLaFermata;
+    [Test]
+    procedure DovrebbeFunzionareSenzaLog;
   end;
 
 implementation
@@ -224,6 +234,7 @@ end;
 
 procedure TTestInputPoller.TestSynchronizeTellsTheKeyboard;
 begin
+  FPoller.Initialize;
   FPoller.Synchronize(True);
   Assert.AreEqual(1, FKeyboard.Active);
   FPoller.Synchronize(False);
@@ -334,6 +345,8 @@ end;
 
 procedure TTestInputPoller.TestShutdownStopsTheDevices;
 begin
+  FPoller.Initialize;
+  FCalls.Clear;
   FPoller.Shutdown;
   Assert.AreEqual(3, FCalls.Count);
   Assert.IsTrue(FCalls.Contains('keyboard.shutdown'));
@@ -343,9 +356,59 @@ end;
 
 procedure TTestInputPoller.TestCapsLockComesFromTheKeyboard;
 begin
+  FPoller.Initialize;
   Assert.IsFalse(FPoller.IsCapsLockOn);
   FKeyboard.Caps := True;
   Assert.IsTrue(FPoller.IsCapsLockOn);
+end;
+
+procedure TTestInputPoller.DovrebbeNonLeggereNullaPrimaDellAvvio;
+begin
+  FKeyboard.Keys[65] := KEYSTATE_DOWN;
+  FPoller.Process;
+  Assert.AreEqual(0, FSink.Events.Count);
+  Assert.AreEqual(0, FMouse.Placed.Count);
+  Assert.IsFalse(FPoller.IsInitialized);
+end;
+
+procedure TTestInputPoller.DovrebbeIgnorareSincronizzazioneEFermataPrimaDellAvvio;
+begin
+  FPoller.Synchronize(True);
+  FPoller.Shutdown;
+  Assert.AreEqual(-1, FKeyboard.Active);
+  Assert.AreEqual(0, FCalls.Count);
+end;
+
+procedure TTestInputPoller.DovrebbeDareCapsLockSpentoPrimaDellAvvio;
+begin
+  FKeyboard.Caps := True;
+  Assert.IsFalse(FPoller.IsCapsLockOn);
+end;
+
+procedure TTestInputPoller.DovrebbeTornareInattivoDopoLaFermata;
+begin
+  FPoller.Initialize;
+  Assert.IsTrue(FPoller.IsInitialized);
+  FPoller.Shutdown;
+  Assert.IsFalse(FPoller.IsInitialized);
+  FCalls.Clear;
+  FSink.Events.Clear;
+  FPoller.Process;
+  FPoller.Shutdown;
+  Assert.AreEqual(0, FSink.Events.Count);
+  Assert.AreEqual(0, FCalls.Count);
+end;
+
+procedure TTestInputPoller.DovrebbeFunzionareSenzaLog;
+begin
+  FPoller := TInputFactory.CreatePoller(FKeyboardIntf, FMouseIntf, FJoystickIntf, FGateIntf,
+    TFakeScreen.Create, TFakeKeyMap.Create, FSinkIntf, nil, 12);
+  FJoystick.Present := True;
+  FPoller.Initialize;
+  FJoystick.Present := False;
+  FPoller.Shutdown;
+  FPoller.Initialize;
+  Assert.IsTrue(FPoller.IsInitialized);
 end;
 
 end.

@@ -44,6 +44,7 @@ type
     FJoystickPresent: Boolean;
     FJoystickX: Integer;
     FJoystickY: Integer;
+    FInitialized: Boolean;
     procedure ResetMouse;
     procedure PostKeys;
     procedure PostMouse;
@@ -61,6 +62,7 @@ type
     procedure Synchronize(AActive: Boolean);
     procedure SetMouseClicks(AValue: Integer);
     function IsCapsLockOn: Boolean;
+    function IsInitialized: Boolean;
   end;
 
 implementation
@@ -128,10 +130,14 @@ begin
   end
   else if Assigned(FLog) then
     FLog.Info(SJoystickNotFound);
+  FInitialized := True;
 end;
 
 procedure TInputPoller.Shutdown;
 begin
+  if not FInitialized then
+    Exit;
+  FInitialized := False;
   FKeyboard.Shutdown;
   FJoystick.Shutdown;
   FMouse.Shutdown;
@@ -220,6 +226,9 @@ end;
 
 procedure TInputPoller.Process;
 begin
+  if not FInitialized then
+    Exit;
+
   if FIgnoreTics > 0 then
   begin
     Dec(FIgnoreTics);
@@ -241,6 +250,9 @@ end;
 
 procedure TInputPoller.Synchronize(AActive: Boolean);
 begin
+  if not FInitialized then
+    Exit;
+
   if AActive then
     FIgnoreTics := IGNORE_TICS;
   FKeyboard.SetActive(AActive);
@@ -256,7 +268,12 @@ end;
 
 function TInputPoller.IsCapsLockOn: Boolean;
 begin
-  Result := FKeyboard.IsCapsLockOn;
+  Result := FInitialized and FKeyboard.IsCapsLockOn;
+end;
+
+function TInputPoller.IsInitialized: Boolean;
+begin
+  Result := FInitialized;
 end;
 
 end.

@@ -43,7 +43,9 @@ uses
   d_event,
   doomdef,
   DelphiDoom.IdTech.Intf,
-  DelphiDoom.Iwad.Intf;
+  DelphiDoom.Iwad.Intf,
+  DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.Engine.Endoom.Intf;
 
 const
 {$IFNDEF FPC}
@@ -211,6 +213,25 @@ function D_FileInDoomPath(const fn: string): string;
 //==============================================================================
 procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+// The reader of the AUTOLOAD lumps, given by the composition root; without it the
+// start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
+//==============================================================================
+//
+// D_ConfigureEndoom
+//
+// The end screen, given by the composition root: D_Display draws it, D_ShutDown frees it.
+//
+//==============================================================================
+procedure D_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+
 var
   showmessageboxonmodified: boolean = false;
 {$IFNDEF OPENGL}
@@ -232,7 +253,6 @@ uses
   c_con,
   c_cmds,
   d_check,
-  e_endoom,
 {$IFNDEF OPENGL}
   f_wipe,
 {$ENDIF}
@@ -258,7 +278,7 @@ uses
   r_defs,
   r_fake3d,
   i_video,
-  i_displaymodes,
+  DelphiDoom.Video.Types,
 {$ENDIF}
   g_game,
   hu_stuff,
@@ -289,10 +309,62 @@ uses
   t_main,
   v_data,
   v_video,
-  w_autoload,
   w_wad,
   w_pak,
   z_zone;
+
+var
+  // given by the composition root (D_ConfigureAutoLoad)
+  main_autoload: IAutoLoadReader = nil;
+
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+begin
+  main_autoload := AReader;
+end;
+
+//==============================================================================
+//
+// D_AutoLoad
+//
+//==============================================================================
+function D_AutoLoad: IAutoLoadReader;
+begin
+  if main_autoload = nil then
+    I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
+  result := main_autoload;
+end;
+
+var
+  // given by the composition root (D_ConfigureEndoom)
+  main_endoom: IEngineEndoomScreen = nil;
+
+//==============================================================================
+//
+// D_ConfigureEndoom
+//
+//==============================================================================
+procedure D_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+begin
+  main_endoom := AScreen;
+end;
+
+//==============================================================================
+//
+// D_EndoomScreen
+//
+//==============================================================================
+function D_EndoomScreen: IEngineEndoomScreen;
+begin
+  if main_endoom = nil then
+    I_Error('D_ConfigureEndoom() was not called: the end screen is missing');
+  result := main_endoom;
+end;
+
 
 const
   BGCOLOR = 7;
@@ -479,7 +551,7 @@ var
 begin
   if gamestate = GS_ENDOOM then
   begin
-    E_Drawer;
+    D_EndoomScreen.Draw;
     {$IFNDEF OPENGL}
     D_FinishUpdate; // page flip or blit buffer
     {$ENDIF}
@@ -2348,7 +2420,7 @@ begin
   SUC_Progress(39);
 
   printf('W_AutoLoadPakFiles: Autoload required pak files.'#13#10);
-  W_AutoLoadPakFiles;
+  D_AutoLoad.Load;
 
   SUC_Progress(40);
 
@@ -2781,7 +2853,8 @@ begin
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);
   PAK_ShutDown;
   printf('E_ShutDown: Shut down ENDOOM screen.'#13#10);
-  E_ShutDown;
+  if main_endoom <> nil then
+    main_endoom.Shutdown;
   printf('U_FreeMapInfo: Free UMAPINFO data.'#13#10);
   U_FreeMapInfo;
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);

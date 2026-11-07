@@ -43,6 +43,8 @@ uses
   m_fixed,
   tables,
   d_event,
+  DelphiDoom.Input.Intf,
+  DelphiDoom.Engine.Endoom.Intf,
   d_player,
   d_ticcmd,
   p_umapinfo;
@@ -429,6 +431,26 @@ var
   mousebuttons: PBooleanArray;
   joybuttons: PBooleanArray;
 
+//==============================================================================
+//
+// G_ConfigureInput
+//
+// The poller of the input, given by the composition root: the caps lock is the speed
+// with autorunmode = 2. Without it G_BuildTiccmd stops with I_Error.
+//
+//==============================================================================
+procedure G_ConfigureInput(const APoller: IInputPoller);
+
+//==============================================================================
+//
+// G_ConfigureEndoom
+//
+// The end screen, given by the composition root: G_Quit starts it and G_Responder gives
+// it the keys. Without it they stop with I_Error.
+//
+//==============================================================================
+procedure G_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+
 implementation
 
 uses
@@ -446,11 +468,9 @@ uses
   info_h,
   info,
   i_system,
-  i_input,
 {$IFNDEF OPENGL}
   r_draw,
 {$ENDIF}
-  e_endoom,
   m_argv,
   m_misc,
   m_menu,
@@ -482,6 +502,58 @@ uses
   r_defs,
   r_main,
   r_intrpl;
+
+var
+  // given by the composition root (G_ConfigureInput)
+  game_input: IInputPoller = nil;
+
+//==============================================================================
+//
+// G_ConfigureInput
+//
+//==============================================================================
+procedure G_ConfigureInput(const APoller: IInputPoller);
+begin
+  game_input := APoller;
+end;
+
+//==============================================================================
+//
+// G_InputPoller
+//
+//==============================================================================
+function G_InputPoller: IInputPoller;
+begin
+  if game_input = nil then
+    I_Error('G_ConfigureInput() was not called: the input is missing');
+  result := game_input;
+end;
+
+var
+  // given by the composition root (G_ConfigureEndoom)
+  game_endoom: IEngineEndoomScreen = nil;
+
+//==============================================================================
+//
+// G_ConfigureEndoom
+//
+//==============================================================================
+procedure G_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+begin
+  game_endoom := AScreen;
+end;
+
+//==============================================================================
+//
+// G_EndoomScreen
+//
+//==============================================================================
+function G_EndoomScreen: IEngineEndoomScreen;
+begin
+  if game_endoom = nil then
+    I_Error('G_ConfigureEndoom() was not called: the end screen is missing');
+  result := game_endoom;
+end;
 
 var
   next_weapon: integer;
@@ -820,7 +892,7 @@ begin
     if autorunmode = 0 then
     else if autorunmode = 1 then
       speed := 1 - speed
-    else if I_GetCapsLock then
+    else if G_InputPoller.IsCapsLockOn then
       speed := 1 - speed;
   end;
 
@@ -1245,7 +1317,7 @@ var
 begin
   if gamestate = GS_ENDOOM then
   begin
-    result := E_Responder(ev);
+    result := G_EndoomScreen.Respond(ev);
     exit;
   end;
   // allow spy mode changes even during the demo
@@ -3269,7 +3341,7 @@ begin
     gamestate := GS_ENDOOM;
     S_PauseSound; // Stop music in ENDOOM screen
     printf('E_Init: Initializing ENDSTRF screen.'#13#10);
-    E_Init;
+    G_EndoomScreen.Initialize;
   end
   else
     I_Quit;

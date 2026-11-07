@@ -39,6 +39,7 @@ uses
   DelphiDoom.Logging.Intf,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Video.Intf,
+  DelphiDoom.Input.Intf,
   DelphiDoom.Platform.Intf;
 
 //==============================================================================
@@ -47,6 +48,16 @@ uses
 //
 //==============================================================================
 procedure I_Init;
+
+//==============================================================================
+//
+// I_ConfigureInput
+// The poller of the keyboard, the mouse and the joystick: I_Init starts it, every frame and
+// every tic read it, I_Destroy stops it. The composition root calls it; without it I_Init
+// stops with I_Error
+//
+//==============================================================================
+procedure I_ConfigureInput(const APoller: IInputPoller);
 
 //==============================================================================
 //
@@ -444,8 +455,8 @@ uses
   m_fixed,
   i_sound,
   i_music,
-  i_input,
   i_io,
+  DelphiDoom.Input.Types,
   i_net,
   i_tmp,
 {$IFNDEF FPC}
@@ -478,6 +489,20 @@ begin
   result := finished;
 end;
 
+var
+  // given by the composition root (I_ConfigureInput)
+  system_input: IInputPoller = nil;
+
+//==============================================================================
+//
+// I_ConfigureInput
+//
+//==============================================================================
+procedure I_ConfigureInput(const APoller: IInputPoller);
+begin
+  system_input := APoller;
+end;
+
 //==============================================================================
 //
 // I_StartFrame
@@ -487,7 +512,9 @@ procedure I_StartFrame;
 begin
   I_ProcessWindows;
   I_ProcessMusic;
-  I_ProcessInput;
+  // the poller reads nothing before I_Init
+  if system_input <> nil then
+    system_input.Process;
 end;
 
 //==============================================================================
@@ -497,8 +524,9 @@ end;
 //==============================================================================
 procedure I_StartTic;
 begin
-  if not InBackground then   // JVAL ?
-    I_ProcessInput;          // JVAL ?
+  if not InBackground then        // JVAL ?
+    if system_input <> nil then   // JVAL ?
+      system_input.Process;
 end;
 
 var
@@ -654,7 +682,14 @@ begin
   printf('I_InitMusic: Initializing music.'#13#10);
   I_InitMusic;
   printf('I_InitInput: Initializing Input Devices.'#13#10);
-  I_InitInput;
+  if system_input = nil then
+    I_Error('I_InitInput(): the input was not configured');
+  try
+    system_input.Initialize;
+  except
+    on E: EInputDeviceException do
+      I_Error('%s', [E.Message]);
+  end;
 
   C_AddCmd('usemmx, mmx', @I_CmdUseMMX);
 end;
@@ -695,7 +730,8 @@ begin
   printf('I_ShutDownMusic: Shut down music.'#13#10);
   I_ShutDownMusic;
   printf('I_ShutDownInput: Shut down input.'#13#10);
-  I_ShutDownInput;
+  if system_input <> nil then
+    system_input.Shutdown;
   if M_CheckParm('-dontsavedefaults') = 0 then
   begin
     printf('M_SaveDefaults: Saving defaults.'#13#10);

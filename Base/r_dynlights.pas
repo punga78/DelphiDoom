@@ -22,8 +22,9 @@
 //
 //  DESCRIPTION:
 //    Dynamic lights (OpenGL & software rendering)
-//    LIGHTDEF/GLDEFS parsing and light animation are in LibsDynLights,
-//    this unit keeps the render records that the renderers use
+//    LIGHTDEF/GLDEFS parsing, light animation and the records of every light are in
+//    Libs\DynLights (IDynLightRenderCache, given by the composition root to r_main,
+//    r_softlights and gl_render); this unit keeps the buffers that the renderers sort
 //
 //------------------------------------------------------------------------------
 
@@ -40,49 +41,14 @@ uses
   p_mobj_h,
   {$ENDIF}
   m_fixed,
-  DelphiDoom.DynLights.Intf;
+  DelphiDoom.DynLights.Types;
 
 type
-  GLDRenderLight = record
-    r, g, b: float;     // Color
-    radius: float;      // radius
-    x, y, z: float;     // Offset
-    shadow: boolean;    // Shadow
-  end;
-  PGLDRenderLight = ^GLDRenderLight;
+  // The record of a light: Libs\DynLights fills it (r, g, b, radius, x, y, z, shadow)
+  GLDRenderLight = TDynLightRender;
+  PGLDRenderLight = PDynLightRender;
   GLDRenderLightArray = array[0..$FFF] of GLDRenderLight;
   PGLDRenderLightArray = ^GLDRenderLightArray;
-
-//==============================================================================
-//
-// R_ConfigureDynamicLights
-// The loader, the registry and the animator of Libs\DynLights, given by the
-// composition root
-//
-//==============================================================================
-procedure R_ConfigureDynamicLights(const ALoader: IDynLightLoader;
-  const ARegistry: IDynLightRegistry; const AAnimator: IDynLightAnimator);
-
-//==============================================================================
-//
-// R_InitDynamicLights
-//
-//==============================================================================
-procedure R_InitDynamicLights;
-
-//==============================================================================
-//
-// R_DynamicLightsDone
-//
-//==============================================================================
-procedure R_DynamicLightsDone;
-
-//==============================================================================
-//
-// R_GetDynamicLight
-//
-//==============================================================================
-function R_GetDynamicLight(const index: integer): PGLDRenderLight;
 
 var
   lightdeflumppresent: boolean = false;
@@ -113,111 +79,27 @@ const
 var
   gldefs_as_lightdef: boolean = true;
 
+//==============================================================================
+//
+// R_FreeDynamicLightItems
+//
+// Frees the buffer of the lights to sort (dlbuffer), at the end of the renderer
+//
+//==============================================================================
+procedure R_FreeDynamicLightItems;
+
 implementation
 
-uses
-  DelphiDoom.DynLights.Types,
-  i_system,
-  p_tick;
-
-var
-  dl_loader: IDynLightLoader;
-  dl_registry: IDynLightRegistry;
-  dl_animator: IDynLightAnimator;
-  // The lights that R_GetDynamicLight gives are pointers that the renderers keep for a frame:
-  // one stable record for each light, and the tic at which it was last calculated
-  dl_renderinfo: array of GLDRenderLight;
-  dl_hasrender: array of boolean;
-  dl_rendertime: array of integer;
-
 //==============================================================================
 //
-// R_ConfigureDynamicLights
+// R_FreeDynamicLightItems
 //
 //==============================================================================
-procedure R_ConfigureDynamicLights(const ALoader: IDynLightLoader;
-  const ARegistry: IDynLightRegistry; const AAnimator: IDynLightAnimator);
+procedure R_FreeDynamicLightItems;
 begin
-  dl_loader := ALoader;
-  dl_registry := ARegistry;
-  dl_animator := AAnimator;
-end;
-
-//==============================================================================
-//
-// R_InitDynamicLights
-//
-//==============================================================================
-procedure R_InitDynamicLights;
-begin
-  if dl_loader = nil then
-    I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
-
-  dl_registry.Clear;
-  dl_animator.Reset;
-  {$IFDEF OPENGL}
-  printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.'#13#10);
-  {$ENDIF}
-  if dl_loader.Load(gldefs_as_lightdef) then
-    lightdeflumppresent := true;
-
-  SetLength(dl_renderinfo, dl_registry.Count);
-  SetLength(dl_hasrender, dl_registry.Count);
-  SetLength(dl_rendertime, dl_registry.Count);
-  if Length(dl_renderinfo) > 0 then
-  begin
-    FillChar(dl_renderinfo[0], Length(dl_renderinfo) * SizeOf(GLDRenderLight), 0);
-    FillChar(dl_hasrender[0], Length(dl_hasrender) * SizeOf(boolean), 0);
-  end;
-end;
-
-//==============================================================================
-//
-// R_DynamicLightsDone
-//
-//==============================================================================
-procedure R_DynamicLightsDone;
-begin
-  if dl_registry <> nil then
-    dl_registry.Clear;
-  if dl_animator <> nil then
-    dl_animator.Reset;
-  SetLength(dl_renderinfo, 0);
-  SetLength(dl_hasrender, 0);
-  SetLength(dl_rendertime, 0);
-
   memfree(pointer(dlbuffer), realdlitems * SizeOf(dlsortitem_t));
   numdlitems := 0;
   realdlitems := 0;
-end;
-
-//==============================================================================
-//
-// R_GetDynamicLight
-//       Dynamic lights animations
-//
-//==============================================================================
-function R_GetDynamicLight(const index: integer): PGLDRenderLight;
-var
-  render: TDynLightRender;
-begin
-  result := @dl_renderinfo[index];
-  result.shadow := false;
-
-  // The animation of a light is the same during one tic
-  if dl_hasrender[index] and (dl_rendertime[index] = leveltime) then
-    exit;
-
-  render := dl_animator.GetRender(index, leveltime);
-  result.r := render.R;
-  result.g := render.G;
-  result.b := render.B;
-  result.radius := render.Radius;
-  result.x := render.X;
-  result.y := render.Y;
-  result.z := render.Z;
-  dl_hasrender[index] := true;
-  dl_rendertime[index] := leveltime;
 end;
 
 end.

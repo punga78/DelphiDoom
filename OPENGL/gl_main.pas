@@ -37,7 +37,38 @@ interface
 uses
   SysUtils,
   Windows,
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Input.Intf,
+  DelphiDoom.Video.Intf{$IFNDEF HEXEN},
+  DelphiDoom.Engine.Endoom.Intf{$ENDIF};
+
+//==============================================================================
+//
+// GL_ConfigureInput
+// The poller of the input: the window tells it when it gains or loses the focus.
+// The composition root calls it
+//
+//==============================================================================
+procedure GL_ConfigureInput(const APoller: IInputPoller);
+
+//==============================================================================
+//
+// GL_ConfigureDisplayModes
+// The catalog of the screen modes, filled when the graphics start and cleared when they stop.
+// The composition root calls it; without it GL_InitGraphics stops with I_Error
+//
+//==============================================================================
+procedure GL_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
+
+{$IFNDEF HEXEN}
+//==============================================================================
+//
+// GL_ConfigureEndoom
+// The end screen, shown in a texture. The composition root calls it
+//
+//==============================================================================
+procedure GL_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+{$ENDIF}
 
 //==============================================================================
 // GL_InitGraphics
@@ -157,9 +188,6 @@ uses
   r_draw,
   st_stuff,
   {$ENDIF}
-  {$IFNDEF HEXEN}
-  e_endoom,
-  {$ENDIF}
   {$IFDEF STRIFE}
   f_fade,
   {$ELSE}
@@ -167,9 +195,8 @@ uses
   {$ENDIF}
   r_main,
   mt_utils,
-  i_displaymodes,
+  r_hires,
   i_mainwindow,
-  i_input,
   i_system,
   m_argv,
   m_menu,
@@ -180,6 +207,46 @@ uses
   gl_defs,
   v_data,
   v_video;
+
+var
+  // given by the composition root (GL_ConfigureInput, GL_ConfigureDisplayModes, GL_ConfigureEndoom)
+  gl_input: IInputPoller = nil;
+  gl_displaymodes: IDisplayModeCatalog = nil;
+{$IFNDEF HEXEN}
+  gl_endoom: IEngineEndoomScreen = nil;
+{$ENDIF}
+
+//==============================================================================
+//
+// GL_ConfigureInput
+//
+//==============================================================================
+procedure GL_ConfigureInput(const APoller: IInputPoller);
+begin
+  gl_input := APoller;
+end;
+
+//==============================================================================
+//
+// GL_ConfigureDisplayModes
+//
+//==============================================================================
+procedure GL_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
+begin
+  gl_displaymodes := ACatalog;
+end;
+
+{$IFNDEF HEXEN}
+//==============================================================================
+//
+// GL_ConfigureEndoom
+//
+//==============================================================================
+procedure GL_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+begin
+  gl_endoom := AScreen;
+end;
+{$ENDIF}
 
 var
   s_alttab_disabled: boolean = false;
@@ -336,7 +403,8 @@ begin
   end;
   glKillWnd;
   I_EnableAltTab;
-  I_ClearDisplayModes;
+  if gl_displaymodes <> nil then
+    gl_displaymodes.Clear;
   memfree(oscreen, allocscreensize);
 end;
 
@@ -518,18 +586,18 @@ begin
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   end;
 
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, ESCREENWIDTH, ESCREENHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, e_screen32);
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, ENDOOM_TEXTURE_WIDTH, ENDOOM_TEXTURE_HEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, gl_endoom.Pixels32);
 
   glColor4f(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_ALPHA_TEST);
   glAlphaFunc(GL_NOTEQUAL, 0);
 
   glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 200 / ESCREENHEIGHT);
+    glTexCoord2f(0.0, 200 / ENDOOM_TEXTURE_HEIGHT);
     glVertex2f(0, 0);
-    glTexCoord2f(640 / ESCREENWIDTH, 200 / ESCREENHEIGHT);
+    glTexCoord2f(640 / ENDOOM_TEXTURE_WIDTH, 200 / ENDOOM_TEXTURE_HEIGHT);
     glVertex2f(SCREENWIDTH, 0);
-    glTexCoord2f(640 / ESCREENWIDTH, 0.0);
+    glTexCoord2f(640 / ENDOOM_TEXTURE_WIDTH, 0.0);
     glVertex2f(SCREENWIDTH, SCREENHEIGHT);
     glTexCoord2f(0.0, 0.0);
     glVertex2f(0, SCREENHEIGHT);
@@ -867,7 +935,8 @@ begin
       WM_ACTIVATE:
         begin
           InBackground := (LOWORD(wparam) = WA_INACTIVE) or (HIWORD(wparam) <> 0);
-          I_SynchronizeInput(not InBackground);
+          if gl_input <> nil then
+            gl_input.Synchronize(not InBackground);
         end;
       WM_CLOSE:
         begin
@@ -931,7 +1000,9 @@ var
 begin
   printf('GL_InitGraphics: Initializing OpenGL.'#13#10);
 
-  I_EnumDisplayModes;
+  if gl_displaymodes = nil then
+    I_Error('GL_ConfigureDisplayModes() was not called: the display modes are missing');
+  gl_displaymodes.Refresh(MAXWIDTH, MAXHEIGHT);
 
   InitOpenGL;                               // New call to initialize and bind the OpenGL dll
   gl_initialized := true;

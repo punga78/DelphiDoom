@@ -35,10 +35,21 @@ unit r_softlights;
 interface
 
 uses
-  p_mobj_h;
+  p_mobj_h,
+  DelphiDoom.DynLights.Intf;
 
 type
   lightmappass_t = (lp_solid, lp_masked);
+
+//==============================================================================
+//
+// R_ConfigureSoftLights
+//
+// The records of the lights (Libs\DynLights) that R_MarkDLights reads.
+// The composition root calls it
+//
+//==============================================================================
+procedure R_ConfigureSoftLights(const ACache: IDynLightRenderCache);
 
 //==============================================================================
 //
@@ -131,7 +142,22 @@ uses
   r_hires,
   tables,
   v_video,
+  p_tick,
   z_zone;
+
+var
+  // given by the composition root (R_ConfigureSoftLights)
+  soft_dynlights: IDynLightRenderCache = nil;
+
+//==============================================================================
+//
+// R_ConfigureSoftLights
+//
+//==============================================================================
+procedure R_ConfigureSoftLights(const ACache: IDynLightRenderCache);
+begin
+  soft_dynlights := ACache;
+end;
 
 const
   LIGHTTEXTURESIZE = 128;
@@ -244,7 +270,7 @@ begin
   for i := 0 to dlights.Count - 1 do
     if (dlights.Numbers[i].num1 = mo._type) or (dlights.Numbers[i].num1 = -1) then
     begin
-      l := R_GetDynamicLight(dlights.Numbers[i].num2);
+      l := soft_dynlights.GetLight(dlights.Numbers[i].num2, leveltime);
       if numdlitems >= realdlitems then
       begin
         realloc(pointer(dlbuffer), realdlitems * SizeOf(dlsortitem_t), (realdlitems + 32) * SizeOf(dlsortitem_t));

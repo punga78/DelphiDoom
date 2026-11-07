@@ -26,7 +26,8 @@ uses
   DelphiDoom.Video.Services in '..\Libs\Video\DelphiDoom.Video.Services.pas',
   DelphiDoom.Video.Factory in '..\Libs\Video\DelphiDoom.Video.Factory.pas',
   DelphiDoom.Tests.Video.Services in 'Source\DelphiDoom.Tests.Video.Services.pas',
-  DelphiDoom.Tests.Video.DisplayModeCatalog in 'Source\DelphiDoom.Tests.Video.DisplayModeCatalog.pas';
+  DelphiDoom.Tests.Video.DisplayModeCatalog in 'Source\DelphiDoom.Tests.Video.DisplayModeCatalog.pas',
+  DelphiDoom.Tests.Video.WindowsDisplayModeSource in 'Source\DelphiDoom.Tests.Video.WindowsDisplayModeSource.pas';
 
 var
   Runner: ITestRunner;

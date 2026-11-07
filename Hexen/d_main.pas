@@ -44,7 +44,8 @@ uses
   d_event,
   doomdef,
   DelphiDoom.IdTech.Intf,
-  DelphiDoom.Iwad.Intf;
+  DelphiDoom.Iwad.Intf,
+  DelphiDoom.Scanner.AutoLoad.Intf;
 
 const
 {$IFNDEF FPC}
@@ -212,6 +213,16 @@ function D_FileInDoomPath(const fn: string): string;
 //==============================================================================
 procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+// The reader of the AUTOLOAD lumps, given by the composition root; without it the
+// start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
 var
   hexdd_pack: boolean = false; // Death Kings of the Dark Citadel pack
 
@@ -261,7 +272,7 @@ uses
   r_defs,
   r_fake3d,
   i_video,
-  i_displaymodes,
+  DelphiDoom.Video.Types,
 {$ENDIF}
   g_game,
   g_demo,
@@ -294,10 +305,36 @@ uses
   t_main,
   v_data,
   v_video,
-  w_autoload,
   w_wad,
   w_pak,
   z_zone;
+
+var
+  // given by the composition root (D_ConfigureAutoLoad)
+  main_autoload: IAutoLoadReader = nil;
+
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+begin
+  main_autoload := AReader;
+end;
+
+//==============================================================================
+//
+// D_AutoLoad
+//
+//==============================================================================
+function D_AutoLoad: IAutoLoadReader;
+begin
+  if main_autoload = nil then
+    I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
+  result := main_autoload;
+end;
+
 
 const
   BGCOLOR = 7;
@@ -2096,7 +2133,7 @@ begin
   SUC_Progress(39);
 
   printf('W_AutoLoadPakFiles: Autoload required pak files.'#13#10);
-  W_AutoLoadPakFiles;
+  D_AutoLoad.Load;
 
   SUC_Progress(40);
 

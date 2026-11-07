@@ -43,7 +43,11 @@ uses
   DelphiDoom.Tests.Mp3.Engine in 'Source\DelphiDoom.Tests.Mp3.Engine.pas',
   DelphiDoom.Tests.Mp3.Client in 'Source\DelphiDoom.Tests.Mp3.Client.pas',
   DelphiDoom.Tests.Mp3.Loader in 'Source\DelphiDoom.Tests.Mp3.Loader.pas',
-  DelphiDoom.Tests.Mp3.Provider in 'Source\DelphiDoom.Tests.Mp3.Provider.pas';
+  DelphiDoom.Tests.Mp3.Provider in 'Source\DelphiDoom.Tests.Mp3.Provider.pas',
+  DelphiDoom.Tests.Mp3.RandomFrames in 'Source\DelphiDoom.Tests.Mp3.RandomFrames.pas',
+  DelphiDoom.Tests.Mp3.Stream in 'Source\DelphiDoom.Tests.Mp3.Stream.pas',
+  DelphiDoom.Tests.Mp3.PcmBuffer in 'Source\DelphiDoom.Tests.Mp3.PcmBuffer.pas',
+  DelphiDoom.Tests.Mp3.Errors in 'Source\DelphiDoom.Tests.Mp3.Errors.pas';
 
 var
   Runner: ITestRunner;

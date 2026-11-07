@@ -18,18 +18,25 @@ type
   TEndoomFactory = class
   public
     class function CreateRenderer: IEndoomRenderer; static;
+    /// <param name="ATicRate">The tics in a second</param>
+    class function CreateSession(ATicRate: Integer): IEndoomSession; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Endoom.Renderer;
+  DelphiDoom.Endoom.Renderer, DelphiDoom.Endoom.Session;
 
 { TEndoomFactory }
 
 class function TEndoomFactory.CreateRenderer: IEndoomRenderer;
 begin
   Result := TEndoomRenderer.Create;
+end;
+
+class function TEndoomFactory.CreateSession(ATicRate: Integer): IEndoomSession;
+begin
+  Result := TEndoomSession.Create(ATicRate);
 end;
 
 end.

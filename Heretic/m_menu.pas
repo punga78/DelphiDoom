@@ -35,6 +35,7 @@ unit m_menu;
 interface
 
 uses
+  DelphiDoom.Video.Intf,
   d_delphi,
   d_event,
   m_fixed;
@@ -244,6 +245,16 @@ var
 var
   EpiCustom: boolean;
 
+//==============================================================================
+//
+// M_ConfigureDisplayModes
+//
+// The catalog of the screen modes that the menu of the video mode lists, given by the
+// composition root; without it the menu stops with I_Error.
+//
+//==============================================================================
+procedure M_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
+
 implementation
 
 uses
@@ -263,9 +274,8 @@ uses
   mt_utils,
   i_system,
   i_threads,
-  i_mp3,
   i_sound,
-  i_displaymodes,
+  DelphiDoom.Video.Types,
 {$IFDEF OPENGL}
   gl_main,
   gl_defs,
@@ -281,7 +291,6 @@ uses
   r_scale,
   r_slopes, // JVAL: Slopes
 {$ENDIF}
-  e_endoom,
   p_mobj_h,
   p_adjust,
   p_obituaries,
@@ -310,6 +319,33 @@ uses
   sounddata,
   w_wad,
   z_zone;
+
+var
+  // given by the composition root (M_ConfigureDisplayModes)
+  menu_displaymodes: IDisplayModeCatalog = nil;
+
+//==============================================================================
+//
+// M_ConfigureDisplayModes
+//
+//==============================================================================
+procedure M_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
+begin
+  menu_displaymodes := ACatalog;
+end;
+
+//==============================================================================
+//
+// M_DisplayModes
+//
+//==============================================================================
+function M_DisplayModes: IDisplayModeCatalog;
+begin
+  if menu_displaymodes = nil then
+    I_Error('M_ConfigureDisplayModes() was not called: the display modes are missing');
+  result := menu_displaymodes;
+end;
+
 
 var
 // temp for screenblocks (0-9)
@@ -2590,7 +2626,7 @@ procedure M_SetVideoMode(choice: integer);
 var
   idx: integer;
 begin
-  idx := I_NearestDisplayModeIndex(SCREENWIDTH, SCREENHEIGHT);
+  idx := M_DisplayModes.NearestIndex(SCREENWIDTH, SCREENHEIGHT);
   if idx >= 0 then
     mdisplaymode_idx := idx;
   OptionsDisplayVideoModeDef.lastOn := 0;
@@ -3172,19 +3208,19 @@ begin
 
   if mdisplaymode_idx < 0 then
     mdisplaymode_idx := 0
-  else if mdisplaymode_idx >= numdisplaymodes then
-    mdisplaymode_idx := numdisplaymodes - 1;
+  else if mdisplaymode_idx >= M_DisplayModes.Count then
+    mdisplaymode_idx := M_DisplayModes.Count - 1;
   ppos := M_WriteText4(OptionsDisplayVideoModeDef.x, OptionsDisplayVideoModeDef.y + OptionsDisplayVideoModeDef.itemheight * Ord(odm_screensize), 'Screen Size: ');
-  sprintf(stmp, '(%dx%d)', [displaymodes[mdisplaymode_idx].width, displaymodes[mdisplaymode_idx].height]);
+  sprintf(stmp, '(%dx%d)', [M_DisplayModes.Modes[mdisplaymode_idx].Width, M_DisplayModes.Modes[mdisplaymode_idx].Height]);
   M_WriteWhiteText4(ppos.x, ppos.y, stmp);
 
   M_DrawThermo(
-    OptionsDisplayVideoModeDef.x, OptionsDisplayVideoModeDef.y + OptionsDisplayVideoModeDef.itemheight * (Ord(odm_screensize) + 1), 30, mdisplaymode_idx, numdisplaymodes);
+    OptionsDisplayVideoModeDef.x, OptionsDisplayVideoModeDef.y + OptionsDisplayVideoModeDef.itemheight * (Ord(odm_screensize) + 1), 30, mdisplaymode_idx, M_DisplayModes.Count);
 
-  if (displaymodes[mdisplaymode_idx].width = SCREENWIDTH) and (displaymodes[mdisplaymode_idx].height = SCREENHEIGHT) then
+  if (M_DisplayModes.Modes[mdisplaymode_idx].Width = SCREENWIDTH) and (M_DisplayModes.Modes[mdisplaymode_idx].Height = SCREENHEIGHT) then
     stmp := 'No change'
   else
-    sprintf(stmp, 'Set video mode to %dx%d...', [displaymodes[mdisplaymode_idx].width, displaymodes[mdisplaymode_idx].height]);
+    sprintf(stmp, 'Set video mode to %dx%d...', [M_DisplayModes.Modes[mdisplaymode_idx].Width, M_DisplayModes.Modes[mdisplaymode_idx].Height]);
   M_WriteText4(OptionsDisplayVideoModeDef.x, OptionsDisplayVideoModeDef.y + OptionsDisplayVideoModeDef.itemheight * Ord(odm_setvideomode), stmp);
 end;
 
@@ -3908,7 +3944,7 @@ begin
       if mdisplaymode_idx > 0 then
         dec(mdisplaymode_idx);
     1:
-      if mdisplaymode_idx < numdisplaymodes - 1 then
+      if mdisplaymode_idx < M_DisplayModes.Count - 1 then
         inc(mdisplaymode_idx);
   end;
 end;
@@ -3922,13 +3958,13 @@ procedure M_ApplyScreenSize(choice: integer);
 begin
   if mdisplaymode_idx < 0 then
     mdisplaymode_idx := 0
-  else if mdisplaymode_idx >= numdisplaymodes then
-    mdisplaymode_idx := numdisplaymodes - 1;
+  else if mdisplaymode_idx >= M_DisplayModes.Count then
+    mdisplaymode_idx := M_DisplayModes.Count - 1;
 
   OptionsDisplayVideoModeDef.lastOn := 0;
   itemOn := 0;
 
-  D_NotifyVideoModeChange(displaymodes[mdisplaymode_idx].width, displaymodes[mdisplaymode_idx].height);
+  D_NotifyVideoModeChange(M_DisplayModes.Modes[mdisplaymode_idx].Width, M_DisplayModes.Modes[mdisplaymode_idx].Height);
 end;
 
 //==============================================================================

@@ -121,6 +121,29 @@ type
     procedure Reset;
   end;
 
+  /// <summary>
+  ///   The lights of the level as the renderers read them: one stable record for each light (the
+  ///   renderers keep the pointer for a frame), calculated at most once in a tic
+  /// </summary>
+  IDynLightRenderCache = interface
+    ['{9E2B47D1-C803-4F6A-B5D9-12A7E06F3C84}']
+    /// <summary>
+    ///   Forgets the lights and reads the lumps again (IDynLightLoader.Load); then there is one
+    ///   record for each light
+    /// </summary>
+    /// <returns>What the loader says: true if there is a lump or file entry of lights</returns>
+    function Load(AGldefsAsLightDef: Boolean): Boolean;
+    /// <summary>Forgets the lights and the records</summary>
+    procedure Clear;
+    /// <summary>How many records there are</summary>
+    function Count: Integer;
+    /// <summary>
+    ///   The record of the light at that tic. The index is not checked: it is one of the lights
+    ///   that the states hold. The shadow is always off
+    /// </summary>
+    function GetLight(AIndex, ALevelTime: Integer): PDynLightRender;
+  end;
+
   /// <summary>What the parser needs; the context may be nil (then it never lists the text)</summary>
   TDynLightParserServices = record
     Registry: IDynLightRegistry;
