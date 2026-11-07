@@ -10,9 +10,9 @@
 
   -Test           nome del progetto di test senza il prefisso: "Zone" = Tests\DelphiDoom.Tests.Zone,
                   "" o "Zlib" = Tests\DelphiDoom.Tests (il progetto di zlib).
-  -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le
-                  unit che il .dpr di test compila da Libs\ (anche piu' cartelle: Sndfile prova Libs\Sound e
-                  Libs\Ogg); se non ne compila nessuna (Common), quelle fuori da Tests\.
+  -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le unit
+                  che il .dpr di test compila dalla cartella della sua libreria (Libs\<Nome>, Libs\<A>\<B> per
+                  "A.B"; Sndfile anche Libs\Sound): le librerie da cui dipende contano nel loro progetto.
   -Tutti          esegue tutti i progetti di test elencati in build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
   -SenzaCompilare usa l'eseguibile gia' in bin\Tests, che deve essere compilato in Debug (senza questa
@@ -55,10 +55,18 @@ function Find-CodeCoverage([string]$Explicit) {
   return $null
 }
 
-# The source files to measure: with -Cartella every .pas of that folder; otherwise every unit the test
-# project compiles from Libs\ (a project often tests more than one folder: Sndfile tests Libs\Sound and
-# Libs\Ogg too). A project that compiles nothing from Libs\ (Common) measures its units outside Source\.
-function Get-SourceFiles([string]$Project, [string]$Explicit) {
+# The folders a test project is the owner of: its library and nothing else. A project also compiles the
+# libraries it depends on (Screenshot compiles Jpeg, Png and Zlib), but their lines belong to their own
+# project and would only dilute the number. Projects whose library has another name are listed here.
+$ownedFolders = @{
+  'Zlib'    = @('Libs\Zlib')
+  'Sndfile' = @('Libs\Sndfile', 'Libs\Sound')   # the engine that the game uses is Libs\Sound
+  'Common'  = @('Common')
+}
+
+# The source files to measure: with -Cartella every .pas of that folder; otherwise the units that the test
+# project compiles from the folders it owns (Libs\<Name>, Libs\<A>\<B> for "A.B", or the table above).
+function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit) {
   if ($Explicit -ne '') {
     return @(Get-ChildItem -LiteralPath (Join-Path $root $Explicit) -Filter *.pas -File -Recurse |
       ForEach-Object { $_.FullName })
@@ -67,18 +75,20 @@ function Get-SourceFiles([string]$Project, [string]$Explicit) {
   if (-not (Test-Path -LiteralPath $dpr)) { throw "Progetto non trovato: $dpr" }
   $paths = [regex]::Matches((Get-Content -LiteralPath $dpr -Raw), "in\s+'([^']+\.pas)'") |
     ForEach-Object { [IO.Path]::GetFullPath((Join-Path (Join-Path $root 'Tests') $_.Groups[1].Value)) }
-  $libs = Join-Path $root 'Libs'
-  $fromLibs = @($paths | Where-Object { $_.StartsWith($libs + '\', [StringComparison]::OrdinalIgnoreCase) })
-  if ($fromLibs.Count -gt 0) { return $fromLibs }
-  $tests = Join-Path $root 'Tests'
-  return @($paths | Where-Object { -not $_.StartsWith($tests + '\', [StringComparison]::OrdinalIgnoreCase) })
+  $key = if ($TestName -eq '') { 'Zlib' } else { $TestName }
+  $owned = if ($ownedFolders.ContainsKey($key)) { $ownedFolders[$key] } else { @('Libs\' + ($key -replace '\.', '\')) }
+  $prefixes = @($owned | ForEach-Object { (Join-Path $root $_) + '\' })
+  return @($paths | Where-Object {
+    $path = $_
+    @($prefixes | Where-Object { $path.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
+  })
 }
 
 function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   $project = if ($TestName -eq '' -or $TestName -eq 'Zlib') { 'DelphiDoom.Tests' } else { 'DelphiDoom.Tests.' + $TestName }
   $exe = Join-Path $root "bin\Tests\$project.exe"
   $map = Join-Path $root "bin\Tests\$project.map"
-  $files = @(Get-SourceFiles $project $Explicit)
+  $files = @(Get-SourceFiles $TestName $project $Explicit)
   if ($files.Count -eq 0) { throw "Nessuna unit da misurare per $project" }
   $label = if ($TestName -eq '') { 'Zlib' } else { $TestName }
   $out = Join-Path $root "logs\copertura\$label"
