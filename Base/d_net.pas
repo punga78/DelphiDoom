@@ -158,7 +158,7 @@ uses
   r_main,
   p_mobj_h,
 {$IFDEF DOOM_OR_STRIFE}
-  p_terrain,
+  p_local,
 {$ENDIF}
 {$IFDEF HEXEN}
   g_demo,

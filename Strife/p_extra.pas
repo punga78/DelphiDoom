@@ -252,7 +252,6 @@ uses
   p_map,
   p_local,
   p_sounds,
-  p_terrain,
   p_common,
   tables;
 

@@ -18,9 +18,18 @@ type
   TTerrainTables = class
   public
     class function ForGame(AGame: TDefGame): TArray<TDefTerrainEntry>; static;
+    /// <summary>
+    ///   The terrain of a flat of the game (the case does not matter), Solid if the flat is
+    ///   not in the list: the same answer of TTerrainTable over ForGame, without making the
+    ///   table (the engine calls it for every flat it loads)
+    /// </summary>
+    class function KindForName(AGame: TDefGame; const AFlatName: string): TDefTerrainKind; static;
   end;
 
 implementation
+
+uses
+  DelphiDoom.Scanner.Strings;
 
 const
   DOOM_TERRAINS: array[0..22] of TDefTerrainEntry = (
@@ -98,6 +107,33 @@ begin
     TDefGame.Hexen: Result := CopyEntries(HEXEN_TERRAINS);
   else
     Result := CopyEntries(STRIFE_TERRAINS);
+  end;
+end;
+
+function FindKind(const AEntries: array of TDefTerrainEntry;
+  const AUpperName: string): TDefTerrainKind;
+var
+  LIndex: Integer;
+begin
+  // the first one that matches wins, as in TTerrainTable
+  for LIndex := 0 to High(AEntries) do
+    if AEntries[LIndex].Name = AUpperName then
+      Exit(AEntries[LIndex].Kind);
+  Result := TDefTerrainKind.Solid;
+end;
+
+class function TTerrainTables.KindForName(AGame: TDefGame;
+  const AFlatName: string): TDefTerrainKind;
+var
+  LUpper: string;
+begin
+  LUpper := TScannerStrings.UpperAscii(AFlatName);
+  case AGame of
+    TDefGame.Doom: Result := FindKind(DOOM_TERRAINS, LUpper);
+    TDefGame.Heretic: Result := FindKind(HERETIC_TERRAINS, LUpper);
+    TDefGame.Hexen: Result := FindKind(HEXEN_TERRAINS, LUpper);
+  else
+    Result := FindKind(STRIFE_TERRAINS, LUpper);
   end;
 end;
 

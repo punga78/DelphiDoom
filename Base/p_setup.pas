@@ -249,9 +249,7 @@ uses
   d_think,
 {$ENDIF}
   z_zone,
-{$IFDEF HEXEN}
   m_argv,
-{$ENDIF}
   m_rnd,
   m_bbox,
 {$IFDEF DOOM}
@@ -268,7 +266,6 @@ uses
 {$ELSE}
   info_h,
 {$ENDIF}
-  p_blockmap,
   p_local,
 {$IF DEFINED(HERETIC)}
   p_umapinfo,
@@ -336,7 +333,157 @@ uses
 {$IFDEF HEXEN}
   s_sndseq,
 {$ENDIF}
+  DelphiDoom.Blockmap.Types,
+  DelphiDoom.Blockmap.Intf,
+  DelphiDoom.Blockmap.Factory,
   doomstat;
+
+//==============================================================================
+//
+// P_BuildBlockMapData
+//
+// Makes the blockmap from the vertexes and the lines of the level (TBlockmapBuilder of
+// Libs\Blockmap, without state)
+//
+//==============================================================================
+function P_BuildBlockMapData: TBlockmapData;
+var
+  i: integer;
+  verts: TArray<TBlockmapPoint>;
+  lns: TArray<TBlockmapLine>;
+begin
+  SetLength(verts, numvertexes);
+  for i := 0 to numvertexes - 1 do
+  begin
+    verts[i].X := vertexes[i].x;
+    verts[i].Y := vertexes[i].y;
+  end;
+  SetLength(lns, numlines);
+  for i := 0 to numlines - 1 do
+  begin
+    lns[i].X1 := lines[i].v1.x;
+    lns[i].Y1 := lines[i].v1.y;
+    lns[i].X2 := lines[i].v2.x;
+    lns[i].Y2 := lines[i].v2.y;
+  end;
+  result := TBlockmapFactory.CreateBuilder.Build(verts, lns);
+end;
+
+//==============================================================================
+//
+// P_LoadBlockMap
+//
+// The lump BLOCKMAP of the level if it can be used, otherwise the blockmap is made from the
+// lines (a missing, too small or too big lump, a large map or -blockmap). It was in
+// p_blockmap.pas.
+//
+//==============================================================================
+procedure P_LoadBlockMap(lump: integer);
+var
+  count: integer;
+  lumpbytes: TArray<Byte>;
+  data: TBlockmapData;
+  fromlump: boolean;
+  size: integer;
+  reader: IBlockmapLumpReader;
+begin
+  reader := TBlockmapFactory.CreateLumpReader;
+
+  fromlump := false;
+  count := W_LumpLength(lump);
+  if (M_CheckParm('-blockmap') = 0) and not largemap and (count > 0) then
+  begin
+    SetLength(lumpbytes, count);
+    W_ReadLump(lump, @lumpbytes[0]);
+    fromlump := reader.IsUsable(lumpbytes);
+  end;
+
+  try
+    if fromlump then
+      data := reader.Read(lumpbytes)
+    else
+      data := P_BuildBlockMapData;
+  except
+    on E: EBlockmapException do
+      I_Error('P_LoadBlockMap(): %s', [E.Message]);
+  end;
+
+  size := Length(data.Lump) * SizeOf(integer);
+  blockmaplump := Z_Malloc(size, PU_LEVEL, nil);
+  Move(data.Lump[0], blockmaplump[0], size);
+  blockmapxneg := data.NegX;
+  blockmapyneg := data.NegY;
+  internalblockmapformat := data.Built;
+
+  blockmap := @blockmaplump[4];
+
+  bmaporgx := blockmaplump[0] * FRACUNIT;
+  bmaporgy := blockmaplump[1] * FRACUNIT;
+  bmapwidth := blockmaplump[2];
+  bmapheight := blockmaplump[3];
+  bmapsize := bmapwidth * bmapheight;
+  // clear out mobj chains
+  count := SizeOf(blocklinkitem_t) * bmapwidth * bmapheight;
+  blocklinks := Z_Malloc(count, PU_LEVEL, nil);
+  ZeroMemory(blocklinks, count);
+end;
+
+//==============================================================================
+// P_RemoveSlimeTrails
+//
+// killough 10/98
+//
+// Remove slime trails.
+//
+// Slime trails are inherent to Doom's coordinate system: a node builder cannot
+// avoid them because two lines through integer points may cross at a point
+// that is not integer, and a WAD has no fractional coordinates. Inside the
+// engine fractional coordinates are fine, so the vertex of a seg that is not
+// an end of its linedef is moved onto the linedef (law of cosines). Orthogonal
+// linedefs and minisegs are skipped. The calculation is TBlockmapSlimeTrailRemover
+// of Libs\Blockmap, without state. It was in p_blockmap.pas.
+//
+//==============================================================================
+procedure P_RemoveSlimeTrails;  // killough 10/98
+var
+  i: integer;
+  verts: TArray<TBlockmapPoint>;
+  sgs: TArray<TBlockmapSeg>;
+begin
+  SetLength(verts, numvertexes);
+  for i := 0 to numvertexes - 1 do
+  begin
+    verts[i].X := vertexes[i].x;
+    verts[i].Y := vertexes[i].y;
+  end;
+  SetLength(sgs, numsegs);
+  for i := 0 to numsegs - 1 do
+  begin
+    sgs[i].Vertex1 := (NativeInt(segs[i].v1) - NativeInt(vertexes)) div SizeOf(vertex_t);
+    sgs[i].Vertex2 := (NativeInt(segs[i].v2) - NativeInt(vertexes)) div SizeOf(vertex_t);
+    sgs[i].Miniseg := segs[i].miniseg;
+    if not segs[i].miniseg then
+    begin
+      sgs[i].LineVertex1 := (NativeInt(segs[i].linedef.v1) - NativeInt(vertexes)) div SizeOf(vertex_t);
+      sgs[i].LineVertex2 := (NativeInt(segs[i].linedef.v2) - NativeInt(vertexes)) div SizeOf(vertex_t);
+      sgs[i].LineDeltaX := segs[i].linedef.dx;
+      sgs[i].LineDeltaY := segs[i].linedef.dy;
+    end;
+  end;
+
+  try
+    TBlockmapFactory.CreateSlimeTrailRemover.Remove(verts, sgs);
+  except
+    on E: EBlockmapException do
+      I_Error('P_RemoveSlimeTrails(): %s', [E.Message]);
+  end;
+
+  for i := 0 to numvertexes - 1 do
+  begin
+    vertexes[i].x := verts[i].X;
+    vertexes[i].y := verts[i].Y;
+  end;
+end;
 
 //==============================================================================
 //

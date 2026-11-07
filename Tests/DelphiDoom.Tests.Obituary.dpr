@@ -17,9 +17,11 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Obituary.Types in '..\Libs\Obituary\DelphiDoom.Obituary.Types.pas',
   DelphiDoom.Obituary.Intf in '..\Libs\Obituary\DelphiDoom.Obituary.Intf.pas',
+  DelphiDoom.Obituary.Genders in '..\Libs\Obituary\DelphiDoom.Obituary.Genders.pas',
   DelphiDoom.Obituary.GenderTable in '..\Libs\Obituary\DelphiDoom.Obituary.GenderTable.pas',
   DelphiDoom.Obituary.Formatter in '..\Libs\Obituary\DelphiDoom.Obituary.Formatter.pas',
   DelphiDoom.Obituary.Factory in '..\Libs\Obituary\DelphiDoom.Obituary.Factory.pas',
+  DelphiDoom.Tests.Obituary.Genders in 'Source\DelphiDoom.Tests.Obituary.Genders.pas',
   DelphiDoom.Tests.Obituary.GenderTable in 'Source\DelphiDoom.Tests.Obituary.GenderTable.pas',
   DelphiDoom.Tests.Obituary.Formatter in 'Source\DelphiDoom.Tests.Obituary.Formatter.pas';
 

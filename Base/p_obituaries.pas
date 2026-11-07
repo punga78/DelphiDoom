@@ -31,7 +31,6 @@ unit p_obituaries;
 interface
 
 uses
-  DelphiDoom.Obituary.Intf,
   p_mobj_h;
 
 //==============================================================================
@@ -40,13 +39,6 @@ uses
 //
 //==============================================================================
 procedure P_Obituary(const victim, inflictor, attacker: Pmobj_t);
-
-//==============================================================================
-//
-// P_ConfigureObituaries
-//
-//==============================================================================
-procedure P_ConfigureObituaries(const AFormatter: IObituaryFormatter);
 
 var
   show_obituaries: boolean = false;
@@ -58,22 +50,9 @@ uses
   d_delphi,
   d_player,
   DelphiDoom.Obituary.Types,
-  i_system,
+  DelphiDoom.Obituary.Formatter,
   p_common,
   w_wad;
-
-var
-  obituary_formatter: IObituaryFormatter = nil;
-
-//==============================================================================
-//
-// P_ConfigureObituaries
-//
-//==============================================================================
-procedure P_ConfigureObituaries(const AFormatter: IObituaryFormatter);
-begin
-  obituary_formatter := AFormatter;
-end;
 
 //==============================================================================
 //
@@ -158,10 +137,8 @@ begin
   else
     aname := attacker.info.name;
 
-  if obituary_formatter = nil then
-    I_Error('P_Obituary(): the obituaries are not configured (ComposeEngine was not called)');
-
-  messagefmt := obituary_formatter.Compose(messagefmt, vname, aname,
+  // the placeholders and the pronouns: TObituaryFormatter of Libs\Obituary, without state
+  messagefmt := TObituaryFormatter.ComposeMessage(messagefmt, vname, aname,
     TObituaryGender(victim.info.gender), TObituaryGender(attacker.info.gender));
 
   pv._message := messagefmt;

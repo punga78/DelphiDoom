@@ -106,6 +106,19 @@ const
   ONCEILINGZ = MAXINT;
 
   ONFLOATZ = MAXINT - 1;
+
+// the floors of Doom and Strife (they were in Doom\p_terrain.pas and Strife\p_terrain.pas)
+  FLOOR_SOLID = 0;
+  FLOOR_WATER = 1;
+  FLOOR_LAVA = 2;
+  FLOOR_SLUDGE = 3;
+  FLOOR_NUKAGE = 4;
+{$ENDIF}
+
+{$IFDEF DOOM_OR_STRIFE}
+var
+  // the splashes of the things that fall in water, lava, sludge and nukage (Doom32.ini, menu, net)
+  allowterrainsplashes: boolean;
 {$ENDIF}
 
 const

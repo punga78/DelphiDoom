@@ -36,6 +36,7 @@ uses
   DelphiDoom.Tests.Definitions.SwitchLumpReader in 'Source\DelphiDoom.Tests.Definitions.SwitchLumpReader.pas',
   DelphiDoom.Tests.Definitions.SwitchSelector in 'Source\DelphiDoom.Tests.Definitions.SwitchSelector.pas',
   DelphiDoom.Tests.Definitions.TerrainTable in 'Source\DelphiDoom.Tests.Definitions.TerrainTable.pas',
+  DelphiDoom.Tests.Definitions.TerrainTables in 'Source\DelphiDoom.Tests.Definitions.TerrainTables.pas',
   DelphiDoom.Tests.Definitions.Tables in 'Source\DelphiDoom.Tests.Definitions.Tables.pas';
 
 var

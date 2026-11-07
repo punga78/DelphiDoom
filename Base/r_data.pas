@@ -273,6 +273,8 @@ uses
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.Imaging.Types,
   DelphiDoom.Palette.Types,
+  DelphiDoom.Definitions.Types,
+  DelphiDoom.Definitions.TerrainTables,
   r_palette,
 {$IFDEF FPC}
   d_fpc,
@@ -287,7 +289,7 @@ uses
   p_tick,
   p_mobj_h,
   p_mobj,
-  p_terrain,
+  p_local,
 {$IFDEF HEXEN}
   p_anim,
 {$ENDIF}
@@ -1237,6 +1239,47 @@ begin
   texturedefs_loader := ALoader;
 end;
 
+// The terrain of the flats is the compiled list of Libs\Definitions (TTerrainTables, without
+// state); the numbers of the floors are the FLOOR_* of p_local, different in every game.
+// Before, they were the four p_terrain.pas (P_TerrainTypeForName).
+const
+{$IF DEFINED(DOOM)}
+  TERRAIN_GAME = TDefGame.Doom;
+{$ELSEIF DEFINED(HERETIC)}
+  TERRAIN_GAME = TDefGame.Heretic;
+{$ELSEIF DEFINED(HEXEN)}
+  TERRAIN_GAME = TDefGame.Hexen;
+{$ELSE}
+  TERRAIN_GAME = TDefGame.Strife;
+{$ENDIF}
+
+  // Solid, Water, Lava, Sludge, Nukage, Ice
+{$IF DEFINED(HEXEN)}
+  TERRAIN_FLOORS: array[TDefTerrainKind] of integer = (
+    FLOOR_SOLID, FLOOR_WATER, FLOOR_LAVA, FLOOR_SLUDGE, FLOOR_SOLID, FLOOR_ICE
+  );
+{$ELSEIF DEFINED(HERETIC)}
+  TERRAIN_FLOORS: array[TDefTerrainKind] of integer = (
+    FLOOR_SOLID, FLOOR_WATER, FLOOR_LAVA, FLOOR_SLUDGE, FLOOR_SOLID, FLOOR_SOLID
+  );
+{$ELSE}
+  TERRAIN_FLOORS: array[TDefTerrainKind] of integer = (
+    FLOOR_SOLID, FLOOR_WATER, FLOOR_LAVA, FLOOR_SLUDGE, FLOOR_NUKAGE, FLOOR_SOLID
+  );
+{$ENDIF}
+
+//==============================================================================
+//
+// R_FlatTerrainType
+//
+// JVAL: 9 December 2007, Added terrain types
+//
+//==============================================================================
+function R_FlatTerrainType(const flatname: string): integer;
+begin
+  result := TERRAIN_FLOORS[TTerrainTables.KindForName(TERRAIN_GAME, strupper(flatname))];
+end;
+
 //==============================================================================
 //
 // R_InitFlats
@@ -1276,7 +1319,7 @@ begin
     flat.flat32 := nil;
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
-    flat.terraintype := P_TerrainTypeForName(flat.name);
+    flat.terraintype := R_FlatTerrainType(flat.name);
     flats[i] := flat;
     flats[i].size := 0;
   end;
@@ -1655,7 +1698,7 @@ begin
     flats[result].flat32 := nil;
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
-    flats[result].terraintype := P_TerrainTypeForName(flats[result].name);
+    flats[result].terraintype := R_FlatTerrainType(flats[result].name);
     M_HashUpdate(s, result);
   end;
 end;
@@ -1713,7 +1756,7 @@ begin
     flats[result].flat32 := nil;
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
-    flats[result].terraintype := P_TerrainTypeForName(flats[result].name);
+    flats[result].terraintype := R_FlatTerrainType(flats[result].name);
     M_HashUpdate(s, result);
   end
 end;
@@ -1746,7 +1789,7 @@ begin
     flats[result].flat32 := nil;
     {$ENDIF}
     // JVAL: 9 December 2007, Added terrain types
-    flats[result].terraintype := P_TerrainTypeForName(flats[result].name);
+    flats[result].terraintype := R_FlatTerrainType(flats[result].name);
     flats[result].size := 0;
   end
 end;

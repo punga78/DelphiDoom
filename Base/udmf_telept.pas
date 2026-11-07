@@ -71,9 +71,6 @@ uses
   p_map,
   p_mobj,
   p_local,
-  {$IFDEF DOOM_OR_STRIFE}
-  p_terrain,
-  {$ENDIF}
   s_sound,
   sounddata,
   {$IFNDEF HEXEN}

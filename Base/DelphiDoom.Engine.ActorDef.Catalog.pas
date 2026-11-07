@@ -52,7 +52,7 @@ uses
   info,
   info_h,
   info_common,
-  p_gender,
+  DelphiDoom.Obituary.Genders,
   p_mobj_h,
   r_renderstyle,
   sc_states;
@@ -143,7 +143,7 @@ end;
 
 function TEngineActorDefCatalog.GenderName(const AName: string): string;
 begin
-  Result := R_GenderName(R_GetGenderForName(AName));
+  Result := TObituaryGenders.NameOf(TObituaryGenders.FindByName(AName));
 end;
 
 function TEngineActorDefCatalog.Find(const AName: string; out AIndex: Integer;

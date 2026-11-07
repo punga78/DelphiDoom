@@ -818,7 +818,6 @@ uses
   p_inter,
   p_sounds,
   p_dialog,
-  p_terrain,
   p_udmf,
   udmf_spec,
   ps_main,

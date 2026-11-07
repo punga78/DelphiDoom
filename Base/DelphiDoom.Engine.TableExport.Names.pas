@@ -50,6 +50,8 @@ uses
   info,
   info_common,
   p_gender,
+  DelphiDoom.Obituary.Types,
+  DelphiDoom.Obituary.Genders,
   r_renderstyle,
   r_translations,
   sounddata,
@@ -175,7 +177,7 @@ end;
 
 function TEngineExportNames.GenderToken(AValue: Integer): string;
 begin
-  Result := R_GenderName(gender_t(AValue));
+  Result := TObituaryGenders.NameOf(TObituaryGender(AValue));
 end;
 
 function TEngineExportNames.AmmoToken(AIndex: Integer): string;

@@ -296,7 +296,6 @@ uses
   p_maputl,
   p_local,
   p_sounds,
-  p_terrain,
   p_common,
   s_sound,
   tables;

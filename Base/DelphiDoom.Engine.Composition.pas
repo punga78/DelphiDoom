@@ -71,8 +71,6 @@ uses
   DelphiDoom.MathCore.Factory,
   m_rnd,
   m_hash,
-  DelphiDoom.Blockmap.Factory,
-  p_blockmap,
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -131,15 +129,10 @@ uses
   DelphiDoom.Definitions.Factory,
   DelphiDoom.Engine.Definitions.AnimCatalog,
   DelphiDoom.Engine.Definitions.TextureLookup,
-  p_terrain,
 {$IFDEF DOOM}
   p_switch,
 {$ENDIF}
   p_animdefs,
-  DelphiDoom.Obituary.Intf,
-  DelphiDoom.Obituary.Factory,
-  p_gender,
-  p_obituaries,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
@@ -404,15 +397,6 @@ begin
     TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
 end;
 
-procedure ComposeObituary;
-var
-  LGenders: IObituaryGenders;
-begin
-  LGenders := TObituaryFactory.CreateGenders;
-  R_ConfigureGenders(LGenders);
-  P_ConfigureObituaries(TObituaryFactory.CreateFormatter(LGenders));
-end;
-
 procedure ComposeNodes;
 var
   LSource: INodesLumpSource;
@@ -431,23 +415,9 @@ begin
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
-var
-  LGame: TDefGame;
 begin
   P_ConfigureAnimDefs(TDefinitionsFactory.CreateAnimDefsParser(TEngineAnimNameCatalog.Create, ALog));
-{$IFDEF DOOM}
-  LGame := TDefGame.Doom;
-{$ENDIF}
-{$IFDEF HERETIC}
-  LGame := TDefGame.Heretic;
-{$ENDIF}
-{$IFDEF HEXEN}
-  LGame := TDefGame.Hexen;
-{$ENDIF}
-{$IFDEF STRIFE}
-  LGame := TDefGame.Strife;
-{$ENDIF}
-  P_ConfigureTerrain(TDefinitionsFactory.CreateTerrainTable(LGame));
+  // the terrain of the flats has no state: r_data calls TTerrainTables directly
 {$IFDEF DOOM}
   // The switches of Heretic, Hexen and Strife keep their own tables: they are used after the start
   P_ConfigureSwitches(TDefinitionsFactory.CreateSwitchLumpReader(False),
@@ -572,12 +542,6 @@ procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
   M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
-end;
-
-procedure ComposeBlockmap;
-begin
-  P_ConfigureBlockmap(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
-    TBlockmapFactory.CreateSlimeTrailRemover);
 end;
 
 procedure ComposeSerializer;
@@ -748,7 +712,6 @@ begin
   I_ConfigureLog(LLog);
   ComposePlatform;
   ComposeMathCore;
-  ComposeBlockmap;
   ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl;
@@ -770,7 +733,6 @@ begin
   ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);
-  ComposeObituary;
   ComposeMusInfo(LLog);
   ComposeNodes;
   ComposeDynLights(LLog, LContext);

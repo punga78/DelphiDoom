@@ -257,7 +257,6 @@ uses
   p_pspr,
   p_setup,
   p_common,
-  p_terrain,
   p_sounds,
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes

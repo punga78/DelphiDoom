@@ -66,6 +66,8 @@ Le due liste restano nell'ordine di prima (base, poi ogni riga `pic`, animazione
 
 `P_TerrainTypeForName(flatname)` diventa `TerrainKindToFloor(table.KindForName(flatname))` dove la traduzione e' una tabella del motore dai nomi neutri ai suoi `FLOOR_*` (**i numeri cambiano per gioco**: Doom e Strife `Solid 0, Water 1, Lava 2, Sludge 3, Nukage 4`; Heretic `0..3` senza Nukage; Hexen `Solid 0, Ice 1, (Liquid 2 non usato), Water 3, Lava 4, Sludge 5`). La tabella (`IDefTerrainTable`) si crea una volta nel composition root. `P_GetTerrainType` di Strife e i commenti di `r_data.pas` (`flat.terraintype := P_TerrainTypeForName(...)`) restano chiamanti.
 
+**Stato attuale (issue #136)**: i quattro `p_terrain.pas` sono stati cancellati. La tabella non ha stato e non passa piu' dal composition root: `R_FlatTerrainType` di `Base\r_data.pas` chiama `TTerrainTables.KindForName(gioco, nome)` (statica, scorre la lista del gioco senza crearla) e traduce con `TERRAIN_FLOORS`; i `FLOOR_*` di Doom e Strife e `allowterrainsplashes` sono in `Base\p_local.pas`, `P_GetTerrainType` di Strife in `Strife\p_mobj.pas` (legge `flats[].terraintype`).
+
 ## 3. Composition root (`DelphiDoom.Engine.Composition`)
 
 Adattatori sottili nel motore (una unit per classe, `DelphiDoom.Engine.Definitions.*`):
