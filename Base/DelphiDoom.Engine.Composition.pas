@@ -68,6 +68,10 @@ uses
   m_hash,
   DelphiDoom.Blockmap.Factory,
   p_blockmap,
+  DelphiDoom.Serializer.Intf,
+  DelphiDoom.Serializer.Factory,
+  DelphiDoom.Engine.Serializer.Resolver,
+  p_serializer,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
   DelphiDoom.Engine.Imaging.ColorIndex,
@@ -560,6 +564,17 @@ begin
     TBlockmapFactory.CreateSlimeTrailRemover);
 end;
 
+procedure ComposeSerializer;
+var
+  LResolver: TEngineSerializerResolver;
+  LHolder: ISerializerStateResolver;
+begin
+  // one object answers for states, mobjs and players: an interface keeps it alive
+  LResolver := TEngineSerializerResolver.Create;
+  LHolder := LResolver;
+  P_ConfigureSerializer(TSerializerFactory.Create(LResolver, LResolver, LResolver));
+end;
+
 {$IFDEF OPENGL}
 procedure ComposeOpenGl;
 begin
@@ -679,6 +694,7 @@ begin
   ComposePlatform;
   ComposeMathCore;
   ComposeBlockmap;
+  ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl;
 {$ENDIF}
