@@ -45,6 +45,8 @@ uses
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
+  DelphiDoom.Clock.Intf,
+  d_net,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
@@ -414,6 +416,7 @@ var
   LEngine: IIdTechEngine;
   LLog: ILog;
   LContext: IGameContext;
+  LClock: IClock;
   LGame: TUdmfGame;
 begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
@@ -430,7 +433,9 @@ begin
   I_ConfigureLog(LLog);
   ComposeMathCore;
   ComposeConsole;
-  I_ConfigureClock(TClockFactory.CreateClock(LLog));
+  LClock := TClockFactory.CreateClock(LLog);
+  I_ConfigureClock(LClock);
+  D_ConfigureNet(LClock, LLog, LContext);
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeInput(LLog);
   ComposeSound(LLog);

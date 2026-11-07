@@ -39,7 +39,6 @@ Le librerie sono state costruite da agenti in parallelo, ognuna con golden dal v
 | Fetta | Issue | Libreria | Collegata al motore |
 |---|---|---|---|
 | UMAPINFO | #69 | `Libs\MapInfo` (23 test) | **sì**: `p_umapinfo` rifà i record dal catalogo, vecchio parser cancellato |
-| Rete | #70 | `Libs\Net` (130 test) | no: riscrive `NetUpdate`, `D_CheckNetGame`, `D_RunMultipleTicks` e la lettura dei comandi in `G_Ticker` dei quattro giochi; il multiplayer reale non è provabile qui e `-timedemo` non ha dato un riferimento. Provare demo e due macchine prima di collegarla (`Libs\Net\WIRING.md`) |
 
 - **MapInfo**: non provati i `G_ValidateMapName`/`S_GetMusicNumForName` veri nei golden (provati a runtime con un UMAPINFO di prova su Freedoom: valori, avvisi e `bossaction = clear` corretti).
 - **Altre famiglie di unit** da considerare per una seconda ondata (`Base\v_*`, `Base\r_*`, `p_*` e `d_*` di ogni gioco): le parti pure e testabili (parser, tabelle, calcoli); il renderer e lo stato di gioco restano per ultimi.

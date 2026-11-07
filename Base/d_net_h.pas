@@ -30,34 +30,9 @@ unit d_net_h;
 
 interface
 
-uses
-  d_ticcmd;
-
 const
-// Networking and tick handling related.
+  // The number of tics of commands that the network keeps for each player
   BACKUPTICS = 12;
-
-type
-  Tcmds = packed array[0..BACKUPTICS - 1] of ticcmd_t;
-//
-// Network packet data.
-//
-  doomdata_t = record
-    // High bit is retransmit request.
-    checksum: LongWord;
-    // Only valid if NCMD_RETRANSMIT.
-    retransmitfrom: byte;
-
-    starttic: byte;
-    player: byte;
-    numtics: byte;
-    flags: LongWord;
-    cmds: Tcmds;
-  end;
-  Pdoomdata_t = ^doomdata_t;
-
-var
-  netbuffer: Pdoomdata_t; // points inside doomcom
 
 implementation
 

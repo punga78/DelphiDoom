@@ -64,7 +64,8 @@ end;
 
 function TEngineGameContext.GameTic: Integer;
 begin
-  Result := gametic;
+  // qualified: inside the class "gametic" would be this very method
+  Result := g_game.gametic;
 end;
 
 end.

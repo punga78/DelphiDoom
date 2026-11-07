@@ -583,7 +583,6 @@ var
   demoend: PByte;
   olddemo: boolean;
 
-  consistency: array[0..MAXPLAYERS - 1] of array[0..BACKUPTICS - 1] of smallint;
 
   savebuffer: PByteArray;
 
@@ -681,7 +680,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := consistency[consoleplayer][maketic mod BACKUPTICS];
+  cmd.consistency := D_NetExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -1054,7 +1053,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := consistency[consoleplayer][maketic mod BACKUPTICS];
+  cmd.consistency := D_NetExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -1675,7 +1674,7 @@ begin
       pl := @players[i];
       cmd := @pl.cmd;
 
-      memcpy(cmd, @netcmds[i][buf], SizeOf(ticcmd_t));
+      D_GetNetCommand(i, buf, cmd);
 
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
@@ -1694,15 +1693,10 @@ begin
 
       if netgame and not netdemo and (gametic mod ticdup = 0) then
       begin
-        if (gametic > BACKUPTICS) and
-           (consistency[i][buf] <> cmd.consistency) then
-          I_Error('G_Ticker(): consistency failure (%d should be %d)',
-            [cmd.consistency, consistency[i][buf]]);
-
         if pl.mo <> nil then
-          consistency[i][buf] := pl.mo.x
+          D_VerifyNetConsistency(i, cmd.consistency, pl.mo.x)
         else
-          consistency[i][buf] := M_GetMenuRandomIndex;
+          D_VerifyNetConsistency(i, cmd.consistency, M_GetMenuRandomIndex);
       end;
     end;
   end;
