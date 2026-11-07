@@ -78,6 +78,30 @@ type
     ldSpritesCsv
   );
 
+  /// <summary>One line of a list the user can sort: the first cell and the other ones</summary>
+  TIdeRow = record
+    Caption: string;
+    Values: TArray<string>;
+    /// <summary>The place of the item in the model that made the row (rows move when sorted)</summary>
+    Tag: Integer;
+  end;
+
+  /// <summary>What a search or a replace in a script has to do</summary>
+  TIdeSearchFlag = (
+    sfBackwards,
+    sfMatchCase,
+    /// <summary>From the beginning of the text and not from the caret</summary>
+    sfEntireScope,
+    sfSelectedOnly,
+    sfWholeWord,
+    /// <summary>Ask before each replace</summary>
+    sfPrompt,
+    sfReplace,
+    sfReplaceAll
+  );
+
+  TIdeSearchFlags = set of TIdeSearchFlag;
+
   /// <summary>Base of the errors of the ide library</summary>
   EIdeException = class(Exception);
 
