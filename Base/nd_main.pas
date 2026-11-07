@@ -39,6 +39,7 @@ uses
   doomdata,
   r_defs,
   m_fixed,
+  DelphiDoom.Platform.Intf,
   DelphiDoom.Nodes.Intf;
 
 var
@@ -347,7 +348,7 @@ type
 //==============================================================================
 procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
   const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-  AHexen: boolean);
+  const ATempFiles: ITempFiles; AHexen: boolean);
 
 //==============================================================================
 //
@@ -441,9 +442,7 @@ implementation
 
 uses
   System.Classes,
-  m_crc32,
-  i_tmp,
-  i_exec,
+  DelphiDoom.MathCore.Crc32,
   DelphiDoom.Glbsp.Intf,
   DelphiDoom.Glbsp.Client,
   DelphiDoom.Glbsp.Provider,
@@ -465,6 +464,7 @@ var
   nd_detector: INodesGlDetector = nil;
   nd_finder: INodesGlMapFinder = nil;
   nd_inputbuilder: INodesGlbspInputBuilder = nil;
+  nd_tempfiles: ITempFiles = nil;
   nd_hexen: boolean = false;
 
 //==============================================================================
@@ -474,12 +474,13 @@ var
 //==============================================================================
 procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
   const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-  AHexen: boolean);
+  const ATempFiles: ITempFiles; AHexen: boolean);
 begin
   nd_source := ASource;
   nd_detector := ADetector;
   nd_finder := AFinder;
   nd_inputbuilder := AInputBuilder;
+  nd_tempfiles := ATempFiles;
   nd_hexen := AHexen;
 end;
 
@@ -490,7 +491,8 @@ end;
 //==============================================================================
 procedure ND_CheckConfigured;
 begin
-  if (nd_source = nil) or (nd_detector = nil) or (nd_finder = nil) or (nd_inputbuilder = nil) then
+  if (nd_source = nil) or (nd_detector = nil) or (nd_finder = nil) or (nd_inputbuilder = nil) or
+     (nd_tempfiles = nil) then
     I_Error('ND_CheckConfigured(): ND_Configure() was not called');
 end;
 
@@ -503,6 +505,26 @@ function ND_ReadLumpBytes(const lump: integer): TBytes;
 begin
   ND_CheckConfigured;
   result := nd_source.ReadLump(lump);
+end;
+
+//==============================================================================
+//
+// ND_LumpCRC32
+// The CRC-32 of a lump in 8 hexadecimal digits in lower case, 'DEADDEAD' for a
+// lump that is not there (as the old GetLumpCRC32 of m_crc32)
+//
+//==============================================================================
+function ND_LumpCRC32(const lump: integer): string;
+var
+  bytes: TBytes;
+begin
+  if lump < 0 then
+  begin
+    result := 'DEADDEAD';
+    exit;
+  end;
+  bytes := ND_ReadLumpBytes(lump);
+  result := TCrc32.ToHex(TCrc32.Calculate(Pointer(bytes)^, Length(bytes)));
 end;
 
 //==============================================================================
@@ -668,7 +690,7 @@ begin
 
   if not fexists(gwafilename) then
   begin
-    mapfilename := I_NewTempFile(mapname + '_' + HextL(adler32) + '.wad');
+    mapfilename := nd_tempfiles.NewTempFile(mapname + '_' + HextL(adler32) + '.wad');
     ND_WriteBytes(mapfilename, nd_inputbuilder.BuildForMap(maplump));
 
     gld_BuildNodes(mapfilename, gwafilename);
@@ -1044,10 +1066,10 @@ begin
     exit;
   end;
 
-  crc32a := GetLumpCRC32(lumpnum + layout.Linedefs);
-  crc32b := GetLumpCRC32(lumpnum + layout.Sidedefs);
-  crc32c := GetLumpCRC32(lumpnum + layout.Vertexes);
-  crc32d := GetLumpCRC32(lumpnum + layout.Sectors);
+  crc32a := ND_LumpCRC32(lumpnum + layout.Linedefs);
+  crc32b := ND_LumpCRC32(lumpnum + layout.Sidedefs);
+  crc32c := ND_LumpCRC32(lumpnum + layout.Vertexes);
+  crc32d := ND_LumpCRC32(lumpnum + layout.Sectors);
 
   mapdir := M_SaveFileName('DATA\');
   MkDir(mapdir);
@@ -1058,7 +1080,7 @@ begin
   if not fexists(wadfilemap) then
   begin
     outfilemap := mapdir + lumpname + '_' + crc32a + '_' + crc32b + '_' + crc32c + '_' + crc32d + '.out';
-    I_DeclareTempFile(outfilemap);
+    nd_tempfiles.Declare(outfilemap);
 
     ND_WriteBytes(outfilemap, nd_inputbuilder.BuildForMapWithoutNodes(lumpnum, layout));
 

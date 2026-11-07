@@ -528,7 +528,7 @@ uses
 {$IFDEF HEXEN}
   g_game,
 {$ENDIF}
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   m_misc,
 {$IFDEF HEXEN}
   m_rnd,
@@ -670,14 +670,14 @@ end;
 //==============================================================================
 procedure R_AddPointToBox(const x: integer; const y: integer; box: Pfixed_tArray);
 begin
-  if x < box[BOXLEFT] then
-    box[BOXLEFT] := x;
-  if x > box[BOXRIGHT] then
-    box[BOXRIGHT] := x;
-  if y < box[BOXBOTTOM] then
-    box[BOXBOTTOM] := y;
-  if y > box[BOXTOP] then
-    box[BOXTOP] := y;
+  if x < box[BOX_LEFT] then
+    box[BOX_LEFT] := x;
+  if x > box[BOX_RIGHT] then
+    box[BOX_RIGHT] := x;
+  if y < box[BOX_BOTTOM] then
+    box[BOX_BOTTOM] := y;
+  if y > box[BOX_TOP] then
+    box[BOX_TOP] := y;
 end;
 
 //==============================================================================

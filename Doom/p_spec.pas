@@ -870,7 +870,7 @@ uses
   z_zone,
   m_argv,
   m_rnd,
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   w_wad,
   r_data,
   r_main,
@@ -4184,24 +4184,24 @@ begin
 
     tmpusher := p; // MT_PUSH/MT_PULL point source
     radius := p.radius; // where force goes to zero
-    tmbbox[BOXTOP] := p.y + radius;
-    tmbbox[BOXBOTTOM] := p.y - radius;
-    tmbbox[BOXRIGHT] := p.x + radius;
-    tmbbox[BOXLEFT] := p.x - radius;
+    tmbbox[BOX_TOP] := p.y + radius;
+    tmbbox[BOX_BOTTOM] := p.y - radius;
+    tmbbox[BOX_RIGHT] := p.x + radius;
+    tmbbox[BOX_LEFT] := p.x - radius;
 
     if internalblockmapformat then
     begin
-      xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-      xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
-      yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-      yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+      xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+      xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+      yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+      yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
     end
     else
     begin
-      xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx - MAXRADIUS);
-      xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
-      yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
-      yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy + MAXRADIUS);
+      xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+      xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+      yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+      yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
     end;
 
     bx := xl;

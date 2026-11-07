@@ -253,9 +253,10 @@ uses
   m_argv,
 {$ENDIF}
   m_rnd,
-  m_bbox,
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.BoundingBox,
 {$IFDEF DOOM}
-  m_sha1,
+  DelphiDoom.MathCore.Sha1,
 {$ENDIF}
   g_game,
   i_system,
@@ -966,7 +967,7 @@ begin
 
   if numlines = 1764 then
   begin
-    sha := strupper(readablestring(SHA1_CalcSHA1Buf(data^, sz)));
+    sha := strupper(readablestring(TSha1.ToRawString(TSha1.Calculate(data^, sz))));
     if (sha = '86C7KC17C14E1B684A49A2481S9AA9LFB8FF4') or // ver 1.2 - 1.9
        (sha = 'SAF04WA061FB7AF3E2BF5KC89349D25F5A9') then // ver 1.1
     begin
@@ -1012,24 +1013,24 @@ begin
 
     if v1.x < v2.x then
     begin
-      ld.bbox[BOXLEFT] := v1.x;
-      ld.bbox[BOXRIGHT] := v2.x;
+      ld.bbox[BOX_LEFT] := v1.x;
+      ld.bbox[BOX_RIGHT] := v2.x;
     end
     else
     begin
-      ld.bbox[BOXLEFT] := v2.x;
-      ld.bbox[BOXRIGHT] := v1.x;
+      ld.bbox[BOX_LEFT] := v2.x;
+      ld.bbox[BOX_RIGHT] := v1.x;
     end;
 
     if v1.y < v2.y then
     begin
-      ld.bbox[BOXBOTTOM] := v1.y;
-      ld.bbox[BOXTOP] := v2.y;
+      ld.bbox[BOX_BOTTOM] := v1.y;
+      ld.bbox[BOX_TOP] := v2.y;
     end
     else
     begin
-      ld.bbox[BOXBOTTOM] := v2.y;
-      ld.bbox[BOXTOP] := v1.y;
+      ld.bbox[BOX_BOTTOM] := v2.y;
+      ld.bbox[BOX_TOP] := v1.y;
     end;
 
     ld.sidenum[0] := smallintwarp1(mld.sidenum[0]);
@@ -1154,7 +1155,7 @@ var
 {$IFDEF DOOM}
   vanillaseg: Pvanillaseg_t;
 {$ENDIF}
-  bbox: array[0..3] of fixed_t;
+  bbox: TBoundingBox;
   block: integer;
 begin
 {$IFDEF DOOM}
@@ -1236,7 +1237,7 @@ begin
   sector := @sectors[0];
   for i := 0 to numsectors - 1 do
   begin
-    M_ClearBox(@bbox);
+    TBoundingBoxMath.Clear(bbox);
     sector.lines := linebuffer;
     li := @lines[0];
     for j := 0 to numlines - 1 do
@@ -1245,8 +1246,8 @@ begin
       begin
         linebuffer[0] := li;
         linebuffer := @linebuffer[1];
-        M_AddToBox(@bbox, li.v1.x, li.v1.y);
-        M_AddToBox(@bbox, li.v2.x, li.v2.y);
+        TBoundingBoxMath.AddPoint(bbox, li.v1.x, li.v1.y);
+        TBoundingBoxMath.AddPoint(bbox, li.v2.x, li.v2.y);
       end;
       inc(li);
     end;
@@ -1256,63 +1257,63 @@ begin
     // set the degenmobj_t to the middle of the bounding box
     if largemap then
     begin
-      sector.soundorg.x := bbox[BOXRIGHT] div 2 + bbox[BOXLEFT] div 2;
-      sector.soundorg.y := bbox[BOXTOP] div 2 + bbox[BOXBOTTOM] div 2;
+      sector.soundorg.x := bbox[BOX_RIGHT] div 2 + bbox[BOX_LEFT] div 2;
+      sector.soundorg.y := bbox[BOX_TOP] div 2 + bbox[BOX_BOTTOM] div 2;
     end
     else
     begin
-      sector.soundorg.x := (bbox[BOXRIGHT] + bbox[BOXLEFT]) div 2;
-      sector.soundorg.y := (bbox[BOXTOP] + bbox[BOXBOTTOM]) div 2;
+      sector.soundorg.x := (bbox[BOX_RIGHT] + bbox[BOX_LEFT]) div 2;
+      sector.soundorg.y := (bbox[BOX_TOP] + bbox[BOX_BOTTOM]) div 2;
     end;
 
     // adjust bounding box to map blocks
 {$IFDEF DOOM}
     if internalblockmapformat then
-      block := MapBlockIntY(int64(bbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS)
+      block := MapBlockIntY(int64(bbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS)
     else
-      block := MapBlockInt(bbox[BOXTOP] - bmaporgy + MAXRADIUS);
+      block := MapBlockInt(bbox[BOX_TOP] - bmaporgy + MAXRADIUS);
 {$ELSE}
-    block := MapBlockIntY(int64(bbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+    block := MapBlockIntY(int64(bbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
 {$ENDIF}
     if block >= bmapheight then
       block := bmapheight - 1;
-    sector.blockbox[BOXTOP] := block;
+    sector.blockbox[BOX_TOP] := block;
 
 {$IFDEF DOOM}
     if internalblockmapformat then
-      block := MapBlockIntY(int64(bbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS)
+      block := MapBlockIntY(int64(bbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS)
     else
-      block := MapBlockInt(bbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
+      block := MapBlockInt(bbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
 {$ELSE}
-    block := MapBlockIntY(int64(bbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    block := MapBlockIntY(int64(bbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
 {$ENDIF}
     if block < 0 then
       block := 0;
-    sector.blockbox[BOXBOTTOM] := block;
+    sector.blockbox[BOX_BOTTOM] := block;
 
 {$IFDEF DOOM}
     if internalblockmapformat then
-      block := MapBlockIntX(int64(bbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS)
+      block := MapBlockIntX(int64(bbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS)
     else
-      block := MapBlockInt(bbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
+      block := MapBlockInt(bbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
 {$ELSE}
-    block := MapBlockIntX(int64(bbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    block := MapBlockIntX(int64(bbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
 {$ENDIF}
     if block >= bmapwidth then
       block := bmapwidth - 1;
-    sector.blockbox[BOXRIGHT] := block;
+    sector.blockbox[BOX_RIGHT] := block;
 
 {$IFDEF DOOM}
     if internalblockmapformat then
-      block := MapBlockIntX(int64(bbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS)
+      block := MapBlockIntX(int64(bbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS)
     else
-      block := MapBlockInt(bbox[BOXLEFT] - bmaporgx - MAXRADIUS);
+      block := MapBlockInt(bbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
 {$ELSE}
-    block := MapBlockIntX(int64(bbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
+    block := MapBlockIntX(int64(bbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
 {$ENDIF}
     if block < 0 then
       block := 0;
-    sector.blockbox[BOXLEFT] := block;
+    sector.blockbox[BOX_LEFT] := block;
 
     inc(sector);
 {$IF DEFINED(DOOM)}

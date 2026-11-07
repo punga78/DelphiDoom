@@ -196,7 +196,7 @@ implementation
 uses
   doomdata,
   i_system,
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   p_mobj_h,
   p_tick,
   p_local,
@@ -854,23 +854,23 @@ begin
 
   if seg.v1.x < seg.v2.x then
   begin
-    line.bbox[BOXLEFT] := seg.v1.x;
-    line.bbox[BOXRIGHT] := seg.v2.x;
+    line.bbox[BOX_LEFT] := seg.v1.x;
+    line.bbox[BOX_RIGHT] := seg.v2.x;
   end
   else
   begin
-    line.bbox[BOXLEFT] := seg.v2.x;
-    line.bbox[BOXRIGHT] := seg.v1.x;
+    line.bbox[BOX_LEFT] := seg.v2.x;
+    line.bbox[BOX_RIGHT] := seg.v1.x;
   end;
   if seg.v1.y < seg.v2.y then
   begin
-    line.bbox[BOXBOTTOM] := seg.v1.y;
-    line.bbox[BOXTOP] := seg.v2.y;
+    line.bbox[BOX_BOTTOM] := seg.v1.y;
+    line.bbox[BOX_TOP] := seg.v2.y;
   end
   else
   begin
-    line.bbox[BOXBOTTOM] := seg.v2.y;
-    line.bbox[BOXTOP] := seg.v1.y;
+    line.bbox[BOX_BOTTOM] := seg.v2.y;
+    line.bbox[BOX_TOP] := seg.v1.y;
   end;
 
   // Update the line's slopetype
@@ -901,12 +901,12 @@ var
   index: integer;
 begin
   // remove the polyobj from each blockmap section
-  j := po.bbox[BOXBOTTOM];
-  while j <= po.bbox[BOXTOP] do
+  j := po.bbox[BOX_BOTTOM];
+  while j <= po.bbox[BOX_TOP] do
   begin
     index := j * bmapwidth;
-    i := po.bbox[BOXLEFT];
-    while i <= po.bbox[BOXRIGHT] do
+    i := po.bbox[BOX_LEFT];
+    while i <= po.bbox[BOX_RIGHT] do
     begin
       if (i >= 0) and (i < bmapwidth) and (j >= 0) and (j < bmapheight) then
       begin
@@ -964,24 +964,24 @@ begin
   end;
   if internalblockmapformat then
   begin
-    po.bbox[BOXRIGHT] := MapBlockIntX(int64(rightX) - int64(bmaporgx));
-    po.bbox[BOXLEFT] := MapBlockIntX(int64(leftX) - int64(bmaporgx));
-    po.bbox[BOXTOP] := MapBlockIntY(int64(topY) - int64(bmaporgy));
-    po.bbox[BOXBOTTOM] := MapBlockIntY(int64(bottomY) - int64(bmaporgy));
+    po.bbox[BOX_RIGHT] := MapBlockIntX(int64(rightX) - int64(bmaporgx));
+    po.bbox[BOX_LEFT] := MapBlockIntX(int64(leftX) - int64(bmaporgx));
+    po.bbox[BOX_TOP] := MapBlockIntY(int64(topY) - int64(bmaporgy));
+    po.bbox[BOX_BOTTOM] := MapBlockIntY(int64(bottomY) - int64(bmaporgy));
   end
   else
   begin
-    po.bbox[BOXRIGHT] := MapBlockInt(rightX - bmaporgx);
-    po.bbox[BOXLEFT] := MapBlockInt(leftX - bmaporgx);
-    po.bbox[BOXTOP] := MapBlockInt(topY - bmaporgy);
-    po.bbox[BOXBOTTOM] := MapBlockInt(bottomY - bmaporgy);
+    po.bbox[BOX_RIGHT] := MapBlockInt(rightX - bmaporgx);
+    po.bbox[BOX_LEFT] := MapBlockInt(leftX - bmaporgx);
+    po.bbox[BOX_TOP] := MapBlockInt(topY - bmaporgy);
+    po.bbox[BOX_BOTTOM] := MapBlockInt(bottomY - bmaporgy);
   end;
   // add the polyobj to each blockmap section
-  j := po.bbox[BOXBOTTOM] * bmapwidth;
-  while j <= po.bbox[BOXTOP] * bmapwidth do
+  j := po.bbox[BOX_BOTTOM] * bmapwidth;
+  while j <= po.bbox[BOX_TOP] * bmapwidth do
   begin
-    i := po.bbox[BOXLEFT];
-    while i <= po.bbox[BOXRIGHT] do
+    i := po.bbox[BOX_LEFT];
+    while i <= po.bbox[BOX_RIGHT] do
     begin
       if (i >= 0) and (i < bmapwidth) and (j >= 0) and (j < bmapheight * bmapwidth) then
       begin
@@ -1040,17 +1040,17 @@ begin
 
   if internalblockmapformat then
   begin
-    top := MapBlockIntY(int64(ld.bbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
-    bottom := MapBlockIntY(int64(ld.bbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    left := MapBlockIntX(int64(ld.bbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-    right := MapBlockIntX(int64(ld.bbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    top := MapBlockIntY(int64(ld.bbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+    bottom := MapBlockIntY(int64(ld.bbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    left := MapBlockIntX(int64(ld.bbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    right := MapBlockIntX(int64(ld.bbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
   end
   else
   begin
-    top := MapBlockInt(ld.bbox[BOXTOP] - bmaporgy + MAXRADIUS);
-    bottom := MapBlockInt(ld.bbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
-    left := MapBlockInt(ld.bbox[BOXLEFT] - bmaporgx - MAXRADIUS);
-    right := MapBlockInt(ld.bbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
+    top := MapBlockInt(ld.bbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+    bottom := MapBlockInt(ld.bbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    left := MapBlockInt(ld.bbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    right := MapBlockInt(ld.bbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
   end;
 
   blocked := false;
@@ -1085,15 +1085,15 @@ begin
         if (mobj.flags and MF_SOLID <> 0) or (mobj.player <> nil) then
         begin
           r := mobj.radius;
-          tmbbox[BOXTOP] := mobj.y + r;
-          tmbbox[BOXBOTTOM] := mobj.y - r;
-          tmbbox[BOXLEFT] := mobj.x - r;
-          tmbbox[BOXRIGHT] := mobj.x + r;
+          tmbbox[BOX_TOP] := mobj.y + r;
+          tmbbox[BOX_BOTTOM] := mobj.y - r;
+          tmbbox[BOX_LEFT] := mobj.x - r;
+          tmbbox[BOX_RIGHT] := mobj.x + r;
 
-          if (tmbbox[BOXRIGHT] <= ld.bbox[BOXLEFT]) or
-             (tmbbox[BOXLEFT] >= ld.bbox[BOXRIGHT]) or
-             (tmbbox[BOXTOP] <= ld.bbox[BOXBOTTOM]) or
-             (tmbbox[BOXBOTTOM] >= ld.bbox[BOXTOP]) then
+          if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+             (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+             (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+             (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
           begin
             continue;
           end;
@@ -1146,10 +1146,10 @@ begin
       l := segList^.linedef;
       if l.validcount <> validcount then
       begin
-        l.bbox[BOXTOP] := l.bbox[BOXTOP] + y;
-        l.bbox[BOXBOTTOM] := l.bbox[BOXBOTTOM] + y;
-        l.bbox[BOXLEFT] := l.bbox[BOXLEFT] + x;
-        l.bbox[BOXRIGHT] := l.bbox[BOXRIGHT] + x;
+        l.bbox[BOX_TOP] := l.bbox[BOX_TOP] + y;
+        l.bbox[BOX_BOTTOM] := l.bbox[BOX_BOTTOM] + y;
+        l.bbox[BOX_LEFT] := l.bbox[BOX_LEFT] + x;
+        l.bbox[BOX_RIGHT] := l.bbox[BOX_RIGHT] + x;
         l.validcount := validcount;
       end;
       veryTempSeg := po.segs;
@@ -1198,10 +1198,10 @@ begin
         l := segList^.linedef;
         if l.validcount <> validcount then
         begin
-          l.bbox[BOXTOP] := l.bbox[BOXTOP] - y;
-          l.bbox[BOXBOTTOM] := l.bbox[BOXBOTTOM] - y;
-          l.bbox[BOXLEFT] := l.bbox[BOXLEFT] - x;
-          l.bbox[BOXRIGHT] := l.bbox[BOXRIGHT] - x;
+          l.bbox[BOX_TOP] := l.bbox[BOX_TOP] - y;
+          l.bbox[BOX_BOTTOM] := l.bbox[BOX_BOTTOM] - y;
+          l.bbox[BOX_LEFT] := l.bbox[BOX_LEFT] - x;
+          l.bbox[BOX_RIGHT] := l.bbox[BOX_RIGHT] - x;
           l.validcount := validcount;
         end;
         veryTempSeg := po.segs;
@@ -1821,10 +1821,10 @@ begin
       l := tempSeg^.linedef;
       if l.validcount <> validcount then
       begin
-        l.bbox[BOXTOP] := l.bbox[BOXTOP] - deltaY;
-        l.bbox[BOXBOTTOM] := l.bbox[BOXBOTTOM] - deltaY;
-        l.bbox[BOXLEFT] := l.bbox[BOXLEFT] - deltaX;
-        l.bbox[BOXRIGHT] := l.bbox[BOXRIGHT] - deltaX;
+        l.bbox[BOX_TOP] := l.bbox[BOX_TOP] - deltaY;
+        l.bbox[BOX_BOTTOM] := l.bbox[BOX_BOTTOM] - deltaY;
+        l.bbox[BOX_LEFT] := l.bbox[BOX_LEFT] - deltaX;
+        l.bbox[BOX_RIGHT] := l.bbox[BOX_RIGHT] - deltaX;
         l.validcount := validcount;
       end;
       veryTempSeg := po.segs;

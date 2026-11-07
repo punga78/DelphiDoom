@@ -35,6 +35,9 @@
         <DCC_DebugInformation>2</DCC_DebugInformation>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+        <!-- the inline functions of the library (fixed point, boxes, tables) are called and not
+             expanded, so the coverage sees their lines; the Release build tests them inlined -->
+        <DCC_Inlining>off</DCC_Inlining>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release'">
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>

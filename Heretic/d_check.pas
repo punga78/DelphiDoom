@@ -48,13 +48,40 @@ function D_GetSavePath: string;
 implementation
 
 uses
+  System.Classes,
+  System.SysUtils,
   d_delphi,
   m_argv,
-  m_crc32,
+  DelphiDoom.MathCore.Crc32,
   w_wadreader;
 
 var
   savepath: string = 'heretic';
+
+//==============================================================================
+//
+// D_FileCRC32
+// The CRC-32 of the bytes of a file (TCrc32 of Libs\MathCore) in 8 hexadecimal
+// digits in lower case, 'DEADDEAD' if the file does not exist (as the old
+// GetCRC32 of m_crc32)
+//
+//==============================================================================
+function D_FileCRC32(const filename: string): string;
+var
+  stream: TFileStream;
+begin
+  if not fexists(filename) then
+  begin
+    result := 'DEADDEAD';
+    exit;
+  end;
+  stream := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
+  try
+    result := TCrc32.ToHex(TCrc32.CalculateStream(stream));
+  finally
+    stream.Free;
+  end;
+end;
 
 //==============================================================================
 //
@@ -72,7 +99,7 @@ var
   wad: TWadReader;
   i: integer;
 begin
-  crc := GetCRC32(filename);
+  crc := D_FileCRC32(filename);
 
   wad := TWadReader.Create;
   wad.OpenWadFile(filename);

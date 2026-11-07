@@ -70,7 +70,6 @@ uses
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
-  m_hash,
   DelphiDoom.Blockmap.Factory,
   p_blockmap,
   DelphiDoom.Serializer.Intf,
@@ -246,7 +245,6 @@ uses
   m_misc,
   i_system,
   i_tmp,
-  i_exec,
   DelphiDoom.Platform.Intf,
   DelphiDoom.Platform.Factory,
   DelphiDoom.Engine.Platform.TempDirectory;
@@ -302,16 +300,16 @@ begin
     end);
 end;
 
-procedure ComposeMusic;
+procedure ComposeMusic(const ATempFiles: ITempFiles);
 begin
   // the order is the one in which a song is looked at: the first backend that knows it plays it
   I_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
     TModuleMusicBackend.Create,
     TMp3MusicBackend.Create,
     TId3MusicBackend.Create,
-    TXmiMusicBackend.Create,
+    TXmiMusicBackend.Create(ATempFiles),
     TMusMusicBackend.Create,
-    TMidiFileMusicBackend.Create)));
+    TMidiFileMusicBackend.Create(ATempFiles))));
   S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
     TEngineExternalMusicSource.Create));
 end;
@@ -413,7 +411,7 @@ begin
   P_ConfigureObituaries(TObituaryFactory.CreateFormatter(LGenders));
 end;
 
-procedure ComposeNodes;
+procedure ComposeNodes(const ATempFiles: ITempFiles);
 var
   LSource: INodesLumpSource;
   LHexen: Boolean;
@@ -427,7 +425,7 @@ begin
   LSource := TEngineNodesLumpSource.Create;
   ND_Configure(LSource, TNodesFactory.CreateGlDetector(LSource),
     TNodesFactory.CreateGlMapFinder(LSource),
-    TNodesFactory.CreateGlbspInputBuilder(LSource, LHexen), LHexen);
+    TNodesFactory.CreateGlbspInputBuilder(LSource, LHexen), ATempFiles, LHexen);
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
@@ -557,21 +555,23 @@ begin
   T_ConfigureTextures(TTextureFactory.CreateFormats(LServices));
 end;
 
-procedure ComposePlatform;
+// The temporary files are one object for the whole engine: who makes one receives it, and
+// i_tmp deletes them all at the shut down
+function ComposePlatform: ITempFiles;
 var
   LStore: IFileStore;
 begin
   LStore := TPlatformFactory.CreateFileStore;
   M_ConfigureFiles(LStore);
-  I_ConfigureTempFiles(TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore));
-  I_ConfigureExec(TPlatformFactory.CreateProcessRunner);
+  Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore);
+  I_ConfigureTempFiles(Result);
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
 end;
 
 procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
-  M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
+  R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
 end;
 
 procedure ComposeBlockmap;
@@ -730,6 +730,7 @@ var
   LContext: IGameContext;
   LClock: IClock;
   LGame: TUdmfGame;
+  LTempFiles: ITempFiles;
 begin
   // The zone first: whatever is built next can already allocate from it
   Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
@@ -746,7 +747,7 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
-  ComposePlatform;
+  LTempFiles := ComposePlatform;
   ComposeMathCore;
   ComposeBlockmap;
   ComposeSerializer;
@@ -762,7 +763,7 @@ begin
     TVideoFactory.CreateWindowsDisplayModeSource));
   ComposeInput(LLog);
   ComposeSound(LLog);
-  ComposeMusic;
+  ComposeMusic(LTempFiles);
   ComposeDehacked(LLog);
   ComposeImaging;
   ComposeScreenshot;
@@ -772,7 +773,7 @@ begin
   ComposeDefinitions(LLog);
   ComposeObituary;
   ComposeMusInfo(LLog);
-  ComposeNodes;
+  ComposeNodes(LTempFiles);
   ComposeDynLights(LLog, LContext);
   ComposeAutomap;
   ComposeActorDef(LLog);

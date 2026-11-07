@@ -35,7 +35,7 @@ unit p_map;
 interface
 
 uses
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   m_rnd,
   i_system,
   doomdef,
@@ -367,10 +367,10 @@ begin
   tmy := y;
 
   r := tmthing.radius;
-  tmbbox[BOXTOP] := y + r;
-  tmbbox[BOXBOTTOM] := y - r;
-  tmbbox[BOXRIGHT] := x + r;
-  tmbbox[BOXLEFT] := x - r;
+  tmbbox[BOX_TOP] := y + r;
+  tmbbox[BOX_BOTTOM] := y - r;
+  tmbbox[BOX_RIGHT] := x + r;
+  tmbbox[BOX_LEFT] := x - r;
 
   newsec := P_PointInSector(x, y);
   ceilingline := nil;
@@ -393,17 +393,17 @@ begin
   // stomp on any things contacted
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
@@ -444,10 +444,10 @@ end;
 //==============================================================================
 function PIT_CheckLine(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOXRIGHT] <= ld.bbox[BOXLEFT]) or
-     (tmbbox[BOXLEFT] >= ld.bbox[BOXRIGHT]) or
-     (tmbbox[BOXTOP] <= ld.bbox[BOXBOTTOM]) or
-     (tmbbox[BOXBOTTOM] >= ld.bbox[BOXTOP]) then
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
@@ -584,10 +584,10 @@ end;
 //==============================================================================
 function PIT_CheckLineTM(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOXRIGHT] <= ld.bbox[BOXLEFT]) or
-     (tmbbox[BOXLEFT] >= ld.bbox[BOXRIGHT]) or
-     (tmbbox[BOXTOP] <= ld.bbox[BOXBOTTOM]) or
-     (tmbbox[BOXBOTTOM] >= ld.bbox[BOXTOP]) then
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
@@ -1218,10 +1218,10 @@ begin
   tmy := y;
 
   r := tmthing.radius;
-  tmbbox[BOXTOP] := y + r;
-  tmbbox[BOXBOTTOM] := y - r;
-  tmbbox[BOXRIGHT] := x + r;
-  tmbbox[BOXLEFT] := x - r;
+  tmbbox[BOX_TOP] := y + r;
+  tmbbox[BOX_BOTTOM] := y - r;
+  tmbbox[BOX_RIGHT] := x + r;
+  tmbbox[BOX_LEFT] := x - r;
 
   newsec := P_PointInSector(x, y);
   ceilingline := nil;
@@ -1264,17 +1264,17 @@ begin
   // into adjacent blocks by up to MAXRADIUS units.
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
@@ -1288,17 +1288,17 @@ begin
   // check lines
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy));
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy);
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
   end;
 
   // JVAL: Slopes
@@ -1478,10 +1478,10 @@ begin
   tmy := y;
 
   r := tmthing.radius;
-  tmbbox[BOXTOP] := y + r;
-  tmbbox[BOXBOTTOM] := y - r;
-  tmbbox[BOXRIGHT] := x + r;
-  tmbbox[BOXLEFT] := x - r;
+  tmbbox[BOX_TOP] := y + r;
+  tmbbox[BOX_BOTTOM] := y - r;
+  tmbbox[BOX_RIGHT] := x + r;
+  tmbbox[BOX_LEFT] := x - r;
 
   newsec := P_PointInSector(x, y);
   ceilingline := nil;
@@ -1511,17 +1511,17 @@ begin
 //
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
@@ -3189,8 +3189,8 @@ begin
   begin
     // re-check heights for all things near the moving sector
     pbox := @sector.blockbox;
-    for x := pbox[BOXLEFT] to pbox[BOXRIGHT] do
-      for y := pbox[BOXBOTTOM] to pbox[BOXTOP] do
+    for x := pbox[BOX_LEFT] to pbox[BOX_RIGHT] do
+      for y := pbox[BOX_BOTTOM] to pbox[BOX_TOP] do
         P_BlockThingsIterator(x, y, PIT_ChangeSector);
   end
   else
@@ -3388,10 +3388,10 @@ end;  // phares 3/13/98
 //==============================================================================
 function PIT_GetSectors(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOXRIGHT] <= ld.bbox[BOXLEFT]) or
-     (tmbbox[BOXLEFT] >= ld.bbox[BOXRIGHT]) or
-     (tmbbox[BOXTOP] <= ld.bbox[BOXBOTTOM]) or
-     (tmbbox[BOXBOTTOM] >= ld.bbox[BOXTOP]) then
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
@@ -3462,26 +3462,26 @@ begin
   tmy := y;
 
   r := tmthing.radius;
-  tmbbox[BOXTOP] := y + r;
-  tmbbox[BOXBOTTOM] := y - r;
-  tmbbox[BOXRIGHT] := x + r;
-  tmbbox[BOXLEFT] := x - r;
+  tmbbox[BOX_TOP] := y + r;
+  tmbbox[BOX_BOTTOM] := y - r;
+  tmbbox[BOX_RIGHT] := x + r;
+  tmbbox[BOX_LEFT] := x - r;
 
   inc(validcount); // used to make sure we only process a line once
 
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOXLEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOXRIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOXBOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOXTOP]) - int64(bmaporgy));
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOXLEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOXRIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOXBOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOXTOP] - bmaporgy);
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
   end;
 
   for bx := xl to xh do

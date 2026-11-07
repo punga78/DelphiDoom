@@ -79,7 +79,7 @@ uses
   d_player,
   m_fixed,
   m_rnd,
-  m_bbox,
+  DelphiDoom.MathCore.Types,
   tables,
   info_h,
   p_user,
@@ -548,29 +548,29 @@ begin
 
   if v1.x >= v2.x then
   begin
-    line.bbox[BOXLEFT] := v2.x;
+    line.bbox[BOX_LEFT] := v2.x;
     x := v1.x;
   end
   else
   begin
-    line.bbox[BOXLEFT] := v1.x;
+    line.bbox[BOX_LEFT] := v1.x;
     x := v2.x;
   end;
 
-  line.bbox[BOXRIGHT] := x;
+  line.bbox[BOX_RIGHT] := x;
 
   if v1.y >= v2.y then
   begin
-    line.bbox[BOXBOTTOM] := v2.y;
+    line.bbox[BOX_BOTTOM] := v2.y;
     y := v1.y;
   end
   else
   begin
-    line.bbox[BOXBOTTOM] := v1.y;
+    line.bbox[BOX_BOTTOM] := v1.y;
     y := v2.y;
   end;
 
-  line.bbox[BOXTOP] := y;
+  line.bbox[BOX_TOP] := y;
 end;
 
 //==============================================================================

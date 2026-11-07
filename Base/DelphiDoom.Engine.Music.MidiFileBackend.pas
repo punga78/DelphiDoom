@@ -13,6 +13,7 @@ interface
 
 uses
   DelphiDoom.Audio.Types,
+  DelphiDoom.Platform.Intf,
   DelphiDoom.Engine.Music.BackendBase;
 
 type
@@ -21,10 +22,16 @@ type
   ///   once when it is registered. Starting it closes the midi stream of the MUS songs
   /// </summary>
   TMidiFileMusicBackend = class(TEngineMusicBackendBase)
+  strict private
+    FTempFiles: ITempFiles;
   protected
+    /// <summary>A new temporary file for a song, deleted when the engine shuts down</summary>
+    function NewSongFile: string;
     /// <summary>Plays a file; false if the file could not be made</summary>
     procedure PlayFile(const AFileName: string);
   public
+    /// <summary>ATempFiles gives the file a song is written to</summary>
+    constructor Create(const ATempFiles: ITempFiles);
     procedure Initialize; override;
     procedure Shutdown; override;
     function Register(AData: Pointer; ASize: Integer;
@@ -40,15 +47,28 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   m_base,
   i_system,
   i_midi,
   i_music,
-  i_tmp,
   s_sound;
 
 { TMidiFileMusicBackend }
+
+constructor TMidiFileMusicBackend.Create(const ATempFiles: ITempFiles);
+begin
+  inherited Create;
+  if not Assigned(ATempFiles) then
+    raise EArgumentNilException.Create('TMidiFileMusicBackend.Create(): ATempFiles is nil');
+  FTempFiles := ATempFiles;
+end;
+
+function TMidiFileMusicBackend.NewSongFile: string;
+begin
+  Result := FTempFiles.NewTempFile(_GAME + '.mid');
+end;
 
 procedure TMidiFileMusicBackend.Initialize;
 begin
@@ -83,7 +103,7 @@ begin
 
   I_StopMus;
 
-  LFileName := I_NewTempFile(_GAME + '.mid');
+  LFileName := NewSongFile;
 
   LDone := fopen(LFile, LFileName, fCreate);
   if LDone then

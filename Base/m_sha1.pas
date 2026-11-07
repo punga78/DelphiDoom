@@ -31,6 +31,10 @@
 
 unit m_sha1;
 
+// What is left of the facade of the SHA-1 (issue #133): the engine calls TSha1 of
+// Libs\MathCore. SHA1_CalcSHA1Buf stays only for vx_voxelsprite, which another piece
+// of work of the same wave changes: when it calls TSha1 this unit can be deleted.
+
 interface
 
 //==============================================================================

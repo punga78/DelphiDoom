@@ -31,6 +31,14 @@
 
 unit i_tmp;
 
+// What is left of the facade of the temporary files (issue #133). The classes of the
+// engine receive the ITempFiles of Libs\Platform from ComposeEngine (the backends of the
+// MIDI and XMI songs, nd_main with ND_Configure). These functions stay for the
+// procedural code that has no object to give it to: the savegames (the PascalScript
+// state of the map goes through a file), ps_dll (a DLL in a PAK is copied to a file
+// before LoadLibrary), s_pk3sounds, and vx_voxelsprite and v_palettes (other pieces of
+// work of the same wave); i_system deletes the files at the shut down.
+
 interface
 
 uses
@@ -43,13 +51,6 @@ uses
 //
 //==============================================================================
 procedure I_ConfigureTempFiles(const ATempFiles: ITempFiles);
-
-//==============================================================================
-//
-// I_InitTempFiles
-//
-//==============================================================================
-procedure I_InitTempFiles;
 
 //==============================================================================
 //
@@ -89,17 +90,6 @@ var
 procedure I_ConfigureTempFiles(const ATempFiles: ITempFiles);
 begin
   engine_tempfiles := ATempFiles;
-end;
-
-//==============================================================================
-//
-// I_InitTempFiles
-//
-//==============================================================================
-procedure I_InitTempFiles;
-begin
-  if not Assigned(engine_tempfiles) then
-    I_Error('I_InitTempFiles(): the temporary files were not configured');
 end;
 
 //==============================================================================

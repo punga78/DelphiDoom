@@ -75,7 +75,6 @@ implementation
 
 uses
   deh_main,
-  m_crc32,
   w_wad;
 
 var
@@ -142,7 +141,7 @@ begin
     exit;
   end;
 
-  result := (W_LumpLength(lumpnum) = 11564) and (GetLumpCRC32(lumpnum) = 'a5c7ddf4');
+  result := (W_LumpLength(lumpnum) = 11564) and (W_LumpCRC32(lumpnum) = 'a5c7ddf4');
 end;
 
 //==============================================================================
@@ -158,7 +157,7 @@ begin
         if W_CheckNumForName('PANEL0') < 0 then
           if W_CheckNumForName('MAP02') < 0 then
             if W_CheckNumForName('SCRIPT00') >= 0 then
-              if GetLumpCRC32('SCRIPT00') = '66042225' then
+              if W_LumpCRC32(W_CheckNumForName('SCRIPT00')) = '66042225' then
               begin
                 teaser := 1;
                 exit;
@@ -170,7 +169,7 @@ begin
         if W_CheckNumForName('HELP0') >= 0 then
           if W_CheckNumForName('PANEL0') >= 0 then
             if W_CheckNumForName('SCRIPT00') >= 0 then
-              if GetLumpCRC32('SCRIPT00') = '4f407f19' then
+              if W_LumpCRC32(W_CheckNumForName('SCRIPT00')) = '4f407f19' then
               begin
                 teaser := 2;
                 exit;
