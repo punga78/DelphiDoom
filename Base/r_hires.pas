@@ -300,7 +300,6 @@ uses
 {$IFNDEF OPENGL}
   r_cache_flats,
   r_cache_main,
-  r_grow,
   r_defs,
   r_data,
   r_softlights,

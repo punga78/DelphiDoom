@@ -259,6 +259,7 @@ uses
   m_misc,
   m_rnd,
   mn_screenshot,
+  DelphiDoom.Imaging.SaveThumbnail,
   mt_utils,
   i_system,
   i_threads,
@@ -1927,7 +1928,7 @@ begin
   if screenshot = nil then
     exit;
 
-  if not MN_ValidScreenShot(screenshot) then
+  if not TImagingSaveThumbnailFormat.IsValid(screenshot^) then
   begin
     for i := 0 to MN_SCREENSHOTSIZE - 1 do
       screenshot.data[i] := aprox_black;

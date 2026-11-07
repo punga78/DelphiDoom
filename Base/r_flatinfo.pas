@@ -21,7 +21,10 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  FLATINFO lump
+//  The sizes of the flats that the renderers share.
+//  The FLATINFO lump is read by R_InitFlats (r_data) with the parser of
+//  Libs\TextureDefs, the reduction to 64x64 is done by V_TileScreen8
+//  (v_video) with the shrinker of Libs\Imaging.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -32,32 +35,6 @@
 unit r_flatinfo;
 
 interface
-
-uses
-  DelphiDoom.TextureDefs.Types,
-  DelphiDoom.TextureDefs.Intf,
-  DelphiDoom.Imaging.Intf;
-
-//==============================================================================
-//
-// R_ParseFlatInfoLumps
-//
-//==============================================================================
-procedure R_ParseFlatInfoLumps;
-
-//==============================================================================
-//
-// R_ConfigureFlatInfo
-//
-//==============================================================================
-procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
-
-//==============================================================================
-//
-// R_FlatSizeFromSize
-//
-//==============================================================================
-function R_FlatSizeFromSize(const size: integer): integer;
 
 type
   dsscale_t = (ds64x64, ds128x128, ds256x256, ds512x512, NUMDSSCALES);
@@ -91,163 +68,6 @@ const
     (memsize: 4096 * 4096; flatsize: 4096)
   );
 
-//==============================================================================
-//
-// R_ShrinkFlatTo64x64
-//
-//==============================================================================
-function R_ShrinkFlatTo64x64(const fin: Pointer; const sz: Integer; const fout: Pointer): Boolean;
-
-//==============================================================================
-//
-// R_ConfigureFlatShrink
-//
-//==============================================================================
-procedure R_ConfigureFlatShrink(const AShrinker: IImagingFlatShrinker);
-
 implementation
-
-uses
-  d_delphi,
-  i_system,
-  r_defs,
-  r_data,
-
-  w_pak,
-  w_wad;
-
-var
-  flatinfo_parser: ITextureDefsFlatInfoParser;
-  flatinfo_catalog: ITextureDefsFlatCatalog;
-  flat_shrinker: IImagingFlatShrinker;
-
-//==============================================================================
-//
-// R_ParseFlatInfoText
-//
-//==============================================================================
-procedure R_ParseFlatInfoText(const in_text: string);
-var
-  sizes: TArray<TTextureDefsFlatSize>;
-  i: integer;
-begin
-  if flatinfo_parser = nil then
-    I_Error('R_ParseFlatInfoText(): FLATINFO is not configured (ComposeEngine was not called)');
-
-  sizes := flatinfo_parser.Parse(in_text, flatinfo_catalog);
-  for i := 0 to Length(sizes) - 1 do
-    flats[sizes[i].FlatIndex].size := sizes[i].SizeCode;
-end;
-
-//==============================================================================
-//
-// R_ConfigureFlatInfo
-//
-//==============================================================================
-procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
-begin
-  flatinfo_parser := AParser;
-  flatinfo_catalog := ACatalog;
-end;
-
-
-const
-  FLATINFOLUMPNAME = 'FLATINFO';
-
-var
-  fl_text: string;
-
-//==============================================================================
-//
-// R_RetrieveFlatInfo
-//
-//==============================================================================
-procedure R_RetrieveFlatInfo(const in_text: string);
-begin
-  if fl_text = '' then
-    fl_text := in_text
-  else
-    fl_text := fl_text + #13#10 + in_text;
-end;
-
-//==============================================================================
-//
-// R_ParseFlatInfoLumps
-//
-//==============================================================================
-procedure R_ParseFlatInfoLumps;
-var
-  i: integer;
-begin
-  fl_text := '';
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = FLATINFOLUMPNAME then
-      R_RetrieveFlatInfo(W_TextLumpNum(i));
-
-  PAK_StringIterator(FLATINFOLUMPNAME, R_RetrieveFlatInfo);
-  PAK_StringIterator(FLATINFOLUMPNAME + '.txt', R_RetrieveFlatInfo);
-
-  R_ParseFlatInfoText(fl_text);
-  fl_text := '';
-end;
-
-//==============================================================================
-//
-// R_FlatSizeFromSize
-//
-//==============================================================================
-function R_FlatSizeFromSize(const size: integer): integer;
-begin
-  if size = 128 then
-    Result := FS128x128
-  else if size = 256 then
-    Result := FS256x256
-  else if size = 512 then
-    Result := FS512x512
-  else if size = 1024 then
-    Result := FS1024x1024
-  else if size = 2048 then
-    Result := FS2048x2048
-  else if size = 4096 then
-    Result := FS4096x4096
-  else
-    Result := FS64x64;
-end;
-
-//==============================================================================
-//
-// R_ShrinkFlatTo64x64
-//
-//==============================================================================
-function R_ShrinkFlatTo64x64(const fin: Pointer; const sz: Integer; const fout: Pointer): Boolean;
-var
-  flat: TArray<Byte>;
-  shrunk: TArray<Byte>;
-begin
-  result := false;
-  if flat_shrinker = nil then
-    I_Error('R_ShrinkFlatTo64x64(): the images are not configured (ComposeEngine was not called)');
-
-  if sz <= 0 then
-    exit;
-
-  SetLength(flat, sz);
-  Move(fin^, flat[0], sz);
-  if flat_shrinker.Shrink(flat, shrunk) then
-  begin
-    Move(shrunk[0], fout^, Length(shrunk));
-    result := true;
-  end;
-end;
-
-//==============================================================================
-//
-// R_ConfigureFlatShrink
-//
-//==============================================================================
-procedure R_ConfigureFlatShrink(const AShrinker: IImagingFlatShrinker);
-begin
-  flat_shrinker := AShrinker;
-end;
 
 end.

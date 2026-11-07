@@ -21,7 +21,11 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//   Save/Load screen preview
+//   Save/Load screen preview: the thumbnail that a saved game keeps.
+//   The thumbnail is made by R_RenderPlayerView (r_main) with the
+//   IImagingThumbnailBuilder of Libs\Imaging and checked by the menus with
+//   TImagingSaveThumbnailFormat: this unit keeps only the record of the
+//   savegames and the last thumbnail taken.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -34,140 +38,24 @@ unit mn_screenshot;
 interface
 
 uses
-  DelphiDoom.Imaging.Intf;
+  DelphiDoom.Imaging.Types;
 
 const
-  MN_SCREENSHOTWIDTH = 80;
-  MN_SCREENSHOTHEIGHT = 50;
-  MN_SCREENSHOTSIZE = MN_SCREENSHOTWIDTH * MN_SCREENSHOTHEIGHT;
+  MN_SCREENSHOTWIDTH = IMAGING_SAVE_THUMBNAIL_WIDTH;
+  MN_SCREENSHOTHEIGHT = IMAGING_SAVE_THUMBNAIL_HEIGHT;
+  MN_SCREENSHOTSIZE = IMAGING_SAVE_THUMBNAIL_SIZE;
 
-  MNSCREENSHOT_MAGIC_SIZE = 14;
-  // MENUSCREENSHOT
-  MNSCREENSHOT_MAGIC: packed array[0..MNSCREENSHOT_MAGIC_SIZE - 1] of byte = (
-    $4D, $45, $4E, $55, $53, $43, $52, $45, $45, $4E, $53, $48, $4F, $54
-  );
+  MNSCREENSHOT_MAGIC_SIZE = IMAGING_SAVE_THUMBNAIL_MAGIC_SIZE;
 
 type
-  menuscreenbuffer_t = record
-    header: packed array[0..MNSCREENSHOT_MAGIC_SIZE - 1] of byte;
-    data: packed array[0..MN_SCREENSHOTSIZE - 1] of byte;
-  end;
+  // The record of the savegames (4014 bytes): the text MENUSCREENSHOT and 80x50 palette indices
+  menuscreenbuffer_t = TImagingSaveThumbnail;
   Pmenuscreenbuffer_t = ^menuscreenbuffer_t;
 
 var
   mn_screenshotbuffer: menuscreenbuffer_t;
   mn_makescreenshot: boolean = false;
 
-//==============================================================================
-//
-// MN_ConfigureScreenShot
-//
-//==============================================================================
-procedure MN_ConfigureScreenShot(const ABuilder: IImagingThumbnailBuilder);
-
-//==============================================================================
-//
-// MN_ScreenShotFromBlitBuffer
-//
-//==============================================================================
-procedure MN_ScreenShotFromBlitBuffer;
-
-//==============================================================================
-//
-// MN_ValidScreenShot
-//
-//==============================================================================
-function MN_ValidScreenShot(const mnbuf: Pmenuscreenbuffer_t): boolean;
-
 implementation
-
-uses
-  System.SysUtils,
-  d_delphi,
-  doomdef,
-  i_system,
-  DelphiDoom.Imaging.Types,
-  {$IFDEF OPENGL}
-  gl_main,
-  {$ELSE}
-  i_video,
-  {$ENDIF}
-  r_draw,
-  v_video;
-
-var
-  // given by the composition root (MN_ConfigureScreenShot)
-  mn_thumbnails: IImagingThumbnailBuilder = nil;
-
-//==============================================================================
-//
-// MN_ConfigureScreenShot
-//
-//==============================================================================
-procedure MN_ConfigureScreenShot(const ABuilder: IImagingThumbnailBuilder);
-begin
-  mn_thumbnails := ABuilder;
-end;
-
-//==============================================================================
-//
-// MN_ScreenShotFromBlitBuffer
-//
-//==============================================================================
-procedure MN_ScreenShotFromBlitBuffer;
-var
-  i: integer;
-  settings: TImagingThumbnailSettings;
-  buf: TBytes;
-  palette: TImagingPixels;
-  thumbnail: TBytes;
-begin
-  if mn_thumbnails = nil then
-    I_Error('MN_ScreenShotFromBlitBuffer(): the thumbnails are not configured (MN_ConfigureScreenShot)');
-
-  {$IFNDEF OPENGL}
-  I_BlitBuffer;
-  {$ENDIF}
-  SetLength(buf, SCREENWIDTH * SCREENHEIGHT * 4);
-  I_ReadScreen32(Pointer(buf));
-
-  settings.ScreenWidth := SCREENWIDTH;
-  settings.ScreenHeight := SCREENHEIGHT;
-  settings.ViewX := viewwindowx;
-  settings.ViewY := viewwindowy;
-  settings.ViewWidth := viewwidth;
-  settings.ViewHeight := viewheight;
-  settings.Width := MN_SCREENSHOTWIDTH;
-  settings.Height := MN_SCREENSHOTHEIGHT;
-  settings.BottomUp := {$IFDEF OPENGL}True{$ELSE}False{$ENDIF};
-
-  SetLength(palette, IMAGING_PALETTE_SIZE);
-  Move(videopal, palette[0], SizeOf(videopal));
-
-  thumbnail := mn_thumbnails.Build(settings, Pointer(buf), palette);
-
-  for i := 0 to MNSCREENSHOT_MAGIC_SIZE - 1 do
-    mn_screenshotbuffer.header[i] := MNSCREENSHOT_MAGIC[i];
-  Move(thumbnail[0], mn_screenshotbuffer.data[0], MN_SCREENSHOTSIZE);
-  mn_makescreenshot := false;
-end;
-
-//==============================================================================
-//
-// MN_ValidScreenShot
-//
-//==============================================================================
-function MN_ValidScreenShot(const mnbuf: Pmenuscreenbuffer_t): boolean;
-var
-  i: integer;
-begin
-  for i := 0 to MNSCREENSHOT_MAGIC_SIZE - 1 do
-    if mnbuf.header[i] <> MNSCREENSHOT_MAGIC[i] then
-    begin
-      Result := False;
-      Exit;
-    end;
-  Result := True;
-end;
 
 end.

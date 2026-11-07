@@ -102,6 +102,13 @@ procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
 
 //==============================================================================
 //
+// R_ConfigureFlatInfo
+//
+//==============================================================================
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
+
+//==============================================================================
+//
 // R_ConfigureColormaps
 //
 //==============================================================================
@@ -319,6 +326,7 @@ uses
   v_data,
   v_video,
   vx_voxelsprite,
+  w_pak,
   w_sprite,
   z_zone;
 
@@ -326,6 +334,8 @@ var
   color_matcher: IColorMatcher = nil;
   colormap_preparer: IColormapPreparer = nil;
   texturedefs_loader: ITextureDefsLoader;
+  flatinfo_parser: ITextureDefsFlatInfoParser = nil;
+  flatinfo_catalog: ITextureDefsFlatCatalog = nil;
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
 
@@ -1235,6 +1245,67 @@ end;
 procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
 begin
   texturedefs_loader := ALoader;
+end;
+
+//==============================================================================
+//
+// R_ConfigureFlatInfo
+// The parser of FLATINFO of Libs\TextureDefs and the catalog of the flats of
+// the engine, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
+begin
+  flatinfo_parser := AParser;
+  flatinfo_catalog := ACatalog;
+end;
+
+const
+  FLATINFOLUMPNAME = 'FLATINFO';
+
+var
+  fl_text: string;
+
+//==============================================================================
+//
+// R_RetrieveFlatInfo
+//
+//==============================================================================
+procedure R_RetrieveFlatInfo(const in_text: string);
+begin
+  if fl_text = '' then
+    fl_text := in_text
+  else
+    fl_text := fl_text + #13#10 + in_text;
+end;
+
+//==============================================================================
+//
+// R_ParseFlatInfoLumps
+// The FLATINFO lumps of the WADs and the PAKs give their sizes to the flats
+// (it was in r_flatinfo.pas)
+//
+//==============================================================================
+procedure R_ParseFlatInfoLumps;
+var
+  i: integer;
+  sizes: TArray<TTextureDefsFlatSize>;
+begin
+  if flatinfo_parser = nil then
+    I_Error('R_ParseFlatInfoLumps(): FLATINFO is not configured (ComposeEngine was not called)');
+
+  fl_text := '';
+  for i := 0 to W_NumLumps - 1 do
+    if char8tostring(W_GetNameForNum(i)) = FLATINFOLUMPNAME then
+      R_RetrieveFlatInfo(W_TextLumpNum(i));
+
+  PAK_StringIterator(FLATINFOLUMPNAME, R_RetrieveFlatInfo);
+  PAK_StringIterator(FLATINFOLUMPNAME + '.txt', R_RetrieveFlatInfo);
+
+  sizes := flatinfo_parser.Parse(fl_text, flatinfo_catalog);
+  for i := 0 to Length(sizes) - 1 do
+    flats[sizes[i].FlatIndex].size := sizes[i].SizeCode;
+  fl_text := '';
 end;
 
 //==============================================================================

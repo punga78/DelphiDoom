@@ -84,7 +84,6 @@ uses
   DelphiDoom.Engine.Screenshot.Folders,
   DelphiDoom.Png.Provider,
   DelphiDoom.Jpeg.Provider,
-  mn_screenshot,
   DelphiDoom.Texture.Intf,
   DelphiDoom.Texture.Factory,
   DelphiDoom.Engine.Texture.PaletteSource,
@@ -94,7 +93,7 @@ uses
   DelphiDoom.Engine.Texture.Resolver,
   t_main,
 {$IFNDEF OPENGL}
-  r_grow,
+  r_cache_flats,
   r_patch,
 {$ENDIF}
   DelphiDoom.Console.Intf,
@@ -119,12 +118,9 @@ uses
   DelphiDoom.Engine.TextureDefs.LumpSource,
   DelphiDoom.Engine.TextureDefs.FlatCatalog,
   r_data,
-  r_flatinfo,
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
-  DelphiDoom.Palette.Profiles,
   DelphiDoom.Palette.Factory,
-  v_palettes,
   r_palette,
   DelphiDoom.Definitions.Types,
   DelphiDoom.Definitions.Intf,
@@ -461,13 +457,6 @@ var
   LMatcher: IColorMatcher;
 begin
   LMatcher := TPaletteFactory.CreateColorMatcher;
-{$IFDEF HEXEN}
-  V_ConfigurePalettes(TPaletteFactory.CreatePaletteBuilder(LMatcher, TPaletteProfiles.Hexen),
-    TPaletteFactory.CreateTranslationBuilder(LMatcher));
-{$ELSE}
-  V_ConfigurePalettes(TPaletteFactory.CreatePaletteBuilder(LMatcher, TPaletteProfiles.Doom),
-    TPaletteFactory.CreateTranslationBuilder(LMatcher));
-{$ENDIF}
   R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
   R_ConfigureColormaps(LMatcher, TPaletteFactory.CreateColormapPreparer);
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
@@ -527,14 +516,14 @@ end;
 procedure ComposeImaging;
 begin
 {$IFNDEF OPENGL}
-  R_ConfigureGrow(TImagingFactory.CreateSpanGrower);
+  R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
-  R_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
+  V_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
   R_ConfigureComposite(TImagingFactory.CreateColumnPainter, TImagingFactory.CreateColumnRebuilder);
 {$IFNDEF OPENGL}
   R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
 {$ENDIF}
-  MN_ConfigureScreenShot(TImagingFactory.CreateThumbnailBuilder(
+  R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
 end;
 
