@@ -223,8 +223,12 @@ procedure CalculateReflect2(const d, wall: vec2_t; var reflect: vec2_t);
 
 implementation
 
-const
-  nanmask = 255 shl 23;
+uses
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.VectorMath;
+
+// The calculations are the ones of TVectorMath (Libs\MathCore); these are the
+// functions of the engine, with the pointers that its callers have.
 
 //==============================================================================
 //
@@ -233,7 +237,7 @@ const
 //==============================================================================
 function IS_NAN(x: float): boolean;
 begin
-  result := (Pinteger(@x)^ and nanmask) = nanmask;
+  result := TVectorMath.IsNaN(x);
 end;
 
 //==============================================================================
@@ -243,7 +247,7 @@ end;
 //==============================================================================
 function DEG2RAD(a: float): float;
 begin
-  result := (a * M_PI) / 180.0;
+  result := TVectorMath.DegreesToRadians(a);
 end;
 
 //==============================================================================
@@ -252,59 +256,19 @@ end;
 //
 //==============================================================================
 procedure ProjectPointOnPlane(dst: Pvec3_t; p: Pvec3_t; normal: Pvec3_t);
-var
-  d: float;
-  n: vec3_t;
-  inv_denom: float;
 begin
-  inv_denom := 1.0 / DotProduct(normal, normal);
-
-  d := DotProduct(normal, p) * inv_denom;
-
-  n[0] := normal[0] * inv_denom;
-  n[1] := normal[1] * inv_denom;
-  n[2] := normal[2] * inv_denom;
-
-  dst[0] := p[0] - d * n[0];
-  dst[1] := p[1] - d * n[1];
-  dst[2] := p[2] - d * n[2];
+  TVectorMath.ProjectPointOnPlane(TVec3(dst^), TVec3(p^), TVec3(normal^));
 end;
 
 //==============================================================================
-// PerpendicularVector
 //
+// PerpendicularVector
 // assumes "src" is normalized
 //
 //==============================================================================
 procedure PerpendicularVector(dst: Pvec3_t; src: Pvec3_t);
-var
-  pos: integer;
-  i: integer;
-  minelem: float;
-  tempvec: vec3_t;
 begin
-  minelem := 1.0;
-
-  // find the smallest magnitude axially aligned vector
-  pos := 0;
-  for i := 0 to 2 do
-  begin
-    if fabs(src[i]) < minelem then
-    begin
-      pos := i;
-      minelem := fabs(src[i]);
-    end;
-  end;
-  tempvec[0] := 0.0;
-  tempvec[1] := 0.0;
-  tempvec[2] := 0.0;
-  tempvec[pos] := 1.0;
-
-  // project the point onto the plane defined by src
-  ProjectPointOnPlane(dst, @tempvec, src);
-
-  // normalize the result
-  VectorNormalize(dst);
+  TVectorMath.PerpendicularVector(TVec3(dst^), TVec3(src^));
 end;
 
 //==============================================================================
@@ -314,60 +278,8 @@ end;
 //==============================================================================
 procedure RotatePointAroundVector(dst: Pvec3_t; dir: Pvec3_t;
   point: Pvec3_t; degrees: float);
-var
-  m: mat3_t;
-  im: mat3_t;
-  zrot: mat3_t;
-  tmpmat: mat3_t;
-  rot: mat3_t;
-  i: integer;
-  vr, vup, vf: vec3_t;
 begin
-  vf[0] := dir[0];
-  vf[1] := dir[1];
-  vf[2] := dir[2];
-
-  PerpendicularVector(@vr, dir);
-  CrossProduct(@vr, @vf, @vup);
-
-  m[0][0] := vr[0];
-  m[1][0] := vr[1];
-  m[2][0] := vr[2];
-
-  m[0][1] := vup[0];
-  m[1][1] := vup[1];
-  m[2][1] := vup[2];
-
-  m[0][2] := vf[0];
-  m[1][2] := vf[1];
-  m[2][2] := vf[2];
-
-  memcpy(@im, @m, SizeOf(im));
-
-  im[0][1] := m[1][0];
-  im[0][2] := m[2][0];
-  im[1][0] := m[0][1];
-  im[1][2] := m[2][1];
-  im[2][0] := m[0][2];
-  im[2][1] := m[1][2];
-
-  ZeroMemory(@zrot, SizeOf(zrot));
-  zrot[0, 0] := 1.0;
-  zrot[1, 1] := 1.0;
-  zrot[2, 2] := 1.0;
-
-  zrot[0][0] := cos(DEG2RAD(degrees));
-  zrot[0][1] := sin(DEG2RAD(degrees));
-  zrot[1][0] := -sin(DEG2RAD(degrees));
-  zrot[1][1] := cos(DEG2RAD(degrees));
-
-  ConcatRotations(@m, @zrot, @tmpmat);
-  ConcatRotations(@tmpmat, @im, @rot);
-
-  for i := 0 to 2 do
-  begin
-    dst[i] := rot[i, 0] * point[0] + rot[i, 1] * point[1] + rot[i, 2] * point[2];
-  end;
+  TVectorMath.RotatePointAroundVector(TVec3(dst^), TVec3(dir^), TVec3(point^), degrees);
 end;
 
 //==============================================================================
@@ -376,17 +288,11 @@ end;
 //
 //==============================================================================
 function VectorCompare(v1, v2: Pvec3_t): integer;
-var
-  i: integer;
 begin
-  for i := 0 to 2 do
-    if v1[i] <> v2[i] then
-    begin
-      result := 0;
-      exit;
-    end;
-
-  result := 1;
+  if TVectorMath.Compare3(TVec3(v1^), TVec3(v2^)) then
+    result := 1
+  else
+    result := 0;
 end;
 
 //==============================================================================
@@ -396,9 +302,7 @@ end;
 //==============================================================================
 procedure VectorMA(veca: Pvec3_t; scale: float; vecb: Pvec3_t; vecc: Pvec3_t);
 begin
-  vecc[0] := veca[0] + scale * vecb[0];
-  vecc[1] := veca[1] + scale * vecb[1];
-  vecc[2] := veca[2] + scale * vecb[2];
+  TVectorMath.MultiplyAdd3(TVec3(veca^), scale, TVec3(vecb^), TVec3(vecc^));
 end;
 
 //==============================================================================
@@ -408,7 +312,7 @@ end;
 //==============================================================================
 function DotProduct(v1, v2: Pvec3_t): vec_t;
 begin
-  result := v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+  result := TVectorMath.Dot3(TVec3(v1^), TVec3(v2^));
 end;
 
 //==============================================================================
@@ -418,9 +322,7 @@ end;
 //==============================================================================
 procedure VectorSubtract(veca, vecb: Pvec3_t; _out: Pvec3_t);
 begin
-  _out[0] := veca[0] - vecb[0];
-  _out[1] := veca[1] - vecb[1];
-  _out[2] := veca[2] - vecb[2];
+  TVectorMath.Subtract3(TVec3(veca^), TVec3(vecb^), TVec3(_out^));
 end;
 
 //==============================================================================
@@ -430,9 +332,7 @@ end;
 //==============================================================================
 procedure VectorAdd(veca, vecb: Pvec3_t; _out: Pvec3_t);
 begin
-  _out[0] := veca[0] + vecb[0];
-  _out[1] := veca[1] + vecb[1];
-  _out[2] := veca[2] + vecb[2];
+  TVectorMath.Add3(TVec3(veca^), TVec3(vecb^), TVec3(_out^));
 end;
 
 //==============================================================================
@@ -454,9 +354,7 @@ end;
 //==============================================================================
 procedure CrossProduct(v1, v2: Pvec3_t; cross: Pvec3_t);
 begin
-  cross[0] := v1[1] * v2[2] - v1[2] * v2[1];
-  cross[1] := v1[2] * v2[0] - v1[0] * v2[2];
-  cross[2] := v1[0] * v2[1] - v1[1] * v2[0];
+  TVectorMath.Cross3(TVec3(v1^), TVec3(v2^), TVec3(cross^));
 end;
 
 //==============================================================================
@@ -464,10 +362,9 @@ end;
 // VectorLength
 //
 //==============================================================================
-function VectorLength(v: Pvec3_t): vec_t; // VJ mayby add VectorSquareLength ?
+function VectorLength(v: Pvec3_t): vec_t;
 begin
-  result := v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-  result := sqrt(result);    // FIXME
+  result := TVectorMath.Length3(TVec3(v^));
 end;
 
 //==============================================================================
@@ -476,19 +373,8 @@ end;
 //
 //==============================================================================
 function VectorNormalize(v: Pvec3_t): float;
-var
-  ilength: float;
 begin
-  result := v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-  result := sqrt(result);    // FIXME
-
-  if result > 0.0 then
-  begin
-    ilength := 1 / result;
-    v[0] := v[0] * ilength;
-    v[1] := v[1] * ilength;
-    v[2] := v[2] * ilength;
-  end;
+  result := TVectorMath.Normalize3(TVec3(v^));
 end;
 
 //==============================================================================
@@ -498,9 +384,7 @@ end;
 //==============================================================================
 procedure VectorInverse(v: Pvec3_t);
 begin
-  v[0] := -v[0];
-  v[1] := -v[1];
-  v[2] := -v[2];
+  TVectorMath.Inverse3(TVec3(v^));
 end;
 
 //==============================================================================
@@ -510,16 +394,8 @@ end;
 //==============================================================================
 procedure VectorScale(_in: Pvec3_t; const scale: vec_t; _out: Pvec3_t);
 begin
-  _out[0] := _in[0] * scale;
-  _out[1] := _in[1] * scale;
-  _out[2] := _in[2] * scale;
+  TVectorMath.Scale3(TVec3(_in^), scale, TVec3(_out^));
 end;
-
-(*
-================
-ConcatRotations
-================
-*)
 
 //==============================================================================
 //
@@ -528,24 +404,7 @@ ConcatRotations
 //==============================================================================
 procedure ConcatRotations(in1, in2: Pmat3_t; _out: Pmat3_t);
 begin
-  _out[0][0] := in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] +
-        in1[0][2] * in2[2][0];
-  _out[0][1] := in1[0][0] * in2[0][1] + in1[0][1] * in2[1][1] +
-        in1[0][2] * in2[2][1];
-  _out[0][2] := in1[0][0] * in2[0][2] + in1[0][1] * in2[1][2] +
-        in1[0][2] * in2[2][2];
-  _out[1][0] := in1[1][0] * in2[0][0] + in1[1][1] * in2[1][0] +
-        in1[1][2] * in2[2][0];
-  _out[1][1] := in1[1][0] * in2[0][1] + in1[1][1] * in2[1][1] +
-        in1[1][2] * in2[2][1];
-  _out[1][2] := in1[1][0] * in2[0][2] + in1[1][1] * in2[1][2] +
-        in1[1][2] * in2[2][2];
-  _out[2][0] := in1[2][0] * in2[0][0] + in1[2][1] * in2[1][0] +
-        in1[2][2] * in2[2][0];
-  _out[2][1] := in1[2][0] * in2[0][1] + in1[2][1] * in2[1][1] +
-        in1[2][2] * in2[2][1];
-  _out[2][2] := in1[2][0] * in2[0][2] + in1[2][1] * in2[1][2] +
-        in1[2][2] * in2[2][2];
+  TVectorMath.ConcatRotations(TMat3(in1^), TMat3(in2^), TMat3(_out^));
 end;
 
 //==============================================================================
@@ -555,7 +414,7 @@ end;
 //==============================================================================
 function DotProduct2(v1, v2: vec2_t): float;
 begin
-  result := v1[0] * v2[0] + v1[1] * v2[1];
+  result := TVectorMath.Dot2(TVec2(v1), TVec2(v2));
 end;
 
 //==============================================================================
@@ -565,8 +424,7 @@ end;
 //==============================================================================
 function VectorSubtract2(veca, vecb: vec2_t): vec2_t;
 begin
-  result[0] := veca[0] - vecb[0];
-  result[1] := veca[1] - vecb[1];
+  TVec2(result) := TVectorMath.Subtract2(TVec2(veca), TVec2(vecb));
 end;
 
 //==============================================================================
@@ -576,8 +434,7 @@ end;
 //==============================================================================
 function VectorAdd2(veca, vecb: vec2_t): vec2_t;
 begin
-  result[0] := veca[0] + vecb[0];
-  result[1] := veca[1] + vecb[1];
+  TVec2(result) := TVectorMath.Add2(TVec2(veca), TVec2(vecb));
 end;
 
 //==============================================================================
@@ -587,8 +444,7 @@ end;
 //==============================================================================
 function VectorScale2(veca: vec2_t; scale: float): vec2_t;
 begin
-  result[0] := veca[0] * scale;
-  result[1] := veca[1] * scale;
+  TVec2(result) := TVectorMath.Scale2(TVec2(veca), scale);
 end;
 
 //==============================================================================
@@ -598,8 +454,7 @@ end;
 //==============================================================================
 function VectorLength2(v: vec2_t): float;
 begin
-  result := v[0] * v[0] + v[1] * v[1];
-  result := sqrt(result);    // FIXME
+  result := TVectorMath.Length2(TVec2(v));
 end;
 
 //==============================================================================
@@ -608,18 +463,8 @@ end;
 //
 //==============================================================================
 function VectorNormalize2(var v: vec2_t): float;
-var
-  ilength: float;
 begin
-  result := v[0] * v[0] + v[1] * v[1];
-  result := sqrt(result);    // FIXME
-
-  if result > 0.0 then
-  begin
-    ilength := 1 / result;
-    v[0] := v[0] * ilength;
-    v[1] := v[1] * ilength;
-  end;
+  result := TVectorMath.Normalize2(TVec2(v));
 end;
 
 //==============================================================================
@@ -628,18 +473,8 @@ end;
 //
 //==============================================================================
 procedure CalculateReflect2(const d, wall: vec2_t; var reflect: vec2_t);
-var
-  n: vec2_t;
 begin
-  n[0] := -wall[1];
-  n[1] := wall[0];
-
-  VectorNormalize2(n);
-
-  reflect := VectorSubtract2(d, VectorScale2(n, 2 * DotProduct2(d, n)));
-  VectorNormalize2(reflect);
-  reflect := VectorScale2(reflect, VectorLength2(d));
+  TVectorMath.CalculateReflect2(TVec2(d), TVec2(wall), TVec2(reflect));
 end;
 
 end.
-

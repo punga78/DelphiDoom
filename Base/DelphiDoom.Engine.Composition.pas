@@ -64,6 +64,11 @@ uses
   DelphiDoom.Engine.Console.Startup,
   DelphiDoom.Engine.Console.VariableSource,
   c_cmds,
+  r_translations,
+  r_draw,
+  r_precalc,
+  r_main,
+  v_video,
   c_con,
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.TextureDefs.Intf,
@@ -339,6 +344,17 @@ begin
     TPaletteFactory.CreateTranslationBuilder(LMatcher));
 {$ENDIF}
   R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
+  R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames);
+  V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
+  R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
+  R_ConfigurePrecalc(TPaletteFactory.CreatePrecalcTables);
+{$IF DEFINED(DOOM)}
+  R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
+{$ELSEIF DEFINED(HERETIC)}
+  R_ConfigurePlayerTranslations(TPaletteFactory.CreateHereticPlayerTranslations);
+{$ELSEIF DEFINED(STRIFE)}
+  R_ConfigurePlayerTranslations(TPaletteFactory.CreateStrifePlayerTranslations);
+{$ENDIF}
 end;
 
 procedure ComposeTextureDefs(const ALog: ILog);

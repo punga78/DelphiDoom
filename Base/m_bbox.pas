@@ -58,7 +58,12 @@ procedure M_AddToBox(box: Pfixed_tArray; x: fixed_t; y: fixed_t);
 implementation
 
 uses
-  doomtype;
+  DelphiDoom.MathCore.Types,
+  DelphiDoom.MathCore.BoundingBox;
+
+type
+  // the box of the engine is a pointer to four fixed_t
+  PBoundingBox = ^TBoundingBox;
 
 //==============================================================================
 //
@@ -67,10 +72,7 @@ uses
 //==============================================================================
 procedure M_ClearBox(box: Pfixed_tArray);
 begin
-  box[BOXTOP] := MININT;
-  box[BOXRIGHT] := MININT;
-  box[BOXBOTTOM] := MAXINT;
-  box[BOXLEFT] := MAXINT;
+  TBoundingBoxMath.Clear(PBoundingBox(box)^);
 end;
 
 //==============================================================================
@@ -80,14 +82,7 @@ end;
 //==============================================================================
 procedure M_AddToBox(box: Pfixed_tArray; x: fixed_t; y: fixed_t);
 begin
-  if x < box[BOXLEFT] then
-    box[BOXLEFT] := x
-  else if x > box[BOXRIGHT] then
-    box[BOXRIGHT] := x;
-  if y < box[BOXBOTTOM] then
-    box[BOXBOTTOM] := y
-  else if y > box[BOXTOP] then
-    box[BOXTOP] := y;
+  TBoundingBoxMath.AddPoint(PBoundingBox(box)^, x, y);
 end;
 
 end.

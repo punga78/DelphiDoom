@@ -648,6 +648,8 @@ uses
   DelphiDoom.Imaging.WallScale in 'Libs\Imaging\DelphiDoom.Imaging.WallScale.pas',
   DelphiDoom.Imaging.Factory in 'Libs\Imaging\DelphiDoom.Imaging.Factory.pas',
   DelphiDoom.MathCore.Types in 'Libs\MathCore\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.VectorMath in 'Libs\MathCore\DelphiDoom.MathCore.VectorMath.pas',
+  DelphiDoom.MathCore.BoundingBox in 'Libs\MathCore\DelphiDoom.MathCore.BoundingBox.pas',
   DelphiDoom.MathCore.Intf in 'Libs\MathCore\DelphiDoom.MathCore.Intf.pas',
   DelphiDoom.MathCore.TableRandom in 'Libs\MathCore\DelphiDoom.MathCore.TableRandom.pas',
   DelphiDoom.MathCore.TableSysRandom in 'Libs\MathCore\DelphiDoom.MathCore.TableSysRandom.pas',

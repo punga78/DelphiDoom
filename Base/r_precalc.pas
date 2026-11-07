@@ -37,7 +37,16 @@ interface
 
 uses
   d_delphi,
-  m_fixed;
+  m_fixed,
+  DelphiDoom.Palette.Intf;
+
+//==============================================================================
+//
+// R_ConfigurePrecalc
+// The precalculated tables of Libs\Palette, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigurePrecalc(const ATables: IPrecalcTables);
 
 //==============================================================================
 //
@@ -87,10 +96,43 @@ var
 
 implementation
 
+uses
+  i_system;
+
 var
   precalc32_r: array[0..255] of PIntegerArray;
   precalc32_g: array[0..255] of PIntegerArray;
   precalc32_b: array[0..255] of PIntegerArray;
+  precalc_tables: IPrecalcTables = nil;
+
+//==============================================================================
+//
+// R_ConfigurePrecalc
+//
+//==============================================================================
+procedure R_ConfigurePrecalc(const ATables: IPrecalcTables);
+begin
+  precalc_tables := ATables;
+end;
+
+//==============================================================================
+//
+// CopyRows
+// Gives each light level its own row of 256 values, like the engine reads them
+//
+//==============================================================================
+procedure CopyRows(const values: TArray<Integer>; var rows: array of PIntegerArray);
+var
+  i: integer;
+  p: PIntegerArray;
+begin
+  for i := 0 to 255 do
+  begin
+    p := malloc(256 * SizeOf(Integer));
+    memcpy(p, @values[i * 256], 256 * SizeOf(Integer));
+    rows[i] := p;
+  end;
+end;
 
 //==============================================================================
 //
@@ -99,81 +141,49 @@ var
 //==============================================================================
 procedure R_InitPrecalc;
 var
-  i, j: integer;
-  p: PIntegerArray;
-  l: LongWord;
-  buf2: twobytes_t;
-  buf4: fourbytes_t;
-  f1, f2: integer;
-  p2: PIntegerArray;
+  i: integer;
+  longs, words: TArray<Cardinal>;
+  inverse: TArray<Cardinal>;
+  byteavg, ravg, gavg, bavg: TArray<Cardinal>;
+  addclamp: TArray<Byte>;
 begin
+  if precalc_tables = nil then
+    I_Error('R_InitPrecalc(): the precalculated tables are not configured (ComposeEngine was not called)');
+
+  CopyRows(precalc_tables.Multiply(0), precalc32_r);
+  CopyRows(precalc_tables.Multiply(1), precalc32_g);
+  CopyRows(precalc_tables.Multiply(2), precalc32_b);
+  CopyRows(precalc_tables.Fog(0), precalc_fog_r);
+  CopyRows(precalc_tables.Fog(1), precalc_fog_g);
+  CopyRows(precalc_tables.Fog(2), precalc_fog_b);
+
+  longs := precalc_tables.ByteToLong;
+  words := precalc_tables.ByteToWord;
   for i := 0 to 255 do
   begin
-    p := malloc(256 * SizeOf(Integer));
-    precalc32_r[i] := p;
-    for j := 0 to 255 do
-      p[j] := (i * j * 256) shr FRACBITS;
-    p := malloc(256 * SizeOf(Integer));
-    precalc32_g[i] := p;
-    for j := 0 to 255 do
-      p[j] := (((i * j * 256) shr FRACBITS) shl 8) and $FF00;
-    p := malloc(256 * SizeOf(Integer));
-    precalc32_b[i] := p;
-    for j := 0 to 255 do
-      p[j] := (i * j * 256) and $FF0000;
-
-    buf4.byte1 := i;
-    buf4.byte2 := i;
-    buf4.byte3 := i;
-    buf4.byte4 := i;
-    precal8_tolong[i] := PLongWord(@buf4)^;
-
-    buf2.byte1 := i;
-    buf2.byte2 := i;
-    precal8_toword[i] := PWord(@buf2)^;
-
-    f1 := i;
-    f2 := 256 - f1;
-
-    p := malloc(256 * SizeOf(Integer));
-    precalc_fog_r[i] := p;
-    for j := 0 to 255 do
-      p[j] := 255 - (i * (255 - j)) shr 8;
-
-    p2 := precalc32_r[i];
-    for j := 0 to 255 do
-      p[j] := (p[j] * f2 + p2[j] * f1) shr 8;
-
-    p := malloc(256 * SizeOf(Integer));
-    precalc_fog_g[i] := p;
-    for j := 0 to 255 do
-      p[j] := precalc_fog_r[i][j] shl 8;
-    p := malloc(256 * SizeOf(Integer));
-    precalc_fog_b[i] := p;
-    for j := 0 to 255 do
-      p[j] := precalc_fog_r[i][j] shl 16;
+    precal8_tolong[i] := longs[i];
+    precal8_toword[i] := words[i];
   end;
 
+  inverse := precalc_tables.InverseColor;
   for i := 0 to 767 do
-  begin
-    l := 255 - i div 6;
-    precal32_ic[i] := l + l shl 8 + l shl 16;
-  end;
+    precal32_ic[i] := inverse[i];
 
+  byteavg := precalc_tables.Average(0);
+  ravg := precalc_tables.Average(1);
+  gavg := precalc_tables.Average(2);
+  bavg := precalc_tables.Average(3);
+  addclamp := precalc_tables.AddClamp;
   for i := 0 to 511 do
   begin
-    average_byte[i] := i div 2;
-    average_r[i] := i div 2;
-    average_g[i] := (i div 2) shl 8;
-    average_b[i] := (i div 2) shl 16;
-    if i > 255 then
-      add32_c[i] := 255
-    else
-      add32_c[i] := i;
+    average_byte[i] := byteavg[i];
+    average_r[i] := ravg[i];
+    average_g[i] := gavg[i];
+    average_b[i] := bavg[i];
+    add32_c[i] := addclamp[i];
   end;
 
 end;
-
 //==============================================================================
 //
 // R_ShutDownPrecalc

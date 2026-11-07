@@ -35,7 +35,8 @@ uses
   doomdef,
   r_defs,
 // Needs access to LFB (guess what).
-  v_video;
+  v_video,
+  DelphiDoom.Palette.Intf;
 
 //==============================================================================
 //
@@ -64,6 +65,15 @@ procedure R_PlayerViewBlanc(const black: byte);
 //
 //==============================================================================
 procedure R_InitBuffer(width, height: integer);
+
+//==============================================================================
+//
+// R_ConfigurePlayerTranslations
+// The color ramps of the players of Libs\Palette, given by the composition root
+// (not in Hexen: it reads its tables from the lumps TRANTBL)
+//
+//==============================================================================
+procedure R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations);
 
 //==============================================================================
 // R_InitTranslationTables
@@ -225,6 +235,19 @@ uses
   doomstat,
   v_data;
 
+var
+  player_translations: IPlayerTranslations = nil;
+
+//==============================================================================
+//
+// R_ConfigurePlayerTranslations
+//
+//==============================================================================
+procedure R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations);
+begin
+  player_translations := ATranslations;
+end;
+
 //==============================================================================
 //
 // R_InitTranslationTables
@@ -247,34 +270,12 @@ var
 {$IFDEF STRIFE}
   col1, col2: byte;
 {$ENDIF}
+{$IFNDEF HEXEN}
+  tables: TArray<Byte>;
+{$ENDIF}
 begin
 {$IF DEFINED(HEXEN)}
   tinttable := W_CacheLumpName('TINTTAB', PU_STATIC);
-{$ELSEIF DEFINED(STRIFE)}
-  xlatab := W_CacheLumpName('XLATAB', PU_STATIC);
-{$ELSE}
-  translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
-  translationtables := PByteArray((integer(translationtables) + 255 ) and not 255);
-{$ENDIF}
-
-{$IF DEFINED(HERETIC)}
-  // translate just the 16 green colors
-  for i := 0 to 255 do
-    if (i >= 255) and (i <= 240) then
-    begin
-      // map green ramp to gray, brown, red
-      translationtables[i] := 114 + (i - 225);  // yellow
-      translationtables[i + 256] := 145 + (i - 225);  // red
-      translationtables[i + 512] := 190 + (i - 225);  // blue
-    end
-    else
-    begin
-      // Keep all other colors as is.
-      translationtables[i] := i;
-      translationtables[i + 256] := i;
-      translationtables[i + 512] := i;
-    end;
-{$ELSEIF DEFINED(HEXEN)}
   translationtables := Z_Malloc(256 * 3 * (MAXPLAYERS - 1), PU_STATIC, nil);
 
   trlmp := W_GetNumForName('TRANTBL0');
@@ -289,120 +290,20 @@ begin
     if Pos('TRANTBL', strupper(char8tostring(W_GetNameForNum(idx)))) = 0 then
       idx := trlmp;
   end;
-{$ELSEIF DEFINED(STRIFE)}
-  translationtables := Z_Malloc(256 * 8, PU_STATIC, nil);
-
-  col1 := $FA;
-  col2 := $E0;
-
-  // villsa [STRIFE] setup all translation tables
-  for i := 0 to 255 do
-  begin
-    if (i >= $80) and (i <= $8f) then
-    begin
-      translationtables [i          ] := (i and $0f) + 64;
-      translationtables [i +     256] := (i and $0f) - 80;
-      translationtables [i + 2 * 256] := (i and $0f) + 16;
-      translationtables [i + 3 * 256] := (i and $0f) + 48;
-      translationtables [i + 4 * 256] := (i and $0f) + 80;
-      translationtables [i + 5 * 256] := (i and $0f) + 96;
-      translationtables [i + 6 * 256] := (i and $0f) - 112;
-    end
-    else if (i >= $50) and (i <= $5f) then
-    begin
-      translationtables [i          ] := i;
-      translationtables [i +     256] := i;
-      translationtables [i + 2 * 256] := i;
-      translationtables [i + 3 * 256] := i;
-      translationtables [i + 4 * 256] := (i and $0f) + $80;
-      translationtables [i + 5 * 256] := (i and $0f) + 16;
-      translationtables [i + 6 * 256] := (i and $0f) + 64;
-    end
-    else if (i >= $d0) and (i <= $df) then
-    begin
-      translationtables [i          ] := i;
-      translationtables [i +     256] := i;
-      translationtables [i + 2 * 256] := i;
-      translationtables [i + 3 * 256] := i;
-      translationtables [i + 4 * 256] := (i and $0f) - 80;
-      translationtables [i + 5 * 256] := (i and $0f) + 48;
-      translationtables [i + 6 * 256] := (i and $0f) + 16;
-    end
-    else if (i >= $c0) and (i <= $cf) then
-    begin
-      translationtables [i          ] := i;
-      translationtables [i +     256] := i;
-      translationtables [i + 2 * 256] := i;
-      translationtables [i + 3 * 256] := i;
-      translationtables [i + 4 * 256] := (i and $0f) - 96;
-      translationtables [i + 5 * 256] := (i and $0f) + 32;
-      translationtables [i + 6 * 256] := (i and $0f);
-      // haleyjd 20110213: missing code:
-      if i and $0f = 0 then
-        translationtables[i + 6 * 256] := 1;
-    end
-    else if (i >= $f7) and (i <= $fb) then
-    begin
-      translationtables [i          ] := col1;
-      translationtables [i +     256] := i;
-      translationtables [i + 2 * 256] := i;
-      translationtables [i + 3 * 256] := i;
-      translationtables [i + 4 * 256] := i;
-      translationtables [i + 5 * 256] := i;
-      translationtables [i + 6 * 256] := i;
-    end
-    else if (i >= $f1) and (i <= $f6) then
-    begin
-      translationtables [i          ] := (i and $0f) - 33;
-      translationtables [i +     256] := i;
-      translationtables [i + 2 * 256] := i;
-      translationtables [i + 3 * 256] := i;
-      translationtables [i + 4 * 256] := i;
-      translationtables [i + 5 * 256] := i;
-      translationtables [i + 6 * 256] := i;
-    end
-    else if (i >= $20) and (i <= $3f) then // haleyjd 20110213: fixed upper end
-    begin
-      translationtables [i          ] := col2;
-      translationtables [i +     256] := col2;
-      translationtables [i + 2 * 256] := (i and $0f) - 48;
-      translationtables [i + 3 * 256] := (i and $0f) - 48;
-      translationtables [i + 4 * 256] := col2;
-      translationtables [i + 5 * 256] := col2;
-      translationtables [i + 6 * 256] := col2;
-    end
-    else  // Keep all other colors as is.
-    begin
-      translationtables[i          ] := i;
-      translationtables[i +     256] := i;
-      translationtables[i + 2 * 256] := i;
-      translationtables[i + 3 * 256] := i;
-      translationtables[i + 4 * 256] := i;
-      translationtables[i + 5 * 256] := i;
-      translationtables[i + 6 * 256] := i;
-    end;
-    inc(col1);
-    inc(col2);
-  end;
 {$ELSE}
-  // translate just the 16 green colors
-  for i := 0 to 255 do
-    if (i >= $70) and (i <= $7f) then
-    begin
-      // map green ramp to gray, brown, red
-      translationtables[i] := $60 + (i and $f);
-      translationtables[i + 256] := $40 + (i and $f);
-      translationtables[i + 512] := $20 + (i and $f);
-    end
-    else
-    begin
-      // Keep all other colors as is.
-      translationtables[i] := i;
-      translationtables[i + 256] := i;
-      translationtables[i + 512] := i;
-    end;
+  if player_translations = nil then
+    I_Error('R_InitTranslationTables(): the player translations are not configured (ComposeEngine was not called)');
+{$IF DEFINED(STRIFE)}
+  xlatab := W_CacheLumpName('XLATAB', PU_STATIC);
+  translationtables := Z_Malloc(256 * 8, PU_STATIC, nil);
+{$ELSE}
+  translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
+  translationtables := PByteArray((integer(translationtables) + 255 ) and not 255);
 {$ENDIF}
-
+  // the color ramps of the players, mapped by Libs\Palette
+  tables := player_translations.Build;
+  memcpy(translationtables, @tables[0], Length(tables));
+{$ENDIF}
   // JVAL: Initialize ColorRegions
   lump := W_CheckNumForName('CR_START');
   for i := 0 to Ord(CR_LIMIT) - 1 do

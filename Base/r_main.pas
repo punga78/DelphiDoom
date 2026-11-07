@@ -46,7 +46,9 @@ uses
   {$IFNDEF OPENGL}
   r_sprite,
   {$ENDIF}
-  r_defs;
+  r_defs,
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Palette.Types;
 
 const
 //
@@ -194,6 +196,13 @@ procedure R_AddPointToBox(const x: integer; const y: integer; box: Pfixed_tArray
 //
 //==============================================================================
 procedure R_RenderPlayerView(player: Pplayer_t);
+
+//==============================================================================
+//
+// R_ConfigureLightTables
+//
+//==============================================================================
+procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
 
 //==============================================================================
 // R_Init
@@ -533,6 +542,8 @@ uses
   {$IFNDEF OPENGL}
   i_threads,
   i_video,
+  i_system,
+  {$ELSE}
   i_system,
   {$ENDIF}
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
@@ -1467,6 +1478,20 @@ begin
   clipangle := xtoviewangle[0];
 end;
 
+var
+  light_tables: ILightTableCalculator = nil;
+
+//==============================================================================
+//
+// R_ConfigureLightTables
+// The calculator of the light tables of Libs\Palette, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
+begin
+  light_tables := ACalculator;
+end;
+
 //==============================================================================
 //
 // R_InitLightTables
@@ -1474,33 +1499,30 @@ end;
 //  because the scalelight table changes with view size.
 //
 //==============================================================================
+
 procedure R_InitLightTables;
 var
   i: integer;
   j: integer;
   level: integer;
-  startmap: integer;
-  scale: integer;
   levelhi: integer;
-  startmaphi: integer;
-  scalehi: integer;
+  config: TLightTableConfig;
+  zlightindex: TArray<Integer>;
+  zlighthires: TArray<Integer>;
 begin
+  if light_tables = nil then
+    I_Error('R_InitLightTables(): the light tables are not configured (ComposeEngine was not called)');
+
   // Calculate the light levels to use
   //  for each level / distance combination.
+  config := TLightTableConfig.Default;
+  zlightindex := light_tables.ZLight(config);
+  zlighthires := light_tables.HiResZLight(config);
   for i := 0 to LIGHTLEVELS - 1 do
   begin
-    startmap := ((LIGHTLEVELS - 1 - i) * 2 * NUMCOLORMAPS) div LIGHTLEVELS;
     for j := 0 to MAXLIGHTZ - 1 do
     begin
-      scale := FixedDiv(160 * FRACUNIT, _SHL(j + 1, LIGHTZSHIFT));
-      scale := _SHR(scale, LIGHTSCALESHIFT);
-      level := startmap - scale div DISTMAP;
-
-      if level < 0 then
-        level := 0
-      else if level >= NUMCOLORMAPS then
-        level := NUMCOLORMAPS - 1;
-
+      level := zlightindex[i * MAXLIGHTZ + j];
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       zlight[i][j] := @colormaps[level * 256];
 {$ELSE}
@@ -1509,23 +1531,12 @@ begin
       fog_zlight[i][j] := @fog_colormaps[level * 256];
     end;
 
-    startmaphi := ((LIGHTLEVELS - 1 - i) * 2 * FRACUNIT) div LIGHTLEVELS;
     for j := 0 to HLL_MAXLIGHTZ - 1 do
     begin
-
-      scalehi := FixedDiv(160 * FRACUNIT, _SHL(j + 1, HLL_LIGHTZSHIFT));
-      scalehi := _SHR(scalehi, HLL_LIGHTSCALESHIFT);
-      levelhi := FRACUNIT - startmaphi + scalehi div DISTMAP;
-
-      if levelhi < 0 then
-        levelhi := 0
-      else if levelhi >= FRACUNIT then
-        levelhi := FRACUNIT - 1;
-
+      levelhi := zlighthires[i * HLL_MAXLIGHTZ + j];
       zlightlevels[i][j] := levelhi;
     end;
   end;
-
 end;
 
 //
@@ -2657,9 +2668,9 @@ var
   i: integer;
   j: integer;
   level: integer;
-  startmap: integer;
   levelhi: integer;
   startmaphi: integer;
+  scalelightindex: TArray<Integer>;
 begin
   setsizeneeded := false;
 
@@ -2777,21 +2788,12 @@ begin
 
   // Calculate the light levels to use
   //  for each level / scale combination.
+  scalelightindex := light_tables.ScaleLight(TLightTableConfig.Default, viewwidth, SCREENWIDTH);
   for i := 0 to LIGHTLEVELS - 1 do
   begin
-    startmap := ((LIGHTLEVELS - 1 - i) * 2) * NUMCOLORMAPS div LIGHTLEVELS;
     for j := 0 to MAXLIGHTSCALE - 1 do
     begin
-      level := startmap - j * SCREENWIDTH div viewwidth div DISTMAP;
-
-      if level < 0 then
-        level := 0
-      else
-      begin
-        if level >= NUMCOLORMAPS then
-          level := NUMCOLORMAPS - 1;
-      end;
-
+      level := scalelightindex[i * MAXLIGHTSCALE + j];
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       scalelight[i][j] := @colormaps[level * 256];
 {$ELSE}
@@ -2800,6 +2802,7 @@ begin
       fog_scalelight[i][j] := @fog_colormaps[level * 256];
     end;
   end;
+
 
   if setdetail >= DL_NORMAL then
     for i := 0 to LIGHTLEVELS - 1 do
