@@ -34,15 +34,18 @@ unit s_externalmusic;
 interface
 
 uses
-  d_delphi,
+  DelphiDoom.Audio.Intf,
   sounddata;
 
-type
-  TExternalMusicInfo = class
-    data: pointer;
-    size: integer;
-    constructor Create(const strm: TDStream); virtual;
-  end;
+//==============================================================================
+//
+// S_ConfigureExternalMusic
+//
+// The cache of the external songs is given by the composition root (ComposeEngine);
+// without it the functions of this unit stop with I_Error.
+//
+//==============================================================================
+procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
 
 //==============================================================================
 //
@@ -70,25 +73,34 @@ implementation
 uses
   doomdef,
   i_music,
-  z_zone,
-  w_pak,
+  i_system,
   w_wad;
 
+var
+  // given by the composition root (S_ConfigureExternalMusic)
+  engine_externalmusic: IExternalMusicCache = nil;
+
 //==============================================================================
 //
-// TExternalMusicInfo.Create
+// S_ConfigureExternalMusic
 //
 //==============================================================================
-constructor TExternalMusicInfo.Create(const strm: TDStream);
+procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
 begin
-  size := strm.Size;
-  strm.Seek(0, sFromBeginning);
-  data := Z_Malloc(size, PU_MUSIC, @data);
-  strm.Read(data^, size);
+  engine_externalmusic := ACache;
 end;
 
-var
-  externalmusic: TDStringList;
+//==============================================================================
+//
+// ExternalMusicCache
+//
+//==============================================================================
+function ExternalMusicCache: IExternalMusicCache;
+begin
+  if engine_externalmusic = nil then
+    I_Error('S_ConfigureExternalMusic() was not called: the external music cannot be loaded');
+  result := engine_externalmusic;
+end;
 
 //==============================================================================
 //
@@ -97,7 +109,7 @@ var
 //==============================================================================
 procedure S_ExternalMusicInit;
 begin
-  externalmusic := TDStringList.Create;
+  ExternalMusicCache.Clear;
 end;
 
 //==============================================================================
@@ -106,23 +118,10 @@ end;
 //
 //==============================================================================
 procedure S_ShutDownExternalMusic;
-var
-  i: integer;
 begin
-  if externalmusic <> nil then
-  begin
-    for i := 0 to externalmusic.Count - 1 do
-      externalmusic.Objects[i].Free;
-
-    externalmusic.Free;
-  end;
+  if engine_externalmusic <> nil then
+    engine_externalmusic.Clear;
 end;
-
-const
-  NUM_MUSIC_EXTENSIONS = 4;
-  MUSIC_EXTENSIONS: array[0..NUM_MUSIC_EXTENSIONS - 1] of string[4] = (
-    '.MOD', '.S3M', '.IT', '.XM'
-  );
 
 //==============================================================================
 //
@@ -131,44 +130,18 @@ const
 //==============================================================================
 function S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean;
 var
-  i: integer;
-  mname: string;
-  idx: integer;
-  minfo: TExternalMusicInfo;
-  strm: TPakStream;
+  clip: IExternalMusicClip;
 begin
-  mname := char8tostring(W_GetNameForNum(music.lumpnum));
-  idx := externalmusic.IndexOf(mname);
-  if idx >= 0 then
+  clip := ExternalMusicCache.Find(char8tostring(W_GetNameForNum(music.lumpnum)));
+  if clip = nil then
   begin
-    minfo := externalmusic.Objects[idx] as TExternalMusicInfo;
-    if minfo.data <> nil then
-    begin
-      music.data := minfo.data;
-      music.handle := I_RegisterSong(music.data, minfo.size);
-      Result := True;
-      Exit;
-    end;
-    minfo.Free;
-    externalmusic.Delete(idx);
+    result := False;
+    exit;
   end;
 
-  for i := 0 to NUM_MUSIC_EXTENSIONS - 1 do
-  begin
-    strm := TPakStream.Create(mname + MUSIC_EXTENSIONS[i], pm_prefered, gamedirectories);
-    if strm.IOResult = 0 then
-    begin
-      minfo := TExternalMusicInfo.Create(strm);
-      externalmusic.AddObject(mname, minfo);
-      music.data := minfo.data;
-      music.handle := I_RegisterSong(music.data, minfo.size);
-      Result := True;
-      strm.Free;
-      Exit;
-    end;
-    strm.Free;
-  end;
-  Result := False;
+  music.data := clip.Data;
+  music.handle := I_RegisterSong(music.data, clip.Size);
+  result := True;
 end;
 
 end.

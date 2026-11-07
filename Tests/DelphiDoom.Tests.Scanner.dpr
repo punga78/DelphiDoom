@@ -34,9 +34,12 @@ uses
   DelphiDoom.Scanner.Directive.Flag in '..\Libs\Scanner\DelphiDoom.Scanner.Directive.Flag.pas',
   DelphiDoom.Scanner.Directive.CvarForce in '..\Libs\Scanner\DelphiDoom.Scanner.Directive.CvarForce.pas',
   DelphiDoom.Scanner.Directive.CreatePalette in '..\Libs\Scanner\DelphiDoom.Scanner.Directive.CreatePalette.pas',
+  DelphiDoom.Scanner.AutoLoad.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.AutoLoad.Intf.pas',
+  DelphiDoom.Scanner.AutoLoad in '..\Libs\Scanner\DelphiDoom.Scanner.AutoLoad.pas',
   DelphiDoom.Tests.Scanner.Parity in 'Source\DelphiDoom.Tests.Scanner.Parity.pas',
   DelphiDoom.Tests.Scanner.Text in 'Source\DelphiDoom.Tests.Scanner.Text.pas',
   DelphiDoom.Tests.Scanner.Preprocessor in 'Source\DelphiDoom.Tests.Scanner.Preprocessor.pas',
+  DelphiDoom.Tests.Scanner.AutoLoad in 'Source\DelphiDoom.Tests.Scanner.AutoLoad.pas',
   DelphiDoom.Tests.Scanner.Expression in 'Source\DelphiDoom.Tests.Scanner.Expression.pas';
 
 var

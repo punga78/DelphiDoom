@@ -109,6 +109,40 @@ type
     procedure Process;
   end;
 
+  /// <summary>
+  ///   A song that is in a file outside the WAD (a module), loaded in memory. The memory may be
+  ///   taken back by the engine (the zone): then IsLoaded is false and Data is nil
+  /// </summary>
+  IExternalMusicClip = interface
+    ['{6E1A94B8-D207-4C5F-83A1-F40B7C29D615}']
+    function GetData: Pointer;
+    function GetSize: Integer;
+    function GetIsLoaded: Boolean;
+    property Data: Pointer read GetData;
+    property Size: Integer read GetSize;
+    property IsLoaded: Boolean read GetIsLoaded;
+  end;
+
+  /// <summary>Where the files of the external songs are: the engine looks in its directories and PAKs</summary>
+  IExternalMusicSource = interface
+    ['{0D83F5A2-91C6-4B7E-A4D0-3E58B6C1F972}']
+    /// <summary>Loads the file in memory; nil when there is no such file</summary>
+    function TryLoad(const AFileName: string): IExternalMusicClip;
+  end;
+
+  /// <summary>The songs found outside the WAD, kept so the files are searched once</summary>
+  IExternalMusicCache = interface
+    ['{A4C7E219-5B03-4D86-9F1A-72D0E8B3C564}']
+    /// <summary>
+    ///   The clip that replaces the song of this name (the lump name), or nil. The file is the
+    ///   name plus one of the extensions, in order; a clip already found is given again, and
+    ///   searched again if its memory was taken back
+    /// </summary>
+    function Find(const AMusicName: string): IExternalMusicClip;
+    /// <summary>Forgets everything that was found</summary>
+    procedure Clear;
+  end;
+
 implementation
 
 end.
