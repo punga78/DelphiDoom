@@ -1,0 +1,156 @@
+﻿== base64
+enc 0 
+dec 0 0  dl=0
+enc 1 Rg==
+dec 1 2 4600 dl=3
+enc 2 RkI=
+dec 2 3 464200 dl=3
+enc 3 RkKb
+dec 3 3 46429b dl=3
+enc 4 RkKbVQ==
+dec 4 5 46429b5502 dl=6
+enc 5 RkKbVV0=
+dec 5 6 46429b555d1b dl=6
+enc 6 RkKbVV2l
+dec 6 6 46429b555da5 dl=6
+enc 7 RkKbVV2lBA==
+dec 7 8 46429b555da5040d dl=9
+enc 8 RkKbVV2lBFY=
+dec 8 9 46429b555da5045625 dl=9
+enc 9 RkKbVV2lBFbe
+dec 9 9 46429b555da50456de dl=9
+enc 10 RkKbVV2lBFbeRA==
+dec 10 11 46429b555da50456de4406 dl=12
+enc 11 RkKbVV2lBFbeRLc=
+dec 11 12 46429b555da50456de44b71e dl=12
+enc 12 RkKbVV2lBFbeRLeI
+dec 12 12 46429b555da50456de44b788 dl=12
+enc 13 RkKbVV2lBFbeRLeIUg==
+dec 13 14 46429b555da50456de44b7885207 dl=15
+enc 14 RkKbVV2lBFbeRLeIUh0=
+dec 14 15 46429b555da50456de44b788521d08 dl=15
+enc 15 RkKbVV2lBFbeRLeIUh2c
+dec 15 15 46429b555da50456de44b788521d9c dl=15
+enc 16 RkKbVV2lBFbeRLeIUh2cqA==
+dec 16 17 46429b555da50456de44b788521d9ca80d dl=18
+enc 17 RkKbVV2lBFbeRLeIUh2cqN4=
+dec 17 18 46429b555da50456de44b788521d9ca8de1c dl=18
+enc 18 RkKbVV2lBFbeRLeIUh2cqN7R
+dec 18 18 46429b555da50456de44b788521d9ca8ded1 dl=18
+enc 19 RkKbVV2lBFbeRLeIUh2cqN7R8Q==
+dec 19 20 46429b555da50456de44b788521d9ca8ded1f10e dl=21
+enc 20 RkKbVV2lBFbeRLeIUh2cqN7R8W8=
+dec 20 21 46429b555da50456de44b788521d9ca8ded1f16f11 dl=21
+enc 21 RkKbVV2lBFbeRLeIUh2cqN7R8W/x
+dec 21 21 46429b555da50456de44b788521d9ca8ded1f16ff1 dl=21
+enc 22 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQw==
+dec 22 23 46429b555da50456de44b788521d9ca8ded1f16ff1430f dl=24
+enc 23 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8A=
+dec 23 24 46429b555da50456de44b788521d9ca8ded1f16ff143c031 dl=24
+enc 24 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BY
+dec 24 24 46429b555da50456de44b788521d9ca8ded1f16ff143c058 dl=24
+enc 25 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYog==
+dec 25 26 46429b555da50456de44b788521d9ca8ded1f16ff143c058a200 dl=27
+enc 26 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogE=
+dec 26 27 46429b555da50456de44b788521d9ca8ded1f16ff143c058a20118 dl=27
+enc 27 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFR
+dec 27 27 46429b555da50456de44b788521d9ca8ded1f16ff143c058a20151 dl=27
+enc 28 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjQ==
+dec 28 29 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518d01 dl=30
+enc 29 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA=
+dec 29 30 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da011 dl=30
+enc 30 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/
+dec 30 30 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f dl=30
+enc 31 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hA==
+dec 31 32 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8400 dl=33
+enc 32 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGE=
+dec 32 33 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f84613f dl=33
+enc 33 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9
+dec 33 33 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd dl=33
+enc 34 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aA==
+dec 34 35 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6801 dl=36
+enc 35 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFQ=
+dec 35 36 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd68543d dl=36
+enc 36 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6
+dec 36 36 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6854fa dl=36
+enc 37 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6aQ==
+dec 37 38 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6854fa6904 dl=39
+enc 38 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6aYw=
+dec 38 39 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6854fa698c3a dl=39
+enc 39 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6aYzs
+dec 39 39 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6854fa698cec dl=39
+enc 40 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6aYzsEQ==
+dec 40 41 46429b555da50456de44b788521d9ca8ded1f16ff143c058a201518da03f8461bd6854fa698cec110c dl=42
+enc300 RkKbVV2lBFbeRLeIUh2cqN7R8W/xQ8BYogFRjaA/hGG9aFT6aYzsEb4o/urfE2XiyJItSOTUhVH4X0lbNyga1ZpxOoHMipPeMyq39gL0reNSUd6wns15hzuEHkGZYqvGXjxy1sD5QDWaZu48I2RvVlSClPdQOez2Yl2GcWeCep+7UHgs8xbLFAIZggubarrp3Dw2sKMIwx4V+wzfNYHg0ZfXHPaFBKP9MKcpfLpyr08rPPyysg51ArSTDUGNvUrQDp9/7wzJyfWcl2powUmGPrbgcxgMBQ0pT369Fen1OBZuGRsSklDTh3CUoWznJYlyJC19QbWIK6CtOCCavFFAHjpbuKGUZ+q+jmv/61ebF6dVy0/QJBcD9UhhEdVoWQppKh94IQPAzS6KEIcL
+str 0  ""
+str 1 YQ== "a"
+str 2 TWFu "Man"
+str 3 aGVsbG8gd29ybGQ= "hello world2"
+str 4 SGVsbG8sIFdvcmxkISDp/w== "Hello, World! \xe9\xff"
+str 5 VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZw== "The quick brown fox jumps over the lazy dog\x04"
+decode 0 3 4d616e
+decode 1 3 4d6100
+decode 2 2 4d00
+decode 3 9 4d616e4d616e4d616e
+decode 4 3 000000
+decode 5 2 4d60
+decode 6 1 4c
+decode 7 0 
+decode 8 3 4d616e
+decode 9 6 4d616e4d616e
+decode 10 3 000000
+decode 11 3 ffffff
+decode 12 3 fbffbf
+decode 13 3 4d616e
+== cmdargs
+cmd 0 0 argc=2 "map" "game/mp/d3dm1" "" | args "game/mp/d3dm1" | "map game/mp/d3dm1" | "\x22game/mp/d3dm1\x22" | "\x22map\x22 \x22game/mp/d3dm1\x22"
+cmd 0 1 argc=2 "map" "game/mp/d3dm1" "" | args "game/mp/d3dm1" | "map game/mp/d3dm1" | "\x22game/mp/d3dm1\x22" | "\x22map\x22 \x22game/mp/d3dm1\x22"
+cmd 1 0 argc=3 "set" "name" "John Doe" "" | args "name John Doe" | "set name" | "\x22name\x22 \x22John Doe\x22" | "\x22set\x22 \x22name\x22 \x22John Doe\x22"
+cmd 1 1 argc=3 "set" "name" "John Doe" "" | args "name John Doe" | "set name" | "\x22name\x22 \x22John Doe\x22" | "\x22set\x22 \x22name\x22 \x22John Doe\x22"
+cmd 2 0 argc=7 "echo" "-5" "+" "3" "-" "x" "12.5" "" | args "-5 + 3 - x 12.5" | "echo -5" | "\x22-5\x22 \x22+\x22 \x223\x22 \x22-\x22 \x22x\x22 \x2212.5\x22" | "\x22echo\x22 \x22-5\x22 \x22+\x22 \x223\x22 \x22-\x22 \x22x\x22 \x2212.5\x22"
+cmd 2 1 argc=5 "echo" "-5" "+3" "-x" "12.5" "" | args "-5 +3 -x 12.5" | "echo -5" | "\x22-5\x22 \x22+3\x22 \x22-x\x22 \x2212.5\x22" | "\x22echo\x22 \x22-5\x22 \x22+3\x22 \x22-x\x22 \x2212.5\x22"
+cmd 3 0 argc=3 "bind" "w" "+forward" "" | args "w +forward" | "bind w" | "\x22w\x22 \x22+forward\x22" | "\x22bind\x22 \x22w\x22 \x22+forward\x22"
+cmd 3 1 argc=3 "bind" "w" "+forward" "" | args "w +forward" | "bind w" | "\x22w\x22 \x22+forward\x22" | "\x22bind\x22 \x22w\x22 \x22+forward\x22"
+cmd 4 0 argc=2 "connect" "192.168.1.1:27960" "" | args "192.168.1.1:27960" | "connect 192.168.1.1:27960" | "\x22192.168.1.1:27960\x22" | "\x22connect\x22 \x22192.168.1.1:27960\x22"
+cmd 4 1 argc=2 "connect" "192.168.1.1:27960" "" | args "192.168.1.1:27960" | "connect 192.168.1.1:27960" | "\x22192.168.1.1:27960\x22" | "\x22connect\x22 \x22192.168.1.1:27960\x22"
+cmd 5 0 argc=2 "exec" "some/path.cfg" "" | args "some/path.cfg" | "exec some/path.cfg" | "\x22some/path.cfg\x22" | "\x22exec\x22 \x22some/path.cfg\x22"
+cmd 5 1 argc=2 "exec" "some/path.cfg" "" | args "some/path.cfg" | "exec some/path.cfg" | "\x22some/path.cfg\x22" | "\x22exec\x22 \x22some/path.cfg\x22"
+cmd 6 0 argc=3 "say" "cvar_name" "rest" "" | args "cvar_name rest" | "say cvar_name" | "\x22cvar_name\x22 \x22rest\x22" | "\x22say\x22 \x22cvar_name\x22 \x22rest\x22"
+cmd 6 1 argc=3 "say" "$cvar_name" "rest" "" | args "$cvar_name rest" | "say $cvar_name" | "\x22$cvar_name\x22 \x22rest\x22" | "\x22say\x22 \x22$cvar_name\x22 \x22rest\x22"
+cmd 7 0 argc=3 "a" "quoted \x5cn string" "b" "" | args "quoted \x5cn string b" | "a quoted \x5cn string" | "\x22quoted \x5c\x5cn string\x22 \x22b\x22" | "\x22a\x22 \x22quoted \x5c\x5cn string\x22 \x22b\x22"
+cmd 7 1 argc=3 "a" "quoted \x5cn string" "b" "" | args "quoted \x5cn string b" | "a quoted \x5cn string" | "\x22quoted \x5c\x5cn string\x22 \x22b\x22" | "\x22a\x22 \x22quoted \x5c\x5cn string\x22 \x22b\x22"
+cmd 8 0 argc=2 "path" "c:\x5cgames\x5cdoom" "" | args "c:\x5cgames\x5cdoom" | "path c:\x5cgames\x5cdoom" | "\x22c:\x5c\x5cgames\x5c\x5cdoom\x22" | "\x22path\x22 \x22c:\x5c\x5cgames\x5c\x5cdoom\x22"
+cmd 8 1 argc=2 "path" "c:\x5cgames\x5cdoom" "" | args "c:\x5cgames\x5cdoom" | "path c:\x5cgames\x5cdoom" | "\x22c:\x5c\x5cgames\x5c\x5cdoom\x22" | "\x22path\x22 \x22c:\x5c\x5cgames\x5c\x5cdoom\x22"
+cmd 9 0 argc=2 "-1" "-2" "" | args "-2" | "-1 -2" | "\x22-2\x22" | "\x22-1\x22 \x22-2\x22"
+cmd 9 1 argc=3 "-1" "-" "2" "" | args "- 2" | "-1 -" | "\x22-\x22 \x222\x22" | "\x22-1\x22 \x22-\x22 \x222\x22"
+cmd 10 0 argc=1 "x" "" | args "" | "x" | "\x22\x22" | "\x22x\x22"
+cmd 10 1 argc=1 "x" "" | args "" | "x" | "\x22\x22" | "\x22x\x22"
+cmd 11 0 argc=0 "" | args "" | "" | "\x22\x22" | "\x22\x22"
+cmd 11 1 argc=0 "" | args "" | "" | "\x22\x22" | "\x22\x22"
+cmd 12 0 argc=0 "" | args "" | "" | "\x22\x22" | "\x22\x22"
+cmd 12 1 argc=0 "" | args "" | "" | "\x22\x22" | "\x22\x22"
+cmd 13 0 argc=1 "one" "" | args "" | "one" | "\x22\x22" | "\x22one\x22"
+cmd 13 1 argc=1 "one" "" | args "" | "one" | "\x22\x22" | "\x22one\x22"
+cmd 14 0 argc=2 "a" "b" "" | args "b" | "a b" | "\x22b\x22" | "\x22a\x22 \x22b\x22"
+cmd 14 1 argc=2 "a" "b" "" | args "b" | "a b" | "\x22b\x22" | "\x22a\x22 \x22b\x22"
+cmd 15 0 argc=3 "x" "single quote" "y" "" | args "single quote y" | "x single quote" | "\x22single quote\x22 \x22y\x22" | "\x22x\x22 \x22single quote\x22 \x22y\x22"
+cmd 15 1 argc=3 "x" "single quote" "y" "" | args "single quote y" | "x single quote" | "\x22single quote\x22 \x22y\x22" | "\x22x\x22 \x22single quote\x22 \x22y\x22"
+cmd 16 0 argc=1 "-" "" | args "" | "-" | "\x22\x22" | "\x22-\x22"
+cmd 16 1 argc=1 "-" "" | args "" | "-" | "\x22\x22" | "\x22-\x22"
+cmd 17 0 argc=1 "-5" "" | args "" | "-5" | "\x22\x22" | "\x22-5\x22"
+cmd 17 1 argc=2 "-" "5" "" | args "5" | "- 5" | "\x225\x22" | "\x22-\x22 \x225\x22"
+cmd 18 0 argc=1 "foo" "" | args "" | "foo" | "\x22\x22" | "\x22foo\x22"
+cmd 18 1 argc=1 "foo" "" | args "" | "foo" | "\x22\x22" | "\x22foo\x22"
+cmd 19 0 argc=4 "name" "=" "value" "other:thing" "" | args "= value other:thing" | "name =" | "\x22=\x22 \x22value\x22 \x22other:thing\x22" | "\x22name\x22 \x22=\x22 \x22value\x22 \x22other:thing\x22"
+cmd 19 1 argc=3 "name" "=value" "other:thing" "" | args "=value other:thing" | "name =value" | "\x22=value\x22 \x22other:thing\x22" | "\x22name\x22 \x22=value\x22 \x22other:thing\x22"
+cmd 20 0 argc=6 "{" "}" "(" ")" ";" "," "" | args "} ( ) ; ," | "{ }" | "\x22}\x22 \x22(\x22 \x22)\x22 \x22;\x22 \x22,\x22" | "\x22{\x22 \x22}\x22 \x22(\x22 \x22)\x22 \x22;\x22 \x22,\x22"
+cmd 20 1 argc=6 "{" "}" "(" ")" ";" "," "" | args "} ( ) ; ," | "{ }" | "\x22}\x22 \x22(\x22 \x22)\x22 \x22;\x22 \x22,\x22" | "\x22{\x22 \x22}\x22 \x22(\x22 \x22)\x22 \x22;\x22 \x22,\x22"
+cmd 21 0 argc=4 "a" "b" "c d" "e" "" | args "b c d e" | "a b" | "\x22b\x22 \x22c d\x22 \x22e\x22" | "\x22a\x22 \x22b\x22 \x22c d\x22 \x22e\x22"
+cmd 21 1 argc=4 "a" "b" "c d" "e" "" | args "b c d e" | "a b" | "\x22b\x22 \x22c d\x22 \x22e\x22" | "\x22a\x22 \x22b\x22 \x22c d\x22 \x22e\x22"
+cmd 22 0 argc=3 "tab" "sep" "here" "" | args "sep here" | "tab sep" | "\x22sep\x22 \x22here\x22" | "\x22tab\x22 \x22sep\x22 \x22here\x22"
+cmd 22 1 argc=3 "tab" "sep" "here" "" | args "sep here" | "tab sep" | "\x22sep\x22 \x22here\x22" | "\x22tab\x22 \x22sep\x22 \x22here\x22"
+many argc=64 last "arg63"
+long argc=3
+append argc=4 "first" "second one" "" "c:\x5cx" "" | args "second one  c:\x5cx" | "first second one" | "\x22second one\x22 \x22\x22 \x22c:\x5c\x5cx\x22" | "\x22first\x22 \x22second one\x22 \x22\x22 \x22c:\x5c\x5cx\x22"
+copy argc=4 "first" "second one" "" "c:\x5cx" "" | args "second one  c:\x5cx" | "first second one" | "\x22second one\x22 \x22\x22 \x22c:\x5c\x5cx\x22" | "\x22first\x22 \x22second one\x22 \x22\x22 \x22c:\x5c\x5cx\x22"
+cleared argc=0

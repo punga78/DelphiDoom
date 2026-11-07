@@ -1,0 +1,2271 @@
+len 0 0
+IsNumeric 0 1
+IsColor 0 0
+HasLower 0 0
+HasUpper 0 0
+LengthWithoutColors 0 0
+Hash 0 0
+IHash 0 0
+Hash3 0 0
+FileNameHash 0 0
+Last. 0 -1
+Last/ 0 -1
+FindChar 0 -1
+FindCharRange 0 -1
+FindText 0 -1
+FindTextI 0 -1
+FindTextRange 0 -1
+CheckExt1 0 0
+CheckExt2 0 0
+CheckExt3 0 0
+CheckExt4 0 0
+IsEmpty 0 1
+RemoveColors 0 ""
+ToLower 0 ""
+ToUpper 0 ""
+StripMediaName 0 ""
+Left3 0 ""
+Right3 0 ""
+Right100 0 ""
+Mid2_4 0 ""
+Mid0_100 0 ""
+Mid50_2 0 ""
+StripLeadingC 0 ""
+StripLeadingS 0 ""
+StripLeadingSpace 0 ""
+StripLeadingOnce 0 0 ""
+StripTrailingC 0 ""
+StripTrailingS 0 ""
+StripTrailingOnce 0 0 ""
+StripSpace 0 ""
+StripAbc 0 ""
+StripTrailingWhitespace 0 ""
+StripQuotes 0 ""
+BackSlashesToSlashes 0 ""
+SetFileExtension1 0 ".txt"
+SetFileExtension2 0 ".xyz"
+StripFileExtension 0 ""
+StripAbsoluteFileExtension 0 ""
+DefaultFileExtension 0 ".def"
+DefaultPath 0 "base/"
+AppendPath1 0 "sub/x.tga"
+AppendPath2 0 "y"
+AppendPath3 0 ""
+StripFilename 0 ""
+StripPath 0 ""
+ExtractFilePath 0 ""
+ExtractFileName 0 ""
+ExtractFileBase 0 ""
+ExtractFileExtension 0 ""
+InsertS 0 "XY"
+InsertC 0 "Z"
+InsertEnd 0 "!!"
+CapLength4 0 ""
+CapLength100 0 ""
+ReplaceA 0 ""
+ReplaceAbc 0 ""
+ReplaceL 0 ""
+ReplaceLong 0 ""
+AppendN 0 "123"
+AppendC 0 "#"
+Fill 0 "*****"
+Plus 0 "+"
+Cmp0 0 0
+len 1 5
+IsNumeric 1 0
+IsColor 1 0
+HasLower 1 1
+HasUpper 1 0
+LengthWithoutColors 1 5
+Hash 1 64393
+IHash 1 64393
+Hash3 1 37564
+FileNameHash 1 905
+Last. 1 -1
+Last/ 1 -1
+FindChar 1 2
+FindCharRange 1 3
+FindText 1 4
+FindTextI 1 4
+FindTextRange 1 -1
+CheckExt1 1 0
+CheckExt2 1 0
+CheckExt3 1 0
+CheckExt4 1 0
+IsEmpty 1 0
+RemoveColors 1 "hello"
+ToLower 1 "hello"
+ToUpper 1 "HELLO"
+StripMediaName 1 "hello"
+Left3 1 "hel"
+Right3 1 "llo"
+Right100 1 "hello"
+Mid2_4 1 "llo"
+Mid0_100 1 "hello"
+Mid50_2 1 ""
+StripLeadingC 1 "hello"
+StripLeadingS 1 "hello"
+StripLeadingSpace 1 "hello"
+StripLeadingOnce 1 0 "hello"
+StripTrailingC 1 "hello"
+StripTrailingS 1 "hello"
+StripTrailingOnce 1 0 "hello"
+StripSpace 1 "hello"
+StripAbc 1 "hello"
+StripTrailingWhitespace 1 "hello"
+StripQuotes 1 "hello"
+BackSlashesToSlashes 1 "hello"
+SetFileExtension1 1 "hello.txt"
+SetFileExtension2 1 "hello.xyz"
+StripFileExtension 1 "hello"
+StripAbsoluteFileExtension 1 "hello"
+DefaultFileExtension 1 "hello.def"
+DefaultPath 1 "base/hello"
+AppendPath1 1 "hello/sub/x.tga"
+AppendPath2 1 "hello/y"
+AppendPath3 1 "hello"
+StripFilename 1 ""
+StripPath 1 "hello"
+ExtractFilePath 1 ""
+ExtractFileName 1 "hello"
+ExtractFileBase 1 "hello"
+ExtractFileExtension 1 ""
+InsertS 1 "heXYllo"
+InsertC 1 "Zhello"
+InsertEnd 1 "hello!!"
+CapLength4 1 "hell"
+CapLength100 1 "hello"
+ReplaceA 1 "hello"
+ReplaceAbc 1 "hello"
+ReplaceL 1 "heo"
+ReplaceLong 1 "hell0000000000"
+AppendN 1 "hello123"
+AppendC 1 "hello#"
+Fill 1 "*****"
+Plus 1 "hello+hello"
+Cmp0 1 1
+len 2 11
+IsNumeric 2 0
+IsColor 2 0
+HasLower 2 1
+HasUpper 2 1
+LengthWithoutColors 2 11
+Hash 2 130616
+IHash 2 138424
+Hash3 2 33756
+FileNameHash 2 184
+Last. 2 -1
+Last/ 2 -1
+FindChar 2 2
+FindCharRange 2 3
+FindText 2 4
+FindTextI 2 4
+FindTextRange 2 -1
+CheckExt1 2 0
+CheckExt2 2 0
+CheckExt3 2 0
+CheckExt4 2 0
+IsEmpty 2 0
+RemoveColors 2 "Hello World"
+ToLower 2 "hello world"
+ToUpper 2 "HELLO WORLD"
+StripMediaName 2 "hello world"
+Left3 2 "Hel"
+Right3 2 "rld"
+Right100 2 "Hello World"
+Mid2_4 2 "llo "
+Mid0_100 2 "Hello World"
+Mid50_2 2 ""
+StripLeadingC 2 "Hello World"
+StripLeadingS 2 "Hello World"
+StripLeadingSpace 2 "Hello World"
+StripLeadingOnce 2 0 "Hello World"
+StripTrailingC 2 "Hello World"
+StripTrailingS 2 "Hello World"
+StripTrailingOnce 2 0 "Hello World"
+StripSpace 2 "Hello World"
+StripAbc 2 "Hello World"
+StripTrailingWhitespace 2 "Hello World"
+StripQuotes 2 "Hello World"
+BackSlashesToSlashes 2 "Hello World"
+SetFileExtension1 2 "Hello World.txt"
+SetFileExtension2 2 "Hello World.xyz"
+StripFileExtension 2 "Hello World"
+StripAbsoluteFileExtension 2 "Hello World"
+DefaultFileExtension 2 "Hello World.def"
+DefaultPath 2 "base/Hello World"
+AppendPath1 2 "Hello World/sub/x.tga"
+AppendPath2 2 "Hello World/y"
+AppendPath3 2 "Hello World"
+StripFilename 2 ""
+StripPath 2 "Hello World"
+ExtractFilePath 2 ""
+ExtractFileName 2 "Hello World"
+ExtractFileBase 2 "Hello World"
+ExtractFileExtension 2 ""
+InsertS 2 "HeXYllo World"
+InsertC 2 "ZHello World"
+InsertEnd 2 "Hello World!!"
+CapLength4 2 "Hell"
+CapLength100 2 "Hello World"
+ReplaceA 2 "Hello World"
+ReplaceAbc 2 "Hello World"
+ReplaceL 2 "Heo Word"
+ReplaceLong 2 "Hell0000000000 W0000000000rld"
+AppendN 2 "Hello World123"
+AppendC 2 "Hello World#"
+Fill 2 "*****"
+Plus 2 "Hello World+Hello World"
+Cmp0 2 0
+len 3 41
+IsNumeric 3 0
+IsColor 3 0
+HasLower 3 1
+HasUpper 3 1
+LengthWithoutColors 3 41
+Hash 3 561472
+IHash 3 565376
+Hash3 3 29873
+FileNameHash 3 836
+Last. 3 37
+Last/ 3 -1
+FindChar 3 35
+FindCharRange 3 -1
+FindText 3 10
+FindTextI 3 10
+FindTextRange 3 4
+CheckExt1 3 1
+CheckExt2 3 1
+CheckExt3 3 0
+CheckExt4 3 0
+IsEmpty 3 0
+RemoveColors 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+ToLower 3 "c:\x5cgames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+ToUpper 3 "C:\x5cGAMES\x5cDOOM3\x5cBASE\x5cMAPS\x5cGAME\x5cMP\x5cFILE.MAP"
+StripMediaName 3 "c:/games/doom3/base/maps/game/mp/file"
+Left3 3 "c:\x5c"
+Right3 3 "map"
+Right100 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+Mid2_4 3 "\x5cGam"
+Mid0_100 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+Mid50_2 3 ""
+StripLeadingC 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripLeadingS 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripLeadingSpace 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripLeadingOnce 3 0 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripTrailingC 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripTrailingS 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripTrailingOnce 3 0 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripSpace 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripAbc 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripTrailingWhitespace 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripQuotes 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+BackSlashesToSlashes 3 "c:/Games/doom3/base/maps/game/mp/file.map"
+SetFileExtension1 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.txt"
+SetFileExtension2 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.xyz"
+StripFileExtension 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile"
+StripAbsoluteFileExtension 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile"
+DefaultFileExtension 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+DefaultPath 3 "base/c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+AppendPath1 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map/sub/x.tga"
+AppendPath2 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map/y"
+AppendPath3 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+StripFilename 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp"
+StripPath 3 "file.map"
+ExtractFilePath 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5c"
+ExtractFileName 3 "file.map"
+ExtractFileBase 3 "file"
+ExtractFileExtension 3 "map"
+InsertS 3 "c:XY\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+InsertC 3 "Zc:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+InsertEnd 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map!!"
+CapLength4 3 "c:\x5cG"
+CapLength100 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+ReplaceA 3 "c:\x5cGXXmes\x5cdoom3\x5cbXXse\x5cmXXps\x5cgXXme\x5cmp\x5cfile.mXXp"
+ReplaceAbc 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+ReplaceL 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfie.map"
+ReplaceLong 3 "c:\x5cGames\x5cd00000000000000000000m3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+AppendN 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map123"
+AppendC 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map#"
+Fill 3 "*****"
+Plus 3 "c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map+c:\x5cGames\x5cdoom3\x5cbase\x5cmaps\x5cgame\x5cmp\x5cfile.map"
+Cmp0 3 0
+len 4 25
+IsNumeric 4 0
+IsColor 4 0
+HasLower 4 1
+HasUpper 4 0
+LengthWithoutColors 4 25
+Hash 4 330883
+IHash 4 330883
+Hash3 4 40444
+FileNameHash 4 38
+Last. 4 21
+Last/ 4 15
+FindChar 4 19
+FindCharRange 4 -1
+FindText 4 10
+FindTextI 4 10
+FindTextRange 4 -1
+CheckExt1 4 0
+CheckExt2 4 0
+CheckExt3 4 0
+CheckExt4 4 1
+IsEmpty 4 0
+RemoveColors 4 "textures/common/caulk.tga"
+ToLower 4 "textures/common/caulk.tga"
+ToUpper 4 "TEXTURES/COMMON/CAULK.TGA"
+StripMediaName 4 "textures/common/caulk"
+Left3 4 "tex"
+Right3 4 "tga"
+Right100 4 "textures/common/caulk.tga"
+Mid2_4 4 "xtur"
+Mid0_100 4 "textures/common/caulk.tga"
+Mid50_2 4 ""
+StripLeadingC 4 "textures/common/caulk.tga"
+StripLeadingS 4 "textures/common/caulk.tga"
+StripLeadingSpace 4 "textures/common/caulk.tga"
+StripLeadingOnce 4 0 "textures/common/caulk.tga"
+StripTrailingC 4 "textures/common/caulk.tga"
+StripTrailingS 4 "textures/common/caulk.tga"
+StripTrailingOnce 4 0 "textures/common/caulk.tga"
+StripSpace 4 "textures/common/caulk.tga"
+StripAbc 4 "textures/common/caulk.tga"
+StripTrailingWhitespace 4 "textures/common/caulk.tga"
+StripQuotes 4 "textures/common/caulk.tga"
+BackSlashesToSlashes 4 "textures/common/caulk.tga"
+SetFileExtension1 4 "textures/common/caulk.txt"
+SetFileExtension2 4 "textures/common/caulk.xyz"
+StripFileExtension 4 "textures/common/caulk"
+StripAbsoluteFileExtension 4 "textures/common/caulk"
+DefaultFileExtension 4 "textures/common/caulk.tga"
+DefaultPath 4 "base/textures/common/caulk.tga"
+AppendPath1 4 "textures/common/caulk.tga/sub/x.tga"
+AppendPath2 4 "textures/common/caulk.tga/y"
+AppendPath3 4 "textures/common/caulk.tga"
+StripFilename 4 "textures/common"
+StripPath 4 "caulk.tga"
+ExtractFilePath 4 "textures/common/"
+ExtractFileName 4 "caulk.tga"
+ExtractFileBase 4 "caulk"
+ExtractFileExtension 4 "tga"
+InsertS 4 "teXYxtures/common/caulk.tga"
+InsertC 4 "Ztextures/common/caulk.tga"
+InsertEnd 4 "textures/common/caulk.tga!!"
+CapLength4 4 "text"
+CapLength100 4 "textures/common/caulk.tga"
+ReplaceA 4 "textures/common/cXXulk.tgXX"
+ReplaceAbc 4 "textures/common/caulk.tga"
+ReplaceL 4 "textures/common/cauk.tga"
+ReplaceLong 4 "textures/c0000000000mm0000000000n/caulk.tga"
+AppendN 4 "textures/common/caulk.tga123"
+AppendC 4 "textures/common/caulk.tga#"
+Fill 4 "*****"
+Plus 4 "textures/common/caulk.tga+textures/common/caulk.tga"
+Cmp0 4 0
+len 5 17
+IsNumeric 5 0
+IsColor 5 1
+HasLower 5 1
+HasUpper 5 0
+LengthWithoutColors 5 11
+Hash 5 181438
+IHash 5 181438
+Hash3 5 30860
+FileNameHash 5 190
+Last. 5 -1
+Last/ 5 -1
+FindChar 5 -1
+FindCharRange 5 -1
+FindText 5 -1
+FindTextI 5 -1
+FindTextRange 5 -1
+CheckExt1 5 0
+CheckExt2 5 0
+CheckExt3 5 0
+CheckExt4 5 0
+IsEmpty 5 0
+RemoveColors 5 "redgreen ^ "
+ToLower 5 "^1red^2green ^ ^3"
+ToUpper 5 "^1RED^2GREEN ^ ^3"
+StripMediaName 5 "^1red^2green ^ ^3"
+Left3 5 "^1r"
+Right3 5 " ^3"
+Right100 5 "^1red^2green ^ ^3"
+Mid2_4 5 "red^"
+Mid0_100 5 "^1red^2green ^ ^3"
+Mid50_2 5 ""
+StripLeadingC 5 "^1red^2green ^ ^3"
+StripLeadingS 5 "^1red^2green ^ ^3"
+StripLeadingSpace 5 "^1red^2green ^ ^3"
+StripLeadingOnce 5 0 "^1red^2green ^ ^3"
+StripTrailingC 5 "^1red^2green ^ ^3"
+StripTrailingS 5 "^1red^2green ^ ^3"
+StripTrailingOnce 5 0 "^1red^2green ^ ^3"
+StripSpace 5 "^1red^2green ^ ^3"
+StripAbc 5 "^1red^2green ^ ^3"
+StripTrailingWhitespace 5 "^1red^2green ^ ^3"
+StripQuotes 5 "^1red^2green ^ ^3"
+BackSlashesToSlashes 5 "^1red^2green ^ ^3"
+SetFileExtension1 5 "^1red^2green ^ ^3.txt"
+SetFileExtension2 5 "^1red^2green ^ ^3.xyz"
+StripFileExtension 5 "^1red^2green ^ ^3"
+StripAbsoluteFileExtension 5 "^1red^2green ^ ^3"
+DefaultFileExtension 5 "^1red^2green ^ ^3.def"
+DefaultPath 5 "base/^1red^2green ^ ^3"
+AppendPath1 5 "^1red^2green ^ ^3/sub/x.tga"
+AppendPath2 5 "^1red^2green ^ ^3/y"
+AppendPath3 5 "^1red^2green ^ ^3"
+StripFilename 5 ""
+StripPath 5 "^1red^2green ^ ^3"
+ExtractFilePath 5 ""
+ExtractFileName 5 "^1red^2green ^ ^3"
+ExtractFileBase 5 "^1red^2green ^ ^3"
+ExtractFileExtension 5 ""
+InsertS 5 "^1XYred^2green ^ ^3"
+InsertC 5 "Z^1red^2green ^ ^3"
+InsertEnd 5 "^1red^2green ^ ^3!!"
+CapLength4 5 "^1re"
+CapLength100 5 "^1red^2green ^ ^3"
+ReplaceA 5 "^1red^2green ^ ^3"
+ReplaceAbc 5 "^1red^2green ^ ^3"
+ReplaceL 5 "^1red^2green ^ ^3"
+ReplaceLong 5 "^1red^2green ^ ^3"
+AppendN 5 "^1red^2green ^ ^3123"
+AppendC 5 "^1red^2green ^ ^3#"
+Fill 5 "*****"
+Plus 5 "^1red^2green ^ ^3+^1red^2green ^ ^3"
+Cmp0 5 0
+len 6 13
+IsNumeric 6 0
+IsColor 6 0
+HasLower 6 1
+HasUpper 6 0
+LengthWithoutColors 6 13
+Hash 6 100841
+IHash 6 100841
+Hash3 6 21684
+FileNameHash 6 489
+Last. 6 -1
+Last/ 6 -1
+FindChar 6 -1
+FindCharRange 6 -1
+FindText 6 -1
+FindTextI 6 -1
+FindTextRange 6 -1
+CheckExt1 6 0
+CheckExt2 6 0
+CheckExt3 6 0
+CheckExt4 6 0
+IsEmpty 6 0
+RemoveColors 6 "  trim me \x09\x0d\x0a"
+ToLower 6 "  trim me \x09\x0d\x0a"
+ToUpper 6 "  TRIM ME \x09\x0d\x0a"
+StripMediaName 6 "  trim me \x09\x0d\x0a"
+Left3 6 "  t"
+Right3 6 "\x09\x0d\x0a"
+Right100 6 "  trim me \x09\x0d\x0a"
+Mid2_4 6 "trim"
+Mid0_100 6 "  trim me \x09\x0d\x0a"
+Mid50_2 6 ""
+StripLeadingC 6 "  trim me \x09\x0d\x0a"
+StripLeadingS 6 "  trim me \x09\x0d\x0a"
+StripLeadingSpace 6 "trim me \x09\x0d\x0a"
+StripLeadingOnce 6 0 "  trim me \x09\x0d\x0a"
+StripTrailingC 6 "  trim me \x09\x0d\x0a"
+StripTrailingS 6 "  trim me \x09\x0d\x0a"
+StripTrailingOnce 6 0 "  trim me \x09\x0d\x0a"
+StripSpace 6 "trim me \x09\x0d\x0a"
+StripAbc 6 "  trim me \x09\x0d\x0a"
+StripTrailingWhitespace 6 "  trim me"
+StripQuotes 6 "  trim me \x09\x0d\x0a"
+BackSlashesToSlashes 6 "  trim me \x09\x0d\x0a"
+SetFileExtension1 6 "  trim me \x09\x0d\x0a.txt"
+SetFileExtension2 6 "  trim me \x09\x0d\x0a.xyz"
+StripFileExtension 6 "  trim me \x09\x0d\x0a"
+StripAbsoluteFileExtension 6 "  trim me \x09\x0d\x0a"
+DefaultFileExtension 6 "  trim me \x09\x0d\x0a.def"
+DefaultPath 6 "base/  trim me \x09\x0d\x0a"
+AppendPath1 6 "  trim me \x09\x0d\x0a/sub/x.tga"
+AppendPath2 6 "  trim me \x09\x0d\x0a/y"
+AppendPath3 6 "  trim me \x09\x0d\x0a"
+StripFilename 6 ""
+StripPath 6 "  trim me \x09\x0d\x0a"
+ExtractFilePath 6 ""
+ExtractFileName 6 "  trim me \x09\x0d\x0a"
+ExtractFileBase 6 "  trim me \x09\x0d\x0a"
+ExtractFileExtension 6 ""
+InsertS 6 "  XYtrim me \x09\x0d\x0a"
+InsertC 6 "Z  trim me \x09\x0d\x0a"
+InsertEnd 6 "  trim me \x09\x0d\x0a!!"
+CapLength4 6 "  tr"
+CapLength100 6 "  trim me \x09\x0d\x0a"
+ReplaceA 6 "  trim me \x09\x0d\x0a"
+ReplaceAbc 6 "  trim me \x09\x0d\x0a"
+ReplaceL 6 "  trim me \x09\x0d\x0a"
+ReplaceLong 6 "  trim me \x09\x0d\x0a"
+AppendN 6 "  trim me \x09\x0d\x0a123"
+AppendC 6 "  trim me \x09\x0d\x0a#"
+Fill 6 "*****"
+Plus 6 "  trim me \x09\x0d\x0a+  trim me \x09\x0d\x0a"
+Cmp0 6 0
+len 7 8
+IsNumeric 7 0
+IsColor 7 0
+HasLower 7 1
+HasUpper 7 0
+LengthWithoutColors 7 8
+Hash 7 88881
+IHash 7 88881
+Hash3 7 31763
+FileNameHash 7 817
+Last. 7 -1
+Last/ 7 -1
+FindChar 7 -1
+FindCharRange 7 -1
+FindText 7 3
+FindTextI 7 3
+FindTextRange 7 -1
+CheckExt1 7 0
+CheckExt2 7 0
+CheckExt3 7 0
+CheckExt4 7 0
+IsEmpty 7 0
+RemoveColors 7 "\x22quoted\x22"
+ToLower 7 "\x22quoted\x22"
+ToUpper 7 "\x22QUOTED\x22"
+StripMediaName 7 "\x22quoted\x22"
+Left3 7 "\x22qu"
+Right3 7 "ed\x22"
+Right100 7 "\x22quoted\x22"
+Mid2_4 7 "uote"
+Mid0_100 7 "\x22quoted\x22"
+Mid50_2 7 ""
+StripLeadingC 7 "\x22quoted\x22"
+StripLeadingS 7 "\x22quoted\x22"
+StripLeadingSpace 7 "\x22quoted\x22"
+StripLeadingOnce 7 0 "\x22quoted\x22"
+StripTrailingC 7 "\x22quoted\x22"
+StripTrailingS 7 "\x22quoted\x22"
+StripTrailingOnce 7 0 "\x22quoted\x22"
+StripSpace 7 "\x22quoted\x22"
+StripAbc 7 "\x22quoted\x22"
+StripTrailingWhitespace 7 "\x22quoted\x22"
+StripQuotes 7 "quoted"
+BackSlashesToSlashes 7 "\x22quoted\x22"
+SetFileExtension1 7 "\x22quoted\x22.txt"
+SetFileExtension2 7 "\x22quoted\x22.xyz"
+StripFileExtension 7 "\x22quoted\x22"
+StripAbsoluteFileExtension 7 "\x22quoted\x22"
+DefaultFileExtension 7 "\x22quoted\x22.def"
+DefaultPath 7 "base/\x22quoted\x22"
+AppendPath1 7 "\x22quoted\x22/sub/x.tga"
+AppendPath2 7 "\x22quoted\x22/y"
+AppendPath3 7 "\x22quoted\x22"
+StripFilename 7 ""
+StripPath 7 "\x22quoted\x22"
+ExtractFilePath 7 ""
+ExtractFileName 7 "\x22quoted\x22"
+ExtractFileBase 7 "\x22quoted\x22"
+ExtractFileExtension 7 ""
+InsertS 7 "\x22qXYuoted\x22"
+InsertC 7 "Z\x22quoted\x22"
+InsertEnd 7 "\x22quoted\x22!!"
+CapLength4 7 "\x22quo"
+CapLength100 7 "\x22quoted\x22"
+ReplaceA 7 "\x22quoted\x22"
+ReplaceAbc 7 "\x22quoted\x22"
+ReplaceL 7 "\x22quoted\x22"
+ReplaceLong 7 "\x22qu0000000000ted\x22"
+AppendN 7 "\x22quoted\x22123"
+AppendC 7 "\x22quoted\x22#"
+Fill 7 "*****"
+Plus 7 "\x22quoted\x22+\x22quoted\x22"
+Cmp0 7 0
+len 8 5
+IsNumeric 8 0
+IsColor 8 0
+HasLower 8 1
+HasUpper 8 0
+LengthWithoutColors 8 5
+Hash 8 46710
+IHash 8 46710
+Hash3 8 28921
+FileNameHash 8 279
+Last. 8 3
+Last/ 8 -1
+FindChar 8 -1
+FindCharRange 8 -1
+FindText 8 -1
+FindTextI 8 -1
+FindTextRange 8 -1
+CheckExt1 8 0
+CheckExt2 8 0
+CheckExt3 8 0
+CheckExt4 8 0
+IsEmpty 8 0
+RemoveColors 8 "a.b.c"
+ToLower 8 "a.b.c"
+ToUpper 8 "A.B.C"
+StripMediaName 8 "a"
+Left3 8 "a.b"
+Right3 8 "b.c"
+Right100 8 "a.b.c"
+Mid2_4 8 "b.c"
+Mid0_100 8 "a.b.c"
+Mid50_2 8 ""
+StripLeadingC 8 ".b.c"
+StripLeadingS 8 "a.b.c"
+StripLeadingSpace 8 "a.b.c"
+StripLeadingOnce 8 0 "a.b.c"
+StripTrailingC 8 "a.b."
+StripTrailingS 8 "a.b.c"
+StripTrailingOnce 8 0 "a.b.c"
+StripSpace 8 "a.b.c"
+StripAbc 8 "a.b.c"
+StripTrailingWhitespace 8 "a.b.c"
+StripQuotes 8 "a.b.c"
+BackSlashesToSlashes 8 "a.b.c"
+SetFileExtension1 8 "a.b.txt"
+SetFileExtension2 8 "a.b.xyz"
+StripFileExtension 8 "a.b"
+StripAbsoluteFileExtension 8 "a"
+DefaultFileExtension 8 "a.b.c"
+DefaultPath 8 "base/a.b.c"
+AppendPath1 8 "a.b.c/sub/x.tga"
+AppendPath2 8 "a.b.c/y"
+AppendPath3 8 "a.b.c"
+StripFilename 8 ""
+StripPath 8 "a.b.c"
+ExtractFilePath 8 ""
+ExtractFileName 8 "a.b.c"
+ExtractFileBase 8 "a"
+ExtractFileExtension 8 "c"
+InsertS 8 "a.XYb.c"
+InsertC 8 "Za.b.c"
+InsertEnd 8 "a.b.c!!"
+CapLength4 8 "a.b."
+CapLength100 8 "a.b.c"
+ReplaceA 8 "XX.b.c"
+ReplaceAbc 8 "a.b.c"
+ReplaceL 8 "a.b.c"
+ReplaceLong 8 "a.b.c"
+AppendN 8 "a.b.c123"
+AppendC 8 "a.b.c#"
+Fill 8 "*****"
+Plus 8 "a.b.c+a.b.c"
+Cmp0 8 0
+len 9 24
+IsNumeric 9 0
+IsColor 9 0
+HasLower 9 1
+HasUpper 9 0
+LengthWithoutColors 9 24
+Hash 9 276132
+IHash 9 276132
+Hash3 9 29090
+FileNameHash 9 145
+Last. 9 20
+Last/ 9 14
+FindChar 9 10
+FindCharRange 9 -1
+FindText 9 7
+FindTextI 9 7
+FindTextRange 9 2
+CheckExt1 9 0
+CheckExt2 9 0
+CheckExt3 9 0
+CheckExt4 9 0
+IsEmpty 9 0
+RemoveColors 9 "/base/models/./x.ase.bak"
+ToLower 9 "/base/models/./x.ase.bak"
+ToUpper 9 "/BASE/MODELS/./X.ASE.BAK"
+StripMediaName 9 "/base/models/"
+Left3 9 "/ba"
+Right3 9 "bak"
+Right100 9 "/base/models/./x.ase.bak"
+Mid2_4 9 "ase/"
+Mid0_100 9 "/base/models/./x.ase.bak"
+Mid50_2 9 ""
+StripLeadingC 9 "/base/models/./x.ase.bak"
+StripLeadingS 9 "/base/models/./x.ase.bak"
+StripLeadingSpace 9 "/base/models/./x.ase.bak"
+StripLeadingOnce 9 0 "/base/models/./x.ase.bak"
+StripTrailingC 9 "/base/models/./x.ase.bak"
+StripTrailingS 9 "/base/models/./x.ase.bak"
+StripTrailingOnce 9 0 "/base/models/./x.ase.bak"
+StripSpace 9 "/base/models/./x.ase.bak"
+StripAbc 9 "/base/models/./x.ase.bak"
+StripTrailingWhitespace 9 "/base/models/./x.ase.bak"
+StripQuotes 9 "/base/models/./x.ase.bak"
+BackSlashesToSlashes 9 "/base/models/./x.ase.bak"
+SetFileExtension1 9 "/base/models/./x.ase.txt"
+SetFileExtension2 9 "/base/models/./x.ase.xyz"
+StripFileExtension 9 "/base/models/./x.ase"
+StripAbsoluteFileExtension 9 "/base/models/"
+DefaultFileExtension 9 "/base/models/./x.ase.bak"
+DefaultPath 9 "/base/models/./x.ase.bak"
+AppendPath1 9 "/base/models/./x.ase.bak/sub/x.tga"
+AppendPath2 9 "/base/models/./x.ase.bak/y"
+AppendPath3 9 "/base/models/./x.ase.bak"
+StripFilename 9 "/base/models/."
+StripPath 9 "x.ase.bak"
+ExtractFilePath 9 "/base/models/./"
+ExtractFileName 9 "x.ase.bak"
+ExtractFileBase 9 "x"
+ExtractFileExtension 9 "bak"
+InsertS 9 "/bXYase/models/./x.ase.bak"
+InsertC 9 "Z/base/models/./x.ase.bak"
+InsertEnd 9 "/base/models/./x.ase.bak!!"
+CapLength4 9 "/bas"
+CapLength100 9 "/base/models/./x.ase.bak"
+ReplaceA 9 "/bXXse/models/./x.XXse.bXXk"
+ReplaceAbc 9 "/base/models/./x.ase.bak"
+ReplaceL 9 "/base/modes/./x.ase.bak"
+ReplaceLong 9 "/base/m0000000000dels/./x.ase.bak"
+AppendN 9 "/base/models/./x.ase.bak123"
+AppendC 9 "/base/models/./x.ase.bak#"
+Fill 9 "*****"
+Plus 9 "/base/models/./x.ase.bak+/base/models/./x.ase.bak"
+Cmp0 9 0
+len 10 6
+IsNumeric 10 1
+IsColor 10 0
+HasLower 10 0
+HasUpper 10 0
+LengthWithoutColors 10 6
+Hash 10 36582
+IHash 10 36582
+Hash3 10 18002
+FileNameHash 10 594
+Last. 10 3
+Last/ 10 -1
+FindChar 10 -1
+FindCharRange 10 -1
+FindText 10 -1
+FindTextI 10 -1
+FindTextRange 10 -1
+CheckExt1 10 0
+CheckExt2 10 0
+CheckExt3 10 0
+CheckExt4 10 0
+IsEmpty 10 0
+RemoveColors 10 "123.45"
+ToLower 10 "123.45"
+ToUpper 10 "123.45"
+StripMediaName 10 "123"
+Left3 10 "123"
+Right3 10 ".45"
+Right100 10 "123.45"
+Mid2_4 10 "3.45"
+Mid0_100 10 "123.45"
+Mid50_2 10 ""
+StripLeadingC 10 "123.45"
+StripLeadingS 10 "123.45"
+StripLeadingSpace 10 "123.45"
+StripLeadingOnce 10 0 "123.45"
+StripTrailingC 10 "123.45"
+StripTrailingS 10 "123.45"
+StripTrailingOnce 10 0 "123.45"
+StripSpace 10 "123.45"
+StripAbc 10 "123.45"
+StripTrailingWhitespace 10 "123.45"
+StripQuotes 10 "123.45"
+BackSlashesToSlashes 10 "123.45"
+SetFileExtension1 10 "123.txt"
+SetFileExtension2 10 "123.xyz"
+StripFileExtension 10 "123"
+StripAbsoluteFileExtension 10 "123"
+DefaultFileExtension 10 "123.45"
+DefaultPath 10 "base/123.45"
+AppendPath1 10 "123.45/sub/x.tga"
+AppendPath2 10 "123.45/y"
+AppendPath3 10 "123.45"
+StripFilename 10 ""
+StripPath 10 "123.45"
+ExtractFilePath 10 ""
+ExtractFileName 10 "123.45"
+ExtractFileBase 10 "123"
+ExtractFileExtension 10 "45"
+InsertS 10 "12XY3.45"
+InsertC 10 "Z123.45"
+InsertEnd 10 "123.45!!"
+CapLength4 10 "123."
+CapLength100 10 "123.45"
+ReplaceA 10 "123.45"
+ReplaceAbc 10 "123.45"
+ReplaceL 10 "123.45"
+ReplaceLong 10 "123.45"
+AppendN 10 "123.45123"
+AppendC 10 "123.45#"
+Fill 10 "*****"
+Plus 10 "123.45+123.45"
+Cmp0 10 0
+len 11 3
+IsNumeric 11 1
+IsColor 11 0
+HasLower 11 0
+HasUpper 11 0
+LengthWithoutColors 11 3
+Hash 11 17285
+IHash 11 17285
+Hash3 11 17285
+FileNameHash 11 901
+Last. 11 -1
+Last/ 11 -1
+FindChar 11 -1
+FindCharRange 11 -1
+FindText 11 -1
+FindTextI 11 -1
+FindTextRange 11 -1
+CheckExt1 11 0
+CheckExt2 11 0
+CheckExt3 11 0
+CheckExt4 11 0
+IsEmpty 11 0
+RemoveColors 11 "-12"
+ToLower 11 "-12"
+ToUpper 11 "-12"
+StripMediaName 11 "-12"
+Left3 11 "-12"
+Right3 11 "-12"
+Right100 11 "-12"
+Mid2_4 11 "2"
+Mid0_100 11 "-12"
+Mid50_2 11 ""
+StripLeadingC 11 "-12"
+StripLeadingS 11 "-12"
+StripLeadingSpace 11 "-12"
+StripLeadingOnce 11 0 "-12"
+StripTrailingC 11 "-12"
+StripTrailingS 11 "-12"
+StripTrailingOnce 11 0 "-12"
+StripSpace 11 "-12"
+StripAbc 11 "-12"
+StripTrailingWhitespace 11 "-12"
+StripQuotes 11 "-12"
+BackSlashesToSlashes 11 "-12"
+SetFileExtension1 11 "-12.txt"
+SetFileExtension2 11 "-12.xyz"
+StripFileExtension 11 "-12"
+StripAbsoluteFileExtension 11 "-12"
+DefaultFileExtension 11 "-12.def"
+DefaultPath 11 "base/-12"
+AppendPath1 11 "-12/sub/x.tga"
+AppendPath2 11 "-12/y"
+AppendPath3 11 "-12"
+StripFilename 11 ""
+StripPath 11 "-12"
+ExtractFilePath 11 ""
+ExtractFileName 11 "-12"
+ExtractFileBase 11 "-12"
+ExtractFileExtension 11 ""
+InsertS 11 "-1XY2"
+InsertC 11 "Z-12"
+InsertEnd 11 "-12!!"
+CapLength4 11 "-12"
+CapLength100 11 "-12"
+ReplaceA 11 "-12"
+ReplaceAbc 11 "-12"
+ReplaceL 11 "-12"
+ReplaceLong 11 "-12"
+AppendN 11 "-12123"
+AppendC 11 "-12#"
+Fill 11 "*****"
+Plus 11 "-12+-12"
+Cmp0 11 0
+len 12 6
+IsNumeric 12 0
+IsColor 12 0
+HasLower 12 0
+HasUpper 12 0
+LengthWithoutColors 12 6
+Hash 12 35725
+IHash 12 35725
+Hash3 12 17397
+FileNameHash 12 567
+Last. 12 4
+Last/ 12 -1
+FindChar 12 -1
+FindCharRange 12 -1
+FindText 12 -1
+FindTextI 12 -1
+FindTextRange 12 -1
+CheckExt1 12 0
+CheckExt2 12 0
+CheckExt3 12 0
+CheckExt4 12 0
+IsEmpty 12 0
+RemoveColors 12 "12.3.4"
+ToLower 12 "12.3.4"
+ToUpper 12 "12.3.4"
+StripMediaName 12 "12"
+Left3 12 "12."
+Right3 12 "3.4"
+Right100 12 "12.3.4"
+Mid2_4 12 ".3.4"
+Mid0_100 12 "12.3.4"
+Mid50_2 12 ""
+StripLeadingC 12 "12.3.4"
+StripLeadingS 12 "12.3.4"
+StripLeadingSpace 12 "12.3.4"
+StripLeadingOnce 12 0 "12.3.4"
+StripTrailingC 12 "12.3.4"
+StripTrailingS 12 "12.3.4"
+StripTrailingOnce 12 0 "12.3.4"
+StripSpace 12 "12.3.4"
+StripAbc 12 "12.3.4"
+StripTrailingWhitespace 12 "12.3.4"
+StripQuotes 12 "12.3.4"
+BackSlashesToSlashes 12 "12.3.4"
+SetFileExtension1 12 "12.3.txt"
+SetFileExtension2 12 "12.3.xyz"
+StripFileExtension 12 "12.3"
+StripAbsoluteFileExtension 12 "12"
+DefaultFileExtension 12 "12.3.4"
+DefaultPath 12 "base/12.3.4"
+AppendPath1 12 "12.3.4/sub/x.tga"
+AppendPath2 12 "12.3.4/y"
+AppendPath3 12 "12.3.4"
+StripFilename 12 ""
+StripPath 12 "12.3.4"
+ExtractFilePath 12 ""
+ExtractFileName 12 "12.3.4"
+ExtractFileBase 12 "12"
+ExtractFileExtension 12 "4"
+InsertS 12 "12XY.3.4"
+InsertC 12 "Z12.3.4"
+InsertEnd 12 "12.3.4!!"
+CapLength4 12 "12.3"
+CapLength100 12 "12.3.4"
+ReplaceA 12 "12.3.4"
+ReplaceAbc 12 "12.3.4"
+ReplaceL 12 "12.3.4"
+ReplaceLong 12 "12.3.4"
+AppendN 12 "12.3.4123"
+AppendC 12 "12.3.4#"
+Fill 12 "*****"
+Plus 12 "12.3.4+12.3.4"
+Cmp0 12 0
+len 13 17
+IsNumeric 13 0
+IsColor 13 0
+HasLower 13 1
+HasUpper 13 1
+LengthWithoutColors 13 17
+Hash 13 184625
+IHash 13 216753
+Hash3 13 29395
+FileNameHash 13 689
+Last. 13 -1
+Last/ 13 -1
+FindChar 13 6
+FindCharRange 13 6
+FindText 13 7
+FindTextI 13 7
+FindTextRange 13 -1
+CheckExt1 13 0
+CheckExt2 13 0
+CheckExt3 13 0
+CheckExt4 13 0
+IsEmpty 13 0
+RemoveColors 13 "UPPER lower MiXeD"
+ToLower 13 "upper lower mixed"
+ToUpper 13 "UPPER LOWER MIXED"
+StripMediaName 13 "upper lower mixed"
+Left3 13 "UPP"
+Right3 13 "XeD"
+Right100 13 "UPPER lower MiXeD"
+Mid2_4 13 "PER "
+Mid0_100 13 "UPPER lower MiXeD"
+Mid50_2 13 ""
+StripLeadingC 13 "UPPER lower MiXeD"
+StripLeadingS 13 "UPPER lower MiXeD"
+StripLeadingSpace 13 "UPPER lower MiXeD"
+StripLeadingOnce 13 0 "UPPER lower MiXeD"
+StripTrailingC 13 "UPPER lower MiXeD"
+StripTrailingS 13 "UPPER lower MiXeD"
+StripTrailingOnce 13 0 "UPPER lower MiXeD"
+StripSpace 13 "UPPER lower MiXeD"
+StripAbc 13 "UPPER lower MiXeD"
+StripTrailingWhitespace 13 "UPPER lower MiXeD"
+StripQuotes 13 "UPPER lower MiXeD"
+BackSlashesToSlashes 13 "UPPER lower MiXeD"
+SetFileExtension1 13 "UPPER lower MiXeD.txt"
+SetFileExtension2 13 "UPPER lower MiXeD.xyz"
+StripFileExtension 13 "UPPER lower MiXeD"
+StripAbsoluteFileExtension 13 "UPPER lower MiXeD"
+DefaultFileExtension 13 "UPPER lower MiXeD.def"
+DefaultPath 13 "base/UPPER lower MiXeD"
+AppendPath1 13 "UPPER lower MiXeD/sub/x.tga"
+AppendPath2 13 "UPPER lower MiXeD/y"
+AppendPath3 13 "UPPER lower MiXeD"
+StripFilename 13 ""
+StripPath 13 "UPPER lower MiXeD"
+ExtractFilePath 13 ""
+ExtractFileName 13 "UPPER lower MiXeD"
+ExtractFileBase 13 "UPPER lower MiXeD"
+ExtractFileExtension 13 ""
+InsertS 13 "UPXYPER lower MiXeD"
+InsertC 13 "ZUPPER lower MiXeD"
+InsertEnd 13 "UPPER lower MiXeD!!"
+CapLength4 13 "UPPE"
+CapLength100 13 "UPPER lower MiXeD"
+ReplaceA 13 "UPPER lower MiXeD"
+ReplaceAbc 13 "UPPER lower MiXeD"
+ReplaceL 13 "UPPER ower MiXeD"
+ReplaceLong 13 "UPPER l0000000000wer MiXeD"
+AppendN 13 "UPPER lower MiXeD123"
+AppendC 13 "UPPER lower MiXeD#"
+Fill 13 "*****"
+Plus 13 "UPPER lower MiXeD+UPPER lower MiXeD"
+Cmp0 13 0
+len 14 7
+IsNumeric 14 0
+IsColor 14 0
+HasLower 14 1
+HasUpper 14 1
+LengthWithoutColors 14 7
+Hash 14 9080
+IHash 14 13048
+Hash3 14 8400
+FileNameHash 14 760
+Last. 14 -1
+Last/ 14 -1
+FindChar 14 -1
+FindCharRange 14 -1
+FindText 14 -1
+FindTextI 14 -1
+FindTextRange 14 -1
+CheckExt1 14 0
+CheckExt2 14 0
+CheckExt3 14 0
+CheckExt4 14 0
+IsEmpty 14 0
+RemoveColors 14 "\xe9t\xe9 \xc9T\xc9"
+ToLower 14 "\xe9t\xe9 \xc9t\xc9"
+ToUpper 14 "\xe9T\xe9 \xc9T\xc9"
+StripMediaName 14 "\xe9t\xe9 \xc9t\xc9"
+Left3 14 "\xe9t\xe9"
+Right3 14 "\xc9T\xc9"
+Right100 14 "\xe9t\xe9 \xc9T\xc9"
+Mid2_4 14 "\xe9 \xc9T"
+Mid0_100 14 "\xe9t\xe9 \xc9T\xc9"
+Mid50_2 14 ""
+StripLeadingC 14 "\xe9t\xe9 \xc9T\xc9"
+StripLeadingS 14 "\xe9t\xe9 \xc9T\xc9"
+StripLeadingSpace 14 "\xe9t\xe9 \xc9T\xc9"
+StripLeadingOnce 14 0 "\xe9t\xe9 \xc9T\xc9"
+StripTrailingC 14 "\xe9t\xe9 \xc9T\xc9"
+StripTrailingS 14 "\xe9t\xe9 \xc9T\xc9"
+StripTrailingOnce 14 0 "\xe9t\xe9 \xc9T\xc9"
+StripSpace 14 "\xe9t\xe9 \xc9T\xc9"
+StripAbc 14 "\xe9t\xe9 \xc9T\xc9"
+StripTrailingWhitespace 14 "\xe9t\xe9 \xc9T\xc9"
+StripQuotes 14 "\xe9t\xe9 \xc9T\xc9"
+BackSlashesToSlashes 14 "\xe9t\xe9 \xc9T\xc9"
+SetFileExtension1 14 "\xe9t\xe9 \xc9T\xc9.txt"
+SetFileExtension2 14 "\xe9t\xe9 \xc9T\xc9.xyz"
+StripFileExtension 14 "\xe9t\xe9 \xc9T\xc9"
+StripAbsoluteFileExtension 14 "\xe9t\xe9 \xc9T\xc9"
+DefaultFileExtension 14 "\xe9t\xe9 \xc9T\xc9.def"
+DefaultPath 14 "base/\xe9t\xe9 \xc9T\xc9"
+AppendPath1 14 "\xe9t\xe9 \xc9T\xc9/sub/x.tga"
+AppendPath2 14 "\xe9t\xe9 \xc9T\xc9/y"
+AppendPath3 14 "\xe9t\xe9 \xc9T\xc9"
+StripFilename 14 ""
+StripPath 14 "\xe9t\xe9 \xc9T\xc9"
+ExtractFilePath 14 ""
+ExtractFileName 14 "\xe9t\xe9 \xc9T\xc9"
+ExtractFileBase 14 "\xe9t\xe9 \xc9T\xc9"
+ExtractFileExtension 14 ""
+InsertS 14 "\xe9tXY\xe9 \xc9T\xc9"
+InsertC 14 "Z\xe9t\xe9 \xc9T\xc9"
+InsertEnd 14 "\xe9t\xe9 \xc9T\xc9!!"
+CapLength4 14 "\xe9t\xe9 "
+CapLength100 14 "\xe9t\xe9 \xc9T\xc9"
+ReplaceA 14 "\xe9t\xe9 \xc9T\xc9"
+ReplaceAbc 14 "\xe9t\xe9 \xc9T\xc9"
+ReplaceL 14 "\xe9t\xe9 \xc9T\xc9"
+ReplaceLong 14 "\xe9t\xe9 \xc9T\xc9"
+AppendN 14 "\xe9t\xe9 \xc9T\xc9123"
+AppendC 14 "\xe9t\xe9 \xc9T\xc9#"
+Fill 14 "*****"
+Plus 14 "\xe9t\xe9 \xc9T\xc9+\xe9t\xe9 \xc9T\xc9"
+Cmp0 14 0
+len 15 1
+IsNumeric 15 0
+IsColor 15 0
+HasLower 15 1
+HasUpper 15 0
+LengthWithoutColors 15 1
+Hash 15 14280
+IHash 15 14280
+Hash3 15 14280
+FileNameHash 15 968
+Last. 15 -1
+Last/ 15 -1
+FindChar 15 -1
+FindCharRange 15 -1
+FindText 15 -1
+FindTextI 15 -1
+FindTextRange 15 -1
+CheckExt1 15 0
+CheckExt2 15 0
+CheckExt3 15 0
+CheckExt4 15 0
+IsEmpty 15 0
+RemoveColors 15 "x"
+ToLower 15 "x"
+ToUpper 15 "X"
+StripMediaName 15 "x"
+Left3 15 "x"
+Right3 15 "x"
+Right100 15 "x"
+Mid2_4 15 ""
+Mid0_100 15 "x"
+Mid50_2 15 ""
+StripLeadingC 15 "x"
+StripLeadingS 15 "x"
+StripLeadingSpace 15 "x"
+StripLeadingOnce 15 0 "x"
+StripTrailingC 15 "x"
+StripTrailingS 15 "x"
+StripTrailingOnce 15 0 "x"
+StripSpace 15 "x"
+StripAbc 15 "x"
+StripTrailingWhitespace 15 "x"
+StripQuotes 15 "x"
+BackSlashesToSlashes 15 "x"
+SetFileExtension1 15 "x.txt"
+SetFileExtension2 15 "x.xyz"
+StripFileExtension 15 "x"
+StripAbsoluteFileExtension 15 "x"
+DefaultFileExtension 15 "x.def"
+DefaultPath 15 "base/x"
+AppendPath1 15 "x/sub/x.tga"
+AppendPath2 15 "x/y"
+AppendPath3 15 "x"
+StripFilename 15 ""
+StripPath 15 "x"
+ExtractFilePath 15 ""
+ExtractFileName 15 "x"
+ExtractFileBase 15 "x"
+ExtractFileExtension 15 ""
+InsertS 15 "xXY"
+InsertC 15 "Zx"
+InsertEnd 15 "x!!"
+CapLength4 15 "x"
+CapLength100 15 "x"
+ReplaceA 15 "x"
+ReplaceAbc 15 "x"
+ReplaceL 15 "x"
+ReplaceLong 15 "x"
+AppendN 15 "x123"
+AppendC 15 "x#"
+Fill 15 "*****"
+Plus 15 "x+x"
+Cmp0 15 0
+len 16 9
+IsNumeric 16 0
+IsColor 16 0
+HasLower 16 1
+HasUpper 16 0
+LengthWithoutColors 16 9
+Hash 16 108492
+IHash 16 108492
+Hash3 16 35282
+FileNameHash 16 972
+Last. 16 -1
+Last/ 16 -1
+FindChar 16 -1
+FindCharRange 16 -1
+FindText 16 -1
+FindTextI 16 -1
+FindTextRange 16 3
+CheckExt1 16 0
+CheckExt2 16 0
+CheckExt3 16 0
+CheckExt4 16 0
+IsEmpty 16 0
+RemoveColors 16 "abcabcabc"
+ToLower 16 "abcabcabc"
+ToUpper 16 "ABCABCABC"
+StripMediaName 16 "abcabcabc"
+Left3 16 "abc"
+Right3 16 "abc"
+Right100 16 "abcabcabc"
+Mid2_4 16 "cabc"
+Mid0_100 16 "abcabcabc"
+Mid50_2 16 ""
+StripLeadingC 16 "bcabcabc"
+StripLeadingS 16 "cabcabc"
+StripLeadingSpace 16 "abcabcabc"
+StripLeadingOnce 16 1 "cabcabc"
+StripTrailingC 16 "abcabcab"
+StripTrailingS 16 "abcabca"
+StripTrailingOnce 16 1 "abcabca"
+StripSpace 16 "abcabcabc"
+StripAbc 16 ""
+StripTrailingWhitespace 16 "abcabcabc"
+StripQuotes 16 "abcabcabc"
+BackSlashesToSlashes 16 "abcabcabc"
+SetFileExtension1 16 "abcabcabc.txt"
+SetFileExtension2 16 "abcabcabc.xyz"
+StripFileExtension 16 "abcabcabc"
+StripAbsoluteFileExtension 16 "abcabcabc"
+DefaultFileExtension 16 "abcabcabc.def"
+DefaultPath 16 "base/abcabcabc"
+AppendPath1 16 "abcabcabc/sub/x.tga"
+AppendPath2 16 "abcabcabc/y"
+AppendPath3 16 "abcabcabc"
+StripFilename 16 ""
+StripPath 16 "abcabcabc"
+ExtractFilePath 16 ""
+ExtractFileName 16 "abcabcabc"
+ExtractFileBase 16 "abcabcabc"
+ExtractFileExtension 16 ""
+InsertS 16 "abXYcabcabc"
+InsertC 16 "Zabcabcabc"
+InsertEnd 16 "abcabcabc!!"
+CapLength4 16 "abca"
+CapLength100 16 "abcabcabc"
+ReplaceA 16 "XXbcXXbcXXbc"
+ReplaceAbc 16 "---"
+ReplaceL 16 "abcabcabc"
+ReplaceLong 16 "abcabcabc"
+AppendN 16 "abcabcabc123"
+AppendC 16 "abcabcabc#"
+Fill 16 "*****"
+Plus 16 "abcabcabc+abcabcabc"
+Cmp0 16 0
+len 17 7
+IsNumeric 17 0
+IsColor 17 0
+HasLower 17 1
+HasUpper 17 0
+LengthWithoutColors 17 7
+Hash 17 81433
+IHash 17 81433
+Hash3 17 30659
+FileNameHash 17 0
+Last. 17 0
+Last/ 17 -1
+FindChar 17 -1
+FindCharRange 17 -1
+FindText 17 -1
+FindTextI 17 -1
+FindTextRange 17 -1
+CheckExt1 17 0
+CheckExt2 17 0
+CheckExt3 17 0
+CheckExt4 17 0
+IsEmpty 17 0
+RemoveColors 17 ".hidden"
+ToLower 17 ".hidden"
+ToUpper 17 ".HIDDEN"
+StripMediaName 17 ""
+Left3 17 ".hi"
+Right3 17 "den"
+Right100 17 ".hidden"
+Mid2_4 17 "idde"
+Mid0_100 17 ".hidden"
+Mid50_2 17 ""
+StripLeadingC 17 ".hidden"
+StripLeadingS 17 ".hidden"
+StripLeadingSpace 17 ".hidden"
+StripLeadingOnce 17 0 ".hidden"
+StripTrailingC 17 ".hidden"
+StripTrailingS 17 ".hidden"
+StripTrailingOnce 17 0 ".hidden"
+StripSpace 17 ".hidden"
+StripAbc 17 ".hidden"
+StripTrailingWhitespace 17 ".hidden"
+StripQuotes 17 ".hidden"
+BackSlashesToSlashes 17 ".hidden"
+SetFileExtension1 17 ".txt"
+SetFileExtension2 17 ".xyz"
+StripFileExtension 17 ""
+StripAbsoluteFileExtension 17 ""
+DefaultFileExtension 17 ".hidden"
+DefaultPath 17 "base/.hidden"
+AppendPath1 17 ".hidden/sub/x.tga"
+AppendPath2 17 ".hidden/y"
+AppendPath3 17 ".hidden"
+StripFilename 17 ""
+StripPath 17 ".hidden"
+ExtractFilePath 17 ""
+ExtractFileName 17 ".hidden"
+ExtractFileBase 17 ""
+ExtractFileExtension 17 "hidden"
+InsertS 17 ".hXYidden"
+InsertC 17 "Z.hidden"
+InsertEnd 17 ".hidden!!"
+CapLength4 17 ".hid"
+CapLength100 17 ".hidden"
+ReplaceA 17 ".hidden"
+ReplaceAbc 17 ".hidden"
+ReplaceL 17 ".hidden"
+ReplaceLong 17 ".hidden"
+AppendN 17 ".hidden123"
+AppendC 17 ".hidden#"
+Fill 17 "*****"
+Plus 17 ".hidden+.hidden"
+Cmp0 17 0
+len 18 4
+IsNumeric 18 0
+IsColor 18 0
+HasLower 18 1
+HasUpper 18 0
+LengthWithoutColors 18 4
+Hash 18 44028
+IHash 18 44028
+Hash3 18 38294
+FileNameHash 18 1020
+Last. 18 -1
+Last/ 18 3
+FindChar 18 -1
+FindCharRange 18 -1
+FindText 18 -1
+FindTextI 18 -1
+FindTextRange 18 -1
+CheckExt1 18 0
+CheckExt2 18 0
+CheckExt3 18 0
+CheckExt4 18 0
+IsEmpty 18 0
+RemoveColors 18 "dir/"
+ToLower 18 "dir/"
+ToUpper 18 "DIR/"
+StripMediaName 18 "dir/"
+Left3 18 "dir"
+Right3 18 "ir/"
+Right100 18 "dir/"
+Mid2_4 18 "r/"
+Mid0_100 18 "dir/"
+Mid50_2 18 ""
+StripLeadingC 18 "dir/"
+StripLeadingS 18 "dir/"
+StripLeadingSpace 18 "dir/"
+StripLeadingOnce 18 0 "dir/"
+StripTrailingC 18 "dir/"
+StripTrailingS 18 "dir/"
+StripTrailingOnce 18 0 "dir/"
+StripSpace 18 "dir/"
+StripAbc 18 "dir/"
+StripTrailingWhitespace 18 "dir/"
+StripQuotes 18 "dir/"
+BackSlashesToSlashes 18 "dir/"
+SetFileExtension1 18 "dir/.txt"
+SetFileExtension2 18 "dir/.xyz"
+StripFileExtension 18 "dir/"
+StripAbsoluteFileExtension 18 "dir/"
+DefaultFileExtension 18 "dir/.def"
+DefaultPath 18 "base/dir/"
+AppendPath1 18 "dir/sub/x.tga"
+AppendPath2 18 "dir/y"
+AppendPath3 18 "dir/"
+StripFilename 18 "dir"
+StripPath 18 ""
+ExtractFilePath 18 "dir/"
+ExtractFileName 18 "dir/"
+ExtractFileBase 18 "dir/"
+ExtractFileExtension 18 ""
+InsertS 18 "diXYr/"
+InsertC 18 "Zdir/"
+InsertEnd 18 "dir/!!"
+CapLength4 18 "dir/"
+CapLength100 18 "dir/"
+ReplaceA 18 "dir/"
+ReplaceAbc 18 "dir/"
+ReplaceL 18 "dir/"
+ReplaceLong 18 "dir/"
+AppendN 18 "dir/123"
+AppendC 18 "dir/#"
+Fill 18 "*****"
+Plus 18 "dir/+dir/"
+Cmp0 18 0
+len 19 5
+IsNumeric 19 0
+IsColor 19 0
+HasLower 19 1
+HasUpper 19 0
+LengthWithoutColors 19 5
+Hash 19 55899
+IHash 19 55899
+Hash3 19 37919
+FileNameHash 19 65
+Last. 19 4
+Last/ 19 -1
+FindChar 19 -1
+FindCharRange 19 -1
+FindText 19 -1
+FindTextI 19 -1
+FindTextRange 19 1
+CheckExt1 19 0
+CheckExt2 19 0
+CheckExt3 19 0
+CheckExt4 19 0
+IsEmpty 19 0
+RemoveColors 19 "name."
+ToLower 19 "name."
+ToUpper 19 "NAME."
+StripMediaName 19 "name"
+Left3 19 "nam"
+Right3 19 "me."
+Right100 19 "name."
+Mid2_4 19 "me."
+Mid0_100 19 "name."
+Mid50_2 19 ""
+StripLeadingC 19 "name."
+StripLeadingS 19 "name."
+StripLeadingSpace 19 "name."
+StripLeadingOnce 19 0 "name."
+StripTrailingC 19 "name."
+StripTrailingS 19 "name."
+StripTrailingOnce 19 0 "name."
+StripSpace 19 "name."
+StripAbc 19 "name."
+StripTrailingWhitespace 19 "name."
+StripQuotes 19 "name."
+BackSlashesToSlashes 19 "name."
+SetFileExtension1 19 "name.txt"
+SetFileExtension2 19 "name.xyz"
+StripFileExtension 19 "name"
+StripAbsoluteFileExtension 19 "name"
+DefaultFileExtension 19 "name."
+DefaultPath 19 "base/name."
+AppendPath1 19 "name./sub/x.tga"
+AppendPath2 19 "name./y"
+AppendPath3 19 "name."
+StripFilename 19 ""
+StripPath 19 "name."
+ExtractFilePath 19 ""
+ExtractFileName 19 "name."
+ExtractFileBase 19 "name"
+ExtractFileExtension 19 ""
+InsertS 19 "naXYme."
+InsertC 19 "Zname."
+InsertEnd 19 "name.!!"
+CapLength4 19 "name"
+CapLength100 19 "name."
+ReplaceA 19 "nXXme."
+ReplaceAbc 19 "name."
+ReplaceL 19 "name."
+ReplaceLong 19 "name."
+AppendN 19 "name.123"
+AppendC 19 "name.#"
+Fill 19 "*****"
+Plus 19 "name.+name."
+Cmp0 19 0
+pair 0 0 0 0 0 0 0 0 0 0
+pair 0 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 3 -1 -1 -1 -1 -1 1 1 -1
+pair 0 4 -1 -1 -1 -1 -1 1 1 -1
+pair 0 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 6 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 7 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 9 -1 -1 -1 -1 -1 1 1 -1
+pair 0 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 11 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 14 1 1 1 1 1 1 1 1
+pair 0 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 17 -1 -1 -1 -1 -1 -1 -1 -1
+pair 0 18 -1 -1 -1 -1 -1 1 1 -1
+pair 0 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 1 0 1 1 1 1 1 1 1 0
+pair 1 1 0 0 0 0 0 0 0 0
+pair 1 2 1 -1 1 0 -1 -1 -1 1
+pair 1 3 1 1 1 1 1 1 1 1
+pair 1 4 -1 -1 -1 -1 -1 1 1 -1
+pair 1 5 1 1 1 1 -1 1 1 1
+pair 1 6 1 1 1 1 1 1 1 1
+pair 1 7 1 1 1 1 1 1 1 1
+pair 1 8 1 1 1 1 1 1 1 1
+pair 1 9 1 1 1 1 1 1 1 1
+pair 1 10 1 1 1 1 1 1 1 1
+pair 1 11 1 1 1 1 1 1 1 1
+pair 1 12 1 1 1 1 1 1 1 1
+pair 1 13 1 -1 1 -1 -1 -1 -1 1
+pair 1 14 1 1 1 1 1 1 1 1
+pair 1 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 1 16 1 1 1 1 1 1 1 1
+pair 1 17 1 1 1 1 1 1 1 1
+pair 1 18 1 1 1 1 1 1 1 1
+pair 1 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 2 0 1 1 1 1 1 1 1 0
+pair 2 1 -1 1 -1 0 1 1 1 -1
+pair 2 2 0 0 0 0 0 0 0 0
+pair 2 3 -1 1 -1 1 1 1 1 -1
+pair 2 4 -1 -1 -1 -1 -1 1 1 -1
+pair 2 5 -1 1 -1 1 -1 1 1 -1
+pair 2 6 1 1 1 1 1 1 1 1
+pair 2 7 1 1 1 1 1 1 1 1
+pair 2 8 -1 1 -1 1 1 1 1 -1
+pair 2 9 1 1 1 1 1 1 1 1
+pair 2 10 1 1 1 1 1 1 1 1
+pair 2 11 1 1 1 1 1 1 1 1
+pair 2 12 1 1 1 1 1 1 1 1
+pair 2 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 2 14 1 1 1 1 1 1 1 1
+pair 2 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 2 16 -1 1 -1 1 1 1 1 -1
+pair 2 17 1 1 1 1 1 1 1 1
+pair 2 18 -1 1 -1 1 1 1 1 -1
+pair 2 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 3 0 1 1 1 1 1 -1 -1 0
+pair 3 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 3 2 1 -1 1 -1 -1 -1 -1 1
+pair 3 3 0 0 0 0 0 0 0 0
+pair 3 4 -1 -1 -1 -1 -1 -1 -1 -1
+pair 3 5 1 1 1 1 -1 -1 -1 1
+pair 3 6 1 1 1 1 1 -1 -1 1
+pair 3 7 1 1 1 1 1 -1 -1 1
+pair 3 8 1 1 1 1 1 -1 -1 1
+pair 3 9 1 1 1 1 1 1 1 1
+pair 3 10 1 1 1 1 1 -1 -1 1
+pair 3 11 1 1 1 1 1 -1 -1 1
+pair 3 12 1 1 1 1 1 -1 -1 1
+pair 3 13 1 -1 1 -1 -1 -1 -1 1
+pair 3 14 1 1 1 1 1 -1 -1 1
+pair 3 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 3 16 1 1 1 1 1 -1 -1 1
+pair 3 17 1 1 1 1 1 -1 -1 1
+pair 3 18 -1 -1 -1 -1 -1 -1 -1 -1
+pair 3 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 4 0 1 1 1 1 1 -1 -1 0
+pair 4 1 1 1 1 1 1 -1 -1 1
+pair 4 2 1 1 1 1 1 -1 -1 1
+pair 4 3 1 1 1 1 1 1 1 1
+pair 4 4 0 0 0 0 0 0 0 0
+pair 4 5 1 1 1 1 1 -1 -1 1
+pair 4 6 1 1 1 1 1 -1 -1 1
+pair 4 7 1 1 1 1 1 -1 -1 1
+pair 4 8 1 1 1 1 1 -1 -1 1
+pair 4 9 1 1 1 1 1 1 1 1
+pair 4 10 1 1 1 1 1 -1 -1 1
+pair 4 11 1 1 1 1 1 -1 -1 1
+pair 4 12 1 1 1 1 1 -1 -1 1
+pair 4 13 1 -1 1 -1 -1 -1 -1 1
+pair 4 14 1 1 1 1 1 -1 -1 1
+pair 4 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 4 16 1 1 1 1 1 -1 -1 1
+pair 4 17 1 1 1 1 1 -1 -1 1
+pair 4 18 1 1 1 1 1 1 1 1
+pair 4 19 1 1 1 1 1 -1 -1 1
+pair 5 0 1 1 1 1 1 1 1 0
+pair 5 1 -1 -1 -1 -1 1 -1 -1 -1
+pair 5 2 1 -1 1 -1 1 -1 -1 1
+pair 5 3 -1 -1 -1 -1 1 1 1 -1
+pair 5 4 -1 -1 -1 -1 -1 1 1 -1
+pair 5 5 0 0 0 0 0 0 0 0
+pair 5 6 1 1 1 1 1 1 1 1
+pair 5 7 1 1 1 1 1 1 1 1
+pair 5 8 -1 -1 -1 -1 1 -1 -1 -1
+pair 5 9 1 1 1 1 1 1 1 1
+pair 5 10 1 1 1 1 1 1 1 1
+pair 5 11 1 1 1 1 1 1 1 1
+pair 5 12 1 1 1 1 1 1 1 1
+pair 5 13 1 -1 1 -1 -1 -1 -1 1
+pair 5 14 1 1 1 1 1 1 1 1
+pair 5 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 5 16 -1 -1 -1 -1 1 -1 -1 -1
+pair 5 17 1 1 1 1 1 1 1 1
+pair 5 18 -1 -1 -1 -1 1 1 1 -1
+pair 5 19 -1 -1 -1 -1 1 -1 -1 -1
+pair 6 0 1 1 1 1 1 1 1 0
+pair 6 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 3 -1 -1 -1 -1 -1 1 1 -1
+pair 6 4 -1 -1 -1 -1 -1 1 1 -1
+pair 6 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 6 0 0 0 0 0 0 0 0
+pair 6 7 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 9 -1 -1 -1 -1 -1 1 1 -1
+pair 6 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 11 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 14 1 1 1 1 1 1 1 1
+pair 6 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 17 -1 -1 -1 -1 -1 -1 -1 -1
+pair 6 18 -1 -1 -1 -1 -1 1 1 -1
+pair 6 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 0 1 1 1 1 1 1 1 0
+pair 7 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 3 -1 -1 -1 -1 -1 1 1 -1
+pair 7 4 -1 -1 -1 -1 -1 1 1 -1
+pair 7 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 6 1 1 1 1 1 1 1 1
+pair 7 7 0 0 0 0 0 0 0 0
+pair 7 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 9 -1 -1 -1 -1 -1 1 1 -1
+pair 7 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 11 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 14 1 1 1 1 1 1 1 1
+pair 7 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 17 -1 -1 -1 -1 -1 -1 -1 -1
+pair 7 18 -1 -1 -1 -1 -1 1 1 -1
+pair 7 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 8 0 1 1 1 1 1 1 1 0
+pair 8 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 8 2 1 -1 1 -1 -1 -1 -1 1
+pair 8 3 -1 -1 -1 -1 -1 1 1 -1
+pair 8 4 -1 -1 -1 -1 -1 1 1 -1
+pair 8 5 1 1 1 1 -1 1 1 1
+pair 8 6 1 1 1 1 1 1 1 1
+pair 8 7 1 1 1 1 1 1 1 1
+pair 8 8 0 0 0 0 0 0 0 0
+pair 8 9 1 1 1 1 1 1 1 1
+pair 8 10 1 1 1 1 1 1 1 1
+pair 8 11 1 1 1 1 1 1 1 1
+pair 8 12 1 1 1 1 1 1 1 1
+pair 8 13 1 -1 1 -1 -1 -1 -1 1
+pair 8 14 1 1 1 1 1 1 1 1
+pair 8 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 8 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 8 17 1 1 1 1 1 1 1 1
+pair 8 18 -1 -1 -1 -1 -1 1 1 -1
+pair 8 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 0 1 1 1 1 1 -1 -1 0
+pair 9 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 3 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 4 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 6 1 1 1 1 1 -1 -1 1
+pair 9 7 1 1 1 1 1 -1 -1 1
+pair 9 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 9 0 0 0 0 0 0 0 0
+pair 9 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 11 1 1 1 1 1 -1 -1 1
+pair 9 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 14 1 1 1 1 1 -1 -1 1
+pair 9 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 17 1 1 1 1 1 -1 -1 1
+pair 9 18 -1 -1 -1 -1 -1 -1 -1 -1
+pair 9 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 0 1 1 1 1 1 1 1 0
+pair 10 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 3 -1 -1 -1 -1 -1 1 1 -1
+pair 10 4 -1 -1 -1 -1 -1 1 1 -1
+pair 10 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 6 1 1 1 1 1 1 1 1
+pair 10 7 1 1 1 1 1 1 1 1
+pair 10 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 9 1 1 1 1 1 1 1 1
+pair 10 10 0 0 0 0 0 0 0 0
+pair 10 11 1 1 1 1 1 1 1 1
+pair 10 12 1 1 1 1 1 1 1 1
+pair 10 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 14 1 1 1 1 1 1 1 1
+pair 10 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 10 17 1 1 1 1 1 1 1 1
+pair 10 18 -1 -1 -1 -1 -1 1 1 -1
+pair 10 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 0 1 1 1 1 1 1 1 0
+pair 11 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 3 -1 -1 -1 -1 -1 1 1 -1
+pair 11 4 -1 -1 -1 -1 -1 1 1 -1
+pair 11 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 6 1 1 1 1 1 1 1 1
+pair 11 7 1 1 1 1 1 1 1 1
+pair 11 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 9 -1 -1 -1 -1 -1 1 1 -1
+pair 11 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 11 0 0 0 0 0 0 0 0
+pair 11 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 14 1 1 1 1 1 1 1 1
+pair 11 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 17 -1 -1 -1 -1 -1 -1 -1 -1
+pair 11 18 -1 -1 -1 -1 -1 1 1 -1
+pair 11 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 0 1 1 1 1 1 1 1 0
+pair 12 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 3 -1 -1 -1 -1 -1 1 1 -1
+pair 12 4 -1 -1 -1 -1 -1 1 1 -1
+pair 12 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 6 1 1 1 1 1 1 1 1
+pair 12 7 1 1 1 1 1 1 1 1
+pair 12 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 9 1 1 1 1 1 1 1 1
+pair 12 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 11 1 1 1 1 1 1 1 1
+pair 12 12 0 0 0 0 0 0 0 0
+pair 12 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 14 1 1 1 1 1 1 1 1
+pair 12 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 12 17 1 1 1 1 1 1 1 1
+pair 12 18 -1 -1 -1 -1 -1 1 1 -1
+pair 12 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 13 0 1 1 1 1 1 1 1 0
+pair 13 1 -1 1 -1 1 1 1 1 -1
+pair 13 2 1 1 1 1 1 1 1 1
+pair 13 3 -1 1 -1 1 1 1 1 -1
+pair 13 4 -1 1 -1 1 1 1 1 -1
+pair 13 5 -1 1 -1 1 1 1 1 -1
+pair 13 6 1 1 1 1 1 1 1 1
+pair 13 7 1 1 1 1 1 1 1 1
+pair 13 8 -1 1 -1 1 1 1 1 -1
+pair 13 9 1 1 1 1 1 1 1 1
+pair 13 10 1 1 1 1 1 1 1 1
+pair 13 11 1 1 1 1 1 1 1 1
+pair 13 12 1 1 1 1 1 1 1 1
+pair 13 13 0 0 0 0 0 0 0 0
+pair 13 14 1 1 1 1 1 1 1 1
+pair 13 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 13 16 -1 1 -1 1 1 1 1 -1
+pair 13 17 1 1 1 1 1 1 1 1
+pair 13 18 -1 1 -1 1 1 1 1 -1
+pair 13 19 -1 1 -1 1 1 1 1 -1
+pair 14 0 -1 -1 -1 -1 -1 -1 -1 0
+pair 14 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 3 -1 -1 -1 -1 -1 1 1 -1
+pair 14 4 -1 -1 -1 -1 -1 1 1 -1
+pair 14 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 6 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 7 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 9 -1 -1 -1 -1 -1 1 1 -1
+pair 14 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 11 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 14 0 0 0 0 0 0 0 0
+pair 14 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 17 -1 -1 -1 -1 -1 -1 -1 -1
+pair 14 18 -1 -1 -1 -1 -1 1 1 -1
+pair 14 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 15 0 1 1 1 1 1 1 1 0
+pair 15 1 1 1 1 1 1 1 1 1
+pair 15 2 1 1 1 1 1 1 1 1
+pair 15 3 1 1 1 1 1 1 1 1
+pair 15 4 1 1 1 1 1 1 1 1
+pair 15 5 1 1 1 1 1 1 1 1
+pair 15 6 1 1 1 1 1 1 1 1
+pair 15 7 1 1 1 1 1 1 1 1
+pair 15 8 1 1 1 1 1 1 1 1
+pair 15 9 1 1 1 1 1 1 1 1
+pair 15 10 1 1 1 1 1 1 1 1
+pair 15 11 1 1 1 1 1 1 1 1
+pair 15 12 1 1 1 1 1 1 1 1
+pair 15 13 1 1 1 1 1 1 1 1
+pair 15 14 1 1 1 1 1 1 1 1
+pair 15 15 0 0 0 0 0 0 0 0
+pair 15 16 1 1 1 1 1 1 1 1
+pair 15 17 1 1 1 1 1 1 1 1
+pair 15 18 1 1 1 1 1 1 1 1
+pair 15 19 1 1 1 1 1 1 1 1
+pair 16 0 1 1 1 1 1 1 1 0
+pair 16 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 16 2 1 -1 1 -1 -1 -1 -1 1
+pair 16 3 -1 -1 -1 -1 -1 1 1 -1
+pair 16 4 -1 -1 -1 -1 -1 1 1 -1
+pair 16 5 1 1 1 1 -1 1 1 1
+pair 16 6 1 1 1 1 1 1 1 1
+pair 16 7 1 1 1 1 1 1 1 1
+pair 16 8 1 1 1 1 1 1 1 1
+pair 16 9 1 1 1 1 1 1 1 1
+pair 16 10 1 1 1 1 1 1 1 1
+pair 16 11 1 1 1 1 1 1 1 1
+pair 16 12 1 1 1 1 1 1 1 1
+pair 16 13 1 -1 1 -1 -1 -1 -1 1
+pair 16 14 1 1 1 1 1 1 1 1
+pair 16 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 16 16 0 0 0 0 0 0 0 0
+pair 16 17 1 1 1 1 1 1 1 1
+pair 16 18 -1 -1 -1 -1 -1 1 1 -1
+pair 16 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 0 1 1 1 1 1 1 1 0
+pair 17 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 2 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 3 -1 -1 -1 -1 -1 1 1 -1
+pair 17 4 -1 -1 -1 -1 -1 1 1 -1
+pair 17 5 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 6 1 1 1 1 1 1 1 1
+pair 17 7 1 1 1 1 1 1 1 1
+pair 17 8 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 9 -1 -1 -1 -1 -1 1 1 -1
+pair 17 10 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 11 1 1 1 1 1 1 1 1
+pair 17 12 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 13 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 14 1 1 1 1 1 1 1 1
+pair 17 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 16 -1 -1 -1 -1 -1 -1 -1 -1
+pair 17 17 0 0 0 0 0 0 0 0
+pair 17 18 -1 -1 -1 -1 -1 1 1 -1
+pair 17 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 18 0 1 1 1 1 1 -1 -1 0
+pair 18 1 -1 -1 -1 -1 -1 -1 -1 -1
+pair 18 2 1 -1 1 -1 -1 -1 -1 1
+pair 18 3 1 1 1 1 1 1 1 1
+pair 18 4 -1 -1 -1 -1 -1 -1 -1 -1
+pair 18 5 1 1 1 1 -1 -1 -1 1
+pair 18 6 1 1 1 1 1 -1 -1 1
+pair 18 7 1 1 1 1 1 -1 -1 1
+pair 18 8 1 1 1 1 1 -1 -1 1
+pair 18 9 1 1 1 1 1 1 1 1
+pair 18 10 1 1 1 1 1 -1 -1 1
+pair 18 11 1 1 1 1 1 -1 -1 1
+pair 18 12 1 1 1 1 1 -1 -1 1
+pair 18 13 1 -1 1 -1 -1 -1 -1 1
+pair 18 14 1 1 1 1 1 -1 -1 1
+pair 18 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 18 16 1 1 1 1 1 -1 -1 1
+pair 18 17 1 1 1 1 1 -1 -1 1
+pair 18 18 0 0 0 0 0 0 0 0
+pair 18 19 -1 -1 -1 -1 -1 -1 -1 -1
+pair 19 0 1 1 1 1 1 1 1 0
+pair 19 1 1 1 1 1 1 1 1 1
+pair 19 2 1 1 1 1 1 1 1 1
+pair 19 3 1 1 1 1 1 1 1 1
+pair 19 4 -1 -1 -1 -1 -1 1 1 -1
+pair 19 5 1 1 1 1 -1 1 1 1
+pair 19 6 1 1 1 1 1 1 1 1
+pair 19 7 1 1 1 1 1 1 1 1
+pair 19 8 1 1 1 1 1 1 1 1
+pair 19 9 1 1 1 1 1 1 1 1
+pair 19 10 1 1 1 1 1 1 1 1
+pair 19 11 1 1 1 1 1 1 1 1
+pair 19 12 1 1 1 1 1 1 1 1
+pair 19 13 1 -1 1 -1 -1 -1 -1 1
+pair 19 14 1 1 1 1 1 1 1 1
+pair 19 15 -1 -1 -1 -1 -1 -1 -1 -1
+pair 19 16 1 1 1 1 1 1 1 1
+pair 19 17 1 1 1 1 1 1 1 1
+pair 19 18 1 1 1 1 1 1 1 1
+pair 19 19 0 0 0 0 0 0 0 0
+filter 0 0 1 1
+filter 0 1 1 1
+filter 0 2 1 1
+filter 0 3 1 1
+filter 0 4 1 1
+filter 0 5 1 1
+filter 0 6 1 1
+filter 0 7 1 1
+filter 0 8 1 1
+filter 0 9 1 1
+filter 0 10 1 1
+filter 0 11 1 1
+filter 0 12 1 1
+filter 0 13 1 1
+filter 0 14 1 1
+filter 0 15 1 1
+filter 0 16 1 1
+filter 0 17 1 1
+filter 0 18 1 1
+filter 0 19 1 1
+filter 1 0 0 0
+filter 1 1 1 1
+filter 1 2 0 1
+filter 1 3 0 0
+filter 1 4 0 0
+filter 1 5 0 0
+filter 1 6 0 0
+filter 1 7 0 0
+filter 1 8 0 0
+filter 1 9 0 0
+filter 1 10 0 0
+filter 1 11 0 0
+filter 1 12 0 0
+filter 1 13 0 0
+filter 1 14 0 0
+filter 1 15 0 0
+filter 1 16 0 0
+filter 1 17 0 0
+filter 1 18 0 0
+filter 1 19 0 0
+filter 2 0 0 0
+filter 2 1 0 0
+filter 2 2 0 0
+filter 2 3 0 0
+filter 2 4 1 1
+filter 2 5 0 0
+filter 2 6 0 0
+filter 2 7 0 0
+filter 2 8 0 0
+filter 2 9 0 0
+filter 2 10 0 0
+filter 2 11 0 0
+filter 2 12 0 0
+filter 2 13 0 0
+filter 2 14 0 0
+filter 2 15 0 0
+filter 2 16 0 0
+filter 2 17 0 0
+filter 2 18 0 0
+filter 2 19 0 0
+filter 3 0 0 0
+filter 3 1 1 1
+filter 3 2 1 1
+filter 3 3 0 0
+filter 3 4 0 0
+filter 3 5 0 0
+filter 3 6 0 0
+filter 3 7 0 0
+filter 3 8 0 0
+filter 3 9 0 0
+filter 3 10 0 0
+filter 3 11 0 0
+filter 3 12 0 0
+filter 3 13 0 0
+filter 3 14 0 0
+filter 3 15 0 0
+filter 3 16 0 0
+filter 3 17 0 0
+filter 3 18 0 0
+filter 3 19 0 0
+filter 4 0 0 0
+filter 4 1 1 1
+filter 4 2 0 1
+filter 4 3 1 1
+filter 4 4 1 1
+filter 4 5 0 0
+filter 4 6 0 0
+filter 4 7 0 0
+filter 4 8 1 1
+filter 4 9 0 0
+filter 4 10 0 0
+filter 4 11 0 0
+filter 4 12 0 0
+filter 4 13 0 1
+filter 4 14 0 0
+filter 4 15 1 1
+filter 4 16 1 1
+filter 4 17 0 0
+filter 4 18 1 1
+filter 4 19 1 1
+filter 5 0 0 0
+filter 5 1 0 1
+filter 5 2 1 1
+filter 5 3 0 0
+filter 5 4 0 0
+filter 5 5 0 0
+filter 5 6 0 0
+filter 5 7 0 0
+filter 5 8 0 0
+filter 5 9 0 0
+filter 5 10 0 0
+filter 5 11 0 0
+filter 5 12 0 0
+filter 5 13 0 0
+filter 5 14 0 0
+filter 5 15 0 0
+filter 5 16 0 0
+filter 5 17 0 0
+filter 5 18 0 0
+filter 5 19 0 0
+filter 6 0 0 0
+filter 6 1 0 0
+filter 6 2 0 0
+filter 6 3 0 0
+filter 6 4 1 1
+filter 6 5 0 0
+filter 6 6 0 0
+filter 6 7 0 0
+filter 6 8 0 0
+filter 6 9 1 1
+filter 6 10 0 0
+filter 6 11 0 0
+filter 6 12 0 0
+filter 6 13 0 0
+filter 6 14 0 0
+filter 6 15 0 0
+filter 6 16 0 0
+filter 6 17 0 0
+filter 6 18 0 0
+filter 6 19 0 0
+filter 7 0 0 0
+filter 7 1 0 0
+filter 7 2 0 0
+filter 7 3 0 0
+filter 7 4 0 0
+filter 7 5 0 0
+filter 7 6 0 0
+filter 7 7 0 0
+filter 7 8 0 0
+filter 7 9 0 0
+filter 7 10 0 0
+filter 7 11 0 0
+filter 7 12 0 0
+filter 7 13 0 0
+filter 7 14 0 0
+filter 7 15 0 0
+filter 7 16 0 0
+filter 7 17 0 0
+filter 7 18 0 0
+filter 7 19 0 0
+filter 8 0 0 0
+filter 8 1 0 0
+filter 8 2 0 0
+filter 8 3 0 0
+filter 8 4 1 1
+filter 8 5 0 0
+filter 8 6 0 0
+filter 8 7 0 0
+filter 8 8 0 0
+filter 8 9 0 0
+filter 8 10 0 0
+filter 8 11 0 0
+filter 8 12 0 0
+filter 8 13 0 0
+filter 8 14 0 0
+filter 8 15 0 0
+filter 8 16 1 1
+filter 8 17 0 0
+filter 8 18 0 0
+filter 8 19 0 0
+filter 9 0 0 0
+filter 9 1 0 1
+filter 9 2 1 1
+filter 9 3 0 0
+filter 9 4 0 0
+filter 9 5 0 0
+filter 9 6 0 0
+filter 9 7 0 0
+filter 9 8 0 0
+filter 9 9 0 0
+filter 9 10 0 0
+filter 9 11 0 0
+filter 9 12 0 0
+filter 9 13 0 0
+filter 9 14 0 0
+filter 9 15 0 0
+filter 9 16 0 0
+filter 9 17 0 0
+filter 9 18 0 0
+filter 9 19 0 0
+filter 10 0 0 0
+filter 10 1 0 0
+filter 10 2 0 0
+filter 10 3 0 0
+filter 10 4 0 0
+filter 10 5 0 0
+filter 10 6 0 0
+filter 10 7 0 0
+filter 10 8 0 0
+filter 10 9 0 0
+filter 10 10 1 1
+filter 10 11 0 0
+filter 10 12 1 1
+filter 10 13 0 0
+filter 10 14 0 0
+filter 10 15 0 0
+filter 10 16 0 0
+filter 10 17 0 0
+filter 10 18 0 0
+filter 10 19 0 0
+ctorfloat 0 "0"
+pluseqfloat 0 "v=0.000000"
+floatarray 0 0 "0"
+floatarray 0 1 "0"
+floatarray 0 2 "0"
+floatarray 0 3 "0"
+ctorfloat 1 "1"
+pluseqfloat 1 "v=1.000000"
+floatarray 1 0 "1"
+floatarray 1 1 "1"
+floatarray 1 2 "1"
+floatarray 1 3 "1"
+ctorfloat 2 "-1.5"
+pluseqfloat 2 "v=-1.500000"
+floatarray 2 0 "-2"
+floatarray 2 1 "-1.5"
+floatarray 2 2 "-1.5"
+floatarray 2 3 "-1.5"
+ctorfloat 3 "0.1"
+pluseqfloat 3 "v=0.100000"
+floatarray 3 0 "0"
+floatarray 3 1 "0.1"
+floatarray 3 2 "0.1"
+floatarray 3 3 "0.1"
+ctorfloat 4 "3.141593"
+pluseqfloat 4 "v=3.141593"
+floatarray 4 0 "3"
+floatarray 4 1 "3.1"
+floatarray 4 2 "3.14"
+floatarray 4 3 "3.142"
+ctorfloat 5 "100"
+pluseqfloat 5 "v=100.000000"
+floatarray 5 0 "100"
+floatarray 5 1 "100"
+floatarray 5 2 "100"
+floatarray 5 3 "100"
+ctorfloat 6 "0"
+pluseqfloat 6 "v=0.000000"
+floatarray 6 0 "0"
+floatarray 6 1 "0"
+floatarray 6 2 "0"
+floatarray 6 3 "0"
+ctorfloat 7 "1234.567749"
+pluseqfloat 7 "v=1234.567749"
+floatarray 7 0 "1235"
+floatarray 7 1 "1234.6"
+floatarray 7 2 "1234.57"
+floatarray 7 3 "1234.568"
+ctorfloat 8 "16777216"
+pluseqfloat 8 "v=16777216.000000"
+floatarray 8 0 "16777216"
+floatarray 8 1 "16777216"
+floatarray 8 2 "16777216"
+floatarray 8 3 "16777216"
+ctorfloat 9 "0.5"
+pluseqfloat 9 "v=0.500000"
+floatarray 9 0 "0"
+floatarray 9 1 "0.5"
+floatarray 9 2 "0.5"
+floatarray 9 3 "0.5"
+ctorfloat 10 "40000.25"
+pluseqfloat 10 "v=40000.250000"
+floatarray 10 0 "40000"
+floatarray 10 1 "40000.2"
+floatarray 10 2 "40000.25"
+floatarray 10 3 "40000.25"
+ctorfloat 11 "1000000000"
+pluseqfloat 11 "v=1000000000.000000"
+floatarray 11 0 "1000000000"
+floatarray 11 1 "1000000000"
+floatarray 11 2 "1000000000"
+floatarray 11 3 "1000000000"
+ctorfloat 12 "-0.000001"
+pluseqfloat 12 "v=-0.000001"
+floatarray 12 0 "-0"
+floatarray 12 1 "-0"
+floatarray 12 2 "-0"
+floatarray 12 3 "-0"
+ctorfloat 13 "2.5"
+pluseqfloat 13 "v=2.500000"
+floatarray 13 0 "2"
+floatarray 13 1 "2.5"
+floatarray 13 2 "2.5"
+floatarray 13 3 "2.5"
+floatarray3 "0 1 -1.5"
+floatarray5 "-1.5 0.1 3.142 100 0"
+formatnumber 0 "          0"
+ctorint 0 "0"
+ctoruint 0 "0"
+pluseq 0 "n00truec"
+formatnumber 1 "          5"
+ctorint 1 "5"
+ctoruint 1 "5"
+pluseq 1 "n55truec"
+formatnumber 2 "        999"
+ctorint 2 "999"
+ctoruint 2 "999"
+pluseq 2 "n999999truec"
+formatnumber 3 "      1,000"
+ctorint 3 "1000"
+ctoruint 3 "1000"
+pluseq 3 "n10001000truec"
+formatnumber 4 "      1,234"
+ctorint 4 "1234"
+ctoruint 4 "1234"
+pluseq 4 "n12341234truec"
+formatnumber 5 "     99,999"
+ctorint 5 "99999"
+ctoruint 5 "99999"
+pluseq 5 "n9999999999truec"
+formatnumber 6 "  1,000,000"
+ctorint 6 "1000000"
+ctoruint 6 "1000000"
+pluseq 6 "n10000001000000truec"
+formatnumber 7 " 12,345,678"
+ctorint 7 "12345678"
+ctoruint 7 "12345678"
+pluseq 7 "n1234567812345678truec"
+formatnumber 8 "1,000,000,000"
+ctorint 8 "1000000000"
+ctoruint 8 "1000000000"
+pluseq 8 "n10000000001000000000truec"
+formatnumber 9 "2,147,483,647"
+ctorint 9 "2147483647"
+ctoruint 9 "2147483647"
+pluseq 9 "n21474836472147483647truec"
+formatnumber 10 "         -5"
+ctorint 10 "-5"
+ctoruint 10 "4294967291"
+pluseq 10 "n-54294967291truec"
+formatnumber 11 "      -1000"
+ctorint 11 "-1000"
+ctoruint 11 "4294966296"
+pluseq 11 "n-10004294966296truec"
+ctorbool "1"
+ctorchar "q"
+ctorrange1 "llo w"
+ctorrange2 "hello world"
+ctorrange3 ""
+chars 0 00000000 0 0
+chars 5 00000005 5 5
+chars 10 000001010 10 10
+chars 15 000000015 15 15
+chars 20 00000004 20 20
+chars 25 00000009 25 25
+chars 30 000000014 30 30
+chars 35 10000003 35 35
+chars 40 10000008 40 40
+chars 45 100000013 45 45
+chars 50 10001002 50 50
+chars 55 10001007 55 55
+chars 60 100000012 60 60
+chars 65 10110001 97 65
+chars 70 10110006 102 70
+chars 75 101100011 107 75
+chars 80 10110000 112 80
+chars 85 10110005 117 85
+chars 90 101100010 122 90
+chars 95 100000015 95 95
+chars 100 11010004 100 68
+chars 105 11010009 105 73
+chars 110 110100014 110 78
+chars 115 11010003 115 83
+chars 120 11010008 120 88
+chars 125 100000013 125 125
+chars 130 00000002 130 130
+chars 135 00000007 135 135
+chars 140 000000012 140 140
+chars 145 00000001 145 145
+chars 150 00000006 150 150
+chars 155 000000011 155 155
+chars 160 00000000 160 160
+chars 165 10000005 165 165
+chars 170 100000010 170 170
+chars 175 100000015 175 175
+chars 180 10000004 180 180
+chars 185 10000009 185 185
+chars 190 100000014 190 190
+chars 195 10110003 195 195
+chars 200 10110008 200 200
+chars 205 101100013 205 205
+chars 210 10110002 210 210
+chars 215 10110007 215 215
+chars 220 101100012 220 220
+chars 225 11010001 225 225
+chars 230 11010006 230 230
+chars 235 110100011 235 235
+chars 240 11010000 240 240
+chars 245 11010005 245 245
+chars 250 110100010 250 250
+chars 255 110100015 255 255
