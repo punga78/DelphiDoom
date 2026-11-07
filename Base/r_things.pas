@@ -464,7 +464,7 @@ begin
     for l := start + 1 to finish - 1 do
     begin
       if spritepresent[l - firstspritelump] then
-
+      begin
         lname8.s := W_GetNameForNum(l);
         if lname8.x[0] = intname then // JVAL
         begin
@@ -485,6 +485,7 @@ begin
             R_InstallSpriteLump(l, frame, rotation, true);
           end;
         end;
+      end;
     end;
 
     // check the frames that were found for completeness
