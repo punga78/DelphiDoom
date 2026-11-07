@@ -38,7 +38,19 @@ uses
   gl_defs,
   r_defs,
   r_visplanes,
-  m_fixed;
+  m_fixed,
+  DelphiDoom.DynLights.Intf;
+
+//==============================================================================
+//
+// gld_ConfigureDynamicLights
+//
+// The lights of the level (Libs\DynLights): gld_Init reads the lumps, R_ShutDownOpenGL
+// forgets them, the sprites read their records. The composition root calls it; without it
+// gld_Init stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
 
 var
   extra_red: float = 0.0;
@@ -249,6 +261,20 @@ uses
   DelphiDoom.Engine.Scanner.Log,
   w_wad,
   z_zone;
+
+var
+  // given by the composition root (gld_ConfigureDynamicLights)
+  gl_dynlights: IDynLightRenderCache = nil;
+
+//==============================================================================
+//
+// gld_ConfigureDynamicLights
+//
+//==============================================================================
+procedure gld_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
+begin
+  gl_dynlights := ACache;
+end;
 
 {$IFDEF DEBUG}
 var
@@ -732,7 +758,11 @@ begin
 
   gld_InitLightTable;
   gld_CalculateSky(100000.0);
-  R_InitDynamicLights;
+  if gl_dynlights = nil then
+    I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
+  printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.'#13#10);
+  if gl_dynlights.Load(gldefs_as_lightdef) then
+    lightdeflumppresent := true;
   gld_InitDynamicShadows;
   gld_InitModels;
   gld_InitVoxels;
@@ -4420,7 +4450,7 @@ begin
   for i := 0 to sprite.dlights.Count - 1 do
     if sprite.dlights[i].num1 = sprite.mo._type then
     begin
-      l := R_GetDynamicLight(sprite.dlights[i].num2);
+      l := gl_dynlights.GetLight(sprite.dlights[i].num2, leveltime);
       if numdlitems >= realdlitems then
       begin
         olddlitems := realdlitems;
@@ -5822,7 +5852,9 @@ begin
   if gl_initialized then
   begin
     gld_SkyDone;
-    R_DynamicLightsDone;
+    if gl_dynlights <> nil then
+      gl_dynlights.Clear;
+    R_FreeDynamicLightItems;
     gld_DynamicShadowsDone;
     gld_ModelsDone;
     gld_VoxelsDone;

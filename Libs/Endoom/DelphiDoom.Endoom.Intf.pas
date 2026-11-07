@@ -41,6 +41,30 @@ type
       AStride: Integer; var AOutput: TArray<Cardinal>);
   end;
 
+  /// <summary>
+  ///   The time of the end screen, counted in tics: the blinking (half a second on, half off),
+  ///   when a key may close the program (after half a second) and when the program closes by
+  ///   itself (after ten seconds). It does not close anything: it says when
+  /// </summary>
+  IEndoomSession = interface
+    ['{6D18F2A4-B39E-4C07-8A51-E2F704C9D3B6}']
+    /// <summary>The screen is shown: the count starts and the picture must be drawn</summary>
+    procedure Start;
+    /// <summary>
+    ///   One tic. Nothing happens before Start. True when the ten seconds are over (the program
+    ///   should close; it is said again at every tic after that)
+    /// </summary>
+    function Tick: Boolean;
+    /// <summary>True if a key that is released closes the program: half a second after Start</summary>
+    function AcceptsKey: Boolean;
+    /// <summary>Whether the blinking cells show their character now</summary>
+    function IsBlinkVisible: Boolean;
+    /// <summary>The picture changed (start or blinking) since it was drawn last</summary>
+    function NeedsRedraw: Boolean;
+    /// <summary>The picture has been drawn</summary>
+    procedure Drawn;
+  end;
+
 implementation
 
 end.

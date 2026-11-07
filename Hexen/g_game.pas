@@ -36,6 +36,7 @@ uses
   doomdef,
   m_fixed,
   d_event,
+  DelphiDoom.Input.Intf,
   d_player,
   d_ticcmd;
 
@@ -341,6 +342,16 @@ var
   mousebuttons: PBooleanArray;
   joybuttons: PBooleanArray;
 
+//==============================================================================
+//
+// G_ConfigureInput
+//
+// The poller of the input, given by the composition root: the caps lock is the speed
+// with autorunmode = 2. Without it G_BuildTiccmd stops with I_Error.
+//
+//==============================================================================
+procedure G_ConfigureInput(const APoller: IInputPoller);
+
 implementation
 
 uses
@@ -355,7 +366,6 @@ uses
   info_h,
   info,
   i_system,
-  i_input,
   m_misc,
   m_menu,
   m_rnd,
@@ -392,6 +402,32 @@ uses
   sv_save,
   udmf_telept,
   tables;
+
+var
+  // given by the composition root (G_ConfigureInput)
+  game_input: IInputPoller = nil;
+
+//==============================================================================
+//
+// G_ConfigureInput
+//
+//==============================================================================
+procedure G_ConfigureInput(const APoller: IInputPoller);
+begin
+  game_input := APoller;
+end;
+
+//==============================================================================
+//
+// G_InputPoller
+//
+//==============================================================================
+function G_InputPoller: IInputPoller;
+begin
+  if game_input = nil then
+    I_Error('G_ConfigureInput() was not called: the input is missing');
+  result := game_input;
+end;
 
 //
 // G_StartNewInit
@@ -579,7 +615,7 @@ begin
   if autorunmode = 0 then
   else if autorunmode = 1 then
     speed := 1 - speed
-  else if I_GetCapsLock then
+  else if G_InputPoller.IsCapsLockOn then
     speed := 1 - speed;
 
   _forward := 0;
@@ -1038,7 +1074,7 @@ begin
   if autorunmode = 0 then
   else if autorunmode = 1 then
     speed := 1 - speed
-  else if I_GetCapsLock then
+  else if G_InputPoller.IsCapsLockOn then
     speed := 1 - speed;
 
   _forward := 0;

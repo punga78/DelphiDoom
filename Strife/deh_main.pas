@@ -142,7 +142,6 @@ uses
   d_items,
   d_englsh,
   dstrings,
-  e_endoom,
   f_finale,
   hu_stuff,
   i_system,

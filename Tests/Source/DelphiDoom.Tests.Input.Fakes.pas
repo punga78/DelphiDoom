@@ -83,7 +83,112 @@ type
     procedure Post(const AEvent: TInputEvent);
   end;
 
+  /// <summary>The calls of the system, written as text in a list; the answers are fields</summary>
+  TFakeInputSystem = class(TInterfacedObject, IKeyboardSystem, ICursorSystem, IJoystickSystem)
+  public
+    Calls: TList<string>;
+    Keys: TKeyStates;
+    KeyboardAccepted: Boolean;
+    KeyStates: array[0..255] of SmallInt;
+    CursorX: Integer;
+    CursorY: Integer;
+    Devices: Cardinal;
+    CaptureAccepted: Boolean;
+    CapturedWindow: THandle;
+    Reading: TJoystickReading;
+    ReadingAvailable: Boolean;
+    constructor Create;
+    destructor Destroy; override;
+    function ReadKeyboardState(var AStates: TKeyStates): Boolean;
+    function GetKeyState(AVirtualKey: Integer): SmallInt;
+    procedure Open;
+    procedure Close;
+    function GetCursorPosition(out AX, AY: Integer): Boolean;
+    function SetCursorPosition(AX, AY: Integer): Boolean;
+    function DeviceCount: Cardinal;
+    function Capture(AWindow: THandle): Boolean;
+    procedure Release;
+    function ReadPosition(out AReading: TJoystickReading): Boolean;
+  end;
+
 implementation
+
+uses
+  System.SysUtils;
+
+{ TFakeInputSystem }
+
+constructor TFakeInputSystem.Create;
+begin
+  inherited Create;
+  Calls := TList<string>.Create;
+  KeyboardAccepted := True;
+end;
+
+destructor TFakeInputSystem.Destroy;
+begin
+  Calls.Free;
+  inherited Destroy;
+end;
+
+function TFakeInputSystem.ReadKeyboardState(var AStates: TKeyStates): Boolean;
+begin
+  Calls.Add('keyboardstate');
+  AStates := Keys;
+  Result := KeyboardAccepted;
+end;
+
+function TFakeInputSystem.GetKeyState(AVirtualKey: Integer): SmallInt;
+begin
+  Calls.Add(Format('keystate %d', [AVirtualKey]));
+  Result := KeyStates[AVirtualKey];
+end;
+
+procedure TFakeInputSystem.Open;
+begin
+  Calls.Add('open');
+end;
+
+procedure TFakeInputSystem.Close;
+begin
+  Calls.Add('close');
+end;
+
+function TFakeInputSystem.GetCursorPosition(out AX, AY: Integer): Boolean;
+begin
+  AX := CursorX;
+  AY := CursorY;
+  Result := True;
+end;
+
+function TFakeInputSystem.SetCursorPosition(AX, AY: Integer): Boolean;
+begin
+  Calls.Add(Format('setcursor %d %d', [AX, AY]));
+  Result := True;
+end;
+
+function TFakeInputSystem.DeviceCount: Cardinal;
+begin
+  Result := Devices;
+end;
+
+function TFakeInputSystem.Capture(AWindow: THandle): Boolean;
+begin
+  Calls.Add('capture');
+  CapturedWindow := AWindow;
+  Result := CaptureAccepted;
+end;
+
+procedure TFakeInputSystem.Release;
+begin
+  Calls.Add('release');
+end;
+
+function TFakeInputSystem.ReadPosition(out AReading: TJoystickReading): Boolean;
+begin
+  AReading := Reading;
+  Result := ReadingAvailable;
+end;
 
 { TFakeKeyboard }
 

@@ -293,7 +293,7 @@ uses
   mt_utils,
   i_system,
   i_video,
-  i_displaymodes,
+  DelphiDoom.Video.Types,
   v_video,
 {$ENDIF}
   r_main,

@@ -48,13 +48,18 @@ type
     RandomSeed: Integer;
   end;
 
-  /// <summary>What the renderer draws of a light at a given time</summary>
+  /// <summary>
+  ///   What the renderer draws of a light at a given time. The renderers of the engine read it
+  ///   with the field names of the old GLDRenderLight (r, g, b, radius, x, y, z, shadow), which
+  ///   is now this record
+  /// </summary>
   TDynLightRender = record
     R, G, B: Single;
     Radius: Single;
     X, Y, Z: Single;
     Shadow: Boolean;
   end;
+  PDynLightRender = ^TDynLightRender;
 
 implementation
 

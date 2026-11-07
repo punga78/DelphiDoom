@@ -11,15 +11,17 @@ unit DelphiDoom.Input.WindowsJoystick;
 interface
 
 uses
-  System.SysUtils, Winapi.Windows, DelphiDoom.Input.Types, DelphiDoom.Input.Intf;
+  System.SysUtils, DelphiDoom.Input.Types, DelphiDoom.Input.Intf;
 
 type
-  /// <summary>The multimedia joystick API (joyGetPosEx); the window that captures it is asked when needed</summary>
+  /// <summary>The multimedia joystick API; the window that captures it is asked when needed</summary>
   TWindowsJoystick = class(TInterfacedObject, IJoystickDevice)
   private
     FWindow: TFunc<THandle>;
+    FSystem: IJoystickSystem;
   public
-    constructor Create(const AWindow: TFunc<THandle>);
+    /// <summary>Raises EArgumentNilException if AWindow or ASystem is nil</summary>
+    constructor Create(const AWindow: TFunc<THandle>; const ASystem: IJoystickSystem);
     function Initialize: Boolean;
     procedure Shutdown;
     function Read(out AReading: TJoystickReading): Boolean;
@@ -27,44 +29,43 @@ type
 
 implementation
 
-uses
-  Winapi.MMSystem;
+const
+  SWindowIsNil = 'TWindowsJoystick: the window is nil';
+  SSystemIsNil = 'TWindowsJoystick: the system is nil';
 
 { TWindowsJoystick }
 
-constructor TWindowsJoystick.Create(const AWindow: TFunc<THandle>);
+constructor TWindowsJoystick.Create(const AWindow: TFunc<THandle>; const ASystem: IJoystickSystem);
 begin
   inherited Create;
+  if not Assigned(AWindow) then
+    raise EArgumentNilException.Create(SWindowIsNil);
+  if not Assigned(ASystem) then
+    raise EArgumentNilException.Create(SSystemIsNil);
   FWindow := AWindow;
+  FSystem := ASystem;
 end;
 
 function TWindowsJoystick.Initialize: Boolean;
 begin
-  Result := joyGetNumDevs > 0;
+  Result := FSystem.DeviceCount > 0;
   if Result then
-    Result := joySetCapture(FWindow(), JOYSTICKID1, 0, False) = JOYERR_NOERROR;
+    Result := FSystem.Capture(FWindow());
 end;
 
 procedure TWindowsJoystick.Shutdown;
 begin
-  joyReleaseCapture(JOYSTICKID1);
+  FSystem.Release;
 end;
 
 function TWindowsJoystick.Read(out AReading: TJoystickReading): Boolean;
 var
-  LInfo: TJoyInfoEx;
+  LReading: TJoystickReading;
 begin
-  ZeroMemory(@LInfo, SizeOf(LInfo));
-  LInfo.dwSize := SizeOf(LInfo);
-  LInfo.dwFlags := JOY_RETURNALL;
-  Result := joyGetPosEx(JOYSTICKID1, @LInfo) = JOYERR_NOERROR;
+  Result := FSystem.ReadPosition(LReading);
+  // the reading is given only when there is one, as before
   if Result then
-  begin
-    AReading.ButtonCount := LInfo.dwButtonNumber;
-    AReading.Buttons := LInfo.wButtons;
-    AReading.X := Integer(LInfo.wXpos);
-    AReading.Y := Integer(LInfo.wYpos);
-  end;
+    AReading := LReading;
 end;
 
 end.

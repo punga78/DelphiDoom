@@ -66,7 +66,6 @@ uses
   p_obituaries,
   i_system,
   i_mainwindow,
-  i_mp3,
   i_midi,
   i_music,
   i_sound,
@@ -88,7 +87,6 @@ uses
   r_softlights,
 {$ENDIF}
 {$IFNDEF HEXEN}
-  e_endoom,
 {$ENDIF}
   m_menu,
   m_misc,

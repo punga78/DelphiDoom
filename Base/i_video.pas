@@ -37,7 +37,17 @@ interface
 uses
   SysUtils,
   Windows,
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Video.Intf;
+
+//==============================================================================
+//
+// I_ConfigureDisplayModes
+// The catalog of the screen modes, filled when the graphics start and cleared when they stop.
+// The composition root calls it; without it I_InitGraphics stops with I_Error
+//
+//==============================================================================
+procedure I_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 
 //==============================================================================
 // I_InitGraphics
@@ -120,11 +130,66 @@ uses
   i_system,
   i_main,
   i_threads,
-  i_displaymodes,
   i_mainwindow,
   r_hires,
   v_data,
-  v_video;
+  v_video,
+  DelphiDoom.Video.Types;
+
+var
+  // given by the composition root (I_ConfigureDisplayModes)
+  video_displaymodes: IDisplayModeCatalog = nil;
+
+//==============================================================================
+//
+// I_ConfigureDisplayModes
+//
+//==============================================================================
+procedure I_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
+begin
+  video_displaymodes := ACatalog;
+end;
+
+//==============================================================================
+//
+// I_DisplayModes
+//
+//==============================================================================
+function I_DisplayModes: IDisplayModeCatalog;
+begin
+  if video_displaymodes = nil then
+    I_Error('I_ConfigureDisplayModes() was not called: the display modes are missing');
+  result := video_displaymodes;
+end;
+
+//==============================================================================
+//
+// I_FindWindowSize
+//
+// The window of a mode: the exact or nearest mode of the catalog, else the screen
+//
+//==============================================================================
+procedure I_FindWindowSize(const mode: integer);
+var
+  w, h: integer;
+begin
+  if mode = FULLSCREEN_SHARED then
+  begin
+    WINDOWWIDTH := NATIVEWIDTH;
+    WINDOWHEIGHT := NATIVEHEIGHT;
+    exit;
+  end;
+
+  if I_DisplayModes.FindWindowSize(SCREENWIDTH, SCREENHEIGHT, w, h) then
+  begin
+    WINDOWWIDTH := w;
+    WINDOWHEIGHT := h;
+    exit;
+  end;
+
+  WINDOWWIDTH := GetSystemMetrics(SM_CXSCREEN);
+  WINDOWHEIGHT := GetSystemMetrics(SM_CYSCREEN);
+end;
 
 var
   g_pDD: IDirectDraw7 = nil;                // DirectDraw object
@@ -245,7 +310,8 @@ begin
   I_ClearInterface(IInterface(g_pDD));
   I_ClearInterface(IInterface(g_pDDClipper));
   I_EnableAltTab;
-  I_ClearDisplayModes;
+  if video_displaymodes <> nil then
+    video_displaymodes.Clear;
   memfree(oscreen, allocscreensize);
   if screen16 <> nil then
     memfree(pointer(screen16), SCREENWIDTH * SCREENHEIGHT * 2);
@@ -713,7 +779,7 @@ begin
 
   printf('I_InitGraphics: Initializing directdraw.'#13#10);
 
-  I_EnumDisplayModes;
+  I_DisplayModes.Refresh(MAXWIDTH, MAXHEIGHT);
 
 ///////////////////////////////////////////////////////////////////////////
 // Create the main DirectDraw object

@@ -37,7 +37,17 @@ unit i_main;
 interface
 
 uses
-  Windows;
+  Windows,
+  DelphiDoom.Input.Intf;
+
+//==============================================================================
+//
+// I_ConfigureWindowInput
+// The poller of the input: the window tells it when it gains or loses the focus.
+// The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureWindowInput(const APoller: IInputPoller);
 
 //==============================================================================
 //
@@ -57,13 +67,26 @@ uses
   Messages,
   doomdef,
   g_game,
-  i_input,
   i_system,
-  i_displaymodes,
   i_mainwindow,
   m_argv,
   m_base,
-  d_main;
+  d_main,
+  DelphiDoom.Video.Types;
+
+var
+  // given by the composition root (I_ConfigureWindowInput)
+  window_input: IInputPoller = nil;
+
+//==============================================================================
+//
+// I_ConfigureWindowInput
+//
+//==============================================================================
+procedure I_ConfigureWindowInput(const APoller: IInputPoller);
+begin
+  window_input := APoller;
+end;
 
 //==============================================================================
 //
@@ -101,7 +124,8 @@ begin
       WM_ACTIVATE:
         begin
           InBackground := (LOWORD(wparam) = WA_INACTIVE) or (HIWORD(wparam) <> 0);
-          I_SynchronizeInput(not InBackground);
+          if window_input <> nil then
+            window_input.Synchronize(not InBackground);
         end;
       WM_CLOSE:
         begin

@@ -97,7 +97,9 @@ begin
   FOffset := 0;
   FTotbit := 0;
   FBufByteIdx := 0;
-  GetMem(FBuf, BUFSIZE * SizeOf(Cardinal));
+  // zeroed: the Huffman reader may go a few bits past the data of a granule, into bytes not
+  // written yet (the old GetMem gave there what the heap had)
+  FBuf := AllocMem(BUFSIZE * SizeOf(Cardinal));
   FBufBitIdx := 8;
   GetMem(FPutMask, 32 * SizeOf(Cardinal));
 

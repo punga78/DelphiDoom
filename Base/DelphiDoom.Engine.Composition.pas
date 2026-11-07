@@ -25,8 +25,8 @@ uses
   DelphiDoom.Logging.Intf,
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
+  DelphiDoom.Video.Intf,
   DelphiDoom.Video.Factory,
-  i_displaymodes,
   DelphiDoom.Acs.Factory,
   DelphiDoom.Udmf.Games,
   DelphiDoom.Udmf.Factory,
@@ -65,7 +65,8 @@ uses
   d_net,
 {$IFNDEF HEXEN}
   DelphiDoom.Endoom.Factory,
-  e_endoom,
+  DelphiDoom.Engine.Endoom.Intf,
+  DelphiDoom.Engine.Endoom.Screen,
 {$ENDIF}
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
@@ -151,7 +152,11 @@ uses
   DelphiDoom.DynLights.Intf,
   DelphiDoom.DynLights.Factory,
   DelphiDoom.Engine.DynLights.Services,
-  r_dynlights,
+{$IFDEF OPENGL}
+  gl_render,
+{$ELSE}
+  r_softlights,
+{$ENDIF}
 {$IFDEF OPENGL}
   gl_defs,
   DelphiDoom.GlMath.Factory,
@@ -206,7 +211,8 @@ uses
   DelphiDoom.Engine.Music.MusBackend,
   DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.Engine.Music.ExternalSource,
-  s_externalmusic,
+  DelphiDoom.Mp3.Provider,
+  s_sound,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -215,10 +221,16 @@ uses
   DelphiDoom.Engine.Input.Sink,
   DelphiDoom.Engine.Input.Gate,
   DelphiDoom.Engine.Input.ScreenSize,
-  DelphiDoom.Engine.Input.DirectKeyboard,
+  g_game,
+{$IFDEF OPENGL}
+  gl_main,
+{$ELSE}
+  i_main,
+  i_video,
+{$ENDIF}
+  m_menu,
   d_event,
   i_mainwindow,
-  i_input,
   i_sound,
   p_acs,
   i_music,
@@ -232,7 +244,6 @@ uses
   w_wadreader,
   w_wadwriter,
   w_pak,
-  w_autoload,
   DelphiDoom.Scanner.AutoLoad,
   DelphiDoom.Engine.Wad.AutoLoadLumps,
   DelphiDoom.Engine.Wad.AutoLoadSink,
@@ -298,29 +309,64 @@ begin
   SC_ConfigureParams(LEvaluatorRef);
 end;
 
+procedure ComposeDisplayModes;
+var
+  LCatalog: IDisplayModeCatalog;
+begin
+  // the video fills the catalog when the graphics start; the menus list it
+  LCatalog := TVideoFactory.CreateDisplayModeCatalog(TVideoFactory.CreateWindowsDisplayModeSource);
+{$IFDEF OPENGL}
+  GL_ConfigureDisplayModes(LCatalog);
+{$ELSE}
+  I_ConfigureDisplayModes(LCatalog);
+{$ENDIF}
+  M_ConfigureDisplayModes(LCatalog);
+end;
+
+{$IFNDEF HEXEN}
+procedure ComposeEndoom;
+var
+  LScreen: IEngineEndoomScreen;
+begin
+  LScreen := TEngineEndoomScreen.Create(TEndoomFactory.CreateRenderer,
+    TEndoomFactory.CreateSession(TICRATE),
+    function: string
+    begin
+      // DEHACKED can change it after the start (END_TEXT_LUMP)
+      Result := EndLumpName;
+    end);
+  D_ConfigureEndoom(LScreen);
+  G_ConfigureEndoom(LScreen);
+  D_ConfigureNetEndoom(LScreen);
+{$IFDEF OPENGL}
+  GL_ConfigureEndoom(LScreen);
+{$ENDIF}
+end;
+{$ENDIF}
+
 procedure ComposeInput(const ALog: ILog);
 var
   LWindow: TFunc<THandle>;
+  LPoller: IInputPoller;
 begin
   LWindow :=
     function: THandle
     begin
       Result := hMainWnd;
     end;
-  I_ConfigureInput(
-    function(AUseDirectInput: Boolean): IInputPoller
-    var
-      LKeyboard: IKeyboardDevice;
-    begin
-      if AUseDirectInput then
-        LKeyboard := TDirectKeyboard.Create(LWindow, ALog)
-      else
-        LKeyboard := TInputFactory.CreateWindowsKeyboard;
-      Result := TInputFactory.CreatePoller(LKeyboard, TInputFactory.CreateWindowsMouse,
-        TInputFactory.CreateWindowsJoystick(LWindow), TEngineInputGate.Create,
-        TEngineScreenSize.Create, TEngineKeyMap.Create, TEngineInputSink.Create, ALog,
-        NUMJOYBUTTONS);
-    end);
+  // One poller for the whole program, idle until I_Init starts it. The keyboard is the one of
+  // Windows: the choice of DirectInput (usedirectinput) was never set by anything
+  LPoller := TInputFactory.CreatePoller(TInputFactory.CreateWindowsKeyboard,
+    TInputFactory.CreateWindowsMouse, TInputFactory.CreateWindowsJoystick(LWindow),
+    TEngineInputGate.Create, TEngineScreenSize.Create, TEngineKeyMap.Create,
+    TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
+  I_ConfigureInput(LPoller);
+  G_ConfigureInput(LPoller);
+{$IFDEF OPENGL}
+  GL_ConfigureInput(LPoller);
+{$ELSE}
+  I_ConfigureWindowInput(LPoller);
+{$ENDIF}
 end;
 
 procedure ComposeSound(const ALog: ILog);
@@ -354,7 +400,7 @@ begin
   // the order is the one in which a song is looked at: the first backend that knows it plays it
   I_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
     TModuleMusicBackend.Create,
-    TMp3MusicBackend.Create,
+    TMp3MusicBackend.Create(TMp3Provider.Mp3),
     TId3MusicBackend.Create,
     TXmiMusicBackend.Create(ATempFiles),
     TMusMusicBackend.Create,
@@ -417,6 +463,7 @@ var
   LRegistry: IDynLightRegistry;
   LParserServices: TDynLightParserServices;
   LCoefficient: Double;
+  LCache: IDynLightRenderCache;
 begin
   LServices := TEngineDynLightServices.Create(APreprocessor);
   LServicesRef := LServices;
@@ -432,11 +479,17 @@ begin
 {$ELSE}
   LCoefficient := 1;
 {$ENDIF}
-  R_ConfigureDynamicLights(
+  LCache := TDynLightFactory.CreateRenderCache(
     TDynLightFactory.CreateLoader(LServices, LServices,
       TDynLightFactory.CreateParser(LParserServices, ALog, LCoefficient)),
     LRegistry,
     TDynLightFactory.CreateAnimator(LRegistry, LServices));
+{$IFDEF OPENGL}
+  gld_ConfigureDynamicLights(LCache);
+{$ELSE}
+  R_ConfigureDynamicLights(LCache);
+  R_ConfigureSoftLights(LCache);
+{$ENDIF}
 end;
 
 procedure ComposeMusInfo(const ALog: ILog);
@@ -813,8 +866,7 @@ begin
   I_ConfigureClock(LClock);
   D_ConfigureNet(LClock, LLog, LContext);
   I_ConfigureVideo(TVideoFactory.CreateServices);
-  I_ConfigureDisplayModes(TVideoFactory.CreateDisplayModeCatalog(
-    TVideoFactory.CreateWindowsDisplayModeSource));
+  ComposeDisplayModes;
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic(LTempFiles);
@@ -835,7 +887,7 @@ begin
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
 {$IFNDEF HEXEN}
-  E_ConfigureEndoom(TEndoomFactory.CreateRenderer);
+  ComposeEndoom;
 {$ENDIF}
   ComposeVoxels(LLog);
 
@@ -844,7 +896,7 @@ begin
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   PAK_Configure(LWadServices);
-  W_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
+  D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
     TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
   if not TUdmfGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);

@@ -11,23 +11,16 @@ unit DelphiDoom.Input.WindowsMouse;
 interface
 
 uses
-  Winapi.Windows, DelphiDoom.Input.Types, DelphiDoom.Input.Intf;
+  DelphiDoom.Input.Types, DelphiDoom.Input.Intf;
 
 type
-  /// <summary>
-  ///   The cursor in physical pixels (GetPhysicalCursorPos, or GetCursorPos on old systems) and
-  ///   the buttons with GetKeyState
-  /// </summary>
+  /// <summary>The cursor of the system and the buttons with GetKeyState</summary>
   TWindowsMouse = class(TInterfacedObject, IMouseDevice)
   private
-    type
-      TGetCursorPosFunc = function(var APoint: TPoint): BOOL; stdcall;
-      TSetCursorPosFunc = function(AX, AY: Integer): BOOL; stdcall;
-    var
-      FUser32: THandle;
-      FGetCursorPos: TGetCursorPosFunc;
-      FSetCursorPos: TSetCursorPosFunc;
+    FSystem: ICursorSystem;
   public
+    /// <summary>Raises EArgumentNilException if ASystem is nil</summary>
+    constructor Create(const ASystem: ICursorSystem);
     procedure Initialize;
     procedure Shutdown;
     procedure GetPosition(out AX, AY: Integer);
@@ -37,44 +30,47 @@ type
 
 implementation
 
+uses
+  System.SysUtils, Winapi.Windows;
+
+const
+  SSystemIsNil = 'TWindowsMouse: the system is nil';
+
 { TWindowsMouse }
+
+constructor TWindowsMouse.Create(const ASystem: ICursorSystem);
+begin
+  inherited Create;
+  if not Assigned(ASystem) then
+    raise EArgumentNilException.Create(SSystemIsNil);
+  FSystem := ASystem;
+end;
 
 procedure TWindowsMouse.Initialize;
 begin
-  FUser32 := LoadLibrary(user32);
-  FGetCursorPos := GetProcAddress(FUser32, 'GetPhysicalCursorPos');
-  if not Assigned(FGetCursorPos) then
-    FGetCursorPos := GetProcAddress(FUser32, 'GetCursorPos');
-  FSetCursorPos := GetProcAddress(FUser32, 'SetPhysicalCursorPos');
-  if not Assigned(FSetCursorPos) then
-    FSetCursorPos := GetProcAddress(FUser32, 'SetCursorPos');
+  FSystem.Open;
 end;
 
 procedure TWindowsMouse.Shutdown;
 begin
-  FreeLibrary(FUser32);
-  FUser32 := 0;
+  FSystem.Close;
 end;
 
 procedure TWindowsMouse.GetPosition(out AX, AY: Integer);
-var
-  LPoint: TPoint;
 begin
-  FGetCursorPos(LPoint);
-  AX := LPoint.X;
-  AY := LPoint.Y;
+  FSystem.GetCursorPosition(AX, AY);
 end;
 
 procedure TWindowsMouse.SetPosition(AX, AY: Integer);
 begin
-  FSetCursorPos(AX, AY);
+  FSystem.SetCursorPosition(AX, AY);
 end;
 
 function TWindowsMouse.IsButtonDown(AButton: TMouseButton): Boolean;
 const
   LVirtualKeys: array[TMouseButton] of Integer = (VK_LBUTTON, VK_RBUTTON, VK_MBUTTON);
 begin
-  Result := GetKeyState(LVirtualKeys[AButton]) < 0;
+  Result := FSystem.GetKeyState(LVirtualKeys[AButton]) < 0;
 end;
 
 end.

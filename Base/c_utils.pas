@@ -48,7 +48,7 @@ uses
 {$ELSE}
   i_video,
 {$ENDIF}
-  i_displaymodes,
+  DelphiDoom.Video.Types,
   i_system;
 
 //==============================================================================

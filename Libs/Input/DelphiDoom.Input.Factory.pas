@@ -32,23 +32,23 @@ implementation
 
 uses
   DelphiDoom.Input.Poller, DelphiDoom.Input.WindowsKeyboard, DelphiDoom.Input.WindowsMouse,
-  DelphiDoom.Input.WindowsJoystick;
+  DelphiDoom.Input.WindowsJoystick, DelphiDoom.Input.WindowsSystem;
 
 { TInputFactory }
 
 class function TInputFactory.CreateWindowsKeyboard: IKeyboardDevice;
 begin
-  Result := TWindowsKeyboard.Create;
+  Result := TWindowsKeyboard.Create(TWindowsInputSystem.Create);
 end;
 
 class function TInputFactory.CreateWindowsMouse: IMouseDevice;
 begin
-  Result := TWindowsMouse.Create;
+  Result := TWindowsMouse.Create(TWindowsInputSystem.Create);
 end;
 
 class function TInputFactory.CreateWindowsJoystick(const AWindow: TFunc<THandle>): IJoystickDevice;
 begin
-  Result := TWindowsJoystick.Create(AWindow);
+  Result := TWindowsJoystick.Create(AWindow, TWindowsInputSystem.Create);
 end;
 
 class function TInputFactory.CreatePoller(const AKeyboard: IKeyboardDevice;

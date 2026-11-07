@@ -133,6 +133,9 @@ var
   gamestate: gamestate_t;
   oldgamestate: integer = -1;
   gamedirectories: TDStringList;
+  // the end screen (ENDTEXT): the lump that is shown (DEHACKED can change it) and whether it is shown
+  EndLumpName: string = 'ENDTEXT';
+  displayendscreen: boolean;
 
 const
 //

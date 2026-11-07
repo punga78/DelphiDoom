@@ -28,13 +28,16 @@ type
     /// <param name="AFilter">May be nil</param>
     class function CreateLoader(const ASource: IDynLightTextSource;
       const AFilter: IDynLightTextFilter; const AParser: IDynLightParser): IDynLightLoader; static;
+    /// <summary>The records that the renderers read, over the lights of the registry</summary>
+    class function CreateRenderCache(const ALoader: IDynLightLoader;
+      const ARegistry: IDynLightRegistry; const AAnimator: IDynLightAnimator): IDynLightRenderCache; static;
   end;
 
 implementation
 
 uses
   DelphiDoom.DynLights.Registry, DelphiDoom.DynLights.Animator, DelphiDoom.DynLights.StateBinder,
-  DelphiDoom.DynLights.Parser, DelphiDoom.DynLights.Loader;
+  DelphiDoom.DynLights.Parser, DelphiDoom.DynLights.Loader, DelphiDoom.DynLights.RenderCache;
 
 { TDynLightFactory }
 
@@ -64,6 +67,12 @@ class function TDynLightFactory.CreateLoader(const ASource: IDynLightTextSource;
   const AFilter: IDynLightTextFilter; const AParser: IDynLightParser): IDynLightLoader;
 begin
   Result := TDynLightLoader.Create(ASource, AFilter, AParser);
+end;
+
+class function TDynLightFactory.CreateRenderCache(const ALoader: IDynLightLoader;
+  const ARegistry: IDynLightRegistry; const AAnimator: IDynLightAnimator): IDynLightRenderCache;
+begin
+  Result := TDynLightRenderCache.Create(ALoader, ARegistry, AAnimator);
 end;
 
 end.

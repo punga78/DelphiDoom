@@ -42,6 +42,9 @@ uses
   m_base,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Logging.Intf,
+{$IFNDEF HEXEN}
+  DelphiDoom.Engine.Endoom.Intf,
+{$ENDIF}
   DelphiDoom.GameState.Intf;
 
 // Network play related stuff.
@@ -55,6 +58,16 @@ uses
 //
 //==============================================================================
 procedure D_ConfigureNet(const AClock: IClock; const ALog: ILog; const AGame: IGameContext);
+
+{$IFNDEF HEXEN}
+//==============================================================================
+//
+// D_ConfigureNetEndoom
+// The end screen, which ticks with the loop of the game; given by the composition root
+//
+//==============================================================================
+procedure D_ConfigureNetEndoom(const AScreen: IEngineEndoomScreen);
+{$ENDIF}
 
 { Create any new ticcmds and broadcast to other players. }
 
@@ -144,9 +157,6 @@ implementation
 uses
   System.SysUtils,
   m_menu,
-{$IFNDEF HEXEN}
-  e_endoom,
-{$ENDIF}
   c_con,
   i_startup,
   i_system,
@@ -190,6 +200,34 @@ begin
   net_log := ALog;
   net_game := AGame;
 end;
+
+{$IFNDEF HEXEN}
+var
+  // given by the composition root (D_ConfigureNetEndoom)
+  net_endoom: IEngineEndoomScreen = nil;
+
+//==============================================================================
+//
+// D_ConfigureNetEndoom
+//
+//==============================================================================
+procedure D_ConfigureNetEndoom(const AScreen: IEngineEndoomScreen);
+begin
+  net_endoom := AScreen;
+end;
+
+//==============================================================================
+//
+// D_EndoomTicker
+//
+//==============================================================================
+procedure D_EndoomTicker;
+begin
+  if net_endoom = nil then
+    I_Error('D_ConfigureNetEndoom() was not called: the end screen is missing');
+  net_endoom.Tick;
+end;
+{$ENDIF}
 
 // The library does not stop the program: its errors end here
 procedure D_NetFailure(const E: Exception);
@@ -492,7 +530,7 @@ begin
       if net_planner.MustYield then
       begin
         {$IFNDEF HEXEN}
-        E_Ticker;
+        D_EndoomTicker;
         {$ENDIF}
         M_Ticker;
         exit;
@@ -546,7 +584,7 @@ begin
           D_DoAdvanceDemo;
         R_Ticker;
         {$IFNDEF HEXEN}
-        E_Ticker;
+        D_EndoomTicker;
         {$ENDIF}
         M_Ticker;
         C_Ticker;
@@ -591,7 +629,7 @@ begin
       D_DoAdvanceDemo;
     R_Ticker;
     {$IFNDEF HEXEN}
-    E_Ticker;
+    D_EndoomTicker;
     {$ENDIF}
     M_Ticker;
     C_Ticker;

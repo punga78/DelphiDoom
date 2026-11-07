@@ -119,7 +119,7 @@ Per toglierla: pochi chiamanti: iniettare il servizio di riduzione dei flat.
 
 ### `Base\s_externalmusic.pas` - 4 funzioni pubbliche, 4 chiamate
 
-Per toglierla: pochi chiamanti: iniettare il servizio di musica esterna.
+**Tolta (issue #137)**: `s_sound` riceve `IExternalMusicCache` (`S_ConfigureExternalMusic`).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -214,7 +214,7 @@ Per toglierla: cold path del renderer software: poche chiamate, sostituibili con
 
 ### `Base\i_mp3.pas` - 6 funzioni pubbliche, 7 chiamate
 
-Per toglierla: il player MP3 e gia una classe; resta la facciata `I_*Mp3` chiamata dal backend musicale: eliminabile togliendo il backend che la usa.
+**Tolta (issue #137)**: `TMp3MusicBackend` riceve `IMp3` dal costruttore e tiene il proprio `TMp3Player`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -264,7 +264,7 @@ Per toglierla: voxel: poche chiamate, iniettare il servizio.
 
 ### `Base\r_dynlights.pas` - 4 funzioni pubbliche, 9 chiamate
 
-Per toglierla: facciata del renderer, record stabili per fotogramma: resta.
+**Non più facciata (issue #137)**: le funzioni sono di `IDynLightRenderCache` (ricevuto da `r_main`, `r_softlights`, `gl_render`); l'unit resta con i buffer dei renderer.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -275,7 +275,7 @@ Per toglierla: facciata del renderer, record stabili per fotogramma: resta.
 
 ### `Base\w_autoload.pas` - 2 funzioni pubbliche, 9 chiamate
 
-Per toglierla: pochi chiamanti: iniettare il servizio di caricamento automatico.
+**Tolta (issue #137)**: i quattro `d_main` ricevono `IAutoLoadReader` (`D_ConfigureAutoLoad`).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -377,7 +377,7 @@ Per toglierla: pochi chiamanti: iniettare il catalogo dei generi.
 
 ### `Base\i_displaymodes.pas` - 5 funzioni pubbliche, 12 chiamate
 
-Per toglierla: i modi video sono letti da `i_video` e `m_menu`; servirebbe un `IDisplayModes` passato al menu.
+**Tolta (issue #137)**: `i_video`, `gl_main` e i quattro `m_menu` ricevono `IDisplayModeCatalog`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -457,7 +457,7 @@ Per toglierla: applica la patch al gioco: resta come adattatore di `IDehackedPat
 
 ### `Base\i_input.pas` - 6 funzioni pubbliche, 17 chiamate
 
-Per toglierla: `I_StartTic`/`I_InitInput` sono nel ciclo principale; servirebbe che `d_main` tenga il `TInputPoller`.
+**Tolta (issue #137)**: un solo `IInputPoller` dato a `i_system`, `i_main`/`gl_main` e ai quattro `g_game`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -513,7 +513,7 @@ Per toglierla: costruzione dei nodi: `p_setup` dovrebbe chiamare `INodeBuilder` 
 
 ### `Base\e_endoom.pas` - 6 funzioni pubbliche, 22 chiamate
 
-Per toglierla: facciata sottile su Libs\Endoom; basta far ricevere l'interfaccia a `i_system` e `d_main`.
+**Tolta (issue #137)**: `IEngineEndoomScreen` (`TEngineEndoomScreen`) dato a `d_main`, `g_game`, `d_net` e `gl_main`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|

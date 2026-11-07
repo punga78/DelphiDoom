@@ -21,6 +21,8 @@ type
   public
     [Test]
     procedure TestMissingLibraryRaises;
+    [Test]
+    procedure DovrebbeRifiutareUnaLibreriaSenzaLExport;
 
     /// <summary>
     ///   Needs bin\Libs\DDMp3.dll (build.bat librerie); skipped otherwise
@@ -55,6 +57,16 @@ begin
     procedure
     begin
       TMp3Loader.Create('DDMp3.nonexistent.dll').Free;
+    end, EMp3Exception);
+end;
+
+procedure TTestMp3Loader.DovrebbeRifiutareUnaLibreriaSenzaLExport;
+begin
+  // a library of the system: it loads, but it does not export DDMp3Create
+  Assert.WillRaise(
+    procedure
+    begin
+      TMp3Loader.Create('kernel32.dll').Free;
     end, EMp3Exception);
 end;
 

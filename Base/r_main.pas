@@ -47,6 +47,7 @@ uses
   r_sprite,
   {$ENDIF}
   r_defs,
+  DelphiDoom.DynLights.Intf,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Types;
 
@@ -218,6 +219,18 @@ procedure R_Init;
 //
 //==============================================================================
 procedure R_ShutDown;
+
+{$IFNDEF OPENGL}
+//==============================================================================
+//
+// R_ConfigureDynamicLights
+//
+// The lights of the level (Libs\DynLights): R_Init reads the lumps, R_ShutDown forgets them.
+// The composition root calls it; without it R_Init stops with I_Error
+//
+//==============================================================================
+procedure R_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
+{$ENDIF}
 
 //==============================================================================
 // R_SetViewSize
@@ -3022,6 +3035,22 @@ begin
   printf('Texture cache reset'#13#10);
 end;
 
+{$IFNDEF OPENGL}
+var
+  // given by the composition root (R_ConfigureDynamicLights)
+  main_dynlights: IDynLightRenderCache = nil;
+
+//==============================================================================
+//
+// R_ConfigureDynamicLights
+//
+//==============================================================================
+procedure R_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
+begin
+  main_dynlights := ACache;
+end;
+{$ENDIF}
+
 //==============================================================================
 //
 // R_Init
@@ -3086,7 +3115,10 @@ begin
   printf('R_InitZBuffer'#13#10); // JVAL: version 205
   R_InitZBuffer;
   printf('R_InitDynamicLights'#13#10);
-  R_InitDynamicLights;
+  if main_dynlights = nil then
+    I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
+  if main_dynlights.Load(gldefs_as_lightdef) then
+    lightdeflumppresent := true;
 {$ENDIF}
 
   framecount := 0;
@@ -3173,7 +3205,9 @@ begin
   printf(#13#10 + 'R_ShutDownZBuffer'); // JVAL: version 205
   R_ShutDownZBuffer;
   printf(#13#10 + 'R_DynamicLightsDone');
-  R_DynamicLightsDone;
+  if main_dynlights <> nil then
+    main_dynlights.Clear;
+  R_FreeDynamicLightItems;
 {$ENDIF}
 {$IFDEF OPENGL}
   printf(#13#10 + 'R_ShutDownOpenGL');
