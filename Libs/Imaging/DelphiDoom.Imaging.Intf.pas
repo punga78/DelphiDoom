@@ -147,6 +147,30 @@ type
       AVisAngle: Cardinal): Double;
   end;
 
+  /// <summary>The color of a palette that is nearest to a given one</summary>
+  IImagingColorIndex = interface
+    ['{2C84E6B1-5A39-4F70-9D12-B8E0A47C6F35}']
+    /// <summary>
+    ///   The index (ALow..AHigh) of the color of APalette ($00BBGGRR, 256 entries) that has the
+    ///   least squared distance from AColor
+    /// </summary>
+    function Nearest(const APalette: TImagingPixels; AColor: Cardinal;
+      ALow, AHigh: Integer): Integer;
+  end;
+
+  /// <summary>Reduces the screen to the picture that the menu shows for a saved game</summary>
+  IImagingThumbnailBuilder = interface
+    ['{91F3D07A-6E52-4B84-A0C9-3D7B15E8F264}']
+    /// <summary>
+    ///   APixels holds ScreenHeight rows of ScreenWidth pixels of 4 bytes (B, G, R and one that
+    ///   is ignored). One pixel of the view window is taken for every pixel of the thumbnail
+    ///   and replaced by its nearest color of APalette (256 entries; the color 0 is never
+    ///   chosen). The result holds Height rows of Width palette indices
+    /// </summary>
+    function Build(const ASettings: TImagingThumbnailSettings; APixels: Pointer;
+      const APalette: TImagingPixels): TBytes;
+  end;
+
 implementation
 
 end.
