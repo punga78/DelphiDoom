@@ -47,6 +47,10 @@ uses
   deh_main,
   DelphiDoom.Clock.Intf,
   d_net,
+{$IFNDEF HEXEN}
+  DelphiDoom.Endoom.Factory,
+  e_endoom,
+{$ENDIF}
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
@@ -542,6 +546,9 @@ begin
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);
+{$IFNDEF HEXEN}
+  E_ConfigureEndoom(TEndoomFactory.CreateRenderer);
+{$ENDIF}
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
