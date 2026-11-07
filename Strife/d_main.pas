@@ -51,6 +51,10 @@ uses
   doomdef,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Configuration.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
   DelphiDoom.Scanner.AutoLoad.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
@@ -242,6 +246,43 @@ procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
 
 //==============================================================================
 //
+// D_ConfigureConsole
+//
+// The console, given by the composition root: D_DoomMain starts it, the loop gives it
+// the keys and draws it, D_ShutDown frees it.
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+// The loop of the game around the network, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+// The defaults of the configuration file, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+// The screenshots (-shot), given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+
+//==============================================================================
+//
 // D_ConfigureEndoom
 //
 // The end screen, given by the composition root: D_Display draws it, D_ShutDown frees it.
@@ -364,6 +405,102 @@ begin
 end;
 
 var
+  // given by the composition root (D_ConfigureConsole, D_ConfigureNetGame,
+  // D_ConfigureDefaults, D_ConfigureScreenshot)
+  main_console: IEngineConsole = nil;
+  main_netgame: IEngineNetGame = nil;
+  main_defaults: IEngineDefaults = nil;
+  main_screenshot: IEngineScreenshot = nil;
+
+//==============================================================================
+//
+// D_ConfigureConsole
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  main_console := AConsole;
+end;
+
+//==============================================================================
+//
+// D_Console
+//
+//==============================================================================
+function D_Console: IEngineConsole;
+begin
+  if main_console = nil then
+    I_Error('D_ConfigureConsole() was not called: the console is missing');
+  result := main_console;
+end;
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  main_netgame := ANetGame;
+end;
+
+//==============================================================================
+//
+// D_NetGame
+//
+//==============================================================================
+function D_NetGame: IEngineNetGame;
+begin
+  if main_netgame = nil then
+    I_Error('D_ConfigureNetGame() was not called: the network is missing');
+  result := main_netgame;
+end;
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+begin
+  main_defaults := ADefaults;
+end;
+
+//==============================================================================
+//
+// D_Defaults
+//
+//==============================================================================
+function D_Defaults: IEngineDefaults;
+begin
+  if main_defaults = nil then
+    I_Error('D_ConfigureDefaults() was not called: the defaults are missing');
+  result := main_defaults;
+end;
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  main_screenshot := AScreenshot;
+end;
+
+//==============================================================================
+//
+// D_Screenshot
+//
+//==============================================================================
+function D_Screenshot: IEngineScreenshot;
+begin
+  if main_screenshot = nil then
+    I_Error('D_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := main_screenshot;
+end;
+
+var
   // given by the composition root (D_ConfigureEndoom)
   main_endoom: IEngineEndoomScreen = nil;
 
@@ -437,7 +574,7 @@ begin
   while eventtail <> eventhead do
   begin
     ev := @events[eventtail];
-    if C_Responder(ev) then
+    if D_Console.Respond(ev) then
       // console ate the event
     else if M_Responder(ev) then
       // menu ate the event
@@ -490,7 +627,7 @@ begin
     shotnumber := I_GetTime;
     if shotnumber <> lastshotnumber then
     begin
-      M_ScreenShot(IntToStrZFill(8, shotnumber), true);
+      D_Screenshot.Take(IntToStrZFill(8, shotnumber), true);
       inc(shotnumber);
     end;
   end;
@@ -683,7 +820,7 @@ begin
     begin
       if scaledviewwidth <> SCREENWIDTH then
       begin
-        if menuactive or menuactivestate or not viewactivestate or C_IsConsoleActive then
+        if menuactive or menuactivestate or not viewactivestate or D_Console.IsActive then
         begin
           borderdrawcount := 3;
           popupactivestate := false;
@@ -748,7 +885,7 @@ begin
     M_Drawer; // Menu is drawn even on top of everything
 
     // Console goes directly to the screen
-    C_Drawer;   // Console is drawn even on top of menus
+    D_Console.Draw;   // Console is drawn even on top of menus
 
     // Draw disk busy patch
     R_DrawDiskBusy; // Draw disk busy on top of console
@@ -765,7 +902,7 @@ begin
     // JVAL: Overlay Drawer before menus
     OVR_Drawer;
     M_Drawer;
-    C_Drawer;
+    D_Console.Draw;
     diskbusyend := -1;
   end
   else
@@ -777,10 +914,10 @@ begin
     OVR_Drawer;
 
     M_Drawer;
-    C_Drawer;
+    D_Console.Draw;
   end;
 
-  NetUpdate; // send out any new accumulation
+  D_NetGame.Update; // send out any new accumulation
 
   {$IFNDEF OPENGL}
   // normal update
@@ -806,7 +943,7 @@ begin
     wipestart := nowtime;
     done := fade_Ticker(tics);
     M_Drawer;         // Menu is drawn even on top of wipes
-    C_Drawer;         // Console draw on top of wipes and menus
+    D_Console.Draw;         // Console draw on top of wipes and menus
     D_FinishUpdate;   // page flip or blit buffer
     HU_DoFPSStuff;
   until done;
@@ -875,9 +1012,9 @@ begin
 
     // process one or more tics
     if singletics then
-      D_RunSingleTick // will run only one tick
+      D_NetGame.RunSingleTic // will run only one tick
     else
-      D_RunMultipleTicks; // will run at least one tick
+      D_NetGame.RunMultipleTics; // will run at least one tick
 
 {$IFNDEF DEBUG}
     if iscritical then
@@ -2069,7 +2206,7 @@ begin
 
   printf('M_LoadDefaults: Load system defaults.'#13#10);
   M_FindDefaultFile;
-  M_LoadDefaults;              // load before initing other systems
+  D_Defaults.Load;              // load before initing other systems
 
   D_AddSystemWAD; // Add system wad first
 
@@ -2560,7 +2697,7 @@ begin
   SUC_Progress(81);
 
   printf('D_CheckNetGame: Checking network game status.'#13#10);
-  D_CheckNetGame;
+  D_NetGame.Start;
 
   SUC_Progress(85);
 
@@ -2621,7 +2758,7 @@ begin
   SUC_Progress(97);
 
   printf('C_Init: Initializing console.'#13#10);
-  C_Init;
+  D_Console.Initialize;
 
   p := M_CheckParm('-keyboardmode');
   if (p > 0) and (p < myargc - 1) then
@@ -2703,7 +2840,8 @@ begin
   printf('M_ShutDownMenus: Shut down menus.'#13#10);
   M_ShutDownMenus;
   printf('C_ShutDown: Shut down console.'#13#10);
-  C_ShutDown;
+  if main_console <> nil then
+    main_console.Shutdown;
   printf('P_ShutDown: Shut down Playloop state.'#13#10);
   P_ShutDown;
   printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);

@@ -34,6 +34,7 @@ unit psi_globals;
 interface
 
 uses
+  DelphiDoom.Engine.Platform.Intf,
   d_delphi,
   SysUtils,
   Classes,
@@ -319,6 +320,14 @@ procedure RIRegister_GlobalVars(CL: TPSRuntimeClassImporter);
 //==============================================================================
 procedure RIRegisterRTL_GlobalVars(Exec: TPSExec);
 
+//==============================================================================
+//
+// PS_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure PS_ConfigureFiles(const AFiles: IEngineFiles);
+
 implementation
 
 uses
@@ -326,6 +335,33 @@ uses
   i_system,
   m_misc,
   z_zone;
+
+var
+  // given by the composition root
+  ps_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// PS_ConfigureFiles
+//
+//==============================================================================
+procedure PS_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  ps_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// PS_Files
+//
+//==============================================================================
+function PS_Files: IEngineFiles;
+begin
+  if ps_files_ref = nil then
+    I_Error('PS_ConfigureFiles() was not called: the files are missing');
+  result := ps_files_ref;
+end;
+
 
 //==============================================================================
 //
@@ -1032,7 +1068,7 @@ var
   buf: Pointer;
   buf1: Pointer;
 begin
-  len := M_ReadFile(fname, buf);
+  len := PS_Files.ReadFile(fname, buf);
   buf1 := buf;
   incp(pointer(buf1), SizeOf(Integer));
   LoadFromBuffer(buf1);
@@ -1128,7 +1164,7 @@ begin
   buf1 := buf;
   incp(buf1, SizeOf(Integer));
   SaveToBuffer(buf1);
-  M_WriteFile(fname, buf, len + SizeOf(integer));
+  PS_Files.WriteFile(fname, buf, len + SizeOf(integer));
   memfree(buf, len + SizeOf(Integer));
 end;
 

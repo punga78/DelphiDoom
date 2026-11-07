@@ -31,6 +31,7 @@ unit p_common;
 interface
 
 uses
+  DelphiDoom.Engine.Console.Intf,
   d_player,
   m_fixed,
   tables,
@@ -2399,6 +2400,14 @@ procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t);
 //==============================================================================
 procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t);
 
+//==============================================================================
+//
+// P_ConfigureConsole
+// The console, given by the composition root
+//
+//==============================================================================
+procedure P_ConfigureConsole(const AConsole: IEngineConsole);
+
 implementation
 
 uses
@@ -2452,6 +2461,33 @@ uses
   sounddata,
   sounds,
   m_rnd;
+
+var
+  // given by the composition root
+  p_console_ref: IEngineConsole = nil;
+
+//==============================================================================
+//
+// P_ConfigureConsole
+//
+//==============================================================================
+procedure P_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  p_console_ref := AConsole;
+end;
+
+//==============================================================================
+//
+// P_Console
+//
+//==============================================================================
+function P_Console: IEngineConsole;
+begin
+  if p_console_ref = nil then
+    I_Error('P_ConfigureConsole() was not called: the console is missing');
+  result := p_console_ref;
+end;
+
 
 //==============================================================================
 // P_DoBulletSlope
@@ -2690,7 +2726,7 @@ begin
   for i := 1 to actor.state.params.Count - 1 do
     cmd := cmd + ' ' + actor.state.params.StrVal[i];
 
-  C_AddCommand(cmd);
+  P_Console.AddCommand(cmd);
 end;
 
 //==============================================================================

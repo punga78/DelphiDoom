@@ -38,6 +38,7 @@ uses
   SysUtils,
   Windows,
   d_delphi,
+  DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Input.Intf,
   DelphiDoom.Video.Intf{$IFNDEF HEXEN},
   DelphiDoom.Engine.Endoom.Intf{$ENDIF};
@@ -172,6 +173,14 @@ var
   NATIVEWIDTH: integer;
   NATIVEHEIGHT: integer;
 
+//==============================================================================
+//
+// GL_ConfigureConsole
+// The console, given by the composition root
+//
+//==============================================================================
+procedure GL_ConfigureConsole(const AConsole: IEngineConsole);
+
 implementation
 
 uses
@@ -207,6 +216,33 @@ uses
   gl_defs,
   v_data,
   v_video;
+
+var
+  // given by the composition root
+  gl_console_ref: IEngineConsole = nil;
+
+//==============================================================================
+//
+// GL_ConfigureConsole
+//
+//==============================================================================
+procedure GL_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  gl_console_ref := AConsole;
+end;
+
+//==============================================================================
+//
+// GL_Console
+//
+//==============================================================================
+function GL_Console: IEngineConsole;
+begin
+  if gl_console_ref = nil then
+    I_Error('GL_ConfigureConsole() was not called: the console is missing');
+  result := gl_console_ref;
+end;
+
 
 var
   // given by the composition root (GL_ConfigureInput, GL_ConfigureDisplayModes, GL_ConfigureEndoom)
@@ -661,7 +697,7 @@ begin
         end
         else
         begin
-          y1 := C_ConsolePos;
+          y1 := GL_Console.Position;
           yovr := OVR_OverlayHeight;
           if yovr > y1 then
             y1 := yovr;
@@ -820,7 +856,7 @@ begin
     done := {$IFDEF STRIFE}fade_Ticker{$ELSE}wipe_Ticker{$ENDIF}(tics);
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
     M_Drawer;         // Menu is drawn even on top of wipes
-    C_Drawer;         // Console draw on top of wipes and menus
+    GL_Console.Draw;         // Console draw on top of wipes and menus
     I_FinishUpdateWIPE;
     HU_DoFPSStuff;
   until done;
@@ -1261,7 +1297,7 @@ begin
     glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 
     AM_Start;               // Start the automap
-    C_AdjustScreenSize;
+    GL_Console.AdjustScreenSize;
     R_ExecuteSetViewSize;   // Set-up new SCREENWIDTH & SCREENHEIGHT
     overlay.ReCalcOverlayLookUp;
     result := true;

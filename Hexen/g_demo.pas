@@ -32,6 +32,7 @@ unit g_demo;
 interface
 
 uses
+  DelphiDoom.Engine.Platform.Intf,
   d_ticcmd;
 
 //==============================================================================
@@ -113,6 +114,14 @@ var
 var
   demoversion: byte;
 
+//==============================================================================
+//
+// G_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureFiles(const AFiles: IEngineFiles);
+
 implementation
 
 uses
@@ -130,6 +139,33 @@ uses
   doomdef,
   w_wad,
   z_zone;
+
+var
+  // given by the composition root
+  g_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// G_ConfigureFiles
+//
+//==============================================================================
+procedure G_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  g_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// G_Files
+//
+//==============================================================================
+function G_Files: IEngineFiles;
+begin
+  if g_files_ref = nil then
+    I_Error('G_ConfigureFiles() was not called: the files are missing');
+  result := g_files_ref;
+end;
+
 //
 // DEMO PLAYBACK
 //
@@ -212,7 +248,7 @@ begin
     demo_p[0] := DEMOMARKER;
     demo_p := @demo_p[1];
 
-    M_WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
+    G_Files.WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
     Z_Free(demobuffer);
     demorecording := false;
     I_Error('G_CheckDemoStatus(): Demo %s recorded', [demoname]);
@@ -577,7 +613,7 @@ var
 begin
   gameaction := ga_nothing;
   if externaldemo then
-    len := M_ReadFile(defdemoname, pointer(demobuffer))
+    len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
   begin
     lump := W_GetNumForName(defdemoname);

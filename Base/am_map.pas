@@ -200,49 +200,6 @@ const
   MAPUNIT = AUTOMAP_MAPUNIT;
   FRACTOMAPUNIT = AUTOMAP_FRACTOMAPUNIT;
 
-//==============================================================================
-//
-// M_ZOOMIN
-//
-// How much zoom-in per tic
-//
-//==============================================================================
-function M_ZOOMIN: integer;
-
-//==============================================================================
-//
-// M_ZOOMOUT
-//
-// How much zoom-out per tic
-//
-//==============================================================================
-function M_ZOOMOUT: integer;
-
-// Translates between frame-buffer and map distances
-
-//==============================================================================
-//
-// FTOM
-//
-//==============================================================================
-function FTOM(x: integer): integer;
-
-// Translates between frame-buffer and map coordinates
-
-//==============================================================================
-//
-// CXMTOF
-//
-//==============================================================================
-function CXMTOF(x: integer): integer;
-
-//==============================================================================
-//
-// CYMTOF
-//
-//==============================================================================
-function CYMTOF(y: integer): integer;
-
 { the following is crap }
 
 const
@@ -422,13 +379,6 @@ var
 
 //==============================================================================
 //
-// AM_rotate
-//
-//==============================================================================
-procedure AM_rotate(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_t);
-
-//==============================================================================
-//
 // AM_ShutDown
 //
 //==============================================================================
@@ -443,15 +393,6 @@ procedure AM_ShutDown;
 //==============================================================================
 procedure AM_Configure(const AView: IAutomapView; const ANavigator: IAutomapNavigator;
   const AMarks: IAutomapMarks);
-
-//==============================================================================
-//
-// AM_GetWindow
-//
-// A copy of the window on the map: read it once before a loop, not for each pixel.
-//
-//==============================================================================
-function AM_GetWindow: TAutomapWindow;
 
 implementation
 
@@ -516,58 +457,6 @@ begin
 end;
 
 //==============================================================================
-// M_ZOOMIN
-//
-// how much zoom-in per tic
-//
-//==============================================================================
-function M_ZOOMIN: integer;
-begin
-  result := AUTOMAP_ZOOM_IN;
-end;
-
-//==============================================================================
-// M_ZOOMOUT
-//
-// how much zoom-out per tic
-//
-//==============================================================================
-function M_ZOOMOUT: integer;
-begin
-  result := AUTOMAP_ZOOM_OUT;
-end;
-
-//==============================================================================
-//
-// FTOM
-//
-//==============================================================================
-function FTOM(x: integer): integer;
-begin
-  result := am_view.FrameToMap(x);
-end;
-
-//==============================================================================
-//
-// CXMTOF
-//
-//==============================================================================
-function CXMTOF(x: integer): integer;
-begin
-  result := am_view.MapToFrameX(x);
-end;
-
-//==============================================================================
-//
-// CYMTOF
-//
-//==============================================================================
-function CYMTOF(y: integer): integer;
-begin
-  result := am_view.MapToFrameY(y);
-end;
-
-//==============================================================================
 // AM_getIslope
 //
 //==============================================================================
@@ -621,16 +510,6 @@ procedure AM_CheckConfigured;
 begin
   if not (Assigned(am_view) and Assigned(am_navigator) and Assigned(am_marks)) then
     I_Error('AM_CheckConfigured(): the automap was not configured (see ComposeEngine)');
-end;
-
-//==============================================================================
-//
-// AM_GetWindow
-//
-//==============================================================================
-function AM_GetWindow: TAutomapWindow;
-begin
-  result := am_view.Window;
 end;
 
 //==============================================================================
@@ -995,39 +874,39 @@ begin
       AM_PANRIGHTKEY: // pan right
         begin
           if not am_navigator.FollowPlayer then
-            am_navigator.PanX := FTOM(F_PANINC)
+            am_navigator.PanX := am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
       AM_PANLEFTKEY: // pan left
         begin
           if not am_navigator.FollowPlayer then
-            am_navigator.PanX := -FTOM(F_PANINC)
+            am_navigator.PanX := -am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
       AM_PANUPKEY: // pan up
         begin
           if not am_navigator.FollowPlayer then
-            am_navigator.PanY := FTOM(F_PANINC)
+            am_navigator.PanY := am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
       AM_PANDOWNKEY: // pan down
         begin
           if not am_navigator.FollowPlayer then
-            am_navigator.PanY := -FTOM(F_PANINC)
+            am_navigator.PanY := -am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
       Ord(AM_ZOOMOUTKEY): // zoom out
         begin
-          am_navigator.SetZoom(M_ZOOMOUT, M_ZOOMIN);
+          am_navigator.SetZoom(AUTOMAP_ZOOM_OUT, AUTOMAP_ZOOM_IN);
         end;
       Ord(AM_ZOOMINKEY),
       Ord(AM_ZOOMINKEY2): // zoom in
         begin
-          am_navigator.SetZoom(M_ZOOMIN, M_ZOOMOUT);
+          am_navigator.SetZoom(AUTOMAP_ZOOM_IN, AUTOMAP_ZOOM_OUT);
         end;
       AM_TONGLEKEY:
         begin
@@ -1443,8 +1322,8 @@ begin
 
     if allowautomaprotate then
     begin
-      AM_rotate(@ml.a.x, @ml.a.y, ANG90 - plr.mo.angle, rx, ry);
-      AM_rotate(@ml.b.x, @ml.b.y, ANG90 - plr.mo.angle, rx, ry);
+      TAutomapRotation.Rotate(ml.a.x, ml.a.y, ANG90 - plr.mo.angle, rx, ry);
+      TAutomapRotation.Rotate(ml.b.x, ml.b.y, ANG90 - plr.mo.angle, rx, ry);
     end;
 
     AM_drawMline(@ml, color);
@@ -1469,25 +1348,13 @@ begin
 
     if allowautomaprotate then
     begin
-      AM_rotate(@ml.a.x, @ml.a.y, ANG90 - plr.mo.angle, rx, ry);
-      AM_rotate(@ml.b.x, @ml.b.y, ANG90 - plr.mo.angle, rx, ry);
+      TAutomapRotation.Rotate(ml.a.x, ml.a.y, ANG90 - plr.mo.angle, rx, ry);
+      TAutomapRotation.Rotate(ml.b.x, ml.b.y, ANG90 - plr.mo.angle, rx, ry);
     end;
 
     AM_drawMline(@ml, color);
     y := y + (MAPBLOCKUNITS * MAPUNIT);
   end;
-end;
-
-//==============================================================================
-// AM_rotate
-//
-// Rotation in 2D.
-// Used to rotate player arrow line character.
-//
-//==============================================================================
-procedure AM_rotate(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_t);
-begin
-  TAutomapRotation.Rotate(x^, y^, a, xpos, ypos);
 end;
 
 //==============================================================================
@@ -1534,8 +1401,8 @@ begin
 
     if allowautomaprotate then
     begin
-      AM_rotate(@l.a.x, @l.a.y, plra, plrx, plry);
-      AM_rotate(@l.b.x, @l.b.y, plra, plrx, plry);
+      TAutomapRotation.Rotate(l.a.x, l.a.y, plra, plrx, plry);
+      TAutomapRotation.Rotate(l.b.x, l.b.y, plra, plrx, plry);
     end;
 
     if (am_cheating <> 0) or (pl.flags and ML_MAPPED <> 0) then
@@ -1736,7 +1603,7 @@ begin
       y := trace.y div FRACTOMAPUNIT;
 
       if allowautomaprotate then
-        AM_rotate(@x, @y, plra, plrx, plry);
+        TAutomapRotation.Rotate(x, y, plra, plrx, plry);
 
       if P_AproxDistance(x - x2, y - y2) < (128 * FRACUNIT) div FRACTOMAPUNIT then
       begin
@@ -1894,7 +1761,7 @@ begin
     y := p.mo.y;
 
     if allowautomaprotate then
-      AM_rotate(@x, @y, ANG90 - plr.mo.angle, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
+      TAutomapRotation.Rotate(x, y, ANG90 - plr.mo.angle, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
 
     AM_drawLineCharacter
       (@player_arrow, NUMPLYRLINES, 0, p.mo.angle,
@@ -1947,7 +1814,7 @@ begin
       y := t.y div FRACTOMAPUNIT;
 
       if allowautomaprotate then
-        AM_rotate(@x, @y, plra, plrx, plry);
+        TAutomapRotation.Rotate(x, y, plra, plrx, plry);
 
 {$IF DEFINED(HERETIC)}
       if t._type = Ord(MT_CKEY) then
@@ -2043,10 +1910,10 @@ begin
       fy := am_marks.Point(i).Y;
 
       if allowautomaprotate then
-        AM_rotate(@fx, @fy, ANG90 - plr.mo.angle, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
+        TAutomapRotation.Rotate(fx, fy, ANG90 - plr.mo.angle, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
 
-      fx := CXMTOF(fx);
-      fy := CYMTOF(fy);
+      fx := am_view.MapToFrameX(fx);
+      fy := am_view.MapToFrameY(fy);
 
       if (fx >= f_x) and (fx <= f_w - w) and (fy >= f_y) and (fy <= f_h - h) then
       {$IFDEF OPENGL}
@@ -2115,7 +1982,7 @@ begin
     if texturedautomap then
     begin
       AM_setSubSectorDrawFuncs;
-      AM_drawSubSectors;
+      AM_drawSubSectors(am_view.Window);
     end;
   end;
   if automapgrid then

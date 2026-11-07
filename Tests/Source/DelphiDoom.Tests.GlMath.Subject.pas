@@ -18,16 +18,9 @@ type
   /// <summary>The classes of the library, asked by the scenarios of parity</summary>
   TGlMathSubject = class(TInterfacedObject, IGlMathSubject)
   strict private
-    FFrustum: IGlFrustum;
     FClipper: IGlAngleClipper;
   public
     constructor Create;
-    procedure CalculateFrustum(const AProjection, AModelView: TGlMatrix4);
-    function Plane(const ASide, AIndex: Integer): Single;
-    function ContainsPoint(const AX, AY, AZ: Single): Boolean;
-    function ContainsSphere(const AX, AY, AZ, ARadius: Single): Boolean;
-    function ContainsBox(const AX, AY, AZ, ASizeX, ASizeY, ASizeZ: Single): Boolean;
-    function ContainsCube(const AX, AY, AZ, ASize: Single): Boolean;
     procedure ClipperClear;
     procedure ClipperSafeAdd(const AStart, AEnd: Cardinal);
     function ClipperSafeCheck(const AStart, AEnd: Cardinal): Boolean;
@@ -48,38 +41,7 @@ uses
 constructor TGlMathSubject.Create;
 begin
   inherited Create;
-  FFrustum := TGlMathFactory.CreateFrustum;
   FClipper := TGlMathFactory.CreateAngleClipper;
-end;
-
-procedure TGlMathSubject.CalculateFrustum(const AProjection, AModelView: TGlMatrix4);
-begin
-  FFrustum.Calculate(AProjection, AModelView);
-end;
-
-function TGlMathSubject.Plane(const ASide, AIndex: Integer): Single;
-begin
-  Result := FFrustum.GetPlane(TGlFrustumSide(ASide), AIndex);
-end;
-
-function TGlMathSubject.ContainsPoint(const AX, AY, AZ: Single): Boolean;
-begin
-  Result := FFrustum.ContainsPoint(AX, AY, AZ);
-end;
-
-function TGlMathSubject.ContainsSphere(const AX, AY, AZ, ARadius: Single): Boolean;
-begin
-  Result := FFrustum.ContainsSphere(AX, AY, AZ, ARadius);
-end;
-
-function TGlMathSubject.ContainsBox(const AX, AY, AZ, ASizeX, ASizeY, ASizeZ: Single): Boolean;
-begin
-  Result := FFrustum.ContainsBox(AX, AY, AZ, ASizeX, ASizeY, ASizeZ);
-end;
-
-function TGlMathSubject.ContainsCube(const AX, AY, AZ, ASize: Single): Boolean;
-begin
-  Result := FFrustum.ContainsCube(AX, AY, AZ, ASize);
 end;
 
 procedure TGlMathSubject.ClipperClear;

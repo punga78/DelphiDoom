@@ -37,6 +37,8 @@ uses
   m_fixed,
   d_event,
   DelphiDoom.Input.Intf,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
   d_player,
   d_ticcmd;
 
@@ -352,6 +354,22 @@ var
 //==============================================================================
 procedure G_ConfigureInput(const APoller: IInputPoller);
 
+//==============================================================================
+//
+// G_ConfigureNetGame
+// The network, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// G_ConfigureScreenshot
+// The screenshots, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+
 implementation
 
 uses
@@ -402,6 +420,55 @@ uses
   sv_save,
   udmf_telept,
   tables;
+
+var
+  // given by the composition root
+  g_netgame_ref: IEngineNetGame = nil;
+  g_screenshot_ref: IEngineScreenshot = nil;
+
+//==============================================================================
+//
+// G_ConfigureNetGame
+//
+//==============================================================================
+procedure G_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  g_netgame_ref := ANetGame;
+end;
+
+//==============================================================================
+//
+// G_NetGame
+//
+//==============================================================================
+function G_NetGame: IEngineNetGame;
+begin
+  if g_netgame_ref = nil then
+    I_Error('G_ConfigureNetGame() was not called: the network is missing');
+  result := g_netgame_ref;
+end;
+
+//==============================================================================
+//
+// G_ConfigureScreenshot
+//
+//==============================================================================
+procedure G_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  g_screenshot_ref := AScreenshot;
+end;
+
+//==============================================================================
+//
+// G_Screenshots
+//
+//==============================================================================
+function G_Screenshots: IEngineScreenshot;
+begin
+  if g_screenshot_ref = nil then
+    I_Error('G_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := g_screenshot_ref;
+end;
 
 var
   // given by the composition root (G_ConfigureInput)
@@ -606,7 +673,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := D_NetExpectedConsistency;
+  cmd.consistency := G_NetGame.ExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -1065,7 +1132,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := D_NetExpectedConsistency;
+  cmd.consistency := G_NetGame.ExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -2601,7 +2668,7 @@ begin
         G_DoWorldDone;
       ga_screenshot:
         begin
-          M_ScreenShot;
+          G_Screenshots.Take;
           gameaction := ga_nothing;
         end;
       ga_leavemap:
@@ -2622,7 +2689,7 @@ begin
       pl := @players[i];
       cmd := @pl.cmd;
 
-      D_GetNetCommand(i, buf, cmd);
+      G_NetGame.GetCommand(i, buf, cmd);
 
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
@@ -2632,9 +2699,9 @@ begin
       if netgame and not netdemo and ((gametic mod ticdup) = 0) then
       begin
         if pl.mo <> nil then
-          D_VerifyNetConsistency(i, cmd.consistency, pl.mo.x)
+          G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
         else
-          D_VerifyNetConsistency(i, cmd.consistency, M_GetMenuRandomIndex);
+          G_NetGame.VerifyConsistency(i, cmd.consistency, M_GetMenuRandomIndex);
       end;
     end;
   end;

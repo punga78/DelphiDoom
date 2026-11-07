@@ -33,6 +33,9 @@ unit am_textured;
 
 interface
 
+uses
+  DelphiDoom.Automap.Types;
+
 //==============================================================================
 //
 // AM_setSubSectorDrawFuncs
@@ -44,8 +47,10 @@ procedure AM_setSubSectorDrawFuncs;
 //
 // AM_drawSubSectors
 //
+// AWindow: the window on the map of Libs\Automap, read once for the frame
+//
 //==============================================================================
-procedure AM_drawSubSectors;
+procedure AM_drawSubSectors(const AWindow: TAutomapWindow);
 
 //==============================================================================
 //
@@ -68,7 +73,8 @@ uses
   doomdef,
   doomdata,
   am_map,
-  DelphiDoom.Automap.Types,
+  DelphiDoom.Automap.Rotation,
+  DelphiDoom.Automap.Transform,
 {$IFNDEF OPENGL}
   i_system,
   i_threads,
@@ -281,7 +287,8 @@ end;
 //
 //==============================================================================
 procedure AM_DrawTexturedTriangle(const lst: seg_ap3; const lump: integer; const sec: Psector_t;
-  const aminx, amaxx: integer; const {$IFDEF OPENGL}lightlevel: integer{$ELSE}amcolormap: pointer{$ENDIF});
+  const aminx, amaxx: integer; const {$IFDEF OPENGL}lightlevel: integer{$ELSE}amcolormap: pointer{$ENDIF};
+  const window: TAutomapWindow);
 {$IFNDEF OPENGL}
 var
   data: PByteArray;
@@ -290,7 +297,6 @@ var
   fang: angle_t;
   fangx, fangy: fixed_t;
   fangsin, fangcos: fixed_t;
-  window: TAutomapWindow; // the window on the map, read once: the loops below run for each pixel
 
   procedure fillLeftFlatTriangle(v1, v2, v3: drawpoint_t);
   var
@@ -450,9 +456,6 @@ var
   v: Pvertex_t;
   i: integer;
 begin
-{$IFNDEF OPENGL}
-  window := AM_GetWindow;
-{$ENDIF}
   v := lst[0].v1;
   t[0].x := v.x div FRACTOMAPUNIT;
   t[0].y := v.y div FRACTOMAPUNIT;
@@ -477,9 +480,9 @@ begin
   for i := 0 to 2 do
   begin
     if allowautomaprotate then
-      AM_rotate(@t[i].x, @t[i].y, pla2, plx, ply);
-    t[i].x := CXMTOF(t[i].x);
-    t[i].y := CYMTOF(t[i].y);
+      TAutomapRotation.Rotate(t[i].x, t[i].y, pla2, plx, ply);
+    t[i].x := TAutomapTransform.MapToFrameX(window, t[i].x);
+    t[i].y := TAutomapTransform.MapToFrameY(window, t[i].y);
   end;
 
   if t[1].x < t[0].x then
@@ -625,6 +628,8 @@ end;
 type
   dssparams_t = record
     minx, maxx: integer;
+    // the window on the map, the same for all the threads
+    window: TAutomapWindow;
   end;
   dssparams_p = ^dssparams_t;
 
@@ -723,7 +728,7 @@ begin
         lst[1] := lst[2];
         lst[2] := seg;
 
-        AM_DrawTexturedTriangle(lst, lump, ssector.sector, parms.minx, parms.maxx, {$IFDEF OPENGL}lightlevel{$ELSE}amcolormap{$ENDIF});
+        AM_DrawTexturedTriangle(lst, lump, ssector.sector, parms.minx, parms.maxx, {$IFDEF OPENGL}lightlevel{$ELSE}amcolormap{$ENDIF}, parms.window);
       end;
     end;
 
@@ -795,7 +800,7 @@ begin
           Inc(seg);
           lst[1] := lst[2];
           lst[2] := seg;
-          AM_DrawTexturedTriangle(lst, lump, ssector.sector, parms.minx, parms.maxx, {$IFDEF OPENGL}lightlevel{$ELSE}amcolormap{$ENDIF});
+          AM_DrawTexturedTriangle(lst, lump, ssector.sector, parms.minx, parms.maxx, {$IFDEF OPENGL}lightlevel{$ELSE}amcolormap{$ENDIF}, parms.window);
         end;
       end;
 
@@ -818,7 +823,7 @@ var
 // AM_drawSubSectors
 //
 //==============================================================================
-procedure AM_drawSubSectors;
+procedure AM_drawSubSectors(const AWindow: TAutomapWindow);
 var
   parms: {$IFNDEF OPENGL}array[0..MAXDSSTHREADS - 1] of{$ENDIF} dssparams_t;
 {$IFNDEF OPENGL}
@@ -857,6 +862,7 @@ begin
     for i := 0 to numdssthreads - 1 do
     begin
       parms[i].minx := l;
+      parms[i].window := AWindow;
       if i = numdssthreads - 1 then
         parms[i].maxx := f_w - 1
       else
@@ -875,6 +881,7 @@ begin
   {$ENDIF}
   begin
     parms{$IFNDEF OPENGL}[0]{$ENDIF}.minx := 1;
+    parms{$IFNDEF OPENGL}[0]{$ENDIF}.window := AWindow;
     parms{$IFNDEF OPENGL}[0]{$ENDIF}.maxx := f_w - 1;
     AM_dodrawSubSectors(@parms{$IFNDEF OPENGL}[0]{$ENDIF});
   end;

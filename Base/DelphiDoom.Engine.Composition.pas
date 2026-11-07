@@ -62,7 +62,8 @@ uses
   DelphiDoom.Zone.Factory,
   DelphiDoom.Engine.Zone.Memory,
   z_zone,
-  d_net,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Net.Game,
 {$IFNDEF HEXEN}
   DelphiDoom.Endoom.Factory,
   DelphiDoom.Engine.Endoom.Intf,
@@ -100,6 +101,16 @@ uses
   DelphiDoom.Engine.Console.FileSystem,
   DelphiDoom.Engine.Console.Startup,
   DelphiDoom.Engine.Console.VariableSource,
+  DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.Console.Screen,
+  DelphiDoom.Engine.Configuration.Intf,
+  DelphiDoom.Engine.Configuration.Defaults,
+  DelphiDoom.Engine.Screenshot.Intf,
+  DelphiDoom.Engine.Screenshot.Service,
+  DelphiDoom.Engine.Platform.Intf,
+  DelphiDoom.Engine.Platform.Files,
+  DelphiDoom.Engine.Palette.Intf,
+  DelphiDoom.Engine.Palette.DefaultPalette,
   c_cmds,
   r_translations,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
@@ -109,7 +120,21 @@ uses
   r_precalc,
   r_main,
   v_video,
-  c_con,
+{$IFNDEF OPENGL}
+  v_displaymode,
+{$ENDIF}
+  p_tick,
+  p_common,
+  psi_system,
+  psi_globals,
+  w_utils,
+{$IFDEF HEXEN}
+  g_demo,
+  sv_save,
+{$ENDIF}
+{$IFDEF STRIFE}
+  p_saveg,
+{$ENDIF}
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.TextureDefs.Factory,
@@ -119,7 +144,6 @@ uses
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Factory,
-  r_palette,
   DelphiDoom.Definitions.Types,
   DelphiDoom.Definitions.Intf,
   DelphiDoom.Definitions.Factory,
@@ -255,7 +279,6 @@ uses
   doomdef,
   d_main,
   m_argv,
-  m_misc,
   i_system,
   i_tmp,
   DelphiDoom.Platform.Intf,
@@ -264,7 +287,7 @@ uses
 
 // The script preprocessor (given back: ActorDef, MapInfo, DynLights and MODELDEF use it)
 // and the evaluator of the expressions in the parameters of the actors
-function ComposeScanner(const ALog: ILog): IScriptTextPreprocessor;
+function ComposeScanner(const ALog: ILog; const ADefaults: IEngineDefaults): IScriptTextPreprocessor;
 var
   LDirectives: TArray<IScriptDirective>;
   LEvaluator: TContextExpressionEvaluator;
@@ -277,11 +300,11 @@ begin
       begin
         vanilla_demo_off := true;
       end),
-    TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
+    TCvarForceDirective.Create(TEngineCvarSetter.Create(ADefaults), ALog),
     TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
 {$ELSE}
   LDirectives := TArray<IScriptDirective>.Create(
-    TCvarForceDirective.Create(TEngineCvarSetter.Create, ALog),
+    TCvarForceDirective.Create(TEngineCvarSetter.Create(ADefaults), ALog),
     TCreatePaletteDirective.Create(TEnginePaletteGenerator.Create, ALog));
 {$ENDIF}
   Result := TScriptTextPreprocessor.Create(TEngineIncludeSource.Create, LDirectives,
@@ -309,11 +332,20 @@ begin
   M_ConfigureDisplayModes(LCatalog);
 end;
 
+// The end screen; the result is its tic, that the loop of the network runs (nothing in Hexen,
+// which has no end screen)
+function ComposeEndoom: TProc;
 {$IFNDEF HEXEN}
-procedure ComposeEndoom;
 var
   LScreen: IEngineEndoomScreen;
+{$ENDIF}
 begin
+{$IFDEF HEXEN}
+  Result :=
+    procedure
+    begin
+    end;
+{$ELSE}
   LScreen := TEngineEndoomScreen.Create(TEndoomFactory.CreateRenderer,
     TEndoomFactory.CreateSession(TICRATE),
     function: string
@@ -323,12 +355,28 @@ begin
     end);
   D_ConfigureEndoom(LScreen);
   G_ConfigureEndoom(LScreen);
-  D_ConfigureNetEndoom(LScreen);
 {$IFDEF OPENGL}
   GL_ConfigureEndoom(LScreen);
 {$ENDIF}
-end;
+  Result :=
+    procedure
+    begin
+      LScreen.Tick;
+    end;
 {$ENDIF}
+end;
+
+procedure ComposeNetGame(const AClock: IClock; const ALog: ILog; const AGame: IGameContext;
+  const AConsole: IEngineConsole; const AEndScreenTick: TProc);
+var
+  LNetGame: IEngineNetGame;
+begin
+  LNetGame := TEngineNetGame.Create(AClock, ALog, AGame, AConsole, AEndScreenTick);
+  D_ConfigureNetGame(LNetGame);
+  G_ConfigureNetGame(LNetGame);
+  R_ConfigureNetGame(LNetGame);
+  I_ConfigureNetGame(LNetGame);
+end;
 
 procedure ComposeInput(const ALog: ILog);
 var
@@ -523,12 +571,18 @@ end;
 procedure ComposePalette;
 var
   LMatcher: IColorMatcher;
+  LDefaultPalette: IEngineDefaultPalette;
 begin
   LMatcher := TPaletteFactory.CreateColorMatcher;
-  R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
-  R_ConfigureColormaps(LMatcher, TPaletteFactory.CreateColormapPreparer);
+  // one palette read once, for the colormaps and the voxels
+  LDefaultPalette := TEngineDefaultPalette.Create(
+    TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
+  R_ConfigureColormaps(LMatcher, TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-  R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer);
+  R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
+{$ENDIF}
+{$IFNDEF OPENGL}
+  R_ConfigureVoxelPalette(LDefaultPalette);
 {$ENDIF}
   R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
@@ -556,29 +610,52 @@ begin
   R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create);
 end;
 
-procedure ComposeConsole(const ALog: ILog; const AGame: IGameContext);
+// The console on the screen; it owns the objects of Libs\Console. ARegistry and AInterpreter
+// are given back: the defaults register their commands and run "get"
+function ComposeConsole(const ALog: ILog; const AGame: IGameContext;
+  out ARegistry: ICommandRegistry; out AInterpreter: IConsoleInterpreter): IEngineConsole;
 var
-  LRegistry: ICommandRegistry;
-  LInterpreter: IConsoleInterpreter;
   LOutput: IConsoleOutput;
   LRunner: IConsoleScriptRunner;
   LVariables: IConsoleVariableSource;
 begin
-  LRegistry := TConsoleFactory.CreateRegistry;
-  LInterpreter := TConsoleFactory.CreateInterpreter(LRegistry);
-  C_ConfigureCommands(LRegistry, LInterpreter);
+  ARegistry := TConsoleFactory.CreateRegistry;
+  AInterpreter := TConsoleFactory.CreateInterpreter(ARegistry);
+  C_ConfigureCommands(ARegistry, AInterpreter);
   LOutput := TEngineConsoleOutput.Create;
-  LRunner := TConsoleFactory.CreateScriptRunner(LInterpreter, TEngineConsoleFileSystem.Create,
+  LRunner := TConsoleFactory.CreateScriptRunner(AInterpreter, TEngineConsoleFileSystem.Create,
     LOutput, ALog);
   LVariables := TEngineConsoleVariableSource.Create;
-  C_ConfigureScripts(
-    TConsoleFactory.CreateStandardCommands(LRegistry, LOutput, LRunner),
+  Result := TEngineConsoleScreen.Create(ARegistry, AInterpreter,
+    TConsoleFactory.CreateStandardCommands(ARegistry, LOutput, LRunner),
     TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create, LRunner, LOutput, AppTitle),
-    TConsoleFactory.CreateVariableCommands(LRegistry, LVariables, LOutput, ALog, AGame));
-  C_ConfigureInput(
-    TConsoleFactory.CreateCommandQueue(LInterpreter),
-    TConsoleFactory.CreateInputLine(']', LInterpreter, LOutput, TConsoleFactory.CreateHistory,
-      TConsoleFactory.CreateCompleter(LRegistry, LVariables)));
+    TConsoleFactory.CreateVariableCommands(ARegistry, LVariables, LOutput, ALog, AGame),
+    TConsoleFactory.CreateCommandQueue(AInterpreter),
+    TConsoleFactory.CreateInputLine(']', AInterpreter, LOutput, TConsoleFactory.CreateHistory,
+      TConsoleFactory.CreateCompleter(ARegistry, LVariables)));
+  D_ConfigureConsole(Result);
+{$IFDEF OPENGL}
+  GL_ConfigureConsole(Result);
+{$ELSE}
+  V_ConfigureConsole(Result);
+{$ENDIF}
+  P_ConfigureTickerConsole(Result);
+  P_ConfigureConsole(Result);
+  PS_ConfigureConsole(Result);
+end;
+
+// The defaults of the configuration file, with their two console commands
+function ComposeDefaults(const ARegistry: ICommandRegistry;
+  const AInterpreter: IConsoleInterpreter): IEngineDefaults;
+var
+  LDefaults: TEngineDefaults;
+begin
+  LDefaults := TEngineDefaults.Create(TConfigurationFactory.CreateFormat, ARegistry, AInterpreter);
+  Result := LDefaults;
+  LDefaults.RegisterCommands;
+  D_ConfigureDefaults(Result);
+  I_ConfigureDefaults(Result);
+  PS_ConfigureDefaults(Result);
 end;
 
 procedure ComposeImaging;
@@ -596,9 +673,15 @@ begin
 end;
 
 procedure ComposeScreenshot;
+var
+  LScreenshot: IEngineScreenshot;
 begin
-  M_ConfigureScreenshot(TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
+  LScreenshot := TEngineScreenshotService.Create(
+    TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
     TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create));
+  D_ConfigureScreenshot(LScreenshot);
+  G_ConfigureScreenshot(LScreenshot);
+  M_ConfigureScreenshot(LScreenshot);
 end;
 
 procedure ComposeTexture(const ALog: ILog);
@@ -619,9 +702,21 @@ end;
 function ComposePlatform: ITempFiles;
 var
   LStore: IFileStore;
+  LFiles: IEngineFiles;
 begin
   LStore := TPlatformFactory.CreateFileStore;
-  M_ConfigureFiles(LStore);
+  LFiles := TEngineFiles.Create(LStore);
+  // the demos and the saves (Hexen: g_demo and sv_save; Strife: also p_saveg and the menus)
+  G_ConfigureFiles(LFiles);
+{$IFDEF HEXEN}
+  SV_ConfigureFiles(LFiles);
+{$ENDIF}
+{$IFDEF STRIFE}
+  P_ConfigureFiles(LFiles);
+  M_ConfigureFiles(LFiles);
+{$ENDIF}
+  PS_ConfigureFiles(LFiles);
+  W_ConfigureFiles(LFiles);
   Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore);
   I_ConfigureTempFiles(Result);
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
@@ -787,6 +882,11 @@ var
   LGame: TUdmfGame;
   LPreprocessor: IScriptTextPreprocessor;
   LTempFiles: ITempFiles;
+  LRegistry: ICommandRegistry;
+  LInterpreter: IConsoleInterpreter;
+  LConsole: IEngineConsole;
+  LDefaults: IEngineDefaults;
+  LEndScreenTick: TProc;
 begin
   // The zone first: whatever is built next can already allocate from it
   Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
@@ -795,7 +895,6 @@ begin
   D_Configure(LEngine);
   ComposeIwad;
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
-  M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
   LContext := TEngineGameContext.Create;
   LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
     function: Boolean
@@ -803,17 +902,18 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
-  LPreprocessor := ComposeScanner(LLog);
+  // the console before anyone registers a command; the defaults after it (#CVARFORCE uses them)
+  LConsole := ComposeConsole(LLog, LContext, LRegistry, LInterpreter);
+  LDefaults := ComposeDefaults(LRegistry, LInterpreter);
+  LPreprocessor := ComposeScanner(LLog, LDefaults);
   LTempFiles := ComposePlatform;
   ComposeMathCore;
   ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl(LPreprocessor);
 {$ENDIF}
-  ComposeConsole(LLog, LContext);
   LClock := TClockFactory.CreateClock(LLog);
   I_ConfigureClock(LClock);
-  D_ConfigureNet(LClock, LLog, LContext);
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeDisplayModes;
   ComposeInput(LLog);
@@ -834,9 +934,8 @@ begin
   ComposeTableExport;
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
-{$IFNDEF HEXEN}
-  ComposeEndoom;
-{$ENDIF}
+  LEndScreenTick := ComposeEndoom();
+  ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick);
   ComposeVoxels(LLog);
 
   LWadServices := TEngineWadServices.Create;

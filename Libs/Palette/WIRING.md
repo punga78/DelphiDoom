@@ -125,6 +125,8 @@ del byte di Strife, le regole strane di `CR_`/`CR` nei nomi.
   la direttiva `#CREATEPALETTE`), che riceve `IPaletteBuilder` dal costruttore. Finché `sc_utils.pas` assembla da sé le
   direttive del preprocessore resta anche un costruttore senza argomenti che crea il costruttore del profilo del gioco.
   Verifica nello stesso eseguibile: PLAYPAL, COLORMAP e FOGMAP del WAD generato identici al vecchio codice negli otto giochi.
-* **Restano** `r_palette.pas` (`R_DefaultPalette` è un servizio con stato, la palette letta una volta; tra i chiamanti c'è
-  `r_voxels.pas`, fuori da questa ondata) e `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
+* `r_palette.pas` è cancellata (#145): la palette di base (letta una volta) è `TEngineDefaultPalette`
+  (`Base\DelphiDoom.Engine.Palette.DefaultPalette.pas`, `IEngineDefaultPalette`, sopra `IPaletteUnpacker`), che `ComposePalette`
+  dà a `R_ConfigureColormaps` (`r_data`), `R_ConfigureCustomColormaps` (`r_colormaps`) e `R_ConfigureVoxelPalette` (`r_voxels`).
+* **Resta** `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
   `p_saveg`: sono dati del motore).

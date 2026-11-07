@@ -30,12 +30,23 @@ unit w_utils;
 
 interface
 
+uses
+  DelphiDoom.Engine.Platform.Intf;
+
 //==============================================================================
 //
 // W_RegisterUtilityCommands
 //
 //==============================================================================
 procedure W_RegisterUtilityCommands;
+
+//==============================================================================
+//
+// W_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure W_ConfigureFiles(const AFiles: IEngineFiles);
 
 implementation
 
@@ -47,6 +58,33 @@ uses
   m_misc,
   w_wad,
   z_zone;
+
+var
+  // given by the composition root
+  w_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// W_ConfigureFiles
+//
+//==============================================================================
+procedure W_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  w_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// W_Files
+//
+//==============================================================================
+function W_Files: IEngineFiles;
+begin
+  if w_files_ref = nil then
+    I_Error('W_ConfigureFiles() was not called: the files are missing');
+  result := w_files_ref;
+end;
+
 
 //==============================================================================
 //
@@ -145,7 +183,7 @@ begin
   p := Z_Malloc(len, PU_STATIC, nil);
   W_ReadLump(lump, p);
 
-  if M_WriteFile(fname, p, len) then
+  if W_Files.WriteFile(fname, p, len) then
     printf('Lump %s saved to file %s (%d bytes).'#13#10, [lumpname, fname, len])
   else
     I_Warning('Can not save lump %s to file %s.'#13#10, [lumpname, fname]);

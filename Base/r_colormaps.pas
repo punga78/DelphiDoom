@@ -38,7 +38,8 @@ uses
   m_fixed,
   r_diher,
   r_main,
-  DelphiDoom.Palette.Intf;
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Engine.Palette.Intf;
 
 const
   C_START = 'C_START';
@@ -47,10 +48,12 @@ const
 //==============================================================================
 //
 // R_ConfigureCustomColormaps
-// The colormap preparer of Libs\Palette, given by the composition root
+// The colormap preparer of Libs\Palette and the default palette, given by the
+// composition root
 //
 //==============================================================================
-procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer);
+procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer;
+  const APalette: IEngineDefaultPalette);
 
 //==============================================================================
 //
@@ -125,7 +128,6 @@ uses
   doomdef,
   i_system,
   r_data,
-  r_palette,
   r_defs,
   r_draw,
   v_data,
@@ -134,15 +136,18 @@ uses
 
 var
   colormap_preparer: IColormapPreparer = nil;
+  default_palette: IEngineDefaultPalette = nil;
 
 //==============================================================================
 //
 // R_ConfigureCustomColormaps
 //
 //==============================================================================
-procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer);
+procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer;
+  const APalette: IEngineDefaultPalette);
 begin
   colormap_preparer := APreparer;
+  default_palette := APalette;
 end;
 //==============================================================================
 //
@@ -161,7 +166,7 @@ var
   rowcolors: TArray<Cardinal>;
   nummaps: integer;
 begin
-  if colormap_preparer = nil then
+  if (colormap_preparer = nil) or (default_palette = nil) then
     I_Error('R_InitCustomColormaps(): the colormap preparer is not configured (ComposeEngine was not called)');
   in_c := false;
   lumps := TDNumberList.Create;
@@ -195,7 +200,7 @@ begin
   // JVAL: Read default palette
     SetLength(colors, 256);
     for j := 0 to 255 do
-      colors[j] := R_DefaultPalette^[j];
+      colors[j] := default_palette.Colors^[j];
 
     customcolormaps := mallocz(numcustomcolormaps * SizeOf(customcolormap_t));
     for i := 0 to numcustomcolormaps - 1 do
