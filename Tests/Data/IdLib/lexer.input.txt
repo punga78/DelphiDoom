@@ -1,0 +1,89 @@
+@@ code 0
+#define MAX(a,b) ((a)>(b)?(a):(b))
+int main(void) { x >>= 2; y <<= 3; z->w = a::b.*c; p...q; i++ + --j; a&&b||c; a!=b==c<=d>=e; ~x ^ y | z & w; $v \ # ## ; : ? [ ] , }
+a += b -= c *= d /= e %= f &= g |= h ^= i; a = b * c / d % e + f - g; !a < b > c
+@@ numbers 0
+0 7 08 09 0x1F 0XaB 0b101 0B11 077 0777 123 123u 123U 123l 123L 123ul 123lu 12.5 .5 5. 1e5 1e-5 1.5e+3 1.5E3
+1.5f 1.5F 1.5l 3.14159 0.000001 1234567890 4294967295 4294967296 0xFFFFFFFF 0xFFFFFFFFF -5 +5 00 0x 0b 1e 1e+ 123456789.123456789 0.1 100.25 1e22 1e-22 2e5.5
+@@ floatexc 1024
+1.#INF 1.#IND 1.#NAN 1.#QNAN 1.#SNAN 1.#INF00 2.#IND 1.#X abcdef
+@@ floatexc_error 4
+1.#INF x
+@@ ip 512
+192.168.1.1 192.168.1.1:27960 127.0.0.1: 10.0.0.1:80 1.2.3 x
+@@ ip_error 4
+1.2.3.4 x
+@@ ip_bad_count 516
+1.2.3 x
+@@ strings 0
+"hello" "con" "cat" 'a' 'b'
+"esc %x5Cn %x5Ct %x5Cx41 %x5Cx4a%x5Cx4B %x5C65 %x5C%x5C %x5C" %x5C' %x5C? %x5Ca %x5Cb %x5Cf %x5Cv %x5Cr end"
+'%x5Cn' 'ab' 'abc' ''
+@@ string_unterminated 4
+"abc
+@@ string_newline 4
+"abc
+def"
+@@ string_eof 4
+"abc
+@@ string_noconcat 8
+"a" "b" "c" 'x' 'y'
+@@ string_backslash_concat 4104
+"a" %x5C
+"b" "c" "d" %x5C
+"e" f "g" %x5C h
+@@ string_backslash_concat_bad 4104
+"a" %x5C
+b
+@@ string_noescape 16
+"a%x5Cnb" "c%x5C%x5C" "x%x5C" 'y%x5C'
+@@ string_escape_errors 4
+"bad %x5Cq escape" "next"
+@@ string_escape_big 4
+"big %x5Cx1FF %x5C300 %x5Cxzz end" "ok %x5C7 bell"
+@@ paths 128
+textures/common/caulk.tga models%x5Cx.ase ./dir ../up c:/x/y .hidden /abs/path a.b.c
+@@ numbernames 256
+3dsmax 4abc 5_x 6 7.5 0x1g 12ab_c 8
+@@ onlystrings 8192
+foo-bar "quoted str" 'x y' baz 12 -5 a/b/c { } x"y" end
+@@ comments 0
+a /* c */b //x
+c /**/d /* multi
+line */ e // end
+f /* g */ /* h */ i
+@@ comment_unterminated 0
+a /* never closed
+@@ comment_nested 0
+a /* b /* c */ d */ e
+@@ comment_line_eof 0
+a // no newline at the end
+@@ comment_slash 0
+a / b /x c/ d
+@@ unknown_punct 4
+a @ b
+@@ unknown_punct2 4
+x ` y
+@@ highascii 0
+a %xE9 b %xC9%xC9 c
+@@ decl 0
+entityDef monster_zombie {
+	"inherit"		"monster_base"
+	"scriptobject"	"monster_zombie"
+	"health"		"100"
+	// comment
+	"size"			"24 24 68"
+	"mins" "-16 -16 0"
+	model "models/zombie.md5mesh" /* inline */
+	anim idle { frames 12 rate 24.5 }
+}
+table sinTable { { 0, 0.5, 1.0, 0.5, 0, -0.5, -1.0, -0.5 } }
+@@ matrix 0
+( 1 2 3 ) ( ( 1 2 ) ( 3 4 ) ) -1.5 +2 - 7 8.5e1 ( ( ( 1 2 ) ( 3 4 ) ) ( ( 5 6 ) ( 7 8 ) ) ) 1 0 2 0x10 -0x10 -3.5
+@@ crlf 0
+a b%x0D%x0A c "d"%x0D%x0A// x%x0D%x0Ae
+@@ empty 0
+@@ whitespace 0
+   %x09 %x0A %x0A
+@@ tail_no_newline 0
+last
