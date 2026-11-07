@@ -34,10 +34,12 @@ unit nd_main;
 interface
 
 uses
+  System.SysUtils,
   d_delphi,
   doomdata,
   r_defs,
-  m_fixed;
+  m_fixed,
+  DelphiDoom.Nodes.Intf;
 
 var
   glnodesver: integer = 0;
@@ -337,6 +339,27 @@ type
 
 //==============================================================================
 //
+// ND_Configure
+//
+// The services of the Nodes library (Libs\Nodes), given by ComposeEngine. Without
+// them the functions of this unit stop the game with an error.
+//
+//==============================================================================
+procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
+  const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
+  AHexen: boolean);
+
+//==============================================================================
+//
+// ND_ReadLumpBytes
+//
+// All the bytes of a lump of the directory.
+//
+//==============================================================================
+function ND_ReadLumpBytes(const lump: integer): TBytes;
+
+//==============================================================================
+//
 // gld_GetGLNodesVersion
 //
 //==============================================================================
@@ -370,59 +393,42 @@ function gld_BuildNodes(const wadfile, gwafile: string): boolean;
 //==============================================================================
 function ND_GetNodes(const mapname: string): string;
 
-type
-  TGWAFile = class
-  private
-    ffilename: string;
-    fnumglvertexes: integer;
-    fglvertexes: PGLVertex2_tArray;
-    fnummapsubsectors: integer;
-    fmapsubsectors: PGLSubSector3_tArray;
-    fnummapnodes: integer;
-    fmapnodes: PGLNode4_tArray;
-    fnummapsegs: integer;
-    fmapsegs: PGLSeg3_tArray;
-  public
-    constructor Create(const afilename: string); virtual;
-    destructor Destroy; override;
-    property filename: string read ffilename;
-    property numglvertexes: integer read fnumglvertexes;
-    property glvertexes: PGLVertex2_tArray read fglvertexes;
-    property nummapsubsectors: integer read fnummapsubsectors;
-    property mapsubsectors: PGLSubSector3_tArray read fmapsubsectors;
-    property nummapnodes: integer read fnummapnodes;
-    property mapnodes: PGLNode4_tArray read fmapnodes;
-    property nummapsegs: integer read fnummapsegs;
-    property mapsegs: PGLSeg3_tArray read fmapsegs;
-  end;
+//==============================================================================
+//
+// ND_ReadGwa
+//
+// Reads a GWA file; sets glnodesver to its version of GL nodes.
+//
+//==============================================================================
+function ND_ReadGwa(const afilename: string): INodesGwa;
 
 //==============================================================================
 //
 // ND_LoadVertexes
 //
 //==============================================================================
-procedure ND_LoadVertexes(lump: integer; gwa: TGWAFile);
+procedure ND_LoadVertexes(lump: integer; const gwa: INodesGwa);
 
 //==============================================================================
 //
 // ND_LoadSubsectors
 //
 //==============================================================================
-procedure ND_LoadSubsectors(gwa: TGWAFile);
+procedure ND_LoadSubsectors(const gwa: INodesGwa);
 
 //==============================================================================
 //
 // ND_LoadNodes
 //
 //==============================================================================
-procedure ND_LoadNodes(gwa: TGWAFile);
+procedure ND_LoadNodes(const gwa: INodesGwa);
 
 //==============================================================================
 //
 // ND_LoadSegs
 //
 //==============================================================================
-procedure ND_LoadSegs(gwa: TGWAFile);
+procedure ND_LoadSegs(const gwa: INodesGwa);
 
 //==============================================================================
 //
@@ -434,13 +440,18 @@ procedure ND_NodesCheck(const lumpname: string);
 implementation
 
 uses
-  acs,
+  System.Classes,
   m_crc32,
   i_tmp,
   i_exec,
   DelphiDoom.Glbsp.Intf,
   DelphiDoom.Glbsp.Client,
   DelphiDoom.Glbsp.Provider,
+  DelphiDoom.Nodes.Types,
+  DelphiDoom.Nodes.Adler32,
+  DelphiDoom.Nodes.GlParser,
+  DelphiDoom.Nodes.Factory,
+  DelphiDoom.Nodes.MapScanner,
   i_system,
   p_setup,
   w_wad,
@@ -448,6 +459,69 @@ uses
   m_argv,
   r_main,
   z_zone;
+
+var
+  nd_source: INodesLumpSource = nil;
+  nd_detector: INodesGlDetector = nil;
+  nd_finder: INodesGlMapFinder = nil;
+  nd_inputbuilder: INodesGlbspInputBuilder = nil;
+  nd_hexen: boolean = false;
+
+//==============================================================================
+//
+// ND_Configure
+//
+//==============================================================================
+procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
+  const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
+  AHexen: boolean);
+begin
+  nd_source := ASource;
+  nd_detector := ADetector;
+  nd_finder := AFinder;
+  nd_inputbuilder := AInputBuilder;
+  nd_hexen := AHexen;
+end;
+
+//==============================================================================
+//
+// ND_CheckConfigured
+//
+//==============================================================================
+procedure ND_CheckConfigured;
+begin
+  if (nd_source = nil) or (nd_detector = nil) or (nd_finder = nil) or (nd_inputbuilder = nil) then
+    I_Error('ND_CheckConfigured(): ND_Configure() was not called');
+end;
+
+//==============================================================================
+//
+// ND_ReadLumpBytes
+//
+//==============================================================================
+function ND_ReadLumpBytes(const lump: integer): TBytes;
+begin
+  ND_CheckConfigured;
+  result := nd_source.ReadLump(lump);
+end;
+
+//==============================================================================
+//
+// ND_WriteBytes
+//
+//==============================================================================
+procedure ND_WriteBytes(const afile: string; const bytes: TBytes);
+var
+  fs: TFileStream;
+begin
+  fs := TFileStream.Create(afile, fmCreate);
+  try
+    if Length(bytes) > 0 then
+      fs.WriteBuffer(bytes[0], Length(bytes));
+  finally
+    fs.Free;
+  end;
+end;
 
 //==============================================================================
 // gld_GetGLNodesVersion
@@ -457,62 +531,11 @@ uses
 //
 //==============================================================================
 function gld_GetGLNodesVersion(const base: integer): integer;
-var
-  data: pointer;
 begin
-  if base + 4 > W_NumLumps then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  if base < 0 then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  if (strupper(char8tostring(W_GetNameForNum(base + Ord(ML_GL_VERTS)))) <> 'GL_VERT') or
-     (strupper(char8tostring(W_GetNameForNum(base + Ord(ML_GL_SEGS)))) <> 'GL_SEGS') or
-     (strupper(char8tostring(W_GetNameForNum(base + Ord(ML_GL_SSECT)))) <> 'GL_SSECT') or
-     (strupper(char8tostring(W_GetNameForNum(base + Ord(ML_GL_NODES)))) <> 'GL_NODES') then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  data := W_CacheLumpNum(base + Ord(ML_GL_VERTS), PU_STATIC);
-  if PLongWord(data)^ = gNd2 then
-  begin
-    Z_ChangeTag(data, PU_CACHE);
-    data := W_CacheLumpNum(base + Ord(ML_GL_SEGS), PU_STATIC);
-    if PLongWord(data)^ = gNd3 then
-      result := 3
-    else
-      result := 2;
+  ND_CheckConfigured;
+  result := nd_detector.DetectVersion(base);
+  if result > 0 then
     printf('gld_GetGLNodesVersion(): GL v%d nodes found.'#13#10, [result]);
-    Z_ChangeTag(data, PU_CACHE);
-    exit;
-  end;
-
-  if PLongWord(data)^ = gNd4 then
-  begin
-    Z_ChangeTag(data, PU_CACHE);
-    result := 4;
-    printf('gld_GetGLNodesVersion(): GL v%d nodes found.'#13#10, [result]);
-    exit;
-  end;
-
-  if PLongWord(data)^ = gNd5 then
-  begin
-    Z_ChangeTag(data, PU_CACHE);
-    result := 5;
-    printf('gld_GetGLNodesVersion(): GL v%d nodes found.'#13#10, [result]);
-    exit;
-  end;
-
-  Z_ChangeTag(data, PU_CACHE);
-  result := 0;
 end;
 
 //==============================================================================
@@ -523,140 +546,20 @@ end;
 procedure gld_GetGLVertexes(v: Pvertex_t; lump: integer; count: integer; ver: integer);
 var
   i: integer;
-  data: pointer;
-  glvert1: PGLVertex1_t;
-  glvert2: PGLVertex2_t;
+  glverts: TArray<TNodesGlVertex>;
 begin
   if (count = 0) or (ver = 0) then
     exit;
 
-  data := W_CacheLumpNum(lump, PU_STATIC);
-  if ver = 1 then
+  glverts := TNodesGlParser.ParseVertexes(ND_ReadLumpBytes(lump), ver);
+  if count > Length(glverts) then
+    count := Length(glverts);
+  for i := 0 to count - 1 do
   begin
-    glvert1 := data;
-    for i := 0 to count - 1 do
-    begin
-      v.x := glvert1.x shl FRACBITS;
-      v.y := glvert1.y shl FRACBITS;
-      inc(v);
-      inc(glvert1);
-    end;
-  end
-  else
-  begin
-    glvert2 := PGLVertex2_t(integer(data) + 4);
-    for i := 0 to count - 1 do
-    begin
-      v.x := glvert2.x;
-      v.y := glvert2.y;
-      inc(v);
-      inc(glvert2);
-    end;
+    v.x := glverts[i].X;
+    v.y := glverts[i].Y;
+    inc(v);
   end;
-  Z_Free(data);
-end;
-
-//
-// GetMapAdler32()
-// JVAL: Compute Adler-32 checksum
-const
-  MOD_ADLER = 65521;
-
-//==============================================================================
-//
-// GetMapAdler32
-//
-//==============================================================================
-function GetMapAdler32(maplump: integer): LongWord;
-var
-  data: PByteArray;
-  A, B: LongWord;
-  len: integer;
-
-  procedure Adler32Loop(lump: integer);
-  var
-    b1, b2: PByte;
-  begin
-    data := W_CacheLumpNum(lump, PU_STATIC);
-    len := W_LumpLength(lump);
-    b1 := @data[0];
-    b2 := @data[len];
-    while b1 <> b2 do
-    begin
-      A := (A + b1^) mod MOD_ADLER;
-      B := (B + A) mod MOD_ADLER;
-      inc(b1);
-    end;
-    Z_ChangeTag(data, PU_CACHE);
-  end;
-
-begin
-  A := 1;
-  B := 0;
-
-  Adler32Loop(maplump + Ord(ML_VERTEXES));
-  Adler32Loop(maplump + Ord(ML_LINEDEFS));
-
-  result := B * 65536 + A;
-
-end;
-
-//==============================================================================
-//
-// GetGLMapAdler32
-// JVAL: This function returns the Adler-32 value of glBSP utility
-//
-//==============================================================================
-function GetGLMapAdler32(glmaplump: integer; glmapname: string): LongWord;
-var
-  txt: string;
-  sglinf: TDStringList;
-  stmp: string;
-  i: integer;
-  s1, s2: string;
-  check: boolean;
-begin
-  txt := W_TextLumpNum(glmaplump);
-
-  sglinf := TDStringList.Create;
-
-  stmp := '';
-
-  for i := 1 to Length(txt) do
-  begin
-    if txt[i] in [#10, #13] then
-    begin
-      if stmp <> '' then
-      begin
-        sglinf.Add(stmp);
-        stmp := '';
-      end;
-    end
-    else
-      stmp := stmp + toupper(txt[i]);
-  end;
-  if stmp <> '' then
-    sglinf.Add(stmp);
-
-  result := 0;
-  check := strupper(glmapname) = strupper(char8tostring(W_GetNameForNum(glmaplump)));
-  for i := 0 to sglinf.Count - 1 do
-  begin
-    splitstring_ch(sglinf.Strings[i], s1, s2, '=');
-    if s1 = 'CHECKSUM' then
-      result := atoui(s2)
-    else if not check and (s1 = 'MAPNAME') then
-    begin // Wrong map!
-      check := (strupper(glmapname) = strupper(s2)) or (strupper(glmapname) = 'GL_' + strupper(s2));
-      if not check then
-        break;
-    end;
-  end;
-
-  sglinf.Free;
-
-  if not check then
-    result := 0;
 end;
 
 //==============================================================================
@@ -665,70 +568,9 @@ end;
 //
 //==============================================================================
 function gld_GetGLMapLump(const maplump: integer): integer;
-var
-  adler32: LongWord;
-  glmapname: string;
-  glmapname8: name8_t;
-  defglmapname8: name8_t;
-  glmaplump: integer;
-  i: integer;
 begin
-  adler32 := GetMapAdler32(maplump);
-  if adler32 = 0 then // JVAL: unused?
-  begin
-    result := -1;
-    exit;
-  end;
-
-  glmapname8.s := W_GetNameForNum(maplump);
-  glmapname := 'GL_' + char8tostring(glmapname8.s);
-  if Length(glmapname) <= 8 then
-  begin
-  // Check the first lump to find
-    glmaplump := W_CheckNumForName(glmapname);
-    if GetGLMapAdler32(glmaplump, glmapname) = adler32 then
-    begin
-      result := glmaplump;
-      exit;
-    end;
-  // Check all the lumps after the map
-    for i := maplump + Ord(ML_BLOCKMAP) + 1 to W_NumLumps - 1 do
-      if W_LumpIsNamed(i, glmapname8) then
-        if i <> glmaplump then // We've already checked this!
-        begin
-          if GetGLMapAdler32(i, glmapname) = adler32 then
-          begin
-            result := i;
-            exit;
-          end;
-        end;
-  end;
-
-  // Check for GL_LEVEL lumps
-  defglmapname8.s := stringtochar8('GL_LEVEL');
-  for i := 0 to W_NumLumps - 1 do
-    if W_LumpIsNamed(i, glmapname8) then
-      begin
-        if GetGLMapAdler32(i, glmapname) = adler32 then
-        begin
-          result := i;
-          exit;
-        end;
-      end;
-
-  // No luck so far? Look for the lumps previous to map
-  // Check all the lumps after the map
-  for i := 0 to maplump - 1 do
-    if W_LumpIsNamed(i, glmapname8) then
-      begin
-        if GetGLMapAdler32(i, glmapname) = adler32 then
-        begin
-          result := i;
-          exit;
-        end;
-      end;
-
-  result := -1;
+  ND_CheckConfigured;
+  result := nd_finder.FindGlMapLump(maplump);
 end;
 
 //==============================================================================
@@ -800,45 +642,6 @@ begin
     result := HextW(HiWord) + HextW(LoWord);
 end;
 
-{$IFNDEF HEXEN}
-type
-  hexenmapthing_t = record
-    tid: smallint;
-    x: smallint;
-    y: smallint;
-    height: smallint;
-    angle: smallint;
-    _type: word;
-    options: smallint;
-    special: byte;
-    arg1: byte;
-    arg2: byte;
-    arg3: byte;
-    arg4: byte;
-    arg5: byte;
-  end;
-  Phexenmapthing_t = ^hexenmapthing_t;
-  hexenmapthing_tArray = array[0..$FFFF] of hexenmapthing_t;
-  Phexenmapthing_tArray = ^hexenmapthing_tArray;
-
-  hexenmaplinedef_t = record
-    v1: smallint;
-    v2: smallint;
-    flags: smallint;
-    special: byte;
-    arg1: byte;
-    arg2: byte;
-    arg3: byte;
-    arg4: byte;
-    arg5: byte;
-  // sidenum[1] will be -1 if one sided
-    sidenum: array[0..1] of smallint;
-  end;
-  Phexenmaplinedef_t = ^hexenmaplinedef_t;
-  hexenmaplinedef_tArray = array[0..$FFFF] of hexenmaplinedef_t;
-  Phexenmaplinedef_tArray = ^hexenmaplinedef_tArray;
-{$ENDIF}
-
 //==============================================================================
 //
 // ND_GetNodes
@@ -846,163 +649,28 @@ type
 //==============================================================================
 function ND_GetNodes(const mapname: string): string;
 var
-  header: wadinfo_t;
-  lump, maplump: integer;
-  i, len: integer;
-  f: TFile;
+  maplump: integer;
   adler32: LongWord;
   path: string;
   mapfilename: string;
   gwafilename: string;
-  infotable: array[0..11] of filelump_t;
-  ninfolumps: integer;
-  buf: PByteArray;
-  hasbehavior: boolean;
-{$IFNDEF HEXEN}
-  x: integer;
-  hlen: integer;
-  vthings: Pmapthing_tArray;
-  hthings: Phexenmapthing_tArray;
-  nthings: integer;
-  vlinedefs: Pmaplinedef_tArray;
-  hlinedefs: Phexenmaplinedef_tArray;
-  nlinedefs: integer;
-{$ENDIF}
 begin
+  ND_CheckConfigured;
   maplump := W_GetNumForName(mapname);
-  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: maplump'#13#10);
-  adler32 := GetMapAdler32(maplump);
-  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: adler32'#13#10);
+  adler32 := TNodesAdler32.OfMap(nd_source, maplump);
 
   path := M_SaveFileName('DATA\');
   MkDir(path);
   path := path + 'BSP\';
-  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: path'#13#10);
   MkDir(path);
 
   gwafilename := fexpand(path + mapname + '_' + HextL(adler32) + '.gwa');
-  if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: gwafilename'#13#10);
 
   if not fexists(gwafilename) then
   begin
     mapfilename := I_NewTempFile(mapname + '_' + HextL(adler32) + '.wad');
-    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: tempfile'#13#10);
+    ND_WriteBytes(mapfilename, nd_inputbuilder.BuildForMap(maplump));
 
-    header.identification :=
-      integer(Ord('P') or (Ord('W') shl 8) or (Ord('A') shl 16) or (Ord('D') shl 24));
-
-    hasbehavior := acc_isbehaviorlump(maplump + Ord(ML_BEHAVIOR));
-    if hasbehavior then
-      ninfolumps := 12
-    else
-      ninfolumps := 11;
-    header.numlumps := {$IFDEF HEXEN}12{$ELSE}ninfolumps{$ENDIF};
-
-    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: create'#13#10);
-    f := TFile.Create(mapfilename, fCreate);
-    f.Write(header, SizeOf(header));
-
-    ZeroMemory(@infotable, SizeOf(infotable));
-
-    for i := 0 to ninfolumps - 1 do
-    begin
-      lump := maplump + i;
-      if lump >= W_NumLumps then
-        Break;
-
-      len := W_LumpLength(lump);
-      if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: lump %d'#13#10, [i]);
-
-      infotable[i].filepos := f.Position;
-      infotable[i].name := W_GetNameForNum(lump);
-
-      {$IFNDEF HEXEN}
-      if hasbehavior and (i = Ord(ML_THINGS)) then
-      begin
-        vthings := malloc(len);
-        W_ReadLump(lump, vthings);
-        nthings := len div SizeOf(mapthing_t);
-        hlen := nthings * SizeOf(hexenmapthing_t);
-        hthings := malloc(hlen);
-        for x := 0 to nthings - 1 do
-        begin
-          hthings[x].tid := 0;
-          hthings[x].x := vthings[x].x;
-          hthings[x].y := vthings[x].y;
-          hthings[x].height := 0;
-          hthings[x].angle := vthings[x].angle;
-          hthings[x]._type := vthings[x]._type;
-          hthings[x].options := vthings[x].options;
-          hthings[x].special := 0;
-          hthings[x].arg1 := 0;
-          hthings[x].arg2 := 0;
-          hthings[x].arg3 := 0;
-          hthings[x].arg4 := 0;
-          hthings[x].arg5 := 0;
-        end;
-        infotable[i].size := hlen;
-        f.Write(hthings^, hlen);
-        memfree(pointer(vthings), len);
-        memfree(pointer(hthings), hlen);
-      end
-      else if hasbehavior and (i = Ord(ML_LINEDEFS)) then
-      begin
-        vlinedefs := malloc(len);
-        W_ReadLump(lump, vlinedefs);
-        nlinedefs := len div SizeOf(maplinedef_t);
-        hlen := nlinedefs * SizeOf(hexenmaplinedef_t);
-        hlinedefs := malloc(hlen);
-        for x := 0 to nlinedefs - 1 do
-        begin
-          hlinedefs[x].v1 := vlinedefs[x].v1;
-          hlinedefs[x].v2 := vlinedefs[x].v2;
-          hlinedefs[x].flags := vlinedefs[x].flags;
-          if IsIntegerInRange(vlinedefs[x].special, 0, 255) then
-            hlinedefs[x].special := vlinedefs[x].special
-          else
-            hlinedefs[x].special := 0;
-          hlinedefs[x].arg1 := 0;
-          hlinedefs[x].arg2 := 0;
-          hlinedefs[x].arg3 := 0;
-          hlinedefs[x].arg4 := 0;
-          hlinedefs[x].arg5 := 0;
-          // sidenum[1] will be -1 if one sided
-          hlinedefs[x].sidenum[0] := vlinedefs[x].sidenum[0];
-          hlinedefs[x].sidenum[1] := vlinedefs[x].sidenum[1];
-        end;
-        infotable[i].size := hlen;
-        f.Write(hlinedefs^, hlen);
-        memfree(pointer(vlinedefs), len);
-        memfree(pointer(hlinedefs), hlen);
-      end
-      else
-      {$ENDIF}
-      begin
-        infotable[i].size := len;
-
-        buf := malloc(len);
-        W_ReadLump(lump, buf);
-        f.Write(buf^, len);
-        memfree(pointer(buf), len);
-      end;
-    end;
-
-    {$IFDEF HEXEN}
-    if not hasbehavior then
-    begin
-      infotable[11].filepos := 0;
-      infotable[11].size := 0;
-      infotable[11].name := stringtochar8('BEHAVIOR');
-    end;
-    {$ENDIF}
-
-    header.infotableofs := f.Position;
-    f.Write(infotable, header.numlumps * SizeOf(filelump_t));
-    f.Seek(0, sFromBeginning);
-    f.Write(header, SizeOf(header));
-    f.Free;
-
-    if M_CheckParm('-devparm') <> 0 then printf('    ND_GetNodes: buildnodes'#13#10);
     gld_BuildNodes(mapfilename, gwafilename);
 
     if not fexists(gwafilename) then
@@ -1020,209 +688,35 @@ var
 
 //==============================================================================
 //
-// TGWAFile.Create
+// ND_ReadGwa
 //
 //==============================================================================
-constructor TGWAFile.Create(const afilename: string);
+function ND_ReadGwa(const afilename: string): INodesGwa;
 var
-  f: TFile;
-  h: wadinfo_t;
-  infotable: array[0..9] of filelump_t;
-  i, j: integer;
-  ver, ver2: LongWord;
-  seg1: GLSeg1_t;
-  node1: GLNode1_t;
-  subsector1: GLSubSector1_t;
+  fs: TFileStream;
+  bytes: TBytes;
 begin
-  ffilename := afilename;
-  f := TFile.Create(ffilename, fOpenReadOnly);
-  f.Read(h, SizeOf(wadinfo_t));
-  if (h.numlumps > 10) or (h.numlumps < 1) then
-  begin
-    f.Free;
-    I_Error('TGWAFile.Create(): Standalone GWA constains %d lumps', [h.numlumps]);
-    Exit;
+  fs := TFileStream.Create(afilename, fmOpenRead or fmShareDenyNone);
+  try
+    SetLength(bytes, fs.Size);
+    if fs.Size > 0 then
+      fs.ReadBuffer(bytes[0], fs.Size);
+  finally
+    fs.Free;
   end;
 
-  f.Seek(h.infotableofs, sFromBeginning);
-  f.Read(infotable, h.numlumps * SizeOf(filelump_t));
-
-  fnumglvertexes := 0;
-  fglvertexes := nil;
-  fnummapsubsectors := 0;
-  fmapsubsectors := nil;
-  fnummapnodes := 0;
-  fmapnodes := nil;
-  fnummapsegs := 0;
-  fmapsegs := nil;
-
-  ver := 0;
-  for i := 0 to h.numlumps - 1 do
-  begin
-    if strupper(char8tostring(infotable[i].name)) = 'GL_VERT' then
+  try
+    result := TNodesFactory.ReadGwa(bytes);
+  except
+    on E: ENodesException do
     begin
-      f.Seek(infotable[i].filepos, sFromBeginning);
-      f.Read(ver, SizeOf(ver));
-    end
-    else if strupper(char8tostring(infotable[i].name)) = 'GL_SEGS' then
-    begin
-      f.Seek(infotable[i].filepos, sFromBeginning);
-      f.Read(ver2, SizeOf(ver2));
-      if ver2 = gNd3 then
-        ver := gNd3;
+      result := nil;
+      I_Error('ND_ReadGwa(): %s (%s)', [E.Message, afilename]);
     end;
   end;
 
-  if ver = gNd2 then
-    glnodesver := 2
-  else if ver = gNd3 then
-    glnodesver := 3
-  else if ver = gNd4 then
-    glnodesver := 4
-  else if ver = gNd5 then
-    glnodesver := 5
-  else
-    glnodesver := 0;
-
-  printf('TGWAFile.Create(): GL v%d nodes found.'#13#10, [glnodesver]);
-
-  for i := 0 to h.numlumps - 1 do
-  begin
-    if strupper(char8tostring(infotable[i].name)) = 'GL_VERT' then
-    begin
-      if glnodesver > 0 then
-      begin
-        f.Seek(infotable[i].filepos + 4, sFromBeginning);
-        fnumglvertexes := (infotable[i].size - 4) div SizeOf(GLVertex2_t);
-      end
-      else
-        fnumglvertexes := infotable[i].size div SizeOf(GLVertex2_t);
-      fglvertexes := malloc(fnumglvertexes * SizeOf(GLVertex2_t));
-      f.Read(fglvertexes^, fnumglvertexes * SizeOf(GLVertex2_t));
-    end
-    else if strupper(char8tostring(infotable[i].name)) = 'GL_SSECT' then
-    begin
-      f.Seek(infotable[i].filepos, sFromBeginning);
-      if glnodesver >= 3 then
-      begin
-        if glnodesver = 3 then
-        begin
-          fnummapsubsectors := (infotable[i].size - 4) div SizeOf(GLSubSector3_t);
-          f.Seek(infotable[i].filepos + 4, sFromBeginning);
-        end
-        else
-          fnummapsubsectors := infotable[i].size div SizeOf(GLSubSector3_t);
-        fmapsubsectors := malloc(fnummapsubsectors * SizeOf(GLSubSector3_t));
-        f.Read(fmapsubsectors^, fnummapsubsectors * SizeOf(GLSubSector3_t));
-      end
-      else
-      begin
-        fnummapsubsectors := infotable[i].size div SizeOf(GLSubSector1_t);
-        fmapsubsectors := malloc(fnummapsubsectors * SizeOf(GLSubSector3_t));
-        for j := 0 to fnummapsubsectors - 1 do
-        begin
-          f.Read(subsector1, SizeOf(GLSubSector1_t));
-          fmapsubsectors[j].count := subsector1.count;
-          fmapsubsectors[j].first_seg := subsector1.first_seg;
-        end;
-      end;
-    end
-    else if strupper(char8tostring(infotable[i].name)) = 'GL_NODES' then
-    begin
-      f.Seek(infotable[i].filepos, sFromBeginning);
-      if glnodesver >= 4 then
-      begin
-        fnummapnodes := infotable[i].size div SizeOf(GLNode4_t);
-        fmapnodes := malloc(fnummapnodes * SizeOf(GLNode4_t));
-        f.Read(fmapnodes^, fnummapnodes * SizeOf(GLNode4_t));
-      end
-      else
-      begin
-        fnummapnodes := infotable[i].size div SizeOf(GLNode1_t);
-        fmapnodes := malloc(fnummapnodes * SizeOf(GLNode4_t));
-        for j := 0 to fnummapnodes - 1 do
-        begin
-          f.Read(node1, SizeOf(GLNode1_t));
-          fmapnodes[j].x := node1.x;
-          fmapnodes[j].y := node1.y;
-          fmapnodes[j].dx := node1.dx;
-          fmapnodes[j].dy := node1.dy;
-          fmapnodes[j].right_bbox[0] := node1.right_bbox[0];
-          fmapnodes[j].right_bbox[1] := node1.right_bbox[1];
-          fmapnodes[j].right_bbox[2] := node1.right_bbox[2];
-          fmapnodes[j].right_bbox[3] := node1.right_bbox[3];
-          fmapnodes[j].left_bbox[0] := node1.left_bbox[0];
-          fmapnodes[j].left_bbox[1] := node1.left_bbox[1];
-          fmapnodes[j].left_bbox[2] := node1.left_bbox[2];
-          fmapnodes[j].left_bbox[3] := node1.left_bbox[3];
-          if node1.right_child and NF_SUBSECTOR <> 0 then
-          begin
-            node1.right_child := node1.right_child and not NF_SUBSECTOR;
-            fmapnodes[j].right_child := node1.right_child;
-            fmapnodes[j].right_child := fmapnodes[j].right_child or NF_SUBSECTOR_V5;
-          end
-          else
-            fmapnodes[j].right_child := node1.right_child;
-          if node1.left_child and NF_SUBSECTOR <> 0 then
-          begin
-            node1.left_child := node1.left_child and not NF_SUBSECTOR;
-            fmapnodes[j].left_child := node1.left_child;
-            fmapnodes[j].left_child := fmapnodes[j].left_child or NF_SUBSECTOR_V5;
-          end
-          else
-            fmapnodes[j].left_child := node1.left_child;
-        end;
-      end;
-    end
-    else if strupper(char8tostring(infotable[i].name)) = 'GL_SEGS' then
-    begin
-      if glnodesver = 3 then
-      begin
-        f.Seek(infotable[i].filepos + 4, sFromBeginning);
-        fnummapsegs := (infotable[i].size - 4) div SizeOf(GLSeg3_t);
-      end
-      else
-      begin
-        f.Seek(infotable[i].filepos, sFromBeginning);
-        if glnodesver < 3 then
-          fnummapsegs := infotable[i].size div SizeOf(GLSeg1_t)
-        else
-          fnummapsegs := infotable[i].size div SizeOf(GLSeg3_t);
-      end;
-
-      fmapsegs := malloc(fnummapsegs * SizeOf(GLSeg3_t));
-      if glnodesver >= 3 then
-        f.Read(fmapsegs^, fnummapsegs * SizeOf(GLSeg3_t))
-      else
-      begin
-        for j := 0 to fnummapsegs - 1 do
-        begin
-          f.Read(seg1, SizeOf(GLSeg1_t));
-          fmapsegs[j].start_vertex := seg1.start_vertex;
-          fmapsegs[j].end_vertex := seg1.end_vertex;
-          fmapsegs[j].linedef := seg1.linedef;
-          fmapsegs[j].side := seg1.side;
-          fmapsegs[j].partner_seg := seg1.partner_seg;
-        end;
-      end;
-    end;
-
-  end;
-  f.Free;
-end;
-
-//==============================================================================
-//
-// TGWAFile.Destroy
-//
-//==============================================================================
-destructor TGWAFile.Destroy;
-begin
-  memfree(pointer(fglvertexes), fnumglvertexes * SizeOf(GLVertex2_t));
-  memfree(pointer(fmapsubsectors), fnummapsubsectors * SizeOf(GLSubSector3_t));
-  memfree(pointer(fmapnodes), fnummapnodes * SizeOf(GLNode4_t));
-  memfree(pointer(fmapsegs), fnummapsegs * SizeOf(GLSeg3_t));
-  inherited;
+  glnodesver := result.Version;
+  printf('ND_ReadGwa(): GL v%d nodes found.'#13#10, [glnodesver]);
 end;
 
 //==============================================================================
@@ -1230,13 +724,14 @@ end;
 // ND_LoadVertexes
 //
 //==============================================================================
-procedure ND_LoadVertexes(lump: integer; gwa: TGWAFile);
+procedure ND_LoadVertexes(lump: integer; const gwa: INodesGwa);
 var
   data: pointer;
   i: integer;
   ml: Pmapvertex_t;
   li: Pvertex_t;
   numglverts: integer;
+  glverts: TArray<TNodesGlVertex>;
   minx: integer;
   maxx: integer;
   miny: integer;
@@ -1248,7 +743,10 @@ begin
   if gwa = nil then
     numglverts := 0
   else
-    numglverts := gwa.numglvertexes;
+  begin
+    glverts := gwa.GlVertexes;
+    numglverts := Length(glverts);
+  end;
 
   firstglvert := W_LumpLength(lump) div SizeOf(mapvertex_t);
   numvertexes := firstglvert + numglverts;
@@ -1298,8 +796,8 @@ begin
 
   for i := 0 to numglverts - 1 do
   begin
-    li.x := gwa.glvertexes[i].x;
-    li.y := gwa.glvertexes[i].y;
+    li.x := glverts[i].X;
+    li.y := glverts[i].Y;
     li.amvalidcount := 0;
     li.interpvalidcount := 0;
     inc(li);
@@ -1312,20 +810,22 @@ end;
 // P_LoadSubsectors
 //
 //==============================================================================
-procedure ND_LoadSubsectors(gwa: TGWAFile);
+procedure ND_LoadSubsectors(const gwa: INodesGwa);
 var
   i: integer;
   ss: Psubsector_t;
+  glsubsectors: TArray<TNodesGlSubsector>;
 begin
-  numsubsectors := gwa.nummapsubsectors;
+  glsubsectors := gwa.Subsectors;
+  numsubsectors := Length(glsubsectors);
   subsectors := Z_Malloc(numsubsectors * SizeOf(subsector_t), PU_LEVEL, nil);
   ZeroMemory(subsectors, numsubsectors * SizeOf(subsector_t));
 
   ss := @subsectors[0];
   for i := 0 to numsubsectors - 1 do
   begin
-    ss.numlines :=  gwa.mapsubsectors[i].count;
-    ss.firstline := gwa.mapsubsectors[i].first_seg;
+    ss.numlines := glsubsectors[i].Count;
+    ss.firstline := glsubsectors[i].FirstSeg;
     inc(ss);
   end;
 end;
@@ -1335,29 +835,31 @@ end;
 // ND_LoadNodes
 //
 //==============================================================================
-procedure ND_LoadNodes(gwa: TGWAFile);
+procedure ND_LoadNodes(const gwa: INodesGwa);
 var
   i: integer;
   k: integer;
   no: Pnode_t;
+  glnodes: TArray<TNodesGlNode>;
 begin
-  numnodes := gwa.nummapnodes;
+  glnodes := gwa.Nodes;
+  numnodes := Length(glnodes);
   nodes := Z_Malloc(numnodes * SizeOf(node_t), PU_LEVEL, nil);
   ZeroMemory(nodes, numnodes * SizeOf(node_t));
 
   no := @nodes[0];
   for i := 0 to numnodes - 1 do
   begin
-    no.x := gwa.mapnodes[i].x * FRACUNIT;
-    no.y := gwa.mapnodes[i].y * FRACUNIT;
-    no.dx := gwa.mapnodes[i].dx * FRACUNIT;
-    no.dy := gwa.mapnodes[i].dy * FRACUNIT;
-    no.children[0] := gwa.mapnodes[i].right_child;
-    no.children[1] := gwa.mapnodes[i].left_child;
+    no.x := glnodes[i].X * FRACUNIT;
+    no.y := glnodes[i].Y * FRACUNIT;
+    no.dx := glnodes[i].DeltaX * FRACUNIT;
+    no.dy := glnodes[i].DeltaY * FRACUNIT;
+    no.children[0] := glnodes[i].RightChild;
+    no.children[1] := glnodes[i].LeftChild;
     for k := 0 to 3 do
-      no.bbox[0, k] := gwa.mapnodes[i].right_bbox[k] * FRACUNIT;
+      no.bbox[0, k] := glnodes[i].RightBoundingBox[k] * FRACUNIT;
     for k := 0 to 3 do
-      no.bbox[1, k] := gwa.mapnodes[i].left_bbox[k] * FRACUNIT;
+      no.bbox[1, k] := glnodes[i].LeftBoundingBox[k] * FRACUNIT;
     inc(no);
   end;
 end;
@@ -1432,31 +934,33 @@ end;
 // ND_LoadSegs
 //
 //==============================================================================
-procedure ND_LoadSegs(gwa: TGWAFile);
+procedure ND_LoadSegs(const gwa: INodesGwa);
 var
   i: integer;
-  ml: PGLSeg3_t;
+  ml: TNodesGlSeg;
+  glsegs: TArray<TNodesGlSeg>;
   li: Pseg_t;
   ldef: Pline_t;
   linedef: integer;
   side: integer;
   sidenum: integer;
 begin
-  numsegs := gwa.nummapsegs;
+  glsegs := gwa.Segs;
+  numsegs := Length(glsegs);
   segs := Z_Malloc(numsegs * SizeOf(seg_t), PU_LEVEL, nil);
   ZeroMemory(segs, numsegs * SizeOf(seg_t));
 
-  ml := @gwa.mapsegs[0];
   li := @segs[0];
   for i := 0 to numsegs - 1 do
   begin
-    li.v1 := @vertexes[CheckGLVertex(ml.start_vertex)];
-    li.v2 := @vertexes[CheckGLVertex(ml.end_vertex)];
+    ml := glsegs[i];
+    li.v1 := @vertexes[CheckGLVertex(ml.StartVertex)];
+    li.v2 := @vertexes[CheckGLVertex(ml.EndVertex)];
     {$IFDEF OPENGL}
     li.iSegID := i;
     {$ENDIF}
 
-    if PWord(@ml.linedef)^ = word(1 shl 16 - 1) then
+    if ml.Linedef = word(1 shl 16 - 1) then
     begin
       li.miniseg := true;
       li.angle := 0;
@@ -1473,14 +977,14 @@ begin
     begin
       li.miniseg := false;
       li.angle := R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
-      linedef := ml.linedef;
+      linedef := ml.Linedef;
       ldef := @lines[linedef];
-      if ml.side <> 0 then
+      if ml.Side <> 0 then
         li.offset := GetOffset(li.v1, ldef.v2)
       else
         li.offset := GetOffset(li.v1, ldef.v1);
       li.linedef := ldef;
-      side := ml.side;
+      side := ml.Side;
       li.sidedef := @sides[ldef.sidenum[side]];
       li.frontsector := li.sidedef.sector;
       if ldef.flags and ML_TWOSIDED <> 0 then
@@ -1501,7 +1005,6 @@ begin
       li.length := gldist(li.v2.x - li.v1.x, li.v2.y - li.v1.y);
       {$ENDIF}
     end;
-    inc(ml);
     inc(li);
   end;
 end;
@@ -1518,130 +1021,33 @@ end;
 procedure ND_NodesCheck(const lumpname: string);
 var
   lumpnum: integer;
-  candonodes: boolean;
-  has_things, has_lines, has_sides, has_vertexes, has_sectors: integer;
-  has_segs, has_ssectors, has_nodes, has_reject, has_blockmap: integer;
-  {$IFDEF HEXEN}
-  has_behavior: integer;
-  {$ENDIF}
-  i: integer;
+  layout: TNodesMapLayout;
   crc32a, crc32b, crc32c, crc32d: string;
   outfilemap: string;
   wadfilemap: string;
   mapdir: string;
-  lname: string;
-  f: TFile;
-  header: wadinfo_t;
-  infotable: array[0..{$IFDEF HEXEN}11{$ELSE}10{$ENDIF}] of filelump_t;
-  ldata: PByteArray;
-  llen: integer;
 begin
+  ND_CheckConfigured;
   lumpnum := W_GetNumForName(lumpname);
   if (lumpnum < 0) or (lumpnum >= W_NumLumps - 1) then
     exit;
 
-  has_things := -1;
-  has_lines := -1;
-  has_sides := -1;
-  has_vertexes := -1;
-  has_sectors := -1;
-  has_segs := -1;
-  has_ssectors := -1;
-  has_nodes := -1;
-  has_reject := -1;
-  has_blockmap := -1;
-  {$IFDEF HEXEN}
-  has_behavior := -1;
-  {$ENDIF}
+  layout := TNodesMapScanner.Scan(nd_source, lumpnum, nd_hexen);
 
-  if lumpnum <= W_NumLumps - {$IFDEF HEXEN}11{$ELSE}10{$ENDIF} then
-  begin
-    for i := 1 to {$IFDEF HEXEN}11{$ELSE}10{$ENDIF} do
-    begin
-      lname := strupper(char8tostring(W_GetNameForNum(lumpnum + i)));
-      // JVAL: 20200222 - Fix bug of continous maps without all assets
-      if (has_things = -1) and (lname = 'THINGS') then
-        has_things := i
-      else if (has_lines = -1) and (lname = 'LINEDEFS') then
-        has_lines := i
-      else if (has_sides = -1) and (lname = 'SIDEDEFS') then
-        has_sides := i
-      else if (has_vertexes = -1) and (lname = 'VERTEXES') then
-        has_vertexes := i
-      else if (has_segs = -1) and (lname = 'SEGS') then
-        has_segs := i
-      else if (has_ssectors = -1) and (lname = 'SSECTORS') then
-        has_ssectors := i
-      else if (has_nodes = -1) and (lname = 'NODES') then
-        has_nodes := i
-      else if (has_sectors = -1) and (lname = 'SECTORS') then
-        has_sectors := i
-      else if (has_reject = -1) and (lname = 'REJECT') then
-        has_reject := i
-      else if (has_blockmap = -1) and (lname = 'BLOCKMAP') then
-        has_blockmap := i
-      {$IFDEF HEXEN}
-      else if (has_behavior = -1) and (lname = 'BEHAVIOR') then
-        has_behavior := i{$ENDIF};
-    end;
-  end
-  else if lumpnum <= W_NumLumps - {$IFDEF HEXEN}7{$ELSE}6{$ENDIF} then
-  begin
-    for i := 1 to {$IFDEF HEXEN}6{$ELSE}5{$ENDIF} do
-    begin
-      lname := strupper(char8tostring(W_GetNameForNum(lumpnum + i)));
-      // JVAL: 20200222 - Fix bug of continous maps without all assets
-      if (has_things = -1) and (lname = 'THINGS') then
-        has_things := i
-      else if (has_lines = -1) and (lname = 'LINEDEFS') then
-        has_lines := i
-      else if (has_sides = -1) and (lname = 'SIDEDEFS') then
-        has_sides := i
-      else if (has_vertexes = -1) and (lname = 'VERTEXES') then
-        has_vertexes := i
-      else if (has_sectors = -1) and (lname = 'SECTORS') then
-        has_sectors := i
-      {$IFDEF HEXEN}
-      else if (has_behavior = -1) and (lname = 'BEHAVIOR') then
-        has_behavior := i{$ENDIF};
-    end;
-  end;
-
-  if has_things = 1 then
-    if has_lines = 2 then
-      if has_sides = 3 then
-        if has_vertexes = 4 then
-          if has_segs = 5 then
-            if has_ssectors = 6 then
-              if has_nodes = 7 then
-                if has_sectors = 8 then
-                  if has_reject = 9 then
-                    if has_blockmap = 10 then
-                    {$IFDEF HEXEN}
-                     if has_behavior = 11 then
-                     {$ENDIF}
-                       exit; // Nothing to do
+  if layout.IsComplete(nd_hexen) then
+    exit; // Nothing to do
 
   // Check if we can build the nodes
-  candonodes := false;
-
-  if has_things > 0 then
-    if has_lines > 0 then
-      if has_sides > 0 then
-        if has_vertexes > 0 then
-          if has_sectors > 0 then
-            candonodes := true;
-
-  if not candonodes then
+  if not layout.CanBuildNodes then
   begin
     I_Warning('ND_NodesCheck(): Missing critical map data to play the map'#13#10);
     exit;
   end;
 
-  crc32a := GetLumpCRC32(lumpnum + has_lines);
-  crc32b := GetLumpCRC32(lumpnum + has_sides);
-  crc32c := GetLumpCRC32(lumpnum + has_vertexes);
-  crc32d := GetLumpCRC32(lumpnum + has_sectors);
+  crc32a := GetLumpCRC32(lumpnum + layout.Linedefs);
+  crc32b := GetLumpCRC32(lumpnum + layout.Sidedefs);
+  crc32c := GetLumpCRC32(lumpnum + layout.Vertexes);
+  crc32d := GetLumpCRC32(lumpnum + layout.Sectors);
 
   mapdir := M_SaveFileName('DATA\');
   MkDir(mapdir);
@@ -1654,135 +1060,7 @@ begin
     outfilemap := mapdir + lumpname + '_' + crc32a + '_' + crc32b + '_' + crc32c + '_' + crc32d + '.out';
     I_DeclareTempFile(outfilemap);
 
-    header.identification :=
-      integer(Ord('P') or (Ord('W') shl 8) or (Ord('A') shl 16) or (Ord('D') shl 24));
-    header.numlumps := {$IFDEF HEXEN}12{$ELSE}11{$ENDIF};
-
-    f := TFile.Create(outfilemap, fCreate);
-    f.Write(header, SizeOf(header));
-
-    ZeroMemory(@infotable, SizeOf(infotable));
-
-    infotable[0].filepos := f.Position;
-    infotable[0].size := 0;
-    infotable[0].name := stringtochar8(strupper(lumpname));
-
-    if has_things > 0 then
-      llen := W_LumpLength(lumpnum + has_things)
-    else
-      llen := 0;
-    infotable[1].filepos := f.Position;
-    infotable[1].size := llen;
-    infotable[1].name := stringtochar8('THINGS');
-    if llen > 0 then
-    begin
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_things, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end;
-
-    if has_lines > 0 then
-      llen := W_LumpLength(lumpnum + has_lines)
-    else
-      llen := 0;
-    infotable[2].filepos := f.Position;
-    infotable[2].size := llen;
-    infotable[2].name := stringtochar8('LINEDEFS');
-    if llen > 0 then
-    begin
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_lines, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end;
-
-    if has_sides > 0 then
-      llen := W_LumpLength(lumpnum + has_sides)
-    else
-      llen := 0;
-    infotable[3].filepos := f.Position;
-    infotable[3].size := llen;
-    infotable[3].name := stringtochar8('SIDEDEFS');
-    if llen > 0 then
-    begin
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_sides, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end;
-
-    if has_sides > 0 then
-      llen := W_LumpLength(lumpnum + has_sides)
-    else
-      llen := 0;
-    infotable[4].filepos := f.Position;
-    infotable[4].size := llen;
-    infotable[4].name := stringtochar8('VERTEXES');
-    if llen > 0 then
-    begin
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_vertexes, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end;
-
-    infotable[5].filepos := f.Position;
-    infotable[5].size := 0;
-    infotable[5].name := stringtochar8('SEGS');
-
-    infotable[6].filepos := f.Position;
-    infotable[6].size := 0;
-    infotable[6].name := stringtochar8('SSECTORS');
-
-    infotable[7].filepos := f.Position;
-    infotable[7].size := 0;
-    infotable[7].name := stringtochar8('NODES');
-
-    if has_sectors > 0 then
-      llen := W_LumpLength(lumpnum + has_sectors)
-    else
-      llen := 0;
-    infotable[8].filepos := f.Position;
-    infotable[8].size := llen;
-    infotable[8].name := stringtochar8('SECTORS');
-    if llen > 0 then
-    begin
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_sectors, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end;
-
-    infotable[9].filepos := f.Position;
-    infotable[9].size := 0;
-    infotable[9].name := stringtochar8('REJECT');
-
-    infotable[10].filepos := f.Position;
-    infotable[10].size := 0;
-    infotable[10].name := stringtochar8('BLOCKMAP');
-
-    {$IFDEF HEXEN}
-    infotable[11].filepos := f.Position;
-    if has_behavior > 0 then
-    begin
-      llen := W_LumpLength(lumpnum + has_behavior);
-      infotable[11].size := llen;
-      ldata := malloc(llen);
-      W_ReadLump(lumpnum + has_behavior, ldata);
-      f.Write(ldata^, llen);
-      memfree(pointer(ldata), llen);
-    end
-    else
-      infotable[11].size := 0;
-    infotable[11].name := stringtochar8('BEHAVIOR');
-    {$ENDIF}
-
-    header.infotableofs := f.Position;
-    f.Write(infotable, SizeOf(infotable));
-    f.Seek(0, sFromBeginning);
-    f.Write(header, SizeOf(header));
-    f.Free;
+    ND_WriteBytes(outfilemap, nd_inputbuilder.BuildForMapWithoutNodes(lumpnum, layout));
 
     // Build the nodes
     printf(#13#10'  ND_NodesCheck: Building GL-Friendly nodes for %s'#13#10, [lumpname]);
@@ -1801,4 +1079,3 @@ begin
 end;
 
 end.
-

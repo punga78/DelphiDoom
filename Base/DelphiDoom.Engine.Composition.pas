@@ -133,6 +133,10 @@ uses
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
   p_musinfo,
+  DelphiDoom.Nodes.Intf,
+  DelphiDoom.Nodes.Factory,
+  DelphiDoom.Engine.Nodes.LumpSource,
+  nd_main,
   DelphiDoom.DynLights.Types,
   DelphiDoom.DynLights.Intf,
   DelphiDoom.DynLights.Factory,
@@ -385,6 +389,23 @@ begin
   LGenders := TObituaryFactory.CreateGenders;
   R_ConfigureGenders(LGenders);
   P_ConfigureObituaries(TObituaryFactory.CreateFormatter(LGenders));
+end;
+
+procedure ComposeNodes;
+var
+  LSource: INodesLumpSource;
+  LHexen: Boolean;
+begin
+  // the maps of Hexen are already in the Hexen format: the other games convert them for the node builder
+{$IFDEF HEXEN}
+  LHexen := True;
+{$ELSE}
+  LHexen := False;
+{$ENDIF}
+  LSource := TEngineNodesLumpSource.Create;
+  ND_Configure(LSource, TNodesFactory.CreateGlDetector(LSource),
+    TNodesFactory.CreateGlMapFinder(LSource),
+    TNodesFactory.CreateGlbspInputBuilder(LSource, LHexen), LHexen);
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
@@ -671,6 +692,7 @@ begin
   ComposeDefinitions(LLog);
   ComposeObituary;
   ComposeMusInfo(LLog);
+  ComposeNodes;
   ComposeDynLights(LLog, LContext);
   ComposeAutomap;
   ComposeActorDef(LLog);
