@@ -585,6 +585,8 @@ begin
     I_Error('ComposeEngine(): the game %s has no profile of IWADs', [_GAME]);
   LServices := TIwadFactory.CreateWindowsServices(LGame, TEngineIwadOptions.Create);
   D_ConfigureIwad(LServices.Locator, LServices.Identifier);
+end;
+
 procedure ComposeVoxels(const ALog: ILog);
 var
   LLoader: IVoxelLoader;
@@ -660,7 +662,6 @@ begin
   E_ConfigureEndoom(TEndoomFactory.CreateRenderer);
 {$ENDIF}
   ComposeVoxels(LLog);
-  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
