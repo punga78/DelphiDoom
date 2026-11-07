@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  Node builder (glbsp wrapper)
+//  GL nodes: the structures of the lumps of glBSP, the GL vertexes and the node builder
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -39,8 +39,7 @@ uses
   doomdata,
   r_defs,
   m_fixed,
-  DelphiDoom.Platform.Intf,
-  DelphiDoom.Nodes.Intf;
+  DelphiDoom.Glbsp.Client;
 
 var
   glnodesver: integer = 0;
@@ -340,45 +339,10 @@ type
 
 //==============================================================================
 //
-// ND_Configure
-//
-// The services of the Nodes library (Libs\Nodes), given by ComposeEngine. Without
-// them the functions of this unit stop the game with an error.
-//
-//==============================================================================
-procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
-  const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-  const ATempFiles: ITempFiles; AHexen: boolean);
-
-//==============================================================================
-//
-// ND_ReadLumpBytes
-//
-// All the bytes of a lump of the directory.
-//
-//==============================================================================
-function ND_ReadLumpBytes(const lump: integer): TBytes;
-
-//==============================================================================
-//
-// gld_GetGLNodesVersion
-//
-//==============================================================================
-function gld_GetGLNodesVersion(const base: integer): integer;
-
-//==============================================================================
-//
 // gld_GetGLVertexes
 //
 //==============================================================================
 procedure gld_GetGLVertexes(v: Pvertex_t; lump: integer; count: integer; ver: integer);
-
-//==============================================================================
-//
-// gld_GetGLMapLump
-//
-//==============================================================================
-function gld_GetGLMapLump(const maplump: integer): integer;
 
 //==============================================================================
 //
@@ -389,176 +353,23 @@ function gld_BuildNodes(const wadfile, gwafile: string): boolean;
 
 //==============================================================================
 //
-// ND_GetNodes
+// ND_RunGlbsp
+//
+// Runs the node builder; what it prints goes to the log, as it did when the
+// program was started from the engine
 //
 //==============================================================================
-function ND_GetNodes(const mapname: string): string;
-
-//==============================================================================
-//
-// ND_ReadGwa
-//
-// Reads a GWA file; sets glnodesver to its version of GL nodes.
-//
-//==============================================================================
-function ND_ReadGwa(const afilename: string): INodesGwa;
-
-//==============================================================================
-//
-// ND_LoadVertexes
-//
-//==============================================================================
-procedure ND_LoadVertexes(lump: integer; const gwa: INodesGwa);
-
-//==============================================================================
-//
-// ND_LoadSubsectors
-//
-//==============================================================================
-procedure ND_LoadSubsectors(const gwa: INodesGwa);
-
-//==============================================================================
-//
-// ND_LoadNodes
-//
-//==============================================================================
-procedure ND_LoadNodes(const gwa: INodesGwa);
-
-//==============================================================================
-//
-// ND_LoadSegs
-//
-//==============================================================================
-procedure ND_LoadSegs(const gwa: INodesGwa);
-
-//==============================================================================
-//
-// ND_NodesCheck
-//
-//==============================================================================
-procedure ND_NodesCheck(const lumpname: string);
+function ND_RunGlbsp(const wadfile, gwafile: string; const options: TGlbspOptions): boolean;
 
 implementation
 
 uses
-  System.Classes,
-  DelphiDoom.MathCore.Crc32,
   DelphiDoom.Glbsp.Intf,
-  DelphiDoom.Glbsp.Client,
   DelphiDoom.Glbsp.Provider,
   DelphiDoom.Nodes.Types,
-  DelphiDoom.Nodes.Adler32,
   DelphiDoom.Nodes.GlParser,
-  DelphiDoom.Nodes.Factory,
-  DelphiDoom.Nodes.MapScanner,
   i_system,
-  p_setup,
-  w_wad,
-  m_misc,
-  m_argv,
-  r_main,
-  z_zone;
-
-var
-  nd_source: INodesLumpSource = nil;
-  nd_detector: INodesGlDetector = nil;
-  nd_finder: INodesGlMapFinder = nil;
-  nd_inputbuilder: INodesGlbspInputBuilder = nil;
-  nd_tempfiles: ITempFiles = nil;
-  nd_hexen: boolean = false;
-
-//==============================================================================
-//
-// ND_Configure
-//
-//==============================================================================
-procedure ND_Configure(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
-  const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-  const ATempFiles: ITempFiles; AHexen: boolean);
-begin
-  nd_source := ASource;
-  nd_detector := ADetector;
-  nd_finder := AFinder;
-  nd_inputbuilder := AInputBuilder;
-  nd_tempfiles := ATempFiles;
-  nd_hexen := AHexen;
-end;
-
-//==============================================================================
-//
-// ND_CheckConfigured
-//
-//==============================================================================
-procedure ND_CheckConfigured;
-begin
-  if (nd_source = nil) or (nd_detector = nil) or (nd_finder = nil) or (nd_inputbuilder = nil) or
-     (nd_tempfiles = nil) then
-    I_Error('ND_CheckConfigured(): ND_Configure() was not called');
-end;
-
-//==============================================================================
-//
-// ND_ReadLumpBytes
-//
-//==============================================================================
-function ND_ReadLumpBytes(const lump: integer): TBytes;
-begin
-  ND_CheckConfigured;
-  result := nd_source.ReadLump(lump);
-end;
-
-//==============================================================================
-//
-// ND_LumpCRC32
-// The CRC-32 of a lump in 8 hexadecimal digits in lower case, 'DEADDEAD' for a
-// lump that is not there (as the old GetLumpCRC32 of m_crc32)
-//
-//==============================================================================
-function ND_LumpCRC32(const lump: integer): string;
-var
-  bytes: TBytes;
-begin
-  if lump < 0 then
-  begin
-    result := 'DEADDEAD';
-    exit;
-  end;
-  bytes := ND_ReadLumpBytes(lump);
-  result := TCrc32.ToHex(TCrc32.Calculate(Pointer(bytes)^, Length(bytes)));
-end;
-
-//==============================================================================
-//
-// ND_WriteBytes
-//
-//==============================================================================
-procedure ND_WriteBytes(const afile: string; const bytes: TBytes);
-var
-  fs: TFileStream;
-begin
-  fs := TFileStream.Create(afile, fmCreate);
-  try
-    if Length(bytes) > 0 then
-      fs.WriteBuffer(bytes[0], Length(bytes));
-  finally
-    fs.Free;
-  end;
-end;
-
-//==============================================================================
-// gld_GetGLNodesVersion
-//
-// JVAL
-//  Returns the glbsp nodes version.
-//
-//==============================================================================
-function gld_GetGLNodesVersion(const base: integer): integer;
-begin
-  ND_CheckConfigured;
-  result := nd_detector.DetectVersion(base);
-  if result > 0 then
-    printf('gld_GetGLNodesVersion(): GL v%d nodes found.'#13#10, [result]);
-end;
+  w_wad;
 
 //==============================================================================
 //
@@ -568,12 +379,16 @@ end;
 procedure gld_GetGLVertexes(v: Pvertex_t; lump: integer; count: integer; ver: integer);
 var
   i: integer;
+  bytes: TBytes;
   glverts: TArray<TNodesGlVertex>;
 begin
   if (count = 0) or (ver = 0) then
     exit;
 
-  glverts := TNodesGlParser.ParseVertexes(ND_ReadLumpBytes(lump), ver);
+  SetLength(bytes, W_LumpLength(lump));
+  if Length(bytes) > 0 then
+    W_ReadLump(lump, @bytes[0]);
+  glverts := TNodesGlParser.ParseVertexes(bytes, ver);
   if count > Length(glverts) then
     count := Length(glverts);
   for i := 0 to count - 1 do
@@ -586,25 +401,10 @@ end;
 
 //==============================================================================
 //
-// gld_GetGLMapLump
-//
-//==============================================================================
-function gld_GetGLMapLump(const maplump: integer): integer;
-begin
-  ND_CheckConfigured;
-  result := nd_finder.FindGlMapLump(maplump);
-end;
-
-//==============================================================================
-//
 // ND_RunGlbsp
 //
-// Runs the node builder; what it prints goes to the log, as it did when the
-// program was started from the engine
-//
 //==============================================================================
-function ND_RunGlbsp(const wadfile, gwafile: string;
-  const options: TGlbspOptions): boolean;
+function ND_RunGlbsp(const wadfile, gwafile: string; const options: TGlbspOptions): boolean;
 begin
   try
     TGlbspProvider.Client.BuildNodes(wadfile, gwafile, options,
@@ -634,470 +434,6 @@ begin
   printf(#13#10);
   if not result then
     I_Warning('gld_BuildNodes(): Failed to build GL-Friendly nodes for %s'#13#10, [wadfile]);
-end;
-
-//==============================================================================
-//
-// HextW
-//
-//==============================================================================
-function HextW(w: Word): string;
-const
-  h: array[0..15] of Char = '0123456789abcdef';
-begin
-  result := h[Hi(w) shr 4] + h[Hi(w) and $F] + h[Lo(w) shr 4] + h[Lo(w) and $F];
-end;
-
-//==============================================================================
-//
-// HextL
-//
-//==============================================================================
-function HextL(l: Longint): string;
-type
-  Long = record
-    LoWord: Word;
-    HiWord: Word;
-  end;
-begin
-  with Long(l) do
-    result := HextW(HiWord) + HextW(LoWord);
-end;
-
-//==============================================================================
-//
-// ND_GetNodes
-//
-//==============================================================================
-function ND_GetNodes(const mapname: string): string;
-var
-  maplump: integer;
-  adler32: LongWord;
-  path: string;
-  mapfilename: string;
-  gwafilename: string;
-begin
-  ND_CheckConfigured;
-  maplump := W_GetNumForName(mapname);
-  adler32 := TNodesAdler32.OfMap(nd_source, maplump);
-
-  path := M_SaveFileName('DATA\');
-  MkDir(path);
-  path := path + 'BSP\';
-  MkDir(path);
-
-  gwafilename := fexpand(path + mapname + '_' + HextL(adler32) + '.gwa');
-
-  if not fexists(gwafilename) then
-  begin
-    mapfilename := nd_tempfiles.NewTempFile(mapname + '_' + HextL(adler32) + '.wad');
-    ND_WriteBytes(mapfilename, nd_inputbuilder.BuildForMap(maplump));
-
-    gld_BuildNodes(mapfilename, gwafilename);
-
-    if not fexists(gwafilename) then
-    begin
-      result := '';
-      exit;
-    end;
-  end;
-
-  result := gwafilename;
-end;
-
-var
-  firstglvert: integer;
-
-//==============================================================================
-//
-// ND_ReadGwa
-//
-//==============================================================================
-function ND_ReadGwa(const afilename: string): INodesGwa;
-var
-  fs: TFileStream;
-  bytes: TBytes;
-begin
-  fs := TFileStream.Create(afilename, fmOpenRead or fmShareDenyNone);
-  try
-    SetLength(bytes, fs.Size);
-    if fs.Size > 0 then
-      fs.ReadBuffer(bytes[0], fs.Size);
-  finally
-    fs.Free;
-  end;
-
-  try
-    result := TNodesFactory.ReadGwa(bytes);
-  except
-    on E: ENodesException do
-    begin
-      result := nil;
-      I_Error('ND_ReadGwa(): %s (%s)', [E.Message, afilename]);
-    end;
-  end;
-
-  glnodesver := result.Version;
-  printf('ND_ReadGwa(): GL v%d nodes found.'#13#10, [glnodesver]);
-end;
-
-//==============================================================================
-//
-// ND_LoadVertexes
-//
-//==============================================================================
-procedure ND_LoadVertexes(lump: integer; const gwa: INodesGwa);
-var
-  data: pointer;
-  i: integer;
-  ml: Pmapvertex_t;
-  li: Pvertex_t;
-  numglverts: integer;
-  glverts: TArray<TNodesGlVertex>;
-  minx: integer;
-  maxx: integer;
-  miny: integer;
-  maxy: integer;
-  dx, dy: integer;
-begin
-  // Determine number of lumps:
-  //  total lump length / vertex record length.
-  if gwa = nil then
-    numglverts := 0
-  else
-  begin
-    glverts := gwa.GlVertexes;
-    numglverts := Length(glverts);
-  end;
-
-  firstglvert := W_LumpLength(lump) div SizeOf(mapvertex_t);
-  numvertexes := firstglvert + numglverts;
-
-  // Allocate zone memory for buffer.
-  vertexes := Z_Malloc(numvertexes * SizeOf(vertex_t), PU_LEVEL, nil);
-
-  // Load data into cache.
-  data := W_CacheLumpNum(lump, PU_STATIC);
-
-  ml := Pmapvertex_t(data);
-
-  // JVAL: 20200414 -> Find map boundaries
-  minx := 100000;
-  maxx := -100000;
-  miny := 100000;
-  maxy := -100000;
-
-  // Copy and convert vertex coordinates,
-  // internal representation as fixed.
-  li := @vertexes[0];
-  for i := 0 to firstglvert - 1 do
-  begin
-    if ml.x > maxx then
-      maxx := ml.x;
-    if ml.x < minx then
-      minx := ml.x;
-    if ml.y > maxy then
-      maxy := ml.y;
-    if ml.y < miny then
-      miny := ml.y;
-    li.x := ml.x * FRACUNIT;
-    li.y := ml.y * FRACUNIT;
-    li.amvalidcount := 0;
-    li.interpvalidcount := 0;
-    inc(ml);
-    inc(li);
-  end;
-
-  dx := maxx - minx;
-  dy := maxy - miny;
-
-  largemap := (dx < -32767) or (dx > 32767) or (dy < -32767) or (dy > 32767);
-
-  // Free buffer memory.
-  Z_Free(data);
-
-  for i := 0 to numglverts - 1 do
-  begin
-    li.x := glverts[i].X;
-    li.y := glverts[i].Y;
-    li.amvalidcount := 0;
-    li.interpvalidcount := 0;
-    inc(li);
-  end;
-end;
-
-//==============================================================================
-// ND_LoadSubsectors
-//
-// P_LoadSubsectors
-//
-//==============================================================================
-procedure ND_LoadSubsectors(const gwa: INodesGwa);
-var
-  i: integer;
-  ss: Psubsector_t;
-  glsubsectors: TArray<TNodesGlSubsector>;
-begin
-  glsubsectors := gwa.Subsectors;
-  numsubsectors := Length(glsubsectors);
-  subsectors := Z_Malloc(numsubsectors * SizeOf(subsector_t), PU_LEVEL, nil);
-  ZeroMemory(subsectors, numsubsectors * SizeOf(subsector_t));
-
-  ss := @subsectors[0];
-  for i := 0 to numsubsectors - 1 do
-  begin
-    ss.numlines := glsubsectors[i].Count;
-    ss.firstline := glsubsectors[i].FirstSeg;
-    inc(ss);
-  end;
-end;
-
-//==============================================================================
-//
-// ND_LoadNodes
-//
-//==============================================================================
-procedure ND_LoadNodes(const gwa: INodesGwa);
-var
-  i: integer;
-  k: integer;
-  no: Pnode_t;
-  glnodes: TArray<TNodesGlNode>;
-begin
-  glnodes := gwa.Nodes;
-  numnodes := Length(glnodes);
-  nodes := Z_Malloc(numnodes * SizeOf(node_t), PU_LEVEL, nil);
-  ZeroMemory(nodes, numnodes * SizeOf(node_t));
-
-  no := @nodes[0];
-  for i := 0 to numnodes - 1 do
-  begin
-    no.x := glnodes[i].X * FRACUNIT;
-    no.y := glnodes[i].Y * FRACUNIT;
-    no.dx := glnodes[i].DeltaX * FRACUNIT;
-    no.dy := glnodes[i].DeltaY * FRACUNIT;
-    no.children[0] := glnodes[i].RightChild;
-    no.children[1] := glnodes[i].LeftChild;
-    for k := 0 to 3 do
-      no.bbox[0, k] := glnodes[i].RightBoundingBox[k] * FRACUNIT;
-    for k := 0 to 3 do
-      no.bbox[1, k] := glnodes[i].LeftBoundingBox[k] * FRACUNIT;
-    inc(no);
-  end;
-end;
-
-{$IFDEF OPENGL}
-
-//==============================================================================
-//
-// gldist
-//
-//==============================================================================
-function gldist(dx, dy: integer): float;
-var
-  fx, fy: float;
-begin
-  fx := dx / FRACUNIT;
-  fy := dy / FRACUNIT;
-  result := sqrt(fx * fx + fy * fy);
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// CheckGLVertex
-//
-//==============================================================================
-function CheckGLVertex(num: integer): integer;
-begin
-  if glnodesver <= 2 then
-  begin
-    if num and (1 shl 15) <> 0 then
-    begin
-      result := num and (1 shl 15 - 1) + firstglvert;
-      exit;
-    end
-  end
-  else if glnodesver <= 4 then
-  begin
-    if num and (1 shl 30) <> 0 then
-    begin
-      result := num and (1 shl 30 - 1) + firstglvert;
-      exit;
-    end
-  end
-  else if glnodesver = 5 then
-  begin
-    if num and (1 shl 31) <> 0 then
-    begin
-      result := LongWord(num) and LongWord(_SHLW(1, 31) - 1) + firstglvert;
-      exit;
-    end
-  end;
-  result := num;
-end;
-
-//==============================================================================
-//
-// GetOffset
-//
-//==============================================================================
-function GetOffset(v1, v2: Pvertex_t): fixed_t;
-var
-  a, b: single;
-begin
-  a := (v1.x - v2.x) / FRACUNIT;
-  b := (v1.y - v2.y) / FRACUNIT;
-  result := round(sqrt(a * a + b * b) * FRACUNIT);
-end;
-
-//==============================================================================
-//
-// ND_LoadSegs
-//
-//==============================================================================
-procedure ND_LoadSegs(const gwa: INodesGwa);
-var
-  i: integer;
-  ml: TNodesGlSeg;
-  glsegs: TArray<TNodesGlSeg>;
-  li: Pseg_t;
-  ldef: Pline_t;
-  linedef: integer;
-  side: integer;
-  sidenum: integer;
-begin
-  glsegs := gwa.Segs;
-  numsegs := Length(glsegs);
-  segs := Z_Malloc(numsegs * SizeOf(seg_t), PU_LEVEL, nil);
-  ZeroMemory(segs, numsegs * SizeOf(seg_t));
-
-  li := @segs[0];
-  for i := 0 to numsegs - 1 do
-  begin
-    ml := glsegs[i];
-    li.v1 := @vertexes[CheckGLVertex(ml.StartVertex)];
-    li.v2 := @vertexes[CheckGLVertex(ml.EndVertex)];
-    {$IFDEF OPENGL}
-    li.iSegID := i;
-    {$ENDIF}
-
-    if ml.Linedef = word(1 shl 16 - 1) then
-    begin
-      li.miniseg := true;
-      li.angle := 0;
-      li.offset := 0;
-      {$IFDEF OPENGL}
-      li.length := 0;
-      {$ENDIF}
-      li.linedef := nil;
-      li.sidedef := nil;
-      li.frontsector := nil;
-      li.backsector := nil;
-    end
-    else
-    begin
-      li.miniseg := false;
-      li.angle := R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
-      linedef := ml.Linedef;
-      ldef := @lines[linedef];
-      if ml.Side <> 0 then
-        li.offset := GetOffset(li.v1, ldef.v2)
-      else
-        li.offset := GetOffset(li.v1, ldef.v1);
-      li.linedef := ldef;
-      side := ml.Side;
-      li.sidedef := @sides[ldef.sidenum[side]];
-      li.frontsector := li.sidedef.sector;
-      if ldef.flags and ML_TWOSIDED <> 0 then
-      begin
-        sidenum := ldef.sidenum[side xor 1];
-        if sidenum = -1 then
-        begin
-          I_Warning('ND_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [linedef]);
-          ldef.flags := ldef.flags and not ML_TWOSIDED;
-          li.backsector := nil;
-        end
-        else
-          li.backsector := sides[sidenum].sector;
-      end
-      else
-        li.backsector := nil;
-      {$IFDEF OPENGL}
-      li.length := gldist(li.v2.x - li.v1.x, li.v2.y - li.v1.y);
-      {$ENDIF}
-    end;
-    inc(li);
-  end;
-end;
-
-//==============================================================================
-//
-// ND_NodesCheck
-//
-// Checks is nodes are available in wad map
-// If not we will build the nodes.
-// This routine allows to load levels without building the nodes (eg slige.out)
-//
-//==============================================================================
-procedure ND_NodesCheck(const lumpname: string);
-var
-  lumpnum: integer;
-  layout: TNodesMapLayout;
-  crc32a, crc32b, crc32c, crc32d: string;
-  outfilemap: string;
-  wadfilemap: string;
-  mapdir: string;
-begin
-  ND_CheckConfigured;
-  lumpnum := W_GetNumForName(lumpname);
-  if (lumpnum < 0) or (lumpnum >= W_NumLumps - 1) then
-    exit;
-
-  layout := TNodesMapScanner.Scan(nd_source, lumpnum, nd_hexen);
-
-  if layout.IsComplete(nd_hexen) then
-    exit; // Nothing to do
-
-  // Check if we can build the nodes
-  if not layout.CanBuildNodes then
-  begin
-    I_Warning('ND_NodesCheck(): Missing critical map data to play the map'#13#10);
-    exit;
-  end;
-
-  crc32a := ND_LumpCRC32(lumpnum + layout.Linedefs);
-  crc32b := ND_LumpCRC32(lumpnum + layout.Sidedefs);
-  crc32c := ND_LumpCRC32(lumpnum + layout.Vertexes);
-  crc32d := ND_LumpCRC32(lumpnum + layout.Sectors);
-
-  mapdir := M_SaveFileName('DATA\');
-  MkDir(mapdir);
-  mapdir := mapdir + 'WADS\';
-  MkDir(mapdir);
-  wadfilemap := mapdir + lumpname + '_' + crc32a + '_' + crc32b + '_' + crc32c + '_' + crc32d + '.wad';
-
-  if not fexists(wadfilemap) then
-  begin
-    outfilemap := mapdir + lumpname + '_' + crc32a + '_' + crc32b + '_' + crc32c + '_' + crc32d + '.out';
-    nd_tempfiles.Declare(outfilemap);
-
-    ND_WriteBytes(outfilemap, nd_inputbuilder.BuildForMapWithoutNodes(lumpnum, layout));
-
-    // Build the nodes
-    printf(#13#10'  ND_NodesCheck: Building GL-Friendly nodes for %s'#13#10, [lumpname]);
-
-    if not ND_RunGlbsp(outfilemap, wadfilemap, [{$IFDEF HEXEN}goHexen{$ENDIF}]) then
-    begin
-      printf(#13#10);
-      I_Warning('ND_NodesCheck(): Failed to build GL-Friendly nodes for %s'#13#10, [outfilemap]);
-      exit;
-    end;
-    printf(#13#10);
-
-  end;
-
-  W_RuntimeLoad(wadfilemap, F_ORIGIN_WAD);
 end;
 
 end.

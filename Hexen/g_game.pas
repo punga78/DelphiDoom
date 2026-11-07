@@ -32,6 +32,7 @@ unit g_game;
 interface
 
 uses
+  DelphiDoom.Engine.Level.Intf,
   d_delphi,
   doomdef,
   m_fixed,
@@ -351,6 +352,16 @@ var
 //
 //==============================================================================
 procedure G_ConfigureInput(const APoller: IInputPoller);
+
+//==============================================================================
+//
+// G_ConfigureLevel
+//
+// The loading of the levels, given by the composition root: G_DoLoadLevel calls it.
+// Without it the game stops with I_Error.
+//
+//==============================================================================
+procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 
 implementation
 
@@ -1442,6 +1453,32 @@ begin
 
 end;
 
+var
+  // given by the composition root (G_ConfigureLevel)
+  game_levelloader: ILevelLoader = nil;
+
+//==============================================================================
+//
+// G_ConfigureLevel
+//
+//==============================================================================
+procedure G_ConfigureLevel(const ALoader: ILevelLoader);
+begin
+  game_levelloader := ALoader;
+end;
+
+//==============================================================================
+//
+// G_LevelLoader
+//
+//==============================================================================
+function G_LevelLoader: ILevelLoader;
+begin
+  if game_levelloader = nil then
+    I_Error('G_ConfigureLevel() was not called: the loading of the levels is missing');
+  result := game_levelloader;
+end;
+
 //==============================================================================
 //
 // G_DoLoadLevel
@@ -1474,7 +1511,7 @@ begin
 
   S_StopAllSequences;
   PS_NewMap;
-  P_SetupLevel(gamemap, 0, gameskill);
+  G_LevelLoader.SetupLevel(0, gamemap, 0, gameskill);
 
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do

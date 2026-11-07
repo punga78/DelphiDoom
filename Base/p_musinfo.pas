@@ -54,17 +54,10 @@ const
 
 //==============================================================================
 //
-// P_InitMusInfo
-//
-//==============================================================================
-procedure P_InitMusInfo;
-
-//==============================================================================
-//
 // P_ConfigureMusInfo
 //
 //==============================================================================
-procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog; const ALoader: IMusInfoLoader);
+procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog);
 
 //==============================================================================
 //
@@ -175,29 +168,15 @@ end;
 
 var
   musinfo_catalog: IMusInfoCatalog;
-  musinfo_loader: IMusInfoLoader;
 
 //==============================================================================
 //
 // P_ConfigureMusInfo
 //
 //==============================================================================
-procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog; const ALoader: IMusInfoLoader);
+procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog);
 begin
   musinfo_catalog := ACatalog;
-  musinfo_loader := ALoader;
-end;
-
-//==============================================================================
-//
-// P_InitMusInfo
-//
-//==============================================================================
-procedure P_InitMusInfo;
-begin
-  if musinfo_loader = nil then
-    I_Error('P_InitMusInfo(): MUSINFO is not configured (ComposeEngine was not called)');
-  musinfo_loader.Load;
 end;
 
 //==============================================================================

@@ -47,6 +47,7 @@ unit d_main;
 interface
 
 uses
+  DelphiDoom.Engine.Level.Intf,
   d_event,
   doomdef,
   DelphiDoom.IdTech.Intf,
@@ -261,6 +262,16 @@ var
 {$IFNDEF OPENGL}
   showfullhdlogo: boolean = false;
 {$ENDIF}
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+// The loading of the levels, given by the composition root: D_DoomMain starts it and frees it.
+// Without it the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
 
 implementation
 
@@ -2016,6 +2027,32 @@ begin
     basedefault := {$IFDEF FPC}'Strife32f.ini'{$ELSE}'Strife32.ini'{$ENDIF};
 end;
 
+var
+  // given by the composition root (D_ConfigureLevel)
+  main_levelloader: ILevelLoader = nil;
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+begin
+  main_levelloader := ALoader;
+end;
+
+//==============================================================================
+//
+// D_LevelLoader
+//
+//==============================================================================
+function D_LevelLoader: ILevelLoader;
+begin
+  if main_levelloader = nil then
+    I_Error('D_ConfigureLevel() was not called: the loading of the levels is missing');
+  result := main_levelloader;
+end;
+
 //==============================================================================
 //
 // D_DoomMain
@@ -2555,7 +2592,7 @@ begin
   SUC_Progress(80);
 
   printf('P_Init: Init Playloop state.'#13#10);
-  P_Init;
+  D_LevelLoader.Initialize;
 
   SUC_Progress(81);
 
@@ -2705,7 +2742,7 @@ begin
   printf('C_ShutDown: Shut down console.'#13#10);
   C_ShutDown;
   printf('P_ShutDown: Shut down Playloop state.'#13#10);
-  P_ShutDown;
+  D_LevelLoader.ShutDown;
   printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);
   R_ShutDown;
   printf('Info_ShutDownRandom: Shut down randomizers.'#13#10);
