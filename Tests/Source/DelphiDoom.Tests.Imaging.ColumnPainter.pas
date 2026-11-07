@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TImagingColumnPainter                                  }
 {                                                                              }
@@ -45,6 +45,8 @@ type
     procedure TestPaintOfATruncatedPostRaises;
     [Test]
     procedure TestPaintWithSmallCacheRaises;
+    [Test]
+    procedure TestPaintOfAColumnWithoutPostsNeedsNoRoom;
     [Test]
     procedure TestPaintWithSmallMarksRaises;
   end;
@@ -197,13 +199,25 @@ procedure TTestImagingColumnPainter.TestPaintWithSmallCacheRaises;
 var
   LColumn, LCache: TBytes;
 begin
-  LColumn := TImagingSamples.Column([Post(0, 2, 1)]);
+  LColumn := TImagingSamples.Column([Post(0, 4, 1)]);
   LCache := TImagingSamples.ZeroBytes(3);
   Assert.WillRaise(
     procedure
     begin
       FPainter.Paint(LColumn, 0, LCache, 0, 0, 4, nil, 0);
     end, EImagingException, 'dovrebbe rifiutare una cache piu'' piccola dell''altezza');
+end;
+
+// Regressione: l'ultima colonna di una texture con patch senza post sta in un blocco
+// che finisce due byte prima dell'altezza; il vecchio codice non scriveva nulla e andava bene
+procedure TTestImagingColumnPainter.TestPaintOfAColumnWithoutPostsNeedsNoRoom;
+var
+  LColumn, LCache: TBytes;
+begin
+  LColumn := TImagingSamples.Column([]);
+  LCache := TImagingSamples.ZeroBytes(2);
+  FPainter.Paint(LColumn, 0, LCache, 0, 0, 4, nil, 0);
+  Assert.AreEqual(Integer(0), Integer(LCache[0]), 'dovrebbe lasciare la cache com''e'''); 
 end;
 
 procedure TTestImagingColumnPainter.TestPaintWithSmallMarksRaises;

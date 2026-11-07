@@ -190,17 +190,24 @@ procedure TImagingColumnRebuilder.Rebuild(var ABlock: TBytes; AColumnOffset: Int
   const AMarks: TBytes; AMarksOffset, AHeight: Integer);
 var
   LSource: TBytes;
+  LAvailable: Integer;
 begin
   if AHeight <= 0 then
     raise EImagingException.Create(SImagingBadHeight);
-  if (AColumnOffset < 0) or (AColumnOffset + 3 + AHeight > Length(ABlock)) then
+  // the column of a pixel row that no patch covers has room for the end mark only, so it may
+  // end before the height: what is written is checked where it is written
+  if (AColumnOffset < 0) or (AColumnOffset >= Length(ABlock)) then
     raise EImagingException.Create(SImagingRebuildOverflow);
   if (AMarksOffset < 0) or (AMarksOffset + AHeight > Length(AMarks)) then
     raise EImagingException.Create(SImagingMarksTooSmall);
 
   // the pixels are saved: the posts are written over them
   SetLength(LSource, AHeight);
-  Move(ABlock[AColumnOffset + 3], LSource[0], AHeight);
+  LAvailable := Length(ABlock) - (AColumnOffset + 3);
+  if LAvailable > AHeight then
+    LAvailable := AHeight;
+  if LAvailable > 0 then
+    Move(ABlock[AColumnOffset + 3], LSource[0], LAvailable);
 
   if AHeight < 255 then
     RebuildShort(ABlock, AColumnOffset, LSource, AMarks, AMarksOffset, AHeight)

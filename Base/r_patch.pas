@@ -34,7 +34,16 @@ unit r_patch;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Imaging.Intf;
+
+//==============================================================================
+//
+// R_ConfigureFixedColumn
+// The builder of fixed columns of Libs\Imaging, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureFixedColumn(const ABuilder: IImagingFixedColumnBuilder);
 
 //==============================================================================
 //
@@ -67,9 +76,11 @@ procedure R_DisableFixedColumn;
 implementation
 
 uses
+  i_system,
   r_defs,
   r_data,
-  z_zone;
+  z_zone,
+  DelphiDoom.Imaging.Types;
 
 const
   FIXEDCOLUMNSIZE = $10000;
@@ -87,6 +98,17 @@ type
 var
   fixedcolumns: array[0..FIXEDCOLUMNSIZE - 1] of Pfixedcolumnitem_t;
   fix_col_enabled: boolean = true;
+  fixed_builder: IImagingFixedColumnBuilder = nil;
+
+//==============================================================================
+//
+// R_ConfigureFixedColumn
+//
+//==============================================================================
+procedure R_ConfigureFixedColumn(const ABuilder: IImagingFixedColumnBuilder);
+begin
+  fixed_builder := ABuilder;
+end;
 
 //==============================================================================
 //
@@ -125,51 +147,43 @@ var
 
   procedure _generatedata128;
   var
-    i: integer;
+    source, repeated: TArray<Byte>;
   begin
+    SetLength(source, h1);
+    memcpy(@source[0], src, h1);
+    try
+      repeated := fixed_builder.Repeat128(source, 0, h1);
+    except
+      on E: EImagingException do
+        I_Error('R_GetFixedColumn(): %s (texture %d, column %d)', [E.Message, tex, col]);
+    end;
     item.data := Z_Malloc(h2, PU_LEVEL, nil);
-    memcpy(item.data, src, h1);
-    for i := h1 to h2 - 1 do
-      item.data[i] := item.data[i - h1];
+    memcpy(item.data, @repeated[0], h2);
   end;
 
   procedure _generatedataTL;
   var
-    i: integer;
-    col: Pcolumn_t;
-    delta, prevdelta: integer;
-    tallpatch: boolean;
-    p: integer;
-    srcTL: PByteArray;
+    posts: PByteArray;
+    size: integer;
+    column, fixed: TArray<Byte>;
   begin
-    item.data := Z_Malloc(h2, PU_LEVEL, nil);
-    col := Pcolumn_t(integer(src) - 3);
-    delta := 0;
-    tallpatch := false;
-    while col.topdelta <> $FF do
-    begin
-      delta := delta + col.topdelta;
-      srcTL := PByteArray(integer(col) + 3);
-      for i := 0 to col.length - 1 do
-      begin
-        p := delta + i;
-        if p >= 0 then
-          if p < h2 then
-            item.data[p] := srcTL[i];
-      end;
-
-      if not tallpatch then
-      begin
-        prevdelta := col.topdelta;
-        col := Pcolumn_t(integer(col) + col.length + 4);
-        if col.topdelta > prevdelta then
-          delta := 0
-        else
-          tallpatch := true;
-      end
-      else
-        col := Pcolumn_t(integer(col) + col.length + 4);
+    // the posts end with 255 and each one takes its length plus 4 bytes
+    posts := PByteArray(integer(src) - 3);
+    size := 0;
+    while posts[size] <> $FF do
+      size := size + posts[size + 1] + 4;
+    inc(size);
+    SetLength(column, size);
+    memcpy(@column[0], posts, size);
+    try
+      fixed := fixed_builder.FromPosts(column, 0, h2);
+    except
+      on E: EImagingException do
+        I_Error('R_GetFixedColumn(): %s (texture %d, column %d)', [E.Message, tex, col]);
     end;
+    item.data := Z_Malloc(h2, PU_LEVEL, nil);
+    if h2 > 0 then
+      memcpy(item.data, @fixed[0], h2);
   end;
 
 begin

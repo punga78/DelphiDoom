@@ -55,6 +55,7 @@ uses
   DelphiDoom.Imaging.Factory,
 {$IFNDEF OPENGL}
   r_grow,
+  r_patch,
 {$ENDIF}
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
@@ -384,6 +385,10 @@ begin
   R_ConfigureGrow(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
   R_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
+  R_ConfigureComposite(TImagingFactory.CreateColumnPainter, TImagingFactory.CreateColumnRebuilder);
+{$IFNDEF OPENGL}
+  R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
+{$ENDIF}
 end;
 
 procedure ComposeMathCore;

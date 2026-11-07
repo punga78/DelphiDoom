@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TImagingColumnRebuilder                                }
 {                                                                              }
@@ -44,6 +44,8 @@ type
     procedure TestRebuildWithZeroHeightRaises;
     [Test]
     procedure TestRebuildInASmallBlockRaises;
+    [Test]
+    procedure TestRebuildOfAColumnWithoutMarksNeedsRoomForTheEndMarkOnly;
     [Test]
     procedure TestRebuildWithSmallMarksRaises;
   end;
@@ -194,6 +196,18 @@ begin
     begin
       FRebuilder.Rebuild(LBlock, 0, Marks(16, [0, 16]), 0, 16);
     end, EImagingException, 'dovrebbe rifiutare un blocco piu'' piccolo della colonna');
+end;
+
+// Regressione: l'ultima colonna senza post di una texture ha posto per il solo segno di fine,
+// due byte meno dell'altezza; il vecchio codice scriveva solo quel byte
+procedure TTestImagingColumnRebuilder.TestRebuildOfAColumnWithoutMarksNeedsRoomForTheEndMarkOnly;
+var
+  LBlock: TBytes;
+begin
+  SetLength(LBlock, 1);
+  LBlock[0] := 7;
+  FRebuilder.Rebuild(LBlock, 0, Marks(16, []), 0, 16);
+  Assert.AreEqual(255, Integer(LBlock[0]), 'dovrebbe scrivere il segno di fine colonna');
 end;
 
 procedure TTestImagingColumnRebuilder.TestRebuildWithSmallMarksRaises;

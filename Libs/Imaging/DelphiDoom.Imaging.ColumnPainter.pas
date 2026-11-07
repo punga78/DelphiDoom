@@ -45,7 +45,9 @@ var
   LLength: Integer;
   LPosition: Integer;
 begin
-  if (ACacheHeight < 0) or (ACacheOffset < 0) or (ACacheOffset + ACacheHeight > Length(ACache)) then
+  // a column without posts writes nothing: its cache may end before the height
+  // (the old code never touched it), so the end of the cache is checked at each write
+  if (ACacheHeight < 0) or (ACacheOffset < 0) then
     raise EImagingException.Create(SImagingCacheTooSmall);
   if (Length(AMarks) > 0) and ((AMarksOffset < 0) or (AMarksOffset + ACacheHeight > Length(AMarks))) then
     raise EImagingException.Create(SImagingMarksTooSmall);
@@ -75,6 +77,8 @@ begin
 
     if LCount > 0 then
     begin
+      if ACacheOffset + LPosition + LCount > Length(ACache) then
+        raise EImagingException.Create(SImagingCacheTooSmall);
       Move(ASource[LOffset + 3], ACache[ACacheOffset + LPosition], LCount);
       if Length(AMarks) > 0 then
         FillChar(AMarks[AMarksOffset + LPosition], LCount, $FF);

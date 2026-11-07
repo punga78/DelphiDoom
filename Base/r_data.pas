@@ -41,7 +41,8 @@ uses
   m_fixed,
   r_defs,
   w_wad,
-  DelphiDoom.TextureDefs.Intf;
+  DelphiDoom.TextureDefs.Intf,
+  DelphiDoom.Imaging.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -97,6 +98,14 @@ procedure R_InitData;
 //
 //==============================================================================
 procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
+
+//==============================================================================
+//
+// R_ConfigureComposite
+//
+//==============================================================================
+procedure R_ConfigureComposite(const APainter: IImagingColumnPainter;
+  const ARebuilder: IImagingColumnRebuilder);
 
 //==============================================================================
 //
@@ -254,6 +263,7 @@ implementation
 
 uses
   DelphiDoom.TextureDefs.Types,
+  DelphiDoom.Imaging.Types,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -304,6 +314,22 @@ uses
 
 var
   texturedefs_loader: ITextureDefsLoader;
+  composite_painter: IImagingColumnPainter = nil;
+  composite_rebuilder: IImagingColumnRebuilder = nil;
+
+//==============================================================================
+//
+// R_ConfigureComposite
+// The painter and the rebuilder of columns of Libs\Imaging, given by the
+// composition root
+//
+//==============================================================================
+procedure R_ConfigureComposite(const APainter: IImagingColumnPainter;
+  const ARebuilder: IImagingColumnRebuilder);
+begin
+  composite_painter := APainter;
+  composite_rebuilder := ARebuilder;
+end;
 
 //==============================================================================
 //
@@ -313,100 +339,100 @@ var
 // A column is composed of zero or more posts,
 // a patch or sprite is composed of zero or more columns.
 //
-// R_DrawColumnInCache
-// Clip and draw a column
-//  from a patch into a cached post.
+// R_GenerateCompositeInto
+// Using the texture definition,
+//  the composite texture is created from the patches,
+//  and each column is cached.
+// The columns are clipped and drawn by the painter and the multipatched
+//  ones are rebuilt from the transparency marks by the rebuilder
 //
 //==============================================================================
-procedure R_DrawColumnInCache(patch: Pcolumn_t; cache: PByteArray;
-  originy: integer; cacheheight: integer);
+procedure R_GenerateCompositeInto(const texnum: integer; block: PByteArray);
 var
-  count: integer;
-  position: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
+  texture: Ptexture_t;
+  patch: Ptexpatch_t;
+  realpatch: Ppatch_t;
+  x1: integer;
+  x2: integer;
+  i: integer;
+  cofs: PIntegerArray;
+  collump: PSmallIntArray;
+  colofs: PIntegerArray;
+  twidth: integer;
+  theight: integer;
+  lumpsize: integer;
+  composite: TArray<Byte>;
+  patchbytes: TArray<Byte>;
+  marks: TArray<Byte>;
 begin
-  delta := 0;
-  tallpatch := false;
-  while patch.topdelta <> $ff do
-  begin
-    count := patch.length;
-    position := originy + delta + patch.topdelta;
+  if (composite_painter = nil) or (composite_rebuilder = nil) then
+    I_Error('R_GenerateComposite(): the composite builders are not configured (ComposeEngine was not called)');
 
-    if position < 0 then
+  texture := textures[texnum];
+  twidth := texture.width;
+  theight := texture.height;
+
+  SetLength(composite, texturecompositesize[texnum]);
+  if texture.patchcount > 1 then
+    SetLength(marks, twidth * theight);
+
+  collump := texturecolumnlump[texnum];
+  colofs := texturecolumnofs[texnum];
+
+  patch := @(texture.patches[0]);
+
+  try
+    // Composite the columns together.
+    for i := 0 to texture.patchcount - 1 do
     begin
-      count := count + position;
-      position := 0;
+{$IFDEF DOOM}
+      // the same patches that R_GenerateLookup counted: it ignores what is not a patch
+      if (patch.patch < 0) or (W_LumpFlags(patch.patch) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
+      begin
+        inc(patch);
+        Continue;
+      end;
+{$ENDIF}
+      realpatch := W_CacheLumpNum(patch.patch, PU_STATIC);
+      lumpsize := W_LumpLength(patch.patch);
+      SetLength(patchbytes, lumpsize);
+      if lumpsize > 0 then
+        memcpy(@patchbytes[0], realpatch, lumpsize);
+      Z_ChangeTag(realpatch, PU_CACHE);
+
+      x1 := patch.originx;
+      x2 := x1 + Ppatch_t(@patchbytes[0]).width;
+
+      cofs := PIntegerArray(integer(@Ppatch_t(@patchbytes[0]).columnofs) - x1 * SizeOf(integer));
+
+      if x1 < 0 then
+        x1 := 0;
+
+      if x2 > twidth then
+        x2 := twidth;
+
+      while x1 < x2 do
+      begin
+        // Column does not have multiple patches?
+        if collump[x1] < 0 then
+          composite_painter.Paint(patchbytes, cofs[x1], composite, colofs[x1], patch.originy,
+            theight, marks, x1 * theight);
+        inc(x1);
+      end;
+      inc(patch);
     end;
 
-    if position + count > cacheheight then
-      count := cacheheight - position;
-
-    if count > 0 then
-      memcpy(@cache[position], PByteArray(integer(patch) + 3), count);
-
-    if not tallpatch then
-    begin
-      prevdelta := patch.topdelta;
-      patch := Pcolumn_t(integer(patch) + patch.length + 4);
-      if patch.topdelta > prevdelta then
-        delta := 0
-      else
-        tallpatch := true;
-    end
-    else
-      patch := Pcolumn_t(integer(patch) + patch.length + 4);
+    if texture.patchcount > 1 then
+      for i := 0 to twidth - 1 do
+        if collump[i] < 0 then // process only multipatched columns
+          composite_rebuilder.Rebuild(composite, colofs[i] - 3, marks, i * theight, theight);
+  except
+    on E: EImagingException do
+      I_Error('R_GenerateComposite(): %s (texture %s, %dx%d, %d patches)', [E.Message, char8tostring(texture.name), twidth, theight, texture.patchcount]);
   end;
-end;
 
-//==============================================================================
-//
-// R_DrawColumnInCacheMultipatch
-//
-//==============================================================================
-procedure R_DrawColumnInCacheMultipatch(patch: Pcolumn_t; cache: PByteArray;
-  originy: integer; cacheheight: integer; marks: PByteArray);
-var
-  count: integer;
-  position: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
-begin
-  delta := 0;
-  tallpatch := false;
-  while patch.topdelta <> $ff do
-  begin
-    count := patch.length;
-    position := originy + delta + patch.topdelta;
-
-    if position < 0 then
-    begin
-      count := count + position;
-      position := 0;
-    end;
-
-    if position + count > cacheheight then
-      count := cacheheight - position;
-
-    if count > 0 then
-    begin
-      memcpy(@cache[position], PByteArray(integer(patch) + 3), count);
-      memset(@marks[position], $ff, count);
-    end;
-
-    if not tallpatch then
-    begin
-      prevdelta := patch.topdelta;
-      patch := Pcolumn_t(integer(patch) + patch.length + 4);
-      if patch.topdelta > prevdelta then
-        delta := 0
-      else
-        tallpatch := true;
-    end
-    else
-      patch := Pcolumn_t(integer(patch) + patch.length + 4);
-
-  end;
+  if Length(composite) > 0 then
+    memcpy(block, @composite[0], Length(composite));
 end;
 
 //==============================================================================
@@ -420,218 +446,10 @@ end;
 procedure R_GenerateComposite(const texnum: integer);
 var
   block: PByteArray;
-  texture: Ptexture_t;
-  patch: Ptexpatch_t;
-  realpatch: Ppatch_t;
-  x1: integer;
-  x2: integer;
-  i, j: integer;
-  cofs: PIntegerArray;
-  col, patchcol: Pcolumn_t;
-  collump: PSmallIntArray;
-  colofs: PIntegerArray; //PWordArray; // 64k
-  twidth: integer;
-  theight: integer;
-  theight4: integer;
-  source, mark1, marks: PByteArray;
-  marksize: integer;
-  talllength, talltopdelta, resttopdelta, lasttopdelta, sourceposition: integer;
 begin
-  texture := textures[texnum];
-  twidth := texture.width;
-  theight := texture.height;
-  marksize := twidth * theight;
-
   block := Z_Malloc(texturecompositesize[texnum], PU_STATIC, @texturecomposite[texnum]);
 
-  collump := texturecolumnlump[texnum];
-  colofs := texturecolumnofs[texnum];
-
-  // Composite the columns together.
-  patch := @(texture.patches[0]);
-
-  if texture.patchcount = 1 then
-  begin
-
-    realpatch := W_CacheLumpNum(patch.patch, PU_STATIC);
-    x1 := patch.originx;
-    x2 := x1 + realpatch.width;
-
-    cofs := PIntegerArray(integer(@realpatch.columnofs) - x1 * SizeOf(integer));
-
-    if x1 < 0 then
-      x1 := 0;
-
-    if x2 > twidth then
-      x2 := twidth;
-
-    while x1 < x2 do
-    begin
-      // Column does not have multiple patches?
-      if collump[x1] < 0 then
-      begin
-        patchcol := Pcolumn_t(integer(realpatch) + cofs[x1]);
-        R_DrawColumnInCache(
-          patchcol, @block[colofs[x1]], patch.originy, theight);
-      end;
-      inc(x1);
-    end;
-    Z_ChangeTag(realpatch, PU_CACHE);
-
-  end
-  else
-  begin
-    marks := mallocz(marksize);
-
-    for i := 0 to texture.patchcount - 1 do
-    begin
-      realpatch := W_CacheLumpNum(patch.patch, PU_STATIC);
-      x1 := patch.originx;
-      x2 := x1 + realpatch.width;
-
-      cofs := PIntegerArray(integer(@realpatch.columnofs) - x1 * SizeOf(integer));
-
-      if x1 < 0 then
-        x1 := 0;
-
-      if x2 > twidth then
-        x2 := twidth;
-
-      while x1 < x2 do
-      begin
-        // Column does not have multiple patches?
-        if collump[x1] < 0 then
-        begin
-          patchcol := Pcolumn_t(integer(realpatch) + cofs[x1]);
-          R_DrawColumnInCacheMultipatch(
-            patchcol, @block[colofs[x1]], patch.originy, theight, @marks[x1 * theight]);
-        end;
-        inc(x1);
-      end;
-      Z_ChangeTag(realpatch, PU_CACHE);
-      inc(patch);
-    end;
-
-    source := malloc(theight);  // temporary column
-    if theight < 255 then
-    begin
-      for i := 0 to twidth - 1 do
-        if collump[i] < 0 then // process only multipatched columns
-        begin
-          col := Pcolumn_t(@block[colofs[i] - 3]);  // cached column
-          mark1 := @marks[i * theight];
-          j := 0;
-
-          // save column in temporary so we can shuffle it around
-          memcpy(source, PByteArray(integer(col) + 3), theight);
-
-          while true do  // reconstruct the column by scanning transparency marks
-          begin
-            // skip transparent cells
-            // JVAL: Fast skip, check 4 bytes at first
-            theight4 := theight - 4;
-            while (j < theight4) and (PInteger(@mark1[j])^ = 0) do
-              j := j + 4;
-            // JVAL: Finally check each of the remaining bytes
-            while (j < theight) and (mark1[j] = 0) do
-              inc(j);
-            if j >= theight then    // if at end of column
-            begin
-              col.topdelta := $FF;  // end-of-column marker
-              break;
-            end;
-            col.topdelta := j;      // starting offset of post
-            // JVAL: 20200118 - Added check for walls with height >= 256
-            while (j < theight) and (mark1[j] <> 0) and (j - col.topdelta < 255) do
-              inc(j);
-            col.length := j - col.topdelta;
-            // copy opaque cells from the temporary back into the column
-            memcpy(PByteArray(integer(col) + 3), @source[col.topdelta], col.length);
-            col := Pcolumn_t(integer(col) + col.length + 4); // next post
-          end;
-        end;
-    end
-    else  // Tall patch with multipatched columns nightmare
-    begin
-      for i := 0 to twidth - 1 do
-        if collump[i] < 0 then // process only multipatched columns
-        begin
-          col := Pcolumn_t(@block[colofs[i] - 3]);  // cached column
-          mark1 := @marks[i * theight];
-          j := 0;
-          lasttopdelta := 0;
-
-          // save column in temporary so we can shuffle it around
-          memcpy(source, PByteArray(integer(col) + 3), theight);
-          while true do  // reconstruct the column by scanning transparency marks
-          begin
-            // skip transparent cells
-            // JVAL: Fast skip, check 4 bytes at first
-            theight4 := theight - 4;
-            while (j < theight4) and (PInteger(@mark1[j])^ = 0) do
-              j := j + 4;
-            // JVAL: Finally check each of the remaining bytes
-            while (j < theight) and (mark1[j] = 0) do
-              inc(j);
-            if j >= theight then    // if at end of column
-            begin
-              col.topdelta := $FF;  // end-of-column marker
-              break;
-            end;
-
-            talltopdelta := j;
-            while (j < theight) and (mark1[j] <> 0) do
-              inc(j);
-            talllength := j - talltopdelta;
-
-            sourceposition := talltopdelta;
-            repeat
-              if talltopdelta < 255 then
-              begin
-                col.topdelta := talltopdelta;
-                lasttopdelta := talltopdelta;
-              end
-              else
-              begin
-                resttopdelta := talltopdelta - lasttopdelta;
-                repeat
-                  if resttopdelta > 254 then
-                  begin
-                    col.topdelta := lasttopdelta;
-                    lasttopdelta := lasttopdelta + lasttopdelta;
-                    col.length := 0;
-                    col := Pcolumn_t(integer(col) + col.length + 4); // next post
-                  end
-                  else
-                  begin
-                    col.topdelta := resttopdelta;
-                    lasttopdelta := talltopdelta;
-                  end;
-                until lasttopdelta = talltopdelta;
-              end;
-
-              if talllength > 254 then
-              begin
-                col.length := 254;
-                talllength := talllength - 254;
-              end
-              else
-              begin
-                col.length := talllength;
-                talllength := 0;
-              end;
-              // copy opaque cells from the temporary back into the column
-              memcpy(PByteArray(integer(col) + 3), @source[sourceposition], col.length);
-              sourceposition := sourceposition + col.length;
-              col := Pcolumn_t(integer(col) + col.length + 4); // next post
-            until talllength = 0;
-          end;
-        end;
-    end;
-
-    memfree(pointer(source), theight);  // free temporary column
-    memfree(pointer(marks), marksize);  // free transparency marks
-  end;
+  R_GenerateCompositeInto(texnum, block);
 
   // Now that the texture has been built in column cache,
   //  it is purgable from zone memory.
