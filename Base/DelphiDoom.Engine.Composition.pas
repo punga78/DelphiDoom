@@ -104,6 +104,12 @@ uses
   r_dynlights,
 {$IFDEF OPENGL}
   gl_defs,
+  DelphiDoom.GlMath.Factory,
+  gl_frustum,
+  gl_clipper,
+  DelphiDoom.Models.Intf,
+  DelphiDoom.Models.Factory,
+  mdl_base,
 {$ENDIF}
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
@@ -413,6 +419,19 @@ begin
   M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
 end;
 
+{$IFDEF OPENGL}
+procedure ComposeOpenGl;
+begin
+  GL_ConfigureFrustum(TGlMathFactory.CreateFrustum);
+  GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
+  MDL_ConfigureModels(TModelsFactory.CreateMd2Parser,
+    function: IModelCommandStream
+    begin
+      Result := TModelsFactory.CreateCommandStream;
+    end);
+end;
+{$ENDIF}
+
 procedure ComposeActorDef(const ALog: ILog);
 var
   LGame: TActorDefGame;
@@ -475,6 +494,9 @@ begin
     end);
   I_ConfigureLog(LLog);
   ComposeMathCore;
+{$IFDEF OPENGL}
+  ComposeOpenGl;
+{$ENDIF}
   ComposeConsole(LLog, LContext);
   LClock := TClockFactory.CreateClock(LLog);
   I_ConfigureClock(LClock);

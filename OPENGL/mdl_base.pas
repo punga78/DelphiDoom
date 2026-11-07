@@ -21,7 +21,8 @@
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
-//    Base model class (Abstract)
+//    Base model class (Abstract) and the services of Libs\Models that the
+//    models of the engine use (the reader of MD2 files, the lists of commands)
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -34,17 +35,9 @@ unit mdl_base;
 interface
 
 uses
-  d_delphi;
-
-type
-  TFrameIndexInfo = class
-  private
-    fStartFrame,
-    fEndFrame: integer;
-  public
-    property StartFrame: integer read fStartFrame write fStartFrame;
-    property EndFrame: integer read fEndFrame write fEndFrame;
-  end;
+  SysUtils,
+  d_delphi,
+  DelphiDoom.Models.Intf;
 
 type
   TBaseModel = class(TObject)
@@ -59,7 +52,75 @@ type
     procedure DrawSimple(const frm: integer); virtual; abstract;
   end;
 
+//==============================================================================
+//
+// MDL_ConfigureModels
+//
+// The composition root gives the services of Libs\Models: the reader of MD2
+// files and the way to make an empty list of commands of a procedural model.
+//
+//==============================================================================
+procedure MDL_ConfigureModels(const AMd2Parser: IMd2Parser;
+  const ACommandStreams: TFunc<IModelCommandStream>);
+
+//==============================================================================
+//
+// MDL_Md2Parser
+//
+//==============================================================================
+function MDL_Md2Parser: IMd2Parser;
+
+//==============================================================================
+//
+// MDL_NewCommandStream
+//
+//==============================================================================
+function MDL_NewCommandStream: IModelCommandStream;
+
 implementation
+
+uses
+  i_system;
+
+var
+  md2_parser: IMd2Parser = nil;
+  command_streams: TFunc<IModelCommandStream> = nil;
+
+//==============================================================================
+//
+// MDL_ConfigureModels
+//
+//==============================================================================
+procedure MDL_ConfigureModels(const AMd2Parser: IMd2Parser;
+  const ACommandStreams: TFunc<IModelCommandStream>);
+begin
+  md2_parser := AMd2Parser;
+  command_streams := ACommandStreams;
+end;
+
+//==============================================================================
+//
+// MDL_Md2Parser
+//
+//==============================================================================
+function MDL_Md2Parser: IMd2Parser;
+begin
+  if not Assigned(md2_parser) then
+    I_Error('MDL_Md2Parser(): the models are not configured (call ComposeEngine first)');
+  Result := md2_parser;
+end;
+
+//==============================================================================
+//
+// MDL_NewCommandStream
+//
+//==============================================================================
+function MDL_NewCommandStream: IModelCommandStream;
+begin
+  if not Assigned(command_streams) then
+    I_Error('MDL_NewCommandStream(): the models are not configured (call ComposeEngine first)');
+  Result := command_streams();
+end;
 
 //==============================================================================
 //

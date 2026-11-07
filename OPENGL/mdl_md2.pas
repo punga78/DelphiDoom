@@ -21,7 +21,9 @@
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
-//    External MD2 model support
+//    External MD2 model support. The file is read by Libs\Models (IMd2Parser);
+//    the model keeps the pointers to the vertexes of each frame and the OpenGL
+//    display lists, and draws.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -36,18 +38,22 @@ interface
 uses
   d_delphi,
   mdl_base,
-  gl_types;
+  gl_types,
+  DelphiDoom.Models.Intf;
 
 type
   TMD2Model = class(TBaseModel)
   protected
     fNumFrames: integer;
     fNumVertexes: integer;
-    frameNames: TDStringList;
-    TheVectorsArray: PGLVertexArraysP;
-    UV: PGLTexcoordArray;
+    fdata: IMd2Model;
+    // the vertexes of each frame and the texture points: the memory is of fdata, the draw does
+    // not call the interface
+    fframes: array of PGLVertex;
+    UV: PGLTexcoord;
     precalc: PGLuintArray;
     fname: string;
+    procedure RefreshFrames;
   public
     constructor Create(const name: string;
       const xoffset, yoffset, zoffset: float;
@@ -68,90 +74,14 @@ type
 implementation
 
 uses
+  SysUtils,
   dglOpenGL,
   doomdef,
   i_system,
   w_folders,
   w_pak,
-  gl_defs;
-
-//------------------------------------------------------------------------------
-//--------------------------- MD2 File Format ----------------------------------
-//------------------------------------------------------------------------------
-
-const
-  // Magic number that identifies MD2 files (ASCII: 'IDP2').
-  MD2_MAGIC = $32504449;
-
-type
-  TMD2_Index_List = record
-    a, b, c: Integer;
-    a_s, a_t,
-    b_s, b_t,
-    c_s, c_t: Single;
-  end;
-  TMD2_Index_List_Array = array[0..$FFFF] of TMD2_Index_List;
-  PMD2_Index_List_Array = ^TMD2_Index_List_Array;
-
-  TMD2_Vertex_List = record
-    x, y, z: Single;
-  end;
-  TMD2_Vertex_List_Array = array[0..$FFFF] of TMD2_Vertex_List;
-  PMD2_Vertex_List_Array = ^TMD2_Vertex_List_Array;
-
-  TMD2_Frame_List = record
-    Vertex: PMD2_Vertex_List_Array;
-  end;
-  TMD2_Frame_List_Array = array[0..$FFFF] of TMD2_Frame_List;
-  PMD2_Frame_List_Array = ^TMD2_Frame_List_Array;
-
-  TMD2DstVert_T = record
-    s: SmallInt;
-    t: SmallInt;
-  end;
-  TMD2DstVert_TArray = array[0..$FFFF] of TMD2DstVert_T;
-  PMD2DstVert_TArray = ^TMD2DstVert_TArray;
-
-  TMD2Triangle_T = record
-    index_xyz: array[0..2] of SmallInt;
-    index_st: array[0..2] of SmallInt;
-  end;
-
-  TMD2Trivertx_T = record
-    v: array[0..2] of Byte;
-    lightnormalindex: byte;
-  end;
-
-  PMD2AliasFrame_T = ^TMD2AliasFrame_T;
-  TMD2AliasFrame_T = record
-    scale: array[0..2] of Single;
-    translate: array[0..2] of Single;
-    name: array[0..15] of Char;
-    verts: array[0..0] of TMD2Trivertx_T;
-  end;
-
-  TDmd2_T = record
-    ident: Integer;
-    version: Integer;
-
-    skinWidth: Integer;
-    skinHeight: Integer;
-    framesize: Integer;
-
-    num_skins: Integer;
-    num_xyz: Integer;
-    num_st: Integer;
-    num_tris: Integer;
-    num_glcmds: Integer;
-    num_frames: Integer;
-
-    ofs_skins: Integer;
-    ofs_st: Integer;
-    ofs_tris: Integer;
-    ofs_frames: Integer;
-    ofs_glcmds: Integer;
-    ofs_end: Integer;
-  end;
+  gl_defs,
+  DelphiDoom.Models.Types;
 
 //==============================================================================
 //
@@ -164,34 +94,24 @@ constructor TMD2Model.Create(const name: string;
   const additionalframes: TDStringList);
 var
   strm: TPakStream;
-  base_st: PMD2DstVert_TArray;
-  tri: TMD2Triangle_T;
-  out_t: PMD2AliasFrame_T;
-  i, j, k, idx1: Integer;
-  vert: PGLVertex;
-  frameName: string;
-  m_index_list: PMD2_Index_List_Array;
-  m_frame_list: PMD2_Frame_List_Array;
-  fm_iTriangles: integer;
-  fxoffset, fyoffset, fzoffset: single;
-  fxscale, fyscale, fzscale: single;
-  modelheader: TDmd2_T;
+  i: Integer;
   m: TMD2Model;
+  placement: TModelPlacement;
+  bytes: TBytes;
 begin
   Inherited;
   printf('  Found external model %s'#13#10, [name]);
   fname := name;
-  frameNames := TDStringList.Create;
-  UV := nil;
-  TheVectorsArray := nil;
   fNumFrames := 0;
   fNumVertexes := 0;
-  fxoffset := xoffset / MAP_COEFF;
-  fyoffset := yoffset / MAP_COEFF;
-  fzoffset := zoffset / MAP_COEFF;
-  fxscale := xscale / MAP_COEFF;
-  fyscale := yscale / MAP_COEFF;
-  fzscale := zscale / MAP_COEFF;
+  UV := nil;
+  // the offsets and the scales are in map units: the library gets them divided by MAP_COEFF
+  placement.OffsetX := xoffset / MAP_COEFF;
+  placement.OffsetY := yoffset / MAP_COEFF;
+  placement.OffsetZ := zoffset / MAP_COEFF;
+  placement.ScaleX := xscale / MAP_COEFF;
+  placement.ScaleY := yscale / MAP_COEFF;
+  placement.ScaleZ := zscale / MAP_COEFF;
   strm := TPakStream.Create(fname, pm_prefered, gamedirectories);
   if strm.IOResult <> 0 then
   begin
@@ -201,126 +121,22 @@ begin
   if strm.IOResult <> 0 then
     I_Error('TMD2Model.Create(): Can not find model %s!', [fname]);
 
-  strm.Read(modelheader, SizeOf(modelheader));
-
-  if modelheader.ident <> MD2_MAGIC then
-    I_Error('TMD2Model.Create(): Invalid MD2 model magic (%d)!', [modelheader.ident]);
-
-  fNumFrames := modelheader.num_frames;
-  fm_iTriangles := modelheader.num_tris;
-  fNumVertexes := fm_iTriangles * 3;
-
-  m_index_list := malloc(SizeOf(TMD2_Index_List) * modelheader.num_tris);
-  m_frame_list := malloc(SizeOf(TMD2_Frame_List) * modelheader.num_frames);
-
-  for i := 0 to modelheader.num_frames - 1 do
-    m_frame_list[i].vertex := malloc(SizeOf(TMD2_Vertex_List) * modelheader.num_xyz);
-
-  strm.Seek(modelheader.ofs_st, sFromBeginning);
-  base_st := malloc(modelheader.num_st * SizeOf(base_st[0]));
-  strm.Read(base_st^, modelheader.num_st * SizeOf(base_st[0]));
-
-  for i := 0 to modelheader.num_tris - 1 do
-  begin
-    strm.Read(Tri, SizeOf(TMD2Triangle_T));
-    with m_index_list[i] do
-    begin
-      a := tri.index_xyz[2];
-      b := tri.index_xyz[1];
-      c := tri.index_xyz[0];
-      a_s := base_st[tri.index_st[2]].s / modelheader.skinWidth;
-      a_t := base_st[tri.index_st[2]].t / modelheader.skinHeight;
-      b_s := base_st[tri.index_st[1]].s / modelheader.skinWidth;
-      b_t := base_st[tri.index_st[1]].t / modelheader.skinHeight;
-      c_s := base_st[tri.index_st[0]].s / modelheader.skinWidth;
-      c_t := base_st[tri.index_st[0]].t / modelheader.skinHeight;
-    end;
-  end;
-  memfree(pointer(base_st), modelheader.num_st * SizeOf(base_st[0]));
-
-  out_t := malloc(modelheader.framesize);
-  for i := 0 to modelheader.num_frames - 1 do
-  begin
-    strm.Read(out_t^, modelheader.framesize);
-    frameName := strupper(strtrim(out_t^.name));
-    if Copy(frameName, Length(frameName) - 1, 1)[1] in ['0'..'9'] then
-      frameName := Copy(frameName, 1, Length(frameName) - 2)
-    else
-      frameName := Copy(frameName, 1, Length(frameName) - 1);
-    if frameNames.IndexOf(frameName) < 0 then
-    begin
-      frameNames.AddObject(frameName, TFrameIndexInfo.Create);
-      (frameNames.Objects[frameNames.Count - 1] as TFrameIndexInfo).StartFrame := i;
-      (frameNames.Objects[frameNames.Count - 1] as TFrameIndexInfo).EndFrame := i;
-    end
-    else
-      (frameNames.Objects[frameNames.IndexOf(frameName)] as TFrameIndexInfo).EndFrame := i;
-
-    for j := 0 to modelheader.num_xyz - 1 do
-    begin
-      with m_frame_list[i].vertex[j] do
-      begin
-        x := (out_t^.verts[j].v[0] * out_t^.scale[0] + out_t^.translate[0]) * fxscale + fxoffset;
-        y := (out_t^.verts[j].v[1] * out_t^.scale[1] + out_t^.translate[1]) * fyscale + fyoffset;
-        z := (out_t^.verts[j].v[2] * out_t^.scale[2] + out_t^.translate[2]) * fzscale + fzoffset;
-      end;
-    end;
-  end;
-  memfree(pointer(out_t), modelheader.framesize);
-
-  UV := malloc(fNumVertexes * SizeOf(GLTexcoord));
-  TheVectorsArray := malloc(fNumFrames * SizeOf(PGLVertexArray));
-
-  k := 0;
-  for j := 0 to fm_iTriangles - 1 do
-  begin
-    UV[k].u := m_index_list[j].a_s;
-    UV[k].v := m_index_list[j].a_t;
-    inc(k);
-
-    UV[k].u := m_index_list[j].b_s;
-    UV[k].v := m_index_list[j].b_t;
-    inc(k);
-
-    UV[k].u := m_index_list[j].c_s;
-    UV[k].v := m_index_list[j].c_t;
-    inc(k);
-  end;
-
-  for i := 0 to fNumFrames - 1 do
-  begin
-    TheVectorsArray[i] := malloc(fNumVertexes * SizeOf(TGLVectorf3));
-    vert := @TheVectorsArray[i][0];
-    for j := 0 to fm_iTriangles - 1 do
-    begin
-      idx1 := m_index_list[j].a;
-      vert.x := m_frame_list[i].vertex[idx1].y;
-      vert.y := m_frame_list[i].vertex[idx1].z;
-      vert.z := m_frame_list[i].vertex[idx1].x;
-      inc(vert);
-
-      idx1 := m_index_list[j].b;
-      vert.x := m_frame_list[i].vertex[idx1].y;
-      vert.y := m_frame_list[i].vertex[idx1].z;
-      vert.z := m_frame_list[i].vertex[idx1].x;
-      inc(vert);
-
-      idx1 := m_index_list[j].c;
-      vert.x := m_frame_list[i].vertex[idx1].y;
-      vert.y := m_frame_list[i].vertex[idx1].z;
-      vert.z := m_frame_list[i].vertex[idx1].x;
-      inc(vert);
-    end;
-  end;
-
-  for i := 0 to fNumFrames - 1 do
-    memfree(pointer(m_frame_list[i].vertex), SizeOf(TMD2_Vertex_List) * modelheader.num_xyz);
-  memfree(pointer(m_frame_list), SizeOf(TMD2_Frame_List) * modelheader.num_frames);
-  memfree(pointer(m_index_list), SizeOf(TMD2_Index_List) * modelheader.num_tris);
-
-  precalc := mallocz(fNumFrames * SizeOf(GLuint));
-
+  SetLength(bytes, strm.Size);
+  if Length(bytes) > 0 then
+    strm.Read(bytes[0], Length(bytes));
   strm.Free;
+
+  try
+    fdata := MDL_Md2Parser.Parse(bytes, placement);
+  except
+    on E: EModelsException do
+      I_Error('TMD2Model.Create(): %s (%s)', [E.Message, fname]);
+  end;
+
+  fNumFrames := fdata.FrameCount;
+  fNumVertexes := fdata.VertexCount;
+  RefreshFrames;
+  precalc := mallocz(fNumFrames * SizeOf(GLuint));
 
   if additionalframes <> nil then
     for i := 0 to additionalframes.Count - 1 do
@@ -337,13 +153,29 @@ end;
 
 //==============================================================================
 //
+// TMD2Model.RefreshFrames
+//
+//==============================================================================
+procedure TMD2Model.RefreshFrames;
+var
+  i: integer;
+begin
+  SetLength(fframes, fdata.FrameCount);
+  for i := 0 to fdata.FrameCount - 1 do
+    fframes[i] := PGLVertex(fdata.GetFrameVertices(i));
+  UV := PGLTexcoord(fdata.GetTexCoords);
+end;
+
+//==============================================================================
+//
 // TMD2Model.MergeFrames
 //
 //==============================================================================
 function TMD2Model.MergeFrames(const m: TBaseModel): boolean;
 var
-  i: integer;
   model: TMD2Model;
+  oldframes: integer;
+  i: integer;
 begin
   if not (m is TMD2Model) then
   begin
@@ -352,35 +184,22 @@ begin
   end;
 
   model := m as TMD2Model;
-  if model.fNumVertexes <> fNumVertexes then
+  if not fdata.MergeFrames(model.fdata) then
   begin
     Result := False;
     Exit;
   end;
 
-  for i := 0 to model.frameNames.Count - 1 do
-  begin
-    frameNames.AddObject(model.frameNames.Strings[i], TFrameIndexInfo.Create);
-      (frameNames.Objects[frameNames.Count - 1] as TFrameIndexInfo).StartFrame := (model.frameNames.Objects[i] as TFrameIndexInfo).StartFrame + fNumFrames;
-      (frameNames.Objects[frameNames.Count - 1] as TFrameIndexInfo).EndFrame := (model.frameNames.Objects[i] as TFrameIndexInfo).EndFrame + fNumFrames;
-  end;
-
-  realloc(pointer(TheVectorsArray),
-    fNumFrames * SizeOf(PGLVertexArray),
-    (model.fNumFrames + fNumFrames) * SizeOf(PGLVertexArray));
+  oldframes := fNumFrames;
+  fNumFrames := fdata.FrameCount;
 
   realloc(pointer(precalc),
-    fNumFrames * SizeOf(GLuint),
-    (model.fNumFrames + fNumFrames) * SizeOf(GLuint));
+    oldframes * SizeOf(GLuint),
+    fNumFrames * SizeOf(GLuint));
+  for i := oldframes to fNumFrames - 1 do
+    precalc[i] := 0;
 
-  for i := fNumFrames to model.fNumFrames + fNumFrames - 1 do
-  begin
-    precalc[i] := model.precalc[fNumFrames - i];
-    TheVectorsArray[i] := malloc(fNumVertexes * SizeOf(TGLVectorf3));
-    memcpy(TheVectorsArray[i], model.TheVectorsArray[fNumFrames - i], fNumVertexes * SizeOf(TGLVectorf3));
-  end;
-
-  fNumFrames := model.fNumFrames + fNumFrames;
+  RefreshFrames;
 
   Result := True;
 end;
@@ -398,14 +217,9 @@ begin
     if precalc[i] > 0 then
       glDeleteLists(precalc[i], 1);
   memfree(pointer(precalc), fNumFrames * SizeOf(GLuint));
-  memfree(pointer(UV), fNumVertexes * SizeOf(GLTexcoord));
-  for i := 0 to fNumFrames - 1 do
-    memfree(pointer(TheVectorsArray[i]), fNumVertexes * SizeOf(TGLVectorf3));
-  memfree(pointer(TheVectorsArray), fNumFrames * SizeOf(GLVertexArraysP));
-
-  for i := 0 to frameNames.Count - 1 do
-    frameNames.Objects[i].Free;
-  frameNames.Free;
+  fframes := nil;
+  UV := nil;
+  fdata := nil;
 
   Inherited;
 end;
@@ -439,13 +253,13 @@ begin
 
   w2 := 1.0 - offset;
 
-  v1 := @TheVectorsArray[frm1][0];
-  mark := @TheVectorsArray[frm1][fNumVertexes];
-  v2 := @TheVectorsArray[frm2][0];
-  coord := @UV[0];
+  v1 := fframes[frm1];
+  mark := PGLVertex(NativeUInt(fframes[frm1]) + NativeUInt(fNumVertexes) * SizeOf(GLVertex));
+  v2 := fframes[frm2];
+  coord := UV;
 
   glBegin(GL_TRIANGLES);
-    while integer(v1) < integer(mark) do
+    while NativeUInt(v1) < NativeUInt(mark) do
     begin
       x := v1.x * w2 + v2.x * offset;
       y := v1.y * w2 + v2.y * offset;
@@ -467,6 +281,8 @@ end;
 procedure TMD2Model.DrawSimple(const frm: integer);
 var
   i: integer;
+  vert: PGLVertex;
+  coord: PGLTexcoord;
 begin
   if precalc[frm] > 0 then
     glCallList(precalc[frm])
@@ -476,11 +292,15 @@ begin
 
     glNewList(precalc[frm], GL_COMPILE_AND_EXECUTE);
 
+      vert := fframes[frm];
+      coord := UV;
       glBegin(GL_TRIANGLES);
         for i := 0 to fNumVertexes - 1 do
         begin
-          glTexCoord2f(UV[i].u, UV[i].v);
-          glVertex3fv(@TheVectorsArray[frm][i]);
+          glTexCoord2f(coord.u, coord.v);
+          glVertex3fv(@vert.x);
+          inc(vert);
+          inc(coord);
         end;
       glEnd;
 
@@ -495,10 +315,7 @@ end;
 //==============================================================================
 function TMD2Model.StartFrame(const i: integer): integer;
 begin
-  result := -1;
-  if IsIntegerInRange(i, 0, frameNames.Count - 1) then
-    if frameNames.Objects[i] <> nil then
-      result := (frameNames.Objects[i] as TFrameIndexInfo).StartFrame;
+  result := fdata.GetGroupStartFrame(i);
 end;
 
 //==============================================================================
@@ -508,10 +325,7 @@ end;
 //==============================================================================
 function TMD2Model.EndFrame(const i: integer): integer;
 begin
-  result := -1;
-  if IsIntegerInRange(i, 0, frameNames.Count - 1) then
-    if frameNames.Objects[i] <> nil then
-      result := (frameNames.Objects[i] as TFrameIndexInfo).EndFrame;
+  result := fdata.GetGroupEndFrame(i);
 end;
 
 //==============================================================================
@@ -521,9 +335,9 @@ end;
 //==============================================================================
 function TMD2Model.StartFrame(const frame: string): integer;
 begin
-  result := StartFrame(frameNames.IndexOf(frame));
+  result := StartFrame(fdata.FindGroup(frame));
   if result = -1 then
-    result := StartFrame(frameNames.IndexOf(strupper(frame)));
+    result := StartFrame(fdata.FindGroup(d_delphi.strupper(frame)));
 end;
 
 //==============================================================================
@@ -533,9 +347,9 @@ end;
 //==============================================================================
 function TMD2Model.EndFrame(const frame: string): integer;
 begin
-  result := EndFrame(frameNames.IndexOf(frame));
+  result := EndFrame(fdata.FindGroup(frame));
   if result = -1 then
-    result := EndFrame(frameNames.IndexOf(strupper(frame)));
+    result := EndFrame(fdata.FindGroup(d_delphi.strupper(frame)));
 end;
 
 //==============================================================================
@@ -545,10 +359,7 @@ end;
 //==============================================================================
 function TMD2Model.FrameName(const i: integer): string;
 begin
-  if IsIntegerInRange(i, 0, frameNames.Count - 1) then
-    result := frameNames.Strings[i]
-  else
-    result := '';
+  result := fdata.GetGroupName(i);
 end;
 
 //==============================================================================
@@ -558,9 +369,9 @@ end;
 //==============================================================================
 function TMD2Model.FrameIndex(const frame: string): integer;
 begin
-  result := frameNames.IndexOf(frame);
+  result := fdata.FindGroup(frame);
   if result = -1 then
-    result := frameNames.IndexOf(strupper(frame));
+    result := fdata.FindGroup(d_delphi.strupper(frame));
 end;
 
 //------------------------------------------------------------------------------
