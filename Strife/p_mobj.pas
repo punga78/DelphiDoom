@@ -198,6 +198,13 @@ function P_GetThingFloorType(thing: Pmobj_t): integer;
 
 //==============================================================================
 //
+// P_GetTerrainType
+//
+//==============================================================================
+function P_GetTerrainType(mobj: Pmobj_t): integer;
+
+//==============================================================================
+//
 // MObj_Init
 //
 //==============================================================================
@@ -277,7 +284,6 @@ uses
   p_pspr,
   p_setup,
   p_common,
-  p_terrain,
   p_sounds,
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes
@@ -2433,6 +2439,26 @@ end;
 function P_GetThingFloorType(thing: Pmobj_t): integer;
 begin
   result := flats[Psubsector_t(thing.subsector).sector.floorpic].terraintype;
+end;
+
+//==============================================================================
+//
+// P_GetTerrainType
+//
+// The terrain under a thing that stands on the floor (it was in Strife\p_terrain.pas, where it
+// looked the name of the flat up at every call: terraintype is the same answer, given by
+// r_data when the flat was loaded)
+//
+//==============================================================================
+function P_GetTerrainType(mobj: Pmobj_t): integer;
+var
+  ss: Psubsector_t;
+begin
+  ss := mobj.subsector;
+  if mobj.z <= ss.sector.floorheight then
+    result := flats[ss.sector.floorpic].terraintype
+  else
+    result := FLOOR_SOLID;
 end;
 
 //==============================================================================

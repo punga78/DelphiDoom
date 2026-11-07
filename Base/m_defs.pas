@@ -49,11 +49,11 @@ uses
   hu_stuff,
   p_mobj_h,
 {$IF DEFINED(DOOM)}
-  p_terrain,
+  p_local,
   p_enemy,
   p_map,
 {$ELSEIF DEFINED(STRIFE)}
-  p_terrain,
+  p_local,
 {$ENDIF}
   p_setup,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}

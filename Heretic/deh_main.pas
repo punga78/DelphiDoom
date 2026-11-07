@@ -142,6 +142,7 @@ uses
   p_extra,
   p_common,
   p_gender,
+  DelphiDoom.Obituary.Genders,
   p_pspr,
   p_pspr_h,
   p_inter,
@@ -390,7 +391,7 @@ var
               end
               else
               begin
-                mobj_val := Ord(R_GetGenderForName(token2));
+                mobj_val := Ord(TObituaryGenders.FindByName(token2));
                 if mobj_val >= 0 then
                   mobjinfo[mobj_no].gender := gender_t(mobj_val)
                 else

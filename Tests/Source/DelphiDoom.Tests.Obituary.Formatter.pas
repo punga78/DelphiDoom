@@ -60,12 +60,18 @@ type
     procedure DovrebbeRifiutareUnGenereSconosciuto;
     [Test]
     procedure DovrebbeRifiutareUnaTabellaNil;
+    [Test]
+    procedure DovrebbeDareConComposeMessageLoStessoTestoDelVecchioCodice;
+    [Test]
+    procedure DovrebbeRifiutareUnGenereSconosciutoConComposeMessage;
+    [Test]
+    procedure DovrebbeUsareIPronomiDatiConComposeWithPronouns;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Obituary.Factory;
+  DelphiDoom.Obituary.Factory, DelphiDoom.Obituary.Formatter;
 
 { TTestObituaryFormatter }
 
@@ -190,6 +196,53 @@ begin
       TObituaryFactory.CreateFormatter(nil);
     end,
     EArgumentNilException);
+end;
+
+procedure TTestObituaryFormatter.DovrebbeDareConComposeMessageLoStessoTestoDelVecchioCodice;
+var
+  LLine: string;
+  LParts: TArray<string>;
+  LCount: Integer;
+begin
+  // the engine calls the static entry point: it must give the lines F of the old code too
+  LCount := 0;
+  for LLine in FGolden do
+    if Copy(LLine, 1, 2) = 'F'#9 then
+    begin
+      LParts := LLine.Split([#9]);
+      Assert.AreEqual(LParts[6],
+        TObituaryFormatter.ComposeMessage(LParts[1], LParts[2], LParts[3],
+          TObituaryGender(StrToInt(LParts[4])), TObituaryGender(StrToInt(LParts[5]))),
+        'model "' + LParts[1] + '" victim ' + LParts[4] + ' killer ' + LParts[5]);
+      Inc(LCount);
+    end;
+  Assert.IsTrue(LCount >= 150, 'the golden file has the cases');
+end;
+
+procedure TTestObituaryFormatter.DovrebbeRifiutareUnGenereSconosciutoConComposeMessage;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TObituaryFormatter.ComposeMessage('%k', 'A', 'B', ogDefault,
+        TObituaryGender(OBITUARY_GENDER_COUNT));
+    end,
+    EObituaryException);
+end;
+
+procedure TTestObituaryFormatter.DovrebbeUsareIPronomiDatiConComposeWithPronouns;
+var
+  LVictim: TObituaryPronouns;
+  LKiller: TObituaryPronouns;
+begin
+  LVictim.Subject := 'v';
+  LKiller.ObjectForm := 'h';
+  LKiller.Possessive := 'p';
+  LKiller.Independent := 's';
+  LKiller.Contraction := 'r';
+  Assert.AreEqual('A B v h p s r',
+    TObituaryFormatter.ComposeWithPronouns('%o %k %g %h %p %s %r', 'A', 'B',
+      LVictim, LKiller));
 end;
 
 end.

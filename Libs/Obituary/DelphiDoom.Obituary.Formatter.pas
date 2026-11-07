@@ -24,12 +24,21 @@ type
     /// <summary>The message of a death</summary>
     function Compose(const AModel, AVictimName, AKillerName: string;
       const AVictimGender, AKillerGender: TObituaryGender): string;
+    /// <summary>
+    ///   The message of a death with the pronouns of the compiled table (TObituaryGenders).
+    ///   It has no state: the engine calls it directly
+    /// </summary>
+    class function ComposeMessage(const AModel, AVictimName, AKillerName: string;
+      const AVictimGender, AKillerGender: TObituaryGender): string; static;
+    /// <summary>The message of a death with the pronouns given</summary>
+    class function ComposeWithPronouns(const AModel, AVictimName, AKillerName: string;
+      const AVictim, AKiller: TObituaryPronouns): string; static;
   end;
 
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, DelphiDoom.Obituary.Genders;
 
 { TObituaryFormatter }
 
@@ -43,17 +52,27 @@ end;
 
 function TObituaryFormatter.Compose(const AModel, AVictimName, AKillerName: string;
   const AVictimGender, AKillerGender: TObituaryGender): string;
+begin
+  Result := ComposeWithPronouns(AModel, AVictimName, AKillerName,
+    FGenders.PronounsOf(AVictimGender), FGenders.PronounsOf(AKillerGender));
+end;
+
+class function TObituaryFormatter.ComposeMessage(const AModel, AVictimName,
+  AKillerName: string; const AVictimGender, AKillerGender: TObituaryGender): string;
+begin
+  Result := ComposeWithPronouns(AModel, AVictimName, AKillerName,
+    TObituaryGenders.PronounsOf(AVictimGender), TObituaryGenders.PronounsOf(AKillerGender));
+end;
+
+class function TObituaryFormatter.ComposeWithPronouns(const AModel, AVictimName,
+  AKillerName: string; const AVictim, AKiller: TObituaryPronouns): string;
 var
   LBuilder: TStringBuilder;
-  LVictim: TObituaryPronouns;
-  LKiller: TObituaryPronouns;
   LIndex: Integer;
   LLength: Integer;
   LReplacement: string;
   LKnown: Boolean;
 begin
-  LVictim := FGenders.PronounsOf(AVictimGender);
-  LKiller := FGenders.PronounsOf(AKillerGender);
   LLength := Length(AModel);
   LBuilder := TStringBuilder.Create(LLength + Length(AVictimName) + Length(AKillerName));
   try
@@ -68,11 +87,11 @@ begin
         case AModel[LIndex + 1] of
           'o', 'O': LReplacement := AVictimName;
           'k', 'K': LReplacement := AKillerName;
-          'g', 'G': LReplacement := LVictim.Subject;
-          'h', 'H': LReplacement := LKiller.ObjectForm;
-          'p', 'P': LReplacement := LKiller.Possessive;
-          's', 'S': LReplacement := LKiller.Independent;
-          'r', 'R': LReplacement := LKiller.Contraction;
+          'g', 'G': LReplacement := AVictim.Subject;
+          'h', 'H': LReplacement := AKiller.ObjectForm;
+          'p', 'P': LReplacement := AKiller.Possessive;
+          's', 'S': LReplacement := AKiller.Independent;
+          'r', 'R': LReplacement := AKiller.Contraction;
         else
           LKnown := False;
         end;

@@ -284,7 +284,7 @@ uses
 {$ENDIF}
   p_setup,
   p_mobj_h,
-  p_terrain,
+  p_local,
   p_enemy,
   p_map,
   p_user,

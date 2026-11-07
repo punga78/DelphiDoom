@@ -28,10 +28,14 @@
 
 unit p_gender;
 
+// The type of the gender of a thing (mobjinfo_t.gender, read by info.pas of every game, by
+// deh_main, sc_actordef and the table export). The names and the pronouns of the genders are
+// in Libs\Obituary (TObituaryGenders, without state): the callers use it directly.
+
 interface
 
 uses
-  DelphiDoom.Obituary.Intf;
+  DelphiDoom.Obituary.Types;
 
 type
   gender_t = (
@@ -44,72 +48,13 @@ type
     NUMGENDERS
   );
 
-//==============================================================================
-//
-// R_ConfigureGenders
-//
-//==============================================================================
-procedure R_ConfigureGenders(const AGenders: IObituaryGenders);
-
-//==============================================================================
-//
-// R_GetGenderForName
-//
-//==============================================================================
-function R_GetGenderForName(const s: string): gender_t;
-
-//==============================================================================
-//
-// R_GenderName
-//
-//==============================================================================
-function R_GenderName(const g: gender_t): string;
+// the ordinals of gender_t are the ones that DEHACKED and ACTORDEF store and that
+// TObituaryGender has: the two lists must have the same length (before, R_ConfigureGenders
+// checked it at the start)
+{$IF Ord(NUMGENDERS) <> OBITUARY_GENDER_COUNT}
+  {$MESSAGE FATAL 'gender_t and TObituaryGender have a different number of genders'}
+{$IFEND}
 
 implementation
-
-uses
-  DelphiDoom.Obituary.Types,
-  i_system;
-
-var
-  genders: IObituaryGenders = nil;
-
-//==============================================================================
-//
-// R_ConfigureGenders
-//
-//==============================================================================
-procedure R_ConfigureGenders(const AGenders: IObituaryGenders);
-begin
-  // the ordinals of gender_t are the ones that DEHACKED and ACTORDEF store
-  if Ord(NUMGENDERS) <> OBITUARY_GENDER_COUNT then
-    I_Error('R_ConfigureGenders(): the genders of the engine (%d) and of the library (%d) differ',
-      [Ord(NUMGENDERS), OBITUARY_GENDER_COUNT]);
-  genders := AGenders;
-end;
-
-//==============================================================================
-//
-// R_GetGenderForName
-//
-//==============================================================================
-function R_GetGenderForName(const s: string): gender_t;
-begin
-  if genders = nil then
-    I_Error('R_GetGenderForName(): the genders are not configured (ComposeEngine was not called)');
-  result := gender_t(genders.FindByName(s));
-end;
-
-//==============================================================================
-//
-// R_GenderName
-//
-//==============================================================================
-function R_GenderName(const g: gender_t): string;
-begin
-  if genders = nil then
-    I_Error('R_GenderName(): the genders are not configured (ComposeEngine was not called)');
-  result := genders.NameOf(TObituaryGender(g));
-end;
 
 end.

@@ -231,7 +231,6 @@ uses
   p_slopes, // JVAL: Slopes
   p_switch,
   p_tick,
-  p_terrain,
   p_enemy,
   p_sounds,
   p_udmf,
