@@ -46,6 +46,10 @@ uses
   DelphiDoom.Dehacked.Factory,
   deh_main,
   DelphiDoom.Clock.Intf,
+  DelphiDoom.Iwad.Intf,
+  DelphiDoom.Iwad.Games,
+  DelphiDoom.Iwad.Factory,
+  DelphiDoom.Engine.Iwad.Options,
   d_net,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
@@ -500,6 +504,17 @@ begin
     LAliases);
 end;
 
+procedure ComposeIwad;
+var
+  LGame: TIwadGame;
+  LServices: TIwadServices;
+begin
+  if not TIwadGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of IWADs', [_GAME]);
+  LServices := TIwadFactory.CreateWindowsServices(LGame, TEngineIwadOptions.Create);
+  D_ConfigureIwad(LServices.Locator, LServices.Identifier);
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -512,6 +527,7 @@ begin
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
+  ComposeIwad;
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
   M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
   LContext := TEngineGameContext.Create;
