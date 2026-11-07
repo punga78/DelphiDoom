@@ -21,6 +21,8 @@ type
   public
     [Test]
     procedure TestMissingLibraryRaises;
+    [Test]
+    procedure TestUnaLibreriaSenzaLExportSollevaUnaEccezione;
 
     /// <summary>
     ///   Needs bin\Libs\DDSndfile.dll (build.bat librerie); skipped otherwise
@@ -55,6 +57,16 @@ begin
     begin
       TSndfileLoader.Create('DDSndfile.nonexistent.dll').Free;
     end, ESndfileException);
+end;
+
+procedure TTestSndfileLoader.TestUnaLibreriaSenzaLExportSollevaUnaEccezione;
+begin
+  // kernel32 is always there and does not export DDSndfileCreate
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      TSndfileLoader.Create('kernel32.dll').Free;
+    end, ESndfileException, 'kernel32.dll does not export ' + DDSNDFILE_CREATE_EXPORT);
 end;
 
 procedure TTestSndfileLoader.TestLoadsTheBuiltLibrary;

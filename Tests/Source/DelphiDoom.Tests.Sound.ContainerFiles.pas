@@ -58,6 +58,16 @@ type
     SsndSize: Int64;
     OmitComm: Boolean;
     OmitSsnd: Boolean;
+    /// <summary>Whole chunks (made with Chunk) before the COMM chunk</summary>
+    ChunksBeforeComm: TBytes;
+    /// <summary>Whole chunks (made with Chunk) between the COMM and the SSND chunk</summary>
+    ChunksAfterComm: TBytes;
+    /// <summary>Size written in the COMM chunk; -2 for the real one</summary>
+    CommSize: Int64;
+    /// <summary>An AIFC COMM chunk with the encoding and without its name</summary>
+    CommWithoutName: Boolean;
+    /// <summary>The 80 bit float of the rate; empty for 44100</summary>
+    Rate: TBytes;
     class function Plain(AChannels, ASampleSize: Word): TSoundTestAiffOptions; static;
     class function Compressed(const AEncoding: AnsiString; AChannels,
       ASampleSize: Word): TSoundTestAiffOptions; static;
@@ -67,6 +77,12 @@ type
   public
     class function BuildAiff(const AOptions: TSoundTestAiffOptions;
       const APayload: TBytes): TBytes; static;
+    /// <summary>
+    ///   An AIFF chunk: the marker, the size (big endian; -1 for the length of
+    ///   ABody) and the body with the pad byte of an odd length
+    /// </summary>
+    class function Chunk(const AMarker: AnsiString; const ABody: TBytes;
+      ASize: Int64 = -1): TBytes; static;
     /// <summary>
     ///   W64 with a 'fmt ' chunk of ATag; AFact adds a 'fact' chunk before the
     ///   data and AJunk a 'junk' chunk after it
@@ -207,11 +223,11 @@ end;
 class function TSoundTestAiffOptions.Plain(AChannels,
   ASampleSize: Word): TSoundTestAiffOptions;
 begin
-  FillChar(Result, SizeOf(Result), 0);
-  Result.Encoding := '';
+  Result := Default(TSoundTestAiffOptions);
   Result.Channels := AChannels;
   Result.SampleSize := ASampleSize;
   Result.SsndSize := -2;
+  Result.CommSize := -2;
 end;
 
 class function TSoundTestAiffOptions.Compressed(const AEncoding: AnsiString;
@@ -825,6 +841,7 @@ begin
     LBody.AddText('AIFC')
   else
     LBody.AddText('AIFF');
+  LBody.AddBytes(AOptions.ChunksBeforeComm);
 
   if not AOptions.OmitComm then
   begin
@@ -832,18 +849,28 @@ begin
     LComm.AddNumber(1000, 4, True);
     LComm.AddNumber(AOptions.SampleSize, 2, True);
     for LIndex := 0 to 9 do
-      LComm.Add(RATE[LIndex]);
+      if Length(AOptions.Rate) = 10 then
+        LComm.Add(AOptions.Rate[LIndex])
+      else
+        LComm.Add(RATE[LIndex]);
     if AOptions.Aifc then
     begin
       LComm.AddText(AOptions.Encoding);
       // An empty name: a Pascal string padded to an even length
-      LComm.Add(0);
-      LComm.Add(0);
+      if not AOptions.CommWithoutName then
+      begin
+        LComm.Add(0);
+        LComm.Add(0);
+      end;
     end;
     LBody.AddText('COMM');
-    LBody.AddNumber(Cardinal(Length(LComm.Bytes)), 4, True);
+    if AOptions.CommSize = -2 then
+      LBody.AddNumber(Cardinal(Length(LComm.Bytes)), 4, True)
+    else
+      LBody.AddNumber(Cardinal(AOptions.CommSize), 4, True);
     LBody.AddBytes(LComm.Bytes);
   end;
+  LBody.AddBytes(AOptions.ChunksAfterComm);
 
   if AOptions.ChunksBeforeData then
   begin
@@ -883,6 +910,22 @@ begin
     LBody.Add(0);
   end;
   Result := LBody.Bytes;
+end;
+
+class function TSoundTestContainerFile.Chunk(const AMarker: AnsiString;
+  const ABody: TBytes; ASize: Int64): TBytes;
+var
+  LSink: TSink;
+begin
+  LSink.AddText(AMarker);
+  if ASize = -1 then
+    LSink.AddNumber(Cardinal(Length(ABody)), 4, True)
+  else
+    LSink.AddNumber(Cardinal(ASize), 4, True);
+  LSink.AddBytes(ABody);
+  if (Length(ABody) and 1) <> 0 then
+    LSink.Add(0);
+  Result := LSink.Bytes;
 end;
 
 class function TSoundTestContainerFile.BuildAu(const AOptions: TSoundTestAuOptions;

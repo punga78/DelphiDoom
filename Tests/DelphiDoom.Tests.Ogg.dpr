@@ -25,7 +25,10 @@ uses
   DelphiDoom.Tests.Ogg.Backends in 'Source\DelphiDoom.Tests.Ogg.Backends.pas',
   DelphiDoom.Tests.Ogg.Structures in 'Source\DelphiDoom.Tests.Ogg.Structures.pas',
   DelphiDoom.Tests.Ogg.BitPacker in 'Source\DelphiDoom.Tests.Ogg.BitPacker.pas',
-  DelphiDoom.Tests.Ogg.Framing in 'Source\DelphiDoom.Tests.Ogg.Framing.pas';
+  DelphiDoom.Tests.Ogg.Framing in 'Source\DelphiDoom.Tests.Ogg.Framing.pas',
+  DelphiDoom.Tests.Ogg.Memory in 'Source\DelphiDoom.Tests.Ogg.Memory.pas',
+  DelphiDoom.Tests.Ogg.Stream in 'Source\DelphiDoom.Tests.Ogg.Stream.pas',
+  DelphiDoom.Tests.Ogg.Sync in 'Source\DelphiDoom.Tests.Ogg.Sync.pas';
 
 var
   Runner: ITestRunner;

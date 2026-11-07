@@ -98,6 +98,12 @@ type
     [Test]
     procedure TestAiffDamaged;
     [Test]
+    procedure TestAiffImaAdpcm;
+    [Test]
+    procedure TestAiffOtherChunks;
+    [Test]
+    procedure TestAiffCommVariants;
+    [Test]
     procedure TestW64;
     [Test]
     procedure TestRf64;
@@ -755,6 +761,213 @@ begin
   LOptions := TSoundTestAiffOptions.Compressed('raw ', 1, 16);
   CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(40, 1)),
     'aifc raw with 16 bits');
+end;
+
+procedure TTestSoundParity.TestAiffImaAdpcm;
+var
+  LOptions: TSoundTestAiffOptions;
+  LChannels: Word;
+begin
+  // Blocks of 34 bytes per channel
+  for LChannels := 1 to 2 do
+  begin
+    LOptions := TSoundTestAiffOptions.Compressed('ima4', LChannels, 16);
+    CheckSame(TSoundTestContainerFile.BuildAiff(LOptions,
+      TSoundTestWavFile.RandomBytes(34 * LChannels * 7, 30 + LChannels)),
+      Format('aifc ima4 %d channels', [LChannels]));
+  end;
+  // A piece of a block at the end: libsndfile fills the rest of it with the
+  // bytes left in its buffer by the block read before, which after a seek are
+  // those of another block. The Pascal decoder reads the sound once, in order,
+  // so only the reads from the start are the same
+  LOptions := TSoundTestAiffOptions.Compressed('ima4', 1, 16);
+  CheckSameBulk(TSoundTestContainerFile.BuildAiff(LOptions,
+    TSoundTestWavFile.RandomBytes(34 * 7 + 20, 31)), 'aifc ima4 piece of a block');
+  // An odd number of blocks in stereo, and a chunk after the data
+  LOptions := TSoundTestAiffOptions.Compressed('ima4', 2, 16);
+  LOptions.ChunkAfterData := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(34 * 5, 33)),
+    'aifc ima4 odd blocks');
+  LOptions := TSoundTestAiffOptions.Compressed('ima4', 3, 16);
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, TSoundTestWavFile.RandomBytes(34 * 6, 34)),
+    'aifc ima4 3 channels');
+end;
+
+function TextBytes(const AText: AnsiString): TBytes;
+begin
+  SetLength(Result, Length(AText));
+  if Length(AText) > 0 then
+    Move(AText[1], Result[0], Length(AText));
+end;
+
+function BigEndianBytes(AValue: Cardinal; ACount: Integer): TBytes;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, ACount);
+  for LIndex := 0 to ACount - 1 do
+    Result[LIndex] := Byte(AValue shr (8 * (ACount - 1 - LIndex)));
+end;
+
+procedure TTestSoundParity.TestAiffOtherChunks;
+var
+  LPayload, LMark, LPeak: TBytes;
+  LIndex: Integer;
+  LOptions: TSoundTestAiffOptions;
+
+  procedure Check(const AName: string; const ABefore, AAfter: TBytes; AChannels: Word = 1;
+    ARefused: Boolean = False);
+  var
+    LChunkOptions: TSoundTestAiffOptions;
+  begin
+    LChunkOptions := TSoundTestAiffOptions.Plain(AChannels, 16);
+    LChunkOptions.ChunksBeforeComm := ABefore;
+    LChunkOptions.ChunksAfterComm := AAfter;
+    if ARefused then
+      CheckSameFailure(TSoundTestContainerFile.BuildAiff(LChunkOptions, LPayload), AName)
+    else
+      CheckSame(TSoundTestContainerFile.BuildAiff(LChunkOptions, LPayload), AName);
+  end;
+
+  procedure Refused(const AName: string; const AAfter: TBytes);
+  begin
+    Check(AName, nil, AAfter, 1, True);
+  end;
+
+begin
+  LPayload := TSoundTestWavFile.RandomBytes(2 * 2 * 80, 40);
+
+  // PEAK: after the COMM chunk, version and time, then value and position of
+  // each channel. A good one is not here: the C engine the answers were taken
+  // from raised an exception in its C runtime while writing the log of it
+  LPeak := BigEndianBytes(1, 4) + BigEndianBytes(0, 4) +
+    BigEndianBytes(0, 4) + BigEndianBytes(0, 4);
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.ChunksAfterComm := TSoundTestContainerFile.Chunk('PEAK', Copy(LPeak, 0, 12));
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff peak wrong size');
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.ChunksBeforeComm := TSoundTestContainerFile.Chunk('PEAK', LPeak);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff peak before comm');
+
+  // Text chunks, short and too long for the buffer of libsndfile
+  Check('aiff text chunks', nil,
+    TSoundTestContainerFile.Chunk('(c) ', TextBytes('2026')) +
+    TSoundTestContainerFile.Chunk('AUTH', TextBytes('someone')) +
+    TSoundTestContainerFile.Chunk('NAME', TextBytes('x')) +
+    TSoundTestContainerFile.Chunk('ANNO', nil));
+  Refused('aiff long copyright', TSoundTestContainerFile.Chunk('(c) ', TSoundTestWavFile.RandomBytes(8192, 45)));
+  Refused('aiff long auth', TSoundTestContainerFile.Chunk('AUTH', TSoundTestWavFile.RandomBytes(8191, 46)));
+  Refused('aiff long name', TSoundTestContainerFile.Chunk('NAME', TSoundTestWavFile.RandomBytes(8190, 47)));
+
+  // COMT: comments with a time, a marker and a text
+  Check('aiff comments', nil, TSoundTestContainerFile.Chunk('COMT',
+    BigEndianBytes(2, 2) +
+    BigEndianBytes(1000, 4) + BigEndianBytes(1, 2) + BigEndianBytes(5, 2) + TextBytes('hello') +
+    BigEndianBytes(2000, 4) + BigEndianBytes(2, 2) + BigEndianBytes(3, 2) + TextBytes('abc') + [0]));
+  Check('aiff empty comments', nil, TSoundTestContainerFile.Chunk('COMT', nil));
+  Refused('aiff comment too long', TSoundTestContainerFile.Chunk('COMT',
+    BigEndianBytes(1, 2) + BigEndianBytes(0, 4) + BigEndianBytes(0, 2) + BigEndianBytes(9000, 2) +
+    TSoundTestWavFile.RandomBytes(20, 48)));
+
+  // APPL of every size libsndfile tells apart
+  Check('aiff appl', nil,
+    TSoundTestContainerFile.Chunk('APPL', TextBytes('stoc') + TextBytes('abcde')) +
+    TSoundTestContainerFile.Chunk('APPL', TextBytes('ab')) +
+    TSoundTestContainerFile.Chunk('APPL', nil));
+  Refused('aiff long appl', TSoundTestContainerFile.Chunk('APPL', TSoundTestWavFile.RandomBytes(8191, 49)));
+
+  // INST, basc, FVER, SFX!, CHAN: skipped
+  Check('aiff inst', nil, TSoundTestContainerFile.Chunk('INST', TSoundTestWavFile.RandomBytes(20, 50)));
+  Check('aiff short inst', nil, TSoundTestContainerFile.Chunk('INST', TSoundTestWavFile.RandomBytes(6, 50)));
+  Check('aiff basc', nil, TSoundTestContainerFile.Chunk('basc', TSoundTestWavFile.RandomBytes(54, 51)));
+  Check('aiff fver', nil, TSoundTestContainerFile.Chunk('FVER', BigEndianBytes($A2805140, 4)));
+  Check('aiff sfx', nil, TSoundTestContainerFile.Chunk('SFX!', TSoundTestWavFile.RandomBytes(6, 52)));
+  // CHAN: a layout libsndfile knows (mono) and a chunk too short
+  // for one. With a layout it does not know libsndfile reads the rest of the
+  // chunk as the next one, while the Pascal decoder skips it whole
+  Check('aiff chan', nil, TSoundTestContainerFile.Chunk('CHAN',
+    [0, $64, 0, $01] + TSoundTestWavFile.RandomBytes(20, 53)));
+  Check('aiff short chan', nil, TSoundTestContainerFile.Chunk('CHAN', TSoundTestWavFile.RandomBytes(8, 53)));
+
+  // MARK: names of odd and even length, a count that is too large
+  LMark := BigEndianBytes(3, 2);
+  for LIndex := 1 to 3 do
+    LMark := LMark + BigEndianBytes(LIndex, 2) + BigEndianBytes(LIndex * 100, 4) +
+      [Byte(LIndex)] + TSoundTestWavFile.RandomBytes(LIndex + Ord(not Odd(LIndex)), 54 + LIndex);
+  Check('aiff markers', nil, TSoundTestContainerFile.Chunk('MARK', LMark));
+  Check('aiff too many markers', nil, TSoundTestContainerFile.Chunk('MARK',
+    BigEndianBytes(2000, 2) + TSoundTestWavFile.RandomBytes(10, 58)));
+  Check('aiff markers cut', nil, TSoundTestContainerFile.Chunk('MARK',
+    BigEndianBytes(5, 2) + BigEndianBytes(1, 2) + BigEndianBytes(7, 4) + [2] + TextBytes('ab') + [0]));
+
+  // The NONE chunk of broken AIFC files, unknown chunks, garbage and huge sizes
+  Check('aiff none chunk', nil, TSoundTestContainerFile.Chunk('NONE', nil, $07000000) +
+    TSoundTestWavFile.RandomBytes(4, 59));
+  Check('aiff unknown chunk', nil, TSoundTestContainerFile.Chunk('wxyz', TSoundTestWavFile.RandomBytes(10, 60)));
+  Refused('aiff huge unknown chunk', TSoundTestContainerFile.Chunk('wxyz', nil, $FFFF0001));
+  Refused('aiff garbage aligned', [1, 2, 3, 4, 0, 0, 0, 4, 9, 9, 9, 9]);
+  Refused('aiff garbage unaligned', [1, 2, 3, 4, 0, 0, 0, 4, 9, 9, 9, 9, 7]);
+  Refused('aiff two forms', TextBytes('FORM') + BigEndianBytes(4, 4) + TextBytes('AIFF'));
+end;
+
+procedure TTestSoundParity.TestAiffCommVariants;
+const
+  RATES: array[0..4, 0..9] of Byte = (
+    ($C0, $0E, $AC, $44, 0, 0, 0, 0, 0, 0),
+    ($3F, $FF, $80, 0, 0, 0, 0, 0, 0, 0),
+    ($41, $0E, $AC, $44, 0, 0, 0, 0, 0, 0),
+    ($40, $1D, $AC, $44, 0, 0, 0, 0, 0, 0),
+    ($40, $0B, $FA, 0, 0, 0, 0, 0, 0, 0));
+var
+  LOptions: TSoundTestAiffOptions;
+  LPayload: TBytes;
+  LIndex: Integer;
+begin
+  LPayload := TSoundTestWavFile.RandomBytes(2 * 120, 61);
+
+  // Rates that are negative, below 1, too large, and an ordinary one
+  for LIndex := 0 to High(RATES) do
+  begin
+    LOptions := TSoundTestAiffOptions.Plain(1, 16);
+    SetLength(LOptions.Rate, 10);
+    Move(RATES[LIndex, 0], LOptions.Rate[0], 10);
+    // libsndfile refuses a rate that is not positive
+    if LIndex = 0 then
+      CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), Format('aiff rate %d', [LIndex]))
+    else
+      CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), Format('aiff rate %d', [LIndex]));
+  end;
+
+  // AIFC with the encoding and no name
+  LOptions := TSoundTestAiffOptions.Compressed('sowt', 1, 16);
+  LOptions.CommWithoutName := True;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc comm without name');
+
+  // Refused by libsndfile too: a COMM size written with the bytes swapped (the
+  // size is turned back, but the chunk is then read as a longer one), a name
+  // longer than its buffer, a size between the AIFF and the AIFC one, no SSND
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.CommSize := $12000000;
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff swapped comm size');
+
+  LOptions := TSoundTestAiffOptions.Compressed('twos', 1, 16);
+  LOptions.CommSize := 9000;
+  LOptions.ChunksAfterComm := TSoundTestWavFile.RandomBytes(9000 - 24, 62);
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc long comm');
+
+  LOptions := TSoundTestAiffOptions.Compressed('twos', 1, 16);
+  LOptions.CommSize := 20;
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aifc comm of 20 bytes');
+
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.OmitSsnd := True;
+  CheckSameFailure(TSoundTestContainerFile.BuildAiff(LOptions, LPayload), 'aiff without ssnd');
+
+  // The data starts past the end of the file
+  LOptions := TSoundTestAiffOptions.Plain(1, 16);
+  LOptions.SsndOffset := 4;
+  LOptions.SsndSize := 8;
+  CheckSame(TSoundTestContainerFile.BuildAiff(LOptions, nil), 'aiff offset past the data');
 end;
 
 procedure TTestSoundParity.TestW64;

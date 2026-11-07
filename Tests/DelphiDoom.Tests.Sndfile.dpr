@@ -78,6 +78,8 @@ uses
   DelphiDoom.Audio.SoundConverter in '..\Base\DelphiDoom.Audio.SoundConverter.pas',
   DelphiDoom.Tests.Sndfile.Wav in 'Source\DelphiDoom.Tests.Sndfile.Wav.pas',
   DelphiDoom.Tests.Sndfile.Engine in 'Source\DelphiDoom.Tests.Sndfile.Engine.pas',
+  DelphiDoom.Tests.Sndfile.FakeSound in 'Source\DelphiDoom.Tests.Sndfile.FakeSound.pas',
+  DelphiDoom.Tests.Sndfile.Exception in 'Source\DelphiDoom.Tests.Sndfile.Exception.pas',
   DelphiDoom.Tests.Sndfile.Client in 'Source\DelphiDoom.Tests.Sndfile.Client.pas',
   DelphiDoom.Tests.Sndfile.Loader in 'Source\DelphiDoom.Tests.Sndfile.Loader.pas',
   DelphiDoom.Tests.Audio.WavBuilder in 'Source\DelphiDoom.Tests.Audio.WavBuilder.pas',

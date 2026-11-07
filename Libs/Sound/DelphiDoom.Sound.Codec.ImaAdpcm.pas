@@ -29,8 +29,15 @@ type
     class function DecodeWavLike(const ASource: TBytes; ADataOffset, ADataLength: Int64;
       AChannels, ABlockSize, ASamplesPerBlock: Integer; out AData: TBytes;
       out AFrames: Int64): Integer; static;
+    /// <summary>
+    ///   AIFF-C 'ima4', one block of every channel after the other.
+    ///   ADecodedPastTheEnd says that the blocks do not divide among the channels:
+    ///   libsndfile then decodes a last group of silence past the frames of the
+    ///   sound, and clears all that a read asks for past them
+    /// </summary>
     class function DecodeAiff(const ASource: TBytes; ADataOffset, ADataLength: Int64;
-      AChannels: Integer; out AData: TBytes; out AFrames: Int64): Integer; static;
+      AChannels: Integer; out AData: TBytes; out AFrames: Int64;
+      out ADecodedPastTheEnd: Boolean): Integer; static;
   end;
 
 implementation
@@ -172,7 +179,7 @@ end;
 
 class function TImaAdpcmDecoder.DecodeAiff(const ASource: TBytes; ADataOffset,
   ADataLength: Int64; AChannels: Integer; out AData: TBytes;
-  out AFrames: Int64): Integer;
+  out AFrames: Int64; out ADecodedPastTheEnd: Boolean): Integer;
 var
   LBlocks, LGroup, LGroupCount, LPosition: Int64;
   LBlockBytes: TBytes;
@@ -181,9 +188,7 @@ var
   LGroupSamples: Integer;
 begin
   AData := nil;
-  AFrames := 0;
-  if (AChannels < 1) or (AChannels > 2) then
-    Exit(SNDFILE_ERR_MALFORMED_FILE);
+  // Any number of channels, as libsndfile: the COMM chunk gave at least one
   if ADataLength < 0 then
     ADataLength := 0;
 
@@ -191,6 +196,7 @@ begin
   if (ADataLength mod AIFF_BLOCK_SIZE) <> 0 then
     Inc(LBlocks);
   AFrames := AIFF_SAMPLES_PER_BLOCK * LBlocks div AChannels;
+  ADecodedPastTheEnd := (LBlocks mod AChannels) <> 0;
   LGroupSamples := AIFF_SAMPLES_PER_BLOCK * AChannels;
   SetLength(AData, AFrames * AChannels * SizeOf(SmallInt));
   SetLength(LBlockBytes, AIFF_BLOCK_SIZE * AChannels);
