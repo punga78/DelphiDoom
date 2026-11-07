@@ -74,13 +74,6 @@ procedure MN_ScreenShotFromBlitBuffer;
 
 //==============================================================================
 //
-// MN_ScreenShotFromSaveGame
-//
-//==============================================================================
-procedure MN_ScreenShotFromSaveGame(const path: string; const outbuff: Pmenuscreenbuffer_t);
-
-//==============================================================================
-//
 // MN_ValidScreenShot
 //
 //==============================================================================
@@ -157,32 +150,6 @@ begin
     mn_screenshotbuffer.header[i] := MNSCREENSHOT_MAGIC[i];
   Move(thumbnail[0], mn_screenshotbuffer.data[0], MN_SCREENSHOTSIZE);
   mn_makescreenshot := false;
-end;
-//==============================================================================
-//
-// MN_ScreenShotFromSaveGame
-//
-//==============================================================================
-procedure MN_ScreenShotFromSaveGame(const path: string; const outbuff: Pmenuscreenbuffer_t);
-var
-  f: TFile;
-begin
-  if not fexists(path) then
-  begin
-    ZeroMemory(outbuff, SizeOf(menuscreenbuffer_t));
-    exit;
-  end;
-
-  f := TFile.Create(path, fOpenReadOnly);
-  if f.Size < SizeOf(menuscreenbuffer_t) then
-  begin
-    ZeroMemory(outbuff, SizeOf(menuscreenbuffer_t));
-    f.Free;
-    exit;
-  end;
-
-  f.Read(outbuff^, SizeOf(menuscreenbuffer_t));
-  f.Free;
 end;
 
 //==============================================================================

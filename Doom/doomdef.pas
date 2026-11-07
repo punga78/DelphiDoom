@@ -42,10 +42,8 @@ uses
 //
 // DOOM version
 const
-  VERSION099 = 99;
   VERSION110 = 110;
   VERSION111 = 111;
-  VERSION112 = 112;
   VERSION113 = 113;
   VERSION114 = 114;
   VERSION115 = 115;
@@ -253,7 +251,6 @@ type
     pw_infrared,
     NUMPOWERS
   );
-  Ppowertype_t = ^powertype_t;
 
 //
 // Power up durations,

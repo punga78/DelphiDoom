@@ -60,13 +60,6 @@ procedure I_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 
 //==============================================================================
 //
-// I_DisplayModeIndex
-//
-//==============================================================================
-function I_DisplayModeIndex(const w, h: integer): integer;
-
-//==============================================================================
-//
 // I_NearestDisplayModeIndex
 //
 //==============================================================================
@@ -141,16 +134,6 @@ begin
   if engine_displaymodes = nil then
     I_Error('I_ConfigureDisplayModes() was not called: the display modes are missing');
   result := engine_displaymodes;
-end;
-
-//==============================================================================
-//
-// I_DisplayModeIndex
-//
-//==============================================================================
-function I_DisplayModeIndex(const w, h: integer): integer;
-begin
-  result := DisplayModesCatalog.IndexOf(w, h);
 end;
 
 //==============================================================================

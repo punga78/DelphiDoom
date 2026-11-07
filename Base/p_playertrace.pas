@@ -94,13 +94,6 @@ function P_FollowPlayer(const mo: Pmobj_t; const p: Pplayer_t): boolean;
 //==============================================================================
 function P_GetPlayerTraceAtPos(const p: Pplayer_t; const at: Integer): Pplayertrace_t;
 
-//==============================================================================
-//
-// P_GetPlayerTraceAtTime
-//
-//==============================================================================
-function P_GetPlayerTraceAtTime(const p: Pplayer_t; const tm: Integer): Pplayertrace_t;
-
 implementation
 
 uses
@@ -376,55 +369,6 @@ begin
     rover := rover + NUMPLAYERTRACEHISTORY;
 
   result := @history.data[rover];
-end;
-
-//==============================================================================
-//
-// P_GetPlayerTraceAtTime
-//
-//==============================================================================
-function P_GetPlayerTraceAtTime(const p: Pplayer_t; const tm: Integer): Pplayertrace_t;
-var
-  pid: integer;
-  history: Pplayertracehistory_t;
-  hpos, i: integer;
-  maxtm, looktm, dt: integer;
-  item: Pplayertrace_t;
-begin
-  pid := PlayerToId(p);
-  if (pid < 0) or not playeringame[pid] then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  history := @playerhistory[pid];
-  if history.numitems = 0 then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  maxtm := MAXINT;
-  looktm := leveltime - tm;
-  result := nil;
-
-  for i := history.rover downto history.rover - history.numitems + 1 do
-  begin
-    if i < 0 then
-      hpos := NUMPLAYERTRACEHISTORY + i
-    else
-      hpos := i;
-    item := @history.data[hpos];
-    dt := Abs(looktm - item.leveltime);
-    if dt < maxtm then
-    begin
-      result := item;
-      if dt = 0 then
-        exit;
-      maxtm := dt;
-    end;
-  end;
 end;
 
 end.

@@ -49,7 +49,6 @@ type
     special: integer;
     tag: integer;
   end;
-  Pbossaction_t = ^bossaction_t;
   bossaction_tArray = array[0..$FF] of bossaction_t;
   Pbossaction_tArray = ^bossaction_tArray;
 
@@ -94,10 +93,6 @@ type
 var
   u_mapinfo: umapinfo_t;
   default_mapinfo: umapinfo_t;
-
-const
-  S_UMAPINFO = 'UMAPINFO';
-  S_UMAPDEF = 'UMAPDEF';
 
 //==============================================================================
 //

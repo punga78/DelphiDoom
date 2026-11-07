@@ -44,13 +44,6 @@ uses
 //==============================================================================
 procedure P_WallBounceMobj(const mo: Pmobj_t; const line: Pline_t);
 
-//==============================================================================
-//
-// P_MobjBounceMobj
-//
-//==============================================================================
-procedure P_MobjBounceMobj(const mo: Pmobj_t; const othermo: Pmobj_t);
-
 implementation
 
 uses
@@ -148,25 +141,6 @@ begin
     mo.x := newx;
     mo.y := newy;
   end;
-end;
-
-//==============================================================================
-//
-// P_MobjBounceMobj
-//
-//==============================================================================
-procedure P_MobjBounceMobj(const mo: Pmobj_t; const othermo: Pmobj_t);
-var
-  d, wall, reflect: vec2_t;
-begin
-  d[0] := mo.momx / FRACUNIT;
-  d[1] := mo.momy / FRACUNIT;
-  wall[0] := -othermo.y / FRACUNIT;
-  wall[1] := othermo.x / FRACUNIT;
-  CalculateReflect2(d, wall, reflect);
-  mo.momx := Round(reflect[0] * FRACUNIT);
-  mo.momy := Round(reflect[1] * FRACUNIT);
-  mo.angle := R_PointToAngle2(0, 0, mo.momx, mo.momy);
 end;
 
 end.

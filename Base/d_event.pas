@@ -118,7 +118,6 @@ const
     // Drop inventory item
     BT2_INVDROP         = 16;
     // Jump up and down
-    BT2_JUMP            = 32;
     // Use medkit
     BT2_HEALTH          = 128;
 {$ENDIF}

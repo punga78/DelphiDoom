@@ -53,13 +53,6 @@ function P_3dFloorNumber(const s: Psector_t; const z: fixed_t): integer; overloa
 
 //==============================================================================
 //
-// P_3dFloorFindMapthingFloorDZ
-//
-//==============================================================================
-function P_3dFloorFindMapthingFloorDZ(const m: Pmapthing_t): fixed_t;
-
-//==============================================================================
-//
 // P_3dFloorFindMapthingFloorZ
 //
 //==============================================================================
@@ -116,24 +109,10 @@ function P_3dCeilingHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t;
 
 //==============================================================================
 //
-// P_PtInSolidFloor
-//
-//==============================================================================
-function P_PtInSolidFloor(const x, y, z: fixed_t): boolean;
-
-//==============================================================================
-//
 // P_PtInSolidFloor2
 //
 //==============================================================================
 function P_PtInSolidFloor2(const x, y, z: fixed_t; const radious: fixed_t): boolean;
-
-//==============================================================================
-//
-// P_SubSectorCentroid
-//
-//==============================================================================
-function P_SubSectorCentroid(const s: Psubsector_t): Psubsector_t;
 
 //==============================================================================
 //
@@ -192,35 +171,6 @@ begin
       result := 0
     else
       result := 1;
-  end
-  else
-    result := 0;
-end;
-
-//==============================================================================
-//
-// P_3dFloorFindMapthingFloorDZ
-//
-//==============================================================================
-function P_3dFloorFindMapthingFloorDZ(const m: Pmapthing_t): fixed_t;
-var
-  ss: Psubsector_t;
-  msec: Psector_t;
-  x, y: fixed_t;
-begin
-  if m.options and MTF_ONMIDSECTOR = 0 then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  x := m.x * FRACUNIT;
-  y := m.y * FRACUNIT;
-  ss := R_PointInSubsector(x, y);
-  if ss.sector.midsec >= 0 then
-  begin
-    msec := @sectors[ss.sector.midsec];
-    result := msec.ceilingheight - P_FloorHeight(ss.sector, x, y);
   end
   else
     result := 0;
@@ -394,26 +344,6 @@ end;
 
 //==============================================================================
 //
-// P_PtInSolidFloor
-//
-//==============================================================================
-function P_PtInSolidFloor(const x, y, z: fixed_t): boolean;
-var
-  s: Psubsector_t;
-  sec: Psector_t;
-begin
-  s := R_PointInSubsector(x, y);
-  if s.sector.midsec >= 0 then
-  begin
-    sec := @sectors[s.sector.midsec];
-    result := (z >= sec.floorheight) and (z <= sec.ceilingheight);
-  end
-  else
-    result := false;
-end;
-
-//==============================================================================
-//
 // P_PtInSolidFloor2
 //
 //==============================================================================
@@ -430,51 +360,6 @@ begin
   end
   else
     result := false;
-end;
-
-//==============================================================================
-// P_SubSectorCentroid
-//
-// JVAL: Calculate the centroid of a subsector
-//
-//==============================================================================
-function P_SubSectorCentroid(const s: Psubsector_t): Psubsector_t;
-var
-  signedArea: Double;
-  x0, y0: Double;
-  x1, y1: Double;
-  A: Double;
-  i: integer;
-  cx, cy: double;
-begin
-  result := s;
-  if result.flags and SSF_CENTROIDCALCED <> 0 then
-    exit;
-
-  signedArea := 0.0;
-  cx := 0.0;  // Temporary X
-  cy := 0.0;  // Temporary Y
-
-  for i := s.firstline to s.firstline + s.numlines - 1 do
-  begin
-    x0 := lines[i].v1.x / FRACUNIT;
-    y0 := lines[i].v1.y / FRACUNIT;
-    x1 := lines[i].v2.x / FRACUNIT;
-    y1 := lines[i].v2.y / FRACUNIT;
-    A := x0 * y1 - x1 * y0;
-    signedArea := signedArea + A;
-    cx := cx + (x0 + x1) * A;
-    cy := cy + (y0 + y1) * A;
-  end;
-
-  signedArea := signedArea * 0.5 * 6.0;
-  cx := cx / signedArea;
-  cy := cy / signedArea;
-
-  result.x := Round(cx * FRACUNIT);
-  result.y := Round(cy * FRACUNIT);
-
-  result.flags := result.flags or SSF_CENTROIDCALCED;
 end;
 
 //==============================================================================

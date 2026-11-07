@@ -47,7 +47,6 @@ type
     exportdecl: TString;
     iscomputed: boolean;
   end;
-  Pprocitem_t = ^procitem_t;
   procitem_tArray = array[0..$FFF] of procitem_t;
   Pprocitem_tArray = ^procitem_tArray;
 

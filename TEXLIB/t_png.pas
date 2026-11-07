@@ -46,7 +46,6 @@ var
   assumecommontranspantcolors: boolean = True;
 
 const
-  PNGEXT = '.PNG';
   PNGSPRITEEXT = '.PNGSPRITE';
 
 implementation

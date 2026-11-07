@@ -85,7 +85,6 @@ type
     // percent sign graphic
     p: Ppatch_t;
   end;
-  Pst_percent_t = ^st_percent_t;
 
 // Multiple Icon widget
   st_multicon_t = record
@@ -105,7 +104,6 @@ type
     // user data
     data: integer;
   end;
-  Pst_multicon_t = ^st_multicon_t;
 
 // Binary Icon widget
 
@@ -123,7 +121,6 @@ type
     p: Ppatch_t;   // icon
     data: integer; // user data
   end;
-  Pst_binicon_t = ^st_binicon_t;
 
 //==============================================================================
 // STlib_init

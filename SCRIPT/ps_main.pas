@@ -188,24 +188,10 @@ function PS_MapScriptSaveSize: integer;
 
 //==============================================================================
 //
-// PS_MapScriptAppendToFile
-//
-//==============================================================================
-function PS_MapScriptAppendToFile(const fname: string): boolean;
-
-//==============================================================================
-//
 // PS_MapScriptLoadFromFile
 //
 //==============================================================================
 function PS_MapScriptLoadFromFile(const fname: string): boolean;
-
-//==============================================================================
-//
-// PS_MapScriptLoadFromFilePos
-//
-//==============================================================================
-function PS_MapScriptLoadFromFilePos(const fname: string; var position: integer): boolean;
 
 //==============================================================================
 //
@@ -1172,23 +1158,6 @@ end;
 
 //==============================================================================
 //
-// PS_MapScriptAppendToFile
-//
-//==============================================================================
-function PS_MapScriptAppendToFile(const fname: string): boolean;
-var
-  psser: TScriptSerializer;
-begin
-  psser := TScriptSerializer.Create(psmanager.EventsExec);
-  try
-    result := psser.AppendToFile(fname);
-  finally
-    psser.Free;
-  end;
-end;
-
-//==============================================================================
-//
 // PS_MapScriptLoadFromFile
 //
 //==============================================================================
@@ -1199,23 +1168,6 @@ begin
   psser := TScriptSerializer.Create(psmanager.EventsExec);
   try
     result := psser.LoadFromFile(fname);
-  finally
-    psser.Free;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_MapScriptLoadFromFilePos
-//
-//==============================================================================
-function PS_MapScriptLoadFromFilePos(const fname: string; var position: integer): boolean;
-var
-  psser: TScriptSerializer;
-begin
-  psser := TScriptSerializer.Create(psmanager.EventsExec);
-  try
-    result := psser.LoadFromFilePos(fname, position);
   finally
     psser.Free;
   end;

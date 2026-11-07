@@ -56,13 +56,6 @@ procedure AddMidiFileToPlayList_Legacy(const MidiFile: string);
 
 //==============================================================================
 //
-// DeleteMidiFileFromPlayList_Legacy
-//
-//==============================================================================
-procedure DeleteMidiFileFromPlayList_Legacy(const MidiFile: string);
-
-//==============================================================================
-//
 // ClearMidiFilePlayList_Legacy
 //
 //==============================================================================
@@ -289,31 +282,6 @@ begin
   if MidiFileNames = nil then
     MidiFileNames := TDStringList.Create;
   MidiFileNames.Add(MidiFile);
-end;
-
-//==============================================================================
-//
-// DeleteMidiFileFromPlayList_Legacy
-//
-//==============================================================================
-procedure DeleteMidiFileFromPlayList_Legacy(const MidiFile: string);
-var
-  i: integer;
-begin
-  if MidiFileNames <> nil then
-  begin
-    if MidiFileNames.IndexOf(MidiFile) > -1 then
-      MidiFileNames.Delete(MidiFileNames.IndexOf(MidiFile))
-    else
-    begin
-      for i := 0 to MidiFileNames.Count - 1 do
-        if strupper(MidiFileNames[i]) = strupper(MidiFile) then
-        begin
-          MidiFileNames.Delete(i);
-          exit;
-        end;
-    end;
-  end;
 end;
 
 //==============================================================================

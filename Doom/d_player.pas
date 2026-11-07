@@ -320,7 +320,6 @@ type
     nextoof: integer;
     quakeintensity: fixed_t;
   end;
-  Pplayer_t206 = ^player_t206;
 
 type
   player_t205 = record
@@ -436,7 +435,6 @@ type
     lookdir16: integer; // JVAL Smooth Look Up/Down
     cmd: ticcmd_t;      // JVAL Smooth Look Up/Down
   end;
-  Pplayer_t205 = ^player_t205;
 
 type
 //
@@ -553,7 +551,6 @@ type
     teleporttics: integer;
     quaketics: integer;
   end;
-  Pplayer_t122 = ^player_t122;
 
 type
   player_t121 = record
@@ -661,7 +658,6 @@ type
     angletargety: fixed_t;
     angletargetticks: integer;
   end;
-  Pplayer_t121 = ^player_t121;
 
   player_t118 = record
     mo: Pmobj_t;
@@ -759,7 +755,6 @@ type
     attackerx: fixed_t;
     attackery: fixed_t;
   end;
-  Pplayer_t118 = ^player_t118;
 
   player_t114 = record
     mo: Pmobj_t;
@@ -854,7 +849,6 @@ type
     // True if secret level has been done.
     didsecret: boolean;
   end;
-  Pplayer_t114 = ^player_t114;
 
 //
 // INTERMISSION
@@ -872,7 +866,6 @@ type
     frags: array[0..3] of integer;
     score: integer; // current score on entry, modified on return
   end;
-  Pwbplayerstruct_t = ^wbplayerstruct_t;
   wbplayerstruct_tArray = packed array[0..$FFFF] of wbplayerstruct_t;
   Pwbplayerstruct_tArray = ^wbplayerstruct_tArray;
 

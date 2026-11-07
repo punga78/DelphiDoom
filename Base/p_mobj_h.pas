@@ -1524,7 +1524,6 @@ type
   end;
 {$ELSEIF DEFINED(HEXEN)}
 
-  Pmobj_t140 = ^mobj_t140;
   mobj_t140 = record
     // List: thinker links.
     thinker: thinker_t;
@@ -1626,7 +1625,6 @@ type
     floorclip: fixed_t;
   end;
 
-  Pmobj_t141 = ^mobj_t141;
   mobj_t141 = record
     // List: thinker links.
     thinker: thinker_t;
@@ -2219,7 +2217,6 @@ type
   Pmobj_t204 = ^mobj_t204;
   mobj_t204 = record
 {$ELSE}
-  Pmobj_t120 = ^mobj_t120;
   mobj_t120 = record
 {$ENDIF}
     // List: thinker links.

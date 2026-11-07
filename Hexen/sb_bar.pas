@@ -38,7 +38,6 @@ uses
 // Now sensitive for scaling.
 const
   SB_HEIGHT = 38;
-  SB_WIDTH = 320;
   SB_Y = 200 - SB_HEIGHT;
 
 // Public Data

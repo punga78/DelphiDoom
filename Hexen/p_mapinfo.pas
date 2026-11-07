@@ -123,13 +123,6 @@ function P_GetMapDescName(const map: integer): string;
 
 //==============================================================================
 //
-// P_GetMapSongLump
-//
-//==============================================================================
-function P_GetMapSongLump(map: integer): string;
-
-//==============================================================================
-//
 // P_GetMapCluster
 //
 //==============================================================================
@@ -564,19 +557,6 @@ end;
 function P_GetMapFadeTable(map: integer): integer;
 begin
   result := MapInfo[P_QualifyMap(map)].fadetable;
-end;
-
-//==============================================================================
-//
-// P_GetMapSongLump
-//
-//==============================================================================
-function P_GetMapSongLump(map: integer): string;
-begin
-  if strupper(MapInfo[P_QualifyMap(map)].songLump) = strupper(DEFAULT_SONG_LUMP) then
-    result := ''
-  else
-    result := MapInfo[P_QualifyMap(map)].songLump;
 end;
 
 //==============================================================================

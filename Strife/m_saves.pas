@@ -158,13 +158,6 @@ procedure M_CreateSaveDirs(const savedir: string);
 //==============================================================================
 procedure M_ClearSlotNum(const num: integer);
 
-//==============================================================================
-//
-// M_CopySlotNum
-//
-//==============================================================================
-procedure M_CopySlotNum(src, dest: integer);
-
 implementation
 
 uses
@@ -203,44 +196,6 @@ begin
     // haleyjd: use M_SafeFilePath, not sprintf
     filepath := M_SafeFilePath(path, files.Strings[i]);
     fdelete(filepath);
-  end;
-  files.Free;
-end;
-
-//==============================================================================
-//
-// M_CopySlotNum
-//
-//==============================================================================
-procedure M_CopySlotNum(src, dest: integer);
-var
-  files: TDSTringList;
-  srcfilename: string;
-  dstfilename: string;
-  i: integer;
-  srcpath, destpath: string;
-begin
-  srcpath := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(src, ''));
-  destpath := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(dest, ''));
-
-  files := findfiles(srcpath + '\*');
-  if (files = nil) or (files.Count = 0) then
-  begin
-    if files <> nil then
-      files.Free;
-    exit;
-  end;
-
-  M_ClearSlotNum(dest);
-  for i := 0 to files.Count - 1 do
-  begin
-    if (files.Strings[i] = '.') or (files.Strings[i] = '..') then
-      continue;
-
-    // haleyjd: use M_SafeFilePath, not sprintf
-    srcfilename := M_SafeFilePath(srcpath, files.Strings[i]);
-    dstfilename := M_SafeFilePath(destpath, files.Strings[i]);
-    CopyFile2(srcfilename, dstfilename);
   end;
   files.Free;
 end;

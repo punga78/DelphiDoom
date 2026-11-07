@@ -148,7 +148,6 @@ type
     Name: TbtString;
     c: TPSPasToken;
   end;
-  PRTab = ^TRTab;
 
   TRTabArray = array[0..$FF] of TRTab;
   PRTabArray = ^TRTabArray;

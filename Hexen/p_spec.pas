@@ -211,7 +211,6 @@ type
     maxlight: integer;
     minlight: integer;
   end;
-  Pfireflicker_t = ^fireflicker_t;
 
   lightflash_t = record
     thinker: thinker_t;
@@ -222,7 +221,6 @@ type
     maxtime: integer;
     mintime: integer;
   end;
-  Plightflash_t = ^lightflash_t;
 
   strobe_t = record
     thinker: thinker_t;
@@ -233,7 +231,6 @@ type
     darktime: integer;
     brighttime: integer;
   end;
-  Pstrobe_t = ^strobe_t;
 
   glow_t = record
     thinker: thinker_t;
@@ -242,13 +239,6 @@ type
     maxlight: integer;
     direction: integer;
   end;
-  Pglow_t = ^glow_t;
-
-const
-  GLOWSPEED = 8;
-  STROBEBRIGHT = 5;
-  FASTDARK = 15;
-  SLOWDARK = 35;
 
 type
   bwhere_e = (
@@ -264,7 +254,6 @@ type
     btimer: integer;
     soundorg: Pmobj_t;
   end;
-  Pbutton_t = ^button_t;
 
 const
   // max # of wall switches in a level
@@ -315,8 +304,6 @@ type
   Pplat_t = ^plat_t;
 
 const
-  PLATWAIT = 3;
-  PLATSPEED = FRACUNIT;
   MAXPLATS = 512;  // JVAL Originally was 30
 
 type
@@ -350,10 +337,6 @@ type
     topcountdown: integer;
   end;
   Pvldoor_t = ^vldoor_t;
-
-const
-  VDOORSPEED = FRACUNIT * 2;
-  VDOORWAIT = 150;
 
 type
 //
@@ -396,8 +379,6 @@ type
   Pceiling_t = ^ceiling_t;
 
 const
-  CEILSPEED = FRACUNIT;
-  CEILWAIT = 150;
   MAXCEILINGS = 128; // JVAL 20210130 - Old value was 30
 
 type

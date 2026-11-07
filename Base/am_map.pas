@@ -167,7 +167,6 @@ const
   SECRETWALLRANGE = WALLRANGE;
 {$ENDIF}
   GRIDCOLORS = GRAYS + (GRAYSRANGE div 2);
-  GRIDRANGE = 0;
   XHAIRCOLORS = GRAYS;
 
   AM_PANDOWNKEY = KEY_DOWNARROW;
@@ -192,16 +191,13 @@ const
   AM_NUMMARKPOINTS = AUTOMAP_MAX_MARKS;
 
 // scale on entry
-  INITSCALEMTOF = AUTOMAP_INITIAL_SCALE;
 
 // how much the automap moves window per tic in frame-buffer coordinates }
 // moves 140 pixels in 1 second }
   F_PANINC = 4;
 
 const
-  MAPBITS = AUTOMAP_MAPBITS;
   MAPUNIT = AUTOMAP_MAPUNIT;
-  FRACTOMAPBITS = AUTOMAP_FRACTOMAPBITS;
   FRACTOMAPUNIT = AUTOMAP_FRACTOMAPUNIT;
 
 //==============================================================================
@@ -230,13 +226,6 @@ function M_ZOOMOUT: integer;
 //
 //==============================================================================
 function FTOM(x: integer): integer;
-
-//==============================================================================
-//
-// MTOF
-//
-//==============================================================================
-function MTOF(x: integer): integer;
 
 // Translates between frame-buffer and map coordinates
 
@@ -556,16 +545,6 @@ end;
 function FTOM(x: integer): integer;
 begin
   result := am_view.FrameToMap(x);
-end;
-
-//==============================================================================
-//
-// MTOF
-//
-//==============================================================================
-function MTOF(x: integer): integer;
-begin
-  result := am_view.MapToFrame(x);
 end;
 
 //==============================================================================

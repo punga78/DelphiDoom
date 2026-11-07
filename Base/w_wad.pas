@@ -68,7 +68,6 @@ type
     numlumps: integer;
     infotableofs: integer;
   end;
-  Pwadinfo_t = ^wadinfo_t;
 
   filelump_t = packed record
     filepos: integer;

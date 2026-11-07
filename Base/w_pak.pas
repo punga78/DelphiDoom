@@ -56,7 +56,6 @@ type
     F: file;
     Z: TPakEntryReader;
   end;
-  PPakFile = ^TPakFile;
 
 const
   PAKHASHSIZE = 8192;

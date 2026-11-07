@@ -251,13 +251,6 @@ procedure MT_ExecutePendingTask(const id: integer);
 
 //==============================================================================
 //
-// MT_ExecutePendingTasks
-//
-//==============================================================================
-procedure MT_ExecutePendingTasks;
-
-//==============================================================================
-//
 // MT_WaitTask
 //
 //==============================================================================
@@ -1359,20 +1352,6 @@ procedure MT_ExecutePendingTask(const id: integer);
 begin
   if Assigned(tasks[id].proc) then
     task_threads[id].Activate(_execute_task, @tasks[id]);
-end;
-
-//==============================================================================
-//
-// MT_ExecutePendingTasks
-//
-//==============================================================================
-procedure MT_ExecutePendingTasks;
-var
-  i: integer;
-begin
-  for i := 0 to NUMTASKTHREADS - 1 do
-    if Assigned(tasks[i].proc) then
-      task_threads[i].Activate(_execute_task, @tasks[i]);
 end;
 
 //==============================================================================

@@ -37,7 +37,6 @@ uses
 
 const
 // font stuff
-  HU_CHARERASE = KEY_BACKSPACE;
 
   HU_MAXLINES = 4;
   HU_MAXLINELINESS = 4;
@@ -86,16 +85,6 @@ type
     laston: boolean;      // last value of *->on;
   end;
   Phu_itext_t = ^hu_itext_t;
-
-//==============================================================================
-// HUlib_init
-//
-// Widget creation, access, and update routines
-//
-// initializes heads-up widget library
-//
-//==============================================================================
-procedure HUlib_init;
 
 //==============================================================================
 // HUlib_clearTextLine
@@ -233,28 +222,12 @@ procedure HUlib_initIText(it: Phu_itext_t; x: integer; y: integer; font: Ppatch_
 procedure HUlib_delCharFromIText(it: Phu_itext_t);
 
 //==============================================================================
-// HUlib_eraseLineFromIText
-//
-// enforces left margin
-//
-//==============================================================================
-procedure HUlib_eraseLineFromIText(it: Phu_itext_t);
-
-//==============================================================================
 // HUlib_resetIText
 //
 // resets line and left margin
 //
 //==============================================================================
 procedure HUlib_resetIText(it: Phu_itext_t);
-
-//==============================================================================
-// HUlib_addPrefixToIText
-//
-// left of left-margin
-//
-//==============================================================================
-procedure HUlib_addPrefixToIText(it: Phu_itext_t; str: string);
 
 //==============================================================================
 // HUlib_keyInIText
@@ -289,15 +262,6 @@ uses
   r_draw,
   v_data,
   v_video;
-
-//==============================================================================
-//
-// HUlib_init
-//
-//==============================================================================
-procedure HUlib_init;
-begin
-end;
 
 //==============================================================================
 //
@@ -735,17 +699,6 @@ begin
 end;
 
 //==============================================================================
-//
-// HUlib_eraseLineFromIText
-//
-//==============================================================================
-procedure HUlib_eraseLineFromIText(it: Phu_itext_t);
-begin
-  while it.lm <> it.line.len do
-    HUlib_delCharFromTextLine(@it.line);
-end;
-
-//==============================================================================
 // HUlib_resetIText
 //
 // Resets left margin as well
@@ -755,20 +708,6 @@ procedure HUlib_resetIText(it: Phu_itext_t);
 begin
   it.lm := 0;
   HUlib_clearTextLine(@it.line);
-end;
-
-//==============================================================================
-//
-// HUlib_addPrefixToIText
-//
-//==============================================================================
-procedure HUlib_addPrefixToIText(it: Phu_itext_t; str: string);
-var
-  i: integer;
-begin
-  for i := 1 to Length(str) do
-    HUlib_addCharToTextLine(@it.line, str[i]);
-  it.lm := it.line.len;
 end;
 
 //==============================================================================
