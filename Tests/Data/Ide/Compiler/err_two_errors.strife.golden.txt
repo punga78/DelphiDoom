@@ -1,0 +1,4 @@
+result=False
+location=6,3
+pcodelength=64
+msgs= Pos: 000061 Compiler: [Error] (6:3): Unknown identifier 'First'\r\n

@@ -1,0 +1,24 @@
+game=heretic
+count=2
+item=script|..\outside\up.ddscript
+item=script|deep\er\down.ddscript
+data=version|1.0\r\ngame|heretic\r\nscript|..\outside\up.ddscript\r\nscript|deep\er\down.ddscript\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+ERROR|Can not create file "<parent>\outside\up.ddscript"\r\n
+ERROR|Can not create file "<dir>\deep\er\down.ddscript"\r\n
+NORMAL|Loading "<dir>\relative_paths.ddide"\r\n
+save=False
+modified after save=False
+saved content=version|1.0\r\ngame|heretic\r\nscript|..\outside\up.ddscript\r\nscript|deep\er\down.ddscript\r\n
+file=relative_paths.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+ERROR|Can not write file "<parent>\outside\up.ddscript"\r\n
+ERROR|Can not write file "<dir>\deep\er\down.ddscript"\r\n

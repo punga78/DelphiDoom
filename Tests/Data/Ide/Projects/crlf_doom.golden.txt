@@ -1,0 +1,28 @@
+game=doom
+count=2
+item=script|crlf.ddscript
+item=actor|crlf.txt
+data=version|1.0\r\ngame|doom\r\nscript|crlf.ddscript\r\nactor|crlf.txt\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\crlf.ddscript"\r\n
+NORMAL|Loading "<dir>\crlf.txt"\r\n
+NORMAL|Loading "<dir>\crlf_doom.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\nscript|crlf.ddscript\r\nactor|crlf.txt\r\n
+file=crlf.ddscript
+file=crlf.ddscript_<date>
+file=crlf.txt
+file=crlf.txt_<date>
+file=crlf_doom.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\crlf.ddscript"\r\n
+NORMAL|Saving "<dir>\crlf.txt"\r\n

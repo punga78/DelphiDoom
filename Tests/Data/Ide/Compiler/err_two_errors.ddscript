@@ -1,0 +1,8 @@
+uses
+  all;
+
+event OnTick(const tick: Integer);
+begin
+  First(tick);
+  Second(tick);
+end;

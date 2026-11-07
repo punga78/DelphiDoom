@@ -1,0 +1,10 @@
+uses
+  all;
+
+var
+  n: Integer;
+
+event OnTick(const tick: Integer);
+begin
+  n := 'text';
+end;

@@ -1,0 +1,428 @@
+## constants count=2419 fnv=FA1486D3796556AE
+   first: ACTOR_INVALID|2147483647
+   last: WPF_SILENT|2
+## constants filter MAX count=4 fnv=D5FE3E7740BF2AC9
+   first: ANGLE_MAX|4294967295
+   last: MF3_EX_NOMAXMOVE|131
+## constants sorted by value count=2419 fnv=26BE73D0D5236EF2
+   first: Infinity|+Inf
+   last: ANGLE_MAX|4294967295
+## variables count=13 fnv=914B4AB750A1BF74
+   first: Actors|!TActors
+   last: WorldStrings|!TWorldStrings
+## variables filter level count=0 fnv=CBF29CE484222325
+## types count=72 fnv=C0D5B298967F468E
+   first: !NotificationVariant|Notification Variant
+   last: WordBool|Enum
+## types filter T count=58 fnv=34AD0EDE3D720775
+   first: !NotificationVariant|Notification Variant
+   last: WideString|WideString
+## unitfunctions count=556 fnv=5EEA19F0669F120E
+   first: FixedMul|function|PS_FIXED
+   last: RandomRange|function|SYSTEM
+## unitfunctions filter get count=218 fnv=50B91FAFACD09BD5
+   first: GetActorTarget|function|PS_GAME
+   last: GetWorldFloat|function|SYSTEM
+## unitfunctions sorted by unit count=218 fnv=50B91FAFACD09BD5
+   first: GetActorTarget|function|PS_GAME
+   last: GetWorldFloat|function|SYSTEM
+## actordef count=455 fnv=A9928E3064490443
+   first: AcolyteSpecial|A_AcolyteSpecial()
+   last: ZombieInSpecialSector|A_ZombieInSpecialSector()
+## actordef filter sound count=30 fnv=F9AA83880CCC82D1
+   first: ActiveSound|A_ActiveSound()
+   last: WeaponSound|A_WeaponSound(sound: sound_t; fullvolume: integer);
+## classes count=314 fnv=20C2F4A13765DBCD
+   first: !TACTOR
+   last:   property value[string]: string;
+## classes filter T count=314 fnv=20C2F4A13765DBCD
+   first: !TACTOR
+   last:   property value[string]: string;
+## sprites count=3887 fnv=1E3CB170957EDB1E
+   first: AFED
+   last:     MT_SIGIL_SC_SHOT
+## sprites list of first count=1 fnv=7CB3F437368EB497
+   first: Ammo Filler
+   last: Ammo Filler
+## sprites list of AFED count=1 fnv=7CB3F437368EB497
+   first: Ammo Filler
+   last: Ammo Filler
+## sprites list of AFEDA count=1 fnv=7CB3F437368EB497
+   first: Ammo Filler
+   last: Ammo Filler
+## sprites list of Ammo Filler count=1 fnv=7CB3F437368EB497
+   first: Ammo Filler
+   last: Ammo Filler
+## sprites list of AGRD count=11 fnv=55CF07256EDFBB25
+   first: Acolyte 1 Tan
+   last: Zombie
+## sprites list of AGRDA count=10 fnv=78B316E078C41245
+   first: Acolyte 1 Tan
+   last: Zombie
+## sprites list of Acolyte 1 Tan count=1 fnv=95BB4B4F077DF8A0
+   first: Acolyte 1 Tan
+   last: Acolyte 1 Tan
+## sprites list of Acolyte 2 Red count=1 fnv=C5DBA5696073494B
+   first: Acolyte 2 Red
+   last: Acolyte 2 Red
+## sprites list of Acolyte 3 Rust count=1 fnv=AF89DCFFB520CB4F
+   first: Acolyte 3 Rust
+   last: Acolyte 3 Rust
+## sprites list of Acolyte 4 Gray count=1 fnv=7CF7E4F105930971
+   first: Acolyte 4 Gray
+   last: Acolyte 4 Gray
+## sprites list of Acolyte 5 Dark Green count=1 fnv=B2D41547330DCE3E
+   first: Acolyte 5 Dark Green
+   last: Acolyte 5 Dark Green
+## sprites list of Acolyte 6 Gold count=1 fnv=D5C0AE21DB64B744
+   first: Acolyte 6 Gold
+   last: Acolyte 6 Gold
+## sprites list of Acolyte 7 Bright Green count=1 fnv=01ABC9F8FEF60270
+   first: Acolyte 7 Bright Green
+   last: Acolyte 7 Bright Green
+## sprites list of Acolyte 8 Blue count=1 fnv=E961F7AAEB28B4B4
+   first: Acolyte 8 Blue
+   last: Acolyte 8 Blue
+## sprites list of Shadow Acolyte count=1 fnv=D915A88C0DAF90EA
+   first: Shadow Acolyte
+   last: Shadow Acolyte
+## sprites list of Zombie count=1 fnv=249F5ADB4A91512F
+   first: Zombie
+   last: Zombie
+## sprites list of AGRDB count=0 fnv=CBF29CE484222325
+## sprites list of AGRDC count=0 fnv=CBF29CE484222325
+## sprites list of AGRDD count=0 fnv=CBF29CE484222325
+## sprites list of AGRDE count=9 fnv=F6FAB89CB2AFBF27
+   first: Acolyte 1 Tan
+   last: Shadow Acolyte
+## sprites list of Acolyte 1 Tan count=1 fnv=95BB4B4F077DF8A0
+   first: Acolyte 1 Tan
+   last: Acolyte 1 Tan
+## sprites list of Acolyte 2 Red count=1 fnv=C5DBA5696073494B
+   first: Acolyte 2 Red
+   last: Acolyte 2 Red
+## sprites list of Acolyte 3 Rust count=1 fnv=AF89DCFFB520CB4F
+   first: Acolyte 3 Rust
+   last: Acolyte 3 Rust
+## sprites list of Acolyte 4 Gray count=1 fnv=7CF7E4F105930971
+   first: Acolyte 4 Gray
+   last: Acolyte 4 Gray
+## sprites list of Acolyte 5 Dark Green count=1 fnv=B2D41547330DCE3E
+   first: Acolyte 5 Dark Green
+   last: Acolyte 5 Dark Green
+## sprites list of Acolyte 6 Gold count=1 fnv=D5C0AE21DB64B744
+   first: Acolyte 6 Gold
+   last: Acolyte 6 Gold
+## sprites list of Acolyte 7 Bright Green count=1 fnv=01ABC9F8FEF60270
+   first: Acolyte 7 Bright Green
+   last: Acolyte 7 Bright Green
+## sprites list of Acolyte 8 Blue count=1 fnv=E961F7AAEB28B4B4
+   first: Acolyte 8 Blue
+   last: Acolyte 8 Blue
+## sprites list of Shadow Acolyte count=1 fnv=D915A88C0DAF90EA
+   first: Shadow Acolyte
+   last: Shadow Acolyte
+## sprites list of AGRDF count=9 fnv=F6FAB89CB2AFBF27
+   first: Acolyte 1 Tan
+   last: Shadow Acolyte
+## sprites list of Acolyte 1 Tan count=1 fnv=95BB4B4F077DF8A0
+   first: Acolyte 1 Tan
+   last: Acolyte 1 Tan
+## sprites list of Acolyte 2 Red count=1 fnv=C5DBA5696073494B
+   first: Acolyte 2 Red
+   last: Acolyte 2 Red
+## sprites list of Acolyte 3 Rust count=1 fnv=AF89DCFFB520CB4F
+   first: Acolyte 3 Rust
+   last: Acolyte 3 Rust
+## sprites list of Acolyte 4 Gray count=1 fnv=7CF7E4F105930971
+   first: Acolyte 4 Gray
+   last: Acolyte 4 Gray
+## sprites list of Acolyte 5 Dark Green count=1 fnv=B2D41547330DCE3E
+   first: Acolyte 5 Dark Green
+   last: Acolyte 5 Dark Green
+## sprites list of Acolyte 6 Gold count=1 fnv=D5C0AE21DB64B744
+   first: Acolyte 6 Gold
+   last: Acolyte 6 Gold
+## sprites list of Acolyte 7 Bright Green count=1 fnv=01ABC9F8FEF60270
+   first: Acolyte 7 Bright Green
+   last: Acolyte 7 Bright Green
+## sprites list of Acolyte 8 Blue count=1 fnv=E961F7AAEB28B4B4
+   first: Acolyte 8 Blue
+   last: Acolyte 8 Blue
+## sprites list of Shadow Acolyte count=1 fnv=D915A88C0DAF90EA
+   first: Shadow Acolyte
+   last: Shadow Acolyte
+## sprites list of AGRDG count=9 fnv=F6FAB89CB2AFBF27
+   first: Acolyte 1 Tan
+   last: Shadow Acolyte
+## sprites list of Acolyte 1 Tan count=1 fnv=95BB4B4F077DF8A0
+   first: Acolyte 1 Tan
+   last: Acolyte 1 Tan
+## sprites list of Acolyte 2 Red count=1 fnv=C5DBA5696073494B
+   first: Acolyte 2 Red
+   last: Acolyte 2 Red
+## sprites filter SP count=108 fnv=76075A3EE7A5A1F3
+   first: ASPR
+   last:     Splash 2
+## states count=20371 fnv=2A5427E8162A2235
+   first: S_NULL
+   last:   Mbf21 Bits: 0
+## states list of S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## states list of Name: S_NULL count=0 fnv=CBF29CE484222325
+## states list of id: 0 count=0 fnv=CBF29CE484222325
+## states list of Sprite Number: PLAY count=0 fnv=CBF29CE484222325
+## states list of Sprite Subnumber: A count=0 fnv=CBF29CE484222325
+## states list of Duration: 0 count=0 fnv=CBF29CE484222325
+## states list of Duration 2: -1 count=0 fnv=CBF29CE484222325
+## states list of Next Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## states list of Codep Frame: NULL count=0 fnv=CBF29CE484222325
+## states list of Unknown 1: 0 count=0 fnv=CBF29CE484222325
+## states list of Unknown 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## states list of Mbf21 Bits: 0 count=0 fnv=CBF29CE484222325
+## states list of S_PNCH_00 count=12 fnv=86C34F8F51E50DEF
+   first: Name|S_PNCH_00
+   last: Mbf21 Bits|0
+## states list of Name: S_PNCH_00 count=0 fnv=CBF29CE484222325
+## states list of id: 1 count=0 fnv=CBF29CE484222325
+## states list of Sprite Number: PNCH count=0 fnv=CBF29CE484222325
+## states list of Sprite Subnumber: A count=0 fnv=CBF29CE484222325
+## states list of Duration: 0 count=0 fnv=CBF29CE484222325
+## states list of Duration 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Next Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## states list of Codep Frame: LIGHT0 count=0 fnv=CBF29CE484222325
+## states list of Unknown 1: 0 count=0 fnv=CBF29CE484222325
+## states list of Unknown 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## states list of Mbf21 Bits: 0 count=0 fnv=CBF29CE484222325
+## states list of S_WAVE_00 count=12 fnv=764E222F26EEB988
+   first: Name|S_WAVE_00
+   last: Mbf21 Bits|0
+## states list of Name: S_WAVE_00 count=0 fnv=CBF29CE484222325
+## states list of id: 2 count=0 fnv=CBF29CE484222325
+## states list of Sprite Number: WAVE count=0 fnv=CBF29CE484222325
+## states list of Sprite Subnumber: A BRIGHT count=0 fnv=CBF29CE484222325
+## states list of Duration: 3 count=0 fnv=CBF29CE484222325
+## states list of Duration 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Next Frame: S_WAVE_01 count=12 fnv=1846A659270C9EA6
+   first: Name|S_WAVE_01
+   last: Mbf21 Bits|0
+## states list of Codep Frame: NULL count=0 fnv=CBF29CE484222325
+## states list of Unknown 1: 0 count=0 fnv=CBF29CE484222325
+## states list of Unknown 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## states list of Mbf21 Bits: 0 count=0 fnv=CBF29CE484222325
+## states list of S_WAVE_01 count=12 fnv=1846A659270C9EA6
+   first: Name|S_WAVE_01
+   last: Mbf21 Bits|0
+## states list of Name: S_WAVE_01 count=0 fnv=CBF29CE484222325
+## states list of id: 3 count=0 fnv=CBF29CE484222325
+## states list of Sprite Number: WAVE count=0 fnv=CBF29CE484222325
+## states list of Sprite Subnumber: B BRIGHT count=0 fnv=CBF29CE484222325
+## states list of Duration: 3 count=0 fnv=CBF29CE484222325
+## states list of Duration 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Next Frame: S_WAVE_02 count=12 fnv=BF48FF83A1BE90D8
+   first: Name|S_WAVE_02
+   last: Mbf21 Bits|0
+## states list of Codep Frame: NULL count=0 fnv=CBF29CE484222325
+## states list of Unknown 1: 0 count=0 fnv=CBF29CE484222325
+## states list of Unknown 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## states list of Mbf21 Bits: 0 count=0 fnv=CBF29CE484222325
+## states list of S_WAVE_02 count=12 fnv=BF48FF83A1BE90D8
+   first: Name|S_WAVE_02
+   last: Mbf21 Bits|0
+## states list of Name: S_WAVE_02 count=0 fnv=CBF29CE484222325
+## states list of id: 4 count=0 fnv=CBF29CE484222325
+## states list of Sprite Number: WAVE count=0 fnv=CBF29CE484222325
+## states list of Sprite Subnumber: C BRIGHT count=0 fnv=CBF29CE484222325
+## states list of Duration: 3 count=0 fnv=CBF29CE484222325
+## states list of Duration 2: 0 count=0 fnv=CBF29CE484222325
+## states list of Next Frame: S_WAVE_03 count=12 fnv=BBE466EE81D24436
+   first: Name|S_WAVE_03
+   last: Mbf21 Bits|0
+## states list of Codep Frame: NULL count=0 fnv=CBF29CE484222325
+## states filter 1 count=7943 fnv=B38BE58B25D432AE
+   first: S_WAVE_01
+   last:   Mbf21 Bits: 0
+## mobjinfo count=27846 fnv=CF5527351465F845
+   first: 10 Gold
+   last:   Width: 20 * FRACUNIT
+## mobjinfo list of 10 Gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Inheritsfrom: -1 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Id #: 138 count=0 fnv=CBF29CE484222325
+## mobjinfo list of id: 169 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Name2: 10_gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Name: 10 Gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Close Attack Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Crash Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Crush Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Death Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Exploding Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Far Attack Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of First Moving Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Heal Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Initial Frame: S_CRED_00 count=12 fnv=348BDE736211C647
+   first: Name|S_CRED_00
+   last: Mbf21 Bits|0
+## mobjinfo list of Injury Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Interact Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Respawn Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Bits: MF_SPECIAL, MF_DROPPED, MF_NOTDMATCH count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags2_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags3_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags4_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags5_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags6_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Action Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Alert Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Attack Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 1: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 2: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 3: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Death Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Melee Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Pain Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Rip Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Alpha: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Blood Color: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Dropitem: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Explosion Damage: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Explosion Radius: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Fast Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Float Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Friction: 59392 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Gender: Default count=0 fnv=CBF29CE484222325
+## mobjinfo list of Gib Health: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Gravity: FRACUNIT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Height: 16 * FRACUNIT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Hit Obituary: "" count=0 fnv=CBF29CE484222325
+## mobjinfo list of Hit Points: 1000 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Infighting Group: IG_DEFAULT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Mass: 100 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Max Dropoff Height: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Max Step Height: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Max Target Range: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Melee Damage: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Melee Range: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Melee Threshold: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Minmissilechance: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Missile Damage: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Missileheight: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Missiletype: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Normal Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Obituary: "" count=0 fnv=CBF29CE484222325
+## mobjinfo list of Pain Chance: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Projectile Group: PG_DEFAULT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Pushfactor: 16384 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Reaction Time: 8 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Renderstyle: NORMAL count=0 fnv=CBF29CE484222325
+## mobjinfo list of Scale: FRACUNIT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Splash Group: SG_DEFAULT count=0 fnv=CBF29CE484222325
+## mobjinfo list of Sprite Dx: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Sprite Dy: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Translation: "" count=0 fnv=CBF29CE484222325
+## mobjinfo list of Vspeed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Weave Index Xy: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Weave Index Z: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Width: 20 * FRACUNIT count=0 fnv=CBF29CE484222325
+## mobjinfo list of 25 Gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Inheritsfrom: -1 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Id #: 139 count=0 fnv=CBF29CE484222325
+## mobjinfo list of id: 170 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Name2: 25_gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Name: 25 Gold count=0 fnv=CBF29CE484222325
+## mobjinfo list of Close Attack Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Crash Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Crush Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Death Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Exploding Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Far Attack Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of First Moving Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Heal Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Initial Frame: S_SACK_00 count=12 fnv=9B05574CB2639D52
+   first: Name|S_SACK_00
+   last: Mbf21 Bits|0
+## mobjinfo list of Injury Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Interact Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Respawn Frame: S_NULL count=12 fnv=E0208C4C01ADC1EF
+   first: Name|S_NULL
+   last: Mbf21 Bits|0
+## mobjinfo list of Bits: MF_SPECIAL, MF_DROPPED, MF_NOTDMATCH count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags2_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags3_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags4_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags5_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Flags6_ex: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Action Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Alert Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Attack Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 1: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 2: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Custom Sound 3: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Death Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Melee Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Pain Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Rip Sound: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Alpha: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Blood Color: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Dropitem: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Explosion Damage: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Explosion Radius: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Fast Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Float Speed: 0 count=0 fnv=CBF29CE484222325
+## mobjinfo list of Friction: 59392 count=0 fnv=CBF29CE484222325
+## mobjinfo filter ZOMBIE count=156 fnv=BE3AFE171D248F40
+   first: Zombie
+   last:   Width: 20 * FRACUNIT

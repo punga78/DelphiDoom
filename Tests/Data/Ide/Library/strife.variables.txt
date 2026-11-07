@@ -1,0 +1,13 @@
+MapStrings=!TMapStrings
+WorldStrings=!TWorldStrings
+MapIntegers=!TMapIntegers
+WorldIntegers=!TWorldIntegers
+MapFloats=!TMapFloats
+WorldFloats=!TWorldFloats
+Actors=!TActors
+Vertexes=!TVertexes
+Sides=!TSides
+Lines=!TLines
+Sectors=!TSectors
+MobjInfo=!TMobjInfo
+Overlay=!TOverlay

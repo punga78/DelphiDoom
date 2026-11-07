@@ -1,0 +1,7 @@
+uses
+  all;
+
+event OnTick(const tick: Integer);
+begin
+  NotDefinedAnywhere(tick);
+end;

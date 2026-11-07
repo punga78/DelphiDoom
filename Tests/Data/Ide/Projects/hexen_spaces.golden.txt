@@ -1,0 +1,28 @@
+game=hexen
+count=2
+item=script|with space.ddscript
+item=actor|padded.txt
+data=version|1.0\r\ngame|hexen\r\nscript|with space.ddscript\r\nactor|padded.txt\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\with space.ddscript"\r\n
+NORMAL|Loading "<dir>\padded.txt"\r\n
+NORMAL|Loading "<dir>\hexen_spaces.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|hexen\r\nscript|with space.ddscript\r\nactor|padded.txt\r\n
+file=hexen_spaces.ddide
+file=padded.txt
+file=padded.txt_<date>
+file=saved.ddide
+file=with space.ddscript
+file=with space.ddscript_<date>
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\with space.ddscript"\r\n
+NORMAL|Saving "<dir>\padded.txt"\r\n
