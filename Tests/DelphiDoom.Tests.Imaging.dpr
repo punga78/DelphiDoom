@@ -31,6 +31,7 @@ uses
   DelphiDoom.Imaging.SineTable in '..\Libs\Imaging\DelphiDoom.Imaging.SineTable.pas',
   DelphiDoom.Imaging.WallScale in '..\Libs\Imaging\DelphiDoom.Imaging.WallScale.pas',
   DelphiDoom.Imaging.ThumbnailBuilder in '..\Libs\Imaging\DelphiDoom.Imaging.ThumbnailBuilder.pas',
+  DelphiDoom.Imaging.SaveThumbnail in '..\Libs\Imaging\DelphiDoom.Imaging.SaveThumbnail.pas',
   DelphiDoom.Imaging.Factory in '..\Libs\Imaging\DelphiDoom.Imaging.Factory.pas',
   DelphiDoom.Tests.Imaging.Samples in 'Source\DelphiDoom.Tests.Imaging.Samples.pas',
   DelphiDoom.Tests.Imaging.Golden in 'Source\DelphiDoom.Tests.Imaging.Golden.pas',
@@ -49,6 +50,7 @@ uses
   DelphiDoom.Tests.Imaging.SineTable in 'Source\DelphiDoom.Tests.Imaging.SineTable.pas',
   DelphiDoom.Tests.Imaging.WallScale in 'Source\DelphiDoom.Tests.Imaging.WallScale.pas',
   DelphiDoom.Tests.Imaging.ThumbnailBuilder in 'Source\DelphiDoom.Tests.Imaging.ThumbnailBuilder.pas',
+  DelphiDoom.Tests.Imaging.SaveThumbnail in 'Source\DelphiDoom.Tests.Imaging.SaveThumbnail.pas',
   DelphiDoom.Tests.Imaging.Factory in 'Source\DelphiDoom.Tests.Imaging.Factory.pas';
 
 var

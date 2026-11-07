@@ -48,6 +48,7 @@ uses
   {$ENDIF}
   r_defs,
   DelphiDoom.DynLights.Intf,
+  DelphiDoom.Imaging.Intf,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Types;
 
@@ -204,6 +205,13 @@ procedure R_RenderPlayerView(player: Pplayer_t);
 //
 //==============================================================================
 procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
+
+//==============================================================================
+//
+// R_ConfigureMenuThumbnail
+//
+//==============================================================================
+procedure R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder);
 
 //==============================================================================
 // R_Init
@@ -538,6 +546,12 @@ uses
   d_net,
   mt_utils,
   mn_screenshot,
+  DelphiDoom.Imaging.Types,
+  DelphiDoom.Imaging.SaveThumbnail,
+{$IFDEF OPENGL}
+  gl_main,
+  v_video,
+{$ENDIF}
 {$IFDEF HEXEN}
   g_game,
 {$ENDIF}
@@ -1503,6 +1517,61 @@ var
 procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
 begin
   light_tables := ACalculator;
+end;
+
+var
+  menu_thumbnails: IImagingThumbnailBuilder = nil;
+
+//==============================================================================
+//
+// R_ConfigureMenuThumbnail
+// The builder of the thumbnails of the saved games of Libs\Imaging, given by
+// the composition root
+//
+//==============================================================================
+procedure R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder);
+begin
+  menu_thumbnails := ABuilder;
+end;
+
+//==============================================================================
+//
+// R_MakeMenuThumbnail
+// The thumbnail of the view that the menu shows and the savegame keeps
+// (it was MN_ScreenShotFromBlitBuffer of mn_screenshot.pas)
+//
+//==============================================================================
+procedure R_MakeMenuThumbnail;
+var
+  settings: TImagingThumbnailSettings;
+  buf: TArray<Byte>;
+  palette: TImagingPixels;
+begin
+  if menu_thumbnails = nil then
+    I_Error('R_MakeMenuThumbnail(): the thumbnails are not configured (ComposeEngine was not called)');
+
+  {$IFNDEF OPENGL}
+  I_BlitBuffer;
+  {$ENDIF}
+  SetLength(buf, SCREENWIDTH * SCREENHEIGHT * 4);
+  I_ReadScreen32(Pointer(buf));
+
+  settings.ScreenWidth := SCREENWIDTH;
+  settings.ScreenHeight := SCREENHEIGHT;
+  settings.ViewX := viewwindowx;
+  settings.ViewY := viewwindowy;
+  settings.ViewWidth := viewwidth;
+  settings.ViewHeight := viewheight;
+  settings.Width := MN_SCREENSHOTWIDTH;
+  settings.Height := MN_SCREENSHOTHEIGHT;
+  settings.BottomUp := {$IFDEF OPENGL}True{$ELSE}False{$ENDIF};
+
+  SetLength(palette, IMAGING_PALETTE_SIZE);
+  Move(videopal, palette[0], SizeOf(videopal));
+
+  TImagingSaveThumbnailFormat.Fill(mn_screenshotbuffer,
+    menu_thumbnails.Build(settings, Pointer(buf), palette));
+  mn_makescreenshot := false;
 end;
 
 //==============================================================================
@@ -3850,7 +3919,7 @@ begin
     R_StopZBuffer;
 {$ENDIF}
   if mn_makescreenshot then
-    MN_ScreenShotFromBlitBuffer;
+    R_MakeMenuThumbnail;
 end;
 
 //==============================================================================

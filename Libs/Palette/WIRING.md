@@ -117,3 +117,14 @@ del byte di Strife, le regole strane di `CR_`/`CR` nei nomi.
 * `ITranslationNames` tiene lo stato degli slot: va creata una sola istanza (come la `TStringList` globale) e svuotata con `R_ShutDownTranslations` (si ricrea).
 * Il test di parità vale per le palette sintetiche e per i quattro WAD commerciali del repository; un PLAYPAL molto diverso (mod) segue lo stesso codice ma non è provato.
 * `IPaletteBufferFixer` lavora su `TBytes` (copia): se i chiamanti restano nei renderer, meglio lasciare la funzione storica e non pagare la copia.
+
+## 7. Fase 2 (issue #135)
+
+* `Base\v_palettes.pas` è cancellata: `V_CreateDoomPalette`, `V_CreateTranslation` e `V_FixBufferPalette` non avevano
+  chiamanti; `V_AutoGeneratePalettes` è `TEnginePaletteGenerator.Generate` (`Base\DelphiDoom.Engine.Scanner.PaletteGenerator.pas`,
+  la direttiva `#CREATEPALETTE`), che riceve `IPaletteBuilder` dal costruttore. Finché `sc_utils.pas` assembla da sé le
+  direttive del preprocessore resta anche un costruttore senza argomenti che crea il costruttore del profilo del gioco.
+  Verifica nello stesso eseguibile: PLAYPAL, COLORMAP e FOGMAP del WAD generato identici al vecchio codice negli otto giochi.
+* **Restano** `r_palette.pas` (`R_DefaultPalette` è un servizio con stato, la palette letta una volta; tra i chiamanti c'è
+  `r_voxels.pas`, fuori da questa ondata) e `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
+  `p_saveg`: sono dati del motore).

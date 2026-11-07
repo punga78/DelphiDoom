@@ -121,6 +121,27 @@ type
     BottomUp: Boolean;
   end;
 
+const
+  /// <summary>Width of the thumbnail that a saved game keeps (MN_SCREENSHOTWIDTH)</summary>
+  IMAGING_SAVE_THUMBNAIL_WIDTH = 80;
+  /// <summary>Height of the thumbnail that a saved game keeps (MN_SCREENSHOTHEIGHT)</summary>
+  IMAGING_SAVE_THUMBNAIL_HEIGHT = 50;
+  /// <summary>Palette indices of the thumbnail of a saved game (MN_SCREENSHOTSIZE)</summary>
+  IMAGING_SAVE_THUMBNAIL_SIZE = IMAGING_SAVE_THUMBNAIL_WIDTH * IMAGING_SAVE_THUMBNAIL_HEIGHT;
+  /// <summary>Bytes of the mark that begins the thumbnail of a saved game (MNSCREENSHOT_MAGIC_SIZE)</summary>
+  IMAGING_SAVE_THUMBNAIL_MAGIC_SIZE = 14;
+
+type
+  /// <summary>
+  ///   The thumbnail as a saved game keeps it (menuscreenbuffer_t): the text MENUSCREENSHOT and
+  ///   80x50 palette indices, 4014 bytes, the same in 32 and 64 bit
+  /// </summary>
+  TImagingSaveThumbnail = packed record
+    Header: packed array[0..IMAGING_SAVE_THUMBNAIL_MAGIC_SIZE - 1] of Byte;
+    Data: packed array[0..IMAGING_SAVE_THUMBNAIL_SIZE - 1] of Byte;
+  end;
+  PImagingSaveThumbnail = ^TImagingSaveThumbnail;
+
 resourcestring
   SImagingColumnWithoutEnd = 'The column does not end inside the data';
   SImagingPostTruncated = 'A post of the column goes past the end of the data';
@@ -142,6 +163,7 @@ resourcestring
   SImagingWipeBufferSize = 'A buffer of the wipe is smaller than the screen';
   SImagingBadSineTable = 'The table of the sines needs five quarters of the circle';
   SImagingBadThumbnail = 'The screen, the palette or the size of the thumbnail are not valid';
+  SImagingBadSaveThumbnail = 'The thumbnail of a saved game needs %d palette indices, not %d';
 
 implementation
 

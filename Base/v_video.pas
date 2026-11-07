@@ -42,6 +42,7 @@ uses
 // Needed because we are refering to patches.
   r_defs,
   v_data,
+  DelphiDoom.Imaging.Intf,
   DelphiDoom.Palette.Intf;
 
 //==============================================================================
@@ -454,6 +455,15 @@ var
 //==============================================================================
 procedure V_ConfigureGamma(const ATables: IGammaTables);
 
+//==============================================================================
+//
+// V_ConfigureFlatShrink
+// The shrinker of the flats of Libs\Imaging (V_TileScreen8), given by the
+// composition root
+//
+//==============================================================================
+procedure V_ConfigureFlatShrink(const AShrinker: IImagingFlatShrinker);
+
 var
   usegamma: byte;
 
@@ -552,6 +562,47 @@ begin
   begin
     row := ATables.Table(level);
     memcpy(@gammatable[level, 0], @row[0], 256);
+  end;
+end;
+
+var
+  flat_shrinker: IImagingFlatShrinker = nil;
+
+//==============================================================================
+//
+// V_ConfigureFlatShrink
+//
+//==============================================================================
+procedure V_ConfigureFlatShrink(const AShrinker: IImagingFlatShrinker);
+begin
+  flat_shrinker := AShrinker;
+end;
+
+//==============================================================================
+//
+// V_ShrinkFlatTo64x64
+// The 64x64 flat of a lump of any size of flat (it was R_ShrinkFlatTo64x64
+// of r_flatinfo.pas)
+//
+//==============================================================================
+function V_ShrinkFlatTo64x64(const fin: Pointer; const sz: Integer; const fout: Pointer): Boolean;
+var
+  flat: TArray<Byte>;
+  shrunk: TArray<Byte>;
+begin
+  result := false;
+  if flat_shrinker = nil then
+    I_Error('V_ShrinkFlatTo64x64(): the images are not configured (ComposeEngine was not called)');
+
+  if sz <= 0 then
+    exit;
+
+  SetLength(flat, sz);
+  Move(fin^, flat[0], sz);
+  if flat_shrinker.Shrink(flat, shrunk) then
+  begin
+    Move(shrunk[0], fout^, Length(shrunk));
+    result := true;
   end;
 end;
 
@@ -5337,7 +5388,7 @@ begin
   begin
     sz := W_LumpLength(lump);
     flat := W_CacheLumpNum(R_GetLumpForFlat(R_FlatNumForName(lumpname)), PU_STATIC);
-    isflat := R_ShrinkFlatTo64x64(flat, sz, @src);
+    isflat := V_ShrinkFlatTo64x64(flat, sz, @src);
     Z_ChangeTag(flat, PU_CACHE);
     if isflat then
     begin

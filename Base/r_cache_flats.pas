@@ -34,12 +34,21 @@ unit r_cache_flats;
 interface
 
 uses
-  r_flatinfo;
+  r_flatinfo,
+  DelphiDoom.Imaging.Intf;
 
 const
 // Flat cache
   FLAT32CACHESIZE = 2048;
   CACHEFLATMASK = FLAT32CACHESIZE - 1;
+
+//==============================================================================
+//
+// R_ConfigureFlatCache
+// The grower of the 64x64 flats of Libs\Imaging, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
 
 //==============================================================================
 //
@@ -119,16 +128,59 @@ uses
   r_data,
   r_span,
   r_flat32,
-  r_grow,
   r_span32,
   r_hires,
   r_mmx,
   v_video,
   w_wad,
-  z_zone;
+  z_zone,
+  DelphiDoom.Imaging.Types;
 
 var
   ds32cache: ds32cacheinfo_tPArray;
+  span_grower: IImagingSpanGrower = nil;
+
+//==============================================================================
+//
+// R_ConfigureFlatCache
+//
+//==============================================================================
+procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
+begin
+  span_grower := AGrower;
+end;
+
+//==============================================================================
+//
+// R_GrowSpan
+// The 64x64 pixels of the cache go to the grower of Libs\Imaging and the
+// bigger flat comes back in the same cache item (it was r_grow.pas)
+//
+//==============================================================================
+procedure R_GrowSpan(const p: Pds32cacheinfo_t; const newscale: dsscale_t);
+var
+  source: TImagingPixels;
+  grown: TImagingPixels;
+begin
+  if span_grower = nil then
+    I_Error('R_GrowSpan(): the images are not configured (ComposeEngine was not called)');
+
+  if p.scale <> ds64x64 then
+    exit;
+
+  SetLength(source, 4096);
+  Move(R_Get_ds32(p)[0], source[0], 4096 * SizeOf(LongWord));
+
+  case newscale of
+    ds128x128: grown := span_grower.Grow64to128(source);
+    ds256x256: grown := span_grower.Grow64to256(source);
+  else
+    grown := span_grower.Grow64to512(source);
+  end;
+
+  p.scale := newscale;
+  Move(grown[0], R_Get_ds32(p)[0], Length(grown) * SizeOf(LongWord));
+end;
 
 //==============================================================================
 //
@@ -444,11 +496,11 @@ begin
         if pds.size = 0 then
         begin
           if detailLevel = DL_ULTRARES then
-            R_GrowSpan64to512(pds)
+            R_GrowSpan(pds, ds512x512)
           else if detailLevel = DL_HIRES then
-            R_GrowSpan64to256(pds)
+            R_GrowSpan(pds, ds256x256)
           else
-            R_GrowSpan64to128(pds);
+            R_GrowSpan(pds, ds128x128);
         end;
       end
       else
@@ -456,9 +508,9 @@ begin
         if pds.size = 0 then
         begin
           if detailLevel = DL_ULTRARES then
-            R_GrowSpan64to256(pds)
+            R_GrowSpan(pds, ds256x256)
           else if detailLevel = DL_HIRES then
-            R_GrowSpan64to128(pds);
+            R_GrowSpan(pds, ds128x128);
         end;
       end;
       pds32 := R_Get_ds32(pds);

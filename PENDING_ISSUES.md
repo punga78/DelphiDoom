@@ -65,3 +65,10 @@ Cancellate (i chiamanti usano le classi senza stato della libreria): i quattro `
 - `P_AnimateSurfaces` (da `p_tick` a ogni tic) e `A_MusicChanger` (azione di stato registrata per puntatore nei quattro `deh_main`): sono procedure chiamate per puntatore o dal ciclo dei tic, servono i dati di modulo; il loro stato (liste delle animazioni, catalogo MusInfo) andrebbe in un oggetto del livello.
 - `Base\p_umapinfo.pas` (`U_ParseMapInfo`/`U_FreeMapInfo` da `D_DoomMain` di tre `d_main`): i record `mapentry_t` (`gamemapinfo`, `u_mapinfo`) sono letti da circa 20 moduli (`g_game`, `f_finale`, `p_setup`, `p_enemy`, `p_user`, `wi_stuff`, `st_stuff`, `sb_bar`, `hu_stuff`, `s_sound`, `udmf_spec`, `d_player`); servirebbe un `IMapInfoCatalog` passato a quei moduli al posto dei record.
 - `Doom\p_switch.pas` contiene anche `P_UseSpecialLine` e `P_ChangeSwitchTexture` (special di linea e bottoni, legati ai thinker: fase thinker).
+## #135 — Facciate di palette e immagini (fase 2, ondata 1)
+
+Cancellate `v_palettes.pas` e `r_grow.pas`; `r_flatinfo.pas` e `mn_screenshot.pas` non sono più facciate (solo tipi e dati del motore). Restano, con il motivo:
+
+- `r_palette.pas`: `R_DefaultPalette` è un servizio con stato (palette letta una volta) chiamato da `r_colormaps`, `r_data` e `r_voxels` (quest'ultimo fuori da questa ondata, voxel). Per toglierla: un `IDefaultPalette` (classe del motore sopra `IPaletteUnpacker` e `V_ReadPalette`) dato da `ComposeEngine` ai tre chiamanti con i loro `*_Configure*`, e `palette_t` spostato in `r_defs`; circa mezza giornata.
+- `r_colormaps.pas` e `r_patch.pas`: sono le cache del motore (colormap personalizzate in zone memory lette dal renderer e da `p_saveg`; `fixedcolumns[]` in `PU_LEVEL`), che restano del motore per decisione; chiamano già la libreria.
+- `TEnginePaletteGenerator` ha ancora un costruttore senza argomenti perché lo crea `sc_utils.pas` (ondata dello scanner): quando le direttive saranno assemblate da `ComposeEngine` va tolto e il costruttore delle palette passato dal composition root.

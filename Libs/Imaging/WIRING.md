@@ -121,3 +121,21 @@ La libreria lavora su `TBytes` e `TArray<Cardinal>`, che **non possono avvolgere
 - Scala dei muri: il confronto `den > FixedInt(num)` mette a confronto un numero 16.16 con un intero; `D_PI`
   vale `3.141592657` (non è il pi esatto) e il seno di `FromGlobalAngleDouble` usa quel valore.
 - Un flat con lunghezza minore di 4096 dà solo righe intere da 64 pixel (la coda di meno di 64 byte si perde).
+
+## 7. Fase 2 (issue #135): i chiamanti usano la libreria senza facciate
+
+- `Base\r_grow.pas` è cancellata: `R_GrowSpan` sta in `r_cache_flats.pas` (l'unico chiamante), che riceve
+  `IImagingSpanGrower` da `ComposeImaging` con `R_ConfigureFlatCache` (solo software).
+- `R_ShrinkFlatTo64x64` e `R_ConfigureFlatShrink` di `r_flatinfo.pas` sono `V_ShrinkFlatTo64x64` e
+  `V_ConfigureFlatShrink` di `v_video.pas` (l'unico chiamante, `V_TileScreen8`). `r_flatinfo.pas` tiene solo
+  i tipi delle misure dei flat (`dsscale_t`, `FS*`, `dsscalesize`, `ds_scale`) usati da 14 unit del renderer;
+  FLATINFO lo legge `R_InitFlats` di `r_data.pas` (`R_ConfigureFlatInfo`, con `Libs\TextureDefs`).
+- La miniatura dei salvataggi: `TImagingSaveThumbnail` (`DelphiDoom.Imaging.Types`, 4014 byte, `SizeOf`
+  coperto da test) e `TImagingSaveThumbnailFormat` (`DelphiDoom.Imaging.SaveThumbnail`: `IsValid`, `Fill`)
+  sostituiscono `MN_ValidScreenShot` e la scrittura del marcatore `MENUSCREENSHOT`; la fa `R_MakeMenuThumbnail`
+  di `r_main.pas` (`R_ConfigureMenuThumbnail`). `mn_screenshot.pas` tiene solo il record e l'ultima miniatura.
+- **Restano** `r_patch.pas` (è la cache `fixedcolumns[]` del motore, PU_LEVEL: chiama già la libreria per
+  `Repeat128`/`FromPosts`) e la parte di `r_cache_flats` che legge i pixel.
+- Verifica (harness temporaneo nello stesso eseguibile, poi tolto): miniatura dallo schermo vero (4014 byte),
+  120 ingrandimenti di flat casuali, 3676 riduzioni (tutti i flat di Freedoom 2 e 10 misure sintetiche) e
+  FLATINFO di un PWAD di prova identici al vecchio codice.
