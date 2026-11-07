@@ -44,9 +44,24 @@ uses
   DelphiDoom.Udmf.ConvertedMap in '..\Libs\Udmf\DelphiDoom.Udmf.ConvertedMap.pas',
   DelphiDoom.Udmf.Converter in '..\Libs\Udmf\DelphiDoom.Udmf.Converter.pas',
   DelphiDoom.Udmf.Factory in '..\Libs\Udmf\DelphiDoom.Udmf.Factory.pas',
+  DelphiDoom.Udmf.Apply.Types in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.Types.pas',
+  DelphiDoom.Udmf.Apply.Intf in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.Intf.pas',
+  DelphiDoom.Udmf.Apply.PlaneMath in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.PlaneMath.pas',
+  DelphiDoom.Udmf.Apply.TriangleFinder in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.TriangleFinder.pas',
+  DelphiDoom.Udmf.Apply.TriangleSlopes in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.TriangleSlopes.pas',
+  DelphiDoom.Udmf.Apply.SectorInterpreter in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.SectorInterpreter.pas',
+  DelphiDoom.Udmf.Apply.LineSpecialTranslator in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.LineSpecialTranslator.pas',
+  DelphiDoom.Udmf.Apply.FakeContrast in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.FakeContrast.pas',
+  DelphiDoom.Udmf.Apply.Factory in '..\Libs\Udmf\DelphiDoom.Udmf.Apply.Factory.pas',
   DelphiDoom.Tests.Udmf.Sounds in 'Source\DelphiDoom.Tests.Udmf.Sounds.pas',
   DelphiDoom.Tests.Udmf.Parity in 'Source\DelphiDoom.Tests.Udmf.Parity.pas',
-  DelphiDoom.Tests.Udmf.Behavior in 'Source\DelphiDoom.Tests.Udmf.Behavior.pas';
+  DelphiDoom.Tests.Udmf.Behavior in 'Source\DelphiDoom.Tests.Udmf.Behavior.pas',
+  DelphiDoom.Tests.Udmf.SectorInterpreter in 'Source\DelphiDoom.Tests.Udmf.SectorInterpreter.pas',
+  DelphiDoom.Tests.Udmf.PlaneMath in 'Source\DelphiDoom.Tests.Udmf.PlaneMath.pas',
+  DelphiDoom.Tests.Udmf.TriangleFinder in 'Source\DelphiDoom.Tests.Udmf.TriangleFinder.pas',
+  DelphiDoom.Tests.Udmf.TriangleSlopes in 'Source\DelphiDoom.Tests.Udmf.TriangleSlopes.pas',
+  DelphiDoom.Tests.Udmf.LineSpecialTranslator in 'Source\DelphiDoom.Tests.Udmf.LineSpecialTranslator.pas',
+  DelphiDoom.Tests.Udmf.FakeContrast in 'Source\DelphiDoom.Tests.Udmf.FakeContrast.pas';
 
 var
   Runner: ITestRunner;

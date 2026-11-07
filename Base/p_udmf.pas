@@ -40,6 +40,7 @@ uses
   tables,
   DelphiDoom.Udmf.Types,
   DelphiDoom.Udmf.Intf,
+  DelphiDoom.Udmf.Apply.Intf,
   DelphiDoom.Engine.Wad.Intf;
 
 //==============================================================================
@@ -58,6 +59,15 @@ function UDMF_Check(const mapname: string): boolean;
 //
 //==============================================================================
 procedure P_ConfigureUdmf(const AConverter: IUdmfConverter; const AWadServices: IEngineWadServices);
+
+//==============================================================================
+//
+// P_ConfigureUdmfApply
+// Gives the unit the objects that write the extra values of the converted map in sectors[],
+// lines[], sides[] and segs[]. The composition root calls it
+//
+//==============================================================================
+procedure P_ConfigureUdmfApply(const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
 
 const
   ML_SCRIPT = Ord(ML_BEHAVIOR) + 1;
@@ -292,7 +302,6 @@ uses
   m_base,
   i_system,
   p_setup,
-  p_slopes,
   p_common,
   r_defs,
   sounds,
@@ -306,6 +315,10 @@ var
   // given by the composition root (P_ConfigureUdmf)
   udmf_converter: IUdmfConverter = nil;
   udmf_wadservices: IEngineWadServices = nil;
+  udmf_sectorapplier: IUdmfMapPartApplier = nil;
+  udmf_lineapplier: IUdmfMapPartApplier = nil;
+  udmf_sideapplier: IUdmfMapPartApplier = nil;
+  udmf_segapplier: IUdmfMapPartApplier = nil;
 
 //==============================================================================
 //
@@ -553,202 +566,27 @@ end;
 
 //==============================================================================
 //
-// UDMF_DoMakeAbsoluteHeights
+// P_ConfigureUdmfApply
 //
 //==============================================================================
-procedure UDMF_DoMakeAbsoluteHeights(const secid: integer);
-var
-  sec: Psector_t;
-  vids: TDNumberList;
-  v, i: integer;
-  a, b, c, d: float;
-  isslope: boolean;
-
-  function _X(id: integer): float;
-  begin
-    result := vertexes[vids[id]].x / FRACUNIT;
-  end;
-
-  function _Y(id: integer): float;
-  begin
-    result := vertexes[vids[id]].y / FRACUNIT;
-  end;
-
-  function _floor(id: integer): float;
-  var
-    vid: integer;
-  begin
-    vid := vids[id];
-    if udmfvertexes[vid].extraflags and UDMF_VF_ZFLOOR <> 0 then
-      result := udmfvertexes[vid].zfloor / FRACUNIT
-    else
-      result := sec.floorheight / FRACUNIT;
-  end;
-
-  function _ceiling(id: integer): float;
-  var
-    vid: integer;
-  begin
-    vid := vids[id];
-    if udmfvertexes[vid].extraflags and UDMF_VF_ZCEILING <> 0 then
-      result := udmfvertexes[vid].zceiling / FRACUNIT
-    else
-      result := sec.ceilingheight / FRACUNIT;
-  end;
-
+procedure P_ConfigureUdmfApply(const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
 begin
-  sec := @sectors[secid];
-  if sec.linecount <> 3 then
-    exit;
-
-  vids := TDNumberList.Create;
-
-  for i := 0 to 2 do
-  begin
-    v := pDiff(sec.lines[i].v1, vertexes, SizeOf(vertex_t));
-    if vids.IndexOf(v) < 0 then
-      vids.Add(v);
-    v := pDiff(sec.lines[i].v2, vertexes, SizeOf(vertex_t));
-    if vids.IndexOf(v) < 0 then
-      vids.Add(v);
-  end;
-
-  if vids.Count <> 3 then // Not closed sector ?
-  begin
-    vids.Free;
-    exit;
-  end;
-
-  for i := 0 to vids.Count - 1 do
-    if vids[i] >= numudmfvertexes then  // Extra vertexes from ???
-    begin
-      vids.Free;
-      exit;
-    end;
-
-  // Check floor slope
-  isslope := false;
-  for i := 0 to 2 do
-    if udmfvertexes[vids[i]].extraflags and UDMF_VF_ZFLOOR <> 0 then
-    begin
-      isslope := true;
-      break;
-    end;
-
-  if isslope then
-  begin
-    calc_slope_plane(
-      _X(0), _Y(0), _floor(0),
-      _X(1), _Y(1), _floor(1),
-      _X(2), _Y(2), _floor(2),
-      a, b, c, d
-    );
-    sec.fa := a;
-    sec.fb := b;
-    sec.fic := 1 / c;
-    sec.fd := d;
-    sec.renderflags := sec.renderflags or SRF_SLOPEFLOOR;
-    P_SlopesAlignPlane(sec, nil, SRF_SLOPEFLOOR, false);
-    sec.slopeline := sec.lines[0];
-    sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
-  end;
-
-  // Check ceiling slope
-  isslope := false;
-  for i := 0 to 2 do
-    if udmfvertexes[vids[i]].extraflags and UDMF_VF_ZCEILING <> 0 then
-    begin
-      isslope := true;
-      break;
-    end;
-
-  if isslope then
-  begin
-    calc_slope_plane(
-      _X(0), _Y(0), _ceiling(0),
-      _X(1), _Y(1), _ceiling(1),
-      _X(2), _Y(2), _ceiling(2),
-      a, b, c, d
-    );
-    sec.ca := a;
-    sec.cb := b;
-    sec.cic := 1 / c;
-    sec.cd := d;
-    sec.renderflags := sec.renderflags or SRF_SLOPECEILING;
-    P_SlopesAlignPlane(sec, nil, SRF_SLOPECEILING, false);
-    sec.slopeline := sec.lines[0];
-    sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
-  end;
-
-  vids.Free;
+  udmf_sectorapplier := ASectors;
+  udmf_lineapplier := ALines;
+  udmf_sideapplier := ASides;
+  udmf_segapplier := ASegs;
 end;
 
 //==============================================================================
 //
-// UDMF_DoMakeSector
+// UDMF_ApplyPart
 //
 //==============================================================================
-procedure UDMF_DoMakeSector(const secid: integer);
-var
-  sec: Psector_t;
-  usec: Pextrasector_t;
+function UDMF_ApplyPart(const what: string; const applier: IUdmfMapPartApplier): boolean;
 begin
-  sec := @sectors[secid];
-  usec := @udmfsectors[secid];
-
-  {$IFDEF DOOM_OR_STRIFE}
-  sec.floor_xoffs := usec.xpanningfloor;
-  sec.floor_yoffs := usec.ypanningfloor;
-  sec.ceiling_xoffs := usec.xpanningceiling;
-  sec.ceiling_yoffs := usec.ypanningceiling;
-  {$ENDIF}
-  sec.gravity := usec.gravity;
-  sec.floorangle := usec.rotationfloor;
-  sec.flooranglex := usec.rotationfloorx;
-  sec.floorangley := usec.rotationfloory;
-  sec.ceilingangle := usec.rotationceiling;
-  sec.ceilinganglex := usec.rotationceilingx;
-  sec.ceilingangley := usec.rotationceilingy;
-  if (usec.extraflags and UDMF_SF_CEILINGPLANE = UDMF_SF_CEILINGPLANE) and (usec.ceilingplane_c <> 0.0) then
-  begin
-    sec.ca := usec.ceilingplane_a;
-    sec.cb := usec.ceilingplane_b;
-    sec.cic := 1 / usec.ceilingplane_c;
-    sec.cd := usec.ceilingplane_d;
-    sec.renderflags := sectors[secid].renderflags or SRF_SLOPECEILING;
-    P_SlopesAlignPlane(sec, nil, SRF_SLOPECEILING, false);
-    sec.slopeline := sec.lines[0];
-    sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
-  end;
-  if (usec.extraflags and UDMF_SF_FLOORPLANE = UDMF_SF_FLOORPLANE) and (usec.floorplane_c <> 0.0) then
-  begin
-    sec.fa := usec.floorplane_a;
-    sec.fb := usec.floorplane_b;
-    sec.fic := 1 / usec.floorplane_c;
-    sec.fd := usec.floorplane_d;
-    sec.renderflags := sectors[secid].renderflags or SRF_SLOPEFLOOR;
-    P_SlopesAlignPlane(sec, nil, SRF_SLOPEFLOOR, false);
-    sec.slopeline := sec.lines[0];
-    sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
-  end;
-  if usec.extraflags and UDMF_SF_RIPPLECEILING <> 0 then
-    sec.renderflags := sec.renderflags or SRF_RIPPLE_CEILING;
-  if usec.extraflags and UDMF_SF_RIPPLEFLOOR <> 0 then
-    sec.renderflags := sec.renderflags or SRF_RIPPLE_FLOOR;
-  if usec.extraflags and UDMF_SF_FOG <> 0 then
-    sec.renderflags := sec.renderflags or SRF_FOG;
-  if usec.extraflags and UDMF_SF_HIDDEN <> 0 then
-    sec.renderflags := sec.renderflags or SRF_HIDDEN;
-  if usec.extraflags and UDMF_SF_NOJUMP <> 0 then
-    sec.flags := sec.flags or SF_NOJUMP;
-  if usec.extraflags and UDMF_SF_NOCROUCH <> 0 then
-    sec.flags := sec.flags or SF_NOCROUCH;
-  sec.moreids := usec.moreids;
-  {$IFNDEF HEXEN}
-  sec.seqType := usec.sound;
-  {$ENDIF}
-  sec.windthrust := usec.windthrust;
-  sec.windangle := usec.windangle;
+  if applier = nil then
+    I_Error('UDMF_Make%s(): P_ConfigureUdmfApply() has not been called', [what]);
+  result := applier.Apply;
 end;
 
 //==============================================================================
@@ -757,59 +595,8 @@ end;
 //
 //==============================================================================
 function UDMF_MakeSectors: boolean;
-var
-  i: integer;
 begin
-  if not hasudmfdata then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if numudmfsectors <> numsectors then
-  begin
-    result := false;
-    exit;
-  end;
-
-  for i := 0 to numudmfsectors - 1 do
-  begin
-    UDMF_DoMakeSector(i);
-    UDMF_DoMakeAbsoluteHeights(i);
-  end;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// UDMF_DoMakeLine
-//
-//==============================================================================
-procedure UDMF_DoMakeLine(const lineid: integer);
-var
-  line: Pline_t;
-  uline: Pextraline_t;
-begin
-  line := @lines[lineid];
-  uline := @udmflinedefs[lineid];
-
-  {$IFNDEF HEXEN}
-  line.arg1 := uline.arg1;
-  line.arg2 := uline.arg2;
-  line.arg3 := uline.arg3;
-  line.arg4 := uline.arg4;
-  line.arg5 := uline.arg5;
-  line.activators := uline.activators;
-  if udmflinetranslate then
-  begin
-    if IsIntegerInRange(line.special and 1023, 1, UDMF_NORMAL_ADD) then
-      line.special := (line.special and 1023 + UDMF_SPECIAL_START) or (line.special and not 1023)
-    else if IsIntegerInRange(line.special and 1023, UDMF_NORMAL_ADD, UDMF_SPECIAL_START + UDMF_NORMAL_ADD) then
-      line.special := (line.special and 1023 - UDMF_NORMAL_ADD) or (line.special and not 1023);
-  end;
-  {$ENDIF}
-  line.moreids := uline.moreids;
+  result := UDMF_ApplyPart('Sectors', udmf_sectorapplier);
 end;
 
 //==============================================================================
@@ -818,49 +605,8 @@ end;
 //
 //==============================================================================
 function UDMF_MakeLines: boolean;
-var
-  i: integer;
 begin
-  if not hasudmfdata then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if numudmflinedefs <> numlines then
-  begin
-    result := false;
-    exit;
-  end;
-
-  for i := 0 to numudmflinedefs - 1 do
-    UDMF_DoMakeLine(i);
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// UDMF_DoMakeSide
-//
-//==============================================================================
-procedure UDMF_DoMakeSide(const sideid: integer);
-var
-  side: Pside_t;
-  uside: Pextraside_t;
-begin
-  side := @sides[sideid];
-  uside := @udmfsidedefs[sideid];
-
-  side.textureoffset := uside.textureoffset;
-  side.toptextureoffset := uside.toptextureoffset;
-  side.midtextureoffset := uside.midtextureoffset;
-  side.bottomtextureoffset := uside.bottomtextureoffset;
-  side.rowoffset := uside.rowoffset;
-  side.toprowoffset := uside.toprowoffset;
-  side.midrowoffset := uside.midrowoffset;
-  side.bottomrowoffset := uside.bottomrowoffset;
-  side.flags := uside.flags;
+  result := UDMF_ApplyPart('Lines', udmf_lineapplier);
 end;
 
 //==============================================================================
@@ -869,49 +615,8 @@ end;
 //
 //==============================================================================
 function UDMF_MakeSides: boolean;
-var
-  i: integer;
 begin
-  if not hasudmfdata then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if numudmfsidedefs <> numsides then
-  begin
-    result := false;
-    exit;
-  end;
-
-  for i := 0 to numudmfsidedefs - 1 do
-    UDMF_DoMakeSide(i);
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// UDMF_DoMakeSeg
-//
-//==============================================================================
-procedure UDMF_DoMakeSeg(const segid: integer);
-var
-  seg: Pseg_t;
-begin
-  seg := @segs[segid];
-
-  if seg.miniseg then
-    Exit;
-
-  if seg.sidedef.flags and SDF_NOFAKECONTRAST <> 0 then
-    seg.fakecontrastlight := 0
-  else if seg.v1.y = seg.v2.y then
-    seg.fakecontrastlight := -1
-  else if seg.v1.x = seg.v2.x then
-    seg.fakecontrastlight := 1
-  else
-    seg.fakecontrastlight := 0;
+  result := UDMF_ApplyPart('Sides', udmf_sideapplier);
 end;
 
 //==============================================================================
@@ -920,19 +625,8 @@ end;
 //
 //==============================================================================
 function UDMF_MakeSegs: boolean;
-var
-  i: integer;
 begin
-  if not hasudmfdata then
-  begin
-    result := false;
-    exit;
-  end;
-
-  for i := 0 to numsegs - 1 do
-    UDMF_DoMakeSeg(i);
-
-  result := true;
+  result := UDMF_ApplyPart('Segs', udmf_segapplier);
 end;
 
 end.

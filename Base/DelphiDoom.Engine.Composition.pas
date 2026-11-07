@@ -31,6 +31,11 @@ uses
   DelphiDoom.Udmf.Games,
   DelphiDoom.Udmf.Factory,
   DelphiDoom.Engine.Udmf.SoundResolver,
+  DelphiDoom.Udmf.Apply.Factory,
+  DelphiDoom.Engine.Udmf.SectorApplier,
+  DelphiDoom.Engine.Udmf.LineApplier,
+  DelphiDoom.Engine.Udmf.SideApplier,
+  DelphiDoom.Engine.Udmf.SegApplier,
   m_base,
   p_udmf,
 {$IFNDEF HEXEN}
@@ -667,6 +672,17 @@ begin
     TEngineVoxelDefinitionSink.Create);
 end;
 
+procedure ComposeUdmfApply;
+begin
+  P_ConfigureUdmfApply(
+    TEngineUdmfSectorApplier.Create(
+      TUdmfApplyFactory.CreateSectorInterpreter, TUdmfApplyFactory.CreateTriangleSlopes),
+    TEngineUdmfLineApplier.Create(
+      TUdmfApplyFactory.CreateLineSpecialTranslator(UDMF_SPECIAL_START, UDMF_NORMAL_ADD)),
+    TEngineUdmfSideApplier.Create,
+    TEngineUdmfSegApplier.Create(TUdmfApplyFactory.CreateFakeContrast));
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -738,6 +754,7 @@ begin
   if not TUdmfGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
   P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);
+  ComposeUdmfApply;
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
   P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
