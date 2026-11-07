@@ -1,0 +1,19 @@
+source open.acs
+load
+tick 1
+tick 40
+start 5 0 0,0,0,0
+start 6 0 42,0,0,0
+start 7 0 1,2,0,0
+start 8 0 1,2,3,0
+tick 3
+start 8 0 1,2,3,0
+suspend 2
+terminate 300
+start 300 0 0,0,0,0
+terminate 300
+tick 2
+start 99 0 0,0,0,0
+suspend 99
+terminate 99
+dump

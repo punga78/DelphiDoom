@@ -10,6 +10,9 @@ unit DelphiDoom.Video.Intf;
 
 interface
 
+uses
+  DelphiDoom.Video.Types;
+
 type
   /// <summary>From the palette of the game (256 colors of R, G, B) to colors of the screen</summary>
   IPaletteConverter = interface
@@ -47,6 +50,42 @@ type
     ///   is in the hack: it stays true until another, different width is given
     /// </summary>
     function Apply(var AScreenWidth: Integer; AEnabled: Boolean): Boolean;
+  end;
+
+  /// <summary>Where the screen modes come from: the graphics system of the computer</summary>
+  IDisplayModeSource = interface
+    ['{5D1E7A32-B8C4-4F96-A0D3-27E94C6B1F58}']
+    /// <summary>Every mode the system knows, in its order, with repetitions</summary>
+    function ListModes: TArray<TDisplayMode>;
+  end;
+
+  /// <summary>The screen modes the game can choose from, sorted by width then height</summary>
+  IDisplayModeCatalog = interface
+    ['{C3A09E64-1F7D-4B85-9E2A-D6B4057F3C91}']
+    function GetCount: Integer;
+    function GetMode(AIndex: Integer): TDisplayMode;
+    /// <summary>
+    ///   Asks the source again. Keeps the 32 bit modes of at least 320x200 and not bigger than
+    ///   AMaxWidth x AMaxHeight; if there are none, the modes of at least 16 bits and 640x400;
+    ///   if there are still none, 320x200 and 640x400
+    /// </summary>
+    procedure Refresh(AMaxWidth, AMaxHeight: Integer);
+    procedure Clear;
+    /// <summary>The index of the mode with exactly this size, or -1</summary>
+    function IndexOf(AWidth, AHeight: Integer): Integer;
+    /// <summary>
+    ///   The index of the mode that is nearest to this size (a mode bigger than the size counts 50
+    ///   more for each side), the exact one if there is; -1 without modes
+    /// </summary>
+    function NearestIndex(AWidth, AHeight: Integer): Integer;
+    /// <summary>
+    ///   The size of the window for a screen: the exact mode or the nearest one. False without
+    ///   modes: the window is as big as the screen of the computer
+    /// </summary>
+    function FindWindowSize(AScreenWidth, AScreenHeight: Integer;
+      out AWindowWidth, AWindowHeight: Integer): Boolean;
+    property Count: Integer read GetCount;
+    property Modes[AIndex: Integer]: TDisplayMode read GetMode; default;
   end;
 
   /// <summary>What the video of the engine needs that does not depend on the graphics API</summary>

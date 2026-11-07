@@ -49,7 +49,8 @@ interface
 uses
   d_event,
   doomdef,
-  DelphiDoom.IdTech.Intf;
+  DelphiDoom.IdTech.Intf,
+  DelphiDoom.Iwad.Intf;
 
 const
 {$IFNDEF FPC}
@@ -128,13 +129,6 @@ procedure D_StartTitle;
 
 //==============================================================================
 //
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
-
-//==============================================================================
-//
 // D_Display
 //
 //==============================================================================
@@ -165,7 +159,6 @@ var
   flipparm: boolean;            // [STRIFE] haleyjd 20110629: checkparm of -flip
   randomparm: boolean;          // [STRIFE] haleyjd 20130915: checkparm of -random
 
-  showintro: boolean = true;    // [STRIFE] checkparm of -nograph, disables intro
 
 // villsa [STRIFE] workparm variable (similar to devparm?)
   workparm: boolean = false;
@@ -228,6 +221,13 @@ var
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
 
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+
 var
   nickname: string = '';
 
@@ -275,7 +275,7 @@ uses
   i_io,
   i_tmp,
   i_startup,
-  i_steam,
+  DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
   nd_main,
@@ -1159,8 +1159,21 @@ begin
   D_PaksAutoload(s2);
 end;
 
-const
-  PATH_SEPARATOR = ';';
+var
+  // given by the composition root (D_ConfigureIwad)
+  iwad_locator: IIwadLocator = nil;
+  iwad_identifier: IIwadIdentifier = nil;
+
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+begin
+  iwad_locator := ALocator;
+  iwad_identifier := AIdentifier;
+end;
 
 //==============================================================================
 //
@@ -1168,121 +1181,10 @@ const
 //
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
-var
-  doomwaddir: string;
-  doomwadpath: string;
-  paths: TDStringList;
-  i: integer;
-  tmp: string;
 begin
-  if fexists(fn) then
-  begin
-    result := fn;
-    exit;
-  end;
-
-  paths := TDStringList.Create;
-
-  if searchdoomwaddir then
-  begin
-    doomwaddir := getenv('STRIFEWADDIR');
-    if doomwaddir <> '' then
-      paths.Add(doomwaddir);
-    doomwaddir := getenv('DOOMWADDIR');
-    if doomwaddir <> '' then
-      paths.Add(doomwaddir);
-  end;
-
-  if searchdoomwadpath then
-  begin
-    doomwadpath := getenv('STRIFEWADPATH');
-    if doomwadpath <> '' then
-    begin
-      tmp := '';
-      for i := 1 to length(doomwadpath) do
-      begin
-        if doomwadpath[i] = PATH_SEPARATOR then
-        begin
-          if tmp <> '' then
-          begin
-            paths.Add(tmp);
-            tmp := '';
-          end;
-        end
-        else
-          tmp := tmp + doomwadpath[i];
-      end;
-      if tmp <> '' then
-        paths.Add(tmp);
-    end;
-    doomwadpath := getenv('DOOMWADPATH');
-    if doomwadpath <> '' then
-    begin
-      tmp := '';
-      for i := 1 to length(doomwadpath) do
-      begin
-        if doomwadpath[i] = PATH_SEPARATOR then
-        begin
-          if tmp <> '' then
-          begin
-            paths.Add(tmp);
-            tmp := '';
-          end;
-        end
-        else
-          tmp := tmp + doomwadpath[i];
-      end;
-      if tmp <> '' then
-        paths.Add(tmp);
-    end;
-  end;
-
-  if additionalwadpaths <> '' then
-  begin
-    tmp := '';
-    for i := 1 to length(additionalwadpaths) do
-    begin
-      if additionalwadpaths[i] = PATH_SEPARATOR then
-      begin
-        if tmp <> '' then
-        begin
-          paths.Add(tmp);
-          tmp := '';
-        end;
-      end
-      else
-        tmp := tmp + additionalwadpaths[i];
-    end;
-    if tmp <> '' then
-      paths.Add(tmp);
-  end;
-
-  if searchsteampaths then
-  begin
-    tmp := QuerySteamDirectory(317040);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads');
-    end;
-  end;
-
-  result := fname(fn);
-  for i := 0 to paths.Count - 1 do
-  begin
-    tmp := fixslashpath(paths.Strings[i]);
-    if tmp[length(tmp)] <> '\' then
-      tmp := tmp + '\';
-    if fexists(tmp + result) then
-    begin
-      result := tmp + result;
-      paths.free;
-      exit;
-    end;
-  end;
-  result := fn;
-  paths.free;
+  if iwad_locator = nil then
+    I_Error('D_FileInDoomPath(): the IWAD locator was not given (D_ConfigureIwad)');
+  result := iwad_locator.Locate(fn);
 end;
 
 const
@@ -1314,72 +1216,60 @@ end;
 //==============================================================================
 procedure IdentifyVersion;
 var
-  strife0wad: string;
-  strife1wad: string;
-  voiceswad: string;
-  doomcwad: string;
+  customname: string;
+  ident: TIwadIdentification;
   p: integer;
 begin
-  //Shareware
-  strife0wad := D_FileInDoomPath('strife0.wad');
-  // Registered.
-  strife1wad := D_FileInDoomPath('strife1.wad');
-  // voices
-  voiceswad := D_FileInDoomPath('voices.wad');
+  if iwad_identifier = nil then
+    I_Error('IdentifyVersion(): the IWAD identifier was not given (D_ConfigureIwad)');
 
+  // the file that the player chose
+  customname := '';
   p := M_CheckParm('-mainwad');
   if p = 0 then
     p := M_CheckParm('-iwad');
   if (p > 0) and (p < myargc - 1) then
+    customname := myargv[p + 1];
+  if iwad_identifier.TryIdentifyCustom(customname, ident) then
   begin
-    inc(p);
-    doomcwad := D_FileInDoomPath(myargv[p]);
-    if fexists(doomcwad) then
+    printf(' External main wad in use: %s'#13#10, [ident.CustomPath]);
+    gamemode := indetermined;
+    D_AddFile(ident.CustomPath);
+    if ident.VoicesPath <> '' then
     begin
-      printf(' External main wad in use: %s'#13#10, [doomcwad]);
-      gamemode := indetermined;
-      D_AddFile(doomcwad);
-      if strupper(fname(doomcwad)) = 'STRIFE1.WAD' then
-      begin
-        voiceswad := D_FileInDoomPath(fpath(fexpand(doomcwad)) + 'voices.wad');
-        if fexists(voiceswad) then
-        begin
-          D_AddFile(voiceswad{$IFDEF OPENGL}, true{$ENDIF});
-          disable_voices := false;
-        end;
-      end;
-      exit;
-    end
-    else
-      doomcwad := '';
-  end;
-
-  if fexists(strife1wad) then
-  begin
-    gamemode := registered;
-    isdemoversion := false;
-    isregistered := true;
-    D_AddFile(strife1wad);
-    if fexists(voiceswad) then
-    begin
-      D_AddFile(voiceswad{$IFDEF OPENGL}, true{$ENDIF});
+      D_AddFile(ident.VoicesPath{$IFDEF OPENGL}, true{$ENDIF});
       disable_voices := false;
     end;
     exit;
   end;
-
-  if fexists(strife0wad) then
+  ident := iwad_identifier.IdentifyKnown;
+  if not ident.Found then
   begin
-    gamemode := shareware;
-    isdemoversion := true;
-    isregistered := false;
-    D_AddFile(strife0wad);
+    printf('Game mode indeterminate.'#13#10);
+    gamemode := indetermined;
     exit;
   end;
 
-  printf('Game mode indeterminate.'#13#10);
-  gamemode := indetermined;
-
+  case ident.Mode of
+    igmRegistered:
+      begin
+        gamemode := registered;
+        isdemoversion := false;
+        isregistered := true;
+      end;
+    igmShareware:
+      begin
+        gamemode := shareware;
+        isdemoversion := true;
+        isregistered := false;
+      end;
+  end;
+  D_AddFile(ident.Files[0]);
+  if ident.VoicesPath <> '' then
+  begin
+    D_AddFile(ident.VoicesPath{$IFDEF OPENGL}, true{$ENDIF});
+    disable_voices := false;
+  end;
 end;
 
 //==============================================================================
@@ -2732,16 +2622,6 @@ begin
   end;
 
   D_DoomLoop;  // never returns
-end;
-
-//==============================================================================
-//
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
-begin
-  result := paused;
 end;
 
 //==============================================================================

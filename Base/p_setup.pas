@@ -324,6 +324,11 @@ uses
 {$ENDIF}
   r_subsectors,
   nd_main,
+  DelphiDoom.Nodes.Intf,
+{$IFDEF DOOM}
+  DelphiDoom.Nodes.Types,
+  DelphiDoom.Nodes.VanillaParser,
+{$ENDIF}
 {$IFNDEF HEXEN}
   udmf_spec,
 {$ENDIF}
@@ -1428,15 +1433,16 @@ end;
 //==============================================================================
 procedure P_LoadVanillaSegs(lump: integer);
 var
-  Data: pointer;
+  mapsegs: TArray<TNodesVanillaSeg>;
   i: integer;
-  ml: Pmapseg_t;
+  ml: TNodesVanillaSeg;
   li: Pvanillaseg_t;
   ldef: Pline_t;
   linedef: integer;
   side: integer;
 begin
-  numvanillasegs := W_LumpLength(lump) div SizeOf(mapseg_t);
+  mapsegs := TNodesVanillaParser.ParseSegs(ND_ReadLumpBytes(lump));
+  numvanillasegs := Length(mapsegs);
   if numvanillasegs >= 32768 then
   begin
     numvanillasegs := 0;
@@ -1445,31 +1451,27 @@ begin
 
   vanillasegs := Z_Malloc(numvanillasegs * SizeOf(vanillaseg_t), PU_LEVEL, nil);
   memset(vanillasegs, 0, numvanillasegs * SizeOf(vanillaseg_t));
-  data := W_CacheLumpNum(lump, PU_STATIC);
 
-  ml := Pmapseg_t(data);
   for i := 0 to numvanillasegs - 1 do
   begin
+    ml := mapsegs[i];
     li := @vanillasegs[i];
-    li.v1 := @vertexes[ml.v1];
-    li.v2 := @vertexes[ml.v2];
+    li.v1 := @vertexes[ml.Vertex1];
+    li.v2 := @vertexes[ml.Vertex2];
 
-    li.angle := _SHL(ml.angle, 16);
-    li.offset := _SHL(ml.offset, 16);
-    linedef := ml.linedef;
+    li.angle := _SHL(ml.Angle, 16);
+    li.offset := _SHL(ml.Offset, 16);
+    linedef := ml.Linedef;
     ldef := @lines[linedef];
     li.linedef := ldef;
-    side := ml.side;
+    side := ml.Side;
     li.sidedef := @sides[ldef.sidenum[side]];
     li.frontsector := sides[ldef.sidenum[side]].sector;
     if ldef.flags and ML_TWOSIDED <> 0 then
       li.backsector := sides[ldef.sidenum[side xor 1]].sector
     else
       li.backsector := nil;
-    Inc(ml);
   end;
-
-  Z_Free(data);
 end;
 
 // P_LoadVanillaSubsectors
@@ -1477,12 +1479,12 @@ end;
 //==============================================================================
 procedure P_LoadVanillaSubsectors(lump: integer);
 var
-  data: pointer;
+  mapsubsectors: TArray<TNodesVanillaSubsector>;
   i: integer;
-  ms: Pmapsubsector_t;
   ss: Pvanillasubsector_t;
 begin
-  numvanillasubsectors := W_LumpLength(lump) div SizeOf(mapsubsector_t);
+  mapsubsectors := TNodesVanillaParser.ParseSubsectors(ND_ReadLumpBytes(lump));
+  numvanillasubsectors := Length(mapsubsectors);
   if numvanillasubsectors >= 32768 then
   begin
     numvanillasubsectors := 0;
@@ -1490,20 +1492,14 @@ begin
   end;
 
   vanillasubsectors := Z_Malloc(numvanillasubsectors * SizeOf(vanillasubsector_t), PU_LEVEL, nil);
-  data := W_CacheLumpNum(lump, PU_STATIC);
-
-  ms := Pmapsubsector_t(data);
   memset(vanillasubsectors, 0, numvanillasubsectors * SizeOf(vanillasubsector_t));
 
   for i := 0 to numvanillasubsectors - 1 do
   begin
     ss := @vanillasubsectors[i];
-    ss.numlines := ms.numsegs;
-    ss.firstline := ms.firstseg;
-    Inc(ms);
+    ss.numlines := mapsubsectors[i].SegCount;
+    ss.firstline := mapsubsectors[i].FirstSeg;
   end;
-
-  Z_Free(data);
 end;
 
 //==============================================================================
@@ -1514,14 +1510,14 @@ end;
 //==============================================================================
 procedure P_LoadVanillaNodes(lump: integer);
 var
-  data: pointer;
+  mapnodes: TArray<TNodesVanillaNode>;
   i: integer;
   j: integer;
   k: integer;
-  mn: Pmapnode_t;
   no: Pvanillanode_t;
 begin
-  numvanillanodes := W_LumpLength(lump) div SizeOf(mapnode_t);
+  mapnodes := TNodesVanillaParser.ParseNodes(ND_ReadLumpBytes(lump));
+  numvanillanodes := Length(mapnodes);
   if numvanillanodes >= 32768 then
   begin
     numvanillanodes := 0;
@@ -1529,27 +1525,21 @@ begin
   end;
 
   vanillanodes := Z_Malloc(numvanillanodes * SizeOf(vanillanode_t), PU_LEVEL, nil);
-  data := W_CacheLumpNum(lump, PU_STATIC);
-
-  mn := Pmapnode_t(data);
 
   for i := 0 to numvanillanodes - 1 do
   begin
     no := @vanillanodes[i];
-    no.x := mn.x * FRACUNIT;
-    no.y := mn.y * FRACUNIT;
-    no.dx := mn.dx * FRACUNIT;
-    no.dy := mn.dy * FRACUNIT;
+    no.x := mapnodes[i].X * FRACUNIT;
+    no.y := mapnodes[i].Y * FRACUNIT;
+    no.dx := mapnodes[i].DeltaX * FRACUNIT;
+    no.dy := mapnodes[i].DeltaY * FRACUNIT;
     for j := 0 to 1 do
     begin
-      no.children[j] := mn.children[j];
+      no.children[j] := mapnodes[i].Children[j];
       for k := 0 to 3 do
-        no.bbox[j, k] := smallint(mn.bbox[j, k]) * FRACUNIT;
+        no.bbox[j, k] := mapnodes[i].BoundingBox[j, k] * FRACUNIT;
     end;
-    Inc(mn);
   end;
-
-  Z_Free(data);
 {$ENDIF}
 end;
 
@@ -1574,7 +1564,7 @@ var
 {$IFDEF OPENGL}
   glmapname: string;
 {$ENDIF}
-  gwa: TGWAFile;
+  gwa: INodesGwa;
   gwaname: string;
   gwaloaded: boolean;
 begin
@@ -1742,7 +1732,7 @@ begin
 {$ENDIF}
     gwaname := ND_GetNodes(lumpname);
     if gwaname <> '' then
-      gwa := TGWAFile.Create(gwaname);
+      gwa := ND_ReadGwa(gwaname);
   end;
 
   // note: most of this ordering is important
@@ -1825,8 +1815,7 @@ begin
     end;
   end;
 
-  if gwa <> nil then
-    gwa.Free;
+  gwa := nil;
 
 {$IFDEF DOOM}
   if preparingdemoplayback and (G_PlayingEngineVersion < VERSION110) and (numlines < 32768) and (numsides < 32768) and not hasudmfdata then

@@ -36,7 +36,9 @@ unit m_misc;
 interface
 
 uses
-  DelphiDoom.Configuration.Intf;
+  DelphiDoom.Configuration.Intf,
+  DelphiDoom.Platform.Intf,
+  DelphiDoom.Screenshot.Intf;
 
 //
 // MISC
@@ -44,6 +46,8 @@ uses
 
 var
   screenshotformat: string = 'PNG';
+  // write a JPEG file next to the TGA or PNG one
+  mirrorjpgsshot: Boolean = True;
 
 //==============================================================================
 //
@@ -68,6 +72,15 @@ function M_ReadFile(const name: string; var buffer: Pointer): integer;
 
 //==============================================================================
 //
+// M_ConfigureFiles
+// Gives the unit the store of whole files behind M_WriteFile, M_AppendFile and M_ReadFile.
+// The composition root calls it
+//
+//==============================================================================
+procedure M_ConfigureFiles(const AStore: IFileStore);
+
+//==============================================================================
+//
 // M_FixScreenshotFormat
 //
 //==============================================================================
@@ -79,6 +92,14 @@ procedure M_FixScreenshotFormat;
 //
 //==============================================================================
 procedure M_ScreenShot(const filename: string = ''; const silent: boolean = false);
+
+//==============================================================================
+//
+// M_ConfigureScreenshot
+//
+//==============================================================================
+procedure M_ConfigureScreenshot(const AWriter: IScreenshotWriter;
+  const ATargets: IScreenshotTargets);
 
 //==============================================================================
 //
@@ -146,6 +167,7 @@ var
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   c_cmds,
   doomdef,
@@ -159,15 +181,42 @@ uses
   m_base,
   m_defs,
   i_system,
-  m_sshot_jpg,
-  DelphiDoom.Texture.PngFileWriter,
+  DelphiDoom.Screenshot.Types,
+  DelphiDoom.Screenshot.Formats,
 {$IFDEF OPENGL}
   gl_main,
   gl_defs,
 {$ELSE}
   i_video,
 {$ENDIF}
-  z_zone;
+  z_zone,
+  DelphiDoom.Platform.Types;
+
+var
+  // given by the composition root (M_ConfigureFiles)
+  engine_files: IFileStore = nil;
+
+//==============================================================================
+//
+// M_ConfigureFiles
+//
+//==============================================================================
+procedure M_ConfigureFiles(const AStore: IFileStore);
+begin
+  engine_files := AStore;
+end;
+
+//==============================================================================
+//
+// M_FileStore
+//
+//==============================================================================
+function M_FileStore: IFileStore;
+begin
+  if not Assigned(engine_files) then
+    I_Error('The store of files was not given (M_ConfigureFiles)');
+  Result := engine_files;
+end;
 
 //==============================================================================
 //
@@ -175,20 +224,8 @@ uses
 //
 //==============================================================================
 function M_WriteFile(const name: string; source: pointer; len: integer): boolean;
-var
-  handle: file;
-  count: integer;
 begin
-  if not fopen(handle, name, fCreate) then
-  begin
-    Result := false;
-    exit;
-  end;
-
-  BlockWrite(handle, source^, len, count);
-  close(handle);
-
-  Result := count > 0;
+  Result := M_FileStore.Write(name, source, len);
 end;
 
 //==============================================================================
@@ -197,27 +234,8 @@ end;
 //
 //==============================================================================
 function M_AppendFile(const name: string; source: pointer; len: integer): integer;
-var
-  handle: TFile;
 begin
-  if not fexists(name) then
-  begin
-    if M_WriteFile(name, source, len) then
-      Result := len
-    else
-      Result := 0;
-    exit;
-  end;
-
-  if len > 0 then
-  begin
-    handle := TFile.Create(name, fOpenReadWrite);
-    handle.Seek(handle.Size, sFromBeginning);
-    Result := handle.Write(source^, len);
-    handle.Free;
-  end
-  else
-    Result := 0;
+  Result := M_FileStore.Append(name, source, len);
 end;
 
 //==============================================================================
@@ -227,21 +245,21 @@ end;
 //==============================================================================
 function M_ReadFile(const name: string; var buffer: Pointer): integer;
 var
-  handle: file;
-  count: integer;
+  data: TBytes;
 begin
-  if not fopen(handle, name, fOpenReadOnly) then
-    I_Error('M_ReadFile(): Could not read file %s', [name]);
+  try
+    data := M_FileStore.Read(name);
+  except
+    on EPlatformException do
+      I_Error('M_ReadFile(): Could not read file %s', [name]);
+  end;
 
-  Result := FileSize(handle);
+  Result := Length(data);
   // JVAL
   // If Z_Malloc changed to malloc() a lot of changes must be made....
   buffer := Z_Malloc(Result, PU_STATIC, nil);
-  BlockRead(handle, buffer^, Result, count);
-  close(handle);
-
-  if count < Result then
-    I_Error('M_ReadFile(): Could not read file %s', [name]);
+  if Result > 0 then
+    Move(data[0], buffer^, Result);
 end;
 
 type
@@ -255,6 +273,11 @@ type
 
 const
   MSG_ERR_SCREENSHOT = 'Couldn''t create a screenshot';
+
+var
+  // given by the composition root (M_ConfigureScreenshot)
+  screenshot_writer: IScreenshotWriter = nil;
+  screenshot_targets: IScreenshotTargets = nil;
 
 //==============================================================================
 // M_FixScreenshotFormat
@@ -280,56 +303,14 @@ end;
 
 //==============================================================================
 //
-// M_DoScreenShotTGA
+// M_ConfigureScreenshot
 //
 //==============================================================================
-function M_DoScreenShotTGA(const filename: string): boolean;
-var
-  buffer: PByteArray;
-  bufsize: integer;
-  src: PByteArray;
-  i: integer;
+procedure M_ConfigureScreenshot(const AWriter: IScreenshotWriter;
+  const ATargets: IScreenshotTargets);
 begin
-  bufsize := SCREENWIDTH * SCREENHEIGHT * 4 + 18;
-  buffer := malloc(bufsize);
-  ZeroMemory(buffer, 18);
-  buffer[2] := 2;    // uncompressed type
-  buffer[12] := SCREENWIDTH and 255;
-  buffer[13] := SCREENWIDTH div 256;
-  buffer[14] := SCREENHEIGHT and 255;
-  buffer[15] := SCREENHEIGHT div 256;
-  buffer[16] := 32;  // pixel size
-  buffer[17] := {$IFDEF OPENGL}0{$ELSE}32{$ENDIF};  // Origin in upper left-hand corner.
-
-  src := @buffer[18];
-
-  I_ReadScreen32(src);
-
-  // JVAL 21/4/2017: Thanks Vladimir :)
-  for i := 0 to SCREENWIDTH * SCREENHEIGHT - 1 do
-    src[i * 4 + 3] := 255;
-
-  Result := M_WriteFile(filename, buffer, SCREENWIDTH * SCREENHEIGHT * 4 + 18);
-
-  memfree(pointer(buffer), bufsize);
-end;
-
-//==============================================================================
-//
-// M_DoScreenShotPNG
-//
-//==============================================================================
-function M_DoScreenShotPNG(const filename: string): boolean;
-var
-  bufsize: integer;
-  buf: PByteArray;
-begin
-  bufsize := SCREENWIDTH * SCREENHEIGHT * 4;
-  buf := malloc(bufsize);
-  I_ReadScreen32(buf);
-  result := TPngFileWriter.SaveBgrx(filename, buf, SCREENWIDTH, SCREENHEIGHT,
-    {$IFDEF OPENGL}True{$ELSE}False{$ENDIF});
-  memfree(pointer(buf), bufsize);
+  screenshot_writer := AWriter;
+  screenshot_targets := ATargets;
 end;
 
 //==============================================================================
@@ -339,18 +320,18 @@ end;
 //==============================================================================
 procedure M_ScreenShot(const filename: string = ''; const silent: boolean = false);
 var
-  tganame: string;
-  basetganame: string;
-  jpgname: string;
-  pngname: string;
+  target: TScreenshotTarget;
+  shotformat: TScreenshotFormat;
+  buffer: TBytes;
   gstr: string;
-  l: integer;
   ret: boolean;
   dir: string;
   date: TDateTime;
   dfmt: string;
-  sctype: string;
 begin
+  if (screenshot_writer = nil) or (screenshot_targets = nil) then
+    I_Error('M_ScreenShot(): the screenshots are not configured (M_ConfigureScreenshot)');
+
   M_FixScreenshotFormat;
   dir := M_SaveFileName('DATA');
   MkDir(dir);
@@ -369,110 +350,19 @@ begin
     {$ENDIF}
     gstr := _GAME;
 
-    basetganame := 'SSHOT_' + gstr + '_';
-
-    tganame := M_SaveFileName('DATA\SCREENSHOTS\TGA\' + basetganame);
-    jpgname := M_SaveFileName('DATA\SCREENSHOTS\JPG\' + basetganame);
-    pngname := M_SaveFileName('DATA\SCREENSHOTS\PNG\' + basetganame);
     date := NowTime;
     dfmt := formatDateTimeAsString('yyyymmdd', date) + '_' + formatDateTimeAsString('hhnnsszzz', date);
-    tganame := tganame + dfmt + '.tga';
-    jpgname := jpgname + dfmt + '.jpg';
-    pngname := pngname + dfmt + '.png';
 
-    sctype := screenshotformat;
+    TScreenshotFormats.TryParse(screenshotformat, shotformat);
+    target := screenshot_targets.ForGenerated(gstr, dfmt, shotformat);
   end
   else
-  begin
-    if strupper(fext(filename)) = '.TGA' then
-    begin
-      sctype := 'TGA';
-      tganame := filename;
-      jpgname := filename;
-      pngname := filename;
-      l := length(filename);
-      jpgname[l - 2] := 'j';
-      jpgname[l - 1] := 'p';
-      jpgname[l] := 'g';
-      pngname[l - 2] := 'p';
-      pngname[l - 1] := 'n';
-      pngname[l] := 'g';
-    end
-    else if strupper(fext(filename)) = '.JPG' then
-    begin
-      sctype := 'JPG';
-      tganame := filename;
-      jpgname := filename;
-      pngname := filename;
-      l := length(filename);
-      tganame[l - 2] := 't';
-      tganame[l - 1] := 'g';
-      tganame[l] := 'a';
-      pngname[l - 2] := 'p';
-      pngname[l - 1] := 'n';
-      pngname[l] := 'g';
-    end
-    else if strupper(fext(filename)) = '.PNG' then
-    begin
-      sctype := 'PNG';
-      tganame := filename;
-      jpgname := filename;
-      pngname := filename;
-      l := length(filename);
-      tganame[l - 2] := 't';
-      tganame[l - 1] := 'g';
-      tganame[l] := 'a';
-      jpgname[l - 2] := 'j';
-      jpgname[l - 1] := 'p';
-      jpgname[l] := 'g';
-    end
-    else
-    begin
-      sctype := 'PNG';
-      tganame := filename + '.tga';
-      jpgname := filename + '.jpg';
-      pngname := filename + '.png';
-    end;
+    target := screenshot_targets.ForFileName(filename);
 
-    if CharPos('/', tganame) = 0 then
-      if CharPos('\', tganame) = 0 then
-        tganame := M_SaveFileName('DATA\SCREENSHOTS\TGA\' + tganame);
-    if CharPos('/', jpgname) = 0 then
-      if CharPos('\', jpgname) = 0 then
-        jpgname := M_SaveFileName('DATA\SCREENSHOTS\JPG\' + jpgname);
-    if CharPos('/', pngname) = 0 then
-      if CharPos('\', pngname) = 0 then
-        jpgname := M_SaveFileName('DATA\SCREENSHOTS\PNG\' + pngname);
-  end;
-
-  if sctype = 'TGA' then
-  begin
-    ret := M_DoScreenShotTGA(tganame);
-    if ret and mirrorjpgsshot then
-      TGAtoJPG(tganame, jpgname);
-  end
-  else if sctype = 'JPG' then
-  begin
-    ret := M_DoScreenShotTGA(tganame);
-    if ret then
-    begin
-      TGAtoJPG(tganame, jpgname);
-      fdelete(tganame);
-    end;
-  end
-  else
-  begin
-    ret := M_DoScreenShotPNG(pngname);
-    if ret and mirrorjpgsshot then
-    begin
-      ret := M_DoScreenShotTGA(tganame);
-      if ret then
-      begin
-        TGAtoJPG(tganame, jpgname);
-        fdelete(tganame);
-      end;
-    end;
-  end;
+  SetLength(buffer, SCREENWIDTH * SCREENHEIGHT * 4);
+  I_ReadScreen32(Pointer(buffer));
+  ret := screenshot_writer.Save(target, Pointer(buffer), SCREENWIDTH, SCREENHEIGHT,
+    {$IFDEF OPENGL}True{$ELSE}False{$ENDIF}, mirrorjpgsshot);
 
   if not silent then
   begin

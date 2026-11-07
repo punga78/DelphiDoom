@@ -1,0 +1,33 @@
+// the arithmetic with the numbers of the stack, the logic and the shifts
+int m;
+
+script 1 (int a, int b)
+{
+    int r;
+    r = a + b;
+    r = a - b;
+    r = a * b;
+    r = a / b;
+    r = a % b;
+    r = a << b;
+    r = a >> b;
+    r = a & b;
+    r = a | b;
+    r = a ^ b;
+    r = !a;
+    r = -a;
+    r = a < b;
+    r = a <= b;
+    r = a > b;
+    r = a >= b;
+    r = a == b;
+    r = a != b;
+    m = r;
+    r += 3;
+    r *= a;
+    m -= 1;
+    m /= 2;
+    m %= 5;
+    m++;
+    m--;
+}

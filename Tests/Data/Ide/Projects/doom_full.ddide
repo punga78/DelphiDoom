@@ -1,0 +1,6 @@
+version|1.0
+game|doom
+script|main.ddscript
+script|scripts\second.ddscript
+actor|actors\monsters.txt
+compiledscript|compiled\main.ddout

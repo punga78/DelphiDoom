@@ -4,13 +4,18 @@ interface
 
 uses
   Windows, Classes, SysUtils, Forms, Controls, ExtCtrls, ComCtrls,
-  ide_baseframe, ide_project, ImgList, Buttons, StdCtrls, Graphics;
+  ImgList, Buttons, StdCtrls, Graphics,
+  DelphiDoom.Ide.Intf, DelphiDoom.Ide.Project;
 
 type
 
   { TFrame_ProjectManager }
 
-  TFrame_ProjectManager = class(TFrame)
+  /// <summary>
+  ///   The tree of the files of the project and the box of the game. It follows the project: when
+  ///   the project changes it is told and draws the tree again
+  /// </summary>
+  TFrame_ProjectManager = class(TFrame, IIdeDocumentObserver)
     Panel7: TPanel;
     TreeView1: TTreeView;
     ImageList1: TImageList;
@@ -23,118 +28,79 @@ type
     procedure GameTypeComboBoxDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure GameTypeComboBoxChange(Sender: TObject);
-  protected
-    tscripts, tactors, tcompiledscripts: TTreeNode;
-    procedure CreateParams(var Params: TCreateParams); override;
+  private
+    FProject: TIdeProject;
   public
     { public declarations }
-    obj: TBaseEditorObject;
     destructor Destroy; override;
-    procedure AdjustLayout(const adata: AnsiString);
+    /// <summary>The frame shows this project from now on (and draws it at once)</summary>
+    procedure AttachProject(const AProject: TIdeProject);
+    procedure DocumentChanged(const AData: AnsiString);
   end;
 
 implementation
 
 {$R *.dfm}
 
-//==============================================================================
-//
-// TFrame_ProjectManager.AdjustLayout
-//
-//==============================================================================
-procedure TFrame_ProjectManager.AdjustLayout(const adata: AnsiString);
-var
-  i: integer;
-  prj: TIDEProject;
-  item: TIDEProjectItem;
-  tscript, tactor, tcompiledscript: TTreeNode;
-begin
-  TreeView1.Items.BeginUpdate;
-  TreeView1.Items.Clear;
-  tactors := TreeView1.Items.AddFirst(nil, 'Actors');
-  tscripts := TreeView1.Items.AddChild(nil, 'Scripts');
-  tcompiledscripts := TreeView1.Items.AddChild(nil, 'Compiled Scripts');
-  tactors.ImageIndex := 6;
-  tactors.SelectedIndex := 7; //tactors.ImageIndex;
-  tscripts.ImageIndex := 8;
-  tscripts.SelectedIndex := 9; //tscripts.ImageIndex;
-  tcompiledscripts.ImageIndex := 10;
-  tcompiledscripts.SelectedIndex := 11; //tcompiledscripts.ImageIndex;
+uses
+  DelphiDoom.Ide.Games, DelphiDoom.Ide.Outline, DelphiDoom.Ide.ProjectOutline;
 
-  if obj <> nil then
-  begin
-    if obj is TIDEProject then
-    begin
-      prj := obj as TIDEProject;
-      GameTypeComboBox.ItemIndex := 0;
-      if prj.Game = 'heretic' then
-        GameTypeComboBox.ItemIndex := 1
-      else if prj.Game = 'hexen' then
-        GameTypeComboBox.ItemIndex := 2
-      else if prj.Game = 'strife' then
-        GameTypeComboBox.ItemIndex := 3;
-      for i := 0 to prj.Count - 1 do
-      begin
-        item := prj.Items[i];
-        if item <> nil then
-          case item.ItemType of
-            pi_actor:
-              begin
-                tactor := TreeView1.Items.AddChild(tactors, item.RelativePath);
-                tactor.ImageIndex := 0;
-                tactor.SelectedIndex := 1;
-              end;
-            pi_script:
-              begin
-                tscript := TreeView1.Items.AddChild(tscripts, item.RelativePath);
-                tscript.ImageIndex := 2;
-                tscript.SelectedIndex := 3;
-              end;
-            pi_compiledscript:
-              begin
-                tcompiledscript := TreeView1.Items.AddChild(tcompiledscripts, item.RelativePath);
-                tcompiledscript.ImageIndex := 4;
-                tcompiledscript.SelectedIndex := 5;
-              end;
-          end;
-      end;
-    end;
-  end;
+const
+  // the images of the tree: a branch has the image of its files plus 6, 8 or 10
+  BRANCH_IMAGES: array[0..2, 0..1] of Integer = ((6, 7), (8, 9), (10, 11));
+  FILE_IMAGES: array[0..2, 0..1] of Integer = ((0, 1), (2, 3), (4, 5));
 
-  TreeView1.Items.EndUpdate;
-end;
-
-//==============================================================================
-//
-// TFrame_ProjectManager.CreateParams
-//
-//==============================================================================
-procedure TFrame_ProjectManager.CreateParams(var Params: TCreateParams);
-begin
-  obj := nil;
-  tscripts := nil;
-  tactors := nil;
-  tcompiledscripts := nil;
-  Inherited;
-end;
-
-//==============================================================================
-//
-// TFrame_ProjectManager.Destroy
-//
-//==============================================================================
 destructor TFrame_ProjectManager.Destroy;
 begin
-  if obj <> nil then
-    obj.Editor := nil;
+  if FProject <> nil then
+    FProject.Detach;
   inherited;
 end;
 
-//==============================================================================
-//
-// TFrame_ProjectManager.GameTypeComboBoxDrawItem
-//
-//==============================================================================
+procedure TFrame_ProjectManager.AttachProject(const AProject: TIdeProject);
+begin
+  if FProject <> nil then
+    FProject.Detach;
+  FProject := AProject;
+  if FProject <> nil then
+    FProject.Attach(Self);
+end;
+
+procedure TFrame_ProjectManager.DocumentChanged(const AData: AnsiString);
+var
+  LOutline: TIdeOutline;
+  LBranch, LFile: TIdeOutlineNode;
+  LNode, LChild: TTreeNode;
+  LIndex: Integer;
+begin
+  LOutline := TIdeProjectOutline.Build(FProject);
+  TreeView1.Items.BeginUpdate;
+  try
+    TreeView1.Items.Clear;
+    for LIndex := 0 to LOutline.Roots.Count - 1 do
+    begin
+      LBranch := LOutline.Roots[LIndex];
+      if LIndex = 0 then
+        LNode := TreeView1.Items.AddFirst(nil, LBranch.Text)
+      else
+        LNode := TreeView1.Items.AddChild(nil, LBranch.Text);
+      LNode.ImageIndex := BRANCH_IMAGES[LIndex, 0];
+      LNode.SelectedIndex := BRANCH_IMAGES[LIndex, 1];
+      for LFile in LBranch.Children do
+      begin
+        LChild := TreeView1.Items.AddChild(LNode, LFile.Text);
+        LChild.ImageIndex := FILE_IMAGES[LIndex, 0];
+        LChild.SelectedIndex := FILE_IMAGES[LIndex, 1];
+      end;
+    end;
+  finally
+    TreeView1.Items.EndUpdate;
+    LOutline.Free;
+  end;
+  if FProject <> nil then
+    GameTypeComboBox.ItemIndex := TIdeGames.BoxIndex(FProject.Game);
+end;
+
 procedure TFrame_ProjectManager.GameTypeComboBoxDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
@@ -171,18 +137,11 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// TFrame_ProjectManager.GameTypeComboBoxChange
-//
-//==============================================================================
 procedure TFrame_ProjectManager.GameTypeComboBoxChange(Sender: TObject);
 begin
-  if obj <> nil then
-    if obj is TIDEProject then
-      if GameTypeComboBox.ItemIndex >= 0 then
-        (obj as TIDEProject).Game := GameTypeComboBox.Items.Strings[GameTypeComboBox.ItemIndex];
+  if FProject <> nil then
+    if GameTypeComboBox.ItemIndex >= 0 then
+      FProject.Game := GameTypeComboBox.Items.Strings[GameTypeComboBox.ItemIndex];
 end;
 
 end.
-

@@ -1,0 +1,24 @@
+// everything that touches the world, with direct and with stack commands
+int t;
+
+script 1 (int a, int b)
+{
+    changefloor(2, "FLAT1");
+    changeceiling(a, "CEIL1");
+    changefloor(a, "FLAT2");
+    changeceiling(3, "CEIL2");
+    setlineblocking(2, 1);
+    setlineblocking(a, b);
+    setlinetexture(2, 0, 1, "TEXA");
+    setlinetexture(a, b, 2, "TEXB");
+    setlinetexture(a, 0, 0, "TEXC");
+    setlinespecial(2, 11, 1, 2, 3, 4, 5);
+    thingsound(5, "SND1", 100);
+    sectorsound("SND2", 50);
+    ambientsound("SND3", 60);
+    soundsequence("SEQ");
+    t = thingcount(1, 0) + thingcount(0, 5) + thingcount(a, b);
+    t += random(1, 10) + random(a, a + b);
+    t += playercount() + gametype() + gameskill() + timer() + lineside();
+    clearlinespecial();
+}

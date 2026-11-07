@@ -116,7 +116,6 @@ uses
   sc_actordef,
   t_main,
   t_png,
-  m_sshot_jpg,
   vx_voxelsprite,
   v_video;
 

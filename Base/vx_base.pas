@@ -34,6 +34,8 @@ unit vx_base;
 interface
 
 uses
+  DelphiDoom.Voxel.Types,
+  DelphiDoom.Voxel.Intf,
 {$IFDEF OPENGL}
   gl_defs,
   gl_voxels,
@@ -96,6 +98,34 @@ procedure VX_InitVoxels;
 //==============================================================================
 procedure VX_VoxelsDone;
 
+//==============================================================================
+//
+// VX_ConfigureVoxels
+//
+//==============================================================================
+procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink);
+
+//==============================================================================
+//
+// VX_AddVoxel
+//
+//==============================================================================
+function VX_AddVoxel(const item: voxelmanageritem_t): integer;
+
+//==============================================================================
+//
+// VX_AddVoxelState
+//
+//==============================================================================
+procedure VX_AddVoxelState(const item: voxelstate_t);
+
+//==============================================================================
+//
+// VX_CheckVoxelSprite
+//
+//==============================================================================
+procedure VX_CheckVoxelSprite(const sprname: string; const voxelsrc: string);
+
 var
   voxelspritenames: TDStringList;
 
@@ -104,18 +134,18 @@ implementation
 uses
   d_main,
   i_system,
-  sc_engine,
-  sc_tokens,
-  sc_states,
   sc_utils,
   info,
-  info_fnd,
   {$IFNDEF OPENGL}
   r_softgl,
   {$ENDIF}
   c_cmds,
   w_wad,
   w_pak;
+
+var
+  vx_definitionparser: IVoxelDefinitionParser = nil;
+  vx_definitionsink: IVoxelDefinitionSink = nil;
 
 //==============================================================================
 //
@@ -220,35 +250,9 @@ const
 //==============================================================================
 procedure SC_DoParseVoxelDefinition(const in_text: string);
 var
-  sc: TScriptEngine;
-  tokens: TTokenList;
   slist: TDStringList;
-  token: string;
-  token_idx: integer;
-  voxelstate: voxelstate_t;
-  voxelitem: voxelmanageritem_t;
-  voxelpending: boolean;
-  statepending: boolean;
   i: integer;
-  nList: TDNumberList;
-  vxidx: integer;
-  sprname: string;
 begin
-  tokens := TTokenList.Create;
-  tokens.Add('VOXELDEF, VOXELDEFINITION');    //  0
-  tokens.Add('STATE');                        //  1
-  tokens.Add('OFFSET');                       //  2
-  tokens.Add('SCALE');                        //  3
-  tokens.Add('FRAME');                        //  4
-  tokens.Add('VOXEL');                        //  5
-  tokens.Add('REPLACE, REPLACES, REPLACING'); //  6
-  tokens.Add('SPRITE');                       //  7
-  tokens.Add('CLIPPED');                      //  8
-  tokens.Add('ANGLEOFFSET');                  //  9
-  tokens.Add('DROPPEDSPIN');                  // 10
-  tokens.Add('PLACEDSPIN');                   // 11
-  tokens.Add('SPIN');                         // 12
-
   if devparm then
   begin
     printf('--------'#13#10);
@@ -266,280 +270,21 @@ begin
     printf('--------'#13#10);
   end;
 
-  sc := TScriptEngine.Create(in_text);
-  sc.AddIgnoreToken('=');
+  if (vx_definitionparser = nil) or (vx_definitionsink = nil) then
+    I_Error('SC_ParseVoxelDefinition(): The VOXELDEF parser is not configured');
 
-  voxelpending := false;
-  statepending := false;
+  vx_definitionparser.Parse(in_text, vx_definitionsink);
+end;
 
-  while sc.GetString do
-  begin
-    token := strupper(sc._String);
-    token_idx := tokens.IndexOfToken(token);
-    case token_idx of
-      0: // VOXEL DEFINITION
-        begin
-          voxelpending := true;
-          voxelitem.name := '';
-          voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}1.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.angleoffset := 0;
-          voxelitem.droppedspin := 0;
-          voxelitem.placedspin := 0;
-          voxelitem.flags := 0;
-          if not sc.GetString then
-          begin
-            I_Warning('SC_ParseVoxelDefinition(): Token expected at line %d'#13#10, [sc._Line]);
-            break;
-          end;
-          voxelitem.name := strupper(sc._String);
-
-          while sc.GetString do
-          begin
-            token := strupper(sc._String);
-            token_idx := tokens.IndexOfToken(token);
-            case token_idx of
-              2:  // Offset
-                begin
-                  sc.MustGetFloat;
-                  voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed(MAP_COEFF * {$ENDIF}sc._Float{$IFNDEF OPENGL}){$ENDIF};
-                end;
-              3:  // Scale
-                begin
-                  sc.MustGetFloat;
-                  voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}sc._Float{$IFNDEF OPENGL}){$ENDIF};
-                  if voxelitem.scale < {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.01{$IFNDEF OPENGL}){$ENDIF} then
-                    voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.01{$IFNDEF OPENGL}){$ENDIF};
-                end;
-              8:  // CLIPPED
-                begin
-                  voxelitem.flags := voxelitem.flags or VX_FLG_CLIPPED;
-                end;
-              9:  // ANGLEOFFSET
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.angleoffset := sc._Integer;
-                end;
-             10:  // DROPPEDSPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.droppedspin := sc._Integer;
-                end;
-             11:  // PLACEDDSPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.placedspin := sc._Integer;
-                end;
-             12:  // SPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.droppedspin := sc._Integer;
-                  voxelitem.placedspin := sc._Integer;
-                end;
-              6:  // Replace
-                begin
-                  if not sc.GetString then
-                  begin
-                    I_Warning('SC_ParseVoxelDefinition(): Token expected at line %d'#13#10, [sc._Line]);
-                    break;
-                  end;
-                  if tokens.IndexOfToken(strupper(sc._String)) <> 7 then
-                  begin
-                    I_Warning('SC_ParseVoxelDefinition(): "SPRITE" expected at line %d'#13#10, [sc._Line]);
-                    break;
-                  end;
-                  sc.MustGetString;
-                  sprname := sc._String;
-                  VX_CheckVoxelSprite(sprname, voxelitem.name);
-                  nList := Info_FindStatesFromSprite(sprname);
-                  vxidx := VX_AddVoxel(voxelitem);
-                  voxelpending := false;
-                  if nList.Count > 0 then
-                  begin
-                    for i := 0 to nList.Count - 1 do
-                    begin
-                      ZeroMemory(@voxelstate, SizeOf(voxelstate_t));
-                      voxelstate.state := nList.Numbers[i];
-                      voxelstate.voxelidx := vxidx;
-                      voxelstate.frame := 0;
-                      VX_AddVoxelState(voxelstate);
-                    end;
-                  end
-                  else
-                  begin
-                    I_Warning('SC_ParseVoxelDefinition(): Can not find sprite %s at line %d'#13#10, [sprname, sc._Line]);
-                  end;
-                  nList.Free;
-                end;
-            else
-              begin
-                VX_AddVoxel(voxelitem);
-                voxelpending := false;
-                sc.UnGet;
-                break;
-              end;
-            end;
-          end;
-        end;
-
-      1: // STATE DEFINITION
-        begin
-          statepending := true;
-          ZeroMemory(@voxelstate, SizeOf(voxelstate_t));
-          voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}1.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.angleoffset := 0;
-          voxelitem.droppedspin := 0;
-          voxelitem.placedspin := 0;
-          voxelstate.voxelidx := -1;
-          if not sc.GetString then
-          begin
-            I_Warning('SC_ParseVoxelDefinition(): Token expected at line %d'#13#10, [sc._Line]);
-            break;
-          end;
-          voxelstate.state := statenames.IndexOfToken(strupper(sc._String));
-          if voxelstate.state < 0 then
-          begin
-            I_Warning('SC_ParseVoxelDefinition(): Unknown state "%s" at line %d'#13#10, [sc._String, sc._Line]);
-            voxelstate.state := 0; // S_NULL
-          end;
-
-          while sc.GetString do
-          begin
-            token := strupper(sc._String);
-            token_idx := tokens.IndexOfToken(token);
-            case token_idx of
-              5:  // Voxel
-                begin
-                  sc.MustGetString;
-                  voxelitem.name := strupper(sc._String);
-                  voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.0{$IFNDEF OPENGL}){$ENDIF};
-                  voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}1.0{$IFNDEF OPENGL}){$ENDIF};
-                  voxelitem.angleoffset := 0;
-                  voxelitem.flags := 0;
-                  voxelstate.voxelidx := VX_AddVoxel(voxelitem);
-                end;
-              4:  // frame
-                begin
-                  sc.MustGetInteger;
-                  voxelstate.frame := sc._Integer;
-                end;
-            else
-              begin
-                VX_AddVoxelState(voxelstate);
-                statepending := false;
-                sc.UnGet;
-                break;
-              end;
-            end;
-          end;
-        end;
-
-      else
-        sprname := sc._String;
-        voxelpending := false;
-        nList := Info_FindStatesFromSprite(sprname);
-        if nList.Count = 0 then
-        begin
-          I_Warning('SC_ParseVoxelDefinition(): Unknown token "%s" at line %d'#13#10, [token, sc._Line]);
-        end
-        else
-        begin
-          sc.MustGetString;
-          voxelitem.name := sc._String;
-          voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}1.0{$IFNDEF OPENGL}){$ENDIF};
-          voxelitem.angleoffset := 0;
-          voxelitem.droppedspin := 0;
-          voxelitem.placedspin := 0;
-          voxelitem.flags := 0;
-
-          voxelpending := true;
-          while sc.GetString do
-          begin
-            token := strupper(sc._String);
-            token_idx := tokens.IndexOfToken(token);
-            case token_idx of
-              2:  // Offset
-                begin
-                  sc.MustGetFloat;
-                  voxelitem.offset := {$IFNDEF OPENGL}FloatToFixed(MAP_COEFF * {$ENDIF}sc._Float{$IFNDEF OPENGL}){$ENDIF};
-                end;
-              3:  // Scale
-                begin
-                  sc.MustGetFloat;
-                  voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}sc._Float{$IFNDEF OPENGL}){$ENDIF};
-                  if voxelitem.scale < {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.01{$IFNDEF OPENGL}){$ENDIF} then
-                    voxelitem.scale := {$IFNDEF OPENGL}FloatToFixed({$ENDIF}0.01{$IFNDEF OPENGL}){$ENDIF};
-                end;
-              8:  // CLIPPED
-                begin
-                  voxelitem.flags := voxelitem.flags or VX_FLG_CLIPPED;
-                end;
-              9:  // ANGLEOFFSET
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.angleoffset := sc._Integer;
-                end;
-             10:  // DROPPEDSPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.droppedspin := sc._Integer;
-                end;
-             11:  // PLACEDDSPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.placedspin := sc._Integer;
-                end;
-             12:  // SPIN
-                begin
-                  sc.MustGetInteger;
-                  voxelitem.droppedspin := sc._Integer;
-                  voxelitem.placedspin := sc._Integer;
-                end;
-            else
-              vxidx := VX_AddVoxel(voxelitem);
-              voxelpending := false;
-
-              for i := 0 to nList.Count - 1 do
-              begin
-                ZeroMemory(@voxelstate, SizeOf(voxelstate_t));
-                voxelstate.state := nList.Numbers[i];
-                voxelstate.voxelidx := vxidx;
-                voxelstate.frame := 0;
-                VX_AddVoxelState(voxelstate);
-              end;
-
-              sc.UnGet;
-              break;
-            end;
-          end;
-          if voxelpending then
-          begin
-            vxidx := VX_AddVoxel(voxelitem);
-            voxelpending := false;
-
-            for i := 0 to nList.Count - 1 do
-            begin
-              ZeroMemory(@voxelstate, SizeOf(voxelstate_t));
-              voxelstate.state := nList.Numbers[i];
-              voxelstate.voxelidx := vxidx;
-              voxelstate.frame := 0;
-              VX_AddVoxelState(voxelstate);
-            end;
-          end;
-        end;
-        nList.Free;
-    end;
-  end;
-
-  if voxelpending then
-    VX_AddVoxel(voxelitem);
-  if statepending then
-    VX_AddVoxelState(voxelstate);
-
-  sc.Free;
-  tokens.Free;
+//==============================================================================
+//
+// VX_ConfigureVoxels
+//
+//==============================================================================
+procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink: IVoxelDefinitionSink);
+begin
+  vx_definitionparser := AParser;
+  vx_definitionsink := ASink;
 end;
 
 //==============================================================================
@@ -580,8 +325,8 @@ begin
     radius := 0;
     if states[i].voxels <> nil then
       for j := 0 to states[i].voxels.Count - 1 do
-        if voxelmanager.items[voxelstates[states[i].voxels.Numbers[i]].voxelidx].voxel.radius > radius then
-          radius := voxelmanager.items[voxelstates[states[i].voxels.Numbers[i]].voxelidx].voxel.radius;
+        if voxelmanager.items[voxelstates[states[i].voxels.Numbers[j]].voxelidx].voxel.radius > radius then
+          radius := voxelmanager.items[voxelstates[states[i].voxels.Numbers[j]].voxelidx].voxel.radius;
     states[i].voxelradius := 2 * radius;
   end;
 {$ENDIF}

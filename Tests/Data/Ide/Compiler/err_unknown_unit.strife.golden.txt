@@ -1,0 +1,4 @@
+result=False
+location=2,3
+pcodelength=28
+msgs= Pos: 000008 Compiler: [Error] nonexistentunit(2:3): Unknown identifier ''\r\n Pos: 000008 Compiler: [Error] (2:3): Unit 'nonexistentunit' not found or contains errors\r\n

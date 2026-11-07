@@ -68,6 +68,7 @@ uses
   doomdef,
   doomdata,
   am_map,
+  DelphiDoom.Automap.Types,
 {$IFNDEF OPENGL}
   i_system,
   i_threads,
@@ -289,6 +290,7 @@ var
   fang: angle_t;
   fangx, fangy: fixed_t;
   fangsin, fangcos: fixed_t;
+  window: TAutomapWindow; // the window on the map, read once: the loops below run for each pixel
 
   procedure fillLeftFlatTriangle(v1, v2, v3: drawpoint_t);
   var
@@ -326,7 +328,7 @@ var
       cury2 := cury2 + (idown - v1.x) * invslope2;
     end;
 
-    xx := (idown - f_x) * scale_ftom + m_x;
+    xx := (idown - f_x) * window.ScaleFrameToMap + window.MapX;
     for i := idown to iup do
     begin
       jup := cury2 div FRACUNIT + 1;
@@ -338,7 +340,7 @@ var
         if jdown < 0 then
           jdown := 0;
 
-        yy := m_y - (jdown - f_y - f_mx) * scale_ftom;
+        yy := window.MapY - (jdown - f_y - f_mx) * window.ScaleFrameToMap;
         for j := jdown to jup do
         begin
           du := xx;
@@ -354,12 +356,12 @@ var
             dv := (dv + (sec.floor_yoffs div FRACUNIT)) and (flat_width - 1);
           {$ENDIF}
           drawsegfunc(i, j, data[du + dv * flat_width], amcolormap);
-          yy := yy - scale_ftom;
+          yy := yy - window.ScaleFrameToMap;
         end;
       end;
       cury1 := cury1 + invslope1;
       cury2 := cury2 + invslope2;
-      xx := xx + scale_ftom;
+      xx := xx + window.ScaleFrameToMap;
     end;
   end;
 
@@ -400,7 +402,7 @@ var
       cury2 := cury2 - (v3.x - iup) * invslope2;
     end;
 
-    xx := (iup - f_x) * scale_ftom + m_x;
+    xx := (iup - f_x) * window.ScaleFrameToMap + window.MapX;
     for i := iup downto idown do
     begin
       cury1 := cury1 - invslope1;
@@ -415,7 +417,7 @@ var
         if jdown < 0 then
           jdown := 0;
 
-        yy := m_y - (jdown - f_y - f_mx) * scale_ftom;
+        yy := window.MapY - (jdown - f_y - f_mx) * window.ScaleFrameToMap;
         for j := jdown to jup do
         begin
           du := xx;
@@ -431,10 +433,10 @@ var
             dv := (dv + (sec.floor_yoffs div FRACUNIT)) and (flat_width - 1);
           {$ENDIF}
           drawsegfunc(i, j, data[du + dv * flat_width], amcolormap);
-          yy := yy - scale_ftom;
+          yy := yy - window.ScaleFrameToMap;
         end;
       end;
-      xx := xx - scale_ftom;
+      xx := xx - window.ScaleFrameToMap;
     end;
   end;
 {$ENDIF}
@@ -448,6 +450,9 @@ var
   v: Pvertex_t;
   i: integer;
 begin
+{$IFNDEF OPENGL}
+  window := AM_GetWindow;
+{$ENDIF}
   v := lst[0].v1;
   t[0].x := v.x div FRACTOMAPUNIT;
   t[0].y := v.y div FRACTOMAPUNIT;

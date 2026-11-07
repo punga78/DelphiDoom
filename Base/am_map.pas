@@ -50,6 +50,8 @@ uses
 {$ENDIF}
   w_wad,
   m_cheat,
+  DelphiDoom.Automap.Types,
+  DelphiDoom.Automap.Intf,
 {$IF DEFINED(HERETIC)}
   i_system,
   h_strings,
@@ -187,20 +189,20 @@ var
   AM_CLEARMARKKEY: integer = Ord('c');
 
 const
-  AM_NUMMARKPOINTS = 10;
+  AM_NUMMARKPOINTS = AUTOMAP_MAX_MARKS;
 
 // scale on entry
-  INITSCALEMTOF = FRACUNIT div 5;
+  INITSCALEMTOF = AUTOMAP_INITIAL_SCALE;
 
 // how much the automap moves window per tic in frame-buffer coordinates }
 // moves 140 pixels in 1 second }
   F_PANINC = 4;
 
 const
-  MAPBITS = 12;
-  MAPUNIT = 1 shl MAPBITS;
-  FRACTOMAPBITS = FRACBITS - MAPBITS;
-  FRACTOMAPUNIT = 1 shl FRACTOMAPBITS;
+  MAPBITS = AUTOMAP_MAPBITS;
+  MAPUNIT = AUTOMAP_MAPUNIT;
+  FRACTOMAPBITS = AUTOMAP_FRACTOMAPBITS;
+  FRACTOMAPUNIT = AUTOMAP_FRACTOMAPUNIT;
 
 //==============================================================================
 //
@@ -258,29 +260,17 @@ const
   LINE_NEVERSEE = ML_DONTDRAW;
 
 type
-  fpoint_t = record
-    x: integer;
-    y: integer;
-  end;
-  Pfpoint_t = ^fpoint_t;
+  fpoint_t = TAutomapFramePoint;
+  Pfpoint_t = PAutomapFramePoint;
 
-  fline_t = record
-    a: fpoint_t;
-    b: fpoint_t;
-  end;
-  Pfline_t = ^fline_t;
+  fline_t = TAutomapFrameLine;
+  Pfline_t = PAutomapFrameLine;
 
-  mpoint_t = record
-    x: fixed_t;
-    y: fixed_t;
-  end;
-  Pmpoint_t = ^mpoint_t;
+  mpoint_t = TAutomapPoint;
+  Pmpoint_t = PAutomapPoint;
 
-  mline_t = record
-    a: mpoint_t;
-    b: mpoint_t;
-  end;
-  Pmline_t = ^mline_t;
+  mline_t = TAutomapLine;
+  Pmline_t = PAutomapLine;
   mline_tArray = packed array[0..$FFFF] of mline_t;
   Pmline_tArray = ^mline_tArray;
 
@@ -362,46 +352,8 @@ var
   fb32: PLongWordArray;   // pseudo-frame buffer
   amclock: integer;
 
-  m_paninc: mpoint_t;     // how far the window pans each tic (map coords)
-  mtof_zoommul: fixed_t;  // how far the window zooms in each tic (map coords)
-  ftom_zoommul: fixed_t;  // how far the window zooms in each tic (fb coords)
-
-  m_x, m_y: fixed_t;      // LL x,y where the window is on the map (map coords)
-  m_x2, m_y2: fixed_t;    // UR x,y where the window is on the map (map coords)
-
-//
-// width/height of window on map (map coords)
-//
-  m_w: fixed_t;
-  m_h: fixed_t;
-
-// based on level size
-  min_x: fixed_t;
-  min_y: fixed_t;
-  max_x: fixed_t;
-  max_y: fixed_t;
-
-  max_w: fixed_t; // max_x-min_x,
-  max_h: fixed_t; // max_y-min_y
-
-// based on player size
-  min_w: fixed_t;
-  min_h: fixed_t;
-
-  min_scale_mtof: fixed_t; // used to tell when to stop zooming out
-  max_scale_mtof: fixed_t; // used to tell when to stop zooming in
-
-// old stuff for recovery later
-  old_m_w, old_m_h: fixed_t;
-  old_m_x, old_m_y: fixed_t;
-
-// old location used by the Follower routine
-  f_oldloc: mpoint_t;
-
-// used by MTOF to scale from map-to-frame-buffer coords
-  scale_mtof: fixed_t = INITSCALEMTOF;
-// used by FTOM to scale from frame-buffer-to-map coords (=1/scale_mtof)
-  scale_ftom: fixed_t;
+// The window on the map (where it is, the scale, the limits of the level, the pan and the zoom)
+// and the marks are in Libs\Automap: see AM_Configure().
 
   plr: Pplayer_t; // the player represented by an arrow
 
@@ -414,12 +366,6 @@ var
   maplumpsize: integer;
   maplumpheight: integer;
 {$ENDIF}
-
-  markpoints: array[0..AM_NUMMARKPOINTS - 1] of mpoint_t; // where the points are
-
-  markpointnum: integer = 0; // next point to be assigned
-
-  followplayer: boolean = true; // specifies whether to follow the player around
 
 const
 {$IFDEF STRIFE}
@@ -499,11 +445,34 @@ procedure AM_rotate(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_t);
 //==============================================================================
 procedure AM_ShutDown;
 
+//==============================================================================
+// AM_Configure
+//
+// Gives the automap the window on the map and the marks of Libs\Automap (done by
+// ComposeEngine). Without it the automap stops with I_Error.
+//
+//==============================================================================
+procedure AM_Configure(const AView: IAutomapView; const ANavigator: IAutomapNavigator;
+  const AMarks: IAutomapMarks);
+
+//==============================================================================
+//
+// AM_GetWindow
+//
+// A copy of the window on the map: read it once before a loop, not for each pixel.
+//
+//==============================================================================
+function AM_GetWindow: TAutomapWindow;
+
 implementation
 
 uses
   am_textured,
   c_cmds,
+{$IFDEF DOOM}
+  i_system,
+{$ENDIF}
+  DelphiDoom.Automap.Rotation,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   d_englsh,
 {$ENDIF}
@@ -537,7 +506,13 @@ uses
 const
   AM_MIN_SCALE = 2048;
 // player radius
-  PLAYERRADIUS = 16 * (1 shl MAPBITS);
+  PLAYERRADIUS = AUTOMAP_PLAYERRADIUS;
+
+var
+  // The window on the map and the marks (Libs\Automap), given by AM_Configure()
+  am_view: IAutomapView = nil;
+  am_navigator: IAutomapNavigator = nil;
+  am_marks: IAutomapMarks = nil;
 
 //==============================================================================
 //
@@ -559,7 +534,7 @@ end;
 //==============================================================================
 function M_ZOOMIN: integer;
 begin
-  result := trunc(1.02 * FRACUNIT);
+  result := AUTOMAP_ZOOM_IN;
 end;
 
 //==============================================================================
@@ -570,7 +545,7 @@ end;
 //==============================================================================
 function M_ZOOMOUT: integer;
 begin
-  result := trunc(FRACUNIT / 1.02);
+  result := AUTOMAP_ZOOM_OUT;
 end;
 
 //==============================================================================
@@ -580,7 +555,7 @@ end;
 //==============================================================================
 function FTOM(x: integer): integer;
 begin
-  result := FixedMul(x * FRACUNIT, scale_ftom);
+  result := am_view.FrameToMap(x);
 end;
 
 //==============================================================================
@@ -590,7 +565,7 @@ end;
 //==============================================================================
 function MTOF(x: integer): integer;
 begin
-  result := FixedInt64(FixedMul64(x, scale_mtof));
+  result := am_view.MapToFrame(x);
 end;
 
 //==============================================================================
@@ -600,7 +575,7 @@ end;
 //==============================================================================
 function CXMTOF(x: integer): integer;
 begin
-  result := f_x + MTOF(x) - MTOF(m_x);
+  result := am_view.MapToFrameX(x);
 end;
 
 //==============================================================================
@@ -610,7 +585,7 @@ end;
 //==============================================================================
 function CYMTOF(y: integer): integer;
 begin
-  result := f_y + (f_h - MTOF(y) + MTOF(m_y));
+  result := am_view.MapToFrameY(y);
 end;
 
 //==============================================================================
@@ -646,58 +621,72 @@ begin
 end;
 
 //==============================================================================
-// AM_activateNewScale
+//
+// AM_Configure
 //
 //==============================================================================
-procedure AM_activateNewScale;
+procedure AM_Configure(const AView: IAutomapView; const ANavigator: IAutomapNavigator;
+  const AMarks: IAutomapMarks);
 begin
-  m_x := m_x + m_w div 2;
-  m_y := m_y + m_h div 2;
-  m_w := FTOM(f_w);
-  m_h := FTOM(f_h);
-  m_x := m_x - m_w div 2;
-  m_y := m_y - m_h div 2;
-  m_x2 := m_x + m_w;
-  m_y2 := m_y + m_h;
+  am_view := AView;
+  am_navigator := ANavigator;
+  am_marks := AMarks;
 end;
 
 //==============================================================================
-// AM_saveScaleAndLoc
+//
+// AM_CheckConfigured
 //
 //==============================================================================
-procedure AM_saveScaleAndLoc;
+procedure AM_CheckConfigured;
 begin
-  old_m_x := m_x;
-  old_m_y := m_y;
-  old_m_w := m_w;
-  old_m_h := m_h;
+  if not (Assigned(am_view) and Assigned(am_navigator) and Assigned(am_marks)) then
+    I_Error('AM_CheckConfigured(): the automap was not configured (see ComposeEngine)');
 end;
 
 //==============================================================================
-// AM_restoreScaleAndLoc
+//
+// AM_GetWindow
 //
 //==============================================================================
-procedure AM_restoreScaleAndLoc;
+function AM_GetWindow: TAutomapWindow;
 begin
-  m_w := old_m_w;
-  m_h := old_m_h;
-  if not followplayer then
-  begin
-    m_x := old_m_x;
-    m_y := old_m_y;
-  end
+  result := am_view.Window;
+end;
+
+//==============================================================================
+//
+// AM_PlayerX, AM_PlayerY
+//
+// Where the player is, in the coordinates of the level
+//
+//==============================================================================
+function AM_PlayerX: fixed_t;
+begin
+  if (plr <> nil) and (plr.mo <> nil) then
+    result := plr.mo.x
   else
-  begin
-    m_x := (plr.mo.x div FRACTOMAPUNIT) - m_w div 2;
-    m_y := (plr.mo.y div FRACTOMAPUNIT) - m_h div 2;
-  end;
+    result := 0;
+end;
 
-  m_x2 := m_x + m_w;
-  m_y2 := m_y + m_h;
+function AM_PlayerY: fixed_t;
+begin
+  if (plr <> nil) and (plr.mo <> nil) then
+    result := plr.mo.y
+  else
+    result := 0;
+end;
 
-  // Change the scaling multipliers
-  scale_mtof := FixedDiv(f_w * FRACUNIT, m_w);
-  scale_ftom := FixedDiv(FRACUNIT, scale_mtof);
+//==============================================================================
+// AM_findMinMaxBoundaries
+//
+// Determines bounding box of all vertices,
+// sets the limits of the zoom range.
+//
+//==============================================================================
+procedure AM_findMinMaxBoundaries;
+begin
+  am_navigator.FitToVertices(PAutomapPoint(@vertexes[0]), numvertexes, SizeOf(vertex_t));
 end;
 
 //==============================================================================
@@ -707,95 +696,11 @@ end;
 //
 //==============================================================================
 procedure AM_addMark;
-begin
-  markpoints[markpointnum].x := m_x + m_w div 2;
-  markpoints[markpointnum].y := m_y + m_h div 2;
-  markpointnum := (markpointnum + 1) mod AM_NUMMARKPOINTS;
-end;
-
-//==============================================================================
-// AM_findMinMaxBoundaries
-//
-// Determines bounding box of all vertices,
-// sets global variables controlling zoom range.
-//
-//==============================================================================
-procedure AM_findMinMaxBoundaries;
 var
-  i: integer;
-  a, b: fixed_t;
-  pvi: Pvertex_t;
+  window: TAutomapWindow;
 begin
-  min_x := MAXINT;
-  min_y := MAXINT;
-  max_x := -MAXINT;
-  max_y := -MAXINT;
-
-  pvi := @vertexes[0];
-  for i := 0 to numvertexes - 1 do
-  begin
-    if pvi.x < min_x then
-      min_x := pvi.x
-    else if pvi.x > max_x then
-      max_x := pvi.x;
-
-    if pvi.y < min_y then
-      min_y := pvi.y
-    else if pvi.y > max_y then
-      max_y := pvi.y;
-    inc(pvi);
-
-  end;
-
-  max_x := max_x div FRACTOMAPUNIT;
-  min_x := min_x div FRACTOMAPUNIT;
-  max_y := max_y div FRACTOMAPUNIT;
-  min_y := min_y div FRACTOMAPUNIT;
-
-  max_w := max_x - min_x;
-  max_h := max_y - min_y;
-
-  min_w := 10 * PLAYERRADIUS; // const? never changed?
-  min_h := 10 * PLAYERRADIUS;
-
-  a := FixedDiv(f_w * FRACUNIT, max_w);
-  b := FixedDiv(f_h * FRACUNIT, max_h);
-
-  if a < b then
-    min_scale_mtof := a
-  else
-    min_scale_mtof := b;
-
-  max_scale_mtof := FixedDiv(f_h * FRACUNIT, 2 * PLAYERRADIUS);
-end;
-
-//==============================================================================
-// AM_changeWindowLoc
-//
-//==============================================================================
-procedure AM_changeWindowLoc;
-begin
-  if (m_paninc.x <> 0) or (m_paninc.y <> 0) then
-  begin
-    followplayer := false;
-    f_oldloc.x := MAXINT;
-  end;
-
-  m_x := m_x + m_paninc.x;
-  m_y := m_y + m_paninc.y;
-
-  if m_x + m_w div 2 > max_x then
-    m_x := max_x - m_w div 2
-  else if m_x + m_w div 2 < min_x then
-    m_x := min_x - m_w div 2;
-
-  if m_y + m_h div 2 > max_y then
-    m_y := max_y - m_h div 2
-  else if m_y + m_h div 2 < min_y then
-    m_y := min_y - m_h div 2;
-
-  m_x2 := m_x + m_w;
-  m_y2 := m_y + m_h;
+  window := am_view.Window;
+  am_marks.Add(window.MapX + window.MapWidth div 2, window.MapY + window.MapHeight div 2);
 end;
 
 //
@@ -813,22 +718,18 @@ procedure AM_initVariables;
 var
   pnum: integer;
   i: integer;
+  hasplayer: boolean;
+  playerx, playery: fixed_t;
 begin
   fb := screens[SCN_FG];
   fb32 := screen32;
 
-  f_oldloc.x := MAXINT;
   amclock := 0;
   lightlev := 0;
 
-  m_paninc.x := 0;
-  m_paninc.y := 0;
-
-  ftom_zoommul := FRACUNIT;
-  mtof_zoommul := FRACUNIT;
-
-  m_w := FTOM(f_w);
-  m_h := FTOM(f_h);
+  hasplayer := false;
+  playerx := 0;
+  playery := 0;
 
   if gamestate = GS_LEVEL then
   begin
@@ -850,20 +751,15 @@ begin
       plr := @players[pnum];
       if plr.mo <> nil then
       begin
-        m_x := (plr.mo.x div FRACTOMAPUNIT) - m_w div 2;
-        m_y := (plr.mo.y div FRACTOMAPUNIT) - m_h div 2;
+        hasplayer := true;
+        playerx := plr.mo.x;
+        playery := plr.mo.y;
       end;
     end;
   end;
 
-  AM_changeWindowLoc;
-
-  // for saving & restoring
-  //AM_saveScaleAndLoc;
-  old_m_x := m_x;
-  old_m_y := m_y;
-  old_m_w := m_w;
-  old_m_h := m_h;
+  // no pan, no zoom, the window on the player; the place and scale are kept for recovery
+  am_navigator.StartWindow(hasplayer, playerx, playery);
 
   // inform the status bar of the change
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -954,12 +850,8 @@ end;
 //
 //==============================================================================
 procedure AM_clearMarks;
-var
-  i: integer;
 begin
-  for i := 0 to AM_NUMMARKPOINTS - 1 do
-    markpoints[i].x := -1; // means empty
-  markpointnum := 0;
+  am_marks.Clear;
 end;
 
 //==============================================================================
@@ -984,13 +876,12 @@ begin
   f_h := SB_Y * SCREENHEIGHT div 200;
 {$ENDIF}
 
+  am_view.SetFrame(f_x, f_y, f_w, f_h);
+
   AM_clearMarks;
 
   AM_findMinMaxBoundaries;
-  scale_mtof := FixedDiv(min_scale_mtof, trunc(0.7 * FRACUNIT));
-  if scale_mtof > max_scale_mtof then
-    scale_mtof := min_scale_mtof;
-  scale_ftom := FixedDiv(FRACUNIT, scale_mtof);
+  am_navigator.InitializeScale;
 end;
 
 //
@@ -1036,6 +927,8 @@ var
 //==============================================================================
 procedure AM_Start;
 begin
+  AM_CheckConfigured;
+
   AM_Stop;
 
   stopped := false;
@@ -1067,9 +960,7 @@ end;
 //==============================================================================
 procedure AM_minOutWindowScale;
 begin
-  scale_mtof := min_scale_mtof;
-  scale_ftom := FixedDiv(FRACUNIT, scale_mtof);
-  AM_activateNewScale;
+  am_navigator.MinOutWindowScale;
 end;
 
 //==============================================================================
@@ -1080,9 +971,7 @@ end;
 //==============================================================================
 procedure AM_maxOutWindowScale;
 begin
-  scale_mtof := max_scale_mtof;
-  scale_ftom := FixedDiv(FRACUNIT, scale_mtof);
-  AM_activateNewScale;
+  am_navigator.MaxOutWindowScale;
 end;
 
 //
@@ -1126,42 +1015,40 @@ begin
     case ev.data1 of
       AM_PANRIGHTKEY: // pan right
         begin
-          if not followplayer then
-            m_paninc.x := FTOM(F_PANINC)
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanX := FTOM(F_PANINC)
           else
             result := false;
         end;
       AM_PANLEFTKEY: // pan left
         begin
-          if not followplayer then
-            m_paninc.x := -FTOM(F_PANINC)
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanX := -FTOM(F_PANINC)
           else
             result := false;
         end;
       AM_PANUPKEY: // pan up
         begin
-          if not followplayer then
-            m_paninc.y := FTOM(F_PANINC)
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanY := FTOM(F_PANINC)
           else
             result := false;
         end;
       AM_PANDOWNKEY: // pan down
         begin
-          if not followplayer then
-            m_paninc.y := -FTOM(F_PANINC)
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanY := -FTOM(F_PANINC)
           else
             result := false;
         end;
       Ord(AM_ZOOMOUTKEY): // zoom out
         begin
-          mtof_zoommul := M_ZOOMOUT;
-          ftom_zoommul := M_ZOOMIN;
+          am_navigator.SetZoom(M_ZOOMOUT, M_ZOOMIN);
         end;
       Ord(AM_ZOOMINKEY),
       Ord(AM_ZOOMINKEY2): // zoom in
         begin
-          mtof_zoommul := M_ZOOMIN;
-          ftom_zoommul := M_ZOOMOUT;
+          am_navigator.SetZoom(M_ZOOMIN, M_ZOOMOUT);
         end;
       AM_TONGLEKEY:
         begin
@@ -1181,17 +1068,17 @@ begin
           bigstate := not bigstate;
           if bigstate then
           begin
-            AM_saveScaleAndLoc;
+            am_navigator.SaveScaleAndLocation;
             AM_minOutWindowScale;
           end
           else
-            AM_restoreScaleAndLoc;
+            am_navigator.RestoreScaleAndLocation(AM_PlayerX, AM_PlayerY);
         end
         else if ev.data1 = AM_FOLLOWKEY then
         begin
-          followplayer := not followplayer;
-          f_oldloc.x := MAXINT;
-          if followplayer then
+          am_navigator.FollowPlayer := not am_navigator.FollowPlayer;
+          am_navigator.ForgetPlayerLocation;
+          if am_navigator.FollowPlayer then
             plr._message := AMSTR_FOLLOWON
           else
             plr._message := AMSTR_FOLLOWOFF;
@@ -1222,7 +1109,7 @@ begin
         end
         else if ev.data1 = AM_MARKKEY then
         begin
-          sprintf(_message, '%s %d', [AMSTR_MARKEDSPOT, markpointnum]);
+          sprintf(_message, '%s %d', [AMSTR_MARKEDSPOT, am_marks.NextIndex]);
           plr._message := _message;
           AM_addMark;
         end
@@ -1242,71 +1129,33 @@ begin
     case ev.data1 of
       AM_PANRIGHTKEY:
         begin
-          if not followplayer then
-            m_paninc.x := 0;
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanX := 0;
         end;
       AM_PANLEFTKEY:
         begin
-          if not followplayer then
-            m_paninc.x := 0;
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanX := 0;
         end;
       AM_PANUPKEY:
         begin
-          if not followplayer then
-            m_paninc.y := 0;
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanY := 0;
         end;
       AM_PANDOWNKEY:
         begin
-          if not followplayer then
-            m_paninc.y := 0;
+          if not am_navigator.FollowPlayer then
+            am_navigator.PanY := 0;
         end;
       Ord(AM_ZOOMOUTKEY),
       Ord(AM_ZOOMINKEY),
       Ord(AM_ZOOMINKEY2):
         begin
-          mtof_zoommul := FRACUNIT;
-          ftom_zoommul := FRACUNIT;
+          am_navigator.SetZoom(FRACUNIT, FRACUNIT);
         end;
     end;
   end;
 
-end;
-
-//==============================================================================
-// AM_changeWindowScale
-//
-// Zooming
-//
-//==============================================================================
-procedure AM_changeWindowScale;
-begin
-  // Change the scaling multipliers
-  scale_mtof := FixedMul(scale_mtof, mtof_zoommul);
-  scale_ftom := FixedDiv(FRACUNIT, scale_mtof);
-
-  if scale_mtof < min_scale_mtof then
-    AM_minOutWindowScale
-  else if scale_mtof > max_scale_mtof then
-    AM_maxOutWindowScale
-  else
-    AM_activateNewScale;
-end;
-
-//==============================================================================
-// AM_doFollowPlayer
-//
-//==============================================================================
-procedure AM_doFollowPlayer;
-begin
-  if (f_oldloc.x <> plr.mo.x) or (f_oldloc.y <> plr.mo.y) then
-  begin
-    m_x := FTOM(MTOF(plr.mo.x div FRACTOMAPUNIT)) - m_w div 2;
-    m_y := FTOM(MTOF(plr.mo.y div FRACTOMAPUNIT)) - m_h div 2;
-    m_x2 := m_x + m_w;
-    m_y2 := m_y + m_h;
-    f_oldloc.x := plr.mo.x;
-    f_oldloc.y := plr.mo.y;
-  end;
 end;
 
 //
@@ -1348,16 +1197,9 @@ begin
 
   inc(amclock);
 
-  if followplayer then
-    AM_doFollowPlayer;
-
-  // Change the zoom if necessary
-  if ftom_zoommul <> FRACUNIT then
-    AM_changeWindowScale;
-
-  // Change x,y location
-  if (m_paninc.x <> 0) or (m_paninc.y <> 0) then
-    AM_changeWindowLoc;
+  // follow the player, change the zoom and the location of the window
+  AM_CheckConfigured;
+  am_navigator.Tick(AM_PlayerX, AM_PlayerY);
 
     // Update light level
     // AM_updateLightLev();
@@ -1445,150 +1287,13 @@ end;
 //==============================================================================
 // AM_clipMline
 //
-// Automap clipping of lines.
-//
-// Based on Cohen-Sutherland clipping algorithm but with a slightly
-// faster reject and precalculated slopes.  If the speed is needed,
-// use a hash algorithm to handle  the common cases.
+// Automap clipping of lines (Cohen-Sutherland, in Libs\Automap).
 //
 //==============================================================================
 function AM_clipMline(ml: Pmline_t; fl: Pfline_t): boolean;
-const
-  LEFT = 1;
-  RIGHT  = 2;
-  BOTTOM = 4;
-  TOP = 8;
-var
-  outcode1, outcode2, outside: integer;
-  tmp: fpoint_t;
-  dx, dy: integer;
-
-  procedure DOOUTCODE(var oc: integer; mx, my: integer);
-  begin
-    oc := 0;
-    if my < 0 then
-      oc := oc or TOP
-    else if my >= f_h then
-      oc := oc or BOTTOM;
-    if mx < 0 then
-      oc := oc or LEFT
-    else if mx >= f_w then
-      oc := oc or RIGHT;
-  end;
-
 begin
-  // do trivial rejects and outcodes
-  if ml.a.y > m_y2 then
-    outcode1 := TOP
-  else if ml.a.y < m_y then
-    outcode1 := BOTTOM
-  else
-    outcode1 := 0;
-
-  if ml.b.y > m_y2 then
-    outcode2 := TOP
-  else if ml.b.y < m_y then
-    outcode2 := BOTTOM
-  else
-    outcode2 := 0;
-
-  if outcode1 and outcode2 <> 0 then
-  begin
-    result := false; // trivially outside
-    exit;
-  end;
-
-  if ml.a.x < m_x then
-    outcode1 := outcode1 or LEFT
-  else if ml.a.x > m_x2 then
-    outcode1 := outcode1 or RIGHT;
-
-  if ml.b.x < m_x then
-    outcode2 := outcode2 or LEFT
-  else if ml.b.x > m_x2 then
-    outcode2 := outcode2 or RIGHT;
-
-  if outcode1 and outcode2 <> 0 then
-  begin
-    result := false; // trivially outside
-    exit;
-  end;
-
-  // transform to frame-buffer coordinates.
-  fl.a.x := CXMTOF(ml.a.x);
-  fl.a.y := CYMTOF(ml.a.y);
-  fl.b.x := CXMTOF(ml.b.x);
-  fl.b.y := CYMTOF(ml.b.y);
-
-  DOOUTCODE(outcode1, fl.a.x, fl.a.y);
-  DOOUTCODE(outcode2, fl.b.x, fl.b.y);
-
-  if outcode1 and outcode2 <> 0 then
-  begin
-    result := false; // trivially outside
-    exit;
-  end;
-
-  while outcode1 or outcode2 <> 0 do
-  begin
-  // may be partially inside box
-  // find an outside point
-    if outcode1 <> 0 then
-      outside := outcode1
-    else
-      outside := outcode2;
-
-  // clip to each side
-    if outside and TOP <> 0 then
-    begin
-      dy := fl.a.y - fl.b.y;
-      dx := fl.b.x - fl.a.x;
-      tmp.x := fl.a.x + (dx * (fl.a.y)) div dy;
-      tmp.y := 0;
-    end
-    else if outside and BOTTOM <> 0 then
-    begin
-      dy := fl.a.y - fl.b.y;
-      dx := fl.b.x - fl.a.x;
-      tmp.x := fl.a.x + (dx * (fl.a.y - f_h)) div dy;
-      tmp.y := f_h - 1;
-    end
-    else if outside and RIGHT <> 0 then
-    begin
-      dy := fl.b.y - fl.a.y;
-      dx := fl.b.x - fl.a.x;
-      tmp.y := fl.a.y + (dy * (f_w - 1 - fl.a.x)) div dx;
-      tmp.x := f_w - 1;
-    end
-    else if outside and LEFT <> 0 then
-    begin
-      dy := fl.b.y - fl.a.y;
-      dx := fl.b.x - fl.a.x;
-      tmp.y := fl.a.y + (dy * (-fl.a.x)) div dx;
-      tmp.x := 0;
-    end;
-
-    if outside = outcode1 then
-    begin
-      fl.a := tmp;
-      DOOUTCODE(outcode1, fl.a.x, fl.a.y);
-    end
-    else
-    begin
-      fl.b := tmp;
-      DOOUTCODE(outcode2, fl.b.x, fl.b.y);
-    end;
-
-    if outcode1 and outcode2 <> 0 then
-    begin
-      result := false; // trivially outside
-      exit;
-    end;
-  end;
-
-  result := true;
+  result := am_view.ClipLine(ml^, fl^);
 end;
-
 //==============================================================================
 // AM_drawFline
 //
@@ -1725,22 +1430,24 @@ var
   minlen, extx, exty: fixed_t;
   minx, miny: fixed_t;
   rx, ry: fixed_t;
+  window: TAutomapWindow;
 begin
-  dw := m_w;
-  dh := m_h;
+  window := am_view.Window;
+  dw := window.MapWidth;
+  dh := window.MapHeight;
 
   minlen := trunc(sqrt(2.0 * dw * dw + 2.0 * dh * dh));
-  extx := (minlen - m_w) div 2;
-  exty := (minlen - m_h) div 2;
+  extx := (minlen - window.MapWidth) div 2;
+  exty := (minlen - window.MapHeight) div 2;
 
-  minx := m_x;
-  miny := m_y;
+  minx := window.MapX;
+  miny := window.MapY;
 
   rx := plr.mo.x div FRACTOMAPUNIT;
   ry := plr.mo.y div FRACTOMAPUNIT;
 
   // Figure out start of vertical gridlines
-  start := m_x - extx;
+  start := window.MapX - extx;
   if ((start - bmaporgx div FRACTOMAPUNIT) mod (MAPBLOCKUNITS * FRACUNIT)) <> 0 then
     start := start {+ (MAPBLOCKUNITS * FRACUNIT)}
           - ((start - bmaporgx div FRACTOMAPUNIT) mod (MAPBLOCKUNITS * FRACUNIT));
@@ -1800,21 +1507,8 @@ end;
 //
 //==============================================================================
 procedure AM_rotate(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_t);
-var
-  tmpx: fixed_t;
-  ang: angle_t;
 begin
-  ang := a shr FRACBITS;
-
-  tmpx := xpos +
-    FixedMul(x^ - xpos, fixedcosine[ang]) -
-    FixedMul(y^ - ypos, fixedsine[ang]);
-
-  y^ := ypos +
-    FixedMul(x^ - xpos, fixedsine[ang]) +
-    FixedMul(y^ - ypos, fixedcosine[ang]);
-
-  x^ := tmpx;
+  TAutomapRotation.Rotate(x^, y^, a, xpos, ypos);
 end;
 
 //==============================================================================
@@ -1823,19 +1517,9 @@ end;
 //
 //==============================================================================
 procedure AM_rotate_dbl(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_t);
-var
-  tmpx: fixed_t;
-  ang: double;
-  asin, acos: double;
 begin
-  ang := a * ANGLE_T_TO_RAD;
-  asin := Sin(ang);
-  acos := Cos(ang);
-  tmpx := xpos + Round((x^ - xpos) * acos - (y^ - ypos) * asin);
-  y^ := ypos + Round((x^ - xpos) * asin + (y^ - ypos) * acos);
-  x^ := tmpx;
+  TAutomapRotation.RotateExact(x^, y^, a, xpos, ypos);
 end;
-
 {$IFDEF HERETIC}
 const
   BLUEKEYCOLOR = 197;
@@ -2372,12 +2056,12 @@ var
 begin
   for i := 0 to AM_NUMMARKPOINTS - 1 do
   begin
-    if markpoints[i].x <> -1 then
+    if am_marks.IsUsed(i) then
     begin
       w := 5; // because something's wrong with the wad, i guess
       h := 6; // because something's wrong with the wad, i guess
-      fx := markpoints[i].x;
-      fy := markpoints[i].y;
+      fx := am_marks.Point(i).X;
+      fy := am_marks.Point(i).Y;
 
       if allowautomaprotate then
         AM_rotate(@fx, @fy, ANG90 - plr.mo.angle, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
@@ -2423,13 +2107,8 @@ begin
   if amstate = am_inactive then
     exit;
 
-  if followplayer then
-  begin
-    m_w := FTOM(f_w);
-    m_h := FTOM(f_h);
-    m_x := plr.mo.x div FRACTOMAPUNIT - m_w div 2;
-    m_y := plr.mo.y div FRACTOMAPUNIT - m_h div 2;
-  end;
+  if am_navigator.FollowPlayer then
+    am_navigator.CenterOnPlayer(plr.mo.x, plr.mo.y);
 
   if amstate = am_only then
   begin

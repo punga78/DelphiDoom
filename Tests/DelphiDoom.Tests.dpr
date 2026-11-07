@@ -25,9 +25,7 @@ uses
   DelphiDoom.Tests.Zlib.Engine in 'Source\DelphiDoom.Tests.Zlib.Engine.pas',
   DelphiDoom.Tests.Zlib.Client in 'Source\DelphiDoom.Tests.Zlib.Client.pas',
   DelphiDoom.Tests.Zlib.Loader in 'Source\DelphiDoom.Tests.Zlib.Loader.pas',
-  DelphiDoom.Tests.Zlib.Provider in 'Source\DelphiDoom.Tests.Zlib.Provider.pas',
-  ide_binary in '..\DD_IDE\ide_binary.pas',
-  DelphiDoom.Tests.Ide.Binary in 'Source\DelphiDoom.Tests.Ide.Binary.pas';
+  DelphiDoom.Tests.Zlib.Provider in 'Source\DelphiDoom.Tests.Zlib.Provider.pas';
 
 var
   Runner: ITestRunner;

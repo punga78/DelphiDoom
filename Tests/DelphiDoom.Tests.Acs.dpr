@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the ACS compiler library (DUnitX)                         }
 {                                                                              }
@@ -34,7 +34,24 @@ uses
   DelphiDoom.Acs.Parser in '..\Libs\Acs\DelphiDoom.Acs.Parser.pas',
   DelphiDoom.Acs.Compiler in '..\Libs\Acs\DelphiDoom.Acs.Compiler.pas',
   DelphiDoom.Acs.MemorySourceProvider in '..\Libs\Acs\DelphiDoom.Acs.MemorySourceProvider.pas',
+  DelphiDoom.Acs.Machine.Types in '..\Libs\Acs\DelphiDoom.Acs.Machine.Types.pas',
+  DelphiDoom.Acs.Machine.Intf in '..\Libs\Acs\DelphiDoom.Acs.Machine.Intf.pas',
+  DelphiDoom.Acs.Machine.Arithmetic in '..\Libs\Acs\DelphiDoom.Acs.Machine.Arithmetic.pas',
+  DelphiDoom.Acs.Machine.Behavior in '..\Libs\Acs\DelphiDoom.Acs.Machine.Behavior.pas',
+  DelphiDoom.Acs.Machine.Variables in '..\Libs\Acs\DelphiDoom.Acs.Machine.Variables.pas',
+  DelphiDoom.Acs.Machine.Interpreter in '..\Libs\Acs\DelphiDoom.Acs.Machine.Interpreter.pas',
+  DelphiDoom.Acs.Machine in '..\Libs\Acs\DelphiDoom.Acs.Machine.pas',
   DelphiDoom.Acs.Factory in '..\Libs\Acs\DelphiDoom.Acs.Factory.pas',
+  DelphiDoom.Tests.Acs.FakeWorld in 'Source\DelphiDoom.Tests.Acs.FakeWorld.pas',
+  DelphiDoom.Tests.Acs.FakeThinkers in 'Source\DelphiDoom.Tests.Acs.FakeThinkers.pas',
+  DelphiDoom.Tests.Acs.FakeHost in 'Source\DelphiDoom.Tests.Acs.FakeHost.pas',
+  DelphiDoom.Tests.Acs.Scenario in 'Source\DelphiDoom.Tests.Acs.Scenario.pas',
+  DelphiDoom.Tests.Acs.MachineTarget in 'Source\DelphiDoom.Tests.Acs.MachineTarget.pas',
+  DelphiDoom.Tests.Acs.ObjectBuilder in 'Source\DelphiDoom.Tests.Acs.ObjectBuilder.pas',
+  DelphiDoom.Tests.Acs.Arithmetic in 'Source\DelphiDoom.Tests.Acs.Arithmetic.pas',
+  DelphiDoom.Tests.Acs.Behavior in 'Source\DelphiDoom.Tests.Acs.Behavior.pas',
+  DelphiDoom.Tests.Acs.Variables in 'Source\DelphiDoom.Tests.Acs.Variables.pas',
+  DelphiDoom.Tests.Acs.Machine in 'Source\DelphiDoom.Tests.Acs.Machine.pas',
   DelphiDoom.Tests.Acs.Compiler in 'Source\DelphiDoom.Tests.Acs.Compiler.pas';
 
 var

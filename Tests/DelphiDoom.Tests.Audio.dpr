@@ -25,9 +25,11 @@ uses
   DelphiDoom.Audio.Levels in '..\Libs\Audio\DelphiDoom.Audio.Levels.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.MusicPlayer in '..\Libs\Audio\DelphiDoom.Audio.MusicPlayer.pas',
+  DelphiDoom.Audio.ExternalMusicCache in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicCache.pas',
   DelphiDoom.Audio.Factory in '..\Libs\Audio\DelphiDoom.Audio.Factory.pas',
   DelphiDoom.Tests.Audio.Fakes in 'Source\DelphiDoom.Tests.Audio.Fakes.pas',
   DelphiDoom.Tests.Audio.SfxPlayer in 'Source\DelphiDoom.Tests.Audio.SfxPlayer.pas',
+  DelphiDoom.Tests.Audio.ExternalMusicCache in 'Source\DelphiDoom.Tests.Audio.ExternalMusicCache.pas',
   DelphiDoom.Tests.Audio.MusicPlayer in 'Source\DelphiDoom.Tests.Audio.MusicPlayer.pas';
 
 var

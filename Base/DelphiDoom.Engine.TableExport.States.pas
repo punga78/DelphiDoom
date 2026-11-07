@@ -33,7 +33,7 @@ implementation
 uses
   SysUtils,
   d_think,
-  deh_main,
+  deh_base,
   info_h,
   info,
   sc_states;
@@ -82,7 +82,6 @@ end;
 function TEngineExportStates.Get(AIndex: Integer): TExportState;
 var
   LState: Pstate_t;
-  LAction: Integer;
 begin
   Result := Default(TExportState);
   LState := @states[AIndex];
@@ -96,12 +95,7 @@ begin
   Result.Numbers[sfFlagsEx] := LState.flags_ex;
   Result.Numbers[sfMbf21Bits] := LState.mbf21bits;
   Result.HasAction := Assigned(LState.action.acv);
-  for LAction := 0 to dehnumactions - 1 do
-    if @LState.action.acp1 = @deh_actions[LAction].action.acp1 then
-    begin
-      Result.ActionName := deh_actions[LAction].name;
-      Break;
-    end;
+  Result.ActionName := DEH_ActionName(LState.action);
   Result.HasParams := LState.params <> nil;
   if Result.HasParams then
     Result.Params := LState.params.Declaration;

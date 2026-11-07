@@ -1,0 +1,25 @@
+game=doom
+count=2
+item=none|
+item=script|after.ddscript
+data=version|1.0\r\ngame|doom\r\nnone|\r\nscript|after.ddscript\r\n
+modified=False
+find a.ddscript=False
+find main.ddscript=False
+find A.DDSCRIPT=False
+find missing=False
+find empty=True
+-- log
+NORMAL|Loading "<dir>\after.ddscript"\r\n
+NORMAL|Loading "<dir>\blank_lines.ddide"\r\n
+save=False
+modified after save=False
+saved content=version|1.0\r\ngame|doom\r\nnone|\r\nscript|after.ddscript\r\n
+file=after.ddscript
+file=after.ddscript_<date>
+file=blank_lines.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+ERROR|Can not write file ""\r\n
+NORMAL|Saving "<dir>\after.ddscript"\r\n

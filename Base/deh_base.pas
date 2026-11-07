@@ -34,6 +34,7 @@ uses
   d_delphi,
   d_think,
   m_fixed,
+  DelphiDoom.Actions.Intf,
   DelphiDoom.TableExport.Intf;
 
 //==============================================================================
@@ -61,7 +62,6 @@ function DEH_CurrentSettings: TDStringList;
 //
 //==============================================================================
 function DEH_ActorDeclaration(const index: integer): string;
-
 //==============================================================================
 //
 // DEH_ParseText
@@ -253,24 +253,45 @@ function DEH_ActionName(action: actionf_t): string;
 
 //==============================================================================
 //
-// DEH_InitActionsHash
+// DEH_ConfigureActions
 //
 //==============================================================================
-procedure DEH_InitActionsHash;
+procedure DEH_ConfigureActions(const ARegistry: IActionRegistry);
 
 //==============================================================================
 //
-// DEH_ShutDownActionsHash
+// DEH_AddNullAction
 //
 //==============================================================================
-procedure DEH_ShutDownActionsHash;
+procedure DEH_AddNullAction;
 
 //==============================================================================
 //
-// DEH_AddActionToHash
+// DEH_ActionCount
 //
 //==============================================================================
-procedure DEH_AddActionToHash(const act: string; const idpos: integer);
+function DEH_ActionCount: integer;
+
+//==============================================================================
+//
+// DEH_ActionProc
+//
+//==============================================================================
+function DEH_ActionProc(const index: integer): actionf_p1;
+
+//==============================================================================
+//
+// DEH_ActionDeclaration
+//
+//==============================================================================
+function DEH_ActionDeclaration(const index: integer): string;
+
+//==============================================================================
+//
+// DEH_ActionEntry
+//
+//==============================================================================
+function DEH_ActionEntry(const action: actionf_t; var entry: TActionEntry): boolean;
 
 //==============================================================================
 //
@@ -278,6 +299,13 @@ procedure DEH_AddActionToHash(const act: string; const idpos: integer);
 //
 //==============================================================================
 function DEH_SearchActionFromHash(const act: string): integer;
+
+//==============================================================================
+//
+// DEH_FindActionByName
+//
+//==============================================================================
+function DEH_FindActionByName(const aname: string): integer;
 
 //==============================================================================
 //
@@ -333,7 +361,34 @@ uses
   sc_states,
   w_folders,
   w_pak,
-  w_wad;
+  w_wad,
+  DelphiDoom.Actions.Names;
+
+var
+  // given by ComposeEngine (DEH_ConfigureActions)
+  dehactions: IActionRegistry = nil;
+
+//==============================================================================
+//
+// DEH_ActionRegistry
+//
+//==============================================================================
+function DEH_ActionRegistry: IActionRegistry;
+begin
+  if dehactions = nil then
+    I_Error('DEH_ActionRegistry(): the registry of the actions is not configured');
+  Result := dehactions;
+end;
+
+//==============================================================================
+//
+// DEH_ConfigureActions
+//
+//==============================================================================
+procedure DEH_ConfigureActions(const ARegistry: IActionRegistry);
+begin
+  dehactions := ARegistry;
+end;
 
 var
   GDehWriter: IExportDehWriter;
@@ -903,8 +958,8 @@ procedure DEH_PrintActions;
 var
   i: integer;
 begin
-  for i := 0 to dehnumactions - 1 do
-    printf('A_%s'#13#10, [deh_actions[i].name]);
+  for i := 0 to DEH_ActionCount - 1 do
+    printf('A_%s'#13#10, [DEH_ActionRegistry.Entry(i).Name]);
 end;
 
 //==============================================================================
@@ -1057,107 +1112,63 @@ end;
 //
 //==============================================================================
 function DEH_ActionName(action: actionf_t): string;
-var
-  i: integer;
 begin
-  for i := 0 to dehnumactions - 1 do
-  begin
-    if @deh_actions[i].action.acp1 = @action.acp1 then
-    begin
-      result := deh_actions[i].name;
-      Exit;
-    end;
-  end;
-  result := '';
-end;
-
-const
-  DEH_ACTIONS_HASH_SIZE = 128;
-
-var
-  dehactionshasttable: array[0..DEH_ACTIONS_HASH_SIZE - 1] of TDStringList;
-
-//==============================================================================
-//
-// DEH_InitActionsHash
-//
-//==============================================================================
-procedure DEH_InitActionsHash;
-var
-  i: integer;
-begin
-  for i := 0 to DEH_ACTIONS_HASH_SIZE - 1 do
-    dehactionshasttable[i] := TDStringList.Create;
+  result := DEH_ActionRegistry.NameOfHandler(@action.acp1);
 end;
 
 //==============================================================================
 //
-// DEH_ShutDownActionsHash
+// DEH_AddNullAction
 //
 //==============================================================================
-procedure DEH_ShutDownActionsHash;
-var
-  i, j: integer;
+procedure DEH_AddNullAction;
 begin
-  for i := 0 to DEH_ACTIONS_HASH_SIZE - 1 do
-  begin
-    for j := 0 to dehactionshasttable[i].Count - 1 do
-      dehactionshasttable[i].Objects[j].Free;
-    dehactionshasttable[i].Free;
-  end;
+  DEH_ActionRegistry.Register('NULL', nil, [], '');
 end;
 
 //==============================================================================
 //
-// DEH_FixActionName
+// DEH_ActionCount
 //
 //==============================================================================
-function DEH_FixActionName(const act: string): string;
+function DEH_ActionCount: integer;
 begin
-  if Pos1('A_', act) then
-    result := strupper(Copy(act, 3, Length(act) - 2))
-  else if Pos1('a_', act) then
-    result := strupper(Copy(act, 3, Length(act) - 2))
-  else
-    result := strupper(act);
+  result := DEH_ActionRegistry.Count;
 end;
 
 //==============================================================================
 //
-// dehactionhash
+// DEH_ActionProc
 //
 //==============================================================================
-function dehactionhash(const act: string): LongWord;
-var
-  i: integer;
+function DEH_ActionProc(const index: integer): actionf_p1;
 begin
-  if act = '' then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  result := 5381 * 33 + Ord(act[1]);
-
-  for i := 2 to Length(act) do
-    result := result * 33 + Ord(act[i]);
-
-  result := result and (DEH_ACTIONS_HASH_SIZE - 1);
+  result := actionf_p1(DEH_ActionRegistry.Entry(index).Handler);
 end;
 
 //==============================================================================
 //
-// DEH_AddActionToHash
+// DEH_ActionDeclaration
 //
 //==============================================================================
-procedure DEH_AddActionToHash(const act: string; const idpos: integer);
-var
-  hash: LongWord;
-  str: string;
+function DEH_ActionDeclaration(const index: integer): string;
 begin
-  str := DEH_FixActionName(act);
-  hash := dehactionhash(str);
-  dehactionshasttable[hash].AddObject(str, TInteger.Create(idpos));
+  result := DEH_ActionRegistry.Entry(index).Declaration;
+end;
+
+//==============================================================================
+//
+// DEH_ActionEntry
+//
+//==============================================================================
+function DEH_ActionEntry(const action: actionf_t; var entry: TActionEntry): boolean;
+var
+  idx: integer;
+begin
+  idx := DEH_ActionRegistry.IndexOfHandler(@action.acp1);
+  result := idx >= 0;
+  if result then
+    entry := DEH_ActionRegistry.Entry(idx);
 end;
 
 //==============================================================================
@@ -1166,21 +1177,18 @@ end;
 //
 //==============================================================================
 function DEH_SearchActionFromHash(const act: string): integer;
-var
-  hash: LongWord;
-  str: string;
-  i: integer;
 begin
-  str := DEH_FixActionName(act);
-  hash := dehactionhash(str);
-  for i := 0 to dehactionshasttable[hash].Count - 1 do
-    if str = dehactionshasttable[hash].Strings[i] then
-    begin
-      result := (dehactionshasttable[hash].Objects[i] as TInteger).intnum;
-      exit;
-    end;
+  result := DEH_ActionRegistry.IndexOfName(act);
+end;
 
-  result := -1;
+//==============================================================================
+//
+// DEH_FindActionByName
+//
+//==============================================================================
+function DEH_FindActionByName(const aname: string): integer;
+begin
+  result := DEH_ActionRegistry.IndexOfName(aname);
 end;
 
 //==============================================================================
@@ -1247,24 +1255,13 @@ end;
 //
 //==============================================================================
 procedure DEH_AddAction(const acp1: actionf_p1; const desc: string);
-var
-  aname: string;
-  i: integer;
 begin
-  if dehnumactions >= DEHMAXACTIONS then
-    I_Error('DEH_AddAction(): Trying to add more than %d actions', [DEHMAXACTIONS]);
-
-  deh_actions[dehnumactions].action.acp1 := @acp1;
-  aname := firstword(desc, [' ', ';', '(', '[', ':', #7, #9, #10, #13]);
-  if Pos1('A_', strupper(aname)) then
-    Delete(aname, 1, 2);
-  deh_actions[dehnumactions].originalname := aname;
-  deh_actions[dehnumactions].name := strupper(aname);
-  deh_actions[dehnumactions].argcount := 0;
-  for i := 0 to MAX_STATE_ARGS - 1 do
-    deh_actions[dehnumactions].default_args[i] := 0;
-  {$IFDEF DLL}deh_actions[dehnumactions].decl := desc;{$ENDIF}
-  Inc(dehnumactions);
+  try
+    DEH_ActionRegistry.Register(TActionNames.FromDeclaration(desc), @acp1, [], desc);
+  except
+    on E: EActionRegistryException do
+      I_Error('DEH_AddAction(): %s', [E.Message]);
+  end;
 end;
 
 //==============================================================================
@@ -1273,27 +1270,13 @@ end;
 //
 //==============================================================================
 procedure DEH_AddAction(const acp1: actionf_p1; const desc: string; const def_args: array of integer); overload;
-var
-  aname: string;
-  n_args, i: integer;
 begin
-  if dehnumactions >= DEHMAXACTIONS then
-    I_Error('DEH_AddAction(): Trying to add more than %d actions', [DEHMAXACTIONS]);
-
-  deh_actions[dehnumactions].action.acp1 := @acp1;
-  aname := firstword(desc, [' ', ';', '(', '[', ':', #7, #9, #10, #13]);
-  if Pos1('A_', strupper(aname)) then
-    Delete(aname, 1, 2);
-  deh_actions[dehnumactions].originalname := aname;
-  deh_actions[dehnumactions].name := strupper(aname);
-  n_args := Length(def_args);
-  deh_actions[dehnumactions].argcount := n_args;
-  for i := 0 to n_args - 1 do
-    deh_actions[dehnumactions].default_args[i] := def_args[i];
-  for i := n_args to MAX_STATE_ARGS - 1 do
-    deh_actions[dehnumactions].default_args[i] := 0;
-  {$IFDEF DLL}deh_actions[dehnumactions].decl := desc;{$ENDIF}
-  Inc(dehnumactions);
+  try
+    DEH_ActionRegistry.Register(TActionNames.FromDeclaration(desc), @acp1, def_args, desc);
+  except
+    on E: EActionRegistryException do
+      I_Error('DEH_AddAction(): %s', [E.Message]);
+  end;
 end;
 
 {$IFDEF HEXEN}

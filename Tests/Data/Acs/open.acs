@@ -1,0 +1,41 @@
+// like scripts.acs, but the open script waits before it restarts
+int state;
+
+script 5 (void)
+{
+    state = 1;
+}
+
+script 6 (int a)
+{
+    state = a;
+}
+
+script 7 (int a, int b)
+{
+    state = a + b;
+}
+
+script 8 (int a, int b, int c)
+{
+    state = a + b + c;
+    suspend;
+    terminate;
+}
+
+script 1 open
+{
+    state = 100;
+    delay(10);
+    restart;
+}
+
+script 2 open
+{
+    suspend;
+}
+
+script 300 (void)
+{
+    terminate;
+}

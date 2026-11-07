@@ -1,0 +1,23 @@
+game=mars
+count=1
+item=script|a.ddscript
+data=version|1.0\r\ngame|mars\r\nscript|a.ddscript\r\n
+modified=False
+find a.ddscript=True
+find main.ddscript=False
+find A.DDSCRIPT=True
+find missing=False
+find empty=False
+-- log
+NORMAL|Loading "<dir>\a.ddscript"\r\n
+NORMAL|Loading "<dir>\radix_and_mars.ddide"\r\n
+save=True
+modified after save=False
+saved content=version|1.0\r\ngame|mars\r\nscript|a.ddscript\r\n
+file=a.ddscript
+file=a.ddscript_<date>
+file=radix_and_mars.ddide
+file=saved.ddide
+-- save log
+NORMAL|Saving "<dir>\saved.ddide"\r\n
+NORMAL|Saving "<dir>\a.ddscript"\r\n

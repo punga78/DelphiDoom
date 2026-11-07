@@ -36,7 +36,9 @@ interface
 uses
   d_delphi,
   tables,
-  gl_types;
+  gl_types,
+  DelphiDoom.Voxel.Types,
+  DelphiDoom.Voxel.Intf;
 
 var
   gl_drawvoxels: boolean = true;
@@ -66,6 +68,13 @@ procedure gld_InitVoxels;
 //==============================================================================
 procedure gld_VoxelsDone;
 
+//==============================================================================
+//
+// gld_ConfigureVoxelLoading
+//
+//==============================================================================
+procedure gld_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
+
 var
   // When = 0 we use TVoxelMeshOptimizer.FastOptimize(),
   // otherwize indicate the pass count for TVoxelMeshOptimizer.Optimize()
@@ -81,14 +90,12 @@ uses
   doomdef,
   gl_defs,
   i_system,
-  sc_engine,
-  vx_base,
-  w_folders,
-  w_pak,
-  w_wad;
+  vx_base;
 
 var
   vx_membuffer: pointer = nil;
+  gl_voxelloader: IVoxelLoader = nil;
+  gl_voxelcubes: IVoxelCubeBuilder = nil;
 
 const
   FLG_SKIPX0 = 1;
@@ -915,24 +922,6 @@ end;
 
 //==============================================================================
 //
-// gld_VoxelRGBSwap
-//
-//==============================================================================
-function gld_VoxelRGBSwap(buffer: LongWord): LongWord;
-var
-  r, g, b: LongWord;
-begin
-  Result := buffer;
-  b := Result and $FF;
-  Result := Result shr 8;
-  g := Result and $FF;
-  Result := Result shr 8;
-  r := Result and $FF;
-  Result := r + g shl 8 + b shl 16;
-end;
-
-//==============================================================================
-//
 // gld_ClearVoxelBuffer
 //
 //==============================================================================
@@ -951,788 +940,39 @@ end;
 
 //==============================================================================
 //
-// gld_LoadDDVOX
+// gld_ListFromCube
+// The list of a DDVOX or VOX model (the loader of Libs\Voxel puts it in a cube)
 //
 //==============================================================================
-function gld_LoadDDVOX(const fname: string; const offset, scale: float): GLuint;
+function gld_ListFromCube(const cube: IVoxelCube; const offset, scale: float): GLuint;
 var
-  buf: TDStringList;
-  sc: TScriptEngine;
-  xx, yy, zz: integer;
-  s: string;
-  strm: TPakStream;
+  cells: TArray<LongWord>;
   voxelbuffer: voxelbuffer_p;
   voxelsize: integer;
+  xx, yy, zz: integer;
+  idx: integer;
   vp: voxelitem_p;
   xxx, yyy, zzz: float;
   xxx1, yyy1, zzz1: float;
   c: GLuint;
-  old_skip_x0, old_skip_x1: boolean;
-  old_skip_y0, old_skip_y1: boolean;
-  old_skip_z0, old_skip_z1: boolean;
   skip_x0, skip_x1: boolean;
   skip_y0, skip_y1: boolean;
   skip_z0, skip_z1: boolean;
-  skip: integer;
   vmx: TVoxelMeshOptimizerDDVOX;
 begin
-  strm := TPakStream.Create(fname, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  buf := TDStringList.Create;
-  buf.LoadFromStream(strm);
-  strm.Free;
-  sc := TScriptEngine.Create(buf.Text);
-  buf.free;
-
-  sc.MustGetInteger;
-  voxelsize := sc._Integer;
+  voxelsize := cube.Size;
+  cells := cube.Cells;
 
   voxelbuffer := vx_membuffer;
   gld_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  xx := 0;
-  yy := 0;
-  zz := 0;
-  while sc.GetString do
-  begin
-    if sc.MatchString('skip') then
-    begin
-      sc.MustGetInteger;
-      inc(zz, sc._Integer);
-    end
-    else
-    begin
-      sc.UnGet;
-      sc.MustGetInteger;
-      voxelbuffer[xx, yy, zz].color := sc._Integer;
-      Inc(zz);
-    end;
-    if zz = voxelsize then
-    begin
-      zz := 0;
-      Inc(yy);
-      if yy = voxelsize then
-      begin
-        yy := 0;
-        Inc(xx);
-        if xx = voxelsize then
-          Break;
-      end;
-    end;
-  end;
-  sc.Free;
-
-  gld_BuildVoxelbufferFlags(voxelbuffer, voxelsize);
-
-  vmx := TVoxelMeshOptimizerDDVOX.Create;
-
-  vmx.step := - 1 / MAP_COEFF * scale;
-  vmx.midx := vmx.step * voxelsize / 2;
-  vmx.midy := vmx.step * voxelsize + offset / MAP_COEFF; // Align down
-  vmx.midz := vmx.step * voxelsize / 2;
-
+  idx := 0;
   for xx := 0 to voxelsize - 1 do
-  begin
-    xxx := xx;
-    xxx1 := xx + 1;
     for yy := 0 to voxelsize - 1 do
-    begin
-      yyy := yy;
-      yyy1 := yy + 1;
       for zz := 0 to voxelsize - 1 do
       begin
-        vp := @voxelbuffer[xx, yy, zz];
-        c := gld_VoxelRGBSwap(vp.color);
-
-        if c <> 0 then
-        begin
-          zzz := zz;
-          zzz1 := zz + 1;
-
-          skip_x0 := vp.flags and FLG_SKIPX0 <> 0;
-          skip_x1 := vp.flags and FLG_SKIPX1 <> 0;
-          skip_y0 := vp.flags and FLG_SKIPY0 <> 0;
-          skip_y1 := vp.flags and FLG_SKIPY1 <> 0;
-          skip_z0 := vp.flags and FLG_SKIPZ0 <> 0;
-          skip_z1 := vp.flags and FLG_SKIPZ1 <> 0;
-
-          if not skip_z0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy1, zzz,
-                        xxx1, yyy1, zzz,
-                        xxx1, yyy, zzz);
-          end;
-
-          if not skip_y0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy, zzz1,
-                        xxx1, yyy, zzz1,
-                        xxx1, yyy, zzz);
-          end;
-
-          if not skip_x0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy, zzz1,
-                        xxx, yyy1, zzz1,
-                        xxx, yyy1, zzz);
-          end;
-
-          if not skip_z1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz1,
-                        xxx, yyy1, zzz1,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy, zzz1);
-          end;
-
-          if not skip_y1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy1, zzz,
-                        xxx, yyy1, zzz1,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy1, zzz);
-          end;
-
-          if not skip_x1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx1, yyy, zzz,
-                        xxx1, yyy1, zzz,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy , zzz1);
-          end;
-        end;
+        voxelbuffer[xx, yy, zz].color := cells[idx];
+        Inc(idx);
       end;
-    end;
-  end;
-
-  // If vx_maxoptimizerpasscount = 0 then vmx.Optimize() will call vmx.FastOptimize()
-  vmx.Optimize;
-
-  result := glGenLists(1);
-
-  glNewList(result, GL_COMPILE);
-
-    vmx.RenderGL;
-
-  glEndList;
-
-  vmx.Free;
-end;
-
-type
-  ddmeshvertex_t = record
-    x, y, z: integer;
-  end;
-
-  ddmeshquad_t = record
-    color: LongWord;
-    vertexes: array[0..3] of ddmeshvertex_t;
-  end;
-
-//==============================================================================
-//
-// gld_LoadDDMESH
-//
-//==============================================================================
-function gld_LoadDDMESH(const fname: string; const offset, scale: float): GLuint;
-var
-  HDR: LongWord;
-  version: integer;
-  numquads: integer;
-  quad: ddmeshquad_t;
-  strm: TPakStream;
-  voxelsize: integer;
-  step: float;
-  midx, midy, midz: float;
-  c: GLuint;
-  i, j: integer;
-  r, g, b: LongWord;
-  idx: LongWord;
-  x, y: LongWord;
-
-  procedure _vertex(const v: ddmeshvertex_t);
-  begin
-    glVertex3f(midx - v.x * step, v.y * step - midy, v.z * step - midz);
-  end;
-
-begin
-  strm := TPakStream.Create(fname, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  strm.Read(HDR, SizeOf(LongWord));
-  if HDR <> Ord('D') + Ord('D') shl 8 + Ord('M') shl 16 + Ord('S') shl 24 then
-  begin
-    I_Warning('gld_LoadDDMESH(): File %s does not have DDMESH magic header!', [fname]);
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  strm.Read(version, SizeOf(integer));
-  if version <> 1 then
-  begin
-    I_Warning('gld_LoadDDMESH(): File %s is from unsupported version = %d!', [fname, version]);
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  strm.Read(voxelsize, SizeOf(integer));
-
-  strm.Read(numquads, SizeOf(integer));
-
-  step := - 1 / MAP_COEFF * scale;
-  midx := step * voxelsize / 2;
-  midy := step * voxelsize + offset / MAP_COEFF; // Align down
-  midz := step * voxelsize / 2;
-
-  result := glGenLists(1);
-
-  glNewList(result, GL_COMPILE);
-
-    glBegin(GL_QUADS);
-
-      for i := 0 to numquads - 1 do
-      begin
-        strm.Read(quad, SizeOf(ddmeshquad_t));
-        c := quad.color;
-        // Get the index to the (procedurally generated) voxeltexture
-        b := (c shr 16) and $FF;
-        g := (c shr  8) and $FF;
-        r := (c       ) and $FF;
-        idx := (r div 4) + (g div 4) * 64 + (b div 4) * 64 * 64;
-        x := idx and 511;
-        y := idx shr 9;
-
-        glTexCoord2f(x / 512 + 1 / 1024, y / 512 + 1 / 1024);
-        for j := 0 to 3 do
-          _vertex(quad.vertexes[j]);
-      end;
-
-    glEnd;
-
-  glEndList;
-
-  strm.Free;
-
-end;
-
-const
-  MAXKVXSIZE = 256;
-
-type
-  kvxbuffer_t = array[0..MAXKVXSIZE - 1, 0..MAXKVXSIZE - 1, 0..MAXKVXSIZE - 1] of word;
-  kvxbuffer_p = ^kvxbuffer_t;
-
-type
-  kvxslab_t = record
-    ztop: byte;    // starting z coordinate of top of slab
-    zleng: byte;  // # of bytes in the color array - slab height
-    backfacecull: byte;  // low 6 bits tell which of 6 faces are exposed
-    col: array[0..255] of byte;// color data from top to bottom
-  end;
-  kvxslab_p = ^kvxslab_t;
-
-//==============================================================================
-//
-// gld_LoadKVX
-//
-//==============================================================================
-function gld_LoadKVX(const fn: string; const offset, scale: float): GLuint;
-var
-  strm: TDStream;
-  pal: array[0..255] of LongWord;
-  i: integer;
-  r, g, b: byte;
-  buf: PByteArray;
-  numbytes: integer;
-  xsiz, ysiz, zsiz, xpivot, ypivot, zpivot: integer;
-  xoffset: PIntegerArray;
-  xyoffset: PSmallIntPArray;
-  voxdata: PByteArray;
-  xx, yy, zz: integer;
-  step: float;
-  midx, midy, midz: float;
-  xxx, yyy, zzz,
-  xxx1, yyy1, zzz1: float;
-  c, oldc: GLuint;
-  slab: kvxslab_p;
-  kvxbuffer: kvxbuffer_p;
-  skip_x0, skip_x1: boolean;
-  skip_y0, skip_y1: boolean;
-  skip_z0, skip_z1: boolean;
-  old_skip_x0, old_skip_x1: boolean;
-  old_skip_y0, old_skip_y1: boolean;
-  old_skip_z0, old_skip_z1: boolean;
-  voxdatasize: integer;
-  offs: integer;
-  endptr: PByte;
-  skip: integer;
-  vmx: TVoxelMeshOptimizerKVX;
-  maxpal: integer;
-  cc: integer;
-  palfactor: double;
-  lump: integer;
-  len: integer;
-  s1, s2, s3: string;
-begin
-  strm := TPakStream.Create(fn, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    strm := TPakStream.Create(fn, pm_directory, '', FOLDER_VOXELS);
-  end;
-  if strm.IOResult <> 0 then
-    if CharPos('.', fn) = 0 then
-    begin
-      s1 := fn + '.KVX';
-      strm.Free;
-      strm := TPakStream.Create(s1, pm_prefered, gamedirectories, FOLDER_VOXELS);
-      if strm.IOResult <> 0 then
-      begin
-        strm.Free;
-        strm := TPakStream.Create(s1, pm_directory, '', FOLDER_VOXELS);
-      end;
-    end;
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    s1 := fname(fn);
-    splitstring_ch(s1, s2, s3, '.');
-    lump := W_CheckNumForName(s2, TYPE_VOXEL);
-    if lump < 0 then
-    begin
-      result := GL_BAD_LIST;
-      Exit;
-    end;
-    len := W_LumpLength(lump);
-    buf := malloc(len);
-    W_ReadLump(lump, buf);
-    strm := TDMemoryStream.Create;
-    strm.Write(buf^, len);
-    strm.Seek(0, sFromBeginning);
-    memfree(pointer(buf), len);
-  end;
-
-  if strm.Size < 768 + 28 then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  strm.Seek(768, sFromEnd);
-  maxpal := 0;
-  for i := 0 to 255 do
-  begin
-    strm.Read(r, SizeOf(Byte));
-    if r > maxpal then
-      maxpal := r;
-    strm.Read(g, SizeOf(Byte));
-    if g > maxpal then
-      maxpal := g;
-    strm.Read(b, SizeOf(Byte));
-    if b > maxpal then
-      maxpal := b;
-    pal[i] := r shl 16 + g shl 8 + b;
-    if pal[i] = 0 then
-      pal[i] := $01;
-  end;
-  // Kvx palette (usually?) uses palette colors in range 0..63)
-  if (maxpal < 255) and (maxpal > 0) then
-  begin
-    palfactor := 255 / maxpal;
-    if palfactor > 4.0 then
-      palfactor := 4.0;
-    for i := 0 to 255 do
-    begin
-      r := pal[i] shr 16;
-      g := pal[i] shr 8;
-      b := pal[i];
-      cc := round(palfactor * r);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      r := cc;
-      cc := round(palfactor * g);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      g := cc;
-      cc := round(palfactor * b);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      b := cc;
-      pal[i] := r shl 16 + g shl 8 + b;
-    end;
-  end;
-
-  strm.Seek(0, sFromBeginning);
-  strm.Read(numbytes, SizeOf(Integer));
-  strm.Read(xsiz, SizeOf(Integer));
-  strm.Read(ysiz, SizeOf(Integer));
-  strm.Read(zsiz, SizeOf(Integer));
-  strm.Read(xpivot, SizeOf(Integer));
-  strm.Read(ypivot, SizeOf(Integer));
-  strm.Read(zpivot, SizeOf(Integer));
-  xoffset := malloc((xsiz + 1) * SizeOf(Integer));
-  xyoffset := malloc(xsiz * SizeOf(PSmallIntArray));
-  for i := 0 to xsiz - 1 do
-    xyoffset[i] := malloc((ysiz + 1) * SizeOf(SmallInt));
-  strm.Read(xoffset^, (xsiz + 1) * SizeOf(Integer));
-  for i := 0 to xsiz - 1 do
-    strm.Read(xyoffset[i]^, (ysiz + 1) * SizeOf(SmallInt));
-  offs := xoffset[0];
-  voxdatasize := numbytes - 24 - (xsiz + 1) * 4 - xsiz * (ysiz + 1) * 2;
-  voxdata := malloc(voxdatasize);
-  strm.Read(voxdata^, voxdatasize);
-  strm.Free;
-
-  step := - 1 / MAP_COEFF * scale;
-  midx := step * xpivot / 256;
-  midy := step * ypivot / 256;
-  midz := step * zpivot / 256;
-  oldc := $FFFFFFFF;
-
-  kvxbuffer := vx_membuffer;
-  for xx := 0 to xsiz - 1 do
-    for yy := 0 to ysiz - 1 do
-       for zz := 0 to zsiz - 1 do
-         kvxbuffer[xx, yy, zz] := $FFFF;
-
-  for xx := 0 to xsiz - 1 do
-  begin
-    for yy := 0 to ysiz - 1 do
-    begin
-      endptr := @voxdata[xoffset[xx] + xyoffset[xx][yy + 1] - offs];
-      slab := @voxdata[xoffset[xx] + xyoffset[xx][yy] - offs];
-      while Integer(slab) < integer(endptr) do
-      begin
-        for zz := slab.ztop to slab.zleng + slab.ztop - 1 do
-          kvxbuffer[xx, yy, zz] := slab.col[zz - slab.ztop];
-        slab := kvxslab_p(integer(slab) + slab.zleng + 3);
-      end;
-    end;
-  end;
-
-  skip := 0;
-
-  vmx := TVoxelMeshOptimizerKVX.Create;
-
-  for xx := 0 to xsiz - 1 do
-  begin
-    xxx := midx - xx * step;
-    xxx1 := midx - (1 + xx) * step;
-    for yy := 0 to ysiz - 1 do
-    begin
-      old_skip_x0 := true;
-      old_skip_x1 := true;
-      old_skip_y0 := true;
-      old_skip_y1 := true;
-      old_skip_z0 := true;
-      old_skip_z1 := true;
-      yyy := yy * step - midy;
-      yyy1 := (1 + yy) * step - midy;
-      for zz := 0 to zsiz - 1 do
-      begin
-        if skip > 0 then
-        begin
-          dec(skip);
-          Continue;
-        end;
-        skip := 0;
-
-        if kvxbuffer[xx, yy, zz] <> $FFFF then
-        begin
-          for i := zz to zsiz - 1 do
-          begin
-            skip_x0 := (xx > 0) and (kvxbuffer[xx - 1, yy, i] <> $FFFF);
-            skip_x1 := (xx < xsiz - 1) and (kvxbuffer[xx + 1, yy, i] <> $FFFF);
-            skip_y0 := (yy > 0) and (kvxbuffer[xx, yy - 1, i] <> $FFFF);
-            skip_y1 := (yy < ysiz - 1) and (kvxbuffer[xx, yy + 1, i] <> $FFFF);
-            skip_z0 := (i > 0) and (kvxbuffer[xx, yy, i - 1] <> $FFFF);
-            skip_z1 := (i < zsiz - 1) and (kvxbuffer[xx, yy, i + 1] <> $FFFF);
-
-            if (old_skip_x0 = skip_x0) and
-               (old_skip_x1 = skip_x1) and
-               (old_skip_y0 = skip_y0) and
-               (old_skip_y1 = skip_y1) and
-               (old_skip_z0 = skip_z0) and
-               (old_skip_z1 = skip_z1) and
-               (kvxbuffer[xx, yy, i] = kvxbuffer[xx, yy, zz]) then
-              Inc(skip)
-            else
-              break;
-          end;
-
-          skip_x0 := (xx > 0) and (kvxbuffer[xx - 1, yy, zz] <> $FFFF);
-          skip_x1 := (xx < xsiz - 1) and (kvxbuffer[xx + 1, yy, zz] <> $FFFF);
-          skip_y0 := (yy > 0) and (kvxbuffer[xx, yy - 1, zz] <> $FFFF);
-          skip_y1 := (yy < ysiz - 1) and (kvxbuffer[xx, yy + 1, zz] <> $FFFF);
-          skip_z0 := (zz > 0) and (kvxbuffer[xx, yy, zz - 1] <> $FFFF);
-          skip_z1 := (zz < zsiz - 1) and (kvxbuffer[xx, yy, zz + 1] <> $FFFF);
-
-          zzz := zz * step - midz;
-          if skip > 0 then
-            dec(skip);
-          zzz1 := (1 + skip + zz) * step - midz;
-
-          old_skip_x0 := skip_x0;
-          old_skip_x1 := skip_x1;
-          old_skip_y0 := skip_y0;
-          old_skip_y1 := skip_y1;
-          old_skip_z0 := skip_z0;
-          old_skip_z1 := skip_z1;
-
-          c := pal[kvxbuffer[xx, yy, zz]];
-
-          if not skip_z0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy1, zzz,
-                        xxx1, yyy1, zzz,
-                        xxx1, yyy, zzz);
-          end;
-
-          if not skip_y0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy, zzz1,
-                        xxx1, yyy, zzz1,
-                        xxx1, yyy, zzz);
-          end;
-
-          if not skip_x0 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz,
-                        xxx, yyy, zzz1,
-                        xxx, yyy1, zzz1,
-                        xxx, yyy1, zzz);
-          end;
-
-          if not skip_z1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy, zzz1,
-                        xxx, yyy1, zzz1,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy, zzz1);
-          end;
-
-          if not skip_y1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx, yyy1, zzz,
-                        xxx, yyy1, zzz1,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy1, zzz);
-          end;
-
-          if not skip_x1 then
-          begin
-            vmx.AddQuad(c,
-                        xxx1, yyy, zzz,
-                        xxx1, yyy1, zzz,
-                        xxx1, yyy1, zzz1,
-                        xxx1, yyy , zzz1);
-          end;
-
-        end;
-
-      end;
-    end;
-  end;
-
-  for i := 0 to xsiz - 1 do
-    memfree(pointer(xyoffset[i]), (ysiz + 1) * SizeOf(SmallInt));
-  memfree(pointer(xoffset), (xsiz + 1) * SizeOf(Integer));
-  memfree(pointer(xyoffset), xsiz * SizeOf(PSmallIntArray));
-  memfree(pointer(voxdata), voxdatasize);
-
-  // If vx_maxoptimizerpasscount = 0 then vmx.Optimize() will call vmx.FastOptimize()
-  vmx.Optimize;
-
-  result := glGenLists(1);
-
-  glNewList(result, GL_COMPILE);
-
-    vmx.RenderGL;
-
-  glEndList;
-
-  vmx.Free;
-end;
-
-//==============================================================================
-// gld_LoadSlab6VOX
-//
-// R_LoadSlab6VOX
-// JVAL 20191004 Support for slab6 VOX files
-//
-//==============================================================================
-function gld_LoadSlab6VOX(const fn: string; const offset, scale: float): GLuint;
-var
-  strm: TDStream;
-  pal: array[0..255] of LongWord;
-  i: integer;
-  r, g, b: byte;
-  xsiz, ysiz, zsiz: integer;
-  voxdatasize: integer;
-  voxdata: PByteArray;
-  voxelbuffer: voxelbuffer_p;
-  voxelsize: integer;
-  vp: voxelitem_p;
-  xx, yy, zz: integer;
-  x1, y1, z1: integer;
-  s: string;
-  maxpal: integer;
-  cc: integer;
-  palfactor: double;
-  xxx, yyy, zzz: float;
-  xxx1, yyy1, zzz1: float;
-  c: GLuint;
-  old_skip_x0, old_skip_x1: boolean;
-  old_skip_y0, old_skip_y1: boolean;
-  old_skip_z0, old_skip_z1: boolean;
-  skip_x0, skip_x1: boolean;
-  skip_y0, skip_y1: boolean;
-  skip_z0, skip_z1: boolean;
-  skip: integer;
-  vmx: TVoxelMeshOptimizerDDVOX;
-begin
-  strm := TPakStream.Create(fn, pm_prefered, gamedirectories, FOLDER_VOXELS);
-  if strm.IOResult <> 0 then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  if strm.Size < 768 + 12 then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  strm.Seek(768, sFromEnd);
-  maxpal := 0;
-  for i := 0 to 255 do
-  begin
-    strm.Read(r, SizeOf(Byte));
-    if r > maxpal then
-      maxpal := r;
-    strm.Read(g, SizeOf(Byte));
-    if g > maxpal then
-      maxpal := g;
-    strm.Read(b, SizeOf(Byte));
-    if b > maxpal then
-      maxpal := b;
-    pal[i] := r shl 16 + g shl 8 + b;
-    if pal[i] = 0 then
-      pal[i] := $01;
-  end;
-  if (maxpal < 255) and (maxpal > 0) then
-  begin
-    palfactor := 255 / maxpal;
-    if palfactor > 4.0 then
-      palfactor := 4.0;
-    for i := 0 to 255 do
-    begin
-      r := pal[i] shr 16;
-      g := pal[i] shr 8;
-      b := pal[i];
-      cc := round(palfactor * r);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      r := cc;
-      cc := round(palfactor * g);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      g := cc;
-      cc := round(palfactor * b);
-      if cc < 0 then
-        cc := 0
-      else if cc > 255 then
-        cc := 255;
-      b := cc;
-      pal[i] := r shl 16 + g shl 8 + b;
-    end;
-  end;
-
-  strm.Seek(0, sFromBeginning);
-  strm.Read(xsiz, SizeOf(Integer));
-  strm.Read(ysiz, SizeOf(Integer));
-  strm.Read(zsiz, SizeOf(Integer));
-
-  if (xsiz <= 0) or (xsiz > 256) or
-     (ysiz <= 0) or (ysiz > 256) or
-     (zsiz <= 0) or (zsiz > 256) then
-  begin
-    strm.Free;
-    result := GL_BAD_LIST;
-    Exit;
-  end;
-
-  voxelsize := xsiz;
-  if voxelsize < ysiz then
-    voxelsize := ysiz;
-  if voxelsize < zsiz then
-    voxelsize := zsiz;
-
-  voxdatasize := xsiz * ysiz * zsiz;
-  GetMem(voxdata, voxdatasize);
-  strm.Read(voxdata^, voxdatasize);
-  strm.Free;
-
-  x1 := (voxelsize - xsiz) div 2;
-  y1 := (voxelsize - ysiz) div 2;
-  z1 := (voxelsize - zsiz) div 2;
-
-  voxelbuffer := vx_membuffer;
-  gld_ClearVoxelBuffer(voxelbuffer, voxelsize);
-
-  i := 0;
-  for xx := x1 to x1 + xsiz - 1 do
-    for yy := y1 to y1 + ysiz - 1 do
-      for zz := z1 to z1 + zsiz - 1 do
-      begin
-        if voxdata[i] <> 255 then
-          voxelbuffer[xx, zz, voxelsize - yy - 1].color := pal[voxdata[i]];
-        inc(i);
-      end;
-  memfree(pointer(voxdata), voxdatasize);
 
   gld_BuildVoxelbufferFlags(voxelbuffer, voxelsize);
 
@@ -1842,6 +1082,292 @@ end;
 
 //==============================================================================
 //
+// gld_ListFromQuads
+// The list of a DDMESH model: the faces that the file already has
+//
+//==============================================================================
+function gld_ListFromQuads(const model: IVoxelModel; const offset, scale: float): GLuint;
+var
+  voxelsize: integer;
+  step: float;
+  midx, midy, midz: float;
+  quad: TVoxelQuad;
+  c: LongWord;
+  i, j: integer;
+  r, g, b: LongWord;
+  idx: LongWord;
+  x, y: LongWord;
+
+  procedure _vertex(const v: TVoxelQuadVertex);
+  begin
+    glVertex3f(midx - v.X * step, v.Y * step - midy, v.Z * step - midz);
+  end;
+
+begin
+  voxelsize := model.SizeX;
+  step := - 1 / MAP_COEFF * scale;
+  midx := step * voxelsize / 2;
+  midy := step * voxelsize + offset / MAP_COEFF; // Align down
+  midz := step * voxelsize / 2;
+
+  result := glGenLists(1);
+
+  glNewList(result, GL_COMPILE);
+
+    glBegin(GL_QUADS);
+
+      for i := 0 to model.QuadCount - 1 do
+      begin
+        quad := model.Quad(i);
+        c := quad.Color;
+        // Get the index to the (procedurally generated) voxeltexture
+        r := (c shr 16) and $FF;
+        g := (c shr  8) and $FF;
+        b := (c       ) and $FF;
+        idx := (r div 4) + (g div 4) * 64 + (b div 4) * 64 * 64;
+        x := idx and 511;
+        y := idx shr 9;
+
+        glTexCoord2f(x / 512 + 1 / 1024, y / 512 + 1 / 1024);
+        for j := 0 to 3 do
+          _vertex(quad.Vertexes[j]);
+      end;
+
+    glEnd;
+
+  glEndList;
+end;
+
+//==============================================================================
+//
+// gld_ListFromKvx
+// The list of a KVX model: the voxels as the file has them, with the pivot of the file
+//
+//==============================================================================
+function gld_ListFromKvx(const model: IVoxelModel; const offset, scale: float): GLuint;
+var
+  cells: TArray<LongWord>;
+  xsiz, ysiz, zsiz: integer;
+  xx, yy, zz: integer;
+  i: integer;
+  step: float;
+  midx, midy, midz: float;
+  xxx, yyy, zzz,
+  xxx1, yyy1, zzz1: float;
+  c: GLuint;
+  skip_x0, skip_x1: boolean;
+  skip_y0, skip_y1: boolean;
+  skip_z0, skip_z1: boolean;
+  old_skip_x0, old_skip_x1: boolean;
+  old_skip_y0, old_skip_y1: boolean;
+  old_skip_z0, old_skip_z1: boolean;
+  skip: integer;
+  vmx: TVoxelMeshOptimizerKVX;
+
+  function _solid(const ax, ay, az: integer): boolean;
+  begin
+    result := cells[(ax * ysiz + ay) * zsiz + az] <> 0;
+  end;
+
+  function _color(const ax, ay, az: integer): LongWord;
+  begin
+    result := cells[(ax * ysiz + ay) * zsiz + az];
+  end;
+
+begin
+  cells := model.Cells;
+  xsiz := model.SizeX;
+  ysiz := model.SizeY;
+  zsiz := model.SizeZ;
+
+  step := - 1 / MAP_COEFF * scale;
+  midx := step * model.PivotX / 256;
+  midy := step * model.PivotY / 256;
+  midz := step * model.PivotZ / 256;
+
+  skip := 0;
+
+  vmx := TVoxelMeshOptimizerKVX.Create;
+
+  for xx := 0 to xsiz - 1 do
+  begin
+    xxx := midx - xx * step;
+    xxx1 := midx - (1 + xx) * step;
+    for yy := 0 to ysiz - 1 do
+    begin
+      old_skip_x0 := true;
+      old_skip_x1 := true;
+      old_skip_y0 := true;
+      old_skip_y1 := true;
+      old_skip_z0 := true;
+      old_skip_z1 := true;
+      yyy := yy * step - midy;
+      yyy1 := (1 + yy) * step - midy;
+      for zz := 0 to zsiz - 1 do
+      begin
+        if skip > 0 then
+        begin
+          dec(skip);
+          Continue;
+        end;
+        skip := 0;
+
+        if _solid(xx, yy, zz) then
+        begin
+          for i := zz to zsiz - 1 do
+          begin
+            skip_x0 := (xx > 0) and _solid(xx - 1, yy, i);
+            skip_x1 := (xx < xsiz - 1) and _solid(xx + 1, yy, i);
+            skip_y0 := (yy > 0) and _solid(xx, yy - 1, i);
+            skip_y1 := (yy < ysiz - 1) and _solid(xx, yy + 1, i);
+            skip_z0 := (i > 0) and _solid(xx, yy, i - 1);
+            skip_z1 := (i < zsiz - 1) and _solid(xx, yy, i + 1);
+
+            if (old_skip_x0 = skip_x0) and
+               (old_skip_x1 = skip_x1) and
+               (old_skip_y0 = skip_y0) and
+               (old_skip_y1 = skip_y1) and
+               (old_skip_z0 = skip_z0) and
+               (old_skip_z1 = skip_z1) and
+               (_color(xx, yy, i) = _color(xx, yy, zz)) then
+              Inc(skip)
+            else
+              break;
+          end;
+
+          skip_x0 := (xx > 0) and _solid(xx - 1, yy, zz);
+          skip_x1 := (xx < xsiz - 1) and _solid(xx + 1, yy, zz);
+          skip_y0 := (yy > 0) and _solid(xx, yy - 1, zz);
+          skip_y1 := (yy < ysiz - 1) and _solid(xx, yy + 1, zz);
+          skip_z0 := (zz > 0) and _solid(xx, yy, zz - 1);
+          skip_z1 := (zz < zsiz - 1) and _solid(xx, yy, zz + 1);
+
+          zzz := zz * step - midz;
+          if skip > 0 then
+            dec(skip);
+          zzz1 := (1 + skip + zz) * step - midz;
+
+          old_skip_x0 := skip_x0;
+          old_skip_x1 := skip_x1;
+          old_skip_y0 := skip_y0;
+          old_skip_y1 := skip_y1;
+          old_skip_z0 := skip_z0;
+          old_skip_z1 := skip_z1;
+
+          c := _color(xx, yy, zz);
+
+          if not skip_z0 then
+          begin
+            vmx.AddQuad(c,
+                        xxx, yyy, zzz,
+                        xxx, yyy1, zzz,
+                        xxx1, yyy1, zzz,
+                        xxx1, yyy, zzz);
+          end;
+
+          if not skip_y0 then
+          begin
+            vmx.AddQuad(c,
+                        xxx, yyy, zzz,
+                        xxx, yyy, zzz1,
+                        xxx1, yyy, zzz1,
+                        xxx1, yyy, zzz);
+          end;
+
+          if not skip_x0 then
+          begin
+            vmx.AddQuad(c,
+                        xxx, yyy, zzz,
+                        xxx, yyy, zzz1,
+                        xxx, yyy1, zzz1,
+                        xxx, yyy1, zzz);
+          end;
+
+          if not skip_z1 then
+          begin
+            vmx.AddQuad(c,
+                        xxx, yyy, zzz1,
+                        xxx, yyy1, zzz1,
+                        xxx1, yyy1, zzz1,
+                        xxx1, yyy, zzz1);
+          end;
+
+          if not skip_y1 then
+          begin
+            vmx.AddQuad(c,
+                        xxx, yyy1, zzz,
+                        xxx, yyy1, zzz1,
+                        xxx1, yyy1, zzz1,
+                        xxx1, yyy1, zzz);
+          end;
+
+          if not skip_x1 then
+          begin
+            vmx.AddQuad(c,
+                        xxx1, yyy, zzz,
+                        xxx1, yyy1, zzz,
+                        xxx1, yyy1, zzz1,
+                        xxx1, yyy , zzz1);
+          end;
+        end;
+
+      end;
+    end;
+  end;
+
+  // If vx_maxoptimizerpasscount = 0 then vmx.Optimize() will call vmx.FastOptimize()
+  vmx.Optimize;
+
+  result := glGenLists(1);
+
+  glNewList(result, GL_COMPILE);
+
+    vmx.RenderGL;
+
+  glEndList;
+
+  vmx.Free;
+end;
+
+//==============================================================================
+//
+// gld_LoadVoxelList
+// The file is read by the loader of Libs\Voxel; each format makes its list
+//
+//==============================================================================
+function gld_LoadVoxelList(const name: string; const offset, scale: float): GLuint;
+var
+  model: IVoxelModel;
+begin
+  result := GL_BAD_LIST;
+  if (gl_voxelloader = nil) or (gl_voxelcubes = nil) then
+    I_Error('gld_LoadVoxelList(): The voxel loader is not configured');
+
+  model := gl_voxelloader.Load(name);
+  if model = nil then
+    Exit;
+
+  case model.Format of
+    vfDdmesh: result := gld_ListFromQuads(model, offset, scale);
+    vfKvx: result := gld_ListFromKvx(model, offset, scale);
+  else
+    result := gld_ListFromCube(gl_voxelcubes.Build(model, cfRenderer), offset, scale);
+  end;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureVoxelLoading
+//
+//==============================================================================
+procedure gld_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
+begin
+  gl_voxelloader := ALoader;
+  gl_voxelcubes := ACubes;
+end;
+
+//==============================================================================
+//
 // TVoxelModel.Create
 //
 //==============================================================================
@@ -1853,29 +1379,11 @@ begin
 
   ext := strupper(fext(name));
 
-  if ext = '.DDMESH' then
+  if (gl_voxelloader <> nil) and gl_voxelloader.IsSupported(name) then
   begin
     fnumframes := 1;
     precalc := mallocz(fNumFrames * SizeOf(GLuint));
-    precalc[0] := gld_LoadDDMESH(name, offset, scale);
-  end
-  else if ext = '.DDVOX' then
-  begin
-    fnumframes := 1;
-    precalc := mallocz(fNumFrames * SizeOf(GLuint));
-    precalc[0] := gld_LoadDDVOX(name, offset, scale);
-  end
-  else if (ext = '.KVX') or (ext = '') then
-  begin
-    fnumframes := 1;
-    precalc := mallocz(fNumFrames * SizeOf(GLuint));
-    precalc[0] := gld_LoadKVX(name, offset, scale);
-  end
-  else if ext = '.VOX' then
-  begin
-    fnumframes := 1;
-    precalc := mallocz(fNumFrames * SizeOf(GLuint));
-    precalc[0] := gld_LoadSlab6VOX(name, offset, scale);
+    precalc[0] := gld_LoadVoxelList(name, offset, scale);
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);
@@ -1965,8 +1473,6 @@ var
   size: integer;
 begin
   size := SizeOf(voxelbuffer_t);
-  if size < SizeOf(kvxbuffer_t) then
-    size := SizeOf(kvxbuffer_t);
 
   gld_InitVoxelTexture;
   vx_membuffer := malloc(size);
@@ -1986,4 +1492,3 @@ begin
 end;
 
 end.
-

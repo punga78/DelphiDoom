@@ -11,7 +11,8 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Intf,
-  DelphiDoom.Imaging.Factory, DelphiDoom.Tests.Imaging.Samples;
+  DelphiDoom.Imaging.Factory, DelphiDoom.Tests.Imaging.Samples,
+  DelphiDoom.Tests.Imaging.ThumbnailBuilder;
 
 type
   [TestFixture]
@@ -43,6 +44,8 @@ begin
   Assert.IsNotNull(TImagingFactory.CreateHiResTableBuilder, 'dovrebbe creare il costruttore delle tabelle');
   Assert.IsNotNull(TImagingFactory.CreateSineTable, 'dovrebbe creare la tabella dei seni');
   Assert.IsNotNull(TImagingFactory.CreateWallScale, 'dovrebbe creare il calcolo della scala');
+  Assert.IsNotNull(TImagingFactory.CreateThumbnailBuilder(TReferenceColorIndex.Create),
+    'dovrebbe creare chi riduce lo schermo a miniatura');
 end;
 
 procedure TTestImagingFactory.TestPatchReaderWithoutPainterUsesTheStandardOne;

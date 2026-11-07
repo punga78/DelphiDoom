@@ -157,6 +157,7 @@ uses
   p_mapinfo,
   p_setup,
   p_acs,
+  DelphiDoom.Acs.Machine.Types,
   p_maputl,
   p_spec,
   udmf_plats,
@@ -1918,14 +1919,16 @@ end;
 procedure ArchiveScripts;
 var
   i: integer;
+  mapvars_buffer: TAcsMapVariables;
 begin
   StreamOutLong(ASEG_SCRIPTS);
-  for i := 0 to ACScriptCount - 1 do
+  for i := 0 to P_ACSMachine.ScriptCount - 1 do
   begin
-    StreamOutByte(Ord(ACSInfo[i].state));
-    StreamOutWord(ACSInfo[i].waitValue);
+    StreamOutByte(Ord(P_ACSMachine.ScriptState[i]));
+    StreamOutWord(P_ACSMachine.ScriptWaitValue[i]);
   end;
-  StreamOutBuffer(@ACSMapVars, SizeOf(ACSMapVars));
+  mapvars_buffer := P_ACSMachine.MapVariables;
+  StreamOutBuffer(@mapvars_buffer, SizeOf(mapvars_buffer));
   SV_ArchiveGlobalVariables(mapvars);
   SV_ArchivePSMapScript;
   SV_ArchiveOverlay;
@@ -1939,15 +1942,17 @@ end;
 procedure UnarchiveScripts;
 var
   i: integer;
+  mapvars_buffer: TAcsMapVariables;
 begin
   AssertSegment(ASEG_SCRIPTS);
-  for i := 0 to ACScriptCount - 1 do
+  for i := 0 to P_ACSMachine.ScriptCount - 1 do
   begin
-    ACSInfo[i].state := aste_t(GET_BYTE);
-    ACSInfo[i].waitValue := GET_WORD;
+    P_ACSMachine.ScriptState[i] := TAcsScriptState(GET_BYTE);
+    P_ACSMachine.ScriptWaitValue[i] := GET_WORD;
   end;
-  memcpy(@ACSMapVars, saveptr, SizeOf(ACSMapVars));
-  incp(saveptr, SizeOf(ACSMapVars));
+  memcpy(@mapvars_buffer, saveptr, SizeOf(mapvars_buffer));
+  incp(saveptr, SizeOf(mapvars_buffer));
+  P_ACSMachine.MapVariables := mapvars_buffer;
   SV_UnArchiveGlobalVariables(mapvars);
   SV_UnArchivePSMapScript;
   SV_UnArchiveOverlay;
@@ -2271,6 +2276,8 @@ procedure SV_SaveGame(slot: integer; description: string);
 var
   fileName: string;
   versionText: string;
+  worldvars_buffer: TAcsWorldVariables;
+  acsstore_buffer: TAcsStore;
 begin
   // Open the output file
   sprintf(fileName, _SAVEGAMENAME, [SAVEPATH, BASE_SLOT]);
@@ -2294,8 +2301,10 @@ begin
   StreamOutByte(Ord(gameskill));
 
   // Write global script info
-  StreamOutBuffer(@ACSWorldVars, SizeOf(ACSWorldVars));
-  StreamOutBuffer(@ACSStore, SizeOf(ACSStore));
+  worldvars_buffer := P_ACSMachine.WorldVariables;
+  acsstore_buffer := P_ACSMachine.Store;
+  StreamOutBuffer(@worldvars_buffer, SizeOf(worldvars_buffer));
+  StreamOutBuffer(@acsstore_buffer, SizeOf(acsstore_buffer));
 
   ArchivePlayers;
 
@@ -2384,6 +2393,8 @@ var
   playerBackup: array[0..MAXPLAYERS - 1] of player_t;
   mobj: Pmobj_t;
   vstring: string;
+  worldvars_buffer: TAcsWorldVariables;
+  acsstore_buffer: TAcsStore;
 begin
   // Copy all needed save files to the base slot
   if slot <> BASE_SLOT then
@@ -2437,10 +2448,12 @@ begin
   defaultskill := Ord(gameskill);
 
   // Read global script info
-  memcpy(@ACSWorldVars, saveptr, SizeOf(ACSWorldVars));
-  incp(saveptr, SizeOf(ACSWorldVars));
-  memcpy(@ACSStore, saveptr, SizeOf(ACSStore));
-  incp(saveptr, SizeOf(ACSStore));
+  memcpy(@worldvars_buffer, saveptr, SizeOf(worldvars_buffer));
+  incp(saveptr, SizeOf(worldvars_buffer));
+  memcpy(@acsstore_buffer, saveptr, SizeOf(acsstore_buffer));
+  incp(saveptr, SizeOf(acsstore_buffer));
+  P_ACSMachine.WorldVariables := worldvars_buffer;
+  P_ACSMachine.Store := acsstore_buffer;
 
   // Read the player structures
   UnarchivePlayers;

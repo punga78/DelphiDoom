@@ -26,6 +26,7 @@ uses
   DelphiDoom.Engine.Log.Sink,
   DelphiDoom.Clock.Factory,
   DelphiDoom.Video.Factory,
+  i_displaymodes,
   DelphiDoom.Acs.Factory,
   DelphiDoom.Udmf.Games,
   DelphiDoom.Udmf.Factory,
@@ -42,17 +43,43 @@ uses
   p_umapinfo,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
+  DelphiDoom.Engine.Acs.Host,
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
+  DelphiDoom.Actions.Factory,
+  deh_base,
   deh_main,
   DelphiDoom.Clock.Intf,
+  DelphiDoom.Iwad.Intf,
+  DelphiDoom.Iwad.Games,
+  DelphiDoom.Iwad.Factory,
+  DelphiDoom.Engine.Iwad.Options,
+  DelphiDoom.Zone.Factory,
+  DelphiDoom.Engine.Zone.Memory,
+  z_zone,
   d_net,
+{$IFNDEF HEXEN}
+  DelphiDoom.Endoom.Factory,
+  e_endoom,
+{$ENDIF}
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
   m_hash,
+  DelphiDoom.Blockmap.Factory,
+  p_blockmap,
+  DelphiDoom.Serializer.Intf,
+  DelphiDoom.Serializer.Factory,
+  DelphiDoom.Engine.Serializer.Resolver,
+  p_serializer,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
+  DelphiDoom.Engine.Imaging.ColorIndex,
+  DelphiDoom.Screenshot.Factory,
+  DelphiDoom.Engine.Screenshot.Folders,
+  DelphiDoom.Png.Provider,
+  DelphiDoom.Jpeg.Provider,
+  mn_screenshot,
   DelphiDoom.Texture.Intf,
   DelphiDoom.Texture.Factory,
   DelphiDoom.Engine.Texture.PaletteSource,
@@ -104,10 +131,18 @@ uses
   p_switch,
 {$ENDIF}
   p_animdefs,
+  DelphiDoom.Obituary.Intf,
+  DelphiDoom.Obituary.Factory,
+  p_gender,
+  p_obituaries,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
   p_musinfo,
+  DelphiDoom.Nodes.Intf,
+  DelphiDoom.Nodes.Factory,
+  DelphiDoom.Engine.Nodes.LumpSource,
+  nd_main,
   DelphiDoom.DynLights.Types,
   DelphiDoom.DynLights.Intf,
   DelphiDoom.DynLights.Factory,
@@ -122,6 +157,9 @@ uses
   DelphiDoom.Models.Factory,
   mdl_base,
 {$ENDIF}
+  DelphiDoom.Automap.Intf,
+  DelphiDoom.Automap.Factory,
+  am_map,
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.ActorDef.Profiles,
@@ -140,8 +178,20 @@ uses
   DelphiDoom.Engine.TableExport.Weapons,
   DelphiDoom.Engine.TableExport.Settings,
   DelphiDoom.Engine.TableExport.Names,
-  deh_base,
   info_export,
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Voxel.Factory,
+  DelphiDoom.Engine.Voxel.FileSource,
+  DelphiDoom.Engine.Voxel.ColorMapper,
+  DelphiDoom.Engine.Voxel.DefinitionLookup,
+  DelphiDoom.Engine.Voxel.DefinitionSink,
+  vx_base,
+  vx_voxelsprite,
+{$IFDEF OPENGL}
+  gl_voxels,
+{$ELSE}
+  r_voxels,
+{$ENDIF}
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
@@ -153,6 +203,8 @@ uses
   DelphiDoom.Engine.Music.XmiBackend,
   DelphiDoom.Engine.Music.MusBackend,
   DelphiDoom.Engine.Music.MidiFileBackend,
+  DelphiDoom.Engine.Music.ExternalSource,
+  s_externalmusic,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
   DelphiDoom.Input.Intf,
@@ -178,11 +230,21 @@ uses
   w_wadreader,
   w_wadwriter,
   w_pak,
+  w_autoload,
+  DelphiDoom.Scanner.AutoLoad,
+  DelphiDoom.Engine.Wad.AutoLoadLumps,
+  DelphiDoom.Engine.Wad.AutoLoadSink,
+  DelphiDoom.Engine.Scanner.Log,
   doomdef,
   d_main,
   m_argv,
   m_misc,
-  i_system;
+  i_system,
+  i_tmp,
+  i_exec,
+  DelphiDoom.Platform.Intf,
+  DelphiDoom.Platform.Factory,
+  DelphiDoom.Engine.Platform.TempDirectory;
 
 procedure ComposeInput(const ALog: ILog);
 var
@@ -245,6 +307,8 @@ begin
     TXmiMusicBackend.Create,
     TMusMusicBackend.Create,
     TMidiFileMusicBackend.Create)));
+  S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
+    TEngineExternalMusicSource.Create));
 end;
 
 {$IFNDEF HEXEN}
@@ -290,6 +354,7 @@ begin
   if not TDehackedGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
   DEH_Configure(TDehackedFactory.CreateParser(LGame, ALog));
+  DEH_ConfigureActions(TActionsFactory.CreateRegistry);
 end;
 
 procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext);
@@ -332,6 +397,32 @@ begin
   LCatalog := TMusInfoFactory.CreateCatalog(LServices, ALog);
   P_ConfigureMusInfo(LCatalog,
     TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
+end;
+
+procedure ComposeObituary;
+var
+  LGenders: IObituaryGenders;
+begin
+  LGenders := TObituaryFactory.CreateGenders;
+  R_ConfigureGenders(LGenders);
+  P_ConfigureObituaries(TObituaryFactory.CreateFormatter(LGenders));
+end;
+
+procedure ComposeNodes;
+var
+  LSource: INodesLumpSource;
+  LHexen: Boolean;
+begin
+  // the maps of Hexen are already in the Hexen format: the other games convert them for the node builder
+{$IFDEF HEXEN}
+  LHexen := True;
+{$ELSE}
+  LHexen := False;
+{$ENDIF}
+  LSource := TEngineNodesLumpSource.Create;
+  ND_Configure(LSource, TNodesFactory.CreateGlDetector(LSource),
+    TNodesFactory.CreateGlMapFinder(LSource),
+    TNodesFactory.CreateGlbspInputBuilder(LSource, LHexen), LHexen);
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
@@ -438,6 +529,14 @@ begin
 {$IFNDEF OPENGL}
   R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
 {$ENDIF}
+  MN_ConfigureScreenShot(TImagingFactory.CreateThumbnailBuilder(
+    TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
+end;
+
+procedure ComposeScreenshot;
+begin
+  M_ConfigureScreenshot(TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
+    TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create));
 end;
 
 procedure ComposeTexture(const ALog: ILog);
@@ -453,10 +552,38 @@ begin
   T_ConfigureTextures(TTextureFactory.CreateFormats(LServices));
 end;
 
+procedure ComposePlatform;
+var
+  LStore: IFileStore;
+begin
+  LStore := TPlatformFactory.CreateFileStore;
+  M_ConfigureFiles(LStore);
+  I_ConfigureTempFiles(TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore));
+  I_ConfigureExec(TPlatformFactory.CreateProcessRunner);
+  I_ConfigurePlatform(TPlatformFactory.CreateServices);
+end;
+
 procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
   M_ConfigureHash(TMathCoreFactory.CreateStringHashTable);
+end;
+
+procedure ComposeBlockmap;
+begin
+  P_ConfigureBlockmap(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
+    TBlockmapFactory.CreateSlimeTrailRemover);
+end;
+
+procedure ComposeSerializer;
+var
+  LResolver: TEngineSerializerResolver;
+  LHolder: ISerializerStateResolver;
+begin
+  // one object answers for states, mobjs and players: an interface keeps it alive
+  LResolver := TEngineSerializerResolver.Create;
+  LHolder := LResolver;
+  P_ConfigureSerializer(TSerializerFactory.Create(LResolver, LResolver, LResolver));
 end;
 
 {$IFDEF OPENGL}
@@ -471,6 +598,15 @@ begin
     end);
 end;
 {$ENDIF}
+
+procedure ComposeAutomap;
+var
+  LView: IAutomapView;
+  LNavigator: IAutomapNavigator;
+begin
+  TAutomapFactory.CreateView(LView, LNavigator);
+  AM_Configure(LView, LNavigator, TAutomapFactory.CreateMarks);
+end;
 
 procedure ComposeActorDef(const ALog: ILog);
 var
@@ -540,6 +676,36 @@ begin
       LNames, LNames, LNames));
 end;
 
+procedure ComposeIwad;
+var
+  LGame: TIwadGame;
+  LServices: TIwadServices;
+begin
+  if not TIwadGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of IWADs', [_GAME]);
+  LServices := TIwadFactory.CreateWindowsServices(LGame, TEngineIwadOptions.Create);
+  D_ConfigureIwad(LServices.Locator, LServices.Identifier);
+end;
+
+procedure ComposeVoxels(const ALog: ILog);
+var
+  LLoader: IVoxelLoader;
+  LCubes: IVoxelCubeBuilder;
+begin
+  LLoader := TVoxelFactory.CreateLoader(TEngineVoxelFileSource.Create, ALog);
+  LCubes := TVoxelFactory.CreateCubeBuilder;
+{$IFDEF OPENGL}
+  gld_ConfigureVoxelLoading(LLoader, LCubes);
+{$ELSE}
+  R_ConfigureVoxelLoading(LLoader, LCubes);
+{$ENDIF}
+  VX_ConfigureVoxelSprites(LLoader, LCubes,
+    TVoxelFactory.CreatePatchBuilder(TEngineVoxelColorMapper.Create));
+  VX_ConfigureVoxels(
+    TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
+    TEngineVoxelDefinitionSink.Create);
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -549,9 +715,12 @@ var
   LClock: IClock;
   LGame: TUdmfGame;
 begin
+  // The zone first: whatever is built next can already allocate from it
+  Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
+  ComposeIwad;
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
   M_ConfigureDefaults(TConfigurationFactory.CreateFormat);
   LContext := TEngineGameContext.Create;
@@ -561,7 +730,10 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  ComposePlatform;
   ComposeMathCore;
+  ComposeBlockmap;
+  ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl;
 {$ENDIF}
@@ -570,26 +742,39 @@ begin
   I_ConfigureClock(LClock);
   D_ConfigureNet(LClock, LLog, LContext);
   I_ConfigureVideo(TVideoFactory.CreateServices);
+  I_ConfigureDisplayModes(TVideoFactory.CreateDisplayModeCatalog(
+    TVideoFactory.CreateWindowsDisplayModeSource));
   ComposeInput(LLog);
   ComposeSound(LLog);
   ComposeMusic;
   ComposeDehacked(LLog);
   ComposeImaging;
+  ComposeScreenshot;
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);
+  ComposeObituary;
   ComposeMusInfo(LLog);
+  ComposeNodes;
   ComposeDynLights(LLog, LContext);
+  ComposeAutomap;
   ComposeActorDef(LLog);
   ComposeTableExport;
-  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
+  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
+    TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
+{$IFNDEF HEXEN}
+  E_ConfigureEndoom(TEndoomFactory.CreateRenderer);
+{$ENDIF}
+  ComposeVoxels(LLog);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   PAK_Configure(LWadServices);
+  W_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
+    TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
   if not TUdmfGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no format of text maps', [_GAME]);
   P_ConfigureUdmf(TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, LLog), LWadServices);

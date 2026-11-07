@@ -38,7 +38,8 @@ uses
   d_ticcmd,
   DelphiDoom.Logging.Intf,
   DelphiDoom.Clock.Intf,
-  DelphiDoom.Video.Intf;
+  DelphiDoom.Video.Intf,
+  DelphiDoom.Platform.Intf;
 
 //==============================================================================
 //
@@ -436,9 +437,19 @@ function I_GetWindowDPI(const h: THandle): integer;
 //==============================================================================
 function I_GetTickCount: LongWord;
 
+//==============================================================================
+//
+// I_ConfigurePlatform
+// Gives the unit the services about the machine: operating system, processor,
+// executable files, drives, DPI and thread priority. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigurePlatform(const AServices: IPlatformServices);
+
 implementation
 
 uses
+  DelphiDoom.Platform.Types,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -932,108 +943,43 @@ begin
   isdiskbusy := true;
 end;
 
+var
+  // given by the composition root (I_ConfigurePlatform)
+  engine_platform: IPlatformServices = nil;
+
+//==============================================================================
+//
+// I_ConfigurePlatform
+//
+//==============================================================================
+procedure I_ConfigurePlatform(const AServices: IPlatformServices);
+begin
+  engine_platform := AServices;
+end;
+
+//==============================================================================
+//
+// I_PlatformServices
+//
+//==============================================================================
+function I_PlatformServices: IPlatformServices;
+begin
+  if not Assigned(engine_platform) then
+    I_Error('The services of the platform were not configured (I_ConfigurePlatform)');
+  result := engine_platform;
+end;
+
 //==============================================================================
 //
 // I_IsCDRomDrive
 //
 //==============================================================================
 function I_IsCDRomDrive(const drive: char = #0): boolean;
-var
-  drv: array[0..3] of char;
-  prm: string;
-  i: integer;
 begin
   if drive = #0 then
-  begin
-    prm := ParamStr(0);
-    if length(prm) > 4 then
-    begin
-      for i := 0 to 2 do
-        drv[i] := prm[i + 1];
-      drv[3] := #0;
-      result := GetDriveType(drv) = DRIVE_CDROM;
-    end
-    else
-      result := GetDriveType(nil) = DRIVE_CDROM
-  end
+    result := I_PlatformServices.Drives.IsProgramOnCdRom(ParamStr(0))
   else
-  begin
-    drv[0] := drive;
-    drv[1] := ':';
-    drv[2] := '\';
-    drv[3] := #0;
-    result := GetDriveType(drv) = DRIVE_CDROM;
-  end;
-end;
-
-type
-  PImageOptionalHeader = ^TImageOptionalHeader;
-
-const
-  IMAGE_NT_OPTIONAL_HDR32_MAGIC = $10b;
-
-//==============================================================================
-//
-// I_GetOptHeader
-//
-//==============================================================================
-function I_GetOptHeader(PEOptHeader: PImageOptionalHeader; fname: string = ''): boolean;
-var
-  f: file;
-  PEHeaderOffset, PESig: Cardinal;
-  EXESig: Word;
-  PEHeader: TImageFileHeader;
-begin
-  if fname = '' then
-    fname := ParamStr(0);
-
-  if not fopen(f, fname, fOpenReadOnly) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  {$I-}
-  BlockRead(f, EXESig, SizeOf(EXESig));
-  if EXESig <> $5A4D {'MZ'} then
-  begin
-    close(f);
-    result := false;
-    exit;
-  end;
-  seek(f, $3C);
-  BlockRead(f, PEHeaderOffset, SizeOf(PEHeaderOffset));
-  if PEHeaderOffset = 0 then
-  begin
-    close(f);
-    result := false;
-    exit;
-  end;
-  seek(f, PEHeaderOffset);
-  BlockRead(f, PESig, SizeOf(PESig));
-  if PESig <> $00004550 {'PE'#0#0} then
-  begin
-    close(f);
-    result := false;
-    exit;
-  end;
-  BlockRead(f, PEHeader, SizeOf(PEHeader));
-  if PEHeader.SizeOfOptionalHeader <> SizeOf(TImageOptionalHeader) then
-  begin
-    close(f);
-    result := false;
-    exit;
-  end;
-  BlockRead(f, PEOptHeader^, SizeOf(TImageOptionalHeader));
-  if PEOptHeader.Magic <> IMAGE_NT_OPTIONAL_HDR32_MAGIC then
-  begin
-    close(f);
-    result := false;
-    exit;
-  end;
-  close(f);
-  {$I+}
-  result := IOResult = 0;
+    result := I_PlatformServices.Drives.IsCdRomDrive(drive);
 end;
 
 //==============================================================================
@@ -1042,13 +988,10 @@ end;
 //
 //==============================================================================
 function I_GetExeImageSize(fname: string = ''): LongWord;
-var
-  PEOptHeader: TImageOptionalHeader;
 begin
-  if I_GetOptHeader(@PEOptHeader, fname) then
-    result := PEOptHeader.SizeOfImage
-  else
-    result := 0;
+  if fname = '' then
+    fname := ParamStr(0);
+  result := I_PlatformServices.Executable.ImageSize(fname);
 end;
 
 //==============================================================================
@@ -1057,35 +1000,10 @@ end;
 //
 //==============================================================================
 function I_VersionBuilt(fname: string = ''): string;
-var
-  vsize: LongWord;
-  zero: LongWord;
-  buffer: PByteArray;
-  res: pointer;
-  len: LongWord;
-  i: integer;
 begin
   if fname = '' then
     fname := ParamStr(0);
-  vsize := GetFileVersionInfoSize(PChar(fname), zero);
-  if vsize = 0 then
-  begin
-    result := '';
-    exit;
-  end;
-
-  buffer := PByteArray(malloc(vsize + 1));
-  GetFileVersionInfo(PChar(fname), 0, vsize, buffer);
-  VerQueryValue(buffer, '\StringFileInfo\040904E4\FileVersion', res, len);
-  result := '';
-  for i := 0 to len - 1 do
-  begin
-    if PChar(res)^ = #0 then
-      break;
-    result := result + PChar(res)^;
-    res := pointer(integer(res) + 1);
-  end;
-  memfree(pointer(buffer), vsize + 1);
+  result := I_PlatformServices.Executable.FileVersion(fname);
 end;
 
 //==============================================================================
@@ -1101,11 +1019,6 @@ begin
   result := (Code <> -1) and (FILE_ATTRIBUTE_DIRECTORY and Code <> 0);
 end;
 
-var
-  hThread: THandle;
-  iPriority: integer = THREAD_PRIORITY_ERROR_RETURN;
-  prioritycheck: integer = 0;
-
 //==============================================================================
 //
 // I_SetCriticalCPUPriority
@@ -1113,13 +1026,7 @@ var
 //==============================================================================
 procedure I_SetCriticalCPUPriority;
 begin
-  if prioritycheck = 0 then
-  begin
-    iPriority := GetThreadPriority(hThread);
-    if iPriority <> THREAD_PRIORITY_ERROR_RETURN then
-      SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);
-    prioritycheck := 1;
-  end;
+  I_PlatformServices.Priority.RaiseToCritical;
 end;
 
 //==============================================================================
@@ -1129,12 +1036,7 @@ end;
 //==============================================================================
 procedure I_SetNormalCPUPriority;
 begin
-  if prioritycheck = 1 then
-  begin
-    if iPriority <> THREAD_PRIORITY_ERROR_RETURN then
-      SetThreadPriority(hThread, iPriority);
-    prioritycheck := 0;
-  end;
+  I_PlatformServices.Priority.Restore;
 end;
 
 //==============================================================================
@@ -1144,65 +1046,20 @@ end;
 //==============================================================================
 procedure I_DetectOS;
 var
-  info: TOSVersionInfo;
-  osname: string;
-  osbuilt: integer;
+  desc: TOperatingSystemDescription;
+  i: integer;
 begin
-  ZeroMemory(@info, SizeOf(TOSVersionInfo));
-  info.dwOSVersionInfoSize := SizeOf(TOSVersionInfo);
-  GetVersionEx(info);
-  osname := '';
-  case info.dwPlatformId of
-    VER_PLATFORM_WIN32_WINDOWS:
-      begin
-        osplatform := os_Win95;
-        if  info.dwMinorVersion < 10 then
-          osname := '95'
-        else if info.dwMinorVersion < 90 then
-          osname := '98'
-        else
-          osname := 'Me';
-        win_vista_or_newer := false;
-      end;
-    VER_PLATFORM_WIN32_NT:
-      begin
-        if info.dwMajorVersion < 5 then
-          osplatform := os_WinNT4
-        else
-          osplatform := os_Win2k;
-        if info.dwMajorVersion < 5 then
-          osname := 'NT'
-        else if info.dwMajorVersion = 5 then
-        begin
-          if info.dwMinorVersion = 0 then
-            osname := '2000'
-          else if info.dwMinorVersion = 1 then
-            osname := 'XP'
-          else if info.dwMinorVersion = 2 then
-            osname := 'Server 2003';
-        end
-        else if (info.dwMajorVersion = 6) and (info.dwMinorVersion = 0) then
-          osname := 'Vista'
-        else if (info.dwMajorVersion = 6) and (info.dwMinorVersion = 1) then
-          osname := '7';
-        win_vista_or_newer := info.dwMajorVersion >= 6;
-      end;
-    else
-      begin
-        OSPlatform := os_unknown;
-        osname := 'Unknown OS';
-      end;
-  end;
-
-  if osplatform = os_Win95 then
-    osbuilt := info.dwBuildNumber and $FFFF
+  desc := I_PlatformServices.OperatingSystem.Describe;
+  case desc.Kind of
+    oskWindows95: osplatform := os_Win95;
+    oskWindowsNT4: osplatform := os_WinNT4;
+    oskWindows2000: osplatform := os_Win2k;
   else
-    osbuilt := info.dwBuildNumber;
-  printf(' OS: Windows %s %u.%u (Build %u)'#13#10, [osname,
-      info.dwMajorVersion, info.dwMinorVersion, osbuilt]);
-  if info.szCSDVersion[0] <> #0 then
-    printf('     %s'#13#10, [info.szCSDVersion]);
-
+    osplatform := os_unknown;
+  end;
+  win_vista_or_newer := desc.IsVistaOrNewer;
+  for i := 0 to Length(desc.Lines) - 1 do
+    printf('%s'#13#10, [desc.Lines[i]]);
 end;
 
 var
@@ -1215,38 +1072,24 @@ var
 //==============================================================================
 procedure I_DetectCPU;
 var
-  info: TSystemInfo;
+  cpu: ICpuInfo;
 begin
-  try
-  // detect MMX and 3DNow! capable CPU (adapted from AMD's "3DNow! Porting Guide")
-    asm
-      pusha
-      mov  eax, $80000000
-      cpuid
-      cmp  eax, $80000000
-      jbe @@NoMMX3DNow
-      mov mmxMachine, 1
-      mov  eax, $80000001
-      cpuid
-      test edx, $80000000
-      jz @@NoMMX3DNow
-      mov AMD3DNowMachine, 1
-  @@NoMMX3DNow:
-      popa
-    end;
-  except
-  // trap for old/exotics CPUs
+  cpu := I_PlatformServices.Cpu;
+  if cpu.HasMmx then
+    mmxMachine := 1
+  else
     mmxMachine := 0;
+  if cpu.Has3DNow then
+    AMD3DNowMachine := 1
+  else
     AMD3DNowMachine := 0;
-  end;
 
   if mmxMachine <> 0 then
     printf(' MMX extentions detected'#13#10);
   if AMD3DNowMachine <> 0 then
     printf(' AMD 3D Now! extentions detected'#13#10);
 
-  GetSystemInfo(info);
-  numcpus := info.dwNumberOfProcessors;
+  numcpus := cpu.ProcessorCount;
 
   if numcpus > 1 then
     printf(' Multi-core system detected (%d CPUs)'#13#10, [numcpus]);
@@ -1363,42 +1206,14 @@ begin
   result := GetSystemMetrics(SM_CYSCREEN);
 end;
 
-type
-  dpiproc_t = function: BOOL; stdcall;
-  dpiproc2_t = function(value: integer): HRESULT; stdcall;
-
 //==============================================================================
 //
 // I_SetDPIAwareness
 //
 //==============================================================================
 function I_SetDPIAwareness: boolean;
-var
-  dpifunc: dpiproc_t;
-  dpifunc2: dpiproc2_t;
-  dllinst: THandle;
 begin
-  result := false;
-
-  dllinst := LoadLibrary('Shcore.dll');
-  if dllinst <> 0 then
-  begin
-    dpifunc2 := GetProcAddress(dllinst, 'SetProcessDpiAwareness');
-    if assigned(dpifunc2) then
-    begin
-      result := dpifunc2(2) = S_OK;
-      if not result then
-        result := dpifunc2(1) = S_OK;
-    end;
-    FreeLibrary(dllinst);
-    exit;
-  end;
-
-  dllinst := LoadLibrary('user32');
-  dpifunc := GetProcAddress(dllinst, 'SetProcessDPIAware');
-  if assigned(dpifunc) then
-    result := dpifunc;
-  FreeLibrary(dllinst);
+  result := I_PlatformServices.Dpi.SetAwareness;
 end;
 
 //==============================================================================
@@ -1407,20 +1222,9 @@ end;
 //
 //==============================================================================
 function I_GetWindowDPI(const h: THandle): integer;
-var
-  dpifunc2: dpiproc2_t;
-  dllinst: THandle;
 begin
-  dllinst := LoadLibrary(user32);
-  dpifunc2 := GetProcAddress(dllinst, 'GetDpiForWindow');
-  if assigned(dpifunc2) then
-    result := dpifunc2(h)
-  else
-    result := 96;
-
-  FreeLibrary(dllinst);
+  result := I_PlatformServices.Dpi.WindowDpi(h);
 end;
-
 
 //==============================================================================
 //
@@ -1431,8 +1235,5 @@ function I_GetTickCount: LongWord;
 begin
   Result := GetTickCount;
 end;
-
-initialization
-  hThread := GetCurrentThread;
 
 end.

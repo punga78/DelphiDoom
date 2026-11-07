@@ -4,9 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls;
+  StdCtrls, ExtCtrls, DelphiDoom.Ide.SearchHistory;
 
 type
+  /// <summary>The "Find" dialog; its drop down list is kept by TIdeSearchHistory</summary>
   TTextSearchDialog = class(TForm)
     Label1: TLabel;
     cbSearchText: TComboBox;
@@ -128,15 +129,14 @@ end;
 //==============================================================================
 function TTextSearchDialog.GetSearchTextHistory: string;
 var
-  i: integer;
+  LHistory: TIdeSearchHistory;
 begin
-  Result := '';
-  for i := 0 to cbSearchText.Items.Count - 1 do begin
-    if i >= 10 then
-      break;
-    if i > 0 then
-      Result := Result + #13#10;
-    Result := Result + cbSearchText.Items[i];
+  LHistory := TIdeSearchHistory.Create;
+  try
+    LHistory.LoadFromText(cbSearchText.Items.Text);
+    Result := LHistory.AsText;
+  finally
+    LHistory.Free;
   end;
 end;
 
@@ -237,18 +237,21 @@ procedure TTextSearchDialog.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 var
   s: string;
-  i: integer;
+  LHistory: TIdeSearchHistory;
 begin
   if ModalResult = mrOK then begin
     s := cbSearchText.Text;
     if s <> '' then begin
-      i := cbSearchText.Items.IndexOf(s);
-      if i > -1 then begin
-        cbSearchText.Items.Delete(i);
-        cbSearchText.Items.Insert(0, s);
-        cbSearchText.Text := s;
-      end else
-        cbSearchText.Items.Insert(0, s);
+      // the text goes to the front of the list (once), then the box shows it again
+      LHistory := TIdeSearchHistory.Create;
+      try
+        LHistory.LoadFromText(cbSearchText.Items.Text);
+        LHistory.Remember(s);
+        cbSearchText.Items.Text := LHistory.AsText;
+      finally
+        LHistory.Free;
+      end;
+      cbSearchText.Text := s;
     end;
   end;
 end;

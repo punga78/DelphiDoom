@@ -1,0 +1,12 @@
+source control.acs
+load
+start 1 0 1,0,0,0
+tick 3
+start 1 0 2,0,0,0
+tick 3
+start 1 0 3,0,0,0
+tick 3
+start 1 0 4,0,0,0
+tick 3
+start 1 0 9,0,0,0
+tick 3

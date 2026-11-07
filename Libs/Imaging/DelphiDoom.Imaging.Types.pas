@@ -103,6 +103,24 @@ type
     PreciseOverflow: Boolean;
   end;
 
+  /// <summary>
+  ///   What a thumbnail of the screen depends on: the sizes of the screen and of the view window
+  ///   (the values that the engine keeps in globals) and the size of the thumbnail
+  /// </summary>
+  TImagingThumbnailSettings = record
+    ScreenWidth: Integer;
+    ScreenHeight: Integer;
+    ViewX: Integer;
+    ViewY: Integer;
+    ViewWidth: Integer;
+    ViewHeight: Integer;
+    /// <summary>Width and height of the thumbnail (80x50 in the menu of the engine)</summary>
+    Width: Integer;
+    Height: Integer;
+    /// <summary>True when the first row of the screen is the bottom one (OpenGL)</summary>
+    BottomUp: Boolean;
+  end;
+
 resourcestring
   SImagingColumnWithoutEnd = 'The column does not end inside the data';
   SImagingPostTruncated = 'A post of the column goes past the end of the data';
@@ -123,6 +141,7 @@ resourcestring
   SImagingWipeNotStarted = 'The wipe has not been started';
   SImagingWipeBufferSize = 'A buffer of the wipe is smaller than the screen';
   SImagingBadSineTable = 'The table of the sines needs five quarters of the circle';
+  SImagingBadThumbnail = 'The screen, the palette or the size of the thumbnail are not valid';
 
 implementation
 

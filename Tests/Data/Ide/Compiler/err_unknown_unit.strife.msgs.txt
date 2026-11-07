@@ -1,0 +1,2 @@
+ Pos: 000008 Compiler: [Error] nonexistentunit(2:3): Unknown identifier ''
+ Pos: 000008 Compiler: [Error] (2:3): Unit 'nonexistentunit' not found or contains errors

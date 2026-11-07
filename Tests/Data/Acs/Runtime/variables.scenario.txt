@@ -1,0 +1,7 @@
+source variables.acs
+load
+start 1 0 1,2,3,0 act=1 line=2
+start 2 0 0,0,0,0
+tick 4
+start 1 0 5,6,7,0
+tick 2

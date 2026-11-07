@@ -42,7 +42,8 @@ interface
 uses
   d_event,
   doomdef,
-  DelphiDoom.IdTech.Intf;
+  DelphiDoom.IdTech.Intf,
+  DelphiDoom.Iwad.Intf;
 
 const
 {$IFNDEF FPC}
@@ -118,13 +119,6 @@ procedure D_AdvanceDemo;
 //
 //==============================================================================
 procedure D_StartTitle;
-
-//==============================================================================
-//
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
 
 //==============================================================================
 //
@@ -210,6 +204,13 @@ var
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
 
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+
 var
   showmessageboxonmodified: boolean = false;
 {$IFNDEF OPENGL}
@@ -249,7 +250,7 @@ uses
   i_io,
   i_tmp,
   i_startup,
-  i_steam,
+  DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
   nd_main,
@@ -1063,8 +1064,21 @@ begin
   D_PaksAutoload(s2);
 end;
 
-const
-  PATH_SEPARATOR = ';';
+var
+  // given by the composition root (D_ConfigureIwad)
+  iwad_locator: IIwadLocator = nil;
+  iwad_identifier: IIwadIdentifier = nil;
+
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+begin
+  iwad_locator := ALocator;
+  iwad_identifier := AIdentifier;
+end;
 
 //==============================================================================
 //
@@ -1072,114 +1086,10 @@ const
 //
 //==============================================================================
 function D_FileInDoomPath(const fn: string): string;
-var
-  doomwaddir: string;
-  doomwadpath: string;
-  paths: TDStringList;
-  i: integer;
-  tmp: string;
 begin
-  if fexists(fn) then
-  begin
-    result := fn;
-    exit;
-  end;
-
-  paths := TDStringList.Create;
-
-  if searchdoomwaddir then
-  begin
-    doomwaddir := getenv('DOOMWADDIR');
-    if doomwaddir <> '' then
-      paths.Add(doomwaddir);
-  end;
-
-  if searchdoomwadpath then
-  begin
-    doomwadpath := getenv('DOOMWADPATH');
-    if doomwadpath <> '' then
-    begin
-      tmp := '';
-      for i := 1 to length(doomwadpath) do
-      begin
-        if doomwadpath[i] = PATH_SEPARATOR then
-        begin
-          if tmp <> '' then
-          begin
-            paths.Add(tmp);
-            tmp := '';
-          end;
-        end
-        else
-          tmp := tmp + doomwadpath[i];
-      end;
-      if tmp <> '' then
-        paths.Add(tmp);
-    end;
-  end;
-
-  if additionalwadpaths <> '' then
-  begin
-    tmp := '';
-    for i := 1 to length(additionalwadpaths) do
-    begin
-      if additionalwadpaths[i] = PATH_SEPARATOR then
-      begin
-        if tmp <> '' then
-        begin
-          paths.Add(tmp);
-          tmp := '';
-        end;
-      end
-      else
-        tmp := tmp + additionalwadpaths[i];
-    end;
-    if tmp <> '' then
-      paths.Add(tmp);
-  end;
-
-  if searchsteampaths then
-  begin
-    tmp := QuerySteamDirectory(2280);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads\');
-    end;
-
-    tmp := QuerySteamDirectory(2290);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads\');
-    end;
-
-    tmp := QuerySteamDirectory(2300);
-    if tmp <> '' then
-    begin
-      paths.Add(tmp);
-      paths.Add(tmp + 'base\');
-      paths.Add(tmp + 'base\wads\');
-    end;
-  end;
-
-  result := fname(fn);
-  for i := 0 to paths.Count - 1 do
-  begin
-    tmp := fixslashpath(paths.Strings[i]);
-    if tmp[length(tmp)] <> '\' then
-      tmp := tmp + '\';
-    if fexists(tmp + result) then
-    begin
-      result := tmp + result;
-      paths.free;
-      exit;
-    end;
-  end;
-  result := fn;
-  paths.free;
+  if iwad_locator = nil then
+    I_Error('D_FileInDoomPath(): the IWAD locator was not given (D_ConfigureIwad)');
+  result := iwad_locator.Locate(fn);
 end;
 
 const
@@ -1214,72 +1124,29 @@ var
 //==============================================================================
 procedure IdentifyVersion;
 var
-  doom1wad: string;
-  doomwad: string;
-  doomuwad: string;
-  doom2wad: string;
-  doombfgwad: string;
-  doom2bfgwad: string;
-
-  doom2fwad: string;
-  plutoniawad: string;
-  tntwad: string;
-  doomwaddir: string;
+  customname: string;
+  ident: TIwadIdentification;
   p: integer;
 begin
-  if searchdoomwaddir then
-    doomwaddir := getenv('DOOMWADDIR')
-  else
-    doomwaddir := '';
+  if iwad_identifier = nil then
+    I_Error('IdentifyVersion(): the IWAD identifier was not given (D_ConfigureIwad)');
 
-  if doomwaddir = '' then
-    doomwaddir := '.';
-
-  // Commercial.
-  sprintf(doom2wad, '%s\doom2.wad', [doomwaddir]);
-
-  // Retail.
-  sprintf(doomuwad, '%s\doomu.wad', [doomwaddir]);
-
-  // Registered.
-  sprintf(doomwad, '%s\doom.wad', [doomwaddir]);
-
-  // Shareware.
-  sprintf(doom1wad, '%s\doom1.wad', [doomwaddir]);
-
-  // plutonia pack
-  sprintf(plutoniawad, '%s\plutonia.wad', [doomwaddir]);
-
-  // tnt pack
-  sprintf(tntwad, '%s\tnt.wad', [doomwaddir]);
-
-  // Doom BFG
-  sprintf(doombfgwad, '%s\doombfg.wad', [doomwaddir]);
-
-  // Doom2 BFG
-  sprintf(doom2bfgwad, '%s\doom2bfg.wad', [doomwaddir]);
-
-  // French stuff.
-  sprintf(doom2fwad, '%s\doom2f.wad', [doomwaddir]);
-
+  // the file that the player chose
+  customname := '';
   p := M_CheckParm('-mainwad');
   if p = 0 then
     p := M_CheckParm('-iwad');
   if (p > 0) and (p < myargc - 1) then
+    customname := myargv[p + 1];
+  doomcwad := '';
+  if iwad_identifier.TryIdentifyCustom(customname, ident) then
   begin
-    inc(p);
-    doomcwad := D_FileInDoomPath(myargv[p]);
-    if fexists(doomcwad) then
-    begin
-      printf(' External main wad in use: %s'#13#10, [doomcwad]);
-      gamemode := indetermined;
-      D_AddFile(doomcwad);
-      exit;
-    end
-    else
-      doomcwad := '';
+    doomcwad := ident.CustomPath;
+    printf(' External main wad in use: %s'#13#10, [doomcwad]);
+    gamemode := indetermined;
+    D_AddFile(doomcwad);
+    exit;
   end;
-
   if M_CheckParm('-shdev') > 0 then
   begin
     gamemode := shareware;
@@ -1312,100 +1179,37 @@ begin
     exit;
   end;
 
-  for p := 1 to 2 do
+  ident := iwad_identifier.IdentifyKnown;
+  if not ident.Found then
   begin
-    if fexists(doom2bfgwad) then
-    begin
-      gamemode := commercial;
-      gamemission := doom2;
-      customgame := cg_bfg2;
-      D_AddFile(doom2bfgwad);
-      exit;
-    end;
-
-    if fexists(doom2fwad) then
-    begin
-      gamemode := commercial;
-      gamemission := doom2;
-      // C'est ridicule!
-      // Let's handle languages in config files, okay?
-      language := french;
-      printf('French version'#13#10);
-      D_AddFile(doom2fwad);
-      exit;
-    end;
-
-    if fexists(doom2wad) then
-    begin
-      gamemode := commercial;
-      gamemission := doom2;
-      D_AddFile(doom2wad);
-      exit;
-    end;
-
-    if fexists(plutoniawad) then
-    begin
-      gamemode := commercial;
-      gamemission := pack_plutonia;
-      D_AddFile(plutoniawad);
-      exit;
-    end;
-
-    if fexists(tntwad) then
-    begin
-      gamemode := commercial;
-      gamemission := pack_tnt;
-      D_AddFile(tntwad);
-      exit;
-    end;
-
-    if fexists(doombfgwad) then
-    begin
-      gamemode := retail;
-      gamemission := doom;
-      D_AddFile(doomuwad);
-      exit;
-    end;
-
-    if fexists(doomuwad) then
-    begin
-      gamemode := indetermined; // Will check if retail or register mode later
-      gamemission := doom;
-      D_AddFile(doomuwad);
-      exit;
-    end;
-
-    if fexists(doomwad) then
-    begin
-      gamemode := indetermined; // Will check if retail or register mode later
-      gamemission := doom;
-      D_AddFile(doomwad);
-      exit;
-    end;
-
-    if fexists(doom1wad) then
-    begin
-      gamemode := shareware;
-      gamemission := doom;
-      D_AddFile(doom1wad);
-      exit;
-    end;
-
-    if p = 1 then
-    begin
-      doom2wad := D_FileInDoomPath(doom2wad);
-      doomuwad := D_FileInDoomPath(doomuwad);
-      doomwad := D_FileInDoomPath(doomwad);
-      doom1wad := D_FileInDoomPath(doom1wad);
-      plutoniawad := D_FileInDoomPath(plutoniawad);
-      tntwad := D_FileInDoomPath(tntwad);
-      doom2fwad := D_FileInDoomPath(doom2fwad);
-    end;
+    printf('Game mode indeterminate.'#13#10);
+    gamemode := indetermined;
+    exit;
   end;
 
-  printf('Game mode indeterminate.'#13#10);
-  gamemode := indetermined;
-
+  case ident.Mode of
+    igmShareware: gamemode := shareware;
+    igmRegistered: gamemode := registered;
+    igmRetail: gamemode := retail;
+    igmCommercial: gamemode := commercial;
+    igmIndetermined: gamemode := indetermined; // Will check if retail or register mode later
+  end;
+  case ident.Mission of
+    imsDoom: gamemission := doom;
+    imsDoom2: gamemission := doom2;
+    imsPlutonia: gamemission := pack_plutonia;
+    imsTnt: gamemission := pack_tnt;
+  end;
+  if ident.IsBfg2 then
+    customgame := cg_bfg2;
+  if ident.IsFrench then
+  begin
+    // C'est ridicule!
+    // Let's handle languages in config files, okay?
+    language := french;
+    printf('French version'#13#10);
+  end;
+  D_AddFile(ident.Files[0]);
 end;
 
 //==============================================================================
@@ -2938,16 +2742,6 @@ begin
   end;
 
   D_DoomLoop;  // never returns
-end;
-
-//==============================================================================
-//
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
-begin
-  result := paused;
 end;
 
 //==============================================================================

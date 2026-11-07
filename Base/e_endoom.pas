@@ -32,7 +32,8 @@ interface
 
 uses
   d_delphi,
-  d_event;
+  d_event,
+  DelphiDoom.Endoom.Intf;
 
 //-----------------------------------------------------------------------------
 //
@@ -51,6 +52,16 @@ var
   EndLumpName: string = 'ENDSTRF';
 {$ENDIF}
   displayendscreen: boolean;
+
+//==============================================================================
+//
+// E_ConfigureEndoom
+//
+// Gives the renderer of the screen (the composition root does it). Without it
+// E_Init stops with an error.
+//
+//==============================================================================
+procedure E_ConfigureEndoom(const ARenderer: IEndoomRenderer);
 
 //==============================================================================
 //
@@ -100,6 +111,7 @@ implementation
 
 uses
   doomdef,
+  DelphiDoom.Endoom.Types,
   i_system,
 {$IFDEF OPENGL}
   gl_main,
@@ -116,6 +128,17 @@ var
   e_ticks: integer = 0;
   e_blink: boolean = true;
   e_needsupdate: boolean = true;
+  e_renderer: IEndoomRenderer = nil;
+
+//==============================================================================
+//
+// E_ConfigureEndoom
+//
+//==============================================================================
+procedure E_ConfigureEndoom(const ARenderer: IEndoomRenderer);
+begin
+  e_renderer := ARenderer;
+end;
 
 //==============================================================================
 //
@@ -141,31 +164,12 @@ begin
 end;
 
 var
-  e_screen: PByteArray;
-  dosfont: PByteArray;
-
-const
-  fontcolors: array[0..15] of LongWord = (
-    0,                            // black
-    170,                          // blue
-    170 shl 8,                    // green
-    170 shl 8 + 170,              // cyan
-    170 shl 16,                   // red
-    170 shl 16 + 170,             // magent
-    170 shl 16 + 85 shl 8,        // brown
-    170 shl 16 + 170 shl 8 + 170, // light gray
-    85 shl 16 + 85 shl 8 + 85,    // dark gray
-    85 shl 16 + 85 shl 8 + 255,   // light blue
-    85 shl 16 + 255 shl 8 + 85,   // light green
-    85 shl 16 + 255 shl 8 + 255,  // light cyan
-    255 shl 16 + 85 shl 8 + 85,   // light red
-    255 shl 16 + 85 shl 8 + 255,  // light magenta
-    255 shl 16 + 255 shl 8 + 85,  // yellow
-    255 shl 16 + 255 shl 8 + 255  // white
-  );
-
-var
-  fontpalcolors: array[0..15] of byte;
+  e_screen: TArray<Byte>;
+  dosfont: TArray<Byte>;
+  fontpalcolors: TArray<Byte>;
+{$IFDEF OPENGL}
+  e_screen32data: TArray<LongWord>;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -177,17 +181,27 @@ var
   dosfontlump: integer;
   i: integer;
   pal: PByteArray;
+  src: pointer;
 begin
+  if e_renderer = nil then
+    I_Error('E_Init(): the ENDOOM renderer is not configured');
+
   e_ticks := 1;
-  e_screen := malloc(640 * 200 * SizeOf(byte));
   dosfontlump := W_CheckNumForName('DOSFONT');
   if dosfontlump >= 0 then
-    dosfont := W_CacheLumpNum(dosfontlump, PU_STATIC)
+  begin
+    SetLength(dosfont, W_LumpLength(dosfontlump));
+    if Length(dosfont) > 0 then
+    begin
+      src := W_CacheLumpNum(dosfontlump, PU_STATIC);
+      Move(src^, dosfont[0], Length(dosfont));
+      Z_ChangeTag(src, PU_CACHE);
+    end;
+  end
   else
   begin
     I_Warning('E_Init(): Can not find DOSFONT lump'#13#10);
-    dosfont := Z_Malloc(128 * 128, PU_STATIC, nil);
-    ZeroMemory(dosfont, 128 * 128);
+    SetLength(dosfont, 0);
   end;
 
   pal := V_ReadPalette(PU_STATIC);
@@ -195,20 +209,12 @@ begin
   I_SetPalette(pal);
   Z_ChangeTag(pal, PU_CACHE);
 
-  for i := 0 to 15 do
-    fontpalcolors[i] := V_FindAproxColorIndex(@curpal, fontcolors[i]);
+  SetLength(fontpalcolors, ENDOOM_COLOR_COUNT);
+  for i := 0 to ENDOOM_COLOR_COUNT - 1 do
+    fontpalcolors[i] := V_FindAproxColorIndex(@curpal, ENDOOM_COLORS[i]);
 
   e_needsupdate := true;
 end;
-
-type
-  endoomchar_t = packed record
-    code: byte;
-    flags: byte;
-  end;
-  Pendoomchar_t = ^endoomchar_t;
-  endoomchar_tArray = array[0..1999] of endoomchar_t;
-  Pendoomchar_tArray = ^endoomchar_tArray;
 
 //==============================================================================
 //
@@ -217,16 +223,14 @@ type
 //==============================================================================
 procedure E_Drawer;
 var
-  endoom: Pendoomchar_tArray;
-  i: integer;
-  sp, fp: integer; // Screen offset, font offset
-  ix, iy: integer;
-  x, y: integer;
-  cx, cy: integer;
-  bcolor, fcolor: byte;
-  pe_char: Pendoomchar_t;
-  blink: boolean;
+  endoomlump: integer;
+  endoomdata: TArray<Byte>;
+  src: pointer;
   pal: PByteArray;
+{$IFDEF OPENGL}
+  ix: integer;
+  palette: array[0..ENDOOM_PALETTE_SIZE - 1] of LongWord;
+{$ENDIF}
 begin
   pal := V_ReadPalette(PU_STATIC);
   V_SetPalette(pal);
@@ -235,56 +239,28 @@ begin
 
   if e_needsupdate then
   begin
-    endoom := W_CacheLumpName(EndLumpName, PU_STATIC);
-    pe_char := @endoom[0];
-    for i := 0 to 1999 do
+    endoomlump := W_GetNumForName(EndLumpName);
+    SetLength(endoomdata, W_LumpLength(endoomlump));
+    if Length(endoomdata) > 0 then
     begin
-      x := i mod 80;
-      y := i div 80;
-      fcolor := fontpalcolors[pe_char.flags and 15];
-      bcolor := fontpalcolors[(pe_char.flags shr 4) and 7];
-      cx := (pe_char.code - 1) mod 16;
-      cy := (pe_char.code - 1) div 16;
-      if e_blink then
-        blink := true
-      else
-        blink := pe_char.flags shr 7 = 0;
-      for iy := 0 to 7 do
-      begin
-        sp := x * 8 + (y * 8 + iy) * 640;
-        fp := cx * 8 + (cy * 8 + iy) * 128;
-        for ix := 0 to 7 do
-        begin
-          if pe_char.code = 0 then
-            e_screen[sp] := bcolor
-          else if dosfont[fp] = 0 then
-            e_screen[sp] := bcolor
-          else
-          begin
-            if blink then
-              e_screen[sp] := fcolor
-            else
-              e_screen[sp] := bcolor
-          end;
-          inc(sp);
-          inc(fp);
-        end;
-      end;
-      inc(pe_char);
+      src := W_CacheLumpNum(endoomlump, PU_STATIC);
+      Move(src^, endoomdata[0], Length(endoomdata));
+      Z_ChangeTag(src, PU_CACHE);
     end;
-    Z_ChangeTag(endoom, PU_CACHE);
+    e_renderer.RenderIndexed(endoomdata, dosfont, fontpalcolors, e_blink, e_screen);
     e_needsupdate := false;
   end;
 
 {$IFDEF OPENGL}
-  if e_screen32 = nil then
-    e_screen32 := mallocz(ESCREENWIDTH * ESCREENHEIGHT * SizeOf(LongWord));
-
-  for ix := 0 to 639 do
-    for iy := 0 to 199 do
-      e_screen32[iy * ESCREENWIDTH + ix] := videopal[e_screen[iy * 640 + ix]] or $FF000000;
+  // the texture is 1024x256: the renderer fills the first 200 rows, the rest stays at zero
+  if Length(e_screen32data) = 0 then
+    SetLength(e_screen32data, ESCREENWIDTH * ESCREENHEIGHT);
+  for ix := 0 to ENDOOM_PALETTE_SIZE - 1 do
+    palette[ix] := videopal[ix];
+  e_renderer.ConvertToRgb32(e_screen, palette, ESCREENWIDTH, e_screen32data);
+  e_screen32 := PLongWordArray(@e_screen32data[0]);
 {$ELSE}
-  V_CopyCustomScreen(e_screen, 640, 200, SCN_FG);
+  V_CopyCustomScreen(PByteArray(@e_screen[0]), ENDOOM_WIDTH, ENDOOM_HEIGHT, SCN_FG);
 {$ENDIF}
 end;
 
@@ -295,14 +271,11 @@ end;
 //==============================================================================
 procedure E_ShutDown;
 begin
-  if e_ticks > 0 then
-  begin
-    memfree(pointer(e_screen), 640 * 200 * SizeOf(byte));
-    Z_Free(dosfont);
-  end;
+  SetLength(e_screen, 0);
+  SetLength(dosfont, 0);
 {$IFDEF OPENGL}
-  if e_screen32 <> nil then
-    memfree(pointer(e_screen32), ESCREENWIDTH * ESCREENHEIGHT * SizeOf(LongWord));
+  e_screen32 := nil;
+  SetLength(e_screen32data, 0);
 {$ENDIF}
 end;
 

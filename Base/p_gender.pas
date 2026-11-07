@@ -30,6 +30,9 @@ unit p_gender;
 
 interface
 
+uses
+  DelphiDoom.Obituary.Intf;
+
 type
   gender_t = (
     gender_Default,
@@ -41,24 +44,12 @@ type
     NUMGENDERS
   );
 
-  genderinfo_t = record
-    name: string[15];
-    ob_g: string[7];
-    ob_h: string[7];
-    ob_p: string[7];
-    ob_s: string[7];
-    ob_r: string[7];
-  end;
-
-const
-  GENDERINFO: array[0..Ord(NUMGENDERS) - 1] of genderinfo_t = (
-    (name: 'Default'; ob_g: 'it';   ob_h: 'it';   ob_p: 'its';    ob_s: 'its';    ob_r: 'it''s'),
-    (name: 'Male';    ob_g: 'he';   ob_h: 'him';  ob_p: 'his';    ob_s: 'his';    ob_r: 'he''s'),
-    (name: 'Female';  ob_g: 'she';  ob_h: 'her';  ob_p: 'her';    ob_s: 'hers';   ob_r: 'she''s'),
-    (name: 'Plural';  ob_g: 'they'; ob_h: 'them'; ob_p: 'their';  ob_s: 'theirs'; ob_r: 'they''re'),
-    (name: 'Team';    ob_g: 'they'; ob_h: 'them'; ob_p: 'their';  ob_s: 'theirs'; ob_r: 'they''re'),
-    (name: 'Neutral'; ob_g: 'it';   ob_h: 'it';   ob_p: 'its';    ob_s: 'its';    ob_r: 'it''s')
-  );
+//==============================================================================
+//
+// R_ConfigureGenders
+//
+//==============================================================================
+procedure R_ConfigureGenders(const AGenders: IObituaryGenders);
 
 //==============================================================================
 //
@@ -66,11 +57,36 @@ const
 //
 //==============================================================================
 function R_GetGenderForName(const s: string): gender_t;
+
+//==============================================================================
+//
+// R_GenderName
+//
+//==============================================================================
+function R_GenderName(const g: gender_t): string;
 
 implementation
 
 uses
-  d_delphi;
+  DelphiDoom.Obituary.Types,
+  i_system;
+
+var
+  genders: IObituaryGenders = nil;
+
+//==============================================================================
+//
+// R_ConfigureGenders
+//
+//==============================================================================
+procedure R_ConfigureGenders(const AGenders: IObituaryGenders);
+begin
+  // the ordinals of gender_t are the ones that DEHACKED and ACTORDEF store
+  if Ord(NUMGENDERS) <> OBITUARY_GENDER_COUNT then
+    I_Error('R_ConfigureGenders(): the genders of the engine (%d) and of the library (%d) differ',
+      [Ord(NUMGENDERS), OBITUARY_GENDER_COUNT]);
+  genders := AGenders;
+end;
 
 //==============================================================================
 //
@@ -78,34 +94,22 @@ uses
 //
 //==============================================================================
 function R_GetGenderForName(const s: string): gender_t;
-var
-  check: string;
-  i, idx: integer;
 begin
-  result := gender_Default;
+  if genders = nil then
+    I_Error('R_GetGenderForName(): the genders are not configured (ComposeEngine was not called)');
+  result := gender_t(genders.FindByName(s));
+end;
 
-  idx := atoi(s, -1);
-  if idx >= 0 then
-    if idx < Ord(NUMGENDERS) then
-    begin
-      result := gender_t(idx);
-      exit;
-    end;
-
-  check := strupper(s);
-  for i := 0 to Ord(NUMGENDERS) - 1 do
-    if check = strupper(GENDERINFO[i].name) then
-    begin
-      result := gender_t(i);
-      exit;
-    end;
-
-  for i := 0 to Ord(NUMGENDERS) - 1 do
-    if check = 'GENDER_' + strupper(GENDERINFO[i].name) then
-    begin
-      result := gender_t(i);
-      exit;
-    end;
+//==============================================================================
+//
+// R_GenderName
+//
+//==============================================================================
+function R_GenderName(const g: gender_t): string;
+begin
+  if genders = nil then
+    I_Error('R_GenderName(): the genders are not configured (ComposeEngine was not called)');
+  result := genders.NameOf(TObituaryGender(g));
 end;
 
 end.

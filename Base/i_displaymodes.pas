@@ -33,6 +33,9 @@ unit i_displaymodes;
 
 interface
 
+uses
+  DelphiDoom.Video.Intf;
+
 type
   displaymode_t = record
     width, height: integer;
@@ -44,6 +47,16 @@ type
 var
   displaymodes: Pdisplaymode_tArray = nil;
   numdisplaymodes: integer = 0;
+
+//==============================================================================
+//
+// I_ConfigureDisplayModes
+//
+// The catalog of the modes is given by the composition root (ComposeEngine);
+// without it the functions of this unit stop with I_Error.
+//
+//==============================================================================
+procedure I_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 
 //==============================================================================
 //
@@ -104,51 +117,30 @@ uses
   {$ENDIF}
   i_system;
 
+var
+  // given by the composition root (I_ConfigureDisplayModes)
+  engine_displaymodes: IDisplayModeCatalog = nil;
+
 //==============================================================================
 //
-// SortDisplayModes
+// I_ConfigureDisplayModes
 //
 //==============================================================================
-procedure SortDisplayModes;
-
-  function sortvalue(const idx: integer): double;
-  begin
-    result := displaymodes[idx].width + displaymodes[idx].height / 1000000
-  end;
-
-  procedure qsort(l, r: Integer);
-  var
-    i, j: Integer;
-    tmp: displaymode_t;
-    rover: double;
-  begin
-    repeat
-      i := l;
-      j := r;
-      rover := sortvalue((l + r) shr 1);
-      repeat
-        while sortvalue(i) < rover do
-          inc(i);
-        while sortvalue(j) > rover do
-          dec(j);
-        if i <= j then
-        begin
-          tmp := displaymodes[i];
-          displaymodes[i] := displaymodes[j];
-          displaymodes[j] := tmp;
-          inc(i);
-          dec(j);
-        end;
-      until i > j;
-      if l < j then
-        qsort(l, j);
-      l := i;
-    until i >= r;
-  end;
-
+procedure I_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 begin
-  if numdisplaymodes > 0 then
-    qsort(0, numdisplaymodes - 1);
+  engine_displaymodes := ACatalog;
+end;
+
+//==============================================================================
+//
+// DisplayModesCatalog
+//
+//==============================================================================
+function DisplayModesCatalog: IDisplayModeCatalog;
+begin
+  if engine_displaymodes = nil then
+    I_Error('I_ConfigureDisplayModes() was not called: the display modes are missing');
+  result := engine_displaymodes;
 end;
 
 //==============================================================================
@@ -157,20 +149,8 @@ end;
 //
 //==============================================================================
 function I_DisplayModeIndex(const w, h: integer): integer;
-var
-  i: integer;
 begin
-  result := -1;
-
-  if displaymodes = nil then
-    exit;
-
-  for i := 0 to numdisplaymodes - 1 do
-    if (displaymodes[i].width = w) and (displaymodes[i].height = h) then
-    begin
-      result := i;
-      exit;
-    end;
+  result := DisplayModesCatalog.IndexOf(w, h);
 end;
 
 //==============================================================================
@@ -179,98 +159,34 @@ end;
 //
 //==============================================================================
 function I_NearestDisplayModeIndex(const w, h: integer): integer;
-var
-  i: integer;
-  dist: double;
-  mindist: double;
 begin
-  result := I_DisplayModeIndex(w, h);
-  if result >= 0 then
-    exit;
-
-  mindist := 1000000000000.0;
-  for i := 0 to numdisplaymodes - 1 do
-  begin
-    dist := sqrt(sqr(displaymodes[i].width - SCREENWIDTH) + sqr(displaymodes[i].height - SCREENHEIGHT));
-    if SCREENWIDTH < displaymodes[i].width then
-      dist := dist + 50.0;
-    if SCREENHEIGHT < displaymodes[i].height then
-      dist := dist + 50.0;
-    if dist < mindist then
-    begin
-      mindist := dist;
-      result := i;
-    end;
-  end;
-end;
-
-//==============================================================================
-//
-// IsAvailableScreenResolution
-//
-//==============================================================================
-function IsAvailableScreenResolution(const w, h: integer): boolean;
-begin
-  result := I_DisplayModeIndex(w, h) >= 0;
+  result := DisplayModesCatalog.NearestIndex(w, h);
 end;
 
 //==============================================================================
 //
 // I_EnumDisplayModes
 //
+// The catalog chooses the modes; the menus read them from displaymodes[]
+//
 //==============================================================================
 procedure I_EnumDisplayModes;
 var
-  dm: TDevMode;
   i: integer;
+  catalog: IDisplayModeCatalog;
 begin
-  if displaymodes <> nil then
-    memfree(pointer(displaymodes), numdisplaymodes * SizeOf(displaymode_t));
+  catalog := DisplayModesCatalog;
+  I_ClearDisplayModes;
 
-  numdisplaymodes := 0;
-  i := 0;
-  while EnumDisplaySettings(nil, i, dm) do
+  catalog.Refresh(MAXWIDTH, MAXHEIGHT);
+  numdisplaymodes := catalog.Count;
+  displaymodes := malloc(numdisplaymodes * SizeOf(displaymode_t));
+  for i := 0 to numdisplaymodes - 1 do
   begin
-    if (dm.dmPelsWidth >= 320) and (dm.dmPelsHeight >= 200) and (dm.dmBitsPerPel = 32) and not IsAvailableScreenResolution(dm.dmPelsWidth, dm.dmPelsHeight) then
-      if (dm.dmPelsWidth <= MAXWIDTH) and (dm.dmPelsHeight <= MAXHEIGHT) then
-      begin
-        realloc(pointer(displaymodes), numdisplaymodes * SizeOf(displaymode_t), (numdisplaymodes + 1) * SizeOf(displaymode_t));
-        displaymodes[numdisplaymodes].width := dm.dmPelsWidth;
-        displaymodes[numdisplaymodes].height := dm.dmPelsHeight;
-        displaymodes[numdisplaymodes].bpp := dm.dmBitsPerPel;
-        inc(numdisplaymodes);
-      end;
-    Inc(i);
+    displaymodes[i].width := catalog.Modes[i].Width;
+    displaymodes[i].height := catalog.Modes[i].Height;
+    displaymodes[i].bpp := catalog.Modes[i].BitsPerPixel;
   end;
-  if numdisplaymodes = 0 then
-  begin
-    while EnumDisplaySettings(nil, i, dm) do
-    begin
-      if (dm.dmPelsWidth >= 640) and (dm.dmPelsHeight >= 400) and (dm.dmBitsPerPel >= 16) and not IsAvailableScreenResolution(dm.dmPelsWidth, dm.dmPelsHeight) then
-        if (dm.dmPelsWidth <= MAXWIDTH) and (dm.dmPelsHeight <= MAXHEIGHT) then
-        begin
-          realloc(pointer(displaymodes), numdisplaymodes * SizeOf(displaymode_t), (numdisplaymodes + 1) * SizeOf(displaymode_t));
-          displaymodes[numdisplaymodes].width := dm.dmPelsWidth;
-          displaymodes[numdisplaymodes].height := dm.dmPelsHeight;
-          displaymodes[numdisplaymodes].bpp := dm.dmBitsPerPel;
-          inc(numdisplaymodes);
-        end;
-      Inc(i);
-    end;
-  end;
-  if numdisplaymodes = 0 then
-  begin
-    displaymodes := malloc(SizeOf(displaymode_t));
-    displaymodes[0].width := 320;
-    displaymodes[0].height := 200;
-    displaymodes[0].bpp := 32;
-    displaymodes[1].width := 640;
-    displaymodes[1].height := 400;
-    displaymodes[1].bpp := 32;
-    numdisplaymodes := 2;
-  end;
-
-  SortDisplayModes;
 end;
 
 {$IFNDEF OPENGL}
@@ -282,10 +198,7 @@ end;
 //==============================================================================
 procedure I_FindWindowSize(const mode: integer);
 var
-  i: integer;
-  dist: double;
-  mindist: double;
-  idx: integer;
+  w, h: integer;
 begin
   if mode = FULLSCREEN_SHARED then
   begin
@@ -294,35 +207,10 @@ begin
     exit;
   end;
 
-  for i := 0 to numdisplaymodes - 1 do
-    if displaymodes[i].width = SCREENWIDTH then
-      if displaymodes[i].height = SCREENHEIGHT then
-      begin
-        WINDOWWIDTH := SCREENWIDTH;
-        WINDOWHEIGHT := SCREENHEIGHT;
-        exit;
-      end;
-
-  mindist := 1000000000000.0;
-  idx := -1;
-  for i := 0 to numdisplaymodes - 1 do
+  if DisplayModesCatalog.FindWindowSize(SCREENWIDTH, SCREENHEIGHT, w, h) then
   begin
-    dist := sqrt(sqr(displaymodes[i].width - SCREENWIDTH) + sqr(displaymodes[i].height - SCREENHEIGHT));
-    if SCREENWIDTH < displaymodes[i].width then
-      dist := dist + 50.0;
-    if SCREENHEIGHT < displaymodes[i].height then
-      dist := dist + 50.0;
-    if dist < mindist then
-    begin
-      mindist := dist;
-      idx := i;
-    end;
-  end;
-
-  if idx >= 0 then
-  begin
-    WINDOWWIDTH := displaymodes[idx].width;
-    WINDOWHEIGHT := displaymodes[idx].height;
+    WINDOWWIDTH := w;
+    WINDOWHEIGHT := h;
     exit;
   end;
 
@@ -338,8 +226,12 @@ end;
 //==============================================================================
 procedure I_ClearDisplayModes;
 begin
-  realloc(pointer(displaymodes), numdisplaymodes * SizeOf(displaymode_t), 0);
+  if displaymodes <> nil then
+    memfree(pointer(displaymodes), numdisplaymodes * SizeOf(displaymode_t));
+  displaymodes := nil;
   numdisplaymodes := 0;
+  if engine_displaymodes <> nil then
+    engine_displaymodes.Clear;
 end;
 
 end.

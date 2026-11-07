@@ -1,0 +1,8 @@
+// the logical and and or: the old interpreter left an operand on the stack when the first one decided
+script 1 (int a, int b)
+{
+    int r;
+    r = a && b;
+    r = a || b;
+    r = (a && b) + (a || b);
+}

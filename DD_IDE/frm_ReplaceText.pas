@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, frm_SearchText;
+  StdCtrls, ExtCtrls, frm_SearchText, DelphiDoom.Ide.SearchHistory;
 
 type
   TTextReplaceDialog = class(TTextSearchDialog)
@@ -45,15 +45,14 @@ end;
 //==============================================================================
 function TTextReplaceDialog.GetReplaceTextHistory: string;
 var
-  i: integer;
+  LHistory: TIdeSearchHistory;
 begin
-  Result := '';
-  for i := 0 to cbReplaceText.Items.Count - 1 do begin
-    if i >= 10 then
-      break;
-    if i > 0 then
-      Result := Result + #13#10;
-    Result := Result + cbReplaceText.Items[i];
+  LHistory := TIdeSearchHistory.Create;
+  try
+    LHistory.LoadFromText(cbReplaceText.Items.Text);
+    Result := LHistory.AsText;
+  finally
+    LHistory.Free;
   end;
 end;
 
@@ -86,19 +85,21 @@ procedure TTextReplaceDialog.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 var
   s: string;
-  i: integer;
+  LHistory: TIdeSearchHistory;
 begin
   inherited;
   if ModalResult = mrOK then begin
     s := cbReplaceText.Text;
     if s <> '' then begin
-      i := cbReplaceText.Items.IndexOf(s);
-      if i > -1 then begin
-        cbReplaceText.Items.Delete(i);
-        cbReplaceText.Items.Insert(0, s);
-        cbReplaceText.Text := s;
-      end else
-        cbReplaceText.Items.Insert(0, s);
+      LHistory := TIdeSearchHistory.Create;
+      try
+        LHistory.LoadFromText(cbReplaceText.Items.Text);
+        LHistory.Remember(s);
+        cbReplaceText.Items.Text := LHistory.AsText;
+      finally
+        LHistory.Free;
+      end;
+      cbReplaceText.Text := s;
     end;
   end;
 end;

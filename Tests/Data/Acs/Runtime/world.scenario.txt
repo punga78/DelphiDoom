@@ -1,0 +1,10 @@
+source world.acs
+load
+game 1 100 3 1 2
+random 3,200,17
+start 1 0 2,1,0,0 act=0 line=1 side=1
+tick 2
+start 1 0 3,0,0,0 line=0
+tick 2
+start 1 0 1,0,0,0
+tick 2

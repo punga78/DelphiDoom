@@ -175,7 +175,7 @@ end;
 
 function TEngineExportNames.GenderToken(AValue: Integer): string;
 begin
-  Result := GENDERINFO[AValue].name;
+  Result := R_GenderName(gender_t(AValue));
 end;
 
 function TEngineExportNames.AmmoToken(AIndex: Integer): string;

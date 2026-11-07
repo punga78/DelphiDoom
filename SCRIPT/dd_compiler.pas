@@ -31,6 +31,11 @@ unit dd_compiler;
 
 interface
 
+// Starts the engine tables the compiler reads. It must run after ComposeEngine (the
+// console, the scanner and the Dehacked parser need their services), so the library
+// project calls it from its own begin block and not from the unit initialization.
+procedure DD_InitDoomEngine;
+
 {$IFDEF DOOM}
 function dd_compile_doom(
 {$ENDIF}
@@ -923,8 +928,8 @@ var
 begin
   try
     afstr := '';
-    for i := 0 to DEHNUMACTIONS - 1 do
-      afstr := afstr + deh_actions[i].decl + #13#10;
+    for i := 0 to DEH_ActionCount - 1 do
+      afstr := afstr + DEH_ActionDeclaration(i) + #13#10;
     DD_CopyStringToPChar(afstr, _out, _outsize);
   finally
   end;
@@ -1037,7 +1042,7 @@ begin
 end;
 
 initialization
-  DD_InitDoomEngine;
+  // DD_InitDoomEngine is called by the library project after ComposeEngine
 
 finalization
   DD_ShutDownDoomEngine;

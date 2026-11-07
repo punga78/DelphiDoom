@@ -1,0 +1,6 @@
+source expressions.acs
+load
+start 1 0 7,3,0,0
+tick 2
+start 1 0 -1,255,0,0
+tick 2
