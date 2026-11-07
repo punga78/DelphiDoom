@@ -33,6 +33,17 @@ unit i_tmp;
 
 interface
 
+uses
+  DelphiDoom.Platform.Intf;
+
+//==============================================================================
+//
+// I_ConfigureTempFiles
+// Gives the unit the temporary files it uses. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureTempFiles(const ATempFiles: ITempFiles);
+
 //==============================================================================
 //
 // I_InitTempFiles
@@ -64,12 +75,21 @@ procedure I_DeclareTempFile(const name: string);
 implementation
 
 uses
-  Windows,
-  m_argv,
-  d_delphi;
+  i_system;
 
 var
-  tempfiles: TDStringList;
+  // given by the composition root (I_ConfigureTempFiles)
+  engine_tempfiles: ITempFiles = nil;
+
+//==============================================================================
+//
+// I_ConfigureTempFiles
+//
+//==============================================================================
+procedure I_ConfigureTempFiles(const ATempFiles: ITempFiles);
+begin
+  engine_tempfiles := ATempFiles;
+end;
 
 //==============================================================================
 //
@@ -78,7 +98,8 @@ var
 //==============================================================================
 procedure I_InitTempFiles;
 begin
-  tempfiles := TDStringList.Create;
+  if not Assigned(engine_tempfiles) then
+    I_Error('I_InitTempFiles(): the temporary files were not configured');
 end;
 
 //==============================================================================
@@ -87,14 +108,9 @@ end;
 //
 //==============================================================================
 procedure I_ShutDownTempFiles;
-var
-  i: integer;
 begin
-{$I-}
-  for i := 0 to tempfiles.Count - 1 do
-    fdelete(tempfiles.Strings[i]);
-{$I+}
-  tempfiles.Free;
+  if Assigned(engine_tempfiles) then
+    engine_tempfiles.DeleteAll;
 end;
 
 //==============================================================================
@@ -103,19 +119,10 @@ end;
 //
 //==============================================================================
 function I_NewTempFile(const name: string): string;
-var
-  buf: array[0..1024] of char;
 begin
-  ZeroMemory(@buf, SizeOf(buf));
-  GetTempPath(Length(buf), buf);
-
-  result := M_SaveFileName('DATA\');
-  MkDir(result);
-  result := result + 'TMP\';
-  MkDir(result);
-
-  result :=  result + fname(name);
-  tempfiles.Add(result);
+  if not Assigned(engine_tempfiles) then
+    I_Error('I_NewTempFile(): the temporary files were not configured');
+  result := engine_tempfiles.NewTempFile(name);
 end;
 
 //==============================================================================
@@ -125,7 +132,9 @@ end;
 //==============================================================================
 procedure I_DeclareTempFile(const name: string);
 begin
-  tempfiles.Add(name);
+  if not Assigned(engine_tempfiles) then
+    I_Error('I_DeclareTempFile(): the temporary files were not configured');
+  engine_tempfiles.Declare(name);
 end;
 
 end.
