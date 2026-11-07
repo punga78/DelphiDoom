@@ -65,6 +65,9 @@ uses
   DelphiDoom.Engine.Console.VariableSource,
   c_cmds,
   r_translations,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  r_colormaps,
+{$ENDIF}
   r_draw,
   r_precalc,
   r_main,
@@ -344,6 +347,10 @@ begin
     TPaletteFactory.CreateTranslationBuilder(LMatcher));
 {$ENDIF}
   R_ConfigurePalette(TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
+  R_ConfigureColormaps(LMatcher, TPaletteFactory.CreateColormapPreparer);
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer);
+{$ENDIF}
   R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
   R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);

@@ -42,7 +42,8 @@ uses
   r_defs,
   w_wad,
   DelphiDoom.TextureDefs.Intf,
-  DelphiDoom.Imaging.Intf;
+  DelphiDoom.Imaging.Intf,
+  DelphiDoom.Palette.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -98,6 +99,13 @@ procedure R_InitData;
 //
 //==============================================================================
 procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
+
+//==============================================================================
+//
+// R_ConfigureColormaps
+//
+//==============================================================================
+procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer);
 
 //==============================================================================
 //
@@ -264,6 +272,8 @@ implementation
 uses
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.Imaging.Types,
+  DelphiDoom.Palette.Types,
+  r_palette,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -313,9 +323,24 @@ uses
   z_zone;
 
 var
+  color_matcher: IColorMatcher = nil;
+  colormap_preparer: IColormapPreparer = nil;
   texturedefs_loader: ITextureDefsLoader;
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
+
+//==============================================================================
+//
+// R_ConfigureColormaps
+// The color matcher and the colormap preparer of Libs\Palette, given by the
+// composition root
+//
+//==============================================================================
+procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer);
+begin
+  color_matcher := AMatcher;
+  colormap_preparer := APreparer;
+end;
 
 //==============================================================================
 //
@@ -1437,28 +1462,25 @@ var
   lump: integer;
   length: integer;
   i: integer;
-  palette: PByteArray;
   cpal: array[0..255] of LongWord;
-  src: PByteArray;
-  dest: PLongWord;
+  colors: TArray<Cardinal>;
+  colormapbytes: TArray<Byte>;
+  fogbytes: TArray<Byte>;
+  fogdata: TFogMapData;
+{$IFDEF DOOM}
+  inverse: TArray<Cardinal>;
+{$ENDIF}
 begin
-  palette := V_ReadPalette(PU_STATIC);
+  if (color_matcher = nil) or (colormap_preparer = nil) then
+    I_Error('R_InitColormaps(): the colormap services are not configured (ComposeEngine was not called)');
 
-  dest := @cpal[0];
-  src := palette;
-  while integer(src) < integer(@palette[256 * 3]) do
-  begin
-    dest^ := (LongWord(src[0]) shl 16) or
-             (LongWord(src[1]) shl 8) or
-             (LongWord(src[2]));
-    inc(dest);
-    src := PByteArray(integer(src) + 3);
-  end;
+  Move(R_DefaultPalette^, cpal, SizeOf(cpal));
+  SetLength(colors, 256);
+  for i := 0 to 255 do
+    colors[i] := cpal[i];
 
-  aprox_black := V_FindAproxColorIndex(@cpal, $0, 1, 255);
-  aprox_red := V_FindAproxColorIndex(@cpal, $FF0000, 1, 255);
-
-  Z_ChangeTag(palette, PU_CACHE);
+  aprox_black := color_matcher.FindApproximateIndex(colors, $0, 1, 255);
+  aprox_red := color_matcher.FindApproximateIndex(colors, $FF0000, 1, 255);
 
   // Load in the light tables,
   //  256 byte align tables.
@@ -1470,32 +1492,24 @@ begin
   colormaplump := lump;
 {$ENDIF}
   length := W_LumpLength(lump);
+  SetLength(colormapbytes, length);
+  W_ReadLump(lump, @colormapbytes[0]);
+  // where the colormap is 0 the color is the nearest to black
+  colormapbytes := colormap_preparer.ReplaceZeros(colormapbytes, aprox_black);
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   colormaps := Z_Malloc(length, PU_STATIC, nil);
+  memcpy(colormaps, @colormapbytes[0], length);
+  v_translation := colormaps;
 {$ELSE}
   def_colormaps := Z_Malloc(length, PU_STATIC, nil);
+  memcpy(def_colormaps, @colormapbytes[0], length);
+  v_translation := def_colormaps;
 {$ENDIF}
   colormaps32 := Z_Malloc(length * SizeOf(LongWord), PU_STATIC, nil);
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  W_ReadLump(lump, colormaps);
-{$ELSE}
-  W_ReadLump(lump, def_colormaps);
-{$ENDIF}
-  for i := 0 to length - 1 do
-{$IF DEFINED(DOOM)}
-    if def_colormaps[i] = 0 then
-      def_colormaps[i] := aprox_black;
-  v_translation := def_colormaps;
+{$IFDEF DOOM}
+  inverse := colormap_preparer.RowColors(colormapbytes, NUMCOLORMAPS, colors);
   for i := 0 to 255 do
-    inversecolormap32[i] := cpal[def_colormaps[NUMCOLORMAPS * 256 + i]];
-{$ELSEIF DEFINED(STRIFE)}
-    if def_colormaps[i] = 0 then
-      def_colormaps[i] := aprox_black;
-  v_translation := def_colormaps;
-{$ELSE}
-    if colormaps[i] = 0 then
-      colormaps[i] := aprox_black;
-  v_translation := colormaps;
+    inversecolormap32[i] := inverse[i];
 {$ENDIF}
 
   // JVAL: Mars fog sectors
@@ -1507,23 +1521,17 @@ begin
 {$ENDIF}
   fog_colormaps := Z_Malloc(length, PU_STATIC, nil);
   fog_colormaps32 := Z_Malloc(length * SizeOf(LongWord), PU_STATIC, nil);
+  SetLength(fogbytes, length);
 {$IFDEF HEXEN}
-  W_ReadLump(fogmaplump, fog_colormaps);
+  W_ReadLump(fogmaplump, @fogbytes[0]);
 {$ELSE}
-  W_ReadLump(lump, fog_colormaps);
+  W_ReadLump(lump, @fogbytes[0]);
 {$ENDIF}
+  fogdata := colormap_preparer.PrepareFog(fogbytes, colormapbytes, aprox_black, colors);
+  memcpy(fog_colormaps, @fogdata.Indexes[0], length);
   for i := 0 to length - 1 do
-  begin
-    if fog_colormaps[i] = 0 then
-      fog_colormaps[i] := aprox_black;
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    if colormaps[i] = aprox_black then
-{$ELSE}
-    if def_colormaps[i] = aprox_black then
-{$ENDIF}
-      fog_colormaps[i] := aprox_black;
-    fog_colormaps32[i] := cpal[fog_colormaps[i]]; // JVAL: Mars fog sectors
-  end;
+    fog_colormaps32[i] := fogdata.Colors[i]; // JVAL: Mars fog sectors
+
 {$IFDEF HEXEN}
 end;
 
@@ -1536,17 +1544,17 @@ procedure R_ChangeColormap(const lumpname: string);
 var
   lump: integer;
   length: integer;
-  i: integer;
+  bytes: TArray<Byte>;
 begin
   // Load in the light tables,
   //  256 byte align tables.
   lump := W_GetNumForName(lumpname);
   LevelUseFog := lump = fogmaplump;
   length := W_LumpLength(lump);
-  W_ReadLump(lump, colormaps);
-  for i := 0 to length - 1 do
-    if colormaps[i] = 0 then
-      colormaps[i] := aprox_black;
+  SetLength(bytes, length);
+  W_ReadLump(lump, @bytes[0]);
+  bytes := colormap_preparer.ReplaceZeros(bytes, aprox_black);
+  memcpy(colormaps, @bytes[0], length);
   v_translation := colormaps;
   {$IFNDEF OPENGL}
   R_SetRenderingFunctions;

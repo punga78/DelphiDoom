@@ -37,11 +37,20 @@ uses
   d_delphi,
   m_fixed,
   r_diher,
-  r_main;
+  r_main,
+  DelphiDoom.Palette.Intf;
 
 const
   C_START = 'C_START';
   C_END = 'C_END';
+
+//==============================================================================
+//
+// R_ConfigureCustomColormaps
+// The colormap preparer of Libs\Palette, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer);
 
 //==============================================================================
 //
@@ -114,13 +123,27 @@ implementation
 
 uses
   doomdef,
+  i_system,
   r_data,
+  r_palette,
   r_defs,
   r_draw,
   v_data,
   w_wad,
   z_zone;
 
+var
+  colormap_preparer: IColormapPreparer = nil;
+
+//==============================================================================
+//
+// R_ConfigureCustomColormaps
+//
+//==============================================================================
+procedure R_ConfigureCustomColormaps(const APreparer: IColormapPreparer);
+begin
+  colormap_preparer := APreparer;
+end;
 //==============================================================================
 //
 // R_InitCustomColormaps
@@ -133,11 +156,13 @@ var
   lumpname: string;
   lumps: TDNumberList;
   lumplen: integer;
-  pal: PByteArray;
-  cpal: array[0..255] of LongWord;
-  src: PByteArray;
-  dest: PLongWord;
+  colors: TArray<Cardinal>;
+  bytes: TArray<Byte>;
+  rowcolors: TArray<Cardinal>;
+  nummaps: integer;
 begin
+  if colormap_preparer = nil then
+    I_Error('R_InitCustomColormaps(): the colormap preparer is not configured (ComposeEngine was not called)');
   in_c := false;
   lumps := TDNumberList.Create;
   for i := 0 to W_NumLumps - 1 do
@@ -168,45 +193,30 @@ begin
     R_InitNonUniformDiherFactor;
 
   // JVAL: Read default palette
-    pal := V_ReadPalette(PU_STATIC);
-
-    dest := @cpal[0];
-    src := pal;
-    while integer(src) < integer(@pal[256 * 3]) do
-    begin
-      dest^ := (LongWord(src[0]) shl 16) or
-               (LongWord(src[1]) shl 8) or
-               (LongWord(src[2]));
-      inc(dest);
-      src := PByteArray(integer(src) + 3);
-    end;
-    Z_ChangeTag(pal, PU_CACHE);
+    SetLength(colors, 256);
+    for j := 0 to 255 do
+      colors[j] := R_DefaultPalette^[j];
 
     customcolormaps := mallocz(numcustomcolormaps * SizeOf(customcolormap_t));
     for i := 0 to numcustomcolormaps - 1 do
     begin
       lumplen := W_LumpLength(lumps.Numbers[i]);
-      customcolormaps[i].colormap := Z_Malloc(lumplen, PU_STATIC, nil);
-      W_ReadLump(lumps.Numbers[i], customcolormaps[i].colormap);
-      for j := 0 to lumplen - 1 do
-        if customcolormaps[i].colormap[j] = 0 then
-          customcolormaps[i].colormap[j] := aprox_black;
+      SetLength(bytes, lumplen);
+      W_ReadLump(lumps.Numbers[i], @bytes[0]);
+      // the colors 0 are the nearest to black, a colormap of less than the
+      // number of colormaps of the game gets the last one repeated
+      bytes := colormap_preparer.ReplaceZeros(bytes, aprox_black);
+      bytes := colormap_preparer.ExpandRows(bytes, NUMCOLORMAPS, nummaps);
+      customcolormaps[i].colormap := Z_Malloc(Length(bytes), PU_STATIC, nil);
+      memcpy(customcolormaps[i].colormap, @bytes[0], Length(bytes));
       customcolormaps[i].lump := lumps.Numbers[i];
       customcolormaps[i].name := strupper(char8tostring(W_GetNameForNum(lumps.Numbers[i])));
-      customcolormaps[i].nummaps := lumplen div 256;
-      if customcolormaps[i].nummaps < NUMCOLORMAPS then
-      begin
-        customcolormaps[i].colormap := Z_Realloc(customcolormaps[i].colormap, NUMCOLORMAPS * 256, PU_STATIC, nil);
-        for j := customcolormaps[i].nummaps to NUMCOLORMAPS - 1 do
-          memmove(@customcolormaps[i].colormap[j * 256],
-                  @customcolormaps[i].colormap[(customcolormaps[i].nummaps - 1) * 256],
-                   256);
-        customcolormaps[i].nummaps := NUMCOLORMAPS;
-      end;
+      customcolormaps[i].nummaps := nummaps;
 
       // JVAL: Create default colormap palette
+      rowcolors := colormap_preparer.RowColors(bytes, 0, colors);
       for j := 0 to 255 do
-        customcolormaps[i].basepal[j] := cpal[customcolormaps[i].colormap[j]];
+        customcolormaps[i].basepal[j] := rowcolors[j];
       {$IFDEF OPENGL}
       R_GetColormapFogColors(customcolormaps[i].fog_r,
                              customcolormaps[i].fog_g,
@@ -216,12 +226,10 @@ begin
       {$ELSE}
       R_CreateDiherTable(@customcolormaps[i].dihertable, @customcolormaps[i].basepal);
       {$ENDIF}
-
     end;
   end;
   lumps.Free;
 end;
-
 //==============================================================================
 //
 // R_ShutDownCustomColormaps
