@@ -55,6 +55,10 @@ uses
   DelphiDoom.Engine.Zone.Memory,
   z_zone,
   d_net,
+{$IFNDEF HEXEN}
+  DelphiDoom.Endoom.Factory,
+  e_endoom,
+{$ENDIF}
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
@@ -597,6 +601,10 @@ begin
   ComposeActorDef(LLog);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
+{$IFNDEF HEXEN}
+  E_ConfigureEndoom(TEndoomFactory.CreateRenderer);
+{$ENDIF}
+  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
