@@ -49,3 +49,11 @@ Da fare fuori dalla #45: Win64 (#40–#44), prova dei percorsi PK3 (#48), warnin
 ## #130 — Codice storico senza chiamanti
 
 Cancellate 76 funzioni pubbliche e 117 dichiarazioni (var, const, puntatori) senza usi (analisi statica sui 12 `.dpr`, DD_IDE, DLL e stringhe PascalScript). `FACCIATE.md` elenca le facciate con i chiamanti. Restano di proposito: renderer, `FixedMul`/angoli, `W_*`, `r_clipper` (libreria di terzi), le funzioni usate solo dentro la propria unit (da rendere locali) e quelle con riferimenti omonimi in test o librerie (`BoolToStr`, `IsZeroes`, `parsefirstword`, `A_Fall`, `AngleToFixed`, `FloatMul`, `DEG2RAD`). `Tests.Scanner` ha 19 test che falliscono in questo worktree (i golden letti come una riga sola, line ending dei file): non dipendono da questo lavoro.
+
+## #135 — Facciate di palette e immagini (fase 2, ondata 1)
+
+Cancellate `v_palettes.pas` e `r_grow.pas`; `r_flatinfo.pas` e `mn_screenshot.pas` non sono più facciate (solo tipi e dati del motore). Restano, con il motivo:
+
+- `r_palette.pas`: `R_DefaultPalette` è un servizio con stato (palette letta una volta) chiamato da `r_colormaps`, `r_data` e `r_voxels` (quest'ultimo fuori da questa ondata, voxel). Per toglierla: un `IDefaultPalette` (classe del motore sopra `IPaletteUnpacker` e `V_ReadPalette`) dato da `ComposeEngine` ai tre chiamanti con i loro `*_Configure*`, e `palette_t` spostato in `r_defs`; circa mezza giornata.
+- `r_colormaps.pas` e `r_patch.pas`: sono le cache del motore (colormap personalizzate in zone memory lette dal renderer e da `p_saveg`; `fixedcolumns[]` in `PU_LEVEL`), che restano del motore per decisione; chiamano già la libreria.
+- `TEnginePaletteGenerator` ha ancora un costruttore senza argomenti perché lo crea `sc_utils.pas` (ondata dello scanner): quando le direttive saranno assemblate da `ComposeEngine` va tolto e il costruttore delle palette passato dal composition root.
