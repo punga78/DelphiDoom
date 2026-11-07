@@ -29,7 +29,7 @@
 unit p_gender;
 
 // The type of the gender of a thing (mobjinfo_t.gender, read by info.pas of every game, by
-// deh_main, sc_actordef and the table export). The names and the pronouns of the genders are
+// the DEHACKED applier, the ACTORDEF catalog and the table export). The names and the pronouns of the genders are
 // in Libs\Obituary (TObituaryGenders, without state): the callers use it directly.
 
 interface

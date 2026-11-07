@@ -35,7 +35,18 @@ uses
   d_think,
   m_fixed,
   DelphiDoom.Actions.Intf,
-  DelphiDoom.TableExport.Intf;
+  DelphiDoom.TableExport.Intf,
+  DelphiDoom.Engine.Dehacked.Intf;
+
+//==============================================================================
+//
+// DEH_ConfigureApplier
+//
+// What reads a patch and applies it to the tables of the game (the class of the
+// game, with the parser of Libs\Dehacked): ComposeEngine gives it
+//
+//==============================================================================
+procedure DEH_ConfigureApplier(const AApplier: IEngineDehackedApplier);
 
 //==============================================================================
 //
@@ -357,7 +368,6 @@ uses
   info,
   info_h,
   m_argv,
-  sc_actordef,
   sc_states,
   w_folders,
   w_pak,
@@ -388,6 +398,20 @@ end;
 procedure DEH_ConfigureActions(const ARegistry: IActionRegistry);
 begin
   dehactions := ARegistry;
+end;
+
+var
+  // given by ComposeEngine (DEH_ConfigureApplier)
+  dehapplier: IEngineDehackedApplier = nil;
+
+//==============================================================================
+//
+// DEH_ConfigureApplier
+//
+//==============================================================================
+procedure DEH_ConfigureApplier(const AApplier: IEngineDehackedApplier);
+begin
+  dehapplier := AApplier;
 end;
 
 var
@@ -443,6 +467,19 @@ end;
 
 //==============================================================================
 //
+// DEH_ApplyList
+// The patch goes to the class of the game (it was DEH_Parse of deh_main)
+//
+//==============================================================================
+procedure DEH_ApplyList(const s: TDStringList);
+begin
+  if dehapplier = nil then
+    I_Error('DEH_Parse(): the DEHACKED parser is not configured (ComposeEngine was not called)');
+  dehapplier.Apply(ListToLines(s));
+end;
+
+//==============================================================================
+//
 // DEH_CurrentSettings
 //
 //==============================================================================
@@ -478,7 +515,7 @@ begin
   s := TDStringList.Create;
   try
     s.Text := deh_tx;
-    DEH_Parse(s);
+    DEH_ApplyList(s);
   finally
     s.Free;
   end;
@@ -601,7 +638,7 @@ begin
     end;
 
     printf(' parsing file %s'#13#10, [fname]);
-    DEH_Parse(s);
+    DEH_ApplyList(s);
 
   finally
     s.Free;

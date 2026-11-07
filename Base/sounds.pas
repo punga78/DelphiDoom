@@ -35,7 +35,18 @@ unit sounds;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.ActorDef.Intf;
+
+//==============================================================================
+//
+// S_ConfigureSoundAliases
+//
+// The aliases of SNDINFO (the table that the ACTORDEF lumps fill), given by the
+// composition root; without it S_GetSoundNumForName stops with I_Error
+//
+//==============================================================================
+procedure S_ConfigureSoundAliases(const AResolver: IActorDefSoundResolver);
 
 //==============================================================================
 //
@@ -84,8 +95,33 @@ implementation
 uses
   i_system,
   sounddata,
-  sc_actordef,
   w_wad;
+
+var
+  // given by the composition root (S_ConfigureSoundAliases)
+  sound_aliases: IActorDefSoundResolver = nil;
+
+//==============================================================================
+//
+// S_ConfigureSoundAliases
+//
+//==============================================================================
+procedure S_ConfigureSoundAliases(const AResolver: IActorDefSoundResolver);
+begin
+  sound_aliases := AResolver;
+end;
+
+//==============================================================================
+//
+// S_SoundAlias
+//
+//==============================================================================
+function S_SoundAlias(const snd: string): string;
+begin
+  if sound_aliases = nil then
+    I_Error('S_SoundAlias(): the sound aliases are not configured (ComposeEngine was not called)');
+  result := sound_aliases.Resolve(snd);
+end;
 
 {$IFDEF DOOM}
 var
@@ -157,7 +193,7 @@ begin
     exit;
   end;
 
-  name := strupper(SC_SoundAlias(sfx_name));
+  name := strupper(S_SoundAlias(sfx_name));
   for i := 1 to numsfx - 1 do
   begin
 {$IFDEF HEXEN}

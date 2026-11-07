@@ -55,6 +55,8 @@ uses
   DelphiDoom.Engine.Net.Intf,
   DelphiDoom.Engine.Configuration.Intf,
   DelphiDoom.Engine.Screenshot.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Engine.ActorDef.Intf,
   DelphiDoom.Scanner.AutoLoad.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
@@ -236,6 +238,26 @@ procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwad
 
 //==============================================================================
 //
+// D_ConfigureGameDefines
+//
+// The defines of the game (D_FillGameDefines adds them), that the script
+// preprocessor reads: given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+// The reader of the ACTORDEF, DECORATE and SNDINFO lumps, given by the
+// composition root; without it the start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+//==============================================================================
+//
 // D_ConfigureAutoLoad
 //
 // The reader of the AUTOLOAD lumps, given by the composition root; without it the
@@ -365,8 +387,6 @@ uses
   sounddata,
   s_sound,
   s_pk3sounds,
-  sc_actordef,
-  sc_defines,
   sc_states,
   sv_strife,
   m_saves,
@@ -377,6 +397,57 @@ uses
   w_pak,
   z_zone;
 
+var
+  // given by the composition root (D_ConfigureGameDefines)
+  main_gamedefines: IScriptGameDefines = nil;
+
+//==============================================================================
+//
+// D_ConfigureGameDefines
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+begin
+  main_gamedefines := ADefines;
+end;
+
+//==============================================================================
+//
+// D_GameDefines
+//
+//==============================================================================
+function D_GameDefines: IScriptGameDefines;
+begin
+  if main_gamedefines = nil then
+    I_Error('D_ConfigureGameDefines() was not called: the defines of the game are missing');
+  result := main_gamedefines;
+end;
+
+var
+  // given by the composition root (D_ConfigureActorDef)
+  main_actordef: IEngineActorDefLumps = nil;
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+begin
+  main_actordef := ALumps;
+end;
+
+//==============================================================================
+//
+// D_ActorDef
+//
+//==============================================================================
+function D_ActorDef: IEngineActorDefLumps;
+begin
+  if main_actordef = nil then
+    I_Error('D_ConfigureActorDef() was not called: the ACTORDEF lumps cannot be read');
+  result := main_actordef;
+end;
 var
   // given by the composition root (D_ConfigureAutoLoad)
   main_autoload: IAutoLoadReader = nil;
@@ -2124,15 +2195,15 @@ end;
 //==============================================================================
 procedure D_FillGameDefines;
 begin
-  SC_AddDefine('strife');
-  if (teaser = 1) or (teaser = 2) then SC_AddDefine('teaser');
+  D_GameDefines.Add('strife');
+  if (teaser = 1) or (teaser = 2) then D_GameDefines.Add('teaser');
   if gamemode = shareware then
-    SC_AddDefine('shareware')
+    D_GameDefines.Add('shareware')
   else
-    SC_AddDefine('registered');
+    D_GameDefines.Add('registered');
 
   {$IFDEF OPENGL}
-  SC_AddDefine('OPENGL');
+  D_GameDefines.Add('OPENGL');
   {$ENDIF}
 end;
 
@@ -2456,7 +2527,7 @@ begin
   SUC_Progress(38);
 
   printf('SC_InitGameDefines: Determine global defines.'#13#10);
-  SC_InitGameDefines;
+  D_GameDefines.Clear;
   D_FillGameDefines;
 
   SUC_Progress(39);
@@ -2467,7 +2538,7 @@ begin
   SUC_Progress(40);
 
   printf('SC_Init: Initializing script engine.'#13#10);
-  SC_Init;
+  D_ActorDef.Initialize;
 
   SUC_Progress(41);
 
@@ -2496,7 +2567,7 @@ begin
   SUC_Progress(43);
 
   printf('SC_ParseSndInfoLumps: Parsing SNDINFO lumps.'#13#10);
-  SC_ParseSndInfoLumps;
+  D_ActorDef.ParseSoundInfoLumps;
 
   SUC_Progress(44);
 
@@ -2504,7 +2575,7 @@ begin
   if p <= 0 then
   begin
     printf('SC_ParseActordefLumps: Parsing ACTORDEF lumps.'#13#10);
-    SC_ParseActordefLumps;
+    D_ActorDef.ParseActorDefLumps;
   end;
 
   SUC_Progress(45);
@@ -2852,9 +2923,9 @@ begin
   printf('T_ShutDown: Shut down texture manager.'#13#10);
   T_ShutDown;
   printf('SC_ShutDown: Shut down script engine.'#13#10);
-  SC_ShutDown;
+  D_ActorDef.ShutDown;
   printf('SC_ShutDownGameDefines: Shut down global defines.'#13#10);
-  SC_ShutDownGameDefines;
+  D_GameDefines.Clear;
   // JVAL: PascalScript
   printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
   PS_ShutDown;

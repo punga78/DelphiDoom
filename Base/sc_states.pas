@@ -43,6 +43,8 @@ uses
 
 var
   statenames: TTokenList;
+  // the DECORATE lumps are read as ACTORDEF (an option of the .ini and of the menu; it was in sc_actordef)
+  decorate_as_actordef: boolean = true;
 
 //==============================================================================
 //

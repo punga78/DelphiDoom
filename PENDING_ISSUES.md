@@ -54,9 +54,20 @@ Cancellate 76 funzioni pubbliche e 117 dichiarazioni (var, const, puntatori) sen
 
 Cancellate `sc_engine.pas`, `sc_evaluate.pas` e `sc_evaluate_actor.pas`. Resta:
 
-- `Base\sc_utils.pas` (`SC_Preprocess`) per il solo `vx_base` (VOXELDEF), che appartiene alla fetta voxel della stessa ondata: quando `vx_base` riceve l'`IScriptTextPreprocessor` (per esempio da `VX_ConfigureVoxels`, o con `SC_ParseVoxelDefinition` dentro `TEngineVoxelDefinitionSink`), `sc_utils.pas` si cancella con le sue righe nei 12 `.dpr`.
+- ~~`Base\sc_utils.pas`~~: cancellata nella #144 (`vx_base` riceve il preprocessore da `VX_ConfigureVoxels`).
 - I 12 moduli che leggono un testo con `TScriptScanner` (`sc_states`, i quattro `p_mobj` per `spawnmobj`/`summon`, `p_common`, `Hexen\p_anim`, `Hexen\p_mapinfo`, `Hexen\s_sndseq`, `gl_models`, `gl_render`, quattro funzioni di `psi_overlay`) creano il log con `TEngineScannerLog` invece di riceverlo: sono procedure storiche (comandi di console, parser di Hexen, funzioni host di PascalScript). Per riceverlo ognuno dovrebbe diventare una classe (o i parser di Hexen passare a `Libs\Definitions`/`Libs\MapInfo`, circa 1 giorno per parser) e le funzioni di PascalScript un oggetto host registrato: fuori da questa ondata.
-- `sc_params` (`TCustomParamList`) riceve il valutatore con `SC_ConfigureParams`: le liste sono create da `DEH_Apply` dei quattro `deh_main` e da `p_common`, procedurali; per passarlo dal costruttore servirebbe portare `DEH_Apply` a classe.
+- ~~`sc_params` con `SC_ConfigureParams`~~: fatto nella #144 (`TCustomParamList` riceve il valutatore dal costruttore).
+
+## #144 — Facciate di script e definizioni (fase 2, ondata 2)
+
+Cancellate `Base\sc_actordef.pas`, `Base\sc_defines.pas`, `Base\sc_utils.pas` e `TEngineScriptDefinesSource`; tolti `DEH_Parse`, `DEH_Configure` e `DEH_Apply` dai quattro `deh_main.pas` (ora `TEngineDehackedApplier`, una classe per gioco) e `SC_ConfigureParams` da `sc_params`. Restano, con il motivo:
+
+- `Base\p_acs.pas` (`P_StartACS`, `P_SuspendACS`, `P_TerminateACS`, `P_StartLockedACS`, `P_TagFinished`, `P_PolyobjFinished`, `TH_InterpretACS`, `P_ACSMachine`…): i chiamanti sono gli special di linea (`Hexen\p_spec`, `udmf_spec`), i thinker dei piani (`udmf_floor`, `udmf_ceilng`, `udmf_doors`, `udmf_plats`, `po_man`), `p_enemy`/`p_inter`/`p_map` di Hexen e i salvataggi (`sv_save`, `p_saveg`); `TH_InterpretACS` è il puntatore a funzione di un thinker salvato grezzo, quindi deve restare una procedura. Per togliere la facciata quei moduli dovrebbero ricevere `IAcsMachine` come classi (fase thinker): stima XL. Non toccata in questa ondata (prestazioni e salvataggi invariati per costruzione).
+- `deh_main.pas` resta con `DEH_Init`/`DEH_ShutDown` (le tabelle dei nomi e le circa 1900 `DEH_AddAction` dei quattro giochi: sono dati del gioco, non una facciata) e, in Strife, `DEH_GetString` (154 chiamate: la tabella delle stringhe del gioco). Portare `DEH_Init` a dati (una tabella per gioco data al registro delle azioni) è una fetta a sé, stima L.
+- `deh_base.pas` resta facciata (`DEH_ParseText`, `DEH_ParseLumpName(s)`, `DEH_ParseFile`, export e azioni): circa 30 chiamanti procedurali (`d_main`, comandi di console, hook di ACTORDEF).
+- `sounds.pas` (`S_ConfigureSoundAliases`) e i quattro `d_main` (`D_ConfigureGameDefines`, `D_ConfigureActorDef`) ricevono i servizi con un `*_Configure*` perché sono procedurali (`S_GetSoundNumForName` ha circa 200 chiamanti).
+- `P_CheckStateArgs` (`p_common`, chiamata a runtime dalle azioni MBF21 per puntatore) crea liste di soli numeri con valutatore nil: è corretto perché una lista di numeri non chiede mai il valutatore (se succedesse, `I_Error` con la dichiarazione).
+- `FACCIATE.md` non è aggiornato da questa issue (è di un'altra fetta della stessa ondata): le righe di `sc_actordef`, `sc_defines`, `sc_utils`, dei quattro `deh_main` (`DEH_Configure`, `DEH_Parse`) e di `sc_params` vanno segnate come tolte.
 ## #136 — Facciate dei dati di gioco rimaste
 
 Cancellate (i chiamanti usano le classi senza stato della libreria): i quattro `p_terrain.pas` (`TTerrainTables.KindForName` da `r_data`), `Base\p_blockmap.pas` (`TBlockmapFactory` da `p_setup`); senza più configurazione `p_gender.pas` (resta solo `gender_t`) e `p_obituaries.pas` (resta `P_Obituary`, logica del motore). Restano facciate, perché i loro servizi hanno dipendenze (log, catalogo dei nomi, ricerca delle texture, sorgenti dei testi, suoni) e i chiamanti sono procedurali:
