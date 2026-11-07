@@ -41,6 +41,7 @@ unit p_saveg;
 interface
 
 uses
+  DelphiDoom.Engine.Platform.Intf,
   d_delphi;
 
 //==============================================================================
@@ -169,6 +170,14 @@ var
   savegameversion: integer;
   savegameversionhack: integer;
 
+//==============================================================================
+//
+// P_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure P_ConfigureFiles(const AFiles: IEngineFiles);
+
 implementation
 
 uses
@@ -221,6 +230,33 @@ uses
   udmf_plats,
   w_wad,
   z_zone;
+
+var
+  // given by the composition root
+  p_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// P_ConfigureFiles
+//
+//==============================================================================
+procedure P_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  p_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// P_Files
+//
+//==============================================================================
+function P_Files: IEngineFiles;
+begin
+  if p_files_ref = nil then
+    I_Error('P_ConfigureFiles() was not called: the files are missing');
+  result := p_files_ref;
+end;
+
 
 //==============================================================================
 // PADSAVEP
@@ -2218,7 +2254,7 @@ begin
   pp := malloc(len);
   ppt := pp;
   P_ArchiveGlobalVariables(worldvars, ppt);
-  M_WriteFile(fname, pp, len);
+  P_Files.WriteFile(fname, pp, len);
   memfree(pp, len);
 end;
 
@@ -2265,7 +2301,7 @@ begin
 
   if fexists(fname) then
   begin
-    M_ReadFile(fname, pp);
+    P_Files.ReadFile(fname, pp);
     ppt := pp;
     P_UnArchiveGlobalVariables(worldvars, ppt);
     Z_Free(pp);
@@ -2355,7 +2391,7 @@ end;
 //==============================================================================
 procedure P_ArchiveScreenShot(const fname: string);
 begin
-  M_WriteFile(fname, @mn_screenshotbuffer, SizeOf(menuscreenbuffer_t));
+  P_Files.WriteFile(fname, @mn_screenshotbuffer, SizeOf(menuscreenbuffer_t));
 end;
 
 end.

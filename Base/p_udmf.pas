@@ -298,7 +298,6 @@ uses
   doomdef,
   acs,
   m_argv,
-  m_crc32,
   m_base,
   i_system,
   p_setup,
@@ -544,7 +543,7 @@ begin
   end;
 
   inc(lumpnum);
-  crc32 := GetLumpCRC32(lumpnum);
+  crc32 := W_LumpCRC32(lumpnum);
 
   wadfilemap := M_SaveFileName('DATA\');
   MkDir(wadfilemap);

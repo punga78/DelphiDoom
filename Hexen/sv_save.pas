@@ -31,6 +31,9 @@ unit sv_save;
 
 interface
 
+uses
+  DelphiDoom.Engine.Platform.Intf;
+
 //==============================================================================
 //
 // SV_Init
@@ -130,6 +133,14 @@ procedure SV_UpdateRebornSlot;
 //==============================================================================
 procedure SV_SaveGame(slot: integer; description: string);
 
+//==============================================================================
+//
+// SV_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure SV_ConfigureFiles(const AFiles: IEngineFiles);
+
 implementation
 
 uses
@@ -188,6 +199,33 @@ uses
   w_wad,
   r_data,
   z_zone;
+
+var
+  // given by the composition root
+  sv_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// SV_ConfigureFiles
+//
+//==============================================================================
+procedure SV_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  sv_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// SV_Files
+//
+//==============================================================================
+function SV_Files: IEngineFiles;
+begin
+  if sv_files_ref = nil then
+    I_Error('SV_ConfigureFiles() was not called: the files are missing');
+  result := sv_files_ref;
+end;
+
 
 var
   saveptr: pointer;
@@ -2354,7 +2392,7 @@ begin
   fileName := M_SaveFileName(fileName);
 
   // Load the file
-  M_ReadFile(fileName, pointer(SaveBuffer));
+  SV_Files.ReadFile(fileName, pointer(SaveBuffer));
   saveptr := SaveBuffer;
 
   ver := GET_LONG;
@@ -2408,7 +2446,7 @@ begin
   fileName := M_SaveFileName(fileName);
 
   // Load the file
-  M_ReadFile(fileName, pointer(SaveBuffer));
+  SV_Files.ReadFile(fileName, pointer(SaveBuffer));
 
   saveptr := SaveBuffer;
   // Set the save pointer and skip the description field

@@ -33,6 +33,9 @@ unit v_displaymode;
 
 interface
 
+uses
+  DelphiDoom.Engine.Console.Intf;
+
 //==============================================================================
 //
 // V_SetDisplayMode
@@ -47,12 +50,20 @@ function V_SetDisplayMode(const newwidth, newheight: integer): boolean;
 //==============================================================================
 function V_DoSetDisplayMode(const newwidth, newheight: integer): boolean;
 
+//==============================================================================
+//
+// V_ConfigureConsole
+// The console, given by the composition root
+//
+//==============================================================================
+procedure V_ConfigureConsole(const AConsole: IEngineConsole);
+
 implementation
 
 uses
   am_map,
   doomdef,
-  c_con,
+  i_system,
   mt_utils,
   i_video,
   psi_overlay,
@@ -69,6 +80,33 @@ uses
   r_things,
   r_plane,
   v_video;
+
+var
+  // given by the composition root
+  v_console_ref: IEngineConsole = nil;
+
+//==============================================================================
+//
+// V_ConfigureConsole
+//
+//==============================================================================
+procedure V_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  v_console_ref := AConsole;
+end;
+
+//==============================================================================
+//
+// V_Console
+//
+//==============================================================================
+function V_Console: IEngineConsole;
+begin
+  if v_console_ref = nil then
+    I_Error('V_ConfigureConsole() was not called: the console is missing');
+  result := v_console_ref;
+end;
+
 
 //==============================================================================
 //
@@ -132,7 +170,7 @@ begin
   needsstatusbarback := True;
   {$ENDIF}
   AM_Start;                // Start the automap
-  C_AdjustScreenSize;      // Notify console for screen resolution change
+  V_Console.AdjustScreenSize;      // Notify console for screen resolution change
   setsizeneeded := true;   // Set-up new SCREENWIDTH & SCREENHEIGHT
   R_InitDepthBuffer;       // Initialize the depth-buffer
   R_InitFake3D;            // Initialize fake 3d

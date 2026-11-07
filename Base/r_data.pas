@@ -44,6 +44,7 @@ uses
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Palette.Intf,
+  DelphiDoom.Engine.Palette.Intf,
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.MathCore.Intf;
 
@@ -114,7 +115,8 @@ procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const A
 // R_ConfigureColormaps
 //
 //==============================================================================
-procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer);
+procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer;
+  const APalette: IEngineDefaultPalette);
 
 //==============================================================================
 //
@@ -299,7 +301,6 @@ uses
   DelphiDoom.Palette.Types,
   DelphiDoom.Definitions.Types,
   DelphiDoom.Definitions.TerrainTables,
-  r_palette,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -351,6 +352,7 @@ var
   voxel_sprites: IEngineVoxelSprites = nil;
   color_matcher: IColorMatcher = nil;
   colormap_preparer: IColormapPreparer = nil;
+  default_palette: IEngineDefaultPalette = nil;
   texturedefs_loader: ITextureDefsLoader;
   flatinfo_parser: ITextureDefsFlatInfoParser = nil;
   flatinfo_catalog: ITextureDefsFlatCatalog = nil;
@@ -390,10 +392,12 @@ end;
 // composition root
 //
 //==============================================================================
-procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer);
+procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: IColormapPreparer;
+  const APalette: IEngineDefaultPalette);
 begin
   color_matcher := AMatcher;
   colormap_preparer := APreparer;
+  default_palette := APalette;
 end;
 
 //==============================================================================
@@ -1639,10 +1643,10 @@ var
   inverse: TArray<Cardinal>;
 {$ENDIF}
 begin
-  if (color_matcher = nil) or (colormap_preparer = nil) then
+  if (color_matcher = nil) or (colormap_preparer = nil) or (default_palette = nil) then
     I_Error('R_InitColormaps(): the colormap services are not configured (ComposeEngine was not called)');
 
-  Move(R_DefaultPalette^, cpal, SizeOf(cpal));
+  Move(default_palette.Colors^, cpal, SizeOf(cpal));
   SetLength(colors, 256);
   for i := 0 to 255 do
     colors[i] := cpal[i];

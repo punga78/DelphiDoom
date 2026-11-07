@@ -22,8 +22,6 @@ type
     /// <summary>The temporary files, in a directory, deleted through a store</summary>
     class function CreateTempFiles(const ADirectory: ITempDirectory;
       const AStore: IFileStore): ITempFiles; static;
-    /// <summary>Runs programs with CreateProcess</summary>
-    class function CreateProcessRunner: IProcessRunner; static;
     /// <summary>The operating system, from Windows</summary>
     class function CreateOperatingSystemInfo: IOperatingSystemInfo; overload; static;
     /// <summary>The operating system, from any source (a fake one, in the tests)</summary>
@@ -36,7 +34,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Platform.FileStore, DelphiDoom.Platform.TempFiles, DelphiDoom.Platform.ProcessRunner,
+  DelphiDoom.Platform.FileStore, DelphiDoom.Platform.TempFiles,
   DelphiDoom.Platform.WindowsVersionSource, DelphiDoom.Platform.OperatingSystemInfo,
   DelphiDoom.Platform.WindowsCpuInfo, DelphiDoom.Platform.ExecutableInfo,
   DelphiDoom.Platform.WindowsDriveInfo, DelphiDoom.Platform.WindowsDisplayDpi,
@@ -53,11 +51,6 @@ class function TPlatformFactory.CreateTempFiles(const ADirectory: ITempDirectory
   const AStore: IFileStore): ITempFiles;
 begin
   Result := TTempFiles.Create(ADirectory, AStore);
-end;
-
-class function TPlatformFactory.CreateProcessRunner: IProcessRunner;
-begin
-  Result := TProcessRunner.Create;
 end;
 
 class function TPlatformFactory.CreateOperatingSystemInfo: IOperatingSystemInfo;

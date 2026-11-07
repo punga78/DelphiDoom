@@ -36,6 +36,9 @@ uses
   m_fixed,
   d_event,
   DelphiDoom.Input.Intf,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
+  DelphiDoom.Engine.Platform.Intf,
   DelphiDoom.Engine.Endoom.Intf,
   d_player,
   d_ticcmd,
@@ -463,6 +466,30 @@ procedure G_ConfigureInput(const APoller: IInputPoller);
 //==============================================================================
 procedure G_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
 
+//==============================================================================
+//
+// G_ConfigureNetGame
+// The network, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// G_ConfigureScreenshot
+// The screenshots, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+
+//==============================================================================
+//
+// G_ConfigureFiles
+// The files, given by the composition root
+//
+//==============================================================================
+procedure G_ConfigureFiles(const AFiles: IEngineFiles);
+
 implementation
 
 uses
@@ -513,6 +540,78 @@ uses
   r_main,
   r_intrpl,
   tables;
+
+var
+  // given by the composition root
+  g_netgame_ref: IEngineNetGame = nil;
+  g_screenshot_ref: IEngineScreenshot = nil;
+  g_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// G_ConfigureNetGame
+//
+//==============================================================================
+procedure G_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  g_netgame_ref := ANetGame;
+end;
+
+//==============================================================================
+//
+// G_NetGame
+//
+//==============================================================================
+function G_NetGame: IEngineNetGame;
+begin
+  if g_netgame_ref = nil then
+    I_Error('G_ConfigureNetGame() was not called: the network is missing');
+  result := g_netgame_ref;
+end;
+
+//==============================================================================
+//
+// G_ConfigureScreenshot
+//
+//==============================================================================
+procedure G_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  g_screenshot_ref := AScreenshot;
+end;
+
+//==============================================================================
+//
+// G_Screenshots
+//
+//==============================================================================
+function G_Screenshots: IEngineScreenshot;
+begin
+  if g_screenshot_ref = nil then
+    I_Error('G_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := g_screenshot_ref;
+end;
+
+//==============================================================================
+//
+// G_ConfigureFiles
+//
+//==============================================================================
+procedure G_ConfigureFiles(const AFiles: IEngineFiles);
+begin
+  g_files_ref := AFiles;
+end;
+
+//==============================================================================
+//
+// G_Files
+//
+//==============================================================================
+function G_Files: IEngineFiles;
+begin
+  if g_files_ref = nil then
+    I_Error('G_ConfigureFiles() was not called: the files are missing');
+  result := g_files_ref;
+end;
 
 var
   // given by the composition root (G_ConfigureInput)
@@ -752,7 +851,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := D_NetExpectedConsistency;
+  cmd.consistency := G_NetGame.ExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -1125,7 +1224,7 @@ begin
 
   memcpy(cmd, base, SizeOf(cmd^));
 
-  cmd.consistency := D_NetExpectedConsistency;
+  cmd.consistency := G_NetGame.ExpectedConsistency;
 
   strafe := gamekeydown[key_strafe] or
             (usemouse and mousebuttons[mousebstrafe]) or
@@ -1729,7 +1828,7 @@ begin
         G_DoWorldDone;
       ga_screenshot:
         begin
-          M_ScreenShot;
+          G_Screenshots.Take;
           gameaction := ga_nothing;
         end;
     end;
@@ -1746,7 +1845,7 @@ begin
       pl := @players[i];
       cmd := @pl.cmd;
 
-      D_GetNetCommand(i, buf, cmd);
+      G_NetGame.GetCommand(i, buf, cmd);
 
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
@@ -1766,9 +1865,9 @@ begin
       if netgame and not netdemo and (gametic mod ticdup = 0) then
       begin
         if pl.mo <> nil then
-          D_VerifyNetConsistency(i, cmd.consistency, pl.mo.x)
+          G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
         else
-          D_VerifyNetConsistency(i, cmd.consistency, M_GetMenuRandomIndex);
+          G_NetGame.VerifyConsistency(i, cmd.consistency, M_GetMenuRandomIndex);
       end;
     end;
   end;
@@ -2520,7 +2619,7 @@ begin
     exit;
   end;
 
-  len := M_ReadFile(savename, pointer(savebuffer));
+  len := G_Files.ReadFile(savename, pointer(savebuffer));
   save_p := PByteArray(integer(savebuffer) + SAVESTRINGSIZE);
 
   savegameversion := VERSION; // Assume current version
@@ -2735,43 +2834,43 @@ begin
   save_p := PByteArray(integer(save_p) + 1);
 
   len := integer(save_p) - integer(savebuffer);
-  M_WriteFile(name, savebuffer, len);
+  G_Files.WriteFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchivePlayers;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveWorld;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveThinkers;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveSpecials;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveVariables;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchivePSMapScript;
 
   len := integer(save_p) - integer(savebuffer);
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveOverlay;
@@ -2781,7 +2880,7 @@ begin
   len := integer(save_p) - integer(savebuffer) + 1;
   if len > maxsize then
     I_Error('G_DoSaveGame(): Savegame buffer overrun');
-  M_AppendFile(name, savebuffer, len);
+  G_Files.AppendFile(name, savebuffer, len);
 
   Z_Free(savebuffer);
   gameaction := ga_nothing;
@@ -3522,7 +3621,7 @@ var
 begin
   gameaction := ga_nothing;
   if externaldemo then
-    len := M_ReadFile(defdemoname, pointer(demobuffer))
+    len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
   begin
     lump := W_GetNumForName(defdemoname);
@@ -3753,7 +3852,7 @@ begin
     demo_p[0] := DEMOMARKER;
     demo_p := @demo_p[1];
 
-    M_WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
+    G_Files.WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
     Z_Free(demobuffer);
     demorecording := false;
     I_Error('G_CheckDemoStatus(): Demo %s recorded', [demoname]);

@@ -33,6 +33,10 @@ unit psi_system;
 
 interface
 
+uses
+  DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.Configuration.Intf;
+
 type
   TDynamicIntegerArray = array of Integer;
   TDynamicInt64Array = array of Int64;
@@ -294,6 +298,22 @@ function PS_GetConsoleBool(const cvar: string): boolean;
 //==============================================================================
 function PS_SetConsoleBool(const cvar: string; const value: boolean): boolean;
 
+//==============================================================================
+//
+// PS_ConfigureConsole
+// The console, given by the composition root
+//
+//==============================================================================
+procedure PS_ConfigureConsole(const AConsole: IEngineConsole);
+
+//==============================================================================
+//
+// PS_ConfigureDefaults
+// The defaults, given by the composition root
+//
+//==============================================================================
+procedure PS_ConfigureDefaults(const ADefaults: IEngineDefaults);
+
 implementation
 
 uses
@@ -307,6 +327,56 @@ uses
   m_rnd,
   p_tick,
   tables;
+
+var
+  // given by the composition root
+  ps_console_ref: IEngineConsole = nil;
+  ps_defaults_ref: IEngineDefaults = nil;
+
+//==============================================================================
+//
+// PS_ConfigureConsole
+//
+//==============================================================================
+procedure PS_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  ps_console_ref := AConsole;
+end;
+
+//==============================================================================
+//
+// PS_Console
+//
+//==============================================================================
+function PS_Console: IEngineConsole;
+begin
+  if ps_console_ref = nil then
+    I_Error('PS_ConfigureConsole() was not called: the console is missing');
+  result := ps_console_ref;
+end;
+
+//==============================================================================
+//
+// PS_ConfigureDefaults
+//
+//==============================================================================
+procedure PS_ConfigureDefaults(const ADefaults: IEngineDefaults);
+begin
+  ps_defaults_ref := ADefaults;
+end;
+
+//==============================================================================
+//
+// PS_Defaults
+//
+//==============================================================================
+function PS_Defaults: IEngineDefaults;
+begin
+  if ps_defaults_ref = nil then
+    I_Error('PS_ConfigureDefaults() was not called: the defaults are missing');
+  result := ps_defaults_ref;
+end;
+
 
 //==============================================================================
 //
@@ -706,7 +776,7 @@ end;
 //==============================================================================
 procedure PS_ConsoleCommand(const parm: string);
 begin
-  C_AddCommand(parm);
+  PS_Console.AddCommand(parm);
 end;
 
 //==============================================================================
@@ -765,7 +835,7 @@ end;
 //==============================================================================
 function PS_SetConsoleStr(const cvar: string; const value: string): boolean;
 begin
-  result := M_ForceDefaultString(cvar, value);
+  result := PS_Defaults.ForceString(cvar, value);
 end;
 
 //==============================================================================
@@ -824,7 +894,7 @@ end;
 //==============================================================================
 function PS_SetConsoleInt(const cvar: string; const value: integer): boolean;
 begin
-  result := M_ForceDefaultInteger(cvar, value);
+  result := PS_Defaults.ForceInteger(cvar, value);
 end;
 
 //==============================================================================
@@ -880,7 +950,7 @@ end;
 //==============================================================================
 function PS_SetConsoleBool(const cvar: string; const value: boolean): boolean;
 begin
-  result := M_ForceDefaultBoolean(cvar, value);
+  result := PS_Defaults.ForceBoolean(cvar, value);
 end;
 
 end.
