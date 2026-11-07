@@ -17,11 +17,11 @@ uses
 type
   /// <summary>
   ///   AIFF and AIFF-C files with PCM (8 to 32 bit, either byte order), float,
-  ///   double, mu-law and A-law samples. Follows the chunk parser of
-  ///   libsndfile, quirks included. Not read yet: the AIFF-C DWVW, GSM 6.10
-  ///   and IMA ADPCM encodings, which are refused. A file without an SSND
-  ///   chunk is refused too (libsndfile opens it and reads garbage), and the
-  ///   CHAN chunk is always skipped whole
+  ///   double, mu-law and A-law samples, and the AIFF-C DWVW, GSM 6.10 and IMA
+  ///   ADPCM encodings. Follows the chunk parser of libsndfile, quirks included.
+  ///   A file without an SSND chunk is refused, and the CHAN chunk is always
+  ///   skipped whole (libsndfile reads the rest of a chunk whose layout it does
+  ///   not know as the next chunk)
   /// </summary>
   TAiffFormat = class(TInterfacedObject, ISoundFormat)
   public
@@ -341,6 +341,7 @@ var
   LSkipped: Integer;
   LData: TBytes;
   LFrames: Int64;
+  LPastTheEnd: Boolean;
 begin
   ASamples := nil;
   LFileLength := Length(ASource);
@@ -554,12 +555,9 @@ begin
 
   if LLayout.Channels < 1 then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
-  if (LFound and HAVE_FORM) = 0 then
-    Exit(SNDFILE_ERR_MALFORMED_FILE);
-  if (LFound and HAVE_AIFF) = 0 then
-    Exit(SNDFILE_ERR_MALFORMED_FILE);
-  if (LFound and HAVE_COMM) = 0 then
-    Exit(SNDFILE_ERR_MALFORMED_FILE);
+  // FORM and its type are the first chunk (they picked the format), and the
+  // channels come only from a COMM chunk: of the chunks libsndfile wants, only
+  // the SSND chunk can still be missing
   if (LFound and HAVE_SSND) = 0 then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
 
@@ -590,10 +588,10 @@ begin
     else
       LDataLength := 0;
     Result := TImaAdpcmDecoder.DecodeAiff(ASource, LDataOffset, LDataLength,
-      LLayout.Channels, LData, LFrames);
+      LLayout.Channels, LData, LFrames, LPastTheEnd);
     if Result = SNDFILE_OK then
       ASamples := TSoundCodecSamples.Wrap(LLayout.Format, LLayout.Channels,
-        LLayout.SampleRate, LFrames, LData);
+        LLayout.SampleRate, LFrames, LData, LPastTheEnd);
     Exit;
   end;
 

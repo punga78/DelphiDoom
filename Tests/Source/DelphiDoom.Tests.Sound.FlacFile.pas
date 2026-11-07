@@ -62,6 +62,9 @@ type
 
 implementation
 
+uses
+  System.Math;
+
 type
   TBitWriter = record
     Bytes: TBytes;
@@ -304,7 +307,9 @@ var
     LCoefficients: array[0..31] of Integer;
     LTypeByte: Integer;
   begin
-    SetLength(LValues, ABlockSize);
+    // A block shorter than the order still writes all the warm-up samples:
+    // those past the block are zeros (they used to be read past the array)
+    SetLength(LValues, Max(ABlockSize, 32));
     LWasted := AOptions.WastedBits;
     for LI := 0 to ABlockSize - 1 do
       LValues[LI] := AData[AOffset + LI] div (1 shl LWasted);

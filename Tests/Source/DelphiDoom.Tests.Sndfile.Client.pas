@@ -54,12 +54,42 @@ type
     procedure TestDecode16NormalizedKeepsSilence;
     [Test]
     procedure TestDecode16OfGarbageRaises;
+    [Test]
+    procedure DovrebbeRifiutareUnNumeroDiFrameNegativo;
+    [Test]
+    procedure DovrebbeTenereSoloIFrameLettiSeIlSuonoEPiuCorto;
+    [Test]
+    procedure DovrebbeFermarsiAiFrameDichiaratiNormalizzando;
+    [Test]
+    procedure DovrebbeTenereSoloIFrameLettiNormalizzando;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Sound.Factory, DelphiDoom.Tests.Sndfile.Wav;
+  DelphiDoom.Sound.Factory, DelphiDoom.Tests.Sndfile.Wav, DelphiDoom.Tests.Sndfile.FakeSound;
+
+function FakeInfo(AFrames: Int64; AChannels, AFormat: Integer): TSoundFileInfo;
+begin
+  Result := Default(TSoundFileInfo);
+  Result.Frames := AFrames;
+  Result.Channels := AChannels;
+  Result.SampleRate := 11025;
+  Result.Format := AFormat;
+end;
+
+function DecodeFake(const AInfo: TSoundFileInfo; ARealFrames: Int64; ANormalize: Boolean): TArray<SmallInt>;
+var
+  LClient: TSndfileClient;
+  LInfo: TSoundFileInfo;
+begin
+  LClient := TSndfileClient.Create(TFakeSndfile.Create(AInfo, ARealFrames, 0.5));
+  try
+    Result := LClient.Decode16(TBytes.Create(1, 2, 3, 4), ANormalize, LInfo);
+  finally
+    LClient.Free;
+  end;
+end;
 
 { TTestSndfileClient }
 
@@ -244,7 +274,39 @@ begin
     end, ESndfileException);
 end;
 
-initialization
-  TDUnitX.RegisterTestFixture(TTestSndfileClient);
+procedure TTestSndfileClient.DovrebbeRifiutareUnNumeroDiFrameNegativo;
+begin
+  try
+    DecodeFake(FakeInfo(-1, 1, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 0, False);
+    Assert.Fail('ESndfileException expected');
+  except
+    on E: ESndfileException do
+      Assert.AreEqual(SNDFILE_ERR_INVALID_ARGUMENT, E.Code);
+  end;
+end;
+
+procedure TTestSndfileClient.DovrebbeTenereSoloIFrameLettiSeIlSuonoEPiuCorto;
+begin
+  // 100 frames promised, 60 given: the samples are those of the 60
+  Assert.AreEqual(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, False)));
+end;
+
+procedure TTestSndfileClient.DovrebbeFermarsiAiFrameDichiaratiNormalizzando;
+var
+  LSamples: TArray<SmallInt>;
+begin
+  // More frames than promised: the normalized samples stop at the promised ones
+  LSamples := DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_FLOAT), 150, False);
+  Assert.AreEqual(2 * 100, Length(LSamples));
+  // The peak of 0.5 becomes the full scale, cut to 32767
+  Assert.AreEqual(32767, Integer(LSamples[High(LSamples)]));
+end;
+
+procedure TTestSndfileClient.DovrebbeTenereSoloIFrameLettiNormalizzando;
+begin
+  Assert.AreEqual(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, True)));
+end;
+
+initialization  TDUnitX.RegisterTestFixture(TTestSndfileClient);
 
 end.
