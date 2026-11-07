@@ -1282,7 +1282,7 @@ begin
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[53]), mobjinfo[i].fastspeed]);
     result.Add('%s = "%s"', [capitalizedstring(mobj_tokens[54]), mobjinfo[i].obituary]);
     result.Add('%s = "%s"', [capitalizedstring(mobj_tokens[55]), mobjinfo[i].hitobituary]);
-    result.Add('%s = %s', [capitalizedstring(mobj_tokens[56]), GENDERINFO[Ord(mobjinfo[i].gender)].name]);
+    result.Add('%s = %s', [capitalizedstring(mobj_tokens[56]), R_GenderName(mobjinfo[i].gender)]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[57]), mobjinfo[i].meleerange]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[58]), mobjinfo[i].maxstepheight]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[59]), mobjinfo[i].maxdropoffheight]);

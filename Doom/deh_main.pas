@@ -1291,7 +1291,7 @@ begin
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[52]), mobjinfo[i].fastspeed]);
     result.Add('%s = "%s"', [capitalizedstring(mobj_tokens[53]), mobjinfo[i].obituary]);
     result.Add('%s = "%s"', [capitalizedstring(mobj_tokens[54]), mobjinfo[i].hitobituary]);
-    result.Add('%s = %s', [capitalizedstring(mobj_tokens[55]), GENDERINFO[Ord(mobjinfo[i].gender)].name]);
+    result.Add('%s = %s', [capitalizedstring(mobj_tokens[55]), R_GenderName(mobjinfo[i].gender)]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[56]), mobjinfo[i].meleerange]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[57]), mobjinfo[i].maxstepheight]);
     result.Add('%s = %d', [capitalizedstring(mobj_tokens[58]), mobjinfo[i].maxdropoffheight]);

@@ -104,6 +104,10 @@ uses
   p_switch,
 {$ENDIF}
   p_animdefs,
+  DelphiDoom.Obituary.Intf,
+  DelphiDoom.Obituary.Factory,
+  p_gender,
+  p_obituaries,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.MusInfo.Factory,
   DelphiDoom.Engine.MusInfo.Services,
@@ -320,6 +324,15 @@ begin
   LCatalog := TMusInfoFactory.CreateCatalog(LServices, ALog);
   P_ConfigureMusInfo(LCatalog,
     TMusInfoFactory.CreateLoader(LServices, TMusInfoFactory.CreateParser(ALog), LCatalog));
+end;
+
+procedure ComposeObituary;
+var
+  LGenders: IObituaryGenders;
+begin
+  LGenders := TObituaryFactory.CreateGenders;
+  R_ConfigureGenders(LGenders);
+  P_ConfigureObituaries(TObituaryFactory.CreateFormatter(LGenders));
 end;
 
 procedure ComposeDefinitions(const ALog: ILog);
@@ -539,6 +552,7 @@ begin
   ComposeTextureDefs(LLog);
   ComposePalette;
   ComposeDefinitions(LLog);
+  ComposeObituary;
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);

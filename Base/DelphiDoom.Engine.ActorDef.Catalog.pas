@@ -143,7 +143,7 @@ end;
 
 function TEngineActorDefCatalog.GenderName(const AName: string): string;
 begin
-  Result := GENDERINFO[Ord(R_GetGenderForName(AName))].name;
+  Result := R_GenderName(R_GetGenderForName(AName));
 end;
 
 function TEngineActorDefCatalog.Find(const AName: string; out AIndex: Integer;
