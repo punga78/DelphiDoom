@@ -46,11 +46,6 @@ type
     procedure Delete(AIndex: Integer; ASaveTime: Boolean);
 
     /// <summary>
-    ///   Removes the last event
-    /// </summary>
-    procedure DeleteLast;
-
-    /// <summary>
     ///   Address of the event AIndex, to change one of its fields in place
     ///   (valid until the next Add, Insert or Delete)
     /// </summary>
@@ -134,15 +129,6 @@ begin
   FEvents[FCount] := Default(TXmiEvent);
   if ASaveTime and (AIndex < FCount) then
     FEvents[AIndex].Ticks := FEvents[AIndex].Ticks + LDelay;
-end;
-
-procedure TXmiTrack.DeleteLast;
-begin
-  if FCount > 0 then
-  begin
-    Dec(FCount);
-    FEvents[FCount] := Default(TXmiEvent);
-  end;
 end;
 
 end.

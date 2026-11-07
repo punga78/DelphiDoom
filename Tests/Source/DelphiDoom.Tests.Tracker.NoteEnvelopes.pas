@@ -11,6 +11,7 @@ interface
 
 uses
   System.Math,
+  System.SysUtils,
   DUnitX.TestFramework,
   DelphiDoom.Tracker.NoteEnvelopes,
   DelphiDoom.Tracker.Types;
@@ -70,8 +71,8 @@ end;
 
 procedure TTestTrackerNoteEnvelopes.TearDown;
 begin
-  FEnvelopes.Free;
-  FInstrument.Free;
+  FreeAndNil(FEnvelopes);
+  FreeAndNil(FInstrument);
 end;
 
 function TTestTrackerNoteEnvelopes.MakeEnvelope(const ATicks, AValues: array of Integer): TTrackerEnvelope;

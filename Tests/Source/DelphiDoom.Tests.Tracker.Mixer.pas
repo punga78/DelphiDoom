@@ -72,8 +72,8 @@ end;
 
 procedure TTestTrackerMixer.TearDown;
 begin
-  FMixer.Free;
-  FSample.Free;
+  FreeAndNil(FMixer);
+  FreeAndNil(FSample);
 end;
 
 function TTestTrackerMixer.NewSample(const AValues: array of SmallInt): TTrackerSample;

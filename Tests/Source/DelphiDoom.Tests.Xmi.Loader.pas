@@ -21,6 +21,8 @@ type
   public
     [Test]
     procedure TestMissingLibraryRaises;
+    [Test]
+    procedure DovrebbeRifiutareUnaLibreriaSenzaLExport;
 
     /// <summary>
     ///   Needs bin\Libs\DDXmi.dll (build.bat librerie); skipped otherwise
@@ -54,6 +56,17 @@ begin
     procedure
     begin
       TXmiLoader.Create('DDXmi.nonexistent.dll').Free;
+    end, EXmiException);
+end;
+
+// kernel32.dll is always there, and it does not export DDXmiCreate: the loader
+// raises, and its destructor unloads the library it had loaded
+procedure TTestXmiLoader.DovrebbeRifiutareUnaLibreriaSenzaLExport;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TXmiLoader.Create('kernel32.dll').Free;
     end, EXmiException);
 end;
 

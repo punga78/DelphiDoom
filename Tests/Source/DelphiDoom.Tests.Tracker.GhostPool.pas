@@ -88,13 +88,13 @@ end;
 
 procedure TTestTrackerGhostPool.TearDown;
 begin
-  FPool.Free;
-  FMixer.Free;
-  FSource.Free;
-  FOtherInstrument.Free;
-  FInstrument.Free;
-  FOtherSample.Free;
-  FSample.Free;
+  FreeAndNil(FPool);
+  FreeAndNil(FMixer);
+  FreeAndNil(FSource);
+  FreeAndNil(FOtherInstrument);
+  FreeAndNil(FInstrument);
+  FreeAndNil(FOtherSample);
+  FreeAndNil(FSample);
 end;
 
 // One voice for the channel and AVoices - 1 for the pool

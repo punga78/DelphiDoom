@@ -37,7 +37,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Mikmod.Intf, DelphiDoom.Mikmod.TrackerEngine, DelphiDoom.Mikmod.Provider;
+  DelphiDoom.Mikmod.Intf, DelphiDoom.Mikmod.TrackerEngine, DelphiDoom.Mikmod.Provider,
+  DelphiDoom.Tests.Tracker.FakeOutput;
 
 { TTestMikModProvider }
 
@@ -67,7 +68,7 @@ procedure TTestMikModProvider.TestUseReplacesTheImplementation;
 begin
   TMikModProvider.Client;
   // The old client is freed by Use: a new one works on the engine passed in
-  TMikModProvider.Use(TTrackerMikModEngine.Create);
+  TMikModProvider.Use(TTrackerMikModEngine.Create(TFakeTrackerOutputFactory.Create));
   Assert.IsFalse(TMikModProvider.Client.IsInitialized);
 end;
 

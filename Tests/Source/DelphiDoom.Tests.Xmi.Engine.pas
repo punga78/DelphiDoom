@@ -65,6 +65,12 @@ type
     procedure TestConvertNilReturnsArgumentError;
     [Test]
     procedure TestTwoEnginesConvertIndependently;
+    [Test]
+    procedure DovrebbeRifiutareIlConteggioDiUnBufferVuoto;
+    [Test]
+    procedure DovrebbeRifiutareUnaTracciaOltreIlLimite;
+    [Test]
+    procedure DovrebbeDareErroreDiDatiPerUnCmfDiVersioneSconosciuta;
   end;
 
 implementation
@@ -309,6 +315,40 @@ begin
 
   AssertIsStandardMidi(LXmiMidi);
   AssertIsStandardMidi(LCmfMidi);
+end;
+
+procedure TTestXmiEngine.DovrebbeRifiutareIlConteggioDiUnBufferVuoto;
+var
+  LCount: Cardinal;
+begin
+  Assert.AreEqual(XMI_ERROR_ARGUMENT, FXmi.GetTrackCount(nil, 0, LCount));
+  Assert.AreEqual(0, Integer(LCount));
+end;
+
+procedure TTestXmiEngine.DovrebbeRifiutareUnaTracciaOltreIlLimite;
+var
+  LXmi: TBytes;
+  LSize: Cardinal;
+begin
+  LXmi := TXmiSamples.BuildXmi;
+  LSize := 0;
+  Assert.AreEqual(XMI_ERROR_TRACK, FXmi.ConvertToMidi(Pointer(LXmi), Length(LXmi),
+    Cardinal(High(Integer)) + 1, nil, LSize));
+end;
+
+procedure TTestXmiEngine.DovrebbeDareErroreDiDatiPerUnCmfDiVersioneSconosciuta;
+var
+  LCmf: TBytes;
+  LCount, LSize: Cardinal;
+begin
+  LCmf := TXmiSamples.BuildCmf;
+  // The version 2.0, little endian
+  LCmf[4] := $00;
+  LCmf[5] := $02;
+  Assert.AreEqual(XMI_ERROR_DATA, FXmi.GetTrackCount(Pointer(LCmf), Length(LCmf), LCount));
+  LSize := 0;
+  Assert.AreEqual(XMI_ERROR_DATA, FXmi.ConvertToMidi(Pointer(LCmf), Length(LCmf), 0,
+    nil, LSize));
 end;
 
 initialization

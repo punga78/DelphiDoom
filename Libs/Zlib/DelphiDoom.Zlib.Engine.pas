@@ -133,6 +133,8 @@ begin
       LStream.next_out := @LNoOutput;
     LStream.avail_out := Longint(ADestSize);
 
+    // With ZLIB_FINISH inflate never answers ZLIB_OK: a stream that is not
+    // finished (output full or input cut) is already ZLIB_BUF_ERROR
     Result := inflate(LStream, ZLIB_FINISH);
     if Result = ZLIB_STREAM_END then
     begin
@@ -140,9 +142,7 @@ begin
       Result := ZLIB_OK;
     end
     else if Result = ZLIB_NEED_DICT then
-      Result := ZLIB_DATA_ERROR
-    else if Result = ZLIB_OK then
-      Result := ZLIB_BUF_ERROR;
+      Result := ZLIB_DATA_ERROR;
   finally
     inflateEnd(LStream);
   end;

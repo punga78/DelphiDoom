@@ -56,6 +56,24 @@ type
     procedure TestModuloMonoHaTuttiICanaliAlCentro;
     [Test]
     procedure TestFileTroncatoSollevaEccezione;
+    [Test]
+    procedure DovrebbeRifiutareUnModuloSenzaCanali;
+    [Test]
+    procedure DovrebbeLeggereLaTabellaDeiPannelli;
+    [Test]
+    procedure DovrebbeUsareLaFrequenzaPredefinitaSeManca;
+    [Test]
+    procedure DovrebbeLeggereLaNotaTagliata;
+    [Test]
+    procedure DovrebbeLeggereICampioniConSegno;
+    [Test]
+    procedure DovrebbeLeggereICampioniA16BitSenzaSegno;
+    [Test]
+    procedure DovrebbeLeggereICampioniA16BitConSegno;
+    [Test]
+    procedure DovrebbeLeggereIDueCanaliDiUnCampioneStereo;
+    [Test]
+    procedure DovrebbeFermareLaRipetizioneAllaFineDelCampione;
   end;
 
 implementation
@@ -303,6 +321,133 @@ begin
     begin
       TTrackerS3mLoader.Load(FBytes);
     end, ETrackerException);
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeRifiutareUnModuloSenzaCanali;
+begin
+  FBytes := BuildS3m;
+  FBytes[$40] := 255;
+  FBytes[$41] := 255;
+
+  Assert.WillRaise(
+    procedure
+    begin
+      TTrackerS3mLoader.Load(FBytes).Free;
+    end, ETrackerException);
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereLaTabellaDeiPannelli;
+var
+  LBytes: TBytes;
+begin
+  // The table follows the pointers: bit 5 says the low nibble is the panning (0..15)
+  LBytes := BuildS3m;
+  LBytes[$35] := 252;
+  LBytes[$66] := $2F;
+  LBytes[$67] := $20;
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(255, Integer(FModule.ChannelPanning[0]));
+  Assert.AreEqual(0, Integer(FModule.ChannelPanning[1]));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeUsareLaFrequenzaPredefinitaSeManca;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildS3m;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + $20, 0);
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(8363, FModule.Samples[0].CenterFrequency);
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereLaNotaTagliata;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildS3m;
+  LBytes[PATTERN_OFFSET + 3] := 254;
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(Integer(TRACKER_NOTE_CUT), Integer(FModule.Patterns[0].Cells[0, 0].Note));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereICampioniConSegno;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildS3m;
+  PutWord(LBytes, $2A, 1);
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  // 0, 128, 255, 64 as signed bytes, scaled to 16 bit
+  Assert.AreEqual(0, Integer(FModule.Samples[0].Data[0]));
+  Assert.AreEqual(-128 * 256, Integer(FModule.Samples[0].Data[1]));
+  Assert.AreEqual(-1 * 256, Integer(FModule.Samples[0].Data[2]));
+  Assert.AreEqual(64 * 256, Integer(FModule.Samples[0].Data[3]));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereICampioniA16BitSenzaSegno;
+var
+  LBytes: TBytes;
+begin
+  // Two samples of 16 bit (little endian): $8000 and $40FF, unsigned
+  LBytes := BuildS3m;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + $10, 2);
+  LBytes[INSTRUMENT_OFFSET + $1F] := 4;
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(2, Length(FModule.Samples[0].Data));
+  Assert.AreEqual(0, Integer(FModule.Samples[0].Data[0]));
+  Assert.AreEqual($40FF - 32768, Integer(FModule.Samples[0].Data[1]));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereICampioniA16BitConSegno;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildS3m;
+  PutWord(LBytes, $2A, 1);
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + $10, 2);
+  LBytes[INSTRUMENT_OFFSET + $1F] := 4;
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(-32768, Integer(FModule.Samples[0].Data[0]));
+  Assert.AreEqual($40FF, Integer(FModule.Samples[0].Data[1]));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeLeggereIDueCanaliDiUnCampioneStereo;
+var
+  LBytes: TBytes;
+begin
+  // A stereo sample of 2 frames has 4 bytes
+  LBytes := BuildS3m;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + $10, 2);
+  LBytes[INSTRUMENT_OFFSET + $1F] := 2;
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(4, Length(FModule.Samples[0].Data));
+end;
+
+procedure TTestTrackerS3mLoader.DovrebbeFermareLaRipetizioneAllaFineDelCampione;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildS3m;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + $18, 10);
+
+  FModule := TTrackerS3mLoader.Load(LBytes);
+
+  Assert.AreEqual(1, FModule.Samples[0].LoopStart);
+  Assert.AreEqual(4, FModule.Samples[0].LoopEnd);
 end;
 
 initialization

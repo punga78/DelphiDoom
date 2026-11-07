@@ -29,9 +29,37 @@ type
     procedure PutWord(var ABytes: TBytes; const AOffset, AValue: Integer);
     procedure PutCardinal(var ABytes: TBytes; const AOffset: Integer; const AValue: Cardinal);
     procedure PutText(var ABytes: TBytes; const AOffset: Integer; const AText: string);
+    procedure AssertLoadRaises(const ABytes: TBytes);
   public
     [TearDown]
     procedure TearDown;
+
+    [Test]
+    procedure DovrebbeRifiutareUnFileSenzaFirma;
+    [Test]
+    procedure DovrebbeRifiutareUnNumeroDiCanaliSbagliato;
+    [Test]
+    procedure DovrebbeRifiutareUnaLunghezzaDelBranoSbagliata;
+    [Test]
+    procedure DovrebbeRipartireDallInizioSeLaRipartenzaEOltreIlBrano;
+    [Test]
+    procedure DovrebbeRifiutareUnPatternSenzaRighe;
+    [Test]
+    procedure DovrebbeRifiutareUnPatternOltreIlFile;
+    [Test]
+    procedure DovrebbeSaltareLaParteNuovaDellIntestazioneDelPattern;
+    [Test]
+    procedure DovrebbeTogliereUnaNotaOltreLUltima;
+    [Test]
+    procedure DovrebbeRifiutareUnaIntestazioneDiStrumentoCorta;
+    [Test]
+    procedure DovrebbeRifiutareUnaIntestazioneDiCampioneCorta;
+    [Test]
+    procedure DovrebbeLasciareVuotoUnCampioneAdpcm;
+    [Test]
+    procedure DovrebbeDecodificareUnCampioneA16Bit;
+    [Test]
+    procedure DovrebbeRipetereAndataERitorno;
 
     [Test]
     procedure TestRiconoscePerLaFirma;
@@ -351,6 +379,156 @@ begin
 
   Assert.AreEqual(1, FModule.Samples.Count);
   Assert.AreSame(FModule.Samples[0], FModule.Instruments[0].Samples[0]);
+end;
+
+procedure TTestTrackerXmLoader.AssertLoadRaises(const ABytes: TBytes);
+begin
+  FBytes := ABytes;
+  Assert.WillRaise(
+    procedure
+    begin
+      TTrackerXmLoader.Load(FBytes).Free;
+    end, ETrackerException);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnFileSenzaFirma;
+begin
+  AssertLoadRaises(TBytes.Create(1, 2, 3));
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnNumeroDiCanaliSbagliato;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutWord(LBytes, 68, 0);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnaLunghezzaDelBranoSbagliata;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutWord(LBytes, 64, 0);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRipartireDallInizioSeLaRipartenzaEOltreIlBrano;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutWord(LBytes, 66, 5);
+  FModule := TTrackerXmLoader.Load(LBytes);
+  Assert.AreEqual(0, FModule.RestartPosition);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnPatternSenzaRighe;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutWord(LBytes, PATTERN_OFFSET + 5, 0);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnPatternOltreIlFile;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutWord(LBytes, PATTERN_OFFSET + 7, $FFFF);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeSaltareLaParteNuovaDellIntestazioneDelPattern;
+var
+  LBytes: TBytes;
+begin
+  // Four bytes more in the header of the pattern, which says it is 13 bytes long
+  LBytes := BuildXm;
+  Insert(TBytes.Create($EE, $EE, $EE, $EE), LBytes, PATTERN_OFFSET + 9);
+  PutCardinal(LBytes, PATTERN_OFFSET, 13);
+  FModule := TTrackerXmLoader.Load(LBytes);
+
+  Assert.AreEqual(49, Integer(FModule.Patterns[0].Cells[0, 0].Note));
+  Assert.AreEqual(1, FModule.Instruments.Count);
+  Assert.AreEqual(4, Length(FModule.Samples[0].Data));
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeTogliereUnaNotaOltreLUltima;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  LBytes[PATTERN_OFFSET + 9 + 1] := TRACKER_NOTE_LAST + 1;
+  FModule := TTrackerXmLoader.Load(LBytes);
+  Assert.AreEqual(TRACKER_NOTE_NONE, Integer(FModule.Patterns[0].Cells[0, 0].Note));
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnaIntestazioneDiStrumentoCorta;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET, 10);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRifiutareUnaIntestazioneDiCampioneCorta;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  PutCardinal(LBytes, INSTRUMENT_OFFSET + 29, 39);
+  AssertLoadRaises(LBytes);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeLasciareVuotoUnCampioneAdpcm;
+var
+  LBytes: TBytes;
+begin
+  // The reserved byte $AD marks the samples packed with ADPCM (ModPlug)
+  LBytes := BuildXm;
+  LBytes[SAMPLE_HEADER_OFFSET + 17] := $AD;
+  FModule := TTrackerXmLoader.Load(LBytes);
+  Assert.AreEqual(1, FModule.Samples.Count);
+  Assert.AreEqual(0, Length(FModule.Samples[0].Data));
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeDecodificareUnCampioneA16Bit;
+var
+  LBytes: TBytes;
+  LSample: TTrackerSample;
+begin
+  // 16 bit: the four bytes are two words, delta coded: 10 and +10, then the
+  // loop (from byte 1, two bytes long) is counted in words
+  LBytes := BuildXm;
+  LBytes[SAMPLE_HEADER_OFFSET + 14] := $11;
+  LBytes[SAMPLE_DATA_OFFSET] := 10;
+  LBytes[SAMPLE_DATA_OFFSET + 1] := 0;
+  LBytes[SAMPLE_DATA_OFFSET + 2] := 10;
+  LBytes[SAMPLE_DATA_OFFSET + 3] := 0;
+  PutCardinal(LBytes, SAMPLE_HEADER_OFFSET + 4, 2);
+  FModule := TTrackerXmLoader.Load(LBytes);
+
+  LSample := FModule.Samples[0];
+  Assert.AreEqual(2, Length(LSample.Data));
+  Assert.AreEqual(10, Integer(LSample.Data[0]));
+  Assert.AreEqual(20, Integer(LSample.Data[1]));
+  Assert.AreEqual(1, LSample.LoopStart);
+  Assert.AreEqual(2, LSample.LoopEnd);
+end;
+
+procedure TTestTrackerXmLoader.DovrebbeRipetereAndataERitorno;
+var
+  LBytes: TBytes;
+begin
+  LBytes := BuildXm;
+  LBytes[SAMPLE_HEADER_OFFSET + 14] := 2;
+  FModule := TTrackerXmLoader.Load(LBytes);
+  Assert.IsTrue(FModule.Samples[0].LoopType = tlPingPong);
 end;
 
 initialization

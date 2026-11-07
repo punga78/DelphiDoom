@@ -10,6 +10,7 @@ unit DelphiDoom.Tests.Tracker.EnvelopeCursor;
 interface
 
 uses
+  System.SysUtils,
   DUnitX.TestFramework,
   DelphiDoom.Tracker.EnvelopeCursor,
   DelphiDoom.Tracker.Types;
@@ -63,7 +64,7 @@ end;
 
 procedure TTestTrackerEnvelopeCursor.TearDown;
 begin
-  FCursor.Free;
+  FreeAndNil(FCursor);
 end;
 
 function TTestTrackerEnvelopeCursor.MakeEnvelope(const ATicks, AValues: array of Integer): TTrackerEnvelope;

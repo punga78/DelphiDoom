@@ -56,12 +56,18 @@ type
     procedure TestVolumeFuoriLimiti;
     [Test]
     procedure TestNonStaSuonandoPrimaDiPlay;
+    [Test]
+    procedure DovrebbeRifiutareUnUscitaMancante;
+    [Test]
+    procedure DovrebbeDareLaVersioneDiMikModCheSostituisce;
+    [Test]
+    procedure DovrebbeDareUnUltimoErroreVuoto;
   end;
 
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, DelphiDoom.Tests.Tracker.FakeOutput;
 
 const
   SOME_RATE = 22050;
@@ -70,7 +76,7 @@ const
 
 procedure TTestTrackerMikModEngine.Setup;
 begin
-  FMikMod := TTrackerMikModEngine.Create;
+  FMikMod := TTrackerMikModEngine.Create(TFakeTrackerOutputFactory.Create);
 end;
 
 procedure TTestTrackerMikModEngine.TearDown;
@@ -233,6 +239,33 @@ begin
   Assert.IsFalse(LPlayer.IsPlaying);
   Assert.IsFalse(LPlayer.IsPaused);
   Assert.AreEqual(MIKMOD_OK, LPlayer.Update);
+end;
+
+procedure TTestTrackerMikModEngine.DovrebbeRifiutareUnUscitaMancante;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TTrackerMikModEngine.Create(nil).Free;
+    end, EArgumentNilException);
+end;
+
+procedure TTestTrackerMikModEngine.DovrebbeDareLaVersioneDiMikModCheSostituisce;
+begin
+  // 3.1.7
+  Assert.AreEqual(Cardinal($030107), FMikMod.GetVersion);
+end;
+
+procedure TTestTrackerMikModEngine.DovrebbeDareUnUltimoErroreVuoto;
+var
+  LBuffer: array[0..7] of AnsiChar;
+begin
+  FillChar(LBuffer, SizeOf(LBuffer), Ord('x'));
+  Assert.AreEqual(Cardinal(0), FMikMod.GetLastError(nil, 0));
+  Assert.AreEqual(Cardinal(0), FMikMod.GetLastError(@LBuffer, 0));
+  Assert.AreEqual(Integer(Ord('x')), Integer(Ord(LBuffer[0])), 'a buffer of size 0 is not written');
+  Assert.AreEqual(Cardinal(0), FMikMod.GetLastError(@LBuffer, SizeOf(LBuffer)));
+  Assert.AreEqual(0, Integer(Ord(LBuffer[0])));
 end;
 
 initialization

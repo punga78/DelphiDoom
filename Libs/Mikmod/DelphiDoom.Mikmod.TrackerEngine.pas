@@ -11,7 +11,8 @@ unit DelphiDoom.Mikmod.TrackerEngine;
 interface
 
 uses
-  DelphiDoom.Mikmod.Intf;
+  DelphiDoom.Mikmod.Intf,
+  DelphiDoom.Tracker.Output.Intf;
 
 const
   // The version of the library that the tracker replaces (3.1.x)
@@ -24,12 +25,15 @@ type
   /// </summary>
   TTrackerMikModEngine = class(TInterfacedObject, IMikMod)
   private
+    FOutputs: ITrackerOutputFactory;
     FInitialized: Boolean;
     FSampleRate: Integer;
     FPlayerExists: Boolean;
-    FLastError: AnsiString;
     procedure PlayerReleased;
   public
+    /// <param name="AOutputs">The audio device and the worker of the players</param>
+    constructor Create(const AOutputs: ITrackerOutputFactory);
+
     // IMikMod
     function GetVersion: Cardinal; stdcall;
     function Initialize(AMixFrequency: Cardinal; AStereo, A16Bits,
@@ -49,6 +53,14 @@ uses
 
 { TTrackerMikModEngine }
 
+constructor TTrackerMikModEngine.Create(const AOutputs: ITrackerOutputFactory);
+begin
+  inherited Create;
+  if not Assigned(AOutputs) then
+    raise EArgumentNilException.Create('AOutputs');
+  FOutputs := AOutputs;
+end;
+
 function TTrackerMikModEngine.GetVersion: Cardinal;
 begin
   Result := TRACKER_VERSION;
@@ -67,7 +79,6 @@ begin
 
   FSampleRate := Integer(AMixFrequency);
   FInitialized := True;
-  FLastError := '';
   Result := MIKMOD_OK;
 end;
 
@@ -104,7 +115,7 @@ begin
       begin
         if Assigned(LKeepAlive) then
           PlayerReleased;
-      end);
+      end, FOutputs);
     FPlayerExists := True;
     Result := MIKMOD_OK;
   except
@@ -113,19 +124,13 @@ begin
   end;
 end;
 
+// The tracker never fails in a way that a text would explain: the last error is
+// always empty, and only the terminator is written
 function TTrackerMikModEngine.GetLastError(ABuffer: PAnsiChar; ABufferSize: Cardinal): Cardinal;
-var
-  LCount: Cardinal;
 begin
-  Result := Length(FLastError);
-  if not Assigned(ABuffer) or (ABufferSize = 0) then
-    Exit;
-  LCount := Result;
-  if LCount > ABufferSize - 1 then
-    LCount := ABufferSize - 1;
-  if LCount > 0 then
-    Move(PAnsiChar(FLastError)^, ABuffer^, LCount);
-  ABuffer[LCount] := #0;
+  Result := 0;
+  if Assigned(ABuffer) and (ABufferSize > 0) then
+    ABuffer^ := #0;
 end;
 
 end.

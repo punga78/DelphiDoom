@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tracker - plays a module through the waveform audio device      }
+{  DelphiDoom: tracker - the waveform audio device of Windows                  }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -11,235 +11,115 @@ unit DelphiDoom.Tracker.WaveOut;
 interface
 
 uses
-  System.Classes,
-  DelphiDoom.Tracker.Types;
+  Winapi.MMSystem,
+  DelphiDoom.Tracker.Output.Intf;
 
 type
   /// <summary>
-  ///   Plays a module in a background thread, a few buffers at a time
+  ///   waveOut of Windows, 16 bit stereo PCM: one header for each buffer, prepared when it is
+  ///   written and given back when it is written again or the device is closed
   /// </summary>
-  /// <remarks>
-  ///   The module must stay alive and unchanged while it plays. A failure of
-  ///   the audio device ends the playback silently: music is never worth
-  ///   stopping the game
-  /// </remarks>
-  TTrackerWaveOut = class
-  private
-    FModule: TTrackerModule;
-    FSampleRate: Integer;
-    FLooping: Boolean;
-    FStopRequested: Boolean;
-    FPaused: Boolean;
-    FVolume: Integer;
-    FThread: TThread;
-    procedure Run;
-    procedure ApplyVolume(const ABuffer: TArray<SmallInt>);
+  TTrackerWaveOutDevice = class(TInterfacedObject, ITrackerAudioDevice)
+  strict private
+    FDevice: HWAVEOUT;
+    FOpen: Boolean;
+    FHeaders: TArray<TWaveHdr>;
+    procedure Unprepare(ABuffer: Integer);
   public
-    /// <param name="AModule">The module to play</param>
-    /// <param name="ASampleRate">Frames per second of the output</param>
-    constructor Create(const AModule: TTrackerModule; const ASampleRate: Integer);
     destructor Destroy; override;
-
-    /// <summary>Starts the song from the beginning, stopping the one that is playing</summary>
-    procedure Play(const ALooping: Boolean);
-
-    /// <summary>Stops the playback and waits for the thread to end</summary>
-    procedure Stop;
-
+    function Open(ASampleRate, ABufferCount: Integer): Boolean;
+    procedure Write(ABuffer: Integer; const ASamples: TArray<SmallInt>);
+    function IsDone(ABuffer: Integer): Boolean;
     procedure Pause;
-    procedure Resume;
-
-    function IsPlaying: Boolean;
-
-    property Paused: Boolean read FPaused;
-    /// <summary>0..128</summary>
-    property Volume: Integer read FVolume write FVolume;
+    procedure Restart;
+    procedure Close;
+    procedure Wait;
   end;
 
 implementation
 
 uses
-  Winapi.MMSystem,
-  Winapi.Windows,
-  System.SysUtils,
-  DelphiDoom.Tracker.Player;
+  Winapi.Windows;
 
 const
-  BUFFER_COUNT = 4;
-  // A buffer lasts a tenth of a second
-  BUFFER_FRACTION = 10;
-  WAIT_MS = 10;
   CHANNELS = 2;
   BITS_PER_SAMPLE = 16;
-  MAX_VOLUME = 128;
+  WAIT_MS = 10;
 
-{ TTrackerWaveOut }
+{ TTrackerWaveOutDevice }
 
-constructor TTrackerWaveOut.Create(const AModule: TTrackerModule; const ASampleRate: Integer);
+destructor TTrackerWaveOutDevice.Destroy;
 begin
-  inherited Create;
-  FModule := AModule;
-  FSampleRate := ASampleRate;
-  FVolume := MAX_VOLUME;
-end;
-
-destructor TTrackerWaveOut.Destroy;
-begin
-  Stop;
+  Close;
   inherited Destroy;
 end;
 
-procedure TTrackerWaveOut.Play(const ALooping: Boolean);
-begin
-  Stop;
-  FLooping := ALooping;
-  FStopRequested := False;
-  FPaused := False;
-  FThread := TThread.CreateAnonymousThread(Run);
-  FThread.FreeOnTerminate := False;
-  FThread.Start;
-end;
-
-procedure TTrackerWaveOut.Stop;
-begin
-  if not Assigned(FThread) then
-    Exit;
-  FStopRequested := True;
-  FThread.WaitFor;
-  FreeAndNil(FThread);
-end;
-
-procedure TTrackerWaveOut.Pause;
-begin
-  FPaused := True;
-end;
-
-procedure TTrackerWaveOut.Resume;
-begin
-  FPaused := False;
-end;
-
-function TTrackerWaveOut.IsPlaying: Boolean;
-begin
-  Result := Assigned(FThread) and not FThread.Finished;
-end;
-
-procedure TTrackerWaveOut.ApplyVolume(const ABuffer: TArray<SmallInt>);
+function TTrackerWaveOutDevice.Open(ASampleRate, ABufferCount: Integer): Boolean;
 var
-  LIndex, LVolume: Integer;
-begin
-  LVolume := FVolume;
-  if LVolume >= MAX_VOLUME then
-    Exit;
-  for LIndex := 0 to High(ABuffer) do
-    ABuffer[LIndex] := ABuffer[LIndex] * LVolume div MAX_VOLUME;
-end;
-
-procedure TTrackerWaveOut.Run;
-var
-  LPlayer: TTrackerPlayer;
-  LDevice: HWAVEOUT;
   LFormat: TWaveFormatEx;
-  LHeaders: array[0..BUFFER_COUNT - 1] of TWaveHdr;
-  LBuffers: array[0..BUFFER_COUNT - 1] of TArray<SmallInt>;
-  // The buffers that were played after the end of the song
-  LDrained: array[0..BUFFER_COUNT - 1] of Boolean;
-  LFrames, LIndex, LNext: Integer;
-  LEnding, LWasPaused, LAllDone: Boolean;
-
-  procedure Fill(const AIndex: Integer);
-  begin
-    LPlayer.Render(LBuffers[AIndex], LFrames);
-    LDrained[AIndex] := False;
-    ApplyVolume(LBuffers[AIndex]);
-    if (LHeaders[AIndex].dwFlags and WHDR_PREPARED) <> 0 then
-      waveOutUnprepareHeader(LDevice, @LHeaders[AIndex], SizeOf(TWaveHdr));
-    FillChar(LHeaders[AIndex], SizeOf(TWaveHdr), 0);
-    LHeaders[AIndex].lpData := PAnsiChar(@LBuffers[AIndex][0]);
-    LHeaders[AIndex].dwBufferLength := LFrames * CHANNELS * (BITS_PER_SAMPLE div 8);
-    if waveOutPrepareHeader(LDevice, @LHeaders[AIndex], SizeOf(TWaveHdr)) = MMSYSERR_NOERROR then
-      waveOutWrite(LDevice, @LHeaders[AIndex], SizeOf(TWaveHdr));
-    // Once the song has finished, what is rendered is only silence
-    if LPlayer.Finished then
-      LEnding := True;
-  end;
-
 begin
-  LPlayer := TTrackerPlayer.Create(FModule, FSampleRate, FLooping);
-  try
-    LFrames := FSampleRate div BUFFER_FRACTION;
-    FillChar(LHeaders, SizeOf(LHeaders), 0);
-    FillChar(LDrained, SizeOf(LDrained), 0);
-    for LIndex := 0 to BUFFER_COUNT - 1 do
-      SetLength(LBuffers[LIndex], LFrames * CHANNELS);
+  FillChar(LFormat, SizeOf(LFormat), 0);
+  LFormat.wFormatTag := WAVE_FORMAT_PCM;
+  LFormat.nChannels := CHANNELS;
+  LFormat.nSamplesPerSec := ASampleRate;
+  LFormat.wBitsPerSample := BITS_PER_SAMPLE;
+  LFormat.nBlockAlign := CHANNELS * (BITS_PER_SAMPLE div 8);
+  LFormat.nAvgBytesPerSec := LFormat.nSamplesPerSec * LFormat.nBlockAlign;
+  FDevice := 0;
+  FOpen := waveOutOpen(@FDevice, WAVE_MAPPER, @LFormat, 0, 0, CALLBACK_NULL) = MMSYSERR_NOERROR;
+  SetLength(FHeaders, ABufferCount);
+  if Length(FHeaders) > 0 then
+    FillChar(FHeaders[0], Length(FHeaders) * SizeOf(TWaveHdr), 0);
+  Result := FOpen;
+end;
 
-    FillChar(LFormat, SizeOf(LFormat), 0);
-    LFormat.wFormatTag := WAVE_FORMAT_PCM;
-    LFormat.nChannels := CHANNELS;
-    LFormat.nSamplesPerSec := FSampleRate;
-    LFormat.wBitsPerSample := BITS_PER_SAMPLE;
-    LFormat.nBlockAlign := CHANNELS * (BITS_PER_SAMPLE div 8);
-    LFormat.nAvgBytesPerSec := LFormat.nSamplesPerSec * LFormat.nBlockAlign;
-    LDevice := 0;
-    if waveOutOpen(@LDevice, WAVE_MAPPER, @LFormat, 0, 0, CALLBACK_NULL) <> MMSYSERR_NOERROR then
-      Exit;
+procedure TTrackerWaveOutDevice.Unprepare(ABuffer: Integer);
+begin
+  if (FHeaders[ABuffer].dwFlags and WHDR_PREPARED) <> 0 then
+    waveOutUnprepareHeader(FDevice, @FHeaders[ABuffer], SizeOf(TWaveHdr));
+end;
 
-    try
-      LEnding := False;
-      LWasPaused := False;
-      LNext := 0;
-      for LIndex := 0 to BUFFER_COUNT - 1 do
-        Fill(LIndex);
+procedure TTrackerWaveOutDevice.Write(ABuffer: Integer; const ASamples: TArray<SmallInt>);
+begin
+  Unprepare(ABuffer);
+  FillChar(FHeaders[ABuffer], SizeOf(TWaveHdr), 0);
+  FHeaders[ABuffer].lpData := PAnsiChar(Pointer(ASamples));
+  FHeaders[ABuffer].dwBufferLength := Length(ASamples) * SizeOf(SmallInt);
+  if waveOutPrepareHeader(FDevice, @FHeaders[ABuffer], SizeOf(TWaveHdr)) = MMSYSERR_NOERROR then
+    waveOutWrite(FDevice, @FHeaders[ABuffer], SizeOf(TWaveHdr));
+end;
 
-      while not FStopRequested do
-      begin
-        if FPaused <> LWasPaused then
-        begin
-          LWasPaused := FPaused;
-          if LWasPaused then
-            waveOutPause(LDevice)
-          else
-            waveOutRestart(LDevice);
-        end;
+function TTrackerWaveOutDevice.IsDone(ABuffer: Integer): Boolean;
+begin
+  Result := (FHeaders[ABuffer].dwFlags and WHDR_DONE) <> 0;
+end;
 
-        if (LHeaders[LNext].dwFlags and WHDR_DONE) <> 0 then
-        begin
-          if LEnding then
-            // Nothing more to write: this buffer has been played
-            LDrained[LNext] := True
-          else
-            Fill(LNext);
-          LNext := (LNext + 1) mod BUFFER_COUNT;
-        end
-        else
-        begin
-          Sleep(WAIT_MS);
-          if LEnding then
-          begin
-            // The end of the song: leave when every buffer has been played
-            LAllDone := True;
-            for LIndex := 0 to BUFFER_COUNT - 1 do
-            begin
-              if not LDrained[LIndex] then
-                LAllDone := False;
-            end;
-            if LAllDone then
-              Break;
-          end;
-        end;
-      end;
-    finally
-      waveOutReset(LDevice);
-      for LIndex := 0 to BUFFER_COUNT - 1 do
-      begin
-        if (LHeaders[LIndex].dwFlags and WHDR_PREPARED) <> 0 then
-          waveOutUnprepareHeader(LDevice, @LHeaders[LIndex], SizeOf(TWaveHdr));
-      end;
-      waveOutClose(LDevice);
-    end;
-  finally
-    LPlayer.Free;
-  end;
+procedure TTrackerWaveOutDevice.Pause;
+begin
+  waveOutPause(FDevice);
+end;
+
+procedure TTrackerWaveOutDevice.Restart;
+begin
+  waveOutRestart(FDevice);
+end;
+
+procedure TTrackerWaveOutDevice.Close;
+var
+  LIndex: Integer;
+begin
+  if not FOpen then
+    Exit;
+  FOpen := False;
+  waveOutReset(FDevice);
+  for LIndex := 0 to High(FHeaders) do
+    Unprepare(LIndex);
+  waveOutClose(FDevice);
+end;
+
+procedure TTrackerWaveOutDevice.Wait;
+begin
+  Sleep(WAIT_MS);
 end;
 
 end.

@@ -56,18 +56,9 @@ uses
 const
   MAX_BUFFER_SIZE = Cardinal(High(Integer));
 
-function CodeOf(AStatus: TXmiConversionStatus): Integer;
-begin
-  case AStatus of
-    TXmiConversionStatus.Ok:              Result := XMI_OK;
-    TXmiConversionStatus.UnknownFormat:   Result := XMI_ERROR_FORMAT;
-    TXmiConversionStatus.BadData:         Result := XMI_ERROR_DATA;
-    TXmiConversionStatus.TrackOutOfRange: Result := XMI_ERROR_TRACK;
-    TXmiConversionStatus.OutOfMemory:     Result := XMI_ERROR_MEMORY;
-  else
-    Result := XMI_ERROR_INTERNAL;
-  end;
-end;
+  // The code of the DLL for each answer of the converter
+  STATUS_CODES: array[TXmiConversionStatus] of Integer = (XMI_OK, XMI_ERROR_FORMAT,
+    XMI_ERROR_DATA, XMI_ERROR_TRACK, XMI_ERROR_MEMORY);
 
 { TXmiEngine }
 
@@ -136,7 +127,7 @@ begin
     Exit(XMI_ERROR_ARGUMENT);
 
   try
-    Result := CodeOf(TXmiConverter.CountTracks(ASource, Integer(ASourceSize), LCount));
+    Result := STATUS_CODES[TXmiConverter.CountTracks(ASource, Integer(ASourceSize), LCount)];
     if Result = XMI_OK then
       ATrackCount := Cardinal(LCount);
   except
@@ -156,7 +147,7 @@ begin
     LStatus := TXmiConverter.ConvertToMidi(ASource, Integer(ASourceSize),
       Integer(ATrack), LMidi);
     if LStatus <> TXmiConversionStatus.Ok then
-      Exit(CodeOf(LStatus));
+      Exit(STATUS_CODES[LStatus]);
     KeepPending(ASource, ASourceSize, ATrack, LMidi);
   end;
 

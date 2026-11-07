@@ -39,7 +39,15 @@ uses
   DelphiDoom.Tests.Xmi.Client in 'Source\DelphiDoom.Tests.Xmi.Client.pas',
   DelphiDoom.Tests.Xmi.Loader in 'Source\DelphiDoom.Tests.Xmi.Loader.pas',
   DelphiDoom.Tests.Xmi.Provider in 'Source\DelphiDoom.Tests.Xmi.Provider.pas',
-  DelphiDoom.Tests.Xmi.Converter in 'Source\DelphiDoom.Tests.Xmi.Converter.pas';
+  DelphiDoom.Tests.Xmi.Converter in 'Source\DelphiDoom.Tests.Xmi.Converter.pas',
+  DelphiDoom.Tests.Xmi.ReferenceCases in 'Source\DelphiDoom.Tests.Xmi.ReferenceCases.pas',
+  DelphiDoom.Tests.Xmi.Reference in 'Source\DelphiDoom.Tests.Xmi.Reference.pas',
+  DelphiDoom.Tests.Xmi.Midi.Track in 'Source\DelphiDoom.Tests.Xmi.Midi.Track.pas',
+  DelphiDoom.Tests.Xmi.Midi.ByteReader in 'Source\DelphiDoom.Tests.Xmi.Midi.ByteReader.pas',
+  DelphiDoom.Tests.Xmi.Writer.Midi in 'Source\DelphiDoom.Tests.Xmi.Writer.Midi.pas',
+  DelphiDoom.Tests.Xmi.Reader.Cmf in 'Source\DelphiDoom.Tests.Xmi.Reader.Cmf.pas',
+  DelphiDoom.Tests.Xmi.Reader.Xmi in 'Source\DelphiDoom.Tests.Xmi.Reader.Xmi.pas',
+  DelphiDoom.Tests.Xmi.Intf in 'Source\DelphiDoom.Tests.Xmi.Intf.pas';
 
 var
   Runner: ITestRunner;
