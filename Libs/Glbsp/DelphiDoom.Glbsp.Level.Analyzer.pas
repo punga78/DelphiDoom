@@ -312,7 +312,7 @@ begin
 
   if not Assigned(LBestMatch) then
   begin
-    Warn(Format('Bad polyobj thing at (%.0f,%.0f).', [AX, AY]));
+    Warn(Format('Bad polyobj thing at (%.0f,%.0f).', [AX, AY], TFormatSettings.Invariant));
     Exit;
   end;
 
@@ -333,7 +333,8 @@ begin
 
   if not Assigned(LSector) then
   begin
-    Warn(Format('Invalid Polyobj thing at (%.0f,%.0f).', [AX, AY]));
+    Warn(Format('Invalid Polyobj thing at (%.0f,%.0f).', [AX, AY],
+      TFormatSettings.Invariant));
     Exit;
   end;
 
@@ -437,9 +438,16 @@ begin
   LA := FData.Sidedefs[ALeft];
   LB := FData.Sidedefs[ARight];
 
-  // The sidedefs on special lines are not merged
-  if (LA.OnSpecial <> 0) or (LB.OnSpecial <> 0) then
+  // The sidedefs on special lines are not merged. glbsp 2.24 compared them by
+  // index with every other sidedef: that is not an order (A < S < B with
+  // A = B), so the duplicates were merged or not depending on the sort
+  // algorithm. Here they come after the other sidedefs (#139)
+  if (LA.OnSpecial <> 0) and (LB.OnSpecial <> 0) then
     Exit(ALeft - ARight);
+  if LA.OnSpecial <> 0 then
+    Exit(1);
+  if LB.OnSpecial <> 0 then
+    Exit(-1);
 
   if LA.Sector <> LB.Sector then
   begin

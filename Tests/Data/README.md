@@ -15,6 +15,16 @@ L'uscita dell'eseguibile glbsp incorporato (2.24) su `glbsp_map01.wad` con `-q -
 
 I riferimenti sono stati prodotti con l'eseguibile glbsp 2.24 che era incorporato nel motore (poi sostituito dal porting in Pascal, issue #2); i sorgenti C 2.24 sono nella storia di git.
 
+## Altri riferimenti di glbsp (issue #139)
+
+Prodotti dai sorgenti C 2.24 (`glbsp-2.24-source` nel commit prima di `4e4e8cd5`) compilati fuori dal repository con `bcc32c` di RAD Studio (`bcc32c -O2 -DWIN32 -DINLINE_G=inline -Isrc src\*.c cmdline\main.c cmdline\display.c`). Al posto di zlib c'è uno `zlib.h` finto in cui `deflate` copia i byte senza comprimerli: il lump `NODES` del formato ZDBSP è quindi `ZNOD` seguito dal flusso in chiaro, e il test decomprime quello del Pascal prima del confronto. Sullo stesso `glbsp_map01.wad` questa compilazione dà con `-n` gli stessi byte di `glbsp_map01_normal.wad` tranne 5 byte di `GL_VERT`, 16 di `NODES`, 16 di `GL_NODES` e la riga `TIME` di `GL_MAP01`: il criterio di confronto è quello sopra. Nei WAD `.wad` qui sotto mancano i lump che glbsp copia identici dall'ingresso (il test li prende dall'ingresso); i marcatori dei livelli ci sono sempre.
+
+- `glbsp_map01_v5.wad`: `-q -xp -n -v5` (nodi GL V5 e nodi normali ZDBSP).
+- `glbsp_map01_v3.gwa`, `glbsp_map01_v1.gwa`, `glbsp_map01_fast.gwa`: `-q -xp -v3`, `-v1`, `-f`.
+- `glbsp_map01_options.wad`: `-q -xp -n -p -m -u -y -w -xr`, con due correzioni nel C (le stesse del Pascal): `SidedefCompare` metteva i sidedef delle linee speciali in ordine di indice rispetto a tutti gli altri, che non è un ordine (A < S < B con A = B): con `-p` i duplicati si univano o no secondo l'algoritmo di `qsort`; ora i sidedef speciali vengono dopo gli altri. E `qsort` di sidedef e vertici rompe la parità con l'indice, così il primo di un gruppo di duplicati non dipende da `qsort`.
+- `glbsp_hexen.wad`: MAP01 di Freedoom portato al formato Hexen (THINGS da 20 byte, LINEDEFS da 16, un lump `BEHAVIOR`), la linea 0 con lo special 1 (inizio di un polyobj); in MAP01 tre punti di polyobj di Hexen (3001/3002: dentro un settore, sotto la mappa, a destra della mappa), in MAP02 uno di ZDoom (9301). `glbsp_hexen_normal.wad`: `-q -xp -n -w`; glbsp avvisa per i due punti fuori dai settori.
+- `glbsp_odd.wad`: tre livelli piccoli fatti a mano (una stanza con una linea a un lato che la attraversa, la "finestra a un lato"; linee senza sidedef destro, a due lati senza sinistro e un settore non chiuso; una stanza di 40000 unità con linee e nodi oltre i 16 bit e la blockmap troncata). `glbsp_odd_normal.wad`: `-q -xp -n -y -w`; `glbsp_odd_warnings.txt` gli avvisi stampati da glbsp, nell'ordine.
+
 ## sound_golden.txt
 
 Le risposte di libsndfile (C) per i suoni di prova di `Tests\Source\DelphiDoom.Tests.Sound.Parity.pas`, una riga per scenario: `nome#impronta-dei-byte|scenario<TAB>impronta a 64 bit` (FNV-1a di `DelphiDoom.Tests.Sound.Digest` su codici di ritorno, frame letti e byte dei buffer). Sono state scritte con il motore C `TSndfileEngine` (libsndfile 1.x + libvorbis 1.3.7 + libFLAC) quando era ancora nel repository, confrontandolo prima con il motore Pascal (105 test, 3900 scenari identici).

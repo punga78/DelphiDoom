@@ -55,6 +55,8 @@ type
     [Test]
     procedure TestSidedefSuLineaSpecialeNonSiUnisce;
     [Test]
+    procedure TestSidedefSpecialiNonImpedisconoDiUnireIDuplicati;
+    [Test]
     procedure TestPotaturaDelleLineeSpostaIRiferimenti;
     [Test]
     procedure TestPotaturaDeiVerticiRinumera;
@@ -213,6 +215,71 @@ begin
   FAnalyzer.DetectDuplicateSidedefs;
 
   Assert.IsNull(FData.Sidedefs[1].Equiv);
+end;
+
+// Regression (#139): glbsp 2.24 compared a sidedef on a special line by index
+// with every other sidedef, which is not an order, and the duplicates around
+// it were merged or not depending on the sort algorithm. Every duplicate must
+// point to the first sidedef of its kind, whatever the specials in between
+procedure TTestGlbspLevelAnalyzer.TestSidedefSpecialiNonImpedisconoDiUnireIDuplicati;
+const
+  COUNT = 300;
+var
+  LSectors: array[0..2] of TGlbspSector;
+  LIndex, LOther: Integer;
+  LSide: TGlbspSidedef;
+  LFirst: TGlbspSidedef;
+  LSameKind: Boolean;
+
+  function IndexOf(const ASide: TGlbspSidedef): Integer;
+  begin
+    if Assigned(ASide) then
+      Result := ASide.Index
+    else
+      Result := -1;
+  end;
+
+begin
+  LSectors[0] := AddSector;
+  LSectors[1] := AddSector;
+  LSectors[2] := nil;
+  for LIndex := 0 to COUNT - 1 do
+  begin
+    LSide := AddSidedef(LSectors[(LIndex * 7) mod 3]);
+    LSide.XOffset := (LIndex * 5) mod 4;
+    LSide.YOffset := (LIndex * 3) mod 2;
+    if (LIndex mod 3) = 1 then
+      LSide.OnSpecial := 1;
+  end;
+  CreateAnalyzer;
+
+  FAnalyzer.DetectDuplicateSidedefs;
+
+  for LIndex := 0 to COUNT - 1 do
+  begin
+    LSide := FData.Sidedefs[LIndex];
+    if LSide.OnSpecial <> 0 then
+    begin
+      Assert.IsNull(LSide.Equiv, Format('special sidedef %d', [LIndex]));
+      Continue;
+    end;
+    LFirst := nil;
+    for LOther := 0 to LIndex - 1 do
+    begin
+      LSameKind := (FData.Sidedefs[LOther].OnSpecial = 0) and
+        (FData.Sidedefs[LOther].Sector = LSide.Sector) and
+        (FData.Sidedefs[LOther].XOffset = LSide.XOffset) and
+        (FData.Sidedefs[LOther].YOffset = LSide.YOffset);
+      if LSameKind then
+      begin
+        LFirst := FData.Sidedefs[LOther];
+        Break;
+      end;
+    end;
+    // AreSame would read a nil object to describe a failure
+    Assert.IsTrue(LFirst = LSide.Equiv, Format('sidedef %d: equivalent %d instead of %d',
+      [LIndex, IndexOf(LSide.Equiv), IndexOf(LFirst)]));
+  end;
 end;
 
 procedure TTestGlbspLevelAnalyzer.TestPotaturaDelleLineeSpostaIRiferimenti;

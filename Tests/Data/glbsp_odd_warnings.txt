@@ -1,0 +1,17 @@
+Linedef #6 seems to be a One-Sided Window (back faces sector #0).
+Linedef #2 is 2s but has no left sidedef
+Linedef #6 is 2s but has no left sidedef
+Linedef #7 has no right sidedef!
+Sector #0 is unclosed near (512.0,768.0)
+Sector mismatch: #1 (256.0,256.0) != #0 (0.0,256.0)
+Sector #0 has sidedef facing #1 near (256,154).
+Subsector #1 near (128.0,896.0) is not closed (1 gaps, 2 segs)
+Subsector #2 near (281.6,358.4) is not closed (1 gaps, 5 segs)
+Sector #1 has sidedef facing #0 (line #3) near (282,358).
+Subsector #3 near (896.0,918.0) is not closed (1 gaps, 2 segs)
+Subsector #4 near (703.2,282.4) is not closed (2 gaps, 5 segs)
+Linedef #0 is VERY long, it may cause problems
+Linedef #1 is VERY long, it may cause problems
+Linedef #2 is VERY long, it may cause problems
+Linedef #3 is VERY long, it may cause problems
+Blockmap TOO LARGE!  Truncated to 124x124 blocks

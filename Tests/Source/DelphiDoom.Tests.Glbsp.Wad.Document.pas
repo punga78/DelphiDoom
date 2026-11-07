@@ -29,6 +29,8 @@ type
     procedure Load(const AStream: TBytesStream; const ALoadAll, AGwaMode: Boolean);
     function DirectoryNames(const AWad: TGlbspWad): string;
     function WriteToBytes: TBytes;
+    // The name of a directory entry: up to 8 characters, ended by the first #0
+    class function EntryName(const AEntry: TRawWadEntry): string; static;
   public
     [Setup]
     procedure Setup;
@@ -62,6 +64,8 @@ type
     [Test]
     procedure TestModalitaGwaScriveSoloIlNuovo;
     [Test]
+    procedure TestNomiDellaDirectorySonoOttoByteRiempitiDiZeri;
+    [Test]
     procedure TestCreaLumpEsistenteLoSvuota;
     [Test]
     procedure TestAllineamentoA4Byte;
@@ -82,6 +86,19 @@ begin
 end;
 
 { TTestGlbspWadDocument }
+
+class function TTestGlbspWadDocument.EntryName(const AEntry: TRawWadEntry): string;
+var
+  LIndex: Integer;
+begin
+  Result := '';
+  for LIndex := 0 to WAD_LUMP_NAME_SIZE - 1 do
+  begin
+    if AEntry.Name[LIndex] = #0 then
+      Break;
+    Result := Result + string(AEntry.Name[LIndex]);
+  end;
+end;
 
 procedure TTestGlbspWadDocument.Setup;
 begin
@@ -391,9 +408,37 @@ begin
   for LIndex := 0 to 1 do
   begin
     Move(LOutput[LDirStart + LIndex * WAD_ENTRY_SIZE], LEntry, SizeOf(LEntry));
-    LNames := LNames + string(AnsiString(PAnsiChar(@LEntry.Name[0]))) + ' ';
+    LNames := LNames + EntryName(LEntry) + ' ';
   end;
   Assert.AreEqual('GL_MAP01 GL_VERT ', LNames);
+end;
+
+// Regression: the name of an entry has no terminator when it is 8 characters
+// long, so it must never be read as a PAnsiChar (the test above did, and in
+// Debug read the bytes on the stack after the record). The library fills the
+// rest of a short name with zeros
+procedure TTestGlbspWadDocument.TestNomiDellaDirectorySonoOttoByteRiempitiDiZeri;
+const
+  EXPECTED: array[0..1] of AnsiString = ('GL_MAP01', 'GL_VERT'#0);
+var
+  LOutput: TBytes;
+  LDirStart: Integer;
+  LIndex: Integer;
+  LName: AnsiString;
+begin
+  Load(BuildWad(BASIC_LEVEL), False, True);
+  FWad.FindNextLevel;
+  FWad.CreateGLLump('GL_VERT').Append('abcde');
+
+  LOutput := WriteToBytes;
+
+  LDirStart := PInteger(@LOutput[8])^;
+  for LIndex := 0 to 1 do
+  begin
+    SetString(LName, PAnsiChar(@LOutput[LDirStart + LIndex * WAD_ENTRY_SIZE + 8]),
+      WAD_LUMP_NAME_SIZE);
+    Assert.AreEqual(string(EXPECTED[LIndex]), string(LName));
+  end;
 end;
 
 procedure TTestGlbspWadDocument.TestCreaLumpEsistenteLoSvuota;

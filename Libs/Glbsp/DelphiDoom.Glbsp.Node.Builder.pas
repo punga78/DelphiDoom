@@ -406,7 +406,7 @@ begin
 
   if LGaps > 0 then
     MiniWarn(Format('Subsector #%d near (%.1f,%.1f) is not closed (%d gaps, %d segs)',
-      [ASub.Index, ASub.MidX, ASub.MidY, LGaps, LTotal]));
+      [ASub.Index, ASub.MidX, ASub.MidY, LGaps, LTotal], TFormatSettings.Invariant));
 end;
 
 procedure TGlbspNodeBuilder.SanityCheckSameSector(const ASub: TGlbspSubsec);
@@ -440,10 +440,11 @@ begin
       if Assigned(LCur.Linedef) then
         MiniWarn(Format('Sector #%d has sidedef facing #%d (line #%d) near (%.0f,%.0f).',
           [LCompare.Sector.Index, LCur.Sector.Index, LCur.Linedef.Index, ASub.MidX,
-          ASub.MidY]))
+          ASub.MidY], TFormatSettings.Invariant))
       else
         MiniWarn(Format('Sector #%d has sidedef facing #%d near (%.0f,%.0f).',
-          [LCompare.Sector.Index, LCur.Sector.Index, ASub.MidX, ASub.MidY]));
+          [LCompare.Sector.Index, LCur.Sector.Index, ASub.MidX, ASub.MidY],
+          TFormatSettings.Invariant));
     end;
     LCur := LCur.Next;
   end;
@@ -461,8 +462,9 @@ begin
     LCur := LCur.Next;
   end;
 
-  raise EGlbspLevelException.CreateFmt(
-    'Subsector #%d near (%.1f,%.1f) has no real seg !', [ASub.Index, ASub.MidX, ASub.MidY]);
+  raise EGlbspLevelException.Create(Format(
+    'Subsector #%d near (%.1f,%.1f) has no real seg !', [ASub.Index, ASub.MidX, ASub.MidY],
+    TFormatSettings.Invariant));
 end;
 
 procedure TGlbspNodeBuilder.RenumberSubsecSegs(const ASub: TGlbspSubsec);
