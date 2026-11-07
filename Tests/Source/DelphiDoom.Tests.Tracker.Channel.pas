@@ -154,8 +154,8 @@ const
 
 procedure TTestTrackerChannel.TearDown;
 begin
-  FPlayer.Free;
-  FModule.Free;
+  FreeAndNil(FPlayer);
+  FreeAndNil(FModule);
 end;
 
 procedure TTestTrackerChannel.Start;

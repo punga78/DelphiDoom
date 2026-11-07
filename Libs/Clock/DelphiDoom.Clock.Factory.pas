@@ -26,13 +26,13 @@ type
 implementation
 
 uses
-  DelphiDoom.Clock.Clock, DelphiDoom.Clock.PerformanceSource;
+  DelphiDoom.Clock.Clock, DelphiDoom.Clock.PerformanceSource, DelphiDoom.Clock.WindowsCounters;
 
 { TClockFactory }
 
 class function TClockFactory.CreateClock(const ALog: ILog): IClock;
 begin
-  Result := TClock.Create(TPerformanceClockSource.Create, ALog);
+  Result := TClock.Create(TPerformanceClockSource.Create(TWindowsClockCounters.Create), ALog);
 end;
 
 class function TClockFactory.CreateClock(const ASource: IClockSource; const ALog: ILog): IClock;

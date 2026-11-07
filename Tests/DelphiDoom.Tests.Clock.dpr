@@ -23,8 +23,10 @@ uses
   DelphiDoom.Clock.Intf in '..\Libs\Clock\DelphiDoom.Clock.Intf.pas',
   DelphiDoom.Clock.Clock in '..\Libs\Clock\DelphiDoom.Clock.Clock.pas',
   DelphiDoom.Clock.PerformanceSource in '..\Libs\Clock\DelphiDoom.Clock.PerformanceSource.pas',
+  DelphiDoom.Clock.WindowsCounters in '..\Libs\Clock\DelphiDoom.Clock.WindowsCounters.pas',
   DelphiDoom.Clock.Factory in '..\Libs\Clock\DelphiDoom.Clock.Factory.pas',
-  DelphiDoom.Tests.Clock.Clock in 'Source\DelphiDoom.Tests.Clock.Clock.pas';
+  DelphiDoom.Tests.Clock.Clock in 'Source\DelphiDoom.Tests.Clock.Clock.pas',
+  DelphiDoom.Tests.Clock.PerformanceSource in 'Source\DelphiDoom.Tests.Clock.PerformanceSource.pas';
 
 var
   Runner: ITestRunner;

@@ -48,7 +48,15 @@ uses
   DelphiDoom.Tracker.Channel in '..\Libs\Mikmod\DelphiDoom.Tracker.Channel.pas',
   DelphiDoom.Tests.Tracker.Effects in 'Source\DelphiDoom.Tests.Tracker.Effects.pas',
   DelphiDoom.Tests.Tracker.Channel in 'Source\DelphiDoom.Tests.Tracker.Channel.pas',
+  DelphiDoom.Tracker.Output.Intf in '..\Libs\Mikmod\DelphiDoom.Tracker.Output.Intf.pas',
+  DelphiDoom.Tracker.Playback in '..\Libs\Mikmod\DelphiDoom.Tracker.Playback.pas',
   DelphiDoom.Tracker.WaveOut in '..\Libs\Mikmod\DelphiDoom.Tracker.WaveOut.pas',
+  DelphiDoom.Tracker.ThreadWorker in '..\Libs\Mikmod\DelphiDoom.Tracker.ThreadWorker.pas',
+  DelphiDoom.Tracker.WindowsOutput in '..\Libs\Mikmod\DelphiDoom.Tracker.WindowsOutput.pas',
+  DelphiDoom.Tests.Tracker.FakeOutput in 'Source\DelphiDoom.Tests.Tracker.FakeOutput.pas',
+  DelphiDoom.Tests.Tracker.Playback in 'Source\DelphiDoom.Tests.Tracker.Playback.pas',
+  DelphiDoom.Tests.Tracker.ThreadWorker in 'Source\DelphiDoom.Tests.Tracker.ThreadWorker.pas',
+  DelphiDoom.Tests.Tracker.WindowsOutput in 'Source\DelphiDoom.Tests.Tracker.WindowsOutput.pas',
   DelphiDoom.Mikmod.TrackerPlayer in '..\Libs\Mikmod\DelphiDoom.Mikmod.TrackerPlayer.pas',
   DelphiDoom.Mikmod.TrackerEngine in '..\Libs\Mikmod\DelphiDoom.Mikmod.TrackerEngine.pas',
   DelphiDoom.Tests.Mikmod.TrackerEngine in 'Source\DelphiDoom.Tests.Mikmod.TrackerEngine.pas',
@@ -56,7 +64,9 @@ uses
   DelphiDoom.Tests.Audio.ModuleDetector in 'Source\DelphiDoom.Tests.Audio.ModuleDetector.pas',
   DelphiDoom.Tests.Mikmod.Client in 'Source\DelphiDoom.Tests.Mikmod.Client.pas',
   DelphiDoom.Tests.Mikmod.Loader in 'Source\DelphiDoom.Tests.Mikmod.Loader.pas',
-  DelphiDoom.Tests.Mikmod.Provider in 'Source\DelphiDoom.Tests.Mikmod.Provider.pas';
+  DelphiDoom.Tests.Mikmod.Provider in 'Source\DelphiDoom.Tests.Mikmod.Provider.pas',
+  DelphiDoom.Tests.Mikmod.TrackerPlayer in 'Source\DelphiDoom.Tests.Mikmod.TrackerPlayer.pas',
+  DelphiDoom.Tests.Mikmod.Intf in 'Source\DelphiDoom.Tests.Mikmod.Intf.pas';
 
 var
   Runner: ITestRunner;

@@ -27,11 +27,9 @@ type
   /// </remarks>
   TXmiXmiToMidiConverter = class
   private
-    class function ChannelOfNewEvent(ATrack: TXmiTrack;
-      ATrackIndex: Integer): Byte; static;
-    class procedure InsertNoteOff(ATrack: TXmiTrack; AIndex,
-      ATrackIndex: Integer); static;
-    class procedure ConvertNotes(ATrack: TXmiTrack; ATrackIndex: Integer); static;
+    class function ChannelOfNewEvent(ATrack: TXmiTrack): Byte; static;
+    class procedure InsertNoteOff(ATrack: TXmiTrack; AIndex: Integer); static;
+    class procedure ConvertNotes(ATrack: TXmiTrack); static;
     class procedure ScaleDelays(ATrack: TXmiTrack; AInitialTempo: Cardinal;
       var ATempo: Cardinal); static;
   public
@@ -63,34 +61,25 @@ type
 
 { TXmiXmiToMidiConverter }
 
-class function TXmiXmiToMidiConverter.ChannelOfNewEvent(ATrack: TXmiTrack;
-  ATrackIndex: Integer): Byte;
+class function TXmiXmiToMidiConverter.ChannelOfNewEvent(ATrack: TXmiTrack): Byte;
 var
   LIndex: Integer;
-  LKind: Integer;
 begin
-  // The channel of the first event that has one
-  for LIndex := 0 to ATrack.Count - 1 do
-  begin
-    LKind := ATrack.EventAt(LIndex).Status shr 4;
-    if (LKind >= 8) and (LKind <= 14) then
-      Exit(ATrack.EventAt(LIndex).Status and 15);
-  end;
-
-  // None: the number of the track is the channel, if it can be
-  if (ATrackIndex >= 0) and (ATrackIndex <= 15) then
-    Result := Byte(ATrackIndex)
-  else
-    Result := 0;
+  // The channel of the first event that has one. A Note Off is added only
+  // for a Note On of the track, so there is always one: the search never
+  // goes beyond the last event
+  LIndex := 0;
+  while not (ATrack.EventAt(LIndex).Status shr 4 in [8..14]) do
+    Inc(LIndex);
+  Result := ATrack.EventAt(LIndex).Status and 15;
 end;
 
-class procedure TXmiXmiToMidiConverter.InsertNoteOff(ATrack: TXmiTrack;
-  AIndex, ATrackIndex: Integer);
+class procedure TXmiXmiToMidiConverter.InsertNoteOff(ATrack: TXmiTrack; AIndex: Integer);
 var
   LEvent: TXmiEvent;
 begin
   LEvent := Default(TXmiEvent);
-  LEvent.Status := STATUS_NOTE_OFF or ChannelOfNewEvent(ATrack, ATrackIndex);
+  LEvent.Status := STATUS_NOTE_OFF or ChannelOfNewEvent(ATrack);
   LEvent.Param1 := DEFAULT_NOTE;
   LEvent.Param2 := 0;
   // The running status is kept if the event before has this very status
@@ -99,8 +88,7 @@ begin
   ATrack.Insert(AIndex, LEvent);
 end;
 
-class procedure TXmiXmiToMidiConverter.ConvertNotes(ATrack: TXmiTrack;
-  ATrackIndex: Integer);
+class procedure TXmiXmiToMidiConverter.ConvertNotes(ATrack: TXmiTrack);
 var
   LActive: TArray<TActiveNote>;
   LActiveCount: Integer;
@@ -173,7 +161,7 @@ begin
       begin
         if LActive[LNext].RemainingTicks = LMinimum then
         begin
-          InsertNoteOff(ATrack, LIndex, ATrackIndex);
+          InsertNoteOff(ATrack, LIndex);
           ATrack.EventAt(LIndex).Status :=
             STATUS_NOTE_OFF or (LActive[LNext].Channel and $F);
           ATrack.EventAt(LIndex).Param1 := LActive[LNext].Note;
@@ -204,7 +192,7 @@ begin
         if ATrack.EventAt(LIndex).Duration = 0 then
         begin
           // A note without duration: off right away
-          InsertNoteOff(ATrack, LIndex + 1, ATrackIndex);
+          InsertNoteOff(ATrack, LIndex + 1);
           ATrack.EventAt(LIndex + 1).Status :=
             STATUS_NOTE_OFF or (ATrack.EventAt(LIndex).Status and $F);
           ATrack.EventAt(LIndex + 1).Param1 := ATrack.EventAt(LIndex).Param1;
@@ -262,7 +250,7 @@ begin
   LTempo := LInitialTempo;
   for LTrackIndex := 0 to ASong.Tracks.Count - 1 do
   begin
-    ConvertNotes(ASong.Tracks[LTrackIndex], LTrackIndex);
+    ConvertNotes(ASong.Tracks[LTrackIndex]);
     ScaleDelays(ASong.Tracks[LTrackIndex], LInitialTempo, LTempo);
   end;
 end;

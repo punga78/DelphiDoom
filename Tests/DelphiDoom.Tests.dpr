@@ -25,7 +25,11 @@ uses
   DelphiDoom.Tests.Zlib.Engine in 'Source\DelphiDoom.Tests.Zlib.Engine.pas',
   DelphiDoom.Tests.Zlib.Client in 'Source\DelphiDoom.Tests.Zlib.Client.pas',
   DelphiDoom.Tests.Zlib.Loader in 'Source\DelphiDoom.Tests.Zlib.Loader.pas',
-  DelphiDoom.Tests.Zlib.Provider in 'Source\DelphiDoom.Tests.Zlib.Provider.pas';
+  DelphiDoom.Tests.Zlib.Provider in 'Source\DelphiDoom.Tests.Zlib.Provider.pas',
+  DelphiDoom.Tests.Zlib.Streams in 'Source\DelphiDoom.Tests.Zlib.Streams.pas',
+  DelphiDoom.Tests.Zlib.Inflater in 'Source\DelphiDoom.Tests.Zlib.Inflater.pas',
+  DelphiDoom.Tests.Zlib.Deflater in 'Source\DelphiDoom.Tests.Zlib.Deflater.pas',
+  DelphiDoom.Tests.Zlib.Intf in 'Source\DelphiDoom.Tests.Zlib.Intf.pas';
 
 var
   Runner: ITestRunner;

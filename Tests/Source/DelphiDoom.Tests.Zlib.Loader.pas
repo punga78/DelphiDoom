@@ -21,6 +21,8 @@ type
   public
     [Test]
     procedure TestMissingLibraryRaises;
+    [Test]
+    procedure DovrebbeRifiutareUnaLibreriaSenzaLExport;
 
     /// <summary>
     ///   Needs bin\Libs\DDZlib.dll (build.bat librerie); skipped otherwise
@@ -39,6 +41,17 @@ begin
     procedure
     begin
       TZlibLoader.Create('DDZlib.nonexistent.dll').Free;
+    end, EZlibException);
+end;
+
+// kernel32.dll is always there, and it does not export DDZlibCreate: the loader
+// raises, and its destructor unloads the library it had loaded
+procedure TTestZlibLoader.DovrebbeRifiutareUnaLibreriaSenzaLExport;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TZlibLoader.Create('kernel32.dll').Free;
     end, EZlibException);
 end;
 

@@ -26,7 +26,11 @@ uses
   DelphiDoom.Tracker.GhostPool in 'DelphiDoom.Tracker.GhostPool.pas',
   DelphiDoom.Tracker.Channel in 'DelphiDoom.Tracker.Channel.pas',
   DelphiDoom.Tracker.Player in 'DelphiDoom.Tracker.Player.pas',
+  DelphiDoom.Tracker.Output.Intf in 'DelphiDoom.Tracker.Output.Intf.pas',
+  DelphiDoom.Tracker.Playback in 'DelphiDoom.Tracker.Playback.pas',
   DelphiDoom.Tracker.WaveOut in 'DelphiDoom.Tracker.WaveOut.pas',
+  DelphiDoom.Tracker.ThreadWorker in 'DelphiDoom.Tracker.ThreadWorker.pas',
+  DelphiDoom.Tracker.WindowsOutput in 'DelphiDoom.Tracker.WindowsOutput.pas',
   DelphiDoom.Mikmod.TrackerPlayer in 'DelphiDoom.Mikmod.TrackerPlayer.pas',
   DelphiDoom.Mikmod.TrackerEngine in 'DelphiDoom.Mikmod.TrackerEngine.pas';
 
@@ -34,7 +38,7 @@ function DDMikmodCreate(out AMikMod: IMikMod): Integer; stdcall;
 begin
   AMikMod := nil;
   try
-    AMikMod := TTrackerMikModEngine.Create;
+    AMikMod := TTrackerMikModEngine.Create(TTrackerWindowsOutputFactory.Create);
     Result := MIKMOD_OK;
   except
     Result := MIKMOD_ERR_INTERNAL;

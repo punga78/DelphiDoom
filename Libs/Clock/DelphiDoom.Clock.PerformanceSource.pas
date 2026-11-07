@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: clock library - the source on the Windows counters               }
+{  DelphiDoom: clock library - the source on the counters of the system         }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -15,14 +15,16 @@ uses
 
 type
   /// <summary>
-  ///   QueryPerformanceCounter; if it fails (or there is no such counter) it goes on with
-  ///   GetTickCount at 1000 steps per second, and the frequency it reports changes with it
+  ///   The high resolution counter; if it fails (or there is no such counter) it goes on with
+  ///   the milliseconds at 1000 steps per second, and the frequency it reports changes with it
   /// </summary>
   TPerformanceClockSource = class(TInterfacedObject, IClockSource)
-  private
+  strict private
+    FCounters: IClockCounters;
     FFrequency: Int64;
   public
-    constructor Create;
+    /// <summary>ACounters are the counters of the system (a fake one, in the tests)</summary>
+    constructor Create(const ACounters: IClockCounters);
     function GetFrequency: Int64;
     function Read: Int64;
     procedure Sleep(AMilliseconds: Integer);
@@ -31,15 +33,22 @@ type
 implementation
 
 uses
-  Winapi.Windows;
+  System.SysUtils;
+
+const
+  // The steps of the counter of the milliseconds in a second
+  TICK_FREQUENCY = 1000;
 
 { TPerformanceClockSource }
 
-constructor TPerformanceClockSource.Create;
+constructor TPerformanceClockSource.Create(const ACounters: IClockCounters);
 begin
   inherited Create;
-  if not QueryPerformanceFrequency(FFrequency) then
-    FFrequency := 1000;
+  if not Assigned(ACounters) then
+    raise EArgumentNilException.Create('ACounters');
+  FCounters := ACounters;
+  if not FCounters.QueryFrequency(FFrequency) then
+    FFrequency := TICK_FREQUENCY;
 end;
 
 function TPerformanceClockSource.GetFrequency: Int64;
@@ -49,18 +58,18 @@ end;
 
 function TPerformanceClockSource.Read: Int64;
 begin
-  if FFrequency = 1000 then
-    Result := GetTickCount
-  else if not QueryPerformanceCounter(Result) then
+  if FFrequency = TICK_FREQUENCY then
+    Result := FCounters.TickCount
+  else if not FCounters.QueryCounter(Result) then
   begin
-    FFrequency := 1000;
-    Result := GetTickCount;
+    FFrequency := TICK_FREQUENCY;
+    Result := FCounters.TickCount;
   end;
 end;
 
 procedure TPerformanceClockSource.Sleep(AMilliseconds: Integer);
 begin
-  Winapi.Windows.Sleep(AMilliseconds);
+  FCounters.Sleep(AMilliseconds);
 end;
 
 end.

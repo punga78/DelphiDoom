@@ -85,8 +85,8 @@ const
 
 procedure TTestTrackerPlayer.TearDown;
 begin
-  FPlayer.Free;
-  FModule.Free;
+  FreeAndNil(FPlayer);
+  FreeAndNil(FModule);
 end;
 
 procedure TTestTrackerPlayer.Start(const ALooping: Boolean);

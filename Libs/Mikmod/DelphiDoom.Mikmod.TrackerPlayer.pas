@@ -13,27 +13,31 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Mikmod.Intf,
-  DelphiDoom.Tracker.Types,
-  DelphiDoom.Tracker.WaveOut;
+  DelphiDoom.Tracker.Output.Intf,
+  DelphiDoom.Tracker.Playback,
+  DelphiDoom.Tracker.Types;
 
 type
   /// <summary>
   ///   Loads MOD, S3M, XM and IT modules and plays them with the tracker of
-  ///   DelphiDoom, through the waveform audio device
+  ///   DelphiDoom, on the audio output it is given
   /// </summary>
   TTrackerModPlayer = class(TInterfacedObject, IMikModPlayer)
   private
     FSampleRate: Integer;
     FOnReleased: TProc;
+    FOutputs: ITrackerOutputFactory;
     FModule: TTrackerModule;
-    FWaveOut: TTrackerWaveOut;
+    FPlayback: TTrackerPlayback;
     FVolume: Integer;
     procedure UnloadModule;
     function LoadBytes(const AData: TBytes): Integer;
   public
     /// <param name="ASampleRate">Frames per second of the output</param>
     /// <param name="AOnReleased">Called when the player is destroyed; may be nil</param>
-    constructor Create(const ASampleRate: Integer; const AOnReleased: TProc);
+    /// <param name="AOutputs">The audio device and the worker of the playback</param>
+    constructor Create(const ASampleRate: Integer; const AOnReleased: TProc;
+      const AOutputs: ITrackerOutputFactory);
     destructor Destroy; override;
 
     function LoadFromFile(AFileName: PAnsiChar): Integer; stdcall;
@@ -58,9 +62,13 @@ uses
 
 { TTrackerModPlayer }
 
-constructor TTrackerModPlayer.Create(const ASampleRate: Integer; const AOnReleased: TProc);
+constructor TTrackerModPlayer.Create(const ASampleRate: Integer; const AOnReleased: TProc;
+  const AOutputs: ITrackerOutputFactory);
 begin
   inherited Create;
+  if not Assigned(AOutputs) then
+    raise EArgumentNilException.Create('AOutputs');
+  FOutputs := AOutputs;
   FSampleRate := ASampleRate;
   FOnReleased := AOnReleased;
   FVolume := MIKMOD_MAX_VOLUME;
@@ -81,7 +89,7 @@ end;
 procedure TTrackerModPlayer.UnloadModule;
 begin
   // The thread uses the module: it ends first
-  FreeAndNil(FWaveOut);
+  FreeAndNil(FPlayback);
   FreeAndNil(FModule);
 end;
 
@@ -107,8 +115,8 @@ begin
   end;
 
   FModule := LModule;
-  FWaveOut := TTrackerWaveOut.Create(FModule, FSampleRate);
-  FWaveOut.Volume := FVolume;
+  FPlayback := TTrackerPlayback.Create(FModule, FSampleRate, FOutputs);
+  FPlayback.Volume := FVolume;
   Result := MIKMOD_OK;
 end;
 
@@ -156,10 +164,10 @@ end;
 function TTrackerModPlayer.Play(ALoop: LongBool): Integer;
 begin
   try
-    if not Assigned(FWaveOut) then
+    if not Assigned(FPlayback) then
       Exit(MIKMOD_ERR_NO_MODULE);
-    FWaveOut.Volume := FVolume;
-    FWaveOut.Play(ALoop);
+    FPlayback.Volume := FVolume;
+    FPlayback.Play(ALoop);
     Result := MIKMOD_OK;
   except
     Result := MIKMOD_ERR_INTERNAL;
@@ -169,8 +177,8 @@ end;
 function TTrackerModPlayer.Stop: Integer;
 begin
   try
-    if Assigned(FWaveOut) then
-      FWaveOut.Stop;
+    if Assigned(FPlayback) then
+      FPlayback.Stop;
     Result := MIKMOD_OK;
   except
     Result := MIKMOD_ERR_INTERNAL;
@@ -180,12 +188,12 @@ end;
 function TTrackerModPlayer.SetPaused(APaused: LongBool): Integer;
 begin
   try
-    if not Assigned(FWaveOut) then
+    if not Assigned(FPlayback) then
       Exit(MIKMOD_ERR_NO_MODULE);
     if APaused then
-      FWaveOut.Pause
+      FPlayback.Pause
     else
-      FWaveOut.Resume;
+      FPlayback.Resume;
     Result := MIKMOD_OK;
   except
     Result := MIKMOD_ERR_INTERNAL;
@@ -197,24 +205,24 @@ begin
   if (AVolume < 0) or (AVolume > MIKMOD_MAX_VOLUME) then
     Exit(MIKMOD_ERR_INVALID_ARGUMENT);
   FVolume := AVolume;
-  if Assigned(FWaveOut) then
-    FWaveOut.Volume := AVolume;
+  if Assigned(FPlayback) then
+    FPlayback.Volume := AVolume;
   Result := MIKMOD_OK;
 end;
 
 function TTrackerModPlayer.IsPlaying: LongBool;
 begin
-  Result := Assigned(FWaveOut) and FWaveOut.IsPlaying;
+  Result := Assigned(FPlayback) and FPlayback.IsPlaying;
 end;
 
 function TTrackerModPlayer.IsPaused: LongBool;
 begin
-  Result := Assigned(FWaveOut) and FWaveOut.Paused;
+  Result := Assigned(FPlayback) and FPlayback.Paused;
 end;
 
 function TTrackerModPlayer.Update: Integer;
 begin
-  // The thread of the waveform audio device does the work
+  // The worker of the playback does the work
   Result := MIKMOD_OK;
 end;
 

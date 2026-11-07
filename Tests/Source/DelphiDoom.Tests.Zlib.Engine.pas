@@ -54,12 +54,24 @@ type
     procedure TestUncompressAutoDetectsZlib;
     [Test]
     procedure TestStreamingRoundTrip;
+    [Test]
+    procedure DovrebbeDecomprimereIlFormatoGzip;
+    [Test]
+    procedure DovrebbeTrattareUnFormatoSconosciutoComeZlib;
+    [Test]
+    procedure DovrebbeDareErroreDiDatiSeServeUnDizionario;
+    [Test]
+    procedure DovrebbeRifiutareBufferMancanti;
+    [Test]
+    procedure DovrebbeRifiutareBufferTroppoGrandi;
+    [Test]
+    procedure DovrebbeRifiutareUnLivelloDiCompressioneSbagliato;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Zlib.Engine;
+  DelphiDoom.Zlib.Engine, DelphiDoom.Tests.Zlib.Streams;
 
 { TTestZlibEngine }
 
@@ -278,6 +290,85 @@ begin
 
   Assert.AreEqual(Length(LSample), Length(LRestored));
   Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), Length(LSample));
+end;
+
+procedure TTestZlibEngine.DovrebbeDecomprimereIlFormatoGzip;
+var
+  LSource: TBytes;
+  LDest: array[0..15] of AnsiChar;
+  LSize: Cardinal;
+  LText: AnsiString;
+begin
+  LSource := TZlibTestStreams.GzipOfAbc;
+  LSize := SizeOf(LDest);
+  Assert.AreEqual(ZLIB_OK, FZlib.Uncompress(Pointer(LSource), Length(LSource), @LDest,
+    LSize, TZlibFormat.Gzip));
+  Assert.AreEqual(3, Integer(LSize));
+  SetString(LText, PAnsiChar(@LDest[0]), LSize);
+  Assert.AreEqual('abc', string(LText));
+end;
+
+procedure TTestZlibEngine.DovrebbeTrattareUnFormatoSconosciutoComeZlib;
+var
+  LSource: TBytes;
+  LDest: array[0..15] of Byte;
+  LSize: Cardinal;
+begin
+  // A value that only a caller on the other side of the DLL can give
+  LSource := TZlibTestStreams.ZlibOfAbc;
+  LSize := SizeOf(LDest);
+  Assert.AreEqual(ZLIB_OK, FZlib.Uncompress(Pointer(LSource), Length(LSource), @LDest,
+    LSize, TZlibFormat(99)));
+  Assert.AreEqual(3, Integer(LSize));
+  Assert.AreEqual(Ord('c'), Integer(LDest[2]));
+end;
+
+procedure TTestZlibEngine.DovrebbeDareErroreDiDatiSeServeUnDizionario;
+var
+  LSource: TBytes;
+  LDest: array[0..15] of Byte;
+  LSize: Cardinal;
+begin
+  LSource := TZlibTestStreams.ZlibThatNeedsADictionary;
+  LSize := SizeOf(LDest);
+  Assert.AreEqual(ZLIB_DATA_ERROR, FZlib.Uncompress(Pointer(LSource), Length(LSource),
+    @LDest, LSize, TZlibFormat.Zlib));
+end;
+
+procedure TTestZlibEngine.DovrebbeRifiutareBufferMancanti;
+var
+  LByte: Byte;
+  LSize: Cardinal;
+begin
+  LByte := 0;
+  LSize := 1;
+  Assert.AreEqual(ZLIB_STREAM_ERROR, FZlib.Compress(@LByte, 1, nil, LSize, ZLIB_DEFAULT_LEVEL));
+  Assert.AreEqual(ZLIB_STREAM_ERROR, FZlib.Compress(nil, 1, @LByte, LSize, ZLIB_DEFAULT_LEVEL));
+  Assert.AreEqual(ZLIB_STREAM_ERROR, FZlib.Uncompress(@LByte, 1, nil, LSize, TZlibFormat.Zlib));
+  Assert.AreEqual(ZLIB_STREAM_ERROR, FZlib.Uncompress(nil, 1, @LByte, LSize, TZlibFormat.Zlib));
+end;
+
+procedure TTestZlibEngine.DovrebbeRifiutareBufferTroppoGrandi;
+var
+  LByte: Byte;
+  LSize: Cardinal;
+begin
+  // The sizes are refused before a byte is read or written
+  LByte := 0;
+  LSize := Cardinal(High(Longint)) + 1;
+  Assert.AreEqual(ZLIB_BUF_ERROR, FZlib.Compress(@LByte, 1, @LByte, LSize, ZLIB_DEFAULT_LEVEL));
+  Assert.AreEqual(ZLIB_BUF_ERROR, FZlib.Uncompress(@LByte, 1, @LByte, LSize, TZlibFormat.Zlib));
+  LSize := 1;
+  Assert.AreEqual(ZLIB_BUF_ERROR, FZlib.Compress(@LByte, Cardinal(High(Longint)) + 1, @LByte,
+    LSize, ZLIB_DEFAULT_LEVEL));
+end;
+
+procedure TTestZlibEngine.DovrebbeRifiutareUnLivelloDiCompressioneSbagliato;
+var
+  LDeflater: IZlibDeflater;
+begin
+  Assert.AreEqual(ZLIB_STREAM_ERROR, FZlib.CreateDeflater(99, LDeflater));
+  Assert.IsNull(LDeflater);
 end;
 
 initialization

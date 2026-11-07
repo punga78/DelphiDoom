@@ -19,7 +19,7 @@ type
   /// </summary>
   /// <remarks>
   ///   By default the client works on the tracker linked in the executable
-  ///   (TTrackerMikModEngine), so no DLL is needed. To use DDMikmod.dll (or a fake in the tests) call Use
+  ///   (TTrackerMikModEngine, on waveOut in a thread), so no DLL is needed. To use DDMikmod.dll (or a fake in the tests) call Use
   ///   with the IMikMod obtained from TMikModLoader before the first use
   /// </remarks>
   TMikModProvider = class
@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Mikmod.TrackerEngine;
+  System.SysUtils, DelphiDoom.Mikmod.TrackerEngine, DelphiDoom.Tracker.WindowsOutput;
 
 { TMikModProvider }
 
@@ -56,7 +56,7 @@ begin
   if not Assigned(FClient) then
   begin
     if not Assigned(FMikMod) then
-      FMikMod := TTrackerMikModEngine.Create;
+      FMikMod := TTrackerMikModEngine.Create(TTrackerWindowsOutputFactory.Create);
     FClient := TMikModClient.Create(FMikMod);
   end;
   Result := FClient;

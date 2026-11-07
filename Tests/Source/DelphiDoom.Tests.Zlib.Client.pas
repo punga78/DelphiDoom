@@ -43,6 +43,12 @@ type
     procedure TestUncompressGarbageRaisesDataError;
     [Test]
     procedure TestUncompressIntoTooSmallBufferRaisesBufError;
+    [Test]
+    procedure DovrebbeCreareFlussiDiCompressioneEDecompressione;
+    [Test]
+    procedure DovrebbeSollevareLErroreDiDatiSenzaMisuraNota;
+    [Test]
+    procedure DovrebbeSollevareLErroreDiUnLivelloSbagliato;
   end;
 
 implementation
@@ -135,6 +141,35 @@ begin
   except
     on E: EZlibException do
       Assert.AreEqual(ZLIB_BUF_ERROR, E.Code);
+  end;
+end;
+
+procedure TTestZlibClient.DovrebbeCreareFlussiDiCompressioneEDecompressione;
+begin
+  Assert.IsNotNull(FClient.CreateInflater(TZlibFormat.Zlib));
+  Assert.IsNotNull(FClient.CreateDeflater(ZLIB_BEST_SPEED));
+end;
+
+procedure TTestZlibClient.DovrebbeSollevareLErroreDiDatiSenzaMisuraNota;
+begin
+  // Only a full buffer is tried again: an error of the data comes out at once
+  try
+    FClient.Uncompress(TBytes.Create($78, $9C, $FF, $FF, $FF, $FF), TZlibFormat.Zlib);
+    Assert.Fail('EZlibException expected');
+  except
+    on E: EZlibException do
+      Assert.AreEqual(ZLIB_DATA_ERROR, E.Code);
+  end;
+end;
+
+procedure TTestZlibClient.DovrebbeSollevareLErroreDiUnLivelloSbagliato;
+begin
+  try
+    FClient.CreateDeflater(99);
+    Assert.Fail('EZlibException expected');
+  except
+    on E: EZlibException do
+      Assert.AreEqual(ZLIB_STREAM_ERROR, E.Code);
   end;
 end;
 

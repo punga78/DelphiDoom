@@ -29,8 +29,6 @@ type
     FStart: Integer;
     FEnd: Integer;
     FPosition: Integer;
-    function GetSize: Integer;
-    function GetPosition: Integer;
     function GetAtEnd: Boolean;
   public
     /// <param name="AStart">First byte of the part to read</param>
@@ -66,9 +64,6 @@ type
     /// </summary>
     function ReadXmiDelay(out AValue: UInt64): TXmiVarLengthStatus;
 
-    /// <summary>Bytes consumed so far, from the start of the part</summary>
-    property Position: Integer read GetPosition;
-    property Size: Integer read GetSize;
     property AtEnd: Boolean read GetAtEnd;
   end;
 
@@ -94,16 +89,6 @@ begin
   FStart := AStart;
   FEnd := AStart + ACount;
   FPosition := AStart;
-end;
-
-function TXmiByteReader.GetSize: Integer;
-begin
-  Result := FEnd - FStart;
-end;
-
-function TXmiByteReader.GetPosition: Integer;
-begin
-  Result := FPosition - FStart;
 end;
 
 function TXmiByteReader.GetAtEnd: Boolean;
