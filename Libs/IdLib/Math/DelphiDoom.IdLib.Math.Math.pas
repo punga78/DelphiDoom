@@ -138,10 +138,11 @@ type
     /// <summary>xor of the bit patterns of the floats</summary>
     class function FloatHash(const AValues: array of Single; const ACount: Integer): Integer; static;
     /// <summary>Arithmetic shift to the right (the sign is copied), the <c>&gt;&gt;</c> of C on a signed int; Delphi's <c>shr</c> is logical</summary>
-    class function Sar(const AValue, AShift: Integer): Integer; static; inline;
+    // not inline: an inlined body is never measured by the coverage of the tests
+    class function Sar(const AValue, AShift: Integer): Integer; static;
     /// <summary>The bit pattern of a float (the original reads it through a pointer cast)</summary>
-    class function SingleToBits(const AValue: Single): Integer; static; inline;
-    class function BitsToSingle(const ABits: Integer): Single; static; inline;
+    class function SingleToBits(const AValue: Single): Integer; static;
+    class function BitsToSingle(const ABits: Integer): Single; static;
   end;
 
 implementation
