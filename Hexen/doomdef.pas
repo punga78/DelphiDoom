@@ -266,7 +266,6 @@ type
   end;
   Pweaponinfo_t = ^weaponinfo_t;
   weaponinfo_tArray = array[0..$FFF] of weaponinfo_t;
-  Pweaponinfo_tArray = ^weaponinfo_tArray;
 
 // Power up artifacts.
   artitype_t = (

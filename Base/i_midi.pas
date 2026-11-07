@@ -62,13 +62,6 @@ procedure I_StopMidi;
 
 //==============================================================================
 //
-// I_IsMidiPlaying
-//
-//==============================================================================
-function I_IsMidiPlaying: boolean;
-
-//==============================================================================
-//
 // I_ResumeMidi
 //
 //==============================================================================
@@ -108,13 +101,6 @@ procedure I_SetMusicVolumeMidi(volume: integer);
 //
 //==============================================================================
 procedure I_ProcessMidi;
-
-//==============================================================================
-//
-// _mciGetErrorString
-//
-//==============================================================================
-function _mciGetErrorString(const code: LongWord): string;
 
 var
   snd_uselegacymidiplayer: integer = 2;
@@ -161,19 +147,6 @@ begin
     I_StopMidi_Legacy
   else
     I_StopMidi_New;
-end;
-
-//==============================================================================
-//
-// I_IsMidiPlaying
-//
-//==============================================================================
-function I_IsMidiPlaying: boolean;
-begin
-  if uselegacymidiplayer then
-    result := I_IsMidiPlaying_Legacy
-  else
-    result := I_IsMidiPlaying_New;
 end;
 
 //==============================================================================
@@ -262,27 +235,6 @@ begin
     I_ProcessMidi_Legacy
   else
     I_ProcessMidi_New;
-end;
-
-//==============================================================================
-//
-// _mciGetErrorString
-//
-//==============================================================================
-function _mciGetErrorString(const code: LongWord): string;
-var
-  buf: array[0..127] of char;
-  i:  integer;
-begin
-  result := '';
-  ZeroMemory(@buf, SizeOf(buf));
-  if mciGetErrorString(code, buf, SizeOf(buf)) then
-    for i := 0 to SizeOf(buf) - 1 do
-    begin
-      if buf[i] = #0 then
-        break;
-      result := result + buf[i];
-    end;
 end;
 
 end.

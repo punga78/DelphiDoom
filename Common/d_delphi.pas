@@ -62,7 +62,6 @@ type
   PByteArray = ^TByteArray;
 
   TShortIntArray = packed array[0..$7FFF] of ShortInt;
-  PShortIntArray = ^TShortIntArray;
 
   TBooleanArray = packed array[0..$7FFF] of boolean;
   PBooleanArray = ^TBooleanArray;
@@ -72,7 +71,6 @@ type
   PIntFunction = function: integer;
 
   TStringArray = array[0..$7FFF] of string;
-  PStringArray = ^TStringArray;
 
   TPointerArray = packed array[0..$7FFF] of pointer;
   PPointerArray = ^TPointerArray;
@@ -83,7 +81,6 @@ type
 
   PWord = ^Word;
   TWordPArray = packed array[0..$7FFF] of PWordArray;
-  PWordPArray = ^TWordPArray;
 
   TLongWordPArray = packed array[0..$7FFF] of PLongWordArray;
   PLongWordPArray = ^TLongWordPArray;
@@ -101,7 +98,6 @@ type
   PFloatArray = ^TFloatArray;
 
   TObjectArray = packed array[0..$7FFF] of TObject;
-  PObjectArray = ^TObjectArray;
 
 type
   charset_t = set of AnsiChar;
@@ -109,28 +105,23 @@ type
   twobytes_t = packed record
     byte1, byte2: byte;
   end;
-  Ptwobytes_t = ^twobytes_t;
 
   fourbytes_t = packed record
     byte1, byte2, byte3, byte4: byte;
   end;
-  Pfourbytes_t = ^fourbytes_t;
 
   eightbytes_t = packed record
     byte1, byte2, byte3, byte4: byte;
     byte5, byte6, byte7, byte8: byte;
   end;
-  Peightbytes_t = ^eightbytes_t;
 
   twointegers_t = packed record
     int1, int2: integer;
   end;
-  Ptwointegers_t = ^twointegers_t;
 
   twolongwords_t = packed record
     longword1, longword2: LongWord;
   end;
-  Ptwolongwords_t = ^twolongwords_t;
 
   TOutProc = procedure (const s: string);
 
@@ -386,14 +377,6 @@ function decide(const condition: integer;
 //==============================================================================
 function decide(const condition: integer;
   const iftrue: pointer; const iffalse: pointer): pointer; overload;
-
-//==============================================================================
-//
-// decidef
-//
-//==============================================================================
-function decidef(const condition: boolean;
-  const iftrue: single; const iffalse: single): single;
 
 //==============================================================================
 //
@@ -889,13 +872,6 @@ function tan(const x: extended): extended;
 
 //==============================================================================
 //
-// strcmp
-//
-//==============================================================================
-function strcmp(const s1, s2: string): integer;
-
-//==============================================================================
-//
 // strupper
 //
 //==============================================================================
@@ -914,13 +890,6 @@ procedure strupperproc(var S: string);
 //
 //==============================================================================
 function strlower(const S: string): string;
-
-//==============================================================================
-//
-// strlowerproc
-//
-//==============================================================================
-procedure strlowerproc(var S: string);
 
 //==============================================================================
 //
@@ -996,13 +965,6 @@ function _SHR4(const x: integer): integer;
 
 //==============================================================================
 //
-// _SHR5
-//
-//==============================================================================
-function _SHR5(const x: integer): integer;
-
-//==============================================================================
-//
 // _SHR7
 //
 //==============================================================================
@@ -1014,13 +976,6 @@ function _SHR7(const x: integer): integer;
 //
 //==============================================================================
 function _SHR8(const x: integer): integer;
-
-//==============================================================================
-//
-// _SHR11
-//
-//==============================================================================
-function _SHR11(const x: integer): integer;
 
 //==============================================================================
 //
@@ -1066,13 +1021,6 @@ function fopen(var f: file; const FileName: string; const mode: integer): boolea
 
 //==============================================================================
 //
-// fwrite
-//
-//==============================================================================
-function fwrite(const data: pointer; const sz1, sz2: integer; var f: file): boolean;
-
-//==============================================================================
-//
 // fsize
 //
 //==============================================================================
@@ -1084,13 +1032,6 @@ function fsize(const FileName: string): integer;
 //
 //==============================================================================
 function fshortname(const FileName: string): string;
-
-//==============================================================================
-//
-// fixslashpath
-//
-//==============================================================================
-function fixslashpath(const apath: string): string;
 
 //==============================================================================
 //
@@ -1438,13 +1379,6 @@ function ibetween(const x: integer; const x1, x2: integer): integer;
 
 //==============================================================================
 //
-// LeftStr
-//
-//==============================================================================
-function LeftStr(const s: string; const l: integer): string;
-
-//==============================================================================
-//
 // RightStr
 //
 //==============================================================================
@@ -1456,13 +1390,6 @@ function RightStr(const s: string; const l: integer): string;
 //
 //==============================================================================
 function fixpathname(const s: string): string;
-
-//==============================================================================
-//
-// logtofile
-//
-//==============================================================================
-procedure logtofile(const fname: string; const str: string);
 
 //==============================================================================
 //
@@ -1484,13 +1411,6 @@ function RemoveQuotesFromString(const s: string): string;
 //
 //==============================================================================
 function isdigit(const c: char): boolean;
-
-//==============================================================================
-//
-// Isign
-//
-//==============================================================================
-function Isign(const x: integer): integer;
 
 //==============================================================================
 //
@@ -2703,20 +2623,6 @@ function decide(const condition: integer;
   const iftrue: pointer; const iffalse: pointer): pointer;
 begin
   if condition <> 0 then
-    result := iftrue
-  else
-    result := iffalse;
-end;
-
-//==============================================================================
-//
-// decidef
-//
-//==============================================================================
-function decidef(const condition: boolean;
-  const iftrue: single; const iffalse: single): single;
-begin
-  if condition then
     result := iftrue
   else
     result := iffalse;
@@ -5333,21 +5239,6 @@ end;
 
 //==============================================================================
 //
-// strcmp
-//
-//==============================================================================
-function strcmp(const s1, s2: string): integer;
-begin
-  if s1 = s2 then
-    result := 0
-  else if s1 < s2 then
-    result := -1
-  else
-    result := 1;
-end;
-
-//==============================================================================
-//
 // strupper
 //
 //==============================================================================
@@ -5417,28 +5308,6 @@ begin
     inc(Source);
     inc(Dest);
     dec(L);
-  end;
-end;
-
-//==============================================================================
-//
-// strlowerproc
-//
-//==============================================================================
-procedure strlowerproc(var S: string);
-var
-  Ch: Char;
-  i, L: Integer;
-begin
-  L := Length(S);
-  for i := 1 to L do
-  begin
-    Ch := S[i];
-    if (Ch >= 'A') and (Ch <= 'Z') then
-    begin
-      inc(Ch, 32);
-      S[i] := Ch;
-    end;
   end;
 end;
 
@@ -5603,16 +5472,6 @@ end;
 
 //==============================================================================
 //
-// _SHR5
-//
-//==============================================================================
-function _SHR5(const x: integer): integer;
-asm
-  sar eax, 5
-end;
-
-//==============================================================================
-//
 // _SHR7
 //
 //==============================================================================
@@ -5629,16 +5488,6 @@ end;
 function _SHR8(const x: integer): integer; assembler;
 asm
   sar eax, 8
-end;
-
-//==============================================================================
-//
-// _SHR11
-//
-//==============================================================================
-function _SHR11(const x: integer): integer; assembler;
-asm
-  sar eax, 11
 end;
 
 //==============================================================================
@@ -5847,23 +5696,6 @@ end;
 
 //==============================================================================
 //
-// fwrite
-//
-//==============================================================================
-function fwrite(const data: pointer; const sz1, sz2: integer; var f: file): boolean;
-var
-  N1: integer;
-  N2: integer;
-begin
-  N1 := sz1 * sz2;
-  {$I-}
-  BlockWrite(f, PByteArray(data)^, N1, N2);
-  {$I+}
-  result := N1 = N2;
-end;
-
-//==============================================================================
-//
 // fsize
 //
 //==============================================================================
@@ -5898,21 +5730,6 @@ begin
       break;
     result := FileName[i] + result;
   end;
-end;
-
-//==============================================================================
-//
-// fixslashpath
-//
-//==============================================================================
-function fixslashpath(const apath: string): string;
-var
-  i: integer;
-begin
-  result := apath;
-  for i := 1 to length(result) do
-    if result[i] = '/' then
-      result[i] := '\';
 end;
 
 //==============================================================================
@@ -6951,26 +6768,6 @@ end;
 
 //==============================================================================
 //
-// LeftStr
-//
-//==============================================================================
-function LeftStr(const s: string; const l: integer): string;
-var
-  i: integer;
-  inplen: integer;
-begin
-  result := '';
-  inplen := Length(s);
-  for i := 1 to l do
-  begin
-    if i > inplen then
-      Break;
-    result := result + s[i];
-  end;
-end;
-
-//==============================================================================
-//
 // RightStr
 //
 //==============================================================================
@@ -7013,31 +6810,6 @@ begin
       result := result + tmp[i];
     last := tmp[i];
   end;
-end;
-
-//==============================================================================
-//
-// logtofile
-//
-//==============================================================================
-procedure logtofile(const fname: string; const str: string);
-var
-  f: file;
-  astr: AnsiString;
-begin
-  if not fexists(fname) then
-    fopen(f, fname, fCreate)
-  else
-  begin
-    fopen(f, fname, fOpenReadWrite);
-    system.Seek(f, FileSize(f));
-  end;
-  {$I-}
-  astr := AnsiString(str);
-  if Length(astr) > 0 then
-    BlockWrite(f, Pointer(astr)^, Length(astr));
-  {$I+}
-  close(f);
 end;
 
 //==============================================================================
@@ -7097,21 +6869,6 @@ end;
 function isdigit(const c: char): boolean;
 begin
   result := CharInSet(c, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
-end;
-
-//==============================================================================
-//
-// Isign
-//
-//==============================================================================
-function Isign(const x: integer): integer;
-begin
-  if x < 0 then
-    result := -1
-  else if x > 0 then
-    result := 1
-  else
-    result := 0;
 end;
 
 //==============================================================================

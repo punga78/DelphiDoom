@@ -86,7 +86,6 @@ type
     isindemo: boolean;
     _type: mobjtype_t;
   end;
-  Pcastinfo_t = ^castinfo_t;
 
 const
   NUM_CASTS = 18;

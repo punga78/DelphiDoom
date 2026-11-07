@@ -251,7 +251,6 @@ type
     pw_targeter,
     NUMPOWERS
   );
-  Ppowertype_t = ^powertype_t;
 
 // villsa [STRIFE]
 // quest numbers
@@ -328,7 +327,6 @@ const
     QF_QUEST29 = (1  shl 28); // Destroyed the Mines Transmitter
     QF_QUEST30 = (1  shl 29);
     QF_QUEST31 = (1  shl 30);
-    QF_QUEST32 = (1  shl 31); // Unused; BUG: Broken Coupling accidentally sets it.
 
     QF_ALLQUESTS: LongWord = $FFFFFFFF; // does not include bit 32!
 

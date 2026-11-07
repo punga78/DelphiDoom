@@ -38,14 +38,6 @@ interface
 //==============================================================================
 function acc_isscriptlump(const lump: integer): boolean;
 
-//==============================================================================
-//
-// acc_isbehaviorlump
-// True if the lump is the compiled script of a map (BEHAVIOR)
-//
-//==============================================================================
-function acc_isbehaviorlump(const lump: integer): boolean;
-
 implementation
 
 uses
@@ -63,22 +55,6 @@ begin
     if (W_GetNameForNum(lump) = 'SCRIPT') or (W_GetNameForNum(lump) = 'SCRIPTS') then
     begin
       Result := W_LumpLength(lump) > 8;
-      Exit;
-    end;
-  Result := False;
-end;
-
-//==============================================================================
-//
-// acc_isbehaviorlump
-//
-//==============================================================================
-function acc_isbehaviorlump(const lump: integer): boolean;
-begin
-  if IsIntegerInRange(lump, 0, W_NumLumps - 1) then
-    if W_GetNameForNum(lump) = 'BEHAVIOR' then
-    begin
-      Result := True;
       Exit;
     end;
   Result := False;

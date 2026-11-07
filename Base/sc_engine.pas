@@ -44,9 +44,6 @@ uses
 // rest of the engine uses and turns the lists of the scanner into TDStringList
 //
 
-const
-  MAX_STRING_SIZE = 1024;
-
 type
   TScriptEngine = class
   private
@@ -113,13 +110,6 @@ function SC_RemoveLineQuotes(const sctext: string): string;
 
 //==============================================================================
 //
-// SC_RemoveLineComments
-//
-//==============================================================================
-function SC_RemoveLineComments(const inp: string): string;
-
-//==============================================================================
-//
 // SC_FixParenthesisLevel
 //
 //==============================================================================
@@ -138,13 +128,6 @@ function SC_ParamsToList(inp: string): TDStringList;
 //
 //==============================================================================
 function SC_IsStringInQuotes(const s: string): boolean;
-
-//==============================================================================
-//
-// SC_TokensToList
-//
-//==============================================================================
-function SC_TokensToList(const inp: string): TDStringList;
 
 implementation
 
@@ -601,16 +584,6 @@ end;
 
 //==============================================================================
 //
-// SC_RemoveLineComments
-//
-//==============================================================================
-function SC_RemoveLineComments(const inp: string): string;
-begin
-  result := TScannerText.RemoveLineComments(inp);
-end;
-
-//==============================================================================
-//
 // SC_FixParenthesisLevel
 //
 //==============================================================================
@@ -637,16 +610,6 @@ end;
 function SC_IsStringInQuotes(const s: string): boolean;
 begin
   result := TScannerText.IsStringInQuotes(s);
-end;
-
-//==============================================================================
-//
-// SC_TokensToList
-//
-//==============================================================================
-function SC_TokensToList(const inp: string): TDStringList;
-begin
-  result := ListOf(TScannerText.TokensToList(inp, TEngineScannerLog.Create));
 end;
 
 end.

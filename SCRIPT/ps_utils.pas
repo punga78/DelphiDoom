@@ -11,7 +11,6 @@ const
   PSMainProcNameOrg = 'Main Proc';
   PSLowBuildSupport = 12;
   PSCurrentBuildNo = 23;
-  PSCurrentversion = '1.31';
   PSValidHeader = 1397769801;
   PSAddrStackStart = 1610612736;
   PSAddrNegativeStackStart = 1073741824;

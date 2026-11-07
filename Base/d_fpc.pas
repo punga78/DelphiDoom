@@ -34,7 +34,6 @@ interface
 {$IFDEF FPC}
 
 type
-  PKeyboardState = ^TKeyboardState;
   TKeyboardState = array[0..255] of byte;
 
   TImageFileHeader = packed record
@@ -46,13 +45,11 @@ type
     SizeOfOptionalHeader: Word;
     Characteristics: Word;
   end;
-  PImageFileHeader = ^TImageFileHeader;
 
   TImageDataDirectory = record
     VirtualAddress: DWORD;
     Size: DWORD;
   end;
-  PImageDataDirectory = ^TImageDataDirectory;
 
 const
   IMAGE_NUMBEROF_DIRECTORY_ENTRIES = 16;
@@ -93,7 +90,6 @@ type
     NumberOfRvaAndSizes: DWORD;
     DataDirectory: packed array[0..IMAGE_NUMBEROF_DIRECTORY_ENTRIES - 1] of TImageDataDirectory;
   end;
-  PImageOptionalHeader = ^TImageOptionalHeader;
 
 //==============================================================================
 //

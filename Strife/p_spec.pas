@@ -57,9 +57,7 @@ uses
 // End-level timer (-TIMER option)
 //
 
-const
 //      Define values for map objects
-  MO_TELEPORTMAN = 14;
 
 // [STRIFE] Teleportation flags - teleflags
 // Not to be conflated with telefrags, though they be tangentially related ;)
@@ -490,7 +488,6 @@ type
 
 const
   CEILSPEED = FRACUNIT;
-  CEILWAIT = 150;
   MAXCEILINGS = 128; // JVAL 20210130 - Old value was 30
 
 type

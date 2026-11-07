@@ -332,7 +332,6 @@ type
     cmd: ticcmd_t;      // JVAL Smooth Look Up/Down
     quakeintensity: fixed_t;
   end;
-  Pplayer_t206 = ^player_t206;
 
 type
   player_t205 = record
@@ -568,7 +567,6 @@ type
     quaketics: integer;
   end;
 
-  Pplayer_t142 = ^player_t142;
 
 type
   player_t141 = record
@@ -680,7 +678,6 @@ type
     jumpTics: integer;
   end;
 
-  Pplayer_t141 = ^player_t141;
 
 //
 // INTERMISSION
@@ -698,9 +695,7 @@ type
     frags: array[0..3] of integer;
     score: integer; // current score on entry, modified on return
   end;
-  Pwbplayerstruct_t = ^wbplayerstruct_t;
   wbplayerstruct_tArray = packed array[0..$FFFF] of wbplayerstruct_t;
-  Pwbplayerstruct_tArray = ^wbplayerstruct_tArray;
 
   wbstartstruct_t = record
     epsd: integer; // episode # (0-2)
@@ -725,7 +720,6 @@ type
 
     plyr: array[0..MAXPLAYERS - 1] of wbplayerstruct_t;
   end;
-  Pwbstartstruct_t = ^wbstartstruct_t;
 
 var
 // JVAL -> moved from g_game

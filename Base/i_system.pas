@@ -50,24 +50,6 @@ procedure I_Init;
 
 //==============================================================================
 //
-// I_ZoneBase
-//
-// Called by startup code
-// to get the ammount of memory to malloc
-// for the zone management.
-//
-//==============================================================================
-function I_ZoneBase(var size: integer): pointer;
-
-//==============================================================================
-//
-// I_ZoneFree
-//
-//==============================================================================
-procedure I_ZoneFree(var p: pointer);
-
-//==============================================================================
-//
 // I_GetSysTime
 //
 // Called by D_DoomLoop,
@@ -554,27 +536,6 @@ function I_GetHeapSize: integer;
 begin
   // Zone is depricated
   result := $10000; //mb_used * 1024 * 1024;
-end;
-
-//==============================================================================
-//
-// I_ZoneBase
-//
-//==============================================================================
-function I_ZoneBase(var size: integer): pointer;
-begin
-  size := I_GetHeapSize;
-  result := malloc(size);
-end;
-
-//==============================================================================
-//
-// I_ZoneFree
-//
-//==============================================================================
-procedure I_ZoneFree(var p: pointer);
-begin
-  memfree(p, I_GetHeapSize);
 end;
 
 //

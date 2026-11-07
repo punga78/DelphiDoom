@@ -68,7 +68,6 @@ type
     computed: boolean;
     flags: integer;
   end;
-  Pcustomparam_t = ^customparam_t;
   customparam_tArray = array[0..$FFF] of customparam_t;
   Pcustomparam_tArray = ^customparam_tArray;
 

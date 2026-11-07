@@ -129,13 +129,6 @@ procedure D_StartTitle;
 
 //==============================================================================
 //
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
-
-//==============================================================================
-//
 // D_Display
 //
 //==============================================================================
@@ -166,7 +159,6 @@ var
   flipparm: boolean;            // [STRIFE] haleyjd 20110629: checkparm of -flip
   randomparm: boolean;          // [STRIFE] haleyjd 20130915: checkparm of -random
 
-  showintro: boolean = true;    // [STRIFE] checkparm of -nograph, disables intro
 
 // villsa [STRIFE] workparm variable (similar to devparm?)
   workparm: boolean = false;
@@ -2630,16 +2622,6 @@ begin
   end;
 
   D_DoomLoop;  // never returns
-end;
-
-//==============================================================================
-//
-// D_IsPaused
-//
-//==============================================================================
-function D_IsPaused: boolean;
-begin
-  result := paused;
 end;
 
 //==============================================================================

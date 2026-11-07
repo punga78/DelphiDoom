@@ -46,7 +46,6 @@ procedure A_MusicChanger(actor: Pmobj_t);
 
 const
   S_MUSINFO_PARAM = 'MUSINFOPARAM';
-  S_MUSINFO_LUMP = 'MUSINFO';
 
 const
   MUSICCHANGER_LO = 14100;

@@ -46,12 +46,10 @@ type
       1: (acv: actionf_v);
       2: (acp2: actionf_p2);
     end;
-  Pactionf_t = ^actionf_t;
   actionf_tArray = array[0..$FFFF] of actionf_t;
   Pactionf_tArray = ^actionf_tArray;
 
   think_t = actionf_t;
-  Pthink_t = ^think_t;
 
   Pthinker_t = ^thinker_t;
   thinker_t = record

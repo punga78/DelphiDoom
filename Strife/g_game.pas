@@ -417,17 +417,9 @@ procedure G_ReadCurrent(path: string);
 var
   sendsave: boolean;         // send a save event next tic
 
-//==============================================================================
-//
-// G_GetSaveName
-//
-//==============================================================================
-function G_GetSaveName(name: string): string;
-
 const
   SAVEGAMESIZE = $1000000; // Originally $2C000
   SAVESTRINGSIZE = 24;
-  SAVEVERSIONSIZE = 16;
 
 const
   NUMKEYS = 256;
@@ -2036,31 +2028,6 @@ begin
   end;
 
   G_LoadPath(gamemap);
-end;
-
-//==============================================================================
-//
-// G_GetSaveName
-//
-//==============================================================================
-function G_GetSaveName(name: string): string;
-var
-  i: integer;
-begin
-  result := '';
-  for i := 0 to Ord(load_end) - 1 do
-  begin
-    if name = itoa(i) then
-    begin
-      sprintf(result, SAVEGAMENAME + '%s.SSG', [name]);
-      exit;
-    end;
-  end;
-
-  if strupper(Copy(name, length(name) - 3, 4)) <> '.SSG' then
-    result := name + '.SSG'
-  else
-    result := name;
 end;
 
 //

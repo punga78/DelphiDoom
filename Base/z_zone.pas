@@ -176,13 +176,6 @@ procedure Z_CheckHeap;
 //==============================================================================
 procedure Z_ChangeTag(ptr: pointer; tag: integer);
 
-//==============================================================================
-//
-// Z_CacheMemory
-//
-//==============================================================================
-function Z_CacheMemory: integer;
-
 implementation
 
 uses
@@ -211,18 +204,6 @@ end;
 procedure Z_ConfigureZone(const AAllocator: IZoneAllocator);
 begin
   zone_allocator := AAllocator;
-end;
-
-//==============================================================================
-//
-// Z_CacheMemory
-//
-//==============================================================================
-function Z_CacheMemory: integer;
-begin
-  if zone_allocator = nil then
-    Z_NotConfigured;
-  result := zone_allocator.Statistics.PurgableBytes;
 end;
 
 //==============================================================================

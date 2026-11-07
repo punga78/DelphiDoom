@@ -380,7 +380,6 @@ type
     lastdialogtalker: Pmobj_t;
     quakeintensity: fixed_t;
   end;
-  Pplayer_t206 = ^player_t206;
 
 type
   player_t205 = record
@@ -510,7 +509,6 @@ type
     lookdir16: integer; // JVAL Smooth Look Up/Down
     cmd: ticcmd_t;      // JVAL Smooth Look Up/Down
   end;
-  Pplayer_t205 = ^player_t205;
 
 type
   player_t203 = record
@@ -640,7 +638,6 @@ type
     lookdir16: integer; // JVAL Smooth Look Up/Down
     cmd: ticcmd_t;      // JVAL Smooth Look Up/Down
   end;
-  Pplayer_t203 = ^player_t203;
 
 type
   player_t122 = record
@@ -768,7 +765,6 @@ type
     teleporttics: integer;
     quaketics: integer;
   end;
-  Pplayer_t122 = ^player_t122;
 
 type
   player_t121 = record
@@ -890,7 +886,6 @@ type
     mapstate: array[0..39] of boolean;
 
   end;
-  Pplayer_t121 = ^player_t121;
 
 //
 // INTERMISSION
@@ -908,9 +903,7 @@ type
     frags: array[0..MAXPLAYERS - 1] of integer;
     score: integer; // current score on entry, modified on return
   end;
-  Pwbplayerstruct_t = ^wbplayerstruct_t;
   wbplayerstruct_tArray = packed array[0..$FFFF] of wbplayerstruct_t;
-  Pwbplayerstruct_tArray = ^wbplayerstruct_tArray;
 
   wbstartstruct_t = record
     epsd: integer; // episode # (0-2)
@@ -935,7 +928,6 @@ type
 
     plyr: array[0..MAXPLAYERS - 1] of wbplayerstruct_t;
   end;
-  Pwbstartstruct_t = ^wbstartstruct_t;
 
 var
 // JVAL -> moved from g_game

@@ -113,13 +113,6 @@ procedure G_CmdSaveGame(const sname: string; const description: string);
 
 //==============================================================================
 //
-// G_WorldDone
-//
-//==============================================================================
-procedure G_WorldDone;
-
-//==============================================================================
-//
 // G_Ticker
 //
 //==============================================================================
@@ -210,7 +203,6 @@ var
 
   gameepisode: integer;
   gamemap: integer;
-  prevmap: integer;
 
   deathmatch: integer; // only if started as net death
   netgame: boolean; // only true if packets are broadcast
@@ -2252,16 +2244,6 @@ begin
     gamestate := GS_INTERMISSION;
     IN_Start;
   end;
-end;
-
-//==============================================================================
-//
-// G_WorldDone
-//
-//==============================================================================
-procedure G_WorldDone;
-begin
-  gameaction := ga_worlddone;
 end;
 
 //==============================================================================

@@ -45,3 +45,7 @@ Restano **codice storico, per scelta documentata** in `CLAUDE.md`:
 - gli interruttori di Heretic, Hexen e Strife e `Hexen\p_anim.pas`.
 
 Da fare fuori dalla #45: Win64 (#40–#44), prova dei percorsi PK3 (#48), warning del compilatore (circa 800 W1057/W1058/W1024: vedi `logs\REPORT_WARNING.md`), crash intermittente di Heretic.
+
+## #130 — Codice storico senza chiamanti
+
+Cancellate 76 funzioni pubbliche e 117 dichiarazioni (var, const, puntatori) senza usi (analisi statica sui 12 `.dpr`, DD_IDE, DLL e stringhe PascalScript). `FACCIATE.md` elenca le facciate con i chiamanti. Restano di proposito: renderer, `FixedMul`/angoli, `W_*`, `r_clipper` (libreria di terzi), le funzioni usate solo dentro la propria unit (da rendere locali) e quelle con riferimenti omonimi in test o librerie (`BoolToStr`, `IsZeroes`, `parsefirstword`, `A_Fall`, `AngleToFixed`, `FloatMul`, `DEG2RAD`). `Tests.Scanner` ha 19 test che falliscono in questo worktree (i golden letti come una riga sola, line ending dei file): non dipendono da questo lavoro.

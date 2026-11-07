@@ -56,24 +56,10 @@ procedure AddMidiFileToPlayList_Legacy(const MidiFile: string);
 
 //==============================================================================
 //
-// DeleteMidiFileFromPlayList_Legacy
-//
-//==============================================================================
-procedure DeleteMidiFileFromPlayList_Legacy(const MidiFile: string);
-
-//==============================================================================
-//
 // ClearMidiFilePlayList_Legacy
 //
 //==============================================================================
 procedure ClearMidiFilePlayList_Legacy;
-
-//==============================================================================
-//
-// I_IsMidiPlaying_Legacy
-//
-//==============================================================================
-function I_IsMidiPlaying_Legacy: boolean;
 
 //==============================================================================
 //
@@ -293,31 +279,6 @@ end;
 
 //==============================================================================
 //
-// DeleteMidiFileFromPlayList_Legacy
-//
-//==============================================================================
-procedure DeleteMidiFileFromPlayList_Legacy(const MidiFile: string);
-var
-  i: integer;
-begin
-  if MidiFileNames <> nil then
-  begin
-    if MidiFileNames.IndexOf(MidiFile) > -1 then
-      MidiFileNames.Delete(MidiFileNames.IndexOf(MidiFile))
-    else
-    begin
-      for i := 0 to MidiFileNames.Count - 1 do
-        if strupper(MidiFileNames[i]) = strupper(MidiFile) then
-        begin
-          MidiFileNames.Delete(i);
-          exit;
-        end;
-    end;
-  end;
-end;
-
-//==============================================================================
-//
 // ClearMidiFilePlayList_Legacy
 //
 //==============================================================================
@@ -387,16 +348,6 @@ begin
     Window := 0;
     fIsMidiPlaying := false;
   end;
-end;
-
-//==============================================================================
-//
-// I_IsMidiPlaying_Legacy
-//
-//==============================================================================
-function I_IsMidiPlaying_Legacy: boolean;
-begin
-  result := fIsMidiPlaying;
 end;
 
 //==============================================================================

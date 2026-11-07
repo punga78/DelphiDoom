@@ -64,9 +64,6 @@ type
     function NumEntries: integer;
   end;
 
-// AddDataToWAD
-function AddDataToWAD(const wad: TWADWriter; const lumpname, data: string): boolean;
-
 implementation
 
 uses
@@ -200,22 +197,6 @@ end;
 function TWadWriter.NumEntries: integer;
 begin
   Result := FBuilder.Count;
-end;
-
-//==============================================================================
-//
-// AddDataToWAD
-//
-//==============================================================================
-function AddDataToWAD(const wad: TWADWriter; const lumpname, data: string): boolean;
-begin
-  if wad <> nil then
-  begin
-    wad.AddString(lumpname, data);
-    Result := True;
-  end
-  else
-    Result := False;
 end;
 
 end.

@@ -94,13 +94,6 @@ function C_BoolEval(parm: string; const default: boolean): boolean;
 //==============================================================================
 function C_GetMachingList(const src: TDStringList; const mask: string): TDStringList;
 
-//==============================================================================
-//
-// C_UnknowCommandMsg
-//
-//==============================================================================
-procedure C_UnknowCommandMsg;
-
 implementation
 
 uses
@@ -226,15 +219,5 @@ end;
 
 const
   S_UNKNOWNCOMMAND = 'Unknown command'#13#10;
-
-//==============================================================================
-//
-// C_UnknowCommandMsg
-//
-//==============================================================================
-procedure C_UnknowCommandMsg;
-begin
-  printf(S_UNKNOWNCOMMAND);
-end;
 
 end.

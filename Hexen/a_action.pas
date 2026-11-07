@@ -151,13 +151,6 @@ procedure A_SetAltShadow(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_UnSetAltShadow
-//
-//==============================================================================
-procedure A_UnSetAltShadow(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ContMobjSound
 //
 //==============================================================================
@@ -825,16 +818,6 @@ procedure A_SetAltShadow(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_SHADOW;
   actor.flags := actor.flags or MF_ALTSHADOW;
-end;
-
-//==============================================================================
-//
-// A_UnSetAltShadow
-//
-//==============================================================================
-procedure A_UnSetAltShadow(actor: Pmobj_t);
-begin
-  actor.flags := actor.flags and not MF_ALTSHADOW;
 end;
 
 //--------------------------------------------------------------------------

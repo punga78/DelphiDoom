@@ -81,13 +81,6 @@ function P_GetPlayerNum(player: Pplayer_t): integer;
 
 //==============================================================================
 //
-// P_IsInvisiblePlayer
-//
-//==============================================================================
-function P_IsInvisiblePlayer(player: Pplayer_t): boolean;
-
-//==============================================================================
-//
 // P_UndoPlayerMorph
 //
 //==============================================================================
@@ -1028,22 +1021,6 @@ begin
     end;
   end;
   result := 0;
-end;
-
-//==============================================================================
-//
-// P_IsInvisiblePlayer
-//
-//==============================================================================
-function P_IsInvisiblePlayer(player: Pplayer_t): boolean;
-begin
-  if player.mo = nil then
-  begin
-    result := false;
-    exit;
-  end;
-
-  result := player.mo.flags and (MF_SHADOW or MF_ALTSHADOW) <> 0;
 end;
 
 //----------------------------------------------------------------------------
