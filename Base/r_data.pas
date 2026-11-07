@@ -43,7 +43,8 @@ uses
   w_wad,
   DelphiDoom.TextureDefs.Intf,
   DelphiDoom.Imaging.Intf,
-  DelphiDoom.Palette.Intf;
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Engine.Voxel.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -114,6 +115,14 @@ procedure R_ConfigureColormaps(const AMatcher: IColorMatcher; const APreparer: I
 //==============================================================================
 procedure R_ConfigureComposite(const APainter: IImagingColumnPainter;
   const ARebuilder: IImagingColumnRebuilder);
+
+//==============================================================================
+//
+// R_ConfigureVoxelSprites
+// The maker of the sprites of the voxels without a patch (R_InitSpriteLumps)
+//
+//==============================================================================
+procedure R_ConfigureVoxelSprites(const ASprites: IEngineVoxelSprites);
 
 //==============================================================================
 //
@@ -318,11 +327,11 @@ uses
 {$ENDIF}
   v_data,
   v_video,
-  vx_voxelsprite,
   w_sprite,
   z_zone;
 
 var
+  voxel_sprites: IEngineVoxelSprites = nil;
   color_matcher: IColorMatcher = nil;
   colormap_preparer: IColormapPreparer = nil;
   texturedefs_loader: ITextureDefsLoader;
@@ -1239,6 +1248,16 @@ end;
 
 //==============================================================================
 //
+// R_ConfigureVoxelSprites
+//
+//==============================================================================
+procedure R_ConfigureVoxelSprites(const ASprites: IEngineVoxelSprites);
+begin
+  voxel_sprites := ASprites;
+end;
+
+//==============================================================================
+//
 // R_InitFlats
 //
 //==============================================================================
@@ -1299,7 +1318,9 @@ var
   tmp: integer;
   lumpname: string;
 begin
-  VX_VoxelToSprite;
+  if not Assigned(voxel_sprites) then
+    I_Error('R_InitSpriteLumps(): the voxel sprites are not configured (call ComposeEngine first)');
+  voxel_sprites.Generate;
 
   firstspritelump := 0;
   for i := 0 to W_NumLumps - 1 do

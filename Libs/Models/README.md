@@ -26,8 +26,8 @@ contesto GL, i buffer del renderer, o è sul percorso caldo (per muro, per sprit
 | `gl_lights`, `gl_ambient`, `gl_shaders` | 147, 156, 208 | 16, 13, 12 | `r_lights` e `gl_render`; `gl_render`; **nessuno** (`gl_shaders`: `numshaders` non cresce mai, è codice morto) | creano texture/programmi GL | restano (solo GL) |
 | `gl_shadows` | 132 | 0 | `gl_render`, `m_defs`, menu | tabella di 16 `GLDRenderLight` di cui il renderer tiene i puntatori | resta |
 | `gl_lightmaps` | 874 | 44 | `gl_render`, `m_defs`, menu | calcolo a freddo per voxel, ma sopra `vx_*`, settori e GL | resta (candidata a una fetta futura) |
-| `gl_voxels` | 1989 | 30 | `r_things`, `vx_base`, `vx_voxelsprite`, `gl_render` | costruisce le mesh dei voxel con il loader `vx_*` e liste GL | resta (candidata a una fetta futura) |
-| **`gl_frustum`** | 346 | 3 (2 `glGetFloatv`) | `gl_render` (una chiamata per fotogramma) | matematica pura, i test `fr_*InFrustum` non hanno chiamanti | **portata a `Libs\GlMath`** (`TGlFrustum`), la unit è una facciata |
+| `gl_voxels` | 1989 | 30 | `r_things`, `vx_base`, `gl_render` | costruisce le mesh dei voxel con il loader `vx_*` e liste GL | resta (candidata a una fetta futura) |
+| **`gl_frustum`** | 346 | 3 (2 `glGetFloatv`) | `gl_render` (una chiamata per fotogramma) | matematica pura, i test `fr_*InFrustum` non hanno chiamanti | **portata a `Libs\GlMath`** (`TGlFrustum`); la unit è stata **cancellata** (#134): i piani non li leggeva nessuno |
 | **`gl_clipper`** | 423 | 0 | `r_bsp` (per ogni muro), `r_main`, `gl_render` | lista di intervalli di angoli, matematica pura sull'angolo | **portata a `Libs\GlMath`** (`TGlAngleClipper`, `TGlViewAngle`), la unit è una facciata |
 | **`gl_models`** | 727 | 2 | `r_things`, `gl_render`, `m_defs`, menu | registro di modelli e parser di MODELDEF (usa `sc_*`) | resta (legato a scanner, `states[]`, texture GL) |
 | **`mdl_md2`** | 568 | 7 | `gl_models` | lettura del file a freddo + disegno (percorso caldo: `Draw`) | **lettura portata** (`Libs\Models`), il disegno resta |
@@ -35,7 +35,7 @@ contesto GL, i buffer del renderer, o è sul percorso caldo (per muro, per sprit
 | **`mdl_script_model`** | 851 | 14 | `mdl_ddmodel`, proclist | lista di comandi + 16 funzioni host di PascalScript | **lista portata**, restano le 16 funzioni host (facciata sottile) |
 | `mdl_dllmodel` | 205 | 4 | `gl_models` | carica una DLL e ne chiama `draw` (`stdcall`) | resta (carica codice esterno che disegna con GL) |
 | `mdl_script`, `mdl_script_proclist`, `mdl_script_functions` | 187, 376, 1020 | 0 | `mdl_script_model` | compilazione ed esecuzione con **PascalScript** (`SCRIPT\ps_*`); ~60 funzioni (matematica in `Extended`, `Format`, `Write`...) registrate per indirizzo con la convenzione `register` | restano: è la colla del vecchio motore PascalScript (`Libs\Script` ha l'analisi di come sostituirlo, non è collegata) |
-| `mdl_base` | 87 | 0 | `mdl_*` | classe base dei modelli | resta, con i servizi di `Libs\Models` (`MDL_ConfigureModels`) |
+| `mdl_base` | 87 | 0 | `mdl_*` | classe base dei modelli | resta, solo `TBaseModel` (#134: `MDL_ConfigureModels`, `MDL_Md2Parser`, `MDL_NewCommandStream` cancellate) |
 
 ## 2. `Libs\Models`
 
@@ -48,8 +48,9 @@ contesto GL, i buffer del renderer, o è sul percorso caldo (per muro, per sprit
 | `DelphiDoom.Models.CommandStream` | `TModelCommandStream`: lista dei comandi di un modello procedurale, elenco ordinato dei fotogrammi, file binario DMX, `Play` su un `IModelRenderer` (ricorsione limitata) |
 | `DelphiDoom.Models.Factory` | `TModelsFactory`, l'unico punto che conosce le classi |
 
-Nel motore: `mdl_base` tiene i servizi dati da `ComposeEngine` (`ComposeOpenGl`, solo nelle build OpenGL) con
-`MDL_ConfigureModels`; `mdl_md2` legge i byte con `TPakStream`, li dà al parser e disegna dai puntatori ai vertici (nessuna
+Nel motore (dalla #134, senza facciata): il lettore MD2 e la lista dei comandi non hanno stato condiviso né dipendenze,
+quindi `mdl_md2` e `mdl_ddmodel` li chiedono a `TModelsFactory` (`CreateMd2Parser` per ogni file, `CreateCommandStream`
+per ogni modello); `mdl_md2` legge i byte con `TPakStream`, li dà al parser e disegna dai puntatori ai vertici (nessuna
 chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel` esegue lo script con
 `MDL_AppendFromScript` (`mdl_script_model`: le funzioni `MDLS_*` aggiungono comandi allo stream), legge un DMX con
 `LoadFromBytes` e suona il fotogramma nella display list con `TEngineModelRenderer`
@@ -104,13 +105,13 @@ chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel
 | `DelphiDoom.GlMath.ViewAngle` | `TGlViewAngle.FrustumAngle`: il vecchio `gld_FrustumAngle` (mezza ampiezza della vista) |
 | `DelphiDoom.GlMath.Factory` | `TGlMathFactory` |
 
-Collegamento: `ComposeOpenGl` (in `ComposeEngine`, solo build OpenGL) dà `GL_ConfigureFrustum` e `GL_ConfigureClipper` alle
-facciate `gl_frustum.pas` e `gl_clipper.pas`, che tengono la vecchia API (`fr_CalculateFrustum`, `gld_clipper_SafeCheckRange`,
-`gld_clipper_SafeAddClipRange`, `gld_ClipperAddViewRange`, `gld_ClipperDone`); senza configurazione `I_Error`.
-`fr_CalculateFrustum` legge le due matrici con `glGetFloatv` e chiama `Calculate`. `gld_ClipperAddViewRange` legge `viewplayer`,
-`monitor_relative_aspect` e `viewangle`. Le funzioni `fr_PointInFrustum`, `fr_SphereInFrustum`, `fr_CubeInFrustum` e
-`fr_BoxInFrustum` non hanno chiamanti nel motore (e i piani calcolati da `fr_CalculateFrustum` non sono letti da nessuno): sono
-rimaste come facciata. **Costo misurato** del clipper (una chiamata a interfaccia in più per ogni controllo, per muro): in un
+Collegamento: `ComposeOpenGl` (in `ComposeEngine`, solo build OpenGL) dà `GL_ConfigureClipper` alla facciata
+`gl_clipper.pas`, che tiene la vecchia API (`gld_clipper_SafeCheckRange`, `gld_clipper_SafeAddClipRange`,
+`gld_ClipperAddViewRange`, `gld_ClipperDone`); senza configurazione `I_Error`. `gld_ClipperAddViewRange` legge `viewplayer`,
+`monitor_relative_aspect` e `viewangle`. Resta una facciata perché i chiamanti sono il giro del BSP (`r_bsp`, per ogni muro) e
+`r_main`: diventeranno classi con il renderer. `gl_frustum.pas` è stata cancellata (#134): `fr_CalculateFrustum` leggeva due
+matrici con `glGetFloatv` a ogni fotogramma e calcolava piani che nessuno leggeva, e i test `fr_*InFrustum` non avevano
+chiamanti; `TGlFrustum` resta nella libreria (con i suoi test) senza chiamanti nel motore. **Costo misurato** del clipper (una chiamata a interfaccia in più per ogni controllo, per muro): in un
 fotogramma tipico (64 intervalli, 2000 controlli) il vecchio è circa 80-100 ns per operazione e il nuovo circa 110-130 ns,
 cioè meno di 0,1 ms per fotogramma.
 

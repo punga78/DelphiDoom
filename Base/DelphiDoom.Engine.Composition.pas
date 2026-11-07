@@ -156,11 +156,7 @@ uses
 {$IFDEF OPENGL}
   gl_defs,
   DelphiDoom.GlMath.Factory,
-  gl_frustum,
   gl_clipper,
-  DelphiDoom.Models.Intf,
-  DelphiDoom.Models.Factory,
-  mdl_base,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -190,8 +186,9 @@ uses
   DelphiDoom.Engine.Voxel.ColorMapper,
   DelphiDoom.Engine.Voxel.DefinitionLookup,
   DelphiDoom.Engine.Voxel.DefinitionSink,
+  DelphiDoom.Engine.Voxel.LumpNames,
+  DelphiDoom.Engine.Voxel.SpriteGenerator,
   vx_base,
-  vx_voxelsprite,
 {$IFDEF OPENGL}
   gl_voxels,
 {$ELSE}
@@ -594,13 +591,7 @@ end;
 {$IFDEF OPENGL}
 procedure ComposeOpenGl;
 begin
-  GL_ConfigureFrustum(TGlMathFactory.CreateFrustum);
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
-  MDL_ConfigureModels(TModelsFactory.CreateMd2Parser,
-    function: IModelCommandStream
-    begin
-      Result := TModelsFactory.CreateCommandStream;
-    end);
 end;
 {$ENDIF}
 
@@ -696,19 +687,26 @@ procedure ComposeVoxels(const ALog: ILog);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
+  LLumps: IVoxelLumpNames;
 begin
   LLoader := TVoxelFactory.CreateLoader(TEngineVoxelFileSource.Create, ALog);
   LCubes := TVoxelFactory.CreateCubeBuilder;
-{$IFDEF OPENGL}
-  gld_ConfigureVoxelLoading(LLoader, LCubes);
-{$ELSE}
-  R_ConfigureVoxelLoading(LLoader, LCubes);
-{$ENDIF}
-  VX_ConfigureVoxelSprites(LLoader, LCubes,
-    TVoxelFactory.CreatePatchBuilder(TEngineVoxelColorMapper.Create));
+  LLumps := TEngineVoxelLumpNames.Create;
+  R_ConfigureVoxelSprites(TEngineVoxelSpriteGenerator.Create(LLoader, LCubes,
+    TVoxelFactory.CreatePatchBuilder(TEngineVoxelColorMapper.Create),
+    function: IVoxelSpriteNames
+    begin
+      Result := TVoxelFactory.CreateSpriteNames(LLumps);
+    end,
+    function: Boolean
+    begin
+      // the option is read at each call: the .ini is read after the composition
+      Result := r_generatespritesfromvoxels;
+    end));
+  // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
-    TEngineVoxelDefinitionSink.Create);
+    TEngineVoxelDefinitionSink.Create(LLoader, LCubes));
 end;
 
 procedure ComposeUdmfApply;

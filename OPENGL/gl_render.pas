@@ -223,7 +223,6 @@ uses
   vx_base,
   nd_main,
   gl_automap,
-  gl_frustum,
   gl_lightmaps,
   gl_clipper,
   gl_shadows,
@@ -2148,8 +2147,6 @@ begin
   gld_drawinfo.num_drawitems := 0;
   dodrawsky := false;
   numdlitems := 0;
-
-  fr_CalculateFrustum;
 
   if gl_renderwireframe then
   begin
@@ -4775,18 +4772,15 @@ begin
 //  glBindTexture(GL_TEXTURE_2D, 0);
 
   voxelinf := @voxelmanager.items[info.voxelidx];
+  // the model is made with the voxel (VX_AddVoxel): it is nil only after VX_VoxelsDone
   if voxelinf.voxel = nil then
   begin
-    voxelinf.voxel := TVoxelModel.Create(voxelinf.name, voxelinf.offset, voxelinf.scale);
-    if voxelinf.voxel = nil then
-    begin
-      I_Warning('gld_DrawVoxel(): Can not load voxel %s'#13#10, [voxelinf.name]);
-      if restoreblend then
-        glAlphaFunc(GL_GEQUAL, 0.01);
-      if restoreequation then
-        glBlendEquation(GL_FUNC_ADD);
-      exit;
-    end;
+    I_Warning('gld_DrawVoxel(): Can not load voxel %s'#13#10, [voxelinf.name]);
+    if restoreblend then
+      glAlphaFunc(GL_GEQUAL, 0.01);
+    if restoreequation then
+      glBlendEquation(GL_FUNC_ADD);
+    exit;
   end;
   {$IFDEF DEBUG}
   printf('**drawing voxel %d'#13#10, [idx]);

@@ -107,7 +107,17 @@ procedure VX_ConfigureVoxels(const AParser: IVoxelDefinitionParser; const ASink:
 
 //==============================================================================
 //
+// VX_FindVoxel
+// The index of the voxel with this name, -1 if it is not there
+//
+//==============================================================================
+function VX_FindVoxel(const name: string): integer;
+
+//==============================================================================
+//
 // VX_AddVoxel
+// Adds the item with its model (made by the caller after VX_FindVoxel): the
+// answer is its index
 //
 //==============================================================================
 function VX_AddVoxel(const item: voxelmanageritem_t): integer;
@@ -149,25 +159,30 @@ var
 
 //==============================================================================
 //
+// VX_FindVoxel
+//
+//==============================================================================
+function VX_FindVoxel(const name: string): integer;
+var
+  check: string[64];
+begin
+  // the names are kept as string[64]: the comparison is the one of the old VX_AddVoxel
+  check := ShortString(name);
+  for result := 0 to voxelmanager.size - 1 do
+    if voxelmanager.items[result].name = check then
+      exit;
+  result := -1;
+end;
+
+//==============================================================================
+//
 // VX_AddVoxel
 //
 //==============================================================================
 function VX_AddVoxel(const item: voxelmanageritem_t): integer;
 var
-  i: integer;
   voxelinf: Pvoxelmanageritem_t;
 begin
-  i := 0;
-  while i < voxelmanager.size do
-  begin
-    if voxelmanager.items[i].name = item.name then
-    begin
-      result := i;
-      exit;
-    end;
-    inc(i);
-  end;
-
   realloc(pointer(voxelmanager.items), voxelmanager.size * SizeOf(voxelmanageritem_t), (1 + voxelmanager.size) * SizeOf(voxelmanageritem_t));
   result := voxelmanager.size;
   voxelinf := @voxelmanager.items[result];
@@ -178,7 +193,7 @@ begin
   voxelinf.droppedspin := item.droppedspin;
   voxelinf.placedspin := item.placedspin;
   voxelinf.flags := item.flags;
-  voxelinf.voxel := TVoxelModel.Create(voxelinf.name, voxelinf.offset, voxelinf.scale{$IFNDEF OPENGL}, voxelinf.flags{$ENDIF});
+  voxelinf.voxel := item.voxel;
 
   inc(voxelmanager.size);
 end;

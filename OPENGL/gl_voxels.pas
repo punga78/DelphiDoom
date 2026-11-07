@@ -42,6 +42,8 @@ uses
 
 var
   gl_drawvoxels: boolean = true;
+  // the sprites of the voxels without a patch are made from the voxel (otherwise an empty picture)
+  r_generatespritesfromvoxels: boolean = true;
 
 type
   TVoxelModel = class
@@ -49,7 +51,9 @@ type
     precalc: PGLuintArray;
     fnumframes: integer;
   public
-    constructor Create(const name: string; const offset, scale: float);
+    /// <summary>The display list of the voxel file name, read by ALoader (ACubes for DDVOX and VOX)</summary>
+    constructor Create(const name: string; const offset, scale: float;
+      const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
     destructor Destroy; override;
     procedure Draw(const frm: Integer; const rot: angle_t);
   end;
@@ -67,13 +71,6 @@ procedure gld_InitVoxels;
 //
 //==============================================================================
 procedure gld_VoxelsDone;
-
-//==============================================================================
-//
-// gld_ConfigureVoxelLoading
-//
-//==============================================================================
-procedure gld_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
 
 var
   // When = 0 we use TVoxelMeshOptimizer.FastOptimize(),
@@ -94,8 +91,6 @@ uses
 
 var
   vx_membuffer: pointer = nil;
-  gl_voxelloader: IVoxelLoader = nil;
-  gl_voxelcubes: IVoxelCubeBuilder = nil;
 
 const
   FLG_SKIPX0 = 1;
@@ -1335,15 +1330,13 @@ end;
 // The file is read by the loader of Libs\Voxel; each format makes its list
 //
 //==============================================================================
-function gld_LoadVoxelList(const name: string; const offset, scale: float): GLuint;
+function gld_LoadVoxelList(const name: string; const offset, scale: float;
+  const loader: IVoxelLoader; const cubes: IVoxelCubeBuilder): GLuint;
 var
   model: IVoxelModel;
 begin
   result := GL_BAD_LIST;
-  if (gl_voxelloader = nil) or (gl_voxelcubes = nil) then
-    I_Error('gld_LoadVoxelList(): The voxel loader is not configured');
-
-  model := gl_voxelloader.Load(name);
+  model := loader.Load(name);
   if model = nil then
     Exit;
 
@@ -1351,19 +1344,8 @@ begin
     vfDdmesh: result := gld_ListFromQuads(model, offset, scale);
     vfKvx: result := gld_ListFromKvx(model, offset, scale);
   else
-    result := gld_ListFromCube(gl_voxelcubes.Build(model, cfRenderer), offset, scale);
+    result := gld_ListFromCube(cubes.Build(model, cfRenderer), offset, scale);
   end;
-end;
-
-//==============================================================================
-//
-// gld_ConfigureVoxelLoading
-//
-//==============================================================================
-procedure gld_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
-begin
-  gl_voxelloader := ALoader;
-  gl_voxelcubes := ACubes;
 end;
 
 //==============================================================================
@@ -1371,7 +1353,8 @@ end;
 // TVoxelModel.Create
 //
 //==============================================================================
-constructor TVoxelModel.Create(const name: string; const offset, scale: float);
+constructor TVoxelModel.Create(const name: string; const offset, scale: float;
+  const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
 var
   ext: string;
 begin
@@ -1379,11 +1362,11 @@ begin
 
   ext := strupper(fext(name));
 
-  if (gl_voxelloader <> nil) and gl_voxelloader.IsSupported(name) then
+  if ALoader.IsSupported(name) then
   begin
     fnumframes := 1;
     precalc := mallocz(fNumFrames * SizeOf(GLuint));
-    precalc[0] := gld_LoadVoxelList(name, offset, scale);
+    precalc[0] := gld_LoadVoxelList(name, offset, scale, ALoader, ACubes);
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);

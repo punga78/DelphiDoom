@@ -44,6 +44,8 @@ uses
 var
   r_drawvoxels: boolean = true;
   r_voxellightmapaccuracy: Integer = 1;
+  // the sprites of the voxels without a patch are made from the voxel (otherwise an empty picture)
+  r_generatespritesfromvoxels: boolean = true;
 
 const
   MAXVOXELSIZE = 256;
@@ -59,7 +61,9 @@ type
     fflags: LongWord;
     fradius: fixed_t;
   public
-    constructor Create(const name: string; const offset, scale: fixed_t; flags: LongWord);
+    /// <summary>The columns of the voxel file name, read by ALoader and put in a cube by ACubes</summary>
+    constructor Create(const name: string; const offset, scale: fixed_t; flags: LongWord;
+      const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
     destructor Destroy; override;
     property radius: fixed_t read fradius;
   end;
@@ -84,13 +88,6 @@ procedure R_VoxelsDone;
 //
 //==============================================================================
 procedure R_DrawVoxel(const vis: Pvissprite_t);
-
-//==============================================================================
-//
-// R_ConfigureVoxelLoading
-//
-//==============================================================================
-procedure R_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
 
 implementation
 
@@ -164,8 +161,6 @@ type
 
 var
   vx_membuffer: PByteArray = nil;
-  r_voxelloader: IVoxelLoader = nil;
-  r_voxelcubes: IVoxelCubeBuilder = nil;
 
 type
   voxelitem_t = packed record
@@ -1013,7 +1008,8 @@ end;
 // in the buffer of the renderer
 //
 //==============================================================================
-function R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t): voxelcolumns_p;
+function R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t;
+  const loader: IVoxelLoader; const cubes: IVoxelCubeBuilder): voxelcolumns_p;
 var
   model: IVoxelModel;
   cube: IVoxelCube;
@@ -1025,14 +1021,11 @@ var
   idx: integer;
 begin
   result := nil;
-  if (r_voxelloader = nil) or (r_voxelcubes = nil) then
-    I_Error('R_LoadVoxelColumns(): The voxel loader is not configured');
-
-  model := r_voxelloader.Load(name);
+  model := loader.Load(name);
   if model = nil then
     Exit;
 
-  cube := r_voxelcubes.Build(model, cfRenderer);
+  cube := cubes.Build(model, cfRenderer);
   voxelsize := cube.Size;
   cells := cube.Cells;
 
@@ -1060,21 +1053,11 @@ end;
 
 //==============================================================================
 //
-// R_ConfigureVoxelLoading
-//
-//==============================================================================
-procedure R_ConfigureVoxelLoading(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
-begin
-  r_voxelloader := ALoader;
-  r_voxelcubes := ACubes;
-end;
-
-//==============================================================================
-//
 // TVoxelModel.Create
 //
 //==============================================================================
-constructor TVoxelModel.Create(const name: string; const offset, scale: fixed_t; flags: LongWord);
+constructor TVoxelModel.Create(const name: string; const offset, scale: fixed_t; flags: LongWord;
+  const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder);
 var
   ext: string;
   i: integer;
@@ -1087,10 +1070,10 @@ begin
   fscale := scale;
   fflags := flags;
 
-  if (r_voxelloader <> nil) and r_voxelloader.IsSupported(name) then
+  if ALoader.IsSupported(name) then
   begin
     fnumframes := 1;
-    frames.Add(integer(R_LoadVoxelColumns(name, offset, scale)));
+    frames.Add(integer(R_LoadVoxelColumns(name, offset, scale, ALoader, ACubes)));
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);
@@ -1247,14 +1230,11 @@ begin
   info := @voxelstates[vidx];
   voxelinf := @voxelmanager.items[info.voxelidx];
 
+  // the model is made with the voxel (VX_AddVoxel): it is nil only after VX_VoxelsDone
   if voxelinf.voxel = nil then
   begin
-    voxelinf.voxel := TVoxelModel.Create(voxelinf.name, voxelinf.offset, voxelinf.scale, voxelinf.flags);
-    if voxelinf.voxel = nil then
-    begin
-      I_Warning('R_DrawThingVoxel(): Can not load voxel %s'#13#10, [voxelinf.name]);
-      exit;
-    end;
+    I_Warning('R_DrawThingVoxel(): Can not load voxel %s'#13#10, [voxelinf.name]);
+    exit;
   end;
 
   clms := voxelcolumns_p(voxelinf.voxel.frames.Numbers[info.frame]);

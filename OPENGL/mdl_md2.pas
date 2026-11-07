@@ -81,7 +81,8 @@ uses
   w_folders,
   w_pak,
   gl_defs,
-  DelphiDoom.Models.Types;
+  DelphiDoom.Models.Types,
+  DelphiDoom.Models.Factory;
 
 //==============================================================================
 //
@@ -127,7 +128,8 @@ begin
   strm.Free;
 
   try
-    fdata := MDL_Md2Parser.Parse(bytes, placement);
+    // the reader of MD2 files has no state and no dependencies: one for each file
+    fdata := TModelsFactory.CreateMd2Parser.Parse(bytes, placement);
   except
     on E: EModelsException do
       I_Error('TMD2Model.Create(): %s (%s)', [E.Message, fname]);

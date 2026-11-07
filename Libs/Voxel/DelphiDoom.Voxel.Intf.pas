@@ -140,6 +140,30 @@ type
     procedure Parse(const AText: string; const ASink: IVoxelDefinitionSink);
   end;
 
+  /// <summary>The names of the lumps of the game, in the order of the directory</summary>
+  IVoxelLumpNames = interface
+    ['{5D2C8E71-A0B4-4F39-9E62-71C3B8D40F5A}']
+    function LumpCount: Integer;
+    /// <summary>The name of a lump as the game has it (up to 8 characters, nothing after a #0)</summary>
+    function LumpName(const AIndex: Integer): string;
+  end;
+
+  /// <summary>
+  ///   The voxel files that become sprites when the game has no patch for them: a file of a known
+  ///   extension (or without one in the VOXELS folder) whose name is a sprite and a frame (5
+  ///   characters, or 6 ending with 0) and whose sprite has no lump between S_START and S_END
+  /// </summary>
+  IVoxelSpriteNames = interface
+    ['{A84F1E63-27C9-4B5D-8D10-E6F35B29C7A4}']
+    /// <summary>Looks at a file of the file system of the game and keeps it if it is a sprite</summary>
+    procedure AddFileName(const AFileName: string);
+    function Count: Integer;
+    /// <summary>The name and the extension of a kept file, in capital letters (what the loader reads)</summary>
+    function Entry(const AIndex: Integer): string;
+    /// <summary>The name of the lump of the sprite of a kept file: the name with 0 for the rotation</summary>
+    function SpriteName(const AIndex: Integer): string;
+  end;
+
 implementation
 
 end.
