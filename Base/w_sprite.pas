@@ -322,7 +322,6 @@ end;
 function W_CacheSpriteNumUntranslated(const lump: integer; const tag: integer): pointer;
 var
   ext: string;
-  tm: PTextureManager;
   strm: TAttachableMemoryStream;
   buf: array[0..3] of byte;
   tex: PTexture;
@@ -367,13 +366,11 @@ begin
 
   strm.Seek(0, sFromBeginning);
 
-  tm := GetImageFormat(ext);
-  if tm = nil then
+  if not T_IsTextureExtension(ext) then
     I_Error('W_CacheSpriteNum(): Internal Error - texture manager is null');
 
   tex := new(PTexture, Create);
-  tm^.SetBitmap(tex);
-  if tm^.LoadFromStream(strm) then
+  if tex.LoadFromStream(strm, ext) then
     result := W_TextureAsPatch(tex, tag, @spritecache.Items[lump])
   else
     result := nil;
