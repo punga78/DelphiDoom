@@ -21,7 +21,9 @@
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
-//    External DMX & DDModel model support
+//    DelphiDoom procedural models (DDMODEL source, DMX binary): the commands are
+//    in a list of Libs\Models (IModelCommandStream), the model keeps the OpenGL
+//    display lists.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -37,12 +39,13 @@ uses
   d_delphi,
   gl_types,
   mdl_base,
-  mdl_script_model;
+  DelphiDoom.Models.Intf;
 
 type
   TDDModel = class(TBaseModel)
   protected
-    fmdl: TDDModelLoader;
+    fmdl: IModelCommandStream;
+    fRenderer: IModelRenderer;
     fNumFrames: integer;
     precalc: PGLuintArray;
     fname: string;
@@ -63,12 +66,16 @@ type
 implementation
 
 uses
+  SysUtils,
   dglOpenGL,
   doomdef,
   gl_defs,
   i_system,
+  mdl_script_model,
   w_folders,
-  w_pak;
+  w_pak,
+  DelphiDoom.Models.Types,
+  DelphiDoom.Engine.Models.Renderer;
 
 //==============================================================================
 //
@@ -92,7 +99,8 @@ begin
   fyscale := yscale / MAP_COEFF;
   fzscale := zscale / MAP_COEFF;
 
-  fmdl := TDDModelLoader.Create;
+  fmdl := MDL_NewCommandStream;
+  fRenderer := TEngineModelRenderer.Create;
   fNumFrames := 0;
   precalc := nil;
 
@@ -102,7 +110,7 @@ begin
     for i := 0 to additionalframes.Count - 1 do
       LoadFrom(additionalframes.Strings[i]);
 
-  fNumFrames := fmdl.Frames.Count;
+  fNumFrames := fmdl.FrameCount;
 
   precalc := mallocz(fNumFrames * SizeOf(GLuint));
 end;
@@ -117,7 +125,9 @@ var
   strm: TPakStream;
   ext: string;
   source: TDStringList;
+  bytes: TBytes;
 begin
+  // JVAL: the file opened is always the one of the model, not fn (as the old code did)
   strm := TPakStream.Create(fname, pm_prefered, gamedirectories);
   if strm.IOResult <> 0 then
   begin
@@ -127,16 +137,26 @@ begin
   if strm.IOResult <> 0 then
     I_Error('TDDModel.LoadFrom(): Can not find model %s!', [fname]);
 
-  ext := strupper(fext(fn));
+  ext := d_delphi.strupper(fext(fn));
   if (ext = '.DDMODEL') or (ext = '.TXT') then
   begin
     source := TDStringList.Create;
     source.LoadFromStream(strm);
-    fmdl.AppendFromScript(source.Text);
+    MDL_AppendFromScript(fmdl, source.Text);
     source.Free;
   end
   else if ext = '.DMX' then
-    fmdl.AppendFromStream(strm)
+  begin
+    SetLength(bytes, strm.Size);
+    if Length(bytes) > 0 then
+      strm.Read(bytes[0], Length(bytes));
+    try
+      fmdl.LoadFromBytes(bytes);
+    except
+      on E: EModelsException do
+        I_Error('TDDModel.LoadFrom(): %s (%s)', [E.Message, fname]);
+    end;
+  end
   else
     I_Error('TDDModel.LoadFrom(): Invalid model type %s!', [fname]);
   strm.Free;
@@ -156,7 +176,8 @@ begin
       glDeleteLists(precalc[i], 1);
 
   memfree(pointer(precalc), fNumFrames * SizeOf(GLuint));
-  fmdl.Free;
+  fmdl := nil;
+  fRenderer := nil;
 
   Inherited;
 end;
@@ -182,8 +203,8 @@ begin
     exit;
   end;
 
-  idx1 := fmdl.Frames.IndexOf(frm1);
-  idx2 := fmdl.Frames.IndexOf(frm2);
+  idx1 := fmdl.IndexOfFrame(frm1);
+  idx2 := fmdl.IndexOfFrame(frm2);
 
   if (idx1 >= 0) and (idx2 >= 0) then
   begin
@@ -225,7 +246,7 @@ begin
     glScalef(fxscale, fyscale, fzscale);
     glTranslatef(fxoffset, fyoffset, fzoffset);
 
-    fmdl.RenderFrame(fmdl.Frames[idx]);
+    fmdl.Play(fmdl.Frames[idx], fRenderer);
 
     glPopMatrix;
 
@@ -242,13 +263,13 @@ procedure TDDModel.DrawSimple(const frm: integer);
 var
   idx: integer;
 begin
-  idx := fmdl.Frames.IndexOf(frm);
+  idx := fmdl.IndexOfFrame(frm);
   if idx >= 0 then
   begin
     DrawSimpleIdx(idx);
     Exit;
   end;
-  if fmdl.Frames.Count = 1 then
+  if fmdl.FrameCount = 1 then
     DrawSimpleIdx(0);
 end;
 
