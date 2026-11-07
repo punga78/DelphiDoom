@@ -1,0 +1,28 @@
+// waits, delays and the end of a script
+script 1 (void)
+{
+    tagwait(2);
+    delay(5);
+    polywait(1);
+    scriptwait(2);
+    print(s:"done");
+}
+
+script 2 (void)
+{
+    delay(3);
+    terminate;
+}
+
+script 3 (void)
+{
+    tagwait(9);
+}
+
+script 4 (int a, int b)
+{
+    tagwait(a);
+    polywait(b);
+    scriptwait(a);
+    delay(a);
+}

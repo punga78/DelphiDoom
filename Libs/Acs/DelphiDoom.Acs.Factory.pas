@@ -12,7 +12,7 @@ unit DelphiDoom.Acs.Factory;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Acs.Intf, DelphiDoom.Logging.Intf;
+  System.SysUtils, DelphiDoom.Acs.Intf, DelphiDoom.Acs.Machine.Intf, DelphiDoom.Logging.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the ACS contracts</summary>
@@ -22,6 +22,10 @@ type
     /// <param name="ALog">May be nil</param>
     class function CreateCompiler(const AProvider: IAcsSourceProvider;
       const ALog: ILog): IAcsCompiler; static;
+    /// <summary>The virtual machine that runs the object code of the maps</summary>
+    /// <param name="AHost">Everything that a script does to the game</param>
+    /// <param name="ALog">May be nil</param>
+    class function CreateMachine(const AHost: IAcsHost; const ALog: ILog): IAcsMachine; static;
     /// <summary>A provider with no files</summary>
     class function CreateEmptyProvider: IAcsSourceProvider; static;
     /// <summary>
@@ -35,7 +39,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Acs.Compiler, DelphiDoom.Acs.MemorySourceProvider;
+  DelphiDoom.Acs.Compiler, DelphiDoom.Acs.Machine, DelphiDoom.Acs.MemorySourceProvider;
 
 { TAcsFactory }
 
@@ -43,6 +47,11 @@ class function TAcsFactory.CreateCompiler(const AProvider: IAcsSourceProvider;
   const ALog: ILog): IAcsCompiler;
 begin
   Result := TAcsCompiler.Create(AProvider, ALog);
+end;
+
+class function TAcsFactory.CreateMachine(const AHost: IAcsHost; const ALog: ILog): IAcsMachine;
+begin
+  Result := TAcsMachine.Create(AHost, ALog);
 end;
 
 class function TAcsFactory.CreateEmptyProvider: IAcsSourceProvider;

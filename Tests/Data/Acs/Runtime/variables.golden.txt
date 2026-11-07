@@ -1,0 +1,41 @@
+> source variables.acs
+> load
+> start 1 0 1,2,3,0 act=1 line=2
+= True
+> start 2 0 0,0,0,0
+= True
+> tick 4
+  remove script 1
+  remove script 2
+> start 1 0 5,6,7,0
+= True
+> tick 2
+  remove script 1
+end
+state
+  script[0] state=0 wait=0
+  script[1] state=0 wait=0
+  map 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  world 7 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  thinker[0] number=1 info=0 delay=0 ip=148 side=0 removed=1 stackptr=0 stack=6,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=1,2,3,1,0,6,0,0,0,0,
+  thinker[1] number=2 info=1 delay=0 ip=456 side=0 removed=1 stackptr=0 stack=3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=2,0,0,0,0,0,0,0,0,0,
+  thinker[2] number=1 info=0 delay=0 ip=148 side=0 removed=1 stackptr=0 stack=18,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=5,6,7,5,0,18,0,0,0,0,
+  sector 0 floor=10 ceiling=20
+  sector 1 floor=11 ceiling=21
+  sector 2 floor=12 ceiling=22
+  sector 3 floor=13 ceiling=23
+  line 0 special=100 flags=0 args=0,0,0,0,0
+  line 1 special=101 flags=0 args=0,0,0,0,0
+  line 2 special=102 flags=0 args=0,0,0,0,0
+  line 3 special=103 flags=0 args=0,0,0,0,0
+  line 4 special=104 flags=0 args=0,0,0,0,0
+  side 0 top=0 middle=0 bottom=0
+  side 1 top=0 middle=0 bottom=0
+  side 2 top=0 middle=0 bottom=0
+  side 3 top=0 middle=0 bottom=0
+  side 4 top=0 middle=0 bottom=0
+  side 5 top=0 middle=0 bottom=0
+  side 6 top=0 middle=0 bottom=0
+  side 7 top=0 middle=0 bottom=0
+  side 8 top=0 middle=0 bottom=0
+  side 9 top=0 middle=0 bottom=0

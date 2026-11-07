@@ -1,0 +1,7 @@
+source specials.acs
+load
+start 1 0 3,4,0,0 act=0 line=1 side=1
+tick 3
+start 1 0 9,9,0,0
+tick 2
+dump

@@ -1,0 +1,79 @@
+> source world.acs
+> load
+> game 1 100 3 1 2
+> random 3,200,17
+> start 1 0 2,1,0,0 act=0 line=1 side=1
+= True
+> tick 2
+  flat FLAT1
+  flat CEIL1
+  flat FLAT2
+  flat CEIL2
+  texture TEXA
+  texture TEXB
+  texture TEXC
+  sound origin=thing 0 id=59400 volume=100
+  sound origin=thing 1 id=59400 volume=100
+  sound origin=sector 1 id=59401 volume=50
+  sound origin=nil id=59402 volume=60
+  sequence origin=sector 1 name=SEQ
+  remove script 1
+> start 1 0 3,0,0,0 line=0
+= True
+> tick 2
+  flat FLAT1
+  flat CEIL1
+  flat FLAT2
+  flat CEIL2
+  texture TEXA
+  texture TEXB
+  texture TEXC
+  sound origin=thing 0 id=59400 volume=100
+  sound origin=thing 1 id=59400 volume=100
+  sound origin=sector 0 id=59401 volume=50
+  sound origin=nil id=59402 volume=60
+  sequence origin=sector 0 name=SEQ
+  remove script 1
+> start 1 0 1,0,0,0
+= True
+> tick 2
+  flat FLAT1
+  flat CEIL1
+  flat FLAT2
+  flat CEIL2
+  texture TEXA
+  texture TEXB
+  texture TEXC
+  sound origin=thing 0 id=59400 volume=100
+  sound origin=thing 1 id=59400 volume=100
+  sound origin=nil id=59401 volume=50
+  sound origin=nil id=59402 volume=60
+  sequence origin=nil name=SEQ
+  remove script 1
+end
+state
+  script[0] state=0 wait=0
+  map 120 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  world 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  thinker[0] number=1 info=0 delay=0 ip=568 side=1 removed=1 stackptr=0 stack=108,1,3,1,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=2,1,0,0,0,0,0,0,0,0,
+  thinker[1] number=1 info=0 delay=0 ip=568 side=0 removed=1 stackptr=0 stack=109,0,3,0,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=3,0,0,0,0,0,0,0,0,0,
+  thinker[2] number=1 info=0 delay=0 ip=568 side=0 removed=1 stackptr=0 stack=111,0,1,0,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, vars=1,0,0,0,0,0,0,0,0,0,
+  sector 0 floor=63449 ceiling=40908
+  sector 1 floor=63448 ceiling=40908
+  sector 2 floor=63448 ceiling=40908
+  sector 3 floor=63449 ceiling=40909
+  line 0 special=0 flags=0 args=0,0,0,0,0
+  line 1 special=11 flags=1 args=1,2,3,4,5
+  line 2 special=11 flags=1 args=1,2,3,4,5
+  line 3 special=103 flags=0 args=0,0,0,0,0
+  line 4 special=104 flags=0 args=0,0,0,0,0
+  side 0 top=15644 middle=0 bottom=15643
+  side 1 top=0 middle=0 bottom=0
+  side 2 top=15644 middle=15642 bottom=0
+  side 3 top=0 middle=0 bottom=15643
+  side 4 top=15644 middle=15642 bottom=0
+  side 5 top=0 middle=0 bottom=15643
+  side 6 top=15644 middle=0 bottom=15643
+  side 7 top=0 middle=0 bottom=0
+  side 8 top=0 middle=0 bottom=0
+  side 9 top=0 middle=0 bottom=0

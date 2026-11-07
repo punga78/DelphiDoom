@@ -42,6 +42,7 @@ uses
   p_umapinfo,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
+  DelphiDoom.Engine.Acs.Host,
   DelphiDoom.Dehacked.Games,
   DelphiDoom.Dehacked.Factory,
   deh_main,
@@ -572,7 +573,8 @@ begin
   ComposeMusInfo(LLog);
   ComposeDynLights(LLog, LContext);
   ComposeActorDef(LLog);
-  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog));
+  P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
+    TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);

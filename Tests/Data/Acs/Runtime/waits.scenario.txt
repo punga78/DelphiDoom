@@ -1,0 +1,27 @@
+source waits.acs
+load
+start 1 0 0,0,0,0
+start 2 0 0,0,0,0
+start 3 0 0,0,0,0
+start 4 0 2,1,0,0
+busy 1 1
+tick 3
+tag 2
+busy 1 0
+tick 2
+tag 2
+tick 10
+polybusy 1 1
+poly 1
+tick 2
+polybusy 1 0
+poly 1
+tick 2
+tick 5
+tick 10
+start 2 0 0,0,0,0
+tick 10
+terminate 3
+tick 2
+terminate 3
+dump

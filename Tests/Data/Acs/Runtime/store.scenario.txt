@@ -1,0 +1,11 @@
+source open.acs
+load
+start 6 2 11,0,0,0
+start 6 2 12,0,0,0
+start 7 3 1,2,0,0
+start 6 0 4,0,0,0
+game 2 0 2 0 1
+checkstore
+tick 40
+newgame
+dump
