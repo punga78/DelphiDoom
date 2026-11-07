@@ -397,6 +397,7 @@ var
   end;
 
 begin
+  LUtf := 0;
   Result := True;
   AResult := TFrameResult.Frame;
   LRaw[0] := FWarmup[0];

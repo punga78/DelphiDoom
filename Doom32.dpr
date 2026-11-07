@@ -759,7 +759,6 @@ uses
   w_wadwriter in 'Base\w_wadwriter.pas',
   sc_evaluate in 'Base\sc_evaluate.pas',
   sc_evaluate_actor in 'Base\sc_evaluate_actor.pas',
-  sc_globals in 'Base\sc_globals.pas',
   r_zbuffer in 'Base\r_zbuffer.pas',
   r_softlights in 'Base\r_softlights.pas',
   r_vislight in 'Base\r_vislight.pas',

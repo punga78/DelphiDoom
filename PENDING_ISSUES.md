@@ -32,13 +32,16 @@ Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_
 
 - **Test a 64 bit di `Libs\Wad`**: dipendono dalla compilazione a 64 bit dell'intero progetto (#40–#44).
 - `TEngineWadServices` e `ComposeEngine` non hanno test DUnitX (dipendono da `d_delphi`, che i progetti di test non linkano): sono coperti dall'avvio dei giochi.
-## #45 — Ondata di fette in parallelo (agenti in worktree)
+## #45 — Motore a classi con dependency injection (conclusa)
 
-Le librerie sono state costruite da agenti in parallelo, ognuna con golden dal vecchio codice; il collegamento al motore e la cancellazione del vecchio codice si fanno una fetta alla volta.
+Tutte le fette sono collegate al motore e il vecchio codice è cancellato dove c'era un equivalente: Wad, argomenti, configurazione, log, clock, input, video (parte pura), audio, ACS, UDMF, special di linea, scanner, preprocessore e valutatore, MapInfo, MusInfo, ActorDef, Dehacked, definizioni (ANIMDEFS, interruttori di Doom, terreno), palette, texture, console, immagini (parti fredde), MathCore, DynLights, rete, JPEG, texture esterne, modelli 3D e geometria di OpenGL. `Libs\Collision`, `Libs\Geometry` e `Libs\IdLib` (porting da Doom 3) non hanno chiamanti nel motore di id Tech 1: hanno un `WIRING.md` per un uso futuro.
 
-| Fetta | Issue | Libreria | Collegata al motore |
-|---|---|---|---|
-| UMAPINFO | #69 | `Libs\MapInfo` (23 test) | **sì**: `p_umapinfo` rifà i record dal catalogo, vecchio parser cancellato |
+Restano **codice storico, per scelta documentata** in `CLAUDE.md`:
 
-- **MapInfo**: non provati i `G_ValidateMapName`/`S_GetMusicNumForName` veri nei golden (provati a runtime con un UMAPINFO di prova su Freedoom: valori, avvisi e `bossaction = clear` corretti).
-- **Altre famiglie di unit** da considerare per una seconda ondata (`Base\v_*`, `Base\r_*`, `p_*` e `d_*` di ogni gioco): le parti pure e testabili (parser, tabelle, calcoli); il renderer e lo stato di gioco restano per ultimi.
+- il renderer software e quello OpenGL (`gl_render`, `gl_main`, `gl_tex`, `gl_sky`, `gl_automap`, `gl_setup`, `gl_slopes`, `gl_lights`, `gl_ambient`, `gl_shadows`, `gl_voxels`, `gl_lightmaps`, il parser MODELDEF di `gl_models`, `mdl_dllmodel`, `mdl_script*`): chiamate per fotogramma, contesto grafico, `screens[]` e zone memory; astrarli richiederebbe un `IRenderer` e non sarebbe verificabile senza contesto;
+- i thinker (`vldoor_t`, `floormove_t`…) e i savegame, il cui formato non può cambiare;
+- `FixedMul`/`FixedDiv` e le funzioni sugli angoli (percorsi caldi, si rivedono con il 64 bit, #41);
+- `V_FindAproxColorIndex`, il melt del wipe, la scala dei muri, le tabelle hi-res, `R_ReadDS32Cache`;
+- gli interruttori di Heretic, Hexen e Strife e `Hexen\p_anim.pas`.
+
+Da fare fuori dalla #45: Win64 (#40–#44), prova dei percorsi PK3 (#48), warning del compilatore (circa 800 W1057/W1058/W1024: vedi `logs\REPORT_WARNING.md`), crash intermittente di Heretic.

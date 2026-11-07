@@ -187,6 +187,7 @@ L'obiettivo è che ogni progetto compili e funzioni sia a Win32 sia a Win64; ogg
 
 ## Aree ancora aperte
 
-- Circa 900 warning di conversione tra `string`, `AnsiString` e `ShortString` (W1057/W1058) e `Char` negli insiemi (W1050): sistemarli file per file con cast espliciti, non sopprimerli.
+- Circa 800 warning di conversione tra `string`, `AnsiString` e `ShortString` (W1057/W1058), firmato/senza segno (W1024) e `Char` negli insiemi (W1050): sistemarli file per file con cast espliciti, non sopprimerli; l'elenco per file è in `logs\REPORT_WARNING.md`. I warning dei cast sugli angoli (W1024) vanno provati con `-timedemo`.
+- Codice storico per scelta (la migrazione a classi della #45 è conclusa sulle parti pure e a freddo): i renderer software e OpenGL, i thinker e i savegame, `FixedMul`/`FixedDiv` e le funzioni sugli angoli; vedi `PENDING_ISSUES.md`.
 - Tracce `-devparm` temporanee in `Doom\p_setup.pas` (`P_SetupLevel`) e `Base\nd_main.pas` (`ND_GetNodes`).
 - Heretic: crash intermittente a runtime da indagare con `crash.txt`.

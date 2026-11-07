@@ -430,7 +430,6 @@ uses
   sc_states in 'Base\sc_states.pas',
   gl_lightmaps in 'OPENGL\gl_lightmaps.pas',
   gl_shadows in 'OPENGL\gl_shadows.pas',
-  gl_shaders in 'OPENGL\gl_shaders.pas',
   p_adjust in 'Base\p_adjust.pas',
   w_autoload in 'Base\w_autoload.pas',
   p_common in 'Base\p_common.pas',

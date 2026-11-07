@@ -1031,7 +1031,9 @@ begin
 
   if hMidiStream = 0 then
   begin
-    I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
+    // with -nomusic the midi stream is never opened: it is not worth a warning for each song
+    if M_CheckParm('-nomusic') = 0 then
+      I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
     Z_Free(info.midievents);
     Z_Free(info.originalmidievents);
     Z_Free(info);

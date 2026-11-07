@@ -63,7 +63,7 @@ begin
   LLayout.BytesPerSample := 2;
   LLayout.Channels := 1;
   LLayout.Format := SNDFILE_FORMAT_HTK or SNDFILE_FORMAT_PCM_16;
-  if (LSamplePeriod > 0) and (LSamplePeriod <= High(Integer)) then
+  if (LSamplePeriod > 0) and (Int64(LSamplePeriod) <= High(Integer)) then
     LLayout.SampleRate := 10000000 div Integer(LSamplePeriod)
   else
     LLayout.SampleRate := DEFAULT_SAMPLE_RATE;
