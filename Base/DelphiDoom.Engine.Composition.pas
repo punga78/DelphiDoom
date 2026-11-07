@@ -263,9 +263,6 @@ uses
   DelphiDoom.Engine.Scanner.ActorFunctions,
   sc_utils,
   sc_params,
-{$IFDEF DOOM}
-  g_game,
-{$ENDIF}
   doomdef,
   d_main,
   m_argv,
