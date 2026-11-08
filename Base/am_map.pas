@@ -397,6 +397,7 @@ procedure AM_Configure(const AView: IAutomapView; const ANavigator: IAutomapNavi
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   am_textured,
   c_cmds,
 {$IFDEF DOOM}
@@ -451,7 +452,7 @@ var
 //==============================================================================
 procedure CmdAllowautomapoverlay(const parm: string);
 begin
-  allowautomapoverlay := C_BoolEval(parm, allowautomapoverlay);
+  allowautomapoverlay := TConsoleNumbers.EvaluateBoolean(parm, allowautomapoverlay);
   if not allowautomapoverlay and (amstate = am_overlay) then
     amstate := am_inactive;
 end;

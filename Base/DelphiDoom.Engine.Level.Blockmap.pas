@@ -12,6 +12,7 @@ unit DelphiDoom.Engine.Level.Blockmap;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Blockmap.Types,
   DelphiDoom.Blockmap.Intf,
   DelphiDoom.Engine.Level.Intf;
@@ -28,12 +29,14 @@ type
     FBuilder: IBlockmapBuilder;
     FLumpReader: IBlockmapLumpReader;
     FSlimeTrails: ISlimeTrailRemover;
+    FCommandLine: ICommandLine;
     function BuildFromLines: TBlockmapData;
     function ReadData(ALump: Integer): TBlockmapData;
     procedure StoreData(const AData: TBlockmapData);
   public
+    /// <param name="ACommandLine">Where -blockmap (always build the blockmap) is looked for</param>
     constructor Create(const ABuilder: IBlockmapBuilder; const ALumpReader: IBlockmapLumpReader;
-      const ASlimeTrails: ISlimeTrailRemover);
+      const ASlimeTrails: ISlimeTrailRemover; const ACommandLine: ICommandLine);
     procedure Load(ALump: Integer);
     /// <summary>
     ///   Slime trails are inherent to Doom's coordinate system: a node builder cannot avoid them
@@ -51,7 +54,6 @@ uses
   System.SysUtils,
   d_delphi,
   m_fixed,
-  m_argv,
   i_system,
   w_wad,
   z_zone,
@@ -61,9 +63,13 @@ uses
 { TEngineLevelBlockmap }
 
 constructor TEngineLevelBlockmap.Create(const ABuilder: IBlockmapBuilder;
-  const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover);
+  const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover;
+  const ACommandLine: ICommandLine);
 begin
   inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create('ACommandLine');
+  FCommandLine := ACommandLine;
   if not Assigned(ABuilder) then
     raise EArgumentNilException.Create('ABuilder');
   if not Assigned(ALumpReader) then
@@ -106,7 +112,7 @@ var
 begin
   LFromLump := False;
   LCount := W_LumpLength(ALump);
-  if (M_CheckParm('-blockmap') = 0) and not largemap and (LCount > 0) then
+  if (FCommandLine.IndexOf('-blockmap') = 0) and not largemap and (LCount > 0) then
   begin
     SetLength(LLumpBytes, LCount);
     W_ReadLump(ALump, @LLumpBytes[0]);

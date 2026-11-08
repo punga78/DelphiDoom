@@ -15,7 +15,8 @@ interface
 
 uses
   DelphiDoom.Acs.Machine.Types,
-  DelphiDoom.Acs.Machine.Intf;
+  DelphiDoom.Acs.Machine.Intf,
+  DelphiDoom.MathCore.Intf;
 
 type
   /// <summary>
@@ -24,7 +25,11 @@ type
   ///   player. Lines and activators of the machine are Pline_t and Pmobj_t of the engine
   /// </summary>
   TEngineAcsHost = class(TInterfacedObject, IAcsHost)
+  strict private
+    FRandom: IGameRandom;
   public
+    /// <param name="ARandom">The generator whose play series NextRandom reads</param>
+    constructor Create(const ARandom: IGameRandom);
     function TicsPerSecond: Integer;
     function CurrentMap: Integer;
     function LevelTime: Integer;
@@ -57,6 +62,7 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   d_think,
   d_player,
@@ -64,7 +70,6 @@ uses
   doomdef,
   g_game,
   info_h,
-  m_rnd,
   p_acs,
   p_inter,
   p_mobj,
@@ -91,7 +96,18 @@ uses
   {$ENDIF}
   z_zone;
 
+const
+  SRandomMissing = 'TEngineAcsHost: the random generator is nil';
+
 { TEngineAcsHost }
+
+constructor TEngineAcsHost.Create(const ARandom: IGameRandom);
+begin
+  inherited Create;
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create(SRandomMissing);
+  FRandom := ARandom;
+end;
 
 function TEngineAcsHost.TicsPerSecond: Integer;
 begin
@@ -135,7 +151,7 @@ end;
 
 function TEngineAcsHost.NextRandom: Integer;
 begin
-  Result := P_Random;
+  Result := FRandom.NextPlay;
 end;
 
 function TEngineAcsHost.AllocateScript: PAcsScript;

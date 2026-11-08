@@ -20,6 +20,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Voxel.Intf,
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.Pak.Intf;
@@ -40,15 +41,18 @@ type
     FNewNames: TFunc<IVoxelSpriteNames>;
     FGenerateOption: TFunc<Boolean>;
     FPakFiles: IPakFileSystem;
+    FSaveFileNames: ISaveFileNames;
     function CollectNames: IVoxelSpriteNames;
     function BuildWadFile(const ANames: IVoxelSpriteNames; const AGenerate: Boolean): string;
   public
     /// <param name="ANewNames">An empty list of names for each call of Generate</param>
     /// <param name="AGenerateOption">The option r_generatespritesfromvoxels, read at each call</param>
     /// <param name="APakFiles">The PAK file system whose files are looked at</param>
+    /// <param name="ASaveFileNames">Puts DATA\ in the working folder of the CD-ROM when needed</param>
     constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder;
       const APatches: IVoxelPatchBuilder; const ANewNames: TFunc<IVoxelSpriteNames>;
-      const AGenerateOption: TFunc<Boolean>; const APakFiles: IPakFileSystem);
+      const AGenerateOption: TFunc<Boolean>; const APakFiles: IPakFileSystem;
+      const ASaveFileNames: ISaveFileNames);
     procedure Generate;
   end;
 
@@ -58,7 +62,6 @@ uses
   d_delphi,
   doomdef,
   i_tmp,
-  m_argv,
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
   w_wad,
@@ -103,12 +106,15 @@ const
 constructor TEngineVoxelSpriteGenerator.Create(const ALoader: IVoxelLoader;
   const ACubes: IVoxelCubeBuilder; const APatches: IVoxelPatchBuilder;
   const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>;
-  const APakFiles: IPakFileSystem);
+  const APakFiles: IPakFileSystem; const ASaveFileNames: ISaveFileNames);
 begin
   inherited Create;
   if not Assigned(APakFiles) then
     raise EArgumentNilException.Create('APakFiles');
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create('ASaveFileNames');
   FPakFiles := APakFiles;
+  FSaveFileNames := ASaveFileNames;
   if not Assigned(ALoader) then
     raise EArgumentNilException.Create('ALoader');
   if not Assigned(ACubes) then
@@ -166,7 +172,7 @@ begin
     LMemory := TDMemoryStream.Create;
     try
       LWad.SaveToStream(LMemory);
-      Result := M_SaveFileName('DATA\');
+      Result := FSaveFileNames.ResolveName('DATA\');
       MkDir(Result);
       Result := Result + 'TMP\';
       MkDir(Result);

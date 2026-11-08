@@ -14,6 +14,7 @@ interface
 
 uses
   DelphiDoom.DynLights.Intf,
+  DelphiDoom.MathCore.Intf,
   DelphiDoom.Scanner.Preprocessor.Intf,
   DelphiDoom.Pak.Intf;
 
@@ -30,11 +31,14 @@ type
     // JVAL: random index for the light animation, don't bother resetting it
     FRandomIndex: Integer;
     FPreprocessor: IScriptTextPreprocessor;
+    FRandom: IGameRandom;
     FPakFiles: IPakFileSystem;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
     /// <param name="APakFiles">The PAK file system that has the GLDEFS and LIGHTDEF files</param>
-    constructor Create(const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem);
+    /// <param name="ARandom">The generator of the animation bytes (NextWithIndex)</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem;
+      const ARandom: IGameRandom);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -59,32 +63,35 @@ uses
   info_h,
   info,
   info_common,
-  m_rnd,
   System.SysUtils,
   p_pspr,
   w_wad;
 
 const
   SPreprocessorMissing = 'TEngineDynLightServices: the preprocessor is nil';
+  SRandomMissing = 'TEngineDynLightServices: the random generator is nil';
   SPakFilesMissing = 'TEngineDynLightServices: the PAK file system is nil';
 
 { TEngineDynLightServices }
 
 constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor;
-  const APakFiles: IPakFileSystem);
+  const APakFiles: IPakFileSystem; const ARandom: IGameRandom);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
     raise EArgumentNilException.Create(SPreprocessorMissing);
   if not Assigned(APakFiles) then
     raise EArgumentNilException.Create(SPakFilesMissing);
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create(SRandomMissing);
   FPreprocessor := APreprocessor;
   FPakFiles := APakFiles;
+  FRandom := ARandom;
 end;
 
 function TEngineDynLightServices.NextByte: Integer;
 begin
-  Result := C_Random(FRandomIndex);
+  Result := FRandom.NextWithIndex(FRandomIndex);
 end;
 
 function TEngineDynLightServices.ObjectForName(const AUpperName: string): Integer;

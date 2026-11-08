@@ -13,6 +13,7 @@ unit DelphiDoom.Engine.Console.Startup;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Console.Intf;
 
 type
@@ -21,7 +22,13 @@ type
   ///   the file of the command line parameter -con
   /// </summary>
   TEngineConsoleStartup = class(TInterfacedObject, IConsoleStartupSource)
+  strict private
+    FCommandLine: ICommandLine;
+    FSaveFileNames: ISaveFileNames;
   public
+    /// <param name="ACommandLine">Where -con is looked for</param>
+    /// <param name="ASaveFileNames">Where the default autoexec file is written</param>
+    constructor Create(const ACommandLine: ICommandLine; const ASaveFileNames: ISaveFileNames);
     function AutoExecFileName: string;
     function DefaultAutoExecExists: Boolean;
     procedure CreateDefaultAutoExec(const ALines: TArray<string>);
@@ -33,16 +40,30 @@ implementation
 
 uses
   System.Classes,
+  System.SysUtils,
   System.Generics.Collections,
   d_delphi,
   c_con,
-  m_argv,
   w_wad;
 
 const
   AUTOEXEC_LUMP_NAME = 'AUTOEXEC';
+  SCommandLineIsNil = 'TEngineConsoleStartup: the command line is nil';
+  SSaveFileNamesIsNil = 'TEngineConsoleStartup: the names of the saved files are nil';
 
 { TEngineConsoleStartup }
+
+constructor TEngineConsoleStartup.Create(const ACommandLine: ICommandLine;
+  const ASaveFileNames: ISaveFileNames);
+begin
+  inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create(SCommandLineIsNil);
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create(SSaveFileNamesIsNil);
+  FCommandLine := ACommandLine;
+  FSaveFileNames := ASaveFileNames;
+end;
 
 function TEngineConsoleStartup.AutoExecFileName: string;
 begin
@@ -63,7 +84,7 @@ begin
   try
     for LLine in ALines do
       LText.Add(LLine);
-    LText.SaveToFile(M_SaveFileName(DEFAUTOEXEC));
+    LText.SaveToFile(FSaveFileNames.ResolveName(DEFAUTOEXEC));
   finally
     LText.Free;
   end;
@@ -90,9 +111,9 @@ var
   LParam: Integer;
 begin
   Result := '';
-  LParam := M_CheckParm('-con');
-  if (LParam > 0) and (LParam < myargc - 1) then
-    Result := myargv[LParam + 1];
+  LParam := FCommandLine.IndexOf('-con');
+  if (LParam > 0) and (LParam < FCommandLine.Count - 1) then
+    Result := FCommandLine[LParam + 1];
 end;
 
 end.
