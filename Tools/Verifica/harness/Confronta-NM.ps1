@@ -52,7 +52,7 @@ public static class SaveDiff {
 
 function Clear-Outputs {
   Get-ChildItem $BinDir -Force -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -match '^(save_lt_|load_lt_|hsave_lt_|hload_lt_|hl_in|harness_sweep)' } |
+    Where-Object { $_.Name -match '^(save_lt_|load_lt_|hsave_lt_|hload_lt_|hl_in|harness_)' } |
     Remove-Item -Recurse -Force
   foreach ($d in Get-ChildItem $BinDir -Recurse -Directory -Filter HEXNDATA -ErrorAction SilentlyContinue) {
     Get-ChildItem $d.FullName -File | Where-Object { $_.Name -match '^hex[0-5]' } | Remove-Item -Force
@@ -69,7 +69,7 @@ function Collect-Outputs([string]$Label) {
   $dest = Join-Path $outRoot $Label
   Remove-Item $dest -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $dest | Out-Null
-  Get-ChildItem $BinDir -Force | Where-Object { $_.Name -match '^(save_lt_|load_lt_|hsave_lt_|hload_lt_|harness_sweep)' } |
+  Get-ChildItem $BinDir -Force | Where-Object { $_.Name -match '^(save_lt_|load_lt_|hsave_lt_|hload_lt_|harness_)' } |
     ForEach-Object { Copy-Item $_.FullName $dest -Recurse -Force }
   if ($Game -eq 'Hexen') {
     $h = Find-HexenDir
@@ -223,6 +223,8 @@ Write-Host ''
 foreach ($l in 'old1', 'new1', 'newload', 'oldload') {
   $f = Join-Path $outRoot "$l\harness_sweep.txt"
   if (Test-Path $f) { Write-Host "sweep $l : $(Get-Content $f)" }
+  $tr = Join-Path $outRoot "$l\harness_trace.txt"
+  if (Test-Path $tr) { Write-Host "trace $l (last 3): $((Get-Content $tr | Select-Object -Last 3) -join ' | ')" }
 }
 Write-Host "Files kept in $outRoot"
 

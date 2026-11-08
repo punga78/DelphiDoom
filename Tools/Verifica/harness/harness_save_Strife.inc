@@ -2,13 +2,14 @@
 // A Strife savegame is a directory: G_DoSaveGame(path) writes <path>\<gamemap> and <path>\current.
 // -hload takes the path of the map file (e.g. hsave_lt_1000\2).
 
-procedure HarnessSaveProc(const ABaseName: string; ASlot: integer);
-var
-  LDirectory: string;
+procedure HarnessDoSave(const APath: string);
 begin
-  LDirectory := 'h' + ABaseName;
-  HarnessMakeDirectory(LDirectory);
-  G_DoSaveGame(LDirectory);
+  G_DoSaveGame(APath);
+end;
+
+procedure HarnessSaveProc(const ABaseName: string; ASlot: integer);
+begin
+  HarnessSaveDirectory('h' + ABaseName, HarnessDoSave);
 end;
 
 procedure HarnessLoadProc(const AArgument: string);

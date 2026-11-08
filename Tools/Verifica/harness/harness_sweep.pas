@@ -24,6 +24,12 @@ type
 
 procedure HarnessTick(AGameTic, ALevelTime: integer; ASave: THarnessSaveProc; ALoad: THarnessLoadProc);
 
+type
+  THarnessPathProc = procedure(const APath: string);
+
+/// Writes a trace, makes the directory, calls ASaver in a try/except and writes a trace after
+procedure HarnessSaveDirectory(const ADirectory: string; ASaver: THarnessPathProc);
+
 procedure HarnessMakeDirectory(const AName: string);
 
 function HarnessToInteger(const AText: string): integer;
@@ -68,7 +74,8 @@ var
 
 procedure HarnessMakeDirectory(const AName: string);
 begin
-  ForceDirectories(AName);
+  if not DirectoryExists(AName) then
+    CreateDir(AName);
 end;
 
 function HarnessToInteger(const AText: string): integer;
@@ -152,6 +159,22 @@ begin
     Rewrite(f);
   writeln(f, AText);
   CloseFile(f);
+end;
+
+procedure HarnessSaveDirectory(const ADirectory: string; ASaver: THarnessPathProc);
+begin
+  HarnessTrace('before mkdir ' + ADirectory + ' cwd=' + GetCurrentDir);
+  try
+    // not ForceDirectories: with a relative name of one component it raises "Unable to create directory"
+    if not DirectoryExists(ADirectory) then
+      CreateDir(ADirectory);
+    HarnessTrace('after mkdir exists=' + IntToStr(Ord(DirectoryExists(ADirectory))));
+    ASaver(ADirectory);
+    HarnessTrace('after save');
+  except
+    on E: Exception do
+      HarnessTrace('EXCEPTION ' + E.ClassName + ': ' + E.Message);
+  end;
 end;
 
 procedure HarnessTick(AGameTic, ALevelTime: integer; ASave: THarnessSaveProc; ALoad: THarnessLoadProc);

@@ -33,7 +33,7 @@ switch ($Game) {
   'Strife'  { $iwad = '-iwad STRIFE0.WAD -warp 2' }
   'Hexen'   { $iwad = '-iwad HEXEN.WAD -warp 2' }
 }
-$baseArguments = "$iwad -nomusic -nosound"
+$baseArguments = "$iwad -nomonsters -nomusic -nosound"
 
 Add-Type -TypeDefinition @'
 using System;
