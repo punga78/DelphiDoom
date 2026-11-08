@@ -363,7 +363,7 @@ uses
 // it), the defines of the game that it reads, and the evaluator of the expressions in the
 // parameters of the actors (given back: the DEHACKED applier gives it to the parameter lists)
 function ComposeScanner(const ALog: ILog; const ADefaults: IEngineDefaults; const ALumps: IEngineLumps;
-  const AZone: IZoneAllocator; const AShutdown: IEngineShutdown;
+  const AZone: IZoneAllocator; const AShutdown: IEngineShutdown; const ATempFiles: ITempFiles;
   out AEvaluator: IContextExpressionEvaluator): IScriptTextPreprocessor;
 var
   LDirectives: TArray<IScriptDirective>;
@@ -374,10 +374,10 @@ begin
   // #CREATEPALETTE makes the palettes of the profile of the game; Hexen has no FOGMAP
 {$IFDEF HEXEN}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False, ALumps, AZone, AShutdown);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False, ALumps, AZone, AShutdown, ATempFiles);
 {$ELSE}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True, ALumps, AZone, AShutdown);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True, ALumps, AZone, AShutdown, ATempFiles);
 {$ENDIF}
 {$IFDEF DOOM}
   LDirectives := TArray<IScriptDirective>.Create(
@@ -1134,7 +1134,7 @@ end;
 
 procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
   const APakFiles: IPakFileSystem; const ASaveFileNames: ISaveFileNames;
-  const ALumps: IEngineLumps; const AScreens: IEngineScreens);
+  const ALumps: IEngineLumps; const AScreens: IEngineScreens; const ATempFiles: ITempFiles);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
@@ -1153,7 +1153,7 @@ begin
     begin
       // the option is read at each call: the .ini is read after the composition
       Result := r_generatespritesfromvoxels;
-    end, APakFiles, ASaveFileNames, ALumps));
+    end, APakFiles, ASaveFileNames, ALumps, ATempFiles));
   // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
@@ -1241,8 +1241,8 @@ begin
   LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LLumps, LRegistry,
     LInterpreter);
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
-  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LEvaluator);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
+  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;
@@ -1273,7 +1273,7 @@ begin
     TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom, LZone), LLog));
   LEndScreenTick := ComposeEndoom(LLumps, LZone, LLog, LShutdown, LScreens);
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
-  ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens);
+  ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
 
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);
