@@ -194,7 +194,8 @@ begin
       if (LX < 8) and (LY < 8) then
         LExpected := 0
       else
-        LExpected := LPalette[PatchIndex(LX, LY)] or $FF000000;
+        // like the flat, the patch decoder ends with SwapRGB (the engine order of the channels)
+        LExpected := SwapRedBlue(LPalette[PatchIndex(LX, LY)] or $FF000000);
       if PixelAt(LX, LY) <> LExpected then
         Assert.AreEqual(IntToHex(LExpected, 8), IntToHex(PixelAt(LX, LY), 8),
           Format('pixel (%d, %d)', [LX, LY]));
