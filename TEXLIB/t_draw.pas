@@ -31,7 +31,16 @@ unit t_draw;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Engine.Texture.Intf;
+
+//==============================================================================
+//
+// T_ConfigureDrawTextures
+// The external textures of the pages, given by the composition root
+//
+//==============================================================================
+procedure T_ConfigureDrawTextures(const AFiles: IEngineTextureFiles);
 
 //==============================================================================
 //
@@ -68,7 +77,7 @@ uses
   m_fixed,
   r_hires,
   r_mmx,
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
   v_video,
   {$IFDEF OPENGL}
   v_data,
@@ -87,6 +96,17 @@ type
 var
   drawtextures: Pdrawtexture_tArray;
   numdrawtextures: integer;
+  draw_texturefiles: IEngineTextureFiles = nil;
+
+//==============================================================================
+//
+// T_ConfigureDrawTextures
+//
+//==============================================================================
+procedure T_ConfigureDrawTextures(const AFiles: IEngineTextureFiles);
+begin
+  draw_texturefiles := AFiles;
+end;
 
 //==============================================================================
 //
@@ -151,7 +171,7 @@ begin
 
   if drawtextures[texid].texture32 = nil then
   begin
-    t := T_LoadHiResTexture(W_GetNameForNum(drawtextures[texid].lump));
+    t := draw_texturefiles.LoadTexture(W_GetNameForNum(drawtextures[texid].lump));
     if t = nil then
     begin
       drawtextures[texid].texture32 := pointer($1);

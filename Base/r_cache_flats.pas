@@ -35,7 +35,8 @@ interface
 
 uses
   r_flatinfo,
-  DelphiDoom.Imaging.Intf;
+  DelphiDoom.Imaging.Intf,
+  DelphiDoom.Engine.Texture.Intf;
 
 const
 // Flat cache
@@ -49,6 +50,14 @@ const
 //
 //==============================================================================
 procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
+
+//==============================================================================
+//
+// R_ConfigureFlatTextures
+// The external textures (useexternaltextures), given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles);
 
 //==============================================================================
 //
@@ -119,7 +128,7 @@ uses
   d_delphi,
   mt_utils,
   i_system,
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
   r_cache_main,
 {$IFDEF DOOM_OR_STRIFE}
   r_colormaps,
@@ -139,6 +148,7 @@ uses
 var
   ds32cache: ds32cacheinfo_tPArray;
   span_grower: IImagingSpanGrower = nil;
+  flat_texturefiles: IEngineTextureFiles = nil;
 
 //==============================================================================
 //
@@ -148,6 +158,16 @@ var
 procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
 begin
   span_grower := AGrower;
+end;
+
+//==============================================================================
+//
+// R_ConfigureFlatTextures
+//
+//==============================================================================
+procedure R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles);
+begin
+  flat_texturefiles := AFiles;
 end;
 
 //==============================================================================
@@ -243,9 +263,9 @@ begin
     if useexternaltextures and (t = nil) then
     begin
       flatname := W_GetNameForNum(lump);
-      t := T_LoadHiResTexture(flatname);
+      t := flat_texturefiles.LoadTexture(flatname);
       if t = nil then // JVAL: This allow to use Doomsday resource pack
-        t := T_LoadHiResTexture('flat-' + flatname);
+        t := flat_texturefiles.LoadTexture('flat-' + flatname);
       if t = nil then
         flats[flats[flat].translation].flat32 := pointer($1) // Mark as missing
       else

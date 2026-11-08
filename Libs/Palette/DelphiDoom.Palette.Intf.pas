@@ -123,12 +123,6 @@ type
     ///   underscore, or CRX with it, or CR + name and CR_ + name (R_GetTranslationTable)
     /// </summary>
     function LumpCandidates(const AName: string): TArray<string>;
-    /// <summary>R_GetBloodTranslationIdForName: a number, or a name (also with CR / CR_ before): 0 if unknown</summary>
-    function BloodIdForName(const AName: string): Integer;
-    /// <summary>R_GetBloodName: '' for 0 and for what does not exist</summary>
-    function BloodName(AId: Integer): string;
-    /// <summary>R_BloodTranslation: the REGION_* of a blood color, -1 for 0 and unknown</summary>
-    function BloodRegion(ABlood: Integer): Integer;
   end;
 
   /// <summary>The tables of r_precalc.pas</summary>

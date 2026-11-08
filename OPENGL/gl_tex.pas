@@ -34,7 +34,8 @@ uses
   d_delphi,
   dglOpenGL,
   r_defs,
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
+  DelphiDoom.Engine.Texture.Intf,
   gl_defs,
   w_wad,
   z_zone;
@@ -58,6 +59,14 @@ var
 
   transparent_pal_index: integer;
   gld_palmap: array[0..255] of byte;
+
+//==============================================================================
+//
+// gld_ConfigureTextureFiles
+// The external textures, given by the composition root
+//
+//==============================================================================
+procedure gld_ConfigureTextureFiles(const AFiles: IEngineTextureFiles);
 
 //==============================================================================
 //
@@ -269,6 +278,20 @@ uses
   r_hires,
   v_data,
   w_sprite;
+
+var
+  // the external textures, given by the composition root (gld_ConfigureTextureFiles)
+  gld_texturefiles: IEngineTextureFiles = nil;
+
+//==============================================================================
+//
+// gld_ConfigureTextureFiles
+//
+//==============================================================================
+procedure gld_ConfigureTextureFiles(const AFiles: IEngineTextureFiles);
+begin
+  gld_texturefiles := AFiles;
+end;
 
 //==============================================================================
 //
@@ -889,7 +912,7 @@ var
   twidth: integer;
   theight: integer;
 begin
-  t := T_LoadHiResTexture(texname);
+  t := gld_texturefiles.LoadTexture(texname);
   if t = nil then
   begin
     result := 0;
@@ -1011,7 +1034,7 @@ var
   twidth: integer;
   theight: integer;
 begin
-  t := T_LoadHiResTexture(texname);
+  t := gld_texturefiles.LoadTexture(texname);
   if t = nil then
   begin
     result := 0;
@@ -1066,14 +1089,14 @@ var
   twidth: integer;
   theight: integer;
 begin
-  t := T_LoadHiResTexture(texname);
+  t := gld_texturefiles.LoadTexture(texname);
   if t = nil then
   begin
     result := 0;
     exit;
   end;
 
-  a := T_LoadHiResTexture(alphatexname);
+  a := gld_texturefiles.LoadTexture(alphatexname);
   if a = nil then
   begin
     result := 0;
@@ -1146,7 +1169,7 @@ begin
     exit;
   end;
 
-  t := T_LoadHiResTexture(texname);
+  t := gld_texturefiles.LoadTexture(texname);
   if t = nil then
   begin
     result := false;

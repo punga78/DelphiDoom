@@ -34,7 +34,16 @@ unit w_sprite;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Engine.Texture.Intf;
+
+//==============================================================================
+//
+// W_ConfigureSpriteTextures
+// The decoders of the sprites that are images (PNG, TGA...), given by the composition root
+//
+//==============================================================================
+procedure W_ConfigureSpriteTextures(const AFiles: IEngineTextureFiles);
 
 //==============================================================================
 //
@@ -69,11 +78,24 @@ implementation
 uses
   i_system,
   r_defs,
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
   t_png,
   v_video,
   w_wad,
   z_zone;
+
+var
+  sprite_texturefiles: IEngineTextureFiles = nil;
+
+//==============================================================================
+//
+// W_ConfigureSpriteTextures
+//
+//==============================================================================
+procedure W_ConfigureSpriteTextures(const AFiles: IEngineTextureFiles);
+begin
+  sprite_texturefiles := AFiles;
+end;
 
 const
   MAXSPRITETRANSLATIONS = 16;
@@ -366,11 +388,11 @@ begin
 
   strm.Seek(0, sFromBeginning);
 
-  if not T_IsTextureExtension(ext) then
+  if (sprite_texturefiles = nil) or not sprite_texturefiles.IsTextureExtension(ext) then
     I_Error('W_CacheSpriteNum(): Internal Error - texture manager is null');
 
   tex := new(PTexture, Create);
-  if tex.LoadFromStream(strm, ext) then
+  if sprite_texturefiles.Decode(strm, ext, tex) then
     result := W_TextureAsPatch(tex, tag, @spritecache.Items[lump])
   else
     result := nil;

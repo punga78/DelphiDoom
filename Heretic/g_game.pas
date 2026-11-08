@@ -3782,7 +3782,11 @@ begin
   if timingdemo then
   begin
     endtime := I_GetTime;
-    I_Error('G_CheckDemoStatus(): timed %d gametics in %d realtics', [gametic, endtime - starttime]);
+    // The result goes to the log and the program ends like after a single demo: with I_Error it was a
+    // message box that waited for a click while the worker threads kept running (#147)
+    printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10, [gametic, endtime - starttime]);
+    timingdemo := false;
+    singledemo := true;
   end;
 
   if demoplayback then

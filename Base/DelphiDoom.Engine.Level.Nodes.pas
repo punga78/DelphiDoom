@@ -14,9 +14,12 @@ interface
 uses
   System.SysUtils,
   r_defs,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Platform.Intf,
   DelphiDoom.Glbsp.Client,
   DelphiDoom.Nodes.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -33,7 +36,10 @@ type
     FFinder: INodesGlMapFinder;
     FInputBuilder: INodesGlbspInputBuilder;
     FTempFiles: ITempFiles;
+    FSaveFileNames: ISaveFileNames;
     FHexen: Boolean;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
     // the first GL vertex of the GWA in vertexes[]
     FFirstGlVertex: Integer;
     class procedure WriteBytes(const AFileName: string; const ABytes: TBytes); static;
@@ -46,10 +52,15 @@ type
     function ReadGwa(const AFileName: string): INodesGwa;
     function BuildGwa(const AMapName: string): string;
   public
-    /// <summary>AHexen: the maps are in the Hexen format and glBSP is told so</summary>
+    /// <summary>
+    ///   ASaveFileNames puts DATA\ in the working folder of the CD-ROM when needed; AHexen:
+    ///   the maps are in the Hexen format and glBSP is told so; ALumps gives the lumps of the
+    ///   map and the files added at runtime, AZone the memory of the level
+    /// </summary>
     constructor Create(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
       const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-      const ATempFiles: ITempFiles; AHexen: Boolean);
+      const ATempFiles: ITempFiles; const ASaveFileNames: ISaveFileNames; AHexen: Boolean;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
     procedure CheckNodes(const AMapName: string);
     function FindGwa(const AMapName: string): INodesGwa;
     function FindGlMapLump(AMapLump: Integer): Integer;
@@ -67,13 +78,11 @@ uses
   d_delphi,
   doomdata,
   m_fixed,
-  m_argv,
   i_system,
   r_main,
-  w_wad,
-  z_zone,
   p_setup,
   nd_main,
+  DelphiDoom.Zone.Types,
   DelphiDoom.MathCore.Crc32,
   DelphiDoom.Wad.Types,
   DelphiDoom.Nodes.Types,
@@ -87,9 +96,13 @@ uses
 
 constructor TEngineLevelNodes.Create(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
   const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
-  const ATempFiles: ITempFiles; AHexen: Boolean);
+  const ATempFiles: ITempFiles; const ASaveFileNames: ISaveFileNames; AHexen: Boolean;
+  const ALumps: IEngineLumps; const AZone: IZoneAllocator);
 begin
   inherited Create;
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create('ASaveFileNames');
+  FSaveFileNames := ASaveFileNames;
   if not Assigned(ASource) then
     raise EArgumentNilException.Create('ASource');
   if not Assigned(ADetector) then
@@ -100,6 +113,12 @@ begin
     raise EArgumentNilException.Create('AInputBuilder');
   if not Assigned(ATempFiles) then
     raise EArgumentNilException.Create('ATempFiles');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FLumps := ALumps;
+  FZone := AZone;
   FSource := ASource;
   FDetector := ADetector;
   FFinder := AFinder;
@@ -180,10 +199,10 @@ var
   LPath: string;
   LMapFileName: string;
 begin
-  LMapLump := W_GetNumForName(AMapName);
+  LMapLump := FLumps.GetNumForName(AMapName);
   LAdler32 := TNodesAdler32.OfMap(FSource, LMapLump);
 
-  LPath := M_SaveFileName('DATA\');
+  LPath := FSaveFileNames.ResolveName('DATA\');
   MkDir(LPath);
   LPath := LPath + 'BSP\';
   MkDir(LPath);
@@ -259,12 +278,12 @@ begin
     LGlVertexCount := Length(LGlVertexes);
   end;
 
-  FFirstGlVertex := W_LumpLength(ALump) div SizeOf(mapvertex_t);
+  FFirstGlVertex := FLumps.LengthOf(ALump) div SizeOf(mapvertex_t);
   numvertexes := FFirstGlVertex + LGlVertexCount;
 
-  vertexes := Z_Malloc(numvertexes * SizeOf(vertex_t), PU_LEVEL, nil);
+  vertexes := FZone.Allocate(numvertexes * SizeOf(vertex_t), ZONE_TAG_LEVEL, nil);
 
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
   LMapVertex := Pmapvertex_t(LData);
 
   // JVAL: 20200414 -> Find map boundaries
@@ -297,7 +316,7 @@ begin
   LDeltaY := LMaxY - LMinY;
   largemap := (LDeltaX < -32767) or (LDeltaX > 32767) or (LDeltaY < -32767) or (LDeltaY > 32767);
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 
   for LIndex := 0 to LGlVertexCount - 1 do
   begin
@@ -317,7 +336,7 @@ var
 begin
   LGlSubsectors := AGwa.Subsectors;
   numsubsectors := Length(LGlSubsectors);
-  subsectors := Z_Malloc(numsubsectors * SizeOf(subsector_t), PU_LEVEL, nil);
+  subsectors := FZone.Allocate(numsubsectors * SizeOf(subsector_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(subsectors, numsubsectors * SizeOf(subsector_t));
 
   LSubsector := @subsectors[0];
@@ -338,7 +357,7 @@ var
 begin
   LGlNodes := AGwa.Nodes;
   numnodes := Length(LGlNodes);
-  nodes := Z_Malloc(numnodes * SizeOf(node_t), PU_LEVEL, nil);
+  nodes := FZone.Allocate(numnodes * SizeOf(node_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(nodes, numnodes * SizeOf(node_t));
 
   LNode := @nodes[0];
@@ -371,7 +390,7 @@ var
 begin
   LGlSegs := AGwa.Segs;
   numsegs := Length(LGlSegs);
-  segs := Z_Malloc(numsegs * SizeOf(seg_t), PU_LEVEL, nil);
+  segs := FZone.Allocate(numsegs * SizeOf(seg_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(segs, numsegs * SizeOf(seg_t));
 
   LSeg := @segs[0];
@@ -442,8 +461,8 @@ var
   LWadFileName: string;
   LMapFolder: string;
 begin
-  LMapLump := W_GetNumForName(AMapName);
-  if (LMapLump < 0) or (LMapLump >= W_NumLumps - 1) then
+  LMapLump := FLumps.GetNumForName(AMapName);
+  if (LMapLump < 0) or (LMapLump >= FLumps.Count - 1) then
     Exit;
 
   LLayout := TNodesMapScanner.Scan(FSource, LMapLump, FHexen);
@@ -458,7 +477,7 @@ begin
     Exit;
   end;
 
-  LMapFolder := M_SaveFileName('DATA\');
+  LMapFolder := FSaveFileNames.ResolveName('DATA\');
   MkDir(LMapFolder);
   LMapFolder := LMapFolder + 'WADS\';
   MkDir(LMapFolder);
@@ -486,7 +505,7 @@ begin
     printf(#13#10);
   end;
 
-  W_RuntimeLoad(LWadFileName, F_ORIGIN_WAD);
+  FLumps.RuntimeLoadFile(LWadFileName);
 end;
 
 end.

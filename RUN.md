@@ -1,59 +1,30 @@
-# Issue #149 - verifica delle luci a classi (da eseguire dal coordinatore)
+# Verifica della issue #150 (da eseguire dal coordinatore, uno alla volta)
 
-Tutto il codice e' stato scritto senza compilatore. Da questa cartella (il worktree):
+Nulla di questo lavoro e' stato compilato o eseguito dall'agente.
 
-## 1. Test della libreria
+## 1. Build
+    build.bat tests
+    build.bat all Release
+Leggere `logs\*.log` (righe `error`). Attesi: zero errori. Firme cambiate da controllare:
+`TEngineAcsHost.Create(IGameRandom)`, `TEngineDynLightServices.Create(.., IGameRandom)`, `TLevelLoader.Create(.., ICommandRegistry, IGameRandom)`,
+`TDoomLevelRules/THereticLevelRules/TStrifeLevelRules.Create(.., IGameRandom)`, `THexenLevelRules.Create(ICommandLine)`, `TEngineDefaults`, `TEngineConsoleStartup`,
+`TEngineLevelBlockmap`, `TEngineLevelNodes`, `TMusMusicBackend`, `TEngineUdmfMapLoader`, `TEngineVoxelSpriteGenerator`, `TEngineScreenshotService`, `TEngineScreenshotFolders`,
+`TEngineTempDirectory`, `TEngineExportSettings`, `TEngineConsoleScreen`, `TEngineActorDefLumps`, `M_ConfigureArgv(builder, queried, savenames)`.
 
-```
-build.bat Tests\DelphiDoom.Tests.Thinkers
-bin\Tests\DelphiDoom.Tests.Thinkers.exe
-```
-Attesi: nessun errore in `logs\DelphiDoom.Tests.Thinkers.log`; exit code 0; 10 fixture
-(Neighbors 13, FlickerRules 12, FireFlicker 7, Flash 4, Strobe 6, Glow 3, Scripted 15,
-Phase 8, Sequence 6, Games 6; totale 80 test) tutti verdi. I test di parita'
-(`DovrebbeDareGliStessiLivelliDelVecchioCodice*`) confrontano livello, conteggi e indice del
-casuale ad ogni tic con `Tests\Source\DelphiDoom.Tests.Thinkers.OldLights.pas`.
-Copertura (>= 90% richiesto): `powershell -NoProfile -File Tools\Copertura.ps1 -Test Thinkers`.
+## 2. Test
+`Tests\DelphiDoom.Tests.CommandLine`: attesi 55 test verdi (30 esistenti + 14 `Queried` + 11 `SaveFileNames`).
+Copertura: `powershell -NoProfile -File Tools\Copertura.ps1 -Test CommandLine` (>= 90%).
 
-## 2. Build dei giochi
+## 3. Parita' comandi e opzioni (confronto vecchio/nuovo)
+Costruire l'eseguibile del commit precedente (master) in un'altra cartella, poi per Doom, Heretic, Hexen, Strife:
+    powershell -NoProfile -File Tools\Verifica\150\Confronta-150.ps1 -OldExe <vecchio>\bin\Doom\Doom32.exe -NewExe bin\Doom\Doom32.exe
+Atteso `IDENTICO` (cmdline, commandlineparams con e senza maschera = stesso elenco e ordine, cmdlist = stessi comandi con gli stessi nomi, typeof).
+Per Heretic/Hexen/Strife passare `-Iwad HERETIC1.WAD` ecc.
 
-`build.bat all Release` (i 12 .dpr hanno 17 righe nuove). Errori da leggere in `logs\*.log`.
+## 4. Serie casuale e demo
+-timedemo demo1, demo2, demo3 (Doom shareware): gametics identici al vecchio (demo3 = 2134).
+Hexen: `-warp 1` carica il BEHAVIOR (TEngineAcsHost con il nuovo generatore); `-timer 1 -deathmatch` per `-timer`.
 
-## 3. Parita' luce per luce nel motore (vecchio contro nuovo, stesso eseguibile)
-
-```
-git apply Tools\Verifica\149\hook-doom32.patch
-build.bat Doom32 Release
-```
-(il patch mette `light_parity` in `Doom32.dpr`, in `Doom\p_lights.pas` e in `Base\udmf_lights.pas`:
-ogni tic di ogni luce esegue prima il vecchio codice su una copia di thinker e settore, poi il nuovo,
-e confronta livello, campi e indice del casuale.) Poi, da `bin\Doom`:
-
-```
-Doom32.exe -iwad DOOM1.WAD -timedemo demo1
-Doom32.exe -iwad DOOM1.WAD -timedemo demo2
-Doom32.exe -iwad DOOM1.WAD -timedemo demo3
-Doom32.exe -iwad FREEDOOM2.WAD -warp 1 (alcuni secondi, poi uscire)
-```
-Risultato in `bin\Doom\light_parity.txt` (scritto all'uscita): righe
-`fireflicker|lightflash|strobe|glow|scripted|phase ticks=N mismatches=0`.
-Atteso: `mismatches=0` ovunque e `ticks` > 0 almeno per lightflash/glow/strobe/fireflicker
-(se un tipo ha ticks=0 la mappa non lo usa: provare altre mappe). Con `mismatches` > 0 il file ha le
-prime 20 righe `MISMATCH` con leveltime e valori. Per Heretic e Strife: lo stesso patch con
-`Doom/` sostituito dal gioco nei percorsi, `Doom32.dpr` con il suo .dpr (le funzioni `T_*` sono
-identiche; Strife definisce STRIFE e il harness usa il suo fuoco). Per Hexen/UDMF vale solo
-`scripted`/`phase` (`-warp 1`, mappe con luci a script). Poi `git checkout -- Doom32.dpr Doom\p_lights.pas Base\udmf_lights.pas`.
-
-## 4. Salvataggio identico byte per byte
-
-Senza il patch, build di Doom32 prima (commit `31ee71e3`) e dopo: salvare lo stesso livello allo stesso
-tic con luci attive (gancio temporaneo in `G_Ticker` al tic 70, come per la #85) e confrontare i file.
-Atteso: stessa dimensione e stessi byte salvo i byte dei campi non usati dei thinker (`light_t`:
-il vecchio li lasciava con il contenuto della memoria, il nuovo li scrive a 0) e le zone gia' diverse
-tra due esecuzioni dello stesso eseguibile (screenshot, puntatori). Ricaricare il salvataggio e controllare
-che le luci continuino (E1M1 di Doom ha luci a lampo; Heretic/Hexen provare mappe con fasi).
-
-## 5. Prestazioni e sincronia
-
-`-timedemo demo1`, `demo2`, `demo3` di Doom prima e dopo (senza il patch): gametic e posizione finale
-identici al vecchio; tempo entro +5%. Smoke degli otto eseguibili con `Tools\Esegui-gioco.ps1`: nessun `crash.txt`.
+## 5. Smoke
+Otto eseguibili con `Tools\Esegui-gioco.ps1` (25 s, `-devparm`), nessun `crash.txt` ne' `I_Error`. In particolare: `-config altro.ini`, `-con file.con`,
+`-nomusic`, `-blockmap`, `-cdrom` (crea la cartella di lavoro), comandi `suicide`, `DEH_PrintActordef`, `DEH_SaveActordef x.txt`.

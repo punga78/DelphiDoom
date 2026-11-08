@@ -27,9 +27,9 @@
 {$I Doom32.inc}
 
 {
-  The settings of the PNG textures that the configuration file sets. The decoders
+  The settings of the external textures that the configuration file sets. The PNG decoders
   (TTexturePngTextureDecoder, TTexturePngSpriteDecoder of Libs\Texture) read them through
-  TEngineTexturePngSettings.
+  TEngineTexturePngSettings, TEngineTextureFiles reads where the textures are looked for.
 }
 
 unit t_png;
@@ -44,6 +44,8 @@ var
   // Also treat as transparent the colors made only of 00 and FF bytes
   // with at least two FF (magenta, cyan, yellow, white...)
   assumecommontranspantcolors: boolean = True;
+  // Look for the external textures in the game folders first (else in TEXTURES\)
+  preferetexturesnamesingamedirectory: boolean = False;
 
 const
   PNGSPRITEEXT = '.PNGSPRITE';

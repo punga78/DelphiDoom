@@ -58,7 +58,7 @@ uses
   dglOpenGL,
   doomdef,
   gl_tex,
-  t_main;
+  DelphiDoom.Engine.Texture.Item;
 
 const
   AMBIENTPRECISION = 8;
