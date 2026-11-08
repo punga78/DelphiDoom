@@ -947,6 +947,8 @@ end;
 procedure ComposeTeleport(const ARandom: IGameRandom);
 begin
   P_ConfigureTeleport(TEngineTeleportFogSpawner.Create, ARandom);
+end;
+
 // The vertical doors (udmf_doors, p_doors): the profile of the game for each flavor of door, the
 // services of the real game (movement of the ceiling, sounds, sectors around, compatibility
 // option) and the classes that run and make the doors. Hexen has only the scripted doors
@@ -984,6 +986,7 @@ begin
 
   P_ConfigureDoors(LClassicRunner, LClassicSpawner, LUdmfRunner, LUdmfSpawner);
 end;
+
 // The moving planes (floors, ceilings, and soon doors and platforms): what the game does when a
 // plane of a sector moves
 procedure ComposePlanes;
