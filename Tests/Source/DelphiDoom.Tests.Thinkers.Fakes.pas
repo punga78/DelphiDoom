@@ -52,16 +52,6 @@ type
     function AddWithNeighbors(ALightLevel: Integer; const ANeighborLevels: array of Integer): TFakeLightSector;
   end;
 
-const
-  /// <summary>In the list of neighbors: a line with no sector on its other side</summary>
-  NO_NEIGHBOR = -32768;
-
-/// <summary>
-///   A random of the game that starts at a given place of the table: two of them with the same
-///   place give the same numbers, which is how the old and the new code are compared
-/// </summary>
-function CreateTestRandom(APlayIndex: Integer): IGameRandom;
-
   /// <summary>What the fake spawner saw</summary>
   TFakePhaseCall = record
     Sector: TFakeLightSector;
@@ -81,6 +71,16 @@ function CreateTestRandom(APlayIndex: Integer): IGameRandom;
     procedure SpawnPhased(const ASector: ILightSector; ABase, AIndex: Integer);
     property Calls: TList<TFakePhaseCall> read FCalls;
   end;
+
+const
+  /// <summary>In the list of neighbors: a line with no sector on its other side</summary>
+  NO_NEIGHBOR = -32768;
+
+/// <summary>
+///   A random of the game that starts at a given place of the table: two of them with the same
+///   place give the same numbers, which is how the old and the new code are compared
+/// </summary>
+function CreateTestRandom(APlayIndex: Integer): IGameRandom;
 
 implementation
 
