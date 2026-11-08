@@ -535,7 +535,7 @@ begin
 end;
 
 procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext;
-  const APreprocessor: IScriptTextPreprocessor);
+  const APreprocessor: IScriptTextPreprocessor; const ALumps: IEngineLumps);
 var
   LServices: TEngineDynLightServices;
   LServicesRef: IInterface;
@@ -1029,7 +1029,7 @@ begin
   ComposeTextureDefs(LLog, LLumps);
   ComposePalette(LZone);
   LMusInfo := ComposeMusInfo(LLog, LLumps);
-  ComposeDynLights(LLog, LContext, LPreprocessor);
+  ComposeDynLights(LLog, LContext, LPreprocessor, LLumps);
   ComposeAutomap;
   ComposeActorDef(LLog, LPreprocessor, LLumps);
   ComposeTableExport;
