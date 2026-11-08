@@ -45,7 +45,6 @@ implementation
 uses
   System.SysUtils,
   System.Classes,
-  System.SysUtils,
   System.Generics.Collections,
   d_delphi,
   c_con;
