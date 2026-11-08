@@ -283,6 +283,7 @@ var
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   c_cmds,
   doomdef,
   m_misc,
@@ -323,7 +324,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_LOWEST);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_LOWEST);
   if newres <> (detailLevel = DL_LOWEST) then
   begin
     if newres then
@@ -350,7 +351,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_LOW);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_LOW);
   if newres <> (detailLevel = DL_LOW) then
   begin
     if newres then
@@ -377,7 +378,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_MEDIUM);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_MEDIUM);
   if newres <> (detailLevel = DL_MEDIUM) then
   begin
     if newres then
@@ -404,7 +405,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_NORMAL);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_NORMAL);
   if newres <> (detailLevel = DL_NORMAL) then
   begin
     if newres then
@@ -431,7 +432,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_HIRES);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_HIRES);
   if newres <> (detailLevel = DL_HIRES) then
   begin
     if newres then
@@ -462,7 +463,7 @@ begin
     exit;
   end;
 
-  newres := C_BoolEval(parm1, detailLevel = DL_ULTRARES);
+  newres := TConsoleNumbers.EvaluateBoolean(parm1, detailLevel = DL_ULTRARES);
   if newres <> (detailLevel = DL_ULTRARES) then
   begin
     if newres then
@@ -530,7 +531,7 @@ begin
     exit;
   end;
 
-  newfullscreen := C_BoolEval(parm1, fullscreen);
+  newfullscreen := TConsoleNumbers.EvaluateBoolean(parm1, fullscreen);
 
   if newfullscreen <> fullscreen then
     GL_ChangeFullScreen(newfullscreen);
@@ -587,7 +588,7 @@ begin
   else if parm = flatfilteringstrings[false] then
     newflatfiltering := false
   else
-    newflatfiltering := C_BoolEval(parm1, extremeflatfiltering);
+    newflatfiltering := TConsoleNumbers.EvaluateBoolean(parm1, extremeflatfiltering);
 
   if extremeflatfiltering <> newflatfiltering then
   begin
@@ -614,7 +615,7 @@ begin
     exit;
   end;
 
- new_32bittexturepaletteeffects := C_BoolEval(parm1, dc_32bittexturepaletteeffects);
+ new_32bittexturepaletteeffects := TConsoleNumbers.EvaluateBoolean(parm1, dc_32bittexturepaletteeffects);
 
   if dc_32bittexturepaletteeffects <> new_32bittexturepaletteeffects then
   begin
@@ -641,7 +642,7 @@ begin
     exit;
   end;
 
-  new_useexternaltextures := C_BoolEval(parm1, useexternaltextures);
+  new_useexternaltextures := TConsoleNumbers.EvaluateBoolean(parm1, useexternaltextures);
 
   if useexternaltextures <> new_useexternaltextures then
   begin

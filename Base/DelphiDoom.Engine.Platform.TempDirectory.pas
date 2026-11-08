@@ -11,6 +11,7 @@ unit DelphiDoom.Engine.Platform.TempDirectory;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Platform.Intf;
 
 type
@@ -19,20 +20,35 @@ type
   ///   directory of the CD-ROM when the game runs from one)
   /// </summary>
   TEngineTempDirectory = class(TInterfacedObject, ITempDirectory)
+  strict private
+    FSaveFileNames: ISaveFileNames;
   public
+    /// <param name="ASaveFileNames">Puts DATA\ in the working folder of the CD-ROM when needed</param>
+    constructor Create(const ASaveFileNames: ISaveFileNames);
     function Directory: string;
   end;
 
 implementation
 
 uses
-  m_argv;
+  System.SysUtils;
+
+const
+  SSaveFileNamesIsNil = 'TEngineTempDirectory: the names of the saved files are nil';
 
 { TEngineTempDirectory }
 
+constructor TEngineTempDirectory.Create(const ASaveFileNames: ISaveFileNames);
+begin
+  inherited Create;
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create(SSaveFileNamesIsNil);
+  FSaveFileNames := ASaveFileNames;
+end;
+
 function TEngineTempDirectory.Directory: string;
 begin
-  Result := M_SaveFileName('DATA\') + 'TMP\';
+  Result := FSaveFileNames.ResolveName('DATA\') + 'TMP\';
 end;
 
 end.

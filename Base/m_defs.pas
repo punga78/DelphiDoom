@@ -110,7 +110,6 @@ uses
   r_pk3textures,
   s_sound,
   sc_states,
-  t_main,
   t_png,
   v_video;
 

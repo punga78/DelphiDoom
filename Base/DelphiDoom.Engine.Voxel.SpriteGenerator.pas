@@ -20,9 +20,11 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Voxel.Intf,
-  DelphiDoom.Engine.Wad.Lumps.Intf,
-  DelphiDoom.Engine.Voxel.Intf;
+  DelphiDoom.Engine.Voxel.Intf,
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -39,16 +41,21 @@ type
     FPatches: IVoxelPatchBuilder;
     FNewNames: TFunc<IVoxelSpriteNames>;
     FGenerateOption: TFunc<Boolean>;
+    FPakFiles: IPakFileSystem;
+    FSaveFileNames: ISaveFileNames;
     FLumps: IEngineLumps;
     function CollectNames: IVoxelSpriteNames;
     function BuildWadFile(const ANames: IVoxelSpriteNames; const AGenerate: Boolean): string;
   public
     /// <param name="ANewNames">An empty list of names for each call of Generate</param>
     /// <param name="AGenerateOption">The option r_generatespritesfromvoxels, read at each call</param>
+    /// <param name="APakFiles">The PAK file system whose files are looked at</param>
+    /// <param name="ASaveFileNames">Puts DATA\ in the working folder of the CD-ROM when needed</param>
     /// <param name="ALumps">Loads the generated WAD at runtime</param>
     constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder;
       const APatches: IVoxelPatchBuilder; const ANewNames: TFunc<IVoxelSpriteNames>;
-      const AGenerateOption: TFunc<Boolean>; const ALumps: IEngineLumps);
+      const AGenerateOption: TFunc<Boolean>; const APakFiles: IPakFileSystem;
+      const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps);
     procedure Generate;
   end;
 
@@ -58,10 +65,8 @@ uses
   d_delphi,
   doomdef,
   i_tmp,
-  m_argv,
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
-  w_pak,
   w_wadwriter;
 
 const
@@ -98,26 +103,23 @@ const
     $C2, $B3, $80, $00, $00, $00, $00, $49, $45, $4E, $44, $AE, $42, $60, $82
   );
 
-var
-  // PAK_FileNameIterator takes a plain procedure: the list being filled is here only during
-  // CollectNames
-  collecting_names: IVoxelSpriteNames = nil;
-
-procedure CollectFileName(const AFileName: string);
-begin
-  collecting_names.AddFileName(AFileName);
-end;
-
 { TEngineVoxelSpriteGenerator }
 
 constructor TEngineVoxelSpriteGenerator.Create(const ALoader: IVoxelLoader;
   const ACubes: IVoxelCubeBuilder; const APatches: IVoxelPatchBuilder;
   const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>;
+  const APakFiles: IPakFileSystem; const ASaveFileNames: ISaveFileNames;
   const ALumps: IEngineLumps);
 begin
   inherited Create;
+  if not Assigned(APakFiles) then
+    raise EArgumentNilException.Create('APakFiles');
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create('ASaveFileNames');
   if not Assigned(ALumps) then
     raise EArgumentNilException.Create('ALumps');
+  FPakFiles := APakFiles;
+  FSaveFileNames := ASaveFileNames;
   FLumps := ALumps;
   if not Assigned(ALoader) then
     raise EArgumentNilException.Create('ALoader');
@@ -137,14 +139,12 @@ begin
 end;
 
 function TEngineVoxelSpriteGenerator.CollectNames: IVoxelSpriteNames;
+var
+  LIndex: Integer;
 begin
   Result := FNewNames();
-  collecting_names := Result;
-  try
-    PAK_FileNameIterator(@CollectFileName);
-  finally
-    collecting_names := nil;
-  end;
+  for LIndex := 0 to FPakFiles.EntryCount - 1 do
+    Result.AddFileName(FPakFiles.EntryName(LIndex));
 end;
 
 function TEngineVoxelSpriteGenerator.BuildWadFile(const ANames: IVoxelSpriteNames;
@@ -178,7 +178,7 @@ begin
     LMemory := TDMemoryStream.Create;
     try
       LWad.SaveToStream(LMemory);
-      Result := M_SaveFileName('DATA\');
+      Result := FSaveFileNames.ResolveName('DATA\');
       MkDir(Result);
       Result := Result + 'TMP\';
       MkDir(Result);

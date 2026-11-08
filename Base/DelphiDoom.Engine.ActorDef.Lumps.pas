@@ -13,6 +13,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.Console.Intf,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.Scanner.Preprocessor.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
@@ -29,15 +30,18 @@ type
     FParser: IActorDefParser;
     FParseSoundInfo: TProc<string>;
     FPreprocessor: IScriptTextPreprocessor;
+    FCommands: ICommandRegistry;
     FLumps: IEngineLumps;
     procedure ParsePakTexts(const AFileName: string);
   public
     /// <param name="AParser">The parser of ACTORDEF, with the sinks of the engine</param>
     /// <param name="AParseSoundInfo">Reads the whole text of SNDINFO into the sound aliases</param>
     /// <param name="APreprocessor">The script preprocessor, for the SNDINFO files of the PAKs</param>
+    /// <param name="ACommands">Gets the console commands that print and save the tables</param>
     /// <param name="ALumps">The lumps of the loaded WADs</param>
     constructor Create(const AParser: IActorDefParser; const AParseSoundInfo: TProc<string>;
-      const APreprocessor: IScriptTextPreprocessor; const ALumps: IEngineLumps);
+      const APreprocessor: IScriptTextPreprocessor; const ACommands: ICommandRegistry;
+      const ALumps: IEngineLumps);
     procedure Initialize;
     procedure ShutDown;
     procedure ParseSoundInfoLumps;
@@ -49,7 +53,6 @@ implementation
 
 uses
   d_delphi,
-  c_cmds,
   deh_base,
 {$IFNDEF FPC}
   i_startup,
@@ -66,6 +69,7 @@ const
   SParserMissing = 'TEngineActorDefLumps: the parser is nil';
   SSoundInfoMissing = 'TEngineActorDefLumps: the reader of SNDINFO is nil';
   SPreprocessorMissing = 'TEngineActorDefLumps: the preprocessor is nil';
+  SCommandsMissing = 'TEngineActorDefLumps: the registry of the commands is nil';
 
 var
   // PAK_StringIterator takes a plain procedure: what it gives is kept here until it returns
@@ -89,11 +93,14 @@ end;
 
 constructor TEngineActorDefLumps.Create(const AParser: IActorDefParser;
   const AParseSoundInfo: TProc<string>; const APreprocessor: IScriptTextPreprocessor;
-  const ALumps: IEngineLumps);
+  const ACommands: ICommandRegistry; const ALumps: IEngineLumps);
 begin
   inherited Create;
+  if not Assigned(ACommands) then
+    raise EArgumentNilException.Create(SCommandsMissing);
   if not Assigned(ALumps) then
     raise EArgumentNilException.Create('ALumps');
+  FCommands := ACommands;
   FLumps := ALumps;
   if not Assigned(AParser) then
     raise EArgumentNilException.Create(SParserMissing);
@@ -109,12 +116,38 @@ end;
 procedure TEngineActorDefLumps.Initialize;
 begin
   SC_InitConsts;
-  C_AddCmd('DEH_PrintActordef, PrintActordef', @DEH_PrintActordef);
-  C_AddCmd('DEH_SaveActordef, SaveActordef', @DEH_SaveActordef);
-  C_AddCmd('DEH_PrintWeapondef, PrintWeapondef', @DEH_PrintWeapondef);
-  C_AddCmd('DEH_SaveWeapondef, SaveWeapondef', @DEH_SaveWeapondef);
-  C_AddCmd('DEH_PrintStateOwners, PrintStateOwners', @DEH_PrintStateOwners);
-  C_AddCmd('DEH_SaveStateOwners, SaveStateOwners', @DEH_SaveStateOwners);
+  // the commands have always been called with both parameters, whatever their own declaration:
+  // the ones that save get the first as the name of the file
+  FCommands.Add('DEH_PrintActordef, PrintActordef',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_PrintActordef;
+    end);
+  FCommands.Add('DEH_SaveActordef, SaveActordef',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_SaveActordef(AParameter1);
+    end);
+  FCommands.Add('DEH_PrintWeapondef, PrintWeapondef',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_PrintWeapondef;
+    end);
+  FCommands.Add('DEH_SaveWeapondef, SaveWeapondef',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_SaveWeapondef(AParameter1);
+    end);
+  FCommands.Add('DEH_PrintStateOwners, PrintStateOwners',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_PrintStateOwners;
+    end);
+  FCommands.Add('DEH_SaveStateOwners, SaveStateOwners',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      DEH_SaveStateOwners(AParameter1);
+    end);
 end;
 
 procedure TEngineActorDefLumps.ShutDown;

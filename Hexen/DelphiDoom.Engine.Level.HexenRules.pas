@@ -15,6 +15,7 @@ uses
   doomdata,
   r_defs,
   p_udmf,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -25,7 +26,11 @@ type
   ///   map. Hexen has no polyobject reset, no ANIMDEFS of Libs\Definitions, no special 260
   /// </summary>
   THexenLevelRules = class(TInterfacedObject, ILevelGameRules, ILevelGeometryRules, ILevelThingRules)
+  strict private
+    FCommandLine: ICommandLine;
   public
+    /// <param name="ACommandLine">Where the deathmatch timer (-timer) is looked for</param>
+    constructor Create(const ACommandLine: ICommandLine);
     // ILevelGameRules
     procedure InitializeData;
     procedure ShutDownData;
@@ -61,13 +66,13 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   doomdef,
   d_player,
   g_game,
   i_system,
   info_h,
-  m_argv,
   m_fixed,
   p_mobj_h,
   p_mobj,
@@ -84,6 +89,14 @@ uses
   w_wad;
 
 { THexenLevelRules }
+
+constructor THexenLevelRules.Create(const ACommandLine: ICommandLine);
+begin
+  inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create('ACommandLine');
+  FCommandLine := ACommandLine;
+end;
 
 procedure THexenLevelRules.InitializeData;
 begin
@@ -175,9 +188,9 @@ procedure THexenLevelRules.AfterDeathmatchSpawn;
 var
   LParameter: Integer;
 begin
-  LParameter := M_CheckParm('-timer');
-  if (LParameter > 0) and (LParameter < myargc - 1) then
-    TimerGame := atoi(myargv[LParameter + 1]) * TICRATE * 60;
+  LParameter := FCommandLine.IndexOf('-timer');
+  if (LParameter > 0) and (LParameter < FCommandLine.Count - 1) then
+    TimerGame := atoi(FCommandLine[LParameter + 1]) * TICRATE * 60;
 end;
 
 procedure THexenLevelRules.AfterSpecials;

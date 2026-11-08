@@ -16,7 +16,8 @@ interface
 uses
   DelphiDoom.Acs.Machine.Types,
   DelphiDoom.Acs.Machine.Intf,
-  DelphiDoom.Zone.Intf;
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.MathCore.Intf;
 
 type
   /// <summary>
@@ -26,10 +27,12 @@ type
   /// </summary>
   TEngineAcsHost = class(TInterfacedObject, IAcsHost)
   strict private
+    FRandom: IGameRandom;
     FZone: IZoneAllocator;
   public
+    /// <param name="ARandom">The generator whose play series NextRandom reads</param>
     /// <param name="AZone">Holds the thinkers of the scripts (PU_LEVSPEC)</param>
-    constructor Create(const AZone: IZoneAllocator);
+    constructor Create(const ARandom: IGameRandom; const AZone: IZoneAllocator);
     function TicsPerSecond: Integer;
     function CurrentMap: Integer;
     function LevelTime: Integer;
@@ -70,7 +73,6 @@ uses
   doomdef,
   g_game,
   info_h,
-  m_rnd,
   p_acs,
   p_inter,
   p_mobj,
@@ -97,13 +99,19 @@ uses
   {$ENDIF}
   DelphiDoom.Zone.Types;
 
+const
+  SRandomMissing = 'TEngineAcsHost: the random generator is nil';
+
 { TEngineAcsHost }
 
-constructor TEngineAcsHost.Create(const AZone: IZoneAllocator);
+constructor TEngineAcsHost.Create(const ARandom: IGameRandom; const AZone: IZoneAllocator);
 begin
   inherited Create;
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create(SRandomMissing);
   if not Assigned(AZone) then
     raise EArgumentNilException.Create('AZone');
+  FRandom := ARandom;
   FZone := AZone;
 end;
 
@@ -149,7 +157,7 @@ end;
 
 function TEngineAcsHost.NextRandom: Integer;
 begin
-  Result := P_Random;
+  Result := FRandom.NextPlay;
 end;
 
 function TEngineAcsHost.AllocateScript: PAcsScript;

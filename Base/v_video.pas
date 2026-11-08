@@ -541,7 +541,7 @@ uses
   {$ENDIF}
   r_flatinfo,
   r_aspect,
-  t_detect,
+  DelphiDoom.Texture.PatchInspector,
   t_draw,
   w_wad,
   z_zone;
@@ -5381,6 +5381,7 @@ var
   x, y: integer;
   xstart, ystart: integer;
   p: Ppatch_t;
+  patchbytes: TArray<Byte>;
 begin
   result := false;
   lump := W_CheckNumForName(lumpname);
@@ -5414,7 +5415,11 @@ begin
     else
     begin
       p := W_CacheLumpNum(lump, PU_STATIC);
-      if T_IsValidPatchImage(p, sz) then
+      // the inspector of Libs\Texture reads a copy of the lump (the old T_IsValidPatchImage)
+      SetLength(patchbytes, sz);
+      if sz > 0 then
+        Move(p^, patchbytes[0], sz);
+      if (sz > 0) and TTexturePatchInspector.IsValid(patchbytes, sz) then
         if (p.width > 0) and (p.height > 0) then
         begin
           ovr := TOverlayDrawer.Create;

@@ -13,7 +13,9 @@ interface
 
 uses
   doomdef,
+  DelphiDoom.Console.Intf,
   DelphiDoom.GameState.Intf,
+  DelphiDoom.MathCore.Intf,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.Nodes.Intf,
   DelphiDoom.Zone.Intf,
@@ -39,6 +41,8 @@ type
     FBlockmap: ILevelBlockmap;
     FUdmf: ILevelUdmf;
     FMusInfo: IMusInfoLoader;
+    FCommands: ICommandRegistry;
+    FRandom: IGameRandom;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
     procedure Trace(const AStep: string);
@@ -53,12 +57,14 @@ type
   public
     /// <summary>
     ///   AGame says when the steps are printed (-devparm); ARules is the class of the game;
-    ///   ALumps finds the label of the map and reloads the development maps, AZone frees the
-    ///   memory of the previous level
+    ///   ACommands gets the console commands of the level; ARandom gives the seed of the
+    ///   random monsters; ALumps finds the label of the map and reloads the development maps,
+    ///   AZone frees the memory of the previous level
     /// </summary>
     constructor Create(const AGame: IGameContext; const ARules: ILevelGameRules;
       const AMap: ILevelMapReader; const AThings: ILevelThings; const ANodes: ILevelNodes;
       const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader;
+      const ACommands: ICommandRegistry; const ARandom: IGameRandom;
       const ALumps: IEngineLumps; const AZone: IZoneAllocator);
     procedure Initialize;
     procedure ShutDown;
@@ -73,11 +79,9 @@ uses
   doomdata,
   doomstat,
   d_player,
-  c_cmds,
   g_game,
   i_system,
   info,
-  m_rnd,
   p_local,
   p_mobj_h,
   p_mobj,
@@ -119,7 +123,8 @@ uses
 constructor TLevelLoader.Create(const AGame: IGameContext; const ARules: ILevelGameRules;
   const AMap: ILevelMapReader; const AThings: ILevelThings; const ANodes: ILevelNodes;
   const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader;
-  const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ACommands: ICommandRegistry; const ARandom: IGameRandom; const ALumps: IEngineLumps;
+  const AZone: IZoneAllocator);
 begin
   inherited Create;
   if not Assigned(ALumps) then
@@ -142,6 +147,10 @@ begin
     raise EArgumentNilException.Create('AUdmf');
   if not Assigned(AMusInfo) then
     raise EArgumentNilException.Create('AMusInfo');
+  if not Assigned(ACommands) then
+    raise EArgumentNilException.Create('ACommands');
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create('ARandom');
   FGame := AGame;
   FRules := ARules;
   FMap := AMap;
@@ -150,6 +159,8 @@ begin
   FBlockmap := ABlockmap;
   FUdmf := AUdmf;
   FMusInfo := AMusInfo;
+  FCommands := ACommands;
+  FRandom := ARandom;
   FLumps := ALumps;
   FZone := AZone;
 end;
@@ -165,8 +176,17 @@ begin
   FRules.InitializeData;
   R_InitSprites(sprnames);
   FMusInfo.Load;
-  C_AddCmd('suicide', @P_CmdSuicide);
-  C_AddCmd('doadjustmissingtextures', @P_AdjustMissingTextures);
+  // the commands have always been called with both parameters, whatever their own declaration
+  FCommands.Add('suicide',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      P_CmdSuicide;
+    end);
+  FCommands.Add('doadjustmissingtextures',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      P_AdjustMissingTextures;
+    end);
 end;
 
 procedure TLevelLoader.ShutDown;
@@ -181,7 +201,7 @@ begin
   isgamefreezed := False;
 
   if not preparingdemoplayback then
-    M_SetSystemRandomSeed(I_Random);
+    FRandom.SystemSeed := FRandom.NextUnpredictable;
 
   // Initial height of PointOfView will be set by player think.
   players[consoleplayer].viewz := 1;

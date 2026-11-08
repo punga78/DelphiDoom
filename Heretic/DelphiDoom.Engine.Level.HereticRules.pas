@@ -15,6 +15,7 @@ uses
   doomdata,
   r_defs,
   p_udmf,
+  DelphiDoom.MathCore.Intf,
   DelphiDoom.Engine.Definitions.Intf,
   DelphiDoom.Engine.Level.Intf;
 
@@ -27,8 +28,10 @@ type
   THereticLevelRules = class(TInterfacedObject, ILevelGameRules, ILevelGeometryRules, ILevelThingRules)
   strict private
     FAnimDefs: IEngineAnimDefsLoader;
+    FRandom: IGameRandom;
   public
-    constructor Create(const AAnimDefs: IEngineAnimDefsLoader);
+    /// <param name="ARandom">Gives the seed of the random monsters that PrintLoading shows</param>
+    constructor Create(const AAnimDefs: IEngineAnimDefsLoader; const ARandom: IGameRandom);
     // ILevelGameRules
     procedure InitializeData;
     procedure ShutDownData;
@@ -70,7 +73,6 @@ uses
   doomstat,
   d_player,
   g_game,
-  m_rnd,
   p_mobj_h,
   p_mobj,
   p_setup,
@@ -87,12 +89,16 @@ uses
 
 { THereticLevelRules }
 
-constructor THereticLevelRules.Create(const AAnimDefs: IEngineAnimDefsLoader);
+constructor THereticLevelRules.Create(const AAnimDefs: IEngineAnimDefsLoader;
+  const ARandom: IGameRandom);
 begin
   inherited Create;
   if not Assigned(AAnimDefs) then
     raise EArgumentNilException.Create('AAnimDefs');
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create('ARandom');
   FAnimDefs := AAnimDefs;
+  FRandom := ARandom;
 end;
 
 procedure THereticLevelRules.InitializeData;
@@ -123,7 +129,7 @@ begin
   printf(#13#10'-------------'#13#10);
   printf('Loading %s (%s)'#13#10, [ALumpName, P_GetMapTitle(AEpisode, AMap)]);
   if spawnrandommonsters then
-    printf(' Random monsters seed=%d'#13#10, [M_GetSystemRandomSeed]);
+    printf(' Random monsters seed=%d'#13#10, [FRandom.SystemSeed]);
 end;
 
 procedure THereticLevelRules.ResetStatistics;

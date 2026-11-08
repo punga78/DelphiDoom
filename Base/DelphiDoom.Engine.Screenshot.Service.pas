@@ -14,6 +14,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Screenshot.Intf,
   DelphiDoom.Engine.Screenshot.Intf;
 
@@ -27,9 +28,12 @@ type
   strict private
     FWriter: IScreenshotWriter;
     FTargets: IScreenshotTargets;
+    FSaveFileNames: ISaveFileNames;
   public
+    /// <param name="ASaveFileNames">Where the folder DATA goes (the working folder of the CD-ROM when needed)</param>
     /// <remarks>Raises EArgumentNilException if one of them is nil</remarks>
-    constructor Create(const AWriter: IScreenshotWriter; const ATargets: IScreenshotTargets);
+    constructor Create(const AWriter: IScreenshotWriter; const ATargets: IScreenshotTargets;
+      const ASaveFileNames: ISaveFileNames);
     procedure Take(const AFileName: string = ''; const ASilent: Boolean = False);
     procedure FixFormat;
   end;
@@ -45,7 +49,6 @@ uses
   d_player,
   g_game,
   d_main,
-  m_argv,
   m_base,
   m_misc,
 {$IFDEF OPENGL}
@@ -59,21 +62,25 @@ uses
 const
   SWriterIsNil = 'TEngineScreenshotService: the writer is nil';
   STargetsIsNil = 'TEngineScreenshotService: the names of the files are nil';
+  SSaveFileNamesIsNil = 'TEngineScreenshotService: the names of the saved files are nil';
   SScreenshotFailed = 'Couldn''t create a screenshot';
   SScreenshotDone = 'screen shot';
 
 { TEngineScreenshotService }
 
 constructor TEngineScreenshotService.Create(const AWriter: IScreenshotWriter;
-  const ATargets: IScreenshotTargets);
+  const ATargets: IScreenshotTargets; const ASaveFileNames: ISaveFileNames);
 begin
   inherited Create;
   if not Assigned(AWriter) then
     raise EArgumentNilException.Create(SWriterIsNil);
   if not Assigned(ATargets) then
     raise EArgumentNilException.Create(STargetsIsNil);
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create(SSaveFileNamesIsNil);
   FWriter := AWriter;
   FTargets := ATargets;
+  FSaveFileNames := ASaveFileNames;
 end;
 
 procedure TEngineScreenshotService.FixFormat;
@@ -104,7 +111,7 @@ var
   LStamp: string;
 begin
   FixFormat;
-  LFolder := M_SaveFileName('DATA');
+  LFolder := FSaveFileNames.ResolveName('DATA');
   MkDir(LFolder);
   MkDir(LFolder + '\SCREENSHOTS');
   MkDir(LFolder + '\SCREENSHOTS\TGA');

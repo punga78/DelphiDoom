@@ -12,12 +12,17 @@ unit DelphiDoom.Engine.TableExport.Settings;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.TableExport.Intf;
 
 type
   /// <summary>What a patch has besides things, states and weapons, from the globals of the game</summary>
   TEngineExportSettings = class(TInterfacedObject, IExportSettingsSource)
+  strict private
+    FCommandLine: ICommandLine;
   public
+    /// <param name="ACommandLine">What CommandLine writes in the patch</param>
+    constructor Create(const ACommandLine: ICommandLine);
     function CreatedWith: string;
     function CommandLine: string;
     function AmmoCount: Integer;
@@ -47,7 +52,6 @@ uses
   d_player,
   {$ENDIF}
   g_game,
-  m_argv,
   {$IFDEF DOOM}
   p_pspr,
   st_stuff,
@@ -56,6 +60,14 @@ uses
   sounddata;
 
 { TEngineExportSettings }
+
+constructor TEngineExportSettings.Create(const ACommandLine: ICommandLine);
+begin
+  inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create('ACommandLine');
+  FCommandLine := ACommandLine;
+end;
 
 function TEngineExportSettings.CreatedWith: string;
 begin
@@ -66,9 +78,9 @@ function TEngineExportSettings.CommandLine: string;
 var
   LIndex: Integer;
 begin
-  Result := fname(myargv[0]);
-  for LIndex := 1 to myargc - 1 do
-    Result := Result + ' ' + myargv[LIndex];
+  Result := fname(FCommandLine[0]);
+  for LIndex := 1 to FCommandLine.Count - 1 do
+    Result := Result + ' ' + FCommandLine[LIndex];
 end;
 
 function TEngineExportSettings.AmmoCount: Integer;

@@ -12,6 +12,7 @@ unit DelphiDoom.Engine.Level.Blockmap;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Blockmap.Types,
   DelphiDoom.Blockmap.Intf,
   DelphiDoom.Zone.Intf,
@@ -30,16 +31,19 @@ type
     FBuilder: IBlockmapBuilder;
     FLumpReader: IBlockmapLumpReader;
     FSlimeTrails: ISlimeTrailRemover;
+    FCommandLine: ICommandLine;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
     function BuildFromLines: TBlockmapData;
     function ReadData(ALump: Integer): TBlockmapData;
     procedure StoreData(const AData: TBlockmapData);
   public
-    /// <summary>ALumps gives the lump BLOCKMAP and AZone the memory of the level</summary>
+    /// <param name="ACommandLine">Where -blockmap (always build the blockmap) is looked for</param>
+    /// <param name="ALumps">Gives the lump BLOCKMAP</param>
+    /// <param name="AZone">The memory of the level</param>
     constructor Create(const ABuilder: IBlockmapBuilder; const ALumpReader: IBlockmapLumpReader;
-      const ASlimeTrails: ISlimeTrailRemover; const ALumps: IEngineLumps;
-      const AZone: IZoneAllocator);
+      const ASlimeTrails: ISlimeTrailRemover; const ACommandLine: ICommandLine;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
     procedure Load(ALump: Integer);
     /// <summary>
     ///   Slime trails are inherent to Doom's coordinate system: a node builder cannot avoid them
@@ -57,7 +61,6 @@ uses
   System.SysUtils,
   d_delphi,
   m_fixed,
-  m_argv,
   i_system,
   r_defs,
   p_setup,
@@ -67,9 +70,12 @@ uses
 
 constructor TEngineLevelBlockmap.Create(const ABuilder: IBlockmapBuilder;
   const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover;
-  const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ACommandLine: ICommandLine; const ALumps: IEngineLumps; const AZone: IZoneAllocator);
 begin
   inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create('ACommandLine');
+  FCommandLine := ACommandLine;
   if not Assigned(ABuilder) then
     raise EArgumentNilException.Create('ABuilder');
   if not Assigned(ALumpReader) then
@@ -118,7 +124,7 @@ var
 begin
   LFromLump := False;
   LCount := FLumps.LengthOf(ALump);
-  if (M_CheckParm('-blockmap') = 0) and not largemap and (LCount > 0) then
+  if (FCommandLine.IndexOf('-blockmap') = 0) and not largemap and (LCount > 0) then
   begin
     SetLength(LLumpBytes, LCount);
     FLumps.Read(ALump, @LLumpBytes[0]);

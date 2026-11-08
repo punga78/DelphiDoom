@@ -11,7 +11,7 @@ unit DelphiDoom.Engine.Wad.Services;
 interface
 
 uses
-  d_delphi, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf, DelphiDoom.Engine.Wad.Intf;
+  d_delphi, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf, DelphiDoom.Wad.Pak.Intf, DelphiDoom.Engine.Wad.Intf;
 
 type
   /// <summary>IEngineWadServices on top of TWadFactory and the sources of the library</summary>
@@ -24,6 +24,8 @@ type
     function CreateFinder(const ADirectory: IWadDirectory): IWadFinder;
     function CreateReader(const ADirectory: IWadDirectory): ILumpReader;
     function CreateBuilder(AKind: TWadKind): IWadBuilder;
+    function CreatePakIndex: IPakIndex;
+    function CreatePakResolver(const AIndex: IPakIndex): IPakPathResolver;
   end;
 
 implementation
@@ -79,6 +81,16 @@ end;
 function TEngineWadServices.CreateBuilder(AKind: TWadKind): IWadBuilder;
 begin
   Result := TWadFactory.CreateBuilder(AKind);
+end;
+
+function TEngineWadServices.CreatePakIndex: IPakIndex;
+begin
+  Result := TWadFactory.CreatePakIndex;
+end;
+
+function TEngineWadServices.CreatePakResolver(const AIndex: IPakIndex): IPakPathResolver;
+begin
+  Result := TWadFactory.CreatePakResolver(AIndex);
 end;
 
 end.

@@ -31,6 +31,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   System.SysUtils,
   c_cmds;
 
@@ -49,7 +50,7 @@ end;
 
 function TEngineCvarSetter.EvaluateBoolean(const AText: string; ADefault: Boolean): Boolean;
 begin
-  Result := C_BoolEval(AText, ADefault);
+  Result := TConsoleNumbers.EvaluateBoolean(AText, ADefault);
 end;
 
 function TEngineCvarSetter.TrySetBoolean(const AName: string; AValue: Boolean): Boolean;

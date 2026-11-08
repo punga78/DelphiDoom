@@ -11,12 +11,12 @@ unit DelphiDoom.Engine.Wad.Intf;
 interface
 
 uses
-  d_delphi, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf;
+  d_delphi, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf, DelphiDoom.Wad.Pak.Intf;
 
 type
   /// <summary>
   ///   The services of the WAD library as the engine needs them: w_wad, w_wadreader,
-  ///   w_wadwriter and w_pak receive one from the composition root and do not know the
+  ///   w_wadwriter and the PAK file system (TPakFileSystem) receive one from the composition root and do not know the
   ///   classes behind it
   /// </summary>
   IEngineWadServices = interface
@@ -38,6 +38,10 @@ type
     function CreateFinder(const ADirectory: IWadDirectory): IWadFinder;
     function CreateReader(const ADirectory: IWadDirectory): ILumpReader;
     function CreateBuilder(AKind: TWadKind): IWadBuilder;
+    /// <summary>An empty index of the PAK file system</summary>
+    function CreatePakIndex: IPakIndex;
+    /// <summary>The rules of the engine to open a name of the PAK file system, on AIndex</summary>
+    function CreatePakResolver(const AIndex: IPakIndex): IPakPathResolver;
   end;
 
 implementation

@@ -13,6 +13,7 @@ unit DelphiDoom.Engine.Console.Startup;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Console.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf;
 
@@ -23,9 +24,15 @@ type
   /// </summary>
   TEngineConsoleStartup = class(TInterfacedObject, IConsoleStartupSource)
   strict private
+    FCommandLine: ICommandLine;
+    FSaveFileNames: ISaveFileNames;
     FLumps: IEngineLumps;
   public
-    constructor Create(const ALumps: IEngineLumps);
+    /// <param name="ACommandLine">Where -con is looked for</param>
+    /// <param name="ASaveFileNames">Where the default autoexec file is written</param>
+    /// <param name="ALumps">The lumps with the AUTOEXEC text</param>
+    constructor Create(const ACommandLine: ICommandLine; const ASaveFileNames: ISaveFileNames;
+      const ALumps: IEngineLumps);
     function AutoExecFileName: string;
     function DefaultAutoExecExists: Boolean;
     procedure CreateDefaultAutoExec(const ALines: TArray<string>);
@@ -38,21 +45,30 @@ implementation
 uses
   System.SysUtils,
   System.Classes,
+  System.SysUtils,
   System.Generics.Collections,
   d_delphi,
-  c_con,
-  m_argv;
+  c_con;
 
 const
   AUTOEXEC_LUMP_NAME = 'AUTOEXEC';
+  SCommandLineIsNil = 'TEngineConsoleStartup: the command line is nil';
+  SSaveFileNamesIsNil = 'TEngineConsoleStartup: the names of the saved files are nil';
 
 { TEngineConsoleStartup }
 
-constructor TEngineConsoleStartup.Create(const ALumps: IEngineLumps);
+constructor TEngineConsoleStartup.Create(const ACommandLine: ICommandLine;
+  const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps);
 begin
   inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create(SCommandLineIsNil);
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create(SSaveFileNamesIsNil);
   if not Assigned(ALumps) then
     raise EArgumentNilException.Create('ALumps');
+  FCommandLine := ACommandLine;
+  FSaveFileNames := ASaveFileNames;
   FLumps := ALumps;
 end;
 
@@ -75,7 +91,7 @@ begin
   try
     for LLine in ALines do
       LText.Add(LLine);
-    LText.SaveToFile(M_SaveFileName(DEFAUTOEXEC));
+    LText.SaveToFile(FSaveFileNames.ResolveName(DEFAUTOEXEC));
   finally
     LText.Free;
   end;
@@ -102,9 +118,9 @@ var
   LParam: Integer;
 begin
   Result := '';
-  LParam := M_CheckParm('-con');
-  if (LParam > 0) and (LParam < myargc - 1) then
-    Result := myargv[LParam + 1];
+  LParam := FCommandLine.IndexOf('-con');
+  if (LParam > 0) and (LParam < FCommandLine.Count - 1) then
+    Result := FCommandLine[LParam + 1];
 end;
 
 end.
