@@ -1,0 +1,39 @@
+Gancio TEMPORANEO per l'issue #156 (NON committare). Serve a confrontare R_PrecalcSegs vecchio e nuovo.
+
+Dove: in Base\DelphiDoom.Engine.Level.Loader.pas, subito dopo la chiamata a R_PrecalcSegs (dentro
+{$IFNDEF OPENGL}), aggiungere  Dump156;  e, prima del metodo che la chiama, nella sezione implementation:
+
+  // --- inizio gancio 156 ---
+  {$Q-}
+  {$R-}
+  procedure Dump156;
+  var
+    i: integer;
+    k: integer;
+    h: LongWord;
+    p: PByteArray;
+    d: double;
+  begin
+    h := 2166136261;
+    for i := 0 to numsegs - 1 do
+    begin
+      p := PByteArray(@segs[i].map_length);
+      for k := 0 to SizeOf(integer) - 1 do
+        h := (h xor p[k]) * 16777619;
+      d := segs[i].inv_length;
+      p := PByteArray(@d);
+      for k := 0 to SizeOf(double) - 1 do
+        h := (h xor p[k]) * 16777619;
+    end;
+    I_Warning('DUMP156 segs=%d fnv=%.8x'#13#10, [numsegs, h]);
+  end;
+  // --- fine gancio 156 ---
+
+(servono r_defs e p_setup nelle uses dell'unit, i_system per I_Warning; se un tipo e ambiguo con SysUtils
+qualificare PByteArray con d_delphi.)
+
+Come si usa: compilare il vecchio (HEAD prima della fetta) e il nuovo con lo stesso gancio, avviare
+ogni gioco su un livello con  -devparm  e confrontare le righe  DUMP156  di DATA\LOGS\*_stderr.txt:
+stesso numero di seg e stessa impronta. Con  -warp  su piu livelli (o -timedemo di demo che cambiano
+livello) si ottengono piu righe. Non copre  lowestfloor / highestceiling / level_needs_tall_walls
+(variabili della sezione implementation di r_segs2): quelle le coprono solo i test della libreria.

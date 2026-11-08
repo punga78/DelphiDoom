@@ -76,6 +76,15 @@ Cancellate (i chiamanti usano le classi senza stato della libreria): i quattro `
 - `P_AnimateSurfaces` (da `p_tick` a ogni tic) e `A_MusicChanger` (azione di stato registrata per puntatore nei quattro `deh_main`): sono procedure chiamate per puntatore o dal ciclo dei tic, servono i dati di modulo; il loro stato (liste delle animazioni, catalogo MusInfo) andrebbe in un oggetto del livello.
 - `Base\p_umapinfo.pas` (`U_ParseMapInfo`/`U_FreeMapInfo` da `D_DoomMain` di tre `d_main`): i record `mapentry_t` (`gamemapinfo`, `u_mapinfo`) sono letti da circa 20 moduli (`g_game`, `f_finale`, `p_setup`, `p_enemy`, `p_user`, `wi_stuff`, `st_stuff`, `sb_bar`, `hu_stuff`, `s_sound`, `udmf_spec`, `d_player`); servirebbe un `IMapInfoCatalog` passato a quei moduli al posto dei record.
 - `Doom\p_switch.pas` contiene anche `P_UseSpecialLine` e `P_ChangeSwitchTexture` (special di linea e bottoni, legati ai thinker: fase thinker).
+
+## #156 — Renderer: analisi e prima fetta (fase 4)
+
+Fatto: analisi unit per unit e ordine di migrazione in `Libs\Renderer\README.md`; fette A (`R_GenerateLookup` -> `TRendererTextureLookup`) e B (`R_CalcSectors`, `R_PrecalcSegs` -> `TRendererLevelPrecalc`), con test di parita (29). Scritte senza compilatore: `RUN-156.md` ha cosa eseguire (build, test, copertura, fumo degli otto eseguibili, confronto degli avvisi di `R_GenerateLookup` con la compilazione vecchia, gancio temporaneo per `R_PrecalcSegs`).
+
+- Da fare, in ordine (stime in `Libs\Renderer\README.md`, sezione 10): vista (`R_ExecuteSetViewSize`, `R_InitTextureMapping`, `R_InitBuffer`), resto freddo di `r_data` e `r_pk3textures`, definizioni degli sprite, cielo/aspetto/camera, precalcolo punto-in-subsector, `R_SetRenderingFunctions` come dati, geometria OpenGL a freddo (`gl_render.pas:1534`-`2030`), orchestrazione del fotogramma, ordinamento dei vissprite, interpolazione; il percorso caldo solo dopo la #41.
+- Servono per le fette 8-11 un gancio temporaneo di impronta dello schermo a 32 bit (`-timedemo`) e un confronto di `-timedemo` entro +5%: non esistono ancora (non nel repository).
+- `texturecolumnlump` e un array di `SmallInt` (`Base\r_defs.pas:961`): con piu di 32767 lump (un PK3 grande) il numero del lump di una patch si tronca; la libreria lo conserva.
+
 ## #142 — Caricamento del livello a classi (fase 2, ondata 2)
 
 Fatto: `P_SetupLevel`, `P_Init` e `P_ShutDown` di `Base\p_setup.pas` sono `TLevelLoader` (`ILevelLoader`), che `ComposeLevel` dà ai quattro `g_game` (`G_ConfigureLevel`) e ai quattro `d_main` (`D_ConfigureLevel`); le parti sono `TEngineLevelMapReader`, `TEngineLevelThings`, `TEngineLevelNodes`, `TEngineLevelBlockmap`, `TEngineUdmfMapLoader`, `TEngineAnimDefsLoader`, `TEngineSwitchListLoader` (Doom), `TEngineVanillaNodes` (Doom) e una classe di regole per gioco (`T<Gioco>LevelRules`). Non hanno più funzioni di facciata: `p_udmf.pas` (solo dati), `nd_main.pas` (record GL, `glnodesver`, `gld_GetGLVertexes`, `gld_BuildNodes`, `ND_RunGlbsp`), `p_setup.pas` (dati del livello, `P_GetMapName`, `P_GetMapTitle`, `P_GameValidThing`). Restano, con il motivo:

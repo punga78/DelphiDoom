@@ -94,7 +94,10 @@ uses
 {$IFNDEF OPENGL}
   r_cache_flats,
   r_patch,
+  r_segs2,
 {$ENDIF}
+  DelphiDoom.Renderer.Factory,
+  DelphiDoom.Engine.Renderer.PatchSource,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -758,6 +761,15 @@ begin
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
 end;
 
+procedure ComposeRenderer(const ALog: ILog);
+begin
+  R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
+    TEngineRendererPatchSource.Create, ALog));
+{$IFNDEF OPENGL}
+  R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
+{$ENDIF}
+end;
+
 procedure ComposeScreenshot;
 var
   LScreenshot: IEngineScreenshot;
@@ -1006,6 +1018,7 @@ begin
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;
+  ComposeRenderer(LLog);
   ComposeScreenshot;
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
