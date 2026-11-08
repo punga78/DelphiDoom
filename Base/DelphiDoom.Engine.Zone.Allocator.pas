@@ -13,7 +13,8 @@ interface
 
 uses
   DelphiDoom.Zone.Types,
-  DelphiDoom.Zone.Intf;
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Shutdown.Intf;
 
 type
   /// <summary>
@@ -26,8 +27,11 @@ type
   TEngineZoneAllocator = class(TInterfacedObject, IZoneAllocator)
   strict private
     FInner: IZoneAllocator;
+    FShutdown: IEngineShutdown;
   public
-    constructor Create(const AInner: IZoneAllocator);
+    /// <param name="AShutdown">Stops the game when the zone refuses a pointer (I_Error)</param>
+    /// <remarks>Raises EArgumentNilException if AInner or AShutdown is nil</remarks>
+    constructor Create(const AInner: IZoneAllocator; const AShutdown: IEngineShutdown);
     function Allocate(ASize: Integer; ATag: Integer; AUser: PPointer): Pointer;
     function Reallocate(APointer: Pointer; ASize: Integer; ATag: Integer; AUser: PPointer): Pointer;
     procedure FreeBlock(APointer: Pointer);
@@ -44,17 +48,20 @@ type
 implementation
 
 uses
-  System.SysUtils,
-  i_system;
+  System.SysUtils;
 
 { TEngineZoneAllocator }
 
-constructor TEngineZoneAllocator.Create(const AInner: IZoneAllocator);
+constructor TEngineZoneAllocator.Create(const AInner: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
   if not Assigned(AInner) then
     raise EArgumentNilException.Create('AInner');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
   FInner := AInner;
+  FShutdown := AShutdown;
 end;
 
 function TEngineZoneAllocator.Allocate(ASize: Integer; ATag: Integer; AUser: PPointer): Pointer;
@@ -71,7 +78,7 @@ begin
     on E: EZoneException do
     begin
       Result := nil;
-      I_Error('Z_Realloc(): %s', [E.Message]);
+      FShutdown.Fail('Z_Realloc(): ' + E.Message);
     end;
   end;
 end;
@@ -82,7 +89,7 @@ begin
     FInner.FreeBlock(APointer);
   except
     on E: EZoneException do
-      I_Error('Z_Free(): %s', [E.Message]);
+      FShutdown.Fail('Z_Free(): ' + E.Message);
   end;
 end;
 
@@ -94,7 +101,7 @@ begin
     on E: EZoneException do
     begin
       Result := 0;
-      I_Error('Z_Size(): %s', [E.Message]);
+      FShutdown.Fail('Z_Size(): ' + E.Message);
     end;
   end;
 end;

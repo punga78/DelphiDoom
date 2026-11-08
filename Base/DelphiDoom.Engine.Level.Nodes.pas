@@ -18,8 +18,10 @@ uses
   DelphiDoom.Platform.Intf,
   DelphiDoom.Glbsp.Client,
   DelphiDoom.Nodes.Intf,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -40,6 +42,8 @@ type
     FHexen: Boolean;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
+    FLog: ILog;
+    FShutdown: IEngineShutdown;
     // the first GL vertex of the GWA in vertexes[]
     FFirstGlVertex: Integer;
     class procedure WriteBytes(const AFileName: string; const ABytes: TBytes); static;
@@ -55,12 +59,14 @@ type
     /// <summary>
     ///   ASaveFileNames puts DATA\ in the working folder of the CD-ROM when needed; AHexen:
     ///   the maps are in the Hexen format and glBSP is told so; ALumps gives the lumps of the
-    ///   map and the files added at runtime, AZone the memory of the level
+    ///   map and the files added at runtime, AZone the memory of the level; ALog receives the
+    ///   warnings and AShutdown stops the game on a GWA that can not be read (I_Error)
     /// </summary>
     constructor Create(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
       const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
       const ATempFiles: ITempFiles; const ASaveFileNames: ISaveFileNames; AHexen: Boolean;
-      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+      const AShutdown: IEngineShutdown);
     procedure CheckNodes(const AMapName: string);
     function FindGwa(const AMapName: string): INodesGwa;
     function FindGlMapLump(AMapLump: Integer): Integer;
@@ -78,7 +84,6 @@ uses
   d_delphi,
   doomdata,
   m_fixed,
-  i_system,
   r_main,
   p_setup,
   nd_main,
@@ -97,9 +102,16 @@ uses
 constructor TEngineLevelNodes.Create(const ASource: INodesLumpSource; const ADetector: INodesGlDetector;
   const AFinder: INodesGlMapFinder; const AInputBuilder: INodesGlbspInputBuilder;
   const ATempFiles: ITempFiles; const ASaveFileNames: ISaveFileNames; AHexen: Boolean;
-  const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(ALog) then
+    raise EArgumentNilException.Create('ALog');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FLog := ALog;
+  FShutdown := AShutdown;
   if not Assigned(ASaveFileNames) then
     raise EArgumentNilException.Create('ASaveFileNames');
   FSaveFileNames := ASaveFileNames;
@@ -240,7 +252,7 @@ begin
     on E: ENodesException do
     begin
       Result := nil;
-      I_Error('ND_ReadGwa(): %s (%s)', [E.Message, AFileName]);
+      FShutdown.Fail(Format('ND_ReadGwa(): %s (%s)', [E.Message, AFileName]));
     end;
   end;
 
@@ -435,7 +447,7 @@ begin
         LSideNumber := LLine.sidenum[LSide xor 1];
         if LSideNumber = -1 then
         begin
-          I_Warning('ND_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]);
+          FLog.Warning(Format('ND_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]));
           LLine.flags := LLine.flags and not ML_TWOSIDED;
           LSeg.backsector := nil;
         end
@@ -473,7 +485,7 @@ begin
   // Check if we can build the nodes
   if not LLayout.CanBuildNodes then
   begin
-    I_Warning('ND_NodesCheck(): Missing critical map data to play the map'#13#10);
+    FLog.Warning('ND_NodesCheck(): Missing critical map data to play the map'#13#10);
     Exit;
   end;
 
@@ -499,7 +511,7 @@ begin
     if not ND_RunGlbsp(LOutFileName, LWadFileName, GlbspOptions) then
     begin
       printf(#13#10);
-      I_Warning('ND_NodesCheck(): Failed to build GL-Friendly nodes for %s'#13#10, [LOutFileName]);
+      FLog.Warning(Format('ND_NodesCheck(): Failed to build GL-Friendly nodes for %s'#13#10, [LOutFileName]));
       Exit;
     end;
     printf(#13#10);
