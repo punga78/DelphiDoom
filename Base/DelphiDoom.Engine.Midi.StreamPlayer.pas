@@ -15,6 +15,7 @@ unit DelphiDoom.Engine.Midi.StreamPlayer;
 interface
 
 uses
+  System.SysUtils,
   Winapi.Windows,
   Winapi.MMSystem,
   DelphiDoom.Midi.Intf;
