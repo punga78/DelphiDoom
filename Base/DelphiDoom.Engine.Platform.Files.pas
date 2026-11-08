@@ -16,6 +16,7 @@ uses
   System.SysUtils,
   DelphiDoom.Platform.Intf,
   DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Platform.Intf;
 
 type
@@ -28,10 +29,13 @@ type
   strict private
     FStore: IFileStore;
     FZone: IZoneAllocator;
+    FShutdown: IEngineShutdown;
   public
     /// <param name="AZone">Holds what ReadFile reads</param>
-    /// <remarks>Raises EArgumentNilException if AStore or AZone is nil</remarks>
-    constructor Create(const AStore: IFileStore; const AZone: IZoneAllocator);
+    /// <param name="AShutdown">Stops the game when a file can not be read (I_Error)</param>
+    /// <remarks>Raises EArgumentNilException if AStore, AZone or AShutdown is nil</remarks>
+    constructor Create(const AStore: IFileStore; const AZone: IZoneAllocator;
+      const AShutdown: IEngineShutdown);
     function WriteFile(const AName: string; const ASource: Pointer; const ALength: Integer): Boolean;
     function AppendFile(const AName: string; const ASource: Pointer; const ALength: Integer): Integer;
     function ReadFile(const AName: string; var ABuffer: Pointer): Integer;
@@ -40,7 +44,6 @@ type
 implementation
 
 uses
-  i_system,
   DelphiDoom.Zone.Types,
   DelphiDoom.Platform.Types;
 
@@ -50,9 +53,13 @@ const
 
 { TEngineFiles }
 
-constructor TEngineFiles.Create(const AStore: IFileStore; const AZone: IZoneAllocator);
+constructor TEngineFiles.Create(const AStore: IFileStore; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(AStore) then
     raise EArgumentNilException.Create(SStoreIsNil);
   if not Assigned(AZone) then
@@ -81,7 +88,7 @@ begin
     LData := FStore.Read(AName);
   except
     on EPlatformException do
-      I_Error(SReadFailed, [AName]);
+      FShutdown.Fail(Format(SReadFailed, [AName]));
   end;
 
   Result := Length(LData);
