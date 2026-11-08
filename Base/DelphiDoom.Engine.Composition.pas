@@ -85,6 +85,8 @@ uses
   DelphiDoom.Thinkers.Light.Factory,
   DelphiDoom.Engine.Light.Services,
   DelphiDoom.Engine.Light.PhaseSpawner,
+  DelphiDoom.Engine.Plane.Services,
+  DelphiDoom.Engine.Plane.Host,
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -880,6 +882,13 @@ begin
     TLightGames.SequenceProfile(LGame), TEngineLightPhaseSpawner.Create);
 end;
 
+// The moving planes (floors, ceilings, and soon doors and platforms): what the game does when a
+// plane of a sector moves
+procedure ComposePlanes;
+begin
+  P_ConfigurePlanes(TEnginePlaneHost.Create);
+end;
+
 procedure ComposeThreading;
 var
   LThreads: IWorkerThreadFactory;
@@ -895,6 +904,7 @@ begin
   M_ConfigureRandom(ARandom);
   R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
   ComposeLights(ARandom);
+  ComposePlanes;
 end;
 
 procedure ComposeSerializer;
