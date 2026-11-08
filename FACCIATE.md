@@ -221,13 +221,11 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
 ### `Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
 
-**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `OPENGL\gl_setup.pas`, `gld_GetGLVertexes`, `gld_BuildNodes` (dai `d_main`) e `ND_RunGlbsp`.
+**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `OPENGL\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `gld_GetGLVertexes` | 1 | gl_setup |
-| `ND_RunGlbsp` | 1 | DelphiDoom.Engine.Level.Nodes |
-| `gld_BuildNodes` | 5 | DelphiDoom.Engine.Level.Nodes, Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
 
 ### `Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
 
@@ -265,7 +263,7 @@ Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `
 
 ### `Base\p_musinfo.pas` - 3 funzioni pubbliche, 9 chiamate
 
-Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` carica con `IMusInfoLoader`); restano `A_MusicChanger` (azione di stato) e `P_FindMusinfoMusic`, che nessuno chiama da fuori.
+Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` carica con `IMusInfoLoader`); resta `A_MusicChanger` (azione di stato); `P_FindMusinfoMusic`, che nessuno chiamava da fuori, dalla #158 non e piu pubblica.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -273,9 +271,9 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 | `P_ConfigureMusInfo` | 1 | DelphiDoom.Engine.Composition |
 | `A_MusicChanger` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
 
-### `Base\i_midi_new.pas` - 9 funzioni pubbliche, 9 chiamate
+### `Base\i_midi_new.pas` - cancellata
 
-Per toglierla: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
+**Tolta (#158)**: il corpo e `TEngineMidiSongPlayer` (`IEngineMidiSongPlayer`), creata da `ComposeMusic` e data a `i_midi` con `I_ConfigureMidi`. Storia: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
