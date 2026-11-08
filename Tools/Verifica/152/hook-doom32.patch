@@ -1,0 +1,84 @@
+diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+index f1b79d91..6369043b 100644
+--- a/Base/udmf_doors.pas
++++ b/Base/udmf_doors.pas
+@@ -72,7 +72,8 @@ uses
+   udmf_spec,
+   {$ENDIF}
+   p_setup,
+-  DelphiDoom.Engine.Door.Thinker;
++  DelphiDoom.Engine.Door.Thinker,
++  door_parity;
+ 
+ //==============================================================================
+ //
+@@ -85,7 +86,7 @@ uses
+ // stays the vldoor_t of the zone memory
+ //
+ //==============================================================================
+-procedure TH_VerticalDoor(door: Pvldoor_t);
++procedure TH_VerticalDoorNew(door: Pvldoor_t);
+ begin
+   if DoorTickUdmf(door) then
+   begin
+@@ -95,6 +96,11 @@ begin
+   end;
+ end;
+ 
++procedure TH_VerticalDoor(door: Pvldoor_t);
++begin
++  DP_Udmf(door, @TH_VerticalDoorNew);
++end;
++
+ //==============================================================================
+ //
+ // EVH_DoDoor
+diff --git a/Doom/p_doors.pas b/Doom/p_doors.pas
+index a9873588..424c88de 100644
+--- a/Doom/p_doors.pas
++++ b/Doom/p_doors.pas
+@@ -99,7 +99,8 @@ uses
+   p_setup,
+   p_floor,
+   DelphiDoom.Thinkers.Door.Types,
+-  DelphiDoom.Engine.Door.Thinker;
++  DelphiDoom.Engine.Door.Thinker,
++  door_parity;
+ 
+ //==============================================================================
+ //
+@@ -108,7 +109,7 @@ uses
+ // T_VerticalDoor
+ //
+ //==============================================================================
+-procedure T_VerticalDoor(door: Pvldoor_t);
++procedure T_VerticalDoorNew(door: Pvldoor_t);
+ begin
+   // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+   if DoorTickClassic(door) then
+@@ -118,6 +119,11 @@ begin
+   end;
+ end;
+ 
++procedure T_VerticalDoor(door: Pvldoor_t);
++begin
++  DP_Classic(door, @T_VerticalDoorNew);
++end;
++
+ //==============================================================================
+ //
+ // EV_DoLockedDoor
+diff --git a/Doom32.dpr b/Doom32.dpr
+index b8d9d2dd..1c4438c9 100644
+--- a/Doom32.dpr
++++ b/Doom32.dpr
+@@ -504,6 +504,9 @@ uses
+   DelphiDoom.Engine.Door.Host in 'Base\DelphiDoom.Engine.Door.Host.pas',
+   DelphiDoom.Engine.Door.Services in 'Base\DelphiDoom.Engine.Door.Services.pas',
+   DelphiDoom.Engine.Door.Thinker in 'Base\DelphiDoom.Engine.Door.Thinker.pas',
++  DelphiDoom.Tests.Thinkers.DoorFakes in 'Tests\Source\DelphiDoom.Tests.Thinkers.DoorFakes.pas',
++  DelphiDoom.Tests.Thinkers.OldDoors in 'Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
++  door_parity in 'Tools\Verifica\152\door_parity.pas',
+   DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
+   DelphiDoom.Configuration.Types in 'Libs\Configuration\DelphiDoom.Configuration.Types.pas',
+   DelphiDoom.Configuration.Intf in 'Libs\Configuration\DelphiDoom.Configuration.Intf.pas',
