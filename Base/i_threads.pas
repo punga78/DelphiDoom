@@ -111,9 +111,11 @@ begin
   th := Pthreadinfo_t(p).thread;
   while true do
   begin
+    // Windows.Sleep, not I_Sleep: the worker still spins while the program ends, after the
+    // finalization of i_system has released the engine clock that I_Sleep calls (#147)
     while (th.fstatus = THR_IDLE) and not th.fterminated do
     begin
-      I_Sleep(0);
+      Windows.Sleep(0);
     end;
     if th.fterminated then
       exit;
@@ -153,14 +155,23 @@ end;
 //
 //==============================================================================
 destructor TDThread.Destroy;
+const
+  // a job lasts a fraction of a frame: a worker still busy after this is stuck
+  WORKER_EXIT_TIMEOUT_MS = 10000;
 var
   id: Integer;
 begin
-  while frunning do
-    I_Sleep(0);
+  // The worker reads the fields of this object until it leaves ThreadWorker: the object can be
+  // freed only after the thread has ended. Before #147 it waited 1 ms and freed it anyway, and a
+  // worker still in its loop read freed memory (access violation at the end of -timedemo demo1).
   fterminated := true;
   fstatus := THR_DEAD;
-  I_WaitForProcess(fid, 1);
+  // a suspended worker never sees fterminated: resume it until its suspend count is 0
+  while Integer(ResumeThread(THandle(fid))) > 1 do
+    ;
+  if WaitForSingleObject(THandle(fid), WORKER_EXIT_TIMEOUT_MS) <> WAIT_OBJECT_0 then
+    TerminateThread(THandle(fid), 1);
+  CloseHandle(THandle(fid));
   id := threadpool.IndexOf(self);
   if id >= 0 then
     threadpool.Delete(id);
