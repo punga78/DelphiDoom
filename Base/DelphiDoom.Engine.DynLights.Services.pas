@@ -15,7 +15,8 @@ interface
 uses
   DelphiDoom.DynLights.Intf,
   DelphiDoom.MathCore.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Pak.Intf;
 
 type
   /// <summary>
@@ -31,10 +32,13 @@ type
     FRandomIndex: Integer;
     FPreprocessor: IScriptTextPreprocessor;
     FRandom: IGameRandom;
+    FPakFiles: IPakFileSystem;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
+    /// <param name="APakFiles">The PAK file system that has the GLDEFS and LIGHTDEF files</param>
     /// <param name="ARandom">The generator of the animation bytes (NextWithIndex)</param>
-    constructor Create(const APreprocessor: IScriptTextPreprocessor; const ARandom: IGameRandom);
+    constructor Create(const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem;
+      const ARandom: IGameRandom);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -61,34 +65,27 @@ uses
   info_common,
   System.SysUtils,
   p_pspr,
-  w_pak,
   w_wad;
-
-var
-  // PAK_StringIterator takes a plain procedure: what it gives is kept here until it returns
-  GCollectedTexts: TArray<string>;
-
-procedure CollectText(const AText: string);
-begin
-  SetLength(GCollectedTexts, Length(GCollectedTexts) + 1);
-  GCollectedTexts[High(GCollectedTexts)] := AText;
-end;
 
 const
   SPreprocessorMissing = 'TEngineDynLightServices: the preprocessor is nil';
   SRandomMissing = 'TEngineDynLightServices: the random generator is nil';
+  SPakFilesMissing = 'TEngineDynLightServices: the PAK file system is nil';
 
 { TEngineDynLightServices }
 
 constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor;
-  const ARandom: IGameRandom);
+  const APakFiles: IPakFileSystem; const ARandom: IGameRandom);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
     raise EArgumentNilException.Create(SPreprocessorMissing);
+  if not Assigned(APakFiles) then
+    raise EArgumentNilException.Create(SPakFilesMissing);
   if not Assigned(ARandom) then
     raise EArgumentNilException.Create(SRandomMissing);
   FPreprocessor := APreprocessor;
+  FPakFiles := APakFiles;
   FRandom := ARandom;
 end;
 
@@ -180,10 +177,7 @@ end;
 
 function TEngineDynLightServices.PakTexts(const AFileName: string): TArray<string>;
 begin
-  GCollectedTexts := nil;
-  PAK_StringIterator(AFileName, @CollectText);
-  Result := GCollectedTexts;
-  GCollectedTexts := nil;
+  Result := FPakFiles.Texts(AFileName);
 end;
 
 function TEngineDynLightServices.Filter(const AText: string): string;
