@@ -297,7 +297,8 @@ uses
   DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.Engine.Music.ExternalSource,
   DelphiDoom.Midi.Factory,
-  i_midi_new,
+  i_midi,
+  DelphiDoom.Engine.Midi.SongPlayer,
   DelphiDoom.Mp3.Provider,
   s_sound,
   s_pk3sounds,
@@ -524,7 +525,8 @@ var
 begin
   // the MIDI files that the player of the midi stream plays (snd_uselegacymidiplayer = 0, 2)
   // are turned into the events of the stream by a sequencer for each song
-  I_ConfigureMidiStream(TMidiFactory.CreateSequencerFactory(ALog));
+  I_ConfigureMidi(TEngineMidiSongPlayer.Create(TMidiFactory.CreateSequencerFactory(ALog), ALog,
+    I_SelectDefaultMidiDevice));
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine, ALog, AShutdown);
   LMus := LMidiStream as IMusicBackend;
