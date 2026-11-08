@@ -11,12 +11,16 @@ unit DelphiDoom.Engine.Wad.AutoLoadLumps;
 interface
 
 uses
-  DelphiDoom.Scanner.AutoLoad.Intf;
+  DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
-  /// <summary>The lump directory of the engine (w_wad), read when asked</summary>
+  /// <summary>The lump directory of the engine, read when asked</summary>
   TEngineAutoLoadLumps = class(TInterfacedObject, IAutoLoadLumps)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function GetCount: Integer;
     function NameOf(AIndex: Integer): string;
     function TextOf(AIndex: Integer): string;
@@ -25,23 +29,31 @@ type
 implementation
 
 uses
-  w_wad;
+  System.SysUtils;
 
 { TEngineAutoLoadLumps }
 
+constructor TEngineAutoLoadLumps.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
+
 function TEngineAutoLoadLumps.GetCount: Integer;
 begin
-  Result := W_NumLumps;
+  Result := FLumps.Count;
 end;
 
 function TEngineAutoLoadLumps.NameOf(AIndex: Integer): string;
 begin
-  Result := char8tostring(W_GetNameForNum(AIndex));
+  Result := FLumps.NameOf(AIndex);
 end;
 
 function TEngineAutoLoadLumps.TextOf(AIndex: Integer): string;
 begin
-  Result := W_TextLumpNum(AIndex);
+  Result := FLumps.TextOf(AIndex);
 end;
 
 end.

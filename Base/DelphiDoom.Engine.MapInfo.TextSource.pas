@@ -14,7 +14,8 @@ interface
 
 uses
   DelphiDoom.MapInfo.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -25,9 +26,11 @@ type
   TEngineMapInfoTextSource = class(TInterfacedObject, IMapInfoTextSource, IMapInfoTextFilter)
   strict private
     FPreprocessor: IScriptTextPreprocessor;
+    FLumps: IEngineLumps;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter</param>
-    constructor Create(const APreprocessor: IScriptTextPreprocessor);
+    /// <param name="ALumps">The lumps of the loaded WADs</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor; const ALumps: IEngineLumps);
     function WadLumpTexts(const AUpperName: string): TArray<string>;
     function PakTexts(const AFileName: string): TArray<string>;
     function Filter(const AText: string): string;
@@ -38,8 +41,7 @@ implementation
 uses
   System.SysUtils,
   d_delphi,
-  w_pak,
-  w_wad;
+  w_pak;
 
 var
   // PAK_StringIterator takes a plain procedure: what it gives is kept here until it returns
@@ -56,12 +58,16 @@ const
 
 { TEngineMapInfoTextSource }
 
-constructor TEngineMapInfoTextSource.Create(const APreprocessor: IScriptTextPreprocessor);
+constructor TEngineMapInfoTextSource.Create(const APreprocessor: IScriptTextPreprocessor;
+  const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
     raise EArgumentNilException.Create(SPreprocessorMissing);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FPreprocessor := APreprocessor;
+  FLumps := ALumps;
 end;
 
 function TEngineMapInfoTextSource.WadLumpTexts(const AUpperName: string): TArray<string>;
@@ -71,13 +77,13 @@ var
 begin
   // all the lumps of that name make one text
   LText := '';
-  for LIndex := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(LIndex)) = AUpperName then
+  for LIndex := 0 to FLumps.Count - 1 do
+    if FLumps.NameOf(LIndex) = AUpperName then
     begin
       if LText = '' then
-        LText := W_TextLumpNum(LIndex)
+        LText := FLumps.TextOf(LIndex)
       else
-        LText := LText + #13#10 + W_TextLumpNum(LIndex);
+        LText := LText + #13#10 + FLumps.TextOf(LIndex);
     end;
   if LText = '' then
     Result := nil

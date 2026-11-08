@@ -16,7 +16,8 @@ uses
   DelphiDoom.DynLights.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.Scanner.Preprocessor.Intf,
-  DelphiDoom.Pak.Intf;
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -33,12 +34,14 @@ type
     FPreprocessor: IScriptTextPreprocessor;
     FRandom: IGameRandom;
     FPakFiles: IPakFileSystem;
+    FLumps: IEngineLumps;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
     /// <param name="APakFiles">The PAK file system that has the GLDEFS and LIGHTDEF files</param>
     /// <param name="ARandom">The generator of the animation bytes (NextWithIndex)</param>
+    /// <param name="ALumps">The lumps of the loaded WADs</param>
     constructor Create(const APreprocessor: IScriptTextPreprocessor; const APakFiles: IPakFileSystem;
-      const ARandom: IGameRandom);
+      const ARandom: IGameRandom; const ALumps: IEngineLumps);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -64,8 +67,7 @@ uses
   info,
   info_common,
   System.SysUtils,
-  p_pspr,
-  w_wad;
+  p_pspr;
 
 const
   SPreprocessorMissing = 'TEngineDynLightServices: the preprocessor is nil';
@@ -75,7 +77,7 @@ const
 { TEngineDynLightServices }
 
 constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor;
-  const APakFiles: IPakFileSystem; const ARandom: IGameRandom);
+  const APakFiles: IPakFileSystem; const ARandom: IGameRandom; const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
@@ -84,9 +86,12 @@ begin
     raise EArgumentNilException.Create(SPakFilesMissing);
   if not Assigned(ARandom) then
     raise EArgumentNilException.Create(SRandomMissing);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FPreprocessor := APreprocessor;
   FPakFiles := APakFiles;
   FRandom := ARandom;
+  FLumps := ALumps;
 end;
 
 function TEngineDynLightServices.NextByte: Integer;
@@ -167,11 +172,11 @@ var
 begin
   // one text for each lump of that name, they are not joined
   Result := nil;
-  for LIndex := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(LIndex)) = AName then
+  for LIndex := 0 to FLumps.Count - 1 do
+    if FLumps.NameOf(LIndex) = AName then
     begin
       SetLength(Result, Length(Result) + 1);
-      Result[High(Result)] := W_TextLumpNum(LIndex);
+      Result[High(Result)] := FLumps.TextOf(LIndex);
     end;
 end;
 

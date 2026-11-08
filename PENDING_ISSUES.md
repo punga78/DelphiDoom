@@ -110,6 +110,18 @@ Cancellate `Base\i_sound.pas` e `Base\i_music.pas`; `s_pk3sounds` riceve `ITempF
 - `i_system` (`I_ShutDownTempFiles`) e i quattro `d_main` (`I_InitTempFiles`): il ciclo di vita, resta finché restano i chiamanti sopra.
 
 `s_sound.pas` non è diventato una classe: tiene il player degli effetti, quello della musica e la cache delle musiche esterne ricevuti da `ComposeEngine` (`S_ConfigureSound`, `S_ConfigureMusic`, `S_ConfigureExternalMusic`) e li chiama direttamente. Portarlo a classe vuol dire portare i canali (`channels[]`, `sobjs`) e le circa 40 procedure `S_*` chiamate da tutto il gioco (azioni, thinker, menu, ACS): stima L, fuori dall'ondata.
+## #151 — Facciate w_wad e z_zone, un modulo alla volta (in corso, non verificato)
+
+Fatto (codice scritto senza compilatore, vedi `RUN-151.md`): `IEngineLumps` (`DelphiDoom.Engine.Wad.Lumps.Intf`, `TEngineLumps` sopra `w_wad`) e `TEngineZoneAllocator` (l'allocatore di `Libs\Zone` con gli `I_Error` di `Z_*`) dati da `ComposeEngine`. Non chiamano più `W_*`/`Z_*`: `TLevelLoader`, `TEngineLevelMapReader/Things/Nodes/Blockmap`, `TEngineUdmfMapLoader`, `TEngineNodesLumpSource`, le sorgenti di lump di texture, voxel (file, nomi, generatore di sprite), AUTOLOAD, MapInfo, MusInfo, luci, include, console (autoexec), ANIMDEFS, ACTORDEF, il generatore di palette, `TEngineEndoomScreen`, `TEngineDefaultPalette`, `TEngineFiles`, `TEngineAcsHost`, la musica esterna. `Libs\Wad`: `TWadLumpText` (usata da `W_TextLumpNum`) e `TWadFileBase` (usata da `ExtractFileBase`).
+
+Restano (la facciata resta, con il motivo):
+
+- `TEngineSfxSampleSource` e `DelphiDoom.Audio.SoundLibrary` (Z_Malloc con puntatore utente dentro `S_sfx[]`, 6 chiamate): non fatti, servirebbe passare `IZoneAllocator`/`IEngineLumps` a `ComposeSound`; stima S.
+- `W_*` dai moduli procedurali (renderer, `r_data`, `st_*`, `wi_stuff`, menu, `p_spec`, `g_game`, `deh_base`, `sc_states`, `gl_*`, `Hexen\*`): circa 750 delle 955 chiamate; non hanno un oggetto a cui dare `IEngineLumps`. Per togliere la facciata ogni modulo diventerebbe una classe (fase renderer/HUD).
+- `Z_*` da thinker, savegame (`p_saveg`, `sv_save`), `p_mobj`, `r_*`: circa 650 delle 697 chiamate; i blocchi dei thinker restano come sono (formato dei salvataggi). `Z_Malloc`/`Z_ChangeTag` restano facciata sul percorso caldo.
+- `w_wad.pas` tiene `lumpcache[]`, `lumpinfo[]`, la gestione dei file e dei PAK (`W_InitMultipleFiles`, `W_RuntimeLoad`, `W_Reload`): `TEngineLumps` è il solo punto da cui le classi la raggiungono.
+- Effetto da controllare: la memoria della zona si libera alla finalizzazione delle unit (le classi tengono l'allocatore), non in `Z_ShutDown`.
+
 
 ## #150 - Facciate di servizio m_argv, c_cmds, m_rnd (parziale)
 

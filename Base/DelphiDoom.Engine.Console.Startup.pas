@@ -14,7 +14,8 @@ interface
 
 uses
   DelphiDoom.CommandLine.Intf,
-  DelphiDoom.Console.Intf;
+  DelphiDoom.Console.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -25,10 +26,13 @@ type
   strict private
     FCommandLine: ICommandLine;
     FSaveFileNames: ISaveFileNames;
+    FLumps: IEngineLumps;
   public
     /// <param name="ACommandLine">Where -con is looked for</param>
     /// <param name="ASaveFileNames">Where the default autoexec file is written</param>
-    constructor Create(const ACommandLine: ICommandLine; const ASaveFileNames: ISaveFileNames);
+    /// <param name="ALumps">The lumps with the AUTOEXEC text</param>
+    constructor Create(const ACommandLine: ICommandLine; const ASaveFileNames: ISaveFileNames;
+      const ALumps: IEngineLumps);
     function AutoExecFileName: string;
     function DefaultAutoExecExists: Boolean;
     procedure CreateDefaultAutoExec(const ALines: TArray<string>);
@@ -39,12 +43,11 @@ type
 implementation
 
 uses
-  System.Classes,
   System.SysUtils,
+  System.Classes,
   System.Generics.Collections,
   d_delphi,
-  c_con,
-  w_wad;
+  c_con;
 
 const
   AUTOEXEC_LUMP_NAME = 'AUTOEXEC';
@@ -54,15 +57,18 @@ const
 { TEngineConsoleStartup }
 
 constructor TEngineConsoleStartup.Create(const ACommandLine: ICommandLine;
-  const ASaveFileNames: ISaveFileNames);
+  const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(ACommandLine) then
     raise EArgumentNilException.Create(SCommandLineIsNil);
   if not Assigned(ASaveFileNames) then
     raise EArgumentNilException.Create(SSaveFileNamesIsNil);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FCommandLine := ACommandLine;
   FSaveFileNames := ASaveFileNames;
+  FLumps := ALumps;
 end;
 
 function TEngineConsoleStartup.AutoExecFileName: string;
@@ -97,9 +103,9 @@ var
 begin
   LTexts := TList<string>.Create;
   try
-    for LLump := 0 to W_NumLumps - 1 do
-      if char8tostring(W_GetNameForNum(LLump)) = AUTOEXEC_LUMP_NAME then
-        LTexts.Add(W_TextLumpNum(LLump));
+    for LLump := 0 to FLumps.Count - 1 do
+      if FLumps.NameOf(LLump) = AUTOEXEC_LUMP_NAME then
+        LTexts.Add(FLumps.TextOf(LLump));
     Result := LTexts.ToArray;
   finally
     LTexts.Free;

@@ -21,7 +21,8 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Voxel.Intf,
-  DelphiDoom.Pak.Intf;
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -31,10 +32,11 @@ type
   TEngineVoxelFileSource = class(TInterfacedObject, IVoxelFileSource)
   strict private
     FPakFiles: IPakFileSystem;
+    FLumps: IEngineLumps;
     class function GameFolders: TArray<string>; static;
   public
-    /// <summary>Raises EArgumentNilException when APakFiles is nil</summary>
-    constructor Create(const APakFiles: IPakFileSystem);
+    /// <summary>Raises EArgumentNilException when APakFiles or ALumps is nil</summary>
+    constructor Create(const APakFiles: IPakFileSystem; const ALumps: IEngineLumps);
     function TryReadFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadDirectoryFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadLump(const AName: string; out ABytes: TBytes): Boolean;
@@ -46,7 +48,7 @@ uses
   d_delphi,
   doomdef,
   w_folders,
-  w_wad,
+  DelphiDoom.Wad.Types,
   DelphiDoom.Wad.Pak.Types;
 
 const
@@ -54,12 +56,16 @@ const
 
 { TEngineVoxelFileSource }
 
-constructor TEngineVoxelFileSource.Create(const APakFiles: IPakFileSystem);
+constructor TEngineVoxelFileSource.Create(const APakFiles: IPakFileSystem;
+  const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(APakFiles) then
     raise EArgumentNilException.Create(SPakFilesMissing);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FPakFiles := APakFiles;
+  FLumps := ALumps;
 end;
 
 class function TEngineVoxelFileSource.GameFolders: TArray<string>;
@@ -120,17 +126,17 @@ var
   LLump: Integer;
   LLength: Integer;
 begin
-  LLump := W_CheckNumForName(AName, TYPE_VOXEL);
+  LLump := FLumps.CheckNumForName(AName, TYPE_VOXEL);
   Result := LLump >= 0;
   if not Result then
   begin
     ABytes := nil;
     Exit;
   end;
-  LLength := W_LumpLength(LLump);
+  LLength := FLumps.LengthOf(LLump);
   SetLength(ABytes, LLength);
   if LLength > 0 then
-    W_ReadLump(LLump, @ABytes[0]);
+    FLumps.Read(LLump, @ABytes[0]);
 end;
 
 end.

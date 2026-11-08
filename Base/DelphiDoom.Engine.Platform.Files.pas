@@ -15,6 +15,7 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Platform.Intf,
+  DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Platform.Intf;
 
 type
@@ -26,9 +27,11 @@ type
   TEngineFiles = class(TInterfacedObject, IEngineFiles)
   strict private
     FStore: IFileStore;
+    FZone: IZoneAllocator;
   public
-    /// <remarks>Raises EArgumentNilException if AStore is nil</remarks>
-    constructor Create(const AStore: IFileStore);
+    /// <param name="AZone">Holds what ReadFile reads</param>
+    /// <remarks>Raises EArgumentNilException if AStore or AZone is nil</remarks>
+    constructor Create(const AStore: IFileStore; const AZone: IZoneAllocator);
     function WriteFile(const AName: string; const ASource: Pointer; const ALength: Integer): Boolean;
     function AppendFile(const AName: string; const ASource: Pointer; const ALength: Integer): Integer;
     function ReadFile(const AName: string; var ABuffer: Pointer): Integer;
@@ -38,7 +41,7 @@ implementation
 
 uses
   i_system,
-  z_zone,
+  DelphiDoom.Zone.Types,
   DelphiDoom.Platform.Types;
 
 const
@@ -47,12 +50,15 @@ const
 
 { TEngineFiles }
 
-constructor TEngineFiles.Create(const AStore: IFileStore);
+constructor TEngineFiles.Create(const AStore: IFileStore; const AZone: IZoneAllocator);
 begin
   inherited Create;
   if not Assigned(AStore) then
     raise EArgumentNilException.Create(SStoreIsNil);
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FStore := AStore;
+  FZone := AZone;
 end;
 
 function TEngineFiles.WriteFile(const AName: string; const ASource: Pointer;
@@ -79,8 +85,8 @@ begin
   end;
 
   Result := Length(LData);
-  // the callers free it with Z_Free
-  ABuffer := Z_Malloc(Result, PU_STATIC, nil);
+  // the callers free it with Z_Free (the zone is the one of z_zone)
+  ABuffer := FZone.Allocate(Result, ZONE_TAG_STATIC, nil);
   if Result > 0 then
     Move(LData[0], ABuffer^, Result);
 end;
