@@ -30,28 +30,24 @@ unit i_threads;
 
 interface
 
-type
-  threadfunc_t = function(p: pointer): integer; stdcall;
+uses
+  DelphiDoom.Threading.Types,
+  DelphiDoom.Threading.Intf;
 
 type
-  TDThread = class;
+  // The job of a thread: the same type as TWorkerProc of Libs\Threading
+  threadfunc_t = TWorkerProc;
 
-  threadinfo_t = record
-    thread: TDThread;
-  end;
-  Pthreadinfo_t = ^threadinfo_t;
-
+type
+  //
+  // TDThread: thin facade over IWorkerThread (Libs\Threading), kept for the units
+  // that create their own threads (walls, fake 3d, depth buffer, menu shader, automap).
+  // The thread waits on an event, is never suspended and is joined by Free.
+  //
   TDThread = class
   private
-    suspended: boolean;
-  protected
-    ffunc: threadfunc_t;
-    fparms: Pointer;
-    fid: Integer;
-    info: threadinfo_t;
-    fstatus: integer;
-    fterminated: boolean;
-    frunning: boolean;
+    FWorker: IWorkerThread;
+    FFunc: threadfunc_t;
   public
     constructor Create(const func: threadfunc_t = nil);
     destructor Destroy; override;
@@ -62,17 +58,25 @@ type
     function IsIdle: Boolean;
   end;
 
-const
-  THR_DEAD = 0;
-  THR_ACTIVE = 1;
-  THR_IDLE = 2;
-
 var
   dotestactivethreads: boolean = true;
 
 //==============================================================================
 //
+// I_ConfigureThreads
+//
+// Gives the factory of worker threads (composition root); TDThread.Create
+// needs it
+//
+//==============================================================================
+procedure I_ConfigureThreads(const AFactory: IWorkerThreadFactory);
+
+//==============================================================================
+//
 // TestActiveThreads
+//
+// It used to suspend the threads that had finished their job; the workers now
+// sleep on an event, so there is nothing to do. Kept for the callers.
 //
 //==============================================================================
 procedure TestActiveThreads;
@@ -94,42 +98,21 @@ function ThreadSet(var x: Integer; const newvalue: Integer): Integer;
 implementation
 
 uses
-  d_delphi,
   Windows,
   i_system;
 
-//==============================================================================
-//
-// ThreadWorker
-//
-//==============================================================================
-function ThreadWorker(p: Pointer): integer; stdcall;
 var
-  th: TDThread;
-begin
-  result := 0;
-  th := Pthreadinfo_t(p).thread;
-  while true do
-  begin
-    // Windows.Sleep, not I_Sleep: the worker still spins while the program ends, after the
-    // finalization of i_system has released the engine clock that I_Sleep calls (#147)
-    while (th.fstatus = THR_IDLE) and not th.fterminated do
-    begin
-      Windows.Sleep(0);
-    end;
-    if th.fterminated then
-      exit;
-    th.frunning := true;
-    th.ffunc(th.fparms);
-    th.frunning := false;
-    if th.fterminated then
-      exit;
-    th.fstatus := THR_IDLE;
-  end;
-end;
+  threadfactory: IWorkerThreadFactory = nil;
 
-var
-  threadpool: TDPointerList;
+//==============================================================================
+//
+// I_ConfigureThreads
+//
+//==============================================================================
+procedure I_ConfigureThreads(const AFactory: IWorkerThreadFactory);
+begin
+  threadfactory := AFactory;
+end;
 
 //==============================================================================
 //
@@ -138,60 +121,37 @@ var
 //==============================================================================
 constructor TDThread.Create(const func: threadfunc_t = nil);
 begin
-  fterminated := false;
-  ffunc := func;
-  fparms := nil;
-  fstatus := THR_IDLE;
-  frunning := false;
-  info.thread := Self;
-  fid := I_CreateProcess(@ThreadWorker, @info, true);
-  suspended := true;
-  threadpool.Add(self);
+  inherited Create;
+  if not Assigned(threadfactory) then
+    I_Error('TDThread.Create(): Threads are not configured');
+  FFunc := func;
+  FWorker := threadfactory.CreateWorker;
 end;
 
 //==============================================================================
 //
 // TDThread.Destroy
 //
+// Releasing the worker waits for the running job and for the thread to leave
+//
 //==============================================================================
 destructor TDThread.Destroy;
-const
-  // a job lasts a fraction of a frame: a worker still busy after this is stuck
-  WORKER_EXIT_TIMEOUT_MS = 10000;
-var
-  id: Integer;
 begin
-  // The worker reads the fields of this object until it leaves ThreadWorker: the object can be
-  // freed only after the thread has ended. Before #147 it waited 1 ms and freed it anyway, and a
-  // worker still in its loop read freed memory (access violation at the end of -timedemo demo1).
-  fterminated := true;
-  fstatus := THR_DEAD;
-  // a suspended worker never sees fterminated: resume it until its suspend count is 0
-  while Integer(ResumeThread(THandle(fid))) > 1 do
-    ;
-  if WaitForSingleObject(THandle(fid), WORKER_EXIT_TIMEOUT_MS) <> WAIT_OBJECT_0 then
-    TerminateThread(THandle(fid), 1);
-  CloseHandle(THandle(fid));
-  id := threadpool.IndexOf(self);
-  if id >= 0 then
-    threadpool.Delete(id);
-  Inherited Destroy;
+  FWorker := nil;
+  inherited Destroy;
 end;
 
 //==============================================================================
 // TDThread.Activate
 //
-// JVAL: Should check for fstatus, but it is not called while active
+// A new job waits for the previous one if it is still running
 //
 //==============================================================================
 procedure TDThread.Activate(const parms: pointer);
 begin
-  if not Assigned(ffunc) then
+  if not Assigned(FFunc) then
     I_Error('TDThread.Activate(): Null function pointer');
-  fparms := parms;
-  fstatus := THR_ACTIVE;
-  suspended := false;
-  ResumeThread(fid);
+  FWorker.Submit(FFunc, parms);
 end;
 
 //==============================================================================
@@ -201,7 +161,7 @@ end;
 //==============================================================================
 procedure TDThread.Activate(const func: threadfunc_t; const parms: pointer);
 begin
-  ffunc := func;
+  FFunc := func;
   Activate(parms);
 end;
 
@@ -212,15 +172,7 @@ end;
 //==============================================================================
 procedure TDThread.Wait;
 begin
-  if suspended then
-    Exit;
-
-  while fstatus = THR_ACTIVE do
-  begin
-    //I_Sleep(0);
-  end;
-  suspended := true;
-  SuspendThread(fid);
+  FWorker.Wait;
 end;
 
 //==============================================================================
@@ -230,17 +182,7 @@ end;
 //==============================================================================
 function TDThread.CheckJobDone: Boolean;
 begin
-  if fstatus = THR_IDLE then
-  begin
-    if not suspended then
-    begin
-      suspended := true;
-      SuspendThread(fid);
-    end;
-    result := true;
-  end
-  else
-    result := false;
+  Result := FWorker.IsIdle;
 end;
 
 //==============================================================================
@@ -250,7 +192,7 @@ end;
 //==============================================================================
 function TDThread.IsIdle: Boolean;
 begin
-  result := fstatus = THR_IDLE;
+  Result := FWorker.IsIdle;
 end;
 
 //==============================================================================
@@ -259,18 +201,7 @@ end;
 //
 //==============================================================================
 procedure TestActiveThreads;
-var
-  i: integer;
-  th: TDThread;
 begin
-  if not dotestactivethreads then
-    exit;
-
-  for i := 0 to threadpool.Count - 1 do
-  begin
-    th := threadpool.Pointers[i];
-    th.CheckJobDone;
-  end;
 end;
 
 //==============================================================================
@@ -293,11 +224,4 @@ begin
   Result := InterlockedExchange(x, newvalue);
 end;
 
-initialization
-  threadpool := TDPointerList.Create;
-
-finalization
-  threadpool.Free;
-
 end.
-

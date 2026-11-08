@@ -61,6 +61,10 @@ uses
   DelphiDoom.Engine.Iwad.Options,
   DelphiDoom.Zone.Factory,
   DelphiDoom.Engine.Zone.Memory,
+  DelphiDoom.Threading.Intf,
+  DelphiDoom.Threading.Factory,
+  i_threads,
+  mt_utils,
   z_zone,
   DelphiDoom.Engine.Net.Intf,
   DelphiDoom.Engine.Net.Game,
@@ -833,6 +837,16 @@ begin
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
 end;
 
+procedure ComposeThreading;
+var
+  LThreads: IWorkerThreadFactory;
+begin
+  // one factory of real threads for the TDThread of the renderer and for the pools of mt_utils
+  LThreads := TThreadingFactory.CreateThreadFactory;
+  I_ConfigureThreads(LThreads);
+  MT_ConfigureThreads(TThreadingFactory.CreatePoolFactory(LThreads));
+end;
+
 procedure ComposeMathCore;
 begin
   M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
@@ -1034,6 +1048,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LEvaluator);
   LTempFiles := ComposePlatform;
+  ComposeThreading;
   ComposeMathCore;
   ComposeSerializer;
 {$IFDEF OPENGL}
