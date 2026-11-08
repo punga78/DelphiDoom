@@ -30,7 +30,7 @@ procedure PP_SetupEnd(plat: Pplat_t; _type: plattype_e; picture, amount: integer
 {$ENDIF}
 procedure PP_UdmfPlatRaise(plat: Pplat_t; NewProc: TPPPlatProc);
 procedure PP_UdmfSetupBegin(sec: Psector_t; plat: Pplat_t);
-procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: PByteArray);
+procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: d_delphi.PByteArray);
 
 implementation
 
@@ -681,7 +681,7 @@ begin
   end;
 end;
 
-procedure Old_UdmfSetup(w: TPPWorld; plat: Pplat_t; sec: Psector_t; _type: plattype_e; args: PByteArray);
+procedure Old_UdmfSetup(w: TPPWorld; plat: Pplat_t; sec: Psector_t; _type: plattype_e; args: d_delphi.PByteArray);
 begin
   plat.crush := false;
   plat.tag := args[0];
@@ -776,7 +776,7 @@ begin
   pp_usetup_plat := plat^;
 end;
 
-procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: PByteArray);
+procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: d_delphi.PByteArray);
 var
   oldsec, newsec: sector_t;
   oldplat, newplat: plat_t;
@@ -913,9 +913,9 @@ begin
 end;
 
 initialization
-  PP_TeleportSelfTest;
 
 finalization
+  PP_TeleportSelfTest;
   PP_WriteReport;
 
 end.
