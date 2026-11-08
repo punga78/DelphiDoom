@@ -28,7 +28,15 @@ type
     /// </summary>
     /// <returns>A new file; the caller frees it</returns>
     /// <exception cref="EM2mException">AMidi is not a type 1 file</exception>
-    class function Merge(const AMidi: TMidiFile): TMidiFile; static;
+    class function Merge(const AMidi: TMidiFile): TMidiFile; overload; static;
+    /// <summary>
+    ///   As Merge, but with AKeepEndOfTrackDelta the time of an end of track event that is
+    ///   dropped is added to the delta of the next event kept, so that the absolute time of
+    ///   every event is the one of the file. Without it (the plain overload, as the old
+    ///   libm2m did) that time is lost
+    /// </summary>
+    class function Merge(const AMidi: TMidiFile;
+      AKeepEndOfTrackDelta: Boolean): TMidiFile; overload; static;
   end;
 
 implementation
@@ -45,13 +53,19 @@ const
 { TMidiTrackMerger }
 
 class function TMidiTrackMerger.Merge(const AMidi: TMidiFile): TMidiFile;
+begin
+  Result := Merge(AMidi, False);
+end;
+
+class function TMidiTrackMerger.Merge(const AMidi: TMidiFile;
+  AKeepEndOfTrackDelta: Boolean): TMidiFile;
 var
   LPosition: TArray<Integer>;
   LElapsed: TArray<Int64>;
   LEnded: TArray<Boolean>;
   LEvents: TArray<TMidiEvent>;
   LCount, LTrack, LNextTrack, LIndex: Integer;
-  LNext, LRemaining: Int64;
+  LNext, LRemaining, LCarry: Int64;
   LEvent: TMidiEvent;
   LAllEnded: Boolean;
 begin
@@ -67,6 +81,7 @@ begin
   SetLength(LElapsed, Length(AMidi.Tracks));
   SetLength(LEnded, Length(AMidi.Tracks));
   LCount := 0;
+  LCarry := 0;
 
   while True do
   begin
@@ -106,6 +121,8 @@ begin
       begin
         for LIndex := 0 to High(LElapsed) do
           Inc(LElapsed[LIndex], LNext);
+        if AKeepEndOfTrackDelta then
+          Inc(LCarry, LNext);
         Inc(LPosition[LNextTrack]);
         Continue;
       end;
@@ -122,7 +139,8 @@ begin
     if LCount = Length(LEvents) then
       SetLength(LEvents, LCount + EVENTS_GROWTH);
     LEvents[LCount] := LEvent;
-    LEvents[LCount].Delta := Cardinal(LNext);
+    LEvents[LCount].Delta := Cardinal(LNext + LCarry);
+    LCarry := 0;
     Inc(LCount);
     Inc(LPosition[LNextTrack]);
   end;

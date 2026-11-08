@@ -39,6 +39,10 @@ type
     [Test]
     procedure TestRifiutaUnFileDiTipo2;
     [Test]
+    procedure TestConLaOpzioneRiportaIlTempoDellaFineScartata;
+    [Test]
+    procedure TestSenzaOpzioneIlTempoDellaFineScartataSiPerde;
+    [Test]
     procedure TestNonCambiaIlFileDiPartenza;
   end;
 
@@ -167,6 +171,40 @@ begin
     begin
       TMidiTrackMerger.Merge(FSource);
     end, EM2mException);
+end;
+
+procedure TTestMidiTrackMerger.TestConLaOpzioneRiportaIlTempoDellaFineScartata;
+var
+  LEvents: TArray<TMidiEvent>;
+  LData: TBytes;
+begin
+  // The first track ends at 1, the second one has notes at 0 and at 119 (regression: the
+  // time of the dropped end of track was lost and the second note came at 118)
+  LData := B.Join([B.Header(1, 2, 96),
+    B.Track(B.Join([B.NoteOn(0, 0, 60, 1), B.EndOfTrack(1)])),
+    B.Track(B.Join([B.NoteOn(0, 1, 70, 1), B.NoteOn(119, 1, 72, 1), B.EndOfTrack(0)]))]);
+  FSource := TMidiReader.Parse(@LData[0], Length(LData));
+  FMerged := TMidiTrackMerger.Merge(FSource, True);
+
+  LEvents := FMerged.Tracks[0].Events;
+  Assert.AreEqual(72, LEvents[2].Param1);
+  Assert.AreEqual(119, Integer(LEvents[2].Delta));
+end;
+
+procedure TTestMidiTrackMerger.TestSenzaOpzioneIlTempoDellaFineScartataSiPerde;
+var
+  LEvents: TArray<TMidiEvent>;
+  LData: TBytes;
+begin
+  LData := B.Join([B.Header(1, 2, 96),
+    B.Track(B.Join([B.NoteOn(0, 0, 60, 1), B.EndOfTrack(1)])),
+    B.Track(B.Join([B.NoteOn(0, 1, 70, 1), B.NoteOn(119, 1, 72, 1), B.EndOfTrack(0)]))]);
+  FSource := TMidiReader.Parse(@LData[0], Length(LData));
+  FMerged := TMidiTrackMerger.Merge(FSource);
+
+  LEvents := FMerged.Tracks[0].Events;
+  Assert.AreEqual(72, LEvents[2].Param1);
+  Assert.AreEqual(118, Integer(LEvents[2].Delta));
 end;
 
 procedure TTestMidiTrackMerger.TestNonCambiaIlFileDiPartenza;
