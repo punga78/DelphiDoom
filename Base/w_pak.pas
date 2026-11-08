@@ -296,8 +296,13 @@ procedure TPakManager.PAddDirectory(const path: string);
       mask := path + '\' + mask;
 
     sl := findfiles(mask);
+    // findfiles gives the names without the path: a directory other than the current
+    // one added nothing, because PAddFile could not open them
     for i := 0 to sl.Count - 1 do
-      PAddFile(sl[i]);
+      if path <> '' then
+        PAddFile(path + '\' + sl[i])
+      else
+        PAddFile(sl[i]);
     sl.Free;
   end;
 

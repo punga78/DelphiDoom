@@ -52,7 +52,8 @@ uses
   DelphiDoom.Tests.Wad.LumpCache in 'Source\DelphiDoom.Tests.Wad.LumpCache.pas',
   DelphiDoom.Tests.Wad.Level in 'Source\DelphiDoom.Tests.Wad.Level.pas',
   DelphiDoom.Tests.Wad.Dll in 'Source\DelphiDoom.Tests.Wad.Dll.pas',
-  DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas';
+  DelphiDoom.Tests.Wad.RealWads in 'Source\DelphiDoom.Tests.Wad.RealWads.pas',
+  DelphiDoom.Tests.Wad.Pk3 in 'Source\DelphiDoom.Tests.Wad.Pk3.pas';
 
 var
   Runner: ITestRunner;

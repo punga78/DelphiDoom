@@ -59,6 +59,10 @@ uses
   w_wadwriter,
   w_wad;
 
+const
+  // the images in this folder of a PK3 are flats only
+  s_FLAT_PATH = 'FLATS\';
+
 var
   t_names: TDStringList;
   f_names: TDStringList;
@@ -73,29 +77,43 @@ var
   check: string;
   name: string;
   ext: string;
+  path: string;
+  istexture: boolean;
+  isflat: boolean;
 begin
   check := strupper(filename);
-  ext := fext(check);
-  if T_IsTextureExtension(ext) then
-    if Pos(s_TEX_PATH, fixpathname(check)) > 0 then
-    begin
-      check := fname(check);
-      name := firstword_ch(check, '.');
-      if name + '.' + ext = check then  // Only one '.'
-        if Length(name) <= 8 then
-          if W_CheckNumForName(name) < 0 then
-          begin
-            if t_names.IndexOf(name) < 0 then
-              if R_CheckTextureNumForName(name) <= 0 then
-              begin
-                t_names.Add(name);
-                f_names.Add(name);
-                Exit;
-              end;
-            if f_names.IndexOf(name) < 0 then
-              f_names.Add(name);
-          end;
-    end;
+  ext := fext(check);  // includes the dot ('.PNG')
+  if not T_IsTextureExtension(ext) then
+    Exit;
+
+  path := fixpathname(check);
+  istexture := Pos(s_TEX_PATH, path) > 0;
+  isflat := Pos(s_FLAT_PATH, path) > 0;
+  if not (istexture or isflat) then
+    Exit;
+
+  check := fname(check);
+  name := firstword_ch(check, '.');
+  // Only one '.' (the extension already has its dot: the old test compared with
+  // name + '.' + ext, "NAME..PNG", and was never true, so no cache was ever written)
+  if name + ext <> check then
+    Exit;
+  if Length(name) > 8 then
+    Exit;
+  if W_CheckNumForName(name) >= 0 then
+    Exit;
+
+  // The images of flats\ are only flats; the ones of textures\ are textures and flats
+  if istexture then
+    if t_names.IndexOf(name) < 0 then
+      if R_CheckTextureNumForName(name) <= 0 then
+      begin
+        t_names.Add(name);
+        f_names.Add(name);
+        Exit;
+      end;
+  if f_names.IndexOf(name) < 0 then
+    f_names.Add(name);
 end;
 
 type
@@ -230,7 +248,7 @@ begin
     p := malloc(size);
 
     memcpy(p, fs.Memory, fs.Size);
-    memcpy(pointer(integer(p) + fs.Size), m.Memory, m.Size);
+    memcpy(PByte(p) + fs.Size, m.Memory, m.Size);
   finally
     m.Free;
     columnofs.Free;
@@ -431,8 +449,9 @@ begin
     MkDir(wad1filename);
     wad1filename := wad1filename + 'pk3tex_' + uitoa(PAK_GetGlobalHash) + '_' + itoa(Hash(t_names.Text)) + '.wad';
     // Check if the texture cache exists
-    t_ok := False;
-    if fexists(wad1filename) then
+    // (a PK3 with only flats has no texture WAD)
+    t_ok := t_names.Count = 0;
+    if (not t_ok) and fexists(wad1filename) then
     begin
       reader := TWadReader.Create;
       reader.OpenWadFile(wad1filename);
@@ -461,9 +480,11 @@ begin
 
     if t_ok and f_ok then
     begin
-      W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
+      if t_names.Count > 0 then
+        W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
       W_RuntimeLoad(wad2filename, F_ORIGIN_WAD);
-      Result := True;
+      // the caller reads TEXTURE0 only if there is a texture WAD
+      Result := t_names.Count > 0;
     end
     else
     begin
@@ -499,7 +520,9 @@ begin
             memfree(p, size);
 
             // Save PNAMES0 entry
-            c8 := stringtochar8(t_names.Strings[i]);
+            // i indexes f_names (t_names is a subset of it): t_names.Strings[i] was
+            // the wrong name, or out of range
+            c8 := stringtochar8(f_names.Strings[i]);
             mp.Write(c8, 8);
 
             // Save TEXTURE0 entry
