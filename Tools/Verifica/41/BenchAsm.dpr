@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  Issue #41: micro benchmark of the old assembler against the Pascal versions }
-{  (32 bit only: the assembler of Tests\Source\DelphiDoom.Tests.Asm.Oracles    }
+{  (32 bit only: the assembler of Tests\Source\DelphiDoom.Tests.AsmParity.Oracles    }
 {  does not exist at 64 bit).                                                  }
 {                                                                              }
 {  Build:  C:\Strumenti\delphi-build.cmd Tools\Verifica\41\BenchAsm.dpr Release Win32 }
@@ -24,7 +24,7 @@ uses
   DelphiDoom.MathCore.Types in '..\..\..\Libs\MathCore\DelphiDoom.MathCore.Types.pas',
   DelphiDoom.MathCore.FixedMath in '..\..\..\Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
   DelphiDoom.MathCore.MemoryFill in '..\..\..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
-  DelphiDoom.Tests.Asm.Oracles in '..\..\..\Tests\Source\DelphiDoom.Tests.Asm.Oracles.pas';
+  DelphiDoom.Tests.AsmParity.Oracles in '..\..\..\Tests\Source\DelphiDoom.Tests.AsmParity.Oracles.pas';
 
 const
   ITERATIONS = 50000000;

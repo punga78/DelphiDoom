@@ -4,7 +4,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Asm.FixedMath;
+unit DelphiDoom.Tests.AsmParity.FixedMath;
 
 {$Q-}
 {$R-}
@@ -17,7 +17,7 @@ uses
 type
   /// <summary>
   ///   Parity of the old assembler of m_fixed, r_softlights, p_local and of the shifts of d_delphi
-  ///   (copied in DelphiDoom.Tests.Asm.Oracles) with the Pascal ones of TFixedMath, on the limit
+  ///   (copied in DelphiDoom.Tests.AsmParity.Oracles) with the Pascal ones of TFixedMath, on the limit
   ///   values and on millions of pseudo random inputs. Only for the 32 bit build, where the
   ///   assembler can run.
   /// </summary>
@@ -62,7 +62,7 @@ implementation
 {$IFDEF CPUX86}
 
 uses
-  DelphiDoom.MathCore.FixedMath, DelphiDoom.Tests.Asm.Oracles, DelphiDoom.Tests.Asm.Parity;
+  DelphiDoom.MathCore.FixedMath, DelphiDoom.Tests.AsmParity.Oracles, DelphiDoom.Tests.AsmParity.Parity;
 
 const
   // the inputs of the functions that never raise; the ones that can raise are slower

@@ -4,7 +4,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Asm.MemoryFill;
+unit DelphiDoom.Tests.AsmParity.MemoryFill;
 
 {$Q-}
 {$R-}
@@ -55,7 +55,7 @@ implementation
 uses
   d_delphi, DelphiDoom.MathCore.MemoryFill
 {$IFDEF CPUX86}
-  , DelphiDoom.Tests.Asm.Oracles
+  , DelphiDoom.Tests.AsmParity.Oracles
 {$ENDIF}
   ;
 

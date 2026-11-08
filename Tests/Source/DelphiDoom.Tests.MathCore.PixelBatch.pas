@@ -18,7 +18,7 @@ uses
 type
   /// <summary>
   ///   TPixelBatch with values written by hand; the parity with the old MMX and 3DNow assembler of
-  ///   r_mmx is in the project of the tests of the assembler (DelphiDoom.Tests.Asm)
+  ///   r_mmx is in the project of the tests of the assembler (DelphiDoom.Tests.AsmParity)
   /// </summary>
   [TestFixture]
   [Category('mathcore')]

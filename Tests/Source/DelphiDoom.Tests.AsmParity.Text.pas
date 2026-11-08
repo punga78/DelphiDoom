@@ -4,7 +4,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Asm.Text;
+unit DelphiDoom.Tests.AsmParity.Text;
 
 {$Q-}
 {$R-}
@@ -47,7 +47,7 @@ implementation
 uses
   d_delphi
 {$IFDEF CPUX86}
-  , DelphiDoom.Tests.Asm.Oracles
+  , DelphiDoom.Tests.AsmParity.Oracles
 {$ENDIF}
   ;
 

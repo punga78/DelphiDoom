@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: unit tests of the assembler replacements (DUnitX)               }
 {                                                                              }
-{  The old assembler (copied in Source\DelphiDoom.Tests.Asm.Oracles or, for    }
+{  The old assembler (copied in Source\DelphiDoom.Tests.AsmParity.Oracles or, for    }
 {  the MMX code, the 32 bit functions of d_delphi and r_mmx) against the       }
 {  Pascal versions, on limit values and millions of pseudo random inputs.      }
 {  The project is built for 32 bit: the assembler cannot run in 64 bit.        }
@@ -10,7 +10,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-program DelphiDoom.Tests.Asm;
+program DelphiDoom.Tests.AsmParity;
 
 {$APPTYPE CONSOLE}
 {$STRONGLINKTYPES ON}
@@ -26,12 +26,12 @@ uses
   DelphiDoom.MathCore.FixedMath in '..\Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
   DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
   DelphiDoom.MathCore.PixelBatch in '..\Libs\MathCore\DelphiDoom.MathCore.PixelBatch.pas',
-  DelphiDoom.Tests.Asm.Oracles in 'Source\DelphiDoom.Tests.Asm.Oracles.pas',
-  DelphiDoom.Tests.Asm.Parity in 'Source\DelphiDoom.Tests.Asm.Parity.pas',
-  DelphiDoom.Tests.Asm.FixedMath in 'Source\DelphiDoom.Tests.Asm.FixedMath.pas',
-  DelphiDoom.Tests.Asm.MemoryFill in 'Source\DelphiDoom.Tests.Asm.MemoryFill.pas',
-  DelphiDoom.Tests.Asm.PixelBatch in 'Source\DelphiDoom.Tests.Asm.PixelBatch.pas',
-  DelphiDoom.Tests.Asm.Text in 'Source\DelphiDoom.Tests.Asm.Text.pas';
+  DelphiDoom.Tests.AsmParity.Oracles in 'Source\DelphiDoom.Tests.AsmParity.Oracles.pas',
+  DelphiDoom.Tests.AsmParity.Parity in 'Source\DelphiDoom.Tests.AsmParity.Parity.pas',
+  DelphiDoom.Tests.AsmParity.FixedMath in 'Source\DelphiDoom.Tests.AsmParity.FixedMath.pas',
+  DelphiDoom.Tests.AsmParity.MemoryFill in 'Source\DelphiDoom.Tests.AsmParity.MemoryFill.pas',
+  DelphiDoom.Tests.AsmParity.PixelBatch in 'Source\DelphiDoom.Tests.AsmParity.PixelBatch.pas',
+  DelphiDoom.Tests.AsmParity.Text in 'Source\DelphiDoom.Tests.AsmParity.Text.pas';
 
 var
   Runner: ITestRunner;

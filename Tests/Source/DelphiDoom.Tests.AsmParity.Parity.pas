@@ -4,7 +4,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Asm.Parity;
+unit DelphiDoom.Tests.AsmParity.Parity;
 
 {$Q-}
 {$R-}

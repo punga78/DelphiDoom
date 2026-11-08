@@ -4,7 +4,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Asm.Oracles;
+unit DelphiDoom.Tests.AsmParity.Oracles;
 
 {$Q-}
 {$R-}

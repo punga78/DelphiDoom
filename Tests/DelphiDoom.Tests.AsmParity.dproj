@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{5B1C7E92-3D44-4F8A-9A6E-2C81D0F7B315}</ProjectGuid>
-        <MainSource>DelphiDoom.Tests.Asm.dpr</MainSource>
+        <MainSource>DelphiDoom.Tests.AsmParity.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -28,7 +28,7 @@
         <DCC_SymbolPlatform>false</DCC_SymbolPlatform>
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
-        <SanitizedProjectName>DelphiDoom.Tests.Asm</SanitizedProjectName>
+        <SanitizedProjectName>DelphiDoom.Tests.AsmParity</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

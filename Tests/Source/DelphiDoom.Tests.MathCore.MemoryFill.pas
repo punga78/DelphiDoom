@@ -18,7 +18,7 @@ uses
 type
   /// <summary>
   ///   TMemoryFill with values written by hand; the parity with the old MMX assembler is in the
-  ///   project of the tests of the assembler (DelphiDoom.Tests.Asm)
+  ///   project of the tests of the assembler (DelphiDoom.Tests.AsmParity)
   /// </summary>
   [TestFixture]
   [Category('mathcore')]

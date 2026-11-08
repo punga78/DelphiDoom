@@ -6,23 +6,23 @@ verifiche vanno fatte nell'ordine qui sotto. Tutti i comandi dalla radice del re
 ## 1. Compilazione
 
 ```
-build.bat Tests\DelphiDoom.Tests.Asm
+build.bat Tests\DelphiDoom.Tests.AsmParity
 build.bat Tests\DelphiDoom.Tests.MathCore
 build.bat giochi
 build.bat strumenti
 ```
 
-Leggere `logs\DelphiDoom.Tests.Asm.log`, `logs\DelphiDoom.Tests.MathCore.log`, `logs\<progetto>.log`
+Leggere `logs\DelphiDoom.Tests.AsmParity.log`, `logs\DelphiDoom.Tests.MathCore.log`, `logs\<progetto>.log`
 (righe `error`, poi i warning nuovi). Attesi: 0 errori. Warning nuovi possibili: nessuno voluto.
 
 ## 2. Test di parità
 
 ```
-bin\Tests\DelphiDoom.Tests.Asm.exe --exitbehavior:Continue
+bin\Tests\DelphiDoom.Tests.AsmParity.exe --exitbehavior:Continue
 bin\Tests\DelphiDoom.Tests.MathCore.exe --exitbehavior:Continue
 ```
 
-Attesi: `DelphiDoom.Tests.Asm` 36 test, tutti verdi (sono circa 30 s: ogni funzione di `m_fixed` gira su
+Attesi: `DelphiDoom.Tests.AsmParity` 36 test, tutti verdi (sono circa 30 s: ogni funzione di `m_fixed` gira su
 un milione di coppie, quelle che sollevano eccezioni su centomila); `DelphiDoom.Tests.MathCore` 113
 test (101 di prima più 12 nuovi), tutti verdi. `build.bat tests` li esegue entrambi (il progetto Asm è
 nella variabile `TESTS`).
