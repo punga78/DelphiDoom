@@ -441,6 +441,8 @@ uses
   DelphiDoom.Engine.Level.MapReader in 'Base\DelphiDoom.Engine.Level.MapReader.pas',
   DelphiDoom.Engine.Level.Things in 'Base\DelphiDoom.Engine.Level.Things.pas',
   DelphiDoom.Engine.Level.Nodes in 'Base\DelphiDoom.Engine.Level.Nodes.pas',
+  DelphiDoom.Engine.Nodes.Intf in 'Base\DelphiDoom.Engine.Nodes.Intf.pas',
+  DelphiDoom.Engine.Nodes.GlbspRunner in 'Base\DelphiDoom.Engine.Nodes.GlbspRunner.pas',
   DelphiDoom.Engine.Level.Blockmap in 'Base\DelphiDoom.Engine.Level.Blockmap.pas',
   DelphiDoom.Engine.Udmf.MapLoader in 'Base\DelphiDoom.Engine.Udmf.MapLoader.pas',
   DelphiDoom.Engine.Definitions.Intf in 'Base\DelphiDoom.Engine.Definitions.Intf.pas',
