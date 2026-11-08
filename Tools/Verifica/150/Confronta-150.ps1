@@ -29,7 +29,7 @@ function Get-Output([string]$exe, [string]$tag) {
   $logs = Join-Path $dir 'DATA\LOGS'
   Get-ChildItem -LiteralPath $logs -Filter '*_stdout.txt' -ErrorAction SilentlyContinue | Remove-Item -Force
   $arguments = "-iwad $Iwad -nosound -nomusic -devparm -con `"$con`" $Extra"
-  & powershell -NoProfile -File $runner -Exe $exe -Arguments $arguments -Seconds $Seconds
+  & powershell -NoProfile -File $runner -Exe $exe -Arguments $arguments -Seconds $Seconds | Out-Null
   $log = Get-ChildItem -LiteralPath $logs -Filter '*_stdout.txt' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
   if (-not $log) { throw "$tag : nessun *_stdout.txt in $logs" }
   $text = Get-Content -LiteralPath $log.FullName
