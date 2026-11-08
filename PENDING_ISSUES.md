@@ -188,3 +188,7 @@ Stato noto di master (0f6ff81c o successivo): `build.bat all` verde e 64 suite d
 - #83 `Libs\Midi`: `RUN-83.md` (golden del vecchio codice con `Tools\Verifica\83`, ascolto); la direttiva `MIDI_LEGACY_LOOP` è ancora attiva fino alla decisione dell'utente sul difetto del giro.
 - #48 percorsi PK3: `Tools\Verifica\48\Prova-Pk3.ps1` (`RUN-48.md`).
 - #150, #151, #155, #156: `RUN.md`, `RUN-151.md`, `RUN-155.md`, `RUN-156.md` (avvio degli otto eseguibili, confronto dei log).
+
+## Texture PK3 corrotte (osservato dalla prova degli errori fatali della #155)
+
+Con `usepk3textures=1` un PNG troncato o con CRC errato dà solo un avviso (`TPNGTextureManager(): PNG error -3/-8`), mentre un JPEG non valido ferma il gioco con `I_Error` (`TJPGTextureManager(): JPEG error -2: Not a valid JPEG stream`). Il vecchio eseguibile non mostrava nulla perché `usepk3textures` non entrava mai in funzione (corretto dalla #48): la differenza viene da quella correzione, non dalle classi della #155. Resta da decidere se un JPEG corrotto debba fermare il gioco come fa oggi o dare un avviso come il PNG. Prove in `Reference\_dati\prove155\` (non tracciata).
