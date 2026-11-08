@@ -261,6 +261,7 @@ var
   LOutcome: TLightScriptedOutcome;
   LOldRandom, LNewRandom: IGameRandom;
   LNewRemoved: Boolean;
+  LWasRemoved: Boolean;
   LName: string;
 begin
   LName := Format('kind %d level %d args %d,%d,%d,%d', [Ord(AKind), ALevel, AArg1, AArg2, AArg3, AArg4]);
@@ -288,10 +289,12 @@ begin
 
     for LTic := 1 to 3000 do
     begin
-      if not LOld.Removed then
+      // a removed light does not run any more, in the old code and in the new one alike
+      LWasRemoved := LOld.Removed;
+      if not LWasRemoved then
         OldTickScripted(LOld, LOldRandom);
-      LNewRemoved := LOld.Removed;
-      if not LNewRemoved then
+      LNewRemoved := LWasRemoved;
+      if not LWasRemoved then
         LNewRemoved := TLightScripted.Tick(AKind, LState.Value1, LState.Value2, LState.Tics1, LState.Tics2,
           LState.Count, LNewSector.Level, LNewRandom);
       Assert.AreEqual(LOld.Removed, LNewRemoved, Format('removed at tic %d, %s', [LTic, LName]));
