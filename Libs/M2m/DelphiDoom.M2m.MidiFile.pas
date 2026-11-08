@@ -27,6 +27,11 @@ type
     SmpteFps: Integer;
     /// <summary>Clocks per frame, or clocks per quarter note when SmpteFps is 0</summary>
     Timing: Integer;
+    /// <summary>
+    ///   The division word of the header as it is in the file, SMPTE bit included: the
+    ///   stream of Windows takes it unchanged. Zero for a file that was not read
+    /// </summary>
+    RawDivision: Integer;
     Tracks: TArray<TMidiTrack>;
   end;
 
