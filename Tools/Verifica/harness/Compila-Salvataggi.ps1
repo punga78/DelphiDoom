@@ -39,7 +39,7 @@ function Build-One([string]$Tree, [string]$G, [string]$Label) {
 if ($Which -contains 'OLD') {
   if (-not (Test-Path $OldTree)) {
     Set-Location $root
-    git worktree add --detach $OldTree $OldCommit
+    cmd /c "git worktree add --detach `"$OldTree`" $OldCommit 2>&1"
   }
   # the harness folder is not in the old commit: only the unit and the includes are needed
   $dest = Join-Path $OldTree 'Tools\Verifica\harness'
