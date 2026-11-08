@@ -85,6 +85,18 @@ uses
   DelphiDoom.Thinkers.Light.Factory,
   DelphiDoom.Engine.Light.Services,
   DelphiDoom.Engine.Light.PhaseSpawner,
+  DelphiDoom.Thinkers.Platform.Types,
+  DelphiDoom.Thinkers.Platform.Intf,
+  DelphiDoom.Thinkers.Platform.Games,
+  DelphiDoom.Thinkers.Platform.Factory,
+  DelphiDoom.Engine.Plat.Services,
+  DelphiDoom.Engine.Plat.Surroundings,
+  DelphiDoom.Engine.Plat.UdmfHost,
+{$IFNDEF HEXEN}
+  DelphiDoom.Engine.Plat.Host,
+{$ENDIF}
+  DelphiDoom.Engine.Teleport.Services,
+  DelphiDoom.Engine.Teleport.FogSpawner,
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -880,6 +892,33 @@ begin
     TLightGames.SequenceProfile(LGame), TEngineLightPhaseSpawner.Create);
 end;
 
+// The platforms (udmf_plats, p_plats): the machine of the classic ones (not in Hexen, which has
+// none) with the rules of the game, and the one of the scripted specials, both with the random of
+// the game and what is around a sector
+procedure ComposePlats(const ARandom: IGameRandom);
+var
+{$IFNDEF HEXEN}
+  LGame: TPlatGame;
+{$ENDIF}
+  LMachine: IPlatMachine;
+begin
+  LMachine := nil;
+{$IFNDEF HEXEN}
+  if not TPlatGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of platforms', [_GAME]);
+  LMachine := TPlatFactory.CreateMachine(LGame, TEnginePlatHost.Create,
+    TEnginePlatSurroundings.Create, ARandom);
+{$ENDIF}
+  P_ConfigurePlats(LMachine, TPlatFactory.CreateUdmfMachine(TEngineUdmfPlatHost.Create,
+    TEnginePlatSurroundings.Create, ARandom));
+end;
+
+// The teleports (udmf_telept, p_telept): the fog spawner and the random of the game
+procedure ComposeTeleport(const ARandom: IGameRandom);
+begin
+  P_ConfigureTeleport(TEngineTeleportFogSpawner.Create, ARandom);
+end;
+
 procedure ComposeThreading;
 var
   LThreads: IWorkerThreadFactory;
@@ -895,6 +934,8 @@ begin
   M_ConfigureRandom(ARandom);
   R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
   ComposeLights(ARandom);
+  ComposePlats(ARandom);
+  ComposeTeleport(ARandom);
 end;
 
 procedure ComposeSerializer;

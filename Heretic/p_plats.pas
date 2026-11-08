@@ -86,87 +86,29 @@ procedure P_RemoveActivePlat(plat: Pplat_t);
 implementation
 
 uses
-  doomdef,
   i_system,
-  m_fixed,
-  m_rnd,
   p_tick,
-  p_floor,
   p_setup,
-  s_sound,
-  sounddata,
-  z_zone;
+  z_zone,
+  DelphiDoom.Thinkers.Platform.Types,
+  DelphiDoom.Engine.Plat.Services,
+  DelphiDoom.Engine.Plat.Thinker;
 
 //==============================================================================
 //
 // T_PlatRaise
 //
+// The tic of a platform: the calculation is TPlatMachine (Libs\Thinkers), the
+// thinker stays the record that the savegames know
+//
 //==============================================================================
 procedure T_PlatRaise(plat: Pplat_t);
 var
-  res: result_e;
+  state: TPlatState;
 begin
-  case plat.status of
-    up:
-      begin
-        res := T_MovePlane(plat.sector, plat.speed, plat.high, plat.crush, 0, 1);
-
-        if (plat._type = raiseAndChange) or (plat._type = raiseToNearestAndChange) then
-        begin
-          if leveltime and 7 = 0 then
-            S_StartSound(@plat.sector.soundorg, Ord(sfx_stnmov));
-        end;
-
-        if (res = crushed) and not plat.crush then
-        begin
-          plat.count := plat.wait;
-          plat.status := down;
-          S_StartSound(@plat.sector.soundorg, Ord(sfx_pstart));
-        end
-        else
-        begin
-          if res = pastdest then
-          begin
-            plat.count := plat.wait;
-            plat.status := waiting;
-            S_StartSound(@plat.sector.soundorg, Ord(sfx_pstop));
-
-            case plat._type of
-              blazeDWUS,
-              downWaitUpStay:
-                P_RemoveActivePlat(plat);
-              raiseAndChange,
-              raiseToNearestAndChange:
-                P_RemoveActivePlat(plat);
-            end;
-          end;
-        end;
-      end;
-
-    down:
-      begin
-        res := T_MovePlane(plat.sector, plat.speed, plat.low, false, 0, -1);
-
-        if res = pastdest then
-        begin
-          plat.count := plat.wait;
-          plat.status := waiting;
-          S_StartSound(@plat.sector.soundorg, Ord(sfx_pstop));
-        end;
-      end;
-    waiting:
-      begin
-        plat.count := plat.count - 1;
-        if plat.count = 0 then
-        begin
-          if plat.sector.floorheight = plat.low then
-            plat.status := up
-          else
-            plat.status := down;
-          S_StartSound(@plat.sector.soundorg, Ord(sfx_pstart));
-        end;
-      end;
-  end;
+  PlatLoadState(plat, state);
+  PlatMachine.Tick(plat, plat.sector, PlatKindOf(plat._type), state);
+  PlatStoreState(plat, state);
 end;
 
 //==============================================================================
@@ -181,12 +123,17 @@ var
   plat: Pplat_t;
   secnum: integer;
   sec: Psector_t;
+  kind: TPlatKind;
+  picture: integer;
+  state: TPlatState;
 begin
   result := 0;
 
   // Activate all <type> plats that are in_stasis
   if _type = perpetualRaise then
     P_ActivateInStasis(line.tag);
+
+  kind := PlatKindOf(_type);
 
   secnum := P_FindSectorFromLineTag(line, -1);
   while secnum >= 0 do
@@ -209,64 +156,15 @@ begin
     plat.crush := false;
     plat.tag := line.tag;
 
-    case _type of
-      raiseToNearestAndChange:
-        begin
-          plat.speed := PLATSPEED div 2;
-          sec.floorpic := sides[line.sidenum[0]].sector.floorpic;
-          plat.high := P_FindNextHighestFloor(sec, sec.floorheight);
-          plat.wait := 0;
-          plat.status := up;
-          // NO MORE DAMAGE, IF APPLICABLE
-          sec.special := 0;
-          S_StartSound(@sec.soundorg, Ord(sfx_stnmov));
-        end;
+    // only the two kinds that change the floor look at the side of the line
+    if (kind = TPlatKind.RaiseToNearestAndChange) or (kind = TPlatKind.RaiseAndChange) then
+      picture := sides[line.sidenum[0]].sector.floorpic
+    else
+      picture := 0;
 
-      raiseAndChange:
-        begin
-          plat.speed := PLATSPEED div 2;
-          sec.floorpic := sides[line.sidenum[0]].sector.floorpic;
-          plat.high := sec.floorheight + amount * FRACUNIT;
-          plat.wait := 0;
-          plat.status := up;
-          S_StartSound(@sec.soundorg, Ord(sfx_stnmov));
-        end;
-      downWaitUpStay:
-        begin
-          plat.speed := PLATSPEED * 4;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := down;
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-      blazeDWUS:
-        begin
-          plat.speed := PLATSPEED * 8;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := down;
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-      perpetualRaise:
-        begin
-          plat.speed := PLATSPEED;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := P_FindHighestFloorSurrounding(sec);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := plat_e(P_Random and 1);
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-    end;
+    PlatLoadState(plat, state);
+    PlatMachine.Configure(sec, kind, picture, amount, state);
+    PlatStoreState(plat, state);
     P_AddActivePlat(plat);
   end;
 end;
@@ -285,7 +183,9 @@ begin
       (activeplats[i].tag = tag) and
       (activeplats[i].status = in_stasis) then
     begin
-      activeplats[i].status := activeplats[i].oldstatus;
+      activeplats[i].status := PlatEngineStatusOf(
+        PlatMachine.WakeUpStatus(PlatKindOf(activeplats[i]._type),
+          PlatStatusOf(activeplats[i].oldstatus)));
       activeplats[i].thinker._function.acp1 := @T_PlatRaise;
     end;
 end;
@@ -298,14 +198,17 @@ end;
 procedure EV_StopPlat(line: Pline_t);
 var
   i: integer;
+  state: TPlatState;
 begin
   for i := 0 to MAXPLATS - 1 do
     if (activeplats[i] <> nil) and
       (activeplats[i].status <> in_stasis) and
       (activeplats[i].tag = line.tag) then
     begin
-      activeplats[i].oldstatus := activeplats[i].status;
-      activeplats[i].status := in_stasis;
+      PlatLoadState(activeplats[i], state);
+      PlatMachine.Pause(state);
+      activeplats[i].oldstatus := PlatEngineStatusOf(state.OldStatus);
+      activeplats[i].status := PlatEngineStatusOf(state.Status);
       activeplats[i].thinker._function.acv := nil;
     end;
 end;

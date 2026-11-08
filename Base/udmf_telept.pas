@@ -78,7 +78,10 @@ uses
   p_tick,
   udmf_mobj,
   {$ENDIF}
-  doomdef;
+  doomdef,
+  DelphiDoom.Thinkers.Teleport.Geometry,
+  DelphiDoom.Thinkers.Teleport.Placement,
+  DelphiDoom.Engine.Teleport.Services;
 
 //==============================================================================
 //
@@ -93,8 +96,8 @@ var
   aboveFloor: fixed_t;
   fogDelta: fixed_t;
   player: Pplayer_t;
-  an: angle_t;
-  fog: Pmobj_t;
+  settleinput: TTeleportSettleInput;
+  settleoutput: TTeleportSettleOutput;
 begin
   oldx := thing.x;
   oldy := thing.y;
@@ -109,61 +112,38 @@ begin
   thing.floorz := floorz;
   thing.ceilingz := ceilingz;
 
-  if thing.player <> nil then
+  // The height of the thing at the destination (TTeleportPlacement, Libs\Thinkers): on the
+  // floor, except a flying player (Heretic and Hexen) and a missile, which keep their
+  // height above it
+  player := thing.player;
+  settleinput.IsPlayer := player <> nil;
+  settleinput.IsMissile := thing.flags and MF_MISSILE <> 0;
+  settleinput.IsFlying := false;
+  {$IFDEF HERETIC_OR_HEXEN}
+  settleinput.IsFlying := (player <> nil) and (player.powers[Ord(pw_flight)] <> 0);
+  {$ENDIF}
+  settleinput.AboveFloor := aboveFloor;
+  settleinput.FloorZ := thing.floorz;
+  settleinput.CeilingZ := thing.ceilingz;
+  settleinput.Height := thing.height;
+  settleinput.UseFog := useFog;
+  TTeleportPlacement.Settle(settleinput, settleoutput);
+  thing.z := settleoutput.Z;
+  if settleoutput.UpdatesViewHeight then
+    player.viewz := thing.z + player.viewheight;
+  if settleoutput.ResetsLook then
   begin
-    player := thing.player;
-    {$IFDEF HERETIC_OR_HEXEN}
-    if (player.powers[Ord(pw_flight)] <> 0) and (aboveFloor <> 0) then
-    begin
-      thing.z := thing.floorz + aboveFloor;
-      if thing.z + thing.height > thing.ceilingz then
-        thing.z := thing.ceilingz - thing.height;
-      player.viewz := thing.z + player.viewheight;
-    end
-    else
-    {$ENDIF}
-    begin
-      thing.z := thing.floorz;
-      player.viewz := thing.z + player.viewheight;
-      if useFog then
-      begin
-        player.lookdir := 0;
-        player.lookdir16 := 0; // JVAL Smooth Look Up/Down
-      end;
-    end;
-  end
-  else if thing.flags and MF_MISSILE <> 0 then
-  begin
-    thing.z := thing.floorz + aboveFloor;
-    if thing.z + thing.height > thing.ceilingz then
-      thing.z := thing.ceilingz - thing.height;
-  end
-  else
-    thing.z := thing.floorz;
+    player.lookdir := 0;
+    player.lookdir16 := 0; // JVAL Smooth Look Up/Down
+  end;
 
   // Spawn teleport fog at source and destination
   if useFog then
   begin
-    if thing.flags and MF_MISSILE <> 0 then
-      fogDelta := 0
-    else
-      fogDelta := TELEFOGHEIGHT;
-    fog := P_SpawnMobj(oldx, oldy, oldz + fogDelta, Ord(MT_TFOG));
-    {$IFDEF HEXEN}
-    S_StartSound(fog, Ord(SFX_TELEPORT));
-    {$ELSE}
-    S_StartSound(fog, Ord(sfx_telept));
-    {$ENDIF}
-    an := angle shr ANGLETOFINESHIFT;
-    fog := P_SpawnMobj(x + 20 * finecosine[an],
-                       y + 20 * finesine[an],
-                       thing.z + fogDelta,
-                       Ord(MT_TFOG));
-    {$IFDEF HEXEN}
-    S_StartSound(fog, Ord(SFX_TELEPORT));
-    {$ELSE}
-    S_StartSound(fog, Ord(sfx_telept));
-    {$ENDIF}
+    fogDelta := TTeleportGeometry.FogHeight(thing.flags and MF_MISSILE <> 0);
+    TeleportFogSpawner.SpawnFog(oldx, oldy, oldz + fogDelta, true);
+    TeleportFogSpawner.SpawnFog(TTeleportGeometry.FogX(x, angle), TTeleportGeometry.FogY(y, angle),
+      thing.z + fogDelta, true);
     if (thing.player <> nil) {$IFDEF HEXEN}and (Pplayer_t(thing.player).powers[Ord(pw_speed)] = 0){$ENDIF} then
     begin // Freeze player for about .5 sec
       thing.reactiontime := 18;
@@ -212,9 +192,8 @@ begin
 
   if thing.flags and MF_MISSILE <> 0 then
   begin
-    an := angle shr ANGLETOFINESHIFT;
-    thing.momx := FixedMul(thing.info.speed, finecosine[an]);
-    thing.momy := FixedMul(thing.info.speed, finesine[an]);
+    thing.momx := TTeleportGeometry.MissileMomentumX(thing.info.speed, angle);
+    thing.momy := TTeleportGeometry.MissileMomentumY(thing.info.speed, angle);
   end
   else if useFog then // no fog doesn't alter the player's momentums
   begin
@@ -264,7 +243,7 @@ begin
     exit;
   end;
 
-  count := 1 + (P_Random mod count);
+  count := TTeleportGeometry.PickDestination(count, TeleportRandom);
   searcher := {$IFDEF HEXEN}-1{$ELSE}@thinkercap{$ENDIF};
   mo := nil;
   for i := 0 to count - 1 do

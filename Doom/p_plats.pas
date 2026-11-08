@@ -85,118 +85,29 @@ procedure P_RemoveActivePlat(plat: Pplat_t);
 implementation
 
 uses
-  d_delphi,
   i_system,
-  doomdef,
-  g_game,
-  m_fixed,
-  m_rnd,
   p_tick,
-  p_floor,
   p_setup,
-  s_sound,
-  sounddata,
-  z_zone;
+  z_zone,
+  DelphiDoom.Thinkers.Platform.Types,
+  DelphiDoom.Engine.Plat.Services,
+  DelphiDoom.Engine.Plat.Thinker;
 
 //==============================================================================
 //
 // T_PlatRaise
 //
+// The tic of a platform: the calculation is TPlatMachine (Libs\Thinkers), the
+// thinker stays the record that the savegames know
+//
 //==============================================================================
 procedure T_PlatRaise(plat: Pplat_t);
 var
-  res: result_e;
+  state: TPlatState;
 begin
-  case plat.status of
-    up:
-      begin
-        res := T_MovePlane(plat.sector, plat.speed, plat.high, plat.crush, 0, 1);
-
-        if (plat._type = raiseAndChange) or (plat._type = raiseToNearestAndChange) then
-        begin
-          if leveltime and 7 = 0 then
-            S_StartSound(@plat.sector.soundorg, Ord(sfx_stnmov));
-        end;
-
-        if (res = crushed) and not plat.crush then
-        begin
-          plat.count := plat.wait;
-          plat.status := down;
-          S_StartSound(@plat.sector.soundorg, Ord(sfx_pstart));
-        end
-        else
-        begin
-          if res = pastdest then
-          begin
-            if plat._type = toggleUpDn then
-            begin             // in stasis awaiting next toggle activation
-              plat.oldstatus := plat.status;//jff 3/14/98 after action wait
-              plat.status := in_stasis;      //for reactivation of toggle
-            end
-            else
-            begin
-              plat.count := plat.wait;
-              plat.status := waiting;
-              S_StartSound(@plat.sector.soundorg, Ord(sfx_pstop));
-            end;
-
-            // lift types and pure raise types are done at end of up stroke
-            // only the perpetual type waits then goes back up
-            case plat._type of
-              blazeDWUS,
-              downWaitUpStay,
-              raiseAndChange,
-              raiseToNearestAndChange,
-              genLift:
-                P_RemoveActivePlat(plat);
-            end;
-          end;
-        end;
-      end;
-
-    down:
-      begin
-        res := T_MovePlane(plat.sector, plat.speed, plat.low, false, 0, -1);
-
-        if res = pastdest then
-        begin
-          if plat._type = toggleUpDn then //jff 3/14/98 toggle up down
-          begin // instant toggles go into stasis awaiting next activation
-            plat.oldstatus := plat.status;//jff 3/14/98 after action wait
-            plat.status := in_stasis;      //for reactivation of toggle
-          end
-          else
-          begin
-            plat.count := plat.wait;
-            plat.status := waiting;
-            S_StartSound(@plat.sector.soundorg, Ord(sfx_pstop));
-          end;
-
-          //jff 1/26/98 remove the plat if it bounced so it can be tried again
-          //only affects plats that raise and bounce
-          //killough 1/31/98: relax compatibility to demo_compatibility
-
-          // remove the plat if its a pure raise type
-          if G_PlayingEngineVersion > VERSION115 then
-            if plat._type in [raiseAndChange, raiseToNearestAndChange] then
-              P_RemoveActivePlat(plat);
-
-        end;
-      end;
-
-    waiting: // plat is waiting
-      begin
-        plat.count := plat.count - 1;
-        if plat.count = 0 then
-        begin
-          if plat.sector.floorheight = plat.low then
-            plat.status := up
-          else
-            plat.status := down;
-          S_StartSound(@plat.sector.soundorg, Ord(sfx_pstart));
-        end;
-      end;
-  end;
+  PlatLoadState(plat, state);
+  PlatMachine.Tick(plat, plat.sector, PlatKindOf(plat._type), state);
+  PlatStoreState(plat, state);
 end;
 
 //==============================================================================
@@ -211,6 +122,9 @@ var
   plat: Pplat_t;
   secnum: integer;
   sec: Psector_t;
+  kind: TPlatKind;
+  picture: integer;
+  state: TPlatState;
 begin
   // Activate all <type> plats that are in_stasis
   if _type = toggleUpDn then
@@ -224,6 +138,8 @@ begin
       P_ActivateInStasis(line.tag);
     result := 0;
   end;
+
+  kind := PlatKindOf(_type);
 
   secnum := -1;
   while P_FindSectorFromLineTag2(line, secnum) >= 0 do
@@ -246,85 +162,15 @@ begin
     plat.crush := false;
     plat.tag := line.tag;
 
-    //jff 1/26/98 Avoid raise plat bouncing a head off a ceiling and then
-    //going down forever -- default low to plat height when triggered
-    plat.low := sec.floorheight;
+    // only the two kinds that change the floor look at the side of the line
+    if (kind = TPlatKind.RaiseToNearestAndChange) or (kind = TPlatKind.RaiseAndChange) then
+      picture := sides[line.sidenum[0]].sector.floorpic
+    else
+      picture := 0;
 
-    case _type of
-      raiseToNearestAndChange:
-        begin
-          plat.speed := PLATSPEED div 2;
-          sec.floorpic := sides[line.sidenum[0]].sector.floorpic;
-          plat.high := P_FindNextHighestFloor(sec, sec.floorheight);
-          plat.wait := 0;
-          plat.status := up;
-          // NO MORE DAMAGE, IF APPLICABLE
-          sec.special := 0;
-          sec.oldspecial := 0;
-          S_StartSound(@sec.soundorg, Ord(sfx_stnmov));
-        end;
-
-      raiseAndChange:
-        begin
-          plat.speed := PLATSPEED div 2;
-          sec.floorpic := sides[line.sidenum[0]].sector.floorpic;
-          plat.high := sec.floorheight + amount * FRACUNIT;
-          plat.wait := 0;
-          plat.status := up;
-          S_StartSound(@sec.soundorg, Ord(sfx_stnmov));
-        end;
-
-      downWaitUpStay:
-        begin
-          plat.speed := PLATSPEED * 4;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := down;
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-
-      blazeDWUS:
-        begin
-          plat.speed := PLATSPEED * 8;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := down;
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-
-      perpetualRaise:
-        begin
-          plat.speed := PLATSPEED;
-          plat.low := P_FindLowestFloorSurrounding(sec);
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := P_FindHighestFloorSurrounding(sec);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.wait := TICRATE * PLATWAIT;
-          plat.status := plat_e(P_Random and 1);
-          S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-        end;
-
-      toggleUpDn: //jff 3/14/98 add new type to support instant toggle
-        begin
-          plat.speed := PLATSPEED;  //not used
-          plat.wait := TICRATE * PLATWAIT; //not used
-          plat.crush := true; //jff 3/14/98 crush anything in the way
-
-          // set up toggling between ceiling, floor inclusive
-          plat.low := sec.ceilingheight;
-          plat.high := sec.floorheight;
-          plat.status := down;
-        end;
-
-    end;
+    PlatLoadState(plat, state);
+    PlatMachine.Configure(sec, kind, picture, amount, state);
+    PlatStoreState(plat, state);
     P_AddActivePlat(plat);
   end;
 end;
@@ -346,10 +192,9 @@ begin
       (plt.tag = tag) and
       (plt.status = in_stasis) then
     begin
-      if plt._type = toggleUpDn then //jff 3/14/98 reactivate toggle type
-        plt.status := plat_e(decide(plt.oldstatus = up, Ord(down), Ord(up)))
-      else
-        plt.status := plt.oldstatus;
+      // the toggle goes the other way, the others do what they were doing
+      plt.status := PlatEngineStatusOf(
+        PlatMachine.WakeUpStatus(PlatKindOf(plt._type), PlatStatusOf(plt.oldstatus)));
       plt.thinker._function.acp1 := @T_PlatRaise;
     end;
   end;
@@ -364,6 +209,7 @@ function EV_StopPlat(line: Pline_t): integer;
 var
   i: integer;
   plt: Pplat_t;
+  state: TPlatState;
 begin
   result := 0;
   for i := 0 to MAXPLATS - 1 do
@@ -374,8 +220,10 @@ begin
       (plt.tag = line.tag) then
     begin
       result := 1;
-      plt.oldstatus := plt.status;
-      plt.status := in_stasis;
+      PlatLoadState(plt, state);
+      PlatMachine.Pause(state);
+      plt.oldstatus := PlatEngineStatusOf(state.OldStatus);
+      plt.status := PlatEngineStatusOf(state.Status);
       plt.thinker._function.acv := nil;
     end;
   end;

@@ -77,93 +77,32 @@ implementation
 
 uses
   i_system,
-  m_fixed,
-  m_rnd,
-  udmf_floor,
-  p_mobj_h,
   p_setup,
   p_tick,
   p_acs,
-  {$IFDEF HEXEN}
-  s_sndseq,
-  {$ELSE}
-  s_sound,
+{$IFNDEF HEXEN}
   udmf_spec,
-  {$ENDIF}
-  z_zone;
+{$ENDIF}
+  z_zone,
+  DelphiDoom.Thinkers.Platform.Types,
+  DelphiDoom.Engine.Plat.Services,
+  DelphiDoom.Engine.Plat.Thinker;
 
 //==============================================================================
 // TH_PlatRaise
 //
 //      Move a plat up and down
+//      The calculation is TUdmfPlatMachine (Libs\Thinkers), the thinker stays
+//      the record that the savegames know
 //
 //==============================================================================
 procedure TH_PlatRaise(plat: Pplat_t);
 var
-  res: result_e;
+  state: TPlatState;
 begin
-  case plat.status of
-    PLAT_UP:
-      begin
-        res := TH_MovePlane(plat.sector, plat.speed, plat.high, plat.crush, 0, 1);
-        if (res = RES_CRUSHED) and not plat.crush then
-        begin
-          plat.count := plat.wait;
-          plat.status := PLAT_DOWN;
-          {$IFDEF HEXEN}
-          S_StartSequence(Pmobj_t(@plat.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(plat.sector.seqType));
-          {$ELSE}
-          S_StartSound(@plat.sector.soundorg, plat.sector.seqType);
-          {$ENDIF}
-        end
-        else if res = RES_PASTDEST then
-        begin
-          plat.count := plat.wait;
-          plat.status := PLAT_WAITING;
-          {$IFDEF HEXEN}
-          S_StopSequence(Pmobj_t(@plat.sector.soundorg));
-          {$ELSE}
-          S_StopSound(@plat.sector.soundorg);
-          {$ENDIF}
-          if (plat._type = PLAT_DOWNWAITUPSTAY) or (plat._type = PLAT_DOWNBYVALUEWAITUPSTAY) or
-            (plat._type = PLAT_DOWNWAITUPSTAYLIP) then
-            PH_RemoveActivePlat(plat);
-        end;
-      end;
-    PLAT_DOWN:
-      begin
-        res := TH_MovePlane(plat.sector, plat.speed, plat.low, false, 0, -1);
-        if res = RES_PASTDEST then
-        begin
-          plat.count := plat.wait;
-          plat.status := PLAT_WAITING;
-          if (plat._type = PLAT_UPWAITDOWNSTAY) or (plat._type = PLAT_UPBYVALUEWAITDOWNSTAY) or
-            (plat._type = PLAT_UPNEARESTWAITDOWNSTAY) then
-            PH_RemoveActivePlat(plat);
-          {$IFDEF HEXEN}
-          S_StopSequence(Pmobj_t(@plat.sector.soundorg));
-          {$ELSE}
-          S_StopSound(@plat.sector.soundorg);
-          {$ENDIF}
-        end;
-      end;
-    PLAT_WAITING:
-      begin
-        dec(plat.count);
-        if plat.count <= 0 then
-        begin
-          if plat.sector.floorheight = plat.low then
-            plat.status := PLAT_UP
-          else
-            plat.status := PLAT_DOWN;
-          {$IFDEF HEXEN}
-          S_StartSequence(Pmobj_t(@plat.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(plat.sector.seqType));
-          {$ELSE}
-          S_StartSound(@plat.sector.soundorg, plat.sector.seqType);
-          {$ENDIF}
-        end;
-      end;
-  end;
+  UdmfPlatLoadState(plat, state);
+  UdmfPlatMachine.Tick(plat, plat.sector, UdmfPlatKindOf(plat._type), state);
+  UdmfPlatStoreState(plat, state);
 end;
 
 //==============================================================================
@@ -178,6 +117,7 @@ var
   plat: Pplat_t;
   secnum: integer;
   sec: Psector_t;
+  state: TPlatState;
 begin
   result := false;
   secnum := -1;
@@ -199,93 +139,13 @@ begin
     plat.sector := sec;
     plat.sector.specialdata := plat;
     plat.thinker._function.acp1 := @TH_PlatRaise;
-    plat.crush := false;
-    plat.tag := args[0];
-    plat.speed := args[1] * (FRACUNIT div 8);
-    case _type of
-      PLAT_DOWNWAITUPSTAY:
-        begin
-          plat.low := P_FindLowestFloorSurrounding(sec) + 8 * FRACUNIT;
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_DOWN;
-        end;
-      PLAT_DOWNWAITUPSTAYLIP:
-        begin
-          plat.low := P_FindLowestFloorSurrounding(sec) + args[3] * FRACUNIT;
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_DOWN;
-        end;
-      PLAT_DOWNBYVALUEWAITUPSTAY:
-        begin
-          plat.low := sec.floorheight - args[3] * 8 * FRACUNIT;
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_DOWN;
-        end;
-      PLAT_UPWAITDOWNSTAY:
-        begin
-          plat.high := P_FindHighestFloorSurrounding(sec);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.low := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_UP;
-        end;
-      PLAT_UPNEARESTWAITDOWNSTAY:
-        begin
-          plat.high := P_FindNextHighestFloor(sec, sec.floorheight);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.low := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_UP;
-        end;
-      PLAT_UPBYVALUEWAITDOWNSTAY:
-        begin
-          plat.high := sec.floorheight + args[3] * 8 * FRACUNIT;
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.low := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := PLAT_UP;
-        end;
-      PLAT_PERPETUALRAISE:
-        begin
-          plat.low := P_FindLowestFloorSurrounding(sec) + 8 * FRACUNIT;
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := P_FindHighestFloorSurrounding(sec);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := plat_e((P_Random and 1) + Ord(PLAT_UP));
-        end;
-      PLAT_PERPETUALRAISELIP:
-        begin
-          plat.low := P_FindLowestFloorSurrounding(sec) + args[3] * FRACUNIT;
-          if plat.low > sec.floorheight then
-            plat.low := sec.floorheight;
-          plat.high := P_FindHighestFloorSurrounding(sec);
-          if plat.high < sec.floorheight then
-            plat.high := sec.floorheight;
-          plat.wait := args[2];
-          plat.status := plat_e((P_Random and 1) + Ord(PLAT_UP));
-        end;
-    end;
+
+    UdmfPlatLoadState(plat, state);
+    UdmfPlatMachine.Configure(sec, UdmfPlatKindOf(_type), args[0], args[1], args[2], args[3], state);
+    UdmfPlatStoreState(plat, state);
+
     PH_AddActivePlat(plat);
-    {$IFDEF HEXEN}
-    S_StartSequence(Pmobj_t(@sec.soundorg), Ord(SEQ_PLATFORM) + Ord(sec.seqType));
-    {$ELSE}
-    S_StartSound(@sec.soundorg, sec.seqType);
-    {$ENDIF}
+    UdmfPlatMachine.AnnounceStart(sec);
   end;
 end;
 

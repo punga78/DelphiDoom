@@ -51,6 +51,16 @@ uses
   DelphiDoom.Thinkers.Light.Sequence in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
   DelphiDoom.Thinkers.Light.Games in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
   DelphiDoom.Thinkers.Light.Factory in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
+  DelphiDoom.Thinkers.Platform.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.Types.pas',
+  DelphiDoom.Thinkers.Platform.Intf in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.Intf.pas',
+  DelphiDoom.Thinkers.Platform.Games in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.Games.pas',
+  DelphiDoom.Thinkers.Platform.Machine in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+  DelphiDoom.Thinkers.Platform.UdmfMachine in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+  DelphiDoom.Thinkers.Platform.Factory in '..\Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
+  DelphiDoom.Thinkers.Teleport.Intf in '..\Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+  DelphiDoom.Thinkers.Teleport.Geometry in '..\Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+  DelphiDoom.Thinkers.Teleport.LineExit in '..\Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+  DelphiDoom.Thinkers.Teleport.Placement in '..\Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Placement.pas',
   DelphiDoom.Tests.Thinkers.Fakes in 'Source\DelphiDoom.Tests.Thinkers.Fakes.pas',
   DelphiDoom.Tests.Thinkers.OldLights in 'Source\DelphiDoom.Tests.Thinkers.OldLights.pas',
   DelphiDoom.Tests.Thinkers.LightNeighbors in 'Source\DelphiDoom.Tests.Thinkers.LightNeighbors.pas',
@@ -62,7 +72,15 @@ uses
   DelphiDoom.Tests.Thinkers.LightScripted in 'Source\DelphiDoom.Tests.Thinkers.LightScripted.pas',
   DelphiDoom.Tests.Thinkers.LightPhase in 'Source\DelphiDoom.Tests.Thinkers.LightPhase.pas',
   DelphiDoom.Tests.Thinkers.LightSequence in 'Source\DelphiDoom.Tests.Thinkers.LightSequence.pas',
-  DelphiDoom.Tests.Thinkers.LightGames in 'Source\DelphiDoom.Tests.Thinkers.LightGames.pas';
+  DelphiDoom.Tests.Thinkers.LightGames in 'Source\DelphiDoom.Tests.Thinkers.LightGames.pas',
+  DelphiDoom.Tests.Thinkers.PlatFakes in 'Source\DelphiDoom.Tests.Thinkers.PlatFakes.pas',
+  DelphiDoom.Tests.Thinkers.OldPlats in 'Source\DelphiDoom.Tests.Thinkers.OldPlats.pas',
+  DelphiDoom.Tests.Thinkers.PlatGames in 'Source\DelphiDoom.Tests.Thinkers.PlatGames.pas',
+  DelphiDoom.Tests.Thinkers.PlatMachine in 'Source\DelphiDoom.Tests.Thinkers.PlatMachine.pas',
+  DelphiDoom.Tests.Thinkers.PlatUdmfMachine in 'Source\DelphiDoom.Tests.Thinkers.PlatUdmfMachine.pas',
+  DelphiDoom.Tests.Thinkers.TeleportGeometry in 'Source\DelphiDoom.Tests.Thinkers.TeleportGeometry.pas',
+  DelphiDoom.Tests.Thinkers.TeleportLineExit in 'Source\DelphiDoom.Tests.Thinkers.TeleportLineExit.pas',
+  DelphiDoom.Tests.Thinkers.TeleportPlacement in 'Source\DelphiDoom.Tests.Thinkers.TeleportPlacement.pas';
 
 var
   Runner: ITestRunner;

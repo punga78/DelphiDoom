@@ -82,7 +82,11 @@ uses
   s_sound,
   sounddata,
   udmf_telept,
-  tables;
+  tables,
+  DelphiDoom.Thinkers.Teleport.Geometry,
+  DelphiDoom.Thinkers.Teleport.LineExit,
+  DelphiDoom.Engine.Teleport.Services,
+  DelphiDoom.Engine.Teleport.LineSide;
 
 //==============================================================================
 //
@@ -94,8 +98,6 @@ var
   i: integer;
   tag: integer;
   m: Pmobj_t;
-  fog: Pmobj_t;
-  an: LongWord;
   thinker: Pthinker_t;
   sector: Psector_t;
   p: Pplayer_t;
@@ -195,19 +197,11 @@ begin
         end;
 
         // spawn teleport fog at source and destination
-        fog := P_SpawnMobj(oldx, oldy, oldz, Ord(MT_TFOG));
-        S_StartSound(fog, Ord(sfx_telept));
-        {$IFDEF FPC}
-        an := _SHRW(m.angle, ANGLETOFINESHIFT);
-        {$ELSE}
-        an := m.angle shr ANGLETOFINESHIFT;
-        {$ENDIF}
-        fog := P_SpawnMobj(m.x + 20 * finecosine[an],
-                           m.y + 20 * finesine[an],
-                           thing.z, Ord(MT_TFOG));
-
-        // emit sound, where?
-        S_StartSound(fog, Ord(sfx_telept));
+        TeleportFogSpawner.SpawnFog(oldx, oldy, oldz, true);
+        // emit sound, where? at the destination fog
+        TeleportFogSpawner.SpawnFog(TTeleportGeometry.FogX(m.x, m.angle),
+                                    TTeleportGeometry.FogY(m.y, m.angle),
+                                    thing.z, true);
 
         // don't move for a bit
         if thing.player <> nil then
@@ -278,11 +272,11 @@ begin
           // Rotate 90 degrees, so that walking perpendicularly across
           // teleporter linedef causes thing to exit in the direction
           // indicated by the exit thing.
-          angle := R_PointToAngle2(0, 0, line.dx, line.dy) - m.angle + ANG90;
+          angle := TTeleportGeometry.SilentExitAngle(R_PointToAngle2(0, 0, line.dx, line.dy), m.angle);
 
           // Sine, cosine of angle adjustment
-          s := finesine[angle shr ANGLETOFINESHIFT];
-          c := finecosine[angle shr ANGLETOFINESHIFT];
+          s := TTeleportGeometry.SineOf(angle);
+          c := TTeleportGeometry.CosineOf(angle);
 
           // Momentum of thing crossing teleporter linedef
           momx := thing.momx;
@@ -305,8 +299,8 @@ begin
           thing.z := z + thing.floorz;
 
           // Rotate thing's momentum to come out of exit just like it entered
-          thing.momx := FixedMul(momx, c) - FixedMul(momy, s);
-          thing.momy := FixedMul(momy, c) + FixedMul(momx, s);
+          thing.momx := TTeleportGeometry.RotatedMomentumX(momx, momy, s, c);
+          thing.momy := TTeleportGeometry.RotatedMomentumY(momx, momy, s, c);
 
           // Adjust player's view, in there has been a height change
           // Voodoo dolls are excluded by making sure player.mo = thing.
@@ -341,9 +335,8 @@ end;
 // It has advantages over the teleporter with thing exits.
 //
 
-// maximum fixed_t units to move object to avoid hiccups
-const
-  FUDGEFACTOR = 10;
+// (the maximum fixed_t units to move object to avoid hiccups is
+// TELEPORT_FUDGE_FACTOR of TTeleportLineExit)
 
 //==============================================================================
 //
@@ -354,14 +347,14 @@ function EV_SilentLineTeleport(line: Pline_t; side: integer; thing: Pmobj_t; rev
 var
   i: integer;
   l: Pline_t;
-  pos: fixed_t;
   angle: angle_t;
   x: fixed_t;
   y: fixed_t;
   z: fixed_t;
   s: fixed_t;
   c: fixed_t;
-  fudge: integer;
+  lineinput: TTeleportLineInput;
+  lineoutput: TTeleportLineOutput;
   player: Pplayer_t;
   stepdown: boolean;
   deltaviewheight: fixed_t;
@@ -378,35 +371,6 @@ begin
     l := @lines[i];
     if (l <> line) and (l.backsector <> nil) then
     begin
-      // Get the thing's position along the source linedef
-      // proff: Changed abs to D_abs (see m_fixed.h)
-      if abs(line.dx) > abs(line.dy) then
-        pos := FixedDiv(thing.x - line.v1.x, line.dx)
-      else
-        pos := FixedDiv(thing.y - line.v1.y, line.dy);
-
-      // Get the angle between the two linedefs, for rotating
-      // orientation and momentum. Rotate 180 degrees, and flip
-      // the position across the exit linedef, if reversed.
-      angle := R_PointToAngle2(0, 0, l.dx, l.dy) -
-               R_PointToAngle2(0, 0, line.dx, line.dy);
-      if reverse then
-        pos := FRACUNIT - pos
-      else
-        angle := angle + ANG180;
-
-      // Interpolate position across the exit linedef
-      x := l.v2.x - FixedMul(pos, l.dx);
-      y := l.v2.y - FixedMul(pos, l.dy);
-
-      // Sine, cosine of angle adjustment
-      s := finesine[angle shr ANGLETOFINESHIFT];
-      c := finecosine[angle shr ANGLETOFINESHIFT];
-
-      // Maximum distance thing can be moved away from interpolated
-      // exit, to ensure that it is on the correct side of exit linedef
-      fudge := FUDGEFACTOR;
-
       // Whether this is a player, and if so, a pointer to its player_t.
       // Voodoo dolls are excluded by making sure thing.player.mo==thing.
       player := nil;
@@ -420,43 +384,33 @@ begin
       // Height of thing above ground
       z := thing.z - thing.floorz;
 
-      // Side to exit the linedef on positionally.
-      //
-      // Notes:
-      //
-      // This flag concerns exit position, not momentum. Due to
-      // roundoff error, the thing can land on either the left or
-      // the right side of the exit linedef, and steps must be
-      // taken to make sure it does not end up on the wrong side.
-      //
-      // Exit momentum is always towards side 1 in a reversed
-      // teleporter, and always towards side 0 otherwise.
-      //
-      // Exiting positionally on side 1 is always safe, as far
-      // as avoiding oscillations and stuck-in-wall problems,
-      // but may not be optimum for non-reversed teleporters.
-      //
-      // Exiting on side 0 can cause oscillations if momentum
-      // is towards side 1, as it is with reversed teleporters.
-      //
-      // Exiting on side 1 slightly improves player viewing
-      // when going down a step on a non-reversed teleporter.
-
-      if reverse or ((player <> nil) and stepdown) then
-        side := 1
-      else
-        side := 0;
-
-      // Make sure we are on correct side of exit linedef.
-      while (P_PointOnLineSide(x, y, l) <> side) and (fudge >= 0) do
-      begin
-        dec(fudge);
-        // proff: Changed abs to D_abs (see m_fixed.h)
-        if abs(l.dx) > abs(l.dy) then
-          y := y - (1 - 2 * intval(intval(l.dx < 0) <> side))
-        else
-          x := x + (1 - 2 * intval(intval(l.dy < 0) <> side));
-      end;
+      // The exit position and the rotation (TTeleportLineExit, Libs\Thinkers): the position of
+      // the thing along the source linedef, the angle between the two linedefs (180 degrees more,
+      // or the position flipped across the exit linedef, if reversed), the interpolated position
+      // across the exit linedef and the sine and cosine of the angle. The position is moved
+      // by at most FUDGEFACTOR units until it is on the correct side of the exit linedef:
+      // the side is 1 for a reversed teleporter or a player that steps down, 0 otherwise.
+      lineinput.SourceDx := line.dx;
+      lineinput.SourceDy := line.dy;
+      lineinput.SourceStartX := line.v1.x;
+      lineinput.SourceStartY := line.v1.y;
+      lineinput.SourceAngle := R_PointToAngle2(0, 0, line.dx, line.dy);
+      lineinput.ExitDx := l.dx;
+      lineinput.ExitDy := l.dy;
+      lineinput.ExitEndX := l.v2.x;
+      lineinput.ExitEndY := l.v2.y;
+      lineinput.ExitAngle := R_PointToAngle2(0, 0, l.dx, l.dy);
+      lineinput.ThingX := thing.x;
+      lineinput.ThingY := thing.y;
+      lineinput.Reverse := reverse;
+      lineinput.ThingIsPlayer := player <> nil;
+      lineinput.StepDown := stepdown;
+      TTeleportLineExit.Compute(lineinput, TEngineTeleportLineSide.Create(l), lineoutput);
+      x := lineoutput.X;
+      y := lineoutput.Y;
+      angle := lineoutput.Angle;
+      s := lineoutput.Sine;
+      c := lineoutput.Cosine;
 
       // Attempt to teleport, aborting if blocked
       if not P_TeleportMove(thing, x, y) then
@@ -478,8 +432,8 @@ begin
       y := thing.momy;
 
       // Rotate thing's momentum to come out of exit just like it entered
-      thing.momx := FixedMul(x, c) - FixedMul(y, s);
-      thing.momy := FixedMul(y, c) + FixedMul(x, s);
+      thing.momx := TTeleportGeometry.RotatedMomentumX(x, y, s, c);
+      thing.momy := TTeleportGeometry.RotatedMomentumY(x, y, s, c);
 
       // Adjust a player's view, in there has been a height change
       if player <> nil then
