@@ -21,6 +21,7 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Voxel.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
   DelphiDoom.Engine.Voxel.Intf;
 
 type
@@ -38,14 +39,16 @@ type
     FPatches: IVoxelPatchBuilder;
     FNewNames: TFunc<IVoxelSpriteNames>;
     FGenerateOption: TFunc<Boolean>;
+    FLumps: IEngineLumps;
     function CollectNames: IVoxelSpriteNames;
     function BuildWadFile(const ANames: IVoxelSpriteNames; const AGenerate: Boolean): string;
   public
     /// <param name="ANewNames">An empty list of names for each call of Generate</param>
     /// <param name="AGenerateOption">The option r_generatespritesfromvoxels, read at each call</param>
+    /// <param name="ALumps">Loads the generated WAD at runtime</param>
     constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder;
       const APatches: IVoxelPatchBuilder; const ANewNames: TFunc<IVoxelSpriteNames>;
-      const AGenerateOption: TFunc<Boolean>);
+      const AGenerateOption: TFunc<Boolean>; const ALumps: IEngineLumps);
     procedure Generate;
   end;
 
@@ -59,7 +62,6 @@ uses
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
   w_pak,
-  w_wad,
   w_wadwriter;
 
 const
@@ -110,9 +112,13 @@ end;
 
 constructor TEngineVoxelSpriteGenerator.Create(const ALoader: IVoxelLoader;
   const ACubes: IVoxelCubeBuilder; const APatches: IVoxelPatchBuilder;
-  const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>);
+  const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>;
+  const ALumps: IEngineLumps);
 begin
   inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
   if not Assigned(ALoader) then
     raise EArgumentNilException.Create('ALoader');
   if not Assigned(ACubes) then
@@ -199,7 +205,7 @@ begin
     Exit;
 
   LWadFileName := BuildWadFile(LNames, FGenerateOption());
-  W_RuntimeLoad(LWadFileName, F_ORIGIN_WAD);
+  FLumps.RuntimeLoadFile(LWadFileName);
   I_DeclareTempFile(LWadFileName);
 end;
 

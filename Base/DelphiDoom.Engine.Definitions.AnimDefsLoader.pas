@@ -13,6 +13,7 @@ interface
 
 uses
   DelphiDoom.Definitions.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
   DelphiDoom.Engine.Definitions.Intf;
 
 type
@@ -24,9 +25,13 @@ type
   TEngineAnimDefsLoader = class(TInterfacedObject, IEngineAnimDefsLoader)
   strict private
     FParser: IDefAnimDefsParser;
+    FLumps: IEngineLumps;
   public
-    /// <summary>The parser leaves out the animations of flats and textures that do not exist</summary>
-    constructor Create(const AParser: IDefAnimDefsParser);
+    /// <summary>
+    ///   The parser leaves out the animations of flats and textures that do not exist; ALumps
+    ///   gives the lump ANIMDEFS
+    /// </summary>
+    constructor Create(const AParser: IDefAnimDefsParser; const ALumps: IEngineLumps);
     procedure Load;
   end;
 
@@ -36,7 +41,6 @@ uses
   System.SysUtils,
   i_system,
   r_data,
-  w_wad,
   p_animdefs,
   DelphiDoom.Definitions.Types;
 
@@ -45,12 +49,16 @@ const
 
 { TEngineAnimDefsLoader }
 
-constructor TEngineAnimDefsLoader.Create(const AParser: IDefAnimDefsParser);
+constructor TEngineAnimDefsLoader.Create(const AParser: IDefAnimDefsParser;
+  const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(AParser) then
     raise EArgumentNilException.Create('AParser');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FParser := AParser;
+  FLumps := ALumps;
 end;
 
 procedure TEngineAnimDefsLoader.Load;
@@ -65,7 +73,7 @@ var
   LIndex: Integer;
   LInner: Integer;
 begin
-  LLump := W_CheckNumForName(ANIM_SCRIPT_NAME);
+  LLump := FLumps.CheckNumForName(ANIM_SCRIPT_NAME);
   if LLump < 0 then
     Exit;
 
@@ -76,7 +84,7 @@ begin
   AnimDefCount := 0;
 
   try
-    LAnimations := FParser.Parse(W_TextLumpNum(LLump));
+    LAnimations := FParser.Parse(FLumps.TextOf(LLump));
   except
     on E: EDefinitionsException do
       I_Error('%s', [E.Message]);

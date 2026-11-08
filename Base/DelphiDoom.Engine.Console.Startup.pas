@@ -13,7 +13,8 @@ unit DelphiDoom.Engine.Console.Startup;
 interface
 
 uses
-  DelphiDoom.Console.Intf;
+  DelphiDoom.Console.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -21,7 +22,10 @@ type
   ///   the file of the command line parameter -con
   /// </summary>
   TEngineConsoleStartup = class(TInterfacedObject, IConsoleStartupSource)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function AutoExecFileName: string;
     function DefaultAutoExecExists: Boolean;
     procedure CreateDefaultAutoExec(const ALines: TArray<string>);
@@ -32,17 +36,25 @@ type
 implementation
 
 uses
+  System.SysUtils,
   System.Classes,
   System.Generics.Collections,
   d_delphi,
   c_con,
-  m_argv,
-  w_wad;
+  m_argv;
 
 const
   AUTOEXEC_LUMP_NAME = 'AUTOEXEC';
 
 { TEngineConsoleStartup }
+
+constructor TEngineConsoleStartup.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
 
 function TEngineConsoleStartup.AutoExecFileName: string;
 begin
@@ -76,9 +88,9 @@ var
 begin
   LTexts := TList<string>.Create;
   try
-    for LLump := 0 to W_NumLumps - 1 do
-      if char8tostring(W_GetNameForNum(LLump)) = AUTOEXEC_LUMP_NAME then
-        LTexts.Add(W_TextLumpNum(LLump));
+    for LLump := 0 to FLumps.Count - 1 do
+      if FLumps.NameOf(LLump) = AUTOEXEC_LUMP_NAME then
+        LTexts.Add(FLumps.TextOf(LLump));
     Result := LTexts.ToArray;
   finally
     LTexts.Free;

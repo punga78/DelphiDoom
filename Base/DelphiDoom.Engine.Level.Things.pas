@@ -12,6 +12,8 @@ unit DelphiDoom.Engine.Level.Things;
 interface
 
 uses
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -22,8 +24,12 @@ type
   TEngineLevelThings = class(TInterfacedObject, ILevelThings)
   strict private
     FRules: ILevelThingRules;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
   public
-    constructor Create(const ARules: ILevelThingRules);
+    /// <summary>ALumps gives the lump THINGS and AZone takes back the copy of it that was cached</summary>
+    constructor Create(const ARules: ILevelThingRules; const ALumps: IEngineLumps;
+      const AZone: IZoneAllocator);
     procedure Load(ALump: Integer);
   end;
 
@@ -32,19 +38,25 @@ implementation
 uses
   System.SysUtils,
   doomdata,
-  w_wad,
-  z_zone,
   p_udmf,
-  p_easyslope;
+  p_easyslope,
+  DelphiDoom.Zone.Types;
 
 { TEngineLevelThings }
 
-constructor TEngineLevelThings.Create(const ARules: ILevelThingRules);
+constructor TEngineLevelThings.Create(const ARules: ILevelThingRules; const ALumps: IEngineLumps;
+  const AZone: IZoneAllocator);
 begin
   inherited Create;
   if not Assigned(ARules) then
     raise EArgumentNilException.Create('ARules');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FRules := ARules;
+  FLumps := ALumps;
+  FZone := AZone;
 end;
 
 procedure TEngineLevelThings.Load(ALump: Integer);
@@ -54,8 +66,8 @@ var
   LThing: Pmapthing_t;
   LCount: Integer;
 begin
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
-  LCount := W_LumpLength(ALump) div SizeOf(mapthing_t);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
+  LCount := FLumps.LengthOf(ALump) div SizeOf(mapthing_t);
 
   P_EasySlopeInit;
 
@@ -80,7 +92,7 @@ begin
   end;
 
   FRules.AfterMapThingsSpawned;
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
   FRules.AfterThingsLoaded;
 end;
 

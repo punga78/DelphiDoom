@@ -20,7 +20,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Voxel.Intf;
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -28,7 +29,10 @@ type
   ///   directories and the PAK files, in the directory of the program, and as lumps of the WADs
   /// </summary>
   TEngineVoxelFileSource = class(TInterfacedObject, IVoxelFileSource)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function TryReadFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadDirectoryFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadLump(const AName: string; out ABytes: TBytes): Boolean;
@@ -41,9 +45,17 @@ uses
   doomdef,
   w_folders,
   w_pak,
-  w_wad;
+  DelphiDoom.Wad.Types;
 
 { TEngineVoxelFileSource }
+
+constructor TEngineVoxelFileSource.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
 
 function ReadAll(const AStream: TPakStream; out ABytes: TBytes): Boolean;
 var
@@ -90,17 +102,17 @@ var
   LLump: Integer;
   LLength: Integer;
 begin
-  LLump := W_CheckNumForName(AName, TYPE_VOXEL);
+  LLump := FLumps.CheckNumForName(AName, TYPE_VOXEL);
   Result := LLump >= 0;
   if not Result then
   begin
     ABytes := nil;
     Exit;
   end;
-  LLength := W_LumpLength(LLump);
+  LLength := FLumps.LengthOf(LLump);
   SetLength(ABytes, LLength);
   if LLength > 0 then
-    W_ReadLump(LLump, @ABytes[0]);
+    FLumps.Read(LLump, @ABytes[0]);
 end;
 
 end.

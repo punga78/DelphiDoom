@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Nodes.Intf;
+  DelphiDoom.Nodes.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -20,7 +21,10 @@ type
   ///   number, with the name as the directory has it
   /// </summary>
   TEngineNodesLumpSource = class(TInterfacedObject, INodesLumpSource)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function GetLumpCount: Integer;
     function LumpName(ALump: Integer): string;
     function LumpLength(ALump: Integer): Integer;
@@ -30,43 +34,47 @@ type
 
 implementation
 
-uses
-  d_delphi,
-  w_wad;
-
 { TEngineNodesLumpSource }
+
+constructor TEngineNodesLumpSource.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
 
 function TEngineNodesLumpSource.GetLumpCount: Integer;
 begin
-  Result := W_NumLumps;
+  Result := FLumps.Count;
 end;
 
 function TEngineNodesLumpSource.LumpName(ALump: Integer): string;
 begin
-  if (ALump < 0) or (ALump >= W_NumLumps) then
+  if (ALump < 0) or (ALump >= FLumps.Count) then
     Result := ''
   else
-    Result := char8tostring(W_GetNameForNum(ALump));
+    Result := FLumps.NameOf(ALump);
 end;
 
 function TEngineNodesLumpSource.LumpLength(ALump: Integer): Integer;
 begin
-  Result := W_LumpLength(ALump);
+  Result := FLumps.LengthOf(ALump);
 end;
 
 function TEngineNodesLumpSource.ReadLump(ALump: Integer): TBytes;
 var
   LLength: Integer;
 begin
-  LLength := W_LumpLength(ALump);
+  LLength := FLumps.LengthOf(ALump);
   SetLength(Result, LLength);
   if LLength > 0 then
-    W_ReadLump(ALump, @Result[0]);
+    FLumps.Read(ALump, @Result[0]);
 end;
 
 function TEngineNodesLumpSource.FindLump(const AName: string): Integer;
 begin
-  Result := W_CheckNumForName(AName);
+  Result := FLumps.CheckNumForName(AName);
 end;
 
 end.

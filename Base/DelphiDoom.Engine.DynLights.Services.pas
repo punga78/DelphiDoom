@@ -14,7 +14,8 @@ interface
 
 uses
   DelphiDoom.DynLights.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -29,9 +30,11 @@ type
     // JVAL: random index for the light animation, don't bother resetting it
     FRandomIndex: Integer;
     FPreprocessor: IScriptTextPreprocessor;
+    FLumps: IEngineLumps;
   public
     /// <param name="APreprocessor">The script preprocessor of Filter (includes, directives, defines)</param>
-    constructor Create(const APreprocessor: IScriptTextPreprocessor);
+    /// <param name="ALumps">The lumps of the loaded WADs</param>
+    constructor Create(const APreprocessor: IScriptTextPreprocessor; const ALumps: IEngineLumps);
     function NextByte: Integer;
     function ObjectForName(const AUpperName: string): Integer;
     function SpriteForName(const AUpperName: string): Integer;
@@ -59,8 +62,7 @@ uses
   m_rnd,
   System.SysUtils,
   p_pspr,
-  w_pak,
-  w_wad;
+  w_pak;
 
 var
   // PAK_StringIterator takes a plain procedure: what it gives is kept here until it returns
@@ -77,12 +79,16 @@ const
 
 { TEngineDynLightServices }
 
-constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor);
+constructor TEngineDynLightServices.Create(const APreprocessor: IScriptTextPreprocessor;
+  const ALumps: IEngineLumps);
 begin
   inherited Create;
   if not Assigned(APreprocessor) then
     raise EArgumentNilException.Create(SPreprocessorMissing);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
   FPreprocessor := APreprocessor;
+  FLumps := ALumps;
 end;
 
 function TEngineDynLightServices.NextByte: Integer;
@@ -163,11 +169,11 @@ var
 begin
   // one text for each lump of that name, they are not joined
   Result := nil;
-  for LIndex := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(LIndex)) = AName then
+  for LIndex := 0 to FLumps.Count - 1 do
+    if FLumps.NameOf(LIndex) = AName then
     begin
       SetLength(Result, Length(Result) + 1);
-      Result[High(Result)] := W_TextLumpNum(LIndex);
+      Result[High(Result)] := FLumps.TextOf(LIndex);
     end;
 end;
 
