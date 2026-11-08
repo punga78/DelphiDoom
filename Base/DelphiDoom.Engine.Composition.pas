@@ -269,6 +269,8 @@ uses
   DelphiDoom.Engine.Music.MusBackend,
   DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.Engine.Music.ExternalSource,
+  DelphiDoom.Midi.Factory,
+  i_midi_new,
   DelphiDoom.Mp3.Provider,
   s_sound,
   s_pk3sounds,
@@ -487,11 +489,14 @@ begin
 end;
 
 procedure ComposeMusic(const ATempFiles: ITempFiles; const ACommandLine: ICommandLine;
-  const AZone: IZoneAllocator);
+  const AZone: IZoneAllocator; const ALog: ILog);
 var
   LMidiStream: IEngineMidiStream;
   LMus: IMusicBackend;
 begin
+  // the MIDI files that the player of the midi stream plays (snd_uselegacymidiplayer = 0, 2)
+  // are turned into the events of the stream by a sequencer for each song
+  I_ConfigureMidiStream(TMidiFactory.CreateSequencerFactory(ALog));
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine);
   LMus := LMidiStream as IMusicBackend;
@@ -1127,7 +1132,7 @@ begin
   ComposeDisplayModes;
   ComposeInput(LLog);
   ComposeSound(LLog);
-  ComposeMusic(LTempFiles, LCommandLine, LZone);
+  ComposeMusic(LTempFiles, LCommandLine, LZone, LLog);
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;

@@ -17,6 +17,26 @@ uses
 
 type
   /// <summary>
+  ///   What the reader accepts besides what the strict C reader of m2m accepts. Without options
+  ///   it reads exactly as before
+  /// </summary>
+  TMidiReaderOption = (
+    /// <summary>
+    ///   The running status survives a meta or system exclusive event (it is the status of the
+    ///   last channel message), as the player of the midi stream wants
+    /// </summary>
+    mroRunningStatusAcrossMeta,
+    /// <summary>
+    ///   The next track starts where the length of the track says, whatever follows its end of
+    ///   track event, and a track of length zero is an empty track
+    /// </summary>
+    mroTrackLengths,
+    /// <summary>Any file type and any number of tracks, none included</summary>
+    mroAnyHeader);
+
+  TMidiReaderOptions = set of TMidiReaderOption;
+
+  /// <summary>
   ///   Reads the header and the tracks of a Standard MIDI file from memory
   /// </summary>
   /// <remarks>
@@ -30,6 +50,7 @@ type
     FData: PByte;
     FSize: Integer;
     FPosition: Integer;
+    FOptions: TMidiReaderOptions;
     function ReadByte: Byte;
     function ReadWord: Word;
     function ReadCardinal: Cardinal;
@@ -43,11 +64,17 @@ type
   public
     /// <param name="AData">The bytes of the file; they must stay alive while the reader works</param>
     /// <param name="ASize">Their number</param>
-    constructor Create(const AData: Pointer; const ASize: Integer);
+    /// <param name="AOptions">What is accepted besides the strict reading</param>
+    constructor Create(const AData: Pointer; const ASize: Integer;
+      const AOptions: TMidiReaderOptions = []);
 
     /// <summary>Reads the whole file</summary>
     /// <exception cref="EM2mException">the file is not readable</exception>
-    class function Parse(const AData: Pointer; const ASize: Integer): TMidiFile; static;
+    class function Parse(const AData: Pointer; const ASize: Integer): TMidiFile; overload; static;
+    /// <summary>Reads the whole file with the given options</summary>
+    /// <exception cref="EM2mException">the file is not readable</exception>
+    class function Parse(const AData: Pointer; const ASize: Integer;
+      const AOptions: TMidiReaderOptions): TMidiFile; overload; static;
   end;
 
 implementation
@@ -69,18 +96,26 @@ const
 
 { TMidiReader }
 
-constructor TMidiReader.Create(const AData: Pointer; const ASize: Integer);
+constructor TMidiReader.Create(const AData: Pointer; const ASize: Integer;
+  const AOptions: TMidiReaderOptions);
 begin
   inherited Create;
   FData := AData;
   FSize := ASize;
+  FOptions := AOptions;
 end;
 
 class function TMidiReader.Parse(const AData: Pointer; const ASize: Integer): TMidiFile;
+begin
+  Result := Parse(AData, ASize, []);
+end;
+
+class function TMidiReader.Parse(const AData: Pointer; const ASize: Integer;
+  const AOptions: TMidiReaderOptions): TMidiFile;
 var
   LReader: TMidiReader;
 begin
-  LReader := TMidiReader.Create(AData, ASize);
+  LReader := TMidiReader.Create(AData, ASize, AOptions);
   try
     Result := LReader.ReadFile;
   finally
@@ -235,10 +270,15 @@ var
   LPreviousType: TMidiEventType;
   LPreviousChannel: Integer;
   LEvent: TMidiEvent;
+  LTrackEnd: Int64;
 begin
   Result := Default(TMidiTrack);
   ReadSignature('MTrk');
   LTotalBytes := ReadCardinal;
+  LTrackEnd := Int64(FPosition) + LTotalBytes;
+  // A track with no bytes at all is an empty track, for the readers that go by the lengths
+  if (mroTrackLengths in FOptions) and (LTotalBytes = 0) then
+    Exit;
   LReadBytes := 0;
   LCount := 0;
   LPreviousType := metNone;
@@ -247,8 +287,13 @@ begin
   while LReadBytes < LTotalBytes do
   begin
     LEvent := ReadEvent(LReadBytes, LPreviousType, LPreviousChannel);
-    LPreviousType := LEvent.EventType;
-    LPreviousChannel := LEvent.Channel;
+    // The running status is the one of the last channel message, with this option
+    if not (mroRunningStatusAcrossMeta in FOptions) or
+      (LEvent.EventType in [metNoteOff..metPitchBend]) then
+    begin
+      LPreviousType := LEvent.EventType;
+      LPreviousChannel := LEvent.Channel;
+    end;
 
     if LCount = Length(Result.Events) then
       SetLength(Result.Events, LCount + EVENTS_GROWTH);
@@ -258,6 +303,12 @@ begin
     if (LEvent.EventType = metMeta) and (LEvent.Param1 = META_ENDTRACK) then
     begin
       SetLength(Result.Events, LCount);
+      if mroTrackLengths in FOptions then
+      begin
+        if LTrackEnd > FSize then
+          raise EM2mException.CreateCode(M2M_ERROR_MIDI);
+        FPosition := Integer(LTrackEnd);
+      end;
       Exit;
     end;
   end;
@@ -278,16 +329,17 @@ begin
   Result := TMidiFile.Create;
   try
     LValue := ReadWord;
-    if LValue > HIGHEST_MODE then
+    if (LValue > HIGHEST_MODE) and not (mroAnyHeader in FOptions) then
       raise EM2mException.CreateCode(M2M_ERROR_MIDI);
     Result.Mode := LValue;
 
     LValue := ReadWord;
-    if LValue = 0 then
+    if (LValue = 0) and not (mroAnyHeader in FOptions) then
       raise EM2mException.CreateCode(M2M_ERROR_MIDI);
     SetLength(Result.Tracks, LValue);
 
     LValue := ReadWord;
+    Result.RawDivision := LValue;
     if (LValue and TIMING_SMPTE) <> 0 then
     begin
       // The upper byte is the frames per second, as a negative number

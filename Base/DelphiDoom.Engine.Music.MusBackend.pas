@@ -84,7 +84,10 @@ uses
   i_system,
   i_midi,
   s_sound,
-  DelphiDoom.Audio.MusConverter;
+  DelphiDoom.Audio.MusConverter,
+  DelphiDoom.Midi.Types,
+  DelphiDoom.Midi.Volume,
+  DelphiDoom.Midi.EventFeeder;
 
 const
   SM2mIsNil = 'TMusMusicBackend.Create(): AM2m is nil';
@@ -375,10 +378,8 @@ end;
 procedure TMusMusicBackend.SetVolume(AVolume: Integer);
 var
   rc: MMRESULT;
-  dwEvent: DWORD;
   vol100: integer;
   ch: DWORD;
-  i: integer;
 begin
 // Set volume on output device.
   if (FCurrent <> nil) and (AVolume = 0) and FStarted then
@@ -386,18 +387,15 @@ begin
 
   if win_vista_or_newer and (FCurrent <> nil) then
   begin
-    vol100 := midivolumecontrol[ibetween(AVolume, 0, 15)];
+    vol100 := TMidiVolume.PercentOfLevel(AVolume);
 
     for ch := 0 to 15 do
-    begin
-      dwEvent := MIDI_CTRLCHANGE or ch or (DWORD(MIDICTRL_VOLUME) shl 8) or (DWORD(vol100) shl 16);
-      midiOutShortMsg(HMIDIOUT(FStream), dwEvent);
-    end;
+      midiOutShortMsg(HMIDIOUT(FStream), TMidiVolume.ControlChangeMessage(ch, Cardinal(vol100)));
 
-    for i := 0 to Length(FCurrent.Events) - 1 do
-      if FCurrent.Events[i].Event and $000000F0 = MIDI_CTRLCHANGE then
-        if (FCurrent.Events[i].Event and $0000FF00) shr 8 = MIDICTRL_VOLUME then
-          FCurrent.Events[i].Event := (FCurrent.OriginalEvents[i].Event and $FF80FFFF) or (Cardinal(vol100) shl 16);
+    // the events of the song are the original ones with the new volume
+    if Length(FCurrent.Events) > 0 then
+      TMidiVolume.ApplyToEvents(PMidiStreamEvent(@FCurrent.Events[0]),
+        PMidiStreamEvent(@FCurrent.OriginalEvents[0]), Length(FCurrent.Events), Cardinal(vol100));
   end
   else
   begin
@@ -418,6 +416,7 @@ procedure TMusMusicBackend.Process;
 var
   header: PMidiHdr;
   length: integer;
+  first: integer;
   i: integer;
   rc: MMRESULT;
 begin
@@ -442,15 +441,10 @@ begin
         FVolumeSet := snd_MusicVolume;
       end;
 
-      header.lpData := PAnsiChar(@FCurrent.Events[FCurrent.NextEvent]);
-      length := System.Length(FCurrent.Events) - FCurrent.NextEvent;
-      if length > MAX_MIDI_EVENTS then
-      begin
-        length := MAX_MIDI_EVENTS;
-        FCurrent.NextEvent := FCurrent.NextEvent + MAX_MIDI_EVENTS;
-      end
-      else
-        FCurrent.NextEvent := 0;
+      // the piece of the song that goes next: at most MAX_MIDI_EVENTS events, then from the start
+      TMidiEventFeeder.NextPiece(System.Length(FCurrent.Events), MAX_MIDI_EVENTS,
+        FCurrent.NextEvent, first, length);
+      header.lpData := PAnsiChar(@FCurrent.Events[first]);
       length := length * SizeOf(TMusMidiEvent);
       header.dwBufferLength := length;
       header.dwBytesRecorded := length;
