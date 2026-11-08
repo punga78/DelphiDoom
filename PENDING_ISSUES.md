@@ -74,7 +74,7 @@ Cancellate (i chiamanti usano le classi senza stato della libreria): i quattro `
 
 - ~~`Base\p_udmf.pas`, `Base\p_musinfo.pas` (`P_InitMusInfo`), `Base\p_animdefs.pas` (`P_InitFTAnims`), `Doom\p_switch.pas` (`P_InitSwitchList`)~~: fatto nella #142 (`TLevelLoader`, vedi sotto).
 - `P_AnimateSurfaces` (da `p_tick` a ogni tic) e `A_MusicChanger` (azione di stato registrata per puntatore nei quattro `deh_main`): sono procedure chiamate per puntatore o dal ciclo dei tic, servono i dati di modulo; il loro stato (liste delle animazioni, catalogo MusInfo) andrebbe in un oggetto del livello.
-- `Base\p_umapinfo.pas` (`U_ParseMapInfo`/`U_FreeMapInfo` da `D_DoomMain` di tre `d_main`): i record `mapentry_t` (`gamemapinfo`, `u_mapinfo`) sono letti da circa 20 moduli (`g_game`, `f_finale`, `p_setup`, `p_enemy`, `p_user`, `wi_stuff`, `st_stuff`, `sb_bar`, `hu_stuff`, `s_sound`, `udmf_spec`, `d_player`); servirebbe un `IMapInfoCatalog` passato a quei moduli al posto dei record.
+- `Base\p_umapinfo.pas` (#159: le funzioni `U_ParseMapInfo`/`U_FreeMapInfo`/`ubigstringtostring` sono ora `TEngineMapInfoRecords`, dato ai tre `d_main` da `D_ConfigureMapInfo`; l'unit resta solo coi dati): i record `mapentry_t` (`gamemapinfo`, `u_mapinfo`) sono letti da circa 20 moduli (`g_game`, `f_finale`, `p_setup`, `p_enemy`, `p_user`, `wi_stuff`, `st_stuff`, `sb_bar`, `hu_stuff`, `s_sound`, `udmf_spec`, `d_player`); servirebbe un `IMapInfoCatalog` passato a quei moduli al posto dei record.
 - `Doom\p_switch.pas` contiene anche `P_UseSpecialLine` e `P_ChangeSwitchTexture` (special di linea e bottoni, legati ai thinker: fase thinker).
 
 ## #156 — Renderer: analisi e prima fetta (fase 4)
@@ -115,7 +115,7 @@ Tolte come facciate: `c_con.pas` (`TEngineConsoleScreen`), `m_misc.pas` (`TEngin
 Cancellate `Base\i_sound.pas` e `Base\i_music.pas`; `s_pk3sounds` riceve `ITempFiles` (`S_ConfigurePK3Sounds`). Resta `Base\i_tmp.pas`, con chiamanti fuori dall'audio:
 
 - i savegame (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file temporaneo, `I_NewTempFile`) e `SCRIPT\ps_dll` (una DLL in un PAK copiata su file prima di `LoadLibrary`): procedure storiche senza un oggetto a cui darlo. Servirebbe un `ITempFiles` passato a `G_DoSaveGame`/`G_DoLoadGame` (o un oggetto dello stato degli script di mappa) e alla registrazione delle funzioni di PascalScript; circa mezza giornata, fuori dall'ondata (savegame).
-- `DelphiDoom.Engine.Scanner.PaletteGenerator` (`I_NewTempFile`) e `DelphiDoom.Engine.Voxel.SpriteGenerator` (`I_DeclareTempFile`) chiamano ancora `i_tmp` (conteggio di `FACCIATE.md`): classi del motore che possono riceverlo dal costruttore; poche righe ciascuna. `sc_utils` non c'è più (#144) e `I_InitTempFiles` non esiste più (#133).
+- ~~`DelphiDoom.Engine.Scanner.PaletteGenerator` e `DelphiDoom.Engine.Voxel.SpriteGenerator` chiamano ancora `i_tmp`~~: fatto nella #159, ricevono `ITempFiles` dal costruttore (`ComposeScanner` e `ComposeVoxels`); `ComposePlatform` ora gira prima di `ComposeScanner`.
 - `i_system` (`I_ShutDownTempFiles`): il ciclo di vita, resta finché restano i chiamanti sopra.
 
 `s_sound.pas` non è diventato una classe: tiene il player degli effetti, quello della musica e la cache delle musiche esterne ricevuti da `ComposeEngine` (`S_ConfigureSound`, `S_ConfigureMusic`, `S_ConfigureExternalMusic`) e li chiama direttamente. Portarlo a classe vuol dire portare i canali (`channels[]`, `sobjs`) e le circa 40 procedure `S_*` chiamate da tutto il gioco (azioni, thinker, menu, ACS): stima L, fuori dall'ondata.
@@ -192,6 +192,11 @@ Stato noto di master (0f6ff81c o successivo): `build.bat all` verde e 64 suite d
 ## Texture PK3 corrotte (osservato dalla prova degli errori fatali della #155)
 
 Con `usepk3textures=1` un PNG troncato o con CRC errato dà solo un avviso (`TPNGTextureManager(): PNG error -3/-8`), mentre un JPEG non valido ferma il gioco con `I_Error` (`TJPGTextureManager(): JPEG error -2: Not a valid JPEG stream`). Il vecchio eseguibile non mostrava nulla perché `usepk3textures` non entrava mai in funzione (corretto dalla #48): la differenza viene da quella correzione, non dalle classi della #155. Resta da decidere se un JPEG corrotto debba fermare il gioco come fa oggi o dare un avviso come il PNG. Prove in `Reference\_dati\prove155\` (non tracciata).
+
+## #159 — Facciate dei dati di gioco (ondata 5)
+
+Fatto: `Base\p_umapinfo.pas` senza funzioni (`TEngineMapInfoRecords`); `P_InitAnimations`/`P_ShutDownAnimations` di `p_animdefs` tolte (`IEngineAnimDefsLoader.Load/Release`); `i_tmp` senza i due chiamanti delle classi del motore. Valutate e lasciate, con il motivo in `FACCIATE.md`: i quattro `deh_main` (dati del gioco: le liste dei nomi sono variabili di unit lette da una dozzina di moduli, più 1900 `DEH_AddAction`; spostarle in una classe non toglie i globali, servirebbe un `IDehackedTables`, stima L), `Doom\p_switch` (codice dei bottoni, fase thinker), `r_patch` (`R_EnableFixedColumn` sul percorso caldo), `r_colormaps` e `r_translations` (cache del motore lette dai salvataggi e dai thinker). **Non verificato a runtime**: `-devparm` con un UMAPINFO (i record si rifanno con lo stesso codice spostato), ANIMDEFS e #CREATEPALETTE/VOXELDEF con la cartella dei file temporanei; le parità nel motore le fa chi rivede.
+
 ## #158 — Facciate sottili rimaste (ondata 5)
 
 Tolte: `Base\i_midi_new.pas` (`TEngineMidiSongPlayer`, `IEngineMidiSongPlayer`, `I_ConfigureMidi` di `i_midi`) e la parte glBSP di `Base\nd_main.pas` (`TEngineGlbspRunner`, `IEngineGlbspRunner`; `gld_BuildNodes` e `ND_RunGlbsp`); `P_FindMusinfoMusic` non è più pubblica. Le altre unit dell'elenco restano, ognuna per un motivo diverso dall'essere una facciata:

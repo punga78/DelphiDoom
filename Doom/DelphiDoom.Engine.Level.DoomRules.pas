@@ -94,7 +94,6 @@ uses
   p_setup,
   udmf_spec,
   p_spec,
-  p_animdefs,
   po_man,
   r_data,
   r_colormaps,
@@ -143,13 +142,12 @@ procedure TDoomLevelRules.InitializeData;
 begin
   FSwitches.Load;
   P_InitPicAnims;
-  P_InitAnimations;
   FAnimDefs.Load; // Init flat and texture animations
 end;
 
 procedure TDoomLevelRules.ShutDownData;
 begin
-  P_ShutDownAnimations;
+  FAnimDefs.Release;
 end;
 
 function TDoomLevelRules.TracesSteps: Boolean;

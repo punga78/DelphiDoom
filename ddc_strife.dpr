@@ -1157,6 +1157,8 @@ uses
   DelphiDoom.Engine.MapInfo.Services in 'Base\DelphiDoom.Engine.MapInfo.Services.pas',
   DelphiDoom.Engine.MapInfo.TextSource in 'Base\DelphiDoom.Engine.MapInfo.TextSource.pas',
   p_umapinfo in 'Base\p_umapinfo.pas',
+  DelphiDoom.Engine.MapInfo.Intf in 'Base\DelphiDoom.Engine.MapInfo.Intf.pas',
+  DelphiDoom.Engine.MapInfo.Records in 'Base\DelphiDoom.Engine.MapInfo.Records.pas',
   p_uactornames in 'Strife\p_uactornames.pas',
   p_easywind in 'Base\p_easywind.pas',
   psi_map in 'SCRIPT\psi_map.pas',

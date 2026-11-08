@@ -1130,6 +1130,8 @@ uses
   DelphiDoom.Engine.MapInfo.Services in 'Base\DelphiDoom.Engine.MapInfo.Services.pas',
   DelphiDoom.Engine.MapInfo.TextSource in 'Base\DelphiDoom.Engine.MapInfo.TextSource.pas',
   p_umapinfo in 'Base\p_umapinfo.pas',
+  DelphiDoom.Engine.MapInfo.Intf in 'Base\DelphiDoom.Engine.MapInfo.Intf.pas',
+  DelphiDoom.Engine.MapInfo.Records in 'Base\DelphiDoom.Engine.MapInfo.Records.pas',
   p_uactornames in 'Heretic\p_uactornames.pas',
   DelphiDoom.Blockmap.Types in 'Libs\Blockmap\DelphiDoom.Blockmap.Types.pas',
   DelphiDoom.Blockmap.Intf in 'Libs\Blockmap\DelphiDoom.Blockmap.Intf.pas',

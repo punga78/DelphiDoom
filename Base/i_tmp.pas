@@ -33,11 +33,11 @@ unit i_tmp;
 
 // What is left of the facade of the temporary files (issue #133). The classes of the
 // engine receive the ITempFiles of Libs\Platform from ComposeEngine (the backends of the
-// MIDI and XMI songs, nd_main with ND_Configure). These functions stay for the
-// procedural code that has no object to give it to: the savegames (the PascalScript
-// state of the map goes through a file), ps_dll (a DLL in a PAK is copied to a file
-// before LoadLibrary), s_pk3sounds, and vx_voxelsprite and v_palettes (other pieces of
-// work of the same wave); i_system deletes the files at the shut down.
+// MIDI and XMI songs, the palette and voxel sprite generators, s_pk3sounds and the
+// glBSP input of the level). These functions stay for the procedural code that has no
+// object to give it to: the savegames (the PascalScript state of the map goes through a
+// file: the four p_saveg and sv_save) and ps_dll (a DLL in a PAK is copied to a file before
+// LoadLibrary); i_system deletes the files at the shut down.
 
 interface
 
