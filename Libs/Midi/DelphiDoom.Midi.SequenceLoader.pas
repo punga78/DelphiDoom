@@ -156,7 +156,7 @@ begin
     begin
       // the old player played the tracks of any file type together
       LFile.Mode := 1;
-      LMerged := TMidiTrackMerger.Merge(LFile);
+      LMerged := TMidiTrackMerger.Merge(LFile, True);
       LTrack := LMerged.Tracks[0].Events;
     end;
 

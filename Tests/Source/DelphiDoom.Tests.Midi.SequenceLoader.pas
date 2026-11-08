@@ -44,6 +44,8 @@ type
     [Test]
     procedure DovrebbeUnireLeTraccieNellOrdineDelTempo;
     [Test]
+    procedure DovrebbeTenereIlTempoAssolutoDopoLaFineDiUnaTraccia;
+    [Test]
     procedure DovrebbeDareLaPrecedenzaAllaPrimaTracciaNelPareggio;
     [Test]
     procedure DovrebbeAccettareUnaTracciaVuota;
@@ -141,6 +143,18 @@ begin
   Assert.AreEqual(Integer(0), Integer(FEvents[0].Time));
   Assert.AreEqual(Integer($91), Integer(FEvents[1].Status));
   Assert.AreEqual(Integer(5), Integer(FEvents[1].Time));
+end;
+
+procedure TTestMidiSequenceLoader.DovrebbeTenereIlTempoAssolutoDopoLaFineDiUnaTraccia;
+begin
+  // regression: the end of track at 1 of the first track was dropped by the merger and its
+  // time lost, so the last note came at 118 and not at 119
+  Assert.IsTrue(Load(TB.Join([TB.Header(1, 2, 96),
+    TB.Track(TB.Join([TB.NoteOn(0, 0, 60, 90), TB.EndOfTrack(1)])),
+    TB.Track(TB.Join([TB.NoteOn(0, 1, 50, 80), TB.NoteOn(119, 1, 52, 80), TB.EndOfTrack(0)]))])));
+  Assert.AreEqual(3, Integer(Length(FEvents)));
+  Assert.AreEqual(Integer(52), Integer(FEvents[2].Data1));
+  Assert.AreEqual(Integer(119), Integer(FEvents[2].Time));
 end;
 
 procedure TTestMidiSequenceLoader.DovrebbeDareLaPrecedenzaAllaPrimaTracciaNelPareggio;

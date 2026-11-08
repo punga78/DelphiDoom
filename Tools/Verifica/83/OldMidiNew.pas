@@ -1875,6 +1875,9 @@ begin
     end;
   finally
     // nothing was ever given to a device: the destructor must not stop one
+    // a failed load never reached StreamBufferSetup: the destructor walks the buffers anyway
+    if Length(midi.m_StreamBuffers) < NUM_STREAM_BUFFERS then
+      SetLength(midi.m_StreamBuffers, NUM_STREAM_BUFFERS);
     midi.m_uCallbackStatus := STATUS_CALLBACKDEAD;
     midi.Free;
   end;
