@@ -35,6 +35,7 @@ uses
   i_system,
   m_argv,
   doomdata,
+  doomdef,
   d_event,
   d_player,
   g_game,
@@ -135,10 +136,35 @@ begin
   HarnessWriteSweep;
 end;
 
+var
+  hs_trace_last: integer = -1;
+
+// harness_trace.txt: a line every 100 of leveltime, and one for every save, so that a run that
+// does not reach a save can be understood afterwards (gamestate 0 = GS_LEVEL)
+procedure HarnessTrace(const AText: string);
+var
+  f: TextFile;
+begin
+  AssignFile(f, 'harness_trace.txt');
+  if FileExists('harness_trace.txt') then
+    Append(f)
+  else
+    Rewrite(f);
+  writeln(f, AText);
+  CloseFile(f);
+end;
+
 procedure HarnessTick(AGameTic, ALevelTime: integer; ASave: THarnessSaveProc; ALoad: THarnessLoadProc);
 var
   i, p: integer;
 begin
+  if ALevelTime div 100 <> hs_trace_last then
+  begin
+    hs_trace_last := ALevelTime div 100;
+    HarnessTrace(Format('gametic=%d leveltime=%d gamestate=%d gameaction=%d',
+      [AGameTic, ALevelTime, Ord(gamestate), Ord(gameaction)]));
+  end;
+
   if not hs_init then
   begin
     hs_init := true;
@@ -157,21 +183,22 @@ begin
     exit;
   end;
 
-  if (hs_loadargument = '') and (ALevelTime = USE_TIME) and not hs_use_done then
+  if (hs_loadargument = '') and (ALevelTime >= USE_TIME) and not hs_use_done then
   begin
     hs_use_done := true;
     HarnessSweep(true);
   end;
-  if (hs_loadargument = '') and (ALevelTime = CROSS_TIME) and not hs_cross_done then
+  if (hs_loadargument = '') and (ALevelTime >= CROSS_TIME) and not hs_cross_done then
   begin
     hs_cross_done := true;
     HarnessSweep(false);
   end;
 
   for i := 0 to High(SAVE_TIMES) do
-    if (ALevelTime = SAVE_TIMES[i]) and not hs_saved[i] then
+    if (ALevelTime >= SAVE_TIMES[i]) and not hs_saved[i] then
     begin
       hs_saved[i] := true;
+      HarnessTrace(Format('save %d at leveltime=%d gametic=%d', [SAVE_TIMES[i], ALevelTime, AGameTic]));
       if hs_loadargument = '' then
         ASave('save_lt_' + IntToStr(SAVE_TIMES[i]), i)
       else if i >= 2 then
