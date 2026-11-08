@@ -127,8 +127,11 @@ begin
           if W_CheckNumForName(name) >= 0 then
             doadd := false;
         end;
+        // 'pistol.wav' and 'pistol.ogg' give the same lump: once is enough (the list
+        // keeps the name with the 'DS' prefix, so the first test did not see it)
         if doadd then
-          s_names.Add(name);
+          if s_names.IndexOf(name) < 0 then
+            s_names.Add(name);
       end;
   end;
 end;

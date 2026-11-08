@@ -35,7 +35,17 @@ interface
 
 uses
   d_delphi,
-  i_threads;
+  i_threads,
+  DelphiDoom.Threading.Intf;
+
+//==============================================================================
+//
+// MT_ConfigureThreads
+//
+// Gives the factory of pools (composition root); MT_Init needs it
+//
+//==============================================================================
+procedure MT_ConfigureThreads(const AFactory: IWorkerPoolFactory);
 
 //==============================================================================
 //
@@ -281,17 +291,30 @@ const
 
 var
   numgpthreads: integer;
-  gp_threads: array[0..MAXGPTHREADS - 1] of TDThread;
+  gp_threads: IWorkerPool;
 
 var
-  exec_threads: array[0..NUMEXECTHREADS - 1] of TDThread;
+  exec_threads: IWorkerPool;
 
 // JVAL: Tasks
 const
   NUMTASKTHREADS = 8;
 
 var
-  task_threads: array[0..NUMTASKTHREADS - 1] of TDThread;
+  task_threads: IWorkerPool;
+
+var
+  poolfactory: IWorkerPoolFactory = nil;
+
+//==============================================================================
+//
+// MT_ConfigureThreads
+//
+//==============================================================================
+procedure MT_ConfigureThreads(const AFactory: IWorkerPoolFactory);
+begin
+  poolfactory := AFactory;
+end;
 
 //
 // MT_ZeroMemory
@@ -354,7 +377,7 @@ begin
     begin
       parms[i].dest := dst;
       parms[i].size := sz;
-      gp_threads[i].Activate(MT_ZeroMemory_thr, @parms[i]);
+      gp_threads[i].Submit(MT_ZeroMemory_thr, @parms[i]);
       dst := pointer(integer(dst) + sz);
     end;
   end;
@@ -436,7 +459,7 @@ begin
       parms[i].dest := dst;
       parms[i].value := val;
       parms[i].size := sz;
-      gp_threads[i].Activate(MT_memset_thr, @parms[i]);
+      gp_threads[i].Submit(MT_memset_thr, @parms[i]);
       dst := pointer(integer(dst) + sz);
     end;
   end;
@@ -485,7 +508,7 @@ begin
       parms[i].dest := dst;
       parms[i].value := val;
       parms[i].size := sz;
-      gp_threads[i].Activate(MT_memseti_thr, @parms[i]);
+      gp_threads[i].Submit(MT_memseti_thr, @parms[i]);
       dst := pointer(integer(dst) + sz4);
     end;
   end;
@@ -554,7 +577,7 @@ begin
       parms[i].dest := dst;
       parms[i].src := src;
       parms[i].size := sz;
-      gp_threads[i].Activate(MT_memcpy_thr, @parms[i]);
+      gp_threads[i].Submit(MT_memcpy_thr, @parms[i]);
       dst := pointer(integer(dst) + sz);
       src := pointer(integer(src) + sz);
     end;
@@ -569,20 +592,17 @@ end;
 //
 //==============================================================================
 procedure MT_Init;
-var
-  i: integer;
 begin
+  if not Assigned(poolfactory) then
+    I_Error('MT_Init(): Threads are not configured');
   numgpthreads := I_GetNumCPUs;
   if numgpthreads < 2 then
     numgpthreads := 2;
   if numgpthreads > MAXGPTHREADS then
     numgpthreads := MAXGPTHREADS;
-  for i := 0 to numgpthreads - 1 do
-    gp_threads[i] := TDThread.Create;
-  for i := 0 to NUMEXECTHREADS - 1 do
-    exec_threads[i] := TDThread.Create;
-  for i := 0 to NUMTASKTHREADS - 1 do
-    task_threads[i] := TDThread.Create;
+  gp_threads := poolfactory.CreatePool(numgpthreads);
+  exec_threads := poolfactory.CreatePool(NUMEXECTHREADS);
+  task_threads := poolfactory.CreatePool(NUMTASKTHREADS);
   mt_initialized := true;
 end;
 
@@ -590,18 +610,15 @@ end;
 //
 // MT_ShutDown
 //
+// Releasing a pool waits for its running jobs and for its threads to leave
+//
 //==============================================================================
 procedure MT_ShutDown;
-var
-  i: integer;
 begin
-  for i := 0 to numgpthreads - 1 do
-    gp_threads[i].Free;
-  for i := 0 to NUMEXECTHREADS - 1 do
-    exec_threads[i].Free;
-  for i := 0 to NUMTASKTHREADS - 1 do
-    task_threads[i].Free;
   mt_initialized := false;
+  gp_threads := nil;
+  exec_threads := nil;
+  task_threads := nil;
 end;
 
 var
@@ -619,7 +636,7 @@ begin
 
   if @func2 <> nil then
   begin
-    exec_threads[0].Activate(func2, parms2);
+    exec_threads[0].Submit(func2, parms2);
     if @func1 = nil then
       I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
     else
@@ -652,25 +669,23 @@ begin
   nt := 0;
   if @func2 <> nil then
   begin
-    exec_threads[nt].Activate(func2, parms2);
+    exec_threads[nt].Submit(func2, parms2);
     inc(nt);
   end;
   if @func3 <> nil then
   begin
-    exec_threads[nt].Activate(func3, parms3);
+    exec_threads[nt].Submit(func3, parms3);
     inc(nt);
   end;
   if @func4 <> nil then
   begin
-    exec_threads[nt].Activate(func4, parms4);
+    exec_threads[nt].Submit(func4, parms4);
     inc(nt);
   end;
   if @func1 = nil then
     I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
   else
     func1(parms1);
-  for i := 0 to nt - 1 do
-    exec_threads[i].CheckJobDone;
   for i := 0 to nt - 1 do
     exec_threads[i].Wait;
   mt_execute_fetched := False;
@@ -696,35 +711,33 @@ begin
   nt := 0;
   if @func2 <> nil then
   begin
-    exec_threads[nt].Activate(func2, parms2);
+    exec_threads[nt].Submit(func2, parms2);
     inc(nt);
   end;
   if @func3 <> nil then
   begin
-    exec_threads[nt].Activate(func3, parms3);
+    exec_threads[nt].Submit(func3, parms3);
     inc(nt);
   end;
   if @func4 <> nil then
   begin
-    exec_threads[nt].Activate(func4, parms4);
+    exec_threads[nt].Submit(func4, parms4);
     inc(nt);
   end;
   if @func5 <> nil then
   begin
-    exec_threads[nt].Activate(func5, parms5);
+    exec_threads[nt].Submit(func5, parms5);
     inc(nt);
   end;
   if @func6 <> nil then
   begin
-    exec_threads[nt].Activate(func6, parms6);
+    exec_threads[nt].Submit(func6, parms6);
     inc(nt);
   end;
   if @func1 = nil then
     I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
   else
     func1(parms1);
-  for i := 0 to nt - 1 do
-    exec_threads[i].CheckJobDone;
   for i := 0 to nt - 1 do
     exec_threads[i].Wait;
   mt_execute_fetched := False;
@@ -752,45 +765,43 @@ begin
   nt := 0;
   if @func2 <> nil then
   begin
-    exec_threads[nt].Activate(func2, parms2);
+    exec_threads[nt].Submit(func2, parms2);
     inc(nt);
   end;
   if @func3 <> nil then
   begin
-    exec_threads[nt].Activate(func3, parms3);
+    exec_threads[nt].Submit(func3, parms3);
     inc(nt);
   end;
   if @func4 <> nil then
   begin
-    exec_threads[nt].Activate(func4, parms4);
+    exec_threads[nt].Submit(func4, parms4);
     inc(nt);
   end;
   if @func5 <> nil then
   begin
-    exec_threads[nt].Activate(func5, parms5);
+    exec_threads[nt].Submit(func5, parms5);
     inc(nt);
   end;
   if @func6 <> nil then
   begin
-    exec_threads[nt].Activate(func6, parms6);
+    exec_threads[nt].Submit(func6, parms6);
     inc(nt);
   end;
   if @func7 <> nil then
   begin
-    exec_threads[nt].Activate(func7, parms7);
+    exec_threads[nt].Submit(func7, parms7);
     inc(nt);
   end;
   if @func8 <> nil then
   begin
-    exec_threads[nt].Activate(func8, parms8);
+    exec_threads[nt].Submit(func8, parms8);
     inc(nt);
   end;
   if @func1 = nil then
     I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
   else
     func1(parms1);
-  for i := 0 to nt - 1 do
-    exec_threads[i].CheckJobDone;
   for i := 0 to nt - 1 do
     exec_threads[i].Wait;
   mt_execute_fetched := False;
@@ -822,65 +833,63 @@ begin
   nt := 0;
   if @func2 <> nil then
   begin
-    exec_threads[nt].Activate(func2, parms2);
+    exec_threads[nt].Submit(func2, parms2);
     inc(nt);
   end;
   if @func3 <> nil then
   begin
-    exec_threads[nt].Activate(func3, parms3);
+    exec_threads[nt].Submit(func3, parms3);
     inc(nt);
   end;
   if @func4 <> nil then
   begin
-    exec_threads[nt].Activate(func4, parms4);
+    exec_threads[nt].Submit(func4, parms4);
     inc(nt);
   end;
   if @func5 <> nil then
   begin
-    exec_threads[nt].Activate(func5, parms5);
+    exec_threads[nt].Submit(func5, parms5);
     inc(nt);
   end;
   if @func6 <> nil then
   begin
-    exec_threads[nt].Activate(func6, parms6);
+    exec_threads[nt].Submit(func6, parms6);
     inc(nt);
   end;
   if @func7 <> nil then
   begin
-    exec_threads[nt].Activate(func7, parms7);
+    exec_threads[nt].Submit(func7, parms7);
     inc(nt);
   end;
   if @func8 <> nil then
   begin
-    exec_threads[nt].Activate(func8, parms8);
+    exec_threads[nt].Submit(func8, parms8);
     inc(nt);
   end;
   if @func9 <> nil then
   begin
-    exec_threads[nt].Activate(func9, parms9);
+    exec_threads[nt].Submit(func9, parms9);
     inc(nt);
   end;
   if @func10 <> nil then
   begin
-    exec_threads[nt].Activate(func10, parms10);
+    exec_threads[nt].Submit(func10, parms10);
     inc(nt);
   end;
   if @func11 <> nil then
   begin
-    exec_threads[nt].Activate(func11, parms11);
+    exec_threads[nt].Submit(func11, parms11);
     inc(nt);
   end;
   if @func12 <> nil then
   begin
-    exec_threads[nt].Activate(func12, parms12);
+    exec_threads[nt].Submit(func12, parms12);
     inc(nt);
   end;
   if @func1 = nil then
     I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
   else
     func1(parms1);
-  for i := 0 to nt - 1 do
-    exec_threads[i].CheckJobDone;
   for i := 0 to nt - 1 do
     exec_threads[i].Wait;
   mt_execute_fetched := False;
@@ -917,90 +926,88 @@ begin
   nt := 0;
   if @func2 <> nil then
   begin
-    exec_threads[nt].Activate(func2, parms2);
+    exec_threads[nt].Submit(func2, parms2);
     inc(nt);
   end;
   if @func3 <> nil then
   begin
-    exec_threads[nt].Activate(func3, parms3);
+    exec_threads[nt].Submit(func3, parms3);
     inc(nt);
   end;
   if @func4 <> nil then
   begin
-    exec_threads[nt].Activate(func4, parms4);
+    exec_threads[nt].Submit(func4, parms4);
     inc(nt);
   end;
   if @func5 <> nil then
   begin
-    exec_threads[nt].Activate(func5, parms5);
+    exec_threads[nt].Submit(func5, parms5);
     inc(nt);
   end;
   if @func6 <> nil then
   begin
-    exec_threads[nt].Activate(func6, parms6);
+    exec_threads[nt].Submit(func6, parms6);
     inc(nt);
   end;
   if @func7 <> nil then
   begin
-    exec_threads[nt].Activate(func7, parms7);
+    exec_threads[nt].Submit(func7, parms7);
     inc(nt);
   end;
   if @func8 <> nil then
   begin
-    exec_threads[nt].Activate(func8, parms8);
+    exec_threads[nt].Submit(func8, parms8);
     inc(nt);
   end;
   if @func9 <> nil then
   begin
-    exec_threads[nt].Activate(func9, parms9);
+    exec_threads[nt].Submit(func9, parms9);
     inc(nt);
   end;
   if @func10 <> nil then
   begin
-    exec_threads[nt].Activate(func10, parms10);
+    exec_threads[nt].Submit(func10, parms10);
     inc(nt);
   end;
   if @func11 <> nil then
   begin
-    exec_threads[nt].Activate(func11, parms11);
+    exec_threads[nt].Submit(func11, parms11);
     inc(nt);
   end;
   if @func12 <> nil then
   begin
-    exec_threads[nt].Activate(func12, parms12);
+    exec_threads[nt].Submit(func12, parms12);
     inc(nt);
   end;
   if @func13 <> nil then
   begin
-    exec_threads[nt].Activate(func13, parms13);
+    exec_threads[nt].Submit(func13, parms13);
     inc(nt);
   end;
   if @func14 <> nil then
   begin
-    exec_threads[nt].Activate(func14, parms14);
+    exec_threads[nt].Submit(func14, parms14);
     inc(nt);
   end;
   if @func15 <> nil then
   begin
-    exec_threads[nt].Activate(func15, parms15);
+    exec_threads[nt].Submit(func15, parms15);
     inc(nt);
   end;
   if @func16 <> nil then
   begin
-    exec_threads[nt].Activate(func16, parms16);
+    exec_threads[nt].Submit(func16, parms16);
     inc(nt);
   end;
   if @func17 <> nil then
   begin
-    exec_threads[nt].Activate(func17, parms17);
+    exec_threads[nt].Submit(func17, parms17);
     inc(nt);
   end;
   if @func1 = nil then
     I_Warning('MT_Execute(): Called with null application thread function.'#13#10)
   else
     func1(parms1);
-  for i := 0 to nt - 1 do
-    exec_threads[i].CheckJobDone;
   for i := 0 to nt - 1 do
     exec_threads[i].Wait;
   mt_execute_fetched := False;
@@ -1018,14 +1025,11 @@ begin
 
   mt_execute_fetched := True;
 
-  exec_threads[0].Activate(func2, parms2);
-  exec_threads[1].Activate(func3, parms3);
-  exec_threads[2].Activate(func4, parms4);
+  exec_threads[0].Submit(func2, parms2);
+  exec_threads[1].Submit(func3, parms3);
+  exec_threads[2].Submit(func4, parms4);
   func1(parms1);
 
-  exec_threads[0].CheckJobDone;
-  exec_threads[1].CheckJobDone;
-  exec_threads[2].CheckJobDone;
 
   exec_threads[0].Wait;
   exec_threads[1].Wait;
@@ -1048,18 +1052,13 @@ begin
 
   mt_execute_fetched := True;
 
-  exec_threads[0].Activate(func2, parms2);
-  exec_threads[1].Activate(func3, parms3);
-  exec_threads[2].Activate(func4, parms4);
-  exec_threads[3].Activate(func5, parms5);
-  exec_threads[4].Activate(func6, parms6);
+  exec_threads[0].Submit(func2, parms2);
+  exec_threads[1].Submit(func3, parms3);
+  exec_threads[2].Submit(func4, parms4);
+  exec_threads[3].Submit(func5, parms5);
+  exec_threads[4].Submit(func6, parms6);
   func1(parms1);
 
-  exec_threads[0].CheckJobDone;
-  exec_threads[1].CheckJobDone;
-  exec_threads[2].CheckJobDone;
-  exec_threads[3].CheckJobDone;
-  exec_threads[4].CheckJobDone;
 
   exec_threads[0].Wait;
   exec_threads[1].Wait;
@@ -1086,22 +1085,15 @@ begin
 
   mt_execute_fetched := True;
 
-  exec_threads[0].Activate(func2, parms2);
-  exec_threads[1].Activate(func3, parms3);
-  exec_threads[2].Activate(func4, parms4);
-  exec_threads[3].Activate(func5, parms5);
-  exec_threads[4].Activate(func6, parms6);
-  exec_threads[5].Activate(func7, parms7);
-  exec_threads[6].Activate(func8, parms8);
+  exec_threads[0].Submit(func2, parms2);
+  exec_threads[1].Submit(func3, parms3);
+  exec_threads[2].Submit(func4, parms4);
+  exec_threads[3].Submit(func5, parms5);
+  exec_threads[4].Submit(func6, parms6);
+  exec_threads[5].Submit(func7, parms7);
+  exec_threads[6].Submit(func8, parms8);
   func1(parms1);
 
-  exec_threads[0].CheckJobDone;
-  exec_threads[1].CheckJobDone;
-  exec_threads[2].CheckJobDone;
-  exec_threads[3].CheckJobDone;
-  exec_threads[4].CheckJobDone;
-  exec_threads[5].CheckJobDone;
-  exec_threads[6].CheckJobDone;
 
   exec_threads[0].Wait;
   exec_threads[1].Wait;
@@ -1134,30 +1126,19 @@ begin
 
   mt_execute_fetched := True;
 
-  exec_threads[0].Activate(func2, parms2);
-  exec_threads[1].Activate(func3, parms3);
-  exec_threads[2].Activate(func4, parms4);
-  exec_threads[3].Activate(func5, parms5);
-  exec_threads[4].Activate(func6, parms6);
-  exec_threads[5].Activate(func7, parms7);
-  exec_threads[6].Activate(func8, parms8);
-  exec_threads[7].Activate(func9, parms9);
-  exec_threads[8].Activate(func10, parms10);
-  exec_threads[9].Activate(func11, parms11);
-  exec_threads[10].Activate(func12, parms12);
+  exec_threads[0].Submit(func2, parms2);
+  exec_threads[1].Submit(func3, parms3);
+  exec_threads[2].Submit(func4, parms4);
+  exec_threads[3].Submit(func5, parms5);
+  exec_threads[4].Submit(func6, parms6);
+  exec_threads[5].Submit(func7, parms7);
+  exec_threads[6].Submit(func8, parms8);
+  exec_threads[7].Submit(func9, parms9);
+  exec_threads[8].Submit(func10, parms10);
+  exec_threads[9].Submit(func11, parms11);
+  exec_threads[10].Submit(func12, parms12);
   func1(parms1);
 
-  exec_threads[0].CheckJobDone;
-  exec_threads[1].CheckJobDone;
-  exec_threads[2].CheckJobDone;
-  exec_threads[3].CheckJobDone;
-  exec_threads[4].CheckJobDone;
-  exec_threads[5].CheckJobDone;
-  exec_threads[6].CheckJobDone;
-  exec_threads[7].CheckJobDone;
-  exec_threads[8].CheckJobDone;
-  exec_threads[9].CheckJobDone;
-  exec_threads[10].CheckJobDone;
 
   exec_threads[0].Wait;
   exec_threads[1].Wait;
@@ -1198,38 +1179,23 @@ begin
 
   mt_execute_fetched := True;
 
-  exec_threads[0].Activate(func2, parms2);
-  exec_threads[1].Activate(func3, parms3);
-  exec_threads[2].Activate(func4, parms4);
-  exec_threads[3].Activate(func5, parms5);
-  exec_threads[4].Activate(func6, parms6);
-  exec_threads[5].Activate(func7, parms7);
-  exec_threads[6].Activate(func8, parms8);
-  exec_threads[7].Activate(func9, parms9);
-  exec_threads[8].Activate(func10, parms10);
-  exec_threads[9].Activate(func11, parms11);
-  exec_threads[10].Activate(func12, parms12);
-  exec_threads[11].Activate(func13, parms13);
-  exec_threads[12].Activate(func14, parms14);
-  exec_threads[13].Activate(func15, parms15);
-  exec_threads[14].Activate(func16, parms16);
+  exec_threads[0].Submit(func2, parms2);
+  exec_threads[1].Submit(func3, parms3);
+  exec_threads[2].Submit(func4, parms4);
+  exec_threads[3].Submit(func5, parms5);
+  exec_threads[4].Submit(func6, parms6);
+  exec_threads[5].Submit(func7, parms7);
+  exec_threads[6].Submit(func8, parms8);
+  exec_threads[7].Submit(func9, parms9);
+  exec_threads[8].Submit(func10, parms10);
+  exec_threads[9].Submit(func11, parms11);
+  exec_threads[10].Submit(func12, parms12);
+  exec_threads[11].Submit(func13, parms13);
+  exec_threads[12].Submit(func14, parms14);
+  exec_threads[13].Submit(func15, parms15);
+  exec_threads[14].Submit(func16, parms16);
   func1(parms1);
 
-  exec_threads[0].CheckJobDone;
-  exec_threads[1].CheckJobDone;
-  exec_threads[2].CheckJobDone;
-  exec_threads[3].CheckJobDone;
-  exec_threads[4].CheckJobDone;
-  exec_threads[5].CheckJobDone;
-  exec_threads[6].CheckJobDone;
-  exec_threads[7].CheckJobDone;
-  exec_threads[8].CheckJobDone;
-  exec_threads[9].CheckJobDone;
-  exec_threads[10].CheckJobDone;
-  exec_threads[11].CheckJobDone;
-  exec_threads[12].CheckJobDone;
-  exec_threads[13].CheckJobDone;
-  exec_threads[14].CheckJobDone;
 
   exec_threads[0].Wait;
   exec_threads[1].Wait;
@@ -1280,15 +1246,12 @@ begin
     parms[i].idx := i;
     parms[i].numidxs := nt;
     parms[i].data := data;
-    exec_threads[i].Activate(func, @parms[i]);
+    exec_threads[i].Submit(func, @parms[i]);
   end;
   parms[nt - 1].idx := nt - 1;
   parms[nt - 1].numidxs := nt;
   parms[nt - 1].data := data;
   func(@parms[nt - 1]);
-
-  for i := 0 to nt - 2 do
-    exec_threads[i].CheckJobDone;
 
   for i := 0 to nt - 2 do
     exec_threads[i].Wait;
@@ -1351,7 +1314,7 @@ end;
 procedure MT_ExecutePendingTask(const id: integer);
 begin
   if Assigned(tasks[id].proc) then
-    task_threads[id].Activate(_execute_task, @tasks[id]);
+    task_threads[id].Submit(_execute_task, @tasks[id]);
 end;
 
 //==============================================================================

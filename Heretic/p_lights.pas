@@ -24,6 +24,8 @@
 // DESCRIPTION:
 //  Handle Sector base lighting effects.
 //  Muzzle flash?
+//  The thinkers stay records in the zone memory (the savegames copy them as
+//  they are); what they compute is in Libs\Thinkers (DelphiDoom.Thinkers.Light.*).
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -36,7 +38,6 @@ unit p_lights;
 interface
 
 uses
-  m_rnd,
   p_spec,
   r_defs,
   z_zone;
@@ -122,7 +123,14 @@ implementation
 
 uses
   p_tick,
-  p_setup;
+  p_setup,
+  DelphiDoom.Thinkers.Light.Neighbors,
+  DelphiDoom.Thinkers.Light.FireFlicker,
+  DelphiDoom.Thinkers.Light.Flash,
+  DelphiDoom.Thinkers.Light.Strobe,
+  DelphiDoom.Thinkers.Light.Glow,
+  DelphiDoom.Engine.Light.Sector,
+  DelphiDoom.Engine.Light.Services;
 
 //==============================================================================
 //
@@ -132,21 +140,9 @@ uses
 //
 //==============================================================================
 procedure T_FireFlicker(flick: Pfireflicker_t);
-var
-  amount: integer;
 begin
-  flick.count := flick.count - 1;
-  if flick.count > 0 then
-    exit;
-
-  amount := (P_Random and 3) * 16;
-
-  if flick.sector.lightlevel - amount < flick.minlight then
-    flick.sector.lightlevel := flick.minlight
-  else
-    flick.sector.lightlevel := flick.maxlight - amount;
-
-  flick.count := 4;
+  TLightFireFlicker.Tick(flick.count, flick.sector.lightlevel, flick.minlight, flick.maxlight,
+    LightFlickerRules, LightRandom);
 end;
 
 //==============================================================================
@@ -157,6 +153,9 @@ end;
 procedure P_SpawnFireFlicker(sector: Psector_t);
 var
   flick: Pfireflicker_t;
+  maxlight: integer;
+  minlight: integer;
+  count: integer;
 begin
   // Note that we are resetting sector attributes.
   // Nothing special about it during gameplay.
@@ -168,9 +167,11 @@ begin
 
   flick.thinker._function.acp1 := @T_FireFlicker;
   flick.sector := sector;
-  flick.maxlight := sector.lightlevel;
-  flick.minlight := P_FindMinSurroundingLight(sector, sector.lightlevel) + 16;
-  flick.count := 4;
+  TLightFireFlicker.Initialize(TEngineLightSector.Wrap(sector), LightFlickerRules,
+    maxlight, minlight, count);
+  flick.maxlight := maxlight;
+  flick.minlight := minlight;
+  flick.count := count;
 end;
 
 //==============================================================================
@@ -183,20 +184,8 @@ end;
 //==============================================================================
 procedure T_LightFlash(flash: Plightflash_t);
 begin
-  flash.count := flash.count - 1;
-  if flash.count > 0 then
-    exit;
-
-  if flash.sector.lightlevel = flash.maxlight then
-  begin
-    flash.sector.lightlevel := flash.minlight;
-    flash.count := (P_Random and flash.mintime) + 1;
-  end
-  else
-  begin
-    flash.sector.lightlevel := flash.maxlight;
-    flash.count := (P_Random and flash.maxtime) + 1;
-  end;
+  TLightFlash.Tick(flash.count, flash.sector.lightlevel, flash.maxlight, flash.minlight,
+    flash.maxtime, flash.mintime, LightRandom);
 end;
 
 //==============================================================================
@@ -209,6 +198,11 @@ end;
 procedure P_SpawnLightFlash(sector: Psector_t);
 var
   flash: Plightflash_t;
+  maxlight: integer;
+  minlight: integer;
+  maxtime: integer;
+  mintime: integer;
+  count: integer;
 begin
   // nothing special about it during gameplay
   sector.special := 0;
@@ -219,12 +213,13 @@ begin
 
   flash.thinker._function.acp1 := @T_LightFlash;
   flash.sector := sector;
-  flash.maxlight := sector.lightlevel;
-
-  flash.minlight := P_FindMinSurroundingLight(sector, sector.lightlevel);
-  flash.maxtime := 64;
-  flash.mintime := 7;
-  flash.count := (P_Random and flash.maxtime) + 1;
+  TLightFlash.Initialize(TEngineLightSector.Wrap(sector), LightRandom,
+    maxlight, minlight, maxtime, mintime, count);
+  flash.maxlight := maxlight;
+  flash.minlight := minlight;
+  flash.maxtime := maxtime;
+  flash.mintime := mintime;
+  flash.count := count;
 end;
 
 //==============================================================================
@@ -236,20 +231,8 @@ end;
 //==============================================================================
 procedure T_StrobeFlash(flash: Pstrobe_t);
 begin
-  flash.count := flash.count - 1;
-  if flash.count > 0 then
-    exit;
-
-  if flash.sector.lightlevel = flash.minlight then
-  begin
-    flash.sector.lightlevel := flash.maxlight;
-    flash.count := flash.brighttime;
-  end
-  else
-  begin
-    flash.sector.lightlevel := flash.minlight;
-    flash.count := flash.darktime;
-  end;
+  TLightStrobe.Tick(flash.count, flash.sector.lightlevel, flash.minlight, flash.maxlight,
+    flash.darktime, flash.brighttime);
 end;
 
 //==============================================================================
@@ -262,28 +245,29 @@ end;
 procedure P_SpawnStrobeFlash(sector: Psector_t; fastOrSlow, inSync: integer);
 var
   flash: Pstrobe_t;
+  maxlight: integer;
+  minlight: integer;
+  darktime: integer;
+  brighttime: integer;
+  count: integer;
 begin
   flash := Z_Malloc(SizeOf(strobe_t), PU_LEVSPEC, nil);
 
   P_AddThinker(@flash.thinker);
 
   flash.sector := sector;
-  flash.darktime := fastOrSlow;
-  flash.brighttime := STROBEBRIGHT;
+  TLightStrobe.Initialize(TEngineLightSector.Wrap(sector), fastOrSlow, inSync <> 0, LightRandom,
+    maxlight, minlight, darktime, brighttime, count);
+  flash.darktime := darktime;
+  flash.brighttime := brighttime;
   flash.thinker._function.acp1 := @T_StrobeFlash;
-  flash.maxlight := sector.lightlevel;
-  flash.minlight := P_FindMinSurroundingLight(sector, sector.lightlevel);
-
-  if flash.minlight = flash.maxlight then
-    flash.minlight := 0;
+  flash.maxlight := maxlight;
+  flash.minlight := minlight;
 
   // nothing special about it during gameplay
   sector.special := 0;
 
-  if inSync = 0 then
-    flash.count := (P_Random and 7) + 1
-  else
-    flash.count := 1;
+  flash.count := count;
 end;
 
 //==============================================================================
@@ -319,29 +303,15 @@ end;
 procedure EV_TurnTagLightsOff(line: Pline_t);
 var
   i: integer;
-  j: integer;
-  min: integer;
   sector: Psector_t;
-  tsec: Psector_t;
-  templine: Pline_t;
 begin
   for i := 0 to numsectors - 1 do
   begin
     sector := @sectors[i];
     if sector.tag = line.tag then
     begin
-      min := sector.lightlevel;
-      for j := 0 to sector.linecount - 1 do
-      begin
-        templine := sector.lines[j];
-        tsec := getNextSector(templine, sector);
-        if tsec <> nil then
-        begin
-          if tsec.lightlevel < min then
-            min := tsec.lightlevel;
-        end;
-      end;
-      sector.lightlevel := min;
+      // the lowest light level among the sector and its neighbors
+      sector.lightlevel := TLightNeighbors.Lowest(TEngineLightSector.Wrap(sector), sector.lightlevel);
     end;
   end;
 end;
@@ -355,10 +325,7 @@ end;
 procedure EV_LightTurnOn(line: Pline_t; bright: integer);
 var
   i: integer;
-  j: integer;
   sector: Psector_t;
-  temp: Psector_t;
-  templine: Pline_t;
 begin
   for i := 0 to numsectors - 1 do
   begin
@@ -369,18 +336,7 @@ begin
       // for highest light level
       // surrounding sector
       if bright = 0 then
-      begin
-        for j := 0 to sector.linecount - 1 do
-        begin
-          templine := sector.lines[j];
-          temp := getNextSector(templine, sector);
-          if temp <> nil then
-          begin
-            if temp.lightlevel > bright then
-              bright := temp.lightlevel;
-          end;
-        end;
-      end;
+        bright := TLightNeighbors.HighestAbove(TEngineLightSector.Wrap(sector), bright);
       sector.lightlevel := bright;
     end;
   end;
@@ -394,28 +350,7 @@ end;
 //==============================================================================
 procedure T_Glow(g: Pglow_t);
 begin
-  case g.direction of
-   -1:
-      begin
-        // DOWN
-        g.sector.lightlevel := g.sector.lightlevel - GLOWSPEED;
-        if g.sector.lightlevel <= g.minlight then
-        begin
-          g.sector.lightlevel := g.sector.lightlevel + GLOWSPEED;
-          g.direction := 1;
-        end;
-      end;
-    1:
-      begin
-        // UP
-        g.sector.lightlevel := g.sector.lightlevel + GLOWSPEED;
-        if g.sector.lightlevel >= g.maxlight then
-        begin
-          g.sector.lightlevel := g.sector.lightlevel - GLOWSPEED;
-          g.direction := -1;
-        end;
-      end;
-  end;
+  TLightGlow.Tick(g.sector.lightlevel, g.minlight, g.maxlight, g.direction);
 end;
 
 //==============================================================================
@@ -426,16 +361,20 @@ end;
 procedure P_SpawnGlowingLight(sector: Psector_t);
 var
   g: Pglow_t;
+  minlight: integer;
+  maxlight: integer;
+  direction: integer;
 begin
   g := Z_Malloc(SizeOf(glow_t), PU_LEVSPEC, nil);
 
   P_AddThinker(@g.thinker);
 
   g.sector := sector;
-  g.minlight := P_FindMinSurroundingLight(sector, sector.lightlevel);
-  g.maxlight := sector.lightlevel;
+  TLightGlow.Initialize(TEngineLightSector.Wrap(sector), minlight, maxlight, direction);
+  g.minlight := minlight;
+  g.maxlight := maxlight;
   g.thinker._function.acp1 := @T_Glow;
-  g.direction := -1;
+  g.direction := direction;
 
   sector.special := 0;
 end;

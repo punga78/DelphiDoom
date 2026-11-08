@@ -13,6 +13,7 @@ interface
 
 uses
   Winapi.MMSystem,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Audio.Types,
   DelphiDoom.M2m.Intf,
   DelphiDoom.M2m.Client,
@@ -41,6 +42,7 @@ type
       PMusSong = ^TMusSong;
     var
       FConverter: TM2mClient;
+      FCommandLine: ICommandLine;
       FStream: HMIDISTRM;
       FDevice: Cardinal;
       FCapabilities: TMidiOutCaps;
@@ -52,8 +54,11 @@ type
     function TryConvertMidiFile(AData: Pointer; ASize: Integer; ASong: PMusSong): Boolean;
     function TryConvert(AData: Pointer; ASize: Integer; ASong: PMusSong): Boolean;
   public
-    /// <summary>AM2m converts the MIDI files to MUS; EArgumentNilException if it is nil</summary>
-    constructor Create(const AM2m: IM2m);
+    /// <summary>
+    ///   AM2m converts the MIDI files to MUS; ACommandLine is where -nomusic is looked for;
+    ///   EArgumentNilException if one of them is nil
+    /// </summary>
+    constructor Create(const AM2m: IM2m; const ACommandLine: ICommandLine);
     destructor Destroy; override;
     procedure Initialize; override;
     procedure Shutdown; override;
@@ -76,7 +81,6 @@ uses
   System.SysUtils,
   Winapi.Windows,
   d_delphi,
-  m_argv,
   i_system,
   i_midi,
   s_sound,
@@ -87,16 +91,20 @@ uses
 
 const
   SM2mIsNil = 'TMusMusicBackend.Create(): AM2m is nil';
+  SCommandLineIsNil = 'TMusMusicBackend.Create(): ACommandLine is nil';
   // the events given to the stream at a time
   MAX_MIDI_EVENTS = 512;
 
 { TMusMusicBackend }
 
-constructor TMusMusicBackend.Create(const AM2m: IM2m);
+constructor TMusMusicBackend.Create(const AM2m: IM2m; const ACommandLine: ICommandLine);
 begin
   inherited Create;
   if not Assigned(AM2m) then
     raise EArgumentNilException.Create(SM2mIsNil);
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create(SCommandLineIsNil);
+  FCommandLine := ACommandLine;
   FConverter := TM2mClient.Create(AM2m);
   FVolumeSet := -1;
 end;
@@ -124,7 +132,7 @@ var
   numdev: LongWord;
   i: integer;
 begin
-  if M_CheckParm('-nomusic') <> 0 then
+  if FCommandLine.IndexOf('-nomusic') <> 0 then
     exit;
 
   if FStream <> 0 then
@@ -293,7 +301,7 @@ begin
   if FStream = 0 then
   begin
     // with -nomusic the midi stream is never opened: it is not worth a warning for each song
-    if M_CheckParm('-nomusic') = 0 then
+    if FCommandLine.IndexOf('-nomusic') = 0 then
       I_Warning('I_RegisterSong(): Could not initialize midi stream'#13#10);
     Dispose(LSong);
     Result := TMusicRegisterResult.Failed;

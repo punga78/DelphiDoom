@@ -318,7 +318,9 @@ uses
   w_pak,
   z_zone,
   DelphiDoom.MathCore.Crc32,
-  DelphiDoom.Wad.Types;
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Text,
+  DelphiDoom.Wad.FileBase;
 
 //
 // The directory of the lumps is kept by the WAD library (Libs\Wad): it reads the
@@ -409,29 +411,14 @@ end;
 //
 //==============================================================================
 procedure ExtractFileBase(const path: string; var dest: string);
-var
-  i: integer;
-  len: integer;
 begin
-  len := Length(path);
-  i := len;
-  while i > 0 do
-  begin
-    if path[i] in ['/', '\'] then
-      break;
-    dec(i);
+  // the rule of the base name is TWadFileBase of Libs\Wad
+  try
+    dest := TWadFileBase.Extract(path);
+  except
+    on E: EWadException do
+      I_Error('ExtractFileBase(): Filename base of %s >8 chars', [path]);
   end;
-  dest := '';
-  while (i < len) do
-  begin
-    inc(i);
-    if path[i] = '.' then
-      break
-    else
-      dest := dest + toupper(path[i]);
-  end;
-  if Length(dest) > 8 then
-    I_Error('ExtractFileBase(): Filename base of %s >8 chars', [path]);
 end;
 
 //==============================================================================
@@ -1215,8 +1202,6 @@ end;
 function W_TextLumpNum(const lump: integer): string;
 var
   p: PByteArray;
-  i: integer;
-  len: integer;
 begin
   if lump < 0 then
   begin
@@ -1225,15 +1210,8 @@ begin
   end;
 
   p := W_CacheLumpNum(lump, PU_STATIC);
-  len := W_LumpLength(lump);
-
-  result := '';
-  SetLength(result, len);
-  for i := 0 to len - 1 do
-    if p[i] <> 0 then
-      result[i + 1] := Chr(p[i])
-    else
-      result[i + 1] := ' ';
+  // one character per byte, a #0 is a space (TWadLumpText of Libs\Wad)
+  result := TWadLumpText.FromBuffer(p, W_LumpLength(lump));
 
   Z_Free(p);
 end;

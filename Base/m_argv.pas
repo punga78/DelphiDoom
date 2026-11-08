@@ -74,25 +74,13 @@ procedure M_InitArgv;
 //==============================================================================
 //
 // M_ConfigureArgv
-// Gives the unit what it builds the command line with. The composition root calls it
-// before M_InitArgv
+// Gives the unit what it builds the command line with, the command line that answers
+// (and remembers) the questions and the names of the saved files. The composition root
+// calls it before M_InitArgv; M_InitArgv attaches to ACommandLine what it builds
 //
 //==============================================================================
-procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder);
-
-//==============================================================================
-//
-// M_CmdShowCommandLineParams
-//
-//==============================================================================
-procedure M_CmdShowCommandLineParams(const parm: string);
-
-//==============================================================================
-//
-// M_CmdShowCmdline
-//
-//==============================================================================
-procedure M_CmdShowCmdline(const parm: string);
+procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder;
+  const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames);
 
 //==============================================================================
 //
@@ -119,18 +107,16 @@ implementation
 
 uses
   d_delphi,
-  c_cmds,
   m_base,
   i_system,
   DelphiDoom.CommandLine.DefaultFile;
 
 var
-  cdchecked: integer = -1;
-
-var
-  cmdparams: TDStringList;
   // given by the composition root (M_ConfigureArgv)
   argv_builder: ICommandLineBuilder = nil;
+  // answers the questions and remembers what was asked; M_InitArgv attaches the command line to it
+  argv_queried: IQueriedCommandLine = nil;
+  argv_savenames: ISaveFileNames = nil;
   // what M_InitArgv built: myargv/myargc are a copy of it for the code that reads them
   commandline: ICommandLine = nil;
 
@@ -141,11 +127,8 @@ var
 //==============================================================================
 function M_CheckParm(const check: string): integer;
 begin
-  if cmdparams.IndexOf(check) < 0 then
-    cmdparams.Add(check);
-
-  if commandline <> nil then
-    result := commandline.IndexOf(check)
+  if argv_queried <> nil then
+    result := argv_queried.IndexOf(check)
   else
     result := 0;
 end;
@@ -157,16 +140,9 @@ end;
 //==============================================================================
 function M_CheckParmCDROM: boolean;
 begin
-  if cdchecked = -1 then
-  begin
-    if I_IsCDRomDrive then
-      cdchecked := 1
-    else
-      cdchecked := M_CheckParm('-cdrom');
-    if cdchecked > 0 then
-      MakeDir(CD_WORKDIR);
-  end;
-  result := cdchecked > 0;
+  if argv_savenames = nil then
+    I_Error('M_CheckParmCDROM(): the command line was not configured (M_ConfigureArgv)');
+  result := argv_savenames.IsCdRomMode;
 end;
 
 //==============================================================================
@@ -174,9 +150,12 @@ end;
 // M_ConfigureArgv
 //
 //==============================================================================
-procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder);
+procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder;
+  const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames);
 begin
   argv_builder := ABuilder;
+  argv_queried := ACommandLine;
+  argv_savenames := ASaveFileNames;
 end;
 
 //==============================================================================
@@ -216,7 +195,7 @@ var
   end;
 
 begin
-  if argv_builder = nil then
+  if (argv_builder = nil) or (argv_queried = nil) then
     I_Error('M_InitArgv(): the command line was not configured (M_ConfigureArgv)');
 
   for i := 0 to ParamCount do
@@ -241,6 +220,7 @@ begin
   end;
 
   commandline := argv_builder.Build;
+  argv_queried.Attach(commandline);
 
   // myargv/myargc: the copy that the older code reads
   myargc := commandline.Count;
@@ -256,41 +236,6 @@ begin
 
   ChDir(fpath(myargv[0]));
 end;
-//==============================================================================
-//
-// M_CmdShowCommandLineParams
-//
-//==============================================================================
-procedure M_CmdShowCommandLineParams(const parm: string);
-var
-  i: integer;
-  mlist: TDStringList;
-  mask: string;
-begin
-  if parm = '' then
-    mask := '*'
-  else
-    mask := parm;
-  mlist := C_GetMachingList(cmdparams, mask);
-  printf('Command line parameters: '#13#10);
-  for i := 0 to mlist.Count - 1 do
-    printf(' %s'#13#10, [mlist[i]]);
-  mlist.Free;
-end;
-
-//==============================================================================
-//
-// M_CmdShowCmdline
-//
-//==============================================================================
-procedure M_CmdShowCmdline(const parm: string);
-var
-  i: integer;
-begin
-  for i := 1 to myargc - 1 do
-    printf('%s ', [myargv[i]]);
-  printf(#13#10);
-end;
 
 //==============================================================================
 //
@@ -299,20 +244,34 @@ end;
 //==============================================================================
 function M_SaveFileName(const filename: string): string;
 begin
-  if M_CheckParmCDROM then
-    result := CD_WORKDIR + filename
-  else
-    result := filename;
+  if argv_savenames = nil then
+    I_Error('M_SaveFileName(): the command line was not configured (M_ConfigureArgv)');
+  result := argv_savenames.ResolveName(filename);
 end;
 
-initialization
-  cmdparams := TDStringList.Create;
+{$IFDEF DEBUG}
+// the parameters that the program asked for
+procedure SaveQueriedParameters;
+var
+  names: TArray<string>;
+  list: TDStringList;
+  i: integer;
+begin
+  if argv_queried = nil then
+    exit;
+  names := argv_queried.QueriedNames;
+  list := TDStringList.Create;
+  try
+    for i := 0 to High(names) do
+      list.Add(names[i]);
+    list.SaveToFile('cmdparams.txt');
+  finally
+    list.Free;
+  end;
+end;
 
 finalization
-{$IFDEF DEBUG}
-  cmdparams.SaveToFile('cmdparams.txt');
+  SaveQueriedParameters;
 {$ENDIF}
-  cmdparams.Free;
 
 end.
-

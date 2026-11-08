@@ -3211,6 +3211,7 @@ uses
   r_main,
   r_sky,
   r_translations,
+  DelphiDoom.Palette.TranslationBlood,
   s_sound,
   sounds,
   tables,
@@ -4825,7 +4826,7 @@ begin
     Result := '';
     Exit;
   end;
-  Result := R_GetBloodName(mo.bloodcolor);
+  Result := TTranslationBlood.NameOf(mo.bloodcolor);
 end;
 
 //==============================================================================
@@ -4840,7 +4841,7 @@ begin
   mo := mobj_from_key(key);
   if mo = nil then
     Exit;
-  mo.bloodcolor := R_GetBloodTranslationIdForName(value);
+  mo.bloodcolor := TTranslationBlood.IdForName(value);
 end;
 
 //==============================================================================

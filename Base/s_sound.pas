@@ -424,6 +424,7 @@ var
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   c_cmds,
   d_player,
   d_think,
@@ -814,7 +815,7 @@ begin
     exit;
   end;
 
-  newu := C_BoolEval(parm1, usemp3);
+  newu := TConsoleNumbers.EvaluateBoolean(parm1, usemp3);
   if newu <> usemp3 then
   begin
     usemp3 := newu;
@@ -837,7 +838,7 @@ begin
     exit;
   end;
 
-  S_SetUseExternalWav(C_BoolEval(parm, useexternalwav));
+  S_SetUseExternalWav(TConsoleNumbers.EvaluateBoolean(parm, useexternalwav));
   S_CmdUseExternalWav;
 end;
 

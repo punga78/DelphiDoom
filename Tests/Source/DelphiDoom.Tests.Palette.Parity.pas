@@ -83,7 +83,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Palette.Profiles, DelphiDoom.Palette.Factory, DelphiDoom.Video.Factory,
+  DelphiDoom.Palette.Profiles, DelphiDoom.Palette.Factory, DelphiDoom.Palette.TranslationBlood,
+  DelphiDoom.Video.Factory,
   DelphiDoom.Tests.Palette.Digest, DelphiDoom.Tests.Palette.Fixtures;
 
 const
@@ -437,12 +438,12 @@ begin
     for LCandidate in LNames.LumpCandidates(LProbe[K]) do
       LCandidates := LCandidates + '|' + LCandidate;
     Check(FGolden, 'names.cand.' + IntToStr(K), LCandidates);
-    Check(FGolden, 'names.bloodid.' + IntToStr(K), IntToStr(LNames.BloodIdForName(LProbe[K])));
+    Check(FGolden, 'names.bloodid.' + IntToStr(K), IntToStr(TTranslationBlood.IdForName(LProbe[K])));
   end;
   for K := -1 to 10 do
   begin
-    Check(FGolden, 'names.bloodname.' + IntToStr(K), LNames.BloodName(K));
-    Check(FGolden, 'names.bloodregion.' + IntToStr(K), IntToStr(LNames.BloodRegion(K)));
+    Check(FGolden, 'names.bloodname.' + IntToStr(K), TTranslationBlood.NameOf(K));
+    Check(FGolden, 'names.bloodregion.' + IntToStr(K), IntToStr(TTranslationBlood.Region(K)));
   end;
 end;
 

@@ -53,7 +53,7 @@ uses
   DelphiDoom.Obituary.Types,
   DelphiDoom.Obituary.Genders,
   r_renderstyle,
-  r_translations,
+  DelphiDoom.Palette.TranslationBlood,
   sounddata,
   sounds;
 
@@ -157,7 +157,7 @@ end;
 
 function TEngineExportNames.BloodName(AColor: Integer): string;
 begin
-  Result := R_GetBloodName(AColor);
+  Result := TTranslationBlood.NameOf(AColor);
 end;
 
 function TEngineExportNames.GroupName(AGroup: TExportGroup; AValue: Integer): string;
