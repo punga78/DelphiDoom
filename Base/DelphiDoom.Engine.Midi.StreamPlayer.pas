@@ -90,7 +90,6 @@ type
 implementation
 
 uses
-  System.SysUtils,
   i_system,
   DelphiDoom.Midi.Types,
   DelphiDoom.Midi.Volume;
