@@ -74,6 +74,10 @@ type
     class function DividePositive(const A, B: TFixed): TFixed; static;
     /// <summary>The division of the unsigned values (the old FixedDivLW), the idiv of the signed ones</summary>
     class function DivideUnsigned(const A, B: Cardinal): Cardinal; static;
+    /// <summary>
+    ///   FIXED_ONE minus DivideUnsigned, wrapping around (the old ASM_CalcFactor of the light maps)
+    /// </summary>
+    class function OneMinusDivideUnsigned(const A, B: Cardinal): Cardinal; static;
     /// <summary>Only the zero divisor is checked (the old FixedDiv_fast)</summary>
     class function DivideFast(const A, B: TFixed): TFixed; static;
     /// <summary>The division in floating point, rounded to the nearest (the old FixedDivEx)</summary>
@@ -260,6 +264,12 @@ begin
       raise EMathCoreException.Create(SDivisionOverflow);
     Result := Cardinal(Integer(LQuotient));
   end;
+end;
+
+class function TFixedMath.OneMinusDivideUnsigned(const A, B: Cardinal): Cardinal;
+begin
+  // sub eax, FRACUNIT; neg eax: the same as FIXED_ONE - quotient, modulo 2^32
+  Result := Cardinal(FIXED_ONE) - DivideUnsigned(A, B);
 end;
 
 class function TFixedMath.DivideFast(const A, B: TFixed): TFixed;

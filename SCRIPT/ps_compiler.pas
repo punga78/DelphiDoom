@@ -1372,6 +1372,9 @@ uses
   {$ENDIF}
   Classes, TypInfo;
 
+// Debug builds only: stops in the debugger where the old code had the assembler "int 3"
+procedure PS_DebugBreak; stdcall; external 'kernel32.dll' name 'DebugBreak';
+
 {$IFDEF DELPHI3UP}
 resourceString
 {$ELSE}
@@ -1592,7 +1595,7 @@ begin
     {$IFDEF DEBUG}
     {$IFNDEF FPC}
     else
-      asm int 3; end;
+      PS_DebugBreak;
     {$ENDIF}
     {$ENDIF}
   end;
@@ -6135,7 +6138,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
     x: TPSProcVar;
   begin
     {$IFDEF DEBUG}
-    if (mtype = nil) or (not mtype.Used) then asm int 3; end;
+    if (mtype = nil) or (not mtype.Used) then PS_DebugBreak;
     {$ENDIF}
     x := TPSProcVar.Create;
     {$IFDEF PS_USESSUPPORT}
@@ -6337,7 +6340,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
         ExpectedType := GetTypeNo(BlockInfo, ivar);
         {$IFDEF DEBUG}
         if not ExpectedType.Used then
-          asm int 3; end;
+          PS_DebugBreak;
         {$ENDIF}
         ParamMode := pmInOut;
       end;
@@ -7282,7 +7285,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
                 ExpectedType := GetTypeNo(BlockInfo, tmp);
                 {$IFDEF DEBUG}
                 if not ExpectedType.Used then
-                  asm int 3; end;
+                  PS_DebugBreak;
                 {$ENDIF}
               end;
               with tmp3.Parameters.Add do
@@ -7291,7 +7294,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
                 ExpectedType := GetTypeNo(BlockInfo, x);
                 {$IFDEF DEBUG}
                 if not ExpectedType.Used then
-                  asm int 3; end;
+                  PS_DebugBreak;
                 {$ENDIF}
                 ParamMode := pmInOut;
               end;
@@ -7326,7 +7329,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
               Param.ExpectedType := GetTypeNo(BlockInfo, tmp);
               {$IFDEF DEBUG}
               if not Param.ExpectedType.Used then
-                asm int 3; end;
+                PS_DebugBreak;
               {$ENDIF}
             end
             else
@@ -7369,7 +7372,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
                 ExpectedType := GetTypeNo(BlockInfo, x);
                 {$IFDEF DEBUG}
                 if not ExpectedType.Used then
-                  asm int 3; end;
+                  PS_DebugBreak;
                 {$ENDIF}
                 if x is TPSValueVar then
                   ParamMode := pmInOut
@@ -7382,7 +7385,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
                 ExpectedType := GetTypeNo(BlockInfo, tmp);
                 {$IFDEF DEBUG}
                 if not ExpectedType.Used then
-                  asm int 3; end;
+                  PS_DebugBreak;
                 {$ENDIF}
               end;
               x := tmp3;
@@ -7793,7 +7796,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
               ExpectedType := at2ut(Decl.Result);
               {$IFDEF DEBUG}
               if not ExpectedType.Used then
-                asm int 3; end;
+                PS_DebugBreak;
               {$ENDIF}
             end;
 
@@ -8113,7 +8116,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
             ExpectedType := GetTypeNo(BlockInfo, temp);
             {$IFDEF DEBUG}
             if not ExpectedType.Used then
-              asm int 3; end;
+              PS_DebugBreak;
             {$ENDIF}
           end;
           with TPSValueProcNo(Result).Parameters.Add do
@@ -8121,7 +8124,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
             ExpectedType := at2ut(FindBaseType(btU32));
             {$IFDEF DEBUG}
             if not ExpectedType.Used then
-              asm int 3; end;
+              PS_DebugBreak;
             {$ENDIF}
             Val := TPSValueData.Create;
             with TPSValueData(val) do
@@ -8620,7 +8623,7 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
           ExpectedType := GetTypeNo(BlockInfo, p);
           {$IFDEF DEBUG}
           if not ExpectedType.Used then
-            asm int 3; end;
+            PS_DebugBreak;
           {$ENDIF}
           FParamMode := pmIn;
         end;
@@ -12413,7 +12416,7 @@ var
           WriteData(p^.tu32, 4);
         {$IFDEF DEBUG}
         else
-          asm int 3; end;
+          PS_DebugBreak;
         {$ENDIF}
       end;
     end;

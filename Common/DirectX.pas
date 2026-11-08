@@ -15648,18 +15648,6 @@ begin
   result.z := v1.z+v2.z;
 end;
 
-{function VectorAdd(const v1, v2: TD3DVector) : TD3DVector;
-asm
-         FLD  DWORD PTR [EAX]
-         FADD DWORD PTR [EDX]
-         FSTP DWORD PTR [ECX]
-         FLD  DWORD PTR [EAX+4]
-         FADD DWORD PTR [EDX+4]
-         FSTP DWORD PTR [ECX+4]
-         FLD  DWORD PTR [EAX+8]
-         FADD DWORD PTR [EDX+8]
-         FSTP DWORD PTR [ECX+8]
-end;}
 
 function VectorSub(v1, v2: TD3DVector) : TD3DVector;
 begin

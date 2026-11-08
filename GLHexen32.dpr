@@ -825,6 +825,8 @@ uses
   DelphiDoom.MathCore.TableTanToAngleEx in 'Libs\MathCore\DelphiDoom.MathCore.TableTanToAngleEx.pas',
   DelphiDoom.MathCore.TableFixedSine in 'Libs\MathCore\DelphiDoom.MathCore.TableFixedSine.pas',
   DelphiDoom.MathCore.FixedMath in 'Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.MathCore.MemoryFill in 'Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
+  DelphiDoom.MathCore.PixelBatch in 'Libs\MathCore\DelphiDoom.MathCore.PixelBatch.pas',
   DelphiDoom.MathCore.Trigonometry in 'Libs\MathCore\DelphiDoom.MathCore.Trigonometry.pas',
   DelphiDoom.MathCore.IntegerStack in 'Libs\MathCore\DelphiDoom.MathCore.IntegerStack.pas',
   DelphiDoom.MathCore.GameRandom in 'Libs\MathCore\DelphiDoom.MathCore.GameRandom.pas',

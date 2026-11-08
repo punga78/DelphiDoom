@@ -1439,7 +1439,7 @@ function IsZeroes(const p: Pointer; const size: integer): boolean;
 // FillDWord
 //
 //==============================================================================
-procedure FillDWord(const dest: Pointer; Count: Integer; Value: LongWord); assembler; register;
+procedure FillDWord(const dest: Pointer; Count: Integer; Value: LongWord); register;
 
 //==============================================================================
 //
@@ -1462,6 +1462,10 @@ uses
   SysUtils
 {$IFDEF FPC}
   ,d_fpc
+{$ENDIF}
+{$IFNDEF CPUX86}
+  ,DelphiDoom.MathCore.FixedMath
+  ,DelphiDoom.MathCore.MemoryFill
 {$ENDIF}
   ;
 
@@ -1799,139 +1803,6 @@ begin
   end;
 end;
 
-{$IFNDEF FPC}
-
-//==============================================================================
-//
-// memcpy_MMX8
-//
-//==============================================================================
-procedure memcpy_MMX8(const dst: pointer; const src: pointer; const len: integer); assembler;
-asm
-  push esi
-  push edi
-
-  mov esi, src
-  mov edi, dst
-  mov ecx, len
-  shr ecx, 3  // 8 bytes per iteration
-
-@@loop1:
-// Read in source data
-  movq  mm1, [esi]
-// Non-temporal stores
-  movntq [edi], mm1
-
-  add esi, 8
-  add edi, 8
-  dec ecx
-  jnz @@loop1
-
-  emms
-
-  pop edi
-  pop esi
-end;
-
-//==============================================================================
-//
-// memcpy_MMX64
-//
-//==============================================================================
-procedure memcpy_MMX64(const dst: pointer; const src: pointer; const len: integer); assembler;
-asm
-  push esi
-  push edi
-
-  mov esi, src
-  mov edi, dst
-  mov ecx, len
-  shr ecx, 6    // 64 bytes per iteration
-
-@@loop1:
-
-// Read in source data
-  movq mm1, [esi]
-  movq mm2, [esi + 8]
-  movq mm3, [esi + 16]
-  movq mm4, [esi + 24]
-  movq mm5, [esi + 32]
-  movq mm6, [esi + 40]
-  movq mm7, [esi + 48]
-  movq mm0, [esi + 56]
-
-// Non-temporal stores
-  movntq [edi], mm1
-  movntq [edi + 8], mm2
-  movntq [edi + 16], mm3
-  movntq [edi + 24], mm4
-  movntq [edi + 32], mm5
-  movntq [edi + 40], mm6
-  movntq [edi + 48], mm7
-  movntq [edi + 56], mm0
-
-  add esi, 64
-  add edi, 64
-  dec ecx
-  jnz @@loop1
-
-  emms
-
-  pop edi
-  pop esi
-end;
-
-//==============================================================================
-//
-// memcpy_3DNow64
-//
-//==============================================================================
-procedure memcpy_3DNow64(const dst: pointer; const src: pointer; const len: integer); assembler;
-asm
-  push esi
-  push edi
-
-  mov esi, src
-  mov edi, dst
-  mov ecx, len
-  shr ecx, 6    // 64 bytes per iteration
-
-@@loop1:
-// Prefetch next loop, non-temporal
-  prefetch [esi + 64]
-  prefetch [esi + 96]
-
-// Read in source data
-  movq mm1, [esi]
-  movq mm2, [esi + 8]
-  movq mm3, [esi + 16]
-  movq mm4, [esi + 24]
-  movq mm5, [esi + 32]
-  movq mm6, [esi + 40]
-  movq mm7, [esi + 48]
-  movq mm0, [esi + 56]
-
-// Non-temporal stores
-  movntq [edi], mm1
-  movntq [edi + 8], mm2
-  movntq [edi + 16], mm3
-  movntq [edi + 24], mm4
-  movntq [edi + 32], mm5
-  movntq [edi + 40], mm6
-  movntq [edi + 48], mm7
-  movntq [edi + 56], mm0
-
-  add esi, 64
-  add edi, 64
-  dec ecx
-  jnz @@loop1
-
-  emms
-
-  pop edi
-  pop esi
-end;
-{$ENDIF}
 
 //==============================================================================
 //
@@ -1954,77 +1825,19 @@ begin
   Move(src0^, dest0^, count0);
 end;
 
-{$IFNDEF FPC}
-
-//==============================================================================
-//
-// memcpy_MMX
-//
-//==============================================================================
-function memcpy_MMX(const dest0: pointer; const src0: pointer; count0: integer): pointer;
-var
-  dest: PByte;
-  src: PByte;
-  count: integer;
-begin
-  if mmxMachine = 0 then
-  begin
-    Move(src0^, dest0^, count0);
-    result := dest0;
-    exit;
-  end;
-
-  // if copying more than 16 bytes and we can copy 8 byte aligned
-  if (count0 > 16) and (((integer(dest0) xor integer(src0)) and 7) = 0) then
-  begin
-    dest := PByte(dest0);
-    src := PByte(src0);
-
-    // copy up to the first 8 byte aligned boundary
-    count := integer(dest) and 7;
-    Move(src^, dest^, count);
-    inc(dest, count);
-    inc(src, count);
-    count := count0 - count;
-
-   // if there are blocks of 64 bytes
-    if count and not 63 <> 0 then
-    begin
-      if AMD3DNowMachine <> 0 then
-        memcpy_3DNow64(dest, src, count and not 63)
-      else
-        memcpy_MMX64(dest, src, count and not 63);
-      inc(src, count and not 63);
-      inc(dest, count and not 63);
-      count := count and 63;
-    end;
-
-    // if there are blocks of 8 bytes
-    if count and not 7 <> 0 then
-    begin
-      memcpy_MMX8(dest, src, count);
-      inc(src, count and not 7);
-      inc(dest, count and not 7);
-      count := count and 7;
-    end;
-
-    // copy any remaining bytes
-    Move(src^, dest^, count);
-  end
-  else
-  begin
-    // use the regular one if we cannot copy 8 byte aligned
-    Move(src0^, dest0^, count0);
-  end;
-  result := dest0;
-end;
-{$ENDIF}
 
 //==============================================================================
 //
 // memset
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function memset(const dest0: pointer; const val: integer; const count0: integer): pointer;
+begin
+  TMemoryFill.FillBytes(dest0, val, count0);
+  result := dest0;
+end;
+{$ELSE}
 function memset(const dest0: pointer; const val: integer; const count0: integer): pointer;
 {$IFNDEF FPC}
 var
@@ -2151,12 +1964,20 @@ begin
   result := dest0;
 {$ENDIF}
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // memsetsi
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function memsetsi(const dest0: pointer; const val: smallint; count0: integer): pointer;
+begin
+  TMemoryFill.FillWords(dest0, val, count0);
+  result := dest0;
+end;
+{$ELSE}
 function memsetsi(const dest0: pointer; const val: smallint; count0: integer): pointer;
 {$IFNDEF FPC}
 var
@@ -2284,12 +2105,20 @@ begin
   result := dest0;
 {$ENDIF}
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // memseti
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function memseti(const dest0: pointer; const val: integer; const count0: integer): pointer;
+begin
+  TMemoryFill.FillDWords(dest0, count0, Cardinal(val));
+  result := dest0;
+end;
+{$ELSE}
 function memseti(const dest0: pointer; const val: integer; const count0: integer): pointer;
 var
   data: union_8b;
@@ -2400,7 +2229,8 @@ begin
     count := count and 7;
   end;
 
-  while count > 4 do
+  // the last 32 bit value was skipped when the count was odd (count > 4 instead of >= 4)
+  while count >= 4 do
   begin
     PInteger(dest)^ := val;
     inc(dest, 4);
@@ -2413,6 +2243,7 @@ begin
 
   result := dest0;
 end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -5317,16 +5148,11 @@ end;
 //
 //==============================================================================
 function toupper(ch: Char): Char; overload;
-asm
-{ ->    AL      Character       }
-{ <-    AL      result          }
-
-  cmp al, 'a'
-  jb  @@exit
-  cmp al, 'z'
-  ja  @@exit
-  sub al, 'a' - 'A'
-@@exit:
+begin
+  if (ch >= 'a') and (ch <= 'z') then
+    result := Char(Ord(ch) - 32)
+  else
+    result := ch;
 end;
 
 //==============================================================================
@@ -5335,16 +5161,11 @@ end;
 //
 //==============================================================================
 function toupper(ch: AnsiChar): AnsiChar; overload;
-asm
-{ ->    AL      Character       }
-{ <-    AL      result          }
-
-  cmp al, 'a'
-  jb  @@exit
-  cmp al, 'z'
-  ja  @@exit
-  sub al, 'a' - 'A'
-@@exit:
+begin
+  if (ch >= 'a') and (ch <= 'z') then
+    result := AnsiChar(Ord(ch) - 32)
+  else
+    result := ch;
 end;
 
 //==============================================================================
@@ -5353,16 +5174,11 @@ end;
 //
 //==============================================================================
 function tolower(ch: Char): Char; overload;
-asm
-{ ->    AL      Character       }
-{ <-    AL      result          }
-
-  cmp al, 'A'
-  jb  @@exit
-  cmp al, 'Z'
-  ja  @@exit
-  sub al, 'A' - 'a'
-@@exit:
+begin
+  if (ch >= 'A') and (ch <= 'Z') then
+    result := Char(Ord(ch) + 32)
+  else
+    result := ch;
 end;
 
 //==============================================================================
@@ -5371,16 +5187,11 @@ end;
 //
 //==============================================================================
 function tolower(ch: AnsiChar): AnsiChar; overload;
-asm
-{ ->    AL      Character       }
-{ <-    AL      result          }
-
-  cmp al, 'A'
-  jb  @@exit
-  cmp al, 'Z'
-  ja  @@exit
-  sub al, 'A' - 'a'
-@@exit:
+begin
+  if (ch >= 'A') and (ch <= 'Z') then
+    result := AnsiChar(Ord(ch) + 32)
+  else
+    result := ch;
 end;
 
 //==============================================================================
@@ -5403,11 +5214,18 @@ end;
 // _SHL
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHL(const x: integer; const bits: integer): integer;
+begin
+  result := x shl (bits and 31);
+end;
+{$ELSE}
 function _SHL(const x: integer; const bits: integer): integer; assembler;
 asm
   mov ecx, edx
   sal eax, cl
 end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -5424,81 +5242,137 @@ end;
 // _SHR
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR(const x: integer; const bits: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, bits and 31);
+end;
+{$ELSE}
 function _SHR(const x: integer; const bits: integer): integer; assembler;
 asm
   mov ecx, edx
   sar eax, cl
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR1
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR1(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 1);
+end;
+{$ELSE}
 function _SHR1(const x: integer): integer; assembler;
 asm
   sar eax, 1
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR2
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR2(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 2);
+end;
+{$ELSE}
 function _SHR2(const x: integer): integer; assembler;
 asm
   sar eax, 2
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR3
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR3(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 3);
+end;
+{$ELSE}
 function _SHR3(const x: integer): integer; assembler;
 asm
   sar eax, 3
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR4
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR4(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 4);
+end;
+{$ELSE}
 function _SHR4(const x: integer): integer; assembler;
 asm
   sar eax, 4
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR7
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR7(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 7);
+end;
+{$ELSE}
 function _SHR7(const x: integer): integer; assembler;
 asm
   sar eax, 7
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR8
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR8(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 8);
+end;
+{$ELSE}
 function _SHR8(const x: integer): integer; assembler;
 asm
   sar eax, 8
 end;
+{$ENDIF}
 
 //==============================================================================
 //
 // _SHR14
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function _SHR14(const x: integer): integer;
+begin
+  result := TFixedMath.ShiftRight(x, 14);
+end;
+{$ELSE}
 function _SHR14(const x: integer): integer; assembler;
 asm
   sar eax, 14
 end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -5538,6 +5412,12 @@ end;
 // ZeroMemory
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+procedure ZeroMemory(const dest0: pointer; const count0: integer);
+begin
+  TMemoryFill.FillBytes(dest0, 0, count0);
+end;
+{$ELSE}
 procedure ZeroMemory(const dest0: pointer; const count0: integer);
 {$IFNDEF FPC}
 var
@@ -5660,6 +5540,7 @@ begin
   end;
 {$ENDIF}
 end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -6125,35 +6006,9 @@ end;
 // StrLCopy
 //
 //==============================================================================
-function StrLCopy(Dest: PChar; const Source: PChar; MaxLen: Cardinal): PChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        PUSH    EBX
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-        MOV     EBX,ECX
-        XOR     AL,AL
-        TEST    ECX,ECX
-        JZ      @@1
-        REPNE   SCASB
-        JNE     @@1
-        INC     ECX
-@@1:    SUB     EBX,ECX
-        MOV     EDI,ESI
-        MOV     ESI,EDX
-        MOV     EDX,EDI
-        MOV     ECX,EBX
-        SHR     ECX,2
-        REP     MOVSD
-        MOV     ECX,EBX
-        AND     ECX,3
-        REP     MOVSB
-        STOSB
-        MOV     EAX,EDX
-        POP     EBX
-        POP     ESI
-        POP     EDI
+function StrLCopy(Dest: PChar; const Source: PChar; MaxLen: Cardinal): PChar;
+begin
+  result := SysUtils.StrLCopy(Dest, Source, MaxLen);
 end;
 
 //==============================================================================
@@ -6935,6 +6790,12 @@ end;
 // FillDWord
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+procedure FillDWord(const dest: Pointer; Count: Integer; Value: LongWord); register;
+begin
+  TMemoryFill.FillDWords(dest, Count, Value);
+end;
+{$ELSE}
 procedure FillDWord(const dest: Pointer; Count: Integer; Value: LongWord); assembler; register;
 asm
   push edi
@@ -6944,6 +6805,7 @@ asm
   rep  stosd
   pop edi
 end;
+{$ENDIF}
 
 //==============================================================================
 //

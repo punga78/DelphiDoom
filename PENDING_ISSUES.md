@@ -40,7 +40,7 @@ Restano **codice storico, per scelta documentata** in `CLAUDE.md`:
 
 - il renderer software e quello OpenGL (`gl_render`, `gl_main`, `gl_tex`, `gl_sky`, `gl_automap`, `gl_setup`, `gl_slopes`, `gl_lights`, `gl_ambient`, `gl_shadows`, `gl_voxels`, `gl_lightmaps`, il parser MODELDEF di `gl_models`, `mdl_dllmodel`, `mdl_script*`): chiamate per fotogramma, contesto grafico, `screens[]` e zone memory; astrarli richiederebbe un `IRenderer` e non sarebbe verificabile senza contesto;
 - i thinker (`vldoor_t`, `floormove_t`…) e i savegame, il cui formato non può cambiare;
-- `FixedMul`/`FixedDiv` e le funzioni sugli angoli (percorsi caldi, si rivedono con il 64 bit, #41);
+- `FixedMul`/`FixedDiv` e le funzioni sugli angoli (percorsi caldi): a 32 bit restano in `asm` (`{$IFDEF CPUX86}`) e per gli altri target hanno la versione Pascal di `TFixedMath` (#41; a 64 bit resta da compilare e da misurare). Aperto nella #41: `SCRIPT\ps_runtime.pas` (`x86.inc`/`x64.inc`: chiamate native di PascalScript, usate solo da `RegisterDelphiFunction` dei modelli OpenGL; per toglierle servirebbe `System.Rtti.Invoke` con i tipi di ogni funzione, circa 400-600 righe e test di parità sulle convenzioni di chiamata), `FASTCODE`, `FASTMM4`, `DD_IDE\SynEdit` e `Launcher\Launcher_utils.pas`;
 - `V_FindAproxColorIndex`, il melt del wipe, la scala dei muri, le tabelle hi-res, `R_ReadDS32Cache`;
 - gli interruttori di Heretic, Hexen e Strife e `Hexen\p_anim.pas`.
 

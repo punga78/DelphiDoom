@@ -839,16 +839,6 @@ end;
 //
 //==============================================================================
 function R_ColorMidAverage(const c1, c2: LongWord): LongWord;
-{
-assembler;
-  asm
-    movd mm0, [eax]
-    pavgusb mm0, [edx]
-//  paddusb mm0, [v2]
-    movd  [eax], mm0
-    femms
-  end;
-}
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
