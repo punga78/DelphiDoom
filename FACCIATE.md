@@ -492,7 +492,7 @@ Per toglierla: facciata delle piattaforme a script (#154, Hexen e UDMF): `TUdmfP
 
 ### `Hexen\d_main.pas` - 25 funzioni pubbliche, 37 chiamate
 
-Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`).
+Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -524,7 +524,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 
 ### `Heretic\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
 
-Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`).
+Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -557,7 +557,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 
 ### `Doom\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
 
-Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`).
+Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -621,7 +621,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 
 ### `Strife\d_main.pas` - 26 funzioni pubbliche, 40 chiamate
 
-Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`).
+Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
