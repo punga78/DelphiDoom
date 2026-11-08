@@ -62,6 +62,7 @@ type
 implementation
 
 uses
+  System.SysUtils, // first: d_delphi must win for PByteArray
   d_delphi,
   d_think,
   d_player,
@@ -94,7 +95,6 @@ uses
   {$IFDEF HEXEN}
   s_sndseq,
   {$ENDIF}
-  System.SysUtils,
   DelphiDoom.Zone.Types;
 
 { TEngineAcsHost }
