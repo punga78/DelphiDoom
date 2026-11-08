@@ -2452,6 +2452,7 @@ uses
   r_defs,
   r_main,
   r_translations,
+  DelphiDoom.Palette.TranslationBlood,
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
   sc_params,
@@ -12576,7 +12577,7 @@ begin
   if not P_CheckStateArgs(actor.state) then
     exit;
 
-  actor.bloodcolor := R_GetBloodTranslationIdForName(actor.state.params.StrVal[0]);
+  actor.bloodcolor := TTranslationBlood.IdForName(actor.state.params.StrVal[0]);
 end;
 
 //==============================================================================

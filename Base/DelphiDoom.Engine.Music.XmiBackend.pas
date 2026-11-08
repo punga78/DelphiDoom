@@ -35,7 +35,6 @@ uses
 {$IFNDEF DLL}
   DelphiDoom.Xmi.Provider,
   m_base,
-  i_system,
 {$ENDIF}
   d_delphi;
 
@@ -74,7 +73,7 @@ begin
   LFileName := NewSongFile;
   if not TXmiProvider.Client.TryConvertToMidiFile(AData, ASize, 0, LFileName) then
   begin
-    I_Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
+    Log.Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
     Result := TMusicRegisterResult.Failed;
     Exit;
   end;

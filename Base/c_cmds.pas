@@ -73,26 +73,10 @@ function C_ExecuteCmd(const name: string; const parm: string): boolean; overload
 //==============================================================================
 function C_ExecuteCmd(name: string; const parm1, parm2: string): boolean; overload;
 
-//==============================================================================
-//
-// C_BoolEval
-//
-//==============================================================================
-function C_BoolEval(parm: string; const default: boolean): boolean;
-
-//==============================================================================
-//
-// C_GetMachingList
-//
-//==============================================================================
-function C_GetMachingList(const src: TDStringList; const mask: string): TDStringList;
-
 implementation
 
 uses
-  i_system,
-  DelphiDoom.Console.Numbers,
-  DelphiDoom.Console.MaskMatcher;
+  i_system;
 
 var
   cmd_registry: ICommandRegistry;
@@ -165,38 +149,6 @@ function C_ExecuteCmd(name: string; const parm1, parm2: string): boolean;
 begin
   C_CheckConfigured;
   result := cmd_interpreter.Execute(name, parm1, parm2);
-end;
-
-//==============================================================================
-//
-// C_BoolEval
-//
-//==============================================================================
-function C_BoolEval(parm: string; const default: boolean): boolean;
-begin
-  result := TConsoleNumbers.EvaluateBoolean(parm, default);
-end;
-
-//==============================================================================
-//
-// C_GetMachingList
-//
-//==============================================================================
-function C_GetMachingList(const src: TDStringList; const mask: string): TDStringList;
-var
-  names: TArray<string>;
-  matching: TArray<string>;
-  i: integer;
-begin
-  SetLength(names, src.Count);
-  for i := 0 to src.Count - 1 do
-    names[i] := src[i];
-
-  matching := TConsoleMaskMatcher.Filter(names, mask);
-
-  result := TDStringList.Create;
-  for i := 0 to Length(matching) - 1 do
-    result.Add(matching[i]);
 end;
 
 const

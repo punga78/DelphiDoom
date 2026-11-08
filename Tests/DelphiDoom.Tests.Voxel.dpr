@@ -56,7 +56,8 @@ uses
   DelphiDoom.Tests.Voxel.PatchBuilder in 'Source\DelphiDoom.Tests.Voxel.PatchBuilder.pas',
   DelphiDoom.Tests.Voxel.DefinitionParser in 'Source\DelphiDoom.Tests.Voxel.DefinitionParser.pas',
   DelphiDoom.Tests.Voxel.Factory in 'Source\DelphiDoom.Tests.Voxel.Factory.pas',
-  DelphiDoom.Tests.Voxel.SpriteNames in 'Source\DelphiDoom.Tests.Voxel.SpriteNames.pas';
+  DelphiDoom.Tests.Voxel.SpriteNames in 'Source\DelphiDoom.Tests.Voxel.SpriteNames.pas',
+  DelphiDoom.Tests.Voxel.Pk3 in 'Source\DelphiDoom.Tests.Voxel.Pk3.pas';
 
 var
   Runner: ITestRunner;

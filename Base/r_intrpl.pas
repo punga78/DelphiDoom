@@ -112,6 +112,7 @@ const
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   d_player,
   d_think,
   c_cmds,
@@ -211,7 +212,7 @@ begin
     exit;
   end;
 
-  newval := C_BoolEval(parm, interpolate);
+  newval := TConsoleNumbers.EvaluateBoolean(parm, interpolate);
   if newval <> interpolate then
   begin
     interpolate := newval;
@@ -236,7 +237,7 @@ begin
     exit;
   end;
 
-  newval := C_BoolEval(parm, interpolateoncapped);
+  newval := TConsoleNumbers.EvaluateBoolean(parm, interpolateoncapped);
   if newval <> interpolateoncapped then
   begin
     interpolateoncapped := newval;

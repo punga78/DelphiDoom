@@ -20,10 +20,14 @@ uses
   DelphiDoom.CommandLine.Arguments in '..\Libs\CommandLine\DelphiDoom.CommandLine.Arguments.pas',
   DelphiDoom.CommandLine.DefaultFile in '..\Libs\CommandLine\DelphiDoom.CommandLine.DefaultFile.pas',
   DelphiDoom.CommandLine.Builder in '..\Libs\CommandLine\DelphiDoom.CommandLine.Builder.pas',
+  DelphiDoom.CommandLine.Queried in '..\Libs\CommandLine\DelphiDoom.CommandLine.Queried.pas',
+  DelphiDoom.CommandLine.SaveFileNames in '..\Libs\CommandLine\DelphiDoom.CommandLine.SaveFileNames.pas',
   DelphiDoom.CommandLine.Factory in '..\Libs\CommandLine\DelphiDoom.CommandLine.Factory.pas',
   DelphiDoom.Tests.CommandLine.Arguments in 'Source\DelphiDoom.Tests.CommandLine.Arguments.pas',
   DelphiDoom.Tests.CommandLine.DefaultFile in 'Source\DelphiDoom.Tests.CommandLine.DefaultFile.pas',
-  DelphiDoom.Tests.CommandLine.Builder in 'Source\DelphiDoom.Tests.CommandLine.Builder.pas';
+  DelphiDoom.Tests.CommandLine.Builder in 'Source\DelphiDoom.Tests.CommandLine.Builder.pas',
+  DelphiDoom.Tests.CommandLine.Queried in 'Source\DelphiDoom.Tests.CommandLine.Queried.pas',
+  DelphiDoom.Tests.CommandLine.SaveFileNames in 'Source\DelphiDoom.Tests.CommandLine.SaveFileNames.pas';
 
 var
   Runner: ITestRunner;

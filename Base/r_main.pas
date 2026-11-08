@@ -549,6 +549,7 @@ procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame);
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   Math,
   doomdata,
   c_cmds,
@@ -2963,7 +2964,7 @@ begin
     exit;
   end;
 
-  newz := C_BoolEval(parm1, zaxisshift);
+  newz := TConsoleNumbers.EvaluateBoolean(parm1, zaxisshift);
   if newz <> zaxisshift then
   begin
     zaxisshift := newz;
@@ -2989,7 +2990,7 @@ begin
     exit;
   end;
 
-  newf := C_BoolEval(parm1, usefake3d);
+  newf := TConsoleNumbers.EvaluateBoolean(parm1, usefake3d);
   if newf <> usefake3d then
   begin
     usefake3d := newf;
@@ -3016,7 +3017,7 @@ begin
     exit;
   end;
 
-  newusefz := C_BoolEval(parm1, useclassicfuzzeffect);
+  newusefz := TConsoleNumbers.EvaluateBoolean(parm1, useclassicfuzzeffect);
   if newusefz <> useclassicfuzzeffect then
   begin
     useclassicfuzzeffect := newusefz;
@@ -3044,7 +3045,7 @@ begin
     exit;
   end;
 
-  newusefz := C_BoolEval(parm1, use32bitfuzzeffect);
+  newusefz := TConsoleNumbers.EvaluateBoolean(parm1, use32bitfuzzeffect);
   if newusefz <> use32bitfuzzeffect then
   begin
     use32bitfuzzeffect := newusefz;
@@ -3071,7 +3072,7 @@ begin
     exit;
   end;
 
-  newdih := C_BoolEval(parm1, diher8bittransparency);
+  newdih := TConsoleNumbers.EvaluateBoolean(parm1, diher8bittransparency);
   if newdih <> diher8bittransparency then
   begin
     diher8bittransparency := newdih;

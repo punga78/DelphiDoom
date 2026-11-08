@@ -15,6 +15,8 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Platform.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Platform.Intf;
 
 type
@@ -26,9 +28,14 @@ type
   TEngineFiles = class(TInterfacedObject, IEngineFiles)
   strict private
     FStore: IFileStore;
+    FZone: IZoneAllocator;
+    FShutdown: IEngineShutdown;
   public
-    /// <remarks>Raises EArgumentNilException if AStore is nil</remarks>
-    constructor Create(const AStore: IFileStore);
+    /// <param name="AZone">Holds what ReadFile reads</param>
+    /// <param name="AShutdown">Stops the game when a file can not be read (I_Error)</param>
+    /// <remarks>Raises EArgumentNilException if AStore, AZone or AShutdown is nil</remarks>
+    constructor Create(const AStore: IFileStore; const AZone: IZoneAllocator;
+      const AShutdown: IEngineShutdown);
     function WriteFile(const AName: string; const ASource: Pointer; const ALength: Integer): Boolean;
     function AppendFile(const AName: string; const ASource: Pointer; const ALength: Integer): Integer;
     function ReadFile(const AName: string; var ABuffer: Pointer): Integer;
@@ -37,8 +44,7 @@ type
 implementation
 
 uses
-  i_system,
-  z_zone,
+  DelphiDoom.Zone.Types,
   DelphiDoom.Platform.Types;
 
 const
@@ -47,12 +53,19 @@ const
 
 { TEngineFiles }
 
-constructor TEngineFiles.Create(const AStore: IFileStore);
+constructor TEngineFiles.Create(const AStore: IFileStore; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(AStore) then
     raise EArgumentNilException.Create(SStoreIsNil);
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FStore := AStore;
+  FZone := AZone;
 end;
 
 function TEngineFiles.WriteFile(const AName: string; const ASource: Pointer;
@@ -75,12 +88,12 @@ begin
     LData := FStore.Read(AName);
   except
     on EPlatformException do
-      I_Error(SReadFailed, [AName]);
+      FShutdown.Fail(Format(SReadFailed, [AName]));
   end;
 
   Result := Length(LData);
-  // the callers free it with Z_Free
-  ABuffer := Z_Malloc(Result, PU_STATIC, nil);
+  // the callers free it with Z_Free (the zone is the one of z_zone)
+  ABuffer := FZone.Allocate(Result, ZONE_TAG_STATIC, nil);
   if Result > 0 then
     Move(LData[0], ABuffer^, Result);
 end;

@@ -13,6 +13,10 @@ interface
 
 uses
   DelphiDoom.GameState.Intf,
+  DelphiDoom.Logging.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -27,12 +31,22 @@ type
   strict private
     FRules: ILevelGeometryRules;
     FGame: IGameContext;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
+    FLog: ILog;
+    FShutdown: IEngineShutdown;
     procedure FindSubsectorSectors;
     procedure CountSectorLines(out ATotal: Integer);
     procedure BuildSectorLines(ATotal: Integer);
   public
-    /// <summary>AGame says when the lines with wrong sides are printed (-devparm)</summary>
-    constructor Create(const ARules: ILevelGeometryRules; const AGame: IGameContext);
+    /// <summary>
+    ///   AGame says when the lines with wrong sides are printed (-devparm); ALumps gives the
+    ///   lumps of the map and AZone the memory of the level; ALog receives the warnings of
+    ///   the lines and AShutdown stops the game on a map that can not be grouped (I_Error)
+    /// </summary>
+    constructor Create(const ARules: ILevelGeometryRules; const AGame: IGameContext;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+      const AShutdown: IEngineShutdown);
     procedure LoadVertexes(ALump: Integer);
     procedure LoadSectors(ALump: Integer);
     procedure LoadSideDefs(ALump: Integer);
@@ -53,9 +67,6 @@ uses
   doomdata,
   doomtype,
   m_fixed,
-  i_system,
-  w_wad,
-  z_zone,
   r_defs,
   r_data,
   p_local,
@@ -64,20 +75,35 @@ uses
 {$IFDEF OPENGL}
   gl_setup,
 {$ENDIF}
+  DelphiDoom.Zone.Types,
   DelphiDoom.MathCore.Types,
   DelphiDoom.MathCore.BoundingBox;
 
 { TEngineLevelMapReader }
 
-constructor TEngineLevelMapReader.Create(const ARules: ILevelGeometryRules; const AGame: IGameContext);
+constructor TEngineLevelMapReader.Create(const ARules: ILevelGeometryRules; const AGame: IGameContext;
+  const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(ALog) then
+    raise EArgumentNilException.Create('ALog');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FLog := ALog;
+  FShutdown := AShutdown;
   if not Assigned(ARules) then
     raise EArgumentNilException.Create('ARules');
   if not Assigned(AGame) then
     raise EArgumentNilException.Create('AGame');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FRules := ARules;
   FGame := AGame;
+  FLumps := ALumps;
+  FZone := AZone;
 end;
 
 procedure TEngineLevelMapReader.LoadVertexes(ALump: Integer);
@@ -89,9 +115,9 @@ var
   LMinX, LMaxX, LMinY, LMaxY: Integer;
   LDeltaX, LDeltaY: Integer;
 begin
-  numvertexes := W_LumpLength(ALump) div SizeOf(mapvertex_t);
-  vertexes := Z_Malloc(numvertexes * SizeOf(vertex_t), PU_LEVEL, nil);
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  numvertexes := FLumps.LengthOf(ALump) div SizeOf(mapvertex_t);
+  vertexes := FZone.Allocate(numvertexes * SizeOf(vertex_t), ZONE_TAG_LEVEL, nil);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
   LMapVertex := Pmapvertex_t(LData);
 
   // internal representation as fixed
@@ -124,7 +150,7 @@ begin
   LDeltaY := LMaxY - LMinY;
   largemap := (LDeltaX < -32767) or (LDeltaX > 32767) or (LDeltaY < -32767) or (LDeltaY > 32767);
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadSegs(ALump: Integer);
@@ -138,10 +164,10 @@ var
   LSide: Integer;
   LSideNumber: Integer;
 begin
-  numsegs := W_LumpLength(ALump) div SizeOf(mapseg_t);
-  segs := Z_Malloc(numsegs * SizeOf(seg_t), PU_LEVEL, nil);
+  numsegs := FLumps.LengthOf(ALump) div SizeOf(mapseg_t);
+  segs := FZone.Allocate(numsegs * SizeOf(seg_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(segs, numsegs * SizeOf(seg_t));
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   LMapSeg := Pmapseg_t(LData);
   LSeg := @segs[0];
@@ -163,7 +189,7 @@ begin
       LSideNumber := LLine.sidenum[LSide xor 1];
       if LSideNumber = -1 then
       begin
-        I_Warning('P_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]);
+        FLog.Warning(Format('P_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]));
         LLine.flags := LLine.flags and not ML_TWOSIDED;
         LSeg.backsector := nil;
       end
@@ -181,7 +207,7 @@ begin
     Inc(LSeg);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadSubsectors(ALump: Integer);
@@ -191,9 +217,9 @@ var
   LMapSubsector: Pmapsubsector_t;
   LSubsector: Psubsector_t;
 begin
-  numsubsectors := W_LumpLength(ALump) div SizeOf(mapsubsector_t);
-  subsectors := Z_Malloc(numsubsectors * SizeOf(subsector_t), PU_LEVEL, nil);
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  numsubsectors := FLumps.LengthOf(ALump) div SizeOf(mapsubsector_t);
+  subsectors := FZone.Allocate(numsubsectors * SizeOf(subsector_t), ZONE_TAG_LEVEL, nil);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   LMapSubsector := Pmapsubsector_t(LData);
   ZeroMemory(subsectors, numsubsectors * SizeOf(subsector_t));
@@ -207,7 +233,7 @@ begin
     Inc(LSubsector);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadSectors(ALump: Integer);
@@ -217,10 +243,10 @@ var
   LMapSector: Pmapsector_t;
   LSector: Psector_t;
 begin
-  numsectors := W_LumpLength(ALump) div SizeOf(mapsector_t);
-  sectors := Z_Malloc(numsectors * SizeOf(sector_t), PU_LEVEL, nil);
+  numsectors := FLumps.LengthOf(ALump) div SizeOf(mapsector_t);
+  sectors := FZone.Allocate(numsectors * SizeOf(sector_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(sectors, numsectors * SizeOf(sector_t));
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   LMapSector := Pmapsector_t(LData);
   LSector := @sectors[0];
@@ -272,7 +298,7 @@ begin
     Inc(LSector);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadNodes(ALump: Integer);
@@ -284,9 +310,9 @@ var
   LMapNode: Pmapnode_t;
   LNode: Pnode_t;
 begin
-  numnodes := W_LumpLength(ALump) div SizeOf(mapnode_t);
-  nodes := Z_Malloc(numnodes * SizeOf(node_t), PU_LEVEL, nil);
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  numnodes := FLumps.LengthOf(ALump) div SizeOf(mapnode_t);
+  nodes := FZone.Allocate(numnodes * SizeOf(node_t), ZONE_TAG_LEVEL, nil);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   LMapNode := Pmapnode_t(LData);
   LNode := @nodes[0];
@@ -315,7 +341,7 @@ begin
     Inc(LNode);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadLineDefs(ALump: Integer);
@@ -328,11 +354,11 @@ var
   LVertex2: Pvertex_t;
   LSize: Integer;
 begin
-  LSize := W_LumpLength(ALump);
+  LSize := FLumps.LengthOf(ALump);
   numlines := LSize div SizeOf(maplinedef_t);
-  lines := Z_Malloc(numlines * SizeOf(line_t), PU_LEVEL, nil);
+  lines := FZone.Allocate(numlines * SizeOf(line_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(lines, numlines * SizeOf(line_t));
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   FRules.FixLineDefs(LData, LSize, numlines);
 
@@ -410,7 +436,7 @@ begin
     Inc(LLine);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadSideDefs(ALump: Integer);
@@ -420,10 +446,10 @@ var
   LMapSide: Pmapsidedef_t;
   LSide: Pside_t;
 begin
-  numsides := W_LumpLength(ALump) div SizeOf(mapsidedef_t);
-  sides := Z_Malloc(numsides * SizeOf(side_t), PU_LEVEL, nil);
+  numsides := FLumps.LengthOf(ALump) div SizeOf(mapsidedef_t);
+  sides := FZone.Allocate(numsides * SizeOf(side_t), ZONE_TAG_LEVEL, nil);
   ZeroMemory(sides, numsides * SizeOf(side_t));
-  LData := W_CacheLumpNum(ALump, PU_STATIC);
+  LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
 
   LMapSide := Pmapsidedef_t(LData);
   LSide := @sides[0];
@@ -437,13 +463,13 @@ begin
     Inc(LSide);
   end;
 
-  Z_Free(LData);
+  FZone.FreeBlock(LData);
 end;
 
 procedure TEngineLevelMapReader.LoadReject(ALump: Integer);
 begin
-  rejectmatrix := W_CacheLumpNum(ALump, PU_LEVEL);
-  rejectmatrixsize := W_LumpLength(ALump);
+  rejectmatrix := FLumps.Cache(ALump, ZONE_TAG_LEVEL);
+  rejectmatrixsize := FLumps.LengthOf(ALump);
 end;
 
 procedure TEngineLevelMapReader.FindSubsectorSectors;
@@ -468,7 +494,7 @@ begin
       Inc(LSeg);
     end;
     if LSubsector.sector = nil then
-      I_Error('P_GroupLines(): Subsector %d is not part of a sector', [LIndex]);
+      FShutdown.Fail(Format('P_GroupLines(): Subsector %d is not part of a sector', [LIndex]));
     Inc(LSubsector);
   end;
 end;
@@ -488,9 +514,9 @@ begin
     else
     begin
       if LLine.backsector = nil then
-        I_Warning('P_GroupLines(): Line %d is missing frontsector & backsector'#13#10, [LIndex])
+        FLog.Warning(Format('P_GroupLines(): Line %d is missing frontsector & backsector'#13#10, [LIndex]))
       else
-        I_Warning('P_GroupLines(): Line %d is missing frontsector'#13#10, [LIndex]);
+        FLog.Warning(Format('P_GroupLines(): Line %d is missing frontsector'#13#10, [LIndex]));
     end;
 
     if (LLine.backsector <> nil) and (LLine.backsector <> LLine.frontsector) then
@@ -515,7 +541,7 @@ begin
   // the same for every sector of the level
   LInternal := FRules.UsesInternalBlockCoordinates;
 
-  LLineBuffer := Z_Malloc(ATotal * SizeOf(Pline_t), PU_LEVEL, nil);
+  LLineBuffer := FZone.Allocate(ATotal * SizeOf(Pline_t), ZONE_TAG_LEVEL, nil);
   LSector := @sectors[0];
   for LIndex := 0 to numsectors - 1 do
   begin
@@ -534,7 +560,7 @@ begin
       Inc(LLine);
     end;
     if pDiff(LLineBuffer, LSector.lines, SizeOf(Pointer)) <> LSector.linecount then
-      I_Error('P_GroupLines(): miscounted');
+      FShutdown.Fail('P_GroupLines(): miscounted');
 
     // set the degenmobj_t to the middle of the bounding box
     if largemap then
