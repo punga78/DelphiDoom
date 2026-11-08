@@ -13,6 +13,7 @@ interface
 
 uses
   DelphiDoom.Audio.Types,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.Platform.Intf,
   DelphiDoom.Engine.Music.Intf,
   DelphiDoom.Engine.Music.BackendBase;
@@ -26,7 +27,10 @@ type
   strict private
     FTempFiles: ITempFiles;
     FMidiStream: IEngineMidiStream;
+    FLog: ILog;
   protected
+    /// <summary>The log that receives the warning of a song that can not be played</summary>
+    property Log: ILog read FLog;
     /// <summary>A new temporary file for a song, deleted when the engine shuts down</summary>
     function NewSongFile: string;
     /// <summary>Plays a file; false if the file could not be made</summary>
@@ -36,9 +40,11 @@ type
   public
     /// <summary>
     ///   ATempFiles gives the file a song is written to; AMidiStream is the stream of the MUS songs.
+    ///   ALog receives the warning of a song that can not be played;
     ///   EArgumentNilException if one of them is nil
     /// </summary>
-    constructor Create(const ATempFiles: ITempFiles; const AMidiStream: IEngineMidiStream);
+    constructor Create(const ATempFiles: ITempFiles; const AMidiStream: IEngineMidiStream;
+      const ALog: ILog);
     procedure Initialize; override;
     procedure Shutdown; override;
     function Register(AData: Pointer; ASize: Integer;
@@ -64,9 +70,12 @@ uses
 { TMidiFileMusicBackend }
 
 constructor TMidiFileMusicBackend.Create(const ATempFiles: ITempFiles;
-  const AMidiStream: IEngineMidiStream);
+  const AMidiStream: IEngineMidiStream; const ALog: ILog);
 begin
   inherited Create;
+  if not Assigned(ALog) then
+    raise EArgumentNilException.Create('TMidiFileMusicBackend.Create(): ALog is nil');
+  FLog := ALog;
   if not Assigned(ATempFiles) then
     raise EArgumentNilException.Create('TMidiFileMusicBackend.Create(): ATempFiles is nil');
   if not Assigned(AMidiStream) then
@@ -132,7 +141,7 @@ begin
 
   if not LDone then
   begin
-    I_Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
+    Log.Warning('I_RegisterSong(): Could not initialize MCI'#13#10);
     Result := TMusicRegisterResult.Failed;
     Exit;
   end;

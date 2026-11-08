@@ -19,7 +19,8 @@ unit DelphiDoom.Engine.Voxel.ColorMapper;
 interface
 
 uses
-  DelphiDoom.Voxel.Intf;
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Engine.Video.Screens.Intf;
 
 type
   /// <summary>
@@ -27,20 +28,32 @@ type
   ///   V_FindAproxColorIndex on default_palette); it runs once for each pixel of a sprite at start
   /// </summary>
   TEngineVoxelColorMapper = class(TInterfacedObject, IVoxelColorMapper)
+  strict private
+    FScreens: IEngineScreens;
   public
+    /// <remarks>Raises EArgumentNilException if AScreens is nil</remarks>
+    constructor Create(const AScreens: IEngineScreens);
     function PaletteIndex(const AColor: Cardinal): Byte;
   end;
 
 implementation
 
 uses
-  v_video;
+  System.SysUtils;
 
 { TEngineVoxelColorMapper }
 
+constructor TEngineVoxelColorMapper.Create(const AScreens: IEngineScreens);
+begin
+  inherited Create;
+  if not Assigned(AScreens) then
+    raise EArgumentNilException.Create('AScreens');
+  FScreens := AScreens;
+end;
+
 function TEngineVoxelColorMapper.PaletteIndex(const AColor: Cardinal): Byte;
 begin
-  Result := V_FindAproxColorIndex(default_palette, AColor);
+  Result := FScreens.NearestColorInDefaultPalette(AColor);
 end;
 
 end.

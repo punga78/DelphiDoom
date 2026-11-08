@@ -93,6 +93,7 @@ uses
   r_defs,
 {$IF DEFINED(DOOM) OR DEFINED(STRIFE)}
   p_lights,
+  p_genlin,
 {$IFEND}
   DelphiDoom.Thinkers.Door.Intf,
   DelphiDoom.Engine.Door.Kinds,

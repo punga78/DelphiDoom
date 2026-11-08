@@ -16,9 +16,12 @@ uses
   d_delphi,
   d_event,
   DelphiDoom.Endoom.Intf,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
-  DelphiDoom.Engine.Endoom.Intf;
+  DelphiDoom.Engine.Endoom.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
+  DelphiDoom.Engine.Video.Screens.Intf;
 
 type
   /// <summary>
@@ -33,6 +36,9 @@ type
     FLumpName: TFunc<string>;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
+    FLog: ILog;
+    FShutdown: IEngineShutdown;
+    FScreens: IEngineScreens;
     FScreen: TBytes;
     FFont: TBytes;
     FColors: TBytes;
@@ -46,8 +52,12 @@ type
     /// <remarks>Raises EArgumentNilException if one of them is nil</remarks>
     /// <param name="ALumps">DOSFONT and the lump of the end screen</param>
     /// <param name="AZone">Gives back the cached copies of the lumps and of the palette</param>
+    /// <param name="ALog">Receives the warning of a missing DOSFONT</param>
+    /// <param name="AShutdown">Closes the program when the screen is over (I_Quit)</param>
+    /// <param name="AScreens">The palette and the screen of the software renderer</param>
     constructor Create(const ARenderer: IEndoomRenderer; const ASession: IEndoomSession;
-      const ALumpName: TFunc<string>; const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+      const ALumpName: TFunc<string>; const ALumps: IEngineLumps; const AZone: IZoneAllocator;
+      const ALog: ILog; const AShutdown: IEngineShutdown; const AScreens: IEngineScreens);
     procedure Initialize;
     procedure Draw;
     procedure Tick;
@@ -61,14 +71,7 @@ implementation
 uses
   doomdef,
   DelphiDoom.Endoom.Types,
-  i_system,
-{$IFDEF OPENGL}
-  gl_main,
-{$ELSE}
-  i_video,
-{$ENDIF}
   v_data,
-  v_video,
   DelphiDoom.Zone.Types;
 
 const
@@ -80,15 +83,25 @@ const
 
 constructor TEngineEndoomScreen.Create(const ARenderer: IEndoomRenderer;
   const ASession: IEndoomSession; const ALumpName: TFunc<string>; const ALumps: IEngineLumps;
-  const AZone: IZoneAllocator);
+  const AZone: IZoneAllocator; const ALog: ILog; const AShutdown: IEngineShutdown;
+  const AScreens: IEngineScreens);
 begin
   inherited Create;
   if not Assigned(ALumps) then
     raise EArgumentNilException.Create('ALumps');
   if not Assigned(AZone) then
     raise EArgumentNilException.Create('AZone');
+  if not Assigned(ALog) then
+    raise EArgumentNilException.Create('ALog');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  if not Assigned(AScreens) then
+    raise EArgumentNilException.Create('AScreens');
   FLumps := ALumps;
   FZone := AZone;
+  FLog := ALog;
+  FShutdown := AShutdown;
+  FScreens := AScreens;
   if not Assigned(ARenderer) then
     raise EArgumentNilException.Create(SRendererIsNil);
   if not Assigned(ASession) then
@@ -105,8 +118,7 @@ var
   LPalette: PByteArray;
 begin
   LPalette := V_ReadPalette(ZONE_TAG_STATIC);
-  V_SetPalette(LPalette);
-  I_SetPalette(LPalette);
+  FScreens.SetPalette(LPalette);
   FZone.ChangeTag(LPalette, ZONE_TAG_CACHE);
 end;
 
@@ -130,7 +142,7 @@ begin
   end
   else
   begin
-    I_Warning('E_Init(): Can not find DOSFONT lump'#13#10);
+    FLog.Warning('E_Init(): Can not find DOSFONT lump'#13#10);
     SetLength(FFont, 0);
   end;
 
@@ -138,7 +150,7 @@ begin
 
   SetLength(FColors, ENDOOM_COLOR_COUNT);
   for LIndex := 0 to ENDOOM_COLOR_COUNT - 1 do
-    FColors[LIndex] := V_FindAproxColorIndex(@curpal, ENDOOM_COLORS[LIndex]);
+    FColors[LIndex] := FScreens.NearestColorInCurrentPalette(ENDOOM_COLORS[LIndex]);
 end;
 
 procedure TEngineEndoomScreen.Draw;
@@ -147,7 +159,6 @@ var
   LData: TBytes;
   LSource: Pointer;
 {$IFDEF OPENGL}
-  LIndex: Integer;
   LPalette: array[0..ENDOOM_PALETTE_SIZE - 1] of Cardinal;
 {$ENDIF}
 begin
@@ -171,19 +182,18 @@ begin
   // the texture is 1024x256: the renderer fills the first 200 rows, the rest stays at zero
   if Length(FScreen32) = 0 then
     SetLength(FScreen32, ENDOOM_TEXTURE_WIDTH * ENDOOM_TEXTURE_HEIGHT);
-  for LIndex := 0 to ENDOOM_PALETTE_SIZE - 1 do
-    LPalette[LIndex] := videopal[LIndex];
+  FScreens.CopyVideoPalette(PLongWordArray(@LPalette[0]));
   FRenderer.ConvertToRgb32(FScreen, LPalette, ENDOOM_TEXTURE_WIDTH, FScreen32);
   FPixels32 := PLongWordArray(@FScreen32[0]);
 {$ELSE}
-  V_CopyCustomScreen(PByteArray(@FScreen[0]), ENDOOM_WIDTH, ENDOOM_HEIGHT, SCN_FG);
+  FScreens.CopyCustomScreen(PByteArray(@FScreen[0]), ENDOOM_WIDTH, ENDOOM_HEIGHT, SCN_FG);
 {$ENDIF}
 end;
 
 procedure TEngineEndoomScreen.Tick;
 begin
   if FSession.Tick then
-    I_Quit;
+    FShutdown.Quit;
 end;
 
 function TEngineEndoomScreen.Respond(const AEvent: Pevent_t): Boolean;
@@ -198,7 +208,7 @@ begin
   begin
     Result := FSession.AcceptsKey;
     if Result then
-      I_Quit;
+      FShutdown.Quit;
   end
   else
     Result := False;

@@ -57,8 +57,15 @@ uses
   DelphiDoom.Thinkers.Door.Runner in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas',
   DelphiDoom.Thinkers.Door.Spawner in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Spawner.pas',
   DelphiDoom.Thinkers.Door.Factory in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Factory.pas',
+  DelphiDoom.Thinkers.Plane.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Types.pas',
+  DelphiDoom.Thinkers.Plane.Intf in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Intf.pas',
+  DelphiDoom.Thinkers.Plane.Rules in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Rules.pas',
+  DelphiDoom.Thinkers.Plane.Mover in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Mover.pas',
+  DelphiDoom.Thinkers.Plane.Waggle in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
   DelphiDoom.Tests.Thinkers.Fakes in 'Source\DelphiDoom.Tests.Thinkers.Fakes.pas',
   DelphiDoom.Tests.Thinkers.OldLights in 'Source\DelphiDoom.Tests.Thinkers.OldLights.pas',
+  DelphiDoom.Tests.Thinkers.OldPlanes in 'Source\DelphiDoom.Tests.Thinkers.OldPlanes.pas',
+  DelphiDoom.Tests.Thinkers.PlaneFakes in 'Source\DelphiDoom.Tests.Thinkers.PlaneFakes.pas',
   DelphiDoom.Tests.Thinkers.LightNeighbors in 'Source\DelphiDoom.Tests.Thinkers.LightNeighbors.pas',
   DelphiDoom.Tests.Thinkers.LightFlickerRules in 'Source\DelphiDoom.Tests.Thinkers.LightFlickerRules.pas',
   DelphiDoom.Tests.Thinkers.LightFireFlicker in 'Source\DelphiDoom.Tests.Thinkers.LightFireFlicker.pas',
@@ -73,7 +80,10 @@ uses
   DelphiDoom.Tests.Thinkers.OldDoors in 'Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
   DelphiDoom.Tests.Thinkers.DoorProfiles in 'Source\DelphiDoom.Tests.Thinkers.DoorProfiles.pas',
   DelphiDoom.Tests.Thinkers.DoorRunner in 'Source\DelphiDoom.Tests.Thinkers.DoorRunner.pas',
-  DelphiDoom.Tests.Thinkers.DoorSpawner in 'Source\DelphiDoom.Tests.Thinkers.DoorSpawner.pas';
+  DelphiDoom.Tests.Thinkers.DoorSpawner in 'Source\DelphiDoom.Tests.Thinkers.DoorSpawner.pas',
+  DelphiDoom.Tests.Thinkers.PlaneRules in 'Source\DelphiDoom.Tests.Thinkers.PlaneRules.pas',
+  DelphiDoom.Tests.Thinkers.PlaneMover in 'Source\DelphiDoom.Tests.Thinkers.PlaneMover.pas',
+  DelphiDoom.Tests.Thinkers.PlaneWaggle in 'Source\DelphiDoom.Tests.Thinkers.PlaneWaggle.pas';
 
 var
   Runner: ITestRunner;

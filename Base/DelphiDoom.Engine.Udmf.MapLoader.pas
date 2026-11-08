@@ -20,6 +20,7 @@ uses
   DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -42,7 +43,8 @@ type
     FSides: IUdmfMapPartApplier;
     FSegs: IUdmfMapPartApplier;
     FSaveFileNames: ISaveFileNames;
-    class procedure CheckRecordSize(const AWhat: string; AEngineSize, ALibrarySize: Integer); static;
+    FShutdown: IEngineShutdown;
+    procedure CheckRecordSize(const AWhat: string; AEngineSize, ALibrarySize: Integer);
     function LumpIsNamed(ALump: Integer; const AName: string): Boolean;
     function LumpToBytes(ALump: Integer): TBytes;
     function ExtraToMemory(const AData: TBytes): Pointer;
@@ -57,12 +59,12 @@ type
     /// <summary>
     ///   The records of the converter have to be the ones of this game: the sizes are checked
     ///   (I_Error if they are not); ASaveFileNames puts DATA\ in the working folder of the
-    ///   CD-ROM when needed
+    ///   CD-ROM when needed; AShutdown stops the game when a size is wrong
     /// </summary>
     constructor Create(const AConverter: IUdmfConverter; const AWadServices: IEngineWadServices;
       const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
       const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps;
-      const AZone: IZoneAllocator);
+      const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
     function Prepare(const AMapName: string): Boolean;
     function ApplySides: Boolean;
     function ApplyLines: Boolean;
@@ -78,7 +80,6 @@ uses
   doomdata,
   acs,
   m_base,
-  i_system,
   p_udmf,
   DelphiDoom.Zone.Types,
   DelphiDoom.Wad.Types,
@@ -99,9 +100,13 @@ resourcestring
 
 constructor TEngineUdmfMapLoader.Create(const AConverter: IUdmfConverter;
   const AWadServices: IEngineWadServices; const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
-  const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(ASaveFileNames) then
     raise EArgumentNilException.Create('ASaveFileNames');
   if not Assigned(ALumps) then
@@ -143,11 +148,11 @@ begin
   FSaveFileNames := ASaveFileNames;
 end;
 
-class procedure TEngineUdmfMapLoader.CheckRecordSize(const AWhat: string; AEngineSize,
+procedure TEngineUdmfMapLoader.CheckRecordSize(const AWhat: string; AEngineSize,
   ALibrarySize: Integer);
 begin
   if AEngineSize <> ALibrarySize then
-    I_Error(SRecordSizeMismatch, [AWhat, AEngineSize, ALibrarySize]);
+    FShutdown.Fail(Format(SRecordSizeMismatch, [AWhat, AEngineSize, ALibrarySize]));
 end;
 
 function TEngineUdmfMapLoader.LumpIsNamed(ALump: Integer; const AName: string): Boolean;
