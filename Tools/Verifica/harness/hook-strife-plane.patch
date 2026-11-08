@@ -1,0 +1,20 @@
+diff --git a/Strife32.dpr b/Strife32.dpr
+index 6a9f396b..0d358768 100644
+--- a/Strife32.dpr
++++ b/Strife32.dpr
+@@ -510,6 +510,7 @@ uses
+   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
++  plane_parity in 'Tools\Verifica\153\plane_parity.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+@@ -1237,6 +1238,7 @@ var
+ begin
+   I_InstallCrashLogger;
+   ComposeEngine;
++  PP_Run;
+ 
+   { Save the current FPU state and then disable FPU exceptions }
+   Saved8087CW := Default8087CW;

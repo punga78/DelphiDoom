@@ -1,0 +1,20 @@
+diff --git a/Hexen32.dpr b/Hexen32.dpr
+index 0a8f0210..b010e2ec 100644
+--- a/Hexen32.dpr
++++ b/Hexen32.dpr
+@@ -504,6 +504,7 @@ uses
+   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
++  plane_parity in 'Tools\Verifica\153\plane_parity.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+@@ -1200,6 +1201,7 @@ var
+ begin
+   I_InstallCrashLogger;
+   ComposeEngine;
++  PP_Run;
+ 
+   { Save the current FPU state and then disable FPU exceptions }
+   Saved8087CW := Default8087CW;

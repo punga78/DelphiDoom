@@ -270,7 +270,7 @@ procedure DP_Run(door: Pvldoor_t; NewProc: TDPDoorProc; AUdmf: boolean);
 var
   before, newstate: TDoorState;
   floorheight: integer;
-  wasset, removed: boolean;
+  removed: boolean;
   newlog: string;
   oldevents: TStringList;
   oldhost: TFakeDoorHost;
@@ -283,7 +283,6 @@ begin
   DP_Install;
   DP_Load(door, before);
   floorheight := door.sector.floorheight;
-  wasset := DP_SectorData(door, AUdmf) = door;
   dp_log.Clear;
   SetLength(dp_results, 0);
 
@@ -291,7 +290,9 @@ begin
 
   newlog := dp_log.Text;
   DP_Load(door, newstate);
-  removed := wasset and (DP_SectorData(door, AUdmf) <> door);
+  // the thinker itself, not the pointer of the sector: with two doors on one sector (a manual door
+  // that falls through the retrigger check) specialdata points to the other one
+  removed := P_ThinkerIsRemoved(@door.thinker);
   SetLength(results, Length(dp_results));
   for i := 0 to High(dp_results) do
     results[i] := dp_results[i];

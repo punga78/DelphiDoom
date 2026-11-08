@@ -1,0 +1,333 @@
+diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+index f1b79d91..6369043b 100644
+--- a/Base/udmf_doors.pas
++++ b/Base/udmf_doors.pas
+@@ -72,7 +72,8 @@ uses
+   udmf_spec,
+   {$ENDIF}
+   p_setup,
+-  DelphiDoom.Engine.Door.Thinker;
++  DelphiDoom.Engine.Door.Thinker,
++  door_parity;
+ 
+ //==============================================================================
+ //
+@@ -85,7 +86,7 @@ uses
+ // stays the vldoor_t of the zone memory
+ //
+ //==============================================================================
+-procedure TH_VerticalDoor(door: Pvldoor_t);
++procedure TH_VerticalDoorNew(door: Pvldoor_t);
+ begin
+   if DoorTickUdmf(door) then
+   begin
+@@ -95,6 +96,11 @@ begin
+   end;
+ end;
+ 
++procedure TH_VerticalDoor(door: Pvldoor_t);
++begin
++  DP_Udmf(door, @TH_VerticalDoorNew);
++end;
++
+ //==============================================================================
+ //
+ // EVH_DoDoor
+diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+index bbcd9b72..978272b5 100644
+--- a/Base/udmf_lights.pas
++++ b/Base/udmf_lights.pas
+@@ -144,20 +144,26 @@ uses
+   DelphiDoom.Thinkers.Light.Phase,
+   DelphiDoom.Thinkers.Light.Sequence,
+   DelphiDoom.Engine.Light.Sector,
+-  DelphiDoom.Engine.Light.Services;
++  DelphiDoom.Engine.Light.Services,
++  light_parity;
+ 
+ //==============================================================================
+ //
+ //  TH_Light
+ //
+ //==============================================================================
+-procedure TH_Light(light: Plight_t);
++procedure TH_LightNew(light: Plight_t);
+ begin
+   if TLightScripted.Tick(TLightKind(Ord(light._type)), light.value1, light.value2,
+     light.tics1, light.tics2, light.count, light.sector.lightlevel, LightRandom) then
+     P_RemoveThinker(@light.thinker);
+ end;
+ 
++procedure TH_Light(light: Plight_t);
++begin
++  LP_Light(light, @TH_LightNew);
++end;
++
+ //==============================================================================
+ //
+ //  EVH_SpawnLight
+@@ -206,11 +212,16 @@ end;
+ // TH_Phase
+ //
+ //==============================================================================
+-procedure TH_Phase(phase: Pphase_t);
++procedure TH_PhaseNew(phase: Pphase_t);
+ begin
+   TLightPhase.Tick(phase.index, phase.base, phase.sector.lightlevel);
+ end;
+ 
++procedure TH_Phase(phase: Pphase_t);
++begin
++  LP_Phase(phase, @TH_PhaseNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnPhasedLight
+diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+index 4b759843..53cd20ac 100644
+--- a/Base/udmf_plats.pas
++++ b/Base/udmf_plats.pas
+@@ -84,6 +84,7 @@ uses
+   udmf_spec,
+ {$ENDIF}
+   z_zone,
++  plat_parity,
+   DelphiDoom.Thinkers.Platform.Types,
+   DelphiDoom.Engine.Plat.Services,
+   DelphiDoom.Engine.Plat.Thinker;
+@@ -96,7 +97,7 @@ uses
+ //      the record that the savegames know
+ //
+ //==============================================================================
+-procedure TH_PlatRaise(plat: Pplat_t);
++procedure TH_PlatRaiseNew(plat: Pplat_t);
+ var
+   state: TPlatState;
+ begin
+@@ -105,6 +106,11 @@ begin
+   UdmfPlatStoreState(plat, state);
+ end;
+ 
++procedure TH_PlatRaise(plat: Pplat_t);
++begin
++  PP_UdmfPlatRaise(plat, @TH_PlatRaiseNew);
++end;
++
+ //==============================================================================
+ // EVH_DoPlat
+ //
+@@ -140,9 +146,11 @@ begin
+     plat.sector.specialdata := plat;
+     plat.thinker._function.acp1 := @TH_PlatRaise;
+ 
++    PP_UdmfSetupBegin(sec, plat);
+     UdmfPlatLoadState(plat, state);
+     UdmfPlatMachine.Configure(sec, UdmfPlatKindOf(_type), args[0], args[1], args[2], args[3], state);
+     UdmfPlatStoreState(plat, state);
++    PP_UdmfSetupEnd(plat, _type, args);
+ 
+     PH_AddActivePlat(plat);
+     UdmfPlatMachine.AnnounceStart(sec);
+diff --git a/Strife/g_game.pas b/Strife/g_game.pas
+index 01360927..aa50a41b 100644
+--- a/Strife/g_game.pas
++++ b/Strife/g_game.pas
+@@ -492,6 +492,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
+ implementation
+ 
+ uses
++  harness_exit,
+   deh_main,
+   c_cmds,
+   z_zone,
+@@ -1610,6 +1611,7 @@ var
+   msg: string;
+   pl: Pplayer_t;
+ begin
++  HarnessExitCheck(gametic);
+   // do player reborns if needed
+   for i := 0 to MAXPLAYERS - 1 do
+     if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+diff --git a/Strife/p_doors.pas b/Strife/p_doors.pas
+index 06c2fd75..8e60ef12 100644
+--- a/Strife/p_doors.pas
++++ b/Strife/p_doors.pas
+@@ -128,6 +128,7 @@ procedure T_SlidingDoor(door: Pslidedoor_t);
+ implementation
+ 
+ uses
++  door_parity,
+   d_delphi,
+   deh_main,
+   i_system,
+@@ -155,7 +156,7 @@ uses
+ // T_VerticalDoor
+ //
+ //==============================================================================
+-procedure T_VerticalDoor(door: Pvldoor_t);
++procedure T_VerticalDoorNew(door: Pvldoor_t);
+ begin
+   // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+   if DoorTickClassic(door) then
+@@ -165,6 +166,11 @@ begin
+   end;
+ end;
+ 
++procedure T_VerticalDoor(door: Pvldoor_t);
++begin
++  DP_Classic(door, @T_VerticalDoorNew);
++end;
++
+ //==============================================================================
+ //
+ // EV_DoLockedDoor
+diff --git a/Strife/p_lights.pas b/Strife/p_lights.pas
+index bb6b20f8..dac7596f 100644
+--- a/Strife/p_lights.pas
++++ b/Strife/p_lights.pas
+@@ -130,6 +130,7 @@ procedure T_FireFlicker(flick: Pfireflicker_t);
+ implementation
+ 
+ uses
++  light_parity,
+   p_tick,
+   p_setup,
+   DelphiDoom.Thinkers.Light.Neighbors,
+@@ -151,12 +152,17 @@ uses
+ // (they are in TLightStrifeFlickerRules)
+ //
+ //==============================================================================
+-procedure T_FireFlicker(flick: Pfireflicker_t);
++procedure T_FireFlickerNew(flick: Pfireflicker_t);
+ begin
+   TLightFireFlicker.Tick(flick.count, flick.sector.lightlevel, flick.minlight, flick.maxlight,
+     LightFlickerRules, LightRandom);
+ end;
+ 
++procedure T_FireFlicker(flick: Pfireflicker_t);
++begin
++  LP_FireFlicker(flick, @T_FireFlickerNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnFireFlicker
+@@ -198,12 +204,17 @@ end;
+ // Do flashing lights.
+ //
+ //==============================================================================
+-procedure T_LightFlash(flash: Plightflash_t);
++procedure T_LightFlashNew(flash: Plightflash_t);
+ begin
+   TLightFlash.Tick(flash.count, flash.sector.lightlevel, flash.maxlight, flash.minlight,
+     flash.maxtime, flash.mintime, LightRandom);
+ end;
+ 
++procedure T_LightFlash(flash: Plightflash_t);
++begin
++  LP_LightFlash(flash, @T_LightFlashNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnLightFlash
+@@ -245,12 +256,17 @@ end;
+ // T_StrobeFlash
+ //
+ //==============================================================================
+-procedure T_StrobeFlash(flash: Pstrobe_t);
++procedure T_StrobeFlashNew(flash: Pstrobe_t);
+ begin
+   TLightStrobe.Tick(flash.count, flash.sector.lightlevel, flash.minlight, flash.maxlight,
+     flash.darktime, flash.brighttime);
+ end;
+ 
++procedure T_StrobeFlash(flash: Pstrobe_t);
++begin
++  LP_StrobeFlash(flash, @T_StrobeFlashNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnStrobeFlash
+@@ -370,11 +386,16 @@ end;
+ // Spawn glowing light
+ //
+ //==============================================================================
+-procedure T_Glow(g: Pglow_t);
++procedure T_GlowNew(g: Pglow_t);
+ begin
+   TLightGlow.Tick(g.sector.lightlevel, g.minlight, g.maxlight, g.direction);
+ end;
+ 
++procedure T_Glow(g: Pglow_t);
++begin
++  LP_Glow(g, @T_GlowNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnGlowingLight
+diff --git a/Strife/p_plats.pas b/Strife/p_plats.pas
+index 7ddaa968..af829621 100644
+--- a/Strife/p_plats.pas
++++ b/Strife/p_plats.pas
+@@ -96,6 +96,7 @@ uses
+   p_tick,
+   p_setup,
+   z_zone,
++  plat_parity,
+   DelphiDoom.Thinkers.Platform.Types,
+   DelphiDoom.Engine.Plat.Services,
+   DelphiDoom.Engine.Plat.Thinker;
+@@ -108,7 +109,7 @@ uses
+ // thinker stays the record that the savegames know
+ //
+ //==============================================================================
+-procedure T_PlatRaise(plat: Pplat_t);
++procedure T_PlatRaiseNew(plat: Pplat_t);
+ var
+   state: TPlatState;
+ begin
+@@ -117,6 +118,11 @@ begin
+   PlatStoreState(plat, state);
+ end;
+ 
++procedure T_PlatRaise(plat: Pplat_t);
++begin
++  PP_PlatRaise(plat, @T_PlatRaiseNew);
++end;
++
+ //==============================================================================
+ // EV_DoPlat
+ //
+@@ -175,9 +181,11 @@ begin
+     else
+       picture := 0;
+ 
++    PP_SetupBegin(sec, plat);
+     PlatLoadState(plat, state);
+     PlatMachine.Configure(sec, kind, picture, amount, state);
+     PlatStoreState(plat, state);
++    PP_SetupEnd(plat, _type, picture, amount);
+     P_AddActivePlat(plat);
+   end;
+ end;
+diff --git a/Strife32.dpr b/Strife32.dpr
+index 6a9f396b..eb79b4d3 100644
+--- a/Strife32.dpr
++++ b/Strife32.dpr
+@@ -510,6 +510,12 @@ uses
+   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
++  plat_parity in 'Tools\Verifica\154\plat_parity.pas',
++  light_parity in 'Tools\Verifica\149\light_parity.pas',
++  DelphiDoom.Tests.Thinkers.DoorFakes in 'Tests\Source\DelphiDoom.Tests.Thinkers.DoorFakes.pas',
++  DelphiDoom.Tests.Thinkers.OldDoors in 'Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
++  door_parity in 'Tools\Verifica\152\door_parity.pas',
++  harness_exit in 'Tools\Verifica\harness\harness_exit.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
