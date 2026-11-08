@@ -45,7 +45,7 @@ uses
   DelphiDoom.MapInfo.Factory,
   DelphiDoom.Engine.MapInfo.Services,
   DelphiDoom.Engine.MapInfo.TextSource,
-  p_umapinfo,
+  DelphiDoom.Engine.MapInfo.Records,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Engine.Acs.Host,
@@ -570,10 +570,10 @@ begin
   LMapServices.Episodes := nil;
 {$ENDIF}
   LCatalog := TMapInfoFactory.CreateCatalog(LServices);
-  U_ConfigureMapInfo(
+  D_ConfigureMapInfo(TEngineMapInfoRecords.Create(
     TMapInfoFactory.CreateLoader(LTextSource, LTextSource,
       TMapInfoFactory.CreateParser(LMapServices, ALog), LCatalog),
-    LCatalog);
+    LCatalog));
 end;
 {$ENDIF}
 

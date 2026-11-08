@@ -52,6 +52,7 @@ uses
   DelphiDoom.Scanner.Preprocessor.Intf,
   DelphiDoom.Engine.ActorDef.Intf,
   DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.Engine.MapInfo.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
 const
@@ -249,6 +250,16 @@ procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
 //
 //==============================================================================
 procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+// The UMAPINFO records, given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
 
 //==============================================================================
 //
@@ -458,6 +469,32 @@ begin
   if main_autoload = nil then
     I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
   result := main_autoload;
+end;
+
+var
+  // given by the composition root (D_ConfigureMapInfo)
+  main_mapinfo: IEngineMapInfoRecords = nil;
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
+begin
+  main_mapinfo := ARecords;
+end;
+
+//==============================================================================
+//
+// D_MapInfo
+//
+//==============================================================================
+function D_MapInfo: IEngineMapInfoRecords;
+begin
+  if main_mapinfo = nil then
+    I_Error('D_ConfigureMapInfo() was not called: UMAPINFO cannot be read');
+  result := main_mapinfo;
 end;
 
 var
@@ -2782,7 +2819,7 @@ begin
 
   // UMAPINFO must be parsed after intializing the menus
   printf('U_ParseMapInfo: Parsing UMAPINFO lumps.'#13#10);
-  U_ParseMapInfo(False, 'UMAPINFO');
+  D_MapInfo.Load(False, 'UMAPINFO');
 
   SUC_Progress(59);
 
@@ -3097,7 +3134,7 @@ begin
   if main_endoom <> nil then
     main_endoom.Shutdown;
   printf('U_FreeMapInfo: Free UMAPINFO data.'#13#10);
-  U_FreeMapInfo;
+  D_MapInfo.Release;
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);
