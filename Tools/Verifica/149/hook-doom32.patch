@@ -1,0 +1,150 @@
+diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+index bbcd9b72..978272b5 100644
+--- a/Base/udmf_lights.pas
++++ b/Base/udmf_lights.pas
+@@ -144,20 +144,26 @@ uses
+   DelphiDoom.Thinkers.Light.Phase,
+   DelphiDoom.Thinkers.Light.Sequence,
+   DelphiDoom.Engine.Light.Sector,
+-  DelphiDoom.Engine.Light.Services;
++  DelphiDoom.Engine.Light.Services,
++  light_parity;
+ 
+ //==============================================================================
+ //
+ //  TH_Light
+ //
+ //==============================================================================
+-procedure TH_Light(light: Plight_t);
++procedure TH_LightNew(light: Plight_t);
+ begin
+   if TLightScripted.Tick(TLightKind(Ord(light._type)), light.value1, light.value2,
+     light.tics1, light.tics2, light.count, light.sector.lightlevel, LightRandom) then
+     P_RemoveThinker(@light.thinker);
+ end;
+ 
++procedure TH_Light(light: Plight_t);
++begin
++  LP_Light(light, @TH_LightNew);
++end;
++
+ //==============================================================================
+ //
+ //  EVH_SpawnLight
+@@ -206,11 +212,16 @@ end;
+ // TH_Phase
+ //
+ //==============================================================================
+-procedure TH_Phase(phase: Pphase_t);
++procedure TH_PhaseNew(phase: Pphase_t);
+ begin
+   TLightPhase.Tick(phase.index, phase.base, phase.sector.lightlevel);
+ end;
+ 
++procedure TH_Phase(phase: Pphase_t);
++begin
++  LP_Phase(phase, @TH_PhaseNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnPhasedLight
+diff --git a/Doom/p_lights.pas b/Doom/p_lights.pas
+index 87477225..3382759e 100644
+--- a/Doom/p_lights.pas
++++ b/Doom/p_lights.pas
+@@ -123,6 +123,7 @@ implementation
+ uses
+   p_tick,
+   p_setup,
++  light_parity,
+   DelphiDoom.Thinkers.Light.Neighbors,
+   DelphiDoom.Thinkers.Light.FireFlicker,
+   DelphiDoom.Thinkers.Light.Flash,
+@@ -138,12 +139,17 @@ uses
+ // T_FireFlicker
+ //
+ //==============================================================================
+-procedure T_FireFlicker(flick: Pfireflicker_t);
++procedure T_FireFlickerNew(flick: Pfireflicker_t);
+ begin
+   TLightFireFlicker.Tick(flick.count, flick.sector.lightlevel, flick.minlight, flick.maxlight,
+     LightFlickerRules, LightRandom);
+ end;
+ 
++procedure T_FireFlicker(flick: Pfireflicker_t);
++begin
++  LP_FireFlicker(flick, @T_FireFlickerNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnFireFlicker
+@@ -181,12 +187,17 @@ end;
+ // Do flashing lights.
+ //
+ //==============================================================================
+-procedure T_LightFlash(flash: Plightflash_t);
++procedure T_LightFlashNew(flash: Plightflash_t);
+ begin
+   TLightFlash.Tick(flash.count, flash.sector.lightlevel, flash.maxlight, flash.minlight,
+     flash.maxtime, flash.mintime, LightRandom);
+ end;
+ 
++procedure T_LightFlash(flash: Plightflash_t);
++begin
++  LP_LightFlash(flash, @T_LightFlashNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnLightFlash
+@@ -228,12 +239,17 @@ end;
+ // T_StrobeFlash
+ //
+ //==============================================================================
+-procedure T_StrobeFlash(flash: Pstrobe_t);
++procedure T_StrobeFlashNew(flash: Pstrobe_t);
+ begin
+   TLightStrobe.Tick(flash.count, flash.sector.lightlevel, flash.minlight, flash.maxlight,
+     flash.darktime, flash.brighttime);
+ end;
+ 
++procedure T_StrobeFlash(flash: Pstrobe_t);
++begin
++  LP_StrobeFlash(flash, @T_StrobeFlashNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnStrobeFlash
+@@ -353,11 +369,16 @@ end;
+ // Spawn glowing light
+ //
+ //==============================================================================
+-procedure T_Glow(g: Pglow_t);
++procedure T_GlowNew(g: Pglow_t);
+ begin
+   TLightGlow.Tick(g.sector.lightlevel, g.minlight, g.maxlight, g.direction);
+ end;
+ 
++procedure T_Glow(g: Pglow_t);
++begin
++  LP_Glow(g, @T_GlowNew);
++end;
++
+ //==============================================================================
+ //
+ // P_SpawnGlowingLight
+diff --git a/Doom32.dpr b/Doom32.dpr
+index ca3fb710..7324218c 100644
+--- a/Doom32.dpr
++++ b/Doom32.dpr
+@@ -467,6 +467,7 @@ uses
+   DelphiDoom.Thinkers.Light.Sequence in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
+   DelphiDoom.Thinkers.Light.Games in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
+   DelphiDoom.Thinkers.Light.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
++  light_parity in 'Tools\Verifica\149\light_parity.pas',
+   DelphiDoom.Engine.Light.Sector in 'Base\DelphiDoom.Engine.Light.Sector.pas',
+   DelphiDoom.Engine.Light.Services in 'Base\DelphiDoom.Engine.Light.Services.pas',
+   DelphiDoom.Engine.Light.PhaseSpawner in 'Base\DelphiDoom.Engine.Light.PhaseSpawner.pas',
