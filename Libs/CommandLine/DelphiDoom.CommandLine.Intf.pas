@@ -88,6 +88,27 @@ type
     function Build: ICommandLine;
   end;
 
+  /// <summary>Where the text of a response file (@name on the command line) comes from</summary>
+  IResponseFileSource = interface
+    ['{6D2B8F14-95A3-4E70-8C1D-3F07A4B6E259}']
+    /// <summary>The whole text of the file; false when it cannot be opened</summary>
+    function TryRead(const AFileName: string; out AText: string): Boolean;
+  end;
+
+  /// <summary>
+  ///   Replaces each argument that starts with '@' by the arguments written in the file it names
+  ///   (separated by spaces or line breaks): the old FindResponseFile of the four d_main
+  /// </summary>
+  IResponseFileExpander = interface
+    ['{0B94E3C7-1A58-4D26-B7F0-82C5D19A6E43}']
+    /// <summary>
+    ///   The arguments with the response files expanded: the program name stays first, empty
+    ///   arguments are dropped and no more than AMaxArguments are kept. A file that cannot be
+    ///   read is reported to the log and its argument is dropped
+    /// </summary>
+    function Expand(const AArguments: TArray<string>; AMaxArguments: Integer): TArray<string>;
+  end;
+
 implementation
 
 end.
