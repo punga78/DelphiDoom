@@ -189,9 +189,12 @@ begin
 end;
 
 procedure TTestCommandLineQueried.DovrebbeArrivareDallaFabbrica;
+var
+  LOther: IQueriedCommandLine;
 begin
+  LOther := TCommandLineFactory.CreateQueriedCommandLine;
   Assert.IsTrue(Assigned(FQueried));
-  Assert.IsTrue(Assigned(TCommandLineFactory.CreateQueriedCommandLine));
+  Assert.IsTrue(Assigned(LOther));
 end;
 
 end.

@@ -227,8 +227,11 @@ begin
 end;
 
 procedure TTestCommandLineSaveFileNames.DovrebbeArrivareDallaFabbrica;
+var
+  LNames: ISaveFileNames;
 begin
-  Assert.IsTrue(Assigned(MakeNames(MakeCommandLine([]), False)));
+  LNames := MakeNames(MakeCommandLine([]), False);
+  Assert.IsTrue(Assigned(LNames));
 end;
 
 end.
