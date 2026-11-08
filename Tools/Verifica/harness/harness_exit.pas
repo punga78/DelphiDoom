@@ -31,7 +31,9 @@ uses
   SysUtils,
   i_system,
   doomdata,
+  d_event,
   d_player,
+  g_game,
   p_mobj_h,
   p_setup,
   r_defs,
@@ -47,6 +49,7 @@ var
   harness_use_count: integer = 0;
   harness_cross_count: integer = 0;
   harness_errors: integer = 0;
+  harness_exits: integer = 0;
 
 procedure HarnessWriteSweep;
 var
@@ -55,7 +58,7 @@ begin
   AssignFile(f, 'harness_sweep.txt');
   Rewrite(f);
   writeln(f, 'use lines=', harness_use_count, ' cross lines=', harness_cross_count,
-    ' exceptions=', harness_errors);
+    ' exceptions=', harness_errors, ' exitsundone=', harness_exits);
   CloseFile(f);
 end;
 
@@ -63,6 +66,7 @@ procedure HarnessSweep(AUse: boolean);
 var
   i: integer;
   mo: Pmobj_t;
+  action: gameaction_t;
 begin
   mo := players[0].mo;
   if mo = nil then
@@ -71,6 +75,7 @@ begin
   begin
     if lines[i].special = 0 then
       continue;
+    action := gameaction;
     try
       if AUse then
       begin
@@ -92,6 +97,14 @@ begin
       end;
     except
       inc(harness_errors);
+    end;
+    // an exit line (or a map teleport) asks G_ExitLevel: gameaction = ga_completed is run at the start of
+    // the next G_Ticker, before any thinker ticks, and the level would be over: undo it, the sweep
+    // is for the thinkers (the exit lines are counted all the same)
+    if gameaction <> action then
+    begin
+      gameaction := action;
+      inc(harness_exits);
     end;
     // a teleport or a death moves or removes the player: take the new one
     mo := players[0].mo;
