@@ -46,6 +46,7 @@ uses
   doomdef,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Nodes.Intf,
   DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Engine.Net.Intf,
   DelphiDoom.Engine.Configuration.Intf,
@@ -221,6 +222,17 @@ function D_FileInDoomPath(const fn: string): string;
 //==============================================================================
 procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 
+{$IFDEF OPENGL}
+//==============================================================================
+//
+// D_ConfigureGlbsp
+// Gives the glBSP runner that builds the GL nodes of the files added at startup
+// (ComposeEngine, OpenGL only)
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+
+{$ENDIF}
 //==============================================================================
 //
 // D_ConfigureGameDefines
@@ -355,7 +367,6 @@ uses
   DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
-  nd_main,
 {$ELSE}
   r_defs,
   r_fake3d,
@@ -1244,6 +1255,34 @@ end;
 var
   wadfiles: TDStringList;
 
+{$IFDEF OPENGL}
+var
+  // given by the composition root (D_ConfigureGlbsp)
+  glbsp_runner: IEngineGlbspRunner = nil;
+
+//==============================================================================
+//
+// D_ConfigureGlbsp
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+begin
+  glbsp_runner := ARunner;
+end;
+
+//==============================================================================
+//
+// D_GlbspRunner
+//
+//==============================================================================
+function D_GlbspRunner: IEngineGlbspRunner;
+begin
+  if glbsp_runner = nil then
+    I_Error('D_AddFile(): the glBSP runner was not given (D_ConfigureGlbsp)');
+  result := glbsp_runner;
+end;
+{$ENDIF}
+
 //==============================================================================
 //
 // D_AddFile
@@ -1293,7 +1332,7 @@ begin
             gwafname := path + fname(gwafname);
             if fexists(gwafname) then
               wadfiles.Add(gwafname)
-            else if gld_BuildNodes(fname2, gwafname) then
+            else if D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
               wadfiles.Add(gwafname);
           end;
         end;

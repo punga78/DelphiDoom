@@ -218,6 +218,8 @@ uses
   DelphiDoom.Engine.Level.MapReader,
   DelphiDoom.Engine.Level.Things,
   DelphiDoom.Engine.Level.Nodes,
+  DelphiDoom.Engine.Nodes.Intf,
+  DelphiDoom.Engine.Nodes.GlbspRunner,
   DelphiDoom.Engine.Level.Blockmap,
 {$IF DEFINED(DOOM)}
   DelphiDoom.Engine.Level.VanillaNodes,
@@ -297,7 +299,8 @@ uses
   DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.Engine.Music.ExternalSource,
   DelphiDoom.Midi.Factory,
-  i_midi_new,
+  i_midi,
+  DelphiDoom.Engine.Midi.SongPlayer,
   DelphiDoom.Mp3.Provider,
   s_sound,
   s_pk3sounds,
@@ -524,7 +527,8 @@ var
 begin
   // the MIDI files that the player of the midi stream plays (snd_uselegacymidiplayer = 0, 2)
   // are turned into the events of the stream by a sequencer for each song
-  I_ConfigureMidiStream(TMidiFactory.CreateSequencerFactory(ALog));
+  I_ConfigureMidi(TEngineMidiSongPlayer.Create(TMidiFactory.CreateSequencerFactory(ALog), ALog,
+    I_SelectDefaultMidiDevice));
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine, ALog, AShutdown);
   LMus := LMidiStream as IMusicBackend;
@@ -685,6 +689,7 @@ var
   LGame: TUdmfGame;
   LNodesSource: INodesLumpSource;
   LHexen: Boolean;
+  LGlbsp: IEngineGlbspRunner;
   LRules: ILevelGameRules;
   LUdmf: ILevelUdmf;
   LLoader: ILevelLoader;
@@ -708,6 +713,7 @@ begin
   LHexen := False;
 {$ENDIF}
   LNodesSource := TEngineNodesLumpSource.Create(ALumps);
+  LGlbsp := TEngineGlbspRunner.Create(LHexen, ALog);
   LRules := ComposeLevelRules(ALog, AContext, LNodesSource, ACommandLine, ARandom, ALumps,
     AShutdown);
 
@@ -718,12 +724,16 @@ begin
     TEngineLevelNodes.Create(LNodesSource, TNodesFactory.CreateGlDetector(LNodesSource),
       TNodesFactory.CreateGlMapFinder(LNodesSource),
       TNodesFactory.CreateGlbspInputBuilder(LNodesSource, LHexen), ATempFiles, ASaveFileNames,
-      LHexen, ALumps, AZone, ALog, AShutdown),
+      LHexen, ALumps, AZone, ALog, AShutdown, LGlbsp),
     TEngineLevelBlockmap.Create(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
       TBlockmapFactory.CreateSlimeTrailRemover, ACommandLine, ALumps, AZone, AShutdown),
     LUdmf, AMusInfo, ARegistry, ARandom, ALumps, AZone);
   G_ConfigureLevel(LLoader);
   D_ConfigureLevel(LLoader);
+{$IFDEF OPENGL}
+  // the GL nodes of the files added at startup (D_AddFile)
+  D_ConfigureGlbsp(LGlbsp);
+{$ENDIF}
 end;
 
 procedure ComposePalette(const APakFiles: IPakFileSystem; const AZone: IZoneAllocator);
