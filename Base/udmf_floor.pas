@@ -143,7 +143,11 @@ uses
   p_acs,
   p_common,
   r_data,
-  r_main;
+  r_main,
+  DelphiDoom.Thinkers.Plane.Types,
+  DelphiDoom.Thinkers.Plane.Rules,
+  DelphiDoom.Thinkers.Plane.Waggle,
+  DelphiDoom.Engine.Plane.Services;
 
 //==============================================================================
 // TH_MovePlane
@@ -153,130 +157,15 @@ uses
 //==============================================================================
 function TH_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
   crush: boolean; floorOrCeiling: integer; dir: integer): result_e;
-var
-  lastpos: fixed_t;
 begin
-  case floorOrCeiling of
-    0:
-      begin
-        // FLOOR
-        if dir = -1 then
-        begin
-        // DOWN
-          if sector.floorheight - speed < dest then
-          begin
-            lastpos := sector.floorheight;
-            sector.floorheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-            end;
-            result := RES_PASTDEST;
-            exit;
-          end
-          else
-          begin
-            lastpos := sector.floorheight;
-            sector.floorheight := sector.floorheight - speed;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := RES_CRUSHED;
-              exit;
-            end;
-          end;
-        end
-        else if dir = 1 then
-        begin
-        // UP
-          if sector.floorheight + speed > dest then
-          begin
-            lastpos := sector.floorheight;
-            sector.floorheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-            //return crushed;
-            end;
-            result := RES_PASTDEST;
-            exit;
-          end
-          else
-          begin
-          // COULD GET CRUSHED
-            lastpos := sector.floorheight;
-            sector.floorheight := sector.floorheight + speed;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := RES_CRUSHED;
-              exit;
-            end
-          end;
-        end;
-      end;
-    1:
-      begin
-      // CEILING
-        if dir = -1 then
-        begin
-        // DOWN
-          if sector.ceilingheight - speed < dest then
-          begin
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-            end;
-            result := RES_PASTDEST;
-            exit;
-          end
-          else
-          begin
-          // COULD GET CRUSHED
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := sector.ceilingheight - speed;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := RES_CRUSHED;
-              exit;
-            end;
-          end;
-        end
-        else if dir = 1 then
-        begin
-        // UP
-          if sector.ceilingheight + speed > dest then
-          begin
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-            //return crushed;
-            end;
-            result := RES_PASTDEST;
-            exit;
-          end
-          else
-          begin
-            sector.ceilingheight := sector.ceilingheight + speed;
-            P_ChangeSector(sector, crush);
-          end;
-        end;
-      end;
+  case PlaneMove(sector, speed, dest, crush, floorOrCeiling, dir, TPlaneRules.Udmf) of
+    TPlaneMoveResult.Crushed:
+      result := RES_CRUSHED;
+    TPlaneMoveResult.PastDest:
+      result := RES_PASTDEST;
+  else
+    result := RES_OK;
   end;
-  P_DynamicSlope(sector); // JVAL: Slopes
-  result := RES_OK;
 end;
 
 //==============================================================================
@@ -1055,45 +944,34 @@ const
 //
 //==============================================================================
 procedure TH_FloorWaggle(waggle: PfloorWaggle_t);
+var
+  LState: TPlaneWaggleState;
+  LFinished: boolean;
 begin
-  case waggle.state of
-    WGLSTATE_EXPAND:
-      begin
-        waggle.scale := waggle.scale + waggle.scaleDelta;
-        if waggle.scale >= waggle.targetScale then
-        begin
-          waggle.scale := waggle.targetScale;
-          waggle.state := WGLSTATE_STABLE;
-        end;
-      end;
-    WGLSTATE_REDUCE:
-      begin
-        waggle.scale := waggle.scale - waggle.scaleDelta;
-        if waggle.scale <= 0 then
-        begin // Remove
-          waggle.sector.floorheight := waggle.originalHeight;
-          P_ChangeSector(waggle.sector, true);
-          waggle.sector.specialdata := nil;
-          P_TagFinished(waggle.sector.tag);
-          P_RemoveThinker(@waggle.thinker);
-          exit;
-        end;
-      end;
-    WGLSTATE_STABLE:
-      begin
-        if waggle.ticker <> -1 then
-        begin
-          dec(waggle.ticker); // JVAL SOS
-          if waggle.ticker <> 0 then
-            waggle.state := WGLSTATE_REDUCE;
-        end;
-      end;
-  end;
+  // the waggle keeps its record (it is saved as it is); the library works on a copy of the fields
+  LState.OriginalHeight := waggle.originalHeight;
+  LState.Accumulator := waggle.accumulator;
+  LState.AccDelta := waggle.accDelta;
+  LState.TargetScale := waggle.targetScale;
+  LState.Scale := waggle.scale;
+  LState.ScaleDelta := waggle.scaleDelta;
+  LState.Ticker := waggle.ticker;
+  LState.State := waggle.state;
 
-  waggle.accumulator := waggle.accumulator + waggle.accDelta;
-  waggle.sector.floorheight := waggle.originalHeight +
-    FixedMul(FloatBobOffsets[_SHR(waggle.accumulator, FRACBITS) and 63], waggle.scale);
-  P_ChangeSector(waggle.sector, true);
+  LFinished := TPlaneWaggle.Tick(LState, waggle.sector.floorheight, FloatBobOffsets,
+    PlaneHost, waggle.sector);
+
+  waggle.accumulator := LState.Accumulator;
+  waggle.scale := LState.Scale;
+  waggle.ticker := LState.Ticker;
+  waggle.state := LState.State;
+
+  if LFinished then
+  begin // Remove
+    waggle.sector.specialdata := nil;
+    P_TagFinished(waggle.sector.tag);
+    P_RemoveThinker(@waggle.thinker);
+  end;
 end;
 
 //==============================================================================

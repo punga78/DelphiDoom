@@ -115,7 +115,10 @@ uses
   p_tick,
   p_setup,
   p_slopes,
-  r_data;
+  r_data,
+  DelphiDoom.Thinkers.Plane.Types,
+  DelphiDoom.Thinkers.Plane.Rules,
+  DelphiDoom.Engine.Plane.Services;
 
 //==============================================================================
 // T_MovePlane
@@ -125,147 +128,16 @@ uses
 //==============================================================================
 function T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
   crush: boolean; floorOrCeiling: integer; direction: integer): result_e;
-var
-  lastpos: fixed_t;
-  flag: boolean;
 begin
-  case floorOrCeiling of
-    0:
-      begin
-        // FLOOR
-        if direction = -1 then
-        begin
-        // DOWN
-          if sector.floorheight - speed < dest then
-          begin
-            //lastpos := sector.floorheight;
-            sector.floorheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-            {  sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush); }
-            //return crushed;
-            end;
-            result := pastdest;
-            exit;
-          end
-          else
-          begin
-            //lastpos := sector.floorheight;
-            sector.floorheight := sector.floorheight - speed;
-            if P_ChangeSector(sector, crush) then
-            begin
-{              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := crushed;
-              exit;  }
-            end;
-          end;
-        end
-        else if direction = 1 then
-        begin
-        // UP
-          if dest > sector.ceilingheight then
-            dest := sector.ceilingheight;
-
-          if sector.floorheight + speed > dest then
-          begin
-            lastpos := sector.floorheight;
-            sector.floorheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-            end;
-            result := pastdest;
-            exit;
-          end
-          else
-          begin
-          // COULD GET CRUSHED
-            lastpos := sector.floorheight;
-            sector.floorheight := sector.floorheight + speed;
-            flag := P_ChangeSector(sector, crush);
-            if flag then
-            begin
-              if crush then
-              begin
-                result := crushed;
-                exit;
-              end;
-              sector.floorheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := crushed;
-              exit;
-            end
-          end;
-        end;
-      end;
-    1:
-      begin
-      // CEILING
-        if direction = -1 then
-        begin
-        // DOWN
-          if dest < sector.floorheight then
-            dest := sector.floorheight;
-
-          if sector.ceilingheight - speed < dest then
-          begin
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-            end;
-            result := pastdest;
-            exit;
-          end
-          else
-          begin
-          // COULD GET CRUSHED
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := sector.ceilingheight - speed;
-            if P_ChangeSector(sector, crush) then
-            begin
-              if crush then
-              begin
-                result := crushed;
-                exit;
-              end;
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-              result := crushed;
-              exit;
-            end;
-          end;
-        end
-        else if direction = 1 then
-        begin
-        // UP
-          if sector.ceilingheight + speed > dest then
-          begin
-            lastpos := sector.ceilingheight;
-            sector.ceilingheight := dest;
-            if P_ChangeSector(sector, crush) then
-            begin
-              sector.ceilingheight := lastpos;
-              P_ChangeSector(sector, crush);
-            end;
-            result := pastdest;
-            exit;
-          end
-          else
-          begin
-            sector.ceilingheight := sector.ceilingheight + speed;
-            P_ChangeSector(sector, crush);
-          end;
-        end;
-      end;
+  case PlaneMove(sector, speed, dest, crush, floorOrCeiling, direction,
+    TPlaneRules.Strife) of
+    TPlaneMoveResult.Crushed:
+      result := crushed;
+    TPlaneMoveResult.PastDest:
+      result := pastdest;
+  else
+    result := ok;
   end;
-  P_DynamicSlope(sector); // JVAL: Slopes
-  result := ok;
 end;
 
 //==============================================================================
