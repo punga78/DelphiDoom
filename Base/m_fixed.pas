@@ -300,123 +300,197 @@ function FixedMod(const a, b: fixed_t): fixed_t;
 implementation
 
 uses
-  doomtype;
+  doomtype
+{$IFNDEF CPUX86}
+  , DelphiDoom.MathCore.FixedMath
+{$ENDIF}
+  ;
 
 //==============================================================================
 //
 // FixedMul
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMul(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
 end;
+{$ELSE}
+function FixedMul(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.Mul(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl3
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl3(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 3
 end;
+{$ELSE}
+function FixedMulShl3(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl3(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl4
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl4(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 4
 end;
+{$ELSE}
+function FixedMulShl4(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl4(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl5
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl5(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 5
 end;
+{$ELSE}
+function FixedMulShl5(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl5(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl8
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl8(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 8
 end;
+{$ELSE}
+function FixedMulShl8(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl8(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl10
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl10(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 10
 end;
+{$ELSE}
+function FixedMulShl10(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl10(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulShl14
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulShl14(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   shl eax, 14
 end;
+{$ELSE}
+function FixedMulShl14(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulShl14(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulDiv8
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulDiv8(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 19
 end;
+{$ELSE}
+function FixedMulDiv8(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulDiv8(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulDiv16
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulDiv16(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 20
 end;
+{$ELSE}
+function FixedMulDiv16(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulDiv16(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMulDiv256
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMulDiv256(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 24
 end;
+{$ELSE}
+function FixedMulDiv256(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulDiv256(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -433,6 +507,7 @@ end;
 // FixedMul88
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMul88(const a, b: fixed_t): fixed_t; assembler;
 asm
   sar a, 8
@@ -440,42 +515,69 @@ asm
   imul b
   shrd eax, edx, 16
 end;
+{$ELSE}
+function FixedMul88(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.Mul88(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedMul8
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedMul8(const a, b: fixed_t): fixed_t; assembler;
 asm
   sar a, 8
   imul b
   shrd eax, edx, 16
 end;
+{$ELSE}
+function FixedMul8(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.Mul8(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedIntMul
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedIntMul(const a, b: fixed_t): fixed_t; assembler;
 asm
   sar b, FRACBITS
   imul b
   shrd eax, edx, 16
 end;
+{$ELSE}
+function FixedIntMul(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.MulByInteger(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // IntFixedMul
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function IntFixedMul(const a, b: fixed_t): fixed_t; assembler;
 asm
   sar eax, FRACBITS
   imul b
   shrd eax, edx, 16
 end;
+{$ELSE}
+function IntFixedMul(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.IntegerMul(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -513,6 +615,7 @@ end;
 // FixedDivLW
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedDivLW(const a, b: LongWord): LongWord; assembler;
 asm
   push ebx
@@ -534,12 +637,19 @@ asm
 @@exit:
   pop ebx
 end;
+{$ELSE}
+function FixedDivLW(const a, b: LongWord): LongWord;
+begin
+  result := TFixedMath.DivideUnsigned(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedDiv_fast
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedDiv_fast(const a, b: fixed_t): fixed_t; assembler;
 asm
   mov ebx, b
@@ -556,6 +666,12 @@ asm
   idiv ebx
 @@exit:
 end;
+{$ELSE}
+function FixedDiv_fast(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.DivideFast(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -594,6 +710,7 @@ end;
 // FixedDiv2
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedDiv2(const a, b: fixed_t): fixed_t;  register; assembler;
 asm
   mov ebx, b
@@ -602,16 +719,29 @@ asm
   sar edx, 16
   idiv ebx
 end;
+{$ELSE}
+function FixedDiv2(const a, b: fixed_t): fixed_t; register;
+begin
+  result := TFixedMath.DivideRaw(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // FixedInt
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedInt(const x: integer): integer; assembler;
 asm
   sar eax, FRACBITS
 end;
+{$ELSE}
+function FixedInt(const x: integer): integer;
+begin
+  result := TFixedMath.ToInteger(x);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -678,12 +808,19 @@ end;
 // FixedInt_FixedMul
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function FixedInt_FixedMul(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
   sar eax, FRACBITS
 end;
+{$ELSE}
+function FixedInt_FixedMul(const a, b: fixed_t): fixed_t;
+begin
+  result := TFixedMath.IntegerOfMul(a, b);
+end;
+{$ENDIF}
 
 //==============================================================================
 //

@@ -82,6 +82,8 @@ type
     procedure DovrebbeScorrereConSegno;
     [Test]
     procedure DovrebbeArrotondareLeMetaAlNumeroPari;
+    [Test]
+    procedure DovrebbeCalcolareUnoMenoLaDivisioneSenzaSegno;
   end;
 
 implementation
@@ -268,6 +270,16 @@ begin
   Assert.AreEqual<Int64>(-2, TFixedMath.RoundDivide(-3, 2));
   Assert.AreEqual<Int64>(-4, TFixedMath.RoundDivide(-7, 2));
   Assert.AreEqual<Int64>(2, TFixedMath.RoundDivide(7, 3));
+end;
+
+procedure TTestMathCoreFixedMath.DovrebbeCalcolareUnoMenoLaDivisioneSenzaSegno;
+begin
+  // 1.0 / 2.0 = 0.5: one minus a half
+  Assert.AreEqual<Cardinal>(FIXED_ONE div 2, TFixedMath.OneMinusDivideUnsigned(FIXED_ONE, 2 * FIXED_ONE));
+  // a zero divisor saturates the division to FIXED_MAX and the subtraction wraps around
+  // 65536 - $7FFFFFFF modulo 2^32
+  Assert.AreEqual<Cardinal>($80010001, TFixedMath.OneMinusDivideUnsigned(1, 0));
+  Assert.AreEqual<Cardinal>(0, TFixedMath.OneMinusDivideUnsigned(FIXED_ONE, FIXED_ONE));
 end;
 
 end.

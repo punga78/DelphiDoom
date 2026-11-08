@@ -120,3 +120,10 @@ Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`:
 - Il CRC di un file è `TCrc32.CalculateStream` (dalla posizione dello stream alla fine, letto a pezzi di 64 KB): la libreria continua a non aprire file né lump. Il CRC di un lump lo calcola il motore (`W_LumpCRC32` in `w_wad`, `ND_LumpCRC32` in `nd_main`).
 - `m_sha1.pas` e `m_crc32.pas` sono cancellate (#145): `m_sha1` era codice morto (il suo ultimo chiamante, `vx_voxelsprite`, era stato cancellato dalla #134) e `p_udmf` chiama `W_LumpCRC32` al posto di `GetLumpCRC32`, che la richiamava e basta.
 - `Tests\DelphiDoom.Tests.MathCore.dproj` in Debug compila con `DCC_Inlining=off`: le funzioni `inline` (virgola fissa, bbox, tabelle) vengono chiamate e la copertura le vede (dall'86% al 98%); in Release i test le provano espanse.
+
+## 7. Stato dopo la issue #41 (assembler in Pascal)
+
+- `TFixedMath` è la versione Pascal di ogni funzione di `m_fixed` che era `asm` (`Mul`, `MulShl*`, `MulDiv*`, `Mul88`, `Mul8`, `MulByInteger`, `IntegerMul`, `IntegerOfMul`, `DivideUnsigned`, `DivideFast`, `DivideRaw`, `ToInteger`) e dei salti aritmetici `_SHR*` di `d_delphi` (`ShiftRight`); `OneMinusDivideUnsigned` è l'`ASM_CalcFactor` di `r_softlights`.
+- `TMemoryFill` (`DelphiDoom.MathCore.MemoryFill`: `FillBytes`, `FillWords`, `FillDWords`) è la versione Pascal di `memset`, `memsetsi`, `memseti`, `ZeroMemory` e `FillDWord`; `TPixelBatch` (`DelphiDoom.MathCore.PixelBatch`: `AddSaturated`, `HalveBytes`) quella di `R_BatchColorAdd32_MMX` e `R_BatchColorShade_AMD` di `r_mmx`.
+- Le unit del motore le usano **solo quando `CPUX86` non è definito** (`{$IFNDEF CPUX86}` nella `uses` e nel corpo): a 32 bit restano l'`asm` e le funzioni di `m_fixed`, `d_delphi`, `p_local`, `r_softlights` e `r_mmx` sono identiche a prima (percorsi caldi: FixedMul/FixedDiv per ogni punto, `FillDWord` per ogni colonna). Ogni unit nuova va anche nei 12 `.dpr` (8 giochi e 4 `ddc_*`): per ora serve al solo 64 bit.
+- Parità: `Tests\DelphiDoom.Tests.Asm` (solo 32 bit) confronta l'`asm` originale con queste classi; `Tests\DelphiDoom.Tests.MathCore` le prova con valori scritti a mano (anche a 64 bit).

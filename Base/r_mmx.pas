@@ -49,6 +49,11 @@ function R_BatchColorShade_AMD(const dest0: PByte; const numbytes: integer): boo
 
 implementation
 
+{$IFNDEF CPUX86}
+uses
+  DelphiDoom.MathCore.PixelBatch;
+{$ENDIF}
+
 type
   rec_2lw = record
     dwords: array[0..1] of LongWord;
@@ -59,6 +64,7 @@ type
 // R_BatchColorAdd32_MMX
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function R_BatchColorAdd32_MMX(const dest0: PLongWord; const color: LongWord; const numpixels: integer): boolean;
 var
   data: rec_2lw;
@@ -178,12 +184,40 @@ begin
   end;
 
 end;
+{$ELSE}
+// No MMX at 64 bit: the same checks and the same bytes, in Pascal (DelphiDoom.MathCore.PixelBatch)
+function R_BatchColorAdd32_MMX(const dest0: PLongWord; const color: LongWord; const numpixels: integer): boolean;
+var
+  count: integer;
+begin
+  if color = 0 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  count := numpixels * 4;
+  if count and 7 <> 0 then
+  begin
+    result := false;
+    exit;
+  end;
+
+  result := true;
+
+  if count = 0 then
+    exit;
+
+  TPixelBatch.AddSaturated(PByte(dest0), color, count);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
 // R_BatchColorShade_AMD
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function R_BatchColorShade_AMD(const dest0: PByte; const numbytes: integer): boolean;
 var
   data: rec_2lw;
@@ -301,5 +335,17 @@ begin
   end;
 
 end;
+{$ELSE}
+// No 3DNow at 64 bit: the same bytes, in Pascal (DelphiDoom.MathCore.PixelBatch)
+function R_BatchColorShade_AMD(const dest0: PByte; const numbytes: integer): boolean;
+begin
+  result := true;
+
+  if numbytes = 0 then
+    exit;
+
+  TPixelBatch.HalveBytes(dest0, numbytes);
+end;
+{$ENDIF}
 
 end.

@@ -259,6 +259,9 @@ uses
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   m_rnd,
 {$ENDIF}
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.FixedMath,
+{$ENDIF}
   p_setup;
 
 //==============================================================================
@@ -266,10 +269,18 @@ uses
 // MapBlockInt
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function MapBlockInt(const x: integer): integer; assembler;
 asm
   sar eax, MAPBLOCKSHIFT
 end;
+{$ELSE}
+function MapBlockInt(const x: integer): integer;
+begin
+  // arithmetic shift: the Delphi shr is a logical one
+  result := TFixedMath.ShiftRight(x, MAPBLOCKSHIFT);
+end;
+{$ENDIF}
 
 //==============================================================================
 //
@@ -300,10 +311,18 @@ end;
 // MapToFrac
 //
 //==============================================================================
+{$IFDEF CPUX86}
 function MapToFrac(const x: integer): integer; assembler;
 asm
   sar eax, MAPBTOFRAC
 end;
+{$ELSE}
+function MapToFrac(const x: integer): integer;
+begin
+  // arithmetic shift: the Delphi shr is a logical one
+  result := TFixedMath.ShiftRight(x, MAPBTOFRAC);
+end;
+{$ENDIF}
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
 //==============================================================================

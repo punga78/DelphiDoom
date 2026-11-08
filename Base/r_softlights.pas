@@ -143,6 +143,9 @@ uses
   tables,
   v_video,
   p_tick,
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.FixedMath,
+{$ENDIF}
   z_zone;
 
 var
@@ -643,6 +646,12 @@ end;
 //  Calculate  FRACUNIT - FixedDivLW(a, b)
 //
 //==============================================================================
+{$IFNDEF CPUX86}
+function ASM_CalcFactor(const a, b: LongWord): LongWord;
+begin
+  result := TFixedMath.OneMinusDivideUnsigned(a, b);
+end;
+{$ELSE}
 function ASM_CalcFactor(const a, b: LongWord): LongWord; assembler;
 asm
   push ebx
@@ -666,6 +675,7 @@ asm
   neg eax
   pop ebx
 end;
+{$ENDIF}
 
 //==============================================================================
 //
