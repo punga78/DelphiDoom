@@ -313,6 +313,7 @@ uses
 // it), the defines of the game that it reads, and the evaluator of the expressions in the
 // parameters of the actors (given back: the DEHACKED applier gives it to the parameter lists)
 function ComposeScanner(const ALog: ILog; const ADefaults: IEngineDefaults; const ALumps: IEngineLumps;
+  const AZone: IZoneAllocator;
   out AEvaluator: IContextExpressionEvaluator): IScriptTextPreprocessor;
 var
   LDirectives: TArray<IScriptDirective>;
@@ -323,10 +324,10 @@ begin
   // #CREATEPALETTE makes the palettes of the profile of the game; Hexen has no FOGMAP
 {$IFDEF HEXEN}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False, ALumps, AZone);
 {$ELSE}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True, ALumps, AZone);
 {$ENDIF}
 {$IFDEF DOOM}
   LDirectives := TArray<IScriptDirective>.Create(
@@ -369,7 +370,7 @@ end;
 
 // The end screen; the result is its tic, that the loop of the network runs (nothing in Hexen,
 // which has no end screen)
-function ComposeEndoom: TProc;
+function ComposeEndoom(const ALumps: IEngineLumps; const AZone: IZoneAllocator): TProc;
 {$IFNDEF HEXEN}
 var
   LScreen: IEngineEndoomScreen;
@@ -387,7 +388,7 @@ begin
     begin
       // DEHACKED can change it after the start (END_TEXT_LUMP)
       Result := EndLumpName;
-    end);
+    end, ALumps, AZone);
   D_ConfigureEndoom(LScreen);
   G_ConfigureEndoom(LScreen);
 {$IFDEF OPENGL}
@@ -464,7 +465,7 @@ begin
     end);
 end;
 
-procedure ComposeMusic(const ATempFiles: ITempFiles);
+procedure ComposeMusic(const ATempFiles: ITempFiles; const AZone: IZoneAllocator);
 var
   LMidiStream: IEngineMidiStream;
   LMus: IMusicBackend;
@@ -481,7 +482,7 @@ begin
     LMus,
     TMidiFileMusicBackend.Create(ATempFiles, LMidiStream))));
   S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
-    TEngineExternalMusicSource.Create));
+    TEngineExternalMusicSource.Create(AZone)));
 end;
 
 {$IFNDEF HEXEN}
@@ -661,7 +662,7 @@ begin
   D_ConfigureLevel(LLoader);
 end;
 
-procedure ComposePalette;
+procedure ComposePalette(const AZone: IZoneAllocator);
 var
   LMatcher: IColorMatcher;
   LDefaultPalette: IEngineDefaultPalette;
@@ -669,7 +670,7 @@ begin
   LMatcher := TPaletteFactory.CreateColorMatcher;
   // one palette read once, for the colormaps and the voxels
   LDefaultPalette := TEngineDefaultPalette.Create(
-    TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter));
+    TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter), AZone);
   R_ConfigureColormaps(LMatcher, TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
@@ -792,13 +793,13 @@ end;
 
 // The temporary files are one object for the whole engine: who makes one receives it, and
 // i_tmp deletes them all at the shut down
-function ComposePlatform: ITempFiles;
+function ComposePlatform(const AZone: IZoneAllocator): ITempFiles;
 var
   LStore: IFileStore;
   LFiles: IEngineFiles;
 begin
   LStore := TPlatformFactory.CreateFileStore;
-  LFiles := TEngineFiles.Create(LStore);
+  LFiles := TEngineFiles.Create(LStore, AZone);
   // the demos and the saves (Hexen: g_demo and sv_save; Strife: also p_saveg and the menus)
   G_ConfigureFiles(LFiles);
 {$IFDEF HEXEN}
@@ -1006,8 +1007,8 @@ begin
   // the console before anyone registers a command; the defaults after it (#CVARFORCE uses them)
   LConsole := ComposeConsole(LLog, LContext, LLumps, LRegistry, LInterpreter);
   LDefaults := ComposeDefaults(LRegistry, LInterpreter);
-  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LEvaluator);
-  LTempFiles := ComposePlatform;
+  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LEvaluator);
+  LTempFiles := ComposePlatform(LZone);
   ComposeMathCore;
   ComposeSerializer;
 {$IFDEF OPENGL}
@@ -1019,22 +1020,22 @@ begin
   ComposeDisplayModes;
   ComposeInput(LLog);
   ComposeSound(LLog);
-  ComposeMusic(LTempFiles);
+  ComposeMusic(LTempFiles, LZone);
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;
   ComposeScreenshot;
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog, LLumps);
-  ComposePalette;
+  ComposePalette(LZone);
   LMusInfo := ComposeMusInfo(LLog, LLumps);
   ComposeDynLights(LLog, LContext, LPreprocessor);
   ComposeAutomap;
   ComposeActorDef(LLog, LPreprocessor, LLumps);
   ComposeTableExport;
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
-    TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
-  LEndScreenTick := ComposeEndoom();
+    TAcsFactory.CreateMachine(TEngineAcsHost.Create(LZone), LLog));
+  LEndScreenTick := ComposeEndoom(LLumps, LZone);
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick);
   ComposeVoxels(LLog, LPreprocessor, LLumps);
 

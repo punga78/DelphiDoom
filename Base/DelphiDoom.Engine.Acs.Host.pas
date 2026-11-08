@@ -15,7 +15,8 @@ interface
 
 uses
   DelphiDoom.Acs.Machine.Types,
-  DelphiDoom.Acs.Machine.Intf;
+  DelphiDoom.Acs.Machine.Intf,
+  DelphiDoom.Zone.Intf;
 
 type
   /// <summary>
@@ -24,7 +25,11 @@ type
   ///   player. Lines and activators of the machine are Pline_t and Pmobj_t of the engine
   /// </summary>
   TEngineAcsHost = class(TInterfacedObject, IAcsHost)
+  strict private
+    FZone: IZoneAllocator;
   public
+    /// <param name="AZone">Holds the thinkers of the scripts (PU_LEVSPEC)</param>
+    constructor Create(const AZone: IZoneAllocator);
     function TicsPerSecond: Integer;
     function CurrentMap: Integer;
     function LevelTime: Integer;
@@ -89,9 +94,18 @@ uses
   {$IFDEF HEXEN}
   s_sndseq,
   {$ENDIF}
-  z_zone;
+  System.SysUtils,
+  DelphiDoom.Zone.Types;
 
 { TEngineAcsHost }
+
+constructor TEngineAcsHost.Create(const AZone: IZoneAllocator);
+begin
+  inherited Create;
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FZone := AZone;
+end;
 
 function TEngineAcsHost.TicsPerSecond: Integer;
 begin
@@ -142,7 +156,7 @@ function TEngineAcsHost.AllocateScript: PAcsScript;
 var
   LScript: Pacs_t;
 begin
-  LScript := Z_Malloc(SizeOf(acs_t), PU_LEVSPEC, nil);
+  LScript := FZone.Allocate(SizeOf(acs_t), ZONE_TAG_LEVSPEC, nil);
   memset(LScript, 0, SizeOf(acs_t));
   LScript.thinker._function.acp1 := @TH_InterpretACS;
   P_AddThinker(@LScript.thinker);
