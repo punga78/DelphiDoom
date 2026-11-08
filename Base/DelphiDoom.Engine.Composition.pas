@@ -80,6 +80,11 @@ uses
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
   m_rnd,
+  DelphiDoom.Thinkers.Light.Types,
+  DelphiDoom.Thinkers.Light.Games,
+  DelphiDoom.Thinkers.Light.Factory,
+  DelphiDoom.Engine.Light.Services,
+  DelphiDoom.Engine.Light.PhaseSpawner,
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -858,6 +863,18 @@ begin
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
 end;
 
+// The lights (udmf_lights, p_lights): the random of the game, the flicker rules and the numbers
+// of the sequences of the game, and the maker of the thinkers of the phased lights
+procedure ComposeLights(const ARandom: IGameRandom);
+var
+  LGame: TLightGame;
+begin
+  if not TLightGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of lights', [_GAME]);
+  P_ConfigureLights(ARandom, TLightFactory.CreateFlickerRules(LGame),
+    TLightGames.SequenceProfile(LGame), TEngineLightPhaseSpawner.Create);
+end;
+
 procedure ComposeThreading;
 var
   LThreads: IWorkerThreadFactory;
@@ -872,6 +889,7 @@ procedure ComposeMathCore(const ARandom: IGameRandom);
 begin
   M_ConfigureRandom(ARandom);
   R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
+  ComposeLights(ARandom);
 end;
 
 procedure ComposeSerializer;
