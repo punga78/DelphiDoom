@@ -45,8 +45,8 @@ function Get-Righe([string]$bin, $run, [string]$etichetta) {
     Where-Object { $_.LastWriteTime -ge $prima } | Sort-Object LastWriteTime | Select-Object -Last 1
   if (-not $log) { return @('NESSUN LOG STDERR') }
   $righe = Select-String -Path $log.FullName -Pattern 'R_GenerateLookup|I_Error' | ForEach-Object { $_.Line.Trim() }
-  if (-not $righe) { return @() }
-  return @($righe)
+  if (-not $righe) { return ,@() }
+  return ,@($righe)
 }
 
 $diversi = 0
