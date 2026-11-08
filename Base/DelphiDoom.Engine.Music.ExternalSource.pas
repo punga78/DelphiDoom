@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Audio.Intf;
+  DelphiDoom.Audio.Intf,
+  DelphiDoom.Zone.Intf;
 
 type
   /// <summary>
@@ -23,8 +24,9 @@ type
   strict private
     FData: Pointer;
     FSize: Integer;
+    FZone: IZoneAllocator;
   public
-    constructor Create(const AContent: TBytes);
+    constructor Create(const AContent: TBytes; const AZone: IZoneAllocator);
     destructor Destroy; override;
     function GetData: Pointer;
     function GetSize: Integer;
@@ -33,7 +35,10 @@ type
 
   /// <summary>Looks for the file as the engine does: preferred directories of the game, then the PAKs</summary>
   TEngineExternalMusicSource = class(TInterfacedObject, IExternalMusicSource)
+  strict private
+    FZone: IZoneAllocator;
   public
+    constructor Create(const AZone: IZoneAllocator);
     function TryLoad(const AFileName: string): IExternalMusicClip;
   end;
 
@@ -42,16 +47,19 @@ implementation
 uses
   d_delphi,
   doomdef,
-  z_zone,
-  w_pak;
+  w_pak,
+  DelphiDoom.Zone.Types;
 
 { TEngineExternalMusicClip }
 
-constructor TEngineExternalMusicClip.Create(const AContent: TBytes);
+constructor TEngineExternalMusicClip.Create(const AContent: TBytes; const AZone: IZoneAllocator);
 begin
   inherited Create;
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FZone := AZone;
   FSize := Length(AContent);
-  FData := Z_Malloc(FSize, PU_MUSIC, @FData);
+  FData := FZone.Allocate(FSize, ZONE_TAG_MUSIC, @FData);
   if FSize > 0 then
     Move(AContent[0], FData^, FSize);
 end;
@@ -59,7 +67,7 @@ end;
 destructor TEngineExternalMusicClip.Destroy;
 begin
   if FData <> nil then
-    Z_Free(FData);
+    FZone.FreeBlock(FData);
   inherited Destroy;
 end;
 
@@ -80,6 +88,14 @@ end;
 
 { TEngineExternalMusicSource }
 
+constructor TEngineExternalMusicSource.Create(const AZone: IZoneAllocator);
+begin
+  inherited Create;
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FZone := AZone;
+end;
+
 function TEngineExternalMusicSource.TryLoad(const AFileName: string): IExternalMusicClip;
 var
   LStream: TPakStream;
@@ -97,7 +113,7 @@ begin
   finally
     LStream.Free;
   end;
-  Result := TEngineExternalMusicClip.Create(LContent);
+  Result := TEngineExternalMusicClip.Create(LContent, FZone);
 end;
 
 end.

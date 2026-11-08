@@ -13,7 +13,8 @@ unit DelphiDoom.Engine.MapInfo.Services;
 interface
 
 uses
-  DelphiDoom.MapInfo.Intf;
+  DelphiDoom.MapInfo.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -23,7 +24,10 @@ type
   /// </summary>
   TEngineMapInfoServices = class(TInterfacedObject, IMapNameValidator, IMapLumpCatalog,
     IMapMusicResolver, IMapActorResolver, IMapEpisodeSink)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function IsValidMapName(const AName: string): Boolean;
     function LumpExists(const AName: string): Boolean;
     function MusicNumberFor(const AName: string): Integer;
@@ -35,6 +39,7 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_delphi,
   g_game,
   info_common,
@@ -42,10 +47,17 @@ uses
   m_menu,
 {$ENDIF}
   p_uactornames,
-  sounds,
-  w_wad;
+  sounds;
 
 { TEngineMapInfoServices }
+
+constructor TEngineMapInfoServices.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
 
 function TEngineMapInfoServices.IsValidMapName(const AName: string): Boolean;
 begin
@@ -54,7 +66,7 @@ end;
 
 function TEngineMapInfoServices.LumpExists(const AName: string): Boolean;
 begin
-  Result := W_CheckNumForName(AName) >= 0;
+  Result := FLumps.CheckNumForName(AName) >= 0;
 end;
 
 function TEngineMapInfoServices.MusicNumberFor(const AName: string): Integer;

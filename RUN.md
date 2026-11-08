@@ -1,36 +1,30 @@
-# RUN - issue #48 (prova dei percorsi PK3)
+# Verifica della issue #150 (da eseguire dal coordinatore, uno alla volta)
 
-Tutto dalla radice di questo worktree. Prima compilare e provare le librerie, poi il motore, poi la prova.
+Nulla di questo lavoro e' stato compilato o eseguito dall'agente.
 
-## 1. Compilazione e test
-```
-build.bat tests          # oppure solo: build.bat Tests\DelphiDoom.Tests.Wad / .Texture / .Voxel
-build.bat giochi         # Doom32, Heretic32, Hexen32, Strife32 (+ GL*32 per --Gl)
-```
-Eseguire poi `bin\Tests\DelphiDoom.Tests.Wad.exe`, `...Texture.exe`, `...Voxel.exe` (i test leggono `Tests\Data\Pk3`
-risalendo da `bin\Tests`). Nuovi: 12 in `TTestWadPk3`, 10 in `TTestTexturePk3`, 10 in `TTestVoxelPk3` (se un `Assert` non torna,
-guardare prima il file di dati: `Make-Pk3.ps1`).
+## 1. Build
+    build.bat tests
+    build.bat all Release
+Leggere `logs\*.log` (righe `error`). Attesi: zero errori. Firme cambiate da controllare:
+`TEngineAcsHost.Create(IGameRandom)`, `TEngineDynLightServices.Create(.., IGameRandom)`, `TLevelLoader.Create(.., ICommandRegistry, IGameRandom)`,
+`TDoomLevelRules/THereticLevelRules/TStrifeLevelRules.Create(.., IGameRandom)`, `THexenLevelRules.Create(ICommandLine)`, `TEngineDefaults`, `TEngineConsoleStartup`,
+`TEngineLevelBlockmap`, `TEngineLevelNodes`, `TMusMusicBackend`, `TEngineUdmfMapLoader`, `TEngineVoxelSpriteGenerator`, `TEngineScreenshotService`, `TEngineScreenshotFolders`,
+`TEngineTempDirectory`, `TEngineExportSettings`, `TEngineConsoleScreen`, `TEngineActorDefLumps`, `M_ConfigureArgv(builder, queried, savenames)`.
 
-## 2. Rigenerare i dati (solo se serve)
-`powershell -NoProfile -ExecutionPolicy Bypass -File Tests\Data\Pk3\Make-Pk3.ps1`
+## 2. Test
+`Tests\DelphiDoom.Tests.CommandLine`: attesi 55 test verdi (30 esistenti + 14 `Queried` + 11 `SaveFileNames`).
+Copertura: `powershell -NoProfile -File Tools\Copertura.ps1 -Test CommandLine` (>= 90%).
 
-## 3. Prova nel motore
-Servono in `bin\<Gioco>` gli IWAD (`FREEDOOM2.WAD`, `HERETIC1.WAD`, `HEXEN.WAD`, `STRIFE0.WAD`) e gli `.ini`.
-```
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Verifica\48\Prova-Pk3.ps1            # software, 4 giochi
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Verifica\48\Prova-Pk3.ps1 -Gl        # anche GL*32
-```
-Lancia ogni gioco due volte con `-iwad <IWAD> -file zpktest.pk3 zpkhires.wad <warp> -devparm -nomusic -nosound`, con
-`usepk3textures=1` messo nell'`.ini` (copia e ripristino automatici). Per ogni gioco **deve risultare**:
-- vivo dopo 25 s, nessun `crash.txt`, nessun `I_Error`/eccezione nei log;
-- `DATA\WADS\pk3tex_*.wad` con `P_START, ZPKPNG, ZPKTGA, ZPKBMP, ZPKJPG, ZPKPCX, ZPKPAT, ZPKFLT, PNAMES0, TEXTURE0, P_END`;
-- `DATA\WADS\pk3flat_*.wad` con gli stessi sette nomi piu' `ZPKFLAT` tra `F_START` e `F_END`;
-- `DATA\TMP\voxelsprite_*.wad` con `SS_START, ZVKAA0, ZVDAA0, ZVSAA0, SS_END`;
-- `DATA\TMP\pk3sounds_*.wad` con `DSZPKWAV, DSZPKOGG, DSZPKFLC`;
-- seconda esecuzione: cache `pk3tex_` non riscritta e nessun "Create textures and flats from PK3".
-Avvisi attesi: negli altri tre giochi `sprite treda/tblua/tgrna not found` (VOXELDEF e' di Doom).
-Riepilogo anche in `logs\prova-pk3-48.txt`; codice di uscita = controlli falliti.
+## 3. Parita' comandi e opzioni (confronto vecchio/nuovo)
+Costruire l'eseguibile del commit precedente (master) in un'altra cartella, poi per Doom, Heretic, Hexen, Strife:
+    powershell -NoProfile -File Tools\Verifica\150\Confronta-150.ps1 -OldExe <vecchio>\bin\Doom\Doom32.exe -NewExe bin\Doom\Doom32.exe
+Atteso `IDENTICO` (cmdline, commandlineparams con e senza maschera = stesso elenco e ordine, cmdlist = stessi comandi con gli stessi nomi, typeof).
+Per Heretic/Hexen/Strife passare `-Iwad HERETIC1.WAD` ecc.
 
-## Non coperto
-Vedere le texture sui muri e i voxel in una mappa, sentire i suoni: servono una mappa che usi i nomi `ZPK*` e un
-ascolto manuale. I lump `HI_START`/`TX_START` di `zpkhires.wad` sono controllati dai test, non caricati come texture.
+## 4. Serie casuale e demo
+-timedemo demo1, demo2, demo3 (Doom shareware): gametics identici al vecchio (demo3 = 2134).
+Hexen: `-warp 1` carica il BEHAVIOR (TEngineAcsHost con il nuovo generatore); `-timer 1 -deathmatch` per `-timer`.
+
+## 5. Smoke
+Otto eseguibili con `Tools\Esegui-gioco.ps1` (25 s, `-devparm`), nessun `crash.txt` ne' `I_Error`. In particolare: `-config altro.ini`, `-con file.con`,
+`-nomusic`, `-blockmap`, `-cdrom` (crea la cartella di lavoro), comandi `suicide`, `DEH_PrintActordef`, `DEH_SaveActordef x.txt`.

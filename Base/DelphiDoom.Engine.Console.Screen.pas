@@ -16,6 +16,7 @@ uses
   System.SysUtils,
   d_delphi,
   d_event,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.AutoExec,
   DelphiDoom.Console.StandardCommands,
@@ -49,6 +50,7 @@ type
     FVariables: TConsoleVariableCommands;
     FQueue: TConsoleCommandQueue;
     FInput: TConsoleInputLine;
+    FCommandLine: IQueriedCommandLine;
     FText: array[0..ENGINE_CONSOLE_LINES - 1] of string;
     FHead: Integer;
     FWidth: Integer;
@@ -75,6 +77,8 @@ type
     class procedure WriteOutput(const AText: string); static;
     class function IsDivideLine(const AText: string): Boolean; static;
     procedure RegisterCommands;
+    procedure ShowCommandLineParameters(const AMask: string);
+    procedure ShowCommandLine;
     procedure CloseConsole(const ATicks: string);
     procedure OpenConsole(const ATicks: string);
     procedure SetColormap(const AColormap: string);
@@ -90,6 +94,7 @@ type
   public
     /// <param name="ARegistry">Where the console registers its own commands</param>
     /// <param name="AInterpreter">Runs the commands that the console calls by name (use)</param>
+    /// <param name="ACommandLine">What the commands "cmdline" and "commandlineparams" show</param>
     /// <remarks>
     ///   The console owns the objects of Libs\Console and frees them in Shutdown (or when it is
     ///   destroyed). Raises EArgumentNilException if one of them is nil
@@ -97,7 +102,7 @@ type
     constructor Create(const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter;
       const AStandard: TConsoleStandardCommands; const AAutoExec: TConsoleAutoExec;
       const AVariables: TConsoleVariableCommands; const AQueue: TConsoleCommandQueue;
-      const AInput: TConsoleInputLine);
+      const AInput: TConsoleInputLine; const ACommandLine: IQueriedCommandLine);
     destructor Destroy; override;
     procedure Initialize;
     procedure Shutdown;
@@ -124,13 +129,13 @@ uses
   doomstat,
 {$ENDIF}
   doomdef,
+  DelphiDoom.Console.MaskMatcher,
   c_cmds,
   c_con,
   c_utils,
   d_main,
   g_game,
   hu_stuff,
-  m_argv,
   m_fixed,
   i_io,
   p_tick,
@@ -162,13 +167,15 @@ const
   SVariablesIsNil = 'TEngineConsoleScreen: the commands of the variables are nil';
   SQueueIsNil = 'TEngineConsoleScreen: the queue of the commands is nil';
   SInputIsNil = 'TEngineConsoleScreen: the line of input is nil';
+  SCommandLineIsNil = 'TEngineConsoleScreen: the command line is nil';
 
 { TEngineConsoleScreen }
 
 constructor TEngineConsoleScreen.Create(const ARegistry: ICommandRegistry;
   const AInterpreter: IConsoleInterpreter; const AStandard: TConsoleStandardCommands;
   const AAutoExec: TConsoleAutoExec; const AVariables: TConsoleVariableCommands;
-  const AQueue: TConsoleCommandQueue; const AInput: TConsoleInputLine);
+  const AQueue: TConsoleCommandQueue; const AInput: TConsoleInputLine;
+  const ACommandLine: IQueriedCommandLine);
 begin
   inherited Create;
   if not Assigned(ARegistry) then
@@ -185,6 +192,9 @@ begin
     raise EArgumentNilException.Create(SQueueIsNil);
   if not Assigned(AInput) then
     raise EArgumentNilException.Create(SInputIsNil);
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create(SCommandLineIsNil);
+  FCommandLine := ACommandLine;
   FRegistry := ARegistry;
   FInterpreter := AInterpreter;
   FStandard := AStandard;
@@ -232,6 +242,33 @@ begin
       // in and not CharInSet: a character is reduced to a byte, as in the old code
       if not (AText[LIndex] in ['-', '=']) then
         Exit(False);
+end;
+
+// The parameters that the program asked for, as M_CmdShowCommandLineParams did
+procedure TEngineConsoleScreen.ShowCommandLineParameters(const AMask: string);
+var
+  LMask: string;
+  LNames: TArray<string>;
+  LIndex: Integer;
+begin
+  if AMask = '' then
+    LMask := '*'
+  else
+    LMask := AMask;
+  LNames := TConsoleMaskMatcher.Filter(FCommandLine.QueriedNames, LMask);
+  printf('Command line parameters: '#13#10);
+  for LIndex := 0 to Length(LNames) - 1 do
+    printf(' %s'#13#10, [LNames[LIndex]]);
+end;
+
+// The arguments without the name of the program, as M_CmdShowCmdline did
+procedure TEngineConsoleScreen.ShowCommandLine;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 1 to FCommandLine.Count - 1 do
+    printf('%s ', [FCommandLine[LIndex]]);
+  printf(#13#10);
 end;
 
 procedure TEngineConsoleScreen.CloseConsole(const ATicks: string);
@@ -347,8 +384,16 @@ begin
     begin
       FPaused := True;
     end);
-  C_AddCmd('commandlineparams', @M_CmdShowCommandLineParams);
-  C_AddCmd('cmdline', @M_CmdShowCmdline);
+  FRegistry.Add('commandlineparams',
+    procedure(const AParam1, AParam2: string)
+    begin
+      ShowCommandLineParameters(AParam1);
+    end);
+  FRegistry.Add('cmdline',
+    procedure(const AParam1, AParam2: string)
+    begin
+      ShowCommandLine;
+    end);
   FRegistry.Add('use',
     procedure(const AParam1, AParam2: string)
     begin

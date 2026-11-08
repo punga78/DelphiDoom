@@ -2,7 +2,7 @@
 
 Dati sintetici scritti da `Make-Pk3.ps1`: **dominio pubblico (CC0)**, nessun asset di un gioco.
 Servono ai test (`Tests\DelphiDoom.Tests.Wad`, `.Texture`, `.Voxel`: unit `*.Pk3`) e alla prova nel motore
-(`Tools\Verifica\48\Prova-Pk3.ps1`, `RUN.md` alla radice).
+(`Tools\Verifica\48\Prova-Pk3.ps1`, `RUN-48.md` alla radice).
 
 | File | Contenuto |
 |---|---|

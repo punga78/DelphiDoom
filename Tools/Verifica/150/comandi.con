@@ -1,0 +1,16 @@
+// Issue #150: console commands whose output must be the same before and after the change.
+// Run with: -con <this file>. The markers help to cut the log.
+printf ===BEGIN-150
+printf ===cmdline
+cmdline
+printf ===commandlineparams
+commandlineparams
+printf ===commandlineparams-mask
+commandlineparams -n*
+commandlineparams -con
+printf ===cmdlist
+cmdlist
+printf ===typeof
+typeof mirror_stdout
+typeof screenshotformat
+printf ===END-150

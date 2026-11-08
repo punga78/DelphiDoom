@@ -20,7 +20,9 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Voxel.Intf;
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -28,7 +30,13 @@ type
   ///   directories and the PAK files, in the directory of the program, and as lumps of the WADs
   /// </summary>
   TEngineVoxelFileSource = class(TInterfacedObject, IVoxelFileSource)
+  strict private
+    FPakFiles: IPakFileSystem;
+    FLumps: IEngineLumps;
+    class function GameFolders: TArray<string>; static;
   public
+    /// <summary>Raises EArgumentNilException when APakFiles or ALumps is nil</summary>
+    constructor Create(const APakFiles: IPakFileSystem; const ALumps: IEngineLumps);
     function TryReadFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadDirectoryFile(const AName: string; out ABytes: TBytes): Boolean;
     function TryReadLump(const AName: string; out ABytes: TBytes): Boolean;
@@ -40,12 +48,40 @@ uses
   d_delphi,
   doomdef,
   w_folders,
-  w_pak,
-  w_wad;
+  DelphiDoom.Wad.Types,
+  DelphiDoom.Wad.Pak.Types;
+
+const
+  SPakFilesMissing = 'TEngineVoxelFileSource: the PAK file system is nil';
 
 { TEngineVoxelFileSource }
 
-function ReadAll(const AStream: TPakStream; out ABytes: TBytes): Boolean;
+constructor TEngineVoxelFileSource.Create(const APakFiles: IPakFileSystem;
+  const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(APakFiles) then
+    raise EArgumentNilException.Create(SPakFilesMissing);
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FPakFiles := APakFiles;
+  FLumps := ALumps;
+end;
+
+class function TEngineVoxelFileSource.GameFolders: TArray<string>;
+var
+  LIndex: Integer;
+begin
+  // the folders of the game are read at each call: d_main sets them after the composition
+  Result := nil;
+  if doomdef.gamedirectories = nil then
+    Exit;
+  SetLength(Result, doomdef.gamedirectories.Count);
+  for LIndex := 0 to doomdef.gamedirectories.Count - 1 do
+    Result[LIndex] := doomdef.gamedirectories[LIndex];
+end;
+
+function ReadAll(const AStream: TDStream; out ABytes: TBytes): Boolean;
 var
   LSize: Integer;
 begin
@@ -63,9 +99,9 @@ end;
 
 function TEngineVoxelFileSource.TryReadFile(const AName: string; out ABytes: TBytes): Boolean;
 var
-  LStream: TPakStream;
+  LStream: TDStream;
 begin
-  LStream := TPakStream.Create(AName, pm_prefered, gamedirectories, FOLDER_VOXELS);
+  LStream := FPakFiles.Open(AName, TPakLookupMode.Preferred, GameFolders, FOLDER_VOXELS);
   try
     Result := ReadAll(LStream, ABytes);
   finally
@@ -75,9 +111,9 @@ end;
 
 function TEngineVoxelFileSource.TryReadDirectoryFile(const AName: string; out ABytes: TBytes): Boolean;
 var
-  LStream: TPakStream;
+  LStream: TDStream;
 begin
-  LStream := TPakStream.Create(AName, pm_directory, '', FOLDER_VOXELS);
+  LStream := FPakFiles.Open(AName, TPakLookupMode.Directory, nil, FOLDER_VOXELS);
   try
     Result := ReadAll(LStream, ABytes);
   finally
@@ -90,17 +126,17 @@ var
   LLump: Integer;
   LLength: Integer;
 begin
-  LLump := W_CheckNumForName(AName, TYPE_VOXEL);
+  LLump := FLumps.CheckNumForName(AName, TYPE_VOXEL);
   Result := LLump >= 0;
   if not Result then
   begin
     ABytes := nil;
     Exit;
   end;
-  LLength := W_LumpLength(LLump);
+  LLength := FLumps.LengthOf(LLump);
   SetLength(ABytes, LLength);
   if LLength > 0 then
-    W_ReadLump(LLump, @ABytes[0]);
+    FLumps.Read(LLump, @ABytes[0]);
 end;
 
 end.

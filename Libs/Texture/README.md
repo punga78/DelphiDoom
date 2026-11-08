@@ -32,8 +32,8 @@ riga) e resta nel motore, perché legge `screen32`, `gammatable` e usa MMX.
 | decodificatori di formato (BMP, TGA, PCX, PNG, JPEG, patch, flat, material) | **qui** (`Decoder.*`), uno per classe, dietro `ITextureDecoder` | sono a freddo, puri, e il vecchio codice mescolava lettura da `TDStream`, VCL (PCX) e stato globale |
 | immagine in memoria e sue operazioni (`TTexture` di `t_main`: ridimensionamento, conversioni, colonne e righe a 32 bit, alfa) | **qui** (`Image`, `Alpha`, `Colors`) | pure su `TBytes`; il vecchio codice usava `asm` (`pixel15to24`, `SwapRGBData`, `EncodeColor*`) e puntatori a memoria da `malloc` |
 | tabella dei decoder per estensione | **qui** (`Formats`, `Factory`) | sostituisce la lista concatenata di `GetImageFormat` |
-| controlli di tipo (`T_IsValid*`) | **qui** (`PatchInspector`, `Decoder.Flat`, `Decoder.Pcx`) | puri; il motore li chiama dalla facciata `t_detect.pas` |
-| `T_LoadHiResTexture`, `PTexture`, ricerca nei PAK, `T_Init` | **resta nel motore** (`t_main.pas`, facciata sottile) | trova i file con `TPakStream` (`w_pak`, `w_folders`): è il confine con il PAK file system; i chiamanti (decine) non si migrano |
+| controlli di tipo (`T_IsValid*`) | **qui** (`PatchInspector`, `Decoder.Flat`, `Decoder.Pcx`) | puri; il motore li chiama direttamente (`TPakFileSystem` per `HI_START`/`TX_START`, `V_TileScreen8`): `t_detect.pas` non esiste piu (issue #146) |
+| `T_LoadHiResTexture`, `PTexture`, ricerca nei PAK | **resta nel motore** come classi (`TEngineTextureFiles` dietro `IEngineTextureFiles`, `TTexture` di `DelphiDoom.Engine.Texture.Item`) | trova i file con il file system PAK (`IPakFileSystem`) ricevuto dal costruttore; `t_main.pas` non esiste piu (issue #146): i chiamanti ricevono `IEngineTextureFiles` dal composition root |
 | `T_DrawFullScreenPatch`, cache `drawtextures[]` | **resta nel motore** (`t_draw.pas`) | legato a `screen32`, ai gamma, a MMX e alla zone memory |
 | `DelphiDoom.Texture.PngFileWriter`, `DelphiDoom.Texture.JpegBitmap` | **restano dove sono** (già a classi, già testati nei progetti Png e Jpeg) | |
 
@@ -53,12 +53,14 @@ PatchInspector, Formats, Factory
 
 Nel motore (`Base\DelphiDoom.Engine.Texture.*`): `PaletteSource` (`default_palette`), `PngReader` (libreria PNG),
 `PngSettings` (variabili di `t_png`), `JpegConverter` (libreria JPEG; un JPEG rotto ferma il gioco, come prima),
-`Resolver` (le texture che un `.material` nomina). `ComposeTexture` (in `ComposeEngine`) le assembla con
-`TTextureFactory.CreateFormats` e le dà a `T_ConfigureTextures`; senza configurazione `t_main` dà un `I_Error`.
-
-`TEXLIB\t_main.pas` tiene la vecchia API (`PTexture`/`TTexture` con gli stessi metodi di prima, `T_LoadHiResTexture`,
-`T_Init`, `T_ShutDown`, `preferetexturesnamesingamedirectory`) sopra `TTextureImage`; `t_png.pas` tiene solo le
-impostazioni dei PNG; `t_detect.pas` ha i `T_IsValid*`.
+`Resolver` (le texture che un `.material` nomina; tiene un riferimento debole ai file, che a loro volta hanno i decoder),
+`Item` (`PTexture`/`TTexture`, gli stessi metodi di prima sopra `TTextureImage`) e `Files` (`TEngineTextureFiles`:
+`LoadImage`, `LoadTexture`, `Decode`, `IsTextureExtension`; il vecchio `T_LoadHiResImage`). `ComposeTexture` (in
+`ComposeEngine`) crea i decoder con `TTextureFactory.CreateFormats`, poi `TEngineTextureFiles` con il file system PAK, e li
+da a chi li usa: `T_ConfigureDrawTextures` (`t_draw`), `W_ConfigureSpriteTextures` (`w_sprite`), `R_ConfigurePK3Textures`
+(`r_pk3textures`), `R_ConfigureFlatTextures` e `R_ConfigureWallTextures` (software), `gld_ConfigureTextureFiles` (OpenGL).
+`t_main.pas` e `t_detect.pas` sono stati cancellati (issue #146); `t_png.pas` tiene le impostazioni (anche
+`preferetexturesnamesingamedirectory`) e `d_main` chiama `T_InitDrawTextures`/`T_ShutDownDrawTextures` al posto di `T_Init`/`T_ShutDown`.
 
 ## 4. Differenze volute dal vecchio codice
 

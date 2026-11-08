@@ -34,6 +34,18 @@ unit r_pk3textures;
 
 interface
 
+uses
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Engine.Texture.Intf;
+
+//==============================================================================
+//
+// R_ConfigurePK3Textures
+// The external textures and the PAK file system, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem);
+
 //==============================================================================
 //
 // R_InitPK3Textures
@@ -52,9 +64,9 @@ uses
   mt_utils,
   r_data,
   r_defs,
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
+  DelphiDoom.Wad.Pak.Types,
   v_video,
-  w_pak,
   w_wadreader,
   w_wadwriter,
   w_wad;
@@ -66,6 +78,19 @@ const
 var
   t_names: TDStringList;
   f_names: TDStringList;
+  pk3_texturefiles: IEngineTextureFiles = nil;
+  pk3_pakfiles: IPakFileSystem = nil;
+
+//==============================================================================
+//
+// R_ConfigurePK3Textures
+//
+//==============================================================================
+procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem);
+begin
+  pk3_texturefiles := AFiles;
+  pk3_pakfiles := APakFiles;
+end;
 
 //==============================================================================
 //
@@ -83,11 +108,11 @@ var
 begin
   check := strupper(filename);
   ext := fext(check);  // includes the dot ('.PNG')
-  if not T_IsTextureExtension(ext) then
+  if not pk3_texturefiles.IsTextureExtension(ext) then
     Exit;
 
   path := fixpathname(check);
-  istexture := Pos(s_TEX_PATH, path) > 0;
+  istexture := Pos(PAK_TEXTURE_PATH, path) > 0;
   isflat := Pos(s_FLAT_PATH, path) > 0;
   if not (istexture or isflat) then
     Exit;
@@ -436,7 +461,8 @@ begin
   t_names := TDStringList.Create;
   f_names := TDStringList.Create;
 
-  PAK_FileNameIterator(@R_AddTextureFileName);
+  for i := 0 to pk3_pakfiles.EntryCount - 1 do
+    R_AddTextureFileName(pk3_pakfiles.EntryName(i));
 
   if f_names.Count > 0 then
   begin
@@ -447,7 +473,7 @@ begin
     MkDir(wad1filename);
     wad1filename := wad1filename + 'WADS\';
     MkDir(wad1filename);
-    wad1filename := wad1filename + 'pk3tex_' + uitoa(PAK_GetGlobalHash) + '_' + itoa(Hash(t_names.Text)) + '.wad';
+    wad1filename := wad1filename + 'pk3tex_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(Hash(t_names.Text)) + '.wad';
     // Check if the texture cache exists
     // (a PK3 with only flats has no texture WAD)
     t_ok := t_names.Count = 0;
@@ -465,7 +491,7 @@ begin
     MkDir(wad2filename);
     wad2filename := wad2filename + 'WADS\';
     MkDir(wad2filename);
-    wad2filename := wad2filename + 'pk3flat_' + uitoa(PAK_GetGlobalHash) + '_' + itoa(Hash(f_names.Text)) + '.wad';
+    wad2filename := wad2filename + 'pk3flat_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(Hash(f_names.Text)) + '.wad';
     // Check if the flat cache exists
     f_ok := False;
     if fexists(wad2filename) then
@@ -510,7 +536,7 @@ begin
       wad2.AddSeparator('F_START');
       for i := 0 to f_names.Count - 1 do
       begin
-        t := T_LoadHiResTexture(f_names.Strings[i]);
+        t := pk3_texturefiles.LoadTexture(f_names.Strings[i]);
         if t <> nil then
         begin
           if t_names.IndexOf(f_names.Strings[i]) >= 0 then

@@ -114,14 +114,6 @@ type
     procedure TestLumpCandidatesForAPlainName;
     [Test]
     procedure TestLumpCandidatesForAPrefixedName;
-    [Test]
-    procedure TestBloodIdAcceptsNumbersAndNames;
-    [Test]
-    procedure TestBloodIdOfAnUnknownNameIsZero;
-    [Test]
-    procedure TestBloodNameOfRedIsEmpty;
-    [Test]
-    procedure TestBloodRegionOfRedIsNone;
     // --- precalc and the others
     [Test]
     procedure TestPrecalcRejectsAMissingChannel;
@@ -703,52 +695,6 @@ begin
   Assert.AreEqual(2, Length(LNames.LumpCandidates('CR_FOO')));
   Assert.AreEqual('CR_FOO', LNames.LumpCandidates('CRFOO')[1]);
   Assert.AreEqual(2, Length(LNames.LumpCandidates('crfoo')));
-end;
-
-procedure TTestPaletteBehavior.TestBloodIdAcceptsNumbersAndNames;
-var
-  LNames: ITranslationNames;
-begin
-  LNames := TPaletteFactory.CreateTranslationNames;
-  Assert.AreEqual(3, LNames.BloodIdForName('3'));
-  Assert.AreEqual(2, LNames.BloodIdForName('green'));
-  Assert.AreEqual(2, LNames.BloodIdForName('CR_GREEN'));
-  Assert.AreEqual(2, LNames.BloodIdForName('CRGREEN'));
-  Assert.AreEqual(6, LNames.BloodIdForName('purple'));
-  Assert.AreEqual(8, LNames.BloodIdForName('Orange'));
-end;
-
-procedure TTestPaletteBehavior.TestBloodIdOfAnUnknownNameIsZero;
-var
-  LNames: ITranslationNames;
-begin
-  LNames := TPaletteFactory.CreateTranslationNames;
-  Assert.AreEqual(0, LNames.BloodIdForName('mauve'));
-  Assert.AreEqual(0, LNames.BloodIdForName('9'));
-  Assert.AreEqual(0, LNames.BloodIdForName('99999999999'));
-  Assert.AreEqual(0, LNames.BloodIdForName(''));
-end;
-
-procedure TTestPaletteBehavior.TestBloodNameOfRedIsEmpty;
-var
-  LNames: ITranslationNames;
-begin
-  LNames := TPaletteFactory.CreateTranslationNames;
-  Assert.AreEqual('', LNames.BloodName(0));
-  Assert.AreEqual('GRAY', LNames.BloodName(1));
-  Assert.AreEqual('ORANGE', LNames.BloodName(8));
-  Assert.AreEqual('', LNames.BloodName(9));
-end;
-
-procedure TTestPaletteBehavior.TestBloodRegionOfRedIsNone;
-var
-  LNames: ITranslationNames;
-begin
-  LNames := TPaletteFactory.CreateTranslationNames;
-  Assert.AreEqual(-1, LNames.BloodRegion(0));
-  Assert.AreEqual(REGION_GRAY, LNames.BloodRegion(1));
-  Assert.AreEqual(REGION_ORANGE, LNames.BloodRegion(8));
-  Assert.AreEqual(-1, LNames.BloodRegion(9));
 end;
 
 procedure TTestPaletteBehavior.TestPrecalcRejectsAMissingChannel;

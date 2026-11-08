@@ -15,6 +15,7 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Palette.Intf,
+  DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Palette.Intf;
 
 type
@@ -27,9 +28,11 @@ type
     FUnpacker: IPaletteUnpacker;
     FColors: TEnginePalette;
     FLoaded: Boolean;
+    FZone: IZoneAllocator;
   public
-    /// <remarks>Raises EArgumentNilException if AUnpacker is nil</remarks>
-    constructor Create(const AUnpacker: IPaletteUnpacker);
+    /// <param name="AZone">Gives back the cached copy of the palette lump</param>
+    /// <remarks>Raises EArgumentNilException if AUnpacker or AZone is nil</remarks>
+    constructor Create(const AUnpacker: IPaletteUnpacker; const AZone: IZoneAllocator);
     function Colors: PEnginePalette;
   end;
 
@@ -38,7 +41,7 @@ implementation
 uses
   d_delphi,
   v_data,
-  z_zone;
+  DelphiDoom.Zone.Types;
 
 const
   SUnpackerIsNil = 'TEngineDefaultPalette: the unpacker of the palette is nil';
@@ -46,12 +49,16 @@ const
 
 { TEngineDefaultPalette }
 
-constructor TEngineDefaultPalette.Create(const AUnpacker: IPaletteUnpacker);
+constructor TEngineDefaultPalette.Create(const AUnpacker: IPaletteUnpacker;
+  const AZone: IZoneAllocator);
 begin
   inherited Create;
   if not Assigned(AUnpacker) then
     raise EArgumentNilException.Create(SUnpackerIsNil);
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FUnpacker := AUnpacker;
+  FZone := AZone;
 end;
 
 function TEngineDefaultPalette.Colors: PEnginePalette;
@@ -62,10 +69,10 @@ var
 begin
   if not FLoaded then
   begin
-    LPalette := V_ReadPalette(PU_STATIC);
+    LPalette := V_ReadPalette(ZONE_TAG_STATIC);
     SetLength(LSource, PALETTE_BYTES);
     Move(LPalette^, LSource[0], PALETTE_BYTES);
-    Z_ChangeTag(LPalette, PU_CACHE);
+    FZone.ChangeTag(LPalette, ZONE_TAG_CACHE);
 
     LColors := FUnpacker.Unpack(LSource);
     Move(LColors[0], FColors[0], SizeOf(TEnginePalette));

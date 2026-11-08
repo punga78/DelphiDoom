@@ -15,6 +15,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Configuration.Intf,
   DelphiDoom.Console.Intf,
   DelphiDoom.Engine.Configuration.Intf;
@@ -31,15 +32,17 @@ type
     FFormat: IConfigurationFormat;
     FRegistry: ICommandRegistry;
     FInterpreter: IConsoleInterpreter;
+    FCommandLine: ICommandLine;
     FFileName: string;
     FConfigNotFound: Boolean;
     procedure ResetMatching(const AMask: string);
   public
     /// <param name="ARegistry">Where the commands of the defaults go and where Reset looks for a command</param>
     /// <param name="AInterpreter">Runs "get" and the command of an option after Reset</param>
+    /// <param name="ACommandLine">Where -defaultvalues and -config are looked for</param>
     /// <remarks>Raises EArgumentNilException if one of them is nil</remarks>
     constructor Create(const AFormat: IConfigurationFormat; const ARegistry: ICommandRegistry;
-      const AInterpreter: IConsoleInterpreter);
+      const AInterpreter: IConsoleInterpreter; const ACommandLine: ICommandLine);
     /// <summary>
     ///   The commands "defaults, setdefaults" and "default, setdefault": both reset every option,
     ///   as in the old code (they were registered by the menus)
@@ -65,7 +68,6 @@ uses
   d_main,
   d_player,
   g_game,
-  m_argv,
   m_base,
   m_defs,
   m_misc,
@@ -79,13 +81,18 @@ const
   SFormatIsNil = 'TEngineDefaults: the format of the configuration is nil';
   SRegistryIsNil = 'TEngineDefaults: the registry of the commands is nil';
   SInterpreterIsNil = 'TEngineDefaults: the interpreter is nil';
+  SCommandLineIsNil = 'TEngineDefaults: the command line is nil';
 
 { TEngineDefaults }
 
 constructor TEngineDefaults.Create(const AFormat: IConfigurationFormat;
-  const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter);
+  const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter;
+  const ACommandLine: ICommandLine);
 begin
   inherited Create;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create(SCommandLineIsNil);
+  FCommandLine := ACommandLine;
   if not Assigned(AFormat) then
     raise EArgumentNilException.Create(SFormatIsNil);
   if not Assigned(ARegistry) then
@@ -257,14 +264,14 @@ begin
     else if defaults[LIndex]._type = tString then
       PString(defaults[LIndex].location)^ := defaults[LIndex].defaultsvalue;
 
-  if M_CheckParm('-defaultvalues') > 0 then
+  if FCommandLine.IndexOf('-defaultvalues') > 0 then
     Exit;
 
   // check for a custom default file
-  LIndex := M_CheckParm('-config');
-  if (LIndex > 0) and (LIndex < myargc - 1) then
+  LIndex := FCommandLine.IndexOf('-config');
+  if (LIndex > 0) and (LIndex < FCommandLine.Count - 1) then
   begin
-    FFileName := myargv[LIndex + 1];
+    FFileName := FCommandLine[LIndex + 1];
     printf(' default file: %s'#13#10, [FFileName]);
   end
   else

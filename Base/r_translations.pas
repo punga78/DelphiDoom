@@ -36,7 +36,8 @@ interface
 
 uses
   p_mobj_h,
-  DelphiDoom.Palette.Intf;
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Pak.Intf;
 
 type
   translationtable_t = array[0..255] of byte;
@@ -47,10 +48,11 @@ type
 //==============================================================================
 //
 // R_ConfigureTranslations
-// The names of the translations of Libs\Palette, given by the composition root
+// The names of the translations of Libs\Palette and the PAK file system (a table can be a
+// file of 256 bytes), given by the composition root. The blood colors are TTranslationBlood
 //
 //==============================================================================
-procedure R_ConfigureTranslations(const ANames: ITranslationNames);
+procedure R_ConfigureTranslations(const ANames: ITranslationNames; const APakFiles: IPakFileSystem);
 
 //==============================================================================
 //
@@ -65,34 +67,6 @@ procedure R_InitTranslations;
 //
 //==============================================================================
 procedure R_ShutDownTranslations;
-
-//==============================================================================
-//
-// R_GetTranslationTable
-//
-//==============================================================================
-function R_GetTranslationTable(const name: string): Ptranslationtable_t;
-
-//==============================================================================
-//
-// R_BloodTranslation
-//
-//==============================================================================
-function R_BloodTranslation(const bt: integer): Pointer;
-
-//==============================================================================
-//
-// R_GetBloodTranslationIdForName
-//
-//==============================================================================
-function R_GetBloodTranslationIdForName(const name: string): integer;
-
-//==============================================================================
-//
-// R_GetBloodName
-//
-//==============================================================================
-function R_GetBloodName(const id: integer): string;
 
 //==============================================================================
 //
@@ -115,13 +89,15 @@ uses
   d_delphi,
   i_system,
   r_draw,
-  w_pak,
   w_wad,
   z_zone,
-  DelphiDoom.Palette.Types;
+  DelphiDoom.Wad.Pak.Types,
+  DelphiDoom.Palette.Types,
+  DelphiDoom.Palette.TranslationBlood;
 
 var
   translation_names: ITranslationNames = nil;
+  translation_pakfiles: IPakFileSystem = nil;
   // the table of each slot of translation_names: the first ones are the color regions
   translation_tables: TList = nil;
 
@@ -130,9 +106,10 @@ var
 // R_ConfigureTranslations
 //
 //==============================================================================
-procedure R_ConfigureTranslations(const ANames: ITranslationNames);
+procedure R_ConfigureTranslations(const ANames: ITranslationNames; const APakFiles: IPakFileSystem);
 begin
   translation_names := ANames;
+  translation_pakfiles := APakFiles;
 end;
 
 //==============================================================================
@@ -181,7 +158,7 @@ var
   var
     strm: TDStream;
   begin
-    strm := TPakStream.Create(pk3name, pm_short);
+    strm := translation_pakfiles.Open(pk3name, TPakLookupMode.Short, nil, '');
     strm.OnBeginBusy := I_BeginDiskBusy;
     Result := (strm.IOResult = 0) and (strm.Size = SizeOf(translationtable_t));
     if Result then
@@ -258,42 +235,6 @@ end;
 
 //==============================================================================
 //
-// R_BloodTranslation
-//
-//==============================================================================
-function R_BloodTranslation(const bt: integer): Pointer;
-var
-  region: integer;
-begin
-  region := translation_names.BloodRegion(bt);
-  if region < 0 then
-    Result := nil
-  else
-    Result := colorregions[region];
-end;
-
-//==============================================================================
-//
-// R_GetBloodTranslationIdForName
-//
-//==============================================================================
-function R_GetBloodTranslationIdForName(const name: string): integer;
-begin
-  Result := translation_names.BloodIdForName(name);
-end;
-
-//==============================================================================
-//
-// R_GetBloodName
-//
-//==============================================================================
-function R_GetBloodName(const id: integer): string;
-begin
-  Result := translation_names.BloodName(id);
-end;
-
-//==============================================================================
-//
 // R_InitMobjTranslation
 //
 //==============================================================================
@@ -312,7 +253,7 @@ end;
 //==============================================================================
 procedure R_SetMobjBloodTranslation(const mo: Pmobj_t; const blood: integer);
 begin
-  mo.translationname := R_GetBloodName(blood);
+  mo.translationname := TTranslationBlood.NameOf(blood);
   mo.translationtable := R_GetTranslationTable(mo.translationname);
 end;
 

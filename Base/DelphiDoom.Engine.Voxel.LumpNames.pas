@@ -19,12 +19,16 @@ unit DelphiDoom.Engine.Voxel.LumpNames;
 interface
 
 uses
-  DelphiDoom.Voxel.Intf;
+  DelphiDoom.Voxel.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
-  /// <summary>The lumps of the WAD directory of the engine (w_wad), asked at each call</summary>
+  /// <summary>The lumps of the WAD directory of the engine, asked at each call</summary>
   TEngineVoxelLumpNames = class(TInterfacedObject, IVoxelLumpNames)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function LumpCount: Integer;
     function LumpName(const AIndex: Integer): string;
   end;
@@ -32,19 +36,26 @@ type
 implementation
 
 uses
-  d_delphi,
-  w_wad;
+  System.SysUtils;
 
 { TEngineVoxelLumpNames }
 
+constructor TEngineVoxelLumpNames.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
+
 function TEngineVoxelLumpNames.LumpCount: Integer;
 begin
-  Result := W_NumLumps;
+  Result := FLumps.Count;
 end;
 
 function TEngineVoxelLumpNames.LumpName(const AIndex: Integer): string;
 begin
-  Result := char8tostring(W_GetNameForNum(AIndex));
+  Result := FLumps.NameOf(AIndex);
 end;
 
 end.

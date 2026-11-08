@@ -16,6 +16,7 @@ uses
   r_defs,
   p_udmf,
   DelphiDoom.GameState.Intf,
+  DelphiDoom.MathCore.Intf,
   DelphiDoom.Engine.Definitions.Intf,
   DelphiDoom.Engine.Level.Intf;
 
@@ -32,12 +33,17 @@ type
     FAnimDefs: IEngineAnimDefsLoader;
     FVanillaNodes: ILevelVanillaNodes;
     FGame: IGameContext;
+    FRandom: IGameRandom;
     procedure Trace(const AStep: string);
     class procedure HideDuplicateThings(AType: Integer); static;
   public
-    /// <summary>AGame says when the steps are printed (-devparm)</summary>
+    /// <summary>
+    ///   AGame says when the steps are printed (-devparm); ARandom gives the seed of the
+    ///   random monsters that PrintLoading shows
+    /// </summary>
     constructor Create(const ASwitches: IEngineSwitchListLoader; const AAnimDefs: IEngineAnimDefsLoader;
-      const AVanillaNodes: ILevelVanillaNodes; const AGame: IGameContext);
+      const AVanillaNodes: ILevelVanillaNodes; const AGame: IGameContext;
+      const ARandom: IGameRandom);
     // ILevelGameRules
     procedure InitializeData;
     procedure ShutDownData;
@@ -82,7 +88,6 @@ uses
   g_game,
   i_system,
   info_h,
-  m_rnd,
   p_mobj_h,
   p_mobj,
   p_tick,
@@ -108,9 +113,12 @@ const
 
 constructor TDoomLevelRules.Create(const ASwitches: IEngineSwitchListLoader;
   const AAnimDefs: IEngineAnimDefsLoader; const AVanillaNodes: ILevelVanillaNodes;
-  const AGame: IGameContext);
+  const AGame: IGameContext; const ARandom: IGameRandom);
 begin
   inherited Create;
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create('ARandom');
+  FRandom := ARandom;
   if not Assigned(ASwitches) then
     raise EArgumentNilException.Create('ASwitches');
   if not Assigned(AAnimDefs) then
@@ -159,7 +167,7 @@ begin
   printf(#13#10'-------------'#13#10);
   printf('Loading %s'#13#10, [ALumpName]);
   if spawnrandommonsters then
-    printf(' Random monsters seed=%d'#13#10, [M_GetSystemRandomSeed]);
+    printf(' Random monsters seed=%d'#13#10, [FRandom.SystemSeed]);
 end;
 
 procedure TDoomLevelRules.ResetStatistics;

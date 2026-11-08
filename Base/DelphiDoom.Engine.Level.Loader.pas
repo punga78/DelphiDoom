@@ -13,9 +13,13 @@ interface
 
 uses
   doomdef,
+  DelphiDoom.Console.Intf,
   DelphiDoom.GameState.Intf,
+  DelphiDoom.MathCore.Intf,
   DelphiDoom.MusInfo.Intf,
   DelphiDoom.Nodes.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -37,6 +41,10 @@ type
     FBlockmap: ILevelBlockmap;
     FUdmf: ILevelUdmf;
     FMusInfo: IMusInfoLoader;
+    FCommands: ICommandRegistry;
+    FRandom: IGameRandom;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
     procedure Trace(const AStep: string);
     procedure ResetLevel;
     function FindNodes(AMapLump: Integer; const AMapName: string): INodesGwa;
@@ -47,10 +55,17 @@ type
     procedure SpawnDeathmatchPlayers;
     procedure FinishLevel;
   public
-    /// <summary>AGame says when the steps are printed (-devparm); ARules is the class of the game</summary>
+    /// <summary>
+    ///   AGame says when the steps are printed (-devparm); ARules is the class of the game;
+    ///   ACommands gets the console commands of the level; ARandom gives the seed of the
+    ///   random monsters; ALumps finds the label of the map and reloads the development maps,
+    ///   AZone frees the memory of the previous level
+    /// </summary>
     constructor Create(const AGame: IGameContext; const ARules: ILevelGameRules;
       const AMap: ILevelMapReader; const AThings: ILevelThings; const ANodes: ILevelNodes;
-      const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader);
+      const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader;
+      const ACommands: ICommandRegistry; const ARandom: IGameRandom;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
     procedure Initialize;
     procedure ShutDown;
     procedure SetupLevel(AEpisode, AMap, APlayerMask: Integer; ASkill: skill_t);
@@ -64,13 +79,9 @@ uses
   doomdata,
   doomstat,
   d_player,
-  c_cmds,
   g_game,
   i_system,
   info,
-  m_rnd,
-  w_wad,
-  z_zone,
   p_local,
   p_mobj_h,
   p_mobj,
@@ -104,15 +115,22 @@ uses
 {$ENDIF}
   r_subsectors,
   nd_main,
-  s_sound;
+  s_sound,
+  DelphiDoom.Zone.Types;
 
 { TLevelLoader }
 
 constructor TLevelLoader.Create(const AGame: IGameContext; const ARules: ILevelGameRules;
   const AMap: ILevelMapReader; const AThings: ILevelThings; const ANodes: ILevelNodes;
-  const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader);
+  const ABlockmap: ILevelBlockmap; const AUdmf: ILevelUdmf; const AMusInfo: IMusInfoLoader;
+  const ACommands: ICommandRegistry; const ARandom: IGameRandom; const ALumps: IEngineLumps;
+  const AZone: IZoneAllocator);
 begin
   inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   if not Assigned(AGame) then
     raise EArgumentNilException.Create('AGame');
   if not Assigned(ARules) then
@@ -129,6 +147,10 @@ begin
     raise EArgumentNilException.Create('AUdmf');
   if not Assigned(AMusInfo) then
     raise EArgumentNilException.Create('AMusInfo');
+  if not Assigned(ACommands) then
+    raise EArgumentNilException.Create('ACommands');
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create('ARandom');
   FGame := AGame;
   FRules := ARules;
   FMap := AMap;
@@ -137,6 +159,10 @@ begin
   FBlockmap := ABlockmap;
   FUdmf := AUdmf;
   FMusInfo := AMusInfo;
+  FCommands := ACommands;
+  FRandom := ARandom;
+  FLumps := ALumps;
+  FZone := AZone;
 end;
 
 procedure TLevelLoader.Trace(const AStep: string);
@@ -150,8 +176,17 @@ begin
   FRules.InitializeData;
   R_InitSprites(sprnames);
   FMusInfo.Load;
-  C_AddCmd('suicide', @P_CmdSuicide);
-  C_AddCmd('doadjustmissingtextures', @P_AdjustMissingTextures);
+  // the commands have always been called with both parameters, whatever their own declaration
+  FCommands.Add('suicide',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      P_CmdSuicide;
+    end);
+  FCommands.Add('doadjustmissingtextures',
+    procedure(const AParameter1, AParameter2: string)
+    begin
+      P_AdjustMissingTextures;
+    end);
 end;
 
 procedure TLevelLoader.ShutDown;
@@ -166,7 +201,7 @@ begin
   isgamefreezed := False;
 
   if not preparingdemoplayback then
-    M_SetSystemRandomSeed(I_Random);
+    FRandom.SystemSeed := FRandom.NextUnpredictable;
 
   // Initial height of PointOfView will be set by player think.
   players[consoleplayer].viewz := 1;
@@ -183,7 +218,7 @@ begin
   MT_WaitTasks;
 
   Trace('Z_FreeTags');
-  Z_FreeTags(PU_LEVEL, PU_PURGELEVEL - 1);
+  FZone.FreeTags(ZONE_TAG_LEVEL, ZONE_TAG_PURGELEVEL - 1);
 
   FRules.ClearLevelData;
 
@@ -197,7 +232,7 @@ begin
 
   // if working with a devlopment map, reload it
   Trace('W_Reload');
-  W_Reload;
+  FLumps.Reload;
 end;
 
 function TLevelLoader.FindNodes(AMapLump: Integer; const AMapName: string): INodesGwa;
@@ -250,7 +285,7 @@ begin
 {$IFDEF OPENGL}
   if (glnodesver > 0) and (glmapnum <> - 1) then
   begin
-    LGlMapName := W_GetNameForNum(glmapnum);
+    LGlMapName := FLumps.NameOf(glmapnum);
     printf(' GL nodes v%d found (%s)'#13#10, [glnodesver, LGlMapName]);
     if glnodesver >= 3 then
       P_LoadSubsectorsV3V5(glmapnum + Ord(ML_GL_SSECT))
@@ -432,7 +467,7 @@ begin
   PS_LinkScriptEvents(LMapName); // JVAL: Script Events
 
   Trace('W_GetNumForName');
-  LMapLump := W_GetNumForName(LMapName);
+  LMapLump := FLumps.GetNumForName(LMapName);
 
   LGwa := FindNodes(LMapLump, LMapName);
 
