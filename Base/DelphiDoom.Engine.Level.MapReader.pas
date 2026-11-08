@@ -13,8 +13,10 @@ interface
 
 uses
   DelphiDoom.GameState.Intf,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -31,16 +33,20 @@ type
     FGame: IGameContext;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
+    FLog: ILog;
+    FShutdown: IEngineShutdown;
     procedure FindSubsectorSectors;
     procedure CountSectorLines(out ATotal: Integer);
     procedure BuildSectorLines(ATotal: Integer);
   public
     /// <summary>
     ///   AGame says when the lines with wrong sides are printed (-devparm); ALumps gives the
-    ///   lumps of the map and AZone the memory of the level
+    ///   lumps of the map and AZone the memory of the level; ALog receives the warnings of
+    ///   the lines and AShutdown stops the game on a map that can not be grouped (I_Error)
     /// </summary>
     constructor Create(const ARules: ILevelGeometryRules; const AGame: IGameContext;
-      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+      const AShutdown: IEngineShutdown);
     procedure LoadVertexes(ALump: Integer);
     procedure LoadSectors(ALump: Integer);
     procedure LoadSideDefs(ALump: Integer);
@@ -61,7 +67,6 @@ uses
   doomdata,
   doomtype,
   m_fixed,
-  i_system,
   r_defs,
   r_data,
   p_local,
@@ -77,9 +82,16 @@ uses
 { TEngineLevelMapReader }
 
 constructor TEngineLevelMapReader.Create(const ARules: ILevelGeometryRules; const AGame: IGameContext;
-  const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ALumps: IEngineLumps; const AZone: IZoneAllocator; const ALog: ILog;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(ALog) then
+    raise EArgumentNilException.Create('ALog');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FLog := ALog;
+  FShutdown := AShutdown;
   if not Assigned(ARules) then
     raise EArgumentNilException.Create('ARules');
   if not Assigned(AGame) then
@@ -177,7 +189,7 @@ begin
       LSideNumber := LLine.sidenum[LSide xor 1];
       if LSideNumber = -1 then
       begin
-        I_Warning('P_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]);
+        FLog.Warning(Format('P_LoadSegs(): Line %d is marked with ML_TWOSIDED flag without backsector'#13#10, [LLineNumber]));
         LLine.flags := LLine.flags and not ML_TWOSIDED;
         LSeg.backsector := nil;
       end
@@ -482,7 +494,7 @@ begin
       Inc(LSeg);
     end;
     if LSubsector.sector = nil then
-      I_Error('P_GroupLines(): Subsector %d is not part of a sector', [LIndex]);
+      FShutdown.Fail(Format('P_GroupLines(): Subsector %d is not part of a sector', [LIndex]));
     Inc(LSubsector);
   end;
 end;
@@ -502,9 +514,9 @@ begin
     else
     begin
       if LLine.backsector = nil then
-        I_Warning('P_GroupLines(): Line %d is missing frontsector & backsector'#13#10, [LIndex])
+        FLog.Warning(Format('P_GroupLines(): Line %d is missing frontsector & backsector'#13#10, [LIndex]))
       else
-        I_Warning('P_GroupLines(): Line %d is missing frontsector'#13#10, [LIndex]);
+        FLog.Warning(Format('P_GroupLines(): Line %d is missing frontsector'#13#10, [LIndex]));
     end;
 
     if (LLine.backsector <> nil) and (LLine.backsector <> LLine.frontsector) then
@@ -548,7 +560,7 @@ begin
       Inc(LLine);
     end;
     if pDiff(LLineBuffer, LSector.lines, SizeOf(Pointer)) <> LSector.linecount then
-      I_Error('P_GroupLines(): miscounted');
+      FShutdown.Fail('P_GroupLines(): miscounted');
 
     // set the degenmobj_t to the middle of the bounding box
     if largemap then

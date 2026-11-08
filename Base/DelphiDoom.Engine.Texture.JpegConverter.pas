@@ -20,7 +20,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Texture.Intf;
+  DelphiDoom.Texture.Intf,
+  DelphiDoom.Engine.Shutdown.Intf;
 
 type
   /// <summary>
@@ -28,14 +29,18 @@ type
   ///   BMP file. A file that cannot be decoded stops the game with an error, as it always did
   /// </summary>
   TEngineTextureJpegConverter = class(TInterfacedObject, ITextureJpegConverter)
+  strict private
+    FShutdown: IEngineShutdown;
   public
+    /// <param name="AShutdown">Stops the game on a file that can not be decoded (I_Error)</param>
+    /// <remarks>Raises EArgumentNilException if AShutdown is nil</remarks>
+    constructor Create(const AShutdown: IEngineShutdown);
     function ToBitmap(const ASource: TBytes): TBytes;
   end;
 
 implementation
 
 uses
-  i_system,
   DelphiDoom.Texture.Types,
   DelphiDoom.Jpeg.Intf,
   DelphiDoom.Jpeg.Client,
@@ -43,6 +48,14 @@ uses
   DelphiDoom.Texture.JpegBitmap;
 
 { TEngineTextureJpegConverter }
+
+constructor TEngineTextureJpegConverter.Create(const AShutdown: IEngineShutdown);
+begin
+  inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
+end;
 
 function TEngineTextureJpegConverter.ToBitmap(const ASource: TBytes): TBytes;
 var
@@ -57,7 +70,7 @@ begin
   except
     on E: EJpegException do
     begin
-      I_Error('TJPGTextureManager(): %s', [E.Message]);
+      FShutdown.Fail('TJPGTextureManager(): ' + E.Message);
       raise ETextureException.Create(E.Message);
     end;
   end;

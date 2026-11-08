@@ -47,7 +47,8 @@ uses
   DelphiDoom.Engine.Palette.Intf,
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.MathCore.Intf,
-  DelphiDoom.Pak.Intf;
+  DelphiDoom.Pak.Intf,
+  DelphiDoom.Renderer.Intf;
 
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
@@ -144,6 +145,14 @@ procedure R_ConfigureVoxelSprites(const ASprites: IEngineVoxelSprites);
 //
 //==============================================================================
 procedure R_ConfigureNameHash(const ATable: IStringHashTable);
+
+//==============================================================================
+//
+// R_ConfigureTextureLookup
+// The builder of the column tables of the textures (R_GenerateLookup)
+//
+//==============================================================================
+procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
 
 //==============================================================================
 //
@@ -300,6 +309,7 @@ procedure R_ChangeColormap(const lumpname: string);
 implementation
 
 uses
+  DelphiDoom.Renderer.Types,
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.Imaging.Types,
   DelphiDoom.Palette.Types,
@@ -362,6 +372,7 @@ var
   flatinfo_pakfiles: IPakFileSystem = nil;
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
+  texture_lookup: IRendererTextureLookup = nil;
   // the last index found for a name of a flat or of a texture (one table for both, as the
   // old global hash of m_hash): every answer is checked against flats[] or textures[]
   name_hash: IStringHashTable = nil;
@@ -375,6 +386,17 @@ var
 procedure R_ConfigureNameHash(const ATable: IStringHashTable);
 begin
   name_hash := ATable;
+end;
+
+//==============================================================================
+//
+// R_ConfigureTextureLookup
+// The builder of the column tables of Libs\Renderer, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
+begin
+  texture_lookup := ALookup;
 end;
 
 //==============================================================================
@@ -551,21 +573,17 @@ end;
 procedure R_GenerateLookup(const texnum: integer);
 var
   texture: Ptexture_t;
-  patchcount: PIntegerArray; // patchcount[texture->width]
-  postcount: PIntegerArray; // postcount[texture->width]
   patch: Ptexpatch_t;
-  realpatch: Ppatch_t;
-  x: integer;
-  x1: integer;
-  x2: integer;
-  i: integer;
   collump: PSmallIntArray;
   colofs: PIntegerArray;  //PWordArray; // 64k
-  col: Pcolumn_t;
-  cofs: PIntegerArray;
-  csize: integer;
-  pat: integer;
+  info: TRendererTextureInfo;
+  lookuplump: TArray<Integer>;
+  lookupofs: TArray<Integer>;
+  i: integer;
 begin
+  if texture_lookup = nil then
+    I_Error('R_GenerateLookup(): the texture lookup is not configured (ComposeEngine was not called)');
+
   texture := textures[texnum];
 
   // Composited texture not created yet.
@@ -575,107 +593,40 @@ begin
   collump := texturecolumnlump[texnum];
   colofs := texturecolumnofs[texnum];
 
+  // The placement of the patches on the texture
+  info.Number := texnum;
+  info.Name := char8tostring(texture.name);
+  info.Width := texture.width;
+  info.Height := texture.height;
+  SetLength(info.Patches, texture.patchcount);
+  patch := @texture.patches[0];
+  for i := 0 to texture.patchcount - 1 do
+  begin
+    info.Patches[i].Lump := patch.patch;
+    info.Patches[i].OriginX := patch.originx;
+    inc(patch);
+  end;
+
+  // The columns that the library does not write keep what they have now
+  SetLength(lookuplump, texture.width);
+  SetLength(lookupofs, texture.width);
+  for i := 0 to texture.width - 1 do
+  begin
+    lookuplump[i] := collump[i];
+    lookupofs[i] := colofs[i];
+  end;
+
   // Now count the number of columns
   //  that are covered by more than one patch.
   // Fill in the lump / offset, so columns
   //  with only a single patch are all done.
-  patchcount := mallocz(texture.width * SizeOf(integer));
-  postcount := mallocz(texture.width * SizeOf(integer));
-  patch := @texture.patches[0];
+  texturecompositesize[texnum] := texture_lookup.Build(info, lookuplump, lookupofs);
 
-  for i := 0 to texture.patchcount - 1 do
+  for i := 0 to texture.width - 1 do
   begin
-    pat := patch.patch;
-{$IFDEF DOOM}
-    if (pat < 0) or (W_LumpFlags(pat) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
-    begin
-      inc(patch);
-      Continue;
-    end;
-{$ENDIF}
-    realpatch := W_CacheLumpNum(pat, PU_STATIC);
-    x1 := patch.originx;
-    x2 := x1 + realpatch.width;
-    cofs := PIntegerArray(@realpatch.columnofs[-x1]);
-
-    if x1 < 0 then
-      x := 0
-    else
-      x := x1;
-
-    if x2 > texture.width then
-      x2 := texture.width;
-
-    while x < x2 do
-    begin
-      col := Pcolumn_t(integer(realpatch) + cofs[x]);
-      while col.topdelta <> $ff do
-      begin
-        postcount[x] := postcount[x] + 1;
-        col := Pcolumn_t(integer(col) + col.length + 4);
-      end;
-      patchcount[x] := patchcount[x] + 1;
-      collump[x] := pat;
-      colofs[x] := cofs[x] + 3;
-      inc(x);
-    end;
-    Z_ChangeTag(realpatch, PU_CACHE);
-    inc(patch);
+    collump[i] := lookuplump[i];
+    colofs[i] := lookupofs[i];
   end;
-
-  if texture.patchcount > 1 then
-  begin
-
-    csize := 0;
-    for x := 0 to texture.width - 1 do
-    begin
-      if patchcount[x] <= 0 then
-      begin
-        I_DevWarning('R_GenerateLookup(): column (%d) without a patch (%s, column=%d)'#13#10, [x, char8tostring(texture.name), x]);
-        collump[x] := -2;
-      end
-      else
-      begin
-        // Use the cached block.
-        collump[x] := -1;
-        colofs[x] := csize + 3;
-        csize := csize + 4 * postcount[x] + 1;
-      end;
-      csize := csize + texture.height;
-    end;
-    texturecompositesize[texnum] := csize;
-
-  end
-  else
-  begin
-
-    for x := 0 to texture.width - 1 do
-    begin
-      if patchcount[x] = 0 then
-      begin
-        I_DevWarning('R_GenerateLookup(): column (%d) without a patch (%s)'#13#10, [x, char8tostring(texture.name)]);
-        collump[x] := -2;
-      end
-      else if patchcount[x] > 1 then
-      begin
-        // Use the cached block.
-        collump[x] := -1;
-        colofs[x] := texturecompositesize[texnum];
-
-        if texturecompositesize[texnum] > $10000 - texture.height then
-          I_DevWarning('R_GenerateLookup(): texture %d is > 64k'#13#10, [texnum]);
-
-        texturecompositesize[texnum] := texturecompositesize[texnum] + texture.height;
-      end;
-    end;
-
-  end;
-
-  if texturecompositesize[texnum] > $10000 - texture.height then
-    I_DevWarning('R_GenerateLookup(): texture %d is > 64k'#13#10, [texnum]);
-
-  memfree(pointer(patchcount), texture.width * SizeOf(integer));
-  memfree(pointer(postcount), texture.width * SizeOf(integer));
 end;
 
 //

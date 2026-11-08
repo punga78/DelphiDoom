@@ -97,7 +97,9 @@ uses
   p_plats,
   p_tick,
   p_setup,
-  p_floor;
+  p_floor,
+  DelphiDoom.Thinkers.Door.Types,
+  DelphiDoom.Engine.Door.Thinker;
 
 //==============================================================================
 //
@@ -107,193 +109,12 @@ uses
 //
 //==============================================================================
 procedure T_VerticalDoor(door: Pvldoor_t);
-var
-  res: result_e;
 begin
-  case door.direction of
-    0:
-      begin
-  // WAITING
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            blazeRaise,
-            genBlazeRaise:
-              begin
-                door.direction := -1; // time to go back down
-                S_StartSound(@door.sector.soundorg, Ord(sfx_bdcls));
-              end;
-            normal,
-            genRaise:
-              begin
-                door.direction := -1; // time to go back down
-                S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
-              end;
-            close30ThenOpen,
-            genCdO:
-              begin
-                door.direction := 1;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-              end;
-            genBlazeCdO:
-              begin
-                door.direction := 1;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
-              end;
-          end;
-        end;
-      end;
-    2:
-      begin
-  //  INITIAL WAIT
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            raiseIn5Mins:
-              begin
-                door.direction := 1;
-                door._type := normal;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-              end;
-          end;
-        end;
-      end;
-
-   -1:
-      begin
-  // DOWN
-        res := T_MovePlane(door.sector, door.speed, door.sector.floorheight,
-                  false, 1, door.direction);
-        if res = pastdest then
-        begin
-          case door._type of
-            blazeRaise,
-            blazeClose,
-            genBlazeRaise,
-            genBlazeClose:
-              begin
-                door.sector.ceilingdata := nil;
-                P_RemoveThinker(@door.thinker); // unlink and free
-                if compatibilitymode then
-                  S_StartSound(@door.sector.soundorg, Ord(sfx_bdcls));
-              end;
-            normal,
-            close,
-            genRaise,
-            genClose:
-              begin
-                door.sector.ceilingdata := nil;
-                P_RemoveThinker(@door.thinker);  // unlink and free
-              end;
-            close30ThenOpen:
-              begin
-                door.direction := 0;
-                door.topcountdown := TICRATE * 30;
-              end;
-            genCdO,
-            genBlazeCdO:
-              begin
-                door.direction := 0;
-                door.topcountdown := door.topwait; // jff 5/8/98 insert delay
-              end;
-          end;
-
-          if not compatibilitymode then
-            if door.line <> nil then
-              if door.line.tag <> 0 then
-              begin
-                if (door.line.special > CGENLOCKEDBASE) and
-                   (door.line.special and 6 = 6) then //jff 3/9/98 all manual doors
-                  EV_TurnTagLightsOff(door.line)
-                else
-                  case door.line.special of
-                    1,
-                    26,
-                    27,
-                    28,
-                    31,
-                    32,
-                    33,
-                    34,
-                    117,
-                    118:
-                      EV_TurnTagLightsOff(door.line);
-                  end;
-              end;
-        end
-        else if res = crushed then
-        begin
-          case door._type of
-            blazeClose,
-            close,    // DO NOT GO BACK UP!
-            genBlazeClose,
-            genClose:
-              begin
-              end;
-          else
-            begin
-              door.direction := 1;
-              S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-            end;
-          end;
-        end;
-      end;
-    1:
-      begin
-  // UP
-        res := T_MovePlane(door.sector, door.speed, door.topheight,
-                  false, 1, door.direction);
-        if res = pastdest then
-        begin
-          case door._type of
-            blazeRaise,
-            normal,
-            genRaise,
-            genBlazeRaise:
-              begin
-                door.direction := 0; // wait at top
-                door.topcountdown := door.topwait;
-              end;
-            close30ThenOpen,
-            blazeOpen,
-            open,
-            genBlazeOpen,
-            genOpen,
-            genCdO,
-            genBlazeCdO:
-              begin
-                door.sector.ceilingdata := nil;
-                P_RemoveThinker(@door.thinker); // unlink and free
-              end;
-          end;
-
-          if not compatibilitymode then
-            if door.line <> nil then
-              if door.line.tag <> 0 then
-              begin
-                if (door.line.special > CGENLOCKEDBASE) and
-                   (door.line.special and 6 = 6) then //jff 3/9/98 all manual doors
-                  EV_LightTurnOn(door.line, 0)
-                else
-                  case door.line.special of
-                    1,
-                    26,
-                    27,
-                    28,
-                    31,
-                    32,
-                    33,
-                    34,
-                    117,
-                    118:
-                      EV_LightTurnOn(door.line, 0);
-                  end;
-              end;
-
-        end;
-      end;
+  // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+  if DoorTickClassic(door) then
+  begin
+    door.sector.ceilingdata := nil;
+    P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -395,57 +216,9 @@ begin
 
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
-    door._type := _type;
-    door.topwait := VDOORWAIT;
-    door.speed := VDOORSPEED;
     door.line := nil;
-
-    case _type of
-      blazeClose:
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-          door.speed := VDOORSPEED * 4;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_bdcls));
-        end;
-
-      close:
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
-        end;
-
-      close30ThenOpen:
-        begin
-          door.topheight := sec.ceilingheight;
-          door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
-        end;
-
-      blazeRaise,
-      blazeOpen:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.speed := VDOORSPEED * 4;
-          if door.topheight <> sec.ceilingheight then
-            S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
-        end;
-
-      normal,
-      open:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          if door.topheight <> sec.ceilingheight then
-            S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-        end;
-    end;
+    // direction, top, speed and sound of the kind: Libs\Thinkers
+    DoorInitTagged(door, _type, VDOORSPEED, VDOORWAIT, false);
   end;
 end;
 
@@ -461,6 +234,7 @@ var
   door: Pvldoor_t;
   plat: Pplat_t;
   sd: integer;
+  action: TDoorRetrigger;
 begin
   // Check for locks
   player := thing.player;
@@ -528,20 +302,13 @@ begin
   if P_SectorActive(ceiling_special, sec) then
   begin
     door := sec.ceilingdata;
-    case line.special of
-       1, // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
-      26,
-      27,
-      28,
-     117:
-        begin
-          if door.direction = -1 then
-            door.direction := 1 // go back up
-          else
+    if DoorRetrigger(line.special, door.direction, thing.player <> nil, false, action) then
+    begin
+      case action of
+        TDoorRetrigger.GoUp:
+          door.direction := 1; // go back up
+        TDoorRetrigger.GoDown:
           begin
-            if thing.player = nil then
-              exit; // JDC: bad guys never close doors
-
             // JVAL: 20210203 - From chocolate-doom
             // When is a door not a door?
             // In Vanilla, door->direction is set, even though
@@ -560,21 +327,9 @@ begin
               plat.wait := -1;
             end;
           end;
-          exit;
-        end;
+      end;
+      exit;
     end;
-  end;
-
-  // for proper sound
-  case line.special of
-   117, // BLAZING DOOR RAISE
-   118: // BLAZING DOOR OPEN
-      S_StartSound(@sec.soundorg, Ord(sfx_bdopn));
-     1, // NORMAL DOOR SOUND
-    31:
-      S_StartSound(@sec.soundorg, Ord(sfx_doropn));
-  else // LOCKED DOOR SOUND
-    S_StartSound(@sec.soundorg, Ord(sfx_doropn));
   end;
 
   // new door thinker
@@ -583,40 +338,12 @@ begin
   sec.ceilingdata := door;
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 1;
-  door.speed := VDOORSPEED;
-  door.topwait := VDOORWAIT;
   door.line := nil;
 
-  case line.special of
-     1,
-    26,
-    27,
-    28:
-      door._type := normal;
-    31,
-    32,
-    33,
-    34:
-      begin
-        door._type := open;
-        line.special := 0;
-      end;
-   117: // blazing door raise
-      begin
-        door._type := blazeRaise;
-        door.speed := VDOORSPEED * 4;
-      end;
-   118: // blazing door open
-      begin
-        door._type := blazeOpen;
-        line.special := 0;
-        door.speed := VDOORSPEED * 4;
-      end;
-  end;
-
-  // find the top and bottom of the movement range
-  door.topheight := P_FindLowestCeilingSurrounding(sec) - 4 * FRACUNIT;
+  // kind, speed, top and sound (blazing doors and locked doors have their own)
+  // of the special of the line: Libs\Thinkers
+  if DoorInitManual(door, line.special, VDOORSPEED, VDOORWAIT, false) then
+    line.special := 0;
 end;
 
 //==============================================================================
@@ -638,11 +365,8 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 0;
-  door._type := normal;
-  door.speed := VDOORSPEED;
-  door.topcountdown := 30 * TICRATE;
   door.line := nil; // remember line that triggered us
+  DoorInitCloseIn30(door);
 end;
 
 //==============================================================================
@@ -664,13 +388,8 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 2;
-  door._type := raiseIn5Mins;
-  door.speed := VDOORSPEED;
-  door.topheight := P_FindLowestCeilingSurrounding(sec) - 4 * FRACUNIT;
-  door.topwait := VDOORWAIT;
-  door.topcountdown := 5 * 60 * TICRATE;
   door.line := nil; // remember line that triggered us
+  DoorInitRaiseIn5Mins(door);
 end;
 
 end.

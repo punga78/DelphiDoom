@@ -21,6 +21,7 @@ uses
   DelphiDoom.Net.Intf,
   DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Net.Services;
 
 type
@@ -38,6 +39,7 @@ type
     FGame: IGameContext;
     FConsole: IEngineConsole;
     FEndScreenTick: TProc;
+    FShutdown: IEngineShutdown;
     FServices: TEngineNetServices;
     FServicesReference: IInterface;
     FSync: INetTicSync;
@@ -46,15 +48,17 @@ type
     procedure CheckStarted;
     procedure ClearDuplicatedCommand(const APlayer, ABuffer: Integer);
     procedure ArbitrateStart;
-    class procedure Fail(const AException: Exception); static;
+    procedure Fail(const AException: Exception);
   public
     /// <param name="AEndScreenTick">
     ///   The tic of the end screen (ENDOOM), run with the tickers of the menu and the console;
     ///   an empty procedure in Hexen, that has no end screen
     /// </param>
+    /// <param name="AShutdown">Stops the game on a network error (I_Error)</param>
     /// <remarks>Raises EArgumentNilException if one of them is nil</remarks>
     constructor Create(const AClock: IClock; const ALog: ILog; const AGame: IGameContext;
-      const AConsole: IEngineConsole; const AEndScreenTick: TProc);
+      const AConsole: IEngineConsole; const AEndScreenTick: TProc;
+      const AShutdown: IEngineShutdown);
     procedure Start;
     procedure Shutdown;
     procedure Update;
@@ -106,9 +110,13 @@ const
 { TEngineNetGame }
 
 constructor TEngineNetGame.Create(const AClock: IClock; const ALog: ILog;
-  const AGame: IGameContext; const AConsole: IEngineConsole; const AEndScreenTick: TProc);
+  const AGame: IGameContext; const AConsole: IEngineConsole; const AEndScreenTick: TProc;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(AClock) then
     raise EArgumentNilException.Create(SClockIsNil);
   if not Assigned(ALog) then
@@ -127,18 +135,18 @@ begin
 end;
 
 // The library does not stop the program: its errors end here
-class procedure TEngineNetGame.Fail(const AException: Exception);
+procedure TEngineNetGame.Fail(const AException: Exception);
 begin
   if AException is ENetVersionMismatchException then
-    I_Error(S_ERR_DIF_NET)
+    FShutdown.Fail(S_ERR_DIF_NET)
   else
-    I_Error('%s', [AException.Message]);
+    FShutdown.Fail(AException.Message);
 end;
 
 procedure TEngineNetGame.CheckStarted;
 begin
   if FSync = nil then
-    I_Error(SNotStarted);
+    FShutdown.Fail(SNotStarted);
 end;
 
 procedure TEngineNetGame.Update;
@@ -283,7 +291,7 @@ begin
   displayplayer := net_consoleplayer;
   ticdup := net_ticdup;
 
-  FServices := TEngineNetServices.Create;
+  FServices := TEngineNetServices.Create(FClock, FShutdown);
   FServicesReference := FServices;
 
   try
@@ -307,7 +315,7 @@ begin
     end;
   except
     on E: ENetVersionMismatchException do
-      I_Error(SArbitrateFailed + S_ERR_DIF_NET);
+      FShutdown.Fail(SArbitrateFailed + S_ERR_DIF_NET);
     on E: ENetException do
       Fail(E);
   end;
@@ -435,7 +443,7 @@ begin
         FEndScreenTick;
         M_Ticker;
         FConsole.Tick;
-        interpolationstarttime := I_GetTime * $10000; // I_GetFracTime;
+        interpolationstarttime := FClock.Steps(TICRATE) * $10000; // I_GetFracTime;
         G_Ticker;
         Inc(g_game.gametic);
 

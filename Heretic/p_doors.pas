@@ -88,7 +88,9 @@ uses
   h_strings,
   p_tick,
   p_setup,
-  p_floor;
+  p_floor,
+  DelphiDoom.Thinkers.Door.Types,
+  DelphiDoom.Engine.Door.Thinker;
 
 //==============================================================================
 //
@@ -98,106 +100,12 @@ uses
 //
 //==============================================================================
 procedure T_VerticalDoor(door: Pvldoor_t);
-var
-  res: result_e;
 begin
-  case door.direction of
-    0:
-      begin
-  // WAITING
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            normal:
-              begin
-                door.direction := -1; // time to go back down
-                S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-              end;
-            close30ThenOpen:
-              begin
-                door.direction := 1;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-              end;
-          end;
-        end;
-      end;
-    2:
-      begin
-  //  INITIAL WAIT
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            raiseIn5Mins:
-              begin
-                door.direction := 1;
-                door._type := normal;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-              end;
-          end;
-        end;
-      end;
-
-   -1:
-      begin
-  // DOWN
-        res := T_MovePlane(door.sector, door.speed, door.sector.floorheight,
-                  false, 1, door.direction);
-        if res = pastdest then
-        begin
-          case door._type of
-            normal,
-            close:
-              begin
-                door.sector.specialdata := nil;
-                P_RemoveThinker(@door.thinker);  // unlink and free
-                S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
-              end;
-            close30ThenOpen:
-              begin
-                door.direction := 0;
-                door.topcountdown := TICRATE * 30;
-              end;
-          end;
-        end
-        else if res = crushed then
-        begin
-          case door._type of
-            close:    // DO NOT GO BACK UP!
-              begin
-              end;
-          else
-            begin
-              door.direction := 1;
-              S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-            end;
-          end;
-        end;
-      end;
-    1:
-      begin
-  // UP
-        res := T_MovePlane(door.sector, door.speed, door.topheight,
-                  false, 1, door.direction);
-        if res = pastdest then
-        begin
-          case door._type of
-            normal:
-              begin
-                door.direction := 0; // wait at top
-                door.topcountdown := door.topwait;
-              end;
-            close30ThenOpen,
-            open:
-              begin
-                door.sector.specialdata := nil;
-                P_RemoveThinker(@door.thinker); // unlink and free
-                S_StopSound(Pmobj_t(@door.sector.soundorg));
-              end;
-          end;
-        end;
-      end;
+  // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+  if DoorTickClassic(door) then
+  begin
+    door.sector.specialdata := nil;
+    P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -236,36 +144,8 @@ begin
 
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
-    door._type := _type;
-    door.topwait := VDOORWAIT;
-    door.speed := speed;
-
-    case _type of
-      close:
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-        end;
-
-      close30ThenOpen:
-        begin
-          door.topheight := sec.ceilingheight;
-          door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-        end;
-
-      normal,
-      open:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          if door.topheight <> sec.ceilingheight then
-            S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
-        end;
-    end;
+    // direction, top, speed and sound of the kind: Libs\Thinkers
+    DoorInitTagged(door, _type, speed, VDOORWAIT, false);
   end;
 end;
 
@@ -280,6 +160,7 @@ var
   sec: Psector_t;
   door: Pvldoor_t;
   side: integer;
+  action: TDoorRetrigger;
 begin
   side := 0;  // only front sides can be used
 
@@ -334,27 +215,17 @@ begin
   if sec.specialdata <> nil then
   begin
     door := sec.specialdata;
-    case line.special of
-       1, // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
-      26,
-      27,
-      28:
-        begin
-          if door.direction = -1 then
-            door.direction := 1 // go back up
-          else
-          begin
-            if thing.player = nil then
-              exit; // JDC: bad guys never close doors
-
-            door.direction := -1; // start going down immediately
-          end;
-          exit;
-        end;
+    if DoorRetrigger(line.special, door.direction, thing.player <> nil, false, action) then
+    begin
+      case action of
+        TDoorRetrigger.GoUp:
+          door.direction := 1; // go back up
+        TDoorRetrigger.GoDown:
+          door.direction := -1; // start going down immediately
+      end;
+      exit;
     end;
   end;
-
-  S_StartSound(@sec.soundorg, Ord(sfx_doropn));
 
   // new door thinker
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
@@ -362,29 +233,10 @@ begin
   sec.specialdata := door;
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 1;
-  door.speed := VDOORSPEED;
-  door.topwait := VDOORWAIT;
 
-  case line.special of
-     1,
-    26,
-    27,
-    28:
-      door._type := normal;
-    31,
-    32,
-    33,
-    34:
-      begin
-        door._type := open;
-        line.special := 0;
-      end;
-  end;
-
-  // find the top and bottom of the movement range
-  door.topheight := P_FindLowestCeilingSurrounding(sec);
-  door.topheight := door.topheight - 4 * FRACUNIT;
+  // kind, speed, top and sound of the special of the line: Libs\Thinkers
+  if DoorInitManual(door, line.special, VDOORSPEED, VDOORWAIT, false) then
+    line.special := 0;
 end;
 
 //==============================================================================
@@ -406,10 +258,7 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 0;
-  door._type := normal;
-  door.speed := VDOORSPEED;
-  door.topcountdown := 30 * TICRATE;
+  DoorInitCloseIn30(door);
 end;
 
 //==============================================================================
@@ -431,13 +280,7 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 2;
-  door._type := raiseIn5Mins;
-  door.speed := VDOORSPEED;
-  door.topheight := P_FindLowestCeilingSurrounding(sec);
-  door.topheight := door.topheight - 4 * FRACUNIT;
-  door.topwait := VDOORWAIT;
-  door.topcountdown := 5 * 60 * TICRATE;
+  DoorInitRaiseIn5Mins(door);
 end;
 
 end.

@@ -17,6 +17,7 @@ uses
   DelphiDoom.Blockmap.Intf,
   DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -34,6 +35,7 @@ type
     FCommandLine: ICommandLine;
     FLumps: IEngineLumps;
     FZone: IZoneAllocator;
+    FShutdown: IEngineShutdown;
     function BuildFromLines: TBlockmapData;
     function ReadData(ALump: Integer): TBlockmapData;
     procedure StoreData(const AData: TBlockmapData);
@@ -41,9 +43,10 @@ type
     /// <param name="ACommandLine">Where -blockmap (always build the blockmap) is looked for</param>
     /// <param name="ALumps">Gives the lump BLOCKMAP</param>
     /// <param name="AZone">The memory of the level</param>
+    /// <param name="AShutdown">Stops the game when the blockmap can not be made (I_Error)</param>
     constructor Create(const ABuilder: IBlockmapBuilder; const ALumpReader: IBlockmapLumpReader;
       const ASlimeTrails: ISlimeTrailRemover; const ACommandLine: ICommandLine;
-      const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
     procedure Load(ALump: Integer);
     /// <summary>
     ///   Slime trails are inherent to Doom's coordinate system: a node builder cannot avoid them
@@ -61,7 +64,6 @@ uses
   System.SysUtils,
   d_delphi,
   m_fixed,
-  i_system,
   r_defs,
   p_setup,
   DelphiDoom.Zone.Types;
@@ -70,9 +72,13 @@ uses
 
 constructor TEngineLevelBlockmap.Create(const ABuilder: IBlockmapBuilder;
   const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover;
-  const ACommandLine: ICommandLine; const ALumps: IEngineLumps; const AZone: IZoneAllocator);
+  const ACommandLine: ICommandLine; const ALumps: IEngineLumps; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(ACommandLine) then
     raise EArgumentNilException.Create('ACommandLine');
   FCommandLine := ACommandLine;
@@ -138,7 +144,7 @@ begin
       Result := BuildFromLines;
   except
     on E: EBlockmapException do
-      I_Error('P_LoadBlockMap(): %s', [E.Message]);
+      FShutdown.Fail('P_LoadBlockMap(): ' + E.Message);
   end;
 end;
 
@@ -203,7 +209,7 @@ begin
     FSlimeTrails.Remove(LVertexes, LSegs);
   except
     on E: EBlockmapException do
-      I_Error('P_RemoveSlimeTrails(): %s', [E.Message]);
+      FShutdown.Fail('P_RemoveSlimeTrails(): ' + E.Message);
   end;
 
   for LIndex := 0 to numvertexes - 1 do

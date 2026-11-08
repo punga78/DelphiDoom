@@ -144,7 +144,9 @@ uses
   p_setup,
   p_floor,
   w_wad,
-  z_zone;
+  z_zone,
+  DelphiDoom.Thinkers.Door.Types,
+  DelphiDoom.Engine.Door.Thinker;
 
 //==============================================================================
 //
@@ -154,225 +156,12 @@ uses
 //
 //==============================================================================
 procedure T_VerticalDoor(door: Pvldoor_t);
-var
-  res1, res2: result_e;
 begin
-  case door.direction of
-    0:
-      begin
-  // WAITING
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            vld_blazeRaise,
-            vld_genBlazeRaise:
-              begin
-                door.direction := -1; // time to go back down
-                S_StartSound(@door.sector.soundorg, Ord(sfx_bdcls));
-              end;
-            vld_normal,
-            vld_genRaise:
-              begin
-                door.direction := -1; // time to go back down
-                // villsa [STRIFE] closesound added
-                S_StartSound(@door.sector.soundorg, door.closesound);
-              end;
-
-            // villsa [STRIFE]
-            vld_shopClose:
-              begin
-                door.direction := 1;
-                door.speed := 2 * FRACUNIT;
-                S_StartSound(@door.sector.soundorg, door.opensound);
-              end;
-
-            vld_close30ThenOpen,
-            vld_genCdO:
-              begin
-                door.direction := 1;
-                // villsa [STRIFE] opensound added
-                S_StartSound(@door.sector.soundorg, door.opensound);
-              end;
-            vld_genBlazeCdO:
-              begin
-                door.direction := 1;
-                S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
-              end;
-          end;
-        end;
-      end;
-    2:
-      begin
-  //  INITIAL WAIT
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            vld_raiseIn5Mins:
-              begin
-                door.direction := 1;
-                door._type := vld_normal;
-                S_StartSound(@door.sector.soundorg, door.opensound);
-              end;
-          end;
-        end;
-      end;
-
-        // villsa [STRIFE]
-   -2:
-      begin
-        // SPLIT
-        res1 := T_MovePlane(door.sector, door.speed, door.topheight, false, 1, 1);
-        res2 := T_MovePlane(door.sector, door.speed, door.topwait, false, 0, -1);
-
-        if (res1 = pastdest) and (res2 = pastdest) then
-        begin
-            door.sector.ceilingdata := nil;
-            P_RemoveThinker(@door.thinker);  // unlink and free
-        end;
-      end;
-
-   -1:
-      begin
-  // DOWN
-        res1 := T_MovePlane(door.sector, door.speed, door.sector.floorheight,
-                  false, 1, door.direction);
-        if res1 = pastdest then
-        begin
-          case door._type of
-            vld_blazeRaise,
-            vld_blazeClose,
-            vld_genBlazeRaise,
-            vld_genBlazeClose,
-            vld_normal,
-            vld_close,
-            vld_genRaise,
-            vld_genClose:
-              begin
-                door.sector.ceilingdata := nil;
-                P_RemoveThinker(@door.thinker); // unlink and free
-              end;
-
-            vld_close30ThenOpen:
-              begin
-                door.direction := 0;
-                door.topcountdown := TICRATE * 30;
-              end;
-
-            vld_genCdO,
-            vld_genBlazeCdO:
-              begin
-                door.direction := 0;
-                door.topcountdown := door.topwait; // jff 5/8/98 insert delay
-              end;
-
-                // villsa [STRIFE]
-            vld_shopClose:
-              begin
-                door.direction := 0;
-                door.topcountdown := TICRATE * 120;
-              end;
-
-          end;
-
-          if not compatibilitymode then
-            if door.line <> nil then
-              if door.line.tag <> 0 then
-              begin
-                if (door.line.special > CGENLOCKEDBASE) and
-                   (door.line.special and 6 = 6) then //jff 3/9/98 all manual doors
-                  EV_TurnTagLightsOff(door.line)
-                else
-                  case door.line.special of
-                    1,
-                    26,
-                    27,
-                    28,
-                    31,
-                    32,
-                    33,
-                    34,
-                    117,
-                    118:
-                      EV_TurnTagLightsOff(door.line);
-                  end;
-              end;
-        end
-        else if res1 = crushed then
-        begin
-          case door._type of
-            vld_blazeClose,
-            vld_close,      // DO NOT GO BACK UP!
-            vld_shopClose,  // villsa [STRIFE]
-            vld_genBlazeClose,
-            vld_genClose:
-              begin
-              end;
-          else
-            begin
-              door.direction := 1;
-              // villsa [STRIFE] opensound added
-              S_StartSound(@door.sector.soundorg, door.opensound);
-            end;
-          end;
-        end;
-      end;
-    1:
-      begin
-  // UP
-        res1 := T_MovePlane(door.sector, door.speed, door.topheight,
-                  false, 1, door.direction);
-        if res1 = pastdest then
-        begin
-          case door._type of
-            vld_blazeRaise,
-            vld_normal,
-            vld_genRaise,
-            vld_genBlazeRaise:
-              begin
-                door.direction := 0; // wait at top
-                door.topcountdown := door.topwait;
-              end;
-            vld_close30ThenOpen,
-            vld_blazeOpen,
-            vld_open,
-            vld_shopClose,  // villsa [STRIFE]
-            vld_genBlazeOpen,
-            vld_genOpen,
-            vld_genCdO,
-            vld_genBlazeCdO:
-              begin
-                door.sector.ceilingdata := nil;
-                P_RemoveThinker(@door.thinker); // unlink and free
-              end;
-          end;
-
-          if not compatibilitymode then
-            if door.line <> nil then
-              if door.line.tag <> 0 then
-              begin
-                if (door.line.special > CGENLOCKEDBASE) and
-                   (door.line.special and 6 = 6) then //jff 3/9/98 all manual doors
-                  EV_LightTurnOn(door.line, 0)
-                else
-                  case door.line.special of
-                    1,
-                    26,
-                    27,
-                    28,
-                    31,
-                    32,
-                    33,
-                    34,
-                    117,
-                    118:
-                      EV_LightTurnOn(door.line, 0);
-                  end;
-              end;
-
-        end;
-      end;
+  // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+  if DoorTickClassic(door) then
+  begin
+    door.sector.ceilingdata := nil;
+    P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -700,91 +489,10 @@ begin
 
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
-    door._type := _type;
-    door.topwait := VDOORWAIT;
-    door.speed := VDOORSPEED;
     door.line := nil;
     P_SoundNumForDoor(door);    // villsa [STRIFE] set door sounds
-
-    case _type of
-      // villsa [STRIFE] new door type
-      vld_splitOpen:
-        begin
-          door.direction := -2;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.speed := FRACUNIT;
-          // yes, it using topwait to get the floor height
-          door.topwait := P_FindLowestFloorSurrounding(sec);
-          if door.topheight = sec.ceilingheight then
-            continue;
-
-          S_StartSound(@door.sector.soundorg, door.opensound);
-        end;
-
-      // villsa [STRIFE] new door type
-      vld_splitRaiseNearest:
-        begin
-          door.direction := -2;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.speed := FRACUNIT;
-          // yes, it using topwait to get the floor height
-          door.topwait := P_FindHighestFloorSurrounding(sec);
-          if door.topheight = sec.ceilingheight then
-            continue;
-
-          S_StartSound(@door.sector.soundorg, door.opensound);
-        end;
-
-      vld_blazeClose,
-      vld_shopClose:     // villsa [STRIFE]
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-          door.speed := VDOORSPEED * 4;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_bdcls));
-        end;
-
-      vld_close:
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-          // villsa [STRIFE] set door sounds
-          S_StartSound(@door.sector.soundorg, door.opensound);
-        end;
-
-      vld_close30ThenOpen:
-        begin
-          door.topheight := sec.ceilingheight;
-          door.direction := -1;
-          // villsa [STRIFE] set door sounds
-          S_StartSound(@door.sector.soundorg, door.closesound);
-        end;
-
-      vld_blazeRaise,
-      vld_blazeOpen:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.speed := VDOORSPEED * 4;
-          if door.topheight <> sec.ceilingheight then
-            S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
-        end;
-
-      vld_normal,
-      vld_open:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          if door.topheight <> sec.ceilingheight then
-            S_StartSound(@door.sector.soundorg, door.opensound);
-        end;
-    end;
+    // direction, top, speed and sound of the kind: Libs\Thinkers
+    DoorInitTagged(door, _type, VDOORSPEED, VDOORWAIT, false);
   end;
 end;
 
@@ -854,6 +562,7 @@ var
   player: Pplayer_t;
   sec: Psector_t;
   door: Pvldoor_t;
+  action: TDoorRetrigger;
 begin
   // Check for locks
   player := thing.player;
@@ -1073,35 +782,16 @@ begin
     // over how to move the door. They should have added a default return if
     // they weren't going to handle this unconditionally...
     // JVAL: Added special 221 from svstrife
-    case line.special of
-       1, // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
-      26,
-      27,
-      28,
-     117,
-     159,       // villsa
-     160,       // haleyjd
-     161,       // villsa
-     166,       // villsa
-     169,       // villsa
-     170,       // villsa
-     190,       // villsa
-     213,       // villsa
-     221,       // kaiser // JVAL: added from svstrife 1.4
-     232:       // villsa
-
-        begin
-          if door.direction = -1 then
-            door.direction := 1 // go back up
-          else
-          begin
-            if thing.player = nil then
-              exit; // JDC: bad guys never close doors
-
-            door.direction := -1; // start going down immediately
-          end;
-          exit;
-        end;
+    // (the list of the lines that reuse the door is in Libs\Thinkers)
+    if DoorRetrigger(line.special, door.direction, thing.player <> nil, false, action) then
+    begin
+      case action of
+        TDoorRetrigger.GoUp:
+          door.direction := 1; // go back up
+        TDoorRetrigger.GoDown:
+          door.direction := -1; // start going down immediately
+      end;
+      exit;
     end;
   end;
 
@@ -1111,61 +801,13 @@ begin
   sec.ceilingdata := door;
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 1;
-  door.speed := VDOORSPEED;
-  door.topwait := VDOORWAIT;
   door.line := nil;
   P_SoundNumForDoor(door);   // haleyjd 09/15/10: [STRIFE] Get door sounds
 
-  // for proper sound - [STRIFE] - verified complete
-  case line.special of
-    117,  // BLAZING DOOR RAISE
-    118:  // BLAZING DOOR OPEN
-        S_StartSound(@sec.soundorg, Ord(sfx_bdopn));
-  else    // NORMAL DOOR SOUND
-    S_StartSound(@sec.soundorg, door.opensound);
-  end;
-
-    // haleyjd: [STRIFE] - verified all.
-  case line.special of
-     1,
-    26,
-    27,
-    28:
-      door._type := vld_normal;
-
-    31,
-    32,
-    33,
-    34,
-   156,   // villsa [STRIFE]
-   157,   // villsa [STRIFE]
-   158:   // villsa [STRIFE]
-      begin
-        door._type := vld_open;
-        line.special := 0;
-      end;
-
-   117: // blazing door raise
-      begin
-        door._type := vld_blazeRaise;
-        door.speed := VDOORSPEED * 4;
-      end;
-
-   118: // blazing door open
-      begin
-        door._type := vld_blazeOpen;
-        line.special := 0;
-        door.speed := VDOORSPEED * 4;
-      end;
-  else
-    // haleyjd: [STRIFE] pretty important to have this here!
-    door._type := vld_normal;
-
-  end;
-
-  // find the top and bottom of the movement range
-  door.topheight := P_FindLowestCeilingSurrounding(sec) - 4 * FRACUNIT;
+  // kind (pretty important to have a default one), speed, top and sound of the
+  // special of the line: Libs\Thinkers
+  if DoorInitManual(door, line.special, VDOORSPEED, VDOORWAIT, false) then
+    line.special := 0;
 end;
 
 //==============================================================================
@@ -1187,11 +829,8 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 0;
-  door._type := vld_normal;
-  door.speed := VDOORSPEED;
-  door.topcountdown := 30 * TICRATE;
   door.line := nil; // remember line that triggered us
+  DoorInitCloseIn30(door);
 end;
 
 //==============================================================================
@@ -1213,13 +852,8 @@ begin
 
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
-  door.direction := 2;
-  door._type := vld_raiseIn5Mins;
-  door.speed := VDOORSPEED;
-  door.topheight := P_FindLowestCeilingSurrounding(sec) - 4 * FRACUNIT;
-  door.topwait := VDOORWAIT;
-  door.topcountdown := 5 * 60 * TICRATE;
   door.line := nil; // remember line that triggered us
+  DoorInitRaiseIn5Mins(door);
 end;
 
 // villsa [STRIFE] resurrected sliding doors

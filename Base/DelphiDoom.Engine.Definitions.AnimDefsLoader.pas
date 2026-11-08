@@ -14,6 +14,7 @@ interface
 uses
   DelphiDoom.Definitions.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Definitions.Intf;
 
 type
@@ -26,12 +27,15 @@ type
   strict private
     FParser: IDefAnimDefsParser;
     FLumps: IEngineLumps;
+    FShutdown: IEngineShutdown;
   public
     /// <summary>
     ///   The parser leaves out the animations of flats and textures that do not exist; ALumps
-    ///   gives the lump ANIMDEFS
+    ///   gives the lump ANIMDEFS; AShutdown stops the game on a lump that can not be read
+    ///   (I_Error)
     /// </summary>
-    constructor Create(const AParser: IDefAnimDefsParser; const ALumps: IEngineLumps);
+    constructor Create(const AParser: IDefAnimDefsParser; const ALumps: IEngineLumps;
+      const AShutdown: IEngineShutdown);
     procedure Load;
   end;
 
@@ -39,7 +43,6 @@ implementation
 
 uses
   System.SysUtils,
-  i_system,
   r_data,
   p_animdefs,
   DelphiDoom.Definitions.Types;
@@ -50,15 +53,18 @@ const
 { TEngineAnimDefsLoader }
 
 constructor TEngineAnimDefsLoader.Create(const AParser: IDefAnimDefsParser;
-  const ALumps: IEngineLumps);
+  const ALumps: IEngineLumps; const AShutdown: IEngineShutdown);
 begin
   inherited Create;
   if not Assigned(AParser) then
     raise EArgumentNilException.Create('AParser');
   if not Assigned(ALumps) then
     raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
   FParser := AParser;
   FLumps := ALumps;
+  FShutdown := AShutdown;
 end;
 
 procedure TEngineAnimDefsLoader.Load;
@@ -87,7 +93,7 @@ begin
     LAnimations := FParser.Parse(FLumps.TextOf(LLump));
   except
     on E: EDefinitionsException do
-      I_Error('%s', [E.Message]);
+      FShutdown.Fail(E.Message);
   end;
 
   for LIndex := 0 to Length(LAnimations) - 1 do
