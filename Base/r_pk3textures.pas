@@ -273,7 +273,7 @@ begin
     p := malloc(size);
 
     memcpy(p, fs.Memory, fs.Size);
-    memcpy(PByte(p) + fs.Size, m.Memory, m.Size);
+    memcpy(Pointer(NativeUInt(p) + NativeUInt(fs.Size)), m.Memory, m.Size);
   finally
     m.Free;
     columnofs.Free;
