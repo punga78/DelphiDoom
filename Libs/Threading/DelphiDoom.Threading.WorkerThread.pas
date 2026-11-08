@@ -11,7 +11,7 @@ unit DelphiDoom.Threading.WorkerThread;
 interface
 
 uses
-  System.SyncObjs, DelphiDoom.Threading.Intf, DelphiDoom.Threading.Types;
+  System.SysUtils, System.SyncObjs, DelphiDoom.Threading.Intf, DelphiDoom.Threading.Types;
 
 type
   /// <summary>
@@ -58,7 +58,7 @@ type
 implementation
 
 uses
-  Winapi.Windows, System.SysUtils;
+  Winapi.Windows;
 
 const
   SNilJob = 'A worker job needs a procedure.';

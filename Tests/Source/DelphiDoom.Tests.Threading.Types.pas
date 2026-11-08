@@ -58,7 +58,7 @@ end;
 
 procedure TTestThreadingTypes.DovrebbeEssereUnErroreDellaLibreria;
 begin
-  Assert.WillRaise(
+  Assert.WillRaiseDescendant(
     procedure
     begin
       raise EWorkerJobException.Create('E', 'm');
