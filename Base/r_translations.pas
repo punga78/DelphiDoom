@@ -174,6 +174,13 @@ var
     lumpname: string;
     lump: integer;
   begin
+    // 'CR_' + a name of 6 or more characters is not a lump name, and stringtochar8
+    // stops the game with I_Error for it
+    if Length(wadname) > 8 then
+    begin
+      Result := False;
+      Exit;
+    end;
     lumpname := char8tostring(stringtochar8(wadname));
     lump := W_CheckNumForName(lumpname);
     if lump >= 0 then

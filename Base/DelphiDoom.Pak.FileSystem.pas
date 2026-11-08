@@ -155,8 +155,13 @@ procedure TPakFileSystem.AddDirectory(const APath: string);
       LMask := APath + '\' + LMask;
     LFiles := findfiles(LMask);
     try
+      // findfiles gives the names without the path: a folder other than the current one
+      // added nothing, because the files could not be opened
       for LIndex := 0 to LFiles.Count - 1 do
-        AddContainer(LFiles[LIndex]);
+        if APath <> '' then
+          AddContainer(APath + '\' + LFiles[LIndex])
+        else
+          AddContainer(LFiles[LIndex]);
     finally
       LFiles.Free;
     end;

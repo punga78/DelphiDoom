@@ -1,0 +1,21 @@
+// DelphiDoom: VOXELDEF del PK3 di prova della issue #48 (dominio pubblico)
+// I tre voxel sostituiscono tre sprite di Doom; negli altri giochi lo sprite non esiste e il
+// parser avvisa "sprite not found": e' atteso.
+
+voxeldef "zvkaa.kvx"
+{
+	Scale = 0.9
+	replaces sprite treda
+}
+
+voxeldef "zvdaa.ddvox"
+{
+	Scale = 0.9
+	replaces sprite tblua
+}
+
+voxeldef "zvsaa.vox"
+{
+	Scale = 0.9
+	replaces sprite tgrna
+}

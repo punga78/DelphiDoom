@@ -59,7 +59,8 @@ uses
   DelphiDoom.Tests.Texture.JpegDecoder in 'Source\DelphiDoom.Tests.Texture.JpegDecoder.pas',
   DelphiDoom.Tests.Texture.Formats in 'Source\DelphiDoom.Tests.Texture.Formats.pas',
   DelphiDoom.Tests.Texture.Factory in 'Source\DelphiDoom.Tests.Texture.Factory.pas',
-  DelphiDoom.Tests.Texture.Parity in 'Source\DelphiDoom.Tests.Texture.Parity.pas';
+  DelphiDoom.Tests.Texture.Parity in 'Source\DelphiDoom.Tests.Texture.Parity.pas',
+  DelphiDoom.Tests.Texture.Pk3 in 'Source\DelphiDoom.Tests.Texture.Pk3.pas';
 
 
 var
