@@ -30,7 +30,7 @@ procedure PP_SetupEnd(plat: Pplat_t; _type: plattype_e; picture, amount: integer
 {$ENDIF}
 procedure PP_UdmfPlatRaise(plat: Pplat_t; NewProc: TPPPlatProc);
 procedure PP_UdmfSetupBegin(sec: Psector_t; plat: Pplat_t);
-procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: PByteArray);
+procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: d_delphi.PByteArray);
 
 implementation
 
@@ -68,6 +68,8 @@ var
   pp_bad: array[0..4] of integer;
   pp_log: TextFile;
   pp_logopen: boolean = false;
+
+procedure PP_EnsureSelfTest; forward;
 
 procedure PP_Open;
 begin
@@ -531,6 +533,7 @@ var
 
 procedure PP_SetupBegin(sec: Psector_t; plat: Pplat_t);
 begin
+  PP_EnsureSelfTest;
   pp_setup_sector := sec^;
   pp_setup_plat := plat^;
 end;
@@ -681,7 +684,7 @@ begin
   end;
 end;
 
-procedure Old_UdmfSetup(w: TPPWorld; plat: Pplat_t; sec: Psector_t; _type: plattype_e; args: PByteArray);
+procedure Old_UdmfSetup(w: TPPWorld; plat: Pplat_t; sec: Psector_t; _type: plattype_e; args: d_delphi.PByteArray);
 begin
   plat.crush := false;
   plat.tag := args[0];
@@ -772,11 +775,12 @@ var
 
 procedure PP_UdmfSetupBegin(sec: Psector_t; plat: Pplat_t);
 begin
+  PP_EnsureSelfTest;
   pp_usetup_sector := sec^;
   pp_usetup_plat := plat^;
 end;
 
-procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: PByteArray);
+procedure PP_UdmfSetupEnd(plat: Pplat_t; _type: plattype_e; args: d_delphi.PByteArray);
 var
   oldsec, newsec: sector_t;
   oldplat, newplat: plat_t;
@@ -912,8 +916,20 @@ begin
   pp_logopen := false;
 end;
 
+var
+  pp_selftest_done: boolean = false;
+
+// Not in the initialization: the tables and the engine are not ready before ComposeEngine
+procedure PP_EnsureSelfTest;
+begin
+  if not pp_selftest_done then
+  begin
+    pp_selftest_done := true;
+    PP_TeleportSelfTest;
+  end;
+end;
+
 initialization
-  PP_TeleportSelfTest;
 
 finalization
   PP_WriteReport;
