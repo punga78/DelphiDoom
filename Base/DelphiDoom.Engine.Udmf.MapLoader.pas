@@ -13,6 +13,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Udmf.Types,
   DelphiDoom.Udmf.Intf,
   DelphiDoom.Udmf.Apply.Intf,
@@ -36,6 +37,7 @@ type
     FLines: IUdmfMapPartApplier;
     FSides: IUdmfMapPartApplier;
     FSegs: IUdmfMapPartApplier;
+    FSaveFileNames: ISaveFileNames;
     class procedure CheckRecordSize(const AWhat: string; AEngineSize, ALibrarySize: Integer); static;
     class function LumpIsNamed(ALump: Integer; const AName: string): Boolean; static;
     class function LumpToBytes(ALump: Integer): TBytes; static;
@@ -50,10 +52,12 @@ type
   public
     /// <summary>
     ///   The records of the converter have to be the ones of this game: the sizes are checked
-    ///   (I_Error if they are not)
+    ///   (I_Error if they are not); ASaveFileNames puts DATA\ in the working folder of the
+    ///   CD-ROM when needed
     /// </summary>
     constructor Create(const AConverter: IUdmfConverter; const AWadServices: IEngineWadServices;
-      const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
+      const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
+      const ASaveFileNames: ISaveFileNames);
     function Prepare(const AMapName: string): Boolean;
     function ApplySides: Boolean;
     function ApplyLines: Boolean;
@@ -69,7 +73,6 @@ uses
   doomdata,
   acs,
   m_base,
-  m_argv,
   i_system,
   z_zone,
   w_wad,
@@ -91,9 +94,12 @@ resourcestring
 { TEngineUdmfMapLoader }
 
 constructor TEngineUdmfMapLoader.Create(const AConverter: IUdmfConverter;
-  const AWadServices: IEngineWadServices; const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
+  const AWadServices: IEngineWadServices; const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
+  const ASaveFileNames: ISaveFileNames);
 begin
   inherited Create;
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create('ASaveFileNames');
   if not Assigned(AConverter) then
     raise EArgumentNilException.Create('AConverter');
   if not Assigned(AWadServices) then
@@ -124,6 +130,7 @@ begin
   FLines := ALines;
   FSides := ASides;
   FSegs := ASegs;
+  FSaveFileNames := ASaveFileNames;
 end;
 
 class procedure TEngineUdmfMapLoader.CheckRecordSize(const AWhat: string; AEngineSize,
@@ -315,7 +322,7 @@ begin
   LScriptLump := FindScriptLump(LMapLump);
 
   LTextLump := LMapLump + 1;
-  LWadFileName := M_SaveFileName('DATA\');
+  LWadFileName := FSaveFileNames.ResolveName('DATA\');
   MkDir(LWadFileName);
   LWadFileName := LWadFileName + 'WADS\';
   MkDir(LWadFileName);

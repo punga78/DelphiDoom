@@ -442,6 +442,8 @@ uses
   DelphiDoom.CommandLine.Arguments in 'Libs\CommandLine\DelphiDoom.CommandLine.Arguments.pas',
   DelphiDoom.CommandLine.DefaultFile in 'Libs\CommandLine\DelphiDoom.CommandLine.DefaultFile.pas',
   DelphiDoom.CommandLine.Builder in 'Libs\CommandLine\DelphiDoom.CommandLine.Builder.pas',
+  DelphiDoom.CommandLine.Queried in 'Libs\CommandLine\DelphiDoom.CommandLine.Queried.pas',
+  DelphiDoom.CommandLine.SaveFileNames in 'Libs\CommandLine\DelphiDoom.CommandLine.SaveFileNames.pas',
   DelphiDoom.CommandLine.Factory in 'Libs\CommandLine\DelphiDoom.CommandLine.Factory.pas',
   DelphiDoom.IdTech.Types in 'Libs\IdTech\DelphiDoom.IdTech.Types.pas',
   DelphiDoom.IdTech.Intf in 'Libs\IdTech\DelphiDoom.IdTech.Intf.pas',

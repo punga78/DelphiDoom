@@ -270,6 +270,7 @@ uses
   i_mainwindow,
   p_acs,
   DelphiDoom.Configuration.Factory,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.IdTech.Factory,
@@ -460,13 +461,13 @@ begin
     end);
 end;
 
-procedure ComposeMusic(const ATempFiles: ITempFiles);
+procedure ComposeMusic(const ATempFiles: ITempFiles; const ACommandLine: ICommandLine);
 var
   LMidiStream: IEngineMidiStream;
   LMus: IMusicBackend;
 begin
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
-  LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create);
+  LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine);
   LMus := LMidiStream as IMusicBackend;
   // the order is the one in which a song is looked at: the first backend that knows it plays it
   S_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
@@ -529,7 +530,7 @@ begin
 end;
 
 procedure ComposeDynLights(const ALog: ILog; const AContext: IGameContext;
-  const APreprocessor: IScriptTextPreprocessor);
+  const APreprocessor: IScriptTextPreprocessor; const ARandom: IGameRandom);
 var
   LServices: TEngineDynLightServices;
   LServicesRef: IInterface;
@@ -538,7 +539,7 @@ var
   LCoefficient: Double;
   LCache: IDynLightRenderCache;
 begin
-  LServices := TEngineDynLightServices.Create(APreprocessor);
+  LServices := TEngineDynLightServices.Create(APreprocessor, ARandom);
   LServicesRef := LServices;
   LRegistry := TDynLightFactory.CreateRegistry;
   LParserServices.Registry := LRegistry;
@@ -584,7 +585,8 @@ end;
 // in Doom, the switches of Libs\Definitions and the nodes of the old engine. The switches of
 // Heretic, Hexen and Strife keep their own tables: they are used after the start
 function ComposeLevelRules(const ALog: ILog; const AContext: IGameContext;
-  const ANodesSource: INodesLumpSource): ILevelGameRules;
+  const ANodesSource: INodesLumpSource; const ACommandLine: ICommandLine;
+  const ARandom: IGameRandom): ILevelGameRules;
 {$IFNDEF HEXEN}
 var
   LAnimDefs: IEngineAnimDefsLoader;
@@ -599,20 +601,22 @@ begin
     TEngineSwitchListLoader.Create(TDefinitionsFactory.CreateSwitchLumpReader(False),
       TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
       TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)),
-    LAnimDefs, TEngineVanillaNodes.Create(ANodesSource), AContext);
+    LAnimDefs, TEngineVanillaNodes.Create(ANodesSource), AContext, ARandom);
 {$ELSEIF DEFINED(HERETIC)}
-  Result := THereticLevelRules.Create(LAnimDefs);
+  Result := THereticLevelRules.Create(LAnimDefs, ARandom);
 {$ELSEIF DEFINED(HEXEN)}
-  Result := THexenLevelRules.Create;
+  Result := THexenLevelRules.Create(ACommandLine);
 {$ELSE}
-  Result := TStrifeLevelRules.Create(LAnimDefs);
+  Result := TStrifeLevelRules.Create(LAnimDefs, ARandom);
 {$ENDIF}
 end;
 
 // The loading of the levels (TLevelLoader) for g_game and d_main, with the text maps of the
 // game, the nodes, the blockmap and the rules of the game
 procedure ComposeLevel(const ALog: ILog; const AContext: IGameContext; const ATempFiles: ITempFiles;
-  const AWadServices: IEngineWadServices; const AMusInfo: IMusInfoLoader);
+  const AWadServices: IEngineWadServices; const AMusInfo: IMusInfoLoader;
+  const ACommandLine: ICommandLine; const ASaveFileNames: ISaveFileNames;
+  const ARegistry: ICommandRegistry; const ARandom: IGameRandom);
 var
   LGame: TUdmfGame;
   LNodesSource: INodesLumpSource;
@@ -630,7 +634,7 @@ begin
     TEngineUdmfLineApplier.Create(
       TUdmfApplyFactory.CreateLineSpecialTranslator(UDMF_SPECIAL_START, UDMF_NORMAL_ADD)),
     TEngineUdmfSideApplier.Create,
-    TEngineUdmfSegApplier.Create(TUdmfApplyFactory.CreateFakeContrast));
+    TEngineUdmfSegApplier.Create(TUdmfApplyFactory.CreateFakeContrast), ASaveFileNames);
 
   // the maps of Hexen are already in the Hexen format: the other games convert them for the node builder
 {$IFDEF HEXEN}
@@ -639,17 +643,18 @@ begin
   LHexen := False;
 {$ENDIF}
   LNodesSource := TEngineNodesLumpSource.Create;
-  LRules := ComposeLevelRules(ALog, AContext, LNodesSource);
+  LRules := ComposeLevelRules(ALog, AContext, LNodesSource, ACommandLine, ARandom);
 
   LLoader := TLevelLoader.Create(AContext, LRules,
     TEngineLevelMapReader.Create(LRules as ILevelGeometryRules, AContext),
     TEngineLevelThings.Create(LRules as ILevelThingRules),
     TEngineLevelNodes.Create(LNodesSource, TNodesFactory.CreateGlDetector(LNodesSource),
       TNodesFactory.CreateGlMapFinder(LNodesSource),
-      TNodesFactory.CreateGlbspInputBuilder(LNodesSource, LHexen), ATempFiles, LHexen),
+      TNodesFactory.CreateGlbspInputBuilder(LNodesSource, LHexen), ATempFiles, ASaveFileNames,
+      LHexen),
     TEngineLevelBlockmap.Create(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
-      TBlockmapFactory.CreateSlimeTrailRemover),
-    LUdmf, AMusInfo);
+      TBlockmapFactory.CreateSlimeTrailRemover, ACommandLine),
+    LUdmf, AMusInfo, ARegistry, ARandom);
   G_ConfigureLevel(LLoader);
   D_ConfigureLevel(LLoader);
 end;
@@ -699,6 +704,7 @@ end;
 // The console on the screen; it owns the objects of Libs\Console. ARegistry and AInterpreter
 // are given back: the defaults register their commands and run "get"
 function ComposeConsole(const ALog: ILog; const AGame: IGameContext;
+  const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames;
   out ARegistry: ICommandRegistry; out AInterpreter: IConsoleInterpreter): IEngineConsole;
 var
   LOutput: IConsoleOutput;
@@ -714,11 +720,13 @@ begin
   LVariables := TEngineConsoleVariableSource.Create;
   Result := TEngineConsoleScreen.Create(ARegistry, AInterpreter,
     TConsoleFactory.CreateStandardCommands(ARegistry, LOutput, LRunner),
-    TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create, LRunner, LOutput, AppTitle),
+    TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create(ACommandLine, ASaveFileNames),
+      LRunner, LOutput, AppTitle),
     TConsoleFactory.CreateVariableCommands(ARegistry, LVariables, LOutput, ALog, AGame),
     TConsoleFactory.CreateCommandQueue(AInterpreter),
     TConsoleFactory.CreateInputLine(']', AInterpreter, LOutput, TConsoleFactory.CreateHistory,
-      TConsoleFactory.CreateCompleter(ARegistry, LVariables)));
+      TConsoleFactory.CreateCompleter(ARegistry, LVariables)),
+    ACommandLine);
   D_ConfigureConsole(Result);
 {$IFDEF OPENGL}
   GL_ConfigureConsole(Result);
@@ -732,11 +740,12 @@ end;
 
 // The defaults of the configuration file, with their two console commands
 function ComposeDefaults(const ARegistry: ICommandRegistry;
-  const AInterpreter: IConsoleInterpreter): IEngineDefaults;
+  const AInterpreter: IConsoleInterpreter; const ACommandLine: ICommandLine): IEngineDefaults;
 var
   LDefaults: TEngineDefaults;
 begin
-  LDefaults := TEngineDefaults.Create(TConfigurationFactory.CreateFormat, ARegistry, AInterpreter);
+  LDefaults := TEngineDefaults.Create(TConfigurationFactory.CreateFormat, ARegistry, AInterpreter,
+    ACommandLine);
   Result := LDefaults;
   LDefaults.RegisterCommands;
   D_ConfigureDefaults(Result);
@@ -758,13 +767,14 @@ begin
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
 end;
 
-procedure ComposeScreenshot;
+procedure ComposeScreenshot(const ASaveFileNames: ISaveFileNames);
 var
   LScreenshot: IEngineScreenshot;
 begin
   LScreenshot := TEngineScreenshotService.Create(
     TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
-    TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create));
+    TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create(ASaveFileNames)),
+    ASaveFileNames);
   D_ConfigureScreenshot(LScreenshot);
   G_ConfigureScreenshot(LScreenshot);
   M_ConfigureScreenshot(LScreenshot);
@@ -785,13 +795,11 @@ end;
 
 // The temporary files are one object for the whole engine: who makes one receives it, and
 // i_tmp deletes them all at the shut down
-function ComposePlatform: ITempFiles;
+function ComposePlatform(const AStore: IFileStore; const ASaveFileNames: ISaveFileNames): ITempFiles;
 var
-  LStore: IFileStore;
   LFiles: IEngineFiles;
 begin
-  LStore := TPlatformFactory.CreateFileStore;
-  LFiles := TEngineFiles.Create(LStore);
+  LFiles := TEngineFiles.Create(AStore);
   // the demos and the saves (Hexen: g_demo and sv_save; Strife: also p_saveg and the menus)
   G_ConfigureFiles(LFiles);
 {$IFDEF HEXEN}
@@ -803,14 +811,14 @@ begin
 {$ENDIF}
   PS_ConfigureFiles(LFiles);
   W_ConfigureFiles(LFiles);
-  Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create, LStore);
+  Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create(ASaveFileNames), AStore);
   I_ConfigureTempFiles(Result);
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
 end;
 
-procedure ComposeMathCore;
+procedure ComposeMathCore(const ARandom: IGameRandom);
 begin
-  M_ConfigureRandom(TMathCoreFactory.CreateGameRandom);
+  M_ConfigureRandom(ARandom);
   R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
 end;
 
@@ -842,7 +850,8 @@ begin
   AM_Configure(LView, LNavigator, TAutomapFactory.CreateMarks);
 end;
 
-procedure ComposeActorDef(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
+procedure ComposeActorDef(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
+  const ARegistry: ICommandRegistry);
 var
   LGame: TActorDefGame;
   LProfile: TActorDefProfile;
@@ -884,13 +893,13 @@ begin
     begin
       TActorDefFactory.ParseSoundInfo(LProfile, AText, LAliases, LListener);
     end,
-    APreprocessor);
+    APreprocessor, ARegistry);
   LLumps := LLumpsObject;
   D_ConfigureActorDef(LLumps);
   S_ConfigureSoundAliases(LAliases);
 end;
 
-procedure ComposeTableExport;
+procedure ComposeTableExport(const ACommandLine: ICommandLine);
 var
   LGame: TExportGame;
   LThings: IExportThingSource;
@@ -907,7 +916,8 @@ begin
   LNames := TEngineExportNames.Create;
   LNamesRef := LNames;
   DEH_ConfigureExport(
-    TTableExportFactory.CreateDehWriter(LGame, LThings, LStates, LWeapons, TEngineExportSettings.Create,
+    TTableExportFactory.CreateDehWriter(LGame, LThings, LStates, LWeapons,
+      TEngineExportSettings.Create(ACommandLine),
       LNames, LNames),
     TTableExportFactory.CreateCsvWriter(LStates, LNames),
     TTableExportFactory.CreateActorDefWriter(LThings, LStates, LNames, LNames, LNames),
@@ -929,7 +939,8 @@ begin
   D_ConfigureIwad(LServices.Locator, LServices.Identifier);
 end;
 
-procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
+procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
+  const ASaveFileNames: ISaveFileNames);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
@@ -948,7 +959,8 @@ begin
     begin
       // the option is read at each call: the .ini is read after the composition
       Result := r_generatespritesfromvoxels;
-    end));
+    end,
+    ASaveFileNames));
   // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
@@ -971,6 +983,10 @@ var
   LConsole: IEngineConsole;
   LDefaults: IEngineDefaults;
   LEndScreenTick: TProc;
+  LCommandLine: IQueriedCommandLine;
+  LSaveFileNames: ISaveFileNames;
+  LRandom: IGameRandom;
+  LStore: IFileStore;
 begin
   // The zone first: whatever is built next can already allocate from it
   Z_ConfigureZone(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create));
@@ -978,7 +994,20 @@ begin
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
   D_Configure(LEngine);
   ComposeIwad;
-  M_ConfigureArgv(TCommandLineFactory.CreateBuilder);
+  // the command line exists from here on, the arguments are attached by M_InitArgv
+  LCommandLine := TCommandLineFactory.CreateQueriedCommandLine;
+  LStore := TPlatformFactory.CreateFileStore;
+  LSaveFileNames := TCommandLineFactory.CreateSaveFileNames(LCommandLine,
+    function: Boolean
+    begin
+      Result := I_IsCDRomDrive;
+    end,
+    procedure(APath: string)
+    begin
+      LStore.EnsureDirectory(APath);
+    end, CD_WORKDIR);
+  M_ConfigureArgv(TCommandLineFactory.CreateBuilder, LCommandLine, LSaveFileNames);
+  LRandom := TMathCoreFactory.CreateGameRandom;
   LContext := TEngineGameContext.Create;
   LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
     function: Boolean
@@ -987,11 +1016,11 @@ begin
     end);
   I_ConfigureLog(LLog);
   // the console before anyone registers a command; the defaults after it (#CVARFORCE uses them)
-  LConsole := ComposeConsole(LLog, LContext, LRegistry, LInterpreter);
-  LDefaults := ComposeDefaults(LRegistry, LInterpreter);
+  LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LRegistry, LInterpreter);
+  LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LEvaluator);
-  LTempFiles := ComposePlatform;
-  ComposeMathCore;
+  LTempFiles := ComposePlatform(LStore, LSaveFileNames);
+  ComposeMathCore(LRandom);
   ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl(LPreprocessor);
@@ -1002,24 +1031,24 @@ begin
   ComposeDisplayModes;
   ComposeInput(LLog);
   ComposeSound(LLog);
-  ComposeMusic(LTempFiles);
+  ComposeMusic(LTempFiles, LCommandLine);
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
   ComposeImaging;
-  ComposeScreenshot;
+  ComposeScreenshot(LSaveFileNames);
   ComposeTexture(LLog);
   ComposeTextureDefs(LLog);
   ComposePalette;
   LMusInfo := ComposeMusInfo(LLog);
-  ComposeDynLights(LLog, LContext, LPreprocessor);
+  ComposeDynLights(LLog, LContext, LPreprocessor, LRandom);
   ComposeAutomap;
-  ComposeActorDef(LLog, LPreprocessor);
-  ComposeTableExport;
+  ComposeActorDef(LLog, LPreprocessor, LRegistry);
+  ComposeTableExport(LCommandLine);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
-    TAcsFactory.CreateMachine(TEngineAcsHost.Create, LLog));
+    TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom), LLog));
   LEndScreenTick := ComposeEndoom();
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick);
-  ComposeVoxels(LLog, LPreprocessor);
+  ComposeVoxels(LLog, LPreprocessor, LSaveFileNames);
 
   LWadServices := TEngineWadServices.Create;
   W_Configure(LWadServices);
@@ -1028,7 +1057,8 @@ begin
   PAK_Configure(LWadServices);
   D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create,
     TEngineAutoLoadSink.Create, TEngineScannerLog.Create));
-  ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo);
+  ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo, LCommandLine, LSaveFileNames,
+    LRegistry, LRandom);
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
   P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);

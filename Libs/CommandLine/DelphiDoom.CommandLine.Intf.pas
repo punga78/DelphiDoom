@@ -37,6 +37,39 @@ type
     property Items[AIndex: Integer]: string read GetItem; default;
   end;
 
+  /// <summary>
+  ///   A command line that exists before the arguments are read and that remembers what the
+  ///   program asked of it: the engine hands it to every class that reads an option, then
+  ///   M_InitArgv attaches the real command line. The names asked so far feed the console
+  ///   command "commandlineparams"
+  /// </summary>
+  IQueriedCommandLine = interface(ICommandLine)
+    ['{5A1D83C6-27F4-4E09-B6A2-D84C10E7F953}']
+    /// <summary>
+    ///   Sets the command line that answers the questions. Until then no parameter is there
+    ///   (IndexOf gives 0, Count gives 0), as the old M_CheckParm did before M_InitArgv
+    /// </summary>
+    procedure Attach(const ACommandLine: ICommandLine);
+    /// <summary>
+    ///   The parameters asked for by name (IndexOf, Has, ValuesAfter), each once whatever its
+    ///   case (the first spelling), in the order they were first asked
+    /// </summary>
+    function QueriedNames: TArray<string>;
+  end;
+
+  /// <summary>
+  ///   Where the files of the engine that are not in the folder of the program go: the same
+  ///   name, or the name inside the working folder of the CD-ROM when the program runs from
+  ///   a CD-ROM or with -cdrom
+  /// </summary>
+  ISaveFileNames = interface
+    ['{C3E75B90-1A4D-4F28-9D61-0B7E5A82F1C4}']
+    /// <summary>True when the files go to the working folder of the CD-ROM</summary>
+    function IsCdRomMode: Boolean;
+    /// <summary>The name in the working folder of the CD-ROM, or the name itself</summary>
+    function ResolveName(const AFileName: string): string;
+  end;
+
   /// <summary>Collects the arguments and makes the ICommandLine</summary>
   ICommandLineBuilder = interface
     ['{4E90A1D7-8B26-4C3F-A5D8-72C1E0F9B346}']
