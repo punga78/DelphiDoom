@@ -1,0 +1,100 @@
+diff --git a/Base/DelphiDoom.Engine.Level.Loader.pas b/Base/DelphiDoom.Engine.Level.Loader.pas
+index 09b2234c..05c0a7fd 100644
+--- a/Base/DelphiDoom.Engine.Level.Loader.pas
++++ b/Base/DelphiDoom.Engine.Level.Loader.pas
+@@ -75,6 +75,7 @@ implementation
+ 
+ uses
+   System.SysUtils,
++  Harness151,
+   d_delphi,
+   doomdata,
+   doomstat,
+@@ -493,6 +494,7 @@ begin
+   SetupGeometry;
+   SpawnThings(LMapLump);
+   FinishLevel;
++  V151_AfterLevel(LMapName);
+ end;
+ 
+ end.
+diff --git a/Base/w_wad.pas b/Base/w_wad.pas
+index bedd3c27..6dae852c 100644
+--- a/Base/w_wad.pas
++++ b/Base/w_wad.pas
+@@ -315,6 +315,7 @@ implementation
+ 
+ uses
+   i_system,
++  Harness151,
+   w_pak,
+   z_zone,
+   DelphiDoom.MathCore.Crc32,
+@@ -1120,6 +1121,7 @@ end;
+ //==============================================================================
+ procedure W_ReadLump(const lump: integer; dest: pointer);
+ begin
++  V151_TraceLump(lump);
+   if lump >= numlumps then
+     I_Error('W_ReadLump(): %d >= numlumps', [lump]);
+ 
+diff --git a/Doom32.dpr b/Doom32.dpr
+index 468d08d5..4f20c6f0 100644
+--- a/Doom32.dpr
++++ b/Doom32.dpr
+@@ -204,6 +204,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
+   i_video in 'Base\i_video.pas',
+   info in 'Doom\info.pas',
+   info_h in 'Doom\info_h.pas',
+diff --git a/GLDoom32.dpr b/GLDoom32.dpr
+index 38a9e68f..284263cc 100644
+--- a/GLDoom32.dpr
++++ b/GLDoom32.dpr
+@@ -207,6 +207,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
+   info in 'Doom\info.pas',
+   info_h in 'Doom\info_h.pas',
+   info_rnd in 'Base\info_rnd.pas',
+diff --git a/Heretic32.dpr b/Heretic32.dpr
+index 5dac3b80..1eece3e9 100644
+--- a/Heretic32.dpr
++++ b/Heretic32.dpr
+@@ -197,6 +197,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
+   i_video in 'Base\i_video.pas',
+   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+diff --git a/Hexen32.dpr b/Hexen32.dpr
+index 0a8f0210..bd1d0bd4 100644
+--- a/Hexen32.dpr
++++ b/Hexen32.dpr
+@@ -111,6 +111,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
+   i_video in 'Base\i_video.pas',
+   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+diff --git a/Strife32.dpr b/Strife32.dpr
+index 6a9f396b..27ae7135 100644
+--- a/Strife32.dpr
++++ b/Strife32.dpr
+@@ -207,6 +207,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
+   i_video in 'Base\i_video.pas',
+   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
