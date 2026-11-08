@@ -11,13 +11,16 @@ unit DelphiDoom.CommandLine.Factory;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.CommandLine.Intf;
+  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.CommandLine.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the interfaces of the library</summary>
   TCommandLineFactory = class
   public
     class function CreateBuilder: ICommandLineBuilder; static;
+    /// <summary>The expander of the response files (@name); the messages go to ALog</summary>
+    class function CreateResponseFileExpander(const ASource: IResponseFileSource;
+      const ALog: ILog): IResponseFileExpander; static;
     /// <summary>A command line made of the given arguments, the program name first</summary>
     class function CreateCommandLine(const AArguments: TArray<string>): ICommandLine; static;
     /// <summary>The command line that the classes receive before the arguments are read; see Attach</summary>
@@ -32,9 +35,16 @@ implementation
 
 uses
   DelphiDoom.CommandLine.Builder, DelphiDoom.CommandLine.Arguments,
-  DelphiDoom.CommandLine.Queried, DelphiDoom.CommandLine.SaveFileNames;
+  DelphiDoom.CommandLine.Queried, DelphiDoom.CommandLine.SaveFileNames,
+  DelphiDoom.CommandLine.ResponseFile;
 
 { TCommandLineFactory }
+
+class function TCommandLineFactory.CreateResponseFileExpander(const ASource: IResponseFileSource;
+  const ALog: ILog): IResponseFileExpander;
+begin
+  Result := TResponseFileExpander.Create(ASource, ALog);
+end;
 
 class function TCommandLineFactory.CreateBuilder: ICommandLineBuilder;
 begin

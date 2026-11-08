@@ -11,6 +11,9 @@ unit DelphiDoom.Video.Factory;
 interface
 
 uses
+  System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Video.Types,
   DelphiDoom.Video.Intf;
 
 type
@@ -24,6 +27,13 @@ type
     class function CreateWindowsDisplayModeSource: IDisplayModeSource; static;
     /// <summary>The catalog of the screen modes that ASource gives</summary>
     class function CreateDisplayModeCatalog(const ASource: IDisplayModeSource): IDisplayModeCatalog; static;
+    /// <summary>
+    ///   The resolver of the size of the rendering screen from the command line; AMetrics gives
+    ///   the size of the desktop and AParseNumber reads a number
+    /// </summary>
+    class function CreateScreenSizeResolver(const ACommandLine: ICommandLine;
+      const AMetrics: IDisplayMetrics; const ALimits: TScreenSizeLimits;
+      const AParseNumber: TFunc<string, Integer>): IScreenSizeResolver; static;
     /// <summary>The services on the screen of Windows</summary>
     class function CreateServices: IVideoServices; static;
   end;
@@ -34,9 +44,16 @@ uses
   DelphiDoom.Video.PaletteConverter, DelphiDoom.Video.SizeLimiter,
   DelphiDoom.Video.MemoryStallHack, DelphiDoom.Video.WindowsDisplayMetrics,
   DelphiDoom.Video.Services, DelphiDoom.Video.DisplayModeCatalog,
-  DelphiDoom.Video.WindowsDisplayModeSource;
+  DelphiDoom.Video.WindowsDisplayModeSource, DelphiDoom.Video.ScreenSizeResolver;
 
 { TVideoFactory }
+
+class function TVideoFactory.CreateScreenSizeResolver(const ACommandLine: ICommandLine;
+  const AMetrics: IDisplayMetrics; const ALimits: TScreenSizeLimits;
+  const AParseNumber: TFunc<string, Integer>): IScreenSizeResolver;
+begin
+  Result := TScreenSizeResolver.Create(ACommandLine, AMetrics, ALimits, AParseNumber);
+end;
 
 class function TVideoFactory.CreatePaletteConverter: IPaletteConverter;
 begin

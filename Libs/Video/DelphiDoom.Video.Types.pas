@@ -29,6 +29,14 @@ type
     BitsPerPixel: Integer;
   end;
 
+  /// <summary>The smallest and the biggest size of the rendering screen that the game accepts</summary>
+  TScreenSizeLimits = record
+    MinWidth: Integer;
+    MinHeight: Integer;
+    MaxWidth: Integer;
+    MaxHeight: Integer;
+  end;
+
 implementation
 
 end.

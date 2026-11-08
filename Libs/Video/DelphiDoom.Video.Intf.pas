@@ -33,6 +33,20 @@ type
     property Height: Integer read GetHeight;
   end;
 
+  /// <summary>
+  ///   The size of the rendering screen that the command line asks for (-screenwidth,
+  ///   -screenheight, -geom, -fullhd, -vga, -svga, -cga, -cgaX2, -cgaX3): the old size part of
+  ///   D_CheckCommonParams
+  /// </summary>
+  IScreenSizeResolver = interface
+    ['{2E5A91D3-7C48-4B06-A3F7-9D10C86B54E2}']
+    /// <summary>
+    ///   AWidth and AHeight are the size so far (-1 is "the size of the desktop"); the result is
+    ///   the size after the options of the command line, always inside the limits
+    /// </summary>
+    procedure Resolve(var AWidth, AHeight: Integer);
+  end;
+
   /// <summary>A window cannot be bigger than the screen</summary>
   ISizeLimiter = interface
     ['{83D5E0B7-9C14-4A62-B1F8-6A2C4E7D0953}']

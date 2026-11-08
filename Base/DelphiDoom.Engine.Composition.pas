@@ -326,6 +326,9 @@ uses
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.Factory,
+  DelphiDoom.Video.Types,
+  DelphiDoom.Engine.Startup.ResponseFileSource,
+  DelphiDoom.Engine.Startup.Numbers,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.IdTech.Factory,
   DelphiDoom.Engine.Wad.Intf,
@@ -1044,6 +1047,24 @@ begin
 end;
 {$ENDIF}
 
+procedure ComposeStartup(const ALog: ILog; const ACommandLine: ICommandLine);
+var
+  LLimits: TScreenSizeLimits;
+begin
+  LLimits.MinWidth := MINWIDTH;
+  LLimits.MinHeight := MINHEIGHT;
+  LLimits.MaxWidth := MAXWIDTH;
+  LLimits.MaxHeight := MAXHEIGHT;
+  D_ConfigureStartup(
+    TCommandLineFactory.CreateResponseFileExpander(TEngineResponseFileSource.Create, ALog),
+    TVideoFactory.CreateScreenSizeResolver(ACommandLine, TVideoFactory.CreateWindowsDisplayMetrics,
+      LLimits,
+      function(AText: string): Integer
+      begin
+        Result := EngineParseNumber(AText);
+      end));
+end;
+
 procedure ComposeAutomap;
 var
   LView: IAutomapView;
@@ -1288,6 +1309,7 @@ begin
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
+  ComposeStartup(LLog, LCommandLine);
   D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create(LLumps),
     TEngineAutoLoadSink.Create(LPakContainers), TEngineScannerLog.Create));
   ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo, LCommandLine, LSaveFileNames,
