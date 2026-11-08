@@ -1,6 +1,9 @@
 // TEMPORARY HARNESS (issues #149, #152, #153, #154; not for the build of the game): ends the game by
 // itself, with a clean exit, so that the parity reports (written in the finalization of the harness
-// units) are produced. G_Ticker calls HarnessExitCheck(gametic). Change HARNESS_EXIT_TIC to run longer.
+// units) are produced, and before that runs an "activation sweep": the player stands still in the
+// -warp runs, so at HARNESS_USE_TIC every line with a special is used and at HARNESS_CROSS_TIC every
+// line with a special is crossed, by the player, to make doors, platforms and teleports move.
+// G_Ticker calls HarnessExitCheck(gametic). Change the constants to run longer or to move the sweeps.
 
 {$I Doom32.inc}
 
@@ -15,19 +18,101 @@ const
 {$ELSE}
   HARNESS_EXIT_TIC = 4000;
 {$ENDIF}
+  /// Tic of the sweep that uses every line with a special
+  HARNESS_USE_TIC = 100;
+  /// Tic of the sweep that crosses every line with a special
+  HARNESS_CROSS_TIC = 200;
 
 procedure HarnessExitCheck(ATic: integer);
 
 implementation
 
 uses
-  i_system;
+  SysUtils,
+  i_system,
+  doomdata,
+  d_player,
+  p_mobj_h,
+  p_setup,
+  r_defs,
+{$IFNDEF HEXEN}
+  p_switch,
+{$ENDIF}
+  p_spec;
 
 var
   harness_posted: boolean = false;
+  harness_use_done: boolean = false;
+  harness_cross_done: boolean = false;
+  harness_use_count: integer = 0;
+  harness_cross_count: integer = 0;
+  harness_errors: integer = 0;
+
+procedure HarnessWriteSweep;
+var
+  f: TextFile;
+begin
+  AssignFile(f, 'harness_sweep.txt');
+  Rewrite(f);
+  writeln(f, 'use lines=', harness_use_count, ' cross lines=', harness_cross_count,
+    ' exceptions=', harness_errors);
+  CloseFile(f);
+end;
+
+procedure HarnessSweep(AUse: boolean);
+var
+  i: integer;
+  mo: Pmobj_t;
+begin
+  mo := players[0].mo;
+  if mo = nil then
+    exit;
+  for i := 0 to numlines - 1 do
+  begin
+    if lines[i].special = 0 then
+      continue;
+    try
+      if AUse then
+      begin
+{$IFDEF HEXEN}
+        P_ActivateLine(@lines[i], mo, 0, SPAC_USE);
+{$ELSE}
+        P_UseSpecialLine(mo, @lines[i], 0);
+{$ENDIF}
+        inc(harness_use_count);
+      end
+      else
+      begin
+{$IFDEF HEXEN}
+        P_ActivateLine(@lines[i], mo, 0, SPAC_CROSS);
+{$ELSE}
+        P_CrossSpecialLine(i, 0, mo);
+{$ENDIF}
+        inc(harness_cross_count);
+      end;
+    except
+      inc(harness_errors);
+    end;
+    // a teleport or a death moves or removes the player: take the new one
+    mo := players[0].mo;
+    if mo = nil then
+      break;
+  end;
+  HarnessWriteSweep;
+end;
 
 procedure HarnessExitCheck(ATic: integer);
 begin
+  if (ATic >= HARNESS_USE_TIC) and not harness_use_done then
+  begin
+    harness_use_done := true;
+    HarnessSweep(true);
+  end;
+  if (ATic >= HARNESS_CROSS_TIC) and not harness_cross_done then
+  begin
+    harness_cross_done := true;
+    HarnessSweep(false);
+  end;
   if (ATic >= HARNESS_EXIT_TIC) and not harness_posted then
   begin
     harness_posted := true;
