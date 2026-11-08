@@ -34,7 +34,8 @@ unit r_cache_walls;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.Engine.Texture.Intf;
 
 const
   MAXBATCHWALLS = 8;
@@ -46,6 +47,14 @@ const
   CACHETEXTMASK = 1 shl CACHECOLSHIFT - 1;
   CACHECOLBITS = 10;
   CACHECOLMASK = 1 shl CACHECOLBITS - 1;
+
+//==============================================================================
+//
+// R_ConfigureWallTextures
+// The external textures (useexternaltextures), given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureWallTextures(const AFiles: IEngineTextureFiles);
 
 //==============================================================================
 //
@@ -162,8 +171,21 @@ uses
 {$IFDEF HEXEN}
   r_cache_sky,
 {$ENDIF}
-  t_main,
+  DelphiDoom.Engine.Texture.Item,
   v_video;
+
+var
+  wall_texturefiles: IEngineTextureFiles = nil;
+
+//==============================================================================
+//
+// R_ConfigureWallTextures
+//
+//==============================================================================
+procedure R_ConfigureWallTextures(const AFiles: IEngineTextureFiles);
+begin
+  wall_texturefiles := AFiles;
+end;
 
 //==============================================================================
 //
@@ -311,7 +333,7 @@ begin
 
     if t = nil then
     begin
-      t := T_LoadHiResTexture(ptex.name);
+      t := wall_texturefiles.LoadTexture(ptex.name);
       if t = nil then
         ptex.texture32 := pointer($1) // Mark as missing
       else

@@ -47,6 +47,7 @@ uses
   DelphiDoom.Engine.Palette.Intf,
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.MathCore.Intf,
+  DelphiDoom.Pak.Intf,
   DelphiDoom.Renderer.Intf;
 
 // Retrieve column data for span blitting.
@@ -107,9 +108,12 @@ procedure R_ConfigureTextureDefs(const ALoader: ITextureDefsLoader);
 //==============================================================================
 //
 // R_ConfigureFlatInfo
+// The parser of FLATINFO, the catalog of the flats and the PAK file system
+// (FLATINFO files), given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog;
+  const APakFiles: IPakFileSystem);
 
 //==============================================================================
 //
@@ -354,7 +358,6 @@ uses
 {$ENDIF}
   v_data,
   v_video,
-  w_pak,
   w_sprite,
   z_zone;
 
@@ -366,6 +369,7 @@ var
   texturedefs_loader: ITextureDefsLoader;
   flatinfo_parser: ITextureDefsFlatInfoParser = nil;
   flatinfo_catalog: ITextureDefsFlatCatalog = nil;
+  flatinfo_pakfiles: IPakFileSystem = nil;
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
   texture_lookup: IRendererTextureLookup = nil;
@@ -1304,10 +1308,12 @@ end;
 // the engine, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog);
+procedure R_ConfigureFlatInfo(const AParser: ITextureDefsFlatInfoParser; const ACatalog: ITextureDefsFlatCatalog;
+  const APakFiles: IPakFileSystem);
 begin
   flatinfo_parser := AParser;
   flatinfo_catalog := ACatalog;
+  flatinfo_pakfiles := APakFiles;
 end;
 
 const
@@ -1340,6 +1346,7 @@ procedure R_ParseFlatInfoLumps;
 var
   i: integer;
   sizes: TArray<TTextureDefsFlatSize>;
+  text: string;
 begin
   if flatinfo_parser = nil then
     I_Error('R_ParseFlatInfoLumps(): FLATINFO is not configured (ComposeEngine was not called)');
@@ -1349,8 +1356,10 @@ begin
     if char8tostring(W_GetNameForNum(i)) = FLATINFOLUMPNAME then
       R_RetrieveFlatInfo(W_TextLumpNum(i));
 
-  PAK_StringIterator(FLATINFOLUMPNAME, R_RetrieveFlatInfo);
-  PAK_StringIterator(FLATINFOLUMPNAME + '.txt', R_RetrieveFlatInfo);
+  for text in flatinfo_pakfiles.Texts(FLATINFOLUMPNAME) do
+    R_RetrieveFlatInfo(text);
+  for text in flatinfo_pakfiles.Texts(FLATINFOLUMPNAME + '.txt') do
+    R_RetrieveFlatInfo(text);
 
   sizes := flatinfo_parser.Parse(fl_text, flatinfo_catalog);
   for i := 0 to Length(sizes) - 1 do

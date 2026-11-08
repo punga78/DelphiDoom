@@ -11,25 +11,41 @@ unit DelphiDoom.Engine.Screenshot.Folders;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Screenshot.Intf;
 
 type
   /// <summary>Answers the Screenshot library with the folder of the saved files of the engine</summary>
   TEngineScreenshotFolders = class(TInterfacedObject, IScreenshotFolders)
+  strict private
+    FSaveFileNames: ISaveFileNames;
   public
+    /// <param name="ASaveFileNames">Gives the name that a file has in the folder of the saved files</param>
+    constructor Create(const ASaveFileNames: ISaveFileNames);
     function PathOf(const ARelativeName: string): string;
   end;
 
 implementation
 
 uses
-  m_argv;
+  System.SysUtils;
+
+const
+  SSaveFileNamesIsNil = 'TEngineScreenshotFolders: the names of the saved files are nil';
 
 { TEngineScreenshotFolders }
 
+constructor TEngineScreenshotFolders.Create(const ASaveFileNames: ISaveFileNames);
+begin
+  inherited Create;
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create(SSaveFileNamesIsNil);
+  FSaveFileNames := ASaveFileNames;
+end;
+
 function TEngineScreenshotFolders.PathOf(const ARelativeName: string): string;
 begin
-  Result := M_SaveFileName(ARelativeName);
+  Result := FSaveFileNames.ResolveName(ARelativeName);
 end;
 
 end.

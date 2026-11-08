@@ -15,7 +15,9 @@ interface
 
 uses
   DelphiDoom.Acs.Machine.Types,
-  DelphiDoom.Acs.Machine.Intf;
+  DelphiDoom.Acs.Machine.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.MathCore.Intf;
 
 type
   /// <summary>
@@ -24,7 +26,13 @@ type
   ///   player. Lines and activators of the machine are Pline_t and Pmobj_t of the engine
   /// </summary>
   TEngineAcsHost = class(TInterfacedObject, IAcsHost)
+  strict private
+    FRandom: IGameRandom;
+    FZone: IZoneAllocator;
   public
+    /// <param name="ARandom">The generator whose play series NextRandom reads</param>
+    /// <param name="AZone">Holds the thinkers of the scripts (PU_LEVSPEC)</param>
+    constructor Create(const ARandom: IGameRandom; const AZone: IZoneAllocator);
     function TicsPerSecond: Integer;
     function CurrentMap: Integer;
     function LevelTime: Integer;
@@ -57,6 +65,7 @@ type
 implementation
 
 uses
+  System.SysUtils, // first: d_delphi must win for PByteArray
   d_delphi,
   d_think,
   d_player,
@@ -64,7 +73,6 @@ uses
   doomdef,
   g_game,
   info_h,
-  m_rnd,
   p_acs,
   p_inter,
   p_mobj,
@@ -89,9 +97,23 @@ uses
   {$IFDEF HEXEN}
   s_sndseq,
   {$ENDIF}
-  z_zone;
+  DelphiDoom.Zone.Types;
+
+const
+  SRandomMissing = 'TEngineAcsHost: the random generator is nil';
 
 { TEngineAcsHost }
+
+constructor TEngineAcsHost.Create(const ARandom: IGameRandom; const AZone: IZoneAllocator);
+begin
+  inherited Create;
+  if not Assigned(ARandom) then
+    raise EArgumentNilException.Create(SRandomMissing);
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FRandom := ARandom;
+  FZone := AZone;
+end;
 
 function TEngineAcsHost.TicsPerSecond: Integer;
 begin
@@ -135,14 +157,14 @@ end;
 
 function TEngineAcsHost.NextRandom: Integer;
 begin
-  Result := P_Random;
+  Result := FRandom.NextPlay;
 end;
 
 function TEngineAcsHost.AllocateScript: PAcsScript;
 var
   LScript: Pacs_t;
 begin
-  LScript := Z_Malloc(SizeOf(acs_t), PU_LEVSPEC, nil);
+  LScript := FZone.Allocate(SizeOf(acs_t), ZONE_TAG_LEVSPEC, nil);
   memset(LScript, 0, SizeOf(acs_t));
   LScript.thinker._function.acp1 := @TH_InterpretACS;
   P_AddThinker(@LScript.thinker);

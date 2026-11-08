@@ -59,6 +59,7 @@ var
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   Windows,
   d_delphi,
   m_misc,
@@ -83,7 +84,7 @@ begin
     exit;
   end;
 
-  neww := C_BoolEval(parm, widescreensupport);
+  neww := TConsoleNumbers.EvaluateBoolean(parm, widescreensupport);
   if neww <> widescreensupport then
   begin
     widescreensupport := neww;
@@ -108,7 +109,7 @@ begin
     exit;
   end;
 
-  neww := C_BoolEval(parm, excludewidescreenplayersprites);
+  neww := TConsoleNumbers.EvaluateBoolean(parm, excludewidescreenplayersprites);
   if neww <> excludewidescreenplayersprites then
   begin
     excludewidescreenplayersprites := neww;

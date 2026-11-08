@@ -661,30 +661,11 @@ end;
 //==============================================================================
 procedure R_WaitWallsCache8;
 var
-  doneid: integer;
-
-  function _alldone: boolean;
-  var
-    i: integer;
-    ret: boolean;
-  begin
-    result := true;
-    for i := doneid to numwallthreads8 - 1 do
-    begin
-      ret := wallthreads8[i].CheckJobDone;
-      result := ret and result;
-      if not result then
-      begin
-        doneid := i;
-        exit;
-      end;
-    end;
-  end;
-
+  i: integer;
 begin
-  doneid := 0;
-  while not _alldone do
-    I_Sleep(0);
+  // The workers wake the waiter with an event: no polling loop
+  for i := 0 to numwallthreads8 - 1 do
+    wallthreads8[i].Wait;
 end;
 
 end.

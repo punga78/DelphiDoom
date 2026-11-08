@@ -11,7 +11,8 @@ unit DelphiDoom.Engine.Definitions.AnimCatalog;
 interface
 
 uses
-  DelphiDoom.Definitions.Intf;
+  DelphiDoom.Definitions.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -19,7 +20,10 @@ type
   ///   not exist is left out. A flat exists when a lump has its name (as it has always been)
   /// </summary>
   TEngineAnimNameCatalog = class(TInterfacedObject, IDefAnimNameCatalog)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function HasFlat(const AName: string): Boolean;
     function HasTexture(const AName: string): Boolean;
   end;
@@ -27,14 +31,22 @@ type
 implementation
 
 uses
-  r_data,
-  w_wad;
+  System.SysUtils,
+  r_data;
 
 { TEngineAnimNameCatalog }
 
+constructor TEngineAnimNameCatalog.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
+
 function TEngineAnimNameCatalog.HasFlat(const AName: string): Boolean;
 begin
-  Result := W_CheckNumForName(AName) <> -1;
+  Result := FLumps.CheckNumForName(AName) <> -1;
 end;
 
 function TEngineAnimNameCatalog.HasTexture(const AName: string): Boolean;

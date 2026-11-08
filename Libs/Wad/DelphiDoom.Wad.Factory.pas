@@ -11,7 +11,8 @@ unit DelphiDoom.Wad.Factory;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf;
+  System.SysUtils, System.Classes, System.IOUtils, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf,
+  DelphiDoom.Wad.Pak.Intf;
 
 type
   /// <summary>
@@ -34,6 +35,10 @@ type
     class function CreateReader(const ADirectory: IWadDirectory): ILumpReader; static;
     class function CreateCache(const AReader: ILumpReader): ILumpCache; static;
     class function CreateBuilder(AKind: TWadKind = TWadKind.PWad): IWadBuilder; static;
+    /// <summary>An empty index of the PAK file system</summary>
+    class function CreatePakIndex: IPakIndex; static;
+    /// <summary>The rules to open a name of the PAK file system, on AIndex</summary>
+    class function CreatePakResolver(const AIndex: IPakIndex): IPakPathResolver; static;
   end;
 
 implementation
@@ -41,7 +46,8 @@ implementation
 uses
   DelphiDoom.Wad.Directory, DelphiDoom.Wad.LumpCache, DelphiDoom.Wad.Builder,
   DelphiDoom.Wad.Source.Wad, DelphiDoom.Wad.Source.Wad2, DelphiDoom.Wad.Source.Pak, DelphiDoom.Wad.Source.Zip,
-  DelphiDoom.Wad.Source.Folder, DelphiDoom.Wad.Source.SingleFile;
+  DelphiDoom.Wad.Source.Folder, DelphiDoom.Wad.Source.SingleFile, DelphiDoom.Wad.Pak.Index,
+  DelphiDoom.Wad.Pak.PathResolver;
 
 const
   SNoSuchPath = 'The path %s does not exist';
@@ -130,6 +136,16 @@ end;
 class function TWadFactory.CreateBuilder(AKind: TWadKind): IWadBuilder;
 begin
   Result := TWadBuilder.Create(AKind);
+end;
+
+class function TWadFactory.CreatePakIndex: IPakIndex;
+begin
+  Result := TPakIndex.Create;
+end;
+
+class function TWadFactory.CreatePakResolver(const AIndex: IPakIndex): IPakPathResolver;
+begin
+  Result := TPakPathResolver.Create(AIndex);
 end;
 
 end.

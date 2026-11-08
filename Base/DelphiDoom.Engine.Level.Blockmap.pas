@@ -12,8 +12,12 @@ unit DelphiDoom.Engine.Level.Blockmap;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Blockmap.Types,
   DelphiDoom.Blockmap.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -28,12 +32,21 @@ type
     FBuilder: IBlockmapBuilder;
     FLumpReader: IBlockmapLumpReader;
     FSlimeTrails: ISlimeTrailRemover;
+    FCommandLine: ICommandLine;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
+    FShutdown: IEngineShutdown;
     function BuildFromLines: TBlockmapData;
     function ReadData(ALump: Integer): TBlockmapData;
     procedure StoreData(const AData: TBlockmapData);
   public
+    /// <param name="ACommandLine">Where -blockmap (always build the blockmap) is looked for</param>
+    /// <param name="ALumps">Gives the lump BLOCKMAP</param>
+    /// <param name="AZone">The memory of the level</param>
+    /// <param name="AShutdown">Stops the game when the blockmap can not be made (I_Error)</param>
     constructor Create(const ABuilder: IBlockmapBuilder; const ALumpReader: IBlockmapLumpReader;
-      const ASlimeTrails: ISlimeTrailRemover);
+      const ASlimeTrails: ISlimeTrailRemover; const ACommandLine: ICommandLine;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
     procedure Load(ALump: Integer);
     /// <summary>
     ///   Slime trails are inherent to Doom's coordinate system: a node builder cannot avoid them
@@ -51,28 +64,39 @@ uses
   System.SysUtils,
   d_delphi,
   m_fixed,
-  m_argv,
-  i_system,
-  w_wad,
-  z_zone,
   r_defs,
-  p_setup;
+  p_setup,
+  DelphiDoom.Zone.Types;
 
 { TEngineLevelBlockmap }
 
 constructor TEngineLevelBlockmap.Create(const ABuilder: IBlockmapBuilder;
-  const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover);
+  const ALumpReader: IBlockmapLumpReader; const ASlimeTrails: ISlimeTrailRemover;
+  const ACommandLine: ICommandLine; const ALumps: IEngineLumps; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
+  if not Assigned(ACommandLine) then
+    raise EArgumentNilException.Create('ACommandLine');
+  FCommandLine := ACommandLine;
   if not Assigned(ABuilder) then
     raise EArgumentNilException.Create('ABuilder');
   if not Assigned(ALumpReader) then
     raise EArgumentNilException.Create('ALumpReader');
   if not Assigned(ASlimeTrails) then
     raise EArgumentNilException.Create('ASlimeTrails');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   FBuilder := ABuilder;
   FLumpReader := ALumpReader;
   FSlimeTrails := ASlimeTrails;
+  FLumps := ALumps;
+  FZone := AZone;
 end;
 
 function TEngineLevelBlockmap.BuildFromLines: TBlockmapData;
@@ -105,11 +129,11 @@ var
   LFromLump: Boolean;
 begin
   LFromLump := False;
-  LCount := W_LumpLength(ALump);
-  if (M_CheckParm('-blockmap') = 0) and not largemap and (LCount > 0) then
+  LCount := FLumps.LengthOf(ALump);
+  if (FCommandLine.IndexOf('-blockmap') = 0) and not largemap and (LCount > 0) then
   begin
     SetLength(LLumpBytes, LCount);
-    W_ReadLump(ALump, @LLumpBytes[0]);
+    FLumps.Read(ALump, @LLumpBytes[0]);
     LFromLump := FLumpReader.IsUsable(LLumpBytes);
   end;
 
@@ -120,7 +144,7 @@ begin
       Result := BuildFromLines;
   except
     on E: EBlockmapException do
-      I_Error('P_LoadBlockMap(): %s', [E.Message]);
+      FShutdown.Fail('P_LoadBlockMap(): ' + E.Message);
   end;
 end;
 
@@ -130,7 +154,7 @@ var
   LCount: Integer;
 begin
   LSize := Length(AData.Lump) * SizeOf(Integer);
-  blockmaplump := Z_Malloc(LSize, PU_LEVEL, nil);
+  blockmaplump := FZone.Allocate(LSize, ZONE_TAG_LEVEL, nil);
   Move(AData.Lump[0], blockmaplump[0], LSize);
   blockmapxneg := AData.NegX;
   blockmapyneg := AData.NegY;
@@ -145,7 +169,7 @@ begin
   bmapsize := bmapwidth * bmapheight;
   // clear out mobj chains
   LCount := SizeOf(blocklinkitem_t) * bmapwidth * bmapheight;
-  blocklinks := Z_Malloc(LCount, PU_LEVEL, nil);
+  blocklinks := FZone.Allocate(LCount, ZONE_TAG_LEVEL, nil);
   ZeroMemory(blocklinks, LCount);
 end;
 
@@ -185,7 +209,7 @@ begin
     FSlimeTrails.Remove(LVertexes, LSegs);
   except
     on E: EBlockmapException do
-      I_Error('P_RemoveSlimeTrails(): %s', [E.Message]);
+      FShutdown.Fail('P_RemoveSlimeTrails(): ' + E.Message);
   end;
 
   for LIndex := 0 to numvertexes - 1 do

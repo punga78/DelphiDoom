@@ -11,25 +11,41 @@ unit DelphiDoom.Engine.Wad.AutoLoadSink;
 interface
 
 uses
-  DelphiDoom.Scanner.AutoLoad.Intf;
+  DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.Pak.Intf;
 
 type
-  /// <summary>PAK_AddFile of the engine: files and directories, as the command line does</summary>
+  /// <summary>The PAK file system of the engine: files and directories, as the command line does</summary>
   TEngineAutoLoadSink = class(TInterfacedObject, IAutoLoadFileSink)
+  strict private
+    FContainers: IPakContainers;
   public
+    /// <summary>Raises EArgumentNilException when AContainers is nil</summary>
+    constructor Create(const AContainers: IPakContainers);
     procedure AddFile(const AFileName: string);
   end;
 
 implementation
 
 uses
-  w_pak;
+  System.SysUtils;
+
+const
+  SContainersMissing = 'TEngineAutoLoadSink: the PAK file system is nil';
 
 { TEngineAutoLoadSink }
 
+constructor TEngineAutoLoadSink.Create(const AContainers: IPakContainers);
+begin
+  inherited Create;
+  if not Assigned(AContainers) then
+    raise EArgumentNilException.Create(SContainersMissing);
+  FContainers := AContainers;
+end;
+
 procedure TEngineAutoLoadSink.AddFile(const AFileName: string);
 begin
-  PAK_AddFile(AFileName);
+  FContainers.AddFile(AFileName);
 end;
 
 end.

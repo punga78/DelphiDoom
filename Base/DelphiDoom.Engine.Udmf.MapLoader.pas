@@ -13,10 +13,14 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Udmf.Types,
   DelphiDoom.Udmf.Intf,
   DelphiDoom.Udmf.Apply.Intf,
+  DelphiDoom.Zone.Intf,
   DelphiDoom.Engine.Wad.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf,
   DelphiDoom.Engine.Level.Intf;
 
 type
@@ -32,14 +36,18 @@ type
   strict private
     FConverter: IUdmfConverter;
     FWadServices: IEngineWadServices;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
     FSectors: IUdmfMapPartApplier;
     FLines: IUdmfMapPartApplier;
     FSides: IUdmfMapPartApplier;
     FSegs: IUdmfMapPartApplier;
-    class procedure CheckRecordSize(const AWhat: string; AEngineSize, ALibrarySize: Integer); static;
-    class function LumpIsNamed(ALump: Integer; const AName: string): Boolean; static;
-    class function LumpToBytes(ALump: Integer): TBytes; static;
-    class function ExtraToMemory(const AData: TBytes): Pointer; static;
+    FSaveFileNames: ISaveFileNames;
+    FShutdown: IEngineShutdown;
+    procedure CheckRecordSize(const AWhat: string; AEngineSize, ALibrarySize: Integer);
+    function LumpIsNamed(ALump: Integer; const AName: string): Boolean;
+    function LumpToBytes(ALump: Integer): TBytes;
+    function ExtraToMemory(const AData: TBytes): Pointer;
     procedure ClearExtraData;
     procedure ReadExtraLumps(AMapLump: Integer);
     function FindLumpOfMap(AMapLump: Integer; const AName: string): Integer;
@@ -50,10 +58,13 @@ type
   public
     /// <summary>
     ///   The records of the converter have to be the ones of this game: the sizes are checked
-    ///   (I_Error if they are not)
+    ///   (I_Error if they are not); ASaveFileNames puts DATA\ in the working folder of the
+    ///   CD-ROM when needed; AShutdown stops the game when a size is wrong
     /// </summary>
     constructor Create(const AConverter: IUdmfConverter; const AWadServices: IEngineWadServices;
-      const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
+      const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
+      const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps;
+      const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
     function Prepare(const AMapName: string): Boolean;
     function ApplySides: Boolean;
     function ApplyLines: Boolean;
@@ -69,11 +80,8 @@ uses
   doomdata,
   acs,
   m_base,
-  m_argv,
-  i_system,
-  z_zone,
-  w_wad,
   p_udmf,
+  DelphiDoom.Zone.Types,
   DelphiDoom.Wad.Types,
   DelphiDoom.Wad.Intf,
   DelphiDoom.Udmf.Namespaces;
@@ -91,9 +99,20 @@ resourcestring
 { TEngineUdmfMapLoader }
 
 constructor TEngineUdmfMapLoader.Create(const AConverter: IUdmfConverter;
-  const AWadServices: IEngineWadServices; const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier);
+  const AWadServices: IEngineWadServices; const ASectors, ALines, ASides, ASegs: IUdmfMapPartApplier;
+  const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps; const AZone: IZoneAllocator;
+  const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
+  if not Assigned(ASaveFileNames) then
+    raise EArgumentNilException.Create('ASaveFileNames');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
   if not Assigned(AConverter) then
     raise EArgumentNilException.Create('AConverter');
   if not Assigned(AWadServices) then
@@ -120,25 +139,28 @@ begin
 
   FConverter := AConverter;
   FWadServices := AWadServices;
+  FLumps := ALumps;
+  FZone := AZone;
   FSectors := ASectors;
   FLines := ALines;
   FSides := ASides;
   FSegs := ASegs;
+  FSaveFileNames := ASaveFileNames;
 end;
 
-class procedure TEngineUdmfMapLoader.CheckRecordSize(const AWhat: string; AEngineSize,
+procedure TEngineUdmfMapLoader.CheckRecordSize(const AWhat: string; AEngineSize,
   ALibrarySize: Integer);
 begin
   if AEngineSize <> ALibrarySize then
-    I_Error(SRecordSizeMismatch, [AWhat, AEngineSize, ALibrarySize]);
+    FShutdown.Fail(Format(SRecordSizeMismatch, [AWhat, AEngineSize, ALibrarySize]));
 end;
 
-class function TEngineUdmfMapLoader.LumpIsNamed(ALump: Integer; const AName: string): Boolean;
+function TEngineUdmfMapLoader.LumpIsNamed(ALump: Integer; const AName: string): Boolean;
 begin
-  Result := strupper(char8tostring(W_GetNameForNum(ALump))) = AName;
+  Result := strupper(FLumps.NameOf(ALump)) = AName;
 end;
 
-class function TEngineUdmfMapLoader.LumpToBytes(ALump: Integer): TBytes;
+function TEngineUdmfMapLoader.LumpToBytes(ALump: Integer): TBytes;
 var
   LData: PByteArray;
   LLength: Integer;
@@ -147,19 +169,19 @@ begin
   Result := nil;
   if ALump > 0 then
   begin
-    LData := W_CacheLumpNum(ALump, PU_STATIC);
-    LLength := W_LumpLength(ALump);
+    LData := FLumps.Cache(ALump, ZONE_TAG_STATIC);
+    LLength := FLumps.LengthOf(ALump);
     SetLength(Result, LLength);
     if LLength > 0 then
       memcpy(@Result[0], LData, LLength);
-    Z_Free(LData);
+    FZone.FreeBlock(LData);
   end;
 end;
 
-class function TEngineUdmfMapLoader.ExtraToMemory(const AData: TBytes): Pointer;
+function TEngineUdmfMapLoader.ExtraToMemory(const AData: TBytes): Pointer;
 begin
   // the extra records live as long as the level
-  Result := Z_Malloc(Length(AData), PU_LEVEL, nil);
+  Result := FZone.Allocate(Length(AData), ZONE_TAG_LEVEL, nil);
   memcpy(Result, @AData[0], Length(AData));
 end;
 
@@ -180,40 +202,40 @@ end;
 
 procedure TEngineUdmfMapLoader.ReadExtraLumps(AMapLump: Integer);
 begin
-  if AMapLump + ML_THINGS2 < W_NumLumps then
+  if AMapLump + ML_THINGS2 < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_THINGS2, MLN_THINGS2) then
     begin
-      udmfthings := W_CacheLumpNum(AMapLump + ML_THINGS2, PU_LEVEL);
-      numudmfthings := W_LumpLength(AMapLump + ML_THINGS2) div SizeOf(extrathing_t);
+      udmfthings := FLumps.Cache(AMapLump + ML_THINGS2, ZONE_TAG_LEVEL);
+      numudmfthings := FLumps.LengthOf(AMapLump + ML_THINGS2) div SizeOf(extrathing_t);
     end;
-  if AMapLump + ML_SECTORS2 < W_NumLumps then
+  if AMapLump + ML_SECTORS2 < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_SECTORS2, MLN_SECTORS2) then
     begin
-      udmfsectors := W_CacheLumpNum(AMapLump + ML_SECTORS2, PU_LEVEL);
-      numudmfsectors := W_LumpLength(AMapLump + ML_SECTORS2) div SizeOf(extrasector_t);
+      udmfsectors := FLumps.Cache(AMapLump + ML_SECTORS2, ZONE_TAG_LEVEL);
+      numudmfsectors := FLumps.LengthOf(AMapLump + ML_SECTORS2) div SizeOf(extrasector_t);
     end;
-  if AMapLump + ML_VERTEX2 < W_NumLumps then
+  if AMapLump + ML_VERTEX2 < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_VERTEX2, MLN_VERTEX2) then
     begin
-      udmfvertexes := W_CacheLumpNum(AMapLump + ML_VERTEX2, PU_LEVEL);
-      numudmfvertexes := W_LumpLength(AMapLump + ML_VERTEX2) div SizeOf(extravertex_t);
+      udmfvertexes := FLumps.Cache(AMapLump + ML_VERTEX2, ZONE_TAG_LEVEL);
+      numudmfvertexes := FLumps.LengthOf(AMapLump + ML_VERTEX2) div SizeOf(extravertex_t);
     end;
-  if AMapLump + ML_LINEDEF2 < W_NumLumps then
+  if AMapLump + ML_LINEDEF2 < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_LINEDEF2, MLN_LINEDEF2) then
     begin
-      udmflinedefs := W_CacheLumpNum(AMapLump + ML_LINEDEF2, PU_LEVEL);
-      numudmflinedefs := W_LumpLength(AMapLump + ML_LINEDEF2) div SizeOf(extraline_t);
+      udmflinedefs := FLumps.Cache(AMapLump + ML_LINEDEF2, ZONE_TAG_LEVEL);
+      numudmflinedefs := FLumps.LengthOf(AMapLump + ML_LINEDEF2) div SizeOf(extraline_t);
     end;
-  if AMapLump + ML_SIDEDEF2 < W_NumLumps then
+  if AMapLump + ML_SIDEDEF2 < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_SIDEDEF2, MLN_SIDEDEF2) then
     begin
-      udmfsidedefs := W_CacheLumpNum(AMapLump + ML_SIDEDEF2, PU_LEVEL);
-      numudmfsidedefs := W_LumpLength(AMapLump + ML_SIDEDEF2) div SizeOf(extraside_t);
+      udmfsidedefs := FLumps.Cache(AMapLump + ML_SIDEDEF2, ZONE_TAG_LEVEL);
+      numudmfsidedefs := FLumps.LengthOf(AMapLump + ML_SIDEDEF2) div SizeOf(extraside_t);
     end;
-  if AMapLump + ML_NSPACE < W_NumLumps then
+  if AMapLump + ML_NSPACE < FLumps.Count then
     if LumpIsNamed(AMapLump + ML_NSPACE, MLN_NSPACE) then
     begin
-      udmfnamespace := W_TextLumpNum(AMapLump + ML_NSPACE);
+      udmfnamespace := FLumps.TextOf(AMapLump + ML_NSPACE);
       udmflinetranslate := TUdmfNamespaces.TranslatesLines(udmfnamespace, _GAME);
     end;
   hasudmfdata := (numudmfthings <> 0) and (numudmfsectors <> 0) and (numudmfvertexes <> 0) and
@@ -227,7 +249,7 @@ begin
   Result := -1;
   for LLump := AMapLump + 1 to AMapLump + MAX_LUMP_CHECK do
   begin
-    if LLump >= W_NumLumps then
+    if LLump >= FLumps.Count then
       Break;
     if LumpIsNamed(LLump, ENDMAP_LUMP_NAME) then
       Break;
@@ -243,7 +265,7 @@ begin
   Result := -1;
   for LLump := AMapLump + 1 to AMapLump + MAX_LUMP_CHECK do
   begin
-    if LLump >= W_NumLumps then
+    if LLump >= FLumps.Count then
       Break;
     if LumpIsNamed(LLump, ENDMAP_LUMP_NAME) then
       Break;
@@ -301,8 +323,8 @@ var
 begin
   ClearExtraData;
 
-  LMapLump := W_GetNumForName(AMapName);
-  if (LMapLump < 0) or (LMapLump >= W_NumLumps - 1) then
+  LMapLump := FLumps.GetNumForName(AMapName);
+  if (LMapLump < 0) or (LMapLump >= FLumps.Count - 1) then
     Exit(False);
 
   if not LumpIsNamed(LMapLump + 1, TEXTMAP_LUMP_NAME) then
@@ -315,19 +337,19 @@ begin
   LScriptLump := FindScriptLump(LMapLump);
 
   LTextLump := LMapLump + 1;
-  LWadFileName := M_SaveFileName('DATA\');
+  LWadFileName := FSaveFileNames.ResolveName('DATA\');
   MkDir(LWadFileName);
   LWadFileName := LWadFileName + 'WADS\';
   MkDir(LWadFileName);
-  LWadFileName := LWadFileName + AMapName + '_' + W_LumpCRC32(LTextLump) + '.wad';
+  LWadFileName := LWadFileName + AMapName + '_' + FLumps.Crc32Of(LTextLump) + '.wad';
 
-  LConverted := FConverter.Convert(W_TextLumpNum(LTextLump));
+  LConverted := FConverter.Convert(FLumps.TextOf(LTextLump));
   StoreExtraRecords(LConverted);
   SaveToVanilla(LConverted, AMapName, LWadFileName, LBehaviorLump, LScriptLump);
   udmfnamespace := LConverted.Namespace;
   udmflinetranslate := TUdmfNamespaces.TranslatesLines(udmfnamespace, _GAME);
 
-  W_RuntimeLoad(LWadFileName, F_ORIGIN_WAD);
+  FLumps.RuntimeLoadFile(LWadFileName);
 
   hasudmfdata := True;
   Result := True;

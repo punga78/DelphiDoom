@@ -12,7 +12,10 @@ interface
 
 uses
   DelphiDoom.Palette.Intf,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Zone.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Shutdown.Intf;
 
 type
   /// <summary>
@@ -24,10 +27,17 @@ type
   strict private
     FBuilder: IPaletteBuilder;
     FWithFogmap: Boolean;
+    FLumps: IEngineLumps;
+    FZone: IZoneAllocator;
+    FShutdown: IEngineShutdown;
   public
     /// <param name="ABuilder">Makes the palettes of the game (profile Doom or Hexen)</param>
     /// <param name="AWithFogmap">False in Hexen, which has no FOGMAP</param>
-    constructor Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean);
+    /// <param name="ALumps">The palette lump, and the WAD that is loaded at runtime</param>
+    /// <param name="AZone">Gives back the cached copy of the palette lump</param>
+    /// <param name="AShutdown">Stops the game when the palettes can not be built (I_Error)</param>
+    constructor Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean;
+      const ALumps: IEngineLumps; const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
     /// <param name="AArgument">The palette lump (empty: PLAYPAL)</param>
     procedure Generate(const AArgument: string);
   end;
@@ -38,22 +48,30 @@ uses
   System.SysUtils,
   DelphiDoom.Palette.Types,
   d_delphi,
-  i_system,
   i_tmp,
-  w_wad,
   w_wadwriter,
-  z_zone;
+  DelphiDoom.Zone.Types;
 
 const
   AUTO_PALETTE_WAD = 'auto_palette.wad';
 
 { TEnginePaletteGenerator }
 
-constructor TEnginePaletteGenerator.Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean);
+constructor TEnginePaletteGenerator.Create(const ABuilder: IPaletteBuilder; AWithFogmap: Boolean;
+  const ALumps: IEngineLumps; const AZone: IZoneAllocator; const AShutdown: IEngineShutdown);
 begin
   inherited Create;
+  if not Assigned(AShutdown) then
+    raise EArgumentNilException.Create('AShutdown');
+  FShutdown := AShutdown;
   if not Assigned(ABuilder) then
     raise EArgumentNilException.Create('ABuilder');
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  if not Assigned(AZone) then
+    raise EArgumentNilException.Create('AZone');
+  FLumps := ALumps;
+  FZone := AZone;
   FBuilder := ABuilder;
   FWithFogmap := AWithFogmap;
 end;
@@ -67,18 +85,18 @@ var
   LFileName: string;
 begin
   if AArgument = '' then
-    LLump := W_CacheLumpName('PLAYPAL', PU_STATIC)
+    LLump := FLumps.Cache(FLumps.GetNumForName('PLAYPAL'), ZONE_TAG_STATIC)
   else
-    LLump := W_CacheLumpName(AArgument, PU_STATIC);
+    LLump := FLumps.Cache(FLumps.GetNumForName(AArgument), ZONE_TAG_STATIC);
   SetLength(LBase, PALETTE_BYTE_COUNT);
   Move(LLump^, LBase[0], PALETTE_BYTE_COUNT);
-  Z_Free(LLump);
+  FZone.FreeBlock(LLump);
 
   try
     LPalettes := FBuilder.Build(LBase, True, FWithFogmap);
   except
     on E: EPaletteException do
-      I_Error('TEnginePaletteGenerator.Generate(): %s', [E.Message]);
+      FShutdown.Fail('TEnginePaletteGenerator.Generate(): ' + E.Message);
   end;
 
   LFileName := I_NewTempFile(AUTO_PALETTE_WAD);
@@ -94,7 +112,7 @@ begin
     LWad.Free;
   end;
 
-  W_RuntimeLoad(LFileName, F_ORIGIN_WAD);
+  FLumps.RuntimeLoadFile(LFileName);
 end;
 
 end.

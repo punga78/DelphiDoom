@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.TextureDefs.Intf;
+  DelphiDoom.TextureDefs.Intf,
+  DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
   /// <summary>
@@ -20,33 +21,41 @@ type
   ///   that wins in the directory, copied out of the zone memory
   /// </summary>
   TEngineTextureLumpSource = class(TInterfacedObject, ITextureDefsLumpSource)
+  strict private
+    FLumps: IEngineLumps;
   public
+    constructor Create(const ALumps: IEngineLumps);
     function TryReadLump(const AName: string; out ABytes: TBytes): Boolean;
   end;
 
 implementation
 
-uses
-  w_wad;
-
 { TEngineTextureLumpSource }
+
+constructor TEngineTextureLumpSource.Create(const ALumps: IEngineLumps);
+begin
+  inherited Create;
+  if not Assigned(ALumps) then
+    raise EArgumentNilException.Create('ALumps');
+  FLumps := ALumps;
+end;
 
 function TEngineTextureLumpSource.TryReadLump(const AName: string; out ABytes: TBytes): Boolean;
 var
   LLump: Integer;
   LLength: Integer;
 begin
-  LLump := W_CheckNumForName(AName);
+  LLump := FLumps.CheckNumForName(AName);
   Result := LLump >= 0;
   if not Result then
   begin
     ABytes := nil;
     Exit;
   end;
-  LLength := W_LumpLength(LLump);
+  LLength := FLumps.LengthOf(LLump);
   SetLength(ABytes, LLength);
   if LLength > 0 then
-    W_ReadLump(LLump, @ABytes[0]);
+    FLumps.Read(LLump, @ABytes[0]);
 end;
 
 end.

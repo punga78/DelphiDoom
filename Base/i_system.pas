@@ -460,6 +460,7 @@ procedure I_ConfigureDefaults(const ADefaults: IEngineDefaults);
 implementation
 
 uses
+  DelphiDoom.Console.Numbers,
   DelphiDoom.Platform.Types,
 {$IFDEF FPC}
   d_fpc,
@@ -694,7 +695,7 @@ begin
     exit;
   end;
 
-  newusemmx := C_BoolEval(parm, usemmx);
+  newusemmx := TConsoleNumbers.EvaluateBoolean(parm, usemmx);
   if usemmx <> newusemmx then
   begin
     usemmx := newusemmx;
