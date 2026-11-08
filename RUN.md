@@ -38,6 +38,18 @@ Con `Tests\Data\Midi\stream.golden.txt` presente (e i WAD in `..\..\bin\<Gioco>`
 Musica nei quattro giochi con `snd_uselegacymidiplayer` 0 (player interno: **usa la libreria**), 1 (MCI, invariato) e 2 (MIDI convertito in MUS: lo stream MUS usa `TMidiVolume` e `TMidiEventFeeder`), con pausa e ripresa e cambio di volume dal menu; Hexen ha i brani in MIDI. I punti «non provati» della #59 (file MIDI con MCI, XMI, pausa/ripresa) restano da provare.
 Con `snd_uselegacymidiplayer = 0` verificare in particolare: il brano parte, ricomincia alla fine (il vecchio player internamente non azzerava il tempo al giro: se non ricominciava già prima, resta uguale), il volume del menu cambia, `-nomusic`.
 
+## Il difetto del giro del brano (`MIDI_LEGACY_LOOP`)
+
+Il vecchio `TMidi` non azzerava il tempo del brano quando questo ricominciava (fine del giro, o `Rewind`): il primo evento dopo il giro aveva come ritardo «il suo tempo meno il tempo della fine», che avvolge a `$FFFFFFxx` tick. All'ascolto: il brano è giusto la prima volta e al secondo giro parte con un ritardo enorme (silenzio) o con eventi fuori tempo; si vede nel golden come primo evento di un blocco dopo la fine con delta `$FFFFFFxx` (righe `looped`/`tempo` dei brani brevi, es. `short_loop`).
+
+Il difetto è sotto **`MIDI_LEGACY_LOOP`**, definito in `Libs\Midi\DelphiDoom.Midi.inc` (riga `{$DEFINE MIDI_LEGACY_LOOP}`, attiva per ora: parità byte per byte con il vecchio codice e con i golden). **Togliendo la riga il codice è corretto**: il tempo riparte da zero a ogni ricomincio. Da togliere dopo che l'utente ha capito il difetto (previsto lunedì 2026-11-09).
+
+Come provare le due configurazioni:
+- **Con il define (default)**: i passi 1-3 sopra. Test dipendenti dal difetto: `DovrebbeConservareIlDeltaCheAvvolgeDopoIlGiro` e i tre di parità con il golden.
+- **Senza il define**: commentare/cancellare la riga `{$DEFINE MIDI_LEGACY_LOOP}` nel `.inc` e ricompilare `Tests\DelphiDoom.Tests.Midi` (anche con `build.bat Tests\DelphiDoom.Tests.Midi`; i `.dcu` vecchi vanno rifatti: `clean` o cancellare `dcu\Tests\Midi`). Il progetto compila anche così. Atteso: i tre test di parità passano con `Assert.Pass` (il golden è del vecchio codice, dopo il giro differisce per costruzione) e al posto del test del delta che avvolge girano `DovrebbeAzzerareIlTempoAlGiro`, `DovrebbeDareIlTempoDelPrimoEventoDopoIlGiro` e `DovrebbeAzzerareIlTempoConIlRewind` (delta zero o pari al tempo del primo evento). Tutti gli altri test sono uguali nelle due configurazioni.
+
+L'altro difetto (evento scritto 192 byte oltre il posto giusto dopo il tempo inserito) **non** è sotto il define: ciò che il vecchio lasciava nei byte in mezzo dipendeva dal contenuto precedente del buffer, che un blocco della libreria non ha. I byte del vecchio sono nelle righe `/legacy-tempo` del golden, solo informative.
+
 ## Rischi di compilazione previsti
 
 - `Libs\Midi\DelphiDoom.Midi.StreamSequencer.pas`: aritmetica `Cardinal` (cast espliciti messi dove Delphi promuove a `Int64`); `case ... else` con solo un commento.

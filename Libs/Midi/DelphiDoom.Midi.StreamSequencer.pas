@@ -9,6 +9,8 @@
 {******************************************************************************}
 unit DelphiDoom.Midi.StreamSequencer;
 
+{$I DelphiDoom.Midi.inc}
+
 {$Q-}
 {$R-}
 // Times and tempos are unsigned numbers that wrap around, as in the old player
@@ -31,8 +33,9 @@ type
   ///   It keeps what the old code did, defects included, so that the blocks are the same bytes:
   ///   the time of an event that is not written (system exclusive, meta) is counted in the
   ///   delta of the next one; an event that does not fit a block and waits for the next one has
-  ///   a delta of zero; the position in time is not reset when the song loops, so the first
-  ///   event after the end has a delta that wraps around. The only difference is the tempo
+  ///   a delta of zero; with MIDI_LEGACY_LOOP (DelphiDoom.Midi.inc) the position in time is not
+  ///   reset when the song starts again, so the first event after the end has a delta that wraps
+  ///   around (without the define the time restarts from zero). The only difference is the tempo
   ///   event inserted by RequestTempoEvent: the old code wrote the event that follows it 192
   ///   bytes farther than the 12 that it counted (a pointer to a record of 16 bytes moved by 12
   ///   steps), so the stream played what the buffer held before; here it follows at once
@@ -150,6 +153,10 @@ begin
   FNextEvent := 0;
   FDone := False;
   FPendingValid := False;
+{$IFNDEF MIDI_LEGACY_LOOP}
+  // the song starts again from time zero: the first delta is the time of its first event
+  FCurrentTime := 0;
+{$ENDIF}
 end;
 
 procedure TMidiStreamSequencer.RequestTempoEvent;

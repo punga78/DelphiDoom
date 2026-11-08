@@ -7,6 +7,8 @@
 {******************************************************************************}
 unit DelphiDoom.Tests.Midi.StreamSequencer;
 
+{$I DelphiDoom.Midi.inc}
+
 interface
 
 uses
@@ -58,8 +60,17 @@ type
     procedure DovrebbeChiedereLaChiamataPerLaVolumeDelCanale;
     [Test]
     procedure DovrebbeRicominciareSeLaCanzoneSiRipete;
+{$IFDEF MIDI_LEGACY_LOOP}
     [Test]
     procedure DovrebbeConservareIlDeltaCheAvvolgeDopoIlGiro;
+{$ELSE}
+    [Test]
+    procedure DovrebbeAzzerareIlTempoAlGiro;
+    [Test]
+    procedure DovrebbeDareIlTempoDelPrimoEventoDopoIlGiro;
+    [Test]
+    procedure DovrebbeAzzerareIlTempoConIlRewind;
+{$ENDIF}
     [Test]
     procedure DovrebbeDimenticareLEventoInSospesoConIlReset;
     [Test]
@@ -285,6 +296,7 @@ begin
   Assert.AreEqual(Integer(60), Integer(EventAt(LBlock, 0).Data[1]));
 end;
 
+{$IFDEF MIDI_LEGACY_LOOP}
 procedure TTestMidiStreamSequencer.DovrebbeConservareIlDeltaCheAvvolgeDopoIlGiro;
 var
   LBlock: TBytes;
@@ -298,6 +310,50 @@ begin
   // the old player did not bring the time back to zero: 0 - 24 wraps around
   Assert.AreEqual(Int64($FFFFFFE8), Int64(EventAt(LBlock, 0).Time));
 end;
+{$ELSE}
+procedure TTestMidiStreamSequencer.DovrebbeAzzerareIlTempoAlGiro;
+var
+  LBlock: TBytes;
+  LCode: TMidiConvertResult;
+begin
+  Assert.IsTrue(Prepare(Song(TB.Join([TB.NoteOn(0, 0, 60, 100), TB.NoteOff(24, 0, 60, 0),
+    TB.EndOfTrack(0)]))));
+  Block(True, LCode);
+  FSequencer.Looped := True;
+  LBlock := Block(False, LCode);
+  // the first event is at time zero: its delta is zero, not 0 - 24
+  Assert.AreEqual(Integer(0), Integer(EventAt(LBlock, 0).Time));
+  Assert.AreEqual(Integer(24), Integer(EventAt(LBlock, 1).Time));
+end;
+
+procedure TTestMidiStreamSequencer.DovrebbeDareIlTempoDelPrimoEventoDopoIlGiro;
+var
+  LBlock: TBytes;
+  LCode: TMidiConvertResult;
+begin
+  Assert.IsTrue(Prepare(Song(TB.Join([TB.NoteOn(10, 0, 60, 100), TB.NoteOff(24, 0, 60, 0),
+    TB.EndOfTrack(0)]))));
+  Block(True, LCode);
+  FSequencer.Looped := True;
+  LBlock := Block(False, LCode);
+  // the song waits 10 ticks before its first event, every round
+  Assert.AreEqual(Integer(10), Integer(EventAt(LBlock, 0).Time));
+  Assert.AreEqual(Integer(24), Integer(EventAt(LBlock, 1).Time));
+end;
+
+procedure TTestMidiStreamSequencer.DovrebbeAzzerareIlTempoConIlRewind;
+var
+  LBlock: TBytes;
+  LCode: TMidiConvertResult;
+begin
+  Assert.IsTrue(Prepare(Song(TB.Join([TB.NoteOn(10, 0, 60, 100), TB.NoteOff(24, 0, 60, 0),
+    TB.EndOfTrack(0)]))));
+  Block(True, LCode);
+  FSequencer.Rewind;
+  LBlock := Block(False, LCode);
+  Assert.AreEqual(Integer(10), Integer(EventAt(LBlock, 0).Time));
+end;
+{$ENDIF}
 
 procedure TTestMidiStreamSequencer.DovrebbeDimenticareLEventoInSospesoConIlReset;
 var
