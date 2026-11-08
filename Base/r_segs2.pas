@@ -36,7 +36,9 @@ interface
 uses
   d_delphi,
   m_fixed,
-  r_defs;
+  r_defs,
+  DelphiDoom.Renderer.Intf,
+  DelphiDoom.Renderer.Types;
 
 var
   rw_scale_dbl: double;
@@ -69,6 +71,13 @@ procedure R_CalcSectors;
 //
 //==============================================================================
 procedure R_PrecalcSegs;
+
+//==============================================================================
+//
+// R_ConfigureLevelPrecalc
+//
+//==============================================================================
+procedure R_ConfigureLevelPrecalc(const APrecalc: IRendererLevelPrecalc);
 
 //==============================================================================
 //
@@ -140,6 +149,7 @@ implementation
 uses
   doomtype,
   doomdef,
+  i_system,
   p_setup,
   r_bsp,
   r_column,
@@ -4019,9 +4029,6 @@ var
   highestceiling: fixed_t;
   level_needs_tall_walls: boolean;
 
-const
-  TALL_WALL_OFFSET = 2048 * FRACUNIT;
-
 //==============================================================================
 //
 // R_SetDrawSegFunctions
@@ -4377,6 +4384,32 @@ begin
   end;
 end;
 
+var
+  level_precalc: IRendererLevelPrecalc = nil;
+
+//==============================================================================
+//
+// R_ConfigureLevelPrecalc
+// The measures of the level of Libs\Renderer, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureLevelPrecalc(const APrecalc: IRendererLevelPrecalc);
+begin
+  level_precalc := APrecalc;
+end;
+
+//==============================================================================
+//
+// R_LevelPrecalc
+//
+//==============================================================================
+function R_LevelPrecalc: IRendererLevelPrecalc;
+begin
+  if level_precalc = nil then
+    I_Error('R_LevelPrecalc(): R_ConfigureLevelPrecalc() was not called');
+  result := level_precalc;
+end;
+
 //==============================================================================
 //
 // R_CalcSectors
@@ -4385,19 +4418,22 @@ end;
 procedure R_CalcSectors;
 var
   i: integer;
-  h: int64;
+  floorheights: TArray<Integer>;
+  ceilingheights: TArray<Integer>;
+  heights: TRendererHeightRange;
 begin
-  lowestfloor := MAXINT;
-  highestceiling := MININT;
+  SetLength(floorheights, numsectors);
+  SetLength(ceilingheights, numsectors);
   for i := 0 to numsectors - 1 do
   begin
-    if sectors[i].floorheight < lowestfloor then
-      lowestfloor := sectors[i].floorheight;
-    if sectors[i].ceilingheight > highestceiling then
-      highestceiling := sectors[i].ceilingheight;
+    floorheights[i] := sectors[i].floorheight;
+    ceilingheights[i] := sectors[i].ceilingheight;
   end;
-  h := int64(highestceiling) - int64(lowestfloor);
-  level_needs_tall_walls := h > TALL_WALL_OFFSET;
+
+  heights := R_LevelPrecalc.MeasureHeights(floorheights, ceilingheights);
+  lowestfloor := heights.LowestFloor;
+  highestceiling := heights.HighestCeiling;
+  level_needs_tall_walls := heights.NeedsTallWalls;
 end;
 
 //==============================================================================
@@ -4408,18 +4444,36 @@ end;
 procedure R_PrecalcSegs;
 var
   i: integer;
-  dx, dy: double;
-  len: double;
+  startx: TArray<Integer>;
+  starty: TArray<Integer>;
+  endx: TArray<Integer>;
+  endy: TArray<Integer>;
+  maplength: TArray<Integer>;
+  invlength: TArray<Double>;
   li: Pseg_t;
 begin
+  SetLength(startx, numsegs);
+  SetLength(starty, numsegs);
+  SetLength(endx, numsegs);
+  SetLength(endy, numsegs);
+  SetLength(maplength, numsegs);
+  SetLength(invlength, numsegs);
   for i := 0 to numsegs - 1 do
   begin
     li := @segs[i];
-    dx := li.v2.x - li.v1.x;
-    dy := li.v2.y - li.v1.y;
-    len := sqrt(dx * dx + dy * dy);
-    li.map_length := round(len / FRACUNIT);
-    li.inv_length := 1 / len;
+    startx[i] := li.v1.x;
+    starty[i] := li.v1.y;
+    endx[i] := li.v2.x;
+    endy[i] := li.v2.y;
+  end;
+
+  R_LevelPrecalc.MeasureSegments(startx, starty, endx, endy, maplength, invlength);
+
+  for i := 0 to numsegs - 1 do
+  begin
+    li := @segs[i];
+    li.map_length := maplength[i];
+    li.inv_length := invlength[i];
   end;
 end;
 
