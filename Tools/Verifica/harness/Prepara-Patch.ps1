@@ -7,8 +7,8 @@
 #
 # Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays as it was.
 param(
-  [Parameter(Mandatory = $true)][ValidateSet('Heretic', 'Strife', 'Hexen')][string]$Game,
-  [Parameter(Mandatory = $true)][ValidateSet('H', 'P')][string]$Variant
+  [Parameter(Mandatory = $true)][ValidateSet('Doom', 'Heretic', 'Strife', 'Hexen')][string]$Game,
+  [Parameter(Mandatory = $true)][ValidateSet('H', 'P', 'S')][string]$Variant
 )
 
 $ErrorActionPreference = 'Stop'
@@ -111,6 +111,33 @@ if ($Variant -eq 'H') {
     if (-not $m.Success) { throw "G_Ticker not found" }
     $nl = if ($m.Value.EndsWith("`r`n")) { "`r`n" } else { "`n" }
     return $t.Substring(0, $m.Index + $m.Length) + "  HarnessExitCheck(gametic);$nl" + $t.Substring($m.Index + $m.Length)
+  }
+}
+elseif ($Variant -eq 'S') {
+  # --- savegames: the hook of harness_sweep in G_Ticker (needs none of the new units: it also builds on 31ee71e3) ---
+  Edit-File $dpr {
+    param($t)
+    $m = [regex]::Match($t, "(?m)^  i_system in 'Base\\i_system.pas',\r?\n")
+    if (-not $m.Success) { throw "i_system not found in $dpr" }
+    $nl = if ($m.Value.EndsWith("`r`n")) { "`r`n" } else { "`n" }
+    return $t.Substring(0, $m.Index + $m.Length) +
+      "  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',$nl" + $t.Substring($m.Index + $m.Length)
+  }
+  if ($Game -eq 'Strife') { $inc = 'Strife' } elseif ($Game -eq 'Hexen') { $inc = 'Hexen' } else { $inc = 'Doom' }
+  Edit-File "$Game\g_game.pas" {
+    param($t)
+    $t = Add-ImplementationUses $t 'harness_sweep'
+    $m = [regex]::Match($t, '(?m)^procedure G_Ticker;\r?\nvar')
+    if (-not $m.Success) { throw "G_Ticker not found" }
+    $nl = if ($m.Value.Contains("`r`n")) { "`r`n" } else { "`n" }
+    $t = $t.Substring(0, $m.Index) + "procedure HarnessSaveCheck; forward;" + $nl + $nl + $t.Substring($m.Index)
+    $m = [regex]::Match($t, '(?ms)^procedure G_Ticker;\r?\nvar.*?^begin\r?\n')
+    $t = $t.Substring(0, $m.Index + $m.Length) + "  HarnessSaveCheck;$nl" + $t.Substring($m.Index + $m.Length)
+    # before the initialization section when there is one
+    $m = [regex]::Match($t, '\r?\n(initialization|finalization)\r?\n')
+    if (-not $m.Success) { $m = [regex]::Match($t, '\r?\nend\.\s*$') }
+    if (-not $m.Success) { throw "end of unit not found" }
+    return $t.Substring(0, $m.Index) + $nl + "{`$I ..\Tools\Verifica\harness\harness_save_$inc.inc}" + $nl + $t.Substring($m.Index)
   }
 }
 else {
