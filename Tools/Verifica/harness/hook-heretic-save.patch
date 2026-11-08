@@ -1,0 +1,50 @@
+diff --git a/Heretic/g_game.pas b/Heretic/g_game.pas
+index 50691c8a..c783cbe2 100644
+--- a/Heretic/g_game.pas
++++ b/Heretic/g_game.pas
+@@ -473,6 +473,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
+ implementation
+ 
+ uses
++  harness_sweep,
+   c_cmds,
+   d_check,
+   z_zone,
+@@ -1954,6 +1955,8 @@ end;
+ // Make ticcmd_ts for the players.
+ //
+ //==============================================================================
++procedure HarnessSaveCheck; forward;
++
+ procedure G_Ticker;
+ var
+   i: integer;
+@@ -1962,6 +1965,7 @@ var
+   msg: string;
+   pl: Pplayer_t;
+ begin
++  HarnessSaveCheck;
+   // do player reborns if needed
+   for i := 0 to MAXPLAYERS - 1 do
+     if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+@@ -3929,6 +3933,8 @@ begin
+   end;
+ end;
+ 
++{$I ..\Tools\Verifica\harness\harness_save_Doom.inc}
++
+ initialization
+ 
+   forwardmove[0] := $19;
+diff --git a/Heretic32.dpr b/Heretic32.dpr
+index 5dac3b80..a4f5eb3c 100644
+--- a/Heretic32.dpr
++++ b/Heretic32.dpr
+@@ -197,6 +197,7 @@ uses
+   i_midi_new in 'Base\i_midi_new.pas',
+   i_net in 'Base\i_net.pas',
+   i_system in 'Base\i_system.pas',
++  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
+   i_video in 'Base\i_video.pas',
+   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
