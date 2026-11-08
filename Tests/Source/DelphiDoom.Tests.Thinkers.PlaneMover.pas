@@ -28,6 +28,8 @@ type
   strict private
     FHost: TFakePlaneHost;
     FHostIntf: IPlaneSectorHost;
+    // the host that Move uses: it is FHostIntf, or a host of a parity test (FHost must stay referenced by FHostIntf)
+    FCurrentHost: IPlaneSectorHost;
     procedure UseHostThatNeverBlocks;
     function Move(var ASector: sector_t; ASpeed, ADestination: Integer; ACrush: Boolean;
       AKind, ADirection: Integer; const ARules: TPlaneMoveRules): TPlaneMoveResult;
@@ -145,11 +147,13 @@ procedure TTestThinkersPlaneMover.Setup;
 begin
   FHost := TFakePlaneHost.Create(THING_HEIGHT);
   FHostIntf := FHost;
+  FCurrentHost := FHostIntf;
 end;
 
 procedure TTestThinkersPlaneMover.TearDown;
 begin
   OldPlaneHost := nil;
+  FCurrentHost := nil;
   FHostIntf := nil;
   FHost := nil;
 end;
@@ -158,9 +162,11 @@ procedure TTestThinkersPlaneMover.UseHostThatNeverBlocks;
 begin
   // a sector is blocked when its gap is smaller than the height of a thing: with a negative
   // height not even a ceiling below the floor is
+  FCurrentHost := nil;
   FHostIntf := nil;
   FHost := TFakePlaneHost.Create(-1000);
   FHostIntf := FHost;
+  FCurrentHost := FHostIntf;
 end;
 
 function TTestThinkersPlaneMover.Move(var ASector: sector_t; ASpeed, ADestination: Integer;
@@ -170,12 +176,12 @@ begin
   case AKind of
     FLOOR_PLANE:
       Result := TPlaneMover.Move(ASector.floorheight, ASector.ceilingheight, ASpeed,
-        ADestination, ACrush, TPlaneKind.Floor, ADirection, ARules, FHostIntf, @ASector);
+        ADestination, ACrush, TPlaneKind.Floor, ADirection, ARules, FCurrentHost, @ASector);
     CEILING_PLANE:
       Result := TPlaneMover.Move(ASector.ceilingheight, ASector.floorheight, ASpeed,
-        ADestination, ACrush, TPlaneKind.Ceiling, ADirection, ARules, FHostIntf, @ASector);
+        ADestination, ACrush, TPlaneKind.Ceiling, ADirection, ARules, FCurrentHost, @ASector);
   else
-    FHostIntf.PlaneMoved(@ASector);
+    FCurrentHost.PlaneMoved(@ASector);
     Result := TPlaneMoveResult.Ok;
   end;
 end;
@@ -602,7 +608,7 @@ begin
       LNewHost.Clear;
       // the old function writes through the pointer to the sector
       LOldResult := ResultOfOld(AOld(@LOldSector, LSpeed, LDest, LCrush, LKind, LDirection));
-      FHostIntf := LNewIntf;
+      FCurrentHost := LNewIntf;
       LNewResult := Move(LNewSector, LSpeed, LDest, LCrush, LKind, LDirection, ARules);
       LText := Format('case %d (kind %d, direction %d, crush %d, speed %d, destination %d)',
         [LCase, LKind, LDirection, Ord(LCrush), LSpeed, LDest]);
@@ -613,7 +619,7 @@ begin
     end;
   finally
     OldPlaneHost := nil;
-    FHostIntf := FHost;
+    FCurrentHost := FHostIntf;
   end;
 end;
 
@@ -657,7 +663,7 @@ begin
         LDirection := 1
       else
         LDirection := -1;
-      FHostIntf := LNewIntf;
+      FCurrentHost := LNewIntf;
       for LStep := 1 to 400 do
       begin
         LOldHost.Clear;
@@ -675,7 +681,7 @@ begin
     end;
   finally
     OldPlaneHost := nil;
-    FHostIntf := FHost;
+    FCurrentHost := FHostIntf;
   end;
 end;
 
