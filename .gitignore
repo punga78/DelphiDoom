@@ -84,3 +84,7 @@ Media/
 # Sorgenti di riferimento di altri motori id Tech (solo consultazione, non fanno parte del progetto)
 Reference/
 
+
+# log di compilazione scritti nella radice dai worktree
+logs_build_*.txt
+lb*.txt
