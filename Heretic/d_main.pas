@@ -46,6 +46,7 @@ uses
   doomdef,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Nodes.Intf,
   DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Engine.Net.Intf,
   DelphiDoom.Engine.Configuration.Intf,
@@ -55,6 +56,7 @@ uses
   DelphiDoom.Scanner.AutoLoad.Intf,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.Video.Intf,
+  DelphiDoom.Engine.MapInfo.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
 const
@@ -222,6 +224,17 @@ function D_FileInDoomPath(const fn: string): string;
 //==============================================================================
 procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 
+{$IFDEF OPENGL}
+//==============================================================================
+//
+// D_ConfigureGlbsp
+// Gives the glBSP runner that builds the GL nodes of the files added at startup
+// (ComposeEngine, OpenGL only)
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+
+{$ENDIF}
 //==============================================================================
 //
 // D_ConfigureGameDefines
@@ -263,6 +276,16 @@ procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
 //==============================================================================
 procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
   const AScreenSize: IScreenSizeResolver);
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+// The UMAPINFO records, given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
 
 //==============================================================================
 //
@@ -360,7 +383,6 @@ uses
   DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
-  nd_main,
 {$ELSE}
   r_defs,
   r_fake3d,
@@ -492,6 +514,20 @@ begin
   main_screensize := AScreenSize;
 end;
 
+var
+  // given by the composition root (D_ConfigureMapInfo)
+  main_mapinfo: IEngineMapInfoRecords = nil;
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
+begin
+  main_mapinfo := ARecords;
+end;
+
 //==============================================================================
 //
 // D_ResponseFiles
@@ -515,6 +551,19 @@ begin
     I_Error('D_ConfigureStartup() was not called: the screen size cannot be read');
   result := main_screensize;
 end;
+
+//==============================================================================
+//
+// D_MapInfo
+//
+//==============================================================================
+function D_MapInfo: IEngineMapInfoRecords;
+begin
+  if main_mapinfo = nil then
+    I_Error('D_ConfigureMapInfo() was not called: UMAPINFO cannot be read');
+  result := main_mapinfo;
+end;
+
 var
   // given by the composition root (D_ConfigureConsole, D_ConfigureNetGame,
   // D_ConfigureDefaults, D_ConfigureScreenshot)
@@ -1263,6 +1312,34 @@ end;
 var
   wadfiles: TDStringList;
 
+{$IFDEF OPENGL}
+var
+  // given by the composition root (D_ConfigureGlbsp)
+  glbsp_runner: IEngineGlbspRunner = nil;
+
+//==============================================================================
+//
+// D_ConfigureGlbsp
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+begin
+  glbsp_runner := ARunner;
+end;
+
+//==============================================================================
+//
+// D_GlbspRunner
+//
+//==============================================================================
+function D_GlbspRunner: IEngineGlbspRunner;
+begin
+  if glbsp_runner = nil then
+    I_Error('D_AddFile(): the glBSP runner was not given (D_ConfigureGlbsp)');
+  result := glbsp_runner;
+end;
+{$ENDIF}
+
 //==============================================================================
 //
 // D_AddFile
@@ -1312,7 +1389,7 @@ begin
             gwafname := path + fname(gwafname);
             if fexists(gwafname) then
               wadfiles.Add(gwafname)
-            else if gld_BuildNodes(fname2, gwafname) then
+            else if D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
               wadfiles.Add(gwafname);
           end;
         end;
@@ -2416,7 +2493,7 @@ begin
 
   // UMAPINFO must be parsed after intializing the menus
   printf('U_ParseMapInfo: Parsing UMAPINFO lumps.'#13#10);
-  U_ParseMapInfo(False, 'UMAPINFO');
+  D_MapInfo.Load(False, 'UMAPINFO');
 
   SUC_Progress(59);
 
@@ -2705,7 +2782,7 @@ begin
   if main_endoom <> nil then
     main_endoom.Shutdown;
   printf('U_FreeMapInfo: Free UMAPINFO data.'#13#10);
-  U_FreeMapInfo;
+  D_MapInfo.Release;
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);

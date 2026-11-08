@@ -59,13 +59,6 @@ const
 //==============================================================================
 procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog);
 
-//==============================================================================
-//
-// P_FindMusinfoMusic
-//
-//==============================================================================
-function P_FindMusinfoMusic(const id: integer; const mapname: string): integer;
-
 implementation
 
 uses
@@ -88,6 +81,21 @@ const
 
 const
   MUSINFOTICS = 30;
+
+var
+  musinfo_catalog: IMusInfoCatalog;
+
+//==============================================================================
+//
+// P_FindMusinfoMusic
+//
+//==============================================================================
+function P_FindMusinfoMusic(const id: integer; const mapname: string): integer;
+begin
+  if musinfo_catalog = nil then
+    I_Error('P_FindMusinfoMusic(): MUSINFO is not configured (ComposeEngine was not called)');
+  result := musinfo_catalog.Find(id, mapname);
+end;
 
 //==============================================================================
 //
@@ -166,9 +174,6 @@ begin
   end;
 end;
 
-var
-  musinfo_catalog: IMusInfoCatalog;
-
 //==============================================================================
 //
 // P_ConfigureMusInfo
@@ -177,18 +182,6 @@ var
 procedure P_ConfigureMusInfo(const ACatalog: IMusInfoCatalog);
 begin
   musinfo_catalog := ACatalog;
-end;
-
-//==============================================================================
-//
-// P_FindMusinfoMusic
-//
-//==============================================================================
-function P_FindMusinfoMusic(const id: integer; const mapname: string): integer;
-begin
-  if musinfo_catalog = nil then
-    I_Error('P_FindMusinfoMusic(): MUSINFO is not configured (ComposeEngine was not called)');
-  result := musinfo_catalog.Find(id, mapname);
 end;
 
 end.

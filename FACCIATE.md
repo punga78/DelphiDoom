@@ -221,13 +221,11 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
 ### `Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
 
-**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `OPENGL\gl_setup.pas`, `gld_GetGLVertexes`, `gld_BuildNodes` (dai `d_main`) e `ND_RunGlbsp`.
+**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `OPENGL\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `gld_GetGLVertexes` | 1 | gl_setup |
-| `ND_RunGlbsp` | 1 | DelphiDoom.Engine.Level.Nodes |
-| `gld_BuildNodes` | 5 | DelphiDoom.Engine.Level.Nodes, Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
 
 ### `Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
 
@@ -265,7 +263,7 @@ Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `
 
 ### `Base\p_musinfo.pas` - 3 funzioni pubbliche, 9 chiamate
 
-Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` carica con `IMusInfoLoader`); restano `A_MusicChanger` (azione di stato) e `P_FindMusinfoMusic`, che nessuno chiama da fuori.
+Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` carica con `IMusInfoLoader`); resta `A_MusicChanger` (azione di stato); `P_FindMusinfoMusic`, che nessuno chiamava da fuori, dalla #158 non e piu pubblica.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -273,9 +271,9 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 | `P_ConfigureMusInfo` | 1 | DelphiDoom.Engine.Composition |
 | `A_MusicChanger` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
 
-### `Base\i_midi_new.pas` - 9 funzioni pubbliche, 9 chiamate
+### `Base\i_midi_new.pas` - cancellata
 
-Per toglierla: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
+**Tolta (#158)**: il corpo e `TEngineMidiSongPlayer` (`IEngineMidiSongPlayer`), creata da `ComposeMusic` e data a `i_midi` con `I_ConfigureMidi`. Storia: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -291,7 +289,7 @@ Per toglierla: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidi
 
 ### `Hexen\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
 
-Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+**Valutata nella #159, lasciata** (vale per i quattro `deh_main`): non e una facciata ma i dati del gioco. `DEH_Init` costruisce le liste dei nomi (`mobj_tokens`, `state_tokens`, i flag...) e registra le circa 1900 azioni, e le liste sono variabili di unit che leggono `ActorDef.Catalog`, `TableExport.Names/Settings`, `info_common`, `p_common`, `r_renderstyle` e, in Strife, 12 moduli del gioco per `DEH_GetString`. Spostare il corpo in una classe cambierebbe solo il nome dell'unit e le liste restano globali; servirebbe prima dare le liste a quei lettori (un `IDehackedTables`) e a `deh_base`, e portare a dati le registrazioni (stima L, come in `PENDING_ISSUES.md`). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -300,7 +298,7 @@ Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una clas
 
 ### `Heretic\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
 
-Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -309,7 +307,7 @@ Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una clas
 
 ### `Doom\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
 
-Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -318,7 +316,7 @@ Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una clas
 
 ### `Doom\p_switch.pas` - 2 funzioni pubbliche, 12 chiamate
 
-Per toglierla: `P_InitSwitchList` e `P_ConfigureSwitches` non esistono piu (#142: `TEngineSwitchListLoader` e le regole di livello di Doom); `P_UseSpecialLine` e `P_ChangeSwitchTexture` sono legati ai thinker dei bottoni: restano.
+**Valutata nella #159, lasciata**: non e una facciata ma codice dei bottoni di Doom (`P_UseSpecialLine`, `P_ChangeSwitchTexture`, il thinker `button_t`), legato ai thinker. `P_InitSwitchList` e `P_ConfigureSwitches` non esistono piu (#142: `TEngineSwitchListLoader` e le regole di livello di Doom); `P_UseSpecialLine` e `P_ChangeSwitchTexture` sono legati ai thinker dei bottoni: restano.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -327,7 +325,7 @@ Per toglierla: `P_InitSwitchList` e `P_ConfigureSwitches` non esistono piu (#142
 
 ### `Base\r_patch.pas` - 5 funzioni pubbliche, 13 chiamate
 
-**Non piu facciata (#135)**: e la cache delle colonne fisse del motore (`fixedcolumns[]`), che chiama gia la libreria.
+**Non piu facciata (#135)**: e la cache delle colonne fisse del motore (`fixedcolumns[]`), che chiama gia la libreria. **Valutata nella #159, lasciata**: `R_EnableFixedColumn`/`R_DisableFixedColumn` sono chiamate dal percorso caldo (`r_plane`, `r_segs`) e `R_GetFixedColumn` da `r_data`; non c'e un oggetto a cui darle senza una chiamata a interfaccia per colonna.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -337,16 +335,16 @@ Per toglierla: `P_InitSwitchList` e `P_ConfigureSwitches` non esistono piu (#142
 | `R_EnableFixedColumn` | 3 | r_plane (2), r_segs |
 | `R_DisableFixedColumn` | 4 | r_plane (3), r_segs |
 
-### `Base\i_tmp.pas` - 4 funzioni pubbliche, 14 chiamate
+### `Base\i_tmp.pas` - 4 funzioni pubbliche, 12 chiamate
 
-Per toglierla: file temporanei: i chiamanti dovrebbero ricevere `ITempFiles`.
+**Ridotta (#159)**: `TEnginePaletteGenerator` e `TEngineVoxelSpriteGenerator` ricevono `ITempFiles` dal costruttore (`ComposeEngine`). Restano i salvataggi (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file) e `ps_dll`, procedure storiche senza un oggetto a cui darlo, e `i_system` per la chiusura.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `I_ConfigureTempFiles` | 1 | DelphiDoom.Engine.Composition |
-| `I_DeclareTempFile` | 1 | DelphiDoom.Engine.Voxel.SpriteGenerator |
+| `I_DeclareTempFile` | 0 | - |
 | `I_ShutDownTempFiles` | 2 | i_system (2) |
-| `I_NewTempFile` | 10 | DelphiDoom.Engine.Scanner.PaletteGenerator, Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), ps_dll, Strife\p_saveg (2) |
+| `I_NewTempFile` | 9 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), ps_dll, Strife\p_saveg (2) |
 
 ### `Heretic\p_ceilng.pas` - 4 funzioni pubbliche, 15 chiamate
 
@@ -359,26 +357,17 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 | `EV_CeilingCrushStop` | 2 | p_spec (2) |
 | `EV_DoCeiling` | 10 | p_spec (7), p_switch (3) |
 
-### `Base\p_animdefs.pas` - 3 funzioni pubbliche, 15 chiamate
+### `Base\p_animdefs.pas` - 1 funzioni pubbliche, 3 chiamate
 
-Per toglierla: ANIMDEFS lo carica `TEngineAnimDefsLoader` (#142) e `P_InitAnimations`/`P_ShutDownAnimations` le chiamano le regole di livello dei giochi; `P_AnimateSurfaces` gira a ogni tic.
+**Ridotta (#159)**: `P_InitAnimations` e `P_ShutDownAnimations` non esistono piu: le liste delle immagini animate le crea `TEngineAnimDefsLoader.Load` e le libera `IEngineAnimDefsLoader.Release` (le regole di livello di Doom, Heretic e Strife). Resta `P_AnimateSurfaces` (chiamata a ogni tic da `p_tick`) con i dati delle animazioni (`AnimDefs[]`, `FrameDefs[]`, le due liste), che il renderer legge; `Hexen\p_anim` ha una copia propria.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `P_AnimateSurfaces` | 3 | Hexen\p_anim (2), p_tick |
-| `P_InitAnimations` | 6 | Doom\DelphiDoom.Engine.Level.DoomRules, Heretic\DelphiDoom.Engine.Level.HereticRules, Hexen\DelphiDoom.Engine.Level.HexenRules, Hexen\p_anim (2), Strife\DelphiDoom.Engine.Level.StrifeRules |
-| `P_ShutDownAnimations` | 6 | Doom\DelphiDoom.Engine.Level.DoomRules, Heretic\DelphiDoom.Engine.Level.HereticRules, Hexen\DelphiDoom.Engine.Level.HexenRules, Hexen\p_anim (2), Strife\DelphiDoom.Engine.Level.StrifeRules |
 
-### `Base\p_umapinfo.pas` - 4 funzioni pubbliche, 17 chiamate
+### `Base\p_umapinfo.pas` - nessuna funzione pubblica
 
-Per toglierla: i record `mapentry_t` sono letti da circa 20 moduli: servirebbe un `IMapInfoCatalog` passato a quei moduli (vedi `PENDING_ISSUES.md`, #136).
-
-| Funzione | Chiamate | Moduli chiamanti |
-|---|---:|---|
-| `U_ConfigureMapInfo` | 1 | DelphiDoom.Engine.Composition |
-| `ubigstringtostring` | 4 | Doom\f_finale (2), Heretic\f_finale (2) |
-| `U_ParseMapInfo` | 6 | Doom\d_main (2), Heretic\d_main (2), Strife\d_main (2) |
-| `U_FreeMapInfo` | 6 | Doom\d_main (2), Heretic\d_main (2), Strife\d_main (2) |
+**Non piu facciata (#159)**: `U_ParseMapInfo`, `U_FreeMapInfo`, `U_ConfigureMapInfo` e `ubigstringtostring` non esistono piu: li fa `TEngineMapInfoRecords` (`DelphiDoom.Engine.MapInfo.Records`, `IEngineMapInfoRecords`), dato da `ComposeEngine` ai tre `d_main` (`D_ConfigureMapInfo`); `f_finale` chiama `TEngineMapInfoRecords.BigStringToString` (statica). L'unit resta con i record `mapentry_t` e le variabili `u_mapinfo` e `default_mapinfo`, letti da circa 20 moduli (vedi `PENDING_ISSUES.md`).
 
 ### `Base\i_threads.pas` - 4 funzioni pubbliche, 19 chiamate
 
@@ -428,7 +417,7 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 
 ### `Base\r_colormaps.pas` - 6 funzioni pubbliche, 23 chiamate
 
-**Non piu facciata (#135)**: e la cache delle colormap personalizzate del motore (lette dal renderer e da `p_saveg`); riceve preparatore e palette di base da `ComposeEngine`.
+**Non piu facciata (#135)**: e la cache delle colormap personalizzate del motore (lette dal renderer e da `p_saveg`); riceve preparatore e palette di base da `ComposeEngine`. **Valutata nella #159, lasciata**: `R_CustomColorMapForName` e chiamata da `p_saveg` di Doom e Strife (12 volte) e dalle linee colormap; sono le cache in zone memory del motore e i salvataggi, senza un oggetto a cui darle.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -479,7 +468,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 
 ### `Base\r_translations.pas` - 5 funzioni pubbliche, 28 chiamate
 
-Per toglierla: dalla #146 `R_GetTranslationTable` e le funzioni del sangue non esistono piu (il sangue e `TTranslationBlood`, statica; le tabelle dei PK3 passano dal file system PAK); restano `R_InitMobjTranslation` e `R_SetMobjBloodTranslation`: passare `ITranslationNames` a chi chiede le tabelle degli sprite.
+**Valutata nella #159, lasciata**: `R_InitMobjTranslation` e `R_SetMobjBloodTranslation` sono chiamate dai `p_mobj`, `p_map`, `p_saveg`/`sv_save` dei giochi, da `p_common` e da `psi_game` (thinker, salvataggi, PascalScript): vanno con la fase dei thinker. Per toglierla: dalla #146 `R_GetTranslationTable` e le funzioni del sangue non esistono piu (il sangue e `TTranslationBlood`, statica; le tabelle dei PK3 passano dal file system PAK); restano `R_InitMobjTranslation` e `R_SetMobjBloodTranslation`: passare `ITranslationNames` a chi chiede le tabelle degli sprite.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -940,7 +929,7 @@ Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane`
 
 ### `Strife\deh_main.pas` - 3 funzioni pubbliche, 164 chiamate
 
-Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
