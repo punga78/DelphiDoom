@@ -72,7 +72,10 @@ uses
   p_map,
   s_sound,
   sounddata,
-  udmf_telept;
+  udmf_telept,
+  DelphiDoom.Thinkers.Teleport.Geometry,
+  DelphiDoom.Thinkers.Teleport.Placement,
+  DelphiDoom.Engine.Teleport.Services;
 
 //==============================================================================
 //
@@ -177,8 +180,8 @@ var
   aboveFloor: fixed_t;
   fogDelta: fixed_t;
   player: Pplayer_t;
-  an: angle_t;
-  fog: Pmobj_t;
+  settleinput: TTeleportSettleInput;
+  settleoutput: TTeleportSettleOutput;
 begin
   oldx := thing.x;
   oldy := thing.y;
@@ -190,42 +193,32 @@ begin
     exit;
   end;
 
-  if thing.player <> nil then
+  // The height of the thing at the destination (TTeleportPlacement, Libs\Thinkers): on the
+  // floor, except a flying player and a missile, which keep their height above it
+  player := thing.player;
+  settleinput.IsPlayer := player <> nil;
+  settleinput.IsMissile := thing.flags and MF_MISSILE <> 0;
+  settleinput.IsFlying := (player <> nil) and (player.powers[Ord(pw_flight)] <> 0);
+  settleinput.AboveFloor := aboveFloor;
+  settleinput.FloorZ := thing.floorz;
+  settleinput.CeilingZ := thing.ceilingz;
+  settleinput.Height := thing.height;
+  settleinput.UseFog := true;
+  TTeleportPlacement.Settle(settleinput, settleoutput);
+  thing.z := settleoutput.Z;
+  if settleoutput.UpdatesViewHeight then
+    player.viewz := thing.z + player.viewheight;
+  if settleoutput.ResetsLook then
   begin
-    player := thing.player;
-    if (player.powers[Ord(pw_flight)] <> 0) and (aboveFloor <> 0) then
-    begin
-      thing.z := thing.floorz + aboveFloor;
-      if thing.z + thing.height > thing.ceilingz then
-        thing.z := thing.ceilingz - thing.height;
-      player.viewz := thing.z + player.viewheight;
-    end
-    else
-    begin
-      thing.z := thing.floorz;
-      player.viewz := thing.z + player.viewheight;
-      player.lookdir := 0;
-      player.lookdir16 := 0; // JVAL Smooth Look Up/Down
-    end;
-  end
-  else if thing.flags and MF_MISSILE <> 0 then
-  begin
-    thing.z := thing.floorz + aboveFloor;
-    if thing.z + thing.height > thing.ceilingz then
-      thing.z := thing.ceilingz - thing.height;
-  end
-  else
-    thing.z := thing.floorz;
+    player.lookdir := 0;
+    player.lookdir16 := 0; // JVAL Smooth Look Up/Down
+  end;
+
   // Spawn teleport fog at source and destination
-  if thing.flags and MF_MISSILE <> 0 then
-    fogDelta := 0
-  else
-    fogDelta := TELEFOGHEIGHT;
-  fog := P_SpawnMobj(oldx, oldy, oldz + fogDelta, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
-  an := angle shr ANGLETOFINESHIFT;
-  fog := P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an], thing.z + fogDelta + destfogdz, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  fogDelta := TTeleportGeometry.FogHeight(thing.flags and MF_MISSILE <> 0);
+  TeleportFogSpawner.SpawnFog(oldx, oldy, oldz + fogDelta, true);
+  TeleportFogSpawner.SpawnFog(TTeleportGeometry.FogX(x, angle), TTeleportGeometry.FogY(y, angle),
+    thing.z + fogDelta + destfogdz, true);
   if (thing.player <> nil) and (Pplayer_t(thing.player).powers[Ord(pw_weaponlevel2)] = 0) then // Freeze player for about .5 sec
     thing.reactiontime := 18;
 
@@ -240,9 +233,8 @@ begin
 
   if thing.flags and MF_MISSILE <> 0 then
   begin
-    angle := angle shr ANGLETOFINESHIFT;
-    thing.momx := FixedMul(thing.info.speed, finecosine[angle]);
-    thing.momy := FixedMul(thing.info.speed, finesine[angle]);
+    thing.momx := TTeleportGeometry.MissileMomentumX(thing.info.speed, angle);
+    thing.momy := TTeleportGeometry.MissileMomentumY(thing.info.speed, angle);
   end
   else
   begin
