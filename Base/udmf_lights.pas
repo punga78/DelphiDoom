@@ -20,6 +20,11 @@
 //  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 //
+// DESCRIPTION:
+//  The lights of the scripted specials and the phased lights. The thinkers stay
+//  records in the zone memory (the savegames copy them as they are); what they
+//  compute is in Libs\Thinkers (see DelphiDoom.Thinkers.Light.*).
+//
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
@@ -127,73 +132,19 @@ const
 implementation
 
 uses
-  m_fixed,
-  m_rnd,
   p_tick,
   p_spec,
   {$IFNDEF HEXEN}
   udmf_spec,
   {$ENDIF}
   p_setup,
-  z_zone;
-
-//==============================================================================
-//
-// P_FindLowestLightSurrounding
-//
-//==============================================================================
-function P_FindLowestLightSurrounding(sec: Psector_t): integer;
-const
-  MAXLIGHT = $FFFF;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  result := MAXLIGHT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.lightlevel < result then
-        result := other.lightlevel;
-  end;
-
-  if result = MAXLIGHT then
-    result := sec.lightlevel;
-end;
-
-//==============================================================================
-//
-// P_FindHighestLightSurrounding
-//
-//==============================================================================
-function P_FindHighestLightSurrounding(sec: Psector_t): integer;
-const
-  MINLIGHT = -1;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  result := MINLIGHT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.lightlevel < result then
-        result := other.lightlevel;
-  end;
-
-  if result = MINLIGHT then
-    result := sec.lightlevel;
-end;
+  z_zone,
+  DelphiDoom.Thinkers.Light.Types,
+  DelphiDoom.Thinkers.Light.Scripted,
+  DelphiDoom.Thinkers.Light.Phase,
+  DelphiDoom.Thinkers.Light.Sequence,
+  DelphiDoom.Engine.Light.Sector,
+  DelphiDoom.Engine.Light.Services;
 
 //==============================================================================
 //
@@ -202,77 +153,9 @@ end;
 //==============================================================================
 procedure TH_Light(light: Plight_t);
 begin
-  if light.count > 0 then
-  begin
-    dec(light.count);
-    exit;
-  end;
-
-  case light._type of
-    LITE_FADE:
-      begin
-        light.sector.lightlevel := ((light.sector.lightlevel * FRACUNIT) + light.value2) div FRACUNIT;
-        if light.tics2 = 1 then
-        begin
-          if light.sector.lightlevel >= light.value1 then
-          begin
-            light.sector.lightlevel := light.value1;
-            P_RemoveThinker(@light.thinker);
-          end;
-        end
-        else if light.sector.lightlevel <= light.value1 then
-        begin
-          light.sector.lightlevel := light.value1;
-          P_RemoveThinker(@light.thinker);
-        end;
-      end;
-    LITE_GLOW:
-      begin
-        light.sector.lightlevel := ((light.sector.lightlevel * FRACUNIT) + light.tics1) div FRACUNIT;
-        if light.tics2 = 1 then
-        begin
-          if light.sector.lightlevel >= light.value1 then
-          begin
-            light.sector.lightlevel := light.value1;
-            light.tics1 := -light.tics1;
-            light.tics2 := -1; // reverse direction
-          end;
-        end
-        else if light.sector.lightlevel <= light.value2 then
-        begin
-          light.sector.lightlevel := light.value2;
-          light.tics1 := -light.tics1;
-          light.tics2 := 1; // reverse direction
-        end;
-      end;
-    LITE_FLICKER:
-      begin
-        if light.sector.lightlevel = light.value1 then
-        begin
-          light.sector.lightlevel := light.value2;
-          light.count := (P_Random and 7) + 1;
-        end
-        else
-        begin
-          light.sector.lightlevel := light.value1;
-          light.count := (P_Random and 31) + 1;
-        end;
-      end;
-    LITE_STROBE,
-    LITE_STROBEDOOM:
-      begin
-        if light.sector.lightlevel = light.value1 then
-        begin
-          light.sector.lightlevel := light.value2;
-          light.count := light.tics2;
-        end
-        else
-        begin
-          light.sector.lightlevel := light.value1;
-          light.count := light.tics1;
-        end;
-      end;
-  end;
+  if TLightScripted.Tick(TLightKind(Ord(light._type)), light.value1, light.value2,
+    light.tics1, light.tics2, light.count, light.sector.lightlevel, LightRandom) then
+    P_RemoveThinker(@light.thinker);
 end;
 
 //==============================================================================
@@ -283,145 +166,40 @@ end;
 function EVH_SpawnLight(line: Pline_t; arg: PByteArray; _type: lighttype_t): boolean;
 var
   light: Plight_t;
-  sec: Psector_t;
   secNum: integer;
-  arg1, arg2, arg3, arg4: integer;
-  think: boolean;
+  arguments: TLightArguments;
+  state: TLightScriptedState;
+  outcome: TLightScriptedOutcome;
 begin
   result := false;
 
-  arg1 := arg[1];
-  arg2 := arg[2];
-  arg3 := arg[3];
-  arg4 := arg[4];
+  arguments.Arg1 := arg[1];
+  arguments.Arg2 := arg[2];
+  arguments.Arg3 := arg[3];
+  arguments.Arg4 := arg[4];
 
   secNum := -1;
   while P_FindSectorFromTag2(arg[0], secNum) >= 0 do
   begin
-    think := false;
-    sec := @sectors[secNum];
+    outcome := TLightScripted.Spawn(TLightKind(Ord(_type)),
+      TEngineLightSector.Wrap(@sectors[secNum]), arguments, LightRandom, state);
+    result := outcome <> TLightScriptedOutcome.Invalid;
 
-    light := Z_Malloc(sizeof(light_t), PU_LEVSPEC, nil);
-    light._type := _type;
-    light.sector := sec;
-    light.count := 0;
-    result := true;
-    case _type of
-      LITE_RAISEBYVALUE:
-        begin
-          sec.lightlevel := sec.lightlevel + arg1;
-          if sec.lightlevel > 255 then
-            sec.lightlevel := 255;
-        end;
-      LITE_LOWERBYVALUE:
-        begin
-          sec.lightlevel := sec.lightlevel - arg1;
-          if sec.lightlevel < 0 then
-            sec.lightlevel := 0;
-        end;
-      LITE_CHANGETOVALUE:
-        begin
-          sec.lightlevel := arg1;
-          if sec.lightlevel < 0 then
-            sec.lightlevel := 0
-          else if sec.lightlevel > 255 then
-            sec.lightlevel := 255;
-        end;
-      LITE_FADE:
-        begin
-          think := true;
-          light.value1 := arg1; // destination lightlevel
-          light.value2 := FixedDiv((arg1 - sec.lightlevel) * FRACUNIT, arg2 * FRACUNIT);  // delta lightlevel
-          if sec.lightlevel <= arg1 then
-            light.tics2 := 1 // get brighter
-          else
-            light.tics2 := -1;
-        end;
-      LITE_GLOW:
-        begin
-          think := true;
-          light.value1 := arg1; // upper lightlevel
-          light.value2 := arg2; // lower lightlevel
-          light.tics1 := FixedDiv((arg1 - sec.lightlevel) * FRACUNIT, arg3 * FRACUNIT);  // lightlevel delta
-          if sec.lightlevel <= arg1 then
-            light.tics2 := 1 // get brighter
-          else
-            light.tics2 := -1;
-        end;
-      LITE_FLICKER:
-        begin
-          think := true;
-          light.value1 := arg1; // upper lightlevel
-          light.value2 := arg2; // lower lightlevel
-          sec.lightlevel := light.value1;
-          light.count := (P_Random and 64) + 1;
-        end;
-      LITE_STROBE:
-        begin
-          think := true;
-          light.value1 := arg1; // upper lightlevel
-          light.value2 := arg2; // lower lightlevel
-          light.tics1 := arg3;  // upper tics
-          light.tics2 := arg4;  // lower tics
-          light.count := arg3;
-          sec.lightlevel := light.value1;
-        end;
-      LITE_STROBEDOOM:
-        begin
-          think := true;
-          light.value1 := sec.lightlevel; // upper lightlevel
-          light.value2 := P_FindLowestLightSurrounding(sec); // lower lightlevel
-          if light.value2 = light.value1 then
-            light.value2 := 0;
-          light.tics1 := arg1;  // upper tics
-          light.tics2 := arg2;  // lower tics
-          light.count := arg1;
-          sec.lightlevel := light.value1;
-        end;
-      LITE_MAXNEIGHTBOR:
-        begin
-          sec.lightlevel := P_FindHighestLightSurrounding(sec);
-          if sec.lightlevel < 0 then
-            sec.lightlevel := 0
-          else if sec.lightlevel > 255 then
-            sec.lightlevel := 255;
-        end;
-      LITE_MINNEIGHTBOR:
-        begin
-          sec.lightlevel := P_FindLowestLightSurrounding(sec);
-          if sec.lightlevel < 0 then
-            sec.lightlevel := 0
-          else if sec.lightlevel > 255 then
-            sec.lightlevel := 255;
-        end;
-      else
-        result := false;
-    end;
-    if think then
+    if outcome = TLightScriptedOutcome.Thinker then
     begin
+      light := Z_Malloc(sizeof(light_t), PU_LEVSPEC, nil);
+      light._type := _type;
+      light.sector := @sectors[secNum];
+      light.value1 := state.Value1;
+      light.value2 := state.Value2;
+      light.tics1 := state.Tics1;
+      light.tics2 := state.Tics2;
+      light.count := state.Count;
       P_AddThinker(@light.thinker);
       light.thinker._function.acp1 := @TH_Light;
-    end
-    else
-      Z_Free(light);
+    end;
   end;
 end;
-
-//
-//  TH_Phase
-//
-
-const
-  PhaseTable: array[0..63] of integer = (
-    128, 112,  96,  80,  64,  48,  32,  32,
-     16,  16,  16,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,  16,  16,  16,
-     32,  32,  48,  64,  80,  96, 112, 128
-  );
 
 //==============================================================================
 //
@@ -430,16 +208,8 @@ const
 //==============================================================================
 procedure TH_Phase(phase: Pphase_t);
 begin
-  phase.index := (phase.index + 1) and 63;
-  phase.sector.lightlevel := phase.base + PhaseTable[phase.index];
+  TLightPhase.Tick(phase.index, phase.base, phase.sector.lightlevel);
 end;
-
-const
-  {$IFDEF DOOM_OR_STRIFE}
-  PHASE_MASK = 31;
-  {$ELSE}
-  PHASE_MASK = $FFFF;
-  {$ENDIF}
 
 //==============================================================================
 //
@@ -449,23 +219,17 @@ const
 procedure P_SpawnPhasedLight(sector: Psector_t; base: integer; index: integer);
 var
   phase: Pphase_t;
+  phaseindex: integer;
+  phasebase: integer;
 begin
   phase := Z_Malloc(SizeOf(phase_t), PU_LEVSPEC, nil);
   P_AddThinker(@phase.thinker);
   phase.sector := sector;
-  if index = -1 then
-  begin // sector.lightlevel as the index
-    phase.index := sector.lightlevel and 63;
-  end
-  else
-  begin
-    phase.index := index and 63;
-  end;
-  phase.base := base and 255;
-  sector.lightlevel := phase.base + PhaseTable[phase.index];
+  TLightPhase.Initialize(TEngineLightSector.Wrap(sector), base, index, LightSequenceProfile,
+    phaseindex, phasebase);
+  phase.index := phaseindex;
+  phase.base := phasebase;
   phase.thinker._function.acp1 := @TH_Phase;
-
-  sector.special := sector.special and not PHASE_MASK;
 end;
 
 //==============================================================================
@@ -474,72 +238,9 @@ end;
 //
 //==============================================================================
 procedure P_SpawnLightSequence(sector: Psector_t; indexStep: integer);
-var
-  sec: Psector_t;
-  nextSec: Psector_t;
-  tempSec: Psector_t;
-  seqSpecial: integer;
-  i: integer;
-  count: integer;
-  index: fixed_t;
-  indexDelta: fixed_t;
-  base: integer;
 begin
-  seqSpecial := LIGHT_SEQUENCE; // look for Light_Sequence, first
-  sec := sector;
-  count := 1;
-  repeat
-    nextSec := nil;
-    sec.special := LIGHT_SEQUENCE_START or (sec.special and not PHASE_MASK); // make sure that the search doesn't back up.
-    for i := 0 to sec.linecount - 1 do
-    begin
-      tempSec := getNextSector(sec.lines[i], sec);
-      if tempSec = nil then
-        continue;
-
-      if tempSec.special and PHASE_MASK = seqSpecial then
-      begin
-        if seqSpecial = LIGHT_SEQUENCE then
-        begin
-          seqSpecial := LIGHT_SEQUENCE_ALT;
-        end
-        else
-        begin
-          seqSpecial := LIGHT_SEQUENCE;
-        end;
-        nextSec := tempSec;
-        inc(count);
-      end;
-    end;
-    sec := nextSec;
-  until sec = nil;
-
-  sec := sector;
-  count := count * indexStep;
-  index := 0;
-  indexDelta := FixedDiv(64 * FRACUNIT, count * FRACUNIT);
-  base := sector.lightlevel;
-  repeat
-    nextSec := nil;
-    if sec.lightlevel <> 0 then
-    begin
-      base := sec.lightlevel;
-    end;
-    P_SpawnPhasedLight(sec, base, index div FRACUNIT);
-    index := index + indexDelta;
-    for i := 0 to sec.linecount - 1 do
-    begin
-      tempSec := getNextSector(sec.lines[i], sec);
-      if tempSec = nil then
-        continue;
-
-      if tempSec.special and PHASE_MASK = LIGHT_SEQUENCE_START then
-      begin
-        nextSec := tempSec;
-      end;
-    end;
-    sec := nextSec;
-  until sec = nil;
+  TLightSequence.Spawn(TEngineLightSector.Wrap(sector), indexStep, LightSequenceProfile,
+    LightPhaseSpawner);
 end;
 
 end.
