@@ -85,6 +85,12 @@ uses
   DelphiDoom.Thinkers.Light.Factory,
   DelphiDoom.Engine.Light.Services,
   DelphiDoom.Engine.Light.PhaseSpawner,
+  DelphiDoom.Thinkers.Door.Types,
+  DelphiDoom.Thinkers.Door.Intf,
+  DelphiDoom.Thinkers.Door.Profiles,
+  DelphiDoom.Thinkers.Door.Factory,
+  DelphiDoom.Engine.Door.Services,
+  DelphiDoom.Engine.Door.Host,
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -880,6 +886,43 @@ begin
     TLightGames.SequenceProfile(LGame), TEngineLightPhaseSpawner.Create);
 end;
 
+// The vertical doors (udmf_doors, p_doors): the profile of the game for each flavor of door, the
+// services of the real game (movement of the ceiling, sounds, sectors around, compatibility
+// option) and the classes that run and make the doors. Hexen has only the scripted doors
+procedure ComposeDoors;
+var
+  LGame: TDoorGame;
+  LHost: IDoorPlaneMover;
+  LProfile: TDoorProfile;
+  LClassicRunner: IDoorRunner;
+  LClassicSpawner: IDoorSpawner;
+  LUdmfRunner: IDoorRunner;
+  LUdmfSpawner: IDoorSpawner;
+begin
+  if not TDoorProfiles.TryGameFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of doors', [_GAME]);
+
+  LClassicRunner := nil;
+  LClassicSpawner := nil;
+  if LGame <> TDoorGame.Hexen then
+  begin
+    LHost := TEngineDoorHost.Create(TDoorFlavor.Classic);
+    LProfile := TDoorProfiles.ForGame(LGame, TDoorFlavor.Classic);
+    LClassicRunner := TDoorFactory.CreateRunner(LProfile, LHost, LHost as IDoorSounds,
+      LHost as IDoorOptions);
+    LClassicSpawner := TDoorFactory.CreateSpawner(LProfile, LHost as IDoorSounds,
+      LHost as IDoorSectorQueries);
+  end;
+
+  LHost := TEngineDoorHost.Create(TDoorFlavor.Udmf);
+  LProfile := TDoorProfiles.ForGame(LGame, TDoorFlavor.Udmf);
+  LUdmfRunner := TDoorFactory.CreateRunner(LProfile, LHost, LHost as IDoorSounds,
+    LHost as IDoorOptions);
+  LUdmfSpawner := TDoorFactory.CreateSpawner(LProfile, LHost as IDoorSounds,
+    LHost as IDoorSectorQueries);
+
+  P_ConfigureDoors(LClassicRunner, LClassicSpawner, LUdmfRunner, LUdmfSpawner);
+end;
 procedure ComposeThreading;
 var
   LThreads: IWorkerThreadFactory;
@@ -895,6 +938,7 @@ begin
   M_ConfigureRandom(ARandom);
   R_ConfigureNameHash(TMathCoreFactory.CreateStringHashTable);
   ComposeLights(ARandom);
+  ComposeDoors;
 end;
 
 procedure ComposeSerializer;

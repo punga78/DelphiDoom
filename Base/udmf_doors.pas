@@ -67,15 +67,12 @@ implementation
 
 uses
   p_tick,
-  udmf_floor,
   p_acs,
-  {$IFDEF HEXEN}
-  s_sndseq,
-  {$ELSE}
-  s_sound,
+  {$IFNDEF HEXEN}
   udmf_spec,
   {$ENDIF}
-  p_setup;
+  p_setup,
+  DelphiDoom.Engine.Door.Thinker;
 
 //==============================================================================
 //
@@ -83,126 +80,18 @@ uses
 //
 // TH_VerticalDoor
 //
+// The state machine of the door (waiting, going down, going up, the sounds and
+// the sequences) is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*); the thinker
+// stays the vldoor_t of the zone memory
+//
 //==============================================================================
 procedure TH_VerticalDoor(door: Pvldoor_t);
-var
-  res: result_e;
 begin
-  case door.direction of
-    0:
-      begin
-  // WAITING
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            DREV_NORMAL:
-              begin
-                door.direction := -1; // time to go back down
-                {$IFDEF HEXEN}
-                S_StartSequence(Pmobj_t(@door.sector.soundorg), Ord(SEQ_DOOR_STONE) + Ord(door.sector.seqType));
-                {$ELSE}
-                S_StartSound(@door.sector.soundorg, door.sector.seqType);
-                {$ENDIF}
-              end;
-            DREV_CLOSE30THENOPEN,
-            DREV_CLOSEWAITTHENOPEN:
-              begin
-                door.direction := 1;
-              end;
-          end;
-        end;
-      end;
-    2:
-      begin
-  //  INITIAL WAIT
-        dec(door.topcountdown);
-        if door.topcountdown = 0 then
-        begin
-          case door._type of
-            DREV_RAISEIN5MINS:
-              begin
-                door.direction := 1;
-                door._type := DREV_NORMAL;
-              end;
-          end;
-        end;
-      end;
-
-   -1:
-      begin
-  // DOWN
-        res := TH_MovePlane(door.sector, door.speed, door.sector.floorheight,
-                  false, 1, door.direction);
-        if res = RES_PASTDEST then
-        begin
-          {$IFDEF HEXEN}
-          S_StopSequence(Pmobj_t(@door.sector.soundorg));
-          {$ELSE}
-          S_StopSound(@door.sector.soundorg);
-          {$ENDIF}
-          case door._type of
-            DREV_NORMAL,
-            DREV_CLOSE:
-              begin
-                door.sector.specialdata := nil;
-                P_TagFinished(door.sector.tag);
-                P_RemoveThinker(@door.thinker);  // unlink and free
-              end;
-            DREV_CLOSE30THENOPEN:
-              begin
-                door.direction := 0;
-                door.topcountdown := TICRATE * 30;
-              end;
-            DREV_CLOSEWAITTHENOPEN:
-              begin
-                door.direction := 0;
-                door.topcountdown := door.topwait;
-              end;
-          end;
-        end
-        else if res = RES_CRUSHED then
-        begin
-          case door._type of
-            DREV_CLOSE:    // DO NOT GO BACK UP!
-              begin
-              end;
-          else
-            begin
-              door.direction := 1;
-            end;
-          end;
-        end;
-      end;
-    1:
-      begin
-  // UP
-        res := TH_MovePlane(door.sector, door.speed, door.topheight,
-                  false, 1, door.direction);
-        if res = RES_PASTDEST then
-        begin
-          {$IFDEF HEXEN}
-          S_StopSequence(Pmobj_t(@door.sector.soundorg));
-          {$ELSE}
-          S_StopSound(@door.sector.soundorg);
-          {$ENDIF}
-          case door._type of
-            DREV_NORMAL:
-              begin
-                door.direction := 0; // wait at top
-                door.topcountdown := door.topwait;
-              end;
-            DREV_CLOSE30THENOPEN,
-            DREV_CLOSEWAITTHENOPEN,
-            DREV_OPEN:
-              begin
-                door.sector.specialdata := nil;
-                P_TagFinished(door.sector.tag);
-                P_RemoveThinker(@door.thinker); // unlink and free
-              end;
-          end;
-        end;
-      end;
+  if DoorTickUdmf(door) then
+  begin
+    door.sector.specialdata := nil;
+    P_TagFinished(door.sector.tag);
+    P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -245,41 +134,8 @@ begin
 
     door.thinker._function.acp1 := @TH_VerticalDoor;
     door.sector := sec;
-
-    case _type of
-      DREV_CLOSE:
-        begin
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-          door.direction := -1;
-        end;
-
-      DREV_CLOSE30THENOPEN,
-      DREV_CLOSEWAITTHENOPEN:
-        begin
-          door.topheight := sec.ceilingheight;
-          door.direction := -1;
-        end;
-
-      DREV_NORMAL,
-      DREV_OPEN:
-        begin
-          door.direction := 1;
-          door.topheight := P_FindLowestCeilingSurrounding(sec);
-          door.topheight := door.topheight - 4 * FRACUNIT;
-        end;
-    end;
-
-    door._type := _type;
-    door.speed := speed;
-    door.topwait := args[2];
-    if _type = DREV_CLOSEWAITTHENOPEN then
-      door.topwait := (door.topwait * TICRATE) div 8; // OctTics
-    {$IFDEF HEXEN}
-    S_StartSequence(Pmobj_t(@door.sector.soundorg), Ord(SEQ_DOOR_STONE) + Ord(door.sector.seqType));
-    {$ELSE}
-    S_StartSound(@door.sector.soundorg, door.sector.seqType);
-    {$ENDIF}
+    // direction, top, wait and sound of the kind: Libs\Thinkers
+    DoorInitTagged(door, _type, speed, args[2], true);
   end;
 end;
 
@@ -312,35 +168,10 @@ begin
   sec.specialdata := door;
   door.thinker._function.acp1 := @TH_VerticalDoor;
   door.sector := sec;
-  door.direction := 1;
-  case line.special of
-    11:
-      begin
-        door._type := DREV_OPEN;
-        line.special := 0;
-      end;
-    12,
-    13:
-      begin
-        door._type := DREV_NORMAL;
-      end;
-  else
-    door._type := DREV_NORMAL;
-  end;
 
-  door.speed := line.arg2 * (FRACUNIT div 8);
-  door.topwait := line.arg3;
-
-  //
-  // find the top and bottom of the movement range
-  //
-  door.topheight := P_FindLowestCeilingSurrounding(sec);
-  door.topheight := door.topheight - 4 * FRACUNIT;
-  {$IFDEF HEXEN}
-  S_StartSequence(Pmobj_t(@door.sector.soundorg), Ord(SEQ_DOOR_STONE) + Ord(door.sector.seqType));
-  {$ELSE}
-  S_StartSound(@door.sector.soundorg, door.sector.seqType);
-  {$ENDIF}
+  // kind, speed, wait, top and sound of the special of the line: Libs\Thinkers
+  if DoorInitManual(door, line.special, line.arg2 * (FRACUNIT div 8), line.arg3, true) then
+    line.special := 0;
   result := true;
 end;
 

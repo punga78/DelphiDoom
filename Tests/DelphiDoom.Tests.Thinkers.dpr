@@ -51,6 +51,12 @@ uses
   DelphiDoom.Thinkers.Light.Sequence in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
   DelphiDoom.Thinkers.Light.Games in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
   DelphiDoom.Thinkers.Light.Factory in '..\Libs\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
+  DelphiDoom.Thinkers.Door.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Types.pas',
+  DelphiDoom.Thinkers.Door.Intf in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Intf.pas',
+  DelphiDoom.Thinkers.Door.Profiles in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Profiles.pas',
+  DelphiDoom.Thinkers.Door.Runner in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas',
+  DelphiDoom.Thinkers.Door.Spawner in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Spawner.pas',
+  DelphiDoom.Thinkers.Door.Factory in '..\Libs\Thinkers\DelphiDoom.Thinkers.Door.Factory.pas',
   DelphiDoom.Tests.Thinkers.Fakes in 'Source\DelphiDoom.Tests.Thinkers.Fakes.pas',
   DelphiDoom.Tests.Thinkers.OldLights in 'Source\DelphiDoom.Tests.Thinkers.OldLights.pas',
   DelphiDoom.Tests.Thinkers.LightNeighbors in 'Source\DelphiDoom.Tests.Thinkers.LightNeighbors.pas',
@@ -62,7 +68,12 @@ uses
   DelphiDoom.Tests.Thinkers.LightScripted in 'Source\DelphiDoom.Tests.Thinkers.LightScripted.pas',
   DelphiDoom.Tests.Thinkers.LightPhase in 'Source\DelphiDoom.Tests.Thinkers.LightPhase.pas',
   DelphiDoom.Tests.Thinkers.LightSequence in 'Source\DelphiDoom.Tests.Thinkers.LightSequence.pas',
-  DelphiDoom.Tests.Thinkers.LightGames in 'Source\DelphiDoom.Tests.Thinkers.LightGames.pas';
+  DelphiDoom.Tests.Thinkers.LightGames in 'Source\DelphiDoom.Tests.Thinkers.LightGames.pas',
+  DelphiDoom.Tests.Thinkers.DoorFakes in 'Source\DelphiDoom.Tests.Thinkers.DoorFakes.pas',
+  DelphiDoom.Tests.Thinkers.OldDoors in 'Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
+  DelphiDoom.Tests.Thinkers.DoorProfiles in 'Source\DelphiDoom.Tests.Thinkers.DoorProfiles.pas',
+  DelphiDoom.Tests.Thinkers.DoorRunner in 'Source\DelphiDoom.Tests.Thinkers.DoorRunner.pas',
+  DelphiDoom.Tests.Thinkers.DoorSpawner in 'Source\DelphiDoom.Tests.Thinkers.DoorSpawner.pas';
 
 var
   Runner: ITestRunner;
