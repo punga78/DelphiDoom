@@ -14,7 +14,7 @@ uses
   DelphiDoom.Iwad.Intf;
 
 type
-  TIwadGame = (igDoom, igHeretic, igHexen, igStrife);
+  TIwadGame = (igDoom, igHeretic, igHexen, igStrife, igRadix);
 
   /// <summary>
   ///   The profile of each game: the IWADs it knows, in order of priority, the variables and
@@ -23,9 +23,9 @@ type
   /// </summary>
   TIwadGames = class
   public
-    /// <summary>DOOM, HERETIC, HEXEN or STRIFE</summary>
+    /// <summary>DOOM, HERETIC, HEXEN, STRIFE or RADIX</summary>
     class function NameOf(AGame: TIwadGame): string; static;
-    /// <summary>The game of a name, whatever the case of the letters; false if it is none of the four</summary>
+    /// <summary>The game of a name, whatever the case of the letters; false if it is none of the five</summary>
     class function TryFromName(const AName: string; out AGame: TIwadGame): Boolean; static;
     class function CreateProfile(AGame: TIwadGame): IIwadProfile; static;
   end;
@@ -36,7 +36,7 @@ uses
   System.SysUtils, DelphiDoom.Iwad.Types, DelphiDoom.Iwad.Profile;
 
 const
-  GAME_NAMES: array[TIwadGame] of string = ('DOOM', 'HERETIC', 'HEXEN', 'STRIFE');
+  GAME_NAMES: array[TIwadGame] of string = ('DOOM', 'HERETIC', 'HEXEN', 'STRIFE', 'RADIX');
 
 function WithSearchable(const AEntry: TIwadEntry; ASearchable: Boolean): TIwadEntry;
 begin
@@ -130,6 +130,20 @@ begin
     '');
 end;
 
+function RadixProfile: IIwadProfile;
+begin
+  // Radix has no IWAD: its data are RADIX.DAT, a container that the engine translates into a WAD
+  // in memory (Libs\Radix); the version (shareware or registered) is told by the CRC of the file
+  Result := TIwadProfile.Create('RADIX',
+    TArray<TIwadEntry>.Create(
+      TIwadEntry.Make('radix.dat', igmIndetermined)),
+    TArray<TIwadCustomRule>.Create(),
+    TArray<string>.Create('RADIXWADDIR', 'DOOMWADDIR'),
+    TArray<string>.Create('RADIXWADPATH', 'DOOMWADPATH'),
+    TArray<Integer>.Create(),
+    '');
+end;
+
 { TIwadGames }
 
 class function TIwadGames.NameOf(AGame: TIwadGame): string;
@@ -159,6 +173,7 @@ begin
     igDoom: Result := DoomProfile;
     igHeretic: Result := HereticProfile;
     igHexen: Result := HexenProfile;
+    igRadix: Result := RadixProfile;
   else
     Result := StrifeProfile;
   end;

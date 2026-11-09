@@ -65,10 +65,11 @@ begin
       Result := DOOM_NAME;
   if SameText(AGame, RADIX_NAME) then
     // Radix (a space shooter on the engine of Doom) moves floors, ceilings, platforms, doors and
-    // lights as Doom does (the analysis of the fork, docs\INTEGRAZIONE_GIOCHI.md); its tables of
-    // things, states and weapons (radix info.pas, radix_actions), its IWAD and its maps are its
-    // own and do not borrow anything: they give an error until the profile of Radix exists
-    if AArea in [TGameProfileArea.Lights, TGameProfileArea.Platforms, TGameProfileArea.Doors] then
+    // lights as Doom does (the analysis of the fork, docs\INTEGRAZIONE_GIOCHI.md) and has the map
+    // formats of Doom; its tables of things, states and weapons (radix info.pas, radix_actions) are
+    // its own: until it has them the tables of Doom stand in for Dehacked, ACTORDEF and the table
+    // exports (a provisional alias, like Speed). The IWAD is not borrowed: its data are RADIX.DAT
+    if AArea <> TGameProfileArea.Iwad then
       Result := DOOM_NAME;
 end;
 
