@@ -15,6 +15,7 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, System.AnsiStrings, DUnitX.TestFramework, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf,
+  DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.Craft,
   DelphiDoom.Tests.XcomMod.RealData;
 
 type
@@ -48,6 +49,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLeStesseSalvatagiDelVeroOpenXcom;
+    [Test]
+    procedure DovrebbeFareLaPartitaNuovaComeIlVeroNewSave;
     [Test]
     procedure DovrebbeSollevareErroreSeIlFileNonHaDueDocumenti;
   end;
@@ -229,6 +232,64 @@ begin
   end;
   Assert.IsTrue(LCount > 0, 'nessun salvataggio nella cartella');
   Assert.AreEqual('', LFailed, 'salvataggi che differiscono dal C++');
+end;
+
+procedure TTestXcomRealSave.DovrebbeFareLaPartitaNuovaComeIlVeroNewSave;
+var
+  LFolder: string;
+  LInfo: TXcomSaveBriefInfo;
+  LFile: TArray<IYamlNode>;
+  LBrief, LItem: IYamlNode;
+  LMods: TArray<string>;
+  LGame: TXcomSavedGame;
+  LRandom: IXcomRandom;
+  LSettings: IXcomSaveSettings;
+  LCraft: TXcomCraft;
+  LVariant: Integer;
+  LOriginal: TYamlText;
+begin
+  LFolder := SaveFolder;
+  if (LFolder = '') or not Assigned(FRuleset) then
+  begin
+    Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
+    Exit;
+  end;
+  // save00.sav is Mod::newSave() with the generator seeded with 1761, and then the changes of Play(0) of savegen.cpp
+  LOriginal := System.AnsiStrings.StringReplace(ReadText(LFolder + 'save00.sav'), #13#10, #10, [rfReplaceAll]);
+  LFile := TYamlFactory.CreateParser.LoadAll(LOriginal);
+  LBrief := LFile[0];
+  LInfo.Version := YamlTextToString(LBrief.Find(YamlStringToText('version')).AsString);
+  LInfo.Engine := YamlTextToString(LBrief.Find(YamlStringToText('engine')).AsString);
+  LInfo.Build := YamlTextToString(LBrief.Find(YamlStringToText('build')).AsString);
+  SetLength(LMods, 0);
+  for LItem in LBrief.Find(YamlStringToText('mods')).Items do
+  begin
+    SetLength(LMods, Length(LMods) + 1);
+    LMods[High(LMods)] := YamlTextToString(LItem.AsString);
+  end;
+  LInfo.Mods := LMods;
+  LRandom := TXcomRandom.Create(1761);
+  LSettings := TXcomDefaultSettings.Create;
+  LGame := TXcomNewGame.Create(FRuleset, FRules, LSettings, LRandom).NewSave;
+  try
+    LVariant := 0;
+    LGame.Difficulty := LVariant mod 5;
+    LGame.GlobeZoom := LVariant mod 6;
+    LGame.GlobeLongitude := 0.1 * LVariant;
+    LGame.GlobeLatitude := -0.05 * LVariant;
+    LGame.Bases[0].Name := 'Base ' + IntToStr(LVariant);
+    LGame.Bases[0].SetLongitude(0.5 + 0.1 * LVariant);
+    LGame.Bases[0].SetLatitude(0.2);
+    for LCraft in LGame.Bases[0].Crafts do
+    begin
+      LCraft.SetLongitude(LGame.Bases[0].Longitude);
+      LCraft.SetLatitude(LGame.Bases[0].Latitude);
+    end;
+    Assert.IsTrue(SameSave(LOriginal, LGame.Save(LInfo, LSettings, LRandom)),
+      'la partita nuova differisce da Mod::newSave');
+  finally
+    LGame.Free;
+  end;
 end;
 
 procedure TTestXcomRealSave.DovrebbeSollevareErroreSeIlFileNonHaDueDocumenti;

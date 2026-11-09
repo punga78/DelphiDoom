@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomSave.Types, DelphiDoom.XcomSave.AlienStrategy, DelphiDoom.XcomSave.SoldierDiary,
   DelphiDoom.XcomSave.SoldierCommendation, DelphiDoom.XcomSave.MissionStatistics, DelphiDoom.XcomSave.Target,
   DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.MovingTarget, DelphiDoom.XcomSave.Transfer,
-  DelphiDoom.XcomSave.Settings.Intf;
+  DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.City;
 
 type
   /// <summary>A moving target of the tests</summary>
@@ -59,6 +59,8 @@ type
     procedure DovrebbeSalvareLaVelocitaEdIlPuntoDiDestinazione;
     [Test]
     procedure DovrebbeSalvareUnSoloContenutoDelTrasferimento;
+    [Test]
+    procedure DovrebbeFareUnaCittaSenzaTipoConIlSuoMarcatore;
   end;
 
 implementation
@@ -393,6 +395,22 @@ begin
     Assert.IsTrue(LTransfer.Save(TXcomTestSettings.Create).Find(YamlStringToText('delivered')).IsDefined);
   finally
     LTransfer.Free;
+  end;
+end;
+
+procedure TTestXcomStrategy.DovrebbeFareUnaCittaSenzaTipoConIlSuoMarcatore;
+var
+  LCity: TXcomCity;
+begin
+  LCity := TXcomCity.Create('STR_PARIS', 0.5, -0.25);
+  try
+    Assert.AreEqual('', LCity.TargetType);
+    Assert.AreEqual(8, LCity.Marker);
+    Assert.AreEqual('STR_PARIS', LCity.CityName);
+    Assert.AreEqual(Double(0.5), LCity.Longitude, 0.0);
+    Assert.AreEqual(Double(-0.25), LCity.Latitude, 0.0);
+  finally
+    LCity.Free;
   end;
 end;
 
