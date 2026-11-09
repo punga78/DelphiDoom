@@ -194,6 +194,8 @@ resourcestring
   SKeenObjectInvalid = 'Keen: the actor %d does not exist';
   SKeenNoSpriteShape = 'Keen: the actor has the shape %d, that is not a sprite';
   SKeenInputBadScan = 'Keen: the scan code %d is not valid';
+  SKeenSoundChunkShort = 'Keen: the chunk of a sound has %d bytes, 6 needed at least';
+  SKeenSoundNotCached = 'Keen: SD_PlaySound() - Attempted to play an uncached sound (%d)';
 
 type
   /// <summary>Something wrong with the data or the arguments of the keen library</summary>
