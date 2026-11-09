@@ -74,7 +74,7 @@ Uso: `TSpeedFactory.CreateTranslator(log).Translate(TSpeedFactory.OpenContainer(
 
 | Fetta | Che cosa | Note |
 |---|---|---|
-| S3 | `Libs\Models`: parser e disegno dei modelli I3D (`Libs\OpenGl\Legacy\i3d_*`, `mdl_i3d`) | il traduttore dà già le voci `MODELS\x.I3D` |
+| S3 (fatta, #168) | `Libs\Models`: parser e disegno su contratto dei modelli I3D (`Libs\OpenGl\Legacy\i3d_*`, `mdl_i3d`), vedi `Libs\Models\README.md` sez. 2b | il traduttore dà le voci `MODELS\x.I3D`; manca solo l'adattatore OpenGL nel motore (con S5) |
 | S4 | `Libs\Racing`: auto, guida, IA, percorso, gara, record, campionato (`speed_cars`, `speed_path`, `speed_race`, `speed_championship`) | **fisica con `double` nel `mobj_t`** (`tiredistance[0..3]`): rischio di determinismo x87/SSE; `ground_t` 4096x4096 byte |
 | S5 | cartella `Speed\` e il gioco: `mobj_t`/`player_t` propri, azioni, HUD, menu, schermate, record su disco, `m_base` e `TSpeedLevelRules`, profilo Iwad; eseguibile `GLSpeed32` | il meccanismo di profilo è in `Libs\GameData\README.md`; i savegame vanno a `Libs\Serializer` con la tabella del gioco |
 | S6 | `r_soft3d` (rasterizzatore software dell'auto del menu) | opzionale: Speed è solo OpenGL |
