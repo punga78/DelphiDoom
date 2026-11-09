@@ -6,6 +6,8 @@
 
 **Differenze e difetti conservati**: vedi il README (Clone copia 255 colori, redraw dopo il resize, `?` inserito nella mappa dei caratteri, spaziatura con `Uint16`). Divisioni per zero e celle piu' larghe dell'immagine sono `EXcomSurfaceException` (il C++ e' indefinito).
 
-**Non portato**: le primitive SDL_gfx (`drawLine`, `drawCircle`, `drawPolygon`, `drawTexturedPolygon`, `drawString`: i sorgenti di SDL_gfx 2.0.26 sono in `Reference\_dati\_strumenti\dl\SDL_gfx-2.0.26.tar.gz`, la `libSDL_gfx.a` e' linkabile dall'harness; servirebbero la mappatura `SDL_MapRGBA` a palette e i casi dei bordi), `loadTerminal`, le sottoclassi con disegno proprio (`XcomUi`).
+**SDL_gfx (fetta 2)**: `TXcomGfx` (`DrawLine`, `DrawCircle`, `DrawPolygon`, `DrawTexturedPolygon`, `DrawString`, fuori da `TXcomSurface`) e `XCOM_GFX_FONT`; `TXcomSdl.ClipBlit` e' il ritaglio di `SDL_UpperBlit` condiviso con `BlitKeyed`. Parita' con la vera SDL 1.2.15 + SDL_gfx 2.0.26: `Tools\Verifica\176\gfx` -> `Tests\Data\XcomSurface\gfx.script.txt`/`gfx.golden.txt` (800 casi, 0 differenze; altri 6000 su due semi). Cose trovate: il colore e' la voce di palette **piu' vicina** (`SDL_MapRGBA`), le lettere passano da una **tabella 3-3-2** di `BlitNto1PixelAlpha` e anche i pixel con alpha 0 del carattere vengono rimappati. Il dettaglio e gli errori dichiarati sono nel README.
 
-Test: `Tests\DelphiDoom.Tests.XcomSurface` (34, copertura 99%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomSurface`.
+**Non portato**: `loadTerminal`, le sottoclassi con disegno proprio (`XcomUi`).
+
+Test: `Tests\DelphiDoom.Tests.XcomSurface` (54; la copertura 99% era prima di SDL_gfx, da rimisurare); `Tools\build.bat Tests\DelphiDoom.Tests.XcomSurface`.

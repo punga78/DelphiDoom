@@ -21,6 +21,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 | `SDL_FillRect`, `SDL_IntersectRect`, `SDL_UpperBlit` (8 bit -> 8 bit con color key e mappa delle palette, `SDL_Map1to1`/`SDL_FindColor`) | `TXcomSdl` (`FillRect`, `IntersectRect`, `BlitKeyed`, `FindColor`) |
 | `ColorReplace`, `StandardShade`, `ShaderDraw` | `TXcomColorReplaceShade`, `TXcomStandardShade` (dietro `IXcomShadeFunction`), `TXcomShadeDrawer` |
 | `Surface::blitNShade` (due varianti) | `TXcomSurfaceShader.Blit` |
+| `Surface::drawLine/drawCircle/drawPolygon/drawTexturedPolygon/drawString` (SDL_gfx 2.0.26: `lineColor`, `filledCircleColor`, `filledPolygonColor`, `texturedPolygon`, `stringColor`) | `TXcomGfx` (`DrawLine`, `DrawCircle`, `DrawPolygon`, `DrawTexturedPolygon`, `DrawString`; sta fuori da `TXcomSurface` come lo shader) e `XCOM_GFX_FONT` (il font 8 x 8 di SDL_gfx) |
 | `Font` (`init`, `getChar`, `getCharSize`, `load`) | `TXcomFont`, `TXcomFontDefinition`; `IXcomSurfaceLoader` e' cio' che carica un'immagine (`Surface::loadImage`) |
 | composition root | `TXcomSurfaceFactory` |
 
@@ -38,11 +39,11 @@ L'harness C++ (fuori dal repository, compilato con g++ MinGW) **collega i veri `
 
 ## Non portato
 
-- **Le primitive di SDL_gfx** (`drawLine`, `drawCircle`, `drawPolygon`, `drawTexturedPolygon`, `drawString`): sono SDL_gfx 2.0.26 su una superficie a 8 bit con palette, la cui mappatura del colore (`SDL_MapRGBA`) e' parte del comportamento; vedi l'elenco in `CLAUDE.md`.
+- Le altre primitive di SDL_gfx (ellissi, archi, rettangoli, linee spesse, anti-aliasing): OpenXcom non le chiama.
 - Il caricamento di file di immagine (`loadImage`, `loadScr`, `loadSpk`, `loadBdy`): i decoder sono in `Libs\XcomFormats`; `loadImage` (PNG/BMP/...) e' dietro `IXcomSurfaceLoader`.
 - `Font::loadTerminal` (il BMP del font DOS incorporato) e i `Surface` di sottoclassi con disegno proprio (`Text`, `Window`, ...), parte di `XcomUi`.
 - I campi di `_tooltip`, la lista di `invalidate`, i colori di `setColor`: sono dell'interfaccia.
 
 ## Test
 
-`Tests\DelphiDoom.Tests.XcomSurface` (34 test, Release e Debug Win32; copertura 99%, 458 righe su 459): `TTestXcomSurfaceGolden` (la parita'), `TTestXcomSurface` (le regole una per una e gli errori). Win64 non provato.
+`Tests\DelphiDoom.Tests.XcomSurface` (54 test, Win32; copertura non rimisurata dopo SDL_gfx): `TTestXcomSurfaceGolden` (la parita'), `TTestXcomSurface` (le regole una per una e gli errori), `TTestXcomGfx` (parita' di SDL_gfx e regole una per una). Win64 non provato.
