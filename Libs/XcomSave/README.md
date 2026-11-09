@@ -53,4 +53,4 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 
 ## Test
 
-`Tests\DelphiDoom.Tests.XcomSave` (25 test: parita' sui 900 casi e gli oggetti uno per uno; Release Win32; copertura 100%, 332 righe su 332). Win64 e Debug non provati.
+`Tests\DelphiDoom.Tests.XcomSave` (61 test: parita' sui 900 casi della prima famiglia e sui 2400 della seconda, e gli oggetti uno per uno; Release Win32; copertura 98%, 1068 righe su 1079). Win64 non provato.
