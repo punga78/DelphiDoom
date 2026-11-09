@@ -23,8 +23,8 @@ uses
 
 type
   /// <summary>
-  ///   The settings of the game (pngtransparentcolor, pngtransparentcolor2 and
-  ///   assumecommontranspantcolors of t_png, set by the configuration file) read when
+  ///   The settings of the game (PngTransparentColor, PngTransparentColor2 and
+  ///   AssumeCommonTransparentColors of TEngineTextureSettings, set by the configuration file) read when
   ///   a PNG is decoded
   /// </summary>
   TEngineTexturePngSettings = class(TInterfacedObject, ITexturePngSettings)
@@ -37,23 +37,23 @@ type
 implementation
 
 uses
-  t_png;
+  DelphiDoom.Engine.Texture.Settings;
 
 { TEngineTexturePngSettings }
 
 function TEngineTexturePngSettings.GetTransparentColor: Cardinal;
 begin
-  Result := Cardinal(pngtransparentcolor);
+  Result := Cardinal(TEngineTextureSettings.PngTransparentColor);
 end;
 
 function TEngineTexturePngSettings.GetTransparentColor2: Cardinal;
 begin
-  Result := Cardinal(pngtransparentcolor2);
+  Result := Cardinal(TEngineTextureSettings.PngTransparentColor2);
 end;
 
 function TEngineTexturePngSettings.GetAssumeCommonColors: Boolean;
 begin
-  Result := assumecommontranspantcolors;
+  Result := TEngineTextureSettings.AssumeCommonTransparentColors;
 end;
 
 end.

@@ -47,6 +47,22 @@ type
     function IsTextureExtension(const AExtension: string): Boolean;
   end;
 
+  /// <summary>
+  ///   The external textures of the full screen pages (the old t_draw): a page is drawn on the
+  ///   screen buffer from the external texture that has the name of its lump
+  /// </summary>
+  IEngineDrawTextures = interface
+    ['{8B3E5D17-92C4-4F0A-B6D1-3A7E04C9F258}']
+    /// <summary>Forgets every page texture (the start of the game)</summary>
+    procedure Initialize;
+    /// <summary>Frees every page texture (the shut down of the game)</summary>
+    procedure ShutDown;
+    /// <summary>
+    ///   Draws the external texture of the lump AName, scaled to the whole screen, in ADest;
+    ///   False if there is no such texture
+    /// </summary>
+    function Draw(const AName: string; const ADest: PLongWordArray): Boolean;
+  end;
 implementation
 
 end.

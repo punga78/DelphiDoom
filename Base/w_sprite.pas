@@ -78,7 +78,7 @@ uses
   i_system,
   r_defs,
   DelphiDoom.Engine.Texture.Item,
-  t_png,
+  DelphiDoom.Texture.Types,
   v_video,
   w_wad,
   z_zone;
@@ -376,7 +376,7 @@ begin
   end;
 
   if (buf[1] = $50) and (buf[2] = $4E) and (buf[3] = $47) then // PNG
-    ext := PNGSPRITEEXT
+    ext := TEXTURE_PNG_SPRITE_EXTENSION
   else if (buf[0] = $42) and (buf[1] = $4D) then // BMP
     ext := '.BMP'
   else

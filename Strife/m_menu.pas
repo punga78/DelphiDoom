@@ -375,7 +375,7 @@ uses
 {$ENDIF}
   r_camera,
   r_draw,
-  t_png,
+  DelphiDoom.Engine.Texture.Settings,
   v_data,
   v_video,
   hu_stuff,
@@ -6380,7 +6380,7 @@ begin
   pmi.name := '!Search texture paths in PK3';
   pmi.cmd := 'preferetexturesnamesingamedirectory';
   pmi.routine := @M_BoolCmd;
-  pmi.pBoolVal := @preferetexturesnamesingamedirectory;
+  pmi.pBoolVal := @TEngineTextureSettings.PreferGameDirectory;
   pmi.alphaKey := 'p';
 
   inc(pmi);

@@ -54,7 +54,7 @@ implementation
 uses
   doomdef,
   i_system,
-  t_png,
+  DelphiDoom.Engine.Texture.Settings,
   w_folders,
   DelphiDoom.Wad.Pak.Types;
 
@@ -114,7 +114,7 @@ begin
     LName := d_delphi.strupper(AFileName);
     if Copy(LName, Length(LName) - Length(LExtension) + 1, Length(LExtension)) <> LExtension then
       LName := LName + LExtension;
-    if preferetexturesnamesingamedirectory then
+    if TEngineTextureSettings.PreferGameDirectory then
       LStream := FPakFiles.Open(LName, TPakLookupMode.Preferred, GameFolders, '')
     else
       LStream := FPakFiles.Open(LName, TPakLookupMode.Short, nil, FOLDER_TEXTURES);

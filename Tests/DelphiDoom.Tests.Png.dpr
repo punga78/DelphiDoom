@@ -44,7 +44,7 @@ uses
   DelphiDoom.Png.Client in '..\Libs\Png\DelphiDoom.Png.Client.pas',
   DelphiDoom.Png.Loader in '..\Libs\Png\DelphiDoom.Png.Loader.pas',
   DelphiDoom.Png.Provider in '..\Libs\Png\DelphiDoom.Png.Provider.pas',
-  DelphiDoom.Texture.PngFileWriter in '..\TEXLIB\DelphiDoom.Texture.PngFileWriter.pas',
+  DelphiDoom.Texture.PngFileWriter in '..\Libs\Texture\DelphiDoom.Texture.PngFileWriter.pas',
   DelphiDoom.Tests.Png.Samples in 'Source\DelphiDoom.Tests.Png.Samples.pas',
   DelphiDoom.Tests.Png.Engine in 'Source\DelphiDoom.Tests.Png.Engine.pas',
   DelphiDoom.Tests.Png.Client in 'Source\DelphiDoom.Tests.Png.Client.pas',
