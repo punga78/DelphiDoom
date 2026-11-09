@@ -193,6 +193,10 @@ begin
   FSurfaces.Add('BACK01.SCR', LBack);
   LRule := TXcomRuleInterface.Create('testMenu');
   FInterfaces.Add('testMenu', LRule);
+  LRule := TXcomRuleInterface.Create('newGameMenu');
+  LRule.Load(TYamlFactory.CreateParser.Load('elements:'#10'  - id: window'#10'    color: 1'#10'  - id: text'#10'    color: 1'#10 +
+    '  - id: ironman'#10'    color: 239'#10'  - id: button'#10'    color: 1'#10));
+  FInterfaces.Add('newGameMenu', LRule);
 end;
 
 destructor TFakeResources.Destroy;

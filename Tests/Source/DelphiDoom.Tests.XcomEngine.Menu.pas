@@ -81,6 +81,33 @@ type
   end;
 
   [TestFixture]
+  [Category('XcomMenu')]
+  TTestXcomNewGameState = class
+  strict private
+    FWorld: TTestWorld;
+    procedure OpenNewGame;
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+    [Test]
+    procedure IlPulsanteNewGameApreLaScelta;
+    [Test]
+    procedure CancelTornaAlMenuPrincipale;
+    [Test]
+    procedure ELTastoEscapeAnnullaPure;
+    [Test]
+    procedure ClicSuUnaDifficoltaLaSeleziona;
+    [Test]
+    procedure LaDifficoltaPredefinitaEPrincipiante;
+    [Test]
+    procedure IronmanSiAccendeEdAAzzera;
+    [Test]
+    procedure OkNonFaNullaPerOra;
+  end;
+
+  [TestFixture]
   [Category('XcomRealData')]
   TTestXcomRealData = class
   strict private
@@ -98,6 +125,8 @@ type
     [Test]
     procedure LaSchermataDiAvvioELaStessaDiOpenXcomVero;
     [Test]
+    procedure LaSceltaDellaDifficoltaELaStessaDiOpenXcomVero;
+    [Test]
     procedure IDatiVeriDannoLeStringheLePaletteEIFont;
   end;
 
@@ -105,6 +134,7 @@ implementation
 
 uses
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomMenu.MainMenuState,
+  DelphiDoom.XcomMenu.NewGameState,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.ModResources,
   DelphiDoom.Png.Provider;
 
@@ -350,6 +380,99 @@ begin
   Assert.IsFalse(FWorld.Game.IsQuitting);
 end;
 
+{ TTestXcomNewGameState }
+
+procedure TTestXcomNewGameState.Setup;
+begin
+  FWorld := TTestWorld.Create;
+end;
+
+procedure TTestXcomNewGameState.TearDown;
+begin
+  FWorld.Free;
+end;
+
+procedure TTestXcomNewGameState.OpenNewGame;
+var
+  LLoader: IXcomGameLoader;
+  LResources: IXcomResources;
+  LLanguage: TXcomLanguage;
+begin
+  LLoader := TFakeLoader.Create;
+  LLoader.Load(LResources, LLanguage);
+  FWorld.Game.AdoptData(LResources, LLanguage);
+  FWorld.Game.SetState(TXcomMainMenuState.Create(FWorld.Game, '1.0 Dev'));
+  FWorld.Wait(500);
+  FWorld.Click(220, 200);
+  FWorld.Wait(500);
+end;
+
+procedure TTestXcomNewGameState.IlPulsanteNewGameApreLaScelta;
+begin
+  OpenNewGame;
+  Assert.IsTrue(FWorld.Game.TopState is TXcomNewGameState);
+end;
+
+procedure TTestXcomNewGameState.CancelTornaAlMenuPrincipale;
+begin
+  OpenNewGame;
+  FWorld.Click(402, 344);
+  FWorld.Wait(50);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
+end;
+
+procedure TTestXcomNewGameState.ELTastoEscapeAnnullaPure;
+var
+  LEvent: TXcomInputEvent;
+begin
+  OpenNewGame;
+  LEvent := TXcomInputEvent.Make(ekKeyDown);
+  LEvent.Key := XCOM_KEY_ESCAPE;
+  FWorld.Events.Enqueue(LEvent);
+  FWorld.Wait(50);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
+end;
+
+procedure TTestXcomNewGameState.ClicSuUnaDifficoltaLaSeleziona;
+begin
+  OpenNewGame;
+  // the button of the genius level: 80, 92 of 160 x 18, in the 640 x 400 display
+  FWorld.Click(320, 202);
+  Assert.AreEqual(3, TXcomNewGameState(FWorld.Game.TopState).Difficulty);
+  FWorld.Click(320, 122);
+  Assert.AreEqual(1, TXcomNewGameState(FWorld.Game.TopState).Difficulty);
+  FWorld.Click(320, 162);
+  Assert.AreEqual(2, TXcomNewGameState(FWorld.Game.TopState).Difficulty);
+  FWorld.Click(320, 242);
+  Assert.AreEqual(4, TXcomNewGameState(FWorld.Game.TopState).Difficulty);
+end;
+
+procedure TTestXcomNewGameState.LaDifficoltaPredefinitaEPrincipiante;
+begin
+  OpenNewGame;
+  Assert.AreEqual(0, TXcomNewGameState(FWorld.Game.TopState).Difficulty);
+end;
+
+procedure TTestXcomNewGameState.IronmanSiAccendeEdAAzzera;
+var
+  LBefore: Byte;
+begin
+  OpenNewGame;
+  LBefore := FWorld.Pixel(170, 276);
+  FWorld.Click(200, 276);
+  Assert.AreNotEqual(Integer(LBefore), Integer(FWorld.Pixel(170, 276)));
+  FWorld.Click(200, 276);
+  Assert.AreEqual(Integer(LBefore), Integer(FWorld.Pixel(170, 276)));
+end;
+
+procedure TTestXcomNewGameState.OkNonFaNullaPerOra;
+begin
+  OpenNewGame;
+  FWorld.Click(238, 328);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomNewGameState);
+  Assert.IsFalse(FWorld.Game.IsQuitting);
+end;
+
 { TTestXcomRealData }
 
 procedure TTestXcomRealData.Setup;
@@ -482,6 +605,42 @@ begin
   end;
 end;
 
+procedure TTestXcomRealData.LaSceltaDellaDifficoltaELaStessaDiOpenXcomVero;
+var
+  LWorld: TTestWorld;
+  LLoader: IXcomGameLoader;
+  LResources: IXcomResources;
+  LLanguage: TXcomLanguage;
+  LSettings: TXcomLoaderSettings;
+begin
+  if FReference = '' then
+  begin
+    Assert.Pass('no real data');
+    Exit;
+  end;
+  LSettings.DataFolder := FDataFolder;
+  LSettings.GameFolder := FGameFolder;
+  LSettings.ModId := 'xcom2';
+  LSettings.LanguageId := 'en-US';
+  LSettings.Wordwrap := twAuto;
+  LLoader := TXcomModGameLoader.Create(LSettings, TXcomDiskFileSystem.Create, TYamlFactory.CreateParser,
+    TPngProvider.Client);
+  LLoader.Load(LResources, LLanguage);
+  LWorld := TTestWorld.Create;
+  try
+    LWorld.Game.AdoptData(LResources, LLanguage);
+    LWorld.Game.SetState(TXcomMainMenuState.Create(LWorld.Game, '1.0 git 2026-06-05 22:05'));
+    LWorld.Click(5000, 5000);
+    LWorld.Wait(500);
+    // a click on New Game; the cursor stays where it clicked, as in the frame of the real game
+    LWorld.Click(220, 200);
+    LWorld.Wait(500);
+    Assert.AreEqual(Golden('newgame'), Hash(LWorld));
+  finally
+    LWorld.Free;
+  end;
+end;
+
 procedure TTestXcomRealData.IDatiVeriDannoLeStringheLePaletteEIFont;
 var
   LLoader: IXcomGameLoader;
@@ -538,6 +697,7 @@ end;
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomStartState);
   TDUnitX.RegisterTestFixture(TTestXcomMainMenuState);
+  TDUnitX.RegisterTestFixture(TTestXcomNewGameState);
   TDUnitX.RegisterTestFixture(TTestXcomRealData);
 
 end.

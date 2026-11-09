@@ -3,3 +3,5 @@
 # start: the start screen after the 9th timer tick with the cursor hidden; DOS path C:\PROGETTI\DELPHI~1\REFERE~1\_DATI\XCOM_T~1\OPENXCOM
 menu_main 640x400 a5775815
 start 640x400 1a5a6bd6
+newgame 640x400 58444485
+# newgame: the difficulty window after a click on New Game at 220,200 (the cursor is drawn there)

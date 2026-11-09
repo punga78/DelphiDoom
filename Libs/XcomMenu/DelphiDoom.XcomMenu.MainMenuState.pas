@@ -29,6 +29,7 @@ type
     FQuit: TXcomTextButton;
     FTitle: TXcomText;
     FVersionText: string;
+    procedure NewGameClick(AAction: TXcomAction);
     procedure OptionsClick(AAction: TXcomAction);
     procedure QuitClick(AAction: TXcomAction);
   public
@@ -36,6 +37,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.XcomMenu.NewGameState;
 
 
 constructor TXcomMainMenuState.Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -62,6 +66,7 @@ begin
   CenterAllSurfaces;
   FWindow.SetBackground(Host.Resources.GetSurface('BACK01.SCR'));
   FNewGame.SetText(Tr('STR_NEW_GAME'));
+  FNewGame.OnMouseClick(NewGameClick);
   FNewBattle.SetText(Tr('STR_NEW_BATTLE'));
   FLoad.SetText(Tr('STR_LOAD_SAVED_GAME'));
   FOptions.SetText(Tr('STR_OPTIONS'));
@@ -72,6 +77,11 @@ begin
   FTitle.SetAlign(haCenter);
   FTitle.SetBig;
   FTitle.SetText(Tr('STR_OPENXCOM').Text + #2 + FVersionText);
+end;
+
+procedure TXcomMainMenuState.NewGameClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomNewGameState.Create(Host));
 end;
 
 procedure TXcomMainMenuState.OptionsClick(AAction: TXcomAction);

@@ -10,6 +10,7 @@ I widget di `Interface\` di **OpenXcom** a classi e senza SDL (issue #176): deri
 | `Window` (bordo in 5 sfumature o sottile, sfondo, popup) | `TXcomWindow` | portato, parita' sui pixel |
 | `TextButton` (bordo, inversione, gruppo, combo) | `TXcomTextButton`, `TXcomButtonGroup` | portato, parita' sui pixel |
 | `Frame`, `NumberText`, `Cursor`, `FpsCounter` | `TXcomFrame`, `TXcomNumberText`, `TXcomCursor`, `TXcomFpsCounter` | portati (il cursore con Bresenham: SDL_gfx non c'e') |
-| `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton`, `ToggleTextButton`, `Bar`, `ImageButton`, `BattlescapeButton` | | **non portati** |
+| `ToggleTextButton` | `TXcomToggleTextButton` | portato (l'interruttore Ironman e' nel frame confrontato) |
+| `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton`, `Bar`, `ImageButton`, `BattlescapeButton` | | **non portati** |
 
 Differenze: il suono dei pulsanti e dei popup non c'e'; `TextButton.SetGroup` prende un `TXcomButtonGroup` (il `TextButton **` del C++); `SetComboToggle` prende una chiusura (il `ComboBox *`). Test e copertura: `Tests\DelphiDoom.Tests.XcomEngine` (96%).

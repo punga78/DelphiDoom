@@ -10,4 +10,4 @@
 
 **Non portato**: audio (Sound/Music/SoundSet/Cat*), filtri di `Zoom`, OpenGL, `FlcPlayer`, `OptionInfo`/`ModInfo`, `Mod` e le `Rule*`, `SurfaceSet`; `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton`, `ToggleTextButton`, `BattlescapeButton`, `ImageButton` (`Libs\XcomUi`).
 
-Test: `Tests\DelphiDoom.Tests.XcomEngine` (195 con `XcomUi` e `XcomMenu`, copertura 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.
+Test: `Tests\DelphiDoom.Tests.XcomEngine` (209 con `XcomUi` e `XcomMenu`, copertura 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.

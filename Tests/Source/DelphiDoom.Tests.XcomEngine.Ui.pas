@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomEngine.ManualClock, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.Frame,
   DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter,
-  DelphiDoom.XcomUi.PaletteShift, DelphiDoom.Tests.XcomEngine.World;
+  DelphiDoom.XcomUi.PaletteShift, DelphiDoom.XcomUi.ToggleTextButton, DelphiDoom.Tests.XcomEngine.World;
 
 type
   [TestFixture]
@@ -185,6 +185,33 @@ type
     procedure PaletteShiftRitagliaEPosizionaIlCarattere;
     [Test]
     procedure PaletteShiftNonDisegnaFuoriDallaDestinazione;
+  end;
+
+  [TestFixture]
+  [Category('XcomUi')]
+  TTestXcomToggleTextButton = class
+  strict private
+    FWorld: TTestWorld;
+    FState: TXcomState;
+    FButton: TXcomToggleTextButton;
+    procedure Press(AButton: Integer);
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+    [Test]
+    procedure UnaPressioneLoAccendeEUnaltraLoSpegne;
+    [Test]
+    procedure ConIlTastoDestroFunzionaUguale;
+    [Test]
+    procedure IlTastoCentraleNonLoCambia;
+    [Test]
+    procedure SetPressedLoAccendeSenzaMouse;
+    [Test]
+    procedure PremutoEInvertitoComeUnPulsanteDiGruppo;
+    [Test]
+    procedure ConIlColoreInvertitoLoUsaDaPremuto;
   end;
 
 implementation
@@ -1186,10 +1213,103 @@ begin
   end;
 end;
 
+{ TTestXcomToggleTextButton }
+
+procedure TTestXcomToggleTextButton.Setup;
+begin
+  FWorld := TTestWorld.Create;
+  FState := TFlatState.Create(FWorld.Game);
+  FButton := TXcomToggleTextButton.Create(40, 20, 10, 10);
+  FState.Add(FButton);
+  FButton.SetColor(20);
+end;
+
+procedure TTestXcomToggleTextButton.TearDown;
+begin
+  FState.Free;
+  FWorld.Free;
+end;
+
+procedure TTestXcomToggleTextButton.Press(AButton: Integer);
+var
+  LEvent: TXcomInputEvent;
+  LAction: TXcomAction;
+begin
+  LEvent := TXcomInputEvent.Make(ekMouseMotion);
+  LEvent.X := 15;
+  LEvent.Y := 15;
+  LAction := TXcomAction.Create(LEvent, 1.0, 1.0, 0, 0);
+  try
+    FButton.Handle(LAction);
+    LAction.Details^.Kind := ekMouseDown;
+    LAction.Details^.Button := AButton;
+    FButton.Handle(LAction);
+    LAction.Details^.Kind := ekMouseUp;
+    FButton.Handle(LAction);
+  finally
+    LAction.Free;
+  end;
+end;
+
+procedure TTestXcomToggleTextButton.UnaPressioneLoAccendeEUnaltraLoSpegne;
+begin
+  Assert.IsFalse(FButton.GetPressed);
+  Press(XCOM_BUTTON_LEFT);
+  Assert.IsTrue(FButton.GetPressed);
+  Assert.AreEqual(25, Integer(FButton.GetPixel(0, 0)));
+  Press(XCOM_BUTTON_LEFT);
+  Assert.IsFalse(FButton.GetPressed);
+  Assert.AreEqual(21, Integer(FButton.GetPixel(0, 0)));
+end;
+
+procedure TTestXcomToggleTextButton.ConIlTastoDestroFunzionaUguale;
+begin
+  Press(XCOM_BUTTON_RIGHT);
+  Assert.IsTrue(FButton.GetPressed);
+end;
+
+procedure TTestXcomToggleTextButton.IlTastoCentraleNonLoCambia;
+begin
+  Press(XCOM_BUTTON_MIDDLE);
+  Assert.IsFalse(FButton.GetPressed);
+end;
+
+procedure TTestXcomToggleTextButton.SetPressedLoAccendeSenzaMouse;
+begin
+  FButton.SetPressed(True);
+  FButton.Draw;
+  Assert.IsTrue(FButton.GetPressed);
+  Assert.AreEqual(25, Integer(FButton.GetPixel(0, 0)));
+  FButton.SetPressed(False);
+  FButton.Draw;
+  Assert.AreEqual(21, Integer(FButton.GetPixel(0, 0)));
+end;
+
+procedure TTestXcomToggleTextButton.PremutoEInvertitoComeUnPulsanteDiGruppo;
+begin
+  FButton.SetPressed(True);
+  FButton.Draw;
+  // inverted around the color plus three: 21 becomes 25 and 25 becomes 21
+  Assert.AreEqual(21, Integer(FButton.GetPixel(39, 0)));
+end;
+
+procedure TTestXcomToggleTextButton.ConIlColoreInvertitoLoUsaDaPremuto;
+begin
+  FButton.SetInvertColor(60);
+  FButton.SetPressed(True);
+  FButton.Draw;
+  // drawn in the inverted color 60 (border 61), then the surface is inverted around 64
+  Assert.AreEqual(67, Integer(FButton.GetPixel(0, 0)));
+  FButton.SetPressed(False);
+  FButton.Draw;
+  Assert.AreEqual(21, Integer(FButton.GetPixel(0, 0)));
+end;
+
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomText);
   TDUnitX.RegisterTestFixture(TTestXcomWindow);
   TDUnitX.RegisterTestFixture(TTestXcomTextButton);
   TDUnitX.RegisterTestFixture(TTestXcomSmallWidgets);
+  TDUnitX.RegisterTestFixture(TTestXcomToggleTextButton);
 
 end.

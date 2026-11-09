@@ -38,6 +38,8 @@ type
   protected
     procedure MousePress(AAction: TXcomAction); override;
     procedure MouseRelease(AAction: TXcomAction); override;
+    /// <summary>InteractiveSurface::mousePress, skipping the code of TextButton (what ToggleTextButton does)</summary>
+    procedure InteractiveMousePress(AAction: TXcomAction);
   public
     constructor Create(AWidth, AHeight: Integer; AX: Integer = 0; AY: Integer = 0);
     destructor Destroy; override;
@@ -238,6 +240,7 @@ begin
   if (AAction.Details^.Button = XCOM_BUTTON_LEFT) and (FGroup <> nil) then
   begin
     LOld := FGroup.Selected;
+    FGroup.Selected := Self;
     if LOld <> nil then
       LOld.Draw;
     Draw;
@@ -248,6 +251,11 @@ begin
       FToggleCombo();
     Draw;
   end;
+  inherited MousePress(AAction);
+end;
+
+procedure TXcomTextButton.InteractiveMousePress(AAction: TXcomAction);
+begin
   inherited MousePress(AAction);
 end;
 
