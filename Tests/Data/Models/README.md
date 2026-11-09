@@ -1,6 +1,6 @@
 # Dati di prova di Libs\Models (issue #45)
 
-`models.golden.txt` è l'uscita del **vecchio codice del motore** (`OPENGL\mdl_md2.pas`: costruttore e `MergeFrames`; `mdl_base.pas`;
+`models.golden.txt` è l'uscita del **vecchio codice del motore** (`Libs\OpenGl\Legacy\mdl_md2.pas`: costruttore e `MergeFrames`; `mdl_base.pas`;
 `mdl_script_model.pas`: `TDDModelLoader` senza lo script), compilato con Delphi 11 Win32 in un programma di prova **fuori dal
 repository** (l'harness non si committa). Nell'harness il flusso è un `TDMemoryStream`, le chiamate OpenGL del disegno vanno a un
 registratore e gli offset e le scale arrivano già divisi per `MAP_COEFF`; il resto è la copia del vecchio testo. Ogni riga è

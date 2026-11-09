@@ -4,7 +4,7 @@ Il renderer (software e OpenGL) e rimasto storico per scelta: chiamate per fotog
 
 ## 1. Metodo e come leggere i numeri
 
-Ho letto le unit (non solo le intestazioni): `Base\r_main.pas`, `r_data`, `r_segs`, `r_segs2`, `r_bsp`, `r_plane`, `r_draw`, `r_sky`, `r_aspect`, `r_things` (funzioni), `r_fake3d`, `r_subsectors`, `OPENGL\gl_*.pas` (elenco delle funzioni e lettura delle parti fredde). I conteggi sono di uno script (perl, fuori dal repository) che:
+Ho letto le unit (non solo le intestazioni): `Base\r_main.pas`, `r_data`, `r_segs`, `r_segs2`, `r_bsp`, `r_plane`, `r_draw`, `r_sky`, `r_aspect`, `r_things` (funzioni), `r_fake3d`, `r_subsectors`, `Libs\OpenGl\Legacy\gl_*.pas` (elenco delle funzioni e lettura delle parti fredde). I conteggi sono di uno script (perl, fuori dal repository) che:
 
 - prende i **globali dell'interfaccia** (blocchi `var` della sezione `interface`) di 89 unit `r_*`, `v_video`, `v_data`, `gl_*`: **582 nomi**;
 - per ogni unit conta quanti di quei globali, dichiarati in *altre* unit, vengono **letti** (compaiono nel testo, commenti e stringhe esclusi) e quanti **scritti** (compaiono a sinistra di `:=`, anche con indici e campi: `dc_x := ...`, `ylookup[i] := ...`, `x.campo := ...`);
@@ -12,7 +12,7 @@ Ho letto le unit (non solo le intestazioni): `Base\r_main.pas`, `r_data`, `r_seg
 
 Limiti: non vede i globali dichiarati nella sezione `implementation`, ne le variabili passate per riferimento (`var`), ne le scritture fatte da una procedura chiamata; una scrittura a un campo di un puntatore (`curline.x := ...`) conta come scrittura del puntatore. Sono **ordini di grandezza** per decidere dove sta l'accoppiamento, non una verifica formale. "Caldo" = eseguito per colonna, per pixel, per muro o per oggetto in ogni fotogramma (dalla lettura del codice, non da un profiler).
 
-Totali: circa 79700 righe in `Base\r_*.pas`, `v_video`, `v_data` e `OPENGL\gl_*.pas`; 582 globali; 142 `{$IF}` di gioco nella sola `r_main`; 3 unit con `asm` (`r_hires` 1, `r_softlights` 1, `r_mmx` 6: sono della #41).
+Totali: circa 79700 righe in `Base\r_*.pas`, `v_video`, `v_data` e `Libs\OpenGl\Legacy\gl_*.pas`; 582 globali; 142 `{$IF}` di gioco nella sola `r_main`; 3 unit con `asm` (`r_hires` 1, `r_softlights` 1, `r_mmx` 6: sono della #41).
 
 ## 2. Come gira un fotogramma
 
@@ -80,7 +80,7 @@ Colonne numeriche: righe; globali dichiarati nell'interfaccia (**dich.**); globa
 | `r_clipper` | 7132 | 0 | 0 | 0 | 58 | **non e codice del renderer**: e Clipper (Angus Johnson, licenza Boost) per i poligoni delle 3D floors e delle pendenze (usato da `r_3dfloors`, `r_cliputils`, `r_slopes`) | nessuno | per muro/settore | non toccare (codice di terzi) | - |
 | `v_video`, `v_data` | 5786, 196 | 10+17 | 0-11 | 0-8 | 11-91 | video (non e del renderer: #148) | `screens[]` | - | altra issue | - |
 
-## 5. Tabella unit per unit - OpenGL (`OPENGL\`)
+## 5. Tabella unit per unit - OpenGL (`Libs\OpenGl\Legacy\`)
 
 | Unit | Righe | dich. | L | S | if | Contenuto | Dipendenze | Caldo? | Candidato | Rischio |
 |---|---:|---:|---:|---:|---:|---|---|---|---|---|
