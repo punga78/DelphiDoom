@@ -18,7 +18,8 @@ uses
   DelphiDoom.EndoomEditor.Presenter,
   DelphiDoom.Tools.Composition,
   DelphiDoom.Tools.Vcl.EndoomPanel,
-  frm_fonteditor;
+  frm_fonteditor,
+  frm_voxeleditor;
 
 type
   /// <summary>
@@ -37,6 +38,7 @@ type
     FEndoomSheet: TTabSheet;
     FPanel: TEndoomEditorPanel;
     FFontForm: TFontEditorForm;
+    FVoxelForm: TVoxelEditorForm;
     FStatusBar: TStatusBar;
     FMenu: TMainMenu;
     FFileMenu: TMenuItem;
@@ -80,6 +82,7 @@ type
     procedure GridClick(ASender: TObject);
     procedure AboutClick(ASender: TObject);
     procedure FontEditorClick(ASender: TObject);
+    procedure VoxelEditorClick(ASender: TObject);
     procedure BlinkTimerTick(ASender: TObject);
     procedure CursorTimerTick(ASender: TObject);
     procedure FormKeyPressed(ASender: TObject; var AKey: Char);
@@ -97,6 +100,8 @@ type
     procedure Start(const ACommandLineFile: string);
     /// <summary>The font editor is shown in its own window (made the first time); a project can be opened in it</summary>
     procedure ShowFontEditor(const AProjectFile: string);
+    /// <summary>The voxel editor is shown in its own window (made the first time); a voxel can be opened in it</summary>
+    procedure ShowVoxelEditor(const AVoxelFile: string);
 
     // IEndoomEditorView
     procedure ShowPicture(const APixels: TArray<Cardinal>; const AOverlay: TEndoomEditorOverlay);
@@ -139,6 +144,7 @@ end;
 destructor TToolsMainForm.Destroy;
 begin
   // the presenters hold interfaces to the windows: they go first
+  FreeAndNil(FVoxelForm);
   FreeAndNil(FFontForm);
   FreeAndNil(FPresenter);
   FreeAndNil(FServices);
@@ -235,6 +241,7 @@ begin
   LTools.Caption := '&Tools';
   FMenu.Items.Add(LTools);
   AddItem(LTools, '&Font creator...', FontEditorClick);
+  AddItem(LTools, '&Voxel editor...', VoxelEditorClick);
 
   LHelp := TMenuItem.Create(Self);
   LHelp.Caption := '&Help';
@@ -269,6 +276,20 @@ begin
     FFontForm.OpenProject(AProjectFile);
   FFontForm.Show;
   FFontForm.BringToFront;
+end;
+
+procedure TToolsMainForm.ShowVoxelEditor(const AVoxelFile: string);
+begin
+  if not Assigned(FVoxelForm) then
+  begin
+    FVoxelForm := TVoxelEditorForm.Create(Self);
+    FVoxelForm.Configure(FServices);
+    FVoxelForm.Start(AVoxelFile);
+  end
+  else if AVoxelFile <> '' then
+    FVoxelForm.OpenVoxel(AVoxelFile);
+  FVoxelForm.Show;
+  FVoxelForm.BringToFront;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -456,6 +477,11 @@ begin
   ShowFontEditor('');
 end;
 
+procedure TToolsMainForm.VoxelEditorClick(ASender: TObject);
+begin
+  ShowVoxelEditor('');
+end;
+
 procedure TToolsMainForm.BlinkTimerTick(ASender: TObject);
 begin
   if Assigned(FPresenter) then
@@ -514,6 +540,8 @@ begin
   ACanClose := FClosing or (not Assigned(FPresenter)) or FPresenter.TryClose;
   if ACanClose and Assigned(FFontForm) and (not FClosing) then
     ACanClose := FFontForm.CanFinish;
+  if ACanClose and Assigned(FVoxelForm) and (not FClosing) then
+    ACanClose := FVoxelForm.CanFinish;
 end;
 
 procedure TToolsMainForm.FormClosed(ASender: TObject; var AAction: TCloseAction);
@@ -522,6 +550,8 @@ begin
     FPresenter.Shutdown;
   if Assigned(FFontForm) then
     FFontForm.Finish;
+  if Assigned(FVoxelForm) then
+    FVoxelForm.Finish;
 end;
 
 procedure TToolsMainForm.FormWheel(ASender: TObject; AShift: TShiftState; AWheelDelta: Integer; AMousePos: TPoint;

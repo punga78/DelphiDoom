@@ -105,7 +105,31 @@ uses
   DelphiDoom.Font.GlyphCropper in '..\Libs\Font\DelphiDoom.Font.GlyphCropper.pas',
   DelphiDoom.Font.Colorizer in '..\Libs\Font\DelphiDoom.Font.Colorizer.pas',
   DelphiDoom.Font.PerlinNoise in '..\Libs\Font\DelphiDoom.Font.PerlinNoise.pas',
-  frm_fonteditor in '..\DD_Tools\frm_fonteditor.pas';
+  frm_fonteditor in '..\DD_Tools\frm_fonteditor.pas',
+  DelphiDoom.VoxelEditor.Types in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Types.pas',
+  DelphiDoom.VoxelEditor.Model in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Model.pas',
+  DelphiDoom.VoxelEditor.Views in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Views.pas',
+  DelphiDoom.VoxelEditor.Planes in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Planes.pas',
+  DelphiDoom.VoxelEditor.Transforms in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Transforms.pas',
+  DelphiDoom.VoxelEditor.Palettes in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Palettes.pas',
+  DelphiDoom.VoxelEditor.Operations in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Operations.pas',
+  DelphiDoom.VoxelEditor.Rotator in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Rotator.pas',
+  DelphiDoom.VoxelEditor.Quantizer in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Quantizer.pas',
+  DelphiDoom.VoxelEditor.ByteReader in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.ByteReader.pas',
+  DelphiDoom.VoxelEditor.Format.SlabPalette in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.SlabPalette.pas',
+  DelphiDoom.VoxelEditor.Format.Ddvox in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.Ddvox.pas',
+  DelphiDoom.VoxelEditor.Format.Kvx in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.Kvx.pas',
+  DelphiDoom.VoxelEditor.Format.Vox in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.Vox.pas',
+  DelphiDoom.VoxelEditor.Format.Ddmesh in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.Ddmesh.pas',
+  DelphiDoom.VoxelEditor.MeshOptimizer in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.MeshOptimizer.pas',
+  DelphiDoom.VoxelEditor.Painter in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Painter.pas',
+  DelphiDoom.VoxelEditor.Intf in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Intf.pas',
+  DelphiDoom.VoxelEditor.Presenter in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Presenter.pas',
+  DelphiDoom.Tools.Win.VoxelBitmaps in '..\DD_Tools\DelphiDoom.Tools.Win.VoxelBitmaps.pas',
+  DelphiDoom.Tools.Win.VoxelClipboard in '..\DD_Tools\DelphiDoom.Tools.Win.VoxelClipboard.pas',
+  DelphiDoom.Tools.Win.VoxelImageFiles in '..\DD_Tools\DelphiDoom.Tools.Win.VoxelImageFiles.pas',
+  DelphiDoom.Tools.Win.VoxelDialogs in '..\DD_Tools\DelphiDoom.Tools.Win.VoxelDialogs.pas',
+  frm_voxeleditor in '..\DD_Tools\frm_voxeleditor.pas';
 
 begin
   Application.Initialize;
@@ -118,6 +142,12 @@ begin
   begin
     ToolsMainForm.Start('');
     ToolsMainForm.ShowFontEditor(ParamStr(1));
+  end
+  // a voxel of the voxel editor (.ddvox) opens that module
+  else if (ParamCount > 0) and SameText(ExtractFileExt(ParamStr(1)), '.ddvox') then
+  begin
+    ToolsMainForm.Start('');
+    ToolsMainForm.ShowVoxelEditor(ParamStr(1));
   end
   else if ParamCount > 0 then
     ToolsMainForm.Start(ParamStr(1))
