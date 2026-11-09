@@ -270,6 +270,8 @@ begin
   end;
 end;
 
+initialization
+
 finalization
   SaveQueriedParameters;
 {$ENDIF}
