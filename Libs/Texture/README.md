@@ -1,5 +1,7 @@
 # Libs\Texture - le texture esterne del motore (issue #45)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Questa libreria sostituisce il codice di `TEXLIB\` che legge i file di immagine delle texture esterne (hi-res,
 sprite, flat) e che tiene l'immagine in memoria: BMP, PCX, TGA, PNG, JPEG, `.PATCH`, `.FLAT`, `.MATERIAL`.
 Non dipende dal motore: lavora su `TBytes` e su buffer di pixel. Dipende solo da `Libs\Logging` (`ILog`, per gli

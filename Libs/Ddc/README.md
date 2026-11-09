@@ -1,5 +1,7 @@
 # Libs\Ddc
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Il **compilatore degli script da riga di comando e in DLL** (issue #172, spostato qui da `SCRIPT\`).
 
 | File | Ruolo |

@@ -1,5 +1,7 @@
 # Libs\Collision — il modello di collisione di Doom 3 (id Tech 4) in Delphi
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Port a classi di `Reference\doom3\neo\cm` (`CollisionModel_*.cpp`, `CollisionModel.h`, `CollisionModel_local.h`),
 con la matematica e la geometria di idlib in `Libs\Geometry`. **Non è collegato al motore**: DelphiDoom è un source
 port di id Tech 1 e il modello di id Tech 4 non ha un chiamante in Doom, Heretic, Hexen e Strife

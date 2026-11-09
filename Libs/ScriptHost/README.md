@@ -1,5 +1,7 @@
 # Libs\ScriptHost
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCRIPT\`): registra nell'interprete le classi, le funzioni e le variabili del gioco, cioè ciò che gli script ACTORDEF/DECORATE possono vedere e chiamare.
 
 | Unit | Ruolo |

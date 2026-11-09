@@ -1,5 +1,7 @@
 # Libs\XcomFormats
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Lettori in Delphi dei **formati dei dati originali di UFO: Enemy Unknown e X-COM: Terror from the Deep** (Microprose 1994/1995), nella forma in cui li legge **OpenXcom** (`Reference\OpenXcom`). Solo classi pure: niente SDL, YAML né finestra. Issue #176, prima fetta del port di OpenXcom (analisi in `Reference\_analisi\openxcom.md`).
 
 Non è un gioco del motore Doom: ha il suo eseguibile di prova (`OpenXcom\Xcom32.dpr`, composition root `OpenXcom\DelphiDoom.Xcom.Composition.pas`) e **non tocca** `ComposeEngine` né `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`) e `Libs\Platform` (`IFileStore`).

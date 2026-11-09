@@ -1,5 +1,7 @@
 # Libs\IdLib - il port in Delphi di idLib (Doom 3 / idTech 4)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 idLib e la libreria di base di Doom 3 (`Reference\doom3\neo\idlib`, circa 100000 righe, di cui 60000 sono SIMD).
 Qui ci sono i pezzi con comportamento proprio, riscritti a classi nello stile del repository (interfacce piccole,
 dipendenze dal costruttore, eccezioni dedicate al posto di `common->Error`). **Nessun chiamante nel motore** di

@@ -1,5 +1,7 @@
 # Libs\Greed
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Port in classi di **xGreed**, il source port Delphi di Jim Valavanis (2020-2022, GPL v2 o successiva) di **"In Pursuit of Greed"** (Softdisk / Channel 7, 1996, motore "Raven 3D", disegno di John Carmack). Sorgenti originali in `Reference\xGreed` (non si modificano); issue #175.
 
 Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, composition root `Greed\DelphiDoom.Greed.Composition.pas`, `Tools\build.bat Greed\Greed32`, output `bin\Greed`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`), `Libs\Platform` (`IFileStore`) e `Libs\MathCore` (`TCrc32`).

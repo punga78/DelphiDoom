@@ -1,5 +1,7 @@
 # Libs\Renderer - analisi del renderer e prima fetta (issue #156)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Il renderer (software e OpenGL) e rimasto storico per scelta: chiamate per fotogramma, `screens[]`, zone memory, circa 580 globali condivisi. Questo documento e l'**analisi unit per unit** richiesta dalla #156, la proposta di `IRenderer` e l'ordine di migrazione a fette. La libreria contiene le **prime due fette senza rischio** (la tabella delle colonne di una texture e le misure del livello), con test di parita.
 
 ## 1. Metodo e come leggere i numeri

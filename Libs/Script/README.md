@@ -1,5 +1,7 @@
 # Libs\Script — PascalScript in `DDScript.dll`
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Estrazione del compilatore e dell'interprete di Pascal Script (ex `SCRIPT\`, ora `Libs\PascalScript\` e `Libs\ScriptHost\`) in una DLL con interfaccia COM-style, secondo il modello di `Libs\Zlib`, `Libs\Xmi`, `Libs\Mp3`.
 Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la **fetta verticale** della Fase 2 consegnata.
 

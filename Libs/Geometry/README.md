@@ -1,5 +1,7 @@
 # Libs\Geometry — tipi geometrici di idlib in Delphi
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Port della parte di idlib (`math`, `bv`, `geometry` di `Reference\doom3\neo\idlib`) che serve al modello di collisione
 (`Libs\Collision`, vedi il suo `README.md`). Codice **derivato da Doom 3 GPL Source Code** (copyright id Software,
 GPL v3 con termini aggiuntivi): le unit portano l'intestazione e l'opera ricade nella GPL v3.

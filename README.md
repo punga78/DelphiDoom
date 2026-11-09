@@ -10,7 +10,7 @@ Tutta la documentazione sta in `docs\`.
 
 | Documento | Contenuto |
 |---|---|
-| `CLAUDE.md` (radice) | istruzioni del repository: build, librerie, stato di ogni area |
+| `CLAUDE.md` (radice) | istruzioni del repository: build, regole generali, indice delle librerie (il dettaglio di ognuna sta in `Libs\<Nome>\CLAUDE.md`) |
 | `docs\FACCIATE.md` | le facciate storiche e cosa le sostituisce |
 | `docs\PENDING_ISSUES.md` | cosa resta aperto e perche |
 | `docs\INTEGRAZIONE_GIOCHI.md` | integrazione tra i quattro giochi |

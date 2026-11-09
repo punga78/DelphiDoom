@@ -1,5 +1,7 @@
 # Libs\GameData - la parte comune dei fork di DelphiDoom e come si aggiunge un gioco (issue #166)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 `Libs\GameData` è la parte comune di Mars3D, Rad-X e Speed (fork di DelphiDoom dello stesso autore, che restano id Tech 1):
 quello che i tre fork avevano scritto tre volte. Sta sotto `Libs\Speed` (e sotto le librerie dei due fork che verranno).
 Analisi completa dei tre fork: `Reference\_analisi\mars3d-radx-speed.md` (cartella ignorata da git) e `INTEGRAZIONE_GIOCHI.md`.

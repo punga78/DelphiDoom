@@ -1,5 +1,7 @@
 # Libs\OpenGl (issue #177)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Qui sta tutto cio' che prima era nella cartella `OPENGL\` della radice (che non esiste piu). Il piano per svuotarla fetta per fetta e `docs\OPENGL_PIANO.md`.
 
 | Cartella | Contenuto |

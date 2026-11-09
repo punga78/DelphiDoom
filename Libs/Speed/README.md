@@ -1,5 +1,7 @@
 # Libs\Speed - i dati di Speed Haste in un WAD (issue #166, fette S1 e S2)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Speed (`Reference\Speed`, `GLSpeed`) è un fork di DelphiDoom 2.05 che fa girare **Speed Haste** (Noriaworks, 1995, corse di auto) sul motore di
 Doom. Il gioco parte da `SPEEDH.JCL` e genera in memoria un WAD in formato Doom (`speed_xlat_wad.pas` e le unit `speed_*` che usa). Questa
 libreria porta a classi **la parte pura**: il contenitore (S1) e il traduttore (S2). Tutto il resto del fork (regole, auto, IA, menu, HUD,

@@ -1,5 +1,7 @@
 # Libs\GlMath (issue #45, fetta "geometria del renderer OpenGL")
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Il clipper degli angoli e l'ampiezza della vista di `Libs\OpenGl\Legacy\gl_clipper.pas`, a classi e senza chiamate a OpenGL. L'analisi
 di tutta la cartella `Libs\OpenGl\Legacy\` (cosa è stato portato e cosa no, e perché), il collegamento al motore e il costo misurato sono
 in `Libs\Models\README.md`, paragrafo 3. Il motore usa il clipper (`gl_clipper.pas`). Il frustum della vista (`TGlFrustum`,

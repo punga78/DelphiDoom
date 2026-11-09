@@ -1,5 +1,7 @@
 # Libs\Models e Libs\GlMath - analisi di `Libs\OpenGl\Legacy\` e cosa è stato portato (issue #45)
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 La cartella `Libs\OpenGl\Legacy\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
 caldo del fotogramma o è caricamento a freddo, e perché è stata portata a classi oppure no. Le due librerie nate da
 questo lavoro sono `Libs\Models` (modelli 3D) e `Libs\GlMath` (geometria pura del renderer); `GlMath` ha il suo

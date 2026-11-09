@@ -1,5 +1,7 @@
 # Libs\PascalScript
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Nucleo di **Pascal Script** (compilatore, interprete, preprocessore, disassemblatore): codice di terzi, modificato per DelphiDoom (issue #172, spostato qui da `SCRIPT\`; la storia dei file resta in git).
 
 Origine: Pascal Script di RemObjects (Carlo Kok), nella versione adattata dal progetto (nomi `ps_*` al posto di `uPS*` per le unit principali). Non è una libreria da convertire a classi: **è già una libreria a classi** (`TPSPascalCompiler`, `TPSExec`, `TPSPreProcessor`...) e si tiene com'è.

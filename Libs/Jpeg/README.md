@@ -1,5 +1,7 @@
 # Libs\Jpeg
 
+> Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
+
 Decoder JPEG a classi, port della parte di decompressione di libjpeg 6b (IJG) al posto di `JPEGLIB\jpg_*.pas` (una traslitterazione letterale con globali, puntatori a funzione, un memory manager proprio e l'IDCT in `asm`), che è stata cancellata. Il motore lo usa per le immagini JPEG delle texture (`TEXLIB\t_jpeg.pas`, tramite `TJpegProvider` e `TJpegBitmapBuilder`); la DLL `DDJpeg` lo espone con `IJpeg`.
 
 ## Struttura

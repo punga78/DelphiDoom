@@ -1,0 +1,19 @@
+# Libs\Sound
+
+Sostituto in Pascal di libsndfile, libvorbis e libflac.
+
+Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
+
+## Contenuto
+
+- Unit nella cartella: 48 (nome a punti `DelphiDoom.Sound.*`).
+- Interfacce dichiarate: `ISoundFormat`.
+- Punto di creazione delle classi: `DelphiDoom.Sound.Factory`.
+
+## Prova
+
+- Nessuna cartella `Tests\DelphiDoom.Tests.Sound*` dedicata: vedi [CLAUDE.md](CLAUDE.md) per come è provata.
+
+## Legami
+
+- Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
