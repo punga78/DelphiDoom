@@ -31,6 +31,7 @@ type
     class function CreateMcdReader: IXcomMcdReader; static;
     class function CreateWorldReader: IXcomWorldReader; static;
     class function CreateWordTableReader: IXcomWordTableReader; static;
+    class function CreateLbmReader: IXcomLbmReader; static;
     /// <summary>The data of the game in the given files, with all the readers</summary>
     class function CreateGameData(const AFiles: IXcomDataFiles): IXcomGameData; static;
   end;
@@ -41,7 +42,7 @@ uses
   DelphiDoom.Xcom.FolderFiles, DelphiDoom.Xcom.ScrDecoder, DelphiDoom.Xcom.SpkDecoder, DelphiDoom.Xcom.BdyDecoder,
   DelphiDoom.Xcom.PckDecoder, DelphiDoom.Xcom.DatDecoder, DelphiDoom.Xcom.PaletteReader, DelphiDoom.Xcom.CatArchive,
   DelphiDoom.Xcom.MapReader, DelphiDoom.Xcom.RouteReader, DelphiDoom.Xcom.McdReader, DelphiDoom.Xcom.WorldReader,
-  DelphiDoom.Xcom.WordTableReader, DelphiDoom.Xcom.GameData;
+  DelphiDoom.Xcom.WordTableReader, DelphiDoom.Xcom.LbmReader, DelphiDoom.Xcom.GameData;
 
 { TXcomFactory }
 
@@ -103,6 +104,11 @@ end;
 class function TXcomFactory.CreateWorldReader: IXcomWorldReader;
 begin
   Result := TXcomWorldReader.Create;
+end;
+
+class function TXcomFactory.CreateLbmReader: IXcomLbmReader;
+begin
+  Result := TXcomLbmReader.Create;
 end;
 
 class function TXcomFactory.CreateWordTableReader: IXcomWordTableReader;

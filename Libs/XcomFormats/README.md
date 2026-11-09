@@ -26,6 +26,8 @@ OpenXcom è **GPL v3 o successiva** (le intestazioni dei suoi sorgenti); il repo
 | `.MCD` (terreno, record da 62 byte `packed`) | `TXcomMcdReader` | `MapDataSet::loadData` |
 | `WORLD.DAT` (poligoni del globo, ottavi di grado -> radianti) | `TXcomWorldReader` | `RuleGlobe::loadDat`, `Xcom2Rad` |
 | `LOFTEMPS.DAT` (parole a 16 bit) | `TXcomWordTableReader` | `MapDataSet::loadLOFTEMPS` |
+| `.LBM` (IFF PBM/ILBM, come `IMG_Load` di SDL_image 1.2.12) | `TXcomLbmReader` | `Surface::loadImage` (via SDL_image) |
+| `UFOGRAPH\D0..D3.LBM` -> palette del battlescape di TFTD | `TXcomBattlescapePalette` | `Mod::loadVanillaResources`, `Palette::setColors` |
 
 Supporto: `TXcomBinaryReader` (le abitudini di `std::ifstream`: lettura che fallisce copia i byte che ci sono, dopo il primo fallimento non si legge più), `TXcomImage` (immagine a 8 bit con palette opzionale: `Surface` senza SDL), `TXcomSpriteSheet` (i fotogrammi in una griglia), `TXcomMapPicture` (vista schematica di un piano del blocco), `TXcomGameData` (`IXcomGameData`: i file di UFO/TFTD per nome), `TXcomFolderFiles` e `TXcomMemoryFiles` (`IXcomDataFiles`), `TXcomPngEncoder` (`IXcomImageEncoder`, sopra `IPaletteConverter` e `TPngClient`) e `TXcomImageExporter`. `TXcomFactory` è l'unico punto che conosce le classi. Tipi e record `packed` senza puntatori (con `SizeOf` coperto da test) in `DelphiDoom.Xcom.Types`; interfacce piccole in `DelphiDoom.Xcom.Intf`.
 

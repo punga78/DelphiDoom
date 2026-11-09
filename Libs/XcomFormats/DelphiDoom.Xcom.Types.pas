@@ -71,6 +71,11 @@ resourcestring
   SXcomDecoderBadSize = 'Xcom: the pictures of %d x %d pixels are not valid';
   SXcomTooManyFrames = 'Xcom: the TAB file says %d frames, the limit is %d';
   SXcomOffsetInvalid = 'Xcom: the offset %d is not valid';
+  SXcomLbmTooShort = 'Xcom: the LBM file ends too soon (at byte %d)';
+  SXcomLbmNotIff = 'Xcom: the file is not an IFF of type PBM or ILBM';
+  SXcomLbmNoHeader = 'Xcom: the LBM file has no BMHD chunk before its BODY';
+  SXcomLbmTooManyColors = 'Xcom: the CMAP of the LBM file has %d colors, the limit is 256';
+  SXcomLbmUnsupported = 'Xcom: an LBM of %d planes, masking %d and compression %d is not supported';
 
 type
   /// <summary>Something wrong with the data or the arguments of the xcom formats library</summary>

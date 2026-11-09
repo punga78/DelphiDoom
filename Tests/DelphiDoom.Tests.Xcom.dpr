@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom formats library (DUnitX)                  }
 {                                                                              }
@@ -35,6 +35,8 @@ uses
   DelphiDoom.Xcom.McdReader in '..\Libs\XcomFormats\DelphiDoom.Xcom.McdReader.pas',
   DelphiDoom.Xcom.WorldReader in '..\Libs\XcomFormats\DelphiDoom.Xcom.WorldReader.pas',
   DelphiDoom.Xcom.WordTableReader in '..\Libs\XcomFormats\DelphiDoom.Xcom.WordTableReader.pas',
+  DelphiDoom.Xcom.LbmReader in '..\Libs\XcomFormats\DelphiDoom.Xcom.LbmReader.pas',
+  DelphiDoom.Xcom.BattlescapePalette in '..\Libs\XcomFormats\DelphiDoom.Xcom.BattlescapePalette.pas',
   DelphiDoom.Xcom.MemoryFiles in '..\Libs\XcomFormats\DelphiDoom.Xcom.MemoryFiles.pas',
   DelphiDoom.Xcom.FolderFiles in '..\Libs\XcomFormats\DelphiDoom.Xcom.FolderFiles.pas',
   DelphiDoom.Xcom.GameData in '..\Libs\XcomFormats\DelphiDoom.Xcom.GameData.pas',
@@ -68,6 +70,8 @@ uses
   DelphiDoom.Tests.Xcom.MapPicture in 'Source\DelphiDoom.Tests.Xcom.MapPicture.pas',
   DelphiDoom.Tests.Xcom.PngEncoder in 'Source\DelphiDoom.Tests.Xcom.PngEncoder.pas',
   DelphiDoom.Tests.Xcom.ImageExporter in 'Source\DelphiDoom.Tests.Xcom.ImageExporter.pas',
+  DelphiDoom.Tests.Xcom.LbmReader in 'Source\DelphiDoom.Tests.Xcom.LbmReader.pas',
+  DelphiDoom.Tests.Xcom.BattlescapePalette in 'Source\DelphiDoom.Tests.Xcom.BattlescapePalette.pas',
   DelphiDoom.Tests.Xcom.RealData in 'Source\DelphiDoom.Tests.Xcom.RealData.pas',
   DelphiDoom.Tests.Xcom.Golden in 'Source\DelphiDoom.Tests.Xcom.Golden.pas';
 

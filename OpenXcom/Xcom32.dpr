@@ -30,6 +30,7 @@ uses
   DelphiDoom.Xcom.SpriteSheet in '..\Libs\XcomFormats\DelphiDoom.Xcom.SpriteSheet.pas',
   DelphiDoom.Xcom.MapPicture in '..\Libs\XcomFormats\DelphiDoom.Xcom.MapPicture.pas',
   DelphiDoom.Xcom.ImageExporter in '..\Libs\XcomFormats\DelphiDoom.Xcom.ImageExporter.pas',
+  DelphiDoom.Xcom.BattlescapePalette in '..\Libs\XcomFormats\DelphiDoom.Xcom.BattlescapePalette.pas',
   DelphiDoom.Xcom.Composition in 'DelphiDoom.Xcom.Composition.pas';
 
 type
@@ -53,7 +54,8 @@ procedure ShowUsage;
 begin
   Writeln('Xcom32 [-data <folder>]... [-pal <n>] [-png <file>] <what>');
   Writeln('  -data     a folder of the game (the one that has GEODATA\PALETTES.DAT), default: the current one');
-  Writeln('  -pal      the palette of GEODATA\PALETTES.DAT (0 geoscape, 1 basescape, 2 graphs, 3 ufopaedia, 4 battlescape), default 0');
+  Writeln('  -pal      the palette of GEODATA\PALETTES.DAT (0 geoscape, 1 basescape, 2 graphs, 3 ufopaedia, 4 battlescape), default 0;');
+  Writeln('            4..7 are the battlescape palettes of UFOGRAPH\D0..D3.LBM when the game has them (TFTD)');
   Writeln('  -png      the file to write (default xcom.png)');
   Writeln('  -pck      the sprites of a .PCK with its .TAB (-tab, default the same name); -w and -h are the size of a frame (32 x 40)');
   Writeln('  -dat      the frames of a .DAT of raw pictures; -w and -h are the size of a frame');
@@ -191,9 +193,20 @@ begin
       Exit;
     end;
     LData := TXcomComposition.OpenGameData(LArguments.Folders);
-    LPalette := LData.LoadPalette(LArguments.PaletteIndex);
-    if LArguments.PaletteIndex = 4 then
+    if (LArguments.PaletteIndex < 4) or (LArguments.PaletteIndex > 4 + TXcomBattlescapePalette.COUNT - 1) then
+      LPalette := LData.LoadPalette(LArguments.PaletteIndex)
+    else if not TXcomBattlescapePalette.TryLoad(LData.Files, TXcomComposition.CreateLbmReader,
+      LArguments.PaletteIndex - 4, LPalette) then
+    begin
+      // no UFOGRAPH\D0.LBM (UFO: Enemy Unknown): the battlescape palette of PALETTES.DAT, as Mod does
+      if LArguments.PaletteIndex <> 4 then
+        raise EXcomFileNotFoundException.CreateFmt(SXcomFileMissing, [TXcomBattlescapePalette.FileName(
+          LArguments.PaletteIndex - 4)]);
+      LPalette := LData.LoadPalette(4);
       LPalette.ApplyBattlescapeGradient;
+    end;
+    if LPalette.Count = 0 then
+      raise EXcomDataException.CreateFmt(SXcomPaletteBadCount, [0, XCOM_PALETTE_COLORS]);
     LExporter := TXcomComposition.CreateImageExporter;
     try
       case LArguments.Mode of
