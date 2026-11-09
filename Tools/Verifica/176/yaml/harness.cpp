@@ -249,6 +249,8 @@ static std::vector<std::string> Split(const std::string& all) {
   return v;
 }
 
+#include "emitcases.h"
+
 int main(int argc, char** argv) {
   std::string mode = argc > 1 ? argv[1] : "";
   if (mode == "gen") {  // gen handwritten out count seed
@@ -278,6 +280,24 @@ int main(int argc, char** argv) {
     }
     return 0;
   }
-  if (mode == "emit") return 0;
+  if (mode == "emit-gen") {  // emit-gen <dir>: the four emitter corpora (fixed seed)
+    std::string dir = argv[2];
+    { std::ofstream o(dir + "\\emit_strings.corpus.txt", std::ios::binary); emitcases::Gen g; g.StringCases(o); }
+    { std::ofstream o(dir + "\\emit_values.corpus.txt", std::ios::binary); emitcases::Gen g; g.ValueCases(o); }
+    { std::ofstream o(dir + "\\emit_settings.corpus.txt", std::ios::binary); emitcases::Gen g; g.SettingCases(o); }
+    { std::ofstream o(dir + "\\emit_random.corpus.txt", std::ios::binary); emitcases::Gen g; g.RandomCases(o, 4000); }
+    return 0;
+  }
+  if (mode == "emit-run") {  // emit-run <corpus>: what the real emitter does for each script
+    _setmode(_fileno(stdout), _O_BINARY);
+    std::ifstream f(argv[2], std::ios::binary);
+    std::stringstream ss; ss << f.rdbuf();
+    auto cases = Split(ss.str());
+    for (size_t i = 0; i < cases.size(); i++) {
+      std::cout << "#" << i << "\n";
+      emitcases::Exec(cases[i], std::cout);
+    }
+    return 0;
+  }
   return 1;
 }
