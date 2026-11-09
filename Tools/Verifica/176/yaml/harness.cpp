@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <fcntl.h>
+#include <io.h>
 
 static std::string Esc(const std::string& s) {
   std::string r;
@@ -265,7 +267,8 @@ int main(int argc, char** argv) {
     }
     return 0;
   }
-  if (mode == "run") {  // run corpus
+  if (mode == "run") {  // run corpus (stdout in binary mode: the golden has LF line ends, no BOM)
+    _setmode(_fileno(stdout), _O_BINARY);
     std::ifstream f(argv[2], std::ios::binary);
     std::stringstream ss; ss << f.rdbuf();
     auto cases = Split(ss.str());

@@ -1,4 +1,4 @@
-﻿#0
+#0
 OK docs=1
 DOC
 M B tag=? n=1
