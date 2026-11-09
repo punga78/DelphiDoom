@@ -717,12 +717,6 @@ const
   BGCOLOR = 7;
   FGCOLOR = 8;
 
-var
-  graphical_startup: integer = 1;
-
-// If true, startup has completed and the main game loop has started.
-  main_loop_started: boolean = false;
-
 //==============================================================================
 //
 // D_DoomLoop()

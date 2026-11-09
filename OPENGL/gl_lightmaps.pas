@@ -451,8 +451,6 @@ var
   checkradious: float;
   rtlp: lightmaprtlitem_p;
   lo_iz, lo_iyz: float;
-  z_offs, yz_offs: integer;
-  rgb_max: float;
   ffloorz, fceilingz: float;
   xx, yy, zz: fixed_t;  // Map Coordinates
   sfactor: float;

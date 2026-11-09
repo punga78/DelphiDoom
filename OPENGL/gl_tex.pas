@@ -47,8 +47,6 @@ var
   gld_GLPatchTextures: PGLTexturePArray = nil;
 
   use_mipmapping: boolean = false;
-  use_multitexturing: boolean = false;
-  ActiveDetailTexture: boolean = false;
 
   gld_max_texturesize: integer = 0;
   gld_max_texturesize3d: integer = 0;

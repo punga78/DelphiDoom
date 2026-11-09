@@ -665,9 +665,6 @@ begin
   result := game_endoom;
 end;
 
-var
-  next_weapon: integer;
-
 // Used for prev/next weapon keys.
 // STRIFE-TODO: Check this table makes sense.
 
@@ -833,53 +830,6 @@ const
 
 var
   bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
-
-//==============================================================================
-//
-// G_IsWeaponSelectable
-//
-//==============================================================================
-function G_IsWeaponSelectable(const weapon: weapontype_t): boolean;
-var
-  player: Pplayer_t;
-begin
-  player := @players[consoleplayer];
-
-  // Can't select a weapon if we don't own it.
-
-  if not player.weaponowned[Ord(weapon)] then
-  begin
-    result := false;
-    exit;
-  end;
-
-  // Can't use registered-only weapons in demo mode:
-
-  if isdemoversion and not weaponinfo[Ord(weapon)].availabledemo then
-  begin
-    result := false;
-    exit;
-  end;
-
-  // Special rules for switching to alternate versions of weapons.
-  // These must match the weapon-switching rules in P_PlayerThink()
-
-  // haleyjd 20141024: same fix here as in P_PlayerThink for torpedo.
-
-  if (weapon = wp_torpedo) and (player.ammo[Ord(weaponinfo[Ord(wp_torpedo)].ammo)] < 30) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if player.ammo[Ord(weaponinfo[Ord(weapon)].ammo)] = 0 then
-  begin
-    result := false;
-    exit;
-  end;
-
-  result := true;
-end;
 
 //==============================================================================
 //

@@ -427,8 +427,8 @@ var
   vanilla_demo_off: boolean = false;
 
 var
-  dogs, default_dogs: integer;                // killough 7/19/98: Marine's best friend :)
-  dog_jumping, default_dog_jumping: integer;  // killough 10/98
+  dogs: integer;                // killough 7/19/98: Marine's best friend :)
+  dog_jumping: integer;  // killough 10/98
 
 const
   SAVEGAMESIZE = $1000000; // Originally $2C000
