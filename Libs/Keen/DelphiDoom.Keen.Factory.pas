@@ -35,6 +35,19 @@ type
       AStream: TStream): IKeenMapSource; static;
     class function CreateGraphics(const AChunks: IKeenChunkSource): IKeenGraphics; static;
     class function CreateMapRenderer: IKeenMapRenderer; static;
+    /// <summary>The 4 planes of the video memory of the EGA</summary>
+    class function CreateEgaMemory: IKeenEgaMemory; static;
+    /// <summary>The video manager (id_vw): AGraphics and ASprites can be nil for a manager that draws only blocks and pixels</summary>
+    class function CreateVideo(const AMemory: IKeenEgaMemory; const AGraphics: IKeenGraphics;
+      const ASprites: IKeenSpriteCache): IKeenVideo; static;
+    /// <summary>The sprites of the graphics, with their shifted copies</summary>
+    class function CreateSpriteCache(const AGraphics: IKeenGraphics): IKeenSpriteCache; static;
+    /// <summary>The map that is played, a copy of a map of the file</summary>
+    class function CreateWorkingMap(const AMap: IKeenMap): IKeenWorkingMap; static;
+    /// <summary>The tile refresh manager (id_rf)</summary>
+    class function CreateRefresh(const AVideo: IKeenVideo; const AGraphics: IKeenGraphics;
+      const ATileInfo: IKeenTileInfo; const ASprites: IKeenSpriteCache; const AClock: IKeenClock;
+      ACompatibility: Boolean = False): IKeenRefresh; static;
     /// <summary>Opens the three files with their headers and dictionaries</summary>
     class function OpenGameData(const AFiles: IKeenDataFiles): IKeenGameData; static;
   end;
@@ -45,7 +58,8 @@ uses
   DelphiDoom.Keen.Huffman, DelphiDoom.Keen.Rlew, DelphiDoom.Keen.FolderFiles, DelphiDoom.Keen.OffsetTable,
   DelphiDoom.Keen.GraphicsLayout, DelphiDoom.Keen.ExplicitLayout, DelphiDoom.Keen.ChunkSource,
   DelphiDoom.Keen.MapSource, DelphiDoom.Keen.Graphics, DelphiDoom.Keen.MapRenderer,
-  DelphiDoom.Keen.GameLoader;
+  DelphiDoom.Keen.GameLoader, DelphiDoom.Keen.EgaMemory, DelphiDoom.Keen.Video, DelphiDoom.Keen.SpriteCache,
+  DelphiDoom.Keen.WorkingMap, DelphiDoom.Keen.Refresh;
 
 { TKeenFactory }
 
@@ -96,6 +110,34 @@ end;
 class function TKeenFactory.CreateMapRenderer: IKeenMapRenderer;
 begin
   Result := TKeenMapRenderer.Create;
+end;
+
+class function TKeenFactory.CreateEgaMemory: IKeenEgaMemory;
+begin
+  Result := TKeenEgaMemory.Create;
+end;
+
+class function TKeenFactory.CreateVideo(const AMemory: IKeenEgaMemory; const AGraphics: IKeenGraphics;
+  const ASprites: IKeenSpriteCache): IKeenVideo;
+begin
+  Result := TKeenVideo.Create(AMemory, AGraphics, ASprites);
+end;
+
+class function TKeenFactory.CreateSpriteCache(const AGraphics: IKeenGraphics): IKeenSpriteCache;
+begin
+  Result := TKeenSpriteCache.Create(AGraphics);
+end;
+
+class function TKeenFactory.CreateWorkingMap(const AMap: IKeenMap): IKeenWorkingMap;
+begin
+  Result := TKeenWorkingMap.Create(AMap);
+end;
+
+class function TKeenFactory.CreateRefresh(const AVideo: IKeenVideo; const AGraphics: IKeenGraphics;
+  const ATileInfo: IKeenTileInfo; const ASprites: IKeenSpriteCache; const AClock: IKeenClock;
+  ACompatibility: Boolean): IKeenRefresh;
+begin
+  Result := TKeenRefresh.Create(AVideo, AGraphics, ATileInfo, ASprites, AClock, ACompatibility);
 end;
 
 class function TKeenFactory.OpenGameData(const AFiles: IKeenDataFiles): IKeenGameData;

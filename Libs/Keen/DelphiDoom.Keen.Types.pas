@@ -108,6 +108,41 @@ const
   /// </summary>
   KEEN_PIXEL_TRANSPARENT = $FF;
 
+  // ---- id_vw.h: the EGA screen ----
+
+  /// <summary>Bytes of a row of the virtual screen (SCREENWIDTH): 512 pixels</summary>
+  KEEN_SCREENWIDTH = 64;
+  /// <summary>Rows that ylookup knows (VIRTUALHEIGHT)</summary>
+  KEEN_VIRTUALHEIGHT = 300;
+  /// <summary>Bytes of each of the 4 planes of the EGA memory (64 KB: the offsets wrap)</summary>
+  KEEN_EGA_PLANE_BYTES = 65536;
+  /// <summary>Shifted copies of a sprite (MAXSHIFTS)</summary>
+  KEEN_MAXSHIFTS = 8;
+  KEEN_WHITE = 15;
+  KEEN_BLACK = 0;
+  KEEN_FIRSTCOLOR = 1;
+  KEEN_SECONDCOLOR = 12;
+  /// <summary>Pixels of the visible screen</summary>
+  KEEN_DISPLAY_WIDTH = 320;
+  KEEN_DISPLAY_HEIGHT = 200;
+
+  // ---- id_rf.h: the tile refresh manager ----
+
+  KEEN_MINTICS = 2;
+  KEEN_MAXTICS = 6;
+  KEEN_MAPBORDER = 2;
+  KEEN_MAXSPRITES = 100;
+  KEEN_MAXANIMTILES = 90;
+  KEEN_MAXANIMTYPES = 50;
+  KEEN_MAXMAPHEIGHT = 128;
+  KEEN_PRIORITIES = 4;
+  KEEN_MASKEDTILEPRIORITY = 3;
+  KEEN_TILEGLOBAL = 256;
+  KEEN_PORTTILESWIDE = 21;
+  KEEN_PORTTILESHIGH = 14;
+  KEEN_UPDATEWIDE = KEEN_PORTTILESWIDE + 1;
+  KEEN_UPDATEHIGH = KEEN_PORTTILESHIGH;
+
 resourcestring
   SKeenDictionaryTooShort = 'Keen: the Huffman dictionary has %d bytes, %d needed';
   SKeenDictionaryBadNode = 'Keen: the node %d of the Huffman dictionary points to %d';
@@ -134,6 +169,19 @@ resourcestring
   SKeenFileUnreadable = 'Keen: the file %s cannot be read';
   SKeenFileNotWritten = 'Keen: the file %s cannot be written';
   SKeenSizeInvalid = 'Keen: the size %d x %d is not valid';
+  SKeenSpriteShifts = 'Keen: the sprite %d has %d shifts (1, 2 or 4)';
+  SKeenSpriteInvalid = 'Keen: the sprite %d does not exist (the table has %d)';
+  SKeenSpriteTooShort = 'Keen: the sprite needs %d bytes, %d given';
+  SKeenVideoOutside = 'Keen: the screen has no row %d (the table has %d rows)';
+  SKeenVideoNoGraphics = 'Keen: the video manager has no graphics to draw %s';
+  SKeenRefreshNoSprites = 'Keen: RF_PlaceSprite: no free spots in spritearray';
+  SKeenRefreshNoAnimTiles = 'Keen: RF_CheckForAnimTile: no free spots in tilearray';
+  SKeenRefreshTooManyAnims = 'Keen: RF_MarkTileGraphics: too many unique animated tiles';
+  SKeenRefreshUnendingAnim = 'Keen: RF_MarkTileGraphics: the animation of tile %d does not end';
+  SKeenRefreshOutOfBounds = 'Keen: RFL_AnimateTiles: the tile (%d, %d) is out of the port';
+  SKeenRefreshNoChain = 'Keen: the animated tile at (%d, %d) has no animation chain (RF_MarkTileGraphics was not called)';
+  SKeenRefreshNoMap = 'Keen: RF_NewMap must be called before the map is used';
+  SKeenRefreshBadPriority = 'Keen: the priority %d of a sprite is not 0..%d';
 
 type
   /// <summary>Something wrong with the data or the arguments of the keen library</summary>
@@ -199,6 +247,36 @@ type
   TKeenSoundCommon = packed record
     Length: Cardinal;
     Priority: Word;
+  end;
+
+  /// <summary>
+  ///   A sprite with its shifted copies (spritetype of id_vw.h): the four shifts that a pel panning of
+  ///   0, 2, 4 and 6 pixels needs. Offsets are from the start of Data (the C counts from the start of the
+  ///   block, after its three tables of MAXSHIFTS words: 48 bytes more). Each copy is the mask plane and the
+  ///   4 color planes of PlaneSize bytes (Width * height), Width in bytes
+  /// </summary>
+  TKeenSprite = record
+    SourceOffset: array[0..KEEN_MAXSHIFTS - 1] of Word;
+    PlaneSize: array[0..KEEN_MAXSHIFTS - 1] of Word;
+    Width: array[0..KEEN_MAXSHIFTS - 1] of Word;
+    Data: TBytes;
+  end;
+
+  /// <summary>How RF_PlaceSprite draws a sprite (drawtype): maskdraw puts it on the list and draws nothing</summary>
+  TKeenDrawType = (kdtSpriteDraw, kdtMaskDraw);
+
+  /// <summary>
+  ///   What RF_PlaceSprite keeps in the pointer of the actor (the void ** user): 0 = the actor has no
+  ///   sprite on the list, otherwise the slot of the sprite plus one
+  /// </summary>
+  TKeenSpriteHandle = Integer;
+
+  /// <summary>A sprite to put on a view of the map: the chunk, the global position (1/16 of a pixel) and the priority</summary>
+  TKeenViewSprite = record
+    SpriteChunk: Integer;
+    GlobalX: Integer;
+    GlobalY: Integer;
+    Priority: Integer;
   end;
 
   /// <summary>An image with one byte for each pixel: the EGA color 0..15, or KEEN_PIXEL_TRANSPARENT</summary>

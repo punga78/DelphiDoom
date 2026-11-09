@@ -23,7 +23,8 @@ uses
 
 procedure ShowUsage;
 begin
-  Writeln('Keen32 [-data <folder>]... [-map <number>] [-png <file>] [-list]');
+  Writeln('Keen32 [-data <folder>]... [-map <number>] [-png <file>] [-list] [-view <tile x> <tile y>]');
+  Writeln('  -view   the screen of the game (320x200, the video manager and the refresh manager) with the origin at a tile');
   Writeln('  -data   a folder with KDREAMS.EGA, KDREAMS.MAP, KDREAMS.AUD and the .KDR headers (default: the current one)');
   Writeln('  -map    the map to draw (default 0)');
   Writeln('  -png    the file to write (default keen_map<number>.png)');
@@ -35,6 +36,9 @@ var
   LMapNumber: Integer;
   LPng: string;
   LList: Boolean;
+  LView: Boolean;
+  LViewX: Integer;
+  LViewY: Integer;
   LIndex: Integer;
   LArgument: string;
   LData: IKeenGameData;
@@ -46,6 +50,7 @@ begin
     LMapNumber := 0;
     LPng := '';
     LList := False;
+    LView := False;
     LIndex := 1;
     while LIndex <= ParamCount do
     begin
@@ -65,6 +70,14 @@ begin
       begin
         Inc(LIndex);
         LPng := ParamStr(LIndex);
+      end
+      else if (LArgument = '-view') and (LIndex + 2 <= ParamCount) then
+      begin
+        // the screen of the game with the origin at a tile of the map
+        LView := True;
+        LViewX := StrToInt(ParamStr(LIndex + 1)) * 256;
+        LViewY := StrToInt(ParamStr(LIndex + 2)) * 256;
+        Inc(LIndex, 2);
       end
       else if LArgument = '-list' then
         LList := True
@@ -89,6 +102,12 @@ begin
         LMap := LData.Maps.LoadMap(LNumber);
         Writeln(Format('%2d  %-18s %3d x %3d', [LNumber, LMap.Name, LMap.Width, LMap.Height]));
       end;
+      Exit;
+    end;
+    if LView then
+    begin
+      TKeenComposition.CreateViewExporter(LData).SaveViewPicture(LMapNumber, LViewX, LViewY, [], LPng);
+      Writeln('View of the map ', LMapNumber, ' saved in ', LPng);
       Exit;
     end;
     TKeenComposition.CreateMapExporter(LData).SaveMapPicture(LMapNumber, LPng);

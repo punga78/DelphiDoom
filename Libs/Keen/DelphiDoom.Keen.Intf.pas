@@ -205,6 +205,201 @@ type
     function Render(const AMap: IKeenMap; const AGraphics: IKeenGraphics): TKeenChunkyImage;
   end;
 
+  /// <summary>
+  ///   Shows a part of a map as the game does (the tile refresh manager on the video memory of the EGA, with the
+  ///   sprites) and saves the 320x200 screen as an image file
+  /// </summary>
+  IKeenViewExporter = interface
+    ['{B6C2E8F4-17A3-4D59-8E0B-92F5D3A61C07}']
+    /// <summary>The screen of the map of the slot AMapNumber with the origin at the global position (AGlobalX, AGlobalY)</summary>
+    procedure SaveViewPicture(AMapNumber, AGlobalX, AGlobalY: Integer; const ASprites: array of TKeenViewSprite;
+      const APath: string);
+  end;
+
+  /// <summary>The 4 planes of the video memory of the EGA, 64 KB each; an offset wraps at 64 KB</summary>
+  IKeenEgaMemory = interface
+    ['{2B7E40D9-6C15-4A83-9F0E-D1A538C6B472}']
+    function ReadByte(APlane, AOffset: Integer): Byte;
+    procedure WriteByte(APlane, AOffset: Integer; AValue: Byte);
+    /// <summary>The copy of the latches: the byte of the four planes at ASourceOffset goes to ADestOffset (write mode 1)</summary>
+    procedure CopyByte(ASourceOffset, ADestOffset: Integer);
+    /// <summary>Every pixel of the memory takes the color (VW_ClearVideo)</summary>
+    procedure Fill(AColor: Byte);
+    /// <summary>A copy of the 64 KB of a plane</summary>
+    function PlaneBytes(APlane: Integer): TBytes;
+  end;
+
+  /// <summary>
+  ///   The sprites of the game with their shifted copies (CAL_CacheSprite): the sprite of the chunk
+  ///   ASpriteChunk (STARTSPRITES and more) is made once and kept
+  /// </summary>
+  IKeenSpriteCache = interface
+    ['{C9150E7A-3D28-4B64-A1F7-0E8B92D6C345}']
+    function GetSprite(ASpriteChunk: Integer): TKeenSprite;
+    /// <summary>The line of the sprite table of the chunk (width, origin, shifts...)</summary>
+    function GetEntry(ASpriteChunk: Integer): TKeenSpriteEntry;
+  end;
+
+  /// <summary>
+  ///   The video manager of the EGA (id_vw.c and id_vw_ae.asm): the drawing routines of the game on the planar
+  ///   memory. X of the block routines is in bytes (8 pixels), Y in pixels; the pixel routines have X and Y
+  ///   in pixels. A block is drawn at BufferOfs only where the C says so (VW_MaskBlock and VW_MemToScreen are
+  ///   given the destination offset)
+  /// </summary>
+  IKeenVideo = interface
+    ['{5E3A8B21-D794-4F06-B2C8-71A0F4E5963D}']
+    function GetMemory: IKeenEgaMemory;
+    function GetLineWidth: Integer;
+    function GetBufferOfs: Integer;
+    procedure SetBufferOfs(AValue: Integer);
+    function GetDisplayOfs: Integer;
+    procedure SetDisplayOfs(AValue: Integer);
+    function GetPanX: Integer;
+    procedure SetPanX(AValue: Integer);
+    function GetPanY: Integer;
+    procedure SetPanY(AValue: Integer);
+    function GetPanSX: Integer;
+    procedure SetPanSX(AValue: Integer);
+    function GetPanSY: Integer;
+    procedure SetPanSY(AValue: Integer);
+    function GetPanAdjust: Integer;
+    procedure SetPanAdjust(AValue: Integer);
+    function GetCrtcStart: Integer;
+    function GetPelPan: Integer;
+    /// <summary>VW_SetLineWidth: bytes of a row of the virtual screen, and the table of the start of each row</summary>
+    procedure SetLineWidth(AWidth: Integer);
+    /// <summary>The offset of the row ARow from the start of a page (ylookup)</summary>
+    function YLookup(ARow: Integer): Integer;
+    /// <summary>VW_SetScreen: where the card starts to show the memory and the pel panning (0..7)</summary>
+    procedure SetScreen(ACrtc, APelPan: Integer);
+    procedure ClearVideo(AColor: Integer);
+    procedure Plot(AX, AY, AColor: Integer);
+    procedure Hlin(AXLow, AXHigh, AY, AColor: Integer);
+    procedure Vlin(AYLow, AYHigh, AX, AColor: Integer);
+    procedure Bar(AX, AY, AWidth, AHeight, AColor: Integer);
+    /// <summary>VW_MaskBlock: the mask at AOffset of AData and then 4 planes, each APlaneSize bytes</summary>
+    procedure MaskBlock(const AData: TBytes; AOffset, ADest, AWide, AHeight, APlaneSize: Integer);
+    /// <summary>VW_MemToScreen: 4 planes of AWide * AHeight bytes</summary>
+    procedure MemToScreen(const ASource: TBytes; ADest, AWide, AHeight: Integer);
+    /// <summary>VW_ScreenToMem: the planes 0..3 of the block in a new array</summary>
+    function ScreenToMem(ASource, AWide, AHeight: Integer): TBytes;
+    /// <summary>VW_ScreenToScreen: a copy with the latches (the memory is the same: the blocks can overlap)</summary>
+    procedure ScreenToScreen(ASource, ADest, AWide, AHeight: Integer);
+    procedure DrawTile8(AX, AY, ATile: Integer);
+    procedure DrawTile8Masked(AX, AY, ATile: Integer);
+    procedure DrawTile16(AX, AY, ATile: Integer);
+    procedure DrawTile16Masked(AX, AY, ATile: Integer);
+    /// <summary>VW_DrawPic: AChunk is the number of the chunk (STARTPICS and more)</summary>
+    procedure DrawPic(AX, AY, AChunk: Integer);
+    /// <summary>VW_DrawMPic: AChunk is STARTPICM and more</summary>
+    procedure DrawMaskedPic(AX, AY, AChunk: Integer);
+    /// <summary>VW_DrawSprite: X and Y in pixels, the shift is the one of X; AChunk is STARTSPRITES and more</summary>
+    procedure DrawSprite(AX, AY, AChunk: Integer);
+    property Memory: IKeenEgaMemory read GetMemory;
+    property LineWidth: Integer read GetLineWidth;
+    property BufferOfs: Integer read GetBufferOfs write SetBufferOfs;
+    property DisplayOfs: Integer read GetDisplayOfs write SetDisplayOfs;
+    property PanX: Integer read GetPanX write SetPanX;
+    property PanY: Integer read GetPanY write SetPanY;
+    property PanSX: Integer read GetPanSX write SetPanSX;
+    property PanSY: Integer read GetPanSY write SetPanSY;
+    property PanAdjust: Integer read GetPanAdjust write SetPanAdjust;
+    /// <summary>The offset where the card starts to show the screen (the last VW_SetScreen)</summary>
+    property CrtcStart: Integer read GetCrtcStart;
+    property PelPan: Integer read GetPelPan;
+  end;
+
+  /// <summary>The clock of the game (TimeCount, 70 tics a second)</summary>
+  IKeenClock = interface
+    ['{8A46D1F3-0B97-4E25-83C1-B5F02E9D7A61}']
+    function GetTimeCount: Integer;
+    procedure SetTimeCount(AValue: Integer);
+    /// <summary>
+    ///   What a loop that waits for TimeCount does between two looks (the C spins; the real clock sleeps, a
+    ///   clock of a test moves the time on)
+    /// </summary>
+    procedure Idle;
+    property TimeCount: Integer read GetTimeCount write SetTimeCount;
+  end;
+
+  /// <summary>
+  ///   The map that the game plays: the 3 planes of words (background, foreground, info) that the actors and
+  ///   the animation of the tiles change. It starts as a copy of a map of the file
+  /// </summary>
+  IKeenWorkingMap = interface
+    ['{F1D40B87-95E2-4C3A-A6D8-3E7C0A52B914}']
+    function GetNumber: Integer;
+    function GetName: string;
+    function GetWidth: Integer;
+    function GetHeight: Integer;
+    /// <summary>The words of a plane, row after row; the array is the storage (what a caller writes, the map has)</summary>
+    function GetPlane(APlane: Integer): TArray<Word>;
+    property Number: Integer read GetNumber;
+    property Name: string read GetName;
+    property Width: Integer read GetWidth;
+    property Height: Integer read GetHeight;
+    property Planes[APlane: Integer]: TArray<Word> read GetPlane;
+  end;
+
+  /// <summary>
+  ///   The tile refresh manager (id_rf.c and id_rf_a.asm): the scrolling of the map on three screens that
+  ///   float in the video memory, the tiles that change and the sprites. The map is drawn tile by tile on
+  ///   the master screen; each refresh copies to the page being drawn only the tiles that changed (the
+  ///   update array) and then draws the sprites over them in priority order
+  /// </summary>
+  IKeenRefresh = interface
+    ['{3C8F9A60-1E75-4D2B-B409-A6D5E3170C82}']
+    function GetTics: Integer;
+    function GetOriginXGlobal: Integer;
+    function GetOriginYGlobal: Integer;
+    function GetOriginXTile: Integer;
+    function GetOriginYTile: Integer;
+    function GetOriginXScreen: Integer;
+    function GetOriginYScreen: Integer;
+    function GetMasterOfs: Integer;
+    function GetOriginXMax: Integer;
+    function GetOriginYMax: Integer;
+    function GetOriginXMin: Integer;
+    function GetOriginYMin: Integer;
+    function GetMapWidth: Integer;
+    function GetMapHeight: Integer;
+    /// <summary>RF_NewMap: the map that is played (RF_MarkTileGraphics and RF_NewPosition come next)</summary>
+    procedure NewMap(const AMap: IKeenWorkingMap);
+    /// <summary>RF_MarkTileGraphics: the animation chains of the tiles of the map (what the C leaves in the info plane)</summary>
+    procedure MarkTileGraphics;
+    procedure NewPosition(AX, AY: Integer);
+    procedure Scroll(AX, AY: Integer);
+    /// <summary>RF_PlaceSprite: the sprite is at the global coordinates (1/16 of a pixel)</summary>
+    procedure PlaceSprite(var AUser: TKeenSpriteHandle; AGlobalX, AGlobalY, ASpriteChunk: Integer;
+      ADraw: TKeenDrawType; APriority: Integer);
+    procedure RemoveSprite(var AUser: TKeenSpriteHandle);
+    procedure Refresh;
+    procedure ForceRefresh;
+    /// <summary>The function that Refresh calls before it shows the page (RF_SetRefreshHook); nil for none</summary>
+    procedure SetRefreshHook(const AHook: TProc);
+    /// <summary>The update array of the page being drawn: for the tests (what changes, what a sprite covers)</summary>
+    function UpdateSnapshot(APage: Integer): TBytes;
+    /// <summary>The page that Refresh draws next (otherpage) and the one that is shown (screenpage)</summary>
+    function GetOtherPage: Integer;
+    function GetScreenPage: Integer;
+    property Tics: Integer read GetTics;
+    property OriginXGlobal: Integer read GetOriginXGlobal;
+    property OriginYGlobal: Integer read GetOriginYGlobal;
+    property OriginXTile: Integer read GetOriginXTile;
+    property OriginYTile: Integer read GetOriginYTile;
+    property OriginXScreen: Integer read GetOriginXScreen;
+    property OriginYScreen: Integer read GetOriginYScreen;
+    property MasterOfs: Integer read GetMasterOfs;
+    property OriginXMin: Integer read GetOriginXMin;
+    property OriginXMax: Integer read GetOriginXMax;
+    property OriginYMin: Integer read GetOriginYMin;
+    property OriginYMax: Integer read GetOriginYMax;
+    property MapWidth: Integer read GetMapWidth;
+    property MapHeight: Integer read GetMapHeight;
+    property OtherPage: Integer read GetOtherPage;
+    property ScreenPage: Integer read GetScreenPage;
+  end;
+
 implementation
 
 end.
