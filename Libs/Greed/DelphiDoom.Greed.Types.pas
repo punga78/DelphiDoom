@@ -95,6 +95,7 @@ resourcestring
   SGreedImageColumn = 'Greed: column %d of the sprite is not valid (offset %d, top %d, bottom %d, lump of %d bytes)';
   SGreedImageKind = 'Greed: the lump %d (%s) is not a picture that can be saved';
   SGreedSaveTooShort = 'Greed: the file %s has %d bytes, %d needed';
+  SGreedSettingUnknown = 'Greed: the setting %s does not exist, or it has another kind';
   SGreedArgumentRange = 'Greed: the value %d of %s is outside %d..%d';
 
 type
