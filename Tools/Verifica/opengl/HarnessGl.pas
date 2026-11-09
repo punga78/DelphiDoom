@@ -24,6 +24,14 @@ unit HarnessGl;
 
 interface
 
+uses
+  DelphiDoom.Clock.Intf;
+
+/// With -glrecord the clock of the program is a virtual one that advances by one tic at every end of a
+/// frame (and at every Sleep/Wait): the sequence of tics and frames does not depend on the speed of the
+/// machine (two runs of one executable are then identical). Without -glrecord the real clock is returned.
+function HarnessGl_Clock(const AReal: IClock): IClock;
+
 procedure HarnessGl_AfterExtensions;
 
 procedure HarnessGl_AfterLevel(const AMapName: string);
@@ -52,6 +60,65 @@ var
   GHooked: Integer = 0;
   GStream: TMemoryStream = nil;
   GRecorder: IGlCallRecorder = nil;
+  GVirtualTic: Integer = 0;
+  GVirtualReads: Integer = 0;
+
+type
+  TVirtualClock = class(TInterfacedObject, IClock)
+  public
+    function Seconds: Double;
+    function Steps(ARate: Integer): Integer;
+    function ScaledSteps(ARate, AScale: Integer): Integer;
+    procedure Sleep(AMilliseconds: Integer);
+    procedure Wait(AMilliseconds: Integer);
+  end;
+
+procedure CountRead;
+begin
+  // a loop that spins on the clock (until tics <> 0) has to end: every 100000 readings without a frame end are a tic
+  Inc(GVirtualReads);
+  if GVirtualReads >= 100000 then
+  begin
+    GVirtualReads := 0;
+    Inc(GVirtualTic);
+  end;
+end;
+
+function TVirtualClock.Seconds: Double;
+begin
+  CountRead;
+  Result := GVirtualTic / 35;
+end;
+
+function TVirtualClock.Steps(ARate: Integer): Integer;
+begin
+  CountRead;
+  Result := Integer((Int64(GVirtualTic) * ARate) div 35);
+end;
+
+function TVirtualClock.ScaledSteps(ARate, AScale: Integer): Integer;
+begin
+  CountRead;
+  Result := Integer((Int64(GVirtualTic) * ARate * AScale) div 35);
+end;
+
+procedure TVirtualClock.Sleep(AMilliseconds: Integer);
+begin
+  Inc(GVirtualTic);
+end;
+
+procedure TVirtualClock.Wait(AMilliseconds: Integer);
+begin
+  Inc(GVirtualTic);
+end;
+
+function HarnessGl_Clock(const AReal: IClock): IClock;
+begin
+  if GEnabled then
+    Result := TVirtualClock.Create
+  else
+    Result := AReal;
+end;
 
 procedure WriteText(const AText: AnsiString);
 begin
@@ -102,6 +169,7 @@ procedure HarnessGl_FrameEnd;
 var
   LTic: Integer;
 begin
+  Inc(GVirtualTic);
   if not GArmed then
     Exit;
   LTic := g_game.gametic;
