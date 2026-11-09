@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomMod.DumpWriter;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.XcomMod.Types;
+  System.SysUtils, System.Classes, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.UnitStats;
 
 type
   /// <summary>Collects the lines "section|name|field=value" that the C++ harness (modload) prints</summary>
@@ -31,6 +31,8 @@ type
     class function QuoteList(const AValues: TArray<string>): string; static;
     class function IntList(const AValues: TArray<Integer>): string; static;
     class function DoubleList(const AValues: TArray<Double>): string; static;
+    /// <summary>The eleven stats as numbers separated by /</summary>
+    class function StatsText(const AStats: TXcomUnitStats): string; static;
     procedure Begin_(const ASection, AName: string);
     procedure Line(const AKey, AValue: string);
     procedure Int(const AKey: string; AValue: Integer);
@@ -138,6 +140,13 @@ begin
     Result := Result + HexDouble(AValues[LIndex]);
   end;
   Result := Result + ']';
+end;
+
+class function TXcomDumpWriter.StatsText(const AStats: TXcomUnitStats): string;
+begin
+  Result := Format('%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d', [AStats.TimeUnits, AStats.Stamina, AStats.Health,
+    AStats.Bravery, AStats.Reactions, AStats.Firing, AStats.Throwing, AStats.Strength, AStats.PsiStrength,
+    AStats.PsiSkill, AStats.Melee]);
 end;
 
 procedure TXcomDumpWriter.Begin_(const ASection, AName: string);

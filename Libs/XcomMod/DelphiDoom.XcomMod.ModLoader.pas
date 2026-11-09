@@ -130,6 +130,9 @@ begin
           raise EXcomModException.Create(Failure(AMods[LIndex].Name, LError.Message));
       end;
     end;
+    // back to the master, then sort
+    Result.SetMods(LData, 0);
+    Result.SortLists;
   except
     Result.Free;
     raise;

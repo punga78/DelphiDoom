@@ -44,7 +44,7 @@ static void DumpRegions(Mod* m) {
       for (size_t a = 0; a < r->_missionZones[z].areas.size(); a++) {
         MissionArea& ma = r->_missionZones[z].areas[a];
         std::string key = "zone" + std::to_string(z) + "_" + std::to_string(a);
-        Line(key.c_str(), V(ma.lonMin) + "," + V(ma.lonMax) + "," + V(ma.latMin) + "," + V(ma.latMax) + "," + V(ma.texture) + "," + V(ma.name));
+        Line(key.c_str(), V(ma.lonMin) + "," + V(ma.lonMax) + "," + V(ma.latMin) + "," + V(ma.latMax) + ",_," + V(ma.name));  // texture is not initialized by the C++ when the row is short: not dumped
       }
   }
 }
@@ -250,6 +250,146 @@ static void DumpMissionScripts(Mod* m) {
   }
 }
 
+static void DumpIndexes(Mod* m) {
+  Begin("indexes", "lists");
+  F("countries", m->_countriesIndex); F("regions", m->_regionsIndex); F("facilities", m->_facilitiesIndex);
+  F("crafts", m->_craftsIndex); F("craftWeapons", m->_craftWeaponsIndex); F("items", m->_itemsIndex);
+  F("invs", m->_invsIndex); F("ufos", m->_ufosIndex); F("soldiers", m->_soldiersIndex); F("aliens", m->_aliensIndex);
+  F("deployments", m->_deploymentsIndex); /* armors: itemless armors are ordered by the address of the objects (not reproducible), not dumped */ F("ufopaedia", m->_ufopaediaIndex);
+  F("ufopaediaCat", m->_ufopaediaCatIndex); F("research", m->_researchIndex); F("manufacture", m->_manufactureIndex);
+  F("alienMissions", m->_alienMissionsIndex); F("terrains", m->_terrainIndex); F("missionScripts", m->_missionScriptIndex);
+  F("ufopaediaSections", m->_ufopaediaSections);
+}
+
+static std::string RectStr(const ArticleDefinitionRect& r) { return V(r.x) + "/" + V(r.y) + "/" + V(r.width) + "/" + V(r.height); }
+
+static void DumpArticles(Mod* m) {
+  for (auto& p : m->_ufopaediaArticles) {
+    ArticleDefinition* r = p.second;
+    Begin("ufopaedia", p.first);
+    F("id", r->id); F("title", r->title); F("section", r->section); F("requires", r->_requires); F("listOrder", r->getListOrder());
+    if (ArticleDefinitionCraft* a = dynamic_cast<ArticleDefinitionCraft*>(r)) { F("class", "craft"); F("image_id", a->image_id); Line("rect_stats", RectStr(a->rect_stats)); Line("rect_text", RectStr(a->rect_text)); F("text", a->text); }
+    else if (ArticleDefinitionCraftWeapon* a = dynamic_cast<ArticleDefinitionCraftWeapon*>(r)) { F("class", "craftWeapon"); F("image_id", a->image_id); F("text", a->text); }
+    else if (ArticleDefinitionTextImage* a = dynamic_cast<ArticleDefinitionTextImage*>(r)) { F("class", "textImage"); F("image_id", a->image_id); F("text", a->text); F("text_width", a->text_width); }
+    else if (ArticleDefinitionTFTD* a = dynamic_cast<ArticleDefinitionTFTD*>(r)) { F("class", "tftd"); F("type_id", (int)a->_type_id); F("image_id", a->image_id); F("text", a->text); F("text_width", a->text_width); F("weapon", a->weapon); }
+    else if (ArticleDefinitionVehicle* a = dynamic_cast<ArticleDefinitionVehicle*>(r)) { F("class", "vehicle"); F("weapon", a->weapon); F("text", a->text); }
+    else if (ArticleDefinitionText* a = dynamic_cast<ArticleDefinitionText*>(r)) { F("class", "text"); F("text", a->text); }
+    else if (ArticleDefinitionItem* a = dynamic_cast<ArticleDefinitionItem*>(r)) { F("class", "item"); F("text", a->text); }
+    else if (ArticleDefinitionUfo* a = dynamic_cast<ArticleDefinitionUfo*>(r)) { F("class", "ufo"); F("text", a->text); }
+    else if (ArticleDefinitionArmor* a = dynamic_cast<ArticleDefinitionArmor*>(r)) { F("class", "armor"); F("text", a->text); }
+    else if (ArticleDefinitionBaseFacility* a = dynamic_cast<ArticleDefinitionBaseFacility*>(r)) { F("class", "baseFacility"); F("text", a->text); }
+  }
+}
+
+static void DumpMapScripts(Mod* m) {
+  for (auto& p : m->_mapScripts) {
+    Begin("mapScripts", p.first);
+    F("count", p.second.size());
+    for (size_t i = 0; i < p.second.size(); i++) {
+      MapScript* r = p.second[i];
+      std::string rects = "[";
+      for (size_t k = 0; k < r->_rects.size(); k++) { if (k) rects += ";"; rects += V(r->_rects[k]->x) + "/" + V(r->_rects[k]->y) + "/" + V(r->_rects[k]->w) + "/" + V(r->_rects[k]->h); }
+      std::string tunnel = "none";
+      if (r->_tunnelData) {
+        tunnel = "level" + V(r->_tunnelData->level) + "{";
+        bool first = true;
+        for (auto& q : r->_tunnelData->replacements) { if (!first) tunnel += ","; first = false; tunnel += V(q.first) + ":" + V(q.second.set) + "/" + V(q.second.entry); }
+        tunnel += "}";
+      }
+      Line(("cmd" + std::to_string(i)).c_str(), V((int)r->_type) + "|" + rects + "]|" + V(r->_groups) + "|" + V(r->_blocks) + "|" + V(r->_frequencies) + "|" + V(r->_maxUses) + "|" + V(r->_conditionals) + "|" + V(r->_sizeX) + "," + V(r->_sizeY) + "," + V(r->_sizeZ) + "|" + V(r->_executionChances) + "," + V(r->_executions) + "," + V(r->_label) + "|" + V((int)r->_direction) + "|" + tunnel + "|" + V(r->_ufoName));
+    }
+  }
+}
+
+static void DumpMcdPatches(Mod* m) {
+  for (auto& p : m->_MCDPatches) {
+    MCDPatch* r = p.second;
+    Begin("mcdPatches", p.first);
+    FM(_bigWalls); FM(_TUWalks); FM(_TUFlys); FM(_TUSlides); FM(_deathTiles); FM(_terrainHeight); FM(_specialTypes);
+    FM(_explosives); FM(_armors); FM(_flammabilities); FM(_fuels); FM(_footstepSounds); FM(_HEBlocks); FM(_noFloors);
+    FM(_LOFTS); FM(_stopLOSses); FM(_objectTypes);
+  }
+}
+
+static void DumpExtras(Mod* m) {
+  for (auto& p : m->_extraSprites) {
+    Begin("extraSprites", p.first);
+    F("count", p.second.size());
+    for (size_t i = 0; i < p.second.size(); i++) {
+      ExtraSprites* r = p.second[i];
+      Line(("set" + std::to_string(i)).c_str(), V(r->_type) + "|" + V(r->_sprites) + "|" + V(r->_width) + "," + V(r->_height) + "," + V(r->_singleImage) + "," + V(r->_subX) + "," + V(r->_subY) + "|" + r->_current->name + ":" + V((unsigned)r->_current->offset) + ":" + V((unsigned)r->_current->size));
+    }
+  }
+  Begin("extraSounds", "list");
+  F("count", m->_extraSounds.size());
+  for (size_t i = 0; i < m->_extraSounds.size(); i++) {
+    ExtraSounds* r = m->_extraSounds[i].second;
+    Line(("set" + std::to_string(i)).c_str(), V(m->_extraSounds[i].first) + "|" + V(r->_type) + "|" + V(r->_sounds) + "|" + r->_current->name + ":" + V((unsigned)r->_current->offset) + ":" + V((unsigned)r->_current->size));
+  }
+  for (auto& p : m->_extraStrings) { Begin("extraStrings", p.first); F("strings", p.second->_strings); }
+  Begin("statStrings", "list");
+  F("count", m->_statStrings.size());
+  for (size_t i = 0; i < m->_statStrings.size(); i++) {
+    StatString* r = m->_statStrings[i];
+    std::string c = "[";
+    for (size_t k = 0; k < r->_conditions.size(); k++) { if (k) c += ";"; c += V(r->_conditions[k]->_conditionName) + "/" + V(r->_conditions[k]->_minVal) + "/" + V(r->_conditions[k]->_maxVal); }
+    Line(("s" + std::to_string(i)).c_str(), V(r->_stringToBeAddedIfAllConditionsAreMet) + "|" + c + "]");
+  }
+}
+
+static void DumpInterfacesEtc(Mod* m) {
+  for (auto& p : m->_interfaces) {
+    RuleInterface* r = p.second;
+    Begin("interfaces", p.first);
+    FM(_type); FM(_palette); FM(_parent); FM(_music); F("count", r->_elements.size());
+    for (auto& e : r->_elements) Line(("e_" + Esc(e.first)).c_str(), V(e.second.x) + "/" + V(e.second.y) + "/" + V(e.second.w) + "/" + V(e.second.h) + "/" + V(e.second.color) + "/" + V(e.second.color2) + "/" + V(e.second.border) + "/" + V(e.second.TFTDMode));
+  }
+  for (auto& p : m->_videos) {
+    RuleVideo* r = p.second;
+    Begin("videos", p.first);
+    FM(_id); FM(_useUfoAudioSequence); FM(_videos); FM(_audioTracks);
+    Line("header", V(r->_slideshowHeader.musicId) + "," + V(r->_slideshowHeader.transitionSeconds));
+    F("slides", r->_slides.size());
+    for (size_t i = 0; i < r->_slides.size(); i++) {
+      SlideshowSlide& s = r->_slides[i];
+      Line(("slide" + std::to_string(i)).c_str(), V(s.imagePath) + "," + V(s.caption) + "," + V(s.w) + "," + V(s.h) + "," + V(s.x) + "," + V(s.y) + "," + V(s.color) + "," + V((int)s.align) + "," + V(s.transitionSeconds));
+    }
+  }
+  RuleConverter* c = m->_converter;
+  Begin("converter", "data");
+  F("offsets", c->_offsets); F("markers", c->_markers); F("countries", c->_countries); F("regions", c->_regions);
+  F("facilities", c->_facilities); F("items", c->_items); F("crews", c->_crews); F("crafts", c->_crafts); F("ufos", c->_ufos);
+  F("craftWeapons", c->_craftWeapons); F("missions", c->_missions); F("armor", c->_armor); F("alienRaces", c->_alienRaces);
+  F("alienRanks", c->_alienRanks); F("research", c->_research); F("manufacture", c->_manufacture); F("ufopaedia", c->_ufopaedia);
+  Begin("constants", "values");
+  F("DOOR_OPEN", Mod::DOOR_OPEN); F("SLIDING_DOOR_OPEN", Mod::SLIDING_DOOR_OPEN); F("SLIDING_DOOR_CLOSE", Mod::SLIDING_DOOR_CLOSE);
+  F("SMALL_EXPLOSION", Mod::SMALL_EXPLOSION); F("LARGE_EXPLOSION", Mod::LARGE_EXPLOSION); F("EXPLOSION_OFFSET", Mod::EXPLOSION_OFFSET);
+  F("SMOKE_OFFSET", Mod::SMOKE_OFFSET); F("UNDERWATER_SMOKE_OFFSET", Mod::UNDERWATER_SMOKE_OFFSET); F("ITEM_DROP", Mod::ITEM_DROP);
+  F("ITEM_THROW", Mod::ITEM_THROW); F("ITEM_RELOAD", Mod::ITEM_RELOAD); F("WALK_OFFSET", Mod::WALK_OFFSET);
+  F("FLYING_SOUND", Mod::FLYING_SOUND); F("BUTTON_PRESS", Mod::BUTTON_PRESS);
+  F("WINDOW_POPUP", std::vector<int>(Mod::WINDOW_POPUP, Mod::WINDOW_POPUP + 3)); F("UFO_FIRE", Mod::UFO_FIRE); F("UFO_HIT", Mod::UFO_HIT);
+  F("UFO_CRASH", Mod::UFO_CRASH); F("UFO_EXPLODE", Mod::UFO_EXPLODE); F("INTERCEPTOR_HIT", Mod::INTERCEPTOR_HIT);
+  F("INTERCEPTOR_EXPLODE", Mod::INTERCEPTOR_EXPLODE); F("GEOSCAPE_CURSOR", Mod::GEOSCAPE_CURSOR);
+  F("BASESCAPE_CURSOR", Mod::BASESCAPE_CURSOR); F("BATTLESCAPE_CURSOR", Mod::BATTLESCAPE_CURSOR); F("UFOPAEDIA_CURSOR", Mod::UFOPAEDIA_CURSOR);
+  F("GRAPHS_CURSOR", Mod::GRAPHS_CURSOR); F("DAMAGE_RANGE", Mod::DAMAGE_RANGE); F("EXPLOSIVE_DAMAGE_RANGE", Mod::EXPLOSIVE_DAMAGE_RANGE);
+  F("FIRE_DAMAGE_RANGE", std::vector<int>(Mod::FIRE_DAMAGE_RANGE, Mod::FIRE_DAMAGE_RANGE + 2)); F("DEBRIEF_MUSIC_GOOD", Mod::DEBRIEF_MUSIC_GOOD);
+  F("DEBRIEF_MUSIC_BAD", Mod::DEBRIEF_MUSIC_BAD);
+  Begin("settings", "values");
+  F("costEngineer", m->_costEngineer); F("costScientist", m->_costScientist); F("timePersonnel", m->_timePersonnel);
+  F("initialFunding", m->_initialFunding); F("turnAIUseGrenade", m->_turnAIUseGrenade); F("turnAIUseBlaster", m->_turnAIUseBlaster);
+  F("defeatScore", m->_defeatScore); F("defeatFunds", m->_defeatFunds); F("difficultyDemigod", m->_difficultyDemigod);
+  F("alienFuel", m->_alienFuel); F("fontName", m->_fontName); F("alienItemLevels", m->_alienItemLevels);
+  F("difficultyCoefficient", std::vector<int>(Mod::DIFFICULTY_COEFFICIENT, Mod::DIFFICULTY_COEFFICIENT + 5));
+  for (int i = 0; i < 5; i++) {
+    Line(("adjust" + std::to_string(i)).c_str(), StatsStr(m->_statAdjustment[i].statGrowth) + "|" + V(m->_statAdjustment[i].growthMultiplier) + "|" + V(m->_statAdjustment[i].aimAndArmorMultiplier));
+  }
+  Begin("startingBase", "keys");
+  std::vector<std::string> keys;
+  for (YAML::const_iterator i = m->_startingBase.begin(); i != m->_startingBase.end(); ++i) keys.push_back(i->first.as<std::string>());
+  std::sort(keys.begin(), keys.end());  // the YAML node keeps the order of the file, the Pascal map the order of the keys
+  F("keys", keys);
+}
+
 static void DumpInventories(Mod* m) {
   for (auto& p : m->_invs) {
     RuleInventory* r = p.second;
@@ -340,6 +480,12 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("alienDeployments")) DumpDeployments(m);
   if (Wanted("alienMissions")) DumpAlienMissions(m);
   if (Wanted("missionScripts")) DumpMissionScripts(m);
+  if (Wanted("ufopaedia")) DumpArticles(m);
+  if (Wanted("mapScripts")) DumpMapScripts(m);
+  if (Wanted("mcdPatches")) DumpMcdPatches(m);
+  if (Wanted("extras")) DumpExtras(m);
+  if (Wanted("interfaces")) DumpInterfacesEtc(m);
+  if (Wanted("indexes")) DumpIndexes(m);
   if (Wanted("research")) DumpResearch(m);
   if (Wanted("manufacture")) DumpManufacture(m);
   if (Wanted("alienRaces")) DumpAlienRaces(m);

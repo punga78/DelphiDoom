@@ -29,6 +29,10 @@ static std::string HexF(float v) {
   snprintf(buf, sizeof buf, "%08X", b);
   return buf;
 }
+template <class T> static std::string V(const std::vector<T>& v);
+template <class T> static std::string V(const std::set<T>& v);
+template <class A, class B> static std::string V(const std::pair<A, B>& v);
+template <class A, class B> static std::string V(const std::map<A, B>& v);
 static void Begin(const char* section, const std::string& name) { gSection = section; gName = Esc(name); }
 static void Line(const char* key, const std::string& value) {
   fprintf(gOut, "%s|%s|%s=%s\n", gSection.c_str(), gName.c_str(), key, value.c_str());

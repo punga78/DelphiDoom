@@ -42,6 +42,14 @@ type
     /// <summary>as&lt;std::vector&lt;std::vector&lt;double&gt;&gt;&gt;</summary>
     class function ReadDoubleRows(const ANode: IYamlNode; const AKey: string;
       const ADefault: TArray<TArray<Double>>): TArray<TArray<Double>>; static;
+    /// <summary>
+    ///   as&lt;std::pair&lt;int, int&gt;&gt;(default) of a node: a sequence of two numbers; anything else gives the
+    ///   default (a bad number in the pair raises)
+    /// </summary>
+    class procedure DecodeIntPair(const ANode: IYamlNode; ADefaultFirst, ADefaultSecond: Integer;
+      out AFirst, ASecond: Integer); static;
+    /// <summary>as&lt;std::pair&lt;int, int&gt;&gt;() without a fallback: anything but a pair of two numbers raises</summary>
+    class procedure RequireIntPair(const ANode: IYamlNode; out AFirst, ASecond: Integer); static;
     /// <summary>as&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt;</summary>
     class function ReadIntegerRows(const ANode: IYamlNode; const AKey: string;
       const ADefault: TArray<TArray<Integer>>): TArray<TArray<Integer>>; static;
@@ -194,6 +202,27 @@ begin
     for LCell := 0 to High(LCells) do
       Result[LIndex][LCell] := LCells[LCell].AsDouble;
   end;
+end;
+
+class procedure TXcomNodeReader.DecodeIntPair(const ANode: IYamlNode; ADefaultFirst, ADefaultSecond: Integer;
+  out AFirst, ASecond: Integer);
+begin
+  if not ANode.IsDefined or not ANode.IsSequence or (ANode.Size <> 2) then
+  begin
+    AFirst := ADefaultFirst;
+    ASecond := ADefaultSecond;
+    Exit;
+  end;
+  AFirst := ANode.Find(0).AsInteger;
+  ASecond := ANode.Find(1).AsInteger;
+end;
+
+class procedure TXcomNodeReader.RequireIntPair(const ANode: IYamlNode; out AFirst, ASecond: Integer);
+begin
+  if not ANode.IsSequence or (ANode.Size <> 2) then
+    raise BadConversion(ANode);
+  AFirst := ANode.Find(0).AsInteger;
+  ASecond := ANode.Find(1).AsInteger;
 end;
 
 class function TXcomNodeReader.ReadIntegerRows(const ANode: IYamlNode; const AKey: string;

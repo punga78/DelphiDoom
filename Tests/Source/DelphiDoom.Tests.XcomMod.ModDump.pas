@@ -71,7 +71,7 @@ uses
   DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
   DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier,
   DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.SoldierNamePool, DelphiDoom.XcomMod.AlienDeployment,
-  DelphiDoom.XcomMod.RuleAlienMission, DelphiDoom.XcomMod.RuleMissionScript;
+  DelphiDoom.XcomMod.RuleAlienMission, DelphiDoom.XcomMod.RuleMissionScript, DelphiDoom.Tests.XcomMod.ModDumpMisc;
 
 { TXcomModDump }
 
@@ -91,7 +91,9 @@ end;
 class function TXcomModDump.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
-    'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'alienDeployments', 'alienMissions', 'missionScripts', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'alienDeployments', 'alienMissions', 'missionScripts', 'ufopaedia', 'mapScripts', 'mcdPatches',
+    'extraSprites', 'extraSounds', 'extraStrings', 'statStrings', 'interfaces', 'videos', 'converter', 'constants',
+    'settings', 'startingBase', 'indexes', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
     'commendations');
 end;
 
@@ -145,7 +147,7 @@ begin
         FWriter.Line('zone' + IntToStr(LZone) + '_' + IntToStr(LArea),
           TXcomDumpWriter.HexDouble(LMissionArea.LonMin) + ',' + TXcomDumpWriter.HexDouble(LMissionArea.LonMax) +
           ',' + TXcomDumpWriter.HexDouble(LMissionArea.LatMin) + ',' +
-          TXcomDumpWriter.HexDouble(LMissionArea.LatMax) + ',' + IntToStr(LMissionArea.Texture) + ',' +
+          TXcomDumpWriter.HexDouble(LMissionArea.LatMax) + ',_,' +
           TXcomDumpWriter.Quote(LMissionArea.Name));
       end;
   end;
@@ -948,6 +950,8 @@ begin
 end;
 
 function TXcomModDump.Dump: TStringList;
+var
+  LMisc: TXcomModDumpMisc;
 begin
   FWriter.Lines.Clear;
   DumpCountries;
@@ -966,6 +970,12 @@ begin
   DumpDeployments;
   DumpAlienMissions;
   DumpMissionScripts;
+  LMisc := TXcomModDumpMisc.Create(FMod, FWriter);
+  try
+    LMisc.Dump;
+  finally
+    LMisc.Free;
+  end;
   DumpResearch;
   DumpManufacture;
   DumpAlienRaces;

@@ -20,7 +20,11 @@ uses
   DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.MapDataSet,
   DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier, DelphiDoom.XcomMod.RuleUnit,
   DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.XcomMod.AlienDeployment, DelphiDoom.XcomMod.RuleAlienMission,
-  DelphiDoom.XcomMod.RuleMissionScript;
+  DelphiDoom.XcomMod.RuleMissionScript, System.Generics.Collections, DelphiDoom.XcomMod.MapScript,
+  DelphiDoom.XcomMod.ArticleDefinition, DelphiDoom.XcomMod.McdPatch, DelphiDoom.XcomMod.ExtraSprites,
+  DelphiDoom.XcomMod.ExtraSounds, DelphiDoom.XcomMod.ExtraStrings, DelphiDoom.XcomMod.StatString,
+  DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomMod.RuleVideo, DelphiDoom.XcomMod.RuleConverter,
+  DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings, System.Generics.Defaults;
 
 type
   /// <summary>
@@ -33,6 +37,25 @@ type
     FShared: IXcomSharedResources;
     FFiles: IXcomModFiles;
     FOffsets: TXcomModOffsets;
+    FMapScripts: TXcomStringMap<TObjectList<TXcomMapScript>>;
+    FArticles: TXcomRuleRegistry<TXcomArticleDefinition>;
+    FArticleSections: TXcomStringMap<Integer>;
+    FArticleSectionIndex: TList<string>;
+    FMcdPatches: TXcomStringMap<TXcomMcdPatch>;
+    FExtraSprites: TXcomStringMap<TObjectList<TXcomExtraSprites>>;
+    FExtraSounds: TObjectList<TXcomExtraSounds>;
+    FExtraStrings: TXcomStringMap<TXcomExtraStrings>;
+    FStatStrings: TObjectList<TXcomStatString>;
+    FInterfaces: TXcomRuleRegistry<TXcomRuleInterface>;
+    FVideos: TXcomRuleRegistry<TXcomRuleVideo>;
+    FConverter: TXcomRuleConverter;
+    FConstants: TXcomModConstants;
+    FSettings: TXcomRulesetSettings;
+    FStartingBase: TXcomStringMap<IYamlNode>;
+    FStartingTime: IYamlNode;
+    FModData: TArray<TXcomModData>;
+    FCurrentMod: Integer;
+    FArticleListOrder: Integer;
     FAlienDeployments: TXcomRuleRegistry<TXcomAlienDeployment>;
     FAlienMissions: TXcomRuleRegistry<TXcomRuleAlienMission>;
     FMissionScripts: TXcomRuleRegistry<TXcomRuleMissionScript>;
@@ -67,6 +90,11 @@ type
     procedure LoadUfos(const ADocument: IYamlNode);
     procedure LoadTerrains(const ADocument: IYamlNode);
     procedure LoadPeople(const ADocument: IYamlNode);
+    class function StableSort(const ANames: TArray<string>; const AKey: TFunc<string, Int64>): TArray<string>; static;
+    procedure LoadArticles(const ADocument: IYamlNode);
+    procedure LoadMapScripts(const ADocument: IYamlNode);
+    procedure LoadExtras(const ADocument: IYamlNode);
+    procedure LoadInterfaceAndMisc(const ADocument: IYamlNode);
     procedure LoadDeployments(const ADocument: IYamlNode);
     procedure LoadAlienMissions(const ADocument: IYamlNode);
     procedure LoadMissionScripts(const ADocument: IYamlNode);
@@ -90,6 +118,12 @@ type
     ///   (EXcomModException with the message of the C++)
     /// </summary>
     procedure ValidateMissions;
+    /// <summary>
+    ///   Mod::sortLists: puts the indexes in the order of the list order of their rules (a craft weapon by its
+    ///   launcher, an armor by its store item, the articles by section). Rules with the same order keep the order
+    ///   they came (the std::sort of the C++ is not stable)
+    /// </summary>
+    procedure SortLists;
     property Offsets: TXcomModOffsets read FOffsets;
     property Countries: TXcomRuleRegistry<TXcomRuleCountry> read FCountries;
     property Regions: TXcomRuleRegistry<TXcomRuleRegion> read FRegions;
@@ -100,6 +134,27 @@ type
     property Ufos: TXcomRuleRegistry<TXcomRuleUfo> read FUfos;
     property Inventories: TXcomRuleRegistry<TXcomRuleInventory> read FInventories;
     property Terrains: TXcomRuleRegistry<TXcomRuleTerrain> read FTerrains;
+    /// <summary>The commands of the map script of each name (the key of the "mapScripts" node)</summary>
+    property MapScripts: TXcomStringMap<TObjectList<TXcomMapScript>> read FMapScripts;
+    /// <summary>The Ufopaedia articles by id (the index in the order they came is Articles.Index)</summary>
+    property Articles: TXcomRuleRegistry<TXcomArticleDefinition> read FArticles;
+    /// <summary>The sections of the Ufopaedia with the least listOrder of their articles; ArticleSectionIndex is the order they came</summary>
+    property ArticleSections: TXcomStringMap<Integer> read FArticleSections;
+    property ArticleSectionIndex: TList<string> read FArticleSectionIndex;
+    property McdPatches: TXcomStringMap<TXcomMcdPatch> read FMcdPatches;
+    property ExtraSprites: TXcomStringMap<TObjectList<TXcomExtraSprites>> read FExtraSprites;
+    property ExtraSounds: TObjectList<TXcomExtraSounds> read FExtraSounds;
+    property ExtraStrings: TXcomStringMap<TXcomExtraStrings> read FExtraStrings;
+    property StatStrings: TObjectList<TXcomStatString> read FStatStrings;
+    property Interfaces: TXcomRuleRegistry<TXcomRuleInterface> read FInterfaces;
+    property Videos: TXcomRuleRegistry<TXcomRuleVideo> read FVideos;
+    property Converter: TXcomRuleConverter read FConverter;
+    property Constants: TXcomModConstants read FConstants;
+    property Settings: TXcomRulesetSettings read FSettings;
+    /// <summary>The starting base: the nodes of "startingBase" by key (the C++ keeps them for the saved game)</summary>
+    property StartingBase: TXcomStringMap<IYamlNode> read FStartingBase;
+    /// <summary>The "startingTime" node (the GameTime that reads it is in Libs\XcomSave)</summary>
+    property StartingTime: IYamlNode read FStartingTime;
     property AlienDeployments: TXcomRuleRegistry<TXcomAlienDeployment> read FAlienDeployments;
     property AlienMissions: TXcomRuleRegistry<TXcomRuleAlienMission> read FAlienMissions;
     property MissionScripts: TXcomRuleRegistry<TXcomRuleMissionScript> read FMissionScripts;
@@ -129,7 +184,24 @@ begin
     raise EArgumentNilException.Create('AShared');
   FShared := AShared;
   FFiles := AFiles;
-  FAlienDeployments := TXcomRuleRegistry<TXcomAlienDeployment>.Create(
+  FMapScripts := TXcomStringMap<TObjectList<TXcomMapScript>>.Create;
+  FArticles := TXcomRuleRegistry<TXcomArticleDefinition>.Create(nil);
+  FArticleSections := TXcomStringMap<Integer>.Create;
+  FArticleSectionIndex := TList<string>.Create;
+  FMcdPatches := TXcomStringMap<TXcomMcdPatch>.Create;
+  FExtraSprites := TXcomStringMap<TObjectList<TXcomExtraSprites>>.Create;
+  FExtraSounds := TObjectList<TXcomExtraSounds>.Create(True);
+  FExtraStrings := TXcomStringMap<TXcomExtraStrings>.Create;
+  FStatStrings := TObjectList<TXcomStatString>.Create(True);
+  FInterfaces := TXcomRuleRegistry<TXcomRuleInterface>.Create(
+    function(AType: string): TXcomRuleInterface begin Result := TXcomRuleInterface.Create(AType); end);
+  FVideos := TXcomRuleRegistry<TXcomRuleVideo>.Create(
+    function(AType: string): TXcomRuleVideo begin Result := TXcomRuleVideo.Create(AType); end);
+  FConverter := TXcomRuleConverter.Create;
+  FConstants := TXcomModConstants.Create;
+  FSettings := TXcomRulesetSettings.Create;
+  FStartingBase := TXcomStringMap<IYamlNode>.Create;
+  FAlienDeployments :=TXcomRuleRegistry<TXcomAlienDeployment>.Create(
     function(AType: string): TXcomAlienDeployment begin Result := TXcomAlienDeployment.Create(AType); end);
   FAlienMissions := TXcomRuleRegistry<TXcomRuleAlienMission>.Create(
     function(AType: string): TXcomRuleAlienMission begin Result := TXcomRuleAlienMission.Create(AType); end);
@@ -186,6 +258,29 @@ begin
   FAlienRaces.Free;
   FManufacture.Free;
   FResearch.Free;
+  FStartingBase.Free;
+  FSettings.Free;
+  FConstants.Free;
+  FConverter.Free;
+  FVideos.Free;
+  FInterfaces.Free;
+  FStatStrings.Free;
+  for LIndex := 0 to FExtraStrings.Count - 1 do
+    FExtraStrings.Value(LIndex).Free;
+  FExtraStrings.Free;
+  FExtraSounds.Free;
+  for LIndex := 0 to FExtraSprites.Count - 1 do
+    FExtraSprites.Value(LIndex).Free;
+  FExtraSprites.Free;
+  for LIndex := 0 to FMcdPatches.Count - 1 do
+    FMcdPatches.Value(LIndex).Free;
+  FMcdPatches.Free;
+  FArticleSectionIndex.Free;
+  FArticleSections.Free;
+  FArticles.Free;
+  for LIndex := 0 to FMapScripts.Count - 1 do
+    FMapScripts.Value(LIndex).Free;
+  FMapScripts.Free;
   FMissionScripts.Free;
   FAlienMissions.Free;
   FAlienDeployments.Free;
@@ -208,6 +303,8 @@ end;
 
 procedure TXcomRuleset.SetMods(const AMods: TArray<TXcomModData>; ACurrent: Integer);
 begin
+  FModData := AMods;
+  FCurrentMod := ACurrent;
   FOffsets.Free;
   FOffsets := TXcomModOffsets.Create(AMods, ACurrent, FShared);
 end;
@@ -296,6 +393,302 @@ begin
     if Assigned(LUnit) then
       LUnit.Load(LItem, FOffsets);
   end;
+end;
+
+procedure TXcomRuleset.LoadArticles(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LId, LKindText: string;
+  LRule: TXcomArticleDefinition;
+  LKind, LOrder: Integer;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'ufopaedia').Items do
+  begin
+    if TXcomNodeReader.Field(LItem, 'id').IsDefined then
+    begin
+      LId := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'id'));
+      LRule := FArticles.Find(LId);
+      if not Assigned(LRule) then
+      begin
+        LKind := TXcomNodeReader.Field(LItem, 'type_id').AsInteger;
+        // the C++ makes no article for an unknown type and then uses it (a crash)
+        if not TXcomArticleDefinition.IsKnownKind(LKind) then
+        begin
+          LKindText := IntToStr(LKind);
+          raise EXcomModException.CreateFmt('Unknown Ufopaedia type_id %s in article %s', [LKindText, LId]);
+        end;
+        LRule := TXcomArticleDefinition.Create(LKind);
+        FArticles.Add(LId, LRule);
+      end;
+      Inc(FArticleListOrder, 100);
+      LRule.Load(LItem, FArticleListOrder);
+      if LRule.Section <> 'STR_NOT_AVAILABLE' then
+      begin
+        if not FArticleSections.TryGetValue(LRule.Section, LOrder) then
+        begin
+          FArticleSections.SetValue(LRule.Section, LRule.ListOrder);
+          FArticleSectionIndex.Add(LRule.Section);
+        end
+        else if LRule.ListOrder < LOrder then
+          FArticleSections.SetValue(LRule.Section, LRule.ListOrder);
+      end;
+    end
+    else if TXcomNodeReader.Field(LItem, 'delete').IsDefined then
+      FArticles.Delete(TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'delete')));
+  end;
+end;
+
+procedure TXcomRuleset.LoadMapScripts(const ADocument: IYamlNode);
+var
+  LItem, LCommand: IYamlNode;
+  LType: string;
+  LList: TObjectList<TXcomMapScript>;
+  LScript: TXcomMapScript;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'mapScripts').Items do
+  begin
+    LType := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'type'));
+    if TXcomNodeReader.Field(LItem, 'delete').IsDefined then
+      LType := TXcomNodeReader.ReadString(LItem, 'delete', LType);
+    if FMapScripts.TryGetValue(LType, LList) then
+      LList.Clear;
+    for LCommand in TXcomNodeReader.Field(LItem, 'commands').Items do
+    begin
+      LScript := TXcomMapScript.Create;
+      try
+        LScript.Load(LCommand);
+      except
+        LScript.Free;
+        raise;
+      end;
+      if not FMapScripts.TryGetValue(LType, LList) then
+      begin
+        LList := TObjectList<TXcomMapScript>.Create(True);
+        FMapScripts.SetValue(LType, LList);
+      end;
+      LList.Add(LScript);
+    end;
+  end;
+end;
+
+procedure TXcomRuleset.LoadExtras(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LType: string;
+  LPatch: TXcomMcdPatch;
+  LSprites: TXcomExtraSprites;
+  LSpriteList: TObjectList<TXcomExtraSprites>;
+  LSounds: TXcomExtraSounds;
+  LStrings: TXcomExtraStrings;
+  LStat: TXcomStatString;
+  LData: TXcomModData;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'MCDPatches').Items do
+  begin
+    LType := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'type'));
+    if not FMcdPatches.TryGetValue(LType, LPatch) then
+    begin
+      LPatch := TXcomMcdPatch.Create;
+      FMcdPatches.SetValue(LType, LPatch);
+    end;
+    LPatch.Load(LItem);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'extraSprites').Items do
+  begin
+    if TXcomNodeReader.Field(LItem, 'type').IsDefined then
+    begin
+      LType := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'type'));
+      LData := FModData[FCurrentMod];
+      // TEXTURE.DAT does not support a mod index: it is always the master
+      if LType = 'TEXTURE.DAT' then
+        LData := FModData[0];
+      LSprites := TXcomExtraSprites.Create;
+      try
+        LSprites.Load(LItem, LData);
+      except
+        LSprites.Free;
+        raise;
+      end;
+      if not FExtraSprites.TryGetValue(LType, LSpriteList) then
+      begin
+        LSpriteList := TObjectList<TXcomExtraSprites>.Create(True);
+        FExtraSprites.SetValue(LType, LSpriteList);
+      end;
+      LSpriteList.Add(LSprites);
+    end
+    else if TXcomNodeReader.Field(LItem, 'delete').IsDefined then
+    begin
+      LType := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'delete'));
+      if FExtraSprites.TryGetValue(LType, LSpriteList) then
+      begin
+        FExtraSprites.Remove(LType);
+        LSpriteList.Free;
+      end;
+    end;
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'extraSounds').Items do
+  begin
+    // the type is read here as well as by the rule (the C++ does the same)
+    TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'type'));
+    LSounds := TXcomExtraSounds.Create;
+    FExtraSounds.Add(LSounds);
+    LSounds.Load(LItem, FModData[FCurrentMod]);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'extraStrings').Items do
+  begin
+    LType := TXcomNodeReader.TextOf(TXcomNodeReader.Field(LItem, 'type'));
+    if not FExtraStrings.TryGetValue(LType, LStrings) then
+    begin
+      LStrings := TXcomExtraStrings.Create;
+      FExtraStrings.SetValue(LType, LStrings);
+    end;
+    LStrings.Load(LItem);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'statStrings').Items do
+  begin
+    LStat := TXcomStatString.Create;
+    FStatStrings.Add(LStat);
+    LStat.Load(LItem);
+  end;
+end;
+
+procedure TXcomRuleset.LoadInterfaceAndMisc(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LInterface: TXcomRuleInterface;
+  LVideo: TXcomRuleVideo;
+  LField: IYamlNode;
+  LPair: TYamlPair;
+begin
+  for LPair in TXcomNodeReader.Field(ADocument, 'startingBase').Pairs do
+    FStartingBase.SetValue(TXcomNodeReader.TextOf(LPair.Key), LPair.Value);
+  if TXcomNodeReader.Field(ADocument, 'startingTime').IsDefined then
+    FStartingTime := TXcomNodeReader.Field(ADocument, 'startingTime');
+  for LItem in TXcomNodeReader.Field(ADocument, 'interfaces').Items do
+  begin
+    LInterface := FInterfaces.LoadRule(LItem, 'type', False);
+    if Assigned(LInterface) then
+      LInterface.Load(LItem);
+  end;
+  LField := TXcomNodeReader.Field(ADocument, 'converter');
+  if LField.IsDefined then
+    FConverter.Load(LField);
+  LField := TXcomNodeReader.Field(ADocument, 'constants');
+  if LField.IsDefined then
+  begin
+    // the old form was a list of nodes
+    if LField.IsSequence then
+      for LItem in LField.Items do
+        FConstants.Load(LItem, FOffsets)
+    else
+      FConstants.Load(LField, FOffsets);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'cutscenes').Items do
+  begin
+    LVideo := FVideos.LoadRule(LItem, 'type', False);
+    if Assigned(LVideo) then
+      LVideo.Load(LItem);
+  end;
+end;
+
+class function TXcomRuleset.StableSort(const ANames: TArray<string>;
+  const AKey: TFunc<string, Int64>): TArray<string>;
+type
+  TEntry = record
+    Name: string;
+    Key: Int64;
+    Position: Integer;
+  end;
+var
+  LEntries: TArray<TEntry>;
+  LIndex: Integer;
+begin
+  SetLength(LEntries, Length(ANames));
+  for LIndex := 0 to High(ANames) do
+  begin
+    LEntries[LIndex].Name := ANames[LIndex];
+    LEntries[LIndex].Key := AKey(ANames[LIndex]);
+    LEntries[LIndex].Position := LIndex;
+  end;
+  // std::sort of the C++ is not stable: the rules with the same list order come out in the order they came
+  TArray.Sort<TEntry>(LEntries, TComparer<TEntry>.Construct(
+    function(const ALeft, ARight: TEntry): Integer
+    begin
+      if ALeft.Key < ARight.Key then
+        Result := -1
+      else if ALeft.Key > ARight.Key then
+        Result := 1
+      else
+        Result := ALeft.Position - ARight.Position;
+    end));
+  SetLength(Result, Length(ANames));
+  for LIndex := 0 to High(Result) do
+    Result[LIndex] := LEntries[LIndex].Name;
+end;
+
+procedure TXcomRuleset.SortLists;
+var
+  LSections: TArray<string>;
+begin
+  LSections := FArticleSectionIndex.ToArray;
+  FItems.SetIndex(StableSort(FItems.Index,
+    function(AName: string): Int64 begin Result := FItems.Find(AName).ListOrder; end));
+  FCrafts.SetIndex(StableSort(FCrafts.Index,
+    function(AName: string): Int64 begin Result := FCrafts.Find(AName).ListOrder; end));
+  FFacilities.SetIndex(StableSort(FFacilities.Index,
+    function(AName: string): Int64 begin Result := FFacilities.Find(AName).ListOrder; end));
+  FResearch.SetIndex(StableSort(FResearch.Index,
+    function(AName: string): Int64 begin Result := FResearch.Find(AName).ListOrder; end));
+  FManufacture.SetIndex(StableSort(FManufacture.Index,
+    function(AName: string): Int64 begin Result := FManufacture.Find(AName).ListOrder; end));
+  FInventories.SetIndex(StableSort(FInventories.Index,
+    function(AName: string): Int64 begin Result := FInventories.Find(AName).ListOrder; end));
+  // special cases: a craft weapon takes the list order of its launcher, an armor of its store item (itemless
+  // armor comes before all else)
+  FCraftWeapons.SetIndex(StableSort(FCraftWeapons.Index,
+    function(AName: string): Int64
+    var
+      LItem: TXcomRuleItem;
+    begin
+      LItem := FItems.Find(FCraftWeapons.Find(AName).LauncherItem);
+      if not Assigned(LItem) then
+        raise EXcomModException.CreateFmt('Item %s not found', [FCraftWeapons.Find(AName).LauncherItem]);
+      Result := LItem.ListOrder;
+    end));
+  FArmors.SetIndex(StableSort(FArmors.Index,
+    function(AName: string): Int64
+    var
+      LItem: TXcomRuleItem;
+    begin
+      LItem := FItems.Find(FArmors.Find(AName).StoreItem);
+      if Assigned(LItem) then
+        Result := LItem.ListOrder
+      else
+        Result := Low(Integer);
+    end));
+  FArticleSections.SetValue('STR_NOT_AVAILABLE', 0);
+  // the articles: by the order of their section, then their own
+  FArticles.SetIndex(StableSort(FArticles.Index,
+    function(AName: string): Int64
+    var
+      LArticle: TXcomArticleDefinition;
+      LSection: Integer;
+    begin
+      LArticle := FArticles.Find(AName);
+      if not FArticleSections.TryGetValue(LArticle.Section, LSection) then
+        raise EXcomModException.CreateFmt('map::at: section %s', [LArticle.Section]);
+      // the section first, then the list order of the article
+      Result := (Int64(LSection) shl 32) + Int64(LArticle.ListOrder);
+    end));
+  FArticleSectionIndex.Clear;
+  FArticleSectionIndex.AddRange(StableSort(LSections,
+    function(AName: string): Int64
+    var
+      LOrder: Integer;
+    begin
+      FArticleSections.TryGetValue(AName, LOrder);
+      Result := LOrder;
+    end));
 end;
 
 procedure TXcomRuleset.LoadDeployments(const ADocument: IYamlNode);
@@ -491,6 +884,8 @@ begin
       LManufacture.Load(LItem, FManufactureListOrder);
     end;
   end;
+  LoadArticles(ADocument);
+  FSettings.Load(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'ufoTrajectories').Items do
   begin
     // loadRule(*i, &_ufoTrajectories, 0, "id"): no index
@@ -499,6 +894,9 @@ begin
       LTrajectory.Load(LItem);
   end;
   LoadAlienMissions(ADocument);
+  LoadExtras(ADocument);
+  LoadInterfaceAndMisc(ADocument);
+  LoadMapScripts(ADocument);
   LoadMissionScripts(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'musics').Items do
   begin

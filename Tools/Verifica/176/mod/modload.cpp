@@ -95,6 +95,7 @@ int main(int argc, char** argv) {
   if (!Options::init(7, args)) return 3;
   try {
     Options::updateMods();
+    Mod::resetGlobalStatics();
     Mod* mod = new Mod();
     mod->loadAll(FileMap::getRulesets());
     FILE* f = fopen(outName.c_str(), "wb");

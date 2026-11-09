@@ -38,6 +38,10 @@ type
     ///   Mod::getMapDataSet does
     /// </summary>
     function GetOrCreate(const AName: string): T;
+    /// <summary>Adds a rule that the caller made (the registry owns it); a rule with the name is replaced and freed</summary>
+    procedure Add(const AName: string; const ARule: T; AIndexed: Boolean = True);
+    /// <summary>Removes the rule with the name from the table and from the index, and frees it</summary>
+    procedure Delete(const AName: string);
     function Count: Integer;
     /// <summary>The name of the AIndex-th rule in the order of the names</summary>
     function Name(AIndex: Integer): string;
@@ -116,6 +120,35 @@ begin
     Result := FFactory(AName);
     FMap.SetValue(AName, Result);
   end;
+end;
+
+procedure TXcomRuleRegistry<T>.Add(const AName: string; const ARule: T; AIndexed: Boolean);
+var
+  LOld: T;
+begin
+  if FMap.TryGetValue(AName, LOld) then
+  begin
+    if LOld <> ARule then
+      LOld.Free;
+  end
+  else if AIndexed then
+    FIndex.Add(AName);
+  FMap.SetValue(AName, ARule);
+end;
+
+procedure TXcomRuleRegistry<T>.Delete(const AName: string);
+var
+  LOld: T;
+  LPosition: Integer;
+begin
+  if FMap.TryGetValue(AName, LOld) then
+  begin
+    FMap.Remove(AName);
+    LOld.Free;
+  end;
+  LPosition := FIndex.IndexOf(AName);
+  if LPosition >= 0 then
+    FIndex.Delete(LPosition);
 end;
 
 function TXcomRuleRegistry<T>.Count: Integer;
