@@ -72,6 +72,7 @@ uses
   DelphiDoom.Tests.XcomMod.ModDump in 'Source\DelphiDoom.Tests.XcomMod.ModDump.pas',
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomMod.RealMod in 'Source\DelphiDoom.Tests.XcomMod.RealMod.pas',
+  DelphiDoom.Tests.XcomMod.Ruleset in 'Source\DelphiDoom.Tests.XcomMod.Ruleset.pas',
   DelphiDoom.Tests.XcomMod.ModOffsets in 'Source\DelphiDoom.Tests.XcomMod.ModOffsets.pas',
   DelphiDoom.Tests.XcomMod.Scenario in 'Source\DelphiDoom.Tests.XcomMod.Scenario.pas',
   DelphiDoom.Tests.XcomMod.Golden in 'Source\DelphiDoom.Tests.XcomMod.Golden.pas',
