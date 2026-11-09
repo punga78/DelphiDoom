@@ -805,6 +805,7 @@ uses
   DelphiDoom.Palette.BufferFixer in 'Libs\Palette\DelphiDoom.Palette.BufferFixer.pas',
   DelphiDoom.Palette.Unpacker in 'Libs\Palette\DelphiDoom.Palette.Unpacker.pas',
   DelphiDoom.Palette.Factory in 'Libs\Palette\DelphiDoom.Palette.Factory.pas',
+  DelphiDoom.GameData.Aliases in 'Libs\GameData\DelphiDoom.GameData.Aliases.pas',
   DelphiDoom.TextureDefs.Types in 'Libs\TextureDefs\DelphiDoom.TextureDefs.Types.pas',
   DelphiDoom.TextureDefs.Intf in 'Libs\TextureDefs\DelphiDoom.TextureDefs.Intf.pas',
   DelphiDoom.TextureDefs.Names in 'Libs\TextureDefs\DelphiDoom.TextureDefs.Names.pas',
