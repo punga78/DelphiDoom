@@ -23,6 +23,27 @@ static std::string MapText(SavedBattleGame* b, int what) {
   return o.str();
 }
 
+// a text of everything an explosion changes: a hash of the tiles (parts, fire, smoke, explosive, items) and the units
+static std::string StateText(SavedBattleGame* b) {
+  std::ostringstream o;
+  unsigned h = 2166136261u;
+  for (int i = 0; i < b->getMapSizeXYZ(); i++) {
+    Tile* t = b->_tiles[i];
+    int vals[14];
+    for (int p = 0; p < 4; p++) { vals[p] = t->_mapDataID[p]; vals[4 + p] = t->_mapDataSetID[p]; }
+    vals[8] = t->_fire; vals[9] = t->_smoke; vals[10] = t->_explosive; vals[11] = t->_explosiveType;
+    vals[12] = (int)t->_inventory.size(); vals[13] = t->_overlaps;
+    for (int k = 0; k < 14; k++) h = (h ^ (unsigned)vals[k]) * 16777619u;
+  }
+  o << "tiles=" << h;
+  for (size_t i = 0; i < b->_units.size(); i++) {
+    BattleUnit* u = b->_units[i];
+    o << " u" << u->getId() << ":" << u->_health << "," << u->_stunlevel << "," << u->_morale << "," << u->getArmor(SIDE_FRONT) << u->getArmor(SIDE_LEFT) << u->getArmor(SIDE_RIGHT) << u->getArmor(SIDE_REAR) << u->getArmor(SIDE_UNDER)
+      << "," << u->getFatalWounds() << "," << u->_fire << "," << (int)u->_status << "," << u->_expFiring << "," << (int)u->_killedBy;
+  }
+  return o.str();
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: enginegen <data> <user> <out folder> <count> <seed> <LOFTEMPS.DAT>\n"); return 2; }
   std::string data = argv[1], user = argv[2], out = argv[3];
@@ -59,6 +80,16 @@ int main(int argc, char** argv) {
       b->_pathfinding = new Pathfinding(b);
       std::ostringstream res;
       int sx = b->_mapsize_x, sy = b->_mapsize_y, sz = b->_mapsize_z;
+      {
+        // explode keeps the tiles it reaches in a std::set of pointers: the order of the pointers decides the
+        // order of the detonations (and so the random numbers that the smoke takes), so the golden carries it
+        std::vector<std::pair<uintptr_t, int> > order;
+        for (int i = 0; i < b->getMapSizeXYZ(); i++) order.push_back(std::make_pair((uintptr_t)b->_tiles[i], i));
+        std::sort(order.begin(), order.end());
+        res << "tileorder = ";
+        for (size_t i = 0; i < order.size(); i++) res << order[i].second << ",";
+        res << "\n";
+      }
       // light
       for (int k = 0; k < 4; k++) {
         int shade = k == 0 ? 0 : (k == 1 ? 4 : (k == 2 ? 9 : 15));
@@ -142,6 +173,25 @@ int main(int argc, char** argv) {
         res << "dist " << a.x << " " << a.y << " " << a.z << " " << c.x << " " << c.y << " " << c.z << " = " << te->distance(a, c) << " " << te->distanceSq(a, c) << " " << te->distanceSq(a, c, false) << "\n";
       }
       res << "doors = " << te->closeUfoDoors() << " map=" << MapText(b, 1) << "\n";
+      // explosions: the generator is seeded for each so that both sides spend the same numbers
+      b->_objectivesNeeded = 0;
+      for (int q = 0; q < 10; q++) {
+        Position c(Pick(sx * 16), Pick(sy * 16), Pick(sz * 24));
+        if (Pick(3) != 0) {
+          // on a unit, so that the damage and the generator are used
+          BattleUnit* at = units[Pick(units.size())];
+          c = Position(at->getPosition().x * 16 + 8, at->getPosition().y * 16 + 8, at->getPosition().z * 24 + 8);
+        }
+        int types[4] = {3, 2, 9, 6};
+        int type = types[Pick(4)];
+        int power = 20 + Pick(100);
+        int radius = 2 + Pick(10);
+        BattleUnit* who = Pick(2) ? 0 : units[Pick(units.size())];
+        int xseed = 1000 + Pick(100000);
+        RNG::setSeed(xseed);
+        te->explode(c, power, (ItemDamageType)type, radius, who);
+        res << "explode " << c.x << " " << c.y << " " << c.z << " " << type << " " << power << " " << radius << " " << (who ? who->getId() : 0) << " " << xseed << " = rng=" << RNG::getSeed() << " " << StateText(b) << "\n";
+      }
       std::ofstream o((base + ".txt").c_str(), std::ios::binary);
       o << res.str();
       for (size_t i = 0; i < b->_mapDataSets.size(); i++) b->_mapDataSets[i]->unloadData();

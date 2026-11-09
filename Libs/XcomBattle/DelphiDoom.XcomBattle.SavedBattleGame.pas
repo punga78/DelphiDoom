@@ -14,7 +14,7 @@ uses
   System.SysUtils, System.Math, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Convert, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapData,
   DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.RuleItem,
-  DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.Ruleset,
+  DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomSave.PositionCodec, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.NodeWriter,
   DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.Directions,
@@ -110,6 +110,8 @@ type
     property MapSizeY: Integer read FSizeY;
     property MapSizeZ: Integer read FSizeZ;
     function MapSizeXyz: Integer;
+    /// <summary>The generator of the battle (the one of the context)</summary>
+    function Random: IXcomRandom;
     property MapDataSets: TList<TXcomMapDataSet> read FMapDataSets;
     property Nodes: TObjectList<TXcomNode> read FNodes;
     property Units: TObjectList<TXcomBattleUnit> read FUnits;
@@ -251,6 +253,11 @@ begin
     LSet.Unload;
   FMapDataSets.Free;
   inherited Destroy;
+end;
+
+function TXcomSavedBattleGame.Random: IXcomRandom;
+begin
+  Result := FContext.Random;
 end;
 
 procedure TXcomSavedBattleGame.AddItem(const AItem: TXcomBattleItem);
@@ -651,7 +658,11 @@ var
   LPart: Integer;
   LDataId: Integer;
   LSetId: Integer;
+  LSet: TXcomMapDataSet;
 begin
+  for LSet in FMapDataSets do
+    if LSet.Name = 'BLANKS' then
+      FScorchedEarth := LSet.ScorchedEarthTile;
   for LIndex := 0 to GetTileCount - 1 do
     for LPart := XCOM_PART_FLOOR to XCOM_PART_OBJECT do
     begin

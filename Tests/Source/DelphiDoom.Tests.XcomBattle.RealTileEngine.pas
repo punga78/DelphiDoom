@@ -16,7 +16,7 @@ uses
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapDataLoader,
   DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomMod.McdPatch, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
+  DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomBattle.Directions, DelphiDoom.XcomBattle.TileEngine, DelphiDoom.Tests.XcomMod.RealData;
 
 type
@@ -32,6 +32,7 @@ type
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function MapText(const ABattle: TXcomSavedBattleGame; AWhat: Integer): string; static;
+    class function TileStateHash(const ABattle: TXcomSavedBattleGame): Cardinal; static;
     class function TrajectoryText(const ATrajectory: TList<TXcomPosition>): string; static;
     class function FindUnit(const ABattle: TXcomSavedBattleGame; AId: Integer): TXcomBattleUnit; static;
     function Answer(const ABattle: TXcomSavedBattleGame; const AEngine: TXcomTileEngine; const AUnits: TList<TXcomBattleUnit>;
@@ -152,6 +153,37 @@ begin
   end;
 end;
 
+class function TTestXcomRealTileEngine.TileStateHash(const ABattle: TXcomSavedBattleGame): Cardinal;
+var
+  LIndex: Integer;
+  LPart: Integer;
+  LTile: TXcomTile;
+  LDataId: Integer;
+  LSetId: Integer;
+  LValues: array[0..13] of Integer;
+  LValue: Integer;
+begin
+  Result := 2166136261;
+  for LIndex := 0 to ABattle.MapSizeXyz - 1 do
+  begin
+    LTile := ABattle.TileByIndex(LIndex);
+    for LPart := 0 to 3 do
+    begin
+      LTile.GetMapDataIds(LDataId, LSetId, LPart);
+      LValues[LPart] := LDataId;
+      LValues[4 + LPart] := LSetId;
+    end;
+    LValues[8] := LTile.Fire;
+    LValues[9] := LTile.Smoke;
+    LValues[10] := LTile.Explosive;
+    LValues[11] := LTile.ExplosiveType;
+    LValues[12] := LTile.Inventory.Count;
+    LValues[13] := LTile.Overlaps;
+    for LValue in LValues do
+      Result := (Result xor Cardinal(LValue)) * 16777619;
+  end;
+end;
+
 class function TTestXcomRealTileEngine.TrajectoryText(const ATrajectory: TList<TXcomPosition>): string;
 var
   LHash: Cardinal;
@@ -198,11 +230,22 @@ var
   LDelta: TXcomPosition;
   LVisibleText: string;
   LCount: Integer;
+  LOrder: TArray<string>;
+  LIds: TArray<Integer>;
 begin
   Result := '';
   LLeft := Copy(AQuestion, 1, Pos(' = ', AQuestion + ' = ') - 1);
   LParts := LLeft.Split([' ']);
-  if LParts[0] = 'light' then
+  if LParts[0] = 'tileorder' then
+  begin
+    LOrder := AQuestion.Substring(12).Split([','], TStringSplitOptions.ExcludeEmpty);
+    SetLength(LIds, Length(LOrder));
+    for LIndex := 0 to High(LOrder) do
+      LIds[LIndex] := StrToInt(LOrder[LIndex]);
+    AEngine.SetDetonationOrder(LIds);
+    Result := AQuestion;
+  end
+  else if LParts[0] = 'light' then
   begin
     LShade := StrToInt(LParts[1]);
     ABattle.GlobalShade := LShade;
@@ -311,6 +354,23 @@ begin
     Result := Format('dist %s = %d %d %d', [LLeft.Substring(5), AEngine.Distance(LOrigin, LTarget),
       AEngine.DistanceSq(LOrigin, LTarget), AEngine.DistanceSq(LOrigin, LTarget, False)]);
   end
+  else if LParts[0] = 'explode' then
+  begin
+    LOrigin := TXcomPosition.Make(StrToInt(LParts[1]), StrToInt(LParts[2]), StrToInt(LParts[3]));
+    LExclude := nil;
+    if StrToInt(LParts[7]) <> 0 then
+      LExclude := FindUnit(ABattle, StrToInt(LParts[7]));
+    ABattle.Random.SetSeed(StrToInt(LParts[8]));
+    AEngine.Explode(LOrigin, StrToInt(LParts[5]), StrToInt(LParts[4]), StrToInt(LParts[6]), LExclude);
+    LVisibleText := '';
+    for LOther in ABattle.Units do
+      LVisibleText := LVisibleText + Format(' u%d:%d,%d,%d,%d%d%d%d%d,%d,%d,%d,%d,%d', [LOther.Id, LOther.Health,
+        LOther.StunLevel, LOther.Morale, LOther.GetArmor(SIDE_FRONT), LOther.GetArmor(SIDE_LEFT),
+        LOther.GetArmor(SIDE_RIGHT), LOther.GetArmor(SIDE_REAR), LOther.GetArmor(SIDE_UNDER), LOther.GetFatalWounds,
+        LOther.Fire, LOther.Status, LOther.ExpFiring, LOther.KilledBy]);
+    Result := Format('explode %s = rng=%s tiles=%u%s', [LLeft.Substring(8), UIntToStr(ABattle.Random.Seed),
+      TileStateHash(ABattle), LVisibleText]);
+  end
   else if LParts[0] = 'doors' then
   begin
     LCount := AEngine.CloseUfoDoors;
@@ -336,7 +396,9 @@ var
   LUnit: TXcomBattleUnit;
 begin
   LFailed := '';
-  LContext := TXcomBattleContext.Create(TXcomRandom.Create(1));
+  // the ranges of the ruleset (Mod::DAMAGE_RANGE and the others are statics of the C++)
+  LContext := TXcomBattleContext.Create(TXcomRandom.Create(1), False, False, FRuleset.Constants.FireDamageRange[0],
+    FRuleset.Constants.FireDamageRange[1], FRuleset.Constants.DamageRange, FRuleset.Constants.ExplosiveDamageRange, 0);
   LBattle := TXcomSavedBattleGame.Create(LContext);
   LLines := TStringList.Create;
   LUnits := TList<TXcomBattleUnit>.Create;

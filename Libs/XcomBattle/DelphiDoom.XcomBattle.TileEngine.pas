@@ -11,7 +11,8 @@ unit DelphiDoom.XcomBattle.TileEngine;
 interface
 
 uses
-  System.SysUtils, System.Math, System.Generics.Collections, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet,
+  System.SysUtils, System.Math, System.Generics.Collections, System.Generics.Defaults, DelphiDoom.XcomMod.MapBlock,
+  DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet,
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Directions,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.Services.Intf,
   DelphiDoom.XcomBattle.Pathfinding;
@@ -48,6 +49,7 @@ type
     FCacheTile: TXcomTile;
     FCacheTileBelow: TXcomTile;
     FCacheTilePosition: TXcomPosition;
+    FDetonationRank: TArray<Integer>;
     procedure AddLight(const ACenter: TXcomPosition; APower, ALayer: Integer);
     function Blockage(const ATile: TXcomTile; APart: Integer; ADamageType: Integer; ADirection: Integer = -1;
       ACheckingFromOrigin: Boolean = False): Integer;
@@ -110,6 +112,19 @@ type
     function CheckForTerrainExplosions: TXcomTile;
     /// <summary>detonate: applies the explosive power of a tile to its parts; true when the objective is destroyed</summary>
     function Detonate(const ATile: TXcomTile): Boolean;
+    /// <summary>
+    ///   explode: HE, smoke, fire and stun in a sphere of rays of 5 and 3 degrees, one tile at a time with the
+    ///   power losing 10 a tile and what the walls block; the unit that caused it may be nil. The tiles hit by HE
+    ///   are detonated in the order of their index (the C++ keeps them in a set of pointers)
+    /// </summary>
+    procedure Explode(const ACenter: TXcomPosition; APower, ADamageType, AMaxRadius: Integer;
+      const AUnit: TXcomBattleUnit = nil);
+    /// <summary>
+    ///   The order in which explode detonates the tiles it reached, as the tile indexes in that order (empty: by
+    ///   index). The C++ keeps them in a set of pointers, so the order is the one of the memory addresses and has
+    ///   no meaning of its own; the parity tests give the order that the real run had
+    /// </summary>
+    procedure SetDetonationOrder(const AOrder: TArray<Integer>);
     property PersonalLighting: Boolean read FPersonalLighting;
   end;
 
@@ -1847,5 +1862,299 @@ begin
   end;
 end;
 
+
+procedure TXcomTileEngine.SetDetonationOrder(const AOrder: TArray<Integer>);
+var
+  LIndex: Integer;
+begin
+  SetLength(FDetonationRank, Length(AOrder));
+  for LIndex := 0 to High(AOrder) do
+    FDetonationRank[AOrder[LIndex]] := LIndex;
+end;
+
+procedure TXcomTileEngine.Explode(const ACenter: TXcomPosition; APower, ADamageType, AMaxRadius: Integer;
+  const AUnit: TXcomBattleUnit);
+var
+  LCenterZ: Double;
+  LCenterX: Double;
+  LCenterY: Double;
+  LHitSide: Integer;
+  LDiagonalWall: Integer;
+  LPower: Integer;
+  LAffected: TList<TXcomTile>;
+  LSeen: TDictionary<Integer, Boolean>;
+  LExHeight: Integer;
+  LVertDec: Integer;
+  LDamageRange: Integer;
+  LOrigin: TXcomTile;
+  LDest: TXcomTile;
+  LFi: Integer;
+  LTe: Integer;
+  LCosTe, LSinTe, LSinFi, LCosFi: Double;
+  LLength: Double;
+  LTileX, LTileY, LTileZ: Integer;
+  LMin: Integer;
+  LMax: Integer;
+  LUnit: TXcomBattleUnit;
+  LBelow: TXcomTile;
+  LWounds: Integer;
+  LItem: TXcomBattleItem;
+  LCopy: TArray<TXcomBattleItem>;
+  LResistance: Single;
+  LBurnTime: Integer;
+  LDirection: Integer;
+  LSkipObject: Boolean;
+  LCenterTile: TXcomPosition;
+  LTile: TXcomTile;
+  LAbove: TXcomTile;
+  LDistanceFromCenter: Integer;
+
+  function CenterPosition: TXcomPosition;
+  begin
+    Result := TXcomPosition.Make(Trunc(LCenterX), Trunc(LCenterY), Trunc(LCenterZ));
+  end;
+
+begin
+  LCenterZ := ACenter.Z div 24 + 0.5;
+  LCenterX := ACenter.X div 16 + 0.5;
+  LCenterY := ACenter.Y div 16 + 0.5;
+  LHitSide := 0;
+  LDiagonalWall := 0;
+  if ADamageType = TXcomRuleItem.DT_IN then
+    APower := APower div 2;
+  LExHeight := EnsureRange(FContext.ExplosionHeight, 0, 3);
+  LVertDec := 1000;
+  if ADamageType = TXcomRuleItem.DT_HE then
+    LDamageRange := FContext.ExplosiveDamageRange
+  else
+    LDamageRange := FContext.DamageRange;
+  case LExHeight of
+    1: LVertDec := 30;
+    2: LVertDec := 10;
+    3: LVertDec := 5;
+  end;
+  LOrigin := FSave.TileAt(CenterPosition);
+  if LOrigin.IsBigWall then
+  begin
+    LDiagonalWall := LOrigin.MapData[XCOM_PART_OBJECT].BigWall;
+    if LDiagonalWall = BIGWALL_NWSE then
+    begin
+      if (ACenter.X mod 16 - ACenter.Y mod 16) > 0 then
+        LHitSide := 1
+      else
+        LHitSide := -1;
+    end;
+    if LDiagonalWall = BIGWALL_NESW then
+    begin
+      if (ACenter.X mod 16 + ACenter.Y mod 16 - 15) > 0 then
+        LHitSide := 1
+      else
+        LHitSide := -1;
+    end;
+  end;
+  LAffected := TList<TXcomTile>.Create;
+  LSeen := TDictionary<Integer, Boolean>.Create;
+  try
+    LFi := -90;
+    while LFi <= 90 do
+    begin
+      // a ray every 3 degrees makes sure that all the tiles of a circle are reached
+      LTe := 0;
+      while LTe <= 360 do
+      begin
+        LCosTe := Cos(LTe * PI_VALUE / 180.0);
+        LSinTe := Sin(LTe * PI_VALUE / 180.0);
+        LSinFi := Sin(LFi * PI_VALUE / 180.0);
+        LCosFi := Cos(LFi * PI_VALUE / 180.0);
+        LOrigin := FSave.TileAt(CenterPosition);
+        LDest := LOrigin;
+        LLength := 0;
+        LPower := APower;
+        while (LPower > 0) and (LLength <= AMaxRadius) do
+        begin
+          if LPower > 0 then
+          begin
+            if ADamageType = TXcomRuleItem.DT_HE then
+              // explosives do half damage to the terrain
+              LDest.SetExplosive(LPower, 0);
+            if not LSeen.ContainsKey(FSave.TileIndex(LDest.Position)) then
+            begin
+              LSeen.Add(FSave.TileIndex(LDest.Position), True);
+              LAffected.Add(LDest);
+              LMin := LPower * (100 - LDamageRange) div 100;
+              LMax := LPower * (100 + LDamageRange) div 100;
+              LUnit := LDest.CurrentUnit;
+              LBelow := FSave.TileAt(LDest.Position - TXcomPosition.Make(0, 0, 1));
+              LWounds := 0;
+              if not Assigned(LUnit) and (LDest.Position.Z > 0) and LDest.HasNoFloor(LBelow) then
+              begin
+                LUnit := LBelow.CurrentUnit;
+                // a unit below with no voxels poking into the tile is not damaged
+                if Assigned(LUnit) and (LUnit.GetHeight + LUnit.FloatHeight - LBelow.GetTerrainLevel <= 24) then
+                  LUnit := nil;
+              end;
+              if Assigned(LUnit) and Assigned(AUnit) then
+                LWounds := LUnit.GetFatalWounds;
+              case ADamageType of
+                TXcomRuleItem.DT_STUN:
+                  begin
+                    if Assigned(LUnit) then
+                    begin
+                      LDistanceFromCenter := Distance(LDest.Position, CenterPosition);
+                      if LDistanceFromCenter < 2 then
+                        LUnit.Damage(TXcomPosition.Make(0, 0, 0), FContext.Random.Generate(LMin, LMax), ADamageType)
+                      else
+                        LUnit.Damage(CenterPosition - LDest.Position, FContext.Random.Generate(LMin, LMax), ADamageType);
+                    end;
+                    for LItem in LDest.Inventory do
+                      if Assigned(LItem.CorpseUnit) then
+                        LItem.CorpseUnit.Damage(TXcomPosition.Make(0, 0, 0), FContext.Random.Generate(LMin, LMax),
+                          ADamageType);
+                  end;
+                TXcomRuleItem.DT_HE:
+                  begin
+                    if Assigned(LUnit) then
+                    begin
+                      if ((Abs(LDest.Position.X - Trunc(LCenterX)) < 2) and (Abs(LDest.Position.Y - Trunc(LCenterY)) < 2) and
+                        (LDest.Position.Z = Trunc(LCenterZ))) or (LDest.Position.Z > Trunc(LCenterZ)) then
+                        // ground zero, or a unit above the explosion
+                        LUnit.Damage(TXcomPosition.Make(0, 0, 0), FContext.Random.Generate(LMin, LMax), ADamageType)
+                      else
+                        // directional damage: a unit above is hit in the legs, the others in the torso
+                        LUnit.Damage(TXcomPosition.Make(Trunc(LCenterX), Trunc(LCenterY), Trunc(LCenterZ) + 5) -
+                          LDest.Position, FContext.Random.Generate(LMin, LMax), ADamageType);
+                    end;
+                    LCopy := LDest.Inventory.ToArray;
+                    for LItem in LCopy do
+                      if LPower > LItem.Rules.Armor then
+                      begin
+                        if Assigned(LItem.CorpseUnit) and (LItem.CorpseUnit.Status = STATUS_UNCONSCIOUS) then
+                          LItem.CorpseUnit.Kill;
+                        FSave.RemoveItem(LItem);
+                      end;
+                  end;
+                TXcomRuleItem.DT_SMOKE:
+                  if (LDest.Smoke < 10) and (LDest.GetTerrainLevel > -24) then
+                  begin
+                    LDest.SetFire(0);
+                    LDest.SetSmoke(FContext.Random.Generate(7, 15));
+                  end;
+                TXcomRuleItem.DT_IN:
+                  if not LDest.IsVoid then
+                  begin
+                    if (LDest.Fire = 0) and (Assigned(LDest.MapData[XCOM_PART_FLOOR]) or
+                      Assigned(LDest.MapData[XCOM_PART_OBJECT])) then
+                    begin
+                      LDest.SetFire(LDest.GetFuel + 1);
+                      LDest.SetSmoke(EnsureRange(15 - (LDest.GetFlammability div 10), 1, 12));
+                    end;
+                    if Assigned(LUnit) then
+                    begin
+                      LResistance := LUnit.Armor.DamageModifier[TXcomRuleItem.DT_IN];
+                      if LResistance > 0.0 then
+                      begin
+                        LUnit.Damage(TXcomPosition.Make(0, 0, 12 - LDest.GetTerrainLevel),
+                          FContext.Random.Generate(FContext.FireDamageRange(0), FContext.FireDamageRange(1)),
+                          TXcomRuleItem.DT_IN, True);
+                        LBurnTime := FContext.Random.Generate(0, Trunc(Single(5.0) * LResistance));
+                        if LUnit.Fire < LBurnTime then
+                          LUnit.SetFire(LBurnTime);
+                      end;
+                    end;
+                  end;
+              end;
+              if Assigned(AUnit) and Assigned(LUnit) and (LUnit.Faction <> AUnit.Faction) then
+              begin
+                AUnit.AddFiringExp;
+                // credit for a kill by bleeding to death, if it is not a unit of the player
+                if (LWounds < LUnit.GetFatalWounds) and (LUnit.Faction <> FACTION_PLAYER) then
+                  LUnit.KilledBy := AUnit.Faction;
+              end;
+            end;
+          end;
+          LLength := LLength + 1.0;
+          LTileX := Floor(LCenterX + LLength * LSinTe * LCosFi);
+          LTileY := Floor(LCenterY + LLength * LCosTe * LCosFi);
+          LTileZ := Floor(LCenterZ + LLength * LSinFi);
+          LOrigin := LDest;
+          LDest := FSave.TileAt(TXcomPosition.Make(LTileX, LTileY, LTileZ));
+          if not Assigned(LDest) then
+            Break;
+          // the blockage by the terrain is deducted from the power: 10 a tile
+          Dec(LPower, 10);
+          if LOrigin.Position.Z <> LTileZ then
+            Dec(LPower, LVertDec);
+          if ADamageType = TXcomRuleItem.DT_IN then
+          begin
+            LDirection := TXcomDirections.FromVector(LOrigin.Position - LDest.Position);
+            // a diagonal step costs half as much again for fire
+            if (LDirection <> -1) and ((LDirection mod 2) <> 0) then
+              Dec(LPower, 5);
+          end;
+          if LLength > 0.5 then
+          begin
+            if LLength > 1.5 then
+            begin
+              Dec(LPower, VerticalBlockage(LOrigin, LDest, ADamageType, False) * 2);
+              Dec(LPower, HorizontalBlockage(LOrigin, LDest, ADamageType, False) * 2);
+            end
+            else
+            begin
+              // the deflection of the big walls
+              LSkipObject := LDiagonalWall = 0;
+              if LDiagonalWall = BIGWALL_NESW then
+              begin
+                if (LHitSide < 0) and (LTe >= 135) and (LTe < 315) then
+                  LSkipObject := True;
+                if (LHitSide > 0) and ((LTe < 135) or (LTe > 315)) then
+                  LSkipObject := True;
+              end;
+              if LDiagonalWall = BIGWALL_NWSE then
+              begin
+                if (LHitSide > 0) and (LTe >= 45) and (LTe < 225) then
+                  LSkipObject := True;
+                if (LHitSide < 0) and ((LTe < 45) or (LTe > 225)) then
+                  LSkipObject := True;
+              end;
+              Dec(LPower, VerticalBlockage(LOrigin, LDest, ADamageType, LSkipObject) * 2);
+              Dec(LPower, HorizontalBlockage(LOrigin, LDest, ADamageType, LSkipObject) * 2);
+            end;
+          end;
+        end;
+        Inc(LTe, 3);
+      end;
+      Inc(LFi, 5);
+    end;
+    // the tiles that HE reached are detonated
+    if ADamageType = TXcomRuleItem.DT_HE then
+    begin
+      LAffected.Sort(TComparer<TXcomTile>.Construct(
+        function(const ALeft, ARight: TXcomTile): Integer
+        begin
+          if Length(FDetonationRank) > 0 then
+            Result := FDetonationRank[FSave.TileIndex(ALeft.Position)] - FDetonationRank[FSave.TileIndex(ARight.Position)]
+          else
+            Result := FSave.TileIndex(ALeft.Position) - FSave.TileIndex(ARight.Position);
+        end));
+      for LTile in LAffected do
+      begin
+        if Detonate(LTile) then
+          FSave.AddDestroyedObjective;
+        ApplyGravityTile(LTile);
+        LAbove := FSave.TileAt(LTile.Position + TXcomPosition.Make(0, 0, 1));
+        if Assigned(LAbove) then
+          ApplyGravityTile(LAbove);
+      end;
+    end;
+  finally
+    LSeen.Free;
+    LAffected.Free;
+  end;
+  // roofs may have been destroyed and fires started
+  CalculateSunShading;
+  CalculateTerrainLighting;
+  LCenterTile := VoxelToTile(ACenter);
+  CalculateFovAt(LCenterTile);
+end;
 
 end.

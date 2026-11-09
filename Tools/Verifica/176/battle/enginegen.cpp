@@ -71,6 +71,19 @@ static void BuildMap(Mod* mod, SavedGame* s, SavedBattleGame* b, std::vector<Bat
       if (t >= 0 && t < 4) parts[t].push_back(std::make_pair(idx, (int)i));
     }
   }
+  {
+    // the BLANKS set has the scorched earth tile that a destroyed floor of the lowest level becomes (a static in the C++)
+    MapDataSet* mds = mod->getMapDataSet("BLANKS");
+    if (std::find(b->_mapDataSets.begin(), b->_mapDataSets.end(), mds) == b->_mapDataSets.end()) {
+      mds->loadData(mod->getMCDPatch("BLANKS"));
+      int idx = b->_mapDataSets.size();
+      b->_mapDataSets.push_back(mds);
+      for (size_t i = 0; i < mds->getSize(); i++) {
+        int t = (int)mds->getObject(i)->getObjectType();
+        if (t >= 0 && t < 4) parts[t].push_back(std::make_pair(idx, (int)i));
+      }
+    }
+  }
   int wallDensity = 5 + Pick(30), objDensity = 5 + Pick(30), upperFloor = 20 + Pick(70);
   for (int i = 0; i < b->getMapSizeXYZ(); i++) {
     Tile* t = b->_tiles[i];
