@@ -26,7 +26,8 @@ uses
   DelphiDoom.ScriptHost.System.Functions,
   DelphiDoom.ScriptHost.System.Intf,
   DelphiDoom.ScriptHost.Types,
-  DelphiDoom.ScriptHost.Variables.Intf;
+  DelphiDoom.ScriptHost.Variables.Intf,
+  DelphiDoom.ScriptHost.World.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the script host</summary>
@@ -51,6 +52,12 @@ type
     /// <summary>The keyboard functions of PS_GAME</summary>
     class function CreateKeys(const ASource: IScriptKeyboardSource;
       const AGame: TScriptGame): IScriptFunctionSection; static;
+    /// <summary>The vertex functions of PS_GAME</summary>
+    class function CreateVertices(const AWorld: IScriptWorld): IScriptVertices; static;
+    /// <summary>The side functions of PS_GAME</summary>
+    class function CreateSides(const AWorld: IScriptWorld): IScriptSides; static;
+    /// <summary>The line functions of PS_GAME (Hexen has no tag and no transparent lines)</summary>
+    class function CreateLines(const AWorld: IScriptWorld; const AGame: TScriptGame): IScriptLines; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -80,7 +87,10 @@ uses
   DelphiDoom.ScriptHost.Registry,
   DelphiDoom.ScriptHost.SectorSpecials.Functions,
   DelphiDoom.ScriptHost.Serializer,
-  DelphiDoom.ScriptHost.Variables;
+  DelphiDoom.ScriptHost.Variables,
+  DelphiDoom.ScriptHost.World.Lines,
+  DelphiDoom.ScriptHost.World.Sides,
+  DelphiDoom.ScriptHost.World.Vertices;
 
 { TScriptHostFactory }
 
@@ -124,6 +134,22 @@ class function TScriptHostFactory.CreateKeys(const ASource: IScriptKeyboardSourc
   const AGame: TScriptGame): IScriptFunctionSection;
 begin
   Result := TScriptKeys.Create(ASource, AGame);
+end;
+
+class function TScriptHostFactory.CreateVertices(const AWorld: IScriptWorld): IScriptVertices;
+begin
+  Result := TScriptVertices.Create(AWorld);
+end;
+
+class function TScriptHostFactory.CreateSides(const AWorld: IScriptWorld): IScriptSides;
+begin
+  Result := TScriptSides.Create(AWorld);
+end;
+
+class function TScriptHostFactory.CreateLines(const AWorld: IScriptWorld;
+  const AGame: TScriptGame): IScriptLines;
+begin
+  Result := TScriptLines.Create(AWorld, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

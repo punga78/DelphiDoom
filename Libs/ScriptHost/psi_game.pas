@@ -39,8 +39,40 @@ uses
   p_mobj_h,
   p_mobjlist,
   psi_system,
+  DelphiDoom.ScriptHost.World.Intf,
   ps_compiler,
   ps_runtime;
+
+//==============================================================================
+//
+// PS_ConfigureWorldFunctions
+// The classes of the vertex, side and line functions (the properties of the
+// classes of the scripts call them)
+//
+//==============================================================================
+procedure PS_ConfigureWorldFunctions(const AVertices: IScriptVertices;
+  const ASides: IScriptSides; const ALines: IScriptLines);
+
+//==============================================================================
+//
+// PS_Vertices
+//
+//==============================================================================
+function PS_Vertices: IScriptVertices;
+
+//==============================================================================
+//
+// PS_Sides
+//
+//==============================================================================
+function PS_Sides: IScriptSides;
+
+//==============================================================================
+//
+// PS_Lines
+//
+//==============================================================================
+function PS_Lines: IScriptLines;
 
 // ---------------------------- ACTORS -----------------------------------------
 
@@ -916,470 +948,9 @@ function PS_R_PointInSubSector(const x: Integer; const y: Integer): Integer;
 
 // -------------------------- VERTEXES -----------------------------------------
 
-//==============================================================================
-//
-// PS_TVertex
-//
-//==============================================================================
-function PS_TVertex(const id: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetVertexX
-//
-//==============================================================================
-function PS_GetVertexX(const v: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetVertexY
-//
-//==============================================================================
-function PS_GetVertexY(const v: Integer): Integer;
-
-//==============================================================================
-//
-// PS_IsValidVertex
-//
-//==============================================================================
-function PS_IsValidVertex(const v: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_GetVertexCount
-//
-//==============================================================================
-function PS_GetVertexCount: Integer;
-
 // ----------------------------- SIDES -----------------------------------------
 
-//==============================================================================
-//
-// PS_TSide
-//
-//==============================================================================
-function PS_TSide(const id: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetSideTextureOffset
-//
-//==============================================================================
-function PS_GetSideTextureOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideTextureOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideTopTextureOffset
-//
-//==============================================================================
-function PS_GetSideTopTextureOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideTopTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideTopTextureOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideBottomTextureOffset
-//
-//==============================================================================
-function PS_GetSideBottomTextureOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideBottomTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideBottomTextureOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideMidTextureOffset
-//
-//==============================================================================
-function PS_GetSideMidTextureOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideMidTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideMidTextureOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideRowOffset
-//
-//==============================================================================
-function PS_GetSideRowOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideRowOffset
-//
-//==============================================================================
-procedure PS_SetSideRowOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideTopRowOffset
-//
-//==============================================================================
-function PS_GetSideTopRowOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideTopRowOffset
-//
-//==============================================================================
-procedure PS_SetSideTopRowOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideBottomRowOffset
-//
-//==============================================================================
-function PS_GetSideBottomRowOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideBottomRowOffset
-//
-//==============================================================================
-procedure PS_SetSideBottomRowOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideMidRowOffset
-//
-//==============================================================================
-function PS_GetSideMidRowOffset(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSideMidRowOffset
-//
-//==============================================================================
-procedure PS_SetSideMidRowOffset(const sd: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSideTopTexture
-//
-//==============================================================================
-function PS_GetSideTopTexture(const sd: Integer): string;
-
-//==============================================================================
-//
-// PS_SetSideTopTexture
-//
-//==============================================================================
-procedure PS_SetSideTopTexture(const sd: Integer; const tex: string);
-
-//==============================================================================
-//
-// PS_GetSideBottomTexture
-//
-//==============================================================================
-function PS_GetSideBottomTexture(const sd: Integer): string;
-
-//==============================================================================
-//
-// PS_SetSideBottomTexture
-//
-//==============================================================================
-procedure PS_SetSideBottomTexture(const sd: Integer; const tex: string);
-
-//==============================================================================
-//
-// PS_GetSideMiddleTexture
-//
-//==============================================================================
-function PS_GetSideMiddleTexture(const sd: Integer): string;
-
-//==============================================================================
-//
-// PS_SetSideMiddleTexture
-//
-//==============================================================================
-procedure PS_SetSideMiddleTexture(const sd: Integer; const tex: string);
-
-//==============================================================================
-//
-// PS_GetSideSector
-//
-//==============================================================================
-function PS_GetSideSector(const sd: Integer): Integer;
-
-//==============================================================================
-//
-// PS_IsValidSide
-//
-//==============================================================================
-function PS_IsValidSide(const sd: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_GetSideCount
-//
-//==============================================================================
-function PS_GetSideCount: Integer;
-
 // ----------------------------- LINES -----------------------------------------
-
-//==============================================================================
-//
-// PS_TLine
-//
-//==============================================================================
-function PS_TLine(const id: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineVertex1
-//
-//==============================================================================
-function PS_GetLineVertex1(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineVertex2
-//
-//==============================================================================
-function PS_GetLineVertex2(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineDX
-//
-//==============================================================================
-function PS_GetLineDX(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineDY
-//
-//==============================================================================
-function PS_GetLineDY(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineSpecial
-//
-//==============================================================================
-function PS_GetLineSpecial(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetLineSpecial
-//
-//==============================================================================
-procedure PS_SetLineSpecial(const ld: Integer; const spec: Integer);
-
-//==============================================================================
-//
-// PS_GetLineArg1
-//
-//==============================================================================
-function PS_GetLineArg1(const ld: Integer): byte;
-
-//==============================================================================
-//
-// PS_SetLineArg1
-//
-//==============================================================================
-procedure PS_SetLineArg1(const ld: Integer; const arg: byte);
-
-//==============================================================================
-//
-// PS_GetLineArg2
-//
-//==============================================================================
-function PS_GetLineArg2(const ld: Integer): byte;
-
-//==============================================================================
-//
-// PS_SetLineArg2
-//
-//==============================================================================
-procedure PS_SetLineArg2(const ld: Integer; const arg: byte);
-
-//==============================================================================
-//
-// PS_GetLineArg3
-//
-//==============================================================================
-function PS_GetLineArg3(const ld: Integer): byte;
-
-//==============================================================================
-//
-// PS_SetLineArg3
-//
-//==============================================================================
-procedure PS_SetLineArg3(const ld: Integer; const arg: byte);
-
-//==============================================================================
-//
-// PS_GetLineArg4
-//
-//==============================================================================
-function PS_GetLineArg4(const ld: Integer): byte;
-
-//==============================================================================
-//
-// PS_SetLineArg4
-//
-//==============================================================================
-procedure PS_SetLineArg4(const ld: Integer; const arg: byte);
-
-//==============================================================================
-//
-// PS_GetLineArg5
-//
-//==============================================================================
-function PS_GetLineArg5(const ld: Integer): byte;
-
-//==============================================================================
-//
-// PS_SetLineArg5
-//
-//==============================================================================
-procedure PS_SetLineArg5(const ld: Integer; const arg: byte);
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_GetLineTag
-//
-//==============================================================================
-function PS_GetLineTag(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetLineTag
-//
-//==============================================================================
-procedure PS_SetLineTag(const ld: Integer; const tg: Integer);
-
-//==============================================================================
-//
-// PS_GetLineTransparent
-//
-//==============================================================================
-function PS_GetLineTransparent(const ld: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetLineTransparent
-//
-//==============================================================================
-procedure PS_SetLineTransparent(const ld: Integer; const x: Boolean);
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetLineIsBlocking
-//
-//==============================================================================
-function PS_GetLineIsBlocking(const ld: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetLineIsBlocking
-//
-//==============================================================================
-procedure PS_SetLineIsBlocking(const ld: Integer; const x: Boolean);
-
-//==============================================================================
-//
-// PS_GetLineIsBlockingMonsters
-//
-//==============================================================================
-function PS_GetLineIsBlockingMonsters(const ld: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetLineIsBlockingMonsters
-//
-//==============================================================================
-procedure PS_SetLineIsBlockingMonsters(const ld: Integer; const x: Boolean);
-
-//==============================================================================
-//
-// PS_GetLineTriggerScripts
-//
-//==============================================================================
-function PS_GetLineTriggerScripts(const ld: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetLineTriggerScripts
-//
-//==============================================================================
-procedure PS_SetLineTriggerScripts(const ld: Integer; const x: Boolean);
-
-//==============================================================================
-//
-// PS_GetLineFrontSide
-//
-//==============================================================================
-function PS_GetLineFrontSide(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineBackSide
-//
-//==============================================================================
-function PS_GetLineBackSide(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineFrontSector
-//
-//==============================================================================
-function PS_GetLineFrontSector(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetLineBackSector
-//
-//==============================================================================
-function PS_GetLineBackSector(const ld: Integer): Integer;
-
-//==============================================================================
-//
-// PS_IsValidLine
-//
-//==============================================================================
-function PS_IsValidLine(const ld: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_GetLineCount
-//
-//==============================================================================
-function PS_GetLineCount: Integer;
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_FindLinesFromTag
-//
-//==============================================================================
-function PS_FindLinesFromTag(const tag: integer): TDynamicIntegerArray;
-{$ENDIF}
 
 // --------------------------- SECTORS -----------------------------------------
 
@@ -2694,6 +2265,7 @@ uses
   g_demo,
   {$ENDIF}
   g_game,
+  i_system,
   info_h,
   info,
   info_common,
@@ -2722,6 +2294,61 @@ uses
   sounds,
   tables,
   w_wad;
+
+var
+  // given by the composition root
+  ps_vertices_ref: IScriptVertices = nil;
+  ps_sides_ref: IScriptSides = nil;
+  ps_lines_ref: IScriptLines = nil;
+
+//==============================================================================
+//
+// PS_ConfigureWorldFunctions
+//
+//==============================================================================
+procedure PS_ConfigureWorldFunctions(const AVertices: IScriptVertices;
+  const ASides: IScriptSides; const ALines: IScriptLines);
+begin
+  ps_vertices_ref := AVertices;
+  ps_sides_ref := ASides;
+  ps_lines_ref := ALines;
+end;
+
+//==============================================================================
+//
+// PS_Vertices
+//
+//==============================================================================
+function PS_Vertices: IScriptVertices;
+begin
+  if ps_vertices_ref = nil then
+    I_Error('PS_ConfigureWorldFunctions() was not called: the vertex functions are missing');
+  Result := ps_vertices_ref;
+end;
+
+//==============================================================================
+//
+// PS_Sides
+//
+//==============================================================================
+function PS_Sides: IScriptSides;
+begin
+  if ps_sides_ref = nil then
+    I_Error('PS_ConfigureWorldFunctions() was not called: the side functions are missing');
+  Result := ps_sides_ref;
+end;
+
+//==============================================================================
+//
+// PS_Lines
+//
+//==============================================================================
+function PS_Lines: IScriptLines;
+begin
+  if ps_lines_ref = nil then
+    I_Error('PS_ConfigureWorldFunctions() was not called: the line functions are missing');
+  Result := ps_lines_ref;
+end;
 
 var
   rtlactors: TRTLActors;
@@ -6588,71 +6215,12 @@ end;
 
 //==============================================================================
 //
-// PS_TVertex
-//
-//==============================================================================
-function PS_TVertex(const id: Integer): Integer;
-begin
-  if (id >= 0) and (id < numvertexes) then
-    Result := id + 1
-  else
-    Result := VERTEX_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetVertexX
-//
-//==============================================================================
-function PS_GetVertexX(const v: Integer): Integer;
-begin
-  if (v >= 0) and (v < numvertexes) then
-    Result := vertexes[v].x
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_GetVertexY
-//
-//==============================================================================
-function PS_GetVertexY(const v: Integer): Integer;
-begin
-  if (v >= 0) and (v < numvertexes) then
-    Result := vertexes[v].y
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_IsValidVertex
-//
-//==============================================================================
-function PS_IsValidVertex(const v: Integer): Boolean;
-begin
-  Result := (v >= 0) and (v < numvertexes);
-end;
-
-//==============================================================================
-//
-// PS_GetVertexCount
-//
-//==============================================================================
-function PS_GetVertexCount: Integer;
-begin
-  Result := numvertexes;
-end;
-
-//==============================================================================
-//
 // TRTLVertexes.GetVertex
 //
 //==============================================================================
 function TRTLVertexes.GetVertex(id: Integer): TRTLVertex;
 begin
-  if (id >= 0) and (id < numvertexes) then
+  if PS_Vertices.IsValidVertex(id) then
     Result := TRTLVertex(id + 1)
   else
     Result := TRTLVertex(VERTEX_INVALID);
@@ -6665,7 +6233,7 @@ end;
 //==============================================================================
 procedure TRTLVertexX_R(Self: TRTLVertex; var T: Integer);
 begin
-  T := PS_GetVertexX(Integer(Self) - 1);
+  T := PS_Vertices.GetVertexX(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -6675,7 +6243,7 @@ end;
 //==============================================================================
 procedure TRTLVertexY_R(Self: TRTLVertex; var T: Integer);
 begin
-  T := PS_GetVertexY(Integer(Self) - 1);
+  T := PS_Vertices.GetVertexY(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -6686,7 +6254,7 @@ end;
 procedure TRTLVertexID_R(Self: TRTLVertex; var T: Integer);
 begin
   T := Integer(Self) - 1;
-  if (T < 0) or (T >= numvertexes) then
+  if not PS_Vertices.IsValidVertex(T) then
     T := VERTEX_INVALID;
 end;
 
@@ -6707,232 +6275,10 @@ end;
 //==============================================================================
 procedure TRTLVertexesCount_R(Self: TRTLActor; var T: Integer);
 begin
-  T := numvertexes;
+  T := PS_Vertices.GetVertexCount;
 end;
 
 // ----------------------------- SIDES -----------------------------------------
-
-//==============================================================================
-//
-// PS_TSide
-//
-//==============================================================================
-function PS_TSide(const id: Integer): Integer;
-begin
-  if (id >= 0) and (id < numsides) then
-    Result := id + 1
-  else
-    Result := SIDE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetSideTextureOffset
-//
-//==============================================================================
-function PS_GetSideTextureOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].textureoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideTextureOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].textureoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideTopTextureOffset
-//
-//==============================================================================
-function PS_GetSideTopTextureOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].toptextureoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideTopTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideTopTextureOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].toptextureoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideBottomTextureOffset
-//
-//==============================================================================
-function PS_GetSideBottomTextureOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].bottomtextureoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideBottomTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideBottomTextureOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].bottomtextureoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideMidTextureOffset
-//
-//==============================================================================
-function PS_GetSideMidTextureOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].midtextureoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideMidTextureOffset
-//
-//==============================================================================
-procedure PS_SetSideMidTextureOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].midtextureoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideRowOffset
-//
-//==============================================================================
-function PS_GetSideRowOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].rowoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideRowOffset
-//
-//==============================================================================
-procedure PS_SetSideRowOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].rowoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideTopRowOffset
-//
-//==============================================================================
-function PS_GetSideTopRowOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].toprowoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideTopRowOffset
-//
-//==============================================================================
-procedure PS_SetSideTopRowOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].toprowoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideBottomRowOffset
-//
-//==============================================================================
-function PS_GetSideBottomRowOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].bottomrowoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideBottomRowOffset
-//
-//==============================================================================
-procedure PS_SetSideBottomRowOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].bottomrowoffset := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSideMidRowOffset
-//
-//==============================================================================
-function PS_GetSideMidRowOffset(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].bottomrowoffset
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSideMidRowOffset
-//
-//==============================================================================
-procedure PS_SetSideMidRowOffset(const sd: Integer; const offs: Integer);
-begin
-  if (sd >= 0) and (sd < numsides) then
-    sides[sd].bottomrowoffset := offs;
-end;
-
-//==============================================================================
-//
-// _texturenamefromid
-//
-//==============================================================================
-function _texturenamefromid(const id: Integer): string;
-begin
-  if id = TEXTURE_INVALID then
-    Result := ''
-  else
-  begin
-    Result := char8tostring(R_NameForSideTexture(id));
-    if Result = '-' then
-      Result := '';
-  end;
-end;
 
 //==============================================================================
 //
@@ -6954,135 +6300,12 @@ end;
 
 //==============================================================================
 //
-// PS_GetSideTopTexture
-//
-//==============================================================================
-function PS_GetSideTopTexture(const sd: Integer): string;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := _texturenamefromid(sides[sd].toptexture)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_SetSideTopTexture
-//
-//==============================================================================
-procedure PS_SetSideTopTexture(const sd: Integer; const tex: string);
-var
-  tid: Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-  begin
-    tid := _textureidfromname(tex);
-    if tid <> TEXTURE_INVALID then
-      sides[sd].toptexture := tid;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSideBottomTexture
-//
-//==============================================================================
-function PS_GetSideBottomTexture(const sd: Integer): string;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := _texturenamefromid(sides[sd].bottomtexture)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_SetSideBottomTexture
-//
-//==============================================================================
-procedure PS_SetSideBottomTexture(const sd: Integer; const tex: string);
-var
-  tid: Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-  begin
-    tid := _textureidfromname(tex);
-    if tid <> TEXTURE_INVALID then
-      sides[sd].bottomtexture := tid;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSideMiddleTexture
-//
-//==============================================================================
-function PS_GetSideMiddleTexture(const sd: Integer): string;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := _texturenamefromid(sides[sd].midtexture)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_SetSideMiddleTexture
-//
-//==============================================================================
-procedure PS_SetSideMiddleTexture(const sd: Integer; const tex: string);
-var
-  tid: Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-  begin
-    tid := _textureidfromname(tex);
-    if tid <> TEXTURE_INVALID then
-      sides[sd].midtexture := tid;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSideSector
-//
-//==============================================================================
-function PS_GetSideSector(const sd: Integer): Integer;
-begin
-  if (sd >= 0) and (sd < numsides) then
-    Result := sides[sd].sector.iSectorID
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_IsValidSide
-//
-//==============================================================================
-function PS_IsValidSide(const sd: Integer): Boolean;
-begin
-  Result := (sd >= 0) and (sd < numsides);
-end;
-
-//==============================================================================
-//
-// PS_GetSideCount
-//
-//==============================================================================
-function PS_GetSideCount: Integer;
-begin
-  Result := numsides;
-end;
-
-//==============================================================================
-//
 // TRTLSides.GetSide
 //
 //==============================================================================
 function TRTLSides.GetSide(id: Integer): TRTLSide;
 begin
-  if (id >= 0) and (id < numsides) then
+  if PS_Sides.IsValidSide(id) then
     Result := TRTLSide(id + 1)
   else
     Result := TRTLSide(SIDE_INVALID);
@@ -7095,7 +6318,7 @@ end;
 //==============================================================================
 procedure TRTLSideTextureOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideTextureOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofTexture, T);
 end;
 
 //==============================================================================
@@ -7105,7 +6328,7 @@ end;
 //==============================================================================
 procedure TRTLSideTextureOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideTextureOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofTexture);
 end;
 
 //==============================================================================
@@ -7115,7 +6338,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopTextureOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideTopTextureOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofTopTexture, T);
 end;
 
 //==============================================================================
@@ -7125,7 +6348,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopTextureOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideTopTextureOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofTopTexture);
 end;
 
 //==============================================================================
@@ -7135,7 +6358,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomTextureOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideBottomTextureOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofBottomTexture, T);
 end;
 
 //==============================================================================
@@ -7145,7 +6368,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomTextureOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideBottomTextureOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofBottomTexture);
 end;
 
 //==============================================================================
@@ -7155,7 +6378,7 @@ end;
 //==============================================================================
 procedure TRTLSideMidTextureOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideMidTextureOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofMiddleTexture, T);
 end;
 
 //==============================================================================
@@ -7165,7 +6388,7 @@ end;
 //==============================================================================
 procedure TRTLSideMidTextureOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideMidTextureOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofMiddleTexture);
 end;
 
 //==============================================================================
@@ -7175,7 +6398,7 @@ end;
 //==============================================================================
 procedure TRTLSideRowOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideRowOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofRow, T);
 end;
 
 //==============================================================================
@@ -7185,7 +6408,7 @@ end;
 //==============================================================================
 procedure TRTLSideRowOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideRowOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofRow);
 end;
 
 //==============================================================================
@@ -7195,7 +6418,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopRowOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideTopRowOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofTopRow, T);
 end;
 
 //==============================================================================
@@ -7205,7 +6428,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopRowOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideTopRowOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofTopRow);
 end;
 
 //==============================================================================
@@ -7215,7 +6438,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomRowOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideBottomRowOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofBottomRow, T);
 end;
 
 //==============================================================================
@@ -7225,7 +6448,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomRowOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideBottomRowOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofBottomRow);
 end;
 
 //==============================================================================
@@ -7235,7 +6458,7 @@ end;
 //==============================================================================
 procedure TRTLSideMidRowOffset_W(Self: TRTLSide; const T: fixed_t);
 begin
-  PS_SetSideMidRowOffset(Integer(Self) - 1, T);
+  PS_Sides.SetOffset(Integer(Self) - 1, sofMidRow, T);
 end;
 
 //==============================================================================
@@ -7245,7 +6468,7 @@ end;
 //==============================================================================
 procedure TRTLSideMidRowOffset_R(Self: TRTLSide; var T: fixed_t);
 begin
-  T := PS_GetSideMidRowOffset(Integer(Self) - 1);
+  T := PS_Sides.GetOffset(Integer(Self) - 1, sofMidRow);
 end;
 
 //==============================================================================
@@ -7255,7 +6478,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopTexture_W(Self: TRTLSide; const T: string);
 begin
-  PS_SetSideTopTexture(Integer(Self) - 1, T);
+  PS_Sides.SetTexture(Integer(Self) - 1, sspTop, T);
 end;
 
 //==============================================================================
@@ -7265,7 +6488,7 @@ end;
 //==============================================================================
 procedure TRTLSideTopTexture_R(Self: TRTLSide; var T: string);
 begin
-  T := PS_GetSideTopTexture(Integer(Self) - 1);
+  T := PS_Sides.GetTexture(Integer(Self) - 1, sspTop);
 end;
 
 //==============================================================================
@@ -7275,7 +6498,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomTexture_W(Self: TRTLSide; const T: string);
 begin
-  PS_SetSideBottomTexture(Integer(Self) - 1, T);
+  PS_Sides.SetTexture(Integer(Self) - 1, sspBottom, T);
 end;
 
 //==============================================================================
@@ -7285,7 +6508,7 @@ end;
 //==============================================================================
 procedure TRTLSideBottomTexture_R(Self: TRTLSide; var T: string);
 begin
-  T := PS_GetSideBottomTexture(Integer(Self) - 1);
+  T := PS_Sides.GetTexture(Integer(Self) - 1, sspBottom);
 end;
 
 //==============================================================================
@@ -7295,7 +6518,7 @@ end;
 //==============================================================================
 procedure TRTLSideMiddleTexture_W(Self: TRTLSide; const T: string);
 begin
-  PS_SetSideMiddleTexture(Integer(Self) - 1, T);
+  PS_Sides.SetTexture(Integer(Self) - 1, sspMiddle, T);
 end;
 
 //==============================================================================
@@ -7305,7 +6528,7 @@ end;
 //==============================================================================
 procedure TRTLSideMiddleTexture_R(Self: TRTLSide; var T: string);
 begin
-  T := PS_GetSideMiddleTexture(Integer(Self) - 1);
+  T := PS_Sides.GetTexture(Integer(Self) - 1, sspMiddle);
 end;
 
 //==============================================================================
@@ -7315,7 +6538,7 @@ end;
 //==============================================================================
 procedure TRTLSideSector_R(Self: TRTLSide; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetSideSector(Integer(Self) - 1)];
+  T := rtlsectors[PS_Sides.GetSideSector(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -7326,7 +6549,7 @@ end;
 procedure TRTLSideID_R(Self: TRTLSide; var T: Integer);
 begin
   T := Integer(Self) - 1;
-  if (T < 0) or (T >= numsides) then
+  if not PS_Sides.IsValidSide(T) then
     T := SIDE_INVALID;
 end;
 
@@ -7337,7 +6560,7 @@ end;
 //==============================================================================
 procedure TRTLSidesCount_R(Self: TRTLSides; var T: Integer);
 begin
-  T := numsides;
+  T := PS_Sides.GetSideCount;
 end;
 
 //==============================================================================
@@ -7355,499 +6578,12 @@ end;
 
 //==============================================================================
 //
-// PS_TLine
-//
-//==============================================================================
-function PS_TLine(const id: Integer): Integer;
-begin
-  if (id >= 0) and (id < numlines) then
-    Result := id + 1
-  else
-    Result := LINE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineVertex1
-//
-//==============================================================================
-function PS_GetLineVertex1(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := pDiff(lines[ld].v1, @vertexes[0], SizeOf(vertex_t))
-  else
-    Result := VERTEX_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineVertex2
-//
-//==============================================================================
-function PS_GetLineVertex2(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := pDiff(lines[ld].v2, @vertexes[0], SizeOf(vertex_t))
-  else
-    Result := VERTEX_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineDX
-//
-//==============================================================================
-function PS_GetLineDX(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].dx
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_GetLineDY
-//
-//==============================================================================
-function PS_GetLineDY(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].dy
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_GetLineSpecial
-//
-//==============================================================================
-function PS_GetLineSpecial(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].special
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineSpecial
-//
-//==============================================================================
-procedure PS_SetLineSpecial(const ld: Integer; const spec: Integer);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].special := spec;
-end;
-
-//==============================================================================
-//
-// PS_GetLineArg1
-//
-//==============================================================================
-function PS_GetLineArg1(const ld: Integer): byte;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].arg1
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineArg1
-//
-//==============================================================================
-procedure PS_SetLineArg1(const ld: Integer; const arg: byte);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].arg1 := arg;
-end;
-
-//==============================================================================
-//
-// PS_GetLineArg2
-//
-//==============================================================================
-function PS_GetLineArg2(const ld: Integer): byte;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].arg2
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineArg2
-//
-//==============================================================================
-procedure PS_SetLineArg2(const ld: Integer; const arg: byte);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].arg2 := arg;
-end;
-
-//==============================================================================
-//
-// PS_GetLineArg3
-//
-//==============================================================================
-function PS_GetLineArg3(const ld: Integer): byte;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].arg3
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineArg3
-//
-//==============================================================================
-procedure PS_SetLineArg3(const ld: Integer; const arg: byte);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].arg3 := arg;
-end;
-
-//==============================================================================
-//
-// PS_GetLineArg4
-//
-//==============================================================================
-function PS_GetLineArg4(const ld: Integer): byte;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].arg4
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineArg4
-//
-//==============================================================================
-procedure PS_SetLineArg4(const ld: Integer; const arg: byte);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].arg4 := arg;
-end;
-
-//==============================================================================
-//
-// PS_GetLineArg5
-//
-//==============================================================================
-function PS_GetLineArg5(const ld: Integer): byte;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].arg5
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineArg5
-//
-//==============================================================================
-procedure PS_SetLineArg5(const ld: Integer; const arg: byte);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].arg5 := arg;
-end;
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_GetLineTag
-//
-//==============================================================================
-function PS_GetLineTag(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].tag
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetLineTag
-//
-//==============================================================================
-procedure PS_SetLineTag(const ld: Integer; const tg: Integer);
-begin
-  if (ld >= 0) and (ld < numlines) then
-    lines[ld].tag := tg;
-end;
-
-//==============================================================================
-//
-// PS_GetLineTransparent
-//
-//==============================================================================
-function PS_GetLineTransparent(const ld: Integer): Boolean;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].renderflags and LRF_TRANSPARENT <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetLineTransparent
-//
-//==============================================================================
-procedure PS_SetLineTransparent(const ld: Integer; const x: Boolean);
-var
-  sd: integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    sd := lines[ld].sidenum[0];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    sd := lines[ld].sidenum[1];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    if x then
-      lines[ld].renderflags := lines[ld].renderflags or LRF_TRANSPARENT
-    else
-      lines[ld].renderflags := lines[ld].renderflags and not LRF_TRANSPARENT;
-  end;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetLineIsBlocking
-//
-//==============================================================================
-function PS_GetLineIsBlocking(const ld: Integer): Boolean;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].flags and ML_BLOCKING <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetLineIsBlocking
-//
-//==============================================================================
-procedure PS_SetLineIsBlocking(const ld: Integer; const x: Boolean);
-var
-  sd: integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    sd := lines[ld].sidenum[0];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    sd := lines[ld].sidenum[1];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    if x then
-      lines[ld].flags := lines[ld].flags or ML_BLOCKING
-    else
-      lines[ld].flags := lines[ld].flags and not ML_BLOCKING;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetLineIsBlockingMonsters
-//
-//==============================================================================
-function PS_GetLineIsBlockingMonsters(const ld: Integer): Boolean;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].flags and ML_BLOCKMONSTERS <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetLineIsBlockingMonsters
-//
-//==============================================================================
-procedure PS_SetLineIsBlockingMonsters(const ld: Integer; const x: Boolean);
-var
-  sd: integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    sd := lines[ld].sidenum[0];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    sd := lines[ld].sidenum[1];
-    if (sd < 0) or (sd >= numsides) then
-      Exit;
-    if x then
-      lines[ld].flags := lines[ld].flags or ML_BLOCKMONSTERS
-    else
-      lines[ld].flags := lines[ld].flags and not ML_BLOCKMONSTERS;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetLineTriggerScripts
-//
-//==============================================================================
-function PS_GetLineTriggerScripts(const ld: Integer): Boolean;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].flags and ML_TRIGGERSCRIPTS <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetLineTriggerScripts
-//
-//==============================================================================
-procedure PS_SetLineTriggerScripts(const ld: Integer; const x: Boolean);
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    if x then
-      lines[ld].flags := lines[ld].flags or ML_TRIGGERSCRIPTS
-    else
-      lines[ld].flags := lines[ld].flags and not ML_TRIGGERSCRIPTS;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetLineFrontSide
-//
-//==============================================================================
-function PS_GetLineFrontSide(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].sidenum[0]
-  else
-    Result := SIDE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineBackSide
-//
-//==============================================================================
-function PS_GetLineBackSide(const ld: Integer): Integer;
-begin
-  if (ld >= 0) and (ld < numlines) then
-    Result := lines[ld].sidenum[1]
-  else
-    Result := SIDE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineFrontSector
-//
-//==============================================================================
-function PS_GetLineFrontSector(const ld: Integer): Integer;
-var
-  sec: Psector_t;
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    sec := lines[ld].frontsector;
-    if sec <> nil then
-      Result := sec.iSectorID
-    else
-      Result := SECTOR_INVALID;
-  end
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetLineBackSector
-//
-//==============================================================================
-function PS_GetLineBackSector(const ld: Integer): Integer;
-var
-  sec: Psector_t;
-begin
-  if (ld >= 0) and (ld < numlines) then
-  begin
-    sec := lines[ld].backsector;
-    if sec <> nil then
-      Result := sec.iSectorID
-    else
-      Result := SECTOR_INVALID;
-  end
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_IsValidLine
-//
-//==============================================================================
-function PS_IsValidLine(const ld: Integer): Boolean;
-begin
-  Result := (ld >= 0) and (ld < numlines);
-end;
-
-//==============================================================================
-//
-// PS_GetLineCount
-//
-//==============================================================================
-function PS_GetLineCount: Integer;
-begin
-  Result := numlines;
-end;
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_FindLinesFromTag
-//
-//==============================================================================
-function PS_FindLinesFromTag(const tag: integer): TDynamicIntegerArray;
-var
-  l: TDNumberList;
-  i: integer;
-begin
-  l := TDNumberList.Create;
-  for i := 0 to numlines - 1 do
-    if lines[i].tag = tag then
-      l.Add(i);
-  SetLength(Result, l.Count);
-  for i := 0 to l.Count - 1 do
-    Result[i] := l.Numbers[i];
-  l.Free;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
 // TRTLLines.GetLine
 //
 //==============================================================================
 function TRTLLines.GetLine(id: Integer): TRTLLine;
 begin
-  if (id >= 0) and (id < numlines) then
+  if PS_Lines.IsValidLine(id) then
     Result := TRTLLine(id + 1)
   else
     Result := TRTLLine(LINE_INVALID);
@@ -7860,7 +6596,7 @@ end;
 //==============================================================================
 procedure TRTLLineBackSector_R(Self: TRTLLine; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetLineBackSector(Integer(Self) - 1)];
+  T := rtlsectors[PS_Lines.GetLineBackSector(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -7870,7 +6606,7 @@ end;
 //==============================================================================
 procedure TRTLLineFrontSector_R(Self: TRTLLine; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetLineFrontSector(Integer(Self) - 1)];
+  T := rtlsectors[PS_Lines.GetLineFrontSector(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -7880,7 +6616,7 @@ end;
 //==============================================================================
 procedure TRTLLineBackSide_R(Self: TRTLLine; var T: TRTLSide);
 begin
-  T := rtlsides[PS_GetLineBackSide(Integer(Self) - 1)];
+  T := rtlsides[PS_Lines.GetLineBackSide(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -7890,7 +6626,7 @@ end;
 //==============================================================================
 procedure TRTLLineFrontSide_R(Self: TRTLLine; var T: TRTLSide);
 begin
-  T := rtlsides[PS_GetLineFrontSide(Integer(Self) - 1)];
+  T := rtlsides[PS_Lines.GetLineFrontSide(Integer(Self) - 1)];
 end;
 
 {$IFNDEF HEXEN}
@@ -7902,7 +6638,7 @@ end;
 //==============================================================================
 procedure TRTLLineTag_W(Self: TRTLLine; const T: Integer);
 begin
-  PS_SetLineTag(Integer(Self) - 1, T);
+  PS_Lines.SetLineTag(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7912,7 +6648,7 @@ end;
 //==============================================================================
 procedure TRTLLineTag_R(Self: TRTLLine; var T: Integer);
 begin
-  T := PS_GetLineTag(Integer(Self) - 1);
+  T := PS_Lines.GetLineTag(Integer(Self) - 1);
 end;
 
 {$ENDIF}
@@ -7924,7 +6660,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg5_W(Self: TRTLLine; const T: byte);
 begin
-  PS_SetLineArg5(Integer(Self) - 1, T);
+  PS_Lines.SetLineArgument(Integer(Self) - 1, 4, T);
 end;
 
 //==============================================================================
@@ -7934,7 +6670,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg5_R(Self: TRTLLine; var T: byte);
 begin
-  T := PS_GetLineArg5(Integer(Self) - 1);
+  T := PS_Lines.GetLineArgument(Integer(Self) - 1, 4);
 end;
 
 //==============================================================================
@@ -7944,7 +6680,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg4_W(Self: TRTLLine; const T: byte);
 begin
-  PS_SetLineArg4(Integer(Self) - 1, T);
+  PS_Lines.SetLineArgument(Integer(Self) - 1, 3, T);
 end;
 
 //==============================================================================
@@ -7954,7 +6690,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg4_R(Self: TRTLLine; var T: byte);
 begin
-  T := PS_GetLineArg4(Integer(Self) - 1);
+  T := PS_Lines.GetLineArgument(Integer(Self) - 1, 3);
 end;
 
 //==============================================================================
@@ -7964,7 +6700,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg3_W(Self: TRTLLine; const T: byte);
 begin
-  PS_SetLineArg3(Integer(Self) - 1, T);
+  PS_Lines.SetLineArgument(Integer(Self) - 1, 2, T);
 end;
 
 //==============================================================================
@@ -7974,7 +6710,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg3_R(Self: TRTLLine; var T: byte);
 begin
-  T := PS_GetLineArg3(Integer(Self) - 1);
+  T := PS_Lines.GetLineArgument(Integer(Self) - 1, 2);
 end;
 
 //==============================================================================
@@ -7984,7 +6720,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg2_W(Self: TRTLLine; const T: byte);
 begin
-  PS_SetLineArg2(Integer(Self) - 1, T);
+  PS_Lines.SetLineArgument(Integer(Self) - 1, 1, T);
 end;
 
 //==============================================================================
@@ -7994,7 +6730,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg2_R(Self: TRTLLine; var T: byte);
 begin
-  T := PS_GetLineArg2(Integer(Self) - 1);
+  T := PS_Lines.GetLineArgument(Integer(Self) - 1, 1);
 end;
 
 //==============================================================================
@@ -8004,7 +6740,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg1_W(Self: TRTLLine; const T: byte);
 begin
-  PS_SetLineArg1(Integer(Self) - 1, T);
+  PS_Lines.SetLineArgument(Integer(Self) - 1, 0, T);
 end;
 
 //==============================================================================
@@ -8014,7 +6750,7 @@ end;
 //==============================================================================
 procedure TRTLLineArg1_R(Self: TRTLLine; var T: byte);
 begin
-  T := PS_GetLineArg1(Integer(Self) - 1);
+  T := PS_Lines.GetLineArgument(Integer(Self) - 1, 0);
 end;
 
 {$IFNDEF HEXEN}
@@ -8026,7 +6762,7 @@ end;
 //==============================================================================
 procedure TRTLLineTransparent_W(Self: TRTLLine; const T: Boolean);
 begin
-  PS_SetLineTransparent(Integer(Self) - 1, T);
+  PS_Lines.SetLineFlag(Integer(Self) - 1, slfTransparent, T);
 end;
 
 //==============================================================================
@@ -8036,7 +6772,7 @@ end;
 //==============================================================================
 procedure TRTLLineTransparent_R(Self: TRTLLine; var T: Boolean);
 begin
-  T := PS_GetLineTransparent(Integer(Self) - 1);
+  T := PS_Lines.GetLineFlag(Integer(Self) - 1, slfTransparent);
 end;
 {$ENDIF}
 
@@ -8047,7 +6783,7 @@ end;
 //==============================================================================
 procedure TRTLLineIsBlocking_W(Self: TRTLLine; const T: Boolean);
 begin
-  PS_SetLineIsBlocking(Integer(Self) - 1, T);
+  PS_Lines.SetLineFlag(Integer(Self) - 1, slfBlocking, T);
 end;
 
 //==============================================================================
@@ -8057,7 +6793,7 @@ end;
 //==============================================================================
 procedure TRTLLineIsBlocking_R(Self: TRTLLine; var T: Boolean);
 begin
-  T := PS_GetLineIsBlocking(Integer(Self) - 1);
+  T := PS_Lines.GetLineFlag(Integer(Self) - 1, slfBlocking);
 end;
 
 //==============================================================================
@@ -8067,7 +6803,7 @@ end;
 //==============================================================================
 procedure TRTLLineIsBlockingMonsters_W(Self: TRTLLine; const T: Boolean);
 begin
-  PS_SetLineIsBlockingMonsters(Integer(Self) - 1, T);
+  PS_Lines.SetLineFlag(Integer(Self) - 1, slfBlockMonsters, T);
 end;
 
 //==============================================================================
@@ -8077,7 +6813,7 @@ end;
 //==============================================================================
 procedure TRTLLineIsBlockingMonsters_R(Self: TRTLLine; var T: Boolean);
 begin
-  T := PS_GetLineIsBlockingMonsters(Integer(Self) - 1);
+  T := PS_Lines.GetLineFlag(Integer(Self) - 1, slfBlockMonsters);
 end;
 
 //==============================================================================
@@ -8087,7 +6823,7 @@ end;
 //==============================================================================
 procedure TRTLLineTriggerScripts_W(Self: TRTLLine; const T: Boolean);
 begin
-  PS_SetLineTriggerScripts(Integer(Self) - 1, T);
+  PS_Lines.SetLineFlag(Integer(Self) - 1, slfTriggerScripts, T);
 end;
 
 //==============================================================================
@@ -8097,7 +6833,7 @@ end;
 //==============================================================================
 procedure TRTLLineTriggerScripts_R(Self: TRTLLine; var T: Boolean);
 begin
-  T := PS_GetLineTriggerScripts(Integer(Self) - 1);
+  T := PS_Lines.GetLineFlag(Integer(Self) - 1, slfTriggerScripts);
 end;
 
 //==============================================================================
@@ -8107,7 +6843,7 @@ end;
 //==============================================================================
 procedure TRTLLineSpecial_W(Self: TRTLLine; const T: Integer);
 begin
-  PS_SetLineSpecial(Integer(Self) - 1, T);
+  PS_Lines.SetLineSpecial(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8117,7 +6853,7 @@ end;
 //==============================================================================
 procedure TRTLLineSpecial_R(Self: TRTLLine; var T: Integer);
 begin
-  T := PS_GetLineSpecial(Integer(Self) - 1);
+  T := PS_Lines.GetLineSpecial(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8127,7 +6863,7 @@ end;
 //==============================================================================
 procedure TRTLLineDY_R(Self: TRTLLine; var T: fixed_t);
 begin
-  T := PS_GetLineDY(Integer(Self) - 1);
+  T := PS_Lines.GetLineDY(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8137,7 +6873,7 @@ end;
 //==============================================================================
 procedure TRTLLineDX_R(Self: TRTLLine; var T: fixed_t);
 begin
-  T := PS_GetLineDX(Integer(Self) - 1);
+  T := PS_Lines.GetLineDX(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8147,7 +6883,7 @@ end;
 //==============================================================================
 procedure TRTLLineVertex2_R(Self: TRTLLine; var T: TRTLVertex);
 begin
-  T := rtlvertexes[PS_GetLineVertex2(Integer(Self) - 1)];
+  T := rtlvertexes[PS_Lines.GetLineVertex2(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -8157,7 +6893,7 @@ end;
 //==============================================================================
 procedure TRTLLineVertex1_R(Self: TRTLLine; var T: TRTLVertex);
 begin
-  T := rtlvertexes[PS_GetLineVertex1(Integer(Self) - 1)];
+  T := rtlvertexes[PS_Lines.GetLineVertex1(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -8168,7 +6904,7 @@ end;
 procedure TRTLLineID_R(Self: TRTLLine; var T: Integer);
 begin
   T := Integer(Self) - 1;
-  if (T < 0) or (T >= numlines) then
+  if not PS_Lines.IsValidLine(T) then
     T := LINE_INVALID;
 end;
 
@@ -8179,7 +6915,7 @@ end;
 //==============================================================================
 procedure TRTLLinesCount_R(Self: TRTLLines; var T: Integer);
 begin
-  T := numlines;
+  T := PS_Lines.GetLineCount;
 end;
 
 //==============================================================================

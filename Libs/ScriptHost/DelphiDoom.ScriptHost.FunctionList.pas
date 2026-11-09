@@ -42,6 +42,8 @@ type
     procedure AddWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
       const ACode: Pointer);
     procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
+    procedure AddMethodWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
+      const AInstance: TObject; const ACode: Pointer);
     /// <summary>Registers every function in the compiler and keeps the names it gives</summary>
     procedure RegisterCompiler(const ACompiler: TPSPascalCompiler);
     /// <summary>Registers in the interpreter the functions that the compiler has registered</summary>
@@ -144,6 +146,24 @@ begin
   LCount := FEntries.Count;
   Add(ADeclaration, ACode);
   // an empty declaration is ignored by Add
+  if FEntries.Count > LCount then
+  begin
+    LEntry := FEntries[LCount];
+    LEntry.Instance := AInstance;
+    FEntries[LCount] := LEntry;
+  end;
+end;
+
+procedure TScriptFunctionList.AddMethodWithCustomResult(const ADeclaration, AResultType,
+  AExportDeclaration: string; const AInstance: TObject; const ACode: Pointer);
+var
+  LCount: Integer;
+  LEntry: TScriptFunctionEntry;
+begin
+  if not Assigned(AInstance) then
+    raise EArgumentNilException.Create('AInstance');
+  LCount := FEntries.Count;
+  AddWithCustomResult(ADeclaration, AResultType, AExportDeclaration, ACode);
   if FEntries.Count > LCount then
   begin
     LEntry := FEntries[LCount];

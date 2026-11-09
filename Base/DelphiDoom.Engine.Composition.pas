@@ -175,6 +175,7 @@ uses
 {$ENDIF}
   p_tick,
   p_common,
+  psi_game,
   psi_system,
   psi_globals,
   psi_map,
@@ -197,6 +198,8 @@ uses
   DelphiDoom.Engine.Script.SectorSpecials,
   DelphiDoom.Engine.Script.VariablesFailure,
   DelphiDoom.Engine.Script.VariablesFiles,
+  DelphiDoom.Engine.Script.World,
+  DelphiDoom.ScriptHost.World.Intf,
   w_utils,
 {$IFDEF HEXEN}
   g_demo,
@@ -864,9 +867,20 @@ var
   LRegistry: IScriptFunctionRegistry;
   LSystem: IScriptSystemFunctions;
   LGame: TScriptGame;
+  LWorld: IScriptWorld;
+  LVertices: IScriptVertices;
+  LSides: IScriptSides;
+  LLines: IScriptLines;
 begin
   if not TScriptGames.TryFromName(_GAME, LGame) then
     I_Error('ComposeEngine(): the game %s has no functions of scripts', [_GAME]);
+  // the vertexes, sides and lines: one gateway, three classes of functions; psi_game keeps them
+  // for the properties of the classes of the scripts
+  LWorld := TEngineScriptWorld.Create;
+  LVertices := TScriptHostFactory.CreateVertices(LWorld);
+  LSides := TScriptHostFactory.CreateSides(LWorld);
+  LLines := TScriptHostFactory.CreateLines(LWorld, LGame);
+  PS_ConfigureWorldFunctions(LVertices, LSides, LLines);
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),

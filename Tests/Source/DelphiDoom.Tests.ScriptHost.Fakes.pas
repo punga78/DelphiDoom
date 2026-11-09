@@ -48,6 +48,8 @@ type
     procedure AddWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
       const ACode: Pointer);
     procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
+    procedure AddMethodWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
+      const AInstance: TObject; const ACode: Pointer);
   end;
 
   TFakeOutput = class(TInterfacedObject, IScriptSystemOutput)
@@ -267,6 +269,13 @@ procedure TFakeFunctionTable.AddMethod(const ADeclaration: string; const AInstan
   const ACode: Pointer);
 begin
   Add(ADeclaration, ACode);
+  Instances[Instances.Count - 1] := AInstance;
+end;
+
+procedure TFakeFunctionTable.AddMethodWithCustomResult(const ADeclaration, AResultType,
+  AExportDeclaration: string; const AInstance: TObject; const ACode: Pointer);
+begin
+  AddWithCustomResult(ADeclaration, AResultType, AExportDeclaration, ACode);
   Instances[Instances.Count - 1] := AInstance;
 end;
 

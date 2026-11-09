@@ -327,77 +327,11 @@ begin
   ATable.Add('function GetActorMeleeSound(const key: LongWord): string;', @PS_GetActorMeleeSound);
   ATable.Add('function MergeActorArrays(const A1, A2: TActorArray): TActorArray;', @PS_MergeLongWordArrays);
   // ------------------------- Vertexes ----------------------------------------
-  ATable.AddWithCustomResult('procedure TVertex(const id: Integer);', '!TVertex', 'function TVertex(const id: Integer): !TVertex;', @PS_TVertex);
-  ATable.Add('function GetVertexX(const v: integer): fixed_t;', @PS_GetVertexX);
-  ATable.Add('function GetVertexY(const v: integer): fixed_t;', @PS_GetVertexY);
-  ATable.Add('function IsValidVertex(const v: Integer): boolean;', @PS_IsValidVertex);
-  ATable.Add('function GetVertexCount: Integer;', @PS_GetVertexCount);
+  PS_Vertices.Describe(ATable);
   // ---------------------------- Sides ----------------------------------------
-  ATable.AddWithCustomResult('procedure TSide(const id: Integer);', '!TSide', 'function TSide(const id: Integer): !TSide;', @PS_TSide);
-  ATable.Add('function GetSideTextureOffset(const sd: Integer): fixed_t;', @PS_GetSideTextureOffset);
-  ATable.Add('procedure SetSideTextureOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideTextureOffset);
-  ATable.Add('function GetSideTopTextureOffset(const sd: Integer): Integer;', @PS_GetSideTopTextureOffset);
-  ATable.Add('procedure SetSideTopTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopTextureOffset);
-  ATable.Add('function GetSideBottomTextureOffset(const sd: Integer): Integer;', @PS_GetSideBottomTextureOffset);
-  ATable.Add('procedure SetSideBottomTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomTextureOffset);
-  ATable.Add('function GetSideMidTextureOffset(const sd: Integer): Integer;', @PS_GetSideMidTextureOffset);
-  ATable.Add('procedure SetSideMidTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidTextureOffset);
-  ATable.Add('function GetSideRowOffset(const sd: Integer): fixed_t;', @PS_GetSideRowOffset);
-  ATable.Add('procedure SetSideRowOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideRowOffset);
-  ATable.Add('function GetSideTopRowOffset(const sd: Integer): Integer;', @PS_GetSideTopRowOffset);
-  ATable.Add('procedure SetSideTopRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopRowOffset);
-  ATable.Add('function GetSideBottomRowOffset(const sd: Integer): Integer;', @PS_GetSideBottomRowOffset);
-  ATable.Add('procedure SetSideBottomRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomRowOffset);
-  ATable.Add('function GetSideMidRowOffset(const sd: Integer): Integer;', @PS_GetSideMidRowOffset);
-  ATable.Add('procedure SetSideMidRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidRowOffset);
-  ATable.Add('function GetSideTopTexture(const sd: Integer): string;', @PS_GetSideTopTexture);
-  ATable.Add('procedure SetSideTopTexture(const sd: Integer; const tex: string);', @PS_SetSideTopTexture);
-  ATable.Add('function GetSideBottomTexture(const sd: Integer): string;', @PS_GetSideBottomTexture);
-  ATable.Add('procedure SetSideBottomTexture(const sd: Integer; const tex: string);', @PS_SetSideBottomTexture);
-  ATable.Add('function GetSideMiddleTexture(const sd: Integer): string;', @PS_GetSideMiddleTexture);
-  ATable.Add('procedure SetSideMiddleTexture(const sd: Integer; const tex: string);', @PS_SetSideMiddleTexture);
-  ATable.Add('function GetSideSector(const sd: Integer): integer;', @PS_GetSideSector);
-  ATable.Add('function IsValidSide(const sd: Integer): boolean;', @PS_IsValidSide);
-  ATable.Add('function GetSideCount: Integer;', @PS_GetSideCount);
+  PS_Sides.Describe(ATable);
   // ---------------------------- Lines ----------------------------------------
-  ATable.AddWithCustomResult('procedure TLine(const id: Integer);', '!TLine', 'function TLine(const id: Integer): !TLine;', @PS_TLine);
-  ATable.Add('function GetLineVertex1(const ld: Integer): integer;', @PS_GetLineVertex1);
-  ATable.Add('function GetLineVertex2(const ld: Integer): integer;', @PS_GetLineVertex2);
-  ATable.Add('function GetLineDX(const ld: Integer): fixed_t;', @PS_GetLineDX);
-  ATable.Add('function GetLineDY(const ld: Integer): fixed_t;', @PS_GetLineDY);
-  ATable.Add('function GetLineSpecial(const ld: Integer): integer;', @PS_GetLineSpecial);
-  ATable.Add('procedure SetLineSpecial(const ld: Integer; const spec: integer);', @PS_SetLineSpecial);
-  ATable.Add('function GetLineArg1(const ld: Integer): byte;', @PS_GetLineArg1);
-  ATable.Add('procedure SetLineArg1(const ld: Integer; const arg: byte);', @PS_SetLineArg1);
-  ATable.Add('function GetLineArg2(const ld: Integer): byte;', @PS_GetLineArg2);
-  ATable.Add('procedure SetLineArg2(const ld: Integer; const arg: byte);', @PS_SetLineArg2);
-  ATable.Add('function GetLineArg3(const ld: Integer): byte;', @PS_GetLineArg3);
-  ATable.Add('procedure SetLineArg3(const ld: Integer; const arg: byte);', @PS_SetLineArg3);
-  ATable.Add('function GetLineArg4(const ld: Integer): byte;', @PS_GetLineArg4);
-  ATable.Add('procedure SetLineArg4(const ld: Integer; const arg: byte);', @PS_SetLineArg4);
-  ATable.Add('function GetLineArg5(const ld: Integer): byte;', @PS_GetLineArg5);
-  ATable.Add('procedure SetLineArg5(const ld: Integer; const arg: byte);', @PS_SetLineArg5);
-  {$IFNDEF HEXEN}
-  ATable.Add('function GetLineTag(const ld: Integer): integer;', @PS_GetLineTag);
-  ATable.Add('procedure SetLineTag(const ld: Integer; const tag: integer);', @PS_SetLineTag);
-  ATable.Add('function GetLineTransparent(const ld: Integer): Boolean;', @PS_GetLineTransparent);
-  ATable.Add('procedure SetLineTransparent(const ld: Integer; const x: Boolean);', @PS_SetLineTransparent);
-  {$ENDIF}
-  ATable.Add('function GetLineIsBlocking(const ld: Integer): Boolean;', @PS_GetLineIsBlocking);
-  ATable.Add('procedure SetLineIsBlocking(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlocking);
-  ATable.Add('function GetLineIsBlockingMonsters(const ld: Integer): Boolean;', @PS_GetLineIsBlockingMonsters);
-  ATable.Add('procedure SetLineIsBlockingMonsters(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlockingMonsters);
-  ATable.Add('function GetLineTriggerScripts(const ld: Integer): Boolean;', @PS_GetLineTriggerScripts);
-  ATable.Add('procedure SetLineTriggerScripts(const ld: Integer; const x: Boolean);', @PS_SetLineTriggerScripts);
-  ATable.Add('function GetLineFrontSide(const ld: Integer): integer;', @PS_GetLineFrontSide);
-  ATable.Add('function GetLineBackSide(const ld: Integer): integer;', @PS_GetLineBackSide);
-  ATable.Add('function GetLineFrontSector(const ld: Integer): integer;', @PS_GetLineFrontSector);
-  ATable.Add('function GetLineBackSector(const ld: Integer): integer;', @PS_GetLineBackSector);
-  ATable.Add('function IsValidLine(const ld: Integer): boolean;', @PS_IsValidLine);
-  ATable.Add('function GetLineCount: Integer;', @PS_GetLineCount);
-  {$IFNDEF HEXEN}
-  ATable.Add('function FindLinesFromTag(const tag: integer): TIntegerArray;', @PS_FindLinesFromTag);
-  {$ENDIF}
+  PS_Lines.Describe(ATable);
 // --------------------------- SECTORS -----------------------------------------
   ATable.AddWithCustomResult('procedure TSector(const id: Integer);', '!TSector', 'function TSector(const id: Integer): !TSector;', @PS_TSector);
   ATable.Add('function GetSectorFloorHeight(const sec: Integer): fixed_t;', @PS_GetSectorFloorHeight);

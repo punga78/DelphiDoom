@@ -36,6 +36,9 @@ type
     ///   must live as long as the interpreters that registered it
     /// </summary>
     procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
+    /// <summary>AddWithCustomResult for a method of AInstance (see AddMethod)</summary>
+    procedure AddMethodWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
+      const AInstance: TObject; const ACode: Pointer);
   end;
 
   /// <summary>
