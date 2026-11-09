@@ -26,6 +26,11 @@ type
     function AllowPsionicCapture: Boolean;
     /// <summary>Mod::FIRE_DAMAGE_RANGE[AIndex]</summary>
     function FireDamageRange(AIndex: Integer): Integer;
+    /// <summary>Mod::DAMAGE_RANGE and Mod::EXPLOSIVE_DAMAGE_RANGE (100 and 50 unless the mod changes them)</summary>
+    function DamageRange: Integer;
+    function ExplosiveDamageRange: Integer;
+    /// <summary>Options::battleExplosionHeight (0 to 3)</summary>
+    function ExplosionHeight: Integer;
   end;
 
   /// <summary>The part of AIModule that the saved game needs (AIModule is not ported yet)</summary>

@@ -1,0 +1,141 @@
+width: 10
+length: 10
+height: 2
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - ORGANIC2
+  - XBASES02
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 184
+binTiles: AAAAACkA////////AQD///////8AAAABAAAAKQADAP//AAABAAEA//8AAAAAAAIAAAApAP////8GAAEA/////wAAAAAAAwAAAAUA////////AAD///////8AAAAEAAAAAQAHAP////8BAAEA/////wAAAAUAAAApAP////8jAAEA/////wEAAAAABgAAAAAABwD/////AQABAP////8AAAAHAAAAKQD//xkACwABAP//AQABAAAAAAgAAAAFAP////8bAAAA/////wEAAAAACQAAAAUA////////AAD///////8AAAAKAAAAAQD/////BgABAP////8AAAAAAAsAAAAFAP///////wAA////////AAAADAAAAAUAIAAYAP//AAABAAEA//8AAAANAAAACQD///////8AAP///////wAAAA4AAAABACAA/////wEAAQD/////AAAADwAAAAAA////////AQD///////8KAAAQAAAAAAADAP////8BAAEA/////wAAABEAAAAJAP////8BAAAA/////wAAAAAAEgAAACkABgD/////AQABAP////8AAAATAAAAKQD/////FAABAP////8BAAAAABQAAAABAAYA/////wEAAQD/////AAAAFQAAAAkA////////AAD///////8AAAAWAAAABQD//xkA//8AAP//AQD//wAAABcAAAAFAP///////wAA////////AAAAGAAAACgA//8YACQAAQD//wEAAQAAAAAZAAAAAQD///////8BAP///////wAAABoAAAABAP////8OAAEA/////wEAAAAAGwAAAAAA////////AQD///////8AAAAcAAAACQD/////DQAAAP////8BAAQCAB0AAAAFAP////8QAAAA/////wEAAAAAHgAAAAEA//8dAP//AQD//wEA//8AAAAfAAAAKAAfAP//CAABAAEA//8AAAAAACAAAAAFAAUA/////wAAAQD/////AAAAIQAAAAEA////////AQD///////8AAAAiAAAAAQAEAP//CAABAAEA//8BAAAAACMAAAAoAP///////wEA////////AAAAJAAAACkA////////AQD///////8AAAAlAAAABQD/////JQAAAP////8BAAkCACYAAAAoAB8A/////wEAAQD/////AAAAJwAAACkA/////xAAAQD/////AQAAAAAoAAAAAAD/////EAABAP////8BAAAAACkAAAAAAAUAGAD//wEAAQABAP//AAAAKgAAAAAA//8eAP//AQD//wEA//8AAAArAAAAKAD///////8BAP///////wAAACwAAAAJAAUA/////wAAAQD/////AAAALQAAAAUABwD/////AAABAP////8AAAAuAAAABQD///////8AAP///////wAAAC8AAAAFAP////8EAAAA/////wAAAAAAMAAAAAAABAD/////AQABAP////8AAAAxAAAAAQAHABYACQABAAEAAQABAAAAADIAAAABAP//HQD//wEA//8BAP//AAAAMwAAAAUA////////AAD///////8AAAA0AAAAKAAHAP//DAABAAEA//8BAAAAADUAAAAFAP////8bAAAA/////wEAAAAANgAAAAkA//8ZAP//AAD//wEA//8AAAA3AAAACQD//x0ACgAAAP//AQABAAAAADgAAAABAP///////wEA////////AAAAOQAAACkA/////w8AAQD/////AQAAAAA6AAAACQAgAP////8AAAEA/////wAAADsAAAABAP////8IAAEA/////wEAAAAAPAAAACgAIAD/////AQABAP////8AAAA9AAAAAAD///////8BAP///////wAAAD4AAAApAP///////wEA////////AAAAPwAAAAUA////////AAD///////8AAABAAAAACQD///////8AAP///////wAAAEEAAAABAP////8GAAEA/////wAAAAAAQgAAAAkA//8dAP//AAD//wEA//8AAABDAAAAAAD///////8BAP///////wAAAEQAAAAFAP///////wAA////////AAAARQAAACgA////////AQD///////8AAABGAAAAKAD///////8BAP///////wAAAEcAAAAFAP//FgD//wAA//8BAP//AAAASAAAACkA//8WAP//AQD//wEA//8AAABJAAAAAQAgAP////8BAAEA/////wMFAEoAAAABAP///////wEA////////AAAASwAAAAEA////////AQD///////8AAABMAAAACQD///////8AAP///////wAAAE0AAAABAAQA/////wEAAQD/////AAAATgAAAAEA////////AQD///////8AAABPAAAAKQD///////8BAP///////wAAAFAAAAAAAP///////wEA////////AAAAUQAAAAkA////////AAD///////8AAABSAAAAAAD/////CwABAP////8BAAAAAFMAAAAoAP///////wEA////////AAAAVAAAAAkA/////w4AAAD/////AQAAAABVAAAAKAD/////EQABAP////8BAAAAAFYAAAABAP///////wEA////////BwAAVwAAACgA////////AQD///////8AAABYAAAAAAD///////8BAP///////wAAAFkAAAAoAP//HgD//wEA//8BAP//AAAAWgAAAAEA/////xAAAQD/////AQAKAABbAAAAKQAEAP//JgABAAEA//8BAAAAAFwAAAApAP///////wEA////////AAAAXQAAAAkA//8XAP//AAD//wEA//8AAABeAAAAKQD///////8BAP///////wAAAF8AAAAFAP////8bAAAA/////wEAAAAAYAAAAAEA//8XAP//AQD//wEA//8AAABhAAAAKAD///////8BAP///////wAAAGIAAAAJAP///////wAA////////AAAAYwAAACgA////////AQD///////8AAABkAAAA//8FAP///////wEA/////wAAAGUAAAAoAP////8JAAEA/////wEAAAAAZgAAAP///////yQA////////AQAAAABnAAAAKQD//xgA//8BAP//AQD//wAAAGgAAAAFAP////8IAAAA/////wAAAAAAaQAAAAAA//8aAP//AQD//wEA//8AAABqAAAAAAD//xkADgABAP//AQABAAAAAGsAAAABAP//FgAMAAEA//8BAAEAAAAAbAAAACgAHwAeAP//AQABAAEA//8AAABtAAAACQD//xgA//8AAP//AQD//wAAAG4AAAD//wYAHQD/////AQABAP//AAAAbwAAAAkAIAD//xMAAAABAP//AQAAAABwAAAACQD///////8AAP///////wAAAHEAAAAFAP///////wAA////////BAIAcgAAACgAIAAaAP//AQABAAEA//8AAABzAAAA////////EgD///////8BAAAAAHUAAAAAAP///////wEA////////AAAAdgAAAAkABgD//xQAAAABAP//AQAAAAB3AAAAAAAGABkAIQABAAEAAQABAAAAAHgAAAAJAP///////wAA////////AAAAeQAAAAkA////////AAD///////8AAAB6AAAACQD/////AgAAAP////8AAAAAAHsAAAApAP///////wEA////////AAAAfQAAAP///////wQA////////AAAAAAB+AAAA//8fAP///////wEA/////wAAAIAAAAAAAP///////wEA////////AAAAgQAAAAUA////////AAD///////8AAACDAAAA/////x4A////////AQD//wAAAIUAAAApAP///////wEA////////AAAAhgAAACgA////////AQD///////8AAACIAAAAKAAFAP////8BAAEA/////wAAAIkAAAAoAAcAGgD//wEAAQABAP//AAAAigAAAAkA/////yQAAAD/////AQAAAACLAAAA////////AwD///////8AAAAAAIwAAAAJAP//HQACAAAA//8BAAEAAAAAjQAAAAAA////////AQD///////8AAACOAAAACQAGAP//BgAAAAEA//8AAAAAAI8AAAD/////GQAjAP////8BAAEAAAAAkAAAAAUAHwD/////AAABAP////8AAACRAAAAKQD/////EAABAP////8BAAAAAJIAAAAFAP///////wAA////////AAAAkwAAAP//BwD///////8BAP////8AAACUAAAAKQD///////8BAP///////wAAAJUAAAABAP///////wEA////////AAAAlgAAAAkA////////AAD///////8AAACXAAAAKQD///////8BAP///////wAAAJgAAAApAP///////wEA////////AAAAmQAAAAUA////////AAD///////8AAACaAAAA//8GAP///////wEA/////wAAAJsAAAABAP///////wEA////////AAAAnAAAAAAA/////yQAAQD/////AQAAAACdAAAACQD/////IgAAAP////8BAAAAAJ4AAAD/////FgD///////8BAP//AAAAoAAAAAkA////////AAD///////8AAACjAAAAAQD///////8BAP///////wAAAKQAAAD//wcA//8MAP//AQD//wEAAAAApQAAAAEA////////AQD///////8JAQCmAAAA//8GAB0A/////wEAAQD//wAAAKcAAAAAAAQA//8bAAEAAQD//wEAAAAAqAAAAAEA////////AQD///////8AAACpAAAAAAADAP////8BAAEA/////wAAAKoAAAABAP///////wEA////////AAAAqwAAACgA/////xQAAQD/////AQAAAACsAAAAKQAEAP//AAABAAEA//8AAAAAAK0AAAApAP///////wEA////////AAAArgAAAP//HwD//wQA//8BAP//AAABAACyAAAAKQD///////8BAP///////wQAALQAAAApAP///////wEA////////AAAAtQAAAAkA////////AAD///////8AAAC2AAAACQAGAP////8AAAEA/////wAAALkAAAAoAAMAGgD//wEAAQABAP//AAAAuwAAAP///////wQA////////AAAAAAC8AAAAKQD///////8BAP///////wAAAL0AAAABAP///////wEA////////AAAAvgAAAP///////wgA////////AAAAAAC/AAAAAAD//xgAHAABAP//AQABAAAAAMAAAAABAP///////wEA////////AAAAwQAAAAkA/////wIAAAD/////AAACAADCAAAABQD///////8AAP///////wAAAMMAAAAAAP///////wEA////////AAAAxAAAAAUA////////AAD///////8AAADFAAAAKQD///////8BAP///////wAAAMYAAAABAP////8SAAEA/////wEACgUAxwAAACgA////////AQD///////8AAAA=
+units:
+  - id: 1000000
+    genUnitType: STR_GILLMAN_SQUAD_LEADER
+    genUnitArmor: GILLMAN_ARMOR0
+    faction: 2
+    status: 0
+    position:
+      - 2
+      - 1
+      - 0
+    direction: 6
+    directionTurret: 6
+    tu: 45
+    health: 50
+    stunlevel: 0
+    energy: 80
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 15
+      - 12
+      - 12
+      - 14
+      - 12
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_LOBSTERMAN_NAVIGATOR
+    genUnitArmor: LOBSTERMAN_ARMOR1
+    faction: 2
+    status: 0
+    position:
+      - 2
+      - 0
+      - 0
+    direction: 0
+    directionTurret: 0
+    tu: 74
+    health: 120
+    stunlevel: 0
+    energy: 95
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 20
+      - 20
+      - 20
+      - 18
+      - 10
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 2
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20

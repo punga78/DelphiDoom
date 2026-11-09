@@ -14,8 +14,8 @@ uses
 
 type
   /// <summary>
-  ///   IXcomBattleContext with plain values: the generator, the two options the battle reads and the fire damage
-  ///   range of the ruleset (5 and 10 unless the mod changes them)
+  ///   IXcomBattleContext with plain values: the generator, the options the battle reads and the ranges of the
+  ///   ruleset (the defaults are the ones of OpenXcom unless the mod changes them)
   /// </summary>
   TXcomBattleContext = class(TInterfacedObject, IXcomBattleContext)
   strict private
@@ -24,19 +24,26 @@ type
     FAllowPsionicCapture: Boolean;
     FFireDamageMin: Integer;
     FFireDamageMax: Integer;
+    FDamageRange: Integer;
+    FExplosiveDamageRange: Integer;
+    FExplosionHeight: Integer;
   public
     constructor Create(const ARandom: IXcomRandom; AAlienBleeding: Boolean = False;
-      AAllowPsionicCapture: Boolean = False; AFireDamageMin: Integer = 5; AFireDamageMax: Integer = 10);
+      AAllowPsionicCapture: Boolean = False; AFireDamageMin: Integer = 5; AFireDamageMax: Integer = 10;
+      ADamageRange: Integer = 100; AExplosiveDamageRange: Integer = 50; AExplosionHeight: Integer = 0);
     function Random: IXcomRandom;
     function AlienBleeding: Boolean;
     function AllowPsionicCapture: Boolean;
     function FireDamageRange(AIndex: Integer): Integer;
+    function DamageRange: Integer;
+    function ExplosiveDamageRange: Integer;
+    function ExplosionHeight: Integer;
   end;
 
 implementation
 
 constructor TXcomBattleContext.Create(const ARandom: IXcomRandom; AAlienBleeding, AAllowPsionicCapture: Boolean;
-  AFireDamageMin, AFireDamageMax: Integer);
+  AFireDamageMin, AFireDamageMax, ADamageRange, AExplosiveDamageRange, AExplosionHeight: Integer);
 begin
   inherited Create;
   FRandom := ARandom;
@@ -44,6 +51,9 @@ begin
   FAllowPsionicCapture := AAllowPsionicCapture;
   FFireDamageMin := AFireDamageMin;
   FFireDamageMax := AFireDamageMax;
+  FDamageRange := ADamageRange;
+  FExplosiveDamageRange := AExplosiveDamageRange;
+  FExplosionHeight := AExplosionHeight;
 end;
 
 function TXcomBattleContext.Random: IXcomRandom;
@@ -67,6 +77,21 @@ begin
     Result := FFireDamageMin
   else
     Result := FFireDamageMax;
+end;
+
+function TXcomBattleContext.DamageRange: Integer;
+begin
+  Result := FDamageRange;
+end;
+
+function TXcomBattleContext.ExplosiveDamageRange: Integer;
+begin
+  Result := FExplosiveDamageRange;
+end;
+
+function TXcomBattleContext.ExplosionHeight: Integer;
+begin
+  Result := FExplosionHeight;
 end;
 
 end.
