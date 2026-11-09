@@ -11,7 +11,7 @@
         <AppType>Console</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\Keen;..\Libs\Video;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\Keen;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\Keen</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Keen\Keen32\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
