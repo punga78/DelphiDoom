@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.Areas,
   DelphiDoom.XcomMod.WeightedOptions, DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleCountry,
   DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture,
-  DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory;
+  DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleCommendations;
 
 type
   [TestFixture]
@@ -86,6 +87,20 @@ type
     procedure DovrebbeLeggereLeTappeDiUnaTraiettoria;
     [Test]
     procedure DovrebbeScalareLaVelocitaDiUnaTappa;
+    [Test]
+    procedure DovrebbeDareIlTipoComeNomeDellaMusicaSenzaNome;
+    [Test]
+    procedure DovrebbeLeggereLaNormalizzazioneDellaMusica;
+    [Test]
+    procedure DovrebbeRifiutareUnBloccoCheNonESuMultipliDiDieci;
+    [Test]
+    procedure DovrebbeLeggereIGruppiComeListaOComeNumero;
+    [Test]
+    procedure DovrebbeLeggereLePosizioniDegliOggettiDelBlocco;
+    [Test]
+    procedure DovrebbeLeggereICriteriDiUnaMenzione;
+    [Test]
+    procedure DovrebbeRifiutareUnaCondizioneDiUccisioneNonValida;
   end;
 
 implementation
@@ -625,6 +640,154 @@ begin
       procedure
       begin
         LRule.Load(Node('waypoints: [[1, 2]]'));
+      end, EYamlBadConversion);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeDareIlTipoComeNomeDellaMusicaSenzaNome;
+var
+  LRule: TXcomRuleMusic;
+begin
+  LRule := TXcomRuleMusic.Create('STR_TYPE');
+  try
+    Assert.AreEqual('STR_TYPE', LRule.Name);
+    Assert.AreEqual('STR_TYPE', LRule.MusicType);
+    Assert.AreEqual(MaxInt, LRule.CatPos);
+    LRule.Load(Node('name: GMTACTIC'));
+    Assert.AreEqual('GMTACTIC', LRule.Name);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeLeggereLaNormalizzazioneDellaMusica;
+var
+  LRule: TXcomRuleMusic;
+begin
+  LRule := TXcomRuleMusic.Create('STR_TYPE');
+  try
+    Assert.AreEqual(Single(0.76), LRule.Normalization);
+    LRule.Load(Node('catPos: 4' + #10 + 'normalization: 0.5'));
+    Assert.AreEqual(4, LRule.CatPos);
+    Assert.AreEqual(Single(0.5), LRule.Normalization);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeRifiutareUnBloccoCheNonESuMultipliDiDieci;
+var
+  LRule: TXcomMapBlock;
+begin
+  LRule := TXcomMapBlock.Create('BLOCK');
+  try
+    Assert.AreEqual(10, LRule.SizeX);
+    Assert.AreEqual(4, LRule.SizeZ);
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('width: 15'));
+      end, EXcomModException);
+    LRule.Load(Node('width: 20' + #10 + 'length: 30' + #10 + 'height: 2'));
+    Assert.AreEqual(30, LRule.SizeY);
+    LRule.SizeZ := 7;
+    Assert.AreEqual(7, LRule.SizeZ);
+    Assert.AreEqual('BLOCK', LRule.Name);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeLeggereIGruppiComeListaOComeNumero;
+var
+  LRule: TXcomMapBlock;
+begin
+  LRule := TXcomMapBlock.Create('BLOCK');
+  try
+    Assert.IsTrue(LRule.IsInGroup(0));
+    LRule.Load(Node('groups: [1, 2]' + #10 + 'revealedFloors: 3'));
+    Assert.IsTrue(LRule.IsInGroup(2));
+    Assert.IsFalse(LRule.IsInGroup(0));
+    Assert.IsTrue(LRule.IsFloorRevealed(3));
+    LRule.Load(Node('groups: 5'));
+    Assert.AreEqual(1, Length(LRule.Groups));
+    Assert.IsTrue(LRule.IsInGroup(5));
+    LRule.Load(Node('groups: abc'));
+    Assert.IsTrue(LRule.IsInGroup(0), 'un testo vale 0');
+    Assert.AreEqual(1, Length(LRule.RevealedFloors));
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeLeggereLePosizioniDegliOggettiDelBlocco;
+var
+  LRule: TXcomMapBlock;
+begin
+  LRule := TXcomMapBlock.Create('BLOCK');
+  try
+    LRule.Load(Node('items: {STR_B: [[1, 2, 3]], STR_A: []}'));
+    Assert.AreEqual(2, LRule.Items.Count);
+    Assert.AreEqual('STR_A', LRule.Items.Key(0));
+    Assert.AreEqual(3, LRule.Items.Value(1)[0].Z);
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('items: {STR_B: [[1, 2]]}'));
+      end, EYamlBadConversion);
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('items: {STR_B: 4}'));
+      end, EYamlBadConversion);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeLeggereICriteriDiUnaMenzione;
+var
+  LRule: TXcomRuleCommendations;
+begin
+  LRule := TXcomRuleCommendations.Create;
+  try
+    LRule.Load(Node('description: STR_D' + #10 + 'sprite: 3' + #10 + 'criteria: {STR_KILLS: [10, 20]}' + #10 +
+      'killCriteria: [[[2, [STR_A, STR_B]], [1, []]], [[5, [STR_C]]]]'));
+    Assert.AreEqual('STR_D', LRule.Description);
+    Assert.AreEqual(3, LRule.Sprite);
+    Assert.AreEqual(1, LRule.Criteria.Count);
+    Assert.AreEqual(20, LRule.Criteria.Value(0)[1]);
+    Assert.AreEqual(2, Length(LRule.KillCriteria));
+    Assert.AreEqual(2, Length(LRule.KillCriteria[0]));
+    Assert.AreEqual('STR_B', LRule.KillCriteria[0][0].Names[1]);
+    Assert.AreEqual(5, LRule.KillCriteria[1][0].Count);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TTestXcomModRules.DovrebbeRifiutareUnaCondizioneDiUccisioneNonValida;
+var
+  LRule: TXcomRuleCommendations;
+begin
+  LRule := TXcomRuleCommendations.Create;
+  try
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('killCriteria: [[[1]]]'));
+      end, EYamlBadConversion);
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('killCriteria: [3]'));
+      end, EYamlBadConversion);
+    Assert.WillRaise(
+      procedure
+      begin
+        LRule.Load(Node('criteria: {STR_X: 4}'));
       end, EYamlBadConversion);
   finally
     LRule.Free;

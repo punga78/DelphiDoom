@@ -25,6 +25,10 @@
 #include "Mod/RuleManufacture.h"
 #include "Mod/AlienRace.h"
 #include "Mod/UfoTrajectory.h"
+#include "Mod/RuleMusic.h"
+#include "Battlescape/Position.h"
+#include "Mod/MapBlock.h"
+#include "Mod/RuleCommendations.h"
 #include "Engine/RNG.h"
 #include "Engine/Exception.h"
 #include "Savegame/WeightedOptions.h"
@@ -156,6 +160,64 @@ static std::string Gen(char kind) {
       }
       return r + "]";
     }
+    case 'F': {  // float
+      if (bad) return Bad();
+      switch (R(5)) { case 0: return "0.76"; case 1: return "1"; case 2: return "-2.5"; case 3: return "3.14159"; default: return Dbl(); }
+    }
+    case 'G': {  // list of ints, a scalar int, or bad
+      if (bad) return Bad();
+      if (R(3) == 0) return Num();
+      std::string r = "[";
+      int n = R(5);
+      for (int i = 0; i < n; i++) { if (i) r += ", "; r += Num(); }
+      return r + "]";
+    }
+    case 'P': {  // map string -> list of positions
+      if (bad) return Bad();
+      std::string r = "{";
+      int n = R(3);
+      for (int i = 0; i < n; i++) {
+        if (i) r += ", ";
+        r += W() + ": [";
+        int m = R(3);
+        for (int j = 0; j < m; j++) { if (j) r += ", "; r += "[" + Num() + ", " + Num() + ", " + Num() + "]"; }
+        r += "]";
+      }
+      return r + "}";
+    }
+    case 'C': {  // map string -> list of ints
+      if (bad) return Bad();
+      std::string r = "{";
+      int n = R(3);
+      for (int i = 0; i < n; i++) {
+        if (i) r += ", ";
+        r += W() + ": [";
+        int m = R(4);
+        for (int j = 0; j < m; j++) { if (j) r += ", "; r += Num(); }
+        r += "]";
+      }
+      return r + "}";
+    }
+    case 'K': {  // kill criteria: list of lists of [int, [strings]]
+      if (bad) return Bad();
+      std::string r = "[";
+      int n = R(3);
+      for (int i = 0; i < n; i++) {
+        if (i) r += ", ";
+        r += "[";
+        int m = R(3);
+        for (int j = 0; j < m; j++) {
+          if (j) r += ", ";
+          r += "[" + Num() + ", [";
+          int k = R(3);
+          for (int q = 0; q < k; q++) { if (q) r += ", "; r += W(); }
+          r += "]]";
+          if (R(20) == 0) r = r.substr(0, r.size() - 1) + ", 1]";
+        }
+        r += "]";
+      }
+      return r + "]";
+    }
     case 'W': {  // weights map string -> size_t
       if (bad) return Bad();
       std::string r = "{";
@@ -191,13 +253,16 @@ static void Generate(const char* path, int count, unsigned seed) {
   std::ofstream o(path, std::ios::binary);
   o << "# corpus of the rule classes: a case is a header line (kind, extra arguments) and a YAML node\n";
   for (int i = 0; i < count; i++) {
-    switch (R(7)) {
+    switch (R(10)) {
       case 0: Case(o, "inventory " + std::to_string(Rg(0, 9)), Doc({{"id", 's'}, {"x", 'i'}, {"y", 'i'}, {"type", 'i'}, {"slots", 'L'}, {"costs", 'M'}, {"listOrder", 'i'}})); break;
       case 1: Case(o, "country " + std::string(R(2) ? "STR_USA" : "STR_X"), Doc({{"type", 's'}, {"fundingBase", 'i'}, {"fundingCap", 'i'}, {"labelLon", 'd'}, {"labelLat", 'd'}, {"areas", 'A'}})); break;
       case 2: Case(o, "region STR_R", Doc({{"type", 's'}, {"cost", 'i'}, {"areas", 'A'}, {"missionZones", 'Z'}, {"missionWeights", 'W'}, {"regionWeight", 'i'}, {"missionRegion", 's'}})); break;
       case 3: Case(o, "research " + std::string(R(2) ? "STR_TOPIC" : "STR_Q") + " " + std::to_string(Rg(0, 9)), Doc({{"name", 's'}, {"lookup", 's'}, {"cutscene", 's'}, {"cost", 'i'}, {"points", 'i'}, {"dependencies", 'S'}, {"unlocks", 'S'}, {"getOneFree", 'S'}, {"requires", 'S'}, {"needItem", 'b'}, {"destroyItem", 'b'}, {"listOrder", 'i'}})); break;
       case 4: Case(o, "manufacture " + std::string(R(2) ? "STR_ITEM" : "STR_OTHER") + " " + std::to_string(Rg(0, 9)), Doc({{"name", 's'}, {"category", 's'}, {"requires", 'S'}, {"space", 'i'}, {"time", 'i'}, {"cost", 'i'}, {"requiredItems", 'M'}, {"producedItems", 'M'}, {"listOrder", 'i'}})); break;
       case 5: Case(o, "race STR_RACE", Doc({{"id", 's'}, {"members", 'S'}})); break;
+      case 6: Case(o, "music STR_MUSIC", Doc({{"name", 's'}, {"catPos", 'i'}, {"normalization", 'F'}})); break;
+      case 7: Case(o, "mapblock STR_BLOCK", Doc({{"name", 's'}, {"width", 'i'}, {"length", 'i'}, {"height", 'i'}, {"groups", 'G'}, {"revealedFloors", 'G'}, {"items", 'P'}})); break;
+      case 8: Case(o, "commendation", Doc({{"description", 's'}, {"criteria", 'C'}, {"sprite", 'i'}, {"killCriteria", 'K'}})); break;
       default: Case(o, "trajectory STR_T", Doc({{"id", 's'}, {"groundTimer", 'i'}, {"waypoints", 'T'}})); break;
     }
   }
@@ -290,6 +355,30 @@ static void RunCase(const std::string& header, const std::string& body) {
       AlienRace r(a1);
       r.load(node);
       Line("id=%s members=%s", Esc(r.getId()).c_str(), StrVec(r._members).c_str());
+    } else if (kind == "music") {
+      RuleMusic r(a1);
+      r.load(node);
+      float nf = r.getNormalization(); double nd = nf; unsigned nb; memcpy(&nb, &nf, 4);
+      Line("name=%s pos=%d norm=%08X %s", Esc(r.getName()).c_str(), r.getCatPos(), nb, D(nd).c_str());
+    } else if (kind == "mapblock") {
+      MapBlock r(a1);
+      r.load(node);
+      std::string g = "groups=", rv = "revealed=", it = "items=";
+      for (int x : r._groups) g += std::to_string(x) + ",";
+      for (int x : r._revealedFloors) rv += std::to_string(x) + ",";
+      for (auto& p : r._items) { it += Esc(p.first) + ":"; for (auto& q : p.second) it += std::to_string(q.x) + "/" + std::to_string(q.y) + "/" + std::to_string(q.z) + ";"; it += "|"; }
+      Line("name=%s size=%d,%d,%d", Esc(r.getName()).c_str(), r.getSizeX(), r.getSizeY(), r.getSizeZ());
+      Line("%s %s %s", g.c_str(), rv.c_str(), it.c_str());
+      std::string in = "in=";
+      for (int k = -1; k < 6; k++) { in += r.isInGroup(k) ? '1' : '0'; in += r.isFloorRevealed(k) ? '1' : '0'; }
+      Line("%s", in.c_str());
+    } else if (kind == "commendation") {
+      RuleCommendations r;
+      r.load(node);
+      std::string c = "criteria=", k = "kill=";
+      for (auto& p : r._criteria) { c += Esc(p.first) + ":"; for (int x : p.second) c += std::to_string(x) + ","; c += "|"; }
+      for (auto& v : r._killCriteria) { k += "["; for (auto& pr : v) { k += std::to_string(pr.first) + "("; for (auto& s : pr.second) k += Esc(s) + ","; k += ")"; } k += "]"; }
+      Line("desc=%s sprite=%d %s %s", Esc(r.getDescription()).c_str(), r.getSprite(), c.c_str(), k.c_str());
     } else if (kind == "trajectory") {
       UfoTrajectory r(a1);
       r.load(node);

@@ -29,6 +29,9 @@ uses
   DelphiDoom.XcomMod.RuleManufacture in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleManufacture.pas',
   DelphiDoom.XcomMod.AlienRace in '..\Libs\XcomMod\DelphiDoom.XcomMod.AlienRace.pas',
   DelphiDoom.XcomMod.UfoTrajectory in '..\Libs\XcomMod\DelphiDoom.XcomMod.UfoTrajectory.pas',
+  DelphiDoom.XcomMod.RuleMusic in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleMusic.pas',
+  DelphiDoom.XcomMod.MapBlock in '..\Libs\XcomMod\DelphiDoom.XcomMod.MapBlock.pas',
+  DelphiDoom.XcomMod.RuleCommendations in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCommendations.pas',
   DelphiDoom.Tests.XcomMod.Scenario in 'Source\DelphiDoom.Tests.XcomMod.Scenario.pas',
   DelphiDoom.Tests.XcomMod.Golden in 'Source\DelphiDoom.Tests.XcomMod.Golden.pas',
   DelphiDoom.Tests.XcomMod.Rules in 'Source\DelphiDoom.Tests.XcomMod.Rules.pas';

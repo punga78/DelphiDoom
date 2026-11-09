@@ -4,5 +4,5 @@ set O=C:\Progetti\DelphiDoom\Reference\OpenXcom\src
 set D=C:\Progetti\DelphiDoom\Reference\_dati\openxcom_build\deps
 set Y=C:\Progetti\DelphiDoom\Reference\_dati\openxcom_build\dl_src
 cd /d %~dp0
-g++ -O1 -std=c++17 -msse2 -mfpmath=sse -w -DYAML_CPP_STATIC_DEFINE -I%Y%\yaml-cpp-yaml-cpp-0.7.0\include -I%O% -I%D%\include\SDL modharness.cpp stubs.cpp %O%\Mod\RuleInventory.cpp %O%\Mod\RuleCountry.cpp %O%\Mod\RuleRegion.cpp %O%\Mod\RuleResearch.cpp %O%\Mod\RuleManufacture.cpp %O%\Mod\AlienRace.cpp %O%\Mod\UfoTrajectory.cpp %O%\Savegame\WeightedOptions.cpp %O%\Engine\RNG.cpp %O%\Mod\City.cpp %O%\Savegame\Target.cpp %Y%\yaml-build\libyaml-cpp.a -static-libgcc -static-libstdc++ -o modharness.exe
+g++ -O1 -std=c++17 -msse2 -mfpmath=sse -w -DYAML_CPP_STATIC_DEFINE -I%Y%\yaml-cpp-yaml-cpp-0.7.0\include -I%O% -I%D%\include\SDL modharness.cpp stubs.cpp %O%\Mod\RuleInventory.cpp %O%\Mod\RuleCountry.cpp %O%\Mod\RuleRegion.cpp %O%\Mod\RuleResearch.cpp %O%\Mod\RuleManufacture.cpp %O%\Mod\AlienRace.cpp %O%\Mod\UfoTrajectory.cpp %O%\Mod\RuleMusic.cpp %O%\Mod\MapBlock.cpp %O%\Mod\RuleCommendations.cpp %O%\Savegame\WeightedOptions.cpp %O%\Engine\RNG.cpp %O%\Mod\City.cpp %O%\Savegame\Target.cpp %Y%\yaml-build\libyaml-cpp.a -static-libgcc -static-libstdc++ -o modharness.exe
 

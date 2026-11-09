@@ -44,6 +44,15 @@ type
       const ADefault: TArray<TArray<Double>>): TArray<TArray<Double>>; static;
     /// <summary>The text of a node (as&lt;std::string&gt;(): a null node is "null")</summary>
     class function TextOf(const ANode: IYamlNode): string; static;
+    /// <summary>as&lt;std::vector&lt;int&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
+    class function IntegersOf(const ANode: IYamlNode): TArray<Integer>; static;
+    /// <summary>as&lt;std::vector&lt;std::string&gt;&gt;() of a node, without a fallback</summary>
+    class function StringsOf(const ANode: IYamlNode): TArray<string>; static;
+    /// <summary>as&lt;std::vector&lt;int&gt;&gt;(fallback) of a field</summary>
+    class function ReadIntegers(const ANode: IYamlNode; const AKey: string;
+      const ADefault: TArray<Integer>): TArray<Integer>; static;
+    /// <summary>The conversion error of yaml-cpp (a bad conversion at the position of the node)</summary>
+    class function BadConversion(const ANode: IYamlNode): EYamlBadConversion; static;
   end;
 
 implementation
@@ -58,6 +67,48 @@ end;
 class function TXcomNodeReader.TextOf(const ANode: IYamlNode): string;
 begin
   Result := YamlTextToString(ANode.AsString);
+end;
+
+class function TXcomNodeReader.BadConversion(const ANode: IYamlNode): EYamlBadConversion;
+begin
+  Result := EYamlBadConversion.Create(ANode.Mark, 'bad conversion');
+end;
+
+class function TXcomNodeReader.IntegersOf(const ANode: IYamlNode): TArray<Integer>;
+var
+  LItems: TArray<IYamlNode>;
+  LIndex: Integer;
+begin
+  if not ANode.IsSequence then
+    raise BadConversion(ANode);
+  LItems := ANode.Items;
+  SetLength(Result, Length(LItems));
+  for LIndex := 0 to High(LItems) do
+    Result[LIndex] := LItems[LIndex].AsInteger;
+end;
+
+class function TXcomNodeReader.StringsOf(const ANode: IYamlNode): TArray<string>;
+var
+  LItems: TArray<IYamlNode>;
+  LIndex: Integer;
+begin
+  if not ANode.IsSequence then
+    raise BadConversion(ANode);
+  LItems := ANode.Items;
+  SetLength(Result, Length(LItems));
+  for LIndex := 0 to High(LItems) do
+    Result[LIndex] := TextOf(LItems[LIndex]);
+end;
+
+class function TXcomNodeReader.ReadIntegers(const ANode: IYamlNode; const AKey: string;
+  const ADefault: TArray<Integer>): TArray<Integer>;
+var
+  LField: IYamlNode;
+begin
+  LField := Field(ANode, AKey);
+  if not LField.IsDefined or not LField.IsSequence then
+    Exit(ADefault);
+  Result := IntegersOf(LField);
 end;
 
 class function TXcomNodeReader.ReadString(const ANode: IYamlNode; const AKey, ADefault: string): string;

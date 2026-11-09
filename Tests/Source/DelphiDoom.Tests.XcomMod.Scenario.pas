@@ -21,7 +21,8 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleInventory,
   DelphiDoom.XcomMod.RuleCountry, DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleResearch,
-  DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory;
+  DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleCommendations;
 
 type
   /// <summary>Runs the cases of the corpus with the Pascal classes and writes the lines of the golden file</summary>
@@ -41,6 +42,9 @@ type
     procedure RunManufacture(const AName, AOrder: string; const ANode: IYamlNode);
     procedure RunRace(const AId: string; const ANode: IYamlNode);
     procedure RunTrajectory(const AId: string; const ANode: IYamlNode);
+    procedure RunMusic(const AType: string; const ANode: IYamlNode);
+    procedure RunMapBlock(const AName: string; const ANode: IYamlNode);
+    procedure RunCommendation(const ANode: IYamlNode);
   public
     constructor Create;
     destructor Destroy; override;
@@ -318,6 +322,104 @@ begin
   end;
 end;
 
+procedure TXcomRuleScenario.RunMusic(const AType: string; const ANode: IYamlNode);
+var
+  LRule: TXcomRuleMusic;
+  LNormalization: Single;
+begin
+  LRule := TXcomRuleMusic.Create(AType);
+  try
+    LRule.Load(ANode);
+    LNormalization := LRule.Normalization;
+    Line(Format('name=%s pos=%d norm=%s %s', [Escape(LRule.Name), LRule.CatPos,
+      IntToHex(PCardinal(@LNormalization)^, 8), Bits(Double(LNormalization))]));
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TXcomRuleScenario.RunMapBlock(const AName: string; const ANode: IYamlNode);
+var
+  LRule: TXcomMapBlock;
+  LGroups, LRevealed, LItems, LInside: string;
+  LValue, LIndex, LKey: Integer;
+  LPosition: TXcomPosition;
+begin
+  LRule := TXcomMapBlock.Create(AName);
+  try
+    LRule.Load(ANode);
+    LGroups := 'groups=';
+    for LValue in LRule.Groups do
+      LGroups := LGroups + IntToStr(LValue) + ',';
+    LRevealed := 'revealed=';
+    for LValue in LRule.RevealedFloors do
+      LRevealed := LRevealed + IntToStr(LValue) + ',';
+    LItems := 'items=';
+    for LIndex := 0 to LRule.Items.Count - 1 do
+    begin
+      LItems := LItems + Escape(LRule.Items.Key(LIndex)) + ':';
+      for LPosition in LRule.Items.Value(LIndex) do
+        LItems := LItems + IntToStr(LPosition.X) + '/' + IntToStr(LPosition.Y) + '/' + IntToStr(LPosition.Z) + ';';
+      LItems := LItems + '|';
+    end;
+    Line(Format('name=%s size=%d,%d,%d', [Escape(LRule.Name), LRule.SizeX, LRule.SizeY, LRule.SizeZ]));
+    Line(LGroups + ' ' + LRevealed + ' ' + LItems);
+    LInside := 'in=';
+    for LKey := -1 to 5 do
+    begin
+      if LRule.IsInGroup(LKey) then
+        LInside := LInside + '1'
+      else
+        LInside := LInside + '0';
+      if LRule.IsFloorRevealed(LKey) then
+        LInside := LInside + '1'
+      else
+        LInside := LInside + '0';
+    end;
+    Line(LInside);
+  finally
+    LRule.Free;
+  end;
+end;
+
+procedure TXcomRuleScenario.RunCommendation(const ANode: IYamlNode);
+var
+  LRule: TXcomRuleCommendations;
+  LCriteria, LKill, LName: string;
+  LValue, LIndex: Integer;
+  LRow: TArray<TXcomKillCondition>;
+  LCondition: TXcomKillCondition;
+begin
+  LRule := TXcomRuleCommendations.Create;
+  try
+    LRule.Load(ANode);
+    LCriteria := 'criteria=';
+    for LIndex := 0 to LRule.Criteria.Count - 1 do
+    begin
+      LCriteria := LCriteria + Escape(LRule.Criteria.Key(LIndex)) + ':';
+      for LValue in LRule.Criteria.Value(LIndex) do
+        LCriteria := LCriteria + IntToStr(LValue) + ',';
+      LCriteria := LCriteria + '|';
+    end;
+    LKill := 'kill=';
+    for LRow in LRule.KillCriteria do
+    begin
+      LKill := LKill + '[';
+      for LCondition in LRow do
+      begin
+        LKill := LKill + IntToStr(LCondition.Count) + '(';
+        for LName in LCondition.Names do
+          LKill := LKill + Escape(LName) + ',';
+        LKill := LKill + ')';
+      end;
+      LKill := LKill + ']';
+    end;
+    Line(Format('desc=%s sprite=%d %s %s', [Escape(LRule.Description), LRule.Sprite, LCriteria, LKill]));
+  finally
+    LRule.Free;
+  end;
+end;
+
 procedure TXcomRuleScenario.RunCase(const AHeader: string; const ABody: TYamlText);
 var
   LParts: TArray<string>;
@@ -355,7 +457,13 @@ begin
     else if LKind = 'race' then
       RunRace(LFirst, LNode)
     else if LKind = 'trajectory' then
-      RunTrajectory(LFirst, LNode);
+      RunTrajectory(LFirst, LNode)
+    else if LKind = 'music' then
+      RunMusic(LFirst, LNode)
+    else if LKind = 'mapblock' then
+      RunMapBlock(LFirst, LNode)
+    else if LKind = 'commendation' then
+      RunCommendation(LNode);
   except
     on E: EYamlException do
       Line('YAML_ERR ' + Escape(YamlTextToString(E.Msg)));
