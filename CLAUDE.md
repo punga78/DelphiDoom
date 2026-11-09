@@ -1,4 +1,4 @@
-﻿# DelphiDoom — istruzioni per Claude
+# DelphiDoom — istruzioni per Claude
 
 Informazioni specifiche di questo repository. Le regole generali (commit, issue, lingua, MCP) sono nel CLAUDE.md globale.
 
@@ -131,7 +131,10 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Voxel** — Lettura dei file dei voxel e del lump VOXELDEF. [CLAUDE.md](Libs/Voxel/CLAUDE.md), [README.md](Libs/Voxel/README.md)
 - **VoxelEditor** — Editor di voxel (modulo Voxel di DD_Tools): cubo, viste, strumenti, formati DDVOX/KVX/VOX/DDMESH, presenter. [CLAUDE.md](Libs/VoxelEditor/CLAUDE.md), [README.md](Libs/VoxelEditor/README.md)
 - **Wad** — Lettura e scrittura di WAD, PAK, ZIP e cartelle; directory dei lump del motore. [CLAUDE.md](Libs/Wad/CLAUDE.md), [README.md](Libs/Wad/README.md)
+- **XcomEngine** — Motore di OpenXcom a classi senza SDL (gioco, stato, schermo, lingua, opzioni, risorse del mod, dispositivi dietro interfacce); parita' sui pixel col vero OpenXcom. [CLAUDE.md](Libs/XcomEngine/CLAUDE.md), [README.md](Libs/XcomEngine/README.md)
 - **XcomFormats** — Lettura dei formati di dati di UFO: Enemy Unknown e Terror from the Deep. [CLAUDE.md](Libs/XcomFormats/CLAUDE.md), [README.md](Libs/XcomFormats/README.md)
+- **XcomMenu** — Stati di Menu\ di OpenXcom (schermata di avvio, menu principale). [CLAUDE.md](Libs/XcomMenu/CLAUDE.md), [README.md](Libs/XcomMenu/README.md)
+- **XcomUi** — Widget di Interface\ di OpenXcom (Text, Window, TextButton, Frame, Cursor, FpsCounter, NumberText). [CLAUDE.md](Libs/XcomUi/CLAUDE.md), [README.md](Libs/XcomUi/README.md)
 - **Xmi** — Convertitore XMI/CMF in MIDI. [CLAUDE.md](Libs/Xmi/CLAUDE.md), [README.md](Libs/Xmi/README.md) (paragrafo in `Libs\Zlib`)
 - **Zlib** — Compressione e decompressione zlib (sopra `System.ZLib`). [CLAUDE.md](Libs/Zlib/CLAUDE.md), [README.md](Libs/Zlib/README.md)
 - **Zone** — Allocatore della zone memory a classi. [CLAUDE.md](Libs/Zone/CLAUDE.md), [README.md](Libs/Zone/README.md)
