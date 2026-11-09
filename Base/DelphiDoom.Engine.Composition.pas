@@ -270,6 +270,10 @@ uses
   DelphiDoom.Models.Factory,
   DelphiDoom.Engine.Models.DefinitionSink,
   DelphiDoom.Engine.Models.DefinitionLookup,
+  DelphiDoom.GlLevel.Intf,
+  DelphiDoom.GlLevel.Factory,
+  DelphiDoom.Engine.GlLevel.FlatWorld,
+  DelphiDoom.Engine.GlLevel.FlatLoopSink,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -1106,6 +1110,12 @@ begin
     TEngineModelDefinitionSink.Create);
 end;
 
+procedure ComposeLevelGeometry;
+begin
+  gld_ConfigureFlatCarver(TGlLevelFactory.CreateFlatCarver(TEngineGlFlatWorld.Create,
+    TEngineGlFlatLoopSink.Create));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
@@ -1373,6 +1383,7 @@ begin
   ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
 {$IFDEF OPENGL}
   ComposeModels(LLog, LPreprocessor);
+  ComposeLevelGeometry;
 {$ENDIF}
 
   W_Configure(LWadServices);
