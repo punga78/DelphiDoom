@@ -15,7 +15,7 @@ Il C è stato cancellato (ultimo commit che lo contiene: `a449cacd`). Queste dif
 
 ## #12 — chiusa
 
-Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_LIB`, `Libs\Sndfile\Native`, `AUDIOLIB`, `MP3LIB`, `XMILIB`, `MIKWIN` e l'unica unit orfana. `ZLIB` (`z_files.pas`), `SCRIPT` restano perché referenziate (`FASTCODE` e `FASTMM4` sono stati tolti con la #171) (`JPEGLIB` è stata poi sostituita dal decoder a classi di `Libs\Jpeg`). Prova a runtime: Doom, Heretic, Hexen e Strife girano 25 s senza crash né `I_Error` (shareware: i warning sulle patch mancanti sono normali). Non ho potuto ascoltare l'audio.
+Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_LIB`, `Libs\Sndfile\Native`, `AUDIOLIB`, `MP3LIB`, `XMILIB`, `MIKWIN` e l'unica unit orfana. `ZLIB` (`z_files.pas`), `SCRIPT` (poi spostata in `Libs\PascalScript`, `Libs\ScriptHost` e `Libs\Ddc` con la #172) restano perché referenziate (`FASTCODE` e `FASTMM4` sono stati tolti con la #171) (`JPEGLIB` è stata poi sostituita dal decoder a classi di `Libs\Jpeg`). Prova a runtime: Doom, Heretic, Hexen e Strife girano 25 s senza crash né `I_Error` (shareware: i warning sulle patch mancanti sono normali). Non ho potuto ascoltare l'audio.
 
 ## #1 — Porting a Delphi 11 (XE11) e build da riga di comando
 
@@ -40,7 +40,7 @@ Restano **codice storico, per scelta documentata** in `CLAUDE.md`:
 
 - il renderer software e quello OpenGL (`gl_render`, `gl_main`, `gl_tex`, `gl_sky`, `gl_automap`, `gl_setup`, `gl_slopes`, `gl_lights`, `gl_ambient`, `gl_shadows`, `gl_voxels`, `gl_lightmaps`, il parser MODELDEF di `gl_models`, `mdl_dllmodel`, `mdl_script*`): chiamate per fotogramma, contesto grafico, `screens[]` e zone memory; astrarli richiederebbe un `IRenderer` e non sarebbe verificabile senza contesto;
 - i thinker (`vldoor_t`, `floormove_t`…) e i savegame, il cui formato non può cambiare;
-- `FixedMul`/`FixedDiv` e le funzioni sugli angoli (percorsi caldi): a 32 bit restano in `asm` (`{$IFDEF CPUX86}`) e per gli altri target hanno la versione Pascal di `TFixedMath` (#41; a 64 bit resta da compilare e da misurare). Aperto nella #41: `SCRIPT\ps_runtime.pas` (`x86.inc`/`x64.inc`: chiamate native di PascalScript, usate solo da `RegisterDelphiFunction` dei modelli OpenGL; per toglierle servirebbe `System.Rtti.Invoke` con i tipi di ogni funzione, circa 400-600 righe e test di parità sulle convenzioni di chiamata), `DD_IDE\SynEdit` e `Launcher\Launcher_utils.pas`;
+- `FixedMul`/`FixedDiv` e le funzioni sugli angoli (percorsi caldi): a 32 bit restano in `asm` (`{$IFDEF CPUX86}`) e per gli altri target hanno la versione Pascal di `TFixedMath` (#41; a 64 bit resta da compilare e da misurare). Aperto nella #41: `Libs\PascalScript\ps_runtime.pas` (`x86.inc`/`x64.inc`: chiamate native di PascalScript, usate solo da `RegisterDelphiFunction` dei modelli OpenGL; per toglierle servirebbe `System.Rtti.Invoke` con i tipi di ogni funzione, circa 400-600 righe e test di parità sulle convenzioni di chiamata), `DD_IDE\SynEdit` e `Launcher\Launcher_utils.pas`;
 - `V_FindAproxColorIndex`, il melt del wipe, la scala dei muri, le tabelle hi-res, `R_ReadDS32Cache`;
 - gli interruttori di Heretic, Hexen e Strife e `Hexen\p_anim.pas`.
 
@@ -114,7 +114,7 @@ Tolte come facciate: `c_con.pas` (`TEngineConsoleScreen`), `m_misc.pas` (`TEngin
 
 Cancellate `Base\i_sound.pas` e `Base\i_music.pas`; `s_pk3sounds` riceve `ITempFiles` (`S_ConfigurePK3Sounds`). Resta `Base\i_tmp.pas`, con chiamanti fuori dall'audio:
 
-- i savegame (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file temporaneo, `I_NewTempFile`) e `SCRIPT\ps_dll` (una DLL in un PAK copiata su file prima di `LoadLibrary`): procedure storiche senza un oggetto a cui darlo. Servirebbe un `ITempFiles` passato a `G_DoSaveGame`/`G_DoLoadGame` (o un oggetto dello stato degli script di mappa) e alla registrazione delle funzioni di PascalScript; circa mezza giornata, fuori dall'ondata (savegame).
+- i savegame (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file temporaneo, `I_NewTempFile`) e `Libs\ScriptHost\ps_dll` (una DLL in un PAK copiata su file prima di `LoadLibrary`): procedure storiche senza un oggetto a cui darlo. Servirebbe un `ITempFiles` passato a `G_DoSaveGame`/`G_DoLoadGame` (o un oggetto dello stato degli script di mappa) e alla registrazione delle funzioni di PascalScript; circa mezza giornata, fuori dall'ondata (savegame).
 - ~~`DelphiDoom.Engine.Scanner.PaletteGenerator` e `DelphiDoom.Engine.Voxel.SpriteGenerator` chiamano ancora `i_tmp`~~: fatto nella #159, ricevono `ITempFiles` dal costruttore (`ComposeScanner` e `ComposeVoxels`); `ComposePlatform` ora gira prima di `ComposeScanner`.
 - `i_system` (`I_ShutDownTempFiles`): il ciclo di vita, resta finché restano i chiamanti sopra.
 

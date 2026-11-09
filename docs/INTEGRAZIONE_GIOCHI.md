@@ -31,7 +31,7 @@ Specifico di Doom (non si riusa fuori dai fork): `Wad` (regole di lump e marcato
 
 **Fatti.** Fork di 2.05-2.06 (il repository è 2.07), GPL v2+. Restano id Tech 1 e compilano con `DOOM`. Rad-X e Speed differiscono per meno di 3,5 mila righe
 su 251 mila: la differenza è quasi solo la data del fork. Le librerie vecchie (AUDIOLIB, MIKWIN, JPEGLIB, MP3LIB, ZLIB, C_LIB) sono già sostituite da `Libs\*`.
-Il codice nuovo è per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila), Speed 30 (12 mila), più 4-8 unit in `Base\`, `OPENGL\`, `SCRIPT\`.
+Il codice nuovo è per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila), Speed 30 (12 mila), più 4-8 unit in `Base\`, `OPENGL\`, `Libs\ScriptHost\`.
 
 **Che cosa è nuovo.**
 - Un traduttore dei dati originali (`mars.mad`, `radix.dat`, `speedh.jcl`) in un WAD in memoria.

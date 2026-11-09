@@ -96,4 +96,4 @@ nessun `I_Error` in `DATA\LOGS\*_stderr.txt`.
   come prima riga di `Base\m_fixed.pas`, `Base\p_local.pas`, `Base\r_softlights.pas`, `Base\r_mmx.pas`
   e `Common\d_delphi.pas` (subito dopo `{$I Doom32.inc}` dove c'è) e fare `Tools\build.bat Doom32 Release`: se
   compila, i rami Pascal sono corretti per la sintassi (le prestazioni e la parità si provano come sopra).
-- `SCRIPT\ps_runtime.pas` (`x86.inc`, `x64.inc`): lasciato com'è; vedi `PENDING_ISSUES.md`.
+- `Libs\PascalScript\ps_runtime.pas` (`x86.inc`, `x64.inc`): lasciato com'è; vedi `PENDING_ISSUES.md`.

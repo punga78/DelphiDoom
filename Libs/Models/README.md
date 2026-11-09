@@ -34,7 +34,7 @@ contesto GL, i buffer del renderer, o è sul percorso caldo (per muro, per sprit
 | **`mdl_ddmodel`** | 255 | 8 | `gl_models` | caricamento a freddo + display list | **comandi portati** (`Libs\Models`), il disegno resta |
 | **`mdl_script_model`** | 851 | 14 | `mdl_ddmodel`, proclist | lista di comandi + 16 funzioni host di PascalScript | **lista portata**, restano le 16 funzioni host (facciata sottile) |
 | `mdl_dllmodel` | 205 | 4 | `gl_models` | carica una DLL e ne chiama `draw` (`stdcall`) | resta (carica codice esterno che disegna con GL) |
-| `mdl_script`, `mdl_script_proclist`, `mdl_script_functions` | 187, 376, 1020 | 0 | `mdl_script_model` | compilazione ed esecuzione con **PascalScript** (`SCRIPT\ps_*`); ~60 funzioni (matematica in `Extended`, `Format`, `Write`...) registrate per indirizzo con la convenzione `register` | restano: è la colla del vecchio motore PascalScript (`Libs\Script` ha l'analisi di come sostituirlo, non è collegata) |
+| `mdl_script`, `mdl_script_proclist`, `mdl_script_functions` | 187, 376, 1020 | 0 | `mdl_script_model` | compilazione ed esecuzione con **PascalScript** (`Libs\PascalScript\ps_*`); ~60 funzioni (matematica in `Extended`, `Format`, `Write`...) registrate per indirizzo con la convenzione `register` | restano: è la colla del vecchio motore PascalScript (`Libs\Script` ha l'analisi di come sostituirlo, non è collegata) |
 | `mdl_base` | 87 | 0 | `mdl_*` | classe base dei modelli | resta, solo `TBaseModel` (#134: `MDL_ConfigureModels`, `MDL_Md2Parser`, `MDL_NewCommandStream` cancellate) |
 
 ## 2. `Libs\Models`
