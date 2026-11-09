@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.XcomMod.ModDump;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Areas,
+  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.XcomMod.WeightedOptions,
+  DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Areas,
   DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.Ruleset, DelphiDoom.Tests.XcomMod.DumpWriter;
 
 type
@@ -35,6 +36,12 @@ type
     procedure DumpCrafts;
     procedure DumpUfos;
     class function StatsText(const AStats: TXcomUnitStats): string; static;
+    class function WeightsText(const AMonths: TList<Cardinal>;
+      const AWeights: TObjectList<TXcomWeightedOptions>): string; static;
+    class function CardMapText(const AValues: TXcomStringMap<Cardinal>): string; static;
+    procedure DumpDeployments;
+    procedure DumpAlienMissions;
+    procedure DumpMissionScripts;
     procedure DumpArmors;
     procedure DumpSoldiers;
     procedure DumpUnits;
@@ -63,7 +70,8 @@ uses
   DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
   DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
   DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier,
-  DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.SoldierNamePool;
+  DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.SoldierNamePool, DelphiDoom.XcomMod.AlienDeployment,
+  DelphiDoom.XcomMod.RuleAlienMission, DelphiDoom.XcomMod.RuleMissionScript;
 
 { TXcomModDump }
 
@@ -83,7 +91,7 @@ end;
 class function TXcomModDump.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
-    'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'alienDeployments', 'alienMissions', 'missionScripts', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
     'commendations');
 end;
 
@@ -589,6 +597,192 @@ begin
   end;
 end;
 
+class function TXcomModDump.WeightsText(const AMonths: TList<Cardinal>;
+  const AWeights: TObjectList<TXcomWeightedOptions>): string;
+var
+  LIndex: Integer;
+begin
+  Result := '[';
+  for LIndex := 0 to AMonths.Count - 1 do
+  begin
+    if LIndex > 0 then
+      Result := Result + ';';
+    Result := Result + UIntToStr(AMonths[LIndex]) + CardMapText(AWeights[LIndex].Choices);
+  end;
+  Result := Result + ']';
+end;
+
+class function TXcomModDump.CardMapText(const AValues: TXcomStringMap<Cardinal>): string;
+var
+  LIndex: Integer;
+begin
+  Result := '{';
+  for LIndex := 0 to AValues.Count - 1 do
+  begin
+    if LIndex > 0 then
+      Result := Result + ',';
+    Result := Result + TXcomDumpWriter.Quote(AValues.Key(LIndex)) + ':' + UIntToStr(AValues.Value(LIndex));
+  end;
+  Result := Result + '}';
+end;
+
+procedure TXcomModDump.DumpDeployments;
+var
+  LIndex, LData, LSet: Integer;
+  LRule: TXcomAlienDeployment;
+  LRecord: TXcomDeploymentData;
+  LText: string;
+  LBriefing: TXcomBriefingData;
+begin
+  for LIndex := 0 to FMod.AlienDeployments.Count - 1 do
+  begin
+    LRule := FMod.AlienDeployments.Rule(LIndex);
+    FWriter.Begin_('alienDeployments', FMod.AlienDeployments.Name(LIndex));
+    FWriter.Str('type', LRule.DeploymentType);
+    FWriter.Card('data', System.Length(LRule.Data));
+    for LData := 0 to High(LRule.Data) do
+    begin
+      LRecord := LRule.Data[LData];
+      LText := '[';
+      for LSet := 0 to High(LRecord.ItemSets) do
+      begin
+        if LSet > 0 then
+          LText := LText + ';';
+        LText := LText + TXcomDumpWriter.QuoteList(LRecord.ItemSets[LSet].Items);
+      end;
+      FWriter.Line('data' + IntToStr(LData), Format('%d,%d,%d,%d,%d,%d,%s]', [LRecord.AlienRank, LRecord.LowQty,
+        LRecord.HighQty, LRecord.DQty, LRecord.ExtraQty, LRecord.PercentageOutsideUfo, LText]));
+    end;
+    FWriter.Int('width', LRule.Width);
+    FWriter.Int('length', LRule.MapLength);
+    FWriter.Int('height', LRule.Height);
+    FWriter.Int('civilians', LRule.Civilians);
+    FWriter.Strs('terrains', LRule.Terrains);
+    FWriter.Strs('music', LRule.Music);
+    FWriter.Int('shade', LRule.Shade);
+    FWriter.Str('nextStage', LRule.NextStage);
+    FWriter.Str('race', LRule.Race);
+    FWriter.Str('script', LRule.Script);
+    FWriter.Bool('finalDestination', LRule.FinalDestination);
+    FWriter.Bool('isAlienBase', LRule.IsAlienBase);
+    FWriter.Str('winCutscene', LRule.WinCutscene);
+    FWriter.Str('loseCutscene', LRule.LoseCutscene);
+    FWriter.Str('abortCutscene', LRule.AbortCutscene);
+    FWriter.Str('alert', LRule.Alert);
+    FWriter.Str('alertBackground', LRule.AlertBackground);
+    LBriefing := LRule.BriefingData;
+    FWriter.Line('briefing', Format('%d,%d,%s,%s,%s,%s,%s,%d,%d', [LBriefing.Palette, LBriefing.TextOffset,
+      TXcomDumpWriter.Quote(LBriefing.Title), TXcomDumpWriter.Quote(LBriefing.Desc),
+      TXcomDumpWriter.Quote(LBriefing.Music), TXcomDumpWriter.Quote(LBriefing.Background),
+      TXcomDumpWriter.Quote(LBriefing.Cutscene), Ord(LBriefing.ShowCraft), Ord(LBriefing.ShowTarget)]));
+    FWriter.Str('markerName', LRule.MarkerName);
+    FWriter.Str('objectivePopup', LRule.ObjectivePopup);
+    FWriter.Str('objectiveCompleteText', LRule.ObjectiveCompleteText);
+    FWriter.Str('objectiveFailedText', LRule.ObjectiveFailedText);
+    FWriter.CardMap('genMission', LRule.GenMission.Choices);
+    FWriter.Int('markerIcon', LRule.MarkerIcon);
+    FWriter.Int('durationMin', LRule.DurationMin);
+    FWriter.Int('durationMax', LRule.DurationMax);
+    FWriter.Int('minDepth', LRule.MinDepth);
+    FWriter.Int('maxDepth', LRule.MaxDepth);
+    FWriter.Int('genMissionFrequency', LRule.GenMissionFrequency);
+    FWriter.Int('objectiveType', LRule.ObjectiveType);
+    FWriter.Int('objectivesRequired', LRule.ObjectivesRequired);
+    FWriter.Int('objectiveCompleteScore', LRule.ObjectiveCompleteScore);
+    FWriter.Int('objectiveFailedScore', LRule.ObjectiveFailedScore);
+    FWriter.Int('despawnPenalty', LRule.DespawnPenalty);
+    FWriter.Int('points', LRule.Points);
+    FWriter.Int('turnLimit', LRule.TurnLimit);
+    FWriter.Int('cheatTurn', LRule.CheatTurn);
+    FWriter.Int('chronoTrigger', LRule.ChronoTrigger);
+    FWriter.Int('escapeType', LRule.EscapeType);
+  end;
+end;
+
+procedure TXcomModDump.DumpAlienMissions;
+var
+  LIndex, LMonth, LWave: Integer;
+  LRule: TXcomRuleAlienMission;
+  LText: string;
+  LWaveRecord: TXcomMissionWave;
+begin
+  for LIndex := 0 to FMod.AlienMissions.Count - 1 do
+  begin
+    LRule := FMod.AlienMissions.Rule(LIndex);
+    FWriter.Begin_('alienMissions', FMod.AlienMissions.Name(LIndex));
+    FWriter.Str('type', LRule.MissionType);
+    FWriter.Str('spawnUfo', LRule.SpawnUfo);
+    LText := '[';
+    for LMonth := 0 to LRule.RaceMonthCount - 1 do
+    begin
+      if LMonth > 0 then
+        LText := LText + ';';
+      LText := LText + UIntToStr(LRule.RaceMonth(LMonth)) + CardMapText(LRule.RaceOptions(LMonth).Choices);
+    end;
+    FWriter.Line('raceDistribution', LText + ']');
+    LText := '{';
+    for LMonth := 0 to LRule.WeightMonthCount - 1 do
+    begin
+      if LMonth > 0 then
+        LText := LText + ',';
+      LText := LText + UIntToStr(LRule.WeightMonth(LMonth)) + ':' + IntToStr(LRule.WeightValue(LMonth));
+    end;
+    FWriter.Line('weights', LText + '}');
+    FWriter.Int('points', LRule.Points);
+    FWriter.Int('objective', LRule.Objective);
+    FWriter.Int('spawnZone', LRule.SpawnZone);
+    FWriter.Int('retaliationOdds', LRule.RetaliationOdds);
+    FWriter.Str('siteType', LRule.SiteType);
+    FWriter.Card('waves', LRule.WaveCount);
+    for LWave := 0 to LRule.WaveCount - 1 do
+    begin
+      LWaveRecord := LRule.Waves[LWave];
+      FWriter.Line('wave' + IntToStr(LWave), TXcomDumpWriter.Quote(LWaveRecord.UfoType) + ',' +
+        UIntToStr(LWaveRecord.UfoCount) + ',' + TXcomDumpWriter.Quote(LWaveRecord.Trajectory) + ',' +
+        UIntToStr(LWaveRecord.SpawnTimer) + ',' + IntToStr(Ord(LWaveRecord.Objective)));
+    end;
+  end;
+end;
+
+procedure TXcomModDump.DumpMissionScripts;
+var
+  LIndex, LName: Integer;
+  LRule: TXcomRuleMissionScript;
+  LText: string;
+begin
+  for LIndex := 0 to FMod.MissionScripts.Count - 1 do
+  begin
+    LRule := FMod.MissionScripts.Rule(LIndex);
+    FWriter.Begin_('missionScripts', FMod.MissionScripts.Name(LIndex));
+    FWriter.Str('type', LRule.ScriptType);
+    FWriter.Str('varName', LRule.VarName);
+    FWriter.Int('firstMonth', LRule.FirstMonth);
+    FWriter.Int('lastMonth', LRule.LastMonth);
+    FWriter.Int('label', LRule.ScriptLabel);
+    FWriter.Int('executionOdds', LRule.ExecutionOdds);
+    FWriter.Int('targetBaseOdds', LRule.TargetBaseOdds);
+    FWriter.Int('minDifficulty', LRule.MinDifficulty);
+    FWriter.Int('maxRuns', LRule.MaxRuns);
+    FWriter.Int('avoidRepeats', LRule.RepeatAvoidance);
+    FWriter.Int('delay', LRule.Delay);
+    FWriter.Ints('conditionals', LRule.Conditionals);
+    FWriter.Line('regionWeights', WeightsText(LRule.RegionMonths, LRule.RegionWeights));
+    FWriter.Line('missionWeights', WeightsText(LRule.MissionMonths, LRule.MissionWeights));
+    FWriter.Line('raceWeights', WeightsText(LRule.RaceMonths, LRule.RaceWeights));
+    LText := '{';
+    for LName := 0 to LRule.ResearchTriggers.Count - 1 do
+    begin
+      if LName > 0 then
+        LText := LText + ',';
+      LText := LText + TXcomDumpWriter.Quote(LRule.ResearchTriggers.Key(LName)) + ':' +
+        IntToStr(Ord(LRule.ResearchTriggers.Value(LName)));
+    end;
+    FWriter.Line('researchTriggers', LText + '}');
+    FWriter.Bool('useTable', LRule.UseTable);
+    FWriter.Bool('siteType', LRule.SiteType);
+  end;
+end;
+
 procedure TXcomModDump.DumpInventories;
 var
   LIndex, LSlot: Integer;
@@ -769,6 +963,9 @@ begin
   DumpArmors;
   DumpSoldiers;
   DumpUnits;
+  DumpDeployments;
+  DumpAlienMissions;
+  DumpMissionScripts;
   DumpResearch;
   DumpManufacture;
   DumpAlienRaces;

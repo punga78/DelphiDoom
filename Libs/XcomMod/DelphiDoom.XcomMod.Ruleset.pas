@@ -19,7 +19,8 @@ uses
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
   DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.MapDataSet,
   DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier, DelphiDoom.XcomMod.RuleUnit,
-  DelphiDoom.XcomMod.ModFiles.Intf;
+  DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.XcomMod.AlienDeployment, DelphiDoom.XcomMod.RuleAlienMission,
+  DelphiDoom.XcomMod.RuleMissionScript;
 
 type
   /// <summary>
@@ -32,6 +33,9 @@ type
     FShared: IXcomSharedResources;
     FFiles: IXcomModFiles;
     FOffsets: TXcomModOffsets;
+    FAlienDeployments: TXcomRuleRegistry<TXcomAlienDeployment>;
+    FAlienMissions: TXcomRuleRegistry<TXcomRuleAlienMission>;
+    FMissionScripts: TXcomRuleRegistry<TXcomRuleMissionScript>;
     FArmors: TXcomRuleRegistry<TXcomArmor>;
     FSoldiers: TXcomRuleRegistry<TXcomRuleSoldier>;
     FUnits: TXcomRuleRegistry<TXcomRuleUnit>;
@@ -63,6 +67,9 @@ type
     procedure LoadUfos(const ADocument: IYamlNode);
     procedure LoadTerrains(const ADocument: IYamlNode);
     procedure LoadPeople(const ADocument: IYamlNode);
+    procedure LoadDeployments(const ADocument: IYamlNode);
+    procedure LoadAlienMissions(const ADocument: IYamlNode);
+    procedure LoadMissionScripts(const ADocument: IYamlNode);
     procedure LoadCommendations(const ADocument: IYamlNode);
     procedure LoadResearch(const ADocument: IYamlNode);
   public
@@ -77,6 +84,12 @@ type
     procedure SetMods(const AMods: TArray<TXcomModData>; ACurrent: Integer);
     /// <summary>Mod::loadFile: the rules of a ruleset file; rules with the same name overwrite those that exist</summary>
     procedure LoadFile(const ADocument: IYamlNode);
+    /// <summary>
+    ///   The checks that Mod::loadMod makes when the files of a mod are loaded: the missions of the scripts and
+    ///   the missions that the regions pick from must be defined, and must not mix terror sites with the others
+    ///   (EXcomModException with the message of the C++)
+    /// </summary>
+    procedure ValidateMissions;
     property Offsets: TXcomModOffsets read FOffsets;
     property Countries: TXcomRuleRegistry<TXcomRuleCountry> read FCountries;
     property Regions: TXcomRuleRegistry<TXcomRuleRegion> read FRegions;
@@ -87,6 +100,9 @@ type
     property Ufos: TXcomRuleRegistry<TXcomRuleUfo> read FUfos;
     property Inventories: TXcomRuleRegistry<TXcomRuleInventory> read FInventories;
     property Terrains: TXcomRuleRegistry<TXcomRuleTerrain> read FTerrains;
+    property AlienDeployments: TXcomRuleRegistry<TXcomAlienDeployment> read FAlienDeployments;
+    property AlienMissions: TXcomRuleRegistry<TXcomRuleAlienMission> read FAlienMissions;
+    property MissionScripts: TXcomRuleRegistry<TXcomRuleMissionScript> read FMissionScripts;
     property Armors: TXcomRuleRegistry<TXcomArmor> read FArmors;
     property Soldiers: TXcomRuleRegistry<TXcomRuleSoldier> read FSoldiers;
     property Units: TXcomRuleRegistry<TXcomRuleUnit> read FUnits;
@@ -113,6 +129,12 @@ begin
     raise EArgumentNilException.Create('AShared');
   FShared := AShared;
   FFiles := AFiles;
+  FAlienDeployments := TXcomRuleRegistry<TXcomAlienDeployment>.Create(
+    function(AType: string): TXcomAlienDeployment begin Result := TXcomAlienDeployment.Create(AType); end);
+  FAlienMissions := TXcomRuleRegistry<TXcomRuleAlienMission>.Create(
+    function(AType: string): TXcomRuleAlienMission begin Result := TXcomRuleAlienMission.Create(AType); end);
+  FMissionScripts := TXcomRuleRegistry<TXcomRuleMissionScript>.Create(
+    function(AType: string): TXcomRuleMissionScript begin Result := TXcomRuleMissionScript.Create(AType); end);
   FArmors := TXcomRuleRegistry<TXcomArmor>.Create(
     function(AType: string): TXcomArmor begin Result := TXcomArmor.Create(AType); end);
   FSoldiers := TXcomRuleRegistry<TXcomRuleSoldier>.Create(
@@ -164,6 +186,9 @@ begin
   FAlienRaces.Free;
   FManufacture.Free;
   FResearch.Free;
+  FMissionScripts.Free;
+  FAlienMissions.Free;
+  FAlienDeployments.Free;
   FUnits.Free;
   FSoldiers.Free;
   FArmors.Free;
@@ -273,6 +298,91 @@ begin
   end;
 end;
 
+procedure TXcomRuleset.LoadDeployments(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomAlienDeployment;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'alienDeployments').Items do
+  begin
+    LRule := FAlienDeployments.LoadRule(LItem);
+    if Assigned(LRule) then
+      LRule.Load(LItem, FOffsets);
+  end;
+end;
+
+procedure TXcomRuleset.LoadAlienMissions(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleAlienMission;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'alienMissions').Items do
+  begin
+    LRule := FAlienMissions.LoadRule(LItem);
+    if Assigned(LRule) then
+      LRule.Load(LItem);
+  end;
+end;
+
+procedure TXcomRuleset.LoadMissionScripts(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleMissionScript;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'missionScripts').Items do
+  begin
+    LRule := FMissionScripts.LoadRule(LItem, 'type');
+    if Assigned(LRule) then
+      LRule.Load(LItem);
+  end;
+end;
+
+procedure TXcomRuleset.ValidateMissions;
+var
+  LIndex, LName: Integer;
+  LScript: TXcomRuleMissionScript;
+  LMissions, LNames: TArray<string>;
+  LMission: TXcomRuleAlienMission;
+  LIsSite: Boolean;
+  LText: string;
+begin
+  for LIndex := 0 to FMissionScripts.Count - 1 do
+  begin
+    LScript := FMissionScripts.Rule(LIndex);
+    LMissions := LScript.AllMissionTypes;
+    if Length(LMissions) = 0 then
+      Continue;
+    LMission := FAlienMissions.Find(LMissions[0]);
+    if not Assigned(LMission) then
+      raise EXcomModException.Create('Error with MissionScript: ' + FMissionScripts.Name(LIndex) +
+        ': alien mission type: ' + LMissions[0] + ' not defined, do not incite the judgement of Amaunator.');
+    LIsSite := LMission.Objective = TXcomRuleAlienMission.OBJECTIVE_SITE;
+    LScript.SiteType := LIsSite;
+    for LText in LMissions do
+    begin
+      LMission := FAlienMissions.Find(LText);
+      if Assigned(LMission) and ((LMission.Objective = TXcomRuleAlienMission.OBJECTIVE_SITE) <> LIsSite) then
+        raise EXcomModException.Create('Error with MissionScript: ' + FMissionScripts.Name(LIndex) +
+          ': cannot mix terror/non-terror missions in a single command, so sayeth the wise Alaundo.');
+    end;
+  end;
+  // the regions pick their missions here: a mission that is not defined, or a terror site, is an error
+  for LIndex := 0 to FRegions.Count - 1 do
+  begin
+    LNames := FRegions.Rule(LIndex).MissionWeights.Names;
+    for LName := 0 to High(LNames) do
+    begin
+      LMission := FAlienMissions.Find(LNames[LName]);
+      if not Assigned(LMission) then
+        raise EXcomModException.Create('Error with MissionWeights: Region: ' + FRegions.Name(LIndex) +
+          ': alien mission type: ' + LNames[LName] + ' not defined, do not incite the judgement of Amaunator.');
+      if LMission.Objective = TXcomRuleAlienMission.OBJECTIVE_SITE then
+        raise EXcomModException.Create('Error with MissionWeights: Region: ' + FRegions.Name(LIndex) + ' has ' +
+          LNames[LName] + ' listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen.');
+    end;
+  end;
+end;
+
 procedure TXcomRuleset.LoadCommendations(const ADocument: IYamlNode);
 var
   LItem: IYamlNode;
@@ -370,6 +480,7 @@ begin
     if Assigned(LRace) then
       LRace.Load(LItem);
   end;
+  LoadDeployments(ADocument);
   LoadResearch(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'manufacture').Items do
   begin
@@ -387,6 +498,8 @@ begin
     if Assigned(LTrajectory) then
       LTrajectory.Load(LItem);
   end;
+  LoadAlienMissions(ADocument);
+  LoadMissionScripts(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'musics').Items do
   begin
     LMusic := FMusics.LoadRule(LItem, 'type', False);

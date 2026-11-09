@@ -195,6 +195,61 @@ static void DumpUnits(Mod* m) {
   }
 }
 
+static std::string WeightsStr(const std::vector<std::pair<size_t, WeightedOptions*> >& v) {
+  std::string s = "[";
+  for (size_t i = 0; i < v.size(); i++) { if (i) s += ";"; s += std::to_string(v[i].first) + V(v[i].second->_choices); }
+  return s + "]";
+}
+
+static void DumpDeployments(Mod* m) {
+  for (auto& p : m->_alienDeployments) {
+    AlienDeployment* r = p.second;
+    Begin("alienDeployments", p.first);
+    FM(_type); F("data", r->_data.size());
+    for (size_t i = 0; i < r->_data.size(); i++) {
+      DeploymentData& d = r->_data[i];
+      std::string sets = "[";
+      for (size_t k = 0; k < d.itemSets.size(); k++) { if (k) sets += ";"; sets += V(d.itemSets[k].items); }
+      Line(("data" + std::to_string(i)).c_str(), V(d.alienRank) + "," + V(d.lowQty) + "," + V(d.highQty) + "," + V(d.dQty) + "," + V(d.extraQty) + "," + V(d.percentageOutsideUfo) + "," + sets + "]");
+    }
+    FM(_width); FM(_length); FM(_height); FM(_civilians); FM(_terrains); FM(_music); FM(_shade); FM(_nextStage); FM(_race);
+    FM(_script); FM(_finalDestination); FM(_isAlienBase); FM(_winCutscene); FM(_loseCutscene); FM(_abortCutscene);
+    FM(_alert); FM(_alertBackground);
+    BriefingData& b = r->_briefingData;
+    Line("briefing", V(b.palette) + "," + V(b.textOffset) + "," + V(b.title) + "," + V(b.desc) + "," + V(b.music) + "," + V(b.background) + "," + V(b.cutscene) + "," + V(b.showCraft) + "," + V(b.showTarget));
+    FM(_markerName); FM(_objectivePopup); FM(_objectiveCompleteText); FM(_objectiveFailedText);
+    F("genMission", r->_genMission._choices); FM(_markerIcon); FM(_durationMin); FM(_durationMax); FM(_minDepth); FM(_maxDepth);
+    FM(_genMissionFrequency); FM(_objectiveType); FM(_objectivesRequired); FM(_objectiveCompleteScore); FM(_objectiveFailedScore);
+    FM(_despawnPenalty); FM(_points); FM(_turnLimit); FM(_cheatTurn); F("chronoTrigger", (int)r->_chronoTrigger);
+    F("escapeType", (int)r->_escapeType);
+  }
+}
+
+static void DumpAlienMissions(Mod* m) {
+  for (auto& p : m->_alienMissions) {
+    RuleAlienMission* r = p.second;
+    Begin("alienMissions", p.first);
+    FM(_type); FM(_spawnUfo); Line("raceDistribution", WeightsStr(r->_raceDistribution)); FM(_weights); FM(_points);
+    F("objective", (int)r->_objective); FM(_spawnZone); FM(_retaliationOdds); FM(_siteType);
+    F("waves", r->_waves.size());
+    for (size_t i = 0; i < r->_waves.size(); i++) {
+      MissionWave& w = r->_waves[i];
+      Line(("wave" + std::to_string(i)).c_str(), V(w.ufoType) + "," + V(w.ufoCount) + "," + V(w.trajectory) + "," + V(w.spawnTimer) + "," + V(w.objective));
+    }
+  }
+}
+
+static void DumpMissionScripts(Mod* m) {
+  for (auto& p : m->_missionScripts) {
+    RuleMissionScript* r = p.second;
+    Begin("missionScripts", p.first);
+    FM(_type); FM(_varName); FM(_firstMonth); FM(_lastMonth); FM(_label); FM(_executionOdds); FM(_targetBaseOdds);
+    FM(_minDifficulty); FM(_maxRuns); FM(_avoidRepeats); FM(_delay); FM(_conditionals);
+    Line("regionWeights", WeightsStr(r->_regionWeights)); Line("missionWeights", WeightsStr(r->_missionWeights));
+    Line("raceWeights", WeightsStr(r->_raceWeights)); FM(_researchTriggers); FM(_useTable); FM(_siteType);
+  }
+}
+
 static void DumpInventories(Mod* m) {
   for (auto& p : m->_invs) {
     RuleInventory* r = p.second;
@@ -282,6 +337,9 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("armors")) DumpArmors(m);
   if (Wanted("soldiers")) DumpSoldiers(m);
   if (Wanted("units")) DumpUnits(m);
+  if (Wanted("alienDeployments")) DumpDeployments(m);
+  if (Wanted("alienMissions")) DumpAlienMissions(m);
+  if (Wanted("missionScripts")) DumpMissionScripts(m);
   if (Wanted("research")) DumpResearch(m);
   if (Wanted("manufacture")) DumpManufacture(m);
   if (Wanted("alienRaces")) DumpAlienRaces(m);

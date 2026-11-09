@@ -124,6 +124,7 @@ begin
               raise EXcomModException.Create(LFileName + ': ' + LError.Message);
           end;
         end;
+        Result.ValidateMissions;
       except
         on LError: EXcomModException do
           raise EXcomModException.Create(Failure(AMods[LIndex].Name, LError.Message));
