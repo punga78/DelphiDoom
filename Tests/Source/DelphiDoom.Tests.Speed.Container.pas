@@ -65,14 +65,14 @@ implementation
 
 uses
   System.IOUtils,
-  DelphiDoom.Speed.Types, DelphiDoom.Speed.Container,
+  DelphiDoom.Speed.Types, DelphiDoom.Speed.Factory, DelphiDoom.Speed.Container,
   DelphiDoom.Tests.Speed.JclBuilder;
 
 { TTestSpeedContainer }
 
 function TTestSpeedContainer.Open(const ABytes: TBytes): ISpeedContainer;
 begin
-  Result := TSpeedContainer.Create(TBytesStream.Create(ABytes), True);
+  Result := TSpeedFactory.OpenContainerBytes(ABytes);
 end;
 
 function TTestSpeedContainer.Sample: ISpeedContainer;
@@ -168,7 +168,7 @@ var
   LTotal: Integer;
 begin
   // the data are one after the other and every file is found by its distance from the directory
-  LContainer := TSpeedContainer.Create(TBytesStream.Create(TJclBuilder.SyntheticGame), True);
+  LContainer := TSpeedFactory.OpenContainerBytes(TJclBuilder.SyntheticGame);
   LTotal := 0;
   for LIndex := 0 to LContainer.Count - 1 do
     LTotal := LTotal + Length(LContainer.Read(LIndex));
@@ -340,7 +340,7 @@ begin
   LPath := TPath.Combine(TPath.GetTempPath, TPath.GetGUIDFileName + '.jcl');
   TFile.WriteAllBytes(LPath, TJclBuilder.SyntheticGame);
   try
-    LContainer := TSpeedContainer.Create(TFileStream.Create(LPath, fmOpenRead or fmShareDenyNone), True);
+    LContainer := TSpeedFactory.OpenContainer(LPath);
     Assert.IsTrue(LContainer.IndexOf('GRAFS.PAL') >= 0);
     LContainer := nil;
   finally

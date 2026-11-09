@@ -55,6 +55,8 @@ Speed ha `double` nel `mobj_t` e fisica con x87 contro SSE (determinismo); i buf
 **Verifica.** Parità byte per byte di traduttori e lettori di contenitore contro il vecchio codice; demo e savegame identici; `-timedemo` dei giochi esistenti invariato; copertura almeno 90%; prestazioni entro +5%.
 **I dati originali non sono nel repository né in `bin\`**: senza di essi la parità dei traduttori non si prova (resta "non verificata").
 
+**Stato (issue #166, 2026-11-09).** Fatte F0 (`Libs\GameData`: costruttore di patch unico per i tre fork e WAD in memoria, parità sulle tre copie vecchie), F1 (`TGameAliases`: Speed prende il profilo di Doom in tutte le aree tranne Iwad; `ComposeEngine` lo usa; il resto per aggiungere un gioco è in `Libs\GameData\README.md`), S1 e S2 (`Libs\Speed`: contenitore `SPEEDH.JCL` e traduttore in un WAD, parità su 1664 righe di lump dello shareware vero e su un gioco sintetico). Non fatte: F2-F4 (profili veri per Mars e Rad-X, `.dpr` dei cinque eseguibili, Launcher e DD_IDE), S3 (modelli I3D), S4 (`Libs\Racing`), S5 (cartella `Speed\`, regole, menu, HUD, savegame), S6 (`r_soft3d`), e tutto Mars3D e Rad-X.
+
 ## 2. DD_FONT, DD_VOXEL, ENDEDIT (strumenti)
 
 **Fatti.** Delphi 7 con la VCL, GPL v2+, versioni 1.0.1.12, 1.7 e 1.0.1.9. Codice proprio: ENDEDIT circa 5.700 righe, DD_FONT circa 6.000, DD_VOXEL circa 26.000. Molte terze parti (FastMM4, Graphics32 circa 55 mila righe, SynEdit, PascalScript, dglOpenGL, pngimage, zlib con `.obj`).
