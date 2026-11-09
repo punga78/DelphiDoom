@@ -1,6 +1,6 @@
-# Libs\Models e Libs\GlMath - analisi di `OPENGL\` e cosa è stato portato (issue #45)
+# Libs\Models e Libs\GlMath - analisi di `Libs\OpenGl\Legacy\` e cosa è stato portato (issue #45)
 
-La cartella `OPENGL\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
+La cartella `Libs\OpenGl\Legacy\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
 caldo del fotogramma o è caricamento a freddo, e perché è stata portata a classi oppure no. Le due librerie nate da
 questo lavoro sono `Libs\Models` (modelli 3D) e `Libs\GlMath` (geometria pura del renderer); `GlMath` ha il suo
 paragrafo qui perché è nata dalla stessa analisi.
@@ -54,7 +54,7 @@ per ogni modello); `mdl_md2` legge i byte con `TPakStream`, li dà al parser e d
 chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel` esegue lo script con
 `MDL_AppendFromScript` (`mdl_script_model`: le funzioni `MDLS_*` aggiungono comandi allo stream), legge un DMX con
 `LoadFromBytes` e suona il fotogramma nella display list con `TEngineModelRenderer`
-(`OPENGL\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
+(`Libs\OpenGl\Legacy\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
 
 ### Differenze volute dal vecchio codice
 
@@ -93,6 +93,66 @@ chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel
 - `mdl_dllmodel`: carica una DLL che disegna con OpenGL.
 - Le funzioni host e la compilazione PascalScript (`mdl_script*`): colla dell'engine PascalScript; vanno con `Libs\Script`.
 - `gl_models` (registro dei modelli e MODELDEF): usa lo scanner del motore, `states[]` e le texture GL.
+
+### 2b. Modelli I3D di Speed Haste (issue #168, fetta S3 di Speed)
+
+Il formato I3D ("OBJECT3D" di Iguana, 1995) è quello dei modelli di Speed (`Reference\Speed\OPENGL\i3d_*`, `mdl_i3d`). Sta in
+`Libs\Models` e non in `Libs\Speed` perché non dipende dal contenitore `SPEEDH.JCL` (il parser prende i byte, che arrivano da
+`ISpeedContainer.TryRead` o da un file) e non dalle regole del gioco; `Libs\Models` non conosce `Libs\Speed` e il test sul gioco vero
+(che ha bisogno del contenitore) sta nel progetto di test di Speed.
+
+**Il formato.** Il file è: firma `$443342` ("B3D"), la dimensione dell'immagine, l'immagine, poi i pixel delle texture. L'immagine è lo
+**scarico di memoria** dell'oggetto (`TI3dDiskObject`, 60 byte): conteggi, flag, cinque puntatori che nel file sono offset dall'inizio
+dell'immagine (vertici di 36 byte, normali di 28, materiali di 28, e la "cache delle facce": per ogni faccia un'intestazione di 48 byte e
+i suoi vertici di 20 byte che puntano al vertice e alla normale), scala e centro. Ogni materiale con `TextureOffset <> 0` ha una texture di
+64x64 byte (256x64 con il flag `I3D_MATERIAL_WIDE`) che segue l'immagine nell'ordine dei materiali; i pixel sono indici della palette fissa
+di 256 colori a 6 bit (`TI3dPalette`). Il flag `I3D_OBJECT_HAS_TIRES` dice che le prime 64 facce sono le quattro gomme (16 a testa). I record
+su disco sono `packed`, senza puntatori (uguali a 32 e 64 bit), con `SizeOf` coperto da test.
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.Models.I3d.Types` | record su disco, record neutri (`TI3dHeader`, `TI3dMaterial`, `TI3dTexture`, `TI3dFace`, `TI3dFaceVertex`, `TI3dCorrection`, `TI3dTireState`), costanti, messaggi |
+| `DelphiDoom.Models.I3d.Intf` | `II3dParser`, `II3dModel`, `II3dCorrectionReader`, `II3dRenderTarget` (estende `IModelRenderer`), `II3dModelRenderer`; `Models.Intf` non è toccata |
+| `DelphiDoom.Models.I3d.Factory` | `TI3dFactory`, l'unico punto che conosce le classi (separata da `TModelsFactory` perché gli eseguibili senza I3D non la linkino) |
+| `DelphiDoom.Models.I3d.Parser` | `TI3dParser` (`II3dParser`): dai byte al modello; ogni offset è controllato contro la dimensione dell'immagine |
+| `DelphiDoom.Models.I3d.Model` | `TI3dModel` (`II3dModel`): intestazione, facce (ogni vertice ha la sua copia della posizione), materiali, texture, le quattro gomme, correzioni |
+| `DelphiDoom.Models.I3d.CorrectionReader` | `TI3dCorrectionReader`: il file `.txt` accanto al modello (`face 3 vertex 1 visible 1 x .. y .. z .. tx .. ty .. color ..`) |
+| `DelphiDoom.Models.I3d.Renderer` | `TI3dModelRenderer` (`II3dModelRenderer`): il vecchio `RenderGL` su un `II3dRenderTarget` |
+| `DelphiDoom.Models.I3d.TireAnimator` | `TI3dTireAnimator`: dalla distanza percorsa alla rotazione di una gomma (la parte di `RenderGLEx`) |
+| `DelphiDoom.Models.I3d.Coordinates` | `TI3dCoordinates`: vertice -> mondo, punti di texture (`UVtoGL`/`GLtoUV`) |
+| `DelphiDoom.Models.I3d.Palette` | `TI3dPalette`: la palette fissa (colore come frazioni o `$00BBGGRR`, indice del colore più vicino) |
+
+`II3dRenderTarget` estende `IModelRenderer` (le chiamate di `BeginPrimitive`, `Vertex3f`, `Color4f`, `PushMatrix`...) con la sola scelta della
+texture (`SetTexturing`, `BindTexture(indice)`, `ResetTextureCache`): è il contratto che un adattatore OpenGL del motore realizzerà (una classe come
+`TEngineModelRenderer` che tiene le texture GPU, create da `II3dModel.TextureToRgba`, e cambia quella di un `.material` per nome con
+`FindMaterialByTextureName`, come faceva `RenderGLEx`); **non c'è ancora nel motore**: `Libs\OpenGl\` non è stata toccata e il disegno esistente non
+passa da qui. Il renderer non ha stato e scorre le facce una volta per modello (una chiamata a interfaccia per faccia e per vertice, come per i
+comandi MD2).
+
+**Verifica (parità).** Un harness **fuori dal repository** (`mdl_i3d`/`i3d_model.pas` e `i3d_structs.pas` del fork con le sole correzioni per compilare:
+`char` -> `AnsiChar` nei nomi delle texture, `TStream`, `glBegin`/`glVertex3f`... sostituiti da una classe che registra le chiamate, `CreateTexture`
+senza GL) ha letto con il vecchio `TI3DModelLoader.LoadFromStream` i 50 modelli I3D di `SPEEDH.JCL` (shareware) e tre file sintetici di
+`TI3dFileBuilder` (con gomme, texture larghe, scala 0, materiale trasparente), e ha scritto per ognuno: intestazione, impronta FNV-1a di facce (conteggi,
+flag, materiale, vertici, punti di texture) e di texture, centro e altezza delle gomme, e tre chiamate di `RenderGL` (con scala e offset diversi, una faccia
+selezionata, gomme che girano) con numero di triangoli, di chiamate e impronta dei loro argomenti (i bit delle `Single`); poi le stesse righe dopo 12
+correzioni (`ApplyCorrection` più `FindTireCenters`, alcune fuori dal modello). I file sono `Tests\Data\Speed\i3d.shareware.golden.txt` (800 righe) e
+`Tests\Data\Models\i3d.synthetic.golden.txt` (48). **La libreria dà le stesse righe, zero differenze** (anche le chiamate di disegno, bit per bit, con lo
+stesso `Single` dopo i calcoli in `Extended`/`Double`). Test: `Tests\DelphiDoom.Tests.Models` (101, copertura 99%) e `Tests\DelphiDoom.Tests.Speed`
+(`DelphiDoom.Tests.Speed.I3dModels`, 2: i 50 modelli letti dal contenitore; si salta se `SPEEDH.JCL` manca).
+
+**Differenze volute dal vecchio.** Un file danneggiato (firma, dimensione, array o riferimenti fuori dall'immagine, texture che non c'è nel file) è
+`EModelsException` (il vecchio leggeva memoria a caso o tornava `false` solo per la firma); un riferimento a un vertice, una normale o un materiale deve
+cadere sull'inizio di un elemento del suo array (il vecchio prendeva un puntatore qualsiasi); una faccia senza materiale (puntatore 0) ha
+`MaterialIndex = -1`, `Color = 0` e si disegna bianca senza texture (il vecchio andava in access violation); il nome della texture è di 8 `AnsiChar`
+(`texname: array[0..7] of char` in Delphi 11 sono 16 byte e sposterebbe tutti i campi seguenti); il colore corretto da una correzione è quello **della
+faccia** (il vecchio lo scriveva nella copia del materiale della faccia, uguale per costruzione); le gomme senza il flag o con meno di 64 facce hanno
+centro e altezza zero. **Conservato**: una faccia di meno di tre vertici conta `n - 2` triangoli (anche negativo); `TI3dPalette.IndexOf` confronta il
+colore a 8 bit con la palette a 6 bit senza scalare (lo usa solo l'editor delle correzioni); un vertice corretto ha la sua copia (non cambia le altre
+facce che usavano lo stesso vertice).
+
+**Non portato.** `RenderSoft`/`RenderSoftEx` (rasterizzatore software `r_soft3d`, fetta S6 opzionale), `AddCorrection`, `SaveCorrections*` (editor), la
+creazione delle texture GL e dei `TBitmap` (`CreateTexture`, `i3d_textures`, `gld_RegisterI3DTexture`: sono del motore), `mdl_i3d`/`mn_drawmodel` (classe del
+motore sopra `TBaseModel`), e l'effetto di `carinfo_t` (le texture della livrea e `mobj.tiredistance` sono dati del gioco: `TI3dTireAnimator` li riceve come numeri).
 
 ## 3. `Libs\GlMath`
 

@@ -1,6 +1,6 @@
 # Dati di prova di Libs\GlMath (issue #45)
 
-`glmath.golden.txt` è l'uscita del **vecchio codice del motore** (`OPENGL\gl_clipper.pas` e `gld_FrustumAngle`), compilato con
+`glmath.golden.txt` è l'uscita del **vecchio codice del motore** (`Libs\OpenGl\Legacy\gl_clipper.pas` e `gld_FrustumAngle`), compilato con
 Delphi 11 Win32, con ottimizzazioni attive, in un programma di prova **fuori dal repository** (l'harness non si committa; ha una copia
 di ciascuna unit in cui sono tolte solo le dipendenze dal motore: `r_main`, `viewplayer`). Ogni riga è
 `chiave=impronta/conteggio`: l'impronta è un FNV-1a a 64 bit (`DelphiDoom.Tests.GlMath.Fingerprint`), il conteggio il numero di valori.

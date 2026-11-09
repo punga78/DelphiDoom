@@ -11,7 +11,7 @@ OpenArena contiene solo dati di riferimento per Quake 3 (`MANIFESTO.md`): nessun
 |---|---|---|---|---|---|
 | Mars3D, Rad-X, Speed | tre fork di DelphiDoom (sparatutto, sparatutto spaziale, corse) | stesso motore id Tech 1, dati e regole diversi | stesso motore, una cartella di gioco ciascuno, profili iniettati | circa 36 giorni in tutto (comune 2, Mars 8, Speed 12, Radix 14) | dati originali assenti, layout di `mobj_t`/`player_t` diversi |
 | DD_FONT, DD_VOXEL, ENDEDIT | strumenti VCL dello stesso autore | strumenti, non giochi | una sola applicazione `DD_Tools` con tre moduli, come `Libs\Ide` | ENDEDIT circa 2 giorni, poi Font, voxel (XL) | Lanczos di Graphics32, macro PascalScript con classi |
-| xGreed | port Delphi di Greed (motore Raven) | già Delphi, 33 mila righe | eseguibile separato che riusa le `Libs\` | 13 fette, circa 10-12 giorni | BASS, DirectDraw, `.obj`, licenza Raven |
+| xGreed | port Delphi di Greed (motore Raven) | già Delphi, 33 mila righe | eseguibile separato che riusa le `Libs\` | 13 fette, circa 10-12 giorni (G0-G4 fatte, #175) | BASS, DirectDraw, `.obj`, licenza Raven |
 | Keen Dreams | sorgenti C id Software 1991 (DOS 16 bit) | C con 4.194 righe di asm | eseguibile separato `Keen32` | 13 fette, circa 20-25 giorni | asm a 16 bit, wraparound, dati proprietari |
 | OpenXcom | clone di UFO/TFTD in C++ (152 mila righe, SDL, yaml-cpp) | C++ non id Tech | eseguibile separato `OpenXcom32` | molti mesi (Battlescape per ultimo) | licenza GPL v3, yaml-cpp, dati originali |
 
@@ -31,7 +31,7 @@ Specifico di Doom (non si riusa fuori dai fork): `Wad` (regole di lump e marcato
 
 **Fatti.** Fork di 2.05-2.06 (il repository è 2.07), GPL v2+. Restano id Tech 1 e compilano con `DOOM`. Rad-X e Speed differiscono per meno di 3,5 mila righe
 su 251 mila: la differenza è quasi solo la data del fork. Le librerie vecchie (AUDIOLIB, MIKWIN, JPEGLIB, MP3LIB, ZLIB, C_LIB) sono già sostituite da `Libs\*`.
-Il codice nuovo è per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila), Speed 30 (12 mila), più 4-8 unit in `Base\`, `OPENGL\`, `Libs\ScriptHost\`.
+Il codice nuovo è per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila), Speed 30 (12 mila), più 4-8 unit in `Base\`, `Libs\OpenGl\Legacy\`, `Libs\ScriptHost\`.
 
 **Che cosa è nuovo.**
 - Un traduttore dei dati originali (`mars.mad`, `radix.dat`, `speedh.jcl`) in un WAD in memoria.
@@ -55,7 +55,7 @@ Speed ha `double` nel `mobj_t` e fisica con x87 contro SSE (determinismo); i buf
 **Verifica.** Parità byte per byte di traduttori e lettori di contenitore contro il vecchio codice; demo e savegame identici; `-timedemo` dei giochi esistenti invariato; copertura almeno 90%; prestazioni entro +5%.
 **I dati originali non sono nel repository né in `bin\`**: senza di essi la parità dei traduttori non si prova (resta "non verificata").
 
-**Stato (issue #166, 2026-11-09).** Fatte F0 (`Libs\GameData`: costruttore di patch unico per i tre fork e WAD in memoria, parità sulle tre copie vecchie), F1 (`TGameAliases`: Speed prende il profilo di Doom in tutte le aree tranne Iwad; `ComposeEngine` lo usa; il resto per aggiungere un gioco è in `Libs\GameData\README.md`), S1 e S2 (`Libs\Speed`: contenitore `SPEEDH.JCL` e traduttore in un WAD, parità su 1664 righe di lump dello shareware vero e su un gioco sintetico). Non fatte: F2-F4 (profili veri per Mars e Rad-X, `.dpr` dei cinque eseguibili, Launcher e DD_IDE), S3 (modelli I3D), S4 (`Libs\Racing`), S5 (cartella `Speed\`, regole, menu, HUD, savegame), S6 (`r_soft3d`), e tutto Mars3D e Rad-X.
+**Stato (issue #166, 2026-11-09).** Fatte F0 (`Libs\GameData`: costruttore di patch unico per i tre fork e WAD in memoria, parità sulle tre copie vecchie), F1 (`TGameAliases`: Speed prende il profilo di Doom in tutte le aree tranne Iwad; `ComposeEngine` lo usa; il resto per aggiungere un gioco è in `Libs\GameData\README.md`), S1 e S2 (`Libs\Speed`: contenitore `SPEEDH.JCL` e traduttore in un WAD, parità su 1664 righe di lump dello shareware vero e su un gioco sintetico). Fatta S3 (issue #168: `DelphiDoom.Models.I3d.*` in `Libs\Models`, parser, correzioni e disegno su `II3dRenderTarget`; parità sui 50 modelli dello shareware, adattatore OpenGL del motore non ancora scritto). Non fatte: F2-F4 (profili veri per Mars e Rad-X, `.dpr` dei cinque eseguibili, Launcher e DD_IDE), S4 (`Libs\Racing`), S5 (cartella `Speed\`, regole, menu, HUD, savegame), S6 (`r_soft3d`), e tutto Mars3D e Rad-X.
 
 ## 2. DD_FONT, DD_VOXEL, ENDEDIT (strumenti)
 
@@ -89,6 +89,8 @@ Percorso minimo di valore: ToolsCore → palette → `PatchWriter` → `Endoom.S
 
 **Come integrarlo.** Eseguibile separato, già Delphi: portarlo a classi con DI e togliere BASS e DirectDraw. 13 fette G0-G12 (circa 10-12 giorni); le più grosse G10 (mondo e logica, XL) e G11 (renderer e FLI, L+M). Verifica con golden dal vecchio codice: lump, piani, `renderbuffer` per pose fisse, stato dopo N tic, byte del salvataggio.
 **Dati necessari (non nel repository):** `GREED.BLO`, `SONG*.S3M`, opzionalmente `MOVIES\*.FLI`. Da verificare: layout fine di walls, sprite e flat del BLO, uso del campo `compress`, formato dei lump sonori, multiplayer.
+
+**Stato (issue #175, fette G0-G4 fatte).** `Libs\Greed` + `Greed\Greed32` (eseguibile a parte, composition root `Greed\DelphiDoom.Greed.Composition.pas`): archivio `GREED.BLO` (`IGreedArchive`), correzione `pst`, mappa a 18 piani (`TGreedMap`, `TGreedMapLoader`: lump o file `.LAY` delle demo), palette e decoder di immagini, flat, muri e sprite, e `Greed32 -data <cartella> [-list] [-map N] [-lump nome] [-png file]` che salva mappe e immagini come PNG (solo prova visiva). Verifica: golden del **codice originale** compilato in un harness (`Tools\Verifica\175\GreedGolden.dpr`, `Tests\Data\Greed`) sulle demo 1.016 e 2.0, zero differenze; 169 test, copertura 100%. **Chiarito dai dati veri:** il campo `compress` e' 0 in ogni lump di entrambe le demo (l'originale non lo legge); walls, sprite, flat e immagini hanno i layout descritti in `Libs\Greed\README.md`; nelle demo i lump delle mappe sono vuoti e le mappe sono file `LEVELn.LAY` da 73728 byte (demo 2.0) o `*.LVL` da 143360 byte (demo 1.016: altro layout, non letto). **Ancora da fare:** G5-G12 (effetti e musica, `TFixedMath`, salvataggi, configurazione, mondo e logica, renderer e FLI, `IFramePresenter`, Win64); ancora aperti la licenza del codice Raven e BASS (non usato dalle fette fatte), il formato dei lump sonori e il multiplayer.
 
 ## 4. Keen Dreams
 
