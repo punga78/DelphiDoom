@@ -46,7 +46,30 @@ uses
   DelphiDoom.Tests.Speed.RawSound in 'Source\DelphiDoom.Tests.Speed.RawSound.pas',
   DelphiDoom.Tests.Speed.MapBitmapBuilder in 'Source\DelphiDoom.Tests.Speed.MapBitmapBuilder.pas',
   DelphiDoom.Tests.Speed.Translator in 'Source\DelphiDoom.Tests.Speed.Translator.pas',
-  DelphiDoom.Tests.Speed.I3dModels in 'Source\DelphiDoom.Tests.Speed.I3dModels.pas';
+  DelphiDoom.Tests.Speed.I3dModels in 'Source\DelphiDoom.Tests.Speed.I3dModels.pas',
+  DelphiDoom.Racing.Types in '..\Libs\Racing\DelphiDoom.Racing.Types.pas',
+  DelphiDoom.Racing.Intf in '..\Libs\Racing\DelphiDoom.Racing.Intf.pas',
+  DelphiDoom.Racing.Math in '..\Libs\Racing\DelphiDoom.Racing.Math.pas',
+  DelphiDoom.Racing.CarData in '..\Libs\Racing\DelphiDoom.Racing.CarData.pas',
+  DelphiDoom.Racing.GearBox in '..\Libs\Racing\DelphiDoom.Racing.GearBox.pas',
+  DelphiDoom.Racing.Ground in '..\Libs\Racing\DelphiDoom.Racing.Ground.pas',
+  DelphiDoom.Racing.CarSounds in '..\Libs\Racing\DelphiDoom.Racing.CarSounds.pas',
+  DelphiDoom.Racing.Particles in '..\Libs\Racing\DelphiDoom.Racing.Particles.pas',
+  DelphiDoom.Racing.Track in '..\Libs\Racing\DelphiDoom.Racing.Track.pas',
+  DelphiDoom.Racing.Physics in '..\Libs\Racing\DelphiDoom.Racing.Physics.pas',
+  DelphiDoom.Racing.AiDriver in '..\Libs\Racing\DelphiDoom.Racing.AiDriver.pas',
+  DelphiDoom.Racing.PlayerDriver in '..\Libs\Racing\DelphiDoom.Racing.PlayerDriver.pas',
+  DelphiDoom.Racing.ScoreTable in '..\Libs\Racing\DelphiDoom.Racing.ScoreTable.pas',
+  DelphiDoom.Racing.GridAssigner in '..\Libs\Racing\DelphiDoom.Racing.GridAssigner.pas',
+  DelphiDoom.Racing.RaceState in '..\Libs\Racing\DelphiDoom.Racing.RaceState.pas',
+  DelphiDoom.Racing.PathReader in '..\Libs\Racing\DelphiDoom.Racing.PathReader.pas',
+  DelphiDoom.Racing.Factory in '..\Libs\Racing\DelphiDoom.Racing.Factory.pas',
+  DelphiDoom.Speed.Sim.Geometry in '..\Speed\DelphiDoom.Speed.Sim.Geometry.pas',
+  DelphiDoom.Speed.Sim.Effects in '..\Speed\DelphiDoom.Speed.Sim.Effects.pas',
+  DelphiDoom.Speed.Sim.LogSink in '..\Speed\DelphiDoom.Speed.Sim.LogSink.pas',
+  DelphiDoom.Speed.RaceSimulation in '..\Speed\DelphiDoom.Speed.RaceSimulation.pas',
+  DelphiDoom.Speed.Composition in '..\Speed\DelphiDoom.Speed.Composition.pas',
+  DelphiDoom.Tests.Speed.RaceSimulation in 'Source\DelphiDoom.Tests.Speed.RaceSimulation.pas';
 
 var
   Runner: ITestRunner;
