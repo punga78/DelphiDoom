@@ -14,7 +14,9 @@ param(
   [Parameter(Mandatory = $true)][string]$Root,
   [Parameter(Mandatory = $true)][string]$Out,
   [string[]]$Steps = @(),
-  [string]$Language = 'en-US'
+  [string]$Language = 'en-US',
+  # own user folder per run (unique name): two runs, or two agents, never share screenshots
+  [string]$UserName = ('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @"
@@ -35,7 +37,7 @@ public class OxcCap {
 }
 "@
 New-Item -ItemType Directory -Force $Out | Out-Null
-$user = Join-Path $Root 'openxcom_user_cmp'
+$user = Join-Path $Root $UserName
 if (Test-Path $user) { Remove-Item -Recurse -Force $user }
 New-Item -ItemType Directory -Force $user | Out-Null
 $cfg = (Get-Content (Join-Path $Root 'openxcom_user\options.cfg') -Raw) -replace '(?m)^  language: .*$', "  language: $Language"
@@ -61,4 +63,8 @@ try {
       }
     }
   }
-} finally { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+} finally {
+  Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+  Start-Sleep 1
+  Remove-Item -Recurse -Force $user -ErrorAction SilentlyContinue
+}

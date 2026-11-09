@@ -5,3 +5,8 @@ menu_main 640x400 a5775815
 start 640x400 1a5a6bd6
 newgame 640x400 58444485
 # newgame: the difficulty window after a click on New Game at 220,200 (the cursor is drawn there)
+audio 640x400 bfd009c5
+audio_combo 640x400 e9358075
+audio_mute 640x400 8bf13cd5
+audio_slider 640x400 2f3f79d5
+# audio*: Options > Audio (click Options 420,255; Audio 96,72); then the music format combo at 520,116 / Background Mute at 290,244 and the mouse at 300,200 / a click on the music slider at 300,32. options.cfg: music 0, sounds 0, UI 42
