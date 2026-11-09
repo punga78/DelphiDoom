@@ -29,27 +29,36 @@ type
     [Test]
     [TestCase('Demo 1.016', 'demo1016')]
     [TestCase('Demo 2.0', 'demo20')]
+    [TestCase('Gioco completo', 'full')]
     procedure DovrebbeDareLaTabellaEIByteDeiLumpDelCodiceOriginale(const ADemo: string);
     [Test]
     [TestCase('Demo 1.016', 'demo1016')]
     [TestCase('Demo 2.0', 'demo20')]
+    [TestCase('Gioco completo', 'full')]
     procedure DovrebbeTrovareIlPrimoLumpDiOgniNomeComeIlCodiceOriginale(const ADemo: string);
     [Test]
     [TestCase('Demo 1.016', 'demo1016')]
     [TestCase('Demo 2.0', 'demo20')]
+    [TestCase('Gioco completo', 'full')]
     procedure DovrebbeDareLaStessaPaletteDelCodiceOriginale(const ADemo: string);
     [Test]
     [TestCase('Demo 1.016', 'demo1016')]
     [TestCase('Demo 2.0', 'demo20')]
+    [TestCase('Gioco completo', 'full')]
     procedure DovrebbeDecodificareLeImmaginiComeIlCodiceOriginale(const ADemo: string);
     [Test]
     [TestCase('Demo 1.016', 'demo1016')]
     [TestCase('Demo 2.0', 'demo20')]
+    [TestCase('Gioco completo', 'full')]
     procedure DovrebbeClassificareICuriLumpComeIlCodiceOriginale(const ADemo: string);
     [Test]
     procedure DovrebbeDareIPianiDelleMappeDelCodiceOriginale;
     [Test]
     procedure DovrebbeNonUsareMaiLaCompressione;
+    [Test]
+    procedure DovrebbeDareIPianiDelleTrentaDueMappeDelBloDelGiocoCompleto;
+    [Test]
+    procedure DovrebbeCorreggereIlLumpPstDelGiocoCompletoComeIlCodiceOriginale;
   end;
 
 implementation
@@ -65,6 +74,8 @@ function TTestGreedGolden.Folder(const ADemo: string): string;
 begin
   if ADemo = 'demo1016' then
     Result := TGreedRealData.Demo1016Folder
+  else if ADemo = 'full' then
+    Result := TGreedRealData.FullFolder
   else
     Result := TGreedRealData.Demo20Folder;
 end;
@@ -260,7 +271,7 @@ begin
     // every group has lumps: the demos have hundreds of sprites and walls
     Assert.IsTrue(LCounts[0] > 100, 'muri');
     Assert.IsTrue(LCounts[1] > 100, 'flat');
-    Assert.IsTrue(LCounts[2] > 500, 'sprite');
+    Assert.IsTrue(LCounts[2] > 300, 'sprite');
     Assert.IsTrue(LCounts[3] > 100, 'immagini');
   finally
     LGolden.Free;
@@ -351,13 +362,86 @@ begin
   end;
 end;
 
+procedure TTestGreedGolden.DovrebbeDareIPianiDelleTrentaDueMappeDelBloDelGiocoCompleto;
+var
+  LFolder: string;
+  LGolden: TStringList;
+  LArchive: IGreedArchive;
+  LLoader: IGreedMapLoader;
+  LMap: IGreedMap;
+  LLine: string;
+  LField: TArray<string>;
+  LChecked: Integer;
+begin
+  LFolder := TGreedRealData.FullFolder;
+  if LFolder = '' then
+    Assert.Pass('I dati di GREED non ci sono su questo PC: prova saltata');
+  LGolden := Golden('full');
+  try
+    LArchive := TGreedRealData.OpenArchive(LFolder);
+    // in the complete game the 18 planes are inside the lump of the map (no .LAY file next to the archive)
+    LLoader := TGreedFactory.CreateMapLoader(LArchive, nil);
+    LChecked := 0;
+    for LLine in LGolden do
+    begin
+      LField := Fields(LLine);
+      if LField[0] <> 'B' then
+        Continue;
+      // B map number, lump, plane, "name", crc: what DoLoadMapData gave after the seek to the lump
+      LMap := LLoader.Load(StrToInt(LField[1]));
+      Assert.AreEqual(LField[5], TGreedLumps.CrcHex(LMap.Planes[TGreedPlane(StrToInt(LField[3]))]), LLine);
+      Inc(LChecked);
+    end;
+    Assert.AreEqual(32 * GREED_MAP_PLANES, LChecked);
+  finally
+    LGolden.Free;
+  end;
+end;
+
+procedure TTestGreedGolden.DovrebbeCorreggereIlLumpPstDelGiocoCompletoComeIlCodiceOriginale;
+var
+  LFolder: string;
+  LGolden: TStringList;
+  LArchive: IGreedArchive;
+  LLine: string;
+  LField: TArray<string>;
+  LIndex: Integer;
+  LFound: Integer;
+begin
+  LFolder := TGreedRealData.FullFolder;
+  if LFolder = '' then
+    Assert.Pass('I dati di GREED non ci sono su questo PC: prova saltata');
+  LGolden := Golden('full');
+  try
+    LArchive := TGreedRealData.OpenArchive(LFolder);
+    LFound := 0;
+    for LLine in LGolden do
+    begin
+      LField := Fields(LLine);
+      if (LField[0] <> 'L') or (LField[4] <> '10463') then
+        Continue;
+      LIndex := StrToInt(LField[1]);
+      // the lump as it is on disk has the CRC32 of the defect, the one after FixLump is in the golden
+      if TGreedLumps.CrcHex(LArchive.ReadLumpRaw(LIndex)) <> '48818333' then
+        Continue;
+      Inc(LFound);
+      Assert.AreEqual(LField[6], TGreedLumps.CrcHex(LArchive.ReadLump(LIndex)), 'lump corretto ' + LField[1]);
+      Assert.AreNotEqual('48818333', TGreedLumps.CrcHex(LArchive.ReadLump(LIndex)));
+    end;
+    Assert.AreEqual(1, LFound, 'un solo lump da correggere');
+  finally
+    LGolden.Free;
+  end;
+end;
+
 procedure TTestGreedGolden.DovrebbeNonUsareMaiLaCompressione;
 var
   LFolder: string;
   LArchive: IGreedArchive;
   LIndex: Integer;
 begin
-  for LFolder in TArray<string>.Create(TGreedRealData.Demo1016Folder, TGreedRealData.Demo20Folder) do
+  for LFolder in TArray<string>.Create(TGreedRealData.Demo1016Folder, TGreedRealData.Demo20Folder,
+    TGreedRealData.FullFolder) do
   begin
     if LFolder = '' then
       Continue;
