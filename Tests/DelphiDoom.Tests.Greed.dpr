@@ -59,6 +59,10 @@ uses
   DelphiDoom.Greed.Settings.Intf in '..\Libs\Greed\DelphiDoom.Greed.Settings.Intf.pas',
   DelphiDoom.Greed.Settings in '..\Libs\Greed\DelphiDoom.Greed.Settings.pas',
   DelphiDoom.Greed.SettingsStore in '..\Libs\Greed\DelphiDoom.Greed.SettingsStore.pas',
+  DelphiDoom.Greed.World.Intf in '..\Libs\Greed\DelphiDoom.Greed.World.Intf.pas',
+  DelphiDoom.Greed.Slopes in '..\Libs\Greed\DelphiDoom.Greed.Slopes.pas',
+  DelphiDoom.Greed.World in '..\Libs\Greed\DelphiDoom.Greed.World.pas',
+  DelphiDoom.Greed.Terrain in '..\Libs\Greed\DelphiDoom.Greed.Terrain.pas',
   DelphiDoom.Greed.Composition in '..\Greed\DelphiDoom.Greed.Composition.pas',
   DelphiDoom.Tests.Greed.Builders in 'Source\DelphiDoom.Tests.Greed.Builders.pas',
   DelphiDoom.Tests.Greed.RealData in 'Source\DelphiDoom.Tests.Greed.RealData.pas',
@@ -88,6 +92,7 @@ uses
   DelphiDoom.Tests.Greed.SaveGames in 'Source\DelphiDoom.Tests.Greed.SaveGames.pas',
   DelphiDoom.Tests.Greed.SaveFolder in 'Source\DelphiDoom.Tests.Greed.SaveFolder.pas',
   DelphiDoom.Tests.Greed.Settings in 'Source\DelphiDoom.Tests.Greed.Settings.pas',
+  DelphiDoom.Tests.Greed.Terrain in 'Source\DelphiDoom.Tests.Greed.Terrain.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var
