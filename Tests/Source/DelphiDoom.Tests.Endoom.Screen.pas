@@ -77,7 +77,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.Screen,
+  DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.Screen,
   DelphiDoom.Tests.Endoom.Digest, DelphiDoom.Tests.Endoom.Fixtures, DelphiDoom.Tests.Endoom.EditorScenarios,
   DelphiDoom.Tests.Endoom.EditorHelper;
 
@@ -85,7 +85,7 @@ uses
 
 procedure TTestEndoomScreen.Setup;
 begin
-  FScreen := TEndoomFactory.CreateScreen;
+  FScreen := TEndoomEditorFactory.CreateScreen;
 end;
 
 procedure TTestEndoomScreen.ExpectError(const AProc: TProc);
@@ -282,7 +282,7 @@ procedure TTestEndoomScreen.DovrebbeLeggereLeQuattromilaByteDiUnFile;
 var
   LOther: IEndoomScreen;
 begin
-  LOther := TEndoomFactory.CreateScreen;
+  LOther := TEndoomEditorFactory.CreateScreen;
   LOther.LoadFromBytes(TEndoomFixtures.Screen(2));
   Assert.AreEqual(TEndoomDigest.OfBytes(TEndoomFixtures.Screen(2)), TEndoomDigest.OfBytes(LOther.ToBytes));
 end;
@@ -316,7 +316,7 @@ procedure TTestEndoomScreen.DovrebbeCopiareUnaSchermataEConfrontarla;
 var
   LCopy: IEndoomScreen;
 begin
-  LCopy := TEndoomFactory.CreateScreen;
+  LCopy := TEndoomEditorFactory.CreateScreen;
   FScreen.SetCharacter(5, 5, 5);
   Assert.IsFalse(FScreen.IsSameAs(LCopy));
   LCopy.AssignFrom(FScreen);
@@ -353,7 +353,7 @@ begin
   Assert.AreEqual(6, Length(LGolden));
   for LSeed := 1 to 6 do
   begin
-    LScreen := TEndoomFactory.CreateScreen;
+    LScreen := TEndoomEditorFactory.CreateScreen;
     TEditorHelper.ApplyOps(LScreen, TEditorScenarios.ModelOps(Cardinal(LSeed * 1000 + 7), 600 * LSeed));
     Assert.AreEqual(Format('%d %s', [LSeed, TEndoomDigest.OfBytes(LScreen.ToBytes)]), LGolden[LSeed - 1]);
   end;

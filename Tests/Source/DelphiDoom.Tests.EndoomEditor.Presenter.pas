@@ -173,7 +173,7 @@ implementation
 
 uses
   System.Math,
-  DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf,
+  DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf,
   DelphiDoom.Endoom.TextArt.Factory, DelphiDoom.Tools.Factory, DelphiDoom.Tools.Types;
 
 const
@@ -208,7 +208,7 @@ begin
   Result := TEndoomEditorPresenter.Create(FViewIntf, FDialogsIntf, FClipboardIntf, FExporterIntf, FFileSystemIntf,
     TToolsFactory.CreateFileBackup(FFileSystemIntf), TToolsFactory.CreateSettings(FFileSystemIntf, SINI),
     TToolsFactory.CreateRecentFiles(TOOLS_RECENT_FILES_LIMIT), TToolsFactory.CreateUndoHistory(TOOLS_UNDO_LIMIT),
-    TEndoomFactory.CreateScreen, TEndoomFactory.CreateScreenImage, TEndoomFactory.CreateEditorFontSource,
+    TEndoomEditorFactory.CreateScreen, TEndoomEditorFactory.CreateScreenImage, TEndoomEditorFactory.CreateEditorFontSource,
     TEndoomTextArtFactory.CreateConverter(FResamplerIntf),
     function(AKind: TEndoomTextArtKind): IEndoomTextArtMethod
     begin
@@ -243,7 +243,7 @@ procedure TTestEndoomEditorPresenter.PutScreenFile(const APath: string; ACode: B
 var
   LScreen: IEndoomScreen;
 begin
-  LScreen := TEndoomFactory.CreateScreen;
+  LScreen := TEndoomEditorFactory.CreateScreen;
   LScreen.SetCharacter(0, 0, ACode);
   FFileSystem.TryWriteAllBytes(APath, LScreen.ToBytes);
 end;
@@ -265,7 +265,7 @@ procedure TTestEndoomEditorPresenter.DovrebbeCreareUnaSchermataVuotaAllAvvio;
 begin
   FPresenter.Start('');
   Assert.AreEqual(ENDOOM_LUMP_SIZE, Length(FPresenter.Screen.ToBytes));
-  Assert.IsTrue(FPresenter.Screen.IsSameAs(TEndoomFactory.CreateScreen));
+  Assert.IsTrue(FPresenter.Screen.IsSameAs(TEndoomEditorFactory.CreateScreen));
   Assert.AreEqual(ENDOOM_EDITOR_TITLE, FView.Title);
   Assert.AreEqual(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FView.Pixels));
   Assert.IsTrue(FView.PictureCount >= 1);
@@ -379,16 +379,16 @@ begin
     begin
       TEndoomEditorPresenter.Create(nil, FDialogsIntf, FClipboardIntf, FExporterIntf, FFileSystemIntf,
         TToolsFactory.CreateFileBackup(FFileSystemIntf), TToolsFactory.CreateSettings(FFileSystemIntf, SINI),
-        TToolsFactory.CreateRecentFiles(3), TToolsFactory.CreateUndoHistory(3), TEndoomFactory.CreateScreen,
-        TEndoomFactory.CreateScreenImage, TEndoomFactory.CreateEditorFontSource,
+        TToolsFactory.CreateRecentFiles(3), TToolsFactory.CreateUndoHistory(3), TEndoomEditorFactory.CreateScreen,
+        TEndoomEditorFactory.CreateScreenImage, TEndoomEditorFactory.CreateEditorFontSource,
         TEndoomTextArtFactory.CreateConverter(FResamplerIntf), LMethods).Free;
     end;
   LNoMethods := procedure
     begin
       TEndoomEditorPresenter.Create(FViewIntf, FDialogsIntf, FClipboardIntf, FExporterIntf, FFileSystemIntf,
         TToolsFactory.CreateFileBackup(FFileSystemIntf), TToolsFactory.CreateSettings(FFileSystemIntf, SINI),
-        TToolsFactory.CreateRecentFiles(3), TToolsFactory.CreateUndoHistory(3), TEndoomFactory.CreateScreen,
-        TEndoomFactory.CreateScreenImage, TEndoomFactory.CreateEditorFontSource,
+        TToolsFactory.CreateRecentFiles(3), TToolsFactory.CreateUndoHistory(3), TEndoomEditorFactory.CreateScreen,
+        TEndoomEditorFactory.CreateScreenImage, TEndoomEditorFactory.CreateEditorFontSource,
         TEndoomTextArtFactory.CreateConverter(FResamplerIntf), nil).Free;
     end;
   LNoScreen := procedure
@@ -396,7 +396,7 @@ begin
       TEndoomEditorPresenter.Create(FViewIntf, FDialogsIntf, FClipboardIntf, FExporterIntf, FFileSystemIntf,
         TToolsFactory.CreateFileBackup(FFileSystemIntf), TToolsFactory.CreateSettings(FFileSystemIntf, SINI),
         TToolsFactory.CreateRecentFiles(3), TToolsFactory.CreateUndoHistory(3), nil,
-        TEndoomFactory.CreateScreenImage, TEndoomFactory.CreateEditorFontSource,
+        TEndoomEditorFactory.CreateScreenImage, TEndoomEditorFactory.CreateEditorFontSource,
         TEndoomTextArtFactory.CreateConverter(FResamplerIntf), LMethods).Free;
     end;
   Assert.WillRaise(LNoView, EArgumentNilException);
@@ -417,7 +417,7 @@ begin
   Assert.IsTrue(FPresenter.Modified);
   Assert.IsTrue(FView.State.CanUndo);
   FPresenter.Undo;
-  Assert.IsTrue(FPresenter.Screen.IsSameAs(TEndoomFactory.CreateScreen));
+  Assert.IsTrue(FPresenter.Screen.IsSameAs(TEndoomEditorFactory.CreateScreen));
   Assert.IsFalse(FView.State.CanUndo);
   Assert.IsTrue(FView.State.CanRedo);
 end;

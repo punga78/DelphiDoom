@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf,
+  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf,
   DelphiDoom.Endoom.TextArt.Factory, DelphiDoom.Imaging.Resampler,
   DelphiDoom.Tests.Endoom.Digest, DelphiDoom.Tests.Endoom.EditorScenarios, DelphiDoom.Tests.Endoom.EditorHelper,
   DelphiDoom.Tests.Imaging.ResampleCases;
@@ -87,7 +87,7 @@ procedure TTestEndoomTextArtConverter.Setup;
 begin
   FFake := TFakeResampler.Create;
   FFakeIntf := FFake;
-  FScreen := TEndoomFactory.CreateScreen;
+  FScreen := TEndoomEditorFactory.CreateScreen;
   SetLength(FFake.Pixels, ENDOOM_COLUMNS * 2 * ENDOOM_ROWS * 2);
 end;
 

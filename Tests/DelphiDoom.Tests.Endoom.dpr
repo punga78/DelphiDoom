@@ -38,6 +38,7 @@ uses
   DelphiDoom.Imaging.Intf in '..\Libs\Imaging\DelphiDoom.Imaging.Intf.pas',
   DelphiDoom.Imaging.Resampler in '..\Libs\Imaging\DelphiDoom.Imaging.Resampler.pas',
   DelphiDoom.Endoom.Factory in '..\Libs\Endoom\DelphiDoom.Endoom.Factory.pas',
+  DelphiDoom.Endoom.EditorFactory in '..\Libs\Endoom\DelphiDoom.Endoom.EditorFactory.pas',
   DelphiDoom.Tests.Endoom.Digest in 'Source\DelphiDoom.Tests.Endoom.Digest.pas',
   DelphiDoom.Tests.Endoom.EditorScenarios in 'Source\DelphiDoom.Tests.Endoom.EditorScenarios.pas',
   DelphiDoom.Tests.Endoom.EditorHelper in 'Source\DelphiDoom.Tests.Endoom.EditorHelper.pas',

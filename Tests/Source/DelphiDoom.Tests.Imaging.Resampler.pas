@@ -57,14 +57,14 @@ type
 implementation
 
 uses
-  DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Factory,
+  DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Resampler,
   DelphiDoom.Tests.Imaging.Golden, DelphiDoom.Tests.Imaging.ResampleCases, DelphiDoom.Tests.Endoom.Digest;
 
 { TTestImagingResampler }
 
 procedure TTestImagingResampler.Setup;
 begin
-  FResampler := TImagingFactory.CreateLanczosResampler;
+  FResampler := TImagingLanczosResampler.Create;
 end;
 
 function TTestImagingResampler.Solid(AWidth, AHeight: Integer; AColor: Cardinal): TArray<Cardinal>;

@@ -45,7 +45,7 @@ implementation
 
 uses
   DelphiDoom.Tools.Factory, DelphiDoom.Tools.Types,
-  DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.Factory,
+  DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.EditorFactory,
   DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf, DelphiDoom.Endoom.TextArt.Factory,
   DelphiDoom.Imaging.Resampler,
   DelphiDoom.Tools.Win.FileSystem, DelphiDoom.Tools.Win.EndoomDialogs, DelphiDoom.Tools.Win.EndoomClipboard,
@@ -78,13 +78,13 @@ function TToolsServices.CreateEndoomEditor(const AView: IEndoomEditorView; out A
 var
   LFontSource: IEndoomFontSource;
 begin
-  LFontSource := TEndoomFactory.CreateEditorFontSource;
+  LFontSource := TEndoomEditorFactory.CreateEditorFontSource;
   AFont := LFontSource.GetFont;
   Result := TEndoomEditorPresenter.Create(AView, FDialogs, FClipboard, FExporter, FFileSystem,
     TToolsFactory.CreateFileBackup(FFileSystem),
     TToolsFactory.CreateSettings(FFileSystem, ChangeFileExt(ParamStr(0), '.ini')),
     TToolsFactory.CreateRecentFiles(TOOLS_RECENT_FILES_LIMIT), TToolsFactory.CreateUndoHistory(TOOLS_UNDO_LIMIT),
-    TEndoomFactory.CreateScreen, TEndoomFactory.CreateScreenImage, LFontSource,
+    TEndoomEditorFactory.CreateScreen, TEndoomEditorFactory.CreateScreenImage, LFontSource,
     TEndoomTextArtFactory.CreateConverter(TImagingLanczosResampler.Create),
     function(AKind: TEndoomTextArtKind): IEndoomTextArtMethod
     begin

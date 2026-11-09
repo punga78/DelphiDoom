@@ -77,14 +77,14 @@ type
 implementation
 
 uses
-  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.Drawing,
+  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.Drawing,
   DelphiDoom.Tests.Endoom.Digest, DelphiDoom.Tests.Endoom.EditorHelper;
 
 { TTestEndoomDrawing }
 
 procedure TTestEndoomDrawing.Setup;
 begin
-  FScreen := TEndoomFactory.CreateScreen;
+  FScreen := TEndoomEditorFactory.CreateScreen;
 end;
 
 function TTestEndoomDrawing.BackgroundsOf(AColor: Integer): Integer;
@@ -126,7 +126,7 @@ var
 begin
   LGolden := TEditorHelper.GoldenLines('DRAW');
   LCases := TEditorScenarios.DrawCases(ATool);
-  LBase := TEndoomFactory.CreateScreen;
+  LBase := TEndoomEditorFactory.CreateScreen;
   TEditorHelper.ApplyOps(LBase, TEditorScenarios.BaseOps);
   LGroup := 0;
   LAccumulated := nil;

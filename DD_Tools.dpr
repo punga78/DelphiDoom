@@ -33,6 +33,7 @@ uses
   DelphiDoom.Endoom.TextPaste in 'Libs\Endoom\DelphiDoom.Endoom.TextPaste.pas',
   DelphiDoom.Endoom.ScreenImage in 'Libs\Endoom\DelphiDoom.Endoom.ScreenImage.pas',
   DelphiDoom.Endoom.Factory in 'Libs\Endoom\DelphiDoom.Endoom.Factory.pas',
+  DelphiDoom.Endoom.EditorFactory in 'Libs\Endoom\DelphiDoom.Endoom.EditorFactory.pas',
   DelphiDoom.Endoom.TextArt.Types in 'Libs\Endoom\DelphiDoom.Endoom.TextArt.Types.pas',
   DelphiDoom.Endoom.TextArt.Intf in 'Libs\Endoom\DelphiDoom.Endoom.TextArt.Intf.pas',
   DelphiDoom.Endoom.TextArt.BackgroundOnly in 'Libs\Endoom\DelphiDoom.Endoom.TextArt.BackgroundOnly.pas',

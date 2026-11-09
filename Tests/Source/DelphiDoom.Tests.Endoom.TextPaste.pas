@@ -54,14 +54,14 @@ type
 implementation
 
 uses
-  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.TextPaste,
+  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.TextPaste,
   DelphiDoom.Tests.Endoom.Digest, DelphiDoom.Tests.Endoom.EditorScenarios, DelphiDoom.Tests.Endoom.EditorHelper;
 
 { TTestEndoomTextPaste }
 
 procedure TTestEndoomTextPaste.Setup;
 begin
-  FScreen := TEndoomFactory.CreateScreen;
+  FScreen := TEndoomEditorFactory.CreateScreen;
 end;
 
 procedure TTestEndoomTextPaste.DovrebbeScrivereUnaRigaDalPuntoDato;
@@ -159,7 +159,7 @@ begin
   LCursor := TEndoomTextPaste.Apply(FScreen, '', 7, 7, 1);
   Assert.AreEqual(7, LCursor.X);
   Assert.AreEqual(7, LCursor.Y);
-  Assert.IsTrue(FScreen.IsSameAs(TEndoomFactory.CreateScreen));
+  Assert.IsTrue(FScreen.IsSameAs(TEndoomEditorFactory.CreateScreen));
 end;
 
 procedure TTestEndoomTextPaste.DovrebbeIncollareGliStessiTestiDelVecchioEditor;

@@ -55,21 +55,21 @@ type
 implementation
 
 uses
-  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.Factory, DelphiDoom.Endoom.ScreenImage,
+  DelphiDoom.Endoom.Types, DelphiDoom.Endoom.EditorFactory, DelphiDoom.Endoom.ScreenImage,
   DelphiDoom.Tests.Endoom.EditorScenarios, DelphiDoom.Tests.Endoom.EditorHelper, DelphiDoom.Tests.Endoom.Fixtures;
 
 { TTestEndoomScreenImage }
 
 procedure TTestEndoomScreenImage.Setup;
 begin
-  FImage := TEndoomFactory.CreateScreenImage;
-  FFont := TEndoomFactory.CreateEditorFontSource.GetFont;
+  FImage := TEndoomEditorFactory.CreateScreenImage;
+  FFont := TEndoomEditorFactory.CreateEditorFontSource.GetFont;
   FPixels := nil;
 end;
 
 procedure TTestEndoomScreenImage.DovrebbeDisegnareSeicentoquarantaPerDuecento;
 begin
-  FImage.Render(TEndoomFactory.CreateScreen, FFont, True, FPixels);
+  FImage.Render(TEndoomEditorFactory.CreateScreen, FFont, True, FPixels);
   Assert.AreEqual(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FPixels));
   Assert.AreEqual(640, ENDOOM_WIDTH);
   Assert.AreEqual(200, ENDOOM_HEIGHT);
@@ -80,7 +80,7 @@ var
   LScreen: IEndoomScreen;
   LColor: Integer;
 begin
-  LScreen := TEndoomFactory.CreateScreen;
+  LScreen := TEndoomEditorFactory.CreateScreen;
   // the empty cells (code 0) show the background
   for LColor := 0 to ENDOOM_BACKGROUND_COLOR_COUNT - 1 do
     LScreen.SetBackground(LColor, 0, LColor);
@@ -95,7 +95,7 @@ var
   LShown: TArray<Cardinal>;
   LHidden: TArray<Cardinal>;
 begin
-  LScreen := TEndoomFactory.CreateScreen;
+  LScreen := TEndoomEditorFactory.CreateScreen;
   // a full block: every pixel is the foreground, or the background when it is hidden
   LScreen.SetCharacter(0, 0, $DB);
   LScreen.SetForeground(0, 0, 15);
@@ -115,9 +115,9 @@ procedure TTestEndoomScreenImage.DovrebbeRiusareLoStessoBuffer;
 var
   LFirst: TArray<Cardinal>;
 begin
-  FImage.Render(TEndoomFactory.CreateScreen, FFont, True, FPixels);
+  FImage.Render(TEndoomEditorFactory.CreateScreen, FFont, True, FPixels);
   LFirst := FPixels;
-  FImage.Render(TEndoomFactory.CreateScreen, FFont, True, FPixels);
+  FImage.Render(TEndoomEditorFactory.CreateScreen, FFont, True, FPixels);
   Assert.AreEqual(Length(LFirst), Length(FPixels));
 end;
 
@@ -150,7 +150,7 @@ begin
   Assert.AreEqual(12, Length(LGolden));
   for LSeed := 1 to 6 do
   begin
-    LScreen := TEndoomFactory.CreateScreen;
+    LScreen := TEndoomEditorFactory.CreateScreen;
     TEditorHelper.ApplyOps(LScreen, TEditorScenarios.ModelOps(Cardinal(LSeed * 1000 + 7), 600 * LSeed));
     for LBlink := 0 to 1 do
     begin
@@ -170,7 +170,7 @@ var
 begin
   LGolden := TEditorHelper.GoldenLines('RENDERF');
   Assert.AreEqual(6, Length(LGolden));
-  LScreen := TEndoomFactory.CreateScreen;
+  LScreen := TEndoomEditorFactory.CreateScreen;
   for LKind := 0 to 2 do
   begin
     LScreen.LoadFromBytes(TEndoomFixtures.Screen(LKind));
@@ -202,7 +202,7 @@ var
   LOther: TBytes;
 begin
   FFont[0] := 77;
-  LOther := TEndoomFactory.CreateEditorFontSource.GetFont;
+  LOther := TEndoomEditorFactory.CreateEditorFontSource.GetFont;
   Assert.AreEqual(0, Integer(LOther[0]));
 end;
 
