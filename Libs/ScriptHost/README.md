@@ -68,3 +68,16 @@ La **fetta 2d e le seguenti** (`docs\SCRIPTHOST_PIANO.md`, sezione 5): speciali 
 Nel motore `Base\DelphiDoom.Engine.Script.SectorSpecials.pas` (`TEngineScriptSectorSpecials`) è l'unica classe che chiama `EVH_*`, `P_ForceLightning` e i polyobj (con l'`{$IFDEF HEXEN}` di prima per `p_anim`/`udmf_spec`); `ComposeScriptHost` la da a `PS_ConfigureSectorSpecials` (`psi_map`, senza di essa `I_Error`). **Strada A**: le 77 `PS_*` di `psi_map` sono thunk di una riga.
 
 **2e: `ps_dll`** (DLL dentro un PK3: copiata in un file temporaneo e caricata da li) è `TScriptDllLoader` (`DelphiDoom.ScriptHost.Dll.Intf` / `.Loader` / `.WindowsLibrary`): `IScriptDllSource` (`KeyOf`, `Extract`: nel motore `TEngineScriptDllSource` sopra `IPakFileSystem` e `ITempFiles`), `IScriptDllLibrary` (`Load`/`Unload`: `TScriptDllWindowsLibrary` = `LoadLibrary`/`FreeLibrary`), `IScriptDllLoader` (`Load` conta gli usi, `Unload` scarica all'ultimo, `Shutdown`). `ps_dll.pas` è la facciata (`PS_PAKLoadDll`, `PS_PAKUnLoadDll`, `PS_ShutDownDLLLoader`; `PS_ConfigureDllLoader` da `ComposeScriptHost`); `PS_InitDLLLoader` non esiste piu. `PS_PAKLoadDll` ora dà un `NativeUInt` (era `LongWord`: sbagliato a 64 bit; `mdl_dllmodel` aggiornato).
+## Partita, texture e tastiera di PS_GAME (issue #172, fetta 2f-1)
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.ScriptHost.Intf` | `IScriptFunctionSection` (una parte delle funzioni di una unit: `Describe`) e `IScriptFunctionTable.AddMethod` (funzione che e' un metodo di un oggetto: l'interprete la chiama con quell'oggetto come `Self`, `RegisterDelphiMethod`) |
+| `DelphiDoom.ScriptHost.Types` | `TScriptGame` (Doom, Heretic, Hexen, Strife), `TScriptKey` (le azioni della tastiera) |
+| `DelphiDoom.ScriptHost.Games` | `TScriptGames.TryFromName` |
+| `DelphiDoom.ScriptHost.Game.Intf` | `IScriptGameInfoSource`, `IScriptTextureSource`, `IScriptKeyboardSource` (cosa chiedono al motore) |
+| `DelphiDoom.ScriptHost.Game.Info` | `TScriptGameInfo`: `_GAME`, `GlobalEarthQuake`, `LocalEarthQuake`, `GameSkill`, `GameMap`, `GameEpisode` (solo Doom e Heretic) |
+| `DelphiDoom.ScriptHost.Game.Textures` | `TScriptTextures`: `GetTextureWidth`, `GetTextureHeight`, `IsValidTexture` |
+| `DelphiDoom.ScriptHost.Keys.Table` / `.Keys` | la tabella dei 56 `key_*`/`mouseb*`/`joyb*` (nome, tasto, giochi, protezione demo) e `TScriptKeys` (+ `TScriptKeyBinding`, uno per riga della tabella; `gamekeydown`, `mousebuttons`, `joybuttons`) |
+
+Nel motore: `Base\DelphiDoom.Engine.Script.GameInfo`, `.Textures`, `.Keyboard` (le uniche a leggere i globali). `ComposeScriptHost` le crea e le da' a `PS_ConfigureGameFunctions` di `ps_import`, che le chiama da `PS_DescribeGameFunctions` al posto delle vecchie `ATable.Add` (stesso ordine, stesse dichiarazioni). I `PS_Game*`, `PS_*Texture*`, `PS_key_*`, `PS_mouseb*`, `PS_joyb*` di `psi_game` non esistono piu. Test: `Tests\Source\DelphiDoom.Tests.ScriptHost.GameSections` (25, anche uno script vero compilato ed eseguito con le tre sezioni).

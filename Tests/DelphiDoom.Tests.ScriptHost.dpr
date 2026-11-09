@@ -62,6 +62,12 @@ uses
   DelphiDoom.ScriptHost.Dll.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Dll.Intf.pas',
   DelphiDoom.ScriptHost.Dll.Loader in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Dll.Loader.pas',
   DelphiDoom.ScriptHost.Dll.WindowsLibrary in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Dll.WindowsLibrary.pas',
+  DelphiDoom.ScriptHost.Game.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Game.Intf.pas',
+  DelphiDoom.ScriptHost.Games in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Games.pas',
+  DelphiDoom.ScriptHost.Game.Info in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Game.Info.pas',
+  DelphiDoom.ScriptHost.Game.Textures in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Game.Textures.pas',
+  DelphiDoom.ScriptHost.Keys.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.Table.pas',
+  DelphiDoom.ScriptHost.Keys in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.pas',
   DelphiDoom.ScriptHost.Factory in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Factory.pas',
   DelphiDoom.Tests.ScriptHost.OldSectorSpecials in 'Source\DelphiDoom.Tests.ScriptHost.OldSectorSpecials.pas',
   DelphiDoom.Tests.ScriptHost.SectorSpecials in 'Source\DelphiDoom.Tests.ScriptHost.SectorSpecials.pas',
@@ -77,7 +83,8 @@ uses
   DelphiDoom.Tests.ScriptHost.FunctionList in 'Source\DelphiDoom.Tests.ScriptHost.FunctionList.pas',
   DelphiDoom.Tests.ScriptHost.CallbackGroup in 'Source\DelphiDoom.Tests.ScriptHost.CallbackGroup.pas',
   DelphiDoom.Tests.ScriptHost.SystemFunctions in 'Source\DelphiDoom.Tests.ScriptHost.SystemFunctions.pas',
-  DelphiDoom.Tests.ScriptHost.FixedFunctions in 'Source\DelphiDoom.Tests.ScriptHost.FixedFunctions.pas';
+  DelphiDoom.Tests.ScriptHost.FixedFunctions in 'Source\DelphiDoom.Tests.ScriptHost.FixedFunctions.pas',
+  DelphiDoom.Tests.ScriptHost.GameSections in 'Source\DelphiDoom.Tests.ScriptHost.GameSections.pas';
 
 var
   Runner: ITestRunner;

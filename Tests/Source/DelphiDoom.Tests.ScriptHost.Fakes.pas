@@ -40,11 +40,14 @@ type
     Codes: TList<Pointer>;
     ResultTypes: TList<string>;
     ExportDeclarations: TList<string>;
+    /// <summary>The Self of every function: nil for a plain routine</summary>
+    Instances: TList<TObject>;
     constructor Create;
     destructor Destroy; override;
     procedure Add(const ADeclaration: string; const ACode: Pointer);
     procedure AddWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
       const ACode: Pointer);
+    procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
   end;
 
   TFakeOutput = class(TInterfacedObject, IScriptSystemOutput)
@@ -228,10 +231,12 @@ begin
   Codes := TList<Pointer>.Create;
   ResultTypes := TList<string>.Create;
   ExportDeclarations := TList<string>.Create;
+  Instances := TList<TObject>.Create;
 end;
 
 destructor TFakeFunctionTable.Destroy;
 begin
+  Instances.Free;
   ExportDeclarations.Free;
   ResultTypes.Free;
   Codes.Free;
@@ -245,6 +250,7 @@ begin
   Codes.Add(ACode);
   ResultTypes.Add('');
   ExportDeclarations.Add(ADeclaration);
+  Instances.Add(nil);
 end;
 
 procedure TFakeFunctionTable.AddWithCustomResult(const ADeclaration, AResultType,
@@ -254,6 +260,14 @@ begin
   Codes.Add(ACode);
   ResultTypes.Add(AResultType);
   ExportDeclarations.Add(AExportDeclaration);
+  Instances.Add(nil);
+end;
+
+procedure TFakeFunctionTable.AddMethod(const ADeclaration: string; const AInstance: TObject;
+  const ACode: Pointer);
+begin
+  Add(ADeclaration, ACode);
+  Instances[Instances.Count - 1] := AInstance;
 end;
 
 { TFakeOutput }
