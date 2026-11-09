@@ -1,0 +1,111 @@
+sizes scoreitem=32 recordtable=230400
+ground map probes hash=035F7C6B
+ground other size hash=EC3E6705
+ground slipcalculation hash=F1AA0F8B
+scores size=230400 recordsize=32 bytes=83CE203B checks=C085E425
+grid cartype=0 players=0 start=19: 5 18 2 7 19 1 8 13 10 11 4 3 15 9 16 14 12 6 0
+grid cartype=0 players=1 start=19: 18 4 11 7 2 15 10 12 14 19 3 9 5 1 16 6 13 17 8
+grid cartype=0 players=2 start=19: 19 18 4 5 14 15 7 6 10 8 12 2 9 17 13 0 1 16 11
+grid cartype=0 players=3 start=19: 13 11 2 14 1 3 4 0 19 17 15 10 16 12 9 18 16 17 18
+grid cartype=1 players=0 start=19: 32 35 30 39 37 34 31 20 38 33 29 27 23 22 25 26 28 21 24
+grid cartype=1 players=1 start=19: 30 23 28 34 36 33 38 21 22 32 20 37 26 29 24 31 39 25 35
+grid cartype=1 players=2 start=19: 21 37 29 36 24 32 30 34 26 27 22 25 35 28 33 23 31 39 38
+grid cartype=1 players=3 start=19: 25 34 27 22 32 28 39 37 26 20 23 30 35 29 33 36 38 31 24
+grid cartype=2 players=0 start=19: 19 23 27 32 1 12 10 3 34 7 22 18 14 8 13 17 35 37 28
+grid cartype=2 players=1 start=19: 6 25 29 11 34 5 12 19 3 26 39 9 16 23 38 8 10 20 36
+grid cartype=2 players=2 start=19: 18 37 36 27 12 22 30 17 25 13 7 6 21 23 4 33 1 9 2
+grid cartype=2 players=3 start=19: 11 36 22 32 19 39 28 30 33 38 0 12 34 24 3 27 2 14 23
+grid all hash=29EBACFC
+track variant=0 loaded=True
+track variant=0 description lines=24 hash=BC8D467A first=0 id=0 x=360448000 y=262144000 a=1073741824 s=79 p=23 n=1 dn=25646691 dh=25646691 v=0
+track variant=0 nextpath hash=4E2DADD8
+track variant=1 loaded=True
+track variant=1 description lines=40 hash=5B9C80C2 first=0 id=0 x=380108800 y=262144000 a=1073741824 s=128 p=39 n=1 dn=18537307 dh=18537307 v=0
+track variant=1 nextpath hash=D3B63C80
+track variant=2 loaded=True
+track variant=2 description lines=12 hash=02894750 first=0 id=0 x=262144000 y=399769600 a=-2147483648 s=163 p=7 n=5 dn=71234376 dh=71234376 v=0
+track variant=2 nextpath hash=2CE40636
+physics car=0 skill=0 mode=0 ground=0 chunks 4C9D41E0 C7B4B133 8D177EE5 total=3E10D756 end gear=4 rpm=13000 speed=1293770 laps=0
+physics car=0 skill=0 mode=0 ground=1 chunks 653C5B45 79A9B50F E72ABD43 total=C50CE249 end gear=1 rpm=1824 speed=70319 laps=0
+physics car=0 skill=0 mode=1 ground=0 chunks 5692CD51 1C55C89D 8DA77F99 total=0BF39E05 end gear=2 rpm=3798 speed=412973 laps=0
+physics car=0 skill=0 mode=1 ground=1 chunks 7817640B 956CDE4B 6278681F total=CD6A2C5B end gear=5 rpm=0 speed=451 laps=0
+physics car=0 skill=0 mode=2 ground=0 chunks 1F561DC2 9ADFB6AF B178F5E9 total=526AC3B4 end gear=5 rpm=9350 speed=899360 laps=0
+physics car=0 skill=0 mode=2 ground=1 chunks 5CCC1055 277DB463 0C18CEA6 total=799A0F10 end gear=1 rpm=1596 speed=64822 laps=0
+physics car=0 skill=2 mode=0 ground=0 chunks 0027CD7E 3EA3E40D BFCA328E total=BB63763D end gear=1 rpm=12260 speed=1332850 laps=0
+physics car=0 skill=2 mode=0 ground=1 chunks 707FBEA5 5E79154E 920A00FD total=A61A48A2 end gear=1 rpm=570 speed=22593 laps=0
+physics car=0 skill=2 mode=1 ground=0 chunks 0291646C F0C5F8F1 CE17AAD7 total=5BD3DA5E end gear=6 rpm=0 speed=347173 laps=0
+physics car=0 skill=2 mode=1 ground=1 chunks 836694D4 A979D81F 3A600301 total=3886591A end gear=2 rpm=0 speed=4018 laps=0
+physics car=0 skill=2 mode=2 ground=0 chunks 6F1243BB A0DDB215 5920BC06 total=ADBBD6BC end gear=6 rpm=8013 speed=822246 laps=0
+physics car=0 skill=2 mode=2 ground=1 chunks 8BADF358 3654FC14 5A4AB9DF total=C712AAD1 end gear=1 rpm=2052 speed=79474 laps=0
+physics car=0 skill=4 mode=0 ground=0 chunks D3CD4E13 98B44415 EF158AF6 total=AAF3299C end gear=0 rpm=0 speed=1313003 laps=0
+physics car=0 skill=4 mode=0 ground=1 chunks FC747747 A6C48900 32E05065 total=3A470AA2 end gear=1 rpm=1140 speed=45201 laps=0
+physics car=0 skill=4 mode=1 ground=0 chunks 8958D04B 8CDD6863 A252FD23 total=E908DFAF end gear=3 rpm=0 speed=0 laps=0
+physics car=0 skill=4 mode=1 ground=1 chunks 4B00D8B7 A7BA8CC1 B7503A31 total=014B3D17 end gear=3 rpm=0 speed=3534 laps=0
+physics car=0 skill=4 mode=2 ground=0 chunks 29F74845 E5DA79CD C3F582FF total=5858AD67 end gear=5 rpm=7273 speed=763151 laps=0
+physics car=0 skill=4 mode=2 ground=1 chunks 0D4BFD7F 0983F1C6 6EA2E231 total=2D7BA078 end gear=1 rpm=2052 speed=79574 laps=0
+physics car=7 skill=0 mode=0 ground=0 chunks 3326DD11 BA588777 4874D658 total=A38B549A end gear=0 rpm=0 speed=1315846 laps=0
+physics car=7 skill=0 mode=0 ground=1 chunks 0178B43E 3E4A84B5 970BB246 total=529EB91B end gear=1 rpm=784 speed=32717 laps=0
+physics car=7 skill=0 mode=1 ground=0 chunks F5C00A16 7F6852A4 8EDC4411 total=D26C7EAB end gear=5 rpm=0 speed=673582 laps=0
+physics car=7 skill=0 mode=1 ground=1 chunks 2B89673D 6B750EE4 E6529D44 total=D7DB4635 end gear=-1 rpm=0 speed=-2144 laps=0
+physics car=7 skill=0 mode=2 ground=0 chunks F9A10479 20AF29EA C4B6577A total=E6305785 end gear=5 rpm=9189 speed=900077 laps=0
+physics car=7 skill=0 mode=2 ground=1 chunks 200AB8CF E22BA2CA AE150765 total=96CF210C end gear=1 rpm=1681 speed=66982 laps=0
+physics car=7 skill=2 mode=0 ground=0 chunks DA565172 2A5BC14D C67A25AD total=94EC67D2 end gear=0 rpm=0 speed=1048253 laps=-1
+physics car=7 skill=2 mode=0 ground=1 chunks 0CABF834 1D3B2978 6DD45DA2 total=93680FA8 end gear=1 rpm=1232 speed=52262 laps=0
+physics car=7 skill=2 mode=1 ground=0 chunks DD425948 147AD445 AD67BC29 total=37D15794 end gear=2 rpm=8367 speed=495754 laps=0
+physics car=7 skill=2 mode=1 ground=1 chunks E45288F1 1E1A0AB6 54D782D0 total=546C9DD9 end gear=1 rpm=448 speed=18604 laps=0
+physics car=7 skill=2 mode=2 ground=0 chunks C7DF5FE4 2E74C2B6 F1EF9AEF total=D9EC0ACD end gear=6 rpm=8135 speed=848176 laps=0
+physics car=7 skill=2 mode=2 ground=1 chunks 38D5CD19 7F3AAC0C 624BAC3E total=0D18542F end gear=1 rpm=1681 speed=68523 laps=0
+physics car=7 skill=4 mode=0 ground=0 chunks BB91A118 A42886B8 532E0D7A total=B1AF8092 end gear=6 rpm=12958 speed=1352701 laps=0
+physics car=7 skill=4 mode=0 ground=1 chunks 3313F8D5 A8CB8567 F38160FC total=278911CE end gear=3 rpm=6530 speed=471603 laps=0
+physics car=7 skill=4 mode=1 ground=0 chunks 5B9A3836 D9DD3C7F F2BC1D3D total=1185D294 end gear=5 rpm=6290 speed=946867 laps=0
+physics car=7 skill=4 mode=1 ground=1 chunks BD266D5E 044471B3 C3FB5AE9 total=AB914496 end gear=5 rpm=0 speed=1042 laps=0
+physics car=7 skill=4 mode=2 ground=0 chunks 7DC6D5B3 9C8207A7 76CF405B total=2A650403 end gear=5 rpm=7060 speed=758634 laps=0
+physics car=7 skill=4 mode=2 ground=1 chunks 0A2055DE C0861177 273AC841 total=ED7B6AF0 end gear=1 rpm=1793 speed=73717 laps=0
+physics car=20 skill=0 mode=0 ground=0 chunks 2BCA772D E4D45A05 7142782B total=09C5D213 end gear=2 rpm=12630 speed=1070650 laps=0
+physics car=20 skill=0 mode=0 ground=1 chunks 42D5CF64 03DB2871 3A59381A total=1A5F6DBD end gear=2 rpm=7358 speed=336225 laps=0
+physics car=20 skill=0 mode=1 ground=0 chunks 444177BB 4398D80C 8A333ECA total=1D6E38ED end gear=1 rpm=2220 speed=350429 laps=0
+physics car=20 skill=0 mode=1 ground=1 chunks 7933F594 265FA9A3 3C489423 total=D8F2E808 end gear=0 rpm=0 speed=0 laps=0
+physics car=20 skill=0 mode=2 ground=0 chunks E3ACEC89 EAAD0C9F 29E4FB72 total=C72DE7C4 end gear=5 rpm=8969 speed=692163 laps=0
+physics car=20 skill=0 mode=2 ground=1 chunks 4464EBC4 B086230A 0C394EBD total=37DD9617 end gear=1 rpm=1428 speed=48005 laps=0
+physics car=20 skill=2 mode=0 ground=0 chunks 241B2543 915578BE C572058A total=F1BBC307 end gear=6 rpm=10771 speed=887317 laps=0
+physics car=20 skill=2 mode=0 ground=1 chunks 8602E5AB 4607EF67 DD79C5C0 total=2FF0749C end gear=1 rpm=1714 speed=52798 laps=0
+physics car=20 skill=2 mode=1 ground=0 chunks 50520BFB 3B76D39B E4C08CB9 total=588D78B5 end gear=6 rpm=0 speed=100538 laps=0
+physics car=20 skill=2 mode=1 ground=1 chunks 372C1917 81D41BC9 707DB3DF total=009C22C5 end gear=5 rpm=56 speed=6120 laps=0
+physics car=20 skill=2 mode=2 ground=0 chunks F3496158 ADDEC090 D9D2EC1B total=A6C89DDF end gear=5 rpm=9593 speed=741290 laps=0
+physics car=20 skill=2 mode=2 ground=1 chunks 6F93F3B1 1B25325D 726163A4 total=CD4EDEB0 end gear=1 rpm=1571 speed=48172 laps=0
+physics car=20 skill=4 mode=0 ground=0 chunks 434DA3AE 37C988A0 7AA71CEF total=8BCFDA91 end gear=0 rpm=0 speed=1055392 laps=0
+physics car=20 skill=4 mode=0 ground=1 chunks 144BF3DF 988C17FF 561B3397 total=A4D2A557 end gear=1 rpm=1000 speed=31231 laps=0
+physics car=20 skill=4 mode=1 ground=0 chunks 4108FD38 5D8CD9A4 7EF0BAB5 total=D654C259 end gear=1 rpm=1110 speed=208367 laps=0
+physics car=20 skill=4 mode=1 ground=1 chunks 3B065E8D FF48A4A6 0121B0B6 total=BFA22FB9 end gear=2 rpm=0 speed=1601 laps=0
+physics car=20 skill=4 mode=2 ground=0 chunks 446CDC50 AA984CF3 1CE2E8BD total=0263CFE2 end gear=6 rpm=9285 speed=767162 laps=0
+physics car=20 skill=4 mode=2 ground=1 chunks 250E3C5D 096AA92D 9EE27617 total=8AD35317 end gear=1 rpm=1571 speed=50195 laps=0
+physics car=33 skill=0 mode=0 ground=0 chunks A8549D6E E082AB77 89B539FE total=DB7A77D7 end gear=3 rpm=13000 speed=1063200 laps=0
+physics car=33 skill=0 mode=0 ground=1 chunks 550D92B5 824206FF E762AB30 total=9AAB2A9A end gear=-1 rpm=0 speed=-320 laps=0
+physics car=33 skill=0 mode=1 ground=0 chunks DD81B281 5E21E1FF D8758D48 total=D1D22252 end gear=6 rpm=1924 speed=164970 laps=0
+physics car=33 skill=0 mode=1 ground=1 chunks ABF3DD83 9A315BB8 685D1F4A total=AAB599D5 end gear=1 rpm=978 speed=30783 laps=0
+physics car=33 skill=0 mode=2 ground=0 chunks DF73A518 E1194F26 B0F8C540 total=82024F5E end gear=5 rpm=8444 speed=667774 laps=0
+physics car=33 skill=0 mode=2 ground=1 chunks D38F37AB 78B79684 C714E575 total=3DF3CEDC end gear=1 rpm=1397 speed=46078 laps=0
+physics car=33 skill=2 mode=0 ground=0 chunks 1E15C0F3 3B1E7608 81308B89 total=EEEDC776 end gear=6 rpm=12012 speed=1012398 laps=0
+physics car=33 skill=2 mode=0 ground=1 chunks ADC7F76E BBBAC009 1AF0E9EA total=F36A5F4D end gear=1 rpm=1118 speed=37369 laps=0
+physics car=33 skill=2 mode=1 ground=0 chunks 7DE64A17 B37E5955 16F91D2A total=6BB938A8 end gear=3 rpm=2220 speed=461552 laps=0
+physics car=33 skill=2 mode=1 ground=1 chunks A140B570 A644E9D2 E600A4C4 total=DE47B6B2 end gear=3 rpm=76 speed=7702 laps=0
+physics car=33 skill=2 mode=2 ground=0 chunks BCB20C13 B115CF79 C24A97A1 total=C12A39FB end gear=5 rpm=9388 speed=742214 laps=0
+physics car=33 skill=2 mode=2 ground=1 chunks F026C9BE 6C435FF6 83B8C29F total=97E4069D end gear=1 rpm=1677 speed=53750 laps=0
+physics car=33 skill=4 mode=0 ground=0 chunks 5BA1D705 C5BD6A6B 50DCF884 total=FC8AA756 end gear=0 rpm=0 speed=1048554 laps=0
+physics car=33 skill=4 mode=0 ground=1 chunks A430017A 5F18AAD4 A1A67287 total=726CEEC9 end gear=1 rpm=1537 speed=49947 laps=0
+physics car=33 skill=4 mode=1 ground=0 chunks B72B2D7A C9328B63 631855D1 total=0DEC86A2 end gear=5 rpm=2220 speed=316864 laps=0
+physics car=33 skill=4 mode=1 ground=1 chunks 4F08BD05 C1E6318C 58139BCD total=FA11A222 end gear=5 rpm=0 speed=1138 laps=0
+physics car=33 skill=4 mode=2 ground=0 chunks 2B7573AB 1ADDA746 98B5F261 total=D625CEF4 end gear=6 rpm=9100 speed=766472 laps=0
+physics car=33 skill=4 mode=2 ground=1 chunks C52B1323 D04DEAF2 87EE3A31 total=C84E4D62 end gear=1 rpm=1677 speed=54399 laps=0
+race skill=1 variant=0 chunks AC057C0E 55DABC41 F4B9D6EE CFF35E0E total=BB3933CA positions=68821B0A laps=1,1,1,1,1,1,1,1
+race skill=1 variant=0 car3 laptimes=3522,0,0 first positions=1,2,3
+race skill=1 variant=1 chunks 3DF33D6D DAADD1E9 8C37DB45 B6750BE5 total=CA6971CA positions=1CC9FA4E laps=1,1,1,1,1,1,1,1
+race skill=1 variant=1 car3 laptimes=3588,0,0 first positions=1,2,3
+race skill=1 variant=2 chunks D58FC35A B4ED1C7E 441AACD2 D8ADF74D total=48034C68 positions=E6DC8AAD laps=0,0,1,-1,0,1,1,0
+race skill=1 variant=2 car3 laptimes=0,0,0 first positions=4,7,1
+race skill=3 variant=0 chunks 3AD55E15 41704CB1 E3F3ECA1 B113FB6A total=13D01C7F positions=9B7158FC laps=1,1,1,1,1,1,1,1
+race skill=3 variant=0 car3 laptimes=3273,0,0 first positions=1,2,3
+race skill=3 variant=1 chunks 51BEC69D D337ED6B A7FD2C6D E4C3F7AE total=C4E6C396 positions=2C91BBCC laps=1,1,1,1,1,1,1,1
+race skill=3 variant=1 car3 laptimes=3347,0,0 first positions=1,2,3
+race skill=3 variant=2 chunks FB74EAD0 1424A768 2D4C174D 1CEB5D03 total=07E79700 positions=0696599A laps=0,1,0,0,-1,1,1,0
+race skill=3 variant=2 car3 laptimes=0,0,0 first positions=6,3,7
