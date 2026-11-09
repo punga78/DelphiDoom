@@ -84,6 +84,10 @@ type
     /// <summary>The byte of a plane at a tile (y * 64 + x); 0 outside 0..4095</summary>
     function GetValue(APlane: TGreedPlane; ASpot: Integer): Byte;
     procedure SetValue(APlane: TGreedPlane; ASpot: Integer; AValue: Byte);
+    /// <summary>Copies the 4096 bytes of a plane to ADest (the renderer reads a plane at a time)</summary>
+    procedure CopyPlane(APlane: TGreedPlane; ADest: PByte);
+    /// <summary>Copies the 4096 flags of the tiles (mapflags) to ADest</summary>
+    procedure CopyMapFlags(ADest: PByte);
     /// <summary>mapflags of a tile; 0 outside the map</summary>
     function GetMapFlags(ASpot: Integer): Byte;
     procedure SetMapFlags(ASpot: Integer; AValue: Byte);

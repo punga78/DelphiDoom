@@ -110,6 +110,22 @@ uses
   DelphiDoom.Tests.Greed.PlayerMovement in 'Source\DelphiDoom.Tests.Greed.PlayerMovement.pas',
   DelphiDoom.Tests.Greed.SpriteDeath in 'Source\DelphiDoom.Tests.Greed.SpriteDeath.pas',
   DelphiDoom.Tests.Greed.GameLoop in 'Source\DelphiDoom.Tests.Greed.GameLoop.pas',
+  DelphiDoom.Greed.Random in '..\Libs\Greed\DelphiDoom.Greed.Random.pas',
+  DelphiDoom.Greed.Render.Types in '..\Libs\Greed\DelphiDoom.Greed.Render.Types.pas',
+  DelphiDoom.Greed.Render.Assets.Intf in '..\Libs\Greed\DelphiDoom.Greed.Render.Assets.Intf.pas',
+  DelphiDoom.Greed.Render.ArchiveAssets in '..\Libs\Greed\DelphiDoom.Greed.Render.ArchiveAssets.pas',
+  DelphiDoom.Greed.Render.Tables in '..\Libs\Greed\DelphiDoom.Greed.Render.Tables.pas',
+  DelphiDoom.Greed.Render.State in '..\Libs\Greed\DelphiDoom.Greed.Render.State.pas',
+  DelphiDoom.Greed.Render.SpanSorter in '..\Libs\Greed\DelphiDoom.Greed.Render.SpanSorter.pas',
+  DelphiDoom.Greed.Render.WallRenderer in '..\Libs\Greed\DelphiDoom.Greed.Render.WallRenderer.pas',
+  DelphiDoom.Greed.Render.PlaneRenderer in '..\Libs\Greed\DelphiDoom.Greed.Render.PlaneRenderer.pas',
+  DelphiDoom.Greed.Render.ContentRenderer in '..\Libs\Greed\DelphiDoom.Greed.Render.ContentRenderer.pas',
+  DelphiDoom.Greed.Render.SpanDrawer in '..\Libs\Greed\DelphiDoom.Greed.Render.SpanDrawer.pas',
+  DelphiDoom.Greed.Render.SpriteInterpolator in '..\Libs\Greed\DelphiDoom.Greed.Render.SpriteInterpolator.pas',
+  DelphiDoom.Greed.Render.FrameRenderer in '..\Libs\Greed\DelphiDoom.Greed.Render.FrameRenderer.pas',
+  DelphiDoom.Tests.Greed.RenderScenarios in 'Source\DelphiDoom.Tests.Greed.RenderScenarios.pas',
+  DelphiDoom.Tests.Greed.RenderRunner in 'Source\DelphiDoom.Tests.Greed.RenderRunner.pas',
+  DelphiDoom.Tests.Greed.Render in 'Source\DelphiDoom.Tests.Greed.Render.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var

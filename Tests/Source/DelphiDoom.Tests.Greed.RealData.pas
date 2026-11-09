@@ -27,6 +27,8 @@ type
     class function Demo1016Folder: string; static;
     /// <summary>The folder of GREED.BLO and of the .LAY files of the demo 2.0; empty if it is not here</summary>
     class function Demo20Folder: string; static;
+    /// <summary>The folder of GREED.BLO of the full game; empty if it is not on this machine (it is not in the repository)</summary>
+    class function FullFolder: string; static;
     /// <summary>A golden file of Tests\Data\Greed</summary>
     class function GoldenPath(const AName: string): string; static;
     /// <summary>The archive of the folder (with the corrections of the original)</summary>
@@ -71,6 +73,13 @@ end;
 class function TGreedRealData.Demo20Folder: string;
 begin
   Result := TPath.Combine(Root, 'demo20gus\GREEDEMO.20');
+  if (Root = '') or not TFile.Exists(TPath.Combine(Result, 'GREED.BLO')) then
+    Result := '';
+end;
+
+class function TGreedRealData.FullFolder: string;
+begin
+  Result := TPath.Combine(Root, 'full');
   if (Root = '') or not TFile.Exists(TPath.Combine(Result, 'GREED.BLO')) then
     Result := '';
 end;
