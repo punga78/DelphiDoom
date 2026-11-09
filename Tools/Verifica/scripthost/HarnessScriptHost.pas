@@ -475,6 +475,9 @@ end;
 function IsSkipped(const AFunction: TVshFunction): Boolean;
 begin
   Result := ContainsText(GSkip, ',' + AFunction.Name + ',');
+  // the Polyobj family ends the game (I_Error of po_man) for a polyobj that the level does not have
+  if StartsText('Polyobj_', AFunction.Name) then
+    Result := True;
   if (GOnly <> '') and not ContainsText(AFunction.Name, GOnly) then
     Result := True;
 end;

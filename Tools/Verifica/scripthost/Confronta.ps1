@@ -21,7 +21,8 @@ param(
   [int]$Seconds = 600,
   [string]$Extra = '',
   [switch]$Twice,
-  [int]$ShowLines = 15
+  [int]$ShowLines = 15,
+  [int]$MaxRepetitions = 80
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -46,28 +47,51 @@ function Clear-Files {
   Get-ChildItem $BinDir -Filter 'verify_scripthost_*.txt' -ErrorAction SilentlyContinue | Remove-Item -Force
 }
 
+$script:skips = New-Object System.Collections.Generic.List[string]
+$script:added = 0
+
+# one run of one executable with the current list of skipped functions; true if it wrote the result file
 function Invoke-One([string]$Label, [string]$Arguments, [string]$Dest) {
   $exe = Join-Path $here "harness_out\${Game}_L2_$($Label.ToUpper()).exe"
   if (-not (Test-Path $exe)) { throw "Eseguibile non trovato: $exe (Compila-ScriptHost.ps1 -Variant L2)" }
   $copy = Join-Path $BinDir "${exeName}_VSH$($Label.ToUpper()).exe"
   Copy-Item $exe $copy -Force
   Clear-Files
+  $skipArgument = ''
+  if ($script:skips.Count -gt 0) { $skipArgument = '-vshskip ' + ($script:skips -join ',') }
   try {
-    Write-Host "--- $Label : $Arguments"
-    & powershell -NoProfile -File $runner -Exe $copy -Arguments "$Arguments $flags" -WorkDir $BinDir -Seconds $Seconds -StopWhenExited
+    Write-Host "--- $Label : $Arguments (saltate dal ciclo: $($script:skips.Count))"
+    & powershell -NoProfile -File $runner -Exe $copy -Arguments "$Arguments $flags $skipArgument" -WorkDir $BinDir -Seconds $Seconds -StopWhenExited
   }
   finally {
     Remove-Item $copy -Force -ErrorAction SilentlyContinue
   }
+  Remove-Item $Dest -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $Dest | Out-Null
   Get-ChildItem $BinDir -Filter 'verify_scripthost_*.txt' -ErrorAction SilentlyContinue | Move-Item -Destination $Dest -Force
-  if (-not (Test-Path (Join-Path $Dest 'verify_scripthost_L2.txt'))) {
-    $progress = Join-Path $Dest 'verify_scripthost_L2_progress.txt'
-    if (Test-Path $progress) { Write-Host "    ATTENZIONE: nessun risultato; ultima funzione in corso: $(Get-Content $progress)" }
-    else { Write-Host '    ATTENZIONE: nessun risultato e nessun file di avanzamento (il gioco non e arrivato al livello?)' }
-  }
+  return (Test-Path (Join-Path $Dest 'verify_scripthost_L2.txt'))
 }
 
+# runs until the result file exists: an executable that dies puts the function in progress in the list of the skipped
+# ones and runs again (the list is shared by old, new and all the repetitions); the same function twice in a row, or
+# too many repetitions, stop everything
+function Invoke-UntilDone([string]$Label, [string]$Arguments, [string]$Dest) {
+  $last = ''
+  while ($true) {
+    if (Invoke-One $Label $Arguments $Dest) { return }
+    $progress = Join-Path $Dest 'verify_scripthost_L2_progress.txt'
+    if (-not (Test-Path $progress)) { throw "[$Label] nessun risultato e nessun file di avanzamento (il gioco non e arrivato al livello?)" }
+    $line = (Get-Content $progress | Select-Object -First 1)
+    if ($line -notmatch '^\d+ (\S+)\.(\S+)$') { throw "[$Label] file di avanzamento non riconosciuto: $line" }
+    $name = $Matches[2]
+    if ($name -eq $last -or $script:skips -contains $name) { throw "[$Label] l'eseguibile e morto due volte sulla stessa funzione: $line" }
+    $last = $name
+    $script:added++
+    if ($script:added -gt $MaxRepetitions) { throw "troppe ripetizioni ($MaxRepetitions): saltate finora $($script:skips -join ',')" }
+    Write-Host "    [$Label] morto su $line : salto $name e rilancio"
+    $script:skips.Add($name)
+  }
+}
 function Compare-Files([string]$Title, [string]$A, [string]$B, [string]$NameA, [string]$NameB) {
   if (-not (Test-Path $A) -or -not (Test-Path $B)) {
     Write-Host "$Title : DIVERSO (file presente solo in uno dei due)"
@@ -95,12 +119,20 @@ $index = 0
 try {
   foreach ($arguments in $runs) {
     $index++
-    Invoke-One 'Old' $arguments (Join-Path $work "run${index}_old")
-    Invoke-One 'New' $arguments (Join-Path $work "run${index}_new")
+    # until old and new both finish with the same, unchanged list of skipped functions
+    do {
+      $before = $script:skips.Count
+      Invoke-UntilDone 'Old' $arguments (Join-Path $work "run${index}_old")
+      Invoke-UntilDone 'New' $arguments (Join-Path $work "run${index}_new")
+    } while ($script:skips.Count -ne $before)
     if ($Twice) {
-      Invoke-One 'Old' $arguments (Join-Path $work "run${index}_old2")
-      Invoke-One 'New' $arguments (Join-Path $work "run${index}_new2")
+      Invoke-UntilDone 'Old' $arguments (Join-Path $work "run${index}_old2")
+      Invoke-UntilDone 'New' $arguments (Join-Path $work "run${index}_new2")
+      if ($script:skips.Count -ne $before) { throw 'la lista dei salti e cambiata nelle ripetizioni: rifare senza -Twice poi con -Twice' }
     }
+    $skipFile = Join-Path $work "run${index}_skipped.txt"
+    $script:skips | Set-Content $skipFile
+    Write-Host "[$Game] $arguments : funzioni saltate dal ciclo automatico, oltre a Polyobj_* e alla lista di default ($($script:skips.Count)): $($script:skips -join ', ')  -> $skipFile"
     foreach ($name in 'verify_scripthost_L2.txt', 'verify_scripthost_L2_scripts.txt') {
       $different += Compare-Files "[$Game] $arguments $name" (Join-Path $work "run${index}_old\$name") (Join-Path $work "run${index}_new\$name") 'vecchio' 'nuovo'
       if ($Twice) {
