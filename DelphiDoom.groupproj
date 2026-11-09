@@ -268,6 +268,9 @@
         <Projects Include="Tests\DelphiDoom.Tests.Xcom.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Tests\DelphiDoom.Tests.XcomMod.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Tests\DelphiDoom.Tests.XcomSurface.dproj">
             <Dependencies/>
         </Projects>
@@ -1127,6 +1130,15 @@
     </Target>
     <Target Name="DelphiDoom_Tests_Xcom:Make">
         <MSBuild Projects="Tests\DelphiDoom.Tests.Xcom.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomMod">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomMod.dproj"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomMod:Clean">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomMod.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomMod:Make">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomMod.dproj" Targets="Make"/>
     </Target>
     <Target Name="DelphiDoom_Tests_XcomSurface">
         <MSBuild Projects="Tests\DelphiDoom.Tests.XcomSurface.dproj"/>

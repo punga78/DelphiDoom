@@ -1,0 +1,10606 @@
+# corpus of the rule classes: a case is a header line (kind, extra arguments) and a YAML node
+%%%%
+region STR_R
+missionZones: [[[1e2, 1e2, 0, 167.165], [0, 70.49, 188.5, 1e2]]]
+missionZones: [[]]
+missionWeights: {true: 27}
+missionWeights: {true: 42, a b: 24, STR_LONG_NAME_1: 18}
+cost: 221
+missionRegion: 7
+areas: [[99.5, -40, 1e2, -2.26], [1e2, 103.5, 164, 36.5]]
+type: 7
+regionWeight: -1
+%%%%
+trajectory STR_T
+id: null
+groundTimer: 7413
+groundTimer: 30
+waypoints: [[0, 0, 92], [4, 0, 12], [3, 4, 6], [5, 4, 58]]
+waypoints: [[0, 4, 93], [0, 0, 73], [2, 0, 8], [4, 4, 4]]
+%%%%
+race STR_RACE
+members: [x]
+id: x
+%%%%
+trajectory STR_T
+id: null
+groundTimer: 0x10
+%%%%
+trajectory STR_T
+waypoints: [[0, 3, 71], [5, 2, 41], [2, 3, 84], [3, 4, 46]]
+id: x
+groundTimer: 0x10
+%%%%
+trajectory STR_T
+groundTimer: 2
+waypoints: [[3, 3, 51], [2, 3, 12], [2, 0, 32], [5, 0, 20]]
+id: 7
+%%%%
+research STR_Q 5
+cost: 2147483647
+name: true
+points: 16
+requires: [STR_GAMMA, STR_LONG_NAME_1, true]
+unlocks: [y, STR_LONG_NAME_1]
+lookup: 7
+cutscene: x
+getOneFree: [a b, y, x]
+destroyItem: no
+%%%%
+region STR_R
+missionWeights: {é: 2, x: 14}
+cost: 2147483647
+missionZones: [[[0, 0, 1e2, 171.787, 2147483647, STR_LONG_NAME_1]], []]
+missionRegion: STR_BETA
+regionWeight: abc
+areas: [[-29.12, 1e2, 356.5, -11.140], [1e2, 1e2, 252.5, 117], [0, 136.636, 32.5, 51.5]]
+%%%%
+research STR_TOPIC 4
+listOrder: 25
+cutscene: true
+dependencies: []
+destroyItem: true
+requires: []
+lookup: STR_ALPHA
+points: 2147483647
+getOneFree: [y, STR_LONG_NAME_1, a b]
+%%%%
+manufacture STR_OTHER 6
+name: null
+listOrder: 35
+requiredItems: {y: -77578}
+requiredItems: {é: 0}
+cost: 26
+space:
+requires: [y, a b, é, STR_BETA]
+category: é
+producedItems: {x: 0, 7: 33, y: -5}
+time: 5
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+members: [STR_LONG_NAME_1, true, 7, STR_BETA]
+%%%%
+research STR_Q 9
+lookup: é
+listOrder: 0
+dependencies: []
+points: -5
+unlocks: [7, STR_GAMMA, STR_LONG_NAME_1]
+name: STR_GAMMA
+cutscene: é
+destroyItem: true
+requires: [1, 2]
+needItem: false
+getOneFree: []
+%%%%
+trajectory STR_T
+groundTimer: 0x10
+groundTimer: 90880
+waypoints: [[4, 0, 45], [6, 2, 75], [5, 1, 27], [5, 2, 56]]
+id: STR_BETA
+%%%%
+manufacture STR_ITEM 6
+cost: 0x10
+producedItems: {STR_GAMMA: 289}
+category: true
+category: STR_BETA
+time: [1, 2]
+listOrder: 96010
+requires: [7, STR_LONG_NAME_1, a b, x]
+requiredItems: {}
+space: abc
+%%%%
+country STR_USA
+labelLat: 0
+labelLat: 1e2
+%%%%
+race STR_RACE
+id: y
+members: [a b, x, true, true]
+%%%%
+trajectory STR_T
+waypoints: [[5, 1, 20], [2, 4, 11], [2, 2, 69], [2, 1, 21]]
+groundTimer: 34
+id: y
+%%%%
+inventory 1
+id: 7
+x: -67437
+type: 21469
+costs:
+costs: {STR_LONG_NAME_1: 5}
+slots: [[1, 4], [5, 0]]
+y: 13
+%%%%
+region STR_R
+regionWeight: 91608
+missionWeights: {7: 7}
+areas: [[-31.68, -56.412, 0, -162.218], [1e2, 308.5, 0, 208.5], [174.992, -166, 97, 11.3]]
+%%%%
+region STR_R
+missionWeights: {}
+type: STR_LONG_NAME_1
+type: é
+missionRegion: true
+areas: [[-45.431, -153.257, 25.186, 86.5], [0, 128.406, 1e2, -27.10], [1e2, -52.76, 0, 275.5]]
+cost: 2147483647
+missionZones: [[[347.5, 185.5, -163.577, 91], [0, -54.23, 0, 146]]]
+regionWeight: 7
+%%%%
+inventory 4
+slots: [[1, 5], [8, 0]]
+x: -1
+id: STR_LONG_NAME_1
+type: 33
+%%%%
+trajectory STR_T
+id: STR_ALPHA
+groundTimer: 0x10
+waypoints: ~
+%%%%
+country STR_USA
+areas: [[179, 102.5, 26.18, 0], [78.5, 10.45, 91.931, 1e2], [-72.686, 83.5, 116, 1e2]]
+labelLon: 138.171
+fundingBase: -1182
+fundingCap: 2
+type: é
+labelLat: 1e2
+%%%%
+region STR_R
+regionWeight: -1
+type: STR_GAMMA
+missionRegion: a b
+areas: [[356.5, 320.5, -57.72, 296.5, 1]]
+missionZones: []
+cost: 39
+missionWeights: {true: 26}
+%%%%
+manufacture STR_ITEM 4
+listOrder: -1
+time: abc
+name: x
+producedItems: {STR_BETA: 1, x: 8}
+requires: [STR_BETA, STR_ALPHA]
+requires: [STR_LONG_NAME_1, STR_ALPHA]
+requiredItems: {STR_LONG_NAME_1: 31, a b: 37, STR_ALPHA: 273}
+%%%%
+manufacture STR_ITEM 3
+time: 0x10
+cost:
+requires: []
+category: 7
+listOrder: {k: v}
+name: null
+%%%%
+manufacture STR_ITEM 7
+listOrder: 23
+space: 95469
+name: null
+time: {k: v}
+requires: [STR_LONG_NAME_1, y]
+category: null
+cost: 267
+%%%%
+country STR_USA
+areas: [[151, 326.5, 221.5, 1e2, 25], [109.949, 0, 0.96, 16, -89478], [21.5, 184.5, 165.414, -50.46]]
+type: STR_ALPHA
+labelLon: abc
+fundingBase: 300
+labelLat: 0
+fundingCap: 3
+%%%%
+trajectory STR_T
+groundTimer: 16
+waypoints: [[3, 3, 28], [0, 4, 26], [4, 0, 94], [6, 0, 81]]
+%%%%
+inventory 7
+listOrder: 64948
+listOrder: abc
+y: 28
+slots: []
+id: a b
+x: -1
+type: -54575
+costs: {}
+%%%%
+trajectory STR_T
+id: 7
+waypoints: [[5, 4, 13], [2, 0, 25]]
+groundTimer: 0x10
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 3
+waypoints: []
+%%%%
+inventory 7
+slots: [[0, 4], [3, 5], [5, 2]]
+type: 0x10
+x: 30
+y: 3
+listOrder: -1
+%%%%
+inventory 2
+id: é
+y: 2147483647
+costs: {true: -253}
+type: 0x10
+x: -1
+slots: []
+%%%%
+inventory 8
+costs: {STR_LONG_NAME_1: 4, 7: 4}
+y: -4
+y: 264
+%%%%
+manufacture STR_OTHER 0
+listOrder: 32
+category: x
+producedItems: {}
+space: 34
+requiredItems: {y: 2147483647, y: -1}
+cost: 49698
+%%%%
+country STR_USA
+areas: [[0, 130, 0, 50.5], [74.81, -9.999, 65, -6.38], [1e2, 1.305, 0, 1e2]]
+fundingBase: 2147483647
+labelLat: -32.95
+fundingCap: 0x10
+labelLon: 136.5
+type: 7
+%%%%
+research STR_Q 1
+destroyItem: no
+needItem: no
+dependencies: [true, STR_ALPHA]
+name: STR_LONG_NAME_1
+unlocks: [STR_GAMMA, STR_BETA, y]
+points: 0x10
+cutscene: STR_LONG_NAME_1
+lookup: a b
+lookup: x
+cost: 2147483647
+requires: []
+%%%%
+country STR_USA
+fundingBase: 0x10
+labelLon: 179
+areas: [[4.5, 179.57, 0, 149.5], [129.5, 73.17, 0, -58.203], [-44, -33.54, 68, 114]]
+type: a b
+fundingCap: 0x10
+%%%%
+race STR_RACE
+id: STR_GAMMA
+members: ~
+%%%%
+region STR_R
+areas: []
+missionWeights: {STR_LONG_NAME_1: 46}
+type: null
+missionRegion: true
+missionRegion: x
+missionZones: []
+regionWeight: -51242
+%%%%
+region STR_R
+cost: ~
+missionZones: []
+areas: [[-56.562, 137.5, 149.851, -161.569]]
+areas: [[1e2, 30.5, -164.884, 55.375], [0, -75.36, 74.333, 159]]
+type: true
+missionWeights: {y: 27, y: 44}
+missionRegion: {k: v}
+%%%%
+manufacture STR_OTHER 2
+requires: [7, a b]
+producedItems: {STR_ALPHA: 27, true: 24}
+space: 203
+cost: 28544
+time: 0x10
+listOrder: 0
+requiredItems: {}
+category: STR_GAMMA
+%%%%
+research STR_Q 0
+destroyItem: abc
+destroyItem: false
+listOrder: 5
+lookup: STR_BETA
+needItem: true
+dependencies: [null, STR_ALPHA, STR_BETA]
+cost: 4
+requires: [true]
+%%%%
+trajectory STR_T
+
+%%%%
+manufacture STR_OTHER 0
+category: null
+requiredItems: {k: v}
+requires: [é, a b, é]
+cost: 23
+producedItems: {}
+space: -1
+time: -1
+listOrder: 0
+name: STR_ALPHA
+%%%%
+region STR_R
+missionZones: [[]]
+areas: [[0, -68.90, 69, 94.5]]
+regionWeight: 3
+missionRegion: a b
+cost: -1
+%%%%
+research STR_Q 3
+lookup: null
+unlocks: [x, STR_GAMMA]
+name: abc
+cutscene: null
+cost: 35
+requires: [y, a b, null]
+dependencies: [7, null, a b, STR_LONG_NAME_1]
+dependencies: [true]
+points: 38
+%%%%
+inventory 0
+listOrder: 192
+listOrder: 39
+x: 95904
+costs: {k: v}
+slots: [[6, 4], [0, 2], [7, 5], [6, 2], [5, 3]]
+id: STR_ALPHA
+y: 40
+y: -1
+%%%%
+race STR_RACE
+id: y
+id: STR_ALPHA
+%%%%
+trajectory STR_T
+id: y
+waypoints: {k: v}
+waypoints: [[1, 4, 42], [2, 4, 87], [2, 4, 9], [6, 0, 49]]
+groundTimer: 14
+%%%%
+research STR_TOPIC 5
+needItem: true
+points: 7
+requires: [STR_BETA, true, a b]
+name: é
+cutscene: a b
+getOneFree: [é, STR_BETA, null, x]
+dependencies: [true, null, 7]
+cost: 4
+lookup: STR_LONG_NAME_1
+listOrder: -3740
+%%%%
+trajectory STR_T
+groundTimer:
+%%%%
+trajectory STR_T
+id: null
+waypoints: [[5, 3, 57], [1, 1, 17], [1, 0, 89]]
+groundTimer: 14
+%%%%
+region STR_R
+missionWeights: {y: 2, STR_ALPHA: 13, STR_ALPHA: 25}
+type: STR_ALPHA
+regionWeight: -4
+missionZones: []
+missionRegion: a b
+%%%%
+manufacture STR_ITEM 4
+space: 12
+category: a b
+name: STR_ALPHA
+listOrder: 103
+producedItems: {7: 171, x: -4, a b: 1}
+time: -1
+requiredItems: {y: 0x10}
+cost: 209
+requires: []
+%%%%
+country STR_X
+fundingCap: 4
+labelLon: 1e2
+type: STR_ALPHA
+areas: []
+labelLat: 94.5
+fundingBase: 0
+%%%%
+research STR_Q 0
+lookup: true
+getOneFree: []
+listOrder: 4
+name: true
+requires: []
+cost:
+destroyItem: true
+points: 2147483647
+dependencies: abc
+cutscene: null
+cutscene: STR_BETA
+%%%%
+race STR_RACE
+id: é
+members: [é, true]
+%%%%
+region STR_R
+type: null
+missionRegion: x
+areas: []
+regionWeight: 285
+cost: 0x10
+%%%%
+inventory 0
+slots: [[1, 4], [0, 2], [5, 2]]
+id: null
+type: 2147483647
+x: 0x10
+y: -1
+y: 250
+listOrder: 70
+costs: {}
+%%%%
+trajectory STR_T
+waypoints: [[1, 3, 4], [5, 2, 56], [3, 3, 80], [2, 1, 74]]
+groundTimer: 17
+id: STR_LONG_NAME_1
+%%%%
+research STR_Q 7
+points: 0x10
+lookup: null
+lookup: true
+cost: 2
+needItem: true
+cutscene: true
+listOrder: -1
+destroyItem: true
+getOneFree: [STR_GAMMA, x]
+%%%%
+research STR_Q 8
+cost: 5
+needItem: true
+needItem: no
+destroyItem: true
+getOneFree: [STR_ALPHA]
+requires: [STR_ALPHA, true, null]
+listOrder: -4026
+cutscene: x
+dependencies: []
+%%%%
+region STR_R
+missionRegion: é
+missionWeights: {null: 27}
+type: true
+missionZones: []
+cost: -92683
+%%%%
+race STR_RACE
+members: [1, 2]
+id: null
+%%%%
+region STR_R
+type: 7
+missionZones: []
+regionWeight: 225
+cost: 21
+missionRegion: null
+%%%%
+race STR_RACE
+id: STR_BETA
+%%%%
+trajectory STR_T
+groundTimer: 12
+waypoints: []
+id: é
+id: 7
+%%%%
+research STR_Q 1
+listOrder: 98483
+destroyItem: true
+name: y
+getOneFree: [7, STR_GAMMA]
+getOneFree: abc
+lookup: a b
+dependencies: [y]
+requires: [1, 2]
+cost: 266
+points: 0x10
+cutscene:
+unlocks: []
+%%%%
+country STR_USA
+areas: [[1e2, 1e2, -8.62, 76.105, 15684]]
+fundingBase: 2147483647
+labelLon: 0
+labelLat: 133.694
+type: STR_GAMMA
+%%%%
+race STR_RACE
+id: a b
+members: [7, null]
+%%%%
+research STR_TOPIC 9
+lookup: STR_GAMMA
+getOneFree: [y, STR_GAMMA]
+destroyItem: no
+requires: [null, é]
+name: x
+points: -2
+needItem: true
+needItem: no
+cost: 27
+cutscene: {k: v}
+dependencies: [x, é, 7, STR_ALPHA]
+unlocks: [é, STR_BETA, null]
+%%%%
+country STR_X
+fundingBase: -73269
+areas: [[0, 58.551, 1e2, -67.158], [287.5, -51, -179, 141], [-171, 343.5, 1e2, 132]]
+labelLat: 216.5
+fundingCap: 28
+type: null
+labelLon: 5.5
+%%%%
+country STR_USA
+fundingCap: 0x10
+labelLon: 235.5
+type: é
+%%%%
+manufacture STR_OTHER 7
+time: 0
+listOrder: -1
+name: STR_GAMMA
+producedItems: {STR_BETA: 14, true: 65551, null: 2147483647}
+space: -1
+space: -1
+requiredItems: {x: 5, y: 282, STR_BETA: -1}
+%%%%
+manufacture STR_ITEM 6
+time: 2147483647
+requiredItems: {}
+listOrder: -1
+cost: -1
+space: 2147483647
+requires: [true, x, null]
+requires: [1, 2]
+name: y
+producedItems: {é: -32952, null: 19}
+category: true
+%%%%
+race STR_RACE
+members: []
+id: é
+%%%%
+country STR_X
+areas: [[-33, 3, 151, -180], [-55.36, 154, -145, 59.82]]
+labelLat: 1e2
+fundingBase: 1
+fundingCap: 15
+labelLon: -84.7
+type: true
+%%%%
+race STR_RACE
+id: STR_GAMMA
+members: [STR_GAMMA, a b, x, STR_BETA]
+%%%%
+region STR_R
+missionWeights: {STR_GAMMA: 47, STR_BETA: 33}
+cost: 2147483647
+missionZones: [[[89, 0, 88.5, 79.84, -84083, null], [1e2, -67.18, 1e2, 1e2]]]
+missionRegion: STR_ALPHA
+type: STR_ALPHA
+areas: [[87.5, 0, 1e2, -76.80, 5], [61, 59.18, 0, -38.77]]
+%%%%
+trajectory STR_T
+groundTimer: 133
+id: {k: v}
+waypoints: [[0, 2, 39], [5, 2, 88], [4, 3, 26]]
+%%%%
+region STR_R
+areas: [[320.5, -61.57, 6.53, 1e2]]
+regionWeight: 2147483647
+missionRegion: a b
+cost: 0x10
+type: 7
+%%%%
+inventory 3
+type: 8
+x: -11618
+slots: [[1, 4], [3, 3]]
+y: 0x10
+id: STR_ALPHA
+listOrder: 209
+%%%%
+manufacture STR_ITEM 5
+name: STR_LONG_NAME_1
+requires: [y]
+requires: [null]
+space: -1
+category: STR_GAMMA
+cost: 2147483647
+listOrder: -1
+producedItems: {}
+requiredItems: {x: 0x10, STR_BETA: 2147483647}
+time: 36
+time: 4
+%%%%
+inventory 0
+x: 0x10
+type: 83
+costs: {x: 2147483647, STR_BETA: -17406, a b: 9}
+id: STR_ALPHA
+listOrder: 35
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+waypoints: [[0, 2, 84], [2, 0, 25], [6, 0, 84]]
+groundTimer: 2147483647
+%%%%
+country STR_X
+type: x
+fundingCap: 0x10
+labelLon: 129.5
+fundingBase: -1
+fundingBase: 0x10
+labelLat: 17
+areas: []
+%%%%
+research STR_TOPIC 9
+needItem: true
+destroyItem: false
+requires: [null, STR_LONG_NAME_1]
+cost: -22394
+unlocks: [STR_BETA]
+name: STR_ALPHA
+listOrder: 2147483647
+cutscene: STR_GAMMA
+getOneFree: []
+dependencies: [STR_LONG_NAME_1]
+points: -1
+%%%%
+region STR_R
+areas: []
+missionRegion: x
+missionZones: [[[142.5, 283.5, 174.917, 1e2], [83.5, 59.76, 0, 0]]]
+regionWeight: 0x10
+missionWeights: {y: 7, x: 33}
+type: STR_LONG_NAME_1
+%%%%
+manufacture STR_ITEM 7
+name: x
+time: 38
+listOrder: -1
+producedItems: {}
+cost: 23
+%%%%
+trajectory STR_T
+id: 7
+waypoints: []
+groundTimer: 2147483647
+%%%%
+country STR_USA
+type: STR_LONG_NAME_1
+fundingCap: 1
+areas: []
+labelLon: 0
+fundingBase: 55
+labelLat: -119.106
+%%%%
+trajectory STR_T
+groundTimer: abc
+id: STR_GAMMA
+%%%%
+inventory 2
+y: 280
+listOrder: 12
+costs: {}
+x: -6041
+id: y
+type: -78274
+%%%%
+trajectory STR_T
+waypoints: [[3, 2, 62], [5, 4, 85], [5, 3, 77]]
+id: y
+groundTimer: 249
+%%%%
+trajectory STR_T
+waypoints: {k: v}
+waypoints: [[4, 2, 96], [4, 2, 35], [1, 1, 81], [4, 2, 42]]
+id: null
+%%%%
+inventory 9
+y: 13
+costs: {STR_GAMMA: -1, STR_GAMMA: 2147483647}
+x: 1
+type: 2147483647
+id: a b
+slots: [[0, 4], [2, 2], [2, 3]]
+%%%%
+country STR_X
+labelLon: 31.53
+labelLat: 23.59
+type: a b
+areas: [[-28.9, -54, 58, 161.5, 0x10], [0, -27.926, -58.68, -128.136]]
+fundingBase: -3
+%%%%
+research STR_Q 5
+points: -27523
+getOneFree: [é, STR_ALPHA]
+needItem: true
+listOrder: 10
+listOrder: -1
+destroyItem: false
+requires: [STR_BETA, STR_ALPHA, y, STR_BETA]
+name: STR_GAMMA
+lookup: true
+cost: 268
+dependencies: [x]
+%%%%
+trajectory STR_T
+id: y
+groundTimer: 2147483647
+waypoints: [1, 2]
+waypoints: []
+%%%%
+manufacture STR_ITEM 0
+time: 57670
+producedItems: {STR_ALPHA: -2, a b: -1, true: -5}
+cost: 0x10
+name: STR_GAMMA
+space: 2147483647
+category: é
+listOrder: 22
+%%%%
+trajectory STR_T
+waypoints: [[4, 2, 48], [2, 0, 66], [0, 4, 66], [6, 4, 24]]
+id: true
+groundTimer: -71926
+%%%%
+race STR_RACE
+members: [null]
+id: STR_ALPHA
+%%%%
+inventory 7
+x: 33
+type: -3
+y: 0x10
+costs: {}
+id: STR_ALPHA
+slots: [[6, 3], [7, 4], [6, 4], [8, 1], [3, 4], [1, 0]]
+%%%%
+country STR_USA
+labelLon: 0
+type: y
+areas: [[-21.26, -152, 0, 91.5]]
+fundingBase: {k: v}
+labelLat: 1e2
+%%%%
+country STR_USA
+areas: [[129.816, 78, 77.5, 11.10, -1], [170.899, 18.19, 172.5, 135.156], [-28.73, -73, 0, 0]]
+fundingBase: 263
+type: null
+labelLon: 1e2
+%%%%
+region STR_R
+cost: 1
+regionWeight: 34
+areas: [[123, 160.5, 39.40, 0, 19], [0, -6.33, 169, 20], [191.5, 0, 77.931, 1e2]]
+missionRegion: STR_GAMMA
+type: true
+missionZones: {k: v}
+missionWeights: {}
+%%%%
+research STR_TOPIC 4
+points: 15
+lookup: 7
+cutscene: y
+needItem: true
+dependencies: [7, é, 7]
+unlocks: [x, STR_GAMMA, x]
+unlocks: [STR_LONG_NAME_1, y]
+cost: -1
+getOneFree: [STR_BETA, STR_ALPHA, null, a b]
+getOneFree: []
+destroyItem: true
+name: true
+%%%%
+trajectory STR_T
+groundTimer: 12
+%%%%
+inventory 9
+costs: {}
+costs: {}
+id: a b
+id: STR_BETA
+x: 46102
+type: ~
+y: -1
+%%%%
+inventory 5
+slots: [[6, 1], [8, 1]]
+x: -1
+type: 5
+costs: {}
+id: y
+%%%%
+country STR_X
+labelLon:
+type: true
+labelLat: 138.788
+%%%%
+inventory 7
+costs: {true: 20, 7: 0x10}
+id: x
+type: 0x10
+type: 2147483647
+x: 146
+listOrder: 21
+y: {k: v}
+%%%%
+research STR_Q 5
+needItem: true
+needItem: false
+cost: -62140
+listOrder: 11
+requires: [STR_ALPHA, a b]
+points: 286
+unlocks: [x, y, null, a b]
+cutscene: y
+name: y
+getOneFree: [7]
+destroyItem: true
+%%%%
+research STR_TOPIC 7
+listOrder: -4
+lookup: STR_BETA
+cost: 6
+dependencies: [STR_LONG_NAME_1, null, STR_BETA, a b]
+dependencies: [STR_LONG_NAME_1, x, é, STR_LONG_NAME_1]
+requires: [x, STR_LONG_NAME_1, STR_ALPHA, é]
+points: -4
+destroyItem: no
+name: y
+getOneFree: [STR_GAMMA, null]
+unlocks: [7]
+%%%%
+manufacture STR_OTHER 6
+listOrder: 2147483647
+requiredItems: {7: 9, STR_LONG_NAME_1: 34, STR_GAMMA: 11}
+time: 66966
+cost: 56270
+name: é
+category: STR_BETA
+requires: [1, 2]
+space: 0x10
+producedItems: {y: -1}
+%%%%
+country STR_USA
+areas: []
+fundingBase: 101
+labelLon: -102
+type: null
+%%%%
+trajectory STR_T
+groundTimer: 5
+waypoints: [[3, 3, 5], [1, 0, 50]]
+id: y
+%%%%
+country STR_USA
+fundingCap: -1
+labelLon: 149.5
+labelLat: 0
+areas: [[1e2, 1e2, 0, -41]]
+fundingBase: 80781
+%%%%
+manufacture STR_ITEM 0
+name: STR_ALPHA
+producedItems: {}
+cost: 213
+requiredItems: {STR_ALPHA: 2}
+space: 5
+time: 119
+listOrder: 0x10
+%%%%
+manufacture STR_OTHER 8
+cost: 35
+producedItems: {null: -1, STR_ALPHA: 5, null: 74}
+requires: [y, STR_BETA]
+time: 37
+requiredItems: {}
+name: true
+name: é
+%%%%
+research STR_Q 8
+lookup: null
+needItem: no
+listOrder: 1
+unlocks: [STR_BETA, STR_ALPHA, 7]
+points: 0x10
+name: STR_GAMMA
+cutscene: ~
+getOneFree: [é, STR_BETA]
+dependencies: [STR_BETA, é]
+requires: []
+requires: []
+cost: -95791
+%%%%
+race STR_RACE
+id: é
+%%%%
+trajectory STR_T
+id: y
+groundTimer: 5
+%%%%
+research STR_Q 8
+dependencies: [x, STR_ALPHA, y, STR_ALPHA]
+lookup: x
+needItem: true
+listOrder: 3
+unlocks: [STR_BETA, 7, 7]
+name: true
+requires: {k: v}
+cutscene: STR_GAMMA
+getOneFree: [a b]
+cost: abc
+points: 96
+%%%%
+region STR_R
+missionWeights: {STR_GAMMA: 35}
+missionRegion: STR_ALPHA
+areas: []
+type: a b
+regionWeight: 0x10
+cost: 2147483647
+%%%%
+inventory 1
+x: 8
+id: STR_GAMMA
+listOrder: 4
+y:
+costs: {STR_LONG_NAME_1: -1, STR_BETA: -8591, 7: 65112}
+type: 0x10
+%%%%
+region STR_R
+areas: [[21.0, -101.829, 45.74, 1e2]]
+missionRegion: true
+type: é
+missionZones: []
+%%%%
+research STR_Q 7
+unlocks: []
+getOneFree: []
+name: STR_GAMMA
+lookup: true
+cutscene: x
+cost: 0x10
+requires: []
+points: 30
+listOrder: 253
+%%%%
+country STR_USA
+fundingCap: -3
+type: STR_LONG_NAME_1
+labelLat: -149.471
+labelLon: 0
+%%%%
+country STR_X
+type: {k: v}
+labelLon: 19
+areas: [[49.5, 158.570, 1e2, 78, 2147483647], [-137.844, -7, 164.5, -156], [1e2, 1e2, 338.5, 117.25]]
+labelLat: 1e2
+fundingBase: 0x10
+fundingCap: -73495
+fundingCap: 86195
+%%%%
+manufacture STR_ITEM 9
+name: {k: v}
+requires: [true, a b]
+requiredItems: {é: 68152, 7: 22}
+listOrder: -4
+space: -2
+category: STR_LONG_NAME_1
+time: 0x10
+cost: 0x10
+%%%%
+research STR_TOPIC 6
+requires: [1, 2]
+cutscene: STR_ALPHA
+points: 0x10
+getOneFree: []
+lookup: STR_BETA
+unlocks: [x, null, STR_BETA]
+cost: 0x10
+destroyItem: true
+listOrder: 187
+dependencies: []
+name: STR_ALPHA
+needItem: true
+needItem: no
+%%%%
+inventory 2
+listOrder: 2147483647
+x: 2147483647
+type: 109
+id: true
+slots: [[5, 0], [5, 0], [3, 0], [6, 3], [4, 2], [3, 5], [3, 5]]
+y: 2147483647
+costs: {STR_ALPHA: 122}
+%%%%
+research STR_Q 8
+getOneFree: []
+listOrder: 168
+name: 7
+lookup: é
+destroyItem: true
+points: 2
+unlocks: [y, x, true]
+requires: []
+dependencies: [y, STR_LONG_NAME_1, a b]
+%%%%
+research STR_Q 4
+lookup: STR_ALPHA
+dependencies: [x]
+destroyItem: ~
+listOrder: 23
+name: x
+cutscene: STR_BETA
+needItem: no
+requires: [STR_LONG_NAME_1, true, STR_BETA]
+cost: 95
+unlocks: [STR_BETA, a b, 7]
+getOneFree: [y]
+points: 95
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+members: {k: v}
+%%%%
+manufacture STR_OTHER 6
+cost: 2147483647
+name: a b
+category: null
+requires: []
+listOrder: ~
+time: 17
+requiredItems: {null: -3}
+requiredItems: {é: 2147483647, STR_LONG_NAME_1: -45005}
+%%%%
+country STR_X
+fundingBase: -1
+labelLat: 4.5
+labelLat: 85.285
+labelLon: 56.167
+areas: [[106, 1e2, 1e2, 1e2]]
+fundingCap: 11822
+type: STR_GAMMA
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 0x10
+%%%%
+research STR_Q 5
+cutscene: a b
+destroyItem: no
+getOneFree: []
+needItem: false
+points: 87619
+dependencies: [a b, true, STR_GAMMA]
+requires: [STR_GAMMA, y]
+lookup: a b
+listOrder: -1
+%%%%
+trajectory STR_T
+groundTimer: 298
+waypoints: [1, 2]
+%%%%
+manufacture STR_ITEM 3
+name: STR_LONG_NAME_1
+category: STR_ALPHA
+space: 3
+requiredItems: {7: -1}
+producedItems: {7: 40}
+%%%%
+research STR_Q 3
+destroyItem: ~
+getOneFree: [a b, é]
+needItem: [1, 2]
+dependencies: [STR_BETA, STR_LONG_NAME_1, STR_BETA]
+cost: abc
+unlocks: []
+requires: []
+name:
+cutscene: STR_GAMMA
+listOrder: 30
+%%%%
+research STR_TOPIC 9
+dependencies: [true, 7]
+dependencies: [x, STR_ALPHA, STR_BETA, null]
+points: 0x10
+points: 36
+requires: [STR_GAMMA, y, STR_ALPHA, é]
+cost: 125
+needItem: [1, 2]
+needItem: false
+listOrder: 35057
+destroyItem: no
+name: STR_LONG_NAME_1
+lookup: x
+getOneFree: []
+%%%%
+race STR_RACE
+members: [null, STR_ALPHA, x, null]
+%%%%
+research STR_Q 6
+cutscene: y
+needItem:
+points: 2147483647
+unlocks: [true, STR_ALPHA, null]
+dependencies: [STR_BETA, x, STR_ALPHA, STR_ALPHA]
+name: STR_GAMMA
+getOneFree: []
+listOrder: 201
+destroyItem: false
+requires: []
+%%%%
+research STR_Q 0
+name: 7
+cutscene: null
+requires: [null]
+getOneFree: [STR_GAMMA, STR_ALPHA]
+lookup: null
+cost: 0x10
+listOrder: {k: v}
+dependencies: [STR_LONG_NAME_1, STR_GAMMA]
+unlocks: ~
+%%%%
+country STR_USA
+areas: [[152.26, 24.37, 21.5, 174.415]]
+fundingBase: 48
+labelLon: 278.5
+labelLat: 1e2
+fundingCap: 0x10
+type: a b
+%%%%
+race STR_RACE
+members: [a b]
+id: true
+%%%%
+country STR_USA
+areas: [[0, 1e2, 67, 164.138]]
+labelLat: 1e2
+labelLat: 116.5
+fundingCap: 1
+fundingBase: 39
+labelLon: 104
+%%%%
+region STR_R
+missionRegion: x
+areas: [[30, 0, -70.66, 21], [-139.684, 0, 0, -46.73, 85]]
+cost: 255
+missionZones: []
+type: x
+missionWeights: {STR_GAMMA: 22, STR_GAMMA: 17}
+%%%%
+country STR_USA
+labelLat: 1e2
+fundingCap: 201
+fundingBase: 57805
+fundingBase: -1
+areas: []
+areas: [[72.5, 16, 1e2, 220.5], [30.518, 1e2, 0, 0]]
+type: true
+labelLon: 1e2
+%%%%
+region STR_R
+missionZones: []
+regionWeight: -1
+areas: [[-8.83, 1e2, 1e2, -76.94]]
+type: STR_BETA
+missionRegion: STR_LONG_NAME_1
+missionWeights: {null: 33}
+missionWeights: {a b: 28, y: 9}
+%%%%
+inventory 1
+slots:
+y: -96246
+id: true
+%%%%
+race STR_RACE
+members: [null, a b]
+id: STR_BETA
+%%%%
+race STR_RACE
+id: true
+members: []
+%%%%
+region STR_R
+missionZones: []
+type: x
+regionWeight: 152
+missionRegion: true
+missionWeights: {a b: 11, null: 26}
+cost: [1, 2]
+%%%%
+inventory 3
+costs: {y: 7, é: 41}
+slots: [[5, 1]]
+x:
+type: 14
+y: 2147483647
+%%%%
+manufacture STR_OTHER 2
+name: STR_GAMMA
+space: 183
+requires: [y, STR_GAMMA, STR_GAMMA, a b]
+category: STR_ALPHA
+cost: 4
+listOrder: 170
+requiredItems: {}
+%%%%
+race STR_RACE
+id: é
+members: [y, STR_LONG_NAME_1, y, STR_ALPHA]
+%%%%
+region STR_R
+missionWeights: {STR_GAMMA: 19}
+missionZones: [[[-17.974, 42.131, -107, 0, 2147483647, a b], [337.5, -2.45, 124.5, 1e2, 195, x]]]
+areas: []
+cost: 3
+type: ~
+regionWeight: 0x10
+%%%%
+country STR_USA
+labelLon: 220.5
+labelLon: 206.5
+areas: [[1e2, 0, -109.574, 1e2, 5]]
+fundingCap: -1
+fundingCap: 0x10
+labelLat: 0
+fundingBase: 30
+%%%%
+manufacture STR_OTHER 6
+space: abc
+category: ~
+name: STR_BETA
+time: 211
+cost: 29
+requires: [STR_ALPHA, é]
+listOrder: 11
+requiredItems: {null: 2147483647, STR_GAMMA: 2147483647, 7: 1}
+%%%%
+trajectory STR_T
+groundTimer: 206
+id: STR_GAMMA
+waypoints: [[5, 0, 59], [2, 4, 92], [0, 1, 13], [5, 3, 91]]
+%%%%
+inventory 9
+id: true
+type: 0x10
+x: -1
+listOrder: 2
+slots: {k: v}
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+waypoints: [[5, 4, 73]]
+groundTimer: 19971
+%%%%
+research STR_Q 1
+destroyItem: no
+lookup: STR_BETA
+cost: -1
+listOrder: 4
+getOneFree: [STR_LONG_NAME_1, STR_ALPHA, a b]
+cutscene: STR_BETA
+unlocks: [é]
+needItem: true
+dependencies: [STR_BETA, STR_GAMMA, x, y]
+%%%%
+race STR_RACE
+id: STR_BETA
+id: true
+%%%%
+inventory 9
+type: 1
+y: -1
+listOrder: 2147483647
+x: 4
+x: 0x10
+id:
+%%%%
+race STR_RACE
+id: é
+members: []
+%%%%
+trajectory STR_T
+id: y
+groundTimer: 119
+%%%%
+inventory 1
+costs: {STR_LONG_NAME_1: -1, 7: -1, é: 30538}
+slots: [[4, 1], [8, 2]]
+x: 31717
+id: true
+%%%%
+research STR_Q 0
+cutscene: true
+dependencies:
+unlocks:
+destroyItem: false
+cost: -1
+points: [1, 2]
+listOrder: 31
+%%%%
+inventory 2
+type: -1
+x: 256
+costs: [1, 2]
+slots: [[8, 2], [7, 2], [5, 3], [8, 2], [3, 5]]
+%%%%
+region STR_R
+areas: []
+missionZones: []
+missionRegion: é
+missionWeights: [1, 2]
+type: STR_ALPHA
+cost: 2147483647
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+manufacture STR_ITEM 0
+name: {k: v}
+requiredItems: {null: 73836}
+category: STR_LONG_NAME_1
+listOrder: 5
+time: 291
+space: 214
+producedItems:
+cost: 2147483647
+%%%%
+trajectory STR_T
+waypoints: []
+id: STR_LONG_NAME_1
+groundTimer:
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 0x10
+waypoints: [[4, 0, 13]]
+%%%%
+race STR_RACE
+members: [a b, a b]
+id: y
+%%%%
+manufacture STR_OTHER 1
+name: x
+listOrder: -49673
+time: 0x10
+requiredItems: {true: 17, é: 220}
+category: STR_GAMMA
+cost: 5
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+race STR_RACE
+members: []
+id: 7
+%%%%
+trajectory STR_T
+id: true
+%%%%
+region STR_R
+missionWeights: {é: 8, a b: 39, é: 43}
+missionZones: []
+type: true
+regionWeight: ~
+%%%%
+country STR_USA
+labelLon: 0
+labelLat: 0
+areas: [[-166.721, 228.5, 130.164, 168.830], [38.75, 1e2, 1e2, -76.19]]
+%%%%
+manufacture STR_OTHER 5
+name: null
+producedItems: {a b: 2147483647}
+requiredItems: {y: 2147483647}
+space: 1
+time: 40
+cost: 20490
+listOrder: -2
+requires: []
+%%%%
+region STR_R
+areas: [[1e2, -3.650, 175.168, 0]]
+missionZones: [[[0.86, 0, 100.3, 99.92]]]
+missionWeights: {é: 8, a b: 11, x: 17}
+%%%%
+trajectory STR_T
+waypoints: [[3, 2, 12], [1, 0, 43]]
+groundTimer: 2147483647
+%%%%
+manufacture STR_OTHER 8
+name: y
+requiredItems: {é: 16}
+requires: [1, 2]
+producedItems: {y: 105, STR_GAMMA: 10}
+time: 2147483647
+listOrder: 17
+category: 7
+space: -29451
+cost: 2147483647
+%%%%
+research STR_TOPIC 4
+listOrder:
+cost: 2147483647
+getOneFree: [null, STR_ALPHA, x]
+destroyItem: true
+points: 2147483647
+needItem: no
+name: 7
+lookup: x
+requires: [STR_GAMMA, STR_GAMMA]
+cutscene: STR_GAMMA
+dependencies: []
+%%%%
+region STR_R
+areas: [[1e2, 293.5, 172, 0], [1e2, 63.11, -60, 0, 39756]]
+missionZones:
+cost: 0x10
+type: true
+regionWeight: 5
+%%%%
+inventory 2
+x: 57
+id: x
+type: -46316
+slots: [[2, 2], [0, 2], [8, 4], [1, 5], [7, 2], [8, 2], [0, 1]]
+listOrder: 20
+%%%%
+region STR_R
+missionZones: [[[0, 1e2, 309.5, -90.95]]]
+missionWeights: {}
+regionWeight: 141
+missionRegion: é
+type: y
+cost: 10
+%%%%
+trajectory STR_T
+groundTimer: abc
+waypoints: [[4, 1, 11]]
+id: STR_ALPHA
+%%%%
+manufacture STR_ITEM 4
+producedItems: {}
+name: null
+category: 7
+space: 268
+time: 21
+requiredItems:
+requiredItems: {STR_GAMMA: -1, y: -3, STR_LONG_NAME_1: 16}
+listOrder: 67654
+%%%%
+race STR_RACE
+id: null
+%%%%
+research STR_TOPIC 4
+requires: [STR_GAMMA, STR_GAMMA, STR_LONG_NAME_1]
+lookup: STR_GAMMA
+name: 7
+listOrder: 8
+cost: 2147483647
+destroyItem: no
+destroyItem: 
+needItem: true
+unlocks: [y, x, y]
+getOneFree: []
+points: 2147483647
+cutscene: STR_GAMMA
+%%%%
+inventory 3
+slots:
+x: 2147483647
+id: 7
+y: 22
+type: 4
+listOrder: 0x10
+costs: {}
+%%%%
+manufacture STR_OTHER 2
+time: 24
+cost: 33
+category: null
+space: 0x10
+requires: [true, true, STR_GAMMA, STR_BETA]
+producedItems: ~
+%%%%
+manufacture STR_ITEM 9
+producedItems: {}
+cost: -1
+requiredItems: {7: 14}
+category: true
+requires: [STR_BETA, x]
+listOrder: 31
+name: STR_BETA
+name: STR_LONG_NAME_1
+time: 0x10
+%%%%
+region STR_R
+type: 7
+cost: 20
+missionRegion: x
+missionWeights: {y: 7, STR_BETA: 39, é: 40}
+areas: []
+areas: []
+regionWeight: 0x10
+missionZones: [[[85.81, -37, 82.5, -106.790]]]
+%%%%
+country STR_X
+fundingBase: 9
+areas: [[-20.2, 88, -63.23, 149.5], [96, 1e2, 1e2, 1e2]]
+fundingCap: 38770
+type: a b
+%%%%
+region STR_R
+missionWeights: {k: v}
+missionZones: [[[-143.588, 7.61, 1e2, 1e2], [8.374, 87, -85.52, 0]]]
+type: null
+missionRegion: STR_LONG_NAME_1
+areas: [[14.390, 0, -10.35, 1e2], [-63.83, 0, 55, -151.415], [244.5, 0, 0, 259.5]]
+regionWeight: -1
+%%%%
+country STR_X
+fundingCap: abc
+fundingBase: 14
+%%%%
+race STR_RACE
+id: [1, 2]
+%%%%
+race STR_RACE
+id: 7
+%%%%
+region STR_R
+cost: 0x10
+regionWeight: -39796
+missionZones: abc
+missionWeights: {x: 21, é: 20, STR_GAMMA: 24}
+missionRegion: true
+missionRegion: STR_ALPHA
+%%%%
+manufacture STR_ITEM 0
+listOrder: -1
+producedItems: {STR_BETA: 2147483647, null: 5}
+requiredItems: {k: v}
+cost: 2147483647
+cost: [1, 2]
+time: -1
+requires: [é]
+category: 7
+space: {k: v}
+%%%%
+trajectory STR_T
+waypoints: [[6, 3, 67], [6, 4, 75]]
+id: STR_LONG_NAME_1
+%%%%
+manufacture STR_OTHER 5
+name: true
+requires: [null, a b]
+producedItems: {STR_GAMMA: 21}
+space: -15936
+time: -1
+listOrder: 15
+%%%%
+race STR_RACE
+members: [STR_ALPHA]
+%%%%
+manufacture STR_ITEM 3
+space: 5
+producedItems: {null: 0x10}
+requires: [STR_GAMMA, STR_BETA, STR_ALPHA]
+requiredItems: {y: 208}
+cost: 0x10
+category: true
+time: 0x10
+name: é
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+inventory 2
+slots: []
+type: 120
+x: 2147483647
+id: STR_BETA
+costs: {}
+y: 2147483647
+y: 3
+%%%%
+country STR_USA
+labelLon: -71
+labelLat: -103
+fundingBase: 180
+type: x
+fundingCap: -1
+%%%%
+region STR_R
+type: é
+type: STR_BETA
+missionZones: []
+missionRegion: STR_BETA
+cost: 2
+areas: [[-150.18, 173.5, 1e2, -115], [-32.55, -48.20, 12.97, 162.197], [37, -90, 45.609, -90.36]]
+%%%%
+race STR_RACE
+members: [null, true, é]
+%%%%
+inventory 1
+x: 68224
+id: null
+slots: [[4, 4]]
+costs: {é: 132, y: 10, 7: -1}
+listOrder: 0x10
+listOrder: 17
+y: 2147483647
+type: 32
+%%%%
+race STR_RACE
+members: [x, y, null, é]
+%%%%
+race STR_RACE
+id: null
+members: []
+%%%%
+race STR_RACE
+members: {k: v}
+id: x
+%%%%
+research STR_TOPIC 7
+cost: {k: v}
+name: null
+dependencies: [null]
+requires: []
+points: 4
+lookup: x
+unlocks: [STR_LONG_NAME_1, a b, a b]
+cutscene: x
+%%%%
+manufacture STR_ITEM 3
+cost: 40
+space: 0x10
+requiredItems: abc
+requires: [STR_LONG_NAME_1]
+category: x
+name: STR_BETA
+producedItems: {}
+%%%%
+manufacture STR_OTHER 5
+category: STR_ALPHA
+requires: [STR_LONG_NAME_1, true, y]
+space: 159
+requiredItems: {STR_ALPHA: -1, a b: -27079, STR_ALPHA: 0x10}
+producedItems: {}
+name: y
+listOrder: 24778
+cost: 0x10
+cost: -5
+time: 95277
+%%%%
+trajectory STR_T
+id: STR_GAMMA
+waypoints: [[0, 3, 84], [0, 4, 24], [4, 2, 17]]
+%%%%
+manufacture STR_ITEM 0
+requiredItems: {STR_GAMMA: -1, a b: 241}
+name: STR_ALPHA
+space: 0x10
+listOrder: 2147483647
+category: é
+time: 72
+producedItems: {a b: 2147483647, x: 283}
+producedItems: {}
+%%%%
+region STR_R
+areas: [[0, 1e2, 0, 128.862], [141.5, 101, -180.472, 231.5]]
+missionZones: [[[1e2, 156.151, 1e2, -119.357, -1, STR_LONG_NAME_1]]]
+missionRegion: null
+regionWeight: 7
+missionWeights: {k: v}
+type: 7
+%%%%
+manufacture STR_ITEM 0
+category: y
+cost: 5
+space: ~
+requires: [é]
+name: y
+name: true
+producedItems: [1, 2]
+requiredItems: {true: -3, STR_LONG_NAME_1: 50872}
+listOrder: 2147483647
+%%%%
+trajectory STR_T
+groundTimer: -33035
+waypoints: [[0, 0, 5]]
+%%%%
+manufacture STR_OTHER 3
+requiredItems: {é: 2147483647}
+listOrder: -68950
+space: 62
+requires: [STR_BETA, true, true, STR_BETA]
+cost: 40
+category: a b
+producedItems: {}
+%%%%
+region STR_R
+regionWeight: ~
+missionZones: []
+cost: -99290
+areas: [[34, 0, 0, 0], [358.5, 61, 0, 74.58], [0, -35.42, 231.5, 130.485]]
+missionWeights: {}
+missionWeights: {STR_GAMMA: 5, x: 4}
+type: STR_ALPHA
+%%%%
+research STR_Q 6
+cutscene: STR_GAMMA
+points: 37
+destroyItem: true
+getOneFree: [y, é, STR_LONG_NAME_1]
+listOrder: 3
+name: STR_ALPHA
+requires: [STR_GAMMA]
+needItem: true
+dependencies: [null, STR_BETA, STR_GAMMA, a b]
+unlocks: abc
+cost: 0x10
+%%%%
+research STR_TOPIC 7
+getOneFree: [true, null, é]
+name: STR_ALPHA
+needItem: false
+points: 2147483647
+cutscene: null
+unlocks: {k: v}
+unlocks: [STR_GAMMA, null, x]
+lookup: x
+dependencies: []
+requires: [true, 7, a b, y]
+%%%%
+inventory 6
+y: 236
+listOrder: 2147483647
+id: x
+x: 20
+type: -5
+slots: [[6, 4], [7, 0], [2, 5], [5, 2], [8, 4], [2, 2]]
+%%%%
+race STR_RACE
+id: a b
+%%%%
+trajectory STR_T
+groundTimer: -60281
+id: STR_ALPHA
+waypoints: [[2, 0, 33], [5, 0, 32]]
+%%%%
+inventory 4
+id: é
+slots: [[1, 5], [3, 5]]
+type: -1
+costs: {true: 2147483647}
+y: 238
+%%%%
+race STR_RACE
+members: [STR_GAMMA, true, STR_BETA, STR_LONG_NAME_1]
+id: STR_GAMMA
+%%%%
+inventory 3
+type: 20
+y: -1
+y: 1
+listOrder: 0x10
+costs: {}
+x: [1, 2]
+%%%%
+country STR_X
+fundingCap: 29
+labelLat: 1e2
+labelLon: 0
+areas: [[165.992, 42.5, -63, 0, -1], [0, 39.5, 1e2, 286.5]]
+fundingBase: 6
+%%%%
+research STR_TOPIC 1
+cutscene: STR_LONG_NAME_1
+dependencies: [STR_LONG_NAME_1, STR_ALPHA]
+cost: 37
+lookup: 7
+destroyItem: true
+unlocks: []
+name: null
+getOneFree: [STR_BETA, null]
+needItem: no
+listOrder: 20
+requires: [a b]
+%%%%
+country STR_X
+labelLon: 1e2
+fundingCap: 18
+labelLat: 21
+fundingBase: 12
+type: a b
+%%%%
+race STR_RACE
+members: []
+%%%%
+country STR_USA
+fundingBase: 47
+labelLon: -56.769
+fundingCap: [1, 2]
+labelLat: -165.589
+areas: []
+areas: [[25.4, -52.85, -88.50, 1e2, 0x10]]
+type: x
+%%%%
+region STR_R
+type: STR_ALPHA
+missionWeights: {x: 9}
+missionZones: [[[65.63, 92, 1e2, 71.43, 0x10, STR_LONG_NAME_1]], [[1e2, 21.32, 1e2, 148.5], [-61, 133.825, 178.5, 0]]]
+cost: 51
+areas: []
+regionWeight: {k: v}
+%%%%
+research STR_TOPIC 3
+destroyItem: true
+cost: 0x10
+needItem: false
+points: 2147483647
+lookup: null
+listOrder: 22
+requires: [STR_BETA, y]
+getOneFree: []
+%%%%
+race STR_RACE
+id: STR_BETA
+members: [é, null]
+%%%%
+trajectory STR_T
+waypoints: []
+groundTimer: -75462
+groundTimer: {k: v}
+%%%%
+region STR_R
+areas: []
+cost: 0x10
+regionWeight: -1
+missionZones: [[[28, 318.5, 0, 77.74]], [[1e2, 68.5, 1e2, -28.79, 0x10, STR_BETA], [110, 48.60, 37.8, 164.168, 4, STR_GAMMA]]]
+%%%%
+research STR_TOPIC 6
+needItem: false
+name: x
+points: -1
+lookup: a b
+cost: -3
+getOneFree: []
+dependencies: []
+dependencies: [null, é]
+requires: [STR_ALPHA]
+destroyItem: no
+listOrder: -12865
+%%%%
+manufacture STR_ITEM 2
+cost: 27
+requires: []
+listOrder: 11
+space: 156
+producedItems: {7: 29}
+name: ~
+%%%%
+country STR_X
+areas: [[48.5, 0, -89, 0], [0, 0, 106.5, 1e2]]
+type: é
+labelLat: 113
+labelLon:
+labelLon: -40.71
+fundingCap: ~
+%%%%
+research STR_TOPIC 5
+cutscene: x
+cost: 2147483647
+name: a b
+lookup: true
+getOneFree: [x, STR_ALPHA, STR_LONG_NAME_1, 7]
+dependencies: []
+points: 40
+listOrder: 0x10
+requires: [STR_ALPHA, STR_GAMMA]
+unlocks: [1, 2]
+destroyItem: true
+%%%%
+race STR_RACE
+members: []
+id: STR_ALPHA
+%%%%
+trajectory STR_T
+waypoints: [[4, 4, 99]]
+groundTimer: 12
+id: é
+%%%%
+country STR_X
+labelLat: -52
+fundingCap: 6845
+areas: [[-62.35, 0, 0, 1e2], [-44.962, -89.134, 64, -93.719]]
+fundingBase: 227
+type: é
+type: null
+%%%%
+manufacture STR_OTHER 3
+name: STR_ALPHA
+listOrder: 32
+space: 0x10
+category: [1, 2]
+time: 5
+requires: [a b, 7, STR_ALPHA, é]
+cost: 0
+producedItems: {y: 2147483647, a b: 2147483647}
+%%%%
+trajectory STR_T
+id: 7
+groundTimer: 0x10
+waypoints: [[6, 4, 5]]
+%%%%
+inventory 7
+id: STR_BETA
+costs: {null: 4, STR_BETA: -1, STR_ALPHA: 30}
+type: 26
+listOrder: ~
+%%%%
+race STR_RACE
+id: STR_BETA
+%%%%
+country STR_X
+type: STR_GAMMA
+labelLon: 268.5
+labelLat: -124.859
+areas: [[1e2, 187.5, -55.93, 0], [1e2, 49, 1e2, 254.5]]
+%%%%
+inventory 7
+listOrder: 111
+x: 0x10
+type: -1
+slots: [[7, 4], [1, 0], [0, 0], [7, 0], [0, 0], [3, 1], [3, 0]]
+%%%%
+trajectory STR_T
+groundTimer: -2
+%%%%
+race STR_RACE
+id: true
+%%%%
+research STR_TOPIC 2
+listOrder: 160
+getOneFree: [STR_LONG_NAME_1, true, STR_LONG_NAME_1]
+dependencies: [null, STR_LONG_NAME_1, STR_BETA]
+unlocks: []
+requires: []
+needItem: true
+destroyItem: no
+cutscene: y
+%%%%
+region STR_R
+missionWeights: {STR_ALPHA: 27}
+cost: -2
+missionRegion: true
+type: null
+missionZones: [[], []]
+regionWeight: 277
+%%%%
+research STR_TOPIC 0
+requires: [é]
+listOrder: 0x10
+dependencies: [STR_GAMMA, STR_BETA, true, STR_LONG_NAME_1]
+unlocks: [7, true, true, 7]
+cutscene: y
+points: 2
+getOneFree: [x, STR_ALPHA, a b]
+cost: 124
+lookup: x
+needItem: true
+destroyItem: no
+%%%%
+manufacture STR_OTHER 5
+space: 1
+producedItems: {STR_LONG_NAME_1: 2147483647}
+producedItems: {x: 20, 7: 8, y: 4}
+name: STR_BETA
+name: y
+listOrder: 3
+category: a b
+cost: -1
+requiredItems: {y: -69312, null: 2147483647, y: 175}
+requires: []
+time: 2147483647
+%%%%
+manufacture STR_ITEM 4
+time: 2147483647
+listOrder: 0x10
+requiredItems: {é: 2147483647, é: 36, true: 24}
+cost: 35
+name: STR_GAMMA
+requires: [y, true, STR_BETA, true]
+space: -70509
+category: é
+%%%%
+region STR_R
+missionZones: [[[1e2, 47.5, 1e2, 299.5], [0, -50.440, 164, 150.553]]]
+missionRegion: x
+type: STR_BETA
+regionWeight: 157
+missionWeights: {}
+%%%%
+manufacture STR_ITEM 3
+time: 0x10
+space: -1
+cost: -4
+producedItems: {null: 9, STR_LONG_NAME_1: 19, STR_ALPHA: 195}
+requiredItems: [1, 2]
+requires: [y, true, STR_ALPHA]
+name: a b
+%%%%
+region STR_R
+regionWeight: 22
+missionWeights: {y: 1}
+areas: [[7.5, 46.8, -66.43, -106], [71.9, 1e2, 1e2, 1e2]]
+areas: []
+missionRegion: STR_GAMMA
+type: é
+cost: -3
+%%%%
+region STR_R
+missionZones: []
+missionWeights: {STR_BETA: 47, é: 27, STR_BETA: 28}
+type: 7
+cost: 34
+missionRegion: STR_LONG_NAME_1
+%%%%
+country STR_X
+fundingCap: -1
+labelLon: 1e2
+labelLat: 1e2
+areas: [[0, -142.286, -160, 83.384], [25.8, 2.52, -97, 0], [58.536, 71.49, 0, 0]]
+fundingBase: 87360
+type: y
+%%%%
+race STR_RACE
+members: [true, 7, true, STR_ALPHA]
+id: STR_LONG_NAME_1
+%%%%
+country STR_USA
+labelLat: 0
+fundingCap: 35
+fundingBase: [1, 2]
+type: STR_LONG_NAME_1
+areas: [[138.5, 304.5, 18, 1.66]]
+%%%%
+region STR_R
+missionWeights: {y: 11, 7: 18}
+areas: [[-70.94, 0, 73.521, 1e2], [1e2, 14.5, 331.5, 64.13], [81.5, 73.63, 0, 72.576]]
+type: STR_GAMMA
+cost: 32
+cost: -1
+missionZones: []
+%%%%
+trajectory STR_T
+groundTimer: 37
+id: STR_LONG_NAME_1
+waypoints: [[0, 0, 76]]
+%%%%
+race STR_RACE
+members: [STR_BETA, STR_ALPHA, 7, é]
+%%%%
+country STR_X
+labelLon: -72.671
+fundingBase: -5
+fundingBase: -1
+type: 7
+areas: [[99, 0, 1e2, 110, 2147483647], [17.5, 54, 25, 76]]
+fundingCap: 0x10
+%%%%
+race STR_RACE
+members: [a b, a b, STR_LONG_NAME_1]
+id: x
+%%%%
+race STR_RACE
+members: [x, STR_GAMMA, STR_GAMMA]
+%%%%
+trajectory STR_T
+groundTimer: {k: v}
+id: 7
+%%%%
+race STR_RACE
+members: [é, a b]
+%%%%
+region STR_R
+missionRegion: STR_LONG_NAME_1
+regionWeight: 40
+areas: [[153, -18, 59.111, 94, 2147483647], [134.5, 0, 58.5, 1e2]]
+type: true
+%%%%
+manufacture STR_ITEM 9
+requiredItems: {é: 28, STR_BETA: 15}
+name: true
+name: y
+cost: 2147483647
+requires: [null]
+listOrder: 36834
+%%%%
+manufacture STR_ITEM 3
+producedItems: {}
+category: STR_ALPHA
+cost: 18
+listOrder: 2147483647
+requiredItems: {}
+name: é
+time: -40355
+time: 1
+%%%%
+research STR_Q 6
+getOneFree: []
+destroyItem: true
+destroyItem: false
+listOrder: -1
+dependencies: [null, null, é, STR_GAMMA]
+points: 2
+points: -5
+requires: [STR_BETA, é, a b]
+unlocks: [STR_GAMMA, STR_LONG_NAME_1]
+lookup: STR_GAMMA
+needItem: no
+cost: 21
+%%%%
+race STR_RACE
+members: [STR_GAMMA, y]
+id: null
+%%%%
+inventory 8
+slots: [[6, 5], [8, 4]]
+id: é
+y: -1
+costs: {y: 2147483647}
+type: -84293
+listOrder: 0x10
+listOrder: -1
+%%%%
+race STR_RACE
+id: y
+members: [STR_GAMMA]
+%%%%
+region STR_R
+missionRegion: STR_LONG_NAME_1
+missionZones: [[[123.375, 1e2, -30.62, 0, -1, STR_GAMMA], [0, -92.578, 1e2, -173.981]]]
+missionWeights: {STR_LONG_NAME_1: 4, null: 35}
+type: STR_ALPHA
+cost: 2147483647
+regionWeight: 32
+%%%%
+trajectory STR_T
+id: a b
+id: null
+groundTimer: 10
+%%%%
+country STR_X
+fundingBase: 38
+labelLon: -156
+fundingCap: -1
+fundingCap: -3
+labelLat: 1e2
+%%%%
+inventory 6
+id: STR_BETA
+costs: {k: v}
+type: 0x10
+listOrder: -1
+x: 2147483647
+%%%%
+manufacture STR_OTHER 9
+category: true
+time: -1
+listOrder: 0
+producedItems: {a b: 17}
+cost: -76159
+name: x
+%%%%
+research STR_TOPIC 5
+getOneFree: [é, é, STR_ALPHA, null]
+points: 0x10
+dependencies: [null]
+lookup: null
+listOrder: 32
+needItem: true
+name: STR_ALPHA
+requires: [é, y, true]
+%%%%
+trajectory STR_T
+id: STR_ALPHA
+groundTimer: 96974
+%%%%
+trajectory STR_T
+id: null
+groundTimer: 93
+waypoints: [[0, 3, 95]]
+%%%%
+country STR_USA
+fundingBase: -1
+labelLon: 122.543
+areas: [[125.841, 74, 66.31, 1e2, -5], [-54.1, 330.5, 1e2, 0], [0, 55.600, 0, 20.5]]
+fundingCap: -16581
+labelLat: 22.896
+type: null
+%%%%
+manufacture STR_ITEM 5
+requiredItems: {7: 16342, STR_GAMMA: 2, 7: 11}
+requires: {k: v}
+category: STR_LONG_NAME_1
+cost: -1
+listOrder: 12
+producedItems: {STR_GAMMA: -1, é: 195, STR_ALPHA: 2147483647}
+time: 30
+space: 22
+name: é
+%%%%
+research STR_Q 1
+cutscene: a b
+unlocks: [STR_BETA]
+cost: 2147483647
+points: 19
+name: y
+needItem: true
+listOrder: 0x10
+lookup: 7
+getOneFree: [a b, STR_ALPHA, STR_LONG_NAME_1]
+%%%%
+race STR_RACE
+id: 7
+members: ~
+%%%%
+race STR_RACE
+members: []
+%%%%
+trajectory STR_T
+groundTimer: 34
+id: é
+waypoints: [[3, 4, 98], [5, 0, 63], [4, 2, 1], [3, 4, 21]]
+%%%%
+race STR_RACE
+id: y
+members: [é, x]
+%%%%
+research STR_TOPIC 7
+lookup: null
+points: -1
+needItem: no
+needItem: true
+getOneFree: [STR_ALPHA, a b, y]
+destroyItem: abc
+requires: [y, STR_ALPHA]
+unlocks: []
+name: STR_GAMMA
+dependencies:
+cost: -5
+cutscene: STR_BETA
+listOrder: -1
+%%%%
+region STR_R
+missionWeights: {é: 6}
+areas: [[0, 1e2, -179.644, 244.5], [282.5, 1, -10.4, 0]]
+regionWeight: 5
+missionZones:
+type: STR_BETA
+cost: 10
+missionRegion: STR_BETA
+%%%%
+research STR_Q 4
+destroyItem: true
+destroyItem: true
+needItem: true
+cutscene: abc
+getOneFree: [x, STR_LONG_NAME_1, null]
+listOrder: 9
+name: STR_BETA
+cost: 128
+dependencies: [STR_ALPHA, STR_LONG_NAME_1, x]
+unlocks: [STR_ALPHA, 7, y]
+requires: [x]
+%%%%
+trajectory STR_T
+waypoints: []
+waypoints: [[0, 2, 20]]
+id: x
+groundTimer: 16
+%%%%
+region STR_R
+missionZones: []
+areas: []
+regionWeight: -3
+cost: 194
+missionWeights: ~
+type: é
+%%%%
+race STR_RACE
+id: é
+members: [STR_LONG_NAME_1, STR_LONG_NAME_1, null]
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+country STR_X
+areas: [[68.200, -19.179, 0, 265.5]]
+type: x
+fundingBase: 212
+fundingCap: -1
+labelLon: 0
+labelLat: 117
+labelLat: 1e2
+%%%%
+research STR_Q 7
+dependencies: [y, STR_ALPHA, 7, 7]
+lookup: STR_ALPHA
+getOneFree: []
+listOrder:
+name: STR_GAMMA
+cutscene: 7
+needItem: true
+needItem: true
+points: 2147483647
+destroyItem: true
+requires: [null]
+cost: 2147483647
+unlocks: []
+%%%%
+trajectory STR_T
+groundTimer: 26
+waypoints: [[0, 1, 10], [5, 3, 39], [5, 0, 58], [1, 3, 77]]
+id: STR_GAMMA
+%%%%
+race STR_RACE
+members: [7, é]
+%%%%
+trajectory STR_T
+id: a b
+waypoints: []
+%%%%
+manufacture STR_OTHER 0
+category: y
+time: 120
+space: -1
+space: 0
+requires: [STR_ALPHA]
+cost: -86782
+name: null
+producedItems: {k: v}
+producedItems: {k: v}
+requiredItems: {}
+listOrder: -4
+%%%%
+manufacture STR_OTHER 8
+category: STR_LONG_NAME_1
+requires: [7]
+name: é
+name: x
+space: 0x10
+space: 23
+requiredItems: {}
+listOrder: -2
+producedItems: {}
+time: 2147483647
+%%%%
+trajectory STR_T
+waypoints:
+groundTimer: 18
+%%%%
+research STR_TOPIC 1
+requires: []
+requires: [STR_LONG_NAME_1, true, STR_ALPHA]
+unlocks: []
+name: y
+lookup: STR_GAMMA
+lookup: x
+dependencies: [null, STR_BETA, STR_GAMMA]
+destroyItem: false
+needItem: true
+cost: 0x10
+cost: 0x10
+%%%%
+trajectory STR_T
+
+%%%%
+trajectory STR_T
+id: é
+%%%%
+region STR_R
+regionWeight: -4007
+missionZones: [[[110.285, 100.5, 132, 198.5, -4, STR_BETA]]]
+cost: 5
+missionRegion: STR_GAMMA
+missionWeights: {true: 10, STR_GAMMA: 1}
+%%%%
+inventory 8
+slots: [[2, 3], [6, 1], [8, 2], [6, 1], [0, 4]]
+x: 0x10
+type: 219
+id: STR_LONG_NAME_1
+listOrder: -1
+%%%%
+manufacture STR_ITEM 6
+listOrder: 0
+space: 0x10
+requires: [true, STR_GAMMA]
+time:
+requiredItems: {}
+name: a b
+name: STR_ALPHA
+category: é
+%%%%
+trajectory STR_T
+groundTimer: 12
+%%%%
+region STR_R
+missionWeights: {}
+type: a b
+regionWeight: 40
+missionZones: [[[0, 36.63, -174.392, 0]], [[81.85, 55.74, 0, 15], [131.522, 40.5, -142.295, 162]]]
+%%%%
+race STR_RACE
+id: a b
+%%%%
+country STR_USA
+labelLon: 177
+fundingBase: 6
+%%%%
+race STR_RACE
+members: [x, STR_ALPHA]
+id: é
+%%%%
+race STR_RACE
+members: [true, x, null]
+id: STR_BETA
+%%%%
+country STR_X
+type: STR_ALPHA
+areas: []
+fundingCap: 2147483647
+fundingBase: 25
+labelLat: 121.75
+labelLon: abc
+%%%%
+research STR_Q 0
+unlocks: []
+listOrder: 2147483647
+destroyItem: false
+cost: -1
+name: x
+lookup: STR_LONG_NAME_1
+needItem: true
+getOneFree: []
+points: 253
+cutscene: STR_BETA
+requires: [null, é]
+%%%%
+inventory 1
+type: ~
+listOrder: 0x10
+y: -1
+id: STR_ALPHA
+x: 3
+costs: {null: 30, STR_GAMMA: 2147483647}
+slots: ~
+%%%%
+region STR_R
+missionZones: []
+missionRegion: a b
+areas: [1, 2]
+cost: -3
+missionWeights: {STR_BETA: 18}
+regionWeight: -13757
+type: STR_ALPHA
+%%%%
+region STR_R
+regionWeight: -1
+missionRegion: true
+missionZones: []
+areas: [[68.70, 1e2, 0, 67.5]]
+cost: 1
+type: x
+missionWeights: {x: 15}
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+id: é
+members: [STR_LONG_NAME_1, STR_LONG_NAME_1, STR_BETA, true]
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+%%%%
+country STR_USA
+labelLat: 13
+fundingCap: 11
+labelLon: -38
+type: é
+fundingBase: -1
+areas: []
+%%%%
+manufacture STR_ITEM 9
+category: STR_BETA
+time: 2147483647
+producedItems: {STR_ALPHA: 2147483647, y: -1}
+space: 2147483647
+requiredItems: {STR_GAMMA: 210}
+requires: [7, 7]
+%%%%
+inventory 8
+costs: {}
+slots: [[1, 2], [3, 4]]
+id: x
+y: 3
+type: 0x10
+%%%%
+trajectory STR_T
+id: 7
+waypoints: abc
+%%%%
+inventory 7
+costs: {STR_LONG_NAME_1: 24}
+costs: {STR_BETA: 2147483647}
+type: -1
+slots: []
+id: STR_ALPHA
+x:
+%%%%
+trajectory STR_T
+groundTimer: 33
+id: STR_BETA
+waypoints: []
+%%%%
+region STR_R
+cost: 100
+missionWeights: {a b: 25}
+areas: []
+type: STR_GAMMA
+type: STR_ALPHA
+missionZones: [1, 2]
+%%%%
+region STR_R
+cost: 36297
+missionWeights: {}
+areas: []
+regionWeight: 2147483647
+missionZones: [[], []]
+type: x
+missionRegion: STR_GAMMA
+%%%%
+inventory 5
+type: 2147483647
+y: {k: v}
+costs: {STR_LONG_NAME_1: 0x10, STR_LONG_NAME_1: 208}
+listOrder: 34
+id: true
+%%%%
+region STR_R
+regionWeight: -1
+missionRegion: STR_LONG_NAME_1
+type: true
+missionZones: [[[95, 0, 48.49, 15.323]]]
+cost: 0x10
+cost: -1
+%%%%
+inventory 9
+listOrder: 182
+x: 25
+y: 0x10
+costs: {7: -1, null: 2147483647}
+type: 0
+id: y
+%%%%
+race STR_RACE
+members: [STR_ALPHA]
+%%%%
+inventory 4
+id: {k: v}
+y: 24
+costs: {7: 92405, a b: -50193}
+type: 267
+x: -1
+listOrder: 0x10
+%%%%
+country STR_USA
+labelLat: 52
+labelLon: 4
+fundingCap: 13651
+areas: [[0, 151.232, 101.895, 66.66], [1e2, 283.5, 0, -37.69], [350.5, -51.914, 35.5, -158]]
+%%%%
+race STR_RACE
+id: é
+members: [STR_BETA, STR_ALPHA, null, x]
+members: [y, y]
+%%%%
+manufacture STR_OTHER 8
+requires: [null, null, x, é]
+cost: 26
+name: null
+space: 2147483647
+time: 1
+requiredItems: {}
+listOrder: 6
+%%%%
+region STR_R
+missionRegion: STR_GAMMA
+type: STR_ALPHA
+missionZones: [[[-19.32, 260.5, 1e2, -26.236]]]
+cost: 12
+missionWeights: {7: 42, STR_BETA: 4, true: 29}
+%%%%
+manufacture STR_OTHER 4
+producedItems: {}
+space: -1
+name: STR_GAMMA
+listOrder: 10
+category: STR_BETA
+requiredItems: {}
+requiredItems: {x: -3, STR_GAMMA: 2147483647, x: 24}
+requires: [x, é, 7, y]
+time: 41743
+cost: abc
+%%%%
+race STR_RACE
+id: true
+members: []
+%%%%
+inventory 2
+listOrder: 92317
+y: 29
+type: 14
+slots: {k: v}
+costs: {y: 255, STR_LONG_NAME_1: 2147483647, x: 24}
+id: é
+x: -1
+%%%%
+manufacture STR_ITEM 4
+name: y
+producedItems: {}
+time: 134
+cost: {k: v}
+requires: [STR_LONG_NAME_1, STR_BETA, STR_BETA, é]
+listOrder: 92
+listOrder: 18
+requiredItems: {true: -96083, é: 15, STR_GAMMA: 0x10}
+category: y
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 2147483647
+%%%%
+race STR_RACE
+id: STR_BETA
+members: []
+%%%%
+country STR_X
+fundingBase: 0x10
+fundingCap: 263
+labelLon: -68.699
+type: STR_ALPHA
+%%%%
+region STR_R
+type: a b
+missionWeights: {}
+areas: []
+missionRegion: x
+regionWeight: -3
+cost: 37
+%%%%
+country STR_USA
+type: STR_ALPHA
+areas: []
+labelLat: -108.937
+fundingBase: -1
+%%%%
+research STR_Q 9
+name: true
+dependencies: [STR_GAMMA]
+unlocks: [STR_ALPHA, STR_ALPHA]
+cost: 0x10
+points: 1
+destroyItem: true
+%%%%
+race STR_RACE
+members: [é]
+id: a b
+id: STR_GAMMA
+%%%%
+region STR_R
+regionWeight: 6
+cost: 20
+type: STR_LONG_NAME_1
+missionRegion: a b
+missionZones:
+areas: [[-82, 112, 232.5, 0], [1e2, -48.5, 44.5, 1e2]]
+%%%%
+country STR_X
+areas: [[1e2, 172, 130.59, 1e2]]
+areas: []
+fundingBase: 92503
+fundingCap: 2147483647
+labelLon: -5
+%%%%
+country STR_X
+fundingCap: 50
+labelLat: ~
+areas: [[-176, -148, 1e2, 80.89], [0, 155.5, 19.637, 1e2]]
+labelLon: -48
+fundingBase: 0x10
+fundingBase: 37
+type: true
+%%%%
+inventory 1
+id: a b
+costs: {}
+type: 55905
+slots: [1, 2]
+listOrder: [1, 2]
+y: 25
+%%%%
+country STR_X
+labelLon: -31.47
+areas: [[1e2, 0, 1e2, -21.70], [-58, 27.5, -83.232, 0, 58109], [0, -33.84, 360.5, 1e2]]
+fundingBase: -3
+type: 7
+fundingCap: 23
+%%%%
+manufacture STR_ITEM 9
+time: 88
+listOrder: 92703
+producedItems: {}
+producedItems: {STR_BETA: 26, y: 2147483647, a b: -59736}
+requires: [7, a b]
+cost: [1, 2]
+category: STR_GAMMA
+space: 11603
+%%%%
+inventory 1
+id: [1, 2]
+costs: {true: 13, 7: 165}
+y: 40
+slots: [[0, 0], [7, 2], [3, 5], [1, 0], [6, 2]]
+x: 16
+type: 0x10
+%%%%
+race STR_RACE
+id: true
+members: [y, null, STR_LONG_NAME_1, y]
+%%%%
+country STR_USA
+type: true
+fundingBase: -1
+labelLon: 1e2
+fundingCap: 255
+labelLat: 171
+%%%%
+manufacture STR_OTHER 9
+requiredItems: {true: -27160, STR_ALPHA: -4}
+producedItems: {7: 1, y: 77539, é: 28}
+name: STR_BETA
+listOrder: 2
+cost: 146
+requires: []
+space: -83789
+category: 7
+time: -78155
+%%%%
+trajectory STR_T
+groundTimer: 0x10
+id: y
+%%%%
+race STR_RACE
+members: [x, STR_BETA]
+id: a b
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+%%%%
+region STR_R
+missionRegion: x
+type: null
+regionWeight: -17994
+areas: []
+missionWeights: {}
+%%%%
+manufacture STR_OTHER 5
+listOrder: 58038
+requires: [true, STR_GAMMA]
+cost: ~
+requiredItems: {x: -1, a b: 107, STR_ALPHA: -60690}
+time: 152
+name: y
+%%%%
+inventory 2
+id: STR_ALPHA
+x: 0x10
+listOrder: ~
+y: 40
+type: 0x10
+slots: [[6, 5], [6, 0], [8, 5]]
+%%%%
+region STR_R
+missionZones: [[[1e2, 0, -28.416, 1e2, 2147483647, a b], [21.90, 24.8, 43.34, 0]]]
+missionWeights: {}
+cost: 2147483647
+missionRegion: true
+type: é
+%%%%
+trajectory STR_T
+id: y
+waypoints: [[4, 2, 79], [4, 3, 28], [2, 3, 92], [2, 3, 4]]
+%%%%
+manufacture STR_ITEM 0
+time: -2
+name: 7
+listOrder: 21
+requires: [STR_GAMMA, y]
+requiredItems: {true: -1, y: 20, STR_LONG_NAME_1: 247}
+cost: 0x10
+space: 9
+producedItems: {x: 2147483647}
+category: y
+%%%%
+country STR_USA
+fundingBase: 8
+type: null
+fundingCap: 170
+areas: [[0, 28.677, 51.456, 0, 19]]
+labelLon:
+labelLon: 0.78
+%%%%
+country STR_X
+labelLat: 41
+areas: [[-108.530, 283.5, 42.5, 126], [-85, 322.5, 0, 1e2], [27.567, -47.43, -135, 300.5, -5]]
+areas: [[156, 16, 0, 51.250]]
+fundingBase: 0x10
+type: é
+%%%%
+region STR_R
+missionZones: [[[3, 0, 1e2, 48.5], [335.5, 97.167, -82.47, 49.5]]]
+missionWeights: {7: 19}
+missionRegion: null
+cost:
+regionWeight: 232
+type: 7
+areas: [[233.5, 1e2, -120.768, -58]]
+%%%%
+region STR_R
+areas: [[1e2, -17.31, 0, 26.5]]
+regionWeight: 2147483647
+missionRegion: STR_BETA
+type: STR_GAMMA
+cost: [1, 2]
+missionWeights: {STR_GAMMA: 21}
+%%%%
+research STR_TOPIC 8
+requires: []
+needItem: false
+cutscene: a b
+listOrder: [1, 2]
+unlocks: [STR_ALPHA, a b]
+lookup: x
+name: a b
+cost: {k: v}
+getOneFree: []
+points: 58151
+%%%%
+country STR_X
+fundingCap: 281
+labelLat: 0
+fundingBase: -80043
+labelLon: -69.135
+areas: [[133.520, 1e2, 0, 4.62], [112, 84.40, -16.18, 260.5]]
+type: abc
+%%%%
+region STR_R
+regionWeight: -1
+missionWeights: abc
+cost: 0x10
+missionRegion: STR_ALPHA
+missionRegion: STR_LONG_NAME_1
+missionZones: [[[0, 0, 49.5, 1e2, 12, STR_BETA], [1e2, -124, 212.5, 1e2]]]
+%%%%
+research STR_TOPIC 0
+listOrder: 57465
+getOneFree: [7, STR_BETA, STR_GAMMA, STR_BETA]
+needItem: true
+destroyItem: true
+lookup: STR_BETA
+name: 7
+name: STR_BETA
+dependencies: [x, x]
+requires: []
+unlocks: [STR_GAMMA, STR_LONG_NAME_1]
+points: -1
+cost: 28
+%%%%
+country STR_USA
+labelLon: -89.92
+fundingBase: 3
+labelLat: 1e2
+areas: [[56.57, 0, 75.5, 188.5, 38]]
+fundingCap: 5
+%%%%
+manufacture STR_OTHER 8
+requires: []
+space: 32
+producedItems: {}
+listOrder: 0
+category: 7
+cost:
+requiredItems: {k: v}
+name: é
+%%%%
+manufacture STR_OTHER 9
+producedItems: {STR_GAMMA: 0x10, a b: -17848}
+name: x
+listOrder: 92001
+requiredItems: {}
+space: -1
+cost: 0
+category: a b
+time: 78
+requires: [STR_GAMMA, null]
+%%%%
+trajectory STR_T
+groundTimer: -1
+waypoints: [[2, 3, 68], [2, 4, 80], [2, 0, 90]]
+%%%%
+research STR_TOPIC 5
+cost: -1
+lookup: true
+dependencies: [null, STR_ALPHA, é]
+listOrder: -2
+getOneFree: [é, STR_GAMMA, null, é]
+needItem: true
+unlocks: [STR_BETA, é, true]
+unlocks: [null, a b]
+cutscene: STR_GAMMA
+%%%%
+research STR_TOPIC 3
+points: 31
+cost: -8018
+cutscene: 7
+getOneFree: [é, 7, true, STR_LONG_NAME_1]
+requires: []
+listOrder: 16
+destroyItem: true
+name: true
+lookup: y
+%%%%
+trajectory STR_T
+id: STR_GAMMA
+groundTimer: 99
+waypoints: {k: v}
+%%%%
+inventory 2
+costs: ~
+listOrder: 0x10
+listOrder: 22
+type: 0x10
+id: x
+x: 38
+slots: [[2, 4], [5, 2], [6, 4], [3, 4], [2, 5]]
+%%%%
+race STR_RACE
+members: [é, STR_ALPHA]
+%%%%
+research STR_TOPIC 3
+destroyItem: true
+listOrder: 29
+dependencies: []
+dependencies: [true]
+lookup: 7
+getOneFree: [y]
+name: STR_BETA
+points: 4
+needItem: true
+requires: []
+cost: 48745
+%%%%
+inventory 6
+slots: [[6, 0], [6, 2], [1, 3], [0, 2], [3, 4]]
+listOrder: 0x10
+costs: {true: -1, y: 0x10, x: 30}
+x: 93503
+%%%%
+region STR_R
+areas:
+areas: [[158.52, 0, 199.5, -70.600], [-176.206, 95.249, 1.39, -12.63], [-79, 162, 0, -145]]
+type: y
+missionRegion: STR_LONG_NAME_1
+regionWeight: 37
+cost: 2
+missionWeights: {STR_LONG_NAME_1: 32, STR_BETA: 15, STR_BETA: 26}
+missionZones: [1, 2]
+%%%%
+manufacture STR_ITEM 8
+cost: 0x10
+listOrder: 168
+space: [1, 2]
+name: null
+producedItems: {STR_LONG_NAME_1: -28759, 7: 40, y: 2147483647}
+requires: [x, x, STR_GAMMA]
+requires: [true, y]
+%%%%
+manufacture STR_OTHER 7
+producedItems: abc
+time: 13875
+category: true
+requiredItems: {}
+name: STR_GAMMA
+space: -1
+requires: []
+listOrder: 2147483647
+listOrder: 2147483647
+%%%%
+country STR_USA
+labelLat: 0
+fundingBase: 8
+fundingCap: -1
+areas: [[-48.89, -84, 0, 85.16], [0, 1e2, 1e2, 1e2]]
+%%%%
+research STR_Q 7
+needItem: true
+lookup: STR_BETA
+getOneFree: [x]
+requires: [x, x]
+requires: [é, STR_BETA, STR_GAMMA]
+listOrder: 4
+dependencies: [STR_GAMMA, é, null, STR_ALPHA]
+points: 103
+unlocks: [true, é, true]
+%%%%
+region STR_R
+cost: 36
+missionWeights: {x: 25, 7: 4}
+missionWeights: {7: 10}
+missionRegion: é
+areas: [[199.5, 161.285, -47, 151, -79600], [149.510, 0, -78, 336.5, 1]]
+missionZones: [[[-58.39, 1e2, 0, 97.875, 73156, a b]]]
+regionWeight: 254
+%%%%
+race STR_RACE
+members: [x, STR_LONG_NAME_1]
+%%%%
+manufacture STR_ITEM 8
+name: é
+requires: [STR_BETA, true, é, 7]
+cost: 1
+requiredItems: {}
+category: 7
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 2147483647
+waypoints: [[6, 0, 19], [5, 2, 52], [4, 4, 78], [0, 2, 15]]
+%%%%
+manufacture STR_ITEM 6
+requires: [é, STR_LONG_NAME_1, y]
+requiredItems: {STR_BETA: 2147483647, STR_ALPHA: 2147483647}
+listOrder: 87
+listOrder: 55007
+producedItems: {}
+space: -1
+category: 7
+cost: 17
+time: -1
+%%%%
+trajectory STR_T
+id: STR_BETA
+groundTimer: 177
+waypoints: [[1, 2, 45]]
+%%%%
+research STR_TOPIC 5
+requires: [STR_GAMMA, STR_LONG_NAME_1, STR_GAMMA, x]
+destroyItem: false
+destroyItem: true
+cutscene: null
+name: 7
+listOrder: 280
+points: 0x10
+cost: 0x10
+getOneFree: [y, true, STR_GAMMA, STR_LONG_NAME_1]
+lookup: y
+%%%%
+region STR_R
+cost: 29
+regionWeight:
+areas: [[-149.522, 0, 72.64, 1e2], [0, 44.29, 1e2, 95.14], [4.33, -89.30, 0, 0]]
+missionWeights: {true: 14, true: 29, null: 49}
+missionRegion: a b
+type: STR_ALPHA
+missionZones: []
+missionZones: []
+%%%%
+region STR_R
+type: é
+regionWeight: -1
+cost: -1
+areas: []
+missionZones: [[]]
+%%%%
+research STR_TOPIC 8
+needItem: {k: v}
+destroyItem: true
+cutscene: 7
+dependencies: [STR_BETA]
+cost: -1
+cost: -3
+getOneFree: [é, é, STR_BETA]
+getOneFree: [true]
+unlocks: [STR_LONG_NAME_1]
+points: 11
+lookup: true
+name: STR_BETA
+requires: [7]
+%%%%
+region STR_R
+missionZones: [[[1e2, 0, -87.879, 27], [72.88, 29.5, 122.127, 0]]]
+missionRegion: x
+areas: [[142.5, 130.286, 1e2, 0], [0, 1e2, 84, -62.35]]
+type: x
+type: true
+missionWeights: {STR_ALPHA: 13, 7: 44, true: 25}
+cost: 120
+regionWeight: 0
+regionWeight: 81
+%%%%
+region STR_R
+regionWeight: 258
+missionZones: []
+cost: -1
+cost: 117
+areas: [[199.5, 0, 1e2, 62.388]]
+missionWeights: {a b: 24, STR_ALPHA: 13}
+type: STR_GAMMA
+%%%%
+manufacture STR_OTHER 9
+cost: 0x10
+producedItems: {STR_GAMMA: -1, STR_BETA: 2147483647, 7: 286}
+name: y
+time: 2147483647
+space: 4
+requires: [true, a b, true, é]
+category: y
+requiredItems: {x: 41041, 7: 46672, true: 2147483647}
+%%%%
+race STR_RACE
+members: []
+id: null
+%%%%
+research STR_TOPIC 4
+cutscene: x
+lookup: STR_ALPHA
+name: a b
+requires: [x]
+unlocks: [true]
+needItem: true
+listOrder: 217
+cost: 2147483647
+%%%%
+country STR_X
+fundingCap: 8
+labelLon: 1e2
+areas: [[0, 151.5, -47.375, 1e2], [0, 145.418, -90.9, 122], [2, -71.157, 0, -113.462]]
+%%%%
+research STR_TOPIC 9
+requires: [STR_ALPHA, a b, STR_ALPHA]
+lookup: null
+listOrder: 2147483647
+name: null
+dependencies:
+cost: 0x10
+cutscene: 7
+needItem: abc
+points: 0x10
+%%%%
+inventory 5
+costs: {STR_GAMMA: 2147483647, null: 2147483647}
+type: 18
+y: 129
+id: x
+x: -1
+%%%%
+research STR_TOPIC 5
+destroyItem: true
+points: 198
+needItem: true
+requires: [a b, STR_ALPHA, STR_GAMMA, 7]
+dependencies: [7, true, x]
+unlocks: [STR_ALPHA]
+cost: 9
+cutscene: STR_ALPHA
+name: STR_GAMMA
+listOrder: -1
+%%%%
+manufacture STR_ITEM 0
+time: 2147483647
+requires: [x, y, STR_ALPHA]
+cost: -2
+space: -1
+category: x
+listOrder: 96815
+%%%%
+trajectory STR_T
+waypoints: [[3, 2, 54]]
+groundTimer: -4539
+id: é
+%%%%
+manufacture STR_ITEM 4
+space: abc
+category: y
+cost: 30
+time: 225
+name: STR_BETA
+name: y
+listOrder: 31
+producedItems: {null: -2, STR_BETA: 0x10, 7: 29}
+%%%%
+inventory 9
+listOrder: 4
+listOrder: 3
+costs: {true: 29, 7: 40, 7: 0x10}
+x: abc
+type: 37
+slots: []
+%%%%
+race STR_RACE
+members: [STR_BETA, y, STR_ALPHA, 7]
+id: STR_ALPHA
+%%%%
+inventory 0
+slots: [[1, 0], [3, 4], [6, 5], [4, 1]]
+y: 0x10
+listOrder: 184
+costs: {y: -3}
+type: -14965
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+groundTimer: 1
+%%%%
+research STR_TOPIC 6
+requires: [null, x, STR_LONG_NAME_1, STR_GAMMA]
+destroyItem: true
+points: 92
+cost: 288
+name: null
+cutscene: null
+lookup: y
+getOneFree: []
+needItem: false
+dependencies: [x, STR_LONG_NAME_1, é]
+%%%%
+region STR_R
+missionRegion: a b
+type: x
+cost: 2
+areas: []
+missionZones: []
+%%%%
+manufacture STR_ITEM 6
+listOrder: 14
+producedItems: {null: 0x10, STR_LONG_NAME_1: 78729, y: 212}
+name: 7
+space: 6
+%%%%
+manufacture STR_ITEM 2
+category: STR_ALPHA
+time: 0x10
+time: 2147483647
+requires: [y, é, é]
+space: 276
+space: -1
+producedItems: [1, 2]
+requiredItems: {}
+cost: -2
+listOrder: 0x10
+%%%%
+inventory 0
+costs: {k: v}
+slots: [[4, 5], [8, 1]]
+id: é
+x: 2147483647
+listOrder: 0x10
+%%%%
+country STR_X
+fundingCap: 16
+areas: [[1e2, 0, 1e2, 129], [-126, 1e2, -108.234, 192.5]]
+labelLon: 1e2
+fundingBase: 76458
+type: é
+%%%%
+country STR_USA
+type: true
+fundingBase: 11
+areas: [[40.87, 57.154, 0, 46.21, -1], [-138.549, -9.13, 35.15, 211.5]]
+labelLat: 70.40
+labelLon: 1e2
+%%%%
+trajectory STR_T
+id: é
+waypoints: [[1, 4, 22], [5, 2, 83]]
+groundTimer: 189
+%%%%
+inventory 5
+slots: [[8, 2], [1, 5], [1, 3], [8, 5]]
+id: y
+x: 12
+y: 0x10
+listOrder: 2147483647
+%%%%
+country STR_X
+labelLat: 0
+areas: [[1e2, 257.5, 122.916, 1e2]]
+areas: []
+fundingBase: 0x10
+%%%%
+inventory 7
+slots: [[7, 2], [0, 1], [1, 4], [7, 5], [0, 4]]
+id: null
+y: 2147483647
+listOrder: 98985
+listOrder: -5
+%%%%
+manufacture STR_OTHER 3
+space: 12
+requires: [a b, STR_GAMMA, x]
+time: 2
+time: 80987
+producedItems: {STR_BETA: 2147483647, STR_GAMMA: -1}
+listOrder: 6
+category: true
+category: true
+requiredItems: {null: 5, é: 0, STR_LONG_NAME_1: 2147483647}
+name: STR_BETA
+%%%%
+race STR_RACE
+members: [a b, null]
+%%%%
+inventory 8
+y: 0x10
+id: é
+x: 9
+x: 0x10
+listOrder: -86919
+costs: {true: 0x10, STR_BETA: 0x10, x: -40027}
+slots: [[4, 3], [1, 2], [1, 1], [2, 0], [0, 1], [6, 1], [2, 2]]
+type: 2147483647
+%%%%
+trajectory STR_T
+id: STR_GAMMA
+groundTimer: -1
+groundTimer: 25
+waypoints: [[5, 1, 91], [6, 1, 98], [1, 2, 94]]
+%%%%
+research STR_TOPIC 4
+requires: abc
+cost: 4
+cutscene: null
+unlocks: []
+listOrder: 0x10
+destroyItem: true
+name: y
+dependencies: [y, STR_BETA, x]
+points: 1
+getOneFree: []
+%%%%
+inventory 1
+costs: [1, 2]
+x: 0x10
+id: y
+id: 7
+type: -10562
+slots: [[5, 4], [8, 2], [6, 3], [5, 4], [6, 5], [6, 1]]
+listOrder: 289
+%%%%
+manufacture STR_ITEM 8
+listOrder: -1
+cost: 2147483647
+cost: 54
+requiredItems: {}
+space: 15
+name: null
+requires: {k: v}
+%%%%
+country STR_USA
+type: x
+areas: []
+labelLon: 0
+labelLat: -113.504
+fundingCap: 230
+fundingBase: -3
+%%%%
+region STR_R
+areas: [[1e2, -89.990, 112, 1e2], [165.5, -136, 0, 0], [0, 34.5, 0, 1e2]]
+missionZones: [[], []]
+missionWeights: {STR_ALPHA: 37, STR_BETA: 30}
+cost: 176
+regionWeight: 0x10
+type: 7
+missionRegion: STR_GAMMA
+%%%%
+manufacture STR_OTHER 8
+category: x
+cost: 0
+space:
+requiredItems: {STR_BETA: 18, y: 40}
+time: 17
+listOrder: -1
+%%%%
+manufacture STR_OTHER 2
+listOrder: 68734
+producedItems: {x: 22}
+requiredItems: abc
+space: 291
+requires: [a b, 7, x]
+name: a b
+category: abc
+%%%%
+region STR_R
+type: a b
+regionWeight: 41174
+cost: 2147483647
+missionZones: [[], []]
+areas: []
+areas: []
+missionWeights:
+%%%%
+trajectory STR_T
+id: 7
+waypoints: [[3, 0, 99]]
+%%%%
+trajectory STR_T
+waypoints: [[4, 3, 39], [6, 2, 59]]
+id: 7
+id: STR_ALPHA
+groundTimer: abc
+%%%%
+inventory 7
+y: 10
+x: 241
+listOrder: 0x10
+listOrder: 280
+slots:
+type: 0
+id: STR_LONG_NAME_1
+%%%%
+trajectory STR_T
+waypoints: []
+id: STR_LONG_NAME_1
+groundTimer: 18
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+groundTimer: 18
+id: x
+waypoints: [[5, 4, 37], [1, 3, 73]]
+%%%%
+country STR_X
+fundingBase: 7
+fundingCap: -4
+labelLon: -36.936
+type: x
+areas: [[171, 68.357, 1e2, 0]]
+areas: [[0, -82.4, 245.5, -128], [1e2, 339.5, 1e2, 1e2], [-13.158, 86.72, 109, 0]]
+%%%%
+research STR_TOPIC 2
+lookup: STR_BETA
+listOrder: 242
+name: null
+getOneFree: []
+unlocks: [x, 7, 7, STR_GAMMA]
+requires: [true, a b]
+points: -18966
+needItem: true
+cutscene: null
+cost: -1
+destroyItem:
+%%%%
+research STR_Q 5
+dependencies: [é]
+cost: 0x10
+name: é
+unlocks: []
+cutscene: é
+destroyItem: true
+requires: [true, a b, y, é]
+lookup: STR_ALPHA
+listOrder: 2147483647
+points: -74417
+needItem: false
+getOneFree: [null, 7, STR_LONG_NAME_1, x]
+%%%%
+inventory 4
+x: -1
+id: y
+listOrder: 257
+slots: [[3, 1], [6, 5], [4, 2], [3, 1], [1, 5]]
+costs: {7: 2147483647, null: 257}
+type: -1
+y: 0x10
+y: 165
+%%%%
+research STR_Q 7
+lookup: y
+lookup: x
+cutscene: STR_ALPHA
+points: 2147483647
+needItem: false
+getOneFree: ~
+destroyItem: false
+requires: [STR_BETA, x]
+requires: [y]
+dependencies: [STR_BETA]
+%%%%
+inventory 7
+id: null
+id: é
+slots: [[4, 1]]
+y: 0x10
+x: -1
+type:
+costs: {true: -71837, y: 146, é: 171}
+%%%%
+race STR_RACE
+members: [STR_ALPHA, y, y, STR_GAMMA]
+%%%%
+inventory 2
+x: 2147483647
+id: a b
+y: 4
+costs: {é: 0x10}
+%%%%
+country STR_X
+type: STR_ALPHA
+labelLat: -68.92
+fundingCap: 19
+areas: [[-62.23, -50.35, 0, 1e2]]
+fundingBase: abc
+fundingBase: 14
+labelLon: 317.5
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+country STR_USA
+labelLat: 103.286
+labelLon: 11.5
+fundingCap: 30
+areas: [[-14.45, 79.47, 311.5, 104.5], [-123, 1e2, 1e2, 79.35], [1e2, -94.99, 71.33, 59]]
+type: STR_ALPHA
+%%%%
+research STR_Q 1
+lookup: {k: v}
+needItem: true
+points: 0x10
+unlocks: [7, y, x, STR_LONG_NAME_1]
+requires: [é, STR_ALPHA]
+cutscene: y
+cost: -1
+dependencies: [7, STR_BETA, STR_ALPHA]
+listOrder: -13760
+name: y
+getOneFree: [true, true, true, STR_BETA]
+destroyItem: true
+%%%%
+country STR_X
+areas: []
+labelLon: 82.5
+fundingBase: -1
+type: STR_ALPHA
+fundingCap: 28
+labelLat: 1e2
+%%%%
+race STR_RACE
+members: {k: v}
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+waypoints: []
+waypoints: [[3, 2, 1]]
+%%%%
+inventory 2
+costs: {STR_BETA: 2147483647, true: -1, x: 24}
+slots: [[3, 1], [1, 5], [1, 5], [8, 2], [0, 1]]
+type: 5
+id: true
+listOrder: 15
+y: -1
+%%%%
+manufacture STR_ITEM 5
+time: 27
+cost: 2147483647
+space: -1
+category: x
+name: null
+requires: [null, STR_GAMMA]
+requiredItems: {k: v}
+producedItems: {}
+%%%%
+region STR_R
+regionWeight: 26
+missionWeights: {a b: 8, true: 31, true: 7}
+type: STR_GAMMA
+areas: [[0, 104.867, -46.12, -24.288], [119, 15.5, 67.687, 82.55]]
+areas: [[113.746, 35, -176.290, -88.89, 12373]]
+missionZones: []
+%%%%
+country STR_USA
+labelLon: -16.452
+areas: [[1e2, 1e2, 0, -105], [-51.2, 80.5, -60.79, -44, 47428], [40, 0, -108, 1e2]]
+type: true
+fundingCap: 2147483647
+labelLat: -70.88
+fundingBase: 98951
+%%%%
+country STR_USA
+labelLat: 38.35
+fundingCap: 4
+%%%%
+race STR_RACE
+id: null
+members: [é, STR_GAMMA, null]
+%%%%
+trajectory STR_T
+waypoints: [[1, 4, 63], [2, 4, 51], [6, 3, 79], [2, 4, 7]]
+groundTimer: -3
+id: STR_LONG_NAME_1
+%%%%
+race STR_RACE
+members: [STR_BETA, y, x]
+id: x
+%%%%
+research STR_Q 9
+requires: [é]
+needItem: false
+destroyItem: no
+cutscene: é
+lookup: STR_GAMMA
+cost: 41
+listOrder: -34117
+name: é
+unlocks: [STR_LONG_NAME_1, x, STR_LONG_NAME_1, x]
+dependencies: [y, STR_ALPHA, STR_ALPHA, é]
+points: abc
+%%%%
+inventory 3
+id: y
+listOrder: 0x10
+listOrder: 265
+x: 12
+costs: {k: v}
+%%%%
+inventory 3
+costs: {}
+slots: []
+id: STR_LONG_NAME_1
+type:
+x: 58
+%%%%
+trajectory STR_T
+waypoints: [[1, 0, 25]]
+id: y
+%%%%
+race STR_RACE
+id: 7
+%%%%
+manufacture STR_OTHER 9
+requiredItems: {}
+producedItems: [1, 2]
+name: STR_LONG_NAME_1
+listOrder: 180
+time: 2147483647
+category: 7
+requires: [true, y, STR_LONG_NAME_1]
+space: 1
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+members: [STR_LONG_NAME_1, STR_GAMMA, a b]
+%%%%
+manufacture STR_ITEM 3
+time: [1, 2]
+requires: [STR_LONG_NAME_1, null]
+requiredItems: {y: -1, a b: 6}
+name: STR_GAMMA
+name: é
+producedItems: {}
+category: null
+space: 1
+cost: 4
+%%%%
+research STR_Q 9
+destroyItem: no
+cost: 89546
+dependencies: []
+listOrder: 8
+cutscene: STR_BETA
+requires: [é, a b]
+name: STR_BETA
+unlocks: [true, STR_BETA, 7]
+getOneFree: [a b, STR_ALPHA, 7]
+%%%%
+region STR_R
+regionWeight: 0x10
+areas: [[302.5, 1e2, 93.671, -22.11], [44.5, -179.917, 0, 327.5], [1e2, 0, 1e2, 30]]
+missionZones: []
+type: 7
+cost: 20
+%%%%
+region STR_R
+areas: [[227.5, -170, 1e2, -165.763]]
+regionWeight: 30
+missionZones: [[]]
+missionWeights: {y: 26}
+missionRegion: null
+cost: -1
+cost: 51
+type: 7
+%%%%
+race STR_RACE
+id: STR_GAMMA
+members: [null, STR_GAMMA, STR_LONG_NAME_1, STR_ALPHA]
+%%%%
+inventory 3
+type: 3
+x: 32
+id: x
+y: 0x10
+listOrder: -1
+slots: [[6, 4], [7, 1], [4, 0], [1, 1], [6, 4]]
+costs: {STR_GAMMA: 38, STR_ALPHA: 29, STR_ALPHA: 2147483647}
+%%%%
+race STR_RACE
+members: abc
+id: STR_BETA
+%%%%
+inventory 1
+id: 7
+type: 35
+costs: {7: 2147483647, STR_BETA: 5, x: 0x10}
+listOrder: -1
+y: {k: v}
+y: -39496
+%%%%
+race STR_RACE
+members: []
+%%%%
+region STR_R
+missionRegion: abc
+cost: 2147483647
+missionWeights: {a b: 28, y: 43}
+areas: [[-169, 0, 71.425, -179], [-120.538, -135, -18.55, 0]]
+missionZones: [[[36.416, -77.271, -109, 58.807, 2147483647, true]], [[312.5, -58.36, 72, 70], [74, 0, 10.69, -42.95, 31422, STR_ALPHA]]]
+missionZones: [[[17, 69.5, 46, 1e2]]]
+%%%%
+research STR_Q 7
+name: a b
+dependencies: [7, STR_BETA, null, 7]
+points: -25379
+getOneFree: [STR_ALPHA, STR_BETA]
+requires: [STR_ALPHA, true]
+requires: [null, STR_LONG_NAME_1, STR_BETA, true]
+needItem: {k: v}
+listOrder: 36
+cost: -1
+cutscene: y
+%%%%
+inventory 1
+x: 43140
+listOrder: 30
+y: 0x10
+id: STR_ALPHA
+type: 2147483647
+%%%%
+race STR_RACE
+id: STR_BETA
+members: [a b, STR_GAMMA, x, 7]
+%%%%
+country STR_USA
+fundingCap: -1
+areas: [[167.5, 283.5, 162.5, -26.606], [88.50, -13.121, -33, -4.47]]
+fundingBase: 12
+type: true
+%%%%
+race STR_RACE
+members: [STR_ALPHA]
+id: STR_BETA
+%%%%
+race STR_RACE
+members: [a b, é, y]
+members: [STR_BETA, STR_ALPHA]
+id: STR_BETA
+%%%%
+research STR_Q 8
+listOrder: 0x10
+cutscene: y
+lookup: STR_ALPHA
+destroyItem: true
+needItem: true
+name: null
+cost: -11649
+points: -1
+getOneFree: [STR_ALPHA, STR_BETA]
+dependencies: []
+unlocks: [STR_LONG_NAME_1, STR_LONG_NAME_1]
+%%%%
+research STR_TOPIC 8
+cutscene: STR_GAMMA
+lookup: STR_BETA
+points: 40
+destroyItem: no
+getOneFree: [true]
+needItem: true
+dependencies:
+name: y
+unlocks: {k: v}
+listOrder: 7
+%%%%
+country STR_USA
+fundingBase: 35
+fundingCap: 39
+type: STR_LONG_NAME_1
+areas: [[0, 1e2, -36.79, 0]]
+labelLat: -23.272
+%%%%
+inventory 0
+y: -1
+type: 36
+x: 2147483647
+id: null
+id: 7
+costs: {a b: 0x10, a b: 2147483647, 7: 0x10}
+listOrder: 2147483647
+%%%%
+manufacture STR_ITEM 6
+listOrder: 205
+time: 2147483647
+cost: -52525
+requires: [STR_LONG_NAME_1]
+producedItems: {true: 2147483647}
+name: STR_BETA
+requiredItems: {x: 2147483647, é: 169, x: 0x10}
+%%%%
+research STR_Q 4
+destroyItem: true
+unlocks: [STR_ALPHA, true, STR_ALPHA]
+name: y
+requires: [a b]
+requires: [STR_ALPHA, STR_LONG_NAME_1, y]
+points: 289
+points: 2147483647
+listOrder: 37
+dependencies: [a b, a b, x]
+%%%%
+research STR_Q 3
+needItem: true
+unlocks: [é, null, STR_LONG_NAME_1, null]
+unlocks: [null, y, a b]
+destroyItem: false
+name: STR_GAMMA
+cutscene: x
+getOneFree:
+dependencies: [null]
+points: 146
+%%%%
+region STR_R
+missionWeights: {STR_LONG_NAME_1: 44, null: 26, a b: 39}
+regionWeight: -4
+type: null
+cost: -1
+missionZones: []
+missionRegion:
+%%%%
+region STR_R
+missionZones: [[[20.99, -29.57, 40.5, 234.5, 0x10, true], [284.5, 216.5, 1e2, -97, -44396, 7]]]
+missionRegion: x
+regionWeight: 4
+areas: []
+cost: 0x10
+missionWeights: {STR_BETA: 34}
+%%%%
+country STR_USA
+areas: [[1e2, 0, 0, 104.5], [1e2, 30, 104.5, 1e2], [71, 126.5, 124.203, 88.5, 19]]
+labelLon: 255.5
+labelLat: -45.66
+fundingBase: abc
+type: 7
+%%%%
+trajectory STR_T
+groundTimer: -1
+id: é
+waypoints: [[0, 1, 91], [0, 0, 26], [3, 2, 80]]
+%%%%
+region STR_R
+areas: []
+type: y
+regionWeight: 22
+missionWeights: {}
+%%%%
+trajectory STR_T
+groundTimer: 26
+id: null
+waypoints: [[0, 0, 6], [2, 0, 20], [6, 2, 85]]
+%%%%
+manufacture STR_ITEM 5
+requires: [STR_GAMMA, STR_GAMMA]
+time: 220
+requiredItems: {true: -4, y: -1}
+cost: 36
+category: a b
+listOrder: -1
+%%%%
+manufacture STR_OTHER 8
+cost: 32
+requires: []
+requires: [STR_ALPHA, STR_LONG_NAME_1, STR_ALPHA]
+space: 2147483647
+category: null
+name: 7
+time: 11
+%%%%
+manufacture STR_ITEM 4
+category: é
+time: 6
+producedItems: {}
+requiredItems: {7: 21, STR_BETA: -91447, é: -2}
+listOrder: -1
+name: STR_ALPHA
+cost: -1
+space: 20
+%%%%
+race STR_RACE
+members: [y, STR_GAMMA]
+id: y
+%%%%
+region STR_R
+missionRegion: STR_BETA
+regionWeight: -1
+areas: []
+type: é
+missionZones: [[]]
+missionWeights: {STR_ALPHA: 29}
+%%%%
+research STR_Q 0
+cutscene: {k: v}
+cost: -3
+points: 0x10
+dependencies: [y, null, 7]
+getOneFree: [y]
+lookup: é
+name: STR_GAMMA
+needItem: {k: v}
+listOrder: -1
+unlocks: ~
+%%%%
+country STR_USA
+type: y
+labelLat: 42.5
+labelLon: 73.875
+labelLon: 326.5
+areas: []
+fundingCap: 231
+fundingCap: {k: v}
+%%%%
+trajectory STR_T
+waypoints: []
+groundTimer: 2147483647
+groundTimer: 2147483647
+%%%%
+country STR_USA
+fundingBase: -1
+labelLon: 1e2
+labelLat: 1e2
+fundingCap: 2147483647
+type: x
+areas: []
+%%%%
+race STR_RACE
+members: []
+id: a b
+%%%%
+trajectory STR_T
+id: abc
+waypoints: []
+groundTimer: 119
+%%%%
+race STR_RACE
+id: a b
+members: [7, y, null]
+members: []
+%%%%
+trajectory STR_T
+waypoints: [[1, 0, 13], [3, 3, 45]]
+groundTimer:
+id: x
+%%%%
+manufacture STR_OTHER 8
+requiredItems: {x: 2, STR_BETA: 171}
+time: 10
+name: null
+category: STR_LONG_NAME_1
+cost: 33
+cost: 2147483647
+requires: [null, STR_GAMMA, STR_LONG_NAME_1]
+%%%%
+manufacture STR_ITEM 7
+requiredItems: {}
+space: 5
+listOrder: 7
+time: 17029
+category: STR_BETA
+name: STR_BETA
+requires: [é, 7, a b]
+producedItems: {é: -1, STR_LONG_NAME_1: 23}
+%%%%
+country STR_X
+labelLat: 1e2
+labelLon: -141
+type: y
+%%%%
+race STR_RACE
+id: ~
+%%%%
+manufacture STR_ITEM 9
+time: -39616
+time: -1
+name: 7
+cost: 2147483647
+producedItems: {k: v}
+space: 0x10
+requiredItems: {STR_BETA: 42, null: 21013, STR_ALPHA: 17826}
+requires: [a b, null, true]
+%%%%
+region STR_R
+missionRegion: y
+cost: 2147483647
+areas: [[-30.20, 150, 9.5, 290.5], [0, 76.995, 0, 178]]
+missionWeights: {a b: 22}
+regionWeight: 4
+%%%%
+region STR_R
+missionWeights: {7: 23, a b: 26}
+type: true
+cost: 0
+missionZones: [[[0, 1e2, 0, 1e2, 0x10, true]]]
+missionRegion: é
+regionWeight: 34
+%%%%
+inventory 6
+id: a b
+slots: [[5, 2], [7, 3], [7, 3], [7, 1], [7, 3]]
+slots: [[4, 1], [7, 4], [1, 3], [5, 0], [7, 1], [7, 1], [5, 0]]
+y: 271
+x: {k: v}
+type: 17
+costs: {STR_ALPHA: -1, é: -1, null: 181}
+%%%%
+country STR_USA
+areas: [[64.28, 66.34, 0, 1e2]]
+fundingBase: 2147483647
+labelLat: 180.940
+labelLon: 1e2
+labelLon: 0
+fundingCap: 0x10
+type: x
+%%%%
+research STR_Q 7
+getOneFree: []
+lookup: true
+lookup: {k: v}
+unlocks: [y, x]
+name: x
+listOrder: 28
+points: 126
+requires: [STR_ALPHA, STR_GAMMA, STR_GAMMA, a b]
+requires: [STR_LONG_NAME_1, STR_BETA, STR_ALPHA]
+dependencies: [true]
+cost: 5
+cutscene: y
+%%%%
+inventory 0
+type: -60409
+id: STR_GAMMA
+y: 0
+%%%%
+country STR_USA
+areas: [[1e2, 0, 1e2, 42.43], [40.70, 0, 1e2, -56.731], [-68, -176, 0, 0]]
+fundingBase: 2
+labelLat: -21.29
+labelLon: 1e2
+labelLon: 1e2
+fundingCap: {k: v}
+type: STR_ALPHA
+%%%%
+research STR_TOPIC 4
+needItem: true
+lookup: null
+requires: [a b]
+getOneFree: [é]
+cutscene: null
+listOrder: 0x10
+name: STR_LONG_NAME_1
+destroyItem: true
+points: -21601
+points: 13
+dependencies: [a b, STR_LONG_NAME_1, STR_ALPHA, STR_ALPHA]
+%%%%
+trajectory STR_T
+waypoints: [[1, 4, 39], [3, 4, 76]]
+id: true
+%%%%
+region STR_R
+regionWeight: 2147483647
+missionRegion: y
+missionZones: []
+cost: 1
+areas: [[177.5, 46.853, -7.79, 1e2, 17809], [3.861, 63.105, 44.824, 150.5]]
+%%%%
+region STR_R
+regionWeight: 20
+cost: 2147483647
+missionZones: []
+missionWeights: {STR_BETA: 1, x: 24}
+missionWeights: {STR_ALPHA: 11}
+areas: []
+%%%%
+region STR_R
+missionWeights: {STR_LONG_NAME_1: 32}
+missionZones: []
+cost: 0x10
+missionRegion: null
+%%%%
+research STR_TOPIC 5
+dependencies: [x]
+unlocks: [true]
+unlocks: [x]
+listOrder: 14
+lookup: 7
+destroyItem: true
+name: STR_ALPHA
+cutscene: 7
+points: 2147483647
+cost: -77132
+requires: []
+getOneFree: [7, 7, STR_ALPHA]
+needItem: no
+%%%%
+research STR_TOPIC 9
+getOneFree: [STR_ALPHA, STR_BETA]
+unlocks: []
+cutscene: x
+dependencies: [STR_GAMMA, null]
+cost: 52
+lookup: é
+needItem: true
+requires: [y, true]
+listOrder: -1
+name: 7
+%%%%
+race STR_RACE
+members: [true, y, STR_GAMMA, STR_ALPHA]
+id: a b
+id: STR_BETA
+%%%%
+inventory 8
+id: x
+slots: []
+listOrder: ~
+y: 36
+costs: {x: 7, a b: 5, y: 5}
+type: 45704
+%%%%
+race STR_RACE
+members: [y, true]
+%%%%
+race STR_RACE
+members: [STR_ALPHA, STR_ALPHA]
+id: y
+%%%%
+race STR_RACE
+id: true
+members: [x]
+%%%%
+trajectory STR_T
+waypoints: [[5, 0, 91], [0, 1, 58], [2, 3, 29]]
+id: STR_GAMMA
+id: STR_GAMMA
+groundTimer:
+%%%%
+race STR_RACE
+members: [STR_LONG_NAME_1, a b, x, y]
+%%%%
+race STR_RACE
+id: 7
+members: [STR_GAMMA, x, a b, STR_LONG_NAME_1]
+%%%%
+region STR_R
+missionWeights: {STR_LONG_NAME_1: 16, STR_LONG_NAME_1: 23}
+missionWeights: {STR_LONG_NAME_1: 42, STR_ALPHA: 22, true: 41}
+missionRegion: null
+type: null
+areas: [[-11.953, -140, 111.517, 0, -18825]]
+areas: [[1e2, 1e2, 1e2, 24]]
+cost: 276
+%%%%
+trajectory STR_T
+waypoints: abc
+id: x
+%%%%
+inventory 9
+slots: [[5, 2], [8, 4], [4, 3], [4, 3], [7, 1], [5, 3], [2, 2]]
+y: -1
+x: -1
+costs: {true: 0x10, é: 15}
+costs: {STR_BETA: -66308}
+type: 0x10
+id: y
+%%%%
+country STR_USA
+fundingCap: [1, 2]
+type: 7
+labelLat: 0
+fundingBase: 4
+areas: [1, 2]
+labelLon: 81
+%%%%
+region STR_R
+type: STR_BETA
+missionRegion: 7
+regionWeight: 159
+areas: [[138.5, 86.5, 0, 1e2]]
+missionZones: []
+missionWeights: {7: 25, a b: 7, y: 49}
+cost: 76622
+%%%%
+manufacture STR_ITEM 3
+category: é
+producedItems: {STR_BETA: 71, 7: 0x10, STR_ALPHA: 2147483647}
+cost: 47
+time: 15
+requires: ~
+requiredItems: {x: 21}
+%%%%
+region STR_R
+regionWeight: 0x10
+missionWeights: {}
+missionRegion: null
+areas: [[241.5, 0, 90.35, -140], [1e2, -148.12, 1e2, 87.948, 0x10]]
+missionZones: []
+%%%%
+trajectory STR_T
+groundTimer: -1
+id: STR_BETA
+waypoints: [[2, 1, 65], [1, 2, 80]]
+%%%%
+trajectory STR_T
+id: null
+groundTimer: -1
+waypoints: [[4, 0, 97], [1, 1, 96]]
+%%%%
+manufacture STR_OTHER 9
+requires: []
+producedItems: {}
+name: y
+time: -1
+listOrder: 12
+cost: 2147483647
+space: 11
+category: x
+%%%%
+manufacture STR_ITEM 3
+cost: 113
+category: null
+requiredItems: {null: 14745}
+space: -1
+time: [1, 2]
+name: STR_LONG_NAME_1
+requires: [é, y]
+%%%%
+trajectory STR_T
+groundTimer: 292
+waypoints:
+id: y
+%%%%
+inventory 0
+costs: {}
+id: null
+slots: [[5, 4], [6, 1]]
+x: 2147483647
+x: 0x10
+y: -1
+%%%%
+trajectory STR_T
+id: 7
+id: 7
+waypoints: [[1, 2, 88], [6, 4, 86]]
+groundTimer: 0x10
+%%%%
+region STR_R
+areas:
+areas: [[-31.846, 281.5, 0, -72.9]]
+missionWeights: {y: 31, x: 27}
+missionZones: [[], [[338.5, -56.56, 130.6, 1e2]]]
+cost: 27
+type: y
+missionRegion: a b
+%%%%
+trajectory STR_T
+groundTimer: 104
+groundTimer: 0
+id: STR_ALPHA
+waypoints: [[3, 1, 6]]
+%%%%
+region STR_R
+cost: -1
+type: 7
+missionZones: [[], [[338.5, 1e2, -126, 1e2], [0, 9, 1e2, 1e2]]]
+regionWeight: 35
+areas: [[121.5, -43, 79.784, 20.56], [-20.62, 59.676, 267.5, -47.90], [-7.928, -132, 1e2, 0]]
+missionRegion: x
+missionWeights: {null: 24}
+%%%%
+country STR_X
+areas: [[154.295, 1e2, 165.5, 41]]
+areas: []
+labelLat: 85.5
+fundingCap: 0x10
+fundingBase: 0x10
+type: true
+%%%%
+trajectory STR_T
+groundTimer: -99307
+waypoints: [[4, 3, 74], [1, 1, 81]]
+id: STR_BETA
+%%%%
+country STR_USA
+fundingCap: 83
+fundingCap: -38766
+labelLon: [1, 2]
+labelLat: 176.924
+fundingBase: 2147483647
+type: é
+areas: [[106.431, 1e2, 21.5, -13.70, 30059], [-46.76, 50.5, 1e2, 3.51]]
+%%%%
+race STR_RACE
+id: true
+%%%%
+manufacture STR_OTHER 3
+time: [1, 2]
+cost: 5
+space: 0x10
+requiredItems: {STR_ALPHA: 32}
+requiredItems: {é: 0x10, a b: 5, null: 0x10}
+producedItems: {}
+name: true
+%%%%
+research STR_TOPIC 2
+dependencies: []
+unlocks: [y, null, STR_ALPHA]
+points: -245
+cost:
+lookup: y
+listOrder: -1
+destroyItem: true
+needItem: no
+cutscene: true
+name: x
+getOneFree: [true, x, x]
+%%%%
+manufacture STR_OTHER 6
+space: 48596
+requiredItems: {true: 0x10}
+requires: [null, a b, é, y]
+name: STR_LONG_NAME_1
+listOrder: 8
+time: 0x10
+cost: 3
+%%%%
+country STR_USA
+fundingBase: -1
+labelLon: 0
+areas: [[71.446, 114.5, 30.96, 0]]
+labelLat: -81.97
+fundingCap: 0x10
+%%%%
+manufacture STR_OTHER 2
+category: STR_GAMMA
+requires: [a b, y, null, STR_BETA]
+space: -4
+listOrder: -79824
+cost: abc
+name: y
+requiredItems: {y: -71026, a b: 293, STR_BETA: 32}
+time: 2147483647
+%%%%
+manufacture STR_ITEM 9
+producedItems: {}
+listOrder: 0x10
+requires: [null]
+cost: 37
+space: 0x10
+category: STR_LONG_NAME_1
+%%%%
+research STR_Q 5
+destroyItem: no
+listOrder: 86
+dependencies: [STR_GAMMA]
+name: é
+points: 0x10
+lookup: é
+lookup: y
+getOneFree: [é, STR_ALPHA]
+unlocks: [true, 7, y, x]
+%%%%
+manufacture STR_ITEM 1
+cost: 0
+requires: [null, a b]
+name: a b
+listOrder: {k: v}
+space: -1
+requiredItems: {}
+category: é
+%%%%
+region STR_R
+missionZones: []
+missionRegion: é
+type: STR_ALPHA
+areas: []
+%%%%
+race STR_RACE
+members: [null]
+id: x
+%%%%
+manufacture STR_OTHER 6
+time: -1
+requiredItems:
+producedItems: {}
+cost: 3
+requires: [STR_GAMMA, é, STR_BETA]
+category: y
+%%%%
+region STR_R
+areas: []
+regionWeight: abc
+missionZones: [[[63, 103, 145.59, -106], [0, 131.5, 102.5, 102.807, -5, STR_LONG_NAME_1]], [[352.5, 0, 0, 43.14], [16, 46.979, 1e2, 301.5]]]
+missionWeights:
+type: a b
+%%%%
+race STR_RACE
+id: null
+members: [y, y]
+%%%%
+research STR_TOPIC 0
+requires: [STR_ALPHA, STR_BETA, a b, true]
+name: STR_ALPHA
+cost: -2
+lookup: é
+needItem: no
+points: 298
+destroyItem: true
+getOneFree: [a b, STR_BETA, 7]
+%%%%
+inventory 1
+costs: {}
+y: 9
+slots: [[5, 1], [6, 0], [8, 0], [1, 4]]
+id: {k: v}
+listOrder: -1
+type: -5
+%%%%
+inventory 0
+y: 285
+listOrder: 140
+type: 2147483647
+slots: []
+id: STR_GAMMA
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+race STR_RACE
+members: [a b, STR_ALPHA]
+id: 7
+%%%%
+research STR_TOPIC 5
+destroyItem: no
+needItem: false
+cutscene: y
+unlocks: [STR_BETA, STR_LONG_NAME_1, é]
+dependencies: [a b]
+requires: []
+listOrder: [1, 2]
+lookup: STR_LONG_NAME_1
+name: é
+getOneFree: [x]
+%%%%
+research STR_Q 1
+cost: 0x10
+name: STR_GAMMA
+requires: [é]
+unlocks: [y]
+cutscene: a b
+needItem: true
+listOrder: 17
+lookup: STR_GAMMA
+getOneFree: [STR_ALPHA, a b, é]
+points: 0x10
+destroyItem: true
+%%%%
+country STR_X
+labelLon: 39.5
+labelLat: 289.5
+fundingCap: 163
+areas: [1, 2]
+areas: [[1e2, 236.5, -11.852, 1e2]]
+%%%%
+country STR_X
+type: x
+fundingCap: 53
+labelLon: 297.5
+labelLon: -143.84
+areas: [[95, -12.928, -11.111, 5.6, 73893]]
+fundingBase: -1
+%%%%
+inventory 0
+id: true
+listOrder: 246
+type: -90171
+y: 0x10
+slots: [[4, 1], [6, 0], [0, 1], [0, 2]]
+x: 0x10
+%%%%
+country STR_X
+fundingCap: 240
+type: x
+areas: [[62.317, 0, 62.5, -71.41], [155.706, -53, -82.76, 15.659], [236.5, 1e2, -79.92, 0]]
+labelLat: 85.5
+fundingBase: 221
+labelLon: 33.89
+%%%%
+region STR_R
+missionWeights: {null: 13, true: 49, x: 5}
+areas: [[1e2, 0, 0, -71.409], [0, 0, 168.899, 0], [-40, 103.5, 1e2, 1e2]]
+type: STR_ALPHA
+regionWeight: 42
+missionZones: [[], []]
+missionZones: [[[77.19, -121, 316.5, 1e2]], [[91.86, 1e2, 153.429, 225.5]]]
+%%%%
+manufacture STR_OTHER 9
+space: 26
+category: x
+time: {k: v}
+requires: [é, STR_BETA, é]
+cost: 35
+requiredItems: {é: 1}
+listOrder: 123
+producedItems: {}
+%%%%
+manufacture STR_ITEM 7
+listOrder: 27
+name: é
+requiredItems: {x: 2, 7: 0x10, null: 173}
+requiredItems: {true: 0x10}
+category: a b
+time: 136
+producedItems: {null: 178}
+space: 0
+%%%%
+manufacture STR_ITEM 3
+time: -59060
+category: 7
+requiredItems: {y: -1}
+producedItems: {x: 13, 7: 2}
+space: 36
+space: 2147483647
+cost: 0x10
+%%%%
+race STR_RACE
+id: y
+members: []
+members: [STR_ALPHA, y, STR_GAMMA]
+%%%%
+country STR_USA
+labelLon: -10.88
+fundingCap: 8
+areas: [[31.11, 1e2, -1, 82.30]]
+labelLat: 140.5
+type: 7
+fundingBase: 20
+%%%%
+region STR_R
+cost: 0x10
+missionRegion: true
+type: x
+regionWeight: 244
+missionWeights: {x: 49, null: 41, null: 4}
+areas: [[219.5, -39, 129, 1e2]]
+areas: []
+%%%%
+inventory 1
+costs: {STR_ALPHA: 37, x: 2, é: 4}
+listOrder: -5
+type: 34
+slots: [[5, 4], [8, 5], [6, 5], [0, 0], [3, 0]]
+x: 18
+y: 54440
+%%%%
+trajectory STR_T
+id: STR_BETA
+%%%%
+race STR_RACE
+members:
+id: null
+%%%%
+research STR_TOPIC 0
+unlocks: [STR_ALPHA, x]
+needItem: no
+dependencies: [y, null, STR_BETA, STR_ALPHA]
+points: -1
+requires: []
+cost: -1
+cutscene: 7
+%%%%
+research STR_TOPIC 1
+cutscene: STR_GAMMA
+unlocks: [STR_LONG_NAME_1, a b, x]
+needItem: true
+listOrder: -1
+destroyItem: false
+points: 50491
+cost: 10
+lookup: y
+getOneFree: [null, true, STR_BETA]
+%%%%
+inventory 1
+type: 2147483647
+id: STR_LONG_NAME_1
+costs: {}
+y: 0
+x: 0x10
+slots: []
+listOrder: -1
+%%%%
+trajectory STR_T
+waypoints: [[3, 3, 94], [2, 3, 35], [5, 2, 89]]
+id: x
+%%%%
+inventory 3
+type: {k: v}
+listOrder: 6
+costs: {é: 2147483647}
+x: 276
+id: x
+slots: []
+%%%%
+country STR_USA
+fundingCap: -1
+labelLat: 33.11
+type: é
+%%%%
+region STR_R
+areas: []
+regionWeight: 0x10
+type: STR_BETA
+cost: -1
+missionWeights: {null: 35}
+missionZones: [[[1e2, 1e2, -79.188, 267.5]], []]
+%%%%
+race STR_RACE
+id: é
+members: [x]
+%%%%
+inventory 6
+y: 1
+type: -1
+id: a b
+x: 0x10
+x: 20
+listOrder: 128
+costs: {null: -4}
+%%%%
+trajectory STR_T
+waypoints: [[6, 3, 21], [2, 4, 54], [3, 3, 30]]
+id: é
+groundTimer: 25
+%%%%
+country STR_USA
+type: STR_LONG_NAME_1
+fundingBase: 2147483647
+areas: [[66.424, 146, 0, 0], [18.5, 1e2, 1e2, 13.65]]
+fundingCap: 298
+%%%%
+manufacture STR_ITEM 7
+cost:
+requiredItems: {}
+category: y
+category: STR_BETA
+producedItems: {STR_LONG_NAME_1: 72}
+producedItems: {STR_GAMMA: 3, 7: -49404, a b: 18063}
+space: 0x10
+listOrder: -1
+time: 38
+name: true
+%%%%
+manufacture STR_OTHER 2
+category: STR_LONG_NAME_1
+requiredItems: {a b: 0, STR_BETA: 91, STR_BETA: -1}
+name: STR_BETA
+requires: []
+producedItems: {STR_LONG_NAME_1: -1}
+space: 117
+cost: -1
+time: 24
+listOrder: 161
+listOrder: -1
+%%%%
+race STR_RACE
+members: []
+id: é
+%%%%
+race STR_RACE
+members: [é]
+members: [y, y, STR_LONG_NAME_1, a b]
+id: 7
+%%%%
+inventory 3
+y: -1
+x: -1
+slots: [[4, 5], [6, 3], [2, 1], [0, 5], [4, 2], [1, 2]]
+costs: {STR_LONG_NAME_1: 1, true: 18}
+listOrder: 2147483647
+type: 39
+id: a b
+%%%%
+race STR_RACE
+members: [7, STR_GAMMA, true, é]
+id: é
+%%%%
+research STR_Q 7
+requires: [STR_ALPHA, STR_ALPHA]
+name: STR_BETA
+lookup: STR_ALPHA
+points: 2147483647
+cost: 1
+unlocks: [STR_BETA]
+cutscene: true
+needItem: false
+dependencies: [STR_ALPHA]
+destroyItem: {k: v}
+%%%%
+country STR_USA
+labelLon: 1e2
+fundingBase: 2147483647
+areas: [[57.5, 0, 107.5, 1e2], [7.82, 263.5, 13.774, 0]]
+labelLat: 89.25
+type: a b
+%%%%
+region STR_R
+cost: 291
+cost: 14768
+areas: [[1e2, 131, 93.5, -165, 0x10]]
+areas: [[-126.229, -36, 0, 153], [35, 1e2, 241.5, 0], [264.5, 0, 158.5, -32.31]]
+missionRegion: 7
+regionWeight: 17
+regionWeight: -41955
+missionWeights: {é: 11}
+missionZones: [[[-15.766, 113, -27, 1e2, 2147483647, a b]]]
+%%%%
+research STR_TOPIC 4
+cost: -62027
+points: -9148
+cutscene: null
+needItem: no
+getOneFree: [STR_LONG_NAME_1, STR_BETA, x]
+destroyItem: no
+unlocks: [y, x]
+listOrder: 163
+dependencies: [y, a b, null, 7]
+name: y
+%%%%
+manufacture STR_ITEM 6
+cost: 26
+name: true
+listOrder: 216
+time: 21
+category: x
+space: 16
+producedItems: {STR_LONG_NAME_1: -3, null: 33, STR_BETA: 0x10}
+requires: [x, null, x, true]
+requiredItems: {é: 30, STR_BETA: 2147483647, 7: 112}
+%%%%
+inventory 5
+y: -367
+listOrder: -3
+costs: {}
+costs: {STR_GAMMA: -1, STR_ALPHA: 273}
+type: 2147483647
+id: STR_BETA
+slots: [[7, 3], [2, 3], [4, 4], [5, 4], [7, 5]]
+%%%%
+trajectory STR_T
+waypoints: [[5, 3, 18], [5, 3, 13]]
+groundTimer: 10
+%%%%
+race STR_RACE
+members: ~
+id: x
+%%%%
+trajectory STR_T
+waypoints: []
+groundTimer: -1
+%%%%
+region STR_R
+missionZones: [[]]
+areas: [[79.702, -23.8, 24.587, 279.5], [1e2, 3.724, 341.5, 312.5]]
+cost: 2147483647
+type: null
+missionRegion: STR_GAMMA
+regionWeight: 97417
+missionWeights: {a b: 12, é: 22}
+missionWeights: {é: 17}
+%%%%
+research STR_Q 8
+cost: -22021
+points: [1, 2]
+listOrder: 4
+lookup: y
+requires: [7, STR_LONG_NAME_1]
+name: STR_LONG_NAME_1
+destroyItem: true
+dependencies: [é, x, y]
+cutscene: STR_ALPHA
+getOneFree: [a b, STR_LONG_NAME_1, null, STR_ALPHA]
+getOneFree: [STR_GAMMA, y, x]
+unlocks: [x, é]
+%%%%
+country STR_X
+labelLat: 178.921
+fundingBase: 0x10
+labelLon: 15
+areas: [[-12.3, -62.65, 173, 1e2], [1e2, 0, 43.110, -81.18], [0, -59.40, 0, -119.407, -1]]
+fundingCap: 0x10
+%%%%
+region STR_R
+areas: [[215.5, -99.57, -69.23, 0]]
+missionRegion: null
+missionRegion: STR_LONG_NAME_1
+regionWeight: 0x10
+cost: -96488
+missionWeights: abc
+%%%%
+trajectory STR_T
+id: null
+%%%%
+region STR_R
+cost: 0x10
+type: true
+missionWeights: {}
+missionRegion: STR_LONG_NAME_1
+missionZones: []
+areas: []
+%%%%
+region STR_R
+regionWeight: 19
+type: STR_BETA
+cost: 0x10
+areas: [[-169, -142, 147.5, 37]]
+missionRegion: null
+%%%%
+research STR_TOPIC 0
+name: x
+lookup: 7
+points: 8
+requires:
+cost: 0x10
+needItem: no
+destroyItem: no
+destroyItem: false
+cutscene: true
+getOneFree: [true]
+%%%%
+trajectory STR_T
+id: null
+groundTimer: {k: v}
+waypoints: [[1, 3, 3]]
+%%%%
+race STR_RACE
+id: é
+members: [é]
+%%%%
+trajectory STR_T
+waypoints: []
+groundTimer: -5
+%%%%
+research STR_TOPIC 0
+cost: 0x10
+listOrder: 0x10
+listOrder: 24
+unlocks: [null, null]
+points: 4
+cutscene: null
+needItem: false
+lookup:
+getOneFree: [STR_GAMMA, STR_GAMMA, a b]
+%%%%
+trajectory STR_T
+waypoints: []
+id: [1, 2]
+%%%%
+region STR_R
+regionWeight: 59561
+type: STR_LONG_NAME_1
+missionWeights: {7: 27, true: 45, STR_GAMMA: 25}
+%%%%
+research STR_TOPIC 6
+dependencies: [null]
+cost: 3
+cutscene: a b
+points: 0x10
+needItem: false
+requires: [a b, null, STR_LONG_NAME_1]
+destroyItem: false
+lookup: STR_ALPHA
+getOneFree: []
+name: x
+unlocks: abc
+%%%%
+inventory 9
+id: y
+listOrder: 65
+costs: {STR_GAMMA: -3}
+type: 3
+y: {k: v}
+slots: [[6, 1], [6, 2], [0, 2], [6, 4], [4, 5]]
+x: ~
+%%%%
+country STR_X
+fundingBase: 226
+fundingBase: 36
+type: STR_ALPHA
+areas: []
+%%%%
+race STR_RACE
+
+%%%%
+race STR_RACE
+id: true
+%%%%
+research STR_Q 9
+cutscene: 7
+listOrder: 0x10
+dependencies: [STR_BETA]
+name: STR_ALPHA
+needItem: no
+requires: [STR_BETA, true, STR_BETA, true]
+points: 40
+destroyItem: {k: v}
+unlocks: [7, y, é]
+%%%%
+research STR_TOPIC 0
+cost: 0x10
+needItem: false
+unlocks: []
+destroyItem: true
+getOneFree: [STR_LONG_NAME_1, null]
+requires: [STR_LONG_NAME_1]
+lookup: y
+points: 2147483647
+name: é
+listOrder: 36076
+%%%%
+trajectory STR_T
+groundTimer: 4
+waypoints: [[0, 3, 83], [6, 3, 42], [3, 1, 95]]
+%%%%
+region STR_R
+type: STR_BETA
+missionRegion: x
+missionZones: [[], [[1e2, -41.30, 24, 102]]]
+areas: [[1e2, 1e2, 96.88, 170]]
+cost: 27
+missionWeights: {null: 8, y: 8, true: 32}
+%%%%
+region STR_R
+regionWeight: 281
+areas: [[-70, 1e2, 73.74, -124], [134.5, -130, 1e2, 66.175], [-128.684, -42.78, 1e2, 319.5]]
+missionWeights: {a b: 32, STR_ALPHA: 43, y: 26}
+type: true
+cost: 67392
+%%%%
+research STR_TOPIC 7
+lookup: STR_ALPHA
+needItem: no
+cost: 1
+dependencies: [STR_GAMMA, x]
+requires: []
+unlocks: []
+unlocks: [STR_ALPHA]
+listOrder: 5
+name: STR_BETA
+getOneFree: [y, STR_GAMMA, a b]
+destroyItem: no
+%%%%
+research STR_TOPIC 8
+cutscene: STR_ALPHA
+lookup: STR_LONG_NAME_1
+needItem: false
+cost: 60
+getOneFree: [x, STR_GAMMA, é, true]
+destroyItem: false
+listOrder: -1
+%%%%
+manufacture STR_OTHER 3
+listOrder: 286
+space: 240
+cost: 2
+requires: []
+time: 0x10
+requiredItems: {7: -3}
+category: STR_ALPHA
+name: é
+%%%%
+region STR_R
+regionWeight: 2
+missionZones: [[[1e2, 0, -138.71, 0], [1e2, 43.27, -7, 84.72, 2147483647, STR_ALPHA]]]
+missionRegion: STR_GAMMA
+missionRegion: a b
+missionWeights: {y: 4, STR_GAMMA: 0, STR_GAMMA: 19}
+areas: [[-69.812, 0, 219.5, 1e2], [-2.33, 1e2, -69.61, 65.78], [-98.452, 281.5, 311.5, 1e2]]
+cost: 0x10
+%%%%
+race STR_RACE
+id: 7
+%%%%
+country STR_X
+fundingBase: 2147483647
+labelLon: 138.416
+fundingCap: 62180
+type: true
+areas: [[87.708, 1e2, -45.742, 0], [1e2, 0, 40.99, 43.73], [84.501, 0, -24, 239.5]]
+labelLat: -38
+%%%%
+research STR_Q 9
+listOrder: 0x10
+cutscene: x
+needItem: true
+cost: 0x10
+dependencies: [x, a b, null, y]
+unlocks: [y, STR_GAMMA, 7]
+unlocks: [y, é, x, STR_ALPHA]
+lookup: null
+name: 7
+requires: [STR_BETA, y, STR_GAMMA]
+getOneFree: [y, STR_ALPHA]
+%%%%
+trajectory STR_T
+id: é
+groundTimer: 15
+%%%%
+country STR_X
+type: y
+labelLon: ~
+fundingBase: 180
+areas: [[0, 1e2, -17, -28.536]]
+fundingCap: -98358
+labelLat: 116.5
+%%%%
+research STR_TOPIC 9
+name: STR_GAMMA
+lookup: y
+needItem: false
+getOneFree: [a b]
+destroyItem: no
+dependencies: [STR_GAMMA, é, a b]
+listOrder: 5
+points: 2147483647
+unlocks: [true]
+%%%%
+country STR_X
+areas: []
+fundingBase: -1
+fundingCap: 15
+labelLon: 0
+type: y
+%%%%
+region STR_R
+missionRegion: STR_ALPHA
+missionRegion: true
+cost: 16
+regionWeight: 2147483647
+type: true
+missionWeights: {STR_BETA: 49}
+areas: [[63.173, 0, 0, 1e2], [1e2, 210.5, -127, -36.315]]
+%%%%
+inventory 5
+type: 2
+slots: [[2, 2], [4, 1], [7, 4]]
+y: 278
+costs: {a b: 0x10, true: 38, true: -40967}
+id: STR_ALPHA
+%%%%
+country STR_USA
+labelLat: 22
+labelLon: 0
+areas: []
+fundingBase: -1
+%%%%
+country STR_X
+areas: [[131.5, 64.69, -169.490, 73.858]]
+fundingCap: -1
+fundingBase: 15099
+%%%%
+inventory 5
+costs: {}
+slots: [[5, 0], [0, 2], [1, 0]]
+x: -3
+listOrder: 3
+type: 40
+y: 2147483647
+%%%%
+inventory 5
+id: x
+costs: {}
+slots: [[6, 0], [8, 5], [7, 3], [1, 4], [7, 3]]
+y: 0x10
+listOrder: abc
+%%%%
+country STR_USA
+type: true
+fundingBase: 2147483647
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+id: a b
+waypoints: [[6, 2, 45], [0, 4, 6], [1, 0, 79], [1, 1, 22]]
+%%%%
+race STR_RACE
+id: y
+members: [STR_ALPHA]
+%%%%
+inventory 7
+x: -1
+x: 0x10
+costs: {}
+y: {k: v}
+y: 13
+id: STR_BETA
+type: 0x10
+%%%%
+trajectory STR_T
+id: x
+groundTimer: 2
+waypoints: [[1, 4, 66]]
+%%%%
+trajectory STR_T
+waypoints: []
+id: STR_LONG_NAME_1
+groundTimer: 38
+%%%%
+research STR_TOPIC 7
+cutscene: STR_ALPHA
+getOneFree: [STR_ALPHA]
+listOrder: 180
+cost: 24
+dependencies: [null]
+points: 2147483647
+requires: []
+destroyItem: no
+%%%%
+region STR_R
+missionWeights: {STR_GAMMA: 26}
+type: é
+cost: 0
+areas: [[-33.94, 1e2, -155.322, 1e2]]
+regionWeight: 0x10
+missionZones: [[[-140, -57.90, 99.5, -52.31, -1, a b]]]
+%%%%
+region STR_R
+missionZones: [[[-136.124, 44.742, 33, 1e2, 2, 7]]]
+missionWeights: {STR_LONG_NAME_1: 38}
+type: STR_BETA
+regionWeight: 88
+%%%%
+race STR_RACE
+members: abc
+id: true
+%%%%
+country STR_X
+fundingCap: 20
+areas: [[-131.893, -21.408, -69.325, 0], [-155, -107, -139.386, 132.941], [1e2, -133, 0, 0]]
+areas: [[-5.62, 0, 0, 43.23, 5], [144.5, 1e2, -138, 0]]
+labelLat: -42.62
+type: true
+%%%%
+research STR_TOPIC 8
+cutscene: x
+requires: [true]
+lookup: STR_BETA
+lookup: é
+destroyItem: no
+points: 96091
+listOrder: 16
+getOneFree: [a b, STR_GAMMA, é]
+unlocks: [y, x]
+name: é
+%%%%
+region STR_R
+cost: 131
+missionRegion: STR_ALPHA
+areas: []
+regionWeight: 5
+type: é
+%%%%
+race STR_RACE
+id: 7
+id: null
+members: [true, y, STR_BETA, null]
+%%%%
+race STR_RACE
+id: true
+%%%%
+research STR_TOPIC 2
+dependencies: [STR_GAMMA, STR_ALPHA, STR_LONG_NAME_1, STR_BETA]
+requires: [y, STR_GAMMA, STR_GAMMA]
+requires: [a b, STR_GAMMA]
+name: x
+listOrder: -99649
+unlocks: [STR_LONG_NAME_1, STR_GAMMA, x]
+getOneFree: []
+cost: -1
+destroyItem: [1, 2]
+cutscene: é
+lookup: 7
+%%%%
+inventory 9
+y: ~
+listOrder: -2
+x: 0x10
+type: 2
+slots: [[3, 1]]
+costs: {y: 216, null: -70440, true: -1}
+id: a b
+%%%%
+race STR_RACE
+id: STR_BETA
+members: [é, a b, STR_ALPHA]
+%%%%
+research STR_Q 9
+listOrder: 9
+dependencies: []
+destroyItem: true
+unlocks:
+needItem: true
+needItem: true
+cost: -1
+name: a b
+name: x
+getOneFree: [y, STR_BETA]
+cutscene: true
+%%%%
+race STR_RACE
+members: [a b, STR_GAMMA, y]
+id: y
+%%%%
+country STR_X
+areas: [[1e2, 0, 304.5, 272.5], [61.73, 0, -16, 299.5, 2147483647], [57, -7.117, -47.91, 0]]
+labelLat: 1e2
+type: STR_GAMMA
+labelLon: -40.891
+%%%%
+manufacture STR_OTHER 1
+listOrder: 0x10
+time: 2147483647
+producedItems: {STR_ALPHA: 80486, null: 71882, null: -68207}
+requiredItems: {é: -1}
+category: a b
+space: 2147483647
+cost: 5
+%%%%
+inventory 1
+x: 31
+id: 7
+listOrder: 0x10
+type: [1, 2]
+y: 5
+%%%%
+research STR_TOPIC 9
+unlocks: [STR_GAMMA, 7, 7]
+cutscene: a b
+points: 219
+getOneFree: [a b, y, a b]
+getOneFree: []
+name: true
+cost: 244
+listOrder: 173
+destroyItem: true
+%%%%
+inventory 2
+slots: []
+id: STR_GAMMA
+listOrder: 0x10
+costs: {STR_LONG_NAME_1: 22}
+x: 1
+type: abc
+%%%%
+manufacture STR_ITEM 7
+category: STR_GAMMA
+name: 7
+cost: 19
+requires: [x, y, y, 7]
+space: -5
+%%%%
+country STR_X
+fundingCap: 13
+areas: [1, 2]
+areas: [[-178, -86.86, 210.5, -38.39]]
+labelLat: 0
+type: STR_GAMMA
+%%%%
+region STR_R
+missionZones: [[], [[30.5, 1e2, 1e2, -56, 60, true]]]
+missionRegion: null
+type: true
+regionWeight: 2
+cost: -1
+missionWeights: {x: 12, é: 17, a b: 0}
+areas: []
+%%%%
+region STR_R
+regionWeight: 91297
+missionZones: [[]]
+missionWeights: {true: 41, x: 44, 7: 30}
+type: 7
+areas: [[53.34, -7.92, -64.98, -147, 0x10]]
+missionRegion: STR_BETA
+%%%%
+country STR_X
+labelLon: 1e2
+fundingCap: {k: v}
+labelLat: 164.368
+fundingBase: 21377
+%%%%
+trajectory STR_T
+waypoints:
+groundTimer: 193
+id: x
+%%%%
+country STR_X
+labelLat: 87.35
+areas: [[151.736, 165, 75, 90], [1e2, 122.700, 136.5, 172.216], [0, -90.661, -3.0, 0]]
+fundingBase: -37258
+labelLon: 23.5
+%%%%
+trajectory STR_T
+waypoints: [[5, 0, 18], [4, 1, 56], [0, 3, 94]]
+%%%%
+manufacture STR_ITEM 1
+category: a b
+cost: -1
+listOrder: 218
+time: 2147483647
+name: STR_BETA
+requires: [y, null, true, STR_GAMMA]
+space: 174
+%%%%
+country STR_X
+type: true
+labelLat: 24.886
+fundingCap: 0x10
+labelLon: 41.5
+fundingBase: -1
+%%%%
+research STR_TOPIC 8
+requires: ~
+cost: 22
+getOneFree: [STR_BETA, STR_GAMMA, null, STR_GAMMA]
+needItem: true
+points: -73482
+cutscene: STR_LONG_NAME_1
+destroyItem: true
+name: [1, 2]
+lookup: 7
+listOrder: 2
+unlocks: [y, STR_LONG_NAME_1, null]
+%%%%
+research STR_TOPIC 1
+cutscene: STR_ALPHA
+points: -1
+lookup: STR_BETA
+name: é
+dependencies: [7, true]
+getOneFree: []
+cost: 0x10
+needItem: true
+%%%%
+research STR_Q 5
+unlocks: [7, x, é]
+dependencies: []
+listOrder: 2147483647
+lookup: true
+cutscene: STR_BETA
+needItem: true
+destroyItem: no
+requires: [STR_ALPHA, STR_LONG_NAME_1, é]
+%%%%
+country STR_USA
+type: STR_BETA
+type: STR_GAMMA
+areas: []
+labelLon: -78.501
+fundingCap: 245
+fundingBase: -1
+%%%%
+research STR_TOPIC 9
+listOrder: 180
+destroyItem: true
+needItem: abc
+needItem: false
+points: 1
+dependencies: [true, y]
+dependencies: [STR_LONG_NAME_1, 7, true, null]
+name: STR_ALPHA
+requires: [STR_BETA, é, STR_GAMMA, STR_ALPHA]
+lookup: true
+unlocks: [STR_LONG_NAME_1, é, true]
+%%%%
+research STR_Q 6
+destroyItem: true
+dependencies: abc
+cutscene: STR_LONG_NAME_1
+cost: 2147483647
+needItem: false
+points: 0x10
+name: STR_BETA
+getOneFree: [STR_BETA, STR_BETA]
+unlocks: []
+listOrder: 75
+listOrder: -4
+lookup: null
+%%%%
+trajectory STR_T
+id: true
+groundTimer: 11
+waypoints: [[5, 4, 90], [6, 4, 58], [4, 2, 32], [4, 0, 34]]
+%%%%
+manufacture STR_OTHER 9
+time: 236
+requires: [é, é, STR_BETA, a b]
+requires: [STR_ALPHA, y, STR_BETA]
+producedItems: {}
+category: true
+cost: 0x10
+name: null
+%%%%
+region STR_R
+areas: []
+missionWeights: {STR_BETA: 22, é: 8, 7: 8}
+cost: 3
+regionWeight: 2147483647
+missionZones: []
+type: é
+%%%%
+country STR_X
+fundingBase: 0x10
+fundingCap: -23460
+labelLat: 0
+areas: [[-175, 75.5, 0, 1e2], [82.84, 0, 0, 328.5, 25]]
+labelLon: 0
+labelLon: 87
+%%%%
+inventory 1
+x: 12
+slots: [[4, 5], [5, 0], [8, 2], [6, 1], [2, 3]]
+costs: {7: 52, true: -88480}
+listOrder: 2147483647
+y: ~
+type: 0x10
+id: STR_ALPHA
+%%%%
+race STR_RACE
+members: [null, é, STR_LONG_NAME_1]
+%%%%
+race STR_RACE
+members: []
+id: STR_GAMMA
+%%%%
+trajectory STR_T
+id: ~
+waypoints: [[1, 3, 43], [0, 4, 58]]
+waypoints: [[3, 0, 4]]
+groundTimer: [1, 2]
+%%%%
+inventory 6
+id: null
+costs: {true: 67, 7: 14, null: 103}
+listOrder: 25
+type: -1
+%%%%
+country STR_USA
+labelLon: 1e2
+fundingCap:
+fundingBase: 2147483647
+type: a b
+areas: [[0, 196.5, -80.31, 298.5, 23], [15.71, 31.64, 16, 31.5], [243.5, 279.5, 1e2, 171.5]]
+labelLat: -33
+%%%%
+trajectory STR_T
+groundTimer: 21
+waypoints: [[4, 1, 90], [0, 0, 72], [0, 4, 88], [0, 4, 84]]
+waypoints: []
+id: a b
+%%%%
+manufacture STR_ITEM 3
+requiredItems: {}
+requiredItems: {null: -3, é: 66886, STR_LONG_NAME_1: 0x10}
+cost: 40
+listOrder: 2147483647
+time: -1
+name: ~
+space: -5
+%%%%
+race STR_RACE
+id: 7
+members: [STR_ALPHA, null]
+%%%%
+research STR_Q 7
+unlocks: [true, a b, true]
+cost: 21
+points: 30
+name: 7
+requires: [STR_BETA, null, y]
+listOrder: 199
+destroyItem: true
+lookup: STR_LONG_NAME_1
+dependencies: [x, x, true]
+%%%%
+race STR_RACE
+id: y
+id: STR_LONG_NAME_1
+members: [7, null]
+%%%%
+manufacture STR_OTHER 3
+requires: [STR_LONG_NAME_1]
+category: a b
+requiredItems: {STR_LONG_NAME_1: 4, STR_BETA: 6, STR_ALPHA: 246}
+cost: -56788
+cost: 0x10
+listOrder: 31
+space: 2
+%%%%
+manufacture STR_OTHER 3
+time: 164
+requires: [x, true]
+space: 2147483647
+producedItems: {é: 18, x: 4}
+category: STR_ALPHA
+%%%%
+region STR_R
+missionZones: [[[0, 156, 1e2, 0]], [[-10, 1e2, 0, 0]]]
+missionRegion: 7
+areas: [[0, 40.5, 140, 1e2]]
+type: null
+cost: 2147483647
+missionWeights: {STR_LONG_NAME_1: 14, null: 28, STR_LONG_NAME_1: 17}
+regionWeight:
+%%%%
+race STR_RACE
+members: []
+id: y
+%%%%
+race STR_RACE
+id: STR_GAMMA
+members: []
+%%%%
+inventory 7
+costs: {true: 5, x: 2147483647}
+x: -42046
+y: 19
+slots: [[6, 2], [8, 5], [2, 4]]
+%%%%
+region STR_R
+cost: 107
+areas: [[-61.1, 38, 37.38, 0], [13.5, -12, 0, 1e2]]
+missionZones: [[[0, 23.744, 65.68, -75.85], [0, -40.66, 1e2, 168.5]]]
+missionZones: [[]]
+missionWeights: {x: 6, x: 18}
+type: STR_ALPHA
+missionRegion: a b
+%%%%
+manufacture STR_ITEM 4
+requires: [STR_ALPHA, STR_LONG_NAME_1, true]
+listOrder: 68630
+space: [1, 2]
+requiredItems: {true: 1, true: 217, x: 1}
+name: STR_BETA
+time: 280
+category: a b
+cost: 2147483647
+%%%%
+race STR_RACE
+members: [y]
+id: STR_ALPHA
+%%%%
+country STR_USA
+type: a b
+areas: [[0, 178.81, -79.42, 148.5], [244.5, 1e2, 177, 0]]
+fundingBase: -1
+labelLon: 0
+fundingCap: 14
+labelLat: -46.97
+%%%%
+country STR_X
+areas: [[-51.36, 0, 1e2, 1e2], [96.5, 219.5, 0, 1e2], [0, 290.5, -50.22, -72]]
+type: STR_BETA
+fundingCap: 5
+labelLon: 10
+%%%%
+region STR_R
+areas: []
+missionRegion: STR_ALPHA
+regionWeight: 56
+type: é
+missionWeights: {x: 12, é: 50, a b: 43}
+cost: 0
+missionZones: [[[14, 76.92, 5.5, 177.301]], [[0, 149.5, 0, 36.72]]]
+%%%%
+country STR_USA
+fundingCap: 29
+type: y
+labelLon: 262.5
+areas: []
+labelLat: 67.26
+%%%%
+manufacture STR_OTHER 0
+space: -5
+listOrder:
+producedItems: {STR_ALPHA: 2147483647, true: 0}
+requiredItems: {a b: 21361, STR_GAMMA: 2147483647}
+cost: 27
+requires: [STR_LONG_NAME_1, STR_ALPHA, STR_ALPHA, y]
+name: STR_GAMMA
+time: -1
+%%%%
+country STR_USA
+labelLon: 0
+fundingBase: -1
+labelLat: 1e2
+labelLat: {k: v}
+type: null
+fundingCap: 4
+areas: [[1e2, -119.450, 1e2, -161], [18.5, 0, 10, 59.82]]
+%%%%
+inventory 2
+x: ~
+costs: [1, 2]
+y: 1
+type: 2147483647
+id: STR_GAMMA
+listOrder: -1
+%%%%
+manufacture STR_ITEM 7
+requires: [STR_ALPHA, é, 7, true]
+listOrder: 2147483647
+category: STR_LONG_NAME_1
+name: 7
+time: 0x10
+space: 105
+cost: 26
+%%%%
+manufacture STR_OTHER 9
+name: STR_GAMMA
+category: STR_GAMMA
+time: 0x10
+requires: [STR_LONG_NAME_1, é, a b, é]
+listOrder: 2147483647
+cost: -1
+requiredItems: {STR_BETA: 2}
+producedItems: {}
+space: 68203
+%%%%
+country STR_X
+labelLat: 57.19
+areas: [[-106, 1e2, 9.609, 49, 28]]
+fundingCap: 3
+type: 7
+%%%%
+research STR_Q 1
+listOrder: 26
+getOneFree: [null]
+name: STR_GAMMA
+lookup: null
+points: 34
+cost: 2147483647
+requires: [a b, STR_GAMMA]
+destroyItem: true
+unlocks: [true]
+cutscene: y
+%%%%
+region STR_R
+missionZones: []
+areas: [[-56.84, 171.5, -131.340, 132], [0, 1e2, -38, -149.281], [-16.37, -1.28, 68.5, 0]]
+type: true
+regionWeight: 3
+regionWeight: 57361
+missionWeights: {y: 36, STR_ALPHA: 44, STR_GAMMA: 26}
+cost: 164
+missionRegion: STR_ALPHA
+%%%%
+country STR_X
+labelLon: 197.5
+fundingCap: 2147483647
+type: null
+%%%%
+region STR_R
+cost: 61396
+type: y
+missionRegion: STR_LONG_NAME_1
+missionWeights: {STR_LONG_NAME_1: 11, 7: 21, é: 18}
+missionZones: [[[1e2, -93, -129, 17.5, 27, a b], [81.433, 0, -67, 87.81]]]
+regionWeight: 4
+%%%%
+manufacture STR_OTHER 7
+requires: []
+name: STR_BETA
+space: 87193
+listOrder: 2
+cost: -77118
+cost: -1
+producedItems: {STR_GAMMA: -88916, STR_BETA: 11966, x: -1}
+%%%%
+country STR_X
+labelLon: 0
+fundingBase: -99683
+type: STR_GAMMA
+labelLat: 1e2
+areas: [[40.841, 99.903, -120.679, 1e2, 4]]
+fundingCap: 5
+%%%%
+trajectory STR_T
+waypoints: []
+groundTimer: 4
+%%%%
+region STR_R
+regionWeight: 11
+missionRegion: x
+cost: 250
+areas: ~
+missionZones: []
+type: {k: v}
+%%%%
+research STR_TOPIC 2
+requires: []
+cost: -1
+destroyItem: no
+points: -1
+name: é
+getOneFree: []
+unlocks: [é, STR_BETA, null, STR_BETA]
+dependencies: [7]
+%%%%
+country STR_USA
+areas: [[72.31, 299.5, -5.994, -66.351], [204.5, 1e2, 332.5, 0]]
+labelLon: 75.5
+fundingBase: 1
+type: STR_ALPHA
+type: 7
+labelLat: 34
+fundingCap: 230
+%%%%
+inventory 4
+id: x
+x: -3
+y: 37
+slots: [[3, 5], [4, 1], [2, 0]]
+type: 2147483647
+%%%%
+research STR_Q 5
+points: -1
+listOrder: [1, 2]
+unlocks: []
+name: x
+destroyItem: no
+cutscene: x
+lookup: STR_GAMMA
+cost: 2147483647
+dependencies: []
+needItem: no
+%%%%
+trajectory STR_T
+waypoints: [[3, 1, 35], [5, 4, 92], [0, 3, 82], [5, 2, 54]]
+id: true
+groundTimer: 66231
+%%%%
+region STR_R
+type: x
+areas: [[72.59, 189.5, 176.5, 2.5], [1e2, 125.407, -109.213, 80.923]]
+missionRegion: true
+missionWeights: {x: 7, é: 26}
+cost: 2147483647
+%%%%
+trajectory STR_T
+waypoints:
+groundTimer: 18
+id: STR_LONG_NAME_1
+%%%%
+country STR_X
+areas: []
+fundingBase: 5
+type: STR_GAMMA
+fundingCap: 2147483647
+labelLat: 171
+labelLon: -88.618
+%%%%
+country STR_X
+labelLat: abc
+fundingBase: 0x10
+fundingCap: 25
+type: x
+%%%%
+research STR_TOPIC 5
+needItem: true
+getOneFree: [a b, a b, STR_BETA]
+getOneFree: [null, x]
+lookup: x
+unlocks: [STR_GAMMA, null, STR_GAMMA, x]
+points: 0x10
+name: STR_BETA
+cutscene: STR_LONG_NAME_1
+listOrder: 26
+requires: [y, x, é]
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+waypoints: [[5, 4, 7]]
+%%%%
+region STR_R
+missionWeights: {é: 21, true: 6, true: 41}
+regionWeight: -1
+missionRegion: abc
+cost: 73422
+areas: [[323.5, 310.5, 83.463, -1.0]]
+missionZones: []
+%%%%
+research STR_TOPIC 1
+needItem: false
+getOneFree: []
+requires: [a b]
+cutscene: STR_BETA
+listOrder: -1
+cost: 35
+name: true
+lookup: 7
+lookup: 7
+unlocks: [STR_LONG_NAME_1, STR_ALPHA, y, STR_BETA]
+points: -1
+points: 2147483647
+%%%%
+manufacture STR_OTHER 8
+space: -31791
+producedItems: {STR_ALPHA: 10, STR_GAMMA: 54, STR_GAMMA: 284}
+category: true
+time: 0x10
+cost: 14
+requiredItems: {é: 0x10}
+listOrder: 2147483647
+name: true
+%%%%
+region STR_R
+regionWeight: 105
+missionWeights: {a b: 13, x: 22, STR_BETA: 30}
+type: STR_ALPHA
+areas: [[-42.64, 0, 0, 169], [0, 0, 168.5, 1e2]]
+missionZones: [[[0, 1e2, -76.90, -172.434, 2, null], [0, 0, 8.90, 1e2, -1, é]]]
+cost: -1
+missionRegion: a b
+%%%%
+inventory 5
+slots: [[7, 0], [1, 2], [3, 2], [8, 3], [1, 0], [1, 4]]
+id: STR_GAMMA
+costs: {7: 0, STR_BETA: 5}
+y: -20502
+x: 10
+type: 0x10
+%%%%
+trajectory STR_T
+id: STR_BETA
+waypoints: [[6, 2, 76], [1, 0, 68]]
+groundTimer: 1
+%%%%
+inventory 5
+y: 0x10
+costs: {é: 0x10, STR_GAMMA: 24}
+slots: [[1, 5], [3, 1], [4, 2], [1, 2], [0, 5], [3, 1], [3, 3]]
+listOrder: 34
+id: 7
+x: 2147483647
+type: 0x10
+%%%%
+manufacture STR_ITEM 3
+requiredItems: {}
+time: 36
+space: 36
+name: true
+producedItems: {null: 0x10}
+requires: [STR_BETA, é]
+category: 7
+%%%%
+manufacture STR_ITEM 0
+category: x
+listOrder: 0x10
+producedItems: ~
+producedItems: 
+name: [1, 2]
+time: 11
+requires: [STR_GAMMA]
+space: 236
+%%%%
+country STR_USA
+type: é
+fundingBase: 2147483647
+areas: [[-21.31, -12, -69.42, 103], [0, 40.5, 93.869, -180]]
+labelLat: 80.98
+labelLon: 1e2
+%%%%
+manufacture STR_ITEM 5
+category: é
+cost: 0x10
+listOrder: 76250
+requires: [é, x, STR_GAMMA, null]
+requires: [1, 2]
+requiredItems: {é: 38, é: 2147483647}
+space: 222
+time: 2147483647
+time: 20
+name: x
+name: é
+%%%%
+race STR_RACE
+members: [x, null, y]
+id: x
+%%%%
+research STR_Q 8
+needItem: no
+lookup: STR_GAMMA
+cutscene: STR_GAMMA
+listOrder: 21
+destroyItem: false
+getOneFree: [x, y]
+dependencies: [true]
+unlocks: [7, y, null, 7]
+points: 0x10
+%%%%
+region STR_R
+missionWeights: {}
+missionWeights: {x: 15}
+type: STR_ALPHA
+regionWeight: 201
+missionZones: []
+areas: []
+cost: 258
+%%%%
+trajectory STR_T
+id: y
+groundTimer: ~
+%%%%
+region STR_R
+type: true
+type: STR_LONG_NAME_1
+missionRegion: a b
+regionWeight: 2147483647
+missionWeights: {STR_GAMMA: 46}
+missionZones: [[[0, 37.11, -172, 174], [267.5, -81, 58.5, 1e2]], [[256.5, 50, -90, 305.5, -1, a b], [57.99, 1e2, 74.5, -57.393]]]
+cost: 2
+areas: []
+%%%%
+region STR_R
+areas: []
+areas: [[333.5, 0, -7.76, 0], [-54.14, 0, -22.8, 98.282, 2147483647], [-71, 73.34, 174, 334.5]]
+type: é
+type: null
+missionWeights: {true: 8}
+regionWeight: 0x10
+missionZones: [[], []]
+missionRegion: x
+%%%%
+inventory 0
+x: -1
+listOrder: -5
+y: -1
+slots: []
+type: -4
+type: 12
+%%%%
+country STR_X
+labelLon: 0
+type: STR_BETA
+fundingCap: 25
+areas: [[20.531, 9.550, 1e2, -14.92], [126.5, 0, -61.9, -56.74, 0x10], [1e2, 35.324, -114, -23.65]]
+areas: [[1e2, 66.9, 1e2, -6, -1], [-70, 0, 200.5, 121]]
+labelLat: 86.5
+%%%%
+country STR_X
+fundingBase: 9
+labelLat: abc
+areas: []
+fundingCap: -24667
+%%%%
+race STR_RACE
+members: abc
+id: STR_ALPHA
+%%%%
+race STR_RACE
+members: []
+%%%%
+trajectory STR_T
+groundTimer: 204
+waypoints: [[5, 2, 3]]
+id: STR_ALPHA
+%%%%
+region STR_R
+missionZones: [[[89.45, 92.211, 146, 1e2], [1e2, 0, 25.9, 1e2]], [[27.5, 1e2, 1e2, -142.19], [-37.31, 140, 1e2, 1e2]]]
+missionZones: []
+missionRegion: é
+type: a b
+cost: 14151
+%%%%
+race STR_RACE
+members: [x]
+id: 7
+%%%%
+manufacture STR_OTHER 4
+requires: [STR_GAMMA, x, é, true]
+cost: 292
+category: STR_BETA
+time: 201
+space: -93722
+requiredItems: {STR_LONG_NAME_1: -1}
+producedItems: {null: 36, é: 2455, é: -5}
+%%%%
+inventory 6
+costs: {y: 158}
+type: 237
+listOrder: -12662
+y: 0x10
+y: -5
+slots: [[7, 0], [6, 2], [6, 0], [8, 4], [7, 2], [8, 0]]
+id: true
+x: 2147483647
+%%%%
+trajectory STR_T
+groundTimer: -1
+id: y
+%%%%
+race STR_RACE
+members: [a b]
+id: x
+%%%%
+trajectory STR_T
+id: 7
+groundTimer: 7
+%%%%
+inventory 7
+listOrder: 0x10
+type: -4
+x: 0
+slots: [[3, 0], [3, 0], [7, 2], [5, 3]]
+id: STR_GAMMA
+y: 3
+%%%%
+region STR_R
+regionWeight: 3
+type: 7
+missionRegion: STR_GAMMA
+missionRegion: x
+missionWeights: {STR_LONG_NAME_1: 38}
+cost: 225
+areas: [[1e2, -106.626, 1e2, 30.5, 34]]
+missionZones: []
+%%%%
+region STR_R
+regionWeight: 180
+cost: 20
+missionWeights: {}
+missionRegion: é
+missionRegion: STR_LONG_NAME_1
+missionZones: []
+areas: [[137, -75, 1e2, -14.2], [104.148, 12.5, 0, 1e2], [17.753, 0, 126, 0]]
+areas: [[-35.63, -90.58, 0, 0], [64.83, 192.5, -9.32, 1e2, -5]]
+type: x
+%%%%
+manufacture STR_ITEM 1
+producedItems: {}
+producedItems: {é: 122, é: 31, y: 25}
+space: 256
+time: 36
+time: 40
+requires: [STR_GAMMA]
+cost: -1
+category: é
+requiredItems: {STR_BETA: -1, y: 2147483647, 7: 1}
+listOrder: 0
+name: 7
+%%%%
+race STR_RACE
+members: [y, é, STR_BETA]
+id: STR_ALPHA
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+id: STR_BETA
+%%%%
+region STR_R
+missionZones: []
+regionWeight: 0x10
+missionRegion: STR_GAMMA
+areas: [[258.5, 39.5, 90.5, 0]]
+cost: 0
+type: true
+%%%%
+inventory 9
+y: 3863
+x: 0x10
+costs: {}
+type: 0
+type: 2147483647
+slots: []
+id: x
+%%%%
+manufacture STR_ITEM 7
+name: STR_BETA
+space: 5
+producedItems: {y: 35}
+time: 2147483647
+listOrder: 16
+cost: -1
+cost: 254
+requires: []
+requiredItems: {null: 2147483647, null: 1, a b: 191}
+%%%%
+country STR_USA
+fundingCap: -3
+fundingCap: 0x10
+labelLon: 1e2
+areas: []
+labelLat: -12.8
+fundingBase: 130
+%%%%
+country STR_USA
+fundingBase: 1
+labelLon: 106.5
+areas: [1, 2]
+fundingCap: 2147483647
+%%%%
+region STR_R
+cost: 0x10
+areas: [[0, 1e2, 1e2, -83.287], [166, -140, 1e2, 1e2, 16500], [42.38, 0, 0, 0]]
+regionWeight: -1
+missionRegion: null
+missionZones: [[]]
+type: y
+%%%%
+race STR_RACE
+members: []
+id: null
+%%%%
+research STR_Q 0
+dependencies: []
+lookup: a b
+points: 0x10
+cutscene: STR_LONG_NAME_1
+cutscene: y
+destroyItem: true
+listOrder: 0x10
+name: STR_BETA
+getOneFree: [STR_GAMMA, STR_GAMMA, STR_GAMMA, y]
+cost: -1
+requires: [a b, a b, null, STR_ALPHA]
+unlocks:
+needItem: no
+%%%%
+research STR_Q 5
+cost: 15
+requires: [7, a b]
+dependencies: [a b, STR_LONG_NAME_1, x, a b]
+getOneFree: [7]
+points: {k: v}
+destroyItem: true
+cutscene: x
+needItem: no
+%%%%
+trajectory STR_T
+groundTimer: 0
+id: true
+waypoints: [[4, 3, 91], [3, 0, 99]]
+%%%%
+country STR_USA
+type: a b
+fundingBase: 2
+areas: [[57.722, 1e2, -96.835, -66.312, 2147483647], [1e2, 0, 50.53, 1e2], [0, -155.438, 0, 1e2]]
+fundingCap: 216
+%%%%
+region STR_R
+regionWeight: 68985
+type: STR_GAMMA
+cost: 2147483647
+missionZones: [[[-1, 74.321, -178.696, 163.489], [7.50, 0, -61, 0]]]
+missionWeights: {null: 43, x: 44}
+%%%%
+region STR_R
+type: x
+type: STR_BETA
+missionZones: []
+regionWeight: 17
+areas: []
+areas: []
+cost: 0x10
+missionRegion: null
+%%%%
+race STR_RACE
+members: []
+id: true
+%%%%
+region STR_R
+missionWeights: {}
+missionZones: [[[-93, 1e2, 158, 30.5]]]
+type: STR_GAMMA
+missionRegion: y
+regionWeight: 15
+cost: -5
+areas: ~
+%%%%
+country STR_X
+areas: [[-30, 1e2, 11.5, 305.5, 1], [18.964, -180.986, 0, 114]]
+labelLat: -163
+fundingBase: 34
+fundingCap: 38
+labelLon: 1e2
+%%%%
+research STR_TOPIC 4
+lookup: null
+needItem: no
+name: a b
+getOneFree: [é, y]
+requires: []
+unlocks: [null]
+dependencies: [STR_GAMMA, STR_ALPHA]
+listOrder: 2147483647
+cost: 37
+%%%%
+region STR_R
+areas: [[-13, -130, 1e2, 1e2], [1e2, 104, 50, 1e2], [0, -51, 1e2, 0, 0x10]]
+regionWeight: -1
+missionWeights: {x: 48, y: 43, STR_LONG_NAME_1: 48}
+%%%%
+inventory 2
+costs: {STR_GAMMA: 2147483647, 7: -51606}
+costs: {true: -4, STR_LONG_NAME_1: 20, é: 2147483647}
+id: é
+x: {k: v}
+type: 0x10
+slots: [[7, 0], [3, 4], [8, 0], [5, 0], [7, 2]]
+y: -5
+%%%%
+region STR_R
+missionRegion: STR_GAMMA
+areas: [[44.895, 113.370, -108.95, 192.5], [1e2, 108.326, 260.5, 155.5], [96.550, 1e2, -12, -154]]
+regionWeight: 23
+type: STR_GAMMA
+missionZones: [[[159, 0, -37.4, 67.5]], [[-42.822, -53, 0, 95.5, -1, 7], [-161.896, 0, 52.188, 61.19]]]
+cost: {k: v}
+%%%%
+inventory 8
+type: 23
+y: -4
+listOrder: -1
+costs: {STR_LONG_NAME_1: 24, null: 7, STR_ALPHA: 158}
+id: é
+%%%%
+research STR_Q 5
+points: 0x10
+destroyItem: no
+unlocks: [a b]
+cutscene: 7
+name: y
+needItem: true
+%%%%
+region STR_R
+areas: [[63, -146.924, -44, 1e2], [90.435, -49, 158.5, 94.692], [-35, 1e2, 1e2, 0]]
+missionWeights: {}
+missionRegion: STR_ALPHA
+cost: 2147483647
+type: x
+%%%%
+country STR_X
+areas: []
+fundingBase: 245
+fundingBase: 37
+type: null
+labelLat: 199.5
+labelLat: -134.718
+fundingCap: 2
+%%%%
+inventory 8
+id: é
+x: -47642
+costs: {x: 32}
+type: 17
+slots: [[8, 4]]
+y: 173
+y: 47301
+%%%%
+region STR_R
+cost: 0
+missionRegion: STR_GAMMA
+type: a b
+regionWeight: abc
+areas: [[310.5, -35.60, 171.71, 58.12], [0, 68.927, 253.5, 1e2]]
+missionWeights: {}
+missionZones: []
+%%%%
+inventory 5
+x: -1
+listOrder: 18
+slots: [[0, 5]]
+costs: {null: -1, y: 2147483647, é: 25}
+id: STR_BETA
+%%%%
+race STR_RACE
+members: [true, STR_ALPHA, STR_GAMMA]
+id: é
+%%%%
+trajectory STR_T
+groundTimer:
+waypoints: [[2, 1, 23], [4, 3, 8], [3, 1, 65]]
+%%%%
+manufacture STR_OTHER 1
+space: [1, 2]
+time: 15
+producedItems: {y: 91, STR_LONG_NAME_1: -4, STR_BETA: 41295}
+name: null
+name: é
+listOrder: 13
+cost: 0x10
+category: null
+requiredItems: {}
+requires: [x, y, true, STR_ALPHA]
+%%%%
+country STR_USA
+labelLat: 47.46
+areas: {k: v}
+labelLon: 0
+%%%%
+race STR_RACE
+id: é
+%%%%
+country STR_X
+fundingCap: 2147483647
+areas: [[-169, 1e2, 26.5, 1e2], [1e2, 352.5, -61, 113.177]]
+labelLon: 1e2
+type: STR_GAMMA
+%%%%
+inventory 3
+id: y
+costs: {true: 123}
+listOrder: 0x10
+x: 2
+type: 2147483647
+slots: [[8, 4], [1, 4]]
+y: 34
+%%%%
+region STR_R
+missionZones: []
+missionWeights: {STR_LONG_NAME_1: 11, true: 5, 7: 7}
+missionRegion: y
+type: null
+areas: [[-128.328, -91, 153.5, 281.5], [72, 0, 63.83, 139.942, -17378], [65.450, 0, 1e2, 2.283, 3]]
+regionWeight: 0
+cost: 25
+%%%%
+inventory 0
+y: 0x10
+id: x
+costs: {}
+x: 26
+slots: [[4, 2], [6, 1], [5, 4], [1, 2]]
+listOrder: 2
+%%%%
+race STR_RACE
+id: x
+%%%%
+race STR_RACE
+members: [STR_BETA]
+id: STR_GAMMA
+%%%%
+trajectory STR_T
+groundTimer: -1
+groundTimer: 0x10
+waypoints: [[1, 3, 44], [5, 0, 84], [6, 0, 64], [6, 0, 95]]
+id: y
+%%%%
+research STR_TOPIC 7
+name: STR_BETA
+lookup: é
+cutscene: true
+dependencies: [STR_GAMMA]
+unlocks: [y, STR_LONG_NAME_1, a b, STR_BETA]
+points: 17
+listOrder: 218
+listOrder: -5
+destroyItem: no
+%%%%
+country STR_X
+type: STR_BETA
+type: STR_GAMMA
+labelLat: 80.44
+fundingCap: 7
+fundingBase: 191
+%%%%
+race STR_RACE
+members: [STR_ALPHA, a b]
+id: 7
+%%%%
+trajectory STR_T
+groundTimer: abc
+waypoints: [[6, 1, 83], [5, 1, 34], [6, 3, 41]]
+%%%%
+region STR_R
+areas: []
+cost: 0x10
+missionWeights: {STR_ALPHA: 35}
+%%%%
+race STR_RACE
+id: abc
+members: [7, y, y, true]
+%%%%
+inventory 5
+type: 39
+slots: []
+x: 0x10
+y: -1
+listOrder: 0x10
+id: true
+%%%%
+inventory 4
+type: 0x10
+type: -2
+id: STR_BETA
+y: 23
+slots: [[6, 3], [6, 4], [5, 5], [0, 3], [0, 3], [0, 2], [1, 4]]
+costs: {STR_BETA: 0, 7: 25, 7: 0x10}
+x: -1
+x: 2147483647
+listOrder: 0x10
+%%%%
+manufacture STR_OTHER 6
+time: 0x10
+producedItems: {é: 5, STR_BETA: 32, STR_GAMMA: 95592}
+listOrder: 7
+cost: 7
+name: STR_ALPHA
+requires: [é, STR_ALPHA, a b]
+requiredItems: {STR_BETA: -1, STR_LONG_NAME_1: 4, true: 117}
+%%%%
+manufacture STR_ITEM 2
+requires: []
+cost: -1
+category: y
+time: 0x10
+listOrder: 0x10
+name: null
+%%%%
+country STR_USA
+labelLat: 1e2
+labelLat: 101
+fundingBase: {k: v}
+labelLon: 27
+areas: [[0, 10.84, 0, 64.643], [0, 1e2, 7.5, 226.5]]
+fundingCap: 2147483647
+%%%%
+region STR_R
+cost: 36
+missionRegion: STR_GAMMA
+missionZones: ~
+type: STR_ALPHA
+areas: [[0, -9.36, 1e2, 71], [307.5, -5.7, 59, 0]]
+regionWeight: 0x10
+%%%%
+race STR_RACE
+members: [y, x, a b]
+%%%%
+manufacture STR_ITEM 0
+requires: abc
+listOrder: 26324
+space: 33
+cost: abc
+time: -1
+%%%%
+country STR_X
+fundingBase: -55911
+fundingCap: 0x10
+labelLon: 0
+labelLat: 0
+areas: [[0, 0, -40.917, 0, 94]]
+type: null
+%%%%
+inventory 3
+type: 31941
+costs: {true: 1}
+y: 0x10
+x:
+%%%%
+research STR_Q 5
+listOrder: 2147483647
+listOrder: 99081
+requires: [1, 2]
+requires: [STR_GAMMA]
+getOneFree: [STR_GAMMA]
+destroyItem: true
+name: null
+cost: 2147483647
+cutscene: STR_LONG_NAME_1
+dependencies: [STR_ALPHA, null, x, é]
+unlocks: [é, null, STR_BETA]
+points: 13
+%%%%
+inventory 6
+y: 12
+id: 7
+x: 3
+listOrder: -1
+costs: {}
+%%%%
+country STR_X
+fundingBase: 3
+labelLat: -78.46
+fundingCap: 75393
+labelLon: -72.28
+type: STR_ALPHA
+areas: [[-130.808, 198.5, 1e2, 287.5], [1e2, 0, -83.29, 84.46], [1e2, 2.75, 195.5, 0]]
+%%%%
+manufacture STR_ITEM 9
+name: y
+listOrder: 133
+producedItems: {é: 17, STR_LONG_NAME_1: 12}
+producedItems: {é: 2147483647, a b: -1}
+category: 7
+category: a b
+time: 35
+space: 0x10
+requires: []
+requiredItems: {true: 54031}
+requiredItems: {é: -11624}
+%%%%
+region STR_R
+type: true
+missionZones: [[[83.62, 1e2, -15, 4.5]]]
+cost: 18
+regionWeight: -59208
+areas: [[1e2, -117.919, 1e2, 22], [0, -41.578, 41.253, 1e2], [42, 1e2, 62.8, -67.901, -1]]
+missionWeights: {x: 34, STR_ALPHA: 15, y: 21}
+missionWeights: {}
+%%%%
+inventory 4
+x: 34
+id: true
+slots: []
+listOrder: 1
+costs: {é: 3, a b: 19, é: 22}
+y: 213
+type: 197
+type: 0x10
+%%%%
+country STR_USA
+areas: [[-1, 17.2, 4.60, -3.853]]
+areas: []
+labelLon: 0
+fundingCap: -3
+fundingBase: 0x10
+fundingBase: 2147483647
+labelLat: 1e2
+%%%%
+manufacture STR_OTHER 5
+time: 2147483647
+cost: 0x10
+requiredItems: {STR_BETA: 32064, STR_BETA: -1, é: 90}
+name: é
+space: abc
+category: x
+producedItems: {true: -1, STR_BETA: -2, y: 39}
+producedItems: {STR_ALPHA: 111}
+%%%%
+inventory 1
+id: y
+slots: [[2, 2]]
+costs: {STR_LONG_NAME_1: -94101, x: 13, STR_ALPHA: -3}
+type: -72017
+y: 0
+y: 285
+%%%%
+race STR_RACE
+members: [STR_BETA]
+id: true
+%%%%
+research STR_Q 6
+unlocks: []
+points: 192
+points: 9
+listOrder: 2147483647
+requires: [y, y, 7]
+cost: 96812
+dependencies: [7, 7, STR_ALPHA]
+name: é
+lookup: STR_LONG_NAME_1
+cutscene: true
+getOneFree: [true, STR_ALPHA, null]
+%%%%
+country STR_X
+areas: []
+labelLon: 1e2
+fundingCap: 2147483647
+type: x
+labelLat: 65.97
+fundingBase: 0x10
+%%%%
+race STR_RACE
+id: null
+members: []
+%%%%
+country STR_X
+labelLon: 0
+type: a b
+fundingBase: 31
+areas: [[1e2, -148, -119, 123.715]]
+%%%%
+trajectory STR_T
+groundTimer: -1
+waypoints: [[4, 0, 22]]
+id: 7
+%%%%
+manufacture STR_OTHER 3
+time: 2147483647
+requires: [STR_ALPHA, x, STR_LONG_NAME_1]
+name: STR_LONG_NAME_1
+cost: ~
+producedItems: {7: 255, true: -1}
+space: -1
+listOrder: 0x10
+%%%%
+research STR_Q 2
+unlocks: [true, x]
+name: STR_ALPHA
+requires: []
+cutscene: STR_BETA
+listOrder: 0x10
+dependencies: [7, y, STR_LONG_NAME_1, 7]
+points: 37
+cost: 2147483647
+cost: -19865
+destroyItem: true
+%%%%
+country STR_X
+labelLon: -94
+type: true
+fundingCap: 112
+areas: [[-119, 1.542, 121.639, 0]]
+fundingBase: -75962
+%%%%
+country STR_X
+fundingCap: 2147483647
+fundingCap: 4
+fundingBase: 111
+labelLon: 1e2
+areas: [[172.5, 0, 100.5, 81.49], [-63, -155.699, -35.6, -48.530], [87.361, 170, 0, 265.5]]
+labelLat: 174.632
+%%%%
+inventory 8
+listOrder: 2147483647
+costs: {}
+y: -40670
+id: a b
+type: 2147483647
+slots: [[8, 5], [1, 5]]
+x: -3
+x: 5
+%%%%
+country STR_USA
+areas: [[166.5, 318.5, 125.5, 109], [50.11, 91, 0, 1e2], [1e2, 1e2, 1e2, -84]]
+fundingBase: 37
+labelLon: abc
+fundingCap: -1
+type: STR_LONG_NAME_1
+labelLat: {k: v}
+%%%%
+race STR_RACE
+members: []
+%%%%
+manufacture STR_OTHER 0
+space: -53187
+time: 28
+name: x
+requires: [y, STR_LONG_NAME_1, STR_LONG_NAME_1, a b]
+cost: 0x10
+category: a b
+requiredItems: {}
+listOrder: 92
+producedItems: {STR_BETA: 0x10, STR_BETA: 7}
+%%%%
+trajectory STR_T
+groundTimer: 39
+groundTimer: -1
+waypoints: [[5, 0, 80], [2, 2, 52]]
+%%%%
+trajectory STR_T
+id: x
+id: null
+groundTimer: {k: v}
+waypoints: []
+%%%%
+manufacture STR_OTHER 6
+requiredItems: {STR_BETA: 2}
+space: 39
+producedItems: {STR_LONG_NAME_1: 0x10, x: -1, é: 145}
+requires: [y, 7, x, y]
+category: STR_ALPHA
+time: 22
+cost: 37
+name: y
+%%%%
+manufacture STR_ITEM 2
+requires: [STR_LONG_NAME_1, true, STR_BETA]
+producedItems: {y: 0, STR_BETA: 19, STR_BETA: -1}
+name: 7
+requiredItems: {STR_BETA: 0x10, y: -5, 7: 135}
+listOrder: 14
+%%%%
+inventory 8
+slots: [[3, 2]]
+listOrder:
+y: 2147483647
+y: 2147483647
+costs: {a b: 186, STR_ALPHA: 21, STR_ALPHA: 5}
+id: STR_BETA
+%%%%
+research STR_Q 3
+destroyItem: true
+listOrder: -1
+cost: 15
+getOneFree: []
+requires: [y, STR_BETA, x, é]
+dependencies: []
+unlocks: []
+lookup: true
+%%%%
+research STR_Q 4
+cost: 24
+needItem: true
+dependencies: [a b, 7, null, true]
+getOneFree: [y, a b]
+getOneFree: [null, y]
+destroyItem: true
+destroyItem: true
+points: 237
+name: STR_BETA
+cutscene: STR_GAMMA
+lookup: true
+requires: [x, null, true]
+%%%%
+country STR_USA
+fundingCap: 2147483647
+labelLat: 130
+fundingBase: 25
+type: y
+areas: [[124, -97.382, -68.32, 294.5], [-11.91, 168.941, 0, 71.0]]
+labelLon: 114
+%%%%
+region STR_R
+cost: 45
+areas: [[-64, 138, 1e2, 268.5]]
+missionRegion: é
+regionWeight: 39
+missionZones: [[]]
+missionWeights: {}
+%%%%
+trajectory STR_T
+groundTimer: 4
+id: STR_BETA
+waypoints: [[2, 3, 58], [0, 4, 27]]
+%%%%
+research STR_Q 9
+dependencies: [STR_LONG_NAME_1, x, true]
+requires: []
+points: -64550
+destroyItem: true
+cutscene: STR_GAMMA
+name: STR_LONG_NAME_1
+needItem: no
+cost: [1, 2]
+getOneFree: [a b]
+%%%%
+research STR_TOPIC 8
+points: 122
+cutscene: null
+cost: 48182
+destroyItem: false
+name: STR_GAMMA
+listOrder: 0x10
+needItem: true
+getOneFree: [STR_BETA, 7, true]
+lookup: 7
+dependencies: [y, true, y]
+%%%%
+manufacture STR_OTHER 5
+producedItems: {STR_BETA: 2147483647, STR_BETA: -1, a b: -1}
+name: 7
+space: -3
+requires: []
+listOrder: 225
+time: 0x10
+category: a b
+cost: 0x10
+%%%%
+trajectory STR_T
+waypoints: [[3, 0, 32], [0, 4, 3]]
+id: STR_BETA
+id: STR_GAMMA
+groundTimer: 37
+%%%%
+region STR_R
+regionWeight: -4
+type: y
+missionZones: [[], [[0, 258.5, 151.5, 0, -1, true]]]
+missionWeights: {}
+areas: [[-6.17, -168.580, -24.90, -55.21], [37.50, 167, 113, 205.5, -1]]
+missionRegion: STR_ALPHA
+cost: 0x10
+%%%%
+trajectory STR_T
+groundTimer: 0x10
+id: STR_GAMMA
+%%%%
+region STR_R
+missionWeights: {}
+type: STR_ALPHA
+areas: []
+cost: -1
+missionZones: [[[211.5, 0, 41.90, 156.5, 15, true], [1e2, -174.712, 0, -91]], [[1e2, 128, -88.14, -10.61], [120, 0, 1e2, -7]]]
+%%%%
+inventory 4
+x: 75
+y: 73716
+listOrder: 6
+id: x
+costs: {é: 219}
+type: 0
+%%%%
+manufacture STR_OTHER 2
+cost: 29
+time: -2
+listOrder: -1
+producedItems: {null: 2147483647, null: 20, a b: 21}
+category: STR_GAMMA
+space: 72
+%%%%
+region STR_R
+missionRegion: x
+regionWeight: -27648
+cost: 2147483647
+areas: [[-145, 358.5, 195.5, 126.881], [-119, 62.5, 0, 1e2]]
+%%%%
+inventory 7
+y: 14
+x: -40974
+slots: [[8, 2], [8, 3], [4, 0], [2, 3], [2, 3], [2, 2]]
+type: 2147483647
+id: null
+listOrder: 2147483647
+%%%%
+region STR_R
+type: a b
+regionWeight: 2147483647
+cost: 6
+areas: [[-157, 113.5, 76.13, 0, 34347]]
+missionWeights: {é: 14, STR_GAMMA: 11, y: 43}
+missionRegion: 7
+missionZones: []
+%%%%
+region STR_R
+missionWeights: {}
+missionRegion: STR_LONG_NAME_1
+type: STR_ALPHA
+areas: []
+cost: 0x10
+regionWeight: -67088
+%%%%
+manufacture STR_OTHER 6
+listOrder: 2147483647
+listOrder: 0x10
+space: 0x10
+requires: []
+time: [1, 2]
+cost: 0x10
+requiredItems: {a b: -2, STR_BETA: -1, STR_LONG_NAME_1: 0x10}
+category: STR_ALPHA
+name: y
+%%%%
+race STR_RACE
+
+%%%%
+region STR_R
+missionRegion: STR_ALPHA
+missionWeights:
+missionZones: []
+areas: [[-27.81, 0, 0, 0]]
+regionWeight: 2147483647
+cost: -1
+%%%%
+research STR_Q 9
+unlocks: []
+unlocks: []
+listOrder: -1
+needItem: true
+lookup: a b
+points: 1
+getOneFree: [STR_ALPHA, STR_ALPHA, 7]
+cost: 67960
+cost: 0x10
+dependencies: [1, 2]
+requires: []
+requires: [STR_BETA, y, STR_BETA, 7]
+%%%%
+research STR_TOPIC 6
+listOrder: 0x10
+name: 7
+unlocks: []
+lookup: STR_LONG_NAME_1
+needItem: true
+points: 227
+cost: 37
+destroyItem: no
+%%%%
+region STR_R
+cost: -3
+missionZones: []
+missionWeights: {}
+regionWeight: 0x10
+type: STR_ALPHA
+areas: [[0, 72, 238.5, 1e2]]
+%%%%
+inventory 9
+y: 185
+id: 7
+slots: [[8, 2], [8, 0], [6, 2], [0, 5]]
+type: 93321
+costs: {7: 0x10}
+listOrder: 0x10
+%%%%
+trajectory STR_T
+waypoints: [[1, 4, 55], [5, 1, 97], [4, 1, 63]]
+id: STR_ALPHA
+groundTimer: 9
+%%%%
+country STR_X
+labelLat: 205.5
+labelLon: -149
+fundingBase: 12
+areas: [[1e2, 299.5, 1e2, 1e2]]
+%%%%
+inventory 8
+listOrder: 25
+costs: {null: -1, STR_GAMMA: 29, STR_BETA: 11}
+x: [1, 2]
+type: 0x10
+y: 9
+id: 7
+%%%%
+inventory 3
+x: 0x10
+y: -587
+costs: {é: 6, a b: -34366, STR_BETA: 0x10}
+type: 0x10
+slots: [[1, 0], [0, 1], [5, 1]]
+listOrder: {k: v}
+%%%%
+inventory 5
+costs: {}
+listOrder: 0x10
+id: STR_BETA
+slots: [[0, 1], [4, 3], [5, 2], [6, 2], [6, 4]]
+x: 13
+type: 2147483647
+y: 22
+%%%%
+trajectory STR_T
+groundTimer: 0x10
+id: é
+%%%%
+inventory 1
+slots: []
+x: 0x10
+id: 7
+listOrder: 23
+y: -77932
+%%%%
+country STR_X
+type: STR_GAMMA
+labelLat: 0
+fundingBase: -1
+areas: [[-167.530, 336.5, -59, -73]]
+%%%%
+inventory 4
+listOrder: -2
+id: é
+x: 0
+y: -1
+slots: []
+costs: {STR_LONG_NAME_1: 0x10, 7: 161, y: 63057}
+type: 2147483647
+%%%%
+manufacture STR_OTHER 6
+producedItems: {x: 173, 7: -1, STR_ALPHA: 0}
+time: 83
+listOrder: -1
+cost: {k: v}
+space: [1, 2]
+category: 7
+requiredItems: {y: 0x10, y: 2147483647}
+requires: [x, null, true]
+%%%%
+manufacture STR_ITEM 0
+space: 7
+producedItems: {}
+category: STR_ALPHA
+listOrder: 2147483647
+requiredItems: {STR_BETA: 2, é: 18}
+time: 0x10
+requires: [a b, y, 7]
+name: é
+%%%%
+research STR_TOPIC 0
+destroyItem: true
+points: 0x10
+dependencies: [null, STR_LONG_NAME_1, STR_BETA, STR_LONG_NAME_1]
+unlocks: [7, null]
+lookup: STR_LONG_NAME_1
+listOrder: 237
+name: a b
+needItem: false
+cutscene: STR_GAMMA
+cost: -96763
+%%%%
+manufacture STR_OTHER 2
+space: -2
+time: 35
+requiredItems: {STR_BETA: -7794, 7: 0x10}
+name: null
+requires: [7, true, 7]
+category: true
+producedItems: {}
+producedItems: {k: v}
+cost: 0x10
+listOrder: 2147483647
+%%%%
+manufacture STR_OTHER 5
+category: STR_BETA
+category: STR_ALPHA
+producedItems: {STR_GAMMA: 0x10, x: 3, a b: -16188}
+name: STR_LONG_NAME_1
+requiredItems: {x: 9, STR_BETA: 18, STR_ALPHA: -1}
+listOrder: 27
+requires: [null, null]
+cost: 0x10
+cost: 15
+%%%%
+research STR_Q 3
+points: -1
+lookup: a b
+unlocks: []
+needItem: true
+dependencies: []
+requires: []
+listOrder: 22
+name: x
+cutscene: x
+getOneFree: [y, STR_GAMMA, x]
+%%%%
+inventory 3
+y: 7
+type: 0x10
+slots: {k: v}
+slots: [[2, 5]]
+listOrder: ~
+listOrder: 0x10
+costs: {}
+costs: {}
+x: 7
+%%%%
+trajectory STR_T
+id: x
+waypoints: []
+%%%%
+country STR_X
+labelLon: 120.782
+labelLon: 0
+type: STR_ALPHA
+areas: [[10.23, 145, 0, 99], [357.5, -35.42, 0, 0], [-71.15, 99.5, -50, 150.901]]
+fundingBase: 255
+%%%%
+region STR_R
+type: 7
+areas: [[75.6, 316.5, 1e2, 339.5, 34], [-12.10, 16.77, 1e2, -164, 3]]
+missionZones: []
+regionWeight: {k: v}
+%%%%
+manufacture STR_OTHER 1
+requires:
+time: 2147483647
+requiredItems: {STR_GAMMA: 0x10, y: 2, STR_GAMMA: 235}
+name: STR_LONG_NAME_1
+listOrder: 66
+listOrder: 4
+producedItems: [1, 2]
+space: -4
+category: é
+%%%%
+research STR_Q 4
+needItem: no
+requires: [STR_BETA, STR_LONG_NAME_1, STR_ALPHA, null]
+name: STR_BETA
+cutscene: a b
+getOneFree: [a b, STR_LONG_NAME_1]
+unlocks: []
+cost: 23
+listOrder: 34
+dependencies: [x, null]
+%%%%
+inventory 4
+slots: [[4, 0], [2, 4], [0, 1], [3, 0], [8, 1], [2, 5]]
+x: 13490
+y: 0
+y: 36
+costs: {}
+type: 2
+id: null
+%%%%
+region STR_R
+regionWeight: 2147483647
+missionWeights: {true: 41, x: 26, é: 0}
+%%%%
+inventory 0
+id: STR_BETA
+listOrder: 33
+slots: [[1, 4], [4, 0], [4, 4]]
+x: -1
+type: 0x10
+costs: {STR_GAMMA: 6, null: 176, 7: 5}
+y: -1
+%%%%
+race STR_RACE
+members: [STR_GAMMA, x]
+id: 7
+%%%%
+research STR_Q 3
+name: 7
+requires: [x]
+listOrder: 24
+cutscene: STR_BETA
+dependencies: []
+cost: -2
+lookup: null
+unlocks: []
+%%%%
+research STR_Q 4
+unlocks: []
+requires: []
+requires: []
+destroyItem: false
+dependencies: [null, 7]
+getOneFree: [a b]
+lookup: y
+name: x
+listOrder: 29
+needItem: no
+points: 0
+%%%%
+trajectory STR_T
+waypoints: [[5, 2, 83], [6, 4, 84]]
+id: STR_BETA
+groundTimer: 2147483647
+%%%%
+manufacture STR_OTHER 0
+listOrder: -59216
+category: STR_ALPHA
+producedItems: {STR_ALPHA: 2147483647}
+requiredItems: {STR_LONG_NAME_1: -45080, null: 4}
+requires: []
+%%%%
+country STR_USA
+fundingBase: 0x10
+areas: []
+labelLon: 0
+labelLat: 173.5
+type: x
+%%%%
+inventory 6
+slots: [[5, 5], [7, 3], [1, 0], [3, 2], [8, 4], [6, 3], [7, 0]]
+slots: [[6, 5], [2, 2]]
+id: a b
+x: 2147483647
+type: 180
+costs: {é: 282, STR_BETA: 0x10, null: 8}
+y: 58722
+listOrder: 1
+%%%%
+research STR_Q 0
+unlocks: [STR_LONG_NAME_1, true, null, STR_BETA]
+destroyItem:
+getOneFree: [STR_BETA, é, true]
+cutscene: y
+name: STR_BETA
+cost:
+requires: [true]
+dependencies: [x, STR_ALPHA, null, STR_ALPHA]
+points: 136
+lookup: x
+%%%%
+manufacture STR_OTHER 4
+requires: [STR_LONG_NAME_1, STR_GAMMA, y]
+time: 17
+cost: 26
+name: y
+requiredItems: {}
+space: -84105
+producedItems: {}
+%%%%
+race STR_RACE
+id: STR_GAMMA
+members: [y, null, a b]
+%%%%
+inventory 6
+costs:
+type: 96337
+y: 0x10
+x: 175
+listOrder: 26428
+id: STR_BETA
+%%%%
+inventory 3
+slots: []
+costs: {a b: 5}
+listOrder: 2
+id: abc
+x: -1
+y: 21980
+y: 0x10
+%%%%
+inventory 3
+type: 2147483647
+listOrder: 2147483647
+costs: {é: 283, STR_BETA: -1}
+slots: [[2, 1], [6, 2], [2, 0]]
+x: 2147483647
+id: true
+%%%%
+region STR_R
+areas: []
+type: STR_GAMMA
+regionWeight: 2147483647
+cost: 2147483647
+missionZones: [[[277.5, 21.317, -4.87, 24.5, -1, a b]], []]
+missionWeights: {}
+%%%%
+region STR_R
+missionRegion: STR_ALPHA
+missionRegion: STR_ALPHA
+regionWeight: 203
+cost: 26
+missionWeights: ~
+areas: []
+type: STR_GAMMA
+%%%%
+region STR_R
+areas: [[-85, 219.5, 170.416, 1e2], [-44, -103.140, -159, 29], [0, 0, 1e2, 1e2]]
+missionWeights: {k: v}
+missionRegion: STR_ALPHA
+regionWeight: -1
+missionZones: [[]]
+cost: -1
+%%%%
+country STR_USA
+type: y
+labelLat: 28.289
+fundingCap: 2147483647
+areas: [[0, 0, -26.65, 44.35], [358.5, -137, 134.5, 119.5]]
+labelLon: -12
+%%%%
+research STR_Q 4
+requires: []
+dependencies: []
+lookup: ~
+destroyItem: true
+listOrder: -1
+cost: 0x10
+points: 29
+unlocks: [STR_GAMMA, null, STR_ALPHA]
+getOneFree: [7]
+cutscene: STR_ALPHA
+needItem: true
+%%%%
+region STR_R
+type: é
+regionWeight: 2147483647
+areas: [[-18, -5.34, 83.169, 171]]
+missionWeights: {STR_ALPHA: 50, a b: 2}
+missionRegion: STR_ALPHA
+%%%%
+race STR_RACE
+id: STR_ALPHA
+members: [null]
+%%%%
+manufacture STR_ITEM 6
+listOrder: 39
+requires: [null, STR_BETA, 7]
+requiredItems: {x: -1, x: -5, y: 12}
+time:
+time: 1
+name: y
+producedItems: {é: 0, a b: -1}
+space: [1, 2]
+%%%%
+trajectory STR_T
+waypoints: [[2, 3, 87], [0, 2, 84]]
+groundTimer: 0x10
+%%%%
+inventory 3
+type: 30
+type: 62903
+y: 0x10
+costs: {}
+listOrder: -38088
+x: 0x10
+%%%%
+manufacture STR_ITEM 4
+requiredItems: {y: 2147483647, x: -79060, a b: 1}
+producedItems:
+cost: -40669
+time: 18
+space: 26
+name: STR_BETA
+requires: [y, 7, y]
+listOrder: 2147483647
+category: y
+%%%%
+inventory 5
+costs: {STR_BETA: 19, null: 10, STR_BETA: 145}
+y: -1
+id: x
+slots: [[5, 5], [7, 2], [5, 2], [4, 2]]
+%%%%
+country STR_USA
+fundingBase: 0x10
+areas: [[42.5, -77.61, 35.71, -106]]
+type: a b
+fundingCap: 27
+labelLon: 61.19
+labelLat: 1e2
+%%%%
+manufacture STR_ITEM 6
+requiredItems: {true: 138}
+category: true
+producedItems: {}
+listOrder: 0x10
+space: 39
+requires: [é, a b]
+name: STR_BETA
+cost: 0x10
+time: 22
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+groundTimer: 10
+waypoints: abc
+%%%%
+trajectory STR_T
+id: STR_BETA
+waypoints: [[4, 1, 59], [4, 3, 96], [1, 2, 39]]
+%%%%
+country STR_X
+type: null
+fundingBase: {k: v}
+fundingBase: -1
+areas: [[87.5, 132.777, -136.6, 1e2], [-79, 1e2, 1e2, 53.470], [-83.41, -43.81, 0, 341.5]]
+labelLon: 113.5
+fundingCap: 2147483647
+labelLat: -56.65
+%%%%
+country STR_USA
+labelLon: 88.747
+type: STR_LONG_NAME_1
+fundingCap: -35001
+labelLat: 196.5
+areas: []
+%%%%
+race STR_RACE
+id: 7
+members: [7, true, true]
+%%%%
+region STR_R
+regionWeight: 1
+cost: 129
+missionWeights: {STR_LONG_NAME_1: 1}
+%%%%
+race STR_RACE
+members: [7, a b, 7, STR_BETA]
+%%%%
+race STR_RACE
+members: [STR_ALPHA]
+%%%%
+race STR_RACE
+id: STR_BETA
+members: [7, STR_ALPHA, STR_BETA, a b]
+%%%%
+country STR_X
+fundingCap: -41203
+fundingBase: 38
+labelLat: 1e2
+type: STR_BETA
+labelLon: 148.713
+%%%%
+country STR_USA
+areas: ~
+labelLon: -82
+fundingCap: 51830
+labelLat: -32
+%%%%
+research STR_Q 8
+cost: 228
+points:
+name: STR_ALPHA
+lookup: STR_ALPHA
+cutscene: STR_ALPHA
+cutscene: true
+getOneFree: []
+requires: [y, 7, STR_LONG_NAME_1, y]
+destroyItem: {k: v}
+unlocks: []
+needItem: no
+%%%%
+manufacture STR_OTHER 1
+producedItems: {STR_LONG_NAME_1: 0x10, x: 9}
+space: -4
+name: true
+requiredItems: {}
+cost:
+requires: [STR_GAMMA]
+listOrder: 65
+time: -1
+%%%%
+country STR_X
+labelLat: abc
+fundingCap: -1
+areas: [[1e2, 83.5, 8.901, -8.20, 27]]
+labelLon: 186.5
+%%%%
+research STR_Q 5
+unlocks: [x, null]
+listOrder: 0x10
+lookup: ~
+dependencies: abc
+getOneFree: [y]
+cutscene: 7
+cost: 112
+needItem: no
+requires: [x]
+points: -5
+%%%%
+trajectory STR_T
+waypoints:
+groundTimer: 0x10
+%%%%
+country STR_USA
+areas: [[0, -164, 161, 0]]
+fundingBase: 0x10
+type: é
+fundingCap: 2147483647
+labelLat: -127.290
+labelLon: abc
+%%%%
+race STR_RACE
+members: [STR_BETA, STR_LONG_NAME_1, x]
+id: y
+%%%%
+manufacture STR_ITEM 8
+space: 2147483647
+requires: []
+time: 0x10
+cost: -1
+category: STR_LONG_NAME_1
+name: true
+%%%%
+race STR_RACE
+id: é
+members: [true, true, a b, STR_LONG_NAME_1]
+%%%%
+race STR_RACE
+members: []
+%%%%
+race STR_RACE
+id: true
+members: abc
+%%%%
+manufacture STR_OTHER 0
+cost: 49710
+time: 10
+requires: [true, true, STR_BETA, true]
+requiredItems: {y: 2147483647, STR_GAMMA: -57730}
+name: STR_LONG_NAME_1
+producedItems: {STR_GAMMA: 20989}
+%%%%
+race STR_RACE
+members: [a b, x]
+id: null
+%%%%
+manufacture STR_ITEM 6
+space: 3
+producedItems: {x: 0x10, STR_GAMMA: 0x10}
+requiredItems: {é: -1, x: 37, null: -1}
+name: true
+requires: [STR_ALPHA, a b, x, 7]
+cost: 35
+category: STR_LONG_NAME_1
+time: 183
+%%%%
+research STR_Q 7
+name: STR_GAMMA
+listOrder: ~
+dependencies: []
+getOneFree: [a b, a b]
+getOneFree: []
+lookup: null
+unlocks: [x, true, STR_ALPHA, é]
+cutscene: 7
+cost: -1
+%%%%
+region STR_R
+cost: -1
+missionZones: [1, 2]
+regionWeight: 242
+areas: []
+type: x
+%%%%
+race STR_RACE
+members: [7, STR_LONG_NAME_1]
+id: STR_ALPHA
+%%%%
+country STR_USA
+areas: [[0, 0, -26, 48], [85.50, -9.26, 17.90, 218.5], [20.439, 174, 201.5, 1e2]]
+labelLon: 145
+fundingCap: 5
+fundingBase: 3
+labelLat: 107.5
+type: é
+%%%%
+manufacture STR_ITEM 4
+space: 6
+producedItems: {7: 16}
+time: 23
+time: 141
+category: a b
+requires: []
+listOrder: 2147483647
+cost: 2147483647
+%%%%
+region STR_R
+missionZones: []
+areas: [[68.336, 101.5, -88.46, 167.277]]
+missionWeights: {7: 10}
+cost: 0x10
+type: y
+missionRegion: a b
+%%%%
+region STR_R
+areas: [[74.18, -35.81, 86.35, 0]]
+cost: 11978
+missionZones: [[[0, 168.5, 130, 31]]]
+type: é
+type: STR_BETA
+missionWeights: {}
+regionWeight: 184
+missionRegion: 7
+%%%%
+trajectory STR_T
+id: null
+waypoints: [[5, 2, 77], [3, 0, 79], [0, 4, 41]]
+groundTimer: -1
+%%%%
+inventory 8
+costs: ~
+x: -1
+listOrder: [1, 2]
+id: STR_ALPHA
+y: 0
+type: 2147483647
+slots: [[6, 1], [5, 3], [2, 3], [1, 5], [1, 4]]
+%%%%
+research STR_TOPIC 6
+lookup: STR_LONG_NAME_1
+name: null
+dependencies: [STR_BETA, STR_LONG_NAME_1, STR_BETA, a b]
+cutscene: x
+getOneFree: [y, STR_ALPHA, STR_GAMMA, 7]
+listOrder: 0x10
+listOrder: abc
+destroyItem: no
+points: -1
+needItem: true
+%%%%
+trajectory STR_T
+waypoints: [[1, 1, 93], [0, 0, 30], [2, 2, 36], [6, 0, 4]]
+groundTimer: 2147483647
+%%%%
+manufacture STR_ITEM 9
+requires: [a b, null, 7, STR_ALPHA]
+cost: 5
+requiredItems: {é: 2147483647, y: 2147483647}
+time: -5
+name: é
+category: STR_GAMMA
+listOrder: -1
+%%%%
+country STR_USA
+fundingBase: 67334
+fundingCap: 2147483647
+labelLat: 276.5
+%%%%
+research STR_TOPIC 6
+getOneFree: [STR_LONG_NAME_1]
+needItem: true
+destroyItem: no
+cutscene: null
+points: 0x10
+listOrder: -64353
+listOrder: 55969
+requires: []
+name: STR_ALPHA
+cost: 34
+lookup: a b
+unlocks: [y, a b]
+%%%%
+research STR_Q 7
+cost: 0x10
+cutscene: x
+points: 0x10
+name: null
+needItem: true
+unlocks: {k: v}
+dependencies: []
+requires: [null, x, é, a b]
+destroyItem: no
+listOrder: 4
+getOneFree: []
+%%%%
+race STR_RACE
+members: [x, 7, x]
+%%%%
+manufacture STR_OTHER 9
+producedItems: {}
+name: STR_ALPHA
+name: null
+space: 273
+time: 14
+requiredItems: {}
+cost: 70814
+listOrder: 94189
+category: STR_GAMMA
+%%%%
+region STR_R
+cost: -1
+regionWeight: 40
+type: null
+missionZones: [[[1e2, 1e2, 215.5, 81.36], [0, 9.95, 4.5, 1e2]], [[0, 1.5, 0, 0]]]
+missionRegion: STR_LONG_NAME_1
+areas: [[0, 1e2, -46.16, 218.5]]
+missionWeights: {x: 47, é: 14}
+%%%%
+research STR_TOPIC 3
+listOrder: 10
+unlocks: [STR_GAMMA, x, null, STR_GAMMA]
+name: {k: v}
+needItem: [1, 2]
+dependencies: [STR_GAMMA, a b, null, STR_ALPHA]
+points: -4
+getOneFree: [STR_BETA, STR_LONG_NAME_1]
+destroyItem: true
+requires: [é, true, STR_LONG_NAME_1]
+cost: 15
+cutscene: null
+%%%%
+research STR_Q 8
+getOneFree: [STR_ALPHA, true]
+cost: 2
+listOrder: 16
+destroyItem: no
+points: 28
+dependencies: [x]
+cutscene: a b
+lookup: STR_LONG_NAME_1
+requires: [STR_GAMMA]
+requires: {k: v}
+needItem: false
+name: abc
+%%%%
+inventory 4
+y: ~
+costs: {k: v}
+id: STR_BETA
+slots: {k: v}
+listOrder: 2147483647
+%%%%
+race STR_RACE
+id: true
+members: [true]
+%%%%
+manufacture STR_OTHER 2
+producedItems: {true: -66997, y: 99555}
+cost: 69779
+space: -5746
+name: y
+category: a b
+requiredItems: {STR_GAMMA: 21, STR_LONG_NAME_1: 13, STR_LONG_NAME_1: 12}
+listOrder: -1
+%%%%
+region STR_R
+cost: 91017
+missionRegion: STR_BETA
+type: STR_GAMMA
+missionZones: []
+areas: [1, 2]
+regionWeight: 2147483647
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+members: [7, é, STR_LONG_NAME_1, true]
+%%%%
+research STR_TOPIC 3
+listOrder: -55714
+dependencies: [y, null, STR_GAMMA, STR_GAMMA]
+unlocks: [STR_LONG_NAME_1, null, true]
+lookup: STR_BETA
+destroyItem: [1, 2]
+name: STR_ALPHA
+name: abc
+getOneFree: [STR_BETA, STR_GAMMA]
+points: 0x10
+cost: 28
+cutscene: a b
+%%%%
+manufacture STR_OTHER 2
+name: x
+producedItems: {}
+listOrder: 296
+cost: 0x10
+requires: [STR_GAMMA, STR_ALPHA, null]
+category: y
+requiredItems: {é: 13, null: 2147483647, STR_BETA: 250}
+time: 25
+space: -1
+%%%%
+country STR_USA
+areas: [[63.17, 299.5, 0, 1e2], [-44.954, -7, 0, -68.88], [0, -125.848, 1e2, 109.5, 2147483647]]
+areas: [[1e2, 1e2, 76.5, -90], [131.5, 0, -132, -10], [99.744, 268.5, -75.4, 1e2, 1]]
+fundingCap: 13
+labelLon: 354.5
+type: STR_LONG_NAME_1
+fundingBase: 33
+%%%%
+race STR_RACE
+members: []
+%%%%
+trajectory STR_T
+groundTimer: 0
+id: é
+%%%%
+region STR_R
+areas: []
+regionWeight: [1, 2]
+missionRegion: a b
+type: y
+cost: {k: v}
+%%%%
+trajectory STR_T
+groundTimer: 289
+waypoints: [[4, 1, 37]]
+id: true
+%%%%
+research STR_Q 5
+unlocks: [x]
+destroyItem: false
+lookup: y
+requires: ~
+dependencies: [STR_ALPHA]
+cutscene: null
+cutscene: null
+cost: 2147483647
+getOneFree: [a b, x, true, STR_BETA]
+%%%%
+research STR_Q 1
+getOneFree: [x, é]
+cutscene: STR_ALPHA
+points: 7
+cost: 24
+unlocks: []
+needItem: no
+name: 7
+destroyItem:
+dependencies: [a b, STR_LONG_NAME_1, null]
+listOrder: 0x10
+listOrder: 0x10
+%%%%
+inventory 4
+y: -1
+costs: {}
+costs: {STR_LONG_NAME_1: 29}
+x: ~
+id: STR_ALPHA
+slots: [[0, 5], [6, 3], [2, 5], [3, 3], [5, 1], [8, 3], [6, 5]]
+type: 18
+%%%%
+country STR_X
+labelLon: -41
+fundingBase: -1
+fundingCap: -1
+type: null
+%%%%
+trajectory STR_T
+waypoints: [[0, 0, 65], [5, 1, 27], [6, 2, 41], [2, 2, 75]]
+%%%%
+research STR_Q 8
+requires: [null, é, STR_GAMMA]
+cutscene: 7
+dependencies: [a b, null]
+needItem: no
+cost: 18
+getOneFree: {k: v}
+destroyItem: no
+unlocks: [STR_GAMMA]
+lookup: x
+points: 0x10
+%%%%
+manufacture STR_OTHER 8
+producedItems: {7: 252}
+requiredItems: {STR_ALPHA: 61787, é: -1, 7: 0x10}
+name: y
+name: true
+cost: -5
+cost: 30
+time: 40
+listOrder: 27
+%%%%
+country STR_X
+type: a b
+areas: [[0, 0, 276.5, 9.18]]
+labelLon: ~
+fundingCap:
+fundingBase: 22
+labelLat: ~
+%%%%
+trajectory STR_T
+waypoints: []
+id: a b
+%%%%
+race STR_RACE
+id: STR_BETA
+members: [true, é, x]
+%%%%
+inventory 6
+x: [1, 2]
+costs: {STR_ALPHA: 0x10}
+listOrder: -1
+id: STR_LONG_NAME_1
+y: 265
+%%%%
+country STR_X
+fundingCap: 8
+labelLat: 1e2
+%%%%
+manufacture STR_ITEM 3
+space: -3
+requires: [x]
+name: y
+listOrder: 14
+cost: 1
+category: x
+category: true
+producedItems: {STR_GAMMA: 0x10}
+time: 0x10
+time: 0x10
+requiredItems: {}
+%%%%
+country STR_USA
+fundingCap:
+fundingBase: 99376
+areas: [[1e2, 1e2, 0, 64.57], [0, 1e2, 1e2, 68.297]]
+%%%%
+inventory 9
+y: 24
+x: 2147483647
+type: 136
+slots:
+id: null
+%%%%
+race STR_RACE
+members: [STR_LONG_NAME_1, é, 7, null]
+id: y
+%%%%
+trajectory STR_T
+waypoints: [[5, 4, 50], [4, 3, 69], [5, 3, 72], [4, 2, 36]]
+groundTimer:
+%%%%
+trajectory STR_T
+waypoints: [[1, 0, 12], [4, 2, 17], [2, 0, 73]]
+%%%%
+country STR_X
+labelLon: -8.53
+fundingCap: -1
+fundingCap: 72179
+type: 7
+areas: [[62.36, 1e2, 0, 107.5], [165, -71, 13.32, -30.4, 20], [20, -19.48, 0, 122.5]]
+labelLat: -55.624
+fundingBase: 2147483647
+%%%%
+race STR_RACE
+members: [STR_BETA]
+%%%%
+research STR_Q 5
+cutscene: x
+cutscene: a b
+cost: 0x10
+needItem: [1, 2]
+points: 0
+requires: [a b, y]
+dependencies: [STR_GAMMA, 7, STR_BETA]
+unlocks: [true, x, é]
+listOrder: -1
+%%%%
+manufacture STR_OTHER 7
+space: 25
+requiredItems: {true: 5, 7: 0x10}
+listOrder: 2147483647
+requires: [STR_LONG_NAME_1, STR_LONG_NAME_1, x, STR_GAMMA]
+category: y
+time: 0x10
+cost: -1
+%%%%
+research STR_Q 5
+destroyItem: true
+requires: []
+needItem: {k: v}
+dependencies: [STR_GAMMA, a b]
+lookup: a b
+lookup: é
+listOrder: 244
+cutscene: STR_LONG_NAME_1
+unlocks: [STR_GAMMA, y]
+unlocks: [x, STR_GAMMA]
+name: 7
+getOneFree: [STR_GAMMA, STR_ALPHA]
+cost: 2147483647
+points: 0x10
+%%%%
+country STR_USA
+areas: [[342.5, -80.9, -20.4, -15.692]]
+areas: [[62.81, 131.5, 292.5, 1e2, 55568], [48.510, 14.5, 125.5, -29.750], [95, 157.608, 0, 29.63, 2]]
+labelLon: 1e2
+%%%%
+region STR_R
+regionWeight: 17
+cost: 2147483647
+missionZones: [[[29, -42, -15, 0], [30.5, 43.735, 119.5, 77, 0x10, x]]]
+missionZones: [[[34.5, 11.5, 105.5, 0]], [[-64, 99.5, 1e2, 0, 35, é]]]
+missionRegion: a b
+%%%%
+trajectory STR_T
+id: true
+groundTimer: 2147483647
+%%%%
+race STR_RACE
+id: 7
+%%%%
+country STR_X
+fundingBase: ~
+labelLon: -17.534
+fundingCap: -1
+areas: [[141.681, 0, 15.5, 64], [162.470, 49.5, 130.5, 0]]
+labelLat: 83.53
+type: STR_ALPHA
+%%%%
+race STR_RACE
+members: [STR_BETA, a b, é]
+id: a b
+%%%%
+region STR_R
+type: STR_LONG_NAME_1
+missionRegion: STR_ALPHA
+missionWeights: {STR_BETA: 1, STR_LONG_NAME_1: 12}
+missionZones: []
+areas: [[-84.92, 0, -103.805, -22.3, 81], [0, 0, 165.5, 318.5], [-36.0, -118.747, 1e2, 265.5]]
+regionWeight: 18
+cost: 1
+%%%%
+region STR_R
+type: 7
+missionRegion: STR_LONG_NAME_1
+areas: [[88.60, 0, 24.5, -165.350], [0, -80, 1e2, -129], [-106.855, -31.769, 285.5, 299.5, -1]]
+regionWeight: 4
+cost: 5
+%%%%
+country STR_USA
+type: STR_LONG_NAME_1
+labelLat: 1e2
+areas: [[-44.51, 143.859, -18, 292.5], [44.41, 93, 136, 1e2]]
+labelLon: 1e2
+labelLon: 220.5
+%%%%
+manufacture STR_ITEM 1
+cost: -1
+requiredItems: {}
+time: 5
+time: 10
+producedItems: {7: -47624}
+category: null
+name: true
+space: 8
+listOrder: -3
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+groundTimer: 204
+%%%%
+trajectory STR_T
+waypoints: [[5, 1, 21], [0, 0, 67], [5, 1, 17], [4, 3, 100]]
+id: 7
+groundTimer: 0x10
+%%%%
+research STR_TOPIC 3
+destroyItem: no
+destroyItem: true
+cost: 6
+name: x
+points: 241
+cutscene: null
+cutscene: é
+requires: [true, x]
+listOrder: 192
+dependencies: [é, STR_BETA, STR_GAMMA]
+lookup: é
+needItem: false
+needItem: false
+getOneFree: [7, STR_ALPHA, true, a b]
+%%%%
+country STR_USA
+fundingBase: 2147483647
+fundingCap: 0x10
+areas: [[-29.102, 39.5, -89, -22], [1e2, 100.124, 1e2, 0]]
+%%%%
+region STR_R
+cost: 29
+missionZones: [[]]
+missionWeights: {y: 43}
+missionRegion: a b
+areas: [[205.5, -9.47, 1e2, 1e2, 0x10], [61.47, 20.5, -131, 0], [-167.992, 76.13, 1e2, 1e2]]
+type: x
+regionWeight: 16
+%%%%
+region STR_R
+areas:
+cost: 2147483647
+missionRegion: a b
+type: é
+missionZones: [[[1e2, -70.73, 242.5, -33.388, -1, STR_ALPHA], [114.273, -77.700, -53.97, 38, 35, é]], [[47.5, 73, 58.62, 206.5]]]
+regionWeight: 81820
+%%%%
+inventory 6
+y: -24353
+slots: [[5, 2], [1, 3], [8, 2], [4, 1], [7, 4]]
+costs: {a b: -60137}
+id:
+type: 49095
+listOrder: 28
+%%%%
+race STR_RACE
+id: é
+%%%%
+research STR_TOPIC 6
+unlocks:
+lookup: é
+getOneFree: [y, STR_ALPHA, STR_GAMMA, null]
+name: é
+destroyItem: true
+points: 2147483647
+cost: abc
+dependencies: []
+listOrder: 0x10
+requires: [x]
+%%%%
+research STR_Q 2
+cutscene: STR_LONG_NAME_1
+name: y
+destroyItem: no
+listOrder: 18
+requires: [y]
+lookup: y
+unlocks: [STR_LONG_NAME_1, y]
+needItem: true
+getOneFree: [STR_LONG_NAME_1, STR_ALPHA, true, a b]
+getOneFree: [é, STR_LONG_NAME_1]
+%%%%
+region STR_R
+missionRegion: é
+regionWeight: 0x10
+areas: [[120.230, 133, 0, 0], [1e2, 150.576, 0, -3.9]]
+type: 7
+missionWeights: {}
+cost: -1
+%%%%
+manufacture STR_ITEM 4
+time: 2147483647
+name: x
+requires: [STR_LONG_NAME_1]
+requiredItems: {STR_GAMMA: 0x10, STR_GAMMA: 2147483647, é: 174}
+listOrder: 39
+category: é
+space: 0
+cost: 10881
+%%%%
+research STR_Q 9
+lookup: STR_GAMMA
+listOrder: 0x10
+dependencies: [x, null]
+needItem: false
+name: é
+cost: -5
+points: -16308
+getOneFree: []
+requires: [y, 7]
+unlocks: [x, y]
+%%%%
+trajectory STR_T
+groundTimer: 2
+waypoints: [[4, 4, 15], [3, 0, 76], [5, 3, 91], [3, 2, 22]]
+%%%%
+inventory 8
+x: -4
+costs: {7: 85177, y: 5}
+listOrder: 8
+y: 39
+id: null
+slots: [1, 2]
+%%%%
+research STR_Q 8
+requires: []
+getOneFree: [STR_LONG_NAME_1, 7]
+unlocks: abc
+needItem: false
+name: a b
+dependencies: [7, é, a b, STR_LONG_NAME_1]
+listOrder: abc
+destroyItem: no
+cost: 25
+cutscene: true
+lookup: STR_BETA
+%%%%
+inventory 6
+listOrder: -7673
+costs: {}
+slots:
+x: 7
+y: 264
+id: a b
+type: -1
+%%%%
+trajectory STR_T
+groundTimer: -1
+waypoints: [[0, 2, 13], [3, 3, 93], [6, 1, 71]]
+id: é
+%%%%
+region STR_R
+cost: 34
+areas: []
+missionZones: []
+type: null
+%%%%
+country STR_X
+labelLat: -28.74
+type: é
+labelLon: 130.5
+fundingBase: 3
+areas: []
+%%%%
+trajectory STR_T
+waypoints: [[0, 2, 79], [1, 0, 27], [3, 4, 31]]
+id: a b
+groundTimer: 210
+%%%%
+manufacture STR_OTHER 3
+cost: 52722
+name: a b
+category: 7
+space: 0x10
+space: 5
+requiredItems: {}
+requires: ~
+producedItems: {k: v}
+producedItems: ~
+%%%%
+country STR_X
+fundingCap: -23246
+labelLat: 60.515
+type: a b
+%%%%
+inventory 0
+listOrder: 5
+x: 2147483647
+y: -2
+costs: {é: -1725}
+costs: {null: 127, true: 81, STR_BETA: 26}
+%%%%
+manufacture STR_ITEM 8
+listOrder: 3
+producedItems: [1, 2]
+requires: []
+category: STR_ALPHA
+name: null
+cost: 0
+time: 2147483647
+requiredItems: {STR_GAMMA: 33, STR_LONG_NAME_1: 12, STR_ALPHA: 1}
+%%%%
+country STR_X
+fundingCap: 0x10
+labelLat: 127.81
+labelLon: -153.891
+type: STR_ALPHA
+areas: {k: v}
+%%%%
+country STR_USA
+fundingCap: 0
+labelLon: abc
+areas: []
+type: a b
+fundingBase: 2
+%%%%
+manufacture STR_OTHER 8
+requires: []
+listOrder: 2147483647
+producedItems: {a b: 1, STR_GAMMA: 2147483647}
+category: STR_LONG_NAME_1
+space: -1
+time: 26
+cost: 4
+requiredItems: {STR_GAMMA: -77774, y: 243}
+%%%%
+region STR_R
+missionWeights: {7: 36, x: 2}
+areas: [[1e2, 103.5, 69.133, 50.40, 187]]
+missionRegion: null
+regionWeight: 211
+type: é
+type: y
+cost: 20
+%%%%
+region STR_R
+missionWeights: {é: 36, true: 44}
+areas: [[132, 266.5, 0, 1e2], [-153.342, 80.94, 1.35, -1.16]]
+regionWeight: 1
+type: STR_BETA
+cost: 32181
+cost: 163
+missionZones: ~
+%%%%
+region STR_R
+missionRegion: y
+type: true
+missionZones: [[]]
+cost: -1
+areas: [[246.5, 191.5, 0, 6, 203], [-75.47, 104.5, 0, -28.723]]
+%%%%
+race STR_RACE
+members: {k: v}
+%%%%
+research STR_Q 5
+cutscene: é
+requires: [STR_LONG_NAME_1, é, a b, 7]
+needItem:
+getOneFree: [y]
+name: y
+destroyItem:
+lookup: STR_LONG_NAME_1
+unlocks: [STR_BETA, é]
+points: 13
+points: 22
+cost: 30
+dependencies: [y, true]
+listOrder: 2
+%%%%
+research STR_TOPIC 5
+name: STR_BETA
+cost: 16
+needItem: no
+listOrder: 0x10
+cutscene: true
+lookup: STR_LONG_NAME_1
+requires: [STR_GAMMA, x, 7]
+requires: [STR_BETA, y, STR_ALPHA]
+getOneFree: [null]
+unlocks: [STR_LONG_NAME_1, true, null, null]
+%%%%
+research STR_TOPIC 4
+requires: [STR_BETA, x, a b, é]
+needItem: ~
+points: 2147483647
+dependencies: [é, x, STR_BETA]
+cost: -1
+unlocks: [a b, a b]
+destroyItem: true
+listOrder: 95366
+lookup: true
+name: a b
+%%%%
+race STR_RACE
+members: [y, null]
+%%%%
+trajectory STR_T
+groundTimer: abc
+waypoints: []
+id: abc
+%%%%
+inventory 0
+slots: [[2, 2]]
+costs: {y: 36, STR_LONG_NAME_1: 5}
+type: 26
+x: -1
+id: a b
+y: -4910
+y: -1
+%%%%
+manufacture STR_ITEM 9
+time: -2
+time: -1
+name: null
+category: é
+requires: []
+producedItems: {}
+cost: 2147483647
+space: 2147483647
+%%%%
+manufacture STR_OTHER 1
+name: true
+category: STR_LONG_NAME_1
+listOrder: 14
+requires: []
+time: 32
+producedItems: {STR_ALPHA: 0x10, é: 88653, STR_BETA: -3}
+space:
+cost: ~
+requiredItems: {}
+%%%%
+manufacture STR_OTHER 4
+listOrder: 16
+requires: []
+category: STR_LONG_NAME_1
+cost: 74934
+producedItems: {}
+requiredItems: {}
+requiredItems: {STR_ALPHA: 0x10, é: -1, a b: -98825}
+name: 7
+space: 33
+time: 0
+%%%%
+race STR_RACE
+id: x
+members: [STR_LONG_NAME_1]
+%%%%
+trajectory STR_T
+id: 7
+groundTimer: 0x10
+%%%%
+country STR_X
+fundingBase: 43
+labelLon: 33
+type: true
+labelLat: 0
+fundingCap: 0x10
+areas: [[0, 290.5, -40.17, 0], [-84.51, 1e2, 1e2, -128.561], [0, 0, 197.5, -121]]
+%%%%
+research STR_TOPIC 6
+getOneFree: []
+listOrder: 28
+unlocks: [STR_LONG_NAME_1]
+needItem: true
+cost: 173
+name: STR_ALPHA
+requires: [x, true, é, null]
+dependencies: [STR_BETA]
+%%%%
+country STR_X
+type: 7
+fundingCap: 2147483647
+labelLon: 151.816
+areas: [[-10.294, 26, 17.98, -67.72]]
+labelLat: 56.22
+labelLat: 248.5
+%%%%
+inventory 7
+x: 7
+y: 0x10
+type: 2147483647
+slots: [[4, 0]]
+id: STR_LONG_NAME_1
+costs: {y: 36448, a b: 4, 7: 39088}
+listOrder: -1
+%%%%
+race STR_RACE
+id: null
+members: [STR_BETA, STR_ALPHA, null, STR_ALPHA]
+%%%%
+country STR_X
+areas: [[3.53, 0, 166, 0]]
+labelLon: 1e2
+type: x
+fundingBase: 2147483647
+fundingCap: 8
+%%%%
+race STR_RACE
+members: [STR_GAMMA, STR_LONG_NAME_1, STR_ALPHA]
+id: abc
+%%%%
+research STR_Q 3
+needItem: no
+dependencies: [a b, 7, y, null]
+listOrder: {k: v}
+listOrder: 2147483647
+unlocks: [true]
+cost: 31
+name: é
+lookup: true
+destroyItem: true
+cutscene: true
+points: 64606
+points: 33
+%%%%
+region STR_R
+regionWeight: 1
+missionRegion: ~
+missionWeights: {x: 7}
+type: STR_GAMMA
+missionZones: [[[73.4, 1e2, -164, 139], [0, 0, 322.5, 9.603]], [[149, 153.165, 204.5, 1e2, 4, null]]]
+cost: 21
+areas: [[1e2, -177, 0.60, 290.5, 23], [1e2, 153, 1e2, 248.5], [-61.669, 0, 82.5, 1e2]]
+%%%%
+research STR_TOPIC 9
+lookup: a b
+getOneFree: [STR_BETA, STR_GAMMA, null, y]
+cutscene: STR_GAMMA
+cost: 2147483647
+needItem: true
+points: 72048
+unlocks: []
+requires: [y, STR_ALPHA, STR_LONG_NAME_1]
+requires: [y]
+%%%%
+race STR_RACE
+members: [STR_GAMMA, y, 7, x]
+id: ~
+%%%%
+race STR_RACE
+id: null
+%%%%
+region STR_R
+areas: [[-40.50, -56.54, 339.5, 0]]
+missionRegion: STR_ALPHA
+type: STR_LONG_NAME_1
+missionZones: []
+missionWeights: {STR_ALPHA: 42, STR_BETA: 34, null: 30}
+regionWeight: 32
+cost: -1
+%%%%
+region STR_R
+missionRegion: STR_GAMMA
+missionWeights: {a b: 16, 7: 40}
+regionWeight: 0x10
+type: STR_ALPHA
+cost: 2147483647
+%%%%
+inventory 3
+y: 0x10
+slots: [[0, 2], [6, 3], [0, 2], [7, 5], [5, 5]]
+costs: {STR_BETA: 2147483647}
+type: 0x10
+x: 24021
+id: STR_GAMMA
+listOrder: 3
+%%%%
+trajectory STR_T
+waypoints: []
+waypoints: [[2, 0, 51], [0, 2, 43], [6, 3, 11]]
+id: a b
+%%%%
+race STR_RACE
+id: x
+%%%%
+country STR_X
+areas: [[0, 0, -1.537, 0], [141.5, 59.14, -100, 49.1, 51], [0, 1e2, 330.5, 256.5]]
+labelLon: -28
+fundingCap: abc
+labelLat: 1e2
+%%%%
+manufacture STR_ITEM 2
+cost: 58817
+requires: abc
+name: 7
+space: 169
+requiredItems: {null: 29}
+category: STR_ALPHA
+time: 5
+listOrder: 2147483647
+%%%%
+inventory 4
+y: 2
+type: -1
+x: 16
+x: 223
+costs: {}
+slots: [[5, 1], [8, 3], [8, 0]]
+listOrder: 44299
+%%%%
+trajectory STR_T
+waypoints: [[3, 2, 67], [6, 1, 38], [6, 0, 16]]
+id: STR_GAMMA
+groundTimer: ~
+%%%%
+manufacture STR_OTHER 0
+name: a b
+time: 2147483647
+producedItems: {é: 9, 7: 294, 7: -91922}
+space: 0
+category: 7
+requires: []
+listOrder: -29061
+cost: 25
+%%%%
+trajectory STR_T
+waypoints: [[5, 1, 56], [1, 0, 71]]
+groundTimer: 180
+%%%%
+country STR_X
+labelLat: -27.50
+fundingBase: 0
+labelLon: 1e2
+labelLon: -59.59
+areas: []
+fundingCap: 4
+%%%%
+race STR_RACE
+id: true
+members: []
+%%%%
+research STR_TOPIC 3
+getOneFree: [STR_BETA, STR_BETA]
+getOneFree: [x, STR_GAMMA]
+lookup: STR_GAMMA
+requires: [é, STR_ALPHA, STR_ALPHA, y]
+needItem: false
+cutscene: STR_GAMMA
+cost: 121
+destroyItem: false
+listOrder: abc
+dependencies: [true, x, é]
+unlocks: [STR_LONG_NAME_1, 7, é, é]
+points: 2
+%%%%
+manufacture STR_ITEM 6
+requiredItems: abc
+name: STR_GAMMA
+producedItems: {null: -1}
+requires: [y, é, STR_BETA]
+cost: 35
+time: -1
+listOrder: 5
+category: null
+%%%%
+manufacture STR_OTHER 5
+requires: []
+space: 2
+producedItems: {7: 0x10, null: -1}
+cost: 78856
+name: STR_ALPHA
+requiredItems: {}
+listOrder: 0
+category: é
+%%%%
+research STR_TOPIC 0
+needItem: no
+lookup: [1, 2]
+destroyItem: no
+dependencies: [7]
+name: x
+unlocks: [STR_ALPHA, x, STR_ALPHA]
+points: -1
+getOneFree: [null]
+cutscene: x
+cost: 2
+requires: []
+%%%%
+region STR_R
+missionZones: [[[0, 1e2, 165.5, 139.5, -1, true], [54.15, -77.37, -43.12, 0, 2147483647, STR_BETA]], []]
+type: STR_LONG_NAME_1
+regionWeight: 181
+areas: []
+missionWeights: {null: 17, a b: 42}
+missionRegion: x
+%%%%
+trajectory STR_T
+groundTimer: 7
+id: STR_LONG_NAME_1
+waypoints: [[3, 2, 17], [5, 3, 90]]
+%%%%
+race STR_RACE
+members: [y]
+%%%%
+region STR_R
+missionWeights: {true: 43, true: 2, null: 42}
+type: x
+type: true
+areas: [[97.5, -46.388, 52, -79.260], [126.217, 1e2, 1e2, 0], [0, 171.5, 1e2, -124]]
+regionWeight: {k: v}
+missionZones: []
+%%%%
+region STR_R
+type: é
+areas: [[-63.606, 1e2, -20.67, -73.56, 2147483647]]
+missionZones: [[[1e2, 1e2, 0, -122], [36.18, 0, 142.858, -21.540, 29, x]]]
+regionWeight: -8918
+cost: 219
+missionRegion: 7
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+id: STR_BETA
+waypoints: [[1, 0, 62]]
+%%%%
+research STR_Q 4
+cost: 29
+dependencies: [true, STR_ALPHA, x]
+dependencies: []
+lookup: y
+needItem: no
+points: -1
+listOrder: -1
+destroyItem: true
+cutscene: true
+cutscene: a b
+name: STR_GAMMA
+%%%%
+inventory 0
+slots: abc
+listOrder: 2147483647
+x: 4
+type: ~
+costs: {a b: -1}
+y: 21
+%%%%
+research STR_Q 4
+listOrder: 2147483647
+lookup: STR_LONG_NAME_1
+lookup: STR_LONG_NAME_1
+name: 7
+cutscene: STR_ALPHA
+getOneFree: [true, y]
+requires: []
+points: 2147483647
+needItem: false
+unlocks: []
+%%%%
+race STR_RACE
+members: [STR_GAMMA, é]
+%%%%
+trajectory STR_T
+waypoints: []
+id: null
+groundTimer: 0x10
+%%%%
+race STR_RACE
+members: [null]
+id: STR_BETA
+id: a b
+%%%%
+trajectory STR_T
+waypoints: [[3, 1, 36], [5, 2, 30]]
+id: STR_GAMMA
+groundTimer: 30
+%%%%
+race STR_RACE
+members: []
+id: x
+%%%%
+manufacture STR_ITEM 5
+requiredItems: {x: 38905, é: -1}
+listOrder: {k: v}
+time: -82561
+category: STR_BETA
+space: -57879
+producedItems: {STR_GAMMA: -1, STR_ALPHA: 39}
+requires: [null, STR_BETA]
+name: null
+cost: 43586
+%%%%
+region STR_R
+regionWeight: 14263
+missionWeights: {STR_BETA: 25, é: 18}
+missionRegion: null
+missionZones: [[[114.411, 125.920, 18, 83.443], [11, 321.5, 1e2, 1e2]], [[-56.66, 10.62, 16.527, -134.755]]]
+cost: 6102
+%%%%
+region STR_R
+type: 7
+cost: 0x10
+missionWeights: {é: 11}
+missionRegion: STR_BETA
+%%%%
+region STR_R
+missionRegion: null
+missionZones: [[[-5, 1e2, -72, 0]]]
+type: STR_BETA
+cost: 12
+areas: [[12, 1e2, 0, -86.843], [48.62, 0, 37.5, -52, -1]]
+missionWeights: {STR_ALPHA: 19}
+%%%%
+race STR_RACE
+members: [true, x, null]
+%%%%
+research STR_Q 3
+points: 0x10
+getOneFree: [true, y, y]
+cost: -1
+dependencies: [null]
+needItem: {k: v}
+destroyItem: true
+listOrder: 67758
+requires: [y, STR_LONG_NAME_1, STR_ALPHA]
+cutscene: null
+cutscene: {k: v}
+name: true
+lookup: é
+%%%%
+research STR_Q 0
+cost: -84918
+destroyItem: true
+unlocks: []
+dependencies: [null, a b]
+requires: []
+listOrder: abc
+lookup: STR_BETA
+getOneFree: [STR_BETA, STR_GAMMA, true, STR_BETA]
+name: true
+points: -1
+needItem: no
+%%%%
+race STR_RACE
+members: [7, STR_GAMMA, 7, y]
+id: y
+%%%%
+trajectory STR_T
+groundTimer: 2147483647
+id: a b
+%%%%
+trajectory STR_T
+id: STR_ALPHA
+waypoints: [[6, 3, 21]]
+%%%%
+race STR_RACE
+members: [true, STR_GAMMA, STR_ALPHA, STR_GAMMA]
+id: STR_GAMMA
+%%%%
+trajectory STR_T
+waypoints: [[6, 4, 100], [1, 0, 10], [6, 4, 9], [6, 2, 21]]
+groundTimer: 24
+id: true
+%%%%
+trajectory STR_T
+waypoints: [[1, 3, 80], [0, 1, 83]]
+id: 7
+groundTimer: 2147483647
+%%%%
+race STR_RACE
+members: [7, true, STR_ALPHA]
+id: STR_GAMMA
+%%%%
+trajectory STR_T
+waypoints: [[6, 0, 88], [3, 4, 84], [4, 2, 37], [3, 1, 45]]
+waypoints: [[5, 4, 100], [2, 0, 20]]
+id: é
+groundTimer: 2147483647
+%%%%
+manufacture STR_ITEM 8
+producedItems: {y: 3, a b: 89, é: 36}
+producedItems: {x: 2, null: 2147483647}
+requires: [STR_BETA, null, STR_BETA]
+requires: [STR_ALPHA]
+listOrder: 0x10
+name: 7
+category: STR_GAMMA
+cost: 0x10
+time: 0x10
+requiredItems: {STR_BETA: 2147483647}
+space: 5
+%%%%
+manufacture STR_OTHER 9
+name: x
+listOrder: 2147483647
+time: 204
+producedItems: {true: 2147483647, é: -1}
+space: 2
+requires: [y, 7, é]
+requiredItems: {a b: 3, true: 14}
+cost: 19
+category: y
+%%%%
+inventory 9
+y: 7
+id: true
+slots: [[5, 0], [7, 3], [7, 2]]
+x: -1
+costs: [1, 2]
+type: 26
+%%%%
+race STR_RACE
+id: y
+members: [7, 7, y, x]
+%%%%
+trajectory STR_T
+id: x
+waypoints: [[6, 2, 84], [0, 1, 90], [0, 3, 50], [6, 3, 9]]
+groundTimer: 0x10
+%%%%
+country STR_X
+fundingBase: 2147483647
+type: STR_BETA
+labelLon: -88.75
+areas: [[223.5, 0, 181.5, 57, 2147483647]]
+labelLat: -174.990
+%%%%
+inventory 7
+type: 20
+y: -1
+listOrder: 0x10
+costs: {true: 0x10, STR_GAMMA: 1}
+id: abc
+%%%%
+region STR_R
+type: true
+missionWeights: {STR_ALPHA: 2}
+missionWeights: {}
+regionWeight: 3
+missionRegion: true
+missionRegion: null
+cost:
+areas: []
+missionZones: []
+%%%%
+manufacture STR_OTHER 5
+time: 2147483647
+category: STR_BETA
+cost: abc
+cost: 0x10
+name: é
+requiredItems: {k: v}
+%%%%
+region STR_R
+type: é
+missionZones: [[[-14.575, 0, 0, 0, 22, STR_ALPHA], [-97, 1e2, 0, 3.44, 0x10, true]], [[0, 0, 0, -77.821]]]
+cost: 1428
+missionRegion: STR_GAMMA
+missionWeights: {STR_BETA: 0, STR_BETA: 27}
+areas: [[254.5, -19, 0, 1e2], [0, 1e2, 0, 65.5]]
+%%%%
+country STR_X
+labelLon: 1e2
+fundingCap: 1
+labelLat: 318.5
+%%%%
+research STR_Q 2
+lookup: é
+cutscene: x
+destroyItem: no
+unlocks: [STR_GAMMA, a b, STR_BETA]
+requires: [STR_GAMMA]
+dependencies: [é]
+name: x
+points: 12
+getOneFree: [y, STR_ALPHA]
+listOrder: abc
+needItem: true
+%%%%
+country STR_X
+areas: [[134.898, 0, 124.286, -25]]
+type: y
+fundingBase: -63406
+labelLat: -46.108
+fundingCap: 29
+%%%%
+inventory 6
+id: y
+y: 2147483647
+costs:
+x: 80789
+type: 2147483647
+slots: [[4, 4], [6, 2], [4, 4], [8, 2], [1, 2], [3, 3]]
+slots: []
+%%%%
+research STR_Q 7
+cost: abc
+needItem: true
+lookup: STR_GAMMA
+points: 229
+unlocks: [STR_GAMMA]
+dependencies: [STR_LONG_NAME_1, STR_ALPHA, null]
+listOrder: 0
+getOneFree: []
+cutscene: STR_ALPHA
+%%%%
+region STR_R
+missionWeights: {y: 41, STR_LONG_NAME_1: 44}
+areas: [[-79.37, 163.178, -38.93, 0]]
+regionWeight: -33461
+missionRegion: STR_BETA
+cost: -1
+missionZones: [[[7.5, 86, 1e2, 0], [0, 198.5, 1e2, 0]]]
+%%%%
+region STR_R
+missionZones: [[], [[-94, 56, 0, 0, 4, a b], [1e2, 0, 177.5, 1e2]]]
+regionWeight: 0x10
+regionWeight: 4
+missionWeights: {true: 44}
+%%%%
+trajectory STR_T
+waypoints: [[5, 0, 45], [6, 2, 16], [0, 4, 79]]
+waypoints: [[4, 3, 55], [1, 4, 15], [5, 4, 94], [2, 2, 83]]
+groundTimer: -1
+groundTimer: -1
+id: a b
+id: a b
+%%%%
+research STR_TOPIC 8
+cost: -23778
+lookup: x
+requires: [STR_LONG_NAME_1, a b]
+dependencies: [null, null]
+needItem: false
+listOrder: 9
+unlocks: [é, STR_BETA]
+points: 1
+points: 2147483647
+getOneFree: [a b]
+destroyItem: true
+cutscene: é
+%%%%
+race STR_RACE
+id: null
+members: [STR_BETA]
+%%%%
+inventory 2
+y: 72
+x: 7
+listOrder: -4
+costs: {7: -1, true: 36}
+%%%%
+inventory 0
+slots: [[3, 0], [4, 0]]
+x: 18
+y: 0x10
+listOrder: 1
+costs: {STR_ALPHA: 292, STR_LONG_NAME_1: 2147483647, STR_LONG_NAME_1: -1}
+%%%%
+region STR_R
+regionWeight: 236
+cost: 2147483647
+missionWeights: {}
+missionZones: [[]]
+missionZones: [[[177.5, 57.98, 81, 0, 42, STR_BETA], [-28.230, 4.614, 105.679, -85.97]], [[-139, 59.564, 41.720, -26, -58115, é]]]
+type: y
+missionRegion: STR_LONG_NAME_1
+areas: []
+%%%%
+inventory 9
+listOrder: 38
+costs: {STR_LONG_NAME_1: 12, é: -73353}
+type: -3
+y: 39
+id: STR_GAMMA
+x: 1
+%%%%
+country STR_USA
+labelLon: 74.24
+fundingBase:
+fundingCap: 22
+areas:
+labelLat: -61
+%%%%
+race STR_RACE
+id: 7
+members: [y]
+%%%%
+research STR_Q 2
+name: true
+getOneFree: [x, y]
+requires: ~
+cost: 0x10
+needItem: false
+cutscene: 7
+dependencies: []
+destroyItem: true
+listOrder: 0x10
+lookup: y
+%%%%
+race STR_RACE
+members: [STR_BETA, y, x, true]
+id: null
+%%%%
+race STR_RACE
+id: a b
+members: [y, x, x, STR_LONG_NAME_1]
+members: [x, STR_GAMMA, é, STR_ALPHA]
+%%%%
+manufacture STR_OTHER 8
+cost: 0x10
+category: STR_BETA
+time: -5
+producedItems: {y: -1, null: 28, a b: -1}
+listOrder: -1
+requiredItems: {}
+space: 2147483647
+%%%%
+inventory 2
+y: 3
+listOrder: 16
+type: 19
+id: STR_ALPHA
+costs: {STR_BETA: 26, a b: 0, 7: -1}
+x: -1
+%%%%
+region STR_R
+areas: [[0, 1, 0, -168, 87687], [0, 64.5, -143.998, 1e2]]
+missionWeights: {STR_GAMMA: 5, a b: 5, a b: 9}
+type: true
+regionWeight: 2147483647
+cost: [1, 2]
+missionRegion: 7
+missionZones: []
+%%%%
+manufacture STR_ITEM 2
+requiredItems:
+space: 2147483647
+listOrder: 93603
+category: STR_LONG_NAME_1
+time: 5464
+requires: []
+producedItems: {null: -1, true: 0x10}
+cost: 188
+name: x
+name: 7
+%%%%
+race STR_RACE
+id: STR_BETA
+%%%%
+trajectory STR_T
+groundTimer: 172
+%%%%
+inventory 8
+slots: [[6, 4], [5, 0], [0, 0], [4, 1]]
+costs: {}
+y: -1
+type: -5
+%%%%
+race STR_RACE
+id: x
+%%%%
+research STR_Q 4
+needItem: true
+requires: [STR_BETA, 7, STR_BETA, STR_LONG_NAME_1]
+listOrder: 2147483647
+cost: -1
+getOneFree: [é]
+lookup: 7
+unlocks: [STR_BETA, null]
+points: 32
+dependencies: []
+destroyItem: true
+%%%%
+inventory 3
+costs: {true: 2147483647}
+id: {k: v}
+id: x
+listOrder: 3
+x: 2147483647
+type: {k: v}
+slots: [[2, 3], [2, 1], [4, 0], [8, 5], [4, 4]]
+slots: [[2, 1], [1, 5], [0, 4]]
+y: -1
+%%%%
+race STR_RACE
+id: STR_LONG_NAME_1
+members: [STR_BETA, x, STR_ALPHA]
+%%%%
+manufacture STR_OTHER 9
+name: x
+space: 266
+category: a b
+time: -33285
+cost: 6
+requiredItems: {true: 2147483647, a b: 1, STR_ALPHA: -1}
+listOrder: 2147483647
+listOrder: -1451
+requires: [null, STR_BETA]
+%%%%
+race STR_RACE
+members: [1, 2]
+%%%%
+trajectory STR_T
+id: true
+waypoints: [[5, 4, 93]]
+%%%%
+research STR_Q 4
+points: 43
+dependencies: [null]
+unlocks: []
+needItem: true
+getOneFree: [é]
+name: null
+requires: [STR_LONG_NAME_1, null, x]
+destroyItem: no
+lookup: null
+listOrder: 103
+%%%%
+inventory 8
+id: x
+y: 21
+slots: [[8, 1], [2, 5], [1, 1]]
+listOrder: 0x10
+x: 0x10
+costs: {STR_ALPHA: -1}
+%%%%
+trajectory STR_T
+waypoints: [[3, 1, 45], [0, 0, 43]]
+groundTimer: 2147483647
+id: STR_ALPHA
+%%%%
+region STR_R
+type: 7
+missionRegion: y
+areas: [[11.72, 1e2, -57.70, 1e2], [2.41, 128.902, 0, -54], [61.729, -71, 291.5, -164]]
+regionWeight: -73299
+missionZones: []
+%%%%
+inventory 1
+type: 17
+slots: [[7, 1], [2, 0], [6, 3], [3, 1], [7, 1], [0, 3]]
+listOrder: 2147483647
+listOrder: 2147483647
+id: null
+y: 2
+x: 13843
+%%%%
+trajectory STR_T
+waypoints: [[0, 2, 99], [3, 0, 78], [6, 0, 80]]
+waypoints: [[0, 2, 19]]
+id: STR_BETA
+groundTimer: 41528
+%%%%
+research STR_Q 7
+dependencies: [STR_ALPHA]
+dependencies: [null, x, STR_ALPHA, null]
+needItem: true
+lookup: true
+lookup: null
+destroyItem: true
+getOneFree: [STR_BETA, STR_GAMMA]
+listOrder: 24
+%%%%
+country STR_X
+labelLat: 1e2
+type: y
+fundingCap: 15
+labelLon: {k: v}
+areas: [[1e2, -48.541, -120, 1e2]]
+areas: abc
+fundingBase: -4
+%%%%
+country STR_X
+fundingCap: 193
+fundingBase: 241
+areas: []
+labelLon: 0
+labelLat: 25.76
+type: STR_LONG_NAME_1
+%%%%
+country STR_USA
+type: STR_ALPHA
+areas: [[1e2, 1e2, 110.5, 31.89], [42.1, 1e2, -75.15, 1e2], [-18.982, -104, 20.12, -110.845]]
+labelLon: 1e2
+fundingBase: [1, 2]
+%%%%
+country STR_USA
+fundingBase: 3
+labelLon: ~
+labelLat: 169.5
+fundingCap: -5
+%%%%
+region STR_R
+type: STR_GAMMA
+areas: []
+missionWeights: {true: 7}
+missionRegion: y
+regionWeight: -1
+%%%%
+country STR_X
+type: y
+labelLon: abc
+labelLat: 0
+fundingBase: 10
+%%%%
+region STR_R
+missionRegion: y
+missionZones: []
+areas: [[-169.259, -65.86, 45.83, 0], [62.14, 59.55, 0, 1e2], [-10, -67.40, 40.44, -144]]
+type: 7
+missionWeights: {k: v}
+missionWeights: {x: 49, STR_BETA: 11, x: 42}
+%%%%
+trajectory STR_T
+waypoints: [[5, 1, 90], [2, 4, 68], [1, 0, 61]]
+id: STR_BETA
+%%%%
+region STR_R
+type: 7
+cost: 2147483647
+missionRegion: STR_GAMMA
+areas: []
+missionWeights: {x: 17, STR_ALPHA: 26, null: 35}
+regionWeight: 2147483647
+%%%%
+country STR_USA
+fundingCap: 22
+fundingBase: 2147483647
+labelLat: -116.692
+labelLon: 0
+areas: [[142.15, 336.5, 39.5, -139.734], [114.5, 27.446, 1e2, 90.405], [-139, 0, 21.5, 0, 247]]
+type: STR_GAMMA
+%%%%
+inventory 7
+y: 21
+slots: [[6, 4], [0, 0], [8, 4], [5, 2]]
+type: -1
+id: é
+costs: {é: 0}
+%%%%
+trajectory STR_T
+groundTimer: 28
+id: STR_GAMMA
+id: abc
+waypoints: [[0, 2, 34], [1, 1, 9]]
+%%%%
+race STR_RACE
+id: null
+%%%%
+country STR_X
+areas: [[79, -112.609, 1e2, 0, 2147483647], [-163, 0, 1e2, 349.5]]
+labelLon: 96
+labelLat: 106.5
+labelLat: -21.93
+fundingBase: 30
+fundingCap: 17
+type: é
+%%%%
+research STR_TOPIC 2
+getOneFree: ~
+cutscene: null
+name: [1, 2]
+cost: 18
+lookup: é
+listOrder: abc
+destroyItem: true
+%%%%
+country STR_X
+fundingCap: 0x10
+labelLat: 1e2
+areas: ~
+fundingBase: -1
+type: x
+labelLon: -105.280
+%%%%
+country STR_USA
+fundingCap: -1
+fundingCap: -1
+areas: []
+fundingBase: 122
+labelLon: 154
+%%%%
+region STR_R
+missionRegion: a b
+missionWeights: {7: 2}
+missionZones: []
+cost: -1
+regionWeight: -4
+areas: ~
+type: é
+%%%%
+trajectory STR_T
+groundTimer: 30
+waypoints: [[2, 3, 8], [5, 3, 63], [5, 0, 68], [6, 4, 13]]
+%%%%
+inventory 1
+slots: [[7, 4], [4, 1], [3, 2]]
+type: -63575
+x: 0x10
+y: -1
+id: null
+%%%%
+inventory 0
+listOrder: 0x10
+y:
+id: STR_GAMMA
+slots: [[5, 2], [4, 3]]
+%%%%
+trajectory STR_T
+waypoints: [[3, 0, 86], [6, 3, 3], [5, 3, 26]]
+id: 7
+groundTimer: 2147483647
+%%%%
+inventory 8
+costs: {null: 2147483647}
+y: 11426
+x: 1
+id: a b
+type: [1, 2]
+%%%%
+trajectory STR_T
+waypoints: [[3, 4, 78]]
+groundTimer: 4
+id: null
+%%%%
+country STR_X
+labelLon: -165
+type: null
+fundingBase: 17
+areas: [[-161.680, 1e2, 62.291, -80.24]]
+labelLat: 1e2
+fundingCap: 0x10
+%%%%
+region STR_R
+regionWeight: -1
+missionRegion: STR_LONG_NAME_1
+missionZones: [[[57.5, 1e2, 4.60, -130, 28, x]]]
+missionZones: [[[8.5, -162.379, 0, 38.171], [-41.40, 0, -13.226, -46.26]]]
+areas: [[270.5, -73.9, 0, 35.394], [266.5, 79.5, -67, 1e2], [-36.960, 1e2, 138, -168.683]]
+%%%%
+research STR_TOPIC 5
+requires:
+destroyItem: false
+points: 15
+cost: 32
+dependencies: [null, STR_LONG_NAME_1, é]
+unlocks: [null]
+unlocks: [x, STR_LONG_NAME_1, x, null]
+needItem: true
+needItem: false
+%%%%
+region STR_R
+missionWeights: {STR_LONG_NAME_1: 40, STR_GAMMA: 9, true: 46}
+missionZones: [[]]
+cost: -1
+type: null
+missionRegion: null
+regionWeight: 60
+areas: [1, 2]
+%%%%
+trajectory STR_T
+groundTimer: 0x10
+id: null
+waypoints: [[0, 1, 8], [6, 0, 45], [3, 1, 57], [2, 3, 31]]
+%%%%
+race STR_RACE
+id: x
+members: ~
+%%%%
+manufacture STR_OTHER 9
+cost: 33
+time: 0x10
+space: -2
+requires: [null, true, true]
+name: STR_LONG_NAME_1
+category: STR_LONG_NAME_1
+%%%%
+race STR_RACE
+id: 7
+members: [STR_LONG_NAME_1, é]
+%%%%
+region STR_R
+missionZones: []
+missionZones: []
+areas: []
+missionRegion: é
+regionWeight: 16
+missionWeights: {}
+type: 7
+%%%%
+research STR_Q 8
+getOneFree: []
+needItem: false
+listOrder: -1
+points: 4
+requires: [null]
+name: 7
+destroyItem: true
+dependencies: [STR_LONG_NAME_1, STR_ALPHA, é, STR_LONG_NAME_1]
+unlocks: [STR_ALPHA, null, true, 7]
+cost: 205
+%%%%
+race STR_RACE
+members: [STR_GAMMA, y]
+id: 7
+%%%%
+race STR_RACE
+members: [STR_LONG_NAME_1, STR_LONG_NAME_1]
+id: a b
+%%%%
+trajectory STR_T
+id: null
+waypoints: []
+groundTimer: -2
+groundTimer: -75092
+%%%%
+race STR_RACE
+members: [STR_ALPHA, true]
+id: a b
+%%%%
+research STR_TOPIC 2
+listOrder: 32
+lookup: null
+destroyItem: true
+name: y
+dependencies: [STR_ALPHA, 7, STR_ALPHA]
+needItem: no
+requires: [true, é, STR_LONG_NAME_1, STR_ALPHA]
+points: 0x10
+cutscene: é
+%%%%
+region STR_R
+type: a b
+areas: [[-131, 6.30, -101, -150], [0, 105.5, 10.20, -27.318]]
+missionZones:
+regionWeight: -4
+regionWeight: -30675
+%%%%
+region STR_R
+regionWeight: 2147483647
+missionRegion: STR_BETA
+missionZones: [[], []]
+missionWeights: {}
+cost: 231
+type: é
+%%%%
+manufacture STR_ITEM 8
+space: 28
+requires: []
+listOrder: 0x10
+producedItems: {STR_ALPHA: 22, null: 0x10, STR_ALPHA: 226}
+time: 0x10
+name: STR_ALPHA
+category: null
+cost: -1
+%%%%
+race STR_RACE
+id: STR_ALPHA
+%%%%
+country STR_USA
+labelLon: {k: v}
+fundingBase: 0x10
+areas: []
+fundingCap: {k: v}
+%%%%
+manufacture STR_OTHER 4
+space: -54700
+space: 57290
+producedItems: {true: 2147483647, STR_LONG_NAME_1: 7475, STR_GAMMA: 0x10}
+cost: [1, 2]
+listOrder: 1
+listOrder: 36933
+category: 7
+time: -43579
+requires: [x, 7, y]
+%%%%
+research STR_Q 1
+points: 0x10
+unlocks: [é, true, true]
+name: STR_GAMMA
+lookup: é
+cutscene: x
+requires: [STR_LONG_NAME_1, STR_GAMMA]
+destroyItem: false
+needItem: no
+cost: 10
+listOrder: 23
+listOrder: 13
+%%%%
+manufacture STR_OTHER 0
+time: 20
+requires: []
+name: STR_LONG_NAME_1
+producedItems: {null: 19400, y: 198, y: 2147483647}
+cost: 17
+%%%%
+inventory 7
+slots: [[8, 2], [4, 1]]
+type: 18
+x: {k: v}
+y: 0x10
+costs: {}
+%%%%
+trajectory STR_T
+id: y
+waypoints: []
+%%%%
+country STR_USA
+areas: []
+fundingBase: -1
+type: y
+labelLat: 1e2
+labelLon: ~
+fundingCap: 28
+%%%%
+trajectory STR_T
+waypoints: [[3, 0, 61], [2, 3, 86]]
+groundTimer: 2
+%%%%
+country STR_USA
+labelLon: 39.921
+areas: [[0, -52.97, 67.13, 78.22]]
+fundingBase: 112
+labelLat: 78.52
+fundingCap: 2147483647
+%%%%
+trajectory STR_T
+id: STR_LONG_NAME_1
+waypoints: [[5, 2, 35]]
+groundTimer: -1
+%%%%
+trajectory STR_T
+id: true
+waypoints: [[0, 3, 42], [3, 2, 0]]
+%%%%
+manufacture STR_OTHER 0
+name: true
+name: x
+category: STR_BETA
+time: -4
+time: 33
+producedItems: {k: v}
+producedItems: {7: -1}
+listOrder: 129
+cost: 3
+%%%%
+research STR_TOPIC 4
+getOneFree: [7, true, é]
+name: STR_GAMMA
+lookup: [1, 2]
+requires: [STR_GAMMA, true]
+destroyItem: true
+listOrder: 0
+dependencies: [y, 7, é]
+cost: 0x10
+%%%%
+trajectory STR_T
+groundTimer: -19493
+waypoints: []
+%%%%
+race STR_RACE
+id: a b
+members:
+%%%%
+inventory 7
+type: 0x10
+listOrder: 157
+x: -4
+y: 40
+costs: {}
+slots: [[1, 2], [1, 3], [1, 4], [8, 2]]
+id: é
+%%%%
+trajectory STR_T
+id: true
+groundTimer: -3
+waypoints: [[6, 0, 21]]
+%%%%
+trajectory STR_T
+waypoints: []
+id: é
+groundTimer: 0x10
+%%%%
+trajectory STR_T
+groundTimer: -1
+%%%%
+region STR_R
+areas: [[143.5, 19.93, 0, 28]]
+missionZones: ~
+regionWeight: 0x10
+missionWeights: {}
+cost: 0
+type: 7
+%%%%
+inventory 5
+slots: [[0, 3], [1, 0], [8, 3], [5, 4], [3, 5], [8, 4]]
+y: 19
+costs: [1, 2]
+type: 14
+id: STR_BETA
+listOrder: 0x10
+%%%%
+trajectory STR_T
+groundTimer: 39
+waypoints: [[6, 2, 10], [2, 3, 99], [0, 2, 96]]
+id: a b
+%%%%
+research STR_TOPIC 3
+cost: -1
+listOrder: 0
+dependencies: []
+destroyItem: no
+destroyItem: false
+name: x
+needItem: true
+lookup: null
+unlocks: [true, x, STR_BETA]
+%%%%
+inventory 6
+x: 0x10
+listOrder: -81123
+id: STR_ALPHA
+y: -83917
+type: 86096
+slots: [[6, 5], [7, 4], [8, 1], [0, 5], [2, 2]]
+%%%%
+country STR_USA
+fundingBase: 2147483647
+labelLon: 45.5
+areas: [[262.5, 0, 58.5, 43.815], [7.153, -111.1, 127.5, 0]]
+type: a b
+%%%%
+region STR_R
+missionWeights: {}
+regionWeight: 264
+regionWeight: ~
+type: STR_ALPHA
+missionZones: [[]]
+missionRegion: a b
+%%%%
+inventory 4
+costs: {a b: 38228}
+listOrder: 2147483647
+slots: [[2, 5], [1, 0]]
+y: [1, 2]
+id: true
+%%%%
+country STR_X
+labelLon: -124.546
+type: true
+fundingBase: 21
+areas: []
+fundingCap: 30
+%%%%
+manufacture STR_OTHER 2
+cost: 0x10
+requiredItems: {STR_BETA: 20, STR_BETA: 13, true: 2147483647}
+name: STR_ALPHA
+requires: [STR_LONG_NAME_1, true, a b, x]
+time: -1
+producedItems: {STR_LONG_NAME_1: 49}
+listOrder: 0x10
+category: null
+space: 31
+%%%%
+country STR_X
+type: STR_BETA
+fundingCap: -30952
+fundingBase: 33
+areas: [[82.510, 95.357, 0, 21.717]]
+%%%%
+manufacture STR_ITEM 8
+category: null
+category: x
+producedItems: {}
+requires: [7, a b]
+requires: [x, a b]
+name: 7
+cost: 85012
+requiredItems: {x: -1, a b: 2147483647, true: 131}
+%%%%
+manufacture STR_OTHER 5
+cost: 15
+requires: [STR_GAMMA, y]
+name: STR_BETA
+space: 95741
+time: 2
+category: null
+listOrder: -30063
+requiredItems: {k: v}
+%%%%
+region STR_R
+missionRegion: STR_LONG_NAME_1
+missionRegion: STR_LONG_NAME_1
+regionWeight: 2147483647
+missionWeights: {a b: 25, null: 49, STR_BETA: 38}
+areas: [[156.424, -17.24, -130, 138.641, 271], [0, 1e2, 245.5, -26.51]]
+cost: 32
+%%%%
+trajectory STR_T
+groundTimer: -3
+id: STR_LONG_NAME_1
+%%%%
+inventory 9
+y: 18925
+type: 8
+listOrder: 0x10
+slots: []
+x: -1
+id: STR_LONG_NAME_1
+%%%%
+region STR_R
+regionWeight: 14
+cost: 2147483647
+areas: [[0, 1e2, 0, -6.38], [1e2, 56.59, 0, -151]]
+missionZones: [[], [[0, -78, 1e2, -38.77, 2147483647, x], [1e2, -20.45, 295.5, 10.1]]]
+missionRegion: x
+type: STR_GAMMA
+missionWeights: {}
+%%%%
+research STR_TOPIC 1
+requires: []
+destroyItem: no
+name: a b
+name: a b
+unlocks: []
+points: 21
+dependencies: [y, STR_GAMMA]
+%%%%
+manufacture STR_OTHER 3
+space: 0x10
+requiredItems: {STR_BETA: 64, 7: 223, STR_BETA: 10}
+listOrder: 1
+producedItems: {é: -1, STR_ALPHA: 4, STR_GAMMA: -1857}
+name: é
+cost: -1
+requires: [null, é, null]
+%%%%
+trajectory STR_T
+id: true
+waypoints: [[1, 0, 17]]
+groundTimer: 0x10
+%%%%
+race STR_RACE
+members: [y]
+id: 7
+%%%%
+manufacture STR_ITEM 3
+name: a b
+category: x
+requires: [true, STR_ALPHA, a b, null]
+requires: [x, 7, null]
+producedItems: [1, 2]
+time: 226
+%%%%
+region STR_R
+regionWeight: 2147483647
+missionWeights: {STR_ALPHA: 50}
+missionWeights: 
+missionZones: [[[0, 94.5, 0, -20.903, 0x10, STR_ALPHA], [-93.591, 262.5, 47, 0]]]
+missionRegion: a b
+missionRegion: STR_GAMMA
+areas: [[-68.57, 79.5, 0, 0], [1, 1e2, 90, -95]]
+type: 7
+%%%%
+race STR_RACE
+id: 7
+members: [true]
+%%%%
+inventory 1
+id: x
+listOrder: 51
+y: 2147483647
+costs: {é: 0x10, true: 26}
+x: -1
+%%%%
+region STR_R
+type: STR_ALPHA
+missionWeights: {}
+cost: -1
+missionZones: []
+missionRegion: null
+regionWeight: 0x10
+%%%%
+country STR_USA
+fundingBase: -1
+type: STR_LONG_NAME_1
+labelLon: 1e2
+fundingCap: ~
+areas: []
+areas: []
+labelLat: 108
+%%%%
+race STR_RACE
+members: [1, 2]
+id: ~
+%%%%
+race STR_RACE
+members: [STR_LONG_NAME_1, a b, STR_LONG_NAME_1]
+members: [STR_LONG_NAME_1, a b, STR_LONG_NAME_1]
+id: y
+%%%%
+country STR_X
+labelLat: 139.533
+fundingBase: 2147483647
+labelLon: 90
+labelLon: -46.961
+fundingCap: 0x10
+areas: [[61.5, 2.5, 0, 61.46, -5], [66, 32, 64.2, 162.5, 2147483647], [-141.277, -25, 0, 157.5]]
+type: x
+%%%%
+research STR_Q 7
+cutscene: y
+cutscene: 7
+getOneFree: [7, x, STR_LONG_NAME_1]
+cost: ~
+points: {k: v}
+destroyItem: false
+requires: [x]
+name: STR_GAMMA
+dependencies: [y, x]
+listOrder: 7
+unlocks: {k: v}
+%%%%
+country STR_USA
+labelLat: 136.5
+fundingCap: -8534
+fundingBase: -1
+labelLon: 32.51
+areas: []
+type: y
+%%%%
+research STR_TOPIC 5
+listOrder: -1
+requires: []
+cost: 260
+cutscene: y
+unlocks: [x]
+getOneFree: [STR_GAMMA]
+getOneFree: [null, a b]
+dependencies: [true, x, x, y]
+needItem: false
+lookup: STR_GAMMA
+%%%%
+manufacture STR_OTHER 4
+time: ~
+cost: 19
+requiredItems: {7: 0, STR_LONG_NAME_1: 8, é: 38}
+requires: []
+listOrder: 2147483647
+producedItems: {}
+category: null
+%%%%
+research STR_Q 3
+name: STR_GAMMA
+cost: 39
+listOrder: -5
+requires: []
+unlocks: []
+getOneFree: [x]
+%%%%
+country STR_X
+areas: [[286.5, 9.5, 200.5, 0], [0, 25.11, 150, 102.5]]
+fundingCap: 264
+fundingBase: -87458
+type: true
+labelLon: -81
+labelLat: 10
+labelLat: 1e2
+%%%%
+manufacture STR_OTHER 3
+time: -1
+requiredItems: {}
+cost: 0x10
+producedItems: [1, 2]
+name: é
+space: 18
+%%%%
+manufacture STR_OTHER 6
+name: ~
+time: 29
+cost: -1
+category: STR_ALPHA
+requires: abc
+producedItems: {y: 2147483647, 7: 2}
+listOrder: 22
+requiredItems: {}
+%%%%
+manufacture STR_ITEM 7
+time: -2
+time: 254
+space: 12
+listOrder: 74624
+requires: [STR_BETA, é, STR_ALPHA]
+cost: -1
+name: 7
+name: STR_LONG_NAME_1
+category: STR_GAMMA
+producedItems: {a b: -4, a b: -1}
+%%%%
+country STR_USA
+type: null
+fundingBase: 2
+fundingCap: 25
+%%%%
+race STR_RACE
+id: STR_GAMMA
+%%%%
+research STR_Q 3
+listOrder: 0x10
+name: y
+destroyItem: [1, 2]
+requires: [x, y, a b, STR_LONG_NAME_1]
+cutscene: STR_LONG_NAME_1
+cost: -2
+dependencies: [STR_BETA]
+lookup: STR_BETA
+getOneFree:
+needItem: no
+unlocks: [STR_BETA, a b, y]
+%%%%
+manufacture STR_OTHER 3
+time: 21
+requiredItems: {é: -3, STR_BETA: 33, null: 2147483647}
+name: null
+cost: {k: v}
+category: é
+space: -5
+producedItems: {y: -3, a b: -2, x: 2147483647}
+listOrder: 19
+requires: [é]
+%%%%
+trajectory STR_T
+id: 7
+waypoints: [[0, 4, 57], [5, 4, 42], [6, 4, 24]]
+groundTimer: 50
+%%%%
+manufacture STR_ITEM 6
+requiredItems: {x: 188}
+requiredItems: {y: 2147483647}
+requires: [null, null, a b, y]
+listOrder: -43134
+time: 2147483647
+cost: 2147483647
+category: a b
+name: a b
+producedItems: {STR_BETA: 40, STR_GAMMA: 143}
+space: 15
+%%%%
+country STR_USA
+labelLon: 0
+fundingBase: 25
+type: true
+areas: [[1e2, 127.5, 1e2, 205.5], [193.5, 41.5, -121.611, 26], [52.4, 8.82, 164.159, 0]]
+labelLat: 1e2
+%%%%
+region STR_R
+missionRegion: y
+cost: 39
+missionWeights: {}
+missionZones: [[[257.5, 1e2, 0, 57], [137.844, 1e2, 1e2, -86.857]]]
+type: y
+%%%%
+inventory 6
+slots: [[4, 0], [6, 2], [7, 0], [5, 5]]
+id: x
+costs: {STR_BETA: 6, 7: 34}
+type: 28101
+listOrder: 224
+y: 35
+x: abc
+%%%%
+region STR_R
+missionRegion: STR_BETA
+areas: []
+regionWeight: 97
+cost: 2147483647
+missionZones: []
+type: a b
+missionWeights: {é: 47, é: 12}
+%%%%
+country STR_X
+areas: [[142.5, 1e2, 1e2, 0]]
+labelLon: 209.5
+labelLat: -84.84
+type: 7
+fundingBase: 15
+fundingCap: -95214
+%%%%
+manufacture STR_OTHER 9
+cost: 34
+category: y
+requiredItems: {x: 0x10}
+requires: [STR_GAMMA]
+requires: [x, STR_LONG_NAME_1, a b]
+listOrder: 0x10
+producedItems:
+%%%%
+trajectory STR_T
+id: a b
+groundTimer: 3
+waypoints: [[3, 2, 21], [4, 4, 87]]
+%%%%
+research STR_TOPIC 4
+needItem: abc
+needItem: {k: v}
+name: true
+dependencies: [y, x, a b, true]
+listOrder: -10515
+getOneFree: [é, null, x, STR_ALPHA]
+unlocks: [STR_BETA, a b, STR_ALPHA, é]
+points: 185
+destroyItem: true
+cutscene: true
+cost: 0x10
+lookup: STR_GAMMA
+requires: [é, x, null]
+%%%%
+research STR_Q 4
+points: 57925
+getOneFree: [null]
+cutscene: true
+cost: -1
+dependencies: [true, true]
+lookup: STR_ALPHA
+listOrder: -19045
+requires: []
+requires: [x, STR_BETA]
+destroyItem: true
+%%%%
+race STR_RACE
+members: [null]
+%%%%
+country STR_X
+fundingCap: 34
+type: null
+fundingBase: -1
+labelLat: 1.73
+labelLon: 0
+areas: []
+%%%%
+country STR_X
+fundingBase: -42683
+areas: []
+labelLon: ~
+labelLat: -1.152
+type: x
+fundingCap: 2147483647
+%%%%
+race STR_RACE
+members: [STR_GAMMA]
+%%%%
+inventory 8
+y: 0x10
+slots: [[1, 4], [7, 4], [1, 0], [3, 0], [1, 2], [0, 3]]
+id: y
+costs: abc
+listOrder: -1
+x: 0x10
+type: 0x10
+%%%%
+race STR_RACE
+members: []
+id: true
+%%%%
+manufacture STR_OTHER 1
+requires: [é, 7, STR_GAMMA]
+requires: [STR_GAMMA, é]
+category: null
+producedItems: {}
+cost: 93
+space: 2147483647
+time: -1
+requiredItems: {STR_GAMMA: -1}
+name: a b
+listOrder: 2147483647
+%%%%
+inventory 0
+id: a b
+listOrder: 21
+y: 34
+x: -1
+type: -1
+costs: {true: 1}
+%%%%
+country STR_X
+areas: [[119.5, 0, 114.295, -32, 248], [1e2, -114.896, 0, -45.573]]
+fundingBase: 2
+type: y
+fundingCap: 18
+%%%%
+inventory 5
+costs: {k: v}
+x: -4
+listOrder: -1
+listOrder: ~
+slots: [[0, 0], [1, 3], [8, 0], [1, 0]]
+y: 169
+%%%%
+manufacture STR_ITEM 8
+requiredItems: {}
+space: 37
+name: STR_BETA
+time: 161
+requires: []
+cost: -1
+listOrder: 2147483647
+%%%%
+region STR_R
+missionWeights: {STR_GAMMA: 31, true: 26, STR_ALPHA: 4}
+missionRegion: STR_LONG_NAME_1
+regionWeight: 79
+areas: [[-72.80, 1.88, 1e2, 0, 37], [0, 1e2, 138.5, -50]]
+areas: []
+cost: 2147483647
+missionZones: [[[1e2, 10.121, -25, -167, -1, STR_GAMMA], [-114.157, 70.584, -41.9, -86.59]]]
+%%%%
+country STR_USA
+type: é
+areas: []
+labelLon: -83.415
+fundingBase: 13
+labelLat: 0
+%%%%
+trajectory STR_T
+groundTimer: 6
+id: [1, 2]
+%%%%
+region STR_R
+cost: -1
+type: x
+regionWeight: {k: v}
+missionZones: []
+missionWeights: ~
+missionRegion: x
+%%%%
+region STR_R
+cost: -1
+regionWeight: -1
+missionZones: []
+type: STR_LONG_NAME_1
+areas: [[120.5, 128.839, -12.82, 130]]
+missionRegion: STR_GAMMA
+%%%%
+manufacture STR_OTHER 2
+category: a b
+category: STR_ALPHA
+requiredItems: {}
+producedItems: {STR_LONG_NAME_1: 57873, true: -5, y: 2147483647}
+listOrder: 31560
+cost: 7
+name: null
+requires: [true]
+space: 0x10
+%%%%
+race STR_RACE
+
+%%%%
+manufacture STR_ITEM 7
+category: STR_GAMMA
+cost: 23
+requires: []
+producedItems:
+time: 14
+time: 4
+name: é
+listOrder: 130
+requiredItems: {STR_ALPHA: 0x10, STR_ALPHA: 18}
+%%%%
+inventory 4
+slots: [1, 2]
+listOrder: 80
+type: 223
+y: -1
+y: -1
+costs: {7: 0x10}
+costs: {}
+x: 2147483647
+%%%%
+race STR_RACE
+members: [a b, é, STR_ALPHA, 7]
+id: null
+%%%%
+race STR_RACE
+
+%%%%
+research STR_Q 3
+dependencies: [STR_BETA]
+needItem: true
+points: 20
+requires: [STR_LONG_NAME_1, 7, true]
+getOneFree: []
+name: x
+lookup: y
+destroyItem: false
+cost: 0x10
+cost: 19
+listOrder: -1
+%%%%
+inventory 3
+type: 0x10
+y: 33
+y: 68613
+slots: [[6, 2], [0, 3], [6, 4]]
+listOrder: 2147483647
+x: -2204
+costs: {STR_LONG_NAME_1: 2147483647}
+id: a b
+id: STR_GAMMA
+%%%%
+research STR_Q 4
+cost: {k: v}
+requires: [7, STR_ALPHA, STR_BETA]
+points: -1
+name: é
+lookup: ~
+cutscene: a b
+dependencies: [7, 7]
+needItem: false
+listOrder: 31
+%%%%
+region STR_R
+cost: 36
+areas: [[91, 1e2, -32.548, 0], [1e2, 1e2, 119, 1e2], [0, -40, 0, -34.39]]
+regionWeight: 259
+missionRegion: STR_ALPHA
+type: é
+type: true
+missionWeights: {}
+%%%%
+race STR_RACE
+members: [null, STR_LONG_NAME_1]
+id: STR_BETA
+%%%%
+race STR_RACE
+id: y
+members: [STR_ALPHA, y, STR_LONG_NAME_1, y]
+%%%%
+research STR_TOPIC 7
+name: x
+dependencies: [STR_ALPHA, STR_BETA, 7]
+lookup: é
+lookup: {k: v}
+unlocks: [STR_GAMMA]
+getOneFree: [STR_BETA]
+cost: 63402
+cutscene: x
+destroyItem: no
+%%%%
+region STR_R
+regionWeight: 2147483647
+missionZones: [[[28.5, 0, -104, 0], [357.5, -139.898, -19.25, 158, 220, a b]], [[1e2, 0, -8.90, -4.75]]]
+type: STR_GAMMA
+missionWeights: {STR_LONG_NAME_1: 3}
+%%%%
+research STR_TOPIC 5
+needItem: no
+requires: [STR_LONG_NAME_1, STR_ALPHA]
+lookup: y
+getOneFree: [null, a b, STR_LONG_NAME_1]
+listOrder: abc
+listOrder: -80553
+cutscene: 7
+name: null
+dependencies: [STR_LONG_NAME_1, STR_GAMMA, x]
+unlocks: []
+destroyItem: true
+%%%%
+race STR_RACE
+members: [a b, a b, é, 7]
+id: STR_ALPHA
+%%%%
+manufacture STR_OTHER 5
+cost: -1
+time: 0x10
+requires: [a b, STR_GAMMA, x, y]
+name: 7
+listOrder:
+listOrder: 
+requiredItems: {STR_ALPHA: 0x10, é: -56956}
+%%%%
+country STR_USA
+labelLat: 1e2
+fundingCap: 0
+labelLon: 167.842
+type: é
+areas: [[-56.95, 151.988, 0, 1e2, 30], [38.5, -162.398, 168.5, 71]]
+%%%%
+race STR_RACE
+members: [STR_GAMMA]
+id: true
+%%%%
+trajectory STR_T
+waypoints: [[4, 3, 60], [2, 2, 6], [1, 4, 98]]
+id: null
+%%%%
+research STR_TOPIC 4
+unlocks: [STR_ALPHA, true, STR_ALPHA]
+unlocks: [STR_GAMMA, a b, y, STR_ALPHA]
+destroyItem: false
+needItem: false
+cutscene: STR_BETA
+lookup: STR_GAMMA
+points: 12
+%%%%
+manufacture STR_ITEM 8
+listOrder: ~
+producedItems: {}
+requires: [x, STR_BETA]
+time: 30
+category: STR_LONG_NAME_1
+requiredItems: {x: 0x10}
+name: a b
+space: -3
+cost: -1
+%%%%
+inventory 5
+slots: [[7, 4], [4, 3], [0, 0]]
+y: 145
+listOrder:
+type: 29
+%%%%
+inventory 6
+listOrder: 259
+costs: {STR_ALPHA: 70790, STR_LONG_NAME_1: 2147483647, 7: 83}
+slots: []
+x: -1
+%%%%
+country STR_USA
+type: STR_LONG_NAME_1
+fundingCap: -42241
+labelLon: 61.563
+%%%%
+research STR_Q 9
+points: 120
+listOrder: -5
+lookup: y
+destroyItem: true
+getOneFree: {k: v}
+needItem: ~
+dependencies: [é, true]
+requires: [true, é, STR_BETA, true]
+name: true
+%%%%
+inventory 8
+type: 0x10
+costs: {STR_ALPHA: 4, é: 32}
+id: STR_BETA
+listOrder: -1
+slots: [[8, 2]]
+x: 49027
+%%%%
+inventory 2
+type: 1702
+x: 0x10
+id: STR_BETA
+slots: [[6, 4], [2, 3], [3, 5], [3, 0]]
+costs: {}
+%%%%
+manufacture STR_ITEM 9
+time: 2147483647
+name: STR_GAMMA
+space: -44390
+cost: 6
+producedItems: {x: 89721, true: 2147483647}
+listOrder: 6
+%%%%
+region STR_R
+areas: [[1e2, 45.128, -146, 72.5]]
+missionRegion: STR_GAMMA
+missionWeights: {7: 4, STR_BETA: 37, STR_BETA: 14}
+cost: 30086
+cost: 0x10
+%%%%
+research STR_TOPIC 6
+listOrder: -5
+lookup: é
+getOneFree: [a b, STR_GAMMA, y]
+cost: -1
+unlocks: [a b]
+requires: []
+points:
+dependencies: [7, a b, true]
+name: x
+cutscene: STR_GAMMA
+destroyItem: no
+destroyItem: true
+%%%%
+race STR_RACE
+id: é
+members: [true, true]
+%%%%
+race STR_RACE
+members: [é, null, STR_LONG_NAME_1, 7]
+%%%%
+race STR_RACE
+id: null
+members: [y, STR_ALPHA]
+%%%%
+trajectory STR_T
+groundTimer: 5
+id: null
+waypoints: []
+%%%%
+region STR_R
+cost: 2147483647
+missionZones: [[[96.499, 343.5, 0, -22.782, 2147483647, STR_GAMMA], [222.5, 1e2, -79.696, 0]]]
+missionRegion: STR_GAMMA
+type: null
+areas: [[-33.82, 104.392, 1e2, 1e2], [0, 48.48, 140.642, 127]]
+areas: [[22.286, -112.547, 24.5, -36], [167.320, -91.967, 44.492, -130.643, 0]]
+regionWeight: 35
+%%%%
+trajectory STR_T
+
+%%%%
+manufacture STR_OTHER 0
+producedItems: {STR_ALPHA: 1, STR_LONG_NAME_1: 31}
+time: -1
+requiredItems:
+category: null
+listOrder: 2147483647
+requires: [null]
+cost: 97
+%%%%
+research STR_Q 8
+lookup: x
+needItem: no
+cost: 48794
+destroyItem: no
+getOneFree: [STR_BETA, 7, y, STR_BETA]
+dependencies: [null, null, STR_BETA]
+requires: [null, STR_ALPHA]
+name: y
+points: 141
+unlocks: abc
+%%%%
+trajectory STR_T
+id: [1, 2]
+waypoints: [[2, 2, 78], [6, 3, 71]]
+groundTimer: 2
+%%%%
+manufacture STR_OTHER 4
+cost: 55993
+name: STR_ALPHA
+producedItems: {y: 2147483647, x: 12}
+requires: [é]
+listOrder: 20
+requiredItems: {a b: 0x10}
+space: 28
+space: 35
+time: 3
+time: 5
+%%%%
+research STR_Q 7
+requires: [7]
+lookup: é
+unlocks: [STR_BETA, 7, STR_LONG_NAME_1, x]
+cutscene: null
+listOrder: 2147483647
+listOrder: 28958
+dependencies: [STR_GAMMA, STR_BETA, null]
+destroyItem: no
+needItem: false
+%%%%
+inventory 3
+id: a b
+x: 2147483647
+costs: {é: 40, STR_GAMMA: 4}
+costs: {STR_BETA: 35}
+y: 35
+%%%%
+research STR_TOPIC 8
+destroyItem: true
+unlocks: [STR_BETA, é]
+dependencies: [é, STR_ALPHA, x]
+listOrder: -1
+getOneFree: [STR_GAMMA, STR_BETA, a b, é]
+name: y
+cost: 17
+lookup: STR_GAMMA
+points: -1
+cutscene: 7
+needItem:
+%%%%
+region STR_R
+regionWeight: 10
+cost: 49093
+type: x
+missionZones: [[[1e2, 137.5, -60, 1.22]], []]
+missionWeights: {STR_BETA: 32, é: 39, x: 50}
+areas: [[87.648, -2, 0, 87.19, 2]]
+%%%%
+manufacture STR_ITEM 5
+name: STR_BETA
+space: 3
+listOrder: 2147483647
+producedItems: {STR_GAMMA: 2147483647}
+time: 23
+requiredItems: {STR_BETA: 4, null: 0x10, null: -1}
+category: y
+cost: 13
+%%%%
+research STR_Q 0
+cost: -1
+cost: 130
+listOrder: -1
+destroyItem: no
+cutscene: STR_ALPHA
+unlocks: [x]
+getOneFree: [STR_BETA, x]
+requires: []
+dependencies: [true]
+needItem: true
+points: 21
+%%%%
+trajectory STR_T
+waypoints: [[4, 2, 2]]
+id: a b
+groundTimer: 1
+%%%%
+inventory 7
+id: null
+id: é
+x: 84204
+listOrder: 228
+y: 0x10
+slots: [[5, 5], [5, 4], [5, 0], [2, 3], [2, 2]]
