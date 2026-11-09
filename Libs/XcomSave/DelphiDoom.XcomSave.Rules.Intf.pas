@@ -28,6 +28,26 @@ type
     function MissionType: string;
   end;
 
+  /// <summary>RuleItem as the saved game uses it to name an item: its type</summary>
+  IXcomItemRule = interface
+    ['{3C0B7F1A-5D52-4E0C-9A31-176000000003}']
+    function ItemType: string;
+  end;
+
+  /// <summary>RuleBaseFacility as the saved game uses it: its type</summary>
+  IXcomFacilityRule = interface
+    ['{3C0B7F1A-5D52-4E0C-9A31-176000000004}']
+    function FacilityType: string;
+  end;
+
+  /// <summary>RuleCraftWeapon as the saved game uses it: its type, ammo capacity and rearming rate</summary>
+  IXcomCraftWeaponRule = interface
+    ['{3C0B7F1A-5D52-4E0C-9A31-176000000005}']
+    function WeaponType: string;
+    function AmmoMax: Integer;
+    function RearmRate: Integer;
+  end;
+
 implementation
 
 end.

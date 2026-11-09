@@ -24,6 +24,15 @@
 #include "Savegame/MissionSite.h"
 #include "Savegame/Node.h"
 #include "Savegame/EquipmentLayoutItem.h"
+#include "Savegame/ItemContainer.h"
+#include "Savegame/Vehicle.h"
+#include "Savegame/CraftWeapon.h"
+#include "Savegame/BaseFacility.h"
+#include "Savegame/Production.h"
+#include "Mod/RuleItem.h"
+#include "Mod/RuleCraftWeapon.h"
+#include "Mod/RuleBaseFacility.h"
+#include "Mod/RuleManufacture.h"
 #include "Mod/AlienDeployment.h"
 #include "Mod/RuleAlienMission.h"
 #undef private
@@ -149,12 +158,26 @@ static std::string RandAngle() {
 
 static std::vector<Field> TargetFields() { return {{"lon", 'd'}, {"lat", 'd'}, {"id", 'i'}, {"name", 's'}}; }
 
+// a map of items and quantities (or something that is not one)
+static std::string ItemMap() {
+  static const char* keys[] = {"STR_RIFLE", "STR_CLIP", "STR_GRENADE", "AAA", "zzz", "STR_ALIEN", "b", "B"};
+  int shape = R(10);
+  if (shape == 0) return Bad();
+  std::string out;
+  int n = R(6);
+  for (int i = 0; i < n; i++) {
+    std::string v = R(14) == 0 ? Bad() : Num();
+    out += std::string(keys[R(8)]) + ":" + (v.empty() ? "" : " " + v) + "\n";
+  }
+  return out;
+}
+
 static void Generate(const char* path, int count, unsigned seed) {
   rng.seed(seed);
   std::ofstream o(path, std::ios::binary);
   o << "# corpus of the saved game objects, second family: a header line (kind, arguments) and a YAML node\n";
   for (int i = 0; i < count; i++) {
-    switch (R(5)) {
+    switch (R(10)) {
       case 0: Case(o, "waypoint " + RandAngle() + " " + RandAngle() + " " + RandAngle() + " " + RandAngle(), Doc(TargetFields())); break;
       case 1: {
         auto f = TargetFields();
@@ -170,7 +193,12 @@ static void Generate(const char* path, int count, unsigned seed) {
         break;
       }
       case 3: Case(o, "node", Doc({{"id", 'i'}, {"position", 'P'}, {"type", 'i'}, {"rank", 'i'}, {"flags", 'i'}, {"reserved", 'i'}, {"priority", 'i'}, {"allocated", 'b'}, {"links", 'I'}, {"dummy", 'b'}})); break;
-      default: Case(o, "equip", Doc({{"itemType", 's'}, {"slot", 's'}, {"slotX", 'i'}, {"slotY", 'i'}, {"ammoItem", 's'}, {"fuseTimer", 'i'}})); break;
+      case 4: Case(o, "equip", Doc({{"itemType", 's'}, {"slot", 's'}, {"slotX", 'i'}, {"slotY", 'i'}, {"ammoItem", 's'}, {"fuseTimer", 'i'}})); break;
+      case 5: Case(o, "itemcontainer", ItemMap()); break;
+      case 6: Case(o, "vehicle STR_TANK " + std::to_string(Rg(-2, 100)) + " " + std::to_string(Rg(1, 4)), Doc({{"ammo", 'i'}, {"size", 'i'}})); break;
+      case 7: Case(o, "craftweapon STR_CW " + std::to_string(Rg(0, 200)) + " " + std::to_string(Rg(1, 30)) + " " + std::to_string(Rg(-3, 220)), Doc({{"ammo", 'i'}, {"rearming", 'b'}})); break;
+      case 8: Case(o, "basefacility STR_FAC", Doc({{"x", 'i'}, {"y", 'i'}, {"buildTime", 'i'}})); break;
+      default: Case(o, "production STR_MANU " + std::to_string(Rg(-5, 60)) + " " + std::to_string(Rg(-1000, 90000)) + " " + (R(8) == 0 ? std::string("2147483647") : std::to_string(Rg(-2, 50))), Doc({{"assigned", 'i'}, {"spent", 'i'}, {"amount", 'i'}, {"infinite", 'b'}, {"sell", 'b'}})); break;
     }
   }
 }
@@ -268,6 +296,86 @@ static void RunCase(const std::string& header, const std::string& body) {
       EquipmentLayoutItem e(node);
       printf("e %s %s %d %d %s %d\n", Esc(e.getItemType()).c_str(), Esc(e.getSlot()).c_str(), e.getSlotX(), e.getSlotY(), Esc(e.getAmmoItem()).c_str(), e.getFuseTimer());
       Out(e.save());
+    } else if (kind == "itemcontainer") {
+      ItemContainer c;
+      c.load(node);
+      auto dump = [&]() {
+        std::string s;
+        for (auto& kv : *c.getContents()) s += kv.first + "=" + std::to_string(kv.second) + ";";
+        printf("c %s total=%d\n", s.c_str(), c.getTotalQuantity());
+      };
+      dump();
+      Out(c.save());
+      c.addItem("STR_RIFLE", 3);
+      c.addItem("", 9);
+      c.addItem("NEW", -2);
+      dump();
+      c.removeItem("STR_RIFLE", 2);
+      c.removeItem("NEW", 5);
+      c.removeItem("nothing", 1);
+      c.removeItem("AAA", 100000);
+      dump();
+      printf("get %d %d %d\n", c.getItem("STR_RIFLE"), c.getItem(""), c.getItem("zzz"));
+      Out(c.save());
+    } else if (kind == "vehicle") {
+      std::string type;
+      int ammo, size;
+      hs >> type >> ammo >> size;
+      RuleItem rule(type);
+      Vehicle v(&rule, ammo, size);
+      v.load(node);
+      printf("v %d %d\n", v.getAmmo(), v.getSize());
+      Out(v.save());
+      v.setAmmo(7);
+      printf("after %d\n", v.getAmmo());
+    } else if (kind == "craftweapon") {
+      std::string type;
+      int ammoMax, rearm, ammo;
+      hs >> type >> ammoMax >> rearm >> ammo;
+      RuleCraftWeapon rule(type);
+      rule._ammoMax = ammoMax;
+      rule._rearmRate = rearm;
+      CraftWeapon w(&rule, ammo);
+      w.load(node);
+      printf("w %d %d\n", w.getAmmo(), w.isRearming());
+      Out(w.save());
+      int clips[] = {0, 1, 2, 5};
+      int avail[] = {0, 3, 100, 1};
+      for (int i = 0; i < 4; i++) {
+        int used = w.rearm(avail[i], clips[i]);
+        printf("rearm clip=%d avail=%d -> used=%d ammo=%d rearming=%d\n", clips[i], avail[i], used, w.getAmmo(), w.isRearming());
+      }
+      printf("set %d ", w.setAmmo(-4)); printf("%d ", w.getAmmo());
+      printf("set %d ", w.setAmmo(1000000)); printf("%d\n", w.getAmmo());
+      w.setRearming(true);
+      Out(w.save());
+    } else if (kind == "basefacility") {
+      std::string type;
+      hs >> type;
+      RuleBaseFacility rule(type);
+      BaseFacility f(&rule, 0);
+      f.load(node);
+      printf("f %d %d %d\n", f.getX(), f.getY(), f.getBuildTime());
+      Out(f.save());
+      f.build();
+      f.setX(3);
+      f.setY(4);
+      printf("after %d %d %d\n", f.getX(), f.getY(), f.getBuildTime());
+    } else if (kind == "production") {
+      std::string name;
+      int time, cost, amount;
+      hs >> name >> time >> cost >> amount;
+      RuleManufacture rule(name);
+      rule.load(YAML::Load("time: " + std::to_string(time) + "\ncost: " + std::to_string(cost) + "\n"), 1);
+      Production p(&rule, amount);
+      p.load(node);
+      printf("p %d %d %d %d %d\n", p.getAssignedEngineers(), p.getTimeSpent(), p.getAmountTotal(), p.getInfiniteAmount(), p.getSellItems());
+      Out(p.save());
+      printf("produced=%d\n", p.getAmountProduced());
+      long long funds[] = {0, cost, (long long)cost - 1, -5, 5000000000LL};
+      std::string m;
+      for (long long fd : funds) m += std::to_string(rule.haveEnoughMoneyForOneMoreUnit(fd)) + ",";
+      printf("money=%s\n", m.c_str());
     }
   } catch (const YAML::Exception& e) {
     printf("YAML_ERR %s\n", Esc(e.msg).c_str());

@@ -19,6 +19,8 @@ type
   public
     /// <summary>YAML::Node node: a null node that becomes a map with the first key assigned</summary>
     class function NewMap: IYamlNode; static;
+    /// <summary>A node that already is a map (an empty std::map assigned to a node: it emits as {})</summary>
+    class function NewEmptyMap: IYamlNode; static;
     /// <summary>node[key] = int (the decimal text a stream writes)</summary>
     class procedure SetInteger(const ANode: IYamlNode; const AKey: string; AValue: Integer); static;
     class procedure SetString(const ANode: IYamlNode; const AKey, AValue: string); static;
@@ -36,6 +38,11 @@ implementation
 class function TXcomNodeWriter.NewMap: IYamlNode;
 begin
   Result := TYamlFactory.CreateNode;
+end;
+
+class function TXcomNodeWriter.NewEmptyMap: IYamlNode;
+begin
+  Result := TYamlFactory.CreateNode(ntMap);
 end;
 
 class procedure TXcomNodeWriter.SetInteger(const ANode: IYamlNode; const AKey: string; AValue: Integer);

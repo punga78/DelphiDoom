@@ -22,7 +22,10 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.Yaml.Convert, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.Rules.Intf,
   DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.AlienBase,
-  DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.EquipmentLayoutItem;
+  DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.EquipmentLayoutItem,
+  DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomSave.ItemContainer,
+  DelphiDoom.XcomSave.Vehicle, DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomSave.BaseFacility,
+  DelphiDoom.XcomSave.Production;
 
 type
   /// <summary>A deployment rule with the three values the harness gives to the real AlienDeployment</summary>
@@ -47,6 +50,21 @@ type
     function MissionType: string;
   end;
 
+  /// <summary>An item, facility and craft weapon rule in one: a type and two numbers</summary>
+  TXcomFakeTypeRule = class(TInterfacedObject, IXcomItemRule, IXcomFacilityRule, IXcomCraftWeaponRule)
+  strict private
+    FType: string;
+    FAmmoMax: Integer;
+    FRearmRate: Integer;
+  public
+    constructor Create(const AType: string; AAmmoMax: Integer = 0; ARearmRate: Integer = 0);
+    function ItemType: string;
+    function FacilityType: string;
+    function WeaponType: string;
+    function AmmoMax: Integer;
+    function RearmRate: Integer;
+  end;
+
   /// <summary>Runs the cases of the corpus with the Pascal classes and writes the lines of the golden file</summary>
   TXcomSaveObjectScenario = class
   strict private
@@ -63,6 +81,11 @@ type
     procedure RunMissionSite(const AParts: TArray<string>; const ANode: IYamlNode);
     procedure RunNode(const ANode: IYamlNode);
     procedure RunEquip(const ANode: IYamlNode);
+    procedure RunItemContainer(const ANode: IYamlNode);
+    procedure RunVehicle(const AParts: TArray<string>; const ANode: IYamlNode);
+    procedure RunCraftWeapon(const AParts: TArray<string>; const ANode: IYamlNode);
+    procedure RunBaseFacility(const AParts: TArray<string>; const ANode: IYamlNode);
+    procedure RunProduction(const AParts: TArray<string>; const ANode: IYamlNode);
   public
     constructor Create;
     destructor Destroy; override;
@@ -112,6 +135,41 @@ end;
 function TXcomFakeMission.MissionType: string;
 begin
   Result := FType;
+end;
+
+{ TXcomFakeTypeRule }
+
+constructor TXcomFakeTypeRule.Create(const AType: string; AAmmoMax, ARearmRate: Integer);
+begin
+  inherited Create;
+  FType := AType;
+  FAmmoMax := AAmmoMax;
+  FRearmRate := ARearmRate;
+end;
+
+function TXcomFakeTypeRule.ItemType: string;
+begin
+  Result := FType;
+end;
+
+function TXcomFakeTypeRule.FacilityType: string;
+begin
+  Result := FType;
+end;
+
+function TXcomFakeTypeRule.WeaponType: string;
+begin
+  Result := FType;
+end;
+
+function TXcomFakeTypeRule.AmmoMax: Integer;
+begin
+  Result := FAmmoMax;
+end;
+
+function TXcomFakeTypeRule.RearmRate: Integer;
+begin
+  Result := FRearmRate;
 end;
 
 { TXcomSaveObjectScenario }
@@ -302,6 +360,144 @@ begin
   end;
 end;
 
+procedure TXcomSaveObjectScenario.RunItemContainer(const ANode: IYamlNode);
+var
+  LContainer: TXcomItemContainer;
+
+  procedure Dump;
+  var
+    LText: string;
+    LIndex: Integer;
+  begin
+    LText := '';
+    for LIndex := 0 to LContainer.Contents.Count - 1 do
+      LText := LText + LContainer.Contents.Key(LIndex) + '=' + IntToStr(LContainer.Contents.Value(LIndex)) + ';';
+    FOutput.Add(Format('c %s total=%d', [LText, LContainer.TotalQuantity]));
+  end;
+
+begin
+  LContainer := TXcomItemContainer.Create;
+  try
+    LContainer.Load(ANode);
+    Dump;
+    Emit(LContainer.Save);
+    LContainer.AddItem('STR_RIFLE', 3);
+    LContainer.AddItem('', 9);
+    LContainer.AddItem('NEW', -2);
+    Dump;
+    LContainer.RemoveItem('STR_RIFLE', 2);
+    LContainer.RemoveItem('NEW', 5);
+    LContainer.RemoveItem('nothing', 1);
+    LContainer.RemoveItem('AAA', 100000);
+    Dump;
+    FOutput.Add(Format('get %d %d %d', [LContainer.GetItem('STR_RIFLE'), LContainer.GetItem(''),
+      LContainer.GetItem('zzz')]));
+    Emit(LContainer.Save);
+  finally
+    LContainer.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunVehicle(const AParts: TArray<string>; const ANode: IYamlNode);
+var
+  LVehicle: TXcomVehicle;
+begin
+  LVehicle := TXcomVehicle.Create(TXcomFakeTypeRule.Create(AParts[1]), StrToInt(AParts[2]), StrToInt(AParts[3]));
+  try
+    LVehicle.Load(ANode);
+    FOutput.Add(Format('v %d %d', [LVehicle.Ammo, LVehicle.Size]));
+    Emit(LVehicle.Save);
+    LVehicle.SetAmmo(7);
+    FOutput.Add(Format('after %d', [LVehicle.Ammo]));
+  finally
+    LVehicle.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunCraftWeapon(const AParts: TArray<string>; const ANode: IYamlNode);
+const
+  Clips: array[0..3] of Integer = (0, 1, 2, 5);
+  Available: array[0..3] of Integer = (0, 3, 100, 1);
+var
+  LWeapon: TXcomCraftWeapon;
+  LIndex, LUsed, LAfterFirst: Integer;
+  LFirst, LSecond: Boolean;
+begin
+  LWeapon := TXcomCraftWeapon.Create(TXcomFakeTypeRule.Create(AParts[1], StrToInt(AParts[2]), StrToInt(AParts[3])),
+    StrToInt(AParts[4]));
+  try
+    LWeapon.Load(ANode);
+    FOutput.Add(Format('w %d %d', [LWeapon.Ammo, BoolInt(LWeapon.Rearming)]));
+    Emit(LWeapon.Save);
+    for LIndex := 0 to 3 do
+    begin
+      LUsed := LWeapon.Rearm(Available[LIndex], Clips[LIndex]);
+      FOutput.Add(Format('rearm clip=%d avail=%d -> used=%d ammo=%d rearming=%d', [Clips[LIndex], Available[LIndex],
+        LUsed, LWeapon.Ammo, BoolInt(LWeapon.Rearming)]));
+    end;
+    LFirst := LWeapon.SetAmmo(-4);
+    LAfterFirst := LWeapon.Ammo;
+    LSecond := LWeapon.SetAmmo(1000000);
+    FOutput.Add(Format('set %d %d set %d %d', [BoolInt(LFirst), LAfterFirst, BoolInt(LSecond), LWeapon.Ammo]));
+    LWeapon.Rearming := True;
+    Emit(LWeapon.Save);
+  finally
+    LWeapon.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunBaseFacility(const AParts: TArray<string>; const ANode: IYamlNode);
+var
+  LFacility: TXcomBaseFacility;
+begin
+  LFacility := TXcomBaseFacility.Create(TXcomFakeTypeRule.Create(AParts[1]));
+  try
+    LFacility.Load(ANode);
+    FOutput.Add(Format('f %d %d %d', [LFacility.X, LFacility.Y, LFacility.BuildTime]));
+    Emit(LFacility.Save);
+    LFacility.Build;
+    LFacility.X := 3;
+    LFacility.Y := 4;
+    FOutput.Add(Format('after %d %d %d', [LFacility.X, LFacility.Y, LFacility.BuildTime]));
+  finally
+    LFacility.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunProduction(const AParts: TArray<string>; const ANode: IYamlNode);
+var
+  LRules: TXcomRuleManufacture;
+  LProduction: TXcomProduction;
+  LCost: Integer;
+  LFund: Int64;
+  LFunds: TArray<Int64>;
+  LText: string;
+begin
+  LCost := StrToInt(AParts[3]);
+  LRules := TXcomRuleManufacture.Create(AParts[1]);
+  try
+    LRules.Load(TYamlFactory.CreateParser.Load(YamlStringToText('time: ' + AParts[2] + #10 + 'cost: ' + AParts[3] +
+      #10)), 1);
+    LProduction := TXcomProduction.Create(LRules, StrToInt(AParts[4]));
+    try
+      LProduction.Load(ANode);
+      FOutput.Add(Format('p %d %d %d %d %d', [LProduction.AssignedEngineers, LProduction.TimeSpent,
+        LProduction.AmountTotal, BoolInt(LProduction.InfiniteAmount), BoolInt(LProduction.SellItems)]));
+      Emit(LProduction.Save);
+      FOutput.Add(Format('produced=%d', [LProduction.AmountProduced]));
+      LFunds := [0, LCost, Int64(LCost) - 1, -5, 5000000000];
+      LText := '';
+      for LFund in LFunds do
+        LText := LText + IntToStr(BoolInt(LProduction.HaveEnoughMoneyForOneMoreUnit(LFund))) + ',';
+      FOutput.Add('money=' + LText);
+    finally
+      LProduction.Free;
+    end;
+  finally
+    LRules.Free;
+  end;
+end;
+
 procedure TXcomSaveObjectScenario.RunCase(const AHeader: string; const ABody: TYamlText);
 var
   LParts: TArray<string>;
@@ -327,7 +523,17 @@ begin
     else if LParts[0] = 'node' then
       RunNode(LNode)
     else if LParts[0] = 'equip' then
-      RunEquip(LNode);
+      RunEquip(LNode)
+    else if LParts[0] = 'itemcontainer' then
+      RunItemContainer(LNode)
+    else if LParts[0] = 'vehicle' then
+      RunVehicle(LParts, LNode)
+    else if LParts[0] = 'craftweapon' then
+      RunCraftWeapon(LParts, LNode)
+    else if LParts[0] = 'basefacility' then
+      RunBaseFacility(LParts, LNode)
+    else if LParts[0] = 'production' then
+      RunProduction(LParts, LNode);
   except
     on E: EYamlException do
       FOutput.Add('YAML_ERR ' + Escape(YamlTextToString(E.Msg)));
