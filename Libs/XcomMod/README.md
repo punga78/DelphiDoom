@@ -1,4 +1,4 @@
-# Libs\XcomMod
+﻿# Libs\XcomMod
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
@@ -41,10 +41,32 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 - `RNG::generate(double, double)` con `AMax = AMin` divide per zero nel C++ e da' +inf (quindi 0 + min): qui ritorna `AMin` senza eccezione FPU.
 - Le stringhe sono `string` (UTF-16); le mappe confrontano i **byte UTF-8** come `std::string`.
 
+## Il regolamento intero (`Mod::loadAll`)
+
+`TXcomRuleset` e' la parte "regole" di `Mod`: una tabella per tipo (`TXcomRuleRegistry<T>`: mappa ordinata per nome e indice nell'ordine di arrivo, con `delete` come `Mod::loadRule`) e `LoadFile` (le 35 sezioni di `Mod::loadFile`: paesi, regioni, strutture, velivoli, armi, oggetti, UFO, inventari, terreni, corazze, soldati, unita', razze, schieramenti, ricerche, produzioni, Ufopaedia, base e tempo di partenza, costi, traiettorie, missioni, patch MCD, sprite/suoni/stringhe extra, stat string, interfacce, convertitore, costanti, script di mappa e di missione, video, musiche, menzioni, crescita delle statistiche). `TXcomModLoader.LoadAll` assegna a ogni mod posizione e spazio nei set condivisi (1000 x lo spazio dei mod prima, 1000 x il proprio), carica prima il file delle risorse (`soundDefs`, `transparencyLUTs`), poi i file di ogni mod in ordine, fa i controlli di `Mod::loadMod` (`ValidateMissions`) e alla fine `SortLists` (ordine degli indici per `listOrder`; a parita' l'ordine di arrivo).
+
+| C++ (OpenXcom) | Delphi |
+|---|---|
+| `Mod::loadAll`, `loadMod`, `loadResourceConfigFile` | `TXcomModLoader.LoadAll` (`TXcomModSource`) |
+| `Mod::loadFile`, le tabelle e `loadRule`, `getMapDataSet`, `sortLists`, i controlli di `loadMod` | `TXcomRuleset`, `TXcomRuleRegistry<T>`, `SortLists`, `ValidateMissions` |
+| `RuleItem`, `RuleBaseFacility`, `RuleCraft`, `RuleUfo` | `TXcomRuleItem`, `TXcomRuleBaseFacility`, `TXcomRuleCraft`, `TXcomRuleUfo` |
+| `RuleTerrain`, `MapDataSet`, `MapScript` | `TXcomRuleTerrain`, `TXcomMapDataSet`, `TXcomMapScript` |
+| `Armor`, `RuleSoldier`, `SoldierNamePool`, `Unit`, `UnitStats` | `TXcomArmor`, `TXcomRuleSoldier`, `TXcomSoldierNamePool`, `TXcomRuleUnit`, `TXcomUnitStats` (+ `TXcomUnitStatsReader`) |
+| `AlienDeployment`, `RuleAlienMission`, `RuleMissionScript` | `TXcomAlienDeployment`, `TXcomRuleAlienMission`, `TXcomRuleMissionScript` |
+| `ArticleDefinition` e le sue 10 sottoclassi | `TXcomArticleDefinition` (un tipo solo: `Load` legge i campi del tipo) |
+| `MCDPatch`, `ExtraSprites`, `ExtraSounds`, `ExtraStrings`, `StatString`, `StatStringCondition` | `TXcomMcdPatch`, `TXcomExtraSprites`, `TXcomExtraSounds`, `TXcomExtraStrings`, `TXcomStatString` |
+| `RuleInterface`, `RuleVideo`, `RuleConverter`, `SoundDefinition` | `TXcomRuleInterface`, `TXcomRuleVideo`, `TXcomRuleConverter`, `TXcomSoundDefinition` |
+| i `static` di `Mod` (porte, esplosioni, cursori, danni...), i membri numerici di `Mod` | `TXcomModConstants`, `TXcomRulesetSettings` |
+| `FileMap` (cartelle e YAML virtuali), le dimensioni dei set (`SurfaceSet`, `SoundSet`) | `IXcomModFiles`, `IXcomSharedResources` |
+
+### Parita' sui mod veri di TFTD
+
+`Tools\Verifica\176\mod\modload.cpp` e' collegato **agli oggetti di una vera build di OpenXcom** (come l'harness di `Libs\XcomSave`), carica con `Mod::loadAll` i mod di TFTD (`Reference\_dati\xcom_tftd\openxcom`: `xcom2` da solo, e `xcom2` con 11 mod che cancellano e sovrascrivono regole) e scarica ogni regola come righe di testo (`Tests\Data\XcomMod\tftd.*.golden.txt.gz`, 170 KB ciascuno). `TTestXcomModReal` carica gli **stessi file YAML** con `TXcomModLoader` e dice **0 differenze** su 34 sezioni (22814 righe e 1,2 MB di testo per il solo `xcom2`: 150 oggetti per 85 campi, 768 righe di corazze, 34 liste di nomi di soldati, blocchi di mappa, articoli, script...). Il test si salta (`Assert.Pass`) senza i dati di TFTD, che non stanno nel repository. Non sono confrontati tre dati che il C++ non rende riproducibili: `MissionArea::texture` (non inizializzato), l'ordine degli `armor` senza oggetto (confronto fra puntatori) e l'ordine delle chiavi di `startingBase` (si ordinano). Rigenerare: `Tools\Verifica\176\mod\regen-real.ps1`.
+
 ## Non portato
 
-`Mod` (`Mod.cpp`, 3769 righe: carica i file e collega tutto) e le altre regole: `RuleItem`, `RuleCraft`, `RuleCraftWeapon`, `RuleUfo`, `RuleBaseFacility`, `RuleSoldier`, `Armor`, `Unit`, `RuleTerrain`, `AlienDeployment`, `AlienMission`, `MapScript`, `MapDataSet`/`MapData` (usano `mod->loadSoundOffset/loadSpriteOffset/getOffset...`, cioe' la tabella degli offset del `Mod`), `RuleGlobe`, `RuleInterface`, `RuleVideo`, `Texture`, `City` (eredita `Target` del salvataggio), `SoldierNamePool`, `StatString`, `ExtraSprites/Sounds/Strings`. Le prossime fette: `TXcomMod` come registro delle regole per tipo (con `delete`/`ignore`, `listOrder` e gli offset) e poi ognuna di queste regole con lo stesso metodo.
+`RuleGlobe`, `Polygon`, `Polyline`, `Texture` (il globo: `data` legge `WORLD.DAT`, che sa leggere `Libs\XcomFormats`), `City`, `MapData` e `MapDataSet::loadData` (gli MCD si leggono a battaglia: `Libs\XcomFormats`), la logica con il generatore casuale di `MapScript` e `RuleMissionScript` (`getNextBlock`, `generate`, `getMissionTypes`), e il resto di `Mod` che non e' regola: risorse (`loadVanillaResources`, `loadBattlescapeResources`, `loadExtraResources`, `modResources`, palette, font, suoni, musica), `newSave`, `genSoldier`, `ModScript`, `ModInfo` e `Options` (lista dei mod e `metadata.yml`: il caricatore riceve gia' nome, spazio e file).
 
 ## Test
 
-`Tests\DelphiDoom.Tests.XcomMod` (40 test: parita' sui 2600 casi e le regole una per una; Release Win32; copertura 92%, 775 righe su 838). Win64 e Debug non provati.
+`Tests\DelphiDoom.Tests.XcomMod` (79 test: parita' sui 3000 casi delle regole singole, parita' sui mod veri di TFTD, regolamento e caricatore con YAML scritto nei test; Release Win32; copertura 91%, 3390 righe su 3706 con i dati di TFTD presenti). Win64 e Debug non provati (Debug serve alla misura della copertura).

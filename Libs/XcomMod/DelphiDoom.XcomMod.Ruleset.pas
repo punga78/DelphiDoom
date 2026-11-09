@@ -24,9 +24,18 @@ uses
   DelphiDoom.XcomMod.ArticleDefinition, DelphiDoom.XcomMod.McdPatch, DelphiDoom.XcomMod.ExtraSprites,
   DelphiDoom.XcomMod.ExtraSounds, DelphiDoom.XcomMod.ExtraStrings, DelphiDoom.XcomMod.StatString,
   DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomMod.RuleVideo, DelphiDoom.XcomMod.RuleConverter,
-  DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings, System.Generics.Defaults;
+  DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings, System.Generics.Defaults,
+  DelphiDoom.XcomMod.SoundDefinition;
 
 type
+  /// <summary>SDL_Color of the transparency lookup tables</summary>
+  TXcomTransparencyColor = record
+    R: Byte;
+    G: Byte;
+    B: Byte;
+    Unused: Byte;
+  end;
+
   /// <summary>
   ///   The ruleset of the game: the rules of every kind, by name, filled by LoadFile from the YAML files of the
   ///   mods in load order (Mod). It does not hold the resources (surfaces, sounds, palettes): the sets that the
@@ -37,6 +46,8 @@ type
     FShared: IXcomSharedResources;
     FFiles: IXcomModFiles;
     FOffsets: TXcomModOffsets;
+    FSoundDefinitions: TXcomRuleRegistry<TXcomSoundDefinition>;
+    FTransparencies: TArray<TXcomTransparencyColor>;
     FMapScripts: TXcomStringMap<TObjectList<TXcomMapScript>>;
     FArticles: TXcomRuleRegistry<TXcomArticleDefinition>;
     FArticleSections: TXcomStringMap<Integer>;
@@ -119,6 +130,15 @@ type
     /// </summary>
     procedure ValidateMissions;
     /// <summary>
+    ///   Mod::loadResourceConfigFile: the sound definitions and the transparency colors of a resource file of
+    ///   the current mod (the lookup tables share the common set, 100 times smaller than the others). More colors
+    ///   than the space of the mod, or a "colors" node that is not a sequence, is EXcomModException
+    /// </summary>
+    procedure LoadResourceConfig(const ADocument: IYamlNode);
+    /// <summary>The transparency colors (R, G, B, unused) of the common set</summary>
+    property Transparencies: TArray<TXcomTransparencyColor> read FTransparencies;
+    property SoundDefinitions: TXcomRuleRegistry<TXcomSoundDefinition> read FSoundDefinitions;
+    /// <summary>
     ///   Mod::sortLists: puts the indexes in the order of the list order of their rules (a craft weapon by its
     ///   launcher, an armor by its store item, the articles by section). Rules with the same order keep the order
     ///   they came (the std::sort of the C++ is not stable)
@@ -184,6 +204,8 @@ begin
     raise EArgumentNilException.Create('AShared');
   FShared := AShared;
   FFiles := AFiles;
+  FSoundDefinitions := TXcomRuleRegistry<TXcomSoundDefinition>.Create(
+    function(AType: string): TXcomSoundDefinition begin Result := TXcomSoundDefinition.Create(AType); end);
   FMapScripts := TXcomStringMap<TObjectList<TXcomMapScript>>.Create;
   FArticles := TXcomRuleRegistry<TXcomArticleDefinition>.Create(nil);
   FArticleSections := TXcomStringMap<Integer>.Create;
@@ -258,6 +280,7 @@ begin
   FAlienRaces.Free;
   FManufacture.Free;
   FResearch.Free;
+  FSoundDefinitions.Free;
   FStartingBase.Free;
   FSettings.Free;
   FConstants.Free;
@@ -689,6 +712,46 @@ begin
       FArticleSections.TryGetValue(AName, LOrder);
       Result := LOrder;
     end));
+end;
+
+procedure TXcomRuleset.LoadResourceConfig(const ADocument: IYamlNode);
+var
+  LItem, LColors, LColor, LLuts: IYamlNode;
+  LRule: TXcomSoundDefinition;
+  LStart, LLimit, LCurrent: Cardinal;
+  LValue: TXcomTransparencyColor;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'soundDefs').Items do
+  begin
+    LRule := FSoundDefinitions.LoadRule(LItem, 'type', False);
+    if Assigned(LRule) then
+      LRule.Load(LItem);
+  end;
+  LLuts := TXcomNodeReader.Field(ADocument, 'transparencyLUTs');
+  if not LLuts.IsDefined then
+    Exit;
+  LStart := FModData[FCurrentMod].Offset div TXcomModOffsets.TRANSPARENCY_SIZE_REDUCTION;
+  LLimit := FModData[FCurrentMod].Size div TXcomModOffsets.TRANSPARENCY_SIZE_REDUCTION;
+  LCurrent := 0;
+  if Cardinal(Length(FTransparencies)) < LStart + LLimit then
+    SetLength(FTransparencies, LStart + LLimit);
+  for LItem in LLuts.Items do
+  begin
+    LColors := TXcomNodeReader.Field(LItem, 'colors');
+    if not LColors.IsSequence then
+      raise EXcomModException.Create('unknown transparencyLUTs node type');
+    for LColor in LColors.Items do
+    begin
+      if LCurrent = LLimit then
+        raise EXcomModException.Create('transparencyLUTs mod limit reach');
+      LValue.R := Byte(LColor.Find(0).AsInteger(0));
+      LValue.G := Byte(LColor.Find(1).AsInteger(0));
+      LValue.B := Byte(LColor.Find(2).AsInteger(0));
+      LValue.Unused := Byte(LColor.Find(3).AsInteger(2));
+      FTransparencies[LStart + LCurrent] := LValue;
+      Inc(LCurrent);
+    end;
+  end;
 end;
 
 procedure TXcomRuleset.LoadDeployments(const ADocument: IYamlNode);

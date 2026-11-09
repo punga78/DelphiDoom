@@ -23,8 +23,13 @@ type
     ReservedSpace: Cardinal;
     /// <summary>The ruleset files of the mod, in the order the engine loads them</summary>
     Files: TArray<string>;
-    class function Make(const AName: string; AReservedSpace: Cardinal; const AFiles: TArray<string>)
-      : TXcomModSource; static;
+    /// <summary>
+    ///   The resource config file of the mod (ModInfo::getResourceConfigFile: sound definitions and transparency
+    ///   colors), read before the rulesets of all the mods; empty if the mod has none
+    /// </summary>
+    ResourceConfigFile: string;
+    class function Make(const AName: string; AReservedSpace: Cardinal; const AFiles: TArray<string>;
+      const AResourceConfigFile: string = ''): TXcomModSource; static;
   end;
 
   /// <summary>
@@ -65,9 +70,10 @@ end;
 
 { TXcomModSource }
 
-class function TXcomModSource.Make(const AName: string; AReservedSpace: Cardinal; const AFiles: TArray<string>)
-  : TXcomModSource;
+class function TXcomModSource.Make(const AName: string; AReservedSpace: Cardinal; const AFiles: TArray<string>;
+  const AResourceConfigFile: string): TXcomModSource;
 begin
+  Result.ResourceConfigFile := AResourceConfigFile;
   Result.Name := AName;
   Result.ReservedSpace := AReservedSpace;
   Result.Files := AFiles;
@@ -110,6 +116,13 @@ begin
   end;
   Result := TXcomRuleset.Create(FShared, FFiles);
   try
+    // the rulesets that can change how the vanilla resources load come first
+    for LIndex := 0 to High(AMods) do
+      if AMods[LIndex].ResourceConfigFile <> '' then
+      begin
+        Result.SetMods(LData, LIndex);
+        Result.LoadResourceConfig(FParser.LoadFile(AMods[LIndex].ResourceConfigFile));
+      end;
     for LIndex := 0 to High(AMods) do
     begin
       Result.SetMods(LData, LIndex);

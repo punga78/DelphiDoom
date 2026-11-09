@@ -89,6 +89,12 @@ type
     procedure DovrebbeControllareLeMissioniDegliScript;
     [Test]
     procedure DovrebbeCaricareIMod;
+    [Test]
+    procedure DovrebbeCaricareIlFileDelleRisorse;
+    [Test]
+    procedure DovrebbeLeggereLeMappeConNumeriEIlRecordDelleStatistiche;
+    [Test]
+    procedure DovrebbeSollevareErroriNelleMissioniAliene;
   end;
 
 implementation
@@ -98,7 +104,7 @@ uses
   DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.RuleSoldier,
   DelphiDoom.XcomMod.MapScript, DelphiDoom.XcomMod.ArticleDefinition, DelphiDoom.XcomMod.RuleAlienMission,
   DelphiDoom.XcomMod.RuleMissionScript, DelphiDoom.XcomMod.RuleRegistry, DelphiDoom.XcomMod.MapDataSet,
-  DelphiDoom.XcomMod.UnitStats;
+  DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomMod.IntStringMap;
 
 { TXcomFixedShared }
 
@@ -650,6 +656,120 @@ begin
       Assert.Contains(LError.Message, 'not defined');
   end;
   LLoader.Free;
+end;
+
+procedure TTestXcomRuleset.DovrebbeCaricareIlFileDelleRisorse;
+var
+  LLoader: TXcomModLoader;
+  LRuleset: TXcomRuleset;
+  LFiles: TXcomMemoryFiles;
+  LRef: IInterface;
+begin
+  LFiles := TXcomMemoryFiles.Create;
+  LRef := LFiles;
+  LFiles.Add('res.yml', '{soundDefs: [{type: S1, soundRanges: [[1, 3], [7], 5], sounds: [9, x], file: A.CAT}, {name: x}], ' +
+    'transparencyLUTs: [{colors: [[1, 2, 3, 4], [5, 6]]}, {colors: [[9, 9, 9]]}]}');
+  LFiles.Add('toomany.yml', '{transparencyLUTs: [{colors: [[1], [2], [3]]}]}');
+  LFiles.Add('badlut.yml', '{transparencyLUTs: [{colors: 3}]}');
+  LLoader := TXcomModLoader.Create(TYamlFactory.CreateParser(LFiles), TXcomFixedShared.Create, LFiles);
+  try
+    LRuleset := LLoader.LoadAll(TArray<TXcomModSource>.Create(TXcomModSource.Make('base', 1, nil, 'res.yml')));
+    try
+      Assert.AreEqual(7, Length(LRuleset.SoundDefinitions.Find('S1').SoundList),
+        '1, 2, 3 e due elementi che non sono una coppia (0), poi 9 e -1 per "x"');
+      Assert.AreEqual('A.CAT', LRuleset.SoundDefinitions.Find('S1').CatFile);
+      Assert.AreEqual(10, Length(LRuleset.Transparencies), '1000 / 100');
+      Assert.AreEqual(1, Integer(LRuleset.Transparencies[0].R));
+      Assert.AreEqual(4, Integer(LRuleset.Transparencies[0].Unused));
+      Assert.AreEqual(2, Integer(LRuleset.Transparencies[1].Unused), 'il quarto numero manca: 2');
+      Assert.AreEqual(9, Integer(LRuleset.Transparencies[2].R));
+    finally
+      LRuleset.Free;
+    end;
+    try
+      LLoader.LoadAll(TArray<TXcomModSource>.Create(TXcomModSource.Make('base', 0, nil, 'toomany.yml')));
+      Assert.Fail('troppi colori');
+    except
+      on LError: EXcomModException do
+        Assert.Contains(LError.Message, 'transparencyLUTs mod limit reach');
+    end;
+    try
+      LLoader.LoadAll(TArray<TXcomModSource>.Create(TXcomModSource.Make('base', 1, nil, 'badlut.yml')));
+      Assert.Fail('colors non e'' una lista');
+    except
+      on LError: EXcomModException do
+        Assert.Contains(LError.Message, 'unknown transparencyLUTs node type');
+    end;
+  finally
+    LLoader.Free;
+  end;
+end;
+
+procedure TTestXcomRuleset.DovrebbeLeggereLeMappeConNumeriEIlRecordDelleStatistiche;
+var
+  LMap: TXcomIntStringMap;
+  LFirst, LSecond, LSum: TXcomUnitStats;
+  LNode: IYamlNode;
+begin
+  LMap := TXcomIntStringMap.Create;
+  try
+    LNode := TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes('{files: {5: e, 2: b, 9: z}, other: 3}'));
+    LMap.ReadField(LNode, 'files');
+    Assert.AreEqual('2:b,5:e,9:z', LMap.ToText, 'in ordine di numero');
+    LMap.ReadField(LNode, 'other');
+    LMap.ReadField(LNode, 'missing');
+    Assert.AreEqual(3, LMap.Count, 'un campo che non e'' una mappa non cambia nulla');
+    LMap.SetValue(5, 'new');
+    Assert.AreEqual('new', LMap.Value(1));
+    Assert.AreEqual(2, LMap.Key(0));
+    LMap.ReadField(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes('{files: {1: a}}')), 'files');
+    Assert.AreEqual('1:a', LMap.ToText, 'una mappa nuova sostituisce');
+    Assert.WillRaise(
+      procedure
+      begin
+        LMap.ReadField(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes('{files: {x: a}}')), 'files');
+      end);
+  finally
+    LMap.Free;
+  end;
+  LFirst := Default(TXcomUnitStats);
+  LFirst.TimeUnits := 10;
+  LFirst.Melee := 3;
+  LSecond := Default(TXcomUnitStats);
+  LSecond.TimeUnits := 5;
+  LSecond.Health := 7;
+  LSum := LFirst + LSecond;
+  Assert.AreEqual(15, LSum.TimeUnits);
+  Assert.AreEqual(7, LSum.Health);
+  LSum := LFirst - LSecond;
+  Assert.AreEqual(5, LSum.TimeUnits);
+  Assert.AreEqual(-7, LSum.Health);
+  LSum := -LFirst;
+  Assert.AreEqual(-10, LSum.TimeUnits);
+  Assert.AreEqual(-3, LSum.Melee);
+  LFirst.Merge(LSecond);
+  Assert.AreEqual(5, LFirst.TimeUnits, 'il valore non zero sostituisce');
+  Assert.AreEqual(3, LFirst.Melee, 'zero lascia com''era');
+  Assert.AreEqual(7, LFirst.Health);
+  LNode := TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes('{stats: {tu: 4, psiSkill: 2}, text: x}'));
+  LSum := TXcomUnitStatsReader.Read(LNode, 'stats', LFirst);
+  Assert.AreEqual(4, LSum.TimeUnits);
+  Assert.AreEqual(0, LSum.Melee, 'decodificato in uno nuovo');
+  Assert.AreEqual(3, TXcomUnitStatsReader.Read(LNode, 'text', LFirst).Melee, 'non e'' una mappa: il predefinito');
+  Assert.AreEqual(3, TXcomUnitStatsReader.Read(LNode, 'missing', LFirst).Melee);
+end;
+
+procedure TTestXcomRuleset.DovrebbeSollevareErroriNelleMissioniAliene;
+begin
+  Assert.AreNotEqual('', LoadFails('alienMissions: [{type: M, waves: [3]}]'), 'un''ondata deve essere una mappa');
+  Assert.AreNotEqual('', LoadFails('alienMissions: [{type: M, missionWeights: {a: 1}}]'));
+  Load('alienMissions: [{type: M2, missionWeights: {1: 2}}]');
+  Load('alienMissions: [{type: M2, missionWeights: {3: 4}}]');
+  Assert.AreEqual(1, FRuleset.AlienMissions.Find('M2').WeightMonthCount, 'i pesi nuovi sostituiscono');
+  Assert.AreEqual(3, Integer(FRuleset.AlienMissions.Find('M2').WeightMonth(0)));
+  Assert.AreEqual(0, FRuleset.AlienMissions.Find('M2').GetWeight(1), 'prima del primo mese vale 0');
+  Assert.AreNotEqual('', LoadFails('alienMissions: [{type: M3, missionWeights: {1: x}}]'));
+  Assert.AreEqual(0, FRuleset.AlienMissions.Find('M3').WeightMonthCount, 'un errore lascia i pesi com''erano');
 end;
 
 end.
