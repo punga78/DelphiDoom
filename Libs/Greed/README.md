@@ -16,6 +16,12 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, comp
 | G1 | `IGreedArchive`: il contenitore `GREED.BLO` (intestazione da 10 byte, tabella da 12, nomi C), lump per nome e per indice, correzione dei dati | `BloArchive`, `LumpFixes`, `PstCorrection` |
 | G2 | la mappa: 18 piani da 4096 byte, caricamento dal lump o dal file `.LAY` | `Map`, `MapReader`, `MapLoader`, `FolderFiles` |
 | G3 | palette VGA e decodifica di immagini, flat, muri e sprite verso un buffer a 8 bit | `Palette`, `PictureDecoder`, `FlatDecoder`, `WallDecoder`, `SpriteDecoder`, `LumpClassifier` |
+| G5 | effetti sonori e musica senza BASS (dettagli in CLAUDE.md) | `Sound.Intf`, `TrigTables`, `SoundGeometry`, `SoundEffects`, `Music`, `SongSelector`, `SoundVolumes`, `AudioDevice` |
+| G6 | aritmetica in virgola fissa | `FixedMath` |
+| G7 | salvataggi: `player_t` packed, directory dei nomi | `SaveTypes`, `Save.Intf`, `SaveGames`, `SaveFolder` |
+| G8 | le 42 impostazioni di `m_defs`, file `xGreed.ini` | `Settings.Intf`, `Settings`, `SettingsStore` |
+| G9 | il mondo: piani, flag, porte, spawn, pendenze, altezza di pavimento e soffitto | `World.Intf`, `World`, `Slopes`, `Terrain` |
+| G10 (primo pezzo) | regole del giocatore: cura, danno, punteggio, nuova partita | `Player.Intf`, `PlayerRules` |
 | G4 | prova visiva: `Greed32 -data <cartella> [-list] [-map N] [-lump nome] [-png file]` | `PngEncoder`, `MapRenderer`, `PngExporter`, `Greed\` |
 
 **Non fatto (G5-G12)**: effetti sonori (`Libs\Sndfile`+`Libs\Audio`, volume e pan per distanza), musica (`Libs\Mikmod` al posto di BASS), asm di `r_public`/`g_delphi` -> `TFixedMath`, salvataggi (`player_t` packed), `LaunchXG` e configurazione, il mondo e la logica (`raven`, `spawn`, `sprites`: G10, XL), il renderer a livello di fotogramma e i FLI (G11), la presentazione del fotogramma senza DirectDraw (`IFramePresenter`, tolto `DirectX.pas`), il tempo e l'input al posto di `timer.pas`/`i_main`, Win64. `Greed32` non apre finestre e non gioca.
