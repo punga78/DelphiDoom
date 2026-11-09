@@ -48,9 +48,7 @@ uses
   r_flatinfo,
   r_span,
   r_span32,
-  r_draw,
-  r_hires,
-  v_video;
+  r_draw;
 
 //==============================================================================
 // R_DrawSpanNormal_Fog

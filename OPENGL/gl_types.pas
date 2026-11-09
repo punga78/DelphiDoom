@@ -73,21 +73,8 @@ type
 // MakeGLVertex
 //
 //==============================================================================
-function MakeGLVertex(const x, y, z: single): GLVertex;
 
 implementation
-
-//==============================================================================
-//
-// MakeGLVertex
-//
-//==============================================================================
-function MakeGLVertex(const x, y, z: single): GLVertex;
-begin
-  result.x := x;
-  result.y := y;
-  result.z := z;
-end;
 
 end.
 

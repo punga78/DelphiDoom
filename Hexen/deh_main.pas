@@ -37,7 +37,6 @@ interface
 
 uses
   d_delphi,
-  d_think,
   info_h;
 
 // A patch is read and applied by TEngineDehackedApplier
@@ -115,7 +114,6 @@ uses
   d_main,
   xn_strings,
   hu_stuff,
-  i_system,
   info,
   info_common,
   m_argv,
@@ -127,8 +125,6 @@ uses
   p_enemy,
   p_extra,
   p_common,
-  p_gender,
-  DelphiDoom.Obituary.Genders,
   p_pspr,
   p_pspr_h,
   p_inter,
@@ -137,11 +133,7 @@ uses
   p_sounds,
   p_simpledialog,
   psi_overlay,
-  r_renderstyle,
-  r_translations,
   sounddata,
-  sounds,
-  sc_states,
   v_data,
   sv_save;
 

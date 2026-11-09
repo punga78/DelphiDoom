@@ -60,7 +60,6 @@ type
     procedure FocusFirst;
     procedure FilterChanged;
     procedure SelectionChanged;
-    procedure ResizeText;
   end;
 
 implementation
@@ -196,11 +195,6 @@ begin
     FExample.SelectExample(LNode.Text);
   end;
   FillList;
-end;
-
-procedure TIdeTreePanel.ResizeText;
-begin
-  FText.Width := FTextPanel.Width - 16;
 end;
 
 end.

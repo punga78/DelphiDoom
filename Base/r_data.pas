@@ -199,7 +199,6 @@ function R_NewFlatNumForLump(const lump: integer): integer;
 // R_CacheFlat
 //
 //==============================================================================
-function R_CacheFlat(const lump: integer; const tag: integer): pointer;
 
 //==============================================================================
 // R_CheckTextureNumForName
@@ -2041,16 +2040,6 @@ begin
     exit;
   Result := stringtochar8(customcolormaps[- sn - 1].name);
 {$ENDIF}
-end;
-
-//==============================================================================
-//
-// R_CacheFlat
-//
-//==============================================================================
-function R_CacheFlat(const lump: integer; const tag: integer): pointer;
-begin
-  result := W_CacheLumpNum(lump, tag);
 end;
 
 //==============================================================================

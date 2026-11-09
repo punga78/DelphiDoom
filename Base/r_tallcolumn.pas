@@ -92,7 +92,6 @@ procedure R_DrawTallColumnUltra_Fog;
 // R_DrawTallColumnBase32
 //
 //==============================================================================
-procedure R_DrawTallColumnBase32;
 
 var
 //
@@ -335,39 +334,6 @@ begin
     dest^ := dc_colormap[dc_local[(LongWord(frac) shr FRACBITS) mod dc_height]];
 
     inc(dest, swidth);
-    inc(frac, fracstep);
-  end;
-end;
-
-//==============================================================================
-//
-// R_DrawTallColumnBase32
-//
-//==============================================================================
-procedure R_DrawTallColumnBase32;
-var
-  count: integer;
-  i: integer;
-  destl: PLongWord;
-  frac: fixed_t;
-  fracstep: fixed_t;
-  spot: integer;
-begin
-  count := dc_yh - dc_yl;
-
-  if count < 0 then
-    exit;
-
-  destl := @((ylookupl[dc_yl]^)[columnofs[dc_x]]);
-
-  fracstep := dc_iscale;
-  frac := dc_texturemid + (dc_yl - centery) * fracstep;
-  for i := 0 to count do
-  begin
-    spot := (LongWord(frac) shr FRACBITS) mod dc_height;
-    destl^ := dc_colormap32[dc_source[spot]];
-
-    inc(destl, SCREENWIDTH);
     inc(frac, fracstep);
   end;
 end;

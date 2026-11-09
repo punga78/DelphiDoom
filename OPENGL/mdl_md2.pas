@@ -68,7 +68,6 @@ type
     function StartFrame(const frame: string): integer; overload; virtual;
     function EndFrame(const frame: string): integer; overload; virtual;
     function FrameName(const i: integer): string; virtual;
-    function FrameIndex(const frame: string): integer; virtual;
   end;
 
 implementation
@@ -362,18 +361,6 @@ end;
 function TMD2Model.FrameName(const i: integer): string;
 begin
   result := fdata.GetGroupName(i);
-end;
-
-//==============================================================================
-//
-// TMD2Model.FrameIndex
-//
-//==============================================================================
-function TMD2Model.FrameIndex(const frame: string): integer;
-begin
-  result := fdata.FindGroup(frame);
-  if result = -1 then
-    result := fdata.FindGroup(d_delphi.strupper(frame));
 end;
 
 //------------------------------------------------------------------------------

@@ -335,14 +335,12 @@ procedure V_PageDrawer(const pagename: string);
 // Draw a linear block of pixels into the view buffer.
 //
 //==============================================================================
-procedure V_DrawBlock(x, y: integer; scrn: integer; width, height: integer; src: PByteArray);
 
 //==============================================================================
 //
 // V_DrawLongBlock
 //
 //==============================================================================
-procedure V_DrawLongBlock(x, y: integer; width, height: integer; src: PLongWordArray);
 
 //==============================================================================
 // V_GetBlock
@@ -350,7 +348,6 @@ procedure V_DrawLongBlock(x, y: integer; width, height: integer; src: PLongWordA
 // Reads a linear block of pixels into the view buffer.
 //
 //==============================================================================
-procedure V_GetBlock(x, y: integer; scrn: integer; width, height: integer; dest: PByteArray);
 
 //==============================================================================
 //
@@ -4946,113 +4943,6 @@ begin
   V_FullScreenStretch;
 end;
 {$ENDIF}
-
-//==============================================================================
-// V_DrawBlock8
-//
-// V_DrawBlock
-// Draw a linear block of pixels into the view buffer.
-//
-//==============================================================================
-procedure V_DrawBlock8(x, y: integer; scrn: integer; width, height: integer; src: PByteArray);
-var
-  dest: PByteArray;
-  swidth: integer;
-begin
-  swidth := V_GetScreenWidth(scrn);
-  dest := PByteArray(integer(screens[scrn]) + y * swidth + x);
-
-  while height <> 0 do
-  begin
-    memcpy(dest, src, width);
-    src := PByteArray(integer(src) + width);
-    dest := PByteArray(integer(dest) + swidth);
-    dec(height);
-  end;
-end;
-
-//==============================================================================
-//
-// V_DrawBlock32
-//
-//==============================================================================
-procedure V_DrawBlock32(x, y: integer; width, height: integer; src: PByteArray);
-var
-  dest: PLongWordArray;
-  swidth: integer;
-  i: integer;
-begin
-  swidth := V_GetScreenWidth(SCN_FG);
-  dest := @screen32[y * swidth + x];
-
-  while height <> 0 do
-  begin
-    for i := 0 to width - 1 do
-      dest[i] := videopal[src[i]];
-    src := PByteArray(integer(src) + width);
-    dest := @dest[swidth];
-    dec(height);
-  end;
-end;
-
-//==============================================================================
-//
-// V_DrawBlock
-//
-//==============================================================================
-procedure V_DrawBlock(x, y: integer; scrn: integer; width, height: integer; src: PByteArray);
-begin
-  if {$IFNDEF OPENGL}(videomode = vm32bit) and{$ENDIF} (scrn = SCN_FG) then
-    V_DrawBlock32(x, y, width, height, src)
-  else
-    V_DrawBlock8(x, y, scrn, width, height, src)
-end;
-
-//==============================================================================
-//
-// V_DrawLongBlock
-//
-//==============================================================================
-procedure V_DrawLongBlock(x, y: integer; width, height: integer; src: PLongWordArray);
-var
-  dest: PLongWordArray;
-  swidth: integer;
-begin
-  swidth := V_GetScreenWidth(SCN_FG);
-  dest := PLongWordArray(@screen32[y * swidth + x]);
-
-  while height <> 0 do
-  begin
-    memcpy(dest, src, width * SizeOf(LongWord));
-    src := PLongWordArray(@src[width]);
-    dest := PLongWordArray(@dest[swidth]);
-    dec(height);
-  end;
-end;
-
-//==============================================================================
-//
-// V_GetBlock
-// Gets a linear block of pixels from the view buffer.
-//
-//==============================================================================
-procedure V_GetBlock(x, y: integer; scrn: integer; width, height: integer; dest: PByteArray);
-var
-  src: PByteArray;
-  swidth: integer;
-begin
-  swidth := V_GetScreenWidth(scrn);
-
-  src := PByteArray(integer(screens[scrn]) + y * swidth + x);
-
-  while height <> 0 do
-  begin
-    memcpy(dest, src, width);
-    src := PByteArray(integer(src) + swidth);
-    dest := PByteArray(integer(dest) + width);
-    dec(height);
-  end;
-end;
 
 //==============================================================================
 //

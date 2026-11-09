@@ -54,7 +54,6 @@ type
     procedure Activate(const parms: pointer); overload;
     procedure Activate(const func: threadfunc_t; const parms: pointer); overload;
     procedure Wait;
-    function CheckJobDone: Boolean;
     function IsIdle: Boolean;
   end;
 
@@ -173,16 +172,6 @@ end;
 procedure TDThread.Wait;
 begin
   FWorker.Wait;
-end;
-
-//==============================================================================
-//
-// TDThread.CheckJobDone
-//
-//==============================================================================
-function TDThread.CheckJobDone: Boolean;
-begin
-  Result := FWorker.IsIdle;
 end;
 
 //==============================================================================

@@ -1004,11 +1004,6 @@ begin
   dc_texturemid := basetexturemid;
 end;
 
-procedure _add_sprite_task;
-begin
-  R_FillSpriteInfo_MT(R_SpriteAddMTInfo);
-end;
-
 //==============================================================================
 //
 // R_DrawMaskedColumnMT

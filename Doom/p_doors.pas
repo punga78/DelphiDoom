@@ -91,7 +91,6 @@ implementation
 uses
   d_player,
   g_game,
-  m_fixed,
   p_genlin,
   p_lights,
   p_plats,

@@ -188,7 +188,6 @@ function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
 // R_AddPointToBox
 //
 //==============================================================================
-procedure R_AddPointToBox(const x: integer; const y: integer; box: Pfixed_tArray);
 
 //==============================================================================
 // R_RenderPlayerView
@@ -723,25 +722,6 @@ begin
     inc(src);
     dec(cnt);
   end;
-end;
-
-//==============================================================================
-//
-// R_AddPointToBox
-// Expand a given bbox
-// so that it encloses a given point.
-//
-//==============================================================================
-procedure R_AddPointToBox(const x: integer; const y: integer; box: Pfixed_tArray);
-begin
-  if x < box[BOX_LEFT] then
-    box[BOX_LEFT] := x;
-  if x > box[BOX_RIGHT] then
-    box[BOX_RIGHT] := x;
-  if y < box[BOX_BOTTOM] then
-    box[BOX_BOTTOM] := y;
-  if y > box[BOX_TOP] then
-    box[BOX_TOP] := y;
 end;
 
 //==============================================================================
@@ -1343,21 +1323,6 @@ begin
   pta_x := x;
   pta_y := y;
   pta_ret := Result;
-end;
-
-//==============================================================================
-//
-// R_PointToAngleDbl
-// JVAL: very slow, do not use
-//
-//==============================================================================
-function R_PointToAngleDbl(const x: fixed_t; const y: fixed_t): angle_t;
-var
-  xx, yy: fixed_t;
-begin
-  xx := x - viewx;
-  yy := y - viewy;
-  result := Round(arctan2(yy, xx) * (ANG180 / D_PI));
 end;
 
 //==============================================================================

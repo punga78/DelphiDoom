@@ -119,7 +119,6 @@ var
 // R_CustomColorMapColor32
 //
 //==============================================================================
-function R_CustomColorMapColor32(const cm: Pcustomcolormap_t; const color: LongWord): LongWord;
 {$ENDIF}
 
 implementation
@@ -130,7 +129,6 @@ uses
   r_data,
   r_defs,
   r_draw,
-  v_data,
   w_wad,
   z_zone;
 
@@ -335,20 +333,6 @@ end;
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_CustomColorMapColor32
-//
-//==============================================================================
-function R_CustomColorMapColor32(const cm: Pcustomcolormap_t; const color: LongWord): LongWord;
-var
-  i, j, k: byte;
-begin
-  i := (color shr 16) shr DIHERSHIFT;
-  j := ((color shr 8) and $FF) shr DIHERSHIFT;
-  k := (color and $FF) shr DIHERSHIFT;
-  result := cm.dihertable[i, j, k];
-end;
 {$ENDIF}
 
 end.

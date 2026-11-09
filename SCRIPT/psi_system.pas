@@ -319,11 +319,9 @@ implementation
 uses
   d_delphi,
   Math,
-  c_con,
   i_io,
   i_system,
   m_defs,
-  m_misc,
   m_rnd,
   p_tick,
   tables;

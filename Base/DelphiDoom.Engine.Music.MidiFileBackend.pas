@@ -63,7 +63,6 @@ uses
   System.SysUtils,
   d_delphi,
   m_base,
-  i_system,
   i_midi,
   s_sound;
 

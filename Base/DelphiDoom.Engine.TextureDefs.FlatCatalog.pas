@@ -26,9 +26,7 @@ type
 implementation
 
 uses
-  d_delphi,
   r_data,
-  r_defs,
   w_wad;
 
 { TEngineFlatCatalog }

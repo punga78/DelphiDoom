@@ -180,7 +180,6 @@ function P_FindSectorFromLineTag(line: Pline_t; start: integer): integer;
 // P_FindMinSurroundingLight
 //
 //==============================================================================
-function P_FindMinSurroundingLight(sector: Psector_t; max: integer): integer;
 
 //==============================================================================
 //
@@ -1014,52 +1013,6 @@ begin
     end;
 
   result := -1;
-end;
-
-//==============================================================================
-// P_FindLineFromLineTag
-//
-// killough 4/16/98: Same thing, only for linedefs
-//
-// JVAL BOOM compatibility
-//
-//==============================================================================
-function P_FindLineFromLineTag(line: Pline_t; start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numlines - 1 do
-    if lines[i].tag = line.tag then
-    begin
-      result := i;
-      exit;
-    end;
-
-  result := -1;
-end;
-
-//==============================================================================
-// P_FindMinSurroundingLight
-//
-// Find minimum light from an adjacent sector
-//
-//==============================================================================
-function P_FindMinSurroundingLight(sector: Psector_t; max: integer): integer;
-var
-  i: integer;
-  line: Pline_t;
-  check: Psector_t;
-begin
-  result := max;
-  for i := 0 to sector.linecount - 1 do
-  begin
-    line := sector.lines[i];
-    check := getNextSector(line, sector);
-
-    if check <> nil then
-      if check.lightlevel < result then
-        result := check.lightlevel;
-  end;
 end;
 
 //==============================================================================

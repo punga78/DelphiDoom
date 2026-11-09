@@ -87,7 +87,6 @@ function get_cheatseq_string(const x: integer): AnsiString; overload; // JVAL
 implementation
 
 uses
-  d_delphi,
   i_system;
 
 //==============================================================================

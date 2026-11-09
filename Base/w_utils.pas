@@ -55,7 +55,6 @@ uses
   c_cmds,
   i_system,
   m_argv,
-  m_misc,
   w_wad,
   z_zone;
 

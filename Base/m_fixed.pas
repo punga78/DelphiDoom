@@ -169,7 +169,6 @@ function FixedDiv(const a, b: fixed_t): fixed_t;
 // FixedDiv_Positive
 //
 //==============================================================================
-function FixedDiv_Positive(const a, b: fixed_t): fixed_t;
 
 //==============================================================================
 //
@@ -281,7 +280,6 @@ function FixedMul64(const a, b: fixed64_t): fixed64_t;
 // FloatDiv
 //
 //==============================================================================
-function FloatDiv(const a, b: fixedfloat_t): fixedfloat_t;
 
 //==============================================================================
 //
@@ -599,19 +597,6 @@ end;
 
 //==============================================================================
 //
-// FixedDiv_Positive
-//
-//==============================================================================
-function FixedDiv_Positive(const a, b: fixed_t): fixed_t;
-begin
-  if (a shr 14) >= b then
-    result := MAXINT
-  else
-    result := FixedDiv2(a, b);
-end;
-
-//==============================================================================
-//
 // FixedDivLW
 //
 //==============================================================================
@@ -859,31 +844,6 @@ end;
 function FixedMul64(const a, b: fixed64_t): fixed64_t;
 begin
   result := Round(a / FRACUNIT * b);
-end;
-
-//==============================================================================
-//
-// FloatDiv
-//
-//==============================================================================
-function FloatDiv(const a, b: fixedfloat_t): fixedfloat_t;
-var
-  ad: fixedfloat_t;
-  bd: fixedfloat_t;
-begin
-  if b = 0 then
-  begin
-    if a < 0 then
-      result := MININT
-    else
-      result := MAXINT;
-  end
-  else
-  begin
-    ad := a / FRACUNIT;
-    bd := b / FRACUNIT;
-    result := (ad / bd) * FRACUNIT;
-  end;
 end;
 
 //==============================================================================

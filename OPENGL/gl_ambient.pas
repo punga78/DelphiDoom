@@ -49,7 +49,6 @@ procedure gld_AmbientDone;
 // gld_AmbientExecute
 //
 //==============================================================================
-procedure gld_AmbientExecute;
 
 implementation
 
@@ -67,64 +66,6 @@ var
   xstep, ystep: float;
   ambient_tex: PTexture;
   tex: GLUint;
-
-//==============================================================================
-//
-// gld_AmbientExecute
-//
-//==============================================================================
-procedure gld_AmbientExecute;
-var
-  x, y: integer;
-  i, j: integer;
-  f: float;
-  l: LongWord;
-  b, b2: byte;
-  pw: PLongWord;
-begin
-  pw := ambient_tex.GetImage;
-  for i := 0 to AMBIENTPRECISION - 1 do
-  begin
-    x := round(i * xstep);
-    if x < 0 then
-      x := 0
-    else if x >= SCREENWIDTH then
-      x := SCREENWIDTH - 1;
-    for j := 0 to AMBIENTPRECISION - 1 do
-    begin
-      y := Round (j * ystep);
-      if y < 0 then
-        y := 0
-      else if y >= SCREENHEIGHT then
-        x := SCREENHEIGHT - 1;
-      glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, @f);
-      l := Round((f * f * f) * 255);
-      if l > 255 then
-        l := 255;
-      b := 192;
-      b2 := l div 2;
-      pw^ := b2 + b2 shl 8 + b2 shl 16 + b shl 24;
-      Inc(pw);
-    end;
-  end;
-
-  glAlphaFunc(GL_LESS, 0.99);
-
-  glBindTexture(GL_TEXTURE_2D, tex);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, AMBIENTPRECISION, AMBIENTPRECISION, GL_RGBA, GL_UNSIGNED_BYTE, ambient_tex.GetImage);
-
-  glDisable(GL_ALPHA_TEST);
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(0.0, 0.0); glVertex2f(0.0, SCREENHEIGHT);
-    glTexCoord2f(0.0, 1.0); glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glTexCoord2f(1.0, 0.0); glVertex2f(0.0, 0.0);
-    glTexCoord2f(1.0, 1.0); glVertex2f(SCREENWIDTH, 0);
-  glEnd;
-  glEnable(GL_ALPHA_TEST);
-
-  glAlphaFunc(GL_GEQUAL, 0.5);
-
-end;
 
 //==============================================================================
 //

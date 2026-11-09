@@ -37,7 +37,6 @@ interface
 
 uses
   d_delphi,
-  d_think,
   m_fixed,
   info_h;
 

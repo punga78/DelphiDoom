@@ -53,7 +53,6 @@ procedure R_DrawColorColumnHi;
 // R_DrawColorColumnAverageMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColorColumnAverageMedium_Batch;
 {$ENDIF}
 
 //==============================================================================
@@ -61,7 +60,6 @@ procedure R_DrawColorColumnAverageMedium_Batch;
 // R_DrawColorColumnAverageHi_Batch
 //
 //==============================================================================
-procedure R_DrawColorColumnAverageHi_Batch;
 {$IFDEF DOOM}
 
 //==============================================================================
@@ -69,7 +67,6 @@ procedure R_DrawColorColumnAverageHi_Batch;
 // R_DrawColorColumnAlphaMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColorColumnAlphaMedium_Batch;
 {$ENDIF}
 
 //==============================================================================
@@ -77,7 +74,6 @@ procedure R_DrawColorColumnAlphaMedium_Batch;
 // R_DrawColorColumnAlphaHi_Batch
 //
 //==============================================================================
-procedure R_DrawColorColumnAlphaHi_Batch;
 
 var
   dc_color: byte;
@@ -1679,50 +1675,11 @@ end;
 
 {$IFDEF DOOM}
 
-//==============================================================================
-//
-// R_DrawColorColumnAverageMedium_Batch
-//
-//==============================================================================
-procedure R_DrawColorColumnAverageMedium_Batch;
-begin
-
-end;
 {$ENDIF}
-
-//==============================================================================
-//
-// R_DrawColorColumnAverageHi_Batch
-//
-//==============================================================================
-procedure R_DrawColorColumnAverageHi_Batch;
-begin
-
-end;
 
 {$IFDEF DOOM}
 
-//==============================================================================
-//
-// R_DrawColorColumnAlphaMedium_Batch
-//
-//==============================================================================
-procedure R_DrawColorColumnAlphaMedium_Batch;
-begin
-
-end;
-
 {$ENDIF}
-
-//==============================================================================
-//
-// R_DrawColorColumnAlphaHi_Batch
-//
-//==============================================================================
-procedure R_DrawColorColumnAlphaHi_Batch;
-begin
-
-end;
 
 {$IFNDEF OPTIMIZE_FOR_SIZE}
 initialization

@@ -30,8 +30,7 @@ implementation
 
 uses
   d_delphi,
-  sounddata,
-  sounds;
+  sounddata;
 
 { TEngineSoundInfoListener }
 

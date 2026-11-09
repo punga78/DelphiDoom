@@ -162,8 +162,7 @@ implementation
 
 uses
   DelphiDoom.Models.Types,
-  mdl_script,
-  mdl_script_functions;
+  mdl_script;
 
 var
   currentcommandstream: IModelCommandStream;

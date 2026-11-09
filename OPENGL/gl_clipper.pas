@@ -78,7 +78,6 @@ procedure gld_ClipperDone;
 implementation
 
 uses
-  d_delphi,
   DelphiDoom.GlMath.ViewAngle,
   i_system,
   r_main;

@@ -3,10 +3,25 @@ unit frm_classes;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, ComCtrls, StdCtrls, Buttons, ExtCtrls,
-  SynEdit, SynHighlighterDDScript,
-  DelphiDoom.Ide.Composition, DelphiDoom.Ide.Vcl.ExampleEdit, DelphiDoom.Ide.Vcl.TreePanel,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ImgList,
+  ComCtrls,
+  StdCtrls,
+  Buttons,
+  ExtCtrls,
+  SynEdit,
+  SynHighlighterDDScript,
+  DelphiDoom.Ide.Composition,
+  DelphiDoom.Ide.Vcl.ExampleEdit,
+  DelphiDoom.Ide.Vcl.TreePanel,
   DelphiDoom.Ide.ClassCatalog;
 
 type
@@ -54,7 +69,7 @@ implementation
 {$R *.dfm}
 
 uses
-  DelphiDoom.Ide.Types, DelphiDoom.Ide.Outline;
+  DelphiDoom.Ide.Outline;
 
 constructor TFrame_Classes.Create(AOwner: TComponent);
 begin

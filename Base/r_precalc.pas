@@ -84,7 +84,6 @@ var
   precal32_ic: array[0..767] of LongWord;
   precal8_tolong: array[0..255] of LongWord;
   precal8_toword: array[0..255] of LongWord;
-  precal_light: array[0..255] of byte;
   precalc_fog_r: array[0..255] of PIntegerArray;
   precalc_fog_g: array[0..255] of PIntegerArray;
   precalc_fog_b: array[0..255] of PIntegerArray;

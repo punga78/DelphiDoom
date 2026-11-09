@@ -36,7 +36,6 @@ type
 implementation
 
 uses
-  d_delphi,
   v_video;
 
 { TEngineTexturePaletteSource }

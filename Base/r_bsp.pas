@@ -103,7 +103,6 @@ var
 // R_UnderWater
 //
 //==============================================================================
-function R_UnderWater: boolean;
 
 {$ENDIF}
 implementation
@@ -309,22 +308,6 @@ begin
   result := sec;
 end;
 
-//==============================================================================
-//
-// R_UnderWater
-//
-//==============================================================================
-function R_UnderWater: boolean;
-begin
-  if viewplayer <> nil then
-    if viewplayer.mo <> nil then
-    begin
-      result := (Psubsector_t(viewplayer.mo.subsector).sector.heightsec <> -1) and
-                (viewz <= sectors[Psubsector_t(viewplayer.mo.subsector).sector.heightsec].floorheight);
-      exit;
-    end;
-  result := false;
-end;
 {$ENDIF}
 
 //==============================================================================

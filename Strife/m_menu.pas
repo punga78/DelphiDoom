@@ -572,17 +572,6 @@ begin
 end;
 
 //==============================================================================
-//
-// M_StopMessage
-//
-//==============================================================================
-procedure M_StopMessage;
-begin
-  menuactive := messageLastMenuActive;
-  messageToPrint := 0;
-end;
-
-//==============================================================================
 // M_StringWidth
 //
 // Find string width from hu_font chars

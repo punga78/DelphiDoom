@@ -53,7 +53,6 @@ uses
   info_h,
   info_common,
   DelphiDoom.Obituary.Genders,
-  p_mobj_h,
   r_renderstyle,
   sc_states;
 

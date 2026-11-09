@@ -32,7 +32,6 @@ implementation
 
 uses
   SysUtils,
-  d_think,
   deh_base,
   info_h,
   info,

@@ -477,36 +477,6 @@ end;
 
 //==============================================================================
 //
-// M_DrawThermoNarrow
-//
-//==============================================================================
-procedure M_DrawThermoNarrow(x, y, thermWidth, thermDot: integer);
-var
-  xx: integer;
-  i: integer;
-  tmpdot: integer;
-begin
-  xx := x;
-  V_DrawPatch(xx - 24, y, SCN_TMP, 'M_SLDLT', false);
-  xx := xx + 8;
-  for i := 0 to thermWidth - 1 do
-  begin
-    V_DrawPatch(xx, y, SCN_TMP, 'M_SLDMD1', false);
-    xx := xx + 5;
-  end;
-  V_DrawPatch(xx, y, SCN_TMP, 'M_SLDRT', false);
-
-  tmpdot := thermDot;
-  if tmpdot < 0 then
-    tmpdot := 0
-  else if tmpdot >= thermWidth then
-    tmpdot := thermWidth - 1;
-  V_DrawPatch((x + 8) + tmpdot * 5, y + 8, SCN_TMP,
-    'M_SLDKB', false);
-end;
-
-//==============================================================================
-//
 // M_StartMessage
 //
 //==============================================================================
@@ -522,17 +492,6 @@ begin
   messageNeedsInput := input;
   mn_makescreenshot := true;
   menuactive := true;
-end;
-
-//==============================================================================
-//
-// M_StopMessage
-//
-//==============================================================================
-procedure M_StopMessage;
-begin
-  menuactive := messageLastMenuActive;
-  messageToPrint := 0;
 end;
 
 //==============================================================================
@@ -660,22 +619,6 @@ begin
 end;
 
 //==============================================================================
-// M_StringHeight2
-//
-//      Find string height from hu_font chars
-//
-//==============================================================================
-function M_StringHeight2(const str: string): integer;
-var
-  i: integer;
-begin
-  result := 24;
-  for i := 1 to Length(str) do
-    if str[i] = #13 then
-      result := result + 24;
-end;
-
-//==============================================================================
 //
 // M_WriteText2
 //
@@ -765,25 +708,6 @@ begin
     else
       result := result + hu_font4[c].width;
   end;
-end;
-
-//==============================================================================
-// M_StringHeight4
-//
-//      Find string height from hu_font chars
-//
-//==============================================================================
-function M_StringHeight4(const str: string): integer;
-var
-  i: integer;
-  height: integer;
-begin
-  height := hu_font4[0].height;
-
-  result := height;
-  for i := 1 to Length(str) do
-    if str[i] = #13 then
-      result := result + height;
 end;
 
 //

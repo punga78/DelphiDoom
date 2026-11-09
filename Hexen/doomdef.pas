@@ -36,8 +36,7 @@ unit doomdef;
 interface
 
 uses
-  d_delphi,
-  m_fixed;
+  d_delphi;
 
 //
 // Global parameters/defines.

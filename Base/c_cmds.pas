@@ -31,7 +31,6 @@ unit c_cmds;
 interface
 
 uses
-  d_delphi,
   DelphiDoom.Console.Intf;
 
 type

@@ -458,38 +458,6 @@ begin
 end;
 
 //==============================================================================
-// AM_getIslope
-//
-//==============================================================================
-procedure AM_getIslope(ml: Pmline_t; _is: Pislope_t);
-var
-  dx, dy: integer;
-begin
-  dx := ml.b.x - ml.a.x;
-  dy := ml.a.y - ml.b.y;
-
-  if dy = 0 then
-  begin
-    if dx < 0 then
-      _is.islp := -MAXINT
-    else
-      _is.islp := MAXINT
-  end
-  else
-    _is.islp := FixedDiv(dx, dy);
-
-  if dx = 0 then
-  begin
-    if dy < 0 then
-      _is.slp := -MAXINT
-    else
-      _is.slp := MAXINT
-  end
-  else
-    _is.slp := FixedDiv(dy, dx);
-end;
-
-//==============================================================================
 //
 // AM_Configure
 //
@@ -822,17 +790,6 @@ begin
   am_navigator.MinOutWindowScale;
 end;
 
-//==============================================================================
-// AM_maxOutWindowScale
-//
-// set the window scale to the minimum size
-//
-//==============================================================================
-procedure AM_maxOutWindowScale;
-begin
-  am_navigator.MaxOutWindowScale;
-end;
-
 //
 // Handle events (user inputs) in automap mode
 //
@@ -1027,22 +984,6 @@ var
   nexttic: integer = 0;
   litelevels: array[0..NUMLITELEVELS - 1] of integer = (0, 4, 7, 10, 12, 14, 15, 15);
   litelevelscnt: integer = 0;
-
-//==============================================================================
-//
-// AM_updateLightLev
-//
-//==============================================================================
-procedure AM_updateLightLev;
-begin
-  // Change light level
-  if amclock > nexttic then
-  begin
-    lightlev := litelevels[litelevelscnt];
-    litelevelscnt := (litelevelscnt + 1) mod NUMLITELEVELS;
-    nexttic := amclock + 6 - (amclock mod 6);
-  end;
-end;
 
 //==============================================================================
 //

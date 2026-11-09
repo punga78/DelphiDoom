@@ -3,10 +3,25 @@ unit frm_actordef;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, ComCtrls, StdCtrls, Buttons, ExtCtrls,
-  SynEdit, SynHighlighterActorDef,
-  DelphiDoom.Ide.Composition, DelphiDoom.Ide.Vcl.ExampleEdit, DelphiDoom.Ide.Vcl.ListPanel;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ImgList,
+  ComCtrls,
+  StdCtrls,
+  Buttons,
+  ExtCtrls,
+  SynEdit,
+  SynHighlighterActorDef,
+  DelphiDoom.Ide.Composition,
+  DelphiDoom.Ide.Vcl.ExampleEdit,
+  DelphiDoom.Ide.Vcl.ListPanel;
 
 type
   /// <summary>
@@ -55,8 +70,8 @@ implementation
 {$R *.dfm}
 
 uses
-  DelphiDoom.Ide.LibraryTable, DelphiDoom.Ide.NameValueTable, DelphiDoom.Ide.ActorDefFunctionTable,
-  DelphiDoom.Ide.UnitFunctionTable;
+  DelphiDoom.Ide.LibraryTable,
+  DelphiDoom.Ide.ActorDefFunctionTable;
 
 constructor TFrame_Actordef.Create(AOwner: TComponent);
 begin

@@ -419,26 +419,6 @@ end;
 
 //==============================================================================
 //
-// P_GetMapCDTrack
-//
-//==============================================================================
-function P_GetMapCDTrack(map: integer): integer;
-begin
-  result := MapInfo[P_QualifyMap(map)].cdTrack;
-end;
-
-//==============================================================================
-//
-// P_GetMapWarpTrans
-//
-//==============================================================================
-function P_GetMapWarpTrans(map: integer): integer;
-begin
-  result := MapInfo[P_QualifyMap(map)].warpTrans;
-end;
-
-//==============================================================================
-//
 // P_GetMapNextMap
 //
 //==============================================================================
@@ -558,79 +538,6 @@ end;
 function P_GetMapFadeTable(map: integer): integer;
 begin
   result := MapInfo[P_QualifyMap(map)].fadetable;
-end;
-
-//==============================================================================
-//
-// P_PutMapSongLump
-//
-//==============================================================================
-procedure P_PutMapSongLump(map: integer; const lumpName: string);
-begin
-  if (map < 1) or (map > MapCount) then
-    exit;
-
-  MapInfo[map].songLump := lumpName;
-end;
-
-//==============================================================================
-//
-// P_GetCDStartTrack
-//
-//==============================================================================
-function P_GetCDStartTrack: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_STARTTRACK - MCMD_CD_STARTTRACK];
-end;
-
-//==============================================================================
-//
-// P_GetCDEnd1Track
-//
-//==============================================================================
-function P_GetCDEnd1Track: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_END1TRACK - MCMD_CD_STARTTRACK];
-end;
-
-//==============================================================================
-//
-// P_GetCDEnd2Track
-//
-//==============================================================================
-function P_GetCDEnd2Track: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_END2TRACK - MCMD_CD_STARTTRACK];
-end;
-
-//==============================================================================
-//
-// P_GetCDEnd3Track
-//
-//==============================================================================
-function P_GetCDEnd3Track: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_END3TRACK - MCMD_CD_STARTTRACK];
-end;
-
-//==============================================================================
-//
-// P_GetCDIntermissionTrack
-//
-//==============================================================================
-function P_GetCDIntermissionTrack: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_INTERTRACK - MCMD_CD_STARTTRACK];
-end;
-
-//==============================================================================
-//
-// P_GetCDTitleTrack
-//
-//==============================================================================
-function P_GetCDTitleTrack: integer;
-begin
-  result := cd_NonLevelTracks[MCMD_CD_TITLETRACK - MCMD_CD_STARTTRACK];
 end;
 
 end.

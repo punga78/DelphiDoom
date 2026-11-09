@@ -444,40 +444,6 @@ begin
   memfree(oscreen, allocscreensize);
 end;
 
-//==============================================================================
-//
-// glEnable2D
-//
-//==============================================================================
-procedure glEnable2D;
-var
-  vPort: array[0..3] of GLInt;
-begin
-  glGetIntegerv(GL_VIEWPORT, @vPort);
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-end;
-
-//==============================================================================
-//
-// glDisable2D
-//
-//==============================================================================
-procedure glDisable2D;
-begin
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix();
-end;
-
 var
   set_hud: boolean;
 

@@ -33,7 +33,6 @@ interface
 uses
   d_delphi,
   d_think,
-  m_fixed,
   DelphiDoom.Actions.Intf,
   DelphiDoom.TableExport.Intf,
   DelphiDoom.Engine.Dehacked.Intf;
@@ -113,7 +112,6 @@ procedure DEH_ParseFile(const filename: string);
 // DEH_StringToCString
 //
 //==============================================================================
-function DEH_StringToCString(const s: string): string;
 
 //==============================================================================
 //
@@ -643,34 +641,6 @@ begin
   finally
     s.Free;
     fnames.Free;
-  end;
-end;
-
-//==============================================================================
-//
-// DEH_StringToCString
-//
-//==============================================================================
-function DEH_StringToCString(const s: string): string;
-var
-  i, len: integer;
-begin
-  result := '';
-  if s = '' then
-  begin
-    exit;
-  end;
-
-  len := Length(s);
-  for i := 1 to len do
-  begin
-    if s[i] <> #13 then
-    begin
-      if s[i] = #10 then
-        result := result + '\n'
-      else
-        result := result + s[i];
-    end;
   end;
 end;
 

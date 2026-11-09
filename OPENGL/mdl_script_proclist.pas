@@ -90,7 +90,6 @@ procedure MDL_RegisterProcsExec(const E: TPSExec);
 // MDL_Procs
 //
 //==============================================================================
-function MDL_Procs: string;
 
 implementation
 
@@ -359,18 +358,6 @@ end;
 procedure MDL_RegisterProcsExec(const E: TPSExec);
 begin
   proclist.RegisterProcsExec(E);
-end;
-
-//==============================================================================
-//
-// MDL_Procs
-//
-//==============================================================================
-function MDL_Procs: string;
-begin
-  MDL_InitProcList;
-  result := proclist.GetDeclarations;
-  MDL_ShutDownProcList;
 end;
 
 end.

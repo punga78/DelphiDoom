@@ -45,7 +45,6 @@ uses
   TypInfo,
   DelphiDoom.Dehacked.Types,
   DelphiDoom.Dehacked.Section,
-  c_cmds,
   doomdef,
   deh_base,
   d_main,
@@ -57,8 +56,6 @@ uses
   info,
   info_common,
   m_argv,
-  m_fixed,
-  ps_main,
   p_mobj,
   p_mobj_h,
   p_enemy,
@@ -69,18 +66,13 @@ uses
   p_pspr,
   p_pspr_h,
   p_inter,
-  p_musinfo,
-  p_sounds,
-  p_simpledialog,
-  psi_overlay,
   r_renderstyle,
   DelphiDoom.Palette.TranslationBlood,
   sounddata,
   sounds,
   sc_params,
   DelphiDoom.Scanner.Text,
-  sc_states,
-  v_data;
+  sc_states;
 
 const
   SParserMissing = 'TEngineDehackedApplier: the parser is nil';

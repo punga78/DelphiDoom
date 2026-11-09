@@ -178,14 +178,12 @@ function R_ColorMean(const c1, c2: LongWord): LongWord; register;
 // R_ColorLightAverage
 //
 //==============================================================================
-function R_ColorLightAverage(const c1, c2: LongWord; const factor, lfactor: fixed_t): LongWord;
 
 //==============================================================================
 //
 // R_InverseLightAverage
 //
 //==============================================================================
-function R_InverseLightAverage(const c1, c2: LongWord; const factor: fixed_t): LongWord;
 
 //==============================================================================
 //
@@ -213,7 +211,6 @@ function R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord;
 // R_InverseLight
 //
 //==============================================================================
-function R_InverseLight(const c: LongWord): LongWord;
 
 //==============================================================================
 //
@@ -227,7 +224,6 @@ function R_FuzzLight(const c: LongWord): LongWord;
 // R_ColorLightAdd
 //
 //==============================================================================
-function R_ColorLightAdd(const c1, r, g, b: LongWord): LongWord; register;
 
 {$IFNDEF OPENGL}
 
@@ -776,65 +772,6 @@ end;
 
 //==============================================================================
 //
-// R_ColorLightAverage
-//
-//==============================================================================
-function R_ColorLightAverage(const c1, c2: LongWord;
-  const factor, lfactor: fixed_t): LongWord;
-var
-  r1, g1, b1: byte;
-  r2, g2, b2: byte;
-  r, g, b: LongWord;
-  factor1: fixed_t;
-  factor2: fixed_t;
-begin
-  r1 := c1;
-  g1 := c1 shr 8;
-  b1 := c1 shr 16;
-  r2 := c2;
-  g2 := c2 shr 8;
-  b2 := c2 shr 16;
-
-  factor1 := ((FRACUNIT - 1 - factor) * lfactor) shr FRACBITS;
-  factor2 := (factor * lfactor) shr FRACBITS;
-
-  r := ((r2 * factor2) + (r1 * factor1)) shr FRACBITS;
-  g := ((g2 * factor2) + (g1 * factor1)) shr FRACBITS;
-  b := ((b2 * factor2) + (b1 * factor1)) shr FRACBITS;
-  result := r + g shl 8 + b shl 16;
-end;
-
-//==============================================================================
-//
-// R_InverseLightAverage
-//
-//==============================================================================
-function R_InverseLightAverage(const c1, c2: LongWord;
-  const factor: fixed_t): LongWord;
-var
-  r1, g1, b1: byte;
-  r2, g2, b2: byte;
-  r, g, b: LongWord;
-  factor1: fixed_t;
-begin
-  r1 := c1;
-  g1 := c1 shr 8;
-  b1 := c1 shr 16;
-  r2 := c2;
-  g2 := c2 shr 8;
-  b2 := c2 shr 16;
-
-  factor1 := FRACUNIT - 1 - factor;
-
-  r := ((r2 * factor) + (r1 * factor1));
-  g := ((g2 * factor) + (g1 * factor1));
-  b := ((b2 * factor) + (b1 * factor1));
-  r := 255 - (r + g + b) div (FRACUNIT * 3);
-  result := r + r shl 8 + r shl 16;
-end;
-
-//==============================================================================
-//
 // R_ColorMidAverage
 //
 //==============================================================================
@@ -907,23 +844,6 @@ end;
 
 //==============================================================================
 //
-// R_InverseLight
-//
-//==============================================================================
-function R_InverseLight(const c: LongWord): LongWord;
-var
-  r1, g1, b1: byte;
-  c1: LongWord;
-begin
-  r1 := c;
-  g1 := c shr 8;
-  b1 := c shr 16;
-  c1 := 255 - (r1 + g1 + b1) div 3;
-  result := c1 + c1 shl 8 + c1 shl 16;
-end;
-
-//==============================================================================
-//
 // R_FuzzLight
 //
 //==============================================================================
@@ -939,30 +859,6 @@ begin
   g := g1 shr 3 * 7;
   b := b1 shr 3 * 7;
   result := r + g shl 8 + b shl 16;
-end;
-
-//==============================================================================
-//
-// R_ColorLightAdd
-//
-//==============================================================================
-function R_ColorLightAdd(const c1, r, g, b: LongWord): LongWord; register;
-var
-  r1, g1, b1: LongWord;
-begin
-  b1 := c1 and $ff;
-  if b > 0 then
-    b1 := b1 + ((255 - b1) * b) div 256;
-
-  g1 := (c1 shr 8) and $ff;
-  if g > 0 then
-    g1 := g1 + ((255 - g1) * g) div 256;
-
-  r1 := (c1 shr 16) and $ff;
-  if r > 0 then
-    r1 := r1 + ((255 - r1) * r) div 256;
-
-  result := b1 + g1 shl 8 + r1 shl 16;
 end;
 
 {$IFNDEF OPENGL}

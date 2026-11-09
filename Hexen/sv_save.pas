@@ -157,7 +157,6 @@ uses
   i_system,
   i_tmp,
   tables,
-  m_misc,
   m_argv,
   a_action,
   p_3dfloors,
@@ -184,7 +183,6 @@ uses
   p_map,
   p_params,
   p_levelinfo,
-  p_udmf,
   po_man,
   ps_main,
   psi_globals,
@@ -455,16 +453,6 @@ end;
 
 //==============================================================================
 //
-// StreamOutLongWord
-//
-//==============================================================================
-procedure StreamOutLongWord(val: LongWord);
-begin
-  SavingFP.Write(val, SizeOf(LongWord));
-end;
-
-//==============================================================================
-//
 // StreamOutString
 //
 //==============================================================================
@@ -499,16 +487,6 @@ begin
     if b = 0 then
       exit;
   end;
-end;
-
-//==============================================================================
-//
-// StreamOutFloat
-//
-//==============================================================================
-procedure StreamOutFloat(val: float);
-begin
-  SavingFP.Write(val, SizeOf(float));
 end;
 
 const

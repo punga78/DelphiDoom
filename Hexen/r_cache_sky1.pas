@@ -44,7 +44,6 @@ implementation
 uses
   d_delphi,
   m_fixed,
-  r_hires,
   r_cache_main,
   r_cache_walls,
   r_column,
