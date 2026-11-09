@@ -88,6 +88,6 @@ Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
 }
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
-git diff --output=$patch
+git diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
 git checkout -- Doom Heretic Hexen Strife Libs\OpenGl\Legacy Base
 Write-Host "Scritto $patch"
