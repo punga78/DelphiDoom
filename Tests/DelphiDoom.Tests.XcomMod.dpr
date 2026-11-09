@@ -34,6 +34,7 @@ uses
   DelphiDoom.XcomMod.RuleCommendations in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCommendations.pas',
   DelphiDoom.XcomMod.ModOffsets in '..\Libs\XcomMod\DelphiDoom.XcomMod.ModOffsets.pas',
   DelphiDoom.XcomMod.RuleCraftWeapon in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCraftWeapon.pas',
+  DelphiDoom.XcomMod.RuleItem in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleItem.pas',
   DelphiDoom.XcomMod.RuleRegistry in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleRegistry.pas',
   DelphiDoom.XcomMod.Ruleset in '..\Libs\XcomMod\DelphiDoom.XcomMod.Ruleset.pas',
   DelphiDoom.XcomMod.ModLoader in '..\Libs\XcomMod\DelphiDoom.XcomMod.ModLoader.pas',

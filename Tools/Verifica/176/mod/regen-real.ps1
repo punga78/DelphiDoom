@@ -23,6 +23,12 @@ foreach ($r in $runs) {
   $user = Join-Path $Work $r[0]
   New-Item -ItemType Directory -Force $user | Out-Null
   Set-Content (Join-Path $user 'options.cfg') $r[2] -NoNewline
-  $p = Start-Process -FilePath "$Work\modload.exe" -ArgumentList $data, $user, (Join-Path $golden $r[1]) -Wait -PassThru -NoNewWindow
+  $raw = Join-Path $Work $r[1]
+  $p = Start-Process -FilePath "$Work\modload.exe" -ArgumentList $data, $user, $raw -Wait -PassThru -NoNewWindow
   if ($p.ExitCode -ne 0) { throw "modload failed for $($r[1])" }
+  # the golden is committed gzipped (the dump is a few MB of text)
+  $in = [IO.File]::OpenRead($raw)
+  $out = [IO.File]::Create((Join-Path $golden ($r[1] + '.gz')))
+  $gz = New-Object IO.Compression.GZipStream($out, [IO.Compression.CompressionLevel]::Optimal)
+  $in.CopyTo($gz); $gz.Dispose(); $out.Dispose(); $in.Dispose()
 }

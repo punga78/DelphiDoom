@@ -61,6 +61,30 @@ static void DumpCraftWeapons(Mod* m) {
   }
 }
 
+// F of a member: the key is the name of the member without its underscore
+#define FM(x) F(#x + 1, r->x)
+static void DumpItems(Mod* m) {
+  for (auto& p : m->_items) {
+    RuleItem* r = p.second;
+    Begin("items", p.first);
+    FM(_type); FM(_name); FM(_requires); FM(_size); FM(_costBuy); FM(_costSell); FM(_transferTime); FM(_weight);
+    FM(_bigSprite); FM(_floorSprite); FM(_handSprite); FM(_bulletSprite); FM(_fireSound); FM(_hitSound); FM(_hitAnimation);
+    FM(_power); FM(_compatibleAmmo); F("damageType", (int)r->_damageType);
+    FM(_accuracyAuto); FM(_accuracySnap); FM(_accuracyAimed); FM(_tuAuto); FM(_tuSnap); FM(_tuAimed); FM(_clipSize);
+    FM(_accuracyMelee); FM(_tuMelee); F("battleType", (int)r->_battleType); FM(_twoHanded); FM(_fixedWeapon);
+    FM(_waypoints); FM(_invWidth); FM(_invHeight); FM(_painKiller); FM(_heal); FM(_stimulant); FM(_woundRecovery);
+    FM(_healthRecovery); FM(_stunRecovery); FM(_energyRecovery); FM(_tuUse); FM(_recoveryPoints); FM(_armor);
+    FM(_turretType); FM(_recover); FM(_ignoreInBaseDefense); FM(_liveAlien); FM(_blastRadius); FM(_attraction);
+    FM(_flatRate); FM(_arcingShot); FM(_listOrder); FM(_maxRange); FM(_aimRange); FM(_snapRange); FM(_autoRange);
+    FM(_minRange); FM(_dropoff); FM(_bulletSpeed); FM(_explosionSpeed); FM(_autoShots); FM(_shotgunPellets);
+    FM(_zombieUnit); FM(_strengthApplied); FM(_skillApplied); FM(_LOSRequired); FM(_underwaterOnly); FM(_landOnly);
+    FM(_meleeSound); FM(_meleePower); FM(_meleeAnimation); FM(_meleeHitSound); FM(_specialType); FM(_vaporColor);
+    FM(_vaporDensity); FM(_vaporProbability);
+    F("explosionRadius", r->getExplosionRadius()); F("maxRangeSq", r->getMaxRangeSq()); F("isRifle", r->isRifle());
+    F("isPistol", r->isPistol());
+  }
+}
+
 static void DumpInventories(Mod* m) {
   for (auto& p : m->_invs) {
     RuleInventory* r = p.second;
@@ -138,6 +162,7 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("countries")) DumpCountries(m);
   if (Wanted("regions")) DumpRegions(m);
   if (Wanted("craftWeapons")) DumpCraftWeapons(m);
+  if (Wanted("items")) DumpItems(m);
   if (Wanted("invs")) DumpInventories(m);
   if (Wanted("research")) DumpResearch(m);
   if (Wanted("manufacture")) DumpManufacture(m);

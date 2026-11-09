@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.XcomMod.Types, DelphiDoom.Yaml.Factory;
+  System.ZLib, DelphiDoom.XcomMod.Types, DelphiDoom.Yaml.Factory;
 
 { TXcomGoldenShared }
 
@@ -117,16 +117,29 @@ end;
 constructor TXcomRealData.Create(const AGoldenName: string);
 var
   LPath: string;
+  LSource: TFileStream;
+  LUnzipped: TDecompressionStream;
 begin
   inherited Create;
   FGolden := TStringList.Create;
   FSprites := TDictionary<string, Integer>.Create;
   FSounds := TDictionary<string, Integer>.Create;
   FSources := TList<TXcomModSource>.Create;
-  LPath := FindUp('Tests\Data\XcomMod\' + AGoldenName, False);
+  // the golden is committed gzipped
+  LPath := FindUp('Tests\Data\XcomMod\' + AGoldenName + '.gz', False);
   if LPath = '' then
     raise Exception.CreateFmt('Golden %s not found', [AGoldenName]);
-  FGolden.LoadFromFile(LPath, TEncoding.UTF8);
+  LSource := TFileStream.Create(LPath, fmOpenRead or fmShareDenyWrite);
+  try
+    LUnzipped := TDecompressionStream.Create(LSource, 15 + 16);
+    try
+      FGolden.LoadFromStream(LUnzipped, TEncoding.UTF8);
+    finally
+      LUnzipped.Free;
+    end;
+  finally
+    LSource.Free;
+  end;
   FDataFolder := FindUp('Reference\_dati\xcom_tftd\openxcom', True);
   ParseManifest;
 end;

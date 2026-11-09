@@ -28,6 +28,7 @@ type
     procedure DumpCountries;
     procedure DumpRegions;
     procedure DumpCraftWeapons;
+    procedure DumpItems;
     procedure DumpInventories;
     procedure DumpResearch;
     procedure DumpManufacture;
@@ -48,7 +49,7 @@ implementation
 
 uses
   DelphiDoom.XcomMod.RuleCountry, DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleCraftWeapon,
-  DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture,
+  DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture,
   DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
   DelphiDoom.XcomMod.RuleCommendations;
 
@@ -69,7 +70,7 @@ end;
 
 class function TXcomModDump.Sections: TArray<string>;
 begin
-  Result := TArray<string>.Create('countries', 'regions', 'craftWeapons', 'invs', 'research', 'manufacture',
+  Result := TArray<string>.Create('countries', 'regions', 'craftWeapons', 'items', 'invs', 'research', 'manufacture',
     'alienRaces', 'ufoTrajectories', 'musics', 'commendations');
 end;
 
@@ -154,6 +155,98 @@ begin
     FWriter.Str('launcher', LRule.LauncherItem);
     FWriter.Str('clip', LRule.ClipItem);
     FWriter.Bool('underwaterOnly', LRule.UnderwaterOnly);
+  end;
+end;
+
+procedure TXcomModDump.DumpItems;
+var
+  LIndex: Integer;
+  LRule: TXcomRuleItem;
+begin
+  for LIndex := 0 to FMod.Items.Count - 1 do
+  begin
+    LRule := FMod.Items.Rule(LIndex);
+    FWriter.Begin_('items', FMod.Items.Name(LIndex));
+    FWriter.Str('type', LRule.ItemType);
+    FWriter.Str('name', LRule.Name);
+    FWriter.Strs('requires', LRule.Requirements);
+    FWriter.Dbl('size', LRule.Size);
+    FWriter.Int('costBuy', LRule.BuyCost);
+    FWriter.Int('costSell', LRule.SellCost);
+    FWriter.Int('transferTime', LRule.TransferTime);
+    FWriter.Int('weight', LRule.Weight);
+    FWriter.Int('bigSprite', LRule.BigSprite);
+    FWriter.Int('floorSprite', LRule.FloorSprite);
+    FWriter.Int('handSprite', LRule.HandSprite);
+    FWriter.Int('bulletSprite', LRule.BulletSprite);
+    FWriter.Int('fireSound', LRule.FireSound);
+    FWriter.Int('hitSound', LRule.HitSound);
+    FWriter.Int('hitAnimation', LRule.HitAnimation);
+    FWriter.Int('power', LRule.Power);
+    FWriter.Strs('compatibleAmmo', LRule.CompatibleAmmo);
+    FWriter.Int('damageType', LRule.DamageType);
+    FWriter.Int('accuracyAuto', LRule.AccuracyAuto);
+    FWriter.Int('accuracySnap', LRule.AccuracySnap);
+    FWriter.Int('accuracyAimed', LRule.AccuracyAimed);
+    FWriter.Int('tuAuto', LRule.TimeUnitsAuto);
+    FWriter.Int('tuSnap', LRule.TimeUnitsSnap);
+    FWriter.Int('tuAimed', LRule.TimeUnitsAimed);
+    FWriter.Int('clipSize', LRule.ClipSize);
+    FWriter.Int('accuracyMelee', LRule.AccuracyMelee);
+    FWriter.Int('tuMelee', LRule.TimeUnitsMelee);
+    FWriter.Int('battleType', LRule.BattleType);
+    FWriter.Bool('twoHanded', LRule.TwoHanded);
+    FWriter.Bool('fixedWeapon', LRule.FixedWeapon);
+    FWriter.Int('waypoints', LRule.Waypoints);
+    FWriter.Int('invWidth', LRule.InventoryWidth);
+    FWriter.Int('invHeight', LRule.InventoryHeight);
+    FWriter.Int('painKiller', LRule.PainKiller);
+    FWriter.Int('heal', LRule.Heal);
+    FWriter.Int('stimulant', LRule.Stimulant);
+    FWriter.Int('woundRecovery', LRule.WoundRecovery);
+    FWriter.Int('healthRecovery', LRule.HealthRecovery);
+    FWriter.Int('stunRecovery', LRule.StunRecovery);
+    FWriter.Int('energyRecovery', LRule.EnergyRecovery);
+    FWriter.Int('tuUse', LRule.TimeUnitsUse);
+    FWriter.Int('recoveryPoints', LRule.RecoveryPoints);
+    FWriter.Int('armor', LRule.Armor);
+    FWriter.Int('turretType', LRule.TurretType);
+    FWriter.Bool('recover', LRule.Recoverable);
+    FWriter.Bool('ignoreInBaseDefense', LRule.IgnoreInBaseDefense);
+    FWriter.Bool('liveAlien', LRule.LiveAlien);
+    FWriter.Int('blastRadius', LRule.BlastRadius);
+    FWriter.Int('attraction', LRule.Attraction);
+    FWriter.Bool('flatRate', LRule.FlatRate);
+    FWriter.Bool('arcingShot', LRule.ArcingShot);
+    FWriter.Int('listOrder', LRule.ListOrder);
+    FWriter.Int('maxRange', LRule.MaxRange);
+    FWriter.Int('aimRange', LRule.AimRange);
+    FWriter.Int('snapRange', LRule.SnapRange);
+    FWriter.Int('autoRange', LRule.AutoRange);
+    FWriter.Int('minRange', LRule.MinRange);
+    FWriter.Int('dropoff', LRule.Dropoff);
+    FWriter.Int('bulletSpeed', LRule.BulletSpeed);
+    FWriter.Int('explosionSpeed', LRule.ExplosionSpeed);
+    FWriter.Int('autoShots', LRule.AutoShots);
+    FWriter.Int('shotgunPellets', LRule.ShotgunPellets);
+    FWriter.Str('zombieUnit', LRule.ZombieUnit);
+    FWriter.Bool('strengthApplied', LRule.StrengthApplied);
+    FWriter.Bool('skillApplied', LRule.SkillApplied);
+    FWriter.Bool('LOSRequired', LRule.LineOfSightRequired);
+    FWriter.Bool('underwaterOnly', LRule.UnderwaterOnly);
+    FWriter.Bool('landOnly', LRule.LandOnly);
+    FWriter.Int('meleeSound', LRule.MeleeSound);
+    FWriter.Int('meleePower', LRule.MeleePower);
+    FWriter.Int('meleeAnimation', LRule.MeleeAnimation);
+    FWriter.Int('meleeHitSound', LRule.MeleeHitSound);
+    FWriter.Int('specialType', LRule.SpecialType);
+    FWriter.Int('vaporColor', LRule.VaporColor);
+    FWriter.Int('vaporDensity', LRule.VaporDensity);
+    FWriter.Int('vaporProbability', LRule.VaporProbability);
+    FWriter.Int('explosionRadius', LRule.ExplosionRadius);
+    FWriter.Int('maxRangeSq', LRule.MaxRangeSquared);
+    FWriter.Bool('isRifle', LRule.IsRifle);
+    FWriter.Bool('isPistol', LRule.IsPistol);
   end;
 end;
 
@@ -327,6 +420,7 @@ begin
   DumpCountries;
   DumpRegions;
   DumpCraftWeapons;
+  DumpItems;
   DumpInventories;
   DumpResearch;
   DumpManufacture;

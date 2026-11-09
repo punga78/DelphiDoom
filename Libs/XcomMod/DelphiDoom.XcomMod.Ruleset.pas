@@ -15,7 +15,7 @@ uses
   DelphiDoom.XcomMod.ModOffsets, DelphiDoom.XcomMod.RuleRegistry, DelphiDoom.XcomMod.RuleCountry,
   DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleResearch,
   DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory,
-  DelphiDoom.XcomMod.RuleMusic, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleCraftWeapon;
+  DelphiDoom.XcomMod.RuleMusic, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomMod.RuleItem;
 
 type
   /// <summary>
@@ -32,6 +32,7 @@ type
     FCountries: TXcomRuleRegistry<TXcomRuleCountry>;
     FRegions: TXcomRuleRegistry<TXcomRuleRegion>;
     FCraftWeapons: TXcomRuleRegistry<TXcomRuleCraftWeapon>;
+    FItems: TXcomRuleRegistry<TXcomRuleItem>;
     FInventories: TXcomRuleRegistry<TXcomRuleInventory>;
     FResearch: TXcomRuleRegistry<TXcomRuleResearch>;
     FManufacture: TXcomRuleRegistry<TXcomRuleManufacture>;
@@ -40,6 +41,7 @@ type
     FMusics: TXcomRuleRegistry<TXcomRuleMusic>;
     FCommendations: TXcomStringMap<TXcomRuleCommendations>;
     FInventoryListOrder: Integer;
+    FItemListOrder: Integer;
     FResearchListOrder: Integer;
     FManufactureListOrder: Integer;
     FFinalResearch: string;
@@ -60,6 +62,7 @@ type
     property Countries: TXcomRuleRegistry<TXcomRuleCountry> read FCountries;
     property Regions: TXcomRuleRegistry<TXcomRuleRegion> read FRegions;
     property CraftWeapons: TXcomRuleRegistry<TXcomRuleCraftWeapon> read FCraftWeapons;
+    property Items: TXcomRuleRegistry<TXcomRuleItem> read FItems;
     property Inventories: TXcomRuleRegistry<TXcomRuleInventory> read FInventories;
     property Research: TXcomRuleRegistry<TXcomRuleResearch> read FResearch;
     property Manufacture: TXcomRuleRegistry<TXcomRuleManufacture> read FManufacture;
@@ -87,6 +90,8 @@ begin
     function(AType: string): TXcomRuleRegion begin Result := TXcomRuleRegion.Create(AType); end);
   FCraftWeapons := TXcomRuleRegistry<TXcomRuleCraftWeapon>.Create(
     function(AType: string): TXcomRuleCraftWeapon begin Result := TXcomRuleCraftWeapon.Create(AType); end);
+  FItems := TXcomRuleRegistry<TXcomRuleItem>.Create(
+    function(AType: string): TXcomRuleItem begin Result := TXcomRuleItem.Create(AType); end);
   FInventories := TXcomRuleRegistry<TXcomRuleInventory>.Create(
     function(AType: string): TXcomRuleInventory begin Result := TXcomRuleInventory.Create(AType); end);
   FResearch := TXcomRuleRegistry<TXcomRuleResearch>.Create(
@@ -115,6 +120,7 @@ begin
   FManufacture.Free;
   FResearch.Free;
   FInventories.Free;
+  FItems.Free;
   FCraftWeapons.Free;
   FRegions.Free;
   FCountries.Free;
@@ -174,6 +180,7 @@ var
   LRegion: TXcomRuleRegion;
   LWeapon: TXcomRuleCraftWeapon;
   LInventory: TXcomRuleInventory;
+  LItemRule: TXcomRuleItem;
   LManufacture: TXcomRuleManufacture;
   LRace: TXcomAlienRace;
   LTrajectory: TXcomUfoTrajectory;
@@ -196,6 +203,15 @@ begin
     LWeapon := FCraftWeapons.LoadRule(LItem);
     if Assigned(LWeapon) then
       LWeapon.Load(LItem, FOffsets);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'items').Items do
+  begin
+    LItemRule := FItems.LoadRule(LItem);
+    if Assigned(LItemRule) then
+    begin
+      Inc(FItemListOrder, 100);
+      LItemRule.Load(LItem, FOffsets, FItemListOrder);
+    end;
   end;
   for LItem in TXcomNodeReader.Field(ADocument, 'invs').Items do
   begin
