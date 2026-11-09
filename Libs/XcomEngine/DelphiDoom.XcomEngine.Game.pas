@@ -15,7 +15,7 @@ uses
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
-  DelphiDoom.XcomEngine.OptionsStore.Intf;
+  DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.Session.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -49,6 +49,8 @@ type
     FDisplayModes: IXcomDisplayModes;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
+    FNewGameStarter: IXcomNewGameStarter;
+    FSession: IInterface;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
     /// <summary>
@@ -80,6 +82,10 @@ type
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
+    function NewGameStarter: IXcomNewGameStarter; override;
+    procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
+    function Session: IInterface; override;
+    procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
@@ -115,6 +121,8 @@ destructor TXcomGame.Destroy;
 begin
   FDeleted.Free;
   FStates.Free;
+  // the saved game uses the rules of the data: it goes before them
+  FSession := nil;
   FLanguage.Free;
   // the states hold pieces of the data: the data goes after them
   FResources := nil;
@@ -201,6 +209,26 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+end;
+
+function TXcomGame.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := FNewGameStarter;
+end;
+
+procedure TXcomGame.SetNewGameStarter(const AStarter: IXcomNewGameStarter);
+begin
+  FNewGameStarter := AStarter;
+end;
+
+function TXcomGame.Session: IInterface;
+begin
+  Result := FSession;
+end;
+
+procedure TXcomGame.SetSession(const ASession: IInterface);
+begin
+  FSession := ASession;
 end;
 
 function TXcomGame.LanguageProvider: IXcomLanguageProvider;

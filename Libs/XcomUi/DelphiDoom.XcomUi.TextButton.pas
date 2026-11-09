@@ -47,6 +47,8 @@ type
     procedure SetColor(AColor: Byte); override;
     function GetColor: Byte; override;
     procedure SetTextColor(AColor: Byte);
+    /// <summary>TextButton::setSecondaryColor: the secondary color of a button is the color of its text</summary>
+    procedure SetSecondaryColor(AColor: Byte); override;
     procedure SetBig;
     procedure SetSmall;
     function GetFont: TXcomFont;
@@ -104,6 +106,11 @@ end;
 function TXcomTextButton.GetColor: Byte;
 begin
   Result := FColor;
+end;
+
+procedure TXcomTextButton.SetSecondaryColor(AColor: Byte);
+begin
+  SetTextColor(AColor);
 end;
 
 procedure TXcomTextButton.SetTextColor(AColor: Byte);

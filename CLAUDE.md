@@ -133,6 +133,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Wad** — Lettura e scrittura di WAD, PAK, ZIP e cartelle; directory dei lump del motore. [CLAUDE.md](Libs/Wad/CLAUDE.md), [README.md](Libs/Wad/README.md)
 - **XcomEngine** — Motore di OpenXcom a classi senza SDL (gioco, stato, schermo, lingua, opzioni, risorse del mod, dispositivi dietro interfacce); parita' sui pixel col vero OpenXcom. [CLAUDE.md](Libs/XcomEngine/CLAUDE.md), [README.md](Libs/XcomEngine/README.md)
 - **XcomFormats** — Lettura dei formati di dati di UFO: Enemy Unknown e Terror from the Deep. [CLAUDE.md](Libs/XcomFormats/CLAUDE.md), [README.md](Libs/XcomFormats/README.md)
+- **XcomGeoscape** — Geoscape di OpenXcom a classi senza SDL (globo con parita' sui pixel, schermata principale, scelta del sito della prima base, avvio di una partita nuova). [CLAUDE.md](Libs/XcomGeoscape/CLAUDE.md), [README.md](Libs/XcomGeoscape/README.md)
 - **XcomMenu** — Stati di Menu\ di OpenXcom (schermata di avvio, menu principale). [CLAUDE.md](Libs/XcomMenu/CLAUDE.md), [README.md](Libs/XcomMenu/README.md)
 - **XcomUi** — Widget di Interface\ di OpenXcom (Text, Window, TextButton, Frame, Cursor, FpsCounter, NumberText). [CLAUDE.md](Libs/XcomUi/CLAUDE.md), [README.md](Libs/XcomUi/README.md)
 - **Xmi** — Convertitore XMI/CMF in MIDI. [CLAUDE.md](Libs/Xmi/CLAUDE.md), [README.md](Libs/Xmi/README.md) (paragrafo in `Libs\Zlib`)

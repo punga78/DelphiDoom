@@ -97,6 +97,8 @@ begin
       AArguments.Settings.DosPath := NextValue
     else if LName = '-listmodes' then
       AArguments.Settings.ListModes := True
+    else if LName = '-seed' then
+      AArguments.Settings.Seed := StrToUInt64(NextValue)
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else

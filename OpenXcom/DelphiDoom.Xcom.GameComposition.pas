@@ -33,6 +33,8 @@ type
     /// <summary>OPENXCOM_VERSION_SHORT and OPENXCOM_VERSION_GIT written on the screens</summary>
     VersionText: string;
     LoadMode: TXcomLoadMode;
+    /// <summary>The seed of the random numbers of a new game (-seed); 0 takes it from the clock</summary>
+    Seed: UInt64;
   end;
 
   /// <summary>
@@ -58,7 +60,8 @@ uses
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
-  DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes;
+  DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
+  DelphiDoom.XcomGeoscape.NewGameStarter;
 
 const
   KEY_FPS = 288;
@@ -108,6 +111,7 @@ var
   LLoaderSettings: TXcomLoaderSettings;
   LTask: TXcomGameLoadTask;
   LLoader: IXcomGameLoader;
+  LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
   LDosPath: string;
 begin
@@ -125,7 +129,10 @@ begin
     LLoaderSettings.ModId := ASettings.ModId;
     LLoaderSettings.LanguageId := LOptions.Language;
     LLoaderSettings.Wordwrap := LOptions.Wordwrap;
-    LLoader := TXcomModGameLoader.Create(LLoaderSettings, LFiles, LParser, TPngProvider.Client);
+    LModLoader := TXcomModGameLoader.Create(LLoaderSettings, LFiles, LParser, TPngProvider.Client);
+    // the strategy screens need the ruleset of the mod
+    LModLoader.LoadRules := True;
+    LLoader := LModLoader;
     case ASettings.LoadMode of
       lmImmediate:
         LTask := TXcomImmediateLoadTask.Create(LLoader);
@@ -146,6 +153,7 @@ begin
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
+    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, nil, nil));
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;

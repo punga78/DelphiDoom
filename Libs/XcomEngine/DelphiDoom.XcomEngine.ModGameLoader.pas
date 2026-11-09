@@ -42,7 +42,13 @@ type
     FParser: IYamlParser;
     FPng: TPngClient;
     FLog: IXcomLog;
+    FLoadRules: Boolean;
   public
+    /// <summary>
+    ///   Also reads the ruleset of the master mod (IXcomGameRules of the resources), that the strategy screens need.
+    ///   Off by default: the screens of the menu do not use it
+    /// </summary>
+    property LoadRules: Boolean read FLoadRules write FLoadRules;
     /// <param name="APng">Not owned: the client shared by the engine</param>
     constructor Create(const ASettings: TXcomLoaderSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser; APng: TPngClient; const ALog: IXcomLog = nil);
@@ -52,7 +58,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.Factory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.ModResources,
+  DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.Factory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.ModResources,
   DelphiDoom.XcomEngine.PngSurfaceLoader;
 
 constructor TXcomModGameLoader.Create(const ASettings: TXcomLoaderSettings; const AFiles: IXcomFileSystem;
@@ -96,6 +102,8 @@ begin
     TXcomPngSurfaceLoader.Create(LMap, FPng), TXcomFactory.CreatePaletteReader, LModFolder);
   LReference := LResources;
   LResources.Load;
+  if FLoadRules then
+    LResources.LoadRules(TYamlFactory.CreateDiskParser, FPng, FSettings.ModId);
   LLanguageId := FSettings.LanguageId;
   if (LLanguageId = '') or
     (not FFiles.FileExists(TPath.Combine(TPath.Combine(FSettings.DataFolder, 'common\Language'),
