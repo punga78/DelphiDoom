@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - the options of OpenXcom                    }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -63,6 +63,9 @@ type
     KeyOk: Integer;
     KeyCancel: Integer;
     KeyScreenshot: Integer;
+    MousewheelSpeed: Integer;
+    ChangeValueByMouseWheel: Integer;
+    KeyboardMode: TXcomKeyboardMode;
     constructor Create;
     /// <summary>Options::resetDefault for the options of this class</summary>
     procedure ResetDefaults;
@@ -129,6 +132,9 @@ begin
   KeyOk := XCOM_KEY_RETURN;
   KeyCancel := XCOM_KEY_ESCAPE;
   KeyScreenshot := XCOM_KEY_F12;
+  MousewheelSpeed := 3;
+  ChangeValueByMouseWheel := 0;
+  KeyboardMode := kmOn;
 end;
 
 procedure TXcomOptions.Load(const ADocument: IYamlNode);

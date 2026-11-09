@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - InteractiveSurface of OpenXcom            }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -60,10 +60,10 @@ type
     procedure SetButtonPressed(AButton: Integer; APressed: Boolean);
     /// <summary>InteractiveSurface::handle: decides what the action means for this surface and calls the handlers</summary>
     procedure Handle(AAction: TXcomAction); virtual;
-    procedure SetFocus(AFocus: Boolean);
+    procedure SetFocus(AFocus: Boolean); virtual;
     function IsFocused: Boolean;
     /// <summary>InteractiveSurface::unpress: releases a pressed button without a real release event</summary>
-    procedure Unpress;
+    procedure Unpress; virtual;
     procedure OnMouseClick(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
     procedure OnMousePress(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
     procedure OnMouseRelease(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
