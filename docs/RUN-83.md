@@ -5,13 +5,13 @@ Codice scritto **senza compilatore**: niente è stato compilato né eseguito. Or
 ## 1. Compilare i test e la libreria (da questo worktree)
 
 ```
-build.bat Tests\DelphiDoom.Tests.Midi
+Tools\build.bat Tests\DelphiDoom.Tests.Midi
 ```
 Il `.dproj` ha il percorso di DUnitX come gli altri (`..\..\Skema\...`): da un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX.
 Leggere `logs\DelphiDoom.Tests.Midi.log` (righe `error`). Atteso: 0 errori.
 Eseguire `bin\Tests\DelphiDoom.Tests.Midi.exe`: **senza** `Tests\Data\Midi\stream.golden.txt` i tre test di parità passano con `Assert.Pass`; gli altri (circa 50: lettore m2m con le opzioni, loader, sequencer, volume, feeder) devono essere verdi. Se un test del sequencer fallisce, è l'aritmetica a mano dei valori attesi (tempo 500000 = `$0107A120` con il flag, 85 eventi per blocco da 1024 byte, blocco da 11 tick a 96 ppq e 500000 us) o un errore del codice: leggere il caso.
 
-Anche `build.bat Tests\DelphiDoom.Tests.M2m` (il lettore ha il parametro nuovo `AOptions`, il comportamento senza opzioni non deve cambiare: 0 differenze, stessi test verdi).
+Anche `Tools\build.bat Tests\DelphiDoom.Tests.M2m` (il lettore ha il parametro nuovo `AOptions`, il comportamento senza opzioni non deve cambiare: 0 differenze, stessi test verdi).
 
 ## 2. Golden dal VECCHIO codice
 
@@ -31,7 +31,7 @@ Con `Tests\Data\Midi\stream.golden.txt` presente (e i WAD in `..\..\bin\<Gioco>`
 
 ## 4. Build dei giochi
 
-`build.bat all` (12 `.dpr` hanno le 8 unit nuove; `Composition` chiama `I_ConfigureMidiStream`). Poi i quattro giochi fino al livello senza `I_Error` né `crash.txt`.
+`Tools\build.bat all` (12 `.dpr` hanno le 8 unit nuove; `Composition` chiama `I_ConfigureMidiStream`). Poi i quattro giochi fino al livello senza `I_Error` né `crash.txt`.
 
 ## 5. Ascolto (una persona)
 
@@ -46,7 +46,7 @@ Il difetto è sotto **`MIDI_LEGACY_LOOP`**, definito in `Libs\Midi\DelphiDoom.Mi
 
 Come provare le due configurazioni:
 - **Con il define (default)**: i passi 1-3 sopra. Test dipendenti dal difetto: `DovrebbeConservareIlDeltaCheAvvolgeDopoIlGiro` e i tre di parità con il golden.
-- **Senza il define**: commentare/cancellare la riga `{$DEFINE MIDI_LEGACY_LOOP}` nel `.inc` e ricompilare `Tests\DelphiDoom.Tests.Midi` (anche con `build.bat Tests\DelphiDoom.Tests.Midi`; i `.dcu` vecchi vanno rifatti: `clean` o cancellare `dcu\Tests\Midi`). Il progetto compila anche così. Atteso: i tre test di parità passano con `Assert.Pass` (il golden è del vecchio codice, dopo il giro differisce per costruzione) e al posto del test del delta che avvolge girano `DovrebbeAzzerareIlTempoAlGiro`, `DovrebbeDareIlTempoDelPrimoEventoDopoIlGiro` e `DovrebbeAzzerareIlTempoConIlRewind` (delta zero o pari al tempo del primo evento). Tutti gli altri test sono uguali nelle due configurazioni.
+- **Senza il define**: commentare/cancellare la riga `{$DEFINE MIDI_LEGACY_LOOP}` nel `.inc` e ricompilare `Tests\DelphiDoom.Tests.Midi` (anche con `Tools\build.bat Tests\DelphiDoom.Tests.Midi`; i `.dcu` vecchi vanno rifatti: `clean` o cancellare `dcu\Tests\Midi`). Il progetto compila anche così. Atteso: i tre test di parità passano con `Assert.Pass` (il golden è del vecchio codice, dopo il giro differisce per costruzione) e al posto del test del delta che avvolge girano `DovrebbeAzzerareIlTempoAlGiro`, `DovrebbeDareIlTempoDelPrimoEventoDopoIlGiro` e `DovrebbeAzzerareIlTempoConIlRewind` (delta zero o pari al tempo del primo evento). Tutti gli altri test sono uguali nelle due configurazioni.
 
 L'altro difetto (evento scritto 192 byte oltre il posto giusto dopo il tempo inserito) **non** è sotto il define: ciò che il vecchio lasciava nei byte in mezzo dipendeva dal contenuto precedente del buffer, che un blocco della libreria non ha. I byte del vecchio sono nelle righe `/legacy-tempo` del golden, solo informative.
 

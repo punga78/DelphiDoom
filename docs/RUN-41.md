@@ -6,10 +6,10 @@ verifiche vanno fatte nell'ordine qui sotto. Tutti i comandi dalla radice del re
 ## 1. Compilazione
 
 ```
-build.bat Tests\DelphiDoom.Tests.AsmParity
-build.bat Tests\DelphiDoom.Tests.MathCore
-build.bat giochi
-build.bat strumenti
+Tools\build.bat Tests\DelphiDoom.Tests.AsmParity
+Tools\build.bat Tests\DelphiDoom.Tests.MathCore
+Tools\build.bat giochi
+Tools\build.bat strumenti
 ```
 
 Leggere `logs\DelphiDoom.Tests.AsmParity.log`, `logs\DelphiDoom.Tests.MathCore.log`, `logs\<progetto>.log`
@@ -24,7 +24,7 @@ bin\Tests\DelphiDoom.Tests.MathCore.exe --exitbehavior:Continue
 
 Attesi: `DelphiDoom.Tests.AsmParity` 36 test, tutti verdi (sono circa 30 s: ogni funzione di `m_fixed` gira su
 un milione di coppie, quelle che sollevano eccezioni su centomila); `DelphiDoom.Tests.MathCore` 113
-test (101 di prima più 12 nuovi), tutti verdi. `build.bat tests` li esegue entrambi (il progetto Asm è
+test (101 di prima più 12 nuovi), tutti verdi. `Tools\build.bat tests` li esegue entrambi (il progetto Asm è
 nella variabile `TESTS`).
 
 Se un test di parità fallisce il messaggio dice la prima differenza, per esempio
@@ -52,10 +52,10 @@ cambiamenti sul percorso di esecuzione sono `toupper`/`tolower` (Pascal), `memse
 `StrLCopy` (mai chiamata). Prima di compilare il nuovo eseguibile copiare il vecchio:
 
 ```
-build.bat Doom32 Release            # sul commit PRECEDENTE (master): produce bin\Doom\Doom32.exe vecchio
+Tools\build.bat Doom32 Release            # sul commit PRECEDENTE (master): produce bin\Doom\Doom32.exe vecchio
 copy bin\Doom\Doom32.exe bin\Doom\Doom32.old.exe
 git checkout <branch della #41>
-build.bat Doom32 Release            # nuovo
+Tools\build.bat Doom32 Release            # nuovo
 powershell -NoProfile -File Tools\Verifica\41\Confronta-timedemo.ps1 `
   -OldExe bin\Doom\Doom32.old.exe -NewExe bin\Doom\Doom32.exe `
   -Arguments '-iwad DOOM1.WAD -timedemo demo1 -nomusic -nosound' -Runs 5
@@ -94,6 +94,6 @@ nessun `I_Error` in `DATA\LOGS\*_stderr.txt`.
   una riga che chiamano le classi di `Libs\MathCore` testate contro l'`asm` (vedi sopra). Per controllarne
   almeno la sintassi a 32 bit, in una copia di lavoro (da non committare) mettere `{$UNDEF CPUX86}`
   come prima riga di `Base\m_fixed.pas`, `Base\p_local.pas`, `Base\r_softlights.pas`, `Base\r_mmx.pas`
-  e `Common\d_delphi.pas` (subito dopo `{$I Doom32.inc}` dove c'è) e fare `build.bat Doom32 Release`: se
+  e `Common\d_delphi.pas` (subito dopo `{$I Doom32.inc}` dove c'è) e fare `Tools\build.bat Doom32 Release`: se
   compila, i rami Pascal sono corretti per la sintassi (le prestazioni e la parità si provano come sopra).
 - `SCRIPT\ps_runtime.pas` (`x86.inc`, `x64.inc`): lasciato com'è; vedi `PENDING_ISSUES.md`.

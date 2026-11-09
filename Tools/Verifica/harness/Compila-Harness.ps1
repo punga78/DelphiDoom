@@ -18,7 +18,7 @@ foreach ($g in $Game) {
     git apply $patch
     if ($LASTEXITCODE -ne 0) { throw "git apply $patch failed" }
     try {
-      & .\build.bat "${g}32" Release
+      & .\Tools\build.bat "${g}32" Release
       $log = "logs\${g}32.log"
       $errors = @(Select-String -Path $log -Pattern '\berror\b|\[Fatal Error\]|Fatal:' -CaseSensitive:$false)
       Write-Host "== $g $v : $($errors.Count) error lines (see $log)"

@@ -18,7 +18,7 @@ DelphiDoom.MapInfo.Factory        in 'Libs\MapInfo\DelphiDoom.MapInfo.Factory.pa
 
 Dipende da `Libs\Scanner` (`DelphiDoom.Scanner.Strings`, `DelphiDoom.Scanner.Scanner`, già nei `.dpr`) e da `Libs\Logging` (`Logging.Intf`, `Logging.Types`). Nessun `uses` di unit storiche.
 
-Riga per `build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.MapInfo`
+Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.MapInfo`
 
 ## 2. Cosa sostituisce cosa
 

@@ -34,7 +34,7 @@ type
     procedure TestLibraryWithoutTheExportRaises;
 
     /// <summary>
-    ///   Needs bin\Libs\DDMikmod.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDMikmod.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;

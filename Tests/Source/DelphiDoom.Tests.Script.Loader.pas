@@ -29,19 +29,19 @@ type
     procedure DovrebbeRifiutareUnaDllSenzaLaFunzioneDiCreazione;
 
     /// <summary>
-    ///   Needs bin\Libs\DDScript.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDScript.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDScript.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDScript.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestCompilesAndRunsThroughTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDScript.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDScript.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestHostFunctionAcrossTheBuiltLibrary;

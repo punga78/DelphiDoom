@@ -36,7 +36,7 @@ Servono in tutti i progetti che oggi compilano `c_cmds`/`c_con`/`m_cheat`: `Doom
   DelphiDoom.Console.Factory in 'Libs\Console\DelphiDoom.Console.Factory.pas',
 ```
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.Console`.
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.Console`.
 Il progetto di test usa `Tests\Data\Console` (corpus, golden e `scripts\*.con`): vedi il suo `README.md`.
 
 ## 2. Cosa sostituisce cosa

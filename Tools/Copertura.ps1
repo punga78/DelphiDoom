@@ -13,10 +13,10 @@
   -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le unit
                   che il .dpr di test compila dalla cartella della sua libreria (Libs\<Nome>, Libs\<A>\<B> per
                   "A.B"; Sndfile anche Libs\Sound): le librerie da cui dipende contano nel loro progetto.
-  -Tutti          esegue tutti i progetti di test elencati in build.bat (variabile TESTS) uno dopo l'altro
+  -Tutti          esegue tutti i progetti di test elencati in Tools\build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
   -SenzaCompilare usa l'eseguibile gia' in bin\Tests, che deve essere compilato in Debug (senza questa
-                  opzione lo script lo ricompila con build.bat in Debug: la mappa di Release non ha i numeri di riga).
+                  opzione lo script lo ricompila con Tools\build.bat in Debug: la mappa di Release non ha i numeri di riga).
   -SoloComando    stampa il comando di CodeCoverage senza eseguirlo.
   -CodeCoverage   percorso di CodeCoverage.exe. Se omesso: variabile d'ambiente DELPHI_CODECOVERAGE,
                   poi Tools\CodeCoverage\CodeCoverage.exe, poi il PATH.
@@ -130,7 +130,7 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   if (-not $SenzaCompilare) {
     Write-Host "Compilazione di Tests\$project ..."
     # Debug: the map of Release has no line numbers; full path because cmd.exe does not see Set-Location
-    & cmd.exe /c "`"$root\build.bat`" Tests\$project Debug" | Select-Object -Last 3 | ForEach-Object { Write-Host $_ }
+    & cmd.exe /c "`"$root\Tools\build.bat`" Tests\$project Debug" | Select-Object -Last 3 | ForEach-Object { Write-Host $_ }
     if ($LASTEXITCODE -ne 0) { throw "Compilazione fallita: vedi logs\$project.log" }
   }
   if (-not (Test-Path -LiteralPath $exe)) { throw "Eseguibile non trovato: $exe (compila senza -SenzaCompilare)" }
@@ -182,9 +182,9 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
 }
 
 if ($Tutti) {
-  $bat = Get-Content -LiteralPath (Join-Path $root 'build.bat') -Raw
+  $bat = Get-Content -LiteralPath (Join-Path $root 'Tools\build.bat') -Raw
   $m = [regex]::Match($bat, 'set "TESTS=([^"]+)"')
-  if (-not $m.Success) { throw 'Variabile TESTS non trovata in build.bat' }
+  if (-not $m.Success) { throw 'Variabile TESTS non trovata in Tools\build.bat' }
   $names = $m.Groups[1].Value.Split(' ', [StringSplitOptions]::RemoveEmptyEntries) |
     ForEach-Object { $_ -replace '^Tests\\DelphiDoom\.Tests\.?', '' }
   $rows = @()

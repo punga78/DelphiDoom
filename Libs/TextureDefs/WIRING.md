@@ -36,7 +36,7 @@ Servono a tutti i progetti che compilano `r_data` e `r_flatinfo`: `Doom32`, `GLD
   DelphiDoom.TextureDefs.Factory in 'Libs\TextureDefs\DelphiDoom.TextureDefs.Factory.pas',
 ```
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.TextureDefs`
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.TextureDefs`
 
 ## 2. Adattatori del motore (da scrivere, in `Base\`)
 

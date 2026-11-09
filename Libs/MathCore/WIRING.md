@@ -104,7 +104,7 @@ DelphiDoom.MathCore.VectorMath, .BoundingBox, .IntegerQueue.) Le unit di tabella
 il vecchio 	ables.pas resta nel motore i dati trigonometrici sono due volte nell'eseguibile. Per questo il collegamento del solo random porta con sé le tabelle (via Trigonometry): si può evitare spostando
 P_RandomHitscanAngle/Slope nel motore (restano nella facciata di m_rnd, che già usa 	ables) o sostituendo inesine & co. con @FINE_SINE_TABLE.
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`:
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`:
 ` Tests\DelphiDoom.Tests.MathCore`
 
 ## 5. Rischi

@@ -20,7 +20,7 @@ Servono in ogni progetto che compila `p_musinfo`: `Doom32`, `GLDoom32`, `Heretic
   DelphiDoom.MusInfo.Factory in 'Libs\MusInfo\DelphiDoom.MusInfo.Factory.pas',
 ```
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.MusInfo`
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.MusInfo`
 
 ## 2. Cosa sostituisce cosa in `Base\p_musinfo.pas`
 

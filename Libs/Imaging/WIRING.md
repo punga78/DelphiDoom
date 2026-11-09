@@ -33,7 +33,7 @@ Servono ai progetti che compilano `r_data`, `r_patch`, `r_grow`, `r_scale`, `r_h
   DelphiDoom.Imaging.Factory in 'Libs\Imaging\DelphiDoom.Imaging.Factory.pas',
 ```
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`:
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`:
 ` Tests\DelphiDoom.Tests.Imaging`
 
 ## 2. Cosa sostituisce cosa

@@ -25,13 +25,13 @@ type
     procedure DovrebbeRifiutareUnaLibreriaSenzaLExport;
 
     /// <summary>
-    ///   Needs bin\Libs\DDMp3.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDMp3.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDMp3.dll (build.bat librerie); skipped otherwise.
+    ///   Needs bin\Libs\DDMp3.dll (Tools\build.bat librerie); skipped otherwise.
     ///   Decodes silent frames through the DLL
     /// </summary>
     [Test]

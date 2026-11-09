@@ -12,11 +12,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.\DD_IDE\SynEdit;.\DD_IDE;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>.\DD_IDE\SynEdit;.\DD_IDE;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ResourcePath>.\DD_IDE\SynEdit;.\DD_IDE;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ExeOutput>bin\Tools</DCC_ExeOutput>
-        <DCC_DcuOutput>dcu\DD_IDE\$(Config)</DCC_DcuOutput>
+        <DCC_UnitSearchPath>..\DD_IDE\SynEdit;..\DD_IDE;..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\DD_IDE\SynEdit;..\DD_IDE;..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ResourcePath>..\DD_IDE\SynEdit;..\DD_IDE;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ExeOutput>..\bin\Tools</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\DD_IDE\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>

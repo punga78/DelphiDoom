@@ -97,13 +97,13 @@ Restano solo il trasporto verso le DLL (compila, disassembla, liste, funzioni de
 
 ## 4. Come si prova
 
-- `build.bat Tests\DelphiDoom.Tests.Ide` e poi `bin\Tests\DelphiDoom.Tests.Ide.exe`.
+- `Tools\build.bat Tests\DelphiDoom.Tests.Ide` e poi `bin\Tests\DelphiDoom.Tests.Ide.exe`.
 - I golden (`Tests\Data\Ide\Projects`, `Compiler`, `Library`) sono stati prodotti dal **vecchio** codice linkando `ide_project` e i frame vecchi in un
   programma di prova (non nel repository: chiamava `TIDEProject`, `ddc_base` e i frame `TFrame_*` con le DLL vere di `bin\Tools`), prima di cambiare i sorgenti.
   Le righe `.msgs.txt` e i `.ddout` sono quelli delle DLL vere; per i pannelli ci sono le righe delle DLL (`Library\<gioco>.*.txt`) e
   le impronte FNV-1a di liste e alberi dei vecchi frame.
 - Per compilare i test dal worktree il percorso relativo di DUnitX non si risolve: serve una giunzione
-  `...\.claude\worktrees\Skema` -> `C:\Progetti\Skema` (o `DCC_UnitSearchPath`), poi `build.bat Tests\DelphiDoom.Tests.Ide`.
+  `...\.claude\worktrees\Skema` -> `C:\Progetti\Skema` (o `DCC_UnitSearchPath`), poi `Tools\build.bat Tests\DelphiDoom.Tests.Ide`.
 - A runtime (solo con `Tools\Esegui-gioco.ps1`, una sola esecuzione per volta): aprire un progetto con `DD_IDE.exe <file.ddide>`, doppio clic su uno script,
   pulsante di compilazione, "Browse Library".
 

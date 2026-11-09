@@ -18,7 +18,7 @@ Servono in tutti i progetti che compilano `p_animdefs`, `p_switch` o `p_terrain`
   DelphiDoom.Definitions.Factory in 'Libs\Definitions\DelphiDoom.Definitions.Factory.pas',
 ```
 
-Riga per `build.bat` (lista `TESTS`): ` Tests\DelphiDoom.Tests.Definitions`. Test: 75 (parita' con il vecchio codice su ANIMDEFS, interruttori di Doom e Strife, terreno dei quattro giochi, tabelle; classi con finti).
+Riga per `Tools\build.bat` (lista `TESTS`): ` Tests\DelphiDoom.Tests.Definitions`. Test: 75 (parita' con il vecchio codice su ANIMDEFS, interruttori di Doom e Strife, terreno dei quattro giochi, tabelle; classi con finti).
 
 ## 2. Cosa sostituisce cosa
 

@@ -20,7 +20,7 @@ function Build-One([string]$Tree, [string]$G, [string]$Label) {
   git apply $patch
   if ($LASTEXITCODE -ne 0) { throw "git apply $patch failed in $Tree" }
   try {
-    & .\build.bat "${G}32" Release
+    & .\Tools\build.bat "${G}32" Release
     $log = "logs\${G}32.log"
     $errors = @(Select-String -Path $log -Pattern '\berror\b|\[Fatal Error\]|Fatal:' -CaseSensitive:$false)
     Write-Host "== $G $Label : $($errors.Count) error lines (see $Tree\$log)"

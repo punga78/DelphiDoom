@@ -2,7 +2,7 @@
 
 I golden di `Tests\Data\ToolsCore`, `Tests\Data\Endoom\editor.golden.txt`, `Tests\Data\Endoom\textart.golden.txt` e
 `Tests\Data\Imaging\lanczos.golden.txt` sono stati scritti dal **vecchio codice di ENDEDIT** (`Reference\ENDEDIT`, mai
-modificato) compilato con Delphi 11 in un programma di prova. I programmi sono qui; non si compilano con `build.bat`.
+modificato) compilato con Delphi 11 in un programma di prova. I programmi sono qui; non si compilano con `Tools\build.bat`.
 
 | Programma | Cosa fa | Scrive |
 |---|---|---|

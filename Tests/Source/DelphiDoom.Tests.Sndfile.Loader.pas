@@ -25,13 +25,13 @@ type
     procedure TestUnaLibreriaSenzaLExportSollevaUnaEccezione;
 
     /// <summary>
-    ///   Needs bin\Libs\DDSndfile.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDSndfile.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDSndfile.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDSndfile.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestOpensASoundThroughTheBuiltLibrary;

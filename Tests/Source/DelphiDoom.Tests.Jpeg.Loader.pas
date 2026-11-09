@@ -23,13 +23,13 @@ type
     procedure TestMissingLibraryRaises;
 
     /// <summary>
-    ///   Needs bin\Libs\DDJpeg.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDJpeg.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDJpeg.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDJpeg.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestBuiltLibraryEncodesAndDecodes;

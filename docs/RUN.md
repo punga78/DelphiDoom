@@ -3,8 +3,8 @@
 Nulla di questo lavoro e' stato compilato o eseguito dall'agente.
 
 ## 1. Build
-    build.bat tests
-    build.bat all Release
+    Tools\build.bat tests
+    Tools\build.bat all Release
 Leggere `logs\*.log` (righe `error`). Attesi: zero errori. Firme cambiate da controllare:
 `TEngineAcsHost.Create(IGameRandom)`, `TEngineDynLightServices.Create(.., IGameRandom)`, `TLevelLoader.Create(.., ICommandRegistry, IGameRandom)`,
 `TDoomLevelRules/THereticLevelRules/TStrifeLevelRules.Create(.., IGameRandom)`, `THexenLevelRules.Create(ICommandLine)`, `TEngineDefaults`, `TEngineConsoleStartup`,

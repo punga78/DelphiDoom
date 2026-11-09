@@ -72,7 +72,7 @@ il contrario di ciò che dice CLAUDE.md. Quindi:
 * Test in `Tests\DelphiDoom.Tests.GameData` (`DelphiDoom.Tests.GameData.Aliases`, 9 casi): i quattro giochi invariati, il profilo
   di Doom per Speed, nessun prestito per l'Iwad, maiuscole, nome sconosciuto invariato.
 
-Verifica fatta: `build.bat Doom32 Release`, `Hexen32`, `GLHeretic32` e `ddc_strife` compilano; **non** provato a runtime (gli otto
+Verifica fatta: `Tools\build.bat Doom32 Release`, `Hexen32`, `GLHeretic32` e `ddc_strife` compilano; **non** provato a runtime (gli otto
 eseguibili non sono stati avviati: la scelta dei profili è la stessa per i quattro giochi).
 
 ### Che cosa resta per aggiungere un gioco (Speed, e poi Mars e Rad-X)

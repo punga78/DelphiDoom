@@ -19,7 +19,7 @@ DelphiDoom.DynLights.Factory      in 'Libs\DynLights\DelphiDoom.DynLights.Factor
 
 Dipende da `Libs\Scanner` (`Scanner.Strings`, `Scanner.Scanner`), `Libs\Logging` (`Logging.Intf`, `Logging.Types`) e `Libs\GameState` (`GameState.Intf`, per la modalità sviluppatore). Nessun `uses` di unit storiche.
 
-Riga per `build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.DynLights`
+Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.DynLights`
 
 ## 2. Cosa sostituisce cosa
 

@@ -4,8 +4,8 @@ Tutto dalla radice di questo worktree. Prima compilare e provare le librerie, po
 
 ## 1. Compilazione e test
 ```
-build.bat tests          # oppure solo: build.bat Tests\DelphiDoom.Tests.Wad / .Texture / .Voxel
-build.bat giochi         # Doom32, Heretic32, Hexen32, Strife32 (+ GL*32 per --Gl)
+Tools\build.bat tests          # oppure solo: Tools\build.bat Tests\DelphiDoom.Tests.Wad / .Texture / .Voxel
+Tools\build.bat giochi         # Doom32, Heretic32, Hexen32, Strife32 (+ GL*32 per --Gl)
 ```
 Eseguire poi `bin\Tests\DelphiDoom.Tests.Wad.exe`, `...Texture.exe`, `...Voxel.exe` (i test leggono `Tests\Data\Pk3`
 risalendo da `bin\Tests`). Nuovi: 12 in `TTestWadPk3`, 10 in `TTestTexturePk3`, 10 in `TTestVoxelPk3` (se un `Assert` non torna,

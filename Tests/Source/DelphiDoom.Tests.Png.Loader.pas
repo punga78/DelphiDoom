@@ -28,7 +28,7 @@ type
     procedure TestLoaderWithoutZlibRaises;
 
     /// <summary>
-    ///   Needs bin\Libs\DDPng.dll (build.bat librerie); skipped otherwise.
+    ///   Needs bin\Libs\DDPng.dll (Tools\build.bat librerie); skipped otherwise.
     ///   The zlib is the one linked in the test executable
     /// </summary>
     [Test]

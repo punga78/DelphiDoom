@@ -60,7 +60,7 @@ Lo stato che il vecchio `DEH_Parse` teneva e che ora tiene `DEH_Apply`: `deh_ini
 
 Da `deh_main.pas` di ogni gioco: tutto il corpo di `DEH_Parse` (circa 1600 righe) e le variabili locali relative; da `deh_base.pas`: `DEH_NextLine`, `DEH_FixedOrFloat`, le tre conversioni di stringhe, `TDEHStringsHashTable`, `dehstringhash`; i `*_hash` e le `uses` che servivano solo al parse. Restano `DEH_CurrentSettings`, i CSV, le azioni, `DEH_Init`/`DEH_ShutDown`.
 
-## `build.bat`
+## `Tools\build.bat`
 
 Aggiungere alla lista `TESTS` (riga 38): `Tests\DelphiDoom.Tests.Dehacked`.
 
