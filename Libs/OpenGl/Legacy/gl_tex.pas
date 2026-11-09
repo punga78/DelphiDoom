@@ -273,6 +273,12 @@ uses
   r_things,
   r_hires,
   v_data,
+  DelphiDoom.GlTexture.Types,
+  DelphiDoom.GlTexture.Palette,
+  DelphiDoom.GlTexture.PatchPainter,
+  DelphiDoom.GlTexture.FlatPainter,
+  DelphiDoom.GlTexture.Ripple,
+  DelphiDoom.GlTexture.Transparency,
   w_sprite;
 
 var
@@ -297,29 +303,10 @@ end;
 procedure gld_InitPalettedTextures;
 var
   playpal: PByteArray;
-  pal: array[0..255] of LongWord;
-  i, j: integer;
 begin
   playpal := V_ReadPalette(PU_STATIC);
-  for i := 0 to 255 do
-  begin
-    pal[i] := _SHL(playpal[i * 3], 16) or _SHL(playpal[i * 3 + 1], 8) or playpal[i * 3 + 2];
-    gld_palmap[i] := i;
-  end;
+  transparent_pal_index := TGlTexturePalette.BuildColorMap(System.PByte(playpal), gld_palmap);
 //  Z_ChangeTag(playpal, PU_CACHE);
-  transparent_pal_index := -1;
-  for i := 0 to 255 do
-  begin
-    for j := i + 1 to 255 do
-      if pal[i] = pal[j] then
-      begin
-        transparent_pal_index := j;
-        gld_palmap[j] := i;
-        break;
-      end;
-    if transparent_pal_index >= 0 then
-      break;
-  end;
 end;
 
 //==============================================================================
@@ -393,29 +380,28 @@ end;
 procedure gld_SetTexturePalette(target: TGLenum);
 var
   playpal: PByteArray;
-  pal: array[0..1023] of byte;
-  pl, pp: PLongWord;
-  i: integer;
+  pal: TGlTextureRgbaPalette;
 begin
   // JVAL: 28/9/2009 - General routine optimization
   playpal := V_ReadPalette(PU_STATIC);
-  pl := PLongWord(playpal);
-  pp := PLongWord(@pal);
-  for i := 0 to 255 do
-  begin
-    pp^ := pl^ or $FF000000;
-    pp := PLongWord(integer(pp) + 4);
-    pl := PLongWord(integer(pl) + 3);
-{ Old code:
-    pal[i * 4] := playpal[i * 3];
-    pal[i * 4 + 1] := playpal[i * 3 + 1];
-    pal[i * 4 + 2] := playpal[i * 3 + 2];
-    pal[i * 4 + 3] := 255;
-}
-  end;
+  TGlTexturePalette.BuildRgba(System.PByte(playpal), transparent_pal_index, pal);
   Z_ChangeTag(playpal, PU_CACHE);
-  PLongWordArray(@pal)[transparent_pal_index] := 0;
   gld_ColorTableEXT(target, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, @pal);
+end;
+
+//==============================================================================
+//
+// gld_MakeTextureTarget
+//
+// The buffer of a texture as the classes of Libs\GlTexture see it (issue #177)
+//
+//==============================================================================
+function gld_MakeTextureTarget(const gltexture: PGLTexture; const buffer: PByteArray): TGlTextureTarget;
+begin
+  result.Pixels := System.PByte(buffer);
+  result.BufferWidth := gltexture.buffer_width;
+  result.RealWidth := gltexture.realtexwidth;
+  result.RealHeight := gltexture.realtexheight;
 end;
 
 //==============================================================================
@@ -426,92 +412,17 @@ end;
 procedure gld_AddPatchToTexture_UnTranslated(gltexture: PGLTexture; buffer: PByteArray;
   const patch: Ppatch_t; originx, originy: integer; paletted: boolean);
 var
-  x, y, j: integer;
-  xs, xe: integer;
-  js,je: integer;
-  column: Pcolumn_t;
-  source: PByteArray;
-  pos: integer;
   playpal: PByteArray;
-  ss: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
+  palette: TGlTexturePaletteData;
 begin
   if (gltexture = nil) or (patch = nil) then
     exit;
 
   playpal := V_ReadPalette(PU_STATIC);
-  xs := 0;
-  xe := patch.width;
-  if (xs + originx) >= gltexture.realtexwidth then
-    exit;
-  if (xe + originx) <= 0 then
-    exit;
-  if (xs + originx) < 0 then
-    xs := -originx;
-  if (xe + originx) > gltexture.realtexwidth then
-    xe := xe + gltexture.realtexwidth - (xe + originx);
-  for x := xs to xe - 1 do
-  begin
-    delta := 0;
-    tallpatch := false;
-    column := Pcolumn_t(integer(patch) + patch.columnofs[x]);
-    while column.topdelta <> 255 do
-    begin
-      delta := delta + column.topdelta;
-      y := (delta + originy);
-      js := 0;
-      je := column.length;
-      if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
-      begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        delta := 0;
-        continue;
-      end;
-      if js + y < 0 then
-        js := -y;
-      if je + y > gltexture.realtexheight then
-        je := je + gltexture.realtexheight - (je + y);
-      source := PByteArray(integer(column) + 3);
-      if paletted then
-      begin
-        pos := (js + y) * gltexture.buffer_width + x + originx;
-        j := js;
-        while j < je do
-        begin
-          buffer[pos] := gld_palmap[source[j]];
-          inc(j);
-          pos := pos + gltexture.buffer_width;
-        end;
-      end
-      else
-      begin
-        pos := 4 * ((js + y) * gltexture.buffer_width + x + originx);
-        j := js;
-        while j < je do
-        begin
-          ss := source[j] * 3;
-          buffer[pos] := playpal[ss];
-          buffer[pos + 1] := playpal[ss + 1];
-          buffer[pos + 2] := playpal[ss + 2];
-          buffer[pos + 3] := 255;
-          inc(j);
-          pos := pos + 4 * gltexture.buffer_width;
-        end;
-      end;
-      if not tallpatch then
-      begin
-        prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        if column.topdelta > prevdelta then
-          delta := 0
-        else
-          tallpatch := true;
-      end
-      else
-        column := Pcolumn_t(integer(column) + column.length + 4);
-    end;
-  end;
+  palette.Colors := System.PByte(playpal);
+  palette.ColorMap := @gld_palmap[0];
+  TGlTexturePatchPainter.Paint(gld_MakeTextureTarget(gltexture, buffer), System.PByte(patch),
+    originx, originy, palette, nil, paletted);
   Z_ChangeTag(playpal, PU_CACHE);
 end;
 
@@ -523,17 +434,9 @@ end;
 procedure gld_AddPatchToTexture(gltexture: PGLTexture; buffer: PByteArray;
   const patch: Ppatch_t; originx, originy: integer; cm: integer; paletted: boolean);
 var
-  x, y, j: integer;
-  xs, xe: integer;
-  js,je: integer;
-  column: Pcolumn_t;
-  source: PByteArray;
-  pos: integer;
   playpal: PByteArray;
   trans: PByteArray;
-  ss: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
+  palette: TGlTexturePaletteData;
 begin
   if cm = Ord(CR_LIMIT) then
   begin
@@ -545,81 +448,14 @@ begin
     exit;
 
   playpal := V_ReadPalette(PU_STATIC);
-  xs := 0;
-  xe := patch.width;
-  if xs + originx >= gltexture.realtexwidth then
-    exit;
-  if xe + originx <= 0 then
-    exit;
   if cm < Ord(CR_LIMIT) then
     trans := colorregions[cm]
   else
     trans := @translationtables[256 * (cm - Ord(CR_LIMIT) - 1)];
-  if xs + originx < 0 then
-    xs := -originx;
-  if xe + originx > gltexture.realtexwidth then
-    xe := xe + gltexture.realtexwidth - (xe + originx);
-  for x := xs to xe - 1 do
-  begin
-    delta := 0;
-    tallpatch := false;
-    column := Pcolumn_t(integer(patch) + patch.columnofs[x]);
-    while column.topdelta <> 255 do
-    begin
-      delta := delta + column.topdelta;
-      y := (delta + originy);
-      js := 0;
-      je := column.length;
-      if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
-      begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        delta := 0;
-        continue;
-      end;
-      if js + y < 0 then
-        js := -y;
-      if je + y > gltexture.realtexheight then
-        je := je + gltexture.realtexheight - (je + y);
-      source := PByteArray(integer(column) + 3);
-      if paletted then
-      begin
-        pos := (js + y) * gltexture.buffer_width + x + originx;
-        j := js;
-        while j < je do
-        begin
-          buffer[pos] := gld_palmap[trans[source[j]]];
-          inc(j);
-          pos := pos + gltexture.buffer_width;
-        end;
-      end
-      else
-      begin
-        pos := 4 * ((js + y) * gltexture.buffer_width + x + originx);
-        j := js;
-        while j < je do
-        begin
-          ss := trans[source[j]] * 3;
-          buffer[pos] := playpal[ss];
-          buffer[pos + 1] := playpal[ss + 1];
-          buffer[pos + 2] := playpal[ss + 2];
-          buffer[pos + 3] := 255;
-          inc(j);
-          pos := pos + 4 * gltexture.buffer_width;
-        end;
-      end;
-      if not tallpatch then
-      begin
-        prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        if column.topdelta > prevdelta then
-          delta := 0
-        else
-          tallpatch := true;
-      end
-      else
-        column := Pcolumn_t(integer(column) + column.length + 4);
-    end;
-  end;
+  palette.Colors := System.PByte(playpal);
+  palette.ColorMap := @gld_palmap[0];
+  TGlTexturePatchPainter.Paint(gld_MakeTextureTarget(gltexture, buffer), System.PByte(patch),
+    originx, originy, palette, System.PByte(trans), paletted);
   Z_ChangeTag(playpal, PU_CACHE);
 end;
 
@@ -629,63 +465,10 @@ end;
 //
 //==============================================================================
 procedure gld_RippleTransform(const buffer: pointer; const w, h: integer; const bytepp: integer; const ripple: integer);
-var
-  t: PIntegerArray;
-  x, y, rx, ry, dx, dy: integer;
-  newbuf: PByteArray;
-  srcbuf: PByteArray;
-
-  procedure _transformpixel;
-  var
-    newp, srcp: integer;
-  begin
-    srcp := rx + ry * w;
-    newp := x + y * w;
-    if bytepp = 1 then
-    begin
-      newbuf[newp] := srcbuf[srcp];
-    end
-    else if bytepp = 4 then
-    begin
-      newp := newp * 4;
-      srcp := srcp * 4;
-      PLongWord(@newbuf[newp])^ := PLongWord(@srcbuf[srcp])^;
-    end
-    else if bytepp = 3 then
-    begin
-      newp := newp * 3;
-      srcp := srcp * 3;
-      newbuf[newp] := srcbuf[srcp];
-      newbuf[newp + 1] := srcbuf[srcp + 1];
-      newbuf[newp + 2] := srcbuf[srcp + 2];
-    end;
-  end;
-
 begin
   if ripple < 0 then
     exit;
-  t:= @r_defripple[ripple];
-  newbuf := malloc(w * h * bytepp);
-  srcbuf := buffer;
-  for x := 0 to w - 1 do
-    for y := 0 to h - 1 do
-    begin
-      dx := Round((t[Round(y * 128 / h) and 127] / $10000) * h / 64);
-      dy := Round((t[Round(x * 128 / w) and 127] / $10000) * w / 64);
-      rx := (x + dx) mod w;
-      while rx < 0 do
-        rx := rx + w;
-      while rx >= w do
-        rx := rx - w;
-      ry := (y + dy) mod h;
-      while ry < 0 do
-        ry := ry + h;
-      while ry >= h do
-        ry := ry + h;
-      _transformpixel;
-    end;
-  memcpy(buffer, newbuf, w * h * bytepp);
-  memfree(pointer(newbuf), w * h * bytepp);
+  TGlTextureRipple.Transform(buffer, w, h, bytepp, PGlRippleRow(@r_defripple[ripple]));
 end;
 
 //==============================================================================
@@ -696,117 +479,28 @@ end;
 procedure gld_AddFlatToTexture(gltexture: PGLTexture; buffer: PByteArray; const flat: PByteArray;
   paletted: boolean; const ripple: integer);
 var
-  x, y, pos: integer;
-  yy: integer;
   playpal: PByteArray;
+  palette: TGlTexturePaletteData;
 begin
   if (gltexture = nil) or (flat = nil) then
     exit;
 
+  palette.ColorMap := @gld_palmap[0];
   if paletted then
   begin
-    for y := 0 to gltexture.realtexheight - 1 do
-    begin
-      pos := y * gltexture.buffer_width;
-      yy := y * gltexture.realtexwidth;
-      for x := 0 to gltexture.realtexwidth - 1 do
-      begin
-        buffer[pos] := gld_palmap[flat[yy + x]];
-        inc(pos);
-      end;
-    end;
+    palette.Colors := nil;
+    TGlTextureFlatPainter.Paint(gld_MakeTextureTarget(gltexture, buffer), System.PByte(flat), palette, true);
     if ripple >= 0 then
       gld_RippleTransform(buffer, gltexture.buffer_width, gltexture.buffer_height, 1, ripple);
   end
   else
   begin
     playpal := V_ReadPalette(PU_STATIC);
-    for y := 0 to gltexture.realtexheight - 1 do
-    begin
-      pos := 4 * (y * gltexture.buffer_width);
-      for x := 0 to gltexture.realtexwidth - 1 do
-      begin
-        yy := flat[y * gltexture.realtexwidth + x] * 3;
-        buffer[pos] := playpal[yy];
-        buffer[pos + 1] := playpal[yy + 1];
-        buffer[pos + 2] := playpal[yy + 2];
-        buffer[pos + 3] := 255;
-        inc(pos, 4);
-      end;
-    end;
+    palette.Colors := System.PByte(playpal);
+    TGlTextureFlatPainter.Paint(gld_MakeTextureTarget(gltexture, buffer), System.PByte(flat), palette, false);
     Z_ChangeTag(playpal, PU_CACHE);
     if ripple >= 0 then
       gld_RippleTransform(buffer, gltexture.buffer_width, gltexture.buffer_height, 4, ripple);
-  end;
-end;
-
-//==============================================================================
-//
-// gld_AddPatchForTransparencyCheck
-//
-//==============================================================================
-procedure gld_AddPatchForTransparencyCheck(gltexture: PGLTexture; buffer: PByteArray;
-  const patch: Ppatch_t; originx, originy: integer);
-var
-  x, y, j: integer;
-  xs, xe: integer;
-  js,je: integer;
-  column: Pcolumn_t;
-  pos: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
-begin
-  xs := 0;
-  xe := patch.width;
-  if xs + originx >= gltexture.realtexwidth then
-    exit;
-  if xe + originx <= 0 then
-    exit;
-  if xs + originx < 0 then
-    xs := -originx;
-  if xe + originx > gltexture.realtexwidth then
-    xe := xe + gltexture.realtexwidth - (xe + originx);
-  for x := xs to xe - 1 do
-  begin
-    delta := 0;
-    tallpatch := false;
-    column := Pcolumn_t(integer(patch) + patch.columnofs[x]);
-    while column.topdelta <> 255 do
-    begin
-      delta := delta + column.topdelta;
-      y := (delta + originy);
-      js := 0;
-      je := column.length;
-      if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
-      begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        delta := 0;
-        continue;
-      end;
-      if js + y < 0 then
-        js := -y;
-      if je + y > gltexture.realtexheight then
-        je := je + gltexture.realtexheight - (je + y);
-      pos := ((js + y) * gltexture.realtexwidth + x + originx);
-      j := js;
-      while j < je do
-      begin
-        buffer[pos] := 255;
-        inc(j);
-        pos := pos + gltexture.realtexwidth;
-      end;
-      if not tallpatch then
-      begin
-        prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
-        if column.topdelta > prevdelta then
-          delta := 0
-        else
-          tallpatch := true;
-      end
-      else
-        column := Pcolumn_t(integer(column) + column.length + 4);
-    end;
   end;
 end;
 
@@ -818,8 +512,6 @@ end;
 function gld_CheckTextureTransparency(gltexture: PGLTexture): boolean;
 var
   buffer: PByteArray;
-  pl: PLongWord;
-  spot: integer;
   bufsize: integer;
   i: integer;
   patch: Ppatch_t;
@@ -854,45 +546,12 @@ begin
   begin
     texpatch := @textures[gltexture.index].patches[i];
     patch := W_CacheLumpNum(texpatch.patch, PU_STATIC);
-    gld_AddPatchForTransparencyCheck(gltexture, buffer, patch, texpatch.originx, texpatch.originy);
+    TGlTextureTransparency.MarkPatch(System.PByte(buffer), gltexture.realtexwidth, gltexture.realtexheight,
+      System.PByte(patch), texpatch.originx, texpatch.originy);
     Z_ChangeTag(patch, PU_CACHE);
   end;
 
-  result := false;
-  if bufsize > 3 then // JVAL: prevent extra small textures, unused ?
-  begin
-    spot := (bufsize - 3) and (not 3);
-    pl := @buffer[spot];
-    for i := 0 to (spot shr 2) - 1 do
-    begin
-      if pl^ <> $FFFFFFFF then
-      begin
-        result := true;
-        break;
-      end;
-      dec(pl);
-    end;
-
-    for i := spot to bufsize - 1 do
-    begin
-      if buffer[i] <> 255 then
-      begin
-        result := true;
-        break;
-      end;
-    end;
-  end
-  else
-  begin
-    for i := 0 to bufsize - 1 do
-    begin
-      if buffer[i] <> 255 then
-      begin
-        result := true;
-        break;
-      end;
-    end;
-  end;
+  result := TGlTextureTransparency.HasHoles(System.PByte(buffer), bufsize);
 
   memfree(pointer(buffer), bufsize);
 end;

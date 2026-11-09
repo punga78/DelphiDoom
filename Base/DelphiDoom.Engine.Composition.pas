@@ -20,6 +20,9 @@ procedure ComposeEngine;
 implementation
 
 uses
+{$IFDEF RADIX}
+  DelphiDoom.Engine.Radix.DataConverter,
+{$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
   DelphiDoom.Logging.Factory,
@@ -266,6 +269,15 @@ uses
   DelphiDoom.GlMath.Factory,
   gl_clipper,
   gl_models,
+  DelphiDoom.Models.Definition.Intf,
+  DelphiDoom.Models.Factory,
+  DelphiDoom.Engine.Models.DefinitionSink,
+  DelphiDoom.Engine.Models.DefinitionLookup,
+  DelphiDoom.GlLevel.Intf,
+  DelphiDoom.GlLevel.Factory,
+  DelphiDoom.Engine.GlLevel.FlatWorld,
+  DelphiDoom.Engine.GlLevel.FlatLoopSink,
+  DelphiDoom.Engine.GlLevel.SectorWorld,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -865,7 +877,7 @@ var
   LSystem: IScriptSystemFunctions;
   LGame: TScriptGame;
 begin
-  if not TScriptGames.TryFromName(_GAME, LGame) then
+  if not TScriptGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Script), LGame) then
     I_Error('ComposeEngine(): the game %s has no functions of scripts', [_GAME]);
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
@@ -1095,9 +1107,22 @@ begin
 end;
 
 {$IFDEF OPENGL}
+procedure ComposeModels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
+begin
+  gld_ConfigureModelDefinitions(APreprocessor,
+    TModelsFactory.CreateDefinitionParser(TEngineModelDefinitionLookup.Create, ALog),
+    TEngineModelDefinitionSink.Create);
+end;
+
+procedure ComposeLevelGeometry;
+begin
+  gld_ConfigureFlatCarver(TGlLevelFactory.CreateFlatCarver(TEngineGlFlatWorld.Create,
+    TEngineGlFlatLoopSink.Create));
+  gld_ConfigureSectorPreprocessor(TGlLevelFactory.CreateSectorPreprocessor(TEngineGlSectorWorld.Create));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
-  gld_ConfigureModelDefinitions(APreprocessor);
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
 end;
 {$ENDIF}
@@ -1361,8 +1386,15 @@ begin
   LEndScreenTick := ComposeEndoom(LLumps, LZone, LLog, LShutdown, LScreens);
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
   ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
+{$IFDEF OPENGL}
+  ComposeModels(LLog, LPreprocessor);
+  ComposeLevelGeometry;
+{$ENDIF}
 
   W_Configure(LWadServices);
+{$IFDEF RADIX}
+  W_ConfigureConverter(TEngineRadixDataConverter.Create(LLog));
+{$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   ComposeStartup(LLog, LCommandLine);

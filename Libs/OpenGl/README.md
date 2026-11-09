@@ -36,3 +36,13 @@ E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5)
 **Cosa e coperto (contenuto con impronta):** `glColor4fv`, `glTexCoord2fv`, `glVertex3fv`, `glMultMatrixf/d`, `glFogfv` (4 float per `GL_FOG_COLOR`, 1 per gli altri), `glTexGenfv`, `glDeleteTextures`; i pixel di `glTexImage2D/3D`, `glTexSubImage2D/3D` e `gluBuild2DMipmaps` (righe senza padding, con l'allineamento di `glPixelStorei`; solo formati e tipi di OpenGL 1.1: RGB, RGBA, BGR, BGRA, luminanza, indice, con tipi byte, short, int, float, double); la palette di `glColorTableEXT`; gli elementi che `glDrawArrays` disegna dagli array di `glVertexPointer` e `glTexCoordPointer` (seguendo `glEnable/DisableClientState`). **Non coperto:** i puntatori di uscita (`glGet*`, `glGenTextures`, `glReadPixels`: solo `nil`/`ptr`), i pixel con tipi impacchettati o con `GL_UNPACK_ROW_LENGTH`/skip/altezza immagine diversi da 0 (solo `ptr`), i valori restituiti dalle funzioni, `glGetString`. **Limite:** i nomi delle texture e delle liste sono quelli del driver; se una fetta cambia l'ordine di creazione, il flusso cambia (e giusto che si veda).
 
 **Harness** (`Tools\Verifica\opengl`): `HarnessGl.pas` con `-glrecord <n>` (n tic consecutivi, il primo fotogramma di ogni tic, a partire da `-glrecordstart` = 35) scrive `glrecord_<MAPPA>.txt` ed esce con `Halt(0)`; `hook-gl.patch` lo aggancia ai quattro `GL*32.dpr`; `Compila.ps1 -Which Old|New` costruisce gli eseguibili, `Confronta.ps1 -Game GLDoom|GLHeretic|GLHexen|GLStrife` li esegue (vecchio due volte per il rumore, poi il nuovo) e stampa UGUALE o DIVERSO. Test: `Tests\DelphiDoom.Tests.OpenGl` (124).
+## Librerie nate da `Legacy` (issue #177)
+
+| Libreria | Fetta | Contenuto |
+|---|---|---|
+| `Libs\Voxel` (`DelphiDoom.Voxel.Mesh*`) | 2 | ottimizzatore di mesh dei voxel, senza OpenGL |
+| `Libs\Models` (`DelphiDoom.Models.Definition.*`) | 3 | parser del lump MODELDEF (modelli, texture, stati) verso un sink |
+| `Libs\GlTexture` | 5 | buffer delle texture: patch, flat, ripple, trasparenza, palette (classi statiche a freddo) |
+| `Libs\GlLevel` | 4 (parte pura) | carving dei flat dal BSP (`IGlFlatCarver`) con mondo e sink iniettati |
+
+Le unit del motore che le usano (`DelphiDoom.Engine.Models.Definition*`, `DelphiDoom.Engine.GlLevel.*`) stanno in `Legacy\` perche' leggono i globali del renderer. Dettagli e verifiche di ogni fetta in `CLAUDE.md`.
