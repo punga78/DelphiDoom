@@ -1,5 +1,7 @@
 # Facciate storiche e chiamanti (issue #130, aggiornato dopo le ondate 3 e 4)
 
+Aggiornato dalla #163: tolte le routine senza alcun riferimento (13 righe delle tabelle e le voci corrispondenti delle sezioni in fondo); il resto e invariato.
+
 Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono citate in `CLAUDE.md` come facciata sopra una libreria di `Libs\`), con le funzioni pubbliche e i loro chiamanti. Serve a decidere quali migrare a mano. Rigenerato dal sorgente (master 0f6ff81c) dopo le ondate 1 (#132-#137), 2 (#145) e 3-4 (#142-#144, #146, #148-#156, #41, #48, #83) della fase 2: le unit tolte restano nell'elenco con la nota di chi ne ha preso il posto; dalle ondate 3 e 4 sono entrate le facciate dei thinker (luci, porte, pavimenti, soffitti, piattaforme, teletrasporti), dei thread (`i_threads`, `mt_utils`) e del midi stream (`i_midi_new`). Il conteggio e stato rifatto con uno script che, applicato al commit 094a89bd, riproduce le tabelle del file precedente (572 righe su 573 uguali: `I_Warning` dava una chiamata in meno).
 
 **Come leggerlo**
@@ -421,7 +423,6 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `R_CustomColorMapColor32` | 0 | - |
 | `R_ConfigureCustomColormaps` | 1 | DelphiDoom.Engine.Composition |
 | `R_InitCustomColormaps` | 2 | r_main (2) |
 | `R_ShutDownCustomColormaps` | 2 | r_main (2) |
@@ -792,7 +793,6 @@ Per toglierla: dalla #146 e la vecchia API procedurale sopra `TPakFileSystem` (`
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `PAK_GetGlobalHash` | 0 | - |
 | `PAK_Configure` | 1 | DelphiDoom.Engine.Composition |
 | `PAK_FileNameIterator` | 1 | s_pk3sounds |
 | `PAK_ReadAllFilesAsString` | 2 | DelphiDoom.Engine.ActorDef.Hooks, DelphiDoom.Engine.Scanner.IncludeSource |
@@ -990,7 +990,6 @@ Per toglierla: renderer: texture e lookup, percorso caldo; resta come facciata. 
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `R_CacheFlat` | 0 | - |
 | `R_ConfigureTextureDefs` | 1 | DelphiDoom.Engine.Composition |
 | `R_ConfigureFlatInfo` | 1 | DelphiDoom.Engine.Composition |
 | `R_ConfigureColormaps` | 1 | DelphiDoom.Engine.Composition |
@@ -1021,7 +1020,6 @@ Per toglierla: renderer: resta. Dalla #145 riceve la rete (`R_ConfigureNetGame`)
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `R_AddPointToBox` | 0 | - |
 | `R_ApplyColormap` | 1 | DelphiDoom.Engine.Console.Screen |
 | `R_PointOnSideVanilla` | 1 | Doom\p_map |
 | `R_PointInSubsectorClassic` | 1 | r_subsectors |
@@ -1079,9 +1077,6 @@ Per toglierla: disegno sullo schermo (`screens[]`): resta.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `V_DrawBlock` | 0 | - |
-| `V_DrawLongBlock` | 0 | - |
-| `V_GetBlock` | 0 | - |
 | `V_PreserveX` | 0 | - |
 | `V_PreserveW` | 0 | - |
 | `V_PreserveH` | 0 | - |
@@ -1153,8 +1148,6 @@ Per toglierla: circa mille chiamanti `W_*`: facciata voluta, non si migrano una 
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `W_LumpIsNamed` | 0 | - |
-| `W_CacheLumpNum2` | 0 | - |
 | `W_Configure` | 1 | DelphiDoom.Engine.Composition |
 | `W_AddPendingWADfromPAK` | 1 | DelphiDoom.Pak.FileSystem |
 | `W_CheckFirstNumForName` | 1 | r_data |
@@ -1211,8 +1204,6 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 |---|---:|---|
 | `I_Sleep` | 0 | - [test: 1] |
 | `I_DetectOS` | 0 | - |
-| `I_CreateProcess` | 0 | - |
-| `I_WaitForProcess` | 0 | - |
 | `I_ConfigureInput` | 1 | DelphiDoom.Engine.Composition |
 | `I_ConfigureLog` | 1 | DelphiDoom.Engine.Composition |
 | `I_ConfigureClock` | 1 | DelphiDoom.Engine.Composition |
@@ -1225,7 +1216,6 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 | `I_Destroy` | 2 | gl_main, i_main |
 | `I_DirectoryExists` | 2 | DelphiDoom.Pak.FileSystem (2) |
 | `I_StartTic` | 3 | DelphiDoom.Engine.Net.Services (3) |
-| `I_BaseTiccmd202` | 3 | Doom\g_game, Heretic\g_game, Hexen\g_game |
 | `I_GetSysTime` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
 | `I_StartFrame` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
 | `I_BaseTiccmd` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
@@ -1263,7 +1253,6 @@ Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un cata
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `DEH_CurrentSettings` | 0 | - |
-| `DEH_StringToCString` | 0 | - |
 | `DEH_CurrentActordef` | 0 | - |
 | `DEH_CurrentWeapondef` | 0 | - |
 | `DEH_CurrentStateOwners` | 0 | - |
@@ -1311,29 +1300,29 @@ Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un cata
 Nessun chiamante fuori dalla unit (riferimenti in `Tests\` e `Libs\` esclusi), non cancellate perche sono renderer, FixedMul/angoli, API storiche (W_*) o libreria di terzi (_clipper). BoolToStr, IsZeroes, parsefirstword, A_Fall, AngleToFixed, FloatMul, DEG2RAD hanno solo riferimenti omonimi in test o librerie: da verificare a mano.
 
 - `Base\deh_base.pas`: DEH_StringToCString
-- `Base\i_system.pas`: I_CreateProcess, I_Sleep, I_WaitForProcess
-- `Base\m_fixed.pas`: FixedDivLW, FixedDiv_fast, FixedDiv_Positive, FixedMulDiv16, FixedMulDiv8, FixedMulShl10, FixedMulShl14, FixedMulShl3, FixedMulShl4, FixedMulShl5, FixedMulShl8, FloatDiv, FloatMul
+- `Base\i_system.pas`: I_Sleep, I_WaitForProcess
+- `Base\m_fixed.pas`: FixedDivLW, FixedDiv_fast, FixedMulDiv16, FixedMulDiv8, FixedMulShl10, FixedMulShl14, FixedMulShl3, FixedMulShl4, FixedMulShl5, FixedMulShl8, FloatMul
 - `Base\r_bsp.pas`: R_UnderWater
 - `Base\r_clipper.pas`: CleanPolygons, ClosedPathsFromPolyTree, DoublePoint, MinkowskiDiff, MinkowskiSum, OpenPathsFromPolyTree, PolyTreeToPaths, ReversePaths, SimplifyPolygon, SimplifyPolygons
-- `Base\r_colorcolumn.pas`: R_DrawColorColumnAlphaHi_Batch, R_DrawColorColumnAlphaMedium_Batch, R_DrawColorColumnAverageHi_Batch, R_DrawColorColumnAverageMedium_Batch
+- `Base\r_colorcolumn.pas`: R_DrawColorColumnAverageMedium_Batch
 - `Base\r_colormaps.pas`: R_CustomColorMapColor32
 - `Base\r_column.pas`: R_DrawColumnBase32
 - `Base\r_data.pas`: R_CacheFlat
-- `Base\r_hires.pas`: R_ColorBoost, R_ColorLightAdd, R_ColorLightAverage, R_FuzzLight, R_InverseLight, R_InverseLightAverage
+- `Base\r_hires.pas`: R_ColorBoost, R_FuzzLight, R_InverseLightAverage
 - `Base\r_main.pas`: R_AddPointToBox
 - `Base\r_tallcolumn.pas`: R_DrawTallColumnBase32
 - `Base\r_trans8.pas`: R_FastApproxColorIndex
-- `Base\r_utils.pas`: R_ColumnToScreenBuffer, R_PointToScreen, R_PointToScreenBufferEx2
+- `Base\r_utils.pas`: R_PointToScreenBufferEx2
 - `Base\r_zbuffer.pas`: R_StartZBuffer
 - `Base\tables.pas`: AngleToFixed
-- `Base\v_video.pas`: V_DrawBlock, V_DrawLongBlock, V_GetBlock
+- `Base\v_video.pas`: V_GetBlock
 - `Base\w_pak.pas`: PAK_GetGlobalHash
 - `Base\w_sprite.pas`: W_CacheSpriteName
-- `Base\w_wad.pas`: W_CacheLumpNum2, W_LumpIsNamed
-- `Common\d_delphi.pas`: capitalizedstring, ftoafmt, IsZeroes, lastword, parsefirstword, RightStr, secondword
+- `Base\w_wad.pas`: W_LumpIsNamed
+- `Common\d_delphi.pas`: IsZeroes, lastword, parsefirstword, RightStr, secondword
 - `Doom\p_spec.pas`: P_FindMinSurroundingLight
 - `Heretic\p_enemy.pas`: A_Fall
-- `Heretic\p_spec.pas`: P_FindMinSurroundingLight, P_InitLava
+- `Heretic\p_spec.pas`: P_InitLava
 - `OPENGL\gl_ambient.pas`: gld_AmbientExecute
 - `OPENGL\gl_misc.pas`: gl_f_max
 - `OPENGL\gl_render.pas`: gld_DrawLine
