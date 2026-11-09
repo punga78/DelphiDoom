@@ -1111,21 +1111,21 @@ begin
 
   for i := 0 to fStringList.Count - 1 do
   begin
-    Result := Result + SizeOf(integer) + Length(fStringList.Strings[i]);
-    Result := Result + SizeOf(integer) + Length((fStringList.Objects[i] as TString).str);
+    Result := Result + SizeOf(integer) + Length(fStringList.Strings[i]) * SizeOf(char);
+    Result := Result + SizeOf(integer) + Length((fStringList.Objects[i] as TString).str) * SizeOf(char);
   end;
 
   Result := Result + SizeOf(integer);
   for i := 0 to fIntegerList.Count - 1 do
   begin
-    Result := Result + SizeOf(integer) + Length(fIntegerList.Strings[i]);
+    Result := Result + SizeOf(integer) + Length(fIntegerList.Strings[i]) * SizeOf(char);
     Result := Result + SizeOf(integer);
   end;
 
   Result := Result + SizeOf(integer);
   for i := 0 to fFloatList.Count - 1 do
   begin
-    Result := Result + SizeOf(integer) + Length(fFloatList.Strings[i]);
+    Result := Result + SizeOf(integer) + Length(fFloatList.Strings[i]) * SizeOf(char);
     Result := Result + SizeOf(float);
   end;
 end;
