@@ -22,6 +22,8 @@ uses
   DelphiDoom.XcomEngine.DosFontData, DelphiDoom.XcomEngine.ModResources, DelphiDoom.XcomEngine.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.PaletteShift,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomUi.Frame,
-  DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomUi.TextButton;
+  DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
+  DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomMenu.StartState,
+  DelphiDoom.XcomMenu.GoToMainMenuState, DelphiDoom.XcomMenu.MainMenuState;
 
 end.

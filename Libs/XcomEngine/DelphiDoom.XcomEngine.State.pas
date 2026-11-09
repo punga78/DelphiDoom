@@ -225,7 +225,8 @@ begin
   Host.FpsCounter.SetPalette(@FPalette[0], 0, 256);
   Host.FpsCounter.SetColor(FCursorColor);
   Host.FpsCounter.Draw;
-  Host.Resources.SetPalette(@FPalette[0], 0, 256);
+  if Host.Resources <> nil then
+    Host.Resources.SetPalette(@FPalette[0], 0, 256);
   for LSurface in FSurfaces do
     LSurface.StateInitialized;
 end;

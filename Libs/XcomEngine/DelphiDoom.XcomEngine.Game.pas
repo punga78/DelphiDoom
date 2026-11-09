@@ -181,6 +181,8 @@ begin
   begin
     FLanguage.Free;
     FLanguage := ALanguage;
+    // Game::loadLanguages: Options::language = currentLang
+    FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
 end;

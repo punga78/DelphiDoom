@@ -62,7 +62,7 @@ type
     procedure LoadFonts;
     function LoadFullScreen(const AName: string): TXcomSurface;
   public
-    /// <param name="AFiles">The virtual files: the common data (Language\Font.dat), the mod and the game files</param>
+    /// <param name="AFiles">The resources own the map. The virtual files: the common data (Language\Font.dat), the mod and the game files</param>
     /// <param name="AGameData">The game directory seen with the names that OpenXcom uses (GEODATA\PALETTES.DAT...)</param>
     /// <param name="AModFolder">The folder of the mod, where the .rul files are (standard\xcom2)</param>
     constructor Create(AFiles: TXcomFileMap; const AGameData: IXcomGameData; const AFileSystem: IXcomFileSystem;
@@ -121,6 +121,7 @@ end;
 
 destructor TXcomModResources.Destroy;
 begin
+  FFiles.Free;
   FExtraStrings.Free;
   FInterfaces.Free;
   FFonts.Free;
