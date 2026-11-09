@@ -17,8 +17,8 @@ uses
 type
   TEditorHelper = class
   public
-    /// <summary>The lines of Tests\Data\Endoom\editor.golden.txt that start with AKind, without it</summary>
-    class function GoldenLines(const AKind: string): TArray<string>; static;
+    /// <summary>The lines of a golden file of Tests\Data\Endoom (the editor's by default) that start with AKind, without it</summary>
+    class function GoldenLines(const AKind: string; const AFile: string = 'editor.golden.txt'): TArray<string>; static;
     /// <summary>The changes of cells of the scenarios on the screen of the library</summary>
     class procedure ApplyOps(const AScreen: IEndoomScreen; const AOps: TArray<TEditorModelOp>); static;
     /// <summary>The 640x200 pixels without the alpha byte (the old bitmap had none), as a fingerprint</summary>
@@ -32,7 +32,7 @@ uses
 
 { TEditorHelper }
 
-class function TEditorHelper.GoldenLines(const AKind: string): TArray<string>;
+class function TEditorHelper.GoldenLines(const AKind, AFile: string): TArray<string>;
 var
   LLines: TStringList;
   LResult: TList<string>;
@@ -42,7 +42,7 @@ begin
   LResult := TList<string>.Create;
   LLines := TStringList.Create;
   try
-    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Endoom\editor.golden.txt'));
+    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Endoom\' + AFile));
     LPrefix := AKind + ' ';
     for LLine in LLines do
       if LLine.StartsWith(LPrefix) then

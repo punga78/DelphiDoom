@@ -171,6 +171,19 @@ type
       const APalette: TImagingPixels): TBytes;
   end;
 
+  /// <summary>Changes the size of a picture (issue #164: what ENDEDIT asked of Graphics32)</summary>
+  IImagingResampler = interface
+    ['{7D0A93E5-4B28-4C61-A5F8-19E3C6B07D42}']
+    /// <summary>
+    ///   ASource holds ASourceHeight rows of ASourceWidth pixels $AARRGGBB; the result holds
+    ///   ADestinationHeight rows of ADestinationWidth pixels. Every channel, alpha included, is
+    ///   resampled on its own. A size smaller than 1, or a picture that does not have the pixels
+    ///   its size says, raises EImagingException
+    /// </summary>
+    function Resample(const ASource: TArray<Cardinal>; ASourceWidth, ASourceHeight,
+      ADestinationWidth, ADestinationHeight: Integer): TArray<Cardinal>;
+  end;
+
 implementation
 
 end.

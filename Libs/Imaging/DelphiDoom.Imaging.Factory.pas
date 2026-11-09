@@ -35,6 +35,8 @@ type
     class function CreateWallScale(const ASines: IImagingSineTable = nil): IImagingWallScale; static;
     /// <param name="AColors">The search of the nearest color of the palette</param>
     class function CreateThumbnailBuilder(const AColors: IImagingColorIndex): IImagingThumbnailBuilder; static;
+    /// <summary>The Lanczos resampler of Graphics32 (what ENDEDIT used to shrink a picture)</summary>
+    class function CreateLanczosResampler: IImagingResampler; static;
   end;
 
 implementation
@@ -46,9 +48,14 @@ uses
   DelphiDoom.Imaging.SpanGrower, DelphiDoom.Imaging.ColumnExpander,
   DelphiDoom.Imaging.HiResTables, DelphiDoom.Imaging.MeltWipe,
   DelphiDoom.Imaging.SineTable, DelphiDoom.Imaging.WallScale,
-  DelphiDoom.Imaging.ThumbnailBuilder;
+  DelphiDoom.Imaging.ThumbnailBuilder, DelphiDoom.Imaging.Resampler;
 
 { TImagingFactory }
+
+class function TImagingFactory.CreateLanczosResampler: IImagingResampler;
+begin
+  Result := TImagingLanczosResampler.Create;
+end;
 
 class function TImagingFactory.CreateColumnPainter: IImagingColumnPainter;
 begin
