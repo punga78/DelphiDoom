@@ -50,7 +50,6 @@ type
     procedure Clear; virtual;
     procedure Add(const m: Pmobj_t); virtual;
     procedure Remove(const m: Pmobj_t); virtual;
-    function FindMobj(const m: Pmobj_t): Boolean;
     function FindMobjFromKey(const key: LongWord): Pmobj_t;
   end;
 
@@ -143,19 +142,6 @@ var
 begin
   hash := m.key and (MOBJHASHSIZE - 1);
   containers[hash].DeleteItem(m);
-end;
-
-//==============================================================================
-//
-// TMobjList.FindMobj
-//
-//==============================================================================
-function TMobjList.FindMobj(const m: Pmobj_t): Boolean;
-var
-  hash: LongWord;
-begin
-  hash := m.key and (MOBJHASHSIZE - 1);
-  Result := containers[hash].ItemExists(m);
 end;
 
 //==============================================================================

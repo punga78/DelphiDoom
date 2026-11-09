@@ -59,11 +59,9 @@ type
     procedure SetBytesPerPixel(Value: word);
     procedure SwapRGB;
     procedure SetAlphaChannel(Value: byte);
-    procedure SetAlphaChannelFromImage(tex: PTexture);
     procedure SetDefaultAlphaChannel;
     procedure RemoveTransparency;
     function ExternalAlphaPresent: boolean;
-    procedure SetExternalAlphaPresent(Value: boolean);
     procedure ConvertTo32bit;
     procedure ConvertToGrayScale;
     function GetBytesPerPixel: word;
@@ -311,16 +309,6 @@ end;
 
 //==============================================================================
 //
-// TTexture.SetAlphaChannelFromImage
-//
-//==============================================================================
-procedure TTexture.SetAlphaChannelFromImage(tex: PTexture);
-begin
-  TTextureAlpha.SetChannelFromImage(FImage, tex.FImage);
-end;
-
-//==============================================================================
-//
 // TTexture.SetDefaultAlphaChannel
 //
 //==============================================================================
@@ -347,16 +335,6 @@ end;
 function TTexture.ExternalAlphaPresent: boolean;
 begin
   result := FImage.ExternalAlphaPresent;
-end;
-
-//==============================================================================
-//
-// TTexture.SetExternalAlphaPresent
-//
-//==============================================================================
-procedure TTexture.SetExternalAlphaPresent(Value: boolean);
-begin
-  FImage.ExternalAlphaPresent := Value;
 end;
 
 //==============================================================================

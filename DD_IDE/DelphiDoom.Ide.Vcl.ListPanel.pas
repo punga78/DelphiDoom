@@ -52,9 +52,7 @@ type
     procedure FocusFirst;
     procedure ColumnClicked(const AColumn: TListColumn);
     procedure FilterChanged;
-    procedure ClearFilter;
     procedure SelectionChanged;
-    procedure ResizeDeclaration;
   end;
 
 implementation
@@ -139,11 +137,6 @@ begin
   FClearButton.Visible := FSearch.Text <> '';
 end;
 
-procedure TIdeListPanel.ClearFilter;
-begin
-  FSearch.Clear;
-end;
-
 procedure TIdeListPanel.SelectionChanged;
 var
   LTag: Integer;
@@ -156,11 +149,6 @@ begin
     FDeclarationPanel.Hint := FDeclaration.Text;
     FExample.SelectExample(FTable.NameOf(LTag));
   end;
-end;
-
-procedure TIdeListPanel.ResizeDeclaration;
-begin
-  FDeclaration.Width := FDeclarationPanel.Width - 16;
 end;
 
 end.

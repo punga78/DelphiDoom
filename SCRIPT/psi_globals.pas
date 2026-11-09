@@ -56,7 +56,6 @@ type
     procedure AssignStringList(const s: TStringList);
     procedure Insert(const str: string; const p: integer);
     procedure Clear;
-    function GetPos(const value: string): integer;
     function CheckPos(const value: string): integer;
     property List: TStringList read fList;
   end;
@@ -70,7 +69,6 @@ type
     constructor Create;
     destructor Destroy; override;
     function IndexOf(const S: string): Integer; override;
-    procedure RebuiltHash;
   end;
 
 //==============================================================================
@@ -477,63 +475,6 @@ end;
 
 //==============================================================================
 //
-// THashTable.GetPos
-//
-//==============================================================================
-function THashTable.GetPos(const value: string): integer;
-var
-  h: integer;
-  i: integer;
-  n: integer;
-begin
-  if flist = nil then
-  begin
-    Result := -1;
-    Exit;
-  end;
-
-  if flist.Count = 0 then
-  begin
-    Result := -1;
-    Exit;
-  end;
-
-  for i := prevsearches.Count - 1 downto 0 do
-  begin
-    n := prevsearches[i];
-    if (n > -1) and (n < fList.Count) then
-      if flist.Strings[n] = value then
-      begin
-        Result := n;
-        Exit;
-      end;
-  end;
-
-  h := Hash(value);
-  if positions[h] = nil then
-  begin
-    Result := fList.IndexOf(value);
-    prevsearches.Add(Result);
-    Exit;
-  end;
-
-  for i := 0 to positions[h].Count - 1 do
-  begin
-    n := positions[h].Numbers[i];
-    if (n > -1) and (n < fList.Count) then
-      if flist.Strings[n] = value then
-      begin
-        Result := n;
-        prevsearches.Add(Result);
-        Exit;
-      end;
-  end;
-
-  Result := fList.IndexOf(value);
-end;
-
-//==============================================================================
-//
 // THashTable.CheckPos
 //
 //==============================================================================
@@ -658,16 +599,6 @@ begin
       s.Objects[i].Free;
   s.Free;
   s := nil;
-end;
-
-//==============================================================================
-//
-// THashStringList.RebuiltHash
-//
-//==============================================================================
-procedure THashStringList.RebuiltHash;
-begin
-  fhash.AssignStringList(self);
 end;
 
 //==============================================================================

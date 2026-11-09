@@ -880,16 +880,10 @@ type
     procedure AddAllMonstersDead;
     procedure AddAllMonsters;
     procedure AddAllMissiles;
-    procedure AddAllPlayers;
-    procedure AddAllName(const name: string);
     procedure AddAllEdNum(const num: Integer);
     procedure AddAllSector(const sec: Integer);
     procedure AddAllSectorTag(const tag: Integer);
     procedure AddAllType(const typ: Integer);
-    procedure AddList(const lst: TActorKeyList);
-    procedure DeleteList(const lst: TActorKeyList);
-    procedure RemoveAllDead;
-    procedure RemoveAllAlive;
     procedure Clear;
     function GetActorArray: TActorArray;
     property Count: Integer read fNumItems;
@@ -5718,29 +5712,6 @@ end;
 
 //==============================================================================
 //
-// TActorKeyList.AddAllPlayers
-//
-//==============================================================================
-procedure TActorKeyList.AddAllPlayers; // Including voodoo dolls
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      if mo.player <> nil then
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
 // TActorKeyList.SetAllowDuplicates
 //
 //==============================================================================
@@ -5781,33 +5752,6 @@ begin
   for i := 1 to Length(name) do
     if not (name[i] in [' ', ',', ';', '.', '/', '\', '[', ']', '(', ')', '{', '}', #13, #10, #9]) then
       Result := Result + toupper(name[i]);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllName
-//
-//==============================================================================
-procedure TActorKeyList.AddAllName(const name: string);
-var
-  uname: string;
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  uname := FormatName(name);
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      minfo := mo.info;
-      if (FormatName(minfo.Name) = uname) {$IFDEF STRIFE} or (FormatName(minfo.Name2) = uname) {$ENDIF} then
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
 end;
 
 //==============================================================================
@@ -5890,94 +5834,6 @@ begin
     end;
     currentthinker := currentthinker.next;
   end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddList
-//
-//==============================================================================
-procedure TActorKeyList.AddList(const lst: TActorKeyList);
-var
-  i: Integer;
-begin
-  for i := 0 to lst.Count - 1 do
-    Add(lst[i]);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.DeleteList
-//
-//==============================================================================
-procedure TActorKeyList.DeleteList(const lst: TActorKeyList);
-var
-  i: Integer;
-begin
-  for i := 0 to lst.Count - 1 do
-    Delete(lst[i]);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.RemoveAllDead
-//
-//==============================================================================
-procedure TActorKeyList.RemoveAllDead;
-var
-  i, j: Integer;
-  tmpList: PLongWordArray;
-  sz: Integer;
-begin
-  if fNumItems = 0 then
-    Exit;
-
-  sz := fNumItems * SizeOf(LongWord);
-  tmpList := malloc(sz);
-  j := 0;
-  for i := 0 to fNumItems - 1 do
-    if PS_GetActorHealth(fList[i]) > 0 then
-    begin
-      tmpList[j] := fList[i];
-      Inc(j);
-    end;
-
-  fNumItems := 0;
-
-  for i := 0 to j - 1 do
-    Add(tmpList[i]);
-  memfree(Pointer(tmpList), sz);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.RemoveAllAlive
-//
-//==============================================================================
-procedure TActorKeyList.RemoveAllAlive;
-var
-  i, j: Integer;
-  tmpList: PLongWordArray;
-  sz: Integer;
-begin
-  if fNumItems = 0 then
-    Exit;
-
-  sz := fNumItems * SizeOf(LongWord);
-  tmpList := malloc(sz);
-  j := 0;
-  for i := 0 to fNumItems - 1 do
-    if PS_GetActorHealth(fList[i]) <= 0 then
-    begin
-      tmpList[j] := fList[i];
-      Inc(j);
-    end;
-
-  fNumItems := 0;
-
-  for i := 0 to j - 1 do
-    Add(tmpList[i]);
-  memfree(Pointer(tmpList), sz);
 end;
 
 //==============================================================================
