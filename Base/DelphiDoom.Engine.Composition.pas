@@ -177,6 +177,14 @@ uses
   p_common,
   psi_system,
   psi_globals,
+  ps_import,
+  DelphiDoom.ScriptHost.Factory,
+  DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.System.Intf,
+  DelphiDoom.Engine.Script.Console,
+  DelphiDoom.Engine.Script.Environment,
+  DelphiDoom.Engine.Script.Output,
+  DelphiDoom.Engine.Script.Routines,
   w_utils,
 {$IFDEF HEXEN}
   g_demo,
@@ -818,7 +826,6 @@ begin
 {$ENDIF}
   P_ConfigureTickerConsole(Result);
   P_ConfigureConsole(Result);
-  PS_ConfigureConsole(Result);
 end;
 
 // The defaults of the configuration file, with their two console commands
@@ -833,7 +840,24 @@ begin
   LDefaults.RegisterCommands;
   D_ConfigureDefaults(Result);
   I_ConfigureDefaults(Result);
-  PS_ConfigureDefaults(Result);
+end;
+
+// The functions that scripts can call: the registry, with the units of script that are classes
+// (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists)
+procedure ComposeScriptHost(const AConsole: IEngineConsole; const ADefaults: IEngineDefaults;
+  const ARandom: IGameRandom);
+var
+  LRegistry: IScriptFunctionRegistry;
+  LSystem: IScriptSystemFunctions;
+begin
+  LRegistry := TScriptHostFactory.CreateRegistry;
+  LSystem := TScriptHostFactory.CreateSystemFunctions(TEngineScriptRoutines.SystemRoutines,
+    TEngineScriptOutput.Create, TEngineScriptEnvironment.Create,
+    TEngineScriptConsole.Create(AConsole, ADefaults), ARandom);
+  LRegistry.AddGroup(LSystem as IScriptFunctionGroup);
+  LRegistry.AddGroup(TScriptHostFactory.CreateFixedGroup(TEngineScriptRoutines.FixedRoutines));
+  PS_ConfigureSystem(LSystem);
+  PS_ConfigureScriptRegistry(LRegistry);
 end;
 
 procedure ComposeImaging;
@@ -1275,6 +1299,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
+  ComposeScriptHost(LConsole, LDefaults, LRandom);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;

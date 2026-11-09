@@ -252,7 +252,7 @@ uses
   ps_events,
   ps_import,
   ps_main,
-  ps_proclist,
+  DelphiDoom.ScriptHost.Intf,
   ps_compiler,
   uPSDisassembly,
   ps_utils,
@@ -416,9 +416,13 @@ procedure dd_getavailableunits_strife(
   var _out: PChar; var _outsize: Integer); stdcall;
 var
   unitnames: string;
+  LName: string;
 begin
   try
-    unitnames := (PS_ImportUnits as TStringList).Text;
+    // the names of the units, one for each line, as the old sorted list gave them
+    unitnames := '';
+    for LName in PS_ScriptRegistry.UnitNames do
+      unitnames := unitnames + LName + #13#10;
     DD_CopyStringToPChar(unitnames, _out, _outsize);
   finally
   end;
@@ -440,23 +444,12 @@ procedure dd_getunitfunctions_strife(
   var _out: PChar; var _outsize: Integer); stdcall;
 var
   unitname: string;
-  lst: TStringList;
   funcdecls: string;
-  idx: integer;
 begin
   try
     DD_CopyPCharToString(_inp, _inpsize, unitname);
-    lst := PS_ImportUnits as TStringList;
-    idx := lst.IndexOf(unitname);
-    if idx < 0 then
-    begin
-      unitname := strupper(unitname);
-      idx := lst.IndexOf(unitname);
-    end;
-    if idx < 0 then
-      funcdecls := ''
-    else
-      funcdecls := (lst.Objects[idx] as TProcedureList).GetDeclarations;
+    // empty for an unknown unit (the case of the name does not matter)
+    funcdecls := PS_ScriptRegistry.Declarations(unitname);
     DD_CopyStringToPChar(funcdecls, _out, _outsize);
   finally
   end;

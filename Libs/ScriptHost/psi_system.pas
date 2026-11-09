@@ -34,16 +34,16 @@ unit psi_system;
 interface
 
 uses
-  DelphiDoom.Engine.Console.Intf,
-  DelphiDoom.Engine.Configuration.Intf;
+  DelphiDoom.ScriptHost.System.Intf;
 
 type
-  TDynamicIntegerArray = array of Integer;
-  TDynamicInt64Array = array of Int64;
-  TDynamicLongWordArray = array of LongWord;
-  TDynamicSingleArray = array of single;
-  TDynamicDoubleArray = array of double;
-  TDynamicExtendedArray = array of extended;
+  // the same types as the arrays of TScriptSystemFunctions (a dynamic array is the same in memory)
+  TDynamicIntegerArray = TArray<Integer>;
+  TDynamicInt64Array = TArray<Int64>;
+  TDynamicLongWordArray = TArray<LongWord>;
+  TDynamicSingleArray = TArray<Single>;
+  TDynamicDoubleArray = TArray<Double>;
+  TDynamicExtendedArray = TArray<Extended>;
 
 //==============================================================================
 //
@@ -300,81 +300,43 @@ function PS_SetConsoleBool(const cvar: string; const value: boolean): boolean;
 
 //==============================================================================
 //
-// PS_ConfigureConsole
-// The console, given by the composition root
+// PS_ConfigureSystem
+// The functions of the unit SYSTEM of the scripts, given by the composition root: the
+// PS_* routines above are the entries that the interpreter calls and they only forward to it
 //
 //==============================================================================
-procedure PS_ConfigureConsole(const AConsole: IEngineConsole);
-
-//==============================================================================
-//
-// PS_ConfigureDefaults
-// The defaults, given by the composition root
-//
-//==============================================================================
-procedure PS_ConfigureDefaults(const ADefaults: IEngineDefaults);
+procedure PS_ConfigureSystem(const AFunctions: IScriptSystemFunctions);
 
 implementation
 
 uses
-  d_delphi,
-  Math,
-  i_io,
-  i_system,
-  m_defs,
-  m_rnd,
-  p_tick,
-  tables;
+  i_system;
 
 var
   // given by the composition root
-  ps_console_ref: IEngineConsole = nil;
-  ps_defaults_ref: IEngineDefaults = nil;
+  ps_system_ref: IScriptSystemFunctions = nil;
 
 //==============================================================================
 //
-// PS_ConfigureConsole
+// PS_ConfigureSystem
 //
 //==============================================================================
-procedure PS_ConfigureConsole(const AConsole: IEngineConsole);
+procedure PS_ConfigureSystem(const AFunctions: IScriptSystemFunctions);
 begin
-  ps_console_ref := AConsole;
+  ps_system_ref := AFunctions;
 end;
 
 //==============================================================================
 //
-// PS_Console
+// PS_System
 //
 //==============================================================================
-function PS_Console: IEngineConsole;
+function PS_System: IScriptSystemFunctions;
 begin
-  if ps_console_ref = nil then
-    I_Error('PS_ConfigureConsole() was not called: the console is missing');
-  result := ps_console_ref;
+  if ps_system_ref = nil then
+    I_Error('PS_ConfigureSystem() was not called: the functions of the unit SYSTEM are missing');
+  result := ps_system_ref;
 end;
-
-//==============================================================================
-//
-// PS_ConfigureDefaults
-//
-//==============================================================================
-procedure PS_ConfigureDefaults(const ADefaults: IEngineDefaults);
-begin
-  ps_defaults_ref := ADefaults;
-end;
-
-//==============================================================================
-//
-// PS_Defaults
-//
-//==============================================================================
-function PS_Defaults: IEngineDefaults;
-begin
-  if ps_defaults_ref = nil then
-    I_Error('PS_ConfigureDefaults() was not called: the defaults are missing');
-  result := ps_defaults_ref;
-end;
-
 
 //==============================================================================
 //
@@ -383,7 +345,7 @@ end;
 //==============================================================================
 function PS_LevelTime: integer;
 begin
-  Result := leveltime;
+  Result := PS_System.LevelTime;
 end;
 
 //==============================================================================
@@ -393,7 +355,7 @@ end;
 //==============================================================================
 procedure PS_Write(const parm: string);
 begin
-  printf(parm);
+  PS_System.WriteText(parm);
 end;
 
 //==============================================================================
@@ -403,7 +365,7 @@ end;
 //==============================================================================
 procedure PS_WriteFmt(const Fmt: string; const args: array of const);
 begin
-  PS_Write(PS_Format(Fmt, args));
+  PS_System.WriteFormatted(Fmt, args);
 end;
 
 //==============================================================================
@@ -413,7 +375,7 @@ end;
 //==============================================================================
 procedure PS_Writeln(const parm: string);
 begin
-  printf(parm + #13#10);
+  PS_System.WriteLine(parm);
 end;
 
 //==============================================================================
@@ -423,7 +385,7 @@ end;
 //==============================================================================
 procedure PS_WritelnFmt(const Fmt: string; const args: array of const);
 begin
-  PS_Writeln(PS_Format(Fmt, args));
+  PS_System.WriteLineFormatted(Fmt, args);
 end;
 
 //==============================================================================
@@ -433,8 +395,7 @@ end;
 //==============================================================================
 procedure PS_OutputDebugString(const parm: string);
 begin
-  if debugfile <> nil then
-    fprintf(debugfile, parm);
+  PS_System.WriteDebug(parm);
 end;
 
 //==============================================================================
@@ -444,21 +405,18 @@ end;
 //==============================================================================
 procedure PS_OutputDebugStringFmt(const Fmt: string; const args: array of const);
 begin
-  PS_OutputDebugString(PS_Format(Fmt, args));
+  PS_System.WriteDebugFormatted(Fmt, args);
 end;
 
-var
-  bpmsg: string = '';
-
 //==============================================================================
-// PS_BreakPoint
 //
+// PS_BreakPoint
 // Actually for debuging the engine, not script
 //
 //==============================================================================
 procedure PS_BreakPoint(const msg: string);
 begin
-  bpmsg := msg;
+  PS_System.BreakPoint(msg);
 end;
 
 //==============================================================================
@@ -468,7 +426,7 @@ end;
 //==============================================================================
 function PS_FineSine(const parm: LongWord): Integer;
 begin
-  Result := finesine[parm and FINEMASK];
+  Result := PS_System.FineSine(parm);
 end;
 
 //==============================================================================
@@ -478,7 +436,7 @@ end;
 //==============================================================================
 function PS_FineCosine(const parm: LongWord): Integer;
 begin
-  Result := finecosine[parm and FINEMASK];
+  Result := PS_System.FineCosine(parm);
 end;
 
 //==============================================================================
@@ -488,7 +446,7 @@ end;
 //==============================================================================
 function PS_FineTangent(const parm: LongWord): Integer;
 begin
-  Result := finetangent[parm and FINEMASK];
+  Result := PS_System.FineTangent(parm);
 end;
 
 //==============================================================================
@@ -498,7 +456,7 @@ end;
 //==============================================================================
 function PS_Tan(const parm: Extended): Extended;
 begin
-  Result := tan(parm);
+  Result := PS_System.TangentOfRadians(parm);
 end;
 
 //==============================================================================
@@ -508,7 +466,7 @@ end;
 //==============================================================================
 function PS_Sin360(const parm: Extended): Extended;
 begin
-  Result := sin(parm / 360 * 2 * pi);
+  Result := PS_System.SineOfDegrees(parm);
 end;
 
 //==============================================================================
@@ -518,7 +476,7 @@ end;
 //==============================================================================
 function PS_Cos360(const parm: Extended): Extended;
 begin
-  Result := cos(parm / 360 * 2 * pi);
+  Result := PS_System.CosineOfDegrees(parm);
 end;
 
 //==============================================================================
@@ -528,7 +486,7 @@ end;
 //==============================================================================
 function PS_Tan360(const parm: Extended): Extended;
 begin
-  Result := tan(parm / 360 * 2 * pi);
+  Result := PS_System.TangentOfDegrees(parm);
 end;
 
 //==============================================================================
@@ -538,12 +496,7 @@ end;
 //==============================================================================
 function PS_Format(const Fmt: string; const args: array of const): string;
 begin
-  try
-    sprintf(Result, Fmt, Args);
-  except
-    I_Warning('Script Runtime Error: Invalid Format Parameters (%s)'#13#10, [Fmt]);
-    Result := Fmt;
-  end;
+  Result := PS_System.FormatText(Fmt, args);
 end;
 
 //==============================================================================
@@ -553,10 +506,7 @@ end;
 //==============================================================================
 function PS_IFI(const condition: boolean; const iftrue, iffalse: Int64): Int64;
 begin
-  if condition then
-    Result := iftrue
-  else
-    Result := iffalse;
+  Result := PS_System.IfInteger(condition, iftrue, iffalse);
 end;
 
 //==============================================================================
@@ -566,10 +516,7 @@ end;
 //==============================================================================
 function PS_IFF(const condition: boolean; const iftrue, iffalse: Extended): Extended;
 begin
-  if condition then
-    Result := iftrue
-  else
-    Result := iffalse;
+  Result := PS_System.IfFloat(condition, iftrue, iffalse);
 end;
 
 //==============================================================================
@@ -579,10 +526,7 @@ end;
 //==============================================================================
 function PS_IFS(const condition: boolean; const iftrue, iffalse: string): string;
 begin
-  if condition then
-    Result := iftrue
-  else
-    Result := iffalse;
+  Result := PS_System.IfString(condition, iftrue, iffalse);
 end;
 
 //==============================================================================
@@ -592,7 +536,7 @@ end;
 //==============================================================================
 function PS_Odd(const x: integer): boolean;
 begin
-  Result := Odd(x);
+  Result := PS_System.IsOdd(x);
 end;
 
 //==============================================================================
@@ -602,7 +546,7 @@ end;
 //==============================================================================
 function PS_Even(const x: integer): boolean;
 begin
-  Result := not Odd(x);
+  Result := PS_System.IsEven(x);
 end;
 
 //==============================================================================
@@ -611,17 +555,8 @@ end;
 //
 //==============================================================================
 function PS_MergeIntegerArrays(const A1, A2: TDynamicIntegerArray): TDynamicIntegerArray;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeIntegerArrays(A1, A2);
 end;
 
 //==============================================================================
@@ -630,17 +565,8 @@ end;
 //
 //==============================================================================
 function PS_MergeInt64Arrays(const A1, A2: TDynamicInt64Array): TDynamicInt64Array;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeInt64Arrays(A1, A2);
 end;
 
 //==============================================================================
@@ -649,17 +575,8 @@ end;
 //
 //==============================================================================
 function PS_MergeLongWordArrays(const A1, A2: TDynamicLongWordArray): TDynamicLongWordArray;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeLongWordArrays(A1, A2);
 end;
 
 //==============================================================================
@@ -668,17 +585,8 @@ end;
 //
 //==============================================================================
 function PS_MergeSingleArrays(const A1, A2: TDynamicSingleArray): TDynamicSingleArray;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeSingleArrays(A1, A2);
 end;
 
 //==============================================================================
@@ -687,17 +595,8 @@ end;
 //
 //==============================================================================
 function PS_MergeDoubleArrays(const A1, A2: TDynamicDoubleArray): TDynamicDoubleArray;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeDoubleArrays(A1, A2);
 end;
 
 //==============================================================================
@@ -706,17 +605,8 @@ end;
 //
 //==============================================================================
 function PS_MergeExtendedArrays(const A1, A2: TDynamicExtendedArray): TDynamicExtendedArray;
-var
-  l1, l2: integer;
-  i: integer;
 begin
-  l1 := Length(A1);
-  l2 := Length(A2);
-  SetLength(Result, l1 + l2);
-  for i := 0 to l1 - 1 do
-    Result[i] := A1[i];
-  for i := 0 to l2 - 1 do
-    Result[l1 + i] := A2[i];
+  Result := PS_System.MergeExtendedArrays(A1, A2);
 end;
 
 //==============================================================================
@@ -725,30 +615,8 @@ end;
 //
 //==============================================================================
 function PS_IsPrime(const N: Int64): Boolean;
-var
-  Test, k: Int64;
-  ee: Extended;
 begin
-  if N <= 3 then
-    Result := N > 1
-  else if ((N mod 2) = 0) or ((N mod 3) = 0) then
-    Result := False
-  else
-  begin
-    Result := True;
-    ee := N;
-    k := Trunc(Sqrt(ee));
-    Test := 5;
-    while Test <= k do
-    begin
-      if ((N mod Test) = 0) or ((N mod (Test + 2)) = 0) then
-      begin
-        Result := False;
-        break; // jump out of the for loop
-      end;
-      Test := Test + 6;
-    end;
-  end;
+  Result := PS_System.IsPrime(N);
 end;
 
 //==============================================================================
@@ -757,14 +625,8 @@ end;
 //
 //==============================================================================
 function PS_RandomRange(const x1, x2: integer): integer;
-var
-  r1, r2: float;
-  rnd: integer;
 begin
-  rnd := P_Random;
-  r1 := (rnd * x1) / 255;
-  r2 := ((255 - rnd) * x2) / 255;
-  result := round(r1 + r2);
+  Result := PS_System.RandomRange(x1, x2);
 end;
 
 //==============================================================================
@@ -774,7 +636,7 @@ end;
 //==============================================================================
 procedure PS_ConsoleCommand(const parm: string);
 begin
-  PS_Console.AddCommand(parm);
+  PS_System.ExecuteConsoleCommand(parm);
 end;
 
 //==============================================================================
@@ -783,47 +645,8 @@ end;
 //
 //==============================================================================
 function PS_GetConsoleStr(const cvar: string): string;
-var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
 begin
-  cname := strlower(cvar);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := PString(location)^;
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := itoa(PInteger(location)^);
-            Exit;
-          end;
-        tBoolean:
-          begin
-            if PBoolean(location)^ then
-              Result := 'true'
-            else
-              Result := 'false';
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
-  end;
-  Result := '';
+  Result := PS_System.GetConsoleString(cvar);
 end;
 
 //==============================================================================
@@ -833,7 +656,7 @@ end;
 //==============================================================================
 function PS_SetConsoleStr(const cvar: string; const value: string): boolean;
 begin
-  result := PS_Defaults.ForceString(cvar, value);
+  Result := PS_System.SetConsoleString(cvar, value);
 end;
 
 //==============================================================================
@@ -842,47 +665,8 @@ end;
 //
 //==============================================================================
 function PS_GetConsoleInt(const cvar: string): integer;
-var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
 begin
-  cname := strlower(cvar);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := atoi(PString(location)^, 0);
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := PInteger(location)^;
-            Exit;
-          end;
-        tBoolean:
-          begin
-            if PBoolean(location)^ then
-              Result := 1
-            else
-              Result := 0;
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
-  end;
-  Result := 0;
+  Result := PS_System.GetConsoleInteger(cvar);
 end;
 
 //==============================================================================
@@ -892,7 +676,7 @@ end;
 //==============================================================================
 function PS_SetConsoleInt(const cvar: string; const value: integer): boolean;
 begin
-  result := PS_Defaults.ForceInteger(cvar, value);
+  Result := PS_System.SetConsoleInteger(cvar, value);
 end;
 
 //==============================================================================
@@ -901,44 +685,8 @@ end;
 //
 //==============================================================================
 function PS_GetConsoleBool(const cvar: string): boolean;
-var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
 begin
-  cname := strlower(cvar);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := PString(location)^ <> '';
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := PInteger(location)^ <> 0;
-            Exit;
-          end;
-        tBoolean:
-          begin
-            Result := PBoolean(location)^;
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
-  end;
-  Result := False;
+  Result := PS_System.GetConsoleBoolean(cvar);
 end;
 
 //==============================================================================
@@ -948,8 +696,7 @@ end;
 //==============================================================================
 function PS_SetConsoleBool(const cvar: string; const value: boolean): boolean;
 begin
-  result := PS_Defaults.ForceBoolean(cvar, value);
+  Result := PS_System.SetConsoleBoolean(cvar, value);
 end;
 
 end.
-

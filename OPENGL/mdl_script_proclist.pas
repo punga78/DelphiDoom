@@ -35,11 +35,23 @@ interface
 
 uses
   d_delphi,
-  ps_proclist,
   ps_compiler,
   ps_runtime;
 
 type
+  // the function of the model scripts (it was in ps_proclist.pas, that the other scripts do not use any more:
+  // their functions are in the registry of Libs\ScriptHost)
+  procitem_t = record
+    proc: Pointer;
+    decl: TString;
+    name: TString;
+    customresult: TString;
+    exportdecl: TString;
+    iscomputed: boolean;
+  end;
+  procitem_tArray = array[0..$FFF] of procitem_t;
+  Pprocitem_tArray = ^procitem_tArray;
+
   TMDLProcedureList = class(TObject)
   private
     fList: Pprocitem_tArray;

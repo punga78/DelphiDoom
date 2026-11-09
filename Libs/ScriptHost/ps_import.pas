@@ -39,7 +39,8 @@ uses
   ps_defs,
   ps_compiler,
   uPSPreProcessor,
-  ps_runtime;
+  ps_runtime,
+  DelphiDoom.ScriptHost.Intf;
 
 //==============================================================================
 //
@@ -83,10 +84,18 @@ const
 
 //==============================================================================
 //
-// PS_ImportUnits
+// PS_ConfigureScriptRegistry
+// The functions that scripts can call, given by the composition root
 //
 //==============================================================================
-function PS_ImportUnits: TObject;
+procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
+
+//==============================================================================
+//
+// PS_ScriptRegistry
+//
+//==============================================================================
+function PS_ScriptRegistry: IScriptFunctionRegistry;
 
 //==============================================================================
 //
@@ -104,7 +113,8 @@ uses
   uPSC_dll,
   uPSR_dateutils,
   uPSR_dll,
-  ps_proclist,
+  DelphiDoom.ScriptHost.Factory,
+  DelphiDoom.ScriptHost.Types,
   psi_game,
   psi_map,
   psi_overlay,
@@ -139,669 +149,628 @@ uses
   ps_keywords;
 
 var
-  units: TStringList;
+  // given by the composition root
+  ps_registry_ref: IScriptFunctionRegistry = nil;
+
+//==============================================================================
+//
+// PS_ConfigureScriptRegistry
+//
+//==============================================================================
+procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
+begin
+  ps_registry_ref := ARegistry;
+end;
+
+//==============================================================================
+//
+// PS_ScriptRegistry
+//
+//==============================================================================
+function PS_ScriptRegistry: IScriptFunctionRegistry;
+begin
+  if ps_registry_ref = nil then
+    I_Error('PS_ConfigureScriptRegistry() was not called: the functions of the scripts are missing');
+  Result := ps_registry_ref;
+end;
+
+//==============================================================================
+//
+// PS_DescribeGameFunctions
+// The functions of the unit PS_GAME
+//
+//==============================================================================
+procedure PS_DescribeGameFunctions(const ATable: IScriptFunctionTable);
+begin
+  // --------------------------- Actors ----------------------------------------
+  ATable.Add('function Actor: LongWord;', @PS_Actor);
+  ATable.AddWithCustomResult('procedure TActor(const key: LongWord);', '!TActor', 'function TActor(const key: LongWord): !TActor;', @PS_TActor);
+  ATable.Add('function GetActorTarget(const key: LongWord): LongWord;', @PS_GetActorTarget);
+  ATable.Add('procedure SetActorTarget(const key: LongWord; const targ: LongWord);', @PS_SetActorTarget);
+  ATable.Add('function GetActorTracer(const key: LongWord): LongWord;', @PS_GetActorTracer);
+  ATable.Add('procedure SetActorTracer(const key: LongWord; const targ: LongWord);', @PS_SetActorTracer);
+  ATable.Add('function GetActorMaster(const key: LongWord): LongWord;', @PS_GetActorMaster);
+  ATable.Add('procedure SetActorMaster(const key: LongWord; const targ: LongWord);', @PS_SetActorMaster);
+  ATable.Add('function GetActorX(const key: LongWord): fixed_t;', @PS_GetActorX);
+  ATable.Add('procedure SetActorX(const key: LongWord; const x: fixed_t);', @PS_SetActorX);
+  ATable.Add('function GetActorY(const key: LongWord): fixed_t;', @PS_GetActorY);
+  ATable.Add('procedure SetActorY(const key: LongWord; const y: fixed_t);', @PS_SetActorY);
+  ATable.Add('function GetActorZ(const key: LongWord): fixed_t;', @PS_GetActorZ);
+  ATable.Add('procedure SetActorZ(const key: LongWord; const z: fixed_t);', @PS_SetActorZ);
+  ATable.Add('procedure SetActorPosition(const key: LongWord; const x, y, z: fixed_t);', @PS_SetActorPosition);
+  ATable.Add('function GetActorMOMX(const key: LongWord): fixed_t;', @PS_GetActorMOMX);
+  ATable.Add('procedure SetActorMOMX(const key: LongWord; const x: fixed_t);', @PS_SetActorMOMX);
+  ATable.Add('function GetActorMOMY(const key: LongWord): fixed_t;', @PS_GetActorMOMY);
+  ATable.Add('procedure SetActorMOMY(const key: LongWord; const y: fixed_t);', @PS_SetActorMOMY);
+  ATable.Add('function GetActorMOMZ(const key: LongWord): fixed_t;', @PS_GetActorMOMZ);
+  ATable.Add('procedure SetActorMOMZ(const key: LongWord; const z: fixed_t);', @PS_SetActorMOMZ);
+  ATable.Add('function GetActorFloorZ(const key: LongWord): fixed_t;', @PS_GetActorFloorZ);
+  ATable.Add('procedure SetActorFloorZ(const key: LongWord; const z: fixed_t);', @PS_SetActorFloorZ);
+  ATable.Add('function GetActorCeilingZ(const key: LongWord): fixed_t;', @PS_GetActorCeilingZ);
+  ATable.Add('procedure SetActorCeilingZ(const key: LongWord; const z: fixed_t);', @PS_SetActorCeilingZ);
+  ATable.Add('function GetActorSpeed(const key: LongWord): fixed_t;', @PS_GetActorSpeed);
+  ATable.Add('procedure SetActorSpeed(const key: LongWord; const speed: fixed_t);', @PS_SetActorSpeed);
+  ATable.Add('function GetActorAngle(const key: LongWord): angle_t;', @PS_GetActorAngle);
+  ATable.Add('procedure SetActorAngle(const key: LongWord; const angle: angle_t);', @PS_SetActorAngle);
+  ATable.Add('function GetActorSector(const key: LongWord): integer;', @PS_GetActorSector);
+  ATable.Add('function GetActorHealth(const key: LongWord): integer;', @PS_GetActorHealth);
+  ATable.Add('procedure SetActorHealth(const key: LongWord; const h: integer);', @PS_SetActorHealth);
+  ATable.Add('function GetActorSpawnHealth(const key: LongWord): integer;', @PS_GetActorSpawnHealth);
+  ATable.Add('function GetActorMass(const key: LongWord): integer;', @PS_GetActorMass);
+  ATable.Add('procedure SetActorMass(const key: LongWord; const m: Integer);', @PS_SetActorMass);
+  ATable.Add('function GetActorHeight(const key: LongWord): fixed_t;', @PS_GetActorHeight);
+  ATable.Add('procedure SetActorHeight(const key: LongWord; const h: fixed_t);', @PS_SetActorHeight);
+  ATable.Add('function GetActorCustomDropItem(const key: LongWord): integer;', @PS_GetActorCustomDropItem);
+  ATable.Add('procedure SetActorCustomDropItem(const key: LongWord; const value: integer);', @PS_SetActorCustomDropItem);
+  ATable.Add('procedure SetActorDefaultDropItem(const key: LongWord);', @PS_SetActorDefaultDropItem);
+  ATable.Add('function GetActorPushFactor(const key: LongWord): integer;', @PS_GetActorPushFactor);
+  ATable.Add('procedure SetActorPushFactor(const key: LongWord; const value: integer);', @PS_SetActorPushFactor);
+  ATable.Add('function GetActorScale(const key: LongWord): integer;', @PS_GetActorScale);
+  ATable.Add('procedure SetActorScale(const key: LongWord; const value: integer);', @PS_SetActorScale);
+  ATable.Add('function GetActorGravity(const key: LongWord): integer;', @PS_GetActorGravity);
+  ATable.Add('procedure SetActorGravity(const key: LongWord; const value: integer);', @PS_SetActorGravity);
+  ATable.Add('function GetActorSpecial(const key: LongWord): Integer;', @PS_GetActorSpecial);
+  ATable.Add('procedure SetActorSpecial(const key: LongWord; const value: Integer);', @PS_SetActorSpecial);
+  ATable.Add('function GetActorArg1(const key: LongWord): integer;', @PS_GetActorArg1);
+  ATable.Add('procedure SetActorArg1(const key: LongWord; const value: integer);', @PS_SetActorArg1);
+  ATable.Add('function GetActorArg2(const key: LongWord): integer;', @PS_GetActorArg2);
+  ATable.Add('procedure SetActorArg2(const key: LongWord; const value: integer);', @PS_SetActorArg2);
+  ATable.Add('function GetActorArg3(const key: LongWord): integer;', @PS_GetActorArg3);
+  ATable.Add('procedure SetActorArg3(const key: LongWord; const value: integer);', @PS_SetActorArg3);
+  ATable.Add('function GetActorArg4(const key: LongWord): integer;', @PS_GetActorArg4);
+  ATable.Add('procedure SetActorArg4(const key: LongWord; const value: integer);', @PS_SetActorArg4);
+  ATable.Add('function GetActorArg5(const key: LongWord): integer;', @PS_GetActorArg5);
+  ATable.Add('procedure SetActorArg5(const key: LongWord; const value: integer);', @PS_SetActorArg5);
+  ATable.Add('function GetActorWeaveIndexXY(const key: LongWord): Integer;);', @PS_GetActorWeaveIndexXY);
+  ATable.Add('procedure SetActorWeaveIndexXY(const key: LongWord; const value: Integer);', @PS_SetActorWeaveIndexXY);
+  ATable.Add('function GetActorWeaveIndexZ(const key: LongWord): Integer;);', @PS_GetActorWeaveIndexZ);
+  ATable.Add('procedure SetActorWeaveIndexZ(const key: LongWord; const value: Integer);', @PS_SetActorWeaveIndexZ);
+  ATable.Add('function GetActorFriction(const key: LongWord): Integer;);', @PS_GetActorFriction);
+  ATable.Add('procedure SetActorFriction(const key: LongWord; const value: Integer););', @PS_SetActorFriction);
+  ATable.Add('function GetActorPainChance(const key: LongWord): Integer;);', @PS_GetActorPainChance);
+  ATable.Add('procedure SetActorPainChance(const key: LongWord; const value: Integer);', @PS_SetActorPainChance);
+  ATable.Add('function GetActorSpriteDX(const key: LongWord): Integer;);', @PS_GetActorSpriteDX);
+  ATable.Add('procedure SetActorSpriteDX(const key: LongWord; const value: Integer);', @PS_SetActorSpriteDX);
+  ATable.Add('function GetActorSpriteDY(const key: LongWord): Integer;);', @PS_GetActorSpriteDY);
+  ATable.Add('procedure SetActorSpriteDY(const key: LongWord; const value: Integer);', @PS_SetActorSpriteDY);
+  ATable.Add('function GetActorCustomParam(const key: LongWord; const parm: string): integer;', @PS_GetActorCustomParam);
+  ATable.Add('procedure SetActorCustomParam(const key: LongWord; const parm: string; const value: integer);', @PS_SetActorCustomParam);
+  ATable.Add('function CheckActorFlag(const key: LongWord; const flag: LongWord): boolean;', @PS_CheckActorFlag);
+  ATable.Add('procedure SetActorFlag(const key: LongWord; const flag: LongWord);', @PS_SetActorFlag);
+  ATable.Add('procedure UnSetActorFlag(const key: LongWord; const flag: LongWord);', @PS_UnSetActorFlag);
+  ATable.Add('function GetActorInfightingGroup(const key: LongWord): Integer;', @PS_GetActorInfightingGroup);
+  ATable.Add('procedure SetActorInfightingGroup(const key: LongWord; const value: Integer);', @PS_SetActorInfightingGroup);
+  ATable.Add('function GetActorProjectileGroup(const key: LongWord): Integer;', @PS_GetActorProjectileGroup);
+  ATable.Add('procedure SetActorProjectileGroup(const key: LongWord; const value: Integer);', @PS_SetActorProjectileGroup);
+  ATable.Add('function GetActorSplashGroup(const key: LongWord): Integer;', @PS_GetActorSplashGroup);
+  ATable.Add('procedure SetActorSplashGroup(const key: LongWord; const value: Integer);', @PS_SetActorSplashGroup);
+  ATable.Add('function GetActorTranslation(const key: LongWord): string;', @PS_GetActorTranslation);
+  ATable.Add('procedure SetActorTranslation(const key: LongWord; const value: string);', @PS_SetActorTranslation);
+  ATable.Add('function GetActorBloodColor(const key: LongWord): string;', @PS_GetActorBloodColor);
+  ATable.Add('procedure SetActorBloodColor(const key: LongWord; const value: string);', @PS_SetActorBloodColor);
+  ATable.Add('function GetActorRipSound(const key: LongWord): string;', @PS_GetActorRipSound);
+  ATable.Add('function GetActorName(const key: LongWord): string;', @PS_GetActorName);
+  {$IFDEF STRIFE}
+  ATable.Add('function GetActorName2(const key: LongWord): string;', @PS_GetActorName2);
+  {$ENDIF}
+  ATable.Add('function GetActorDistanceXY(const key1, key2: LongWord): fixed_t;', @PS_GetActorDistanceXY);
+  ATable.Add('function GetActorDistanceXYZ(const key1, key2: LongWord): fixed_t;', @PS_GetActorDistanceXYZ);
+  ATable.Add('function GetActorMobjType(const key: LongWord): integer;', @PS_GetActorMobjType);
+  ATable.Add('function GetActorEditorNumber(const key: LongWord): integer;', @PS_GetActorEditorNumber);
+  ATable.Add('function GetActorState(const key: LongWord): integer;', @PS_GetActorState);
+  ATable.Add('procedure SetActorState(const key: LongWord; const value: Integer);', @PS_SetActorState);
+  ATable.Add('function IsValidActor(const key: LongWord): boolean;', @PS_IsValidActor);
+  ATable.Add('procedure ActorPlaySound(const key: LongWord; const snd: string);', @PS_ActorPlaySound);
+  ATable.Add('procedure PlaySound(const snd: string);', @PS_PlaySound);
+  ATable.Add('function GetActorPlayer(const key: LongWord): integer;', @PS_GetActorPlayer);
+  ATable.Add('function GetPlayerActor(const plnum: integer): LongWord;', @PS_GetPlayerActor);
+  ATable.Add('function SpawnActorType(x, y, z: fixed_t; const typ: integer): LongWord;', @PS_SpawnActorType);
+  ATable.Add('function SpawnActorEditorNumber(x, y, z: fixed_t; const ednum: integer): LongWord;', @PS_SpawnActorEditorNumber);
+  ATable.Add('function SpawnActorName(x, y, z: fixed_t; const name: string): LongWord;', @PS_SpawnActorName);
+  ATable.Add('procedure RemoveActor(const key: LongWord);', @PS_RemoveActor);
+  ATable.Add('function CheckActorSight(const actor1, actor2: LongWord): boolean;', @PS_CheckActorSight);
+  ATable.Add('function ActorTypeFromEditorNumber(const ednum: integer): integer;', @PS_ActorTypeFromEditorNumber);
+  ATable.Add('function ActorTypeFromName(const name: string): integer;', @PS_ActorTypeFromName);
+  ATable.Add('function GetActorSeeSound(const key: LongWord): string;', @PS_GetActorSeeSound);
+  ATable.Add('function GetActorAttackSound(const key: LongWord): string;', @PS_GetActorAttackSound);
+  ATable.Add('function GetActorPainSound(const key: LongWord): string;', @PS_GetActorPainSound);
+  ATable.Add('function GetActorDeathSound(const key: LongWord): string;', @PS_GetActorDeathSound);
+  ATable.Add('function GetActorActiveSound(const key: LongWord): string;', @PS_GetActorActiveSound);
+  ATable.Add('function GetActorCustomSound1(const key: LongWord): string;', @PS_GetActorCustomSound1);
+  ATable.Add('function GetActorCustomSound2(const key: LongWord): string;', @PS_GetActorCustomSound2);
+  ATable.Add('function GetActorCustomSound3(const key: LongWord): string;', @PS_GetActorCustomSound3);
+  ATable.Add('function GetActorMeleeSound(const key: LongWord): string;', @PS_GetActorMeleeSound);
+  ATable.Add('function MergeActorArrays(const A1, A2: TActorArray): TActorArray;', @PS_MergeLongWordArrays);
+  // ------------------------- Vertexes ----------------------------------------
+  ATable.AddWithCustomResult('procedure TVertex(const id: Integer);', '!TVertex', 'function TVertex(const id: Integer): !TVertex;', @PS_TVertex);
+  ATable.Add('function GetVertexX(const v: integer): fixed_t;', @PS_GetVertexX);
+  ATable.Add('function GetVertexY(const v: integer): fixed_t;', @PS_GetVertexY);
+  ATable.Add('function IsValidVertex(const v: Integer): boolean;', @PS_IsValidVertex);
+  ATable.Add('function GetVertexCount: Integer;', @PS_GetVertexCount);
+  // ---------------------------- Sides ----------------------------------------
+  ATable.AddWithCustomResult('procedure TSide(const id: Integer);', '!TSide', 'function TSide(const id: Integer): !TSide;', @PS_TSide);
+  ATable.Add('function GetSideTextureOffset(const sd: Integer): fixed_t;', @PS_GetSideTextureOffset);
+  ATable.Add('procedure SetSideTextureOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideTextureOffset);
+  ATable.Add('function GetSideTopTextureOffset(const sd: Integer): Integer;', @PS_GetSideTopTextureOffset);
+  ATable.Add('procedure SetSideTopTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopTextureOffset);
+  ATable.Add('function GetSideBottomTextureOffset(const sd: Integer): Integer;', @PS_GetSideBottomTextureOffset);
+  ATable.Add('procedure SetSideBottomTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomTextureOffset);
+  ATable.Add('function GetSideMidTextureOffset(const sd: Integer): Integer;', @PS_GetSideMidTextureOffset);
+  ATable.Add('procedure SetSideMidTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidTextureOffset);
+  ATable.Add('function GetSideRowOffset(const sd: Integer): fixed_t;', @PS_GetSideRowOffset);
+  ATable.Add('procedure SetSideRowOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideRowOffset);
+  ATable.Add('function GetSideTopRowOffset(const sd: Integer): Integer;', @PS_GetSideTopRowOffset);
+  ATable.Add('procedure SetSideTopRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopRowOffset);
+  ATable.Add('function GetSideBottomRowOffset(const sd: Integer): Integer;', @PS_GetSideBottomRowOffset);
+  ATable.Add('procedure SetSideBottomRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomRowOffset);
+  ATable.Add('function GetSideMidRowOffset(const sd: Integer): Integer;', @PS_GetSideMidRowOffset);
+  ATable.Add('procedure SetSideMidRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidRowOffset);
+  ATable.Add('function GetSideTopTexture(const sd: Integer): string;', @PS_GetSideTopTexture);
+  ATable.Add('procedure SetSideTopTexture(const sd: Integer; const tex: string);', @PS_SetSideTopTexture);
+  ATable.Add('function GetSideBottomTexture(const sd: Integer): string;', @PS_GetSideBottomTexture);
+  ATable.Add('procedure SetSideBottomTexture(const sd: Integer; const tex: string);', @PS_SetSideBottomTexture);
+  ATable.Add('function GetSideMiddleTexture(const sd: Integer): string;', @PS_GetSideMiddleTexture);
+  ATable.Add('procedure SetSideMiddleTexture(const sd: Integer; const tex: string);', @PS_SetSideMiddleTexture);
+  ATable.Add('function GetSideSector(const sd: Integer): integer;', @PS_GetSideSector);
+  ATable.Add('function IsValidSide(const sd: Integer): boolean;', @PS_IsValidSide);
+  ATable.Add('function GetSideCount: Integer;', @PS_GetSideCount);
+  // ---------------------------- Lines ----------------------------------------
+  ATable.AddWithCustomResult('procedure TLine(const id: Integer);', '!TLine', 'function TLine(const id: Integer): !TLine;', @PS_TLine);
+  ATable.Add('function GetLineVertex1(const ld: Integer): integer;', @PS_GetLineVertex1);
+  ATable.Add('function GetLineVertex2(const ld: Integer): integer;', @PS_GetLineVertex2);
+  ATable.Add('function GetLineDX(const ld: Integer): fixed_t;', @PS_GetLineDX);
+  ATable.Add('function GetLineDY(const ld: Integer): fixed_t;', @PS_GetLineDY);
+  ATable.Add('function GetLineSpecial(const ld: Integer): integer;', @PS_GetLineSpecial);
+  ATable.Add('procedure SetLineSpecial(const ld: Integer; const spec: integer);', @PS_SetLineSpecial);
+  ATable.Add('function GetLineArg1(const ld: Integer): byte;', @PS_GetLineArg1);
+  ATable.Add('procedure SetLineArg1(const ld: Integer; const arg: byte);', @PS_SetLineArg1);
+  ATable.Add('function GetLineArg2(const ld: Integer): byte;', @PS_GetLineArg2);
+  ATable.Add('procedure SetLineArg2(const ld: Integer; const arg: byte);', @PS_SetLineArg2);
+  ATable.Add('function GetLineArg3(const ld: Integer): byte;', @PS_GetLineArg3);
+  ATable.Add('procedure SetLineArg3(const ld: Integer; const arg: byte);', @PS_SetLineArg3);
+  ATable.Add('function GetLineArg4(const ld: Integer): byte;', @PS_GetLineArg4);
+  ATable.Add('procedure SetLineArg4(const ld: Integer; const arg: byte);', @PS_SetLineArg4);
+  ATable.Add('function GetLineArg5(const ld: Integer): byte;', @PS_GetLineArg5);
+  ATable.Add('procedure SetLineArg5(const ld: Integer; const arg: byte);', @PS_SetLineArg5);
+  {$IFNDEF HEXEN}
+  ATable.Add('function GetLineTag(const ld: Integer): integer;', @PS_GetLineTag);
+  ATable.Add('procedure SetLineTag(const ld: Integer; const tag: integer);', @PS_SetLineTag);
+  ATable.Add('function GetLineTransparent(const ld: Integer): Boolean;', @PS_GetLineTransparent);
+  ATable.Add('procedure SetLineTransparent(const ld: Integer; const x: Boolean);', @PS_SetLineTransparent);
+  {$ENDIF}
+  ATable.Add('function GetLineIsBlocking(const ld: Integer): Boolean;', @PS_GetLineIsBlocking);
+  ATable.Add('procedure SetLineIsBlocking(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlocking);
+  ATable.Add('function GetLineIsBlockingMonsters(const ld: Integer): Boolean;', @PS_GetLineIsBlockingMonsters);
+  ATable.Add('procedure SetLineIsBlockingMonsters(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlockingMonsters);
+  ATable.Add('function GetLineTriggerScripts(const ld: Integer): Boolean;', @PS_GetLineTriggerScripts);
+  ATable.Add('procedure SetLineTriggerScripts(const ld: Integer; const x: Boolean);', @PS_SetLineTriggerScripts);
+  ATable.Add('function GetLineFrontSide(const ld: Integer): integer;', @PS_GetLineFrontSide);
+  ATable.Add('function GetLineBackSide(const ld: Integer): integer;', @PS_GetLineBackSide);
+  ATable.Add('function GetLineFrontSector(const ld: Integer): integer;', @PS_GetLineFrontSector);
+  ATable.Add('function GetLineBackSector(const ld: Integer): integer;', @PS_GetLineBackSector);
+  ATable.Add('function IsValidLine(const ld: Integer): boolean;', @PS_IsValidLine);
+  ATable.Add('function GetLineCount: Integer;', @PS_GetLineCount);
+  {$IFNDEF HEXEN}
+  ATable.Add('function FindLinesFromTag(const tag: integer): TIntegerArray;', @PS_FindLinesFromTag);
+  {$ENDIF}
+// --------------------------- SECTORS -----------------------------------------
+  ATable.AddWithCustomResult('procedure TSector(const id: Integer);', '!TSector', 'function TSector(const id: Integer): !TSector;', @PS_TSector);
+  ATable.Add('function GetSectorFloorHeight(const sec: Integer): fixed_t;', @PS_GetSectorFloorHeight);
+  ATable.Add('procedure SetSectorFloorHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorFloorHeight);
+  ATable.Add('function GetSectorCeilingHeight(const sec: Integer): fixed_t;', @PS_GetSectorCeilingHeight);
+  ATable.Add('procedure SetSectorCeilingHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorCeilingHeight);
+  ATable.Add('function GetSectorFloorPicture(const sec: Integer): string;', @PS_GetSectorFloorPicture);
+  ATable.Add('procedure SetSectorFloorPicture(const sec: Integer; const pic: string);', @PS_SetSectorFloorPicture);
+  ATable.Add('function GetSectorCeilingPicture(const sec: Integer): string;', @PS_GetSectorCeilingPicture);
+  ATable.Add('procedure SetSectorCeilingPicture(const sec: Integer; const pic: string);', @PS_SetSectorCeilingPicture);
+  ATable.Add('function GetSectorLightLevel(const sec: Integer): Integer;', @PS_GetSectorLightLevel);
+  ATable.Add('procedure SetSectorLightLevel(const sec: Integer; const x: Integer);', @PS_SetSectorLightLevel);
+  ATable.Add('function GetSectorSpecial(const sec: Integer): Integer;', @PS_GetSectorSpecial);
+  ATable.Add('function GetSectorTag(const sec: Integer): Integer;', @PS_GetSectorTag);
+  ATable.Add('procedure SetSectorTag(const sec: Integer; const x: Integer);', @PS_SetSectorTag);
+  ATable.Add('function GetSectorActors(const sec: Integer): TActorArray;', @PS_GetSectorActors);
+  ATable.Add('function GetSectorNumActors(const sec: Integer): Integer;', @PS_GetSectorNumActors);
+  ATable.Add('function GetSectorLines(const sec: Integer): TIntegerArray;', @PS_GetSectorLines);
+  ATable.Add('function GetSectorNumLines(const sec: Integer): Integer;', @PS_GetSectorNumLines);
+  {$IFDEF DOOM_OR_STRIFE}
+  ATable.Add('function GetSectorFloorXOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorXOffset);
+  ATable.Add('procedure SetSectorFloorXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorXOffset);
+  ATable.Add('function GetSectorFloorYOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorYOffset);
+  ATable.Add('procedure SetSectorFloorYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorYOffset);
+  ATable.Add('function GetSectorCeilingXOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingXOffset);
+  ATable.Add('procedure SetSectorCeilingXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingXOffset);
+  ATable.Add('function GetSectorCeilingYOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingYOffset);
+  ATable.Add('procedure SetSectorCeilingYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingYOffset);
+  {$ENDIF}
+  ATable.Add('function GetSectorFloorAngle(const sec: Integer): angle_t;', @PS_GetSectorFloorAngle);
+  ATable.Add('procedure SetSectorFloorAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorFloorAngle);
+  ATable.Add('function GetSectorFloorAngleX(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleX);
+  ATable.Add('procedure SetSectorFloorAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorFloorAngleX);
+  ATable.Add('function GetSectorFloorAngleY(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleY);
+  ATable.Add('procedure SetSectorFloorAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorFloorAngleY);
+  ATable.Add('function GetSectorCeilingAngle(const sec: Integer): angle_t;', @PS_GetSectorCeilingAngle);
+  ATable.Add('procedure SetSectorCeilingAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorCeilingAngle);
+  ATable.Add('function GetSectorCeilingAngleX(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleX);
+  ATable.Add('procedure SetSectorCeilingAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorCeilingAngleX);
+  ATable.Add('function GetSectorCeilingAngleY(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleY);
+  ATable.Add('procedure SetSectorCeilingAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorCeilingAngleY);
+  ATable.Add('function GetSectorRippleFloor(const sec: Integer): Boolean;', @PS_GetSectorRippleFloor);
+  ATable.Add('procedure SetSectorRippleFloor(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleFloor);
+  ATable.Add('function GetSectorRippleCeiling(const sec: Integer): Boolean;', @PS_GetSectorRippleCeiling);
+  ATable.Add('procedure SetSectorRippleCeiling(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleCeiling);
+  ATable.Add('function GetSectorInterpolate(const sec: Integer): Boolean;', @PS_GetSectorInterpolate);
+  ATable.Add('procedure SetSectorInterpolate(const sec: Integer; const intpl: Boolean);', @PS_SetSectorInterpolate);
+  ATable.Add('function GetSectorFog(const sec: Integer): Boolean;', @PS_GetSectorFog);
+  ATable.Add('procedure SetSectorFog(const sec: Integer; const fog: Boolean);', @PS_SetSectorFog);
+  ATable.Add('function GetSectorGravity(const sec: Integer): fixed_t;', @PS_GetSectorGravity);  // JVAL: sector gravity (VERSION 204)
+  ATable.Add('procedure SetSectorGravity(const sec: Integer; const grav: fixed_t);', @PS_SetSectorGravity); // JVAL: sector gravity (VERSION 204)
+  ATable.Add('function GetSectorWindThrust(const sec: Integer): Integer;', @PS_GetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
+  ATable.Add('procedure SetSectorWindThrust(const sec: Integer; const wthrust: Integer);', @PS_SetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
+  ATable.Add('function GetSectorWindAngle(const sec: Integer): LongWord;', @PS_GetSectorWindAngle); // JVAL: 20220223 - Sector WindAngle
+  ATable.Add('procedure SetSectorWindAngle(const sec: Integer; const wangle: LongWord);', @PS_SetSectorWindAngle);  // JVAL: 20220223 - Sector WindAngle
+  ATable.Add('function GetSectorMidSector(const sec: Integer): Integer;', @PS_GetSectorMidSector);
+  ATable.Add('function GetSectorSlopeSector(const sec: Integer): Integer;', @PS_GetSectorSlopeSector);
+  ATable.Add('function SkyPicture: string;', @PS_SkyPicture);
+  ATable.Add('function IsValidSector(const sec: Integer): boolean;', @PS_IsValidSector);
+  ATable.Add('function GetSectorCount: Integer;', @PS_GetSectorCount);
+  ATable.Add('function FindSectorsFromTag(const tag: integer): TIntegerArray;', @PS_FindSectorsFromTag);
+  ATable.Add('procedure SectorPlaySound(const secid: integer; const snd: string);', @PS_SectorPlaySound);
+  ATable.Add('procedure SectorMoveZ(const secid: integer; const dz: fixed_t);', @PS_SectorMoveZ);
+  ATable.Add('procedure SetSectorFloorSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetFloorSlope);
+  ATable.Add('procedure SetSectorCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetCeilingSlope);
+// --------------------------- PLAYERS -----------------------------------------
+  ATable.Add('function PlayerInGame(const plnum: integer): boolean;', @PS_PlayerInGame);
+  {$IFDEF DOOM_OR_STRIFE}
+  ATable.Add('procedure PlayerFaceMobj(const plnum: integer; const actor: LongWord; const ticks: integer);', @PS_PlayerFaceMobj);
+  {$ENDIF}
+  {$IFDEF DOOM_OR_STRIFE}
+  ATable.Add('procedure SetPlayerHasCard(const plnum: integer; const card: integer; const value: boolean);', @PS_SetPlayerHasCard);
+  ATable.Add('function GetPlayerHasCard(const plnum: integer; const card: integer): boolean;', @PS_GetPlayerHasCard);
+  ATable.Add('procedure SetPlayerHasKey(const plnum: integer; const key: integer; const value: boolean);', @PS_SetPlayerHasCard);
+  ATable.Add('function GetPlayerHasKey(const plnum: integer; const key: integer): boolean;', @PS_GetPlayerHasCard);
+  {$ENDIF}
+  {$IFDEF HERETIC_OR_HEXEN}
+  ATable.Add('procedure SetPlayerHasCard(const plnum: integer; const card: integer; const value: boolean);', @PS_SetPlayerHasKey);
+  ATable.Add('function GetPlayerHasCard(const plnum: integer; const card: integer): boolean;', @PS_GetPlayerHasKey);
+  ATable.Add('procedure SetPlayerHasKey(const plnum: integer; const key: integer; const value: boolean);', @PS_SetPlayerHasKey);
+  ATable.Add('function GetPlayerHasKey(const plnum: integer; const key: integer): boolean;', @PS_GetPlayerHasKey);
+  ATable.Add('procedure PlayerUseArtifact(const plnum: Integer; const arti: Integer);', @PS_PlayerUseArtifact);
+  ATable.Add('function GiveArtifactToPlayer(const plnum: Integer; const arti: Integer): Boolean;', @PS_GiveArtifactToPlayer);
+  ATable.Add('function CheckPlayerArtifact(const plnum: Integer; const arti: Integer): Integer;', @PS_CheckPlayerArtifact);
+  {$ENDIF}
+  ATable.Add('procedure SetPlayerHasWeapon(const plnum: integer; const weapon: integer; const value: boolean);', @PS_SetPlayerHasWeapon);
+  ATable.Add('function GetPlayerHasWeapon(const plnum: integer; const weapon: integer): boolean;', @PS_GetPlayerHasWeapon);
+  {$IFNDEF HEXEN}
+  ATable.Add('procedure SetPlayerAmmo(const plnum: integer; const ammotype: integer; const value: integer);', @PS_SetPlayerAmmo);
+  ATable.Add('function GetPlayerAmmo(const plnum: integer; const ammotype: integer): integer;', @PS_GetPlayerAmmo);
+  {$ELSE}
+  ATable.Add('procedure SetPlayerMana(const plnum: integer; const mana: integer; const value: integer);', @PS_SetPlayerMana);
+  ATable.Add('function GetPlayerMana(const plnum: integer; const mana: integer): integer;', @PS_GetPlayerMana);
+  {$ENDIF}
+  {$IFDEF HEXEN}
+  ATable.Add('function GetPlayerClass(const plnum: Integer): Integer;', @PS_GetPlayerClass);
+  {$ENDIF}
+  ATable.Add('procedure SetPlayerMessage(const plnum: integer; const msg: string);', @PS_SetPlayerMessage);
+  ATable.Add('function GetPlayerMessage(const plnum: integer): string;', @PS_GetPlayerMessage);
+  ATable.Add('procedure SetPlayerExtraLight(const plnum: Integer; const l: Integer);', @PS_SetPlayerExtraLight);
+  ATable.Add('function GetPlayerExtraLight(const plnum: Integer): Integer;', @PS_GetPlayerExtraLight);
+  ATable.Add('procedure SetPlayerPowerTicks(const plnum: integer; const powertype: integer; const ticks: integer);', @PS_SetPlayerPowerTicks);
+  ATable.Add('function GetPlayerPowerTicks(const plnum: integer; const powertype: integer): integer;', @PS_GetPlayerPowerTicks);
+  ATable.Add('function GetPlayerViewZ(const plnum: integer): fixed_t;', @PS_GetPlayerViewZ);
+  ATable.Add('function GetPlayerViewHeight(const plnum: integer): fixed_t;', @PS_GetPlayerViewHeight);
+  ATable.Add('function ConsolePlayer: Integer;', @PS_ConsolePlayer);
+  {$IFDEF STRIFE}
+  ATable.Add('function CheckPlayerQuest(const plnum: Integer; const quest: LongWord): Boolean;', @PS_CheckPlayerQuest);
+  ATable.Add('procedure SetPlayerQuest(const plnum: Integer; const quest: LongWord);', @PS_SetPlayerQuest);
+  ATable.Add('procedure UnSetPlayerQuest(const plnum: Integer; const quest: LongWord);', @PS_UnSetPlayerQuest);
+  {$ENDIF}
+// -------------------------- TEXTURES -----------------------------------------
+  ATable.Add('function GetTextureWidth(const tex: string): Integer;', @PS_GetTextureWidth);
+  ATable.Add('function GetTextureHeight(const tex: string): Integer;', @PS_GetTextureHeight);
+  ATable.Add('function IsValidTexture(const tex: string): boolean;', @PS_IsValidTexture);
+// ----------------------------- MOBJS -----------------------------------------
+  ATable.Add('function IsValidMobjType(const typ: integer): boolean;', @PS_IsValidMobjType);
+  ATable.Add('function GetMobjTypeFromEditorNumber(const en: integer): integer;', @PS_GetMobjTypeFromEditorNumber);
+  ATable.Add('function GetEditorNumberFromMobjType(const typ: integer): integer;', @PS_GetEditorNumberFromMobjType);
+  ATable.Add('function GetMobjInfoCount: integer;', @PS_GetMobjInfoCount);
+  ATable.Add('function GetMobjInfoName(const typ: integer): string;', @PS_GetMobjInfoName);
+  {$IFDEF STRIFE}
+  ATable.Add('function GetMobjInfoName2(const typ: integer): string;', @PS_GetMobjInfoName2);
+  {$ENDIF}
+  ATable.Add('function GetMobjInfoInheritsFrom(const typ: integer): integer;', @PS_GetMobjInfoInheritsFrom);
+  ATable.Add('function GetMobjInfoDoomEdNum(const typ: integer): integer;', @PS_GetMobjInfoDoomEdNum);
+  ATable.Add('function GetMobjInfoSpawnState(const typ: integer): integer;', @PS_GetMobjInfoSpawnState);
+  ATable.Add('function GetMobjInfoSpawnHealth(const typ: integer): integer;', @PS_GetMobjInfoSpawnHealth);
+  ATable.Add('function GetMobjInfoSeeState(const typ: integer): integer;', @PS_GetMobjInfoSeeState);
+  ATable.Add('function GetMobjInfoSeeSound(const typ: integer): string;', @PS_GetMobjInfoSeeSound);
+  ATable.Add('function GetMobjInfoReactionTime(const typ: integer): integer;', @PS_GetMobjInfoReactionTime);
+  ATable.Add('function GetMobjInfoAttackSound(const typ: integer): string;', @PS_GetMobjInfoAttackSound);
+  ATable.Add('function GetMobjInfoPainState(const typ: integer): integer;', @PS_GetMobjInfoPainState);
+  ATable.Add('function GetMobjInfoPainChance(const typ: integer): integer;', @PS_GetMobjInfoPainChance);
+  ATable.Add('function GetMobjInfoPainSound(const typ: integer): string;', @PS_GetMobjInfoPainSound);
+  ATable.Add('function GetMobjInfoMeleeState(const typ: integer): integer;', @PS_GetMobjInfoMeleeState);
+  ATable.Add('function GetMobjInfoMissileState(const typ: integer): integer;', @PS_GetMobjInfoMissileState);
+  ATable.Add('function GetMobjInfoDeathState(const typ: integer): integer;', @PS_GetMobjInfoDeathState);
+  ATable.Add('function GetMobjInfoXdeathState(const typ: integer): integer;', @PS_GetMobjInfoXdeathState);
+  ATable.Add('function GetMobjInfoDeathSound(const typ: integer): string;', @PS_GetMobjInfoDeathSound);
+  ATable.Add('function GetMobjInfoSpeed(const typ: integer): integer;', @PS_GetMobjInfoSpeed);
+  ATable.Add('function GetMobjInfoRadius(const typ: integer): integer;', @PS_GetMobjInfoRadius);
+  ATable.Add('function GetMobjInfoHeight(const typ: integer): integer;', @PS_GetMobjInfoHeight);
+  ATable.Add('function GetMobjInfoMass(const typ: integer): integer;', @PS_GetMobjInfoMass);
+  ATable.Add('function GetMobjInfoDamage(const typ: integer): integer;', @PS_GetMobjInfoDamage);
+  ATable.Add('function GetMobjInfoActiveSound(const typ: integer): string;', @PS_GetMobjInfoActiveSound);
+  ATable.Add('function GetMobjInfoFlag(const typ: Integer; const flg: integer): boolean;', @PS_GetMobjInfoFlag);
+  ATable.Add('function GetMobjInfoRaiseState(const typ: integer): integer;', @PS_GetMobjInfoRaiseState);
+  ATable.Add('function GetMobjInfoCustomSound1(const typ: integer): string;', @PS_GetMobjInfoCustomSound1);
+  ATable.Add('function GetMobjInfoCustomSound2(const typ: integer): string;', @PS_GetMobjInfoCustomSound2);
+  ATable.Add('function GetMobjInfoCustomSound3(const typ: integer): string;', @PS_GetMobjInfoCustomSound3);
+  ATable.Add('function GetMobjInfoDropItem(const typ: integer): integer;', @PS_GetMobjInfoDropItem);
+  ATable.Add('function GetMobjInfoMissiletype(const typ: integer): integer;', @PS_GetMobjInfoMissiletype);
+  ATable.Add('function GetMobjInfoExplosionDamage(const typ: integer): integer;', @PS_GetMobjInfoExplosionDamage);
+  ATable.Add('function GetMobjInfoExplosionRadius(const typ: integer): integer;', @PS_GetMobjInfoExplosionRadius);
+  ATable.Add('function GetMobjInfoMeleeDamage(const typ: integer): integer;', @PS_GetMobjInfoMeleeDamage);
+  ATable.Add('function GetMobjInfoMeleeSound(const typ: integer): string;', @PS_GetMobjInfoMeleeSound);
+  ATable.Add('function GetMobjInfoRenderStyle(const typ: integer): integer;', @PS_GetMobjInfoRenderStyle);
+  ATable.Add('function GetMobjInfoAlpha(const typ: integer): integer;', @PS_GetMobjInfoAlpha);
+  ATable.Add('function GetMobjInfoHealState(const typ: integer): integer;', @PS_GetMobjInfoHealState);
+  ATable.Add('function GetMobjInfoCrashState(const typ: integer): integer;', @PS_GetMobjInfoCrashState);
+  ATable.Add('function GetMobjInfoCrushState(const typ: integer): integer;', @PS_GetMobjInfoCrushState);
+  ATable.Add('function GetMobjInfoVSpeed(const typ: integer): integer;', @PS_GetMobjInfoVSpeed);
+  ATable.Add('function GetMobjInfoMinMissileChance(const typ: integer): integer;', @PS_GetMobjInfoMinMissileChance);
+  ATable.Add('function GetMobjInfoPushFactor(const typ: integer): integer;', @PS_GetMobjInfoPushFactor);
+  ATable.Add('function GetMobjInfoScale(const typ: integer): integer;', @PS_GetMobjInfoScale);
+  ATable.Add('function GetMobjInfoInteractState(const typ: integer): integer;', @PS_GetMobjInfoInteractState);
+  ATable.Add('function GetMobjInfoMissileHeight(const typ: integer): integer;', @PS_GetMobjInfoMissileHeight);
+  ATable.Add('function GetMobjInfoFloatSpeed(const typ: integer): integer;', @PS_GetMobjInfoFloatSpeed);
+  ATable.Add('function GetMobjInfoNormalSpeed(const typ: integer): integer;', @PS_GetMobjInfoNormalSpeed);
+  ATable.Add('function GetMobjInfoFastSpeed(const typ: integer): integer;', @PS_GetMobjInfoFastSpeed);
+  ATable.Add('function GetMobjInfoObituary(const typ: integer): string;', @PS_GetMobjInfoObituary);
+  ATable.Add('function GetMobjInfoHitObituary(const typ: integer): string;', @PS_GetMobjInfoHitObituary);
+  ATable.Add('function GetMobjInfoGender(const typ: integer): integer;', @PS_GetMobjInfoGender);
+  ATable.Add('function GetMobjInfoMeleeRange(const typ: integer): integer;', @PS_GetMobjInfoMeleeRange);
+  ATable.Add('function GetMobjInfoMaxStepHeight(const typ: integer): integer;', @PS_GetMobjInfoMaxStepHeight);
+  ATable.Add('function GetMobjInfoMaxDropOffHeight(const typ: integer): integer;', @PS_GetMobjInfoMaxDropOffHeight);
+  ATable.Add('function GetMobjInfoGibHealth(const typ: integer): integer;', @PS_GetMobjInfoGibHealth);
+  ATable.Add('function GetMobjInfoMaxTargetRange(const typ: integer): integer;', @PS_GetMobjInfoMaxTargetRange);
+  ATable.Add('function GetMobjInfoWeaveIndexXY(const typ: integer): integer;', @PS_GetMobjInfoWeaveIndexXY);
+  ATable.Add('function GetMobjInfoWeaveIndexZ(const typ: integer): integer;', @PS_GetMobjInfoWeaveIndexZ);
+  ATable.Add('function GetMobjInfoFriction(const typ: integer): integer;', @PS_GetMobjInfoFriction);
+  ATable.Add('function GetMobjInfoSpriteDX(const dx: integer): integer;', @PS_GetMobjInfoSpriteDX);
+  ATable.Add('function GetMobjInfoSpriteDY(const dy: integer): integer;', @PS_GetMobjInfoSpriteDY);
+  ATable.Add('function GetMobjInfoInfightingGroup(const typ: integer): Integer;', @PS_GetMobjInfoInfightingGroup);
+  ATable.Add('function GetMobjInfoProjectileGroup(const typ: integer): Integer;', @PS_GetMobjInfoProjectileGroup);
+  ATable.Add('function GetMobjInfoSplashGroup(const typ: integer): Integer;', @PS_GetMobjInfoSplashGroup);
+  ATable.Add('function GetMobjInfoRipSound(const typ: integer): string;', @PS_GetMobjInfoRipSound);
+  ATable.Add('function GetMobjInfoMeleeThreshold(const typ: integer): integer;', @PS_GetMobjInfoMeleeThreshold);
+// ------------------------------ GAME -----------------------------------------
+  {$IFDEF HEXEN}
+  ATable.Add('procedure G_Completed(map, position: integer);', @G_Completed);
+  ATable.Add('function P_TranslateMap(map: integer): integer;', @P_TranslateMap);
+  ATable.Add('function P_GetMapNextMap(map: integer): integer;', @P_GetMapNextMap);
+  {$ENDIF}
+  {$IFDEF DOOM_OR_HERETIC}
+  ATable.Add('procedure G_ExitLevel;', @G_ExitLevel);
+  ATable.Add('procedure G_SecretExitLevel;', @G_SecretExitLevel);
+  {$ENDIF}
+  {$IFDEF STRIFE}
+  ATable.Add('procedure G_ExitLevel(dest: integer);', @G_ExitLevel);
+  {$ENDIF}
+  ATable.Add('function _GAME: string;', @PS_Game);
+  ATable.Add('procedure GlobalEarthQuake(const tics: integer);', @PS_GlobalEarthQuake);
+  ATable.Add('procedure LocalEarthQuake(const x, y, z: fixed_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);', @PS_LocalEarthQuake);
+  ATable.Add('function GameSkill: integer;', @PS_GameSkill);
+  ATable.Add('function GameMap: integer;', @PS_GameMap);
+  {$IFDEF DOOM_OR_HERETIC}
+  ATable.Add('function GameEpisode: integer;', @PS_GameEpisode);
+  {$ENDIF}
+// ------------------ KEYBOARD CONTROL -----------------------------------------
+  ATable.Add('function gamekeydown(const kkey: integer): boolean;', @PS_gamekeydown);
+  ATable.Add('function mousebuttons(const mkey: integer): boolean;', @PS_mousebuttons);
+  ATable.Add('function joybuttons(const jkey: integer): boolean;', @PS_joybuttons);
+  ATable.Add('function key_right: integer;', @PS_key_right);
+  ATable.Add('function key_left: integer;', @PS_key_left);
+  ATable.Add('function key_up: integer;', @PS_key_up);
+  ATable.Add('function key_down: integer;', @PS_key_down);
+  ATable.Add('function key_lookup: integer;', @PS_key_lookup);
+  ATable.Add('function key_lookdown: integer;', @PS_key_lookdown);
+  ATable.Add('function key_lookcenter: integer;', @PS_key_lookcenter);
+  ATable.Add('function key_lookright: integer;', @PS_key_lookright);
+  ATable.Add('function key_lookleft: integer;', @PS_key_lookleft);
+  {$IFNDEF STRIFE}
+  ATable.Add('function key_lookforward: integer;', @PS_key_lookforward);
+  {$ENDIF}
+  ATable.Add('function key_strafeleft: integer;', @PS_key_strafeleft);
+  ATable.Add('function key_straferight: integer;', @PS_key_straferight);
+  ATable.Add('function key_fire: integer;', @PS_key_fire);
+  ATable.Add('function key_use: integer;', @PS_key_use);
+  ATable.Add('function key_strafe: integer;', @PS_key_strafe);
+  ATable.Add('function key_speed: integer;', @PS_key_speed);
+  ATable.Add('function key_jump: integer;', @PS_key_jump);
+  // JVAL: 20211101 - Crouch
+  ATable.Add('function key_crouch: integer;', @PS_key_crouch);
+  ATable.Add('function key_weapon0: integer;', @PS_key_weapon0);
+  ATable.Add('function key_weapon1: integer;', @PS_key_weapon1);
+  ATable.Add('function key_weapon2: integer;', @PS_key_weapon2);
+  ATable.Add('function key_weapon3: integer;', @PS_key_weapon3);
+  {$IFNDEF HEXEN}
+  ATable.Add('function key_weapon4: integer;', @PS_key_weapon4);
+  ATable.Add('function key_weapon5: integer;', @PS_key_weapon5);
+  ATable.Add('function key_weapon6: integer;', @PS_key_weapon6);
+  ATable.Add('function key_weapon7: integer;', @PS_key_weapon7);
+  {$ENDIF}
+  {$IFDEF HERETIC_OR_HEXEN}
+  ATable.Add('function key_flyup: integer;', @PS_key_flyup);
+  ATable.Add('function key_flydown: integer;', @PS_key_flydown);
+  ATable.Add('function key_flycenter: integer;', @PS_key_flycenter);
+  ATable.Add('function key_invleft: integer;', @PS_key_invleft);
+  ATable.Add('function key_invright: integer;', @PS_key_invright);
+  ATable.Add('function key_useartifact: integer;', @PS_key_useartifact);
+  {$ENDIF}
+  {$IFDEF STRIFE}
+  ATable.Add('function key_invleft: integer;', @PS_key_invleft);
+  ATable.Add('function key_invright: integer;', @PS_key_invright);
+  ATable.Add('function key_weapon8: integer;', @PS_key_weapon8);
+  ATable.Add('function key_weapon9: integer;', @PS_key_weapon9);
+  ATable.Add('function key_usehealth: integer;', @PS_key_usehealth);
+  ATable.Add('function key_invquery: integer;', @PS_key_invquery);
+  ATable.Add('function key_mission: integer;', @PS_key_mission);
+  ATable.Add('function key_invpop: integer;', @PS_key_invpop);
+  ATable.Add('function key_invkey: integer;', @PS_key_invkey);
+  ATable.Add('function key_invhome: integer;', @PS_key_invhome);
+  ATable.Add('function key_invend: integer;', @PS_key_invend);
+  ATable.Add('function key_invuse: integer;', @PS_key_invuse);
+  ATable.Add('function key_invdrop: integer;', @PS_key_invdrop);
+  {$ENDIF}
+  ATable.Add('function mousebfire: integer;', @PS_mousebfire);
+  ATable.Add('function mousebstrafe: integer;', @PS_mousebstrafe);
+  ATable.Add('function mousebforward: integer;', @PS_mousebforward);
+  ATable.Add('function joybfire: integer;', @PS_joybfire);
+  ATable.Add('function joybstrafe: integer;', @PS_joybstrafe);
+  ATable.Add('function joybuse: integer;', @PS_joybuse);
+  ATable.Add('function joybspeed: integer;', @PS_joybspeed);
+  ATable.Add('function joybjump: integer;', @PS_joybjump);
+  // JVAL: 20211101 - Crouch
+  ATable.Add('function joybcrouch: integer;', @PS_joybcrouch);
+  ATable.Add('function joyblleft: integer;', @PS_joyblleft);
+  ATable.Add('function joyblright: integer;', @PS_joyblright);
+// ------------------------------- MAP -----------------------------------------
+  ATable.Add('function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;', @R_PointToAngle);
+  ATable.Add('function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;', @R_PointToAngle2);
+  ATable.Add('function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;', @R_PointToDist);
+  ATable.Add('function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;', @P_AproxDistance);
+  ATable.Add('function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: integer): integer;', @PS_P_PointOnLineSide);
+  ATable.Add('function R_PointInSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSector);
+  ATable.Add('function R_PointInSubSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSubSector);
+// ------------------------------- MAP -----------------------------------------
+  ATable.Add('function Ceiling_CrushAndRaise(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_CrushAndRaise);
+  ATable.Add('function Ceiling_CrushRaiseAndStay(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_CrushRaiseAndStay);
+  ATable.Add('function Ceiling_CrushStop(const tag: integer): boolean;', @PS_Ceiling_CrushStop);
+  ATable.Add('function Ceiling_LowerAndCrush(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_LowerAndCrush);
+  ATable.Add('function Ceiling_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_LowerByValue);
+  ATable.Add('function Ceiling_LowerByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_LowerByValueTimes8);
+  ATable.Add('function Ceiling_LowerToFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToFloor);
+  ATable.Add('function Ceiling_LowerToHighestFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToHighestFloor);
+  ATable.Add('function Ceiling_LowerToLowest(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToLowest);
+  ATable.Add('function Ceiling_MoveToValueAndCrush(const tag: integer; const speed: integer; const height: integer; const crush: integer): boolean;', @PS_Ceiling_MoveToValueAndCrush);
+  ATable.Add('function Ceiling_MoveToValue(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Ceiling_MoveToValue);
+  ATable.Add('function Ceiling_MoveToValueTimes8(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Ceiling_MoveToValueTimes8);
+  ATable.Add('function Ceiling_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_RaiseByValue);
+  ATable.Add('function Ceiling_RaiseByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_RaiseByValueTimes8);
+  ATable.Add('function Ceiling_RaiseToHighestFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_RaiseToHighestFloor);
+  ATable.Add('function Door_Close(const tag: integer; const speed: integer): boolean;', @PS_Door_Close);
+  ATable.Add('function Door_CloseWaitOpen(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Door_CloseWaitOpen);
+  ATable.Add('function Door_Open(const tag: integer; const speed: integer): boolean;', @PS_Door_Open);
+  ATable.Add('function Door_Raise(const tag: integer; const speed: integer; delay: integer): boolean;', @PS_Door_Raise);
+  ATable.Add('function FloorAndCeiling_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_FloorAndCeiling_LowerByValue);
+  ATable.Add('function FloorAndCeiling_LowerRaise(const tag: integer; const fspeed, cspeed: integer): boolean;', @PS_FloorAndCeiling_LowerRaise);
+  ATable.Add('function FloorAndCeiling_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_FloorAndCeiling_RaiseByValue);
+  ATable.Add('function Floor_CrushStop(const tag: integer): boolean;', @PS_Floor_CrushStop);
+  ATable.Add('function Floor_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerByValue);
+  ATable.Add('function Floor_LowerByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerByValueTimes8);
+  ATable.Add('function Floor_LowerToHighest(const tag: integer; const speed: integer; const adjust: integer): boolean;', @PS_Floor_LowerToHighest);
+  ATable.Add('function Floor_LowerToLowestCeiling(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToLowestCeiling);
+  ATable.Add('function Floor_LowerToLowest(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToLowest);
+  ATable.Add('function Floor_LowerToNearest(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToNearest);
+  ATable.Add('function Floor_MoveToValue(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Floor_MoveToValue);
+  ATable.Add('function Floor_MoveToValueTimes8(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Floor_MoveToValueTimes8);
+  ATable.Add('function Floor_RaiseAndCrushDoom(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Floor_RaiseAndCrushDoom);
+  ATable.Add('function Floor_RaiseAndCrush(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Floor_RaiseAndCrush);
+  ATable.Add('function Floor_RaiseByTexture(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseByTexture);
+  ATable.Add('function Floor_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseByValue);
+  ATable.Add('function Floor_RaiseByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseByValueTimes8);
+  ATable.Add('function Floor_RaiseInstant(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseInstant);
+  ATable.Add('function Floor_LowerInstant(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerInstant);
+  ATable.Add('function Floor_RaiseToCeilingNoChange(const tag: integer; const speed: integer; const crush: integer; const gap: integer): boolean;', @PS_Floor_RaiseToCeilingNoChange);
+  ATable.Add('function Floor_RaiseToHighest(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToHighest);
+  ATable.Add('function Floor_RaiseToLowestCeiling(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToLowestCeiling);
+  ATable.Add('function Floor_RaiseToNearest(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToNearest);
+  ATable.Add('function Floor_ToCeilingInstantNoChange(const tag: integer; const crush: integer; const gap: integer): boolean;', @PS_Floor_ToCeilingInstantNoChange);
+  ATable.Add('function Floor_Waggle(const tag: integer; const amp: integer; const freq: integer; const offset: integer; const time: integer): boolean;', @PS_Floor_Waggle);
+  ATable.Add('function Light_ChangeToValue(const tag: integer; const value: integer): boolean;', @PS_Light_ChangeToValue);
+  ATable.Add('function Light_Fade(const tag: integer; const value: integer; const tics: integer): boolean;', @PS_Light_Fade);
+  ATable.Add('function Light_Flicker(const tag: integer; const upper: integer; const lower: integer): boolean;', @PS_Light_Flicker);
+  ATable.Add('function Light_ForceLightning: boolean;', @PS_Light_ForceLightning);
+  ATable.Add('function Light_ForceLightningTics(const tics: integer): boolean;', @PS_Light_ForceLightningTics);
+  ATable.Add('function Light_Glow(const tag: integer; const upper: integer; const lower: integer; const tics: integer): boolean;', @PS_Light_Glow);
+  ATable.Add('function Light_LowerByValue(const tag: integer; const value: integer): boolean;', @PS_Light_LowerByValue);
+  ATable.Add('function Light_MaxNeighbor(const tag: integer): boolean;', @PS_Light_MaxNeighbor);
+  ATable.Add('function Light_MinNeighbor(const tag: integer): boolean;', @PS_Light_MinNeighbor);
+  ATable.Add('function Light_RaiseByValue(const tag: integer; const value: integer): boolean;', @PS_Light_RaiseByValue);
+  ATable.Add('function Light_Strobe(const tag: integer; const upper: integer; const lower: integer; const utics: integer; const ltics: integer): boolean;', @PS_Light_Strobe);
+  ATable.Add('function Light_StrobeDoom(const tag: integer; const utics: integer; const ltics: integer): boolean;', @PS_Light_StrobeDoom);
+  ATable.Add('function Pillar_BuildAndCrush(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Pillar_BuildAndCrush);
+  ATable.Add('function Pillar_Build(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Pillar_Build);
+  ATable.Add('function Pillar_Open(const tag: integer; const speed: integer; const fdist: integer; const cdist: integer): boolean;', @PS_Pillar_Open);
+  ATable.Add('function Plat_DownByValue(const tag: integer; const speed: integer; const delay: integer; const height: integer): boolean;', @PS_Plat_DownByValue);
+  ATable.Add('function Plat_DownWaitUpStay(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_DownWaitUpStay);
+  ATable.Add('function Plat_DownWaitUpStayLip(const tag: integer; const speed: integer; const delay: integer; const lip: integer): boolean;', @PS_Plat_DownWaitUpStayLip);
+  ATable.Add('function Plat_PerpetualRaise(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_PerpetualRaise);
+  ATable.Add('function Plat_PerpetualRaiseLip(const tag: integer; const speed: integer; const delay: integer; const lip: integer): boolean;', @PS_Plat_PerpetualRaiseLip);
+  ATable.Add('function Plat_UpByValue(const tag: integer; const speed: integer; const delay: integer; const height: integer): boolean;', @PS_Plat_UpByValue);
+  ATable.Add('function Plat_UpNearestWaitDownStay (const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_UpNearestWaitDownStay );
+  ATable.Add('function Plat_UpWaitDownStay(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_UpWaitDownStay);
+  ATable.Add('function Polyobj_DoorSlide(const po: integer; const speed: integer; const angle: integer; const dist: integer; const delay: integer): boolean;', @PS_Polyobj_DoorSlide);
+  ATable.Add('function Polyobj_DoorSwing(const po: integer; const speed: integer; const angle: integer; const delay: integer): boolean;', @PS_Polyobj_DoorSwing);
+  ATable.Add('function Polyobj_Move(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_Move);
+  ATable.Add('function Polyobj_MoveTimes8(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_MoveTimes8);
+  ATable.Add('function Polyobj_OR_Move(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_OR_Move);
+  ATable.Add('function Polyobj_OR_MoveTimes8(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_OR_MoveTimes8);
+  ATable.Add('function Polyobj_OR_RotateLeft(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_OR_RotateLeft);
+  ATable.Add('function Polyobj_OR_RotateRight(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_OR_RotateRight);
+  ATable.Add('function Polyobj_RotateLeft(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_RotateLeft);
+  ATable.Add('function Polyobj_RotateRight(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_RotateRight);
+end;
+
+//==============================================================================
+//
+// PS_DescribeOverlayFunctions
+// The functions of the unit PS_OVERLAY
+//
+//==============================================================================
+procedure PS_DescribeOverlayFunctions(const ATable: IScriptFunctionTable);
+begin
+  ATable.Add('procedure OverlayClear;', @PS_OverlayClear);
+  ATable.Add('procedure OverlayDrawPatch(const ticks: Integer; const patchname: string; const x, y: Integer);', @PS_OverlayDrawPatch);
+  ATable.Add('procedure OverlayDrawPatchStretched(const ticks: Integer; const patchname: string; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawPatchStretched);
+  ATable.Add('procedure OverlayDrawPixel(const ticks: Integer; const red, green, blue : byte; const x, y : Integer);', @PS_OverlayDrawPixel);
+  ATable.Add('procedure OverlayDrawRect(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawRect);
+  ATable.Add('procedure OverlayDrawLine(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawLine);
+  ATable.Add('procedure OverlayDrawText(const ticks: Integer; const txt: string; const align: Integer; const x, y: Integer);', @PS_OverlayDrawText);
+  ATable.Add('procedure OverlayDrawLeftText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawLeftText);
+  ATable.Add('procedure OverlayDrawRightText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawRightText);
+  ATable.Add('procedure OverlayDrawCenterText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawCenterText);
+end;
 
 //==============================================================================
 //
 // PS_InitProcLists
+// SYSTEM and PS_FIXED are classes that the composition root has already put in the registry
 //
 //==============================================================================
 procedure PS_InitProcLists;
-var
-  baseproclist: TProcedureList;
-  basename: string;
 begin
-  units := TStringList.Create;
-
-  basename := 'SYSTEM';
-  baseproclist := TProcedureList.Create(basename);
-  baseproclist.Add('procedure OutputDebugString(const parm: string);', @PS_OutputDebugString);
-  baseproclist.Add('procedure OutputDebugStringFmt(const Fmt: string; const args: array of const);', @PS_OutputDebugStringFmt);
-  baseproclist.Add('procedure BreakPoint(const msg: string);', @PS_BreakPoint);
-  baseproclist.Add('procedure ConsoleCommand(Data: string)', @PS_ConsoleCommand);
-  baseproclist.Add('function GetConsoleStr(const cvar: string): string;', @PS_GetConsoleStr);
-  baseproclist.Add('function SetConsoleStr(const cvar: string; const value: string): boolean;', @PS_SetConsoleStr);
-  baseproclist.Add('function GetConsoleInt(const cvar: string): integer;', @PS_GetConsoleInt);
-  baseproclist.Add('function SetConsoleInt(const cvar: string; const value: integer): boolean;', @PS_SetConsoleInt);
-  baseproclist.Add('function GetConsoleBool(const cvar: string): boolean;', @PS_GetConsoleBool);
-  baseproclist.Add('function SetConsoleBool(const cvar: string; const value: boolean): boolean;', @PS_SetConsoleBool);
-  baseproclist.Add('procedure Write(Data: string)', @PS_Write);
-  baseproclist.Add('procedure WriteFmt(const Fmt: string; const args: array of const);', @PS_WriteFmt);
-  baseproclist.Add('procedure Writeln(Data: string)', @PS_Writeln);
-  baseproclist.Add('procedure WritelnFmt(const Fmt: string; const args: array of const);', @PS_WritelnFmt);
-  baseproclist.Add('function LevelTime: integer', @PS_Leveltime);
-  baseproclist.Add('function FineSine(const parm: LongWord): Integer', @PS_FineSine);
-  baseproclist.Add('function FineCosine(const parm: LongWord): Integer', @PS_FineCosine);
-  baseproclist.Add('function FineTangent(const parm: LongWord): Integer', @PS_FineTangent);
-  baseproclist.Add('function GetMapString(const x: string): string;', @PS_GetMapStr);
-  baseproclist.Add('procedure SetMapString(const x: string; const v: string);', @PS_SetMapStr);
-  baseproclist.Add('function GetMapInteger(const x: string): integer;', @PS_GetMapInt);
-  baseproclist.Add('procedure SetMapInteger(const x: string; const v: integer);', @PS_SetMapInt);
-  baseproclist.Add('function GetMapFloat(const x: string): single;', @PS_GetMapFloat);
-  baseproclist.Add('procedure SetMapFloat(const x: string; const v: single);', @PS_SetMapFloat);
-  baseproclist.Add('function GetWorldString(const x: string): string;', @PS_GetWorldStr);
-  baseproclist.Add('procedure SetWorldString(const x: string; const v: string);', @PS_SetWorldStr);
-  baseproclist.Add('function GetWorldInteger(const x: string): integer;', @PS_GetWorldInt);
-  baseproclist.Add('procedure SetWorldInteger(const x: string; const v: integer);', @PS_SetWorldInt);
-  baseproclist.Add('function GetWorldFloat(const x: string): single;', @PS_GetWorldFloat);
-  baseproclist.Add('procedure SetWorldFloat(const x: string; const v: single);', @PS_SetWorldFloat);
-  baseproclist.Add('function Tan(const parm: Extended): Extended;', @PS_Tan);
-  baseproclist.Add('function Sin360(const parm: Extended): Extended;', @PS_Sin360);
-  baseproclist.Add('function Cos360(const parm: Extended): Extended;', @PS_Cos360);
-  baseproclist.Add('function Tan360(const parm: Extended): Extended;', @PS_Tan360);
-  baseproclist.Add('function P_Random: integer;', @P_Random);
-  baseproclist.Add('function Format(const Fmt: string; const args: array of const): string;', @PS_Format);
-  baseproclist.Add('function IsIntegerInRange(const test, i1, i2: integer): boolean;', @IsIntegerInRange);
-  baseproclist.Add('function IsLongWordInRange(const test, i1, i2: LongWord): boolean;', @IsLongWordInRange);
-  baseproclist.Add('function IsSingleInRange(const test, f1, f2: single): boolean;', @IsFloatInRange);
-  baseproclist.Add('function IsFloatInRange(const test, f1, f2: single): boolean;', @IsFloatInRange);
-  baseproclist.Add('function IsDoubleInRange(const test, f1, f2: double): boolean;', @IsDoubleInRange);
-  baseproclist.Add('function IsExtendedInRange(const test, f1, f2: Extended): boolean;', @IsExtendedInRange);
-  baseproclist.Add('function IFI(const condition: boolean; const iftrue, iffalse: Int64): Int64;', @PS_IFI);
-  baseproclist.Add('function IFF(const condition: boolean; const iftrue, iffalse: Extended): Extended;', @PS_IFF);
-  baseproclist.Add('function IFS(const condition: boolean; const iftrue, iffalse: string): string;', @PS_IFS);
-  baseproclist.Add('function Odd(const x: integer): boolean;', @PS_Odd);
-  baseproclist.Add('function Even(const x: integer): boolean;', @PS_Even);
-  baseproclist.Add('function MergeIntegerArrays(const A1, A2: TIntegerArray): TIntegerArray;', @PS_MergeIntegerArrays);
-  baseproclist.Add('function MergeInt64Arrays(const A1, A2: TInt64Array): TInt64Array;', @PS_MergeInt64Arrays);
-  baseproclist.Add('function MergeLongWordArrays(const A1, A2: TLongWordArray): TLongWordArray;', @PS_MergeLongWordArrays);
-  baseproclist.Add('function MergeSingleArrays(const A1, A2: TSingleArray): TSingleArray;', @PS_MergeSingleArrays);
-  baseproclist.Add('function MergeFloatArrays(const A1, A2: TFloatArray): TFloatArray;', @PS_MergeSingleArrays);
-  baseproclist.Add('function MergeDoubleArrays(const A1, A2: TDoubleArray): TDoubleArray;', @PS_MergeDoubleArrays);
-  baseproclist.Add('function MergeExtendedArrays(const A1, A2: TExtendedArray): TExtendedArray;', @PS_MergeExtendedArrays);
-  baseproclist.Add('function IsPrime(const N: Int64): Boolean;', @PS_IsPrime);
-  baseproclist.Add('function RandomRange(const x1, x2: integer): integer;', @PS_RandomRange);
-  units.AddObject(basename, baseproclist);
-
-  basename := 'PS_GAME';
-  baseproclist := TProcedureList.Create(basename);
-  // --------------------------- Actors ----------------------------------------
-  baseproclist.Add('function Actor: LongWord;', @PS_Actor);
-  baseproclist.AddWithCustomResult('procedure TActor(const key: LongWord);', '!TActor', 'function TActor(const key: LongWord): !TActor;', @PS_TActor);
-  baseproclist.Add('function GetActorTarget(const key: LongWord): LongWord;', @PS_GetActorTarget);
-  baseproclist.Add('procedure SetActorTarget(const key: LongWord; const targ: LongWord);', @PS_SetActorTarget);
-  baseproclist.Add('function GetActorTracer(const key: LongWord): LongWord;', @PS_GetActorTracer);
-  baseproclist.Add('procedure SetActorTracer(const key: LongWord; const targ: LongWord);', @PS_SetActorTracer);
-  baseproclist.Add('function GetActorMaster(const key: LongWord): LongWord;', @PS_GetActorMaster);
-  baseproclist.Add('procedure SetActorMaster(const key: LongWord; const targ: LongWord);', @PS_SetActorMaster);
-  baseproclist.Add('function GetActorX(const key: LongWord): fixed_t;', @PS_GetActorX);
-  baseproclist.Add('procedure SetActorX(const key: LongWord; const x: fixed_t);', @PS_SetActorX);
-  baseproclist.Add('function GetActorY(const key: LongWord): fixed_t;', @PS_GetActorY);
-  baseproclist.Add('procedure SetActorY(const key: LongWord; const y: fixed_t);', @PS_SetActorY);
-  baseproclist.Add('function GetActorZ(const key: LongWord): fixed_t;', @PS_GetActorZ);
-  baseproclist.Add('procedure SetActorZ(const key: LongWord; const z: fixed_t);', @PS_SetActorZ);
-  baseproclist.Add('procedure SetActorPosition(const key: LongWord; const x, y, z: fixed_t);', @PS_SetActorPosition);
-  baseproclist.Add('function GetActorMOMX(const key: LongWord): fixed_t;', @PS_GetActorMOMX);
-  baseproclist.Add('procedure SetActorMOMX(const key: LongWord; const x: fixed_t);', @PS_SetActorMOMX);
-  baseproclist.Add('function GetActorMOMY(const key: LongWord): fixed_t;', @PS_GetActorMOMY);
-  baseproclist.Add('procedure SetActorMOMY(const key: LongWord; const y: fixed_t);', @PS_SetActorMOMY);
-  baseproclist.Add('function GetActorMOMZ(const key: LongWord): fixed_t;', @PS_GetActorMOMZ);
-  baseproclist.Add('procedure SetActorMOMZ(const key: LongWord; const z: fixed_t);', @PS_SetActorMOMZ);
-  baseproclist.Add('function GetActorFloorZ(const key: LongWord): fixed_t;', @PS_GetActorFloorZ);
-  baseproclist.Add('procedure SetActorFloorZ(const key: LongWord; const z: fixed_t);', @PS_SetActorFloorZ);
-  baseproclist.Add('function GetActorCeilingZ(const key: LongWord): fixed_t;', @PS_GetActorCeilingZ);
-  baseproclist.Add('procedure SetActorCeilingZ(const key: LongWord; const z: fixed_t);', @PS_SetActorCeilingZ);
-  baseproclist.Add('function GetActorSpeed(const key: LongWord): fixed_t;', @PS_GetActorSpeed);
-  baseproclist.Add('procedure SetActorSpeed(const key: LongWord; const speed: fixed_t);', @PS_SetActorSpeed);
-  baseproclist.Add('function GetActorAngle(const key: LongWord): angle_t;', @PS_GetActorAngle);
-  baseproclist.Add('procedure SetActorAngle(const key: LongWord; const angle: angle_t);', @PS_SetActorAngle);
-  baseproclist.Add('function GetActorSector(const key: LongWord): integer;', @PS_GetActorSector);
-  baseproclist.Add('function GetActorHealth(const key: LongWord): integer;', @PS_GetActorHealth);
-  baseproclist.Add('procedure SetActorHealth(const key: LongWord; const h: integer);', @PS_SetActorHealth);
-  baseproclist.Add('function GetActorSpawnHealth(const key: LongWord): integer;', @PS_GetActorSpawnHealth);
-  baseproclist.Add('function GetActorMass(const key: LongWord): integer;', @PS_GetActorMass);
-  baseproclist.Add('procedure SetActorMass(const key: LongWord; const m: Integer);', @PS_SetActorMass);
-  baseproclist.Add('function GetActorHeight(const key: LongWord): fixed_t;', @PS_GetActorHeight);
-  baseproclist.Add('procedure SetActorHeight(const key: LongWord; const h: fixed_t);', @PS_SetActorHeight);
-  baseproclist.Add('function GetActorCustomDropItem(const key: LongWord): integer;', @PS_GetActorCustomDropItem);
-  baseproclist.Add('procedure SetActorCustomDropItem(const key: LongWord; const value: integer);', @PS_SetActorCustomDropItem);
-  baseproclist.Add('procedure SetActorDefaultDropItem(const key: LongWord);', @PS_SetActorDefaultDropItem);
-  baseproclist.Add('function GetActorPushFactor(const key: LongWord): integer;', @PS_GetActorPushFactor);
-  baseproclist.Add('procedure SetActorPushFactor(const key: LongWord; const value: integer);', @PS_SetActorPushFactor);
-  baseproclist.Add('function GetActorScale(const key: LongWord): integer;', @PS_GetActorScale);
-  baseproclist.Add('procedure SetActorScale(const key: LongWord; const value: integer);', @PS_SetActorScale);
-  baseproclist.Add('function GetActorGravity(const key: LongWord): integer;', @PS_GetActorGravity);
-  baseproclist.Add('procedure SetActorGravity(const key: LongWord; const value: integer);', @PS_SetActorGravity);
-  baseproclist.Add('function GetActorSpecial(const key: LongWord): Integer;', @PS_GetActorSpecial);
-  baseproclist.Add('procedure SetActorSpecial(const key: LongWord; const value: Integer);', @PS_SetActorSpecial);
-  baseproclist.Add('function GetActorArg1(const key: LongWord): integer;', @PS_GetActorArg1);
-  baseproclist.Add('procedure SetActorArg1(const key: LongWord; const value: integer);', @PS_SetActorArg1);
-  baseproclist.Add('function GetActorArg2(const key: LongWord): integer;', @PS_GetActorArg2);
-  baseproclist.Add('procedure SetActorArg2(const key: LongWord; const value: integer);', @PS_SetActorArg2);
-  baseproclist.Add('function GetActorArg3(const key: LongWord): integer;', @PS_GetActorArg3);
-  baseproclist.Add('procedure SetActorArg3(const key: LongWord; const value: integer);', @PS_SetActorArg3);
-  baseproclist.Add('function GetActorArg4(const key: LongWord): integer;', @PS_GetActorArg4);
-  baseproclist.Add('procedure SetActorArg4(const key: LongWord; const value: integer);', @PS_SetActorArg4);
-  baseproclist.Add('function GetActorArg5(const key: LongWord): integer;', @PS_GetActorArg5);
-  baseproclist.Add('procedure SetActorArg5(const key: LongWord; const value: integer);', @PS_SetActorArg5);
-  baseproclist.Add('function GetActorWeaveIndexXY(const key: LongWord): Integer;);', @PS_GetActorWeaveIndexXY);
-  baseproclist.Add('procedure SetActorWeaveIndexXY(const key: LongWord; const value: Integer);', @PS_SetActorWeaveIndexXY);
-  baseproclist.Add('function GetActorWeaveIndexZ(const key: LongWord): Integer;);', @PS_GetActorWeaveIndexZ);
-  baseproclist.Add('procedure SetActorWeaveIndexZ(const key: LongWord; const value: Integer);', @PS_SetActorWeaveIndexZ);
-  baseproclist.Add('function GetActorFriction(const key: LongWord): Integer;);', @PS_GetActorFriction);
-  baseproclist.Add('procedure SetActorFriction(const key: LongWord; const value: Integer););', @PS_SetActorFriction);
-  baseproclist.Add('function GetActorPainChance(const key: LongWord): Integer;);', @PS_GetActorPainChance);
-  baseproclist.Add('procedure SetActorPainChance(const key: LongWord; const value: Integer);', @PS_SetActorPainChance);
-  baseproclist.Add('function GetActorSpriteDX(const key: LongWord): Integer;);', @PS_GetActorSpriteDX);
-  baseproclist.Add('procedure SetActorSpriteDX(const key: LongWord; const value: Integer);', @PS_SetActorSpriteDX);
-  baseproclist.Add('function GetActorSpriteDY(const key: LongWord): Integer;);', @PS_GetActorSpriteDY);
-  baseproclist.Add('procedure SetActorSpriteDY(const key: LongWord; const value: Integer);', @PS_SetActorSpriteDY);
-  baseproclist.Add('function GetActorCustomParam(const key: LongWord; const parm: string): integer;', @PS_GetActorCustomParam);
-  baseproclist.Add('procedure SetActorCustomParam(const key: LongWord; const parm: string; const value: integer);', @PS_SetActorCustomParam);
-  baseproclist.Add('function CheckActorFlag(const key: LongWord; const flag: LongWord): boolean;', @PS_CheckActorFlag);
-  baseproclist.Add('procedure SetActorFlag(const key: LongWord; const flag: LongWord);', @PS_SetActorFlag);
-  baseproclist.Add('procedure UnSetActorFlag(const key: LongWord; const flag: LongWord);', @PS_UnSetActorFlag);
-  baseproclist.Add('function GetActorInfightingGroup(const key: LongWord): Integer;', @PS_GetActorInfightingGroup);
-  baseproclist.Add('procedure SetActorInfightingGroup(const key: LongWord; const value: Integer);', @PS_SetActorInfightingGroup);
-  baseproclist.Add('function GetActorProjectileGroup(const key: LongWord): Integer;', @PS_GetActorProjectileGroup);
-  baseproclist.Add('procedure SetActorProjectileGroup(const key: LongWord; const value: Integer);', @PS_SetActorProjectileGroup);
-  baseproclist.Add('function GetActorSplashGroup(const key: LongWord): Integer;', @PS_GetActorSplashGroup);
-  baseproclist.Add('procedure SetActorSplashGroup(const key: LongWord; const value: Integer);', @PS_SetActorSplashGroup);
-  baseproclist.Add('function GetActorTranslation(const key: LongWord): string;', @PS_GetActorTranslation);
-  baseproclist.Add('procedure SetActorTranslation(const key: LongWord; const value: string);', @PS_SetActorTranslation);
-  baseproclist.Add('function GetActorBloodColor(const key: LongWord): string;', @PS_GetActorBloodColor);
-  baseproclist.Add('procedure SetActorBloodColor(const key: LongWord; const value: string);', @PS_SetActorBloodColor);
-  baseproclist.Add('function GetActorRipSound(const key: LongWord): string;', @PS_GetActorRipSound);
-  baseproclist.Add('function GetActorName(const key: LongWord): string;', @PS_GetActorName);
-  {$IFDEF STRIFE}
-  baseproclist.Add('function GetActorName2(const key: LongWord): string;', @PS_GetActorName2);
-  {$ENDIF}
-  baseproclist.Add('function GetActorDistanceXY(const key1, key2: LongWord): fixed_t;', @PS_GetActorDistanceXY);
-  baseproclist.Add('function GetActorDistanceXYZ(const key1, key2: LongWord): fixed_t;', @PS_GetActorDistanceXYZ);
-  baseproclist.Add('function GetActorMobjType(const key: LongWord): integer;', @PS_GetActorMobjType);
-  baseproclist.Add('function GetActorEditorNumber(const key: LongWord): integer;', @PS_GetActorEditorNumber);
-  baseproclist.Add('function GetActorState(const key: LongWord): integer;', @PS_GetActorState);
-  baseproclist.Add('procedure SetActorState(const key: LongWord; const value: Integer);', @PS_SetActorState);
-  baseproclist.Add('function IsValidActor(const key: LongWord): boolean;', @PS_IsValidActor);
-  baseproclist.Add('procedure ActorPlaySound(const key: LongWord; const snd: string);', @PS_ActorPlaySound);
-  baseproclist.Add('procedure PlaySound(const snd: string);', @PS_PlaySound);
-  baseproclist.Add('function GetActorPlayer(const key: LongWord): integer;', @PS_GetActorPlayer);
-  baseproclist.Add('function GetPlayerActor(const plnum: integer): LongWord;', @PS_GetPlayerActor);
-  baseproclist.Add('function SpawnActorType(x, y, z: fixed_t; const typ: integer): LongWord;', @PS_SpawnActorType);
-  baseproclist.Add('function SpawnActorEditorNumber(x, y, z: fixed_t; const ednum: integer): LongWord;', @PS_SpawnActorEditorNumber);
-  baseproclist.Add('function SpawnActorName(x, y, z: fixed_t; const name: string): LongWord;', @PS_SpawnActorName);
-  baseproclist.Add('procedure RemoveActor(const key: LongWord);', @PS_RemoveActor);
-  baseproclist.Add('function CheckActorSight(const actor1, actor2: LongWord): boolean;', @PS_CheckActorSight);
-  baseproclist.Add('function ActorTypeFromEditorNumber(const ednum: integer): integer;', @PS_ActorTypeFromEditorNumber);
-  baseproclist.Add('function ActorTypeFromName(const name: string): integer;', @PS_ActorTypeFromName);
-  baseproclist.Add('function GetActorSeeSound(const key: LongWord): string;', @PS_GetActorSeeSound);
-  baseproclist.Add('function GetActorAttackSound(const key: LongWord): string;', @PS_GetActorAttackSound);
-  baseproclist.Add('function GetActorPainSound(const key: LongWord): string;', @PS_GetActorPainSound);
-  baseproclist.Add('function GetActorDeathSound(const key: LongWord): string;', @PS_GetActorDeathSound);
-  baseproclist.Add('function GetActorActiveSound(const key: LongWord): string;', @PS_GetActorActiveSound);
-  baseproclist.Add('function GetActorCustomSound1(const key: LongWord): string;', @PS_GetActorCustomSound1);
-  baseproclist.Add('function GetActorCustomSound2(const key: LongWord): string;', @PS_GetActorCustomSound2);
-  baseproclist.Add('function GetActorCustomSound3(const key: LongWord): string;', @PS_GetActorCustomSound3);
-  baseproclist.Add('function GetActorMeleeSound(const key: LongWord): string;', @PS_GetActorMeleeSound);
-  baseproclist.Add('function MergeActorArrays(const A1, A2: TActorArray): TActorArray;', @PS_MergeLongWordArrays);
-  // ------------------------- Vertexes ----------------------------------------
-  baseproclist.AddWithCustomResult('procedure TVertex(const id: Integer);', '!TVertex', 'function TVertex(const id: Integer): !TVertex;', @PS_TVertex);
-  baseproclist.Add('function GetVertexX(const v: integer): fixed_t;', @PS_GetVertexX);
-  baseproclist.Add('function GetVertexY(const v: integer): fixed_t;', @PS_GetVertexY);
-  baseproclist.Add('function IsValidVertex(const v: Integer): boolean;', @PS_IsValidVertex);
-  baseproclist.Add('function GetVertexCount: Integer;', @PS_GetVertexCount);
-  // ---------------------------- Sides ----------------------------------------
-  baseproclist.AddWithCustomResult('procedure TSide(const id: Integer);', '!TSide', 'function TSide(const id: Integer): !TSide;', @PS_TSide);
-  baseproclist.Add('function GetSideTextureOffset(const sd: Integer): fixed_t;', @PS_GetSideTextureOffset);
-  baseproclist.Add('procedure SetSideTextureOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideTextureOffset);
-  baseproclist.Add('function GetSideTopTextureOffset(const sd: Integer): Integer;', @PS_GetSideTopTextureOffset);
-  baseproclist.Add('procedure SetSideTopTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopTextureOffset);
-  baseproclist.Add('function GetSideBottomTextureOffset(const sd: Integer): Integer;', @PS_GetSideBottomTextureOffset);
-  baseproclist.Add('procedure SetSideBottomTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomTextureOffset);
-  baseproclist.Add('function GetSideMidTextureOffset(const sd: Integer): Integer;', @PS_GetSideMidTextureOffset);
-  baseproclist.Add('procedure SetSideMidTextureOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidTextureOffset);
-  baseproclist.Add('function GetSideRowOffset(const sd: Integer): fixed_t;', @PS_GetSideRowOffset);
-  baseproclist.Add('procedure SetSideRowOffset(const sd: Integer; const offs: fixed_t);', @PS_SetSideRowOffset);
-  baseproclist.Add('function GetSideTopRowOffset(const sd: Integer): Integer;', @PS_GetSideTopRowOffset);
-  baseproclist.Add('procedure SetSideTopRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideTopRowOffset);
-  baseproclist.Add('function GetSideBottomRowOffset(const sd: Integer): Integer;', @PS_GetSideBottomRowOffset);
-  baseproclist.Add('procedure SetSideBottomRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideBottomRowOffset);
-  baseproclist.Add('function GetSideMidRowOffset(const sd: Integer): Integer;', @PS_GetSideMidRowOffset);
-  baseproclist.Add('procedure SetSideMidRowOffset(const sd: Integer; const offs: Integer);', @PS_SetSideMidRowOffset);
-  baseproclist.Add('function GetSideTopTexture(const sd: Integer): string;', @PS_GetSideTopTexture);
-  baseproclist.Add('procedure SetSideTopTexture(const sd: Integer; const tex: string);', @PS_SetSideTopTexture);
-  baseproclist.Add('function GetSideBottomTexture(const sd: Integer): string;', @PS_GetSideBottomTexture);
-  baseproclist.Add('procedure SetSideBottomTexture(const sd: Integer; const tex: string);', @PS_SetSideBottomTexture);
-  baseproclist.Add('function GetSideMiddleTexture(const sd: Integer): string;', @PS_GetSideMiddleTexture);
-  baseproclist.Add('procedure SetSideMiddleTexture(const sd: Integer; const tex: string);', @PS_SetSideMiddleTexture);
-  baseproclist.Add('function GetSideSector(const sd: Integer): integer;', @PS_GetSideSector);
-  baseproclist.Add('function IsValidSide(const sd: Integer): boolean;', @PS_IsValidSide);
-  baseproclist.Add('function GetSideCount: Integer;', @PS_GetSideCount);
-  // ---------------------------- Lines ----------------------------------------
-  baseproclist.AddWithCustomResult('procedure TLine(const id: Integer);', '!TLine', 'function TLine(const id: Integer): !TLine;', @PS_TLine);
-  baseproclist.Add('function GetLineVertex1(const ld: Integer): integer;', @PS_GetLineVertex1);
-  baseproclist.Add('function GetLineVertex2(const ld: Integer): integer;', @PS_GetLineVertex2);
-  baseproclist.Add('function GetLineDX(const ld: Integer): fixed_t;', @PS_GetLineDX);
-  baseproclist.Add('function GetLineDY(const ld: Integer): fixed_t;', @PS_GetLineDY);
-  baseproclist.Add('function GetLineSpecial(const ld: Integer): integer;', @PS_GetLineSpecial);
-  baseproclist.Add('procedure SetLineSpecial(const ld: Integer; const spec: integer);', @PS_SetLineSpecial);
-  baseproclist.Add('function GetLineArg1(const ld: Integer): byte;', @PS_GetLineArg1);
-  baseproclist.Add('procedure SetLineArg1(const ld: Integer; const arg: byte);', @PS_SetLineArg1);
-  baseproclist.Add('function GetLineArg2(const ld: Integer): byte;', @PS_GetLineArg2);
-  baseproclist.Add('procedure SetLineArg2(const ld: Integer; const arg: byte);', @PS_SetLineArg2);
-  baseproclist.Add('function GetLineArg3(const ld: Integer): byte;', @PS_GetLineArg3);
-  baseproclist.Add('procedure SetLineArg3(const ld: Integer; const arg: byte);', @PS_SetLineArg3);
-  baseproclist.Add('function GetLineArg4(const ld: Integer): byte;', @PS_GetLineArg4);
-  baseproclist.Add('procedure SetLineArg4(const ld: Integer; const arg: byte);', @PS_SetLineArg4);
-  baseproclist.Add('function GetLineArg5(const ld: Integer): byte;', @PS_GetLineArg5);
-  baseproclist.Add('procedure SetLineArg5(const ld: Integer; const arg: byte);', @PS_SetLineArg5);
-  {$IFNDEF HEXEN}
-  baseproclist.Add('function GetLineTag(const ld: Integer): integer;', @PS_GetLineTag);
-  baseproclist.Add('procedure SetLineTag(const ld: Integer; const tag: integer);', @PS_SetLineTag);
-  baseproclist.Add('function GetLineTransparent(const ld: Integer): Boolean;', @PS_GetLineTransparent);
-  baseproclist.Add('procedure SetLineTransparent(const ld: Integer; const x: Boolean);', @PS_SetLineTransparent);
-  {$ENDIF}
-  baseproclist.Add('function GetLineIsBlocking(const ld: Integer): Boolean;', @PS_GetLineIsBlocking);
-  baseproclist.Add('procedure SetLineIsBlocking(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlocking);
-  baseproclist.Add('function GetLineIsBlockingMonsters(const ld: Integer): Boolean;', @PS_GetLineIsBlockingMonsters);
-  baseproclist.Add('procedure SetLineIsBlockingMonsters(const ld: Integer; const x: Boolean);', @PS_SetLineIsBlockingMonsters);
-  baseproclist.Add('function GetLineTriggerScripts(const ld: Integer): Boolean;', @PS_GetLineTriggerScripts);
-  baseproclist.Add('procedure SetLineTriggerScripts(const ld: Integer; const x: Boolean);', @PS_SetLineTriggerScripts);
-  baseproclist.Add('function GetLineFrontSide(const ld: Integer): integer;', @PS_GetLineFrontSide);
-  baseproclist.Add('function GetLineBackSide(const ld: Integer): integer;', @PS_GetLineBackSide);
-  baseproclist.Add('function GetLineFrontSector(const ld: Integer): integer;', @PS_GetLineFrontSector);
-  baseproclist.Add('function GetLineBackSector(const ld: Integer): integer;', @PS_GetLineBackSector);
-  baseproclist.Add('function IsValidLine(const ld: Integer): boolean;', @PS_IsValidLine);
-  baseproclist.Add('function GetLineCount: Integer;', @PS_GetLineCount);
-  {$IFNDEF HEXEN}
-  baseproclist.Add('function FindLinesFromTag(const tag: integer): TIntegerArray;', @PS_FindLinesFromTag);
-  {$ENDIF}
-// --------------------------- SECTORS -----------------------------------------
-  baseproclist.AddWithCustomResult('procedure TSector(const id: Integer);', '!TSector', 'function TSector(const id: Integer): !TSector;', @PS_TSector);
-  baseproclist.Add('function GetSectorFloorHeight(const sec: Integer): fixed_t;', @PS_GetSectorFloorHeight);
-  baseproclist.Add('procedure SetSectorFloorHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorFloorHeight);
-  baseproclist.Add('function GetSectorCeilingHeight(const sec: Integer): fixed_t;', @PS_GetSectorCeilingHeight);
-  baseproclist.Add('procedure SetSectorCeilingHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorCeilingHeight);
-  baseproclist.Add('function GetSectorFloorPicture(const sec: Integer): string;', @PS_GetSectorFloorPicture);
-  baseproclist.Add('procedure SetSectorFloorPicture(const sec: Integer; const pic: string);', @PS_SetSectorFloorPicture);
-  baseproclist.Add('function GetSectorCeilingPicture(const sec: Integer): string;', @PS_GetSectorCeilingPicture);
-  baseproclist.Add('procedure SetSectorCeilingPicture(const sec: Integer; const pic: string);', @PS_SetSectorCeilingPicture);
-  baseproclist.Add('function GetSectorLightLevel(const sec: Integer): Integer;', @PS_GetSectorLightLevel);
-  baseproclist.Add('procedure SetSectorLightLevel(const sec: Integer; const x: Integer);', @PS_SetSectorLightLevel);
-  baseproclist.Add('function GetSectorSpecial(const sec: Integer): Integer;', @PS_GetSectorSpecial);
-  baseproclist.Add('function GetSectorTag(const sec: Integer): Integer;', @PS_GetSectorTag);
-  baseproclist.Add('procedure SetSectorTag(const sec: Integer; const x: Integer);', @PS_SetSectorTag);
-  baseproclist.Add('function GetSectorActors(const sec: Integer): TActorArray;', @PS_GetSectorActors);
-  baseproclist.Add('function GetSectorNumActors(const sec: Integer): Integer;', @PS_GetSectorNumActors);
-  baseproclist.Add('function GetSectorLines(const sec: Integer): TIntegerArray;', @PS_GetSectorLines);
-  baseproclist.Add('function GetSectorNumLines(const sec: Integer): Integer;', @PS_GetSectorNumLines);
-  {$IFDEF DOOM_OR_STRIFE}
-  baseproclist.Add('function GetSectorFloorXOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorXOffset);
-  baseproclist.Add('procedure SetSectorFloorXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorXOffset);
-  baseproclist.Add('function GetSectorFloorYOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorYOffset);
-  baseproclist.Add('procedure SetSectorFloorYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorYOffset);
-  baseproclist.Add('function GetSectorCeilingXOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingXOffset);
-  baseproclist.Add('procedure SetSectorCeilingXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingXOffset);
-  baseproclist.Add('function GetSectorCeilingYOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingYOffset);
-  baseproclist.Add('procedure SetSectorCeilingYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingYOffset);
-  {$ENDIF}
-  baseproclist.Add('function GetSectorFloorAngle(const sec: Integer): angle_t;', @PS_GetSectorFloorAngle);
-  baseproclist.Add('procedure SetSectorFloorAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorFloorAngle);
-  baseproclist.Add('function GetSectorFloorAngleX(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleX);
-  baseproclist.Add('procedure SetSectorFloorAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorFloorAngleX);
-  baseproclist.Add('function GetSectorFloorAngleY(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleY);
-  baseproclist.Add('procedure SetSectorFloorAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorFloorAngleY);
-  baseproclist.Add('function GetSectorCeilingAngle(const sec: Integer): angle_t;', @PS_GetSectorCeilingAngle);
-  baseproclist.Add('procedure SetSectorCeilingAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorCeilingAngle);
-  baseproclist.Add('function GetSectorCeilingAngleX(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleX);
-  baseproclist.Add('procedure SetSectorCeilingAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorCeilingAngleX);
-  baseproclist.Add('function GetSectorCeilingAngleY(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleY);
-  baseproclist.Add('procedure SetSectorCeilingAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorCeilingAngleY);
-  baseproclist.Add('function GetSectorRippleFloor(const sec: Integer): Boolean;', @PS_GetSectorRippleFloor);
-  baseproclist.Add('procedure SetSectorRippleFloor(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleFloor);
-  baseproclist.Add('function GetSectorRippleCeiling(const sec: Integer): Boolean;', @PS_GetSectorRippleCeiling);
-  baseproclist.Add('procedure SetSectorRippleCeiling(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleCeiling);
-  baseproclist.Add('function GetSectorInterpolate(const sec: Integer): Boolean;', @PS_GetSectorInterpolate);
-  baseproclist.Add('procedure SetSectorInterpolate(const sec: Integer; const intpl: Boolean);', @PS_SetSectorInterpolate);
-  baseproclist.Add('function GetSectorFog(const sec: Integer): Boolean;', @PS_GetSectorFog);
-  baseproclist.Add('procedure SetSectorFog(const sec: Integer; const fog: Boolean);', @PS_SetSectorFog);
-  baseproclist.Add('function GetSectorGravity(const sec: Integer): fixed_t;', @PS_GetSectorGravity);  // JVAL: sector gravity (VERSION 204)
-  baseproclist.Add('procedure SetSectorGravity(const sec: Integer; const grav: fixed_t);', @PS_SetSectorGravity); // JVAL: sector gravity (VERSION 204)
-  baseproclist.Add('function GetSectorWindThrust(const sec: Integer): Integer;', @PS_GetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
-  baseproclist.Add('procedure SetSectorWindThrust(const sec: Integer; const wthrust: Integer);', @PS_SetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
-  baseproclist.Add('function GetSectorWindAngle(const sec: Integer): LongWord;', @PS_GetSectorWindAngle); // JVAL: 20220223 - Sector WindAngle
-  baseproclist.Add('procedure SetSectorWindAngle(const sec: Integer; const wangle: LongWord);', @PS_SetSectorWindAngle);  // JVAL: 20220223 - Sector WindAngle
-  baseproclist.Add('function GetSectorMidSector(const sec: Integer): Integer;', @PS_GetSectorMidSector);
-  baseproclist.Add('function GetSectorSlopeSector(const sec: Integer): Integer;', @PS_GetSectorSlopeSector);
-  baseproclist.Add('function SkyPicture: string;', @PS_SkyPicture);
-  baseproclist.Add('function IsValidSector(const sec: Integer): boolean;', @PS_IsValidSector);
-  baseproclist.Add('function GetSectorCount: Integer;', @PS_GetSectorCount);
-  baseproclist.Add('function FindSectorsFromTag(const tag: integer): TIntegerArray;', @PS_FindSectorsFromTag);
-  baseproclist.Add('procedure SectorPlaySound(const secid: integer; const snd: string);', @PS_SectorPlaySound);
-  baseproclist.Add('procedure SectorMoveZ(const secid: integer; const dz: fixed_t);', @PS_SectorMoveZ);
-  baseproclist.Add('procedure SetSectorFloorSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetFloorSlope);
-  baseproclist.Add('procedure SetSectorCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetCeilingSlope);
-// --------------------------- PLAYERS -----------------------------------------
-  baseproclist.Add('function PlayerInGame(const plnum: integer): boolean;', @PS_PlayerInGame);
-  {$IFDEF DOOM_OR_STRIFE}
-  baseproclist.Add('procedure PlayerFaceMobj(const plnum: integer; const actor: LongWord; const ticks: integer);', @PS_PlayerFaceMobj);
-  {$ENDIF}
-  {$IFDEF DOOM_OR_STRIFE}
-  baseproclist.Add('procedure SetPlayerHasCard(const plnum: integer; const card: integer; const value: boolean);', @PS_SetPlayerHasCard);
-  baseproclist.Add('function GetPlayerHasCard(const plnum: integer; const card: integer): boolean;', @PS_GetPlayerHasCard);
-  baseproclist.Add('procedure SetPlayerHasKey(const plnum: integer; const key: integer; const value: boolean);', @PS_SetPlayerHasCard);
-  baseproclist.Add('function GetPlayerHasKey(const plnum: integer; const key: integer): boolean;', @PS_GetPlayerHasCard);
-  {$ENDIF}
-  {$IFDEF HERETIC_OR_HEXEN}
-  baseproclist.Add('procedure SetPlayerHasCard(const plnum: integer; const card: integer; const value: boolean);', @PS_SetPlayerHasKey);
-  baseproclist.Add('function GetPlayerHasCard(const plnum: integer; const card: integer): boolean;', @PS_GetPlayerHasKey);
-  baseproclist.Add('procedure SetPlayerHasKey(const plnum: integer; const key: integer; const value: boolean);', @PS_SetPlayerHasKey);
-  baseproclist.Add('function GetPlayerHasKey(const plnum: integer; const key: integer): boolean;', @PS_GetPlayerHasKey);
-  baseproclist.Add('procedure PlayerUseArtifact(const plnum: Integer; const arti: Integer);', @PS_PlayerUseArtifact);
-  baseproclist.Add('function GiveArtifactToPlayer(const plnum: Integer; const arti: Integer): Boolean;', @PS_GiveArtifactToPlayer);
-  baseproclist.Add('function CheckPlayerArtifact(const plnum: Integer; const arti: Integer): Integer;', @PS_CheckPlayerArtifact);
-  {$ENDIF}
-  baseproclist.Add('procedure SetPlayerHasWeapon(const plnum: integer; const weapon: integer; const value: boolean);', @PS_SetPlayerHasWeapon);
-  baseproclist.Add('function GetPlayerHasWeapon(const plnum: integer; const weapon: integer): boolean;', @PS_GetPlayerHasWeapon);
-  {$IFNDEF HEXEN}
-  baseproclist.Add('procedure SetPlayerAmmo(const plnum: integer; const ammotype: integer; const value: integer);', @PS_SetPlayerAmmo);
-  baseproclist.Add('function GetPlayerAmmo(const plnum: integer; const ammotype: integer): integer;', @PS_GetPlayerAmmo);
-  {$ELSE}
-  baseproclist.Add('procedure SetPlayerMana(const plnum: integer; const mana: integer; const value: integer);', @PS_SetPlayerMana);
-  baseproclist.Add('function GetPlayerMana(const plnum: integer; const mana: integer): integer;', @PS_GetPlayerMana);
-  {$ENDIF}
-  {$IFDEF HEXEN}
-  baseproclist.Add('function GetPlayerClass(const plnum: Integer): Integer;', @PS_GetPlayerClass);
-  {$ENDIF}
-  baseproclist.Add('procedure SetPlayerMessage(const plnum: integer; const msg: string);', @PS_SetPlayerMessage);
-  baseproclist.Add('function GetPlayerMessage(const plnum: integer): string;', @PS_GetPlayerMessage);
-  baseproclist.Add('procedure SetPlayerExtraLight(const plnum: Integer; const l: Integer);', @PS_SetPlayerExtraLight);
-  baseproclist.Add('function GetPlayerExtraLight(const plnum: Integer): Integer;', @PS_GetPlayerExtraLight);
-  baseproclist.Add('procedure SetPlayerPowerTicks(const plnum: integer; const powertype: integer; const ticks: integer);', @PS_SetPlayerPowerTicks);
-  baseproclist.Add('function GetPlayerPowerTicks(const plnum: integer; const powertype: integer): integer;', @PS_GetPlayerPowerTicks);
-  baseproclist.Add('function GetPlayerViewZ(const plnum: integer): fixed_t;', @PS_GetPlayerViewZ);
-  baseproclist.Add('function GetPlayerViewHeight(const plnum: integer): fixed_t;', @PS_GetPlayerViewHeight);
-  baseproclist.Add('function ConsolePlayer: Integer;', @PS_ConsolePlayer);
-  {$IFDEF STRIFE}
-  baseproclist.Add('function CheckPlayerQuest(const plnum: Integer; const quest: LongWord): Boolean;', @PS_CheckPlayerQuest);
-  baseproclist.Add('procedure SetPlayerQuest(const plnum: Integer; const quest: LongWord);', @PS_SetPlayerQuest);
-  baseproclist.Add('procedure UnSetPlayerQuest(const plnum: Integer; const quest: LongWord);', @PS_UnSetPlayerQuest);
-  {$ENDIF}
-// -------------------------- TEXTURES -----------------------------------------
-  baseproclist.Add('function GetTextureWidth(const tex: string): Integer;', @PS_GetTextureWidth);
-  baseproclist.Add('function GetTextureHeight(const tex: string): Integer;', @PS_GetTextureHeight);
-  baseproclist.Add('function IsValidTexture(const tex: string): boolean;', @PS_IsValidTexture);
-// ----------------------------- MOBJS -----------------------------------------
-  baseproclist.Add('function IsValidMobjType(const typ: integer): boolean;', @PS_IsValidMobjType);
-  baseproclist.Add('function GetMobjTypeFromEditorNumber(const en: integer): integer;', @PS_GetMobjTypeFromEditorNumber);
-  baseproclist.Add('function GetEditorNumberFromMobjType(const typ: integer): integer;', @PS_GetEditorNumberFromMobjType);
-  baseproclist.Add('function GetMobjInfoCount: integer;', @PS_GetMobjInfoCount);
-  baseproclist.Add('function GetMobjInfoName(const typ: integer): string;', @PS_GetMobjInfoName);
-  {$IFDEF STRIFE}
-  baseproclist.Add('function GetMobjInfoName2(const typ: integer): string;', @PS_GetMobjInfoName2);
-  {$ENDIF}
-  baseproclist.Add('function GetMobjInfoInheritsFrom(const typ: integer): integer;', @PS_GetMobjInfoInheritsFrom);
-  baseproclist.Add('function GetMobjInfoDoomEdNum(const typ: integer): integer;', @PS_GetMobjInfoDoomEdNum);
-  baseproclist.Add('function GetMobjInfoSpawnState(const typ: integer): integer;', @PS_GetMobjInfoSpawnState);
-  baseproclist.Add('function GetMobjInfoSpawnHealth(const typ: integer): integer;', @PS_GetMobjInfoSpawnHealth);
-  baseproclist.Add('function GetMobjInfoSeeState(const typ: integer): integer;', @PS_GetMobjInfoSeeState);
-  baseproclist.Add('function GetMobjInfoSeeSound(const typ: integer): string;', @PS_GetMobjInfoSeeSound);
-  baseproclist.Add('function GetMobjInfoReactionTime(const typ: integer): integer;', @PS_GetMobjInfoReactionTime);
-  baseproclist.Add('function GetMobjInfoAttackSound(const typ: integer): string;', @PS_GetMobjInfoAttackSound);
-  baseproclist.Add('function GetMobjInfoPainState(const typ: integer): integer;', @PS_GetMobjInfoPainState);
-  baseproclist.Add('function GetMobjInfoPainChance(const typ: integer): integer;', @PS_GetMobjInfoPainChance);
-  baseproclist.Add('function GetMobjInfoPainSound(const typ: integer): string;', @PS_GetMobjInfoPainSound);
-  baseproclist.Add('function GetMobjInfoMeleeState(const typ: integer): integer;', @PS_GetMobjInfoMeleeState);
-  baseproclist.Add('function GetMobjInfoMissileState(const typ: integer): integer;', @PS_GetMobjInfoMissileState);
-  baseproclist.Add('function GetMobjInfoDeathState(const typ: integer): integer;', @PS_GetMobjInfoDeathState);
-  baseproclist.Add('function GetMobjInfoXdeathState(const typ: integer): integer;', @PS_GetMobjInfoXdeathState);
-  baseproclist.Add('function GetMobjInfoDeathSound(const typ: integer): string;', @PS_GetMobjInfoDeathSound);
-  baseproclist.Add('function GetMobjInfoSpeed(const typ: integer): integer;', @PS_GetMobjInfoSpeed);
-  baseproclist.Add('function GetMobjInfoRadius(const typ: integer): integer;', @PS_GetMobjInfoRadius);
-  baseproclist.Add('function GetMobjInfoHeight(const typ: integer): integer;', @PS_GetMobjInfoHeight);
-  baseproclist.Add('function GetMobjInfoMass(const typ: integer): integer;', @PS_GetMobjInfoMass);
-  baseproclist.Add('function GetMobjInfoDamage(const typ: integer): integer;', @PS_GetMobjInfoDamage);
-  baseproclist.Add('function GetMobjInfoActiveSound(const typ: integer): string;', @PS_GetMobjInfoActiveSound);
-  baseproclist.Add('function GetMobjInfoFlag(const typ: Integer; const flg: integer): boolean;', @PS_GetMobjInfoFlag);
-  baseproclist.Add('function GetMobjInfoRaiseState(const typ: integer): integer;', @PS_GetMobjInfoRaiseState);
-  baseproclist.Add('function GetMobjInfoCustomSound1(const typ: integer): string;', @PS_GetMobjInfoCustomSound1);
-  baseproclist.Add('function GetMobjInfoCustomSound2(const typ: integer): string;', @PS_GetMobjInfoCustomSound2);
-  baseproclist.Add('function GetMobjInfoCustomSound3(const typ: integer): string;', @PS_GetMobjInfoCustomSound3);
-  baseproclist.Add('function GetMobjInfoDropItem(const typ: integer): integer;', @PS_GetMobjInfoDropItem);
-  baseproclist.Add('function GetMobjInfoMissiletype(const typ: integer): integer;', @PS_GetMobjInfoMissiletype);
-  baseproclist.Add('function GetMobjInfoExplosionDamage(const typ: integer): integer;', @PS_GetMobjInfoExplosionDamage);
-  baseproclist.Add('function GetMobjInfoExplosionRadius(const typ: integer): integer;', @PS_GetMobjInfoExplosionRadius);
-  baseproclist.Add('function GetMobjInfoMeleeDamage(const typ: integer): integer;', @PS_GetMobjInfoMeleeDamage);
-  baseproclist.Add('function GetMobjInfoMeleeSound(const typ: integer): string;', @PS_GetMobjInfoMeleeSound);
-  baseproclist.Add('function GetMobjInfoRenderStyle(const typ: integer): integer;', @PS_GetMobjInfoRenderStyle);
-  baseproclist.Add('function GetMobjInfoAlpha(const typ: integer): integer;', @PS_GetMobjInfoAlpha);
-  baseproclist.Add('function GetMobjInfoHealState(const typ: integer): integer;', @PS_GetMobjInfoHealState);
-  baseproclist.Add('function GetMobjInfoCrashState(const typ: integer): integer;', @PS_GetMobjInfoCrashState);
-  baseproclist.Add('function GetMobjInfoCrushState(const typ: integer): integer;', @PS_GetMobjInfoCrushState);
-  baseproclist.Add('function GetMobjInfoVSpeed(const typ: integer): integer;', @PS_GetMobjInfoVSpeed);
-  baseproclist.Add('function GetMobjInfoMinMissileChance(const typ: integer): integer;', @PS_GetMobjInfoMinMissileChance);
-  baseproclist.Add('function GetMobjInfoPushFactor(const typ: integer): integer;', @PS_GetMobjInfoPushFactor);
-  baseproclist.Add('function GetMobjInfoScale(const typ: integer): integer;', @PS_GetMobjInfoScale);
-  baseproclist.Add('function GetMobjInfoInteractState(const typ: integer): integer;', @PS_GetMobjInfoInteractState);
-  baseproclist.Add('function GetMobjInfoMissileHeight(const typ: integer): integer;', @PS_GetMobjInfoMissileHeight);
-  baseproclist.Add('function GetMobjInfoFloatSpeed(const typ: integer): integer;', @PS_GetMobjInfoFloatSpeed);
-  baseproclist.Add('function GetMobjInfoNormalSpeed(const typ: integer): integer;', @PS_GetMobjInfoNormalSpeed);
-  baseproclist.Add('function GetMobjInfoFastSpeed(const typ: integer): integer;', @PS_GetMobjInfoFastSpeed);
-  baseproclist.Add('function GetMobjInfoObituary(const typ: integer): string;', @PS_GetMobjInfoObituary);
-  baseproclist.Add('function GetMobjInfoHitObituary(const typ: integer): string;', @PS_GetMobjInfoHitObituary);
-  baseproclist.Add('function GetMobjInfoGender(const typ: integer): integer;', @PS_GetMobjInfoGender);
-  baseproclist.Add('function GetMobjInfoMeleeRange(const typ: integer): integer;', @PS_GetMobjInfoMeleeRange);
-  baseproclist.Add('function GetMobjInfoMaxStepHeight(const typ: integer): integer;', @PS_GetMobjInfoMaxStepHeight);
-  baseproclist.Add('function GetMobjInfoMaxDropOffHeight(const typ: integer): integer;', @PS_GetMobjInfoMaxDropOffHeight);
-  baseproclist.Add('function GetMobjInfoGibHealth(const typ: integer): integer;', @PS_GetMobjInfoGibHealth);
-  baseproclist.Add('function GetMobjInfoMaxTargetRange(const typ: integer): integer;', @PS_GetMobjInfoMaxTargetRange);
-  baseproclist.Add('function GetMobjInfoWeaveIndexXY(const typ: integer): integer;', @PS_GetMobjInfoWeaveIndexXY);
-  baseproclist.Add('function GetMobjInfoWeaveIndexZ(const typ: integer): integer;', @PS_GetMobjInfoWeaveIndexZ);
-  baseproclist.Add('function GetMobjInfoFriction(const typ: integer): integer;', @PS_GetMobjInfoFriction);
-  baseproclist.Add('function GetMobjInfoSpriteDX(const dx: integer): integer;', @PS_GetMobjInfoSpriteDX);
-  baseproclist.Add('function GetMobjInfoSpriteDY(const dy: integer): integer;', @PS_GetMobjInfoSpriteDY);
-  baseproclist.Add('function GetMobjInfoInfightingGroup(const typ: integer): Integer;', @PS_GetMobjInfoInfightingGroup);
-  baseproclist.Add('function GetMobjInfoProjectileGroup(const typ: integer): Integer;', @PS_GetMobjInfoProjectileGroup);
-  baseproclist.Add('function GetMobjInfoSplashGroup(const typ: integer): Integer;', @PS_GetMobjInfoSplashGroup);
-  baseproclist.Add('function GetMobjInfoRipSound(const typ: integer): string;', @PS_GetMobjInfoRipSound);
-  baseproclist.Add('function GetMobjInfoMeleeThreshold(const typ: integer): integer;', @PS_GetMobjInfoMeleeThreshold);
-// ------------------------------ GAME -----------------------------------------
-  {$IFDEF HEXEN}
-  baseproclist.Add('procedure G_Completed(map, position: integer);', @G_Completed);
-  baseproclist.Add('function P_TranslateMap(map: integer): integer;', @P_TranslateMap);
-  baseproclist.Add('function P_GetMapNextMap(map: integer): integer;', @P_GetMapNextMap);
-  {$ENDIF}
-  {$IFDEF DOOM_OR_HERETIC}
-  baseproclist.Add('procedure G_ExitLevel;', @G_ExitLevel);
-  baseproclist.Add('procedure G_SecretExitLevel;', @G_SecretExitLevel);
-  {$ENDIF}
-  {$IFDEF STRIFE}
-  baseproclist.Add('procedure G_ExitLevel(dest: integer);', @G_ExitLevel);
-  {$ENDIF}
-  baseproclist.Add('function _GAME: string;', @PS_Game);
-  baseproclist.Add('procedure GlobalEarthQuake(const tics: integer);', @PS_GlobalEarthQuake);
-  baseproclist.Add('procedure LocalEarthQuake(const x, y, z: fixed_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);', @PS_LocalEarthQuake);
-  baseproclist.Add('function GameSkill: integer;', @PS_GameSkill);
-  baseproclist.Add('function GameMap: integer;', @PS_GameMap);
-  {$IFDEF DOOM_OR_HERETIC}
-  baseproclist.Add('function GameEpisode: integer;', @PS_GameEpisode);
-  {$ENDIF}
-// ------------------ KEYBOARD CONTROL -----------------------------------------
-  baseproclist.Add('function gamekeydown(const kkey: integer): boolean;', @PS_gamekeydown);
-  baseproclist.Add('function mousebuttons(const mkey: integer): boolean;', @PS_mousebuttons);
-  baseproclist.Add('function joybuttons(const jkey: integer): boolean;', @PS_joybuttons);
-  baseproclist.Add('function key_right: integer;', @PS_key_right);
-  baseproclist.Add('function key_left: integer;', @PS_key_left);
-  baseproclist.Add('function key_up: integer;', @PS_key_up);
-  baseproclist.Add('function key_down: integer;', @PS_key_down);
-  baseproclist.Add('function key_lookup: integer;', @PS_key_lookup);
-  baseproclist.Add('function key_lookdown: integer;', @PS_key_lookdown);
-  baseproclist.Add('function key_lookcenter: integer;', @PS_key_lookcenter);
-  baseproclist.Add('function key_lookright: integer;', @PS_key_lookright);
-  baseproclist.Add('function key_lookleft: integer;', @PS_key_lookleft);
-  {$IFNDEF STRIFE}
-  baseproclist.Add('function key_lookforward: integer;', @PS_key_lookforward);
-  {$ENDIF}
-  baseproclist.Add('function key_strafeleft: integer;', @PS_key_strafeleft);
-  baseproclist.Add('function key_straferight: integer;', @PS_key_straferight);
-  baseproclist.Add('function key_fire: integer;', @PS_key_fire);
-  baseproclist.Add('function key_use: integer;', @PS_key_use);
-  baseproclist.Add('function key_strafe: integer;', @PS_key_strafe);
-  baseproclist.Add('function key_speed: integer;', @PS_key_speed);
-  baseproclist.Add('function key_jump: integer;', @PS_key_jump);
-  // JVAL: 20211101 - Crouch
-  baseproclist.Add('function key_crouch: integer;', @PS_key_crouch);
-  baseproclist.Add('function key_weapon0: integer;', @PS_key_weapon0);
-  baseproclist.Add('function key_weapon1: integer;', @PS_key_weapon1);
-  baseproclist.Add('function key_weapon2: integer;', @PS_key_weapon2);
-  baseproclist.Add('function key_weapon3: integer;', @PS_key_weapon3);
-  {$IFNDEF HEXEN}
-  baseproclist.Add('function key_weapon4: integer;', @PS_key_weapon4);
-  baseproclist.Add('function key_weapon5: integer;', @PS_key_weapon5);
-  baseproclist.Add('function key_weapon6: integer;', @PS_key_weapon6);
-  baseproclist.Add('function key_weapon7: integer;', @PS_key_weapon7);
-  {$ENDIF}
-  {$IFDEF HERETIC_OR_HEXEN}
-  baseproclist.Add('function key_flyup: integer;', @PS_key_flyup);
-  baseproclist.Add('function key_flydown: integer;', @PS_key_flydown);
-  baseproclist.Add('function key_flycenter: integer;', @PS_key_flycenter);
-  baseproclist.Add('function key_invleft: integer;', @PS_key_invleft);
-  baseproclist.Add('function key_invright: integer;', @PS_key_invright);
-  baseproclist.Add('function key_useartifact: integer;', @PS_key_useartifact);
-  {$ENDIF}
-  {$IFDEF STRIFE}
-  baseproclist.Add('function key_invleft: integer;', @PS_key_invleft);
-  baseproclist.Add('function key_invright: integer;', @PS_key_invright);
-  baseproclist.Add('function key_weapon8: integer;', @PS_key_weapon8);
-  baseproclist.Add('function key_weapon9: integer;', @PS_key_weapon9);
-  baseproclist.Add('function key_usehealth: integer;', @PS_key_usehealth);
-  baseproclist.Add('function key_invquery: integer;', @PS_key_invquery);
-  baseproclist.Add('function key_mission: integer;', @PS_key_mission);
-  baseproclist.Add('function key_invpop: integer;', @PS_key_invpop);
-  baseproclist.Add('function key_invkey: integer;', @PS_key_invkey);
-  baseproclist.Add('function key_invhome: integer;', @PS_key_invhome);
-  baseproclist.Add('function key_invend: integer;', @PS_key_invend);
-  baseproclist.Add('function key_invuse: integer;', @PS_key_invuse);
-  baseproclist.Add('function key_invdrop: integer;', @PS_key_invdrop);
-  {$ENDIF}
-  baseproclist.Add('function mousebfire: integer;', @PS_mousebfire);
-  baseproclist.Add('function mousebstrafe: integer;', @PS_mousebstrafe);
-  baseproclist.Add('function mousebforward: integer;', @PS_mousebforward);
-  baseproclist.Add('function joybfire: integer;', @PS_joybfire);
-  baseproclist.Add('function joybstrafe: integer;', @PS_joybstrafe);
-  baseproclist.Add('function joybuse: integer;', @PS_joybuse);
-  baseproclist.Add('function joybspeed: integer;', @PS_joybspeed);
-  baseproclist.Add('function joybjump: integer;', @PS_joybjump);
-  // JVAL: 20211101 - Crouch
-  baseproclist.Add('function joybcrouch: integer;', @PS_joybcrouch);
-  baseproclist.Add('function joyblleft: integer;', @PS_joyblleft);
-  baseproclist.Add('function joyblright: integer;', @PS_joyblright);
-// ------------------------------- MAP -----------------------------------------
-  baseproclist.Add('function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;', @R_PointToAngle);
-  baseproclist.Add('function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;', @R_PointToAngle2);
-  baseproclist.Add('function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;', @R_PointToDist);
-  baseproclist.Add('function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;', @P_AproxDistance);
-  baseproclist.Add('function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: integer): integer;', @PS_P_PointOnLineSide);
-  baseproclist.Add('function R_PointInSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSector);
-  baseproclist.Add('function R_PointInSubSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSubSector);
-// ------------------------------- MAP -----------------------------------------
-  baseproclist.Add('function Ceiling_CrushAndRaise(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_CrushAndRaise);
-  baseproclist.Add('function Ceiling_CrushRaiseAndStay(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_CrushRaiseAndStay);
-  baseproclist.Add('function Ceiling_CrushStop(const tag: integer): boolean;', @PS_Ceiling_CrushStop);
-  baseproclist.Add('function Ceiling_LowerAndCrush(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Ceiling_LowerAndCrush);
-  baseproclist.Add('function Ceiling_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_LowerByValue);
-  baseproclist.Add('function Ceiling_LowerByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_LowerByValueTimes8);
-  baseproclist.Add('function Ceiling_LowerToFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToFloor);
-  baseproclist.Add('function Ceiling_LowerToHighestFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToHighestFloor);
-  baseproclist.Add('function Ceiling_LowerToLowest(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_LowerToLowest);
-  baseproclist.Add('function Ceiling_MoveToValueAndCrush(const tag: integer; const speed: integer; const height: integer; const crush: integer): boolean;', @PS_Ceiling_MoveToValueAndCrush);
-  baseproclist.Add('function Ceiling_MoveToValue(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Ceiling_MoveToValue);
-  baseproclist.Add('function Ceiling_MoveToValueTimes8(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Ceiling_MoveToValueTimes8);
-  baseproclist.Add('function Ceiling_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_RaiseByValue);
-  baseproclist.Add('function Ceiling_RaiseByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Ceiling_RaiseByValueTimes8);
-  baseproclist.Add('function Ceiling_RaiseToHighestFloor(const tag: integer; const speed: integer): boolean;', @PS_Ceiling_RaiseToHighestFloor);
-  baseproclist.Add('function Door_Close(const tag: integer; const speed: integer): boolean;', @PS_Door_Close);
-  baseproclist.Add('function Door_CloseWaitOpen(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Door_CloseWaitOpen);
-  baseproclist.Add('function Door_Open(const tag: integer; const speed: integer): boolean;', @PS_Door_Open);
-  baseproclist.Add('function Door_Raise(const tag: integer; const speed: integer; delay: integer): boolean;', @PS_Door_Raise);
-  baseproclist.Add('function FloorAndCeiling_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_FloorAndCeiling_LowerByValue);
-  baseproclist.Add('function FloorAndCeiling_LowerRaise(const tag: integer; const fspeed, cspeed: integer): boolean;', @PS_FloorAndCeiling_LowerRaise);
-  baseproclist.Add('function FloorAndCeiling_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_FloorAndCeiling_RaiseByValue);
-  baseproclist.Add('function Floor_CrushStop(const tag: integer): boolean;', @PS_Floor_CrushStop);
-  baseproclist.Add('function Floor_LowerByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerByValue);
-  baseproclist.Add('function Floor_LowerByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerByValueTimes8);
-  baseproclist.Add('function Floor_LowerToHighest(const tag: integer; const speed: integer; const adjust: integer): boolean;', @PS_Floor_LowerToHighest);
-  baseproclist.Add('function Floor_LowerToLowestCeiling(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToLowestCeiling);
-  baseproclist.Add('function Floor_LowerToLowest(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToLowest);
-  baseproclist.Add('function Floor_LowerToNearest(const tag: integer; const speed: integer): boolean;', @PS_Floor_LowerToNearest);
-  baseproclist.Add('function Floor_MoveToValue(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Floor_MoveToValue);
-  baseproclist.Add('function Floor_MoveToValueTimes8(const tag: integer; const speed: integer; const height: integer; const neg: integer): boolean;', @PS_Floor_MoveToValueTimes8);
-  baseproclist.Add('function Floor_RaiseAndCrushDoom(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Floor_RaiseAndCrushDoom);
-  baseproclist.Add('function Floor_RaiseAndCrush(const tag: integer; const speed: integer; const crush: integer): boolean;', @PS_Floor_RaiseAndCrush);
-  baseproclist.Add('function Floor_RaiseByTexture(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseByTexture);
-  baseproclist.Add('function Floor_RaiseByValue(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseByValue);
-  baseproclist.Add('function Floor_RaiseByValueTimes8(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseByValueTimes8);
-  baseproclist.Add('function Floor_RaiseInstant(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_RaiseInstant);
-  baseproclist.Add('function Floor_LowerInstant(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Floor_LowerInstant);
-  baseproclist.Add('function Floor_RaiseToCeilingNoChange(const tag: integer; const speed: integer; const crush: integer; const gap: integer): boolean;', @PS_Floor_RaiseToCeilingNoChange);
-  baseproclist.Add('function Floor_RaiseToHighest(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToHighest);
-  baseproclist.Add('function Floor_RaiseToLowestCeiling(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToLowestCeiling);
-  baseproclist.Add('function Floor_RaiseToNearest(const tag: integer; const speed: integer): boolean;', @PS_Floor_RaiseToNearest);
-  baseproclist.Add('function Floor_ToCeilingInstantNoChange(const tag: integer; const crush: integer; const gap: integer): boolean;', @PS_Floor_ToCeilingInstantNoChange);
-  baseproclist.Add('function Floor_Waggle(const tag: integer; const amp: integer; const freq: integer; const offset: integer; const time: integer): boolean;', @PS_Floor_Waggle);
-  baseproclist.Add('function Light_ChangeToValue(const tag: integer; const value: integer): boolean;', @PS_Light_ChangeToValue);
-  baseproclist.Add('function Light_Fade(const tag: integer; const value: integer; const tics: integer): boolean;', @PS_Light_Fade);
-  baseproclist.Add('function Light_Flicker(const tag: integer; const upper: integer; const lower: integer): boolean;', @PS_Light_Flicker);
-  baseproclist.Add('function Light_ForceLightning: boolean;', @PS_Light_ForceLightning);
-  baseproclist.Add('function Light_ForceLightningTics(const tics: integer): boolean;', @PS_Light_ForceLightningTics);
-  baseproclist.Add('function Light_Glow(const tag: integer; const upper: integer; const lower: integer; const tics: integer): boolean;', @PS_Light_Glow);
-  baseproclist.Add('function Light_LowerByValue(const tag: integer; const value: integer): boolean;', @PS_Light_LowerByValue);
-  baseproclist.Add('function Light_MaxNeighbor(const tag: integer): boolean;', @PS_Light_MaxNeighbor);
-  baseproclist.Add('function Light_MinNeighbor(const tag: integer): boolean;', @PS_Light_MinNeighbor);
-  baseproclist.Add('function Light_RaiseByValue(const tag: integer; const value: integer): boolean;', @PS_Light_RaiseByValue);
-  baseproclist.Add('function Light_Strobe(const tag: integer; const upper: integer; const lower: integer; const utics: integer; const ltics: integer): boolean;', @PS_Light_Strobe);
-  baseproclist.Add('function Light_StrobeDoom(const tag: integer; const utics: integer; const ltics: integer): boolean;', @PS_Light_StrobeDoom);
-  baseproclist.Add('function Pillar_BuildAndCrush(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Pillar_BuildAndCrush);
-  baseproclist.Add('function Pillar_Build(const tag: integer; const speed: integer; const height: integer): boolean;', @PS_Pillar_Build);
-  baseproclist.Add('function Pillar_Open(const tag: integer; const speed: integer; const fdist: integer; const cdist: integer): boolean;', @PS_Pillar_Open);
-  baseproclist.Add('function Plat_DownByValue(const tag: integer; const speed: integer; const delay: integer; const height: integer): boolean;', @PS_Plat_DownByValue);
-  baseproclist.Add('function Plat_DownWaitUpStay(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_DownWaitUpStay);
-  baseproclist.Add('function Plat_DownWaitUpStayLip(const tag: integer; const speed: integer; const delay: integer; const lip: integer): boolean;', @PS_Plat_DownWaitUpStayLip);
-  baseproclist.Add('function Plat_PerpetualRaise(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_PerpetualRaise);
-  baseproclist.Add('function Plat_PerpetualRaiseLip(const tag: integer; const speed: integer; const delay: integer; const lip: integer): boolean;', @PS_Plat_PerpetualRaiseLip);
-  baseproclist.Add('function Plat_UpByValue(const tag: integer; const speed: integer; const delay: integer; const height: integer): boolean;', @PS_Plat_UpByValue);
-  baseproclist.Add('function Plat_UpNearestWaitDownStay (const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_UpNearestWaitDownStay );
-  baseproclist.Add('function Plat_UpWaitDownStay(const tag: integer; const speed: integer; const delay: integer): boolean;', @PS_Plat_UpWaitDownStay);
-  baseproclist.Add('function Polyobj_DoorSlide(const po: integer; const speed: integer; const angle: integer; const dist: integer; const delay: integer): boolean;', @PS_Polyobj_DoorSlide);
-  baseproclist.Add('function Polyobj_DoorSwing(const po: integer; const speed: integer; const angle: integer; const delay: integer): boolean;', @PS_Polyobj_DoorSwing);
-  baseproclist.Add('function Polyobj_Move(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_Move);
-  baseproclist.Add('function Polyobj_MoveTimes8(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_MoveTimes8);
-  baseproclist.Add('function Polyobj_OR_Move(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_OR_Move);
-  baseproclist.Add('function Polyobj_OR_MoveTimes8(const po: integer; const speed: integer; const angle: integer; const dist: integer): boolean;', @PS_Polyobj_OR_MoveTimes8);
-  baseproclist.Add('function Polyobj_OR_RotateLeft(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_OR_RotateLeft);
-  baseproclist.Add('function Polyobj_OR_RotateRight(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_OR_RotateRight);
-  baseproclist.Add('function Polyobj_RotateLeft(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_RotateLeft);
-  baseproclist.Add('function Polyobj_RotateRight(const po: integer; const speed: integer; const angle: integer): boolean;', @PS_Polyobj_RotateRight);
-  units.AddObject(basename, baseproclist);
-
-  basename := 'PS_FIXED';
-  baseproclist := TProcedureList.Create(basename);
-  baseproclist.Add('function FixedMul(const a, b: fixed_t): fixed_t;', @FixedMulEx);
-  baseproclist.Add('function FixedDiv(const a, b: fixed_t): fixed_t;', @FixedDivEx);
-  baseproclist.Add('function FixedSqrt(const a: fixed_t): fixed_t;', @FixedSqrt);
-  baseproclist.Add('function FloatToFixed(const f: single): fixed_t;', @FloatToFixed);
-  baseproclist.Add('function DoubleToFixed(const f: double): fixed_t;', @DoubleToFixed);
-  baseproclist.Add('function ExtendedToFixed(const f: extended): fixed_t;', @ExtendedToFixed);
-  baseproclist.Add('function FixedToFloat(const x: fixed_t): single;', @FixedToFloat);
-  baseproclist.Add('function FixedToDouble(const x: fixed_t): double;', @FixedToDouble);
-  baseproclist.Add('function FixedToExtended(const x: fixed_t): extended;', @FixedToExtended);
-  units.AddObject(basename, baseproclist);
-
-  basename := 'PS_OVERLAY';
-  baseproclist := TProcedureList.Create(basename);
-  baseproclist.Add('procedure OverlayClear;', @PS_OverlayClear);
-  baseproclist.Add('procedure OverlayDrawPatch(const ticks: Integer; const patchname: string; const x, y: Integer);', @PS_OverlayDrawPatch);
-  baseproclist.Add('procedure OverlayDrawPatchStretched(const ticks: Integer; const patchname: string; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawPatchStretched);
-  baseproclist.Add('procedure OverlayDrawPixel(const ticks: Integer; const red, green, blue : byte; const x, y : Integer);', @PS_OverlayDrawPixel);
-  baseproclist.Add('procedure OverlayDrawRect(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawRect);
-  baseproclist.Add('procedure OverlayDrawLine(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawLine);
-  baseproclist.Add('procedure OverlayDrawText(const ticks: Integer; const txt: string; const align: Integer; const x, y: Integer);', @PS_OverlayDrawText);
-  baseproclist.Add('procedure OverlayDrawLeftText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawLeftText);
-  baseproclist.Add('procedure OverlayDrawRightText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawRightText);
-  baseproclist.Add('procedure OverlayDrawCenterText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawCenterText);
-  units.AddObject(basename, baseproclist);
-
-  units.Sorted := True;
+  PS_ScriptRegistry.AddGroup(TScriptHostFactory.CreateCallbackGroup('PS_GAME', PS_DescribeGameFunctions));
+  PS_ScriptRegistry.AddGroup(TScriptHostFactory.CreateCallbackGroup('PS_OVERLAY', PS_DescribeOverlayFunctions));
 end;
 
 //==============================================================================
@@ -810,15 +779,8 @@ end;
 //
 //==============================================================================
 procedure PS_ResetProcLists;
-var
-  i: integer;
-  baseproclist: TProcedureList;
 begin
-  for i := 0 to units.Count - 1 do
-  begin
-    baseproclist := units.Objects[i] as TProcedureList;
-    baseproclist.Reset;
-  end;
+  PS_ScriptRegistry.Reset;
 end;
 
 //==============================================================================
@@ -827,16 +789,13 @@ end;
 //
 //==============================================================================
 procedure PS_ShutDownProcLists;
-var
-  i: integer;
-  baseproclist: TProcedureList;
 begin
-  for i := 0 to units.Count - 1 do
+  // PS_GAME and PS_OVERLAY are the ones that PS_InitProcLists added
+  if ps_registry_ref <> nil then
   begin
-    baseproclist := units.Objects[i] as TProcedureList;
-    baseproclist.Free;
+    ps_registry_ref.RemoveGroup('PS_GAME');
+    ps_registry_ref.RemoveGroup('PS_OVERLAY');
   end;
-  units.Free;
 end;
 
 //==============================================================================
@@ -852,9 +811,7 @@ var
   uT_integer: TPSType;
   uT_longword: TPSType;
   uT_extended: TPSType;
-  idx: integer;
-  baseproclist: TProcedureList;
-  uUnit: string;
+  LName: string;
   flgcount: LongWord;
 { the OnUses callback function is called for each "uses" in the script.
   It's always called with the parameter 'SYSTEM' at the top of the script.
@@ -887,12 +844,7 @@ begin
     SIRegister_Game(Sender);
     SIRegister_TOverlay(Sender);
 
-    idx := units.IndexOf(Name);
-    if idx >= 0 then
-    begin
-      baseproclist := units.Objects[idx] as TProcedureList;
-      baseproclist.RegisterProcsComp(Sender);
-    end;
+    PS_ScriptRegistry.RegisterCompiler(string(Name), Sender);
 
     { This will register the function to the script engine. Now it can be used from within the script. }
     uT_extended := Sender.FindType('extended');
@@ -1263,21 +1215,14 @@ begin
   end
   else if Name = 'ALL' then
   begin
-    for i := 0 to units.Count - 1 do
-    begin
-      uUnit := strupper(units.Strings[i]);
-      if uUnit <> 'SYSTEM' then
-        PS_ScriptOnUses(Sender, uUnit);
-    end;
+    for LName in PS_ScriptRegistry.CompilerUnitNames do
+      PS_ScriptOnUses(Sender, TbtString(LName));
     Result := True;
   end
   else
   begin
-    idx := units.IndexOf(Name);
-    if idx >= 0 then
+    if PS_ScriptRegistry.RegisterCompiler(string(Name), Sender) then
     begin
-      baseproclist := units.Objects[idx] as TProcedureList;
-      baseproclist.RegisterProcsComp(Sender);
       Result := True;
     end
     else
@@ -1499,19 +1444,14 @@ var
   lst: TStringList;
 
   function RegisterRTLUnit(const s: string): boolean;
-  var
-    i: integer;
   begin
-    i := units.indexOf(s);
-    if i >= 0 then
+    if PS_ScriptRegistry.RegisterExecutor(s, Self) then
     begin
-      (units.Objects[i] as TProcedureList).RegisterProcsExec(Self);
       Result := True;
     end
     else if s = 'ALL' then
     begin
-      for i := 0 to units.Count - 1 do
-        (units.Objects[i] as TProcedureList).RegisterProcsExec(Self);
+      PS_ScriptRegistry.RegisterExecutorForAll(Self);
       Result := True;
     end
     else
@@ -1592,16 +1532,6 @@ begin
     RIRegisterRTL_Game(Self);
     RIRegisterRTL_TOverlay(Self);
   end;
-end;
-
-//==============================================================================
-//
-// PS_ImportUnits
-//
-//==============================================================================
-function PS_ImportUnits: TObject;
-begin
-  Result := units;
 end;
 
 type
