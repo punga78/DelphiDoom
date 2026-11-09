@@ -16,6 +16,9 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   DelphiDoom.MathCore.Crc32 in '..\Libs\MathCore\DelphiDoom.MathCore.Crc32.pas',
+  DelphiDoom.MathCore.Types in '..\Libs\MathCore\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.FixedMath in '..\Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.Greed.FixedMath in '..\Libs\Greed\DelphiDoom.Greed.FixedMath.pas',
   DelphiDoom.Greed.Types in '..\Libs\Greed\DelphiDoom.Greed.Types.pas',
   DelphiDoom.Greed.LittleEndian in '..\Libs\Greed\DelphiDoom.Greed.LittleEndian.pas',
   DelphiDoom.Greed.Intf in '..\Libs\Greed\DelphiDoom.Greed.Intf.pas',
@@ -53,6 +56,7 @@ uses
   DelphiDoom.Tests.Greed.MapRenderer in 'Source\DelphiDoom.Tests.Greed.MapRenderer.pas',
   DelphiDoom.Tests.Greed.PngExporter in 'Source\DelphiDoom.Tests.Greed.PngExporter.pas',
   DelphiDoom.Tests.Greed.Factory in 'Source\DelphiDoom.Tests.Greed.Factory.pas',
+  DelphiDoom.Tests.Greed.FixedMath in 'Source\DelphiDoom.Tests.Greed.FixedMath.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var
