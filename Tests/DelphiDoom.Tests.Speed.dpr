@@ -45,7 +45,8 @@ uses
   DelphiDoom.Tests.Speed.LevelBuilder in 'Source\DelphiDoom.Tests.Speed.LevelBuilder.pas',
   DelphiDoom.Tests.Speed.RawSound in 'Source\DelphiDoom.Tests.Speed.RawSound.pas',
   DelphiDoom.Tests.Speed.MapBitmapBuilder in 'Source\DelphiDoom.Tests.Speed.MapBitmapBuilder.pas',
-  DelphiDoom.Tests.Speed.Translator in 'Source\DelphiDoom.Tests.Speed.Translator.pas';
+  DelphiDoom.Tests.Speed.Translator in 'Source\DelphiDoom.Tests.Speed.Translator.pas',
+  DelphiDoom.Tests.Speed.I3dModels in 'Source\DelphiDoom.Tests.Speed.I3dModels.pas';
 
 var
   Runner: ITestRunner;
@@ -81,3 +82,4 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
