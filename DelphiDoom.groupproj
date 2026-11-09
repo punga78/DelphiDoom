@@ -37,7 +37,7 @@
         <Projects Include="DD_Tools\DD_Tools.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="SCRIPT\ddc.dproj">
+        <Projects Include="Libs\Ddc\ddc.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Doom\ddc_doom.dproj">
@@ -400,13 +400,13 @@
         <MSBuild Projects="DD_Tools\DD_Tools.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc">
-        <MSBuild Projects="SCRIPT\ddc.dproj"/>
+        <MSBuild Projects="Libs\Ddc\ddc.dproj"/>
     </Target>
     <Target Name="ddc:Clean">
-        <MSBuild Projects="SCRIPT\ddc.dproj" Targets="Clean"/>
+        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Clean"/>
     </Target>
     <Target Name="ddc:Make">
-        <MSBuild Projects="SCRIPT\ddc.dproj" Targets="Make"/>
+        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc_doom">
         <MSBuild Projects="Doom\ddc_doom.dproj"/>

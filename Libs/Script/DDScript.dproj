@@ -12,10 +12,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.;Shim;..\..\SCRIPT;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>Shim;.;..\..\SCRIPT;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ResourcePath>..\..\SCRIPT;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>..\..\SCRIPT;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_UnitSearchPath>.;Shim;..\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>Shim;.;..\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ResourcePath>..\PascalScript;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ObjPath>..\PascalScript;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\..\bin\Libs</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\Libs\DDScript\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

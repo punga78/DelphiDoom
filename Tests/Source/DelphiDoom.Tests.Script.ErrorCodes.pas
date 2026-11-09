@@ -18,7 +18,7 @@ type
   ///   The answers of TScriptCompilerEngine and TScriptExecutorEngine to the arguments they refuse,
   ///   to the values of the wrong type and to what PascalScript reports (hints, warnings, typed
   ///   constants, calling conventions): the expected behaviour is that of PascalScript
-  ///   (SCRIPT\ps_compiler.pas, ps_runtime.pas) and of the contract in DelphiDoom.Script.Intf
+  ///   (Libs\PascalScript\ps_compiler.pas, ps_runtime.pas) and of the contract in DelphiDoom.Script.Intf
   /// </summary>
   [TestFixture]
   [Category('script')]

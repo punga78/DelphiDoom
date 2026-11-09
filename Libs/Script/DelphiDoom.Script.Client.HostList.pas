@@ -31,7 +31,7 @@ type
   ///   addresses), so the two never disagree
   /// </summary>
   /// <remarks>
-  ///   Replaces SCRIPT\ps_proclist.pas for the code that talks to the library
+  ///   Replaces Libs\ScriptHost\ps_proclist.pas for the code that talks to the library
   ///   through its clients: the declaration text is the same, and the default
   ///   convention is the register one of the engine functions
   /// </remarks>

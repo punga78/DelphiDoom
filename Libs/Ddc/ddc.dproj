@@ -12,10 +12,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>ShareMM;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Common;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ExeOutput>..\bin\Tools</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\ddc\$(Config)</DCC_DcuOutput>
+        <DCC_UnitSearchPath>..\..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ExeOutput>..\..\bin\Tools</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\dcu\ddc\$(Config)</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>

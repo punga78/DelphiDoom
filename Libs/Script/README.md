@@ -1,6 +1,6 @@
 # Libs\Script — PascalScript in `DDScript.dll`
 
-Estrazione del compilatore e dell'interprete di Pascal Script (`SCRIPT\`) in una DLL con interfaccia COM-style, secondo il modello di `Libs\Zlib`, `Libs\Xmi`, `Libs\Mp3`.
+Estrazione del compilatore e dell'interprete di Pascal Script (ex `SCRIPT\`, ora `Libs\PascalScript\` e `Libs\ScriptHost\`) in una DLL con interfaccia COM-style, secondo il modello di `Libs\Zlib`, `Libs\Xmi`, `Libs\Mp3`.
 Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la **fetta verticale** della Fase 2 consegnata.
 
 ## Stato
@@ -16,7 +16,7 @@ Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la
 | 3E (#22) | Tabella di parole chiave dei modelli e preprocessore con define/include dell'host | fatto |
 | 3F (#23) | Prove nel gioco | non pianificata |
 
-**Decisione (#10)**: il motore resta su PascalScript in-process (`SCRIPT\ps_*`). Gli script del gioco usano classi Delphi vere (`Actors`, `Lines`, `MapStrings`…) registrate con `TPSRuntimeClassImporter` dal `TClass` e dai puntatori ai metodi, che non attraversano il confine di una DLL: `SCRIPT\ps_*` è il motore degli script, non codice storico da togliere. `DDScript` è la facciata per script semplici (funzioni, costanti, tipi, unit, globali, parole chiave, preprocessore).
+**Decisione (#10)**: il motore resta su PascalScript in-process (`Libs\ScriptHost\ps_*` e `Libs\PascalScript\ps_*`). Gli script del gioco usano classi Delphi vere (`Actors`, `Lines`, `MapStrings`…) registrate con `TPSRuntimeClassImporter` dal `TClass` e dai puntatori ai metodi, che non attraversano il confine di una DLL: `Libs\ScriptHost\ps_*` e `Libs\PascalScript\ps_*` è il motore degli script, non codice storico da togliere. `DDScript` è la facciata per script semplici (funzioni, costanti, tipi, unit, globali, parole chiave, preprocessore).
 
 Build: `DDScript` (progetto in `Libs\Script`, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `Tools\build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
 
@@ -26,7 +26,7 @@ Build: `DDScript` (progetto in `Libs\Script`, `bin\Libs\DDScript.dll`). Test: `T
 
 ### Dimensioni
 
-`SCRIPT\` ha circa 72.000 righe, ma il 52% è nel nucleo e il 20% in un solo file di binding.
+La vecchia `SCRIPT\` aveva circa 72.000 righe, ma il 52% è nel nucleo e il 20% in un solo file di binding.
 
 | Gruppo | Unit | Righe |
 |---|---|---|
@@ -151,7 +151,7 @@ Nulla è stato compilato. Punti da guardare per primi:
 
 1. `Doom32.inc`: il progetto mette `Libs\Script\Shim` per primo nell'include path; se Delphi cercasse nella cartella del progetto prima del path, userebbe il `Doom32.inc` vero (innocuo, ma con `APPTYPE GUI`).
 2. `ps_compiler`/`ps_runtime` compilano con `Libs\Script\Shim\d_delphi.pas` al posto di quello del motore: se mancasse un simbolo oltre a `CharPos`, l'errore sarà "Undeclared identifier" in quei file (non modificarli: aggiungere la routine allo shim).
-3. Conversione implicita `AnsiString`→`string` negli avvisi W1057/W1058 dentro `SCRIPT\`: preesistenti.
+3. Conversione implicita `AnsiString`→`string` negli avvisi W1057/W1058 dentro `Libs\PascalScript\` e `Libs\ScriptHost\`: preesistenti.
 4. `GetVar` di `TPSExec` restituisce l'indice nella tabella delle variabili esportate, non il numero della variabile: le due cose coincidono solo se **tutte** le globali sono esportate, nell'ordine di dichiarazione. `ScriptExportGlobals` (in `Native.Compiler`) lo garantisce; il test `TestGlobalIntegers` legge due variabili diverse per verificarlo.
 5. L'errore a runtime di una divisione per zero dipende dalla mappatura delle eccezioni hardware di Delphi: nel test `TestRuntimeErrorIsReported` il risultato atteso è `SCRIPT_ERROR_RUNTIME`.
 6. Dopo un errore a runtime lo stato dell'interprete non viene rimesso a punto: dopo `SCRIPT_ERROR_RUNTIME` conviene ricaricare il bytecode prima di nuove chiamate.

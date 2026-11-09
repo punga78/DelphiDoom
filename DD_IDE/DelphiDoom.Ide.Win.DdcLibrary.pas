@@ -19,7 +19,7 @@ type
   /// <summary>
   ///   The script compiler and the lists of the compiler library of a game, which live in
   ///   ddc_doom.dll, ddc_heretic.dll, ddc_hexen.dll and ddc_strife.dll (the same ones the
-  ///   command line compiler ddc.exe uses, through SCRIPT\ddc_base). Between Open and Close the dll
+  ///   command line compiler ddc.exe uses, through Libs\Ddc\ddc_base). Between Open and Close the dll
   ///   stays loaded, so that the many calls that follow do not load it again
   /// </summary>
   TDdcIdeLibrary = class(TInterfacedObject, IIdeScriptCompiler, IIdeGameLibrary)
