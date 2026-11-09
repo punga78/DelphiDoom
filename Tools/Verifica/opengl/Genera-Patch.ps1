@@ -72,13 +72,14 @@ Edit-File 'Libs\OpenGl\Legacy\gl_main.pas' {
 Edit-File 'Libs\OpenGl\Legacy\gl_render.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
+  $t = Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
   Replace-Once $t "  SwapBuffers(h_DC);$crlf" "  SwapBuffers(h_DC);$crlf  HarnessGl_FrameEnd;$crlf"
 }
 
 Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
-  Replace-Once $t "  FinishLevel;$crlf" "  FinishLevel;$crlf  HarnessGl_AfterLevel(LMapName);$crlf"
+  Replace-Once $t "  FinishLevel;$crlf" "  FinishLevel;$crlf  HarnessGl_AfterLevel(LMapName, Self, AEpisode, AMap, APlayerMask, Ord(ASkill));$crlf"
 }
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
