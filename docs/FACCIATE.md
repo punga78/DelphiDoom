@@ -1390,3 +1390,5 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Strife\p_mobj.pas`: P_SpawnMissileAngleZSpeed
 - `Strife\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
 - `Strife\p_user.pas`: P_DropInventoryItem, P_ItemBehavior
+
+**Nota (issue #177, fetta 3)**: `gld_ConfigureModelDefinitions` di `gl_models.pas` riceve preprocessore, parser (`IModelDefinitionParser`) e sink (`TEngineModelDefinitionSink`) da `ComposeModels`; `gld_AddModel`, `gld_AddModelState` e `gld_AddModelTexture` sono ora esposte dall'unit e chiamate solo da quel sink.

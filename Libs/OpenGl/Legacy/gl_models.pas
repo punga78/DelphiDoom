@@ -40,7 +40,8 @@ uses
   m_fixed,
   dglOpenGL,
   mdl_base,
-  DelphiDoom.Scanner.Preprocessor.Intf;
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Models.Definition.Intf;
 
 var
   gl_drawmodels: boolean = true;
@@ -100,7 +101,8 @@ procedure gld_ModelsDone;
 // The script preprocessor that MODELDEF goes through (given by ComposeEngine)
 //
 //==============================================================================
-procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor);
+procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor;
+  const AParser: IModelDefinitionParser; const ASink: IModelDefinitionSink);
 
 const
   MDSTRLEN = 64;
@@ -162,6 +164,29 @@ var
   modelstates: Pmodelstate_tArray;
   nummodelstates: integer;
 
+//==============================================================================
+//
+// gld_AddModel
+//
+// The registry of the models: a model with the name it already has gives its index
+//
+//==============================================================================
+function gld_AddModel(const item: modelmanageritem_t): integer;
+
+//==============================================================================
+//
+// gld_AddModelState
+//
+//==============================================================================
+procedure gld_AddModelState(const item: modelstate_t);
+
+//==============================================================================
+//
+// gld_AddModelTexture
+//
+//==============================================================================
+function gld_AddModelTexture(const texturename: string): integer;
+
 const
   MODELINTERPOLATERANGE = 512 * FRACUNIT;
 
@@ -176,24 +201,26 @@ uses
   mdl_ddmodel,
   mdl_dllmodel,
   gl_tex,
-  DelphiDoom.Scanner.Scanner,
-  DelphiDoom.Engine.Scanner.Log,
-  sc_tokens,
   sc_states,
   w_pak,
   w_wad;
 
 var
   modeldef_preprocessor: IScriptTextPreprocessor;
+  modeldef_parser: IModelDefinitionParser;
+  modeldef_sink: IModelDefinitionSink;
 
 //==============================================================================
 //
 // gld_ConfigureModelDefinitions
 //
 //==============================================================================
-procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor);
+procedure gld_ConfigureModelDefinitions(const APreprocessor: IScriptTextPreprocessor;
+  const AParser: IModelDefinitionParser; const ASink: IModelDefinitionSink);
 begin
   modeldef_preprocessor := APreprocessor;
+  modeldef_parser := AParser;
+  modeldef_sink := ASink;
 end;
 
 //==============================================================================
@@ -294,43 +321,22 @@ const
   MODELDEFLUMPNAME = 'MODELDEF';
 
 //==============================================================================
-// SC_DoParseModelDefinition
 //
 // SC_ParseModelDefinition
-// JVAL: Parse MODELDEF LUMP
+//
+// JVAL: Parse a MODELDEF lump. The text is read by the parser of Libs\Models
+// (issue #177), the models, textures and states go to modeldef_sink.
 //
 //==============================================================================
-procedure SC_DoParseModelDefinition(const in_text: string);
+procedure SC_ParseModelDefinition(const in_text: string);
 var
-  sc: TScriptScanner;
-  tokens: TTokenList;
+  text: string;
   slist: TDStringList;
-  token: string;
-  token_idx: integer;
-  modelstate: modelstate_t;
-  modelitem: modelmanageritem_t;
-  modelpending: boolean;
-  statepending: boolean;
   i: integer;
 begin
-  tokens := TTokenList.Create;
-  modelitem.framemerge := TDStringList.Create;
-  tokens.Add('MODELDEF, MODELDEFINITION');
-  tokens.Add('STATE');
-  tokens.Add('OFFSET, ZOFFSET, OFFSETZ');
-  tokens.Add('SCALE');
-  tokens.Add('TEXTURE');
-  tokens.Add('FRAME, FRAME1, STARTFRAME');
-  tokens.Add('FRAME2, ENDFRAME, NEXTFRAME'); // JVAL: used from version 2.0.3.706 and up
-  tokens.Add('MODEL');
-  tokens.Add('FRAMEMERGE');
-  tokens.Add('TRANSPARENCY');
-  tokens.Add('XOFFSET, OFFSETX'); // 10
-  tokens.Add('YOFFSET, OFFSETY'); // 11
-  tokens.Add('XSCALE, SCALEX');   // 12
-  tokens.Add('YSCALE, SCALEY');   // 13
-  tokens.Add('ZSCALE, SCALEZ');   // 14
-  tokens.Add('PROC');             // 15
+  if (modeldef_preprocessor = nil) or (modeldef_parser = nil) or (modeldef_sink = nil) then
+    I_Error('SC_ParseModelDefinition(): the parser is not configured (ComposeEngine was not called)');
+  text := modeldef_preprocessor.Preprocess(in_text, false);
 
   if devparm then
   begin
@@ -339,7 +345,7 @@ begin
 
     slist := TDStringList.Create;
     try
-      slist.Text := in_text;
+      slist.Text := text;
       for i := 0 to slist.Count - 1 do
         printf('%s: %s'#13#10, [IntToStrZFill(6, i + 1), slist[i]]);
     finally
@@ -349,206 +355,7 @@ begin
     printf('--------'#13#10);
   end;
 
-  sc := TScriptScanner.Create(in_text, TEngineScannerLog.Create);
-
-  modelpending := false;
-  statepending := false;
-
-  while sc.GetString do
-  begin
-    token := strupper(sc.AsString);
-    token_idx := tokens.IndexOfToken(token);
-    case token_idx of
-      0: // MODEL DEFINITION
-        begin
-          modelpending := true;
-          modelitem.name := '';
-          modelitem.proc := '';
-          modelitem.xoffset := 0.0;
-          modelitem.yoffset := 0.0;
-          modelitem.zoffset := 0.0;
-          modelitem.xscale := 1.0;
-          modelitem.yscale := 1.0;
-          modelitem.zscale := 1.0;
-          modelitem.framemerge.Clear;
-          if not sc.GetString then
-          begin
-            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc.Line]);
-            break;
-          end;
-          modelitem.name := strupper(sc.AsString);
-
-          while sc.GetString do
-          begin
-            token := strupper(sc.AsString);
-            token_idx := tokens.IndexOfToken(token);
-            case token_idx of
-              2:  // Offset / zoffset
-                begin
-                  sc.MustGetFloat;
-                  modelitem.zoffset := sc.AsFloat;
-                end;
-             10:  // xoffset
-                begin
-                  sc.MustGetFloat;
-                  modelitem.xoffset := sc.AsFloat;
-                end;
-             11:  // yoffset
-                begin
-                  sc.MustGetFloat;
-                  modelitem.xoffset := sc.AsFloat;
-                end;
-              3:  // Scale
-                begin
-                  sc.MustGetFloat;
-                  modelitem.xscale := sc.AsFloat;
-                  modelitem.yscale := sc.AsFloat;
-                  modelitem.zscale := sc.AsFloat;
-                end;
-             12:  // xscale
-                begin
-                  sc.MustGetFloat;
-                  modelitem.xscale := sc.AsFloat;
-                end;
-             13:  // yscale
-                begin
-                  sc.MustGetFloat;
-                  modelitem.yscale := sc.AsFloat;
-                end;
-             14:  // zscale
-                begin
-                  sc.MustGetFloat;
-                  modelitem.zscale := sc.AsFloat;
-                end;
-              8:  // FRAMEMERGE
-                begin
-                  sc.MustGetString;
-                  modelitem.framemerge.Add(strupper(sc.AsString));
-                end;
-             15:  // PROC
-                begin
-                  sc.MustGetString;
-                  modelitem.proc := sc.AsString;
-                end;
-            else
-              begin
-                gld_AddModel(modelitem);
-                modelpending := false;
-                sc.UnGet;
-                break;
-              end;
-            end;
-          end;
-        end;
-
-      1: // STATE DEFINITION
-        begin
-          statepending := true;
-          ZeroMemory(@modelstate, SizeOf(modelstate_t));
-          modelitem.xoffset := 0.0;
-          modelitem.yoffset := 0.0;
-          modelitem.zoffset := 0.0;
-          modelitem.xscale := 1.0;
-          modelitem.yscale := 1.0;
-          modelitem.zscale := 1.0;
-          modelitem.framemerge.Clear;
-
-          modelstate.modelidx := -1;
-          modelstate.texture := -1;
-          modelstate.startframe := -1;
-          modelstate.endframe := -1;
-          modelstate.nextframe := -1; // JVAL: runtime only!
-          modelstate.transparency := 1.0;
-          if not sc.GetString then
-          begin
-            I_Warning('SC_ParseModelDefinition(): Token expected at line %d'#13#10, [sc.Line]);
-            break;
-          end;
-          modelstate.state := statenames.IndexOfToken(strupper(sc.AsString));
-          if modelstate.state < 0 then
-          begin
-            I_Warning('SC_ParseModelDefinition(): Unknown state "%s" at line %d'#13#10, [sc.AsString, sc.Line]);
-            modelstate.state := 0; // S_NULL
-          end;
-
-          while sc.GetString do
-          begin
-            token := strupper(sc.AsString);
-            token_idx := tokens.IndexOfToken(token);
-            case token_idx of
-              7:  // Model
-                begin
-                  sc.MustGetString;
-                  modelitem.name := strupper(sc.AsString);
-                  modelitem.proc := '';
-                  modelitem.xoffset := 0.0;
-                  modelitem.yoffset := 0.0;
-                  modelitem.zoffset := 0.0;
-                  modelitem.xscale := 1.0;
-                  modelitem.yscale := 1.0;
-                  modelitem.zscale := 1.0;
-                  modelstate.modelidx := gld_AddModel(modelitem);
-                end;
-              4:  // Texture
-                begin
-                  sc.MustGetString;
-                  modelstate.texture := gld_AddModelTexture(strupper(sc.AsString));
-                end;
-              5:  // startframe
-                begin
-                  sc.MustGetInteger;
-                  modelstate.startframe := sc.AsInteger;
-                  if modelstate.endframe < 0 then
-                    modelstate.endframe := modelstate.startframe;
-                end;
-              6:  // endframe
-                begin
-                  sc.MustGetInteger;
-                  modelstate.endframe := sc.AsInteger;
-                end;
-              9:  // transparency
-                begin
-                  sc.MustGetFloat;
-                  modelstate.transparency := sc.AsFloat;
-                end;
-            else
-              begin
-                gld_AddModelState(modelstate);
-                statepending := false;
-                sc.UnGet;
-                break;
-              end;
-            end;
-          end;
-        end;
-
-      else
-        begin
-          I_Warning('SC_ParseModelDefinition(): Unknown token "%s" at line %d'#13#10, [token, sc.Line]);
-        end;
-    end;
-  end;
-
-  if modelpending then
-    gld_AddModel(modelitem);
-  if statepending then
-    gld_AddModelState(modelstate);
-
-  sc.Free;
-  tokens.Free;
-  modelitem.framemerge.Free;
-end;
-
-//==============================================================================
-//
-// SC_ParseModelDefinition
-//
-//==============================================================================
-procedure SC_ParseModelDefinition(const in_text: string);
-begin
-  if modeldef_preprocessor = nil then
-    I_Error('SC_ParseModelDefinition(): the preprocessor is not configured (ComposeEngine was not called)');
-  SC_DoParseModelDefinition(modeldef_preprocessor.Preprocess(in_text, false));
+  modeldef_parser.Parse(text, modeldef_sink);
 end;
 
 //==============================================================================
