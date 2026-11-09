@@ -39,7 +39,8 @@ uses
   DelphiDoom.Radix.Context, DelphiDoom.Radix.Container, DelphiDoom.Radix.PaletteBuilder,
   DelphiDoom.Radix.PalettePart, DelphiDoom.Radix.TexturePart, DelphiDoom.Radix.FlatPart,
   DelphiDoom.Radix.GraphicsPart, DelphiDoom.Radix.SmallFontPart, DelphiDoom.Radix.LumpGroupPart,
-  DelphiDoom.Radix.Translator;
+  DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
+  DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.Translator;
 
 { TRadixFactory }
 
@@ -69,7 +70,12 @@ begin
      TRadixFlatPart.Create(LMatcher, True),
      TRadixGraphicsPart.Create,
      TRadixSmallFontPart.Create,
+     TRadixBigFontPart.Create(LMatcher),
+     TRadixDosFontPart.Create(LMatcher),
+     TRadixMenuTranslationPart.Create,
      TRadixLumpGroupPart.Music,
+     TRadixCockpitPart.Create,
+     TRadixSoundPart.Create,
      TRadixLumpGroupPart.MissionText,
      TRadixLumpGroupPart.MissionBriefing,
      TRadixLumpGroupPart.EndText],

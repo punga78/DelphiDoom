@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the radix library (DUnitX)                        }
 {                                                                              }
@@ -32,6 +32,16 @@ uses
   DelphiDoom.Radix.GraphicsPart in '..\Libs\Radix\DelphiDoom.Radix.GraphicsPart.pas',
   DelphiDoom.Radix.SmallFontPart in '..\Libs\Radix\DelphiDoom.Radix.SmallFontPart.pas',
   DelphiDoom.Radix.LumpGroupPart in '..\Libs\Radix\DelphiDoom.Radix.LumpGroupPart.pas',
+  DelphiDoom.Radix.Bitmap in '..\Libs\Radix\DelphiDoom.Radix.Bitmap.pas',
+  DelphiDoom.Radix.BitmapOps in '..\Libs\Radix\DelphiDoom.Radix.BitmapOps.pas',
+  DelphiDoom.Radix.FontData in '..\Libs\Radix\DelphiDoom.Radix.FontData.pas',
+  DelphiDoom.Radix.PerlinNoise in '..\Libs\Radix\DelphiDoom.Radix.PerlinNoise.pas',
+  DelphiDoom.Radix.FontTinter in '..\Libs\Radix\DelphiDoom.Radix.FontTinter.pas',
+  DelphiDoom.Radix.BigFontPart in '..\Libs\Radix\DelphiDoom.Radix.BigFontPart.pas',
+  DelphiDoom.Radix.DosFontPart in '..\Libs\Radix\DelphiDoom.Radix.DosFontPart.pas',
+  DelphiDoom.Radix.MenuTranslationPart in '..\Libs\Radix\DelphiDoom.Radix.MenuTranslationPart.pas',
+  DelphiDoom.Radix.CockpitPart in '..\Libs\Radix\DelphiDoom.Radix.CockpitPart.pas',
+  DelphiDoom.Radix.SoundPart in '..\Libs\Radix\DelphiDoom.Radix.SoundPart.pas',
   DelphiDoom.Radix.Translator in '..\Libs\Radix\DelphiDoom.Radix.Translator.pas',
   DelphiDoom.Radix.Factory in '..\Libs\Radix\DelphiDoom.Radix.Factory.pas',
   DelphiDoom.Tests.GameData.Scenarios in 'Source\DelphiDoom.Tests.GameData.Scenarios.pas',
@@ -43,6 +53,10 @@ uses
   DelphiDoom.Tests.Radix.GraphicsPart in 'Source\DelphiDoom.Tests.Radix.GraphicsPart.pas',
   DelphiDoom.Tests.Radix.SmallFontPart in 'Source\DelphiDoom.Tests.Radix.SmallFontPart.pas',
   DelphiDoom.Tests.Radix.LumpGroupPart in 'Source\DelphiDoom.Tests.Radix.LumpGroupPart.pas',
+  DelphiDoom.Tests.Radix.Bitmap in 'Source\DelphiDoom.Tests.Radix.Bitmap.pas',
+  DelphiDoom.Tests.Radix.BitmapOps in 'Source\DelphiDoom.Tests.Radix.BitmapOps.pas',
+  DelphiDoom.Tests.Radix.FontParts in 'Source\DelphiDoom.Tests.Radix.FontParts.pas',
+  DelphiDoom.Tests.Radix.CockpitSoundParts in 'Source\DelphiDoom.Tests.Radix.CockpitSoundParts.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var
@@ -79,3 +93,4 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
