@@ -12,7 +12,7 @@ Qui sta tutto cio' che prima era nella cartella `OPENGL\` della radice (che non 
 
 Regole:
 
-- Le unit non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Libs\OpenGl\Binding\dglOpenGL.pas`.
+- Le unit (tranne gl_voxels.pas, fetta 2: l'ottimizzatore di mesh e in Libs\Voxel) non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Libs\OpenGl\Binding\dglOpenGL.pas`.
 - Le chiamate GL restano chiamate dirette a `dglOpenGL`; le interfacce stanno a granularita di fotogramma, mai per vertice o per chiamata.
 - Le unit di `Legacy` seguono la regola del codice storico (niente rinomina ne riformattazione in massa).
 
