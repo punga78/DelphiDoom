@@ -11,9 +11,73 @@ unit DelphiDoom.Endoom.Intf;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  DelphiDoom.Endoom.Types;
 
 type
+  /// <summary>
+  ///   The text screen that a tool edits: 80x25 cells, the same 4000 bytes as the lump (a character
+  ///   and an attribute per cell, row after row). A cell outside of the screen raises
+  ///   EEndoomException; so does a color that does not exist (a foreground is 0..15, a background
+  ///   0..7: the same indices as ENDOOM_COLORS)
+  /// </summary>
+  IEndoomScreen = interface
+    ['{B4D82A6F-31C7-49E5-8A0B-6F5C9E1D2073}']
+    function GetCell(AX, AY: Integer): TEndoomCell;
+    procedure SetCell(AX, AY: Integer; const ACell: TEndoomCell);
+    function GetCharacter(AX, AY: Integer): Byte;
+    procedure SetCharacter(AX, AY: Integer; ACode: Byte);
+    function GetForeground(AX, AY: Integer): Integer;
+    procedure SetForeground(AX, AY: Integer; AColor: Integer);
+    function GetBackground(AX, AY: Integer): Integer;
+    procedure SetBackground(AX, AY: Integer; AColor: Integer);
+    function GetBlink(AX, AY: Integer): Boolean;
+    procedure SetBlink(AX, AY: Integer; ABlink: Boolean);
+    /// <summary>Every cell becomes 0, 0: no character, black on black, no blinking</summary>
+    procedure Clear;
+    /// <summary>The same background (0..7) for the cells of a rectangle; the part outside is ignored</summary>
+    procedure FillBackground(const ARect: TEndoomRect; AColor: Integer);
+    /// <summary>The same foreground (0..15) for the cells of a rectangle; the part outside is ignored</summary>
+    procedure FillForeground(const ARect: TEndoomRect; AColor: Integer);
+    /// <summary>The same character for the cells of a rectangle; the part outside is ignored</summary>
+    procedure FillCharacter(const ARect: TEndoomRect; ACode: Byte);
+    /// <summary>Takes the cells of a rectangle (the part outside of the screen is left out)</summary>
+    function CopyBlock(const ARect: TEndoomRect): TEndoomBlock;
+    /// <summary>Puts a block with its top left corner in a cell; what falls outside is dropped</summary>
+    procedure PasteBlock(const ABlock: TEndoomBlock; AX, AY: Integer);
+    /// <summary>The 4000 bytes of the lump</summary>
+    function ToBytes: TBytes;
+    /// <summary>
+    ///   Takes the first 4000 bytes of a lump or of a file; fewer bytes are not a text screen and
+    ///   raise EEndoomException (the old tool kept the old cells for the missing bytes)
+    /// </summary>
+    procedure LoadFromBytes(const ABytes: TBytes);
+    /// <summary>This screen becomes a copy of another (the old AssignTo did it the other way round)</summary>
+    procedure AssignFrom(const ASource: IEndoomScreen);
+    function IsSameAs(const AOther: IEndoomScreen): Boolean;
+  end;
+
+  /// <summary>Where the picture of the font (DOSFONT: 128x128 bytes, 0 is the background) comes from</summary>
+  IEndoomFontSource = interface
+    ['{5A93E0C8-D17B-4F26-92A4-0B7E8C3D6F15}']
+    function GetFont: TBytes;
+  end;
+
+  /// <summary>
+  ///   The picture of a text screen for a window or for a file: 640x200 pixels of $FFRRGGBB with
+  ///   the colors of ENDOOM_COLORS
+  /// </summary>
+  IEndoomScreenImage = interface
+    ['{E81F4D37-6A92-4C0B-B5D8-3F2A9C7E1046}']
+    /// <summary>
+    ///   Draws the screen. ABlinkVisible is the same flag as in IEndoomRenderer: true shows every
+    ///   character, false hides those of the cells that blink. The old TEndScreen.GetBitmap had
+    ///   the opposite flag: its blink = true was ABlinkVisible = false
+    /// </summary>
+    procedure Render(const AScreen: IEndoomScreen; const AFont: TBytes; ABlinkVisible: Boolean;
+      var APixels: TArray<Cardinal>);
+  end;
+
   /// <summary>
   ///   Draws the text screen shown at the end of the game (80x25 cells, a character and an
   ///   attribute each) in a picture of 640x200 pixels. It knows nothing of WADs or of video:
