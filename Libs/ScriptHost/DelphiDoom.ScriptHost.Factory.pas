@@ -16,7 +16,8 @@ uses
   DelphiDoom.ScriptHost.Fixed.Functions,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Functions,
-  DelphiDoom.ScriptHost.System.Intf;
+  DelphiDoom.ScriptHost.System.Intf,
+  DelphiDoom.ScriptHost.Variables.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the script host</summary>
@@ -33,12 +34,16 @@ type
     /// <summary>A unit of script whose functions a procedure writes</summary>
     class function CreateCallbackGroup(const AUnitName: string;
       const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup; static;
+    /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
+    class function CreateVariables(const AFiles: IScriptVariablesFiles;
+      const AFailure: IScriptVariablesFailure): IScriptVariables; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.ScriptHost.Registry;
+  DelphiDoom.ScriptHost.Registry,
+  DelphiDoom.ScriptHost.Variables;
 
 { TScriptHostFactory }
 
@@ -64,6 +69,12 @@ class function TScriptHostFactory.CreateCallbackGroup(const AUnitName: string;
   const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup;
 begin
   Result := TScriptCallbackGroup.Create(AUnitName, ADescribe);
+end;
+
+class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;
+  const AFailure: IScriptVariablesFailure): IScriptVariables;
+begin
+  Result := TScriptVariables.Create(AFiles, AFailure);
 end;
 
 end.

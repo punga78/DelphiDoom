@@ -185,6 +185,8 @@ uses
   DelphiDoom.Engine.Script.Environment,
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
+  DelphiDoom.Engine.Script.VariablesFailure,
+  DelphiDoom.Engine.Script.VariablesFiles,
   w_utils,
 {$IFDEF HEXEN}
   g_demo,
@@ -941,7 +943,8 @@ begin
   P_ConfigureFiles(LFiles);
   M_ConfigureFiles(LFiles);
 {$ENDIF}
-  PS_ConfigureFiles(LFiles);
+  PS_ConfigureVariables(TEngineScriptVariablesFiles.Create(LFiles),
+    TEngineScriptVariablesFailure.Create);
   W_ConfigureFiles(LFiles);
   Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create(ASaveFileNames), AStore);
   I_ConfigureTempFiles(Result);
