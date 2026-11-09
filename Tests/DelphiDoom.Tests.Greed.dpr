@@ -65,6 +65,10 @@ uses
   DelphiDoom.Greed.Terrain in '..\Libs\Greed\DelphiDoom.Greed.Terrain.pas',
   DelphiDoom.Greed.Player.Intf in '..\Libs\Greed\DelphiDoom.Greed.Player.Intf.pas',
   DelphiDoom.Greed.PlayerRules in '..\Libs\Greed\DelphiDoom.Greed.PlayerRules.pas',
+  DelphiDoom.Greed.Actor.Types in '..\Libs\Greed\DelphiDoom.Greed.Actor.Types.pas',
+  DelphiDoom.Greed.LinkedPool in '..\Libs\Greed\DelphiDoom.Greed.LinkedPool.pas',
+  DelphiDoom.Greed.Elevator.Intf in '..\Libs\Greed\DelphiDoom.Greed.Elevator.Intf.pas',
+  DelphiDoom.Greed.ElevatorRules in '..\Libs\Greed\DelphiDoom.Greed.ElevatorRules.pas',
   DelphiDoom.Greed.Composition in '..\Greed\DelphiDoom.Greed.Composition.pas',
   DelphiDoom.Tests.Greed.Builders in 'Source\DelphiDoom.Tests.Greed.Builders.pas',
   DelphiDoom.Tests.Greed.RealData in 'Source\DelphiDoom.Tests.Greed.RealData.pas',
@@ -96,6 +100,7 @@ uses
   DelphiDoom.Tests.Greed.Settings in 'Source\DelphiDoom.Tests.Greed.Settings.pas',
   DelphiDoom.Tests.Greed.Terrain in 'Source\DelphiDoom.Tests.Greed.Terrain.pas',
   DelphiDoom.Tests.Greed.PlayerRules in 'Source\DelphiDoom.Tests.Greed.PlayerRules.pas',
+  DelphiDoom.Tests.Greed.Actors in 'Source\DelphiDoom.Tests.Greed.Actors.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var
