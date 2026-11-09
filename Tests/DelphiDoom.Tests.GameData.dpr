@@ -20,9 +20,11 @@ uses
   DelphiDoom.GameData.PatchBuilder in '..\Libs\GameData\DelphiDoom.GameData.PatchBuilder.pas',
   DelphiDoom.GameData.WadComposer in '..\Libs\GameData\DelphiDoom.GameData.WadComposer.pas',
   DelphiDoom.GameData.Factory in '..\Libs\GameData\DelphiDoom.GameData.Factory.pas',
+  DelphiDoom.GameData.Aliases in '..\Libs\GameData\DelphiDoom.GameData.Aliases.pas',
   DelphiDoom.Tests.GameData.Scenarios in 'Source\DelphiDoom.Tests.GameData.Scenarios.pas',
   DelphiDoom.Tests.GameData.PatchBuilder in 'Source\DelphiDoom.Tests.GameData.PatchBuilder.pas',
-  DelphiDoom.Tests.GameData.WadComposer in 'Source\DelphiDoom.Tests.GameData.WadComposer.pas';
+  DelphiDoom.Tests.GameData.WadComposer in 'Source\DelphiDoom.Tests.GameData.WadComposer.pas',
+  DelphiDoom.Tests.GameData.Aliases in 'Source\DelphiDoom.Tests.GameData.Aliases.pas';
 
 var
   Runner: ITestRunner;

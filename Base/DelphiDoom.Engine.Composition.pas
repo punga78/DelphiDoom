@@ -21,6 +21,7 @@ implementation
 
 uses
   System.SysUtils,
+  DelphiDoom.GameData.Aliases,
   DelphiDoom.Logging.Factory,
   DelphiDoom.Logging.Intf,
   DelphiDoom.Engine.Log.Sink,
@@ -581,7 +582,7 @@ procedure ComposeDehacked(const ALog: ILog; const AEvaluator: IContextExpression
 var
   LGame: TDehackedGame;
 begin
-  if not TDehackedGames.TryFromName(_GAME, LGame) then
+  if not TDehackedGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Dehacked), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
   // TEngineDehackedApplier is the class of the game (one unit with this name in each folder)
   DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog),
@@ -689,7 +690,7 @@ var
   LUdmf: ILevelUdmf;
   LLoader: ILevelLoader;
 begin
-  if not TUdmfGames.TryFromName(_GAME, LGame) then
+  if not TUdmfGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Udmf), LGame) then
     AShutdown.Fail(Format('ComposeEngine(): the game %s has no format of text maps', [_GAME]));
   LUdmf := TEngineUdmfMapLoader.Create(
     TUdmfFactory.CreateConverter(LGame, TEngineUdmfSoundResolver.Create, ALog), AWadServices,
@@ -916,7 +917,7 @@ procedure ComposeLights(const ARandom: IGameRandom);
 var
   LGame: TLightGame;
 begin
-  if not TLightGames.TryFromName(_GAME, LGame) then
+  if not TLightGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Lights), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of lights', [_GAME]);
   P_ConfigureLights(ARandom, TLightFactory.CreateFlickerRules(LGame),
     TLightGames.SequenceProfile(LGame), TEngineLightPhaseSpawner.Create);
@@ -934,7 +935,7 @@ var
 begin
   LMachine := nil;
 {$IFNDEF HEXEN}
-  if not TPlatGames.TryFromName(_GAME, LGame) then
+  if not TPlatGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Platforms), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of platforms', [_GAME]);
   LMachine := TPlatFactory.CreateMachine(LGame, TEnginePlatHost.Create,
     TEnginePlatSurroundings.Create, ARandom);
@@ -962,7 +963,7 @@ var
   LUdmfRunner: IDoorRunner;
   LUdmfSpawner: IDoorSpawner;
 begin
-  if not TDoorProfiles.TryGameFromName(_GAME, LGame) then
+  if not TDoorProfiles.TryGameFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Doors), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of doors', [_GAME]);
 
   LClassicRunner := nil;
@@ -1057,7 +1058,7 @@ var
   LLumps: IEngineActorDefLumps;
   LLumpsObject: TEngineActorDefLumps;
 begin
-  if not TActorDefProfiles.TryFromName(_GAME, LGame) then
+  if not TActorDefProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.ActorDef), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of ACTORDEF', [_GAME]);
   LProfile := TActorDefProfiles.ForGame(LGame);
   LCatalog := TEngineActorDefCatalog.Create;
@@ -1101,7 +1102,7 @@ var
   LNames: TEngineExportNames;
   LNamesRef: IInterface;
 begin
-  if not TExportProfiles.TryFromName(_GAME, LGame) then
+  if not TExportProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.TableExport), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of the table exports', [_GAME]);
   LThings := TEngineExportThings.Create(False);
   LStates := TEngineExportStates.Create;
@@ -1126,7 +1127,7 @@ var
   LGame: TIwadGame;
   LServices: TIwadServices;
 begin
-  if not TIwadGames.TryFromName(_GAME, LGame) then
+  if not TIwadGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Iwad), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of IWADs', [_GAME]);
   LServices := TIwadFactory.CreateWindowsServices(LGame, TEngineIwadOptions.Create);
   D_ConfigureIwad(LServices.Locator, LServices.Identifier);
