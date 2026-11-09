@@ -1383,7 +1383,6 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
 - `Libs\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
 - `Libs\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
-- `Libs\ScriptHost\psi_globals.pas`: FreeHashList
 - `Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
 - `Strife\g_game.pas`: G_DoLoadGame
 - `Strife\m_menu.pas`: M_StringWidth2, M_StringWidth3, M_WriteText2, M_WriteText3
