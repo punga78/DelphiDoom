@@ -35,6 +35,7 @@ type
     class procedure Mix(var AHash: UInt64; const AData; ASize: Integer); static;
     procedure DumpGlobe;
     procedure DumpMapData;
+    procedure DumpPicks;
     procedure DumpConverter;
     procedure DumpConstants;
     procedure DumpSettings;
@@ -55,7 +56,8 @@ uses
   DelphiDoom.XcomMod.RuleConverter, DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings,
   System.Generics.Defaults, DelphiDoom.XcomMod.RuleGlobe, DelphiDoom.XcomMod.Polygon, DelphiDoom.XcomMod.Polyline,
   DelphiDoom.XcomMod.Texture, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet,
-  DelphiDoom.XcomMod.MapDataLoader;
+  DelphiDoom.XcomMod.MapDataLoader, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.WeightedOptions,
+  DelphiDoom.XcomMod.RuleMissionScript, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleTerrain;
 
 { TXcomModDumpMisc }
 
@@ -69,7 +71,7 @@ end;
 class function TXcomModDumpMisc.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('ufopaedia', 'mapScripts', 'mcdPatches', 'extraSprites', 'extraSounds',
-    'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures', 'globeTerrains', 'mapData',
+    'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures', 'globeTerrains', 'mapData', 'picks',
     'converter', 'constants', 'settings', 'startingBase', 'indexes');
 end;
 
@@ -409,6 +411,112 @@ begin
   end;
 end;
 
+procedure TXcomModDumpMisc.DumpPicks;
+const
+  MONTHS: array[0..5] of Integer = (0, 1, 5, 12, 24, 48);
+  TYPE_MONTHS: array[0..3] of Integer = (-3, 0, 7, 30);
+var
+  LRandom: IXcomRandom;
+  LIndex, LType, LMonth, LCommand, LStep, LTerrain: Integer;
+  LRule: TXcomRuleMissionScript;
+  LMonthList: TList<Cardinal>;
+  LWeights: TObjectList<TXcomWeightedOptions>;
+  LName: string;
+  LCommands: TObjectList<TXcomMapScript>;
+  LScript: TXcomMapScript;
+  LTerrainRule, LFound: TXcomRuleTerrain;
+  LGroups, LBlocks: TArray<Integer>;
+  LText: string;
+  LBlock: TXcomMapBlock;
+  function AtOrBefore(AMonths: TList<Cardinal>; AMonth: Integer): Boolean;
+  var
+    LEntry: Cardinal;
+  begin
+    for LEntry in AMonths do
+      if LEntry <= Cardinal(AMonth) then
+        Exit(True);
+    Result := False;
+  end;
+begin
+  LRandom := TXcomRandom.Create(176);
+  for LIndex := 0 to FMod.MissionScripts.Count - 1 do
+  begin
+    LRule := FMod.MissionScripts.Rule(LIndex);
+    FWriter.Begin_('picks', 'mission|' + FMod.MissionScripts.Name(LIndex));
+    for LType := 0 to 2 do
+    begin
+      case LType of
+        0: begin LMonthList := LRule.RegionMonths; LWeights := LRule.RegionWeights; end;
+        1: begin LMonthList := LRule.MissionMonths; LWeights := LRule.MissionWeights; end;
+      else
+        LMonthList := LRule.RaceMonths;
+        LWeights := LRule.RaceWeights;
+      end;
+      if LWeights.Count = 0 then
+        Continue;
+      for LMonth in MONTHS do
+      begin
+        if not AtOrBefore(LMonthList, LMonth) then
+          Continue;
+        FWriter.Str('gen' + IntToStr(LType) + '_' + IntToStr(LMonth), LRule.Generate(Cardinal(LMonth), LType, LRandom));
+      end;
+    end;
+    for LMonth in TYPE_MONTHS do
+    begin
+      if LRule.MissionWeights.Count > 0 then
+        FWriter.Strs('types' + IntToStr(LMonth), LRule.GetMissionTypes(LMonth));
+      if LRule.RegionWeights.Count > 0 then
+        FWriter.Strs('regions' + IntToStr(LMonth), LRule.GetRegions(LMonth));
+    end;
+  end;
+  for LIndex := 0 to FMod.MapScripts.Count - 1 do
+  begin
+    LName := FMod.MapScripts.Key(LIndex);
+    LCommands := FMod.MapScripts.Value(LIndex);
+    LFound := nil;
+    for LTerrain := 0 to FMod.Terrains.Count - 1 do
+    begin
+      LTerrainRule := FMod.Terrains.Rule(LTerrain);
+      if LTerrainRule.Script = LName then
+      begin
+        LFound := LTerrainRule;
+        Break;
+      end;
+    end;
+    for LCommand := 0 to LCommands.Count - 1 do
+    begin
+      LScript := LCommands[LCommand];
+      FWriter.Begin_('picks', 'map|' + LName + '|' + IntToStr(LCommand));
+      LScript.Init;
+      SetLength(LGroups, 6);
+      for LStep := 0 to 5 do
+        LGroups[LStep] := LScript.GetGroupNumber(LRandom);
+      LScript.Init;
+      SetLength(LBlocks, 6);
+      for LStep := 0 to 5 do
+        LBlocks[LStep] := LScript.GetBlockNumber(LRandom);
+      FWriter.Ints('groups', LGroups);
+      FWriter.Ints('blocks', LBlocks);
+      if Assigned(LFound) then
+      begin
+        LScript.Init;
+        LText := '[';
+        for LStep := 0 to 3 do
+        begin
+          LBlock := LScript.GetNextBlock(LFound, LRandom);
+          if LStep > 0 then
+            LText := LText + ',';
+          if Assigned(LBlock) then
+            LText := LText + TXcomDumpWriter.Quote(LBlock.Name)
+          else
+            LText := LText + TXcomDumpWriter.Quote('0');
+        end;
+        FWriter.Line('next', LText + ']');
+      end;
+    end;
+  end;
+end;
+
 procedure TXcomModDumpMisc.DumpMapData;
 const
   FNV_BASIS: UInt64 = 14695981039346656037;
@@ -736,6 +844,7 @@ begin
   DumpVideos;
   DumpGlobe;
   DumpMapData;
+  DumpPicks;
   DumpConverter;
   DumpConstants;
   DumpSettings;

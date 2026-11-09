@@ -47,6 +47,7 @@
 #include "Mod/MapScript.h"
 #include "Battlescape/Position.h"
 #include "Mod/MapBlock.h"
+#include "Engine/RNG.h"
 #include "Mod/Unit.h"
 #include "Mod/SoldierNamePool.h"
 #include "Mod/AlienDeployment.h"

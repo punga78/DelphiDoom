@@ -111,6 +111,58 @@ static void DumpTerrains(Mod* m) {
   for (auto& p : m->_terrains) { Begin("terrains", p.first); DumpTerrainBody(p.second); }
 }
 
+// The picks of the mission scripts and map scripts with the generator of the game seeded with 176. Both sides make the
+// same calls in the same order. Calls that the C++ leaves undefined (no weights for the month) are not made
+static bool HasWeightAtOrBefore(const std::vector<std::pair<size_t, WeightedOptions*> >& v, size_t month) {
+  for (size_t i = 0; i < v.size(); i++) if (v[i].first <= month) return true;
+  return false;
+}
+static void DumpPicks(Mod* m) {
+  RNG::setSeed(176);
+  static const int months[] = {0, 1, 5, 12, 24, 48};
+  static const int typeMonths[] = {-3, 0, 7, 30};
+  for (auto& p : m->_missionScripts) {
+    RuleMissionScript* r = p.second;
+    Begin("picks", "mission|" + p.first);
+    for (int t = 0; t < 3; t++) {
+      const std::vector<std::pair<size_t, WeightedOptions*> >& v = t == 0 ? r->_regionWeights : (t == 1 ? r->_missionWeights : r->_raceWeights);
+      if (v.empty()) continue;
+      for (int mo : months) {
+        if (!HasWeightAtOrBefore(v, (size_t)mo)) continue;
+        Line(("gen" + std::to_string(t) + "_" + std::to_string(mo)).c_str(), V(r->generate((size_t)mo, (GenerationType)t)));
+      }
+    }
+    for (int mo : typeMonths) {
+      if (!r->_missionWeights.empty()) Line(("types" + std::to_string(mo)).c_str(), V(r->getMissionTypes(mo)));
+      if (!r->_regionWeights.empty()) Line(("regions" + std::to_string(mo)).c_str(), V(r->getRegions(mo)));
+    }
+  }
+  for (auto& p : m->_mapScripts) {
+    RuleTerrain* terrain = 0;
+    for (auto& t : m->_terrains) if (t.second->_script == p.first) { terrain = t.second; break; }
+    for (size_t i = 0; i < p.second.size(); i++) {
+      MapScript* c = p.second[i];
+      Begin("picks", "map|" + p.first + "|" + std::to_string(i));
+      c->init();
+      std::vector<int> groups, blocks;
+      for (int k = 0; k < 6; k++) groups.push_back(c->getGroupNumber());
+      c->init();
+      for (int k = 0; k < 6; k++) blocks.push_back(c->getBlockNumber());
+      Line("groups", V(groups));
+      Line("blocks", V(blocks));
+      if (terrain) {
+        c->init();
+        std::string names = "[";
+        for (int k = 0; k < 4; k++) {
+          MapBlock* b = c->getNextBlock(terrain);
+          names += (k ? "," : "") + V(b ? b->getName() : std::string("0"));
+        }
+        Line("next", names + "]");
+      }
+    }
+  }
+}
+
 // loadData of every set (MapDataSet::loadData with the patch of the mods): one hash of all the parts of a set and the
 // first and last parts in full. FNV-1a 64 over the ints of every part in a fixed order
 static void DumpMapData(Mod* m) {
@@ -563,6 +615,7 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("terrains")) DumpTerrains(m);
   if (Wanted("mapDataSets")) DumpMapDataSets(m);
   if (Wanted("mapData")) DumpMapData(m);
+  if (Wanted("picks")) DumpPicks(m);
   if (Wanted("armors")) DumpArmors(m);
   if (Wanted("soldiers")) DumpSoldiers(m);
   if (Wanted("units")) DumpUnits(m);

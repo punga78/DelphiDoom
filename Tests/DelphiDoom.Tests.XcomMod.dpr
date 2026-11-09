@@ -80,6 +80,7 @@ uses
   DelphiDoom.Tests.XcomMod.RealMod in 'Source\DelphiDoom.Tests.XcomMod.RealMod.pas',
   DelphiDoom.Tests.XcomMod.Ruleset in 'Source\DelphiDoom.Tests.XcomMod.Ruleset.pas',
   DelphiDoom.Tests.XcomMod.MapData in 'Source\DelphiDoom.Tests.XcomMod.MapData.pas',
+  DelphiDoom.Tests.XcomMod.Picks in 'Source\DelphiDoom.Tests.XcomMod.Picks.pas',
   DelphiDoom.Tests.XcomMod.Globe in 'Source\DelphiDoom.Tests.XcomMod.Globe.pas',
   DelphiDoom.Tests.XcomMod.ModOffsets in 'Source\DelphiDoom.Tests.XcomMod.ModOffsets.pas',
   DelphiDoom.Tests.XcomMod.Scenario in 'Source\DelphiDoom.Tests.XcomMod.Scenario.pas',

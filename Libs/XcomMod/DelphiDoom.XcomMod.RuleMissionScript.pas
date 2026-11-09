@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.Types,
-  DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.WeightedOptions;
+  DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.WeightedOptions, DelphiDoom.XcomMod.Random;
 
 type
   /// <summary>
@@ -42,6 +42,11 @@ type
     FResearchTriggers: TXcomStringMap<Boolean>;
     FUseTable: Boolean;
     FSiteType: Boolean;
+    const
+      /// <summary>GenerationType</summary>
+      GEN_REGION = 0;
+      GEN_MISSION = 1;
+      GEN_RACE = 2;
     class procedure AppendWeights(const ANode: IYamlNode; AMonths: TList<Cardinal>;
       AWeights: TObjectList<TXcomWeightedOptions>); static;
     procedure ReadResearchTriggers(const ANode: IYamlNode);
@@ -55,6 +60,20 @@ type
     procedure Load(const ANode: IYamlNode);
     /// <summary>getAllMissionTypes: every mission of every month, without repeats, in the order of the names</summary>
     function AllMissionTypes: TArray<string>;
+    /// <summary>
+    ///   getMissionTypes: the missions of the last set of weights that starts at or before the month (the
+    ///   first set if the month is earlier than all). A script with no mission weights is undefined in the C++:
+    ///   EXcomModException
+    /// </summary>
+    function GetMissionTypes(AMonth: Integer): TArray<string>;
+    /// <summary>getRegions: as GetMissionTypes for the weights of the regions</summary>
+    function GetRegions(AMonth: Integer): TArray<string>;
+    /// <summary>
+    ///   generate: picks a region, mission or race (AType: 0 region, 1 mission, 2 race: GenerationType) from the
+    ///   last set of weights at or before the month. No set at or before the month (the C++ reads past the
+    ///   start of the vector) or no set at all is EXcomModException
+    /// </summary>
+    function Generate(AMonthsPassed: Cardinal; AType: Integer; const ARandom: IXcomRandom): string;
     function HasMissionWeights: Boolean;
     function HasRaceWeights: Boolean;
     function HasRegionWeights: Boolean;
@@ -86,6 +105,9 @@ implementation
 
 uses
   System.Generics.Defaults, DelphiDoom.Yaml.Types;
+
+const
+  SNoWeights = 'Xcom: mission script has no weights for the month';
 
 resourcestring
   SScriptNoVarName = 'Error in mission script: %s: no varName provided for a script with maxRuns or repeatAvoidance.';
@@ -214,6 +236,65 @@ begin
   finally
     LTypes.Free;
   end;
+end;
+
+function TXcomRuleMissionScript.GetMissionTypes(AMonth: Integer): TArray<string>;
+var
+  LIndex: Integer;
+begin
+  if FMissionWeights.Count = 0 then
+    raise EXcomModException.Create(SNoWeights);
+  LIndex := FMissionWeights.Count - 1;
+  // while (month < (int)first): the walk stops at the first set if the month is earlier than all
+  while (LIndex > 0) and (AMonth < Integer(FMissionMonths[LIndex])) do
+    Dec(LIndex);
+  Result := FMissionWeights[LIndex].Names;
+end;
+
+function TXcomRuleMissionScript.GetRegions(AMonth: Integer): TArray<string>;
+var
+  LIndex: Integer;
+begin
+  if FRegionWeights.Count = 0 then
+    raise EXcomModException.Create(SNoWeights);
+  LIndex := FRegionWeights.Count - 1;
+  while (LIndex > 0) and (AMonth < Integer(FRegionMonths[LIndex])) do
+    Dec(LIndex);
+  Result := FRegionWeights[LIndex].Names;
+end;
+
+function TXcomRuleMissionScript.Generate(AMonthsPassed: Cardinal; AType: Integer;
+  const ARandom: IXcomRandom): string;
+var
+  LMonths: TList<Cardinal>;
+  LWeights: TObjectList<TXcomWeightedOptions>;
+  LIndex: Integer;
+begin
+  case AType of
+    GEN_RACE:
+      begin
+        LMonths := FRaceMonths;
+        LWeights := FRaceWeights;
+      end;
+    GEN_REGION:
+      begin
+        LMonths := FRegionMonths;
+        LWeights := FRegionWeights;
+      end;
+  else
+    LMonths := FMissionMonths;
+    LWeights := FMissionWeights;
+  end;
+  if LWeights.Count = 0 then
+    raise EXcomModException.Create(SNoWeights);
+  LIndex := LWeights.Count - 1;
+  while AMonthsPassed < LMonths[LIndex] do
+  begin
+    Dec(LIndex);
+    if LIndex < 0 then
+      raise EXcomModException.Create(SNoWeights);
+  end;
+  Result := LWeights[LIndex].Choose(ARandom);
 end;
 
 function TXcomRuleMissionScript.HasMissionWeights: Boolean;

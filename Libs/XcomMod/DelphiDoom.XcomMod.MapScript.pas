@@ -10,7 +10,8 @@ unit DelphiDoom.XcomMod.MapScript;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.NodeReader;
+  System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.NodeReader,
+  DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleTerrain;
 
 type
   /// <summary>SDL_Rect of a script: a rectangle of blocks of the map</summary>
@@ -80,6 +81,13 @@ type
     FDirection: Integer;
     FTunnelData: TXcomTunnelData;
     FUfoName: string;
+    FCumulativeFrequency: Integer;
+    FBlocksTemp: TArray<Integer>;
+    FGroupsTemp: TArray<Integer>;
+    FFrequenciesTemp: TArray<Integer>;
+    FMaxUsesTemp: TArray<Integer>;
+    class procedure Erase(var AValues: TArray<Integer>; AIndex: Integer); static;
+    function Pick(var AItems: TArray<Integer>; const ARandom: IXcomRandom): Integer;
     procedure ReadRects(const ANode: IYamlNode);
     procedure ReadTunnel(const ANode: IYamlNode);
     procedure ReadSizes(const ANode: IYamlNode);
@@ -95,6 +103,24 @@ type
     ///   tunnel or line without direction are EXcomModException with the messages of the C++
     /// </summary>
     procedure Load(const ANode: IYamlNode);
+    /// <summary>
+    ///   init: starts a battle with the full lists of groups, blocks, frequencies and uses (the temporary lists
+    ///   that the picks shrink). Call it before GetNextBlock
+    /// </summary>
+    procedure Init;
+    /// <summary>
+    ///   getGroupNumber: a group by frequency (MT_DEFAULT if the command has no groups, MT_UNDEFINED if every
+    ///   frequency is used up); a group with a use limit leaves the list when it is used up. Lists of
+    ///   different lengths (the C++ throws out_of_range from at()) are EXcomModException
+    /// </summary>
+    function GetGroupNumber(const ARandom: IXcomRandom): Integer;
+    /// <summary>getBlockNumber: like GetGroupNumber for the numbers of the blocks</summary>
+    function GetBlockNumber(const ARandom: IXcomRandom): Integer;
+    /// <summary>
+    ///   getNextBlock: the next block of the terrain for the command: a random one of the size and group if
+    ///   the command has no blocks, otherwise the one picked by number; nil if the number is out of the terrain
+    /// </summary>
+    function GetNextBlock(const ATerrain: TXcomRuleTerrain; const ARandom: IXcomRandom): TXcomMapBlock;
     property CommandType: Integer read FType;
     property Rects: TArray<TXcomScriptRect> read FRects;
     property Groups: TArray<Integer> read FGroups;
@@ -115,6 +141,11 @@ type
   end;
 
 implementation
+
+const
+  /// <summary>MapBlockType: MT_UNDEFINED and MT_DEFAULT</summary>
+  MT_UNDEFINED = -1;
+  MT_DEFAULT = 0;
 
 resourcestring
   SMapScriptUnknown = 'Unknown command: %s';
@@ -153,6 +184,82 @@ destructor TXcomMapScript.Destroy;
 begin
   FTunnelData.Free;
   inherited Destroy;
+end;
+
+class procedure TXcomMapScript.Erase(var AValues: TArray<Integer>; AIndex: Integer);
+begin
+  Delete(AValues, AIndex, 1);
+end;
+
+procedure TXcomMapScript.Init;
+var
+  LFrequency: Integer;
+begin
+  FCumulativeFrequency := 0;
+  for LFrequency in FFrequencies do
+    Inc(FCumulativeFrequency, LFrequency);
+  FBlocksTemp := Copy(FBlocks);
+  FGroupsTemp := Copy(FGroups);
+  FFrequenciesTemp := Copy(FFrequencies);
+  FMaxUsesTemp := Copy(FMaxUses);
+end;
+
+function TXcomMapScript.Pick(var AItems: TArray<Integer>; const ARandom: IXcomRandom): Integer;
+var
+  LPick, LIndex: Integer;
+begin
+  if FCumulativeFrequency > 0 then
+  begin
+    LPick := ARandom.Generate(0, FCumulativeFrequency - 1);
+    for LIndex := 0 to High(AItems) do
+    begin
+      // the C++ reads the frequencies and uses with at(): a shorter list throws out_of_range
+      if (LIndex >= Length(FFrequenciesTemp)) or (LIndex >= Length(FMaxUsesTemp)) then
+        raise EXcomModException.Create('Xcom: map script lists of different lengths');
+      if LPick < FFrequenciesTemp[LIndex] then
+      begin
+        Result := AItems[LIndex];
+        if FMaxUsesTemp[LIndex] > 0 then
+        begin
+          Dec(FMaxUsesTemp[LIndex]);
+          if FMaxUsesTemp[LIndex] = 0 then
+          begin
+            Erase(AItems, LIndex);
+            Dec(FCumulativeFrequency, FFrequenciesTemp[LIndex]);
+            Erase(FFrequenciesTemp, LIndex);
+            Erase(FMaxUsesTemp, LIndex);
+          end;
+        end;
+        Exit;
+      end;
+      Dec(LPick, FFrequenciesTemp[LIndex]);
+    end;
+  end;
+  Result := MT_UNDEFINED;
+end;
+
+function TXcomMapScript.GetGroupNumber(const ARandom: IXcomRandom): Integer;
+begin
+  if Length(FGroups) = 0 then
+    Exit(MT_DEFAULT);
+  Result := Pick(FGroupsTemp, ARandom);
+end;
+
+function TXcomMapScript.GetBlockNumber(const ARandom: IXcomRandom): Integer;
+begin
+  Result := Pick(FBlocksTemp, ARandom);
+end;
+
+function TXcomMapScript.GetNextBlock(const ATerrain: TXcomRuleTerrain; const ARandom: IXcomRandom): TXcomMapBlock;
+var
+  LNumber: Integer;
+begin
+  if Length(FBlocks) = 0 then
+    Exit(ATerrain.GetRandomMapBlock(FSizeX * 10, FSizeY * 10, GetGroupNumber(ARandom), ARandom));
+  LNumber := GetBlockNumber(ARandom);
+  if (LNumber <> MT_UNDEFINED) and (LNumber < ATerrain.MapBlocks.Count) then
+    Exit(ATerrain.MapBlocks[LNumber]);
+  Result := nil;
 end;
 
 class procedure TXcomMapScript.Append(var AValues: TArray<Integer>; AValue: Integer);

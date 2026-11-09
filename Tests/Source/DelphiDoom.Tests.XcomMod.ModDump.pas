@@ -93,7 +93,7 @@ begin
   Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
     'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'alienDeployments', 'alienMissions', 'missionScripts', 'ufopaedia', 'mapScripts', 'mcdPatches',
     'extraSprites', 'extraSounds', 'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures',
-    'globeTerrains', 'mapData', 'converter', 'constants', 'settings', 'startingBase', 'indexes', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'globeTerrains', 'mapData', 'picks', 'converter', 'constants', 'settings', 'startingBase', 'indexes', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
     'commendations');
 end;
 
