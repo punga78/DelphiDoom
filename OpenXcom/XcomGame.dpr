@@ -48,9 +48,44 @@ type
 
 procedure ShowUsage;
 begin
-  Writeln('XcomGame -data <common+standard folder> -game <game folder> [-user <folder>] [-mod xcom2]');
+  Writeln('XcomGame [-data <common+standard folder>] [-game <game folder>] [-user <folder>] [-mod xcom2]');
+  Writeln('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
   Writeln('         [-shot <file.png> [-ms <n>] [-script wait:ms;click:x,y;key:n;shot:file;...]]');
   Writeln('         [-version <text>] [-dospath <text>] [-hold]');
+end;
+
+/// <summary>
+/// Without -data and -game, looks next to the executable: the data folder is the one that has common\ and
+/// standard\ (the executable folder or its data\ subfolder), the game folder is TFTD\, UFO\ or the executable
+/// folder itself when it has GEODATA\.
+/// </summary>
+procedure ApplyDefaultFolders(var ASettings: TXcomGameSettings);
+var
+  LBase: string;
+
+  function Sub(const AName: string): string;
+  begin
+    Result := LBase + AName;
+  end;
+
+begin
+  LBase := ExtractFilePath(ParamStr(0));
+  if ASettings.DataFolder = '' then
+  begin
+    if DirectoryExists(Sub('common')) and DirectoryExists(Sub('standard')) then
+      ASettings.DataFolder := LBase
+    else if DirectoryExists(Sub('data\common')) and DirectoryExists(Sub('data\standard')) then
+      ASettings.DataFolder := Sub('data');
+  end;
+  if ASettings.GameFolder = '' then
+  begin
+    if DirectoryExists(Sub('TFTD\GEODATA')) then
+      ASettings.GameFolder := Sub('TFTD')
+    else if DirectoryExists(Sub('UFO\GEODATA')) then
+      ASettings.GameFolder := Sub('UFO')
+    else if DirectoryExists(Sub('GEODATA')) then
+      ASettings.GameFolder := LBase;
+  end;
 end;
 
 function ParseArguments(out AArguments: TArguments): Boolean;
@@ -103,6 +138,7 @@ begin
       Exit(False);
     Inc(LIndex);
   end;
+  ApplyDefaultFolders(AArguments.Settings);
   Result := (AArguments.Settings.DataFolder <> '') and (AArguments.Settings.GameFolder <> '');
 end;
 
