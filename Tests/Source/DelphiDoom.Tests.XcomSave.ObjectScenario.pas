@@ -25,7 +25,9 @@ uses
   DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.EquipmentLayoutItem,
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomSave.ItemContainer,
   DelphiDoom.XcomSave.Vehicle, DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomSave.Production;
+  DelphiDoom.XcomSave.Production, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.UnitEnums,
+  DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomSave.BattleUnitStatistics, DelphiDoom.XcomSave.SoldierDeath,
+  DelphiDoom.XcomSave.GameTime;
 
 type
   /// <summary>A deployment rule with the three values the harness gives to the real AlienDeployment</summary>
@@ -86,6 +88,10 @@ type
     procedure RunCraftWeapon(const AParts: TArray<string>; const ANode: IYamlNode);
     procedure RunBaseFacility(const AParts: TArray<string>; const ANode: IYamlNode);
     procedure RunProduction(const AParts: TArray<string>; const ANode: IYamlNode);
+    procedure RunUnitStats(const ANode: IYamlNode);
+    procedure RunKill(const ANode: IYamlNode);
+    procedure RunStatistics(const ANode: IYamlNode);
+    procedure RunDeath(const ANode: IYamlNode);
   public
     constructor Create;
     destructor Destroy; override;
@@ -498,6 +504,107 @@ begin
   end;
 end;
 
+procedure TXcomSaveObjectScenario.RunUnitStats(const ANode: IYamlNode);
+var
+  LStats, LOther, LMerged, LPlusMinus: TXcomUnitStats;
+
+  procedure Show(const ALabel: string; const AStats: TXcomUnitStats);
+  begin
+    FOutput.Add(Format('%s %d %d %d %d %d %d %d %d %d %d %d', [ALabel, AStats.TimeUnits, AStats.Stamina,
+      AStats.Health, AStats.Bravery, AStats.Reactions, AStats.Firing, AStats.Throwing, AStats.Strength,
+      AStats.PsiStrength, AStats.PsiSkill, AStats.Melee]));
+  end;
+
+  function Make(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11: Integer): TXcomUnitStats;
+  begin
+    Result.TimeUnits := A1;
+    Result.Stamina := A2;
+    Result.Health := A3;
+    Result.Bravery := A4;
+    Result.Reactions := A5;
+    Result.Firing := A6;
+    Result.Throwing := A7;
+    Result.Strength := A8;
+    Result.PsiStrength := A9;
+    Result.PsiSkill := A10;
+    Result.Melee := A11;
+  end;
+
+begin
+  LStats := Make(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+  LStats := TXcomUnitStatsCodec.Decode(ANode, LStats);
+  Show('s', LStats);
+  Emit(TXcomUnitStatsCodec.Encode(LStats));
+  LOther := Make(3, 0, -5, 7, 0, 2, 0, 100, -100, 1, 0);
+  Show('add', LStats + LOther);
+  Show('sub', LStats - LOther);
+  Show('neg', -LStats);
+  LMerged := LStats;
+  LMerged.Merge(LOther);
+  Show('merge', LMerged);
+  LPlusMinus := LStats + LOther - LOther;
+  Show('pm', LPlusMinus);
+end;
+
+procedure TXcomSaveObjectScenario.RunKill(const ANode: IYamlNode);
+var
+  LKill: TXcomBattleUnitKills;
+begin
+  LKill := TXcomBattleUnitKills.Create(ANode);
+  try
+    FOutput.Add(Format('k %s|%s|%s|%s|%s|%s %d %d %d %d %d %d %d', [Escape(LKill.Name), Escape(LKill.UnitType),
+      Escape(LKill.Rank), Escape(LKill.Race), Escape(LKill.Weapon), Escape(LKill.WeaponAmmo), LKill.Status,
+      LKill.Faction, LKill.Mission, LKill.Turn, LKill.Id, LKill.Side, LKill.BodyPart]));
+    Emit(LKill.Save);
+    FOutput.Add(Format('strings %s %s %s %s %s', [LKill.KillStatusString, LKill.UnitStatusString,
+      LKill.UnitFactionString, LKill.UnitSideString, LKill.UnitBodyPartString]));
+    FOutput.Add(Format('hostile=%d', [BoolInt(LKill.HostileTurn)]));
+    FOutput.Add(Format('unique=%d', [LKill.MakeTurnUnique]));
+    LKill.SetTurn(5, LKill.Faction);
+    FOutput.Add(Format('turn=%d hostile=%d', [LKill.Turn, BoolInt(LKill.HostileTurn)]));
+  finally
+    LKill.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunStatistics(const ANode: IYamlNode);
+var
+  LStats: TXcomBattleUnitStatistics;
+begin
+  LStats := TXcomBattleUnitStatistics.Create(ANode);
+  try
+    FOutput.Add(Format('st %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d kills=%d',
+      [BoolInt(LStats.WasUnconscious), LStats.ShotAtCounter, LStats.HitCounter, LStats.ShotByFriendlyCounter,
+      LStats.ShotFriendlyCounter, BoolInt(LStats.LoneSurvivor), BoolInt(LStats.IronMan),
+      LStats.LongDistanceHitCounter, LStats.LowAccuracyHitCounter, LStats.ShotsFiredCounter,
+      LStats.ShotsLandedCounter, BoolInt(LStats.NikeCross), BoolInt(LStats.MercyCross), LStats.WoundsHealed,
+      LStats.AppliedStimulant, LStats.AppliedPainKill, LStats.RevivedSoldier, LStats.RevivedHostile,
+      LStats.RevivedNeutral, LStats.Martyr, LStats.SlaveKills, LStats.Kills.Count]));
+    Emit(LStats.Save);
+    FOutput.Add(Format('dup %d %d %d friendly=%d', [BoolInt(LStats.DuplicateEntry(XcomStatusDead, 0)),
+      BoolInt(LStats.DuplicateEntry(XcomStatusUnconscious, 1)), BoolInt(LStats.DuplicateEntry(XcomStatusIgnoreMe, 5)),
+      BoolInt(LStats.HasFriendlyFired)]));
+  finally
+    LStats.Free;
+  end;
+end;
+
+procedure TXcomSaveObjectScenario.RunDeath(const ANode: IYamlNode);
+var
+  LDeath: TXcomSoldierDeath;
+begin
+  LDeath := TXcomSoldierDeath.Create;
+  try
+    LDeath.Load(ANode);
+    FOutput.Add(Format('d %d %d %d %d %d %d %d cause=%d', [LDeath.Time.Weekday, LDeath.Time.Day, LDeath.Time.Month,
+      LDeath.Time.Year, LDeath.Time.Hour, LDeath.Time.Minute, LDeath.Time.Second,
+      BoolInt(Assigned(LDeath.Cause))]));
+    Emit(LDeath.Save);
+  finally
+    LDeath.Free;
+  end;
+end;
+
 procedure TXcomSaveObjectScenario.RunCase(const AHeader: string; const ABody: TYamlText);
 var
   LParts: TArray<string>;
@@ -533,7 +640,15 @@ begin
     else if LParts[0] = 'basefacility' then
       RunBaseFacility(LParts, LNode)
     else if LParts[0] = 'production' then
-      RunProduction(LParts, LNode);
+      RunProduction(LParts, LNode)
+    else if LParts[0] = 'unitstats' then
+      RunUnitStats(LNode)
+    else if LParts[0] = 'kill' then
+      RunKill(LNode)
+    else if LParts[0] = 'stats' then
+      RunStatistics(LNode)
+    else if LParts[0] = 'death' then
+      RunDeath(LNode);
   except
     on E: EYamlException do
       FOutput.Add('YAML_ERR ' + Escape(YamlTextToString(E.Msg)));

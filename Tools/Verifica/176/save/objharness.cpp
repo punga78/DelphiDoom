@@ -29,6 +29,10 @@
 #include "Savegame/CraftWeapon.h"
 #include "Savegame/BaseFacility.h"
 #include "Savegame/Production.h"
+#include "Savegame/BattleUnitStatistics.h"
+#include "Savegame/SoldierDeath.h"
+#include "Savegame/GameTime.h"
+#include "Mod/Unit.h"
 #include "Mod/RuleItem.h"
 #include "Mod/RuleCraftWeapon.h"
 #include "Mod/RuleBaseFacility.h"
@@ -93,8 +97,9 @@ static std::string Str() {
   static const char* v[] = {"hello", "STR_FOO", "yes", "123", "a b", "", "with: colon", "#c", "caf\xC3\xA9", "STR_HUMAN", "NONE", "- x", "'q'", "STR_AVALON"};
   return v[R(14)];
 }
+static bool gStrict = false;  // every field present and valid (the C++ leaves members of some constructors uninitialised)
 static std::string Gen(char kind) {
-  bool bad = R(14) == 0;
+  bool bad = !gStrict && R(14) == 0;
   switch (kind) {
     case 'i': return bad ? Bad() : Num();
     case 'b': return bad ? Bad() : (R(2) ? "true" : (R(2) ? "no" : "false"));
@@ -120,7 +125,7 @@ struct Field { const char* key; char kind; };
 static std::string Doc(const std::vector<Field>& fields) {
   std::string out;
   std::vector<int> order;
-  for (size_t i = 0; i < fields.size(); i++) if (R(10) < 8) order.push_back((int)i);
+  for (size_t i = 0; i < fields.size(); i++) if (gStrict || R(10) < 8) order.push_back((int)i);
   for (size_t i = order.size(); i > 1; i--) std::swap(order[i - 1], order[R((int)i)]);
   for (int i : order) {
     std::string v = Gen(fields[i].kind);
@@ -158,6 +163,47 @@ static std::string RandAngle() {
 
 static std::vector<Field> TargetFields() { return {{"lon", 'd'}, {"lat", 'd'}, {"id", 'i'}, {"name", 's'}}; }
 
+static std::string SmallInt(int hi) { return R(10) == 0 ? Num() : std::to_string(Rg(0, hi)); }
+// the lines of a kill record (a map), the status, faction, side and body part mostly inside their enumerations
+static std::string KillDoc(bool full = true) {
+  std::string out;
+  const char* keys[] = {"name", "type", "rank", "race", "weapon", "weaponAmmo"};
+  for (int i = 0; i < 6; i++) if (R(10) < 6) out += std::string(keys[i]) + ": " + (R(14) == 0 ? Bad() : Str()) + "\n";
+  if (R(12)) out += "status: " + SmallInt(10) + "\n";
+  if (R(12)) out += "faction: " + SmallInt(2) + "\n";
+  if (R(12)) out += "side: " + SmallInt(4) + "\n";
+  if (R(12)) out += "bodypart: " + SmallInt(5) + "\n";
+  if (full || R(2)) out += "mission: " + std::to_string(Rg(0, 9)) + "\n";
+  if (full || R(2)) out += "turn: " + std::to_string(Rg(0, 40)) + "\n";
+  if (full || R(2)) out += "id: " + std::to_string(Rg(0, 5)) + "\n";
+  return out;
+}
+static std::string Indent(const std::string& block, const std::string& first, const std::string& rest) {
+  std::string out;
+  std::istringstream is(block);
+  std::string line;
+  bool firstLine = true;
+  while (std::getline(is, line)) { out += (firstLine ? first : rest) + line + "\n"; firstLine = false; }
+  return out;
+}
+static std::string StatsDoc() {
+  gStrict = true;
+  std::string out = Doc({{"wasUnconcious", 'b'}, {"shotAtCounter", 'i'}, {"hitCounter", 'i'}, {"shotByFriendlyCounter", 'i'}, {"shotFriendlyCounter", 'i'}, {"loneSurvivor", 'b'}, {"ironMan", 'b'}, {"longDistanceHitCounter", 'i'}, {"lowAccuracyHitCounter", 'i'}, {"shotsFiredCounter", 'i'}, {"shotsLandedCounter", 'i'}, {"nikeCross", 'b'}, {"mercyCross", 'b'}, {"woundsHealed", 'i'}, {"appliedStimulant", 'i'}, {"appliedPainKill", 'i'}, {"revivedSoldier", 'i'}, {"revivedHostile", 'i'}, {"revivedNeutral", 'i'}, {"martyr", 'i'}, {"slaveKills", 'i'}});
+  gStrict = false;
+  int shape = R(12);
+  if (shape == 0) out += "kills: " + Bad() + "\n";
+  else if (shape < 9) {
+    int n = R(4);
+    out += "kills:\n";
+    for (int i = 0; i < n; i++) {
+      std::string k = KillDoc();
+      if (k.empty()) k = "status: 6\nfaction: 1\nside: 0\nbodypart: 0\n";
+      out += Indent(k, "  - ", "    ");
+    }
+    if (n == 0) out += "  []\n";
+  }
+  return out;
+}
 // a map of items and quantities (or something that is not one)
 static std::string ItemMap() {
   static const char* keys[] = {"STR_RIFLE", "STR_CLIP", "STR_GRENADE", "AAA", "zzz", "STR_ALIEN", "b", "B"};
@@ -177,7 +223,19 @@ static void Generate(const char* path, int count, unsigned seed) {
   std::ofstream o(path, std::ios::binary);
   o << "# corpus of the saved game objects, second family: a header line (kind, arguments) and a YAML node\n";
   for (int i = 0; i < count; i++) {
-    switch (R(10)) {
+    switch (R(15)) {
+      case 10: Case(o, "unitstats", Doc({{"tu", 'i'}, {"stamina", 'i'}, {"health", 'i'}, {"bravery", 'i'}, {"reactions", 'i'}, {"firing", 'i'}, {"throwing", 'i'}, {"strength", 'i'}, {"psiStrength", 'i'}, {"psiSkill", 'i'}, {"melee", 'i'}})); break;
+      case 11: Case(o, "kill", KillDoc()); break;
+      case 12: Case(o, "stats", StatsDoc()); break;
+      case 13: {
+        std::string t = Doc({{"second", 'i'}, {"minute", 'i'}, {"hour", 'i'}, {"weekday", 'i'}, {"day", 'i'}, {"month", 'i'}, {"year", 'i'}});
+        std::string body;
+        if (R(10)) body += "time:\n" + Indent(t.empty() ? "second: 5\n" : t, "  ", "  ");
+        if (R(3)) { std::string k = KillDoc(false); body += "cause:\n" + Indent(k.empty() ? "status: 6\nfaction: 0\nside: 1\nbodypart: 2\n" : k, "  ", "  "); }
+        Case(o, "death", body);
+        break;
+      }
+      case 14: Case(o, "kill", KillDoc()); break;
       case 0: Case(o, "waypoint " + RandAngle() + " " + RandAngle() + " " + RandAngle() + " " + RandAngle(), Doc(TargetFields())); break;
       case 1: {
         auto f = TargetFields();
@@ -361,6 +419,45 @@ static void RunCase(const std::string& header, const std::string& body) {
       f.setX(3);
       f.setY(4);
       printf("after %d %d %d\n", f.getX(), f.getY(), f.getBuildTime());
+    } else if (kind == "unitstats") {
+      UnitStats s(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+      s = node.as<UnitStats>(s);
+      auto show = [&](const char* label, const UnitStats& u) {
+        printf("%s %d %d %d %d %d %d %d %d %d %d %d\n", label, u.tu, u.stamina, u.health, u.bravery, u.reactions, u.firing, u.throwing, u.strength, u.psiStrength, u.psiSkill, u.melee);
+      };
+      show("s", s);
+      Out(YAML::convert<UnitStats>::encode(s));
+      UnitStats o2(3, 0, -5, 7, 0, 2, 0, 100, -100, 1, 0);
+      show("add", s + o2);
+      show("sub", s - o2);
+      show("neg", -s);
+      UnitStats m = s;
+      m.merge(o2);
+      show("merge", m);
+      UnitStats p = s;
+      p += o2;
+      p -= o2;
+      show("pm", p);
+    } else if (kind == "kill") {
+      BattleUnitKills k(node);
+      printf("k %s|%s|%s|%s|%s|%s %d %d %d %d %d %d %d\n", Esc(k.name).c_str(), Esc(k.type).c_str(), Esc(k.rank).c_str(), Esc(k.race).c_str(), Esc(k.weapon).c_str(), Esc(k.weaponAmmo).c_str(), (int)k.status, (int)k.faction, k.mission, k.turn, k.id, (int)k.side, (int)k.bodypart);
+      Out(k.save());
+      printf("strings %s %s %s %s %s\n", k.getKillStatusString().c_str(), k.getUnitStatusString().c_str(), k.getUnitFactionString().c_str(), k.getUnitSideString().c_str(), k.getUnitBodyPartString().c_str());
+      printf("hostile=%d\n", k.hostileTurn());
+      printf("unique=%d\n", k.makeTurnUnique());
+      k.setTurn(5, k.faction);
+      printf("turn=%d hostile=%d\n", k.turn, k.hostileTurn());
+    } else if (kind == "stats") {
+      BattleUnitStatistics st(node);
+      printf("st %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d kills=%d\n", st.wasUnconcious, st.shotAtCounter, st.hitCounter, st.shotByFriendlyCounter, st.shotFriendlyCounter, st.loneSurvivor, st.ironMan, st.longDistanceHitCounter, st.lowAccuracyHitCounter, st.shotsFiredCounter, st.shotsLandedCounter, st.nikeCross, st.mercyCross, st.woundsHealed, st.appliedStimulant, st.appliedPainKill, st.revivedSoldier, st.revivedHostile, st.revivedNeutral, st.martyr, st.slaveKills, (int)st.kills.size());
+      Out(st.save());
+      printf("dup %d %d %d friendly=%d\n", st.duplicateEntry(STATUS_DEAD, 0), st.duplicateEntry(STATUS_UNCONSCIOUS, 1), st.duplicateEntry(STATUS_IGNORE_ME, 5), st.hasFriendlyFired());
+    } else if (kind == "death") {
+      SoldierDeath d;
+      d.load(node);
+      const GameTime* t = d.getTime();
+      printf("d %d %d %d %d %d %d %d cause=%d\n", t->getWeekday(), t->getDay(), t->getMonth(), t->getYear(), t->getHour(), t->getMinute(), t->getSecond(), d.getCause() != 0);
+      Out(d.save());
     } else if (kind == "production") {
       std::string name;
       int time, cost, amount;
