@@ -14,7 +14,7 @@ avvisi) e da `Libs\Imaging` (`TImagingColorMath.Add`, la somma dei colori di `R_
 | `r_cache_walls.pas` (muri, software 32 bit) | `T_LoadHiResTexture`, `ScaleTo`, `Mirror`, `GetColumn32`, `GetPalettedColumn32` | la prima volta che una colonna di una texture ha bisogno del suo ingrandimento: a freddo, il risultato resta nella cache del renderer |
 | `r_cache_flats.pas` (flat, software 32 bit) | `T_LoadHiResTexture`, `ScaleTo`, `SetPalColor`, `GetTransformedPalette`, `GetImage`, `ConvertTo32bit` | una volta per flat |
 | `r_pk3textures.pas`, `w_sprite.pas` | `T_LoadHiResTexture`, `GetColumn32`, `GetRow32`, `SetRow32`, `SetColumn32`, `SetDefaultAlphaChannel`, `RemoveTransparency`, `ScaleTo`, `LoadFromStream` | all'avvio e al caricamento di un livello, per fare patch e flat dalle texture dei PK3 e degli sprite PNG |
-| `OPENGL\gl_tex.pas`, `gl_ambient.pas` | `ConvertTo32bit`, `SwapRGB`, `Set*AlphaChannel*`, `ScaleTo`, `GetImage`, `GetRow32` | al caricamento di una texture OpenGL: a freddo |
+| `Libs\OpenGl\Legacy\gl_tex.pas`, `gl_ambient.pas` | `ConvertTo32bit`, `SwapRGB`, `Set*AlphaChannel*`, `ScaleTo`, `GetImage`, `GetRow32` | al caricamento di una texture OpenGL: a freddo |
 | `t_draw.pas` -> `TEngineDrawTextures` (`T_DrawFullScreenPatch`) | `GetRow32`, `GetPalettedRow32` | **per ogni fotogramma** in cui si vede una pagina a tutto schermo esterna: una chiamata per riga dello schermo |
 | `w_pak.pas`, `v_video.pas` | `T_IsValidPatchImage`, `T_IsValidFlatImage`, `T_IsValidPCXHeader` | a freddo (riconoscere il tipo di una voce di un PAK) |
 | `m_defs.pas` | `pngtransparentcolor`, `pngtransparentcolor2`, `assumecommontranspantcolors`, `preferetexturesnamesingamedirectory` | impostazioni del file `.ini` |

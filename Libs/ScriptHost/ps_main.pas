@@ -36,10 +36,20 @@ interface
 uses
   p_mobj_h,
   ps_compiler,
-  ps_runtime;
+  ps_runtime,
+  DelphiDoom.Logging.Intf;
 
 type
   psscripttype_t = (pst_normal, pst_global, pst_none);
+
+//==============================================================================
+//
+// PS_ConfigureStateServices
+// The log of the events and of the serializer of the script state, given by the
+// composition root (before PS_Init)
+//
+//==============================================================================
+procedure PS_ConfigureStateServices(const ALog: ILog);
 
 //==============================================================================
 //
@@ -217,9 +227,11 @@ uses
   i_system,
   p_common,
   ps_import,
-  ps_events,
   ps_dll,
-  ps_serializer,
+  DelphiDoom.ScriptHost.Events.Intf,
+  DelphiDoom.ScriptHost.Events.Table,
+  DelphiDoom.ScriptHost.Factory,
+  DelphiDoom.ScriptHost.Serializer.Intf,
   psi_game,
   psi_globals,
   psi_overlay,
@@ -249,7 +261,7 @@ type
     importer: TPSDoomRuntimeClassImporter;
     globalexec: TDoomExec;
     feventsexec: TDoomExec;
-    fevents: TScriptEvents;
+    fevents: IScriptEvents;
     globalindex: integer;
     fGlobalInterface: string;
     fGlobalImplementation: string;
@@ -268,9 +280,35 @@ type
     function RunScript(actor: Pmobj_t; const scid: integer): boolean;
     procedure LinkScriptEvents(const mapname: string);
     property Count: integer read fNumItems;
-    property Events: TScriptEvents read fevents;
+    property Events: IScriptEvents read fevents;
     property EventsExec: TDoomExec read feventsexec;
   end;
+
+var
+  // given by the composition root
+  ps_state_log: ILog = nil;
+
+//==============================================================================
+//
+// PS_ConfigureStateServices
+//
+//==============================================================================
+procedure PS_ConfigureStateServices(const ALog: ILog);
+begin
+  ps_state_log := ALog;
+end;
+
+//==============================================================================
+//
+// PS_StateLog
+//
+//==============================================================================
+function PS_StateLog: ILog;
+begin
+  if ps_state_log = nil then
+    I_Error('PS_ConfigureStateServices() was not called: the log of the script events is missing');
+  Result := ps_state_log;
+end;
 
 //==============================================================================
 //
@@ -282,14 +320,14 @@ var
   I: Integer;
 begin
   Result := True;
-  for I := Low(EventExportedProcs) to High(EventExportedProcs) do
-    if (Proc.Name = EventExportedProcs[I].Name) then
+  for I := Low(SCRIPT_EVENT_SIGNATURES) to High(SCRIPT_EVENT_SIGNATURES) do
+    if (Proc.Name = SCRIPT_EVENT_SIGNATURES[I].Name) then
       if not ExportCheck(Sender, Proc,
-        Slice(EventExportedProcs[I].Typ, EventExportedProcs[I].ParamCount + 1),
-        Slice(EventExportedProcs[I].Dir, EventExportedProcs[I].ParamCount)) then
+        Slice(SCRIPT_EVENT_SIGNATURES[I].Typ, SCRIPT_EVENT_SIGNATURES[I].ParamCount + 1),
+        Slice(SCRIPT_EVENT_SIGNATURES[I].Dir, SCRIPT_EVENT_SIGNATURES[I].ParamCount)) then
       begin
         //  Parameter missmatch
-        Sender.MakeErrorEx(EventExportedProcs[I].Name, ecInvalidEventParameters, '',
+        Sender.MakeErrorEx(SCRIPT_EVENT_SIGNATURES[I].Name, ecInvalidEventParameters, '',
           Proc.DeclarePos, Proc.DeclareRow, Proc.DeclareCol);
         Result := False;
         Exit;
@@ -314,7 +352,7 @@ begin
   importer := TPSDoomRuntimeClassImporter.Create;
   globalexec := nil;
   feventsexec := TDoomExec.CreateDoomExec(importer);
-  fevents := TScriptEvents.Create(feventsexec);
+  fevents := TScriptHostFactory.CreateEvents(feventsexec, PS_StateLog);
   AddNormalSourceFile('GLOBAL', '');
 end;
 
@@ -340,8 +378,8 @@ begin
   end;
   compiler.Free;
   importer.Free;
+  fevents := nil;
   feventsexec.Free;
-  fevents.Free;
 end;
 
 //==============================================================================
@@ -674,7 +712,7 @@ var
     I: Integer;
   begin
     //Check against our set of allowed types
-    if not (aType.BaseType in VALID_GLOBAL_VAR_TYPES) then
+    if not (aType.BaseType in SCRIPT_SERIALIZABLE_TYPES) then
     begin
       sprintf(Result, 'TPSExecManager.LinkScriptEvents(): Unsupported global variable type %d (%s)'#13#10,
         [aType.BaseType, aType.ExportName]);
@@ -1126,14 +1164,10 @@ end;
 //==============================================================================
 function PS_MapScriptSaveToFile(const fname: string): boolean;
 var
-  psser: TScriptSerializer;
+  psser: IScriptSerializer;
 begin
-  psser := TScriptSerializer.Create(psmanager.EventsExec);
-  try
-    result := psser.SaveToFile(fname);
-  finally
-    psser.Free;
-  end;
+  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  result := psser.SaveToFile(fname);
 end;
 
 //==============================================================================
@@ -1143,14 +1177,10 @@ end;
 //==============================================================================
 function PS_MapScriptSaveSize: integer;
 var
-  psser: TScriptSerializer;
+  psser: IScriptSerializer;
 begin
-  psser := TScriptSerializer.Create(psmanager.EventsExec);
-  try
-    Result := psser.SaveSize;
-  finally
-    psser.Free;
-  end;
+  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  Result := psser.SaveSize;
 end;
 
 //==============================================================================
@@ -1160,14 +1190,10 @@ end;
 //==============================================================================
 function PS_MapScriptLoadFromFile(const fname: string): boolean;
 var
-  psser: TScriptSerializer;
+  psser: IScriptSerializer;
 begin
-  psser := TScriptSerializer.Create(psmanager.EventsExec);
-  try
-    result := psser.LoadFromFile(fname);
-  finally
-    psser.Free;
-  end;
+  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  result := psser.LoadFromFile(fname);
 end;
 
 //==============================================================================

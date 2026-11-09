@@ -249,7 +249,7 @@ uses
   info_common,
   sc_consts,
   sc_states,
-  ps_events,
+  DelphiDoom.ScriptHost.Events.Table,
   ps_import,
   ps_main,
   DelphiDoom.ScriptHost.Intf,
@@ -899,8 +899,8 @@ var
   i: integer;
 begin
   estr := '';
-  for i := Low(EventExportedProcs) to High(EventExportedProcs) do
-    estr := estr + EventExportedProcs[i].Name + '|' + EventExportedProcs[i].Template + #13#10;
+  for i := Low(SCRIPT_EVENT_SIGNATURES) to High(SCRIPT_EVENT_SIGNATURES) do
+    estr := estr + SCRIPT_EVENT_SIGNATURES[i].Name + '|' + SCRIPT_EVENT_SIGNATURES[i].Template + #13#10;
   DD_CopyStringToPChar(estr, _out, _outsize);
 end;
 
