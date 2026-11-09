@@ -15,7 +15,7 @@ uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Actor.Types,
   DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Frame.Intf,
   DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.Elevator.Intf, DelphiDoom.Greed.ElevatorRules,
-  DelphiDoom.Clock.Intf;
+  DelphiDoom.Clock.Intf, DelphiDoom.Greed.DoorRules;
 
 const
   /// <summary>TICRATE: the game runs at 70 tics a second</summary>
@@ -61,6 +61,7 @@ type
     FPlayer: TGreedPlayerRecord;
     FFallRate: Integer;
     FTics: Integer;
+    FDoors: TGreedDoorRules;
     procedure Move(AAngle: Integer; ASpeed: TGreedFixed);
   public
     constructor Create(const AWorld: IGreedWorld; const AMovement: TGreedPlayerMovement;
@@ -83,6 +84,8 @@ type
     ///   (0 = no limit); returns the tics played
     /// </summary>
     function Run(AMaxTics: Integer): Integer;
+    /// <summary>The rules of the doors (CheckDoors), run at each tic; nil: the doors do not move. Not owned</summary>
+    property Doors: TGreedDoorRules read FDoors write FDoors;
     property Player: TGreedPlayerRecord read FPlayer;
     property Tics: Integer read FTics;
     property FrameBuffer: TGreedFrame read FFrame;
@@ -204,6 +207,8 @@ begin
   // the player stays on the floor (the original falls with the fall rate: not ported)
   FPlayer.Z := TGreedTerrain.FloorZ(FWorld, FPlayer.X, FPlayer.Y) + FPlayer.Height;
   FElevators.Check(FPlayer, FFallRate);
+  if Assigned(FDoors) then
+    FDoors.Check(FPlayer.X, FPlayer.Y);
   Inc(FTics);
 end;
 

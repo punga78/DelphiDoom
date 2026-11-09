@@ -30,6 +30,8 @@ type
     procedure Load(const AMap: IGreedMap);
     function GetValue(APlane: TGreedPlane; ASpot: Integer): Byte;
     procedure SetValue(APlane: TGreedPlane; ASpot: Integer; AValue: Byte);
+    procedure CopyPlane(APlane: TGreedPlane; ADest: PByte);
+    procedure CopyMapFlags(ADest: PByte);
     function GetMapFlags(ASpot: Integer): Byte;
     procedure SetMapFlags(ASpot: Integer; AValue: Byte);
     function AddDoor(ATileX, ATileY: Integer): Integer;
@@ -106,6 +108,16 @@ begin
   if (ASpot < 0) or (ASpot >= GREED_MAP_TILES) then
     raise EGreedDataException.CreateFmt(SGreedTileOutside, [ASpot mod GREED_MAP_SIZE, ASpot div GREED_MAP_SIZE]);
   FPlanes[APlane][ASpot] := AValue;
+end;
+
+procedure TGreedWorld.CopyPlane(APlane: TGreedPlane; ADest: PByte);
+begin
+  Move(FPlanes[APlane][0], ADest^, GREED_MAP_TILES);
+end;
+
+procedure TGreedWorld.CopyMapFlags(ADest: PByte);
+begin
+  Move(FMapFlags[0], ADest^, GREED_MAP_TILES);
 end;
 
 function TGreedWorld.GetMapFlags(ASpot: Integer): Byte;

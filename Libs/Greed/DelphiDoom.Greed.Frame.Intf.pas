@@ -50,7 +50,7 @@ type
   /// <summary>Draws the level seen by the player into a frame (RF_RenderView in the original)</summary>
   IGreedFrameRenderer = interface
     ['{F2540C97-3AE1-4B6D-9E83-D17B0A5C6E29}']
-    procedure Render(const AWorld: IGreedWorld; const APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
+    procedure Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
   end;
 
 implementation

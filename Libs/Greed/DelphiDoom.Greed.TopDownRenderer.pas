@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the level seen from above                        }
 {  Not a port: a stand-in for RF_RenderView (the renderer of Raven 3D is the    }
@@ -42,7 +42,7 @@ type
     constructor Create; overload;
     /// <summary>With the indexes of the palette that the program found for the colors it wants</summary>
     constructor Create(AFloor, AWall, ADoor, APlayer: Byte); overload;
-    procedure Render(const AWorld: IGreedWorld; const APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
+    procedure Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
   end;
 
 implementation
@@ -69,7 +69,7 @@ begin
   FPlayer := APlayer;
 end;
 
-procedure TGreedTopDownRenderer.Render(const AWorld: IGreedWorld; const APlayer: TGreedPlayerRecord;
+procedure TGreedTopDownRenderer.Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord;
   var AFrame: TGreedFrame);
 var
   LX, LY, LCenterX, LCenterY, LSpot, LTileX, LTileY, LSubX, LSubY, LStep: Integer;

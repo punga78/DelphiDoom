@@ -83,6 +83,8 @@ type
     Grounded: Boolean;
   end;
 
+  PGreedSprite = ^TGreedSprite;
+
   /// <summary>elevobj_t without the list links</summary>
   TGreedElevator = record
     Up: Boolean;

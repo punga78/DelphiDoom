@@ -1,0 +1,6493 @@
+a: 1
+%%%%
+a: 1
+b: two
+c: 3.5
+%%%%
+- 1
+- 2
+- three
+%%%%
+key:
+  - a
+  - b
+other:
+  nested:
+    deep: value
+%%%%
+key:
+- a
+- b
+last: x
+%%%%
+# comment
+a: 1 # trailing
+b: "quoted # not comment"
+%%%%
+a: 'single ''quoted'' text'
+b: "double \"quoted\" \\ \n \t \x41 Ã© \U0001F600"
+%%%%
+a: [1, 2, 3]
+b: {x: 1, y: 2}
+c: [a, [b, c], {d: e}]
+%%%%
+[1, 2, 3]
+%%%%
+{a: 1, b: [x, y], c: {d: e}}
+%%%%
+a: |
+  line one
+  line two
+
+  line four
+b: next
+%%%%
+a: |-
+  strip
+b: |+
+  keep
+
+c: >
+  folded
+  text here
+
+  new para
+d: >-
+  folded strip
+  more
+%%%%
+a: |2
+    indented more
+  base
+%%%%
+text: plain
+  continued
+  more lines
+next: 1
+%%%%
+"multi
+  line quoted": 1
+'single
+  multi': 2
+%%%%
+base: &anc
+  x: 1
+  y: 2
+copy: *anc
+list: [*anc, &b 5, *b]
+%%%%
+a: !!str 123
+b: !!int "5"
+c: !custom value
+d: !<tag:example.com,2000:x> val
+%%%%
+a:
+b: ~
+c: null
+d: Null
+e: NULL
+f: ""
+g: 'null'
+%%%%
+? complex
+: value
+? [a, b]
+: seq key
+%%%%
+- - a
+  - b
+- - c
+-
+  - d
+%%%%
+- a: 1
+  b: 2
+- c: 3
+  d:
+    - x
+%%%%
+---
+a: 1
+...
+---
+b: 2
+%%%%
+--- text
+%%%%
+--- |
+  literal doc
+%%%%
+a: 1
+---
+b: 2
+---
+- 3
+%%%%
+%YAML 1.2
+---
+a: 1
+%%%%
+a: 1
+	b: 2
+%%%%
+a: 1
+ b: 2
+%%%%
+a: [1, 2
+%%%%
+a: {x: 1
+%%%%
+a: "unterminated
+%%%%
+a: 'unterminated
+%%%%
+- a
+b: 1
+%%%%
+a: 1
+- b
+%%%%
+a: *missing
+%%%%
+a: @bad
+%%%%
+a: `bad
+%%%%
+a: b: c
+%%%%
+a: - b
+%%%%
+: value
+%%%%
+a: 1
+a: 2
+%%%%
+a: -1
+b: +2
+c: 0x1F
+d: 0o17
+e: 1e3
+f: .inf
+g: -.inf
+h: .nan
+i: 1.5e-3
+j: 0.1
+k: 007
+%%%%
+t: true
+f: false
+y: yes
+n: no
+o: on
+x: off
+c1: True
+c2: FALSE
+c3: Y
+c4: n
+%%%%
+url: http://example.com:8080/path?x=1#frag
+time: 12:30:45
+colon: a:b
+dash: a-b
+star: a*b
+%%%%
+a: "AÃŸâ‚¬"
+b: "\0\a\b\e\f\r\v\N\_\L\P"
+c: "\/ \  slash"
+%%%%
+a: "bad escape \q"
+%%%%
+a: "line1\
+  line2"
+%%%%
+- "a
+  b
+
+  c"
+%%%%
+key with spaces: value with spaces
+"quoted key": v
+'single key': w
+? explicit
+%%%%
+a:    spaced
+b:	tabbed
+%%%%
+a: 1
+b: 2
+
+c: 3
+
+
+d: 4
+%%%%
+list:
+  - a
+
+  - b
+%%%%
+a: 1
+ # indented comment
+b: 2
+%%%%
+- #comment
+  a
+%%%%
+a: [
+  1,
+  2,
+  ]
+%%%%
+a: [1,,2]
+%%%%
+a: {x, y: 1, z: }
+%%%%
+a: {"q": 1, 'r': 2, s t: 3}
+%%%%
+[a, b: c, d]
+%%%%
+- [a: b]
+- {a}
+%%%%
+a: &x [1, 2]
+b: &y {k: v}
+c: !t &z val
+%%%%
+&top
+a: 1
+%%%%
+&a x: &b y
+%%%%
+? |
+  block key
+: v
+%%%%
+a: b
+? c
+%%%%
+a: 1
+?
+: 2
+%%%%
+!!map
+a: 1
+%%%%
+!!seq
+- a
+%%%%
+!!null
+%%%%
+a: !!null x
+b: !!bool true
+c: !!float 1.5
+%%%%
+"
+%%%%
+'
+%%%%
+{
+%%%%
+[
+%%%%
+]
+%%%%
+}
+%%%%
+-
+%%%%
+-
+-
+%%%%
+a:
+  -
+  - b
+%%%%
+a:
+ b:
+  c:
+   d: 1
+%%%%
+a:
+    b: 1
+    c: 2
+d:
+  e: 3
+%%%%
+a:
+    b: 1
+  c: 2
+%%%%
+  a: 1
+  b: 2
+%%%%
+  - a
+  - b
+%%%%
+    deep
+%%%%
+just a plain scalar
+%%%%
+"just a quoted scalar"
+%%%%
+
+%%%%
+# only comment
+%%%%
+---
+%%%%
+---
+---
+%%%%
+...
+%%%%
+a: 1
+b: 2
+%%%%
+Ã©: Ã¼
+æ—¥æœ¬èªž: ãƒ†ã‚¹ãƒˆ
+emoji: "ðŸ˜€"
+%%%%
+a: |
+  tab	inside
+b: >
+  x
+   y
+  z
+%%%%
+a: >
+  one
+  two
+
+  three
+    indented
+  four
+%%%%
+a: |
+b: c
+%%%%
+a: |
+%%%%
+a: >-
+
+b: x
+%%%%
+- |
+  one
+- >
+  two
+- 'three'
+%%%%
+a: -
+%%%%
+- - - deep
+%%%%
+a: [[[[1]]]]
+%%%%
+a: {b: {c: {d: 1}}}
+%%%%
+? - a
+  - b
+: - c
+%%%%
+a: 'it''s'
+b: ''
+c: ""
+d: ''''
+%%%%
+a: "\x4"
+%%%%
+a: "\u00"
+%%%%
+a: !
+%%%%
+a: !<
+%%%%
+a: !!
+%%%%
+%TAG ! tag:example.com,2000:
+---
+a: !foo bar
+%%%%
+%TAG !e! tag:example.com,2000:
+---
+a: !e!foo bar
+%%%%
+a: &
+%%%%
+a: *
+%%%%
+a: &x
+b: *x
+%%%%
+a: [&x 1, *x, *x]
+%%%%
+- &a1 [*a1]
+%%%%
+k: v
+#
+%%%%
+k: v #c
+ #d
+%%%%
+k:v
+%%%%
+k: v:w
+%%%%
+k : v
+%%%%
+k  :  v
+%%%%
+"k": v
+"k" : v
+%%%%
+[a, b] : c
+%%%%
+{a: b}: c
+%%%%
+a: [b]c
+%%%%
+a: "b"c
+%%%%
+a: 'b'c
+%%%%
+a: {b: c}d
+%%%%
+- a: 1
+- b
+  c
+%%%%
+a: b
+  c: d
+%%%%
+a: 1
+   b
+%%%%
+a: [1,
+2]
+%%%%
+a: [1,
+  2]
+b: 1
+%%%%
+a: {x: 1,
+y: 2}
+%%%%
+a: [
+%%%%
+a: {
+b: 1
+%%%%
+ab: |
+ x
+
+  y
+%%%%
+a: |
+   three
+  two
+%%%%
+a: |1
+  x
+%%%%
+a: |0
+  x
+%%%%
+a: |10
+  x
+%%%%
+a: >+
+  x
+
+%%%%
+a: |+
+
+%%%%
+a: |-
+%%%%
+a: |-
+  x
+
+b: 1
+%%%%
+a: >2-
+   x
+%%%%
+a: >-2
+   x
+%%%%
+a: |# c
+  x
+%%%%
+a: | # c
+  x
+%%%%
+a: |x
+  y
+%%%%
+---
+colon:: STR_FOO
+
+"q?":
+  -
+    834:
+      - "0x1F"
+      - "alpha\n\t\x41"
+%%%%
+---
+'12.5':
+  - |+
+    x
+  - "k-1
+~"
+-  - 1: 161.33
+    null: null
+      Ã©
+616:
+& - # c
+  - a b: yes beta # c
+    beta:
+      - 'æ—¥æœ¬
+-3'
+
+      # comment
+  - q?: type x
+    - dash: true
+
+%%%%
+-
+...
+%%%%
+0x1F yes: 12.5
+delta: false
+"yes":
+  - {12.5 x: 'name
+colon:', k-1: {beta x: -3,~: a b k-1, "yes\n\t{\x41": null}, alpha type: 1398}
+%%%%
+yes ~: 'null' # c
+442: 17.63
+value id: hello world # c
+%%%%
+- 664.57
+%%%%
+- 911.67
+%%%%
+- value æ—¥æœ¬
+%%%%
+---
+-col|n:
+  Ã©
+%%%%
+---
+-262:
+  769: >-
+
+    a b
+      more
+    true
+  846: true
+  æ—¥æœ¬: true # c
+  null hello world: [{}, true]
+- dash: delta
+gamma: >
+  true
+STR_FOO: # c
+%%%%
+k-1: x
+  æ—¥æœ¬
+value: colon: ~
+type gamma: beta y # c
+'delta': k-1
+  -3
+%%%%
+- []
+%%%%
+-
+  -
+    - dash: # no
+      q?
+
+   | Ã© name: 1
+      value
+    true: false
+    "value": -266 # c
+
+
+%%%%
+- -283: |+
+    # no
+    a b
+- 'value' # c
+%%%%
+q?: null # c
+1 name: >
+  - dash
+type: null
+%%%%
+359: 608.95
+%%%%
+- a:b
+  1
+%%%%
+% y
+%%%%
+- beta
+  k_2
+%%%%
+- true
+ ] æ—¥]œ¬
+%%%%
+-
+  - [[true, 1423, -200], [gamma k-1, 672.11], q?]
+  # comment
+  - -3
+    1
+%%%%
+,- ~
+  0x1F
+%%%%
+-
+%%%%
+---
+1: a:b
+1241:
+  - null # c
+  - null
+  -
+    - |-
+      x
+    - {"æ—¥æœ¬": 944.89, id: 'STR_FOO
+a b', value: []}
+    -
+    - k-1 12.5
+id he,llo world:
+  0x1F id: 'Ã©'
+%%%%
+- 12.5
+%%%%
+-
+  -
+  - y
+    colon:
+  - |
+    x
+
+%%%%
+- 926 # c
+%%%%
+--
+- Ã©
+%%%%
+
+
+%%%%
+- fls%
+%%%%
+'hello world':
+  id: {}
+  'delta': |+
+    x
+
+  476:
+  k_2 ~: 'true
+k-1' # c
+type: true
+  value
+
+%%%%
+- '0]1F
+%%%%
+-
+  - a b
+    true
+  - Ã© x # c
+  # comment
+  -
+    STR_FOO: [a b]
+    x æ—¥æœ¬: null
+    -148: true
+  - >+
+
+    ~
+%%%%
+- z hello world
+%%%%
+-
+%%%%
+-
+  - 137 # c
+  - hello world true: |+
+      x
+    true: "k-1\n\t\x41"
+  - 123.50 # c
+
+  - 825 # c
+- hello world # c
+%%%%
+- "k-1\n\t\x41"
+...
+%%%%
+-
+  'value': false
+
+%%%%
+-
+  - [[false]]
+  -
+    yes STR_FOO: 934.17
+  -
+    hello world: 707.91
+    # no -3: [[# no], {"z": 329, x -3: 'STR_FOO', hello world: 39.28}, ~]
+
+  - 724.91 # c
+%%%%
+1025: '12.5
+q?'
+colon: - dash: "12.
+-x" # c
+'x': delta # c
+%%%%
+- "beta"
+%%%%
+---
+- delta x: q?
+    type
+- "
+colon:
+hello world\n\t\x41" # c
+- 749.96
+%%%%
+'alpha':
+  - Ã©
+
+  -
+    - "-3": null
+      x: 193 # c
+    # comment
+    -
+      yes ~: null
+      value: 150.95
+
+  # comment
+  -
+    -
+      ~ id: - dash # c
+      'name': {1025: {1: 340}}
+      hello world yes: true
+      21: null # c
+    - 853
+    -
+      a b: {"-3": {# no Ã©: false}, 'a b': {1189: "delta", delta: -482, 'id': # no 0x1F}}
+  # comment
+  - STR_FOO a b: null # c
+k-1 a b: q?
+"k-1\n\t\x41":
+  "x\n\t\x41": value
+    hello world
+  y: [104.67, [], {name: null}]
+  a b - dash: >
+    x
+  gamma: 340 # c
+1309:
+  k-1 STR_FOO: null
+%%%%
+- x: 41
+  12.5: vlue null
+-
+  - null
+    q?
+  - value
+    value
+  - alpha
+    k_2
+%%%%
+---
+- false
+%%%%
+a b:
+  - "colon:
+yes"
+  - id 1
+  -
+    - z: "alpha
+x"
+      - dash: [\ull, ["gamma", ~, null]]
+  # comment
+  - hello world
+    0x1F
+1146: 'alpha
+k_2'
+12.5: alpha
+  yes
+...
+%%%%
+- STR_FOO
+  æ—¥æœ¬
+- "al%pha
+- dash\'n\t\x41"
+%%%%
+- >
+  name
+%%%%
+- null
+%%%%
+-
+  null:
+    1120:
+      1427: 243.75
+      -57: 'Ã©
+alpha'
+    Ã© delta:
+      332:
+      ,ull: null # c
+  type: k-1
+   >1
+  x true: hello world
+- {}
+%%%%
+- 0x1F
+  - dash
+- beta: delta # c
+  12.5: |-
+    x
+- 629
+- - dash
+
+%%%%
+gamma z: a:b # c
+%%%%
+---
+1006:
+  value: - dash
+
+  alpha: "delta"
+  a:b 1:
+    -3: 0x1F
+      yes
+
+    "a:b":
+      "type": æ—¥æœ¬ STR_FOO
+      k_2: true
+
+    60: alpha
+    0x1F:
+      null: 'name
+~' #!c
+
+  770: >
+    null
+    x
+
+true: 12.5
+%%%%
+-
+  beta:
+    'a:b':
+      -3: null
+    name: hello world
+- |
+  colon:
+  k_2
+  null
+%%%%
+- k-1:
+    558:
+      - 'beta'  c
+      - a b 1 # c
+      - "value": [null]
+      - '1'
+%%%%
+- null alpha
+%%%%
+-
+  "Ã©":
+    "colon:": 927.35 # c
+    729: 'delta
+k_2'
+    colon:: false
+  beta: ~
+  "gamma\n\t\x41":
+    -3: null # c
+    'beta': true
+    Ã© id: true
+    -3: null
+%%%%
+-
+  alp\ha beta: >-
+    true
+      more
+    - dash,
+- >-
+  ~
+%%%%
+- Ã©
+%%%%
+"y": # c
+id: '0x1F
+# no'
+true x: k_2
+  STR_FOO
+
+x: >
+  q?
+%%%%
+- a b # c
+%%%%
+id gamma:
+  -
+    1282:
+      - x -3: 141.57 # c
+      - -3
+      - {}
+      - 12.5
+
+    390: q?
+      0x1F
+    ~: z
+      a:b
+type: true
+  k_2
+Ã©: gamma
+  x
+%%%%
+-  	ull: ~
+%%%%
+- beta: gamma beta
+  yes: -3
+    0x1F
+-
+  - delta z: {"value": 216}
+
+%%%%
+-
+  'q?': Ã©
+    yes
+  delta: >+
+
+    null
+    yes
+      more
+%%%%
+- 'value
+-3' # c
+%%%%
+yes æ—¥æœ¬: Ã©
+  k_2
+'null':
+  - 12.5 1
+  - x:
+      - 'null
+type'
+  - 1 z
+  # comment
+
+"- dash": STR_FOO
+  type
+%%%%
+-{null # c
+%%%%
+-
+  - "- dash
+12.5\n\t\x41"
+
+  - 'beta': # c
+    x: []
+%%%%
+æ—¥æœ¬: æ—¥æœ¬
+  Ã©
+id:
+  -
+    -
+      - "type": {k-1 beta: {}, 1171: [], q?: {12.5 name: 'name
+a:b'}}
+      - -349
+  -
+    1011:
+      - 82.0 # c
+      - true
+      - null
+...
+%%%%
+- |-
+
+
+  Ã©
+%%%%
+-
+  true nam': "# no"
+
+- null
+-}value
+  z
+- 663: q?
+  0x1F: 956 # c
+
+%%%%
+alpha: 
+colon: value: >-
+  q?
+
+yes: false # c
+
+%%%%
+- fal[e
+%%%%
+-
+  value: 978
+%%%%
+- >
+  0x1F
+  y
+  delta
+    more
+%%%%
+'x':
+  -
+    type: 12.5
+      Ã©
+
+    698: "value"
+
+  - -3: name
+  # com-ment
+  - q? value
+value:
+  888: false # c
+
+  1343: >
+
+    hello world
+      more
+  970: >-
+    -3
+    12.5
+  a b: 'a b
+beta' # c
+%%%%
+-484: 1
+  alpha
+true: {beta: 910.75, beta: ~}
+%%%%
+- 324: [[STR_FOO, null, 879.94], [q?, false, ~]]
+  beta: 1
+    0x1F
+- 'z
+0x1F' # c
+# comment
+-
+  - "0x1F": false
+  # comment
+  - k-1: z
+      q?
+    k-1: alpha
+  -
+    type k_2:
+      gamma: STR_FOO STR_FOO
+    0x1F -3:
+      - k_2: true
+        # no: true
+      - beta # c
+    1155: |-
+      k_2
+        more
+      a b
+        more
+
+    æ—¥æœ¬: {a b: [948, 'k_2']}
+  -
+    '~': 801.21
+    279:
+      - -3
+      - 1357
+      - 342.58
+
+    656: 'id
+beta' # c
+%%%%
+-
+  gamma # no: "k-1
+Ã©\n\t\x41" # c
+%%%%
+829:
+  0x1F: gamma # c
+Ã©:
+  - 141: null # c
+    Ã©: {414: [y, # no delta], y: {}, gamma: yes}
+  - colon:: Ã© # c
+    # no: 'id'
+
+  - Ã©
+  - '1
+gamma' # c
+
+...
+%%%%
+---
+'a b': {}
+'# no':
+  755: name
+"name":
+  colon: x: null # c
+  alpha:
+    type - dash: 'hello world'
+    1440: STR_FOO
+    STR_FOO: []
+  value: {"k-1\n\t\x41": {z # no: Ã©}, 1: {value: 610, x: null}}
+
+  747: true
+    12.5
+%%%%
+- 0x1F
+  Ã©
+%%%%
+---
+- k_2: x # c
+  q?:
+    STR_FOO: æ—¥æœ¬
+    546: |
+      x
+    880: |-
+      x
+    -3 type:
+      -
+      # comment
+      - x: type
+      - null # c
+      - 'beta'
+-
+  true type: a b
+  null -3: "id"
+  0x1F ~: 303.57
+  506: -25
+
+# comment
+%%%%
+- # c
+...
+%%%%
+-
+  -
+    - "z": {null: ["# no
+type", 12.5, hello world]}
+      x: 'æ—¥æœ¬' # c
+    - Ã©
+      type
+    - Ã© yes
+  - -419: # no
+  - -241 # c
+  - q?: - dash
+      colon:
+
+  # comment
+%%%%
+-
+  - true # !
+  - [[-419, 0x1F]]
+  -257.26
+%%%%
+Ã© value: 'alpha'
+1 a:b: |+
+  1
+%%%%
+---
+- STR_FOO
+  value
+%%%%
+a:b: q?
+
+type: yes
+"a b\n\t\x41": null # c
+STR_FOO # no: "æ—¥æœ¬
+null" # c
+%%%%
+-
+  nme-3: type
+%%%%
+---
+-
+  delta: 477.52
+  -371: name
+  name -3: "STR_FOO"
+  719: Ã©
+    true
+%%%%
+- 530.53 # c
+%%%%
+- dash z: '12.5
+12.5' # c
+hello world: a:b
+  value
+%%%%
+- "- dash":
+    a b æ—¥æœ¬:
+      Ã©: null # c
+    delta:
+      487: [[~, delta a:b, k_2], [672.71]]
+      type: {z alpha: '-3', "true": [151.12], 22: {STR_FOO: x name, alpha: 'a:b', 958: z}}
+      "value":
+    y: |2
+      id
+        more
+      alpha
+    'alpha':
+      z delta: delta
+
+      true: -244 # c
+-
+  - {}
+  -
+    x a b:
+      - gamma: 12.5 # c
+      - 'delta'
+      - -479
+  - z
+    yes
+# comment
+- ~
+  k-1
+%%%%
+- [[], ['k_2
+- dash', ~, true]]
+%%%%
+- >-
+  STR_FOO
+  hello world
+    more
+  1
+%%%%
+- ?'# no?', []]
+%%%%
+- [false, {null: yes}, false]
+-
+  -
+    STR_FOO: |2
+      x
+    0x1F:
+      'type': 354.70
+      0x1F: null
+    -3: delta
+  ,   -3
+    343: colon:
+      Ã©
+  - null
+  - ~:
+      830: [34, [y k-1, true 1]]
+      delta: null
+      type: {}
+# comment
+-
+  95: >-
+]    ~
+      more
+  null 1: >+
+
+    beta
+
+  372: >+
+    æ—¥æœ¬
+    colon:
+      more
+
+%%%%
+---
+- a:b
+  yes
+%%%%
+- true # c
+%%%%
+- |2
+
+  null
+...
+%%%%
+- q?: [['-3
+null', ~, "gmma"]|
+%%%%
+- hello world: |2
+    x
+  id:
+    - 1096: value
+    - 'alpha': 12.5 # no
+
+    - |-
+      x
+    -
+      - false # c
+
+# comment
+- |
+  type
+
+  type
+    more
+%%%%
+- h>llo :world
+%%%%
+- gamma # c
+%%%%
+-
+  colon::
+
+  gamma:
+    - "id": -3 alpha # c
+  a b:
+    -239: true # c
+  12.5: k_2 # c
+%%%%
+- id
+  beta
+-
+ 
+ - >
+    y
+
+    y
+      more
+
+- false # c
+%%%%
+- 12.5 a	b
+%%%%
+--}
+q?: id
+%%%%
+-
+  277: '1'
+%%%%
+- STR_FO
+%%%%
+-
+  æ—¥æœ¬: a b
+    name
+  0x1F beta: æ—¥æœ¬
+    1
+  a:b: 12.5
+    - dash
+%%%%
+- [{'type': null, val{e: true}, {}, false]
+- a:b: k-1
+    delta
+  q?: >+
+    æ—¥æœ¬
+- ["0x1F", ['hello world', beta yes], null]
+%%%%
+- dash gamma: # no Ã©
+value hello world:
+  - false
+  - value
+    ~
+
+  - delta
+id:
+  true name: |+
+    x
+q?: null
+
+%%%%
+---
+- æ—¥æœ¬
+%%%%
+q? k-1: value
+  delta
+%%%%
+---
+- >
+
+
+%%%%
+-3 z: Ã©
+k_2: yes
+~:
+  y: 'id'
+  'a b': a b # c
+%%%%
+-
+  delta k_2: null
+
+  alpha # no: 530.13
+
+  delta a b: ~
+  a:b: null # c
+- 94 # c
+
+%%%%
+- 905.83
+%%%%
+---
+-
+  -352: >+
+    true
+      more
+    alpha
+    k_2
+      more
+  ~ k_2: >-
+    type
+  "yes": 754.77
+%%%%
+- |2
+  0x1F
+    more
+  hello world
+- z: true
+- 12.5
+  beta
+- "æ—¥æœ¬": |
+
+
+  k-1: y
+    k_2
+...
+%%%%
+- y # no
+%%%%
+"1": 'z
+æ—¥æœ¬'
+...
+%%%%
+-
+  - 701 # c
+  - 408
+%%%%
+- Ã© hello world
+%%%%
+- "- da	sh"
+%%%%
+- []
+%%%%
+- x
+  k-1
+%%%%
+- true # c
+%%%%
+"# no": >
+  x
+-3:
+  Ã© k_2:
+    - 707: "delta\n\t\x41"
+      a:b: [{'k-1': null, 419: z}, ['a:b'], [false]]
+
+  1351: 72.3
+  'null': colon:
+    k_2
+  'z':
+    173: {hello world: {}, a:b: [false, null, null], name y: beta k-1}
+    "true": [[1 # no], ~, {-273: true}]
+    "gamma\n\t\x41": true
+    -325: >
+      value
+      beta
+        more
+      STR_FOO
+STR_FOO null:
+  - "STR_FOO": delta
+      true
+  - hello world
+    k-1
+  -
+    value: [colon:, [], {}]
+    k-1 x:
+    x:
+      - "Ã©
+~" # c
+      - "x"
+      -
+%%%%
+- @|
+  x...
+%%%%
+- -
+  gamma
+  delta
+    m|re
+  a:b
+%%%%
+-  k-1: |2
+    -3
+      more
+  'alpha': 300
+  Ã© 0x1F: |-
+
+%%%%
+---
+-
+  - dash: y
+  colon::
+
+  ~ -3: []
+%%%%
+1398: {1123: [], -65: ["0x1F
+x", false]}
+~ ~: |
+
+  beta
+
+alpha a:b:
+  y:
+    1 alpha: true alpha
+    'null':
+      name id: 'value'
+    1: 471.1 # c
+    type colon::
+      - "colon:": [{-3: type k-1, 277: 887, null null: null}, [180, type]]
+        - dash: true
+      -
+
+
+%%%%
+- []
+%%%%
+'1':
+  454: k_2 # c
+  "colon:": null
+  'id':
+    - "æ—¥æœ¬": {}
+    -
+      q? Ã©: STR_FOO
+      hello world:
+    - x value
+
+    -
+      # no k-1: # no
+      true: 540 # c
+      z: {1282: null, q?: 'STR_FOO
+1'}
+%%%%
+- [{-3: ~, value: 'beta
+# no'}]
+%%%%
+-337:
+  -
+    - 1409: 339 # c
+      gamma: æ—¥æœ¬
+  - '0x1F
+x'
+  -
+    - 523.95
+    ]
+      - 284.27
+
+      -
+      - {a:b type: [380.45, hello world]}
+    - id: false
+      yes: k_2 - c
+    # comment
+    - gamma: yes 1 # c
+      y: null
+110:
+  "alpha": "id"
+  '~':
+    - true: true # c
+%%%%
+- 'true': x
+    - dash
+  yes: a:b
+@   }
+...
+%%%%
+q?: - dash
+-154:
+  -
+    1022: {}
+    id: |
+      delta
+      a:b
+    ~:
+      # no: ~
+    name: 871 # c
+  - 170 # c
+
+  - ~
+    a:b
+  - 830: {delta: {a b: false, 785: true, 667: null}, "a b": {'12.5': ~, #rue delta: 1192}, k-1: æ—¥æœ¬}
+    true: null # c
+alpha - dash: x
+%%%%
+-
+  æ—¥æœ¬: >-
+    x
+  æ—¥æœ¬: x # c
+%%%%
+---
+- x
+  a:b
+%%%%
+-3 q?:
+  - null
+alpha: true yes
+559:
+  - {colon: z: [delta a:b, '0x1F
+~'], k-1: true, 243: {1401: ~, 913: "~"}}
+  - 1
+  - "k-1"
+%%%%
+-
+  -218: # c
+  302: |
+
+    z
+      more
+  1142: |
+    STR_FOO
+    colon:
+    q?
+      more
+  Ã©: a:b
+    a:b
+%%%%
+-
+  -
+    a b 12.5: null
+    STR_FOO: "y"
+
+    12.5: 'delta
+a:' # c
+    -201: 0x1F
+  - >+
+    x
+
+%%%%
+-| 1375
+%%%%
+-
+  -
+    Ã©: "-3"
+    a:b gama: true
+    æ—¥æœ¬: true
+    k-1: z
+  - 'alpha': 612.83
+  -
+    ~ 1: beta
+  # comment
+  - alpha 0x1F: yes # c
+%%%%
+true:
+  -
+    - 'type
+STR_FOO' # c
+    - true
+    - a:b
+  - 769
+  -
+    "q?": ~
+    null:?|+
+      x
+    name -3: |-
+
+      ~
+642: |2
+  z
+-3 delta:
+  - null
+  -
+    - -228
+
+    - -175: null
+    -
+      "STR_FOO": "hello world
+STR_FOO"
+    -
+      a b: z # c
+      STR_FOO: [{53: '12.5', "beta\n\t\x41": STR_FOO}]
+      alpha 12.5: true # c
+      "-3": {- dash y: {x: false}, true: beta, # no a b: [k_2, z k_2]}
+id: z
+%%%%
+- >
+
+- {}
+%%%%
+z: 12.5
+gamma: 'y
+æ—¥æœ¬' # c
+%%%%
+- "z": "gamma
+hello world"
+- true 0x1F:
+    null:
+      - # no
+      - alpha: 'delta'
+        beta: {colon:: [x], 1180: 1358, value: [colon:]}
+    id: >-
+      alpha
+      1
+      true
+        more
+  STR_FOO:
+    - æ—¥æœ¬
+      q?
+    - - dash # c
+    - null
+%%%%
+- x
+  id
+%%%%
+- true
+
+%%%%
+---
+- >+
+  typ	e
+%%%%
+-
+  - |
+    a b
+    yes
+      more
+    # no
+      more
+
+  - "x": |
+      x
+    STR_FOO: 345.34 # c
+-
+  - null
+  - [{id: true, "x\n\t\x41": a b}, [], {k-1 STR_FOO: 656.65}]
+
+- 'a:b': "1
+q?"
+  x:
+    - 'y':
+    - 169.74
+# comment
+%%%%
+- 0x1F:
+    'true': q?
+    'x': {}
+
+    colon: a:b: k-1
+      k_2\
+    79:
+      - "id"
+
+%%%%
+- 159: |-
+    hello world
+    yes
+      more
+
+%%%%
+- beta
+  1
+%%%%
+---
+-
+  - gamma delta: {-359: {1 STR_FOO: "x
+0x1F", 906: ~, 1156: 'delta'}, z ~: [y, 721.8]}
+...
+%%%%
+- "name
+id\n\t\x41" # c
+%%%%
+-
+  -
+   q? z: null
+
+    hello world: "yes"
+    1 ~: y gamma
+  - null
+    12.5
+%%%%
+- |
+  x
+%%%%
+- 0x1F STR_FOO:
+    -
+      hello world: a b
+      "k-1":
+      'colon:': æ—¥æœ¬ # c
+      "beta": false
+    - |
+      a b
+        more
+      y
+      q?
+  gamma:
+    alpha:
+      k-1: Ã© æ—¥æœ¬
+      "~": []
+
+      "æ—¥æœ¬\n\t\x41": {}
+      hello world: '~
+type'
+    k-1:
+      k_2: ["name
+k-1\n\t\x41", k_2, []]
+      a b yes: ~
+      240: 1 beta
+    yes: >
+      null
+      delta
+        more
+      null
+
+%%%%
+-
+  171: -3
+    id
+  yes:
+    0x1F z: 'a:b'
+    541: k-1
+    -143: -62.26
+  value: true
+    gamma
+%%%%
+-
+  - |-
+    x
+  - beta # c
+  - alpha
+%%%%
+-
+  - q?: y æ—¥æœ¬
+  -
+    name: null # c
+    k_2: 453.28
+    beta hello world: value
+  # comment
+%%%%
+- [1 a b, [], [null]]
+%%%%
+---
+-
+  -
+    - gamma
+  # comment
+  -
+    - [[-3, 940.6]]
+    - 0x1F: [{id: id a:b}]
+    - false
+  -
+    - "Ã©
+name"
+%%%%
+-
+  yes: null # c
+  a:b true:
+    gamma: -148
+    -409: true
+
+  null:
+- id hello world: |2
+    x
+-
+  -
+    -
+      alpha: Ã© # c
+      'colon:': false # c
+      'type': []
+    - k-1
+  - colon:
+    id
+  - []
+  - id
+    yes
+-
+  -
+    12.5: k_2
+    a:b Ã©: -411
+    ~ z: 76.59
+    colon:: >+
+      alpha
+      x
+        more
+
+  -
+    - STR_FOO
+
+  -
+    x: false # c
+    colon: alpha: {668: # no 0x1F}
+
+%%%%
+- # no
+  k_2
+-
+  - {a b: [true, '-3'], alpha: [z, "-3
+true", -486]}
+  - 625.71 # c
+  -
+    ~: [{}, false, null]
+
+    hello world: 848 # c
+  -
+    - type STR_FOO
+    - gamma
+
+    - - dash: false
+      Ã©: 451.30
+    - - dash # c
+-
+  colon:: >+
+    12.5
+      more
+    Ã©
+  -481: 0x1F id
+
+  'x':
+    -
+      true -3: {STR_FOO - dash: true, null STR_FOO: false}
+      y: k_2
+    - k_2
+
+    - false
+    - "x\n\t\x41": {}
+  a:b: |+
+    type
+      more
+
+- "delta": true # c
+  0x1F: hello world
+    value
+%%%%
+-
+  '1':
+    - {yes - dash: [], id: 'value
+Ã©', y: {"yes": delta}}
+
+    - Ã©
+
+    - 24
+...
+%%%%
+'k-1': -3
+  value
+%%%%
+236: colon: # c
+1442: |2
+  true
+
+1206: 872.15 # c
+%%%%
+- k-1
+  alpha
+-
+  -
+    x: 'gamma'
+    true q?: 0x1F
+
+  - {}
+  - Ã©:
+      x # no: Ã©
+      alpha:
+      true k_2: '# no'
+      506: "x\n\t\x41"
+  -
+    - -3
+      null
+    - value
+
+    - 'y': true
+      gamma: {Ã©: {-3: yes 1, -361: 'type
+STR_FOO', 1051: delta - dash}}
+-
+  - Ã© gamma: [[id, - dash]]
+%%%%
+- k_2 x:
+    - {'gamma': [null, false, k-1], "q?": ~}
+    - []
+    - a b
+      Ã©
+    - q?: true
+
+- 0x1F x:
+    1389: |+
+      0x1F
+        more
+      alpha
+      hello world
+    null: # c
+  12.5: hello world
+    hello world
+
+- 0x1F
+
+-
+
+%%%%
+---
+- '~'
+%%%%
+- nul-l # 
+%%%%
+---
+- {}
+%%%%
+' :'k-1
+colon:' # c
+%%%%
+-
+  a b: {k_2: []}
+  hello world true:
+    - "gamma
+name\n\t\x41"
+    - Ã© delta: [y, {'beta': STR_FOO, "id": type}, {}]
+    - id: id
+    # comment
+
+  "y\n\t\x41":
+    value: yes
+%%%%
+---
+Ã© id:
+  -12: |2
+    colon:
+
+%%%%
+---
+-
+  - >+
+    q?
+%%%%
+---
+a b alpha: |+
+  1
+    more
+  12.5
+    more
+%%%%
+861: 256 # c
+%%%%
+- |2
+  ~
+    more
+- ~ yes
+
+- >-
+  y
+    more
+  name
+    more
+- 311:
+    -
+      - # no: # c
+        id: false
+      - a b
+      - type: false
+        name: "a b
+beta"
+      - [[~, "id
+y\n\t\x41"], [-134, 922.53], 1041]
+    - STR_FOO
+      alpha
+    -
+      - -20
+
+      - "a b": {}
+        true: "STR_FOO\n\t\x41"
+      - 752: z
+        q?: Ã© # c
+
+  12.5:
+    null: "a b
+0x1F"
+%%%%
+- {-174: [colon:, colon:], "æ—¥æœ¬\n\t\x41": [hello world, 279], 1166: 1096}
+...
+%%%%
+---
+a b:
+  '# no':
+    k_2:
+      "colon:\n\t\x41": 'colon:
+a:b'
+
+      981: 405.97
+  q?: null # c
+  581: delta
+    x
+type: null
+null 1: false
+"k-1": null
+%%%%
+æ—¥æœ¬ yes:
+  -
+    - null
+    -
+      - -3 colon:: null
+        value: [{"0x1F": -62, null: null}, [q?, colon:]]
+      - true: y # c
+        delta: k-1 # c
+      - "type": 'name
+~' # c
+        name: # no colon: # c
+      - y
+      # comment
+    -
+      - ~
+      - id
+      - z: 162 # c
+      - 139.40 # c
+1116: >+
+
+  Ã©
+%%%%
+763: {1198: null, delta: # no}
+%%%%
+- {284: {"x": x}}
+%%%%
+-
+  { 121: null
+...
+%%%%
+name: ~
+  y
+-3: [~]
+'beta': 'hello world
+a:b'
+beta 12.5: 358
+%%%%
+- null # c
+%%%%
+-
+  'Ã©':
+    - 'colon:
+~'
+    - a b: true
+      null: value gamma # c
+    - type colon:
+
+%%%%
+763: 1
+  x
+1153:
+  -
+    - ~: [{}, true]
+      z: # no
+    - Ã© # c
+    - 1
+
+    # comment
+  -
+    yes: |+
+      beta
+        more
+      a:b
+      12.5
+
+  - {}
+  - true
+-143: [[198.73, -155], {'null': ~, 1: ~}, {383: x 0x1F, x name: null}]
+
+%%%%
+null:
+  "value":
+    1 - dash: false # c
+    gamma: beta
+      0x1F
+    1:
+      - 755.90 # c
+
+      - yes - dash # c
+  alpha: id
+  type: [[true], {gamma: z 12.5}]
+type:
+  -
+    colon:: >
+      x
+    STR_FOO: {}
+
+    1273: ~ a:b
+    '12.5': |2
+
+      ~
+        more
+  - 1
+  # comment
+'null': k_2
+  1
+%%%%
+-
+  - 688.85 # c
+  - [{value: true, k_2 1: null}, {}]
+  - |+
+    12.5
+  - name # c
+%%%%
+-
+  - []
+  - 1030
+
+  - true
+    0x1F
+%%%%
+- >+
+  x
+%%%%
+-
+%%%%
+---
+-
+  colon:: >-
+
+    true
+    ~
+      more
+  -473:
+    x: true
+    STR_FOO: null
+    q?: 1017 # c
+
+%%%%
+- a:b: {~: {1206: ~}}
+  colon::
+    '1':
+      z: delta # c
+# comment
+- |
+  0x1F
+- STR_FOO
+  x
+
+# comment
+%%%%
+- [{484: "a:b
+0x1F"}, {value: 252.85, yes: ~, "q?\n\t\x41": type}]
+%%%%
+- yes: >+
+    x
+  true: 47.25 # c
+- null
+# comment
+- 1083 # c
+%%%%
+- '~' # c
+...
+%%%%
+--371 # c
+%%%%
+x a b:
+  gamma: 547
+  alpha 1:
+    - null
+    - 1292: null
+x a b: null
+beta: {}
+'colon:'%: {1302: {@ no a:b: 176.12, 'gamma': 'id
+value'}, "y": {}}
+%%%%
+-
+  -
+    1426:
+      - y
+      - "12.5
+hello world"
+    -149:
+      - a b
+      # comment
+  - beta
+  - # no
+    id
+- 0x1F
+  delta
+-
+  "a:b":
+    "delta": |-
+
+      hello world
+    alpha: value
+    1133: k_2
+
+    860:
+      "k_2": {id yes: alpha, ~ æ—¥æœ¬: {k-1: 1275}}
+      ~: 12.5 - dash
+
+
+  "y\n\t\x41": [{Ã©: "æ—¥æœ¬
+x", 1: æ—¥æœ¬, '0x1F': null}, {12.5 beta: 275}, 177.72]
+  1418:
+  k-1 x:
+- 725.77
+%%%%
+---
+true name: "q?\n\t\x41"
+'hello world':
+  -
+    - |-
+      beta
+
+    - x gamma
+    -
+      name: [[id null], {Ã©: æ—¥æœ¬}, {hello world: ~, '~': 'Ã©
+k_2'}]
+      a b: null
+      y a:b: 510 # c
+      'a b': null a b
+
+  - delta
+  -
+    - dash a b: null # c
+    k-1:
+      'a b': 899
+
+
+  - 'k-1': null # c
+    1:
+- dash a:b:
+  0x1F beta:
+    a b:
+      'id': - dash
+
+    1: {12.5: {"hello world": "true
+z"}}
+  -184: 557
+  name: a:b
+    ~
+  type:
+    - dash:
+      - a b
+%%%%
+- [[1, ~]]
+%%%%
+-
+  - "true\n\t\x41": null
+    - dash: {true 1: {"null\n\t\x41": null, æ—¥æœ¬: value, k_2: null}}
+  - null
+  -
+    1: null
+    663: {"colon:": 'STR_FOO
+- dash', a:b: {null: a b}, k-1: 46.93}
+%%%%
+>-1: yes
+%%%%
+- beta
+  ~
+...
+%%%%
+-
+  "alpha": {}
+%%%%
+- >	
+  value
+    more
+  k-1
+  }
+    more
+...
+%%%%
+z Ã©: false
+1490: a:b
+  -3
+x:
+  345: {894: [], ~ null: [], Ã©: []}
+%%%%
+- >
+  hello world
+%%%%
+-|"q?"\n\t\x41"
+%%%%
+-3 æ—¥æœ¬: k-1
+  k-1
+
+%%%%
+---
+-
+  - ~
+    1
+  - q?
+    - dash
+  - x
+    -3
+%%%%
+- nul
+
+%%%%
+---- 14:67
+%%%%
+- [{x delta: true, value: 1470}, [null, null, q?], false]
+- {}
+
+- null # c
+- 'delta' # c
+%%%%
+-
+  z: y
+  colon: Ã©: null # c
+  alpha:
+    'gamma': false
+
+    k-1: gamma
+
+...
+%%%%
+- y ~
+-
+  - null
+  - 175.47
+  - - dash # c
+- "delta": 982.65
+
+- # no: [{delta: null}, [y, k_2 hello world]]
+  a:b: y
+    # no
+
+%%%%
+- |
+  a:b
+%%%%
+-
+%%%%
+---
+-
+  - 52
+  -
+    1022: false
+    Ã©: 430.86
+  - null # c
+%%%%
+-
+  496:
+    - hello world: k-1
+      null: [{}, k-1 SR_FOO, id]
+  - dash name:
+    - 422
+  1: ~
+%%%%
+---
+- 136 # c
+%%%%
+996:
+  -
+    - "z\n\t\x41": 'alpha
+y'
+      id: æ—¥æœ¬ # c
+    - "k-1
+- dash"
+    - ~: # c
+
+    - [{delta: "id"}, {}, {~: 315.72}]
+  - 113: q?
+      # no
+    hello world: false
+  -
+    - gamma: 922.83
+      y: æ—¥æœ¬
+    -
+      name: 678
+      -334: "beta\n\t\x41"
+
+      ~: null # c
+      'k_2': {null: {}}
+
+    - q?
+      name
+    - æ—¥æœ¬: null
+  - {y k_2: [], type a:b: ["z\n\t\x41"]}
+
+colon::
+  -
+    gamma beta: >-
+      x
+    981: null
+
+  - |
+    x
+  - "true
+colon:" # c
+  - q? k-1: |
+      x
+STR_FOO: hello world
+  id
+%%%%
+- true
+%%%%
+-
+  -3: true # c
+...
+%%%%
+- {}
+%%%%
+---
+- 874
+-
+  - z
+    yes
+  - "hello world":
+      0x1F: delta value
+      'true': {1222: {1391: # no}}
+
+    >  '@-1': 1 # c
+  - >+
+    a b
+  - []
+
+  # comment
+%%%%
+- # c
+%%%%
+- {}
+%%%%
+delta: null
+'1': ~
+  name
+colon: hello world: STR_FOO
+  true
+%%%%
+alpha: |+
+  x
+1328:
+  k_2: 381
+  - dash gamma:
+    -
+      "null": [{beta: z}]
+      type: "STR_FOO
+colon:\n\t\x41" # c
+'beta': []
+-3 z: ~ # c
+%%%%
+- 751.82 # c
+-
+  -215: {colon: id: {gamma: z, -314: ~}}
+  'beta':
+    171:
+      # no STR_FOO: null # c
+      yes: alpha
+
+      "hello world\n\t\x41": # c
+      delta: yes k-1
+    1426: 'hello world
+name'
+    12.5: 653.2 # c
+    'name': {k-1 beta: alpha, delta yes: [~, 338.50], "Ã©": {449: "12.5\n\t\x41", Ã© true: k_2, 680: delta}}
+
+  hello world:
+    -
+      - STR_FOO ~: false
+        alpha: value
+    - [z, -3 hello world, [true, ~]]
+
+
+# comment
+-
+  - [[1, 'k-1'], [false], 'true']
+%%%%
+# no k-1: 224
+%%%%
+- null # c
+
+...
+%%%%
+0x1F:
+  k_2 name: false
+  value: false
+  -44: # c
+
+0x1F: -3
+  - dash
+0x1F: null
+id alpha: beta
+  k_2
+...
+%%%%
+--[
+- 'alpha
+alpha'
+%%%%
+"-3": alpha
+hello world:
+  æ—¥æœ¬:
+    gamma:
+      a:b: null
+      "a b": "z
+Ã©" # c
+      # no # no: "æ—¥æœ¬"
+    a b alpha: gamma
+      0x1F
+    168: null
+    Ã©:
+      - []
+      - 1448 # c
+      - null
+"beta": 12.5
+  id
+%%%%
+"- dash": colon:
+  null
+alpha name: y gamma
+%%%%
+-}727.82
+%%%%
+-
+  - - dash æ—¥æœ¬:
+      - # c
+      - -3 name: {"delta\n\t\x41": {787: "Ã©", "beta": null, gamma colon:: hello world gam%a}}
+        true: 865
+      - 1123 # c
+      # comment
+      - colon:
+  - 1261 # c
+- beta # c
+
+-
+  true STRFOO:
+    - # c
+    - # c
+    - 12.5: "true
+Ã©" # c
+    - value
+      0x1F
+%%%%
+---
+- |-
+  1
+
+  beta
+%%%%
+- "name
+type"
+...
+%%%%
+value STR_FOO:
+  - # no
+  -
+    - 66 # c
+-373:
+
+...
+%%%%
+\ "yes"}
+%%%%
+- 'hello world
+~' # c
+%%%%
+-
+  - |2
+
+    type
+
+  - 'k_2' # c
+%%%%
+---
+-
+  -
+   - dash: null
+    915: # c
+  -
+    - "x": false
+      beta: 'delta'
+    # comment
+    - a:b: 'k-1'
+    - 957
+%%%%
+-
+  -
+    'gamma': -3
+    null name:
+      - 'beta
+# no'
+      - 43.77 # c
+      - [Ã© alpha, {}, {'1': y, 581: "name\n\t\x41", æ—¥æœ¬: ~}]
+    "delta": true
+    922: {}
+
+  # comment
+  - # no colon::
+      - 1025: [{125: 355.67, 'y': 273.17}, null, {1 z: k-1}]
+      # comment
+      - "x\n\t\x41" # c
+
+      - 'id
+y'
+      - k-1
+
+  -
+    delta: 728
+    -285: 175.98 # c
+    550: 24.54
+
+  - [id hello world]
+- 416
+- 12.5
+- 645: Ã©
+    y
+  y: k-1
+    null
+
+# comment
+%%%%
+---
+- null *, c
+%%%%
+- a b
+  true
+%%%%
+- >+
+  x
+  gamm	
+>  12.5
+%%%%
+- "a b
+null"
+%%%%
+- 1107 # c
+%%%%
+- colon:
+%%%%
+- '>' #>c
+%%%%
+-
+  yes STR_FOO:
+    'Ã©': {gamma: "yes\n\t\x41", gamma: {-386: true, a b q?: 957.11}, beta: ~}
+    name: 'STR_FOO
+12.5'
+    id:
+  654: "1
+Ã©" # c
+  3: "y"
+  "yes": null
+%%%%
+-
+  - |-
+    q?
+    hello world
+      more
+%%%%
+- null
+...
+%%%%
+-
+%%%%
+- k-1
+%%%%
+-
+%%%%
+STR_FOO: STR_FOO
+  id
+12.5: 786.28
+- dash: hello world # c
+k-1 k-1:
+  -
+    -410:
+      id true:
+    - dash: >
+      id
+        more
+      true
+      x
+    æ—¥æœ¬: value
+      ~
+  -
+    1:
+      hello world z: a b
+      -170: null # c
+
+      12.5: 1231 # c
+    -147:
+      - dash Ã©: "- dash"
+      0x1F: {"value": 382.33}
+      ~: {}
+
+%%%%
+---
+value:
+  'hello world': 662
+  Ã© z: -3 gamma
+  'z': {304: ~, true value: {}}
+  376:
+    -
+      k-1: type # c
+      æ—¥æœ¬: name
+      colon:: STR_FOO x # c
+      ~ 12.5: 852
+    -
+      z: k_2
+
+      -3 null: {}
+      name: id # c
+
+    # comment
+    - false
+
+    -
+      - z: 560.0
+
+      - a:b
+
+
+- dash q?:
+
+%%%%
+- type: >-
+
+- -122: true
+  delta:
+    'a b': 12.5
+      z
+    1: [[707.6, true], {'k-1': 'æ—¥æœ¬'}]
+
+    yes - dash: {940: ["z
+y\n\t\x41"], 'gamma': []}
+    0x1F:
+      - 621: # c
+      # comment
+      -
+      - 972.41 # c
+
+%%%%
+- alpha
+%%%%
+-
+  - yes: name # c
+%%%%
+- gamma
+..{.
+%%%%
+- colon:
+  0x1F
+# comment
+- STR_FOO colon:: - dash
+    k-1
+  id: >+
+    id
+    1
+    # no
+      more
+- q?
+%%%%
+---
+- null
+...
+%%%%
+- 178
+%%%%
+-
+  -
+    -
+      gamma:
+      a b # no: # no
+      448: k_2 a b
+    - 987.93
+    # comment
+    -
+      1478: true # c
+
+      hello world: '# no'
+    - -426
+  # comment
+  -
+    - type: 994 # c
+
+    - >-
+      # no
+
+
+    -
+      -466: type - dash
+      null alpha: 241.21 # c
+
+      delta: "true\n\t\x41"
+      # no: gamma
+    - hello world # c
+- 235.63
+%%%%
+-
+  -444:
+    # no -3: # no null # c
+    "value": q?
+    ~: [{null: # no null, 1345: null}, 555.66, null value]
+  delta: {hello world: [beta, colon:, 967]}
+  null: null # c
+%%%%
+- "alha": [{- dash: # noy, 1306: Ã©, 1144: ~}]
+%%%%
+1431: 12.5
+id: {-160: {154: yes, value: 522.25, colon:: k-1 æ—¥æœ¬}, 1341: {delta gamma: 763}, ~: []}
+'delta':
+  - y: name
+      alpha
+    hello world:
+      - beta hello world
+      # comment
+      - 'k_2': 1191
+      - null
+      - 12.5
+  - a:b
+    value
+  -
+    - {533: {a b: true, beta æ—¥æœ¬: null}}
+    - 0x1F # c
+%%%%
+- [~]
+- 58: |
+    colon:
+      more
+
+  type:
+    - {1019: []}
+    - # c
+
+    # comment
+- colon:
+  colon:
+%%%%
+- |
+  yes
+  -3
+  æ—¥æœ,¬
+    more
+%%%%
+q?:
+  - Ã©
+    a b
+
+  -
+    a b: null
+    y: |2
+
+    x:
+      - y: 696.55 # c
+        12.5: 724.74
+      - "0x1F
+type\n\t\x41" # c
+      # comment
+      - false
+      - 1227: 'null
+delta' # c
+    -3:
+      STR_FOO: z # c
+Ã©:
+  -284: a:b # c
+  "hello wrld\n\t\x41": hello w	orld # c
+  k-1: 0x1F q?
+  z: true
+%%%%
+1334:
+  - # no:
+      k_2: k_2
+      beta: # c
+    q?:
+      "type\n\t\x41": id
+      "-3": "k_2
+x\n\t\x41"
+      }beta q?: 12.5
+      'a b': []
+value: y # c
+
+%%%%
+- >+
+  x
+%%%%
+a:b:
+  - 1458 # c
+
+  - alpha
+    Ã©
+  - 1
+  - 322.53 # c
+
+  # comment
+%%%%
+- {yes: null, name 1: type yes, q?: null}
+- "k-1":
+    STR_FOO:
+      type: type
+    alpha STR_FOO:
+    value delta:
+      - [false, {}, {}]
+  beta: >
+    x
+    true
+      more
+- 'null':
+    663:
+%%%%
+-
+  type:
+    - "0x1F": name
+      æ—¥æœ¬: null
+    - y x: "q?"
+      0x1F: [[null], []]
+    -
+      12.5: null # c
+      name: k-1 a b
+      null: "name"
+
+    - - dash
+      æ—¥æœ¬
+
+  colon:: true 0x1F # c
+ &Ã©:
+    -3 null: {type: {0x1F: ~}, k-1: [], -448: 12.5 k-1}
+    580: null # c
+
+  "q?\n\t\x41":
+    delta Ã©: 'a b
+12.5'
+
+...
+%%%%
+---
+- hello world: true # c} &q?: delta
+- |2
+  x
+
+-
+  'colon:':
+    12.5 12.5: |+
+      id
+        more
+    x: null
+    x y:
+      815: 791.16
+
+      955: 161.58
+      id: {~: {yes: null}, name: [k-1, ~, k-1], z: {}}
+    a b: |2
+      alpha
+      beta
+        more
+      - dash
+
+  - dash id: null
+- |
+
+  beta
+    more
+  alpha
+    more
+%%%%
+- a:b:
+    k_2 # no: beta
+      id
+    -135:
+      - gamma # c
+      - 259.72
+
+      - []
+- a b # c
+...
+%%%%
+- '0x1F
+type'
+%%%%
+---
+- {k-1: null, -dash: ['x', beta], STR_FOO: "a:b
+null"}
+- [# no]
+- z
+  Ã©
+%%%%
+-
+  -
+    - x ~: '# no'
+      ~: "STR_FOO
+-3" # c
+    - -330: null
+      alpha: x id # c
+
+    -
+      264: k_2 # c
+      282: 1163
+      x a:b: 131.53 # c
+      149: 'yes'
+  - 'beta'
+  -
+    colon::
+      - "STR_FOO
+delta\n\t\x41" # c
+    'a b': null
+    alpha y: 1366
+
+
+  -
+    type:
+      - null # c
+      -
+
+      # comment
+      - 'name': 1120
+        beta: [[k_2 name, 'name
+null']]
+      - "k-1"
+
+  # comment
+%%%%
+---
+-
+  'beta': a b - dash # c
+
+-
+  z: null # c
+
+  gamma:
+    Ã©: true
+      12.5
+    null: []
+     b colon:: '1'
+%%%%
+---
+- null
+  beta
+
+-
+  -
+    - dash:
+      0x1F: # c
+      1183: id
+      'id': [1333, {value: 'alpha
+yes'}]
+      "~": 'type
+a b'
+    "Ã©":
+      'true':
+      '12.5': "a b
+k-1"
+
+      323: yes
+  -
+    - colon:: 4.83 # c
+    - [{620: null, alpha x: Ã©}]
+
+    -
+      z: false # c
+
+    - k-1: 151 # c
+    # comment
+  - Ã©
+    k_2
+  - delta id: true
+# comment
+- 'q?':
+    -
+      268: null
+
+- id: k_2
+    hello world
+%%%%
+-
+  - {"~\n\t\x41": {'gamma': ~, 208: '~'}}
+  - -430:
+    a b: true # c
+  -
+    x y: gamma
+    y: alpha
+    12.5: []
+
+  - true null
+...
+%%%%
+-
+  STR_FOO gamma: 804.90
+  632: >
+
+
+    gamma
+      more
+- 1097: id - dash # c
+  # no: a b
+    Ã©
+- '~
+type'
+- 1 colon:
+%%%%
+-
+  q? q?: name
+    type
+%%%%
+- |2
+  æ—¥æœ¬
+    more
+%%%%
+- tr]e
+  æ—¥æœ¬
+%%%%
+-true
+  k_2
+%%%%
+---
+gamma: []
+%%%%
+1 beta:
+  - 'yes
+hello world'
+  - false
+  - 0x1F
+    delta
+  - true
+  # comment
+"name": "k_2
+a:b" # c
+'Ã©': [{y: 'a:b
+æ—¥æœ¬'}, ["type
+-3"], {}]
+553: |+
+  delta
+%%%%
+-
+
+%%%%
+- a b
+  hello world
+- 29:
+    -
+      hello world: -293 # c
+      1420: gamma
+      id: {"Ã©": {}, "value": [~, -254, k-1 k-1]}
+      gamma k-1: -360
+%%%%
+-
+  -
+    1005:
+      - 1: y # c
+        x: # c
+- delta: null
+- null null
+- delta
+  æ—¥æœ¬
+%%%%
+-
+  - [{-338: null}, 1450]
+  - false # c
+  - null # c
+  - delta
+    0x1F
+%%%%
+--
+- {gamma: 'k-1', a:b: 70}
+- null
+- id
+  true
+# comment
+- a:b:
+    - ?ull
+    - 1
+  beta: |+
+    name
+      more
+    q?
+      more
+%%%%
+---
+-
+  value: null
+  -67: - dash value
+  true: true
+  749: false # c
+%%%%
+true 0x1F:
+  - name
+  - hello world: 280.52
+    0x1F:
+      - "a b"
+      - 12.5 æ—¥æœ¬
+
+  - colon:
+'x': '~
+1'
+STR_FOO a b: {- dash: ["z"], "- dash": [null x, a b]}
+%%%%
+0x1F: [@%]
+
+%%%%
+170:
+  STR_FOO delta:
+    beta beta:
+      gamma: null
+      - dash: {'gamma': {}}
+
+      "12.5\n\t\x41": 'name
+hello world'
+    value: false
+
+  'hello world':
+    "null\n\t\x41": 836.60
+"yes": >-
+  - dash
+  1
+  q?
+397: null # c
+'a:b':
+  - "-3
+alpha"
+  - 'beta': true
+%%%%
+z:
+  k-1:
+    1307:
+      - "æ—¥æœ¬": null # c
+        Ã©: true
+      - "yes"
+      - value k_2
+
+    - dash: type
+      q?
+
+  beta ~: y
+    12.5
+1092:
+  - -208: a b
+    z: 167 # c
+  - 'y
+hello world' # c
+  -
+    gamma delta: true
+
+  - null
+%%%%
+- a b q?
+%%%%
+- 	ype: 930 # c
+  k_2: []
+- >
+
+
+%%%%
+-
+  - "colon:": 132
+    true: false
+  - id
+%%%%
+- "~": |-
+    yes
+      more
+    æ—¥æœ¬
+    STR_FOO
+      more
+  alpha: |+
+    -3
+%%%%
+- {"k-1": {k_2 null: y æ—¥æœ¬,} 1 465: ~}}
+%%%%
+- |
+  a b
+    more
+  1
+    more
+- true # c
+
+%%%%
+-
+  Ã©: gamma # c
+  z x: {yes: true, 12.5: {z: a b # no, 'q?': a:b}, type name: []}
+- null type
+- value
+  name
+- null
+
+%%%%
+- >+
+  0x1F[
+%%%%
+y:
+  - null
+  - beta
+  - false # c
+  # comment
+...
+%%%%
+- ~ gamma
+%%%%
+1305: |
+  x
+
+'yes':
+  æ—¥æœ¬:
+    "12.5":
+      1339: null
+      'delta': yes
+    x:
+      "name": null # c
+      0x1F colon:: yes
+      id: [70]
+      -30: delta # c
+
+  a:b:
+    -
+      id: {}
+
+q?: "alpha
+æ—¥æœ¬\@\t\x41"
+%%%%
+1:
+  - delta
+    gamma
+  # comment
+  - # c
+  -
+    - 488: "yes"
+      k-1: [~, {a:b k_2: k_2, y true: # no}]
+    - gamma
+    -
+      - k-1
+      - ~
+      - -493 # c
+      - 256.3 # c
+    # comment
+  - |
+    x
+    true
+k-1 gamma:
+  633: >
+    gamma
+    -3
+    hello world
+      more
+
+%%%%
+- -3
+%%%%
+1047:
+  - {colon:: [], 1447: {"id": 551, 1485: false, - dash true: "delta"}}
+
+  -
+    id:} -174
+
+    q?: "delta
+yes\n\t\x41" # c
+    id: []
+    id: 328.92
+  - |2
+    0x1F
+      more
+    type
+    k_2
+%%%%
+- 922
+%%%%
+---
+- 'true' # c
+%%%%
+-46:
+  - true
+    a b
+  # comment
+  -
+    -
+  - # no
+-3 type: >
+  name
+  value
+'z': true
+alpha: {}
+%%%%
+a b:
+  0x1F: y
+    x
+  delta: 1352
+  type hello world:
+    - k_2 # c
+"beta\n\t\x41":
+  -
+    z:
+      - -316: æ—¥æœ¬ 12.5
+   "    a:b: [[true], {'z': gamma delta#}]
+    æ—¥æœ¬ hello world:
+      - {}
+      - STR_FOO
+      -
+
+  -
+  - beta
+  - gamma
+"12.5":
+  - |2
+    Ã©
+    0x1F
+  - Ã©
+    # no
+  - {1430: {}, 673: {233: "z\n\t\x41", 0x1F: type a:b, q? 1: alpha gamma}}
+%%%%
+--
+
+- true
+%%%%
+906: |-
+  x
+'a b':
+  a b id:
+    'Ã©': |-
+
+      alpha
+        more
+  "beta\n\t\x41":
+    - >+
+      x
+    - []
+    - k_2
+      q?
+  gamma: z
+    # no
+-302: null
+%%%%
+1090: [['- dash
+0x1F', name]]
+Ã©: gamma # c
+%%%%
+---æ—¥æœ¬: |-
+  x
+%%%%
+- >
+ x
+%%%%
+-
+  "name": ~
+    delta
+  hello world:
+    - æ—¥æœ¬: -56
+      delta: [[383.13], beta]
+    # comment
+    - STR_FOO ame # c
+    - 12.5 # c
+  k_2": 971.76
+  0x1F: false
+%%%%
+0x1F: |2
+  x
+gamma:
+  'beta':
+    '12.5': 'value
+id' # c
+    y:
+      value: # c
+      hello world - dash: 12.5 # c
+      x: [{}, ["z
+gamma", name - dash, 12.5 type], []]
+      id: null
+  "STR_FOO":
+    - -242: null # c
+  0x1F q?: >
+    x
+518:
+  "STR_FOO":
+    delta: >
+      x
+  y 12.5:
+value: >
+  beta
+    more
+  ~
+  hello world
+
+...
+%%%%
+- [~]
+%%%%
+- |-
+  q?
+%%%%
+-
+  'x':
+    'y': |+      gamma
+
+      delta
+       more
+
+- "id": colon:
+  z: id
+    -3
+%%%%
+"alpha": >+
+  ~
+    more
+
+name: "y
+0x1F\n\t\x41"
+%%%%
+-
+  - [null, [id,@ 357.52], [896.78]]
+  - -112: ["Ã©
+colon:\n\t\x1", ~, {'Ã©': value, 969: type}]
+    z: hello world true
+%%%%
+- false
+%%%%
+-
+  ~: >
+    a:b
+      more
+    0x1F
+    12.5
+      more
+  865: name - dash # c
+  31*: false
+  1288:
+    - a:b # c
+
+%%%%
+-
+  alpha: {-393: [a:b 12.5, null],value: ["12.5"], 'x': {}}
+  null: null
+  k-1:
+    1: true # c
+    764: beta
+    value: a:b
+  x: "1\n\t\x41"
+%%%%
+- null # c
+...
+%%%%
+---
+- #ull
+%%%%
+---
+- beta
+%%%%
+z: 1265 # c
+%%%%
+"q?":
+  z: 1407
+  1461: >+
+    k_2
+
+  ~:
+    - type
+    - value: - dash # c
+   ]  yes: false
+  '- dash': hello world
+    - dash
+
+æ—¥æœ¬:
+  - '1'
+  - type
+    hello world
+
+  -
+    0x1F k_2: 358
+  -
+    -487:
+      - delta gamma: type
+      - "~"
+    "-3": 642.10
+
+    z: {-1 gamma # c
+    q? ~:
+      - name 1: x # c
+      - # no
+      - a:b: {}
+        type: yes
+      - false
+
+STR_FOO: false
+%%%%
+---
+- [[], [y], {yes: false, k-1: 494.64}]
+%%%%
+- [{'0x1F': 1197, value: 'name
+k_2', 'type': -135}]
+%%%%
+@ -3
+  valu-
+%%%%
+550:
+  alpha: 341
+  a:b # no: 415.93 # c
+a b:
+  - type: |+
+      a b
+       more
+      a:b
+        more
+
+  - 'hello world': null # c
+    -3:
+      - STR_FOO
+
+gamma: value
+  æ—¥æœ¬
+beta type:
+  colon: # no:
+
+  146: Ã© Ã©
+  z ab:
+    "æ—¥æœ¬":
+      - -392
+
+      # comment
+      - -434: yes delta
+      # comment
+%%%%
+919: {1041: [k_2]}
+'delta'': k_2
+%%%%
+-id
+%%%%
+- ['- da:']
+%%%%
+- "# no"
+%%%%
+- true
+  gamma
+- "alpha
+12.5"
+- Ã©
+  id
+%%%%
+-
+  'a %b': []
+"  362: null
+%%%%
+-
+  - -3
+  - 1078: id # c
+  # comment  -
+    -231: yes # c
+%%%%
+149: "Ã|
+[beta" # c
+%%%%
+---
+- >+
+
+  value
+    more
+  alpha
+    more
+-
+  - name: |-
+      x
+  - {41: [beta, x], # no: {z: 1137}, z a b: type}
+  - æ—¥æœ¬ beta:
+      - [{beta 1: null, STR_FOO: "x
+value"}, [k-1 x, ~, false], {}]
+    delta:
+      alpha null: {'y': {'x': alpha, 397: true, a:b 12.5: 12.5}, 377: []}
+
+      æ—¥æœ¬: {}
+      1325: æ—¥æœ¬ # c
+
+      q?: [[], alpha, {STR_FOO: k_2 x, 488: ~}]
+  - - dash colon::
+      - null # c
+
+      # comment
+      - 764.72
+      - true: y
+        null: true # c
+
+      - 354.50
+%%%%
+colon: name: alpha
+type: id
+  name
+12.5:
+  907: 32.63
+
+STR_FOO 0x1F:
+  0x1F: {}
+  "id": 835.30
+%%%%
+apha:
+  - |2
+    alpha
+    type
+    # no
+      more
+  - k-1 -3
+  -
+    909:
+      - "q?
+id\n\t\x41"
+      - gamma
+
+    0x1F: q? a:b
+    1146: 211.90
+  - k-1: q?
+      true
+    ~: [- dash æ—¥æœ¬, [delt?a, false, a b]]
+colon: hello world: ~
+  æ—¥æœ¬
+"a b": {}
+0x1F: 1448
+%%%%
+-
+  - 333: {}
+  - "Ã©
+0x1F"
+%%%%
+"q?": 0x1F
+  k_2
+
+644: 12.5
+  q?
+æ—¥æœ¬:
+  -
+    - 296
+  - Ã©:
+      - "type
+true\n\t\x41"
+      - 782: # c
+      - "null\n\t\x41"
+
+      - z 12.5
+    a:b: 'yes'
+
+%%%%
+- q?
+  # no
+%%%%
+Ã© a:b: {}
+1367:
+  -3: |
+    value
+  'null': [12.5, null]
+
+  q?:
+    alpha:
+      Ã©: '- dash
+yes'
+      '0x1F': a:b z # c
+      0x1F: true
+    ~: STR_FOO # no
+    334:
+      - id # c
+      - 'alpha
+type'
+
+      - null # c
+12.5: - dash # c
+""z":
+  colon:: # c
+  # no: STR_FOO
+    q?
+  delta: [[alpha Ã©, 1, null]]
+%%%%
+- 'null':
+    - y 1: # c
+    -
+      - true
+  x: false
+-
+  -
+    - z
+      gamma
+    - true
+      k-1
+  - |
+    z
+# comment
+- [{STR_FOO: true}]
+%%%%
+-
+  - colon:
+  - 'id
+y'
+  - value: false
+%%%%
+"alpha":
+  -
+    type:
+      Ã©: 408
+      "q?": -353 # c
+
+    id: 134.90
+    q? type:
+      - null
+      - 1051: false
+      - 12.5
+
+    a b: 1
+  - 1
+    # no
+  - 356.73
+  # comment
+delta: null
+Ã©: type
+  hello world
+alpha: |+
+  -3
+%%%%
+-
+  hello world: delta # c
+%%%%
+name: gamma
+  a:b
+value:
+  -
+    delta yes: '~'
+  - {}
+  - STR_FOO
+  - "beta
+yes" # c
+"Ã©":
+  61: "y"
+  Ã© k-1: colon:
+    alpha
+  true alpha: |
+    x
+delta:
+  0x1F: |-
+    x
+  'id': |2
+    1
+      more
+  919: {'beta': {"true": false, k-1: ~ q?}}
+%%%%
+'k-1':
+  - # c
+  - false
+"- dash": value
+
+%%%%
+-
+%%%%
+- null # c
+
+- ~: |2
+    x
+-
+  'value':
+    - null
+    # comment
+    - 281: true
+      type: STR"_FOO # c
+    - 'Ã©
+yes'
+- false # c
+%%%%
+-
+  delta # no: ?a:b'
+  - dash: false
+%%%%
+- {1: ['z
+Ã©', # no 1, 650.19]}
+
+- 323: ~
+ %  y
+
+-
+  a b null: |+
+    value
+  STR_FO: true
+- k-1: q?
+    1
+%%%%
+- beta z
+%%%%
+Ã©: "y"
+601: false # c
+z a:b: 'hello world'
+12.5 a b: a b # c
+%%%%
+\~
+%%%%
+- false
+...
+%%%%
+- t'ue # c
+%%%%
+4	6: 'a:b'
+
+%%%%
+- -121
+%%%%
+'a:b': æ—¥æœ¬
+type: [256]
+"null\n\t\x41": {colon: Ã©: 299, id: []}
+%%%%
+type delta:
+  gamma -3:
+    12.5 null: q?
+      a:b
+
+  'value': {1397: [~]}
+
+  x # no:
+    "delta":
+      - true # c
+      - null # c
+      - true # c
+    z: k-1 # c
+    471: 942
+
+    'beta':
+      - [{'hello world': # no name, 1032: 118.29, 'alpha': yes}, 12.5 value]
+      - yes
+
+  "~":
+    1373: x
+    gamma:
+      - yes
+
+"gamma": |2
+  gamma
+    more
+  delta
+    more
+%%%%
+- # no
+  k-1
+- [{}]
+- type alpha
+%%%%
+- |
+  x
+%%%%
+~12.5: >
+ x
+%%%%
+---
+"beta\n\t\x41":true
+%%%%
+- æ—¥æœ¬
+  y
+%%%%
+- k_2 # c
+%%%%
+- |+"
+ null
+%%%%
+- 1255
+%%%%
+- 'x
+z'
+%%%%
+- []"
+%%%%
+- null
+%%%%
+---
+id a b:
+  ~:
+    - "type
+STR_FOO"
+    - null: null
+    -
+     # delta: null
+~: |+
+  x
+'a:b':
+  - null:
+      - 12.5: -163 # c
+        0x1F: type
+  - 1433:
+      - dash beta: 657.88
+  - [[-3 STR_FOO]]
+
+
+%%%%
+1228: 5]81 # c
+null: #c
+1:
+278:
+%%%%
+-
+  - y
+  - [x]
+  - gamma y # c
+  -
+- >
+  k-1
+%%%%
+-
+  y:
+  id: >
+    colon:
+    æ—¥æœ¬
+      more
+  id -[3:
+    -213: null
+    - dsh: alpha
+  1: null
+%%%%
+1146: hello world # c
+k_2: |
+  x
+value: 159.35
+20:
+  Ã© name: hello world # c
+  'gamma': true
+  a b: x x
+  id: "~
+type" # c
+%%%%
+---
+- {1215: [- dash, 1], value: {a:b: 'a b
+12.5', yes: 'yes
+STR_FOO', delta: true}, "y\n\t\x41": ['gamma
+id']}
+%%%%
+0x1F:
+  null æ—¥æœ¬: -486
+  beta ~: false # c
+  value: 842
+%%%%
+- 1 "| c
+%%%%
+-409: 1
+  name
+%%%%
+-
+  -
+    "0x1F\n\t\x41": [[null], 12.5 id]
+
+  # comment
+  - k_2
+    # no
+  - -56: 183 # c
+    k-1: name ~ # c
+  - 'alpha
+~' # c
+%%%%
+true: true
+  hello world
+1209:
+  -
+    colon: alpha:
+    yes: null # c!
+    gamma: k_2 STR_FOO
+    "value": gamma # c
+Ã©: 731.49 # c
+%%%%
+-
+  'z':
+    hello world: k_2 
+æ—¥æœ¬
+    colon: alpha:
+    q? yes: [1032,~, z 1]
+%%%%
+"æ—¥æœ¬": value
+  value
+beta delta: []
+value yes:
+  -
+    -
+      yes: [{'0x1F': ~, hello world: k_2, '- dash': x Ã©}, 'true']
+      z beta: gamma # c
+
+
+    -
+      # no: null # c
+
+[ - # no
+    STR_FOO
+  -
+  - id: -3
+      12.5
+%%%%
+- {a:b:{"id": gamma, 608:! null, name: "~
+-3"}}
+%%%%
+-
+  - value
+    ~
+  "# comment
+  - "alpha": null
+    q:
+  - {}
+%%%%
+- ~
+- k_2
+  beta
+- |+
+  value
+
+- 1
+  a:b
+%%%%
+- colon:
+  z
+%%%%
+- q?
+  - dash
+%%%%
+1326:
+  -
+    - k-1
+      STR_FOO
+    -
+      - "x\n\t\x41": -3
+      - {1297: {q?: Ã©, true true: ~, STR_FOO gamma: y}, 885: {name: k_2, "a:b": true}, '- dash': k-1}
+      # comment
+    - 12.5: {beta: {}, 'æ—¥æœ¬': [a b]}
+      delta: x
+    - STR_FOO
+      æ—¥æœ¬
+  -
+    x:
+      name: colon: # c
+
+      null: - dash # c
+      hello world k_2: null
+    id -3: value # no # c
+
+    k_2:
+      - false
+      - # c
+      -
+
+      - false
+    y:
+      "name\n\t\x41": {}
+
+      "value": gamma æ—¥æœ¬
+
+  - 809: Ã©
+      null
+    yes: k-1
+  - 'alpha': name alpha
+Ã©:
+  - |2
+    x
+
+  - [[1122]]
+  - value z: z # c
+    x: {}
+  -
+    - "- dash": false
+      type: 'id'
+k_2 alpha: - dash
+  1
+%%%%
+-
+  "name": |-
+    type
+      more
+
+    ~
+  yes:
+    267:
+      - true
+
+    STR_FOO: [[686, æ—¥æœ¬ hello world, true], {k-1 x: true 1, x k_2: 0x1F z}, [1443]]
+- 'beta':
+    name: |+
+      x
+    æ—¥æœ¬:
+      'beta': beta # c
+      12.5 -3: q? # c
+      STR_FOO: yes
+      null: beta
+    640: 0x1F
+      k_2
+  x: {id: null, 96: ~}
+- 'Ã©'
+%%%%
+-
+  - "gamma
+- dash"
+  - # no STR_FOO # c
+
+%%%%
+-
+  - dash: |
+    x
+  36:
+    beta:
+    -342: 712.65
+
+  -229:
+    - Ã©
+    - {type: {1 12.5: STR_FOO}, y: {-351: 979.68}}
+    - 1360
+    - yes
+
+
+%%%%
+782: {colon:: {}, 1: {}}
+0x1F gamma: yes # c
+%%%%
+# no 0x1F:
+   k_2 alpha
+  - |-
+
+
+    k-1
+  - 205
+  - 1327
+STR_FOO: >
+
+k_2 z: z
+  æ—¥æœ¬
+'y': STR_FOO
+  colon:
+%%%%
+- colon: gamma:
+    k_2:
+      gamma: false
+      1: yes - dash
+- 48:
+    -
+      - æ—¥æœ¬
+      - y
+      - gamma
+      - 'a:b'
+    - k_2
+    -
+      "gamma\n\t\x41":
+      name id: 1 # c
+
+  alpha: {-3: [1028, null], a:b: [beta, 449], Ã©: {true ~: 0x1F true, 'type': æ—¥æœ¬}}
+- 0x1F 12.5
+...
+%%%%
+- æ—¥æœ¬
+  STR_FOO
+%%%%
+- alpha
+  k-1
+
+-
+  'type':
+
+  0x1F: 'true
+1' # c
+- ~ -3:
+    898: 1251 # c
+    1 0x1F:
+-
+  454: null # c
+  type null:
+    - 871: hello world
+      alpha: 'a:b'
+  y STR_FOO: {x: [true, 'a b
+~', 12.5], true: beta}
+  "true":
+    -
+      gamma: 595.30
+    - colon:
+      Ã©
+    - 825: null
+      name: value
+    -
+      q? value: Ã©
+%%%%
+- STR_FOO
+  type
+%%%%
+- true
+%%%%
+- colon: # c
+%%%%
+- id
+  tr\e
+%%%%
+- 14.73
+%%%%
+---
+- "k_2
+k-1"
+# comment
+- 578 # c
+-
+  -50: x # c
+  'z': {377: {661: true}, "k-1": {"k-1": null, -3: yes, hello world: true}, 'y': id}
+  12.5:
+    0x1F 1:
+      -480: a:b a:b
+ >     q?: false
+      æ—¥æœ¬: null
+
+- 1268: 272
+%%%%
+- {}
+%%%%
+-
+  - delta
+  # comment
+  - 1 alpha: 109.25
+    -3: false
+
+  - 'STR_FOO': null
+%%%%
+- >+
+  type
+    more
+  name
+%%%%
+-
+  true Ã©: z
+
+%%%%
+- æ—¥æœ¬ gamma
+- {}
+# comment
+%%%%
+- flse 
+%%%%
+"0:x1F": |
+
+  x
+    more
+%%%%
+- false
+%%%%
+---
+-
+  318: 929.58
+ \ STR_FOO:
+    3|98: 306 # c
+%%%%
+{- x
+  alpha
+%%%%
+- - dash true: |-
+    x
+-
+  -
+    "z": 'z' # c
+  - -3: STR_FOO
+
+# comment
+%%%%
+282:
+  1353: tr?e gamma
+  945: x
+  gamma ~: {}
+  true:
+    - false # c
+
+    - STR_FOO
+true: {'k-1': 637.72}
+
+yes # no: Ã©
+  null?
+%%%%
+- true
+%%%%
+- "0x1Fz\n\t\x41"!
+%%%%
+- null # c
+%%%%
+- STR_FOO
+  colon:
+%%%%
+-
+  - 876: Ã©
+
+  -
+    ,- -3 # c
+    - "æ—¥æœ¬
+type" # c
+    - a b'
+    - '0x1F
+delta'
+
+  # comment
+  - "a b
+type"
+%%%%
+- [alp@a z, ~]
+%%%%
+1379: >-
+  delta
+    more
+  q?
+  colon:
+%%%%
+---
+-
+  -350: 0x1F
+    a b
+  1: |+
+    0x1F
+      more
+
+    k_2
+  a b: |2
+    x
+%%%%
+- 687: 'x
+yes' # c
+  value: {Ã©: [], -3: {true: ~}, 22: {}}
+-
+  '- dash': value
+  81:
+    - >
+      # no
+
+-
+  null colon:: STR_FOO
+    value
+  k_2 true: >+
+
+    x
+
+%%%%
+---
+-
+  '12.5': |+
+    delta
+  true:
+    - 'x' # c
+    -
+
+    - delta: 1
+      value: {type nae: æ—¥æœ¬, "value": {1: q?, 'type': beta}}
+%%%%
+- # no # c
+%%%%
+- {'delta': [], alpha: {delta ~: null, 1104: # no}, alpha: {æ—¥æœ¬: 125.93, 'z': 'k-1'}}
+%%%%
+---
+-
+  1094: {-111: [], delta: hello world}
+  255: hello world # c
+  hello world:
+    432: true # c
+    q?: z # c
+    791: yes k-1 # c
+%%%%
+- >-
+  value
+
+  name
+    more
+%%%%
+- |-
+
+  z
+    more
+%%%%
+- |2
+
+  k-1
+  hello world
+    more
+%%%%
+a:b: æ—¥æœ¬
+  # no
+-3:
+  gamma:
+    type: a:b
+    0x1F:
+      - [{a:b: "type", -3: beta}, [null]]
+      - beta delta
+  1072:
+    - "id" # c
+    - 'k-1
+k_2' # c
+    - 'type'
+
+  1276: 'id'
+
+  y: "name"
+'- dash':
+  q? 1: x
+    Ã©
+  hello world: 287.51
+  æ—¥æœ¬: 773
+%%%%
+-
+  - 1 true: true # c
+  - 12.5 STR_FOO: '# no
+value'
+    - dash:
+      - 505.49 # c
+%%%%
+- >
+  z
+%%%%
+-
+  -
+    271: beta
+
+    k-1: null
+  -
+    - delta ~
+    - STR_FOO STR_FOO
+    - -485
+    - true # c
+  -
+    a b yes: z
+    y: 806.70
+
+    null alpha: beta value
+    colon:: "name" # c
+  -
+    1010: {æ—¥æœ¬: 524.73, "z": {STR_FOO: false, yes q?: 0x1F, gamma Ã©: "beta"}, name: [null -3, id name]}
+%%%%
+1144:
+  '-3': hello world ~
+  gamma beta:
+    z: null # c
+
+%%%%
+null:
+  yes yes:
+    -
+      - null
+      -
+      - 'colon:' # c
+    -
+      z gamma: k_2
+      "- dash\n\t\x41": 958.84 # c
+      'STR_FOO': 1090
+    # comment
+    -
+      - {"colon:\n\t\x41": 987, true 1: æ—¥æœ¬}
+
+  278: gamma beta # c
+  type:
+    -
+      - '# no'
+
+    - æ—¥æœ¬
+      yes
+    - null
+,  type:
+    1292: null # c
+    true: 159.92 # c
+
+    461: 13
+1393: |
+  a:b
+alpha: id
+  yes
+12.5: "delta
+beta\n\t\x41"
+%%%%
+'# n'':
+%%%%
+- 'z"{
+~'
+%%%%
+'delta': "Ã©"
+"0x1F": yes
+  a b
+x ,value: # c
+...
+%%%%
+1: -]dash  a b
+
+%%%%
+---
+'type': type
+  type
+'colon:': 1 Ã©
+z: 442.38
+530:
+  a b gamma: []
+  true: gamma
+  # no Ã©: [['gamma', 'x
+null']]
+
+%%%%
+- null # c
+%%%%
+-
+  817: 'beta
+~'
+  1 a b:
+    - id
+    - value a:b: # no a:b
+      hello world: x # c
+    - beta # c
+    - 1 y: 'q?
+name' # c
+      name: 424.46
+  a:b: -64
+  yes:
+    -3: ~
+%%%%
+-
+  - |-
+    z
+    # no
+    a:b
+  # comment
+  - æ—¥æœ¬: null
+    -3: beta true
+  - k_2 z
+%%%%
+---
+- value
+  STR_FOO
+%%%%
+- type colon: # c
+- hello world true:
+    -
+      - 'q?
+# no'
+    - -3
+    # comment
+# comment
+- |-
+  - dash
+    more
+  id
+%%%%
+- z # c
+%%%%
+0x1F:
+  delta: name type
+  "gamma":
+  0x1F: |+
+    x
+true: k_2 x
+%%%%
+-
+  null ~:
+    66:
+
+    "z": alpha
+"    -3: 570.11
+
+    type 0x1F: 221.13
+  k-1:
+    x: # c
+    'x': "colon:\n\t\x41"
+    10: q? # c
+    STR_FOO x: colon:
+
+  "gamma": colon:
+  a b a:b: null
+%%%%
+---
+- >+
+  alpha
+  y
+%%%%
+'name':
+  æ—¥æœ¬: '12.5'
+%%%%
+"id": beta}
+~:
+
+'~': []
+%%%%
+- 'æ—¥æœ¬
+k_2' # c
+...
+%%%%
+- false # c
+%%%%
+- STR_FOO true
+%%%%
+true: {-3 true: '1
+# no'}
+x true: "# no
+beta\n\t\x41"
+Ã© Ã©:
+  - a b id: [[id x], ["1
+z"]]
+
+  - {-163: {}, 235: 'hello world'}
+  -
+    - -245: 1191
+      true: true
+
+    - "~
+yes"
+    - # no - dash # c
+
+  # comment
+%%%%
+-
+  - - dash: false
+    ~: alse
+
+%%%%
+- 1
+  type
+%%%%
+- >-
+  x
+  a:b
+-
+  12.5: STR_FOO
+    k_2
+  k-1: a:b
+    delta
+  q?: >+
+    # no
+  " 1
+  1448: >+
+    ~
+%%%%
+- false
+- {}
+# co>ment
+%%%%
+191: y
+  q?
+%%%%
+275: [q?, {STR_FOO: true, STR_FOO: 649, z 0x1F: null}]
+%%%%
+-
+  - STR_FOO
+    a:b
+...
+%%%%
+-
+  "beta": 'he?llo world'
+  '- dash': æ—¥æœ¬ - dash
+
+...
+%%%%
+"yes": 1333
+...
+%%%%
+-
+  -
+    - {}
+
+  # comment
+  -
+    - beta: -120 # c
+      0x1F: {"alpha": []}
+    - "id\n\t\x41"
+    - 655: name
+      -3: 'null
+STR_FOO'
+  - '1': delta # c
+  - |+
+
+    colon:
+    q?
+...
+%%%%
+- 932.76
+- Ã©
+  id
+- colon: gamma:
+    - 81.1 # c
+    - hello world:
+      yes: # c
+    - - dash: q?
+      # no: yes 1
+%%%%
+a b -3:
+  - colon:
+    ~
+  -
+    - yes: "- dash
+z"
+      alpha:
+    -
+    -
+      - 0x1F
+      - {1426: {STR_FOO: -47}, y: [217.79, ~], "k-1": {-3: -307, beta: false, Ã©: ~}}
+      - -244 # c
+      - colon:: 'y' # c
+  - [[type a b, value]]
+  - null
+gamma -3: null # c
+880: null # c
+583: type
+%%%%
+- 12.5
+?  ~
+- null
+%%%%
+- |es
+%%%%
+- [{beta: 1}]
+%%%%
+-
+  - 
+    x
+  - 1
+   1
+%%%%
+- # no: [{}]
+  # no:
+    - 'yes'
+%%%%
+- null
+-
+  -
+    - y # c
+    - -112
+
+  - 1317:
+      - 'STR_FOO
+~'
+      - name ~: 0x1F
+      - gamma: "a:b"
+      - 'name'
+    yes:
+      - 588.62 # c
+
+      - true # c
+      - 722: "# no"
+        delta: STR_FOO
+      - 383.43
+  # comment
+  - gamma k_2: ~
+    æ—¥æœ¬:
+      - {}
+      - id colon:: 0x1F k-1
+        k-1: 'a b
+beta'
+      - name k-1
+- "alpha": beta
+  -3: name
+-
+  beta 0x1F: [[733.48, 842.39, -288]]
+  1:
+    -
+    - []
+    - 12.5
+      delta
+
+%%%%
+-
+  - value: [[q?, name, 'q?
+STR_FOO'], y, []]
+  # comment
+  - id: id name
+    beta: null
+
+  - >-
+    beta
+    y
+    1
+      more
+  - 'x': 'alpha' # c
+%%%%
+"type":
+  - # c
+  -
+    1315:
+      - false # c
+      - alpha 12.5: 749.44
+        alpha: "yes
+true\n\t\x41" # c
+    177: 101.11 # c
+    0x1F:
+      - STR_FOO
+      - "12.5
+y"
+    1: ~
+      æ—¥æœ¬
+  - 0x1F # c
+%%%%
+1112: -3
+  0x1F
+
+%%%%
+-
+  'id': 1
+    beta
+%%%%
+- 55.69
+%%%%
+---
+- |+
+  æ—¥æœ¬
+%%%%
+æ—¥æœ¬: |+
+  id
+
+%%%%
+---
+-
+%%%%
+---
+- true: 800
+- >+
+  value
+  - dash
+%%%%
+-[ []
+%%%%
+---
+- colon:
+  y
+%%%%
+-3:
+  293: {æ—¥æœ¬: {-234: value, 946: hello world}, STR_FOO k_2: [], -224: null}
+  gamma:
+    -
+      - 'yes
+a b' # c
+      - null
+
+      # comment
+      - 12.5 # c
+      - 265 # c
+
+    - 1480: {}
+    -
+      - # no
+      - 1353 # c
+
+  æ—¥æœ¬ k_2:
+    -3: [[]]
+    134:
+      colon:: {z: {}}
+      'STR_FOO': 1
+      ~ delta: null
+
+      STR_FOO: k-1
+    1122: z
+      - dash
+  k-1 12.5: id # c
+
+y: "STR_FOO" # c
+yes 12.5: 12.5 # c
+"name":
+%%%%
+---
+- -399
+- >+
+
+  Ã©
+  a:b
+- a b value: "k-1
+beta\n\t\x41" # c
+  delta:
+    - 1073
+%%%%
+---
+type:
+  874: |
+    x
+
+beta type: beta
+  q?
+%%%%
+- z
+  0x1F
+- colon:: {}
+%%%%
+- a:b
+  yes
+%%%%
+- |
+  12.5
+  æ—¥æœ¬
+  a b
+- 0x1F:
+    - x
+      alpha
+    -
+      - true
+      - {}
+
+-
+  "1":
+    -
+      ~: null
+      '-3': null
+      z: 'k_2'
+    - # c
+  - dash:
+    - hello world: ~ x
+  beta:
+    delta: "-3
+name"
+    q?: 'yes'
+    12.5:
+      - '-3': null # c
+        Ã©: null # c
+      - []
+    æ—¥æœ¬ 0x1F:
+      - {}
+      - {-102: [~, 609.19, gamma STR_FOO], "æ—¥æœ¬": []}
+      - false
+  true: value
+%%%%
+- q?
+%%%%
+-3: |-
+  k-1
+value: >-
+  STR_FOO
+  alpha
+  yes
+    more
+
+1274:
+  -375:
+    - "1"
+    -
+      y: y
+      STR_FOO: {1232: ame x, hello world: {"STR_FOO": null}}
+      0x1F STR_FOO  delta 0x1F # c
+      Ã© value: beta # c
+  1466: æ—¥æœ¬ # c
+
+  # no hello world: 374 # c
+  x: name
+%%%%
+- |2
+  # no
+    more
+%%%%
+- |2
+  alpha
+  STR_FOO
+  nll
+%%%%
+gamma: a b
+delta 1: null
+k_2 gamma 
+  - |
+    name
+
+
+  # comment
+'null': null
+%%%%
+- -3
+
+ x?
+%%%%
+-
+ - -322: # c
+  - name%
+%%%%
+- >+
+
+-
+  - >+
+
+    id
+      more
+
+- ~: k-1
+%%%%
+1035:
+  - true
+    type
+  -
+
+  # comment
+  -
+    q? - dash:
+      k-1: false
+      z: null
+    416: [411.22, {null 12.5: yes a:b, 378: 989, yes Ã©: 57.59}]
+  - 12.5
+    name
+"æ—¥æœ¬": z # c
+89: -3
+
+%%%%
+-
+  1:
+    yes: q?
+      -3
+    STR_FOO: 1 # c
+    ~:
+      - 739: null # c
+        k_2: true
+  gamma: "beta\n\t\x41" # c
+  924: false
+- 772:
+    "æ—¥æœ¬\n\t\x41": "z" # c
+
+    1 value: {}
+- k-1
+  12.5
+%%%%
+- |+
+  x
+%%%%
+id:
+  name:
+    1411:
+      -
+
+    "- dash": 0x1F
+      1
+
+    "a b": |+
+
+    STR_FOO:
+      "yes": Ã© # c
+      - dash: y
+      null true: [null, {value: 533.35, 340: ~, 1 z: "value\n\t\x41"}]
+      hello world: []
+  '0x1F': {}
+
+%%%%
+-
+  -332:
+    "Ã©\n\t\x41":
+
+    z: 753.46
+- 'beta
+z' # c
+-
+  1064:
+    "a b\n\t\x41": "æ—¥æœ¬"
+    "1": k-1
+    q?: >
+      0x1F
+      alpha
+        more
+
+  0x1F 12.5: beta
+    type
+
+- >
+
+%%%%
+# no yes: |-
+  STR_FOO
+    more
+  gamma
+  hello world
+366: 143.32 # c
+'# no': "# no"
+%%%%
+- true
+  y
+%%%%
+- a b
+  ~
+-
+  'gamma':
+    -
+    - |2
+      x
+  '12.5': ~
+  a b: - dash # c
+
+# comment
+- colon:: 'gamma
+hello world'
+%%%%
+- id:k-1
+%%%%
+-
+  yes a b: 0x1F - dash
+  "beta": []
+%%%%
+- {}
+...
+%%%%
+'delta':
+  type: 'alpha*
+  value:
+    a b a:b: >+
+      null
+
+      colon:
+    alpha:
+
+    12.5 hello world:
+    1:
+      - 1086 # c
+  name beta:
+    500: 742
+
+    713: null # c
+    type:
+      - 423
+      # comment
+      -
+      - delta # c
+      - false
+    z: ~
+
+  value: alpha # c
+null - dash: >+
+  x
+%%%%
+-
+  a b:
+    # no: {STR_FOO type: ~, k_2 12.5: ['value', true, 30.51@]}
+    1094: yes
+  hello world hello world:
+    "alpha": STR_FOO
+    1: 'æ—¥æœ¬
+delta'
+    hello world: beta gamma # c
+
+    q?: 846
+  724: false
+  type id: 1.24
+%%%%
+-
+  colon:: k_2 æ—¥æœ¬
+%%%%
+,--
+x: true
+12.5:
+%%%%
+- id
+{ k_2
+%%%%
+"~": |2
+  delta
+    more
+
+  hello world
+%%%%
+---
+- [984.85, 91, 12.5]
+%%%%
+0x1F: x
+  gamma
+-143: name
+  1
+%%%%
+-
+  - 401: false
+    beta: false
+  # comment
+  - q?
+  - k-1: # c
+%%%%
+- gamma
+  colon:
+%%%%
+-
+  12.5 delta: true
+  246: 1
+    ~
+  yes beta: >+
+    x
+
+%%%%
+"y": 990
+%%%%
+- gam	%ma
+  ~
+%%%%
+-
+  - {null: {'Ã©': STR_FOO name}}
+  - null # c
+%%%%
+-
+# comment
+- null x: false
+%%%%
+---
+-
+ * 1176: >-
+
+  null: []
+  "value":
+    - ~ null
+    # comment
+    - 1
+
+    - "- dash\n\t\x41" # c
+    # comment
+    - 'k_2': colon:
+}      gamma: 956 # c
+  STR_FOO: 107.26 # c
+%%%%
+a:b colon::
+  - "0x1F"
+  -
+    - k_%2 # c
+    # comment
+167: >-
+  colon:
+yes: |
+
+%%%%
+-
+  - gamma hello world
+  - x
+    type
+
+  - true
+
+-
+  -
+    - 164: null
+    - delta
+    - q?
+      q?
+    - 'alpha': a:b -3
+
+- {'k_2': {}}
+%%%%
+- null # c
+-
+  - 1 k_2: |2
+      gamma
+        more
+    gamma: >+
+      q?
+        more
+
+  - -82: true
+%%%%
+- >
+
+  z
+  value
+- 312.7
+...
+%%%%
+null:
+  -387: ~ # c
+
+  yes 0x1F:
+    - {}
+    -
+      Ã©: "name
+type" # c
+      k-1: z
+      q?: false
+    -
+      Ã© id: "gamma
+k_2"
+      'type': null
+    - 209: [{# no: ~, k-1: hello world, # no: 990}]
+      y: "delta"
+  name: # c
+958: |2
+
+  value
+%%%%
+-
+  - null # c
+...
+%%%%
+-
+  0x1F:
+    -3: true
+    gamma: æ—¥æœ¬
+
+  "value": Ã©
+    ~
+%%%%
+- 4>23.7,8
+%%%%
+- "y" # c
+%%%%
+- |2
+  y
+    more
+  value
+  a:b
+- ~
+  z
+%%%%
+STR_FOO true:
+  - "value": |+
+      0x1F
+        more
+      type
+  - type
+    gamma
+  - -242: STR_FOO value
+    id: æ—¥æœ¬
+      æ—¥æœ¬
+  - >+
+    x
+gamma: []
+'~': |
+  x
+k-1 alpha: æ—¥æœ¬
+  STR_FOO
+%%%%
+- 'alpha'
+%%%%
+null gamma: [{"a b": ~, 'q?': "type"}, []]
+"yes": gamma
+"- dash\n\t\x41": alpha
+delta alpha:
+  - null # c
+  -
+    - 1 ~: 12.5
+      value: æ—¥æœ¬ # c
+    -
+      y: "x
+beta"
+    - Ã©
+      name
+    - yes # c
+
+  - |+
+    -3
+      more
+
+    12.5
+%%%%
+---
+- "æ—¥æœ¬
+type\n\t\x41"
+%%%%
+- -3 STR_FOO
+%%%%
+-->
+- a>b
+%%%%
+Ã© STR_FOO: "0x1F
+id"
+beta: {k-1: q? - dash, Ã©: gamma, type: {"1": colon:}}
+%%%%
+-44,4: a':b
+%%%%
+---
+- alpha
+  alpha
+%%%%
+- false
+# comment
+- [['1']]
+%%%%
+- k-1:
+    -
+      - yes Ã©
+      - "k_2": [null]
+      - true # c
+  d&lta:
+    -69: Ã©
+      -3
+    colon: beta:
+      - k-1 y # c
+      - 'STR_FOO
+1' # c
+      - {alpha: {1410: id, y # no: "beta", 159: a b}, z 1: 'delta', null: {717: ~, 'æ—¥æœ¬': 181.43}}
+      - [[- dash], 205]
+    k-1: colon: delta
+%%%%
+-
+  - dash: 0x1F
+    z
+  35: STR_FOO 1
+%%%%
+STR_FOO: type
+  a:b
+'delta': 1
+  null
+
+alpha:
+  "true": |+
+    type
+      more
+    STR_FOO
+      more
+  "- dash\n\t\x41": -261
+  1036: æ—¥æœ¬ # c
+
+  colon: a b: hello world
+    a b
+...
+%%%%
+---
+-
+  gamma: gamma
+  1260: yes
+  true: >-
+
+    0x1F
+    k_2
+      more
+  y: |-
+
+    type
+    colon:
+%%%%
+- 0x1F a:b:
+    # no: z
+      y
+
+    - dash k-1: |-
+      yes
+        mre
+    "yes":
+      929: y
+
+    value: 1
+      beta
+  colon:: Ã©
+    beta
+- 1389: |
+    q?
+    -3
+      more
+  yes: type
+    ~
+-
+  ~: |
+    x
+  id:! alpha k-1
+  ~ a:b: gamma # c
+%%%%
+---
+- true alpha # c
+%%%%
+- 484
+...
+%%%%
+- 82.10 # !c
+%%%%
+- 1
+  yes
+- q?: []
+  z: {'name': 538.66, 'STR_FOO': {delta: ~}, "beta": ["hello world
+gamma", y # no, alpha]}
+- k-1
+  colon:
+%%%%
+-
+  "type": 1328
+  æ—¥æœ¬: id
+    -3
+# comment
+- >-
+  æ—¥æœ¬
+    more
+
+- 902.10
+# comment
+- k_2
+  a b
+
+# comment
+%%%%
+-408: []
+%%%%
+---
+974:
+  delta STR_FOO: >+
+    alpha
+  a:b: 'a b' # c
+  'k_2': false # c
+
+  alpha: 12.5
+    alpha
+12.5: "true
+type"
+gamma:
+  yes value:
+    k-1:
+      gamma colon::
+      gamma: null
+      value: "hello world
+value\n\t\x41"
+
+    gamma hello world:
+      - 479.32 # c
+    'a b': |-
+      a:b
+        more
+      value
+        more
+503:
+  name 12.5: {yes STR_FOO: æ—¥æœ¬}
+%%%%
+-
+  name:
+    q? 1: 512
+    a:b hello world: null q? # c
+    1259: 1333
+    363:
+      - "delta
+k-1"
+%%%%
+- "true
+gamma\n\t\x41"
+...
+%%%%
+-
+...
+%%%%
+STR_FOO type:
+  id: >+
+    x
+  'beta':
+    -
+      324: value
+      '~': a b # c
+      'name': y k-1 # c
+      y: null
+    - colon:
+    - |2
+      z
+      beta
+        more
+    - colon:: {1001: gamma, 0x1F: {9: 250.71, colon: a b: Ã©, "true": 381.98}}
+      y: z
+  "delta": "~
+beta" # c
+320:
+  - null
+-415: 'yes'
+a b:
+  - yes: 'delta'
+    beta: {}
+
+  - [{}]
+  - 538.51
+  - # c
+%%%%
+- |-
+  x
+%%%%
+- x: true æ—¥æœ¬
+  -3: 12.5 k-1 # c
+- name:
+    beta: y
+    "type\n\t\x41":
+      1136: true # c
+      -159: 'yes'
+      -3: 677
+      "colon:": id
+    318: |2
+      true
+      y
+        more
+    colon::
+      "gamma\n\t\x41": delta
+      "value": [197.32, [type, true, false], STR_FOO]
+      "Ã©\n\t\x41": [{value Ã©: type, type: true, 1 y: 149.39}]
+%%%%
+a: "\x41"
+%%%%
+a: "x\x41y"
+%%%%
+- "\x41
+%%%%
+a: "\xe9"
+%%%%
+a: "x\xe9y"
+%%%%
+- "\xe9
+%%%%
+a: "\xff"
+%%%%
+a: "x\xffy"
+%%%%
+- "\xff
+%%%%
+a: "\x80"
+%%%%
+a: "x\x80y"
+%%%%
+- "\x80
+%%%%
+a: "\u00e9"
+%%%%
+a: "x\u00e9y"
+%%%%
+- "\u00e9
+%%%%
+a: "\u65e5"
+%%%%
+a: "x\u65e5y"
+%%%%
+- "\u65e5
+%%%%
+a: "\uFFFF"
+%%%%
+a: "x\uFFFFy"
+%%%%
+- "\uFFFF
+%%%%
+a: "\U0001F600"
+%%%%
+a: "x\U0001F600y"
+%%%%
+- "\U0001F600
+%%%%
+a: "\U0010FFFF"
+%%%%
+a: "x\U0010FFFFy"
+%%%%
+- "\U0010FFFF
+%%%%
+a: "\uD800"
+%%%%
+a: "x\uD800y"
+%%%%
+- "\uD800
+%%%%
+a: "\uDFFF"
+%%%%
+a: "x\uDFFFy"
+%%%%
+- "\uDFFF
+%%%%
+a: "\U00110000"
+%%%%
+a: "x\U00110000y"
+%%%%
+- "\U00110000
+%%%%
+a: "\xZZ"
+%%%%
+a: "x\xZZy"
+%%%%
+- "\xZZ
+%%%%
+a: "\u12"
+%%%%
+a: "x\u12y"
+%%%%
+- "\u12
+%%%%
+a: "\N"
+%%%%
+a: "x\Ny"
+%%%%
+- "\N
+%%%%
+a: "\_"
+%%%%
+a: "x\_y"
+%%%%
+- "\_
+%%%%
+a: "\L"
+%%%%
+a: "x\Ly"
+%%%%
+- "\L
+%%%%
+a: "\P"
+%%%%
+a: "x\Py"
+%%%%
+- "\P
+%%%%
+a: "\0"
+%%%%
+a: "x\0y"
+%%%%
+- "\0
+%%%%
+a: "\a"
+%%%%
+a: "x\ay"
+%%%%
+- "\a
+%%%%
+a: "\b"
+%%%%
+a: "x\by"
+%%%%
+- "\b
+%%%%
+a: "\t"
+%%%%
+a: "x\ty"
+%%%%
+- "\t
+%%%%
+a: "\n"
+%%%%
+a: "x\ny"
+%%%%
+- "\n
+%%%%
+a: "\v"
+%%%%
+a: "x\vy"
+%%%%
+- "\v
+%%%%
+a: "\f"
+%%%%
+a: "x\fy"
+%%%%
+- "\f
+%%%%
+a: "\r"
+%%%%
+a: "x\ry"
+%%%%
+- "\r
+%%%%
+a: "\e"
+%%%%
+a: "x\ey"
+%%%%
+- "\e
+%%%%
+a: "\/"
+%%%%
+a: "x\/y"
+%%%%
+- "\/
+%%%%
+a: "\ "
+%%%%
+a: "x\ y"
+%%%%
+- "\ 
+%%%%
+a: "\q"
+%%%%
+a: "x\qy"
+%%%%
+- "\q
+%%%%
+a: "\x"
+%%%%
+a: "x\xy"
+%%%%
+- "\x
+%%%%
+a: "\u"
+%%%%
+a: "x\uy"
+%%%%
+- "\u
+%%%%
+a: 'it''s'
+%%%%
+a: 'x'''
+%%%%
+a: "line1\
+  line2"
+%%%%
+a: "one
+
+  two"
+%%%%
+a :   1 
+%%%%
+a :   1
+%%%%
+a :   1 x
+%%%%
+ÿþa :   1 
+%%%%
+ÿþa :   1
+%%%%
+ÿþa :   1 x
+%%%%
+ a :   1
+%%%%
+ a :   
+%%%%
+ a :   1x
+%%%%
+þÿ a :   1
+%%%%
+þÿ a :   
+%%%%
+þÿ a :   1x
+%%%%
+a   :       1   
+%%%%
+a   :       1  
+%%%%
+a   :       1   x
+%%%%
+ÿþ  a   :       1   
+%%%%
+ÿþ  a   :       1  
+%%%%
+ÿþ  a   :       1   x
+%%%%
+   a   :       1
+%%%%
+   a   :       
+%%%%
+   a   :       1x
+%%%%
+  þÿ   a   :       1
+%%%%
+  þÿ   a   :       
+%%%%
+  þÿ   a   :       1x
+%%%%
+a :   1 
+ b :   [ x ,   y ] 
+ 
+%%%%
+a :   1 
+ b :   [ x ,   y ] 
+
+%%%%
+a :   1 
+ b :   [ x ,   y ] 
+ x
+%%%%
+ÿþa :   1 
+ b :   [ x ,   y ] 
+ 
+%%%%
+ÿþa :   1 
+ b :   [ x ,   y ] 
+
+%%%%
+ÿþa :   1 
+ b :   [ x ,   y ] 
+ x
+%%%%
+ a :   1 
+ b :   [ x ,   y ] 
+
+%%%%
+ a :   1 
+ b :   [ x ,   y ] 
+%%%%
+ a :   1 
+ b :   [ x ,   y ] 
+x
+%%%%
+þÿ a :   1 
+ b :   [ x ,   y ] 
+
+%%%%
+þÿ a :   1 
+ b :   [ x ,   y ] 
+%%%%
+þÿ a :   1 
+ b :   [ x ,   y ] 
+x
+%%%%
+a   :       1   
+   b   :       [   x   ,       y   ]   
+   
+%%%%
+a   :       1   
+   b   :       [   x   ,       y   ]   
+  
+%%%%
+a   :       1   
+   b   :       [   x   ,       y   ]   
+   x
+%%%%
+ÿþ  a   :       1   
+   b   :       [   x   ,       y   ]   
+   
+%%%%
+ÿþ  a   :       1   
+   b   :       [   x   ,       y   ]   
+  
+%%%%
+ÿþ  a   :       1   
+   b   :       [   x   ,       y   ]   
+   x
+%%%%
+   a   :       1   
+   b   :       [   x   ,       y   ]   
+
+%%%%
+   a   :       1   
+   b   :       [   x   ,       y   ]   
+%%%%
+   a   :       1   
+   b   :       [   x   ,       y   ]   
+x
+%%%%
+  þÿ   a   :       1   
+   b   :       [   x   ,       y   ]   
+
+%%%%
+  þÿ   a   :       1   
+   b   :       [   x   ,       y   ]   
+%%%%
+  þÿ   a   :       1   
+   b   :       [   x   ,       y   ]   
+x
+%%%%
+k :   c a f é   åe  =Ø Þ
+ 
+%%%%
+k :   c a f é   åe  =Ø Þ
+
+%%%%
+k :   c a f é   åe  =Ø Þ
+ x
+%%%%
+ÿþk :   c a f é   åe  =Ø Þ
+ 
+%%%%
+ÿþk :   c a f é   åe  =Ø Þ
+
+%%%%
+ÿþk :   c a f é   åe  =Ø Þ
+ x
+%%%%
+ k :   c a f é  eå  Ø=Þ  
+
+%%%%
+ k :   c a f é  eå  Ø=Þ  
+%%%%
+ k :   c a f é  eå  Ø=Þ  
+x
+%%%%
+þÿ k :   c a f é  eå  Ø=Þ  
+
+%%%%
+þÿ k :   c a f é  eå  Ø=Þ  
+%%%%
+þÿ k :   c a f é  eå  Ø=Þ  
+x
+%%%%
+k   :       c   a   f   é       åe       ö 
+   
+%%%%
+k   :       c   a   f   é       åe       ö 
+  
+%%%%
+k   :       c   a   f   é       åe       ö 
+   x
+%%%%
+ÿþ  k   :       c   a   f   é       åe       ö 
+   
+%%%%
+ÿþ  k   :       c   a   f   é       åe       ö 
+  
+%%%%
+ÿþ  k   :       c   a   f   é       åe       ö 
+   x
+%%%%
+   k   :       c   a   f   é      eå     ö    
+
+%%%%
+   k   :       c   a   f   é      eå     ö    
+%%%%
+   k   :       c   a   f   é      eå     ö    
+x
+%%%%
+  þÿ   k   :       c   a   f   é      eå     ö    
+
+%%%%
+  þÿ   k   :       c   a   f   é      eå     ö    
+%%%%
+  þÿ   k   :       c   a   f   é      eå     ö    
+x
+%%%%
+-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+ 
+%%%%
+-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+
+%%%%
+-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+ x
+%%%%
+ÿþ-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+ 
+%%%%
+ÿþ-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+
+%%%%
+ÿþ-   " \ u 0 0 e 9 " 
+ -   ' q ' 
+ x
+%%%%
+ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+
+%%%%
+ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+%%%%
+ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+x
+%%%%
+þÿ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+
+%%%%
+þÿ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+%%%%
+þÿ -   " \ u 0 0 e 9 " 
+ -   ' q ' 
+x
+%%%%
+-       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+   
+%%%%
+-       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+  
+%%%%
+-       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+   x
+%%%%
+ÿþ  -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+   
+%%%%
+ÿþ  -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+  
+%%%%
+ÿþ  -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+   x
+%%%%
+   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+
+%%%%
+   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+%%%%
+   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+x
+%%%%
+  þÿ   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+
+%%%%
+  þÿ   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+%%%%
+  þÿ   -       "   \   u   0   0   e   9   "   
+   -       '   q   '   
+x
+%%%%
+#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+ 
+%%%%
+#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+
+%%%%
+#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+ x
+%%%%
+ÿþ#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+ 
+%%%%
+ÿþ#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+
+%%%%
+ÿþ#   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+ x
+%%%%
+ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+
+%%%%
+ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+%%%%
+ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+x
+%%%%
+þÿ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+
+%%%%
+þÿ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+%%%%
+þÿ #   c o m m e n t 
+ k e y :   v a l u e   #   e n d 
+x
+%%%%
+#       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+   
+%%%%
+#       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+  
+%%%%
+#       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+   x
+%%%%
+ÿþ  #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+   
+%%%%
+ÿþ  #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+  
+%%%%
+ÿþ  #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+   x
+%%%%
+   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+
+%%%%
+   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+%%%%
+   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+x
+%%%%
+  þÿ   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+
+%%%%
+  þÿ   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+%%%%
+  þÿ   #       c   o   m   m   e   n   t   
+   k   e   y   :       v   a   l   u   e       #       e   n   d   
+x
+%%%%
+{ a :   ¬ } 
+%%%%
+{ a :   ¬ }
+%%%%
+{ a :   ¬ } x
+%%%%
+ÿþ{ a :   ¬ } 
+%%%%
+ÿþ{ a :   ¬ }
+%%%%
+ÿþ{ a :   ¬ } x
+%%%%
+ { a :   ¬ }
+%%%%
+ { a :   ¬ 
+%%%%
+ { a :   ¬ }x
+%%%%
+þÿ { a :   ¬ }
+%%%%
+þÿ { a :   ¬ 
+%%%%
+þÿ { a :   ¬ }x
+%%%%
+{   a   :       ¬   }   
+%%%%
+{   a   :       ¬   }  
+%%%%
+{   a   :       ¬   }   x
+%%%%
+ÿþ  {   a   :       ¬   }   
+%%%%
+ÿþ  {   a   :       ¬   }  
+%%%%
+ÿþ  {   a   :       ¬   }   x
+%%%%
+   {   a   :       ¬   }
+%%%%
+   {   a   :       ¬   
+%%%%
+   {   a   :       ¬   }x
+%%%%
+  þÿ   {   a   :       ¬   }
+%%%%
+  þÿ   {   a   :       ¬   
+%%%%
+  þÿ   {   a   :       ¬   }x
+%%%%
+ÿþa :    Øx 
+ 
+%%%%
+a :    Øx 
+ 
+%%%%
+ÿþa :    Üx 
+ 
+%%%%
+a :    Üx 
+ 
+%%%%
+ÿþa :    Ø Ø Ü
+ 
+%%%%
+a :    Ø Ø Ü
+ 
+%%%%
+ÿþa :    Ø
+%%%%
+a :    Ø
+%%%%
+ÿþa :    x 
+ 
+%%%%
+a :    x 
+ 
+%%%%
+ÿþa :    Ü Üx 
+ 
+%%%%
+a :    Ü Üx 
+ 
+%%%%
+ÿþa :   =Ø Þÿþx 
+ 
+%%%%
+a :   =Ø Þÿþx 
+ 
+%%%%
+þÿ a :  Ø  x 
+
+%%%%
+ a :  Ø  x 
+
+%%%%
+þÿ a :  Ü  x 
+
+%%%%
+ a :  Ü  x 
+
+%%%%
+þÿ a :  Ø Ø Ü  
+
+%%%%
+ a :  Ø Ø Ü  
+
+%%%%
+þÿ a :  Ø 
+%%%%
+ a :  Ø 
+%%%%
+þÿ a :    x 
+
+%%%%
+ a :    x 
+
+%%%%
+þÿ a :  Ü Ü  x 
+
+%%%%
+ a :  Ü Ü  x 
+
+%%%%
+þÿ a :  Ø=Þ þÿ x 
+
+%%%%
+ a :  Ø=Þ þÿ x 
+
+%%%%
+ÿþ  a   :        Ø  x   
+   
+%%%%
+ÿþ  a   :        Ü  x   
+   
+%%%%
+ÿþ  a   :        Ø   Ø   Ü  
+   
+%%%%
+ÿþ  a   :        Ø  
+%%%%
+ÿþ  a   :          x   
+   
+%%%%
+ÿþ  a   :          x   
+   
+%%%%
+ÿþ  a   :        ö ÿþ  x   
+   
+%%%%
+  þÿ   a   :      Ø    x   
+
+%%%%
+  þÿ   a   :      Ü    x   
+
+%%%%
+  þÿ   a   :      Ø   Ø   Ü    
+
+%%%%
+  þÿ   a   :      Ø 
+%%%%
+  þÿ   a   :          x   
+
+%%%%
+  þÿ   a   :          x   
+
+%%%%
+  þÿ   a   :     ö   þÿ   x   
+
+%%%%
+ï»a: 1
+%%%%
+ïa: 1
+%%%%
+ÿa: 1
+%%%%
+þÿ
+%%%%
+ÿþ  
+%%%%
+  þÿ
+%%%%
+   
+%%%%
+ 

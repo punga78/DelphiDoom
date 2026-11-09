@@ -1,0 +1,72 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: unit tests of the xcom ruleset library (DUnitX)                  }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{  (the library itself is derived from OpenXcom, GPL v3 or later: see           }
+{  Libs\XcomFormats\README.md)                                                  }
+{                                                                              }
+{******************************************************************************}
+program DelphiDoom.Tests.XcomMod;
+
+{$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
+
+uses
+  System.SysUtils,
+  DUnitX.Loggers.Console,
+  DUnitX.Loggers.Xml.NUnit,
+  DUnitX.TestFramework,
+  DelphiDoom.XcomMod.Types in '..\Libs\XcomMod\DelphiDoom.XcomMod.Types.pas',
+  DelphiDoom.XcomMod.Random in '..\Libs\XcomMod\DelphiDoom.XcomMod.Random.pas',
+  DelphiDoom.XcomMod.NodeReader in '..\Libs\XcomMod\DelphiDoom.XcomMod.NodeReader.pas',
+  DelphiDoom.XcomMod.Areas in '..\Libs\XcomMod\DelphiDoom.XcomMod.Areas.pas',
+  DelphiDoom.XcomMod.WeightedOptions in '..\Libs\XcomMod\DelphiDoom.XcomMod.WeightedOptions.pas',
+  DelphiDoom.XcomMod.RuleInventory in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleInventory.pas',
+  DelphiDoom.XcomMod.RuleCountry in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCountry.pas',
+  DelphiDoom.XcomMod.RuleRegion in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleRegion.pas',
+  DelphiDoom.XcomMod.RuleResearch in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleResearch.pas',
+  DelphiDoom.XcomMod.RuleManufacture in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleManufacture.pas',
+  DelphiDoom.XcomMod.AlienRace in '..\Libs\XcomMod\DelphiDoom.XcomMod.AlienRace.pas',
+  DelphiDoom.XcomMod.UfoTrajectory in '..\Libs\XcomMod\DelphiDoom.XcomMod.UfoTrajectory.pas',
+  DelphiDoom.XcomMod.RuleMusic in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleMusic.pas',
+  DelphiDoom.XcomMod.MapBlock in '..\Libs\XcomMod\DelphiDoom.XcomMod.MapBlock.pas',
+  DelphiDoom.XcomMod.RuleCommendations in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCommendations.pas',
+  DelphiDoom.Tests.XcomMod.Scenario in 'Source\DelphiDoom.Tests.XcomMod.Scenario.pas',
+  DelphiDoom.Tests.XcomMod.Golden in 'Source\DelphiDoom.Tests.XcomMod.Golden.pas',
+  DelphiDoom.Tests.XcomMod.Rules in 'Source\DelphiDoom.Tests.XcomMod.Rules.pas';
+
+var
+  Runner: ITestRunner;
+  Results: IRunResults;
+  Logger: ITestLogger;
+  NUnitLogger: ITestLogger;
+
+begin
+  try
+    TDUnitX.CheckCommandLine;
+    Runner := TDUnitX.CreateRunner;
+    Runner.UseRTTI := True;
+    Runner.FailsOnNoAsserts := False;
+
+    Logger := TDUnitXConsoleLogger.Create(True);
+    Runner.AddLogger(Logger);
+    NUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
+    Runner.AddLogger(NUnitLogger);
+
+    Results := Runner.Execute;
+    if not Results.AllPassed then
+      System.ExitCode := EXIT_ERRORS;
+
+    {$IFNDEF CI}
+    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
+    begin
+      System.Write('Done.. press <Enter> key to quit.');
+      System.Readln;
+    end;
+    {$ENDIF}
+  except
+    on E: Exception do
+      System.Writeln(E.ClassName, ': ', E.Message);
+  end;
+end.
