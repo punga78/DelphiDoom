@@ -10,12 +10,12 @@ library DDScript;
 
 uses
   d_delphi in 'Shim\d_delphi.pas',
-  ps_defs in '..\..\SCRIPT\ps_defs.pas',
-  ps_keywords in '..\..\SCRIPT\ps_keywords.pas',
-  ps_utils in '..\..\SCRIPT\ps_utils.pas',
-  ps_compiler in '..\..\SCRIPT\ps_compiler.pas',
-  uPSPreProcessor in '..\..\SCRIPT\uPSPreProcessor.pas',
-  ps_runtime in '..\..\SCRIPT\ps_runtime.pas',
+  ps_defs in '..\..\Libs\PascalScript\ps_defs.pas',
+  ps_keywords in '..\..\Libs\PascalScript\ps_keywords.pas',
+  ps_utils in '..\..\Libs\PascalScript\ps_utils.pas',
+  ps_compiler in '..\..\Libs\PascalScript\ps_compiler.pas',
+  uPSPreProcessor in '..\..\Libs\PascalScript\uPSPreProcessor.pas',
+  ps_runtime in '..\..\Libs\PascalScript\ps_runtime.pas',
   DelphiDoom.Script.Intf in 'DelphiDoom.Script.Intf.pas',
   DelphiDoom.Script.Native in 'DelphiDoom.Script.Native.pas',
   DelphiDoom.Script.Native.Compiler in 'DelphiDoom.Script.Native.Compiler.pas',

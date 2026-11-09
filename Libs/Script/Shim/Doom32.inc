@@ -1,6 +1,6 @@
 // Replacement of Doom32.inc for the script DLL and its tests.
 //
-// SCRIPT\ps_defs.pas and SCRIPT\ps_keywords.pas start with {$I Doom32.inc}.
+// Libs\PascalScript\ps_defs.pas and Libs\PascalScript\ps_keywords.pas start with {$I Doom32.inc}.
 // The real file also sets application level switches ($APPTYPE GUI,
 // $IMAGEBASE, stack sizes) that belong to the engine executables and would
 // change the type of a console test project. This file keeps only the code

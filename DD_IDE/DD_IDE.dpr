@@ -114,7 +114,7 @@ uses
   frm_ReplaceText in '..\DD_IDE\frm_ReplaceText.pas' {TextReplaceDialog},
   frm_ConfirmReplace in '..\DD_IDE\frm_ConfirmReplace.pas' {ConfirmReplaceDialog},
   frm_message in '..\DD_IDE\frm_message.pas' {frmMessage},
-  ddc_base in '..\SCRIPT\ddc_base.pas',
+  ddc_base in '..\Libs\Ddc\ddc_base.pas',
   frm_unitfunctions in '..\DD_IDE\frm_unitfunctions.pas' {Frame_UnitFunctions: TFrame},
   frm_PageSetup in '..\DD_IDE\SynEdit\frm_PageSetup.pas' {PageSetupDlg},
   frm_PrintPreview in '..\DD_IDE\SynEdit\frm_PrintPreview.pas' {ScriptPrintPreviewDlg},

@@ -12,8 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>HEXEN;OPTIMIZE_FOR_SPEED;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Hexen;..\Base;..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Hexen;..\Base;..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\Hexen;..\Base;..\Common;..\Libs\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Hexen;..\Base;..\Common;..\Libs\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>..\Hexen;..\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ObjPath>..\Hexen;..\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Hexen</DCC_ExeOutput>

@@ -12,10 +12,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Script;..\Libs\Script\Shim;..\SCRIPT;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Script\Shim;..\Libs\Script;..\SCRIPT;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ObjPath>..\SCRIPT;$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_ResourcePath>..\SCRIPT;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Script;..\Libs\Script\Shim;..\Libs\PascalScript;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Libs\Script\Shim;..\Libs\Script;..\Libs\PascalScript;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ObjPath>..\Libs\PascalScript;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_ResourcePath>..\Libs\PascalScript;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Tests\Script\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>

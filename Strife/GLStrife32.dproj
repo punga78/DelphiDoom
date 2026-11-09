@@ -12,8 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>OPENGL;STRIFE;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Strife;..\Base;..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Strife;..\Base;..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\Strife;..\Base;..\Common;..\Libs\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Strife;..\Base;..\Common;..\Libs\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>..\Strife;..\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ObjPath>..\Strife;..\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Strife</DCC_ExeOutput>
