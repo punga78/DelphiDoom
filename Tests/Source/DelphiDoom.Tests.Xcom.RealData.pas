@@ -6,7 +6,8 @@
 {  are not in the repository. They are looked for in the folder of the          }
 {  environment variable DELPHIDOOM_XCOM_DATA (the folder of the game: the one   }
 {  that has GEODATA, GEOGRAPH, MAPS, ROUTES, TERRAIN, UNITS...), or in          }
-{  Reference\_dati\xcom of a folder above the program. A test that needs them   }
+{  Reference\_dati\xcom or Reference\_dati\xcom_tftd\TFTD of a folder above the  }
+{  program. A test that needs them                                              }
 {  is skipped if they are not there                                             }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -53,6 +54,16 @@ type
     procedure DovrebbeLeggereOgniPercorsoDellaBattaglia;
     [Test]
     procedure DovrebbeLeggereOgniTerreno;
+    [Test]
+    procedure DovrebbeLeggereOgniFileCatDelSuono;
+    [Test]
+    procedure DovrebbeLeggereIPoligoniDelGlobo;
+    [Test]
+    procedure DovrebbeLeggereLaTabellaDelleForme;
+    [Test]
+    procedure DovrebbeDecodificareOgniBdyESpkConDatiDentroLImmagine;
+    [Test]
+    procedure DovrebbeTrovareNelPckOgniFotogrammaCheUnTerrenoUsa;
   end;
 
 implementation
@@ -75,7 +86,11 @@ begin
   LCurrent := ExtractFilePath(ParamStr(0));
   while LCurrent <> '' do
   begin
+    // UFO (xcom) first, then TFTD (xcom_tftd\TFTD, the floppy install laid out in folders)
     LCandidate := TPath.Combine(LCurrent, 'Reference\_dati\xcom');
+    if TDirectory.Exists(LCandidate) then
+      Exit(LCandidate);
+    LCandidate := TPath.Combine(LCurrent, 'Reference\_dati\xcom_tftd\TFTD');
     if TDirectory.Exists(LCandidate) then
       Exit(LCandidate);
     LParent := ExtractFilePath(ExcludeTrailingPathDelimiter(LCurrent));
@@ -108,9 +123,14 @@ end;
 procedure TTestXcomRealData.DovrebbeLeggereLeCinquePalettiDellaGeoscape;
 var
   LIndex: Integer;
+  LPalettes: Integer;
 begin
   SkipIfMissing;
-  for LIndex := 0 to 4 do
+  // UFO has five palettes of 774 bytes (768 + 6 of header), TFTD three (2322 bytes): the real
+  // TFTD data showed that a palette past the end of the file has no color with alpha 255
+  LPalettes := Integer(TFile.GetSize(TPath.Combine(FFolder, 'GEODATA\PALETTES.DAT'))) div XCOM_PALETTE_STRIDE;
+  Assert.IsTrue(LPalettes >= 3, 'PALETTES.DAT troppo corto');
+  for LIndex := 0 to LPalettes - 1 do
   begin
     Assert.AreEqual(256, FData.LoadPalette(LIndex).Count);
     Assert.AreEqual(0, Integer(FData.LoadPalette(LIndex).Colors[0].Alpha));
@@ -204,6 +224,124 @@ begin
     Inc(LCount);
   end;
   Assert.IsTrue(LCount > 0, 'nessun file MCD');
+end;
+
+procedure TTestXcomRealData.DovrebbeLeggereOgniFileCatDelSuono;
+var
+  LPath: string;
+  LBytes: TBytes;
+  LCat: IXcomCatArchive;
+  LCount: Integer;
+  LIndex: Integer;
+begin
+  SkipIfMissing;
+  LCount := 0;
+  for LPath in TDirectory.GetFiles(TPath.Combine(FFolder, 'SOUND'), '*.CAT') do
+  begin
+    LBytes := TFile.ReadAllBytes(LPath);
+    LCat := TXcomFactory.CreateCatArchive(LBytes);
+    Assert.IsTrue(LCat.Count > 0, LPath);
+    for LIndex := 0 to LCat.Count - 1 do
+      Assert.IsTrue(Int64(LCat.Entries[LIndex].Offset) + LCat.Entries[LIndex].Size <= Length(LBytes),
+        Format('%s: la voce %d va oltre la fine del file', [LPath, LIndex]));
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0, 'nessun file CAT');
+end;
+
+procedure TTestXcomRealData.DovrebbeLeggereIPoligoniDelGlobo;
+var
+  LPolygons: TArray<TXcomWorldPolygon>;
+  LIndex: Integer;
+begin
+  SkipIfMissing;
+  LPolygons := TXcomFactory.CreateWorldReader.Read(FData.GetFiles.ReadAll('GEODATA\WORLD.DAT'));
+  Assert.IsTrue(Length(LPolygons) > 100, 'pochi poligoni');
+  for LIndex := 0 to High(LPolygons) do
+  begin
+    Assert.IsTrue(LPolygons[LIndex].Points in [3, 4], Format('poligono %d: %d punti', [LIndex, LPolygons[LIndex].Points]));
+    Assert.IsTrue((LPolygons[LIndex].Texture >= 0) and (LPolygons[LIndex].Texture < 32),
+      Format('poligono %d: texture %d', [LIndex, LPolygons[LIndex].Texture]));
+  end;
+end;
+
+procedure TTestXcomRealData.DovrebbeLeggereLaTabellaDelleForme;
+var
+  LWords: TArray<Word>;
+begin
+  SkipIfMissing;
+  LWords := TXcomFactory.CreateWordTableReader.Read(FData.GetFiles.ReadAll('TERRAIN\LOFTEMPS.DAT'));
+  Assert.IsTrue(Length(LWords) > 0);
+  // every shape (a voxel layout) is 16 words, one for each layer of 16 x 16 voxels
+  Assert.AreEqual(0, Integer(Length(LWords) mod 16));
+end;
+
+procedure TTestXcomRealData.DovrebbeDecodificareOgniBdyESpkConDatiDentroLImmagine;
+var
+  LPath: string;
+  LImage: TXcomImage;
+  LPixel: Byte;
+  LHasData: Boolean;
+  LCount: Integer;
+begin
+  SkipIfMissing;
+  LCount := 0;
+  for LPath in TDirectory.GetFiles(TPath.Combine(FFolder, 'UFOGRAPH'), '*.*') do
+  begin
+    if SameText(TPath.GetExtension(LPath), '.BDY') then
+      LImage := TXcomFactory.CreateBdyDecoder.Decode(TFile.ReadAllBytes(LPath), 320, 200)
+    else if SameText(TPath.GetExtension(LPath), '.SPK') then
+      LImage := TXcomFactory.CreateSpkDecoder.Decode(TFile.ReadAllBytes(LPath), 320, 200)
+    else
+      Continue;
+    Assert.AreEqual(320 * 200, Integer(Length(LImage.Pixels)), LPath);
+    LHasData := False;
+    for LPixel in LImage.Pixels do
+      if LPixel <> 0 then
+      begin
+        LHasData := True;
+        Break;
+      end;
+    Assert.IsTrue(LHasData, 'immagine vuota: ' + LPath);
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0, 'nessun file BDY o SPK');
+end;
+
+procedure TTestXcomRealData.DovrebbeTrovareNelPckOgniFotogrammaCheUnTerrenoUsa;
+var
+  LPath: string;
+  LPck: string;
+  LRecords: TArray<TXcomMcdRecord>;
+  LFrames: TArray<TXcomImage>;
+  LRecord: Integer;
+  LFrame: Integer;
+  LCount: Integer;
+  LOutside: string;
+begin
+  SkipIfMissing;
+  LCount := 0;
+  LOutside := '';
+  for LPath in TDirectory.GetFiles(TPath.Combine(FFolder, 'TERRAIN'), '*.MCD') do
+  begin
+    LPck := TPath.ChangeExtension(LPath, '.PCK');
+    // a few terrain sets of TFTD (ISLAND4, XBASE1, XBASE2) are only MCD: they use the frames of another set
+    if not TFile.Exists(LPck) then
+      Continue;
+    LRecords := FData.LoadTerrain('TERRAIN\' + TPath.GetFileName(LPath));
+    LFrames := FData.LoadImageSet('TERRAIN\' + TPath.GetFileName(LPck), '', 32, 40, FData.LoadPalette(0));
+    for LRecord := 0 to High(LRecords) do
+      for LFrame := 0 to 7 do
+        // XBASES05 of TFTD (floppy 1.0 data) has the objects 39, 40 and 41 (frames 74, 75, 76) outside its 74
+        // frames: the original game has this defect and never draws them, so it is the one that is accepted
+        if (LRecords[LRecord].Frame[LFrame] >= Length(LFrames)) and
+          not (SameText(TPath.GetFileNameWithoutExtension(LPath), 'XBASES05') and (LRecord in [39..41])) then
+          LOutside := LOutside + Format('%s: l''oggetto %d usa il fotogramma %d di %d'#13#10,
+            [TPath.GetFileName(LPath), LRecord, LRecords[LRecord].Frame[LFrame], Length(LFrames)]);
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0, 'nessun terreno con MCD e PCK');
+  Assert.AreEqual('', LOutside, 'fotogrammi fuori dal PCK');
 end;
 
 initialization
