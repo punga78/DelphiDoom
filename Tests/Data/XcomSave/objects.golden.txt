@@ -1,0 +1,11116 @@
+#0 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+PARSE_ERR
+#1 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 4
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 4
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 0000000000000000 0000000000000000 id=4
+EMIT good
+| lon: 0
+| lat: 0
+| id: 4
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 4
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=4
+#2 equip
+e  NONE -2147483648 286 hello 2147483647
+EMIT good
+| itemType: ""
+| slot: NONE
+| slotX: -2147483648
+| slotY: 286
+| ammoItem: hello
+| fuseTimer: 2147483647
+|.
+#3 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+tex=0 secs=19 race=hello battle=0 det=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| id: 107
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 0
+| secondsRemaining: 19
+| race: hello
+| detected: false
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_SITE_MARK
+| id: 107
+|.
+type=STR_SITE_MARK marker=-1
+marker=0
+city=STR_CITY
+#4 equip
+e null  2147483647 -2147483648 hello -2147483648
+EMIT good
+| itemType: "null"
+| slot: ""
+| slotX: 2147483647
+| slotY: -2147483648
+| ammoItem: hello
+|.
+#5 waypoint 3FF526E978D4FDF4 BFE319D26ECD3D35 4016E147AE147AE1 4003609882984B3B
+ll 0000000000000000 40117AE147AE147B id=-2147483648
+EMIT good
+| lon: 0
+| lat: 4.3700000000000001
+| id: -2147483648
+| name: yes
+|.
+EMIT good
+| lon: 0
+| lat: 4.3700000000000001
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 3FF526E978D4FDF4 BFE319D26ECD3D35
+dist=1.749756109
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#6 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=STR_HUMAN battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 27
+| race: STR_HUMAN
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 27
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 0000000000000000 401A000000000000 id=27
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 27
+| race: STR_HUMAN
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 27
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=27
+#7 equip
+e STR_AVALON  12 21 NONE 285
+EMIT good
+| itemType: STR_AVALON
+| slot: ""
+| slotX: 12
+| slotY: 21
+| fuseTimer: 285
+|.
+#8 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+YAML_ERR bad conversion
+#9 equip
+e STR_HUMAN STR_HUMAN 17 7 NONE -2
+EMIT good
+| itemType: STR_HUMAN
+| slot: STR_HUMAN
+| slotX: 17
+| slotY: 7
+|.
+#10 waypoint 4022B851EB851EB8 C021E147AE147AE1 BFE806E1A0EF4E56 3FF6666666666666
+ll 40075C28F5C28F5C 400921FB54442D11 id=16
+EMIT good
+| lon: 2.9199999999999999
+| lat: 3.14159265358979
+| id: 16
+|.
+EMIT good
+| lon: 2.9199999999999999
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 4018DFA62CE826E4 40173191B206DF36
+dist=1.920769668
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#11 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race=STR_AVALON battle=0 disc=0
+EMIT good
+| lon: inf
+| lat: 1.5
+| id: 16
+| name: caf\xC3\xA9
+| race: STR_AVALON
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=1
+ll 7FF0000000000000 3FF8000000000000 id=16
+EMIT good
+| lon: inf
+| lat: 1.5
+| id: 16
+| name: caf\xC3\xA9
+| race: STR_AVALON
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#12 waypoint C00725B1336938FF 3FEF22D0E5604189 3FF9126E978D4FDF 4002DFEA8D271A76
+ll 401A000000000000 0000000000000000 id=16
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 16
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 400B1E45751F2131 3FEF22D0E5604189
+dist=0.8200594344
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#13 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#14 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+tex=16 secs=35 race=STR_HUMAN battle=0 det=0
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| secondsRemaining: 35
+| race: STR_HUMAN
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#15 equip
+e STR_FOO  16 16 hello 59
+EMIT good
+| itemType: STR_FOO
+| slot: ""
+| slotX: 16
+| slotY: 16
+| ammoItem: hello
+| fuseTimer: 59
+|.
+#16 equip
+e STR_HUMAN  29 0 yes -1
+EMIT good
+| itemType: STR_HUMAN
+| slot: ""
+| slotX: 29
+| ammoItem: yes
+|.
+#17 equip
+e 123 null 2147483647 0 caf\xC3\xA9 -2147483648
+EMIT good
+| itemType: 123
+| slot: "null"
+| slotX: 2147483647
+| ammoItem: caf\xC3\xA9
+|.
+#18 waypoint 401E7AE147AE147B 4027B6DB6DB6DB6E 3FD51C8A44920048 3FEE2D0E56041893
+ll 0000000000000000 3FF8000000000000 id=156
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 156
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 156
+|.
+set 4011E9E39D8BFDEF C0216E5C98A5D028
+dist=1.86382564
+self=0
+marker=STR_WAY_POINT_ id=156
+type=STR_WAY_POINT marker=6
+#19 equip
+e null STR_FOO -2147483648 -12588 STR_AVALON 5
+EMIT good
+| itemType: "null"
+| slot: STR_FOO
+| slotX: -2147483648
+| slotY: -12588
+| ammoItem: STR_AVALON
+| fuseTimer: 5
+|.
+#20 waypoint C01C47AE147AE148 BFD2187683EADBAB 3FEB3E6E2A2A200F C026000000000000
+ll 400921FB54442D11 0000000000000000 id=2147483647
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 2147483647
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 4015FC48940D78E8 BFD2187683EADBAB
+dist=1.853834613
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#21 waypoint 402BB6DB6DB6DB6E 3FD6666666666666 401DE147AE147AE1 4018924924924925
+ll 3FF3AE147AE147AE 401A000000000000 id=-2147483648
+EMIT good
+| lon: 1.23
+| lat: 6.5
+| id: -2147483648
+| name: hello
+|.
+EMIT good
+| lon: 1.23
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 3FF4A700CB9572B0 3FD6666666666666
+dist=0.5008873293
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#22 waypoint 3FF4B4395810624E 4020000000000000 40111EB851EB851F 40036D76B4BD3682
+ll 0000000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: hello
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 4011BE0C00262F20 C0136F0255DDE974
+dist=1.002094247
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#23 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=0 race=STR_HUMAN battle=1 det=1
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 16
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| race: STR_HUMAN
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=2
+marker=2
+city=STR_CITY
+#24 equip
+PARSE_ERR
+#25 node
+n 0 0,0,0 13 0 2147483647 0 0 alloc=0 dummy=0 target=0
+links=[-83886,-2147483648,]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 13
+| rank: 0
+| flags: 2147483647
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - -83886
+|   - -2147483648
+| dummy: false
+|.
+alloc=1
+alloc=0
+#26 node
+n 2147483647 12,13,2 16 20 0 16 0 alloc=1 dummy=0 target=0
+links=[2,5,16,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 12
+|   - 13
+|   - 2
+| type: 16
+| rank: 20
+| flags: 0
+| reserved: 16
+| priority: 0
+| allocated: true
+| links:
+|   - 2
+|   - 5
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#27 equip
+e NONE q 0 0 NONE 4
+EMIT good
+| itemType: NONE
+| slot: q
+| fuseTimer: 4
+|.
+#28 node
+n -2147483648 19,8,2 0 2147483647 284 45137 187 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: -2147483648
+| position:
+|   - 19
+|   - 8
+|   - 2
+| type: 0
+| rank: 2147483647
+| flags: 284
+| reserved: 45137
+| priority: 187
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#29 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=null battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 4
+| name: "null"
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 4
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 0000000000000000 3FF8000000000000 id=4
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 4
+| name: "null"
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 4
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=4
+#30 node
+n 16 0,0,0 0 12 -85401 52 16 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 16
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 12
+| flags: -85401
+| reserved: 52
+| priority: 16
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#31 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=99 secs=2147483647 race=a b battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 1000
+| id: 2147483647
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 99
+| secondsRemaining: 2147483647
+| race: a b
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=-1
+marker=1
+city=STR_CITY
+#32 node
+n 77114 5,33,1 0 -2147483648 0 16 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 77114
+| position:
+|   - 5
+|   - 33
+|   - 1
+| type: 0
+| rank: -2147483648
+| flags: 0
+| reserved: 16
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#33 waypoint C003DAD75EF7065C 3FFBFF731A53E937 BFFBE5B6B60A12A9 BFF5EB851EB851EC
+ll 3FF3AE147AE147AE C00ECCCCCCCCCCCD id=17843
+EMIT good
+| lon: 1.23
+| lat: -3.8500000000000001
+| id: 17843
+|.
+EMIT good
+| lon: 1.23
+| lat: -3.8500000000000001
+| type: STR_WAY_POINT
+| id: 17843
+|.
+set 3FE51C8FD5349AF0 3FF644838E3470F9
+dist=3.003747936
+self=0
+marker=STR_WAY_POINT_ id=17843
+type=STR_WAY_POINT marker=6
+#34 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=null battle=0 disc=0
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 16
+| race: "null"
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 401A000000000000 0000000000000000 id=16
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 16
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#35 equip
+e STR_HUMAN caf\xC3\xA9 0 16 yes -2147483648
+EMIT good
+| itemType: STR_HUMAN
+| slot: caf\xC3\xA9
+| slotY: 16
+| ammoItem: yes
+|.
+#36 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#37 equip
+PARSE_ERR
+#38 node
+n 164 0,0,0 2147483647 21 1 37 22 alloc=0 dummy=1 target=0
+links=[-2147483648,16,16,]
+EMIT good
+| id: 164
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 2147483647
+| rank: 21
+| flags: 1
+| reserved: 37
+| priority: 22
+| allocated: false
+| links:
+|   - -2147483648
+|   - 16
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#39 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=hello battle=1 det=0
+EMIT good
+| lon: 6.9500000000000002
+| lat: 1000
+| id: -2147483648
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: hello
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 6.9500000000000002
+| lat: 1000
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=-1
+marker=2
+city=STR_CITY
+#40 waypoint C02BB6DB6DB6DB6E 4026000000000000 C00EDB6DB6DB6DB7 4011B6DB6DB6DB6E
+ll 401A000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 2147483647
+| name: "null"
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 3FFD9CF5DCF2E780 C01F6F0255DDE974
+dist=0.2801141309
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#41 node
+n 23 0,0,0 0 0 2147483647 89 4 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 23
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 0
+| flags: 2147483647
+| reserved: 89
+| priority: 4
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#42 equip
+PARSE_ERR
+#43 node
+n 272 54,38,1 0 35013 54508 80904 14 alloc=0 dummy=1 target=0
+links=[2147483647,30,-2147483648,9,]
+EMIT good
+| id: 272
+| position:
+|   - 54
+|   - 38
+|   - 1
+| type: 0
+| rank: 35013
+| flags: 54508
+| reserved: 80904
+| priority: 14
+| allocated: false
+| links:
+|   - 2147483647
+|   - 30
+|   - -2147483648
+|   - 9
+| dummy: true
+|.
+alloc=1
+alloc=0
+#44 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=36 secs=0 race= battle=0 det=1
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 36
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=5
+marker=5
+city=STR_CITY
+#45 node
+n -38545 60,32,2 19 0 109 -1 19 alloc=1 dummy=1 target=0
+links=[-3,]
+EMIT good
+| id: -38545
+| position:
+|   - 60
+|   - 32
+|   - 2
+| type: 19
+| rank: 0
+| flags: 109
+| reserved: -1
+| priority: 19
+| allocated: true
+| links:
+|   - -3
+| dummy: true
+|.
+alloc=1
+alloc=0
+#46 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=1 disc=0
+EMIT good
+| lon: 5.3700000000000001
+| lat: 1000
+| id: 6
+| name: STR_HUMAN
+| race: ""
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.3700000000000001
+| lat: 1000
+| type: STR_AB_MARK
+| id: 6
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 40157AE147AE147B 408F400000000000 id=6
+EMIT good
+| lon: 5.3700000000000001
+| lat: 1000
+| id: 6
+| name: STR_HUMAN
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.3700000000000001
+| lat: 1000
+| type: STR_AB_MARK
+| id: 6
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=6
+#47 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=a b battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 18
+| name: a b
+| race: a b
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 18
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 0000000000000000 0000000000000000 id=18
+EMIT good
+| lon: 0
+| lat: 0
+| id: 18
+| name: a b
+| race: a b
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 18
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=18
+#48 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 16
+| name: q
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=1
+ll 0000000000000000 0000000000000000 id=16
+EMIT good
+| lon: 0
+| lat: 0
+| id: 16
+| name: q
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#49 node
+n 0 12,50,2 2147483647 -13818 23 0 0 alloc=0 dummy=1 target=0
+links=[2147483647,-85364,22090,52,26,]
+EMIT good
+| id: 0
+| position:
+|   - 12
+|   - 50
+|   - 2
+| type: 2147483647
+| rank: -13818
+| flags: 23
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - 2147483647
+|   - -85364
+|   - 22090
+|   - 52
+|   - 26
+| dummy: true
+|.
+alloc=1
+alloc=0
+#50 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#51 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race=a b battle=0 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| id: 23
+| name: yes
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: a b
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| type: STR_SITE_MARK
+| id: 23
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#52 node
+n 144 0,0,0 2147483647 16 15 0 -2147483648 alloc=1 dummy=1 target=0
+links=[30,2147483647,25,16,]
+EMIT good
+| id: 144
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 2147483647
+| rank: 16
+| flags: 15
+| reserved: 0
+| priority: -2147483648
+| allocated: true
+| links:
+|   - 30
+|   - 2147483647
+|   - 25
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#53 equip
+e abc  -5 2147483647 hello 16
+EMIT good
+| itemType: abc
+| slot: ""
+| slotX: -5
+| slotY: 2147483647
+| ammoItem: hello
+| fuseTimer: 16
+|.
+#54 equip
+PARSE_ERR
+#55 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race= battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 5
+| name: "null"
+| race: ""
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 5
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 0000000000000000 0000000000000000 id=5
+EMIT good
+| lon: 0
+| lat: 0
+| id: 5
+| name: "null"
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 5
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=5
+#56 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 0000000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#57 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race= battle=0 det=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 1
+| name: hello
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: ""
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: 1
+|.
+type=STR_SITE_MARK marker=-1
+marker=9
+city=STR_CITY
+#58 equip
+e STR_AVALON STR_HUMAN 114 -46858 STR_HUMAN -2147483648
+EMIT good
+| itemType: STR_AVALON
+| slot: STR_HUMAN
+| slotX: 114
+| slotY: -46858
+| ammoItem: STR_HUMAN
+|.
+#59 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=null battle=1 disc=1
+EMIT good
+| lon: 1.5
+| lat: 3.5600000000000001
+| id: -2147483648
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.5600000000000001
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+type=STR_AB_MARK marker=8
+marker=8
+ll 3FF8000000000000 400C7AE147AE147B id=-2147483648
+EMIT good
+| lon: 1.5
+| lat: 3.5600000000000001
+| id: -2147483648
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.5600000000000001
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-2147483648
+#60 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=q battle=1 disc=0
+EMIT good
+| lon: 6.5
+| lat: inf
+| id: 37
+| name: caf\xC3\xA9
+| race: q
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: inf
+| type: STR_AB_MARK
+| id: 37
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 401A000000000000 7FF0000000000000 id=37
+EMIT good
+| lon: 6.5
+| lat: inf
+| id: 37
+| name: caf\xC3\xA9
+| race: q
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: inf
+| type: STR_AB_MARK
+| id: 37
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=37
+#61 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=STR_AVALON battle=1 disc=1
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: -84909
+| name: NONE
+| race: STR_AVALON
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: -84909
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 0000000000000000 BFD0000000000000 id=-84909
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: -84909
+| name: NONE
+| race: STR_AVALON
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: -84909
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-84909
+#62 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=q battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| name: STR_HUMAN
+| race: q
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=2
+ll 0000000000000000 400921FB54442D11 id=0
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| name: STR_HUMAN
+| race: q
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#63 waypoint 3FF0ED916872B021 40060A98E43D00E7 401C000000000000 BFB5B6F49E4D079A
+ll C0127AE147AE147B 408F400000000000 id=2147483647
+EMIT good
+| lon: -4.6200000000000001
+| lat: 1000
+| id: 2147483647
+| name: NONE
+|.
+EMIT good
+| lon: -4.6200000000000001
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 4010CC62043EC294 3FD8BB1380396188
+dist=2.694400102
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#64 equip
+e null yes 0 -2147483648 NONE -1
+EMIT good
+| itemType: "null"
+| slot: yes
+| slotY: -2147483648
+|.
+#65 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race= battle=0 disc=1
+EMIT good
+| lon: 1.5
+| lat: -4.6399999999999997
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: -4.6399999999999997
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=0
+marker=0
+ll 3FF8000000000000 C0128F5C28F5C28F id=0
+EMIT good
+| lon: 1.5
+| lat: -4.6399999999999997
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: -4.6399999999999997
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#66 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-1 secs=7 race= battle=0 det=0
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| id: 11
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 7
+| race: ""
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| type: STR_SITE_MARK
+| id: 11
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#67 waypoint C0256DB6DB6DB6DB C02C492492492492 402C000000000000 3FFB0A3D70A3D70A
+PARSE_ERR
+#68 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: q
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 0000000000000000 0000000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: q
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#69 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=0 race=null battle=1 det=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 273
+| name: abc
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| race: "null"
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_SITE_MARK
+| id: 273
+|.
+type=STR_SITE_MARK marker=-1
+marker=6
+city=STR_CITY
+#70 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=1
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| id: 2147483647
+| name: hello
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=6
+marker=6
+ll 400921FB54442D11 408F400000000000 id=2147483647
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| id: 2147483647
+| name: hello
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#71 node
+n -5 30,9,3 -2147483648 16 0 0 5 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: -5
+| position:
+|   - 30
+|   - 9
+|   - 3
+| type: -2147483648
+| rank: 16
+| flags: 0
+| reserved: 0
+| priority: 5
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#72 node
+n 2 15,55,3 0 5 0 109 0 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 2
+| position:
+|   - 15
+|   - 55
+|   - 3
+| type: 0
+| rank: 5
+| flags: 0
+| reserved: 109
+| priority: 0
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#73 equip
+e  STR_AVALON 0 0 123 77
+EMIT good
+| itemType: ""
+| slot: STR_AVALON
+| ammoItem: 123
+| fuseTimer: 77
+|.
+#74 waypoint 402B249249249249 4021249249249249 C016E147AE147AE1 BFE7D368D85BA13B
+PARSE_ERR
+#75 equip
+e  abc -86311 -2 NONE -52478
+EMIT good
+| itemType: ""
+| slot: abc
+| slotX: -86311
+| slotY: -2
+|.
+#76 waypoint 3F947AE147AE147B C022492492492492 400847389BA7E6B9 C0296DB6DB6DB6DB
+ll 0000000000000000 408F400000000000 id=6
+EMIT good
+| lon: 0
+| lat: 1000
+| id: 6
+| name: a b
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 6
+|.
+set 40094AF116D38941 4018014B7A703298
+dist=0.1824316845
+self=0
+marker=STR_WAY_POINT_ id=6
+type=STR_WAY_POINT marker=6
+#77 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 2147483647
+| name: caf\xC3\xA9
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=1
+marker=1
+ll 0000000000000000 400921FB54442D11 id=2147483647
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 2147483647
+| name: caf\xC3\xA9
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#78 node
+n 16 60,5,0 -2147483648 2 87815 -2147483648 4 alloc=1 dummy=0 target=0
+links=[-2147483648,-30225,80352,]
+EMIT good
+| id: 16
+| position:
+|   - 60
+|   - 5
+|   - 0
+| type: -2147483648
+| rank: 2
+| flags: 87815
+| reserved: -2147483648
+| priority: 4
+| allocated: true
+| links:
+|   - -2147483648
+|   - -30225
+|   - 80352
+| dummy: false
+|.
+alloc=1
+alloc=0
+#79 node
+n 86 0,0,0 2147483647 0 2147483647 0 0 alloc=0 dummy=0 target=0
+links=[176,16,16,56797,16,]
+EMIT good
+| id: 86
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 2147483647
+| rank: 0
+| flags: 2147483647
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - 176
+|   - 16
+|   - 16
+|   - 56797
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#80 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=null battle=1 det=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -5
+| name: STR_AVALON
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: "null"
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_SITE_MARK
+| id: -5
+|.
+type=STR_SITE_MARK marker=-1
+marker=9
+city=STR_CITY
+#81 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=17 secs=61 race=null battle=1 det=1
+EMIT good
+| lon: -0.25
+| lat: inf
+| id: 20
+| name: 123
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 17
+| secondsRemaining: 61
+| race: "null"
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_SITE_MARK
+| id: 20
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#82 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=85 secs=0 race=STR_HUMAN battle=0 det=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -24013
+| name: STR_AVALON
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 85
+| race: STR_HUMAN
+| detected: false
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_SITE_MARK
+| id: -24013
+|.
+type=STR_SITE_MARK marker=-1
+marker=6
+city=STR_CITY
+#83 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=27 secs=0 race=STR_AVALON battle=1 det=0
+EMIT good
+| lon: 1.5
+| lat: 1000
+| id: 16
+| name: 123
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 27
+| race: STR_AVALON
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 1.5
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#84 waypoint 3FE6D916872B020C 3FFFA9FBE76C8B44 3FCC8B4395810625 400B6DB6DB6DB6DB
+ll 0000000000000000 BFD0000000000000 id=-94179
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: -94179
+| name: NONE
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: -94179
+|.
+set 400ED840F60EED9B 3FF299FAC11BCEEC
+dist=1.494773304
+self=0
+marker=STR_WAY_POINT_ id=-94179
+type=STR_WAY_POINT marker=6
+#85 waypoint C024DB6DB6DB6DB7 C00B6DB6DB6DB6DB BFCBBF1C1F9B50D4 BFDB6DB6DB6DB6DB
+ll 0000000000000000 0000000000000000 id=105
+EMIT good
+| lon: 0
+| lat: 0
+| id: 105
+| name: hello
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_WAY_POINT
+| id: 105
+|.
+set 40151E18E4F3954E 3FD25DDC394C4E18
+dist=1.049251944
+self=0
+marker=STR_WAY_POINT_ id=105
+type=STR_WAY_POINT marker=6
+#86 equip
+e  abc 0 16 hello -45080
+EMIT good
+| itemType: ""
+| slot: abc
+| slotY: 16
+| ammoItem: hello
+|.
+#87 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=STR_FOO battle=1 disc=1
+EMIT good
+| lon: 0
+| lat: 6.5
+| name: "null"
+| race: STR_FOO
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=0
+marker=0
+ll 0000000000000000 401A000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| name: "null"
+| race: STR_FOO
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#88 equip
+e  yes 16 -1 123 22479
+EMIT good
+| itemType: ""
+| slot: yes
+| slotX: 16
+| slotY: -1
+| ammoItem: 123
+| fuseTimer: 22479
+|.
+#89 equip
+e null  16 50 a b -1
+EMIT good
+| itemType: "null"
+| slot: ""
+| slotX: 16
+| slotY: 50
+| ammoItem: a b
+|.
+#90 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#91 equip
+PARSE_ERR
+#92 waypoint C004924924924925 4022000000000000 4019B851EB851EB8 4021249249249249
+ll 401A000000000000 0000000000000000 id=6
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 6
+| name: STR_FOO
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 6
+|.
+set 3FE23EC8BEC78FCC C0176F0255DDE974
+dist=1.808657757
+self=0
+marker=STR_WAY_POINT_ id=6
+type=STR_WAY_POINT marker=6
+#93 node
+n 20 50,45,2 0 0 19 -2147483648 107 alloc=0 dummy=0 target=0
+links=[36,54484,25,]
+EMIT good
+| id: 20
+| position:
+|   - 50
+|   - 45
+|   - 2
+| type: 0
+| rank: 0
+| flags: 19
+| reserved: -2147483648
+| priority: 107
+| allocated: false
+| links:
+|   - 36
+|   - 54484
+|   - 25
+| dummy: false
+|.
+alloc=1
+alloc=0
+#94 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race=caf\xC3\xA9 battle=0 det=1
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 16
+| name: STR_FOO
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: caf\xC3\xA9
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=4
+marker=4
+city=STR_CITY
+#95 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=6 secs=16 race= battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 1000
+| id: 27
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 6
+| secondsRemaining: 16
+| race: ""
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 27
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#96 waypoint 3FF0A3D70A3D70A4 C01F147AE147AE14 C001D70A3D70A3D7 3F834D4B3760EA50
+ll 401499999999999A 401A000000000000 id=-2147483648
+EMIT good
+| lon: 5.1500000000000004
+| lat: 6.5
+| id: -2147483648
+|.
+EMIT good
+| lon: 5.1500000000000004
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 4010B9F36CB172B5 4012837D37259788
+dist=1.66350916
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#97 node
+n 2147483647 6,46,3 21 0 2147483647 0 3436 alloc=0 dummy=0 target=0
+links=[14,16,-5,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 6
+|   - 46
+|   - 3
+| type: 21
+| rank: 0
+| flags: 2147483647
+| reserved: 0
+| priority: 3436
+| allocated: false
+| links:
+|   - 14
+|   - 16
+|   - -5
+| dummy: false
+|.
+alloc=1
+alloc=0
+#98 node
+n 0 55,59,2 16 -3 0 -75702 233 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 55
+|   - 59
+|   - 2
+| type: 16
+| rank: -3
+| flags: 0
+| reserved: -75702
+| priority: 233
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#99 waypoint 3FF76C7747344705 3FFE28C586876E1D C002492492492492 3FE29924795C0C70
+ll 401A000000000000 400E666666666666 id=32
+EMIT good
+| lon: 6.5
+| lat: 3.7999999999999998
+| id: 32
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 6.5
+| lat: 3.7999999999999998
+| type: STR_WAY_POINT
+| id: 32
+|.
+set 40126C1B7BEF284D 3FF41B312200EC13
+dist=0.7464138665
+self=0
+marker=STR_WAY_POINT_ id=32
+type=STR_WAY_POINT marker=6
+#100 node
+n 26 0,0,0 275 16 0 9 17 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 26
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 275
+| rank: 16
+| flags: 0
+| reserved: 9
+| priority: 17
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#101 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=123 battle=1 det=0
+EMIT good
+| lon: 1.5
+| lat: -2.6299999999999999
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: 123
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 1.5
+| lat: -2.6299999999999999
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=7
+city=STR_CITY
+#102 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=-1 secs=170 race=hello battle=0 det=1
+EMIT good
+| lon: -2.9199999999999999
+| lat: 0
+| id: -2
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 170
+| race: hello
+| detected: true
+|.
+EMIT good
+| lon: -2.9199999999999999
+| lat: 0
+| type: STR_SITE_MARK
+| id: -2
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#103 equip
+e  null 19 2147483647 STR_HUMAN -1
+EMIT good
+| itemType: ""
+| slot: "null"
+| slotX: 19
+| slotY: 2147483647
+| ammoItem: STR_HUMAN
+|.
+#104 node
+n 0 6,56,1 2147483647 0 0 -2147483648 2147483647 alloc=1 dummy=0 target=0
+links=[7,2147483647,16,8318,2147483647,]
+EMIT good
+| id: 0
+| position:
+|   - 6
+|   - 56
+|   - 1
+| type: 2147483647
+| rank: 0
+| flags: 0
+| reserved: -2147483648
+| priority: 2147483647
+| allocated: true
+| links:
+|   - 7
+|   - 2147483647
+|   - 16
+|   - 8318
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#105 waypoint 3FF210624DD2F1AA 40015DE0ACD38827 3FE70A3D70A3D70A 3FE752BAE2EA7077
+ll 0000000000000000 0000000000000000 id=30
+EMIT good
+| lon: 0
+| lat: 0
+| id: 30
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_WAY_POINT
+| id: 30
+|.
+set 401115163D96D2F6 3FEF106A9DC293C4
+dist=1.406870151
+self=0
+marker=STR_WAY_POINT_ id=30
+type=STR_WAY_POINT marker=6
+#106 equip
+e hello yes 2147483647 -2147483648 yes 15
+EMIT good
+| itemType: hello
+| slot: yes
+| slotX: 2147483647
+| slotY: -2147483648
+| ammoItem: yes
+| fuseTimer: 15
+|.
+#107 node
+n 0 31,7,1 -1 56678 98 82571 0 alloc=0 dummy=1 target=0
+links=[20,16,-2147483648,2,33,]
+EMIT good
+| id: 0
+| position:
+|   - 31
+|   - 7
+|   - 1
+| type: -1
+| rank: 56678
+| flags: 98
+| reserved: 82571
+| priority: 0
+| allocated: false
+| links:
+|   - 20
+|   - 16
+|   - -2147483648
+|   - 2
+|   - 33
+| dummy: true
+|.
+alloc=1
+alloc=0
+#108 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=-1 secs=28 race=null battle=1 det=0
+EMIT good
+| lon: 0
+| lat: 1000
+| name: q
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 28
+| race: "null"
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=8
+city=STR_CITY
+#109 node
+n -2147483648 48,33,1 0 16 40 28 0 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: -2147483648
+| position:
+|   - 48
+|   - 33
+|   - 1
+| type: 0
+| rank: 16
+| flags: 40
+| reserved: 28
+| priority: 0
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#110 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=hello battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 16
+| name: hello
+| race: hello
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=7
+marker=7
+ll 0000000000000000 400921FB54442D11 id=16
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 16
+| name: hello
+| race: hello
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#111 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=null battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 3
+| name: STR_AVALON
+| race: "null"
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 3
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 0000000000000000 401A000000000000 id=3
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 3
+| name: STR_AVALON
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 3
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=3
+#112 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=null battle=1 disc=0
+EMIT good
+| lon: inf
+| lat: inf
+| name: caf\xC3\xA9
+| race: "null"
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: inf
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 7FF0000000000000 7FF0000000000000 id=0
+EMIT good
+| lon: inf
+| lat: inf
+| name: caf\xC3\xA9
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: inf
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#113 node
+n 31 28,43,0 0 -2147483648 2147483647 0 52488 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 31
+| position:
+|   - 28
+|   - 43
+|   - 0
+| type: 0
+| rank: -2147483648
+| flags: 2147483647
+| reserved: 0
+| priority: 52488
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#114 waypoint 3FD6E978D4FDF3B6 3FE3851EB851EB85 401D249249249249 402A000000000000
+ll 0000000000000000 3FF8000000000000 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: -2147483648
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 3FD6E978D4FDF3B6 3FE3851EB851EB85
+dist=0.5821716471
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#115 node
+n 0 36,10,2 38 16 50122 16 2147483647 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 36
+|   - 10
+|   - 2
+| type: 38
+| rank: 16
+| flags: 50122
+| reserved: 16
+| priority: 2147483647
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#116 waypoint 401DB6DB6DB6DB6E 3FF5A1CAC083126F BFF0000000000000 BFF8A14BFAAA55A9
+ll 7FF0000000000000 0000000000000000 id=1
+EMIT good
+| lon: inf
+| lat: 0
+| id: 1
+| name: NONE
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_WAY_POINT
+| id: 1
+|.
+set 3FF2538065CAB958 3FF5A1CAC083126F
+dist=2.938182053
+self=0
+marker=STR_WAY_POINT_ id=1
+type=STR_WAY_POINT marker=6
+#117 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=a b battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 6.3099999999999996
+| id: 2147483647
+| name: "null"
+| race: a b
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.3099999999999996
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=2
+ll 0000000000000000 40193D70A3D70A3D id=2147483647
+EMIT good
+| lon: 0
+| lat: 6.3099999999999996
+| id: 2147483647
+| name: "null"
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.3099999999999996
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#118 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=38085 secs=0 race=null battle=0 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: -0.95999999999999996
+| id: 10
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 38085
+| race: "null"
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: -0.95999999999999996
+| type: STR_SITE_MARK
+| id: 10
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#119 node
+n 24818 0,0,0 17 -2147483648 4 16 0 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 24818
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 17
+| rank: -2147483648
+| flags: 4
+| reserved: 16
+| priority: 0
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#120 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=177 race= battle=0 det=1
+EMIT good
+| lon: -5.3899999999999997
+| lat: inf
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| secondsRemaining: 177
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: -5.3899999999999997
+| lat: inf
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=6
+marker=6
+city=STR_CITY
+#121 equip
+e STR_FOO NONE 0 212 hello 16
+EMIT good
+| itemType: STR_FOO
+| slot: NONE
+| slotY: 212
+| ammoItem: hello
+| fuseTimer: 16
+|.
+#122 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=null battle=0 det=1
+EMIT good
+| lon: 0
+| lat: 1000
+| id: 2147483647
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: "null"
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=5
+marker=5
+city=STR_CITY
+#123 equip
+PARSE_ERR
+#124 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+PARSE_ERR
+#125 equip
+e hello q 0 5 null -1
+EMIT good
+| itemType: hello
+| slot: q
+| slotY: 5
+| ammoItem: "null"
+|.
+#126 equip
+e abc null 2 5 NONE 2147483647
+EMIT good
+| itemType: abc
+| slot: "null"
+| slotX: 2
+| slotY: 5
+| fuseTimer: 2147483647
+|.
+#127 waypoint 4027249249249249 40222E147AE147AE 401351EB851EB852 C012DB6DB6DB6DB7
+ll BFD0000000000000 40108F5C28F5C28F id=50
+EMIT good
+| lon: -0.25
+| lat: 4.1399999999999997
+| id: 50
+|.
+EMIT good
+| lon: -0.25
+| lat: 4.1399999999999997
+| type: STR_WAY_POINT
+| id: 50
+|.
+set 40012C5727C5C1DC C017CB2B4BA078D0
+dist=1.237719538
+self=0
+marker=STR_WAY_POINT_ id=50
+type=STR_WAY_POINT marker=6
+#128 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race=yes battle=1 det=0
+EMIT good
+| lon: -5.9199999999999999
+| lat: 0
+| id: 33
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: yes
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: -5.9199999999999999
+| lat: 0
+| type: STR_SITE_MARK
+| id: 33
+|.
+type=STR_SITE_MARK marker=-1
+marker=6
+city=STR_CITY
+#129 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+race=null battle=0 disc=1
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -25836
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: -25836
+|.
+type=STR_AB_MARK marker=4
+marker=4
+ll 408F400000000000 0000000000000000 id=-25836
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -25836
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: -25836
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-25836
+#130 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=STR_HUMAN battle=0 disc=0
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 2147483647
+| name: NONE
+| race: STR_HUMAN
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 401A000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: 2147483647
+| name: NONE
+| race: STR_HUMAN
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#131 node
+n 38 3,39,0 210 37 0 0 258 alloc=1 dummy=0 target=0
+links=[16,-2147483648,16,16,14,]
+EMIT good
+| id: 38
+| position:
+|   - 3
+|   - 39
+|   - 0
+| type: 210
+| rank: 37
+| flags: 0
+| reserved: 0
+| priority: 258
+| allocated: true
+| links:
+|   - 16
+|   - -2147483648
+|   - 16
+|   - 16
+|   - 14
+| dummy: false
+|.
+alloc=1
+alloc=0
+#132 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+PARSE_ERR
+#133 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=STR_HUMAN battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 4
+| race: STR_HUMAN
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 4
+|.
+type=STR_AB_MARK marker=7
+marker=7
+ll 0000000000000000 400921FB54442D11 id=4
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 4
+| race: STR_HUMAN
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 4
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=4
+#134 equip
+PARSE_ERR
+#135 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=123 battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=9
+marker=9
+ll 0000000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#136 node
+n 7 35,18,1 -2 4 -41569 -4 0 alloc=0 dummy=0 target=0
+links=[-2147483648,16,22,2147483647,149,]
+EMIT good
+| id: 7
+| position:
+|   - 35
+|   - 18
+|   - 1
+| type: -2
+| rank: 4
+| flags: -41569
+| reserved: -4
+| priority: 0
+| allocated: false
+| links:
+|   - -2147483648
+|   - 16
+|   - 22
+|   - 2147483647
+|   - 149
+| dummy: false
+|.
+alloc=1
+alloc=0
+#137 waypoint C025B6DB6DB6DB6E 401270A3D70A3D71 C002492492492492 4016492492492492
+YAML_ERR bad conversion
+#138 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#139 waypoint 40148F5C28F5C28F 402B249249249249 3FF178D4FDF3B646 BFE8000000000000
+ll 401A000000000000 0000000000000000 id=0
+EMIT good
+| lon: 6.5
+| lat: 0
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FFFF979FB4EB00C C024DC1374138703
+dist=2.527445631
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#140 node
+n 0 31,55,3 2147483647 0 -2147483648 27 -2147483648 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 31
+|   - 55
+|   - 3
+| type: 2147483647
+| rank: 0
+| flags: -2147483648
+| reserved: 27
+| priority: -2147483648
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#141 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+PARSE_ERR
+#142 equip
+e q STR_AVALON 4 25 null -1
+EMIT good
+| itemType: q
+| slot: STR_AVALON
+| slotX: 4
+| slotY: 25
+| ammoItem: "null"
+|.
+#143 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=NONE battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| race: NONE
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll 0000000000000000 0000000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 0
+| race: NONE
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#144 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=STR_HUMAN battle=0 disc=0
+EMIT good
+| lon: -2.8700000000000001
+| lat: 0
+| id: 2147483647
+| name: a b
+| race: STR_HUMAN
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -2.8700000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll C006F5C28F5C28F6 0000000000000000 id=2147483647
+EMIT good
+| lon: -2.8700000000000001
+| lat: 0
+| id: 2147483647
+| name: a b
+| race: STR_HUMAN
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -2.8700000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#145 equip
+e null null -2147483648 -40099 NONE -1
+EMIT good
+| itemType: "null"
+| slot: "null"
+| slotX: -2147483648
+| slotY: -40099
+|.
+#146 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=3552 secs=0 race=123 battle=1 det=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: hello
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 3552
+| race: 123
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#147 equip
+PARSE_ERR
+#148 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=47 race= battle=0 det=1
+EMIT good
+| lon: -0.79000000000000004
+| lat: -0.25
+| id: -1
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| secondsRemaining: 47
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: -0.79000000000000004
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: -1
+|.
+type=STR_SITE_MARK marker=0
+marker=0
+city=STR_CITY
+#149 equip
+e hello STR_FOO 61864 22 yes -1
+EMIT good
+| itemType: hello
+| slot: STR_FOO
+| slotX: 61864
+| slotY: 22
+| ammoItem: yes
+|.
+#150 waypoint C013AE147AE147AE C024492492492492 C00123F8CB2D6569 3FFE75FAB364F1C7
+ll 0000000000000000 400921FB54442D11 id=203
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 203
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 203
+|.
+set 401204E48384FBF6 401C014B7A703298
+dist=1.168243352
+self=0
+marker=STR_WAY_POINT_ id=203
+type=STR_WAY_POINT marker=6
+#151 waypoint 402070A3D70A3D71 BFE66B1B5C51E57B 3FE8189374BC6A7F 40216B851EB851EC
+ll 401A000000000000 BFD0000000000000 id=17
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| id: 17
+| name: yes
+|.
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 17
+|.
+set 3FFEFD3167413728 BFE66B1B5C51E57B
+dist=2.265857749
+self=0
+marker=STR_WAY_POINT_ id=17
+type=STR_WAY_POINT marker=6
+#152 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-1 secs=2147483647 race=123 battle=1 det=1
+EMIT good
+| lon: 2.2200000000000002
+| lat: 0
+| id: -3
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 2147483647
+| race: 123
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 2.2200000000000002
+| lat: 0
+| type: STR_SITE_MARK
+| id: -3
+|.
+type=STR_SITE_MARK marker=3
+marker=3
+city=STR_CITY
+#153 waypoint C014000000000000 BFF29924795C0C70 400B1EB851EB851F C013333333333333
+YAML_ERR bad conversion
+#154 equip
+e STR_AVALON NONE 16 0 NONE -2147483648
+EMIT good
+| itemType: STR_AVALON
+| slot: NONE
+| slotX: 16
+|.
+#155 node
+n 31 25,26,0 -50739 0 35432 -2147483648 -2147483648 alloc=1 dummy=1 target=0
+links=[14,42,56479,]
+EMIT good
+| id: 31
+| position:
+|   - 25
+|   - 26
+|   - 0
+| type: -50739
+| rank: 0
+| flags: 35432
+| reserved: -2147483648
+| priority: -2147483648
+| allocated: true
+| links:
+|   - 14
+|   - 42
+|   - 56479
+| dummy: true
+|.
+alloc=1
+alloc=0
+#156 equip
+e  abc -2147483648 0 123 1
+EMIT good
+| itemType: ""
+| slot: abc
+| slotX: -2147483648
+| ammoItem: 123
+| fuseTimer: 1
+|.
+#157 equip
+PARSE_ERR
+#158 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=STR_AVALON battle=0 det=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 2147483647
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: STR_AVALON
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=-1
+marker=6
+city=STR_CITY
+#159 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=yes battle=0 disc=0
+EMIT good
+| lon: 1000
+| lat: 6.5
+| id: 16
+| name: yes
+| race: yes
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 408F400000000000 401A000000000000 id=16
+EMIT good
+| lon: 1000
+| lat: 6.5
+| id: 16
+| name: yes
+| race: yes
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#160 node
+n 16 0,0,0 31 -3 2 2147483647 16 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 16
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 31
+| rank: -3
+| flags: 2
+| reserved: 2147483647
+| priority: 16
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#161 equip
+e   6 2147483647 NONE -1
+EMIT good
+| itemType: ""
+| slot: ""
+| slotX: 6
+| slotY: 2147483647
+|.
+#162 node
+n -2147483648 0,0,0 0 -2 0 52 30 alloc=1 dummy=0 target=0
+links=[33,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: -2
+| flags: 0
+| reserved: 52
+| priority: 30
+| allocated: true
+| links:
+|   - 33
+| dummy: false
+|.
+alloc=1
+alloc=0
+#163 node
+n 2147483647 32,25,1 2147483647 17 16 0 2 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 2147483647
+| position:
+|   - 32
+|   - 25
+|   - 1
+| type: 2147483647
+| rank: 17
+| flags: 16
+| reserved: 0
+| priority: 2
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#164 node
+n -2147483648 0,0,0 0 0 0 2147483647 2147483647 alloc=0 dummy=0 target=0
+links=[35,35,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 0
+| flags: 0
+| reserved: 2147483647
+| priority: 2147483647
+| allocated: false
+| links:
+|   - 35
+|   - 35
+| dummy: false
+|.
+alloc=1
+alloc=0
+#165 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=123 battle=0 disc=0
+EMIT good
+| lon: 1.5
+| lat: 1000
+| id: 5
+| name: yes
+| race: 123
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 1000
+| type: STR_AB_MARK
+| id: 5
+|.
+type=STR_AB_MARK marker=-1
+marker=6
+ll 3FF8000000000000 408F400000000000 id=5
+EMIT good
+| lon: 1.5
+| lat: 1000
+| id: 5
+| name: yes
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 1000
+| type: STR_AB_MARK
+| id: 5
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=5
+#166 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=-39704 secs=39 race=123 battle=1 det=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: -50782
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -39704
+| secondsRemaining: 39
+| race: 123
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_SITE_MARK
+| id: -50782
+|.
+type=STR_SITE_MARK marker=-1
+marker=8
+city=STR_CITY
+#167 node
+n 2147483647 60,9,0 2147483647 0 5 16 -2147483648 alloc=1 dummy=0 target=0
+links=[16,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 60
+|   - 9
+|   - 0
+| type: 2147483647
+| rank: 0
+| flags: 5
+| reserved: 16
+| priority: -2147483648
+| allocated: true
+| links:
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#168 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=36 secs=0 race=STR_HUMAN battle=0 det=1
+EMIT good
+| lon: 0
+| lat: 0
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 36
+| race: STR_HUMAN
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=3
+marker=3
+city=STR_CITY
+#169 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#170 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+YAML_ERR bad conversion
+#171 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: -2147483648
+| name: 123
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 401A000000000000 0000000000000000 id=-2147483648
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: -2147483648
+| name: 123
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-2147483648
+#172 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=16 race=STR_FOO battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 16
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| secondsRemaining: 16
+| race: STR_FOO
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#173 equip
+e a b caf\xC3\xA9 16 262 q -2147483648
+EMIT good
+| itemType: a b
+| slot: caf\xC3\xA9
+| slotX: 16
+| slotY: 262
+| ammoItem: q
+|.
+#174 equip
+PARSE_ERR
+#175 equip
+e NONE NONE -4 0 STR_FOO 20
+EMIT good
+| itemType: NONE
+| slot: NONE
+| slotX: -4
+| ammoItem: STR_FOO
+| fuseTimer: 20
+|.
+#176 waypoint 3FF6F5C28F5C28F6 C0051C8A44920048 4022DB6DB6DB6DB7 40215C28F5C28F5C
+ll C014666666666666 BFD0000000000000 id=189
+EMIT good
+| lon: -5.0999999999999996
+| lat: -0.25
+| id: 189
+|.
+EMIT good
+| lon: -5.0999999999999996
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 189
+|.
+set 40124E6E4DF920CA BFE015C43EC8B340
+dist=2.000039892
+self=0
+marker=STR_WAY_POINT_ id=189
+type=STR_WAY_POINT marker=6
+#177 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=q battle=1 disc=0
+EMIT good
+| lon: 4.2199999999999998
+| lat: inf
+| name: hello
+| race: q
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 4.2199999999999998
+| lat: inf
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 4010E147AE147AE1 7FF0000000000000 id=0
+EMIT good
+| lon: 4.2199999999999998
+| lat: inf
+| name: hello
+| race: q
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 4.2199999999999998
+| lat: inf
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#178 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#179 node
+n -32265 0,0,0 16 0 -2147483648 16 19 alloc=1 dummy=1 target=0
+links=[20,-1813,27,]
+EMIT good
+| id: -32265
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 16
+| rank: 0
+| flags: -2147483648
+| reserved: 16
+| priority: 19
+| allocated: true
+| links:
+|   - 20
+|   - -1813
+|   - 27
+| dummy: true
+|.
+alloc=1
+alloc=0
+#180 waypoint C018000000000000 C026492492492492 BFCB582A8E73F69D 3FD25E353F7CED91
+ll 0000000000000000 BFD0000000000000 id=13
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 13
+| name: hello
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 13
+|.
+set 400B65F1FCCC8748 402000A5BD38194C
+dist=1.15519049
+self=0
+marker=STR_WAY_POINT_ id=13
+type=STR_WAY_POINT marker=6
+#181 waypoint C00E3D70A3D70A3D C0222E147AE147AE BFDA56CEA3919513 3FF86E978D4FDF3B
+ll 401A000000000000 401A000000000000 id=22
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| id: 22
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: 22
+|.
+set 40169440AC7ABE86 4017CB2B4BA078D0
+dist=1.862884165
+self=0
+marker=STR_WAY_POINT_ id=22
+type=STR_WAY_POINT marker=6
+#182 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=a b battle=1 disc=1
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| id: 5
+| name: yes
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 5
+|.
+type=STR_AB_MARK marker=2
+marker=2
+ll 401A000000000000 401A000000000000 id=5
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| id: 5
+| name: yes
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 5
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=5
+#183 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+race=null battle=1 disc=1
+EMIT good
+| lon: -0.25
+| lat: -2.3900000000000001
+| id: 2147483647
+| name: STR_AVALON
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: -2.3900000000000001
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=4
+marker=4
+ll BFD0000000000000 C0031EB851EB851F id=2147483647
+EMIT good
+| lon: -0.25
+| lat: -2.3900000000000001
+| id: 2147483647
+| name: STR_AVALON
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: -2.3900000000000001
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#184 equip
+e STR_HUMAN STR_FOO 263 4 STR_HUMAN -2147483648
+EMIT good
+| itemType: STR_HUMAN
+| slot: STR_FOO
+| slotX: 263
+| slotY: 4
+| ammoItem: STR_HUMAN
+|.
+#185 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: -67512
+| name: STR_FOO
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: -67512
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 0000000000000000 0000000000000000 id=-67512
+EMIT good
+| lon: 0
+| lat: 0
+| id: -67512
+| name: STR_FOO
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: -67512
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-67512
+#186 equip
+e a b hello 21 2147483647 q 16
+EMIT good
+| itemType: a b
+| slot: hello
+| slotX: 21
+| slotY: 2147483647
+| ammoItem: q
+| fuseTimer: 16
+|.
+#187 equip
+e  NONE -13955 -49740 123 16
+EMIT good
+| itemType: ""
+| slot: NONE
+| slotX: -13955
+| slotY: -49740
+| ammoItem: 123
+| fuseTimer: 16
+|.
+#188 node
+n 0 0,0,0 -96060 -2147483648 0 2147483647 300 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: -96060
+| rank: -2147483648
+| flags: 0
+| reserved: 2147483647
+| priority: 300
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#189 equip
+e STR_HUMAN NONE 38 5 NONE -1
+EMIT good
+| itemType: STR_HUMAN
+| slot: NONE
+| slotX: 38
+| slotY: 5
+|.
+#190 node
+n 2147483647 0,0,0 2147483647 2147483647 23 0 -838 alloc=0 dummy=0 target=0
+links=[3676,1,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 2147483647
+| rank: 2147483647
+| flags: 23
+| reserved: 0
+| priority: -838
+| allocated: false
+| links:
+|   - 3676
+|   - 1
+| dummy: false
+|.
+alloc=1
+alloc=0
+#191 waypoint BFE8EE812787D952 C01728F5C28F5C29 BFC851EB851EB852 3FF4924924924925
+ll 0000000000000000 0000000000000000 id=39
+EMIT good
+| lon: 0
+| lat: 0
+| id: 39
+| name: STR_FOO
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_WAY_POINT
+| id: 39
+|.
+set 4002E65B0A6236C4 40052FF030DA8B3A
+dist=0.8495927785
+self=0
+marker=STR_WAY_POINT_ id=39
+type=STR_WAY_POINT marker=6
+#192 node
+n 0 1,43,2 24 18481 0 33 2147483647 alloc=1 dummy=1 target=0
+links=[16,-2147483648,16,]
+EMIT good
+| id: 0
+| position:
+|   - 1
+|   - 43
+|   - 2
+| type: 24
+| rank: 18481
+| flags: 0
+| reserved: 33
+| priority: 2147483647
+| allocated: true
+| links:
+|   - 16
+|   - -2147483648
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#193 waypoint 3FEBBF1C1F9B50D4 3FF347AE147AE148 4021B6DB6DB6DB6E C00B6DB6DB6DB6DB
+ll 0000000000000000 401628F5C28F5C29 id=0
+EMIT good
+| lon: 0
+| lat: 5.54
+|.
+EMIT good
+| lon: 0
+| lat: 5.54
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FEBBF1C1F9B50D4 3FF347AE147AE148
+dist=1.254688337
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#194 node
+n 0 0,0,0 3 25 16 0 -48315 alloc=1 dummy=0 target=0
+links=[99666,34588,215,16,]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 3
+| rank: 25
+| flags: 16
+| reserved: 0
+| priority: -48315
+| allocated: true
+| links:
+|   - 99666
+|   - 34588
+|   - 215
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#195 waypoint 3FF4B020C49BA5E3 BFF0000000000000 BFD27F68151235E2 40053646A8DBD6D5
+ll 7FF0000000000000 401A000000000000 id=19
+EMIT good
+| lon: inf
+| lat: 6.5
+| id: 19
+| name: a b
+|.
+EMIT good
+| lon: inf
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: 19
+|.
+set 3FF4B020C49BA5E3 BFF0000000000000
+dist=1.972223131
+self=0
+marker=STR_WAY_POINT_ id=19
+type=STR_WAY_POINT marker=6
+#196 equip
+e STR_FOO a b 3 -2147483648 STR_FOO 2
+EMIT good
+| itemType: STR_FOO
+| slot: a b
+| slotX: 3
+| slotY: -2147483648
+| ammoItem: STR_FOO
+| fuseTimer: 2
+|.
+#197 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=hello battle=0 disc=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 5
+| name: q
+| race: hello
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 5
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 408F400000000000 0000000000000000 id=5
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 5
+| name: q
+| race: hello
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 5
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=5
+#198 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=null battle=1 disc=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 3FF8000000000000 0000000000000000 id=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#199 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=4 secs=3 race=null battle=0 det=0
+EMIT good
+| lon: inf
+| lat: 1000
+| id: 3
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 4
+| secondsRemaining: 3
+| race: "null"
+| detected: false
+|.
+EMIT good
+| lon: inf
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 3
+|.
+type=STR_SITE_MARK marker=-1
+marker=9
+city=STR_CITY
+#200 waypoint C0095C28F5C28F5C 4028924924924925 3FFBF7CED916872B 401B28F5C28F5C29
+ll 0000000000000000 401A000000000000 id=16
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 16
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 401904E48384FBF6 C02249CA4F813DDF
+dist=1.533718864
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#201 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+PARSE_ERR
+#202 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=24528 race= battle=1 det=0
+EMIT good
+| lon: inf
+| lat: 0
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| secondsRemaining: 24528
+| race: ""
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#203 equip
+e 123  16 16 null -2147483648
+EMIT good
+| itemType: 123
+| slot: ""
+| slotX: 16
+| slotY: 16
+| ammoItem: "null"
+|.
+#204 waypoint C00A492492492492 3FED0624DD2F1AA0 BFFB6508C098E1E4 4016DB6DB6DB6DB7
+PARSE_ERR
+#205 equip
+PARSE_ERR
+#206 equip
+PARSE_ERR
+#207 waypoint 3FF5E76C8B439581 3FC4FDF3B645A1CB C00EDB6DB6DB6DB7 3FD7EF9DB22D0E56
+ll BFD0000000000000 401A000000000000 id=-2147483648
+EMIT good
+| lon: -0.25
+| lat: 6.5
+| id: -2147483648
+| name: 123
+|.
+EMIT good
+| lon: -0.25
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 3FF5E76C8B439581 3FC4FDF3B645A1CB
+dist=1.034463496
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#208 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=q battle=1 disc=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| id: -4
+| name: STR_FOO
+| race: q
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_AB_MARK
+| id: -4
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll 3FF8000000000000 0000000000000000 id=-4
+EMIT good
+| lon: 1.5
+| lat: 0
+| id: -4
+| name: STR_FOO
+| race: q
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_AB_MARK
+| id: -4
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-4
+#209 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#210 equip
+e hello caf\xC3\xA9 2 2 123 33
+EMIT good
+| itemType: hello
+| slot: caf\xC3\xA9
+| slotX: 2
+| slotY: 2
+| ammoItem: 123
+| fuseTimer: 33
+|.
+#211 node
+n 0 28,59,0 16 40085 -2147483648 73 -2147483648 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 28
+|   - 59
+|   - 0
+| type: 16
+| rank: 40085
+| flags: -2147483648
+| reserved: 73
+| priority: -2147483648
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#212 waypoint 3FF40E50278AB378 3FE92F1A9FBE76C9 3FF02F7B126FEF26 C00326B0A0F2287C
+ll 0000000000000000 40138F5C28F5C28F id=26358
+EMIT good
+| lon: 0
+| lat: 4.8899999999999997
+| id: 26358
+|.
+EMIT good
+| lon: 0
+| lat: 4.8899999999999997
+| type: STR_WAY_POINT
+| id: 26358
+|.
+set 3FF40E50278AB378 3FE92F1A9FBE76C9
+dist=2.963344294
+self=0
+marker=STR_WAY_POINT_ id=26358
+type=STR_WAY_POINT marker=6
+#213 waypoint 3FFB4395810624DD 3FC8B4395810624E 401747AE147AE148 4001AE147AE147AE
+ll 4017A3D70A3D70A4 3FF8000000000000 id=3
+EMIT good
+| lon: 5.9100000000000001
+| lat: 1.5
+| id: 3
+| name: 123
+|.
+EMIT good
+| lon: 5.9100000000000001
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 3
+|.
+set 3FFB4395810624DD 3FC8B4395810624E
+dist=1.066974013
+self=0
+marker=STR_WAY_POINT_ id=3
+type=STR_WAY_POINT marker=6
+#214 node
+n 0 16,11,1 79327 3 16 10686 156 alloc=1 dummy=1 target=0
+links=[16,32570,]
+EMIT good
+| id: 0
+| position:
+|   - 16
+|   - 11
+|   - 1
+| type: 79327
+| rank: 3
+| flags: 16
+| reserved: 10686
+| priority: 156
+| allocated: true
+| links:
+|   - 16
+|   - 32570
+| dummy: true
+|.
+alloc=1
+alloc=0
+#215 waypoint C02B6DB6DB6DB6DB 3FEE5604189374BC C02119999999999A BFE851EB851EB852
+ll 3FF8000000000000 0000000000000000 id=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| name: q
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 40148A8445F11992 3FEE5604189374BC
+dist=1.955139385
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#216 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=yes battle=1 disc=0
+EMIT good
+| lon: 4.54
+| lat: 5.6100000000000003
+| name: "null"
+| race: yes
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 4.54
+| lat: 5.6100000000000003
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=6
+ll 401228F5C28F5C29 401670A3D70A3D71 id=0
+EMIT good
+| lon: 4.54
+| lat: 5.6100000000000003
+| name: "null"
+| race: yes
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 4.54
+| lat: 5.6100000000000003
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#217 equip
+PARSE_ERR
+#218 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=239 secs=0 race= battle=0 det=1
+EMIT good
+| lon: 0
+| lat: 4.0199999999999996
+| id: 181
+| name: STR_AVALON
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 239
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 4.0199999999999996
+| type: STR_SITE_MARK
+| id: 181
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#219 node
+n -2147483648 4,10,2 26 0 0 93435 0 alloc=0 dummy=0 target=0
+links=[288,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 4
+|   - 10
+|   - 2
+| type: 26
+| rank: 0
+| flags: 0
+| reserved: 93435
+| priority: 0
+| allocated: false
+| links:
+|   - 288
+| dummy: false
+|.
+alloc=1
+alloc=0
+#220 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: -2147483648
+| name: 123
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+type=STR_AB_MARK marker=-1
+marker=6
+ll 0000000000000000 3FF8000000000000 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: -2147483648
+| name: 123
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-2147483648
+#221 waypoint C01D99999999999A C001847B434249FC C0028F5C28F5C28F 3FF147AE147AE148
+ll 3FF8000000000000 408F400000000000 id=0
+EMIT good
+| lon: 1.5
+| lat: 1000
+| name: q
+|.
+EMIT good
+| lon: 1.5
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 400032BEC9995414 BFEE760044078C70
+dist=2.526365195
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#222 waypoint 3FEB8BA35707A3B9 4002492492492492 3FCDF3B645A1CAC1 C0218A3D70A3D70A
+ll BFD0000000000000 7FF0000000000000 id=91740
+EMIT good
+| lon: -0.25
+| lat: inf
+| id: 91740
+| name: hello
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_WAY_POINT
+| id: 91740
+|.
+set 4010027215030B03 3FEB635B07EC2218
+dist=1.609543812
+self=0
+marker=STR_WAY_POINT_ id=91740
+type=STR_WAY_POINT marker=6
+#223 waypoint C022DC28F5C28F5C 400752BAE2EA7077 BFFB3E6E2A2A200F 3FF174BC6A7EF9DB
+PARSE_ERR
+#224 node
+n 0 45,20,2 31 0 2147483647 2 -2147483648 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 45
+|   - 20
+|   - 2
+| type: 31
+| rank: 0
+| flags: 2147483647
+| reserved: 2
+| priority: -2147483648
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#225 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race= battle=0 det=1
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| id: 30
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| type: STR_SITE_MARK
+| id: 30
+|.
+type=STR_SITE_MARK marker=0
+marker=0
+city=STR_CITY
+#226 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: 1.5
+| lat: -0.25
+| id: 2147483647
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=9
+marker=9
+ll 3FF8000000000000 BFD0000000000000 id=2147483647
+EMIT good
+| lon: 1.5
+| lat: -0.25
+| id: 2147483647
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#227 node
+n 0 28,7,2 -2 150 -4 71814 209 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 28
+|   - 7
+|   - 2
+| type: -2
+| rank: 150
+| flags: -4
+| reserved: 71814
+| priority: 209
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#228 equip
+e  hello 281 5 STR_FOO 32
+EMIT good
+| itemType: ""
+| slot: hello
+| slotX: 281
+| slotY: 5
+| ammoItem: STR_FOO
+| fuseTimer: 32
+|.
+#229 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: 74789
+| name: hello
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 74789
+|.
+type=STR_AB_MARK marker=-1
+marker=6
+ll 0000000000000000 0000000000000000 id=74789
+EMIT good
+| lon: 0
+| lat: 0
+| id: 74789
+| name: hello
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 74789
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=74789
+#230 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=hello battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: -2147483648
+| name: STR_HUMAN
+| race: hello
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 0000000000000000 401A000000000000 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: -2147483648
+| name: STR_HUMAN
+| race: hello
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-2147483648
+#231 equip
+e STR_AVALON  16 22 hello 16
+EMIT good
+| itemType: STR_AVALON
+| slot: ""
+| slotX: 16
+| slotY: 22
+| ammoItem: hello
+| fuseTimer: 16
+|.
+#232 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=STR_AVALON battle=0 disc=0
+EMIT good
+| lon: -0.25
+| lat: -2.7599999999999998
+| race: STR_AVALON
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: -2.7599999999999998
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll BFD0000000000000 C006147AE147AE14 id=0
+EMIT good
+| lon: -0.25
+| lat: -2.7599999999999998
+| race: STR_AVALON
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: -2.7599999999999998
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#233 equip
+e null STR_FOO 2147483647 162 hello -1
+EMIT good
+| itemType: "null"
+| slot: STR_FOO
+| slotX: 2147483647
+| slotY: 162
+| ammoItem: hello
+|.
+#234 node
+n 84764 33,46,1 16 16 0 -2147483648 185 alloc=0 dummy=0 target=0
+links=[33,]
+EMIT good
+| id: 84764
+| position:
+|   - 33
+|   - 46
+|   - 1
+| type: 16
+| rank: 16
+| flags: 0
+| reserved: -2147483648
+| priority: 185
+| allocated: false
+| links:
+|   - 33
+| dummy: false
+|.
+alloc=1
+alloc=0
+#235 waypoint 4004924924924925 3FE5E353F7CED917 3FF75810624DD2F2 BFD8209E053924E4
+ll BFD0000000000000 408F400000000000 id=296
+EMIT good
+| lon: -0.25
+| lat: 1000
+| id: 296
+| name: caf\xC3\xA9
+|.
+EMIT good
+| lon: -0.25
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 296
+|.
+set 4004924924924925 3FE5E353F7CED917
+dist=1.484440589
+self=0
+marker=STR_WAY_POINT_ id=296
+type=STR_WAY_POINT marker=6
+#236 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=32379 secs=16 race=a b battle=1 det=1
+EMIT good
+| lon: inf
+| lat: 0
+| id: 228
+| name: caf\xC3\xA9
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 32379
+| secondsRemaining: 16
+| race: a b
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_SITE_MARK
+| id: 228
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#237 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| id: 13
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 13
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 3FF8000000000000 400921FB54442D11 id=13
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| id: 13
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 13
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=13
+#238 node
+n 0 56,0,0 -2147483648 0 21 -2147483648 -2147483648 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 56
+|   - 0
+|   - 0
+| type: -2147483648
+| rank: 0
+| flags: 21
+| reserved: -2147483648
+| priority: -2147483648
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#239 node
+n 39 7,23,1 -2147483648 -2104 2147483647 0 16 alloc=0 dummy=1 target=0
+links=[15,11,36,]
+EMIT good
+| id: 39
+| position:
+|   - 7
+|   - 23
+|   - 1
+| type: -2147483648
+| rank: -2104
+| flags: 2147483647
+| reserved: 0
+| priority: 16
+| allocated: false
+| links:
+|   - 15
+|   - 11
+|   - 36
+| dummy: true
+|.
+alloc=1
+alloc=0
+#240 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#241 waypoint 400306852395DC4B C005B6DB6DB6DB6E 4012492492492492 C0019E37A78C208A
+ll 3FF8000000000000 3FF8000000000000 id=66387
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| id: 66387
+| name: STR_FOO
+|.
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 66387
+|.
+set 401614403BED04B2 BFDB58FF346A8D50
+dist=1.549514416
+self=0
+marker=STR_WAY_POINT_ id=66387
+type=STR_WAY_POINT marker=6
+#242 node
+n 46319 0,0,0 0 0 0 68091 155 alloc=0 dummy=1 target=0
+links=[2147483647,27,]
+EMIT good
+| id: 46319
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 0
+| flags: 0
+| reserved: 68091
+| priority: 155
+| allocated: false
+| links:
+|   - 2147483647
+|   - 27
+| dummy: true
+|.
+alloc=1
+alloc=0
+#243 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=216 secs=2147483647 race=hello battle=0 det=0
+EMIT good
+| lon: 4.9400000000000004
+| lat: 6.5
+| id: 84
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 216
+| secondsRemaining: 2147483647
+| race: hello
+| detected: false
+|.
+EMIT good
+| lon: 4.9400000000000004
+| lat: 6.5
+| type: STR_SITE_MARK
+| id: 84
+|.
+type=STR_SITE_MARK marker=-1
+marker=6
+city=STR_CITY
+#244 waypoint C026DB6DB6DB6DB7 C0061DE62F7461D1 3FE51EB851EB851F BFE6DB6DB6DB6DB7
+PARSE_ERR
+#245 node
+YAML_ERR bad conversion
+#246 waypoint BFF71F421A56C35B 3FFE82D8E589DD0E C026924924924925 4021EB851EB851EC
+ll 408F400000000000 0000000000000000 id=37
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 37
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_WAY_POINT
+| id: 37
+|.
+set 3FFB24B48E3196D4 3FF3C11DC2FE7D22
+dist=1.416788632
+self=0
+marker=STR_WAY_POINT_ id=37
+type=STR_WAY_POINT marker=6
+#247 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=yes battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 37
+| name: "null"
+| race: yes
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 37
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 0000000000000000 BFD0000000000000 id=37
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 37
+| name: "null"
+| race: yes
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 37
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=37
+#248 equip
+e  null 2147483647 2147483647 null 72
+EMIT good
+| itemType: ""
+| slot: "null"
+| slotX: 2147483647
+| slotY: 2147483647
+| ammoItem: "null"
+| fuseTimer: 72
+|.
+#249 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=STR_AVALON battle=0 det=0
+EMIT good
+| lon: inf
+| lat: inf
+| id: 32
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: STR_AVALON
+| detected: false
+|.
+EMIT good
+| lon: inf
+| lat: inf
+| type: STR_SITE_MARK
+| id: 32
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#250 equip
+e null null 33307 0 q -1
+EMIT good
+| itemType: "null"
+| slot: "null"
+| slotX: 33307
+| ammoItem: q
+|.
+#251 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=1
+EMIT good
+| lon: 2.79
+| lat: -0.25
+| id: 8
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 2.79
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 8
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 400651EB851EB852 BFD0000000000000 id=8
+EMIT good
+| lon: 2.79
+| lat: -0.25
+| id: 8
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 2.79
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 8
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=8
+#252 node
+n -2147483648 0,0,0 0 7 4 16 -2 alloc=0 dummy=0 target=0
+links=[-47156,273,199,47372,-2,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 7
+| flags: 4
+| reserved: 16
+| priority: -2
+| allocated: false
+| links:
+|   - -47156
+|   - 273
+|   - 199
+|   - 47372
+|   - -2
+| dummy: false
+|.
+alloc=1
+alloc=0
+#253 equip
+e caf\xC3\xA9  0 0 123 -1
+EMIT good
+| itemType: caf\xC3\xA9
+| slot: ""
+| ammoItem: 123
+|.
+#254 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=hello battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 16
+| name: "null"
+| race: hello
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=2
+marker=2
+ll 0000000000000000 0000000000000000 id=16
+EMIT good
+| lon: 0
+| lat: 0
+| id: 16
+| name: "null"
+| race: hello
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#255 waypoint C000D6C39E4FE1C0 401328F5C28F5C29 C01D249249249249 3FFA8A476C25422F
+ll 400921FB54442D11 7FF0000000000000 id=175
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| id: 175
+| name: STR_FOO
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| type: STR_WAY_POINT
+| id: 175
+|.
+set 3FF0966F6BE896B0 BFFA5FE061B51674
+dist=3.054507938
+self=0
+marker=STR_WAY_POINT_ id=175
+type=STR_WAY_POINT marker=6
+#256 equip
+PARSE_ERR
+#257 equip
+e  STR_AVALON 16 21 STR_AVALON -2147483648
+EMIT good
+| itemType: ""
+| slot: STR_AVALON
+| slotX: 16
+| slotY: 21
+| ammoItem: STR_AVALON
+|.
+#258 equip
+e 123 STR_FOO 277 0 NONE 240
+EMIT good
+| itemType: 123
+| slot: STR_FOO
+| slotX: 277
+| fuseTimer: 240
+|.
+#259 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#260 equip
+e STR_FOO STR_HUMAN -2147483648 0 null -2147483648
+EMIT good
+| itemType: STR_FOO
+| slot: STR_HUMAN
+| slotX: -2147483648
+| ammoItem: "null"
+|.
+#261 waypoint 4011B6DB6DB6DB6E 3FF34FDF3B645A1D 3FFF810624DD2F1B 3FD015BEAE261898
+PARSE_ERR
+#262 node
+n 16 11,48,1 56051 94676 6 16 2147483647 alloc=0 dummy=0 target=0
+links=[-4,55007,35,91,]
+EMIT good
+| id: 16
+| position:
+|   - 11
+|   - 48
+|   - 1
+| type: 56051
+| rank: 94676
+| flags: 6
+| reserved: 16
+| priority: 2147483647
+| allocated: false
+| links:
+|   - -4
+|   - 55007
+|   - 35
+|   - 91
+| dummy: false
+|.
+alloc=1
+alloc=0
+#263 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+YAML_ERR bad conversion
+#264 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race= battle=0 disc=1
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| id: 16
+| name: 123
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 401A000000000000 BFD0000000000000 id=16
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| id: 16
+| name: 123
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#265 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=null battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: -2147483648
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+type=STR_AB_MARK marker=6
+marker=6
+ll 0000000000000000 401A000000000000 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: -2147483648
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: -2147483648
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-2147483648
+#266 waypoint 4021249249249249 C008007287DCD8B3 3FA8209E053924E4 C01ADB6DB6DB6DB7
+ll 401A000000000000 3FF8000000000000 id=37
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| id: 37
+|.
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 37
+|.
+set 4015B826E8270E06 BFC2188CC6754650
+dist=0.9050470976
+self=0
+marker=STR_WAY_POINT_ id=37
+type=STR_WAY_POINT marker=6
+#267 waypoint 400DB6DB6DB6DB6E 3FF6CCCCCCCCCCCD 4023249249249249 3FFF6872B020C49C
+ll 0000000000000000 408F400000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1000
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 400DB6DB6DB6DB6E 3FF6CCCCCCCCCCCD
+dist=0.5282327201
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#268 waypoint C01FCCCCCCCCCCCD 3FEB4BC6A7EF9DB2 401D28F5C28F5C29 400EDB6DB6DB6DB7
+ll 40145C28F5C28F5C 400921FB54442D11 id=97
+EMIT good
+| lon: 5.0899999999999999
+| lat: 3.14159265358979
+| id: 97
+| name: hello
+|.
+EMIT good
+| lon: 5.0899999999999999
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 97
+|.
+set 40127729DBBB8D63 3FEB4BC6A7EF9DB2
+dist=1.621941831
+self=0
+marker=STR_WAY_POINT_ id=97
+type=STR_WAY_POINT marker=6
+#269 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+YAML_ERR bad conversion
+#270 node
+n 65 33,2,1 0 19 39 -3448 9 alloc=1 dummy=1 target=0
+links=[21,14,16,]
+EMIT good
+| id: 65
+| position:
+|   - 33
+|   - 2
+|   - 1
+| type: 0
+| rank: 19
+| flags: 39
+| reserved: -3448
+| priority: 9
+| allocated: true
+| links:
+|   - 21
+|   - 14
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#271 equip
+e hello null 12 -80192 hello 1
+EMIT good
+| itemType: hello
+| slot: "null"
+| slotX: 12
+| slotY: -80192
+| ammoItem: hello
+| fuseTimer: 1
+|.
+#272 equip
+e null  -2 0 STR_AVALON -28963
+EMIT good
+| itemType: "null"
+| slot: ""
+| slotX: -2
+| ammoItem: STR_AVALON
+|.
+#273 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=-14988 secs=0 race=123 battle=1 det=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| name: abc
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -14988
+| race: 123
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#274 node
+n 4 2,16,0 -2147483648 2147483647 5 0 294 alloc=1 dummy=0 target=0
+links=[16,4,163,16,1,]
+EMIT good
+| id: 4
+| position:
+|   - 2
+|   - 16
+|   - 0
+| type: -2147483648
+| rank: 2147483647
+| flags: 5
+| reserved: 0
+| priority: 294
+| allocated: true
+| links:
+|   - 16
+|   - 4
+|   - 163
+|   - 16
+|   - 1
+| dummy: false
+|.
+alloc=1
+alloc=0
+#275 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: 0
+| lat: 4.5099999999999998
+| id: 9
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 4.5099999999999998
+| type: STR_AB_MARK
+| id: 9
+|.
+type=STR_AB_MARK marker=9
+marker=9
+ll 0000000000000000 40120A3D70A3D70A id=9
+EMIT good
+| lon: 0
+| lat: 4.5099999999999998
+| id: 9
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 4.5099999999999998
+| type: STR_AB_MARK
+| id: 9
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=9
+#276 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+tex=30 secs=0 race=a b battle=1 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| id: -2147483648
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 30
+| race: a b
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: inf
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#277 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=0 race=q battle=0 det=0
+EMIT good
+| lon: 1000
+| lat: 2.8100000000000001
+| id: 217
+| name: q
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| race: q
+| detected: false
+|.
+EMIT good
+| lon: 1000
+| lat: 2.8100000000000001
+| type: STR_SITE_MARK
+| id: 217
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#278 node
+n 73 0,0,0 180 -4 0 2147483647 16 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 73
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 180
+| rank: -4
+| flags: 0
+| reserved: 2147483647
+| priority: 16
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#279 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| name: caf\xC3\xA9
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 0000000000000000 3FF8000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| name: caf\xC3\xA9
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#280 equip
+PARSE_ERR
+#281 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=STR_AVALON battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: "null"
+| race: STR_AVALON
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 0000000000000000 0000000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: "null"
+| race: STR_AVALON
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#282 equip
+PARSE_ERR
+#283 waypoint C00747AE147AE148 40224CCCCCCCCCCD 401F6DB6DB6DB6DB 4016492492492492
+ll 0000000000000000 C01A28F5C28F5C29 id=149
+EMIT good
+| lon: 0
+| lat: -6.54
+| id: 149
+| name: STR_HUMAN
+|.
+EMIT good
+| lon: 0
+| lat: -6.54
+| type: STR_WAY_POINT
+| id: 149
+|.
+set 3FCDA4D3FC94BD00 C018089BEF77830E
+dist=1.582983214
+self=0
+marker=STR_WAY_POINT_ id=149
+type=STR_WAY_POINT marker=6
+#284 waypoint C005FDBAB21815A0 BFF7AE147AE147AE 401CA3D70A3D70A4 BFF3CDF92CD21B15
+ll 408F400000000000 408F400000000000 id=15
+EMIT good
+| lon: 1000
+| lat: 1000
+| id: 15
+|.
+EMIT good
+| lon: 1000
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 15
+|.
+set 400C463BF6704490 BFF7AE147AE147AE
+dist=0.4154463737
+self=0
+marker=STR_WAY_POINT_ id=15
+type=STR_WAY_POINT marker=6
+#285 waypoint BFDB6DB6DB6DB6DB BFFB17D393BB5E3B 4021249249249249 400DB6DB6DB6DB6E
+ll 0000000000000000 3FF8000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4005B44478D6763C BFF72C2314CCFBF5
+dist=1.110460558
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#286 equip
+PARSE_ERR
+#287 equip
+e  caf\xC3\xA9 -91786 0 STR_FOO 2147483647
+EMIT good
+| itemType: ""
+| slot: caf\xC3\xA9
+| slotX: -91786
+| ammoItem: STR_FOO
+| fuseTimer: 2147483647
+|.
+#288 equip
+PARSE_ERR
+#289 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=0 disc=1
+EMIT good
+| lon: 3.2599999999999998
+| lat: 1.5
+| id: 69388
+| name: NONE
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.2599999999999998
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 69388
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 400A147AE147AE14 3FF8000000000000 id=69388
+EMIT good
+| lon: 3.2599999999999998
+| lat: 1.5
+| id: 69388
+| name: NONE
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.2599999999999998
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 69388
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=69388
+#290 equip
+PARSE_ERR
+#291 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: -1.27
+| id: 2147483647
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -1.27
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 0000000000000000 BFF451EB851EB852 id=2147483647
+EMIT good
+| lon: 0
+| lat: -1.27
+| id: 2147483647
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -1.27
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#292 waypoint C0145C28F5C28F5C 3FFCFDF3B645A1CB C0170A3D70A3D70A 3FF6000000000000
+ll 3FF8000000000000 7FF0000000000000 id=16
+EMIT good
+| lon: 1.5
+| lat: inf
+| id: 16
+| name: STR_HUMAN
+|.
+EMIT good
+| lon: 1.5
+| lat: inf
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 401156D008A3B448 3FF54602F242B865
+dist=0.4126242084
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#293 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=a b battle=0 disc=0
+EMIT good
+| lon: inf
+| lat: 6.5
+| id: 2
+| name: 123
+| race: a b
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 2
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll 7FF0000000000000 401A000000000000 id=2
+EMIT good
+| lon: inf
+| lat: 6.5
+| id: 2
+| name: 123
+| race: a b
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 2
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2
+#294 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=null battle=1 disc=1
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 35
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 35
+|.
+type=STR_AB_MARK marker=8
+marker=8
+ll 0000000000000000 3FF8000000000000 id=35
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 35
+| name: "null"
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 35
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=35
+#295 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+PARSE_ERR
+#296 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=a b battle=0 disc=0
+EMIT good
+| lon: 5.4199999999999999
+| lat: 0
+| id: 16
+| race: a b
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.4199999999999999
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 4015AE147AE147AE 0000000000000000 id=16
+EMIT good
+| lon: 5.4199999999999999
+| lat: 0
+| id: 16
+| race: a b
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.4199999999999999
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#297 equip
+e 123  -5 0 NONE 20
+EMIT good
+| itemType: 123
+| slot: ""
+| slotX: -5
+| fuseTimer: 20
+|.
+#298 node
+n -2147483648 58,14,1 -2147483648 25 2 4 0 alloc=1 dummy=0 target=0
+links=[1,39,16,2147483647,5,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 58
+|   - 14
+|   - 1
+| type: -2147483648
+| rank: 25
+| flags: 2
+| reserved: 4
+| priority: 0
+| allocated: true
+| links:
+|   - 1
+|   - 39
+|   - 16
+|   - 2147483647
+|   - 5
+| dummy: false
+|.
+alloc=1
+alloc=0
+#299 node
+n 2147483647 31,27,2 -2147483648 -5 9 2147483647 -2147483648 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 2147483647
+| position:
+|   - 31
+|   - 27
+|   - 2
+| type: -2147483648
+| rank: -5
+| flags: 9
+| reserved: 2147483647
+| priority: -2147483648
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#300 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+PARSE_ERR
+#301 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=243 secs=0 race=STR_FOO battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 1000
+| id: 1
+| name: q
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 243
+| race: STR_FOO
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 1
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#302 node
+n 32 0,0,0 2 0 -2147483648 20 98355 alloc=1 dummy=1 target=0
+links=[12610,11,13,-2147483648,16,]
+EMIT good
+| id: 32
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 2
+| rank: 0
+| flags: -2147483648
+| reserved: 20
+| priority: 98355
+| allocated: true
+| links:
+|   - 12610
+|   - 11
+|   - 13
+|   - -2147483648
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#303 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=yes battle=0 disc=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| id: -69617
+| race: yes
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: -69617
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 400921FB54442D11 408F400000000000 id=-69617
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| id: -69617
+| race: yes
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: -69617
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-69617
+#304 equip
+PARSE_ERR
+#305 node
+n 0 55,45,0 0 16 0 0 190 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 55
+|   - 45
+|   - 0
+| type: 0
+| rank: 16
+| flags: 0
+| reserved: 0
+| priority: 190
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#306 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-1 secs=4 race=abc battle=1 det=1
+EMIT good
+| lon: 1.5
+| lat: 0
+| id: 16
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 4
+| race: abc
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=6
+marker=6
+city=STR_CITY
+#307 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#308 equip
+e 123 caf\xC3\xA9 35 0 NONE 23
+EMIT good
+| itemType: 123
+| slot: caf\xC3\xA9
+| slotX: 35
+| fuseTimer: 23
+|.
+#309 node
+YAML_ERR bad conversion
+#310 waypoint BFFD1A8B6980214D C012492492492492 BFE46863868D2268 40223851EB851EB8
+ll 0000000000000000 400921FB54442D11 id=2147483647
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 2147483647
+| name: yes
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 3FF5296B3F0838E4 3FF6E09BA09C3818
+dist=1.205453311
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#311 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 5.71
+| lat: -0.25
+| id: 7
+| name: caf\xC3\xA9
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.71
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 7
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 4016D70A3D70A3D7 BFD0000000000000 id=7
+EMIT good
+| lon: 5.71
+| lat: -0.25
+| id: 7
+| name: caf\xC3\xA9
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.71
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 7
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=7
+#312 waypoint 4004B851EB851EB8 C024DB6DB6DB6DB7 3FEC4189374BC6A8 3FF0FD5E34BEA394
+ll 0000000000000000 3FF8000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4016ED269FE4A5E8 401D25DDC394C4E2
+dist=0.6885874894
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#313 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=-1 secs=2147483647 race=q battle=0 det=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: -2147483648
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 2147483647
+| race: q
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=-1
+marker=7
+city=STR_CITY
+#314 node
+n 16 9,60,2 31 -2147483648 -3 0 16 alloc=1 dummy=0 target=0
+links=[2147483647,-96497,]
+EMIT good
+| id: 16
+| position:
+|   - 9
+|   - 60
+|   - 2
+| type: 31
+| rank: -2147483648
+| flags: -3
+| reserved: 0
+| priority: 16
+| allocated: true
+| links:
+|   - 2147483647
+|   - -96497
+| dummy: false
+|.
+alloc=1
+alloc=0
+#315 node
+n 16 6,37,3 264 0 15 14 -63835 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 16
+| position:
+|   - 6
+|   - 37
+|   - 3
+| type: 264
+| rank: 0
+| flags: 15
+| reserved: 14
+| priority: -63835
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#316 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=-75579 secs=16 race=null battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -75579
+| secondsRemaining: 16
+| race: "null"
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=1
+city=STR_CITY
+#317 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+tex=16 secs=0 race= battle=0 det=1
+EMIT good
+| lon: inf
+| lat: -1.78
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: inf
+| lat: -1.78
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=5
+marker=5
+city=STR_CITY
+#318 equip
+e STR_HUMAN  182 30 NONE 29
+EMIT good
+| itemType: STR_HUMAN
+| slot: ""
+| slotX: 182
+| slotY: 30
+| fuseTimer: 29
+|.
+#319 equip
+e STR_HUMAN NONE 12 11 caf\xC3\xA9 -1
+EMIT good
+| itemType: STR_HUMAN
+| slot: NONE
+| slotX: 12
+| slotY: 11
+| ammoItem: caf\xC3\xA9
+|.
+#320 node
+YAML_ERR bad conversion
+#321 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=null battle=0 disc=1
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: 16
+| name: a b
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 7FF0000000000000 BFD0000000000000 id=16
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: 16
+| name: a b
+| race: "null"
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#322 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=16 secs=0 race=STR_FOO battle=0 det=0
+EMIT good
+| lon: inf
+| lat: 0
+| id: 18
+| name: yes
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| race: STR_FOO
+| detected: false
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_SITE_MARK
+| id: 18
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#323 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 2.3900000000000001
+| lat: 0
+| id: 2
+| name: hello
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 2.3900000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 2
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll 40031EB851EB851F 0000000000000000 id=2
+EMIT good
+| lon: 2.3900000000000001
+| lat: 0
+| id: 2
+| name: hello
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 2.3900000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 2
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2
+#324 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=0 race=hello battle=1 det=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| race: hello
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#325 equip
+PARSE_ERR
+#326 node
+n 2147483647 41,29,1 -2147483648 2147483647 139 35 -2147483648 alloc=0 dummy=0 target=0
+links=[175,16,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 41
+|   - 29
+|   - 1
+| type: -2147483648
+| rank: 2147483647
+| flags: 139
+| reserved: 35
+| priority: -2147483648
+| allocated: false
+| links:
+|   - 175
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#327 equip
+e abc hello 1 -3 a b 21
+EMIT good
+| itemType: abc
+| slot: hello
+| slotX: 1
+| slotY: -3
+| ammoItem: a b
+| fuseTimer: 21
+|.
+#328 equip
+e caf\xC3\xA9  0 -3 STR_FOO -2147483648
+EMIT good
+| itemType: caf\xC3\xA9
+| slot: ""
+| slotY: -3
+| ammoItem: STR_FOO
+|.
+#329 equip
+PARSE_ERR
+#330 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 400921FB54442D11 408F400000000000 id=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#331 waypoint 40036D76B4BD3682 BF69BC6449D68DC1 C028924924924925 40256DB6DB6DB6DB
+ll 7FF0000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: inf
+| lat: 0
+| id: 2147483647
+| name: q
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 40036D76B4BD3682 BF69BC6449D68DC1
+dist=1.415728298
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#332 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=16 secs=19 race=123 battle=0 det=1
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: 2147483647
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| secondsRemaining: 19
+| race: 123
+| detected: true
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=8
+marker=8
+city=STR_CITY
+#333 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=21 race=123 battle=0 det=0
+EMIT good
+| lon: 3.0499999999999998
+| lat: 1.5
+| id: -4
+| name: caf\xC3\xA9
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| secondsRemaining: 21
+| race: 123
+| detected: false
+|.
+EMIT good
+| lon: 3.0499999999999998
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: -4
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#334 waypoint C024924924924925 40023232E834B239 C02A000000000000 C008DB33DC507868
+ll 7FF0000000000000 0000000000000000 id=0
+EMIT good
+| lon: inf
+| lat: 0
+| name: hello
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4015B0620985DE72 3FEBBF21B03DEB7C
+dist=2.23301483
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#335 equip
+e  a b 16 31 NONE -2147483648
+EMIT good
+| itemType: ""
+| slot: a b
+| slotX: 16
+| slotY: 31
+|.
+#336 waypoint C02123D70A3D70A4 C02A924924924925 C02A000000000000 3FEF10650D1FF919
+ll BFD0000000000000 0000000000000000 id=-2147483648
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: -2147483648
+| name: STR_FOO
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 3FEB5A574F5B12E0 402449CA4F813DDF
+dist=2.294484623
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#337 equip
+PARSE_ERR
+#338 equip
+PARSE_ERR
+#339 node
+n 30 0,0,0 -2147483648 17 0 25 17 alloc=0 dummy=0 target=0
+links=[-10591,-13789,3,16,]
+EMIT good
+| id: 30
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: -2147483648
+| rank: 17
+| flags: 0
+| reserved: 25
+| priority: 17
+| allocated: false
+| links:
+|   - -10591
+|   - -13789
+|   - 3
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#340 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+PARSE_ERR
+#341 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-1 secs=2147483647 race=hello battle=1 det=1
+EMIT good
+| lon: -3.4300000000000002
+| lat: 1000
+| id: 25
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 2147483647
+| race: hello
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: -3.4300000000000002
+| lat: 1000
+| type: STR_SITE_MARK
+| id: 25
+|.
+type=STR_SITE_MARK marker=3
+marker=3
+city=STR_CITY
+#342 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=2147483647 secs=0 race= battle=1 det=1
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 2147483647
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 2147483647
+| race: ""
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=8
+marker=8
+city=STR_CITY
+#343 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=caf\xC3\xA9 battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 1000
+| name: caf\xC3\xA9
+| race: caf\xC3\xA9
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 0000000000000000 408F400000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1000
+| name: caf\xC3\xA9
+| race: caf\xC3\xA9
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#344 node
+YAML_ERR bad conversion
+#345 node
+n 39 40,39,0 7 0 -48141 22 0 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 39
+| position:
+|   - 40
+|   - 39
+|   - 0
+| type: 7
+| rank: 0
+| flags: -48141
+| reserved: 22
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#346 equip
+PARSE_ERR
+#347 equip
+PARSE_ERR
+#348 node
+n -2147483648 0,0,0 43 -94436 16 285 0 alloc=0 dummy=0 target=0
+links=[204,17,16,1,2147483647,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 43
+| rank: -94436
+| flags: 16
+| reserved: 285
+| priority: 0
+| allocated: false
+| links:
+|   - 204
+|   - 17
+|   - 16
+|   - 1
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#349 waypoint BFE23232E834B239 C012492492492492 C0176DB6DB6DB6DB 3FDCAC083126E979
+ll BFD0000000000000 0000000000000000 id=107
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 107
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_WAY_POINT
+| id: 107
+|.
+set 4004956E9A370088 3FF6E09BA09C3818
+dist=1.202654557
+self=0
+marker=STR_WAY_POINT_ id=107
+type=STR_WAY_POINT marker=6
+#350 node
+n 2147483647 0,0,0 14 0 0 3 37 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 2147483647
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 14
+| rank: 0
+| flags: 0
+| reserved: 3
+| priority: 37
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#351 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| name: hello
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 0000000000000000 BFD0000000000000 id=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| name: hello
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#352 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+PARSE_ERR
+#353 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=caf\xC3\xA9 battle=0 disc=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 16
+| name: STR_HUMAN
+| race: caf\xC3\xA9
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 408F400000000000 0000000000000000 id=16
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 16
+| name: STR_HUMAN
+| race: caf\xC3\xA9
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#354 waypoint 40276DB6DB6DB6DB 401D28F5C28F5C29 C01D3D70A3D70A3D 4015249249249249
+ll 4005EB851EB851EC 400921FB54442D11 id=34
+EMIT good
+| lon: 2.7400000000000002
+| lat: 3.14159265358979
+| id: 34
+| name: "null"
+|.
+EMIT good
+| lon: 2.7400000000000002
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 34
+|.
+set 400250E970EA5424 C01097F8186D459D
+dist=2.009156245
+self=0
+marker=STR_WAY_POINT_ id=34
+type=STR_WAY_POINT marker=6
+#355 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=23 secs=16 race= battle=1 det=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 16
+| name: hello
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 23
+| secondsRemaining: 16
+| race: ""
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=-1
+marker=8
+city=STR_CITY
+#356 node
+n 0 34,43,1 47 14 25 -88343 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 34
+|   - 43
+|   - 1
+| type: 47
+| rank: 14
+| flags: 25
+| reserved: -88343
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#357 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=a b battle=1 disc=1
+EMIT good
+| lon: 6.5
+| lat: 0.68999999999999995
+| name: a b
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0.68999999999999995
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=5
+marker=5
+ll 401A000000000000 3FE6147AE147AE14 id=0
+EMIT good
+| lon: 6.5
+| lat: 0.68999999999999995
+| name: a b
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 0.68999999999999995
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#358 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race= battle=0 det=1
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 16
+| name: STR_FOO
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=6
+marker=6
+city=STR_CITY
+#359 equip
+e  STR_AVALON -15126 6883 abc 16
+EMIT good
+| itemType: ""
+| slot: STR_AVALON
+| slotX: -15126
+| slotY: 6883
+| ammoItem: abc
+| fuseTimer: 16
+|.
+#360 waypoint C012EB851EB851EC C029B6DB6DB6DB6E C002E147AE147AE1 C011F5C28F5C28F6
+ll 7FF0000000000000 3FF8000000000000 id=2
+EMIT good
+| lon: inf
+| lat: 1.5
+| id: 2
+|.
+EMIT good
+| lon: inf
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 2
+|.
+set 4012C773DFADF1B8 40236E5C98A5D028
+dist=1.699320318
+self=0
+marker=STR_WAY_POINT_ id=2
+type=STR_WAY_POINT marker=6
+#361 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: -95072
+| name: STR_AVALON
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: -95072
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 0000000000000000 0000000000000000 id=-95072
+EMIT good
+| lon: 0
+| lat: 0
+| id: -95072
+| name: STR_AVALON
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: -95072
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-95072
+#362 waypoint 3FE645A1CAC08312 C01DB6DB6DB6DB6E 3FFD4125FFEEE321 BFF4A8BA8145BACA
+ll BFD0000000000000 0000000000000000 id=16
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 16
+| name: STR_HUMAN
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 400EB363C6F44DDC 401125DDC394C4E2
+dist=0.3927981107
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#363 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race= battle=0 det=0
+EMIT good
+| lon: 1000
+| lat: 3.6699999999999999
+| id: -2147483648
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: ""
+| detected: false
+|.
+EMIT good
+| lon: 1000
+| lat: 3.6699999999999999
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=-1
+marker=1
+city=STR_CITY
+#364 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+PARSE_ERR
+#365 waypoint 4024924924924925 BFB5B6F49E4D079A BFFD4E043213CE68 4008946DC8856A62
+ll 3FF8000000000000 3FF8000000000000 id=-2147483648
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| id: -2147483648
+| name: 123
+|.
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 40100296F4E06532 BFB5B6F49E4D079A
+dist=2.693565048
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#366 waypoint 400028F5C28F5C29 3FF04DD2F1A9FBE7 3FF7645A1CAC0831 3FF5296876B6EB8F
+ll 408F400000000000 408F400000000000 id=1
+EMIT good
+| lon: 1000
+| lat: 1000
+| id: 1
+| name: hello
+|.
+EMIT good
+| lon: 1000
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 1
+|.
+set 400028F5C28F5C29 3FF04DD2F1A9FBE7
+dist=0.3632953625
+self=0
+marker=STR_WAY_POINT_ id=1
+type=STR_WAY_POINT marker=6
+#367 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race=hello battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 0
+| id: -2147483648
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: hello
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#368 node
+n -2147483648 0,13,0 0 -67572 16 38 0 alloc=0 dummy=0 target=0
+links=[2147483647,16,-2147483648,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 13
+|   - 0
+| type: 0
+| rank: -67572
+| flags: 16
+| reserved: 38
+| priority: 0
+| allocated: false
+| links:
+|   - 2147483647
+|   - 16
+|   - -2147483648
+| dummy: false
+|.
+alloc=1
+alloc=0
+#369 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 5.7599999999999998
+| lat: 0
+| id: 3
+| name: a b
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.7599999999999998
+| lat: 0
+| type: STR_AB_MARK
+| id: 3
+|.
+type=STR_AB_MARK marker=-1
+marker=2
+ll 40170A3D70A3D70A 0000000000000000 id=3
+EMIT good
+| lon: 5.7599999999999998
+| lat: 0
+| id: 3
+| name: a b
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.7599999999999998
+| lat: 0
+| type: STR_AB_MARK
+| id: 3
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=3
+#370 equip
+PARSE_ERR
+#371 equip
+e q  0 0 NONE -1
+EMIT good
+| itemType: q
+| slot: ""
+|.
+#372 equip
+e 123 hello -25604 2147483647 STR_FOO 8
+EMIT good
+| itemType: 123
+| slot: hello
+| slotX: -25604
+| slotY: 2147483647
+| ammoItem: STR_FOO
+| fuseTimer: 8
+|.
+#373 equip
+e null caf\xC3\xA9 29 0 123 1
+EMIT good
+| itemType: "null"
+| slot: caf\xC3\xA9
+| slotX: 29
+| ammoItem: 123
+| fuseTimer: 1
+|.
+#374 node
+n 0 0,0,0 38 -2147483648 19 236 4 alloc=1 dummy=0 target=0
+links=[97530,16,-11391,]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 38
+| rank: -2147483648
+| flags: 19
+| reserved: 236
+| priority: 4
+| allocated: true
+| links:
+|   - 97530
+|   - 16
+|   - -11391
+| dummy: false
+|.
+alloc=1
+alloc=0
+#375 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=58534 secs=52 race= battle=0 det=1
+EMIT good
+| lon: -0.25
+| lat: 6.5
+| name: STR_FOO
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 58534
+| secondsRemaining: 52
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: -0.25
+| lat: 6.5
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=1
+marker=1
+city=STR_CITY
+#376 equip
+PARSE_ERR
+#377 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=22 secs=124 race= battle=0 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 10557
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 22
+| secondsRemaining: 124
+| race: ""
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_SITE_MARK
+| id: 10557
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#378 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#379 equip
+e null NONE 2 2147483647 123 -2147483648
+EMIT good
+| itemType: "null"
+| slot: NONE
+| slotX: 2
+| slotY: 2147483647
+| ammoItem: 123
+|.
+#380 node
+n 16 11,52,3 -1 16 -91189 2147483647 2147483647 alloc=0 dummy=0 target=0
+links=[2147483647,]
+EMIT good
+| id: 16
+| position:
+|   - 11
+|   - 52
+|   - 3
+| type: -1
+| rank: 16
+| flags: -91189
+| reserved: 2147483647
+| priority: 2147483647
+| allocated: false
+| links:
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#381 waypoint 3FF17E0C2A2FD459 3FCFBE76C8B43958 4017AE147AE147AE 400394114B2BF856
+ll 0000000000000000 400921FB54442D11 id=16
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 16
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 3FF17E0C2A2FD459 3FCFBE76C8B43958
+dist=1.498669673
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#382 node
+n 0 0,0,0 0 -2147483648 -2147483648 299 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: -2147483648
+| flags: -2147483648
+| reserved: 299
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#383 equip
+PARSE_ERR
+#384 node
+YAML_ERR bad conversion
+#385 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=16 secs=28 race=STR_FOO battle=0 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 2147483647
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| secondsRemaining: 28
+| race: STR_FOO
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=-1
+marker=2
+city=STR_CITY
+#386 waypoint BFE380C3FFF4976C C01970A3D70A3D71 3FCE8FB717AEC854 3FE60C49BA5E353F
+ll 0000000000000000 7FF0000000000000 id=-5
+EMIT good
+| lon: 0
+| lat: inf
+| id: -5
+|.
+EMIT good
+| lon: 0
+| lat: inf
+| type: STR_WAY_POINT
+| id: -5
+|.
+set 400441CA5447073C 4009BF4C59D04DCA
+dist=1.092618792
+self=0
+marker=STR_WAY_POINT_ id=-5
+type=STR_WAY_POINT marker=6
+#387 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+tex=-1 secs=11 race=STR_HUMAN battle=0 det=1
+EMIT good
+| lon: 3.14159265358979
+| lat: 6.5
+| id: 7
+| name: q
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 11
+| race: STR_HUMAN
+| detected: true
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 6.5
+| type: STR_SITE_MARK
+| id: 7
+|.
+type=STR_SITE_MARK marker=6
+marker=6
+city=STR_CITY
+#388 waypoint 4008C1777806A1DA 3FDC28F5C28F5C29 4008C7E69119177E 3FFB6C8B43958106
+ll 0000000000000000 401047AE147AE148 id=0
+EMIT good
+| lon: 0
+| lat: 4.0700000000000003
+|.
+EMIT good
+| lon: 0
+| lat: 4.0700000000000003
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4008C1777806A1DA 3FDC28F5C28F5C29
+dist=1.273999334
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#389 node
+n 2147483647 4,6,0 -1 2147483647 16 0 0 alloc=1 dummy=0 target=0
+links=[4,123,15,3,36,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 4
+|   - 6
+|   - 0
+| type: -1
+| rank: 2147483647
+| flags: 16
+| reserved: 0
+| priority: 0
+| allocated: true
+| links:
+|   - 4
+|   - 123
+|   - 15
+|   - 3
+|   - 36
+| dummy: false
+|.
+alloc=1
+alloc=0
+#390 node
+n 70663 11,6,2 16 -2147483648 16 16 16 alloc=1 dummy=0 target=0
+links=[33,10,7,11,]
+EMIT good
+| id: 70663
+| position:
+|   - 11
+|   - 6
+|   - 2
+| type: 16
+| rank: -2147483648
+| flags: 16
+| reserved: 16
+| priority: 16
+| allocated: true
+| links:
+|   - 33
+|   - 10
+|   - 7
+|   - 11
+| dummy: false
+|.
+alloc=1
+alloc=0
+#391 waypoint 401D1EB851EB851F 401BE147AE147AE1 40216DB6DB6DB6DB 3FFEC8B439581062
+PARSE_ERR
+#392 equip
+e  NONE 0 0 NONE 11
+EMIT good
+| itemType: ""
+| slot: NONE
+| fuseTimer: 11
+|.
+#393 node
+n 0 0,0,0 -5 74 0 16 -2147483648 alloc=0 dummy=1 target=0
+links=[16,5,8,27,-1,]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: -5
+| rank: 74
+| flags: 0
+| reserved: 16
+| priority: -2147483648
+| allocated: false
+| links:
+|   - 16
+|   - 5
+|   - 8
+|   - 27
+|   - -1
+| dummy: true
+|.
+alloc=1
+alloc=0
+#394 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+PARSE_ERR
+#395 node
+n 16 0,0,0 0 76 -2147483648 8593 -2147483648 alloc=0 dummy=0 target=0
+links=[16,-2147483648,16,1,2,]
+EMIT good
+| id: 16
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 76
+| flags: -2147483648
+| reserved: 8593
+| priority: -2147483648
+| allocated: false
+| links:
+|   - 16
+|   - -2147483648
+|   - 16
+|   - 1
+|   - 2
+| dummy: false
+|.
+alloc=1
+alloc=0
+#396 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=-95932 secs=0 race=null battle=1 det=0
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| id: 116
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -95932
+| race: "null"
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 3.14159265358979
+| type: STR_SITE_MARK
+| id: 116
+|.
+type=STR_SITE_MARK marker=-1
+marker=1
+city=STR_CITY
+#397 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+PARSE_ERR
+#398 node
+n 0 43,21,1 16 15287 2147483647 273 3 alloc=0 dummy=1 target=0
+links=[16,12372,74,]
+EMIT good
+| id: 0
+| position:
+|   - 43
+|   - 21
+|   - 1
+| type: 16
+| rank: 15287
+| flags: 2147483647
+| reserved: 273
+| priority: 3
+| allocated: false
+| links:
+|   - 16
+|   - 12372
+|   - 74
+| dummy: true
+|.
+alloc=1
+alloc=0
+#399 equip
+e q  -2 1 NONE 24521
+EMIT good
+| itemType: q
+| slot: ""
+| slotX: -2
+| slotY: 1
+| fuseTimer: 24521
+|.
+#400 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-34965 secs=0 race=a b battle=0 det=1
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 16
+| name: yes
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -34965
+| race: a b
+| detected: true
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=3
+marker=3
+city=STR_CITY
+#401 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| id: 34601
+| name: 123
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 34601
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 3FF8000000000000 3FF8000000000000 id=34601
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| id: 34601
+| name: 123
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 34601
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=34601
+#402 waypoint C0000F4F9513A2F5 3FD2B2E0DDA5E2FE 4020492492492492 BFE70585B60CECCD
+ll 0000000000000000 400921FB54442D11 id=2147483647
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: 2147483647
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 40111A5389BA5B9E 3FD2B2E0DDA5E2FE
+dist=2.387192835
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#403 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=null battle=1 disc=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 16
+| name: 123
+| race: "null"
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll BFD0000000000000 0000000000000000 id=16
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 16
+| name: 123
+| race: "null"
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#404 node
+n 21 0,0,0 15 0 37 16 2147483647 alloc=1 dummy=1 target=0
+links=[-2147483648,]
+EMIT good
+| id: 21
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 15
+| rank: 0
+| flags: 37
+| reserved: 16
+| priority: 2147483647
+| allocated: true
+| links:
+|   - -2147483648
+| dummy: true
+|.
+alloc=1
+alloc=0
+#405 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+PARSE_ERR
+#406 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=yes battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: STR_FOO
+| race: yes
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=7
+marker=7
+ll 0000000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: 0
+| lat: 0
+| id: 2147483647
+| name: STR_FOO
+| race: yes
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#407 node
+n 0 0,0,0 -2147483648 76993 -4 0 16 alloc=1 dummy=0 target=0
+links=[31,51,2147483647,]
+EMIT good
+| id: 0
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: -2147483648
+| rank: 76993
+| flags: -4
+| reserved: 0
+| priority: 16
+| allocated: true
+| links:
+|   - 31
+|   - 51
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#408 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#409 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#410 waypoint 3FBD70A3D70A3D71 40046ED29F9F980B 401C924924924925 3FDC49BA5E353F7D
+ll 4015CCCCCCCCCCCD 0000000000000000 id=3
+EMIT good
+| lon: 5.4500000000000002
+| lat: 0
+| id: 3
+|.
+EMIT good
+| lon: 5.4500000000000002
+| lat: 0
+| type: STR_WAY_POINT
+| id: 3
+|.
+set 400A0D8072FC7F04 3FE2CCA2D2925434
+dist=1.892438759
+self=0
+marker=STR_WAY_POINT_ id=3
+type=STR_WAY_POINT marker=6
+#411 waypoint 400C3D70A3D70A3D C01F8F5C28F5C28F C022A8F5C28F5C29 3FEBE76C8B439581
+PARSE_ERR
+#412 equip
+PARSE_ERR
+#413 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=123 battle=0 disc=0
+EMIT good
+| lon: 5.4299999999999997
+| lat: 1.5
+| id: 11
+| name: a b
+| race: 123
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.4299999999999997
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 11
+|.
+type=STR_AB_MARK marker=-1
+marker=6
+ll 4015B851EB851EB8 3FF8000000000000 id=11
+EMIT good
+| lon: 5.4299999999999997
+| lat: 1.5
+| id: 11
+| name: a b
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 5.4299999999999997
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 11
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=11
+#414 waypoint 3FFE7AE147AE147B C020DB6DB6DB6DB7 C0015C28F5C28F5C C01BE147AE147AE1
+ll 0000000000000000 BFD0000000000000 id=3
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 3
+| name: q
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 3
+|.
+set 40142FB5FC0D9BAB 401525DDC394C4E2
+dist=0.6723609536
+self=0
+marker=STR_WAY_POINT_ id=3
+type=STR_WAY_POINT marker=6
+#415 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race= battle=0 disc=1
+EMIT good
+| lon: inf
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 7FF0000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: inf
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#416 node
+n -2147483648 13,58,3 1 0 30 24 -55481 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: -2147483648
+| position:
+|   - 13
+|   - 58
+|   - 3
+| type: 1
+| rank: 0
+| flags: 30
+| reserved: 24
+| priority: -55481
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#417 node
+n 143 58,14,0 -2098 11894 98666 -2147483648 19 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 143
+| position:
+|   - 58
+|   - 14
+|   - 0
+| type: -2098
+| rank: 11894
+| flags: 98666
+| reserved: -2147483648
+| priority: 19
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#418 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#419 waypoint C024924924924925 BFFFEB26619398CE 4022492492492492 BFF54324DB00C21C
+ll 0000000000000000 3FFCF5C28F5C28F6 id=12
+EMIT good
+| lon: 0
+| lat: 1.8100000000000001
+| id: 12
+| name: STR_HUMAN
+|.
+EMIT good
+| lon: 0
+| lat: 1.8100000000000001
+| type: STR_WAY_POINT
+| id: 12
+|.
+set 4015B0620985DE72 BFF258D046F4C162
+dist=0.6395625985
+self=0
+marker=STR_WAY_POINT_ id=12
+type=STR_WAY_POINT marker=6
+#420 equip
+e   -2147483648 0 hello 2147483647
+EMIT good
+| itemType: ""
+| slot: ""
+| slotX: -2147483648
+| ammoItem: hello
+| fuseTimer: 2147483647
+|.
+#421 node
+n -2147483648 42,26,0 2147483647 0 13 20343 -19395 alloc=0 dummy=1 target=0
+links=[149,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 42
+|   - 26
+|   - 0
+| type: 2147483647
+| rank: 0
+| flags: 13
+| reserved: 20343
+| priority: -19395
+| allocated: false
+| links:
+|   - 149
+| dummy: true
+|.
+alloc=1
+alloc=0
+#422 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race=yes battle=1 disc=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 9
+| race: yes
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 9
+|.
+type=STR_AB_MARK marker=-1
+marker=7
+ll 408F400000000000 0000000000000000 id=9
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 9
+| race: yes
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 9
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=9
+#423 equip
+e a b 123 33 2 STR_HUMAN 1
+EMIT good
+| itemType: a b
+| slot: 123
+| slotX: 33
+| slotY: 2
+| ammoItem: STR_HUMAN
+| fuseTimer: 1
+|.
+#424 node
+n -71011 50,21,0 76172 2147483647 38 0 0 alloc=0 dummy=0 target=0
+links=[-2147483648,4,2147483647,]
+EMIT good
+| id: -71011
+| position:
+|   - 50
+|   - 21
+|   - 0
+| type: 76172
+| rank: 2147483647
+| flags: 38
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - -2147483648
+|   - 4
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#425 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#426 node
+n 40 6,43,3 -2 145 23 16 16 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 40
+| position:
+|   - 6
+|   - 43
+|   - 3
+| type: -2
+| rank: 145
+| flags: 23
+| reserved: 16
+| priority: 16
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#427 waypoint 3FFB6DB6DB6DB6DB 3FE90E5604189375 4015333333333333 BFF147AE147AE148
+ll 400EA3D70A3D70A4 BFD0000000000000 id=0
+EMIT good
+| lon: 3.8300000000000001
+| lat: -0.25
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 3.8300000000000001
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FFB6DB6DB6DB6DB 3FE90E5604189375
+dist=2.748710178
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#428 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=16 race=a b battle=1 det=1
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 13166
+| name: caf\xC3\xA9
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| secondsRemaining: 16
+| race: a b
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_SITE_MARK
+| id: 13166
+|.
+type=STR_SITE_MARK marker=5
+marker=5
+city=STR_CITY
+#429 equip
+e  NONE -46377 0 null -1
+EMIT good
+| itemType: ""
+| slot: NONE
+| slotX: -46377
+| ammoItem: "null"
+|.
+#430 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=a b battle=0 disc=0
+EMIT good
+| lon: inf
+| lat: -0.25
+| name: "null"
+| race: a b
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 7FF0000000000000 BFD0000000000000 id=0
+EMIT good
+| lon: inf
+| lat: -0.25
+| name: "null"
+| race: a b
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#431 node
+n 0 45,48,2 2147483647 -31860 16 16 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 45
+|   - 48
+|   - 2
+| type: 2147483647
+| rank: -31860
+| flags: 16
+| reserved: 16
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#432 node
+n 2147483647 53,10,0 2 40 0 3 6 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 2147483647
+| position:
+|   - 53
+|   - 10
+|   - 0
+| type: 2
+| rank: 40
+| flags: 0
+| reserved: 3
+| priority: 6
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#433 node
+n 16 39,48,2 13 0 28 274 0 alloc=1 dummy=1 target=0
+links=[16,221,138,16,0,]
+EMIT good
+| id: 16
+| position:
+|   - 39
+|   - 48
+|   - 2
+| type: 13
+| rank: 0
+| flags: 28
+| reserved: 274
+| priority: 0
+| allocated: true
+| links:
+|   - 16
+|   - 221
+|   - 138
+|   - 16
+|   - 0
+| dummy: true
+|.
+alloc=1
+alloc=0
+#434 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race=123 battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 281
+| name: STR_AVALON
+| race: 123
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 281
+|.
+type=STR_AB_MARK marker=-1
+marker=1
+ll 0000000000000000 BFD0000000000000 id=281
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 281
+| name: STR_AVALON
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 281
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=281
+#435 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0.63
+| id: 80
+| name: STR_FOO
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0.63
+| type: STR_AB_MARK
+| id: 80
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 0000000000000000 3FE428F5C28F5C29 id=80
+EMIT good
+| lon: 0
+| lat: 0.63
+| id: 80
+| name: STR_FOO
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0.63
+| type: STR_AB_MARK
+| id: 80
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=80
+#436 node
+n 4 6,19,2 14 39 -2147483648 0 126 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 4
+| position:
+|   - 6
+|   - 19
+|   - 2
+| type: 14
+| rank: 39
+| flags: -2147483648
+| reserved: 0
+| priority: 126
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#437 waypoint 3FF476C8B4395810 C02070A3D70A3D71 C023C7AE147AE148 C00F851EB851EB85
+ll BFD0000000000000 7FF0000000000000 id=0
+EMIT good
+| lon: -0.25
+| lat: inf
+| name: "null"
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4011AEAFD7306C90 4014504A03F26456
+dist=2.24682908
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#438 waypoint 4014E147AE147AE1 BFF62AC461994D18 3FF599999999999A 3FE1171A99087A22
+ll 401A000000000000 4001EB851EB851EC id=0
+EMIT good
+| lon: 6.5
+| lat: 2.2400000000000002
+|.
+EMIT good
+| lon: 6.5
+| lat: 2.2400000000000002
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4014E147AE147AE1 BFF62AC461994D18
+dist=2.237880284
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#439 node
+n 0 10,17,1 16 11 9231 0 9 alloc=0 dummy=0 target=0
+links=[22,216,11,-2147483648,16,]
+EMIT good
+| id: 0
+| position:
+|   - 10
+|   - 17
+|   - 1
+| type: 16
+| rank: 11
+| flags: 9231
+| reserved: 0
+| priority: 9
+| allocated: false
+| links:
+|   - 22
+|   - 216
+|   - 11
+|   - -2147483648
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#440 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#441 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 283
+| name: STR_HUMAN
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 283
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 0000000000000000 401A000000000000 id=283
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 283
+| name: STR_HUMAN
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 283
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=283
+#442 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=0
+EMIT good
+| lon: 6.5
+| lat: 3.3300000000000001
+| id: 16
+| name: STR_FOO
+| race: NONE
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 3.3300000000000001
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=2
+ll 401A000000000000 400AA3D70A3D70A4 id=16
+EMIT good
+| lon: 6.5
+| lat: 3.3300000000000001
+| id: 16
+| name: STR_FOO
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.5
+| lat: 3.3300000000000001
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#443 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+PARSE_ERR
+#444 node
+n 16 0,0,0 0 -2 22619 0 16 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 16
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: -2
+| flags: 22619
+| reserved: 0
+| priority: 16
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#445 equip
+e 123  0 13 q 0
+EMIT good
+| itemType: 123
+| slot: ""
+| slotY: 13
+| ammoItem: q
+| fuseTimer: 0
+|.
+#446 equip
+e a b q 33 -72045 null 16
+EMIT good
+| itemType: a b
+| slot: q
+| slotX: 33
+| slotY: -72045
+| ammoItem: "null"
+| fuseTimer: 16
+|.
+#447 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=NONE battle=0 disc=1
+EMIT good
+| lon: -4.8700000000000001
+| lat: 0
+| name: "null"
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -4.8700000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll C0137AE147AE147B 0000000000000000 id=0
+EMIT good
+| lon: -4.8700000000000001
+| lat: 0
+| name: "null"
+| race: NONE
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -4.8700000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#448 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=a b battle=0 disc=0
+EMIT good
+| lon: 6.2300000000000004
+| lat: 6.5
+| id: 2147483647
+| race: a b
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.2300000000000004
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 4018EB851EB851EC 401A000000000000 id=2147483647
+EMIT good
+| lon: 6.2300000000000004
+| lat: 6.5
+| id: 2147483647
+| race: a b
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 6.2300000000000004
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#449 equip
+e  NONE 0 0 null 76335
+EMIT good
+| itemType: ""
+| slot: NONE
+| ammoItem: "null"
+| fuseTimer: 76335
+|.
+#450 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0.029999999999999999
+| lat: 3.14159265358979
+| id: 11
+| name: STR_AVALON
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0.029999999999999999
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 11
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 3F9EB851EB851EB8 400921FB54442D11 id=11
+EMIT good
+| lon: 0.029999999999999999
+| lat: 3.14159265358979
+| id: 11
+| name: STR_AVALON
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0.029999999999999999
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 11
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=11
+#451 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=-2147483648 secs=0 race= battle=1 det=1
+EMIT good
+| lon: 4.4900000000000002
+| lat: 0
+| id: 55333
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2147483648
+| race: ""
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 4.4900000000000002
+| lat: 0
+| type: STR_SITE_MARK
+| id: 55333
+|.
+type=STR_SITE_MARK marker=9
+marker=9
+city=STR_CITY
+#452 node
+n 0 21,30,0 0 38 2147483647 20 -78867 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 21
+|   - 30
+|   - 0
+| type: 0
+| rank: 38
+| flags: 2147483647
+| reserved: 20
+| priority: -78867
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#453 waypoint 3FF09FBE76C8B439 3FF8D0E560418937 3FF69FBE76C8B439 4000B02907E11FEB
+ll 3FE0000000000000 0000000000000000 id=0
+EMIT good
+| lon: 0.5
+| lat: 0
+| name: caf\xC3\xA9
+|.
+EMIT good
+| lon: 0.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FF09FBE76C8B439 3FF8D0E560418937
+dist=0.5336848754
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#454 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#455 waypoint 3FF4F5C28F5C28F6 BFC7B9AC7411CAAD C015333333333333 401370A3D70A3D71
+ll 0000000000000000 3FEF5C28F5C28F5C id=0
+EMIT good
+| lon: 0
+| lat: 0.97999999999999998
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: 0.97999999999999998
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FF4F5C28F5C28F6 BFC7B9AC7411CAAD
+dist=1.245916345
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#456 node
+n 40 54,13,2 -2 2147483647 -99830 0 0 alloc=0 dummy=1 target=0
+links=[2147483647,]
+EMIT good
+| id: 40
+| position:
+|   - 54
+|   - 13
+|   - 2
+| type: -2
+| rank: 2147483647
+| flags: -99830
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - 2147483647
+| dummy: true
+|.
+alloc=1
+alloc=0
+#457 equip
+PARSE_ERR
+#458 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=caf\xC3\xA9 battle=0 disc=0
+EMIT good
+| lon: -0.96999999999999997
+| lat: 1000
+| id: 33
+| name: "null"
+| race: caf\xC3\xA9
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.96999999999999997
+| lat: 1000
+| type: STR_AB_MARK
+| id: 33
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll BFEF0A3D70A3D70A 408F400000000000 id=33
+EMIT good
+| lon: -0.96999999999999997
+| lat: 1000
+| id: 33
+| name: "null"
+| race: caf\xC3\xA9
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.96999999999999997
+| lat: 1000
+| type: STR_AB_MARK
+| id: 33
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=33
+#459 equip
+e  null 6986 0 a b -1
+EMIT good
+| itemType: ""
+| slot: "null"
+| slotX: 6986
+| ammoItem: a b
+|.
+#460 node
+n 75 42,15,2 0 0 0 0 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 75
+| position:
+|   - 42
+|   - 15
+|   - 2
+| type: 0
+| rank: 0
+| flags: 0
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#461 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=16 secs=33 race=caf\xC3\xA9 battle=0 det=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 29
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| secondsRemaining: 33
+| race: caf\xC3\xA9
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 29
+|.
+type=STR_SITE_MARK marker=5
+marker=5
+city=STR_CITY
+#462 waypoint C017B851EB851EB8 C00CCCCCCCCCCCCD BFFD47AE147AE148 C016DB6DB6DB6DB7
+ll 7FF0000000000000 BFD0000000000000 id=-2147483648
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: -2147483648
+| name: hello
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 400BF54E25C249D8 3FDD568BC444FDA8
+dist=0.8329775445
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#463 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=STR_AVALON battle=1 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 1.5
+| id: -82510
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: STR_AVALON
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: -82510
+|.
+type=STR_SITE_MARK marker=-1
+marker=2
+city=STR_CITY
+#464 equip
+e hello  49375 -2147483648 STR_HUMAN 16
+EMIT good
+| itemType: hello
+| slot: ""
+| slotX: 49375
+| slotY: -2147483648
+| ammoItem: STR_HUMAN
+| fuseTimer: 16
+|.
+#465 equip
+e STR_FOO  16 0 NONE 5
+EMIT good
+| itemType: STR_FOO
+| slot: ""
+| slotX: 16
+| fuseTimer: 5
+|.
+#466 alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 0
+| id: 38
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 38
+|.
+type=STR_AB_MARK marker=6
+marker=6
+ll 0000000000000000 0000000000000000 id=38
+EMIT good
+| lon: 0
+| lat: 0
+| id: 38
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 38
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=38
+#467 equip
+e hello  -2 2147483647 caf\xC3\xA9 3
+EMIT good
+| itemType: hello
+| slot: ""
+| slotX: -2
+| slotY: 2147483647
+| ammoItem: caf\xC3\xA9
+| fuseTimer: 3
+|.
+#468 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#469 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=STR_FOO battle=1 disc=1
+EMIT good
+| lon: -0.25
+| lat: inf
+| id: 2147483647
+| name: q
+| race: STR_FOO
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll BFD0000000000000 7FF0000000000000 id=2147483647
+EMIT good
+| lon: -0.25
+| lat: inf
+| id: 2147483647
+| name: q
+| race: STR_FOO
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#470 node
+n 52171 22,31,3 40 16 0 189 0 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 52171
+| position:
+|   - 22
+|   - 31
+|   - 3
+| type: 40
+| rank: 16
+| flags: 0
+| reserved: 189
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#471 waypoint 3FE374BC6A7EF9DB 3FC395810624DD2F BFF947AE147AE148 3FD947AE147AE148
+ll 401A000000000000 408F400000000000 id=277
+EMIT good
+| lon: 6.5
+| lat: 1000
+| id: 277
+| name: "null"
+|.
+EMIT good
+| lon: 6.5
+| lat: 1000
+| type: STR_WAY_POINT
+| id: 277
+|.
+set 3FE374BC6A7EF9DB 3FC395810624DD2F
+dist=2.059299063
+self=0
+marker=STR_WAY_POINT_ id=277
+type=STR_WAY_POINT marker=6
+#472 waypoint 401428F5C28F5C29 C013E147AE147AE1 C0207AE147AE147B 40088DFEAF72F4BF
+PARSE_ERR
+#473 equip
+PARSE_ERR
+#474 equip
+e NONE  1 33 NONE -1
+EMIT good
+| itemType: NONE
+| slot: ""
+| slotX: 1
+| slotY: 33
+|.
+#475 equip
+e q STR_HUMAN 19 0 STR_HUMAN 16
+EMIT good
+| itemType: q
+| slot: STR_HUMAN
+| slotX: 19
+| ammoItem: STR_HUMAN
+| fuseTimer: 16
+|.
+#476 alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: -6.6699999999999999
+| lat: 6.5
+| name: caf\xC3\xA9
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -6.6699999999999999
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=7
+marker=7
+ll C01AAE147AE147AE 401A000000000000 id=0
+EMIT good
+| lon: -6.6699999999999999
+| lat: 6.5
+| name: caf\xC3\xA9
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -6.6699999999999999
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#477 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race=q battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 6.5
+| name: "null"
+| race: q
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=2
+marker=2
+ll 0000000000000000 401A000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| name: "null"
+| race: q
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#478 equip
+PARSE_ERR
+#479 waypoint BF934D4B3760EA50 40076C7747344705 3FEE9FBE76C8B439 3FDEB851EB851EB8
+ll 3FEC28F5C28F5C29 4005D70A3D70A3D7 id=89
+EMIT good
+| lon: 0.88
+| lat: 2.73
+| id: 89
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 0.88
+| lat: 2.73
+| type: STR_WAY_POINT
+| id: 89
+|.
+set 4008FB60BDD56B44 3FCB5840D0FE6130
+dist=1.969177509
+self=0
+marker=STR_WAY_POINT_ id=89
+type=STR_WAY_POINT marker=6
+#480 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#481 equip
+e STR_HUMAN  -24858 -2147483648 q -1
+EMIT good
+| itemType: STR_HUMAN
+| slot: ""
+| slotX: -24858
+| slotY: -2147483648
+| ammoItem: q
+|.
+#482 node
+n -2147483648 0,0,0 10 -2147483648 4 29 0 alloc=1 dummy=0 target=0
+links=[36,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 10
+| rank: -2147483648
+| flags: 4
+| reserved: 29
+| priority: 0
+| allocated: true
+| links:
+|   - 36
+| dummy: false
+|.
+alloc=1
+alloc=0
+#483 missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+tex=-1 secs=20 race= battle=0 det=1
+EMIT good
+| lon: 2.8700000000000001
+| lat: 2.3999999999999999
+| id: 58
+| name: STR_FOO
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 20
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 2.8700000000000001
+| lat: 2.3999999999999999
+| type: STR_SITE_MARK
+| id: 58
+|.
+type=STR_SITE_MARK marker=7
+marker=7
+city=STR_CITY
+#484 node
+n 2147483647 34,10,3 2147483647 16 -95110 -2147483648 30 alloc=1 dummy=0 target=0
+links=[29,2147483647,14,-2147483648,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 34
+|   - 10
+|   - 3
+| type: 2147483647
+| rank: 16
+| flags: -95110
+| reserved: -2147483648
+| priority: 30
+| allocated: true
+| links:
+|   - 29
+|   - 2147483647
+|   - 14
+|   - -2147483648
+| dummy: false
+|.
+alloc=1
+alloc=0
+#485 node
+n 40 37,22,3 33 2147483647 202 0 0 alloc=0 dummy=1 target=0
+links=[16,174,]
+EMIT good
+| id: 40
+| position:
+|   - 37
+|   - 22
+|   - 3
+| type: 33
+| rank: 2147483647
+| flags: 202
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - 16
+|   - 174
+| dummy: true
+|.
+alloc=1
+alloc=0
+#486 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#487 node
+n 38783 54,2,1 0 2147483647 0 -1 5 alloc=0 dummy=0 target=0
+links=[2147483647,171,]
+EMIT good
+| id: 38783
+| position:
+|   - 54
+|   - 2
+|   - 1
+| type: 0
+| rank: 2147483647
+| flags: 0
+| reserved: -1
+| priority: 5
+| allocated: false
+| links:
+|   - 2147483647
+|   - 171
+| dummy: false
+|.
+alloc=1
+alloc=0
+#488 equip
+e hello  0 24 NONE 287
+EMIT good
+| itemType: hello
+| slot: ""
+| slotY: 24
+| fuseTimer: 287
+|.
+#489 waypoint 4022AE147AE147AE 3FDDE353F7CED917 3FEBA5E353F7CED9 40022BC3CF223C96
+ll 400921FB54442D11 408F400000000000 id=-2147483648
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| id: -2147483648
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 1000
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 4008745B42FCC488 3FDDE353F7CED917
+dist=0.8236090398
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#490 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+tex=72442 secs=2147483647 race=123 battle=1 det=0
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -5
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 72442
+| secondsRemaining: 2147483647
+| race: 123
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_SITE_MARK
+| id: -5
+|.
+type=STR_SITE_MARK marker=-1
+marker=0
+city=STR_CITY
+#491 missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#492 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=-1 secs=16 race=q battle=0 det=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 16
+| race: q
+| detected: false
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=1
+city=STR_CITY
+#493 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#494 waypoint C029249249249249 3FF578D4FDF3B646 3FF6F1A9FBE76C8B 3FF5A9FBE76C8B44
+ll 408F400000000000 3FF7AE147AE147AE id=1
+EMIT good
+| lon: 1000
+| lat: 1.48
+| id: 1
+| name: "null"
+|.
+EMIT good
+| lon: 1000
+| lat: 1.48
+| type: STR_WAY_POINT
+| id: 1
+|.
+set 40191CCD6A8362B6 3FF578D4FDF3B646
+dist=0.2924162334
+self=0
+marker=STR_WAY_POINT_ id=1
+type=STR_WAY_POINT marker=6
+#495 equip
+e 123 STR_FOO 23 38 STR_HUMAN 2147483647
+EMIT good
+| itemType: 123
+| slot: STR_FOO
+| slotX: 23
+| slotY: 38
+| ammoItem: STR_HUMAN
+| fuseTimer: 2147483647
+|.
+#496 waypoint C00589EAEECBD022 C022C7AE147AE148 BFE51C8A44920048 C00589EAEECBD022
+ll 408F400000000000 3FD1EB851EB851EC id=65
+EMIT good
+| lon: 1000
+| lat: 0.28000000000000003
+| id: 65
+| name: NONE
+|.
+EMIT good
+| lon: 1000
+| lat: 0.28000000000000003
+| type: STR_WAY_POINT
+| id: 65
+|.
+set 3FDCC0832BC2E7B0 4018FE5E7ED3AC04
+dist=1.967104527
+self=0
+marker=STR_WAY_POINT_ id=65
+type=STR_WAY_POINT marker=6
+#497 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=q battle=0 disc=0
+EMIT good
+| lon: -3.27
+| lat: inf
+| id: 16
+| name: hello
+| race: q
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -3.27
+| lat: inf
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll C00A28F5C28F5C29 7FF0000000000000 id=16
+EMIT good
+| lon: -3.27
+| lat: inf
+| id: 16
+| name: hello
+| race: q
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -3.27
+| lat: inf
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#498 node
+n 22 0,0,0 0 0 27301 0 0 alloc=1 dummy=1 target=0
+links=[37,-2147483648,18,169,16,]
+EMIT good
+| id: 22
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 0
+| rank: 0
+| flags: 27301
+| reserved: 0
+| priority: 0
+| allocated: true
+| links:
+|   - 37
+|   - -2147483648
+|   - 18
+|   - 169
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#499 node
+n -2147483648 37,22,3 -2147483648 0 0 1 5 alloc=0 dummy=0 target=0
+links=[31,24380,]
+EMIT good
+| id: -2147483648
+| position:
+|   - 37
+|   - 22
+|   - 3
+| type: -2147483648
+| rank: 0
+| flags: 0
+| reserved: 1
+| priority: 5
+| allocated: false
+| links:
+|   - 31
+|   - 24380
+| dummy: false
+|.
+alloc=1
+alloc=0
+#500 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#501 node
+n 16 48,9,3 91 -5 16 0 11 alloc=1 dummy=0 target=0
+links=[2147483647,40,]
+EMIT good
+| id: 16
+| position:
+|   - 48
+|   - 9
+|   - 3
+| type: 91
+| rank: -5
+| flags: 16
+| reserved: 0
+| priority: 11
+| allocated: true
+| links:
+|   - 2147483647
+|   - 40
+| dummy: false
+|.
+alloc=1
+alloc=0
+#502 waypoint C018924924924925 3FF9D2F1A9FBE76D C009249249249249 3FFD0DAD375B3606
+ll 0000000000000000 408F400000000000 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 1000
+| id: -2147483648
+|.
+EMIT good
+| lon: 0
+| lat: 1000
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 400A415FB3A7F4FE 3FF87104FE8C72C3
+dist=0.2878772738
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#503 equip
+PARSE_ERR
+#504 waypoint 4018924924924925 4011A3D70A3D70A4 3FF6CCCCCCCCCCCD C022000000000000
+ll BFD0000000000000 0000000000000000 id=16
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 16
+| name: "null"
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 40080296F4E06532 BFF44B65806D6860
+dist=1.164833566
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#505 equip
+PARSE_ERR
+#506 node
+n -2 35,56,2 0 0 -5 22 2147483647 alloc=1 dummy=1 target=0
+links=[-2147483648,84532,-2147483648,-5,]
+EMIT good
+| id: -2
+| position:
+|   - 35
+|   - 56
+|   - 2
+| type: 0
+| rank: 0
+| flags: -5
+| reserved: 22
+| priority: 2147483647
+| allocated: true
+| links:
+|   - -2147483648
+|   - 84532
+|   - -2147483648
+|   - -5
+| dummy: true
+|.
+alloc=1
+alloc=0
+#507 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=16 secs=0 race=null battle=0 det=1
+EMIT good
+| lon: 4.1100000000000003
+| lat: 0
+| name: STR_AVALON
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| race: "null"
+| detected: true
+|.
+EMIT good
+| lon: 4.1100000000000003
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=1
+marker=1
+city=STR_CITY
+#508 node
+n 98223 4,42,0 21 82472 0 177 33 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 98223
+| position:
+|   - 4
+|   - 42
+|   - 0
+| type: 21
+| rank: 82472
+| flags: 0
+| reserved: 177
+| priority: 33
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#509 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 1000
+| lat: 6.5
+| id: 16
+| name: "null"
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 408F400000000000 401A000000000000 id=16
+EMIT good
+| lon: 1000
+| lat: 6.5
+| id: 16
+| name: "null"
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 6.5
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#510 equip
+e null a b 24 273 q 297
+EMIT good
+| itemType: "null"
+| slot: a b
+| slotX: 24
+| slotY: 273
+| ammoItem: q
+| fuseTimer: 297
+|.
+#511 waypoint 3FF5837BD5B95A7F 4007333333333333 4028DB6DB6DB6DB7 3FFAE5604189374C
+ll 400921FB54442D11 401A000000000000 id=-95657
+EMIT good
+| lon: 3.14159265358979
+| lat: 6.5
+| id: -95657
+| name: NONE
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: -95657
+|.
+set 4011F1DC9F906D2C 3FCEEC82110F9E50
+dist=1.320980745
+self=0
+marker=STR_WAY_POINT_ id=-95657
+type=STR_WAY_POINT marker=6
+#512 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=STR_FOO battle=0 disc=0
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| id: 278
+| name: "null"
+| race: STR_FOO
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 278
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 3FF8000000000000 400921FB54442D11 id=278
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| id: 278
+| name: "null"
+| race: STR_FOO
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 278
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=278
+#513 waypoint 3FF60429CB2A8B44 C026492492492492 C0065E3D2A2CFA34 BFE3333333333333
+ll 0000000000000000 BFD0000000000000 id=16
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 16
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 16
+|.
+set 401212081CECB95D 402000A5BD38194C
+dist=2.240607556
+self=0
+marker=STR_WAY_POINT_ id=16
+type=STR_WAY_POINT marker=6
+#514 equip
+e a b a b 2 34 NONE 2147483647
+EMIT good
+| itemType: a b
+| slot: a b
+| slotX: 2
+| slotY: 34
+| fuseTimer: 2147483647
+|.
+#515 waypoint 4004E147AE147AE1 3FF45604189374BC C020DB6DB6DB6DB7 BFF2666666666666
+ll 4003C28F5C28F5C3 401A000000000000 id=0
+EMIT good
+| lon: 2.4700000000000002
+| lat: 6.5
+| name: a b
+|.
+EMIT good
+| lon: 2.4700000000000002
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4004E147AE147AE1 3FF45604189374BC
+dist=2.619677885
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#516 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=4428 secs=0 race=STR_FOO battle=0 det=1
+EMIT good
+| lon: inf
+| lat: 0
+| id: -3
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 4428
+| race: STR_FOO
+| detected: true
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_SITE_MARK
+| id: -3
+|.
+type=STR_SITE_MARK marker=4
+marker=4
+city=STR_CITY
+#517 missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#518 node
+n 0 11,11,0 4 0 14 240 24 alloc=1 dummy=0 target=0
+links=[16,]
+EMIT good
+| id: 0
+| position:
+|   - 11
+|   - 11
+|   - 0
+| type: 4
+| rank: 0
+| flags: 14
+| reserved: 240
+| priority: 24
+| allocated: true
+| links:
+|   - 16
+| dummy: false
+|.
+alloc=1
+alloc=0
+#519 node
+n 23 45,38,2 1 -2147483648 0 16 0 alloc=0 dummy=1 target=0
+links=[]
+EMIT good
+| id: 23
+| position:
+|   - 45
+|   - 38
+|   - 2
+| type: 1
+| rank: -2147483648
+| flags: 0
+| reserved: 16
+| priority: 0
+| allocated: false
+| links:
+|   []
+| dummy: true
+|.
+alloc=1
+alloc=0
+#520 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race=123 battle=0 disc=0
+EMIT good
+| lon: inf
+| lat: 2.6699999999999999
+| id: 16
+| race: 123
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 2.6699999999999999
+| type: STR_AB_MARK
+| id: 16
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 7FF0000000000000 40055C28F5C28F5C id=16
+EMIT good
+| lon: inf
+| lat: 2.6699999999999999
+| id: 16
+| race: 123
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: 2.6699999999999999
+| type: STR_AB_MARK
+| id: 16
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=16
+#521 alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+PARSE_ERR
+#522 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#523 waypoint BFF5EB851EB851EC 3FE5810624DD2F1B 3FFC7EF9DB22D0E5 C022924924924925
+ll 0000000000000000 3FD0000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 0.25
+| name: 123
+|.
+EMIT good
+| lon: 0
+| lat: 0.25
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 4013A71A0C96189D 3FE5810624DD2F1B
+dist=0.8111109745
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#524 waypoint 3FE0ED916872B021 401AC28F5C28F5C3 4026492492492492 BFF71F421A56C35B
+ll 0000000000000000 400921FB54442D11 id=-2147483648
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| id: -2147483648
+| name: yes
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 400D5D5FAE60D920 C00C6323640DBE6E
+dist=2.021328058
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#525 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=-1 secs=35 race=q battle=0 det=0
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| id: 16
+| name: STR_HUMAN
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 35
+| race: q
+| detected: false
+|.
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: 16
+|.
+type=STR_SITE_MARK marker=-1
+marker=2
+city=STR_CITY
+#526 equip
+e q STR_HUMAN 2147483647 36 q -1
+EMIT good
+| itemType: q
+| slot: STR_HUMAN
+| slotX: 2147483647
+| slotY: 36
+| ammoItem: q
+|.
+#527 equip
+PARSE_ERR
+#528 node
+n 2147483647 5,17,2 -77294 4 -5 -8591 -2147483648 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 2147483647
+| position:
+|   - 5
+|   - 17
+|   - 2
+| type: -77294
+| rank: 4
+| flags: -5
+| reserved: -8591
+| priority: -2147483648
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#529 node
+n 0 57,5,0 22 -2147483648 -2147483648 0 -61119 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 57
+|   - 5
+|   - 0
+| type: 22
+| rank: -2147483648
+| flags: -2147483648
+| reserved: 0
+| priority: -61119
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#530 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+PARSE_ERR
+#531 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=0 secs=87 race=NONE battle=0 det=1
+EMIT good
+| lon: 0
+| lat: 6.5
+| id: 2147483647
+| name: NONE
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 0
+| secondsRemaining: 87
+| race: NONE
+| detected: true
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_SITE_MARK
+| id: 2147483647
+|.
+type=STR_SITE_MARK marker=1
+marker=1
+city=STR_CITY
+#532 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| name: "null"
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=3
+ll 0000000000000000 400921FB54442D11 id=0
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| name: "null"
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 3.14159265358979
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#533 node
+n 0 17,23,2 0 16 0 0 -2147483648 alloc=1 dummy=1 target=0
+links=[16,]
+EMIT good
+| id: 0
+| position:
+|   - 17
+|   - 23
+|   - 2
+| type: 0
+| rank: 16
+| flags: 0
+| reserved: 0
+| priority: -2147483648
+| allocated: true
+| links:
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#534 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=-2 secs=2147483647 race=null battle=0 det=1
+EMIT good
+| lon: 3.2000000000000002
+| lat: inf
+| id: 20352
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -2
+| secondsRemaining: 2147483647
+| race: "null"
+| detected: true
+|.
+EMIT good
+| lon: 3.2000000000000002
+| lat: inf
+| type: STR_SITE_MARK
+| id: 20352
+|.
+type=STR_SITE_MARK marker=2
+marker=2
+city=STR_CITY
+#535 equip
+e STR_HUMAN NONE 16 33 hello -17807
+EMIT good
+| itemType: STR_HUMAN
+| slot: NONE
+| slotX: 16
+| slotY: 33
+| ammoItem: hello
+|.
+#536 waypoint 3FFB8BA35707A3B9 3FF7333333333333 3FF5F3B645A1CAC1 3FFAFE172F7187AD
+ll 7FF0000000000000 0000000000000000 id=33
+EMIT good
+| lon: inf
+| lat: 0
+| id: 33
+| name: NONE
+|.
+EMIT good
+| lon: inf
+| lat: 0
+| type: STR_WAY_POINT
+| id: 33
+|.
+set 3FFB8BA35707A3B9 3FF7333333333333
+dist=0.2334066731
+self=0
+marker=STR_WAY_POINT_ id=33
+type=STR_WAY_POINT marker=6
+#537 node
+n 0 42,44,3 2147483647 -4 30 30 2147483647 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: 0
+| position:
+|   - 42
+|   - 44
+|   - 3
+| type: 2147483647
+| rank: -4
+| flags: 30
+| reserved: 30
+| priority: 2147483647
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#538 waypoint 4029249249249249 401F6DB6DB6DB6DB 4011249249249249 401DB6DB6DB6DB6E
+ll BFD0000000000000 3FF8000000000000 id=2147483647
+EMIT good
+| lon: -0.25
+| lat: 1.5
+| id: 2147483647
+| name: yes
+|.
+EMIT good
+| lon: -0.25
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 2147483647
+|.
+set 40092C5727C5C1DC C012DCB9314BA04F
+dist=0.4240965327
+self=0
+marker=STR_WAY_POINT_ id=2147483647
+type=STR_WAY_POINT marker=6
+#539 equip
+e caf\xC3\xA9  0 108 abc 45
+EMIT good
+| itemType: caf\xC3\xA9
+| slot: ""
+| slotY: 108
+| ammoItem: abc
+| fuseTimer: 45
+|.
+#540 waypoint 3FF015BEAE261898 4018F5C28F5C28F6 C01F6DB6DB6DB6DB 402A924924924925
+ll 7FF0000000000000 3FF6E147AE147AE1 id=34
+EMIT good
+| lon: inf
+| lat: 1.4299999999999999
+| id: 34
+| name: caf\xC3\xA9
+|.
+EMIT good
+| lon: inf
+| lat: 1.4299999999999999
+| type: STR_WAY_POINT
+| id: 34
+|.
+set 4010966D55AB9CB2 C008C989CA7424D4
+dist=2.297298055
+self=0
+marker=STR_WAY_POINT_ id=34
+type=STR_WAY_POINT marker=6
+#541 waypoint 3FB27F68151235E2 3FF5FBE76C8B4396 401F99999999999A 400C924924924925
+ll 0000000000000000 401A000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 6.5
+| name: q
+|.
+EMIT good
+| lon: 0
+| lat: 6.5
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FB27F68151235E2 3FF5FBE76C8B4396
+dist=1.996916667
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#542 node
+n 37 58,59,0 129 -2147483648 16 0 1 alloc=1 dummy=1 target=0
+links=[0,33,3,]
+EMIT good
+| id: 37
+| position:
+|   - 58
+|   - 59
+|   - 0
+| type: 129
+| rank: -2147483648
+| flags: 16
+| reserved: 0
+| priority: 1
+| allocated: true
+| links:
+|   - 0
+|   - 33
+|   - 3
+| dummy: true
+|.
+alloc=1
+alloc=0
+#543 equip
+PARSE_ERR
+#544 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=-1 secs=59 race=123 battle=0 det=0
+EMIT good
+| lon: -0.25
+| lat: inf
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 59
+| race: 123
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: inf
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=9
+city=STR_CITY
+#545 equip
+PARSE_ERR
+#546 missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+tex=63 secs=0 race=null battle=0 det=0
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| id: 166
+| name: caf\xC3\xA9
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 63
+| race: "null"
+| detected: false
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: 0
+| type: STR_SITE_MARK
+| id: 166
+|.
+type=STR_SITE_MARK marker=-1
+marker=4
+city=STR_CITY
+#547 waypoint 3FFC000000000000 C0276DB6DB6DB6DB C01A492492492492 3FE47AE147AE147B
+ll 400921FB54442D11 BFD0000000000000 id=0
+EMIT good
+| lon: 3.14159265358979
+| lat: -0.25
+| name: "null"
+|.
+EMIT good
+| lon: 3.14159265358979
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 401390FDAA22168C 40212538065CAB95
+dist=1.357676549
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#548 waypoint C016492492492492 3FFFD169FD49C241 40213D70A3D70A3D 40003C594494DA6D
+YAML_ERR bad conversion
+#549 alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race=q battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 2147483647
+| race: q
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=0
+ll 0000000000000000 3FF8000000000000 id=2147483647
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 2147483647
+| race: q
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#550 node
+n 2147483647 0,0,0 26 0 149 27 0 alloc=0 dummy=0 target=0
+links=[15,]
+EMIT good
+| id: 2147483647
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 26
+| rank: 0
+| flags: 149
+| reserved: 27
+| priority: 0
+| allocated: false
+| links:
+|   - 15
+| dummy: false
+|.
+alloc=1
+alloc=0
+#551 missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+tex=16 secs=0 race=yes battle=0 det=0
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 16
+| race: yes
+| detected: false
+|.
+EMIT good
+| lon: 6.5
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=8
+city=STR_CITY
+#552 equip
+PARSE_ERR
+#553 equip
+e a b  -1 16 STR_HUMAN -1
+EMIT good
+| itemType: a b
+| slot: ""
+| slotX: -1
+| slotY: 16
+| ammoItem: STR_HUMAN
+|.
+#554 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#555 node
+n -67569 5,50,1 0 35 4 27 142 alloc=1 dummy=0 target=0
+links=[39,-2147483648,]
+EMIT good
+| id: -67569
+| position:
+|   - 5
+|   - 50
+|   - 1
+| type: 0
+| rank: 35
+| flags: 4
+| reserved: 27
+| priority: 142
+| allocated: true
+| links:
+|   - 39
+|   - -2147483648
+| dummy: false
+|.
+alloc=1
+alloc=0
+#556 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#557 equip
+e null q 16 5 NONE -1
+EMIT good
+| itemType: "null"
+| slot: q
+| slotX: 16
+| slotY: 5
+|.
+#558 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race=NONE battle=1 disc=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 68957
+| name: a b
+| race: NONE
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 68957
+|.
+type=STR_AB_MARK marker=-1
+marker=1
+ll BFD0000000000000 0000000000000000 id=68957
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 68957
+| name: a b
+| race: NONE
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 68957
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=68957
+#559 waypoint 3FEEF1A9FBE76C8B 3FB4E9117BFE532C 3FD5B6F49E4D079A 4014000000000000
+ll 3FF8000000000000 0000000000000000 id=0
+EMIT good
+| lon: 1.5
+| lat: 0
+| name: STR_FOO
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FEEF1A9FBE76C8B 3FB4E9117BFE532C
+dist=1.419636721
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#560 node
+YAML_ERR bad conversion
+#561 node
+YAML_ERR bad conversion
+#562 alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+PARSE_ERR
+#563 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race= battle=1 disc=0
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll BFD0000000000000 0000000000000000 id=2147483647
+EMIT good
+| lon: -0.25
+| lat: 0
+| id: 2147483647
+| name: "null"
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: -0.25
+| lat: 0
+| type: STR_AB_MARK
+| id: 2147483647
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=2147483647
+#564 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=a b battle=1 disc=0
+EMIT good
+| lon: inf
+| lat: -3.3900000000000001
+| id: -59736
+| race: a b
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -3.3900000000000001
+| type: STR_AB_MARK
+| id: -59736
+|.
+type=STR_AB_MARK marker=-1
+marker=5
+ll 7FF0000000000000 C00B1EB851EB851F id=-59736
+EMIT good
+| lon: inf
+| lat: -3.3900000000000001
+| id: -59736
+| race: a b
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -3.3900000000000001
+| type: STR_AB_MARK
+| id: -59736
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-59736
+#565 alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race= battle=1 disc=1
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 31
+| name: 123
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 31
+|.
+type=STR_AB_MARK marker=3
+marker=3
+ll 408F400000000000 0000000000000000 id=31
+EMIT good
+| lon: 1000
+| lat: 0
+| id: 31
+| name: 123
+| race: ""
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_AB_MARK
+| id: 31
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=31
+#566 equip
+PARSE_ERR
+#567 alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+race= battle=0 disc=0
+EMIT good
+| lon: 1.5900000000000001
+| lat: 0
+| id: -24990
+| race: ""
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5900000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: -24990
+|.
+type=STR_AB_MARK marker=-1
+marker=2
+ll 3FF970A3D70A3D71 0000000000000000 id=-24990
+EMIT good
+| lon: 1.5900000000000001
+| lat: 0
+| id: -24990
+| race: ""
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 1.5900000000000001
+| lat: 0
+| type: STR_AB_MARK
+| id: -24990
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=-24990
+#568 waypoint 3FE51EB851EB851F 4023B6DB6DB6DB6E C0036DB6DB6DB6DB C00DB6DB6DB6DB6E
+ll 408F400000000000 0000000000000000 id=-2147483648
+EMIT good
+| lon: 1000
+| lat: 0
+| id: -2147483648
+| name: hello
+|.
+EMIT good
+| lon: 1000
+| lat: 0
+| type: STR_WAY_POINT
+| id: -2147483648
+|.
+set 400E69A968BF0E60 C01ADCB9314BA050
+dist=2.99379478
+self=0
+marker=STR_WAY_POINT_ id=-2147483648
+type=STR_WAY_POINT marker=6
+#569 missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+tex=-1 secs=0 race=a b battle=1 det=1
+EMIT good
+| lon: 1.5
+| lat: 1000
+| id: -2147483648
+| name: caf\xC3\xA9
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| race: a b
+| inBattlescape: true
+| detected: true
+|.
+EMIT good
+| lon: 1.5
+| lat: 1000
+| type: STR_SITE_MARK
+| id: -2147483648
+|.
+type=STR_SITE_MARK marker=1
+marker=1
+city=STR_CITY
+#570 waypoint BFF4CCCCCCCCCCCD 40296DB6DB6DB6DB C00FD70A3D70A3D7 4024000000000000
+ll 7FF0000000000000 3FF8000000000000 id=0
+EMIT good
+| lon: inf
+| lat: 1.5
+| name: q
+|.
+EMIT good
+| lon: inf
+| lat: 1.5
+| type: STR_WAY_POINT
+| id: 0
+|.
+set 3FFD7729DBBB8D64 C0232538065CAB95
+dist=0.8461392583
+self=0
+marker=STR_WAY_POINT_ id=0
+type=STR_WAY_POINT marker=6
+#571 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=-69892 secs=1 race=null battle=0 det=0
+EMIT good
+| lon: inf
+| lat: 3.14159265358979
+| name: q
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -69892
+| secondsRemaining: 1
+| race: "null"
+| detected: false
+|.
+EMIT good
+| lon: inf
+| lat: 3.14159265358979
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#572 waypoint 3FF010624DD2F1AA 3FE2E659A6399019 400DB6DB6DB6DB6E C026000000000000
+ll 0000000000000000 0000000000000000 id=-169
+EMIT good
+| lon: 0
+| lat: 0
+| id: -169
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_WAY_POINT
+| id: -169
+|.
+set 3FF010624DD2F1AA 3FE2E659A6399019
+dist=0.9841989553
+self=0
+marker=STR_WAY_POINT_ id=-169
+type=STR_WAY_POINT marker=6
+#573 equip
+e STR_AVALON NONE 16 -20044 q -1
+EMIT good
+| itemType: STR_AVALON
+| slot: NONE
+| slotX: 16
+| slotY: -20044
+| ammoItem: q
+|.
+#574 equip
+e  STR_HUMAN 63 135 a b 227
+EMIT good
+| itemType: ""
+| slot: STR_HUMAN
+| slotX: 63
+| slotY: 135
+| ammoItem: a b
+| fuseTimer: 227
+|.
+#575 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+PARSE_ERR
+#576 alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race=STR_FOO battle=1 disc=0
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: 240
+| race: STR_FOO
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 240
+|.
+type=STR_AB_MARK marker=-1
+marker=9
+ll 7FF0000000000000 BFD0000000000000 id=240
+EMIT good
+| lon: inf
+| lat: -0.25
+| id: 240
+| race: STR_FOO
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: inf
+| lat: -0.25
+| type: STR_AB_MARK
+| id: 240
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=240
+#577 missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+PARSE_ERR
+#578 missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+tex=24 secs=0 race=caf\xC3\xA9 battle=0 det=0
+EMIT good
+| lon: 2.1899999999999999
+| lat: 1.5
+| id: 15
+| name: a b
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 24
+| race: caf\xC3\xA9
+| detected: false
+|.
+EMIT good
+| lon: 2.1899999999999999
+| lat: 1.5
+| type: STR_SITE_MARK
+| id: 15
+|.
+type=STR_SITE_MARK marker=-1
+marker=2
+city=STR_CITY
+#579 equip
+e STR_FOO yes 33 0 q -1
+EMIT good
+| itemType: STR_FOO
+| slot: yes
+| slotX: 33
+| ammoItem: q
+|.
+#580 waypoint 4003ADCDAF75CEE4 BFF0000000000000 3FEEC32FE0427570 C025B6DB6DB6DB6E
+ll 3FF8000000000000 0000000000000000 id=1
+EMIT good
+| lon: 1.5
+| lat: 0
+| id: 1
+| name: "null"
+|.
+EMIT good
+| lon: 1.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: 1
+|.
+set 4003ADCDAF75CEE4 BFF0000000000000
+dist=2.565878621
+self=0
+marker=STR_WAY_POINT_ id=1
+type=STR_WAY_POINT marker=6
+#581 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+PARSE_ERR
+#582 alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race=caf\xC3\xA9 battle=0 disc=1
+EMIT good
+| lon: 0
+| lat: 1.5
+| race: caf\xC3\xA9
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=5
+marker=5
+ll 0000000000000000 3FF8000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| race: caf\xC3\xA9
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#583 missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+tex=189 secs=170 race= battle=0 det=1
+EMIT good
+| lon: 6.5
+| lat: 2.0600000000000001
+| id: 23
+| name: "null"
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 189
+| secondsRemaining: 170
+| race: ""
+| detected: true
+|.
+EMIT good
+| lon: 6.5
+| lat: 2.0600000000000001
+| type: STR_SITE_MARK
+| id: 23
+|.
+type=STR_SITE_MARK marker=9
+marker=9
+city=STR_CITY
+#584 equip
+PARSE_ERR
+#585 node
+n 0 3,6,3 -5 34 2147483647 0 0 alloc=0 dummy=1 target=0
+links=[-2147483648,-2147483648,16,]
+EMIT good
+| id: 0
+| position:
+|   - 3
+|   - 6
+|   - 3
+| type: -5
+| rank: 34
+| flags: 2147483647
+| reserved: 0
+| priority: 0
+| allocated: false
+| links:
+|   - -2147483648
+|   - -2147483648
+|   - 16
+| dummy: true
+|.
+alloc=1
+alloc=0
+#586 equip
+PARSE_ERR
+#587 node
+n 294 0,0,0 52 2147483647 1 36 16 alloc=1 dummy=0 target=0
+links=[]
+EMIT good
+| id: 294
+| position:
+|   - 0
+|   - 0
+|   - 0
+| type: 52
+| rank: 2147483647
+| flags: 1
+| reserved: 36
+| priority: 16
+| allocated: true
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#588 node
+n 12 46,45,1 0 0 -2147483648 2147483647 78852 alloc=1 dummy=0 target=0
+links=[16,-2147483648,-14785,2147483647,]
+EMIT good
+| id: 12
+| position:
+|   - 46
+|   - 45
+|   - 1
+| type: 0
+| rank: 0
+| flags: -2147483648
+| reserved: 2147483647
+| priority: 78852
+| allocated: true
+| links:
+|   - 16
+|   - -2147483648
+|   - -14785
+|   - 2147483647
+| dummy: false
+|.
+alloc=1
+alloc=0
+#589 missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+tex=30 secs=0 race=yes battle=1 det=0
+EMIT good
+| lon: -0.25
+| lat: 5.79
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: 30
+| race: yes
+| inBattlescape: true
+| detected: false
+|.
+EMIT good
+| lon: -0.25
+| lat: 5.79
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=5
+city=STR_CITY
+#590 missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+tex=-1 secs=272 race=123 battle=0 det=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: hello
+| type: STR_MISSION
+| deployment: STR_SITE_DEP
+| texture: -1
+| secondsRemaining: 272
+| race: 123
+| detected: false
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_SITE_MARK
+| id: 0
+|.
+type=STR_SITE_MARK marker=-1
+marker=3
+city=STR_CITY
+#591 alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race=q battle=0 disc=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: yes
+| race: q
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+type=STR_AB_MARK marker=-1
+marker=8
+ll 0000000000000000 0000000000000000 id=0
+EMIT good
+| lon: 0
+| lat: 0
+| name: yes
+| race: q
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 0
+| type: STR_AB_MARK
+| id: 0
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=0
+#592 node
+n -2147483648 56,57,0 2147483647 -74095 -2147483648 13 29 alloc=0 dummy=0 target=0
+links=[]
+EMIT good
+| id: -2147483648
+| position:
+|   - 56
+|   - 57
+|   - 0
+| type: 2147483647
+| rank: -74095
+| flags: -2147483648
+| reserved: 13
+| priority: 29
+| allocated: false
+| links:
+|   []
+| dummy: false
+|.
+alloc=1
+alloc=0
+#593 equip
+PARSE_ERR
+#594 node
+n -57246 18,13,0 0 0 -28771 0 6 alloc=0 dummy=0 target=0
+links=[1,2,]
+EMIT good
+| id: -57246
+| position:
+|   - 18
+|   - 13
+|   - 0
+| type: 0
+| rank: 0
+| flags: -28771
+| reserved: 0
+| priority: 6
+| allocated: false
+| links:
+|   - 1
+|   - 2
+| dummy: false
+|.
+alloc=1
+alloc=0
+#595 waypoint 3FF6D4FDF3B645A2 3FD89374BC6A7EFA C018F5C28F5C28F6 C016A3D70A3D70A4
+ll 401A000000000000 0000000000000000 id=-5
+EMIT good
+| lon: 6.5
+| lat: 0
+| id: -5
+| name: STR_AVALON
+|.
+EMIT good
+| lon: 6.5
+| lat: 0
+| type: STR_WAY_POINT
+| id: -5
+|.
+set 3FF6D4FDF3B645A2 3FD89374BC6A7EFA
+dist=1.204026808
+self=0
+marker=STR_WAY_POINT_ id=-5
+type=STR_WAY_POINT marker=6
+#596 waypoint 4026DB6DB6DB6DB7 4020DB6DB6DB6DB7 C00C924924924925 3FE79DB22D0E5604
+ll 0000000000000000 BFD0000000000000 id=214
+EMIT good
+| lon: 0
+| lat: -0.25
+| id: 214
+| name: "null"
+|.
+EMIT good
+| lon: 0
+| lat: -0.25
+| type: STR_WAY_POINT
+| id: 214
+|.
+set 400007C4DEA12F94 C01525DDC394C4E2
+dist=0.5151392338
+self=0
+marker=STR_WAY_POINT_ id=214
+type=STR_WAY_POINT marker=6
+#597 waypoint C01FB851EB851EB8 4000A3D70A3D70A4 C0157AE147AE147B 401070A3D70A3D71
+PARSE_ERR
+#598 alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race=q battle=1 disc=0
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 14
+| name: a b
+| race: q
+| inBattlescape: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 14
+|.
+type=STR_AB_MARK marker=-1
+marker=-1
+ll 0000000000000000 3FF8000000000000 id=14
+EMIT good
+| lon: 0
+| lat: 1.5
+| id: 14
+| name: a b
+| race: q
+| inBattlescape: true
+| discovered: true
+| deployment: STR_ALIENBASE_DEP
+|.
+EMIT good
+| lon: 0
+| lat: 1.5
+| type: STR_AB_MARK
+| id: 14
+|.
+set 0000000000000000 0000000000000000
+dist=0
+self=0
+marker=STR_AB_MARK_ id=14
+#599 equip
+e null STR_FOO 5 0 abc -1
+EMIT good
+| itemType: "null"
+| slot: STR_FOO
+| slotX: 5
+| ammoItem: abc
+|.

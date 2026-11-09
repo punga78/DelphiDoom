@@ -1,0 +1,4688 @@
+# corpus of the saved game objects, second family: a header line (kind, arguments) and a YAML node
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: with: colon
+name: café
+id: 52
+lon: 3.14159265358979
+inBattlescape: false
+discovered: no
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 4
+lat: [1, 2]
+discovered: true
+inBattlescape: true
+%%%%
+equip
+fuseTimer: 2147483647
+slotX: -2147483648
+ammoItem: hello
+slot: NONE
+slotY: 286
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+secondsRemaining: 19
+name: a b
+texture: 0
+id: 107
+lon: 1.5
+detected: false
+inBattlescape: false
+race: hello
+%%%%
+equip
+slotX: 2147483647
+itemType: ~
+fuseTimer: -2147483648
+ammoItem: hello
+slotY: -2147483648
+slot: [1, 2]
+%%%%
+waypoint 3FF526E978D4FDF4 BFE319D26ECD3D35 4016E147AE147AE1 4003609882984B3B
+name: yes
+lat: 4.370000
+id: -2147483648
+lon: 0
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+lon: 0
+id: 27
+race: STR_HUMAN
+lat: 6.5
+%%%%
+equip
+slotX: 12
+fuseTimer: 285
+slotY: 21
+itemType: STR_AVALON
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+texture: 2147483647
+lon: 0
+secondsRemaining: 15
+id: 2
+name: [1, 2]
+race: STR_AVALON
+inBattlescape: [1, 2]
+lat: 1e3
+detected: no
+%%%%
+equip
+slotY: 7
+itemType: STR_HUMAN
+slotX: 17
+fuseTimer: -2
+slot: STR_HUMAN
+%%%%
+waypoint 4022B851EB851EB8 C021E147AE147AE1 BFE806E1A0EF4E56 3FF6666666666666
+lat: 3.14159265358979
+id: 0x10
+lon: 2.920000
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+lon: .inf
+name: café
+inBattlescape: no
+race: STR_AVALON
+lat: 1.5
+discovered: abc
+id: 0x10
+%%%%
+waypoint C00725B1336938FF 3FEF22D0E5604189 3FF9126E978D4FDF 4002DFEA8D271A76
+lon: 6.5
+lat: 0
+id: 0x10
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+race: with: colon
+lon: 1e3
+detected: false
+texture: 2147483647
+id: 2147483647
+lat: -0.25
+secondsRemaining: -3
+inBattlescape: no
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+name: STR_HUMAN
+secondsRemaining: 35
+lon: -0.25
+race: STR_HUMAN
+id: ~
+texture: 0x10
+detected: false
+lat: 3.14159265358979
+%%%%
+equip
+itemType: STR_FOO
+ammoItem: hello
+slotY: 0x10
+fuseTimer: 59
+slotX: 0x10
+%%%%
+equip
+itemType: STR_HUMAN
+ammoItem: yes
+slotX: 29
+slotY: [1, 2]
+%%%%
+equip
+ammoItem: café
+itemType: 123
+fuseTimer: -2147483648
+slotX: 2147483647
+slot:
+%%%%
+waypoint 401E7AE147AE147B 4027B6DB6DB6DB6E 3FD51C8A44920048 3FEE2D0E56041893
+lat: 1.5
+name:
+id: 156
+lon: 0
+%%%%
+equip
+itemType:
+slot: STR_FOO
+ammoItem: STR_AVALON
+slotX: -2147483648
+slotY: -12588
+fuseTimer: 5
+%%%%
+waypoint C01C47AE147AE148 BFD2187683EADBAB 3FEB3E6E2A2A200F C026000000000000
+lat: 0
+lon: 3.14159265358979
+id: 2147483647
+%%%%
+waypoint 402BB6DB6DB6DB6E 3FD6666666666666 401DE147AE147AE1 4018924924924925
+id: -2147483648
+name: hello
+lon: 1.230000
+lat: 6.5
+%%%%
+waypoint 3FF4B4395810624E 4020000000000000 40111EB851EB851F 40036D76B4BD3682
+lon:
+id: 2147483647
+name: hello
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+secondsRemaining: -2147483648
+texture: 2147483647
+id: 0x10
+detected: true
+race: STR_HUMAN
+inBattlescape: true
+name: #c
+lat: 6.5
+%%%%
+equip
+slotY: {k: v}
+itemType: - x
+slot:
+fuseTimer: 5
+ammoItem: yes
+%%%%
+node
+allocated: false
+position: {k: v}
+flags: 2147483647
+links: [-83886, -2147483648]
+type: 13
+%%%%
+node
+position: [12, 13, 2]
+type: 0x10
+id: 2147483647
+links: [2, 5, 0x10]
+reserved: 0x10
+allocated: true
+rank: 20
+dummy: false
+%%%%
+equip
+fuseTimer: 4
+slot: 'q'
+itemType: NONE
+%%%%
+node
+position: [19, 8, 2]
+links: {k: v}
+type: 0
+reserved: 45137
+dummy: true
+rank: 2147483647
+priority: 187
+flags: 284
+id: -2147483648
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 4
+lon: 0
+discovered: true
+lat: 1.5
+race:
+name:
+%%%%
+node
+priority: 0x10
+id: 0x10
+rank: 12
+flags: -85401
+reserved: 52
+dummy: false
+allocated: false
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+id: 2147483647
+secondsRemaining: 2147483647
+detected: no
+lat: 1e3
+name: STR_HUMAN
+lon: abc
+texture: 99
+inBattlescape:
+race: a b
+%%%%
+node
+allocated: [1, 2]
+links: {k: v}
+position: [5, 33, 1]
+reserved: 0x10
+flags: abc
+dummy: false
+id: 77114
+rank: -2147483648
+%%%%
+waypoint C003DAD75EF7065C 3FFBFF731A53E937 BFFBE5B6B60A12A9 BFF5EB851EB851EC
+id: 17843
+lat: -3.850000
+lon: 1.230000
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+lon: 6.5
+race:
+inBattlescape: no
+id: 0x10
+%%%%
+equip
+slot: café
+itemType: STR_HUMAN
+fuseTimer: -2147483648
+slotY: 0x10
+ammoItem: yes
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+lat: 1e3
+detected: true
+lon: abc
+race: - x
+id: 4
+inBattlescape: false
+secondsRemaining: 199
+name: 'q'
+%%%%
+equip
+slotY: 21
+ammoItem: ~
+slot: NONE
+itemType: - x
+fuseTimer: 10
+%%%%
+node
+id: 164
+links: [-2147483648, 0x10, 0x10]
+type: 2147483647
+flags: 1
+position: [1, 2]
+rank: 21
+reserved: 37
+dummy: true
+allocated: no
+priority: 22
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+race: hello
+lat: 1e3
+id: -2147483648
+detected: no
+inBattlescape: true
+lon: 6.950000
+name: #c
+%%%%
+waypoint C02BB6DB6DB6DB6E 4026000000000000 C00EDB6DB6DB6DB7 4011B6DB6DB6DB6E
+lon: 6.5
+name:
+id: 2147483647
+%%%%
+node
+position: [1, 2]
+priority: 4
+flags: 2147483647
+allocated: no
+dummy: true
+links: []
+id: 23
+reserved: 89
+%%%%
+equip
+slotY: 2147483647
+ammoItem: hello
+slotX: 7
+itemType: STR_AVALON
+fuseTimer: 0
+slot: - x
+%%%%
+node
+id: 272
+position: [54, 38, 1]
+links: [2147483647, 30, -2147483648, 9]
+dummy: true
+reserved: 80904
+flags: 54508
+rank: 35013
+priority: 14
+allocated: false
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+texture: 36
+detected: true
+secondsRemaining: -79164
+lon: 1.5
+%%%%
+node
+position: [60, 32, 2]
+id: -38545
+reserved: -1
+type: 19
+dummy: true
+links: [-3]
+allocated: true
+priority: 19
+flags: 109
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 6
+lon: 5.370000
+inBattlescape: true
+lat: 1e3
+name: STR_HUMAN
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+discovered: false
+race: a b
+name: a b
+id: 18
+inBattlescape: no
+lat: 0
+lon: 0
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+discovered: no
+race: NONE
+id: 0x10
+inBattlescape: false
+name: 'q'
+%%%%
+node
+rank: -13818
+type: 2147483647
+dummy: true
+flags: 23
+position: [12, 50, 2]
+links: [2147483647, -85364, 22090, 52, 26]
+allocated: false
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+inBattlescape: true
+lat: -0.25
+race: - x
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+id: 23
+race: a b
+secondsRemaining: 0x10
+name: yes
+inBattlescape: false
+lon: 3.14159265358979
+detected: false
+lat: .inf
+%%%%
+node
+type: 2147483647
+allocated: true
+flags: 15
+dummy: true
+rank: 0x10
+priority: -2147483648
+links: [30, 2147483647, 25, 0x10]
+id: 144
+%%%%
+equip
+slotX: -5
+fuseTimer: 0x10
+ammoItem: hello
+slotY: 2147483647
+itemType: abc
+%%%%
+equip
+slotX: 27612
+ammoItem: with: colon
+fuseTimer: -86703
+slot:
+slotY: -2147483648
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+inBattlescape: true
+id: 5
+lat: [1, 2]
+name:
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+id: 2147483647
+name:
+discovered: no
+inBattlescape: false
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+id: 1
+detected: no
+lat: -0.25
+secondsRemaining: 0x10
+name: hello
+inBattlescape: false
+%%%%
+equip
+fuseTimer: -2147483648
+slot: STR_HUMAN
+itemType: STR_AVALON
+slotX: 114
+slotY: -46858
+ammoItem: STR_HUMAN
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+inBattlescape: true
+name: #c
+lon: 1.5
+lat: 3.560000
+race:
+discovered: true
+id: -2147483648
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+name: café
+lat: .inf
+id: 37
+race: 'q'
+lon: 6.5
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+name: NONE
+id: -84909
+race: STR_AVALON
+lat: -0.25
+discovered: true
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+inBattlescape: true
+name: STR_HUMAN
+lon: [1, 2]
+race: 'q'
+discovered: no
+lat: 3.14159265358979
+%%%%
+waypoint 3FF0ED916872B021 40060A98E43D00E7 401C000000000000 BFB5B6F49E4D079A
+name: NONE
+id: 2147483647
+lat: 1e3
+lon: -4.620000
+%%%%
+equip
+itemType:
+slot: yes
+slotY: -2147483648
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+discovered: true
+lat: -4.640000
+inBattlescape: false
+lon: 1.5
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+id: 11
+lon: -0.25
+secondsRemaining: 7
+inBattlescape: no
+lat: 3.14159265358979
+name: a b
+detected: false
+%%%%
+waypoint C0256DB6DB6DB6DB C02C492492492492 402C000000000000 3FFB0A3D70A3D70A
+lon: -0.25
+name: with: colon
+id: 39
+lat: -0.25
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+discovered: abc
+name: 'q'
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+lon: -0.25
+race: ~
+id: 273
+secondsRemaining: -2147483648
+texture: -2147483648
+name: abc
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+lon: 3.14159265358979
+lat: 1e3
+race: STR_FOO
+name: hello
+discovered: true
+id: 2147483647
+%%%%
+node
+type: -2147483648
+allocated: no
+position: [30, 9, 3]
+reserved: abc
+id: -5
+priority: 5
+rank: 0x10
+%%%%
+node
+id: 2
+rank: 5
+reserved: 109
+dummy: false
+position: [15, 55, 3]
+links: []
+allocated: true
+%%%%
+equip
+fuseTimer: 77
+ammoItem: 123
+slot: STR_AVALON
+slotY: ~
+%%%%
+waypoint 402B249249249249 4021249249249249 C016E147AE147AE1 BFE7D368D85BA13B
+id: 9
+lat: 5.670000
+lon: 1e3
+name: - x
+%%%%
+equip
+fuseTimer: -52478
+slot: abc
+slotY: -2
+slotX: -86311
+%%%%
+waypoint 3F947AE147AE147B C022492492492492 400847389BA7E6B9 C0296DB6DB6DB6DB
+id: 6
+lon: 0
+name: a b
+lat: 1e3
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+race: NONE
+id: 2147483647
+lat: 3.14159265358979
+discovered: true
+name: café
+%%%%
+node
+flags: 87815
+allocated: true
+links: [-2147483648, -30225, 80352]
+dummy: false
+priority: 4
+position: [60, 5, 0]
+id: 0x10
+rank: 2
+reserved: -2147483648
+type: -2147483648
+%%%%
+node
+links: [176, 0x10, 0x10, 56797, 0x10]
+type: 2147483647
+dummy: ~
+rank:
+id: 86
+reserved: ~
+flags: 2147483647
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+lon: 1e3
+inBattlescape: true
+race: #c
+name: STR_AVALON
+lat: {k: v}
+detected: false
+id: -5
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+detected: true
+name: 123
+lat: .inf
+secondsRemaining: 61
+inBattlescape: true
+texture: 17
+lon: -0.25
+id: 20
+race: ~
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+name: STR_AVALON
+texture: 85
+lon: 1e3
+id: -24013
+inBattlescape: false
+race: STR_HUMAN
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+texture: 27
+id: 0x10
+race: STR_AVALON
+lon: 1.5
+inBattlescape: true
+detected: false
+lat: 1e3
+name: 123
+secondsRemaining: -4
+%%%%
+waypoint 3FE6D916872B020C 3FFFA9FBE76C8B44 3FCC8B4395810625 400B6DB6DB6DB6DB
+name: NONE
+lat: -0.25
+id: -94179
+%%%%
+waypoint C024DB6DB6DB6DB7 C00B6DB6DB6DB6DB BFCBBF1C1F9B50D4 BFDB6DB6DB6DB6DB
+name: hello
+id: 105
+lon: {k: v}
+%%%%
+equip
+slotY: 0x10
+ammoItem: hello
+fuseTimer: -45080
+slot: abc
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+discovered: true
+inBattlescape: true
+name: #c
+race: STR_FOO
+lat: 6.5
+%%%%
+equip
+fuseTimer: 22479
+slotX: 16
+slotY: -1
+ammoItem: 123
+slot: yes
+%%%%
+equip
+slotX: 0x10
+itemType: #c
+slotY: 50
+ammoItem: a b
+fuseTimer: abc
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+inBattlescape: no
+secondsRemaining: 1
+name: with: colon
+texture: -93706
+lon: 1.5
+race: yes
+detected: true
+lat: 0
+%%%%
+equip
+ammoItem: - x
+slotX: 0x10
+slotY: -2147483648
+itemType: a b
+slot: café
+fuseTimer: 0x10
+%%%%
+waypoint C004924924924925 4022000000000000 4019B851EB851EB8 4021249249249249
+name: STR_FOO
+lon: 6.5
+id: 6
+%%%%
+node
+id: 20
+priority: 107
+position: [50, 45, 2]
+allocated: no
+flags: 19
+links: [36, 54484, 25]
+reserved: -2147483648
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+inBattlescape: false
+id: 0x10
+race: café
+secondsRemaining: 0x10
+detected: true
+lat: -0.25
+name: STR_FOO
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+id: 27
+texture: 6
+lon:
+lat: 1e3
+secondsRemaining: 0x10
+%%%%
+waypoint 3FF0A3D70A3D70A4 C01F147AE147AE14 C001D70A3D70A3D7 3F834D4B3760EA50
+lon: 5.150000
+lat: 6.5
+id: -2147483648
+%%%%
+node
+flags: 2147483647
+type: 21
+dummy: false
+links: [14, 0x10, -5]
+id: 2147483647
+position: [6, 46, 3]
+priority: 3436
+%%%%
+node
+allocated: false
+rank: -3
+reserved: -75702
+dummy: false
+priority: 233
+position: [55, 59, 2]
+links: ~
+type: 0x10
+%%%%
+waypoint 3FF76C7747344705 3FFE28C586876E1D C002492492492492 3FE29924795C0C70
+lat: 3.800000
+id: 32
+name: STR_AVALON
+lon: 6.5
+%%%%
+node
+allocated: false
+position: [1, 2]
+priority: 17
+reserved: 9
+id: 26
+type: 275
+rank: 0x10
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+detected: no
+lon: 1.5
+race: 123
+lat: -2.630000
+inBattlescape: true
+texture: ~
+id: [1, 2]
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+detected: true
+id: -2
+secondsRemaining: 170
+race: hello
+lat: 0
+lon: -2.920000
+%%%%
+equip
+slot:
+slotX: 19
+slotY: 2147483647
+ammoItem: STR_HUMAN
+%%%%
+node
+flags:
+links: [7, 2147483647, 0x10, 8318, 2147483647]
+position: [6, 56, 1]
+rank: {k: v}
+dummy: no
+type: 2147483647
+allocated: true
+reserved: -2147483648
+priority: 2147483647
+%%%%
+waypoint 3FF210624DD2F1AA 40015DE0ACD38827 3FE70A3D70A3D70A 3FE752BAE2EA7077
+lat: 0
+id: 30
+lon: {k: v}
+%%%%
+equip
+itemType: hello
+slotX: 2147483647
+slotY: -2147483648
+fuseTimer: 15
+slot: yes
+ammoItem: yes
+%%%%
+node
+rank: 56678
+links: [20, 0x10, -2147483648, 2, 33]
+flags: 98
+reserved: 82571
+position: [31, 7, 1]
+dummy: true
+type: -1
+allocated: no
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+inBattlescape: true
+lat: 1e3
+id: abc
+name: 'q'
+secondsRemaining: 28
+race: #c
+%%%%
+node
+id: -2147483648
+priority: 0
+position: [48, 33, 1]
+allocated: true
+flags: 40
+rank: 0x10
+dummy: {k: v}
+reserved: 28
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+race: hello
+id: 0x10
+name: hello
+lon: ~
+lat: 3.14159265358979
+discovered: true
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+name: STR_AVALON
+id: 3
+lon: 0
+lat: 6.5
+inBattlescape: false
+race:
+discovered: no
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+lon: .inf
+name: café
+inBattlescape: true
+race:
+lat: .inf
+%%%%
+node
+type: ~
+id: 31
+rank: -2147483648
+flags: 2147483647
+position: [28, 43, 0]
+priority: 52488
+%%%%
+waypoint 3FD6E978D4FDF3B6 3FE3851EB851EB85 401D249249249249 402A000000000000
+id: -2147483648
+lat: 1.5
+name:
+lon: 0
+%%%%
+node
+allocated: false
+rank: 0x10
+position: [36, 10, 2]
+type: 38
+dummy: false
+reserved: 16
+priority: 2147483647
+flags: 50122
+%%%%
+waypoint 401DB6DB6DB6DB6E 3FF5A1CAC083126F BFF0000000000000 BFF8A14BFAAA55A9
+lon: .inf
+id: 1
+name: NONE
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+name: #c
+lon: 0
+id: 2147483647
+lat: 6.310000
+race: a b
+inBattlescape: true
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+id: 10
+texture: 38085
+lon: 3.14159265358979
+race: #c
+detected: false
+lat: -0.960000
+inBattlescape: no
+%%%%
+node
+reserved: 0x10
+flags: 4
+allocated: true
+links: []
+dummy: {k: v}
+type: 17
+rank: -2147483648
+id: 24818
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+inBattlescape: false
+lon: -5.390000
+texture: 2147483647
+lat: .inf
+detected: true
+name: STR_HUMAN
+secondsRemaining: 177
+race: {k: v}
+%%%%
+equip
+itemType: STR_FOO
+ammoItem: hello
+fuseTimer: 0x10
+slotY: 212
+slot: NONE
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+inBattlescape: false
+id: 2147483647
+lat: 1e3
+race:
+name: #c
+detected: true
+secondsRemaining: -2147483648
+%%%%
+equip
+slotX: 15399
+itemType: café
+slotY: 80
+fuseTimer: 10
+slot: with: colon
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+inBattlescape: true
+id: 0x10
+lon: 1.5
+lat: 0
+discovered: [1, 2]
+name: with: colon
+race: 123
+%%%%
+equip
+itemType: hello
+slot: 'q'
+ammoItem: #c
+slotY: 5
+%%%%
+equip
+fuseTimer: 2147483647
+itemType: abc
+ammoItem: NONE
+slotX: 2
+slot:
+slotY: 5
+%%%%
+waypoint 4027249249249249 40222E147AE147AE 401351EB851EB852 C012DB6DB6DB6DB7
+id: 50
+lat: 4.140000
+lon: -0.25
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+secondsRemaining: 0x10
+name: #c
+id: 33
+lon: -5.920000
+detected: false
+lat: [1, 2]
+inBattlescape: true
+race: yes
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+id: -25836
+race: #c
+lon: 1e3
+discovered: true
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+name: NONE
+id: 2147483647
+lon: 6.5
+race: STR_HUMAN
+discovered: no
+%%%%
+node
+type: 210
+flags: 0
+id: 38
+position: [3, 39, 0]
+priority: 258
+links: [0x10, -2147483648, 0x10, 0x10, 14]
+rank: 37
+reserved: [1, 2]
+dummy: false
+allocated: true
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+lon: 2.970000
+name: with: colon
+race: STR_AVALON
+lat: 5.080000
+id: 0
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+inBattlescape: no
+lon: [1, 2]
+id: 4
+discovered: true
+lat: 3.14159265358979
+race: STR_HUMAN
+%%%%
+equip
+slotX: 83
+itemType: abc
+fuseTimer: ~
+ammoItem: - x
+slotY: 19
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+race: 123
+id: 2147483647
+lat: 0
+discovered: true
+inBattlescape: ~
+%%%%
+node
+reserved: -4
+id: 7
+rank: 4
+links: [-2147483648, 0x10, 22, 2147483647, 149]
+allocated: false
+flags: -41569
+position: [35, 18, 1]
+type: -2
+priority: [1, 2]
+%%%%
+waypoint C025B6DB6DB6DB6E 401270A3D70A3D71 C002492492492492 4016492492492492
+name: {k: v}
+lon: 6.5
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+race: with: colon
+secondsRemaining: 32
+id: -2147483648
+inBattlescape:
+name: STR_HUMAN
+lon: 3.14159265358979
+lat: 0
+texture: -2147483648
+%%%%
+waypoint 40148F5C28F5C28F 402B249249249249 3FF178D4FDF3B646 BFE8000000000000
+lon: 6.5
+id: ~
+lat: 0
+%%%%
+node
+type: 2147483647
+dummy: abc
+flags: -2147483648
+reserved: 27
+position: [31, 55, 3]
+priority: -2147483648
+id:
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+lon: 3.14159265358979
+discovered: true
+inBattlescape: true
+race: - x
+%%%%
+equip
+slotY: 25
+slot: STR_AVALON
+slotX: 4
+ammoItem: ~
+itemType: 'q'
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+inBattlescape: true
+race: NONE
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+lat: {k: v}
+id: 2147483647
+lon: -2.870000
+discovered: false
+name: a b
+race: STR_HUMAN
+%%%%
+equip
+slotY: -40099
+itemType:
+slot: #c
+slotX: -2147483648
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+texture: 3552
+race: 123
+id: 2147483647
+inBattlescape: true
+detected: true
+name: hello
+lon: 0
+%%%%
+equip
+slotY: -19260
+fuseTimer: 5
+ammoItem: - x
+slot: hello
+itemType: 'q'
+slotX: 92320
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+lat: -0.25
+id: -1
+inBattlescape: false
+texture: 2147483647
+secondsRemaining: 47
+detected: true
+lon: -0.790000
+name: NONE
+%%%%
+equip
+slot: STR_FOO
+slotX: 61864
+itemType: hello
+slotY: 22
+ammoItem: yes
+%%%%
+waypoint C013AE147AE147AE C024492492492492 C00123F8CB2D6569 3FFE75FAB364F1C7
+lat: 3.14159265358979
+id: 203
+%%%%
+waypoint 402070A3D70A3D71 BFE66B1B5C51E57B 3FE8189374BC6A7F 40216B851EB851EC
+lon: 6.5
+id: 17
+name: yes
+lat: -0.25
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+lon: 2.220000
+id: -3
+race: 123
+secondsRemaining: 2147483647
+name: NONE
+inBattlescape: true
+detected: true
+%%%%
+waypoint C014000000000000 BFF29924795C0C70 400B1EB851EB851F C013333333333333
+id: 10
+lat: 1.5
+name: {k: v}
+lon: 0
+%%%%
+equip
+itemType: STR_AVALON
+slotX: 0x10
+slot: NONE
+fuseTimer: -2147483648
+%%%%
+node
+type: -50739
+links: [14, 42, 56479]
+dummy: true
+allocated: true
+flags: 35432
+reserved: -2147483648
+priority: -2147483648
+position: [25, 26, 0]
+rank: ~
+id: 31
+%%%%
+equip
+slotX: -2147483648
+ammoItem: 123
+slot: abc
+fuseTimer: 1
+%%%%
+equip
+slotX: abc
+ammoItem: with: colon
+slotY: 2147483647
+itemType: yes
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+id: 2147483647
+detected: no
+inBattlescape: no
+name: ~
+lat: -0.25
+race: STR_AVALON
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+lat: 6.5
+discovered: no
+name: yes
+race: yes
+id: 0x10
+lon: 1e3
+inBattlescape: ~
+%%%%
+node
+id: 0x10
+position: [1, 2]
+rank: -3
+links: []
+type: 31
+reserved: 2147483647
+dummy: false
+allocated: false
+flags: 2
+priority: 0x10
+%%%%
+equip
+slotY: 2147483647
+slotX: 6
+%%%%
+node
+id: -2147483648
+type: abc
+flags: [1, 2]
+rank: -2
+allocated: true
+links: [33]
+reserved: 52
+position: [1, 2]
+priority: 30
+%%%%
+node
+type: 2147483647
+flags: 0x10
+links: []
+position: [32, 25, 1]
+allocated: false
+priority: 2
+rank: 17
+id: 2147483647
+%%%%
+node
+flags: {k: v}
+position: [1, 2]
+priority: 2147483647
+id: -2147483648
+reserved: 2147483647
+links: [35, 35]
+dummy: no
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+id: 5
+lon: 1.5
+discovered: no
+race: 123
+name: yes
+lat: 1e3
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+id: -50782
+inBattlescape: true
+texture: -39704
+lat: 0
+lon: -0.25
+race: 123
+detected: false
+secondsRemaining: 39
+%%%%
+node
+priority: -2147483648
+position: [60, 9, 0]
+reserved: 0x10
+links: [0x10]
+flags: 5
+allocated: true
+id: 2147483647
+dummy: no
+type: 2147483647
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+texture: 36
+lon: 0
+detected: true
+name: NONE
+lat: 0
+race: STR_HUMAN
+inBattlescape: false
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+secondsRemaining: 19
+id: 122
+texture: 0x10
+lat: 1e3
+detected: no
+race: with: colon
+name: NONE
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+race: hello
+name: [1, 2]
+discovered: false
+lat: 6.5
+id: 6
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race: [1, 2]
+discovered: true
+lon: 6.5
+id: -2147483648
+name: 123
+lat: 0
+inBattlescape: true
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+detected: false
+lat: 0
+secondsRemaining: 0x10
+texture: -2147483648
+race: STR_FOO
+id: 0x10
+%%%%
+equip
+slot: café
+ammoItem: 'q'
+fuseTimer: -2147483648
+itemType: a b
+slotX: 0x10
+slotY: 262
+%%%%
+equip
+slotX:
+slot: #c
+ammoItem: with: colon
+fuseTimer: 0x10
+slotY: -5
+itemType: STR_FOO
+%%%%
+equip
+fuseTimer: 20
+ammoItem: STR_FOO
+slot: NONE
+itemType: NONE
+slotX: -4
+%%%%
+waypoint 3FF6F5C28F5C28F6 C0051C8A44920048 4022DB6DB6DB6DB7 40215C28F5C28F5C
+lon: -5.100000
+lat: -0.25
+id: 189
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+lon: 4.220000
+discovered: false
+lat: .inf
+name: hello
+inBattlescape: true
+race: 'q'
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+lon: 1.5
+inBattlescape: no
+texture: -2147483648
+id: -5
+race: - x
+detected: true
+lat: -0.25
+secondsRemaining: 77
+%%%%
+node
+flags: -2147483648
+type: 0x10
+links: [20, -1813, 27]
+id: -32265
+dummy: true
+reserved: 0x10
+priority: 19
+allocated: true
+position: [1, 2]
+%%%%
+waypoint C018000000000000 C026492492492492 BFCB582A8E73F69D 3FD25E353F7CED91
+id: 13
+lat: -0.25
+lon: 0
+name: hello
+%%%%
+waypoint C00E3D70A3D70A3D C0222E147AE147AE BFDA56CEA3919513 3FF86E978D4FDF3B
+id: 22
+name: STR_AVALON
+lat: 6.5
+lon: 6.5
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+lon: 6.5
+inBattlescape: true
+race: a b
+discovered: true
+name: yes
+lat: 6.5
+id: 5
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+lat: -2.390000
+discovered: true
+id: 2147483647
+inBattlescape: true
+lon: -0.25
+name: STR_AVALON
+race: #c
+%%%%
+equip
+itemType: STR_HUMAN
+slotY: 4
+ammoItem: STR_HUMAN
+slot: STR_FOO
+fuseTimer: -2147483648
+slotX: 263
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+id: -67512
+discovered: no
+race: STR_FOO
+name: STR_FOO
+%%%%
+equip
+slotX: 21
+slotY: 2147483647
+itemType: a b
+slot: hello
+fuseTimer: 0x10
+ammoItem: 'q'
+%%%%
+equip
+ammoItem: 123
+slot: NONE
+slotY: -49740
+fuseTimer: 0x10
+slotX: -13955
+%%%%
+node
+priority: 300
+rank: -2147483648
+type: -96060
+reserved: 2147483647
+allocated: no
+dummy: false
+%%%%
+equip
+slotX: 38
+slotY: 5
+itemType: STR_HUMAN
+ammoItem: NONE
+slot: NONE
+%%%%
+node
+allocated: no
+type: 2147483647
+rank: 2147483647
+links: [3676, 1]
+flags: 23
+priority: -838
+dummy: false
+id: 2147483647
+%%%%
+waypoint BFE8EE812787D952 C01728F5C28F5C29 BFC851EB851EB852 3FF4924924924925
+name: STR_FOO
+id: 39
+%%%%
+node
+position: [1, 43, 2]
+allocated: true
+priority: 2147483647
+type: 24
+reserved: 33
+links: [0x10, -2147483648, 0x10]
+rank: 18481
+dummy: true
+%%%%
+waypoint 3FEBBF1C1F9B50D4 3FF347AE147AE148 4021B6DB6DB6DB6E C00B6DB6DB6DB6DB
+lon: 0
+lat: 5.540000
+%%%%
+node
+rank: 25
+links: [99666, 34588, 215, 0x10]
+flags: 0x10
+type: 3
+allocated: true
+priority: -48315
+%%%%
+waypoint 3FF4B020C49BA5E3 BFF0000000000000 BFD27F68151235E2 40053646A8DBD6D5
+lat: 6.5
+id: 19
+lon: .inf
+name: a b
+%%%%
+equip
+slot: a b
+itemType: STR_FOO
+slotX: 3
+ammoItem: STR_FOO
+fuseTimer: 2
+slotY: -2147483648
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+name: 'q'
+lon: 1e3
+id: 5
+race: hello
+discovered: false
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+lon: 1.5
+race: #c
+discovered: false
+inBattlescape: true
+name:
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+race: #c
+id: 3
+name:
+lat: 1e3
+lon: .inf
+secondsRemaining: 3
+texture: 4
+%%%%
+waypoint C0095C28F5C28F5C 4028924924924925 3FFBF7CED916872B 401B28F5C28F5C29
+lon: [1, 2]
+lat: 6.5
+id: 0x10
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+lat: 3.14159265358979
+inBattlescape: true
+discovered: no
+id: 10147
+lon: 6.5
+name: - x
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+texture: 2147483647
+name: STR_HUMAN
+inBattlescape: true
+detected: {k: v}
+id: abc
+lon: .inf
+secondsRemaining: 24528
+%%%%
+equip
+fuseTimer: -2147483648
+ammoItem:
+itemType: 123
+slotX: 0x10
+slotY: 0x10
+%%%%
+waypoint C00A492492492492 3FED0624DD2F1AA0 BFFB6508C098E1E4 4016DB6DB6DB6DB7
+lon: .inf
+id: 35
+name: with: colon
+lat: 3.480000
+%%%%
+equip
+itemType: - x
+slotY: -5
+slotX: 36
+ammoItem: STR_AVALON
+slot: hello
+fuseTimer: 0
+%%%%
+equip
+ammoItem: - x
+slotX: 0
+slot: 123
+fuseTimer: -2147483648
+slotY: 2147483647
+itemType: café
+%%%%
+waypoint 3FF5E76C8B439581 3FC4FDF3B645A1CB C00EDB6DB6DB6DB7 3FD7EF9DB22D0E56
+id: -2147483648
+lon: -0.25
+name: 123
+lat: 6.5
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: 'q'
+name: STR_FOO
+lon: 1.5
+inBattlescape: true
+lat: 0
+id: -4
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+detected: false
+name: - x
+inBattlescape: no
+secondsRemaining: 0x10
+lat: 3.530000
+texture: -3
+%%%%
+equip
+ammoItem: 123
+slotX: 2
+slot: café
+slotY: 2
+fuseTimer: 33
+itemType: hello
+%%%%
+node
+reserved: 73
+type: 0x10
+id: {k: v}
+flags: -2147483648
+dummy: no
+position: [28, 59, 0]
+rank: 40085
+allocated: true
+priority: -2147483648
+%%%%
+waypoint 3FF40E50278AB378 3FE92F1A9FBE76C9 3FF02F7B126FEF26 C00326B0A0F2287C
+lat: 4.890000
+id: 26358
+%%%%
+waypoint 3FFB4395810624DD 3FC8B4395810624E 401747AE147AE148 4001AE147AE147AE
+lon: 5.910000
+name: 123
+id: 3
+lat: 1.5
+%%%%
+node
+rank: 3
+links: [0x10, 32570]
+dummy: true
+flags: 0x10
+position: [16, 11, 1]
+priority: 156
+type: 79327
+allocated: true
+reserved: 10686
+%%%%
+waypoint C02B6DB6DB6DB6DB 3FEE5604189374BC C02119999999999A BFE851EB851EB852
+name: 'q'
+lon: 1.5
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+lat: 5.610000
+name:
+inBattlescape: true
+lon: 4.540000
+race: yes
+discovered: no
+%%%%
+equip
+ammoItem: - x
+fuseTimer: 2147483647
+slotX: 48
+itemType: STR_FOO
+slotY: 38
+slot: [1, 2]
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+lat: 4.020000
+lon: 0
+texture: 239
+id: 181
+name: STR_AVALON
+detected: true
+%%%%
+node
+type: 26
+id: -2147483648
+links: [288]
+position: [4, 10, 2]
+rank: [1, 2]
+reserved: 93435
+dummy: [1, 2]
+allocated: false
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+lat: 1.5
+name: 123
+id: -2147483648
+%%%%
+waypoint C01D99999999999A C001847B434249FC C0028F5C28F5C28F 3FF147AE147AE148
+lat: 1e3
+lon: 1.5
+name: 'q'
+%%%%
+waypoint 3FEB8BA35707A3B9 4002492492492492 3FCDF3B645A1CAC1 C0218A3D70A3D70A
+lat: .inf
+name: hello
+id: 91740
+lon: -0.25
+%%%%
+waypoint C022DC28F5C28F5C 400752BAE2EA7077 BFFB3E6E2A2A200F 3FF174BC6A7EF9DB
+lon: 1e3
+id: 2147483647
+name: with: colon
+%%%%
+node
+priority: -2147483648
+flags: 2147483647
+dummy: no
+position: [45, 20, 2]
+reserved: 2
+allocated: true
+type: 31
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+lon: 3.14159265358979
+detected: true
+id: 30
+inBattlescape: no
+lat: .inf
+name: NONE
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: true
+lon: 1.5
+lat: -0.25
+id: 2147483647
+inBattlescape: true
+%%%%
+node
+priority: 209
+allocated: false
+links: []
+dummy: false
+flags: -4
+reserved: 71814
+rank: 150
+position: [28, 7, 2]
+type: -2
+%%%%
+equip
+slotX: 281
+slot: hello
+slotY: 5
+fuseTimer: 32
+ammoItem: STR_FOO
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+discovered: false
+id: 74789
+name: hello
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+name: STR_HUMAN
+id: -2147483648
+lat: 6.5
+race: hello
+inBattlescape: true
+%%%%
+equip
+slotX: 0x10
+ammoItem: hello
+itemType: STR_AVALON
+slot: {k: v}
+fuseTimer: 0x10
+slotY: 22
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: STR_AVALON
+discovered: false
+id: [1, 2]
+inBattlescape: false
+lon: -0.25
+lat: -2.760000
+%%%%
+equip
+slotX: 2147483647
+itemType: #c
+ammoItem: hello
+fuseTimer:
+slot: STR_FOO
+slotY: 162
+%%%%
+node
+id: 84764
+links: [33]
+reserved: -2147483648
+priority: 185
+dummy: no
+allocated: false
+type: 0x10
+position: [33, 46, 1]
+rank: 0x10
+%%%%
+waypoint 4004924924924925 3FE5E353F7CED917 3FF75810624DD2F2 BFD8209E053924E4
+lon: -0.25
+name: café
+id: 296
+lat: 1e3
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+lat: 0
+texture: 32379
+name: café
+detected: true
+lon: .inf
+secondsRemaining: 16
+id: 228
+race: a b
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+lon: 1.5
+inBattlescape: no
+race: NONE
+lat: 3.14159265358979
+discovered: [1, 2]
+id: 13
+%%%%
+node
+flags: 21
+type: -2147483648
+dummy: no
+allocated: true
+reserved: -2147483648
+position: [56, 0, 0]
+rank: 0
+priority: -2147483648
+%%%%
+node
+rank: -2104
+type: -2147483648
+allocated: no
+flags: 2147483647
+links: [15, 11, 36]
+priority: 0x10
+id: 39
+dummy: true
+position: [7, 23, 1]
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+name: STR_HUMAN
+inBattlescape: false
+lon: 0
+lat: .inf
+id: 2147483647
+race: with: colon
+%%%%
+waypoint 400306852395DC4B C005B6DB6DB6DB6E 4012492492492492 C0019E37A78C208A
+name: STR_FOO
+lon: 1.5
+id: 66387
+lat: 1.5
+%%%%
+node
+id: 46319
+priority: 155
+links: [2147483647, 27]
+reserved: 68091
+dummy: true
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+id: 84
+lon: 4.940000
+detected: false
+secondsRemaining: 2147483647
+race: hello
+lat: 6.5
+name: a b
+texture: 216
+%%%%
+waypoint C026DB6DB6DB6DB7 C0061DE62F7461D1 3FE51EB851EB851F BFE6DB6DB6DB6DB7
+id: ~
+name: - x
+lon: .inf
+lat: 1.5
+%%%%
+node
+position: [1, 2, x]
+priority: 0
+type: 2147483647
+flags: -2147483648
+allocated: true
+id: 0x10
+rank: 55
+reserved: -2147483648
+%%%%
+waypoint BFF71F421A56C35B 3FFE82D8E589DD0E C026924924924925 4021EB851EB851EC
+lon: 1e3
+lat: 0
+id: 37
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+name: #c
+lat: -0.25
+discovered:
+race: yes
+id: 37
+%%%%
+equip
+slotY: 2147483647
+slot: ~
+slotX: 2147483647
+fuseTimer: 72
+ammoItem: #c
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+lon: .inf
+race: STR_AVALON
+id: 32
+lat: .inf
+inBattlescape: no
+%%%%
+equip
+ammoItem: 'q'
+itemType: #c
+slotY: abc
+slot: #c
+slotX: 33307
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+lon: 2.790000
+discovered: true
+inBattlescape: no
+id: 8
+lat: -0.25
+race: NONE
+%%%%
+node
+allocated: false
+dummy: ~
+reserved: 0x10
+links: [-47156, 273, 199, 47372, -2]
+id: -2147483648
+flags: 4
+rank: 7
+position: [1, 2]
+priority: -2
+%%%%
+equip
+ammoItem: 123
+itemType: café
+slotY: 0
+slotX: abc
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+discovered: true
+lon: {k: v}
+id: 0x10
+name:
+race: hello
+%%%%
+waypoint C000D6C39E4FE1C0 401328F5C28F5C29 C01D249249249249 3FFA8A476C25422F
+name: STR_FOO
+id: 175
+lon: 3.14159265358979
+lat: .inf
+%%%%
+equip
+slotX: -71717
+ammoItem: - x
+slot: STR_AVALON
+itemType: 123
+%%%%
+equip
+slotX: 0x10
+slotY: 21
+fuseTimer: -2147483648
+ammoItem: STR_AVALON
+slot: STR_AVALON
+%%%%
+equip
+itemType: 123
+ammoItem: NONE
+slot: STR_FOO
+slotY: 0
+slotX: 277
+fuseTimer: 240
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+lon: 1e3
+race: STR_AVALON
+name: - x
+secondsRemaining: 33
+id: [1, 2]
+%%%%
+equip
+fuseTimer: -2147483648
+slotX: -2147483648
+slot: STR_HUMAN
+itemType: STR_FOO
+ammoItem:
+%%%%
+waypoint 4011B6DB6DB6DB6E 3FF34FDF3B645A1D 3FFF810624DD2F1B 3FD015BEAE261898
+id: 31
+name: with: colon
+lat: .inf
+lon: 2.850000
+%%%%
+node
+links: [-4, 55007, 35, 91]
+flags: 6
+type: 56051
+dummy: false
+priority: 2147483647
+allocated: false
+rank: 94676
+id: 0x10
+reserved: 0x10
+position: [11, 48, 1]
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+inBattlescape: true
+id:
+lat: 1.5
+discovered: ~
+name: {k: v}
+race: STR_FOO
+lon: 0
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+discovered: true
+inBattlescape: no
+id: 0x10
+lon: 6.5
+name: 123
+lat: -0.25
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+discovered: true
+race:
+id: -2147483648
+inBattlescape: no
+lat: 6.5
+%%%%
+waypoint 4021249249249249 C008007287DCD8B3 3FA8209E053924E4 C01ADB6DB6DB6DB7
+lat: 1.5
+lon: 6.5
+id: 37
+%%%%
+waypoint 400DB6DB6DB6DB6E 3FF6CCCCCCCCCCCD 4023249249249249 3FFF6872B020C49C
+lat: 1e3
+id: {k: v}
+name: #c
+%%%%
+waypoint C01FCCCCCCCCCCCD 3FEB4BC6A7EF9DB2 401D28F5C28F5C29 400EDB6DB6DB6DB7
+name: hello
+lon: 5.090000
+lat: 3.14159265358979
+id: 97
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+name: [1, 2]
+id: 0x10
+lon: 1e3
+inBattlescape:
+%%%%
+node
+id: 65
+links: [21, 14, 0x10]
+dummy: true
+position: [33, 2, 1]
+allocated: true
+flags: 39
+priority: 9
+rank: 19
+reserved: -3448
+%%%%
+equip
+slotX: 12
+itemType: hello
+slot:
+fuseTimer: 1
+ammoItem: hello
+slotY: -80192
+%%%%
+equip
+slotX: -2
+fuseTimer: -28963
+ammoItem: STR_AVALON
+itemType:
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+name: abc
+secondsRemaining: -73310
+detected: no
+inBattlescape: true
+race: 123
+texture: -14988
+lon: 1.5
+%%%%
+node
+priority: 294
+id: 4
+reserved: ~
+allocated: true
+type: -2147483648
+dummy: false
+flags: 5
+position: [2, 16, 0]
+rank: 2147483647
+links: [0x10, 4, 163, 0x10, 1]
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+inBattlescape: true
+id: 9
+discovered: true
+lat: 4.510000
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+secondsRemaining: -8551
+race: a b
+inBattlescape: true
+detected: no
+lat: .inf
+lon: 3.14159265358979
+id: -2147483648
+texture: 30
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+detected: {k: v}
+inBattlescape: false
+lon: 1e3
+race: 'q'
+id: 217
+name: 'q'
+texture: 2147483647
+lat: 2.810000
+%%%%
+node
+dummy: {k: v}
+links: []
+id: 73
+rank: -4
+flags: 0
+reserved: 2147483647
+type: 180
+priority: 0x10
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+discovered: no
+name: café
+race: NONE
+inBattlescape: no
+lat: 1.5
+%%%%
+equip
+slot: yes
+ammoItem: with: colon
+itemType: {k: v}
+slotY: 0x10
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+inBattlescape: true
+discovered: no
+race: STR_AVALON
+name: ~
+%%%%
+equip
+fuseTimer: 0x10
+itemType: NONE
+slot: a b
+slotX: -2147483648
+ammoItem: - x
+%%%%
+waypoint C00747AE147AE148 40224CCCCCCCCCCD 401F6DB6DB6DB6DB 4016492492492492
+name: STR_HUMAN
+id: 149
+lat: -6.540000
+%%%%
+waypoint C005FDBAB21815A0 BFF7AE147AE147AE 401CA3D70A3D70A4 BFF3CDF92CD21B15
+id: 15
+lat: 1e3
+lon: 1e3
+%%%%
+waypoint BFDB6DB6DB6DB6DB BFFB17D393BB5E3B 4021249249249249 400DB6DB6DB6DB6E
+name:
+lat: 1.5
+%%%%
+equip
+slotY: 12
+fuseTimer: 18
+slotX: 20
+itemType: 'q'
+slot: #c
+ammoItem: - x
+%%%%
+equip
+ammoItem: STR_FOO
+itemType: [1, 2]
+fuseTimer: 2147483647
+slotX: -91786
+slot: café
+%%%%
+equip
+slotX: -3
+ammoItem: with: colon
+fuseTimer: 22
+itemType: a b
+slotY: -14406
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 69388
+name: NONE
+lon: 3.260000
+discovered: true
+lat: 1.5
+%%%%
+equip
+slotY: ~
+slot: with: colon
+ammoItem: with: colon
+slotX: 0x10
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+discovered: no
+id: 2147483647
+lat: -1.270000
+%%%%
+waypoint C0145C28F5C28F5C 3FFCFDF3B645A1CB C0170A3D70A3D70A 3FF6000000000000
+lat: .inf
+name: STR_HUMAN
+id: 0x10
+lon: 1.5
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: a b
+lat: 6.5
+name: 123
+id: 2
+lon: .inf
+discovered: false
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+name:
+id: 35
+inBattlescape: true
+discovered: true
+lat: 1.5
+race: ~
+lon:
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race: - x
+lat: 3.14159265358979
+name: a b
+discovered: true
+lon: -0.25
+id: 41
+inBattlescape: no
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+lon: 5.420000
+race: a b
+id: 0x10
+discovered: false
+%%%%
+equip
+ammoItem: NONE
+slotX: -5
+fuseTimer: 20
+itemType: 123
+%%%%
+node
+allocated: true
+flags: 2
+id: -2147483648
+rank: 25
+dummy: false
+type: -2147483648
+reserved: 4
+position: [58, 14, 1]
+links: [1, 39, 0x10, 2147483647, 5]
+%%%%
+node
+flags: 9
+priority: -2147483648
+id: 2147483647
+type: -2147483648
+dummy: no
+rank: -5
+allocated: true
+reserved: 2147483647
+position: [31, 27, 2]
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+id: -2
+lat: 6.5
+lon: 6.5
+race: STR_HUMAN
+inBattlescape: false
+name: with: colon
+discovered: true
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+id: 1
+lon: 0
+race: STR_FOO
+detected: ~
+texture: 243
+lat: 1e3
+inBattlescape: false
+name: 'q'
+%%%%
+node
+priority: 98355
+rank: [1, 2]
+flags: -2147483648
+reserved: 20
+links: [12610, 11, 13, -2147483648, 0x10]
+dummy: true
+type: 2
+id: 32
+allocated: true
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+lon: 3.14159265358979
+race: yes
+lat: 1e3
+id: -69617
+discovered: false
+inBattlescape: no
+%%%%
+equip
+slotX: 0x10
+slotY: 0x10
+fuseTimer: -48142
+ammoItem: hello
+slot: - x
+%%%%
+node
+rank: 0x10
+allocated: false
+priority: 190
+dummy: true
+type: [1, 2]
+id: ~
+position: [55, 45, 0]
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+secondsRemaining: 4
+detected: true
+inBattlescape: true
+lon: 1.5
+lat: 0
+race: abc
+id: 0x10
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+inBattlescape: no
+lat: 1.5
+race: 'q'
+name: with: colon
+lon: 4.980000
+id: 30
+texture: -97200
+detected: true
+%%%%
+equip
+slotY: ~
+slotX: 35
+slot: café
+itemType: 123
+fuseTimer: 23
+%%%%
+node
+rank: 207
+flags: 37
+id: -2147483648
+allocated: no
+dummy: true
+position: [1, 2, x]
+priority: -2147483648
+links: []
+reserved: 19
+type: 0x10
+%%%%
+waypoint BFFD1A8B6980214D C012492492492492 BFE46863868D2268 40223851EB851EB8
+lat: 3.14159265358979
+name: yes
+id: 2147483647
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 7
+race: [1, 2]
+lon: 5.710000
+discovered: abc
+name: café
+lat: -0.25
+inBattlescape: false
+%%%%
+waypoint 4004B851EB851EB8 C024DB6DB6DB6DB7 3FEC4189374BC6A8 3FF0FD5E34BEA394
+name:
+lat: 1.5
+id: abc
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+name: #c
+lat: abc
+secondsRemaining: 2147483647
+detected: no
+id: -2147483648
+lon: -0.25
+inBattlescape: no
+race: 'q'
+%%%%
+node
+flags: -3
+allocated: true
+rank: -2147483648
+position: [9, 60, 2]
+reserved:
+priority: 0x10
+dummy: no
+links: [2147483647, -96497]
+id: 0x10
+type: 31
+%%%%
+node
+priority: -63835
+type: 264
+rank: {k: v}
+position: [6, 37, 3]
+reserved: 14
+id: 0x10
+flags: 15
+dummy: [1, 2]
+links: []
+allocated: false
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+secondsRemaining: 0x10
+race:
+inBattlescape: no
+lon: 0
+texture: -75579
+lat: 0
+detected: false
+name: #c
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+texture: 0x10
+name: #c
+secondsRemaining: -94456
+inBattlescape: no
+lon: .inf
+detected: true
+lat: -1.780000
+%%%%
+equip
+itemType: STR_HUMAN
+slotY: 30
+slotX: 182
+fuseTimer: 29
+%%%%
+equip
+ammoItem: café
+slotY: 11
+slotX: 12
+itemType: STR_HUMAN
+slot: NONE
+%%%%
+node
+rank: 23
+reserved: {k: v}
+dummy: true
+links: [-2147483648, 2147483647, -65817]
+flags: 18
+id: 30
+position: [1, 2, x]
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+lat: -0.25
+race:
+lon: .inf
+id: 0x10
+name: a b
+discovered: true
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+name: yes
+id: 18
+inBattlescape: no
+race: STR_FOO
+texture: 0x10
+lon: .inf
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+lat: [1, 2]
+lon: 2.390000
+discovered: false
+name: hello
+id: 2
+race: NONE
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+name: STR_HUMAN
+lat: 1.5
+race: hello
+detected: false
+inBattlescape: true
+texture: -2147483648
+%%%%
+equip
+slotX: -83894
+fuseTimer: 11
+ammoItem: ~
+slot: 123
+itemType: - x
+slotY: -2147483648
+%%%%
+node
+allocated: no
+priority: -2147483648
+flags: 139
+links: [175, 0x10]
+id: 2147483647
+dummy: no
+type: -2147483648
+position: [41, 29, 1]
+reserved: 35
+rank: 2147483647
+%%%%
+equip
+ammoItem: a b
+slotY: -3
+slot: hello
+fuseTimer: 21
+itemType: abc
+slotX: 1
+%%%%
+equip
+itemType: café
+slotX: 0
+fuseTimer: -2147483648
+slot: [1, 2]
+slotY: -3
+ammoItem: STR_FOO
+%%%%
+equip
+slotX: 2147483647
+ammoItem: with: colon
+slotY: 32
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+lat: 1e3
+inBattlescape: false
+race: STR_FOO
+lon: 3.14159265358979
+discovered: no
+%%%%
+waypoint 40036D76B4BD3682 BF69BC6449D68DC1 C028924924924925 40256DB6DB6DB6DB
+name: 'q'
+lon: .inf
+id: 2147483647
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+name: a b
+texture: 0x10
+id: 2147483647
+lat: -0.25
+race: 123
+lon: .inf
+detected: true
+secondsRemaining: 19
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+lat: 1.5
+secondsRemaining: 21
+texture: -2147483648
+id: -4
+race: 123
+name: café
+lon: 3.050000
+detected: no
+%%%%
+waypoint C024924924924925 40023232E834B239 C02A000000000000 C008DB33DC507868
+lat: abc
+name: hello
+id: 0
+lon: .inf
+%%%%
+equip
+slot: a b
+slotX: 0x10
+fuseTimer: -2147483648
+slotY: 31
+itemType: {k: v}
+%%%%
+waypoint C02123D70A3D70A4 C02A924924924925 C02A000000000000 3FEF10650D1FF919
+name: STR_FOO
+id: -2147483648
+lon: -0.25
+%%%%
+equip
+slot: STR_HUMAN
+ammoItem: 'q'
+itemType: with: colon
+slotY: 30
+%%%%
+equip
+slotY: 218
+fuseTimer: 33088
+itemType: - x
+slotX: 21
+slot: - x
+%%%%
+node
+priority: 17
+dummy: false
+type: -2147483648
+id: 30
+rank: 17
+allocated: false
+reserved: 25
+links: [-10591, -13789, 3, 0x10]
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: no
+id: 167
+lat: 0.430000
+inBattlescape: no
+name: with: colon
+race: 123
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+lat: 1e3
+detected: true
+lon: -3.430000
+id: 25
+secondsRemaining: 2147483647
+inBattlescape: true
+race: hello
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+lon: 3.14159265358979
+detected: true
+name: a b
+texture: 2147483647
+id: 2147483647
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+discovered: false
+lat: 1e3
+inBattlescape: true
+race: café
+name: café
+%%%%
+node
+links: [250, 28]
+type: 2147483647
+priority: 31
+flags:
+position: [1, 2, x]
+dummy: no
+allocated: no
+%%%%
+node
+position: [40, 39, 0]
+type: 7
+dummy: true
+flags: -48141
+id: 39
+reserved: 22
+%%%%
+equip
+ammoItem: with: colon
+itemType: yes
+fuseTimer: 13
+slotX: -2147483648
+slot: #c
+%%%%
+equip
+slot: with: colon
+slotX: 17
+slotY: 0x10
+fuseTimer: 46
+%%%%
+node
+rank: -94436
+links: [204, 17, 0x10, 1, 2147483647]
+id: -2147483648
+reserved: 285
+allocated: false
+position: ~
+type: 43
+flags: 0x10
+%%%%
+waypoint BFE23232E834B239 C012492492492492 C0176DB6DB6DB6DB 3FDCAC083126E979
+id: 107
+lon: -0.25
+%%%%
+node
+allocated: no
+reserved: 3
+priority: 37
+type: 14
+id: 2147483647
+links: []
+dummy: true
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+lat: -0.25
+lon: {k: v}
+name: hello
+inBattlescape: false
+race: STR_FOO
+id: abc
+discovered: false
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: false
+race: - x
+lon: .inf
+id: 32
+inBattlescape: no
+name: 123
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+discovered: no
+lat: 0
+race: café
+lon: 1e3
+name: STR_HUMAN
+id: 0x10
+%%%%
+waypoint 40276DB6DB6DB6DB 401D28F5C28F5C29 C01D3D70A3D70A3D 4015249249249249
+lon: 2.740000
+id: 34
+lat: 3.14159265358979
+name: #c
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+id: 0x10
+secondsRemaining: 0x10
+detected: no
+inBattlescape: true
+lat: -0.25
+texture: 23
+lon: 0
+name: hello
+%%%%
+node
+type: 47
+allocated: no
+links: {k: v}
+flags: 25
+rank: 14
+position: [34, 43, 1]
+dummy: no
+reserved: -88343
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+discovered: true
+name: a b
+id: 0
+lat: 0.690000
+lon: 6.5
+inBattlescape: true
+race: a b
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+race: [1, 2]
+secondsRemaining: -43547
+lon: 3.14159265358979
+id: 16
+name: STR_FOO
+detected: true
+%%%%
+equip
+fuseTimer: 0x10
+ammoItem: abc
+slotY: 6883
+slot: STR_AVALON
+slotX: -15126
+%%%%
+waypoint C012EB851EB851EC C029B6DB6DB6DB6E C002E147AE147AE1 C011F5C28F5C28F6
+lat: 1.5
+lon: .inf
+id: 2
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+name: STR_AVALON
+inBattlescape: no
+race: STR_FOO
+id: -95072
+lon: 0
+%%%%
+waypoint 3FE645A1CAC08312 C01DB6DB6DB6DB6E 3FFD4125FFEEE321 BFF4A8BA8145BACA
+name: STR_HUMAN
+id: 0x10
+lon: -0.25
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+lat: 3.670000
+name: a b
+id: -2147483648
+secondsRemaining: 0x10
+lon: 1e3
+inBattlescape: no
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+race: hello
+id: 2147483647
+name: - x
+lon: 1e3
+%%%%
+waypoint 4024924924924925 BFB5B6F49E4D079A BFFD4E043213CE68 4008946DC8856A62
+name: 123
+lat: 1.5
+id: -2147483648
+lon: 1.5
+%%%%
+waypoint 400028F5C28F5C29 3FF04DD2F1A9FBE7 3FF7645A1CAC0831 3FF5296876B6EB8F
+lat: 1e3
+id: 1
+lon: 1e3
+name: hello
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+secondsRemaining: 0x10
+id: -2147483648
+lon: ~
+lat: ~
+inBattlescape:
+race: hello
+detected: false
+%%%%
+node
+position: [0, 13, 0]
+id: -2147483648
+type: ~
+rank: -67572
+dummy: no
+reserved: 38
+links: [2147483647, 0x10, -2147483648]
+allocated: false
+flags: 0x10
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+id: 3
+lat: ~
+name: a b
+discovered: false
+lon: 5.760000
+%%%%
+equip
+slotY: -2147483648
+itemType: with: colon
+slotX: -2147483648
+ammoItem: #c
+slot: STR_FOO
+%%%%
+equip
+slot: [1, 2]
+itemType: 'q'
+%%%%
+equip
+fuseTimer: 8
+ammoItem: STR_FOO
+slotX: -25604
+slotY: 2147483647
+slot: hello
+itemType: 123
+%%%%
+equip
+fuseTimer: 1
+slot: café
+ammoItem: 123
+itemType:
+slotX: 29
+%%%%
+node
+type: 38
+reserved: 236
+rank: -2147483648
+allocated: true
+links: [97530, 0x10, -11391]
+priority: 4
+flags: 19
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+detected: true
+lon: -0.25
+secondsRemaining: 52
+texture: 58534
+name: STR_FOO
+lat: 6.5
+%%%%
+equip
+itemType: ~
+fuseTimer: ~
+slot: - x
+slotY: -78983
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+lon: 3.14159265358979
+id: 10557
+name:
+secondsRemaining: 124
+texture: 22
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+lon: 1.5
+texture: abc
+inBattlescape: no
+name: NONE
+detected: true
+id: 25
+secondsRemaining: 32
+race: - x
+%%%%
+equip
+itemType:
+fuseTimer: -2147483648
+slot: NONE
+ammoItem: 123
+slotX: 2
+slotY: 2147483647
+%%%%
+node
+dummy: false
+priority: 2147483647
+rank: 0x10
+reserved: 2147483647
+flags: -91189
+allocated: no
+links: [2147483647]
+type: -1
+id: 0x10
+position: [11, 52, 3]
+%%%%
+waypoint 3FF17E0C2A2FD459 3FCFBE76C8B43958 4017AE147AE147AE 400394114B2BF856
+lat: 3.14159265358979
+id: 0x10
+%%%%
+node
+flags: -2147483648
+reserved: 299
+type: [1, 2]
+rank: -2147483648
+links:
+id: ~
+dummy: {k: v}
+allocated: false
+%%%%
+equip
+ammoItem: STR_HUMAN
+itemType:
+slotX: 2147483647
+slotY: 5
+slot: with: colon
+%%%%
+node
+flags: 1
+reserved: -1
+dummy: true
+id: -2147483648
+type: 97959
+position: [1, 2, x]
+links: [-54067]
+allocated: true
+priority: 2147483647
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+lon: 3.14159265358979
+detected: false
+secondsRemaining: 28
+texture: 0x10
+lat: {k: v}
+inBattlescape: false
+id: 2147483647
+race: STR_FOO
+%%%%
+waypoint BFE380C3FFF4976C C01970A3D70A3D71 3FCE8FB717AEC854 3FE60C49BA5E353F
+id: -5
+lat: .inf
+lon: 0
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+id: 7
+secondsRemaining: 11
+race: STR_HUMAN
+name: 'q'
+lat: 6.5
+detected: true
+inBattlescape: false
+lon: 3.14159265358979
+%%%%
+waypoint 4008C1777806A1DA 3FDC28F5C28F5C29 4008C7E69119177E 3FFB6C8B43958106
+lat: 4.070000
+lon: 0
+id: 0
+%%%%
+node
+links: [4, 123, 15, 3, 36]
+priority: ~
+reserved:
+rank: 2147483647
+dummy: no
+type: -1
+allocated: true
+id: 2147483647
+position: [4, 6, 0]
+flags: 0x10
+%%%%
+node
+links: [33, 10, 7, 11]
+flags: 0x10
+position: [11, 6, 2]
+priority: 0x10
+id: 70663
+rank: -2147483648
+allocated: true
+type: 0x10
+reserved: 0x10
+%%%%
+waypoint 401D1EB851EB851F 401BE147AE147AE1 40216DB6DB6DB6DB 3FFEC8B439581062
+lon: 3.14159265358979
+name: with: colon
+lat: 0
+id: 2147483647
+%%%%
+equip
+slot: NONE
+fuseTimer: 11
+%%%%
+node
+reserved: 0x10
+type: -5
+position: [1, 2]
+priority: -2147483648
+links: [0x10, 5, 8, 27, -1]
+allocated: {k: v}
+rank: 74
+dummy: true
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+name: a b
+lon: 1.730000
+lat: -4.540000
+race: with: colon
+discovered: no
+id: 22
+%%%%
+node
+allocated: abc
+flags: -2147483648
+id: 0x10
+reserved: 8593
+priority: -2147483648
+rank: 76
+dummy: no
+links: [0x10, -2147483648, 0x10, 1, 2]
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+race: #c
+name:
+inBattlescape: true
+id: 116
+lon: -0.25
+lat: 3.14159265358979
+texture: -95932
+secondsRemaining: -69740
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+race: with: colon
+id: 44
+lon: 6.5
+discovered: no
+name: 'q'
+lat: -0.550000
+%%%%
+node
+type: 0x10
+flags: 2147483647
+allocated: false
+links: [0x10, 12372, 74]
+priority: 3
+dummy: true
+id:
+position: [43, 21, 1]
+reserved: 273
+rank: 15287
+%%%%
+equip
+fuseTimer: 24521
+itemType: 'q'
+slotY: 1
+slotX: -2
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+name: yes
+detected: true
+texture: -34965
+lon: -0.25
+lat: 0
+race: a b
+id: 0x10
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+inBattlescape: false
+name: 123
+lon: 1.5
+lat: 1.5
+id: 34601
+discovered: no
+%%%%
+waypoint C0000F4F9513A2F5 3FD2B2E0DDA5E2FE 4020492492492492 BFE70585B60CECCD
+id: 2147483647
+lon: [1, 2]
+name: STR_AVALON
+lat: 3.14159265358979
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+name: 123
+race:
+id: 0x10
+inBattlescape: true
+lon: -0.25
+%%%%
+node
+allocated: true
+reserved: 0x10
+priority: 2147483647
+links: [-2147483648]
+dummy: true
+id: 21
+flags: 37
+type: 15
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+name: yes
+lon: 3.14159265358979
+discovered: true
+race: with: colon
+lat: 4.440000
+id: -2147483648
+inBattlescape: no
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+discovered: true
+inBattlescape: {k: v}
+race: yes
+name: STR_FOO
+id: 2147483647
+%%%%
+node
+reserved: ~
+priority: 0x10
+position: [1, 2]
+rank: 76993
+links: [31, 51, 2147483647]
+allocated: true
+type: -2147483648
+flags: -4
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+inBattlescape: true
+name: with: colon
+texture: 19
+lon: 1.5
+lat: 1e3
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+lon: 0
+race: - x
+detected: false
+texture: -40965
+lat: 0
+secondsRemaining: 0x10
+name: STR_FOO
+id: 156
+%%%%
+waypoint 3FBD70A3D70A3D71 40046ED29F9F980B 401C924924924925 3FDC49BA5E353F7D
+id: 3
+lat: 0
+lon: 5.450000
+%%%%
+waypoint 400C3D70A3D70A3D C01F8F5C28F5C28F C022A8F5C28F5C29 3FEBE76C8B439581
+name: with: colon
+id: 7
+lat: 1e3
+lon: 0.580000
+%%%%
+equip
+ammoItem: - x
+slotX: 25
+fuseTimer: 0x10
+slot: - x
+slotY: 0x10
+itemType: yes
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+id: 11
+name: a b
+lat: 1.5
+inBattlescape: false
+lon: 5.430000
+race: 123
+%%%%
+waypoint 3FFE7AE147AE147B C020DB6DB6DB6DB7 C0015C28F5C28F5C C01BE147AE147AE1
+name: 'q'
+lat: -0.25
+id: 3
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+lon: .inf
+name:
+lat: 0
+inBattlescape: {k: v}
+id: 2147483647
+discovered: true
+%%%%
+node
+flags: 30
+type: 1
+priority: -55481
+position: [13, 58, 3]
+reserved: 24
+dummy: false
+id: -2147483648
+allocated: no
+%%%%
+node
+priority: 19
+reserved: -2147483648
+dummy: false
+type: -2098
+position: [58, 14, 0]
+allocated: true
+flags: 98666
+id: 143
+rank: 11894
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+texture: -2147483648
+name: with: colon
+detected: true
+lon: ~
+id: -97583
+race: - x
+%%%%
+waypoint C024924924924925 BFFFEB26619398CE 4022492492492492 BFF54324DB00C21C
+name: STR_HUMAN
+lat: 1.810000
+id: 12
+%%%%
+equip
+itemType: {k: v}
+fuseTimer: 2147483647
+slotX: -2147483648
+ammoItem: hello
+%%%%
+node
+dummy: true
+type: 2147483647
+id: -2147483648
+flags: 13
+reserved: 20343
+position: [42, 26, 0]
+links: [149]
+priority: -19395
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+inBattlescape: true
+discovered: false
+id: 9
+race: yes
+lon: 1e3
+%%%%
+equip
+slotY: 2
+slotX: 33
+itemType: a b
+fuseTimer: 1
+ammoItem: STR_HUMAN
+slot: 123
+%%%%
+node
+id: -71011
+type: 76172
+position: [50, 21, 0]
+rank: 2147483647
+flags: 38
+links: [-2147483648, 4, 2147483647]
+dummy: false
+allocated: no
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+name: with: colon
+inBattlescape: false
+secondsRemaining: 0x10
+lon: 6.5
+texture: 33677
+lat: 3.14159265358979
+%%%%
+node
+type: -2
+priority: 0x10
+position: [6, 43, 3]
+flags: 23
+id: 40
+allocated: true
+rank: 145
+reserved: 16
+links: []
+%%%%
+waypoint 3FFB6DB6DB6DB6DB 3FE90E5604189375 4015333333333333 BFF147AE147AE148
+lon: 3.830000
+name: STR_AVALON
+lat: -0.25
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+race: a b
+lat: 0
+texture: -2147483648
+lon: -0.25
+secondsRemaining: 0x10
+detected: true
+id: 13166
+inBattlescape: true
+name: café
+%%%%
+equip
+slotX: -46377
+slot: NONE
+ammoItem:
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+lon: .inf
+discovered: false
+race: a b
+inBattlescape: no
+lat: -0.25
+name:
+%%%%
+node
+reserved: 0x10
+dummy: false
+rank: -31860
+position: [45, 48, 2]
+flags: 0x10
+type: 2147483647
+links: []
+%%%%
+node
+type: 2
+links:
+position: [53, 10, 0]
+id: 2147483647
+reserved: 3
+rank: 40
+allocated: true
+priority: 6
+%%%%
+node
+allocated: true
+reserved: 274
+id: 0x10
+links: [0x10, 221, 138, 0x10, 0]
+position: [39, 48, 2]
+type: 13
+dummy: true
+flags: 28
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+name: STR_AVALON
+race: 123
+id: 281
+discovered: false
+lat: -0.25
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+race: STR_FOO
+name: STR_FOO
+id: 80
+lon: ~
+lat: 0.630000
+%%%%
+node
+priority: 126
+allocated:
+rank: 39
+flags: -2147483648
+id: 4
+type: 14
+dummy: true
+position: [6, 19, 2]
+links: []
+%%%%
+waypoint 3FF476C8B4395810 C02070A3D70A3D71 C023C7AE147AE148 C00F851EB851EB85
+lon: -0.25
+lat: .inf
+name:
+%%%%
+waypoint 4014E147AE147AE1 BFF62AC461994D18 3FF599999999999A 3FE1171A99087A22
+lon: 6.5
+lat: 2.240000
+%%%%
+node
+dummy: false
+position: [10, 17, 1]
+links: [22, 216, 11, -2147483648, 0x10]
+priority: 9
+type: 0x10
+flags: 9231
+rank: 11
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+race:
+id: 6197
+lat: .inf
+inBattlescape: true
+discovered: true
+name: with: colon
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 283
+race: NONE
+inBattlescape:
+name: STR_HUMAN
+lat: 6.5
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+inBattlescape: no
+id: 0x10
+discovered: false
+lon: 6.5
+name: STR_FOO
+lat: 3.330000
+race: NONE
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+name: with: colon
+discovered: false
+race: a b
+id: 31
+inBattlescape: no
+lon: -4.740000
+lat: 1.5
+%%%%
+node
+rank: -2
+dummy: true
+id: 0x10
+links: []
+flags: 22619
+priority: 0x10
+%%%%
+equip
+fuseTimer: 0
+slotY: 13
+ammoItem: 'q'
+itemType: 123
+%%%%
+equip
+slotY: -72045
+itemType: a b
+slotX: 33
+ammoItem: #c
+slot: 'q'
+fuseTimer: 0x10
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+discovered: true
+lon: -4.870000
+name:
+race: NONE
+inBattlescape: false
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: false
+lat: 6.5
+race: a b
+lon: 6.230000
+inBattlescape: false
+id: 2147483647
+%%%%
+equip
+slotY: {k: v}
+fuseTimer: 76335
+ammoItem: #c
+slot: NONE
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+name: STR_AVALON
+lon: 0.030000
+id: 11
+race: {k: v}
+lat: 3.14159265358979
+inBattlescape: no
+discovered: no
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+inBattlescape: true
+secondsRemaining: -2147483648
+detected: true
+lat: {k: v}
+texture: -2147483648
+lon: 4.490000
+name:
+id: 55333
+%%%%
+node
+links: []
+position: [21, 30, 0]
+priority: -78867
+dummy: true
+allocated: no
+rank: 38
+reserved: 20
+flags: 2147483647
+%%%%
+waypoint 3FF09FBE76C8B439 3FF8D0E560418937 3FF69FBE76C8B439 4000B02907E11FEB
+name: café
+lon: 0.500000
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+lon: abc
+detected: true
+texture: -2
+name: with: colon
+race: #c
+lat: {k: v}
+inBattlescape: false
+secondsRemaining: 0x10
+id: 17
+%%%%
+waypoint 3FF4F5C28F5C28F6 BFC7B9AC7411CAAD C015333333333333 401370A3D70A3D71
+lat: 0.980000
+lon: 0
+name: ~
+%%%%
+node
+links: [2147483647]
+type: -2
+id: 40
+dummy: true
+position: [54, 13, 2]
+rank: 2147483647
+flags: -99830
+%%%%
+equip
+slot: - x
+ammoItem: #c
+fuseTimer: 96
+slotX: 91723
+slotY: 0
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+lat: 1e3
+id: 33
+race: café
+lon: -0.970000
+name: #c
+inBattlescape: no
+%%%%
+equip
+slotX: 6986
+slot: #c
+ammoItem: a b
+%%%%
+node
+id: 75
+allocated: false
+links: []
+dummy:
+position: [42, 15, 2]
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+texture: 0x10
+race: café
+inBattlescape: false
+lon: 0
+id: 29
+detected: true
+name: NONE
+secondsRemaining: 33
+%%%%
+waypoint C017B851EB851EB8 C00CCCCCCCCCCCCD BFFD47AE147AE148 C016DB6DB6DB6DB7
+name: hello
+lat: -0.25
+id: -2147483648
+lon: .inf
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+id: -82510
+detected: [1, 2]
+lat: 1.5
+race: STR_AVALON
+inBattlescape: true
+lon: 3.14159265358979
+texture: ~
+%%%%
+equip
+slotY: -2147483648
+slotX: 49375
+fuseTimer: 0x10
+ammoItem: STR_HUMAN
+itemType: hello
+%%%%
+equip
+slotY: 0
+slotX: 0x10
+fuseTimer: 5
+itemType: STR_FOO
+%%%%
+alienbase STR_AB_MARK 6 STR_ALIENBASE_DEP
+lat: 0
+inBattlescape: false
+discovered: true
+race: STR_FOO
+id: 38
+%%%%
+equip
+slotY: 2147483647
+ammoItem: café
+fuseTimer: 3
+slotX: -2
+itemType: hello
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+discovered: true
+name: STR_AVALON
+lon: 3.14159265358979
+race: - x
+inBattlescape: no
+lat: .inf
+id: -2147483648
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 2147483647
+lon: -0.25
+lat: .inf
+race: STR_FOO
+discovered: true
+inBattlescape: true
+name: 'q'
+%%%%
+node
+links: []
+type: 40
+reserved: 189
+position: [22, 31, 3]
+dummy: false
+id: 52171
+rank: 0x10
+%%%%
+waypoint 3FE374BC6A7EF9DB 3FC395810624DD2F BFF947AE147AE148 3FD947AE147AE148
+name: ~
+lon: 6.5
+lat: 1e3
+id: 277
+%%%%
+waypoint 401428F5C28F5C29 C013E147AE147AE1 C0207AE147AE147B 40088DFEAF72F4BF
+lat: 6.5
+lon: 6.5
+id: 0x10
+name: - x
+%%%%
+equip
+itemType: - x
+fuseTimer: 19
+ammoItem: {k: v}
+slotY: 1
+slot: STR_AVALON
+%%%%
+equip
+slotY: 33
+ammoItem: NONE
+itemType: NONE
+slotX: 1
+%%%%
+equip
+slotX: 19
+slot: STR_HUMAN
+fuseTimer: 0x10
+itemType: 'q'
+ammoItem: STR_HUMAN
+%%%%
+alienbase STR_AB_MARK 7 STR_ALIENBASE_DEP
+name: café
+discovered: true
+lat: 6.5
+inBattlescape: true
+lon: -6.670000
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+lat: 6.5
+name: #c
+race: 'q'
+lon: [1, 2]
+discovered: true
+%%%%
+equip
+itemType:
+slotX: 126
+ammoItem: - x
+fuseTimer: [1, 2]
+%%%%
+waypoint BF934D4B3760EA50 40076C7747344705 3FEE9FBE76C8B439 3FDEB851EB851EB8
+name: STR_AVALON
+lon: 0.880000
+lat: 2.730000
+id: 89
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+lon: 6.5
+id: 266
+race: yes
+detected: false
+name: with: colon
+inBattlescape: no
+secondsRemaining: 26
+texture: -34954
+%%%%
+equip
+fuseTimer: -1
+slotX: -24858
+slot: {k: v}
+ammoItem: 'q'
+slotY: -2147483648
+itemType: STR_HUMAN
+%%%%
+node
+position: [1, 2]
+type: 10
+rank: -2147483648
+allocated: true
+flags: 4
+id: -2147483648
+links: [36]
+reserved: 29
+priority: {k: v}
+%%%%
+missionsite STR_SITE_MARK 7 STR_SITE_DEP STR_MISSION
+lat: 2.400000
+detected: true
+texture: abc
+inBattlescape: no
+id: 58
+secondsRemaining: 20
+name: STR_FOO
+lon: 2.870000
+%%%%
+node
+allocated: true
+links: [29, 2147483647, 14, -2147483648]
+priority: 30
+flags: -95110
+type: 2147483647
+rank: 16
+reserved: -2147483648
+position: [34, 10, 3]
+dummy: no
+id: 2147483647
+%%%%
+node
+reserved: {k: v}
+flags: 202
+dummy: true
+rank: 2147483647
+type: 33
+id: 40
+position: [37, 22, 3]
+links: [0x10, 174]
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+name: with: colon
+lat: -0.25
+lon: 1e3
+inBattlescape: true
+id: 14
+race: with: colon
+%%%%
+node
+links: [2147483647, 171]
+priority: 5
+reserved: -1
+allocated:
+dummy: no
+id: 38783
+flags: 0
+rank: 2147483647
+type: 0
+position: [54, 2, 1]
+%%%%
+equip
+fuseTimer: 287
+slotY: 24
+itemType: hello
+%%%%
+waypoint 4022AE147AE147AE 3FDDE353F7CED917 3FEBA5E353F7CED9 40022BC3CF223C96
+id: -2147483648
+name: STR_AVALON
+lat: 1e3
+lon: 3.14159265358979
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+race: 123
+detected: false
+lon: 1e3
+secondsRemaining: 2147483647
+inBattlescape: true
+id: -5
+name: a b
+texture: 72442
+%%%%
+missionsite STR_SITE_MARK 0 STR_SITE_DEP STR_MISSION
+lat: 0
+inBattlescape: abc
+name: - x
+detected: no
+id: 155
+lon: .inf
+race: hello
+secondsRemaining: -2147483648
+texture: 19
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+inBattlescape: no
+race: 'q'
+secondsRemaining: 0x10
+lon: 1.5
+detected: no
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+texture: 0
+id: -57207
+lon: 6.5
+race: café
+lat: 6.650000
+detected: no
+secondsRemaining: -2147483648
+name: with: colon
+%%%%
+waypoint C029249249249249 3FF578D4FDF3B646 3FF6F1A9FBE76C8B 3FF5A9FBE76C8B44
+lon: 1e3
+lat: 1.480000
+name: #c
+id: 1
+%%%%
+equip
+slotX: 23
+itemType: 123
+slot: STR_FOO
+slotY: 38
+fuseTimer: 2147483647
+ammoItem: STR_HUMAN
+%%%%
+waypoint C00589EAEECBD022 C022C7AE147AE148 BFE51C8A44920048 C00589EAEECBD022
+name: NONE
+lon: 1e3
+id: 65
+lat: 0.280000
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: 'q'
+id: 16
+inBattlescape: abc
+lat: .inf
+lon: -3.270000
+name: hello
+discovered: no
+%%%%
+node
+dummy: true
+rank: abc
+position: abc
+id: 22
+links: [37, -2147483648, 18, 169, 0x10]
+flags: 27301
+allocated: true
+type: [1, 2]
+%%%%
+node
+priority: 5
+id: -2147483648
+dummy: {k: v}
+allocated: no
+reserved: 1
+type: -2147483648
+position: [37, 22, 3]
+links: [31, 24380]
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+lon: 1e3
+detected: no
+inBattlescape: true
+secondsRemaining: 0x10
+race: - x
+id: 16
+texture: -14825
+%%%%
+node
+position: [48, 9, 3]
+type: 91
+links: [2147483647, 40]
+id: 0x10
+priority: 11
+flags: 0x10
+allocated: true
+rank: -5
+dummy: no
+%%%%
+waypoint C018924924924925 3FF9D2F1A9FBE76D C009249249249249 3FFD0DAD375B3606
+id: -2147483648
+lat: 1e3
+lon:
+%%%%
+equip
+slot: STR_AVALON
+ammoItem: yes
+slotX: -2147483648
+fuseTimer: 16
+itemType: - x
+slotY: 258
+%%%%
+waypoint 4018924924924925 4011A3D70A3D70A4 3FF6CCCCCCCCCCCD C022000000000000
+id: 0x10
+name:
+lon: -0.25
+%%%%
+equip
+slotX: {k: v}
+slot: hello
+itemType: yes
+ammoItem: with: colon
+slotY: 26
+%%%%
+node
+dummy: true
+id: -2
+position: [35, 56, 2]
+reserved: 22
+links: [-2147483648, 84532, -2147483648, -5]
+flags: -5
+priority: 2147483647
+allocated: true
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+race:
+lon: 4.110000
+detected: true
+name: STR_AVALON
+texture: 0x10
+%%%%
+node
+links: []
+reserved: 177
+rank: 82472
+position: [4, 42, 0]
+priority: 33
+allocated: true
+id: 98223
+type: 21
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: ~
+id: 0x10
+lon: 1e3
+inBattlescape: false
+name:
+lat: 6.5
+%%%%
+equip
+fuseTimer: 297
+slotY: 273
+slotX: 24
+slot: a b
+ammoItem: 'q'
+itemType: #c
+%%%%
+waypoint 3FF5837BD5B95A7F 4007333333333333 4028DB6DB6DB6DB7 3FFAE5604189374C
+name: NONE
+id: -95657
+lon: 3.14159265358979
+lat: 6.5
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+inBattlescape: false
+id: 278
+lat: 3.14159265358979
+race: STR_FOO
+discovered: no
+name:
+lon: 1.5
+%%%%
+waypoint 3FF60429CB2A8B44 C026492492492492 C0065E3D2A2CFA34 BFE3333333333333
+id: 0x10
+lat: -0.25
+lon: 0
+%%%%
+equip
+slotX: 2
+slotY: 34
+fuseTimer: 2147483647
+itemType: a b
+slot: a b
+%%%%
+waypoint 4004E147AE147AE1 3FF45604189374BC C020DB6DB6DB6DB7 BFF2666666666666
+lon: 2.470000
+name: a b
+lat: 6.5
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+lon: .inf
+texture: 4428
+name:
+id: -3
+race: STR_FOO
+detected: true
+secondsRemaining:
+inBattlescape: no
+%%%%
+missionsite STR_SITE_MARK 6 STR_SITE_DEP STR_MISSION
+lat: .inf
+secondsRemaining: 31
+name: #c
+detected: true
+texture: 38
+id: 0x10
+race: - x
+%%%%
+node
+reserved: 240
+dummy: false
+position: [11, 11, 0]
+allocated: true
+priority: 24
+flags: 14
+type: 4
+links: [16]
+rank: {k: v}
+%%%%
+node
+position: [45, 38, 2]
+reserved: 0x10
+links: []
+dummy: true
+rank: -2147483648
+type: 1
+id: 23
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+lon: .inf
+discovered: no
+race: 123
+id: 0x10
+lat: 2.670000
+%%%%
+alienbase STR_AB_MARK 4 STR_ALIENBASE_DEP
+lon: 1.910000
+name: - x
+inBattlescape: ~
+lat: -6.630000
+id: 18
+race: - x
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+secondsRemaining: -2147483648
+name: 123
+id: 194
+race: with: colon
+inBattlescape: true
+detected: no
+lon: 1.750000
+texture: 8
+lat: 3.14159265358979
+%%%%
+waypoint BFF5EB851EB851EC 3FE5810624DD2F1B 3FFC7EF9DB22D0E5 C022924924924925
+lat: 0.250000
+name: 123
+%%%%
+waypoint 3FE0ED916872B021 401AC28F5C28F5C3 4026492492492492 BFF71F421A56C35B
+name: yes
+id: -2147483648
+lat: 3.14159265358979
+lon: 0
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+name: STR_HUMAN
+lat: 1.5
+secondsRemaining: 35
+lon: 6.5
+inBattlescape: no
+race: 'q'
+id: 0x10
+%%%%
+equip
+slotX: 2147483647
+itemType: 'q'
+slotY: 36
+slot: STR_HUMAN
+ammoItem: 'q'
+%%%%
+equip
+slotX: 37743
+fuseTimer: 164
+itemType: with: colon
+slotY: 206
+slot:
+ammoItem: STR_AVALON
+%%%%
+node
+position: [5, 17, 2]
+rank: 4
+flags: -5
+type: -77294
+dummy: no
+allocated: no
+reserved: -8591
+id: 2147483647
+priority: -2147483648
+%%%%
+node
+allocated: true
+rank: -2147483648
+type: 22
+flags: -2147483648
+priority: -61119
+position: [57, 5, 0]
+dummy: [1, 2]
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+inBattlescape: true
+discovered: true
+lon: 1e3
+race: with: colon
+lat: 0
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+id: 2147483647
+texture: 0
+name: NONE
+lon: ~
+secondsRemaining: 87
+lat: 6.5
+detected: true
+race: NONE
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+lon: 0
+inBattlescape: false
+name:
+discovered: no
+lat: 3.14159265358979
+%%%%
+node
+rank: 0x10
+dummy: true
+priority: -2147483648
+allocated: true
+position: [17, 23, 2]
+links: [16]
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+lat: .inf
+detected: true
+lon: 3.200000
+texture: -2
+inBattlescape: false
+secondsRemaining: 2147483647
+race: #c
+id: 20352
+%%%%
+equip
+ammoItem: hello
+itemType: STR_HUMAN
+slotX: 0x10
+slotY: 33
+fuseTimer: -17807
+slot: NONE
+%%%%
+waypoint 3FFB8BA35707A3B9 3FF7333333333333 3FF5F3B645A1CAC1 3FFAFE172F7187AD
+lon: .inf
+name: NONE
+id: 33
+%%%%
+node
+links: []
+allocated: no
+priority: 2147483647
+reserved: 30
+type: 2147483647
+rank: -4
+flags: 30
+position: [42, 44, 3]
+%%%%
+waypoint 4029249249249249 401F6DB6DB6DB6DB 4011249249249249 401DB6DB6DB6DB6E
+id: 2147483647
+lat: 1.5
+name: yes
+lon: -0.25
+%%%%
+equip
+ammoItem: abc
+fuseTimer: 45
+slotY: 108
+itemType: café
+%%%%
+waypoint 3FF015BEAE261898 4018F5C28F5C28F6 C01F6DB6DB6DB6DB 402A924924924925
+lon: .inf
+id: 34
+name: café
+lat: 1.430000
+%%%%
+waypoint 3FB27F68151235E2 3FF5FBE76C8B4396 401F99999999999A 400C924924924925
+name: 'q'
+lat: 6.5
+%%%%
+node
+position: [58, 59, 0]
+links: [0, 33, 3]
+type: 129
+rank: -2147483648
+allocated: true
+id: 37
+flags: 0x10
+priority: 1
+dummy: true
+%%%%
+equip
+slotY: 2147483647
+itemType: hello
+slot: STR_AVALON
+ammoItem: with: colon
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+id: [1, 2]
+secondsRemaining: 59
+detected: no
+inBattlescape: false
+lon: -0.25
+race: 123
+name: #c
+lat: .inf
+%%%%
+equip
+slot: with: colon
+slotX: 51
+slotY: -2147483648
+fuseTimer: -51402
+itemType: STR_HUMAN
+ammoItem: STR_AVALON
+%%%%
+missionsite STR_SITE_MARK 4 STR_SITE_DEP STR_MISSION
+id: 166
+texture: 63
+race: #c
+secondsRemaining: -2147483648
+name: café
+lon: 3.14159265358979
+inBattlescape: no
+%%%%
+waypoint 3FFC000000000000 C0276DB6DB6DB6DB C01A492492492492 3FE47AE147AE147B
+lat: -0.25
+lon: 3.14159265358979
+id:
+name:
+%%%%
+waypoint C016492492492492 3FFFD169FD49C241 40213D70A3D70A3D 40003C594494DA6D
+lat: 0
+id: -3702
+name: {k: v}
+%%%%
+alienbase STR_AB_MARK 0 STR_ALIENBASE_DEP
+lon: {k: v}
+lat: 1.5
+discovered: no
+race: 'q'
+id: 2147483647
+%%%%
+node
+reserved: 27
+allocated: no
+links: [15]
+position:
+id: 2147483647
+dummy: no
+flags: 149
+type: 26
+%%%%
+missionsite STR_SITE_MARK 8 STR_SITE_DEP STR_MISSION
+detected: false
+lat: 1.5
+texture: 0x10
+name: #c
+lon: 6.5
+inBattlescape: false
+race: yes
+%%%%
+equip
+itemType: NONE
+slot: - x
+fuseTimer: 2147483647
+slotX: 3
+ammoItem: STR_FOO
+%%%%
+equip
+itemType: a b
+ammoItem: STR_HUMAN
+slotX: -1
+slotY: 0x10
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+lon: .inf
+detected: true
+texture: 95
+secondsRemaining: 0x10
+inBattlescape: false
+name: with: colon
+race: STR_FOO
+%%%%
+node
+rank: 35
+allocated: true
+priority: 142
+id: -67569
+links: [39, -2147483648]
+dummy: false
+reserved: 27
+position: [5, 50, 1]
+flags: 4
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+secondsRemaining: 0x10
+inBattlescape: true
+race: NONE
+lat: 6.5
+detected: false
+name: with: colon
+lon: 1e3
+%%%%
+equip
+ammoItem: NONE
+slot: 'q'
+slotY: 5
+itemType: #c
+slotX: 16
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+lon: -0.25
+name: a b
+id: 68957
+inBattlescape: true
+race: NONE
+discovered: false
+%%%%
+waypoint 3FEEF1A9FBE76C8B 3FB4E9117BFE532C 3FD5B6F49E4D079A 4014000000000000
+name: STR_FOO
+lon: 1.5
+%%%%
+node
+rank: 2147483647
+type: 177
+position: [1, 2, x]
+reserved: 39
+allocated: no
+id: abc
+links: abc
+flags: 0x10
+%%%%
+node
+reserved: 81
+dummy: no
+id: {k: v}
+rank: 38
+flags: -3
+position: [1, 2, x]
+%%%%
+alienbase STR_AB_MARK 1 STR_ALIENBASE_DEP
+id: -2
+lat: 3.710000
+inBattlescape: true
+name: - x
+discovered: no
+lon: -0.25
+race: #c
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+inBattlescape: true
+lon: -0.25
+lat:
+id: 2147483647
+name: ~
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+lon: .inf
+lat: -3.390000
+inBattlescape: true
+id: -59736
+race: a b
+discovered: no
+%%%%
+alienbase STR_AB_MARK 3 STR_ALIENBASE_DEP
+id: 31
+inBattlescape: true
+discovered: true
+lon: 1e3
+name: 123
+%%%%
+equip
+slot: with: colon
+ammoItem:
+slotX: 74
+fuseTimer: 66
+itemType:
+slotY: 12
+%%%%
+alienbase STR_AB_MARK 2 STR_ALIENBASE_DEP
+lat: 0
+lon: 1.590000
+id: -24990
+%%%%
+waypoint 3FE51EB851EB851F 4023B6DB6DB6DB6E C0036DB6DB6DB6DB C00DB6DB6DB6DB6E
+name: hello
+lon: 1e3
+lat:
+id: -2147483648
+%%%%
+missionsite STR_SITE_MARK 1 STR_SITE_DEP STR_MISSION
+race: a b
+name: café
+lon: 1.5
+texture: -1
+id: -2147483648
+detected: true
+inBattlescape: true
+lat: 1e3
+%%%%
+waypoint BFF4CCCCCCCCCCCD 40296DB6DB6DB6DB C00FD70A3D70A3D7 4024000000000000
+lat: 1.5
+lon: .inf
+name: 'q'
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+race:
+secondsRemaining: 1
+lon: .inf
+texture: -69892
+detected: false
+lat: 3.14159265358979
+inBattlescape: false
+name: 'q'
+%%%%
+waypoint 3FF010624DD2F1AA 3FE2E659A6399019 400DB6DB6DB6DB6E C026000000000000
+lon: abc
+lat: ~
+id: -169
+%%%%
+equip
+slot: NONE
+slotX: 0x10
+slotY: -20044
+itemType: STR_AVALON
+ammoItem: 'q'
+%%%%
+equip
+fuseTimer: 227
+ammoItem: a b
+slot: STR_HUMAN
+slotY: 135
+slotX: 63
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+name: with: colon
+id: 34
+race: STR_AVALON
+inBattlescape: true
+%%%%
+alienbase STR_AB_MARK 9 STR_ALIENBASE_DEP
+discovered: no
+inBattlescape: true
+id: 240
+lat: -0.25
+lon: .inf
+race: STR_FOO
+%%%%
+missionsite STR_SITE_MARK -1 STR_SITE_DEP STR_MISSION
+lon: 3.930000
+detected: false
+lat: -6.670000
+name: - x
+inBattlescape: false
+texture: [1, 2]
+%%%%
+missionsite STR_SITE_MARK 2 STR_SITE_DEP STR_MISSION
+lat: 1.5
+lon: 2.190000
+name: a b
+id: 15
+inBattlescape: false
+race: café
+texture: 24
+%%%%
+equip
+itemType: STR_FOO
+ammoItem: 'q'
+slot: yes
+slotX: 33
+%%%%
+waypoint 4003ADCDAF75CEE4 BFF0000000000000 3FEEC32FE0427570 C025B6DB6DB6DB6E
+id: 1
+lon: 1.5
+name: #c
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+name: - x
+discovered: {k: v}
+inBattlescape: true
+race: STR_FOO
+lon: 3.14159265358979
+lat: 1e3
+%%%%
+alienbase STR_AB_MARK 5 STR_ALIENBASE_DEP
+race: café
+inBattlescape:
+lat: 1.5
+discovered: true
+%%%%
+missionsite STR_SITE_MARK 9 STR_SITE_DEP STR_MISSION
+secondsRemaining: 170
+name: #c
+id: 23
+lon: 6.5
+lat: 2.060000
+detected: true
+texture: 189
+inBattlescape: no
+%%%%
+equip
+fuseTimer: {k: v}
+slot: STR_FOO
+ammoItem: 123
+itemType: - x
+slotX: 0x10
+slotY: 18
+%%%%
+node
+type: -5
+links: [-2147483648, -2147483648, 0x10]
+dummy: true
+position: [3, 6, 3]
+allocated: false
+rank: 34
+flags: 2147483647
+%%%%
+equip
+ammoItem: #c
+itemType: NONE
+fuseTimer: 22
+slot: - x
+slotX: 12
+slotY: 0x10
+%%%%
+node
+id: 294
+priority: 0x10
+allocated: true
+type: 52
+links: []
+rank: 2147483647
+position: [1, 2]
+reserved: 36
+flags: 1
+%%%%
+node
+flags: -2147483648
+priority: 78852
+type: ~
+allocated: true
+position: [46, 45, 1]
+id: 12
+dummy: [1, 2]
+links: [0x10, -2147483648, -14785, 2147483647]
+reserved: 2147483647
+%%%%
+missionsite STR_SITE_MARK 5 STR_SITE_DEP STR_MISSION
+lon: -0.25
+inBattlescape: true
+race: yes
+texture: 30
+lat: 5.790000
+detected: false
+%%%%
+missionsite STR_SITE_MARK 3 STR_SITE_DEP STR_MISSION
+secondsRemaining: 272
+race: 123
+inBattlescape: no
+lat: 0
+name: hello
+%%%%
+alienbase STR_AB_MARK 8 STR_ALIENBASE_DEP
+discovered: false
+name: yes
+lon: 0
+race: 'q'
+%%%%
+node
+allocated: no
+dummy: false
+rank: -74095
+flags: -2147483648
+position: [56, 57, 0]
+priority: 29
+links: []
+reserved: 13
+type: 2147483647
+id: -2147483648
+%%%%
+equip
+slot: NONE
+fuseTimer: 40
+ammoItem: with: colon
+slotX: -5
+itemType: 'q'
+%%%%
+node
+reserved: ~
+position: [18, 13, 0]
+id: -57246
+links: [1, 2]
+flags: -28771
+priority: 6
+allocated: false
+%%%%
+waypoint 3FF6D4FDF3B645A2 3FD89374BC6A7EFA C018F5C28F5C28F6 C016A3D70A3D70A4
+id: -5
+lon: 6.5
+lat: 0
+name: STR_AVALON
+%%%%
+waypoint 4026DB6DB6DB6DB7 4020DB6DB6DB6DB7 C00C924924924925 3FE79DB22D0E5604
+id: 214
+name:
+lat: -0.25
+lon: {k: v}
+%%%%
+waypoint C01FB851EB851EB8 4000A3D70A3D70A4 C0157AE147AE147B 401070A3D70A3D71
+name: - x
+id: 300
+lon: 1.5
+lat: .inf
+%%%%
+alienbase STR_AB_MARK -1 STR_ALIENBASE_DEP
+inBattlescape: true
+id: 14
+discovered: false
+lon: [1, 2]
+name: a b
+lat: 1.5
+race: 'q'
+%%%%
+equip
+itemType:
+slotX: 5
+slot: STR_FOO
+slotY: 0
+ammoItem: abc
