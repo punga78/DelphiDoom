@@ -1,3 +1,7 @@
 Tests/Data/Scanner/** -text
 Tests/Data/Collision/** -text
 Tests/Data/Xcom/** -text
+Tests/Data/Yaml/** -text
+Tests/Data/XcomSurface/** -text
+Tests/Data/XcomMod/** -text
+Tests/Data/XcomSave/** -text
