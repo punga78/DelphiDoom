@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  System.ZLib, DelphiDoom.XcomMod.Types, DelphiDoom.Yaml.Factory;
+  System.ZLib, DelphiDoom.Tests.XcomMod.DiskModFiles, DelphiDoom.XcomMod.Types, DelphiDoom.Yaml.Factory;
 
 { TXcomGoldenShared }
 
@@ -213,16 +213,27 @@ var
   LLoader: TXcomModLoader;
   LSources: TArray<TXcomModSource>;
   LIndex, LFile: Integer;
+  LRoots: TList<string>;
 begin
   LSources := FSources.ToArray;
-  for LIndex := 0 to High(LSources) do
-  begin
-    LSources[LIndex].Files := Copy(LSources[LIndex].Files);
-    for LFile := 0 to High(LSources[LIndex].Files) do
-      LSources[LIndex].Files[LFile] := IncludeTrailingPathDelimiter(FDataFolder) +
-        StringReplace(LSources[LIndex].Files[LFile], '/', '\', [rfReplaceAll]);
+  LRoots := TList<string>.Create;
+  try
+    for LIndex := 0 to High(LSources) do
+    begin
+      LSources[LIndex].Files := Copy(LSources[LIndex].Files);
+      for LFile := 0 to High(LSources[LIndex].Files) do
+        LSources[LIndex].Files[LFile] := IncludeTrailingPathDelimiter(FDataFolder) +
+          StringReplace(LSources[LIndex].Files[LFile], '/', '\', [rfReplaceAll]);
+      // the folder of the mod: the later a mod, the sooner its files are found
+      if Length(LSources[LIndex].Files) > 0 then
+        LRoots.Insert(0, ExtractFilePath(LSources[LIndex].Files[0]));
+    end;
+    LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'common');
+    LLoader := TXcomModLoader.Create(TYamlFactory.CreateDiskParser, TXcomGoldenShared.Create(FSprites, FSounds),
+      TXcomDiskModFiles.Create(LRoots.ToArray, TYamlFactory.CreateDiskParser));
+  finally
+    LRoots.Free;
   end;
-  LLoader := TXcomModLoader.Create(TYamlFactory.CreateDiskParser, TXcomGoldenShared.Create(FSprites, FSounds));
   try
     Result := LLoader.LoadAll(LSources);
   finally

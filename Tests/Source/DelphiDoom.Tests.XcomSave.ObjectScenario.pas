@@ -25,7 +25,7 @@ uses
   DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.EquipmentLayoutItem,
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomSave.ItemContainer,
   DelphiDoom.XcomSave.Vehicle, DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomSave.Production, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.UnitEnums,
+  DelphiDoom.XcomSave.Production, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.UnitEnums,
   DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomSave.BattleUnitStatistics, DelphiDoom.XcomSave.SoldierDeath,
   DelphiDoom.XcomSave.GameTime;
 

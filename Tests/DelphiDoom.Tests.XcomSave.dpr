@@ -49,6 +49,7 @@ uses
   DelphiDoom.XcomSave.Production in '..\Libs\XcomSave\DelphiDoom.XcomSave.Production.pas',
   DelphiDoom.XcomSave.NodeIteration in '..\Libs\XcomSave\DelphiDoom.XcomSave.NodeIteration.pas',
   DelphiDoom.XcomSave.UnitEnums in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitEnums.pas',
+  DelphiDoom.XcomMod.UnitStats in '..\Libs\XcomMod\DelphiDoom.XcomMod.UnitStats.pas',
   DelphiDoom.XcomSave.UnitStats in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitStats.pas',
   DelphiDoom.XcomSave.BattleUnitKills in '..\Libs\XcomSave\DelphiDoom.XcomSave.BattleUnitKills.pas',
   DelphiDoom.XcomSave.BattleUnitStatistics in '..\Libs\XcomSave\DelphiDoom.XcomSave.BattleUnitStatistics.pas',

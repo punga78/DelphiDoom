@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
   DelphiDoom.XcomSave.UnitEnums, DelphiDoom.XcomSave.NodeWriter, DelphiDoom.XcomSave.NodeIteration,
-  DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.BattleUnitKills;
+  DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.BattleUnitKills;
 
 type
   /// <summary>

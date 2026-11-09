@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Areas,
-  DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.Ruleset, DelphiDoom.Tests.XcomMod.DumpWriter;
+  DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.Ruleset, DelphiDoom.Tests.XcomMod.DumpWriter;
 
 type
   /// <summary>
@@ -34,6 +34,10 @@ type
     procedure DumpFacilities;
     procedure DumpCrafts;
     procedure DumpUfos;
+    class function StatsText(const AStats: TXcomUnitStats): string; static;
+    procedure DumpArmors;
+    procedure DumpSoldiers;
+    procedure DumpUnits;
     procedure DumpItems;
     procedure DumpInventories;
     procedure DumpResearch;
@@ -58,7 +62,8 @@ uses
   DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture,
   DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
   DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
-  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.MapBlock;
+  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier,
+  DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.SoldierNamePool;
 
 { TXcomModDump }
 
@@ -78,7 +83,7 @@ end;
 class function TXcomModDump.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
-    'invs', 'terrains', 'mapDataSets', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
     'commendations');
 end;
 
@@ -445,6 +450,145 @@ begin
   end;
 end;
 
+class function TXcomModDump.StatsText(const AStats: TXcomUnitStats): string;
+begin
+  Result := Format('%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d', [AStats.TimeUnits, AStats.Stamina, AStats.Health,
+    AStats.Bravery, AStats.Reactions, AStats.Firing, AStats.Throwing, AStats.Strength, AStats.PsiStrength,
+    AStats.PsiSkill, AStats.Melee]);
+end;
+
+procedure TXcomModDump.DumpArmors;
+var
+  LIndex, LType: Integer;
+  LRule: TXcomArmor;
+  LText: string;
+begin
+  for LIndex := 0 to FMod.Armors.Count - 1 do
+  begin
+    LRule := FMod.Armors.Rule(LIndex);
+    FWriter.Begin_('armors', FMod.Armors.Name(LIndex));
+    FWriter.Str('type', LRule.ArmorType);
+    FWriter.Str('spriteSheet', LRule.SpriteSheet);
+    FWriter.Str('spriteInv', LRule.SpriteInventory);
+    FWriter.Str('corpseGeo', LRule.CorpseGeoscape);
+    FWriter.Str('storeItem', LRule.StoreItem);
+    FWriter.Str('specWeapon', LRule.SpecialWeapon);
+    FWriter.Strs('corpseBattle', LRule.CorpseBattlescape);
+    FWriter.Int('frontArmor', LRule.FrontArmor);
+    FWriter.Int('sideArmor', LRule.SideArmor);
+    FWriter.Int('rearArmor', LRule.RearArmor);
+    FWriter.Int('underArmor', LRule.UnderArmor);
+    FWriter.Int('drawingRoutine', LRule.DrawingRoutine);
+    FWriter.Bool('drawBubbles', LRule.DrawBubbles);
+    FWriter.Int('movementType', LRule.MovementType);
+    FWriter.Int('size', LRule.Size);
+    FWriter.Int('weight', LRule.Weight);
+    LText := '[';
+    for LType := 0 to TXcomArmor.DAMAGE_TYPES - 1 do
+    begin
+      if LType > 0 then
+        LText := LText + ',';
+      LText := LText + TXcomDumpWriter.HexSingle(LRule.DamageModifier[LType]);
+    end;
+    FWriter.Line('damageModifier', LText + ']');
+    FWriter.Ints('loftempsSet', LRule.LoftempsSet);
+    FWriter.Line('stats', StatsText(LRule.Stats));
+    FWriter.Int('deathFrames', LRule.DeathFrames);
+    FWriter.Bool('constantAnimation', LRule.ConstantAnimation);
+    FWriter.Bool('hasInventory', LRule.HasInventory);
+    FWriter.Int('forcedTorso', LRule.ForcedTorso);
+    FWriter.Int('faceColorGroup', LRule.FaceColorGroup);
+    FWriter.Int('hairColorGroup', LRule.HairColorGroup);
+    FWriter.Int('utileColorGroup', LRule.UtileColorGroup);
+    FWriter.Int('rankColorGroup', LRule.RankColorGroup);
+    FWriter.Ints('faceColor', LRule.FaceColor);
+    FWriter.Ints('hairColor', LRule.HairColor);
+    FWriter.Ints('utileColor', LRule.UtileColor);
+    FWriter.Ints('rankColor', LRule.RankColor);
+    FWriter.Strs('units', LRule.Units);
+  end;
+end;
+
+procedure TXcomModDump.DumpSoldiers;
+var
+  LIndex, LPool: Integer;
+  LRule: TXcomRuleSoldier;
+  LNames: TXcomSoldierNamePool;
+begin
+  for LIndex := 0 to FMod.Soldiers.Count - 1 do
+  begin
+    LRule := FMod.Soldiers.Rule(LIndex);
+    FWriter.Begin_('soldiers', FMod.Soldiers.Name(LIndex));
+    FWriter.Str('type', LRule.SoldierType);
+    FWriter.Strs('requires', LRule.Requirements);
+    FWriter.Line('minStats', StatsText(LRule.MinStats));
+    FWriter.Line('maxStats', StatsText(LRule.MaxStats));
+    FWriter.Line('statCaps', StatsText(LRule.StatCaps));
+    FWriter.Str('armor', LRule.ArmorName);
+    FWriter.Int('costBuy', LRule.BuyCost);
+    FWriter.Int('costSalary', LRule.SalaryCost);
+    FWriter.Int('standHeight', LRule.StandHeight);
+    FWriter.Int('kneelHeight', LRule.KneelHeight);
+    FWriter.Int('floatHeight', LRule.FloatHeight);
+    FWriter.Int('femaleFrequency', LRule.FemaleFrequency);
+    FWriter.Int('value', LRule.Value);
+    FWriter.Int('transferTime', LRule.TransferTime);
+    FWriter.Ints('deathSoundMale', LRule.DeathSoundMale);
+    FWriter.Ints('deathSoundFemale', LRule.DeathSoundFemale);
+    FWriter.Card('pools', LRule.Names.Count);
+    for LPool := 0 to LRule.Names.Count - 1 do
+    begin
+      LNames := LRule.Names[LPool];
+      FWriter.Line('pool' + IntToStr(LPool), TXcomDumpWriter.QuoteList(LNames.MaleFirst) + ';' +
+        TXcomDumpWriter.QuoteList(LNames.FemaleFirst) + ';' + TXcomDumpWriter.QuoteList(LNames.MaleLast) + ';' +
+        TXcomDumpWriter.QuoteList(LNames.FemaleLast) + ';' + TXcomDumpWriter.IntList(LNames.LookWeights) + ';' +
+        IntToStr(LNames.TotalWeight) + ';' + IntToStr(LNames.FemaleFrequency));
+    end;
+  end;
+end;
+
+procedure TXcomModDump.DumpUnits;
+var
+  LIndex, LRow: Integer;
+  LRule: TXcomRuleUnit;
+  LText: string;
+begin
+  for LIndex := 0 to FMod.Units.Count - 1 do
+  begin
+    LRule := FMod.Units.Rule(LIndex);
+    FWriter.Begin_('units', FMod.Units.Name(LIndex));
+    FWriter.Str('type', LRule.UnitType);
+    FWriter.Str('race', LRule.Race);
+    FWriter.Str('rank', LRule.Rank);
+    FWriter.Line('stats', StatsText(LRule.Stats));
+    FWriter.Str('armor', LRule.Armor);
+    FWriter.Int('standHeight', LRule.StandHeight);
+    FWriter.Int('kneelHeight', LRule.KneelHeight);
+    FWriter.Int('floatHeight', LRule.FloatHeight);
+    FWriter.Ints('deathSound', LRule.DeathSounds);
+    FWriter.Int('value', LRule.Value);
+    FWriter.Int('aggroSound', LRule.AggroSound);
+    FWriter.Int('moveSound', LRule.MoveSound);
+    FWriter.Int('intelligence', LRule.Intelligence);
+    FWriter.Int('aggression', LRule.Aggression);
+    FWriter.Int('energyRecovery', LRule.EnergyRecovery);
+    FWriter.Int('specab', LRule.SpecialAbility);
+    FWriter.Str('spawnUnit', LRule.SpawnUnit);
+    FWriter.Bool('livingWeapon', LRule.LivingWeapon);
+    FWriter.Str('meleeWeapon', LRule.MeleeWeapon);
+    FWriter.Str('psiWeapon', LRule.PsiWeapon);
+    LText := '[';
+    for LRow := 0 to High(LRule.BuiltInWeapons) do
+    begin
+      if LRow > 0 then
+        LText := LText + ',';
+      LText := LText + TXcomDumpWriter.QuoteList(LRule.BuiltInWeapons[LRow]);
+    end;
+    FWriter.Line('builtInWeapons', LText + ']');
+    FWriter.Bool('capturable', LRule.Capturable);
+  end;
+end;
+
 procedure TXcomModDump.DumpInventories;
 var
   LIndex, LSlot: Integer;
@@ -622,6 +766,9 @@ begin
   DumpInventories;
   DumpTerrains;
   DumpMapDataSets;
+  DumpArmors;
+  DumpSoldiers;
+  DumpUnits;
   DumpResearch;
   DumpManufacture;
   DumpAlienRaces;

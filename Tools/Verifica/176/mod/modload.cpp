@@ -48,6 +48,7 @@
 #include "Battlescape/Position.h"
 #include "Mod/MapBlock.h"
 #include "Mod/Unit.h"
+#include "Mod/SoldierNamePool.h"
 #include "Mod/AlienDeployment.h"
 #include "Mod/ExtraSprites.h"
 #include "Mod/ExtraSounds.h"

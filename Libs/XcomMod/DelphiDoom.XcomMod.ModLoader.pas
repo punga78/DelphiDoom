@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.ModOffsets,
-  DelphiDoom.XcomMod.Ruleset;
+  DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModFiles.Intf;
 
 type
   /// <summary>A mod to load: its id, the space it reserves in the common sets and its ruleset files in order</summary>
@@ -36,8 +36,11 @@ type
   strict private
     FParser: IYamlParser;
     FShared: IXcomSharedResources;
+    FFiles: IXcomModFiles;
   public
-    constructor Create(const AParser: IYamlParser; const AShared: IXcomSharedResources);
+    /// <param name="AFiles">The virtual files of the mods (soldier names); nil if there are none</param>
+    constructor Create(const AParser: IYamlParser; const AShared: IXcomSharedResources;
+      const AFiles: IXcomModFiles = nil);
     /// <summary>
     ///   A new ruleset (the caller frees it). An error of a file is EXcomModException: "failed to load 'mod'" and
     ///   the text "file: message" of Mod::loadMod, as the C++ throws it
@@ -72,7 +75,8 @@ end;
 
 { TXcomModLoader }
 
-constructor TXcomModLoader.Create(const AParser: IYamlParser; const AShared: IXcomSharedResources);
+constructor TXcomModLoader.Create(const AParser: IYamlParser; const AShared: IXcomSharedResources;
+  const AFiles: IXcomModFiles);
 begin
   inherited Create;
   if not Assigned(AParser) then
@@ -81,6 +85,7 @@ begin
     raise EArgumentNilException.Create('AShared');
   FParser := AParser;
   FShared := AShared;
+  FFiles := AFiles;
 end;
 
 function TXcomModLoader.LoadAll(const AMods: TArray<TXcomModSource>): TXcomRuleset;
@@ -103,7 +108,7 @@ begin
     LData[LIndex] := TXcomModData.Make(AMods[LIndex].Name, 1000 * LOffset, 1000 * AMods[LIndex].ReservedSpace);
     Inc(LOffset, AMods[LIndex].ReservedSpace);
   end;
-  Result := TXcomRuleset.Create(FShared);
+  Result := TXcomRuleset.Create(FShared, FFiles);
   try
     for LIndex := 0 to High(AMods) do
     begin

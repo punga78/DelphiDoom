@@ -151,6 +151,50 @@ static void DumpUfos(Mod* m) {
   }
 }
 
+static std::string StatsStr(const UnitStats& s) {
+  return V(s.tu) + "/" + V(s.stamina) + "/" + V(s.health) + "/" + V(s.bravery) + "/" + V(s.reactions) + "/" + V(s.firing) + "/" + V(s.throwing) + "/" + V(s.strength) + "/" + V(s.psiStrength) + "/" + V(s.psiSkill) + "/" + V(s.melee);
+}
+
+static void DumpArmors(Mod* m) {
+  for (auto& p : m->_armors) {
+    Armor* r = p.second;
+    Begin("armors", p.first);
+    FM(_type); FM(_spriteSheet); FM(_spriteInv); FM(_corpseGeo); FM(_storeItem); FM(_specWeapon); FM(_corpseBattle);
+    FM(_frontArmor); FM(_sideArmor); FM(_rearArmor); FM(_underArmor); FM(_drawingRoutine); FM(_drawBubbles);
+    F("movementType", (int)r->_movementType); FM(_size); FM(_weight);
+    F("damageModifier", std::vector<float>(r->_damageModifier, r->_damageModifier + Armor::DAMAGE_TYPES));
+    FM(_loftempsSet); Line("stats", StatsStr(r->_stats)); FM(_deathFrames); FM(_constantAnimation); FM(_hasInventory);
+    F("forcedTorso", (int)r->_forcedTorso); FM(_faceColorGroup); FM(_hairColorGroup); FM(_utileColorGroup); FM(_rankColorGroup);
+    FM(_faceColor); FM(_hairColor); FM(_utileColor); FM(_rankColor); FM(_units);
+  }
+}
+
+static void DumpSoldiers(Mod* m) {
+  for (auto& p : m->_soldiers) {
+    RuleSoldier* r = p.second;
+    Begin("soldiers", p.first);
+    FM(_type); FM(_requires); Line("minStats", StatsStr(r->_minStats)); Line("maxStats", StatsStr(r->_maxStats));
+    Line("statCaps", StatsStr(r->_statCaps)); FM(_armor); FM(_costBuy); FM(_costSalary); FM(_standHeight); FM(_kneelHeight);
+    FM(_floatHeight); FM(_femaleFrequency); FM(_value); FM(_transferTime); FM(_deathSoundMale); FM(_deathSoundFemale);
+    F("pools", r->_names.size());
+    for (size_t i = 0; i < r->_names.size(); i++) {
+      SoldierNamePool* n = r->_names[i];
+      Line(("pool" + std::to_string(i)).c_str(), V(n->_maleFirst) + ";" + V(n->_femaleFirst) + ";" + V(n->_maleLast) + ";" + V(n->_femaleLast) + ";" + V(n->_lookWeights) + ";" + V(n->_totalWeight) + ";" + V(n->_femaleFrequency));
+    }
+  }
+}
+
+static void DumpUnits(Mod* m) {
+  for (auto& p : m->_units) {
+    Unit* r = p.second;
+    Begin("units", p.first);
+    FM(_type); FM(_race); FM(_rank); Line("stats", StatsStr(r->_stats)); FM(_armor); FM(_standHeight); FM(_kneelHeight);
+    FM(_floatHeight); FM(_deathSound); FM(_value); FM(_aggroSound); FM(_moveSound); FM(_intelligence); FM(_aggression);
+    FM(_energyRecovery); F("specab", (int)r->_specab); FM(_spawnUnit); FM(_livingWeapon); FM(_meleeWeapon); FM(_psiWeapon);
+    FM(_builtInWeapons); FM(_capturable);
+  }
+}
+
 static void DumpInventories(Mod* m) {
   for (auto& p : m->_invs) {
     RuleInventory* r = p.second;
@@ -235,6 +279,9 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("invs")) DumpInventories(m);
   if (Wanted("terrains")) DumpTerrains(m);
   if (Wanted("mapDataSets")) DumpMapDataSets(m);
+  if (Wanted("armors")) DumpArmors(m);
+  if (Wanted("soldiers")) DumpSoldiers(m);
+  if (Wanted("units")) DumpUnits(m);
   if (Wanted("research")) DumpResearch(m);
   if (Wanted("manufacture")) DumpManufacture(m);
   if (Wanted("alienRaces")) DumpAlienRaces(m);

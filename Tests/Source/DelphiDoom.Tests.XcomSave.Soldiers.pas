@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
-  DelphiDoom.XcomSave.UnitEnums, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.NodeIteration,
+  DelphiDoom.XcomSave.UnitEnums, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.NodeIteration,
   DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomSave.BattleUnitStatistics, DelphiDoom.XcomSave.GameTime,
   DelphiDoom.XcomSave.SoldierDeath;
 

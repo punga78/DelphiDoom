@@ -17,7 +17,9 @@ uses
   DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory,
   DelphiDoom.XcomMod.RuleMusic, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleCraftWeapon,
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
-  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.MapDataSet;
+  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.MapDataSet,
+  DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleSoldier, DelphiDoom.XcomMod.RuleUnit,
+  DelphiDoom.XcomMod.ModFiles.Intf;
 
 type
   /// <summary>
@@ -28,7 +30,11 @@ type
   TXcomRuleset = class
   strict private
     FShared: IXcomSharedResources;
+    FFiles: IXcomModFiles;
     FOffsets: TXcomModOffsets;
+    FArmors: TXcomRuleRegistry<TXcomArmor>;
+    FSoldiers: TXcomRuleRegistry<TXcomRuleSoldier>;
+    FUnits: TXcomRuleRegistry<TXcomRuleUnit>;
     FCountries: TXcomRuleRegistry<TXcomRuleCountry>;
     FRegions: TXcomRuleRegistry<TXcomRuleRegion>;
     FFacilities: TXcomRuleRegistry<TXcomRuleBaseFacility>;
@@ -56,11 +62,13 @@ type
     procedure LoadCrafts(const ADocument: IYamlNode);
     procedure LoadUfos(const ADocument: IYamlNode);
     procedure LoadTerrains(const ADocument: IYamlNode);
+    procedure LoadPeople(const ADocument: IYamlNode);
     procedure LoadCommendations(const ADocument: IYamlNode);
     procedure LoadResearch(const ADocument: IYamlNode);
   public
     /// <param name="AShared">The sizes of the common resource sets (the offsets of the rules need them)</param>
-    constructor Create(const AShared: IXcomSharedResources);
+    /// <param name="AFiles">The virtual files of the mods (the lists of soldier names); nil if there are none</param>
+    constructor Create(const AShared: IXcomSharedResources; const AFiles: IXcomModFiles = nil);
     destructor Destroy; override;
     /// <summary>
     ///   Sets the mods that share the sets (_modData) and the one that is being loaded (_modCurrent), the
@@ -79,6 +87,9 @@ type
     property Ufos: TXcomRuleRegistry<TXcomRuleUfo> read FUfos;
     property Inventories: TXcomRuleRegistry<TXcomRuleInventory> read FInventories;
     property Terrains: TXcomRuleRegistry<TXcomRuleTerrain> read FTerrains;
+    property Armors: TXcomRuleRegistry<TXcomArmor> read FArmors;
+    property Soldiers: TXcomRuleRegistry<TXcomRuleSoldier> read FSoldiers;
+    property Units: TXcomRuleRegistry<TXcomRuleUnit> read FUnits;
     /// <summary>The map data files that the terrains refer to (Mod::getMapDataSet makes them on demand)</summary>
     property MapDataSets: TXcomRuleRegistry<TXcomMapDataSet> read FMapDataSets;
     property Research: TXcomRuleRegistry<TXcomRuleResearch> read FResearch;
@@ -95,12 +106,19 @@ implementation
 
 { TXcomRuleset }
 
-constructor TXcomRuleset.Create(const AShared: IXcomSharedResources);
+constructor TXcomRuleset.Create(const AShared: IXcomSharedResources; const AFiles: IXcomModFiles);
 begin
   inherited Create;
   if not Assigned(AShared) then
     raise EArgumentNilException.Create('AShared');
   FShared := AShared;
+  FFiles := AFiles;
+  FArmors := TXcomRuleRegistry<TXcomArmor>.Create(
+    function(AType: string): TXcomArmor begin Result := TXcomArmor.Create(AType); end);
+  FSoldiers := TXcomRuleRegistry<TXcomRuleSoldier>.Create(
+    function(AType: string): TXcomRuleSoldier begin Result := TXcomRuleSoldier.Create(AType); end);
+  FUnits := TXcomRuleRegistry<TXcomRuleUnit>.Create(
+    function(AType: string): TXcomRuleUnit begin Result := TXcomRuleUnit.Create(AType); end);
   FCountries := TXcomRuleRegistry<TXcomRuleCountry>.Create(
     function(AType: string): TXcomRuleCountry begin Result := TXcomRuleCountry.Create(AType); end);
   FRegions := TXcomRuleRegistry<TXcomRuleRegion>.Create(
@@ -146,7 +164,9 @@ begin
   FAlienRaces.Free;
   FManufacture.Free;
   FResearch.Free;
-  // the terrains refer to the map data files: they go first
+  FUnits.Free;
+  FSoldiers.Free;
+  FArmors.Free;
   FUfos.Free;
   FCrafts.Free;
   FTerrains.Free;
@@ -222,6 +242,34 @@ begin
     LRule := FTerrains.LoadRule(LItem, 'name');
     if Assigned(LRule) then
       LRule.Load(LItem, FOffsets, FMapDataSets);
+  end;
+end;
+
+procedure TXcomRuleset.LoadPeople(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LArmor: TXcomArmor;
+  LSoldier: TXcomRuleSoldier;
+  LUnit: TXcomRuleUnit;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'armors').Items do
+  begin
+    LArmor := FArmors.LoadRule(LItem);
+    if Assigned(LArmor) then
+      LArmor.Load(LItem);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'soldiers').Items do
+  begin
+    LSoldier := FSoldiers.LoadRule(LItem);
+    if Assigned(LSoldier) then
+      LSoldier.Load(LItem, FOffsets, FFiles);
+  end;
+  for LItem in TXcomNodeReader.Field(ADocument, 'units').Items do
+  begin
+    // loadRule(*i, &_units): no index
+    LUnit := FUnits.LoadRule(LItem, 'type', False);
+    if Assigned(LUnit) then
+      LUnit.Load(LItem, FOffsets);
   end;
 end;
 
@@ -315,6 +363,7 @@ begin
     end;
   end;
   LoadTerrains(ADocument);
+  LoadPeople(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'alienRaces').Items do
   begin
     LRace := FAlienRaces.LoadRule(LItem, 'id');
