@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: OpenGL math library - the clipper of angles                     }
-{  Port of OPENGL\gl_clipper.pas, loosely based on the JDoom clipper.          }
+{  Port of Libs\OpenGl\Legacy\gl_clipper.pas, loosely based on the JDoom clipper.          }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

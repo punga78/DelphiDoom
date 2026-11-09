@@ -178,6 +178,7 @@ uses
   psi_system,
   psi_globals,
   ps_import,
+  ps_main,
   DelphiDoom.ScriptHost.Factory,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Intf,
@@ -185,6 +186,8 @@ uses
   DelphiDoom.Engine.Script.Environment,
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
+  DelphiDoom.Engine.Script.VariablesFailure,
+  DelphiDoom.Engine.Script.VariablesFiles,
   w_utils,
 {$IFDEF HEXEN}
   g_demo,
@@ -844,8 +847,8 @@ end;
 
 // The functions that scripts can call: the registry, with the units of script that are classes
 // (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists)
-procedure ComposeScriptHost(const AConsole: IEngineConsole; const ADefaults: IEngineDefaults;
-  const ARandom: IGameRandom);
+procedure ComposeScriptHost(const ALog: ILog; const AConsole: IEngineConsole;
+  const ADefaults: IEngineDefaults; const ARandom: IGameRandom);
 var
   LRegistry: IScriptFunctionRegistry;
   LSystem: IScriptSystemFunctions;
@@ -858,6 +861,8 @@ begin
   LRegistry.AddGroup(TScriptHostFactory.CreateFixedGroup(TEngineScriptRoutines.FixedRoutines));
   PS_ConfigureSystem(LSystem);
   PS_ConfigureScriptRegistry(LRegistry);
+  // the events and the serializer of the script state warn through the log
+  PS_ConfigureStateServices(ALog);
 end;
 
 procedure ComposeImaging;
@@ -941,7 +946,8 @@ begin
   P_ConfigureFiles(LFiles);
   M_ConfigureFiles(LFiles);
 {$ENDIF}
-  PS_ConfigureFiles(LFiles);
+  PS_ConfigureVariables(TEngineScriptVariablesFiles.Create(LFiles),
+    TEngineScriptVariablesFailure.Create);
   W_ConfigureFiles(LFiles);
   Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create(ASaveFileNames), AStore);
   I_ConfigureTempFiles(Result);
@@ -1299,7 +1305,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
-  ComposeScriptHost(LConsole, LDefaults, LRandom);
+  ComposeScriptHost(LLog, LConsole, LDefaults, LRandom);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;

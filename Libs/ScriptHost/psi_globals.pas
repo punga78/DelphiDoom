@@ -34,98 +34,21 @@ unit psi_globals;
 interface
 
 uses
-  DelphiDoom.Engine.Platform.Intf,
   d_delphi,
   SysUtils,
   Classes,
   ps_compiler,
-  ps_runtime;
+  ps_runtime,
+  DelphiDoom.ScriptHost.Variables.Intf;
 
-const
-  HASHSIZE = 8192;
-
+// The variables of the scripts of the map and of the world (Delphi Doom ScriptHost library:
+// TScriptVariables, created by PS_InitGlobals); this unit keeps the old API
 type
-  THashTable = class(TObject)
-  private
-    positions: array[0..HASHSIZE - 1] of TDNumberList;
-    fList: TStringList;
-    prevsearches: TDLimitNumberList;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    procedure AssignStringList(const s: TStringList);
-    procedure Insert(const str: string; const p: integer);
-    procedure Clear;
-    function CheckPos(const value: string): integer;
-    property List: TStringList read fList;
-  end;
-
-type
-  THashStringList = class(TStringList)
-  protected
-    fhash: THashTable;
-    procedure InsertItem(Index: Integer; const S: string; AObject: TObject); override;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    function IndexOf(const S: string): Integer; override;
-  end;
-
-//==============================================================================
-//
-// FreeHashList
-//
-//==============================================================================
-procedure FreeHashList(var s: THashStringList);
-
-type
-  TGlobalVariablesList = class(TObject)
-  private
-    fStringList: THashStringList;
-    fIntegerList: THashStringList;
-    fFloatList: THashStringList;
-  protected
-    function GetInteger(name: string): integer; virtual;
-    procedure PutInteger(name: string; const value: integer); virtual;
-    function GetIntegerArray(name: string; index: integer): integer; virtual;
-    procedure PutIntegerArray(name: string; index: integer; const value: integer); virtual;
-    function GetFloat(name: string): float; virtual;
-    procedure PutFloat(name: string; const value: float); virtual;
-    function GetFloatArray(name: string; index: integer): float; virtual;
-    procedure PutFloatArray(name: string; index: integer; const value: float); virtual;
-    function GetString(name: string): string; virtual;
-    procedure PutString(name: string; const value: string); virtual;
-    function GetStringArray(name: string; index: integer): string; virtual;
-    procedure PutStringArray(name: string; index: integer; const value: string); virtual;
-    function DoAddString(const name: string; const value: string): integer; virtual;
-    function DoAddInteger(const name: string; const value: integer): integer; virtual;
-    function DoAddFloat(const name: string; const value: float): integer; virtual;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    function AddString(const name: string; const value: string): integer; virtual;
-    function AddInteger(const name: string; const value: integer): integer; virtual;
-    function AddFloat(const name: string; const value: float): integer; virtual;
-    procedure Clear;
-    function LoadFromBuffer(const pbuf: pointer): integer;
-    procedure LoadFromFile(const fname: string);
-    function SaveToBuffer(const pbuf: pointer): integer;
-    procedure SaveToFile(const fname: string);
-    function StructureSize: integer;
-    property IntVal[name: string]: integer read GetInteger write PutInteger;
-    property IntValArray[name: string; index: integer]: integer read GetIntegerArray write PutIntegerArray;
-    property FloatVal[name: string]: float read GetFloat write PutFloat;
-    property FloatValArray[name: string; index: integer]: float read GetFloatArray write PutFloatArray;
-    property StrVal[name: string]: string read GetString write PutString;
-    property StrValArray[name: string; index: integer]: string read GetStringArray write PutStringArray;
-    property Strings: THashStringList read fStringList;
-    property Integers: THashStringList read fIntegerList;
-    property Floats: THashStringList read fFloatList;
-  end;
+  TGlobalVariablesList = IScriptVariables;
 
 var
-  mapvars: TGlobalVariablesList;
-  worldvars: TGlobalVariablesList;
+  mapvars: IScriptVariables;
+  worldvars: IScriptVariables;
 
 //==============================================================================
 //
@@ -230,11 +153,11 @@ procedure PS_ShutDownGlobals;
 type
   TGlobalStrings = class(TObject)
   protected
-    flist: TGlobalVariablesList;
+    flist: IScriptVariables;
     function Get(vname: string): string; virtual;
     procedure Put(vname: string; const value: string); virtual;
   public
-    constructor Create(const alist: TGlobalVariablesList); virtual;
+    constructor Create(const alist: IScriptVariables); virtual;
   end;
 
   TMapStrings = class(TGlobalStrings)
@@ -254,11 +177,11 @@ type
 type
   TGlobalIntegers = class(TObject)
   protected
-    flist: TGlobalVariablesList;
+    flist: IScriptVariables;
     function Get(vname: string): integer; virtual;
     procedure Put(vname: string; const value: integer); virtual;
   public
-    constructor Create(const alist: TGlobalVariablesList); virtual;
+    constructor Create(const alist: IScriptVariables); virtual;
   end;
 
   TMapIntegers = class(TGlobalIntegers)
@@ -278,11 +201,11 @@ type
 type
   TGlobalFloats = class(TObject)
   protected
-    flist: TGlobalVariablesList;
+    flist: IScriptVariables;
     function Get(vname: string): float; virtual;
     procedure Put(vname: string; const value: float); virtual;
   public
-    constructor Create(const alist: TGlobalVariablesList); virtual;
+    constructor Create(const alist: IScriptVariables); virtual;
   end;
 
   TMapFloats = class(TGlobalFloats)
@@ -320,814 +243,47 @@ procedure RIRegisterRTL_GlobalVars(Exec: TPSExec);
 
 //==============================================================================
 //
-// PS_ConfigureFiles
-// The files, given by the composition root
+// PS_ConfigureVariables
+// The files and the failure of the variables, given by the composition root
 //
 //==============================================================================
-procedure PS_ConfigureFiles(const AFiles: IEngineFiles);
+procedure PS_ConfigureVariables(const AFiles: IScriptVariablesFiles;
+  const AFailure: IScriptVariablesFailure);
 
 implementation
 
 uses
   c_cmds,
   i_system,
-  z_zone;
+  DelphiDoom.ScriptHost.Factory;
 
 var
   // given by the composition root
-  ps_files_ref: IEngineFiles = nil;
+  ps_variables_files: IScriptVariablesFiles = nil;
+  ps_variables_failure: IScriptVariablesFailure = nil;
 
 //==============================================================================
 //
-// PS_ConfigureFiles
+// PS_ConfigureVariables
 //
 //==============================================================================
-procedure PS_ConfigureFiles(const AFiles: IEngineFiles);
+procedure PS_ConfigureVariables(const AFiles: IScriptVariablesFiles;
+  const AFailure: IScriptVariablesFailure);
 begin
-  ps_files_ref := AFiles;
+  ps_variables_files := AFiles;
+  ps_variables_failure := AFailure;
 end;
 
 //==============================================================================
 //
-// PS_Files
+// PS_NewVariables
 //
 //==============================================================================
-function PS_Files: IEngineFiles;
+function PS_NewVariables: IScriptVariables;
 begin
-  if ps_files_ref = nil then
-    I_Error('PS_ConfigureFiles() was not called: the files are missing');
-  result := ps_files_ref;
-end;
-
-
-//==============================================================================
-//
-// Hash
-//
-//==============================================================================
-function Hash(const name: string): integer;
-var
-  b: Byte;
-  i: integer;
-  len: integer;
-begin
-  len := Length(name);
-  if len = 0 then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  b := Ord(name[1]);
-
-  Result := 5381 * 33 + b;
-
-  for i := 2 to len do
-  begin
-    b := Ord(name[i]);
-    Result := Result * 33 + b;
-  end;
-
-  Result := Result and (HASHSIZE - 1);
-end;
-
-//==============================================================================
-//
-// THashTable.Create
-//
-//==============================================================================
-constructor THashTable.Create;
-begin
-  inherited;
-  flist := nil;
-  prevsearches := TDLimitNumberList.CreateLimited(5);
-  FillChar(positions, SizeOf(positions), 0);
-end;
-
-//==============================================================================
-//
-// THashTable.Destroy
-//
-//==============================================================================
-destructor THashTable.Destroy;
-var
-  i: integer;
-begin
-  for i := 0 to HASHSIZE - 1 do
-    if positions[i] <> nil then
-      positions[i].Free;
-  prevsearches.Free;
-  inherited;
-end;
-
-//==============================================================================
-//
-// THashTable.Insert
-//
-//==============================================================================
-procedure THashTable.Insert(const str: string; const p: integer);
-var
-  h: integer;
-begin
-  if flist = nil then
-    Exit;
-
-  h := Hash(str);
-  if positions[h] = nil then
-    positions[h] := TDNumberList.Create;
-  positions[h].Add(p);
-end;
-
-//==============================================================================
-//
-// THashTable.AssignStringList
-//
-//==============================================================================
-procedure THashTable.AssignStringList(const s: TStringList);
-var
-  i: integer;
-  h: integer;
-begin
-  Clear;
-  flist := s;
-  for i := 0 to flist.Count - 1 do
-  begin
-    h := Hash(flist.Strings[i]);
-    if positions[h] = nil then
-      positions[h] := TDNumberList.Create;
-    positions[h].Add(i);
-  end;
-end;
-
-//==============================================================================
-//
-// THashTable.Clear
-//
-//==============================================================================
-procedure THashTable.Clear;
-var
-  i: integer;
-begin
-  for i := 0 to HASHSIZE - 1 do
-    if positions[i] <> nil then
-      positions[i].Clear;
-end;
-
-//==============================================================================
-//
-// THashTable.CheckPos
-//
-//==============================================================================
-function THashTable.CheckPos(const value: string): integer;
-var
-  h: integer;
-  i: integer;
-  n: integer;
-begin
-  for i := prevsearches.Count - 1 downto 0 do
-  begin
-    n := prevsearches[i];
-    if (n > -1) and (n < fList.Count) then
-      if flist.Strings[n] = value then
-      begin
-        Result := n;
-        Exit;
-      end;
-  end;
-
-  h := Hash(value);
-  if positions[h] = nil then
-  begin
-    Result := -1;
-    Exit;
-  end;
-
-  for i := 0 to positions[h].Count - 1 do
-  begin
-    n := positions[h].Numbers[i];
-    if (n > -1) and (n < fList.Count) then
-      if flist.Strings[n] = value then
-      begin
-        Result := n;
-        prevsearches.Add(Result);
-        Exit;
-      end;
-  end;
-
-  Result := -1;
-end;
-
-//==============================================================================
-//
-// THashStringList.Create
-//
-//==============================================================================
-constructor THashStringList.Create;
-begin
-  fhash := THashTable.Create;
-  Inherited Create;
-  fhash.AssignStringList(self);
-end;
-
-//==============================================================================
-//
-// THashStringList.Destroy
-//
-//==============================================================================
-destructor THashStringList.Destroy;
-begin
-  Inherited;
-  fhash.Free;
-end;
-
-//==============================================================================
-//
-// THashStringList.InsertItem
-//
-//==============================================================================
-procedure THashStringList.InsertItem(Index: Integer; const S: string; AObject: TObject);
-var
-  rebuildhash: boolean;
-begin
-  rebuildhash := Index < Count;
-  inherited InsertItem(Index, S, AObject);
-  if rebuildhash then
-  begin
-    if not Sorted then
-      fhash.AssignStringList(self);
-  end
-  else
-    fhash.Insert(s, Index);
-end;
-
-//==============================================================================
-//
-// THashStringList.IndexOf
-//
-//==============================================================================
-function THashStringList.IndexOf(const S: string): Integer;
-begin
-  if Count = 0 then
-  begin
-    Result := -1;
-    Exit;
-  end;
-
-  if Sorted then
-  begin
-    if not Find(S, Result) then
-      Result := -1;
-    Exit;
-  end;
-
-  Result := fhash.CheckPos(S);
-end;
-
-//==============================================================================
-//
-// FreeHashList
-//
-//==============================================================================
-procedure FreeHashList(var s: THashStringList);
-var
-  i: integer;
-begin
-  if s = nil then
-    Exit;
-  for i := 0 to s.Count - 1 do
-    if s.Objects[i] <> nil then
-      s.Objects[i].Free;
-  s.Free;
-  s := nil;
-end;
-
-//==============================================================================
-// TGlobalVariablesList.Create
-//
-////////////////////////////////////////////////////////////////////////////////
-//
-//==============================================================================
-constructor TGlobalVariablesList.Create;
-begin
-  inherited Create;
-  fStringList := THashStringList.Create;
-  fIntegerList := THashStringList.Create;
-  fFloatList := THashStringList.Create;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.Destroy
-//
-//==============================================================================
-destructor TGlobalVariablesList.Destroy;
-begin
-  FreeHashList(fStringList);
-  FreeHashList(fIntegerList);
-  FreeHashList(fFloatList);
-  inherited;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.Clear
-//
-//==============================================================================
-procedure TGlobalVariablesList.Clear;
-begin
-  FreeHashList(fStringList);
-  FreeHashList(fIntegerList);
-  FreeHashList(fFloatList);
-  fStringList := THashStringList.Create;
-  fIntegerList := THashStringList.Create;
-  fFloatList := THashStringList.Create;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetInteger
-//
-//==============================================================================
-function TGlobalVariablesList.GetInteger(name: string): integer;
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fIntegerList.IndexOf(uname);
-  if idx < 0 then
-  begin
-    idx := fFloatList.IndexOf(uname);
-    if idx < 0 then
-    begin
-      Result := 0;
-      Exit;
-    end;
-    Result := Round((fFloatList.Objects[idx] as TFloat).floatnum);
-    Exit;
-  end;
-  Result := (fIntegerList.Objects[idx] as TInteger).intnum;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutInteger
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutInteger(name: string; const value: integer);
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fIntegerList.IndexOf(uname);
-  if idx < 0 then
-    DoAddInteger(uname, value)
-  else
-    (fIntegerList.Objects[idx] as TInteger).intnum := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetIntegerArray
-//
-//==============================================================================
-function TGlobalVariablesList.GetIntegerArray(name: string; index: integer): integer;
-begin
-  Result := GetInteger(sfmt(name + '[%d]', [index]));
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutIntegerArray
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutIntegerArray(name: string; index: integer; const value: integer);
-begin
-  PutInteger(sfmt(name + '[%d]', [index]), value);
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetFloat
-//
-//==============================================================================
-function TGlobalVariablesList.GetFloat(name: string): float;
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fFloatList.IndexOf(uname);
-  if idx < 0 then
-  begin
-    idx := fIntegerList.IndexOf(uname);
-    if idx < 0 then
-    begin
-      Result := 0.0;
-      Exit;
-    end;
-    Result := (fIntegerList.Objects[idx] as TInteger).intnum;
-    Exit;
-  end;
-  Result := (fFloatList.Objects[idx] as TFloat).floatnum;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutFloat
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutFloat(name: string; const value: float);
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fFloatList.IndexOf(uname);
-  if idx < 0 then
-    DoAddFloat(uname, value)
-  else
-    (fFloatList.Objects[idx] as TFloat).floatnum := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetFloatArray
-//
-//==============================================================================
-function TGlobalVariablesList.GetFloatArray(name: string; index: integer): float;
-begin
-  Result := GetFloat(sfmt(name + '[%d]', [index]));
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutFloatArray
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutFloatArray(name: string; index: integer; const value: float);
-begin
-  PutFloat(sfmt(name + '[%d]', [index]), value);
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetString
-//
-//==============================================================================
-function TGlobalVariablesList.GetString(name: string): string;
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fStringList.IndexOf(uname);
-  if idx < 0 then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := (fStringList.Objects[idx] as TString).str;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutString
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutString(name: string; const value: string);
-var
-  uname: string;
-  idx: integer;
-begin
-  uname := UpperCase(name);
-  idx := fStringList.IndexOf(uname);
-  if idx < 0 then
-    DoAddString(uname, value)
-  else
-    (fStringList.Objects[idx] as TString).str := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.GetStringArray
-//
-//==============================================================================
-function TGlobalVariablesList.GetStringArray(name: string; index: integer): string;
-begin
-  Result := GetString(sfmt(name + '[%d]', [index]));
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.PutStringArray
-//
-//==============================================================================
-procedure TGlobalVariablesList.PutStringArray(name: string; index: integer; const value: string);
-begin
-  PutString(sfmt(name + '[%d]', [index]), value);
-end;
-
-//==============================================================================
-// TGlobalVariablesList.DoAddString
-//
-// Assumes name is in Uppercase and is not duplicate
-//
-//==============================================================================
-function TGlobalVariablesList.DoAddString(const name: string; const value: string): integer;
-begin
-  Result := fStringList.AddObject(name, TString.Create(value));
-end;
-
-//==============================================================================
-// TGlobalVariablesList.DoAddInteger
-//
-// Assumes name is in Uppercase and is not duplicate
-//
-//==============================================================================
-function TGlobalVariablesList.DoAddInteger(const name: string; const value: integer): integer;
-begin
-  Result := fIntegerList.AddObject(name, TInteger.Create(value));
-end;
-
-//==============================================================================
-// TGlobalVariablesList.DoAddFloat
-//
-// Assumes name is in Uppercase and is not duplicate
-//
-//==============================================================================
-function TGlobalVariablesList.DoAddFloat(const name: string; const value: float): integer;
-begin
-  Result := fFloatList.AddObject(name, TFloat.Create(value));
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.AddString
-//
-//==============================================================================
-function TGlobalVariablesList.AddString(const name: string; const value: string): integer;
-var
-  uname: string;
-begin
-  uname := UpperCase(name);
-  Result := fStringList.IndexOf(uname);
-  if Result < 0 then
-    Result := DoAddString(uname, value)
-  else
-    (fStringList.Objects[Result] as TString).str := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.AddInteger
-//
-//==============================================================================
-function TGlobalVariablesList.AddInteger(const name: string; const value: integer): integer;
-var
-  uname: string;
-begin
-  uname := UpperCase(name);
-  Result := fIntegerList.IndexOf(uname);
-  if Result < 0 then
-    Result := DoAddInteger(uname, value)
-  else
-    (fIntegerList.Objects[Result] as TInteger).intnum := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.AddFloat
-//
-//==============================================================================
-function TGlobalVariablesList.AddFloat(const name: string; const value: float): integer;
-var
-  uname: string;
-begin
-  uname := UpperCase(name);
-  Result := fFloatList.IndexOf(uname);
-  if Result < 0 then
-    Result := DoAddFloat(uname, value)
-  else
-    (fFloatList.Objects[Result] as TFloat).floatnum := value;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.LoadFromBuffer
-//
-//==============================================================================
-function TGlobalVariablesList.LoadFromBuffer(const pbuf: pointer): integer;
-var
-  p: integer;
-  buf: PByteArray;
-
-  function GET_INTEGER: integer;
-  begin
-    Result := PInteger(@buf[p])^;
-    Inc(p, SizeOf(integer));
-  end;
-
-  function GET_FLOAT: float;
-  begin
-    Result := PFloat(@buf[p])^;
-    Inc(p, SizeOf(float));
-  end;
-
-  function GET_CHAR: char;
-  begin
-    Result := PChar(@buf[p])^;
-    Inc(p, SizeOf(char));
-  end;
-
-  function GET_STRING: string;
-  var
-    x: integer;
-    len: integer;
-  begin
-    len := GET_INTEGER;
-    SetLength(Result, len);
-    for x := 1 to len do
-      Result[x] := GET_CHAR;
-  end;
-
-var
-  i, num: integer;
-  tmpn: string;
-begin
-  Clear;
-  p := 0;
-  buf := pbuf;
-
-  // Load strings
-  num := GET_INTEGER;
-  for i := 0 to num - 1 do
-  begin
-    tmpn := GET_STRING;
-    AddString(tmpn, GET_STRING);
-  end;
-
-  // Load integers
-  num := GET_INTEGER;
-  for i := 0 to num - 1 do
-  begin
-    tmpn := GET_STRING;
-    AddInteger(tmpn, GET_INTEGER);
-  end;
-
-  // Load integers
-  num := GET_INTEGER;
-  for i := 0 to num - 1 do
-  begin
-    tmpn := GET_STRING;
-    AddFloat(tmpn, GET_FLOAT);
-  end;
-
-  Result := p;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.LoadFromFile
-//
-//==============================================================================
-procedure TGlobalVariablesList.LoadFromFile(const fname: string);
-var
-  len: integer;
-  buf: Pointer;
-  buf1: Pointer;
-begin
-  len := PS_Files.ReadFile(fname, buf);
-  buf1 := buf;
-  incp(pointer(buf1), SizeOf(Integer));
-  LoadFromBuffer(buf1);
-  if len - SizeOf(integer) <> StructureSize then
-    I_Error('TGlobalVariablesList.LoadFromFile(): Can not load from file %s', [fname]);
-  Z_Free(buf);
-end;
-
-//==============================================================================
-// TGlobalVariablesList.SaveToBuffer
-//
-// Returns the bytes written
-//
-//==============================================================================
-function TGlobalVariablesList.SaveToBuffer(const pbuf: pointer): integer;
-var
-  p: integer;
-  buf: PByteArray;
-
-  procedure PUT_INTEGER(const v: integer);
-  begin
-    PInteger(@buf[p])^ := v;
-    p := p + SizeOf(integer);
-  end;
-
-  procedure PUT_FLOAT(const v: float);
-  begin
-    PFloat(@buf[p])^ := v;
-    p := p + SizeOf(float);
-  end;
-
-  procedure PUT_CHAR(const v: char);
-  begin
-    PChar(@buf[p])^ := v;
-    p := p + SizeOf(char);
-  end;
-
-  procedure PUT_STRING(const v: string);
-  var
-    x: integer;
-    len: integer;
-  begin
-    len := Length(v);
-    PUT_INTEGER(len);
-    for x := 1 to len do
-      PUT_CHAR(v[x]);
-  end;
-
-var
-  i: integer;
-begin
-  p := 0;
-  buf := pbuf;
-
-  PUT_INTEGER(fStringList.Count);
-  for i := 0 to fStringList.Count - 1 do
-  begin
-    PUT_STRING(fStringList.Strings[i]);
-    PUT_STRING((fStringList.Objects[i] as TString).str);
-  end;
-
-  PUT_INTEGER(fIntegerList.Count);
-  for i := 0 to fIntegerList.Count - 1 do
-  begin
-    PUT_STRING(fIntegerList.Strings[i]);
-    PUT_INTEGER((fIntegerList.Objects[i] as TInteger).intnum);
-  end;
-
-  PUT_INTEGER(fFloatList.Count);
-  for i := 0 to fFloatList.Count - 1 do
-  begin
-    PUT_STRING(fFloatList.Strings[i]);
-    PUT_FLOAT((fFloatList.Objects[i] as TFloat).floatnum);
-  end;
-
-  Result := p;
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.SaveToFile
-//
-//==============================================================================
-procedure TGlobalVariablesList.SaveToFile(const fname: string);
-var
-  len: integer;
-  buf: Pointer;
-  buf1: Pointer;
-begin
-  len := StructureSize;
-  buf := malloc(len + SizeOf(Integer));
-  PInteger(buf)^ := len;
-  buf1 := buf;
-  incp(buf1, SizeOf(Integer));
-  SaveToBuffer(buf1);
-  PS_Files.WriteFile(fname, buf, len + SizeOf(integer));
-  memfree(buf, len + SizeOf(Integer));
-end;
-
-//==============================================================================
-//
-// TGlobalVariablesList.StructureSize
-//
-//==============================================================================
-function TGlobalVariablesList.StructureSize: integer;
-var
-  i: integer;
-begin
-  Result := SizeOf(integer);
-
-  for i := 0 to fStringList.Count - 1 do
-  begin
-    Result := Result + SizeOf(integer) + Length(fStringList.Strings[i]) * SizeOf(char);
-    Result := Result + SizeOf(integer) + Length((fStringList.Objects[i] as TString).str) * SizeOf(char);
-  end;
-
-  Result := Result + SizeOf(integer);
-  for i := 0 to fIntegerList.Count - 1 do
-  begin
-    Result := Result + SizeOf(integer) + Length(fIntegerList.Strings[i]) * SizeOf(char);
-    Result := Result + SizeOf(integer);
-  end;
-
-  Result := Result + SizeOf(integer);
-  for i := 0 to fFloatList.Count - 1 do
-  begin
-    Result := Result + SizeOf(integer) + Length(fFloatList.Strings[i]) * SizeOf(char);
-    Result := Result + SizeOf(float);
-  end;
+  if (ps_variables_files = nil) or (ps_variables_failure = nil) then
+    I_Error('PS_ConfigureVariables() was not called: the variables of the scripts are missing');
+  Result := TScriptHostFactory.CreateVariables(ps_variables_files, ps_variables_failure);
 end;
 
 //==============================================================================
@@ -1255,7 +411,7 @@ end;
 // CmdGetVar
 //
 //==============================================================================
-procedure CmdGetVar(const s1, s2: string; vars: TGlobalVariablesList;
+procedure CmdGetVar(const s1, s2: string; const vars: IScriptVariables;
   const desc: string);
 var
   s: string;
@@ -1272,11 +428,11 @@ begin
     splitstring_ch(s, v1, v2);
     if v1 <> '' then
     begin
-      if vars.fStringList.IndexOf(v1) >= 0 then
+      if vars.HasString(v1) then
         printf('[%s]=%s'#13#10, [v1, vars.StrVal[v1]])
-      else if vars.fIntegerList.IndexOf(v1) >= 0 then
+      else if vars.HasInteger(v1) then
         printf('[%s]=%d'#13#10, [v1, vars.IntVal[v1]])
-      else if vars.fFloatList.IndexOf(v1) >= 0 then
+      else if vars.HasFloat(v1) then
         printf('[%s]=%2.3f'#13#10, [v1, vars.FloatVal[v1]])
       else
         printf('[%s] - (undeclared %s variable)'#13#10, [v1, desc]);
@@ -1310,7 +466,7 @@ end;
 // CmdSetVar
 //
 //==============================================================================
-procedure CmdSetVar(const s1, s2: string; vars: TGlobalVariablesList;
+procedure CmdSetVar(const s1, s2: string; const vars: IScriptVariables;
   const desc: string);
 begin
   if s1 = '' then
@@ -1331,11 +487,11 @@ begin
     Exit;
   end;
 
-  if vars.fStringList.IndexOf(s1) >= 0 then
+  if vars.HasString(s1) then
     vars.StrVal[s1] := s2
-  else if vars.fIntegerList.IndexOf(s1) >= 0 then
+  else if vars.HasInteger(s1) then
     vars.IntVal[s1] := atoi(s2)
-  else if vars.fFloatList.IndexOf(s1) >= 0 then
+  else if vars.HasFloat(s1) then
     vars.FloatVal[s1] := atof(s2)
   else
   begin
@@ -1383,8 +539,8 @@ var
 //==============================================================================
 procedure PS_InitGlobals;
 begin
-  mapvars := TGlobalVariablesList.Create;
-  worldvars := TGlobalVariablesList.Create;
+  mapvars := PS_NewVariables;
+  worldvars := PS_NewVariables;
 
   RTL_MapVarS := TMapStrings.Create;
   RTL_WorldVarS := TWorldStrings.Create;
@@ -1413,8 +569,8 @@ begin
   RTL_MapVarF.Free;
   RTL_WorldVarF.Free;
 
-  mapvars.Free;
-  worldvars.Free;
+  mapvars := nil;
+  worldvars := nil;
 end;
 
 //==============================================================================
@@ -1424,7 +580,7 @@ end;
 // Global strings
 //
 //==============================================================================
-constructor TGlobalStrings.Create(const alist: TGlobalVariablesList);
+constructor TGlobalStrings.Create(const alist: IScriptVariables);
 begin
   fList := alist;
   inherited Create;
@@ -1477,7 +633,7 @@ end;
 // Global integers
 //
 //==============================================================================
-constructor TGlobalIntegers.Create(const alist: TGlobalVariablesList);
+constructor TGlobalIntegers.Create(const alist: IScriptVariables);
 begin
   fList := alist;
   inherited Create;
@@ -1530,7 +686,7 @@ end;
 // Global floats
 //
 //==============================================================================
-constructor TGlobalFloats.Create(const alist: TGlobalVariablesList);
+constructor TGlobalFloats.Create(const alist: IScriptVariables);
 begin
   fList := alist;
   inherited Create;

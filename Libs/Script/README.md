@@ -36,7 +36,7 @@ La vecchia `SCRIPT\` aveva circa 72.000 righe, ma il 52% è nel nucleo e il 20% 
 | Binding al motore | `ps_import` 1.646 (**TDoomCompiler**, **TDoomExec**, `OnUses`, ~570 dichiarazioni testuali), `ps_main` 1.252 (gestore degli script dei livelli), `ps_events` 406, `ps_serializer` 563 (savegame), `ps_proclist` 271, `uPSDisassembly` 683, `dd_compiler` 1.046 | ~5.900 |
 | Funzioni del gioco esposte agli script | `psi_game` 14.207, `psi_overlay` 2.865, `psi_map` 1.979, `psi_globals` 1.962, `psi_system` 887 (~1.600 routine `PS_*`) | ~21.900 |
 | Strumenti da riga di comando | `ddc_base` 949, `cmdline_compiler` 238 | ~1.200 |
-| Script dei modelli (OpenGL) | `OPENGL\mdl_script`, `mdl_script_functions`, `mdl_script_model`, `mdl_script_proclist` (usano `ps_keywords`, `ps_compiler`, `ps_runtime`, `ps_defs` con la tabella `DDModelScriptLookupTable`) | ~2.400 |
+| Script dei modelli (OpenGL) | `Libs\OpenGl\Legacy\mdl_script`, `mdl_script_functions`, `mdl_script_model`, `mdl_script_proclist` (usano `ps_keywords`, `ps_compiler`, `ps_runtime`, `ps_defs` con la tabella `DDModelScriptLookupTable`) | ~2.400 |
 
 ### Il nucleo è autonomo
 

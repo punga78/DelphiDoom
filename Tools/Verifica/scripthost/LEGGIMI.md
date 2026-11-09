@@ -53,6 +53,27 @@ nel vecchio (usa `PS_ImportUnits`/`TProcedureList`) e nel nuovo (`PS_ScriptRegis
 .\Tools\Verifica\scripthost\Confronta-Salvataggi.ps1 -Game Doom
 ```
 
+### Dopo le fette 2b e 2c (#174): cosa eseguire
+
+Le variabili degli script (`TScriptVariables`), gli eventi e il serializzatore sono cambiati senza cambiare i byte: L1 è
+identico (rifatto, non avvia giochi) e i test DUnitX provano i byte. Resta da provare nel motore:
+
+```
+# 1. L2 dei 4 giochi, nuovo contro vecchio (include A_*MapVar*, MapIntegers[...], gli eventi)
+.\Tools\Verifica\scripthost\Compila-ScriptHost.ps1 -Variant L2 -Which Old
+.\Tools\Verifica\scripthost\Compila-ScriptHost.ps1 -Variant L2 -Which New
+.\Tools\Verifica\scripthost\Confronta.ps1 -Game Doom -Twice     # poi Heretic, Hexen, Strife
+# 2. salvataggi con mapvars, worldvars e variabili globali dello script: i byte devono essere uguali
+.\Tools\Verifica\scripthost\Compila-ScriptHost.ps1 -Variant Save -Which Old
+.\Tools\Verifica\scripthost\Compila-ScriptHost.ps1 -Variant Save -Which New
+.\Tools\Verifica\scripthost\Confronta-Salvataggi.ps1 -Game Doom  # poi Heretic, Hexen, Strife
+# 3. a mano: salvare in gioco con almeno una variabile degli script (il difetto di StructureSize, commit 6c1456ab,
+#    faceva uscire il gioco in silenzio al caricamento) e ricaricare; Hexen anche da un livello all'altro (worldvars su file)
+```
+
+`hook-scripthost.patch` e `hook-save-<gioco>.patch` si applicano ancora (`git apply --check` dà esito positivo dopo la #174);
+se non si applicassero, `Genera-Patch.ps1` li rifà.
+
 `-Twice` rifà ogni eseguibile due volte: ciò che cambia tra due esecuzioni dello stesso eseguibile è rumore (per
 esempio una funzione che legge il tempo di sistema), non una differenza tra vecchio e nuovo.
 

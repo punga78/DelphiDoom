@@ -1,6 +1,6 @@
-# Libs\Models e Libs\GlMath - analisi di `OPENGL\` e cosa è stato portato (issue #45)
+# Libs\Models e Libs\GlMath - analisi di `Libs\OpenGl\Legacy\` e cosa è stato portato (issue #45)
 
-La cartella `OPENGL\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
+La cartella `Libs\OpenGl\Legacy\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
 caldo del fotogramma o è caricamento a freddo, e perché è stata portata a classi oppure no. Le due librerie nate da
 questo lavoro sono `Libs\Models` (modelli 3D) e `Libs\GlMath` (geometria pura del renderer); `GlMath` ha il suo
 paragrafo qui perché è nata dalla stessa analisi.
@@ -54,7 +54,7 @@ per ogni modello); `mdl_md2` legge i byte con `TPakStream`, li dà al parser e d
 chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel` esegue lo script con
 `MDL_AppendFromScript` (`mdl_script_model`: le funzioni `MDLS_*` aggiungono comandi allo stream), legge un DMX con
 `LoadFromBytes` e suona il fotogramma nella display list con `TEngineModelRenderer`
-(`OPENGL\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
+(`Libs\OpenGl\Legacy\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
 
 ### Differenze volute dal vecchio codice
 
@@ -125,7 +125,7 @@ su disco sono `packed`, senza puntatori (uguali a 32 e 64 bit), con `SizeOf` cop
 `II3dRenderTarget` estende `IModelRenderer` (le chiamate di `BeginPrimitive`, `Vertex3f`, `Color4f`, `PushMatrix`...) con la sola scelta della
 texture (`SetTexturing`, `BindTexture(indice)`, `ResetTextureCache`): è il contratto che un adattatore OpenGL del motore realizzerà (una classe come
 `TEngineModelRenderer` che tiene le texture GPU, create da `II3dModel.TextureToRgba`, e cambia quella di un `.material` per nome con
-`FindMaterialByTextureName`, come faceva `RenderGLEx`); **non c'è ancora nel motore**: `OPENGL\` non è stato toccato e il disegno esistente non
+`FindMaterialByTextureName`, come faceva `RenderGLEx`); **non c'è ancora nel motore**: `Libs\OpenGl\` non è stata toccata e il disegno esistente non
 passa da qui. Il renderer non ha stato e scorre le facce una volta per modello (una chiamata a interfaccia per faccia e per vertice, come per i
 comandi MD2).
 
