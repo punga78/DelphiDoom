@@ -178,6 +178,7 @@ uses
   psi_system,
   psi_globals,
   ps_import,
+  ps_main,
   DelphiDoom.ScriptHost.Factory,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Intf,
@@ -846,8 +847,8 @@ end;
 
 // The functions that scripts can call: the registry, with the units of script that are classes
 // (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists)
-procedure ComposeScriptHost(const AConsole: IEngineConsole; const ADefaults: IEngineDefaults;
-  const ARandom: IGameRandom);
+procedure ComposeScriptHost(const ALog: ILog; const AConsole: IEngineConsole;
+  const ADefaults: IEngineDefaults; const ARandom: IGameRandom);
 var
   LRegistry: IScriptFunctionRegistry;
   LSystem: IScriptSystemFunctions;
@@ -860,6 +861,8 @@ begin
   LRegistry.AddGroup(TScriptHostFactory.CreateFixedGroup(TEngineScriptRoutines.FixedRoutines));
   PS_ConfigureSystem(LSystem);
   PS_ConfigureScriptRegistry(LRegistry);
+  // the events and the serializer of the script state warn through the log
+  PS_ConfigureStateServices(ALog);
 end;
 
 procedure ComposeImaging;
@@ -1302,7 +1305,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
-  ComposeScriptHost(LConsole, LDefaults, LRandom);
+  ComposeScriptHost(LLog, LConsole, LDefaults, LRandom);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;
