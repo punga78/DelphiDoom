@@ -30,6 +30,22 @@ type
     /// </summary>
     procedure AddWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
       const ACode: Pointer);
+    /// <summary>
+    ///   Adds a function that is a method of AInstance (ACode is the address of the method, as
+    ///   @TClass.Method gives it): the interpreter calls it with AInstance as Self. The object
+    ///   must live as long as the interpreters that registered it
+    /// </summary>
+    procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
+  end;
+
+  /// <summary>
+  ///   A part of the functions of a unit of script (the keyboard, the textures...): it writes its
+  ///   functions in the place of the unit where they have always been, and owns the objects that
+  ///   the interpreter calls
+  /// </summary>
+  IScriptFunctionSection = interface
+    ['{3E8F6B24-D1A7-4C95-B0E3-7A52C9D84F16}']
+    procedure Describe(const ATable: IScriptFunctionTable);
   end;
 
   /// <summary>

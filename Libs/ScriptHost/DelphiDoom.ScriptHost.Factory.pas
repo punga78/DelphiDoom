@@ -17,10 +17,12 @@ uses
   DelphiDoom.ScriptHost.CallbackGroup,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Fixed.Functions,
+  DelphiDoom.ScriptHost.Game.Intf,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.Serializer.Intf,
   DelphiDoom.ScriptHost.System.Functions,
   DelphiDoom.ScriptHost.System.Intf,
+  DelphiDoom.ScriptHost.Types,
   DelphiDoom.ScriptHost.Variables.Intf;
 
 type
@@ -38,6 +40,14 @@ type
     /// <summary>A unit of script whose functions a procedure writes</summary>
     class function CreateCallbackGroup(const AUnitName: string;
       const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup; static;
+    /// <summary>The game information functions of PS_GAME (_GAME, GameSkill, the earthquakes...)</summary>
+    class function CreateGameInfo(const ASource: IScriptGameInfoSource;
+      const AGame: TScriptGame): IScriptFunctionSection; static;
+    /// <summary>The texture functions of PS_GAME</summary>
+    class function CreateTextures(const ASource: IScriptTextureSource): IScriptFunctionSection; static;
+    /// <summary>The keyboard functions of PS_GAME</summary>
+    class function CreateKeys(const ASource: IScriptKeyboardSource;
+      const AGame: TScriptGame): IScriptFunctionSection; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -51,6 +61,9 @@ implementation
 
 uses
   DelphiDoom.ScriptHost.Events,
+  DelphiDoom.ScriptHost.Game.Info,
+  DelphiDoom.ScriptHost.Game.Textures,
+  DelphiDoom.ScriptHost.Keys,
   DelphiDoom.ScriptHost.Registry,
   DelphiDoom.ScriptHost.Serializer,
   DelphiDoom.ScriptHost.Variables;
@@ -79,6 +92,24 @@ class function TScriptHostFactory.CreateCallbackGroup(const AUnitName: string;
   const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup;
 begin
   Result := TScriptCallbackGroup.Create(AUnitName, ADescribe);
+end;
+
+class function TScriptHostFactory.CreateGameInfo(const ASource: IScriptGameInfoSource;
+  const AGame: TScriptGame): IScriptFunctionSection;
+begin
+  Result := TScriptGameInfo.Create(ASource, AGame);
+end;
+
+class function TScriptHostFactory.CreateTextures(
+  const ASource: IScriptTextureSource): IScriptFunctionSection;
+begin
+  Result := TScriptTextures.Create(ASource);
+end;
+
+class function TScriptHostFactory.CreateKeys(const ASource: IScriptKeyboardSource;
+  const AGame: TScriptGame): IScriptFunctionSection;
+begin
+  Result := TScriptKeys.Create(ASource, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

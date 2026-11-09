@@ -92,6 +92,14 @@ procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
 
 //==============================================================================
 //
+// PS_ConfigureGameFunctions
+// The parts of PS_GAME that are classes (game information, textures, keyboard)
+//
+//==============================================================================
+procedure PS_ConfigureGameFunctions(const AGameInfo, ATextures, AKeys: IScriptFunctionSection);
+
+//==============================================================================
+//
 // PS_ScriptRegistry
 //
 //==============================================================================
@@ -151,6 +159,9 @@ uses
 var
   // given by the composition root
   ps_registry_ref: IScriptFunctionRegistry = nil;
+  ps_gameinfo_ref: IScriptFunctionSection = nil;
+  ps_textures_ref: IScriptFunctionSection = nil;
+  ps_keys_ref: IScriptFunctionSection = nil;
 
 //==============================================================================
 //
@@ -160,6 +171,18 @@ var
 procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
 begin
   ps_registry_ref := ARegistry;
+end;
+
+//==============================================================================
+//
+// PS_ConfigureGameFunctions
+//
+//==============================================================================
+procedure PS_ConfigureGameFunctions(const AGameInfo, ATextures, AKeys: IScriptFunctionSection);
+begin
+  ps_gameinfo_ref := AGameInfo;
+  ps_textures_ref := ATextures;
+  ps_keys_ref := AKeys;
 end;
 
 //==============================================================================
@@ -182,6 +205,8 @@ end;
 //==============================================================================
 procedure PS_DescribeGameFunctions(const ATable: IScriptFunctionTable);
 begin
+  if (ps_gameinfo_ref = nil) or (ps_textures_ref = nil) or (ps_keys_ref = nil) then
+    I_Error('PS_ConfigureGameFunctions() was not called: the functions of the game are missing');
   // --------------------------- Actors ----------------------------------------
   ATable.Add('function Actor: LongWord;', @PS_Actor);
   ATable.AddWithCustomResult('procedure TActor(const key: LongWord);', '!TActor', 'function TActor(const key: LongWord): !TActor;', @PS_TActor);
@@ -485,9 +510,7 @@ begin
   ATable.Add('procedure UnSetPlayerQuest(const plnum: Integer; const quest: LongWord);', @PS_UnSetPlayerQuest);
   {$ENDIF}
 // -------------------------- TEXTURES -----------------------------------------
-  ATable.Add('function GetTextureWidth(const tex: string): Integer;', @PS_GetTextureWidth);
-  ATable.Add('function GetTextureHeight(const tex: string): Integer;', @PS_GetTextureHeight);
-  ATable.Add('function IsValidTexture(const tex: string): boolean;', @PS_IsValidTexture);
+  ps_textures_ref.Describe(ATable);
 // ----------------------------- MOBJS -----------------------------------------
   ATable.Add('function IsValidMobjType(const typ: integer): boolean;', @PS_IsValidMobjType);
   ATable.Add('function GetMobjTypeFromEditorNumber(const en: integer): integer;', @PS_GetMobjTypeFromEditorNumber);
@@ -575,84 +598,9 @@ begin
   {$IFDEF STRIFE}
   ATable.Add('procedure G_ExitLevel(dest: integer);', @G_ExitLevel);
   {$ENDIF}
-  ATable.Add('function _GAME: string;', @PS_Game);
-  ATable.Add('procedure GlobalEarthQuake(const tics: integer);', @PS_GlobalEarthQuake);
-  ATable.Add('procedure LocalEarthQuake(const x, y, z: fixed_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);', @PS_LocalEarthQuake);
-  ATable.Add('function GameSkill: integer;', @PS_GameSkill);
-  ATable.Add('function GameMap: integer;', @PS_GameMap);
-  {$IFDEF DOOM_OR_HERETIC}
-  ATable.Add('function GameEpisode: integer;', @PS_GameEpisode);
-  {$ENDIF}
+  ps_gameinfo_ref.Describe(ATable);
 // ------------------ KEYBOARD CONTROL -----------------------------------------
-  ATable.Add('function gamekeydown(const kkey: integer): boolean;', @PS_gamekeydown);
-  ATable.Add('function mousebuttons(const mkey: integer): boolean;', @PS_mousebuttons);
-  ATable.Add('function joybuttons(const jkey: integer): boolean;', @PS_joybuttons);
-  ATable.Add('function key_right: integer;', @PS_key_right);
-  ATable.Add('function key_left: integer;', @PS_key_left);
-  ATable.Add('function key_up: integer;', @PS_key_up);
-  ATable.Add('function key_down: integer;', @PS_key_down);
-  ATable.Add('function key_lookup: integer;', @PS_key_lookup);
-  ATable.Add('function key_lookdown: integer;', @PS_key_lookdown);
-  ATable.Add('function key_lookcenter: integer;', @PS_key_lookcenter);
-  ATable.Add('function key_lookright: integer;', @PS_key_lookright);
-  ATable.Add('function key_lookleft: integer;', @PS_key_lookleft);
-  {$IFNDEF STRIFE}
-  ATable.Add('function key_lookforward: integer;', @PS_key_lookforward);
-  {$ENDIF}
-  ATable.Add('function key_strafeleft: integer;', @PS_key_strafeleft);
-  ATable.Add('function key_straferight: integer;', @PS_key_straferight);
-  ATable.Add('function key_fire: integer;', @PS_key_fire);
-  ATable.Add('function key_use: integer;', @PS_key_use);
-  ATable.Add('function key_strafe: integer;', @PS_key_strafe);
-  ATable.Add('function key_speed: integer;', @PS_key_speed);
-  ATable.Add('function key_jump: integer;', @PS_key_jump);
-  // JVAL: 20211101 - Crouch
-  ATable.Add('function key_crouch: integer;', @PS_key_crouch);
-  ATable.Add('function key_weapon0: integer;', @PS_key_weapon0);
-  ATable.Add('function key_weapon1: integer;', @PS_key_weapon1);
-  ATable.Add('function key_weapon2: integer;', @PS_key_weapon2);
-  ATable.Add('function key_weapon3: integer;', @PS_key_weapon3);
-  {$IFNDEF HEXEN}
-  ATable.Add('function key_weapon4: integer;', @PS_key_weapon4);
-  ATable.Add('function key_weapon5: integer;', @PS_key_weapon5);
-  ATable.Add('function key_weapon6: integer;', @PS_key_weapon6);
-  ATable.Add('function key_weapon7: integer;', @PS_key_weapon7);
-  {$ENDIF}
-  {$IFDEF HERETIC_OR_HEXEN}
-  ATable.Add('function key_flyup: integer;', @PS_key_flyup);
-  ATable.Add('function key_flydown: integer;', @PS_key_flydown);
-  ATable.Add('function key_flycenter: integer;', @PS_key_flycenter);
-  ATable.Add('function key_invleft: integer;', @PS_key_invleft);
-  ATable.Add('function key_invright: integer;', @PS_key_invright);
-  ATable.Add('function key_useartifact: integer;', @PS_key_useartifact);
-  {$ENDIF}
-  {$IFDEF STRIFE}
-  ATable.Add('function key_invleft: integer;', @PS_key_invleft);
-  ATable.Add('function key_invright: integer;', @PS_key_invright);
-  ATable.Add('function key_weapon8: integer;', @PS_key_weapon8);
-  ATable.Add('function key_weapon9: integer;', @PS_key_weapon9);
-  ATable.Add('function key_usehealth: integer;', @PS_key_usehealth);
-  ATable.Add('function key_invquery: integer;', @PS_key_invquery);
-  ATable.Add('function key_mission: integer;', @PS_key_mission);
-  ATable.Add('function key_invpop: integer;', @PS_key_invpop);
-  ATable.Add('function key_invkey: integer;', @PS_key_invkey);
-  ATable.Add('function key_invhome: integer;', @PS_key_invhome);
-  ATable.Add('function key_invend: integer;', @PS_key_invend);
-  ATable.Add('function key_invuse: integer;', @PS_key_invuse);
-  ATable.Add('function key_invdrop: integer;', @PS_key_invdrop);
-  {$ENDIF}
-  ATable.Add('function mousebfire: integer;', @PS_mousebfire);
-  ATable.Add('function mousebstrafe: integer;', @PS_mousebstrafe);
-  ATable.Add('function mousebforward: integer;', @PS_mousebforward);
-  ATable.Add('function joybfire: integer;', @PS_joybfire);
-  ATable.Add('function joybstrafe: integer;', @PS_joybstrafe);
-  ATable.Add('function joybuse: integer;', @PS_joybuse);
-  ATable.Add('function joybspeed: integer;', @PS_joybspeed);
-  ATable.Add('function joybjump: integer;', @PS_joybjump);
-  // JVAL: 20211101 - Crouch
-  ATable.Add('function joybcrouch: integer;', @PS_joybcrouch);
-  ATable.Add('function joyblleft: integer;', @PS_joyblleft);
-  ATable.Add('function joyblright: integer;', @PS_joyblright);
+  ps_keys_ref.Describe(ATable);
 // ------------------------------- MAP -----------------------------------------
   ATable.Add('function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;', @R_PointToAngle);
   ATable.Add('function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;', @R_PointToAngle2);

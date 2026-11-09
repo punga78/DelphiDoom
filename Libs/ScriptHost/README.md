@@ -52,3 +52,17 @@ Le funzioni che gli script chiamano stanno in un **registro a gruppi** (schema d
 `TScriptHostFactory` crea le tre cose (`CreateVariables`, `CreateEvents`, `CreateSerializer`). **Collegamento**: `PS_ConfigureVariables` (`psi_globals`, chiamata da `ComposePlatform` con `TEngineScriptVariablesFiles` e `TEngineScriptVariablesFailure` di `Base\`) e `PS_ConfigureStateServices` (`ps_main`, chiamata da `ComposeScriptHost` con l'`ILog`); senza di esse `I_Error`. `psi_globals` resta la facciata: `mapvars`/`worldvars` (`IScriptVariables`), `TGlobalVariablesList` (alias dell'interfaccia), le `PS_Get/SetMap/World*` e le sei classi `TMapStrings`...`TWorldFloats` che Pascal Script importa. **Verifica**: golden L1 invariati nei 4 giochi; `Tests\DelphiDoom.Tests.ScriptHost` ha 134 test (copertura 95% di `Libs\ScriptHost`; le unit nuove 91-100%): byte del salvataggio scritti a mano, `StructureSize` uguale ai byte scritti, nomi non ASCII e lunghi, buffer e file malformati, hash (valori dei vecchi `Hash`), eventi e serializzatore sul compilatore e sull'interprete veri. Non provato a runtime: L2 e un salvataggio con variabili degli script (`Tools\Verifica\scripthost\LEGGIMI.md`).
 
 La **fetta 2d e le seguenti** (`docs\SCRIPTHOST_PIANO.md`, sezione 5): speciali di settore, `ps_dll`, e per ultime `psi_game` (attori, linee, settori...), `ps_import`/`ps_main` e l'overlay. La spike di `RegisterDelphiMethod` (`Tools\Verifica\scripthost\spike`) passa a 32 e 64 bit: le fette seguenti possono togliere i thunk. Il nucleo dell'interprete sta in `Libs\PascalScript`; il compilatore da riga di comando in `Libs\Ddc`.
+
+## Partita, texture e tastiera di PS_GAME (issue #172, fetta 2f-1)
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.ScriptHost.Intf` | `IScriptFunctionSection` (una parte delle funzioni di una unit: `Describe`) e `IScriptFunctionTable.AddMethod` (funzione che e' un metodo di un oggetto: l'interprete la chiama con quell'oggetto come `Self`, `RegisterDelphiMethod`) |
+| `DelphiDoom.ScriptHost.Types` | `TScriptGame` (Doom, Heretic, Hexen, Strife), `TScriptKey` (le azioni della tastiera) |
+| `DelphiDoom.ScriptHost.Games` | `TScriptGames.TryFromName` |
+| `DelphiDoom.ScriptHost.Game.Intf` | `IScriptGameInfoSource`, `IScriptTextureSource`, `IScriptKeyboardSource` (cosa chiedono al motore) |
+| `DelphiDoom.ScriptHost.Game.Info` | `TScriptGameInfo`: `_GAME`, `GlobalEarthQuake`, `LocalEarthQuake`, `GameSkill`, `GameMap`, `GameEpisode` (solo Doom e Heretic) |
+| `DelphiDoom.ScriptHost.Game.Textures` | `TScriptTextures`: `GetTextureWidth`, `GetTextureHeight`, `IsValidTexture` |
+| `DelphiDoom.ScriptHost.Keys.Table` / `.Keys` | la tabella dei 56 `key_*`/`mouseb*`/`joyb*` (nome, tasto, giochi, protezione demo) e `TScriptKeys` (+ `TScriptKeyBinding`, uno per riga della tabella; `gamekeydown`, `mousebuttons`, `joybuttons`) |
+
+Nel motore: `Base\DelphiDoom.Engine.Script.GameInfo`, `.Textures`, `.Keyboard` (le uniche a leggere i globali). `ComposeScriptHost` le crea e le da' a `PS_ConfigureGameFunctions` di `ps_import`, che le chiama da `PS_DescribeGameFunctions` al posto delle vecchie `ATable.Add` (stesso ordine, stesse dichiarazioni). I `PS_Game*`, `PS_*Texture*`, `PS_key_*`, `PS_mouseb*`, `PS_joyb*` di `psi_game` non esistono piu. Test: `Tests\Source\DelphiDoom.Tests.ScriptHost.GameSections` (25, anche uno script vero compilato ed eseguito con le tre sezioni).

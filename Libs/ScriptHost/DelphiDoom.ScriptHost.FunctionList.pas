@@ -41,6 +41,7 @@ type
     procedure Add(const ADeclaration: string; const ACode: Pointer);
     procedure AddWithCustomResult(const ADeclaration, AResultType, AExportDeclaration: string;
       const ACode: Pointer);
+    procedure AddMethod(const ADeclaration: string; const AInstance: TObject; const ACode: Pointer);
     /// <summary>Registers every function in the compiler and keeps the names it gives</summary>
     procedure RegisterCompiler(const ACompiler: TPSPascalCompiler);
     /// <summary>Registers in the interpreter the functions that the compiler has registered</summary>
@@ -102,6 +103,7 @@ begin
   if LDeclaration[Length(LDeclaration)] <> ';' then
     LDeclaration := LDeclaration + ';';
   LEntry.Code := ACode;
+  LEntry.Instance := nil;
   LEntry.Declaration := LDeclaration;
   LEntry.ResultType := '';
   LEntry.ExportDeclaration := LDeclaration;
@@ -122,12 +124,32 @@ begin
   if LDeclaration[Length(LDeclaration)] <> ';' then
     LDeclaration := LDeclaration + ';';
   LEntry.Code := ACode;
+  LEntry.Instance := nil;
   LEntry.Declaration := LDeclaration;
   LEntry.ResultType := AResultType;
   LEntry.ExportDeclaration := AExportDeclaration;
   LEntry.Name := '';
   LEntry.Computed := True;
   FEntries.Add(LEntry);
+end;
+
+procedure TScriptFunctionList.AddMethod(const ADeclaration: string; const AInstance: TObject;
+  const ACode: Pointer);
+var
+  LCount: Integer;
+  LEntry: TScriptFunctionEntry;
+begin
+  if not Assigned(AInstance) then
+    raise EArgumentNilException.Create('AInstance');
+  LCount := FEntries.Count;
+  Add(ADeclaration, ACode);
+  // an empty declaration is ignored by Add
+  if FEntries.Count > LCount then
+  begin
+    LEntry := FEntries[LCount];
+    LEntry.Instance := AInstance;
+    FEntries[LCount] := LEntry;
+  end;
 end;
 
 procedure TScriptFunctionList.RegisterCompiler(const ACompiler: TPSPascalCompiler);
@@ -159,8 +181,9 @@ var
 begin
   for LIndex := 0 to FEntries.Count - 1 do
     if FEntries[LIndex].Computed then
-      AExecutor.RegisterDelphiFunction(FEntries[LIndex].Code, TbtString(FEntries[LIndex].Name),
-        cdRegister);
+      // RegisterDelphiFunction is RegisterDelphiMethod with a nil Self
+      AExecutor.RegisterDelphiMethod(FEntries[LIndex].Instance, FEntries[LIndex].Code,
+        TbtString(FEntries[LIndex].Name), cdRegister);
 end;
 
 procedure TScriptFunctionList.Reset;

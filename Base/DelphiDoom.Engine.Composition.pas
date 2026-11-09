@@ -180,10 +180,15 @@ uses
   ps_import,
   ps_main,
   DelphiDoom.ScriptHost.Factory,
+  DelphiDoom.ScriptHost.Games,
+  DelphiDoom.ScriptHost.Types,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Intf,
   DelphiDoom.Engine.Script.Console,
   DelphiDoom.Engine.Script.Environment,
+  DelphiDoom.Engine.Script.GameInfo,
+  DelphiDoom.Engine.Script.Keyboard,
+  DelphiDoom.Engine.Script.Textures,
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
   DelphiDoom.Engine.Script.VariablesFailure,
@@ -847,12 +852,20 @@ end;
 
 // The functions that scripts can call: the registry, with the units of script that are classes
 // (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists)
-procedure ComposeScriptHost(const ALog: ILog; const AConsole: IEngineConsole;
-  const ADefaults: IEngineDefaults; const ARandom: IGameRandom);
+procedure ComposeScriptHost(const ALog: ILog; const AContext: IGameContext;
+  const AConsole: IEngineConsole; const ADefaults: IEngineDefaults; const ARandom: IGameRandom);
 var
   LRegistry: IScriptFunctionRegistry;
   LSystem: IScriptSystemFunctions;
+  LGame: TScriptGame;
 begin
+  if not TScriptGames.TryFromName(_GAME, LGame) then
+    I_Error('ComposeEngine(): the game %s has no functions of scripts', [_GAME]);
+  // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
+  PS_ConfigureGameFunctions(
+    TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),
+    TScriptHostFactory.CreateTextures(TEngineScriptTextures.Create),
+    TScriptHostFactory.CreateKeys(TEngineScriptKeyboard.Create(AContext), LGame));
   LRegistry := TScriptHostFactory.CreateRegistry;
   LSystem := TScriptHostFactory.CreateSystemFunctions(TEngineScriptRoutines.SystemRoutines,
     TEngineScriptOutput.Create, TEngineScriptEnvironment.Create,
@@ -1305,7 +1318,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
-  ComposeScriptHost(LLog, LConsole, LDefaults, LRandom);
+  ComposeScriptHost(LLog, LContext, LConsole, LDefaults, LRandom);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;
