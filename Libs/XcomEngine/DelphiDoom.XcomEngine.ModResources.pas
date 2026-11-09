@@ -1,0 +1,382 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: xcom engine library - the game data of a mod as the interface    }
+{  needs it (a part of Mod of OpenXcom: palettes, full screen pictures, fonts,  }
+{  interface rules, cursor colors and extra strings)                            }
+{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
+{  Libs\XcomFormats\README.md for the license of this unit                      }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.XcomEngine.ModResources;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
+  DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image, DelphiDoom.Xcom.Intf,
+  DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Intf,
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap,
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf;
+
+type
+  /// <summary>
+  ///   The data of one palette (256 colors) at a stable address, so that a pointer to it can be given away
+  /// </summary>
+  TXcomPaletteBox = class
+  public
+    Colors: TXcomColors;
+  end;
+
+  /// <summary>
+  ///   IXcomResources for a game directory (UFO or TFTD) and the ruleset of a mod: Mod::loadVanillaResources and
+  ///   loadExtraResources for the palettes and the fonts, and loadFile for the "interfaces", "constants", "fontName"
+  ///   and "extraStrings" of the ruleset files. The full screen pictures (BACK01.SCR...) are read the first time they
+  ///   are asked for. Not ported: the surface sets, the sounds, the music, the other rules (see the README)
+  /// </summary>
+  TXcomModResources = class(TInterfacedObject, IXcomResources)
+  strict private
+    FFiles: TXcomFileMap;
+    FGameData: IXcomGameData;
+    FParser: IYamlParser;
+    FFontLoader: IXcomSurfaceLoader;
+    FPaletteReader: IXcomPaletteReader;
+    FModFolder: string;
+    FFileSystem: IXcomFileSystem;
+    FPalettes: TObjectDictionary<string, TXcomPaletteBox>;
+    FSurfaces: TObjectDictionary<string, TXcomSurface>;
+    FFonts: TObjectDictionary<string, TXcomFont>;
+    FInterfaces: TObjectDictionary<string, TXcomRuleInterface>;
+    FExtraStrings: TObjectDictionary<string, TDictionary<string, string>>;
+    FStatePalette: TXcomColors;
+    FHasStatePalette: Boolean;
+    FFontName: string;
+    FGeoscapeCursor: Integer;
+    FBasescapeCursor: Integer;
+    FBattlescapeCursor: Integer;
+    FUfopaediaCursor: Integer;
+    FGraphsCursor: Integer;
+    procedure AddPalette(const AName: string; const APalette: TXcomPalette);
+    procedure LoadPalettes;
+    procedure LoadRulesets;
+    procedure LoadRuleset(const ANode: IYamlNode);
+    procedure LoadFonts;
+    function LoadFullScreen(const AName: string): TXcomSurface;
+  public
+    /// <param name="AFiles">The resources own the map. The virtual files: the common data (Language\Font.dat), the mod and the game files</param>
+    /// <param name="AGameData">The game directory seen with the names that OpenXcom uses (GEODATA\PALETTES.DAT...)</param>
+    /// <param name="AModFolder">The folder of the mod, where the .rul files are (standard\xcom2)</param>
+    constructor Create(AFiles: TXcomFileMap; const AGameData: IXcomGameData; const AFileSystem: IXcomFileSystem;
+      const AParser: IYamlParser; const AFontLoader: IXcomSurfaceLoader; const APaletteReader: IXcomPaletteReader;
+      const AModFolder: string);
+    destructor Destroy; override;
+    /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
+    procedure Load;
+    function GetSurface(const AName: string): TXcomSurface;
+    function GetFont(const AName: string): TXcomFont;
+    function GetInterface(const AId: string): TXcomRuleInterface;
+    function GetPalette(const AName: string): PXcomColor;
+    function CursorColor(const APalette: string): Integer;
+    procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
+    /// <summary>Mod::getExtraStrings: the strings of a language that the rulesets define (nil when there are none)</summary>
+    function ExtraStrings(const ALanguage: string): TDictionary<string, string>;
+    function FontName: string;
+  end;
+
+implementation
+
+uses
+  System.IOUtils, DelphiDoom.XcomEngine.YamlFields;
+
+const
+  PALETTE_NAMES: array[0..4] of string = ('PAL_GEOSCAPE', 'PAL_BASESCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA',
+    'PAL_BATTLEPEDIA');
+  SCREEN_WIDTH = 320;
+  SCREEN_HEIGHT = 200;
+
+constructor TXcomModResources.Create(AFiles: TXcomFileMap; const AGameData: IXcomGameData;
+  const AFileSystem: IXcomFileSystem; const AParser: IYamlParser; const AFontLoader: IXcomSurfaceLoader;
+  const APaletteReader: IXcomPaletteReader; const AModFolder: string);
+begin
+  inherited Create;
+  FPaletteReader := APaletteReader;
+  FFiles := AFiles;
+  FGameData := AGameData;
+  FFileSystem := AFileSystem;
+  FParser := AParser;
+  FFontLoader := AFontLoader;
+  FModFolder := AModFolder;
+  FPalettes := TObjectDictionary<string, TXcomPaletteBox>.Create([doOwnsValues]);
+  FSurfaces := TObjectDictionary<string, TXcomSurface>.Create([doOwnsValues]);
+  FFonts := TObjectDictionary<string, TXcomFont>.Create([doOwnsValues]);
+  FInterfaces := TObjectDictionary<string, TXcomRuleInterface>.Create([doOwnsValues]);
+  FExtraStrings := TObjectDictionary<string, TDictionary<string, string>>.Create([doOwnsValues]);
+  FFontName := 'Font.dat';
+  // Mod::resetGlobalStatics
+  FGeoscapeCursor := 252;
+  FBasescapeCursor := 252;
+  FBattlescapeCursor := 144;
+  FUfopaediaCursor := 252;
+  FGraphsCursor := 252;
+end;
+
+destructor TXcomModResources.Destroy;
+begin
+  FFiles.Free;
+  FExtraStrings.Free;
+  FInterfaces.Free;
+  FFonts.Free;
+  FSurfaces.Free;
+  FPalettes.Free;
+  inherited Destroy;
+end;
+
+procedure TXcomModResources.AddPalette(const AName: string; const APalette: TXcomPalette);
+var
+  LBox: TXcomPaletteBox;
+begin
+  LBox := TXcomPaletteBox.Create;
+  FillChar(LBox.Colors, SizeOf(LBox.Colors), 0);
+  Move(APalette.Colors, LBox.Colors, SizeOf(TXcomColor) * APalette.Count);
+  FPalettes.AddOrSetValue(AName, LBox);
+end;
+
+procedure TXcomModResources.LoadPalettes;
+var
+  LIndex: Integer;
+  LPalette: TXcomPalette;
+  LBackPalettes: TXcomPalette;
+begin
+  for LIndex := 0 to High(PALETTE_NAMES) do
+    AddPalette(PALETTE_NAMES[LIndex], FGameData.LoadPalette(LIndex));
+  LPalette := FGameData.LoadPalette(4);
+  LPalette.ApplyBattlescapeGradient;
+  AddPalette('PAL_BATTLESCAPE', LPalette);
+  // BACKPALS.DAT: 128 colors, the blocks of 16 that the windows take as their background colors
+  LBackPalettes := FPaletteReader.Read(FGameData.Files.ReadAll('GEODATA/BACKPALS.DAT'), 128, 0);
+  AddPalette('BACKPALS.DAT', LBackPalettes);
+end;
+
+procedure TXcomModResources.LoadRuleset(const ANode: IYamlNode);
+var
+  LItem: IYamlNode;
+  LId: string;
+  LRule: TXcomRuleInterface;
+  LConstants: IYamlNode;
+  LStrings: TDictionary<string, string>;
+  LPair: TYamlPair;
+begin
+  FFontName := TXcomYamlFields.ReadString(ANode, 'fontName', FFontName);
+  LConstants := TXcomYamlFields.Field(ANode, 'constants');
+  if Assigned(LConstants) then
+  begin
+    FGeoscapeCursor := TXcomYamlFields.ReadInteger(LConstants, 'geoscapeCursor', FGeoscapeCursor);
+    FBasescapeCursor := TXcomYamlFields.ReadInteger(LConstants, 'basescapeCursor', FBasescapeCursor);
+    FBattlescapeCursor := TXcomYamlFields.ReadInteger(LConstants, 'battlescapeCursor', FBattlescapeCursor);
+    FUfopaediaCursor := TXcomYamlFields.ReadInteger(LConstants, 'ufopaediaCursor', FUfopaediaCursor);
+    FGraphsCursor := TXcomYamlFields.ReadInteger(LConstants, 'graphsCursor', FGraphsCursor);
+  end;
+  for LItem in TXcomYamlFields.Sequence(ANode, 'extraStrings') do
+  begin
+    LId := TXcomYamlFields.ReadString(LItem, 'type', '');
+    if not FExtraStrings.TryGetValue(LId, LStrings) then
+    begin
+      LStrings := TDictionary<string, string>.Create;
+      FExtraStrings.Add(LId, LStrings);
+    end;
+    if Assigned(TXcomYamlFields.Field(LItem, 'strings')) then
+      for LPair in TXcomYamlFields.Field(LItem, 'strings').Pairs do
+        LStrings.AddOrSetValue(LPair.Key.ScalarString, LPair.Value.ScalarString);
+  end;
+  for LItem in TXcomYamlFields.Sequence(ANode, 'interfaces') do
+  begin
+    LId := TXcomYamlFields.ReadString(LItem, 'type', '');
+    if LId = '' then
+      Continue;
+    if not FInterfaces.TryGetValue(LId, LRule) then
+    begin
+      LRule := TXcomRuleInterface.Create(LId);
+      FInterfaces.Add(LId, LRule);
+    end;
+    LRule.Load(LItem);
+  end;
+end;
+
+procedure TXcomModResources.LoadRulesets;
+var
+  LNames: TArray<string>;
+  LName: string;
+  LBytes: TBytes;
+  LText: string;
+begin
+  LNames := FFileSystem.FolderContents(FModFolder, 'rul');
+  for LName in LNames do
+  begin
+    LBytes := FFileSystem.ReadAll(TPath.Combine(FModFolder, LName + '.rul'));
+    // the files that have none of the keys that are read here are not parsed (the big rulesets of the items...)
+    LText := TEncoding.UTF8.GetString(LBytes);
+    if (Pos('interfaces:', LText) = 0) and (Pos('constants:', LText) = 0) and (Pos('fontName:', LText) = 0) and
+      (Pos('extraStrings:', LText) = 0) then
+      Continue;
+    try
+      LoadRuleset(FParser.Load(LBytes));
+    except
+      on E: EYamlException do
+        raise EXcomEngineException.Create(LName + '.rul: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TXcomModResources.LoadFonts;
+var
+  LDocument: IYamlNode;
+  LItem: IYamlNode;
+  LImage: IYamlNode;
+  LDefinition: TXcomFontDefinition;
+  LImageDefinition: TXcomFontImageDefinition;
+  LImages: TList<TXcomFontImageDefinition>;
+  LWidth: Integer;
+  LHeight: Integer;
+  LSpacing: Integer;
+  LFont: TXcomFont;
+begin
+  LDocument := FParser.Load(FFiles.ReadAll('Language/' + FFontName));
+  for LItem in TXcomYamlFields.Sequence(LDocument, 'fonts') do
+  begin
+    LWidth := TXcomYamlFields.ReadInteger(LItem, 'width', 0);
+    LHeight := TXcomYamlFields.ReadInteger(LItem, 'height', 0);
+    LSpacing := TXcomYamlFields.ReadInteger(LItem, 'spacing', 0);
+    LDefinition.Monospace := TXcomYamlFields.ReadBoolean(LItem, 'monospace', False);
+    LImages := TList<TXcomFontImageDefinition>.Create;
+    try
+      for LImage in TXcomYamlFields.Sequence(LItem, 'images') do
+      begin
+        LImageDefinition.Width := TXcomYamlFields.ReadInteger(LImage, 'width', LWidth);
+        LImageDefinition.Height := TXcomYamlFields.ReadInteger(LImage, 'height', LHeight);
+        LImageDefinition.Spacing := TXcomYamlFields.ReadInteger(LImage, 'spacing', LSpacing);
+        LImageDefinition.FileName := TXcomYamlFields.ReadString(LImage, 'file', '');
+        LImageDefinition.Chars := TXcomYamlFields.ReadString(LImage, 'chars', '');
+        LImages.Add(LImageDefinition);
+      end;
+      LDefinition.Images := LImages.ToArray;
+    finally
+      LImages.Free;
+    end;
+    LFont := TXcomFont.Create;
+    try
+      LFont.Load(LDefinition, FFontLoader);
+    except
+      LFont.Free;
+      raise;
+    end;
+    FFonts.AddOrSetValue(TXcomYamlFields.ReadString(LItem, 'id', ''), LFont);
+  end;
+end;
+
+procedure TXcomModResources.Load;
+begin
+  LoadPalettes;
+  LoadRulesets;
+  LoadFonts;
+end;
+
+function TXcomModResources.LoadFullScreen(const AName: string): TXcomSurface;
+var
+  LImage: TXcomImage;
+  LPalette: TXcomPalette;
+  LPath: string;
+begin
+  LPalette := TXcomPalette.Create(0);
+  if SameText(AName, 'INTERWIN.DAT') then
+    LImage := FGameData.LoadImage('GEODATA/INTERWIN.DAT', 160, 600, LPalette)
+  else
+  begin
+    LPath := 'GEOGRAPH/' + AName;
+    if not FGameData.Files.Exists(LPath) then
+      raise EXcomEngineException.Create('Surface ' + AName + ' not found');
+    LImage := FGameData.LoadImage(LPath, SCREEN_WIDTH, SCREEN_HEIGHT, LPalette);
+  end;
+  Result := TXcomSurface.Create(LImage.Width, LImage.Height);
+  Move(LImage.Pixels[0], Result.PixelPointer(0, 0)^, LImage.Width * LImage.Height);
+  if FHasStatePalette then
+    Result.SetColors(FStatePalette);
+end;
+
+function TXcomModResources.GetSurface(const AName: string): TXcomSurface;
+var
+  LName: string;
+begin
+  LName := UpperCase(AName);
+  if not FSurfaces.TryGetValue(LName, Result) then
+  begin
+    Result := LoadFullScreen(LName);
+    FSurfaces.Add(LName, Result);
+  end;
+end;
+
+function TXcomModResources.GetFont(const AName: string): TXcomFont;
+begin
+  if not FFonts.TryGetValue(AName, Result) then
+    raise EXcomEngineException.Create('Font ' + AName + ' not found');
+end;
+
+function TXcomModResources.GetInterface(const AId: string): TXcomRuleInterface;
+begin
+  if not FInterfaces.TryGetValue(AId, Result) then
+    Result := nil;
+end;
+
+function TXcomModResources.GetPalette(const AName: string): PXcomColor;
+var
+  LBox: TXcomPaletteBox;
+begin
+  if not FPalettes.TryGetValue(AName, LBox) then
+    raise EXcomEngineException.Create('Palette ' + AName + ' not found');
+  Result := @LBox.Colors[0];
+end;
+
+function TXcomModResources.CursorColor(const APalette: string): Integer;
+begin
+  if APalette = 'PAL_GEOSCAPE' then
+    Result := FGeoscapeCursor
+  else if APalette = 'PAL_BASESCAPE' then
+    Result := FBasescapeCursor
+  else if APalette = 'PAL_UFOPAEDIA' then
+    Result := FUfopaediaCursor
+  else if APalette = 'PAL_GRAPHS' then
+    Result := FGraphsCursor
+  else
+    Result := FBattlescapeCursor;
+end;
+
+procedure TXcomModResources.SetPalette(AColors: PXcomColor; AFirst, ACount: Integer);
+var
+  LColors: TArray<TXcomColor>;
+  LSurface: TXcomSurface;
+  LFont: TXcomFont;
+  LIndex: Integer;
+begin
+  if ACount <= 0 then
+    Exit;
+  Move(AColors^, FStatePalette[AFirst], ACount * SizeOf(TXcomColor));
+  FHasStatePalette := True;
+  SetLength(LColors, ACount);
+  Move(AColors^, LColors[0], ACount * SizeOf(TXcomColor));
+  for LFont in FFonts.Values do
+    for LIndex := 0 to LFont.ImageCount - 1 do
+      LFont.ImageSurface(LIndex).SetColors(LColors, AFirst);
+  for LSurface in FSurfaces.Values do
+    LSurface.SetColors(LColors, AFirst);
+end;
+
+function TXcomModResources.ExtraStrings(const ALanguage: string): TDictionary<string, string>;
+begin
+  if not FExtraStrings.TryGetValue(ALanguage, Result) then
+    Result := nil;
+end;
+
+function TXcomModResources.FontName: string;
+begin
+  Result := FFontName;
+end;
+
+end.

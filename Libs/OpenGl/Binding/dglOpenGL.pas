@@ -1,366 +1,54 @@
-{==============================================================================}
-{                                                                              }
-{       OpenGL 4.1 - Headertranslation                                         }
-{       Version 4.1a                                                           }
-{       Date : 14.03.2011                                                      }
-{                                                                              }
-{       Works with :                                                           }
-{        - Delphi 3 and up                                                     }
-{        - FreePascal (1.9.3 and up)                                           }
-{                                                                              }
-{==============================================================================}
-{                                                                              }
-{       Containts the translations of glext.h, gl_1_1.h, glu.h and weglext.h.  }
-{       It also contains some helperfunctions that were inspired by those      }
-{       found in Mike Lischke's OpenGL12.pas.                                  }
-{                                                                              }
-{       Copyright (C) DGL-OpenGL2-Portteam                                     }
-{       All Rights Reserved                                                    }
-{                                                                              }
-{       Obtained through:                                                      }
-{       Delphi OpenGL Community(DGL) - www.delphigl.com                        }
-{                                                                              }
-{       Converted and maintained by DGL's GL2.0-Team :                         }
-{         - Sascha Willems                - http://www.delphigl.de             }
-{         - Steffen Xonna (Lossy eX)      - http://www.dev-center.de           }
-{         - Lars Middendorf               - http://www.3d-seite.de             }
-{       Additional input :                                                     }
-{         - Martin Waldegger (Mars)       - http://www.basegraph.com           }
-{         - Benjamin Rosseaux (BeRo)      - http://www.0ok.de                  }
-{       Additional thanks:                                                     }
-{           sigsegv (libdl.so)                                                 }
-{                                                                              }
-{                                                                              }
-{==============================================================================}
-{ You may retrieve the latest version of this file at the Delphi OpenGL        }
-{ Community home page, located at http://www.delphigl.com/                     }
-{                                                                              }
-{ The contents of this file are used with permission, subject to               }
-{ the Mozilla Public License Version 1.1 (the "License"); you may              }
-{ not use this file except in compliance with the License. You may             }
-{ obtain a copy of the License at                                              }
-{ http://www.mozilla.org/MPL/MPL-1.1.html                                      }
-{                                                                              }
-{ Software distributed under the License is distributed on an                  }
-{ "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or               }
-{ implied. See the License for the specific language governing                 }
-{ rights and limitations under the License.                                    }
-{                                                                              }
-{==============================================================================}
-{ History :                                                                    }
-{ Version 1.0    Initial Release                                               }
-{ Version 1.1    Added PPointer in Tpyessection for compatiblity with Delphi   }
-{                versions lower than 7                                    (SW) }
-{                Added a function named RaiseLastOSError including a comment   }
-{                on how to make it run under Delphi versions lower than 7 (SW) }
-{                Added some data types according to the GL-Syntax         (SW) }
-{ Version 1.2    Fixed some problems with getting the addresses of some        }
-{                Extensions (e.g. glTexImage3D) where the EXT/ARB did work     }
-{                but not the core-functions                               (SW) }
-{ Version 1.3    A second call to ReadimplementationProperties won't           }
-{                revert to the default libs anymore                       (MW) }
-{                Libraries now will be released if necessary              (MW) }
-{ Version 1.3a   Small fixes for glSlang-functions                        (SW) }
-{ Version 1.3b   Fixed a small bug with GL_ARB_shader_objects, that lead       }
-{                lead to that extension not loaded correctly              (SW) }
-{ Version 1.3c   more GL 1.5 compliance by FOG_COORD_xx and                    }
-{                ARB less VBO and occlusion query routines                (MW) }
-{ Version 1.3d   Fixed linebreaks (should now be corrected under D5)      (SW) }
-{ Version 1.4    Changed header to correspond to the OpenGL-Shading            }
-{                Language specification 1.10 :                                 }
-{                - Added new GL_SAMPLER_*-Constants                            }
-{                - Added Constant GL_SHADING_LANGUAGE_VERSION_ARB              }
-{                - Added Constant GL_FRAGMENT_SHADER_DERIVATIVE_HINT_ARB       }
-{                - Added Constant GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB  (SW) }
-{ Version 1.4a   Fixed a missing stdcall for glBindAttribLocationARB      (SW) }
-{ Version 1.4b   Fixed declaration for glUniform*(f/i)vARB (added count)  (MW) }
-{                glCompileShaderARB changed from function to procedure    (MW) }
-{ Version 1.5    Added support for FreePascal                             (BR) }
-{                Added type TGLVectorf3/TGLVector3f                       (SW) }
-{ Version 1.6    Added Extension GL_EXT_framebuffer_object                (SX) }
-{ Version 1.7    Added Extension GL_ARB_fragment_program_shadow           (SX) }
-{                Added Extension GL_ARB_draw_buffers                      (SX) }
-{                Added Extension GL_ARB_texture_rectangle                 (SX) }
-{                Added Extension GL_ARB_color_buffer_float                (SX) }
-{                Added Extension GL_ARB_half_float_pixel                  (SX) }
-{                Added Extension GL_ARB_texture_float                     (SX) }
-{                Added Extension GL_ARB_pixel_buffer_object               (SX) }
-{                Added Extension GL_EXT_depth_bounds_test                 (SX) }
-{                Added Extension GL_EXT_texture_mirror_clamp              (SX) }
-{                Added Extension GL_EXT_blend_equation_separate           (SX) }
-{                Added Extension GL_EXT_pixel_buffer_object               (SX) }
-{                Added Extension GL_EXT_texture_compression_dxt1          (SX) }
-{                Added Extension GL_NV_fragment_program_option            (SX) }
-{                Added Extension GL_NV_fragment_program2                  (SX) }
-{                Added Extension GL_NV_vertex_program2_option             (SX) }
-{                Added Extension GL_NV_vertex_program3                    (SX) }
-{ Version 1.8    Added explicit delegate type definitions                 (LM) }
-{                Added .Net 1.1 Support                                   (LM) }
-{                Added .Net overloaded functions                          (LM) }
-{                Added delayed extension loading and stubs                (LM) }
-{                Added automatic InitOpenGL call in CreateRenderingContext(LM) }
-{                Added extra Read_* function                              (LM) }
-{ Version 2.0    fixed some Problem with version string and damn drivers.      }
-{                String 1.15 identified as OpenGL 1.5 not as OpenGL 1.1   (SX) }
-{                Removed unexisting extension GL_ARB_texture_mirror_repeat(SX) }
-{                Added Extension WGL_ARB_pixel_format_float               (SX) }
-{                Added Extension GL_EXT_stencil_clear_tag                 (SX) }
-{                Added Extension GL_EXT_texture_rectangle                 (SX) }
-{                Added Extension GL_EXT_texture_edge_clamp                (SX) }
-{                Some 1.5 Core Consts added (now completed)               (SX) }
-{                gluProject need pointer for not .net                     (SX) }
-{                gluUnProject need pointer for not .net                   (SX) }
-{                wglUseFontOutlines* need pointer for not .net            (SX) }
-{                wglSwapMultipleBuffers need pointer for not .net         (SX) }
-{                Bug with wglGetExtensionsStringEXT removed                    }
-{                different type for .net                                  (SX) }
-{                Added OpenGL 2.0 Core                                    (SX) }
-{ Version 2.0.1  fixed some problems with glGetActiveAttrib in 2.0 Core   (SX) }
-{                fixes some problems with gluProject                      (SX) }
-{                fixes some problems with gluUnProject                    (SX) }
-{                fixes some problems with gluTessVertex                   (SX) }
-{                fixes some problems with gluLoadSamplingMatrices         (SX) }
-{ Version 2.1    Removed .NET Support                                     (SX) }
-{                Better support for Linux                                 (SX) }
-{                Better Codeformation                                     (SX) }
-{                Added some more Vector/Matrix types                      (SX) }
-{                Added OpenGL 2.1 Core                                    (SX) }
-{                Added Extension GL_EXT_packed_depth_stencil              (SX) }
-{                Added Extension GL_EXT_texture_sRGB                      (SX) }
-{                Added Extension GL_EXT_framebuffer_blit                  (SX) }
-{                Added Extension GL_EXT_framebuffer_multisample           (SX) }
-{                Added Extension GL_EXT_timer_query                       (SX) }
-{                Added Extension GL_EXT_gpu_program_parameters            (SX) }
-{                Added Extension GL_EXT_bindable_uniform                  (SX) }
-{                Added Extension GL_EXT_draw_buffers2                     (SX) }
-{                Added Extension GL_EXT_draw_instanced                    (SX) }
-{                Added Extension GL_EXT_framebuffer_sRGB                  (SX) }
-{                Added Extension GL_EXT_geometry_shader4                  (SX) }
-{                Added Extension GL_EXT_gpu_shader4                       (SX) }
-{                Added Extension GL_EXT_packed_float                      (SX) }
-{                Added Extension GL_EXT_texture_array                     (SX) }
-{                Added Extension GL_EXT_texture_buffer_object             (SX) }
-{                Added Extension GL_EXT_texture_compression_latc          (SX) }
-{                Added Extension GL_EXT_texture_compression_rgtc          (SX) }
-{                Added Extension GL_EXT_texture_integer                   (SX) }
-{                Added Extension GL_EXT_texture_shared_exponent           (SX) }
-{                Added Extension GL_NV_depth_buffer_float                 (SX) }
-{                Added Extension GL_NV_fragment_program4                  (SX) }
-{                Added Extension GL_NV_framebuffer_multisample_coverage   (SX) }
-{                Added Extension GL_NV_geometry_program4                  (SX) }
-{                Added Extension GL_NV_gpu_program4                       (SX) }
-{                Added Extension GL_NV_parameter_buffer_object            (SX) }
-{                Added Extension GL_NV_transform_feedback                 (SX) }
-{                Added Extension GL_NV_vertex_program4                    (SX) }
-{ Version 3.0    fixed some const of GL_EXT_texture_shared_exponent       (SX) }
-{                possible better support for mac                          (SX) }
-{                Added OpenGL 3.0 Core                                    (SX) }
-{                Added Extension GL_ARB_depth_buffer_float                (SX) }
-{                Added Extension GL_ARB_draw_instanced                    (SX) }
-{                Added Extension GL_ARB_framebuffer_object                (SX) }
-{                Added Extension GL_ARB_framebuffer_sRGB                  (SX) }
-{                Added Extension GL_ARB_geometry_shader4                  (SX) }
-{                Added Extension GL_ARB_half_float_vertex                 (SX) }
-{                Added Extension GL_ARB_instanced_arrays                  (SX) }
-{                Added Extension GL_ARB_map_buffer_range                  (SX) }
-{                Added Extension GL_ARB_texture_buffer_object             (SX) }
-{                Added Extension GL_ARB_texture_compression_rgtc          (SX) }
-{                Added Extension GL_ARB_texture_rg                        (SX) }
-{                Added Extension GL_ARB_vertex_array_object               (SX) }
-{                Added Extension GL_NV_conditional_render                 (SX) }
-{                Added Extension GL_NV_present_video                      (SX) }
-{                Added Extension GL_EXT_transform_feedback                (SX) }
-{                Added Extension GL_EXT_direct_state_access               (SX) }
-{                Added Extension GL_EXT_vertex_array_bgra                 (SX) }
-{                Added Extension GL_EXT_texture_swizzle                   (SX) }
-{                Added Extension GL_NV_explicit_multisample               (SX) }
-{                Added Extension GL_NV_transform_feedback2                (SX) }
-{                Added Extension WGL_ARB_create_context                   (SX) }
-{                Added Extension WGL_NV_present_video                     (SX) }
-{                Added Extension WGL_NV_video_out                         (SX) }
-{                Added Extension WGL_NV_swap_group                        (SX) }
-{                Added Extension WGL_NV_gpu_affinity                      (SX) }
-{                Added define DGL_TINY_HEADER to suppress automatic            }
-{                function loading                                         (SX) }
-{                glProcedure renamed to dglGetProcAddress and now it's         }
-{                visible from outside the unit to custom load functions   (SX) }
-{                dglCheckExtension added to check if an extension exists  (SX) }
-{                Read_GL_ARB_buffer_object renamed to                          }
-{                Read_GL_ARB_vertex_buffer_object                         (SX) }
-{ Version 3.0.1  fixed an problem with fpc                                (SX) }
-{ Version 3.0.2  fixed an problem with WGL_ARB_create_context             (SX) }
-{ Version 3.2    Functions from GL_VERSION_3_0 where updated              (SX) }
-{                Functions from GL_ARB_map_buffer_range where updated     (SX) }
-{                Functions from GL_NV_present_video where added           (SX) }
-{                Added consts of GL_ARB_instanced_arrays                  (SX) }
-{                Defines to identify Delphi was changed (prevent for           }
-{                feature maintenance)                                     (SX) }
-{                Added Extension GL_ATI_meminfo                           (SX) }
-{                Added Extension GL_AMD_performance_monitor               (SX) }
-{                Added Extension GL_AMD_texture_texture4                  (SX) }
-{                Added Extension GL_AMD_vertex_shader_tesselator          (SX) }
-{                Added Extension GL_EXT_provoking_vertex                  (SX) }
-{                Added Extension WGL_AMD_gpu_association                  (SX) }
-{                Added OpenGL 3.1 Core                                    (SX) }
-{                All deprecated stuff can be disabled if you undef the         }
-{                define DGL_DEPRECATED                                    (SX) }
-{                Added Extension GL_ARB_uniform_buffer_object             (SX) }
-{                Added Extension GL_ARB_compatibility                     (SX) }
-{                Added Extension GL_ARB_copy_buffer                       (SX) }
-{                Added Extension GL_ARB_shader_texture_lod                (SX) }
-{                Remove function from GL_NV_present_video                 (SX) }
-{                Added Extension WGL_3DL_stereo_control                   (SX) }
-{                Added Extension GL_EXT_texture_snorm                     (SX) }
-{                Added Extension GL_AMD_draw_buffers_blend                (SX) }
-{                Added Extension GL_APPLE_texture_range                   (SX) }
-{                Added Extension GL_APPLE_float_pixels                    (SX) }
-{                Added Extension GL_APPLE_vertex_program_evaluators       (SX) }
-{                Added Extension GL_APPLE_aux_depth_stencil               (SX) }
-{                Added Extension GL_APPLE_object_purgeable                (SX) }
-{                Added Extension GL_APPLE_row_bytes                       (SX) }
-{                Added OpenGL 3.2 Core                                    (SX) }
-{                Added Extension GL_ARB_depth_clamp                       (SX) }
-{                Added Extension GL_ARB_draw_elements_base_vertex         (SX) }
-{                Added Extension GL_ARB_fragment_coord_conventions        (SX) }
-{                Added Extension GL_ARB_provoking_vertex                  (SX) }
-{                Added Extension GL_ARB_seamless_cube_map                 (SX) }
-{                Added Extension GL_ARB_sync                              (SX) }
-{                Added Extension GL_ARB_texture_multisample               (SX) }
-{                Added Extension GL_ARB_vertex_array_bgra                 (SX) }
-{                Added Extension GL_ARB_draw_buffers_blend                (SX) }
-{                Added Extension GL_ARB_sample_shading                    (SX) }
-{                Added Extension GL_ARB_texture_cube_map_array            (SX) }
-{                Added Extension GL_ARB_texture_gather                    (SX) }
-{                Added Extension GL_ARB_texture_query_lod                 (SX) }
-{                Added Extension WGL_ARB_create_context_profile           (SX) }
-{                Added GLX Core up to Version 1.4                         (SX) }
-{                Added Extension GLX_ARB_multisample                      (SX) }
-{                Added Extension GLX_ARB_fbconfig_float                   (SX) }
-{                Added Extension GLX_ARB_get_proc_address                 (SX) }
-{                Added Extension GLX_ARB_create_context                   (SX) }
-{                Added Extension GLX_ARB_create_context_profile           (SX) }
-{                Added Extension GLX_EXT_visual_info                      (SX) }
-{                Added Extension GLX_EXT_visual_rating                    (SX) }
-{                Added Extension GLX_EXT_import_context                   (SX) }
-{                Added Extension GLX_EXT_fbconfig_packed_float            (SX) }
-{                Added Extension GLX_EXT_framebuffer_sRGB                 (SX) }
-{                Added Extension GLX_EXT_texture_from_pixmap              (SX) }
-{ Version 3.2.1  Fixed some problems with Delphi < 6                      (SX) }
-{ Version 3.2.2  Added Extension GL_APPLE_rgb_422                         (SX) }
-{                Added Extension GL_EXT_separate_shader_objects           (SX) }
-{                Added Extension GL_NV_video_capture                      (SX) }
-{                Added Extension GL_NV_copy_image                         (SX) }
-{                Added Extension GL_NV_parameter_buffer_object2           (SX) }
-{                Added Extension GL_NV_shader_buffer_load                 (SX) }
-{                Added Extension GL_NV_vertex_buffer_unified_memory       (SX) }
-{                Added Extension GL_NV_texture_barrier                    (SX) }
-{                Variable GL_EXT_texture_snorm will be filled             (SX) }
-{                Variable GL_APPLE_row_bytes will be filled               (SX) }
-{                Added Extension WGL_NV_video_capture                     (SX) }
-{                Added Extension WGL_NV_copy_image                        (SX) }
-{                WGL_NV_video_out now named WGL_NV_video_output           (SX) }
-{                Added Extension GLX_EXT_swap_control                     (SX) }
-{ Version 3.2.3  Fixed an Problem with glGetAttribLocation                (SX) }
-{                Added const GL_UNIFORM_BUFFER_EXT                        (SX) }
-{                Functions of GL_NV_texture_barrier now will be loaded    (SX) }
-{ Version 4.0    Changes on Extension GL_ARB_texture_gather               (SX) }
-{                Changes on Extension GL_NV_shader_buffer_load            (SX) }
-{                Added OpenGL 3.3 Core                                    (SX) }
-{                Added OpenGL 4.0 Core                                    (SX) }
-{                Added Extension GL_AMD_shader_stencil_export             (SX) }
-{                Added Extension GL_AMD_seamless_cubemap_per_texture      (SX) }
-{                Added Extension GL_ARB_shading_language_include          (SX) }
-{                Added Extension GL_ARB_texture_compression_bptc          (SX) }
-{                Added Extension GL_ARB_blend_func_extended               (SX) }
-{                Added Extension GL_ARB_explicit_attrib_location          (SX) }
-{                Added Extension GL_ARB_occlusion_query2                  (SX) }
-{                Added Extension GL_ARB_sampler_objects                   (SX) }
-{                Added Extension GL_ARB_shader_bit_encoding               (SX) }
-{                Added Extension GL_ARB_texture_rgb10_a2ui                (SX) }
-{                Added Extension GL_ARB_texture_swizzle                   (SX) }
-{                Added Extension GL_ARB_timer_query                       (SX) }
-{                Added Extension GL_ARB_vertex_type_2_10_10_10_rev        (SX) }
-{                Added Extension GL_ARB_draw_indirect                     (SX) }
-{                Added Extension GL_ARB_gpu_shader5                       (SX) }
-{                Added Extension GL_ARB_gpu_shader_fp64                   (SX) }
-{                Added Extension GL_ARB_shader_subroutine                 (SX) }
-{                Added Extension GL_ARB_tessellation_shader               (SX) }
-{                Added Extension GL_ARB_texture_buffer_object_rgb32       (SX) }
-{                Added Extension GL_ARB_transform_feedback2               (SX) }
-{                Added Extension GL_ARB_transform_feedback3               (SX) }
-{ Version 4.1    Possible fix some strange linux behavior                 (SX) }
-{                All function uses GL instead of TGL types                (SX) }
-{                GL_AMD_vertex_shader_tesselator will be read now         (SX) }
-{                GL_AMD_draw_buffers_blend will be read now               (SX) }
-{                Changes on glStencilFuncSeparate (GL_2_0)                (SX) }
-{                Changes on GL_VERSION_3_2                                (SX) }
-{                Changes on GL_VERSION_3_3                                (SX) }
-{                Changes on GL_VERSION_4_0                                (SX) }
-{                Changes on GL_ARB_sample_shading                         (SX) }
-{                Changes on GL_ARB_texture_cube_map_array                 (SX) }
-{                Changes on GL_ARB_gpu_shader5                            (SX) }
-{                Changes on GL_ARB_transform_feedback3                    (SX) }
-{                Changes on GL_ARB_sampler_objects                        (SX) }
-{                Changes on GL_ARB_gpu_shader_fp64                        (SX) }
-{                Changes on GL_APPLE_element_array                        (SX) }
-{                Changes on GL_APPLE_vertex_array_range                   (SX) }
-{                Changes on GL_NV_transform_feedback                      (SX) }
-{                Changes on GL_NV_vertex_buffer_unified_memory            (SX) }
-{                Changes on GL_EXT_multi_draw_arrays                      (SX) }
-{                Changes on GL_EXT_direct_state_access                    (SX) }
-{                Changes on GL_AMD_performance_monitor                    (SX) }
-{                Changes on GL_AMD_seamless_cubemap_per_texture           (SX) }
-{                Changes on GL_EXT_geometry_shader4                       (SX) }
-{                Added OpenGL 4.1 Core                                    (SX) }
-{                Added Extension GL_ARB_ES2_compatibility                 (SX) }
-{                Added Extension GL_ARB_get_program_binary                (SX) }
-{                Added Extension GL_ARB_separate_shader_objects           (SX) }
-{                Added Extension GL_ARB_shader_precision                  (SX) }
-{                Added Extension GL_ARB_vertex_attrib_64bit               (SX) }
-{                Added Extension GL_ARB_viewport_array                    (SX) }
-{                Added Extension GL_ARB_cl_event                          (SX) }
-{                Added Extension GL_ARB_debug_output                      (SX) }
-{                Added Extension GL_ARB_robustness                        (SX) }
-{                Added Extension GL_ARB_shader_stencil_export             (SX) }
-{                Added Extension GL_AMD_conservative_depth                (SX) }
-{                Added Extension GL_EXT_shader_image_load_store           (SX) }
-{                Added Extension GL_EXT_vertex_attrib_64bit               (SX) }
-{                Added Extension GL_NV_gpu_program5                       (SX) }
-{                Added Extension GL_NV_gpu_shader5                        (SX) }
-{                Added Extension GL_NV_shader_buffer_store                (SX) }
-{                Added Extension GL_NV_tessellation_program5              (SX) }
-{                Added Extension GL_NV_vertex_attrib_integer_64bit        (SX) }
-{                Added Extension GL_NV_multisample_coverage               (SX) }
-{                Added Extension GL_AMD_name_gen_delete                   (SX) }
-{                Added Extension GL_AMD_debug_output                      (SX) }
-{                Added Extension GL_NV_vdpau_interop                      (SX) }
-{                Added Extension GL_AMD_transform_feedback3_lines_triangles (SX) }
-{                Added Extension GL_AMD_depth_clamp_separate              (SX) }
-{                Added Extension GL_EXT_texture_sRGB_decode               (SX) }
-{                Added Extension WGL_ARB_framebuffer_sRGB                 (SX) }
-{                Added Extension WGL_ARB_create_context_robustness        (SX) }
-{                Added Extension WGL_EXT_create_context_es2_profile       (SX) }
-{                Added Extension WGL_NV_multisample_coverage              (SX) }
-{                Added Extension GLX_ARB_vertex_buffer_object             (SX) }
-{                Added Extension GLX_ARB_framebuffer_sRGB                 (SX) }
-{                Added Extension GLX_ARB_create_context_robustness        (SX) }
-{                Added Extension GLX_EXT_create_context_es2_profile       (SX) }
-{ Version 4.1a   Fix for dglGetProcAddress with FPC and linux (def param) (SW) }
+{ ============================================================================
 
-{==============================================================================}
-{ Header based on glext.h  rev 67 (2010/12/09)                                 }
-{ Header based on wglext.h rev 22 (2010/08/06)                                 }
-{ Header based on glxext.h rev 32 (2010/08/06)  (only Core/ARB/EXT)            }
-{                                                                              }
-{ This is an important notice for maintaining. Dont remove it. And make sure   }
-{ to keep it up to date                                                        }
-{==============================================================================}
+       OpenGL 4.6 - Headertranslation
+
+       Supported environments and targets :
+        - (Win32) Delphi 6 and up
+        - (Win32, Win64) Delphi XE2
+        - (Win32, Win64, Linux, MacOSX) FreePascal (1.9.3 and up)
+
+==============================================================================
+
+       Copyright (C) DGL-OpenGL-Portteam
+       All Rights Reserved
+
+       Obtained through:
+       Bitbucket source repository - https://bitbucket.org/saschawillems/dglopengl
+       Delphi OpenGL Community(DGL) - www.delphigl.com
+
+       Converted and maintained by DGL's OpenGL-Portteam :
+         - Sascha Willems             - http://www.saschawillems.de
+         - Steffen Xonna (Lossy eX)   - http://www.dev-center.de
+       Additional input :
+         - Andrey Gruzdev (Mac OS X patch for XE2 / FPC)
+         - Lars Middendorf
+         - Martin Waldegger (Mars)
+         - Benjamin Rosseaux (BeRo)   - http://www.0ok.de
+       Additional thanks:
+           sigsegv (libdl.so)
+
+==============================================================================
+
+  You may retrieve the latest version of this file at the Delphi OpenGL
+  Community home page, located at http://www.delphigl.com/
+
+  This Source Code Form is subject to the terms of the Mozilla Public License,
+  v. 2.0. If a copy of the MPL was not distributed with this file,
+  You can obtain one at http://mozilla.org/MPL/2.0/.
+
+  Software distributed under the License is distributed on an
+  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the License for the specific language governing
+  rights and limitations under the License.
+
+============================================================================== }
 
 {$define DGL_DEPRECATED}
 {
   This define defines if the header should use deprecated ARB stuff or not.
   per Default the Header use deprecated Stuff.
 }
+
 
 {.$define DGL_TINY_HEADER}
 {
@@ -385,12 +73,14 @@
 
      So only the function "glActiveTextureARB" and "glMultiTexCoord2fARB" will be loaded.
 
+
   Please notice that the extension variables won't be loaded if this define is active. But
   you can call dglCheckExtension to check if any extension exists. You can assign them to
   the variables of the dglOpenGL.pas so all code they use this will find them.
 
   > GL_ARB_shading_language_100 := dglCheckExtension('GL_ARB_shading_language_100');
 }
+
 
 unit dglOpenGL;
 
@@ -435,6 +125,17 @@ interface
   {$A4}
 {$ENDIF}
 
+// 64 BIT architecture
+// Free pascal
+{$IFDEF CPU64}
+  {$DEFINE DGL_64BIT}
+{$ENDIF}
+// Delphi
+{$IFDEF WIN64}
+  {$DEFINE DGL_64BIT}
+{$ENDIF}
+
+
 // generell options
 {$H+,O+,X+}
 
@@ -452,21 +153,30 @@ interface
   {$DEFINE DGL_LINUX}
 {$ENDIF}
 
-// detecting 64 Bit CPU
-{$IFDEF CPU64}          // fpc on 64 bit cpus
-  {$DEFINE DGL_64BIT}   // dgl define for 64 bit
+{$IFDEF DARWIN}  // Mac OS X and FPC
+   {$DEFINE DGL_MAC}
+{$ENDIF}
+
+{$IFDEF DELPHI}  // Mac OS X add Delphi
+{$IFDEF MACOS}
+   {$DEFINE DGL_MAC}
+{$ENDIF}
 {$ENDIF}
 
 uses
+  {$IFDEF FPC}{$IFDEF DARWIN}dynlibs,{$ENDIF}{$ENDIF}  // LoadLibrary functions
   SysUtils
   {$IFDEF DGL_WIN}, Windows{$ENDIF}
+  {$IFDEF DGL_64BIT} ,math {$ENDIF}
   {$IFDEF DGL_LINUX}, X, XLib, XUtil{$ENDIF}
   ;
 
 type
-  // Needed for Delphi 6 and less (defined in system.pas for Delphi 7)
-  PPointer = ^Pointer;
-  PCardinal = ^Cardinal;
+  {$IFDEF DELPHI6_AND_DOWN}
+    // Delphi 6 compatibility
+    PPointer = ^Pointer;
+    PCardinal = ^Cardinal;
+  {$ENDIF}
 
   GLenum = Cardinal;
   GLboolean = BYTEBOOL;
@@ -536,6 +246,7 @@ type
 
   // GL_VERSION_1_5
   GLintptr = GLint;
+  PGLintptr = ^GLintptr;
   GLsizeiptr = GLsizei;
 
   // GL_ARB_vertex_buffer_object
@@ -591,15 +302,22 @@ type
   p_cl_context = ^_cl_context;
   p_cl_event = ^_cl_event;
 
+  // GL_ARB_compute_variable_group_size
+  TglDispatchComputeGroupSizeARB = procedure (num_groups_x : GLuint; num_groups_y : GLuint; num_groups_z : GLuint; group_size_x : GLuint; group_size_y : GLuint; group_size_z : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   // GL_ARB_debug_output
   TglDebugProcARB = procedure (source: GLenum; type_: GLenum; id: GLuint; severity: GLenum; length: GLsizei; const message_: PGLchar; userParam: PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_AMD_debug_output
   TglDebugProcAMD = procedure (id: GLuint; category: GLenum; severity: GLenum; length: GLsizei; const message_: PGLchar; userParam: PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
+  // GL_KHR_debug (4.3)
+  TglDebugProc = procedure(source : GLEnum; type_ : GLEnum; id : GLUInt; severity : GLUInt; length : GLsizei; const message_ : PGLCHar; userParam : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   // GL_NV_vdpau_interop
   GLvdpauSurfaceNV = GLintptr;
   PGLvdpauSurfaceNV = ^GLvdpauSurfaceNV;
+
 
   // GLX
   {$IFDEF DGL_LINUX}
@@ -655,6 +373,7 @@ type
   TGLVector3f = TGLVectorf3;
 
   // Datatypes corresponding to OpenGL12.pas for easy porting
+  TVector3f = TGLVectorf3;
   TVector3d = TGLVectord3;
 
   TVector4i = TGLVectori4;
@@ -666,13 +385,7 @@ type
 
   PGLMatrixd4 = ^TGLMatrixd4;
   PVector4i = ^TVector4i;
-
-{$IFDEF FPC}
-  TRect = packed record
-    Left, Top, Right, Bottom: Longint;
-  end;
-{$ENDIF}
-
+{$IFDEF DGL_WIN}
   PGPU_DEVICE = ^GPU_DEVICE;
   GPU_DEVICE = record
     cb: DWORD;
@@ -681,6 +394,7 @@ type
     Flags: DWORD;
     rcVirtualScreen: TRect;
   end;
+{$ENDIF}
 
 type
 {$IFDEF FPC}
@@ -752,6 +466,11 @@ var
   GL_VERSION_3_3,
   GL_VERSION_4_0,
   GL_VERSION_4_1,
+  GL_VERSION_4_2,
+  GL_VERSION_4_3,
+  GL_VERSION_4_4,
+  GL_VERSION_4_5,
+  GL_VERSION_4_6,
   GLU_VERSION_1_1,
   GLU_VERSION_1_2,
   GLU_VERSION_1_3,
@@ -789,6 +508,7 @@ var
   GL_ARB_texture_env_combine,
   GL_ARB_texture_env_crossbar,
   GL_ARB_texture_env_dot3,
+  GL_ARB_texture_filter_minmax,
   GL_ARB_texture_mirrored_repeat,
   GL_ARB_transpose_matrix,
   GL_ARB_vertex_blend,
@@ -798,6 +518,7 @@ var
   GL_ARB_shader_objects,
   GL_ARB_vertex_shader,
   GL_ARB_fragment_shader,
+  GL_ARB_fragment_shader_interlock,
   GL_ARB_shading_language_100,
   GL_ARB_occlusion_query,
   GL_ARB_texture_non_power_of_two,
@@ -825,6 +546,7 @@ var
   GL_ARB_compatibility,
   GL_ARB_copy_buffer,
   GL_ARB_shader_texture_lod,
+  GL_ARB_shader_viewport_layer_array,
   GL_ARB_depth_clamp,
   GL_ARB_draw_elements_base_vertex,
   GL_ARB_fragment_coord_conventions,
@@ -835,6 +557,9 @@ var
   GL_ARB_vertex_array_bgra,
   GL_ARB_draw_buffers_blend,
   GL_ARB_sample_shading,
+  GL_ARB_sample_locations,
+  GL_ARB_sparse_texture2,
+  GL_ARB_sparse_texture_clamp,
   GL_ARB_texture_cube_map_array,
   GL_ARB_texture_gather,
   GL_ARB_texture_query_lod,
@@ -843,8 +568,11 @@ var
   GL_ARB_blend_func_extended,
   GL_ARB_explicit_attrib_location,
   GL_ARB_occlusion_query2,
+  GL_ARB_parallel_shader_compile,
+  GL_ARB_post_depth_coverage,
   GL_ARB_sampler_objects,
   GL_ARB_shader_bit_encoding,
+  GL_ARB_shader_clock,
   GL_ARB_texture_rgb10_a2ui,
   GL_ARB_texture_swizzle,
   GL_ARB_timer_query,
@@ -852,18 +580,111 @@ var
   GL_ARB_draw_indirect,
   GL_ARB_gpu_shader5,
   GL_ARB_gpu_shader_fp64,
+  GL_ARB_gpu_shader_int64,
   GL_ARB_shader_subroutine,
   GL_ARB_tessellation_shader,
   GL_ARB_texture_buffer_object_rgb32,
   GL_ARB_transform_feedback2,
   GL_ARB_transform_feedback3,
   GL_ARB_ES2_compatibility,
+  GL_ARB_ES3_2_compatibility,
   GL_ARB_get_program_binary,
   GL_ARB_separate_shader_objects,
   GL_ARB_shader_precision,
+  GL_ARB_shader_ballot,
   GL_ARB_vertex_attrib_64bit,
   GL_ARB_viewport_array,
+
+  // GL 4.2
+  GL_ARB_base_instance,
+  GL_ARB_shading_language_420pack,
+  GL_ARB_transform_feedback_instanced,
+  GL_ARB_compressed_texture_pixel_storage,
+  GL_ARB_conservative_depth,
+  GL_ARB_internalformat_query,
+  GL_ARB_map_buffer_alignment,
+  GL_ARB_shader_atomic_counters,
+  GL_ARB_shader_image_load_store,
+  GL_ARB_shading_language_packing,
+  GL_ARB_texture_storage,
+
+
+  // GL 4.3
+  GL_ARB_arrays_of_arrays,
+  GL_ARB_fragment_layer_viewport,
+  GL_ARB_shader_image_size,
+  GL_ARB_ES3_compatibility,
+  GL_ARB_clear_buffer_object,
+  GL_ARB_compute_shader,
+  GL_ARB_copy_image,
+  GL_KHR_debug,
+  GL_ARB_explicit_uniform_location,
+  GL_ARB_framebuffer_no_attachments,
+  GL_ARB_internalformat_query2,
+  GL_ARB_invalidate_subdata,
+  GL_ARB_multi_draw_indirect,
+  GL_ARB_program_interface_query,
+  GL_ARB_robust_buffer_access_behavior,
+  GL_ARB_shader_storage_buffer_object,
+  GL_ARB_stencil_texturing,
+  GL_ARB_texture_buffer_range,
+  GL_ARB_texture_query_levels,
+  GL_ARB_texture_storage_multisample,
+  GL_ARB_texture_view,
+  GL_ARB_vertex_attrib_binding,
+  GL_NV_path_rendering,
+  GL_AMD_pinned_memory,
+  GL_AMD_stencil_operation_extended,
+  GL_AMD_vertex_shader_viewport_index,
+  GL_AMD_vertex_shader_layer,
+  GL_NV_bindless_texture,
+  GL_NV_shader_atomic_float,
+  GL_AMD_query_buffer_object,
+
+
+  // GL 4.4
+  GL_ARB_buffer_storage,
+  GL_ARB_clear_texture,
+  GL_ARB_enhanced_layouts,
+  GL_ARB_multi_bind,
+  GL_ARB_query_buffer_object,
+  GL_ARB_texture_mirror_clamp_to_edge,
+  GL_ARB_texture_stencil8,
+  GL_ARB_vertex_type_10f_11f_11f_rev,
+  GL_ARB_bindless_texture,
+  GL_ARB_sparse_texture,
+
+  // GL 4.5
+  GL_ARB_clip_control,
+  GL_ARB_cull_distance,
+  GL_ARB_ES3_1_compatibility,
+  GL_ARB_conditional_render_inverted,
+  GL_KHR_context_flush_control,
+  GL_ARB_derivative_control,
+  GL_ARB_direct_state_access,
+  GL_ARB_get_texture_sub_image,
+  GL_KHR_robustness,
+  GL_KHR_blend_equation_advanced,
+  GL_KHR_blend_equation_advanced_coherent,
+  GL_KHR_robust_buffer_access_behavior,
+  GL_ARB_shader_texture_image_samples,
+  GL_ARB_texture_barrier,
+
+  // GL 4.6
+  GL_ARB_indirect_parameters,
+  GL_ARB_pipeline_statistics_query,
+  GL_ARB_polygon_offset_clamp,
+  GL_KHR_no_error,
+  GL_ARB_shader_atomic_counter_ops,
+  GL_ARB_shader_draw_parameters,
+  GL_ARB_shader_group_vote,
+  GL_ARB_gl_spirv,
+  GL_ARB_spirv_extensions,
+  GL_ARB_texture_filter_anisotropic,
+  GL_ARB_transform_feedback_overflow_query,
+
   GL_ARB_cl_event,
+  GL_ARB_compute_variable_group_size,
   GL_ARB_debug_output,
   GL_ARB_robustness,
   GL_ARB_shader_stencil_export,
@@ -1001,6 +822,7 @@ var
   GL_INGR_color_clamp,
   GL_INGR_interlace_read,
   GL_INGR_palette_buffer,
+  GL_INTEL_framebuffer_CMAA,
   GL_INTEL_parallel_arrays,
   GL_INTEL_texture_scissor,
   GL_MESA_resize_buffers,
@@ -1050,6 +872,9 @@ var
   GL_NV_transform_feedback,
   GL_NV_vertex_program4,
   GL_NV_conditional_render,
+  GL_NV_conservative_raster,
+  GL_NV_conservative_raster_dilate,
+
   GL_NV_present_video,
   GL_NV_explicit_multisample,
   GL_NV_transform_feedback2,
@@ -1069,6 +894,10 @@ var
   GL_OML_interlace,
   GL_OML_resample,
   GL_OML_subsample,
+
+  GL_OVR_multiview,
+  GL_OVR_multiview2,
+
   GL_PGI_misc_hints,
   GL_PGI_vertex_hints,
   GL_REND_screen_coordinates,
@@ -1141,6 +970,7 @@ var
   GL_SUN_triangle_list,
   GL_SUN_vertex,
 
+  // WGL
   GL_WIN_phong_shading,
   GL_WIN_specular_fog,
   WGL_3DFX_multisample,
@@ -1184,12 +1014,14 @@ var
   WGL_NV_video_capture,
   WGL_NV_copy_image,
   WGL_NV_multisample_coverage,
+  WGL_NV_DX_interop,
   WGL_OML_sync_control,
   WGL_3DL_stereo_control,
+  WGL_ARB_context_flush_control,
   WIN_draw_range_elements,
   WIN_swap_hint,
 
-//  GLX_VERSION_1_0,
+  // GLX
   GLX_VERSION_1_3,
   GLX_VERSION_1_4,
   GLX_ARB_multisample,
@@ -1207,6 +1039,7 @@ var
   GLX_EXT_framebuffer_sRGB,
   GLX_EXT_texture_from_pixmap,
   GLX_EXT_swap_control,
+  GLX_ARB_context_flush_control,
   GLX_EXT_create_context_es2_profile : Boolean;
 
 const
@@ -1216,8 +1049,8 @@ const
   GL_STENCIL_BUFFER_BIT = $00000400;
   GL_COLOR_BUFFER_BIT = $00004000;
   { Boolean }
-  GL_TRUE = 1;
-  GL_FALSE = 0;
+  GL_TRUE: ByteBool = True;
+  GL_FALSE: ByteBool = False;
   { BeginMode }
   GL_POINTS = $0000;
   GL_LINES = $0001;
@@ -2647,6 +2480,7 @@ const
   { reuse GL_MAX_VERTEX_UNIFORM_VECTORS }
   { reuse GL_MAX_VARYING_VECTORS }
   { reuse GL_MAX_FRAGMENT_UNIFORM_VECTORS }
+  { reuse GL_RGB565 }
   { Reuse tokens from ARB_get_program_binary }
   { reuse GL_PROGRAM_BINARY_RETRIEVABLE_HINT }
   { reuse GL_PROGRAM_BINARY_LENGTH }
@@ -2671,6 +2505,407 @@ const
   { reuse GL_LAYER_PROVOKING_VERTEX }
   { reuse GL_VIEWPORT_INDEX_PROVOKING_VERTEX }
   { reuse GL_UNDEFINED_VERTEX }
+
+  // GL_VERSION_4_2
+  { Reuse tokens from ARB_base_instance (none) }
+  { Reuse tokens from ARB_shading_language_420pack (none) }
+  { Reuse tokens from ARB_transform_feedback_instanced (none) }
+  { Reuse tokens from ARB_compressed_texture_pixel_storage }
+  { reuse GL_UNPACK_COMPRESSED_BLOCK_WIDTH }
+  { reuse GL_UNPACK_COMPRESSED_BLOCK_HEIGHT }
+  { reuse GL_UNPACK_COMPRESSED_BLOCK_DEPTH }
+  { reuse GL_UNPACK_COMPRESSED_BLOCK_SIZE }
+  { reuse GL_PACK_COMPRESSED_BLOCK_WIDTH }
+  { reuse GL_PACK_COMPRESSED_BLOCK_HEIGHT }
+  { reuse GL_PACK_COMPRESSED_BLOCK_DEPTH }
+  { reuse GL_PACK_COMPRESSED_BLOCK_SIZE }
+  { Reuse tokens from ARB_conservative_depth (none) }
+  { Reuse tokens from ARB_internalformat_query }
+  { reuse GL_NUM_SAMPLE_COUNTS }
+  { Reuse tokens from ARB_map_buffer_alignment }
+  { reuse GL_MIN_MAP_BUFFER_ALIGNMENT }
+  { Reuse tokens from ARB_shader_atomic_counters }
+  { reuse GL_ATOMIC_COUNTER_BUFFER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_BINDING }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_START }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_SIZE }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER }
+  { reuse GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_VERTEX_ATOMIC_COUNTERS }
+  { reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS }
+  { reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS }
+  { reuse GL_MAX_GEOMETRY_ATOMIC_COUNTERS }
+  { reuse GL_MAX_FRAGMENT_ATOMIC_COUNTERS }
+  { reuse GL_MAX_COMBINED_ATOMIC_COUNTERS }
+  { reuse GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE }
+  { reuse GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS }
+  { reuse GL_ACTIVE_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX }
+  { reuse GL_UNSIGNED_INT_ATOMIC_COUNTER }
+  { Reuse tokens from ARB_shader_image_load_store }
+  { reuse GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT }
+  { reuse GL_ELEMENT_ARRAY_BARRIER_BIT }
+  { reuse GL_UNIFORM_BARRIER_BIT }
+  { reuse GL_TEXTURE_FETCH_BARRIER_BIT }
+  { reuse GL_SHADER_IMAGE_ACCESS_BARRIER_BIT }
+  { reuse GL_COMMAND_BARRIER_BIT }
+  { reuse GL_PIXEL_BUFFER_BARRIER_BIT }
+  { reuse GL_TEXTURE_UPDATE_BARRIER_BIT }
+  { reuse GL_BUFFER_UPDATE_BARRIER_BIT }
+  { reuse GL_FRAMEBUFFER_BARRIER_BIT }
+  { reuse GL_TRANSFORM_FEEDBACK_BARRIER_BIT }
+  { reuse GL_ATOMIC_COUNTER_BARRIER_BIT }
+  { reuse GL_ALL_BARRIER_BITS }
+  { reuse GL_MAX_IMAGE_UNITS }
+  { reuse GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS }
+  { reuse GL_IMAGE_BINDING_NAME }
+  { reuse GL_IMAGE_BINDING_LEVEL }
+  { reuse GL_IMAGE_BINDING_LAYERED }
+  { reuse GL_IMAGE_BINDING_LAYER }
+  { reuse GL_IMAGE_BINDING_ACCESS }
+  { reuse GL_IMAGE_1D }
+  { reuse GL_IMAGE_2D }
+  { reuse GL_IMAGE_3D }
+  { reuse GL_IMAGE_2D_RECT }
+  { reuse GL_IMAGE_CUBE }
+  { reuse GL_IMAGE_BUFFER }
+  { reuse GL_IMAGE_1D_ARRAY }
+  { reuse GL_IMAGE_2D_ARRAY }
+  { reuse GL_IMAGE_CUBE_MAP_ARRAY }
+  { reuse GL_IMAGE_2D_MULTISAMPLE }
+  { reuse GL_IMAGE_2D_MULTISAMPLE_ARRAY }
+  { reuse GL_INT_IMAGE_1D }
+  { reuse GL_INT_IMAGE_2D }
+  { reuse GL_INT_IMAGE_3D }
+  { reuse GL_INT_IMAGE_2D_RECT }
+  { reuse GL_INT_IMAGE_CUBE }
+  { reuse GL_INT_IMAGE_BUFFER }
+  { reuse GL_INT_IMAGE_1D_ARRAY }
+  { reuse GL_INT_IMAGE_2D_ARRAY }
+  { reuse GL_INT_IMAGE_CUBE_MAP_ARRAY }
+  { reuse GL_INT_IMAGE_2D_MULTISAMPLE }
+  { reuse GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY }
+  { reuse GL_UNSIGNED_INT_IMAGE_1D }
+  { reuse GL_UNSIGNED_INT_IMAGE_2D }
+  { reuse GL_UNSIGNED_INT_IMAGE_3D }
+  { reuse GL_UNSIGNED_INT_IMAGE_2D_RECT }
+  { reuse GL_UNSIGNED_INT_IMAGE_CUBE }
+  { reuse GL_UNSIGNED_INT_IMAGE_BUFFER }
+  { reuse GL_UNSIGNED_INT_IMAGE_1D_ARRAY }
+  { reuse GL_UNSIGNED_INT_IMAGE_2D_ARRAY }
+  { reuse GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY }
+  { reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE }
+  { reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY }
+  { reuse GL_MAX_IMAGE_SAMPLES }
+  { reuse GL_IMAGE_BINDING_FORMAT }
+  { reuse GL_IMAGE_FORMAT_COMPATIBILITY_TYPE }
+  { reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE }
+  { reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS }
+  { reuse GL_MAX_VERTEX_IMAGE_UNIFORMS }
+  { reuse GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS }
+  { reuse GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS }
+  { reuse GL_MAX_GEOMETRY_IMAGE_UNIFORMS }
+  { reuse GL_MAX_FRAGMENT_IMAGE_UNIFORMS }
+  { reuse GL_MAX_COMBINED_IMAGE_UNIFORMS }
+  { Reuse tokens from ARB_shading_language_packing (none) }
+  { Reuse tokens from ARB_texture_storage }
+  { reuse GL_TEXTURE_IMMUTABLE_FORMAT }
+
+  // GL_VERSION_4_3
+  GL_NUM_SHADING_LANGUAGE_VERSIONS  = $82E9;
+  GL_VERTEX_ATTRIB_ARRAY_LONG = $874E;
+  { Reuse tokens from ARB_arrays_of_arrays (none, GLSL only) }
+  { Reuse tokens from ARB_fragment_layer_viewport (none, GLSL only) }
+  { Reuse tokens from ARB_shader_image_size (none, GLSL only) }
+  { Reuse tokens from ARB_ES3_compatibility }
+  { reuse GL_COMPRESSED_RGB8_ETC2 }
+  { reuse GL_COMPRESSED_SRGB8_ETC2 }
+  { reuse GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 }
+  { reuse GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 }
+  { reuse GL_COMPRESSED_RGBA8_ETC2_EAC }
+  { reuse GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC }
+  { reuse GL_COMPRESSED_R11_EAC }
+  { reuse GL_COMPRESSED_SIGNED_R11_EAC }
+  { reuse GL_COMPRESSED_RG11_EAC }
+  { reuse GL_COMPRESSED_SIGNED_RG11_EAC }
+  { reuse GL_PRIMITIVE_RESTART_FIXED_INDEX }
+  { reuse GL_ANY_SAMPLES_PASSED_CONSERVATIVE }
+  { reuse GL_MAX_ELEMENT_INDEX }
+  { Reuse tokens from ARB_clear_buffer_object (none) }
+  { Reuse tokens from ARB_compute_shader }
+  { reuse GL_COMPUTE_SHADER }
+  { reuse GL_MAX_COMPUTE_UNIFORM_BLOCKS }
+  { reuse GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS }
+  { reuse GL_MAX_COMPUTE_IMAGE_UNIFORMS }
+  { reuse GL_MAX_COMPUTE_SHARED_MEMORY_SIZE }
+  { reuse GL_MAX_COMPUTE_UNIFORM_COMPONENTS }
+  { reuse GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS }
+  { reuse GL_MAX_COMPUTE_ATOMIC_COUNTERS }
+  { reuse GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS }
+  { reuse GL_MAX_COMPUTE_LOCAL_INVOCATIONS }
+  { reuse GL_MAX_COMPUTE_WORK_GROUP_COUNT }
+  { reuse GL_MAX_COMPUTE_WORK_GROUP_SIZE }
+  { reuse GL_COMPUTE_LOCAL_WORK_SIZE }
+  { reuse GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER }
+  { reuse GL_DISPATCH_INDIRECT_BUFFER }
+  { reuse GL_DISPATCH_INDIRECT_BUFFER_BINDING }
+  { Reuse tokens from ARB_copy_image (none) }
+  { Reuse tokens from KHR_debug }
+  { reuse GL_DEBUG_OUTPUT_SYNCHRONOUS }
+  { reuse GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH }
+  { reuse GL_DEBUG_CALLBACK_FUNCTION }
+  { reuse GL_DEBUG_CALLBACK_USER_PARAM }
+  { reuse GL_DEBUG_SOURCE_API }
+  { reuse GL_DEBUG_SOURCE_WINDOW_SYSTEM }
+  { reuse GL_DEBUG_SOURCE_SHADER_COMPILER }
+  { reuse GL_DEBUG_SOURCE_THIRD_PARTY }
+  { reuse GL_DEBUG_SOURCE_APPLICATION }
+  { reuse GL_DEBUG_SOURCE_OTHER }
+  { reuse GL_DEBUG_TYPE_ERROR }
+  { reuse GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR }
+  { reuse GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR }
+  { reuse GL_DEBUG_TYPE_PORTABILITY }
+  { reuse GL_DEBUG_TYPE_PERFORMANCE }
+  { reuse GL_DEBUG_TYPE_OTHER }
+  { reuse GL_MAX_DEBUG_MESSAGE_LENGTH }
+  { reuse GL_MAX_DEBUG_LOGGED_MESSAGES }
+  { reuse GL_DEBUG_LOGGED_MESSAGES }
+  { reuse GL_DEBUG_SEVERITY_HIGH }
+  { reuse GL_DEBUG_SEVERITY_MEDIUM }
+  { reuse GL_DEBUG_SEVERITY_LOW }
+  { reuse GL_DEBUG_TYPE_MARKER }
+  { reuse GL_DEBUG_TYPE_PUSH_GROUP }
+  { reuse GL_DEBUG_TYPE_POP_GROUP }
+  { reuse GL_DEBUG_SEVERITY_NOTIFICATION }
+  { reuse GL_MAX_DEBUG_GROUP_STACK_DEPTH }
+  { reuse GL_DEBUG_GROUP_STACK_DEPTH }
+  { reuse GL_BUFFER }
+  { reuse GL_SHADER }
+  { reuse GL_PROGRAM }
+  { reuse GL_QUERY }
+  { reuse GL_PROGRAM_PIPELINE }
+  { reuse GL_SAMPLER }
+  { reuse GL_DISPLAY_LIST }
+  { reuse GL_MAX_LABEL_LENGTH }
+  { reuse GL_DEBUG_OUTPUT }
+  { reuse GL_CONTEXT_FLAG_DEBUG_BIT }
+  { reuse GL_STACK_UNDERFLOW }
+  { reuse GL_STACK_OVERFLOW }
+  { Reuse tokens from ARB_explicit_uniform_location }
+  { reuse GL_MAX_UNIFORM_LOCATIONS }
+  { Reuse tokens from ARB_framebuffer_no_attachments }
+  { reuse GL_FRAMEBUFFER_DEFAULT_WIDTH }
+  { reuse GL_FRAMEBUFFER_DEFAULT_HEIGHT }
+  { reuse GL_FRAMEBUFFER_DEFAULT_LAYERS }
+  { reuse GL_FRAMEBUFFER_DEFAULT_SAMPLES }
+  { reuse GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS }
+  { reuse GL_MAX_FRAMEBUFFER_WIDTH }
+  { reuse GL_MAX_FRAMEBUFFER_HEIGHT }
+  { reuse GL_MAX_FRAMEBUFFER_LAYERS }
+  { reuse GL_MAX_FRAMEBUFFER_SAMPLES }
+  { Reuse tokens from ARB_internalformat_query2 }
+  { reuse GL_INTERNALFORMAT_SUPPORTED }
+  { reuse GL_INTERNALFORMAT_PREFERRED }
+  { reuse GL_INTERNALFORMAT_RED_SIZE }
+  { reuse GL_INTERNALFORMAT_GREEN_SIZE }
+  { reuse GL_INTERNALFORMAT_BLUE_SIZE }
+  { reuse GL_INTERNALFORMAT_ALPHA_SIZE }
+  { reuse GL_INTERNALFORMAT_DEPTH_SIZE }
+  { reuse GL_INTERNALFORMAT_STENCIL_SIZE }
+  { reuse GL_INTERNALFORMAT_SHARED_SIZE }
+  { reuse GL_INTERNALFORMAT_RED_TYPE }
+  { reuse GL_INTERNALFORMAT_GREEN_TYPE }
+  { reuse GL_INTERNALFORMAT_BLUE_TYPE }
+  { reuse GL_INTERNALFORMAT_ALPHA_TYPE }
+  { reuse GL_INTERNALFORMAT_DEPTH_TYPE }
+  { reuse GL_INTERNALFORMAT_STENCIL_TYPE }
+  { reuse GL_MAX_WIDTH }
+  { reuse GL_MAX_HEIGHT }
+  { reuse GL_MAX_DEPTH }
+  { reuse GL_MAX_LAYERS }
+  { reuse GL_MAX_COMBINED_DIMENSIONS }
+  { reuse GL_COLOR_COMPONENTS }
+  { reuse GL_DEPTH_COMPONENTS }
+  { reuse GL_STENCIL_COMPONENTS }
+  { reuse GL_COLOR_RENDERABLE }
+  { reuse GL_DEPTH_RENDERABLE }
+  { reuse GL_STENCIL_RENDERABLE }
+  { reuse GL_FRAMEBUFFER_RENDERABLE }
+  { reuse GL_FRAMEBUFFER_RENDERABLE_LAYERED }
+  { reuse GL_FRAMEBUFFER_BLEND }
+  { reuse GL_READ_PIXELS }
+  { reuse GL_READ_PIXELS_FORMAT }
+  { reuse GL_READ_PIXELS_TYPE }
+  { reuse GL_TEXTURE_IMAGE_FORMAT }
+  { reuse GL_TEXTURE_IMAGE_TYPE }
+  { reuse GL_GET_TEXTURE_IMAGE_FORMAT }
+  { reuse GL_GET_TEXTURE_IMAGE_TYPE }
+  { reuse GL_MIPMAP }
+  { reuse GL_MANUAL_GENERATE_MIPMAP }
+  { reuse GL_AUTO_GENERATE_MIPMAP }
+  { reuse GL_COLOR_ENCODING }
+  { reuse GL_SRGB_READ }
+  { reuse GL_SRGB_WRITE }
+  { reuse GL_FILTER }
+  { reuse GL_VERTEX_TEXTURE }
+  { reuse GL_TESS_CONTROL_TEXTURE }
+  { reuse GL_TESS_EVALUATION_TEXTURE }
+  { reuse GL_GEOMETRY_TEXTURE }
+  { reuse GL_FRAGMENT_TEXTURE }
+  { reuse GL_COMPUTE_TEXTURE }
+  { reuse GL_TEXTURE_SHADOW }
+  { reuse GL_TEXTURE_GATHER }
+  { reuse GL_TEXTURE_GATHER_SHADOW }
+  { reuse GL_SHADER_IMAGE_LOAD }
+  { reuse GL_SHADER_IMAGE_STORE }
+  { reuse GL_SHADER_IMAGE_ATOMIC }
+  { reuse GL_IMAGE_TEXEL_SIZE }
+  { reuse GL_IMAGE_COMPATIBILITY_CLASS }
+  { reuse GL_IMAGE_PIXEL_FORMAT }
+  { reuse GL_IMAGE_PIXEL_TYPE }
+  { reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST }
+  { reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST }
+  { reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE }
+  { reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE }
+  { reuse GL_TEXTURE_COMPRESSED_BLOCK_WIDTH }
+  { reuse GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT }
+  { reuse GL_TEXTURE_COMPRESSED_BLOCK_SIZE }
+  { reuse GL_CLEAR_BUFFER }
+  { reuse GL_TEXTURE_VIEW }
+  { reuse GL_VIEW_COMPATIBILITY_CLASS }
+  { reuse GL_FULL_SUPPORT }
+  { reuse GL_CAVEAT_SUPPORT }
+  { reuse GL_IMAGE_CLASS_4_X_32 }
+  { reuse GL_IMAGE_CLASS_2_X_32 }
+  { reuse GL_IMAGE_CLASS_1_X_32 }
+  { reuse GL_IMAGE_CLASS_4_X_16 }
+  { reuse GL_IMAGE_CLASS_2_X_16 }
+  { reuse GL_IMAGE_CLASS_1_X_16 }
+  { reuse GL_IMAGE_CLASS_4_X_8 }
+  { reuse GL_IMAGE_CLASS_2_X_8 }
+  { reuse GL_IMAGE_CLASS_1_X_8 }
+  { reuse GL_IMAGE_CLASS_11_11_10 }
+  { reuse GL_IMAGE_CLASS_10_10_10_2 }
+  { reuse GL_VIEW_CLASS_128_BITS }
+  { reuse GL_VIEW_CLASS_96_BITS }
+  { reuse GL_VIEW_CLASS_64_BITS }
+  { reuse GL_VIEW_CLASS_48_BITS }
+  { reuse GL_VIEW_CLASS_32_BITS }
+  { reuse GL_VIEW_CLASS_24_BITS }
+  { reuse GL_VIEW_CLASS_16_BITS }
+  { reuse GL_VIEW_CLASS_8_BITS }
+  { reuse GL_VIEW_CLASS_S3TC_DXT1_RGB }
+  { reuse GL_VIEW_CLASS_S3TC_DXT1_RGBA }
+  { reuse GL_VIEW_CLASS_S3TC_DXT3_RGBA }
+  { reuse GL_VIEW_CLASS_S3TC_DXT5_RGBA }
+  { reuse GL_VIEW_CLASS_RGTC1_RED }
+  { reuse GL_VIEW_CLASS_RGTC2_RG }
+  { reuse GL_VIEW_CLASS_BPTC_UNORM }
+  { reuse GL_VIEW_CLASS_BPTC_FLOAT }
+  { Reuse tokens from ARB_invalidate_subdata (none) }
+  { Reuse tokens from ARB_multi_draw_indirect (none) }
+  { Reuse tokens from ARB_program_interface_query }
+  { reuse GL_UNIFORM }
+  { reuse GL_UNIFORM_BLOCK }
+  { reuse GL_PROGRAM_INPUT }
+  { reuse GL_PROGRAM_OUTPUT }
+  { reuse GL_BUFFER_VARIABLE }
+  { reuse GL_SHADER_STORAGE_BLOCK }
+  { reuse GL_VERTEX_SUBROUTINE }
+  { reuse GL_TESS_CONTROL_SUBROUTINE }
+  { reuse GL_TESS_EVALUATION_SUBROUTINE }
+  { reuse GL_GEOMETRY_SUBROUTINE }
+  { reuse GL_FRAGMENT_SUBROUTINE }
+  { reuse GL_COMPUTE_SUBROUTINE }
+  { reuse GL_VERTEX_SUBROUTINE_UNIFORM }
+  { reuse GL_TESS_CONTROL_SUBROUTINE_UNIFORM }
+  { reuse GL_TESS_EVALUATION_SUBROUTINE_UNIFORM }
+  { reuse GL_GEOMETRY_SUBROUTINE_UNIFORM }
+  { reuse GL_FRAGMENT_SUBROUTINE_UNIFORM }
+  { reuse GL_COMPUTE_SUBROUTINE_UNIFORM }
+  { reuse GL_TRANSFORM_FEEDBACK_VARYING }
+  { reuse GL_ACTIVE_RESOURCES }
+  { reuse GL_MAX_NAME_LENGTH }
+  { reuse GL_MAX_NUM_ACTIVE_VARIABLES }
+  { reuse GL_MAX_NUM_COMPATIBLE_SUBROUTINES }
+  { reuse GL_NAME_LENGTH }
+  { reuse GL_TYPE }
+  { reuse GL_ARRAY_SIZE }
+  { reuse GL_OFFSET }
+  { reuse GL_BLOCK_INDEX }
+  { reuse GL_ARRAY_STRIDE }
+  { reuse GL_MATRIX_STRIDE }
+  { reuse GL_IS_ROW_MAJOR }
+  { reuse GL_ATOMIC_COUNTER_BUFFER_INDEX }
+  { reuse GL_BUFFER_BINDING }
+  { reuse GL_BUFFER_DATA_SIZE }
+  { reuse GL_NUM_ACTIVE_VARIABLES }
+  { reuse GL_ACTIVE_VARIABLES }
+  { reuse GL_REFERENCED_BY_VERTEX_SHADER }
+  { reuse GL_REFERENCED_BY_TESS_CONTROL_SHADER }
+  { reuse GL_REFERENCED_BY_TESS_EVALUATION_SHADER }
+  { reuse GL_REFERENCED_BY_GEOMETRY_SHADER }
+  { reuse GL_REFERENCED_BY_FRAGMENT_SHADER }
+  { reuse GL_REFERENCED_BY_COMPUTE_SHADER }
+  { reuse GL_TOP_LEVEL_ARRAY_SIZE }
+  { reuse GL_TOP_LEVEL_ARRAY_STRIDE }
+  { reuse GL_LOCATION }
+  { reuse GL_LOCATION_INDEX }
+  { reuse GL_IS_PER_PATCH }
+  { Reuse tokens from ARB_robust_buffer_access_behavior (none) }
+  { Reuse tokens from ARB_shader_storage_buffer_object }
+  { reuse GL_SHADER_STORAGE_BUFFER }
+  { reuse GL_SHADER_STORAGE_BUFFER_BINDING }
+  { reuse GL_SHADER_STORAGE_BUFFER_START }
+  { reuse GL_SHADER_STORAGE_BUFFER_SIZE }
+  { reuse GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS }
+  { reuse GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS }
+  { reuse GL_MAX_SHADER_STORAGE_BLOCK_SIZE }
+  { reuse GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT }
+  { reuse GL_SHADER_STORAGE_BARRIER_BIT }
+  { reuse GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES }
+  { Reuse tokens from ARB_stencil_texturing }
+  { reuse GL_DEPTH_STENCIL_TEXTURE_MODE }
+  { Reuse tokens from ARB_texture_buffer_range }
+  { reuse GL_TEXTURE_BUFFER_OFFSET }
+  { reuse GL_TEXTURE_BUFFER_SIZE }
+  { reuse GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT }
+  { Reuse tokens from ARB_texture_query_levels (none) }
+  { Reuse tokens from ARB_texture_storage_multisample (none) }
+  { Reuse tokens from ARB_texture_view }
+  { reuse GL_TEXTURE_VIEW_MIN_LEVEL }
+  { reuse GL_TEXTURE_VIEW_NUM_LEVELS }
+  { reuse GL_TEXTURE_VIEW_MIN_LAYER }
+  { reuse GL_TEXTURE_VIEW_NUM_LAYERS }
+  { reuse GL_TEXTURE_IMMUTABLE_LEVELS }
+  { Reuse tokens from ARB_vertex_attrib_binding }
+  { reuse GL_VERTEX_ATTRIB_BINDING }
+  { reuse GL_VERTEX_ATTRIB_RELATIVE_OFFSET }
+  { reuse GL_VERTEX_BINDING_DIVISOR }
+  { reuse GL_VERTEX_BINDING_OFFSET }
+  { reuse GL_VERTEX_BINDING_STRIDE }
+  { reuse GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET }
+  { reuse GL_MAX_VERTEX_ATTRIB_BINDINGS }
+
 
   // GL_3DFX_multisample
   GL_MULTISAMPLE_3DFX = $86B2;
@@ -2716,6 +2951,7 @@ const
   GL_YCBCR_422_APPLE = $85B9;
   GL_UNSIGNED_SHORT_8_8_APPLE = $85BA;
   GL_UNSIGNED_SHORT_8_8_REV_APPLE = $85BB;
+  GL_RGB_RAW_422_APPLE = $8A51;
 
   // GL_APPLE_texture_range
   GL_TEXTURE_RANGE_LENGTH_APPLE = $85B7;
@@ -2949,6 +3185,10 @@ const
   // GL_ARB_shadow_ambient
   GL_TEXTURE_COMPARE_FAIL_VALUE_ARB = $80BF;
 
+  // GL_ARB_sparse_buffer
+  GL_SPARSE_STORAGE_BIT_ARB = $0400;
+  GL_SPARSE_BUFFER_PAGE_SIZE_ARB = $82F8;
+
   // GL_ARB_texture_border_clamp
   GL_CLAMP_TO_BORDER_ARB = $812D;
 
@@ -3006,6 +3246,10 @@ const
   // GL_ARB_texture_env_dot3
   GL_DOT3_RGB_ARB = $86AE;
   GL_DOT3_RGBA_ARB = $86AF;
+
+  // GL_ARB_texture_filter_minmax
+  GL_TEXTURE_REDUCTION_MODE_ARB = $9366;
+  GL_WEIGHTED_AVERAGE_ARB = $9367;
 
   // GL_ARB_texture_mirrored_repeat
   GL_MIRRORED_REPEAT_ARB = $8370;
@@ -3209,6 +3453,12 @@ const
   GLX_RGBA_FLOAT_TYPE = $20B9;
   GLX_RGBA_FLOAT_BIT = $00000004;
 
+  // GL_ARB_compute_variable_group_size
+  GL_MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS_ARB = $9344;
+  GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS_ARB = $90EB;
+  GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE_ARB = $9345;
+  GL_MAX_COMPUTE_FIXED_GROUP_SIZE_ARB = $91BF;
+
   // GL_ARB_half_float_pixel
   GL_HALF_FLOAT_ARB = $140B;
 
@@ -3354,6 +3604,10 @@ const
   { reuse GL_MAX_VARYING_COMPONENTS }
   { reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER }
 
+  // GL_ARB_gl_spirv
+  GL_SHADER_BINARY_FORMAT_SPIR_V_ARB = $9551;
+  GL_SPIR_V_BINARY_ARB = $9552;
+
   // GL_ARB_half_float_vertex
   GL_HALF_FLOAT = $140B;
 
@@ -3447,8 +3701,10 @@ const
   { ARB_compatibility just defines tokens from core 3.0 }
 
   // GL_ARB_copy_buffer
-  GL_COPY_READ_BUFFER = $8F36;
-  GL_COPY_WRITE_BUFFER = $8F37;
+  GL_COPY_READ_BUFFER_BINDING = $8F36;
+  GL_COPY_READ_BUFFER = GL_COPY_READ_BUFFER_BINDING;
+  GL_COPY_WRITE_BUFFER_BINDING = $8F37;
+  GL_COPY_WRITE_BUFFER = GL_COPY_WRITE_BUFFER_BINDING;
 
   // GL_ARB_depth_clamp
   GL_DEPTH_CLAMP = $864F;
@@ -3509,6 +3765,16 @@ const
   GL_SAMPLE_SHADING_ARB = $8C36;
   GL_MIN_SAMPLE_SHADING_VALUE_ARB = $8C37;
 
+  // GL_ARB_sample_locations
+  GL_SAMPLE_LOCATION_SUBPIXEL_BITS_ARB = $933D;
+  GL_SAMPLE_LOCATION_PIXEL_GRID_WIDTH_ARB = $933E;
+  GL_SAMPLE_LOCATION_PIXEL_GRID_HEIGHT_ARB = $933F;
+  GL_PROGRAMMABLE_SAMPLE_LOCATION_TABLE_SIZE_ARB = $9340;
+  GL_SAMPLE_LOCATION_ARB = $8E50;
+  GL_PROGRAMMABLE_SAMPLE_LOCATION_ARB = $9341;
+  GL_FRAMEBUFFER_PROGRAMMABLE_SAMPLE_LOCATIONS_ARB = $9342;
+  GL_FRAMEBUFFER_SAMPLE_LOCATION_PIXEL_GRID_ARB = $9343;
+
   // GL_ARB_texture_cube_map_array
   GL_TEXTURE_CUBE_MAP_ARRAY_ARB = $9009;
   GL_TEXTURE_BINDING_CUBE_MAP_ARRAY_ARB = $900A;
@@ -3543,6 +3809,10 @@ const
   // GL_ARB_occlusion_query2
   GL_ANY_SAMPLES_PASSED = $8C2F;
 
+  // GL_ARB_parallel_shader_compile
+  GL_MAX_SHADER_COMPILER_THREADS_ARB = $91B0;
+  GL_COMPLETION_STATUS_ARB = $91B1;
+
   // GL_ARB_sampler_objects
   GL_SAMPLER_BINDING = $8919;
 
@@ -3555,6 +3825,20 @@ const
   GL_TEXTURE_SWIZZLE_B = $8E44;
   GL_TEXTURE_SWIZZLE_A = $8E45;
   GL_TEXTURE_SWIZZLE_RGBA = $8E46;
+
+  // GL_ARB_SPARSE_TEXTURE
+  GL_TEXTURE_SPARSE_ARB = $91A6;
+  GL_VIRTUAL_PAGE_SIZE_INDEX_ARB = $91A7;
+  GL_NUM_VIRTUAL_PAGE_SIZES_ARB = $91A8;
+  GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_ARB = $91A9;
+  GL_NUM_SPARSE_LEVELS_ARB = $91AA;
+  GL_VIRTUAL_PAGE_SIZE_X_ARB = $9195;
+  GL_VIRTUAL_PAGE_SIZE_Y_ARB = $9196;
+  GL_VIRTUAL_PAGE_SIZE_Z_ARB = $9197;
+  GL_MAX_SPARSE_TEXTURE_SIZE_ARB = $9198;
+  GL_MAX_SPARSE_3D_TEXTURE_SIZE_ARB = $9199;
+  GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB = $919A;
+  GL_MIN_SPARSE_LEVEL_ARB = $919B;
 
   // GL_ARB_timer_query
   GL_TIME_ELAPSED = $88BF;
@@ -3590,6 +3874,15 @@ const
   GL_DOUBLE_MAT3x4 = $8F4C;
   GL_DOUBLE_MAT4x2 = $8F4D;
   GL_DOUBLE_MAT4x3 = $8F4E;
+
+  // GL_ARB_gpu_shader_int64
+  GL_INT64_ARB = $140E;
+  GL_INT64_VEC2_ARB = $8FE9;
+  GL_INT64_VEC3_ARB = $8FEA;
+  GL_INT64_VEC4_ARB = $8FEB;
+  GL_UNSIGNED_INT64_VEC2_ARB = $8FF5;
+  GL_UNSIGNED_INT64_VEC3_ARB = $8FF6;
+  GL_UNSIGNED_INT64_VEC4_ARB = $8FF7;
 
   // GL_ARB_shader_subroutine
   GL_ACTIVE_SUBROUTINES = $8DE5;
@@ -3650,9 +3943,15 @@ const
 
   // GL_ARB_transform_feedback2
   GL_TRANSFORM_FEEDBACK = $8E22;
-  GL_TRANSFORM_FEEDBACK_BUFFER_PAUSED = $8E23;
-  GL_TRANSFORM_FEEDBACK_BUFFER_ACTIVE = $8E24;
+  GL_TRANSFORM_FEEDBACK_PAUSED = $8E23;
+  GL_TRANSFORM_FEEDBACK_BUFFER_PAUSED = GL_TRANSFORM_FEEDBACK_PAUSED;
+  GL_TRANSFORM_FEEDBACK_ACTIVE = $8E24;
+  GL_TRANSFORM_FEEDBACK_BUFFER_ACTIVE = GL_TRANSFORM_FEEDBACK_ACTIVE;
   GL_TRANSFORM_FEEDBACK_BINDING = $8E25;
+
+  // GL_ARB_transform_feedback_overflow_query
+  GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB = $82EC;
+  GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB = $82ED;
 
   // GL_ARB_transform_feedback3
   GL_MAX_TRANSFORM_FEEDBACK_BUFFERS = $8E70;
@@ -3673,6 +3972,12 @@ const
   GL_MAX_VERTEX_UNIFORM_VECTORS = $8DFB;
   GL_MAX_VARYING_VECTORS = $8DFC;
   GL_MAX_FRAGMENT_UNIFORM_VECTORS = $8DFD;
+  GL_RGB565 = $8D62;
+
+  // GL_ARB_ES3_2_compatibility
+  GL_PRIMITIVE_BOUNDING_BOX_ARB = $092BE;
+  GL_MULTISAMPLE_LINE_WIDTH_RANGE_ARB = $09381;
+  GL_MULTISAMPLE_LINE_WIDTH_GRANULARITY_ARB = $09382;
 
   // GL_ARB_get_program_binary
   GL_PROGRAM_BINARY_RETRIEVABLE_HINT = $8257;
@@ -3758,6 +4063,482 @@ const
   GL_UNKNOWN_CONTEXT_RESET_ARB = $8255;
   GL_RESET_NOTIFICATION_STRATEGY_ARB = $8256;
   GL_NO_RESET_NOTIFICATION_ARB = $8261;
+
+  //  GL_ARB_compressed_texture_pixel_storage
+  GL_UNPACK_COMPRESSED_BLOCK_WIDTH  = $09127;
+  GL_UNPACK_COMPRESSED_BLOCK_HEIGHT = $09128;
+  GL_UNPACK_COMPRESSED_BLOCK_DEPTH  = $09129;
+  GL_UNPACK_COMPRESSED_BLOCK_SIZE   = $0912A;
+  GL_PACK_COMPRESSED_BLOCK_WIDTH    = $0912B;
+  GL_PACK_COMPRESSED_BLOCK_HEIGHT   = $0912C;
+  GL_PACK_COMPRESSED_BLOCK_DEPTH    = $0912D;
+  GL_PACK_COMPRESSED_BLOCK_SIZE     = $0912E;
+
+  // GL_ARB_internalformat_query
+  GL_NUM_SAMPLE_COUNTS              = $09380;
+
+  // GL_ARB_map_buffer_alignment
+  GL_MIN_MAP_BUFFER_ALIGNMENT       = $090BC;
+
+  // GL_ARB_shader_atomic_counters
+  GL_ATOMIC_COUNTER_BUFFER          = $92C0;
+  GL_ATOMIC_COUNTER_BUFFER_BINDING  = $92C1;
+  GL_ATOMIC_COUNTER_BUFFER_START    = $92C2;
+  GL_ATOMIC_COUNTER_BUFFER_SIZE     = $92C3;
+  GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE = $92C4;
+  GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS = $92C5;
+  GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES = $92C6;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER = $92C7;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER = $92C8;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = $92C9;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER = $92CA;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER = $92CB;
+  GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS = $92CC;
+  GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS = $92CD;
+  GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS = $92CE;
+  GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS = $92CF;
+  GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS = $92D0;
+  GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS = $92D1;
+  GL_MAX_VERTEX_ATOMIC_COUNTERS     = $92D2;
+  GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS = $92D3;
+  GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS = $92D4;
+  GL_MAX_GEOMETRY_ATOMIC_COUNTERS   = $92D5;
+  GL_MAX_FRAGMENT_ATOMIC_COUNTERS   = $92D6;
+  GL_MAX_COMBINED_ATOMIC_COUNTERS   = $92D7;
+  GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE = $92D8;
+  GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS = $92DC;
+  GL_ACTIVE_ATOMIC_COUNTER_BUFFERS  = $92D9;
+  GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX = $92DA;
+  GL_UNSIGNED_INT_ATOMIC_COUNTER    = $92DB;
+
+  // GL_ARB_shader_image_load_store
+  GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT = $00000001;
+  GL_ELEMENT_ARRAY_BARRIER_BIT      = $00000002;
+  GL_UNIFORM_BARRIER_BIT            = $00000004;
+  GL_TEXTURE_FETCH_BARRIER_BIT      = $00000008;
+  GL_SHADER_IMAGE_ACCESS_BARRIER_BIT = $00000020;
+  GL_COMMAND_BARRIER_BIT            = $00000040;
+  GL_PIXEL_BUFFER_BARRIER_BIT       = $00000080;
+  GL_TEXTURE_UPDATE_BARRIER_BIT     = $00000100;
+  GL_BUFFER_UPDATE_BARRIER_BIT      = $00000200;
+  GL_FRAMEBUFFER_BARRIER_BIT        = $00000400;
+  GL_TRANSFORM_FEEDBACK_BARRIER_BIT = $00000800;
+  GL_ATOMIC_COUNTER_BARRIER_BIT     = $00001000;
+  GL_ALL_BARRIER_BITS               = $FFFFFFFF;
+  GL_MAX_IMAGE_UNITS                = $8F38;
+  GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS = $8F39;
+  GL_IMAGE_BINDING_NAME             = $8F3A;
+  GL_IMAGE_BINDING_LEVEL            = $8F3B;
+  GL_IMAGE_BINDING_LAYERED          = $8F3C;
+  GL_IMAGE_BINDING_LAYER            = $8F3D;
+  GL_IMAGE_BINDING_ACCESS           = $8F3E;
+  GL_IMAGE_1D                       = $904C;
+  GL_IMAGE_2D                       = $904D;
+  GL_IMAGE_3D                       = $904E;
+  GL_IMAGE_2D_RECT                  = $904F;
+  GL_IMAGE_CUBE                     = $9050;
+  GL_IMAGE_BUFFER                   = $9051;
+  GL_IMAGE_1D_ARRAY                 = $9052;
+  GL_IMAGE_2D_ARRAY                 = $9053;
+  GL_IMAGE_CUBE_MAP_ARRAY           = $9054;
+  GL_IMAGE_2D_MULTISAMPLE           = $9055;
+  GL_IMAGE_2D_MULTISAMPLE_ARRAY     = $9056;
+  GL_INT_IMAGE_1D                   = $9057;
+  GL_INT_IMAGE_2D                   = $9058;
+  GL_INT_IMAGE_3D                   = $9059;
+  GL_INT_IMAGE_2D_RECT              = $905A;
+  GL_INT_IMAGE_CUBE                 = $905B;
+  GL_INT_IMAGE_BUFFER               = $905C;
+  GL_INT_IMAGE_1D_ARRAY             = $905D;
+  GL_INT_IMAGE_2D_ARRAY             = $905E;
+  GL_INT_IMAGE_CUBE_MAP_ARRAY       = $905F;
+  GL_INT_IMAGE_2D_MULTISAMPLE       = $9060;
+  GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY = $9061;
+  GL_UNSIGNED_INT_IMAGE_1D          = $9062;
+  GL_UNSIGNED_INT_IMAGE_2D          = $9063;
+  GL_UNSIGNED_INT_IMAGE_3D          = $9064;
+  GL_UNSIGNED_INT_IMAGE_2D_RECT     = $9065;
+  GL_UNSIGNED_INT_IMAGE_CUBE        = $9066;
+  GL_UNSIGNED_INT_IMAGE_BUFFER      = $9067;
+  GL_UNSIGNED_INT_IMAGE_1D_ARRAY    = $9068;
+  GL_UNSIGNED_INT_IMAGE_2D_ARRAY    = $9069;
+  GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY = $906A;
+  GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE = $906B;
+  GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY = $906C;
+  GL_MAX_IMAGE_SAMPLES              = $906D;
+  GL_IMAGE_BINDING_FORMAT           = $906E;
+  GL_IMAGE_FORMAT_COMPATIBILITY_TYPE = $90C7;
+  GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE = $90C8;
+  GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS = $90C9;
+  GL_MAX_VERTEX_IMAGE_UNIFORMS      = $90CA;
+  GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS = $90CB;
+  GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS = $90CC;
+  GL_MAX_GEOMETRY_IMAGE_UNIFORMS    = $90CD;
+  GL_MAX_FRAGMENT_IMAGE_UNIFORMS    = $90CE;
+  GL_MAX_COMBINED_IMAGE_UNIFORMS    = $90CF;
+
+  // GL_ARB_texture_storage
+  GL_TEXTURE_IMMUTABLE_FORMAT       = $912F;
+
+  // 4.3
+  // GL_KHR_texture_compression_astc_hdr
+  GL_COMPRESSED_RGBA_ASTC_4x4_KHR = $93B0;
+  GL_COMPRESSED_RGBA_ASTC_5x4_KHR = $93B1;
+  GL_COMPRESSED_RGBA_ASTC_5x5_KHR = $93B2;
+  GL_COMPRESSED_RGBA_ASTC_6x5_KHR = $93B3;
+  GL_COMPRESSED_RGBA_ASTC_6x6_KHR = $93B4;
+  GL_COMPRESSED_RGBA_ASTC_8x5_KHR = $93B5;
+  GL_COMPRESSED_RGBA_ASTC_8x6_KHR = $93B6;
+  GL_COMPRESSED_RGBA_ASTC_8x8_KHR = $93B7;
+  GL_COMPRESSED_RGBA_ASTC_105_KHR = $93B8;
+  GL_COMPRESSED_RGBA_ASTC_106_KHR = $93B9;
+  GL_COMPRESSED_RGBA_ASTC_108_KHR = $93BA;
+  GL_COMPRESSED_RGBA_ASTC_110_KHR = $93BB;
+  GL_COMPRESSED_RGBA_ASTC_12x10_KHR = $93BC;
+  GL_COMPRESSED_RGBA_ASTC_12x12_KHR = $93BD;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR = $93D0;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR = $93D1;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR = $93D2;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR = $93D3;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR = $93D4;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR = $93D5;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR = $93D6;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR = $93D7;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR = $93D8;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR = $93D9;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR = $93DA;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR = $93DB;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR = $93DC;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = $93DD;
+  // (4.3) GL_KHR_debug
+  GL_DEBUG_OUTPUT_SYNCHRONOUS       = $8242;
+  GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH = $8243;
+  GL_DEBUG_CALLBACK_FUNCTION        = $8244;
+  GL_DEBUG_CALLBACK_USER_PARAM      = $8245;
+  GL_DEBUG_SOURCE_API               = $8246;
+  GL_DEBUG_SOURCE_WINDOW_SYSTEM     = $8247;
+  GL_DEBUG_SOURCE_SHADER_COMPILER   = $8248;
+  GL_DEBUG_SOURCE_THIRD_PARTY       = $8249;
+  GL_DEBUG_SOURCE_APPLICATION       = $824A;
+  GL_DEBUG_SOURCE_OTHER             = $824B;
+  GL_DEBUG_TYPE_ERROR               = $824C;
+  GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = $824D;
+  GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  = $824E;
+  GL_DEBUG_TYPE_PORTABILITY         = $824F;
+  GL_DEBUG_TYPE_PERFORMANCE         = $8250;
+  GL_DEBUG_TYPE_OTHER               = $8251;
+  GL_DEBUG_TYPE_MARKER              = $8268;
+  GL_DEBUG_TYPE_PUSH_GROUP          = $8269;
+  GL_DEBUG_TYPE_POP_GROUP           = $826A;
+  GL_DEBUG_SEVERITY_NOTIFICATION    = $826B;
+  GL_MAX_DEBUG_GROUP_STACK_DEPTH    = $826C;
+  GL_DEBUG_GROUP_STACK_DEPTH        = $826D;
+  GL_BUFFER                         = $82E0;
+  GL_SHADER                         = $82E1;
+  GL_PROGRAM                        = $82E2;
+  GL_QUERY                          = $82E3;
+  GL_PROGRAM_PIPELINE               = $82E4;
+  GL_SAMPLER                        = $82E6;
+  GL_DISPLAY_LIST                   = $82E7;
+  GL_MAX_LABEL_LENGTH               = $82E8;
+  GL_MAX_DEBUG_MESSAGE_LENGTH       = $9143;
+  GL_MAX_DEBUG_LOGGED_MESSAGES      = $9144;
+  GL_DEBUG_LOGGED_MESSAGES          = $9145;
+  GL_DEBUG_SEVERITY_HIGH            = $9146;
+  GL_DEBUG_SEVERITY_MEDIUM          = $9147;
+  GL_DEBUG_SEVERITY_LOW             = $9148;
+  GL_DEBUG_OUTPUT                   = $92E0;
+  GL_CONTEXT_FLAG_DEBUG_BIT         = $00000002;
+  GL_COMPUTE_SHADER                 = $91B9;
+  GL_MAX_COMPUTE_UNIFORM_BLOCKS     = $91BB;
+  GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS = $91BC;
+  GL_MAX_COMPUTE_IMAGE_UNIFORMS     = $91BD;
+  GL_MAX_COMPUTE_SHARED_MEMORY_SIZE = $8262;
+  GL_MAX_COMPUTE_UNIFORM_COMPONENTS = $8263;
+  GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS = $8264;
+  GL_MAX_COMPUTE_ATOMIC_COUNTERS    = $8265;
+  GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS = $8266;
+  GL_MAX_COMPUTE_LOCAL_INVOCATIONS  = $90EB;
+  GL_MAX_COMPUTE_WORK_GROUP_COUNT   = $91BE;
+  GL_MAX_COMPUTE_WORK_GROUP_SIZE    = $91BF;
+  GL_COMPUTE_LOCAL_WORK_SIZE        = $8267;
+  GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER = $90EC;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER = $90ED;
+  GL_DISPATCH_INDIRECT_BUFFER       = $90EE;
+  GL_DISPATCH_INDIRECT_BUFFER_BINDING = $90EF;
+  GL_COMPUTE_SHADER_BIT             = $00000020;
+  GL_COMPRESSED_RGB8_ETC2           = $9274;
+  GL_COMPRESSED_SRGB8_ETC2          = $9275;
+  GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = $9276;
+  GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = $9277;
+  GL_COMPRESSED_RGBA8_ETC2_EAC      = $9278;
+  GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = $9279;
+  GL_COMPRESSED_R11_EAC             = $9270;
+  GL_COMPRESSED_SIGNED_R11_EAC      = $9271;
+  GL_COMPRESSED_RG11_EAC            = $9272;
+  GL_COMPRESSED_SIGNED_RG11_EAC     = $9273;
+  GL_PRIMITIVE_RESTART_FIXED_INDEX  = $8D69;
+  GL_ANY_SAMPLES_PASSED_CONSERVATIVE = $8D6A;
+  GL_MAX_ELEMENT_INDEX              = $8D6B;
+      GL_MAX_UNIFORM_LOCATIONS          = $826E;
+  GL_FRAMEBUFFER_DEFAULT_WIDTH      = $9310;
+  GL_FRAMEBUFFER_DEFAULT_HEIGHT     = $9311;
+  GL_FRAMEBUFFER_DEFAULT_LAYERS     = $9312;
+  GL_FRAMEBUFFER_DEFAULT_SAMPLES    = $9313;
+  GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS = $9314;
+  GL_MAX_FRAMEBUFFER_WIDTH          = $9315;
+  GL_MAX_FRAMEBUFFER_HEIGHT         = $9316;
+  GL_MAX_FRAMEBUFFER_LAYERS         = $9317;
+  GL_MAX_FRAMEBUFFER_SAMPLES        = $9318;
+        GL_INTERNALFORMAT_SUPPORTED       = $826F;
+  GL_INTERNALFORMAT_PREFERRED       = $8270;
+  GL_INTERNALFORMAT_RED_SIZE        = $8271;
+  GL_INTERNALFORMAT_GREEN_SIZE      = $8272;
+  GL_INTERNALFORMAT_BLUE_SIZE       = $8273;
+  GL_INTERNALFORMAT_ALPHA_SIZE      = $8274;
+  GL_INTERNALFORMAT_DEPTH_SIZE      = $8275;
+  GL_INTERNALFORMAT_STENCIL_SIZE    = $8276;
+  GL_INTERNALFORMAT_SHARED_SIZE     = $8277;
+  GL_INTERNALFORMAT_RED_TYPE        = $8278;
+  GL_INTERNALFORMAT_GREEN_TYPE      = $8279;
+  GL_INTERNALFORMAT_BLUE_TYPE       = $827A;
+  GL_INTERNALFORMAT_ALPHA_TYPE      = $827B;
+  GL_INTERNALFORMAT_DEPTH_TYPE      = $827C;
+  GL_INTERNALFORMAT_STENCIL_TYPE    = $827D;
+  GL_MAX_WIDTH                      = $827E;
+  GL_MAX_HEIGHT                     = $827F;
+  GL_MAX_DEPTH                      = $8280;
+  GL_MAX_LAYERS                     = $8281;
+  GL_MAX_COMBINED_DIMENSIONS        = $8282;
+  GL_COLOR_COMPONENTS               = $8283;
+  GL_DEPTH_COMPONENTS               = $8284;
+  GL_STENCIL_COMPONENTS             = $8285;
+  GL_COLOR_RENDERABLE               = $8286;
+  GL_DEPTH_RENDERABLE               = $8287;
+  GL_STENCIL_RENDERABLE             = $8288;
+  GL_FRAMEBUFFER_RENDERABLE         = $8289;
+  GL_FRAMEBUFFER_RENDERABLE_LAYERED = $828A;
+  GL_FRAMEBUFFER_BLEND              = $828B;
+  GL_READ_PIXELS                    = $828C;
+  GL_READ_PIXELS_FORMAT             = $828D;
+  GL_READ_PIXELS_TYPE               = $828E;
+  GL_TEXTURE_IMAGE_FORMAT           = $828F;
+  GL_TEXTURE_IMAGE_TYPE             = $8290;
+  GL_GET_TEXTURE_IMAGE_FORMAT       = $8291;
+  GL_GET_TEXTURE_IMAGE_TYPE         = $8292;
+  GL_MIPMAP                         = $8293;
+  GL_MANUAL_GENERATE_MIPMAP         = $8294;
+  GL_AUTO_GENERATE_MIPMAP           = $8295;
+  GL_COLOR_ENCODING                 = $8296;
+  GL_SRGB_READ                      = $8297;
+  GL_SRGB_WRITE                     = $8298;
+  GL_SRGB_DECODE_ARB                = $8299;
+  GL_FILTER                         = $829A;
+  GL_VERTEX_TEXTURE                 = $829B;
+  GL_TESS_CONTROL_TEXTURE           = $829C;
+  GL_TESS_EVALUATION_TEXTURE        = $829D;
+  GL_GEOMETRY_TEXTURE               = $829E;
+  GL_FRAGMENT_TEXTURE               = $829F;
+  GL_COMPUTE_TEXTURE                = $82A0;
+  GL_TEXTURE_SHADOW                 = $82A1;
+  GL_TEXTURE_GATHER                 = $82A2;
+  GL_TEXTURE_GATHER_SHADOW          = $82A3;
+  GL_SHADER_IMAGE_LOAD              = $82A4;
+  GL_SHADER_IMAGE_STORE             = $82A5;
+  GL_SHADER_IMAGE_ATOMIC            = $82A6;
+  GL_IMAGE_TEXEL_SIZE               = $82A7;
+  GL_IMAGE_COMPATIBILITY_CLASS      = $82A8;
+  GL_IMAGE_PIXEL_FORMAT             = $82A9;
+  GL_IMAGE_PIXEL_TYPE               = $82AA;
+  GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST = $82AC;
+  GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST = $82AD;
+  GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE = $82AE;
+  GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE = $82AF;
+  GL_TEXTURE_COMPRESSED_BLOCK_WIDTH = $82B1;
+  GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT = $82B2;
+  GL_TEXTURE_COMPRESSED_BLOCK_SIZE  = $82B3;
+  GL_CLEAR_BUFFER                   = $82B4;
+  GL_TEXTURE_VIEW                   = $82B5;
+  GL_VIEW_COMPATIBILITY_CLASS       = $82B6;
+  GL_FULL_SUPPORT                   = $82B7;
+  GL_CAVEAT_SUPPORT                 = $82B8;
+  GL_IMAGE_CLASS_4_X_32             = $82B9;
+  GL_IMAGE_CLASS_2_X_32             = $82BA;
+  GL_IMAGE_CLASS_1_X_32             = $82BB;
+  GL_IMAGE_CLASS_4_X_16             = $82BC;
+  GL_IMAGE_CLASS_2_X_16             = $82BD;
+  GL_IMAGE_CLASS_1_X_16             = $82BE;
+  GL_IMAGE_CLASS_4_X_8              = $82BF;
+  GL_IMAGE_CLASS_2_X_8              = $82C0;
+  GL_IMAGE_CLASS_1_X_8              = $82C1;
+  GL_IMAGE_CLASS_11_11_10           = $82C2;
+  GL_IMAGE_CLASS_10_10_10_2         = $82C3;
+  GL_VIEW_CLASS_128_BITS            = $82C4;
+  GL_VIEW_CLASS_96_BITS             = $82C5;
+  GL_VIEW_CLASS_64_BITS             = $82C6;
+  GL_VIEW_CLASS_48_BITS             = $82C7;
+  GL_VIEW_CLASS_32_BITS             = $82C8;
+  GL_VIEW_CLASS_24_BITS             = $82C9;
+  GL_VIEW_CLASS_16_BITS             = $82CA;
+  GL_VIEW_CLASS_8_BITS              = $82CB;
+  GL_VIEW_CLASS_S3TC_DXT1_RGB       = $82CC;
+  GL_VIEW_CLASS_S3TC_DXT1_RGBA      = $82CD;
+  GL_VIEW_CLASS_S3TC_DXT3_RGBA      = $82CE;
+  GL_VIEW_CLASS_S3TC_DXT5_RGBA      = $82CF;
+  GL_VIEW_CLASS_RGTC1_RED           = $82D0;
+  GL_VIEW_CLASS_RGTC2_RG            = $82D1;
+  GL_VIEW_CLASS_BPTC_UNORM          = $82D2;
+  GL_VIEW_CLASS_BPTC_FLOAT          = $82D3;
+  GL_UNIFORM                        = $92E1;
+  GL_UNIFORM_BLOCK                  = $92E2;
+  GL_PROGRAM_INPUT                  = $92E3;
+  GL_PROGRAM_OUTPUT                 = $92E4;
+  GL_BUFFER_VARIABLE                = $92E5;
+  GL_SHADER_STORAGE_BLOCK           = $92E6;
+  GL_VERTEX_SUBROUTINE              = $92E8;
+  GL_TESS_CONTROL_SUBROUTINE        = $92E9;
+  GL_TESS_EVALUATION_SUBROUTINE     = $92EA;
+  GL_GEOMETRY_SUBROUTINE            = $92EB;
+  GL_FRAGMENT_SUBROUTINE            = $92EC;
+  GL_COMPUTE_SUBROUTINE             = $92ED;
+  GL_VERTEX_SUBROUTINE_UNIFORM      = $92EE;
+  GL_TESS_CONTROL_SUBROUTINE_UNIFORM = $92EF;
+  GL_TESS_EVALUATION_SUBROUTINE_UNIFORM = $92F0;
+  GL_GEOMETRY_SUBROUTINE_UNIFORM    = $92F1;
+  GL_FRAGMENT_SUBROUTINE_UNIFORM    = $92F2;
+  GL_COMPUTE_SUBROUTINE_UNIFORM     = $92F3;
+  GL_TRANSFORM_FEEDBACK_VARYING     = $92F4;
+  GL_ACTIVE_RESOURCES               = $92F5;
+  GL_MAX_NAME_LENGTH                = $92F6;
+  GL_MAX_NUM_ACTIVE_VARIABLES       = $92F7;
+  GL_MAX_NUM_COMPATIBLE_SUBROUTINES = $92F8;
+  GL_NAME_LENGTH                    = $92F9;
+  GL_TYPE                           = $92FA;
+  GL_ARRAY_SIZE                     = $92FB;
+  GL_OFFSET                         = $92FC;
+  GL_BLOCK_INDEX                    = $92FD;
+  GL_ARRAY_STRIDE                   = $92FE;
+  GL_MATRIX_STRIDE                  = $92FF;
+  GL_IS_ROW_MAJOR                   = $9300;
+  GL_ATOMIC_COUNTER_BUFFER_INDEX    = $9301;
+  GL_BUFFER_BINDING                 = $9302;
+  GL_BUFFER_DATA_SIZE               = $9303;
+  GL_NUM_ACTIVE_VARIABLES           = $9304;
+  GL_ACTIVE_VARIABLES               = $9305;
+  GL_REFERENCED_BY_VERTEX_SHADER    = $9306;
+  GL_REFERENCED_BY_TESS_CONTROL_SHADER = $9307;
+  GL_REFERENCED_BY_TESS_EVALUATION_SHADER = $9308;
+  GL_REFERENCED_BY_GEOMETRY_SHADER  = $9309;
+  GL_REFERENCED_BY_FRAGMENT_SHADER  = $930A;
+  GL_REFERENCED_BY_COMPUTE_SHADER   = $930B;
+  GL_TOP_LEVEL_ARRAY_SIZE           = $930C;
+  GL_TOP_LEVEL_ARRAY_STRIDE         = $930D;
+  GL_LOCATION                       = $930E;
+  GL_LOCATION_INDEX                 = $930F;
+  GL_IS_PER_PATCH                   = $92E7;
+  GL_SHADER_STORAGE_BUFFER          = $90D2;
+  GL_SHADER_STORAGE_BUFFER_BINDING  = $90D3;
+  GL_SHADER_STORAGE_BUFFER_START    = $90D4;
+  GL_SHADER_STORAGE_BUFFER_SIZE     = $90D5;
+  GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS = $90D6;
+  GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS = $90D7;
+  GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS = $90D8;
+  GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS = $90D9;
+  GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS = $90DA;
+  GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS = $90DB;
+  GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS = $90DC;
+  GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = $90DD;
+  GL_MAX_SHADER_STORAGE_BLOCK_SIZE  = $90DE;
+  GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT = $90DF;
+  GL_SHADER_STORAGE_BARRIER_BIT     = $2000;
+  GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES = GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS;
+  GL_DEPTH_STENCIL_TEXTURE_MODE     = $90EA;
+
+  GL_TEXTURE_BUFFER_OFFSET          = $919D;
+  GL_TEXTURE_BUFFER_SIZE            = $919E;
+  GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT = $919F;
+  GL_TEXTURE_VIEW_MIN_LEVEL         = $82DB;
+  GL_TEXTURE_VIEW_NUM_LEVELS        = $82DC;
+  GL_TEXTURE_VIEW_MIN_LAYER         = $82DD;
+  GL_TEXTURE_VIEW_NUM_LAYERS        = $82DE;
+  GL_TEXTURE_IMMUTABLE_LEVELS       = $82DF;
+  GL_VERTEX_ATTRIB_BINDING          = $82D4;
+  GL_VERTEX_ATTRIB_RELATIVE_OFFSET  = $82D5;
+  GL_VERTEX_BINDING_DIVISOR         = $82D6;
+  GL_VERTEX_BINDING_OFFSET          = $82D7;
+  GL_VERTEX_BINDING_STRIDE          = $82D8;
+  GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET = $82D9;
+  GL_MAX_VERTEX_ATTRIB_BINDINGS     = $82DA;
+
+  // GL 4.4
+  GL_MAX_VERTEX_ATTRIB_STRIDE         = $82E5;
+  GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED = $8221;
+  GL_TEXTURE_BUFFER_BINDING = $8C2A;
+  GL_MAP_PERSISTENT_BIT               = $0040;
+  GL_MAP_COHERENT_BIT                 = $0080;
+  GL_DYNAMIC_STORAGE_BIT              = $0100;
+  GL_CLIENT_STORAGE_BIT               = $0200;
+  GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT = $00004000;
+  GL_BUFFER_IMMUTABLE_STORAGE       	= $821F;
+  GL_BUFFER_STORAGE_FLAGS           	= $8220;
+  GL_CLEAR_TEXTURE                  	= $9365;
+  GL_LOCATION_COMPONENT             	= $934A;
+  GL_TRANSFORM_FEEDBACK_BUFFER_INDEX 	= $934B;
+  GL_TRANSFORM_FEEDBACK_BUFFER_STRIDE = $934C;
+  GL_QUERY_BUFFER                   	= $9192;
+  GL_QUERY_BUFFER_BARRIER_BIT       	= $00008000;
+  GL_QUERY_BUFFER_BINDING           	= $9193;
+  GL_QUERY_RESULT_NO_WAIT           	= $9194;
+  GL_MIRROR_CLAMP_TO_EDGE           	= $8743;
+
+  // GL 4.5
+  GL_CONTEXT_LOST                   = $0507;
+  GL_NEGATIVE_ONE_TO_ONE            = $935E;
+  GL_ZERO_TO_ONE                    = $935F;
+  GL_CLIP_ORIGIN                    = $935C;
+  GL_CLIP_DEPTH_MODE                = $935D;
+  GL_QUERY_WAIT_INVERTED            = $8E17;
+  GL_QUERY_NO_WAIT_INVERTED         = $8E18;
+  GL_QUERY_BY_REGION_WAIT_INVERTED  = $8E19;
+  GL_QUERY_BY_REGION_NO_WAIT_INVERTED = $8E1A;
+  GL_MAX_CULL_DISTANCES             = $82F9;
+  GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES = $82FA;
+  GL_TEXTURE_TARGET                 = $1006;
+  GL_QUERY_TARGET                   = $82EA;
+  GL_TEXTURE_BINDING                = $82EB;
+  GL_GUILTY_CONTEXT_RESET           = $8253;
+  GL_INNOCENT_CONTEXT_RESET         = $8254;
+  GL_UNKNOWN_CONTEXT_RESET          = $8255;
+  GL_RESET_NOTIFICATION_STRATEGY    = $8256;
+  GL_LOSE_CONTEXT_ON_RESET          = $8252;
+  GL_NO_RESET_NOTIFICATION          = $8261;
+  GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT = $00000004;
+  GL_CONTEXT_RELEASE_BEHAVIOR       = $82FB;
+  GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH = $82FC;
+
+  // 4.6
+  GL_SHADER_BINARY_FORMAT_SPIR_V = $9551;
+  GL_SPIR_V_BINARY = $9552;
+  GL_PARAMETER_BUFFER = $80EE;
+  GL_PARAMETER_BUFFER_BINDING = $80EF;
+  GL_CONTEXT_FLAG_NO_ERROR_BIT = $00000008;
+  GL_VERTICES_SUBMITTED = $82EE;
+  GL_PRIMITIVES_SUBMITTED = $82EF;
+  GL_VERTEX_SHADER_INVOCATIONS = $82F0;
+  GL_TESS_CONTROL_SHADER_PATCHES = $82F1;
+  GL_TESS_EVALUATION_SHADER_INVOCATIONS = $82F2;
+  GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED = $82F3;
+  GL_FRAGMENT_SHADER_INVOCATIONS = $82F4;
+  GL_COMPUTE_SHADER_INVOCATIONS = $82F5;
+  GL_CLIPPING_INPUT_PRIMITIVES = $82F6;
+  GL_CLIPPING_OUTPUT_PRIMITIVES = $82F7;
+  GL_POLYGON_OFFSET_CLAMP = $8E1B;
+  GL_SPIR_V_EXTENSIONS = $9553;
+  GL_NUM_SPIR_V_EXTENSIONS = $9554;
+  GL_TEXTURE_MAX_ANISOTROPY = $84FE;
+  GL_MAX_TEXTURE_MAX_ANISOTROPY = $84FF;
+  GL_TRANSFORM_FEEDBACK_OVERFLOW = $82EC;
+  GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW = $82ED;  
 
   // GL_ATI_draw_buffers
   GL_MAX_DRAW_BUFFERS_ATI = $8824;
@@ -4957,6 +5738,183 @@ const
   GL_DECODE_EXT = $8A49;
   GL_SKIP_DECODE_EXT = $8A4A;
 
+  // GL_NV_texture_multisample
+  GL_TEXTURE_COVERAGE_SAMPLES_NV    = $9045;
+  GL_TEXTURE_COLOR_SAMPLES_NV       = $9046;
+
+  // GL_AMD_blend_minmax_factor
+  GL_FACTOR_MIN_AMD                 = $901C;
+  GL_FACTOR_MAX_AMD                 = $901D;
+
+  // GL_AMD_sample_positions
+  GL_SUBSAMPLE_DISTANCE_AMD         = $883F;
+
+  // GL_EXT_x11_sync_object
+  GL_SYNC_X11_FENCE_EXT             = $90E1;
+
+  // GL_EXT_framebuffer_multisample_blit_scaled
+  GL_SCALED_RESOLVE_FASTEST_EXT     = $90BA;
+  GL_SCALED_RESOLVE_NICEST_EXT      = $90BB;
+
+  // (4.3) GL_NV_path_rendering
+ 	GL_PATH_FORMAT_SVG_NV            = $9070;
+ 	GL_PATH_FORMAT_PS_NV             = $9071;
+ 	GL_STANDARD_FONT_NAME_NV         = $9072;
+ 	GL_SYSTEM_FONT_NAME_NV           = $9073;
+ 	GL_FILE_NAME_NV                  = $9074;
+ 	GL_PATH_STROKE_WIDTH_NV          = $9075;
+ 	GL_PATH_END_CAPS_NV              = $9076;
+ 	GL_PATH_INITIAL_END_CAP_NV       = $9077;
+ 	GL_PATH_TERMINAL_END_CAP_NV      = $9078;
+ 	GL_PATH_JOIN_STYLE_NV            = $9079;
+ 	GL_PATH_MITER_LIMIT_NV           = $907A;
+ 	GL_PATH_DASH_CAPS_NV             = $907B;
+ 	GL_PATH_INITIAL_DASH_CAP_NV      = $907C;
+ 	GL_PATH_TERMINAL_DASH_CAP_NV     = $907D;
+ 	GL_PATH_DASH_OFFSET_NV           = $907E;
+ 	GL_PATH_CLIENT_LENGTH_NV         = $907F;
+ 	GL_PATH_FILL_MODE_NV             = $9080;
+ 	GL_PATH_FILL_MASK_NV             = $9081;
+ 	GL_PATH_FILL_COVER_MODE_NV       = $9082;
+ 	GL_PATH_STROKE_COVER_MODE_NV     = $9083;
+ 	GL_PATH_STROKE_MASK_NV           = $9084;
+ 	GL_PATH_SAMPLE_QUALITY_NV        = $9085;
+ 	GL_PATH_STROKE_BOUND_NV          = $9086;
+ 	GL_PATH_STROKE_OVERSAMPLE_COUNT_NV= $9087;
+ 	GL_COUNT_UP_NV                   = $9088;
+ 	GL_COUNT_DOWN_NV                 = $9089;
+ 	GL_PATH_OBJECT_BOUNDING_BOX_NV   = $908A;
+ 	GL_CONVEX_HULL_NV                = $908B;
+ 	GL_MULTI_HULLS_NV                = $908C;
+ 	GL_BOUNDING_BOX_NV               = $908D;
+ 	GL_TRANSLATE_X_NV                = $908E;
+ 	GL_TRANSLATE_Y_NV                = $908F;
+ 	GL_TRANSLATE_2D_NV               = $9090;
+ 	GL_TRANSLATE_3D_NV               = $9091;
+ 	GL_AFFINE_2D_NV                  = $9092;
+ 	GL_PROJECTIVE_2D_NV              = $9093;
+ 	GL_AFFINE_3D_NV                  = $9094;
+ 	GL_PROJECTIVE_3D_NV              = $9095;
+ 	GL_TRANSPOSE_AFFINE_2D_NV        = $9096;
+ 	GL_TRANSPOSE_PROJECTIVE_2D_NV    = $9097;
+	GL_TRANSPOSE_AFFINE_3D_NV        = $9098;
+ 	GL_TRANSPOSE_PROJECTIVE_3D_NV    = $9099;
+ 	GL_UTF8_NV                       = $909A;
+ 	GL_UTF16_NV                      = $909B;
+ 	GL_BOUNDING_BOX_OF_BOUNDING_BOXES_NV= $909C;
+ 	GL_PATH_COMMAND_COUNT_NV         = $909D;
+ 	GL_PATH_COORD_COUNT_NV           = $909E;
+  GL_PATH_DASH_ARRAY_COUNT_NV      = $909F;
+  GL_PATH_COMPUTED_LENGTH_NV       = $90A0;
+  GL_PATH_FILL_BOUNDING_BOX_NV     = $90A1;
+  GL_PATH_STROKE_BOUNDING_BOX_NV   = $90A2;
+  GL_SQUARE_NV                     = $90A3;
+  GL_ROUND_NV                      = $90A4;
+  GL_TRIANGULAR_NV                 = $90A5;
+  GL_BEVEL_NV                      = $90A6;
+  GL_MITER_REVERT_NV               = $90A7;
+  GL_MITER_TRUNCATE_NV             = $90A8;
+  GL_SKIP_MISSING_GLYPH_NV         = $90A9;
+  GL_USE_MISSING_GLYPH_NV          = $90AA;
+  GL_PATH_ERROR_POSITION_NV        = $90AB;
+  GL_PATH_FOG_GEN_MODE_NV          = $90AC;
+  GL_ACCUM_ADJACENT_PAIRS_NV       = $90AD;
+  GL_ADJACENT_PAIRS_NV             = $90AE;
+  GL_FIRST_TO_REST_NV              = $90AF;
+  GL_PATH_GEN_MODE_NV              = $90B0;
+  GL_PATH_GEN_COEFF_NV             = $90B1;
+  GL_PATH_GEN_COLOR_FORMAT_NV      = $90B2;
+  GL_PATH_GEN_COMPONENTS_NV        = $90B3;
+  GL_PATH_STENCIL_FUNC_NV          = $90B7;
+  GL_PATH_STENCIL_REF_NV           = $90B8;
+  GL_PATH_STENCIL_VALUE_MASK_NV    = $90B9;
+  GL_PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV= $90BD;
+  GL_PATH_STENCIL_DEPTH_OFFSET_UNITS_NV= $90BE;
+  GL_PATH_COVER_DEPTH_FUNC_NV      = $90BF;
+  GL_PATH_DASH_OFFSET_RESET_NV     = $90B4;
+  GL_MOVE_TO_RESETS_NV             = $90B5;
+  GL_MOVE_TO_CONTINUES_NV          = $90B6;
+  GL_CLOSE_PATH_NV                 = $00;
+  GL_MOVE_TO_NV                    = $02;
+  GL_RELATIVE_MOVE_TO_NV           = $03;
+  GL_LINE_TO_NV                    = $04;
+  GL_RELATIVE_LINE_TO_NV           = $05;
+  GL_HORIZONTAL_LINE_TO_NV         = $06;
+  GL_RELATIVE_HORIZONTAL_LINE_TO_NV= $07;
+  GL_VERTICAL_LINE_TO_NV           = $08;
+  GL_RELATIVE_VERTICAL_LINE_TO_NV  = $09;
+  GL_QUADRATIC_CURVE_TO_NV         = $0A;
+  GL_RELATIVE_QUADRATIC_CURVE_TO_NV= $0B;
+  GL_CUBIC_CURVE_TO_NV             = $0C;
+  GL_RELATIVE_CUBIC_CURVE_TO_NV    = $0D;
+  GL_SMOOTH_QUADRATIC_CURVE_TO_NV  = $0E;
+  GL_RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV= $0F;
+  GL_SMOOTH_CUBIC_CURVE_TO_NV      = $10;
+  GL_RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV= $11;
+  GL_SMALL_CCW_ARC_TO_NV           = $12;
+  GL_RELATIVE_SMALL_CCW_ARC_TO_NV  = $13;
+  GL_SMALL_CW_ARC_TO_NV            = $14;
+  GL_RELATIVE_SMALL_CW_ARC_TO_NV   = $15;
+  GL_LARGE_CCW_ARC_TO_NV           = $16;
+  GL_RELATIVE_LARGE_CCW_ARC_TO_NV  = $17;
+  GL_LARGE_CW_ARC_TO_NV            = $18;
+  GL_RELATIVE_LARGE_CW_ARC_TO_NV   = $19;
+  GL_RESTART_PATH_NV               = $F0;
+  GL_DUP_FIRST_CUBIC_CURVE_TO_NV   = $F2;
+  GL_DUP_LAST_CUBIC_CURVE_TO_NV    = $F4;
+  GL_RECT_NV                       = $F6;
+  GL_CIRCULAR_CCW_ARC_TO_NV        = $F8;
+  GL_CIRCULAR_CW_ARC_TO_NV         = $FA;
+  GL_CIRCULAR_TANGENT_ARC_TO_NV    = $FC;
+  GL_ARC_TO_NV                     = $FE;
+  GL_RELATIVE_ARC_TO_NV            = $FF;
+  GL_BOLD_BIT_NV                   = $01;
+  GL_ITALIC_BIT_NV                 = $02;
+  GL_GLYPH_WIDTH_BIT_NV            = $01;
+  GL_GLYPH_HEIGHT_BIT_NV           = $02;
+  GL_GLYPH_HORIZONTAL_BEARING_X_BIT_NV= $04;
+  GL_GLYPH_HORIZONTAL_BEARING_Y_BIT_NV= $08;
+  GL_GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV= $10;
+  GL_GLYPH_VERTICAL_BEARING_X_BIT_NV= $20;
+  GL_GLYPH_VERTICAL_BEARING_Y_BIT_NV= $40;
+  GL_GLYPH_VERTICAL_BEARING_ADVANCE_BIT_NV= $80;
+  GL_GLYPH_HAS_KERNING_NV          = $100;
+  GL_FONT_X_MIN_BOUNDS_NV          = $00010000;
+  GL_FONT_Y_MIN_BOUNDS_NV          = $00020000;
+  GL_FONT_X_MAX_BOUNDS_NV          = $00040000;
+  GL_FONT_Y_MAX_BOUNDS_NV          = $00080000;
+  GL_FONT_UNITS_PER_EM_NV          = $00100000;
+  GL_FONT_ASCENDER_NV              = $00200000;
+  GL_FONT_DESCENDER_NV             = $00400000;
+  GL_FONT_HEIGHT_NV                = $00800000;
+  GL_FONT_MAX_ADVANCE_WIDTH_NV     = $01000000;
+  GL_FONT_MAX_ADVANCE_HEIGHT_NV    = $02000000;
+  GL_FONT_UNDERLINE_POSITION_NV    = $04000000;
+  GL_FONT_UNDERLINE_THICKNESS_NV   = $08000000;
+  GL_FONT_HAS_KERNING_NV           = $10000000;
+
+  // (4.3) GL_AMD_pinned_memory
+  GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD= $9160;
+
+  // (4.3) GL_AMD_stencil_operation_extended
+  GL_SET_AMD                       = $874A;
+  GL_REPLACE_VALUE_AMD             = $874B;
+  GL_STENCIL_OP_VALUE_AMD          = $874C;
+  GL_STENCIL_BACK_OP_VALUE_AMD     = $874D;
+
+  // (4.3) GL_AMD_vertex_shader_viewport_index
+
+  // (4.3) GL_AMD_vertex_shader_layer
+
+  // (4.3) GL_NV_bindless_texture
+
+  // (4.3) GL_NV_shader_atomic_float
+
+  // (4.3) GL_AMD_query_buffer_object
+  GL_QUERY_BUFFER_AMD              = $9192;
+  GL_QUERY_BUFFER_BINDING_AMD      = $9193;
+  GL_QUERY_RESULT_NO_WAIT_AMD      = $9194;
+
   // GL_FfdMaskSGIX
   GL_TEXTURE_DEFORMATION_BIT_SGIX = $00000001;
   GL_GEOMETRY_DEFORMATION_BIT_SGIX = $00000002;
@@ -5497,6 +6455,17 @@ const
   GL_QUERY_BY_REGION_WAIT_NV = $8E15;
   GL_QUERY_BY_REGION_NO_WAIT_NV = $8E16;
 
+  // GL_NV_conservative_raster
+  GL_CONSERVATIVE_RASTERIZATION_NV = $9346;
+  GL_SUBPIXEL_PRECISION_BIAS_X_BITS_NV = $9347;
+  GL_SUBPIXEL_PRECISION_BIAS_Y_BITS_NV = $9348;
+  GL_MAX_SUBPIXEL_PRECISION_BIAS_BITS_NV = $9349;
+
+  // GL_NV_conservative_raster_dilate
+  GL_CONSERVATIVE_RASTER_DILATE_NV = $9379;
+  GL_CONSERVATIVE_RASTER_DILATE_RANGE_NV = $937A;
+  GL_CONSERVATIVE_RASTER_DILATE_GRANULARITY_NV = $937B;
+
   // GL_NV_present_video
   GL_FRAME_NV = $8E26;
   GL_FIELDS_NV = $8E27;
@@ -5668,6 +6637,12 @@ const
   // GL_OML_subsample
   GL_FORMAT_SUBSAMPLE_24_24_OML = $8982;
   GL_FORMAT_SUBSAMPLE_244_244_OML = $8983;
+
+  // GL_OVR_multiview
+  GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR = $9630;
+  GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR = $9632;
+  GL_MAX_VIEWS_OVR = $9631;
+  GL_FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR  = $9633;
 
   // GL_PGI_misc_hints
   GL_PREFER_DOUBLEBUFFER_HINT_PGI = $1A1F8;
@@ -6120,7 +7095,7 @@ const
   // GL_WIN_specular_fog
   GL_FOG_SPECULAR_TEXTURE_WIN = $80EC;
 
-   // GL_ARB_vertex_shader
+  // GL_ARB_vertex_shader
   GL_VERTEX_SHADER_ARB = $8B31;
   GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB = $8B4A;
   GL_MAX_VARYING_FLOATS_ARB = $8B4B;
@@ -6128,6 +7103,32 @@ const
   GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = $8B4D;
   GL_OBJECT_ACTIVE_ATTRIBUTES_ARB = $8B89;
   GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB = $8B8A;
+
+  // GL_KHR_blend_equation_advanced
+  GL_MULTIPLY_KHR = $9294;
+  GL_SCREEN_KHR = $9295;
+  GL_OVERLAY_KHR = $9296;
+  GL_DARKEN_KHR = $9297;
+  GL_LIGHTEN_KHR = $9298;
+  GL_COLORDODGE_KHR = $9299;
+  GL_COLORBURN_KHR = $929A;
+  GL_HARDLIGHT_KHR = $929B;
+  GL_SOFTLIGHT_KHR = $929C;
+  GL_DIFFERENCE_KHR = $929E;
+  GL_EXCLUSION_KHR = $92A0;
+  GL_HSL_HUE_KHR = $92AD;
+  GL_HSL_SATURATION_KHR = $92AE;
+  GL_HSL_COLOR_KHR = $92AF;
+  GL_HSL_LUMINOSITY_KHR = $92B0;
+
+  // GL_KHR_blend_equation_advanced_coherent
+  GL_BLEND_ADVANCED_COHERENT_KHR = $9285;
+
+  // GL_KHR_robustness
+  GL_CONTEXT_ROBUST_ACCESS = $90F3;
+
+  // GL_KHR_no_error
+  GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR = $00000008;
 
   // GL_ARB_fragment_shader
   GL_FRAGMENT_SHADER_ARB = $8B30;
@@ -6140,6 +7141,18 @@ const
   GL_CURRENT_QUERY_ARB = $8865;
   GL_QUERY_RESULT_ARB = $8866;
   GL_QUERY_RESULT_AVAILABLE_ARB = $8867;
+
+  // GL_ARB_pipeline_statistics_query
+  GL_VERTICES_SUBMITTED_ARB         = $82EE;
+  GL_PRIMITIVES_SUBMITTED_ARB       = $82EF;
+  GL_VERTEX_SHADER_INVOCATIONS_ARB  = $82F0;
+  GL_TESS_CONTROL_SHADER_PATCHES_ARB = $82F1;
+  GL_TESS_EVALUATION_SHADER_INVOCATIONS_ARB = $82F2;
+  GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED_ARB = $82F3;
+  GL_FRAGMENT_SHADER_INVOCATIONS_ARB = $82F4;
+  GL_COMPUTE_SHADER_INVOCATIONS_ARB = $82F5;
+  GL_CLIPPING_INPUT_PRIMITIVES_ARB  = $82F6;
+  GL_CLIPPING_OUTPUT_PRIMITIVES_ARB = $82F7;
 
   // GL_ARB_point_sprite
   GL_POINT_SPRITE_ARB = $8861;
@@ -6196,6 +7209,11 @@ const
   WGL_BACK_COLOR_BUFFER_BIT_ARB = $00000002;
   WGL_DEPTH_BUFFER_BIT_ARB = $00000004;
   WGL_STENCIL_BUFFER_BIT_ARB = $00000008;
+
+  // WGL_ARB_context_flush_control
+  WGL_CONTEXT_RELEASE_BEHAVIOR_ARB = $2097;
+  WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB = 0;
+  WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB = $2098;
 
   // WGL_ARB_make_current_read
   ERROR_INVALID_PIXEL_TYPE_ARB = $2043;
@@ -6307,6 +7325,9 @@ const
   WGL_AUX7_ARB = $208E;
   WGL_AUX8_ARB = $208F;
   WGL_AUX9_ARB = $2090;
+
+  // WGL_ARB_robustness_application_isolation
+  WGL_CONTEXT_RESET_ISOLATION_BIT_ARB = $00000008;
 
   // WGL_ARB_create_context
   WGL_CONTEXT_DEBUG_BIT_ARB = $00000001;
@@ -6495,6 +7516,14 @@ const
   WGL_COVERAGE_SAMPLES_NV = $2042;
   WGL_COLOR_SAMPLES_NV = $20B9;
 
+  // WGL_EXT_create_context_es2_profile
+  WGL_CONTEXT_ES2_PROFILE_BIT_EXT = $00000004;
+
+  // WGL_NV_DX_interop
+  WGL_ACCESS_READ_ONLY_NV        = $00000000;
+  WGL_ACCESS_READ_WRITE_NV       = $00000001;
+  WGL_ACCESS_WRITE_DISCARD_NV    = $00000002;
+
   // WIN_draw_range_elements
   GL_MAX_ELEMENTS_VERTICES_WIN = $80E8;
   GL_MAX_ELEMENTS_INDICES_WIN = $80E9;
@@ -6588,9 +7617,17 @@ const
   GLX_SAMPLE_BUFFERS_ARB = 100000;
   GLX_SAMPLES_ARB = 100001;
 
+  // GLX_ARB_robustness_application_isolation
+  GLX_CONTEXT_RESET_ISOLATION_BIT_ARB = $00000008;
+
   // GLX_ARB_fbconfig_float
   GLX_RGBA_FLOAT_TYPE_ARB = $20B9;
   GLX_RGBA_FLOAT_BIT_ARB = $00000004;
+
+  // GLX_ARB_context_flush_control
+  GLX_CONTEXT_RELEASE_BEHAVIOR_ARB = $2097;
+  GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB = 0;
+  GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB = $2098;
 
   // GLX_ARB_create_context
   GLX_CONTEXT_DEBUG_BIT_ARB = $00000001;
@@ -6694,6 +7731,9 @@ const
   // GLX_EXT_create_context_es2_profile
   GLX_CONTEXT_ES2_PROFILE_BIT_EXT = $00000004;
 
+  // GL_EXT_Late_Swaps
+  GLX_LATE_SWAPS_TEAR_EXT         = $20F3;
+
   // GLU
   GLU_INVALID_ENUM = 100900;
   GLU_INVALID_VALUE = 100901;
@@ -6701,8 +7741,8 @@ const
   GLU_INCOMPATIBLE_GL_VERSION = 100903;
   GLU_VERSION = 100800;
   GLU_EXTENSIONS = 100801;
-  GLU_TRUE = GL_TRUE;
-  GLU_FALSE = GL_FALSE;
+  GLU_TRUE: ByteBool = True;
+  GLU_FALSE: ByteBool = False;
   GLU_SMOOTH = 100000;
   GLU_FLAT = 100001;
   GLU_NONE = 100002;
@@ -7126,6 +8166,7 @@ type
   TglTexGeni = procedure(coord: GLenum; pname: GLenum; param: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglTexGeniv = procedure(coord: GLenum; pname: GLenum; const params: PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
+
   TglTranslated = procedure(x: GLdouble; y: GLdouble; z: GLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglTranslatef = procedure(x: GLfloat; y: GLfloat; z: GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglVertex2d = procedure(x: GLdouble; y: GLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -7338,9 +8379,9 @@ type
   TglGetAttachedShaders = procedure(programObj: GLhandle; MaxCount: GLsizei; var Count: GLint; shaders: PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetAttribLocation = function(programObj: GLhandle; char: PGLChar): glint; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetProgramiv = procedure(programObj: GLhandle; pname: GLenum; params: PGLInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
-  TglGetProgramInfoLog = procedure(programObj: GLHandle; maxLength: glsizei; var length: GLint; infoLog: PGLChar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramInfoLog = procedure(programObj: GLHandle; maxLength: glsizei; length: PGLSizei; infoLog: PGLChar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetShaderiv = procedure(shaderObj: GLhandle; pname: GLenum; params: PGLInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
-  TglGetShaderInfoLog = procedure(shaderObj: GLHandle; maxLength: glsizei; var length: glint; infoLog: PGLChar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetShaderInfoLog = procedure(shaderObj: GLHandle; maxLength: glsizei; length: PGLSizei; infoLog: PGLChar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetShaderSource = procedure(shaderObj: GLhandle; maxlength: GLsizei; var length: GLsizei; source: PGLChar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetUniformLocation = function(programObj: GLhandle; const char: PGLChar): glint; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetUniformfv = procedure(programObj: GLhandle; location: GLint; params: PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -7351,7 +8392,7 @@ type
   TglIsProgram = function(programObj: GLhandle) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglIsShader = function(shaderObj: GLhandle) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglLinkProgram = procedure(programObj: GLHandle); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
-  TglShaderSource = procedure(shaderObj: GLHandle; count: glsizei; _string: PPGLChar; lengths: pglint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglShaderSource = procedure(shaderObj: GLHandle; count: glsizei; const _string: PPGLChar; lengths: pglint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglUseProgram = procedure(programObj: GLhandle); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglUniform1f = procedure(location: GLint; v0: GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglUniform2f = procedure(location: GLint; v0, v1: GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -7482,6 +8523,11 @@ type
   TglClearBufferfv = procedure(buffer: GLenum; drawbuffer: GLint; const value: PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglClearBufferfi = procedure(buffer: GLenum; drawbuffer: GLint; depth: GLfloat; stencil: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetStringi = function(name: GLenum; index: GLuint): PGLubyte; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_VERSION_2_1
+  TglEnableVertexArrayEXT = procedure(vaobj: GLuint; array_: GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglEnableVertexArrayAttribEXT = procedure(vaobj: GLuint; index: GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexAttribOffsetEXT = procedure(vaobj: GLuint; buffer: GLuint; index: GLuint; size: GLint; type_: GLenum; normalized: GLboolean; stride: GLsizei; offset: GLintptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_VERSION_3_1
   { OpenGL 3.1 also reuses entry points from these extensions: }
@@ -7781,7 +8827,7 @@ type
   TglGetHandleARB = function(pname: GlEnum): GLHandleARB; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglDetachObjectARB = procedure(container, attached: GLHandleARB); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglCreateShaderObjectARB = function(shaderType: glenum): GLHandleARB; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
-  TglShaderSourceARB = procedure(shaderObj: GLHandleARB; count: glsizei; _string: PPGLCharARB; lengths: pglint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglShaderSourceARB = procedure(shaderObj: GLHandleARB; count: glsizei; const _string: PPGLCharARB; lengths: pglint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglCompileShaderARB = procedure(shaderObj: GLHandleARB); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglCreateProgramObjectARB = function: GLHandleARB; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglAttachObjectARB = procedure(programObj, shaderObj: GLhandleARB); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -7859,12 +8905,18 @@ type
   TglFramebufferTextureLayerARB = procedure(target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; layer: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglFramebufferTextureFaceARB = procedure(target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; face: GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
+  // GL_ARB_gl_spirv
+  TglSpecializeShaderARB = procedure(shader : GLuint; const pEntryPoint : PGLChar; numSpecializationConstants : GLuint; const pConstantIndex : PGLUint; const pConstantValue : PGLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   // GL_ARB_instanced_arrays
   TglVertexAttribDivisorARB = procedure(index_: GLuint; divisor: GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_ARB_map_buffer_range
   TglMapBufferRange = function(target: GLenum; offset: GLintptr; length: GLsizeiptr; access: GLbitfield): PGLvoid; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglFlushMappedBufferRange = procedure(target: GLenum; offset: GLintptr; length: GLsizeiptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_parallel_shader_compile
+  TglMaxShaderCompilerThreadsARB = procedure(count : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_ARB_texture_buffer_object
   TglTexBufferARB = procedure(target: GLenum; internalformat: GLenum; buffer: GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -7919,6 +8971,11 @@ type
 
   // GL_ARB_sample_shading
   TglMinSampleShadingARB = procedure(value: GLclampf); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_sample_locations
+  TglFramebufferSampleLocationsfvARB = procedure(target : GLenum; start : GLuint; count : GLsizei; const v : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferSampleLocationsfvARB = procedure(framebuffer : GLuint; start : GLuint; count : GLsizei; const v : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglEvaluateDepthValuesARB = procedure(); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_ARB_shading_language_include
   TglNamedStringARB = procedure(type_: GLenum; namelen: GLint; const name: PGLchar; stringlen: GLint; const string_: PGLchar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -8016,6 +9073,44 @@ type
   TglUniformMatrix4x2dv = procedure(location: GLint; count: GLsizei; transpose: GLboolean; const value: PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglUniformMatrix4x3dv = procedure(location: GLint; count: GLsizei; transpose: GLboolean; const value: PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetUniformdv = procedure(program_: GLuint; location: GLint; params: PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_gpu_shader_int64
+  TglUniform1i64ARB = procedure(location : GLint; x : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform2i64ARB = procedure(location : GLint; x : GLint64; y : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform3i64ARB = procedure(location : GLint; x : GLint64; y : GLint64; z : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform4i64ARB = procedure(location : GLint; x : GLint64; y : GLint64; z : GLint64; w : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform1i64vARB = procedure(location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform2i64vARB = procedure(location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform3i64vARB = procedure(location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform4i64vARB = procedure(location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform1ui64ARB = procedure(location : GLint; x : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform2ui64ARB = procedure(location : GLint; x : GLuint64; y : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform3ui64ARB = procedure(location : GLint; x : GLuint64; y : GLuint64; z : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform4ui64ARB = procedure(location : GLint; x : GLuint64; y : GLuint64; z : GLuint64; w : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform1ui64vARB = procedure(location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform2ui64vARB = procedure(location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform3ui64vARB = procedure(location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniform4ui64vARB = procedure(location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetUniformi64vARB = procedure(program_ : GLuint; location : GLint; params : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetUniformui64vARB = procedure(program_ : GLuint; location : GLint; params : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformi64vARB = procedure(program_ : GLuint; location : GLint; bufSize : GLsizei; params : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformui64vARB = procedure(program_ : GLuint; location : GLint; bufSize : GLsizei; params : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform1i64ARB = procedure(program_ : GLuint; location : GLint; x : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform2i64ARB = procedure(program_ : GLuint; location : GLint; x : GLint64; y : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform3i64ARB = procedure(program_ : GLuint; location : GLint; x : GLint64; y : GLint64; z : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform4i64ARB = procedure(program_ : GLuint; location : GLint; x : GLint64; y : GLint64; z : GLint64; w : GLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform1i64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform2i64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform3i64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform4i64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform1ui64ARB = procedure(program_ : GLuint; location : GLint; x : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform2ui64ARB = procedure(program_ : GLuint; location : GLint; x : GLuint64; y : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform3ui64ARB = procedure(program_ : GLuint; location : GLint; x : GLuint64; y : GLuint64; z : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform4ui64ARB = procedure(program_ : GLuint; location : GLint; x : GLuint64; y : GLuint64; z : GLuint64; w : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform1ui64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform2ui64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform3ui64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniform4ui64vARB = procedure(program_ : GLuint; location : GLint; count : GLsizei; const value : PGLuint64 ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_ARB_shader_subroutine
   TglGetSubroutineUniformLocation = function(program_: GLuint; shadertype: GLenum; const name: PGLchar): GLint; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -8143,6 +9238,298 @@ type
   TglDepthRangeIndexed = procedure(index: GLuint; n: GLclampd; f: GLclampd); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetFloati_v = procedure(target: GLenum; index: GLuint; data: PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglGetDoublei_v = procedure(target: GLenum; index: GLuint; data: PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL 4.2
+
+  // GL_ARB_base_instance
+  TglDrawArraysInstancedBaseInstance = procedure(mode : GLenum; first : GLint; count :GLsizei; primcount : GLsizei; baseinstance : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDrawElementsInstancedBaseInstance = procedure(mode : GLEnum; count : GLsizei; _type : GLenum; const indices : PGLVoid; primcount : GLsizei; baseinstance : GLUInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDrawElementsInstancedBaseVertexBaseInstance = procedure(mode : GLEnum; count : GLsizei; _type : GLenum; const indices : PGLVoid; primcount :GLsizei; basevertex : GLint; baseinstance : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_transform_feedback_instanced
+  TglDrawTransformFeedbackInstanced = procedure(mode : GLenum; id : GLuint; primcount : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDrawTransformFeedbackStreamInstanced = procedure(mode : GLenum; id : GLUInt; stream : GLUint; primcount : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_internalformat_query
+  TglGetInternalformativ = procedure(target : GLenum; internalformat : GLenum; pname : GLenum; bufSize : GLsizei; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_shader_atomic_counters
+  TglGetActiveAtomicCounterBufferiv = procedure(_program : GLuint; bufferIndex : GLuint; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  /// GL_ARB_shader_image_load_store
+  TglBindImageTexture = procedure(_unit : GLuint; texture : GLuint; level :GLint; layered : GLboolean; layer : GLint; access : GLenum; format : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMemoryBarrier = procedure(barriers : GLbitfield); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_texture_storage
+  TglTexStorage1D = procedure(target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTexStorage2D = procedure(target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTexStorage3D = procedure(target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage1DEXT = procedure(texture : GLuint; target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage2DEXT = procedure(texture : GLuint; target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage3DEXT = procedure(texture : GLuint; target : GLenum; levels :GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+
+  // GL 4.3
+
+  // GL_KHR_debug
+  TglDebugMessageControl = procedure(source : GLenum; type_ : GLenum; severity : TGLenum; count : GLsizei; const ids : PGLUInt; enabled : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDebugMessageInsert = procedure(source : GLenum;  type_ : GLenum; id : GLuint; sverity : GLenum; length : GLsizei; const buf : PGLchar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDebugMessageCallback = procedure(callback : TGLDEBUGPROC; const userParam : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetDebugMessageLog = function(count : GLuint; bufsize : GLsizei; sources : PGLenum; types : PGLenum; ids : PGLuint; sverities : PGLenum; lengths : PGLSizei; messagelog : PGLchar) : GLUInt; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPushDebugGroup = procedure(source : GLenum; id : GLuint; length : GLsizei; const message_ : PGLchar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPopDebugGroup = procedure; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglObjectLabel = procedure(identifier : GLenum; name : GLuint; length : GLsizei; const label_ : PGLCHar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetObjectLabel = procedure(identifier : GLenum; name : GLuint; bufsize : GLsizei; length : PGLsizei; label_ : PGLCHar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglObjectPtrLabel = procedure(const ptr : Pointer; length : GLsizei; const label_ : PGLCHar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetObjectPtrLabel = procedure(const ptr : Pointer; bufSize : GLsizei; length : PGLsizei; label_ : PGLCHar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_clear_buffer_object
+  TglClearBufferData = procedure(target : GLenum; internalformat : GLenum; format : GLEnum; type_ : GLEnum; const data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearBufferSubData = procedure(target : GLenum; internalformat : GLenum; offset : GLintptr; size : GLsizeiptr; format : GLenum; type_ : GLenum; const data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedBufferDataEXT = procedure(buffer : GLuint; internalformat : GLenum; format : GLEnum; type_ : GLEnum; const data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedBufferSubDataEXT = procedure(buffer : GLuint; internalformat : GLenum; format : GLenum; type_ : GLenum; offset : GLsizeiptr; size : GLsizeiptr; const data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_compute_shader
+  TglDispatchCompute = procedure(num_groups_x : GLuint; num_groups_y : GLuint; num_groups_z : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDispatchComputeIndirect = procedure(indirect : GLintptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_copy_image
+  TglCopyImageSubData = procedure(srcName : GLUInt; srcTarget : GLenum; srcLevel : GLint; srcX : GLint; srcY : GLint; srcZ : GLint; dstName : GLUInt; dstTarget : GLEnum; dstLevel : GLInt; dstX : GLInt; dstY : GLint; dstZ : GLint; srcWidth : GLsizei; srcHeight : GLsizei; srcDepth : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_debug_group
+  // ARB_debug_group reuses entry points from KHR_debug
+
+  // GL_ARB_debug_label
+  // ARB_debug_label reuses entry points from KHR_debug
+
+  // GL_ARB_debug_output2
+
+  // GL_ARB_ES3_2_compatibility
+  TglPrimitiveBoundingBoxARB = procedure(minX : GLfloat; minY : GLfloat; minZ : GLfloat; minW : GLfloat; maxX : GLfloat; maxY : GLfloat; maxZ : GLfloat; maxW : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_ES3_compatibility
+
+  // GL_ARB_explicit_uniform_location
+
+  // GL_ARB_fragment_layer_viewport
+
+  // GL_ARB_framebuffer_no_attachments
+  TglFramebufferParameteri = procedure(target : GLenum; pname : GLenum; param : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetFramebufferParameteriv = procedure(target : GLenum; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferParameteriEXT = procedure(framebuffer : GLUInt; pname : GLenum; param : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedFramebufferParameterivEXT = procedure(framebuffer : GLUInt; pname : GLenum; param : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_internalformat_query2
+  TglGetInternalformati64v = procedure(target : GLenum; internalformat : GLenum; pname : GLenum; bufSize : GLsizei; params : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_invalidate_subdata
+  TglInvalidateTexSubImage = procedure(texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateTexImage = procedure(texture : GLuint; level : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateBufferSubData = procedure(buffer : GLuint; offset : GLintptr; length : GLsizeiptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateBufferData = procedure(buffer : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateFramebuffer = procedure(target : GLenum; numAttachments : GLsizei; const attachments : PGLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateSubFramebuffer = procedure(target : GLenum; numAttachments : GLsizei; const attachments : PGLenum; x : GLint; y : GLint; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_multi_draw_indirect
+  TglMultiDrawArraysIndirect = procedure(mode : GLenum; const indirect : Pointer; drawcount : GLsizei; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMultiDrawElementsIndirect = procedure(mode : GLenum; type_ : GLenum; const indirect : Pointer; drawcount : GLsizei; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_program_interface_query
+  TglGetProgramInterfaceiv = procedure(program_ : GLUInt;programInterface : GLenum; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramResourceIndex = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLUInt; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramResourceName = procedure(program_ : GLUInt;programInterface : GLenum; index : GLuint; bufSize : GLsizei; length : PGLsizei; name : PGLchar); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramResourceiv = procedure(program_ : GLUInt;programInterface : GLenum; index : GLuint; propCount : GLsizei; const props : PGLenum; bufSize : GLsizei; length : PGLsizei; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramResourceLocation = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLInt; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetProgramResourceLocationIndex = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLInt; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_robust_buffer_access_behavior
+
+  // GL_ARB_shader_image_size
+
+  // GL_ARB_shader_storage_buffer_object
+  TglShaderStorageBlockBinding = procedure(program_ : GLuint; storageBlockIndex : GLuint; storageBlockBinding : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_stencil_texturing
+
+  // GL_ARB_texture_buffer_range
+  TglTexBufferRange = procedure(target : GLenum; internalformat : GLenum; buffer : GLuint; offset :GLintptr; size : GLsizeiptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureBufferRangeEXT = procedure(texture : GLuint; target : GLenum; internalformat : GLenum; buffer : GLuint; offset : GLintptr; size : GLsizeiptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_texture_query_levels
+
+  // GL_ARB_texture_storage_multisample
+  TglTexStorage2DMultisample = procedure(target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTexStorage3DMultisample = procedure(target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage2DMultisampleEXT = procedure(texture : GLuint; target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage3DMultisampleEXT = procedure(texture : GLuint; target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL 4.4
+
+  TglBufferStorage = procedure(target : GLenum; size : GLsizeiptr; const data : pointer; flags : GLbitfield); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearTexImage = procedure(texture : GLuint; level : GLint; format : GLenum; _type : GLenum; const data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearTexSubImage = procedure(texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; format : GLenum; _type : GLenum; const Data : Pointer); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindBuffersBase = procedure(target : GLenum; first : GLuint; count : GLsizei; const buffers : PGLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindBuffersRange = procedure(target : GLenum; first : GLuint; count : GLsizei; const buffers : PGLuint; const offsets : GLintptr; const sizes : GLsizeiptr); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindTextures = procedure(first : GLuint; count : GLsizei; const textures : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindSamplers = procedure(first : GLuint; count : GLsizei; const samplers : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindImageTextures = procedure(first : GLuint; count : GLsizei; const textures : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindVertexBuffers = procedure(first : GLuint; count : GLsizei; const buffers : GLuint; const offsets : GLintptr; const strides : PGLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTexPageCommitmentARB = procedure(target : glenum; level : glint; xoffset : glint; yoffset : glint; zoffset : glint; width : glsizei; height : glsizei; depth : glsizei; resident : glboolean);  {$IFDEF DGL_WIN} stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL 4.5
+  TglClipControl = procedure(origin : GLenum; depth : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateTransformFeedbacks = procedure(n : GLsizei; ids : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTransformFeedbackBufferBase = procedure (xfb : GLuint; index : GLuint; buffer : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTransformFeedbackBufferRange = procedure (xfb : GLuint; index : GLuint; buffer : GLuint; offset : GLintptr; size : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTransformFeedbackiv = procedure (xfb : GLuint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTransformFeedbacki_v = procedure (xfb : GLuint; pname : GLenum; index : GLuint; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTransformFeedbacki64_v = procedure (xfb : GLuint; pname : GLenum; index : GLuint; param : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateBuffers = procedure (n : GLsizei; buffers : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedBufferStorage = procedure (buffer : GLuint; size : GLsizei; const data : PGLVoid; flags : GLbitfield); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedBufferData = procedure (buffer : GLuint; size : GLsizei; const data : PGLVoid; usage : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedBufferSubData = procedure (buffer : GLuint; offset : GLintptr; size : GLsizei; data : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCopyNamedBufferSubData = procedure (readBuffer : GLuint; writeBuffer : GLuint; readOffset : GLintptr; writeOffset : GLintptr; size : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedBufferData = procedure (buffer : GLuint; internalformat : GLenum; format : GLenum; _type : GLenum; data : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedBufferSubData = procedure (buffer : GLuint; internalformat : GLenum; offset : GLintptr; size : GLsizei; format : GLenum; _type : GLenum; data : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMapNamedBuffer = function(buffer : GLuint; access : GLenum) : PGLvoid; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMapNamedBufferRange = function(buffer : GLuint; offset : GLintptr; length : GLsizei; access : GLbitfield) : PGLvoid; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUnmapNamedBuffer = function(buffer : GLuint) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglFlushMappedNamedBufferRange = procedure (buffer : GLuint; offset : GLintptr; length : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedBufferParameteriv = procedure (buffer : GLuint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedBufferParameteri64v = procedure (buffer : GLuint; pname : GLenum; param : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedBufferPointerv = procedure (buffer : GLuint; pname : GLenum; params : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedBufferSubData = procedure (buffer : GLuint; offset : GLintptr; size : GLsizei; data : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateFramebuffers = procedure (n : GLsizei; framebuffers : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferRenderbuffer = procedure (framebuffer : GLuint; attachment : GLenum ; renderbuffertarget : GLEnum; renderbuffer : GLUInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferParameteri = procedure (framebuffer : GLuint; pname : GLenum; param : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferTexture = procedure (framebuffer : GLuint; attachment : GLenum; texture : GLuint; level : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferTextureLayer = procedure (framebuffer : GLuint; attachment : GLenum; texture : GLuint; level : GLint; layer : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferDrawBuffer = procedure (framebuffer : GLuint; buf : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferDrawBuffers = procedure (framebuffer : GLuint; n : GLsizei; bufs : PGLEnum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedFramebufferReadBuffer = procedure (framebuffer : GLuint; src : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateNamedFramebufferData = procedure (framebuffer : GLuint; numAttachments : GLSizei; attachments : PGLEnum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInvalidateNamedFramebufferSubData = procedure (framebuffer : GLuint; numAttachments : GLSizei; attachments : PGLEnum; x : GLint; y : GLint; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedFramebufferiv = procedure (framebuffer : GLuint; buffer : GLenum; drawbuffer : GLint; value : PGLInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedFramebufferuiv = procedure (framebuffer : GLuint; buffer : GLenum; drawbuffer : GLint; value : PGLInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedFramebufferfv = procedure (framebuffer : GLuint; buffer : GLenum; drawbuffer : GLint; value : PGLFloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglClearNamedFramebufferfi = procedure (framebuffer : GLuint; buffer : GLenum; const depth : GLfloat; stencil : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBlitNamedFramebuffer = procedure (readFramebuffer : GLuint; drawFramebuffer : GLuint; srcX0 : GLint; srcY0 : GLint; srcX1 : GLint; srcY1 : GLint; dstX0 : GLint; dstY0 : GLint; dstX1 : GLint; dstY1 : GLint ; mask : GLbitfield; filter : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCheckNamedFramebufferStatus = function(framebuffer : GLuint; target : GLenum) : GLenum; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedFramebufferParameteriv = procedure (framebuffer : GLuint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedFramebufferAttachmentParameteriv = procedure (framebuffer : GLuint; attachment : GLenum; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateRenderbuffers = procedure (n : GLsizei; renderbuffers : PGLUInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedRenderbufferStorage = procedure (renderbuffer : GLUInt; internalformat : GLenum ; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedRenderbufferStorageMultisample = procedure (renderbuffer : GLUInt; samples : GLSizei; internalformat : GLenum ; width : GLSizei; height : GLSizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetNamedRenderbufferParameteriv = procedure (renderbuffer : GLUInt; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateTextures = procedure (target : GLenum ; n : GLsizei; textures : PGLUInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureBuffer = procedure (texture : GLuint; internalformat : GLenum; buffer : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureBufferRange = procedure (texture : GLuint; internalformat : GLenum; buffer : GLuint; offset : GLintptr; size : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage1D = procedure (texture : GLuint; levels : GLsizei; internalformat : GLenum; width : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage2D = procedure (texture : GLuint; levels : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage3D = procedure (texture : GLuint; levels : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage2DMultisample = procedure (texture : GLuint; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureStorage3DMultisample = procedure (texture : GLuint; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureSubImage1D = procedure (texture : GLuint; level : GLint; xoffset : GLint; width : GLsizei; format : GLenum; _type : GLenum; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureSubImage2D = procedure (texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; width : GLsizei; height : GLsizei; format : GLenum; _type : GLenum; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureSubImage3D = procedure (texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; format : GLenum; _type : GLenum; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCompressedTextureSubImage1D = procedure (texture : GLuint; level : GLint; xoffset : GLint; width : GLsizei; format : GLenum; imageSize : GLsizei; data : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCompressedTextureSubImage2D = procedure (texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; width : GLsizei; height : GLsizei; format : GLenum; mageSize : GLsizei; data : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCompressedTextureSubImage3D = procedure (texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; format : GLenum; imageSize : GLsizei; data : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCopyTextureSubImage1D = procedure (texture : GLuint; level : GLint ; xoffset : GLint; x : GLint; y : GLint; width : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCopyTextureSubImage2D = procedure (texture : GLuint; level : GLint ; xoffset : GLint; yoffset : GLint; x : GLint; y : GLint; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCopyTextureSubImage3D = procedure (texture : GLuint; level : GLint ; xoffset : GLint; yoffset : GLint; zoffset : GLint; x : GLint; y : GLint; width : GLsizei; height : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameterf = procedure (texture : GLuint; pname : GLenum; param : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameterfv = procedure (texture : GLuint; pname : GLenum; const param : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameteri = procedure (texture : GLuint; pname : GLenum; param : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameterIiv = procedure (texture : GLuint; pname : GLenum; const params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameterIuiv = procedure (texture : GLuint; pname : GLenum; const params : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureParameteriv = procedure (texture : GLuint; pname : GLenum; const param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGenerateTextureMipmap = procedure(texture : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglBindTextureUnit = procedure (_unit : GLuint; texture : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureImage = procedure (texture : GLuint; level : GLint ; format : GLenum; _type : GLenum; bufSize : GLsizei; pixels : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetCompressedTextureImage = procedure (texture : GLuint; level : GLint; bufSize : GLSizei; pixels : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureLevelParameterfv = procedure (texture : GLuint; level : GLint; pname : GLenum; params : PGLFloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureLevelParameteriv = procedure (texture : GLuint; level : GLint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureParameterfv = procedure (texture : GLuint; pname : GLenum; params : PGLFloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureParameterIiv = procedure (texture : GLuint; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureParameterIuiv = procedure (texture : GLuint; pname : GLenum; params : PGLInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureParameteriv = procedure (texture : GLuint; pname : GLenum; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateVertexArrays = procedure (n : GLsizei; arrays : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDisableVertexArrayAttrib = procedure (vaobj : GLuint; index : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglEnableVertexArrayAttrib = procedure (vaobj : GLuint; index : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayElementBuffer = procedure (vaobj : GLuint; buffer : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexBuffer = procedure (vaobj : GLuint; bindingindex : GLuint; buffer : GLuint; offset : GLintptr; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexBuffers = procedure (vaobj : GLuint; first : GLuint; count : GLsizei; const buffers : PGLuint; const offsets : PGLintptr; const strides : PGLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayAttribBinding = procedure (vaobj : GLuint; attribindex : GLuint; bindingindex : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayAttribFormat = procedure(vaobj : GLuint; attribindex : GLuint; size : GLint; _type : GLenum; normalized : GLboolean; relativeoffset : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayAttribIFormat = procedure (vaobj : GLuint; attribindex : GLuint; size : GLint; _type : GLenum; relativeoffset : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayAttribLFormat = procedure (vaobj : GLuint; attribindex : GLuint; size : GLint; _type : GLenum; relativeoffset : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayBindingDivisor = procedure (vaobj : GLuint; bindingindex : GLuint; divisor : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetVertexArrayiv = procedure (vaobj : GLuint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetVertexArrayIndexediv = procedure (vaobj : GLuint; index : GLuint; pname : GLenum; param : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetVertexArrayIndexed64iv = procedure (vaobj : GLuint; index : GLuint; pname : GLenum; param : PGLint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateSamplers = procedure (n : GLsizei; samplers : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateProgramPipelines = procedure (n : GLsizei; pipelines : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCreateQueries = procedure (target : GLenum; n : GLsizei; ids : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMemoryBarrierByRegion = procedure (barriers : GLbitfield); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureSubImage = procedure (texture : GLuint; level : GLint ; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; format : GLenum; _type : GLenum; bufSize : GLsizei; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetCompressedTextureSubImage = procedure (texture : GLuint; level : GLint ; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; bufSize : GLsizei; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetGraphicsResetStatus = function : GLEnum; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnCompressedTexImage = procedure (target : GLenum; lod : GLint; bufSize : GLsizei; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnTexImage = procedure (target : GLenum; level : GLint; format : GLenum; _type : GLenum; bufSize : GLSizei; pixels : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformdv = procedure (_program : GLuint; location : GLint; bufSize : GLsizei; params : PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformfv = procedure (_program : GLuint; location : GLint; bufSize : GLsizei; params : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformiv = procedure (_program : GLuint; location : GLint; bufSize : GLsizei; params : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnUniformuiv = procedure (_program : GLuint; location : GLint; bufSize : GLsizei; params : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglReadnPixels = procedure (x : GLint; y : GLint; width : GLsizei; height : GLsizei; format : GLenum; _type : GLenum; bufSize : GLsizei; data : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnMapdv = procedure (target : GLenum; query : GLenum; bufSize : GLsizei; v : PGLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnMapfv = procedure (target : GLenum; query : GLenum; bufSize : GLsizei; v : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnMapiv = procedure (target : GLenum; query : GLenum; bufSize : GLsizei; v : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnPixelMapfv = procedure (map : GLenum; bufSize : GLsizei; values : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnPixelMapuiv = procedure (map : GLenum; bufSize : GLsizei; values : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnPixelMapusv = procedure (map : GLenum; bufSize : GLsizei; values : PGLushort); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnPolygonStipple = procedure (bufSize : GLsizei; pattern : PGLubyte); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnColorTable = procedure (target : GLenum; format : GLenum; _type : GLenum; bufSize : GLsizei; table : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnConvolutionFilter = procedure (target : GLenum; format : GLenum; _type : GLenum; bufSize : GLsizei; image : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnSeparableFilter = procedure (target : GLenum; format : GLenum; _type : GLenum; rowBufSize : GLsizei; row : PGLvoid; columnBufSize : GLsizei; column : PGLvoid; span : PGLVoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnHistogram = procedure (target : GLenum; reset : GLboolean; format : GLenum; _type : GLenum; bufSize : GLsizei; values : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetnMinmax = procedure (target : GLenum; reset : GLboolean; format : GLenum; _type : GLenum; bufSize : GLsizei; values : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTextureBarrier = procedure; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL 4.6
+  TglSpecializeShader = procedure(shader : GLuint; const pEntryPoint : PGLchar; numSpecializationConstants : GLuint; const pConstantIndex : PGLuint; const pConstantValue : PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMultiDrawArraysIndirectCount = procedure(mode : GLenum; const indirect : PGLVoid; drawcount : GLintptr; maxdrawcount : GLsizei; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMultiDrawElementsIndirectCount = procedure(mode : GLenum; _type : GLenum; const indirect : PGLvoid; drawcount : GLintptr; maxdrawcount : GLsizei; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPolygonOffsetClamp = procedure(factor : GLfloat; units : GLfloat; clamp : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_sparse_buffer
+  TglBufferPageCommitmentARB = procedure (target : GLenum; offset : GLintptr; size : GLsizei; commit : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedBufferPageCommitmentEXT = procedure (buffer : GLuint; offset : GLintptr; size : GLsizei; commit : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglNamedBufferPageCommitmentARB = procedure (buffer : GLuint; offset : GLintptr; size : GLsizei; commit : GLboolean); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_KHR_blend_equation_advanced
+  TglBlendBarrierKHR = procedure; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_texture_view
+  TglTextureView = procedure(texture : GLuint; target : GLenum; origtexture : GLuint; internalformat : GLenum; minlevel : GLuint; numlevels : GLuint; minlayer : GLuint; numlayers : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_vertex_attrib_binding
+  TglBindVertexBuffer = procedure(bindingindex : GLuint; buffer : GLuint; offset : GLintptr; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; normalized : GLboolean; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribIFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribLFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribBinding = procedure(attribindex : GLuint; bindingindex : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexBindingDivisor = procedure(bindingindex : GLuint; divisor : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayBindVertexBufferEXT = procedure(vaobj : GLuint; bindingindex : GLuint; buffer : GLuint; offset : GLintptr; stride : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexAttribFormatEXT = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; normalized : GLboolean; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexAttribIFormatEXT = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexAttribLFormatEXT = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexAttribBindingEXT = procedure(vaobj : GLuint; attribindex : GLuint; bindingindex : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexArrayVertexBindingDivisorEXT = procedure(vaobj : GLuint; bindingindex : GLuint; divisor : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_robustness_isolation
+
+  //
 
   // GL_ARB_cl_event
   TglCreateSyncFromCLeventARB = function(context: p_cl_context; event: p_cl_event; flags: GLbitfield): GLsync; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -8601,7 +9988,7 @@ type
   // GL_EXT_geometry_shader4
   TglProgramParameteriEXT = procedure (_program: GLuint; pname: GLenum; value: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglFramebufferTextureEXT = procedure(target: GLenum; attachment: GLenum; texture: GLuint; level: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
-//  TglFramebufferTextureLayerEXT = procedure(target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; layer: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   TglFramebufferTextureFaceEXT = procedure(target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; face: GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_EXT_gpu_shader4
@@ -8924,6 +10311,9 @@ type
   // GL_INGR_blend_func_separate
   TglBlendFuncSeparateINGR = procedure(sfactorRGB: GLenum; dfactorRGB: GLenum; sfactorAlpha: GLenum; dfactorAlpha: GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
+  // GL_INTEL_framebuffer_CMAA
+  TglApplyFramebufferAttachmentCMAAINTEL = procedure(); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   // GL_INTEL_parallel_arrays
   TglVertexPointervINTEL = procedure(size: GLint; _type: GLenum; const _pointer: PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglNormalPointervINTEL = procedure(_type: GLenum; const _pointer: PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -9197,6 +10587,12 @@ type
   TglBeginConditionalRenderNV = procedure(id: GLuint; mode: GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglEndConditionalRenderNV = procedure(); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
+  // GL_NV_conservative_raster
+  TglSubpixelPrecisionBiasNV = procedure(xbits : GLuint; ybits : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_NV_conservative_raster_dilate
+  TglConservativeRasterParameterfNV = procedure(pname : GLenum; value : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
   // GL_NV_present_video
   TglPresentFrameKeyedNV = procedure(video_slot: GLuint; minPresentTime: GLuint64EXT; beginPresentTimeId: GLuint; presentDuratioId: GLuint; type_: GLenum; target0: GLenum; fill0: GLuint; key0: GLuint; target1: GLenum; fill1: GLuint; key1: GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglPresentFrameDualFillNV = procedure(video_slot: GLuint; minPresentTime: GLuint64EXT; beginPresentTimeId: GLuint; presentDurationId: GLuint; type_: GLenum; target0: GLenum; fill0: GLuint; target1: GLenum; fill1: GLuint; target2: GLenum; fill2: GLuint; target3: GLenum; fill3: GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -9341,6 +10737,108 @@ type
 
   // GL_NV_texture_barrier
   TglTextureBarrierNV = procedure; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // (4.3)
+	// GL_NV_path_rendering
+  TglGenPathsNV = function(range : GLsizei) : GLuint; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglDeletePathsNV = procedure(path : GLUInt; range : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsPathNV = function(path : GLUInt) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathCommandsNV = procedure(path : GLUInt; numCommands : GLsizei; const commands : PGLubyte; numCoords : GLsizei; coordType : GLenum; const coords : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathCoordsNV = procedure(path : GLUInt; numCoords : GLSizei; coordType : GLenum; const coords : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathSubCommandsNV = procedure(path : GLUInt; commandStart : GLsizei; commandsToDelete : GLsizei; numCommands : GLsizei; const commands : PGLubyte; numCoords : GLSizei; coordType : GLenum; const coords : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathSubCoordsNV = procedure(path : GLUInt; coordStart : GLsizei; numCoords : GLSizei; coordType : GLenum; const coords : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathStringNV = procedure(path : GLUInt; format : GLenum; length : GLsizei; const pathString : PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathGlyphsNV = procedure(firstPathName : GLuint; fontTarget : GLenum; const fontName : PGLvoid; fontStyle : GLbitfield; numGlyphs : GLsizei; type_ : GLenum; const charcodes : PGLvoid; handleMissingGlyphs : GLenum; pathParameterTemplate : GLUInt; emScale : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathGlyphRangeNV = procedure(firstPathName : GLuint; fontTarget : GLenum; const fontName : PGLvoid; fontStyle : GLbitfield; firstGlyph : GLuint; numGlyphs : GLsizei; handleMissingGlyphs : GLenum; pathParameterTemplate : GLUInt; emScale : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglWeightPathsNV = procedure(resultPath : GLUInt; numPaths : GLSizei; const paths : PGLuint; const weights : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCopyPathNV = procedure(resultPath : GLUInt; srcPath : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglInterpolatePathsNV = procedure(resultPath : GLUInt; pathA : GLUInt; pathB : GLUInt; weight : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglTransformPathNV = procedure(resultPath : GLUInt; srcPath : GLuint; transformType : GLenum; const transformValues : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathParameterivNV = procedure(path : GLUInt; pname : GLEnum; const value : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathParameteriNV = procedure(path : GLUInt; pname : GLEnum; value : GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathParameterfvNV = procedure(path : GLUInt; pname : GLEnum; const value : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathParameterfNV = procedure(path : GLUInt; pname : GLEnum; value : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathDashArrayNV = procedure(path : GLUInt; dashCount : GLsizei; const dashArray : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathStencilFuncNV = procedure(func : GLenum; ref : GLint; mask : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathStencilDepthOffsetNV = procedure(factor : GLfloat; units : GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglStencilFillPathNV = procedure(path : GLUInt; fillMode : GLenum; mask : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglStencilStrokePathNV = procedure(path : GLUInt; reference : GLint; mask : GLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglStencilFillPathInstancedNV = procedure(numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; fillMode : GLenum; mask : GLuint; transformType : GLenum; const transformValues : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglStencilStrokePathInstancedNV = procedure(numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; reference : GLint; mask : GLuint; transformType : GLenum; const transformValues : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathCoverDepthFuncNV = procedure(func : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathColorGenNV = procedure(color : GLenum; genMode : GLenum; colorFormat : GLenum; const coeffs : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathTexGenNV = procedure(texCoordSet : GLenum; genMode : GLenum; components : GLint; const coeffs : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPathFogGenNV = procedure(genMode : GLEnum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCoverFillPathNV = procedure(path : GLUInt; coverMode : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCoverStrokePathNV = procedure(path : GLUInt; coverMode : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCoverFillPathInstancedNV = procedure(numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; coverMode : GLenum; transformType : GLenum; const transformValues : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglCoverStrokePathInstancedNV = procedure(numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; coverMode : GLenum; transformType : GLenum; const transformValues : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathParameterivNV = procedure(path : GLUInt; pname : GLEnum; value : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathParameterfvNV = procedure(path : GLUInt; pname : GLEnum; value : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathCommandsNV = procedure(path : GLUInt; commands : PGLubyte); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathCoordsNV = procedure(path : GLUInt; coords : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathDashArrayNV = procedure(path : GLUInt; dashArray : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathMetricsNV = procedure(metricQueryMask : GLbitfield; numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; stride : GLsizei; metrics : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathMetricRangeNV = procedure(metricQueryMask : GLbitfield; firstPathName : GLuint; numPaths : GLSizei; stride : GLsizei; metrics : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathSpacingNV = procedure(pathListMode : GLenum; numPaths : GLSizei; pathNameType : GLenum; const paths : PGLvoid; pathBase : GLUInt; advanceScale : GLfloat; kerningScale : GLfloat; transformType : GLenum; returnedSpacing : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathColorGenivNV = procedure(color : GLenum; pname : GLEnum; value : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathColorGenfvNV = procedure(color : GLenum; pname : GLEnum; value : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathTexGenivNV = procedure(texCoordSet : GLenum; pname : GLEnum; value : PGLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathTexGenfvNV = procedure(texCoordSet : GLenum; pname : GLEnum; value : PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsPointInFillPathNV = function(path : GLUInt; mask : GLuint; x : GLfloat; y : GLfloat) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsPointInStrokePathNV = function (path : GLUInt; x : GLfloat; y : GLfloat) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetPathLengthNV = function(path : GLUInt; startSegment : GLsizei; numSegments : GLsizei) : GLfloat; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglPointAlongPathNV  = function(path : GLUInt; startSegment : GLsizei; numSegments : GLsizei; distance : GLfloat; x : PGLfloat; y : PGLfloat; tangentX : PGLfloat; tangentY : PGLfloat) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_AMD_pinned_memory
+
+  // GL_AMD_stencil_operation_extended
+  TglStencilOpValueAMD = procedure(face : GLEnum; value : GLUInt); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_AMD_vertex_shader_viewport_index
+
+  // GL_AMD_vertex_shader_layer
+
+  // GL_NV_bindless_texture
+  TglGetTextureHandleNV = function(texture : GLuint ) : GLuint64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureSamplerHandleNV = function(texture : GLuint; sampler : GLuint) : GLuint64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeTextureHandleResidentNV = procedure(handle : GLUint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeTextureHandleNonResidentNV = procedure(handle : GLUint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetImageHandleNV = function(texture : GLuint; level : GLint; layered : GLboolean; layer : GLint; format : GLenum) : GLUInt64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeImageHandleResidentNV = procedure(handle : GLUint64; access : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeImageHandleNonResidentNV = procedure(handle : GLUint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniformHandleui64NV = procedure(location : GLint; value : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniformHandleui64vNV = procedure(location : GLint; cowunt : GLsizei; const value : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniformHandleui64NV = procedure(program_ : GLuint; location : GLint; value : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniformHandleui64vNV = procedure(program_ : GLuint; location : GLint; count : GLsizei; const values : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsTextureHandleResidentNV = function(handle : GLUint64) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsImageHandleResidentNV = function(handle : GLUint64) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  // GL_ARB_bindless_texture
+
+  TglGetTextureHandleARB = function (texture : GLuint) : GLUInt64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetTextureSamplerHandleARB = function (texture : GLuint; sampler : GLuint) : GLUInt64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeTextureHandleResidentARB = procedure (handle : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeTextureHandleNonResidentARB = procedure (handle : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetImageHandleARB = function (texture : GLuint; level : GLint; layered : GLboolean; layer : GLint; format : GLenum) : GLuint64; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeImageHandleResidentARB = procedure (handle : GLuint64; access : GLenum); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglMakeImageHandleNonResidentARB = procedure (handle : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniformHandleui64ARB = procedure (location : GLint; value : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglUniformHandleui64vARB = procedure (location : GLint; count : GLsizei; const value : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniformHandleui64ARB = procedure (program_ : GLuint; location : GLint; value : GLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglProgramUniformHandleui64vARB = procedure (program_ : GLuint; location : GLint; count : GLsizei; const values : PGLuint64); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsTextureHandleResidentARB = function (handle : GLuint64) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglIsImageHandleResidentARB = function (handle : GLuint64) : GLboolean; {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribL1ui64ARB = procedure (index : GLuint; x : GLuint64EXT); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglVertexAttribL1ui64vARB = procedure (index : GLuint; const v : PGLuint64EXT); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  TglGetVertexAttribLui64vARB = procedure (index : GLuint; pname : GLenum; params : PGLuint64EXT ); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+	// GL_NV_shader_atomic_float
+
+	// GL_AMD_query_buffer_object
+
+  // GL_OVR_multiview
+  TglFramebufferTextureMultiviewOVR = procedure(target : GLenum; attachment : GLenum; texture : GLuint; level : GLint; baseViewIndex : GLint; numViews : GLsizei); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
 
   // GL_PGI_misc_hints
   TglHintPGI = procedure(target: GLenum; mode: GLint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -9559,6 +11057,7 @@ type
   TwglUseFontOutlinesW = function(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single; p7: Integer; p8: PGlyphMetricsFloat): BOOL; stdcall;
   TwglUseFontOutlines = function(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single; p7: Integer; p8: PGlyphMetricsFloat): BOOL; stdcall;
 
+
   // WGL_ARB_buffer_region
   TwglCreateBufferRegionARB = function(hDC: HDC; iLayerPlane: GLint; uType: GLuint): THandle; stdcall;
   TwglDeleteBufferRegionARB = procedure(hRegion: THandle); stdcall;
@@ -9719,6 +11218,16 @@ type
   // WGL_NV_copy_image
   TwglCopyImageSubDataNV = function(hSrcRc: HGLRC; srcName: GLuint; srcTarget: GLenum; srcLevel: GLint; srcX: GLint; srcY: GLint; srcZ: GLint; hDstRC: HGLRC; dstName: GLuint; dstTarget: GLenum; dstLevel: GLint; dstX: GLint; dstY: GLint; dstZ: GLint; width: GLsizei; height: GLsizei; depth: GLsizei): Boolean; stdcall;
 
+  // WGL_NV_DX_interop
+  TwglDXSetResourceShareHandleNV = function(dxObject : PGLVoid; hareHandle : Cardinal) : Boolean; stdcall;
+  TwglDXOpenDeviceNV = function(dxDevice : PGLVoid) : Cardinal; stdcall;
+  TwglDXCloseDeviceNV = function(hDevice : Cardinal) : Boolean; stdcall;
+  TwglDXRegisterObjectNV = function(hDevice : Cardinal; dxObject : PGLVoid; name : GLUInt; _type : TGLEnum; access : TGLenum) : Cardinal; stdcall;
+  TwglDXUnregisterObjectNV = function(hDevice : Cardinal; hObject : Cardinal) : Boolean; stdcall;
+  TwglDXObjectAccessNV = function(hObject : Cardinal; access : GLenum) : Boolean; stdcall;
+  TwglDXLockObjectsNV = function(hDevice : Cardinal; count : GLint; hObjects : PCardinal) : Boolean; stdcall;
+  TwglDXUnlockObjectsNV = function (hDevice : Cardinal; count : GLint; hObjects : PCardinal) : Boolean; stdcall;
+
   // WGL_OML_sync_control
   TwglGetSyncValuesOML = function(hdc: HDC; ust: PGLint64; msc: PGLint64; sbc: PGLint64): Boolean; stdcall;
   TwglGetMscRateOML = function(hdc: HDC; numerator: PGLint; denominator: PGLint): Boolean; stdcall;
@@ -9764,7 +11273,7 @@ type
   TglXGetFBConfigs = function(dpy: PDisplay; screen: GLint; nelements: PGLint): GLXFBConfig; cdecl;
   TglXChooseFBConfig = function(dpy: PDisplay; screen: GLint; attrib_list: PGLint; nelements: PGLint): GLXFBConfig; cdecl;
   TglXGetFBConfigAttrib = function(dpy: PDisplay; config: GLXFBConfig; attribute: GLint; value: PGLint): glint; cdecl;
-  TglXGetVisualFromFBConfig = function(dpy: PDisplay; config: GLXFBConfig) : PXVisualInfo;
+  TglXGetVisualFromFBConfig = function(dpy: PDisplay; config: GLXFBConfig) : PXVisualInfo; cdecl;
   TglXCreateWindow = function(dpy: PDisplay; config: GLXFBConfig; win: Window; attrib_list: PGLint): GLXWindow; cdecl;
   TglXDestroyWindow = procedure(dpy: PDisplay; win: GLXWindow); cdecl;
   TglXCreatePixmap = function(dpy: PDisplay; config: GLXFBConfig; pixmap: Pixmap; attrib_list: PGLint): GLXPixmap; cdecl;
@@ -9801,6 +11310,8 @@ type
   // GLX_EXT_texture_from_pixmap
   TglXBindTexImageEXT = procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint; const attrib_list: PGLint); cdecl;
   TglXReleaseTexImageEXT = procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint); cdecl;
+
+  TglXSwapIntervalEXT = procedure (dpy : PDisplay; drawable : GLXDrawable; interval : GLint); cdecl;
 {$ENDIF}
 
   // GL utility functions and procedures
@@ -10523,6 +12034,11 @@ var
   glClearBufferfi: TglClearBufferfi;
   glGetStringi: TglGetStringi;
 
+  // GL_VERSION_2_1
+  glEnableVertexArrayEXT : TglEnableVertexArrayEXT;
+  glEnableVertexArrayAttribEXT : TglEnableVertexArrayAttribEXT;
+  glVertexArrayVertexAttribOffsetEXT : TglVertexArrayVertexAttribOffsetEXT;
+
   // GL_VERSION_3_1
   glDrawArraysInstanced: TglDrawArraysInstanced;
   glDrawElementsInstanced: TglDrawElementsInstanced;
@@ -10530,15 +12046,9 @@ var
   glPrimitiveRestartIndex: TglPrimitiveRestartIndex;
 
   // GL_VERSION_3_2
-  { OpenGL 3.2 also reuses entry points from these extensions: }
-  { ARB_draw_elements_base_vertex }
-  { ARB_provoking_vertex }
-  { ARB_sync }
-  { ARB_texture_multisample }
   glGetInteger64i_v: TglGetInteger64i_v;
   glGetBufferParameteri64v: TglGetBufferParameteri64v;
   glFramebufferTexture: TglFramebufferTexture;
-//  glFramebufferTextureFace: TglFramebufferTextureFace;
 
   // GL_VERSION_3_3
   glVertexAttribDivisor: TglVertexAttribDivisor;
@@ -10878,6 +12388,9 @@ var
   glFramebufferTextureLayerARB: TglFramebufferTextureLayerARB;
   glFramebufferTextureFaceARB: TglFramebufferTextureFaceARB;
 
+  // GL_ARB_gl_spirv
+  glSpecializeShaderARB: TglSpecializeShaderARB;
+
   // GL_ARB_instanced_arrays
   glVertexAttribDivisorARB: TglVertexAttribDivisorARB;
 
@@ -10938,6 +12451,11 @@ var
 
   // GL_ARB_sample_shading
   glMinSampleShadingARB: TglMinSampleShadingARB;
+
+  // GL_ARB_sample_locations
+  glFramebufferSampleLocationsfvARB : TglFramebufferSampleLocationsfvARB;
+  glNamedFramebufferSampleLocationsfvARB : TglNamedFramebufferSampleLocationsfvARB;
+  glEvaluateDepthValuesARB : TglEvaluateDepthValuesARB;
 
   // GL_ARB_shading_language_include
   glNamedStringARB: TglNamedStringARB;
@@ -11036,6 +12554,44 @@ var
   glUniformMatrix4x3dv: TglUniformMatrix4x3dv;
   glGetUniformdv: TglGetUniformdv;
 
+  // GL_ARB_gpu_shader_int64
+  glUniform1i64ARB : TglUniform1i64ARB;
+  glUniform2i64ARB : TglUniform2i64ARB;
+  glUniform3i64ARB : TglUniform3i64ARB;
+  glUniform4i64ARB : TglUniform4i64ARB;
+  glUniform1i64vARB : TglUniform1i64vARB;
+  glUniform2i64vARB : TglUniform2i64vARB;
+  glUniform3i64vARB : TglUniform3i64vARB;
+  glUniform4i64vARB : TglUniform4i64vARB;
+  glUniform1ui64ARB : TglUniform1ui64ARB;
+  glUniform2ui64ARB : TglUniform2ui64ARB;
+  glUniform3ui64ARB : TglUniform3ui64ARB;
+  glUniform4ui64ARB : TglUniform4ui64ARB;
+  glUniform1ui64vARB : TglUniform1ui64vARB;
+  glUniform2ui64vARB : TglUniform2ui64vARB;
+  glUniform3ui64vARB : TglUniform3ui64vARB;
+  glUniform4ui64vARB : TglUniform4ui64vARB;
+  glGetUniformi64vARB : TglGetUniformi64vARB;
+  glGetUniformui64vARB : TglGetUniformui64vARB;
+  glGetnUniformi64vARB : TglGetnUniformi64vARB;
+  glGetnUniformui64vARB : TglGetnUniformui64vARB;
+  glProgramUniform1i64ARB : TglProgramUniform1i64ARB;
+  glProgramUniform2i64ARB : TglProgramUniform2i64ARB;
+  glProgramUniform3i64ARB : TglProgramUniform3i64ARB;
+  glProgramUniform4i64ARB : TglProgramUniform4i64ARB;
+  glProgramUniform1i64vARB : TglProgramUniform1i64vARB;
+  glProgramUniform2i64vARB : TglProgramUniform2i64vARB;
+  glProgramUniform3i64vARB : TglProgramUniform3i64vARB;
+  glProgramUniform4i64vARB : TglProgramUniform4i64vARB;
+  glProgramUniform1ui64ARB : TglProgramUniform1ui64ARB;
+  glProgramUniform2ui64ARB : TglProgramUniform2ui64ARB;
+  glProgramUniform3ui64ARB : TglProgramUniform3ui64ARB;
+  glProgramUniform4ui64ARB : TglProgramUniform4ui64ARB ;
+  glProgramUniform1ui64vARB : TglProgramUniform1ui64vARB;
+  glProgramUniform2ui64vARB : TglProgramUniform2ui64vARB;
+  glProgramUniform3ui64vARB : TglProgramUniform3ui64vARB;
+  glProgramUniform4ui64vARB : TglProgramUniform4ui64vARB;
+
   // GL_ARB_shader_subroutine
   glGetSubroutineUniformLocation: TglGetSubroutineUniformLocation;
   glGetSubroutineIndex: TglGetSubroutineIndex;
@@ -11071,6 +12627,12 @@ var
   glGetShaderPrecisionFormat: TglGetShaderPrecisionFormat;
   glDepthRangef: TglDepthRangef;
   glClearDepthf: TglClearDepthf;
+
+  // GL_ARB_ES3_2_compatibility
+  glPrimitiveBoundingBoxARB : TglPrimitiveBoundingBoxARB;
+
+  // GL_ARB_parallel_shader_compile
+  glMaxShaderCompilerThreadsARB : TglMaxShaderCompilerThreadsARB;
 
   // GL_ARB_get_program_binary
   glGetProgramBinary: TglGetProgramBinary;
@@ -11163,6 +12725,256 @@ var
   glGetFloati_v: TglGetFloati_v;
   glGetDoublei_v: TglGetDoublei_v;
 
+  // GL 4.2
+
+  // GL_ARB_base_instance
+  glDrawArraysInstancedBaseInstance : TglDrawArraysInstancedBaseInstance;
+  glDrawElementsInstancedBaseInstance : TglDrawElementsInstancedBaseInstance;
+  glDrawElementsInstancedBaseVertexBaseInstance : TglDrawElementsInstancedBaseVertexBaseInstance;
+
+  // GL_ARB_transform_feedback_instanced
+  glDrawTransformFeedbackInstanced : TglDrawTransformFeedbackInstanced;
+  glDrawTransformFeedbackStreamInstanced : TglDrawTransformFeedbackStreamInstanced;
+
+  // GL_ARB_internalformat_query
+  glGetInternalformativ : TglGetInternalformativ;
+
+  // GL_ARB_shader_atomic_counters
+  glGetActiveAtomicCounterBufferiv : TglGetActiveAtomicCounterBufferiv;
+
+  /// GL_ARB_shader_image_load_store
+  glBindImageTexture : TglBindImageTexture;
+  glMemoryBarrier : TglMemoryBarrier;
+
+  // GL_ARB_texture_storage
+  glTexStorage1D : TglTexStorage1D;
+  glTexStorage2D : TglTexStorage2D;
+  glTexStorage3D : TglTexStorage3D;
+  glTextureStorage1DEXT : TglTextureStorage1DEXT;
+  glTextureStorage2DEXT : TglTextureStorage2DEXT;
+  glTextureStorage3DEXT : TglTextureStorage3DEXT;
+
+
+  // GL 4.3
+    // GL_KHR_debug
+    glDebugMessageControl : TglDebugMessageControl;
+    glDebugMessageInsert : TglDebugMessageInsert;
+    glDebugMessageCallback : TglDebugMessageCallback;
+    glGetDebugMessageLog : TglGetDebugMessageLog;
+    glPushDebugGroup : TglPushDebugGroup;
+    glPopDebugGroup : TglPopDebugGroup;
+    glObjectLabel : TglObjectLabel;
+    glGetObjectLabel : TglGetObjectLabel;
+    glObjectPtrLabel : TglObjectPtrLabel;
+    glGetObjectPtrLabel : TglGetObjectPtrLabel;
+    // GL_ARB_clear_buffer_object
+    glClearBufferData : TglClearBufferData;
+    glClearBufferSubData : TglClearBufferSubData;
+    glClearNamedBufferDataEXT : TglClearNamedBufferDataEXT;
+    glClearNamedBufferSubDataEXT : TglClearNamedBufferSubDataEXT;
+    // GL_ARB_compute_shader
+    glDispatchCompute : TglDispatchCompute;
+    glDispatchComputeIndirect : TglDispatchComputeIndirect;
+    // GL_ARB_copy_image
+    glCopyImageSubData : TglCopyImageSubData;
+    // GL_ARB_framebuffer_no_attachments
+    glFramebufferParameteri : TglFramebufferParameteri;
+    glGetFramebufferParameteriv : TglGetFramebufferParameteriv;
+    glNamedFramebufferParameteriEXT : TglNamedFramebufferParameteriEXT;
+    glGetNamedFramebufferParameterivEXT : TglGetNamedFramebufferParameterivEXT;
+    // GL_ARB_internalformat_query2
+    glGetInternalformati64v : TglGetInternalformati64v;
+    // GL_ARB_invalidate_subdata
+    glInvalidateTexSubImage : TglInvalidateTexSubImage;
+    glInvalidateTexImage : TglInvalidateTexImage;
+    glInvalidateBufferSubData : TglInvalidateBufferSubData;
+    glInvalidateBufferData : TglInvalidateBufferData;
+    glInvalidateFramebuffer : TglInvalidateFramebuffer;
+    glInvalidateSubFramebuffer : TglInvalidateSubFramebuffer;
+    // GL_ARB_multi_draw_indirect
+    glMultiDrawArraysIndirect : TglMultiDrawArraysIndirect;
+    glMultiDrawElementsIndirect : TglMultiDrawElementsIndirect;
+    // GL_ARB_program_interface_query
+    glGetProgramInterfaceiv : TglGetProgramInterfaceiv;
+    glGetProgramResourceIndex : TglGetProgramResourceIndex;
+    glGetProgramResourceName : TglGetProgramResourceName;
+    glGetProgramResourceiv : TglGetProgramResourceiv;
+    glGetProgramResourceLocation : TglGetProgramResourceLocation;
+    glGetProgramResourceLocationIndex : TglGetProgramResourceLocationIndex;
+    // GL_ARB_shader_storage_buffer_object
+    glShaderStorageBlockBinding : TglShaderStorageBlockBinding;
+    // GL_ARB_texture_buffer_range
+    glTexBufferRange : TglTexBufferRange;
+    glTextureBufferRangeEXT : TglTextureBufferRangeEXT;
+    // GL_ARB_texture_storage_multisample
+    glTexStorage2DMultisample : TglTexStorage2DMultisample;
+    glTexStorage3DMultisample : TglTexStorage3DMultisample;
+    glTextureStorage2DMultisampleEXT : TglTextureStorage2DMultisampleEXT;
+    glTextureStorage3DMultisampleEXT : TglTextureStorage3DMultisampleEXT;
+    // GL_ARB_texture_view
+    glTextureView : TglTextureView;
+    // GL_ARB_vertex_attrib_binding
+    glBindVertexBuffer : TglBindVertexBuffer;
+    glVertexAttribFormat : TglVertexAttribFormat;
+    glVertexAttribIFormat : TglVertexAttribIFormat;
+    glVertexAttribLFormat : TglVertexAttribLFormat;
+    glVertexAttribBinding : TglVertexAttribBinding;
+    glVertexBindingDivisor : TglVertexBindingDivisor;
+    glVertexArrayBindVertexBufferEXT : TglVertexArrayBindVertexBufferEXT;
+    glVertexArrayVertexAttribFormatEXT : TglVertexArrayVertexAttribFormatEXT;
+    glVertexArrayVertexAttribIFormatEXT : TglVertexArrayVertexAttribIFormatEXT;
+    glVertexArrayVertexAttribLFormatEXT : TglVertexArrayVertexAttribLFormatEXT;
+    glVertexArrayVertexAttribBindingEXT : TglVertexArrayVertexAttribBindingEXT;
+    glVertexArrayVertexBindingDivisorEXT : TglVertexArrayVertexBindingDivisorEXT;
+  // END GL 4.3
+
+
+  // GL 4.4
+    glBufferStorage : TglBufferStorage;
+    glClearTexImage : TglClearTexImage;
+    glClearTexSubImage : TglClearTexSubImage;
+    glBindBuffersBase : TglBindBuffersBase;
+    glBindBuffersRange : TglBindBuffersRange;
+    glBindTextures : TglBindTextures;
+    glBindSamplers : TglBindSamplers;
+    glBindImageTextures : TglBindImageTextures;
+    glBindVertexBuffers : TglBindVertexBuffers;
+    glTexPageCommitmentARB : TglTexPageCommitmentARB;
+
+  // GL 4.5
+  glClipControl : TglClipControl;
+  glCreateTransformFeedbacks : TglCreateTransformFeedbacks;
+  glTransformFeedbackBufferBase : TglTransformFeedbackBufferBase;
+  glTransformFeedbackBufferRange : TglTransformFeedbackBufferRange;
+  glGetTransformFeedbackiv : TglGetTransformFeedbackiv;
+  glGetTransformFeedbacki_v : TglGetTransformFeedbacki_v;
+  glGetTransformFeedbacki64_v : TglGetTransformFeedbacki64_v;
+  glCreateBuffers : TglCreateBuffers;
+  glNamedBufferStorage : TglNamedBufferStorage;
+  glNamedBufferData : TglNamedBufferData;
+  glNamedBufferSubData : TglNamedBufferSubData;
+  glCopyNamedBufferSubData : TglCopyNamedBufferSubData;
+  glClearNamedBufferData : TglClearNamedBufferData;
+  glClearNamedBufferSubData : TglClearNamedBufferSubData;
+  glMapNamedBuffer : TglMapNamedBuffer;
+  glMapNamedBufferRange : TglMapNamedBufferRange;
+  glUnmapNamedBuffer : TglUnmapNamedBuffer;
+  glFlushMappedNamedBufferRange : TglFlushMappedNamedBufferRange;
+  glGetNamedBufferParameteriv : TglGetNamedBufferParameteriv;
+  glGetNamedBufferParameteri64v : TglGetNamedBufferParameteri64v;
+  glGetNamedBufferPointerv : TglGetNamedBufferPointerv;
+  glGetNamedBufferSubData : TglGetNamedBufferSubData;
+  glCreateFramebuffers : TglCreateFramebuffers;
+  glNamedFramebufferRenderbuffer : TglNamedFramebufferRenderbuffer;
+  glNamedFramebufferParameteri : TglNamedFramebufferParameteri;
+  glNamedFramebufferTexture : TglNamedFramebufferTexture;
+  glNamedFramebufferTextureLayer : TglNamedFramebufferTextureLayer;
+  glNamedFramebufferDrawBuffer : TglNamedFramebufferDrawBuffer;
+  glNamedFramebufferDrawBuffers : TglNamedFramebufferDrawBuffers;
+  glNamedFramebufferReadBuffer : TglNamedFramebufferReadBuffer;
+  glInvalidateNamedFramebufferData : TglInvalidateNamedFramebufferData;
+  glInvalidateNamedFramebufferSubData : TglInvalidateNamedFramebufferSubData;
+  glClearNamedFramebufferiv : TglClearNamedFramebufferiv;
+  glClearNamedFramebufferuiv : TglClearNamedFramebufferuiv;
+  glClearNamedFramebufferfv : TglClearNamedFramebufferfv;
+  glClearNamedFramebufferfi : TglClearNamedFramebufferfi;
+  glBlitNamedFramebuffer : TglBlitNamedFramebuffer;
+  glCheckNamedFramebufferStatus : TglCheckNamedFramebufferStatus;
+  glGetNamedFramebufferParameteriv : TglGetNamedFramebufferParameteriv;
+  glGetNamedFramebufferAttachmentParameteriv : TglGetNamedFramebufferAttachmentParameteriv;
+  glCreateRenderbuffers : TglCreateRenderbuffers;
+  glNamedRenderbufferStorage : TglNamedRenderbufferStorage;
+  glNamedRenderbufferStorageMultisample : TglNamedRenderbufferStorageMultisample;
+  glGetNamedRenderbufferParameteriv : TglGetNamedRenderbufferParameteriv;
+  glCreateTextures : TglCreateTextures;
+  glTextureBuffer : TglTextureBuffer;
+  glTextureBufferRange : TglTextureBufferRange;
+  glTextureStorage1D : TglTextureStorage1D;
+  glTextureStorage2D : TglTextureStorage2D;
+  glTextureStorage3D : TglTextureStorage3D;
+  glTextureStorage2DMultisample : TglTextureStorage2DMultisample;
+  glTextureStorage3DMultisample : TglTextureStorage3DMultisample;
+  glTextureSubImage1D : TglTextureSubImage1D;
+  glTextureSubImage2D : TglTextureSubImage2D;
+  glTextureSubImage3D : TglTextureSubImage3D;
+  glCompressedTextureSubImage1D : TglCompressedTextureSubImage1D;
+  glCompressedTextureSubImage2D : TglCompressedTextureSubImage2D;
+  glCompressedTextureSubImage3D : TglCompressedTextureSubImage3D;
+  glCopyTextureSubImage1D : TglCopyTextureSubImage1D;
+  glCopyTextureSubImage2D : TglCopyTextureSubImage2D;
+  glCopyTextureSubImage3D : TglCopyTextureSubImage3D;
+  glTextureParameterf : TglTextureParameterf;
+  glTextureParameterfv : TglTextureParameterfv;
+  glTextureParameteri : TglTextureParameteri;
+  glTextureParameterIiv : TglTextureParameterIiv;
+  glTextureParameterIuiv : TglTextureParameterIuiv;
+  glTextureParameteriv : TglTextureParameteriv;
+  glGenerateTextureMipmap : TglGenerateTextureMipmap;
+  glBindTextureUnit : TglBindTextureUnit;
+  glGetTextureImage : TglGetTextureImage;
+  glGetCompressedTextureImage : TglGetCompressedTextureImage;
+  glGetTextureLevelParameterfv : TglGetTextureLevelParameterfv;
+  glGetTextureLevelParameteriv : TglGetTextureLevelParameteriv;
+  glGetTextureParameterfv : TglGetTextureParameterfv;
+  glGetTextureParameterIiv : TglGetTextureParameterIiv;
+  glGetTextureParameterIuiv : TglGetTextureParameterIuiv;
+  glGetTextureParameteriv : TglGetTextureParameteriv;
+  glCreateVertexArrays : TglCreateVertexArrays;
+  glDisableVertexArrayAttrib : TglDisableVertexArrayAttrib;
+  glEnableVertexArrayAttrib : TglEnableVertexArrayAttrib;
+  glVertexArrayElementBuffer : TglVertexArrayElementBuffer;
+  glVertexArrayVertexBuffer : TglVertexArrayVertexBuffer;
+  glVertexArrayVertexBuffers : TglVertexArrayVertexBuffers;
+  glVertexArrayAttribBinding : TglVertexArrayAttribBinding;
+  glVertexArrayAttribFormat : TglVertexArrayAttribFormat;
+  glVertexArrayAttribIFormat : TglVertexArrayAttribIFormat;
+  glVertexArrayAttribLFormat : TglVertexArrayAttribLFormat;
+  glVertexArrayBindingDivisor : TglVertexArrayBindingDivisor;
+  glGetVertexArrayiv : TglGetVertexArrayiv;
+  glGetVertexArrayIndexediv : TglGetVertexArrayIndexediv;
+  glGetVertexArrayIndexed64iv : TglGetVertexArrayIndexed64iv;
+  glCreateSamplers : TglCreateSamplers;
+  glCreateProgramPipelines : TglCreateProgramPipelines;
+  glCreateQueries : TglCreateQueries;
+  glMemoryBarrierByRegion : TglMemoryBarrierByRegion;
+  glGetTextureSubImage : TglGetTextureSubImage;
+  glGetCompressedTextureSubImage : TglGetCompressedTextureSubImage;
+  glGetGraphicsResetStatus : TglGetGraphicsResetStatus;
+  glGetnCompressedTexImage : TglGetnCompressedTexImage;
+  glGetnTexImage : TglGetnTexImage;
+  glGetnUniformdv : TglGetnUniformdv;
+  glGetnUniformfv : TglGetnUniformfv;
+  glGetnUniformiv : TglGetnUniformiv;
+  glGetnUniformuiv : TglGetnUniformuiv;
+  glReadnPixels : TglReadnPixels;
+  glGetnMapdv : TglGetnMapdv;
+  glGetnMapfv : TglGetnMapfv;
+  glGetnMapiv : TglGetnMapiv;
+  glGetnPixelMapfv : TglGetnPixelMapfv;
+  glGetnPixelMapuiv : TglGetnPixelMapuiv;
+  glGetnPixelMapusv : TglGetnPixelMapusv;
+  glGetnPolygonStipple : TglGetnPolygonStipple;
+  glGetnColorTable : TglGetnColorTable;
+  glGetnConvolutionFilter : TglGetnConvolutionFilter;
+  glGetnSeparableFilter : TglGetnSeparableFilter;
+  glGetnHistogram : TglGetnHistogram;
+  glGetnMinmax : TglGetnMinmax;
+  glTextureBarrier : TglTextureBarrier;
+
+  // 4.6
+  glSpecializeShader : TglSpecializeShader;
+  glMultiDrawArraysIndirectCount : TglMultiDrawArraysIndirectCount;
+  glMultiDrawElementsIndirectCount : TglMultiDrawElementsIndirectCount;
+  glPolygonOffsetClamp : TglPolygonOffsetClamp;
+  
+  // GL_ARB_sparse_buffer
+  glBufferPageCommitmentARB : TglBufferPageCommitmentARB;
+  glNamedBufferPageCommitmentEXT : TglNamedBufferPageCommitmentEXT;
+  glNamedBufferPageCommitmentARB : TglNamedBufferPageCommitmentARB;
+
+  // GL_KHR_blend_equation_advanced
+  glBlendBarrierKHR : TglBlendBarrierKHR;
+
   // GL_ARB_cl_event
   glCreateSyncFromCLeventARB: TglCreateSyncFromCLeventARB;
 
@@ -11171,6 +12983,9 @@ var
   glDebugMessageInsertARB: TglDebugMessageInsertARB;
   glDebugMessageCallbackARB: TglDebugMessageCallbackARB;
   glGetDebugMessageLogARB: TglGetDebugMessageLogARB;
+
+  // GL_ARB_compute_variable_group_size
+  glDispatchComputeGroupSizeARB : TglDispatchComputeGroupSizeARB;
 
   // GL_ARB_robustness
   glGetGraphicsResetStatusARB: TglGetGraphicsResetStatusARB;
@@ -11941,6 +13756,9 @@ var
   // GL_INGR_blend_func_separate
   glBlendFuncSeparateINGR: TglBlendFuncSeparateINGR;
 
+  // GL_INTEL_framebuffer_CMAA
+  glApplyFramebufferAttachmentCMAAINTEL : TglApplyFramebufferAttachmentCMAAINTEL;
+
   // GL_INTEL_parallel_arrays
   glVertexPointervINTEL: TglVertexPointervINTEL;
   glNormalPointervINTEL: TglNormalPointervINTEL;
@@ -12214,6 +14032,12 @@ var
   glBeginConditionalRenderNV: TglBeginConditionalRenderNV;
   glEndConditionalRenderNV: TglEndConditionalRenderNV;
 
+  // GL_NV_conservative_raster
+  glSubpixelPrecisionBiasNV : TglSubpixelPrecisionBiasNV;
+
+  // GL_NV_conservative_raster_dilate
+  glConservativeRasterParameterfNV : TglConservativeRasterParameterfNV;
+
   // GL_NV_present_video
   glPresentFrameKeyedNV: TglPresentFrameKeyedNV;
   glPresentFrameDualFillNV: TglPresentFrameDualFillNV;
@@ -12359,8 +14183,104 @@ var
   // GL_NV_texture_barrier
   glTextureBarrierNV: TglTextureBarrierNV;
 
+  // (4.3) GL_NV_path_rendering
+  glGenPathsNV : TglGenPathsNV;
+  glDeletePathsNV : TglDeletePathsNV;
+  glIsPathNV : TglIsPathNV;
+  glPathCommandsNV : TglPathCommandsNV;
+  glPathCoordsNV : TglPathCoordsNV;
+  glPathSubCommandsNV : TglPathSubCommandsNV;
+  glPathSubCoordsNV : TglPathSubCoordsNV;
+  glPathStringNV : TglPathStringNV;
+  glPathGlyphsNV : TglPathGlyphsNV;
+  glPathGlyphRangeNV : TglPathGlyphRangeNV;
+  glWeightPathsNV : TglWeightPathsNV;
+  glCopyPathNV : TglCopyPathNV;
+  glInterpolatePathsNV : TglInterpolatePathsNV;
+  glTransformPathNV : TglTransformPathNV;
+  glPathParameterivNV : TglPathParameterivNV;
+  glPathParameteriNV : TglPathParameteriNV;
+  glPathParameterfvNV : TglPathParameterfvNV;
+  glPathParameterfNV : TglPathParameterfNV;
+  glPathDashArrayNV : TglPathDashArrayNV;
+  glPathStencilFuncNV : TglPathStencilFuncNV;
+  glPathStencilDepthOffsetNV : TglPathStencilDepthOffsetNV;
+  glStencilFillPathNV : TglStencilFillPathNV;
+  glStencilStrokePathNV : TglStencilStrokePathNV;
+  glStencilFillPathInstancedNV : TglStencilFillPathInstancedNV;
+  glStencilStrokePathInstancedNV : TglStencilStrokePathInstancedNV;
+  glPathCoverDepthFuncNV : TglPathCoverDepthFuncNV;
+  glPathColorGenNV : TglPathColorGenNV;
+  glPathTexGenNV : TglPathTexGenNV;
+  glPathFogGenNV : TglPathFogGenNV;
+  glCoverFillPathNV : TglCoverFillPathNV;
+  glCoverStrokePathNV : TglCoverStrokePathNV;
+  glCoverFillPathInstancedNV : TglCoverFillPathInstancedNV;
+  glCoverStrokePathInstancedNV : TglCoverStrokePathInstancedNV;
+  glGetPathParameterivNV : TglGetPathParameterivNV;
+  glGetPathParameterfvNV : TglGetPathParameterfvNV;
+  glGetPathCommandsNV : TglGetPathCommandsNV;
+  glGetPathCoordsNV : TglGetPathCoordsNV;
+  glGetPathDashArrayNV : TglGetPathDashArrayNV;
+  glGetPathMetricsNV : TglGetPathMetricsNV;
+  glGetPathMetricRangeNV : TglGetPathMetricRangeNV;
+  glGetPathSpacingNV : TglGetPathSpacingNV;
+  glGetPathColorGenivNV : TglGetPathColorGenivNV;
+  glGetPathColorGenfvNV : TglGetPathColorGenfvNV;
+  glGetPathTexGenivNV : TglGetPathTexGenivNV;
+  glGetPathTexGenfvNV : TglGetPathTexGenfvNV;
+  glIsPointInFillPathNV : TglIsPointInFillPathNV;
+  glIsPointInStrokePathNV : TglIsPointInStrokePathNV;
+  glGetPathLengthNV : TglGetPathLengthNV;
+  glPointAlongPathNV : TglPointAlongPathNV;
+
+  // GL_AMD_pinned_memory
+
+  // GL_AMD_stencil_operation_extended
+  glStencilOpValueAMD : TglStencilOpValueAMD;
+
+  // GL_AMD_vertex_shader_viewport_index
+
+  // GL_AMD_vertex_shader_layer
+
+  // GL_NV_bindless_texture
+  glGetTextureHandleNV : TglGetTextureHandleNV;
+  glGetTextureSamplerHandleNV : TglGetTextureSamplerHandleNV;
+  glMakeTextureHandleResidentNV : TglMakeTextureHandleResidentNV;
+  glMakeTextureHandleNonResidentNV : TglMakeTextureHandleNonResidentNV;
+  glGetImageHandleNV : TglGetImageHandleNV;
+  glMakeImageHandleResidentNV : TglMakeImageHandleResidentNV;
+  glMakeImageHandleNonResidentNV : TglMakeImageHandleNonResidentNV;
+  glUniformHandleui64NV : TglUniformHandleui64NV;
+  glUniformHandleui64vNV : TglUniformHandleui64vNV;
+  glProgramUniformHandleui64NV : TglProgramUniformHandleui64NV;
+  glProgramUniformHandleui64vNV : TglProgramUniformHandleui64vNV;
+  glIsTextureHandleResidentNV : TglIsTextureHandleResidentNV;
+  glIsImageHandleResidentNV : TglIsImageHandleResidentNV;
+
+  // GL_ARB_bindless_texture
+  glGetTextureHandleARB : TglGetTextureHandleARB;
+  glGetTextureSamplerHandleARB : TglGetTextureSamplerHandleARB;
+  glMakeTextureHandleResidentARB : TglMakeTextureHandleResidentARB;
+  glMakeTextureHandleNonResidentARB : TglMakeTextureHandleNonResidentARB;
+  glGetImageHandleARB : TglGetImageHandleARB;
+  glMakeImageHandleResidentARB : TglMakeImageHandleResidentARB;
+  glMakeImageHandleNonResidentARB : TglMakeImageHandleNonResidentARB;
+  glUniformHandleui64ARB : TglUniformHandleui64ARB;
+  glUniformHandleui64vARB : TglUniformHandleui64vARB;
+  glProgramUniformHandleui64ARB : TglProgramUniformHandleui64ARB;
+  glProgramUniformHandleui64vARB : TglProgramUniformHandleui64vARB;
+  glIsTextureHandleResidentARB : TglIsTextureHandleResidentARB;
+  glIsImageHandleResidentARB : TglIsImageHandleResidentARB;
+  glVertexAttribL1ui64ARB : TglVertexAttribL1ui64ARB;
+  glVertexAttribL1ui64vARB : TglVertexAttribL1ui64vARB;
+  glGetVertexAttribLui64vARB : TglGetVertexAttribLui64vARB;
+
   // GL_PGI_misc_hints
   glHintPGI: TglHintPGI;
+
+  // GL_OVR_multiview
+  glFramebufferTextureMultiviewOVR : TglFramebufferTextureMultiviewOVR;
 
   // GL_SGIS_detail_texture
   glDetailTexFuncSGIS: TglDetailTexFuncSGIS;
@@ -12733,6 +14653,16 @@ var
   // WGL_NV_copy_image
   wglCopyImageSubDataNV: TwglCopyImageSubDataNV;
 
+  // WGL_NV_DX_interop
+  wglDXSetResourceShareHandleNV : TwglDXSetResourceShareHandleNV;
+  wglDXOpenDeviceNV : TwglDXOpenDeviceNV;
+  wglDXCloseDeviceNV : TwglDXCloseDeviceNV;
+  wglDXRegisterObjectNV : TwglDXRegisterObjectNV;
+  wglDXUnregisterObjectNV : TwglDXUnregisterObjectNV;
+  wglDXObjectAccessNV : TwglDXObjectAccessNV;
+  wglDXLockObjectsNV : TwglDXLockObjectsNV;
+  wglDXUnlockObjectsNV : TwglDXUnlockObjectsNV;
+
   // WGL_OML_sync_control
   wglGetSyncValuesOML: TwglGetSyncValuesOML;
   wglGetMscRateOML: TwglGetMscRateOML;
@@ -12815,6 +14745,8 @@ var
   // GLX_EXT_texture_from_pixmap
   glXBindTexImageEXT: TglXBindTexImageEXT;
   glXReleaseTexImageEXT: TglXReleaseTexImageEXT;
+
+  glXSwapIntervalEXT : TglXSwapIntervalEXT;
 {$ENDIF}
 
   // GL utility functions and procedures
@@ -12870,6 +14802,7 @@ var
   gluNextContour: TgluNextContour;
   gluEndPolygon: TgluEndPolygon;
 
+
 type
   TRCOptions = set of (opDoubleBuffered, opGDI, opStereo);
 
@@ -12881,53 +14814,30 @@ var
   ExtensionsRead: Boolean;
   ImplementationRead: Boolean;
 
+
 const
 {$IFDEF DGL_WIN}
   OPENGL_LIBNAME = 'OpenGL32.dll';
   GLU_LIBNAME = 'GLU32.dll';
 {$ELSE}
   {$IFDEF darwin}
-    OPENGL_LIBNAME = 'libGL.dylib';
-    GLU_LIBNAME = 'libGLU.dylib';
+    //provide explicit paths for macOS libraries: https://gist.github.com/frostney/1044116
+    //OPENGL_LIBNAME = 'libGL.dylib';
+    //GLU_LIBNAME = 'libGLU.dylib';
+    OPENGL_LIBNAME = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
+    GLU_LIBNAME = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
   {$ELSE}
     OPENGL_LIBNAME = 'libGL.so.1';
     GLU_LIBNAME = 'libGLU.so.1';
   {$ENDIF}
 {$ENDIF}
 
-//==============================================================================
-//
-// InitOpenGL
-//
-//==============================================================================
 function InitOpenGL(LibName: String = OPENGL_LIBNAME; GLULibName: String = GLU_LIBNAME): Boolean;
 
-//==============================================================================
-//
-// dglGetProcAddress
-//
-//==============================================================================
 function dglGetProcAddress(ProcName: PAnsiChar; LibHandle: Pointer = nil {$IFDEF DGL_LINUX}; ForceDLSym: Boolean = False{$ENDIF}): Pointer;
-
-//==============================================================================
-//
-// dglCheckExtension
-//
-//==============================================================================
 function dglCheckExtension(Extension: AnsiString): Boolean;
 
-//==============================================================================
-//
-// ReadExtensions
-//
-//==============================================================================
 procedure ReadExtensions;
-
-//==============================================================================
-//
-// ReadImplementationProperties
-//
-//==============================================================================
 procedure ReadImplementationProperties;
 
 // =============================================================================
@@ -12935,1542 +14845,281 @@ procedure ReadImplementationProperties;
 // =============================================================================
 {$IFDEF DGL_WIN}
   function CreateRenderingContext(DC: HDC; Options: TRCOptions; ColorBits, ZBits, StencilBits, AccumBits, AuxBuffers: Integer; Layer: Integer): HGLRC;
+  function CreateRenderingContextVersion(DC: HDC; Options: TRCOptions; MajorVersion, MinorVersion : Integer; ForwardCompatible : Boolean; ColorBits, ZBits, StencilBits, AccumBits, AuxBuffers: Integer; Layer: Integer): HGLRC;
   procedure DestroyRenderingContext(RC: HGLRC);
 
   procedure ActivateRenderingContext(DC: HDC; RC: HGLRC; loadext: boolean = true);
   procedure DeactivateRenderingContext;
 {$ENDIF}
 
-//==============================================================================
-//
-// ReadOpenGLCore
-//
-//==============================================================================
+
 procedure ReadOpenGLCore;
-
-//==============================================================================
-//
-// Read_GL_3DFX_tbuffer
-//
-//==============================================================================
 procedure Read_GL_3DFX_tbuffer;
-
-//==============================================================================
-//
-// Read_GL_APPLE_element_array
-//
-//==============================================================================
 procedure Read_GL_APPLE_element_array;
-
-//==============================================================================
-//
-// Read_GL_APPLE_fence
-//
-//==============================================================================
 procedure Read_GL_APPLE_fence;
-
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_array_object;
-
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_array_range
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_array_range;
-
-//==============================================================================
-//
-// Read_GL_APPLE_texture_range
-//
-//==============================================================================
 procedure Read_GL_APPLE_texture_range;
-
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_program_evaluators
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_program_evaluators;
-
-//==============================================================================
-//
-// Read_GL_APPLE_object_purgeable
-//
-//==============================================================================
 procedure Read_GL_APPLE_object_purgeable;
-
-//==============================================================================
-//
-// Read_GL_ARB_matrix_palette
-//
-//==============================================================================
 procedure Read_GL_ARB_matrix_palette;
-
-//==============================================================================
-//
-// Read_GL_ARB_multitexture
-//
-//==============================================================================
 procedure Read_GL_ARB_multitexture;
-
-//==============================================================================
-//
-// Read_GL_ARB_point_parameters
-//
-//==============================================================================
 procedure Read_GL_ARB_point_parameters;
-
-//==============================================================================
-//
-// Read_GL_ARB_texture_compression
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_compression;
-
-//==============================================================================
-//
-// Read_GL_ARB_transpose_matrix
-//
-//==============================================================================
 procedure Read_GL_ARB_transpose_matrix;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_blend
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_blend;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_buffer_object;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_program
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_program;
-
-//==============================================================================
-//
-// Read_GL_ARB_window_pos
-//
-//==============================================================================
 procedure Read_GL_ARB_window_pos;
-
-//==============================================================================
-//
-// Read_GL_ARB_color_buffer_float
-//
-//==============================================================================
 procedure Read_GL_ARB_color_buffer_float;
-
-//==============================================================================
-//
-// Read_GL_ARB_Shader_Objects
-//
-//==============================================================================
 procedure Read_GL_ARB_Shader_Objects;
-
-//==============================================================================
-//
-// Read_GL_ARB_occlusion_query
-//
-//==============================================================================
 procedure Read_GL_ARB_occlusion_query;
-
-//==============================================================================
-//
-// Read_GL_ARB_draw_instanced
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_instanced;
-
-//==============================================================================
-//
-// Read_GL_ARB_framebuffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_framebuffer_object;
-
-//==============================================================================
-//
-// Read_GL_ARB_geometry_shader4
-//
-//==============================================================================
 procedure Read_GL_ARB_geometry_shader4;
-
-//==============================================================================
-//
-// Read_GL_ARB_instanced_arrays
-//
-//==============================================================================
+procedure Read_GL_ARB_gl_spirv;
 procedure Read_GL_ARB_instanced_arrays;
-
-//==============================================================================
-//
-// Read_GL_ARB_map_buffer_range
-//
-//==============================================================================
 procedure Read_GL_ARB_map_buffer_range;
-
-//==============================================================================
-//
-// Read_GL_ARB_texture_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_buffer_object;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_array_object;
-
-//==============================================================================
-//
-// Read_GL_ARB_uniform_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_uniform_buffer_object;
-
-//==============================================================================
-//
-// Read_GL_ARB_copy_buffer
-//
-//==============================================================================
 procedure Read_GL_ARB_copy_buffer;
-
-//==============================================================================
-//
-// Read_GL_ARB_draw_elements_base_vertex
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_elements_base_vertex;
-
-//==============================================================================
-//
-// Read_GL_ARB_provoking_vertex
-//
-//==============================================================================
 procedure Read_GL_ARB_provoking_vertex;
-
-//==============================================================================
-//
-// Read_GL_ARB_sync
-//
-//==============================================================================
 procedure Read_GL_ARB_sync;
-
-//==============================================================================
-//
-// Read_GL_ARB_texture_multisample
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_multisample;
-
-//==============================================================================
-//
-// Read_GL_ARB_draw_buffers_blend
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_buffers_blend;
-
-//==============================================================================
-//
-// Read_GL_ARB_sample_shading
-//
-//==============================================================================
 procedure Read_GL_ARB_sample_shading;
-
-//==============================================================================
-//
-// Read_GL_ARB_shading_language_include
-//
-//==============================================================================
+procedure Read_GL_ARB_sample_locations;
 procedure Read_GL_ARB_shading_language_include;
-
-//==============================================================================
-//
-// Read_GL_ARB_blend_func_extended
-//
-//==============================================================================
 procedure Read_GL_ARB_blend_func_extended;
-
-//==============================================================================
-//
-// Read_GL_ARB_sampler_objects
-//
-//==============================================================================
 procedure Read_GL_ARB_sampler_objects;
-
-//==============================================================================
-//
-// Read_GL_ARB_timer_query
-//
-//==============================================================================
 procedure Read_GL_ARB_timer_query;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_type_2_10_10_10_rev
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_type_2_10_10_10_rev;
-
-//==============================================================================
-//
-// Read_GL_ARB_draw_indirect
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_indirect;
-
-//==============================================================================
-//
-// Read_GL_ARB_gpu_shader_fp64
-//
-//==============================================================================
 procedure Read_GL_ARB_gpu_shader_fp64;
-
-//==============================================================================
-//
-// Read_GL_ARB_shader_subroutine
-//
-//==============================================================================
+procedure Read_GL_ARB_gpu_shader_int64;
 procedure Read_GL_ARB_shader_subroutine;
-
-//==============================================================================
-//
-// Read_GL_ARB_tessellation_shader
-//
-//==============================================================================
 procedure Read_GL_ARB_tessellation_shader;
-
-//==============================================================================
-//
-// Read_GL_ARB_transform_feedback2
-//
-//==============================================================================
 procedure Read_GL_ARB_transform_feedback2;
-
-//==============================================================================
-//
-// Read_GL_ARB_transform_feedback3
-//
-//==============================================================================
 procedure Read_GL_ARB_transform_feedback3;
-
-//==============================================================================
-//
-// Read_GL_ARB_ES2_compatibility
-//
-//==============================================================================
 procedure Read_GL_ARB_ES2_compatibility;
-
-//==============================================================================
-//
-// Read_GL_ARB_get_program_binary
-//
-//==============================================================================
 procedure Read_GL_ARB_get_program_binary;
-
-//==============================================================================
-//
-// Read_GL_ARB_separate_shader_objects
-//
-//==============================================================================
 procedure Read_GL_ARB_separate_shader_objects;
-
-//==============================================================================
-//
-// Read_GL_ARB_vertex_attrib_64bit
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_attrib_64bit;
-
-//==============================================================================
-//
-// Read_GL_ARB_viewport_array
-//
-//==============================================================================
 procedure Read_GL_ARB_viewport_array;
 
-//==============================================================================
+procedure Read_GL_ARB_ES3_2_compatibility;
+procedure Read_GL_ARB_parallel_shader_compile;
+
+// GL 4.2
+procedure Read_GL_ARB_base_instance;
+procedure Read_GL_ARB_transform_feedback_instanced;
+procedure Read_GL_ARB_internalformat_query;
+procedure Read_GL_ARB_shader_atomic_counters;
+procedure Read_GL_ARB_shader_image_load_store;
+procedure Read_GL_ARB_texture_storage;
+// GL 4.3
+procedure Read_GL_KHR_debug;
+procedure Read_GL_ARB_clear_buffer_object;
+procedure Read_GL_ARB_compute_shader;
+procedure Read_GL_ARB_copy_image;
+procedure Read_GL_ARB_framebuffer_no_attachments;
+procedure Read_GL_ARB_internalformat_query2;
+procedure Read_GL_ARB_invalidate_subdata;
+procedure Read_GL_ARB_multi_draw_indirect;
+procedure Read_GL_ARB_program_interface_query;
+procedure Read_GL_ARB_shader_storage_buffer_object;
+procedure Read_GL_ARB_texture_buffer_range;
+procedure Read_GL_ARB_texture_storage_multisample;
+procedure Read_GL_ARB_texture_view;
+procedure Read_GL_ARB_vertex_attrib_binding;
+
+
+procedure Read_GL_4_4;
+procedure Read_GL_4_5;
+procedure Read_GL_4_6;
+
 //
-// Read_GL_ARB_cl_event
-//
-//==============================================================================
 procedure Read_GL_ARB_cl_event;
-
-//==============================================================================
-//
-// Read_GL_ARB_debug_output
-//
-//==============================================================================
+procedure Read_GL_ARB_compute_variable_group_size;
 procedure Read_GL_ARB_debug_output;
-
-//==============================================================================
-//
-// Read_GL_ARB_robustness
-//
-//==============================================================================
 procedure Read_GL_ARB_robustness;
-
-//==============================================================================
-//
-// Read_GL_ATI_draw_buffers
-//
-//==============================================================================
 procedure Read_GL_ATI_draw_buffers;
-
-//==============================================================================
-//
-// Read_GL_ATI_element_array
-//
-//==============================================================================
 procedure Read_GL_ATI_element_array;
-
-//==============================================================================
-//
-// Read_GL_ATI_envmap_bumpmap
-//
-//==============================================================================
 procedure Read_GL_ATI_envmap_bumpmap;
-
-//==============================================================================
-//
-// Read_GL_ATI_fragment_shader
-//
-//==============================================================================
 procedure Read_GL_ATI_fragment_shader;
-
-//==============================================================================
-//
-// Read_GL_ATI_map_object_buffer
-//
-//==============================================================================
 procedure Read_GL_ATI_map_object_buffer;
-
-//==============================================================================
-//
-// Read_GL_ATI_pn_triangles
-//
-//==============================================================================
 procedure Read_GL_ATI_pn_triangles;
-
-//==============================================================================
-//
-// Read_GL_ATI_separate_stencil
-//
-//==============================================================================
 procedure Read_GL_ATI_separate_stencil;
-
-//==============================================================================
-//
-// Read_GL_ATI_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_array_object;
-
-//==============================================================================
-//
-// Read_GL_ATI_vertex_attrib_array_object
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_attrib_array_object;
-
-//==============================================================================
-//
-// Read_GL_ATI_vertex_streams
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_streams;
-
-//==============================================================================
-//
-// Read_GL_AMD_performance_monitor
-//
-//==============================================================================
 procedure Read_GL_AMD_performance_monitor;
-
-//==============================================================================
-//
-// Read_GL_AMD_vertex_shader_tesselator
-//
-//==============================================================================
 procedure Read_GL_AMD_vertex_shader_tesselator;
-
-//==============================================================================
-//
-// Read_GL_AMD_draw_buffers_blend
-//
-//==============================================================================
 procedure Read_GL_AMD_draw_buffers_blend;
-
-//==============================================================================
-//
-// Read_GL_AMD_name_gen_delete
-//
-//==============================================================================
 procedure Read_GL_AMD_name_gen_delete;
-
-//==============================================================================
-//
-// Read_GL_AMD_debug_output
-//
-//==============================================================================
 procedure Read_GL_AMD_debug_output;
-
-//==============================================================================
-//
-// Read_GL_EXT_blend_color
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_color;
-
-//==============================================================================
-//
-// Read_GL_EXT_blend_func_separate
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_func_separate;
-
-//==============================================================================
-//
-// Read_GL_EXT_blend_minmax
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_minmax;
-
-//==============================================================================
-//
-// Read_GL_EXT_color_subtable
-//
-//==============================================================================
 procedure Read_GL_EXT_color_subtable;
-
-//==============================================================================
-//
-// Read_GL_EXT_compiled_vertex_array
-//
-//==============================================================================
 procedure Read_GL_EXT_compiled_vertex_array;
-
-//==============================================================================
-//
-// Read_GL_EXT_convolution
-//
-//==============================================================================
 procedure Read_GL_EXT_convolution;
-
-//==============================================================================
-//
-// Read_GL_EXT_coordinate_frame
-//
-//==============================================================================
 procedure Read_GL_EXT_coordinate_frame;
-
-//==============================================================================
-//
-// Read_GL_EXT_copy_texture
-//
-//==============================================================================
 procedure Read_GL_EXT_copy_texture;
-
-//==============================================================================
-//
-// Read_GL_EXT_cull_vertex
-//
-//==============================================================================
 procedure Read_GL_EXT_cull_vertex;
-
-//==============================================================================
-//
-// Read_GL_EXT_draw_range_elements
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_range_elements;
-
-//==============================================================================
-//
-// Read_GL_EXT_fog_coord
-//
-//==============================================================================
 procedure Read_GL_EXT_fog_coord;
-
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_object
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_object;
-
-//==============================================================================
-//
-// Read_GL_EXT_histogram
-//
-//==============================================================================
 procedure Read_GL_EXT_histogram;
-
-//==============================================================================
-//
-// Read_GL_EXT_index_func
-//
-//==============================================================================
 procedure Read_GL_EXT_index_func;
-
-//==============================================================================
-//
-// Read_GL_EXT_index_material
-//
-//==============================================================================
 procedure Read_GL_EXT_index_material;
-
-//==============================================================================
-//
-// Read_GL_EXT_multi_draw_arrays
-//
-//==============================================================================
 procedure Read_GL_EXT_multi_draw_arrays;
-
-//==============================================================================
-//
-// Read_GL_EXT_multisample
-//
-//==============================================================================
 procedure Read_GL_EXT_multisample;
-
-//==============================================================================
-//
-// Read_GL_EXT_paletted_texture
-//
-//==============================================================================
 procedure Read_GL_EXT_paletted_texture;
-
-//==============================================================================
-//
-// Read_GL_EXT_pixel_transform
-//
-//==============================================================================
 procedure Read_GL_EXT_pixel_transform;
-
-//==============================================================================
-//
-// Read_GL_EXT_point_parameters
-//
-//==============================================================================
 procedure Read_GL_EXT_point_parameters;
-
-//==============================================================================
-//
-// Read_GL_EXT_polygon_offset
-//
-//==============================================================================
 procedure Read_GL_EXT_polygon_offset;
-
-//==============================================================================
-//
-// Read_GL_EXT_secondary_color
-//
-//==============================================================================
 procedure Read_GL_EXT_secondary_color;
-
-//==============================================================================
-//
-// Read_GL_EXT_stencil_two_side
-//
-//==============================================================================
 procedure Read_GL_EXT_stencil_two_side;
-
-//==============================================================================
-//
-// Read_GL_EXT_subtexture
-//
-//==============================================================================
 procedure Read_GL_EXT_subtexture;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture3D
-//
-//==============================================================================
 procedure Read_GL_EXT_texture3D;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture_object
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_object;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture_perturb_normal
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_perturb_normal;
-
-//==============================================================================
-//
-// Read_GL_EXT_vertex_array
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_array;
-
-//==============================================================================
-//
-// Read_GL_EXT_vertex_shader
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_shader;
-
-//==============================================================================
-//
-// Read_GL_EXT_vertex_weighting
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_weighting;
-
-//==============================================================================
-//
-// Read_GL_EXT_depth_bounds_test
-//
-//==============================================================================
 procedure Read_GL_EXT_depth_bounds_test;
-
-//==============================================================================
-//
-// Read_GL_EXT_blend_equation_separate
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_equation_separate;
-
-//==============================================================================
-//
-// Read_GL_EXT_stencil_clear_tag
-//
-//==============================================================================
 procedure Read_GL_EXT_stencil_clear_tag;
-
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_blit
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_blit;
-
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_multisample
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_multisample;
-
-//==============================================================================
-//
-// Read_GL_EXT_timer_query
-//
-//==============================================================================
 procedure Read_GL_EXT_timer_query;
-
-//==============================================================================
-//
-// Read_GL_EXT_gpu_program_parameters
-//
-//==============================================================================
 procedure Read_GL_EXT_gpu_program_parameters;
-
-//==============================================================================
-//
-// Read_GL_EXT_bindable_uniform
-//
-//==============================================================================
 procedure Read_GL_EXT_bindable_uniform;
-
-//==============================================================================
-//
-// Read_GL_EXT_draw_buffers2
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_buffers2;
-
-//==============================================================================
-//
-// Read_GL_EXT_draw_instanced
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_instanced;
-
-//==============================================================================
-//
-// Read_GL_EXT_geometry_shader4
-//
-//==============================================================================
 procedure Read_GL_EXT_geometry_shader4;
-
-//==============================================================================
-//
-// Read_GL_EXT_gpu_shader4
-//
-//==============================================================================
 procedure Read_GL_EXT_gpu_shader4;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture_array
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_array;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture_buffer_object
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_buffer_object;
-
-//==============================================================================
-//
-// Read_GL_EXT_texture_integer
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_integer;
-
-//==============================================================================
-//
-// Read_GL_EXT_transform_feedback
-//
-//==============================================================================
 procedure Read_GL_EXT_transform_feedback;
-
-//==============================================================================
-//
-// Read_GL_EXT_direct_state_access
-//
-//==============================================================================
 procedure Read_GL_EXT_direct_state_access;
-
-//==============================================================================
-//
-// Read_GL_EXT_separate_shader_objects
-//
-//==============================================================================
 procedure Read_GL_EXT_separate_shader_objects;
-
-//==============================================================================
-//
-// Read_GL_EXT_shader_image_load_store
-//
-//==============================================================================
 procedure Read_GL_EXT_shader_image_load_store;
-
-//==============================================================================
-//
-// Read_GL_EXT_vertex_attrib_64bit
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_attrib_64bit;
-
-//==============================================================================
-//
-// Read_GL_HP_image_transform
-//
-//==============================================================================
 procedure Read_GL_HP_image_transform;
-
-//==============================================================================
-//
-// Read_GL_IBM_multimode_draw_arrays
-//
-//==============================================================================
 procedure Read_GL_IBM_multimode_draw_arrays;
-
-//==============================================================================
-//
-// Read_GL_IBM_vertex_array_lists
-//
-//==============================================================================
 procedure Read_GL_IBM_vertex_array_lists;
-
-//==============================================================================
-//
-// Read_GL_INGR_blend_func_separate
-//
-//==============================================================================
 procedure Read_GL_INGR_blend_func_separate;
-
-//==============================================================================
-//
-// Read_GL_INTEL_parallel_arrays
-//
-//==============================================================================
 procedure Read_GL_INTEL_parallel_arrays;
-
-//==============================================================================
-//
-// Read_GL_MESA_resize_buffers
-//
-//==============================================================================
+procedure Read_GL_INTEL_framebuffer_CMAA;
 procedure Read_GL_MESA_resize_buffers;
-
-//==============================================================================
-//
-// Read_GL_MESA_window_pos
-//
-//==============================================================================
 procedure Read_GL_MESA_window_pos;
-
-//==============================================================================
-//
-// Read_GL_NV_evaluators
-//
-//==============================================================================
 procedure Read_GL_NV_evaluators;
-
-//==============================================================================
-//
-// Read_GL_NV_fence
-//
-//==============================================================================
 procedure Read_GL_NV_fence;
-
-//==============================================================================
-//
-// Read_GL_NV_fragment_program
-//
-//==============================================================================
 procedure Read_GL_NV_fragment_program;
-
-//==============================================================================
-//
-// Read_GL_NV_half_float
-//
-//==============================================================================
 procedure Read_GL_NV_half_float;
-
-//==============================================================================
-//
-// Read_GL_NV_occlusion_query
-//
-//==============================================================================
 procedure Read_GL_NV_occlusion_query;
-
-//==============================================================================
-//
-// Read_GL_NV_pixel_data_range
-//
-//==============================================================================
 procedure Read_GL_NV_pixel_data_range;
-
-//==============================================================================
-//
-// Read_GL_NV_point_sprite
-//
-//==============================================================================
 procedure Read_GL_NV_point_sprite;
-
-//==============================================================================
-//
-// Read_GL_NV_primitive_restart
-//
-//==============================================================================
 procedure Read_GL_NV_primitive_restart;
-
-//==============================================================================
-//
-// Read_GL_NV_register_combiners
-//
-//==============================================================================
 procedure Read_GL_NV_register_combiners;
-
-//==============================================================================
-//
-// Read_GL_NV_register_combiners2
-//
-//==============================================================================
 procedure Read_GL_NV_register_combiners2;
-
-//==============================================================================
-//
-// Read_GL_NV_vertex_array_range
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_array_range;
-
-//==============================================================================
-//
-// Read_GL_NV_vertex_program
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_program;
-
-//==============================================================================
-//
-// Read_GL_NV_depth_buffer_float
-//
-//==============================================================================
 procedure Read_GL_NV_depth_buffer_float;
-
-//==============================================================================
-//
-// Read_GL_NV_framebuffer_multisample_coverage
-//
-//==============================================================================
 procedure Read_GL_NV_framebuffer_multisample_coverage;
-
-//==============================================================================
-//
-// Read_GL_NV_geometry_program4
-//
-//==============================================================================
 procedure Read_GL_NV_geometry_program4;
-
-//==============================================================================
-//
-// Read_GL_NV_gpu_program4
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_program4;
-
-//==============================================================================
-//
-// Read_GL_NV_parameter_buffer_object
-//
-//==============================================================================
 procedure Read_GL_NV_parameter_buffer_object;
-
-//==============================================================================
-//
-// Read_GL_NV_transform_feedback
-//
-//==============================================================================
 procedure Read_GL_NV_transform_feedback;
-
-//==============================================================================
-//
-// Read_GL_NV_conditional_render
-//
-//==============================================================================
 procedure Read_GL_NV_conditional_render;
-
-//==============================================================================
-//
-// Read_GL_NV_present_video
-//
-//==============================================================================
+procedure Read_GL_NV_conservative_raster;
+procedure Read_GL_NV_conservative_raster_dilate;
 procedure Read_GL_NV_present_video;
-
-//==============================================================================
-//
-// Read_GL_NV_explicit_multisample
-//
-//==============================================================================
 procedure Read_GL_NV_explicit_multisample;
-
-//==============================================================================
-//
-// Read_GL_NV_transform_feedback2
-//
-//==============================================================================
 procedure Read_GL_NV_transform_feedback2;
-
-//==============================================================================
-//
-// Read_GL_NV_video_capture
-//
-//==============================================================================
 procedure Read_GL_NV_video_capture;
-
-//==============================================================================
-//
-// Read_GL_NV_copy_image
-//
-//==============================================================================
 procedure Read_GL_NV_copy_image;
-
-//==============================================================================
-//
-// Read_GL_NV_shader_buffer_load
-//
-//==============================================================================
 procedure Read_GL_NV_shader_buffer_load;
-
-//==============================================================================
-//
-// Read_GL_NV_vertex_buffer_unified_memory
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_buffer_unified_memory;
-
-//==============================================================================
-//
-// Read_GL_NV_gpu_program5
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_program5;
-
-//==============================================================================
-//
-// Read_GL_NV_gpu_shader5
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_shader5;
-
-//==============================================================================
-//
-// Read_GL_NV_vertex_attrib_integer_64bit
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_attrib_integer_64bit;
-
-//==============================================================================
-//
-// Read_GL_NV_vdpau_interop
-//
-//==============================================================================
 procedure Read_GL_NV_vdpau_interop;
-
-//==============================================================================
-//
-// Read_GL_NV_texture_barrier
-//
-//==============================================================================
 procedure Read_GL_NV_texture_barrier;
-
-//==============================================================================
-//
-// Read_GL_PGI_misc_hints
-//
-//==============================================================================
 procedure Read_GL_PGI_misc_hints;
-
-//==============================================================================
-//
-// Read_GL_SGIS_detail_texture
-//
-//==============================================================================
+procedure Read_GL_OVR_multiview;
 procedure Read_GL_SGIS_detail_texture;
-
-//==============================================================================
-//
-// Read_GL_SGIS_fog_function
-//
-//==============================================================================
 procedure Read_GL_SGIS_fog_function;
-
-//==============================================================================
-//
-// Read_GL_SGIS_multisample
-//
-//==============================================================================
 procedure Read_GL_SGIS_multisample;
-
-//==============================================================================
-//
-// Read_GL_SGIS_pixel_texture
-//
-//==============================================================================
 procedure Read_GL_SGIS_pixel_texture;
-
-//==============================================================================
-//
-// Read_GL_SGIS_point_parameters
-//
-//==============================================================================
 procedure Read_GL_SGIS_point_parameters;
-
-//==============================================================================
-//
-// Read_GL_SGIS_sharpen_texture
-//
-//==============================================================================
 procedure Read_GL_SGIS_sharpen_texture;
-
-//==============================================================================
-//
-// Read_GL_SGIS_texture4D
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture4D;
-
-//==============================================================================
-//
-// Read_GL_SGIS_texture_color_mask
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture_color_mask;
-
-//==============================================================================
-//
-// Read_GL_SGIS_texture_filter4
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture_filter4;
-
-//==============================================================================
-//
-// Read_GL_SGIX_async
-//
-//==============================================================================
 procedure Read_GL_SGIX_async;
-
-//==============================================================================
-//
-// Read_GL_SGIX_flush_raster
-//
-//==============================================================================
 procedure Read_GL_SGIX_flush_raster;
-
-//==============================================================================
-//
-// Read_GL_SGIX_fragment_lighting
-//
-//==============================================================================
 procedure Read_GL_SGIX_fragment_lighting;
-
-//==============================================================================
-//
-// Read_GL_SGIX_framezoom
-//
-//==============================================================================
 procedure Read_GL_SGIX_framezoom;
-
-//==============================================================================
-//
-// Read_GL_SGIX_igloo_interface
-//
-//==============================================================================
 procedure Read_GL_SGIX_igloo_interface;
-
-//==============================================================================
-//
-// Read_GL_SGIX_instruments
-//
-//==============================================================================
 procedure Read_GL_SGIX_instruments;
-
-//==============================================================================
-//
-// Read_GL_SGIX_list_priority
-//
-//==============================================================================
 procedure Read_GL_SGIX_list_priority;
-
-//==============================================================================
-//
-// Read_GL_SGIX_pixel_texture
-//
-//==============================================================================
 procedure Read_GL_SGIX_pixel_texture;
-
-//==============================================================================
-//
-// Read_GL_SGIX_polynomial_ffd
-//
-//==============================================================================
 procedure Read_GL_SGIX_polynomial_ffd;
-
-//==============================================================================
-//
-// Read_GL_SGIX_reference_plane
-//
-//==============================================================================
 procedure Read_GL_SGIX_reference_plane;
-
-//==============================================================================
-//
-// Read_GL_SGIX_sprite
-//
-//==============================================================================
 procedure Read_GL_SGIX_sprite;
-
-//==============================================================================
-//
-// Read_GL_SGIX_tag_sample_buffer
-//
-//==============================================================================
 procedure Read_GL_SGIX_tag_sample_buffer;
-
-//==============================================================================
-//
-// Read_GL_SGI_color_table
-//
-//==============================================================================
 procedure Read_GL_SGI_color_table;
-
-//==============================================================================
-//
-// Read_GL_SUNX_constant_data
-//
-//==============================================================================
 procedure Read_GL_SUNX_constant_data;
-
-//==============================================================================
-//
-// Read_GL_SUN_global_alpha
-//
-//==============================================================================
 procedure Read_GL_SUN_global_alpha;
-
-//==============================================================================
-//
-// Read_GL_SUN_mesh_array
-//
-//==============================================================================
 procedure Read_GL_SUN_mesh_array;
-
-//==============================================================================
-//
-// Read_GL_SUN_triangle_list
-//
-//==============================================================================
 procedure Read_GL_SUN_triangle_list;
-
-//==============================================================================
-//
-// Read_GL_SUN_vertex
-//
-//==============================================================================
 procedure Read_GL_SUN_vertex;
 
 {$IFDEF DGL_WIN}
-
-//==============================================================================
-//
-// Read_WGL_ARB_buffer_region
-//
-//==============================================================================
 procedure Read_WGL_ARB_buffer_region;
-
-//==============================================================================
-//
-// Read_WGL_ARB_extensions_string
-//
-//==============================================================================
 procedure Read_WGL_ARB_extensions_string;
-
-//==============================================================================
-//
-// Read_WGL_ARB_make_current_read
-//
-//==============================================================================
 procedure Read_WGL_ARB_make_current_read;
-
-//==============================================================================
-//
-// Read_WGL_ARB_pbuffer
-//
-//==============================================================================
 procedure Read_WGL_ARB_pbuffer;
-
-//==============================================================================
-//
-// Read_WGL_ARB_pixel_format
-//
-//==============================================================================
 procedure Read_WGL_ARB_pixel_format;
-
-//==============================================================================
-//
-// Read_WGL_ARB_pixel_format_float
-//
-//==============================================================================
 procedure Read_WGL_ARB_pixel_format_float;
-
-//==============================================================================
-//
-// Read_WGL_ARB_render_texture
-//
-//==============================================================================
 procedure Read_WGL_ARB_render_texture;
-
-//==============================================================================
-//
-// Read_WGL_ARB_create_context
-//
-//==============================================================================
 procedure Read_WGL_ARB_create_context;
-
-//==============================================================================
-//
-// Read_WGL_AMD_gpu_association
-//
-//==============================================================================
 procedure Read_WGL_AMD_gpu_association;
-
-//==============================================================================
-//
-// Read_WGL_EXT_display_color_table
-//
-//==============================================================================
 procedure Read_WGL_EXT_display_color_table;
-
-//==============================================================================
-//
-// Read_WGL_EXT_extensions_string
-//
-//==============================================================================
 procedure Read_WGL_EXT_extensions_string;
-
-//==============================================================================
-//
-// Read_WGL_EXT_make_current_read
-//
-//==============================================================================
 procedure Read_WGL_EXT_make_current_read;
-
-//==============================================================================
-//
-// Read_WGL_EXT_pbuffer
-//
-//==============================================================================
 procedure Read_WGL_EXT_pbuffer;
-
-//==============================================================================
-//
-// Read_WGL_EXT_pixel_format
-//
-//==============================================================================
 procedure Read_WGL_EXT_pixel_format;
-
-//==============================================================================
-//
-// Read_WGL_EXT_swap_control
-//
-//==============================================================================
 procedure Read_WGL_EXT_swap_control;
-
-//==============================================================================
-//
-// Read_WGL_I3D_digital_video_control
-//
-//==============================================================================
 procedure Read_WGL_I3D_digital_video_control;
-
-//==============================================================================
-//
-// Read_WGL_I3D_gamma
-//
-//==============================================================================
 procedure Read_WGL_I3D_gamma;
-
-//==============================================================================
-//
-// Read_WGL_I3D_genlock
-//
-//==============================================================================
 procedure Read_WGL_I3D_genlock;
-
-//==============================================================================
-//
-// Read_WGL_I3D_image_buffer
-//
-//==============================================================================
 procedure Read_WGL_I3D_image_buffer;
-
-//==============================================================================
-//
-// Read_WGL_I3D_swap_frame_lock
-//
-//==============================================================================
 procedure Read_WGL_I3D_swap_frame_lock;
-
-//==============================================================================
-//
-// Read_WGL_I3D_swap_frame_usage
-//
-//==============================================================================
 procedure Read_WGL_I3D_swap_frame_usage;
-
-//==============================================================================
-//
-// Read_WGL_NV_vertex_array_range
-//
-//==============================================================================
 procedure Read_WGL_NV_vertex_array_range;
-
-//==============================================================================
-//
-// Read_WGL_NV_present_video
-//
-//==============================================================================
 procedure Read_WGL_NV_present_video;
-
-//==============================================================================
-//
-// Read_WGL_NV_video_output
-//
-//==============================================================================
 procedure Read_WGL_NV_video_output;
-
-//==============================================================================
-//
-// Read_WGL_NV_swap_group
-//
-//==============================================================================
 procedure Read_WGL_NV_swap_group;
-
-//==============================================================================
-//
-// Read_WGL_NV_gpu_affinity
-//
-//==============================================================================
 procedure Read_WGL_NV_gpu_affinity;
-
-//==============================================================================
-//
-// Read_WGL_NV_video_capture
-//
-//==============================================================================
 procedure Read_WGL_NV_video_capture;
-
-//==============================================================================
-//
-// Read_WGL_NV_copy_image
-//
-//==============================================================================
 procedure Read_WGL_NV_copy_image;
-
-//==============================================================================
-//
-// Read_WGL_OML_sync_control
-//
-//==============================================================================
 procedure Read_WGL_OML_sync_control;
-
-//==============================================================================
-//
-// Read_WGL_3DL_stereo_control
-//
-//==============================================================================
 procedure Read_WGL_3DL_stereo_control;
 
-//==============================================================================
-//
-// Read_WIN_draw_range_elements
-//
-//==============================================================================
 procedure Read_WIN_draw_range_elements;
-
-//==============================================================================
-//
-// Read_WIN_swap_hint
-//
-//==============================================================================
 procedure Read_WIN_swap_hint;
 {$ENDIF}
 
+
 implementation
+
 
 {$IFDEF DGL_LINUX}
 const
@@ -14481,33 +15130,17 @@ const
   // Seems to work on Debian / Fedora
   LibraryLib = {$IFDEF Linux} 'libdl.so.2'{$ELSE} 'c'{$ENDIF};
 
-//==============================================================================
-//
-// dlopen
-//
-//==============================================================================
 function dlopen(Name: PAnsiChar; Flags: LongInt): Pointer; cdecl; external LibraryLib name 'dlopen';
-
-//==============================================================================
-//
-// dlclose
-//
-//==============================================================================
 function dlclose(Lib: Pointer): LongInt; cdecl; external LibraryLib name 'dlclose';
 
-//==============================================================================
-//
-// dlsym
-//
-//==============================================================================
 function dlsym(Lib: Pointer; Name: PAnsiChar): Pointer; cdecl; external LibraryLib name 'dlsym';
 {$ENDIF}
 
-//==============================================================================
-//
-// dglLoadLibrary
-//
-//==============================================================================
+{$IFDEF DGL_MAC}{$IFDEF OPENGL_FRAMEWORK}  // OpenGL framework used
+const
+  RTLD_DEFAULT = Pointer(-2);
+{$ENDIF}{$ENDIF}
+
 function dglLoadLibrary(Name: PChar): Pointer;
 begin
   {$IFDEF DGL_WIN}
@@ -14517,13 +15150,17 @@ begin
   {$IFDEF DGL_LINUX}
   Result := dlopen(Name, RTLD_LAZY);
   {$ENDIF}
+
+  {$IFDEF DGL_MAC}
+  {$IFDEF OPENGL_FRAMEWORK}
+  Result := RTLD_DEFAULT;
+  {$ELSE}
+  Result := Pointer(LoadLibrary(Name));
+  {$ENDIF}
+  {$ENDIF}
 end;
 
-//==============================================================================
-//
-// dglFreeLibrary
-//
-//==============================================================================
+
 function dglFreeLibrary(LibHandle: Pointer): Boolean;
 begin
   if LibHandle = nil then
@@ -14536,17 +15173,22 @@ begin
     {$IFDEF DGL_LINUX}
     Result := dlclose(LibHandle) = 0;
     {$ENDIF}
+
+    {$IFDEF DGL_MAC}
+    {$IFDEF OPENGL_FRAMEWORK}
+	Result := true;
+	{$ELSE}
+    Result := FreeLibrary(HMODULE(LibHandle));
+    {$ENDIF}
+	{$ENDIF}
 end;
 
-//==============================================================================
-//
-// dglGetProcAddress
-//
-//==============================================================================
+
 function dglGetProcAddress(ProcName: PAnsiChar; LibHandle: Pointer = nil {$IFDEF DGL_LINUX}; ForceDLSym: Boolean = False{$ENDIF}): Pointer;
 begin
   if LibHandle = nil then
     LibHandle := GL_LibHandle;
+
 
   {$IFDEF DGL_WIN}
     Result := GetProcAddress(HMODULE(LibHandle), ProcName);
@@ -14559,7 +15201,6 @@ begin
   {$ENDIF}
 
   {$IFDEF DGL_LINUX}
-    Result :=  nil;
     if not ForceDLSym then begin
       if Addr(glXGetProcAddress) <> nil then
         Result := glXGetProcAddress(ProcName);
@@ -14576,23 +15217,43 @@ begin
 
     Result := dlsym(LibHandle, ProcName);
   {$ENDIF}
+
+  {$IFDEF DGL_MAC}
+    Result := GetProcAddress(HMODULE(LibHandle), ProcName);
+  {$ENDIF}
 end;
 
-//==============================================================================
-//
-// Int_GetExtensionString
-//
-//==============================================================================
-function Int_GetExtensionString: AnsiString;
-begin
-  // generel extension string
-  if not Assigned(@glGetString) then
-    glGetString := dglGetProcAddress('glGetString');
 
-  if Assigned(@glGetString) then
-    Result := glGetString(GL_EXTENSIONS)
-  else
-    Result := '';
+function Int_GetExtensionString: AnsiString;
+var
+	ExtensionCount : GLuint;
+  i : Integer;
+begin
+  if GL_VERSION_3_0
+    then
+      begin
+        if not Assigned(@glGetIntegerv) then glGetIntegerv := dglGetProcAddress('glGetIntegerv');
+        if not Assigned(@glGetStringi)  then glGetStringi  := dglGetProcAddress('glGetStringi');
+
+        result := '';
+
+        if Assigned(@glGetIntegerv) and Assigned(@glGetStringi)
+          then
+            begin
+              glGetIntegerv(GL_NUM_EXTENSIONS, @extensionCount);
+
+              For I := 0 to extensionCount - 1 do
+                result := result + #32 + PAnsiChar(glGetStringi(GL_EXTENSIONS, I));
+            end;
+      end
+    else
+      begin
+        if not Assigned(@glGetString) then glGetString := dglGetProcAddress('glGetString');
+
+        if Assigned(@glGetString)
+          then result := glGetString(GL_EXTENSIONS)
+          else result := '';
+      end;
 
   if (GL_LibHandle <> nil) then begin
     {$IFDEF DGL_WIN}
@@ -14615,21 +15276,13 @@ begin
   Result := #32 + Result + #32;
 end;
 
-//==============================================================================
-//
-// Int_CheckExtension
-//
-//==============================================================================
+
 function Int_CheckExtension(AllExtensions, CheckExtension: AnsiString): Boolean;
 begin
   Result := Pos(#32 + CheckExtension + #32, AllExtensions) > 0;
 end;
 
-//==============================================================================
-//
-// dglCheckExtension
-//
-//==============================================================================
+
 function dglCheckExtension(Extension: AnsiString): Boolean;
 var
   Extensions: AnsiString;
@@ -14638,11 +15291,8 @@ begin
   Result := Int_CheckExtension(Extensions, Extension);
 end;
 
-//==============================================================================
-//
-// InitOpenGL
-//
-//==============================================================================
+
+
 function InitOpenGL(LibName: String; GLULibName: String): Boolean;
 begin
   Result := False;
@@ -14748,6 +15398,8 @@ begin
       // GLX_EXT_texture_from_pixmap
       glXBindTexImageEXT := dglGetProcAddress('glXBindTexImageEXT');
       glXReleaseTexImageEXT := dglGetProcAddress('glXReleaseTexImageEXT');
+
+      glXSwapIntervalEXT := dglGetProcAddress('glXSwapIntervalEXT');
     {$ENDIF}
 
     Result := True;
@@ -14810,11 +15462,6 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// ReadOpenGLCore
-//
-//==============================================================================
 procedure ReadOpenGLCore;
 begin
   // GL_VERSION_1_0
@@ -15489,6 +16136,11 @@ begin
   glClearBufferfi := dglGetProcAddress('glClearBufferfi');
   glGetStringi := dglGetProcAddress('glGetStringi');
 
+  // GL_VERSION_2_1
+  glEnableVertexArrayEXT := dglGetProcAddress('glEnableVertexArrayEXT');
+  glEnableVertexArrayAttribEXT := dglGetProcAddress('glEnableVertexArrayAttribEXT');
+  glVertexArrayVertexAttribOffsetEXT := dglGetProcAddress('glVertexArrayVertexAttribOffsetEXT');
+
   // GL_VERSION_3_1
   { OpenGL 3.1 also reuses entry points from these extensions: }
   Read_GL_ARB_copy_buffer;
@@ -15553,23 +16205,56 @@ begin
   { ARB_shader_precision (no entry points) }
   Read_GL_ARB_vertex_attrib_64bit;
   Read_GL_ARB_viewport_array;
+
+  // GL_VERSION_4_2
+  { OpenGL 4.2 reuses entry points from these extensions: }
+  Read_GL_ARB_base_instance;
+  //Read_GL_ARB_shading_language_420pack (no entry points)
+  Read_GL_ARB_transform_feedback_instanced;
+  //Read_GL_ARB_compressed_texture_pixel_storage (no entry points)
+  //Read_GL_ARB_conservative_depth;
+  Read_GL_ARB_internalformat_query;
+  //Read_GL_ARB_map_buffer_alignment;
+  Read_GL_ARB_shader_atomic_counters;
+  Read_GL_ARB_shader_image_load_store;
+  //Read_GL_ARB_shading_language_packing;
+  Read_GL_ARB_texture_storage;
+
+  // GL_VERSION_4_3
+  // OpenGL 4.3 reuses entry points from these extensions:
+  // Read_GL_ARB_arrays_of_arrays (none, GLSL only) (no entry points)
+  // Read_GL_ARB_fragment_layer_viewport (none, GLSL only) (no entry points)
+  // Read_GL_ARB_shader_image_size (none, GLSL only) (no entry points)
+  // Read_GL_ARB_ES3_compatibility (no entry points)
+  Read_GL_ARB_clear_buffer_object;
+  Read_GL_ARB_compute_shader;
+  Read_GL_ARB_copy_image;
+  Read_GL_KHR_debug;
+  // Read_GL_ARB_explicit_uniform_location  (no entry points)
+  Read_GL_ARB_framebuffer_no_attachments;
+  Read_GL_ARB_internalformat_query2;
+  Read_GL_ARB_invalidate_subdata;
+  Read_GL_ARB_multi_draw_indirect;
+  Read_GL_ARB_program_interface_query;
+  // Read_GL_ARB_robust_buffer_access_behavior (none)  (no entry points)
+  Read_GL_ARB_shader_storage_buffer_object;
+  // Read_GL_ARB_stencil_texturing  (no entry points)
+  Read_GL_ARB_texture_buffer_range;
+  // Read_GL_ARB_texture_query_levels (none)  (no entry points)
+  Read_GL_ARB_texture_storage_multisample;
+  Read_GL_ARB_texture_view;
+  Read_GL_ARB_vertex_attrib_binding;
+
+  Read_GL_4_4;
+  Read_GL_4_5;
+  Read_GL_4_6;
 end;
 
-//==============================================================================
-//
-// Read_GL_3DFX_tbuffer
-//
-//==============================================================================
 procedure Read_GL_3DFX_tbuffer;
 begin
   glTbufferMask3DFX := dglGetProcAddress('glTbufferMask3DFX');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_element_array
-//
-//==============================================================================
 procedure Read_GL_APPLE_element_array;
 begin
   glElementPointerAPPLE := dglGetProcAddress('glElementPointerAPPLE');
@@ -15579,11 +16264,6 @@ begin
   glMultiDrawRangeElementArrayAPPLE := dglGetProcAddress('glMultiDrawRangeElementArrayAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_fence
-//
-//==============================================================================
 procedure Read_GL_APPLE_fence;
 begin
   glGenFencesAPPLE := dglGetProcAddress('glGenFencesAPPLE');
@@ -15596,11 +16276,6 @@ begin
   glFinishObjectAPPLE := dglGetProcAddress('glFinishObjectAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_array_object;
 begin
   glBindVertexArrayAPPLE := dglGetProcAddress('glBindVertexArrayAPPLE');
@@ -15609,11 +16284,6 @@ begin
   glIsVertexArrayAPPLE := dglGetProcAddress('glIsVertexArrayAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_array_range
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_array_range;
 begin
   glVertexArrayRangeAPPLE := dglGetProcAddress('glVertexArrayRangeAPPLE');
@@ -15621,22 +16291,12 @@ begin
   glVertexArrayParameteriAPPLE := dglGetProcAddress('glVertexArrayParameteriAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_texture_range
-//
-//==============================================================================
 procedure Read_GL_APPLE_texture_range;
 begin
   glTextureRangeAPPLE := dglGetProcAddress('glTextureRangeAPPLE');
   glGetTexParameterPointervAPPLE := dglGetProcAddress('glGetTexParameterPointervAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_vertex_program_evaluators
-//
-//==============================================================================
 procedure Read_GL_APPLE_vertex_program_evaluators;
 begin
   glEnableVertexAttribAPPLE := dglGetProcAddress('glEnableVertexAttribAPPLE');
@@ -15648,11 +16308,6 @@ begin
   glMapVertexAttrib2fAPPLE := dglGetProcAddress('glMapVertexAttrib2fAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_APPLE_object_purgeable
-//
-//==============================================================================
 procedure Read_GL_APPLE_object_purgeable;
 begin
   glObjectPurgeableAPPLE := dglGetProcAddress('glObjectPurgeableAPPLE');
@@ -15660,11 +16315,6 @@ begin
   glGetObjectParameterivAPPLE := dglGetProcAddress('glGetObjectParameterivAPPLE');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_matrix_palette
-//
-//==============================================================================
 procedure Read_GL_ARB_matrix_palette;
 begin
   glCurrentPaletteMatrixARB := dglGetProcAddress('glCurrentPaletteMatrixARB');
@@ -15674,21 +16324,11 @@ begin
   glMatrixIndexPointerARB := dglGetProcAddress('glMatrixIndexPointerARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_multisample
-//
-//==============================================================================
 procedure Read_GL_ARB_multisample;
 begin
   glSampleCoverageARB := dglGetProcAddress('glSampleCoverageARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_multitexture
-//
-//==============================================================================
 procedure Read_GL_ARB_multitexture;
 begin
   glActiveTextureARB := dglGetProcAddress('glActiveTextureARB');
@@ -15727,22 +16367,12 @@ begin
   glMultiTexCoord4svARB := dglGetProcAddress('glMultiTexCoord4svARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_point_parameters
-//
-//==============================================================================
 procedure Read_GL_ARB_point_parameters;
 begin
   glPointParameterfARB := dglGetProcAddress('glPointParameterfARB');
   glPointParameterfvARB := dglGetProcAddress('glPointParameterfvARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_texture_compression
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_compression;
 begin
   glCompressedTexImage3DARB := dglGetProcAddress('glCompressedTexImage3DARB');
@@ -15754,11 +16384,6 @@ begin
   glGetCompressedTexImageARB := dglGetProcAddress('glGetCompressedTexImageARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_transpose_matrix
-//
-//==============================================================================
 procedure Read_GL_ARB_transpose_matrix;
 begin
   glLoadTransposeMatrixfARB := dglGetProcAddress('glLoadTransposeMatrixfARB');
@@ -15767,11 +16392,6 @@ begin
   glMultTransposeMatrixdARB := dglGetProcAddress('glMultTransposeMatrixdARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_blend
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_blend;
 begin
   glWeightbvARB := dglGetProcAddress('glWeightbvARB');
@@ -15786,11 +16406,6 @@ begin
   glVertexBlendARB := dglGetProcAddress('glVertexBlendARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_buffer_object;
 begin
   glBindBufferARB := dglGetProcAddress('glBindBufferARB');
@@ -15806,11 +16421,6 @@ begin
   glGetBufferPointervARB := dglGetProcAddress('glGetBufferPointervARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_program
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_program;
 begin
   glVertexAttrib1dARB := dglGetProcAddress('glVertexAttrib1dARB');
@@ -15877,11 +16487,6 @@ begin
   glIsProgramARB := dglGetProcAddress('glIsProgramARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_window_pos
-//
-//==============================================================================
 procedure Read_GL_ARB_window_pos;
 begin
   glWindowPos2dARB := dglGetProcAddress('glWindowPos2dARB');
@@ -15902,31 +16507,16 @@ begin
   glWindowPos3svARB := dglGetProcAddress('glWindowPos3svARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_draw_buffers
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_buffers;
 begin
   glDrawBuffersARB := dglGetProcAddress('glDrawBuffersARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_color_buffer_float
-//
-//==============================================================================
 procedure Read_GL_ARB_color_buffer_float;
 begin
   glClampColorARB := dglGetProcAddress('glClampColorARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_Shader_Objects
-//
-//==============================================================================
 procedure Read_GL_ARB_Shader_Objects;
 begin
   // GL_ARB_Shader_Objects
@@ -15977,11 +16567,6 @@ begin
   glGetVertexAttribPointervARB := dglGetProcAddress('glGetVertexAttribPointervARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_occlusion_query
-//
-//==============================================================================
 procedure Read_GL_ARB_occlusion_query;
 begin
   glGenQueriesARB := dglGetProcAddress('glGenQueriesARB');
@@ -15994,22 +16579,12 @@ begin
   glGetQueryObjectuivARB := dglGetProcAddress('glGetQueryObjectuivARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_draw_instanced
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_instanced;
 begin
   glDrawArraysInstancedARB := dglGetProcAddress('glDrawArraysInstancedARB');
   glDrawElementsInstancedARB := dglGetProcAddress('glDrawElementsInstancedARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_framebuffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_framebuffer_object;
 begin
   glIsRenderbuffer := dglGetProcAddress('glIsRenderbuffer');
@@ -16034,11 +16609,6 @@ begin
   glFramebufferTextureLayer := dglGetProcAddress('glFramebufferTextureLayer');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_geometry_shader4
-//
-//==============================================================================
 procedure Read_GL_ARB_geometry_shader4;
 begin
   glProgramParameteriARB := dglGetProcAddress('glProgramParameteriARB');
@@ -16047,42 +16617,27 @@ begin
   glFramebufferTextureFaceARB := dglGetProcAddress('glFramebufferTextureFaceARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_instanced_arrays
-//
-//==============================================================================
+procedure Read_GL_ARB_gl_spirv;
+begin
+  glSpecializeShaderARB := dglGetProcAddress('glSpecializeShaderARB');
+end;
+
 procedure Read_GL_ARB_instanced_arrays;
 begin
   glVertexAttribDivisorARB := dglGetProcAddress('glVertexAttribDivisorARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_map_buffer_range
-//
-//==============================================================================
 procedure Read_GL_ARB_map_buffer_range;
 begin
   glMapBufferRange := dglGetProcAddress('glMapBufferRange');
   glFlushMappedBufferRange := dglGetProcAddress('glFlushMappedBufferRange');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_texture_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_buffer_object;
 begin
   glTexBufferARB := dglGetProcAddress('glTexBufferARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_array_object;
 begin
   glBindVertexArray := dglGetProcAddress('glBindVertexArray');
@@ -16091,11 +16646,6 @@ begin
   glIsVertexArray := dglGetProcAddress('glIsVertexArray');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_uniform_buffer_object
-//
-//==============================================================================
 procedure Read_GL_ARB_uniform_buffer_object;
 begin
   glGetUniformIndices := dglGetProcAddress('glGetUniformIndices');
@@ -16107,21 +16657,11 @@ begin
   glUniformBlockBinding := dglGetProcAddress('glUniformBlockBinding');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_copy_buffer
-//
-//==============================================================================
 procedure Read_GL_ARB_copy_buffer;
 begin
   glCopyBufferSubData := dglGetProcAddress('glCopyBufferSubData');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_draw_elements_base_vertex
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_elements_base_vertex;
 begin
   glDrawElementsBaseVertex := dglGetProcAddress('glDrawElementsBaseVertex');
@@ -16130,21 +16670,11 @@ begin
   glMultiDrawElementsBaseVertex := dglGetProcAddress('glMultiDrawElementsBaseVertex');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_provoking_vertex
-//
-//==============================================================================
 procedure Read_GL_ARB_provoking_vertex;
 begin
   glProvokingVertex := dglGetProcAddress('glProvokingVertex');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_sync
-//
-//==============================================================================
 procedure Read_GL_ARB_sync;
 begin
   glFenceSync := dglGetProcAddress('glFenceSync');
@@ -16156,11 +16686,6 @@ begin
   glGetSynciv := dglGetProcAddress('glGetSynciv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_texture_multisample
-//
-//==============================================================================
 procedure Read_GL_ARB_texture_multisample;
 begin
   glTexImage2DMultisample := dglGetProcAddress('glTexImage2DMultisample');
@@ -16169,11 +16694,6 @@ begin
   glSampleMaski := dglGetProcAddress('glSampleMaski');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_draw_buffers_blend
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_buffers_blend;
 begin
   glBlendEquationiARB := dglGetProcAddress('glBlendEquationiARB');
@@ -16182,21 +16702,18 @@ begin
   glBlendFuncSeparateiARB := dglGetProcAddress('glBlendFuncSeparateiARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_sample_shading
-//
-//==============================================================================
 procedure Read_GL_ARB_sample_shading;
 begin
   glMinSampleShadingARB := dglGetProcAddress('glMinSampleShadingARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_shading_language_include
-//
-//==============================================================================
+procedure Read_GL_ARB_sample_locations;
+begin
+  glFramebufferSampleLocationsfvARB := dglGetProcAddress('glFramebufferSampleLocationsfvARB');
+  glNamedFramebufferSampleLocationsfvARB := dglGetProcAddress('glNamedFramebufferSampleLocationsfvARB');
+  glEvaluateDepthValuesARB := dglGetProcAddress('glEvaluateDepthValuesARB');;
+end;
+
 procedure Read_GL_ARB_shading_language_include;
 begin
   glNamedStringARB := dglGetProcAddress('glNamedStringARB');
@@ -16207,22 +16724,30 @@ begin
   glGetNamedStringivARB := dglGetProcAddress('glGetNamedStringivARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_blend_func_extended
-//
-//==============================================================================
+procedure Read_GL_ARB_sparse_texture;
+begin
+  glTexPageCommitmentARB := dglGetProcAddress('glTexPageCommitmentARB');
+end;
+
+procedure Read_GL_ARB_sparse_buffer;
+begin
+  glBufferPageCommitmentARB := dglGetProcAddress('glBufferPageCommitmentARB');
+  glNamedBufferPageCommitmentEXT := dglGetProcAddress('glNamedBufferPageCommitmentEXT');
+  glNamedBufferPageCommitmentARB := dglGetProcAddress('glNamedBufferPageCommitmentARB');
+end;
+
+procedure Read_GL_KHR_blend_equation_advanced;
+begin
+  glBlendBarrierKHR := dglGetProcAddress('glBlendBarrierKHR');
+end;
+
+
 procedure Read_GL_ARB_blend_func_extended;
 begin
   glBindFragDataLocationIndexed := dglGetProcAddress('glBindFragDataLocationIndexed');
   glGetFragDataIndex := dglGetProcAddress('glGetFragDataIndex');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_sampler_objects
-//
-//==============================================================================
 procedure Read_GL_ARB_sampler_objects;
 begin
   glGenSamplers := dglGetProcAddress('glGenSamplers');
@@ -16241,11 +16766,6 @@ begin
   glGetSamplerParameterIuiv := dglGetProcAddress('glGetSamplerParameterIuiv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_timer_query
-//
-//==============================================================================
 procedure Read_GL_ARB_timer_query;
 begin
   glQueryCounter := dglGetProcAddress('glQueryCounter');
@@ -16253,11 +16773,6 @@ begin
   glGetQueryObjectui64v := dglGetProcAddress('glGetQueryObjectui64v');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_type_2_10_10_10_rev
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_type_2_10_10_10_rev;
 begin
   glVertexP2ui := dglGetProcAddress('glVertexP2ui');
@@ -16300,22 +16815,12 @@ begin
   glVertexAttribP4uiv := dglGetProcAddress('glVertexAttribP4uiv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_draw_indirect
-//
-//==============================================================================
 procedure Read_GL_ARB_draw_indirect;
 begin
   glDrawArraysIndirect := dglGetProcAddress('glDrawArraysIndirect');
   glDrawElementsIndirect := dglGetProcAddress('glDrawElementsIndirect');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_gpu_shader_fp64
-//
-//==============================================================================
 procedure Read_GL_ARB_gpu_shader_fp64;
 begin
   glUniform1d := dglGetProcAddress('glUniform1d');
@@ -16338,11 +16843,46 @@ begin
   glGetUniformdv := dglGetProcAddress('glGetUniformdv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_shader_subroutine
-//
-//==============================================================================
+procedure Read_GL_ARB_gpu_shader_int64;
+begin
+  glUniform1i64ARB := dglGetProcAddress('glUniform1i64ARB');
+  glUniform2i64ARB := dglGetProcAddress('glUniform2i64ARB');
+  glUniform3i64ARB := dglGetProcAddress('glUniform3i64ARB');
+  glUniform4i64ARB := dglGetProcAddress('glUniform4i64ARB');
+  glUniform1i64vARB := dglGetProcAddress('glUniform1i64vARB');
+  glUniform2i64vARB := dglGetProcAddress('glUniform2i64vARB');
+  glUniform3i64vARB := dglGetProcAddress('glUniform3i64vARB');
+  glUniform4i64vARB := dglGetProcAddress('glUniform4i64vARB');
+  glUniform1ui64ARB := dglGetProcAddress('glUniform1ui64ARB');
+  glUniform2ui64ARB := dglGetProcAddress('glUniform2ui64ARB');
+  glUniform3ui64ARB := dglGetProcAddress('glUniform3ui64ARB');
+  glUniform4ui64ARB := dglGetProcAddress('glUniform4ui64ARB');
+  glUniform1ui64vARB := dglGetProcAddress('glUniform1ui64vARB');
+  glUniform2ui64vARB := dglGetProcAddress('glUniform2ui64vARB');
+  glUniform3ui64vARB := dglGetProcAddress('glUniform3ui64vARB');
+  glUniform4ui64vARB := dglGetProcAddress('glUniform4ui64vARB');
+  glGetUniformi64vARB := dglGetProcAddress('glGetUniformi64vARB');
+  glGetUniformui64vARB := dglGetProcAddress('glGetUniformui64vARB');
+  glGetnUniformi64vARB := dglGetProcAddress('glGetnUniformi64vARB');
+  glGetnUniformui64vARB := dglGetProcAddress('glGetnUniformui64vARB');
+  glProgramUniform1i64ARB := dglGetProcAddress('glProgramUniform1i64ARB');
+  glProgramUniform2i64ARB := dglGetProcAddress('glProgramUniform2i64ARB');
+  glProgramUniform3i64ARB := dglGetProcAddress('glProgramUniform3i64ARB');
+  glProgramUniform4i64ARB := dglGetProcAddress('glProgramUniform4i64ARB');
+  glProgramUniform1i64vARB := dglGetProcAddress('glProgramUniform1i64vARB');
+  glProgramUniform2i64vARB := dglGetProcAddress('glProgramUniform2i64vARB');
+  glProgramUniform3i64vARB := dglGetProcAddress('glProgramUniform3i64vARB');
+  glProgramUniform4i64vARB := dglGetProcAddress('glProgramUniform4i64vARB');
+  glProgramUniform1ui64ARB := dglGetProcAddress('glProgramUniform1ui64ARB');
+  glProgramUniform2ui64ARB := dglGetProcAddress('glProgramUniform2ui64ARB');
+  glProgramUniform3ui64ARB := dglGetProcAddress('glProgramUniform3ui64ARB');
+  glProgramUniform4ui64ARB := dglGetProcAddress('glProgramUniform4ui64ARB ');
+  glProgramUniform1ui64vARB := dglGetProcAddress('glProgramUniform1ui64vARB');
+  glProgramUniform2ui64vARB := dglGetProcAddress('glProgramUniform2ui64vARB');
+  glProgramUniform3ui64vARB := dglGetProcAddress('glProgramUniform3ui64vARB');
+  glProgramUniform4ui64vARB := dglGetProcAddress('glProgramUniform4ui64vARB');
+end;
+
 procedure Read_GL_ARB_shader_subroutine;
 begin
   glGetSubroutineUniformLocation := dglGetProcAddress('glGetSubroutineUniformLocation');
@@ -16355,22 +16895,12 @@ begin
   glGetProgramStageiv := dglGetProcAddress('glGetProgramStageiv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_tessellation_shader
-//
-//==============================================================================
 procedure Read_GL_ARB_tessellation_shader;
 begin
   glPatchParameteri := dglGetProcAddress('glPatchParameteri');
   glPatchParameterfv := dglGetProcAddress('glPatchParameterfv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_transform_feedback2
-//
-//==============================================================================
 procedure Read_GL_ARB_transform_feedback2;
 begin
   glBindTransformFeedback := dglGetProcAddress('glBindTransformFeedback');
@@ -16382,11 +16912,6 @@ begin
   glDrawTransformFeedback := dglGetProcAddress('glDrawTransformFeedback');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_transform_feedback3
-//
-//==============================================================================
 procedure Read_GL_ARB_transform_feedback3;
 begin
   glDrawTransformFeedbackStream := dglGetProcAddress('glDrawTransformFeedbackStream');
@@ -16395,11 +16920,6 @@ begin
   glGetQueryIndexediv := dglGetProcAddress('glGetQueryIndexediv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_ES2_compatibility
-//
-//==============================================================================
 procedure Read_GL_ARB_ES2_compatibility;
 begin
   glReleaseShaderCompiler := dglGetProcAddress('glReleaseShaderCompiler');
@@ -16409,11 +16929,16 @@ begin
   glClearDepthf := dglGetProcAddress('glClearDepthf');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_get_program_binary
-//
-//==============================================================================
+procedure Read_GL_ARB_ES3_2_compatibility;
+begin
+  glPrimitiveBoundingBoxARB := dglGetProcAddress('glPrimitiveBoundingBoxARB');
+end;
+
+procedure Read_GL_ARB_parallel_shader_compile;
+begin
+  glMaxShaderCompilerThreadsARB := dglGetProcAddress('glMaxShaderCompilerThreadsARB');
+end;
+
 procedure Read_GL_ARB_get_program_binary;
 begin
   glGetProgramBinary := dglGetProcAddress('glGetProgramBinary');
@@ -16421,11 +16946,6 @@ begin
   glProgramParameteri := dglGetProcAddress('glProgramParameteri');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_separate_shader_objects
-//
-//==============================================================================
 procedure Read_GL_ARB_separate_shader_objects;
 begin
   glUseProgramStages := dglGetProcAddress('glUseProgramStages');
@@ -16490,11 +17010,6 @@ begin
   glGetProgramPipelineInfoLog := dglGetProcAddress('glGetProgramPipelineInfoLog');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_vertex_attrib_64bit
-//
-//==============================================================================
 procedure Read_GL_ARB_vertex_attrib_64bit;
 begin
   glVertexAttribL1d := dglGetProcAddress('glVertexAttribL1d');
@@ -16509,11 +17024,6 @@ begin
   glGetVertexAttribLdv := dglGetProcAddress('glGetVertexAttribLdv');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_viewport_array
-//
-//==============================================================================
 procedure Read_GL_ARB_viewport_array;
 begin
   glViewportArrayv := dglGetProcAddress('glViewportArrayv');
@@ -16528,21 +17038,409 @@ begin
   glGetDoublei_v := dglGetProcAddress('glGetDoublei_v');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_cl_event
-//
-//==============================================================================
+// GL 4.2
+
+procedure Read_GL_ARB_base_instance;
+begin
+glDrawArraysInstancedBaseInstance := dglGetProcAddress('glDrawArraysInstancedBaseInstance');
+glDrawElementsInstancedBaseInstance := dglGetProcAddress('glDrawElementsInstancedBaseInstance');
+glDrawElementsInstancedBaseVertexBaseInstance := dglGetProcAddress('glDrawElementsInstancedBaseVertexBaseInstance');
+end;
+
+procedure Read_GL_ARB_transform_feedback_instanced;
+begin
+glDrawTransformFeedbackInstanced := dglGetProcAddress('glDrawTransformFeedbackInstanced');
+glDrawTransformFeedbackStreamInstanced := dglGetProcAddress('glDrawTransformFeedbackStreamInstanced');
+end;
+
+procedure Read_GL_ARB_internalformat_query;
+begin
+glGetInternalformativ := dglGetProcAddress('glGetInternalformativ');
+end;
+
+procedure Read_GL_ARB_shader_atomic_counters;
+begin
+glGetActiveAtomicCounterBufferiv := dglGetProcAddress('glGetActiveAtomicCounterBufferiv');
+end;
+
+procedure Read_GL_ARB_shader_image_load_store;
+begin
+glBindImageTexture := dglGetProcAddress('glBindImageTexture');
+glMemoryBarrier := dglGetProcAddress('glMemoryBarrier');
+end;
+
+procedure Read_GL_ARB_texture_storage;
+begin
+glTexStorage1D := dglGetProcAddress('glTexStorage1D');
+glTexStorage2D := dglGetProcAddress('glTexStorage2D');
+glTexStorage3D := dglGetProcAddress('glTexStorage3D');
+glTextureStorage1DEXT := dglGetProcAddress('glTextureStorage1DEXT');
+glTextureStorage2DEXT := dglGetProcAddress('glTextureStorage2DEXT');
+glTextureStorage3DEXT := dglGetProcAddress('glTextureStorage3DEXT');
+end;
+
+
+// GL 4.3
+procedure Read_GL_KHR_debug;
+begin
+  glDebugMessageControl := dglGetProcAddress('glDebugMessageControl');
+  glDebugMessageInsert := dglGetProcAddress('glDebugMessageInsert');
+  glDebugMessageCallback := dglGetProcAddress('glDebugMessageCallback');
+  glGetDebugMessageLog := dglGetProcAddress('glGetDebugMessageLog');
+  glPushDebugGroup := dglGetProcAddress('glPushDebugGroup');
+  glPopDebugGroup := dglGetProcAddress('glPopDebugGroup');
+  glObjectLabel := dglGetProcAddress('glObjectLabel');
+  glGetObjectLabel := dglGetProcAddress('glGetObjectLabel');
+  glObjectPtrLabel := dglGetProcAddress('glObjectPtrLabel');
+  glGetObjectPtrLabel := dglGetProcAddress('glGetObjectPtrLabel');
+end;
+
+procedure Read_GL_ARB_clear_buffer_object;
+begin
+  glClearBufferData := dglGetProcAddress('glClearBufferData');
+  glClearBufferSubData := dglGetProcAddress('glClearBufferSubData');
+  glClearNamedBufferDataEXT := dglGetProcAddress('glClearNamedBufferDataEXT');
+  glClearNamedBufferSubDataEXT := dglGetProcAddress('glClearNamedBufferSubDataEXT');
+end;
+
+procedure Read_GL_ARB_compute_shader;
+begin
+  glDispatchCompute := dglGetProcAddress('glDispatchCompute');
+  glDispatchComputeIndirect := dglGetProcAddress('glDispatchComputeIndirect');
+end;
+
+procedure Read_GL_ARB_copy_image;
+begin
+  glCopyImageSubData := dglGetProcAddress('glCopyImageSubData');
+end;
+
+procedure Read_GL_ARB_framebuffer_no_attachments;
+begin
+  glFramebufferParameteri := dglGetProcAddress('glFramebufferParameteri');
+  glGetFramebufferParameteriv := dglGetProcAddress('glGetFramebufferParameteriv');
+  glNamedFramebufferParameteriEXT := dglGetProcAddress('glNamedFramebufferParameteriEXT');
+  glGetNamedFramebufferParameterivEXT := dglGetProcAddress('glGetNamedFramebufferParameterivEXT');
+end;
+
+procedure Read_GL_ARB_internalformat_query2;
+begin
+  glGetInternalformati64v := dglGetProcAddress('glGetInternalformati64v');;
+end;
+
+procedure Read_GL_ARB_invalidate_subdata;
+begin
+  glInvalidateTexSubImage := dglGetProcAddress('glInvalidateTexSubImage');
+  glInvalidateTexImage := dglGetProcAddress('glInvalidateTexImage');
+  glInvalidateBufferSubData := dglGetProcAddress('glInvalidateBufferSubData');
+  glInvalidateBufferData := dglGetProcAddress('glInvalidateBufferData');
+  glInvalidateFramebuffer := dglGetProcAddress('glInvalidateFramebuffer');
+  glInvalidateSubFramebuffer := dglGetProcAddress('glInvalidateSubFramebuffer');
+end;
+
+procedure Read_GL_ARB_multi_draw_indirect;
+begin
+  glMultiDrawArraysIndirect := dglGetProcAddress('glMultiDrawArraysIndirect');
+  glMultiDrawElementsIndirect := dglGetProcAddress('glMultiDrawElementsIndirect');
+end;
+
+procedure Read_GL_ARB_program_interface_query;
+begin
+  glGetProgramInterfaceiv := dglGetProcAddress('glGetProgramInterfaceiv');
+  glGetProgramResourceIndex := dglGetProcAddress('glGetProgramResourceIndex');
+  glGetProgramResourceName := dglGetProcAddress('glGetProgramResourceName');
+  glGetProgramResourceiv := dglGetProcAddress('glGetProgramResourceiv');
+  glGetProgramResourceLocation := dglGetProcAddress('glGetProgramResourceLocation');
+  glGetProgramResourceLocationIndex := dglGetProcAddress('glGetProgramResourceLocationIndex');
+end;
+
+procedure Read_GL_ARB_shader_storage_buffer_object;
+begin
+  glShaderStorageBlockBinding := dglGetProcAddress('glShaderStorageBlockBinding');
+end;
+
+procedure Read_GL_ARB_texture_buffer_range;
+begin
+  glTexBufferRange := dglGetProcAddress('glTexBufferRange');
+  glTextureBufferRangeEXT := dglGetProcAddress('glTextureBufferRangeEXT');
+end;
+
+procedure Read_GL_ARB_texture_storage_multisample;
+begin
+  glTexStorage2DMultisample := dglGetProcAddress('glTexStorage2DMultisample');
+  glTexStorage3DMultisample := dglGetProcAddress('glTexStorage3DMultisample');
+  glTextureStorage2DMultisampleEXT := dglGetProcAddress('glTextureStorage2DMultisampleEXT');
+  glTextureStorage3DMultisampleEXT := dglGetProcAddress('glTextureStorage3DMultisampleEXT');
+end;
+
+procedure Read_GL_ARB_texture_view;
+begin
+  glTextureView := dglGetProcAddress('glTextureView');
+end;
+
+procedure Read_GL_ARB_vertex_attrib_binding;
+begin
+  glBindVertexBuffer := dglGetProcAddress('glBindVertexBuffer');
+  glVertexAttribFormat := dglGetProcAddress('glVertexAttribFormat');
+  glVertexAttribIFormat := dglGetProcAddress('glVertexAttribIFormat');
+  glVertexAttribLFormat := dglGetProcAddress('glVertexAttribLFormat');
+  glVertexAttribBinding := dglGetProcAddress('glVertexAttribBinding');
+  glVertexBindingDivisor := dglGetProcAddress('glVertexBindingDivisor');
+  glVertexArrayBindVertexBufferEXT := dglGetProcAddress('glVertexArrayBindVertexBufferEXT');
+  glVertexArrayVertexAttribFormatEXT := dglGetProcAddress('glVertexArrayVertexAttribFormatEXT');
+  glVertexArrayVertexAttribIFormatEXT := dglGetProcAddress('glVertexArrayVertexAttribIFormatEXT');
+  glVertexArrayVertexAttribLFormatEXT := dglGetProcAddress('glVertexArrayVertexAttribLFormatEXT');
+  glVertexArrayVertexAttribBindingEXT := dglGetProcAddress('glVertexArrayVertexAttribBindingEXT');
+  glVertexArrayVertexBindingDivisorEXT := dglGetProcAddress('glVertexArrayVertexBindingDivisorEXT');
+end;
+
+procedure Read_GL_4_4;
+begin
+  glBufferStorage     := dglGetProcAddress('glBufferStorage');
+  glClearTexImage     := dglGetProcAddress('glClearTexImage');
+  glClearTexSubImage  := dglGetProcAddress('glClearTexSubImage');
+  glBindBuffersBase   := dglGetProcAddress('glBindBuffersBase');
+  glBindBuffersRange  := dglGetProcAddress('glBindBuffersRange');
+  glBindTextures      := dglGetProcAddress('glBindTextures');
+  glBindSamplers      := dglGetProcAddress('glBindSamplers');
+  glBindImageTextures := dglGetProcAddress('glBindImageTextures');
+  glBindVertexBuffers := dglGetProcAddress('glBindVertexBuffers');
+end;
+
+procedure Read_GL_4_5;
+begin
+  glClipControl:= dglGetProcAddress('glClipControl');
+  glCreateTransformFeedbacks:= dglGetProcAddress('glCreateTransformFeedbacks');
+  glTransformFeedbackBufferBase:= dglGetProcAddress('glTransformFeedbackBufferBase');
+  glTransformFeedbackBufferRange:= dglGetProcAddress('glTransformFeedbackBufferRange');
+  glGetTransformFeedbackiv:= dglGetProcAddress('glGetTransformFeedbackiv');
+  glGetTransformFeedbacki_v:= dglGetProcAddress('glGetTransformFeedbacki_v');
+  glGetTransformFeedbacki64_v:= dglGetProcAddress('glGetTransformFeedbacki64_v');
+  glCreateBuffers:= dglGetProcAddress('glCreateBuffers');
+  glNamedBufferStorage:= dglGetProcAddress('glNamedBufferStorage');
+  glNamedBufferData:= dglGetProcAddress('glNamedBufferData');
+  glNamedBufferSubData:= dglGetProcAddress('glNamedBufferSubData');
+  glCopyNamedBufferSubData:= dglGetProcAddress('glCopyNamedBufferSubData');
+  glClearNamedBufferData:= dglGetProcAddress('glClearNamedBufferData');
+  glClearNamedBufferSubData:= dglGetProcAddress('glClearNamedBufferSubData');
+  glMapNamedBuffer:= dglGetProcAddress('glMapNamedBuffer');
+  glMapNamedBufferRange:= dglGetProcAddress('glMapNamedBufferRange');
+  glUnmapNamedBuffer:= dglGetProcAddress('glUnmapNamedBuffer');
+  glFlushMappedNamedBufferRange:= dglGetProcAddress('glFlushMappedNamedBufferRange');
+  glGetNamedBufferParameteriv:= dglGetProcAddress('glGetNamedBufferParameteriv');
+  glGetNamedBufferParameteri64v:= dglGetProcAddress('glGetNamedBufferParameteri64v');
+  glGetNamedBufferPointerv:= dglGetProcAddress('glGetNamedBufferPointerv');
+  glGetNamedBufferSubData:= dglGetProcAddress('glGetNamedBufferSubData');
+  glCreateFramebuffers:= dglGetProcAddress('glCreateFramebuffers');
+  glNamedFramebufferRenderbuffer:= dglGetProcAddress('glNamedFramebufferRenderbuffer');
+  glNamedFramebufferParameteri:= dglGetProcAddress('glNamedFramebufferParameteri');
+  glNamedFramebufferTexture:= dglGetProcAddress('glNamedFramebufferTexture');
+  glNamedFramebufferTextureLayer:= dglGetProcAddress('glNamedFramebufferTextureLayer');
+  glNamedFramebufferDrawBuffer:= dglGetProcAddress('glNamedFramebufferDrawBuffer');
+  glNamedFramebufferDrawBuffers:= dglGetProcAddress('glNamedFramebufferDrawBuffers');
+  glNamedFramebufferReadBuffer:= dglGetProcAddress('glNamedFramebufferReadBuffer');
+  glInvalidateNamedFramebufferData:= dglGetProcAddress('glInvalidateNamedFramebufferData');
+  glInvalidateNamedFramebufferSubData:= dglGetProcAddress('glInvalidateNamedFramebufferSubData');
+  glClearNamedFramebufferiv:= dglGetProcAddress('glClearNamedFramebufferiv');
+  glClearNamedFramebufferuiv:= dglGetProcAddress('glClearNamedFramebufferuiv');
+  glClearNamedFramebufferfv:= dglGetProcAddress('glClearNamedFramebufferfv');
+  glClearNamedFramebufferfi:= dglGetProcAddress('glClearNamedFramebufferfi');
+  glBlitNamedFramebuffer:= dglGetProcAddress('glBlitNamedFramebuffer');
+  glCheckNamedFramebufferStatus:= dglGetProcAddress('glCheckNamedFramebufferStatus');
+  glGetNamedFramebufferParameteriv:= dglGetProcAddress('glGetNamedFramebufferParameteriv');
+  glGetNamedFramebufferAttachmentParameteriv:= dglGetProcAddress('glGetNamedFramebufferAttachmentParameteriv');
+  glCreateRenderbuffers:= dglGetProcAddress('glCreateRenderbuffers');
+  glNamedRenderbufferStorage:= dglGetProcAddress('glNamedRenderbufferStorage');
+  glNamedRenderbufferStorageMultisample:= dglGetProcAddress('glNamedRenderbufferStorageMultisample');
+  glGetNamedRenderbufferParameteriv:= dglGetProcAddress('glGetNamedRenderbufferParameteriv');
+  glCreateTextures:= dglGetProcAddress('glCreateTextures');
+  glTextureBuffer:= dglGetProcAddress('glTextureBuffer');
+  glTextureBufferRange:= dglGetProcAddress('glTextureBufferRange');
+  glTextureStorage1D:= dglGetProcAddress('glTextureStorage1D');
+  glTextureStorage2D:= dglGetProcAddress('glTextureStorage2D');
+  glTextureStorage3D:= dglGetProcAddress('glTextureStorage3D');
+  glTextureStorage2DMultisample:= dglGetProcAddress('glTextureStorage2DMultisample');
+  glTextureStorage3DMultisample:= dglGetProcAddress('glTextureStorage3DMultisample');
+  glTextureSubImage1D:= dglGetProcAddress('glTextureSubImage1D');
+  glTextureSubImage2D:= dglGetProcAddress('glTextureSubImage2D');
+  glTextureSubImage3D:= dglGetProcAddress('glTextureSubImage3D');
+  glCompressedTextureSubImage1D:= dglGetProcAddress('glCompressedTextureSubImage1D');
+  glCompressedTextureSubImage2D:= dglGetProcAddress('glCompressedTextureSubImage2D');
+  glCompressedTextureSubImage3D:= dglGetProcAddress('glCompressedTextureSubImage3D');
+  glCopyTextureSubImage1D:= dglGetProcAddress('glCopyTextureSubImage1D');
+  glCopyTextureSubImage2D:= dglGetProcAddress('glCopyTextureSubImage2D');
+  glCopyTextureSubImage3D:= dglGetProcAddress('glCopyTextureSubImage3D');
+  glTextureParameterf:= dglGetProcAddress('glTextureParameterf');
+  glTextureParameterfv:= dglGetProcAddress('glTextureParameterfv');
+  glTextureParameteri:= dglGetProcAddress('glTextureParameteri');
+  glTextureParameterIiv:= dglGetProcAddress('glTextureParameterIiv');
+  glTextureParameterIuiv:= dglGetProcAddress('glTextureParameterIuiv');
+  glTextureParameteriv:= dglGetProcAddress('glTextureParameteriv');
+  glGenerateTextureMipmap:= dglGetProcAddress('glGenerateTextureMipmap');
+  glBindTextureUnit:= dglGetProcAddress('glBindTextureUnit');
+  glGetTextureImage:= dglGetProcAddress('glGetTextureImage');
+  glGetCompressedTextureImage:= dglGetProcAddress('glGetCompressedTextureImage');
+  glGetTextureLevelParameterfv:= dglGetProcAddress('glGetTextureLevelParameterfv');
+  glGetTextureLevelParameteriv:= dglGetProcAddress('glGetTextureLevelParameteriv');
+  glGetTextureParameterfv:= dglGetProcAddress('glGetTextureParameterfv');
+  glGetTextureParameterIiv:= dglGetProcAddress('glGetTextureParameterIiv');
+  glGetTextureParameterIuiv:= dglGetProcAddress('glGetTextureParameterIuiv');
+  glGetTextureParameteriv:= dglGetProcAddress('glGetTextureParameteriv');
+  glCreateVertexArrays:= dglGetProcAddress('glCreateVertexArrays');
+  glDisableVertexArrayAttrib:= dglGetProcAddress('glDisableVertexArrayAttrib');
+  glEnableVertexArrayAttrib:= dglGetProcAddress('glEnableVertexArrayAttrib');
+  glVertexArrayElementBuffer:= dglGetProcAddress('glVertexArrayElementBuffer');
+  glVertexArrayVertexBuffer:= dglGetProcAddress('glVertexArrayVertexBuffer');
+  glVertexArrayVertexBuffers:= dglGetProcAddress('glVertexArrayVertexBuffers');
+  glVertexArrayAttribBinding:= dglGetProcAddress('glVertexArrayAttribBinding');
+  glVertexArrayAttribFormat:= dglGetProcAddress('glVertexArrayAttribFormat');
+  glVertexArrayAttribIFormat:= dglGetProcAddress('glVertexArrayAttribIFormat');
+  glVertexArrayAttribLFormat:= dglGetProcAddress('glVertexArrayAttribLFormat');
+  glVertexArrayBindingDivisor:= dglGetProcAddress('glVertexArrayBindingDivisor');
+  glGetVertexArrayiv:= dglGetProcAddress('glGetVertexArrayiv');
+  glGetVertexArrayIndexediv:= dglGetProcAddress('glGetVertexArrayIndexediv');
+  glGetVertexArrayIndexed64iv:= dglGetProcAddress('glGetVertexArrayIndexed64iv');
+  glCreateSamplers:= dglGetProcAddress('glCreateSamplers');
+  glCreateProgramPipelines:= dglGetProcAddress('glCreateProgramPipelines');
+  glCreateQueries:= dglGetProcAddress('glCreateQueries');
+  glMemoryBarrierByRegion:= dglGetProcAddress('glMemoryBarrierByRegion');
+  glGetTextureSubImage:= dglGetProcAddress('glGetTextureSubImage');
+  glGetCompressedTextureSubImage:= dglGetProcAddress('glGetCompressedTextureSubImage');
+  glGetGraphicsResetStatus:= dglGetProcAddress('glGetGraphicsResetStatus');
+  glGetnCompressedTexImage:= dglGetProcAddress('glGetnCompressedTexImage');
+  glGetnTexImage:= dglGetProcAddress('glGetnTexImage');
+  glGetnUniformdv:= dglGetProcAddress('glGetnUniformdv');
+  glGetnUniformfv:= dglGetProcAddress('glGetnUniformfv');
+  glGetnUniformiv:= dglGetProcAddress('glGetnUniformiv');
+  glGetnUniformuiv:= dglGetProcAddress('glGetnUniformuiv');
+  glReadnPixels:= dglGetProcAddress('glReadnPixels');
+  glGetnMapdv:= dglGetProcAddress('glGetnMapdv');
+  glGetnMapfv:= dglGetProcAddress('glGetnMapfv');
+  glGetnMapiv:= dglGetProcAddress('glGetnMapiv');
+  glGetnPixelMapfv:= dglGetProcAddress('glGetnPixelMapfv');
+  glGetnPixelMapuiv:= dglGetProcAddress('glGetnPixelMapuiv');
+  glGetnPixelMapusv:= dglGetProcAddress('glGetnPixelMapusv');
+  glGetnPolygonStipple:= dglGetProcAddress('glGetnPolygonStipple');
+  glGetnColorTable:= dglGetProcAddress('glGetnColorTable');
+  glGetnConvolutionFilter:= dglGetProcAddress('glGetnConvolutionFilter');
+  glGetnSeparableFilter:= dglGetProcAddress('glGetnSeparableFilter');
+  glGetnHistogram:= dglGetProcAddress('glGetnHistogram');
+  glGetnMinmax:= dglGetProcAddress('glGetnMinmax');
+  glTextureBarrier:= dglGetProcAddress('glTextureBarrier');
+end;
+
+procedure Read_GL_4_6;
+begin
+  glSpecializeShader := dglGetProcAddress('glSpecializeShader'); 
+  glMultiDrawArraysIndirectCount := dglGetProcAddress('glMultiDrawArraysIndirectCount');
+  glMultiDrawElementsIndirectCount := dglGetProcAddress('glMultiDrawElementsIndirectCount');
+  glPolygonOffsetClamp := dglGetProcAddress('glPolygonOffsetClamp');
+end;
+
+procedure Read_GL_NV_path_rendering;
+begin
+  glGenPathsNV := dglGetProcAddress('glGenPathsNV');
+  glDeletePathsNV := dglGetProcAddress('glDeletePathsNV');
+  glIsPathNV := dglGetProcAddress('glIsPathNV');
+  glPathCommandsNV := dglGetProcAddress('glPathCommandsNV');
+  glPathCoordsNV := dglGetProcAddress('glPathCoordsNV');
+  glPathSubCommandsNV := dglGetProcAddress('glPathSubCommandsNV');
+  glPathSubCoordsNV := dglGetProcAddress('glPathSubCoordsNV');
+  glPathStringNV := dglGetProcAddress('glPathStringNV');
+  glPathGlyphsNV := dglGetProcAddress('glPathGlyphsNV');
+  glPathGlyphRangeNV := dglGetProcAddress('glPathGlyphRangeNV');
+  glWeightPathsNV := dglGetProcAddress('glWeightPathsNV');
+  glCopyPathNV := dglGetProcAddress('glCopyPathNV');
+  glInterpolatePathsNV := dglGetProcAddress('glInterpolatePathsNV');
+  glTransformPathNV := dglGetProcAddress('glTransformPathNV');
+  glPathParameterivNV := dglGetProcAddress('glPathParameterivNV');
+  glPathParameteriNV := dglGetProcAddress('glPathParameteriNV');
+  glPathParameterfvNV := dglGetProcAddress('glPathParameterfvNV');
+  glPathParameterfNV := dglGetProcAddress('glPathParameterfNV');
+  glPathDashArrayNV := dglGetProcAddress('glPathDashArrayNV');
+  glPathStencilFuncNV := dglGetProcAddress('glPathStencilFuncNV');
+  glPathStencilDepthOffsetNV := dglGetProcAddress('glPathStencilDepthOffsetNV');
+  glStencilFillPathNV := dglGetProcAddress('glStencilFillPathNV');
+  glStencilStrokePathNV := dglGetProcAddress('glStencilStrokePathNV');
+  glStencilFillPathInstancedNV := dglGetProcAddress('glStencilFillPathInstancedNV');
+  glStencilStrokePathInstancedNV := dglGetProcAddress('glStencilStrokePathInstancedNV');
+  glPathCoverDepthFuncNV := dglGetProcAddress('glPathCoverDepthFuncNV');
+  glPathColorGenNV := dglGetProcAddress('glPathColorGenNV');
+  glPathTexGenNV := dglGetProcAddress('glPathTexGenNV');
+  glPathFogGenNV := dglGetProcAddress('glPathFogGenNV');
+  glCoverFillPathNV := dglGetProcAddress('glCoverFillPathNV');
+  glCoverStrokePathNV := dglGetProcAddress('glCoverStrokePathNV');
+  glCoverFillPathInstancedNV := dglGetProcAddress('glCoverFillPathInstancedNV');
+  glCoverStrokePathInstancedNV := dglGetProcAddress('glCoverStrokePathInstancedNV');
+  glGetPathParameterivNV := dglGetProcAddress('glGetPathParameterivNV');
+  glGetPathParameterfvNV := dglGetProcAddress('glGetPathParameterfvNV');
+  glGetPathCommandsNV := dglGetProcAddress('glGetPathCommandsNV');
+  glGetPathCoordsNV := dglGetProcAddress('glGetPathCoordsNV');
+  glGetPathDashArrayNV := dglGetProcAddress('glGetPathDashArrayNV');
+  glGetPathMetricsNV := dglGetProcAddress('glGetPathMetricsNV');
+  glGetPathMetricRangeNV := dglGetProcAddress('glGetPathMetricRangeNV');
+  glGetPathSpacingNV := dglGetProcAddress('glGetPathSpacingNV');
+  glGetPathColorGenivNV := dglGetProcAddress('glGetPathColorGenivNV');
+  glGetPathColorGenfvNV := dglGetProcAddress('glGetPathColorGenfvNV');
+  glGetPathTexGenivNV := dglGetProcAddress('glGetPathTexGenivNV');
+  glGetPathTexGenfvNV := dglGetProcAddress('glGetPathTexGenfvNV');
+  glIsPointInFillPathNV := dglGetProcAddress('glIsPointInFillPathNV');
+  glIsPointInStrokePathNV := dglGetProcAddress('glIsPointInStrokePathNV');
+  glGetPathLengthNV := dglGetProcAddress('glGetPathLengthNV');
+  glPointAlongPathNV := dglGetProcAddress('glPointAlongPathNV');
+end;
+
+procedure Read_GL_AMD_stencil_operation_extended;
+begin
+	glStencilOpValueAMD := dglGetProcAddress('glStencilOpValueAMD');
+end;
+
+procedure Read_GL_NV_bindless_texture;
+begin
+  glGetTextureHandleNV := dglGetProcAddress('glGetTextureHandleNV');
+  glGetTextureSamplerHandleNV := dglGetProcAddress('glGetTextureSamplerHandleNV');
+  glMakeTextureHandleResidentNV := dglGetProcAddress('glMakeTextureHandleResidentNV');
+  glMakeTextureHandleNonResidentNV := dglGetProcAddress('glMakeTextureHandleNonResidentNV');
+  glGetImageHandleNV := dglGetProcAddress('glGetImageHandleNV');
+  glMakeImageHandleResidentNV := dglGetProcAddress('glMakeImageHandleResidentNV');
+  glMakeImageHandleNonResidentNV := dglGetProcAddress('glMakeImageHandleNonResidentNV');
+  glUniformHandleui64NV := dglGetProcAddress('glUniformHandleui64NV');
+  glUniformHandleui64vNV := dglGetProcAddress('glUniformHandleui64vNV');
+  glProgramUniformHandleui64NV := dglGetProcAddress('glProgramUniformHandleui64NV');
+  glProgramUniformHandleui64vNV := dglGetProcAddress('glProgramUniformHandleui64vNV');
+  glIsTextureHandleResidentNV := dglGetProcAddress('glIsTextureHandleResidentNV');
+  glIsImageHandleResidentNV := dglGetProcAddress('glIsImageHandleResidentNV');
+end;
+
+procedure Read_GL_ARB_bindless_texture;
+begin
+  glGetTextureHandleARB := dglGetProcAddress('glGetTextureHandleARB');
+  glGetTextureSamplerHandleARB := dglGetProcAddress('glGetTextureSamplerHandleARB');
+  glMakeTextureHandleResidentARB := dglGetProcAddress('glMakeTextureHandleResidentARB');
+  glMakeTextureHandleNonResidentARB := dglGetProcAddress('glMakeTextureHandleNonResidentARB');
+  glGetImageHandleARB := dglGetProcAddress('glGetImageHandleARB');
+  glMakeImageHandleResidentARB := dglGetProcAddress('glMakeImageHandleResidentARB');
+  glMakeImageHandleNonResidentARB := dglGetProcAddress('glMakeImageHandleNonResidentARB');
+  glUniformHandleui64ARB := dglGetProcAddress('glUniformHandleui64ARB');
+  glUniformHandleui64vARB := dglGetProcAddress('glUniformHandleui64vARB');
+  glProgramUniformHandleui64ARB := dglGetProcAddress('glProgramUniformHandleui64ARB');
+  glProgramUniformHandleui64vARB := dglGetProcAddress('glProgramUniformHandleui64vARB');
+  glIsTextureHandleResidentARB := dglGetProcAddress('glIsTextureHandleResidentARB');
+  glIsImageHandleResidentARB := dglGetProcAddress('glIsImageHandleResidentARB');
+  glVertexAttribL1ui64ARB := dglGetProcAddress('glVertexAttribL1ui64ARB');
+  glVertexAttribL1ui64vARB := dglGetProcAddress('glVertexAttribL1ui64vARB');
+  glGetVertexAttribLui64vARB := dglGetProcAddress('glGetVertexAttribLui64vARB');
+end;
+
 procedure Read_GL_ARB_cl_event;
 begin
   glCreateSyncFromCLeventARB := dglGetProcAddress('glCreateSyncFromCLeventARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_debug_output
-//
-//==============================================================================
+procedure Read_GL_ARB_compute_variable_group_size;
+begin
+  glDispatchComputeGroupSizeARB := dglGetProcAddress('glDispatchComputeGroupSizeARB');
+end;
+
 procedure Read_GL_ARB_debug_output;
 begin
   glDebugMessageControlARB := dglGetProcAddress('glDebugMessageControlARB');
@@ -16551,11 +17449,6 @@ begin
   glGetDebugMessageLogARB := dglGetProcAddress('glGetDebugMessageLogARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ARB_robustness
-//
-//==============================================================================
 procedure Read_GL_ARB_robustness;
 begin
   glGetGraphicsResetStatusARB := dglGetProcAddress('glGetGraphicsResetStatusARB');
@@ -16580,21 +17473,11 @@ begin
   glGetnUniformdvARB := dglGetProcAddress('glGetnUniformdvARB');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_draw_buffers
-//
-//==============================================================================
 procedure Read_GL_ATI_draw_buffers;
 begin
   glDrawBuffersATI := dglGetProcAddress('glDrawBuffersATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_element_array
-//
-//==============================================================================
 procedure Read_GL_ATI_element_array;
 begin
   glElementPointerATI := dglGetProcAddress('glElementPointerATI');
@@ -16602,11 +17485,6 @@ begin
   glDrawRangeElementArrayATI := dglGetProcAddress('glDrawRangeElementArrayATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_envmap_bumpmap
-//
-//==============================================================================
 procedure Read_GL_ATI_envmap_bumpmap;
 begin
   glTexBumpParameterivATI := dglGetProcAddress('glTexBumpParameterivATI');
@@ -16615,11 +17493,6 @@ begin
   glGetTexBumpParameterfvATI := dglGetProcAddress('glGetTexBumpParameterfvATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_fragment_shader
-//
-//==============================================================================
 procedure Read_GL_ATI_fragment_shader;
 begin
   glGenFragmentShadersATI := dglGetProcAddress('glGenFragmentShadersATI');
@@ -16638,44 +17511,24 @@ begin
   glSetFragmentShaderConstantATI := dglGetProcAddress('glSetFragmentShaderConstantATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_map_object_buffer
-//
-//==============================================================================
 procedure Read_GL_ATI_map_object_buffer;
 begin
   glMapObjectBufferATI := dglGetProcAddress('glMapObjectBufferATI');
   glUnmapObjectBufferATI := dglGetProcAddress('glUnmapObjectBufferATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_pn_triangles
-//
-//==============================================================================
 procedure Read_GL_ATI_pn_triangles;
 begin
   glPNTrianglesiATI := dglGetProcAddress('glPNTrianglesiATI');
   glPNTrianglesfATI := dglGetProcAddress('glPNTrianglesfATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_separate_stencil
-//
-//==============================================================================
 procedure Read_GL_ATI_separate_stencil;
 begin
   glStencilOpSeparateATI := dglGetProcAddress('glStencilOpSeparateATI');
   glStencilFuncSeparateATI := dglGetProcAddress('glStencilFuncSeparateATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_vertex_array_object
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_array_object;
 begin
   glNewObjectBufferATI := dglGetProcAddress('glNewObjectBufferATI');
@@ -16693,11 +17546,6 @@ begin
 
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_vertex_attrib_array_object
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_attrib_array_object;
 begin
   glVertexAttribArrayObjectATI := dglGetProcAddress('glVertexAttribArrayObjectATI');
@@ -16705,11 +17553,6 @@ begin
   glGetVertexAttribArrayObjectivATI := dglGetProcAddress('glGetVertexAttribArrayObjectivATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_ATI_vertex_streams
-//
-//==============================================================================
 procedure Read_GL_ATI_vertex_streams;
 begin
   glVertexStream1sATI := dglGetProcAddress('glVertexStream1sATI');
@@ -16759,11 +17602,6 @@ begin
   glVertexBlendEnvfATI := dglGetProcAddress('glVertexBlendEnvfATI');
 end;
 
-//==============================================================================
-//
-// Read_GL_AMD_performance_monitor
-//
-//==============================================================================
 procedure Read_GL_AMD_performance_monitor;
 begin
   glGetPerfMonitorGroupsAMD := dglGetProcAddress('glGetPerfMonitorGroupsAMD');
@@ -16779,22 +17617,12 @@ begin
   glGetPerfMonitorCounterDataAMD := dglGetProcAddress('glGetPerfMonitorCounterDataAMD');
 end;
 
-//==============================================================================
-//
-// Read_GL_AMD_vertex_shader_tesselator
-//
-//==============================================================================
 procedure Read_GL_AMD_vertex_shader_tesselator;
 begin
   glTessellationFactorAMD := dglGetProcAddress('glTessellationFactorAMD');
   glTessellationModeAMD := dglGetProcAddress('glTessellationModeAMD');
 end;
 
-//==============================================================================
-//
-// Read_GL_AMD_draw_buffers_blend
-//
-//==============================================================================
 procedure Read_GL_AMD_draw_buffers_blend;
 begin
   glBlendFuncIndexedAMD := dglGetProcAddress('glBlendFuncIndexedAMD');
@@ -16803,11 +17631,6 @@ begin
   glBlendEquationSeparateIndexedAMD := dglGetProcAddress('glBlendEquationSeparateIndexedAMD');
 end;
 
-//==============================================================================
-//
-// Read_GL_AMD_name_gen_delete
-//
-//==============================================================================
 procedure Read_GL_AMD_name_gen_delete;
 begin
   glGenNamesAMD := dglGetProcAddress('glGenNamesAMD');
@@ -16815,11 +17638,6 @@ begin
   glIsNameAMD := dglGetProcAddress('glIsNameAMD');
 end;
 
-//==============================================================================
-//
-// Read_GL_AMD_debug_output
-//
-//==============================================================================
 procedure Read_GL_AMD_debug_output;
 begin
   glDebugMessageEnableAMD := dglGetProcAddress('glDebugMessageEnableAMD');
@@ -16828,63 +17646,33 @@ begin
   glGetDebugMessageLogAMD := dglGetProcAddress('glGetDebugMessageLogAMD');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_blend_color
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_color;
 begin
   glBlendColorEXT := dglGetProcAddress('glBlendColorEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_blend_func_separate
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_func_separate;
 begin
   glBlendFuncSeparateEXT := dglGetProcAddress('glBlendFuncSeparateEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_blend_minmax
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_minmax;
 begin
   glBlendEquationEXT := dglGetProcAddress('glBlendEquationEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_color_subtable
-//
-//==============================================================================
 procedure Read_GL_EXT_color_subtable;
 begin
   glColorSubTableEXT := dglGetProcAddress('glColorSubTableEXT');
   glCopyColorSubTableEXT := dglGetProcAddress('glCopyColorSubTableEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_compiled_vertex_array
-//
-//==============================================================================
 procedure Read_GL_EXT_compiled_vertex_array;
 begin
   glLockArraysEXT := dglGetProcAddress('glLockArraysEXT');
   glUnlockArraysEXT := dglGetProcAddress('glUnlockArraysEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_convolution
-//
-//==============================================================================
 procedure Read_GL_EXT_convolution;
 begin
   glConvolutionFilter1DEXT := dglGetProcAddress('glConvolutionFilter1DEXT');
@@ -16902,11 +17690,6 @@ begin
   glSeparableFilter2DEXT := dglGetProcAddress('glSeparableFilter2DEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_coordinate_frame
-//
-//==============================================================================
 procedure Read_GL_EXT_coordinate_frame;
 begin
   glTangent3bEXT := dglGetProcAddress('glTangent3bEXT');
@@ -16933,11 +17716,6 @@ begin
   glBinormalPointerEXT := dglGetProcAddress('glBinormalPointerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_copy_texture
-//
-//==============================================================================
 procedure Read_GL_EXT_copy_texture;
 begin
   glCopyTexImage1DEXT := dglGetProcAddress('glCopyTexImage1DEXT');
@@ -16947,32 +17725,17 @@ begin
   glCopyTexSubImage3DEXT := dglGetProcAddress('glCopyTexSubImage3DEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_cull_vertex
-//
-//==============================================================================
 procedure Read_GL_EXT_cull_vertex;
 begin
   glCullParameterdvEXT := dglGetProcAddress('glCullParameterdvEXT');
   glCullParameterfvEXT := dglGetProcAddress('glCullParameterfvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_draw_range_elements
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_range_elements;
 begin
   glDrawRangeElementsEXT := dglGetProcAddress('glDrawRangeElementsEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_fog_coord
-//
-//==============================================================================
 procedure Read_GL_EXT_fog_coord;
 begin
   glFogCoordfEXT := dglGetProcAddress('glFogCoordfEXT');
@@ -16982,11 +17745,6 @@ begin
   glFogCoordPointerEXT := dglGetProcAddress('glFogCoordPointerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_object
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_object;
 begin
   glIsRenderbufferEXT := dglGetProcAddress('glIsRenderbufferEXT');
@@ -17008,11 +17766,6 @@ begin
   glGenerateMipmapEXT := dglGetProcAddress('glGenerateMipmapEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_histogram
-//
-//==============================================================================
 procedure Read_GL_EXT_histogram;
 begin
   glGetHistogramEXT := dglGetProcAddress('glGetHistogramEXT');
@@ -17027,31 +17780,16 @@ begin
   glResetMinmaxEXT := dglGetProcAddress('glResetMinmaxEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_index_func
-//
-//==============================================================================
 procedure Read_GL_EXT_index_func;
 begin
   glIndexFuncEXT := dglGetProcAddress('glIndexFuncEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_index_material
-//
-//==============================================================================
 procedure Read_GL_EXT_index_material;
 begin
   glIndexMaterialEXT := dglGetProcAddress('glIndexMaterialEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_light_texture
-//
-//==============================================================================
 procedure Read_GL_EXT_light_texture;
 begin
   glApplyTextureEXT := dglGetProcAddress('glApplyTextureEXT');
@@ -17059,33 +17797,18 @@ begin
   glTextureMaterialEXT := dglGetProcAddress('glTextureMaterialEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_multi_draw_arrays
-//
-//==============================================================================
 procedure Read_GL_EXT_multi_draw_arrays;
 begin
   glMultiDrawArraysEXT := dglGetProcAddress('glMultiDrawArraysEXT');
   glMultiDrawElementsEXT := dglGetProcAddress('glMultiDrawElementsEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_multisample
-//
-//==============================================================================
 procedure Read_GL_EXT_multisample;
 begin
   glSampleMaskEXT := dglGetProcAddress('glSampleMaskEXT');
   glSamplePatternEXT := dglGetProcAddress('glSamplePatternEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_paletted_texture
-//
-//==============================================================================
 procedure Read_GL_EXT_paletted_texture;
 begin
   glColorTableEXT := dglGetProcAddress('glColorTableEXT');
@@ -17094,11 +17817,6 @@ begin
   glGetColorTableParameterfvEXT := dglGetProcAddress('glGetColorTableParameterfvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_pixel_transform
-//
-//==============================================================================
 procedure Read_GL_EXT_pixel_transform;
 begin
   glPixelTransformParameteriEXT := dglGetProcAddress('glPixelTransformParameteriEXT');
@@ -17107,32 +17825,17 @@ begin
   glPixelTransformParameterfvEXT := dglGetProcAddress('glPixelTransformParameterfvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_point_parameters
-//
-//==============================================================================
 procedure Read_GL_EXT_point_parameters;
 begin
   glPointParameterfEXT := dglGetProcAddress('glPointParameterfEXT');
   glPointParameterfvEXT := dglGetProcAddress('glPointParameterfvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_polygon_offset
-//
-//==============================================================================
 procedure Read_GL_EXT_polygon_offset;
 begin
   glPolygonOffsetEXT := dglGetProcAddress('glPolygonOffsetEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_secondary_color
-//
-//==============================================================================
 procedure Read_GL_EXT_secondary_color;
 begin
   glSecondaryColor3bEXT := dglGetProcAddress('glSecondaryColor3bEXT');
@@ -17154,43 +17857,23 @@ begin
   glSecondaryColorPointerEXT := dglGetProcAddress('glSecondaryColorPointerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_stencil_two_side
-//
-//==============================================================================
 procedure Read_GL_EXT_stencil_two_side;
 begin
   glActiveStencilFaceEXT := dglGetProcAddress('glActiveStencilFaceEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_subtexture
-//
-//==============================================================================
 procedure Read_GL_EXT_subtexture;
 begin
   glTexSubImage1DEXT := dglGetProcAddress('glTexSubImage1DEXT');
   glTexSubImage2DEXT := dglGetProcAddress('glTexSubImage2DEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture3D
-//
-//==============================================================================
 procedure Read_GL_EXT_texture3D;
 begin
   glTexImage3DEXT := dglGetProcAddress('glTexImage3DEXT');
   glTexSubImage3DEXT := dglGetProcAddress('glTexSubImage3DEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture_object
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_object;
 begin
   glAreTexturesResidentEXT := dglGetProcAddress('glAreTexturesResidentEXT');
@@ -17201,21 +17884,11 @@ begin
   glPrioritizeTexturesEXT := dglGetProcAddress('glPrioritizeTexturesEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture_perturb_normal
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_perturb_normal;
 begin
   glTextureNormalEXT := dglGetProcAddress('glTextureNormalEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_vertex_array
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_array;
 begin
   glArrayElementEXT := dglGetProcAddress('glArrayElementEXT');
@@ -17229,11 +17902,6 @@ begin
   glVertexPointerEXT := dglGetProcAddress('glVertexPointerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_vertex_shader
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_shader;
 begin
   glBeginVertexShaderEXT := dglGetProcAddress('glBeginVertexShaderEXT');
@@ -17280,11 +17948,6 @@ begin
   glGetLocalConstantFloatvEXT := dglGetProcAddress('glGetLocalConstantFloatvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_vertex_weighting
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_weighting;
 begin
   glVertexWeightfEXT := dglGetProcAddress('glVertexWeightfEXT');
@@ -17292,84 +17955,44 @@ begin
   glVertexWeightPointerEXT := dglGetProcAddress('glVertexWeightPointerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_depth_bounds_test
-//
-//==============================================================================
 procedure Read_GL_EXT_depth_bounds_test;
 begin
   glImageTransformParameteriHP := dglGetProcAddress('glImageTransformParameteriHP');
   glDepthBoundsEXT := dglGetProcAddress('glDepthBoundsEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_blend_equation_separate
-//
-//==============================================================================
 procedure Read_GL_EXT_blend_equation_separate;
 begin
   glBlendEquationSeparateEXT := dglGetProcAddress('glBlendEquationSeparateEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_stencil_clear_tag
-//
-//==============================================================================
 procedure Read_GL_EXT_stencil_clear_tag;
 begin
   glStencilClearTagEXT := dglGetProcAddress('glStencilClearTagEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_blit
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_blit;
 begin
   glBlitFramebufferEXT := dglGetProcAddress('glBlitFramebufferEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_framebuffer_multisample
-//
-//==============================================================================
 procedure Read_GL_EXT_framebuffer_multisample;
 begin
   glRenderbufferStorageMultisampleEXT := dglGetProcAddress('glRenderbufferStorageMultisampleEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_timer_query
-//
-//==============================================================================
 procedure Read_GL_EXT_timer_query;
 begin
   glGetQueryObjecti64vEXT := dglGetProcAddress('glGetQueryObjecti64vEXT');
   glGetQueryObjectui64vEXT := dglGetProcAddress('glGetQueryObjectui64vEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_gpu_program_parameters
-//
-//==============================================================================
 procedure Read_GL_EXT_gpu_program_parameters;
 begin
   glProgramEnvParameters4fvEXT := dglGetProcAddress('glProgramEnvParameters4fvEXT');
   glProgramLocalParameters4fvEXT := dglGetProcAddress('glProgramLocalParameters4fvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_bindable_uniform
-//
-//==============================================================================
 procedure Read_GL_EXT_bindable_uniform;
 begin
   glUniformBufferEXT := dglGetProcAddress('glUniformBufferEXT');
@@ -17377,11 +18000,6 @@ begin
   glGetUniformOffsetEXT := dglGetProcAddress('glGetUniformOffsetEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_draw_buffers2
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_buffers2;
 begin
   glColorMaskIndexedEXT := dglGetProcAddress('glColorMaskIndexedEXT');
@@ -17392,22 +18010,12 @@ begin
   glIsEnabledIndexedEXT := dglGetProcAddress('glIsEnabledIndexedEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_draw_instanced
-//
-//==============================================================================
 procedure Read_GL_EXT_draw_instanced;
 begin
   glDrawArraysInstancedEXT := dglGetProcAddress('glDrawArraysInstancedEXT');
   glDrawElementsInstancedEXT := dglGetProcAddress('glDrawElementsInstancedEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_geometry_shader4
-//
-//==============================================================================
 procedure Read_GL_EXT_geometry_shader4;
 begin
   glProgramParameteriEXT := dglGetProcAddress('glProgramParameteriEXT');
@@ -17416,11 +18024,6 @@ begin
   glFramebufferTextureFaceEXT := dglGetProcAddress('glFramebufferTextureFaceEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_gpu_shader4
-//
-//==============================================================================
 procedure Read_GL_EXT_gpu_shader4;
 begin
   glVertexAttribI1iEXT := dglGetProcAddress('glVertexAttribI1iEXT');
@@ -17459,31 +18062,16 @@ begin
   glGetFragDataLocationEXT := dglGetProcAddress('glGetFragDataLocationEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture_array
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_array;
 begin
   glFramebufferTextureLayerEXT := dglGetProcAddress('glFramebufferTextureLayerEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture_buffer_object
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_buffer_object;
 begin
   glTexBufferEXT := dglGetProcAddress('glTexBufferEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_texture_integer
-//
-//==============================================================================
 procedure Read_GL_EXT_texture_integer;
 begin
   glClearColorIiEXT := dglGetProcAddress('glClearColorIiEXT');
@@ -17494,11 +18082,6 @@ begin
   glGetTexParameterIiuvEXT := dglGetProcAddress('glGetTexParameterIiuvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_transform_feedback
-//
-//==============================================================================
 procedure Read_GL_EXT_transform_feedback;
 begin
   glBeginTransformFeedbackEXT := dglGetProcAddress('lBeginTransformFeedbackEXT');
@@ -17510,11 +18093,6 @@ begin
   glGetTransformFeedbackVaryingEXT := dglGetProcAddress('glGetTransformFeedbackVaryingEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_direct_state_access
-//
-//==============================================================================
 procedure Read_GL_EXT_direct_state_access;
 begin
   glClientAttribDefaultEXT := dglGetProcAddress('glClientAttribDefaultEXT');
@@ -17725,11 +18303,6 @@ begin
   glProgramUniformMatrix4x3dvEXT := dglGetProcAddress('glProgramUniformMatrix4x3dvEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_separate_shader_objects
-//
-//==============================================================================
 procedure Read_GL_EXT_separate_shader_objects;
 begin
   glUseShaderProgramEXT := dglGetProcAddress('glUseShaderProgramEXT');
@@ -17737,22 +18310,12 @@ begin
   glCreateShaderProgramEXT := dglGetProcAddress('glCreateShaderProgramEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_shader_image_load_store
-//
-//==============================================================================
 procedure Read_GL_EXT_shader_image_load_store;
 begin
   glBindImageTextureEXT := dglGetProcAddress('glBindImageTextureEXT');
   glMemoryBarrierEXT := dglGetProcAddress('glMemoryBarrierEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_EXT_vertex_attrib_64bit
-//
-//==============================================================================
 procedure Read_GL_EXT_vertex_attrib_64bit;
 begin
   glVertexAttribL1dEXT := dglGetProcAddress('glVertexAttribL1dEXT');
@@ -17768,11 +18331,6 @@ begin
   glVertexArrayVertexAttribLOffsetEXT := dglGetProcAddress('glVertexArrayVertexAttribLOffsetEXT');
 end;
 
-//==============================================================================
-//
-// Read_GL_HP_image_transform
-//
-//==============================================================================
 procedure Read_GL_HP_image_transform;
 begin
   glImageTransformParameteriHP := dglGetProcAddress('glImageTransformParameteriHP');
@@ -17783,22 +18341,12 @@ begin
   glGetImageTransformParameterfvHP := dglGetProcAddress('glGetImageTransformParameterfvHP');
 end;
 
-//==============================================================================
-//
-// Read_GL_IBM_multimode_draw_arrays
-//
-//==============================================================================
 procedure Read_GL_IBM_multimode_draw_arrays;
 begin
   glMultiModeDrawArraysIBM := dglGetProcAddress('glMultiModeDrawArraysIBM');
   glMultiModeDrawElementsIBM := dglGetProcAddress('glMultiModeDrawElementsIBM');
 end;
 
-//==============================================================================
-//
-// Read_GL_IBM_vertex_array_lists
-//
-//==============================================================================
 procedure Read_GL_IBM_vertex_array_lists;
 begin
   glColorPointerListIBM := dglGetProcAddress('glColorPointerListIBM');
@@ -17811,21 +18359,11 @@ begin
   glVertexPointerListIBM := dglGetProcAddress('glVertexPointerListIBM');
 end;
 
-//==============================================================================
-//
-// Read_GL_INGR_blend_func_separate
-//
-//==============================================================================
 procedure Read_GL_INGR_blend_func_separate;
 begin
   glBlendFuncSeparateINGR := dglGetProcAddress('glBlendFuncSeparateINGR');
 end;
 
-//==============================================================================
-//
-// Read_GL_INTEL_parallel_arrays
-//
-//==============================================================================
 procedure Read_GL_INTEL_parallel_arrays;
 begin
   glVertexPointervINTEL := dglGetProcAddress('glVertexPointervINTEL');
@@ -17834,21 +18372,16 @@ begin
   glTexCoordPointervINTEL := dglGetProcAddress('glTexCoordPointervINTEL');
 end;
 
-//==============================================================================
-//
-// Read_GL_MESA_resize_buffers
-//
-//==============================================================================
+procedure Read_GL_INTEL_framebuffer_CMAA;
+begin
+  glApplyFramebufferAttachmentCMAAINTEL := dglGetProcAddress('glApplyFramebufferAttachmentCMAAINTEL');
+end;
+
 procedure Read_GL_MESA_resize_buffers;
 begin
   glResizeBuffersMESA := dglGetProcAddress('glResizeBuffersMESA');
 end;
 
-//==============================================================================
-//
-// Read_GL_MESA_window_pos
-//
-//==============================================================================
 procedure Read_GL_MESA_window_pos;
 begin
   glWindowPos2dMESA := dglGetProcAddress('glWindowPos2dMESA');
@@ -17877,11 +18410,6 @@ begin
   glWindowPos4svMESA := dglGetProcAddress('glWindowPos4svMESA');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_evaluators
-//
-//==============================================================================
 procedure Read_GL_NV_evaluators;
 begin
   glMapControlPointsNV := dglGetProcAddress('glMapControlPointsNV');
@@ -17895,11 +18423,6 @@ begin
   glEvalMapsNV := dglGetProcAddress('glEvalMapsNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_fence
-//
-//==============================================================================
 procedure Read_GL_NV_fence;
 begin
   glDeleteFencesNV := dglGetProcAddress('glDeleteFencesNV');
@@ -17911,11 +18434,6 @@ begin
   glSetFenceNV := dglGetProcAddress('glSetFenceNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_fragment_program
-//
-//==============================================================================
 procedure Read_GL_NV_fragment_program;
 begin
   glProgramNamedParameter4fNV := dglGetProcAddress('glProgramNamedParameter4fNV');
@@ -17926,11 +18444,6 @@ begin
   glGetProgramNamedParameterdvNV := dglGetProcAddress('glGetProgramNamedParameterdvNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_half_float
-//
-//==============================================================================
 procedure Read_GL_NV_half_float;
 begin
   glVertex2hNV := dglGetProcAddress('glVertex2hNV');
@@ -17981,11 +18494,6 @@ begin
   glVertexAttribs4hvNV := dglGetProcAddress('glVertexAttribs4hvNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_occlusion_query
-//
-//==============================================================================
 procedure Read_GL_NV_occlusion_query;
 begin
   glGenOcclusionQueriesNV := dglGetProcAddress('glGenOcclusionQueriesNV');
@@ -17997,44 +18505,24 @@ begin
   glGetOcclusionQueryuivNV := dglGetProcAddress('glGetOcclusionQueryuivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_pixel_data_range
-//
-//==============================================================================
 procedure Read_GL_NV_pixel_data_range;
 begin
   glPixelDataRangeNV := dglGetProcAddress('glPixelDataRangeNV');
   glFlushPixelDataRangeNV := dglGetProcAddress('glFlushPixelDataRangeNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_point_sprite
-//
-//==============================================================================
 procedure Read_GL_NV_point_sprite;
 begin
   glPointParameteriNV := dglGetProcAddress('glPointParameteriNV');
   glPointParameterivNV := dglGetProcAddress('glPointParameterivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_primitive_restart
-//
-//==============================================================================
 procedure Read_GL_NV_primitive_restart;
 begin
   glPrimitiveRestartNV := dglGetProcAddress('glPrimitiveRestartNV');
   glPrimitiveRestartIndexNV := dglGetProcAddress('glPrimitiveRestartIndexNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_register_combiners
-//
-//==============================================================================
 procedure Read_GL_NV_register_combiners;
 begin
   glCombinerParameterfvNV := dglGetProcAddress('glCombinerParameterfvNV');
@@ -18052,33 +18540,18 @@ begin
   glGetFinalCombinerInputParameterivNV := dglGetProcAddress('glGetFinalCombinerInputParameterivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_register_combiners2
-//
-//==============================================================================
 procedure Read_GL_NV_register_combiners2;
 begin
   glCombinerStageParameterfvNV := dglGetProcAddress('glCombinerStageParameterfvNV');
   glGetCombinerStageParameterfvNV := dglGetProcAddress('glGetCombinerStageParameterfvNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_vertex_array_range
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_array_range;
 begin
   glFlushVertexArrayRangeNV := dglGetProcAddress('glFlushVertexArrayRangeNV');
   glVertexArrayRangeNV := dglGetProcAddress('glVertexArrayRangeNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_vertex_program
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_program;
 begin
   glAreProgramsResidentNV := dglGetProcAddress('glAreProgramsResidentNV');
@@ -18147,11 +18620,6 @@ begin
   glVertexAttribs4ubvNV := dglGetProcAddress('glVertexAttribs4ubvNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_depth_buffer_float
-//
-//==============================================================================
 procedure Read_GL_NV_depth_buffer_float;
 begin
   glDepthRangedNV := dglGetProcAddress('glDepthRangedNV');
@@ -18159,31 +18627,16 @@ begin
   glDepthBoundsdNV := dglGetProcAddress('glDepthBoundsdNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_framebuffer_multisample_coverage
-//
-//==============================================================================
 procedure Read_GL_NV_framebuffer_multisample_coverage;
 begin
   glRenderbufferStorageMultsampleCoverageNV := dglGetProcAddress('glRenderbufferStorageMultsampleCoverageNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_geometry_program4
-//
-//==============================================================================
 procedure Read_GL_NV_geometry_program4;
 begin
   glProgramVertexLimitNV := dglGetProcAddress('glProgramVertexLimitNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_gpu_program4
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_program4;
 begin
   glProgramLocalParameterI4iNV := dglGetProcAddress('glProgramLocalParameterI4iNV');
@@ -18204,11 +18657,6 @@ begin
   glGetProgramEnvParameterIuivNV := dglGetProcAddress('glGetProgramEnvParameterIuivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_parameter_buffer_object
-//
-//==============================================================================
 procedure Read_GL_NV_parameter_buffer_object;
 begin
   glProgramBufferParametersfvNV := dglGetProcAddress('glProgramBufferParametersfvNV');
@@ -18216,11 +18664,6 @@ begin
   glProgramBufferParametersIuivNV := dglGetProcAddress('glProgramBufferParametersIuivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_transform_feedback
-//
-//==============================================================================
 procedure Read_GL_NV_transform_feedback;
 begin
   glBeginTransformFeedbackNV := dglGetProcAddress('glBeginTransformFeedbackNV');
@@ -18237,22 +18680,23 @@ begin
   glTransformFeedbackStreamAttribsNV := dglGetProcAddress('glTransformFeedbackStreamAttribsNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_conditional_render
-//
-//==============================================================================
 procedure Read_GL_NV_conditional_render;
 begin
   glBeginConditionalRenderNV := dglGetProcAddress('glBeginConditionalRenderNV');
   glEndConditionalRenderNV := dglGetProcAddress('glEndConditionalRenderNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_present_video
-//
-//==============================================================================
+procedure Read_GL_NV_conservative_raster;
+begin
+  glSubpixelPrecisionBiasNV := dglGetProcAddress('glSubpixelPrecisionBiasNV');
+end;
+
+procedure Read_GL_NV_conservative_raster_dilate;
+begin
+  glConservativeRasterParameterfNV := dglGetProcAddress('glConservativeRasterParameterfNV');
+end;
+
+
 procedure Read_GL_NV_present_video;
 begin
   glPresentFrameKeyedNV := dglGetProcAddress('glPresentFrameKeyedNV');
@@ -18264,11 +18708,6 @@ begin
 //  glVideoParameterivNV := dglGetProcAddress('glVideoParameterivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_explicit_multisample
-//
-//==============================================================================
 procedure Read_GL_NV_explicit_multisample;
 begin
   glGetMultisamplefvNV := dglGetProcAddress('glGetMultisamplefvNV');
@@ -18276,11 +18715,6 @@ begin
   glTexRenderbufferNV := dglGetProcAddress('glTexRenderbufferNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_transform_feedback2
-//
-//==============================================================================
 procedure Read_GL_NV_transform_feedback2;
 begin
   glBindTransformFeedbackNV := dglGetProcAddress('glBindTransformFeedbackNV');
@@ -18292,11 +18726,6 @@ begin
   glDrawTransformFeedbackNV := dglGetProcAddress('glDrawTransformFeedbackNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_video_capture
-//
-//==============================================================================
 procedure Read_GL_NV_video_capture;
 begin
   glBeginVideoCaptureNV := dglGetProcAddress('glBeginVideoCaptureNV');
@@ -18313,21 +18742,11 @@ begin
   glVideoCaptureStreamParameterdvNV := dglGetProcAddress('glVideoCaptureStreamParameterdvNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_copy_image
-//
-//==============================================================================
 procedure Read_GL_NV_copy_image;
 begin
   glCopyImageSubDataNV := dglGetProcAddress('glCopyImageSubDataNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_shader_buffer_load
-//
-//==============================================================================
 procedure Read_GL_NV_shader_buffer_load;
 begin
   glMakeBufferResidentNV := dglGetProcAddress('glMakeBufferResidentNV');
@@ -18346,11 +18765,6 @@ begin
   glProgramUniformui64vNV := dglGetProcAddress('glProgramUniformui64vNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_vertex_buffer_unified_memory
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_buffer_unified_memory;
 begin
   glBufferAddressRangeNV := dglGetProcAddress('glBufferAddressRangeNV');
@@ -18367,22 +18781,12 @@ begin
   glGetIntegerui64i_vNV := dglGetProcAddress('glGetIntegerui64i_vNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_gpu_program5
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_program5;
 begin
   glProgramSubroutineParametersuivNV := dglGetProcAddress('glProgramSubroutineParametersuivNV');
   glGetProgramSubroutineParameteruivNV := dglGetProcAddress('glGetProgramSubroutineParameteruivNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_gpu_shader5
-//
-//==============================================================================
 procedure Read_GL_NV_gpu_shader5;
 begin
   glUniform1i64NV := dglGetProcAddress('glUniform1i64NV');
@@ -18420,11 +18824,6 @@ begin
   glProgramUniform4ui64vNV := dglGetProcAddress('glProgramUniform4ui64vNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_vertex_attrib_integer_64bit
-//
-//==============================================================================
 procedure Read_GL_NV_vertex_attrib_integer_64bit;
 begin
   glVertexAttribL1i64NV := dglGetProcAddress('glVertexAttribL1i64NV');
@@ -18448,11 +18847,6 @@ begin
   glVertexAttribLFormatNV := dglGetProcAddress('glVertexAttribLFormatNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_vdpau_interop
-//
-//==============================================================================
 procedure Read_GL_NV_vdpau_interop;
 begin
   glVDPAUInitNV := dglGetProcAddress('glVDPAUInitNV');
@@ -18467,64 +18861,39 @@ begin
   glVDPAUUnmapSurfacesNV := dglGetProcAddress('glVDPAUUnmapSurfacesNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_NV_texture_barrier
-//
-//==============================================================================
 procedure Read_GL_NV_texture_barrier;
 begin
   glTextureBarrierNV := dglGetProcAddress('glTextureBarrierNV');
 end;
 
-//==============================================================================
-//
-// Read_GL_PGI_misc_hints
-//
-//==============================================================================
 procedure Read_GL_PGI_misc_hints;
 begin
   glHintPGI := dglGetProcAddress('glHintPGI');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_detail_texture
-//
-//==============================================================================
+procedure Read_GL_OVR_multiview;
+begin
+  glFramebufferTextureMultiviewOVR := dglGetProcAddress('glFramebufferTextureMultiviewOVR');
+end;
+
 procedure Read_GL_SGIS_detail_texture;
 begin
   glDetailTexFuncSGIS := dglGetProcAddress('glDetailTexFuncSGIS');
   glGetDetailTexFuncSGIS := dglGetProcAddress('glGetDetailTexFuncSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_fog_function
-//
-//==============================================================================
 procedure Read_GL_SGIS_fog_function;
 begin
   glFogFuncSGIS := dglGetProcAddress('glFogFuncSGIS');
   glGetFogFuncSGIS := dglGetProcAddress('glGetFogFuncSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_multisample
-//
-//==============================================================================
 procedure Read_GL_SGIS_multisample;
 begin
   glSampleMaskSGIS := dglGetProcAddress('glSampleMaskSGIS');
   glSamplePatternSGIS := dglGetProcAddress('glSamplePatternSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_pixel_texture
-//
-//==============================================================================
 procedure Read_GL_SGIS_pixel_texture;
 begin
   glPixelTexGenParameteriSGIS := dglGetProcAddress('glPixelTexGenParameteriSGIS');
@@ -18535,65 +18904,35 @@ begin
   glGetPixelTexGenParameterfvSGIS := dglGetProcAddress('glGetPixelTexGenParameterfvSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_point_parameters
-//
-//==============================================================================
 procedure Read_GL_SGIS_point_parameters;
 begin
   glPointParameterfSGIS := dglGetProcAddress('glPointParameterfSGIS');
   glPointParameterfvSGIS := dglGetProcAddress('glPointParameterfvSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_sharpen_texture
-//
-//==============================================================================
 procedure Read_GL_SGIS_sharpen_texture;
 begin
   glSharpenTexFuncSGIS := dglGetProcAddress('glSharpenTexFuncSGIS');
   glGetSharpenTexFuncSGIS := dglGetProcAddress('glGetSharpenTexFuncSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_texture4D
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture4D;
 begin
   glTexImage4DSGIS := dglGetProcAddress('glTexImage4DSGIS');
   glTexSubImage4DSGIS := dglGetProcAddress('glTexSubImage4DSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_texture_color_mask
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture_color_mask;
 begin
   glTextureColorMaskSGIS := dglGetProcAddress('glTextureColorMaskSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIS_texture_filter4
-//
-//==============================================================================
 procedure Read_GL_SGIS_texture_filter4;
 begin
   glGetTexFilterFuncSGIS := dglGetProcAddress('glGetTexFilterFuncSGIS');
   glTexFilterFuncSGIS := dglGetProcAddress('glTexFilterFuncSGIS');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_async
-//
-//==============================================================================
 procedure Read_GL_SGIX_async;
 begin
   glAsyncMarkerSGIX := dglGetProcAddress('glAsyncMarkerSGIX');
@@ -18604,21 +18943,11 @@ begin
   glIsAsyncMarkerSGIX := dglGetProcAddress('glIsAsyncMarkerSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_flush_raster
-//
-//==============================================================================
 procedure Read_GL_SGIX_flush_raster;
 begin
   glFlushRasterSGIX := dglGetProcAddress('glFlushRasterSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_fragment_lighting
-//
-//==============================================================================
 procedure Read_GL_SGIX_fragment_lighting;
 begin
   glFragmentColorMaterialSGIX := dglGetProcAddress('glFragmentColorMaterialSGIX');
@@ -18641,31 +18970,16 @@ begin
   glLightEnviSGIX := dglGetProcAddress('glLightEnviSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_framezoom
-//
-//==============================================================================
 procedure Read_GL_SGIX_framezoom;
 begin
   glFrameZoomSGIX := dglGetProcAddress('glFrameZoomSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_igloo_interface
-//
-//==============================================================================
 procedure Read_GL_SGIX_igloo_interface;
 begin
   glIglooInterfaceSGIX := dglGetProcAddress('glIglooInterfaceSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_instruments
-//
-//==============================================================================
 procedure Read_GL_SGIX_instruments;
 begin
   glGetInstrumentsSGIX := dglGetProcAddress('glGetInstrumentsSGIX');
@@ -18676,11 +18990,6 @@ begin
   glStopInstrumentsSGIX := dglGetProcAddress('glStopInstrumentsSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_list_priority
-//
-//==============================================================================
 procedure Read_GL_SGIX_list_priority;
 begin
   glGetListParameterfvSGIX := dglGetProcAddress('glGetListParameterfvSGIX');
@@ -18691,21 +19000,11 @@ begin
   glListParameterivSGIX := dglGetProcAddress('glListParameterivSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_pixel_texture
-//
-//==============================================================================
 procedure Read_GL_SGIX_pixel_texture;
 begin
   glPixelTexGenSGIX := dglGetProcAddress('glPixelTexGenSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_polynomial_ffd
-//
-//==============================================================================
 procedure Read_GL_SGIX_polynomial_ffd;
 begin
   glDeformationMap3dSGIX := dglGetProcAddress('glDeformationMap3dSGIX');
@@ -18714,21 +19013,11 @@ begin
   glLoadIdentityDeformationMapSGIX := dglGetProcAddress('glLoadIdentityDeformationMapSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_reference_plane
-//
-//==============================================================================
 procedure Read_GL_SGIX_reference_plane;
 begin
   glReferencePlaneSGIX := dglGetProcAddress('glReferencePlaneSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_sprite
-//
-//==============================================================================
 procedure Read_GL_SGIX_sprite;
 begin
   glSpriteParameterfSGIX := dglGetProcAddress('glSpriteParameterfSGIX');
@@ -18737,21 +19026,11 @@ begin
   glSpriteParameterivSGIX := dglGetProcAddress('glSpriteParameterivSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGIX_tag_sample_buffer
-//
-//==============================================================================
 procedure Read_GL_SGIX_tag_sample_buffer;
 begin
   glTagSampleBufferSGIX := dglGetProcAddress('glTagSampleBufferSGIX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SGI_color_table
-//
-//==============================================================================
 procedure Read_GL_SGI_color_table;
 begin
   glColorTableSGI := dglGetProcAddress('glColorTableSGI');
@@ -18763,21 +19042,11 @@ begin
   glGetColorTableParameterivSGI := dglGetProcAddress('glGetColorTableParameterivSGI');
 end;
 
-//==============================================================================
-//
-// Read_GL_SUNX_constant_data
-//
-//==============================================================================
 procedure Read_GL_SUNX_constant_data;
 begin
   glFinishTextureSUNX := dglGetProcAddress('glFinishTextureSUNX');
 end;
 
-//==============================================================================
-//
-// Read_GL_SUN_global_alpha
-//
-//==============================================================================
 procedure Read_GL_SUN_global_alpha;
 begin
   glGlobalAlphaFactorbSUN := dglGetProcAddress('glGlobalAlphaFactorbSUN');
@@ -18790,21 +19059,11 @@ begin
   glGlobalAlphaFactoruiSUN := dglGetProcAddress('glGlobalAlphaFactoruiSUN');
 end;
 
-//==============================================================================
-//
-// Read_GL_SUN_mesh_array
-//
-//==============================================================================
 procedure Read_GL_SUN_mesh_array;
 begin
   glDrawMeshArraysSUN := dglGetProcAddress('glDrawMeshArraysSUN');
 end;
 
-//==============================================================================
-//
-// Read_GL_SUN_triangle_list
-//
-//==============================================================================
 procedure Read_GL_SUN_triangle_list;
 begin
   glReplacementCodeuiSUN := dglGetProcAddress('glReplacementCodeuiSUN');
@@ -18816,11 +19075,6 @@ begin
   glReplacementCodePointerSUN := dglGetProcAddress('glReplacementCodePointerSUN');
 end;
 
-//==============================================================================
-//
-// Read_GL_SUN_vertex
-//
-//==============================================================================
 procedure Read_GL_SUN_vertex;
 begin
   glColor4ubVertex2fSUN := dglGetProcAddress('glColor4ubVertex2fSUN');
@@ -18866,12 +19120,6 @@ begin
 end;
 
 {$IFDEF DGL_WIN}
-
-//==============================================================================
-//
-// Read_WGL_ARB_buffer_region
-//
-//==============================================================================
 procedure Read_WGL_ARB_buffer_region;
 begin
   wglCreateBufferRegionARB := dglGetProcAddress('wglCreateBufferRegionARB');
@@ -18880,32 +19128,17 @@ begin
   wglRestoreBufferRegionARB := dglGetProcAddress('wglRestoreBufferRegionARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_extensions_string
-//
-//==============================================================================
 procedure Read_WGL_ARB_extensions_string;
 begin
   wglGetExtensionsStringARB := dglGetProcAddress('wglGetExtensionsStringARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_make_current_read
-//
-//==============================================================================
 procedure Read_WGL_ARB_make_current_read;
 begin
   wglMakeContextCurrentARB := dglGetProcAddress('wglMakeContextCurrentARB');
   wglGetCurrentReadDCARB := dglGetProcAddress('wglGetCurrentReadDCARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_pbuffer
-//
-//==============================================================================
 procedure Read_WGL_ARB_pbuffer;
 begin
   wglCreatePbufferARB := dglGetProcAddress('wglCreatePbufferARB');
@@ -18915,11 +19148,6 @@ begin
   wglQueryPbufferARB := dglGetProcAddress('wglQueryPbufferARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_pixel_format
-//
-//==============================================================================
 procedure Read_WGL_ARB_pixel_format;
 begin
   wglGetPixelFormatAttribivARB := dglGetProcAddress('wglGetPixelFormatAttribivARB');
@@ -18927,21 +19155,11 @@ begin
   wglChoosePixelFormatARB := dglGetProcAddress('wglChoosePixelFormatARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_pixel_format_float
-//
-//==============================================================================
 procedure Read_WGL_ARB_pixel_format_float;
 begin
   wglClampColorARB := dglGetProcAddress('wglClampColorARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_render_texture
-//
-//==============================================================================
 procedure Read_WGL_ARB_render_texture;
 begin
   wglBindTexImageARB := dglGetProcAddress('wglBindTexImageARB');
@@ -18949,21 +19167,11 @@ begin
   wglSetPbufferAttribARB := dglGetProcAddress('wglSetPbufferAttribARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_ARB_create_context
-//
-//==============================================================================
 procedure Read_WGL_ARB_create_context;
 begin
   wglCreateContextAttribsARB := dglGetProcAddress('wglCreateContextAttribsARB');
 end;
 
-//==============================================================================
-//
-// Read_WGL_AMD_gpu_association
-//
-//==============================================================================
 procedure Read_WGL_AMD_gpu_association;
 begin
   wglGetGPUIDsAMD := dglGetProcAddress('wglGetGPUIDsAMD');
@@ -18977,11 +19185,6 @@ begin
   wglBlitContextFramebufferAMD := dglGetProcAddress('wglBlitContextFramebufferAMD');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_display_color_table
-//
-//==============================================================================
 procedure Read_WGL_EXT_display_color_table;
 begin
   wglCreateDisplayColorTableEXT := dglGetProcAddress('wglCreateDisplayColorTableEXT');
@@ -18990,32 +19193,17 @@ begin
   wglDestroyDisplayColorTableEXT := dglGetProcAddress('wglDestroyDisplayColorTableEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_extensions_string
-//
-//==============================================================================
 procedure Read_WGL_EXT_extensions_string;
 begin
   wglGetExtensionsStringEXT := dglGetProcAddress('wglGetExtensionsStringEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_make_current_read
-//
-//==============================================================================
 procedure Read_WGL_EXT_make_current_read;
 begin
   wglMakeContextCurrentEXT := dglGetProcAddress('wglMakeContextCurrentEXT');
   wglGetCurrentReadDCEXT := dglGetProcAddress('wglGetCurrentReadDCEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_pbuffer
-//
-//==============================================================================
 procedure Read_WGL_EXT_pbuffer;
 begin
   wglCreatePbufferEXT := dglGetProcAddress('wglCreatePbufferEXT');
@@ -19025,11 +19213,6 @@ begin
   wglQueryPbufferEXT := dglGetProcAddress('wglQueryPbufferEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_pixel_format
-//
-//==============================================================================
 procedure Read_WGL_EXT_pixel_format;
 begin
   wglGetPixelFormatAttribivEXT := dglGetProcAddress('wglGetPixelFormatAttribivEXT');
@@ -19037,33 +19220,18 @@ begin
   wglChoosePixelFormatEXT := dglGetProcAddress('wglChoosePixelFormatEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_EXT_swap_control
-//
-//==============================================================================
 procedure Read_WGL_EXT_swap_control;
 begin
   wglSwapIntervalEXT := dglGetProcAddress('wglSwapIntervalEXT');
   wglGetSwapIntervalEXT := dglGetProcAddress('wglGetSwapIntervalEXT');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_digital_video_control
-//
-//==============================================================================
 procedure Read_WGL_I3D_digital_video_control;
 begin
   wglGetDigitalVideoParametersI3D := dglGetProcAddress('wglGetDigitalVideoParametersI3D');
   wglSetDigitalVideoParametersI3D := dglGetProcAddress('wglSetDigitalVideoParametersI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_gamma
-//
-//==============================================================================
 procedure Read_WGL_I3D_gamma;
 begin
   wglGetGammaTableParametersI3D := dglGetProcAddress('wglGetGammaTableParametersI3D');
@@ -19072,11 +19240,6 @@ begin
   wglSetGammaTableI3D := dglGetProcAddress('wglSetGammaTableI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_genlock
-//
-//==============================================================================
 procedure Read_WGL_I3D_genlock;
 begin
   wglEnableGenlockI3D := dglGetProcAddress('wglEnableGenlockI3D');
@@ -19093,11 +19256,6 @@ begin
   wglQueryGenlockMaxSourceDelayI3D := dglGetProcAddress('wglQueryGenlockMaxSourceDelayI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_image_buffer
-//
-//==============================================================================
 procedure Read_WGL_I3D_image_buffer;
 begin
   wglCreateImageBufferI3D := dglGetProcAddress('wglCreateImageBufferI3D');
@@ -19106,11 +19264,6 @@ begin
   wglReleaseImageBufferEventsI3D := dglGetProcAddress('wglReleaseImageBufferEventsI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_swap_frame_lock
-//
-//==============================================================================
 procedure Read_WGL_I3D_swap_frame_lock;
 begin
   wglEnableFrameLockI3D := dglGetProcAddress('wglEnableFrameLockI3D');
@@ -19119,11 +19272,6 @@ begin
   wglQueryFrameLockMasterI3D := dglGetProcAddress('wglQueryFrameLockMasterI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_I3D_swap_frame_usage
-//
-//==============================================================================
 procedure Read_WGL_I3D_swap_frame_usage;
 begin
   wglGetFrameUsageI3D := dglGetProcAddress('wglGetFrameUsageI3D');
@@ -19132,22 +19280,12 @@ begin
   wglQueryFrameTrackingI3D := dglGetProcAddress('wglQueryFrameTrackingI3D');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_vertex_array_range
-//
-//==============================================================================
 procedure Read_WGL_NV_vertex_array_range;
 begin
   wglAllocateMemoryNV := dglGetProcAddress('wglAllocateMemoryNV');
   wglFreeMemoryNV := dglGetProcAddress('wglFreeMemoryNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_present_video
-//
-//==============================================================================
 procedure Read_WGL_NV_present_video;
 begin
   wglEnumerateVideoDevicesNV := dglGetProcAddress('wglEnumerateVideoDevicesNV');
@@ -19155,11 +19293,6 @@ begin
   wglQueryCurrentContextNV := dglGetProcAddress('wglQueryCurrentContextNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_video_output
-//
-//==============================================================================
 procedure Read_WGL_NV_video_output;
 begin
   wglGetVideoDeviceNV := dglGetProcAddress('wglGetVideoDeviceNV');
@@ -19170,11 +19303,6 @@ begin
   wglGetVideoInfoNV := dglGetProcAddress('wglGetVideoInfoNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_swap_group
-//
-//==============================================================================
 procedure Read_WGL_NV_swap_group;
 begin
   wglJoinSwapGroupNV := dglGetProcAddress('wglJoinSwapGroupNV');
@@ -19185,11 +19313,6 @@ begin
   wglResetFrameCountNV := dglGetProcAddress('wglResetFrameCountNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_gpu_affinity
-//
-//==============================================================================
 procedure Read_WGL_NV_gpu_affinity;
 begin
   wglEnumGpusNV := dglGetProcAddress('wglEnumGpusNV');
@@ -19199,11 +19322,6 @@ begin
   wglDeleteDCNV := dglGetProcAddress('wglDeleteDCNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_video_capture
-//
-//==============================================================================
 procedure Read_WGL_NV_video_capture;
 begin
   wglBindVideoCaptureDeviceNV := dglGetProcAddress('wglBindVideoCaptureDeviceNV');
@@ -19213,21 +19331,24 @@ begin
   wglReleaseVideoCaptureDeviceNV := dglGetProcAddress('wglReleaseVideoCaptureDeviceNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_NV_copy_image
-//
-//==============================================================================
 procedure Read_WGL_NV_copy_image;
 begin
   wglCopyImageSubDataNV := dglGetProcAddress('wglCopyImageSubDataNV');
 end;
 
-//==============================================================================
-//
-// Read_WGL_OML_sync_control
-//
-//==============================================================================
+procedure Read_WGL_NV_DX_interop;
+begin
+  wglDXSetResourceShareHandleNV := dglGetProcAddress('wglDXSetResourceShareHandleNV');
+  wglDXOpenDeviceNV := dglGetProcAddress('wglDXOpenDeviceNV');
+  wglDXCloseDeviceNV := dglGetProcAddress('wglDXCloseDeviceNV');
+  wglDXRegisterObjectNV := dglGetProcAddress('wglDXRegisterObjectNV');
+  wglDXUnregisterObjectNV := dglGetProcAddress('wglDXUnregisterObjectNV');
+  wglDXObjectAccessNV := dglGetProcAddress('wglDXObjectAccessNV');
+  wglDXLockObjectsNV := dglGetProcAddress('wglDXLockObjectsNV');
+  wglDXUnlockObjectsNV := dglGetProcAddress('wglDXUnlockObjectsNV');
+end;
+
+
 procedure Read_WGL_OML_sync_control;
 begin
   wglGetSyncValuesOML := dglGetProcAddress('wglGetSyncValuesOML');
@@ -19238,54 +19359,28 @@ begin
   wglWaitForSbcOML := dglGetProcAddress('wglWaitForSbcOML');
 end;
 
-//==============================================================================
-//
-// Read_WGL_3DL_stereo_control
-//
-//==============================================================================
 procedure Read_WGL_3DL_stereo_control;
 begin
   wglSetStereoEmitterState3DL := dglGetProcAddress('wglSetStereoEmitterState3DL');
 end;
 
-//==============================================================================
-//
-// Read_WIN_draw_range_elements
-//
-//==============================================================================
 procedure Read_WIN_draw_range_elements;
 begin
   glDrawRangeElementsWIN := dglGetProcAddress('glDrawRangeElementsWIN');
 end;
 
-//==============================================================================
-//
-// Read_WIN_swap_hint
-//
-//==============================================================================
 procedure Read_WIN_swap_hint;
 begin
   glAddSwapHintRectWIN := dglGetProcAddress('glAddSwapHintRectWIN');
 end;
 {$ENDIF}
 
-//==============================================================================
-//
-// ReadExtensions
-//
-//==============================================================================
+
 procedure ReadExtensions;
 begin
   ReadOpenGLCore;
 
-  Read_GL_3DFX_tbuffer;
-  Read_GL_APPLE_element_array;
-  Read_GL_APPLE_fence;
-  Read_GL_APPLE_vertex_array_object;
-  Read_GL_APPLE_vertex_array_range;
-  Read_GL_APPLE_texture_range;
-  Read_GL_APPLE_vertex_program_evaluators;
-  Read_GL_APPLE_object_purgeable;
+  // ARB
   Read_GL_ARB_matrix_palette;
   Read_GL_ARB_multitexture;
   Read_GL_ARB_point_parameters;
@@ -19301,6 +19396,8 @@ begin
   Read_GL_ARB_draw_instanced;
   Read_GL_ARB_framebuffer_object;
   Read_GL_ARB_geometry_shader4;
+  Read_GL_ARB_gl_spirv;
+  Read_GL_ARB_gpu_shader_int64;
   Read_GL_ARB_instanced_arrays;
   Read_GL_ARB_map_buffer_range;
   Read_GL_ARB_texture_buffer_object;
@@ -19313,7 +19410,10 @@ begin
   Read_GL_ARB_texture_multisample;
   Read_GL_ARB_draw_buffers_blend;
   Read_GL_ARB_sample_shading;
+  Read_GL_ARB_sample_locations;
   Read_GL_ARB_shading_language_include;
+  Read_GL_ARB_sparse_texture;
+  Read_GL_ARB_sparse_buffer;
   Read_GL_ARB_blend_func_extended;
   Read_GL_ARB_sampler_objects;
   Read_GL_ARB_timer_query;
@@ -19324,14 +19424,28 @@ begin
   Read_GL_ARB_tessellation_shader;
   Read_GL_ARB_transform_feedback2;
   Read_GL_ARB_transform_feedback3;
-  Read_GL_ARB_ES2_compatibility;
   Read_GL_ARB_get_program_binary;
   Read_GL_ARB_separate_shader_objects;
   Read_GL_ARB_vertex_attrib_64bit;
   Read_GL_ARB_viewport_array;
   Read_GL_ARB_cl_event;
+  Read_GL_ARB_compute_variable_group_size;
   Read_GL_ARB_debug_output;
   Read_GL_ARB_robustness;
+  Read_GL_ARB_ES2_compatibility;
+  Read_GL_ARB_ES3_2_compatibility;
+  Read_GL_ARB_parallel_shader_compile;
+  Read_GL_ARB_bindless_texture;
+
+  // Vendor
+  Read_GL_3DFX_tbuffer;
+  Read_GL_APPLE_element_array;
+  Read_GL_APPLE_fence;
+  Read_GL_APPLE_vertex_array_object;
+  Read_GL_APPLE_vertex_array_range;
+  Read_GL_APPLE_texture_range;
+  Read_GL_APPLE_vertex_program_evaluators;
+  Read_GL_APPLE_object_purgeable; 
   Read_GL_ATI_draw_buffers;
   Read_GL_ATI_element_array;
   Read_GL_ATI_envmap_bumpmap;
@@ -19347,6 +19461,7 @@ begin
   Read_GL_AMD_draw_buffers_blend;
   Read_GL_AMD_name_gen_delete;
   Read_GL_AMD_debug_output;
+  Read_GL_AMD_stencil_operation_extended;
   Read_GL_EXT_blend_color;
   Read_GL_EXT_blend_func_separate;
   Read_GL_EXT_blend_minmax;
@@ -19402,6 +19517,8 @@ begin
   Read_GL_IBM_vertex_array_lists;
   Read_GL_INGR_blend_func_separate;
   Read_GL_INTEL_parallel_arrays;
+  Read_GL_INTEL_framebuffer_CMAA;
+  Read_GL_KHR_blend_equation_advanced;
   Read_GL_MESA_resize_buffers;
   Read_GL_MESA_window_pos;
   Read_GL_NV_evaluators;
@@ -19423,6 +19540,8 @@ begin
   Read_GL_NV_parameter_buffer_object;
   Read_GL_NV_transform_feedback;
   Read_GL_NV_conditional_render;
+  Read_GL_NV_conservative_raster;
+  Read_GL_NV_conservative_raster_dilate;
   Read_GL_NV_present_video;
   Read_GL_NV_explicit_multisample;
   Read_GL_NV_transform_feedback2;
@@ -19435,7 +19554,10 @@ begin
   Read_GL_NV_vertex_attrib_integer_64bit;
   Read_GL_NV_vdpau_interop;
   Read_GL_NV_texture_barrier;
+  Read_GL_NV_path_rendering;
+  Read_GL_NV_bindless_texture;
   Read_GL_PGI_misc_hints;
+  Read_GL_OVR_multiview;
   Read_GL_SGIS_detail_texture;
   Read_GL_SGIS_fog_function;
   Read_GL_SGIS_multisample;
@@ -19463,7 +19585,6 @@ begin
   Read_GL_SUN_mesh_array;
   Read_GL_SUN_triangle_list;
   Read_GL_SUN_vertex;
-
 {$IFDEF DGL_WIN}
   Read_WGL_ARB_buffer_region;
   Read_WGL_ARB_extensions_string;
@@ -19493,6 +19614,7 @@ begin
   Read_WGL_NV_gpu_affinity;
   Read_WGL_NV_video_capture;
   Read_WGL_NV_copy_image;
+  Read_WGL_NV_DX_interop;
   Read_WGL_OML_sync_control;
   Read_WGL_3DL_stereo_control;
 
@@ -19506,8 +19628,7 @@ end;
 // =============================================================================
 //  ReadCoreVersion
 // =============================================================================
-//
-//==============================================================================
+
 procedure ReadCoreVersion;
 var
   AnsiBuffer: AnsiString;
@@ -19553,6 +19674,7 @@ var
     end;
   end;
 
+
 begin
   // determine version of implementation
   // GL
@@ -19578,6 +19700,11 @@ begin
   GL_VERSION_3_3 := False;
   GL_VERSION_4_0 := False;
   GL_VERSION_4_1 := False;
+  GL_VERSION_4_2 := False;
+  GL_VERSION_4_3 := False;
+  GL_VERSION_4_4 := False;
+  GL_VERSION_4_5 := False;
+  GL_VERSION_4_6 := False;
 
   if MajorVersion = 1 then
   begin
@@ -19628,6 +19755,16 @@ begin
 
     if MinorVersion >= 1 then
       GL_VERSION_4_1 := True;
+    if MinorVersion >= 2 then
+      GL_VERSION_4_2 := True;
+    if MinorVersion >= 3 then
+      GL_VERSION_4_3 := True;
+    if MinorVersion >= 4 then
+      GL_VERSION_4_4 := True;
+    if MinorVersion >= 5 then
+      GL_VERSION_4_5 := True;
+    if MinorVersion >= 6 then
+      GL_VERSION_4_6 := True;
   end;
 
   // GLU
@@ -19651,11 +19788,11 @@ begin
   end;
 end;
 
+
 // =============================================================================
 //  ReadImplementationProperties
 // =============================================================================
-//
-//==============================================================================
+
 procedure ReadImplementationProperties;
 var
   Buffer: Ansistring;
@@ -19665,12 +19802,12 @@ begin
   // Check all extensions
   Buffer := Int_GetExtensionString;
 
-  // === 3DFX ====================================================================
+  // 3DFX
   GL_3DFX_multisample := Int_CheckExtension(Buffer, 'GL_3DFX_multisample');
   GL_3DFX_tbuffer := Int_CheckExtension(Buffer, 'GL_3DFX_tbuffer');
   GL_3DFX_texture_compression_FXT1 := Int_CheckExtension(Buffer, 'GL_3DFX_texture_compression_FXT1');
 
-  // === APPLE ===================================================================
+  // APPLE
   GL_APPLE_client_storage := Int_CheckExtension(Buffer, 'GL_APPLE_client_storage');
   GL_APPLE_element_array := Int_CheckExtension(Buffer, 'GL_APPLE_element_array');
   GL_APPLE_fence := Int_CheckExtension(Buffer, 'GL_APPLE_fence');
@@ -19687,7 +19824,7 @@ begin
   GL_APPLE_row_bytes := Int_CheckExtension(Buffer, 'GL_APPLE_row_bytes');
   GL_APPLE_rgb_422 := Int_CheckExtension(Buffer, 'GL_APPLE_rgb_422');
 
-  // === ARB =====================================================================
+  // ARB
   GL_ARB_depth_texture := Int_CheckExtension(Buffer, 'GL_ARB_depth_texture');
   GL_ARB_fragment_program := Int_CheckExtension(Buffer, 'GL_ARB_fragment_program');
   GL_ARB_imaging := Int_CheckExtension(Buffer, 'GL_ARB_imaging');
@@ -19697,6 +19834,10 @@ begin
   GL_ARB_point_parameters := Int_CheckExtension(Buffer, 'GL_ARB_point_parameters');
   GL_ARB_shadow := Int_CheckExtension(Buffer, 'GL_ARB_shadow');
   GL_ARB_shadow_ambient := Int_CheckExtension(Buffer, 'GL_ARB_shadow_ambient');
+  GL_ARB_sparse_texture := Int_CheckExtension(Buffer, 'GL_ARB_sparse_texture');
+  GL_ARB_sparse_texture2 := Int_CheckExtension(Buffer, 'GL_ARB_sparse_texture2');
+  GL_ARB_sparse_texture_clamp := Int_CheckExtension(Buffer, 'GL_ARB_sparse_texture_clamp');
+  GL_ARB_spirv_extensions := Int_CheckExtension(Buffer, 'GL_ARB_spirv_extensions');
   GL_ARB_texture_border_clamp := Int_CheckExtension(Buffer, 'GL_ARB_texture_border_clamp');
   GL_ARB_texture_compression := Int_CheckExtension(Buffer, 'GL_ARB_texture_compression');
   GL_ARB_texture_cube_map := Int_CheckExtension(Buffer, 'GL_ARB_texture_cube_map');
@@ -19704,6 +19845,7 @@ begin
   GL_ARB_texture_env_combine := Int_CheckExtension(Buffer, 'GL_ARB_texture_env_combine');
   GL_ARB_texture_env_crossbar := Int_CheckExtension(Buffer, 'GL_ARB_texture_env_crossbar');
   GL_ARB_texture_env_dot3 := Int_CheckExtension(Buffer, 'GL_ARB_texture_env_dot3');
+  GL_ARB_texture_filter_minmax := Int_CheckExtension(Buffer, 'GL_ARB_texture_filter_minmax');
   GL_ARB_texture_mirrored_repeat := Int_CheckExtension(Buffer, 'GL_ARB_texture_mirrored_repeat');
   GL_ARB_transpose_matrix := Int_CheckExtension(Buffer, 'GL_ARB_transpose_matrix');
   GL_ARB_vertex_blend := Int_CheckExtension(Buffer, 'GL_ARB_vertex_blend');
@@ -19713,6 +19855,7 @@ begin
   GL_ARB_shader_objects := Int_CheckExtension(Buffer, 'GL_ARB_shader_objects');
   GL_ARB_vertex_shader := Int_CheckExtension(Buffer, 'GL_ARB_vertex_shader');
   GL_ARB_fragment_shader := Int_CheckExtension(Buffer, 'GL_ARB_fragment_shader');
+  GL_ARB_fragment_shader_interlock := Int_CheckExtension(Buffer, 'GL_ARB_fragment_shader_interlock');
   GL_ARB_occlusion_query := Int_CheckExtension(Buffer, 'GL_ARB_occlusion_query');
   GL_ARB_shading_language_100 := Int_CheckExtension(Buffer, 'GL_ARB_shading_language_100');
   GL_ARB_point_sprite := Int_CheckExtension(Buffer, 'GL_ARB_point_sprite');
@@ -19724,11 +19867,13 @@ begin
   GL_ARB_half_float_pixel := Int_CheckExtension(Buffer, 'GL_ARB_half_float_pixel');
   GL_ARB_texture_float := Int_CheckExtension(Buffer, 'GL_ARB_texture_float');
   GL_ARB_pixel_buffer_object := Int_CheckExtension(Buffer, 'GL_ARB_pixel_buffer_object');
+  GL_ARB_polygon_offset_clamp := Int_CheckExtension(Buffer, 'GL_ARB_polygon_offset_clamp');
   GL_ARB_depth_buffer_float := Int_CheckExtension(Buffer, 'GL_ARB_depth_buffer_float');
   GL_ARB_draw_instanced := Int_CheckExtension(Buffer, 'GL_ARB_draw_instanced');
   GL_ARB_framebuffer_object := Int_CheckExtension(Buffer, 'GL_ARB_framebuffer_object');
   GL_ARB_framebuffer_sRGB := Int_CheckExtension(Buffer, 'GL_ARB_framebuffer_sRGB');
   GL_ARB_geometry_shader4 := Int_CheckExtension(Buffer, 'GL_ARB_geometry_shader4');
+  GL_ARB_gl_spirv := Int_CheckExtension(Buffer, 'GL_ARB_gl_spirv');
   GL_ARB_half_float_vertex := Int_CheckExtension(Buffer, 'GL_ARB_half_float_vertex');
   GL_ARB_instanced_arrays := Int_CheckExtension(Buffer, 'GL_ARB_instanced_arrays');
   GL_ARB_map_buffer_range := Int_CheckExtension(Buffer, 'GL_ARB_map_buffer_range');
@@ -19740,6 +19885,7 @@ begin
   GL_ARB_compatibility := Int_CheckExtension(Buffer, 'GL_ARB_compatibility');
   GL_ARB_copy_buffer := Int_CheckExtension(Buffer, 'GL_ARB_copy_buffer');
   GL_ARB_shader_texture_lod := Int_CheckExtension(Buffer, 'GL_ARB_shader_texture_lod');
+  GL_ARB_shader_viewport_layer_array := Int_CheckExtension(Buffer, 'GL_ARB_shader_viewport_layer_array');
   GL_ARB_depth_clamp := Int_CheckExtension(Buffer, 'GL_ARB_depth_clamp');
   GL_ARB_draw_elements_base_vertex := Int_CheckExtension(Buffer, 'GL_ARB_draw_elements_base_vertex');
   GL_ARB_fragment_coord_conventions := Int_CheckExtension(Buffer, 'GL_ARB_fragment_coord_conventions');
@@ -19751,6 +19897,7 @@ begin
   GL_ARB_draw_buffers_blend := Int_CheckExtension(Buffer, 'GL_ARB_draw_buffers_blend');
   GL_ARB_sample_shading := Int_CheckExtension(Buffer, 'GL_ARB_sample_shading');
   GL_ARB_texture_cube_map_array := Int_CheckExtension(Buffer, 'GL_ARB_texture_cube_map_array');
+  GL_ARB_texture_filter_anisotropic := Int_CheckExtension(Buffer, 'GL_ARB_texture_filter_anisotropic');
   GL_ARB_texture_gather := Int_CheckExtension(Buffer, 'GL_ARB_texture_gather');
   GL_ARB_texture_query_lod := Int_CheckExtension(Buffer, 'GL_ARB_texture_query_lod');
   GL_ARB_shading_language_include := Int_CheckExtension(Buffer, 'GL_ARB_shading_language_include');
@@ -19758,8 +19905,11 @@ begin
   GL_ARB_blend_func_extended := Int_CheckExtension(Buffer, 'GL_ARB_blend_func_extended');
   GL_ARB_explicit_attrib_location := Int_CheckExtension(Buffer, 'GL_ARB_explicit_attrib_location');
   GL_ARB_occlusion_query2 := Int_CheckExtension(Buffer, 'GL_ARB_occlusion_query2');
+  GL_ARB_parallel_shader_compile := Int_CheckExtension(Buffer, 'GL_ARB_parallel_shader_compile');
+  GL_ARB_post_depth_coverage := Int_CheckExtension(Buffer, 'GL_ARB_post_depth_coverage');
   GL_ARB_sampler_objects := Int_CheckExtension(Buffer, 'GL_ARB_sampler_objects');
   GL_ARB_shader_bit_encoding := Int_CheckExtension(Buffer, 'GL_ARB_shader_bit_encoding');
+  GL_ARB_shader_clock := Int_CheckExtension(Buffer, 'GL_ARB_shader_clock');
   GL_ARB_texture_rgb10_a2ui := Int_CheckExtension(Buffer, 'GL_ARB_texture_rgb10_a2ui');
   GL_ARB_texture_swizzle := Int_CheckExtension(Buffer, 'GL_ARB_texture_swizzle');
   GL_ARB_timer_query := Int_CheckExtension(Buffer, 'GL_ARB_timer_query');
@@ -19767,23 +19917,103 @@ begin
   GL_ARB_draw_indirect := Int_CheckExtension(Buffer, 'GL_ARB_draw_indirect');
   GL_ARB_gpu_shader5 := Int_CheckExtension(Buffer, 'GL_ARB_gpu_shader5');
   GL_ARB_gpu_shader_fp64 := Int_CheckExtension(Buffer, 'GL_ARB_gpu_shader_fp64');
+  GL_ARB_gpu_shader_int64 := Int_CheckExtension(Buffer, 'GL_ARB_gpu_shader_int64');
   GL_ARB_shader_subroutine := Int_CheckExtension(Buffer, 'GL_ARB_shader_subroutine');
   GL_ARB_tessellation_shader := Int_CheckExtension(Buffer, 'GL_ARB_tessellation_shader');
   GL_ARB_texture_buffer_object_rgb32 := Int_CheckExtension(Buffer, 'GL_ARB_texture_buffer_object_rgb32');
   GL_ARB_transform_feedback2 := Int_CheckExtension(Buffer, 'GL_ARB_transform_feedback2');
   GL_ARB_transform_feedback3 := Int_CheckExtension(Buffer, 'GL_ARB_transform_feedback3');
   GL_ARB_ES2_compatibility := Int_CheckExtension(Buffer, 'GL_ARB_ES2_compatibility');
+  GL_ARB_ES3_2_compatibility := Int_CheckExtension(Buffer, 'GL_ARB_ES3_2_compatibility');
   GL_ARB_get_program_binary := Int_CheckExtension(Buffer, 'GL_ARB_get_program_binary');
   GL_ARB_separate_shader_objects := Int_CheckExtension(Buffer, 'GL_ARB_separate_shader_objects');
+  GL_ARB_shader_atomic_counter_ops := Int_CheckExtension(Buffer, 'GL_ARB_shader_atomic_counter_ops');
+  GL_ARB_shader_ballot := Int_CheckExtension(Buffer, 'GL_ARB_shader_ballot');
   GL_ARB_shader_precision := Int_CheckExtension(Buffer, 'GL_ARB_shader_precision');
   GL_ARB_vertex_attrib_64bit := Int_CheckExtension(Buffer, 'GL_ARB_vertex_attrib_64bit');
   GL_ARB_viewport_array := Int_CheckExtension(Buffer, 'GL_ARB_viewport_array');
+  GL_ARB_compute_variable_group_size := Int_CheckExtension(Buffer, 'GL_ARB_compute_variable_group_size');
+
+  // GL 4.2
+  GL_ARB_base_instance := Int_CheckExtension(Buffer, 'GL_ARB_base_instance');
+  GL_ARB_shading_language_420pack := Int_CheckExtension(Buffer, 'GL_ARB_shading_language_420pack');
+  GL_ARB_transform_feedback_instanced := Int_CheckExtension(Buffer, 'GL_ARB_transform_feedback_instanced');
+  GL_ARB_compressed_texture_pixel_storage := Int_CheckExtension(Buffer, 'GL_ARB_compressed_texture_pixel_storage');
+  GL_ARB_conservative_depth := Int_CheckExtension(Buffer, 'GL_ARB_conservative_depth');
+  GL_ARB_internalformat_query := Int_CheckExtension(Buffer, 'GL_ARB_internalformat_query');
+  GL_ARB_map_buffer_alignment := Int_CheckExtension(Buffer, 'GL_ARB_map_buffer_alignment');
+  GL_ARB_shader_atomic_counters := Int_CheckExtension(Buffer, 'GL_ARB_shader_atomic_counters');
+  GL_ARB_shader_image_load_store := Int_CheckExtension(Buffer, 'GL_ARB_shader_image_load_store');
+  GL_ARB_shading_language_packing := Int_CheckExtension(Buffer, 'GL_ARB_shading_language_packing');
+  GL_ARB_texture_storage := Int_CheckExtension(Buffer, 'GL_ARB_texture_storage');
+
+  // GL 4.3
+  GL_ARB_arrays_of_arrays := Int_CheckExtension(Buffer, 'GL_ARB_arrays_of_arrays');
+  GL_ARB_fragment_layer_viewport := Int_CheckExtension(Buffer, 'GL_ARB_fragment_layer_viewport');
+  GL_ARB_shader_image_size := Int_CheckExtension(Buffer, 'GL_ARB_shader_image_size');
+  GL_ARB_ES3_compatibility := Int_CheckExtension(Buffer, 'GL_ARB_ES3_compatibility');
+  GL_ARB_clear_buffer_object := Int_CheckExtension(Buffer, 'GL_ARB_clear_buffer_object');
+  GL_ARB_compute_shader := Int_CheckExtension(Buffer, 'GL_ARB_compute_shader');
+  GL_ARB_copy_image := Int_CheckExtension(Buffer, 'GL_ARB_copy_image');
+  GL_KHR_debug := Int_CheckExtension(Buffer, 'GL_KHR_debug');
+  GL_ARB_explicit_uniform_location := Int_CheckExtension(Buffer, 'GL_ARB_explicit_uniform_location');
+  GL_ARB_framebuffer_no_attachments := Int_CheckExtension(Buffer, 'GL_ARB_framebuffer_no_attachments');
+  GL_ARB_internalformat_query2 := Int_CheckExtension(Buffer, 'GL_ARB_internalformat_query2');
+  GL_ARB_invalidate_subdata := Int_CheckExtension(Buffer, 'GL_ARB_invalidate_subdata');
+  GL_ARB_multi_draw_indirect := Int_CheckExtension(Buffer, 'GL_ARB_multi_draw_indirect');
+  GL_ARB_program_interface_query := Int_CheckExtension(Buffer, 'GL_ARB_program_interface_query');
+  GL_ARB_robust_buffer_access_behavior := Int_CheckExtension(Buffer, 'GL_ARB_robust_buffer_access_behavior');
+  GL_ARB_shader_storage_buffer_object := Int_CheckExtension(Buffer, 'GL_ARB_shader_storage_buffer_object');
+  GL_ARB_stencil_texturing := Int_CheckExtension(Buffer, 'GL_ARB_stencil_texturing');
+  GL_ARB_texture_buffer_range := Int_CheckExtension(Buffer, 'GL_ARB_texture_buffer_range');
+  GL_ARB_texture_query_levels := Int_CheckExtension(Buffer, 'GL_ARB_texture_query_levels');
+  GL_ARB_texture_storage_multisample := Int_CheckExtension(Buffer, 'GL_ARB_texture_storage_multisample');
+  GL_ARB_texture_view := Int_CheckExtension(Buffer, 'GL_ARB_texture_view');
+  GL_ARB_vertex_attrib_binding := Int_CheckExtension(Buffer, 'GL_ARB_vertex_attrib_binding');
   GL_ARB_cl_event := Int_CheckExtension(Buffer, 'GL_ARB_cl_event');
   GL_ARB_debug_output := Int_CheckExtension(Buffer, 'GL_ARB_debug_output');
   GL_ARB_robustness := Int_CheckExtension(Buffer, 'GL_ARB_robustness');
   GL_ARB_shader_stencil_export := Int_CheckExtension(Buffer, 'GL_ARB_shader_stencil_export');
 
-  // === ATI/AMD =================================================================
+  // GL 4.4
+  GL_ARB_buffer_storage := Int_CheckExtension(Buffer, 'GL_ARB_buffer_storage');
+  GL_ARB_clear_texture := Int_CheckExtension(Buffer, 'GL_ARB_clear_texture');
+  GL_ARB_enhanced_layouts := Int_CheckExtension(Buffer, 'GL_ARB_enhanced_layouts');
+  GL_ARB_multi_bind := Int_CheckExtension(Buffer, 'GL_ARB_multi_bind');
+  GL_ARB_query_buffer_object := Int_CheckExtension(Buffer, 'GL_ARB_query_buffer_object');
+  GL_ARB_texture_mirror_clamp_to_edge:= Int_CheckExtension(Buffer, 'GL_ARB_texture_mirror_clamp_to_edge');
+  GL_ARB_texture_stencil8 := Int_CheckExtension(Buffer, 'GL_ARB_texture_stencil8');
+  GL_ARB_vertex_type_10f_11f_11f_rev := Int_CheckExtension(Buffer, 'GL_ARB_vertex_type_10f_11f_11f_rev');
+  GL_ARB_bindless_texture := Int_CheckExtension(Buffer, 'GL_ARB_bindless_texture');
+  GL_ARB_sparse_texture	:= Int_CheckExtension(Buffer, 'GL_ARB_sparse_texture');
+
+  // GL 4.5
+  GL_ARB_clip_control := Int_CheckExtension(Buffer, 'GL_ARB_clip_control');
+  GL_ARB_cull_distance := Int_CheckExtension(Buffer, 'GL_ARB_cull_distance');
+  GL_ARB_ES3_1_compatibility := Int_CheckExtension(Buffer, 'GL_ARB_ES3_1_compatibility');
+  GL_ARB_conditional_render_inverted := Int_CheckExtension(Buffer, 'GL_ARB_conditional_render_inverted');
+  GL_KHR_context_flush_control := Int_CheckExtension(Buffer, 'GL_KHR_context_flush_control');
+  GL_ARB_derivative_control := Int_CheckExtension(Buffer, 'GL_ARB_derivative_control');
+  GL_ARB_direct_state_access := Int_CheckExtension(Buffer, 'GL_ARB_direct_state_access');
+  GL_ARB_get_texture_sub_image := Int_CheckExtension(Buffer, 'GL_ARB_get_texture_sub_image');
+  GL_KHR_robustness := Int_CheckExtension(Buffer, 'GL_KHR_robustness');
+  GL_ARB_shader_texture_image_samples := Int_CheckExtension(Buffer, 'GL_ARB_shader_texture_image_samples');
+  GL_ARB_texture_barrier := Int_CheckExtension(Buffer, 'GL_ARB_texture_barrier');
+
+  // GL 4.6
+  GL_ARB_indirect_parameters := Int_CheckExtension(Buffer, 'GL_ARB_indirect_parameters');
+  GL_ARB_pipeline_statistics_query := Int_CheckExtension(Buffer, 'GL_ARB_pipeline_statistics_query');
+  GL_ARB_polygon_offset_clamp := Int_CheckExtension(Buffer, 'GL_ARB_polygon_offset_clamp');
+  GL_KHR_no_error := Int_CheckExtension(Buffer, 'GL_KHR_no_error');
+  GL_ARB_shader_atomic_counter_ops := Int_CheckExtension(Buffer, 'GL_ARB_shader_atomic_counter_ops');
+  GL_ARB_shader_draw_parameters := Int_CheckExtension(Buffer, 'GL_ARB_shader_draw_parameters');
+  GL_ARB_shader_group_vote := Int_CheckExtension(Buffer, 'GL_ARB_shader_group_vote');
+  GL_ARB_gl_spirv := Int_CheckExtension(Buffer, 'GL_ARB_gl_spirv');
+  GL_ARB_spirv_extensions := Int_CheckExtension(Buffer, 'GL_ARB_spirv_extensions');
+  GL_ARB_texture_filter_anisotropic := Int_CheckExtension(Buffer, 'GL_ARB_texture_filter_anisotropic');
+  GL_ARB_transform_feedback_overflow_query := Int_CheckExtension(Buffer, 'GL_ARB_transform_feedback_overflow_query');
+
+  // ATI/AMD
   GL_ATI_draw_buffers := Int_CheckExtension(Buffer, 'GL_ATI_draw_buffers');
   GL_ATI_element_array := Int_CheckExtension(Buffer, 'GL_ATI_element_array');
   GL_ATI_envmap_bumpmap := Int_CheckExtension(Buffer, 'GL_ATI_envmap_bumpmap');
@@ -19810,8 +20040,14 @@ begin
   GL_AMD_debug_output := Int_CheckExtension(Buffer, 'GL_AMD_debug_output');
   GL_AMD_transform_feedback3_lines_triangles := Int_CheckExtension(Buffer, 'GL_AMD_transform_feedback3_lines_triangles');
   GL_AMD_depth_clamp_separate := Int_CheckExtension(Buffer, 'GL_AMD_depth_clamp_separate');
+  // 4.3
+  GL_AMD_pinned_memory := Int_CheckExtension(Buffer, 'GL_AMD_pinned_memory');
+  GL_AMD_stencil_operation_extended := Int_CheckExtension(Buffer, 'GL_AMD_stencil_operation_extended');
+  GL_AMD_vertex_shader_viewport_index := Int_CheckExtension(Buffer, 'GL_AMD_vertex_shader_viewport_index');
+  GL_AMD_vertex_shader_layer := Int_CheckExtension(Buffer, 'GL_AMD_vertex_shader_layer');
+  GL_AMD_query_buffer_object := Int_CheckExtension(Buffer, 'GL_AMD_query_buffer_object');
 
-  // === EXT =====================================================================
+  // EXT
   GL_EXT_422_pixels := Int_CheckExtension(Buffer, 'GL_EXT_422_pixels');
   GL_EXT_abgr := Int_CheckExtension(Buffer, 'GL_EXT_abgr');
   GL_EXT_bgra := Int_CheckExtension(Buffer, 'GL_EXT_bgra');
@@ -19907,34 +20143,43 @@ begin
   GL_EXT_vertex_attrib_64bit := Int_CheckExtension(Buffer, 'GL_EXT_vertex_attrib_64bit');
   GL_EXT_texture_sRGB_decode := Int_CheckExtension(Buffer, 'GL_EXT_texture_sRGB_decode');
 
-  // === HP ======================================================================
+  // HP
   GL_HP_convolution_border_modes := Int_CheckExtension(Buffer, 'GL_HP_convolution_border_modes');
   GL_HP_image_transform := Int_CheckExtension(Buffer, 'GL_HP_image_transform');
   GL_HP_occlusion_test := Int_CheckExtension(Buffer, 'GL_HP_occlusion_test');
   GL_HP_texture_lighting := Int_CheckExtension(Buffer, 'GL_HP_texture_lighting');
 
-  // === IBM =====================================================================
+  // IBM
   GL_IBM_cull_vertex := Int_CheckExtension(Buffer, 'GL_IBM_cull_vertex');
   GL_IBM_multimode_draw_arrays := Int_CheckExtension(Buffer, 'GL_IBM_multimode_draw_arrays');
   GL_IBM_rasterpos_clip := Int_CheckExtension(Buffer, 'GL_IBM_rasterpos_clip');
   GL_IBM_texture_mirrored_repeat := Int_CheckExtension(Buffer, 'GL_IBM_texture_mirrored_repeat');
   GL_IBM_vertex_array_lists := Int_CheckExtension(Buffer, 'GL_IBM_vertex_array_lists');
 
-  // === INGR ====================================================================
+  // INGR
   GL_INGR_blend_func_separate := Int_CheckExtension(Buffer, 'GL_INGR_blend_func_separate');
   GL_INGR_color_clamp := Int_CheckExtension(Buffer, 'GL_INGR_color_clamp');
   GL_INGR_interlace_read := Int_CheckExtension(Buffer, 'GL_INGR_interlace_read');
   GL_INGR_palette_buffer := Int_CheckExtension(Buffer, 'GL_INGR_palette_buffer');
 
-  // === INTEL ===================================================================
+  // INTEL
+  GL_INTEL_framebuffer_CMAA := Int_CheckExtension(Buffer, 'GL_INTEL_framebuffer_CMAA');
   GL_INTEL_parallel_arrays := Int_CheckExtension(Buffer, 'GL_INTEL_parallel_arrays');
   GL_INTEL_texture_scissor := Int_CheckExtension(Buffer, 'GL_INTEL_texture_scissor');
 
-  // === MESA ====================================================================
+  // MESA
   GL_MESA_resize_buffers := Int_CheckExtension(Buffer, 'GL_MESA_resize_buffers');
   GL_MESA_window_pos := Int_CheckExtension(Buffer, 'GL_MESA_window_pos');
 
-  // === NVIDIA ==================================================================
+  // Khronos
+  // 4.5
+  GL_KHR_blend_equation_advanced := Int_CheckExtension(Buffer, 'GL_KHR_blend_equation_advanced');
+  GL_KHR_blend_equation_advanced_coherent := Int_CheckExtension(Buffer, 'GL_KHR_blend_equation_advanced_coherent');
+  GL_KHR_no_error := Int_CheckExtension(Buffer, 'GL_KHR_no_error');
+  GL_KHR_robustness := Int_CheckExtension(Buffer, 'GL_KHR_robustness');
+  GL_KHR_robust_buffer_access_behavior := Int_CheckExtension(Buffer, 'GL_KHR_robust_buffer_access_behavior');
+
+  // NVIDIA
   GL_NV_blend_square := Int_CheckExtension(Buffer, 'GL_NV_blend_square');
   GL_NV_copy_depth_to_color := Int_CheckExtension(Buffer, 'GL_NV_copy_depth_to_color');
   GL_NV_depth_clamp := Int_CheckExtension(Buffer, 'GL_NV_depth_clamp');
@@ -19980,6 +20225,8 @@ begin
   GL_NV_transform_feedback := Int_CheckExtension(Buffer, 'GL_NV_transform_feedback');
   GL_NV_vertex_program4 := Int_CheckExtension(Buffer, 'GL_NV_vertex_program4');
   GL_NV_conditional_render := Int_CheckExtension(Buffer, 'GL_NV_conditional_render');
+  GL_NV_conservative_raster := Int_CheckExtension(Buffer, 'GL_NV_conservative_raster');
+  GL_NV_conservative_raster_dilate := Int_CheckExtension(Buffer, 'GL_NV_conservative_raster_dilate');
   GL_NV_present_video := Int_CheckExtension(Buffer, 'GL_NV_present_video');
   GL_NV_explicit_multisample := Int_CheckExtension(Buffer, 'GL_NV_explicit_multisample');
   GL_NV_transform_feedback2 := Int_CheckExtension(Buffer, 'GL_NV_transform_feedback2');
@@ -19996,23 +20243,31 @@ begin
   GL_NV_multisample_coverage := Int_CheckExtension(Buffer, 'GL_NV_multisample_coverage');
   GL_NV_vdpau_interop := Int_CheckExtension(Buffer, 'GL_NV_vdpau_interop');
   GL_NV_texture_barrier := Int_CheckExtension(Buffer, 'GL_NV_texture_barrier');
+  // 4.3
+  GL_NV_path_rendering := Int_CheckExtension(Buffer, 'GL_NV_path_rendering');
+  GL_NV_bindless_texture := Int_CheckExtension(Buffer, 'GL_NV_bindless_texture');
+  GL_NV_shader_atomic_float := Int_CheckExtension(Buffer, 'GL_NV_shader_atomic_float');
 
-  // === OML =====================================================================
+  // OML
   GL_OML_interlace := Int_CheckExtension(Buffer, 'GL_OML_interlace');
   GL_OML_resample := Int_CheckExtension(Buffer, 'GL_OML_resample');
   GL_OML_subsample := Int_CheckExtension(Buffer, 'GL_OML_subsample');
 
-  // === PGI =====================================================================
+  // OVR
+  GL_OVR_multiview := Int_CheckExtension(Buffer, 'GL_OVR_multiview');
+  GL_OVR_multiview2 := Int_CheckExtension(Buffer, 'GL_OVR_multiview2');
+
+  // PGI
   GL_PGI_misc_hints := Int_CheckExtension(Buffer, 'GL_PGI_misc_hints');
   GL_PGI_vertex_hints := Int_CheckExtension(Buffer, 'GL_PGI_vertex_hints');
 
-  // === REND ====================================================================
+  // REND
   GL_REND_screen_coordinates := Int_CheckExtension(Buffer, 'GL_REND_screen_coordinates');
 
-  // === S3 ======================================================================
+  // S3
   GL_S3_s3tc := Int_CheckExtension(Buffer, 'GL_S3_s3tc');
 
-  // === SGIS ====================================================================
+  // SGIS
   GL_SGIS_detail_texture := Int_CheckExtension(Buffer, 'GL_SGIS_detail_texture');
   GL_SGIS_fog_function := Int_CheckExtension(Buffer, 'GL_SGIS_fog_function');
   GL_SGIS_generate_mipmap := Int_CheckExtension(Buffer, 'GL_SGIS_generate_mipmap');
@@ -20029,7 +20284,7 @@ begin
   GL_SGIS_texture_lod := Int_CheckExtension(Buffer, 'GL_SGIS_texture_lod');
   GL_SGIS_texture_select := Int_CheckExtension(Buffer, 'GL_SGIS_texture_select');
 
-  // === SGIX ====================================================================
+  // SGIX
   GL_FfdMaskSGIX := Int_CheckExtension(Buffer, 'GL_FfdMaskSGIX');
   GL_SGIX_async := Int_CheckExtension(Buffer, 'GL_SGIX_async');
   GL_SGIX_async_histogram := Int_CheckExtension(Buffer, 'GL_SGIX_async_histogram');
@@ -20073,13 +20328,13 @@ begin
   GL_SGIX_ycrcb_subsample := Int_CheckExtension(Buffer, 'GL_SGIX_ycrcb_subsample');
   GL_SGIX_ycrcba := Int_CheckExtension(Buffer, 'GL_SGIX_ycrcba');
 
-  // === SGI =====================================================================
+  // SGI
   GL_SGI_color_matrix := Int_CheckExtension(Buffer, 'GL_SGI_color_matrix');
   GL_SGI_color_table := Int_CheckExtension(Buffer, 'GL_SGI_color_table');
   GL_SGI_depth_pass_instrument := Int_CheckExtension(Buffer, 'GL_SGI_depth_pass_instrument');
   GL_SGI_texture_color_table := Int_CheckExtension(Buffer, 'GL_SGI_texture_color_table');
 
-  // === SUN =====================================================================
+  // SUN
   GL_SUNX_constant_data := Int_CheckExtension(Buffer, 'GL_SUNX_constant_data');
   GL_SUN_convolution_border_modes := Int_CheckExtension(Buffer, 'GL_SUN_convolution_border_modes');
   GL_SUN_global_alpha := Int_CheckExtension(Buffer, 'GL_SUN_global_alpha');
@@ -20088,12 +20343,12 @@ begin
   GL_SUN_triangle_list := Int_CheckExtension(Buffer, 'GL_SUN_triangle_list');
   GL_SUN_vertex := Int_CheckExtension(Buffer, 'GL_SUN_vertex');
 
-  // === WIN =====================================================================
+  // WIN
   GL_WIN_phong_shading := Int_CheckExtension(Buffer, 'GL_WIN_phong_shading');
   GL_WIN_specular_fog := Int_CheckExtension(Buffer, 'GL_WIN_specular_fog');
 
   {$IFDEF DGL_WIN}
-  // === WGL =====================================================================
+  // WGL
   WGL_3DFX_multisample := Int_CheckExtension(Buffer, 'WGL_3DFX_multisample');
   WGL_ARB_buffer_region := Int_CheckExtension(Buffer, 'WGL_ARB_buffer_region');
   WGL_ARB_extensions_string := Int_CheckExtension(Buffer, 'WGL_ARB_extensions_string');
@@ -20135,15 +20390,16 @@ begin
   WGL_NV_video_capture := Int_CheckExtension(Buffer, 'WGL_NV_video_capture');
   WGL_NV_copy_image := Int_CheckExtension(Buffer, 'WGL_NV_copy_image');
   WGL_NV_multisample_coverage := Int_CheckExtension(Buffer, 'WGL_NV_multisample_coverage');
+  WGL_NV_DX_interop := Int_CheckExtension(Buffer, 'WGL_NV_multisample_coverage');
   WGL_OML_sync_control := Int_CheckExtension(Buffer, 'WGL_OML_sync_control');
   WGL_3DL_stereo_control := Int_CheckExtension(Buffer, 'WGL_3DL_stereo_control');
-
+  WGL_ARB_context_flush_control := Int_CheckExtension(Buffer, 'WGL_ARB_context_flush_control');
   WIN_draw_range_elements := Int_CheckExtension(Buffer, 'WIN_draw_range_elements');
   WIN_swap_hint := Int_CheckExtension(Buffer, 'WIN_swap_hint');
   {$ENDIF}
 
   {$IFDEF DGL_LINUX}
-  // === GLX =====================================================================
+  // GLX
   GLX_ARB_multisample := Int_CheckExtension(Buffer, 'GLX_ARB_multisample');
   GLX_ARB_fbconfig_float := Int_CheckExtension(Buffer, 'GLX_ARB_fbconfig_float');
   GLX_ARB_get_proc_address := Int_CheckExtension(Buffer, 'GLX_ARB_get_proc_address');
@@ -20160,19 +20416,19 @@ begin
   GLX_EXT_texture_from_pixmap := Int_CheckExtension(Buffer, 'GLX_EXT_texture_from_pixmap');
   GLX_EXT_swap_control := Int_CheckExtension(Buffer, 'GLX_EXT_swap_control');
   GLX_EXT_create_context_es2_profile := Int_CheckExtension(Buffer, 'GLX_EXT_create_context_es2_profile');
+  GLX_ARB_context_flush_control := Int_CheckExtension(Buffer, 'GLX_ARB_context_flush_control');
   {$ENDIF}
+
   ImplementationRead := True;
 end;
 
 {$IFDEF DGL_WIN}
-
 // =============================================================================
 // RaiseLastOSError
 // =============================================================================
 // Needed for compatibility with older Delphiversions
 // =============================================================================
-//
-//==============================================================================
+
 procedure RaiseLastOSError;
 begin
 {$IFDEF FPC}
@@ -20189,8 +20445,7 @@ end;
 // =============================================================================
 // CreateRenderingContext
 // =============================================================================
-//
-//==============================================================================
+
 function CreateRenderingContext(DC: HDC; Options: TRCOptions; ColorBits, ZBits, StencilBits, AccumBits, AuxBuffers: Integer; Layer: Integer): HGLRC;
 const
   OBJ_MEMDC = 10;
@@ -20278,20 +20533,161 @@ begin
 end;
 
 // =============================================================================
+// CreateRenderingContextVersion
+// =============================================================================
+//  Creates a context for the more recent OpenGL versions (3.0) and up
+//  For that we first need to get a normal GL context for getting the
+//  function pointer to wglCreateContextAttribsARB first
+// =============================================================================
+function CreateRenderingContextVersion(DC: HDC; Options: TRCOptions; MajorVersion, MinorVersion : Integer; ForwardCompatible : Boolean; ColorBits, ZBits, StencilBits, AccumBits, AuxBuffers: Integer; Layer: Integer): HGLRC;
+const
+  OBJ_MEMDC          = 10;
+  OBJ_ENHMETADC      = 12;
+  OBJ_METADC         = 4;
+  PFD_DOUBLEBUFFER   = $00000001;
+  PFD_STEREO         = $00000002;
+  PFD_DRAW_TO_WINDOW = $00000004;
+  PFD_DRAW_TO_BITMAP = $00000008;
+  PFD_SUPPORT_GDI    = $00000010;
+  PFD_SUPPORT_OPENGL = $00000020;
+  PFD_TYPE_RGBA      = 0;
+  PFD_MAIN_PLANE     = 0;
+  PFD_OVERLAY_PLANE  = 1;
+  PFD_UNDERLAY_PLANE = LongWord(-1);
+  MemoryDCs          = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
+var
+  PFDescriptor : TPixelFormatDescriptor;
+  PixelFormat  : Integer;
+  AType        : DWORD;
+  LegacyRC     : HGLRC;
+  Attribs      : array of Integer;
+begin
+  if GL_LibHandle = nil then
+  	InitOpenGL;
+
+  if not Assigned(GL_LibHandle) then
+  	raise Exception.Create('GL_LibHandle is NIL. Could not load OpenGL library!');
+
+  FillChar(PFDescriptor, SizeOf(PFDescriptor), 0);
+
+  with PFDescriptor do
+    begin
+      nSize    := SizeOf(PFDescriptor);
+      nVersion := 1;
+      dwFlags  := PFD_SUPPORT_OPENGL;
+      AType    := GetObjectType(DC);
+
+      if AType = 0 then
+      	RaiseLastOSError;
+
+      if AType in MemoryDCs then
+      	dwFlags := dwFlags or PFD_DRAW_TO_BITMAP
+      else
+      	dwFlags := dwFlags or PFD_DRAW_TO_WINDOW;
+
+      if opDoubleBuffered in Options then
+      	dwFlags := dwFlags or PFD_DOUBLEBUFFER;
+
+      if opGDI in Options then
+      	dwFlags := dwFlags or PFD_SUPPORT_GDI;
+
+      if opStereo in Options then
+      	dwFlags := dwFlags or PFD_STEREO;
+
+      iPixelType   := PFD_TYPE_RGBA;
+      cColorBits   := ColorBits;
+      cDepthBits   := zBits;
+      cStencilBits := StencilBits;
+      cAccumBits   := AccumBits;
+      cAuxBuffers  := AuxBuffers;
+
+      if Layer = 0 then
+        iLayerType := PFD_MAIN_PLANE
+      else
+        if Layer > 0 then
+          iLayerType := PFD_OVERLAY_PLANE
+        else
+          iLayerType := Byte(PFD_UNDERLAY_PLANE);
+    end;
+
+  PixelFormat := ChoosePixelFormat(DC, @PFDescriptor);
+
+  if PixelFormat = 0 then
+  	RaiseLastOSError;
+
+  if GetPixelFormat(DC) <> PixelFormat then
+  	if not SetPixelFormat(DC, PixelFormat, @PFDescriptor) then
+  		RaiseLastOSError;
+
+  DescribePixelFormat(DC, PixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+
+  // Create legacy render context first for we need function pointers to
+  // create new OpenGL render contexts
+  LegacyRC := wglCreateContext(DC);
+  wglMakeCurrent(DC, LegacyRC);
+
+  // Set attributes to describe our requested context
+  SetLength(Attribs, 5);
+  Attribs[0] := WGL_CONTEXT_MAJOR_VERSION_ARB;
+  Attribs[1] := MajorVersion;
+  Attribs[2] := WGL_CONTEXT_MINOR_VERSION_ARB;
+  Attribs[3] := MinorVersion;
+
+  // Add context flag for forward compatible context
+  //  Forward compatible means no more support for legacy functions like
+  //  immediate mode (glvertex, glrotate, gltranslate, etc.)
+  if ForwardCompatible then
+    begin
+      SetLength(Attribs, Length(Attribs)+2);
+      Attribs[4] := WGL_CONTEXT_FLAGS_ARB;
+      Attribs[5] := WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
+    end;
+
+  // Attribute flags must be finalized with a zero
+  Attribs[High(Attribs)] := 0;
+
+  // Get function pointer for new context creation function
+  wglCreateContextAttribsARB := wglGetProcAddress('wglCreateContextAttribsARB');
+
+  if not Assigned(wglCreateContextAttribsARB) then
+    begin
+      raise Exception.Create('Could not get function pointer adress for wglCreateContextAttribsARB - OpenGL 3.x and above not supported!');
+      wglDeleteContext(LegacyRC);
+      exit;
+    end;
+
+  // Create context
+  Result := wglCreateContextAttribsARB(DC, 0, @Attribs[0]);
+
+  if Result = 0 then
+    begin
+      raise Exception.Create('Could not create the desired OpenGL rendering context!');
+      wglDeleteContext(LegacyRC);
+      exit;
+    end;
+
+  wglDeleteContext(LegacyRC);
+
+  if Result = 0 then
+  	RaiseLastOSError
+  else
+  	LastPixelFormat := 0;
+end;
+
+// =============================================================================
 // DestroyRenderingContext
 // =============================================================================
-//
-//==============================================================================
+
 procedure DestroyRenderingContext(RC: HGLRC);
 begin
   wglDeleteContext(RC);
 end;
 
+
 // =============================================================================
 // ActivateRenderingContext
 // =============================================================================
-//
-//==============================================================================
+
 procedure ActivateRenderingContext(DC: HDC; RC: HGLRC; loadext: boolean = true);
 begin
   Assert((DC <> 0), 'DC must not be 0');
@@ -20312,19 +20708,23 @@ end;
 // =============================================================================
 // DeactivateRenderingContext
 // =============================================================================
-//
-//==============================================================================
+
 procedure DeactivateRenderingContext;
 begin
   wglMakeCurrent(0, 0);
 end;
 {$ENDIF}
 
+
 initialization
 
-{$IFDEF CPU386}
+{$IFDEF CPU386}{$IFNDEF DARWIN}
   Set8087CW($133F);
+{$ENDIF}{$ENDIF}
+{$IFDEF DGL_64BIT}
+  SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide,exOverflow, exUnderflow, exPrecision]);
 {$ENDIF}
+
 
 finalization
 

@@ -32,6 +32,10 @@ type
     FRedraw: Boolean;
     FTftdMode: Boolean;
     procedure Resize(AWidth, AHeight: Integer);
+  protected
+    procedure SetX(AValue: Integer); virtual;
+    procedure SetY(AValue: Integer); virtual;
+    procedure SetVisible(AValue: Boolean); virtual;
   public
     /// <summary>A blank surface: all pixels 0, a palette of 256 black colors, visible, at (AX, AY)</summary>
     constructor Create(AWidth, AHeight: Integer; AX: Integer = 0; AY: Integer = 0);
@@ -45,9 +49,10 @@ type
     /// <summary>The pixels in rows from the top, Width bytes each</summary>
     function Pixels: TBytes;
     function PixelPointer(AX, AY: Integer): PByte;
-    property X: Integer read FX write FX;
-    property Y: Integer read FY write FY;
-    property Visible: Boolean read FVisible write FVisible;
+    /// <summary>The position; the setters are virtual (setX/setY of Surface) so a widget can move its children</summary>
+    property X: Integer read FX write SetX;
+    property Y: Integer read FY write SetY;
+    property Visible: Boolean read FVisible write SetVisible;
     property Hidden: Boolean read FHidden write FHidden;
     /// <summary>True after a change of size: the next Blit first clears the surface (Surface::draw)</summary>
     property Redraw: Boolean read FRedraw write FRedraw;
@@ -88,15 +93,15 @@ type
     procedure DrawRect(AX, AY, AWidth, AHeight: Integer; AColor: Byte); overload;
     procedure DrawRect(const ARect: TXcomRect; AColor: Byte); overload;
     /// <summary>Surface::draw: the base surface just clears itself and forgets that it must be redrawn</summary>
-    procedure Draw;
+    procedure Draw; virtual;
     /// <summary>
     ///   Surface::blit: if the surface is visible and not hidden it is copied (with its crop) on ATarget at its
     ///   own position, the index 0 being transparent
     /// </summary>
-    procedure Blit(ATarget: TXcomSurface);
+    procedure Blit(ATarget: TXcomSurface); virtual;
     /// <summary>Surface::setWidth: the surface changes size keeping the pixels it can, and must be redrawn</summary>
-    procedure SetWidth(AWidth: Integer);
-    procedure SetHeight(AHeight: Integer);
+    procedure SetWidth(AWidth: Integer); virtual;
+    procedure SetHeight(AHeight: Integer); virtual;
   end;
 
 implementation
@@ -332,6 +337,21 @@ begin
   TXcomSdl.BlitKeyed(@FImage.Pixels[0], Width, Height, FImage.Palette, nil, @LNew.Pixels[0], AWidth, AHeight,
     LNew.Palette, 0, 0);
   FImage := LNew;
+end;
+
+procedure TXcomSurface.SetX(AValue: Integer);
+begin
+  FX := AValue;
+end;
+
+procedure TXcomSurface.SetY(AValue: Integer);
+begin
+  FY := AValue;
+end;
+
+procedure TXcomSurface.SetVisible(AValue: Boolean);
+begin
+  FVisible := AValue;
 end;
 
 procedure TXcomSurface.SetWidth(AWidth: Integer);

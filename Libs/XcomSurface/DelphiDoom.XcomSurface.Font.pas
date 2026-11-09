@@ -84,6 +84,10 @@ type
     function Width: Integer;
     function Height: Integer;
     function Spacing: Integer;
+    /// <summary>How many pictures the font has (Font::_images.size())</summary>
+    function ImageCount: Integer;
+    /// <summary>The surface of a picture (Font::getPalette and setPalette work on these); owned by the font</summary>
+    function ImageSurface(AIndex: Integer): TXcomSurface;
     /// <summary>The code points of a string (a surrogate pair is one code point), as Unicode::convUtf8ToUtf32</summary>
     class function CodePoints(const AText: string): TArray<Cardinal>; static;
   end;
@@ -204,10 +208,15 @@ begin
 end;
 
 function TXcomFont.GetChar(ACode: Cardinal): TXcomSurface;
+var
+  LEntry: TXcomFontChar;
 begin
   if not FChars.ContainsKey(ACode) then
     ACode := Ord('?');
-  Result := FImages[EntryOf(ACode).ImageIndex].Surface;
+  LEntry := EntryOf(ACode);
+  Result := FImages[LEntry.ImageIndex].Surface;
+  // Font::getChar leaves the crop of the picture on the rectangle of the character
+  Result.Crop := LEntry.Rect;
 end;
 
 function TXcomFont.TryGetChar(ACode: Cardinal; out AChar: TXcomFontChar): Boolean;
@@ -264,6 +273,16 @@ begin
   if FImages.Count = 0 then
     raise EXcomSurfaceException.Create(SNoImages);
   Result := FImages[0].Spacing;
+end;
+
+function TXcomFont.ImageCount: Integer;
+begin
+  Result := FImages.Count;
+end;
+
+function TXcomFont.ImageSurface(AIndex: Integer): TXcomSurface;
+begin
+  Result := FImages[AIndex].Surface;
 end;
 
 class function TXcomFont.CodePoints(const AText: string): TArray<Cardinal>;
