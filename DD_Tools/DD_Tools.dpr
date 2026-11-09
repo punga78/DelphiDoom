@@ -11,6 +11,7 @@ program DD_Tools;
 {$DESCRIPTION 'DelphiDoom Tools'}
 
 uses
+  System.SysUtils,
   Vcl.Forms,
   DelphiDoom.Tools.Types in '..\Libs\ToolsCore\DelphiDoom.Tools.Types.pas',
   DelphiDoom.Tools.Intf in '..\Libs\ToolsCore\DelphiDoom.Tools.Intf.pas',
@@ -56,7 +57,55 @@ uses
   DelphiDoom.Tools.Vcl.EndoomPanel in '..\DD_Tools\DelphiDoom.Tools.Vcl.EndoomPanel.pas',
   DelphiDoom.Tools.Composition in '..\DD_Tools\DelphiDoom.Tools.Composition.pas',
   frm_textartmethod in '..\DD_Tools\frm_textartmethod.pas',
-  frm_toolsmain in '..\DD_Tools\frm_toolsmain.pas';
+  frm_toolsmain in '..\DD_Tools\frm_toolsmain.pas',
+  DelphiDoom.Tools.Win.FontDialogs in '..\DD_Tools\DelphiDoom.Tools.Win.FontDialogs.pas',
+  DelphiDoom.Tools.Win.FontCatalog in '..\DD_Tools\DelphiDoom.Tools.Win.FontCatalog.pas',
+  DelphiDoom.Tools.Win.FontInstaller in '..\DD_Tools\DelphiDoom.Tools.Win.FontInstaller.pas',
+  DelphiDoom.Tools.Win.FontImageExporter in '..\DD_Tools\DelphiDoom.Tools.Win.FontImageExporter.pas',
+  DelphiDoom.Tools.Win.FontRasterizer in '..\DD_Tools\DelphiDoom.Tools.Win.FontRasterizer.pas',
+  DelphiDoom.FontEditor.Intf in '..\Libs\FontEditor\DelphiDoom.FontEditor.Intf.pas',
+  DelphiDoom.FontEditor.Presenter in '..\Libs\FontEditor\DelphiDoom.FontEditor.Presenter.pas',
+  DelphiDoom.Wad.Factory in '..\Libs\Wad\DelphiDoom.Wad.Factory.pas',
+  DelphiDoom.Font.Intf in '..\Libs\Font\DelphiDoom.Font.Intf.pas',
+  DelphiDoom.Font.Factory in '..\Libs\Font\DelphiDoom.Font.Factory.pas',
+  DelphiDoom.FontEditor.Types in '..\Libs\FontEditor\DelphiDoom.FontEditor.Types.pas',
+  DelphiDoom.Font.Types in '..\Libs\Font\DelphiDoom.Font.Types.pas',
+  DelphiDoom.Font.Settings in '..\Libs\Font\DelphiDoom.Font.Settings.pas',
+  DelphiDoom.Palette.GamePalettes in '..\Libs\Palette\DelphiDoom.Palette.GamePalettes.pas',
+  DelphiDoom.Font.SettingsFormat in '..\Libs\Font\DelphiDoom.Font.SettingsFormat.pas',
+  DelphiDoom.Font.LumpNames in '..\Libs\Font\DelphiDoom.Font.LumpNames.pas',
+  DelphiDoom.Wad.Types in '..\Libs\Wad\DelphiDoom.Wad.Types.pas',
+  DelphiDoom.Wad.Intf in '..\Libs\Wad\DelphiDoom.Wad.Intf.pas',
+  DelphiDoom.Wad.Pak.Intf in '..\Libs\Wad\DelphiDoom.Wad.Pak.Intf.pas',
+  DelphiDoom.Wad.Directory in '..\Libs\Wad\DelphiDoom.Wad.Directory.pas',
+  DelphiDoom.Wad.LumpCache in '..\Libs\Wad\DelphiDoom.Wad.LumpCache.pas',
+  DelphiDoom.Wad.Builder in '..\Libs\Wad\DelphiDoom.Wad.Builder.pas',
+  DelphiDoom.Wad.Source.Wad in '..\Libs\Wad\DelphiDoom.Wad.Source.Wad.pas',
+  DelphiDoom.Wad.Source.Wad2 in '..\Libs\Wad\DelphiDoom.Wad.Source.Wad2.pas',
+  DelphiDoom.Wad.Source.Pak in '..\Libs\Wad\DelphiDoom.Wad.Source.Pak.pas',
+  DelphiDoom.Wad.Source.Zip in '..\Libs\Wad\DelphiDoom.Wad.Source.Zip.pas',
+  DelphiDoom.Wad.Source.Folder in '..\Libs\Wad\DelphiDoom.Wad.Source.Folder.pas',
+  DelphiDoom.Wad.Source.SingleFile in '..\Libs\Wad\DelphiDoom.Wad.Source.SingleFile.pas',
+  DelphiDoom.Wad.Pak.Index in '..\Libs\Wad\DelphiDoom.Wad.Pak.Index.pas',
+  DelphiDoom.Wad.Pak.PathResolver in '..\Libs\Wad\DelphiDoom.Wad.Pak.PathResolver.pas',
+  DelphiDoom.Palette.ColorMatcher in '..\Libs\Palette\DelphiDoom.Palette.ColorMatcher.pas',
+  DelphiDoom.Imaging.PatchWriter in '..\Libs\Imaging\DelphiDoom.Imaging.PatchWriter.pas',
+  DelphiDoom.Font.TextComposer in '..\Libs\Font\DelphiDoom.Font.TextComposer.pas',
+  DelphiDoom.Font.GridComposer in '..\Libs\Font\DelphiDoom.Font.GridComposer.pas',
+  DelphiDoom.Font.Exporter in '..\Libs\Font\DelphiDoom.Font.Exporter.pas',
+  DelphiDoom.Font.WadGenerator in '..\Libs\Font\DelphiDoom.Font.WadGenerator.pas',
+  DelphiDoom.Palette.Types in '..\Libs\Palette\DelphiDoom.Palette.Types.pas',
+  DelphiDoom.Palette.GamePaletteData in '..\Libs\Palette\DelphiDoom.Palette.GamePaletteData.pas',
+  DelphiDoom.Wad.Pak.Types in '..\Libs\Wad\DelphiDoom.Wad.Pak.Types.pas',
+  DelphiDoom.Wad.Name in '..\Libs\Wad\DelphiDoom.Wad.Name.pas',
+  DelphiDoom.Wad.Indicators in '..\Libs\Wad\DelphiDoom.Wad.Indicators.pas',
+  DelphiDoom.Wad.Source.Base in '..\Libs\Wad\DelphiDoom.Wad.Source.Base.pas',
+  DelphiDoom.Wad.Pak.Names in '..\Libs\Wad\DelphiDoom.Wad.Pak.Names.pas',
+  DelphiDoom.Palette.Intf in '..\Libs\Palette\DelphiDoom.Palette.Intf.pas',
+  DelphiDoom.Font.GlyphCropper in '..\Libs\Font\DelphiDoom.Font.GlyphCropper.pas',
+  DelphiDoom.Font.Colorizer in '..\Libs\Font\DelphiDoom.Font.Colorizer.pas',
+  DelphiDoom.Font.PerlinNoise in '..\Libs\Font\DelphiDoom.Font.PerlinNoise.pas',
+  frm_fonteditor in '..\DD_Tools\frm_fonteditor.pas';
 
 begin
   Application.Initialize;
@@ -64,7 +113,13 @@ begin
   Application.CreateForm(TToolsMainForm, ToolsMainForm);
   // the composition root: the main window owns the services from here on
   ToolsMainForm.Configure(TToolsServices.Create(Application.Title));
-  if ParamCount > 0 then
+  // a project of the font editor (.ddp) opens that module, any other file is a text screen of the endoom editor
+  if (ParamCount > 0) and SameText(ExtractFileExt(ParamStr(1)), '.ddp') then
+  begin
+    ToolsMainForm.Start('');
+    ToolsMainForm.ShowFontEditor(ParamStr(1));
+  end
+  else if ParamCount > 0 then
     ToolsMainForm.Start(ParamStr(1))
   else
     ToolsMainForm.Start('');
