@@ -97,7 +97,8 @@ resourcestring
   SGreedSaveTooShort = 'Greed: the file %s has %d bytes, %d needed';
   SGreedSettingUnknown = 'Greed: the setting %s does not exist, or it has another kind';
   SGreedTooMany = 'Greed: too many %s placed (%d)';
-  SGreedNoPlayerStart = 'Greed: the map %d has no start of the player (mapsprites 1)';
+  SGreedIllegalKill = 'Greed: a sprite of the kind %d cannot be killed';
+  SGreedNoPlayerStart ='Greed: the map %d has no start of the player (mapsprites 1)';
   SGreedArgumentRange ='Greed: the value %d of %s is outside %d..%d';
 
 type

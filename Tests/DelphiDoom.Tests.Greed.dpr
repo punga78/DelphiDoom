@@ -70,6 +70,7 @@ uses
   DelphiDoom.Greed.Elevator.Intf in '..\Libs\Greed\DelphiDoom.Greed.Elevator.Intf.pas',
   DelphiDoom.Greed.ElevatorRules in '..\Libs\Greed\DelphiDoom.Greed.ElevatorRules.pas',
   DelphiDoom.Greed.PlayerMovement in '..\Libs\Greed\DelphiDoom.Greed.PlayerMovement.pas',
+  DelphiDoom.Greed.SpriteDeath in '..\Libs\Greed\DelphiDoom.Greed.SpriteDeath.pas',
   DelphiDoom.Clock.Intf in '..\Libs\Clock\DelphiDoom.Clock.Intf.pas',
   DelphiDoom.Greed.Frame.Intf in '..\Libs\Greed\DelphiDoom.Greed.Frame.Intf.pas',
   DelphiDoom.Greed.TopDownRenderer in '..\Libs\Greed\DelphiDoom.Greed.TopDownRenderer.pas',
@@ -107,6 +108,7 @@ uses
   DelphiDoom.Tests.Greed.PlayerRules in 'Source\DelphiDoom.Tests.Greed.PlayerRules.pas',
   DelphiDoom.Tests.Greed.Actors in 'Source\DelphiDoom.Tests.Greed.Actors.pas',
   DelphiDoom.Tests.Greed.PlayerMovement in 'Source\DelphiDoom.Tests.Greed.PlayerMovement.pas',
+  DelphiDoom.Tests.Greed.SpriteDeath in 'Source\DelphiDoom.Tests.Greed.SpriteDeath.pas',
   DelphiDoom.Tests.Greed.GameLoop in 'Source\DelphiDoom.Tests.Greed.GameLoop.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
