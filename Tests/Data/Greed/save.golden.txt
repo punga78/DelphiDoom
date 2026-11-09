@@ -1,0 +1,21 @@
+S player_t 20996 3639f3c5
+O x 0
+O mapspot 12
+O weapons 64
+O ammo 84
+O bodycount 96
+O northmap 108
+O westmap 4204
+O northwall 8300
+O westwall 12396
+O savesprites 16492
+O scrollmin 20588
+O primaries 20596
+O secondaries 20604
+O frags 20632
+O runmod 20664
+O inventory 20672
+O status 20724
+O jumpmod 20736
+O events 20740
+S pevent_t 52 94ba3984

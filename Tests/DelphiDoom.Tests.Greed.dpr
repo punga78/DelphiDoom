@@ -52,6 +52,10 @@ uses
   DelphiDoom.Greed.SoundEffects in '..\Libs\Greed\DelphiDoom.Greed.SoundEffects.pas',
   DelphiDoom.Greed.Music in '..\Libs\Greed\DelphiDoom.Greed.Music.pas',
   DelphiDoom.Greed.SongSelector in '..\Libs\Greed\DelphiDoom.Greed.SongSelector.pas',
+  DelphiDoom.Greed.SaveTypes in '..\Libs\Greed\DelphiDoom.Greed.SaveTypes.pas',
+  DelphiDoom.Greed.Save.Intf in '..\Libs\Greed\DelphiDoom.Greed.Save.Intf.pas',
+  DelphiDoom.Greed.SaveGames in '..\Libs\Greed\DelphiDoom.Greed.SaveGames.pas',
+  DelphiDoom.Greed.SaveFolder in '..\Libs\Greed\DelphiDoom.Greed.SaveFolder.pas',
   DelphiDoom.Greed.Composition in '..\Greed\DelphiDoom.Greed.Composition.pas',
   DelphiDoom.Tests.Greed.Builders in 'Source\DelphiDoom.Tests.Greed.Builders.pas',
   DelphiDoom.Tests.Greed.RealData in 'Source\DelphiDoom.Tests.Greed.RealData.pas',
@@ -78,6 +82,8 @@ uses
   DelphiDoom.Tests.Greed.SoundEffects in 'Source\DelphiDoom.Tests.Greed.SoundEffects.pas',
   DelphiDoom.Tests.Greed.Music in 'Source\DelphiDoom.Tests.Greed.Music.pas',
   DelphiDoom.Tests.Greed.SongSelector in 'Source\DelphiDoom.Tests.Greed.SongSelector.pas',
+  DelphiDoom.Tests.Greed.SaveGames in 'Source\DelphiDoom.Tests.Greed.SaveGames.pas',
+  DelphiDoom.Tests.Greed.SaveFolder in 'Source\DelphiDoom.Tests.Greed.SaveFolder.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var
