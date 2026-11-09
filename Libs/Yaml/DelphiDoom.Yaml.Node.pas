@@ -46,7 +46,7 @@ type
     /// <summary>A handle to an existing node</summary>
     constructor CreateHandle(ANode: TYamlDetailNode; const AMemory: IYamlMemoryHolder);
     /// <summary>The handle of a missing key (ZombieNode)</summary>
-    constructor CreateZombie(const AKey: TYamlText);
+    class function NewZombie(const AKey: TYamlText): IYamlNode; static;
     function IsDefined: Boolean;
     function NodeType: TYamlNodeType;
     function IsNull: Boolean;
@@ -160,11 +160,14 @@ begin
   FNode := ANode;
 end;
 
-constructor TYamlNode.CreateZombie(const AKey: TYamlText);
+class function TYamlNode.NewZombie(const AKey: TYamlText): IYamlNode;
+var
+  LNode: TYamlNode;
 begin
-  inherited Create;
-  FIsValid := False;
-  FInvalidKey := AKey;
+  LNode := TYamlNode.Create;
+  LNode.FIsValid := False;
+  LNode.FInvalidKey := AKey;
+  Result := LNode;
 end;
 
 function TYamlNode.DetailNode: TYamlDetailNode;
@@ -383,7 +386,7 @@ begin
     else
       LText := AKey.Node.Scalar;
     end;
-    Exit(TYamlNode.CreateZombie(LText));
+    Exit(TYamlNode.NewZombie(LText));
   end;
   Result := NewHandle(LValue);
 end;

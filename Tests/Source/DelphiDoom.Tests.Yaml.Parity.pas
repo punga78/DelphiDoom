@@ -127,7 +127,7 @@ var
 begin
   LCorpus := TYamlParityDumper.SplitCases(TFile.ReadAllBytes(DataFile('corpus.txt')));
   Assert.IsTrue(Cut(ReadFileText('parse.golden.txt'), LGolden), 'il golden non comincia con #0');
-  Assert.AreEqual(Length(LCorpus), Length(LGolden), 'casi del corpus e casi del golden');
+  Assert.AreEqual(Integer(Length(LCorpus)), Integer(Length(LGolden)), 'casi del corpus e casi del golden');
 end;
 
 procedure TTestYamlParity.CompareCorpus(const ACorpusName, AGoldenName: string; const ARunner: TFunc<TYamlText, TYamlText>);
@@ -140,7 +140,7 @@ var
 begin
   LCorpus := TYamlParityDumper.SplitCases(TFile.ReadAllBytes(DataFile(ACorpusName)));
   Assert.IsTrue(Cut(ReadFileText(AGoldenName), LGolden), 'il golden non comincia con #0');
-  Assert.AreEqual(Length(LCorpus), Length(LGolden), 'casi del corpus e casi del golden');
+  Assert.AreEqual(Integer(Length(LCorpus)), Integer(Length(LGolden)), 'casi del corpus e casi del golden');
   LDifferent := 0;
   LReport := '';
   for I := 0 to High(LCorpus) do

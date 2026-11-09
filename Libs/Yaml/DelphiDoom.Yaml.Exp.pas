@@ -194,14 +194,17 @@ begin
   LValue := ParseHex(LText, AStream.Mark);
   if ((LValue >= $D800) and (LValue <= $DFFF)) or (LValue > $10FFFF) then
     raise EYamlParserException.Create(AStream.Mark, SYamlInvalidUnicode + TYamlText(UIntToStr(LValue)));
+  // the bytes are made with YamlBytes: a concatenation of one char strings above #127 would be converted
   if LValue <= $7F then
-    Exit(Str(LValue));
-  if LValue <= $7FF then
-    Exit(Str($C0 + (LValue shr 6)) + Str($80 + (LValue and $3F)));
-  if LValue <= $FFFF then
-    Exit(Str($E0 + (LValue shr 12)) + Str($80 + ((LValue shr 6) and $3F)) + Str($80 + (LValue and $3F)));
-  Result := Str($F0 + (LValue shr 18)) + Str($80 + ((LValue shr 12) and $3F)) +
-    Str($80 + ((LValue shr 6) and $3F)) + Str($80 + (LValue and $3F));
+    Result := YamlBytes([Byte(LValue)])
+  else if LValue <= $7FF then
+    Result := YamlBytes([Byte($C0 + (LValue shr 6)), Byte($80 + (LValue and $3F))])
+  else if LValue <= $FFFF then
+    Result := YamlBytes([Byte($E0 + (LValue shr 12)), Byte($80 + ((LValue shr 6) and $3F)),
+      Byte($80 + (LValue and $3F))])
+  else
+    Result := YamlBytes([Byte($F0 + (LValue shr 18)), Byte($80 + ((LValue shr 12) and $3F)),
+      Byte($80 + ((LValue shr 6) and $3F)), Byte($80 + (LValue and $3F))]);
 end;
 
 class function TYamlExp.Escape(AStream: TYamlStream): TYamlText;

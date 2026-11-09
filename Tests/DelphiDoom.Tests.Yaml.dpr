@@ -43,6 +43,10 @@ uses
   DelphiDoom.Yaml.Factory in '..\Libs\Yaml\DelphiDoom.Yaml.Factory.pas',
   DelphiDoom.Tests.Yaml.Dumper in 'Source\DelphiDoom.Tests.Yaml.Dumper.pas',
   DelphiDoom.Tests.Yaml.EmitScript in 'Source\DelphiDoom.Tests.Yaml.EmitScript.pas',
+  DelphiDoom.Tests.Yaml.Node in 'Source\DelphiDoom.Tests.Yaml.Node.pas',
+  DelphiDoom.Tests.Yaml.Convert in 'Source\DelphiDoom.Tests.Yaml.Convert.pas',
+  DelphiDoom.Tests.Yaml.Parser in 'Source\DelphiDoom.Tests.Yaml.Parser.pas',
+  DelphiDoom.Tests.Yaml.Emitter in 'Source\DelphiDoom.Tests.Yaml.Emitter.pas',
   DelphiDoom.Tests.Yaml.Parity in 'Source\DelphiDoom.Tests.Yaml.Parity.pas';
 
 var
@@ -52,6 +56,9 @@ var
   NUnitLogger: ITestLogger;
 
 begin
+  {$IFDEF DEBUG}
+  ReportMemoryLeaksOnShutdown := True;
+  {$ENDIF}
   try
     TDUnitX.CheckCommandLine;
     Runner := TDUnitX.CreateRunner;
