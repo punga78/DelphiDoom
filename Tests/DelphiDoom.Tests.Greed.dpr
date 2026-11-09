@@ -126,6 +126,10 @@ uses
   DelphiDoom.Tests.Greed.RenderScenarios in 'Source\DelphiDoom.Tests.Greed.RenderScenarios.pas',
   DelphiDoom.Tests.Greed.RenderRunner in 'Source\DelphiDoom.Tests.Greed.RenderRunner.pas',
   DelphiDoom.Tests.Greed.Render in 'Source\DelphiDoom.Tests.Greed.Render.pas',
+  DelphiDoom.Greed.Door.Intf in '..\Libs\Greed\DelphiDoom.Greed.Door.Intf.pas',
+  DelphiDoom.Greed.DoorRules in '..\Libs\Greed\DelphiDoom.Greed.DoorRules.pas',
+  DelphiDoom.Greed.DoorSpawner in '..\Libs\Greed\DelphiDoom.Greed.DoorSpawner.pas',
+  DelphiDoom.Tests.Greed.Doors in 'Source\DelphiDoom.Tests.Greed.Doors.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas';
 
 var

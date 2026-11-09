@@ -31,9 +31,11 @@ begin
   Writeln('  -lump   a picture, flat, wall or sprite to save as a PNG, by name or by number');
   Writeln('  -png    the file to write (default greed_map<number>.png or greed_<lump>.png)');
   Writeln('  -play   opens a window and plays the map (the first is 0), seen from above: arrows or W S, Q E to turn,');
-  Writeln('          A D to step aside, Shift to run, Escape to quit. The renderer of the game is not ported yet');
+  Writeln('          A D to step aside, Shift to run, Escape to quit. The first person view; -topdown shows the map from above');
   Writeln('  -ticks  with -play: stops after that number of tics (70 a second)');
   Writeln('  -autoplay  with -play: the player walks by itself');
+  Writeln('  -topdown   with -play: the view from above instead of the first person view');
+  Writeln('  -topdown   with -play: the view from above instead of the first person view');
   Writeln('  -shot   with -play: saves the last picture as a PNG');
 end;
 
@@ -55,6 +57,7 @@ var
   LPlayMap: Integer;
   LTicks: Integer;
   LAutoPlay: Boolean;
+  LTopDown: Boolean;
   LShot: string;
 
 begin
@@ -62,6 +65,7 @@ begin
     LPlayMap := -1;
     LTicks := 0;
     LAutoPlay := False;
+    LTopDown := False;
     LShot := '';
     LMapNumber := -1;
     LLump := '';
@@ -109,6 +113,8 @@ begin
       end
       else if LArgument = '-autoplay' then
         LAutoPlay := True
+      else if LArgument = '-topdown' then
+        LTopDown := True
       else if LArgument = '-list' then
         LList := True
       else
@@ -131,7 +137,7 @@ begin
     LArchive := TGreedComposition.OpenArchive(LFolders);
     if LPlayMap >= 0 then
     begin
-      Writeln('Played ', TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot), ' tics');
+      Writeln('Played ', TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot, not LTopDown), ' tics');
       Exit;
     end;
     if LList then
