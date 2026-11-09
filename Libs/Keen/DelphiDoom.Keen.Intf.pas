@@ -11,7 +11,7 @@ unit DelphiDoom.Keen.Intf;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.Keen.Types;
+  System.SysUtils, System.Classes, DelphiDoom.Keen.Types, DelphiDoom.Keen.InputTypes;
 
 type
   /// <summary>The Huffman expansion of the id engine (CAL_HuffExpand), with the dictionary of a file</summary>
@@ -320,6 +320,100 @@ type
     /// </summary>
     procedure Idle;
     property TimeCount: Integer read GetTimeCount write SetTimeCount;
+  end;
+
+  /// <summary>The mouse as the input manager sees it (the driver of the DOS mouse: the movement since the last look and the buttons)</summary>
+  IKeenMouse = interface
+    ['{6A2D9F04-C1B7-4E83-95A6-0D3E7B8F21C5}']
+    function IsPresent: Boolean;
+    /// <summary>INL_GetMouseDelta: how far the mouse moved since the last call, in mickeys</summary>
+    procedure GetDelta(out ADeltaX, ADeltaY: Integer);
+    /// <summary>INL_GetMouseButtons: bit 0 the left button, bit 1 the right one, bit 2 the middle one</summary>
+    function GetButtons: Word;
+  end;
+
+  /// <summary>The joysticks of the game port: the position of an axis and the buttons</summary>
+  IKeenJoysticks = interface
+    ['{D84F3B16-7E02-4A59-8C61-B9A05E2C7D43}']
+    function IsPresent(AJoy: Integer): Boolean;
+    /// <summary>IN_GetJoyAbs: the absolute position (the count of the timing loop of the game port)</summary>
+    procedure GetAbs(AJoy: Integer; out AX, AY: Word);
+    /// <summary>INL_GetJoyButtons: bit 0 the first button, bit 1 the second (1 = pressed)</summary>
+    function GetButtons(AJoy: Integer): Word;
+  end;
+
+  /// <summary>What the loops that wait for the user do between two looks: read the devices (the keyboard interrupt did it in the DOS)</summary>
+  IKeenInputPump = interface
+    ['{0B73E5A8-92D1-4F46-A3C0-6E8D14B7F952}']
+    procedure Pump;
+  end;
+
+  /// <summary>
+  ///   The input manager (id_in.c): the keyboard as the table of the keys that are down, the last scan code
+  ///   and ASCII code, the controls of the players (keyboard, mouse, joystick) and the demo buffer
+  /// </summary>
+  IKeenInput = interface
+    ['{E9A1C470-5D38-4B6F-8021-C7F34A9E6B15}']
+    function GetLastScan: Byte;
+    procedure SetLastScan(AValue: Byte);
+    function GetLastAscii: Byte;
+    procedure SetLastAscii(AValue: Byte);
+    function GetPaused: Boolean;
+    procedure SetPaused(AValue: Boolean);
+    function GetDemoMode: TKeenDemoMode;
+    function GetMousePresent: Boolean;
+    function GetKeyboardDef(AIndex: Integer): TKeenKeyboardDef;
+    procedure SetKeyboardDef(AIndex: Integer; const AValue: TKeenKeyboardDef);
+    function GetJoystickDef(AJoy: Integer): TKeenJoystickDef;
+    function GetControl(APlayer: Integer): TKeenControlType;
+    function GetJoystickPresent(AJoy: Integer): Boolean;
+    /// <summary>
+    ///   INL_KeyService: what the keyboard interrupt does with the byte of the port $60: the prefix $E0, the pause
+    ///   key, a make code (key down) or a break code (key up), and the ASCII code of the key
+    /// </summary>
+    procedure KeyService(AByte: Byte);
+    /// <summary>IN_Startup: looks for the mouse and the joysticks (the parameters -nomouse and -nojoys turn them off)</summary>
+    procedure Startup(AUseMouse, AUseJoysticks: Boolean);
+    procedure Shutdown;
+    /// <summary>IN_Default: the control of the player 0; the keyboard if it was not saved or the device is not there</summary>
+    procedure SetDefault(AGotIt: Boolean; AControl: TKeenControlType);
+    /// <summary>IN_SetKeyHook: what is called after each make or break code (not after the prefix $E0)</summary>
+    procedure SetKeyHook(const AHook: TProc);
+    function IsKeyDown(AScan: Integer): Boolean;
+    /// <summary>IN_ClearKey: the key is up and, if it was the last scan code, there is none</summary>
+    procedure ClearKey(AScan: Integer);
+    procedure ClearKeysDown;
+    procedure SetControlType(APlayer: Integer; AType: TKeenControlType);
+    /// <summary>IN_SetupJoy: the range of the axes of a joystick; the dead zone is the middle fifth</summary>
+    procedure SetupJoystick(AJoy: Integer; AMinX, AMaxX, AMinY, AMaxY: Word);
+    function ReadControl(APlayer: Integer): TKeenControlInfo;
+    function ReadCursor: TKeenControlInfo;
+    function IsUserInput: Boolean;
+    /// <summary>IN_UserInput: waits for ADelay tics or an input; true if there was one</summary>
+    function UserInput(ADelay: Integer; AClear: Boolean): Boolean;
+    /// <summary>IN_AckBack: waits for a key or a button</summary>
+    procedure AckBack;
+    /// <summary>IN_Ack: waits until nothing is pressed and then for a key or a button</summary>
+    procedure Ack;
+    function WaitForKey: Byte;
+    function WaitForAscii: Byte;
+    /// <summary>IN_GetJoyButtonsDB: the buttons, read again after a tic until the two readings are the same</summary>
+    function GetJoystickButtonsDebounced(AJoy: Integer): Word;
+    /// <summary>IN_StartDemoRecord: false if the size is 0</summary>
+    function StartDemoRecord(ASize: Integer): Boolean;
+    procedure StartDemoPlayback(const ABytes: TBytes; ASize: Integer);
+    procedure StopDemo;
+    /// <summary>The bytes that the recording made</summary>
+    function DemoBytes: TBytes;
+    property LastScan: Byte read GetLastScan write SetLastScan;
+    property LastAscii: Byte read GetLastAscii write SetLastAscii;
+    property Paused: Boolean read GetPaused write SetPaused;
+    property DemoMode: TKeenDemoMode read GetDemoMode;
+    property MousePresent: Boolean read GetMousePresent;
+    property KeyboardDefs[AIndex: Integer]: TKeenKeyboardDef read GetKeyboardDef write SetKeyboardDef;
+    property JoystickDefs[AJoy: Integer]: TKeenJoystickDef read GetJoystickDef;
+    property Controls[APlayer: Integer]: TKeenControlType read GetControl;
+    property JoystickPresent[AJoy: Integer]: Boolean read GetJoystickPresent;
   end;
 
   /// <summary>

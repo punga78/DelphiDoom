@@ -182,6 +182,12 @@ resourcestring
   SKeenRefreshNoChain = 'Keen: the animated tile at (%d, %d) has no animation chain (RF_MarkTileGraphics was not called)';
   SKeenRefreshNoMap = 'Keen: RF_NewMap must be called before the map is used';
   SKeenRefreshBadPriority = 'Keen: the priority %d of a sprite is not 0..%d';
+  SKeenDemoTruncated = 'Keen: the demo has %d bytes and needs at least %d';
+  SKeenDemoBadLength = 'Keen: the demo says it has %d tics and only %d bytes follow';
+  SKeenDemoOverflow = 'Keen: demo buffer overflow (%d of %d bytes)';
+  SKeenDemoExceeded = 'Keen: demo playback exceeded';
+  SKeenDemoNotRecording = 'Keen: no demo is being recorded';
+  SKeenInputBadScan = 'Keen: the scan code %d is not valid';
 
 type
   /// <summary>Something wrong with the data or the arguments of the keen library</summary>
