@@ -67,7 +67,7 @@ Il messaggio `printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.')` di `R_In
 
 ## 4. Cosa si può cancellare dopo il collegamento
 
-`Base\r_dynlights.pas` quasi per intero (resta la parte del renderer: `dlsortitem_t`, `dlbuffer`...). Consumatori da riscrivere (cercare `GLDLight`, `PGLDRenderLight`, `R_GetDynamicLight`, `R_FindDynamicLight`, `R_AddDynamicLight`, `lightdeflumppresent`): `Base\r_softlights.pas`, `Base\r_things.pas`, `Base\r_main.pas`, `OPENGL\gl_lightmaps.pas`, `gl_render.pas`, `gl_shadows.pas`, `Doom|Heretic\*` che inizializzano le luci.
+`Base\r_dynlights.pas` quasi per intero (resta la parte del renderer: `dlsortitem_t`, `dlbuffer`...). Consumatori da riscrivere (cercare `GLDLight`, `PGLDRenderLight`, `R_GetDynamicLight`, `R_FindDynamicLight`, `R_AddDynamicLight`, `lightdeflumppresent`): `Base\r_softlights.pas`, `Base\r_things.pas`, `Base\r_main.pas`, `Libs\OpenGl\Legacy\gl_lightmaps.pas`, `gl_render.pas`, `gl_shadows.pas`, `Doom|Heretic\*` che inizializzano le luci.
 
 ## 5. Come sono stati ottenuti i golden
 

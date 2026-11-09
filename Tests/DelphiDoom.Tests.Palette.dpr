@@ -46,7 +46,13 @@ uses
   DelphiDoom.Tests.Palette.Fakes in 'Source\DelphiDoom.Tests.Palette.Fakes.pas',
   DelphiDoom.Tests.Palette.Parity in 'Source\DelphiDoom.Tests.Palette.Parity.pas',
   DelphiDoom.Tests.Palette.Behavior in 'Source\DelphiDoom.Tests.Palette.Behavior.pas',
-  DelphiDoom.Tests.Palette.TranslationBlood in 'Source\DelphiDoom.Tests.Palette.TranslationBlood.pas';
+  DelphiDoom.Tests.Palette.TranslationBlood in 'Source\DelphiDoom.Tests.Palette.TranslationBlood.pas',
+  DelphiDoom.Palette.GamePaletteData in '..\Libs\Palette\DelphiDoom.Palette.GamePaletteData.pas',
+  DelphiDoom.Palette.GamePalettes in '..\Libs\Palette\DelphiDoom.Palette.GamePalettes.pas',
+  DelphiDoom.Tests.Sound.Digest in 'Source\DelphiDoom.Tests.Sound.Digest.pas',
+  DelphiDoom.Tests.Font.Golden in 'Source\DelphiDoom.Tests.Font.Golden.pas',
+  DelphiDoom.Tests.Font.Scenarios in 'Source\DelphiDoom.Tests.Font.Scenarios.pas',
+  DelphiDoom.Tests.Palette.GamePalettes in 'Source\DelphiDoom.Tests.Palette.GamePalettes.pas';
 
 var
   Runner: ITestRunner;

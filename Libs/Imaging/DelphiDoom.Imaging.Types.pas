@@ -158,6 +158,8 @@ resourcestring
   SImagingSpanTooSmall = 'A 64x64 span needs 4096 pixels';
   SImagingBufferTooSmall = 'The buffer is smaller than the algorithm needs';
   SImagingBadFactor = 'The factor of the expansion is not valid';
+  SImagingPatchPictureSize = 'The picture of the patch has a negative size, is higher than 255 or is wider than 32767';
+  SImagingPatchPictureTooSmall = 'The picture of the patch has fewer pixels than its size says';
   SImagingBadWipeSettings = 'The settings of the wipe are not valid';
   SImagingWipeNotStarted = 'The wipe has not been started';
   SImagingWipeBufferSize = 'A buffer of the wipe is smaller than the screen';

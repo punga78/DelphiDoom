@@ -17,7 +17,8 @@ uses
   DelphiDoom.EndoomEditor.Intf,
   DelphiDoom.EndoomEditor.Presenter,
   DelphiDoom.Tools.Composition,
-  DelphiDoom.Tools.Vcl.EndoomPanel;
+  DelphiDoom.Tools.Vcl.EndoomPanel,
+  frm_fonteditor;
 
 type
   /// <summary>
@@ -35,6 +36,7 @@ type
     FPages: TPageControl;
     FEndoomSheet: TTabSheet;
     FPanel: TEndoomEditorPanel;
+    FFontForm: TFontEditorForm;
     FStatusBar: TStatusBar;
     FMenu: TMainMenu;
     FFileMenu: TMenuItem;
@@ -77,6 +79,7 @@ type
     procedure ZoomOutClick(ASender: TObject);
     procedure GridClick(ASender: TObject);
     procedure AboutClick(ASender: TObject);
+    procedure FontEditorClick(ASender: TObject);
     procedure BlinkTimerTick(ASender: TObject);
     procedure CursorTimerTick(ASender: TObject);
     procedure FormKeyPressed(ASender: TObject; var AKey: Char);
@@ -92,6 +95,8 @@ type
     procedure Configure(const AServices: TToolsServices);
     /// <summary>The window is shown: the file of the command line is opened (or an empty screen is made)</summary>
     procedure Start(const ACommandLineFile: string);
+    /// <summary>The font editor is shown in its own window (made the first time); a project can be opened in it</summary>
+    procedure ShowFontEditor(const AProjectFile: string);
 
     // IEndoomEditorView
     procedure ShowPicture(const APixels: TArray<Cardinal>; const AOverlay: TEndoomEditorOverlay);
@@ -133,7 +138,8 @@ end;
 
 destructor TToolsMainForm.Destroy;
 begin
-  // the presenter holds interfaces to this window: it goes first
+  // the presenters hold interfaces to the windows: they go first
+  FreeAndNil(FFontForm);
   FreeAndNil(FPresenter);
   FreeAndNil(FServices);
   inherited Destroy;
@@ -174,6 +180,7 @@ procedure TToolsMainForm.BuildMenus;
 var
   LEdit: TMenuItem;
   LView: TMenuItem;
+  LTools: TMenuItem;
   LHelp: TMenuItem;
   LIndex: Integer;
   LItem: TMenuItem;
@@ -224,6 +231,11 @@ begin
   LItem := AddItem(LView, '&Grid', GridClick, ShortCut(Ord('G'), [ssCtrl]));
   LItem.AutoCheck := False;
 
+  LTools := TMenuItem.Create(Self);
+  LTools.Caption := '&Tools';
+  FMenu.Items.Add(LTools);
+  AddItem(LTools, '&Font creator...', FontEditorClick);
+
   LHelp := TMenuItem.Create(Self);
   LHelp.Caption := '&Help';
   FMenu.Items.Add(LHelp);
@@ -243,6 +255,20 @@ end;
 procedure TToolsMainForm.Start(const ACommandLineFile: string);
 begin
   FPresenter.Start(ACommandLineFile);
+end;
+
+procedure TToolsMainForm.ShowFontEditor(const AProjectFile: string);
+begin
+  if not Assigned(FFontForm) then
+  begin
+    FFontForm := TFontEditorForm.Create(Self);
+    FFontForm.Configure(FServices);
+    FFontForm.Start(AProjectFile);
+  end
+  else if AProjectFile <> '' then
+    FFontForm.OpenProject(AProjectFile);
+  FFontForm.Show;
+  FFontForm.BringToFront;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -425,6 +451,11 @@ begin
   FPresenter.About;
 end;
 
+procedure TToolsMainForm.FontEditorClick(ASender: TObject);
+begin
+  ShowFontEditor('');
+end;
+
 procedure TToolsMainForm.BlinkTimerTick(ASender: TObject);
 begin
   if Assigned(FPresenter) then
@@ -481,12 +512,16 @@ end;
 procedure TToolsMainForm.FormCloseQueried(ASender: TObject; var ACanClose: Boolean);
 begin
   ACanClose := FClosing or (not Assigned(FPresenter)) or FPresenter.TryClose;
+  if ACanClose and Assigned(FFontForm) and (not FClosing) then
+    ACanClose := FFontForm.CanFinish;
 end;
 
 procedure TToolsMainForm.FormClosed(ASender: TObject; var AAction: TCloseAction);
 begin
   if Assigned(FPresenter) then
     FPresenter.Shutdown;
+  if Assigned(FFontForm) then
+    FFontForm.Finish;
 end;
 
 procedure TToolsMainForm.FormWheel(ASender: TObject; AShift: TShiftState; AWheelDelta: Integer; AMousePos: TPoint;

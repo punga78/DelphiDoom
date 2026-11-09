@@ -55,7 +55,12 @@ uses
   DelphiDoom.Tests.Imaging.ThumbnailBuilder in 'Source\DelphiDoom.Tests.Imaging.ThumbnailBuilder.pas',
   DelphiDoom.Tests.Imaging.SaveThumbnail in 'Source\DelphiDoom.Tests.Imaging.SaveThumbnail.pas',
   DelphiDoom.Tests.Imaging.Factory in 'Source\DelphiDoom.Tests.Imaging.Factory.pas',
-  DelphiDoom.Tests.Imaging.Resampler in 'Source\DelphiDoom.Tests.Imaging.Resampler.pas';
+  DelphiDoom.Tests.Imaging.Resampler in 'Source\DelphiDoom.Tests.Imaging.Resampler.pas',
+  DelphiDoom.Imaging.PatchWriter in '..\Libs\Imaging\DelphiDoom.Imaging.PatchWriter.pas',
+  DelphiDoom.Tests.Sound.Digest in 'Source\DelphiDoom.Tests.Sound.Digest.pas',
+  DelphiDoom.Tests.Font.Golden in 'Source\DelphiDoom.Tests.Font.Golden.pas',
+  DelphiDoom.Tests.Font.Scenarios in 'Source\DelphiDoom.Tests.Font.Scenarios.pas',
+  DelphiDoom.Tests.Imaging.PatchWriter in 'Source\DelphiDoom.Tests.Imaging.PatchWriter.pas';
 
 var
   Runner: ITestRunner;

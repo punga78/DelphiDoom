@@ -6,8 +6,6 @@ Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCR
 |---|---|
 | `ps_import` | `TDoomCompiler` e `TDoomExec`: compilatore e interprete con le classi del gioco registrate |
 | `ps_main` | avvio, ciclo di compilazione/esecuzione degli script del gioco |
-| `ps_events` | eventi del gioco chiamati negli script |
-| `ps_serializer` | salvataggio e caricamento dello stato degli script |
 | `ps_proclist` | elenco delle funzioni host e delle dichiarazioni |
 | `ps_dll` | DLL contenute in un PAK, copiate su file prima di `LoadLibrary` |
 | `psi_game`, `psi_overlay`, `psi_map`, `psi_globals`, `psi_system` | le circa 1.600 funzioni `PS_*` che gli script chiamano (giocatori, mobj, overlay, mappa, sistema) |
@@ -38,4 +36,17 @@ Le funzioni che gli script chiamano stanno in un **registro a gruppi** (schema d
 
 ## Cosa resta
 
-La **fetta 2b e le seguenti** (`docs\SCRIPTHOST_PIANO.md`, sezione 5): variabili (`psi_globals`), eventi e serializzatore, speciali di settore, `ps_dll`, e per ultime `psi_game` (attori, linee, settori...), `ps_import`/`ps_main` e l'overlay. La spike di `RegisterDelphiMethod` (`Tools\Verifica\scripthost\spike`) passa a 32 e 64 bit: le fette seguenti possono togliere i thunk. Il nucleo dell'interprete sta in `Libs\PascalScript`; il compilatore da riga di comando in `Libs\Ddc`.
+## Variabili, eventi e serializzatore (issue #174, fette 2b e 2c)
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.ScriptHost.Variables.Intf` | `IScriptVariables` (variabili di mappa o di mondo: stringhe, interi e float per nome, senza distinguere le maiuscole; `Load/SaveToBuffer`, `StructureSize`, `Load/SaveToFile`), `IScriptVariablesFiles` (file interi), `IScriptVariablesFailure` (dove va un errore: nel motore `I_Error`) |
+| `DelphiDoom.ScriptHost.Variables.Types` | `EScriptVariablesException`, i tre valori (`TScriptStringValue`, `TScriptIntegerValue`, `TScriptFloatValue`), costanti della tabella hash |
+| `DelphiDoom.ScriptHost.Variables.HashTable` / `.HashList` | `TScriptHashTable` (8192 catene, le ultime 5 posizioni trovate provate per prime; il vecchio `THashTable`) e `TScriptHashStringList` (il vecchio `THashStringList`) |
+| `DelphiDoom.ScriptHost.Variables` | `TScriptVariables` (il vecchio `TGlobalVariablesList`); formato su buffer e su file **invariato**: interi e float di 4 byte, stringhe con la lunghezza e 2 byte (UTF-16) per carattere, ordine stringhe, interi, float |
+| `DelphiDoom.ScriptHost.Events.Table` / `.Intf` / `.Events` | `SCRIPT_EVENT_SIGNATURES` (nome, parametri e modello dell'editor dei 10 eventi), `IScriptEvents` e `TScriptEvents` (riceve un `TPSExec` e un `ILog`) |
+| `DelphiDoom.ScriptHost.Serializer.Intf` / `.Serializer` | `IScriptSerializer` e `TScriptSerializer` (stato delle variabili globali di uno script: file, flusso, `SaveSize`), `SCRIPT_SERIALIZABLE_TYPES` |
+
+`TScriptHostFactory` crea le tre cose (`CreateVariables`, `CreateEvents`, `CreateSerializer`). **Collegamento**: `PS_ConfigureVariables` (`psi_globals`, chiamata da `ComposePlatform` con `TEngineScriptVariablesFiles` e `TEngineScriptVariablesFailure` di `Base\`) e `PS_ConfigureStateServices` (`ps_main`, chiamata da `ComposeScriptHost` con l'`ILog`); senza di esse `I_Error`. `psi_globals` resta la facciata: `mapvars`/`worldvars` (`IScriptVariables`), `TGlobalVariablesList` (alias dell'interfaccia), le `PS_Get/SetMap/World*` e le sei classi `TMapStrings`...`TWorldFloats` che Pascal Script importa. **Verifica**: golden L1 invariati nei 4 giochi; `Tests\DelphiDoom.Tests.ScriptHost` ha 134 test (copertura 95% di `Libs\ScriptHost`; le unit nuove 91-100%): byte del salvataggio scritti a mano, `StructureSize` uguale ai byte scritti, nomi non ASCII e lunghi, buffer e file malformati, hash (valori dei vecchi `Hash`), eventi e serializzatore sul compilatore e sull'interprete veri. Non provato a runtime: L2 e un salvataggio con variabili degli script (`Tools\Verifica\scripthost\LEGGIMI.md`).
+
+La **fetta 2d e le seguenti** (`docs\SCRIPTHOST_PIANO.md`, sezione 5): speciali di settore, `ps_dll`, e per ultime `psi_game` (attori, linee, settori...), `ps_import`/`ps_main` e l'overlay. La spike di `RegisterDelphiMethod` (`Tools\Verifica\scripthost\spike`) passa a 32 e 64 bit: le fette seguenti possono togliere i thunk. Il nucleo dell'interprete sta in `Libs\PascalScript`; il compilatore da riga di comando in `Libs\Ddc`.

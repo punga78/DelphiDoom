@@ -184,6 +184,23 @@ type
       ADestinationWidth, ADestinationHeight: Integer): TArray<Cardinal>;
   end;
 
+  /// <summary>Writes a patch of Doom from a picture of palette indices (issue #167: FF_CreateDoomPatch of DD_FONT)</summary>
+  IImagingPatchWriter = interface
+    ['{C41B8D07-3E59-4A26-9F70-6D18A2E5B3C9}']
+    /// <summary>
+    ///   APixels holds AHeight rows of AWidth palette indices. The patch has a column for each column of the
+    ///   picture; the posts are the runs of pixels that are not 0 (the transparent index), or one post for the
+    ///   whole column when ASolid. The offsets are those of the patch (the center of the picture: ALeftOffset
+    ///   and ATopOffset, which are the sprite offsets of the engine). A size that is negative, or a height above
+    ///   255 (a post can not be longer), or a picture that does not have the pixels its size says, raises
+    ///   EImagingException
+    /// </summary>
+    function Build(const APixels: TBytes; AWidth, AHeight: Integer; ASolid: Boolean; ALeftOffset,
+      ATopOffset: Integer): TBytes; overload;
+    /// <summary>The same with the offsets that DD_FONT used by default: half of the width and the height</summary>
+    function Build(const APixels: TBytes; AWidth, AHeight: Integer; ASolid: Boolean): TBytes; overload;
+  end;
+
 implementation
 
 end.
