@@ -16,6 +16,16 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   DelphiDoom.Models.Types in '..\Libs\Models\DelphiDoom.Models.Types.pas',
+  DelphiDoom.Models.I3d.Types in '..\Libs\Models\DelphiDoom.Models.I3d.Types.pas',
+  DelphiDoom.Models.I3d.Intf in '..\Libs\Models\DelphiDoom.Models.I3d.Intf.pas',
+  DelphiDoom.Models.I3d.Factory in '..\Libs\Models\DelphiDoom.Models.I3d.Factory.pas',
+  DelphiDoom.Models.I3d.Palette in '..\Libs\Models\DelphiDoom.Models.I3d.Palette.pas',
+  DelphiDoom.Models.I3d.Coordinates in '..\Libs\Models\DelphiDoom.Models.I3d.Coordinates.pas',
+  DelphiDoom.Models.I3d.TireAnimator in '..\Libs\Models\DelphiDoom.Models.I3d.TireAnimator.pas',
+  DelphiDoom.Models.I3d.Model in '..\Libs\Models\DelphiDoom.Models.I3d.Model.pas',
+  DelphiDoom.Models.I3d.Parser in '..\Libs\Models\DelphiDoom.Models.I3d.Parser.pas',
+  DelphiDoom.Models.I3d.CorrectionReader in '..\Libs\Models\DelphiDoom.Models.I3d.CorrectionReader.pas',
+  DelphiDoom.Models.I3d.Renderer in '..\Libs\Models\DelphiDoom.Models.I3d.Renderer.pas',
   DelphiDoom.Models.Intf in '..\Libs\Models\DelphiDoom.Models.Intf.pas',
   DelphiDoom.Models.Md2Model in '..\Libs\Models\DelphiDoom.Models.Md2Model.pas',
   DelphiDoom.Models.Md2Parser in '..\Libs\Models\DelphiDoom.Models.Md2Parser.pas',
@@ -27,7 +37,16 @@ uses
   DelphiDoom.Tests.Models.Scenarios in 'Source\DelphiDoom.Tests.Models.Scenarios.pas',
   DelphiDoom.Tests.Models.Subject in 'Source\DelphiDoom.Tests.Models.Subject.pas',
   DelphiDoom.Tests.Models.Md2Parser in 'Source\DelphiDoom.Tests.Models.Md2Parser.pas',
-  DelphiDoom.Tests.Models.CommandStream in 'Source\DelphiDoom.Tests.Models.CommandStream.pas';
+  DelphiDoom.Tests.Models.CommandStream in 'Source\DelphiDoom.Tests.Models.CommandStream.pas',
+  DelphiDoom.Tests.Models.I3dFileBuilder in 'Source\DelphiDoom.Tests.Models.I3dFileBuilder.pas',
+  DelphiDoom.Tests.Models.I3dRecorder in 'Source\DelphiDoom.Tests.Models.I3dRecorder.pas',
+  DelphiDoom.Tests.Models.I3dDump in 'Source\DelphiDoom.Tests.Models.I3dDump.pas',
+  DelphiDoom.Tests.Models.I3dParser in 'Source\DelphiDoom.Tests.Models.I3dParser.pas',
+  DelphiDoom.Tests.Models.I3dRenderer in 'Source\DelphiDoom.Tests.Models.I3dRenderer.pas',
+  DelphiDoom.Tests.Models.I3dCoordinates in 'Source\DelphiDoom.Tests.Models.I3dCoordinates.pas',
+  DelphiDoom.Tests.Models.I3dPalette in 'Source\DelphiDoom.Tests.Models.I3dPalette.pas',
+  DelphiDoom.Tests.Models.I3dTireAnimator in 'Source\DelphiDoom.Tests.Models.I3dTireAnimator.pas',
+  DelphiDoom.Tests.Models.I3dCorrections in 'Source\DelphiDoom.Tests.Models.I3dCorrections.pas';
 
 var
   Runner: ITestRunner;
@@ -63,3 +82,4 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
