@@ -43,7 +43,7 @@ name" cinque volte; per questo `dos\` ha `UFOEXE\` e `UFO2EXE\` con `GEOSCAPE.EX
 dura circa 70 secondi prima della scelta della lingua (`click:800,430` = English: le coordinate sono quelle
 dell'immagine catturata 1600x1200, l'area di gioco sta al centro di una finestra 960x600), poi logo MicroProse,
 introduzione e titolo; `key:esc` salta le schermate dell'introduzione. Le animazioni (`ANIMS`) e `SOUND\INTRO.CAT` non
-sono nei floppy.
+sono nei floppy. **Non riuscito**: dopo l'introduzione (anche saltata con Esc) `UFOEXE\geoscape` non disegna nulla (schermo nero per almeno 90 secondi, con `cycles max` e senza scheda audio); non si è indagato (serve guardare `black.exe` e gli argomenti di `terror.com`, o provare `geoscape.exe` da solo).
 
 ## Test
 
