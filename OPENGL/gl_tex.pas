@@ -223,14 +223,12 @@ function gld_LoadExternalTexture(const t: PTexture; const transparent: boolean; 
 // gld_LoadExternalTextureAlpha
 //
 //==============================================================================
-function gld_LoadExternalTextureAlpha(const texname: string; const alpha: byte; const texmode: GLUint): GLUint; overload;
 
 //==============================================================================
 //
 // gld_LoadExternalTextureAlpha
 //
 //==============================================================================
-function gld_LoadExternalTextureAlpha(const texname: string; const alphatexname: string; const texmode: GLUint): GLUint; overload;
 
 //==============================================================================
 //
@@ -1021,123 +1019,6 @@ begin
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_tex_filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_tex_filter);
   end;
-end;
-
-//==============================================================================
-//
-// gld_LoadExternalTextureAlpha
-//
-//==============================================================================
-function gld_LoadExternalTextureAlpha(const texname: string; const alpha: byte; const texmode: GLUint): GLUint;
-var
-  t: PTexture;
-  twidth: integer;
-  theight: integer;
-begin
-  t := gld_texturefiles.LoadTexture(texname);
-  if t = nil then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  t.ConvertTo32bit;
-  t.SwapRGB;
-  t.SetAlphaChannel(alpha);
-
-  twidth := gld_GetTexDimension(t.GetWidth);
-  theight := gld_GetTexDimension(t.GetHeight);
-  t.ScaleTo(twidth, theight);
-
-  glGenTextures(1, @result);
-  glBindTexture(GL_TEXTURE_2D, result);
-
-  if use_mipmapping then
-  begin
-    gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
-                      twidth, theight,
-                      GL_RGBA, GL_UNSIGNED_BYTE, t.GetImage);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_tex_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_mipmap_filter);
-    if gl_texture_filter_anisotropic then
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2.0);
-  end
-  else
-  begin
-    glTexImage2D(GL_TEXTURE_2D, 0, gl_tex_format,
-                 twidth, theight,
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, t.GetImage);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_tex_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_tex_filter);
-  end;
-  dispose(t, destroy);
-end;
-
-//==============================================================================
-//
-// gld_LoadExternalTextureAlpha
-//
-//==============================================================================
-function gld_LoadExternalTextureAlpha(const texname: string; const alphatexname: string; const texmode: GLUint): GLUint;
-var
-  t: PTexture;
-  a: PTexture;
-  twidth: integer;
-  theight: integer;
-begin
-  t := gld_texturefiles.LoadTexture(texname);
-  if t = nil then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  a := gld_texturefiles.LoadTexture(alphatexname);
-  if a = nil then
-  begin
-    result := 0;
-    exit;
-  end;
-
-  t.ConvertTo32bit;
-  t.SwapRGB;
-  t.SetAlphaChannelFromImage(a);
-  dispose(a, destroy);
-
-  twidth := gld_GetTexDimension(t.GetWidth);
-  theight := gld_GetTexDimension(t.GetHeight);
-  t.ScaleTo(twidth, theight);
-
-  glGenTextures(1, @result);
-  glBindTexture(GL_TEXTURE_2D, result);
-
-  if use_mipmapping then
-  begin
-    gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
-                      twidth, theight,
-                      GL_RGBA, GL_UNSIGNED_BYTE, t.GetImage);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_tex_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_mipmap_filter);
-    if gl_texture_filter_anisotropic then
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2.0);
-  end
-  else
-  begin
-    glTexImage2D(GL_TEXTURE_2D, 0, gl_tex_format,
-                 twidth, theight,
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, t.GetImage);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texmode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_tex_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_tex_filter);
-  end;
-  dispose(t, destroy);
 end;
 
 //==============================================================================

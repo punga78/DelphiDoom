@@ -194,7 +194,6 @@ function P_FindLineFromLineTag2(line: Pline_t; var start: integer): integer;
 // P_FindMinSurroundingLight
 //
 //==============================================================================
-function P_FindMinSurroundingLight(sector: Psector_t; max: integer): integer;
 
 //==============================================================================
 //
@@ -1732,28 +1731,6 @@ begin
 end;
 
 //==============================================================================
-// P_FindLineFromLineTag
-//
-// killough 4/16/98: Same thing, only for linedefs
-//
-// JVAL BOOM compatibility
-//
-//==============================================================================
-function P_FindLineFromLineTag(line: Pline_t; start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numlines - 1 do
-    if lines[i].tag = line.tag then
-    begin
-      result := i;
-      exit;
-    end;
-
-  result := -1;
-end;
-
-//==============================================================================
 //
 // P_FindLineFromLineTag2
 //
@@ -1772,30 +1749,6 @@ begin
 
   result := -1;
   start := -1;
-end;
-
-//==============================================================================
-// P_FindMinSurroundingLight
-//
-// Find minimum light from an adjacent sector
-//
-//==============================================================================
-function P_FindMinSurroundingLight(sector: Psector_t; max: integer): integer;
-var
-  i: integer;
-  line: Pline_t;
-  check: Psector_t;
-begin
-  result := max;
-  for i := 0 to sector.linecount - 1 do
-  begin
-    line := sector.lines[i];
-    check := getNextSector(line, sector);
-
-    if check <> nil then
-      if check.lightlevel < result then
-        result := check.lightlevel;
-  end;
 end;
 
 //==============================================================================
@@ -2051,38 +2004,6 @@ begin
 
   end;
   result := false;       // zero tag not allowed
-end;
-
-//==============================================================================
-//
-// P_IsSecret()
-//
-// Passed a sector, returns if the sector secret type is still active, i.e.
-// secret type is set and the secret has not yet been obtained.
-//
-// jff 3/14/98 added to simplify checks for whether sector is secret
-//  in automap and other places
-//
-//==============================================================================
-function P_IsSecret(sec: Psector_t): boolean;
-begin
-  result := (sec.special = 9) or (sec.special and SECRET_MASK <> 0);
-end;
-
-//==============================================================================
-//
-// P_WasSecret()
-//
-// Passed a sector, returns if the sector secret type is was active, i.e.
-// secret type was set and the secret has been obtained already.
-//
-// jff 3/14/98 added to simplify checks for whether sector is secret
-//  in automap and other places
-//
-//==============================================================================
-function P_WasSecret(sec: Psector_t): boolean;
-begin
-  result := (sec.oldspecial = 9) or (sec.oldspecial and SECRET_MASK <> 0);
 end;
 
 //==============================================================================

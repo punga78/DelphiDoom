@@ -1119,29 +1119,6 @@ begin
   frames.Free;
 end;
 
-//==============================================================================
-//
-// VX_RotatePoint
-//
-//==============================================================================
-procedure VX_RotatePoint(x: Pfixed_t; y: Pfixed_t; a: angle_t);
-var
-  tmpx: fixed_t;
-  asin, acos: fixed_t;
-begin
-  acos := finecosine[a];
-  asin := finesine[a];
-  tmpx :=
-    FixedMul(x^, acos) -
-    FixedMul(y^, asin);
-
-  y^ :=
-    FixedMul(x^, asin) +
-    FixedMul(y^, acos);
-
-  x^ := tmpx;
-end;
-
 var
   vx_simpleclip: boolean;
   vx_ceilingclip: fixed_t;

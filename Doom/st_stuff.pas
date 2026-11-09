@@ -838,28 +838,6 @@ begin
 end;
 
 //==============================================================================
-// ST_TALLNUMWIDTH
-//
-// Should be set to patch width
-//  for tall numbers later on
-//
-//==============================================================================
-function ST_TALLNUMWIDTH: integer;
-begin
-  result := tallnum[0].width;
-end;
-
-//==============================================================================
-//
-// ST_MAPWIDTH
-//
-//==============================================================================
-function ST_MAPWIDTH: integer;
-begin
-  result := Length(mapnames[(gameepisode - 1) * 9 + (gamemap - 1)]);
-end;
-
-//==============================================================================
 // ST_RefreshBackground
 //
 // STATUS BAR CODE
@@ -1801,47 +1779,6 @@ procedure ST_LoadData;
 begin
   lu_palette := W_GetNumForName(PLAYPAL);
   ST_LoadGraphics;
-end;
-
-//==============================================================================
-//
-// ST_UnloadGraphics
-//
-//==============================================================================
-procedure ST_UnloadGraphics;
-var
-  i: integer;
-begin
-  // unload the numbers, tall and short
-  for i := 0 to 9 do
-  begin
-    Z_ChangeTag(tallnum[i], PU_CACHE);
-    Z_ChangeTag(shortnum[i], PU_CACHE);
-  end;
-  // unload tall percent
-  Z_ChangeTag(tallpercent, PU_CACHE);
-
-  // unload arms background
-  Z_ChangeTag(armsbg, PU_CACHE);
-
-  // unload gray #'s
-  for i := 0 to 5 do
-    Z_ChangeTag(arms[i][0], PU_CACHE);
-
-  // unload the key cards
-  for i := 0 to Ord(NUMCARDS) - 1 do
-    Z_ChangeTag(keys[i], PU_CACHE);
-
-  Z_ChangeTag(sbar, PU_CACHE);
-  if oldsharewareversion then
-    Z_ChangeTag(sbar2, PU_CACHE);
-  Z_ChangeTag(faceback, PU_CACHE);
-
-  for i := 0 to ST_NUMFACES - 1 do
-    Z_ChangeTag(faces[i], PU_CACHE);
-
-  // Note: nobody ain't seen no unloading    // JVAL ???
-  //   of stminus yet. Dude.
 end;
 
 //==============================================================================

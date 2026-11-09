@@ -1280,40 +1280,6 @@ end;
 // Source can be NULL for slime, barrel explosions
 // and other environmental stuff.
 //
-// P_IsMobjBoss
-//
-// villsa [STRIFE] new function
-//
-//==============================================================================
-function P_IsMobjBoss(typ: integer): boolean;
-begin
-  case typ of
-    Ord(MT_PROGRAMMER),
-    Ord(MT_BISHOP),
-    Ord(MT_RLEADER),
-    Ord(MT_ORACLE),
-    Ord(MT_PRIEST):
-      begin
-        result := true;
-        exit;
-      end;
-  end;
-
-  result := mobjinfo[typ].flags_ex and MF_EX_BOSS <> 0;
-end;
-
-//==============================================================================
-//
-// P_DamageMobj
-// Damages both enemies and players
-// "inflictor" is the thing that caused the damage
-//  creature or missile, can be NULL (slime, etc)
-// "source" is the thing to target after taking damage
-//  creature or NULL
-// Source and inflictor are the same for melee attacks.
-// Source can be NULL for slime, barrel explosions
-// and other environmental stuff.
-//
 // [STRIFE] Extensive changes for spectrals, fire damage, disintegration, and
 //  a plethora of mobjtype-specific hacks.
 //

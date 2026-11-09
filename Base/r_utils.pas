@@ -55,21 +55,18 @@ function R_PointToScreenBufferEx(const wx, wy, wz: fixed_t; var x, y: Integer): 
 // R_PointToScreenBufferEx2
 //
 //==============================================================================
-function R_PointToScreenBufferEx2(const wx, wy, wz: fixed_t; var x, y: Integer; var axscale, ayscale: fixed_t): boolean;
 
 //==============================================================================
 //
 // R_ColumnToScreenBuffer
 //
 //==============================================================================
-procedure R_ColumnToScreenBuffer(const wx, wy, wz1, wz2: fixed_t; var x, y1, y2: Integer);
 
 //==============================================================================
 //
 // R_PointToScreen
 //
 //==============================================================================
-function R_PointToScreen(const wx, wy, wz: fixed_t; var x, y: Integer): boolean;
 
 implementation
 
@@ -187,95 +184,6 @@ begin
     x := x div 2;
     y := y div 2;
   end;
-end;
-
-//==============================================================================
-//
-// R_PointToScreenBufferEx2
-//
-//==============================================================================
-function R_PointToScreenBufferEx2(const wx, wy, wz: fixed_t; var x, y: Integer; var axscale, ayscale: fixed_t): boolean;
-var
-  x1, y1: float;
-  tr_x: float;
-  tr_y: float;
-  tr_z: float;
-  tx: float;
-  tz: float;
-  xscale: float;
-  yscale: float;
-  dcos, dsin: float;
-begin
-  result := true;
-  tr_x := (wx - viewx) / FRACUNIT;
-  tr_y := (wy - viewy) / FRACUNIT;
-  tr_z := (wz - viewz) / FRACUNIT;
-  dcos := viewcos / FRACUNIT;
-  dsin := viewsin / FRACUNIT;
-  tz := tr_x * dcos + tr_y * dsin;
-
-  xscale := projection / FRACUNIT / tz;
-  axscale := Round(xscale);
-
-  tx := tr_x * dsin - tr_y * dcos;
-
-  x1 := centerx + tx * xscale;
-
-  result := result and (x1 < viewwidth) and (x1 >= 0);
-
-  yscale := projectiony / FRACUNIT / tz;
-  ayscale := Round(yscale);
-  y1 := centery - tr_z * yscale;
-
-  result := result and (y1 < viewheight) and (y1 >= 0);
-
-  x := trunc(x1);
-  y := trunc(y1);
-  while (abs(x) > FRACUNIT) or (abs(y) > FRACUNIT) do
-  begin
-    x := x div 2;
-    y := y div 2;
-  end;
-end;
-
-//==============================================================================
-//
-// R_ColumnToScreenBuffer
-//
-//==============================================================================
-procedure R_ColumnToScreenBuffer(const wx, wy, wz1, wz2: fixed_t; var x, y1, y2: Integer);
-var
-  tr_x: fixed_t;
-  tr_y: fixed_t;
-  tx: fixed_t;
-  tz: fixed_t;
-  xscale: fixed_t;
-begin
-  tr_x := wx - viewx;
-  tr_y := wy - viewy;
-  tz := FixedMul(tr_x, viewcos) + FixedMul(tr_y, viewsin);
-
-  xscale := FixedDiv(projection, tz);
-
-  tx := FixedMul(tr_x, viewsin) - FixedMul(tr_y, viewcos);
-
-  x := centerx + FixedInt_FixedMul(tx, xscale);
-
-  xscale := FixedDiv(projectiony, tz);
-  y1 := centery - FixedInt_FixedMul(wz1 - viewz, xscale);
-  y2 := centery - FixedInt_FixedMul(wz2 - viewz, xscale);
-end;
-
-//==============================================================================
-//
-// R_PointToScreen
-//
-//==============================================================================
-function R_PointToScreen(const wx, wy, wz: fixed_t; var x, y: Integer): boolean;
-begin
-  result := R_PointToScreenBuffer(wx, wy, wz, x, y);
-  x := x + viewwindowx;
-  y := y + viewwindowy;
 end;
 
 end.

@@ -365,14 +365,12 @@ type
 // I_CreateProcess
 //
 //==============================================================================
-function I_CreateProcess(p: process_t; parm: pointer; suspended: boolean): integer;
 
 //==============================================================================
 //
 // I_WaitForProcess
 //
 //==============================================================================
-procedure I_WaitForProcess(pid: integer; msec: integer);
 
 //==============================================================================
 //
@@ -595,17 +593,6 @@ var
 function I_BaseTiccmd202: Pticcmd_t202;
 begin
   result := @emptycmd202;
-end;
-
-//==============================================================================
-//
-// I_GetHeapSize
-//
-//==============================================================================
-function I_GetHeapSize: integer;
-begin
-  // Zone is depricated
-  result := $10000; //mb_used * 1024 * 1024;
 end;
 
 //
@@ -1177,31 +1164,6 @@ begin
     Pointer(Dest) := nil;
     IInterface(P)._Release;
   end;
-end;
-
-//==============================================================================
-//
-// I_CreateProcess
-//
-//==============================================================================
-function I_CreateProcess(p: process_t; parm: pointer; suspended: boolean): integer;
-var
-  id: LongWord;
-begin
-  if suspended then
-    result := CreateThread(nil, $1000, @p, parm, CREATE_SUSPENDED, id)
-  else
-    result := CreateThread(nil, $1000, @p, parm, 0, id);
-end;
-
-//==============================================================================
-//
-// I_WaitForProcess
-//
-//==============================================================================
-procedure I_WaitForProcess(pid: integer; msec: integer);
-begin
-  WaitForSingleObject(pid, msec);
 end;
 
 type

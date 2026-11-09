@@ -395,33 +395,5 @@ begin
 
 end;
 
-//==============================================================================
-//
-// P_3dFloorMapThingFromMobj
-//
-//==============================================================================
-function P_3dFloorMapThingFromMobj(const mo: Pmobj_t; const x, y, z: integer): mapthing_t;
-var
-  ss: Psubsector_t;
-  msec: Psector_t;
-begin
-  result.x := x div FRACUNIT;
-  result.y := y div FRACUNIT;
-  result.angle := mo.angle div ANG1;
-  result._type := mo.spawnpoint._type;
-  result.options := 0;
-  ss := R_PointInSubsector(x, y);
-  if ss.sector.midsec >= 0 then
-  begin
-    msec := @sectors[ss.sector.midsec];
-    if z > msec.floorheight then
-      result.options := MTF_ONMIDSECTOR
-    else
-      result.options := 0;
-  end
-  else
-    result.options := 0;
-end;
-
 end.
 

@@ -1332,53 +1332,6 @@ end;
 
 //==============================================================================
 //
-// P_TossDegninOre
-// villsa [STRIFE] new function
-//
-//==============================================================================
-function P_TossDegninOre(player: Pplayer_t): boolean;
-var
-  angle: angle_t;
-  mo, ore: Pmobj_t;
-  x, y, z, dist: fixed_t;
-begin
-  angle := player.mo.angle div ANGLETOFINEUNIT;
-
-  if (angle < 7618) and (angle >= 6718) then
-    angle := 7618
-  else if (angle < 5570) and (angle >= 4670) then
-    angle := 5570
-  else if (angle < 3522) and (angle >= 2622) then
-    angle := 3522
-  else if (angle < 1474) and (angle >= 574) then
-    angle := 1474;
-
-  mo := player.mo;
-  dist := mobjinfo[Ord(MT_DEGNINORE)].radius + mo.info.radius + (4 * FRACUNIT);
-
-  x := mo.x + FixedMul(finecosine[angle], dist);
-  y := mo.y + FixedMul(finesine[angle], dist);
-  z := mo.z + (10 * FRACUNIT);
-  ore := P_SpawnMobj(x, y, z, Ord(MT_DEGNINORE));
-
-  if P_CheckPosition(ore, x, y) then
-  begin
-    ore.target := mo;
-    ore.angle := angle * ANGLETOFINEUNIT;
-    ore.momx := FixedMul(finecosine[angle], (5 * FRACUNIT));
-    ore.momy := FixedMul(finesine[angle], (5 * FRACUNIT));
-    ore.momz := FRACUNIT;
-    result := true;
-  end
-  else
-  begin
-    P_RemoveMobj(ore);
-    result := false;
-  end;
-end;
-
-//==============================================================================
-//
 // P_SpawnTeleportBeacon
 //
 // villsa [STRIFE] new function

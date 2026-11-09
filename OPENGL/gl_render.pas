@@ -197,7 +197,6 @@ procedure R_ShutDownOpenGL;
 // gld_DrawLine
 //
 //==============================================================================
-procedure gld_DrawLine(x0, y0, x1, y1: integer; PalColor: byte);
 
 implementation
 
@@ -930,33 +929,6 @@ end;
 
 //==============================================================================
 //
-// gld_DrawLine
-//
-//==============================================================================
-procedure gld_DrawLine(x0, y0, x1, y1: integer; PalColor: byte);
-var
-  playpal: PByteArray;
-  idx: integer;
-begin
-  glBindTexture(GL_TEXTURE_2D, 0);
-  last_gltexture := nil;
-  last_cm := -1;
-
-  playpal := V_ReadPalette(PU_STATIC);
-  idx := 3 * PalColor;
-  glColor3f(playpal[idx] / 255.0,
-            playpal[idx + 1] / 255.0,
-            playpal[idx + 2] / 255.0);
-  Z_ChangeTag(playpal, PU_CACHE);
-
-  glBegin(GL_LINES);
-    glVertex2i(x0, y0);
-    glVertex2i(x1, y1);
-  glEnd;
-end;
-
-//==============================================================================
-//
 // gld_DrawWeapon
 //
 //==============================================================================
@@ -1021,32 +993,6 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.5);
   end;
-  glColor3f(1.0, 1.0, 1.0);
-end;
-
-//==============================================================================
-//
-// gld_FillBlock
-//
-//==============================================================================
-procedure gld_FillBlock(x, y, width, height: integer; col: integer);
-var
-  playpal: PByteArray;
-begin
-  glBindTexture(GL_TEXTURE_2D, 0);
-  last_gltexture := nil;
-  last_cm := -1;
-  playpal := V_ReadPalette(PU_STATIC);
-  glColor3f(playpal[3 * col] / 255.0,
-            playpal[3 * col + 1] / 255.0,
-            playpal[3 * col + 2] / 255.0);
-  Z_ChangeTag(playpal, PU_CACHE);
-  glBegin(GL_TRIANGLE_STRIP);
-    glVertex2i(x, y);
-    glVertex2i(x, y + height);
-    glVertex2i(x + width, y);
-    glVertex2i(x + width, y + height);
-  glEnd;
   glColor3f(1.0, 1.0, 1.0);
 end;
 
@@ -2543,31 +2489,6 @@ begin
   begin
     w.vt := OV_MID(tex, seg);
     w.vb := w.vt + (lineheight * tex.inv_buffer_height);
-  end;
-end;
-
-//==============================================================================
-//
-// CALC_TEX_VALUES_MIDDLE2S
-//
-//==============================================================================
-procedure CALC_TEX_VALUES_MIDDLE2S(w: PGLWall; seg: Pseg_t; peg: boolean; linelength, lineheight: float);
-var
-  tex: PGLTexture;
-begin
-  w.flag := GLDWF_M2S;
-  tex := w.gltexture;
-  w.ul := OU_MID(tex, seg);
-  w.ur := w.ul + (linelength * tex.inv_buffer_width);
-  if peg then
-  begin
-    w.vb := tex.heightscale;
-    w.vt := w.vb - (lineheight * tex.inv_buffer_height)
-  end
-  else
-  begin
-    w.vt := 0.0;
-    w.vb := lineheight * tex.inv_buffer_height;
   end;
 end;
 

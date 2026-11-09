@@ -464,18 +464,6 @@ begin
 end;
 
 //==============================================================================
-// WI_Responder
-//
-// The ticker is used to detect keys
-//  because of timing issues in netgames.
-//
-//==============================================================================
-function WI_Responder(ev: Pevent_t): boolean;
-begin
-  result := false;
-end;
-
-//==============================================================================
 // WI_DrawLF
 //
 // Draws "<Levelname> Finished!"

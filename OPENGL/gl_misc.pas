@@ -49,7 +49,6 @@ function gl_i_max(const a, b: integer): integer;
 // gl_f_max
 //
 //==============================================================================
-function gl_f_max(const a, b: single): single;
 
 implementation
 
@@ -72,19 +71,6 @@ end;
 //
 //==============================================================================
 function gl_i_max(const a, b: integer): integer;
-begin
-  if a > b then
-    result := a
-  else
-    result := b;
-end;
-
-//==============================================================================
-//
-// gl_f_max
-//
-//==============================================================================
-function gl_f_max(const a, b: single): single;
 begin
   if a > b then
     result := a

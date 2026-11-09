@@ -836,20 +836,6 @@ var
 
 //==============================================================================
 //
-// G_CmdChecksum
-//
-//==============================================================================
-function G_CmdChecksum(cmd: Pticcmd_t): integer;
-var
-  i: integer;
-begin
-  result := 0;
-  for i := 0 to SizeOf(cmd^) div 4 - 2 do
-    result := result + PIntegerArray(cmd)[i];
-end;
-
-//==============================================================================
-//
 // G_IsWeaponSelectable
 //
 //==============================================================================
@@ -893,40 +879,6 @@ begin
   end;
 
   result := true;
-end;
-
-//==============================================================================
-//
-// G_NextWeapon
-//
-//==============================================================================
-function G_NextWeapon(const direction: integer): integer;
-var
-  weapon: weapontype_t;
-  start_i, i: integer;
-begin
-  // Find index in the table.
-
-  if players[consoleplayer].pendingweapon = wp_nochange then
-    weapon := players[consoleplayer].readyweapon
-  else
-    weapon := players[consoleplayer].pendingweapon;
-
-  start_i := 0;
-  for i := 0 to WEAPONORDERSIZE - 1 do
-    if weapon_order_table[i].weapon = weapon then
-    begin
-      start_i := i;
-      break;
-    end;
-
-  // Switch weapon.
-  i := start_i;
-  repeat;
-    i := (i + direction + WEAPONORDERSIZE) mod WEAPONORDERSIZE;
-  until not (i <> start_i) and not G_IsWeaponSelectable(weapon_order_table[i].weapon);
-
-  result := Ord(weapon_order_table[i].weapon_num);
 end;
 
 //==============================================================================
@@ -2028,23 +1980,6 @@ begin
   riftangle := angle;
   riftdest := spot;
   destmap := map;
-end;
-
-//==============================================================================
-//
-// G_Exit2
-//
-// haleyjd 20101003: [STRIFE] New function.
-// No xrefs to this, doesn't seem to be used. Could have gotten inlined
-// somewhere but I haven't seen it.
-//
-//==============================================================================
-procedure G_Exit2(dest: integer; angle: angle_t);
-begin
-  riftdest := dest;
-  gameaction := ga_completed;
-  riftangle := angle;
-  destmap := gamemap;
 end;
 
 //==============================================================================

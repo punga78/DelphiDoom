@@ -71,7 +71,6 @@ function W_CacheSpriteNum(const lump: integer; const ftranslation: pointer; cons
 // W_CacheSpriteName
 //
 //==============================================================================
-function W_CacheSpriteName(const name: string; const ftranslation: pointer; const tag: integer): pointer;
 
 implementation
 
@@ -509,16 +508,6 @@ begin
   checkcols.Free;
 
   result := newpatch;
-end;
-
-//==============================================================================
-//
-// W_CacheSpriteName
-//
-//==============================================================================
-function W_CacheSpriteName(const name: string; const ftranslation: pointer; const tag: integer): pointer;
-begin
-  result := W_CacheSpriteNum(W_GetNumForName(name, TYPE_SPRITE), ftranslation, tag);
 end;
 
 end.

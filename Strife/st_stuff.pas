@@ -1806,48 +1806,6 @@ end;
 
 //==============================================================================
 //
-// ST_UnloadGraphics
-//
-//==============================================================================
-procedure ST_UnloadGraphics;
-var
-  i: integer;
-begin
-  // Load the numbers, tall and short
-  for i := 0 to 9 do
-  begin
-    Z_ChangeTag(invfontg[i], PU_CACHE);
-    Z_ChangeTag(invfonty[i], PU_CACHE);
-  end;
-
-  // haleyjd 20100919: load Sigil patches
-  if not isdemoversion then
-    for i := 0 to 4 do
-      Z_ChangeTag(invsigil[i], PU_CACHE);
-
-  // load ammo patches
-  for i := 0 to Ord(NUMAMMO) - 1 do
-    Z_ChangeTag(invammo[i], PU_CACHE);
-
-  Z_ChangeTag(invarmor[0], PU_CACHE);
-  Z_ChangeTag(invarmor[1], PU_CACHE);
-
-  if netgame then
-  begin
-    Z_ChangeTag(stback, PU_CACHE);
-  end;
-
-  Z_ChangeTag(invback, PU_CACHE);
-  Z_ChangeTag(invtop, PU_CACHE);
-  Z_ChangeTag(invpop, PU_CACHE);
-  Z_ChangeTag(invpop2, PU_CACHE);
-  Z_ChangeTag(invpbak, PU_CACHE);
-  Z_ChangeTag(invpbak2, PU_CACHE);
-  Z_ChangeTag(invcursor, PU_CACHE);
-end;
-
-//==============================================================================
-//
 // ST_InitData
 //
 //==============================================================================

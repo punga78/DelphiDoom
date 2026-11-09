@@ -343,29 +343,6 @@ var
   swingx: fixed_t;
   swingy: fixed_t;
 
-//==============================================================================
-//
-// P_CalcSwing
-//
-//==============================================================================
-procedure P_CalcSwing(player: Pplayer_t);
-var
-  swing: fixed_t;
-  angle: integer;
-begin
-  // OPTIMIZE: tablify this.
-  // A LUT would allow for different modes,
-  //  and add flexibility.
-
-  swing := player.bob;
-
-  angle := (FINEANGLES div 70 * leveltime) and FINEMASK;
-  swingx := FixedMul(swing, finesine[angle]);
-
-  angle := (FINEANGLES div 70 * leveltime + FINEANGLES div 2) and FINEMASK;
-  swingy := -FixedMul(swingx, finesine[angle]);
-end;
-
 // The first set is where the weapon preferences from             // killough,
 // default.cfg are stored. These values represent the keys used   // phares
 // in DOOM2 to bring up the weapon, i.e. 6 = plasma gun. These    //    |

@@ -464,28 +464,6 @@ end;
 
 //==============================================================================
 //
-// M_DrawEmptyCell
-//
-//==============================================================================
-procedure M_DrawEmptyCell(menu: Pmenu_t; item: integer);
-begin
-  V_DrawPatch(menu.x - 10, menu.y + item * menu.itemheight - 1, SCN_TMP,
-    'M_CELL1', false);
-end;
-
-//==============================================================================
-//
-// M_DrawSelCell
-//
-//==============================================================================
-procedure M_DrawSelCell(menu: Pmenu_t; item: integer);
-begin
-  V_DrawPatch(menu.x - 10, menu.y + item * menu.itemheight - 1, SCN_TMP,
-    'M_CELL2', false);
-end;
-
-//==============================================================================
-//
 // M_StartMessage
 //
 //==============================================================================
@@ -501,17 +479,6 @@ begin
   messageNeedsInput := input;
   mn_makescreenshot := true;
   menuactive := true;
-end;
-
-//==============================================================================
-//
-// M_StopMessage
-//
-//==============================================================================
-procedure M_StopMessage;
-begin
-  menuactive := messageLastMenuActive;
-  messageToPrint := 0;
 end;
 
 //==============================================================================

@@ -94,14 +94,12 @@ function R_GetSubtractive8table(const factor: fixed_t = FRACUNIT div 2): Ptrans8
 // R_FastApproxColorIndex
 //
 //==============================================================================
-function R_FastApproxColorIndex(const c: LongWord): byte; overload;
 
 //==============================================================================
 //
 // R_FastApproxColorIndex
 //
 //==============================================================================
-function R_FastApproxColorIndex(const r, g, b: byte): byte; overload;
 
 const
   FASTTABLESHIFT = 3;
@@ -501,36 +499,6 @@ begin
     result := subtractive8tables[NUMTRANS8TABLES]
   else
     result := subtractive8tables[idx];
-end;
-
-//==============================================================================
-//
-// R_FastApproxColorIndex
-//
-//==============================================================================
-function R_FastApproxColorIndex(const c: LongWord): byte; overload;
-var
-  r, g, b: LongWord;
-begin
-  b := (c shr FASTTABLESHIFT) and $FF;
-  g := (c shr (FASTTABLESHIFT + 8)) and $FF;
-  r := (c shr (FASTTABLESHIFT + 16)) and $FF;
-  result := approxcolorindexarray[r shl (16 - FASTTABLESHIFT - FASTTABLESHIFT) + g shl (8 - FASTTABLESHIFT) + b];
-end;
-
-//==============================================================================
-//
-// R_FastApproxColorIndex
-//
-//==============================================================================
-function R_FastApproxColorIndex(const r, g, b: byte): byte; overload;
-var
-  r1, g1, b1: LongWord;
-begin
-  b1 := b shr FASTTABLESHIFT;
-  g1 := g shr FASTTABLESHIFT;
-  r1 := r shr FASTTABLESHIFT;
-  result := approxcolorindexarray[r1 shl (16 - FASTTABLESHIFT - FASTTABLESHIFT) + g1 shl (8 - FASTTABLESHIFT) + b1];
 end;
 
 var

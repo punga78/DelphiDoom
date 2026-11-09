@@ -404,26 +404,6 @@ end;
 
 //==============================================================================
 //
-// F_WaitTicker
-//
-// [STRIFE] New function
-// haleyjd 09/13/10: This is called from G_Ticker if gamestate is 1, but we
-// have no idea for what it's supposed to be. It is unused.
-//
-//==============================================================================
-procedure F_WaitTicker;
-begin
-  inc(finalecount);
-  if finalecount >= 250 then
-  begin
-    gamestate := GS_FINALE;
-    finalestage := 0;
-    finalecount := 0;
-  end;
-end;
-
-//==============================================================================
-//
 // F_DoSlideShow
 //
 // [STRIFE] New function

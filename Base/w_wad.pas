@@ -221,7 +221,6 @@ function W_GetNameForNum(const lump: integer): char8_t;
 // True when the lump has exactly that name
 //
 //==============================================================================
-function W_LumpIsNamed(const lump: integer; const name: name8_t): boolean;
 
 //==============================================================================
 //
@@ -264,7 +263,6 @@ function W_CacheLumpNum(const lump: integer; const tag: integer): pointer;
 // W_CacheLumpNum2
 //
 //==============================================================================
-function W_CacheLumpNum2(const lump: integer; const tag: integer): pointer;
 
 //==============================================================================
 //
@@ -930,27 +928,6 @@ end;
 
 //==============================================================================
 //
-// W_InitFile
-// Just initialize from a single file.
-//
-//==============================================================================
-procedure W_InitFile(const filename: string);
-var
-  names: TDStringList;
-begin
-  names := TDSTringList.Create;
-  try
-    names.Add(filename);
-    W_InitMultipleFiles(names);
-  finally
-    if names.Objects[0] <> nil then
-      names.Objects[0].Free;
-    names.Free;
-  end;
-end;
-
-//==============================================================================
-//
 // W_NumLumps
 //
 //==============================================================================
@@ -1055,17 +1032,6 @@ end;
 
 //==============================================================================
 //
-// W_LumpIsNamed
-// True when the lump has exactly that name
-//
-//==============================================================================
-function W_LumpIsNamed(const lump: integer; const name: name8_t): boolean;
-begin
-  result := (lumpinfo[lump].v1 = name.x[0]) and (lumpinfo[lump].v2 = name.x[1]);
-end;
-
-//==============================================================================
-//
 // W_LumpFlags
 //
 //==============================================================================
@@ -1145,29 +1111,6 @@ begin
   if lump < 0 then
     I_Error('W_CacheLumpNum(): lump = %d, < 0', [lump]);
 
-  if lumpcache[lump] = nil then
-  begin
-    // read the lump in
-    //printf ("cache miss on lump %i\n",lump);
-    Z_Malloc(W_LumpLength(lump), tag, @lumpcache[lump]);
-    W_ReadLump(lump, lumpcache[lump]);
-  end
-  else
-  begin
-    //printf ("cache hit on lump %i\n",lump);
-    Z_ChangeTag(lumpcache[lump], tag);
-  end;
-
-  result := lumpcache[lump];
-end;
-
-//==============================================================================
-//
-// W_CacheLumpNum2
-//
-//==============================================================================
-function W_CacheLumpNum2(const lump: integer; const tag: integer): pointer;
-begin
   if lumpcache[lump] = nil then
   begin
     // read the lump in

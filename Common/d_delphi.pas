@@ -182,7 +182,6 @@ function ftoa(f: single): string;
 // ftoafmt
 //
 //==============================================================================
-function ftoafmt(const fmt: string; f: single): string;
 
 //==============================================================================
 //
@@ -1045,7 +1044,6 @@ function strtrim(const S: string): string;
 // capitalizedstring
 //
 //==============================================================================
-function capitalizedstring(const S: string; const splitter: char = ' '): string;
 
 //==============================================================================
 //
@@ -1598,19 +1596,6 @@ begin
   FormatSettings.DecimalSeparator := '.';
 
   result := FloatToStr(f);
-end;
-
-//==============================================================================
-//
-// ftoafmt
-//
-//==============================================================================
-function ftoafmt(const fmt: string; f: single): string;
-begin
-  FormatSettings.ThousandSeparator := #0;
-  FormatSettings.DecimalSeparator := '.';
-
-  sprintf(result, '%' + fmt + 'f', [f]);
 end;
 
 //==============================================================================
@@ -5636,32 +5621,6 @@ begin
       result := S
     else
       result := Copy(S, I, L - I + 1);
-  end;
-end;
-
-//==============================================================================
-//
-// capitalizedstring
-//
-//==============================================================================
-function capitalizedstring(const S: string; const splitter: char = ' '): string;
-var
-  i: integer;
-  c: string;
-begin
-  if S = '' then
-  begin
-    result := '';
-    exit;
-  end;
-
-  result := strlower(S);
-  result[1] := toupper(result[1]);
-  c := tolower(splitter);
-  for i := 2 to Length(result) do
-  begin
-    if result[i - 1] = c then
-      result[i] := toupper(result[i])
   end;
 end;
 

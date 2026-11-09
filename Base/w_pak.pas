@@ -143,7 +143,6 @@ procedure PAK_LoadPendingPaks;
 // PAK_GetGlobalHash
 //
 //==============================================================================
-function PAK_GetGlobalHash: LongWord;
 
 implementation
 
@@ -343,16 +342,6 @@ end;
 function PAK_ReadAllFilesAsString(const filename: string): string;
 begin
   result := PAK_Files.ReadAllTexts(filename);
-end;
-
-//==============================================================================
-//
-// PAK_GetGlobalHash
-//
-//==============================================================================
-function PAK_GetGlobalHash: LongWord;
-begin
-  result := PAK_Files.GlobalHash;
 end;
 
 end.
