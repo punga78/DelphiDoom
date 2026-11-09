@@ -266,6 +266,14 @@ uses
   DelphiDoom.GlMath.Factory,
   gl_clipper,
   gl_models,
+  DelphiDoom.Models.Definition.Intf,
+  DelphiDoom.Models.Factory,
+  DelphiDoom.Engine.Models.DefinitionSink,
+  DelphiDoom.Engine.Models.DefinitionLookup,
+  DelphiDoom.GlLevel.Intf,
+  DelphiDoom.GlLevel.Factory,
+  DelphiDoom.Engine.GlLevel.FlatWorld,
+  DelphiDoom.Engine.GlLevel.FlatLoopSink,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -1095,9 +1103,21 @@ begin
 end;
 
 {$IFDEF OPENGL}
+procedure ComposeModels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor);
+begin
+  gld_ConfigureModelDefinitions(APreprocessor,
+    TModelsFactory.CreateDefinitionParser(TEngineModelDefinitionLookup.Create, ALog),
+    TEngineModelDefinitionSink.Create);
+end;
+
+procedure ComposeLevelGeometry;
+begin
+  gld_ConfigureFlatCarver(TGlLevelFactory.CreateFlatCarver(TEngineGlFlatWorld.Create,
+    TEngineGlFlatLoopSink.Create));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
-  gld_ConfigureModelDefinitions(APreprocessor);
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
 end;
 {$ENDIF}
@@ -1361,6 +1381,10 @@ begin
   LEndScreenTick := ComposeEndoom(LLumps, LZone, LLog, LShutdown, LScreens);
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
   ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
+{$IFDEF OPENGL}
+  ComposeModels(LLog, LPreprocessor);
+  ComposeLevelGeometry;
+{$ENDIF}
 
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);

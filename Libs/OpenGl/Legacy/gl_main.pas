@@ -1173,6 +1173,10 @@ begin
   allocscreensize := 2048 * (1536 + ERROR_OFFSET) * SizeOf(LongWord) and not (4095);
   screen := mallocA(allocscreensize, $10000, oscreen); // JVAL: Memory padding may increase performance until 4%
   screen32 := screen;
+  // malloc does not clear the memory: the overlay texture (GLDRAWTEXWIDTH x GLDRAWTEXHEIGHT) is uploaded
+  // from the start of this buffer and its size is bigger than the part the engine draws on, so
+  // the rest of the texture was whatever the heap had (it changed from a run to another)
+  ZeroMemory(screen, allocscreensize - $10000);
 
   GL_CreateOverlayTexture;
 
