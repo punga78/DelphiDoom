@@ -39,7 +39,28 @@ uses
   r_defs,
   r_visplanes,
   m_fixed,
-  DelphiDoom.DynLights.Intf;
+  DelphiDoom.DynLights.Intf,
+  DelphiDoom.GlLevel.Types,
+  DelphiDoom.GlLevel.Intf;
+
+//==============================================================================
+//
+// gld_ConfigureFlatCarver
+//
+// The carver of the flats (Libs\GlLevel): gld_PreprocessSectors uses it; the composition
+// root calls this, without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureFlatCarver(const ACarver: IGlFlatCarver);
+
+//==============================================================================
+//
+// gld_AddFlatLoop
+//
+// A polygon of a flat from the carver (called by the sink of the engine)
+//
+//==============================================================================
+procedure gld_AddFlatLoop(const sectorid: integer; const points: PGlFixedPoint; const count: integer);
 
 //==============================================================================
 //
@@ -1416,377 +1437,58 @@ var
  * originaly from JHexen. I have redone it.
  *}
 
-const
-  MAX_CC_SIDES = 64;
-
-//==============================================================================
-//
-// FIX2DBL
-//
-//==============================================================================
-function FIX2DBL(const x: fixed_t): double;
-begin
-  result := x / 1.0;
-end;
-
-//==============================================================================
-//
-// gld_PointOnSide
-//
-//==============================================================================
-function gld_PointOnSide(p: Pvertex_t; d: Pdivline_t): boolean;
-begin
-  // We'll return false if the point c is on the left side.
-  result := (FIX2DBL(d.y) - FIX2DBL(p.y)) * FIX2DBL(d.dx) - (FIX2DBL(d.x) - FIX2DBL(p.x)) * FIX2DBL(d.dy) >= 0;
-end;
-
-//==============================================================================
-// gld_CalcIntersectionVertex
-//
-// Lines start-end and fdiv must intersect.
-//
-//==============================================================================
-procedure gld_CalcIntersectionVertex(s: Pvertex_t; e: Pvertex_t; d: Pdivline_t; i: Pvertex_t);
 var
-  ax: double;
-  ay: double;
-  bx: double;
-  by: double;
-  cx: double;
-  cy: double;
-  dx: double;
-  dy: double;
-  r: double;
-begin
-  ax := FIX2DBL(s.x);
-  ay := FIX2DBL(s.y);
-  bx := FIX2DBL(e.x);
-  by := FIX2DBL(e.y);
-  cx := FIX2DBL(d.x);
-  cy := FIX2DBL(d.y);
-  dx := cx + FIX2DBL(d.dx);
-  dy := cy + FIX2DBL(d.dy);
-  r := ((ay - cy) * (dx - cx) - (ax - cx) * (dy - cy)) / ((bx - ax) * (dy - cy) - (by - ay) * (dx - cx));
-  i.x := round(FIX2DBL(s.x) + r * (FIX2DBL(e.x) - FIX2DBL(s.x)));
-  i.y := round(FIX2DBL(s.y) + r * (FIX2DBL(e.y) - FIX2DBL(s.y)));
-end;
+  // the carver of the flats (Libs\GlLevel), given by the composition root (gld_ConfigureFlatCarver)
+  gld_flatcarver: IGlFlatCarver = nil;
 
 //==============================================================================
-// gld_FlatEdgeClipper
 //
-// Returns a pointer to the list of points. It must be used.
+// gld_ConfigureFlatCarver
 //
 //==============================================================================
-function gld_FlatEdgeClipper(numpoints: Pinteger; points: Pvertex_tArray; numclippers: integer; clippers: Pdivline_tArray): Pvertex_tArray;
-var
-  sidelist: array[0..MAX_CC_SIDES - 1] of boolean;
-  i, k, num: integer;
-  curclip: Pdivline_t;
-  startIdx, endIdx: integer;
-  newvert: vertex_t;
-  previdx: integer;
+procedure gld_ConfigureFlatCarver(const ACarver: IGlFlatCarver);
 begin
-  num := numpoints^;
-  // We'll clip the polygon with each of the divlines. The left side of
-  // each divline is discarded.
-  for i := 0 to numclippers - 1 do
-  begin
-    curclip := @clippers[i];
-
-    // First we'll determine the side of each vertex. Points are allowed
-    // to be on the line.
-    for k := 0 to num - 1 do
-      sidelist[k] := gld_PointOnSide(@points[k], curclip);
-
-    k := 0;
-    while k < num do
-    begin
-      startIdx := k;
-      endIdx := k + 1;
-      // Check the end index.
-      if endIdx = num then
-        endIdx := 0; // Wrap-around.
-      // Clipping will happen when the ends are on different sides.
-      if sidelist[startIdx] <> sidelist[endIdx] then
-      begin
-        gld_CalcIntersectionVertex(@points[startIdx], @points[endIdx], curclip, @newvert);
-
-        // Add the new vertex. Also modify the sidelist.
-        inc(num);
-        realloc(pointer(points), (num - 1) * SizeOf(vertex_t), num * SizeOf(vertex_t));
-        if num >= MAX_CC_SIDES then
-          I_Error('gld_FlatEdgeClipper(): Too many points in carver');
-
-        // Make room for the new vertex.
-        memmove(@points[endIdx + 1], @points[endIdx], (num - endIdx - 1) * SizeOf(vertex_t)); // VJ SOS
-        memcpy(@points[endIdx], @newvert, SizeOf(newvert));
-
-        memmove(@sidelist[endIdx + 1], @sidelist[endIdx], num - endIdx - 1);
-        sidelist[endIdx] := true;
-
-        // Skip over the new vertex.
-        inc(k);
-      end;
-      inc(k);
-    end;
-
-    // Now we must discard the points that are on the wrong side.
-    k := 0;
-    while k < num do
-    begin
-      if not sidelist[k] then
-      begin
-        memmove(@points[k], @points[k + 1], (num - k - 1) * SizeOf(vertex_t));
-        memmove(@sidelist[k], @sidelist[k + 1], num - k - 1);
-        dec(num);
-      end
-      else
-        inc(k);
-    end;
-  end;
-
-  // Screen out consecutive identical points.
-  i := 0;
-  while i < num do
-  begin
-    previdx := i - 1;
-    if previdx < 0 then
-      previdx := num - 1;
-    if (points[i].x = points[previdx].x) and (points[i].y = points[previdx].y) then
-    begin
-      // This point (i) must be removed.
-      memmove(@points[i], @points[i + 1], (num - i - 1) * SizeOf(vertex_t));
-      dec(num)
-    end
-    else
-      inc(i);
-  end;
-
-  numpoints^ := num;
-  result := points;
+  gld_flatcarver := ACarver;
 end;
 
 //==============================================================================
 //
-// gld_FlatConvexCarver
+// gld_AddFlatLoop
+//
+// A convex polygon of a flat (a fan of the points) is added to the vertex arrays and to the
+// loops of its sector. The points of the carver are in fixed point.
 //
 //==============================================================================
-procedure gld_FlatConvexCarver(ssidx: integer; num: integer; list: Pdivline_tArray);
+procedure gld_AddFlatLoop(const sectorid: integer; const points: PGlFixedPoint; const count: integer);
 var
-  ssec: Psubsector_t;
-  numclippers: integer;
-  clippers: Pdivline_tArray;
-  i, numedgepoints: integer;
-  edgepoints: Pvertex_tArray;
-  epoint: Pvertex_t;
+  i: integer;
+  epoint: PGlFixedPoint;
   glsec: PGLSector;
-  seg: Pseg_t;
-  currentsector: integer;
-  plist: Pdivline_t;
-  ploop: PGLLoopDef;
-  vert: PGLVertex;
-  snum: integer;
-begin
-  ssec := @subsectors[ssidx];
-  snum := ssec.numlines;
-  numclippers := num + snum;
-
-  clippers := malloc(numclippers * SizeOf(divline_t));
-  for i := 0 to num - 1 do
-  begin
-    plist := @list[num - i - 1];
-    clippers[i].x := plist.x;
-    clippers[i].y := plist.y;
-    clippers[i].dx := plist.dx;
-    clippers[i].dy := plist.dy;
-  end;
-  for i := num to numclippers - 1 do
-  begin
-    snum := ssec.firstline;
-    seg := @segs[snum + i - num];
-    clippers[i].x := seg.v1.x;
-    clippers[i].y := seg.v1.y;
-    clippers[i].dx := seg.v2.x - seg.v1.x;
-    clippers[i].dy := seg.v2.y - seg.v1.y;
-  end;
-
-  // Setup the 'worldwide' polygon.
-  numedgepoints := 4;
-  edgepoints := malloc(numedgepoints * Sizeof(vertex_t));
-
-  edgepoints[0].x := MININT;
-  edgepoints[0].y := MAXINT;
-
-  edgepoints[1].x := MAXINT;
-  edgepoints[1].y := MAXINT;
-
-  edgepoints[2].x := MAXINT;
-  edgepoints[2].y := MININT;
-
-  edgepoints[3].x := MININT;
-  edgepoints[3].y := MININT;
-
-  // Do some clipping, <snip> <snip>
-  edgepoints := gld_FlatEdgeClipper(@numedgepoints, edgepoints, numclippers, clippers);
-
-  if numedgepoints >= 3 then
-  begin
-    gld_AddGlobalVertexes(numedgepoints);
-    if (gld_vertexes <> nil) and (gld_texcoords <> nil) then
-    begin
-
-      currentsector := ssec.sector.iSectorID;
-
-      glsec := @sectorloops[currentsector];
-      glsec.loops := Z_Realloc(glsec.loops, SizeOf(GLLoopDef) * (glsec.loopcount + 1), PU_LEVEL, nil);
-      ploop := @glsec.loops[glsec.loopcount];
-      ploop.mode := GL_TRIANGLE_FAN;
-      ploop.vertexcount := numedgepoints;
-      ploop.vertexindex := gld_num_vertexes;
-      inc(glsec.loopcount);
-
-      epoint := @edgepoints[0];
-      for i := 0 to numedgepoints - 1 do
-      begin
-        gld_texcoords[gld_num_vertexes].u := (epoint.x / FRACUNIT) / 64.0;
-        gld_texcoords[gld_num_vertexes].v := (-epoint.y / FRACUNIT) / 64.0;
-        vert := @gld_vertexes[gld_num_vertexes];
-        vert.x := -epoint.x / MAP_SCALE;
-        vert.y := 0.0;
-        vert.z := epoint.y / MAP_SCALE;
-        inc(gld_num_vertexes);
-        inc(epoint);
-      end;
-    end;
-  end;
-  // We're done, free the edgepoints memory.
-  memfree(pointer(edgepoints), numedgepoints * SizeOf(vertex_t));
-  memfree(pointer(clippers), numclippers * SizeOf(divline_t));
-end;
-
-//==============================================================================
-//
-// gld_CarveFlats
-//
-//==============================================================================
-procedure gld_CarveFlats(bspnode: integer; numdivlines: integer; divlines: Pdivline_tArray; sectorclosed: PBooleanArray);
-var
-  nod: Pnode_t;
-  dl: Pdivline_t;
-  childlist: Pdivline_tArray;
-  childlistsize: integer;
-  ssidx: integer;
-begin
-  childlistsize := numdivlines + 1;
-
-  if bspnode = -1 then
-  begin
-    if not sectorclosed[subsectors[0].sector.iSectorID] then
-      gld_FlatConvexCarver(0, numdivlines, divlines);
-    exit;
-  end;
-
-  // If this is a subsector we are dealing with, begin carving with the
-  // given list.
-  if bspnode and NF_SUBSECTOR <> 0 then
-  begin
-    // We have arrived at a subsector. The divline list contains all
-    // the partition lines that carve out the subsector.
-    ssidx := bspnode and not NF_SUBSECTOR;
-    if not sectorclosed[subsectors[ssidx].sector.iSectorID] then
-      gld_FlatConvexCarver(ssidx, numdivlines, divlines);
-    exit;
-  end;
-
-  // Get a pointer to the node.
-  nod := @nodes[bspnode];
-
-  // Allocate a new list for each child.
-  childlist := malloc(childlistsize * SizeOf(divline_t));
-
-  // Copy the previous lines.
-  if divlines <> nil then
-    memcpy(childlist, divlines, numdivlines * SizeOf(divline_t));
-
-  dl := @childlist[numdivlines];
-  dl.x := nod.x;
-  dl.y := nod.y;
-  // The right child gets the original line (LEFT side clipped).
-  dl.dx := nod.dx;
-  dl.dy := nod.dy;
-  gld_CarveFlats(nod.children[0], childlistsize, childlist, sectorclosed);
-
-  // The left side. We must reverse the line, otherwise the wrong
-  // side would get clipped.
-  dl.dx := -nod.dx;
-  dl.dy := -nod.dy;
-  gld_CarveFlats(nod.children[1], childlistsize, childlist, sectorclosed);
-
-  // We are finishing with this node, free the allocated list.
-  memfree(pointer(childlist), childlistsize * SizeOf(divline_t));
-end;
-
-(********************************************
- * Name     : gld_GetSubSectorVertices      *
- * created  : 08/13/00                      *
- * modified : 09/18/00, adapted for PrBoom  *
- * author   : figgi                         *
- * what     : prepares subsectorvertices    *
- *            (glnodes only)                *
- ********************************************)
-
-//==============================================================================
-//
-// gld_GetSubSectorVertices
-//
-//==============================================================================
-procedure gld_GetSubSectorVertices(sectorclosed: PBooleanArray);
-var
-  i, j: integer;
-  numedgepoints: integer;
-  ssector: Psubsector_t;
-  currentsector: integer;
-  glsec: PGLSector;
-  seg: Pseg_t;
   ploop: PGLLoopDef;
   vert: PGLVertex;
 begin
-  for i := 0 to numsubsectors - 1 do
+  gld_AddGlobalVertexes(count);
+  if (gld_vertexes <> nil) and (gld_texcoords <> nil) then
   begin
-    ssector := @subsectors[i];
+    glsec := @sectorloops[sectorid];
+    glsec.loops := Z_Realloc(glsec.loops, SizeOf(GLLoopDef) * (glsec.loopcount + 1), PU_LEVEL, nil);
+    ploop := @glsec.loops[glsec.loopcount];
+    ploop.mode := GL_TRIANGLE_FAN;
+    ploop.vertexcount := count;
+    ploop.vertexindex := gld_num_vertexes;
+    inc(glsec.loopcount);
 
-    if sectorclosed[ssector.sector.iSectorID] then
-      continue;
-
-    numedgepoints := ssector.numlines;
-    if numedgepoints < 3 then
-      continue;
-
-    gld_AddGlobalVertexes(numedgepoints);
-
-    if (gld_vertexes <> nil) and (gld_texcoords <> nil) then
+    epoint := points;
+    for i := 0 to count - 1 do
     begin
-      currentsector := ssector.sector.iSectorID;
-
-      glsec := @sectorloops[currentsector];
-      glsec.loops := Z_Realloc(glsec.loops, SizeOf(GLLoopDef) * (glsec.loopcount + 1), PU_LEVEL, nil);
-      ploop := @glsec.loops[glsec.loopcount];
-      ploop.mode := GL_TRIANGLE_FAN;
-      ploop.vertexcount := numedgepoints;
-      ploop.vertexindex := gld_num_vertexes;
-      inc(glsec.loopcount);
-      seg := @segs[ssector.firstline];
-      for j := 0 to numedgepoints - 1 do
-      begin
-        gld_texcoords[gld_num_vertexes].u := (seg.v1.x / FRACUNIT) / 64.0;
-        gld_texcoords[gld_num_vertexes].v :=(-seg.v1.y / FRACUNIT) / 64.0;
-        vert := @gld_vertexes[gld_num_vertexes];
-        vert.x := -seg.v1.x / MAP_SCALE;
-        vert.y := 0.0;
-        vert.z := seg.v1.y / MAP_SCALE;
-        inc(gld_num_vertexes);
-        inc(seg);
-      end;
+      gld_texcoords[gld_num_vertexes].u := (epoint.X / FRACUNIT) / 64.0;
+      gld_texcoords[gld_num_vertexes].v := (-epoint.Y / FRACUNIT) / 64.0;
+      vert := @gld_vertexes[gld_num_vertexes];
+      vert.x := -epoint.X / MAP_SCALE;
+      vert.y := 0.0;
+      vert.z := epoint.Y / MAP_SCALE;
+      inc(gld_num_vertexes);
+      inc(epoint);
     end;
   end;
 end;
@@ -1864,6 +1566,9 @@ var
   v1num, v2num: integer;
   ppl: PPline_t;
 begin
+  if gld_flatcarver = nil then
+    I_Error('gld_PreprocessSectors(): the flat carver is not configured (ComposeEngine was not called)');
+
   sectorclosed := Z_Malloc2(numsectors * SizeOf(boolean), PU_LEVEL, nil);
   if sectorclosed = nil then
     I_Error('gld_PreprocessSectors(): Not enough memory for array sectorclosed');
@@ -1958,9 +1663,17 @@ begin
 
   // figgi -- adapted for glnodes // JVAL
   if glnodesver = 0 then
-    gld_CarveFlats(numnodes - 1, 0, nil, sectorclosed)
+    gld_flatcarver.CarveFlats(numnodes - 1,
+      function(const sectorid: integer): boolean
+      begin
+        result := sectorclosed[sectorid];
+      end)
   else
-    gld_GetSubSectorVertices(sectorclosed);
+    gld_flatcarver.AddSubsectorLoops(
+      function(const sectorid: integer): boolean
+      begin
+        result := sectorclosed[sectorid];
+      end);
 
   Z_Free(sectorclosed);
 end;
