@@ -55,6 +55,16 @@ procedure gld_ConfigureFlatCarver(const ACarver: IGlFlatCarver);
 
 //==============================================================================
 //
+// gld_ConfigureSectorPreprocessor
+//
+// The checks on the sectors (Libs\GlLevel): gld_PreprocessSectors uses them; the composition
+// root calls this, without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureSectorPreprocessor(const APreprocessor: IGlSectorPreprocessor);
+
+//==============================================================================
+//
 // gld_AddFlatLoop
 //
 // A polygon of a flat from the carver (called by the sink of the engine)
@@ -1440,6 +1450,8 @@ var
 var
   // the carver of the flats (Libs\GlLevel), given by the composition root (gld_ConfigureFlatCarver)
   gld_flatcarver: IGlFlatCarver = nil;
+  // the checks on the sectors (Libs\GlLevel), given by the composition root (gld_ConfigureSectorPreprocessor)
+  gld_sectorpreprocessor: IGlSectorPreprocessor = nil;
 
 //==============================================================================
 //
@@ -1449,6 +1461,16 @@ var
 procedure gld_ConfigureFlatCarver(const ACarver: IGlFlatCarver);
 begin
   gld_flatcarver := ACarver;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureSectorPreprocessor
+//
+//==============================================================================
+procedure gld_ConfigureSectorPreprocessor(const APreprocessor: IGlSectorPreprocessor);
+begin
+  gld_sectorpreprocessor := APreprocessor;
 end;
 
 //==============================================================================
@@ -1493,44 +1515,6 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// gld_PrepareSectorSpecialEffects
-//
-//==============================================================================
-procedure gld_PrepareSectorSpecialEffects(const sec: Psector_t);
-var
-  i: integer;
-  line: Pline_t;
-begin
-  // the following is for specialeffects. see r_bsp.c in R_Subsector
-  sec.no_toptextures := true;
-  sec.no_bottomtextures := true;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    line := sec.lines[i];
-    if (line.sidenum[0] <> -1) and
-       (line.sidenum[1] <> -1) then
-    begin
-      if sides[line.sidenum[0]].toptexture <> 0 then
-        sec.no_toptextures := false;
-      if sides[line.sidenum[0]].bottomtexture <> 0 then
-        sec.no_bottomtextures := false;
-      if sides[line.sidenum[1]].toptexture <> 0 then
-        sec.no_toptextures := false;
-      if sides[line.sidenum[1]].bottomtexture <> 0 then
-        sec.no_bottomtextures := false;
-    end
-    else
-    begin
-      sec.no_toptextures := false;
-      sec.no_bottomtextures := false;
-      exit;
-    end;
-  end;
-end;
-
 // gld_PreprocessLevel
 //
 // this checks all sectors if they are closed and calls gld_PrecalculateSector to
@@ -1561,11 +1545,9 @@ end;
 procedure gld_PreprocessSectors;
 var
   sectorclosed: PBooleanArray;
-  vcheck1, vcheck2: PIntegerArray;
-  i, j: integer;
-  v1num, v2num: integer;
-  ppl: PPline_t;
 begin
+  if gld_sectorpreprocessor = nil then
+    I_Error('gld_PreprocessSectors(): the sector preprocessor is not configured (ComposeEngine was not called)');
   if gld_flatcarver = nil then
     I_Error('gld_PreprocessSectors(): the flat carver is not configured (ComposeEngine was not called)');
 
@@ -1610,56 +1592,7 @@ begin
   gld_num_vertexes := 0;
   gld_AddGlobalVertexes(numvertexes * 2);
 
-  // JVAL: From prboom-plus
-  vcheck1 := malloc(numvertexes * SizeOf(vcheck1[0]));
-  vcheck2 := malloc(numvertexes * SizeOf(vcheck2[0]));
-  for i := 0 to numsectors - 1 do
-  begin
-    gld_PrepareSectorSpecialEffects(@sectors[i]);
-
-    ZeroMemory(vcheck1, numvertexes * SizeOf(vcheck1[0]));
-    ZeroMemory(vcheck2, numvertexes * SizeOf(vcheck2[0]));
-
-    ppl := @sectors[i].lines[0];
-    for j := 0 to sectors[i].linecount - 1 do
-    begin
-      v1num := (integer(ppl^.v1) - integer(vertexes)) div SizeOf(vertex_t);
-      v2num := (integer(ppl^.v2) - integer(vertexes)) div SizeOf(vertex_t);
-      if (v1num >= numvertexes) or (v2num >= numvertexes) then
-        continue;
-
-      // e6y: for correct handling of missing textures.
-      // We do not need to apply some algos for isolated lines.
-      inc(vcheck2[v1num]);
-      inc(vcheck2[v2num]);
-
-      if ppl^.sidenum[0] <> - 1 then
-        if sides[ppl^.sidenum[0]].sector = @sectors[i] then
-        begin
-          vcheck1[v1num] := vcheck1[v1num] or 1;
-          vcheck1[v2num] := vcheck1[v2num] or 2;
-        end;
-      if ppl^.sidenum[1] <> -1 then
-        if sides[ppl^.sidenum[1]].sector = @sectors[i] then
-        begin
-          vcheck1[v1num] := vcheck1[v1num] or 2;
-          vcheck1[v2num] := vcheck1[v2num] or 1;
-        end;
-      inc(ppl);
-    end;
-
-    ppl := @sectors[i].lines[0];
-    for j := 0 to sectors[i].linecount - 1 do
-    begin
-      v1num :=(integer(ppl^.v1) -integer(vertexes)) div SizeOf(vertex_t);
-      v2num :=(integer(ppl^.v2) -integer(vertexes)) div SizeOf(vertex_t);
-      if (vcheck2[v1num] < 2) and (vcheck2[v2num] < 2) then
-        ppl^.renderflags := ppl^.renderflags or LRF_ISOLATED;
-      inc(ppl);
-    end;
-  end;
-  memfree(pointer(vcheck1), numvertexes * SizeOf(vcheck1[0]));
-  memfree(pointer(vcheck2), numvertexes * SizeOf(vcheck2[0]));
+  gld_sectorpreprocessor.Preprocess;
 
   // figgi -- adapted for glnodes // JVAL
   if glnodesver = 0 then
