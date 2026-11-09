@@ -18,6 +18,11 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   DelphiDoom.Tests.XcomEngine.Compose in 'Source\DelphiDoom.Tests.XcomEngine.Compose.pas',
+  DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
+  DelphiDoom.Tests.XcomEngine.Core in 'Source\DelphiDoom.Tests.XcomEngine.Core.pas',
+  DelphiDoom.Tests.XcomEngine.Game in 'Source\DelphiDoom.Tests.XcomEngine.Game.pas',
+  DelphiDoom.Tests.XcomEngine.Ui in 'Source\DelphiDoom.Tests.XcomEngine.Ui.pas',
+  DelphiDoom.Tests.XcomEngine.Menu in 'Source\DelphiDoom.Tests.XcomEngine.Menu.pas',
   DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas';
 
 var

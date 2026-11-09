@@ -71,6 +71,8 @@ type
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
     procedure Run;
     function IsQuitting: Boolean;
+    /// <summary>The state on top (nil when there is none)</summary>
+    function TopState: TXcomState;
     procedure SetMouseActive(AActive: Boolean);
     /// <summary>How many frames were drawn</summary>
     property Frames: Integer read FFrames;
@@ -185,6 +187,14 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+end;
+
+function TXcomGame.TopState: TXcomState;
+begin
+  if FStates.Count > 0 then
+    Result := FStates.Last
+  else
+    Result := nil;
 end;
 
 function TXcomGame.IsQuitting: Boolean;

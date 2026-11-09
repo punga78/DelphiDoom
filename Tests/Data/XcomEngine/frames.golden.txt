@@ -1,0 +1,5 @@
+# Frames of the real OpenXcom (nightly 2026-06-05, TFTD, en-US, window 640x400, F12) as: name WxH FNV-1a-32 of the R,G,B bytes
+# menu_main: the main menu with the mouse outside of the window
+# start: the start screen after the 9th timer tick with the cursor hidden; DOS path C:\PROGETTI\DELPHI~1\REFERE~1\_DATI\XCOM_T~1\OPENXCOM
+menu_main 640x400 a5775815
+start 640x400 1a5a6bd6
