@@ -15,7 +15,7 @@ avvisi) e da `Libs\Imaging` (`TImagingColorMath.Add`, la somma dei colori di `R_
 | `r_cache_flats.pas` (flat, software 32 bit) | `T_LoadHiResTexture`, `ScaleTo`, `SetPalColor`, `GetTransformedPalette`, `GetImage`, `ConvertTo32bit` | una volta per flat |
 | `r_pk3textures.pas`, `w_sprite.pas` | `T_LoadHiResTexture`, `GetColumn32`, `GetRow32`, `SetRow32`, `SetColumn32`, `SetDefaultAlphaChannel`, `RemoveTransparency`, `ScaleTo`, `LoadFromStream` | all'avvio e al caricamento di un livello, per fare patch e flat dalle texture dei PK3 e degli sprite PNG |
 | `OPENGL\gl_tex.pas`, `gl_ambient.pas` | `ConvertTo32bit`, `SwapRGB`, `Set*AlphaChannel*`, `ScaleTo`, `GetImage`, `GetRow32` | al caricamento di una texture OpenGL: a freddo |
-| `t_draw.pas` (`T_DrawFullScreenPatch`) | `GetRow32`, `GetPalettedRow32` | **per ogni fotogramma** in cui si vede una pagina a tutto schermo esterna: una chiamata per riga dello schermo |
+| `t_draw.pas` -> `TEngineDrawTextures` (`T_DrawFullScreenPatch`) | `GetRow32`, `GetPalettedRow32` | **per ogni fotogramma** in cui si vede una pagina a tutto schermo esterna: una chiamata per riga dello schermo |
 | `w_pak.pas`, `v_video.pas` | `T_IsValidPatchImage`, `T_IsValidFlatImage`, `T_IsValidPCXHeader` | a freddo (riconoscere il tipo di una voce di un PAK) |
 | `m_defs.pas` | `pngtransparentcolor`, `pngtransparentcolor2`, `assumecommontranspantcolors`, `preferetexturesnamesingamedirectory` | impostazioni del file `.ini` |
 | `d_main.pas` dei 4 giochi | `T_Init`, `T_ShutDown` | avvio e chiusura |
@@ -34,8 +34,8 @@ riga) e resta nel motore, perché legge `screen32`, `gammatable` e usa MMX.
 | tabella dei decoder per estensione | **qui** (`Formats`, `Factory`) | sostituisce la lista concatenata di `GetImageFormat` |
 | controlli di tipo (`T_IsValid*`) | **qui** (`PatchInspector`, `Decoder.Flat`, `Decoder.Pcx`) | puri; il motore li chiama direttamente (`TPakFileSystem` per `HI_START`/`TX_START`, `V_TileScreen8`): `t_detect.pas` non esiste piu (issue #146) |
 | `T_LoadHiResTexture`, `PTexture`, ricerca nei PAK | **resta nel motore** come classi (`TEngineTextureFiles` dietro `IEngineTextureFiles`, `TTexture` di `DelphiDoom.Engine.Texture.Item`) | trova i file con il file system PAK (`IPakFileSystem`) ricevuto dal costruttore; `t_main.pas` non esiste piu (issue #146): i chiamanti ricevono `IEngineTextureFiles` dal composition root |
-| `T_DrawFullScreenPatch`, cache `drawtextures[]` | **resta nel motore** (`t_draw.pas`) | legato a `screen32`, ai gamma, a MMX e alla zone memory |
-| `DelphiDoom.Texture.PngFileWriter`, `DelphiDoom.Texture.JpegBitmap` | **restano dove sono** (già a classi, già testati nei progetti Png e Jpeg) | |
+| `T_DrawFullScreenPatch`, cache `drawtextures[]` | **resta nel motore** (`TEngineDrawTextures`, ex `t_draw.pas`) | legato a `screen32`, ai gamma, a MMX e alla zone memory |
+| `DelphiDoom.Texture.PngFileWriter`, `DelphiDoom.Texture.JpegBitmap` | **sono in questa cartella** (spostate da `TEXLIB`, issue #171) (già a classi, già testati nei progetti Png e Jpeg) | |
 
 ## 3. Struttura
 
@@ -52,14 +52,14 @@ PatchInspector, Formats, Factory
 ```
 
 Nel motore (`Base\DelphiDoom.Engine.Texture.*`): `PaletteSource` (`default_palette`), `PngReader` (libreria PNG),
-`PngSettings` (variabili di `t_png`), `JpegConverter` (libreria JPEG; un JPEG rotto ferma il gioco, come prima),
+`PngSettings` (opzioni in `TEngineTextureSettings`, ex variabili di `t_png`), `JpegConverter` (libreria JPEG; un JPEG rotto ferma il gioco, come prima),
 `Resolver` (le texture che un `.material` nomina; tiene un riferimento debole ai file, che a loro volta hanno i decoder),
 `Item` (`PTexture`/`TTexture`, gli stessi metodi di prima sopra `TTextureImage`) e `Files` (`TEngineTextureFiles`:
 `LoadImage`, `LoadTexture`, `Decode`, `IsTextureExtension`; il vecchio `T_LoadHiResImage`). `ComposeTexture` (in
 `ComposeEngine`) crea i decoder con `TTextureFactory.CreateFormats`, poi `TEngineTextureFiles` con il file system PAK, e li
-da a chi li usa: `T_ConfigureDrawTextures` (`t_draw`), `W_ConfigureSpriteTextures` (`w_sprite`), `R_ConfigurePK3Textures`
+da a chi li usa: `V_ConfigureDrawTextures` (`v_video`), `W_ConfigureSpriteTextures` (`w_sprite`), `R_ConfigurePK3Textures`
 (`r_pk3textures`), `R_ConfigureFlatTextures` e `R_ConfigureWallTextures` (software), `gld_ConfigureTextureFiles` (OpenGL).
-`t_main.pas` e `t_detect.pas` sono stati cancellati (issue #146); `t_png.pas` tiene le impostazioni (anche
+`t_main.pas` e `t_detect.pas` sono stati cancellati (issue #146); `t_png.pas` teneva le impostazioni (ora `TEngineTextureSettings`) (anche
 `preferetexturesnamesingamedirectory`) e `d_main` chiama `T_InitDrawTextures`/`T_ShutDownDrawTextures` al posto di `T_Init`/`T_ShutDown`.
 
 ## 4. Differenze volute dal vecchio codice
