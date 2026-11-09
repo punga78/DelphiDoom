@@ -25,7 +25,7 @@ uses
   DelphiDoom.XcomMod.ExtraSounds, DelphiDoom.XcomMod.ExtraStrings, DelphiDoom.XcomMod.StatString,
   DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomMod.RuleVideo, DelphiDoom.XcomMod.RuleConverter,
   DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings, System.Generics.Defaults,
-  DelphiDoom.XcomMod.SoundDefinition;
+  DelphiDoom.XcomMod.SoundDefinition, DelphiDoom.XcomMod.RuleGlobe;
 
 type
   /// <summary>SDL_Color of the transparency lookup tables</summary>
@@ -60,6 +60,7 @@ type
     FInterfaces: TXcomRuleRegistry<TXcomRuleInterface>;
     FVideos: TXcomRuleRegistry<TXcomRuleVideo>;
     FConverter: TXcomRuleConverter;
+    FGlobe: TXcomRuleGlobe;
     FConstants: TXcomModConstants;
     FSettings: TXcomRulesetSettings;
     FStartingBase: TXcomStringMap<IYamlNode>;
@@ -169,6 +170,8 @@ type
     property Interfaces: TXcomRuleRegistry<TXcomRuleInterface> read FInterfaces;
     property Videos: TXcomRuleRegistry<TXcomRuleVideo> read FVideos;
     property Converter: TXcomRuleConverter read FConverter;
+    /// <summary>getGlobe</summary>
+    property Globe: TXcomRuleGlobe read FGlobe;
     property Constants: TXcomModConstants read FConstants;
     property Settings: TXcomRulesetSettings read FSettings;
     /// <summary>The starting base: the nodes of "startingBase" by key (the C++ keeps them for the saved game)</summary>
@@ -220,6 +223,7 @@ begin
   FVideos := TXcomRuleRegistry<TXcomRuleVideo>.Create(
     function(AType: string): TXcomRuleVideo begin Result := TXcomRuleVideo.Create(AType); end);
   FConverter := TXcomRuleConverter.Create;
+  FGlobe := TXcomRuleGlobe.Create(AFiles);
   FConstants := TXcomModConstants.Create;
   FSettings := TXcomRulesetSettings.Create;
   FStartingBase := TXcomStringMap<IYamlNode>.Create;
@@ -284,6 +288,7 @@ begin
   FStartingBase.Free;
   FSettings.Free;
   FConstants.Free;
+  FGlobe.Free;
   FConverter.Free;
   FVideos.Free;
   FInterfaces.Free;
@@ -593,6 +598,9 @@ begin
     if Assigned(LInterface) then
       LInterface.Load(LItem);
   end;
+  LField := TXcomNodeReader.Field(ADocument, 'globe');
+  if LField.IsDefined then
+    FGlobe.Load(LField);
   LField := TXcomNodeReader.Field(ADocument, 'converter');
   if LField.IsDefined then
     FConverter.Load(LField);

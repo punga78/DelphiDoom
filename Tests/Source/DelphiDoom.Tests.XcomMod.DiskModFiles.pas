@@ -29,6 +29,7 @@ type
     constructor Create(const ARoots: TArray<string>; const AParser: IYamlParser);
     function FolderContents(const AVirtualFolder: string): TArray<string>;
     function LoadYaml(const AVirtualFile: string): IYamlNode;
+    function LoadBytes(const AVirtualFile: string): TBytes;
   end;
 
 implementation
@@ -76,6 +77,19 @@ begin
     LPath := IncludeTrailingPathDelimiter(LRoot) + StringReplace(AVirtualFile, '/', '\', [rfReplaceAll]);
     if FileExists(LPath) then
       Exit(FParser.LoadFile(LPath));
+  end;
+  raise EXcomModException.CreateFmt('File %s not found', [AVirtualFile]);
+end;
+
+function TXcomDiskModFiles.LoadBytes(const AVirtualFile: string): TBytes;
+var
+  LRoot, LPath: string;
+begin
+  for LRoot in FRoots do
+  begin
+    LPath := IncludeTrailingPathDelimiter(LRoot) + StringReplace(AVirtualFile, '/', '\', [rfReplaceAll]);
+    if FileExists(LPath) then
+      Exit(TFile.ReadAllBytes(LPath));
   end;
   raise EXcomModException.CreateFmt('File %s not found', [AVirtualFile]);
 end;

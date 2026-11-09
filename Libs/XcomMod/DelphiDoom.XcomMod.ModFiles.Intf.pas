@@ -11,7 +11,7 @@ unit DelphiDoom.XcomMod.ModFiles.Intf;
 interface
 
 uses
-  DelphiDoom.Yaml.Intf;
+  System.SysUtils, DelphiDoom.Yaml.Intf;
 
 type
   /// <summary>
@@ -24,6 +24,8 @@ type
     function FolderContents(const AVirtualFolder: string): TArray<string>;
     /// <summary>getFilePath + LoadFile: the YAML document of a virtual file</summary>
     function LoadYaml(const AVirtualFile: string): IYamlNode;
+    /// <summary>getFilePath + the bytes of the file (the data of the globe); a missing file is EXcomModException</summary>
+    function LoadBytes(const AVirtualFile: string): TBytes;
   end;
 
 implementation

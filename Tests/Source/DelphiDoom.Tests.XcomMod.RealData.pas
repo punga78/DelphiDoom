@@ -229,6 +229,8 @@ begin
         LRoots.Insert(0, ExtractFilePath(LSources[LIndex].Files[0]));
     end;
     LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'common');
+    // the data folder of the game (GEODATA\WORLD.DAT of the globe)
+    LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'TFTD');
     LLoader := TXcomModLoader.Create(TYamlFactory.CreateDiskParser, TXcomGoldenShared.Create(FSprites, FSounds),
       TXcomDiskModFiles.Create(LRoots.ToArray, TYamlFactory.CreateDiskParser));
   finally

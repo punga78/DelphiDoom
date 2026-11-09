@@ -355,6 +355,58 @@ static void DumpInterfacesEtc(Mod* m) {
       Line(("slide" + std::to_string(i)).c_str(), V(s.imagePath) + "," + V(s.caption) + "," + V(s.w) + "," + V(s.h) + "," + V(s.x) + "," + V(s.y) + "," + V(s.color) + "," + V((int)s.align) + "," + V(s.transitionSeconds));
     }
   }
+  RuleGlobe* gl = m->_globe;
+  Begin("globe", "data");
+  {
+    // FNV-1a 64 over the points of every polygon (count, texture, longitudes and latitudes as bits)
+    unsigned long long h = 14695981039346656037ULL;
+    auto mix = [&h](const void* p, size_t n) { const unsigned char* b = (const unsigned char*)p; for (size_t k = 0; k < n; k++) { h ^= b[k]; h *= 1099511628211ULL; } };
+    size_t first = 0;
+    for (std::list<Polygon*>::iterator i = gl->_polygons.begin(); i != gl->_polygons.end(); ++i, first++) {
+      Polygon* pg = *i;
+      int pts = pg->_points, tex = pg->_texture;
+      mix(&pts, 4); mix(&tex, 4);
+      for (int k = 0; k < pts; k++) { mix(&pg->_lon[k], 8); mix(&pg->_lat[k], 8); }
+      if (first < 3 || first + 3 >= gl->_polygons.size()) {
+        std::string t = V(pts) + "," + V(tex);
+        for (int k = 0; k < pts; k++) t += "," + V(pg->_lon[k]) + "," + V(pg->_lat[k]);
+        Line(("polygon" + std::to_string(first)).c_str(), t);
+      }
+    }
+    F("polygons", gl->_polygons.size());
+    char hb[32]; snprintf(hb, sizeof hb, "%016llX", h); Line("polygonHash", hb);
+    h = 14695981039346656037ULL;
+    for (std::list<Polyline*>::iterator i = gl->_polylines.begin(); i != gl->_polylines.end(); ++i) {
+      Polyline* pl = *i;
+      int pts = pl->_points;
+      mix(&pts, 4);
+      for (int k = 0; k < pts; k++) { mix(&pl->_lon[k], 8); mix(&pl->_lat[k], 8); }
+    }
+    F("polylines", gl->_polylines.size());
+    snprintf(hb, sizeof hb, "%016llX", h); Line("polylineHash", hb);
+  }
+  F("countryColor", (int)Globe::COUNTRY_LABEL_COLOR); F("cityColor", (int)Globe::CITY_LABEL_COLOR);
+  F("baseColor", (int)Globe::BASE_LABEL_COLOR); F("lineColor", (int)Globe::LINE_COLOR);
+  F("oceanColor", (int)Globe::OCEAN_COLOR); F("oceanShading", Globe::OCEAN_SHADING);
+  for (std::map<int, Texture*>::iterator i = gl->_textures.begin(); i != gl->_textures.end(); ++i) {
+    Texture* t = i->second;
+    Begin("textures", std::to_string(i->first));
+    F("id", t->_id); F("deployments", t->_deployments);
+    Line("count", V((int)t->_terrain.size()));
+    for (size_t k = 0; k < t->_terrain.size(); k++) {
+      TerrainCriteria& c = t->_terrain[k];
+      Line(("t" + std::to_string(k)).c_str(), V(c.name) + "," + V(c.weight) + "," + V(c.lonMin) + "," + V(c.lonMax) + "," + V(c.latMin) + "," + V(c.latMax));
+    }
+  }
+  {
+    // getTerrains("") and the terrains of every deployment of the textures
+    std::set<std::string> names;
+    for (std::map<int, Texture*>::iterator i = gl->_textures.begin(); i != gl->_textures.end(); ++i)
+      for (std::map<std::string, int>::const_iterator d = i->second->_deployments.begin(); d != i->second->_deployments.end(); ++d) names.insert(d->first);
+    Begin("globeTerrains", "all");
+    Line("none", V(gl->getTerrains("")));
+    for (std::set<std::string>::iterator n = names.begin(); n != names.end(); ++n) Line(("d_" + Esc(*n)).c_str(), V(gl->getTerrains(*n)));
+  }
   RuleConverter* c = m->_converter;
   Begin("converter", "data");
   F("offsets", c->_offsets); F("markers", c->_markers); F("countries", c->_countries); F("regions", c->_regions);
