@@ -37,12 +37,14 @@ type
     constructor Create(const AParser: IDefAnimDefsParser; const ALumps: IEngineLumps;
       const AShutdown: IEngineShutdown);
     procedure Load;
+    procedure Release;
   end;
 
 implementation
 
 uses
   System.SysUtils,
+  d_delphi,
   r_data,
   p_animdefs,
   DelphiDoom.Definitions.Types;
@@ -79,6 +81,11 @@ var
   LIndex: Integer;
   LInner: Integer;
 begin
+  // the lists exist even when the game has no ANIMDEFS (r_data reads them)
+  if animatedflatslist = nil then
+    animatedflatslist := TDNumberList.Create;
+  if animatedtextureslist = nil then
+    animatedtextureslist := TDNumberList.Create;
   LLump := FLumps.CheckNumForName(ANIM_SCRIPT_NAME);
   if LLump < 0 then
     Exit;
@@ -132,6 +139,12 @@ begin
     Inc(AnimDefCount);
     Inc(LAnimation);
   end;
+end;
+
+procedure TEngineAnimDefsLoader.Release;
+begin
+  FreeAndNil(animatedflatslist);
+  FreeAndNil(animatedtextureslist);
 end;
 
 end.

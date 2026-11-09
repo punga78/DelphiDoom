@@ -24,6 +24,7 @@ uses
   DelphiDoom.Voxel.Intf,
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.Pak.Intf,
+  DelphiDoom.Platform.Intf,
   DelphiDoom.Engine.Wad.Lumps.Intf;
 
 type
@@ -44,6 +45,7 @@ type
     FPakFiles: IPakFileSystem;
     FSaveFileNames: ISaveFileNames;
     FLumps: IEngineLumps;
+    FTempFiles: ITempFiles;
     function CollectNames: IVoxelSpriteNames;
     function BuildWadFile(const ANames: IVoxelSpriteNames; const AGenerate: Boolean): string;
   public
@@ -52,10 +54,12 @@ type
     /// <param name="APakFiles">The PAK file system whose files are looked at</param>
     /// <param name="ASaveFileNames">Puts DATA\ in the working folder of the CD-ROM when needed</param>
     /// <param name="ALumps">Loads the generated WAD at runtime</param>
+    /// <param name="ATempFiles">Remembers the generated WAD (deleted at the shut down)</param>
     constructor Create(const ALoader: IVoxelLoader; const ACubes: IVoxelCubeBuilder;
       const APatches: IVoxelPatchBuilder; const ANewNames: TFunc<IVoxelSpriteNames>;
       const AGenerateOption: TFunc<Boolean>; const APakFiles: IPakFileSystem;
-      const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps);
+      const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps;
+      const ATempFiles: ITempFiles);
     procedure Generate;
   end;
 
@@ -64,7 +68,6 @@ implementation
 uses
   d_delphi,
   doomdef,
-  i_tmp,
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
   w_wadwriter;
@@ -109,9 +112,12 @@ constructor TEngineVoxelSpriteGenerator.Create(const ALoader: IVoxelLoader;
   const ACubes: IVoxelCubeBuilder; const APatches: IVoxelPatchBuilder;
   const ANewNames: TFunc<IVoxelSpriteNames>; const AGenerateOption: TFunc<Boolean>;
   const APakFiles: IPakFileSystem; const ASaveFileNames: ISaveFileNames;
-  const ALumps: IEngineLumps);
+  const ALumps: IEngineLumps; const ATempFiles: ITempFiles);
 begin
   inherited Create;
+  if not Assigned(ATempFiles) then
+    raise EArgumentNilException.Create('ATempFiles');
+  FTempFiles := ATempFiles;
   if not Assigned(APakFiles) then
     raise EArgumentNilException.Create('APakFiles');
   if not Assigned(ASaveFileNames) then
@@ -206,7 +212,7 @@ begin
 
   LWadFileName := BuildWadFile(LNames, FGenerateOption());
   FLumps.RuntimeLoadFile(LWadFileName);
-  I_DeclareTempFile(LWadFileName);
+  FTempFiles.Declare(LWadFileName);
 end;
 
 end.

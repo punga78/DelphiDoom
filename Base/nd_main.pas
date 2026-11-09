@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  GL nodes: the structures of the lumps of glBSP, the GL vertexes and the node builder
+//  GL nodes: the structures of the lumps of glBSP, and the GL vertexes (glBSP is run by TEngineGlbspRunner)
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -38,8 +38,7 @@ uses
   d_delphi,
   doomdata,
   r_defs,
-  m_fixed,
-  DelphiDoom.Glbsp.Client;
+  m_fixed;
 
 var
   glnodesver: integer = 0;
@@ -344,31 +343,11 @@ type
 //==============================================================================
 procedure gld_GetGLVertexes(v: Pvertex_t; lump: integer; count: integer; ver: integer);
 
-//==============================================================================
-//
-// gld_BuildNodes
-//
-//==============================================================================
-function gld_BuildNodes(const wadfile, gwafile: string): boolean;
-
-//==============================================================================
-//
-// ND_RunGlbsp
-//
-// Runs the node builder; what it prints goes to the log, as it did when the
-// program was started from the engine
-//
-//==============================================================================
-function ND_RunGlbsp(const wadfile, gwafile: string; const options: TGlbspOptions): boolean;
-
 implementation
 
 uses
-  DelphiDoom.Glbsp.Intf,
-  DelphiDoom.Glbsp.Provider,
   DelphiDoom.Nodes.Types,
   DelphiDoom.Nodes.GlParser,
-  i_system,
   w_wad;
 
 //==============================================================================
@@ -397,43 +376,6 @@ begin
     v.y := glverts[i].Y;
     inc(v);
   end;
-end;
-
-//==============================================================================
-//
-// ND_RunGlbsp
-//
-//==============================================================================
-function ND_RunGlbsp(const wadfile, gwafile: string; const options: TGlbspOptions): boolean;
-begin
-  try
-    TGlbspProvider.Client.BuildNodes(wadfile, gwafile, options,
-      GLBSP_MAX_TIMEOUT_MS);
-    result := True;
-  except
-    on E: EGlbspException do
-    begin
-      result := False;
-      printf('%s'#13#10, [E.Message]);
-    end;
-  end;
-  if TGlbspProvider.Client.Output <> '' then
-    printf('%s', [TGlbspProvider.Client.Output]);
-end;
-
-//==============================================================================
-//
-// gld_BuildNodes
-//
-//==============================================================================
-function gld_BuildNodes(const wadfile, gwafile: string): boolean;
-begin
-  printf(#13#10'  gld_BuildNodes: Building GL-Friendly nodes for %s'#13#10, [wadfile]);
-  result := ND_RunGlbsp(wadfile, gwafile, [goQuiet, goNoProgress
-    {$IFDEF HEXEN}, goHexen{$ENDIF}]);
-  printf(#13#10);
-  if not result then
-    I_Warning('gld_BuildNodes(): Failed to build GL-Friendly nodes for %s'#13#10, [wadfile]);
 end;
 
 end.

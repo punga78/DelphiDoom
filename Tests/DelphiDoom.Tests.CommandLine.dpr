@@ -23,9 +23,15 @@ uses
   DelphiDoom.CommandLine.Queried in '..\Libs\CommandLine\DelphiDoom.CommandLine.Queried.pas',
   DelphiDoom.CommandLine.SaveFileNames in '..\Libs\CommandLine\DelphiDoom.CommandLine.SaveFileNames.pas',
   DelphiDoom.CommandLine.Factory in '..\Libs\CommandLine\DelphiDoom.CommandLine.Factory.pas',
+  DelphiDoom.CommandLine.ResponseFile in '..\Libs\CommandLine\DelphiDoom.CommandLine.ResponseFile.pas',
+  DelphiDoom.CommandLine.FileList in '..\Libs\CommandLine\DelphiDoom.CommandLine.FileList.pas',
+  DelphiDoom.Logging.Types in '..\Libs\Logging\DelphiDoom.Logging.Types.pas',
+  DelphiDoom.Logging.Intf in '..\Libs\Logging\DelphiDoom.Logging.Intf.pas',
   DelphiDoom.Tests.CommandLine.Arguments in 'Source\DelphiDoom.Tests.CommandLine.Arguments.pas',
   DelphiDoom.Tests.CommandLine.DefaultFile in 'Source\DelphiDoom.Tests.CommandLine.DefaultFile.pas',
   DelphiDoom.Tests.CommandLine.Builder in 'Source\DelphiDoom.Tests.CommandLine.Builder.pas',
+  DelphiDoom.Tests.CommandLine.ResponseFile in 'Source\DelphiDoom.Tests.CommandLine.ResponseFile.pas',
+  DelphiDoom.Tests.CommandLine.FileList in 'Source\DelphiDoom.Tests.CommandLine.FileList.pas',
   DelphiDoom.Tests.CommandLine.Queried in 'Source\DelphiDoom.Tests.CommandLine.Queried.pas',
   DelphiDoom.Tests.CommandLine.SaveFileNames in 'Source\DelphiDoom.Tests.CommandLine.SaveFileNames.pas';
 

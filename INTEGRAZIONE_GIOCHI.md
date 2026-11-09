@@ -98,6 +98,7 @@ Formati: `KDREAMS.EGA/MAP/AUD`, mappa = Huffman poi RLEW (`id_ca.c:309,524,1436`
 
 **Come integrarlo.** Eseguibile separato `Keen32` con `Libs\Keen` e composition root proprio; **non** estendere `TIdTechGeneration` (Keen non è id Tech 1). Traduzione con l'agente `c-to-delphi-translator`. Trappole: `int`/`unsigned` a 16 bit, puntatori far, tabelle di stati con puntatori a funzione, asm. **`bcc32c` non compila l'asm a 16 bit**: gli oracoli vanno scritti a mano in C o presi da DOSBox.
 Fette K0-K12 (circa 20-25 giorni); giocabile senza AdLib in circa 12 giorni (K0-K9); le più pesanti K6 (sprite e scroll), K8 (gioco a classi), K10 (OPL2), tutte XL.
+**Stato (issue #165): K0-K4 fatte** in `Libs\Keen` e `Keen\Keen32` (Huffman, RLEW, file a chunk, mappe, tile, EGA planare → pixel, PNG della mappa), 170 test, parità con `kdgold.exe` sui dati shareware 1.13; resta K5-K12. Dettagli in `Libs\Keen\README.md`.
 **Dati mancanti:** `KDREAMS.EGA`, `KDREAMS.MAP`, `KDREAMS.AUD` (e `KDREAMS.CMP`), coerenti con i `static\*.KDR` (versione 1.93 EGA).
 
 ## 5. OpenXcom

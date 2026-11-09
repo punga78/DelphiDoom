@@ -25,6 +25,9 @@ uses
   DelphiDoom.Video.WindowsDisplayModeSource in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayModeSource.pas',
   DelphiDoom.Video.Services in '..\Libs\Video\DelphiDoom.Video.Services.pas',
   DelphiDoom.Video.Factory in '..\Libs\Video\DelphiDoom.Video.Factory.pas',
+  DelphiDoom.CommandLine.Intf in '..\Libs\CommandLine\DelphiDoom.CommandLine.Intf.pas',
+  DelphiDoom.Video.ScreenSizeResolver in '..\Libs\Video\DelphiDoom.Video.ScreenSizeResolver.pas',
+  DelphiDoom.Tests.Video.ScreenSizeResolver in 'Source\DelphiDoom.Tests.Video.ScreenSizeResolver.pas',
   DelphiDoom.Tests.Video.Services in 'Source\DelphiDoom.Tests.Video.Services.pas',
   DelphiDoom.Tests.Video.DisplayModeCatalog in 'Source\DelphiDoom.Tests.Video.DisplayModeCatalog.pas',
   DelphiDoom.Tests.Video.WindowsDisplayModeSource in 'Source\DelphiDoom.Tests.Video.WindowsDisplayModeSource.pas';
