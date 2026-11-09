@@ -87,7 +87,13 @@ uses
   doomdef,
   gl_defs,
   i_system,
-  vx_base;
+  vx_base,
+  DelphiDoom.Voxel.MeshTypes,
+  DelphiDoom.Voxel.MeshRenderer.Intf,
+  DelphiDoom.Voxel.MeshOptimizer,
+  DelphiDoom.Voxel.MeshKvxMap,
+  DelphiDoom.Voxel.MeshDdvoxMap,
+  DelphiDoom.Engine.Voxel.MeshRenderer;
 
 var
   vx_membuffer: pointer = nil;
@@ -113,779 +119,45 @@ type
   voxelbuffer_p = ^voxelbuffer_t;
 
 // jval
-//  class TVoxelMeshOptimizer()
-//  Mesh reducer for voxels
-//  Optimize() method gives excellent results, but unfortunatelly is slow.
-//  FastOptimize() method gives acceptable results and works significally faster
-//  Note: I must make voxelquad_t a class, but never mind, it works :)
-//
-type
-  voxelvertex_t = record
-    x, y, z: float;
-  end;
-  voxelvertex_p = ^voxelvertex_t;
-
-  voxelquad_t = record
-    color: GLuint;
-    vertexes: array[0..3] of voxelvertex_t;
-    valid: Boolean;
-    orientation: Char;
-  end;
-
-  voxelquad_p = ^voxelquad_t;
-  voxelquad_a = array[0..$FFF] of voxelquad_t;
-  voxelquad_pa = ^voxelquad_a;
-
-  TVoxelMeshOptimizer = class
-  private
-    fquads: voxelquad_pa;
-    fnumquads: integer;
-    frealnumquads: integer;
-    procedure Grow;
-    procedure TryMergeQuads(const q1, q2: voxelquad_p);
-    procedure SortQuadVertexes(const q: voxelquad_p);
-    procedure InnerOptimize;
-  protected
-    procedure RenderVertexGL(const v: voxelvertex_p); virtual;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    procedure AddQuad(const c: GLuint; const x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3: float);
-    procedure Optimize;
-    procedure FastOptimize;
-    procedure RenderGL;
-    property quads: voxelquad_pa read fquads;
-    property numquads: integer read fnumquads;
-  end;
-
-  TVoxelMeshOptimizerKVX = class(TVoxelMeshOptimizer)
-  protected
-    procedure RenderVertexGL(const v: voxelvertex_p); override;
-  end;
-
-  TVoxelMeshOptimizerDDVOX = class(TVoxelMeshOptimizer)
-  protected
-    midx, midy, midz: float;
-    step: float;
-    procedure RenderVertexGL(const v: voxelvertex_p); override;
-  end;
-
 //==============================================================================
 //
-// TVoxelMeshOptimizer.Create
+// gld_BuildMeshList
+// Optimizes the mesh and compiles it into a display list (vx_maxoptimizerpasscount = 0
+// is the fast optimizer)
 //
 //==============================================================================
-constructor TVoxelMeshOptimizer.Create;
-begin
-  fquads := nil;
-  fnumquads := 0;
-  frealnumquads := 0;
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.Destroy
-//
-//==============================================================================
-destructor TVoxelMeshOptimizer.Destroy;
-begin
-  memfree(Pointer(fquads), frealnumquads * SizeOf(voxelquad_t));
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.AddQuad
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.AddQuad(const c: GLuint; const x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3: float);
+function gld_BuildMeshList(const vmx: TVoxelMeshOptimizer; const map: IVoxelMeshVertexMap): GLuint;
 var
-  q: voxelquad_p;
-begin
-  Grow;
-  q := @fquads[fnumquads - 1];
-  q.color := c;
-  q.vertexes[0].x := x0;
-  q.vertexes[0].y := y0;
-  q.vertexes[0].z := z0;
-  q.vertexes[1].x := x1;
-  q.vertexes[1].y := y1;
-  q.vertexes[1].z := z1;
-  q.vertexes[2].x := x2;
-  q.vertexes[2].y := y2;
-  q.vertexes[2].z := z2;
-  q.vertexes[3].x := x3;
-  q.vertexes[3].y := y3;
-  q.vertexes[3].z := z3;
-  q.valid := true;
-  if (x0 = x1) and (x0 = x2) and (x0 = x3) then
-    q.orientation := 'x'
-  else if (y0 = y1) and (y0 = y2) and (y0 = y3) then
-    q.orientation := 'y'
-  else if (z0 = z1) and (z0 = z2) and (z0 = z3) then
-    q.orientation := 'z'
-  else
-  begin
-    q.orientation := ' ';
-    q.valid := false;
-  end;
-end;
-
-const
-  VXOGROWSTEP = 256;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.Grow
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.Grow;
-begin
-  Inc(fnumquads);
-  if fnumquads > frealnumquads then
-  begin
-    realloc(Pointer(fquads), frealnumquads * SizeOf(voxelquad_t), (frealnumquads + VXOGROWSTEP) * SizeOf(voxelquad_t));
-    frealnumquads := frealnumquads + VXOGROWSTEP;
-  end;
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.SortQuadVertexes
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.SortQuadVertexes(const q: voxelquad_p);
-var
-  i, si: integer;
-  sorttbl: array[0..3] of integer;
-  mid1, mid2: float;
-  v: voxelvertex_t;
-  vp: voxelvertex_p;
-  done: boolean;
-begin
-  mid1 := 0;
-  mid2 := 0;
-  if q.orientation = 'x' then
-  begin
-    for i := 0 to 3 do
-    begin
-      mid1 := mid1 + q.vertexes[i].y;
-      mid2 := mid2 + q.vertexes[i].z;
-    end;
-    mid1 := mid1 / 4;
-    mid2 := mid2 / 4;
-    vp := @q.vertexes[0];
-    for i := 0 to 3 do
-    begin
-      if vp.y < mid1 then
-      begin
-        if vp.z < mid2 then
-          sorttbl[i] := 0
-        else
-          sorttbl[i] := 1;
-      end
-      else
-      begin
-        if vp.z < mid2 then
-          sorttbl[i] := 3
-        else
-          sorttbl[i] := 2;
-      end;
-      inc(vp);
-    end;
-    repeat
-      done := true;
-      for i := 0 to 3 do
-        if sorttbl[i] <> i then
-        begin
-          v := q.vertexes[i];
-          si := sorttbl[i];
-          q.vertexes[i] := q.vertexes[si];
-          q.vertexes[si] := v;
-          sorttbl[si] := si;
-          sorttbl[i] := i;
-          done := false;
-          break;
-        end;
-    until done;
-  end
-  else if q.orientation = 'y' then
-  begin
-    for i := 0 to 3 do
-    begin
-      mid1 := mid1 + q.vertexes[i].x;
-      mid2 := mid2 + q.vertexes[i].z;
-    end;
-    mid1 := mid1 / 4;
-    mid2 := mid2 / 4;
-    vp := @q.vertexes[0];
-    for i := 0 to 3 do
-    begin
-      if vp.x < mid1 then
-      begin
-        if vp.z < mid2 then
-          sorttbl[i] := 0
-        else
-          sorttbl[i] := 1;
-      end
-      else
-      begin
-        if vp.z < mid2 then
-          sorttbl[i] := 3
-        else
-          sorttbl[i] := 2;
-      end;
-      inc(vp);
-    end;
-    repeat
-      done := true;
-      for i := 0 to 3 do
-        if sorttbl[i] <> i then
-        begin
-          v := q.vertexes[i];
-          si := sorttbl[i];
-          q.vertexes[i] := q.vertexes[si];
-          q.vertexes[si] := v;
-          sorttbl[si] := si;
-          sorttbl[i] := i;
-          done := false;
-          break;
-        end;
-    until done;
-  end
-  else if q.orientation = 'z' then
-  begin
-    for i := 0 to 3 do
-    begin
-      mid1 := mid1 + q.vertexes[i].x;
-      mid2 := mid2 + q.vertexes[i].y;
-    end;
-    mid1 := mid1 / 4;
-    mid2 := mid2 / 4;
-    vp := @q.vertexes[0];
-    for i := 0 to 3 do
-    begin
-      if vp.x < mid1 then
-      begin
-        if vp.y < mid2 then
-          sorttbl[i] := 0
-        else
-          sorttbl[i] := 1;
-      end
-      else
-      begin
-        if vp.y < mid2 then
-          sorttbl[i] := 3
-        else
-          sorttbl[i] := 2;
-      end;
-      inc(vp);
-    end;
-    repeat
-      done := true;
-      for i := 0 to 3 do
-        if sorttbl[i] <> i then
-        begin
-          v := q.vertexes[i];
-          si := sorttbl[i];
-          q.vertexes[i] := q.vertexes[si];
-          q.vertexes[si] := v;
-          sorttbl[si] := si;
-          sorttbl[i] := i;
-          done := false;
-          break;
-        end;
-    until done;
-  end;
-
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.Optimize
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.Optimize;
-var
-  cnt: integer;
-  oldnumquads: integer;
-  passc: integer;
+  optimized: TVoxelMeshOptimizeResult;
+  renderer: IVoxelMeshRenderer;
 begin
   vx_maxoptimizerpasscount := GetIntegerInRange(vx_maxoptimizerpasscount, 0, MAX_VX_OPTIMIZE);
-
-  if vx_maxoptimizerpasscount = 0 then
+  optimized := vmx.Optimize(vx_maxoptimizerpasscount);
+  if optimized.Kind = vokFast then
   begin
-    FastOptimize;
-    exit;
-  end;
-
-  oldnumquads := fnumquads;
-  passc := 0;
-  repeat
-    cnt := fnumquads;
-    InnerOptimize;
-    inc(passc);
-    if passc = vx_maxoptimizerpasscount then
-      break;
-  until cnt = fnumquads;
-  if oldnumquads > fnumquads then
-    printf('    TVoxelMeshOptimizer.Optimize(): Mesh reduced from %d to %d quads, pass count = %d.'#13#10, [oldnumquads, fnumquads, passc])
-  else
-    printf('    TVoxelMeshOptimizer.Optimize(): Can not reduce mesh complexity, size is %d quads.'#13#10, [fnumquads]);
-end;
-
-const
-  FASTOPTIMIZEAHEAD = 128;
-
-//==============================================================================
-// TVoxelMeshOptimizer.FastOptimize
-//
-// As simple as it looks, we check only the next FASTOPTIMIZEAHEAD quads of the array
-// FastOptimize() reduces a typical voxel mesh fast.
-// Optimize() reduces the mesh about 50% - 60% more than FastOptimize() but it's much slower,
-// we can' afford it at load time
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.FastOptimize;
-var
-  i, j: integer;
-  q1, q2: voxelquad_p;
-  ori: Char;
-  c: GLuint;
-  fnewquads: voxelquad_pa;
-  fnewnumquads: integer;
-  fnewrealnumquads: integer;
-  oldnumquads: integer;
-begin
-  oldnumquads := fnumquads;
-  for i := 0 to fnumquads - FASTOPTIMIZEAHEAD - 1 do
-  begin
-    q1 := @fquads[i];
-    if q1.valid then
-    begin
-      ori := q1.orientation;
-      c := q1.color;
-      for j := i + 1 to i + FASTOPTIMIZEAHEAD do
-      begin
-        q2 := @fquads[j];
-        if q2.valid then
-          if (q2.orientation = ori) and (q2.color = c) then
-            TryMergeQuads(q1, q2);
-      end;
-    end;
-  end;
-
-  fnewnumquads := 0;
-  for i := 0 to fnumquads - 1 do
-    if fquads[i].valid then
-      Inc(fnewnumquads);
-
-  fnewrealnumquads := (fnewnumquads + VXOGROWSTEP) and (not (VXOGROWSTEP - 1));
-
-  if fnewrealnumquads = frealnumquads then
-  begin
-    j := 0;
-    for i := 0 to fnumquads - 1 do
-    begin
-      q1 := @fquads[i];
-      if q1.valid then
-        if i <> j then
-        begin
-          fquads[j] := q1^;
-          SortQuadVertexes(@fquads[j]);
-          Inc(j);
-        end;
-    end;
+    if optimized.OldQuadCount > optimized.NewQuadCount then
+      printf('    TVoxelMeshOptimizer.FastOptimize(): Mesh reduced from %d to %d quads.'#13#10, [optimized.OldQuadCount, optimized.NewQuadCount])
+    else
+      printf('    TVoxelMeshOptimizer.FastOptimize(): Can not reduce mesh complexity, size is %d quads.'#13#10, [optimized.NewQuadCount]);
   end
   else
   begin
-    fnewquads := malloc(fnewrealnumquads * SizeOf(voxelquad_t));
-
-    q2 := @fnewquads[0];
-
-    for i := 0 to fnumquads - 1 do
-    begin
-      q1 := @fquads[i];
-      if q1.valid then
-      begin
-        q2^ := q1^;
-        SortQuadVertexes(q2);
-        Inc(q2);
-      end;
-    end;
-
-    memfree(Pointer(fquads), frealnumquads * SizeOf(voxelquad_t));
-    fquads := fnewquads;
-    fnumquads := fnewnumquads;
-    frealnumquads := fnewrealnumquads;
-  end;
-  if oldnumquads > fnumquads then
-    printf('    TVoxelMeshOptimizer.FastOptimize(): Mesh reduced from %d to %d quads.'#13#10, [oldnumquads, fnumquads])
-  else
-    printf('    TVoxelMeshOptimizer.FastOptimize(): Can not reduce mesh complexity, size is %d quads.'#13#10, [fnumquads]);
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.InnerOptimize
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.InnerOptimize;
-var
-  i, j: integer;
-  q1, q2: voxelquad_p;
-  ori: Char;
-  c: GLuint;
-  fnewquads: voxelquad_pa;
-  fnewnumquads: integer;
-  fnewrealnumquads: integer;
-begin
-  for i := 0 to fnumquads - 2 do
-  begin
-    q1 := @fquads[i];
-    if q1.valid then
-    begin
-      ori := q1.orientation;
-      c := q1.color;
-      for j := i + 1 to fnumquads - 1 do
-      begin
-        q2 := @fquads[j];
-        if q2.valid then
-          if (q2.orientation = ori) and (q2.color = c) then
-            TryMergeQuads(q1, q2);
-      end;
-    end;
+    if optimized.OldQuadCount > optimized.NewQuadCount then
+      printf('    TVoxelMeshOptimizer.Optimize(): Mesh reduced from %d to %d quads, pass count = %d.'#13#10, [optimized.OldQuadCount, optimized.NewQuadCount, optimized.Passes])
+    else
+      printf('    TVoxelMeshOptimizer.Optimize(): Can not reduce mesh complexity, size is %d quads.'#13#10, [optimized.NewQuadCount]);
   end;
 
-  fnewnumquads := 0;
-  for i := 0 to fnumquads - 1 do
-    if fquads[i].valid then
-      Inc(fnewnumquads);
+  result := glGenLists(1);
 
-  fnewrealnumquads := (fnewnumquads + VXOGROWSTEP) and (not (VXOGROWSTEP - 1));
+  glNewList(result, GL_COMPILE);
 
-  if fnewrealnumquads = frealnumquads then
-  begin
-    j := 0;
-    for i := 0 to fnumquads - 1 do
-    begin
-      q1 := @fquads[i];
-      if q1.valid then
-        if i <> j then
-        begin
-          fquads[j] := q1^;
-          SortQuadVertexes(@fquads[j]);
-          Inc(j);
-        end;
-    end;
-  end
-  else
-  begin
-    fnewquads := malloc(fnewrealnumquads * SizeOf(voxelquad_t));
+    renderer := TEngineVoxelMeshRenderer.Create;
+    vmx.Render(renderer, map);
 
-    q2 := @fnewquads[0];
-
-    for i := 0 to fnumquads - 1 do
-    begin
-      q1 := @fquads[i];
-      if q1.valid then
-      begin
-        q2^ := q1^;
-        SortQuadVertexes(q2);
-        Inc(q2);
-      end;
-    end;
-
-    memfree(Pointer(fquads), frealnumquads * SizeOf(voxelquad_t));
-    fquads := fnewquads;
-    fnumquads := fnewnumquads;
-    frealnumquads := fnewrealnumquads;
-  end;
+  glEndList;
 end;
 
-//==============================================================================
-// TVoxelMeshOptimizer.TryMergeQuads
-//
-// jval
-// Check if q1 & q2 quads can be merged to reduce mesh complexity
-// Merged quad returned to q1, q2 is flaged as invalid (we will remove it later from list)
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.TryMergeQuads(const q1, q2: voxelquad_p);
-var
-  match1, match2: array[0..3] of integer; // Matching points
-  cnt: integer;
-  i, j: integer;
-  i2a, i2b: integer;
-  x, y, z: float;
-  vp: voxelvertex_p;
-begin
-  for i := 0 to 3 do
-  begin
-    match1[i] := -1;
-    match2[i] := -1;
-  end;
-  if q1.orientation = 'x' then
-  begin
-    if q1.vertexes[0].x <> q2.vertexes[0].x then
-      exit;
-    for i := 0 to 3 do
-    begin
-      y := q1.vertexes[i].y;
-      z := q1.vertexes[i].z;
-      vp := @q2.vertexes[0];
-      for j := 0 to 3 do
-      begin
-        if (y = vp.y) and (z = vp.z) then
-        begin
-          match1[i] := j;
-          match2[j] := i;
-        end;
-        inc(vp);
-      end;
-    end;
-
-    cnt := 0;
-    for i := 0 to 3 do
-      if match1[i] = -1 then
-        Inc(cnt);
-    if cnt = 2 then
-    begin
-      i2a := -1;
-      for i := 0 to 3 do
-        if match2[i] = -1 then
-        begin
-          i2a := i;
-          Break;
-        end;
-      i2b := -1;
-      for i := 3 downto 0 do
-        if match2[i] = -1 then
-        begin
-          i2b := i;
-          Break;
-        end;
-
-      if (i2a <> -1) and (i2a <> i2b) then
-      begin
-        for i := 0 to 3 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].y := q2.vertexes[i2a].y;
-            q1.vertexes[i].z := q2.vertexes[i2a].z;
-            break;
-          end;
-        for i := 3 downto 0 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].y := q2.vertexes[i2b].y;
-            q1.vertexes[i].z := q2.vertexes[i2b].z;
-            break;
-          end;
-        q2.valid := false;
-      end;
-    end;
-  end
-  else if q1.orientation = 'y' then
-  begin
-    if q1.vertexes[0].y <> q2.vertexes[0].y then
-      exit;
-    for i := 0 to 3 do
-    begin
-      x := q1.vertexes[i].x;
-      z := q1.vertexes[i].z;
-      vp := @q2.vertexes[0];
-      for j := 0 to 3 do
-      begin
-        if (x = vp.x) and (z = vp.z) then
-        begin
-          match1[i] := j;
-          match2[j] := i;
-        end;
-        inc(vp);
-      end;
-    end;
-
-    cnt := 0;
-    for i := 0 to 3 do
-      if match1[i] = -1 then
-        Inc(cnt);
-    if cnt = 2 then
-    begin
-      i2a := -1;
-      for i := 0 to 3 do
-        if match2[i] = -1 then
-        begin
-          i2a := i;
-          Break;
-        end;
-      i2b := -1;
-      for i := 3 downto 0 do
-        if match2[i] = -1 then
-        begin
-          i2b := i;
-          Break;
-        end;
-
-      if (i2a <> -1) and (i2a <> i2b) then
-      begin
-        for i := 0 to 3 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].x := q2.vertexes[i2a].x;
-            q1.vertexes[i].z := q2.vertexes[i2a].z;
-            break;
-          end;
-        for i := 3 downto 0 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].x := q2.vertexes[i2b].x;
-            q1.vertexes[i].z := q2.vertexes[i2b].z;
-            break;
-          end;
-        q2.valid := false;
-      end;
-    end;
-  end
-  else if q1.orientation = 'z' then
-  begin
-    if q1.vertexes[0].z <> q2.vertexes[0].z then
-      exit;
-    for i := 0 to 3 do
-    begin
-      x := q1.vertexes[i].x;
-      y := q1.vertexes[i].y;
-      vp := @q2.vertexes[0];
-      for j := 0 to 3 do
-      begin
-        if (x = vp.x) and (y = vp.y) then
-        begin
-          match1[i] := j;
-          match2[j] := i;
-        end;
-        inc(vp);
-      end;
-    end;
-
-    cnt := 0;
-    for i := 0 to 3 do
-      if match1[i] = -1 then
-        Inc(cnt);
-    if cnt = 2 then
-    begin
-      i2a := -1;
-      for i := 0 to 3 do
-        if match2[i] = -1 then
-        begin
-          i2a := i;
-          Break;
-        end;
-      i2b := -1;
-      for i := 3 downto 0 do
-        if match2[i] = -1 then
-        begin
-          i2b := i;
-          Break;
-        end;
-
-      if (i2a <> -1) and (i2a <> i2b) then
-      begin
-        for i := 0 to 3 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].x := q2.vertexes[i2a].x;
-            q1.vertexes[i].y := q2.vertexes[i2a].y;
-            break;
-          end;
-        for i := 3 downto 0 do
-          if match1[i] <> -1 then
-          begin
-            q1.vertexes[i].x := q2.vertexes[i2b].x;
-            q1.vertexes[i].y := q2.vertexes[i2b].y;
-            break;
-          end;
-        q2.valid := false;
-      end;
-    end;
-  end;
-
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.RenderVertexGL
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.RenderVertexGL(const v: voxelvertex_p);
-begin
-  glVertex3fv(@v);
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizerKVX.RenderVertexGL
-//
-//==============================================================================
-procedure TVoxelMeshOptimizerKVX.RenderVertexGL(const v: voxelvertex_p);
-begin
-  glVertex3f(v.x, v.z, -v.y);
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizerDDVOX.RenderVertexGL
-//
-//==============================================================================
-procedure TVoxelMeshOptimizerDDVOX.RenderVertexGL(const v: voxelvertex_p);
-begin
-  glVertex3f(midx - v.x * step, v.y * step - midy, v.z * step - midz);
-end;
-
-//==============================================================================
-//
-// TVoxelMeshOptimizer.RenderGL
-//
-//==============================================================================
-procedure TVoxelMeshOptimizer.RenderGL;
-var
-  i: integer;
-  q: voxelquad_p;
-  c: GLuint;
-  r, g, b: LongWord;
-  idx: LongWord;
-  x, y: LongWord;
-begin
-  glBegin(GL_QUADS);
-
-  for i := 0 to fnumquads - 1 do
-  begin
-    q := @fquads[i];
-    if q.valid then
-    begin
-      c := q.color;
-      // Get the index to the (procedurally generated) voxeltexture
-      r := (c shr 16) and $FF;
-      g := (c shr  8) and $FF;
-      b := (c       ) and $FF;
-      idx := (r div 4) + (g div 4) * 64 + (b div 4) * 64 * 64;
-      x := idx and 511;
-      y := idx shr 9;
-
-      glTexCoord2f(x / 512 + 1 / 1024, y / 512 + 1 / 1024);
-
-      RenderVertexGL(@q.vertexes[0]);
-
-      RenderVertexGL(@q.vertexes[1]);
-
-      RenderVertexGL(@q.vertexes[2]);
-
-      RenderVertexGL(@q.vertexes[3]);
-    end;
-  end;
-
-  glEnd;
-end;
-
-//==============================================================================
 //
 // gld_BuildVoxelbufferFlags
 //
@@ -953,7 +225,8 @@ var
   skip_x0, skip_x1: boolean;
   skip_y0, skip_y1: boolean;
   skip_z0, skip_z1: boolean;
-  vmx: TVoxelMeshOptimizerDDVOX;
+  vmx: TVoxelMeshOptimizer;
+  vstep, vmidx, vmidy, vmidz: float;
 begin
   voxelsize := cube.Size;
   cells := cube.Cells;
@@ -971,12 +244,12 @@ begin
 
   gld_BuildVoxelbufferFlags(voxelbuffer, voxelsize);
 
-  vmx := TVoxelMeshOptimizerDDVOX.Create;
+  vmx := TVoxelMeshOptimizer.Create;
 
-  vmx.step := - 1 / MAP_COEFF * scale;
-  vmx.midx := vmx.step * voxelsize / 2;
-  vmx.midy := vmx.step * voxelsize + offset / MAP_COEFF; // Align down
-  vmx.midz := vmx.step * voxelsize / 2;
+  vstep := - 1 / MAP_COEFF * scale;
+  vmidx := vstep * voxelsize / 2;
+  vmidy := vstep * voxelsize + offset / MAP_COEFF; // Align down
+  vmidz := vstep * voxelsize / 2;
 
   for xx := 0 to voxelsize - 1 do
   begin
@@ -1061,16 +334,7 @@ begin
     end;
   end;
 
-  // If vx_maxoptimizerpasscount = 0 then vmx.Optimize() will call vmx.FastOptimize()
-  vmx.Optimize;
-
-  result := glGenLists(1);
-
-  glNewList(result, GL_COMPILE);
-
-    vmx.RenderGL;
-
-  glEndList;
+  result := gld_BuildMeshList(vmx, TVoxelMeshDdvoxMap.Create(vmidx, vmidy, vmidz, vstep));
 
   vmx.Free;
 end;
@@ -1157,7 +421,7 @@ var
   old_skip_y0, old_skip_y1: boolean;
   old_skip_z0, old_skip_z1: boolean;
   skip: integer;
-  vmx: TVoxelMeshOptimizerKVX;
+  vmx: TVoxelMeshOptimizer;
 
   function _solid(const ax, ay, az: integer): boolean;
   begin
@@ -1182,7 +446,7 @@ begin
 
   skip := 0;
 
-  vmx := TVoxelMeshOptimizerKVX.Create;
+  vmx := TVoxelMeshOptimizer.Create;
 
   for xx := 0 to xsiz - 1 do
   begin
@@ -1310,16 +574,7 @@ begin
     end;
   end;
 
-  // If vx_maxoptimizerpasscount = 0 then vmx.Optimize() will call vmx.FastOptimize()
-  vmx.Optimize;
-
-  result := glGenLists(1);
-
-  glNewList(result, GL_COMPILE);
-
-    vmx.RenderGL;
-
-  glEndList;
+  result := gld_BuildMeshList(vmx, TVoxelMeshKvxMap.Create);
 
   vmx.Free;
 end;

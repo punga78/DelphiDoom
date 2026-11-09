@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //
 //  DelphiDoom is a source port of the game Doom and it is
 //  based on original Linux Doom as published by "id Software"
@@ -32,7 +32,11 @@ interface
 
 const
 {$IFDEF DOOM}
+{$IFDEF RADIX}
+  _GAME = 'Radix';
+{$ELSE}
   _GAME = 'Doom';
+{$ENDIF}
 {$ENDIF}
 {$IFDEF HERETIC}
   _GAME = 'Heretic';
@@ -51,3 +55,4 @@ const
 implementation
 
 end.
+

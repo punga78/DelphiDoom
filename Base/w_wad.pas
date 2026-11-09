@@ -37,7 +37,8 @@ interface
 uses
   d_delphi,
   DelphiDoom.Wad.Intf,
-  DelphiDoom.Engine.Wad.Intf;
+  DelphiDoom.Engine.Wad.Intf,
+  DelphiDoom.Engine.Wad.Converter.Intf;
 
 //
 // TYPES
@@ -126,6 +127,15 @@ function stringtochar8(src: string): char8_t;
 //
 //==============================================================================
 procedure W_Configure(const AServices: IEngineWadServices);
+
+//==============================================================================
+//
+// W_ConfigureConverter
+// Gives the unit the converter of the data container of the game (Radix:
+// RADIX.DAT); a game whose data are WADs does not call it
+//
+//==============================================================================
+procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
 
 //==============================================================================
 //
@@ -335,6 +345,7 @@ var
   lumpinfoalloc: integer = 0; // lumps that lumpinfo has room for
 
   wad_services: IEngineWadServices = nil;
+  wad_converter: IEngineWadConverter = nil;
   wad_directory: IWadDirectory = nil;
   wad_finder: IWadFinder = nil;
   wad_reader: ILumpReader = nil;
@@ -515,6 +526,8 @@ var
   iswad: boolean;
   source: IWadSource;
   base8: char8_t;
+  converted: TArray<Byte>;
+  memory: TDMemoryStream;
 begin
   // open the file and add to directory
   // handle reload indicator.
@@ -532,6 +545,23 @@ begin
   begin
     I_Warning('W_AddFile(): File %s does not exist'#13#10, [filename]);
     result := nil;
+    exit;
+  end;
+
+  if Assigned(wad_converter) and (strupper(fext(filename)) = '.DAT') and
+    wad_converter.TryConvert(filename, converted) then
+  begin
+    // the data of the game are not a WAD: the translated lumps are one, in memory
+    memory := TDMemoryStream.Create;
+    memory.Write(converted[0], Length(converted));
+    memory.Seek(0, sFromBeginning);
+    result := memory;
+    source := W_CreateWadSource(filename, memory, false);
+    printf(' adding %s (%d lump' + decide(source.Count = 1, '', 's') + ' translated)'#13#10, [filename, source.Count]);
+    wad_directory.AddSource(source);
+    SetLength(wad_handles, wad_directory.SourceCount);
+    wad_handles[High(wad_handles)] := memory;
+    W_SyncLumpInfo;
     exit;
   end;
 
@@ -834,6 +864,16 @@ end;
 procedure W_Configure(const AServices: IEngineWadServices);
 begin
   wad_services := AServices;
+end;
+
+//==============================================================================
+//
+// W_ConfigureConverter
+//
+//==============================================================================
+procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
+begin
+  wad_converter := AConverter;
 end;
 
 //==============================================================================

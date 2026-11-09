@@ -1390,3 +1390,7 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Strife\p_mobj.pas`: P_SpawnMissileAngleZSpeed
 - `Strife\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
 - `Strife\p_user.pas`: P_DropInventoryItem, P_ItemBehavior
+
+**Nota (issue #177, fetta 3)**: `gld_ConfigureModelDefinitions` di `gl_models.pas` riceve preprocessore, parser (`IModelDefinitionParser`) e sink (`TEngineModelDefinitionSink`) da `ComposeModels`; `gld_AddModel`, `gld_AddModelState` e `gld_AddModelTexture` sono ora esposte dall'unit e chiamate solo da quel sink.
+
+**Nota (issue #177, fetta 4 parziale)**: `gld_FlatEdgeClipper`, `gld_FlatConvexCarver`, `gld_CarveFlats` e `gld_GetSubSectorVertices` di `gl_render.pas` non esistono piu: le sostituisce `IGlFlatCarver` (`gld_ConfigureFlatCarver`, dato da `ComposeLevelGeometry`) e `gld_AddFlatLoop`. Dalla fetta 5, le routine di buffer di `gl_tex.pas` (`gld_AddPatchToTexture*`, `gld_AddFlatToTexture`, `gld_RippleTransform`, `gld_CheckTextureTransparency`, `gld_InitPalettedTextures`, `gld_SetTexturePalette`) restano con la stessa firma e chiamano le classi di `Libs\GlTexture`.

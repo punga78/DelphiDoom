@@ -30,6 +30,13 @@ const
   /// <summary>Bytes of the planes of a map; a map in the archive can have more after them (its script)</summary>
   GREED_MAP_BYTES = GREED_MAP_PLANES * GREED_MAP_TILES;
 
+  /// <summary>Last angle: the circle has 1024 angles (ANGLES = 1023)</summary>
+  GREED_ANGLES = 1023;
+  /// <summary>Bits of a tile in fixed point units (FRACTILESHIFT = FRACBITS + TILESHIFT)</summary>
+  GREED_FRACTILESHIFT = 22;
+  /// <summary>One tile in fixed point units (FRACTILEUNIT)</summary>
+  GREED_FRACTILEUNIT = 1 shl GREED_FRACTILESHIFT;
+
   // ---- d_disk.pas: the archive ----
 
   /// <summary>Bytes of the header of the archive (fileinfo_t)</summary>
@@ -87,7 +94,12 @@ resourcestring
   SGreedImageSize = 'Greed: the size %d x %d of the %s is not valid';
   SGreedImageColumn = 'Greed: column %d of the sprite is not valid (offset %d, top %d, bottom %d, lump of %d bytes)';
   SGreedImageKind = 'Greed: the lump %d (%s) is not a picture that can be saved';
-  SGreedArgumentRange = 'Greed: the value %d of %s is outside %d..%d';
+  SGreedSaveTooShort = 'Greed: the file %s has %d bytes, %d needed';
+  SGreedSettingUnknown = 'Greed: the setting %s does not exist, or it has another kind';
+  SGreedTooMany = 'Greed: too many %s placed (%d)';
+  SGreedIllegalKill = 'Greed: a sprite of the kind %d cannot be killed';
+  SGreedNoPlayerStart ='Greed: the map %d has no start of the player (mapsprites 1)';
+  SGreedArgumentRange ='Greed: the value %d of %s is outside %d..%d';
 
 type
   /// <summary>Something wrong with the data or the arguments of the greed library</summary>

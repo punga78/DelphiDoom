@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the IWAD library - the profiles of the games            }
 {                                                                              }
@@ -24,6 +24,8 @@ type
     procedure DovrebbeDareIlNomeDiOgniGioco;
     [Test]
     procedure DovrebbeRiconoscereIlGiocoDalNomeSenzaDistinguereLeMaiuscole;
+    [Test]
+    procedure DovrebbeDareIlProfiloDiRadixConIlFileDeiDati;
     [Test]
     procedure DovrebbeDareFalsoPerUnNomeSconosciuto;
     [Test]
@@ -78,6 +80,19 @@ begin
   Assert.IsTrue(LGame = igHexen);
   Assert.IsTrue(TIwadGames.TryFromName('Heretic', LGame));
   Assert.IsTrue(LGame = igHeretic);
+end;
+
+procedure TTestIwadGames.DovrebbeDareIlProfiloDiRadixConIlFileDeiDati;
+var
+  LGame: TIwadGame;
+  LProfile: IIwadProfile;
+begin
+  Assert.IsTrue(TIwadGames.TryFromName('Radix', LGame));
+  Assert.IsTrue(LGame = igRadix);
+  LProfile := TIwadGames.CreateProfile(igRadix);
+  Assert.AreEqual('RADIX', LProfile.GameName);
+  Assert.AreEqual('radix.dat', LProfile.Entries[0].FileName);
+  Assert.AreEqual('RADIXWADDIR', LProfile.DirectoryVariables[0]);
 end;
 
 procedure TTestIwadGames.DovrebbeDareFalsoPerUnNomeSconosciuto;
@@ -189,3 +204,4 @@ begin
 end;
 
 end.
+

@@ -36,6 +36,9 @@ type
     BeginPlayCount: Integer;
     GodModeCleared: Integer;
     GameLoaded: Boolean;
+    GodMode: Boolean;
+    JumpCheat: Boolean;
+    NeedBombsShown: Integer;
     OnCheckKeys: TProc;
     constructor Create;
     destructor Destroy; override;
@@ -45,6 +48,9 @@ type
     function IsGameLoaded: Boolean;
     procedure BeginPlay;
     procedure ClearGodMode;
+    function IsGodMode: Boolean;
+    function IsJumpCheat: Boolean;
+    procedure ShowNeedBombs;
   end;
 
   /// <summary>Spawns what the test sees: the call is written down and the actor is made like a real spawner would</summary>
@@ -171,6 +177,21 @@ end;
 procedure TFakeKeenEvents.ClearGodMode;
 begin
   Inc(GodModeCleared);
+end;
+
+function TFakeKeenEvents.IsGodMode: Boolean;
+begin
+  Result := GodMode;
+end;
+
+function TFakeKeenEvents.IsJumpCheat: Boolean;
+begin
+  Result := JumpCheat;
+end;
+
+procedure TFakeKeenEvents.ShowNeedBombs;
+begin
+  Inc(NeedBombsShown);
 end;
 
 { TFakeKeenSpawner }

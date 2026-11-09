@@ -30,6 +30,13 @@ begin
   Writeln('  -map    the map to draw as a PNG (the first is 0)');
   Writeln('  -lump   a picture, flat, wall or sprite to save as a PNG, by name or by number');
   Writeln('  -png    the file to write (default greed_map<number>.png or greed_<lump>.png)');
+  Writeln('  -play   opens a window and plays the map (the first is 0), seen from above: arrows or W S, Q E to turn,');
+  Writeln('          A D to step aside, Shift to run, Escape to quit. The first person view; -topdown shows the map from above');
+  Writeln('  -ticks  with -play: stops after that number of tics (70 a second)');
+  Writeln('  -autoplay  with -play: the player walks by itself');
+  Writeln('  -topdown   with -play: the view from above instead of the first person view');
+  Writeln('  -topdown   with -play: the view from above instead of the first person view');
+  Writeln('  -shot   with -play: saves the last picture as a PNG');
 end;
 
 const
@@ -47,9 +54,19 @@ var
   LClassifier: IGreedLumpClassifier;
   LNumber: Integer;
   LLumpIndex: Integer;
+  LPlayMap: Integer;
+  LTicks: Integer;
+  LAutoPlay: Boolean;
+  LTopDown: Boolean;
+  LShot: string;
 
 begin
   try
+    LPlayMap := -1;
+    LTicks := 0;
+    LAutoPlay := False;
+    LTopDown := False;
+    LShot := '';
     LMapNumber := -1;
     LLump := '';
     LPng := '';
@@ -79,6 +96,25 @@ begin
         Inc(LIndex);
         LPng := ParamStr(LIndex);
       end
+      else if (LArgument = '-play') and (LIndex < ParamCount) then
+      begin
+        Inc(LIndex);
+        LPlayMap := StrToInt(ParamStr(LIndex));
+      end
+      else if (LArgument = '-ticks') and (LIndex < ParamCount) then
+      begin
+        Inc(LIndex);
+        LTicks := StrToInt(ParamStr(LIndex));
+      end
+      else if (LArgument = '-shot') and (LIndex < ParamCount) then
+      begin
+        Inc(LIndex);
+        LShot := ParamStr(LIndex);
+      end
+      else if LArgument = '-autoplay' then
+        LAutoPlay := True
+      else if LArgument = '-topdown' then
+        LTopDown := True
       else if LArgument = '-list' then
         LList := True
       else
@@ -91,7 +127,7 @@ begin
     end;
     if Length(LFolders) = 0 then
       LFolders := [GetCurrentDir];
-    if (not LList) and (LMapNumber < 0) and (LLump = '') then
+    if (not LList) and (LMapNumber < 0) and (LLump = '') and (LPlayMap < 0) then
     begin
       ShowUsage;
       System.ExitCode := 2;
@@ -99,6 +135,11 @@ begin
     end;
 
     LArchive := TGreedComposition.OpenArchive(LFolders);
+    if LPlayMap >= 0 then
+    begin
+      Writeln('Played ', TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot, not LTopDown), ' tics');
+      Exit;
+    end;
     if LList then
     begin
       LClassifier := TGreedComposition.CreateClassifier(LArchive);

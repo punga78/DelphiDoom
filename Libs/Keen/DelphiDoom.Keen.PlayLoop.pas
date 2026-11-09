@@ -20,8 +20,6 @@ uses
   DelphiDoom.Keen.Intf, DelphiDoom.Keen.StateMachine, DelphiDoom.Keen.ActorMover;
 
 type
-  PKeenGameState = ^TKeenGameState;
-
   /// <summary>
   ///   A level in play. A frame reads the control of the player, makes every actor go through its state (the
   ///   asleep ones wake up when their tiles come into view, the ones far from the view go to sleep), calls the
@@ -40,11 +38,7 @@ type
     FInput: IKeenInput;
     FRandom: IKeenRandom;
     FEvents: IKeenGameEvents;
-    FGameState: TKeenGameState;
-    FPlayState: TKeenExit;
-    FControl: TKeenControlInfo;
-    FButton0Held: Boolean;
-    FButton1Held: Boolean;
+    FState: IKeenPlayState;
     FPlummet: Boolean;
     FSingleGravity: Integer;
     FOriginXTileMax: Integer;
@@ -54,13 +48,25 @@ type
     FInactivateTop: Integer;
     FInactivateBottom: Integer;
     function GetGameState: PKeenGameState;
+    function GetPlayState: TKeenExit;
+    procedure SetPlayState(AValue: TKeenExit);
+    function GetControl: TKeenControlInfo;
+    function GetButton0Held: Boolean;
+    procedure SetButton0Held(AValue: Boolean);
+    function GetButton1Held: Boolean;
+    procedure SetButton1Held(AValue: Boolean);
     procedure ThinkAndWake;
     procedure CheckContacts;
     procedure ReactAll;
   public
     constructor Create(const AObjects: IKeenObjectList; AMachine: TKeenStateMachine; AMover: TKeenActorMover;
       const AStates: IKeenStateTable; const AActions: IKeenActions; const ARefresh: IKeenRefresh;
-      const AInput: IKeenInput; const ARandom: IKeenRandom; const AEvents: IKeenGameEvents);
+      const AInput: IKeenInput; const ARandom: IKeenRandom; const AEvents: IKeenGameEvents); overload;
+    /// <param name="AState">The state of the play that the actions of the actors share</param>
+    constructor Create(const AObjects: IKeenObjectList; AMachine: TKeenStateMachine; AMover: TKeenActorMover;
+      const AStates: IKeenStateTable; const AActions: IKeenActions; const ARefresh: IKeenRefresh;
+      const AInput: IKeenInput; const ARandom: IKeenRandom; const AEvents: IKeenGameEvents;
+      const AState: IKeenPlayState); overload;
     /// <summary>CalcInactivate: the limits, in tiles, outside of which an actor goes to sleep</summary>
     procedure CalcInactivate;
     /// <summary>ScrollScreen: the level ends if Keen leaves the map, Keen dies if he falls off it, and the view follows him</summary>
@@ -78,11 +84,11 @@ type
     procedure Run;
     /// <summary>The state of the game that a saved game keeps</summary>
     property GameState: PKeenGameState read GetGameState;
-    property PlayState: TKeenExit read FPlayState write FPlayState;
+    property PlayState: TKeenExit read GetPlayState write SetPlayState;
     /// <summary>c: the control of the first player, as read at the start of the frame</summary>
-    property Control: TKeenControlInfo read FControl;
-    property Button0Held: Boolean read FButton0Held write FButton0Held;
-    property Button1Held: Boolean read FButton1Held write FButton1Held;
+    property Control: TKeenControlInfo read GetControl;
+    property Button0Held: Boolean read GetButton0Held write SetButton0Held;
+    property Button1Held: Boolean read GetButton1Held write SetButton1Held;
     /// <summary>True when Keen has already been killed for falling off the world</summary>
     property Plummet: Boolean read FPlummet write FPlummet;
     property SingleGravity: Integer read FSingleGravity;
@@ -97,7 +103,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Keen.ActionIds, DelphiDoom.Keen.AudioIds, DelphiDoom.Keen.Arithmetic;
+  DelphiDoom.Keen.ActionIds, DelphiDoom.Keen.Arithmetic, DelphiDoom.Keen.PlayState;
 
 { TKeenPlayLoop }
 
@@ -105,7 +111,20 @@ constructor TKeenPlayLoop.Create(const AObjects: IKeenObjectList; AMachine: TKee
   const AStates: IKeenStateTable; const AActions: IKeenActions; const ARefresh: IKeenRefresh;
   const AInput: IKeenInput; const ARandom: IKeenRandom; const AEvents: IKeenGameEvents);
 begin
+  if not Assigned(AEvents) then
+    raise EArgumentNilException.Create('AEvents');
+  Create(AObjects, AMachine, AMover, AStates, AActions, ARefresh, AInput, ARandom, AEvents,
+    TKeenPlayState.Create(AEvents));
+end;
+
+constructor TKeenPlayLoop.Create(const AObjects: IKeenObjectList; AMachine: TKeenStateMachine; AMover: TKeenActorMover;
+  const AStates: IKeenStateTable; const AActions: IKeenActions; const ARefresh: IKeenRefresh;
+  const AInput: IKeenInput; const ARandom: IKeenRandom; const AEvents: IKeenGameEvents;
+  const AState: IKeenPlayState);
+begin
   inherited Create;
+  if not Assigned(AState) then
+    raise EArgumentNilException.Create('AState');
   if not Assigned(AObjects) then
     raise EArgumentNilException.Create('AObjects');
   if not Assigned(AMachine) then
@@ -133,12 +152,47 @@ begin
   FInput := AInput;
   FRandom := ARandom;
   FEvents := AEvents;
-  FPlayState := keNotDone;
+  FState := AState;
 end;
 
 function TKeenPlayLoop.GetGameState: PKeenGameState;
 begin
-  Result := @FGameState;
+  Result := FState.GameState;
+end;
+
+function TKeenPlayLoop.GetPlayState: TKeenExit;
+begin
+  Result := FState.PlayState;
+end;
+
+procedure TKeenPlayLoop.SetPlayState(AValue: TKeenExit);
+begin
+  FState.PlayState := AValue;
+end;
+
+function TKeenPlayLoop.GetControl: TKeenControlInfo;
+begin
+  Result := FState.Control;
+end;
+
+function TKeenPlayLoop.GetButton0Held: Boolean;
+begin
+  Result := FState.Button0Held;
+end;
+
+procedure TKeenPlayLoop.SetButton0Held(AValue: Boolean);
+begin
+  FState.Button0Held := AValue;
+end;
+
+function TKeenPlayLoop.GetButton1Held: Boolean;
+begin
+  Result := FState.Button1Held;
+end;
+
+procedure TKeenPlayLoop.SetButton1Held(AValue: Boolean);
+begin
+  FState.Button1Held := AValue;
 end;
 
 procedure TKeenPlayLoop.CalcInactivate;
@@ -166,7 +220,7 @@ begin
   if (LPlayer^.Left < FRefresh.OriginXMin) or
     (LPlayer^.Right > TKeenArithmetic.ToWord(FRefresh.OriginXMax + 20 * KEEN_TILEGLOBAL)) then
   begin
-    FPlayState := keLevelComplete;
+    FState.PlayState := keLevelComplete;
     Exit;
   end;
   // fallen off the bottom of the world?
@@ -200,13 +254,8 @@ end;
 
 procedure TKeenPlayLoop.GivePoints(APoints: Integer);
 begin
-  FGameState.Score := FGameState.Score + APoints;
-  if FGameState.Score >= FGameState.NextExtra then
-  begin
-    FEvents.PlaySound(KEEN_SND_EXTRAKEENSND);
-    Inc(FGameState.Lives);
-    FGameState.NextExtra := FGameState.NextExtra * 2;
-  end;
+  FState.GivePoints(APoints);
+
 end;
 
 procedure TKeenPlayLoop.CalcSingleGravity;
@@ -316,11 +365,11 @@ procedure TKeenPlayLoop.RunFrame;
 begin
   CalcSingleGravity;
   // the input of the player
-  FControl := FInput.ReadControl(0);
-  if not FControl.Button0 then
-    FButton0Held := False;
-  if not FControl.Button1 then
-    FButton1Held := False;
+  FState.Control := FInput.ReadControl(0);
+  if not FState.Control.Button0 then
+    FState.Button0Held := False;
+  if not FState.Control.Button1 then
+    FState.Button1Held := False;
   // go through the states and propose the movements
   ThinkAndWake;
   // the contacts between the actors
@@ -335,14 +384,14 @@ end;
 
 procedure TKeenPlayLoop.Run;
 begin
-  FButton0Held := False;
-  FButton1Held := False;
-  FPlayState := keNotDone;
+  FState.Button0Held := False;
+  FState.Button1Held := False;
+  FState.PlayState := keNotDone;
   FPlummet := False;
   FEvents.BeginPlay;
   repeat
     RunFrame;
-  until FEvents.IsGameLoaded or (FPlayState <> keNotDone);
+  until FEvents.IsGameLoaded or (FState.PlayState <> keNotDone);
 end;
 
 end.

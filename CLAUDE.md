@@ -1,4 +1,4 @@
-# DelphiDoom — istruzioni per Claude
+﻿# DelphiDoom — istruzioni per Claude
 
 Informazioni specifiche di questo repository. Le regole generali (commit, issue, lingua, MCP) sono nel CLAUDE.md globale.
 
@@ -90,7 +90,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Input** — Tastiera, mouse e joystick: dispositivi, poller e mappa dei tasti. [CLAUDE.md](Libs/Input/CLAUDE.md), [README.md](Libs/Input/README.md)
 - **Iwad** — Ricerca e riconoscimento degli IWAD. [CLAUDE.md](Libs/Iwad/CLAUDE.md), [README.md](Libs/Iwad/README.md)
 - **Jpeg** — Decoder JPEG a classi (port della decompressione di libjpeg 6b). [CLAUDE.md](Libs/Jpeg/CLAUDE.md), [README.md](Libs/Jpeg/README.md)
-- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
+- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli, azioni del giocatore e dei nemici). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
 - **Logging** — Log del motore: `ILog`, canali e sink. [CLAUDE.md](Libs/Logging/CLAUDE.md), [README.md](Libs/Logging/README.md)
 - **M2m** — Convertitore MIDI in MUS. [CLAUDE.md](Libs/M2m/CLAUDE.md), [README.md](Libs/M2m/README.md) (paragrafo in `Libs\Zlib`)
 - **MapInfo** — Lettura di UMAPINFO e catalogo delle mappe. [CLAUDE.md](Libs/MapInfo/CLAUDE.md), [README.md](Libs/MapInfo/README.md)
@@ -109,6 +109,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **PascalScript** — Nucleo di Pascal Script (di terzi, modificato). [CLAUDE.md](Libs/PascalScript/CLAUDE.md), [README.md](Libs/PascalScript/README.md) (paragrafo in `Libs\ScriptHost`)
 - **Platform** — Servizi del sistema operativo: file, cartelle temporanee, informazioni su sistema, CPU ed eseguibile. [CLAUDE.md](Libs/Platform/CLAUDE.md), [README.md](Libs/Platform/README.md)
 - **Png** — Codifica e decodifica PNG (la compressione arriva da un `IZlib` iniettato). [CLAUDE.md](Libs/Png/CLAUDE.md), [README.md](Libs/Png/README.md)
+- **Racing** — Auto, fisica, IA, percorso, giri e tabelle dei tempi di Speed Haste (S4 di Speed, parità con il vecchio codice). [CLAUDE.md](Libs/Racing/CLAUDE.md), [README.md](Libs/Racing/README.md)
 - **Renderer** — Analisi del renderer e prime fette fredde (tabella colonne delle texture, precalcolo del livello). [CLAUDE.md](Libs/Renderer/CLAUDE.md), [README.md](Libs/Renderer/README.md)
 - **Scanner** — Scanner dei testi degli script, preprocessore, valutatore di espressioni, AUTOLOAD. [CLAUDE.md](Libs/Scanner/CLAUDE.md), [README.md](Libs/Scanner/README.md)
 - **Screenshot** — Scrittura degli screenshot (TGA, PNG, JPEG). [CLAUDE.md](Libs/Screenshot/CLAUDE.md), [README.md](Libs/Screenshot/README.md)
@@ -118,7 +119,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Sndfile** — Contratto `ISndfile` e provider che usa il motore di `LibsSound`. [CLAUDE.md](Libs/Sndfile/CLAUDE.md), [README.md](Libs/Sndfile/README.md) (paragrafo in `Libs\Sound`)
 - **Sound** — Sostituto in Pascal di libsndfile, libvorbis e libflac. [CLAUDE.md](Libs/Sound/CLAUDE.md), [README.md](Libs/Sound/README.md)
 - **Specials** — Registro degli special delle linee al posto del grande `case`. [CLAUDE.md](Libs/Specials/CLAUDE.md), [README.md](Libs/Specials/README.md)
-- **Speed** — Traduzione del contenitore `SPEEDH.JCL` di Speed Haste in un WAD in memoria. [CLAUDE.md](Libs/Speed/CLAUDE.md), [README.md](Libs/Speed/README.md)
+- **Speed** — Traduzione del contenitore `SPEEDH.JCL` di Speed Haste in un WAD in memoria; la cartella `Speed\` ha il programma `Speed32` (traduce e fa correre le auto del computer con `Libs\Racing`, senza finestra né motore). [CLAUDE.md](Libs/Speed/CLAUDE.md), [README.md](Libs/Speed/README.md)
 - **TableExport** — Scrittura delle tabelle correnti del motore come DEH, ACTORDEF, WEAPONDEF, CSV e sorgente Pascal. [CLAUDE.md](Libs/TableExport/CLAUDE.md), [README.md](Libs/TableExport/README.md)
 - **Texture** — Decoder dei file di immagine delle texture esterne e immagine in memoria. [CLAUDE.md](Libs/Texture/CLAUDE.md), [README.md](Libs/Texture/README.md)
 - **TextureDefs** — Lettura delle definizioni delle texture (PNAMES, TEXTURE1..3, TEXTURE0) e dei flat (FLATINFO). [CLAUDE.md](Libs/TextureDefs/CLAUDE.md), [README.md](Libs/TextureDefs/README.md)
@@ -128,6 +129,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Udmf** — Conversione di una mappa UDMF (TEXTMAP) nei record del motore. [CLAUDE.md](Libs/Udmf/CLAUDE.md), [README.md](Libs/Udmf/README.md)
 - **Video** — Parte del video indipendente dall'API grafica: palette, limiti, catalogo dei modi, risoluzione. [CLAUDE.md](Libs/Video/CLAUDE.md), [README.md](Libs/Video/README.md)
 - **Voxel** — Lettura dei file dei voxel e del lump VOXELDEF. [CLAUDE.md](Libs/Voxel/CLAUDE.md), [README.md](Libs/Voxel/README.md)
+- **VoxelEditor** — Editor di voxel (modulo Voxel di DD_Tools): cubo, viste, strumenti, formati DDVOX/KVX/VOX/DDMESH, presenter. [CLAUDE.md](Libs/VoxelEditor/CLAUDE.md), [README.md](Libs/VoxelEditor/README.md)
 - **Wad** — Lettura e scrittura di WAD, PAK, ZIP e cartelle; directory dei lump del motore. [CLAUDE.md](Libs/Wad/CLAUDE.md), [README.md](Libs/Wad/README.md)
 - **XcomFormats** — Lettura dei formati di dati di UFO: Enemy Unknown e Terror from the Deep. [CLAUDE.md](Libs/XcomFormats/CLAUDE.md), [README.md](Libs/XcomFormats/README.md)
 - **Xmi** — Convertitore XMI/CMF in MIDI. [CLAUDE.md](Libs/Xmi/CLAUDE.md), [README.md](Libs/Xmi/README.md) (paragrafo in `Libs\Zlib`)
@@ -219,5 +221,8 @@ L'obiettivo è che ogni progetto compili e funzioni sia a Win32 sia a Win64; ogg
 - Codice storico per scelta (la migrazione a classi della #45 è conclusa sulle parti pure e a freddo): i renderer software e OpenGL, i thinker e i savegame, `FixedMul`/`FixedDiv` e le funzioni sugli angoli; vedi `docs\PENDING_ISSUES.md`.
 - Tracce `-devparm` temporanee dei passi del caricamento del livello di Doom (`TLevelLoader.Trace`, accese da `TDoomLevelRules.TracesSteps`).
 - Codice morto (issue #163): tolte 95 routine globali, 17 metodi, 11 variabili e 138 unit inutili dalle clausole `uses` (circa 3830 righe). Restano `P_CheckVisibility` di `p_sight` (direttive incrociate), costanti e tipi senza riferimenti e 44 clausole `uses` con direttive: vedi `docs\PENDING_ISSUES.md` (#163). Per cercarne altro: una routine globale è morta solo se il suo nome non compare in nessun `.pas`, `.dpr`, `.inc` o `.dfm` di nessun progetto (giochi, `ddc_*`, Launcher, DD_IDE, Keen, tutti i `Tests\*`), stringhe comprese (PascalScript, `C_AddCmd`, `DEH_AddAction`).
-- Heretic: crash intermittente a runtime da indagare con `crash.txt`.
+- Heretic: il crash intermittente (#162) non si riproduce: 93 avvii/uscite senza crash né blocchi (vedi `docs\PENDING_ISSUES.md`, #162); resta aperta solo la chiusura motivata dell'issue.
 
+
+
+`Libs\Radix` (issue #169, fetta F2 di **Rad-X**) traduce `RADIX.DAT` (Radix - beyond the void) in un WAD in memoria come il `Radix2WAD_Game` del fork. **Il traduttore e' completo**: 2534 lump su 2534 (2.0 shareware) e 2456 su 2456 (1.0) identici al **vecchio** traduttore (harness `Tools\Verifica\169` sulla copia di `Reference\Rad-X` con le correzioni di `Reference\_analisi\radx_crash.md`, `RadixDiff.exe`), byte per byte e nello stesso ordine, `RADIXINF` compreso. `IRadixContainer` (`NSRes:Radix`), `IRadixPaletteBuilder`, `IRadixTranslator` che esegue una lista di `IRadixPart` (una classe per unit: palette, texture, livelli, flat, schermate, font piccolo, grandi e del terminale, `TRN_MENU`, sprite, musica, cabina, suoni, testi), `TRadixFactory` (`CreateTranslator(TRadixLumpNames)`: i nomi `Original` del fork o quelli `Doom` che il motore legge); patch e WAD in memoria da `Libs\GameData`. Test in `Tests\DelphiDoom.Tests.Radix` (200). Win32 e `Double`; Win64 non provato; i dati 1.1 non ci sono. **Collegato al motore come primo passo**: `Radix\Radix32.dpr` (`Tools\build.bat Radix\Radix32`, define `DOOM;RADIX`, `_GAME = 'Radix'`, unit di `Doom\`) con `IEngineWadConverter` (`Base\DelphiDoom.Engine.Wad.Converter.Intf.pas`; `W_AddFile` di un `.DAT` chiede al convertitore `TEngineRadixDataConverter`, dato da `ComposeEngine` sotto `{$IFDEF RADIX}`), `TGameAliases` (Radix prende Doom in ogni area tranne Iwad, nuova area `Script`), `igRadix` in `TIwadGames`, `D_AddSystemWAD` che legge `<_GAME>32.swd` (per Radix `Radix32.swd`, copia di `Reference\Rad-X\WADSRC\SYS.wad`). **A runtime** (Radix32, RADIX.DAT 2.0 shareware, `-devparm -nomusic -nosound`): traduce e carica RADIX.DAT e `Radix32.swd` (nessun `TNT1A0 not found`), le texture, legge DEH (13 azioni `*RADIX*` sconosciute in DEH) e si ferma su `W_GetNumForName(): STCFN033 not found!` (font di Doom: Radix usa FNTAnnn e BIGFx): **il gioco non gira**; mancano le circa 98 unit di gioco (mobj_t e player_t, `radix_actions`, HUD, menu, `p_setup` con `RADIXMAPMAGIC`, salvataggi), la scelta shareware o registered dal CRC e il livello con `-warp` (vedi `Libs\Radix\CLAUDE.md`). Gli altri otto eseguibili compilano come prima (`Tools\build.bat giochi`). Le correzioni dei difetti Unicode del fork (`TDStrings.GetTextStr`, `fprintf`, `TWadWriter.AddString`, `GetTempPath`) sono gia nel motore principale. Dettagli: `Libs\Radix\CLAUDE.md`.

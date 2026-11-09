@@ -16,6 +16,16 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, comp
 | G1 | `IGreedArchive`: il contenitore `GREED.BLO` (intestazione da 10 byte, tabella da 12, nomi C), lump per nome e per indice, correzione dei dati | `BloArchive`, `LumpFixes`, `PstCorrection` |
 | G2 | la mappa: 18 piani da 4096 byte, caricamento dal lump o dal file `.LAY` | `Map`, `MapReader`, `MapLoader`, `FolderFiles` |
 | G3 | palette VGA e decodifica di immagini, flat, muri e sprite verso un buffer a 8 bit | `Palette`, `PictureDecoder`, `FlatDecoder`, `WallDecoder`, `SpriteDecoder`, `LumpClassifier` |
+| G5 | effetti sonori e musica senza BASS (dettagli in CLAUDE.md) | `Sound.Intf`, `TrigTables`, `SoundGeometry`, `SoundEffects`, `Music`, `SongSelector`, `SoundVolumes`, `AudioDevice` |
+| G6 | aritmetica in virgola fissa | `FixedMath` |
+| G7 | salvataggi: `player_t` packed, directory dei nomi | `SaveTypes`, `Save.Intf`, `SaveGames`, `SaveFolder` |
+| G8 | le 42 impostazioni di `m_defs`, file `xGreed.ini` | `Settings.Intf`, `Settings`, `SettingsStore` |
+| G9 | il mondo: piani, flag, porte, spawn, pendenze, altezza di pavimento e soffitto | `World.Intf`, `World`, `Slopes`, `Terrain` |
+| G10 (primo pezzo) | regole del giocatore: cura, danno, punteggio, nuova partita | `Player.Intf`, `PlayerRules` |
+| G10 (secondo pezzo) | liste di sprite e ascensori, ascensori, movimento del giocatore, morte dei sprite | `Actor.Types`, `LinkedPool`, `Elevator.Intf`, `ElevatorRules`, `PlayerMovement`, `SpriteDeath` |
+| G11 | renderer a fotogramma di Raven 3D (muri, scalini, pavimenti e soffitti inclinati, cielo, porte, sprite, trasparenze, interpolazione), parita' sui pixel con l'originale su 699 fotogrammi | `Render.Types`, `Render.Tables`, `Render.State`, `Render.WallRenderer`, `Render.PlaneRenderer`, `Render.ContentRenderer`, `Render.SpanDrawer`, `Render.SpanSorter`, `Render.SpriteInterpolator`, `Render.FrameRenderer`, `Render.Assets.Intf`, `Render.ArchiveAssets`, `Random` |
+| G10 (porte) | le porte della mappa e `CheckDoors` | `Door.Intf`, `DoorSpawner`, `DoorRules` |
+| G12 (parziale) | ciclo di gioco a 70 tic, finestra GDI e vista in prima persona a 640x400 (`-topdown` per la vista dall'alto): `Greed32 -play` | `Frame.Intf`, `GameLoop`, `TopDownRenderer`, `MovementHost`, `Greed\DelphiDoom.Greed.Win.Window`, `AutoPlayInput` |
 | G4 | prova visiva: `Greed32 -data <cartella> [-list] [-map N] [-lump nome] [-png file]` | `PngEncoder`, `MapRenderer`, `PngExporter`, `Greed\` |
 
 **Non fatto (G5-G12)**: effetti sonori (`Libs\Sndfile`+`Libs\Audio`, volume e pan per distanza), musica (`Libs\Mikmod` al posto di BASS), asm di `r_public`/`g_delphi` -> `TFixedMath`, salvataggi (`player_t` packed), `LaunchXG` e configurazione, il mondo e la logica (`raven`, `spawn`, `sprites`: G10, XL), il renderer a livello di fotogramma e i FLI (G11), la presentazione del fotogramma senza DirectDraw (`IFramePresenter`, tolto `DirectX.pas`), il tempo e l'input al posto di `timer.pas`/`i_main`, Win64. `Greed32` non apre finestre e non gioca.
@@ -51,6 +61,14 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, comp
 
 I golden di `Tests\Data\Greed` vengono dal **codice originale** di xGreed compilato in un harness fuori dal repository (`Tools\Verifica\175\GreedGolden.dpr`: usa `d_disk.pas` e `g_fixlump.pas` originali, e per muri e sprite le formule di `LoadTextures` e di `ScaleMaskedPost`, la seconda copiata alla lettera; per i piani `DoLoadMapData` su `fread`; vedi `Tests\Data\README.md`), sulle due demo (`Reference\_dati\greed`: `demo1016\GREED.BLO`, 6.915.530 byte, e `demo20gus\GREEDEMO.20\GREED.BLO`, 7.452.270 byte): per ogni lump nome, posizione, dimensione, `compress`, CRC32 dei byte letti e primo lump con quel nome (3191 e 3007 righe); CRC32 della palette; per ogni immagine, muro, flat e sprite larghezza, altezza e CRC32 dei pixel decodificati (137 immagini, 231 muri, 152 flat, 1024 sprite nella 1.016; 142, 246, 176 e 890 nella 2.0); CRC32 dei 18 piani delle quattro mappe `.LAY`. La libreria da' gli stessi valori: **zero differenze**. I test sui dati veri li cercano in `DELPHIDOOM_GREED_DATA` o in `Reference\_dati\greed` sopra l'eseguibile e si saltano se mancano.
 
+## Dati del gioco completo (`full\GREED.BLO`, 2026-11-09)
+
+Il `GREED.BLO` del gioco completo (19.726.074 byte, forniti dall'utente: `Reference\_dati\MANIFEST.md`) ha 2332 lump e **le 32 mappe dentro l'archivio** (lump `level1.lay` ... `for8play.lay` dopo il marcatore `map`, 73728 byte ciascuno: nessun file `.LAY` accanto). Il golden `Tests\Data\Greed\blo_full.golden.txt` (3911 righe, solo numeri) e' del codice originale (`GreedGolden.dpr` ora scrive anche le righe `B`: `LoadNewMap` con il `seek` al lump e i 18 `fread`): la libreria dà **zero differenze** su tabella e byte di tutti i lump (CRC32 dopo `FixLump`), primo lump per nome, palette, 262 muri, 232 flat, 370 sprite, 136 immagini, classificazione dei lump e 576 piani (32 mappe x 18). `Greed32 -data <cartella> -map N -png` esporta tutte le 32 mappe; `-play N -autoplay` le percorre (vista dall'alto).
+
+- Un'immagine a schermo intero (`credits3`, `redchars`...) **e' seguita da un lump di 768 byte che e' la sua palette** (`2328` `credits3` 64008 byte, `2329` 768 byte): con la palette del gioco i colori del logo sono rumore, con la sua sono giusti. `Greed32 -lump` usa sempre la palette del gioco (non scelta dalla libreria: da gestire nel renderer).
+- Nello shareware le immagini che il gioco compone con `backdrop` sono in `pic_t` a 8 bit senza maschera; i nomi stanno solo sui lump di testa di ogni gruppo (`backdrop`, `statbar1`, `gun2`, `missile`...), gli altri sono per posizione.
+- Il `GREED.EXE` del gioco completo e' la versione CD-ROM (`nocdromcheck` per saltare il controllo, filmati `MOVIES\*.FLI` cercati su `A:`); girato in DOSBox e, compilato dal sorgente con Delphi 11 (`Reference\_dati\xgreed_build`), con questi stessi dati: menu, introduzione e livello 1 (`Tools\Verifica\175\LEGGIMI.md`).
+
 ## Differenze volute dal vecchio codice
 
 - Un lump senza dati (marcatori come `startsprites`, e le mappe vuote delle demo) si legge come un array vuoto: l'originale faceva `malloc(0)` e dava `MS_Error` (`CA_CacheLump`).
@@ -61,7 +79,7 @@ I golden di `Tests\Data\Greed` vengono dal **codice originale** di xGreed compil
 ## Difetti conservati
 
 - `CA_CachePalette`: i valori della palette sopra 63 avvolgono nel byte.
-- La correzione `FixLump` si applica a `ReadLump` (come `CA_CacheLump`) e non a `ReadLumpRaw` (come `CA_ReadLump`). **Non provata sui dati veri**: nessuna delle due demo ha il lump di 10463 byte con CRC32 `48818333` (e' del gioco completo); la tabella e' provata con voci di prova e `GREED_PST_CORRECTED` ha i byte dell'originale.
+- La correzione `FixLump` si applica a `ReadLump` (come `CA_CacheLump`) e non a `ReadLumpRaw` (come `CA_ReadLump`). **Provata sui dati veri del gioco completo** (le demo non hanno quel lump): il lump 770 di `GREED.BLO` ha 10463 byte con CRC32 `48818333` e `ReadLump` dà gli stessi byte del `CA_CacheLump` originale (CRC32 `6336b14e`); la tabella e' provata anche con voci di prova e `GREED_PST_CORRECTED` ha i byte dell'originale.
 - I fix che `LoadNewMap` fa sulle tabelle dopo la lettura (`floordef`/`ceilingdef` a 0 diventano 56) sono del gioco, non del file: non sono fatti da `TGreedMapReader`.
 
 ## Da collegare / da fare

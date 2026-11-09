@@ -156,6 +156,20 @@ begin
         Out.Add(Format('P %d %d %d %d %d %s', [I, W, H, SmallAt(Data, 4), SmallAt(Data, 6), Crc(@Data[8], W * H)]));
     end;
   end;
+  // mappe nel BLO (gioco completo): LoadNewMap originale, seek alla posizione del lump e DoLoadMapData (18 fread da 4096);
+  // un lump dopo 'map' e' una mappa se ha almeno 18 * 4096 byte (nelle demo sono vuoti: le mappe sono file .LAY)
+  Startsp := CA_CheckNamedNum('map');
+  if Startsp >= 0 then
+    for I := Startsp + 1 to fileinfo.numlumps - 1 do
+    begin
+      if infotable[I].size < 18 * 4096 then Continue;
+      seek(cachehandle, infotable[I].filepos);
+      for J := 0 to 17 do
+      begin
+        fread(@Plane, 4096, 1, cachehandle);
+        Out.Add(Format('B %d %d %d %s %s', [I - Startsp - 1, I, J, '"' + string(NameOf(I)) + '"', Crc(@Plane, 4096)]));
+      end;
+    end;
   Out.SaveToFile(ParamStr(2));
   Out.Clear;
   // mappe: DoLoadMapData originale (18 piani da 4096 letti uno dopo l'altro) da file .LAY

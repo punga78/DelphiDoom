@@ -16,7 +16,9 @@ uses
   DelphiDoom.EndoomEditor.Intf,
   DelphiDoom.EndoomEditor.Presenter,
   DelphiDoom.FontEditor.Intf,
-  DelphiDoom.FontEditor.Presenter;
+  DelphiDoom.FontEditor.Presenter,
+  DelphiDoom.VoxelEditor.Intf,
+  DelphiDoom.VoxelEditor.Presenter;
 
 type
   /// <summary>
@@ -34,6 +36,7 @@ type
     FExporter: IEndoomEditorImageExporter;
     FDialogs: IEndoomEditorDialogs;
     FFontDialogs: IFontEditorDialogs;
+    FVoxelDialogs: IVoxelEditorDialogs;
   public
     constructor Create(const ATitle: string);
     /// <summary>
@@ -43,6 +46,8 @@ type
     function CreateEndoomEditor(const AView: IEndoomEditorView; out AFont: TBytes): TEndoomEditorPresenter;
     /// <summary>The presenter of the font editor for a window. The caller owns it and frees it before the window is gone</summary>
     function CreateFontEditor(const AView: IFontEditorView): TFontEditorPresenter;
+    /// <summary>The presenter of the voxel editor for a window. The caller owns it and frees it before the window is gone</summary>
+    function CreateVoxelEditor(const AView: IVoxelEditorView): TVoxelEditorPresenter;
     /// <summary>The version of the program, from its version resource</summary>
     function VersionText: string;
     property Title: string read FTitle;
@@ -51,14 +56,15 @@ type
 implementation
 
 uses
-  DelphiDoom.Tools.Factory, DelphiDoom.Tools.Types,
+  DelphiDoom.Tools.Factory, DelphiDoom.Tools.Types, DelphiDoom.VoxelEditor.Types,
   DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.EditorFactory,
   DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf, DelphiDoom.Endoom.TextArt.Factory,
   DelphiDoom.Imaging.Resampler,
   DelphiDoom.Wad.Factory, DelphiDoom.Font.Intf, DelphiDoom.Font.Factory,
   DelphiDoom.Tools.Win.FileSystem, DelphiDoom.Tools.Win.EndoomDialogs, DelphiDoom.Tools.Win.EndoomClipboard,
   DelphiDoom.Tools.Win.ImageExporter, DelphiDoom.Tools.Win.FontRasterizer, DelphiDoom.Tools.Win.FontCatalog,
-  DelphiDoom.Tools.Win.FontInstaller, DelphiDoom.Tools.Win.FontDialogs, DelphiDoom.Tools.Win.FontImageExporter;
+  DelphiDoom.Tools.Win.FontInstaller, DelphiDoom.Tools.Win.FontDialogs, DelphiDoom.Tools.Win.FontImageExporter,
+  DelphiDoom.Tools.Win.VoxelDialogs, DelphiDoom.Tools.Win.VoxelClipboard, DelphiDoom.Tools.Win.VoxelImageFiles;
 
 { TToolsServices }
 
@@ -72,6 +78,7 @@ begin
   FExporter := TVclEndoomImageExporter.Create;
   FDialogs := TVclEndoomEditorDialogs.Create(ATitle, VersionText);
   FFontDialogs := TVclFontEditorDialogs.Create('DelphiDoom Font Creator', VersionText);
+  FVoxelDialogs := TVclVoxelEditorDialogs.Create(VOXEL_EDITOR_TITLE, VersionText);
 end;
 
 function TToolsServices.VersionText: string;
@@ -112,6 +119,14 @@ begin
     TToolsFactory.CreateRecentFiles(TOOLS_RECENT_FILES_LIMIT), TToolsFactory.CreateUndoHistory(TOOLS_UNDO_LIMIT),
     TFontFactory.CreateGridComposer(LRasterizer), TFontFactory.CreateTextComposer(LRasterizer),
     TFontFactory.CreateWadGenerator(LRasterizer, TWadFactory.CreateBuilder));
+end;
+
+function TToolsServices.CreateVoxelEditor(const AView: IVoxelEditorView): TVoxelEditorPresenter;
+begin
+  Result := TVoxelEditorPresenter.Create(AView, FVoxelDialogs, TVclVoxelEditorClipboard.Create,
+    TVclVoxelImageLoader.Create, TVclVoxelImageExporter.Create, FFileSystem,
+    TToolsFactory.CreateFileBackup(FFileSystem), FSettings, TToolsFactory.CreateRecentFiles(TOOLS_RECENT_FILES_LIMIT),
+    TToolsFactory.CreateUndoHistory(TOOLS_UNDO_LIMIT));
 end;
 
 end.
