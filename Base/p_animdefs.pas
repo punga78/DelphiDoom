@@ -43,20 +43,6 @@ uses
 //==============================================================================
 procedure P_AnimateSurfaces;
 
-//==============================================================================
-//
-// P_InitAnimations
-//
-//==============================================================================
-procedure P_InitAnimations;
-
-//==============================================================================
-//
-// P_ShutDownAnimations
-//
-//==============================================================================
-procedure P_ShutDownAnimations;
-
 const
   MAX_ANIM_DEFS = 128;
   MAX_FRAME_DEFS = 512;
@@ -138,28 +124,6 @@ begin
     end;
   end;
 
-end;
-
-//==============================================================================
-//
-// P_InitAnimations
-//
-//==============================================================================
-procedure P_InitAnimations;
-begin
-  animatedflatslist := TDNumberList.Create;
-  animatedtextureslist := TDNumberList.Create;
-end;
-
-//==============================================================================
-//
-// P_ShutDownAnimations
-//
-//==============================================================================
-procedure P_ShutDownAnimations;
-begin
-  FreeAndNil(animatedflatslist);
-  FreeAndNil(animatedtextureslist);
 end;
 
 end.

@@ -79,7 +79,6 @@ uses
   udmf_spec,
   p_spec,
   p_switch,
-  p_animdefs,
   po_man,
   DelphiDoom.Engine.Level.TransparentLines,
   DelphiDoom.Engine.Level.ColormapLines;
@@ -110,13 +109,12 @@ procedure TStrifeLevelRules.InitializeData;
 begin
   P_InitSwitchList;
   P_InitPicAnims;
-  P_InitAnimations;
   FAnimDefs.Load; // Init flat and texture animations
 end;
 
 procedure TStrifeLevelRules.ShutDownData;
 begin
-  P_ShutDownAnimations;
+  FAnimDefs.Release;
 end;
 
 function TStrifeLevelRules.TracesSteps: Boolean;

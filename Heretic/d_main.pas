@@ -46,6 +46,7 @@ uses
   doomdef,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Nodes.Intf,
   DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Engine.Net.Intf,
   DelphiDoom.Engine.Configuration.Intf,
@@ -53,6 +54,9 @@ uses
   DelphiDoom.Scanner.Preprocessor.Intf,
   DelphiDoom.Engine.ActorDef.Intf,
   DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Video.Intf,
+  DelphiDoom.Engine.MapInfo.Intf,
   DelphiDoom.Engine.Endoom.Intf;
 
 const
@@ -220,6 +224,17 @@ function D_FileInDoomPath(const fn: string): string;
 //==============================================================================
 procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 
+{$IFDEF OPENGL}
+//==============================================================================
+//
+// D_ConfigureGlbsp
+// Gives the glBSP runner that builds the GL nodes of the files added at startup
+// (ComposeEngine, OpenGL only)
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+
+{$ENDIF}
 //==============================================================================
 //
 // D_ConfigureGameDefines
@@ -249,6 +264,28 @@ procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
 //
 //==============================================================================
 procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
+//==============================================================================
+//
+// D_ConfigureStartup
+//
+// The expander of the response files (@name) and the resolver of the screen size from the
+// command line, given by the composition root; without them the start of the game stops
+// with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+  const AScreenSize: IScreenSizeResolver);
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+// The UMAPINFO records, given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
 
 //==============================================================================
 //
@@ -316,6 +353,8 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.CommandLine.FileList,
+  DelphiDoom.Wad.Pak.GameDirectories,
   deh_base,
   deh_main,
   doomstat,
@@ -344,7 +383,6 @@ uses
   DelphiDoom.Iwad.Types,
 {$IFDEF OPENGL}
   gl_main,
-  nd_main,
 {$ELSE}
   r_defs,
   r_fake3d,
@@ -457,6 +495,73 @@ begin
   if main_autoload = nil then
     I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
   result := main_autoload;
+end;
+
+var
+  // given by the composition root (D_ConfigureStartup)
+  main_responsefiles: IResponseFileExpander = nil;
+  main_screensize: IScreenSizeResolver = nil;
+
+//==============================================================================
+//
+// D_ConfigureStartup
+//
+//==============================================================================
+procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+  const AScreenSize: IScreenSizeResolver);
+begin
+  main_responsefiles := AResponseFiles;
+  main_screensize := AScreenSize;
+end;
+
+var
+  // given by the composition root (D_ConfigureMapInfo)
+  main_mapinfo: IEngineMapInfoRecords = nil;
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
+begin
+  main_mapinfo := ARecords;
+end;
+
+//==============================================================================
+//
+// D_ResponseFiles
+//
+//==============================================================================
+function D_ResponseFiles: IResponseFileExpander;
+begin
+  if main_responsefiles = nil then
+    I_Error('D_ConfigureStartup() was not called: the response files cannot be read');
+  result := main_responsefiles;
+end;
+
+//==============================================================================
+//
+// D_ScreenSize
+//
+//==============================================================================
+function D_ScreenSize: IScreenSizeResolver;
+begin
+  if main_screensize = nil then
+    I_Error('D_ConfigureStartup() was not called: the screen size cannot be read');
+  result := main_screensize;
+end;
+
+//==============================================================================
+//
+// D_MapInfo
+//
+//==============================================================================
+function D_MapInfo: IEngineMapInfoRecords;
+begin
+  if main_mapinfo = nil then
+    I_Error('D_ConfigureMapInfo() was not called: UMAPINFO cannot be read');
+  result := main_mapinfo;
 end;
 
 var
@@ -1207,6 +1312,34 @@ end;
 var
   wadfiles: TDStringList;
 
+{$IFDEF OPENGL}
+var
+  // given by the composition root (D_ConfigureGlbsp)
+  glbsp_runner: IEngineGlbspRunner = nil;
+
+//==============================================================================
+//
+// D_ConfigureGlbsp
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+begin
+  glbsp_runner := ARunner;
+end;
+
+//==============================================================================
+//
+// D_GlbspRunner
+//
+//==============================================================================
+function D_GlbspRunner: IEngineGlbspRunner;
+begin
+  if glbsp_runner = nil then
+    I_Error('D_AddFile(): the glBSP runner was not given (D_ConfigureGlbsp)');
+  result := glbsp_runner;
+end;
+{$ENDIF}
+
 //==============================================================================
 //
 // D_AddFile
@@ -1256,7 +1389,7 @@ begin
             gwafname := path + fname(gwafname);
             if fexists(gwafname) then
               wadfiles.Add(gwafname)
-            else if gld_BuildNodes(fname2, gwafname) then
+            else if D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
               wadfiles.Add(gwafname);
           end;
         end;
@@ -1275,18 +1408,12 @@ end;
 //==============================================================================
 procedure D_WadsAutoLoad(fnames: string);
 var
-  s1, s2: string;
+  names: TArray<string>;
+  i: integer;
 begin
-  trimproc(fnames);
-  if fnames = '' then
-    exit;
-
-  if CharPos(';', fnames) > 0 then
-    splitstring_ch(fnames, s1, s2, ';')
-  else
-    splitstring_ch(fnames, s1, s2, ',');
-  D_AddFile(s1);
-  D_WadsAutoLoad(s2);
+  names := TCommandLineFileList.Split(fnames);
+  for i := 0 to Length(names) - 1 do
+    D_AddFile(names[i]);
 end;
 
 //==============================================================================
@@ -1296,18 +1423,12 @@ end;
 //==============================================================================
 procedure D_PaksAutoload(fnames: string);
 var
-  s1, s2: string;
+  names: TArray<string>;
+  i: integer;
 begin
-  trimproc(fnames);
-  if fnames = '' then
-    exit;
-
-  if CharPos(';', fnames) > 0 then
-    splitstring_ch(fnames, s1, s2, ';')
-  else
-    splitstring_ch(fnames, s1, s2, ',');
-  PAK_AddFile(s1);
-  D_PaksAutoload(s2);
+  names := TCommandLineFileList.Split(fnames);
+  for i := 0 to Length(names) - 1 do
+    PAK_AddFile(names[i]);
 end;
 
 var
@@ -1413,67 +1534,16 @@ end;
 //==============================================================================
 procedure FindResponseFile;
 var
+  arguments: TArray<string>;
   i: integer;
-  handle: file;
-  size: integer;
-  index: integer;
-  myargv1: string;
-  infile: string;
-  filename: string;
-  afilename: AnsiString;
-  s: TDStringList;
 begin
-  s := TDStringList.Create;
-  try
-    s.Add(myargv[0]);
-
-    for i := 1 to myargc - 1 do
-    begin
-      if myargv[i][1] = '@' then
-      begin
-        // READ THE RESPONSE FILE INTO MEMORY
-        myargv1 := Copy(myargv[i], 2, length(myargv[i]) - 1);
-        if fopen(handle, myargv1, fOpenReadOnly) then
-        begin
-          printf('Found response file %s!'#13#10, [myargv1]);
-
-          size := FileSize(handle);
-          seek(handle, 0);
-          SetLength(afilename, size);
-          if size > 0 then
-            BlockRead(handle, (@afilename[1])^, size);
-          close(handle);
-          filename := string(afilename);
-
-          infile := '';
-          for index := 1 to Length(filename) do
-            if filename[index] = ' ' then
-              infile := infile + #13#10
-            else
-              infile := infile + filename[i];
-
-          s.Text := s.Text + infile;
-        end
-        else
-          printf(#13#10'No such response file: %s!'#13#10, [myargv1]);
-      end
-      else
-        s.Add(myargv[i])
-    end;
-
-    index := 0;
-    for i := 0 to s.Count - 1 do
-      if s[i] <> '' then
-      begin
-        myargv[index] := s[i];
-        inc(index);
-        if index = MAXARGS then
-          break;
-      end;
-    myargc := index;
-  finally
-    s.Free;
-  end;
+  SetLength(arguments, myargc);
+  for i := 0 to myargc - 1 do
+    arguments[i] := myargv[i];
+  arguments := D_ResponseFiles.Expand(arguments, MAXARGS);
+  for i := 0 to Length(arguments) - 1 do
+    myargv[i] := arguments[i];
+  myargc := Length(arguments);
 end;
 
 {$IFNDEF OPENGL}
@@ -1710,6 +1780,7 @@ end;
 procedure D_IdentifyGameDirectories;
 var
   gamedirectorystring: string;
+  wadnames: TArray<string>;
   i: integer;
   wad: string;
 begin
@@ -1721,14 +1792,10 @@ begin
     if gamemode = extendedwad then
       gamedirectorystring := 'EXTENDED,HERETIC-EXT,' + gamedirectorystring;
   end;
-  for i := wadfiles.Count - 1 downto 0 do
-  begin
-    wad := strupper(fname(wadfiles[i]));
-    if CharPos('.', wad) > 0 then
-      wad := Copy(wad, 1, CharPos('.', wad) - 1);
-    if Pos(',' + wad + ',', ',' + gamedirectorystring + ',') = 0 then
-      gamedirectorystring := wad + ',' + gamedirectorystring;
-  end;
+  SetLength(wadnames, wadfiles.Count);
+  for i := 0 to wadfiles.Count - 1 do
+    wadnames[i] := strupper(fname(wadfiles[i]));
+  gamedirectorystring := TPakGameDirectories.Compose(gamedirectorystring, wadnames);
 
   gamedirectories := PAK_GetDirectoryListFromString(gamedirectorystring);
   for i := 0 to gamedirectories.Count - 1 do
@@ -1748,7 +1815,6 @@ end;
 procedure D_CheckCommonParams;
 var
   p: integer;
-  s1, s2: string;
 begin
   p := M_CheckParm('-fullscreen');
   if (p <> 0) and (p <= myargc - 1) then
@@ -1852,113 +1918,7 @@ begin
   if (p <> 0) and (p <= myargc - 1) then
     usejoystick := true;
 
-  p := M_CheckParm('-screenwidth');
-  if (p <> 0) and (p < myargc - 1) then
-    SCREENWIDTH := atoi(myargv[p + 1]);
-  if SCREENWIDTH > MAXWIDTH then
-    SCREENWIDTH := MAXWIDTH;
-
-  p := M_CheckParm('-screenheight');
-  if (p <> 0) and (p < myargc - 1) then
-    SCREENHEIGHT := atoi(myargv[p + 1]);
-  if SCREENHEIGHT > MAXHEIGHT then
-    SCREENHEIGHT := MAXHEIGHT;
-
-  p := M_CheckParm('-geom');
-  if (p <> 0) and (p < myargc - 1) then
-  begin
-    splitstring(myargv[p + 1], s1, s2, ['X', 'x']);
-    SCREENWIDTH := atoi(s1);
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    if SCREENWIDTH < MINWIDTH then
-      SCREENWIDTH := MINWIDTH;
-    SCREENHEIGHT := atoi(s2);
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-    if SCREENHEIGHT < MINHEIGHT then
-      SCREENHEIGHT := MINHEIGHT;
-  end;
-
-  p := M_CheckParm('-fullhd');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 1920;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 1080;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  p := M_CheckParm('-vga');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 640;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 480;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  p := M_CheckParm('-svga');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 800;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 600;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  p := M_CheckParm('-cga');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 320;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 200;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  p := M_CheckParm('-cgaX2');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 640;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 400;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  p := M_CheckParm('-cgaX3');
-  if (p <> 0) and (p < myargc) then
-  begin
-    SCREENWIDTH := 960;
-    if SCREENWIDTH > MAXWIDTH then
-      SCREENWIDTH := MAXWIDTH;
-    SCREENHEIGHT := 600;
-    if SCREENHEIGHT > MAXHEIGHT then
-      SCREENHEIGHT := MAXHEIGHT;
-  end;
-
-  if SCREENHEIGHT = -1 then
-    SCREENHEIGHT := I_ScreenHeight;
-  if SCREENHEIGHT > MAXHEIGHT then
-    SCREENHEIGHT := MAXHEIGHT
-  else if SCREENHEIGHT < MINHEIGHT then
-    SCREENHEIGHT := MINHEIGHT;
-
-  if SCREENWIDTH = -1 then
-    SCREENWIDTH := I_ScreenWidth;
-  if SCREENWIDTH > MAXWIDTH then
-    SCREENWIDTH := MAXWIDTH
-  else if SCREENWIDTH < MINWIDTH then
-    SCREENWIDTH := MINWIDTH;
+  D_ScreenSize.Resolve(SCREENWIDTH, SCREENHEIGHT);
 
   {$IFNDEF OPENGL}
   WINDOWWIDTH := SCREENWIDTH;
@@ -2533,7 +2493,7 @@ begin
 
   // UMAPINFO must be parsed after intializing the menus
   printf('U_ParseMapInfo: Parsing UMAPINFO lumps.'#13#10);
-  U_ParseMapInfo(False, 'UMAPINFO');
+  D_MapInfo.Load(False, 'UMAPINFO');
 
   SUC_Progress(59);
 
@@ -2822,7 +2782,7 @@ begin
   if main_endoom <> nil then
     main_endoom.Shutdown;
   printf('U_FreeMapInfo: Free UMAPINFO data.'#13#10);
-  U_FreeMapInfo;
+  D_MapInfo.Release;
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);
