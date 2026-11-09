@@ -40,7 +40,6 @@ implementation
 
 uses
   System.SysUtils,
-  d_delphi,
   w_pak;
 
 var

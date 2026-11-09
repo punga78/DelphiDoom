@@ -32,8 +32,7 @@ implementation
 
 uses
   DelphiDoom.Console.Numbers,
-  System.SysUtils,
-  c_cmds;
+  System.SysUtils;
 
 const
   SDefaultsIsNil = 'TEngineCvarSetter: the defaults are nil';

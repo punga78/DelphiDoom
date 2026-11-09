@@ -61,7 +61,6 @@ implementation
 uses
   d_delphi,
   g_game,
-  i_system,
   m_argv,
   r_main,
   tables,

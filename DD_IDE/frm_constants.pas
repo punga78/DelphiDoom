@@ -3,10 +3,25 @@ unit frm_constants;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, ComCtrls, StdCtrls, Buttons, ExtCtrls,
-  SynEdit, SynHighlighterDDScript,
-  DelphiDoom.Ide.Composition, DelphiDoom.Ide.Vcl.ExampleEdit, DelphiDoom.Ide.Vcl.ListPanel;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ImgList,
+  ComCtrls,
+  StdCtrls,
+  Buttons,
+  ExtCtrls,
+  SynEdit,
+  SynHighlighterDDScript,
+  DelphiDoom.Ide.Composition,
+  DelphiDoom.Ide.Vcl.ExampleEdit,
+  DelphiDoom.Ide.Vcl.ListPanel;
 
 type
   /// <summary>
@@ -55,8 +70,8 @@ implementation
 {$R *.dfm}
 
 uses
-  DelphiDoom.Ide.LibraryTable, DelphiDoom.Ide.NameValueTable, DelphiDoom.Ide.ActorDefFunctionTable,
-  DelphiDoom.Ide.UnitFunctionTable;
+  DelphiDoom.Ide.LibraryTable,
+  DelphiDoom.Ide.NameValueTable;
 
 constructor TFrame_Constants.Create(AOwner: TComponent);
 begin

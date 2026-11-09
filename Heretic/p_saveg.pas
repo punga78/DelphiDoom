@@ -188,7 +188,6 @@ uses
   p_lights,
   p_params,
   p_levelinfo,
-  p_udmf,
   po_man,
   ps_main,
   psi_globals,

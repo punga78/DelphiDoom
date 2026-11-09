@@ -129,7 +129,6 @@ uses
   mt_utils,
   i_system,
   i_main,
-  i_threads,
   i_mainwindow,
   r_hires,
   v_data,

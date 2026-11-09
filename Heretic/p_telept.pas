@@ -59,7 +59,6 @@ function P_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; destfogdz: fi
 implementation
 
 uses
-  d_delphi,
   doomdef,
   d_think,
   d_player,
@@ -70,7 +69,6 @@ uses
   p_tick,
   p_mobj,
   p_map,
-  s_sound,
   sounddata,
   udmf_telept,
   DelphiDoom.Thinkers.Teleport.Geometry,

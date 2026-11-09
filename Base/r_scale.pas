@@ -64,7 +64,6 @@ var
 implementation
 
 uses
-  doomtype,
   r_segs,
   r_main;
 

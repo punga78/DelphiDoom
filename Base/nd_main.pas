@@ -35,8 +35,6 @@ interface
 
 uses
   System.SysUtils,
-  d_delphi,
-  doomdata,
   r_defs,
   m_fixed;
 

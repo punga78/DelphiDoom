@@ -333,7 +333,6 @@ implementation
 uses
   c_cmds,
   i_system,
-  m_misc,
   z_zone;
 
 var

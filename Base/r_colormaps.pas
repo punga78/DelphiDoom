@@ -129,7 +129,6 @@ uses
   r_data,
   r_defs,
   r_draw,
-  v_data,
   w_wad,
   z_zone;
 

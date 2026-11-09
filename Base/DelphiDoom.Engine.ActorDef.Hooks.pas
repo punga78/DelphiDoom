@@ -47,7 +47,6 @@ type
 implementation
 
 uses
-  d_delphi,
   deh_base,
   ps_main,
   w_pak;

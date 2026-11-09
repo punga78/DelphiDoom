@@ -128,8 +128,7 @@ uses
   p_setup,
   p_slopes,
   p_spec,
-  r_main,
-  tables;
+  r_main;
 
 //==============================================================================
 // P_3dFloorNumber

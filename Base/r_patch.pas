@@ -77,7 +77,6 @@ implementation
 
 uses
   i_system,
-  r_defs,
   r_data,
   z_zone,
   DelphiDoom.Imaging.Types;

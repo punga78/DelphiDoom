@@ -36,8 +36,7 @@ interface
 {$IFDEF DEBUG}
 uses
   d_delphi,
-  r_visplanes,
-  r_defs;
+  r_visplanes;
 
 //==============================================================================
 //

@@ -48,9 +48,7 @@ uses
   r_cache_main,
   r_cache_walls,
   r_column,
-  r_data,
-  r_sky,
-  v_video;
+  r_data;
 
 //==============================================================================
 // R_ReadDC32InternalSkyCache2

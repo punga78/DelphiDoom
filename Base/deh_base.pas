@@ -33,7 +33,6 @@ interface
 uses
   d_delphi,
   d_think,
-  m_fixed,
   DelphiDoom.Actions.Intf,
   DelphiDoom.TableExport.Intf,
   DelphiDoom.Engine.Dehacked.Intf;

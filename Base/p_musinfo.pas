@@ -71,7 +71,6 @@ uses
   p_setup,
   p_levelinfo,
   sounddata,
-  sounds,
   s_sound,
   w_wad;
 
