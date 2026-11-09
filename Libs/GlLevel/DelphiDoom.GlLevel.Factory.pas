@@ -19,12 +19,15 @@ type
   public
     /// <summary>The carver of the flats over a BSP and a place for the polygons</summary>
     class function CreateFlatCarver(const AWorld: IGlFlatWorld; const ASink: IGlFlatLoopSink): IGlFlatCarver; static;
+    /// <summary>The checks on the sectors of a level (special effects and isolated lines)</summary>
+    class function CreateSectorPreprocessor(const AWorld: IGlSectorWorld): IGlSectorPreprocessor; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.GlLevel.FlatCarver;
+  DelphiDoom.GlLevel.FlatCarver,
+  DelphiDoom.GlLevel.SectorPreprocessor;
 
 { TGlLevelFactory }
 
@@ -32,6 +35,11 @@ class function TGlLevelFactory.CreateFlatCarver(const AWorld: IGlFlatWorld;
   const ASink: IGlFlatLoopSink): IGlFlatCarver;
 begin
   Result := TGlFlatCarver.Create(AWorld, ASink);
+end;
+
+class function TGlLevelFactory.CreateSectorPreprocessor(const AWorld: IGlSectorWorld): IGlSectorPreprocessor;
+begin
+  Result := TGlSectorPreprocessor.Create(AWorld);
 end;
 
 end.
