@@ -37,7 +37,7 @@ type
   public
     /// <summary>The name to give to TryFromName of the library of AArea</summary>
     class function ProfileOf(const AGame: string; AArea: TGameProfileArea): string; static;
-    /// <summary>True when the game borrows the profile of another game in at least one area</summary>
+    /// <summary>True (Speed, Radix) when the game borrows the profile of another game in at least one area</summary>
     class function IsAlias(const AGame: string): Boolean; static;
   end;
 
@@ -49,6 +49,7 @@ uses
 const
   DOOM_NAME = 'Doom';
   SPEED_NAME = 'Speed';
+  RADIX_NAME = 'Radix';
 
 { TGameAliases }
 
@@ -62,11 +63,18 @@ begin
     // see README.md) and the IWAD is not borrowed
     if AArea <> TGameProfileArea.Iwad then
       Result := DOOM_NAME;
+  if SameText(AGame, RADIX_NAME) then
+    // Radix (a space shooter on the engine of Doom) moves floors, ceilings, platforms, doors and
+    // lights as Doom does (the analysis of the fork, docs\INTEGRAZIONE_GIOCHI.md); its tables of
+    // things, states and weapons (radix info.pas, radix_actions), its IWAD and its maps are its
+    // own and do not borrow anything: they give an error until the profile of Radix exists
+    if AArea in [TGameProfileArea.Lights, TGameProfileArea.Platforms, TGameProfileArea.Doors] then
+      Result := DOOM_NAME;
 end;
 
 class function TGameAliases.IsAlias(const AGame: string): Boolean;
 begin
-  Result := SameText(AGame, SPEED_NAME);
+  Result := SameText(AGame, SPEED_NAME) or SameText(AGame, RADIX_NAME);
 end;
 
 end.
