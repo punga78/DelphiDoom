@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the xcom engine - a small game made of fakes: a memory  }
 {  display, a manual clock, a queue of events, and resources with a font drawn  }
@@ -38,6 +38,7 @@ type
     function GetInterface(const AId: string): TXcomRuleInterface;
     function GetPalette(const AName: string): PXcomColor;
     function CursorColor(const APalette: string): Integer;
+    function HasSoundDefinitions: Boolean;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     property PaletteCalls: Integer read FPaletteCalls;
   end;
@@ -256,6 +257,11 @@ begin
     Result := 144
   else
     Result := 252;
+end;
+
+function TFakeResources.HasSoundDefinitions: Boolean;
+begin
+  Result := True;
 end;
 
 procedure TFakeResources.SetPalette(AColors: PXcomColor; AFirst, ACount: Integer);

@@ -55,6 +55,8 @@ type
     procedure LoadLanguages; virtual;
     /// <summary>Game::setVolume: the volumes of the sounds, the music and the interface</summary>
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
+    /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
+    function CurrentMusicFormat: string; virtual;
   end;
 
   /// <summary>
@@ -144,6 +146,11 @@ end;
 
 procedure TXcomStateHost.SetVolume(ASound, AMusic, AUi: Integer);
 begin
+end;
+
+function TXcomStateHost.CurrentMusicFormat: string;
+begin
+  Result := 'Adlib';
 end;
 
 { TXcomState }

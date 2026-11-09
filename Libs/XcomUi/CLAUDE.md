@@ -10,4 +10,6 @@
 
 **erappole dei controlli**: `OffsetBlock` stringe il valore nel blocco di 16 colori (un pixel a 80 con -5 resta 80); `eextList.GetSelectedRow` prima del primo passaggio del mouse da' la riga 0 (come il C++); le frecce di riga prendono la Y solo quando la lista e' disegnata (`Blit`); `eextList.Scrolleo` disegna subito; `InteractiveSurface.SetFocus` e `Unpress` sono virtuali (`eextEdit` e `eextList` li ridefiniscono).
 
-eest: `eests\DelphiDoom.eests.XcomEngine` (293 test con i controlli).
+**Parita' dei controlli**: `TextList`, `ComboBox`, `ScrollBar`, `ArrowButton`, `TextEdit` (testo grande), `ToggleTextButton` sono nei frame confrontati col vero OpenXcom (schermata video delle opzioni e lista delle lingue aperta, 0 pixel diversi). `Slider` e `Bar` no (`Slider` e' nella schermata audio, non confrontata). `ComboBox` con zero opzioni tiene una riga (la superficie non puo' essere vuota).
+
+Test: `Tests\DelphiDoom.Tests.XcomEngine` (319 test con i controlli e le opzioni).

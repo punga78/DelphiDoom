@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.XcomMenu.OptionsTypes,
-  DelphiDoom.XcomMenu.OptionsNavigator.Intf, DelphiDoom.XcomMenu.OptionsVideoState,
+  DelphiDoom.XcomMenu.OptionsNavigator.Intf, DelphiDoom.XcomMenu.OptionsVideoState, DelphiDoom.XcomMenu.OptionsAudioState,
   DelphiDoom.XcomMenu.OptionsConfirmState, DelphiDoom.Tests.XcomEngine.World;
 
 type
@@ -45,6 +45,15 @@ type
     procedure List(out ACodes, ANames: TArray<string>);
     function Load(const ALanguageId: string; AWordwrap: TXcomTextWrapping;
       const AResources: IXcomResources): TXcomLanguage;
+  end;
+
+  TFakeAudio = class(TInterfacedObject, IXcomAudioDevice)
+  public
+    Sound: Integer;
+    Music: Integer;
+    Ui: Integer;
+    function IsAvailable: Boolean;
+    procedure SetVolume(ASound, AMusic, AUi: Integer);
   end;
 
   TFakeModes = class(TInterfacedObject, IXcomDisplayModes)
@@ -90,6 +99,32 @@ type
     procedure IlNomeDiUnaLinguaSconosciutaELSuoCodice;
     [Test]
     procedure ILNomiSonoQuelliDelMenu;
+  end;
+
+  [TestFixture]
+  [Category('XcomOptions')]
+  TTestXcomOptionsAudio = class
+  strict private
+    FWorld: TTestWorld;
+    FAudio: TFakeAudio;
+    FAudioRef: IXcomAudioDevice;
+    FNavigator: TFakeNavigator;
+    FNavigatorRef: IXcomOptionsNavigator;
+    procedure Open;
+    procedure ClickAt(AX, AY: Integer);
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+    [Test]
+    procedure ElSliderDelVolumeDellaMusicaImpostaLOpzioneEIlVolume;
+    [Test]
+    procedure ILFormatoDellaMusicaChiedeIlRicaricamento;
+    [Test]
+    procedure IlSilenzioInSecondoPianoSiImposta;
+    [Test]
+    procedure ISlidersPartonoDalleOpzioni;
   end;
 
   [TestFixture]
@@ -170,6 +205,18 @@ function TFolderProviderForScreens.Load(const ALanguageId: string; AWordwrap: TX
   const AResources: IXcomResources): TXcomLanguage;
 begin
   Result := TXcomLanguage.Create(ALanguageId, AWordwrap, nil, nil);
+end;
+
+function TFakeAudio.IsAvailable: Boolean;
+begin
+  Result := True;
+end;
+
+procedure TFakeAudio.SetVolume(ASound, AMusic, AUi: Integer);
+begin
+  Sound := ASound;
+  Music := AMusic;
+  Ui := AUi;
 end;
 
 function TFakeModes.Modes: TArray<TXcomDisplayMode>;
@@ -382,6 +429,75 @@ begin
   Assert.AreEqual('Fran' + #$E7 + 'ais (FR)', TXcomLanguage.NameOf('fr'));
   Assert.AreEqual(#$0420#$0443#$0441#$0441#$043A#$0438#$0439, TXcomLanguage.NameOf('ru'));
   Assert.AreEqual('Portugu' + #$EA + 's (BR)', TXcomLanguage.NameOf('pt-BR'));
+end;
+
+{ TTestXcomOptionsAudio }
+
+procedure TTestXcomOptionsAudio.Setup;
+begin
+  FWorld := TTestWorld.Create;
+  FAudio := TFakeAudio.Create;
+  FAudioRef := FAudio;
+  FNavigator := TFakeNavigator.Create;
+  FNavigatorRef := FNavigator;
+  FWorld.Game.SetAudioDevice(FAudioRef);
+end;
+
+procedure TTestXcomOptionsAudio.TearDown;
+begin
+  FNavigatorRef := nil;
+  FAudioRef := nil;
+  FWorld.Free;
+end;
+
+procedure TTestXcomOptionsAudio.ClickAt(AX, AY: Integer);
+begin
+  FWorld.Click(Round(AX * FWorld.Game.Screen.XScale), Round(AY * FWorld.Game.Screen.YScale));
+end;
+
+procedure TTestXcomOptionsAudio.Open;
+begin
+  FWorld.Game.PushState(TXcomOptionsAudioState.Create(FWorld.Game, ooMenu, FNavigatorRef));
+  FWorld.Wait(400);
+end;
+
+procedure TTestXcomOptionsAudio.ISlidersPartonoDalleOpzioni;
+begin
+  Assert.AreEqual(84, FWorld.Game.Options.MusicVolume);
+  Open;
+  // nothing changes until a slider is moved
+  Assert.AreEqual(84, FWorld.Game.Options.MusicVolume);
+  Assert.AreEqual(0, FAudio.Music);
+end;
+
+procedure TTestXcomOptionsAudio.ElSliderDelVolumeDellaMusicaImpostaLOpzioneEIlVolume;
+begin
+  Open;
+  // the slider of the music is at 94,18 (104 wide): a click at its right end gives the maximum
+  ClickAt(196, 26);
+  Assert.AreEqual(128, FWorld.Game.Options.MusicVolume);
+  Assert.AreEqual(128, FAudio.Music);
+  Assert.AreEqual(FWorld.Game.Options.SoundVolume, FAudio.Sound);
+end;
+
+procedure TTestXcomOptionsAudio.ILFormatoDellaMusicaChiedeIlRicaricamento;
+begin
+  Open;
+  // the combo of the music format is at 206,50; its list opens below, 9 pixels a row from 69
+  ClickAt(258, 58);
+  ClickAt(258, 91);
+  FWorld.Wait(50);
+  Assert.AreEqual(2, FWorld.Game.Options.PreferredMusic);
+  Assert.IsTrue(FWorld.Game.Options.Reload);
+end;
+
+procedure TTestXcomOptionsAudio.IlSilenzioInSecondoPianoSiImposta;
+begin
+  Open;
+  ClickAt(146, 122);
+  Assert.IsTrue(FWorld.Game.Options.BackgroundMute);
+  ClickAt(146, 122);
+  Assert.IsFalse(FWorld.Game.Options.BackgroundMute);
 end;
 
 { TTestXcomOptionsScreens }

@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - the game data of a mod as the interface    }
 {  needs it (a part of Mod of OpenXcom: palettes, full screen pictures, fonts,  }
@@ -55,6 +55,7 @@ type
     FBattlescapeCursor: Integer;
     FUfopaediaCursor: Integer;
     FGraphsCursor: Integer;
+    FHasSoundDefinitions: Boolean;
     procedure AddPalette(const AName: string; const APalette: TXcomPalette);
     procedure LoadPalettes;
     procedure LoadRulesets;
@@ -71,6 +72,7 @@ type
     destructor Destroy; override;
     /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
     procedure Load;
+    function HasSoundDefinitions: Boolean;
     function GetSurface(const AName: string): TXcomSurface;
     function GetFont(const AName: string): TXcomFont;
     function GetInterface(const AId: string): TXcomRuleInterface;
@@ -175,6 +177,8 @@ begin
     FUfopaediaCursor := TXcomYamlFields.ReadInteger(LConstants, 'ufopaediaCursor', FUfopaediaCursor);
     FGraphsCursor := TXcomYamlFields.ReadInteger(LConstants, 'graphsCursor', FGraphsCursor);
   end;
+  if Length(TXcomYamlFields.Sequence(ANode, 'soundDefs')) > 0 then
+    FHasSoundDefinitions := True;
   for LItem in TXcomYamlFields.Sequence(ANode, 'extraStrings') do
   begin
     LId := TXcomYamlFields.ReadString(LItem, 'type', '');
@@ -215,7 +219,7 @@ begin
     // the files that have none of the keys that are read here are not parsed (the big rulesets of the items...)
     LText := TEncoding.UTF8.GetString(LBytes);
     if (Pos('interfaces:', LText) = 0) and (Pos('constants:', LText) = 0) and (Pos('fontName:', LText) = 0) and
-      (Pos('extraStrings:', LText) = 0) then
+      (Pos('extraStrings:', LText) = 0) and (Pos('soundDefs:', LText) = 0) then
       Continue;
     try
       LoadRuleset(FParser.Load(LBytes));
@@ -224,6 +228,11 @@ begin
         raise EXcomEngineException.Create(LName + '.rul: ' + E.Message);
     end;
   end;
+end;
+
+function TXcomModResources.HasSoundDefinitions: Boolean;
+begin
+  Result := FHasSoundDefinitions;
 end;
 
 procedure TXcomModResources.LoadFonts;

@@ -32,7 +32,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.XcomMenu.OptionsVideoState;
+  DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.XcomMenu.OptionsVideoState, DelphiDoom.XcomMenu.OptionsAudioState;
 
 constructor TXcomMenuOptionsNavigator.Create(const AVersionText: string);
 begin
@@ -46,6 +46,8 @@ begin
   case ACategory of
     ocVideo:
       Result := TXcomOptionsVideoState.Create(AHost, AOrigin, Self);
+    ocAudio:
+      Result := TXcomOptionsAudioState.Create(AHost, AOrigin, Self);
   else
     Result := nil;
   end;

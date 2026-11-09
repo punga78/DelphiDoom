@@ -79,6 +79,12 @@ type
     NewGeoscapeScale: Integer;
     NewBattlescapeScale: Integer;
     CaptureMouse: Boolean;
+    /// <summary>MusicFormat, SoundFormat and VideoFormat of the audio options (0 is automatic / the animation)</summary>
+    PreferredMusic: Integer;
+    PreferredSound: Integer;
+    PreferredVideo: Integer;
+    CurrentSound: Integer;
+    BackgroundMute: Boolean;
     RootWindowedMode: Boolean;
     NewRootWindowedMode: Boolean;
     WindowedModePositionX: Integer;
@@ -158,6 +164,11 @@ begin
   KeyboardMode := kmOn;
   UseOpenGLShader := 'Shaders/Raw.OpenGL.shader';
   CaptureMouse := False;
+  PreferredMusic := 0;
+  PreferredSound := 0;
+  PreferredVideo := 0;
+  CurrentSound := 0;
+  BackgroundMute := False;
   RootWindowedMode := False;
   WindowedModePositionX := 0;
   WindowedModePositionY := 0;
@@ -274,6 +285,10 @@ begin
   WindowedModePositionX := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosX', WindowedModePositionX);
   WindowedModePositionY := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosY', WindowedModePositionY);
   UseOpenGLShader := TXcomYamlFields.ReadString(LNode, 'useOpenGLShader', UseOpenGLShader);
+  PreferredMusic := TXcomYamlFields.ReadInteger(LNode, 'preferredMusic', PreferredMusic);
+  PreferredSound := TXcomYamlFields.ReadInteger(LNode, 'preferredSound', PreferredSound);
+  PreferredVideo := TXcomYamlFields.ReadInteger(LNode, 'preferredVideo', PreferredVideo);
+  BackgroundMute := TXcomYamlFields.ReadBoolean(LNode, 'backgroundMute', BackgroundMute);
   SyncPendingDisplay;
 end;
 
@@ -298,6 +313,10 @@ begin
     '  mousewheelSpeed: ' + IntToStr(MousewheelSpeed) + #10 +
     '  changeValueByMouseWheel: ' + IntToStr(ChangeValueByMouseWheel) + #10 +
     '  captureMouse: ' + IntToStr(Ord(CaptureMouse)) + #10 +
+    '  preferredMusic: ' + IntToStr(PreferredMusic) + #10 +
+    '  preferredSound: ' + IntToStr(PreferredSound) + #10 +
+    '  preferredVideo: ' + IntToStr(PreferredVideo) + #10 +
+    '  backgroundMute: ' + Flag(BackgroundMute) + #10 +
     '  rootWindowedMode: ' + Flag(RootWindowedMode) + #10 +
     '  windowedModePosX: ' + IntToStr(WindowedModePositionX) + #10 +
     '  windowedModePosY: ' + IntToStr(WindowedModePositionY) + #10 +
