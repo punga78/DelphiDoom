@@ -274,6 +274,7 @@ uses
   DelphiDoom.GlLevel.Factory,
   DelphiDoom.Engine.GlLevel.FlatWorld,
   DelphiDoom.Engine.GlLevel.FlatLoopSink,
+  DelphiDoom.Engine.GlLevel.SectorWorld,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -1114,6 +1115,7 @@ procedure ComposeLevelGeometry;
 begin
   gld_ConfigureFlatCarver(TGlLevelFactory.CreateFlatCarver(TEngineGlFlatWorld.Create,
     TEngineGlFlatLoopSink.Create));
+  gld_ConfigureSectorPreprocessor(TGlLevelFactory.CreateSectorPreprocessor(TEngineGlSectorWorld.Create));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);

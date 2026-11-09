@@ -54,6 +54,21 @@ type
     Finish: TGlFixedPoint;
   end;
 
+  /// <summary>
+  ///   A line of a sector as the preprocessor of the sectors reads it: the numbers of its two vertexes in the
+  ///   vertex array of the level (a number outside the array is a line the old code stopped at) and, if it has
+  ///   both sides, the top and bottom textures of each side (zero = no texture)
+  /// </summary>
+  TGlSectorLine = record
+    Vertex1: Integer;
+    Vertex2: Integer;
+    HasBothSides: Boolean;
+    FrontTopTexture: Integer;
+    FrontBottomTexture: Integer;
+    BackTopTexture: Integer;
+    BackBottomTexture: Integer;
+  end;
+
   /// <summary>Is a sector closed (a sector that gets no flat)</summary>
   TGlSectorClosed = reference to function(const ASectorId: Integer): Boolean;
 
