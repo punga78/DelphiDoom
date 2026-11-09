@@ -19,7 +19,8 @@ uses
   DelphiDoom.XcomMod.RulesetSettings, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomBattle.Types,
   DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.Directions,
-  DelphiDoom.XcomSave.Node;
+  DelphiDoom.XcomSave.Node, DelphiDoom.XcomBattle.PathfindingNode, DelphiDoom.XcomBattle.PathfindingOpenSet,
+  DelphiDoom.XcomBattle.Pathfinding;
 
 type
   /// <summary>A generator that gives the numbers it was told to (and the minimum when it runs out)</summary>
@@ -116,6 +117,18 @@ type
     procedure DovrebbeSalvareECaricareUnaBattagliaVuota;
     [Test]
     procedure DovrebbeDareLeDirezioni;
+    [Test]
+    procedure DovrebbeDareICostiDellaCodaNelLOrdineDiLibstdcxx;
+    [Test]
+    procedure DovrebbeScartareLaVoceVecchiaDiUnNodoRimesso;
+    [Test]
+    procedure DovrebbeTrovareUnPercorsoDritto;
+    [Test]
+    procedure DovrebbeGirareIntornoAUnMuroConAStar;
+    [Test]
+    procedure DovrebbeRifiutareUnaDestinazioneFuoriDallaMappaOBloccata;
+    [Test]
+    procedure DovrebbeTrovareLeTegoleRaggiungibili;
   end;
 
 implementation
@@ -1047,6 +1060,209 @@ begin
   Assert.AreEqual(-1, TXcomDirections.ToVector(9).Z);
   Assert.AreEqual(3, TXcomDirections.FromVector(Pos3(1, 1, 0)));
   Assert.AreEqual(-1, TXcomDirections.FromVector(Pos3(0, 0, 0)));
+end;
+
+procedure TTestXcomBattleModel.DovrebbeDareICostiDellaCodaNelLOrdineDiLibstdcxx;
+var
+  LSet: TXcomPathfindingOpenSet;
+  LNodes: array[0..4] of TXcomPathfindingNode;
+  LIndex: Integer;
+  LCosts: array[0..4] of Integer;
+begin
+  LCosts[0] := 7;
+  LCosts[1] := 3;
+  LCosts[2] := 9;
+  LCosts[3] := 3;
+  LCosts[4] := 5;
+  LSet := TXcomPathfindingOpenSet.Create;
+  try
+    for LIndex := 0 to 4 do
+    begin
+      LNodes[LIndex] := TXcomPathfindingNode.Create(Pos3(LIndex, 0, 0));
+      LNodes[LIndex].Connect(LCosts[LIndex], nil, 0);
+      LSet.Push(LNodes[LIndex]);
+    end;
+    Assert.IsFalse(LSet.IsEmpty);
+    // lowest first; the two nodes of cost 3 come out in the order of the heap of libstdc++ (the later one first)
+    Assert.AreEqual(3, LSet.Pop.GetTuCost(False));
+    Assert.AreEqual(3, LSet.Pop.GetTuCost(False));
+    Assert.AreEqual(5, LSet.Pop.GetTuCost(False));
+    Assert.AreEqual(7, LSet.Pop.GetTuCost(False));
+    Assert.AreEqual(9, LSet.Pop.GetTuCost(False));
+    Assert.IsTrue(LSet.IsEmpty);
+    Assert.WillRaise(
+      procedure
+      begin
+        LSet.Pop;
+      end, EXcomBattleException);
+  finally
+    LSet.Free;
+    for LIndex := 0 to 4 do
+      LNodes[LIndex].Free;
+  end;
+end;
+
+procedure TTestXcomBattleModel.DovrebbeScartareLaVoceVecchiaDiUnNodoRimesso;
+var
+  LSet: TXcomPathfindingOpenSet;
+  LFirst, LSecond: TXcomPathfindingNode;
+begin
+  LFirst := TXcomPathfindingNode.Create(Pos3(0, 0, 0));
+  LSecond := TXcomPathfindingNode.Create(Pos3(1, 0, 0));
+  LSet := TXcomPathfindingOpenSet.Create;
+  try
+    LFirst.Connect(2, nil, 0);
+    LSecond.Connect(4, nil, 0);
+    LSet.Push(LFirst);
+    LSet.Push(LSecond);
+    // a cheaper way to the second node: the old entry stays in the heap but has no node
+    LSecond.Connect(1, LFirst, 3);
+    LSet.Push(LSecond);
+    Assert.AreSame(LSecond, LSet.Pop);
+    Assert.AreSame(LFirst, LSet.Pop);
+    Assert.IsTrue(LSet.IsEmpty);
+  finally
+    LSet.Free;
+    LSecond.Free;
+    LFirst.Free;
+  end;
+end;
+
+procedure TTestXcomBattleModel.DovrebbeTrovareUnPercorsoDritto;
+var
+  LBattle: TXcomSavedBattleGame;
+  LPathfinding: TXcomPathfinding;
+  LUnit: TXcomBattleUnit;
+  LPath: TArray<Integer>;
+  LIndex: Integer;
+begin
+  LBattle := TXcomSavedBattleGame.Create(Context([]));
+  LBattle.InitMap(6, 3, 1);
+  for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+    LBattle.TileByIndex(LIndex).SetMapData(MakePart(4), 0, 0, XCOM_PART_FLOOR);
+  LUnit := MakeUnit(Context([]), FACTION_PLAYER, 1);
+  LBattle.Units.Add(LUnit);
+  LPathfinding := TXcomPathfinding.Create(LBattle);
+  LBattle.Pathfinder := LPathfinding;
+  try
+    LUnit.SetPosition(Pos3(0, 1, 0));
+    LBattle.ResetUnitTiles;
+    LPathfinding.Calculate(LUnit, Pos3(4, 1, 0));
+    LPath := LPathfinding.Path;
+    Assert.AreEqual(4, Length(LPath));
+    for LIndex := 0 to 3 do
+      Assert.AreEqual(2, LPath[LIndex]);
+    Assert.AreEqual(16, LPathfinding.TotalTuCost);
+    Assert.AreEqual(2, LPathfinding.GetStartDirection);
+    Assert.AreEqual(2, LPathfinding.DequeuePath);
+    Assert.AreEqual(2, Length(LPathfinding.Path) - 1);
+    LPathfinding.AbortPath;
+    Assert.AreEqual(-1, LPathfinding.DequeuePath);
+    Assert.AreEqual(-1, LPathfinding.GetStartDirection);
+    // a diagonal step costs half as much again
+    LPathfinding.Calculate(LUnit, Pos3(1, 0, 0));
+    Assert.AreEqual(6, LPathfinding.TotalTuCost);
+  finally
+    LBattle.Free;
+  end;
+end;
+
+procedure TTestXcomBattleModel.DovrebbeGirareIntornoAUnMuroConAStar;
+var
+  LBattle: TXcomSavedBattleGame;
+  LPathfinding: TXcomPathfinding;
+  LUnit: TXcomBattleUnit;
+  LIndex: Integer;
+  LY: Integer;
+  LPath: TArray<Integer>;
+begin
+  LBattle := TXcomSavedBattleGame.Create(Context([]));
+  LBattle.InitMap(5, 5, 1);
+  for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+    LBattle.TileByIndex(LIndex).SetMapData(MakePart(4), 0, 0, XCOM_PART_FLOOR);
+  // a wall of objects that cannot be walked through, from the north down to the row 3 (column 2)
+  for LY := 0 to 3 do
+    LBattle.TileAt(Pos3(2, LY, 0)).SetMapData(MakePart(255), 1, 0, XCOM_PART_OBJECT);
+  LUnit := MakeUnit(Context([]), FACTION_PLAYER, 1);
+  LBattle.Units.Add(LUnit);
+  LPathfinding := TXcomPathfinding.Create(LBattle);
+  LBattle.Pathfinder := LPathfinding;
+  try
+    LUnit.SetPosition(Pos3(0, 0, 0));
+    LBattle.ResetUnitTiles;
+    LPathfinding.Calculate(LUnit, Pos3(4, 0, 0));
+    LPath := LPathfinding.Path;
+    Assert.IsTrue(Length(LPath) > 0);
+    Assert.IsTrue(Length(LPath) >= 4);
+    // it must go down to the row 4 to pass the wall
+    Assert.IsTrue(LPathfinding.TotalTuCost > 0);
+    LPathfinding.Calculate(LUnit, Pos3(2, 2, 0));
+    Assert.AreEqual(0, Length(LPathfinding.Path));
+  finally
+    LBattle.Free;
+  end;
+end;
+
+procedure TTestXcomBattleModel.DovrebbeRifiutareUnaDestinazioneFuoriDallaMappaOBloccata;
+var
+  LBattle: TXcomSavedBattleGame;
+  LPathfinding: TXcomPathfinding;
+  LUnit: TXcomBattleUnit;
+  LIndex: Integer;
+  LEnd: TXcomPosition;
+begin
+  LBattle := TXcomSavedBattleGame.Create(Context([]));
+  LBattle.InitMap(4, 4, 1);
+  for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+    LBattle.TileByIndex(LIndex).SetMapData(MakePart(4), 0, 0, XCOM_PART_FLOOR);
+  LUnit := MakeUnit(Context([]), FACTION_PLAYER, 1);
+  LBattle.Units.Add(LUnit);
+  LPathfinding := TXcomPathfinding.Create(LBattle);
+  LBattle.Pathfinder := LPathfinding;
+  try
+    LUnit.SetPosition(Pos3(0, 0, 0));
+    LBattle.ResetUnitTiles;
+    LPathfinding.Calculate(LUnit, Pos3(4, 0, 0));
+    Assert.AreEqual(0, Length(LPathfinding.Path));
+    LPathfinding.Calculate(LUnit, Pos3(-1, 0, 0));
+    Assert.AreEqual(0, Length(LPathfinding.Path));
+    Assert.IsFalse(LPathfinding.IsOnStairs(Pos3(0, 0, 0), Pos3(2, 2, 0)));
+    Assert.IsFalse(LPathfinding.ValidateUpDown(LUnit, Pos3(0, 0, 0), DIR_UP));
+    Assert.IsTrue(LPathfinding.IsBlocked(nil, 0, nil));
+    Assert.AreEqual(255, LPathfinding.GetTuCost(Pos3(0, 0, 0), 0, LEnd, LUnit, nil, False));
+  finally
+    LBattle.Free;
+  end;
+end;
+
+procedure TTestXcomBattleModel.DovrebbeTrovareLeTegoleRaggiungibili;
+var
+  LBattle: TXcomSavedBattleGame;
+  LPathfinding: TXcomPathfinding;
+  LUnit: TXcomBattleUnit;
+  LIndex: Integer;
+  LReach: TArray<Integer>;
+begin
+  LBattle := TXcomSavedBattleGame.Create(Context([]));
+  LBattle.InitMap(5, 5, 1);
+  for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+    LBattle.TileByIndex(LIndex).SetMapData(MakePart(4), 0, 0, XCOM_PART_FLOOR);
+  LUnit := MakeUnit(Context([]), FACTION_PLAYER, 1);
+  LBattle.Units.Add(LUnit);
+  LPathfinding := TXcomPathfinding.Create(LBattle);
+  LBattle.Pathfinder := LPathfinding;
+  try
+    LUnit.SetPosition(Pos3(2, 2, 0));
+    LBattle.ResetUnitTiles;
+    // 4 time units a step (6 diagonally): the 8 neighbours cost at most 6, so 9 tiles with the start
+    LReach := LPathfinding.FindReachable(LUnit, 6);
+    Assert.AreEqual(9, Length(LReach));
+    Assert.AreEqual(LBattle.TileIndex(Pos3(2, 2, 0)), LReach[0]);
+    LReach := LPathfinding.FindReachable(LUnit, 0);
+    Assert.AreEqual(1, Length(LReach));
+  finally
+    LBattle.Free;
+  end;
 end;
 
 initialization

@@ -19,6 +19,12 @@
 
 Dettagli del formato che la parita' ha mostrato: `tileIndexSize` e gli altri sono `char` e yaml-cpp li scrive come un carattere di controllo (`"\x04"`), `binTiles` e' uno scalare base64 **senza** tag `!!binary`; un oggetto con `owner` ma senza `inventoryslot` e' saltato dal caricamento (le armi speciali di OXCE): le munizioni date a un'unita' senza slot spariscono al `load`, e il C++ lo fa.
 
+## Fetta 2a: Pathfinding (fatta)
+
+`DelphiDoom.XcomBattle.Pathfinding` (**`TXcomPathfinding`**, implementa `IXcomBattlePathfinder`), `PathfindingNode`, `PathfindingOpenSet`. `calculate` (retta di Bresenham poi A*), `getTUCost` (un passo, scale, cadute, unita' grandi, porte, fuoco), `isBlocked`, `isOnStairs`, `validateUpDown`, `findReachable`. **La coda e' lo `heap` di libstdc++** (`push_heap`, `pop_heap`, `__adjust_heap` riscritti): i nodi con lo stesso costo escono nello stesso ordine del C++ e A* sceglie lo stesso percorso e lascia lo stesso `_totalTUCost` (che nel C++ e' l'ultimo costo calcolato, non quello del percorso). Non portati: `previewPath`/`removePreview` (disegnano sulle tegole tramite `BattlescapeGame`) e lo spostamento "strafe" (legge la tastiera, `Options::strafe` e' falso di predefinito). `findReachable` ordina con un ordinamento stabile dove il C++ usa `std::sort` (a parita' di costo l'ordine non e' definito).
+
+**Parita'**: `Tools\Verifica\176\battle\pathgen.cpp` costruisce mappe con parti MCD vere scelte per tipo (pavimenti, muri, oggetti, fuoco, fumo, porte UFO), unita' delle regole vere (anche grandi) e risponde con il **vero `Pathfinding`** a `calculate` (anche con `maxTUCost` e missili), `getTUCost` e `findReachable`; `battleNN`/`pathNN.yml` e' la mappa e `pathNN.txt` le risposte. `TTestXcomRealPathfinding` rifa' le stesse domande con la libreria: **12 mappe, 1137 domande, 0 differenze**. Per cercare la prima differenza: `PATHGEN_ALL=<n>` fa stampare ogni passo di ogni tegola per l'unita' n e `DELPHIDOOM_XCOMBATTLE_PATH=<cartella>` fa leggere al test quella cartella. Una tegola con fuoco e senza fumo e senza parti e' "vuota" (`isVoid`) e non si salva: il generatore mette sempre il fumo.
+
 ## Test
 
 `Tests\DelphiDoom.Tests.XcomBattle` (`Tools\build.bat Tests\DelphiDoom.Tests.XcomBattle`; da un worktree serve `$env:DCC_UnitSearchPath` con il percorso di DUnitX): `TTestXcomBattleModel` (regole fatte a mano da YAML, generatore a numeri dati `TScriptedRandom`, pathfinder e motore delle tegole finti) e `TTestXcomRealBattle`.

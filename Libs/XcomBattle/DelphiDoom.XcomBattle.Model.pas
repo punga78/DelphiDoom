@@ -431,6 +431,8 @@ type
     procedure ResetHitState;
     /// <summary>toggleFireDamage: switches the "took fire damage this turn" flag</summary>
     procedure ToggleFireDamage;
+    /// <summary>getVisible: a unit of the player is always visible, the others as the visible flag says</summary>
+    function GetVisible: Boolean;
     procedure FreePatrolTarget;
     property Id: Integer read FId;
     property Position: TXcomPosition read FPosition;
@@ -2940,6 +2942,14 @@ end;
 procedure TXcomBattleUnit.ResetHitState;
 begin
   FHitByAnything := False;
+end;
+
+function TXcomBattleUnit.GetVisible: Boolean;
+begin
+  if FFaction = FACTION_PLAYER then
+    Result := True
+  else
+    Result := FVisible;
 end;
 
 procedure TXcomBattleUnit.ToggleFireDamage;

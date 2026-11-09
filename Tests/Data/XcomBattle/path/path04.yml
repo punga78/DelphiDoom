@@ -1,0 +1,366 @@
+width: 10
+length: 20
+height: 1
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - GRUNGE3
+  - CRYPT2
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 200
+binTiles: AAAAAAIA////////AQD///////8AAAABAAAABgD///////8BAP///////wAAAAIAAAADAP///////wEA////////AAAAAwAAAAMA////////AQD///////8AAAAEAAAACwD///////8BAP///////wAAAAUAAAAHAP////8AAAEA/////wAAAAAABgAAAAUALQD/////AQABAP////8AAAAHAAAACAD///////8BAP///////wAAAAgAAAASAP////8IAAEA/////wAAAAAACQAAAAkA//8pAAIAAQD//wEAAAAAAAAKAAAAAgD///////8BAP///////wAAAAsAAAAOAP////8jAAEA/////wEAAAAADAAAAAEA////////AQD///////8AAAANAAAAAQD///////8BAP///////wAAAA4AAAAXAP///////wEA////////AAAADwAAAAQA////////AQD///////8AAAAQAAAACwD///////8BAP///////wAAABEAAAAHAP///////wEA////////AAAAEgAAAA4A////////AQD///////8AAAATAAAAEAD///////8BAP///////wAAABQAAAAJAP///////wEA////////AAAAFQAAAA8A////////AQD///////8AAAAWAAAAEwD///////8BAP///////wAAABcAAAAUAP///////wEA////////AAAAGAAAAAcA////////AQD///////8AAAAZAAAAEQD///////8BAP///////wAAABoAAAAMACwA//8eAAEAAQD//wEAAAAAGwAAABcA/////wYAAQD/////AAAJAAAcAAAABwD//ysABAABAP//AQAAAAAAAB0AAAAEAC4A/////wEAAQD/////AAAAHgAAABYA/////wIAAQD/////AAAAAAAfAAAAEgD///////8BAP///////wAAACAAAAAAAP///////wEA////////AAAAIQAAAA4AMAD/////AQABAP////8AAAAiAAAACAD///////8BAP///////wAAACMAAAAAAP//KQD//wEA//8BAP//AAAAJAAAAAEA////////AQD///////8AAAAlAAAACAD/////GwABAP////8BAAAAACYAAAAHAP///////wEA////////AAAAJwAAAA8A////////AQD///////8AAAAoAAAAEAD///////8BAP///////wAAACkAAAASAP///////wEA////////AAAAKgAAAAkALgAoACYAAQABAAEAAQAAAAArAAAAFwAsAP////8BAAEA/////wAAACwAAAAJAP//KwD//wEA//8BAP//AAAALQAAAAQALAD//wQAAQABAP//AAAAAAAuAAAAEAD///////8BAP///////wAAAC8AAAATAP////8AAAEA/////wAAAAAAMAAAABAA////////AQD///////8AAAAxAAAAAQAsAP//IgABAAEA//8BAAAAADIAAAAMAP////8mAAEA/////wEAAAAAMwAAAA0A////////AQD///////8AAAA0AAAAFAD/////IgABAP////8BAAAAADUAAAAOAP////8YAAEA/////wEAAAAANgAAAAYA////////AQD///////8AAAA3AAAACAD///////8BAP///////wAAADgAAAANAP///////wEA////////AAAAOQAAAA4ALwD/////AQABAP////8AAAA6AAAAEAD/////HQABAP////8BAAAAADsAAAADAP///////wEA////////AAAAPAAAAAoA/////wUAAQD/////AAAAAAA9AAAAEwD//ykA//8BAP//AQD//wAAAD4AAAATAC4A/////wEAAQD/////AAAAPwAAAAEA////////AQD///////8AAABAAAAAEwD/////GgABAP////8BAAAAAEEAAAAUAC4AJwD//wEAAQABAP//AAAAQgAAAAUA////////AQD///////8CAABDAAAAFQD///////8BAP///////wAAAEQAAAAOAP////8AAAEA/////wAAAAAARQAAAA4A////////AQD///////8AAABGAAAAFAD/////IwABAP////8BAAAAAEcAAAASAP///////wEA////////AAAASAAAAAcA/////wgAAQD/////AAAAAABJAAAABQD//ycA//8BAP//AQD//wAAAEoAAAABAP///////wEA////////AAAASwAAABQA//8nAP//AQD//wEA//8AAABMAAAABAD///////8BAP///////wAAAE0AAAAPAP///////wEA////////AAAATgAAABcA/////wMAAQD/////AAAGAABPAAAACwD///////8BAP///////wAAAFAAAAAAAC0A/////wEAAQD/////AAAAUQAAABUA/////wEAAQD/////AAAAAABSAAAAFgD//ycA//8BAP//AQD//wAAAFMAAAAOAP///////wEA////////AAAAVAAAAAsA//8rAP//AQD//wEA//8AAABVAAAAEwD///////8BAP///////wAAAFYAAAAWAP///////wEA////////AAAAVwAAABUA//8pAP//AQD//wEA//8AAABYAAAABwD///////8BAP///////wAAAFkAAAAEAP///////wEA////////AAAAWgAAABMA////////AQD///////8AAABbAAAAEAAvAP//CAABAAEA//8AAAAAAFwAAAAKAP//JwD//wEA//8BAP//AAAAXQAAAAYA////////AQD///////8AAABeAAAAEgD///////8BAP///////wAAAF8AAAARAP///////wEA////////AAAAYAAAABIA/////wUAAQD/////AAAAAABhAAAACgD///////8BAP///////wAAAGIAAAALAP///////wEA////////AAAAYwAAAAgA////////AQD///////8CAABkAAAAFAD///////8BAP///////wAAAGUAAAAGAP///////wEA////////BwAAZgAAAAkAMAD/////AQABAP////8AAABnAAAAFwAvAP////8BAAEA/////wAAAGgAAAASAP////8HAAEA/////wAAAAAAaQAAAAkA////////AQD///////8AAABqAAAACAD/////CAABAP////8AAAAAAGsAAAACAP///////wEA////////AAAAbAAAABQA////////AQD///////8AAABtAAAAEQD///////8BAP///////wAAAG4AAAACAP///////wEA////////AAAAbwAAAAMA////////AQD///////8BAABwAAAAFgD///////8BAP///////wAAAHEAAAAFAP//KgD//wEA//8BAP//AAAAcgAAABYA////////AQD///////8AAABzAAAABAD///////8BAP///////wAAAHQAAAAUAP///////wEA////////AAAAdQAAABUALwApAP//AQABAAEA//8AAAB2AAAAAQD//ygA//8BAP//AQD//wAAAHcAAAATAP///////wEA////////AAAAeAAAABAA////////AQD///////8AAAB5AAAABQD/////BgABAP////8AAAcAAHoAAAAGAP////8aAAEA/////wEABQMAewAAABMA////////AQD///////8AAAB8AAAAFAD///////8BAP///////wAAAH0AAAAQAP////8ZAAEA/////wEAAAAAfgAAABUALAD/////AQABAP////8AAAB/AAAAEgD/////IQABAP////8BAAAAAIAAAAANAP////8GAAEA/////wAAAAAAgQAAAAQA//8pAP//AQD//wEA//8AAACCAAAAEgD///////8BAP///////wAAAIMAAAAPAC0A/////wEAAQD/////AAAAhAAAAAoA////////AQD///////8AAACFAAAABQD///////8BAP///////wAAAIYAAAAQAC8A//8HAAEAAQD//wAAAAAAhwAAAA8A////////AQD///////8AAACIAAAAFQD///////8BAP///////wAAAIkAAAATAC4A//8YAAEAAQD//wEAAAAAigAAAAcALgD/////AQABAP////8AAACLAAAABQAwACkA//8BAAEAAQD//wEBAIwAAAABAP///////wEA////////AAAAjQAAAAQA////////AQD///////8AAACOAAAAFgD///////8BAP///////wAAAI8AAAABAP///////wEA////////AAAAkAAAAAYA/////x8AAQD/////AQAAAACRAAAAEQD///////8BAP///////wAAAJIAAAATAP////8dAAEA/////wEAAAAAkwAAAAoA////////AQD///////8AAACUAAAAEQD/////AgABAP////8AAAAAAJUAAAANAP////8hAAEA/////wEAAAAAlgAAAAoAMAD//xoAAQABAP//AQAAAACXAAAAFwD/////GQABAP////8BAAAAAJgAAAAXAP///////wEA////////AAAAmQAAAAgA////////AQD///////8AAACaAAAABwD///////8BAP///////wAAAJsAAAABAP//KgD//wEA//8BAP//AAAAnAAAAAIA////////AQD///////8AAACdAAAAFQD///////8BAP///////wAAAJ4AAAAQAP////8JAAEA/////wAAAAAAnwAAAA0A/////wIAAQD/////AAAAAACgAAAAAAD///////8BAP///////wAAAKEAAAAOAP///////wEA////////AAAAogAAABQA////////AQD///////8AAACjAAAACgD///////8BAP///////wAAAKQAAAAIAP////8JAAEA/////wAAAAAApQAAABYALQD/////AQABAP////8AAACmAAAADwD///////8BAP///////wAAAKcAAAAKAP///////wEA////////AAAAqAAAABcA////////AQD///////8AAACpAAAAFQD//ykA//8BAP//AQD//wAAAKoAAAAXAP///////wEA////////AAAAqwAAAAQA////////AQD///////8AAACsAAAACAAtAP////8BAAEA/////wAAAK0AAAAIAP///////wEA////////AAAArgAAAAwA////////AQD///////8AAACvAAAACQD///////8BAP///////wAAALAAAAAPAP///////wEA////////AAAAsQAAAAEA//8pAP//AQD//wEA//8AAACyAAAAAgD///////8BAP///////wAAALMAAAAMAP////8ZAAEA/////wEAAAAAtAAAABAAMAAqAP//AQABAAEA//8AAAC1AAAADgD///////8BAP///////wAAALYAAAADAP///////wEA////////AAAAtwAAAAAALwD/////AQABAP////8AAAC4AAAABgD//yoACAABAP//AQAAAAAAALkAAAASAP///////wEA////////AAAAugAAAAYA//8pAP//AQD//wEA//8AAAC7AAAADAD///////8BAP///////wAAALwAAAAOAP//JwD//wEA//8BAP//AAAAvQAAAAkA//8rAP//AQD//wEA//8AAAC+AAAADgD///////8BAP///////wAAAL8AAAACAP///////wEA////////AAAAwAAAAA0A////////AQD///////8AAADBAAAAEQD///////8BAP///////wAAAMIAAAAHAP///////wEA////////AAAAwwAAAAIA////////AQD///////8AAADEAAAADwD/////BgABAP////8AAAAAAMUAAAAEAP////8lAAEA/////wEAAAAAxgAAAAcALQD/////AQABAP////8AAADHAAAAFwD/////GwABAP////8BAAAAAA==
+units:
+  - id: 1000000
+    genUnitType: STR_LOBSTERMAN_SOLDIER
+    genUnitArmor: LOBSTERMAN_ARMOR0
+    faction: 1
+    status: 0
+    position:
+      - 4
+      - 4
+      - 0
+    direction: 2
+    directionTurret: 2
+    tu: 56
+    health: 90
+    stunlevel: 0
+    energy: 90
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 8
+      - 8
+      - 8
+      - 6
+      - 4
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 2
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_HALLUCINOID_TERRORIST
+    genUnitArmor: HALLUCINOID_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 4
+      - 10
+      - 0
+    direction: 7
+    directionTurret: 7
+    tu: 62
+    health: 120
+    stunlevel: 0
+    energy: 90
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 35
+      - 35
+      - 35
+      - 35
+      - 25
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 6
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000002
+    genUnitType: STR_DISPLACER_PWT
+    genUnitArmor: DISPLACER_ARMOR
+    faction: 2
+    status: 0
+    position:
+      - 6
+      - 3
+      - 0
+    direction: 4
+    directionTurret: 4
+    tu: 100
+    health: 90
+    stunlevel: 0
+    energy: 100
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 130
+      - 130
+      - 130
+      - 130
+      - 100
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 4
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000003
+    genUnitType: SAILOR_CIVILIAN
+    genUnitArmor: SAILOR_ARMOR
+    faction: 2
+    status: 0
+    position:
+      - 3
+      - 3
+      - 0
+    direction: 4
+    directionTurret: 4
+    tu: 35
+    health: 30
+    stunlevel: 0
+    energy: 65
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000004
+    genUnitType: STR_COELACANTH_AQUA_JET
+    genUnitArmor: COELACANTH_ARMOR
+    faction: 1
+    status: 0
+    position:
+      - 1
+      - 1
+      - 0
+    direction: 0
+    directionTurret: 0
+    tu: 70
+    health: 90
+    stunlevel: 0
+    energy: 100
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 36
+      - 30
+      - 30
+      - 24
+      - 24
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000005
+    genUnitType: STR_ZOMBIE
+    genUnitArmor: ZOMBIE_ARMOR
+    faction: 2
+    status: 0
+    position:
+      - 4
+      - 12
+      - 0
+    direction: 5
+    directionTurret: 5
+    tu: 40
+    health: 84
+    stunlevel: 0
+    energy: 110
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 4
+      - 4
+      - 4
+      - 4
+      - 4
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    spawnUnit: STR_TENTACULAT_TERRORIST
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 0
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20
