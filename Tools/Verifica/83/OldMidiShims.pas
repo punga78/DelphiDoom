@@ -1,6 +1,6 @@
 { What the old i_midi_new needed from the engine (i_system, d_main, i_midi, d_delphi), written
   again so that the old code compiles alone in the program that records its blocks.
-  The program is not part of the build: see RUN-83.md in the root of the repository. }
+  The program is not part of the build: see docs\RUN-83.md. }
 unit OldMidiShims;
 
 interface

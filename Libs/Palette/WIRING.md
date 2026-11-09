@@ -35,7 +35,7 @@ usano `V_*`). `DelphiDoom.Video.*` ci sono già. Righe:
 
 (`PlayerTranslations.Heretic`/`Strife` si possono compilare ovunque: non hanno `{$IFDEF}`; il composition root sceglie.)
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.Palette`.
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.Palette`.
 Il progetto di test (`Tests\DelphiDoom.Tests.Palette.dpr/.dproj`) cerca `..\Libs\Palette;..\Libs\Video`.
 
 ## 2. Cosa sostituisce cosa

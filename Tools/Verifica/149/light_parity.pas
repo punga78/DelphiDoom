@@ -1,6 +1,6 @@
 // TEMPORARY HARNESS of issue #149 (not for the build of the game): runs the OLD code of the light
 // thinkers (copied as it was before Libs\Thinkers) next to the NEW one, for every tic of every light,
-// on the same state and the same random numbers. See RUN.md.
+// on the same state and the same random numbers. See docs\RUN.md.
 //
 // For each call: copy of the thinker and of its sector -> old code on the copy (it uses the real
 // random: its index is saved before and restored after) -> new code on the real thinker -> compare

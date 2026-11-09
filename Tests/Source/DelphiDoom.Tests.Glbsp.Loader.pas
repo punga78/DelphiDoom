@@ -37,7 +37,7 @@ type
     procedure TestMissingLibraryReportsLoadLibraryCode;
 
     /// <summary>
-    ///   Needs bin\Libs\DDGlbsp.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDGlbsp.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;

@@ -25,13 +25,13 @@ type
     procedure DovrebbeRifiutareUnaLibreriaSenzaLExport;
 
     /// <summary>
-    ///   Needs bin\Libs\DDXmi.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDXmi.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestLoadsTheBuiltLibrary;
 
     /// <summary>
-    ///   Needs bin\Libs\DDXmi.dll (build.bat librerie); skipped otherwise
+    ///   Needs bin\Libs\DDXmi.dll (Tools\build.bat librerie); skipped otherwise
     /// </summary>
     [Test]
     procedure TestConvertsThroughTheBuiltLibrary;

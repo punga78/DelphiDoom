@@ -35,7 +35,7 @@ Servono in tutti i progetti che oggi compilano `sc_actordef`: `Doom32`, `GLDoom3
   DelphiDoom.ActorDef.Factory in 'Libs\ActorDef\DelphiDoom.ActorDef.Factory.pas',
 ```
 
-Riga da aggiungere in `build.bat`, alla fine della lista `TESTS`:
+Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`:
 ` Tests\DelphiDoom.Tests.ActorDef`
 
 ## 2. Cosa sostituisce cosa in `Base\sc_actordef.pas`
@@ -113,7 +113,7 @@ quello (e da `statenames`). Per questo il parser non produce una lista ma chiama
 
 Il vecchio `Base\sc_actordef.pas` non si compila fuori dal motore (scrive in `mobjinfo`, `statenames`, `DEH_ParseText`).
 Si è fatto un **harness temporaneo** (fuori dal repository, non committato) che compila il motore intero di ogni gioco
-(un `.dpr` generato da `Doom32.dpr`, `Heretic32.dpr`, `Hexen32.dpr`, `Strife32.dpr`, con gli stessi define) ma con una copia
+(un `.dpr` generato da `Doom\Doom32.dpr`, `Heretic\Heretic32.dpr`, `Hexen\Hexen32.dpr`, `Strife\Strife32.dpr`, con gli stessi define) ma con una copia
 patchata di `sc_actordef.pas` e con un `main` che fa `ComposeEngine`, `Z_Init`, `PAK_InitFileSystem`, `Info_Init(true)`,
 `Info_InitStateOwners`, `SC_DefaultStatedefLump`, `DEH_Init` e poi legge un testo. La copia patchata fa solo questo:
 

@@ -1,10 +1,10 @@
 // TEMPORARY HARNESS of issue #152 (not for the build of the game): runs the OLD code of the door
 // thinkers next to the NEW one, for every tic of every door, on the same state and the same
-// results of the real movement of the ceiling. See RUN-152.md.
+// results of the real movement of the ceiling. See docs\RUN-152.md.
 //
 // The old code here is the oracle of the unit tests (Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors:
 // the statements of the old procedures, with the calls to the game replaced by a fake host), not a
-// compilation of the old text: the real old executable is the one built from master (RUN-152.md,
+// compilation of the old text: the real old executable is the one built from master (docs\RUN-152.md,
 // timedemo and savegames).
 //
 // For each call: state of the door (neutral kind) and floor are written down -> the NEW code runs

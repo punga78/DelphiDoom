@@ -3,7 +3,7 @@
   per ogni giro il codice di uscita, la presenza di crash.txt e la riga "timed N gametics in M realtics"
   trovata nei log. Serve per la #147/#148: demo1 di Doom32 andava in access violation all'uscita.
 
-  Uso (dalla radice del worktree, dopo build.bat Doom32 Release):
+  Uso (dalla radice del worktree, dopo Tools\build.bat Doom32 Release):
     powershell -NoProfile -File Tools\Verifica\148\Ripeti-timedemo.ps1 -Giri 10 -Demo demo1
     powershell -NoProfile -File Tools\Verifica\148\Ripeti-timedemo.ps1 -Giri 3 -Demo demo2
     powershell -NoProfile -File Tools\Verifica\148\Ripeti-timedemo.ps1 -Giri 3 -Demo demo3

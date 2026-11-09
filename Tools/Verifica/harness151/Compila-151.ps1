@@ -34,7 +34,7 @@ if ($LASTEXITCODE -ne 0) { throw "git apply $patch fallito in $tree" }
 try {
   foreach ($g in $Game) {
     $project = "${g}32"
-    & .\build.bat $project Release
+    & .\Tools\build.bat $project Release
     $log = "logs\$project.log"
     $errors = @(Select-String -Path $log -Pattern '\berror\b|\[Fatal Error\]|Fatal:' -CaseSensitive:$false)
     Write-Host "== $Which $project : $($errors.Count) error lines (see $tree\$log)"

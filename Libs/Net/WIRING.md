@@ -22,7 +22,7 @@ DelphiDoom.Net.Factory              in 'Libs\Net\DelphiDoom.Net.Factory.pas'
 Più, per le unit del motore nuove (vedi sotto), le implementazioni delle interfacce:
 `DelphiDoom.Engine.Net.LocalInput`, `.Players`, `.Trace`, `.AbortCheck` (nomi suggeriti, in `Base\`).
 
-Riga per `build.bat` (lista `TESTS`, in coda): `Tests\DelphiDoom.Tests.Net`
+Riga per `Tools\build.bat` (lista `TESTS`, in coda): `Tests\DelphiDoom.Tests.Net`
 
 ## 2. Funzione per funzione
 

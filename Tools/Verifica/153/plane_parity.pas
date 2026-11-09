@@ -3,7 +3,7 @@
 // to the NEW one, the facades T_MovePlane (p_floor.pas, not Hexen) and TH_MovePlane (udmf_floor.pas),
 // on copies of engine sectors and the same cases. P_ChangeSector and P_DynamicSlope are replaced
 // by a fake host that blocks a sector when its gap is smaller than a given height and writes
-// every call in a log. See RUN-153.md. PP_Run replaces the host of the planes and ends the program.
+// every call in a log. See docs\RUN-153.md. PP_Run replaces the host of the planes and ends the program.
 //
 // For each case: old code on a copy of the sector -> new code (the facade) on another copy ->
 // compare result, heights and the log of the calls. A report is written to plane_parity.txt.

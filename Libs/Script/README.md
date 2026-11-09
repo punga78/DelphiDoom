@@ -18,7 +18,7 @@ Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la
 
 **Decisione (#10)**: il motore resta su PascalScript in-process (`SCRIPT\ps_*`). Gli script del gioco usano classi Delphi vere (`Actors`, `Lines`, `MapStrings`…) registrate con `TPSRuntimeClassImporter` dal `TClass` e dai puntatori ai metodi, che non attraversano il confine di una DLL: `SCRIPT\ps_*` è il motore degli script, non codice storico da togliere. `DDScript` è la facciata per script semplici (funzioni, costanti, tipi, unit, globali, parole chiave, preprocessore).
 
-Build: `DDScript` (progetto in `Libs\Script`, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
+Build: `DDScript` (progetto in `Libs\Script`, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `Tools\build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
 
 ---
 
