@@ -38,6 +38,8 @@ type
     function Choose(const ARandom: IXcomRandom): string;
     /// <summary>getNames: the options in the order of the keys</summary>
     function Names: TArray<string>;
+    /// <summary>The options and their weights (_choices)</summary>
+    property Choices: TXcomStringMap<Cardinal> read FChoices;
   end;
 
 implementation

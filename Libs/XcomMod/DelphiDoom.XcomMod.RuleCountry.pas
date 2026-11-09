@@ -31,6 +31,8 @@ type
     procedure Load(const ANode: IYamlNode);
     property CountryType: string read FType;
     property FundingCap: Integer read FFundingCap;
+    /// <summary>The boxes of the country (getLonMin, getLonMax, getLatMin, getLatMax), in radians</summary>
+    property Areas: TXcomGlobeAreas read FAreas;
     /// <summary>The longitude of the label, in radians</summary>
     property LabelLongitude: Double read FLabelLongitude;
     property LabelLatitude: Double read FLabelLatitude;

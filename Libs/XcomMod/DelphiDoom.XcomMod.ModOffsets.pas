@@ -30,6 +30,11 @@ type
     ['{2C8E4F17-6A93-4D05-B1E7-F30A95C8D426}']
     /// <summary>SoundSet::getMaxSharedSounds of the sound set ASet: the sounds that every mod sees</summary>
     function MaxSharedSounds(const ASet: string): Integer;
+    /// <summary>
+    ///   SurfaceSet::getMaxSharedFrames of the sprite set ASet (Mod::loadSpriteOffset looks it up and the C++
+    ///   throws "Sprite Set ... not found" if there is none: this raises EXcomModException)
+    /// </summary>
+    function MaxSharedFrames(const ASet: string): Integer;
   end;
 
   /// <summary>
@@ -71,6 +76,9 @@ type
     /// <summary>Mod::loadSoundOffset for a list of sounds (a node that is not a sequence is one sound)</summary>
     procedure LoadSoundOffset(const AParent: string; var ASounds: TArray<Integer>; const ANode: IYamlNode;
       const ASet: string); overload;
+    /// <summary>Mod::loadSpriteOffset: nothing happens if the node is not there; AMultiplier is for projectiles</summary>
+    procedure LoadSpriteOffset(const AParent: string; var ASprite: Integer; const ANode: IYamlNode;
+      const ASet: string; AMultiplier: Cardinal = 1);
     /// <summary>Mod::loadTransparencyOffset</summary>
     procedure LoadTransparencyOffset(const AParent: string; var AIndex: Integer; const ANode: IYamlNode);
   end;
@@ -201,6 +209,13 @@ begin
     SetLength(ASounds, 1);
     ASounds[0] := LSound;
   end;
+end;
+
+procedure TXcomModOffsets.LoadSpriteOffset(const AParent: string; var ASprite: Integer; const ANode: IYamlNode;
+  const ASet: string; AMultiplier: Cardinal);
+begin
+  if ANode.IsDefined then
+    LoadOffsetNode(AParent, ASprite, ANode, FShared.MaxSharedFrames(ASet), ASet, AMultiplier);
 end;
 
 procedure TXcomModOffsets.LoadTransparencyOffset(const AParent: string; var AIndex: Integer;

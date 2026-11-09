@@ -57,6 +57,8 @@ type
     property InventoryType: Integer read FType;
     property Slots: TArray<TXcomRuleSlot> read FSlots;
     property ListOrder: Integer read FListOrder;
+    /// <summary>The cost, in time units, of moving an item to each other section (_costs)</summary>
+    property Costs: TXcomStringMap<Integer> read FCosts;
     /// <summary>checkSlotInPosition: whether the point (screen coordinates) is over a slot of the section</summary>
     function IsSlotInPosition(AMouseX, AMouseY: Integer): Boolean;
     /// <summary>Whether the section has a cost for moving an item to the section with this id</summary>

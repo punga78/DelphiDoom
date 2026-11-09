@@ -68,11 +68,17 @@ type
   TFakeShared = class(TInterfacedObject, IXcomSharedResources)
   public
     function MaxSharedSounds(const ASet: string): Integer;
+    function MaxSharedFrames(const ASet: string): Integer;
   end;
 
 function TFakeShared.MaxSharedSounds(const ASet: string): Integer;
 begin
   Result := 20;
+end;
+
+function TFakeShared.MaxSharedFrames(const ASet: string): Integer;
+begin
+  Result := 30;
 end;
 
 { TTestXcomModOffsets }

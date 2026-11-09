@@ -54,6 +54,8 @@ type
     procedure Load(const ANode: IYamlNode);
     property RegionType: string read FType;
     property BaseCost: Integer read FCost;
+    /// <summary>The boxes of the region (getLonMin, getLonMax, getLatMin, getLatMax), in radians</summary>
+    property Areas: TXcomGlobeAreas read FAreas;
     property Weight: Cardinal read FRegionWeight;
     property MissionRegion: string read FMissionRegion;
     property MissionZones: TArray<TXcomMissionZone> read FMissionZones;

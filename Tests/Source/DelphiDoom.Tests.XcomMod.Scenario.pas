@@ -61,11 +61,17 @@ type
   TXcomScenarioSharedResources = class(TInterfacedObject, IXcomSharedResources)
   public
     function MaxSharedSounds(const ASet: string): Integer;
+    function MaxSharedFrames(const ASet: string): Integer;
   end;
 
 function TXcomScenarioSharedResources.MaxSharedSounds(const ASet: string): Integer;
 begin
   Result := 20;
+end;
+
+function TXcomScenarioSharedResources.MaxSharedFrames(const ASet: string): Integer;
+begin
+  Result := 30;
 end;
 
 { TXcomRuleScenario }
