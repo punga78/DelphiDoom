@@ -93,7 +93,7 @@ type
     destructor Destroy; override;
     function GetArrowsLeftEdge: Integer;
     function GetArrowsRightEdge: Integer;
-    procedure Unpress;
+    procedure Unpress; override;
     procedure SetCellColor(ARow, AColumn: Integer; AColor: Byte);
     procedure SetRowColor(ARow: Integer; AColor: Byte);
     function GetCellText(ARow, AColumn: Integer): string;

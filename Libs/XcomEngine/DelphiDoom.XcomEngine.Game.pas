@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - Game of OpenXcom (the main loop and the    }
 {  stack of states)                                                             }
@@ -14,7 +14,8 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomEngine.Resources.Intf;
+  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
+  DelphiDoom.XcomEngine.OptionsStore.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -44,6 +45,10 @@ type
     FTimeOfLastFrame: Cardinal;
     FFrames: Integer;
     FOnScreenshot: TXcomScreenshotHandler;
+    FLanguageProvider: IXcomLanguageProvider;
+    FDisplayModes: IXcomDisplayModes;
+    FOptionsStore: IXcomOptionsStore;
+    FAudio: IXcomAudioDevice;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
     /// <summary>
@@ -66,6 +71,15 @@ type
     procedure Quit; override;
     function IsState(AState: TXcomState): Boolean; override;
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); override;
+    function LanguageProvider: IXcomLanguageProvider; override;
+    function DisplayModes: IXcomDisplayModes; override;
+    function OptionsStore: IXcomOptionsStore; override;
+    procedure LoadLanguages; override;
+    procedure SetVolume(ASound, AMusic, AUi: Integer); override;
+    procedure SetLanguageProvider(const AProvider: IXcomLanguageProvider);
+    procedure SetDisplayModes(const AModes: IXcomDisplayModes);
+    procedure SetOptionsStore(const AStore: IXcomOptionsStore);
+    procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
@@ -187,6 +201,53 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+end;
+
+function TXcomGame.LanguageProvider: IXcomLanguageProvider;
+begin
+  Result := FLanguageProvider;
+end;
+
+function TXcomGame.DisplayModes: IXcomDisplayModes;
+begin
+  Result := FDisplayModes;
+end;
+
+function TXcomGame.OptionsStore: IXcomOptionsStore;
+begin
+  Result := FOptionsStore;
+end;
+
+procedure TXcomGame.SetLanguageProvider(const AProvider: IXcomLanguageProvider);
+begin
+  FLanguageProvider := AProvider;
+end;
+
+procedure TXcomGame.SetDisplayModes(const AModes: IXcomDisplayModes);
+begin
+  FDisplayModes := AModes;
+end;
+
+procedure TXcomGame.SetOptionsStore(const AStore: IXcomOptionsStore);
+begin
+  FOptionsStore := AStore;
+end;
+
+procedure TXcomGame.SetAudioDevice(const AAudio: IXcomAudioDevice);
+begin
+  FAudio := AAudio;
+end;
+
+procedure TXcomGame.LoadLanguages;
+begin
+  if Assigned(FLanguageProvider) then
+    AdoptData(FResources, FLanguageProvider.Load(FOptions.Language, FOptions.Wordwrap, FResources));
+end;
+
+procedure TXcomGame.SetVolume(ASound, AMusic, AUi: Integer);
+begin
+  if Assigned(FAudio) then
+    FAudio.SetVolume(ASound, AMusic, AUi);
 end;
 
 function TXcomGame.TopState: TXcomState;

@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - State of OpenXcom (a screen of the game    }
 {  with the surfaces it manages) and the host it asks things to                 }
@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
-  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf;
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
+  DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf;
 
 type
   TXcomState = class;
@@ -44,6 +45,16 @@ type
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); virtual; abstract;
     /// <summary>Game::isState: the state is the one on top</summary>
     function IsState(AState: TXcomState): Boolean; virtual; abstract;
+    /// <summary>The languages that can be chosen and loaded (nil when the host has none)</summary>
+    function LanguageProvider: IXcomLanguageProvider; virtual;
+    /// <summary>The full screen modes of the display (nil when the host cannot list them)</summary>
+    function DisplayModes: IXcomDisplayModes; virtual;
+    /// <summary>Where the options are kept (nil: Options::save and load do nothing)</summary>
+    function OptionsStore: IXcomOptionsStore; virtual;
+    /// <summary>Game::loadLanguages: loads the language of Options::language and replaces the current one</summary>
+    procedure LoadLanguages; virtual;
+    /// <summary>Game::setVolume: the volumes of the sounds, the music and the interface</summary>
+    procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
   end;
 
   /// <summary>
@@ -109,6 +120,33 @@ implementation
 const
   PALETTE_GEOSCAPE = 'PAL_GEOSCAPE';
   PALETTE_BACKPALS = 'BACKPALS.DAT';
+
+{ TXcomStateHost }
+
+function TXcomStateHost.LanguageProvider: IXcomLanguageProvider;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.DisplayModes: IXcomDisplayModes;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.OptionsStore: IXcomOptionsStore;
+begin
+  Result := nil;
+end;
+
+procedure TXcomStateHost.LoadLanguages;
+begin
+end;
+
+procedure TXcomStateHost.SetVolume(ASound, AMusic, AUi: Integer);
+begin
+end;
+
+{ TXcomState }
 
 constructor TXcomState.Create(AHost: TXcomStateHost);
 begin

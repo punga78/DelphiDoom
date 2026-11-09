@@ -66,9 +66,32 @@ type
     MousewheelSpeed: Integer;
     ChangeValueByMouseWheel: Integer;
     KeyboardMode: TXcomKeyboardMode;
+    /// <summary>The pending video options (newFullscreen...): the video screen changes these, OK swaps them with the current ones</summary>
+    NewFullscreen: Boolean;
+    NewBorderless: Boolean;
+    NewAllowResize: Boolean;
+    NewOpenGL: Boolean;
+    NewScaleFilter: Boolean;
+    NewHQXFilter: Boolean;
+    NewXBRZFilter: Boolean;
+    UseOpenGLShader: string;
+    NewOpenGLShader: string;
+    NewGeoscapeScale: Integer;
+    NewBattlescapeScale: Integer;
+    CaptureMouse: Boolean;
+    RootWindowedMode: Boolean;
+    NewRootWindowedMode: Boolean;
+    WindowedModePositionX: Integer;
+    WindowedModePositionY: Integer;
+    NewWindowedModePositionX: Integer;
+    NewWindowedModePositionY: Integer;
     constructor Create;
     /// <summary>Options::resetDefault for the options of this class</summary>
     procedure ResetDefaults;
+    /// <summary>The pending video options start equal to the current ones (what Options::load leaves)</summary>
+    procedure SyncPendingDisplay;
+    /// <summary>Options::switchDisplay: swaps the current video options with the pending ones</summary>
+    procedure SwitchDisplay;
     /// <summary>
     ///   Options::load: reads the "options" map of an options.cfg (the node of the file); a key that is missing
     ///   or has a bad value keeps what it has
@@ -102,8 +125,6 @@ begin
   BaseYBattlescape := 200;
   GeoscapeScale := 0;
   BattlescapeScale := 0;
-  NewDisplayWidth := DisplayWidth;
-  NewDisplayHeight := DisplayHeight;
   KeepAspectRatio := True;
   NonSquarePixelRatio := False;
   AllowResize := False;
@@ -135,6 +156,74 @@ begin
   MousewheelSpeed := 3;
   ChangeValueByMouseWheel := 0;
   KeyboardMode := kmOn;
+  UseOpenGLShader := 'Shaders/Raw.OpenGL.shader';
+  CaptureMouse := False;
+  RootWindowedMode := False;
+  WindowedModePositionX := 0;
+  WindowedModePositionY := 0;
+  SyncPendingDisplay;
+end;
+
+procedure TXcomOptions.SyncPendingDisplay;
+begin
+  NewDisplayWidth := DisplayWidth;
+  NewDisplayHeight := DisplayHeight;
+  NewFullscreen := Fullscreen;
+  NewBorderless := Borderless;
+  NewAllowResize := AllowResize;
+  NewOpenGL := UseOpenGL;
+  NewScaleFilter := UseScaleFilter;
+  NewHQXFilter := UseHQXFilter;
+  NewXBRZFilter := UseXBRZFilter;
+  NewOpenGLShader := UseOpenGLShader;
+  NewGeoscapeScale := GeoscapeScale;
+  NewBattlescapeScale := BattlescapeScale;
+  NewRootWindowedMode := RootWindowedMode;
+  NewWindowedModePositionX := WindowedModePositionX;
+  NewWindowedModePositionY := WindowedModePositionY;
+end;
+
+procedure TXcomOptions.SwitchDisplay;
+  procedure SwapInt(var A, B: Integer);
+  var
+    LTemp: Integer;
+  begin
+    LTemp := A;
+    A := B;
+    B := LTemp;
+  end;
+  procedure SwapBool(var A, B: Boolean);
+  var
+    LTemp: Boolean;
+  begin
+    LTemp := A;
+    A := B;
+    B := LTemp;
+  end;
+  procedure SwapString(var A, B: string);
+  var
+    LTemp: string;
+  begin
+    LTemp := A;
+    A := B;
+    B := LTemp;
+  end;
+begin
+  SwapInt(DisplayWidth, NewDisplayWidth);
+  SwapInt(DisplayHeight, NewDisplayHeight);
+  SwapBool(UseOpenGL, NewOpenGL);
+  SwapBool(UseScaleFilter, NewScaleFilter);
+  SwapInt(BattlescapeScale, NewBattlescapeScale);
+  SwapInt(GeoscapeScale, NewGeoscapeScale);
+  SwapBool(UseHQXFilter, NewHQXFilter);
+  SwapString(UseOpenGLShader, NewOpenGLShader);
+  SwapBool(UseXBRZFilter, NewXBRZFilter);
+  SwapBool(RootWindowedMode, NewRootWindowedMode);
+  SwapInt(WindowedModePositionX, NewWindowedModePositionX);
+  SwapInt(WindowedModePositionY, NewWindowedModePositionY);
+  SwapBool(Fullscreen, NewFullscreen);
+  SwapBool(AllowResize, NewAllowResize);
+  SwapBool(Borderless, NewBorderless);
 end;
 
 procedure TXcomOptions.Load(const ADocument: IYamlNode);
@@ -178,6 +267,14 @@ begin
   KeyOk := TXcomYamlFields.ReadInteger(LNode, 'keyOk', KeyOk);
   KeyCancel := TXcomYamlFields.ReadInteger(LNode, 'keyCancel', KeyCancel);
   KeyScreenshot := TXcomYamlFields.ReadInteger(LNode, 'keyScreenshot', KeyScreenshot);
+  MousewheelSpeed := TXcomYamlFields.ReadInteger(LNode, 'mousewheelSpeed', MousewheelSpeed);
+  ChangeValueByMouseWheel := TXcomYamlFields.ReadInteger(LNode, 'changeValueByMouseWheel', ChangeValueByMouseWheel);
+  CaptureMouse := TXcomYamlFields.ReadInteger(LNode, 'captureMouse', Ord(CaptureMouse)) <> 0;
+  RootWindowedMode := TXcomYamlFields.ReadBoolean(LNode, 'rootWindowedMode', RootWindowedMode);
+  WindowedModePositionX := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosX', WindowedModePositionX);
+  WindowedModePositionY := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosY', WindowedModePositionY);
+  UseOpenGLShader := TXcomYamlFields.ReadString(LNode, 'useOpenGLShader', UseOpenGLShader);
+  SyncPendingDisplay;
 end;
 
 function TXcomOptions.Save: string;
@@ -197,7 +294,14 @@ begin
     '  battlescapeScale: ' + IntToStr(BattlescapeScale) + #10 +
     '  language: ' + Language + #10 +
     '  wordwrap: ' + IntToStr(Ord(Wordwrap)) + #10 +
-    '  fpsCounter: ' + Flag(FpsCounter) + #10;
+    '  fpsCounter: ' + Flag(FpsCounter) + #10 +
+    '  mousewheelSpeed: ' + IntToStr(MousewheelSpeed) + #10 +
+    '  changeValueByMouseWheel: ' + IntToStr(ChangeValueByMouseWheel) + #10 +
+    '  captureMouse: ' + IntToStr(Ord(CaptureMouse)) + #10 +
+    '  rootWindowedMode: ' + Flag(RootWindowedMode) + #10 +
+    '  windowedModePosX: ' + IntToStr(WindowedModePositionX) + #10 +
+    '  windowedModePosY: ' + IntToStr(WindowedModePositionY) + #10 +
+    '  useOpenGLShader: ' + UseOpenGLShader + #10;
 end;
 
 end.

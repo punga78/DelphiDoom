@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - Language of OpenXcom                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -218,14 +218,120 @@ class function TXcomLanguage.NameOf(const ALanguageId: string): string;
 begin
   if ALanguageId = 'en-US' then
     Result := 'English (US)'
-  else if ALanguageId = 'en-GB' then
+  else
+  if ALanguageId = 'en-GB' then
     Result := 'English (UK)'
-  else if ALanguageId = 'de' then
+  else
+  if ALanguageId = 'bg' then
+    Result := #$0411 + #$044A + #$043B + #$0433 + #$0430 + #$0440 + #$0441 + #$043A + #$0438
+  else
+  if ALanguageId = 'ca-ES' then
+    Result := 'Catal' + #$00E0
+  else
+  if ALanguageId = 'cs' then
+    Result := #$010C + 'esky'
+  else
+  if ALanguageId = 'cy' then
+    Result := 'Cymraeg'
+  else
+  if ALanguageId = 'da' then
+    Result := 'Dansk'
+  else
+  if ALanguageId = 'de' then
     Result := 'Deutsch'
-  else if ALanguageId = 'it' then
+  else
+  if ALanguageId = 'el' then
+    Result := #$0395 + #$03BB + #$03BB + #$03B7 + #$03BD + #$03B9 + #$03BA + #$03AC
+  else
+  if ALanguageId = 'et' then
+    Result := 'Eesti'
+  else
+  if ALanguageId = 'es-ES' then
+    Result := 'Espa' + #$00F1 + 'ol (ES)'
+  else
+  if ALanguageId = 'es-419' then
+    Result := 'Espa' + #$00F1 + 'ol (AL)'
+  else
+  if ALanguageId = 'fr' then
+    Result := 'Fran' + #$00E7 + 'ais (FR)'
+  else
+  if ALanguageId = 'fr-CA' then
+    Result := 'Fran' + #$00E7 + 'ais (CA)'
+  else
+  if ALanguageId = 'fi' then
+    Result := 'Suomi'
+  else
+  if ALanguageId = 'ga' then
+    Result := 'Gaeilge'
+  else
+  if ALanguageId = 'hr' then
+    Result := 'Hrvatski'
+  else
+  if ALanguageId = 'hu' then
+    Result := 'Magyar'
+  else
+  if ALanguageId = 'it' then
     Result := 'Italiano'
-  else if ALanguageId = 'fr' then
-    Result := 'Fran' + #$E7 + 'ais (FR)'
+  else
+  if ALanguageId = 'is' then
+    Result := #$00CD + 'slenska'
+  else
+  if ALanguageId = 'ja' then
+    Result := #$65E5 + #$672C + #$8A9E
+  else
+  if ALanguageId = 'ko' then
+    Result := #$D55C + #$AD6D + #$C5B4
+  else
+  if ALanguageId = 'lb' then
+    Result := 'L' + #$00EB + 'tzebuergesch'
+  else
+  if ALanguageId = 'lv' then
+    Result := 'Latvie' + #$0161 + 'u'
+  else
+  if ALanguageId = 'nl' then
+    Result := 'Nederlands'
+  else
+  if ALanguageId = 'no' then
+    Result := 'Norsk'
+  else
+  if ALanguageId = 'pl' then
+    Result := 'Polski'
+  else
+  if ALanguageId = 'pt-BR' then
+    Result := 'Portugu' + #$00EA + 's (BR)'
+  else
+  if ALanguageId = 'pt-PT' then
+    Result := 'Portugu' + #$00EA + 's (PT)'
+  else
+  if ALanguageId = 'ro' then
+    Result := 'Rom' + #$00E2 + 'n' + #$0103
+  else
+  if ALanguageId = 'ru' then
+    Result := #$0420 + #$0443 + #$0441 + #$0441 + #$043A + #$0438 + #$0439
+  else
+  if ALanguageId = 'sk' then
+    Result := 'Sloven' + #$010D + 'ina'
+  else
+  if ALanguageId = 'sl' then
+    Result := 'Sloven' + #$0161 + #$010D + 'ina'
+  else
+  if ALanguageId = 'sv' then
+    Result := 'Svenska'
+  else
+  if ALanguageId = 'tr' then
+    Result := 'T' + #$00FC + 'rk' + #$00E7 + 'e'
+  else
+  if ALanguageId = 'uk' then
+    Result := #$0423 + #$043A + #$0440 + #$0430 + #$0457 + #$043D + #$0441 + #$044C + #$043A + #$0430
+  else
+  if ALanguageId = 'vi' then
+    Result := 'Ti' + #$1EBF + 'ng Vi' + #$1EC7 + 't'
+  else
+  if ALanguageId = 'zh-CN' then
+    Result := #$4E2D + #$6587
+  else
+  if ALanguageId = 'zh-TW' then
+    Result := #$6587 + #$8A00
   else
     Result := ALanguageId;
 end;

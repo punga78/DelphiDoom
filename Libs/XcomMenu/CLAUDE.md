@@ -1,4 +1,4 @@
-# Libs\XcomMenu - note per Claude
+﻿# Libs\XcomMenu - note per Claude
 
 `Libs\XcomMenu` (issue #176, fetta "menu") ha gli stati di `Menu\` di **OpenXcom** gia' portati: `TXcomStartState` (riceve un `TXcomGameLoadTask`, la riga del prompt DOS e il testo della versione; all'`Init` avvia il task; al successo `Host.AdoptData` e `SetState(TXcomGoToMainMenuState)`; all'errore mostra l'errore e aspetta un tasto), `TXcomGoToMainMenuState` (`UpdateScale` della geoscape e `SetState(TXcomMainMenuState)`) `TXcomNewGameState` (popup verticale, cinque pulsanti di un `TXcomButtonGroup`, `TXcomToggleTextButton` Ironman; Cancel e Esc chiudono, OK non fa nulla: mancano il salvataggio e la geoscape) e `TXcomMainMenuState` (finestra con popup, sei pulsanti, titolo grande con la versione piccola sotto; Quit e New Game sono collegati). Sopra `Libs\XcomEngine` e `Libs\XcomUi`. **Non tocca** `ComposeEngine` ne' `TIdTechGeneration`. **Licenza**: derivato da OpenXcom, GPL v3 o successiva; la decide l'utente.
 

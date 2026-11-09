@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - MainMenuState of OpenXcom                    }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -39,7 +39,8 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMenu.NewGameState;
+  DelphiDoom.XcomMenu.NewGameState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsVideoState,
+  DelphiDoom.XcomMenu.MenuOptionsNavigator;
 
 
 constructor TXcomMainMenuState.Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -86,7 +87,7 @@ end;
 
 procedure TXcomMainMenuState.OptionsClick(AAction: TXcomAction);
 begin
-  // the options screens are the next slice
+  Host.PushState(TXcomOptionsVideoState.Create(Host, ooMenu, TXcomMenuOptionsNavigator.Create(FVersionText)));
 end;
 
 procedure TXcomMainMenuState.QuitClick(AAction: TXcomAction);

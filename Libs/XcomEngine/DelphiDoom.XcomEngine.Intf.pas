@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - the contracts of the device (window,       }
 {  events, clock, audio) that replace SDL                                       }
@@ -33,6 +33,18 @@ type
     function MouseState(out AX, AY: Integer): Integer;
     /// <summary>The modifier keys that are down (SDL_GetModState)</summary>
     function ModifierState: Integer;
+  end;
+
+  /// <summary>A size of the display that the video options list (an SDL_Rect of SDL_ListModes)</summary>
+  TXcomDisplayMode = record
+    Width: Integer;
+    Height: Integer;
+  end;
+
+  /// <summary>The full screen modes of the display (SDL_ListModes), from the largest to the smallest</summary>
+  IXcomDisplayModes = interface
+    ['{3F6D1B84-27A5-4E90-B3C8-9A1D5E7F20C6}']
+    function Modes: TArray<TXcomDisplayMode>;
   end;
 
   /// <summary>The clock in milliseconds (SDL_GetTicks) and the wait (SDL_Delay)</summary>
