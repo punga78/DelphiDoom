@@ -82,7 +82,6 @@ uses
   p_ambient,
   p_enemy,
   p_pspr,
-  p_animdefs,
   po_man,
   r_data,
   DelphiDoom.Engine.Level.TransparentLines;
@@ -105,13 +104,12 @@ procedure THereticLevelRules.InitializeData;
 begin
   P_InitSwitchList;
   P_InitPicAnims;
-  P_InitAnimations;
   FAnimDefs.Load; // Init flat and texture animations
 end;
 
 procedure THereticLevelRules.ShutDownData;
 begin
-  P_ShutDownAnimations;
+  FAnimDefs.Release;
 end;
 
 function THereticLevelRules.TracesSteps: Boolean;

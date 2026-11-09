@@ -162,6 +162,7 @@ resourcestring
   SImagingWipeNotStarted = 'The wipe has not been started';
   SImagingWipeBufferSize = 'A buffer of the wipe is smaller than the screen';
   SImagingBadSineTable = 'The table of the sines needs five quarters of the circle';
+  SImagingBadPictureSize = 'A picture needs a width and a height of at least 1 pixel (%dx%d), and %d pixels, not %d';
   SImagingBadThumbnail = 'The screen, the palette or the size of the thumbnail are not valid';
   SImagingBadSaveThumbnail = 'The thumbnail of a saved game needs %d palette indices, not %d';
 

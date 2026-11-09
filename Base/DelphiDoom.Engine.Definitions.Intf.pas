@@ -18,7 +18,10 @@ type
   /// </summary>
   IEngineAnimDefsLoader = interface
     ['{8C1A5F24-3B07-4E9D-A26B-D490E71C5F38}']
+    /// <summary>Makes the lists of the animated pictures (empty) and reads the lump if there is one</summary>
     procedure Load;
+    /// <summary>Frees the lists of the animated pictures (it was P_ShutDownAnimations)</summary>
+    procedure Release;
   end;
 
   /// <summary>

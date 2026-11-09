@@ -46,7 +46,7 @@ uses
   DelphiDoom.MapInfo.Factory,
   DelphiDoom.Engine.MapInfo.Services,
   DelphiDoom.Engine.MapInfo.TextSource,
-  p_umapinfo,
+  DelphiDoom.Engine.MapInfo.Records,
 {$ENDIF}
   DelphiDoom.Engine.Acs.SourceProvider,
   DelphiDoom.Engine.Acs.Host,
@@ -219,6 +219,8 @@ uses
   DelphiDoom.Engine.Level.MapReader,
   DelphiDoom.Engine.Level.Things,
   DelphiDoom.Engine.Level.Nodes,
+  DelphiDoom.Engine.Nodes.Intf,
+  DelphiDoom.Engine.Nodes.GlbspRunner,
   DelphiDoom.Engine.Level.Blockmap,
 {$IF DEFINED(DOOM)}
   DelphiDoom.Engine.Level.VanillaNodes,
@@ -298,7 +300,8 @@ uses
   DelphiDoom.Engine.Music.MidiFileBackend,
   DelphiDoom.Engine.Music.ExternalSource,
   DelphiDoom.Midi.Factory,
-  i_midi_new,
+  i_midi,
+  DelphiDoom.Engine.Midi.SongPlayer,
   DelphiDoom.Mp3.Provider,
   s_sound,
   s_pk3sounds,
@@ -324,6 +327,9 @@ uses
   DelphiDoom.Configuration.Factory,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.Factory,
+  DelphiDoom.Video.Types,
+  DelphiDoom.Engine.Startup.ResponseFileSource,
+  DelphiDoom.Engine.Startup.Numbers,
   DelphiDoom.IdTech.Intf,
   DelphiDoom.IdTech.Factory,
   DelphiDoom.Engine.Wad.Intf,
@@ -364,7 +370,7 @@ uses
 // it), the defines of the game that it reads, and the evaluator of the expressions in the
 // parameters of the actors (given back: the DEHACKED applier gives it to the parameter lists)
 function ComposeScanner(const ALog: ILog; const ADefaults: IEngineDefaults; const ALumps: IEngineLumps;
-  const AZone: IZoneAllocator; const AShutdown: IEngineShutdown;
+  const AZone: IZoneAllocator; const AShutdown: IEngineShutdown; const ATempFiles: ITempFiles;
   out AEvaluator: IContextExpressionEvaluator): IScriptTextPreprocessor;
 var
   LDirectives: TArray<IScriptDirective>;
@@ -375,10 +381,10 @@ begin
   // #CREATEPALETTE makes the palettes of the profile of the game; Hexen has no FOGMAP
 {$IFDEF HEXEN}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False, ALumps, AZone, AShutdown);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Hexen), False, ALumps, AZone, AShutdown, ATempFiles);
 {$ELSE}
   LPalettes := TEnginePaletteGenerator.Create(TPaletteFactory.CreatePaletteBuilder(
-    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True, ALumps, AZone, AShutdown);
+    TPaletteFactory.CreateColorMatcher, TPaletteProfiles.Doom), True, ALumps, AZone, AShutdown, ATempFiles);
 {$ENDIF}
 {$IFDEF DOOM}
   LDirectives := TArray<IScriptDirective>.Create(
@@ -525,7 +531,8 @@ var
 begin
   // the MIDI files that the player of the midi stream plays (snd_uselegacymidiplayer = 0, 2)
   // are turned into the events of the stream by a sequencer for each song
-  I_ConfigureMidiStream(TMidiFactory.CreateSequencerFactory(ALog));
+  I_ConfigureMidi(TEngineMidiSongPlayer.Create(TMidiFactory.CreateSequencerFactory(ALog), ALog,
+    I_SelectDefaultMidiDevice));
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine, ALog, AShutdown);
   LMus := LMidiStream as IMusicBackend;
@@ -571,10 +578,10 @@ begin
   LMapServices.Episodes := nil;
 {$ENDIF}
   LCatalog := TMapInfoFactory.CreateCatalog(LServices);
-  U_ConfigureMapInfo(
+  D_ConfigureMapInfo(TEngineMapInfoRecords.Create(
     TMapInfoFactory.CreateLoader(LTextSource, LTextSource,
       TMapInfoFactory.CreateParser(LMapServices, ALog), LCatalog),
-    LCatalog);
+    LCatalog));
 end;
 {$ENDIF}
 
@@ -686,6 +693,7 @@ var
   LGame: TUdmfGame;
   LNodesSource: INodesLumpSource;
   LHexen: Boolean;
+  LGlbsp: IEngineGlbspRunner;
   LRules: ILevelGameRules;
   LUdmf: ILevelUdmf;
   LLoader: ILevelLoader;
@@ -709,6 +717,7 @@ begin
   LHexen := False;
 {$ENDIF}
   LNodesSource := TEngineNodesLumpSource.Create(ALumps);
+  LGlbsp := TEngineGlbspRunner.Create(LHexen, ALog);
   LRules := ComposeLevelRules(ALog, AContext, LNodesSource, ACommandLine, ARandom, ALumps,
     AShutdown);
 
@@ -719,12 +728,16 @@ begin
     TEngineLevelNodes.Create(LNodesSource, TNodesFactory.CreateGlDetector(LNodesSource),
       TNodesFactory.CreateGlMapFinder(LNodesSource),
       TNodesFactory.CreateGlbspInputBuilder(LNodesSource, LHexen), ATempFiles, ASaveFileNames,
-      LHexen, ALumps, AZone, ALog, AShutdown),
+      LHexen, ALumps, AZone, ALog, AShutdown, LGlbsp),
     TEngineLevelBlockmap.Create(TBlockmapFactory.CreateBuilder, TBlockmapFactory.CreateLumpReader,
       TBlockmapFactory.CreateSlimeTrailRemover, ACommandLine, ALumps, AZone, AShutdown),
     LUdmf, AMusInfo, ARegistry, ARandom, ALumps, AZone);
   G_ConfigureLevel(LLoader);
   D_ConfigureLevel(LLoader);
+{$IFDEF OPENGL}
+  // the GL nodes of the files added at startup (D_AddFile)
+  D_ConfigureGlbsp(LGlbsp);
+{$ENDIF}
 end;
 
 procedure ComposePalette(const APakFiles: IPakFileSystem; const AZone: IZoneAllocator);
@@ -1035,6 +1048,24 @@ begin
 end;
 {$ENDIF}
 
+procedure ComposeStartup(const ALog: ILog; const ACommandLine: ICommandLine);
+var
+  LLimits: TScreenSizeLimits;
+begin
+  LLimits.MinWidth := MINWIDTH;
+  LLimits.MinHeight := MINHEIGHT;
+  LLimits.MaxWidth := MAXWIDTH;
+  LLimits.MaxHeight := MAXHEIGHT;
+  D_ConfigureStartup(
+    TCommandLineFactory.CreateResponseFileExpander(TEngineResponseFileSource.Create, ALog),
+    TVideoFactory.CreateScreenSizeResolver(ACommandLine, TVideoFactory.CreateWindowsDisplayMetrics,
+      LLimits,
+      function(AText: string): Integer
+      begin
+        Result := EngineParseNumber(AText);
+      end));
+end;
+
 procedure ComposeAutomap;
 var
   LView: IAutomapView;
@@ -1135,7 +1166,7 @@ end;
 
 procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
   const APakFiles: IPakFileSystem; const ASaveFileNames: ISaveFileNames;
-  const ALumps: IEngineLumps; const AScreens: IEngineScreens);
+  const ALumps: IEngineLumps; const AScreens: IEngineScreens; const ATempFiles: ITempFiles);
 var
   LLoader: IVoxelLoader;
   LCubes: IVoxelCubeBuilder;
@@ -1154,7 +1185,7 @@ begin
     begin
       // the option is read at each call: the .ini is read after the composition
       Result := r_generatespritesfromvoxels;
-    end, APakFiles, ASaveFileNames, ALumps));
+    end, APakFiles, ASaveFileNames, ALumps, ATempFiles));
   // the sink makes the model of the renderer of each new voxel with the loader
   VX_ConfigureVoxels(
     TVoxelFactory.CreateDefinitionParser(TEngineVoxelDefinitionLookup.Create, ALog),
@@ -1242,8 +1273,8 @@ begin
   LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LLumps, LRegistry,
     LInterpreter);
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
-  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LEvaluator);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
+  LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;
@@ -1274,11 +1305,12 @@ begin
     TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom, LZone), LLog));
   LEndScreenTick := ComposeEndoom(LLumps, LZone, LLog, LShutdown, LScreens);
   ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
-  ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens);
+  ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
 
   W_Configure(LWadServices);
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
+  ComposeStartup(LLog, LCommandLine);
   D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create(LLumps),
     TEngineAutoLoadSink.Create(LPakContainers), TEngineScannerLog.Create));
   ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo, LCommandLine, LSaveFileNames,

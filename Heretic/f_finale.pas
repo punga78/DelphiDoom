@@ -90,6 +90,7 @@ uses
   g_game,
   m_menu,
   p_umapinfo,
+  DelphiDoom.Engine.MapInfo.Records,
   r_defs,
 // Functions.
   z_zone,
@@ -177,9 +178,9 @@ begin
   if gamemapinfo <> nil then
   begin
     if (gamemapinfo.intertextsecret[0] <> #0) and secretexit and (gamemapinfo.intertextsecret[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := ubigstringtostring(gamemapinfo.intertextsecret)
+      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertextsecret)
     else if (gamemapinfo.intertext[0] <> #0) and  not secretexit and (gamemapinfo.intertext[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := ubigstringtostring(gamemapinfo.intertext);
+      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertext);
 
     if gamemapinfo.interbackdrop <> '' then
       finaleflat := gamemapinfo.interbackdrop;

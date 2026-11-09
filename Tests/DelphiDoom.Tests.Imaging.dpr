@@ -32,8 +32,11 @@ uses
   DelphiDoom.Imaging.WallScale in '..\Libs\Imaging\DelphiDoom.Imaging.WallScale.pas',
   DelphiDoom.Imaging.ThumbnailBuilder in '..\Libs\Imaging\DelphiDoom.Imaging.ThumbnailBuilder.pas',
   DelphiDoom.Imaging.SaveThumbnail in '..\Libs\Imaging\DelphiDoom.Imaging.SaveThumbnail.pas',
+  DelphiDoom.Imaging.Resampler in '..\Libs\Imaging\DelphiDoom.Imaging.Resampler.pas',
   DelphiDoom.Imaging.Factory in '..\Libs\Imaging\DelphiDoom.Imaging.Factory.pas',
   DelphiDoom.Tests.Imaging.Samples in 'Source\DelphiDoom.Tests.Imaging.Samples.pas',
+  DelphiDoom.Tests.Imaging.ResampleCases in 'Source\DelphiDoom.Tests.Imaging.ResampleCases.pas',
+  DelphiDoom.Tests.Endoom.Digest in 'Source\DelphiDoom.Tests.Endoom.Digest.pas',
   DelphiDoom.Tests.Imaging.Golden in 'Source\DelphiDoom.Tests.Imaging.Golden.pas',
   DelphiDoom.Tests.Imaging.Types in 'Source\DelphiDoom.Tests.Imaging.Types.pas',
   DelphiDoom.Tests.Imaging.ColorMath in 'Source\DelphiDoom.Tests.Imaging.ColorMath.pas',
@@ -51,7 +54,8 @@ uses
   DelphiDoom.Tests.Imaging.WallScale in 'Source\DelphiDoom.Tests.Imaging.WallScale.pas',
   DelphiDoom.Tests.Imaging.ThumbnailBuilder in 'Source\DelphiDoom.Tests.Imaging.ThumbnailBuilder.pas',
   DelphiDoom.Tests.Imaging.SaveThumbnail in 'Source\DelphiDoom.Tests.Imaging.SaveThumbnail.pas',
-  DelphiDoom.Tests.Imaging.Factory in 'Source\DelphiDoom.Tests.Imaging.Factory.pas';
+  DelphiDoom.Tests.Imaging.Factory in 'Source\DelphiDoom.Tests.Imaging.Factory.pas',
+  DelphiDoom.Tests.Imaging.Resampler in 'Source\DelphiDoom.Tests.Imaging.Resampler.pas';
 
 var
   Runner: ITestRunner;

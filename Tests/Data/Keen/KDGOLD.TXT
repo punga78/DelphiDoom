@@ -1,0 +1,162 @@
+mainmem=565438
+tinf_s=0EC3 RLEWtag=ABCD off0=5475 off1=8454 hs0=36 hs1=37
+hdr[0] sizeof=38: 0B 00 00 00 C2 0A 00 00 9A 14 00 00 B7 0A D8 09 C9 00 55 00 42 00 4C 41 4E 44 20 4F 46 20 54 55 42 45 52 49 41 00 00 00
+map 0 name=LAND OF TUBERIA width=85 height=66
+map00_plane0             size=11220 crc32=5128481A
+map00_plane1             size=11220 crc32=59819341
+map00_plane2             size=11220 crc32=C4F1DB8A
+hdr[1] sizeof=38: 87 15 00 00 28 1B 00 00 6B 20 00 00 A1 05 43 05 9B 00 88 00 25 00 48 4F 52 53 45 52 41 44 49 53 48 48 49 4C 4C 00 00 00
+map 1 name=HORSERADISHHILL width=136 height=37
+map01_plane0             size=10064 crc32=C36B9A08
+map01_plane1             size=10064 crc32=7257ECDB
+map01_plane2             size=10064 crc32=AEA651F5
+hdr[2] sizeof=38: 2B 21 00 00 9F 42 00 00 E7 56 00 00 74 21 48 14 24 01 5E 00 5D 00 4D 45 4C 4F 4E 20 4D 49 4E 45 53 00 49 4C 4C 00 00 00
+map 2 name=MELON MINES width=94 height=93
+map02_plane0             size=17484 crc32=4CCA7E6A
+map02_plane1             size=17484 crc32=9F84B5EF
+map02_plane2             size=17484 crc32=C2034DD9
+hdr[3] sizeof=38: 2E 58 00 00 8C 59 00 00 A7 5E 00 00 5E 01 1B 05 C2 00 41 00 3E 00 42 52 49 44 47 45 20 42 4F 54 54 4F 4D 53 00 00 00 00
+map 3 name=BRIDGE BOTTOMS width=65 height=62
+map03_plane0             size=8060 crc32=ED75CFDB
+map03_plane1             size=8060 crc32=FFF793B8
+map03_plane2             size=8060 crc32=C6DE61C6
+hdr[4] sizeof=38: 8E 5F 00 00 88 64 00 00 CA 6B 00 00 FA 04 42 07 D4 00 4A 00 2E 00 52 48 55 42 41 52 42 20 52 41 50 49 44 53 00 00 00 00
+map 4 name=RHUBARB RAPIDS width=74 height=46
+map04_plane0             size=6808 crc32=34FABF2F
+map04_plane1             size=6808 crc32=B9B6F472
+map04_plane2             size=6808 crc32=DC282CB1
+hdr[5] sizeof=38: C2 6C 00 00 2A 72 00 00 E5 77 00 00 68 05 BB 05 AF 00 2A 00 48 00 50 41 52 53 4E 49 50 20 50 41 53 53 00 53 00 00 00 00
+map 5 name=PARSNIP PASS width=42 height=72
+map05_plane0             size=6048 crc32=A34CD2EE
+map05_plane1             size=6048 crc32=2E9D2E07
+map05_plane2             size=6048 crc32=1A5ECB1F
+hdr[6] sizeof=38: B8 78 00 00 5E 79 00 00 4B 7A 00 00 A6 00 ED 00 5A 00 1A 00 1E 00 54 45 4D 50 31 00 53 43 52 45 45 4E 00 4C 00 00 00 00
+map 6 name=TEMP1 width=26 height=30
+map06_plane0             size=1560 crc32=B9EF5CA2
+map06_plane1             size=1560 crc32=2AC306D0
+map06_plane2             size=1560 crc32=6019B36C
+hdr[7] sizeof=38: C6 7A 00 00 8E 86 00 00 C6 94 00 00 C8 0B 38 0E 2B 01 CA 00 3B 00 53 50 55 44 20 43 49 54 59 00 52 49 4E 47 00 00 00 00
+map 7 name=SPUD CITY width=202 height=59
+map07_plane0             size=23836 crc32=10E39CDE
+map07_plane1             size=23836 crc32=5CC89213
+map07_plane2             size=23836 crc32=28D1D7CE
+hdr[8] sizeof=38: 14 96 00 00 BA 96 00 00 A7 97 00 00 A6 00 ED 00 5A 00 1A 00 1E 00 54 45 4D 50 38 00 53 43 52 45 45 4E 00 4C 00 00 00 00
+map 8 name=TEMP8 width=26 height=30
+map08_plane0             size=1560 crc32=11070BBE
+map08_plane1             size=1560 crc32=2AC306D0
+map08_plane2             size=1560 crc32=6019B36C
+hdr[9] sizeof=38: 22 98 00 00 11 A3 00 00 B1 AC 00 00 EF 0A A0 09 FC 00 7E 00 2F 00 41 50 50 4C 45 20 41 43 52 45 53 00 4E 47 00 00 00 00
+map 9 name=APPLE ACRES width=126 height=47
+map09_plane0             size=11844 crc32=38C8EF5D
+map09_plane1             size=11844 crc32=CFF5C68A
+map09_plane2             size=11844 crc32=BDA7804A
+hdr[10] sizeof=38: D0 AD 00 00 D2 B1 00 00 AB B6 00 00 02 04 D9 04 2E 01 8B 00 27 00 47 52 41 50 45 20 47 52 4F 56 45 00 4E 47 00 00 00 00
+map 10 name=GRAPE GROVE width=139 height=39
+map10_plane0             size=10842 crc32=C1663253
+map10_plane1             size=10842 crc32=242E6313
+map10_plane2             size=10842 crc32=D3B86264
+hdr[11] sizeof=38: FD B7 00 00 A3 B8 00 00 90 B9 00 00 A6 00 ED 00 5A 00 1A 00 1E 00 54 45 4D 50 32 00 53 43 52 45 45 4E 00 4C 00 00 03 00
+map 11 name=TEMP2 width=26 height=30
+map11_plane0             size=1560 crc32=11070BBE
+map11_plane1             size=1560 crc32=2AC306D0
+map11_plane2             size=1560 crc32=6019B36C
+hdr[12] sizeof=38: 0A BA 00 00 0E BC 00 00 2A C0 00 00 04 02 1C 04 96 00 5D 00 1D 00 42 52 55 53 2E 53 50 52 4F 55 54 20 42 41 59 00 00 00
+map 12 name=BRUS.SPROUT BAY width=93 height=29
+map12_plane0             size=5394 crc32=0A09173A
+map12_plane1             size=5394 crc32=53B2BE75
+map12_plane2             size=5394 crc32=77BE7930
+hdr[13] sizeof=38: E4 C0 00 00 8B C1 00 00 78 C2 00 00 A7 00 ED 00 5A 00 1A 00 1E 00 54 45 4D 50 31 33 00 43 52 45 45 4E 00 4C 00 00 00 00
+map 13 name=TEMP13 width=26 height=30
+map13_plane0             size=1560 crc32=86E48122
+map13_plane1             size=1560 crc32=2AC306D0
+map13_plane2             size=1560 crc32=6019B36C
+hdr[14] sizeof=38: F5 C2 00 00 EB C5 00 00 1E C9 00 00 F6 02 33 03 64 00 4A 00 1D 00 53 51 55 41 53 48 20 53 57 41 4D 50 00 4E 47 00 00 00
+map 14 name=SQUASH SWAMP width=74 height=29
+map14_plane0             size=4292 crc32=A8C6332B
+map14_plane1             size=4292 crc32=36D9A73B
+map14_plane2             size=4292 crc32=E6C6F240
+hdr[15] sizeof=38: A7 C9 00 00 DD CE 00 00 C0 D0 00 00 36 05 E3 01 10 00 23 00 1E 00 42 4F 4F 42 55 53 27 20 52 4F 4F 4D 00 41 00 00 00 00
+map 15 name=BOOBUS' ROOM width=35 height=30
+map15_plane0             size=2100 crc32=410E121D
+map15_plane1             size=2100 crc32=FA9E8909
+map15_plane2             size=2100 crc32=3FCB91BE
+hdr[16] sizeof=38: F4 D0 00 00 F3 EE 00 00 D0 FC 00 00 FF 1D DD 0D 13 01 55 00 50 00 43 41 53 54 4C 45 20 54 55 42 45 52 49 41 00 00 03 00
+map 16 name=CASTLE TUBERIA width=85 height=80
+map16_plane0             size=13600 crc32=3E3ABC7A
+map16_plane1             size=13600 crc32=E90071E2
+map16_plane2             size=13600 crc32=71B44C21
+hdr[20] sizeof=38: 09 FE 00 00 05 00 01 00 62 00 01 00 FC 01 5D 00 09 00 25 00 13 00 54 49 54 4C 45 20 53 43 52 45 45 4E 00 4C 00 00 03 00
+map 20 name=TITLE SCREEN width=37 height=19
+map20_plane0             size=1406 crc32=3BBE72D0
+map20_plane1             size=1406 crc32=81EA27D0
+map20_plane2             size=1406 crc32=03B4DD36
+pictable entries=65
+pictable                 size=260 crc32=9016995F
+pic000_w5_h32            size=640 crc32=CE52A2A1
+pic001_w5_h32            size=640 crc32=18758177
+pic002_w5_h32            size=640 crc32=809D0E60
+pic003_w5_h32            size=640 crc32=5FA172DA
+pic004_w5_h32            size=640 crc32=7E403C7E
+pic005_w5_h32            size=640 crc32=4C375A84
+pic006_w5_h32            size=640 crc32=E35059AC
+pic007_w5_h32            size=640 crc32=605DA619
+pic008_w5_h32            size=640 crc32=7DCAD700
+pic009_w5_h32            size=640 crc32=38F4AB0C
+pic010_w5_h32            size=640 crc32=91F1C296
+pic011_w5_h32            size=640 crc32=BBD8BB14
+pic012_w4_h24            size=384 crc32=E50CE93E
+pic013_w4_h24            size=384 crc32=107B8905
+pic014_w4_h24            size=384 crc32=4875A569
+pic015_w4_h24            size=384 crc32=4178AF72
+pic016_w4_h24            size=384 crc32=F93BDB1F
+pic017_w4_h24            size=384 crc32=4F77145F
+pic018_w4_h24            size=384 crc32=A82E5387
+pic019_w4_h24            size=384 crc32=C031EA68
+pic020_w4_h24            size=384 crc32=B410450E
+pic021_w4_h24            size=384 crc32=9D6CEC2B
+pic022_w4_h24            size=384 crc32=16D5B145
+pic023_w4_h24            size=384 crc32=13E2CC50
+pic024_w4_h24            size=384 crc32=381C08D0
+pic025_w4_h24            size=384 crc32=24E58EAA
+pic026_w4_h24            size=384 crc32=8E7BE839
+pic027_w4_h24            size=384 crc32=4AEBF0CB
+pic028_w4_h24            size=384 crc32=F82A80D4
+pic029_w4_h24            size=384 crc32=9040E5D9
+pic030_w4_h24            size=384 crc32=9788EA28
+pic031_w4_h24            size=384 crc32=87BF17EC
+pic032_w7_h32            size=896 crc32=203E00F9
+pic033_w7_h32            size=896 crc32=9DE83191
+pic034_w7_h32            size=896 crc32=4D6D13F3
+pic035_w4_h16            size=256 crc32=54EFB044
+pic036_w4_h16            size=256 crc32=7E8038D6
+pic037_w4_h16            size=256 crc32=1D6E58B6
+pic038_w4_h16            size=256 crc32=AA312230
+pic039_w4_h24            size=384 crc32=80F7D4CA
+pic040_w4_h24            size=384 crc32=22CAB094
+pic041_w4_h24            size=384 crc32=032353E9
+pic042_w4_h24            size=384 crc32=51391CDD
+pic043_w4_h24            size=384 crc32=045A6D7C
+pic044_w4_h24            size=384 crc32=7AFB3F42
+pic045_w4_h24            size=384 crc32=BEAE34C6
+pic046_w4_h24            size=384 crc32=5FD6B0D5
+pic047_w4_h24            size=384 crc32=9E03D27D
+pic048_w4_h24            size=384 crc32=9E9D5C01
+pic049_w4_h24            size=384 crc32=D5E3023B
+pic050_w4_h24            size=384 crc32=74B8B363
+pic051_w4_h24            size=384 crc32=0772A068
+pic052_w4_h24            size=384 crc32=2FD3E1DF
+pic053_w4_h24            size=384 crc32=9429AB51
+pic054_w4_h24            size=384 crc32=8C305653
+pic055_w4_h24            size=384 crc32=7963E1B0
+pic056_w4_h24            size=384 crc32=332F46CA
+pic057_w4_h24            size=384 crc32=2C6B27BF
+pic058_w4_h24            size=384 crc32=965E833C
+pic059_w4_h24            size=384 crc32=7A8F08D6
+pic060_w4_h24            size=384 crc32=A2CF05C6
+pic061_w4_h24            size=384 crc32=C2D720AB
+pic062_w4_h24            size=384 crc32=1DE091AE
+pic063_w5_h24            size=480 crc32=C92ED33A
+pic064_w5_h24            size=480 crc32=80D192B4
+tile8_all                size=2304 crc32=BF5D7E88
+tile8m_all               size=1440 crc32=9C417B02
+tileinfo_block           size=11322 crc32=BD8EE2B4

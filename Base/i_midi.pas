@@ -33,6 +33,9 @@ unit i_midi;
 
 interface
 
+uses
+  DelphiDoom.Engine.Midi.Intf;
+
 const
   MThd = $6468544D; // Start of file
   MTrk = $6B72544D; // Start of track
@@ -110,6 +113,15 @@ procedure I_ProcessMidi;
 //==============================================================================
 function I_SelectDefaultMidiDevice: LongWord;
 
+//==============================================================================
+//
+// I_ConfigureMidi
+// Gives the player of the midi stream (ComposeEngine). Without it the internal player
+// (snd_uselegacymidiplayer <> 1) stops the game when it is first used
+//
+//==============================================================================
+procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
+
 var
   snd_uselegacymidiplayer: integer = 2;
 
@@ -121,11 +133,34 @@ uses
   MMSystem,
   d_delphi,
   m_argv,
-  i_midi_new,
+  i_system,
   i_midi_legacy;
 
 var
   uselegacymidiplayer: boolean = false;
+  midiplayer: IEngineMidiSongPlayer = nil;
+
+//==============================================================================
+//
+// I_ConfigureMidi
+//
+//==============================================================================
+procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
+begin
+  midiplayer := APlayer;
+end;
+
+//==============================================================================
+//
+// ConfiguredMidiPlayer
+//
+//==============================================================================
+function ConfiguredMidiPlayer: IEngineMidiSongPlayer;
+begin
+  if not Assigned(midiplayer) then
+    I_Error('I_PlayMidi(): the MIDI player is not configured (ComposeEngine)');
+  result := midiplayer;
+end;
 
 //==============================================================================
 //
@@ -141,7 +176,7 @@ begin
     I_PlayMidi_Legacy(0);
   end
   else
-    I_PlayMidi_New(aMidiFile);
+    ConfiguredMidiPlayer.Play(aMidiFile);
 end;
 
 //==============================================================================
@@ -154,7 +189,10 @@ begin
   if uselegacymidiplayer then
     I_StopMidi_Legacy
   else
-    I_StopMidi_New;
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Stop;
+  end;
 end;
 
 //==============================================================================
@@ -167,7 +205,10 @@ begin
   if uselegacymidiplayer then
     I_ResumeMidi_Legacy
   else
-    I_ResumeMidi_New;
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Resume;
+  end;
 end;
 
 //==============================================================================
@@ -180,7 +221,10 @@ begin
   if uselegacymidiplayer then
     I_PauseMidi_Legacy
   else
-    I_PauseMidi_New;
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Pause;
+  end;
 end;
 
 //==============================================================================
@@ -203,7 +247,10 @@ begin
     I_InitMidi_Legacy;
   end
   else
-    I_InitMidi_New
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Initialize;
+  end
 end;
 
 //==============================================================================
@@ -216,7 +263,10 @@ begin
   if uselegacymidiplayer then
     I_ShutDownMidi_Legacy
   else
-    I_ShutDownMidi_New
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.ShutDown;
+  end
 end;
 
 //==============================================================================
@@ -229,7 +279,10 @@ begin
   if uselegacymidiplayer then
     I_SetMusicVolumeMidi_Legacy(volume)
   else
-    I_SetMusicVolumeMidi_New(volume);
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.SetVolume(volume);
+  end;
 end;
 
 //==============================================================================
@@ -242,7 +295,10 @@ begin
   if uselegacymidiplayer then
     I_ProcessMidi_Legacy
   else
-    I_ProcessMidi_New;
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Process;
+  end;
 end;
 
 //==============================================================================
