@@ -19,7 +19,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#133)**: `I_ExecProgram` non aveva chiamanti; dalla #145 non c'e piu nemmeno `TProcessRunner` in `Libs\Platform`.
 
-### `OPENGL\gl_frustum.pas` - cancellata
+### `Libs\OpenGl\Legacy\gl_frustum.pas` - cancellata
 
 **Tolta (#134)**: i piani del frustum non li leggeva nessuno; dalla #145 non c'e piu nemmeno `TGlFrustum` in `Libs\GlMath`.
 
@@ -31,7 +31,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#135)**: `#CREATEPALETTE` (`TEnginePaletteGenerator`) usa `IPaletteBuilder` di `Libs\Palette`.
 
-### `OPENGL\mdl_base.pas` - nessuna funzione pubblica
+### `Libs\OpenGl\Legacy\mdl_base.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#134)**: resta solo con i tipi dei modelli.
 
@@ -175,7 +175,7 @@ Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 |---|---:|---|
 | `P_ConfigureSerializer` | 1 | DelphiDoom.Engine.Composition |
 
-### `OPENGL\gl_voxels.pas` - 2 funzioni pubbliche, 2 chiamate
+### `Libs\OpenGl\Legacy\gl_voxels.pas` - 2 funzioni pubbliche, 2 chiamate
 
 **Non piu facciata (#134)**: resta il disegno dei voxel in OpenGL (`gld_InitVoxels`, `gld_VoxelsDone`), legato al contesto GL.
 
@@ -209,7 +209,7 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 |---|---:|---|
 | `P_Obituary` | 5 | Doom\p_inter, Heretic\p_inter, Hexen\p_inter (2), Strife\p_inter |
 
-### `OPENGL\gl_clipper.pas` - 5 funzioni pubbliche, 7 chiamate
+### `Libs\OpenGl\Legacy\gl_clipper.pas` - 5 funzioni pubbliche, 7 chiamate
 
 Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
@@ -223,7 +223,7 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
 ### `Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
 
-**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `OPENGL\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
+**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `Libs\OpenGl\Legacy\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1323,12 +1323,12 @@ Nessun chiamante fuori dalla unit (riferimenti in `Tests\` e `Libs\` esclusi), n
 - `Doom\p_spec.pas`: P_FindMinSurroundingLight
 - `Heretic\p_enemy.pas`: A_Fall
 - `Heretic\p_spec.pas`: P_InitLava
-- `OPENGL\gl_ambient.pas`: gld_AmbientExecute
-- `OPENGL\gl_misc.pas`: gl_f_max
-- `OPENGL\gl_render.pas`: gld_DrawLine
-- `OPENGL\gl_tex.pas`: gld_LoadExternalTextureAlpha
-- `OPENGL\gl_types.pas`: MakeGLVertex
-- `OPENGL\mdl_script_proclist.pas`: MDL_Procs
+- `Libs\OpenGl\Legacy\gl_ambient.pas`: gld_AmbientExecute
+- `Libs\OpenGl\Legacy\gl_misc.pas`: gl_f_max
+- `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawLine
+- `Libs\OpenGl\Legacy\gl_tex.pas`: gld_LoadExternalTextureAlpha
+- `Libs\OpenGl\Legacy\gl_types.pas`: MakeGLVertex
+- `Libs\OpenGl\Legacy\mdl_script_proclist.pas`: MDL_Procs
 - `Strife\p_spec.pas`: P_FindMinSurroundingLight
 
 
@@ -1380,8 +1380,8 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem
 - `Hexen\p_user.pas`: P_PlayerNextArtifact
 - `Hexen\sv_save.pas`: P_ArchiveScreenShot, P_UnArchiveScreenShot
-- `OPENGL\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
-- `OPENGL\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
+- `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
+- `Libs\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
 - `Libs\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
 - `Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
 - `Strife\g_game.pas`: G_DoLoadGame

@@ -1,7 +1,7 @@
 # Dati di prova di Libs\Voxel (issue #78)
 
 `voxel.golden.txt` e' l'uscita del **vecchio codice del motore** (i quattro caricatori di `Base\r_voxels.pas` per il renderer software,
-la classe `TVoxelImageLoader` di `Base\vx_voxelsprite.pas` per gli sprite, i quattro caricatori di `OPENGL\gl_voxels.pas` fino ai buffer da
+la classe `TVoxelImageLoader` di `Base\vx_voxelsprite.pas` per gli sprite, i quattro caricatori di `Libs\OpenGl\Legacy\gl_voxels.pas` fino ai buffer da
 cui nasce la mesh, `SC_DoParseVoxelDefinition` di `Base\vx_base.pas`), compilato con Delphi 11 Win32 in un programma di prova **fuori dal
 repository** (l'harness non si committa). Nell'harness i file arrivano da memoria (`TPakStream` e' un flusso di memoria), i buffer sono
 di lato 64 invece di 256, il parser di VOXELDEF scrive su un registratore (variante OpenGL: offset e scala sono float) e il colore piu' vicino
