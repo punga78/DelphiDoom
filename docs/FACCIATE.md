@@ -155,7 +155,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#143)**: `s_sound` riceve `IMusicPlayer` (`S_ConfigureMusic`) e chiama i backend (`Base\DelphiDoom.Engine.Music.*`); `I_SelectDefaultMidiDevice` sta in `i_midi`.
 
-### `TEXLIB\t_main.pas` - cancellata
+### `TEXLIB\t_main.pas` - cancellata (e con lei `t_draw.pas`, `t_png.pas`: classi `TEngineDrawTextures` e `TEngineTextureSettings`, issue #171; `TEXLIB` non esiste più)
 
 **Tolta (#146)**, con `TEXLIB\t_detect.pas`: `T_LoadHiResImage` e i caricatori sono `TEngineTextureFiles` (`IEngineTextureFiles`, dato da `ComposeTexture`); la classe `TTexture` e in `Base\DelphiDoom.Engine.Texture.Item.pas`; il riconoscimento di patch, PCX e flat lo fanno `TTexturePatchInspector`, `TTexturePcxDecoder` e `TTextureFlatDecoder` di `Libs\Texture`.
 

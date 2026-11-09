@@ -50,7 +50,7 @@ uses
   DelphiDoom.Jpeg.Client in '..\Libs\Jpeg\DelphiDoom.Jpeg.Client.pas',
   DelphiDoom.Jpeg.Loader in '..\Libs\Jpeg\DelphiDoom.Jpeg.Loader.pas',
   DelphiDoom.Jpeg.Provider in '..\Libs\Jpeg\DelphiDoom.Jpeg.Provider.pas',
-  DelphiDoom.Texture.JpegBitmap in '..\TEXLIB\DelphiDoom.Texture.JpegBitmap.pas',
+  DelphiDoom.Texture.JpegBitmap in '..\Libs\Texture\DelphiDoom.Texture.JpegBitmap.pas',
   DelphiDoom.Tests.Jpeg.Random in 'Source\DelphiDoom.Tests.Jpeg.Random.pas',
   DelphiDoom.Tests.Jpeg.Digest in 'Source\DelphiDoom.Tests.Jpeg.Digest.pas',
   DelphiDoom.Tests.Jpeg.Synthesizer in 'Source\DelphiDoom.Tests.Jpeg.Synthesizer.pas',

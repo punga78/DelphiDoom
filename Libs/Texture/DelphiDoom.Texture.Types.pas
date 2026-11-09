@@ -15,6 +15,8 @@ uses
   System.SysUtils;
 
 const
+  /// <summary>The extension of the PNG files that are read as sprites</summary>
+  TEXTURE_PNG_SPRITE_EXTENSION = '.PNGSPRITE';
   /// <summary>Entries of the palette of a texture</summary>
   TEXTURE_PALETTE_SIZE = 256;
   /// <summary>

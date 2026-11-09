@@ -45,32 +45,8 @@ program GLHexen32;
 {$R *.RES}
 
 uses
-  FastMM4 in '..\FASTMM4\FastMM4.pas',
-  FastMM4Messages in '..\FASTMM4\FastMM4Messages.pas',
   i_crashlog in '..\Base\i_crashlog.pas',
   SysUtils,
-{$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
-  FastCode in '..\FASTCODE\FastCode.pas',
-  FastMove in '..\FASTCODE\FastMove.pas',
-  AnsiStringReplaceJOHIA32Unit12 in '..\FASTCODE\AnsiStringReplaceJOHIA32Unit12.pas',
-  AnsiStringReplaceJOHPASUnit12 in '..\FASTCODE\AnsiStringReplaceJOHPASUnit12.pas',
-  FastcodeAnsiStringReplaceUnit in '..\FASTCODE\FastcodeAnsiStringReplaceUnit.pas',
-  FastcodeCompareMemUnit in '..\FASTCODE\FastcodeCompareMemUnit.pas',
-  FastcodeCompareStrUnit in '..\FASTCODE\FastcodeCompareStrUnit.pas',
-  FastcodeCompareTextUnit in '..\FASTCODE\FastcodeCompareTextUnit.pas',
-  FastcodeCPUID in '..\FASTCODE\FastcodeCPUID.pas',
-  FastcodeFillCharUnit in '..\FASTCODE\FastcodeFillCharUnit.pas',
-  FastcodeLowerCaseUnit in '..\FASTCODE\FastcodeLowerCaseUnit.pas',
-  FastcodePatch in '..\FASTCODE\FastcodePatch.pas',
-  FastcodePosExUnit in '..\FASTCODE\FastcodePosExUnit.pas',
-  FastcodePosUnit in '..\FASTCODE\FastcodePosUnit.pas',
-  FastcodeStrCompUnit in '..\FASTCODE\FastcodeStrCompUnit.pas',
-  FastcodeStrCopyUnit in '..\FASTCODE\FastcodeStrCopyUnit.pas',
-  FastcodeStrICompUnit in '..\FASTCODE\FastcodeStrICompUnit.pas',
-  FastCodeStrLenUnit in '..\FASTCODE\FastCodeStrLenUnit.pas',
-  FastcodeStrToInt32Unit in '..\FASTCODE\FastcodeStrToInt32Unit.pas',
-  FastcodeUpperCaseUnit in '..\FASTCODE\FastcodeUpperCaseUnit.pas',
-{$ENDIF}
   DelphiDoom.GlMath.Types in '..\Libs\GlMath\DelphiDoom.GlMath.Types.pas',
   DelphiDoom.GlMath.Intf in '..\Libs\GlMath\DelphiDoom.GlMath.Intf.pas',
   DelphiDoom.GlMath.AngleClipper in '..\Libs\GlMath\DelphiDoom.GlMath.AngleClipper.pas',
@@ -215,7 +191,7 @@ uses
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Provider in '..\Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
-  t_draw in '..\TEXLIB\t_draw.pas',
+  DelphiDoom.Engine.Texture.DrawTextures in '..\Base\DelphiDoom.Engine.Texture.DrawTextures.pas',
   DelphiDoom.Jpeg.Intf in '..\Libs\Jpeg\DelphiDoom.Jpeg.Intf.pas',
   DelphiDoom.Jpeg.Types in '..\Libs\Jpeg\DelphiDoom.Jpeg.Types.pas',
   DelphiDoom.Jpeg.ByteSource in '..\Libs\Jpeg\DelphiDoom.Jpeg.ByteSource.pas',
@@ -250,8 +226,8 @@ uses
   DelphiDoom.Jpeg.Engine in '..\Libs\Jpeg\DelphiDoom.Jpeg.Engine.pas',
   DelphiDoom.Jpeg.Client in '..\Libs\Jpeg\DelphiDoom.Jpeg.Client.pas',
   DelphiDoom.Jpeg.Provider in '..\Libs\Jpeg\DelphiDoom.Jpeg.Provider.pas',
-  DelphiDoom.Texture.JpegBitmap in '..\TEXLIB\DelphiDoom.Texture.JpegBitmap.pas',
-  t_png in '..\TEXLIB\t_png.pas',
+  DelphiDoom.Texture.JpegBitmap in '..\Libs\Texture\DelphiDoom.Texture.JpegBitmap.pas',
+  DelphiDoom.Engine.Texture.Settings in '..\Base\DelphiDoom.Engine.Texture.Settings.pas',
   DelphiDoom.Png.Intf in '..\Libs\Png\DelphiDoom.Png.Intf.pas',
   DelphiDoom.Png.Crc in '..\Libs\Png\DelphiDoom.Png.Crc.pas',
   DelphiDoom.Png.ByteOrder in '..\Libs\Png\DelphiDoom.Png.ByteOrder.pas',
@@ -271,7 +247,7 @@ uses
   DelphiDoom.Png.Engine in '..\Libs\Png\DelphiDoom.Png.Engine.pas',
   DelphiDoom.Png.Client in '..\Libs\Png\DelphiDoom.Png.Client.pas',
   DelphiDoom.Png.Provider in '..\Libs\Png\DelphiDoom.Png.Provider.pas',
-  DelphiDoom.Texture.PngFileWriter in '..\TEXLIB\DelphiDoom.Texture.PngFileWriter.pas',
+  DelphiDoom.Texture.PngFileWriter in '..\Libs\Texture\DelphiDoom.Texture.PngFileWriter.pas',
   z_zone in '..\Base\z_zone.pas',
   w_pak in '..\Base\w_pak.pas',
   DelphiDoom.Wad.Types in '..\Libs\Wad\DelphiDoom.Wad.Types.pas',
@@ -1196,6 +1172,11 @@ var
   Saved8087CW: Word;
 
 begin
+  { The RTL memory manager locks only when IsMultiThread is set: the engine threads use CreateThread }
+  IsMultiThread := True;
+{$IFDEF DEBUG}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   I_InstallCrashLogger;
   ComposeEngine;
 

@@ -110,7 +110,7 @@ uses
   r_pk3textures,
   s_sound,
   sc_states,
-  t_png,
+  DelphiDoom.Engine.Texture.Settings,
   v_video;
 
 const
@@ -1220,7 +1220,7 @@ const
      _type: tBoolean),
 
     (name: 'preferetexturesnamesingamedirectory';
-     location: @preferetexturesnamesingamedirectory;
+     location: @TEngineTextureSettings.PreferGameDirectory;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1248,7 +1248,7 @@ const
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     (name: 'pngtransparentcolor';
-     location: @pngtransparentcolor;
+     location: @TEngineTextureSettings.PngTransparentColor;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1257,7 +1257,7 @@ const
      _type: tInteger),
 
     (name: 'pngtransparentcolor2';
-     location: @pngtransparentcolor2;
+     location: @TEngineTextureSettings.PngTransparentColor2;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1266,7 +1266,7 @@ const
      _type: tInteger),
 
     (name: 'assumecommontranspantcolors';
-     location: @assumecommontranspantcolors;
+     location: @TEngineTextureSettings.AssumeCommonTransparentColors;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1277,7 +1277,7 @@ const
 {$ELSE}
 {$IFNDEF FPC}
     (name: 'pngtransparentcolor';
-     location: @pngtransparentcolor;
+     location: @TEngineTextureSettings.PngTransparentColor;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1286,7 +1286,7 @@ const
      _type: tInteger),
 
     (name: 'pngtransparentcolor2';
-     location: @pngtransparentcolor2;
+     location: @TEngineTextureSettings.PngTransparentColor2;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';
@@ -1295,7 +1295,7 @@ const
      _type: tInteger),
 
     (name: 'assumecommontranspantcolors';
-     location: @assumecommontranspantcolors;
+     location: @TEngineTextureSettings.AssumeCommonTransparentColors;
      oldlocation: nil;
      setable: DFS_ALWAYS;
      defaultsvalue: '';

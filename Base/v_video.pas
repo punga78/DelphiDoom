@@ -43,7 +43,8 @@ uses
   r_defs,
   v_data,
   DelphiDoom.Imaging.Intf,
-  DelphiDoom.Palette.Intf;
+  DelphiDoom.Palette.Intf,
+  DelphiDoom.Engine.Texture.Intf;
 
 //==============================================================================
 //
@@ -461,6 +462,28 @@ procedure V_ConfigureGamma(const ATables: IGammaTables);
 //==============================================================================
 procedure V_ConfigureFlatShrink(const AShrinker: IImagingFlatShrinker);
 
+//==============================================================================
+//
+// V_ConfigureDrawTextures
+// The external textures of the full screen pages, given by the composition root
+//
+//==============================================================================
+procedure V_ConfigureDrawTextures(const ADrawTextures: IEngineDrawTextures);
+
+//==============================================================================
+//
+// V_InitDrawTextures
+//
+//==============================================================================
+procedure V_InitDrawTextures;
+
+//==============================================================================
+//
+// V_ShutDownDrawTextures
+//
+//==============================================================================
+procedure V_ShutDownDrawTextures;
+
 var
   usegamma: byte;
 
@@ -539,7 +562,6 @@ uses
   r_flatinfo,
   r_aspect,
   DelphiDoom.Texture.PatchInspector,
-  t_draw,
   w_wad,
   z_zone;
 
@@ -562,6 +584,41 @@ begin
   end;
 end;
 
+var
+  draw_textures: IEngineDrawTextures = nil;
+
+//==============================================================================
+//
+// V_ConfigureDrawTextures
+//
+//==============================================================================
+procedure V_ConfigureDrawTextures(const ADrawTextures: IEngineDrawTextures);
+begin
+  draw_textures := ADrawTextures;
+end;
+
+//==============================================================================
+//
+// V_InitDrawTextures
+//
+//==============================================================================
+procedure V_InitDrawTextures;
+begin
+  if draw_textures = nil then
+    I_Error('V_InitDrawTextures(): the draw textures are not configured');
+  draw_textures.Initialize;
+end;
+
+//==============================================================================
+//
+// V_ShutDownDrawTextures
+//
+//==============================================================================
+procedure V_ShutDownDrawTextures;
+begin
+  if draw_textures <> nil then
+    draw_textures.ShutDown;
+end;
 var
   flat_shrinker: IImagingFlatShrinker = nil;
 
@@ -4853,7 +4910,7 @@ var
   oldw, oldh: integer;
 begin
   if {$IFNDEF OPENGL}(videomode = vm32bit) and{$ENDIF} useexternaltextures then
-    if T_DrawFullScreenPatch(pagename, screen32) then
+    if draw_textures.Draw(pagename, screen32) then
     begin
       V_FullScreenStretch;
       exit;
@@ -4914,7 +4971,7 @@ var
 {$ENDIF}
 begin
 {$IFDEF OPENGL}
-  if T_DrawFullScreenPatch(pagename, screen32) then
+  if draw_textures.Draw(pagename, screen32) then
   begin
     V_FullScreenStretch;
     exit;
@@ -4932,7 +4989,7 @@ begin
 
 {$ELSE}
   if (videomode = vm32bit) and useexternaltextures then
-    if T_DrawFullScreenPatch(pagename, screen32) then
+    if draw_textures.Draw(pagename, screen32) then
     begin
       V_FullScreenStretch;
       exit;

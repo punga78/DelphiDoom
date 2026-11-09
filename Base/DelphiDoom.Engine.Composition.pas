@@ -130,7 +130,7 @@ uses
   DelphiDoom.Engine.Texture.Resolver,
   DelphiDoom.Engine.Texture.Intf,
   DelphiDoom.Engine.Texture.Files,
-  t_draw,
+  DelphiDoom.Engine.Texture.DrawTextures,
   w_sprite,
   r_pk3textures,
 {$IFDEF OPENGL}
@@ -889,7 +889,7 @@ begin
   LFiles := TEngineTextureFiles.Create(TTextureFactory.CreateFormats(LServices), APakFiles);
   // a material asks the files for the images it names: the resolver keeps them weakly
   LResolver.Attach(LFiles);
-  T_ConfigureDrawTextures(LFiles);
+  V_ConfigureDrawTextures(TEngineDrawTextures.Create(LFiles));
   W_ConfigureSpriteTextures(LFiles);
   R_ConfigurePK3Textures(LFiles, APakFiles);
 {$IFDEF OPENGL}

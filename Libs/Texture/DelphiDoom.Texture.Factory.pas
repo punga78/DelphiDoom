@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Texture.Formats, DelphiDoom.Texture.Decoder.PngTexture,
+  System.SysUtils, DelphiDoom.Texture.Types, DelphiDoom.Texture.Formats, DelphiDoom.Texture.Decoder.PngTexture,
   DelphiDoom.Texture.Decoder.PngSprite, DelphiDoom.Texture.Decoder.Jpeg,
   DelphiDoom.Texture.Decoder.Pcx, DelphiDoom.Texture.Decoder.Tga,
   DelphiDoom.Texture.Decoder.Bmp, DelphiDoom.Texture.Decoder.Material,
@@ -56,7 +56,7 @@ begin
   SetLength(LDecoders, 10);
   LDecoders[0] := TTexturePngTextureDecoder.Create('.PNG', AServices.PngReader,
     AServices.PngSettings, AServices.Log);
-  LDecoders[1] := TTexturePngSpriteDecoder.Create('.PNGSPRITE', AServices.PngReader,
+  LDecoders[1] := TTexturePngSpriteDecoder.Create(TEXTURE_PNG_SPRITE_EXTENSION, AServices.PngReader,
     AServices.Log);
   LDecoders[2] := TTextureJpegDecoder.Create('.JPG', AServices.JpegConverter, LBitmap);
   LDecoders[3] := TTextureJpegDecoder.Create('.JPEG', AServices.JpegConverter, LBitmap);
