@@ -56,6 +56,9 @@ type
   /// </summary>
   TKeenActive = (kaNo, kaYes, kaAllways, kaRemovable);
 
+  /// <summary>SDMode: what plays the sound effects. Off and the PC speaker; the AdLib and the digitized sounds are not ported yet</summary>
+  TKeenSoundMode = (ksmOff, ksmPC);
+
   /// <summary>gametype: what a saved game keeps of the game</summary>
   TKeenGameState = record
     WorldX: Word;

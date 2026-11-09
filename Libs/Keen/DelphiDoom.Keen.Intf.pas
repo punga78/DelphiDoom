@@ -714,6 +714,35 @@ type
     property Map: IKeenWorkingMap read GetMap;
   end;
 
+  /// <summary>The speaker of the PC: the timer 2 and the bits 0 and 1 of the port 61h (what SDL_PCService writes to the ports)</summary>
+  IKeenSpeaker = interface
+    ['{A5D20C86-71E3-4B19-8C04-E9F6B3A17D52}']
+    /// <summary>A tone: the divisor goes to the timer and the speaker and its gate are turned on</summary>
+    procedure Tone(ADivisor: Word);
+    /// <summary>Silence between two tones: the speaker and its gate are turned off</summary>
+    procedure Silence;
+    /// <summary>SDL_PCStopSound: the speaker is turned off (the gate is not touched)</summary>
+    procedure Stop;
+  end;
+
+  /// <summary>The sound effects (id_sd.c): which sound plays, with its priority, and the service that the timer calls</summary>
+  IKeenSoundManager = interface
+    ['{3F7B91D4-C068-4E25-A1B9-08D7E5C42A63}']
+    function GetMode: TKeenSoundMode;
+    procedure SetMode(AMode: TKeenSoundMode);
+    /// <summary>SD_PlaySound: it plays if the priority of the sound is not lower than the one that plays; an EKeenException for a sound that is not cached</summary>
+    procedure PlaySound(ASound: Integer);
+    /// <summary>SD_StopSound</summary>
+    procedure StopSound;
+    /// <summary>SD_SoundPlaying: the number of the sound that plays, 0 if none (the sound 0 reads as none, as in the C)</summary>
+    function SoundPlaying: Integer;
+    /// <summary>The timer interrupt: 140 times per second (KEEN_PC_SERVICE_RATE)</summary>
+    procedure Service;
+    /// <summary>SD_WaitSoundDone</summary>
+    procedure WaitSoundDone;
+    property Mode: TKeenSoundMode read GetMode write SetMode;
+  end;
+
   /// <summary>ChangeToFlower: an enemy that a flower power hits becomes a flower for a while</summary>
   IKeenFlowerChanger = interface
     ['{E0B8D3A6-2F91-4C47-83A5-71D9C46B0E18}']
