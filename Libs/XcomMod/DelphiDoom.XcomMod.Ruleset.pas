@@ -170,6 +170,8 @@ type
     property Interfaces: TXcomRuleRegistry<TXcomRuleInterface> read FInterfaces;
     property Videos: TXcomRuleRegistry<TXcomRuleVideo> read FVideos;
     property Converter: TXcomRuleConverter read FConverter;
+    /// <summary>The virtual files of the mods that the ruleset was made with (nil if none)</summary>
+    property Files: IXcomModFiles read FFiles;
     /// <summary>getGlobe</summary>
     property Globe: TXcomRuleGlobe read FGlobe;
     property Constants: TXcomModConstants read FConstants;

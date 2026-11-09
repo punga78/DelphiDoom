@@ -34,6 +34,7 @@ type
     procedure DumpVideos;
     class procedure Mix(var AHash: UInt64; const AData; ASize: Integer); static;
     procedure DumpGlobe;
+    procedure DumpMapData;
     procedure DumpConverter;
     procedure DumpConstants;
     procedure DumpSettings;
@@ -53,7 +54,8 @@ uses
   DelphiDoom.XcomMod.StatString, DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomMod.RuleVideo,
   DelphiDoom.XcomMod.RuleConverter, DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings,
   System.Generics.Defaults, DelphiDoom.XcomMod.RuleGlobe, DelphiDoom.XcomMod.Polygon, DelphiDoom.XcomMod.Polyline,
-  DelphiDoom.XcomMod.Texture;
+  DelphiDoom.XcomMod.Texture, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet,
+  DelphiDoom.XcomMod.MapDataLoader;
 
 { TXcomModDumpMisc }
 
@@ -67,8 +69,8 @@ end;
 class function TXcomModDumpMisc.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('ufopaedia', 'mapScripts', 'mcdPatches', 'extraSprites', 'extraSounds',
-    'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures', 'globeTerrains', 'converter',
-    'constants', 'settings', 'startingBase', 'indexes');
+    'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures', 'globeTerrains', 'mapData',
+    'converter', 'constants', 'settings', 'startingBase', 'indexes');
 end;
 
 class function TXcomModDumpMisc.MapText(const AValues: TXcomIntStringMap): string;
@@ -407,6 +409,101 @@ begin
   end;
 end;
 
+procedure TXcomModDumpMisc.DumpMapData;
+const
+  FNV_BASIS: UInt64 = 14695981039346656037;
+var
+  LIndex, LPart, LItem: Integer;
+  LSet: TXcomMapDataSet;
+  LPatch: TXcomMcdPatch;
+  LLoader: TXcomMapDataLoader;
+  LHash: UInt64;
+  LError, LText: string;
+  LData: TXcomMapData;
+  procedure Add(AValue: Integer);
+  begin
+    Mix(LHash, AValue, 4);
+    if LText <> '' then
+      LText := LText + ',';
+    LText := LText + IntToStr(AValue);
+  end;
+begin
+  LLoader := TXcomMapDataLoader.Create(FMod.Files);
+  try
+    for LIndex := 0 to FMod.MapDataSets.Count - 1 do
+    begin
+      LSet := FMod.MapDataSets.Rule(LIndex);
+      FWriter.Begin_('mapData', FMod.MapDataSets.Name(LIndex));
+      if not FMod.McdPatches.TryGetValue(LSet.Name, LPatch) then
+        LPatch := nil;
+      LError := '';
+      try
+        LLoader.LoadData(LSet, LPatch);
+      except
+        on E: EXcomModException do
+          LError := E.Message;
+      end;
+      // the sprites are not ported: only the messages of the MCD file are compared
+      if Pos('MCD', LError) = 0 then
+        LError := '';
+      FWriter.Card('size', LSet.Size);
+      FWriter.Str('error', LError);
+      LHash := FNV_BASIS;
+      for LPart := 0 to LSet.Size - 1 do
+      begin
+        LData := LSet.GetObject(LPart);
+        LText := '';
+        for LItem := 0 to 7 do
+          Add(LData.GetSprite(LItem));
+        Add(LData.YOffset);
+        Add(LData.SpecialType);
+        Add(LData.ObjectType);
+        Add(LData.TuWalk);
+        Add(LData.TuFly);
+        Add(LData.TuSlide);
+        Add(Ord(LData.IsUfoDoor));
+        Add(Ord(LData.StopLos));
+        Add(Ord(LData.IsNoFloor));
+        Add(Ord(LData.IsGravLift));
+        Add(Ord(LData.IsDoor));
+        Add(Ord(LData.BlockFire));
+        Add(Ord(LData.BlockSmoke));
+        Add(Ord(LData.IsBaseModule));
+        Add(LData.BigWall);
+        Add(LData.TerrainLevel);
+        Add(LData.FootstepSound);
+        Add(LData.AltMcd);
+        Add(LData.DieMcd);
+        Add(LData.LightSource);
+        Add(LData.GetLightSource);
+        Add(LData.Armor);
+        Add(LData.Flammable);
+        Add(LData.Fuel);
+        Add(LData.Explosive);
+        Add(LData.ExplosiveType);
+        Add(LData.MiniMapIndex);
+        for LItem := 0 to 5 do
+          Add(LData.BlockValue(LItem));
+        for LItem := 0 to 11 do
+          Add(LData.GetLoftId(LItem));
+        for LItem := 0 to 9 do
+          Add(LData.GetBlock(LItem));
+        for LItem := 0 to 4 do
+          Add(LData.GetTuCost(LItem));
+        if (LPart < 2) or (LPart + 2 >= LSet.Size) then
+          FWriter.Line('part' + IntToStr(LPart), LText);
+      end;
+      FWriter.Line('hash', IntToHex(LHash, 16));
+      if (LSet.Name = 'BLANKS') and (LSet.Size > 0) then
+        FWriter.Int('blank', 1)
+      else
+        FWriter.Int('blank', 0);
+    end;
+  finally
+    LLoader.Free;
+  end;
+end;
+
 procedure TXcomModDumpMisc.DumpGlobe;
 const
   FNV_BASIS: UInt64 = 14695981039346656037;
@@ -638,6 +735,7 @@ begin
   DumpInterfaces;
   DumpVideos;
   DumpGlobe;
+  DumpMapData;
   DumpConverter;
   DumpConstants;
   DumpSettings;

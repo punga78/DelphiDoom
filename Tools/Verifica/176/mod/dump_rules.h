@@ -111,6 +111,42 @@ static void DumpTerrains(Mod* m) {
   for (auto& p : m->_terrains) { Begin("terrains", p.first); DumpTerrainBody(p.second); }
 }
 
+// loadData of every set (MapDataSet::loadData with the patch of the mods): one hash of all the parts of a set and the
+// first and last parts in full. FNV-1a 64 over the ints of every part in a fixed order
+static void DumpMapData(Mod* m) {
+  for (auto& p : m->_mapDataSets) {
+    MapDataSet* s = p.second;
+    Begin("mapData", p.first);
+    std::string error;
+    try { s->loadData(m->getMCDPatch(p.first)); } catch (Exception& e) { error = e.what(); }
+    // the sprites (PCK and TAB) are not ported: their errors are not compared
+    if (error.find("MCD") == std::string::npos) error = "";
+    F("size", s->_objects.size());
+    Line("error", V(error));
+    unsigned long long h = 14695981039346656037ULL;
+    auto mix = [&h](int v) { unsigned char b[4]; memcpy(b, &v, 4); for (int k = 0; k < 4; k++) { h ^= b[k]; h *= 1099511628211ULL; } };
+    for (size_t i = 0; i < s->_objects.size(); i++) {
+      MapData* d = s->_objects[i];
+      std::string t;
+      auto add = [&](int v) { mix(v); t += (t.empty() ? "" : ",") + std::to_string(v); };
+      for (int k = 0; k < 8; k++) add(d->getSprite(k));
+      add(d->getYOffset()); add((int)d->getSpecialType()); add((int)d->getObjectType());
+      add(d->_TUWalk); add(d->_TUFly); add(d->_TUSlide);
+      add(d->isUFODoor()); add(d->_stopLOS); add(d->isNoFloor()); add(d->isGravLift()); add(d->isDoor()); add(d->_blockFire); add(d->_blockSmoke); add(d->isBaseModule());
+      add(d->getBigWall()); add(d->getTerrainLevel()); add(d->getFootstepSound()); add(d->getAltMCD()); add(d->getDieMCD());
+      add(d->_lightSource); add(d->getLightSource()); add(d->getArmor()); add(d->getFlammable()); add(d->getFuel());
+      add(d->getExplosive()); add(d->getExplosiveType()); add((int)d->getMiniMapIndex());
+      for (int k = 0; k < 6; k++) add(d->_block[k]);
+      for (int k = 0; k < 12; k++) add(d->getLoftID(k));
+      for (int k = 0; k < 10; k++) add(d->getBlock((ItemDamageType)k));
+      for (int k = 0; k < 5; k++) add(d->getTUCost((MovementType)k));
+      if (i < 2 || i + 2 >= s->_objects.size()) Line(("part" + std::to_string(i)).c_str(), t);
+    }
+    char hb[32]; snprintf(hb, sizeof hb, "%016llX", h); Line("hash", hb);
+    F("blank", s->getName() == "BLANKS" && s->_objects.size() > 0 ? 1 : 0);
+  }
+}
+
 static void DumpMapDataSets(Mod* m) {
   for (auto& p : m->_mapDataSets) { Begin("mapDataSets", p.first); F("name", p.second->_name); }
 }
@@ -526,6 +562,7 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("invs")) DumpInventories(m);
   if (Wanted("terrains")) DumpTerrains(m);
   if (Wanted("mapDataSets")) DumpMapDataSets(m);
+  if (Wanted("mapData")) DumpMapData(m);
   if (Wanted("armors")) DumpArmors(m);
   if (Wanted("soldiers")) DumpSoldiers(m);
   if (Wanted("units")) DumpUnits(m);
