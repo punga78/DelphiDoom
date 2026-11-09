@@ -10,6 +10,7 @@ interface
 
 uses
   System.SysUtils,
+  System.Math,
   DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Convert,
@@ -77,6 +78,12 @@ type
     function Remove(const AKey: IYamlNode): Boolean; overload;
     procedure Assign(const AValue: IYamlNode);
     procedure AssignScalar(const AValue: TYamlText);
+    procedure AssignInteger(AValue: Integer);
+    procedure AssignInt64(AValue: Int64);
+    procedure AssignUInt64(AValue: UInt64);
+    procedure AssignDouble(AValue: Double);
+    procedure AssignSingle(AValue: Single);
+    procedure AssignBoolean(AValue: Boolean);
     procedure AssignNull;
     procedure AssignData(const AValue: IYamlNode);
     procedure Reset(const AValue: IYamlNode);
@@ -505,6 +512,62 @@ procedure TYamlNode.AssignScalar(const AValue: TYamlText);
 begin
   EnsureNodeExists;
   FNode.SetScalar(AValue);
+end;
+
+procedure TYamlNode.AssignInteger(AValue: Integer);
+begin
+  AssignScalar(TYamlText(IntToStr(AValue)));
+end;
+
+procedure TYamlNode.AssignInt64(AValue: Int64);
+begin
+  AssignScalar(TYamlText(IntToStr(AValue)));
+end;
+
+procedure TYamlNode.AssignUInt64(AValue: UInt64);
+begin
+  AssignScalar(TYamlText(UIntToStr(AValue)));
+end;
+
+procedure TYamlNode.AssignDouble(AValue: Double);
+begin
+  if IsNan(AValue) then
+    AssignScalar('.nan')
+  else if IsInfinite(AValue) then
+  begin
+    if AValue < 0 then
+      AssignScalar('-.inf')
+    else
+      AssignScalar('.inf');
+  end
+  else
+    AssignScalar(TYamlConvert.FormatGeneral(AValue, 17));
+end;
+
+procedure TYamlNode.AssignSingle(AValue: Single);
+var
+  LValue: Double;
+begin
+  LValue := AValue;
+  if IsNan(LValue) then
+    AssignScalar('.nan')
+  else if IsInfinite(LValue) then
+  begin
+    if LValue < 0 then
+      AssignScalar('-.inf')
+    else
+      AssignScalar('.inf');
+  end
+  else
+    AssignScalar(TYamlConvert.FormatGeneral(LValue, 9));
+end;
+
+procedure TYamlNode.AssignBoolean(AValue: Boolean);
+begin
+  if AValue then
+    AssignScalar('true')
+  else
+    AssignScalar('false');
 end;
 
 procedure TYamlNode.AssignNull;

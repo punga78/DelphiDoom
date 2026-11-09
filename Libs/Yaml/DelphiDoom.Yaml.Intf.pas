@@ -95,6 +95,16 @@ type
     procedure Assign(const AValue: IYamlNode);
     /// <summary>operator=(string): the node becomes a scalar</summary>
     procedure AssignScalar(const AValue: TYamlText);
+    /// <summary>operator=(int) and the other numbers: convert&lt;T&gt;::encode, a scalar with the text of the number</summary>
+    procedure AssignInteger(AValue: Integer);
+    procedure AssignInt64(AValue: Int64);
+    procedure AssignUInt64(AValue: UInt64);
+    /// <summary>A double is written with 17 significant digits, .inf, -.inf and .nan like convert&lt;double&gt;</summary>
+    procedure AssignDouble(AValue: Double);
+    /// <summary>A float is written with 9 significant digits</summary>
+    procedure AssignSingle(AValue: Single);
+    /// <summary>true or false</summary>
+    procedure AssignBoolean(AValue: Boolean);
     /// <summary>operator=(Null)</summary>
     procedure AssignNull;
     /// <summary>The node takes the data (type, scalar, children) of AValue and stays another node</summary>

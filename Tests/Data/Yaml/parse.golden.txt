@@ -9190,3 +9190,2508 @@ EMIT good
 |       value: [197.32, [type, true, false], STR_FOO]
 |       "\xC3\xA9\\n\\tA": [{value \xC3\xA9: type, type: true, 1 y: 149.39}]
 |.
+#753
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "A" tag=! i=! u=! l=! s=! c=A d=! f=! b=!
+EMIT good
+| a: A
+|.
+#754
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "xAy" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: xAy
+|.
+#755
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "A " tag=! i=! u=! l=! s=! c=A d=! f=! b=!
+EMIT good
+| - "A "
+|.
+#756
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xC3\xA9
+|.
+#757
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xC3\xA9y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xC3\xA9y
+|.
+#758
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xC3\xA9 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xC3\xA9 "
+|.
+#759
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xC3\xBF" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xC3\xBF
+|.
+#760
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xC3\xBFy" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xC3\xBFy
+|.
+#761
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xC3\xBF " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xC3\xBF "
+|.
+#762
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xC2\x80" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\\x80"
+|.
+#763
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xC2\x80y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\x80y"
+|.
+#764
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xC2\x80 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\\x80 "
+|.
+#765
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xC3\xA9
+|.
+#766
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xC3\xA9y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xC3\xA9y
+|.
+#767
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xC3\xA9 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xC3\xA9 "
+|.
+#768
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE6\x97\xA5" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xE6\x97\xA5
+|.
+#769
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xE6\x97\xA5y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xE6\x97\xA5y
+|.
+#770
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xE6\x97\xA5 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xE6\x97\xA5 "
+|.
+#771
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBF" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBF
+|.
+#772
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xEF\xBF\xBFy" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xEF\xBF\xBFy
+|.
+#773
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xEF\xBF\xBF " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xEF\xBF\xBD "
+|.
+#774
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF0\x9F\x98\x80
+|.
+#775
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xF0\x9F\x98\x80y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xF0\x9F\x98\x80y
+|.
+#776
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xF0\x9F\x98\x80 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xF0\x9F\x98\x80 "
+|.
+#777
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF4\x8F\xBF\xBF" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF4\x8F\xBF\xBF
+|.
+#778
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xF4\x8F\xBF\xBFy" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xF4\x8F\xBF\xBFy
+|.
+#779
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xF4\x8F\xBF\xBF " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xEF\xBF\xBD "
+|.
+#780
+ERR invalid unicode: 55296 @0:10
+#781
+ERR invalid unicode: 55296 @0:11
+#782
+ERR invalid unicode: 55296 @0:9
+#783
+ERR invalid unicode: 57343 @0:10
+#784
+ERR invalid unicode: 57343 @0:11
+#785
+ERR invalid unicode: 57343 @0:9
+#786
+ERR invalid unicode: 1114112 @0:14
+#787
+ERR invalid unicode: 1114112 @0:15
+#788
+ERR invalid unicode: 1114112 @0:13
+#789
+ERR bad character found while scanning hex number @0:8
+#790
+ERR bad character found while scanning hex number @0:9
+#791
+ERR bad character found while scanning hex number @0:7
+#792
+ERR bad character found while scanning hex number @1:0
+#793
+ERR bad character found while scanning hex number @0:11
+#794
+ERR bad character found while scanning hex number @1:1
+#795
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x85" tag=! i=! u=! l=! s=! c=… d=! f=! b=!
+EMIT good
+| a: \x85
+|.
+#796
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x85y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\x85y
+|.
+#797
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x85 " tag=! i=! u=! l=! s=! c=… d=! f=! b=!
+EMIT good
+| - "\xEF\xBF\xBD "
+|.
+#798
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xA0" tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| a: \xA0
+|.
+#799
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xA0y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xA0y
+|.
+#800
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xA0 " tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| - "\xEF\xBF\xBD "
+|.
+#801
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x80\xA8" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xE2\x80\xA8
+|.
+#802
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xE2\x80\xA8y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xE2\x80\xA8y
+|.
+#803
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xE2\x80\xA8 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xE2\x80\xA8 "
+|.
+#804
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x80\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xE2\x80\xA9
+|.
+#805
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\xE2\x80\xA9y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\xE2\x80\xA9y
+|.
+#806
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\xE2\x80\xA9 " tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| - "\xE2\x80\xA9 "
+|.
+#807
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x00" tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| a: "\\x00"
+|.
+#808
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x00y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\x00y"
+|.
+#809
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x00 " tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| - "\\x00 "
+|.
+#810
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x07" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: "\\x07"
+|.
+#811
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x07y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\x07y"
+|.
+#812
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x07 " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\x07 "
+|.
+#813
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x08" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: "\\b"
+|.
+#814
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x08y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\by"
+|.
+#815
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x08 " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\b "
+|.
+#816
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\t" tag=! i=! u=! l=! s=! c=	 d=! f=! b=!
+EMIT good
+| a: "\\t"
+|.
+#817
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\ty" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\ty"
+|.
+#818
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\t " tag=! i=! u=! l=! s=! c=	 d=! f=! b=!
+EMIT good
+| - "\\t "
+|.
+#819
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\n" tag=! i=! u=! l=! s=! c=
+ d=! f=! b=!
+EMIT good
+| a: "\\n"
+|.
+#820
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\ny" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\ny"
+|.
+#821
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\n " tag=! i=! u=! l=! s=! c=
+ d=! f=! b=!
+EMIT good
+| - "\\n "
+|.
+#822
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x0B" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: "\\x0b"
+|.
+#823
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x0By" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\x0by"
+|.
+#824
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x0B " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\x0b "
+|.
+#825
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x0C" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: "\\f"
+|.
+#826
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x0Cy" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\fy"
+|.
+#827
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x0C " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\f "
+|.
+#828
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\r" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: \r
+|.
+#829
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\ry" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x\ry
+|.
+#830
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\r " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\r "
+|.
+#831
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\x1B" tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| a: "\\x1b"
+|.
+#832
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x\x1By" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "x\\x1by"
+|.
+#833
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "\x1B " tag=! i=! u=! l=! s=! c= d=! f=! b=!
+EMIT good
+| - "\\x1b "
+|.
+#834
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "/" tag=! i=! u=! l=! s=! c=/ d=! f=! b=!
+EMIT good
+| a: /
+|.
+#835
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x/y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x/y
+|.
+#836
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "/ " tag=! i=! u=! l=! s=! c=/ d=! f=! b=!
+EMIT good
+| - "/ "
+|.
+#837
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S " " tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| a: " "
+|.
+#838
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x y" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x y
+|.
+#839
+OK docs=1
+DOC
+Q B tag=? n=1
+  - S "  " tag=! i=! u=! l=! s=! c=  d=! f=! b=!
+EMIT good
+| - "  "
+|.
+#840
+ERR unknown escape character: q @0:6
+#841
+ERR unknown escape character: q @0:7
+#842
+ERR unknown escape character: q @0:5
+#843
+ERR bad character found while scanning hex number @1:0
+#844
+ERR bad character found while scanning hex number @0:9
+#845
+ERR bad character found while scanning hex number @1:1
+#846
+ERR bad character found while scanning hex number @1:2
+#847
+ERR bad character found while scanning hex number @1:1
+#848
+ERR bad character found while scanning hex number @1:3
+#849
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "it's" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: it's
+|.
+#850
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "x'" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: x'
+|.
+#851
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "line1line2" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: line1line2
+|.
+#852
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "one\ntwo" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "one\\ntwo"
+|.
+#853
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#854
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE0\xA8\xB1" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xE0\xA8\xB1
+|.
+#855
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: 1\xE0\xA9\xB8
+|.
+#856
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#857
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE0\xA8\xB1" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xE0\xA8\xB1
+|.
+#858
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: 1\xE0\xA9\xB8
+|.
+#859
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#860
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: ~
+|.
+#861
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: 1\xE7\xA0\x8A
+|.
+#862
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#863
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: ~
+|.
+#864
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: 1\xE7\xA0\x8A
+|.
+#865
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#866
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x80\x80\xB1" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF0\x80\x80\xB1
+|.
+#867
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#868
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#869
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x80\x80\xB1" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF0\x80\x80\xB1
+|.
+#870
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#871
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#872
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: ~
+|.
+#873
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#874
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#875
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: ~
+|.
+#876
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| a: 1
+|.
+#877
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#878
+ERR end of map not found @1:9
+#879
+OK docs=1
+DOC
+M B tag=? n=3
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: 1
+| b: [x, y]
+| \xE0\xA9\xB8: ~
+|.
+#880
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#881
+ERR end of map not found @1:9
+#882
+OK docs=1
+DOC
+M B tag=? n=3
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: 1
+| b: [x, y]
+| \xE0\xA9\xB8: ~
+|.
+#883
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#884
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#885
+OK docs=1
+DOC
+M B tag=? n=3
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: 1
+| b: [x, y]
+| \xE7\xA0\x8A: ~
+|.
+#886
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#887
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#888
+OK docs=1
+DOC
+M B tag=? n=3
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| a: 1
+| b: [x, y]
+| \xE7\xA0\x8A: ~
+|.
+#889
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#890
+ERR end of map not found @1:9
+#891
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#892
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#893
+ERR end of map not found @1:9
+#894
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#895
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#896
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#897
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#898
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#899
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#900
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+  K S "b" tag=? i=! u=! l=! s=! c=b d=! f=! b=!
+  V Q F tag=? n=2
+    - S "x" tag=? i=! u=! l=! s=! c=x d=! f=! b=!
+    - S "y" tag=? i=! u=! l=! s=! c=y d=! f=! b=T
+EMIT good
+| a: 1
+| b: [x, y]
+|.
+#901
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#902
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xE0\xA8\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xE0\xA8\x8A
+|.
+#903
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+| \xE0\xA9\xB8: ~
+|.
+#904
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#905
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xE0\xA8\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xE0\xA8\x8A
+|.
+#906
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+| \xE0\xA9\xB8: ~
+|.
+#907
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#908
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#909
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+| \xE7\xA0\x8A: ~
+|.
+#910
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#911
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#912
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+| \xE7\xA0\x8A: ~
+|.
+#913
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#914
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xF0\x80\x80\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xF0\x80\x80\x8A
+|.
+#915
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#916
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#917
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xF0\x80\x80\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\xF0\x80\x80\x8A
+|.
+#918
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#919
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#920
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#921
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#922
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#923
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#924
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "k" tag=? i=! u=! l=! s=! c=k d=! f=! b=!
+  V S "caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80
+|.
+#925
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#926
+ERR end of sequence not found @1:5
+#927
+OK docs=2
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+DOC
+S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE0\xA9\xB8
+|.
+#928
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#929
+ERR end of sequence not found @1:5
+#930
+OK docs=2
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+DOC
+S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE0\xA9\xB8
+|.
+#931
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#932
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#933
+OK docs=2
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+DOC
+S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE7\xA0\x8A
+|.
+#934
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#935
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#936
+OK docs=2
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+DOC
+S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE7\xA0\x8A
+|.
+#937
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#938
+ERR end of sequence not found @1:5
+#939
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#940
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#941
+ERR end of sequence not found @1:5
+#942
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#943
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#944
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#945
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#946
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#947
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#948
+OK docs=1
+DOC
+Q B tag=? n=2
+  - S "\xC3\xA9" tag=! i=! u=! l=! s=! c=! d=! f=! b=!
+  - S "q" tag=! i=! u=! l=! s=! c=q d=! f=! b=!
+EMIT good
+| - \xC3\xA9
+| - q
+|.
+#949
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#950
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#951
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| key: value
+| \xE0\xA9\xB8: ~
+|.
+#952
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#953
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#954
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| key: value
+| \xE0\xA9\xB8: ~
+|.
+#955
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#956
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#957
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| key: value
+| \xE7\xA0\x8A: ~
+|.
+#958
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#959
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#960
+OK docs=1
+DOC
+M B tag=? n=2
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  K S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V NULL tag=
+EMIT good
+| key: value
+| \xE7\xA0\x8A: ~
+|.
+#961
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#962
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#963
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#964
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#965
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#966
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#967
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#968
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#969
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#970
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#971
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#972
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "key" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "value" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| key: value
+|.
+#973
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#974
+ERR end of map flow not found @0:0
+#975
+OK docs=2
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+DOC
+S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE0\xA9\xB8
+|.
+#976
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#977
+ERR end of map flow not found @0:0
+#978
+OK docs=2
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+DOC
+S "\xE0\xA9\xB8" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE0\xA9\xB8
+|.
+#979
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#980
+ERR end of map flow not found @1:0
+#981
+OK docs=2
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+DOC
+S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE7\xA0\x8A
+|.
+#982
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#983
+ERR end of map flow not found @1:0
+#984
+OK docs=2
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+DOC
+S "\xE7\xA0\x8A" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| \xE7\xA0\x8A
+|.
+#985
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#986
+ERR end of map flow not found @0:0
+#987
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#988
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#989
+ERR end of map flow not found @0:0
+#990
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#991
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#992
+ERR end of map flow not found @1:0
+#993
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#994
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#995
+ERR end of map flow not found @1:0
+#996
+OK docs=1
+DOC
+M F tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xE2\x82\xAC" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| {a: \xE2\x82\xAC}
+|.
+#997
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xED\xA0\x80
+|.
+#998
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xED\xA0\x80
+|.
+#999
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1000
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1001
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xF0\x90\x80\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xF0\x90\x80\x80
+|.
+#1002
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xF0\x90\x80\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xF0\x90\x80\x80
+|.
+#1003
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD
+|.
+#1004
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD
+|.
+#1005
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1006
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1007
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xEF\xBF\xBDx
+|.
+#1008
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xEF\xBF\xBDx
+|.
+#1009
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1010
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1011
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xED\xA0\x80
+|.
+#1012
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xED\xA0\x80
+|.
+#1013
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1014
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1015
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xF0\x90\x80\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xF0\x90\x80\x80
+|.
+#1016
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xF0\x90\x80\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xF0\x90\x80\x80
+|.
+#1017
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD
+|.
+#1018
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD
+|.
+#1019
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1020
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1021
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xEF\xBF\xBDx
+|.
+#1022
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBD\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBD\xEF\xBF\xBDx
+|.
+#1023
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1024
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1025
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80x
+|.
+#1026
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xB0\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xB0\x80x
+|.
+#1027
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80\xED\xA0\x80\xED\xB0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80\xED\xA0\x80\xED\xB0\x80
+|.
+#1028
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80
+|.
+#1029
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1030
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF4\x90\x80\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF4\x90\x80\x80x
+|.
+#1031
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1032
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80x
+|.
+#1033
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xB0\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xB0\x80x
+|.
+#1034
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80\xED\xA0\x80\xED\xB0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80\xED\xA0\x80\xED\xB0\x80
+|.
+#1035
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xED\xA0\x80" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xED\xA0\x80
+|.
+#1036
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xEF\xBF\xBDx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xEF\xBF\xBDx
+|.
+#1037
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF4\x90\x80\x80x" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: \xF4\x90\x80\x80x
+|.
+#1038
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "a" tag=? i=! u=! l=! s=! c=a d=! f=! b=!
+  V S "\xF0\x9F\x98\x80\xEF\xBB\xBFx" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+EMIT good
+| a: "\xF0\x9F\x98\x80\\ufeffx"
+|.
+#1039
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "\xEF\xBBa" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| \xEF\xBBa: 1
+|.
+#1040
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "\xEFa" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| \xEFa: 1
+|.
+#1041
+OK docs=1
+DOC
+M B tag=? n=1
+  K S "\xFFa" tag=? i=! u=! l=! s=! c=! d=! f=! b=!
+  V S "1" tag=? i=1 u=1 l=1 s=1 c=1 d=1 f=1 b=!
+EMIT good
+| \xFFa: 1
+|.
+#1042
+OK docs=0
+#1043
+OK docs=0
+#1044
+OK docs=0
+#1045
+OK docs=0
+#1046
+OK docs=0

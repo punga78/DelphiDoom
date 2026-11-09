@@ -61,6 +61,8 @@ type
     procedure DovrebbeSaltareLeCoppieNonDefiniteNellIterazione;
     [Test]
     procedure DovrebbeUnireLaMemoriaDeiNodiAggiunti;
+    [Test]
+    procedure DovrebbeAssegnareNumeriEBooleaniComeTesto;
   end;
 
 implementation
@@ -306,6 +308,27 @@ begin
   Assert.AreEqual(1, Integer(Length(LNode.Pairs)));
   LNode.Child('pending').AssignScalar('x');
   Assert.AreEqual(2, Integer(Length(LNode.Pairs)));
+end;
+
+procedure TTestYamlNode.DovrebbeAssegnareNumeriEBooleaniComeTesto;
+var
+  LNode: IYamlNode;
+begin
+  LNode := TYamlFactory.CreateNode(ntMap);
+  LNode.Child('i').AssignInteger(-5);
+  LNode.Child('l').AssignInt64(9007199254740993);
+  LNode.Child('d').AssignDouble(0.1);
+  LNode.Child('f').AssignSingle(0.5);
+  LNode.Child('b').AssignBoolean(True);
+  LNode.Child('n').AssignNull;
+  Assert.AreEqual('-5', LNode.Find('i').ScalarString);
+  Assert.AreEqual('9007199254740993', LNode.Find('l').ScalarString);
+  Assert.AreEqual('0.10000000000000001', LNode.Find('d').ScalarString);
+  Assert.AreEqual(0.1, LNode.Find('d').AsDouble, 0);
+  Assert.AreEqual('0.5', LNode.Find('f').ScalarString);
+  Assert.IsTrue(LNode.Find('b').AsBoolean);
+  Assert.IsTrue(LNode.Find('n').IsNull);
+  Assert.AreEqual(6, LNode.Size);
 end;
 
 procedure TTestYamlNode.DovrebbeUnireLaMemoriaDeiNodiAggiunti;

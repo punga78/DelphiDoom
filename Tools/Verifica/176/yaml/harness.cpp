@@ -251,6 +251,93 @@ static std::vector<std::string> Split(const std::string& all) {
 
 #include "emitcases.h"
 
+// ---- cases appended to the corpus after the random ones: escapes and the encodings of the input ----
+static const std::string BS = "\\";
+
+static std::vector<unsigned> Utf8ToCodepoints(const std::string& s) {
+  std::vector<unsigned> v;
+  for (size_t i = 0; i < s.size();) {
+    unsigned char c = s[i];
+    int n = c < 0x80 ? 1 : c < 0xE0 ? 2 : c < 0xF0 ? 3 : 4;
+    unsigned cp = n == 1 ? c : (c & (0xFF >> (n + 1)));
+    for (int k = 1; k < n && i + k < s.size(); k++) cp = (cp << 6) | (s[i + k] & 0x3F);
+    v.push_back(cp);
+    i += n;
+  }
+  return v;
+}
+
+// kind: 0 UTF-16LE, 1 UTF-16BE, 2 UTF-32LE, 3 UTF-32BE; words may be surrogates / out of range on purpose
+static std::string EncodeUnits(const std::vector<unsigned>& cps, int kind, bool bom, bool splitAstral) {
+  std::string r;
+  auto put16 = [&](unsigned u) { if (kind == 0) { r += (char)(u & 255); r += (char)(u >> 8); } else { r += (char)(u >> 8); r += (char)(u & 255); } };
+  auto put32 = [&](unsigned u) {
+    if (kind == 2) { r += (char)(u & 255); r += (char)((u >> 8) & 255); r += (char)((u >> 16) & 255); r += (char)(u >> 24); }
+    else { r += (char)(u >> 24); r += (char)((u >> 16) & 255); r += (char)((u >> 8) & 255); r += (char)(u & 255); }
+  };
+  if (bom) { if (kind < 2) put16(0xFEFF); else put32(0xFEFF); }
+  for (unsigned cp : cps) {
+    if (kind < 2) {
+      if (cp >= 0x10000 && splitAstral) { unsigned c = cp - 0x10000; put16(0xD800 + (c >> 10)); put16(0xDC00 + (c & 0x3FF)); }
+      else put16(cp & 0xFFFF);
+    } else put32(cp);
+  }
+  return r;
+}
+
+static void ExtraCases(std::ostream& o) {
+  auto sep = [&](const std::string& body) { o << "%%%%\n" << body << "\n"; };
+  // escape sequences of double and single quoted scalars (all the codes, the errors, the end of the input)
+  const char* esc[] = {"x41", "xe9", "xff", "x80", "u00e9", "u65e5", "uFFFF", "U0001F600", "U0010FFFF", "uD800", "uDFFF",
+                       "U00110000", "xZZ", "u12", "N", "_", "L", "P", "0", "a", "b", "t", "n", "v", "f", "r", "e", "/", " ",
+                       "q", "x", "u"};
+  for (const char* e : esc) {
+    sep("a: \"" + BS + e + "\"");
+    sep("a: \"x" + BS + e + "y\"");
+    sep("- \"" + BS + e);
+  }
+  sep("a: 'it''s'");
+  sep("a: 'x'''");
+  sep("a: \"line1" + BS + "\n  line2\"");
+  sep("a: \"one\n\n  two\"");
+  // the input in the other encodings
+  std::vector<std::string> docs = {"a: 1", "a: 1\nb: [x, y]\n", "k: caf\xC3\xA9 \xE6\x97\xA5 \xF0\x9F\x98\x80\n",
+                                   "- \"" + BS + "u00e9\"\n- 'q'\n", "# comment\nkey: value # end\n", "{a: \xE2\x82\xAC}"};
+  for (const std::string& d : docs) {
+    auto cps = Utf8ToCodepoints(d);
+    for (int kind = 0; kind < 4; kind++)
+      for (int bom = 0; bom < 2; bom++) {
+        sep(EncodeUnits(cps, kind, bom != 0, true));
+        // the last unit cut in half, and one byte more
+        std::string e = EncodeUnits(cps, kind, bom != 0, true);
+        sep(e.substr(0, e.size() - 1));
+        sep(e + "x");
+      }
+  }
+  // surrogates in the wrong places and astral characters in the code points of the 16 bit forms
+  std::vector<unsigned> a = {'a', ':', ' ', 0xD800, 'x', '\n'};            // lone high surrogate
+  std::vector<unsigned> b = {'a', ':', ' ', 0xDC00, 'x', '\n'};            // lone low surrogate
+  std::vector<unsigned> c = {'a', ':', ' ', 0xD800, 0xD800, 0xDC00, '\n'}; // high, then a valid pair
+  std::vector<unsigned> d = {'a', ':', ' ', 0xD800};                       // high surrogate at the end
+  std::vector<unsigned> e = {'a', ':', ' ', 0x4, 'x', '\n'};               // the eof character
+  std::vector<unsigned> f = {'a', ':', ' ', 0x110000, 'x', '\n'};
+  std::vector<unsigned> g = {'a', ':', ' ', 0x1F600, 0xFEFF, 'x', '\n'};
+  for (int kind = 0; kind < 4; kind++)
+    for (auto* v : {&a, &b, &c, &d, &e, &f, &g}) {
+      sep(EncodeUnits(*v, kind, true, true));
+      if (kind < 2) sep(EncodeUnits(*v, kind, false, true));
+    }
+  // BOM-like starts that are not BOMs
+  sep(std::string("\xEF\xBB") + "a: 1");
+  sep(std::string("\xEF") + "a: 1");
+  sep(std::string("\xFF") + "a: 1");
+  sep(std::string("\xFE\xFF"));
+  sep(std::string("\xFF\xFE\x00\x00", 4));
+  sep(std::string("\x00\x00\xFE\xFF", 4));
+  sep(std::string("\x00\x00\x00", 3));
+  sep(std::string("\x00", 1));
+}
+
 int main(int argc, char** argv) {
   std::string mode = argc > 1 ? argv[1] : "";
   if (mode == "gen") {  // gen handwritten out count seed
@@ -267,6 +354,7 @@ int main(int argc, char** argv) {
       o << "%%%%\n" << d;
       if (d.empty() || d.back() != '\n') o << "\n";
     }
+    ExtraCases(o);
     return 0;
   }
   if (mode == "run") {  // run corpus (stdout in binary mode: the golden has LF line ends, no BOM)
