@@ -42,6 +42,11 @@ uses
   DelphiDoom.Radix.MenuTranslationPart in '..\Libs\Radix\DelphiDoom.Radix.MenuTranslationPart.pas',
   DelphiDoom.Radix.CockpitPart in '..\Libs\Radix\DelphiDoom.Radix.CockpitPart.pas',
   DelphiDoom.Radix.SoundPart in '..\Libs\Radix\DelphiDoom.Radix.SoundPart.pas',
+  DelphiDoom.Radix.SpriteData in '..\Libs\Radix\DelphiDoom.Radix.SpriteData.pas',
+  DelphiDoom.Radix.Things in '..\Libs\Radix\DelphiDoom.Radix.Things.pas',
+  DelphiDoom.Radix.SpriteList in '..\Libs\Radix\DelphiDoom.Radix.SpriteList.pas',
+  DelphiDoom.Radix.SpriteCatalog in '..\Libs\Radix\DelphiDoom.Radix.SpriteCatalog.pas',
+  DelphiDoom.Radix.SpritePart in '..\Libs\Radix\DelphiDoom.Radix.SpritePart.pas',
   DelphiDoom.Radix.Translator in '..\Libs\Radix\DelphiDoom.Radix.Translator.pas',
   DelphiDoom.Radix.Factory in '..\Libs\Radix\DelphiDoom.Radix.Factory.pas',
   DelphiDoom.Tests.GameData.Scenarios in 'Source\DelphiDoom.Tests.GameData.Scenarios.pas',
@@ -57,6 +62,8 @@ uses
   DelphiDoom.Tests.Radix.BitmapOps in 'Source\DelphiDoom.Tests.Radix.BitmapOps.pas',
   DelphiDoom.Tests.Radix.FontParts in 'Source\DelphiDoom.Tests.Radix.FontParts.pas',
   DelphiDoom.Tests.Radix.CockpitSoundParts in 'Source\DelphiDoom.Tests.Radix.CockpitSoundParts.pas',
+  DelphiDoom.Tests.Radix.SpriteList in 'Source\DelphiDoom.Tests.Radix.SpriteList.pas',
+  DelphiDoom.Tests.Radix.SpritePart in 'Source\DelphiDoom.Tests.Radix.SpritePart.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var
@@ -93,4 +100,5 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
 

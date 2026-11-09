@@ -40,7 +40,8 @@ uses
   DelphiDoom.Radix.PalettePart, DelphiDoom.Radix.TexturePart, DelphiDoom.Radix.FlatPart,
   DelphiDoom.Radix.GraphicsPart, DelphiDoom.Radix.SmallFontPart, DelphiDoom.Radix.LumpGroupPart,
   DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
-  DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.Translator;
+  DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
+  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Translator;
 
 { TRadixFactory }
 
@@ -73,6 +74,7 @@ begin
      TRadixBigFontPart.Create(LMatcher),
      TRadixDosFontPart.Create(LMatcher),
      TRadixMenuTranslationPart.Create,
+     TRadixSpritePart.Create(TRadixSpriteCatalog.Fill),
      TRadixLumpGroupPart.Music,
      TRadixCockpitPart.Create,
      TRadixSoundPart.Create,
