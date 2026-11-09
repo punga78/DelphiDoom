@@ -1,3 +1,23 @@
+diff --git a/Base/DelphiDoom.Engine.Composition.pas b/Base/DelphiDoom.Engine.Composition.pas
+index ce105700..d11373da 100644
+--- a/Base/DelphiDoom.Engine.Composition.pas
++++ b/Base/DelphiDoom.Engine.Composition.pas
+@@ -20,6 +20,7 @@ procedure ComposeEngine;
+ implementation
+ 
+ uses
++  HarnessGl,
+   System.SysUtils,
+   DelphiDoom.GameData.Aliases,
+   DelphiDoom.Logging.Factory,
+@@ -1337,6 +1338,7 @@ begin
+   ComposeOpenGl(LPreprocessor);
+ {$ENDIF}
+   LClock := TClockFactory.CreateClock(LLog);
++  LClock := HarnessGl_Clock(LClock);
+   I_ConfigureClock(LClock);
+   I_ConfigureVideo(TVideoFactory.CreateServices);
+   ComposeDisplayModes;
 diff --git a/Base/DelphiDoom.Engine.Level.Loader.pas b/Base/DelphiDoom.Engine.Level.Loader.pas
 index 09b2234c..a5154776 100644
 --- a/Base/DelphiDoom.Engine.Level.Loader.pas
@@ -19,7 +39,7 @@ index 09b2234c..a5154776 100644
  
  end.
 diff --git a/Doom/GLDoom32.dpr b/Doom/GLDoom32.dpr
-index 0680a7b4..3b5ce9f3 100644
+index bc320ae5..7834d7db 100644
 --- a/Doom/GLDoom32.dpr
 +++ b/Doom/GLDoom32.dpr
 @@ -53,6 +53,19 @@ uses
@@ -43,7 +63,7 @@ index 0680a7b4..3b5ce9f3 100644
    gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
 diff --git a/Heretic/GLHeretic32.dpr b/Heretic/GLHeretic32.dpr
-index 8f5145ef..93e8faa6 100644
+index 00a62608..f0654fdf 100644
 --- a/Heretic/GLHeretic32.dpr
 +++ b/Heretic/GLHeretic32.dpr
 @@ -55,6 +55,19 @@ uses
@@ -67,7 +87,7 @@ index 8f5145ef..93e8faa6 100644
    gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
 diff --git a/Hexen/GLHexen32.dpr b/Hexen/GLHexen32.dpr
-index 23a6ac56..a7deb071 100644
+index 5f158a6a..7ef590bb 100644
 --- a/Hexen/GLHexen32.dpr
 +++ b/Hexen/GLHexen32.dpr
 @@ -55,6 +55,19 @@ uses
@@ -131,7 +151,7 @@ index c2c97021..a0ca2df4 100644
  
  {*****************
 diff --git a/Strife/GLStrife32.dpr b/Strife/GLStrife32.dpr
-index 9b8f152e..2ae00065 100644
+index 40b2b0d1..99d413b0 100644
 --- a/Strife/GLStrife32.dpr
 +++ b/Strife/GLStrife32.dpr
 @@ -53,6 +53,19 @@ uses

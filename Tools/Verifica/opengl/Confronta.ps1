@@ -17,7 +17,8 @@ param(
   [int]$StartTic = 35,
   [int]$Seconds = 120,
   [int]$ShowLines = 8,
-  [switch]$SkipNoise
+  [switch]$SkipNoise,
+  [switch]$StrictOverlay
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -35,8 +36,8 @@ switch ($Game) {
   'GLHexen'   { $runs = @('-iwad HEXEN.WAD -warp 1') }
   'GLStrife'  { $runs = @('-iwad STRIFE0.WAD -warp 2') }
 }
-# fixed state: no monsters, no sound, no interpolation (its fraction depends on the clock), a window
-$extra = "-nomonsters -nomusic -nosound -nointerpolate -windowed -glrecord $Tics -glrecordstart $StartTic"
+# fixed state: no monsters, no sound, no interpolation, no mouse (the view would follow the cursor), a window;\r\n# the program clock is a virtual one (HarnessGl_Clock): one tic per frame, so the speed of the machine does not matter
+$extra = "-nomonsters -nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"
 
 function Clear-Files {
   Get-ChildItem $BinDir -Filter 'glrecord_*.txt' -ErrorAction SilentlyContinue | Remove-Item -Force
@@ -60,9 +61,25 @@ function Invoke-One([string]$Label, [string]$Version, [string]$Arguments, [strin
 }
 
 # Compares two files; writes UGUALE/DIVERSO and the first differences. Returns $true if they are the same.
+# The 2D overlay of the engine (screen32: HUD, status bar, console) is uploaded as a 1024x1024 BGRA texture at every
+# frame; its PIXELS are made by the software drawing of the engine and are not stable between two runs of the same
+# executable (they change with the heap or the HUD timers, nothing in the GL calls changes). Unless -StrictOverlay, the
+# hash of that upload and the sum of the frame that contains it are not compared (the calls are, all of them).
+function Read-Normalized([string]$Path) {
+  $lines = [System.IO.File]::ReadAllLines($Path)
+  if ($StrictOverlay) { return $lines }
+  $prefix = 'glTexImage2D($0DE1,0,4,1024,1024,0,$80E1,$1401,h:'
+  for ($i = 0; $i -lt $lines.Length; $i++) {
+    $l = $lines[$i]
+    if ($l.StartsWith($prefix)) { $lines[$i] = $prefix + '*' }
+    elseif ($l.StartsWith('FRAME ')) { $lines[$i] = $l -replace ' sum=[0-9a-f]+$', '' }
+  }
+  return $lines
+}
+
 function Compare-Records([string]$Title, [string]$A, [string]$B, [string]$NameA, [string]$NameB) {
-  $linesA = [System.IO.File]::ReadAllLines($A)
-  $linesB = [System.IO.File]::ReadAllLines($B)
+  $linesA = Read-Normalized $A
+  $linesB = Read-Normalized $B
   if ([System.Linq.Enumerable]::SequenceEqual([string[]]$linesA, [string[]]$linesB)) {
     Write-Host "$Title : UGUALE ($($linesA.Count) righe)"
     return $true

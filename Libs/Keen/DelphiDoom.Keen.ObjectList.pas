@@ -156,6 +156,7 @@ begin
   FFreeList := FObjects[LSlot].Prev;
   FillChar(FObjects[LSlot], SizeOf(TKeenObject), 0);
   FObjects[LSlot].Slot := LSlot;
+  FObjects[LSlot].State := -1; // the C clears the actor: its state is the null pointer
   FObjects[LSlot].Next := -1;
   if FLast >= 0 then
     FObjects[FLast].Next := LSlot;
