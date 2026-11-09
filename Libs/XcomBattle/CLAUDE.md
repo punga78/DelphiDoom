@@ -1,0 +1,28 @@
+# Libs\XcomBattle - note per Claude
+
+`Libs\XcomBattle` (issue #176, **Battlescape**: modello e logica, senza UI) porta a classi i pezzi della battaglia tattica di **OpenXcom**. Sta sopra `Libs\XcomMod` (regole, `TXcomRuleset`, `TXcomMapData`, `TXcomMapDataSet`, `IXcomRandom`), `Libs\XcomSave` (`TXcomNode`, `TXcomSoldier`, `TXcomBattleUnitStatistics`, `TXcomNodeWriter`) e `Libs\Yaml`. **Non tocca** `ComposeEngine` ne' `TIdTechGeneration`. **Licenza**: derivato da OpenXcom, GPL v3 o successiva (intestazioni di ogni unit); il repository resta GPL v2 o successiva, la scelta e' dell'utente.
+
+## Fetta 1: il modello salvato (fatta)
+
+- `DelphiDoom.XcomBattle.Model`: **`TXcomTile`**, **`TXcomBattleItem`**, **`TXcomBattleUnit`** in una sola unit (si riferiscono a vicenda: in Delphi una classe non si dichiara in avanti da un'altra unit; e' l'unica eccezione alla regola "una classe per unit"). Tutto il comportamento di `Tile.cpp`, `BattleItem.cpp`, `BattleUnit.cpp` che non e' disegno: porte e porte UFO, distruzione e fuoco, fumo, luce, formato binario delle tegole (`TXcomTileSerializationKey`), danno e ferite, turni, azioni e precisione, esperienza, statistiche dopo la missione, armi speciali.
+- `DelphiDoom.XcomBattle.SavedBattleGame`: **`TXcomSavedBattleGame`** (`SavedBattleGame`): `Load`/`Save` del documento `battleGame`, mappa di tegole, nodi, unita', oggetti (i quattro elenchi), selezione delle unita', `EndTurn`, `PrepareNewTurn` (fuoco e fumo che si propagano), `SetUnitPosition`, `PlaceUnitNearPosition`, `GetSpawnNode`, `GetPatrolNode`, obiettivi, mappa dei moduli della difesa della base.
+- `DelphiDoom.XcomBattle.Intf` (`IXcomBattleContext`: il generatore, `alienBleeding`, `allowPsionicCapture`, il danno del fuoco; `IXcomUnitAI`), `Services.Intf` (`IXcomBattlePathfinder`, `IXcomBattleTileEngine`: cio' che il salvataggio chiede a `Pathfinding` e `TileEngine`, che a loro volta contengono il salvataggio), `Context` (`TXcomBattleContext`), `RawUnitAI` (il nodo `AI` di un'unita' tenuto com'e' finche' `AIModule` non e' portato), `Directions` (`directionToVector`), `Types` (costanti delle enumerazioni, `NODE_RANK`).
+- `TXcomPosition` (in `Libs\XcomMod`) ha ora gli operatori di `Position` (`+`, `-`, `div`, `=`, `<>`, `Make`); `TXcomMapData.Dataset` e' il `getDataset()` (un `TObject` perche' `MapDataSet` usa `MapData`).
+
+**Proprieta'**: il `TXcomSavedBattleGame` possiede tegole, nodi, unita' e **tutti** gli oggetti (anche quelli di `_deleted`, di `recover*` e le armi speciali); i set di `MCD` sono del `TXcomRuleset` (il distruttore li `Unload`a come il C++). Unita', tegole e oggetti si riferiscono senza possedersi.
+
+**Differenze dichiarate dal C++**: l'animazione di fuoco e fumo di `Tile::load` (`std::rand`) resta 0; il colore casuale dei civili e degli alieni e' un parametro (`AColors`); i particelle (`Tile::_particles`), la cache dei disegni (`Surface`) e `BattleUnit::breathe` (`RNG::seedless`, solo visivo) non ci sono; `knockOut` con `spawnUnit` (converte l'unita' tramite `BattlescapeGame`) non e' portato; `SavedBattleGame::convertUnit` non e' portato; `getName` ha una funzione di traduzione al posto di `Language`; `Soldier::getName(true)` e' il nome senza statstring. **Comportamenti indefiniti del C++ che qui sono errori**: un `SavedBattleGame` con un'unita' di un soldato che il `SavedGame` non ha (`EXcomBattleException`), un indice di tegola fuori dalla mappa nei dati binari, `getLoftemps` fuori dal limite, `getNodes()->at()` fuori. `Node::nodeRank` e' `NODE_RANK`.
+
+## Parita'
+
+`Tools\Verifica\176\battle\battlegen.cpp` (`build.cmd <cartella>`) e' collegato **agli oggetti di una vera build di OpenXcom** (come `Tools\Verifica\176\save`): `Mod::loadAll` su TFTD, `Mod::newSave()` per i soldati, poi una battaglia costruita con i costruttori e i metodi veri (tegole con parti degli MCD veri, soldati e alieni, danno con il generatore vero, oggetti e munizioni, nodi, fuoco, fumo, porte, moduli) e scrive `battleNN.sav`, `battleNN.yml` (`SavedBattleGame::save`) e `battleNN.re.yml` (`load` + `loadMapResources` senza motore delle tegole + `save` veri). `TTestXcomRealBattle` carica `battleNN.yml` con la libreria (con i set MCD caricati da `TXcomMapDataLoader`) e confronta il salvataggio con `battleNN.re.yml`: **8 battaglie su 8 identiche**. I dati stanno in `Tests\Data\XcomBattle`; senza `Reference\_dati\xcom_tftd` il test e' un `Assert.Pass`. Rigenerare: `battle\build.cmd <cartella>` e `battlegen <dati> <utente> <uscita> 8 1761`.
+
+Dettagli del formato che la parita' ha mostrato: `tileIndexSize` e gli altri sono `char` e yaml-cpp li scrive come un carattere di controllo (`"\x04"`), `binTiles` e' uno scalare base64 **senza** tag `!!binary`; un oggetto con `owner` ma senza `inventoryslot` e' saltato dal caricamento (le armi speciali di OXCE): le munizioni date a un'unita' senza slot spariscono al `load`, e il C++ lo fa.
+
+## Test
+
+`Tests\DelphiDoom.Tests.XcomBattle` (`Tools\build.bat Tests\DelphiDoom.Tests.XcomBattle`; da un worktree serve `$env:DCC_UnitSearchPath` con il percorso di DUnitX): `TTestXcomBattleModel` (regole fatte a mano da YAML, generatore a numeri dati `TScriptedRandom`, pathfinder e motore delle tegole finti) e `TTestXcomRealBattle`.
+
+## Non portato (ancora)
+
+`Pathfinding`, `TileEngine`, `Projectile`, `ExplosionBState`, `BattlescapeGame`, `AIModule`, `BattlescapeGenerator`, il disegno (`Map`, `UnitSprite`...) e gli stati: vedi la sezione "Battlescape" di `docs\INTEGRAZIONE_GIOCHI.md`. L'aggancio al `TXcomSavedGame` (che oggi rifiuta un `.sav` con `battleGame`) non e' fatto: la battaglia si carica dal documento `battleGame` con `TXcomSavedBattleGame.Load`.
