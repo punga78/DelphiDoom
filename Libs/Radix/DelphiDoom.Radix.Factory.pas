@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Radix.Intf;
+  DelphiDoom.Radix.Types, DelphiDoom.Radix.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the library</summary>
@@ -27,7 +27,10 @@ type
     ///   The translator of the game with the steps that are ported, in the order of the old
     ///   converter, and the patch options of Rad-X
     /// </summary>
-    class function CreateTranslator: IRadixTranslator; static;
+    /// <summary>The translator with the names of the old game: PNAMES0 and TEXTURE0</summary>
+    class function CreateTranslator: IRadixTranslator; overload; static;
+    /// <summary>The translator that gives the lumps the names that the engine reads (TRadixLumpNames)</summary>
+    class function CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator; overload; static;
   end;
 
 implementation
@@ -61,13 +64,18 @@ begin
 end;
 
 class function TRadixFactory.CreateTranslator: IRadixTranslator;
+begin
+  Result := CreateTranslator(TRadixLumpNames.Original);
+end;
+
+class function TRadixFactory.CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator;
 var
   LMatcher: IColorMatcher;
 begin
   LMatcher := TPaletteFactory.CreateColorMatcher;
   Result := TRadixTranslator.Create(
-    [TRadixPalettePart.Create(CreatePaletteBuilder),
-     TRadixTexturePart.Create('PNAMES0', 'TEXTURE0'),
+    [TRadixPalettePart.Create(CreatePaletteBuilder, ANames.Palette, ANames.ColorMap),
+     TRadixTexturePart.Create(ANames.PatchNames, ANames.Textures),
      TRadixLevelFactory.CreatePart(True),
      TRadixFlatPart.Create(LMatcher, True),
      TRadixGraphicsPart.Create,
@@ -90,4 +98,5 @@ begin
 end;
 
 end.
+
 

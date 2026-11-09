@@ -25,7 +25,8 @@ type
     Doors,
     ActorDef,
     TableExport,
-    Iwad
+    Iwad,
+    Script
   );
 
   /// <summary>

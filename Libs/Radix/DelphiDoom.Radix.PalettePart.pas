@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: radix library - TRadixPalettePart                               }
 {  Copyright (C) 2004-2024 by Jim Valavanis (original DelphiDoom, Rad-X)       }
@@ -25,10 +25,16 @@ type
   TRadixPalettePart = class(TInterfacedObject, IRadixPart)
   strict private
     FBuilder: IRadixPaletteBuilder;
+    FPaletteName: string;
+    FColorMapName: string;
     procedure BuildTranslations(const AContext: TRadixTranslationContext);
   public
     /// <param name="ABuilder">Makes the palettes; EArgumentNilException when nil</param>
-    constructor Create(const ABuilder: IRadixPaletteBuilder);
+    constructor Create(const ABuilder: IRadixPaletteBuilder); overload;
+    /// <param name="APaletteName">The name of the lump of the palettes (PALETTE in the old game)</param>
+    /// <param name="AColorMapName">The name of the lump of the color maps (SHADES in the old game)</param>
+    constructor Create(const ABuilder: IRadixPaletteBuilder; const APaletteName,
+      AColorMapName: string); overload;
     /// <summary>ERadixException when the container has no lump "Palette[1]"</summary>
     procedure Build(const AContext: TRadixTranslationContext);
   end;
@@ -45,10 +51,18 @@ const
 
 constructor TRadixPalettePart.Create(const ABuilder: IRadixPaletteBuilder);
 begin
+  Create(ABuilder, RADIX_PALETTE_LUMP, RADIX_COLORMAP_LUMP);
+end;
+
+constructor TRadixPalettePart.Create(const ABuilder: IRadixPaletteBuilder; const APaletteName,
+  AColorMapName: string);
+begin
   inherited Create;
   if not Assigned(ABuilder) then
     raise EArgumentNilException.Create('ABuilder');
   FBuilder := ABuilder;
+  FPaletteName := APaletteName;
+  FColorMapName := AColorMapName;
 end;
 
 procedure TRadixPalettePart.BuildTranslations(const AContext: TRadixTranslationContext);
@@ -76,8 +90,8 @@ begin
   if not AContext.Container.TryRead('Palette[1]', LPalette) then
     raise ERadixException.Create(SRadixNoPalette);
   // the tables are made from the base palette after it has been scaled
-  AContext.Wad.AddLump(RADIX_PALETTE_LUMP, FBuilder.BuildPlayPal(LPalette));
-  AContext.Wad.AddLump(RADIX_COLORMAP_LUMP, FBuilder.BuildColorMap(LPalette));
+  AContext.Wad.AddLump(FPaletteName, FBuilder.BuildPlayPal(LPalette));
+  AContext.Wad.AddLump(FColorMapName, FBuilder.BuildColorMap(LPalette));
   FBuilder.Scale(LPalette);
   AContext.SetPalette(LPalette);
   BuildTranslations(AContext);

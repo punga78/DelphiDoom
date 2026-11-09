@@ -105,6 +105,7 @@ end;
 procedure TTestGameDataAliases.DovrebbeLasciareRadixConIlProprioProfiloIwad;
 begin
   Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Iwad));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Script));
 end;
 
 end.
