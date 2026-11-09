@@ -90,7 +90,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Input** — Tastiera, mouse e joystick: dispositivi, poller e mappa dei tasti. [CLAUDE.md](Libs/Input/CLAUDE.md), [README.md](Libs/Input/README.md)
 - **Iwad** — Ricerca e riconoscimento degli IWAD. [CLAUDE.md](Libs/Iwad/CLAUDE.md), [README.md](Libs/Iwad/README.md)
 - **Jpeg** — Decoder JPEG a classi (port della decompressione di libjpeg 6b). [CLAUDE.md](Libs/Jpeg/CLAUDE.md), [README.md](Libs/Jpeg/README.md)
-- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
+- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli, azioni del giocatore e dei nemici). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
 - **Logging** — Log del motore: `ILog`, canali e sink. [CLAUDE.md](Libs/Logging/CLAUDE.md), [README.md](Libs/Logging/README.md)
 - **M2m** — Convertitore MIDI in MUS. [CLAUDE.md](Libs/M2m/CLAUDE.md), [README.md](Libs/M2m/README.md) (paragrafo in `Libs\Zlib`)
 - **MapInfo** — Lettura di UMAPINFO e catalogo delle mappe. [CLAUDE.md](Libs/MapInfo/CLAUDE.md), [README.md](Libs/MapInfo/README.md)
@@ -109,6 +109,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **PascalScript** — Nucleo di Pascal Script (di terzi, modificato). [CLAUDE.md](Libs/PascalScript/CLAUDE.md), [README.md](Libs/PascalScript/README.md) (paragrafo in `Libs\ScriptHost`)
 - **Platform** — Servizi del sistema operativo: file, cartelle temporanee, informazioni su sistema, CPU ed eseguibile. [CLAUDE.md](Libs/Platform/CLAUDE.md), [README.md](Libs/Platform/README.md)
 - **Png** — Codifica e decodifica PNG (la compressione arriva da un `IZlib` iniettato). [CLAUDE.md](Libs/Png/CLAUDE.md), [README.md](Libs/Png/README.md)
+- **Racing** — Auto, fisica, IA, percorso, giri e tabelle dei tempi di Speed Haste (S4 di Speed, parità con il vecchio codice). [CLAUDE.md](Libs/Racing/CLAUDE.md), [README.md](Libs/Racing/README.md)
 - **Renderer** — Analisi del renderer e prime fette fredde (tabella colonne delle texture, precalcolo del livello). [CLAUDE.md](Libs/Renderer/CLAUDE.md), [README.md](Libs/Renderer/README.md)
 - **Scanner** — Scanner dei testi degli script, preprocessore, valutatore di espressioni, AUTOLOAD. [CLAUDE.md](Libs/Scanner/CLAUDE.md), [README.md](Libs/Scanner/README.md)
 - **Screenshot** — Scrittura degli screenshot (TGA, PNG, JPEG). [CLAUDE.md](Libs/Screenshot/CLAUDE.md), [README.md](Libs/Screenshot/README.md)
@@ -118,7 +119,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Sndfile** — Contratto `ISndfile` e provider che usa il motore di `LibsSound`. [CLAUDE.md](Libs/Sndfile/CLAUDE.md), [README.md](Libs/Sndfile/README.md) (paragrafo in `Libs\Sound`)
 - **Sound** — Sostituto in Pascal di libsndfile, libvorbis e libflac. [CLAUDE.md](Libs/Sound/CLAUDE.md), [README.md](Libs/Sound/README.md)
 - **Specials** — Registro degli special delle linee al posto del grande `case`. [CLAUDE.md](Libs/Specials/CLAUDE.md), [README.md](Libs/Specials/README.md)
-- **Speed** — Traduzione del contenitore `SPEEDH.JCL` di Speed Haste in un WAD in memoria. [CLAUDE.md](Libs/Speed/CLAUDE.md), [README.md](Libs/Speed/README.md)
+- **Speed** — Traduzione del contenitore `SPEEDH.JCL` di Speed Haste in un WAD in memoria; la cartella `Speed\` ha il programma `Speed32` (traduce e fa correre le auto del computer con `Libs\Racing`, senza finestra né motore). [CLAUDE.md](Libs/Speed/CLAUDE.md), [README.md](Libs/Speed/README.md)
 - **TableExport** — Scrittura delle tabelle correnti del motore come DEH, ACTORDEF, WEAPONDEF, CSV e sorgente Pascal. [CLAUDE.md](Libs/TableExport/CLAUDE.md), [README.md](Libs/TableExport/README.md)
 - **Texture** — Decoder dei file di immagine delle texture esterne e immagine in memoria. [CLAUDE.md](Libs/Texture/CLAUDE.md), [README.md](Libs/Texture/README.md)
 - **TextureDefs** — Lettura delle definizioni delle texture (PNAMES, TEXTURE1..3, TEXTURE0) e dei flat (FLATINFO). [CLAUDE.md](Libs/TextureDefs/CLAUDE.md), [README.md](Libs/TextureDefs/README.md)
@@ -219,5 +220,5 @@ L'obiettivo è che ogni progetto compili e funzioni sia a Win32 sia a Win64; ogg
 - Codice storico per scelta (la migrazione a classi della #45 è conclusa sulle parti pure e a freddo): i renderer software e OpenGL, i thinker e i savegame, `FixedMul`/`FixedDiv` e le funzioni sugli angoli; vedi `docs\PENDING_ISSUES.md`.
 - Tracce `-devparm` temporanee dei passi del caricamento del livello di Doom (`TLevelLoader.Trace`, accese da `TDoomLevelRules.TracesSteps`).
 - Codice morto (issue #163): tolte 95 routine globali, 17 metodi, 11 variabili e 138 unit inutili dalle clausole `uses` (circa 3830 righe). Restano `P_CheckVisibility` di `p_sight` (direttive incrociate), costanti e tipi senza riferimenti e 44 clausole `uses` con direttive: vedi `docs\PENDING_ISSUES.md` (#163). Per cercarne altro: una routine globale è morta solo se il suo nome non compare in nessun `.pas`, `.dpr`, `.inc` o `.dfm` di nessun progetto (giochi, `ddc_*`, Launcher, DD_IDE, Keen, tutti i `Tests\*`), stringhe comprese (PascalScript, `C_AddCmd`, `DEH_AddAction`).
-- Heretic: crash intermittente a runtime da indagare con `crash.txt`.
+- Heretic: il crash intermittente (#162) non si riproduce: 93 avvii/uscite senza crash né blocchi (vedi `docs\PENDING_ISSUES.md`, #162); resta aperta solo la chiusura motivata dell'issue.
 
