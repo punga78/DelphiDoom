@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom ruleset library (DUnitX)                  }
 {                                                                              }
@@ -32,6 +32,9 @@ uses
   DelphiDoom.XcomMod.RuleMusic in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleMusic.pas',
   DelphiDoom.XcomMod.MapBlock in '..\Libs\XcomMod\DelphiDoom.XcomMod.MapBlock.pas',
   DelphiDoom.XcomMod.RuleCommendations in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCommendations.pas',
+  DelphiDoom.XcomMod.ModOffsets in '..\Libs\XcomMod\DelphiDoom.XcomMod.ModOffsets.pas',
+  DelphiDoom.XcomMod.RuleCraftWeapon in '..\Libs\XcomMod\DelphiDoom.XcomMod.RuleCraftWeapon.pas',
+  DelphiDoom.Tests.XcomMod.ModOffsets in 'Source\DelphiDoom.Tests.XcomMod.ModOffsets.pas',
   DelphiDoom.Tests.XcomMod.Scenario in 'Source\DelphiDoom.Tests.XcomMod.Scenario.pas',
   DelphiDoom.Tests.XcomMod.Golden in 'Source\DelphiDoom.Tests.XcomMod.Golden.pas',
   DelphiDoom.Tests.XcomMod.Rules in 'Source\DelphiDoom.Tests.XcomMod.Rules.pas';

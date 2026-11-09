@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the xcom ruleset library - the scenarios of parity      }
 {                                                                              }
@@ -22,7 +22,8 @@ uses
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleInventory,
   DelphiDoom.XcomMod.RuleCountry, DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleResearch,
   DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
-  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleCommendations;
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.ModOffsets,
+  DelphiDoom.XcomMod.RuleCraftWeapon;
 
 type
   /// <summary>Runs the cases of the corpus with the Pascal classes and writes the lines of the golden file</summary>
@@ -45,6 +46,7 @@ type
     procedure RunMusic(const AType: string; const ANode: IYamlNode);
     procedure RunMapBlock(const AName: string; const ANode: IYamlNode);
     procedure RunCommendation(const ANode: IYamlNode);
+    procedure RunCraftWeapon(const AType, ACurrent: string; const ANode: IYamlNode);
   public
     constructor Create;
     destructor Destroy; override;
@@ -53,6 +55,18 @@ type
   end;
 
 implementation
+
+type
+  /// <summary>The 20 shared sounds that the stub of the harness gives to every sound set</summary>
+  TXcomScenarioSharedResources = class(TInterfacedObject, IXcomSharedResources)
+  public
+    function MaxSharedSounds(const ASet: string): Integer;
+  end;
+
+function TXcomScenarioSharedResources.MaxSharedSounds(const ASet: string): Integer;
+begin
+  Result := 20;
+end;
 
 { TXcomRuleScenario }
 
@@ -420,6 +434,30 @@ begin
   end;
 end;
 
+procedure TXcomRuleScenario.RunCraftWeapon(const AType, ACurrent: string; const ANode: IYamlNode);
+var
+  LRule: TXcomRuleCraftWeapon;
+  LOffsets: TXcomModOffsets;
+begin
+  // the mods of the harness: master (offset 0, size 1000), xcom1 (1000, 500) and the one that is loading (2000, 300)
+  LOffsets := TXcomModOffsets.Create([TXcomModData.Make('master', 0, 1000), TXcomModData.Make('xcom1', 1000, 500),
+    TXcomModData.Make('mymod', 2000, 300)], StrToInt(ACurrent), TXcomScenarioSharedResources.Create);
+  try
+    LRule := TXcomRuleCraftWeapon.Create(AType);
+    try
+      LRule.Load(ANode, LOffsets);
+      Line(Format('type=%s sprite=%d sound=%d dmg=%d range=%d acc=%d rc=%d rs=%d ra=%d ammo=%d rearm=%d ptype=%d ' +
+        'pspeed=%d water=%d', [Escape(LRule.WeaponType), LRule.Sprite, LRule.Sound, LRule.Damage, LRule.Range,
+        LRule.Accuracy, LRule.CautiousReload, LRule.StandardReload, LRule.AggressiveReload, LRule.AmmoMax,
+        LRule.RearmRate, LRule.ProjectileType, LRule.ProjectileSpeed, Ord(LRule.UnderwaterOnly)]));
+      Line('launcher=' + Escape(LRule.LauncherItem) + ' clip=' + Escape(LRule.ClipItem));
+    finally
+      LRule.Free;
+    end;
+  finally
+    LOffsets.Free;
+  end;
+end;
 procedure TXcomRuleScenario.RunCase(const AHeader: string; const ABody: TYamlText);
 var
   LParts: TArray<string>;
@@ -463,7 +501,9 @@ begin
     else if LKind = 'mapblock' then
       RunMapBlock(LFirst, LNode)
     else if LKind = 'commendation' then
-      RunCommendation(LNode);
+      RunCommendation(LNode)
+    else if LKind = 'craftweapon' then
+      RunCraftWeapon(LFirst, LSecond, LNode);
   except
     on E: EYamlException do
       Line('YAML_ERR ' + Escape(YamlTextToString(E.Msg)));
