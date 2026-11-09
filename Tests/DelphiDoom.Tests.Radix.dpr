@@ -47,6 +47,23 @@ uses
   DelphiDoom.Radix.SpriteList in '..\Libs\Radix\DelphiDoom.Radix.SpriteList.pas',
   DelphiDoom.Radix.SpriteCatalog in '..\Libs\Radix\DelphiDoom.Radix.SpriteCatalog.pas',
   DelphiDoom.Radix.SpritePart in '..\Libs\Radix\DelphiDoom.Radix.SpritePart.pas',
+  DelphiDoom.Radix.Level.Converter in '..\Libs\Radix\DelphiDoom.Radix.Level.Converter.pas',
+  DelphiDoom.Radix.Level.Coordinates in '..\Libs\Radix\DelphiDoom.Radix.Level.Coordinates.pas',
+  DelphiDoom.Radix.Level.Data in '..\Libs\Radix\DelphiDoom.Radix.Level.Data.pas',
+  DelphiDoom.Radix.Level.DoomMap in '..\Libs\Radix\DelphiDoom.Radix.Level.DoomMap.pas',
+  DelphiDoom.Radix.Level.Factory in '..\Libs\Radix\DelphiDoom.Radix.Level.Factory.pas',
+  DelphiDoom.Radix.Level.FixNone in '..\Libs\Radix\DelphiDoom.Radix.Level.FixNone.pas',
+  DelphiDoom.Radix.Level.FixOps in '..\Libs\Radix\DelphiDoom.Radix.Level.FixOps.pas',
+  DelphiDoom.Radix.Level.FixSelector in '..\Libs\Radix\DelphiDoom.Radix.Level.FixSelector.pas',
+  DelphiDoom.Radix.Level.FixV10 in '..\Libs\Radix\DelphiDoom.Radix.Level.FixV10.pas',
+  DelphiDoom.Radix.Level.FixV11 in '..\Libs\Radix\DelphiDoom.Radix.Level.FixV11.pas',
+  DelphiDoom.Radix.Level.FixV2 in '..\Libs\Radix\DelphiDoom.Radix.Level.FixV2.pas',
+  DelphiDoom.Radix.Level.Intf in '..\Libs\Radix\DelphiDoom.Radix.Level.Intf.pas',
+  DelphiDoom.Radix.Level.Reader in '..\Libs\Radix\DelphiDoom.Radix.Level.Reader.pas',
+  DelphiDoom.Radix.Level.Table in '..\Libs\Radix\DelphiDoom.Radix.Level.Table.pas',
+  DelphiDoom.Radix.Level.Types in '..\Libs\Radix\DelphiDoom.Radix.Level.Types.pas',
+  DelphiDoom.Radix.Level.Versions in '..\Libs\Radix\DelphiDoom.Radix.Level.Versions.pas',
+  DelphiDoom.Radix.LevelPart in '..\Libs\Radix\DelphiDoom.Radix.LevelPart.pas',
   DelphiDoom.Radix.Translator in '..\Libs\Radix\DelphiDoom.Radix.Translator.pas',
   DelphiDoom.Radix.Factory in '..\Libs\Radix\DelphiDoom.Radix.Factory.pas',
   DelphiDoom.Tests.GameData.Scenarios in 'Source\DelphiDoom.Tests.GameData.Scenarios.pas',
@@ -64,6 +81,13 @@ uses
   DelphiDoom.Tests.Radix.CockpitSoundParts in 'Source\DelphiDoom.Tests.Radix.CockpitSoundParts.pas',
   DelphiDoom.Tests.Radix.SpriteList in 'Source\DelphiDoom.Tests.Radix.SpriteList.pas',
   DelphiDoom.Tests.Radix.SpritePart in 'Source\DelphiDoom.Tests.Radix.SpritePart.pas',
+  DelphiDoom.Tests.Radix.LevelBuilder in 'Source\DelphiDoom.Tests.Radix.LevelBuilder.pas',
+  DelphiDoom.Tests.Radix.LevelConverter in 'Source\DelphiDoom.Tests.Radix.LevelConverter.pas',
+  DelphiDoom.Tests.Radix.LevelCoordinates in 'Source\DelphiDoom.Tests.Radix.LevelCoordinates.pas',
+  DelphiDoom.Tests.Radix.LevelDoomMap in 'Source\DelphiDoom.Tests.Radix.LevelDoomMap.pas',
+  DelphiDoom.Tests.Radix.LevelPart in 'Source\DelphiDoom.Tests.Radix.LevelPart.pas',
+  DelphiDoom.Tests.Radix.LevelReader in 'Source\DelphiDoom.Tests.Radix.LevelReader.pas',
+  DelphiDoom.Tests.Radix.LevelVersions in 'Source\DelphiDoom.Tests.Radix.LevelVersions.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var
@@ -100,5 +124,6 @@ begin
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+
 
 

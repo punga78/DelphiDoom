@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: radix library - the factory: the composition root               }
 {  Copyright (C) 2004-2024 by Jim Valavanis (original DelphiDoom, Rad-X)       }
@@ -41,7 +41,7 @@ uses
   DelphiDoom.Radix.GraphicsPart, DelphiDoom.Radix.SmallFontPart, DelphiDoom.Radix.LumpGroupPart,
   DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
   DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
-  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Translator;
+  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator;
 
 { TRadixFactory }
 
@@ -68,6 +68,7 @@ begin
   Result := TRadixTranslator.Create(
     [TRadixPalettePart.Create(CreatePaletteBuilder),
      TRadixTexturePart.Create('PNAMES0', 'TEXTURE0'),
+     TRadixLevelFactory.CreatePart(True),
      TRadixFlatPart.Create(LMatcher, True),
      TRadixGraphicsPart.Create,
      TRadixSmallFontPart.Create,
@@ -89,3 +90,4 @@ begin
 end;
 
 end.
+
