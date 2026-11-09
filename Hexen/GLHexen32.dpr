@@ -45,32 +45,8 @@ program GLHexen32;
 {$R *.RES}
 
 uses
-  FastMM4 in '..\FASTMM4\FastMM4.pas',
-  FastMM4Messages in '..\FASTMM4\FastMM4Messages.pas',
   i_crashlog in '..\Base\i_crashlog.pas',
   SysUtils,
-{$IFNDEF UNICODE} // obsolete RTL patches, not valid for the Unicode RTL
-  FastCode in '..\FASTCODE\FastCode.pas',
-  FastMove in '..\FASTCODE\FastMove.pas',
-  AnsiStringReplaceJOHIA32Unit12 in '..\FASTCODE\AnsiStringReplaceJOHIA32Unit12.pas',
-  AnsiStringReplaceJOHPASUnit12 in '..\FASTCODE\AnsiStringReplaceJOHPASUnit12.pas',
-  FastcodeAnsiStringReplaceUnit in '..\FASTCODE\FastcodeAnsiStringReplaceUnit.pas',
-  FastcodeCompareMemUnit in '..\FASTCODE\FastcodeCompareMemUnit.pas',
-  FastcodeCompareStrUnit in '..\FASTCODE\FastcodeCompareStrUnit.pas',
-  FastcodeCompareTextUnit in '..\FASTCODE\FastcodeCompareTextUnit.pas',
-  FastcodeCPUID in '..\FASTCODE\FastcodeCPUID.pas',
-  FastcodeFillCharUnit in '..\FASTCODE\FastcodeFillCharUnit.pas',
-  FastcodeLowerCaseUnit in '..\FASTCODE\FastcodeLowerCaseUnit.pas',
-  FastcodePatch in '..\FASTCODE\FastcodePatch.pas',
-  FastcodePosExUnit in '..\FASTCODE\FastcodePosExUnit.pas',
-  FastcodePosUnit in '..\FASTCODE\FastcodePosUnit.pas',
-  FastcodeStrCompUnit in '..\FASTCODE\FastcodeStrCompUnit.pas',
-  FastcodeStrCopyUnit in '..\FASTCODE\FastcodeStrCopyUnit.pas',
-  FastcodeStrICompUnit in '..\FASTCODE\FastcodeStrICompUnit.pas',
-  FastCodeStrLenUnit in '..\FASTCODE\FastCodeStrLenUnit.pas',
-  FastcodeStrToInt32Unit in '..\FASTCODE\FastcodeStrToInt32Unit.pas',
-  FastcodeUpperCaseUnit in '..\FASTCODE\FastcodeUpperCaseUnit.pas',
-{$ENDIF}
   DelphiDoom.GlMath.Types in '..\Libs\GlMath\DelphiDoom.GlMath.Types.pas',
   DelphiDoom.GlMath.Intf in '..\Libs\GlMath\DelphiDoom.GlMath.Intf.pas',
   DelphiDoom.GlMath.AngleClipper in '..\Libs\GlMath\DelphiDoom.GlMath.AngleClipper.pas',
@@ -1196,6 +1172,11 @@ var
   Saved8087CW: Word;
 
 begin
+  { The RTL memory manager locks only when IsMultiThread is set: the engine threads use CreateThread }
+  IsMultiThread := True;
+{$IFDEF DEBUG}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   I_InstallCrashLogger;
   ComposeEngine;
 
