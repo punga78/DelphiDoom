@@ -25,6 +25,12 @@ type
     class function NewSequence: IYamlNode; static;
     /// <summary>node[key] = another node</summary>
     class procedure SetNode(const ANode: IYamlNode; const AKey: string; const AValue: IYamlNode); static;
+    /// <summary>node[key].push_back(value): the key becomes a sequence if it was not there</summary>
+    class procedure PushBack(const ANode: IYamlNode; const AKey: string; const AValue: IYamlNode); static;
+    /// <summary>node[key] = a double (yaml-cpp writes it with 17 significant digits)</summary>
+    class procedure SetDouble(const ANode: IYamlNode; const AKey: string; AValue: Double); static;
+    /// <summary>node[key] = a 64 bit integer</summary>
+    class procedure SetInt64(const ANode: IYamlNode; const AKey: string; AValue: Int64); static;
     /// <summary>node[key] = int (the decimal text a stream writes)</summary>
     class procedure SetInteger(const ANode: IYamlNode; const AKey: string; AValue: Integer); static;
     class procedure SetString(const ANode: IYamlNode; const AKey, AValue: string); static;
@@ -57,6 +63,21 @@ end;
 class procedure TXcomNodeWriter.SetNode(const ANode: IYamlNode; const AKey: string; const AValue: IYamlNode);
 begin
   ANode.Child(YamlStringToText(AKey)).Assign(AValue);
+end;
+
+class procedure TXcomNodeWriter.PushBack(const ANode: IYamlNode; const AKey: string; const AValue: IYamlNode);
+begin
+  ANode.Child(YamlStringToText(AKey)).Add(AValue);
+end;
+
+class procedure TXcomNodeWriter.SetDouble(const ANode: IYamlNode; const AKey: string; AValue: Double);
+begin
+  ANode.Child(YamlStringToText(AKey)).AssignDouble(AValue);
+end;
+
+class procedure TXcomNodeWriter.SetInt64(const ANode: IYamlNode; const AKey: string; AValue: Int64);
+begin
+  ANode.Child(YamlStringToText(AKey)).AssignInt64(AValue);
 end;
 
 class procedure TXcomNodeWriter.SetInteger(const ANode: IYamlNode; const AKey: string; AValue: Integer);

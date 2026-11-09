@@ -10,7 +10,8 @@ unit DelphiDoom.XcomMod.SoldierNamePool;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader;
+  System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.Types,
+  DelphiDoom.XcomMod.Random;
 
 type
   /// <summary>The lists of names, look weights and female frequency of a .nam file (SoldierNamePool)</summary>
@@ -34,11 +35,75 @@ type
     property LookWeights: TArray<Integer> read FLookWeights;
     property TotalWeight: Integer read FTotalWeight;
     property FemaleFrequency: Integer read FFemaleFrequency;
+    /// <summary>
+    ///   genName: a name by gender (the pool frequency if it has one, otherwise the one of the soldier type);
+    ///   AFemale tells the gender that came out. An empty first-name list is EXcomModException (the C++
+    ///   reads past a vector of size 0)
+    /// </summary>
+    function GenName(out AFemale: Boolean; AFemaleFrequency: Integer; const ARandom: IXcomRandom): string;
+    /// <summary>
+    ///   genLook: a look by weight; the weights are made as long as the number of looks (new ones weigh 2) and
+    ///   the total follows
+    /// </summary>
+    function GenLook(ALooks: Integer; const ARandom: IXcomRandom): Integer;
   end;
 
 implementation
 
 { TXcomSoldierNamePool }
+
+function TXcomSoldierNamePool.GenName(out AFemale: Boolean; AFemaleFrequency: Integer;
+  const ARandom: IXcomRandom): string;
+var
+  LFirst, LLast: TArray<string>;
+begin
+  if FFemaleFrequency > -1 then
+    AFemale := ARandom.Generate(0, 99) < FFemaleFrequency
+  else
+    AFemale := ARandom.Generate(0, 99) < AFemaleFrequency;
+  if AFemale then
+  begin
+    LFirst := FFemaleFirst;
+    LLast := FFemaleLast;
+  end
+  else
+  begin
+    LFirst := FMaleFirst;
+    LLast := FMaleLast;
+  end;
+  if Length(LFirst) = 0 then
+    raise EXcomModException.Create('Xcom: the name file has no first names');
+  Result := LFirst[ARandom.Generate(0, Length(LFirst) - 1)];
+  if Length(LLast) > 0 then
+    Result := Result + ' ' + LLast[ARandom.Generate(0, Length(LLast) - 1)];
+end;
+
+function TXcomSoldierNamePool.GenLook(ALooks: Integer; const ARandom: IXcomRandom): Integer;
+const
+  MINIMUM_CHANCE = 2;
+var
+  LRandom, LIndex: Integer;
+begin
+  while Length(FLookWeights) < ALooks do
+  begin
+    SetLength(FLookWeights, Length(FLookWeights) + 1);
+    FLookWeights[High(FLookWeights)] := MINIMUM_CHANCE;
+    Inc(FTotalWeight, MINIMUM_CHANCE);
+  end;
+  while Length(FLookWeights) > ALooks do
+  begin
+    Dec(FTotalWeight, FLookWeights[High(FLookWeights)]);
+    SetLength(FLookWeights, Length(FLookWeights) - 1);
+  end;
+  LRandom := ARandom.Generate(0, FTotalWeight);
+  for LIndex := 0 to High(FLookWeights) do
+  begin
+    if LRandom <= FLookWeights[LIndex] then
+      Exit(LIndex);
+    Dec(LRandom, FLookWeights[LIndex]);
+  end;
+  Result := ARandom.Generate(0, ALooks - 1);
+end;
 
 constructor TXcomSoldierNamePool.Create;
 begin

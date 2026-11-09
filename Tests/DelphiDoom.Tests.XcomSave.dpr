@@ -64,6 +64,10 @@ uses
   DelphiDoom.Tests.XcomSave.Targets in 'Source\DelphiDoom.Tests.XcomSave.Targets.pas',
   DelphiDoom.Tests.XcomSave.Scenario in 'Source\DelphiDoom.Tests.XcomSave.Scenario.pas',
   DelphiDoom.Tests.XcomSave.Golden in 'Source\DelphiDoom.Tests.XcomSave.Golden.pas',
+  DelphiDoom.Tests.XcomMod.DiskModFiles in 'Source\DelphiDoom.Tests.XcomMod.DiskModFiles.pas',
+  DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
+  DelphiDoom.Tests.XcomSave.RealSave in 'Source\DelphiDoom.Tests.XcomSave.RealSave.pas',
+  DelphiDoom.Tests.XcomSave.Strategy in 'Source\DelphiDoom.Tests.XcomSave.Strategy.pas',
   DelphiDoom.Tests.XcomSave.Objects in 'Source\DelphiDoom.Tests.XcomSave.Objects.pas';
 
 var

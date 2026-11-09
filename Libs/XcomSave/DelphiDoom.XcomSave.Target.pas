@@ -10,7 +10,7 @@ unit DelphiDoom.XcomSave.Target;
 interface
 
 uses
-  System.SysUtils, System.Math, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomSave.Types,
+  System.SysUtils, System.Math, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomSave.Types,
   DelphiDoom.XcomSave.NodeWriter, DelphiDoom.XcomSave.Serialization;
 
 type
@@ -25,8 +25,18 @@ type
     FLatitude: Double;
     FId: Integer;
     FName: string;
+    FFollowers: TList<TXcomTarget>;
     class function AreSame(ALeft, ARight: Double): Boolean; static;
   public
+    constructor Create;
+    destructor Destroy; override;
+    /// <summary>
+    ///   getFollowers: the moving targets that go to this one (not owned). A target must be released from its
+    ///   destination (SetDestination(nil)) before it is freed, as the destructor of MovingTarget does
+    /// </summary>
+    property Followers: TList<TXcomTarget> read FFollowers;
+    /// <summary>The same angles test as the C++ (AreSame of fmath.h)</summary>
+    class function SameAngle(ALeft, ARight: Double): Boolean; static;
     /// <summary>Loads the target; a name that is not a scalar raises EYamlBadConversion</summary>
     procedure Load(const ANode: IYamlNode); virtual;
     /// <summary>Saves the target: lon and lat as 17 digit text, the id and the name when they are not empty</summary>
@@ -71,6 +81,23 @@ begin
   LScale := Max(1.0, Max(Abs(ALeft), Abs(ARight)));
   LScale := 2.2204460492503131E-16 * LScale;
   Result := LDifference <= LScale;
+end;
+
+constructor TXcomTarget.Create;
+begin
+  inherited Create;
+  FFollowers := TList<TXcomTarget>.Create;
+end;
+
+destructor TXcomTarget.Destroy;
+begin
+  FFollowers.Free;
+  inherited Destroy;
+end;
+
+class function TXcomTarget.SameAngle(ALeft, ARight: Double): Boolean;
+begin
+  Result := AreSame(ALeft, ARight);
 end;
 
 procedure TXcomTarget.Load(const ANode: IYamlNode);
