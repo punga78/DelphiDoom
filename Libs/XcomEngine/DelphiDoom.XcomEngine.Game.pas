@@ -15,7 +15,7 @@ uses
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
-  DelphiDoom.XcomEngine.OptionsStore.Intf;
+  DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -49,6 +49,7 @@ type
     FDisplayModes: IXcomDisplayModes;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
+    FFolderOpener: IXcomFolderOpener;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
     /// <summary>
@@ -80,6 +81,8 @@ type
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
+    procedure SetFolderOpener(const AOpener: IXcomFolderOpener);
+    procedure OpenFolder(const APath: string); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
@@ -221,6 +224,17 @@ end;
 procedure TXcomGame.SetLanguageProvider(const AProvider: IXcomLanguageProvider);
 begin
   FLanguageProvider := AProvider;
+end;
+
+procedure TXcomGame.SetFolderOpener(const AOpener: IXcomFolderOpener);
+begin
+  FFolderOpener := AOpener;
+end;
+
+procedure TXcomGame.OpenFolder(const APath: string);
+begin
+  if FFolderOpener <> nil then
+    FFolderOpener.Open(APath);
 end;
 
 procedure TXcomGame.SetDisplayModes(const AModes: IXcomDisplayModes);

@@ -75,6 +75,8 @@ type
     destructor Destroy; override;
     procedure Wait(AMilliseconds: Integer);
     procedure Click(AX, AY: Integer);
+    /// <summary>A click that keeps the button down for AHoldMilliseconds (the timers of the arrows run while it is down)</summary>
+    procedure ClickHeld(AX, AY, AHoldMilliseconds: Integer);
     function Pixel(AX, AY: Integer): Byte;
     class function Parse(const AText: string): IYamlNode; static;
     property Game: TXcomGame read FGame;
@@ -328,6 +330,26 @@ begin
   LEvent.Kind := ekMouseUp;
   FEvents.Enqueue(LEvent);
   Wait(20);
+end;
+
+procedure TTestWorld.ClickHeld(AX, AY, AHoldMilliseconds: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  LEvent := TXcomInputEvent.Make(ekMouseMotion);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  FEvents.Enqueue(LEvent);
+  Wait(20);
+  LEvent := TXcomInputEvent.Make(ekMouseDown);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  LEvent.Button := XCOM_BUTTON_LEFT;
+  FEvents.Enqueue(LEvent);
+  Wait(AHoldMilliseconds);
+  LEvent.Kind := ekMouseUp;
+  FEvents.Enqueue(LEvent);
+  Wait(40);
 end;
 
 class function TTestWorld.Parse(const AText: string): IYamlNode;

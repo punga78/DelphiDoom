@@ -26,7 +26,8 @@ uses
   DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas',
   DelphiDoom.Tests.XcomEngine.Controls in 'Source\DelphiDoom.Tests.XcomEngine.Controls.pas',
   DelphiDoom.Tests.XcomEngine.OptionsScreens in 'Source\DelphiDoom.Tests.XcomEngine.OptionsScreens.pas',
-  DelphiDoom.Tests.XcomEngine.RealFrames in 'Source\DelphiDoom.Tests.XcomEngine.RealFrames.pas';
+  DelphiDoom.Tests.XcomEngine.RealFrames in 'Source\DelphiDoom.Tests.XcomEngine.RealFrames.pas',
+  DelphiDoom.Tests.XcomEngine.OptionsMore in 'Source\DelphiDoom.Tests.XcomEngine.OptionsMore.pas';
 
 var
   Runner: ITestRunner;

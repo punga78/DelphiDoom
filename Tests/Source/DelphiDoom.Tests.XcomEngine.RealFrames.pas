@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom screens against frames of the real        }
 {  OpenXcom (skipped when the game data is not there). Each case opens the     }
@@ -27,6 +27,7 @@ type
     FReference: string;
     FGameFolder: string;
     FDataFolder: string;
+    FOptionsFile: string;
     function Hash(AWorld: TTestWorld): string;
     function Golden(const AName: string): string;
     /// <summary>Saves the frame as a BMP when the environment variable DD_XCOM_DUMP names a file (to look at a failure)</summary>
@@ -41,6 +42,17 @@ type
     [TestCase('audio_combo', 'audio_combo,420:255;96:72;520:116')]
     [TestCase('audio_mute', 'audio_mute,420:255;96:72;290:244;300:200')]
     [TestCase('audio_slider', 'audio_slider,420:255;96:72;300:32')]
+    [TestCase('controls', 'controls,420:255;96:112')]
+    [TestCase('geoscape', 'geoscape,420:255;96:152')]
+    [TestCase('battlescape', 'battlescape,420:255;96:192')]
+    [TestCase('advanced', 'advanced,420:255;96:232')]
+    [TestCase('controls_sel', 'controls_sel,420:255;96:112;300:88')]
+    [TestCase('controls_scroll', 'controls_scroll,420:255;96:112;608:272:80:14')]
+    [TestCase('controls_t1', 'controls_t1,420:255;96:112;608:200')]
+    [TestCase('controls_t2', 'controls_t2,420:255;96:112;608:258')]
+    [TestCase('controls_t3', 'controls_t3,420:255;96:112;608:150')]
+    [TestCase('advanced_click', 'advanced_click,420:255;96:232;300:56;300:40;300:104;300:104')]
+    [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
   end;
 
@@ -64,7 +76,8 @@ begin
     Exit;
   FGameFolder := TPath.Combine(FReference, '_dati\xcom_tftd\TFTD');
   FDataFolder := TPath.Combine(FReference, 'OpenXcom\bin');
-  if not TDirectory.Exists(TPath.Combine(FDataFolder, 'common')) then
+  FOptionsFile := TPath.Combine(FReference, '_dati\xcom_tftd\openxcom_user\options.cfg');
+  if not (TDirectory.Exists(TPath.Combine(FDataFolder, 'common')) and TFile.Exists(FOptionsFile)) then
     FReference := '';
 end;
 
@@ -163,6 +176,7 @@ var
   LSettings: TXcomLoaderSettings;
   LStep: string;
   LPoint: TArray<string>;
+  LRepeat: Integer;
 begin
   LSettings.DataFolder := FDataFolder;
   LSettings.GameFolder := FGameFolder;
@@ -184,16 +198,22 @@ begin
     LWorld.Game.SetLanguageProvider(TXcomFolderLanguageProvider.Create(FDataFolder,
       TPath.Combine(TPath.Combine(FDataFolder, 'standard'), 'xcom2'), TXcomDiskFileSystem.Create,
       TYamlFactory.CreateParser));
-    LWorld.Game.Options.MusicVolume := 0;
-    LWorld.Game.Options.SoundVolume := 0;
-    LWorld.Game.Options.UiVolume := 42;
+    LWorld.Game.Options.Load(TYamlFactory.CreateParser.Load(TFile.ReadAllBytes(FOptionsFile)));
     LWorld.Game.SetState(TXcomGoToMainMenuState.Create(LWorld.Game, '1.0 git 2026-06-05 22:05'));
     LWorld.Click(5000, 5000);
     LWorld.Wait(500);
     for LStep in ASteps.Split([';']) do
     begin
       LPoint := LStep.Split([':']);
-      LWorld.Click(StrToInt(LPoint[0]), StrToInt(LPoint[1]));
+      // x:y is a click, x:y:n holds the button down for n milliseconds, x:y:n:r repeats it r times
+      if Length(LPoint) = 2 then
+        LWorld.Click(StrToInt(LPoint[0]), StrToInt(LPoint[1]))
+      else
+        for LRepeat := 1 to StrToInt(LPoint[3]) do
+        begin
+          LWorld.ClickHeld(StrToInt(LPoint[0]), StrToInt(LPoint[1]), StrToInt(LPoint[2]));
+          LWorld.Wait(300);
+        end;
       LWorld.Wait(300);
     end;
     Result := Hash(LWorld);

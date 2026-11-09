@@ -58,7 +58,8 @@ uses
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
-  DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes;
+  DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
+  DelphiDoom.Xcom.Win.FolderOpener;
 
 const
   KEY_FPS = 288;
@@ -118,6 +119,12 @@ begin
     LOptionsFile := TPath.Combine(ASettings.UserFolder, 'options.cfg');
     if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
       LOptions.Load(LParser.Load(LFiles.ReadAll(LOptionsFile)));
+    // the folders that the options screen shows (in the program of OpenXcom: the user, master user and config folders)
+    LOptions.OriginalDataFolder := IncludeTrailingPathDelimiter(ASettings.GameFolder);
+    LOptions.ModDataFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.DataFolder, 'common'));
+    LOptions.UserFolder := IncludeTrailingPathDelimiter(ASettings.UserFolder);
+    LOptions.MasterUserFolder := LOptions.UserFolder;
+    LOptions.ConfigFolder := LOptions.UserFolder;
     LOptions.BaseXResolution := LOptions.DisplayWidth;
     LOptions.BaseYResolution := LOptions.DisplayHeight;
     LLoaderSettings.DataFolder := ASettings.DataFolder;
@@ -144,6 +151,7 @@ begin
     Result.SetOptionsStore(TXcomFileOptionsStore.Create(LFiles, LParser, ASettings.UserFolder));
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
+    Result.SetFolderOpener(TXcomWinFolderOpener.Create);
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));

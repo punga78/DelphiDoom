@@ -57,6 +57,8 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
+    procedure OpenFolder(const APath: string); virtual;
   end;
 
   /// <summary>
@@ -145,6 +147,10 @@ begin
 end;
 
 procedure TXcomStateHost.SetVolume(ASound, AMusic, AUi: Integer);
+begin
+end;
+
+procedure TXcomStateHost.OpenFolder(const APath: string);
 begin
 end;
 
