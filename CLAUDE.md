@@ -219,5 +219,5 @@ L'obiettivo è che ogni progetto compili e funzioni sia a Win32 sia a Win64; ogg
 - Codice storico per scelta (la migrazione a classi della #45 è conclusa sulle parti pure e a freddo): i renderer software e OpenGL, i thinker e i savegame, `FixedMul`/`FixedDiv` e le funzioni sugli angoli; vedi `docs\PENDING_ISSUES.md`.
 - Tracce `-devparm` temporanee dei passi del caricamento del livello di Doom (`TLevelLoader.Trace`, accese da `TDoomLevelRules.TracesSteps`).
 - Codice morto (issue #163): tolte 95 routine globali, 17 metodi, 11 variabili e 138 unit inutili dalle clausole `uses` (circa 3830 righe). Restano `P_CheckVisibility` di `p_sight` (direttive incrociate), costanti e tipi senza riferimenti e 44 clausole `uses` con direttive: vedi `docs\PENDING_ISSUES.md` (#163). Per cercarne altro: una routine globale è morta solo se il suo nome non compare in nessun `.pas`, `.dpr`, `.inc` o `.dfm` di nessun progetto (giochi, `ddc_*`, Launcher, DD_IDE, Keen, tutti i `Tests\*`), stringhe comprese (PascalScript, `C_AddCmd`, `DEH_AddAction`).
-- Heretic: crash intermittente a runtime da indagare con `crash.txt`.
+- Heretic: il crash intermittente (#162) non si riproduce: 93 avvii/uscite senza crash né blocchi (vedi `docs\PENDING_ISSUES.md`, #162); resta aperta solo la chiusura motivata dell'issue.
 

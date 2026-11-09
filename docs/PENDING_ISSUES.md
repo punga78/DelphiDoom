@@ -227,3 +227,11 @@ Tolti in 4 lotti (build degli 8 giochi e degli strumenti verde dopo ognuno): 95 
 - 44 clausole `uses` con direttive o commenti, non toccate dallo script.
 - Funzioni di `m_fixed` usate solo dai test di parità `AsmParity`; `r_clipper`, `DirectX.pas`, `dglOpenGL.pas` e PascalScript sono di terzi o API di sistema.
 - Non verificato a runtime (le parità le fa il proprietario): il lotto 3 non cambia l'ordine di inizializzazione (escluse le unit con `initialization`) ma cambia i grafi dei `uses`.
+
+## #162 e #147 — crash intermittente di Heretic e uscita (indagine del 2026-11-09, non riprodotto)
+
+- **Prove** (Release, build del worktree dopo la #148, `HERETIC1.WAD`, macchina carica da altri agenti, `Tools\Verifica\162\Ripeti-uscita.ps1`: avvio, gioco, chiusura come `I_Quit` con `WM_DESTROY`, controllo di `crash.txt` e del codice di uscita): Heretic32 **83 avvii/uscite** senza `crash.txt`, codice 0, nessun blocco (`-warp 1 1` x 30 con audio, x 20 chiusi dopo 2 s, x 4 chiusi dopo 20 s, ognuna delle mappe 1 1..1 9 x 2 con 8 s, `-devparm` e `-skill 4` x 7, più 4+1 prove iniziali) e GLHeretic32 **10** (`-warp 1 1`, 8 s): 93 in tutto, più un'esecuzione di 120 s con la demo e nessun difetto. Nessun `I_Error` e solo i warning noti sulle patch mancanti (shareware).
+- **Falso allarme da non ripetere**: chiudere un gioco con `-devparm` dopo 3 s non lo fa uscire (20 su 20). Non è un difetto del gioco: a 3 s la finestra di avvio ha un handle diverso da quella di gioco (provato: handle 2229274 poi 3540630, e il messaggio all'handle nuovo chiude con codice 0), quindi `WM_DESTROY` va perso. `WM_CLOSE` invece è ignorato di proposito (`i_main.pas`, Alt+F4).
+- **`-timedemo` di Doom32** (Release, stessa build): demo1 5026, demo2 3836, demo3 2134 gametic, come prima.
+- **Perché si propone la chiusura**: il crash fu annotato quando il motore usava ancora le librerie audio in C (`9ddbc2aa`, 2026-11-06), poi cancellate, e i vecchi `TDThread` (#147) sono stati sostituiti dalla #148. Non c'è un `crash.txt` da analizzare nel repository né nel `bin` condiviso. Se ricompare serve il `crash.txt` e il `.map` della stessa build (`Heretic32.map`, `DCC_MapFile=3`).
+- **Non fatto**: Win64, Heretic con audio MIDI/MP3 veri sotto carico, una partita lunga con mostri (nessun input automatico affidabile), debug build con `ReportMemoryLeaksOnShutdown`.
