@@ -552,8 +552,6 @@ uses
   DelphiDoom.Wad.Pak.GameDirectories in 'Libs\Wad\DelphiDoom.Wad.Pak.GameDirectories.pas',
   DelphiDoom.Engine.Startup.ResponseFileSource in 'Base\DelphiDoom.Engine.Startup.ResponseFileSource.pas',
   DelphiDoom.Engine.Startup.Numbers in 'Base\DelphiDoom.Engine.Startup.Numbers.pas',
-  DelphiDoom.Engine.MapInfo.Intf in 'Base\DelphiDoom.Engine.MapInfo.Intf.pas',
-  DelphiDoom.Engine.MapInfo.Records in 'Base\DelphiDoom.Engine.MapInfo.Records.pas',
   DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
   DelphiDoom.Configuration.Types in 'Libs\Configuration\DelphiDoom.Configuration.Types.pas',
   DelphiDoom.Configuration.Intf in 'Libs\Configuration\DelphiDoom.Configuration.Intf.pas',
