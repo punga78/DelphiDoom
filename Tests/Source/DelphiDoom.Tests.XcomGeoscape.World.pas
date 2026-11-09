@@ -35,6 +35,8 @@ type
     function HasData: Boolean;
     /// <summary>The palette of the geoscape (PAL_GEOSCAPE: the first of PALETTES.DAT)</summary>
     function GeoscapePalette: TXcomPalette;
+    /// <summary>A palette of PALETTES.DAT (0 geoscape, 1 basescape)</summary>
+    function GamePalette(AIndex: Integer): TXcomPalette;
     property Rules: TXcomGameRules read FRules;
     property Map: TXcomFileMap read FMap;
     property Root: string read FRoot;
@@ -93,6 +95,11 @@ begin
   FRules.Free;
   FMap.Free;
   inherited Destroy;
+end;
+
+function TXcomGeoWorld.GamePalette(AIndex: Integer): TXcomPalette;
+begin
+  Result := FGameData.LoadPalette(AIndex);
 end;
 
 function TXcomGeoWorld.GeoscapePalette: TXcomPalette;

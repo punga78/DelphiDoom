@@ -61,7 +61,8 @@ uses
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
-  DelphiDoom.XcomGeoscape.NewGameStarter;
+  DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
+  DelphiDoom.XcomEngine.State;
 
 const
   KEY_FPS = 288;
@@ -153,7 +154,11 @@ begin
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
-    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, nil, nil));
+    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, nil,
+      function(AHost: TXcomStateHost): IXcomGeoscapeNavigator
+      begin
+        Result := TXcomGameNavigator.Create(AHost);
+      end));
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;

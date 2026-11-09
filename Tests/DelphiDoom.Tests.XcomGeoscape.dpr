@@ -20,6 +20,8 @@ uses
   DelphiDoom.Tests.XcomGeoscape.World in 'Source\DelphiDoom.Tests.XcomGeoscape.World.pas',
   DelphiDoom.Tests.XcomGeoscape.GameRules in 'Source\DelphiDoom.Tests.XcomGeoscape.GameRules.pas',
   DelphiDoom.Tests.XcomGeoscape.Host in 'Source\DelphiDoom.Tests.XcomGeoscape.Host.pas',
+  DelphiDoom.Tests.XcomGeoscape.Funding in 'Source\DelphiDoom.Tests.XcomGeoscape.Funding.pas',
+  DelphiDoom.Tests.XcomGeoscape.BaseViewParity in 'Source\DelphiDoom.Tests.XcomGeoscape.BaseViewParity.pas',
   DelphiDoom.Tests.XcomGeoscape.GlobeParity in 'Source\DelphiDoom.Tests.XcomGeoscape.GlobeParity.pas',
   DelphiDoom.Tests.XcomGeoscape.Globe in 'Source\DelphiDoom.Tests.XcomGeoscape.Globe.pas';
 

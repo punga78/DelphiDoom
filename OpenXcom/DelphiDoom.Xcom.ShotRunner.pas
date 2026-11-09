@@ -114,6 +114,9 @@ var
 begin
   LEvent := TXcomInputEvent.Make(ekKeyDown);
   LEvent.Key := AKey;
+  // a printable key also types its character (the unicode field of the SDL event)
+  if (AKey >= 32) and (AKey <= 126) then
+    LEvent.Character := Cardinal(AKey);
   FEvents.Enqueue(LEvent);
   Wait(20);
   LEvent.Kind := ekKeyUp;

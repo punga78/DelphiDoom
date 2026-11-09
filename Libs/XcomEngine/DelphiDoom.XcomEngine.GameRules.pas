@@ -12,7 +12,8 @@ unit DelphiDoom.XcomEngine.GameRules;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.Intf,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.Types,
+  DelphiDoom.Xcom.Intf,
   DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModFiles.Intf,
   DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.Rules.Intf;
 
@@ -35,6 +36,8 @@ type
     FModFiles: IXcomModFiles;
     FRuleset: TXcomRuleset;
     FSets: TObjectDictionary<string, TXcomSurfaceSet>;
+    FStatePalette: array[0..255] of TXcomColor;
+    FHasStatePalette: Boolean;
     function CreateVanillaSet(const AName: string): TXcomSurfaceSet;
     procedure ApplyExtraSprites(const AName: string; var ASet: TXcomSurfaceSet);
     procedure LoadSubdivided(ASet: TXcomSurfaceSet; AStart, AWidth, AHeight, ASubX, ASubY: Integer; const APath: string);
@@ -47,12 +50,14 @@ type
     function Ruleset: TXcomRuleset;
     function ModFiles: IXcomModFiles;
     function GetSurfaceSet(const AName: string): TXcomSurfaceSet;
+    /// <summary>Mod::setPalette: the colors go to every set that exists and to the ones that are made later (the state palette)</summary>
+    procedure SetPalette(const AColors: TArray<TXcomColor>; AFirst: Integer);
   end;
 
 implementation
 
 uses
-  System.Classes, System.IOUtils, System.Generics.Defaults, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image,
+  System.Classes, System.IOUtils, System.Generics.Defaults, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image,
   DelphiDoom.XcomMod.ModLoader, DelphiDoom.XcomMod.ExtraSprites, DelphiDoom.XcomMod.Types,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.FileMapModFiles, DelphiDoom.XcomEngine.SharedResources;
 
@@ -243,6 +248,19 @@ begin
   end;
 end;
 
+procedure TXcomGameRules.SetPalette(const AColors: TArray<TXcomColor>; AFirst: Integer);
+var
+  LSet: TXcomSurfaceSet;
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(AColors) do
+    if AFirst + LIndex <= 255 then
+      FStatePalette[AFirst + LIndex] := AColors[LIndex];
+  FHasStatePalette := True;
+  for LSet in FSets.Values do
+    LSet.SetPalette(AColors, AFirst);
+end;
+
 function TXcomGameRules.GetSurfaceSet(const AName: string): TXcomSurfaceSet;
 begin
   if FSets.TryGetValue(AName, Result) then
@@ -251,6 +269,8 @@ begin
   ApplyExtraSprites(AName, Result);
   if Assigned(Result) then
   begin
+    if FHasStatePalette then
+      Result.SetPalette(FStatePalette);
     if AName = 'GlobeMarkers' then
       Result.MaxSharedFrames := 9
     else if (AName = 'BASEBITS.PCK') or (AName = 'INTICON.PCK') then

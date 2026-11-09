@@ -453,6 +453,9 @@ begin
       LFont.ImageSurface(LIndex).SetColors(LColors, AFirst);
   for LSurface in FSurfaces.Values do
     LSurface.SetColors(LColors, AFirst);
+  // Mod::setPalette: the sets of sprites too
+  if Assigned(FRules) then
+    FRules.SetPalette(LColors, AFirst);
 end;
 
 function TXcomModResources.ExtraStrings(const ALanguage: string): TDictionary<string, string>;
