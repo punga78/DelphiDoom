@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: XcomGame - the composition root of the game                      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -18,6 +18,8 @@ type
 
   /// <summary>What the program was asked to do (the command line of OpenXcom, reduced)</summary>
   TXcomGameSettings = record
+    /// <summary>The video options list the modes of the display (-listmodes). The reference program (SDL 1.2 over SDL 2) reports none, so by default the arrows of the resolution are hidden as in the reference</summary>
+    ListModes: Boolean;
     /// <summary>The folder with common\ and standard\ (-data)</summary>
     DataFolder: string;
     /// <summary>The folder of the original game: UFO or TFTD (-game)</summary>
@@ -55,7 +57,8 @@ uses
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
-  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState;
+  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
+  DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes;
 
 const
   KEY_FPS = 288;
@@ -138,6 +141,11 @@ begin
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),
       TXcomLanguage.Create('', LOptions.Wordwrap, LFiles, LParser), AClock, AEvents);
+    Result.SetOptionsStore(TXcomFileOptionsStore.Create(LFiles, LParser, ASettings.UserFolder));
+    Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
+      TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
+    if ASettings.ListModes then
+      Result.SetDisplayModes(TXcomWinDisplayModes.Create);
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;

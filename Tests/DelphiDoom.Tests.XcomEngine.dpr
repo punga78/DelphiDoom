@@ -23,7 +23,9 @@ uses
   DelphiDoom.Tests.XcomEngine.Game in 'Source\DelphiDoom.Tests.XcomEngine.Game.pas',
   DelphiDoom.Tests.XcomEngine.Ui in 'Source\DelphiDoom.Tests.XcomEngine.Ui.pas',
   DelphiDoom.Tests.XcomEngine.Menu in 'Source\DelphiDoom.Tests.XcomEngine.Menu.pas',
-  DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas';
+  DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas',
+  DelphiDoom.Tests.XcomEngine.Controls in 'Source\DelphiDoom.Tests.XcomEngine.Controls.pas',
+  DelphiDoom.Tests.XcomEngine.OptionsScreens in 'Source\DelphiDoom.Tests.XcomEngine.OptionsScreens.pas';
 
 var
   Runner: ITestRunner;

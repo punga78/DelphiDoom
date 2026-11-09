@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - what the states ask of the loaded game     }
 {  data (the part of Mod of OpenXcom that the interface uses)                   }
@@ -33,6 +33,8 @@ type
     function CursorColor(const APalette: string): Integer;
     /// <summary>Mod::setPalette: the graphics and fonts of the game take the colors (so blits do not remap them)</summary>
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
+    /// <summary>Mod::getSoundDefinitions() is not empty: the rulesets define the sounds (TFTD does)</summary>
+    function HasSoundDefinitions: Boolean;
   end;
 
 implementation

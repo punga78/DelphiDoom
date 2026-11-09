@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - shared types (events, handlers, errors)    }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -51,6 +51,9 @@ type
   /// <summary>The handler of the timer of a state or of a surface (StateHandler and SurfaceHandler)</summary>
   TXcomNotify = reference to procedure;
 
+  /// <summary>KeyboardType: how text is typed (KEYBOARD_OFF: arrows pick a letter; KEYBOARD_ON: the keyboard)</summary>
+  TXcomKeyboardMode = (kmOff, kmOn, kmVirtual);
+
 const
   XCOM_BUTTON_LEFT = 1;
   XCOM_BUTTON_MIDDLE = 2;
@@ -65,6 +68,14 @@ const
   XCOM_KEY_TAB = 9;
   XCOM_KEY_RETURN = 13;
   XCOM_KEY_ESCAPE = 27;
+  XCOM_KEY_DELETE = 127;
+  XCOM_KEY_KP_ENTER = 271;
+  XCOM_KEY_UP = 273;
+  XCOM_KEY_DOWN = 274;
+  XCOM_KEY_RIGHT = 275;
+  XCOM_KEY_LEFT = 276;
+  XCOM_KEY_HOME = 278;
+  XCOM_KEY_END = 279;
   XCOM_KEY_F12 = 293;
   XCOM_KMOD_SHIFT = $0003;
   XCOM_KMOD_CTRL = $00C0;
