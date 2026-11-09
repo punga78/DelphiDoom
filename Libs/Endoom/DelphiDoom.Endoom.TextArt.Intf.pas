@@ -27,6 +27,9 @@ type
     property Kind: TEndoomTextArtKind read GetKind;
   end;
 
+  /// <summary>Makes the method of a kind (what a window asks when the user chooses one)</summary>
+  TEndoomTextArtMethodProvider = reference to function(AKind: TEndoomTextArtKind): IEndoomTextArtMethod;
+
   /// <summary>Turns a picture into the text screen, cell by cell, with a method</summary>
   IEndoomTextArtConverter = interface
     ['{0E7B94D6-A318-4C25-8F5A-D1C60B7293E8}']
