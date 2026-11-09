@@ -9,7 +9,7 @@ I widget di `Interface\` di **OpenXcom** a classi e senza SDL (issue #176): deri
 | `Text` (misura, a capo per parole o lettere, rientro, allineamenti, colori, `PaletteShift`, scorrimento) | `TXcomText`, `TXcomPaletteShift` | portato, parita' sui pixel col vero OpenXcom |
 | `Window` (bordo in 5 sfumature o sottile, sfondo, popup) | `TXcomWindow` | portato, parita' sui pixel |
 | `TextButton` (bordo, inversione, gruppo, combo) | `TXcomTextButton`, `TXcomButtonGroup` | portato, parita' sui pixel |
-| `Frame`, `NumberText`, `Cursor`, `FpsCounter` | `TXcomFrame`, `TXcomNumberText`, `TXcomCursor`, `TXcomFpsCounter` | portati (il cursore con Bresenham: SDL_gfx non c'e') |
+| `Frame`, `NumberText`, `Cursor`, `FpsCounter` | `TXcomFrame`, `TXcomNumberText`, `TXcomCursor`, `TXcomFpsCounter` | portati (il cursore con TXcomGfx.DrawLine, e' nel frame confrontato) |
 | `ToggleTextButton` | `TXcomToggleTextButton` | portato (l'interruttore Ironman e' nel frame confrontato) |
 | `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton`, `Bar`, `ImageButton`, `BattlescapeButton` | | **non portati** |
 

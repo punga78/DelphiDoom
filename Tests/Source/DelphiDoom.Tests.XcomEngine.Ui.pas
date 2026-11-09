@@ -1049,9 +1049,21 @@ end;
 procedure TTestXcomSmallWidgets.IlCursoreEUnaFrecciaDelColore;
 var
   LCursor: TXcomCursor;
+  LColors: array[0..255] of TXcomColor;
+  LIndex: Integer;
 begin
   LCursor := TXcomCursor.Create(9, 13);
   try
+    // the lines of SDL_gfx take the color of the palette that is the nearest to the one asked for: a palette of
+    // 256 different colors makes it the same index
+    for LIndex := 0 to 255 do
+    begin
+      LColors[LIndex].Red := LIndex;
+      LColors[LIndex].Green := 255 - LIndex;
+      LColors[LIndex].Blue := (LIndex * 3) and $FF;
+      LColors[LIndex].Alpha := 255;
+    end;
+    LCursor.SetColors(LColors);
     LCursor.SetColor(100);
     LCursor.Draw;
     Assert.AreEqual(100, Integer(LCursor.GetPixel(0, 0)));
