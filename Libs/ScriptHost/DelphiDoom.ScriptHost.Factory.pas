@@ -11,12 +11,17 @@ unit DelphiDoom.ScriptHost.Factory;
 interface
 
 uses
+  ps_runtime,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.ScriptHost.CallbackGroup,
+  DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Fixed.Functions,
   DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.Serializer.Intf,
   DelphiDoom.ScriptHost.System.Functions,
-  DelphiDoom.ScriptHost.System.Intf;
+  DelphiDoom.ScriptHost.System.Intf,
+  DelphiDoom.ScriptHost.Variables.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the script host</summary>
@@ -33,12 +38,22 @@ type
     /// <summary>A unit of script whose functions a procedure writes</summary>
     class function CreateCallbackGroup(const AUnitName: string;
       const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup; static;
+    /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
+    class function CreateVariables(const AFiles: IScriptVariablesFiles;
+      const AFailure: IScriptVariablesFailure): IScriptVariables; static;
+    /// <summary>The events of the script that the interpreter has loaded (not owned)</summary>
+    class function CreateEvents(const AExec: TPSExec; const ALog: ILog): IScriptEvents; static;
+    /// <summary>The saver of the global variables of the script of the interpreter (not owned)</summary>
+    class function CreateSerializer(const AExec: TPSExec; const ALog: ILog): IScriptSerializer; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.ScriptHost.Registry;
+  DelphiDoom.ScriptHost.Events,
+  DelphiDoom.ScriptHost.Registry,
+  DelphiDoom.ScriptHost.Serializer,
+  DelphiDoom.ScriptHost.Variables;
 
 { TScriptHostFactory }
 
@@ -64,6 +79,23 @@ class function TScriptHostFactory.CreateCallbackGroup(const AUnitName: string;
   const ADescribe: TScriptDescribeProcedure): IScriptFunctionGroup;
 begin
   Result := TScriptCallbackGroup.Create(AUnitName, ADescribe);
+end;
+
+class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;
+  const AFailure: IScriptVariablesFailure): IScriptVariables;
+begin
+  Result := TScriptVariables.Create(AFiles, AFailure);
+end;
+
+class function TScriptHostFactory.CreateEvents(const AExec: TPSExec; const ALog: ILog): IScriptEvents;
+begin
+  Result := TScriptEvents.Create(AExec, ALog);
+end;
+
+class function TScriptHostFactory.CreateSerializer(const AExec: TPSExec;
+  const ALog: ILog): IScriptSerializer;
+begin
+  Result := TScriptSerializer.Create(AExec, ALog);
 end;
 
 end.
