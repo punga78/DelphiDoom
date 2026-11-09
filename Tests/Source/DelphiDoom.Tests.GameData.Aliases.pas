@@ -33,6 +33,10 @@ type
     procedure DovrebbeLasciareUnNomeSconosciutoCosiCheLaLibreriaDiaErrore;
     [Test]
     procedure DovrebbeDireCheSoloSpeedEUnAlias;
+    [Test]
+    procedure DovrebbeDareIlProfiloDiDoomSoloAPavimentiPorteELuciPerRadix;
+    [Test]
+    procedure DovrebbeLasciareRadixSenzaProfiloNelleAltreAree;
   end;
 
 implementation
@@ -84,6 +88,23 @@ begin
   Assert.IsFalse(TGameAliases.IsAlias('Doom'));
   Assert.IsFalse(TGameAliases.IsAlias('Hexen'));
   Assert.IsFalse(TGameAliases.IsAlias(''));
+  Assert.IsTrue(TGameAliases.IsAlias('radix'));
+end;
+
+procedure TTestGameDataAliases.DovrebbeDareIlProfiloDiDoomSoloAPavimentiPorteELuciPerRadix;
+begin
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Lights));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Platforms));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('RADIX', TGameProfileArea.Doors));
+end;
+
+procedure TTestGameDataAliases.DovrebbeLasciareRadixSenzaProfiloNelleAltreAree;
+begin
+  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Dehacked));
+  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.ActorDef));
+  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.TableExport));
+  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Udmf));
+  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Iwad));
 end;
 
 end.
