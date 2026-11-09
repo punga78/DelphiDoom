@@ -1,0 +1,12576 @@
+SCENARIO chip-0-1
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+W 0
+W 0
+W 0
+G 0 301 607b776fede26c00
+RD 0
+W 0
+G 0 2 43a69362c96224a5
+W 0
+G 0 300 1b595ec2dd70a7e4
+G 0 2 db45828ba39908d3
+W 0
+G 0 214 05d9b73753219f6e
+G 0 396 055004b17da2fef0
+G 0 179 5c0ee2596fa4c0bd
+W 0
+G 0 389 918f5489cd75d381
+W 0
+RD 0
+W 0
+G 0 174 0561dda700d4eaaa
+W 0
+W 0
+G 0 147 edbe4b16dbbe581f
+G 0 264 59bbf566498c0d55
+G 0 285 923dea5ebc471f8a
+G 0 253 f32039c015a1e19e
+G 0 2 ae43d1cd192ddcc2
+G 0 279 a0c951b4cd789963
+RD 0
+W 0
+W 0
+G 0 27 c5d70e2e7111f6fd
+W 0
+G 0 295 6fcde7306ede9cb9
+W 0
+RD 0
+G 0 323 34eb49478f264f6c
+G 0 228 464cda991e2d6f99
+G 0 60 e80cf572633aba4e
+W 0
+RD 0
+G 0 304 7a7639000b2e970e
+W 0
+RD 0
+G 0 123 26913d633d07c144
+W 0
+W 0
+W 0
+G 0 189 5fe73e630c7febd4
+RD 0
+SCENARIO chip-0-2
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 309 4fc3c121ab77adda
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 208 196be69a9829dde3
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 1 0a994907b6f56de3
+G 0 113 4db4458449388db9
+W 0
+G 0 3 c969c613879c6bbe
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 350 c09ee5bcb74030ab
+G 0 9 7c3a1cf9f2765aed
+W 0
+G 0 41 da251dfae077902d
+G 0 51 23ee21fa4edcccbd
+G 0 55 76c519d78418065d
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 267 df1bb6349e2d48e3
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 236 8015ebff76f88605
+G 0 395 46fc7993bbad547d
+G 0 1 08328807b4eb6fed
+W 0
+G 0 81 f10326ff40b2006d
+RD 0
+SCENARIO chip-0-3
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 297 abc1b8bacd0e8963
+RD 0
+G 0 355 42b54222a2795ab8
+G 0 2 99cfe6ebc47ed229
+G 0 56 7cc29d974824b04a
+W 0
+G 0 298 963102ea2e33a635
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 266 83d98174304825ab
+W 0
+G 0 380 c6f22f223be0955f
+G 0 27 c5d70e2e7111f6fd
+RD 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 135 068c466907ad1e3f
+W 0
+G 0 191 f31a71deb5f5aded
+W 0
+G 0 136 78af82d8e5016203
+G 0 231 4f7d68ba032e902b
+G 0 154 17aa4b507ed4e58d
+G 0 65 6c284fc43e50c246
+G 0 108 b2990e85f0b5d208
+G 0 392 3d00af6daa61b383
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 334 48ba28536d6bfa39
+W 0
+G 0 113 ee6a12da28ec7a9b
+W 0
+W 0
+G 0 294 ab3f4aada0f76195
+W 0
+G 0 315 00998c220d0f4822
+W 0
+G 0 316 d9e523b62134288e
+RD 0
+SCENARIO chip-0-4
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 feca7649cc8020d5
+G 0 398 5aa23973e0867e7e
+W 0
+W 0
+G 0 167 f24ce60134cd4466
+W 0
+G 0 179 d29ec62a9cdac0d9
+G 0 3 c9aa9a1387d3b7ef
+W 0
+G 0 285 33d4963abc7497f3
+W 0
+G 0 221 5a08610bbc362cdc
+G 0 352 fb7e65dacc3e00d8
+G 0 193 f86a5a23d2383fc8
+RD 0
+W 0
+G 0 3 c9aa9a1387d3b7ef
+G 0 168 4767a617152b4834
+G 0 374 16d67bc135e5c852
+W 0
+W 0
+W 0
+G 0 199 1f1214ffc8cb3413
+RD 0
+G 0 347 764b41e3dbf258fd
+G 0 85 308ae8a272d4900d
+G 0 304 c46994239eb782a5
+W 0
+G 0 247 b9788edb70bbb45d
+W 0
+W 0
+G 0 218 fc19fe5ed8d2a1b5
+G 0 2 4d25767f9dce13f5
+G 0 114 f0d9aff1eae8ed75
+G 0 1 08328807b4eb6fed
+W 0
+G 0 17 7e5c9816dfc405ed
+W 0
+RD 0
+W 0
+G 0 314 ddf61ca886b76d97
+W 0
+W 0
+W 0
+W 0
+G 0 25 86cb21b4931179ad
+RD 0
+W 0
+G 0 335 b984571dd14daae5
+G 0 184 0c9945cfa049deb7
+G 0 154 6ca0466225dcc7b1
+RD 0
+SCENARIO chip-0-5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 231 aedb73079a618d8b
+RD 0
+RD 0
+G 0 3 ca8e9b138895b1e7
+G 0 317 fa83e5d6d6437a63
+G 0 123 d52f5d1ba420172c
+G 0 2 9a78f4a67199e3d5
+W 0
+W 0
+G 0 85 57da2a0379176f77
+W 0
+G 0 383 e42af8757a054ce1
+G 0 215 c10f641341982450
+W 0
+W 0
+G 0 82 db07555c0a2c542b
+W 0
+W 0
+G 0 328 42e571fab8b9d665
+G 0 368 daaa74a434914ca5
+W 0
+G 0 390 71f59eda57be6095
+RD 0
+G 0 274 ffd8150a3220f675
+G 0 321 b877cbdc903d31ed
+G 0 242 76647ae1392bc175
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 292 9a0094294483e6c5
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 149 a230b6009c0d2a0d
+W 0
+W 0
+G 0 312 441b6865a35be825
+W 0
+W 0
+G 0 189 b58563db43ec0a6d
+W 0
+W 0
+G 0 122 d4960595a50042b5
+G 0 182 b9a09bd842c8f1ab
+G 0 368 daaa74a434914ca5
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+G 0 89 69719faa3d2d53ad
+RD 0
+SCENARIO chip-0-6
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+G 0 223 40c2e688f51a269d
+G 0 2 4ce16c7f9d94362b
+G 0 292 9a0094294483e6c5
+G 0 166 e61ef9a5b2bc2bab
+W 0
+G 0 114 f0d9aff1eae8ed75
+G 0 243 b843741b7776babd
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 357 75151772d0ec3e8d
+G 0 257 a597339b4dc4d7ed
+G 0 230 abcbfcbc604143ab
+W 0
+W 0
+G 0 238 fc82bcd3bfe946ab
+W 0
+G 0 249 6a5d9570480674ad
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 329 9d6142680ba8e52d
+W 0
+G 0 309 bd78475ee43e2b0d
+W 0
+G 0 1 08328807b4eb6fed
+G 0 16 0c8210784d8af5a5
+W 0
+G 0 398 972bcedb1b9d7dd5
+G 0 249 6a5d9570480674ad
+W 0
+G 0 148 354d249f7cd31aa5
+G 0 289 1623f34f2d4a84ed
+RD 0
+G 0 83 614bfa7d11b349bd
+W 0
+W 0
+W 0
+RD 0
+G 0 284 6522f0ef84dc1da5
+G 0 274 ffd8150a3220f675
+G 0 1 08328807b4eb6fed
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+RD 0
+SCENARIO chip-0-7
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 147 f2c636ddd979d95b
+G 0 177 a96b6b63e654e8f4
+W 0
+G 0 3 38ad45288fa70263
+W 0
+G 0 152 25fb255bec2d02a6
+G 0 60 66cc56a08153be8f
+W 0
+G 0 396 872a7e322578afcb
+W 0
+W 0
+RD 0
+G 0 281 8446a81bb8f8465f
+W 0
+G 0 28 a89f21559c95e35c
+W 0
+W 0
+G 0 305 32783be6e60e5827
+W 0
+W 0
+W 0
+W 0
+G 0 95 1adaef209a869f1c
+W 0
+W 0
+W 0
+RD 0
+G 0 94 ee070914534023a0
+G 0 2 f868767d29cf97f5
+RD 0
+W 0
+G 0 376 6befb73be98ebbf2
+W 0
+W 0
+G 0 316 5c29f49223695c2d
+RD 0
+G 0 16 c0a31a97ba4acb25
+W 0
+W 0
+W 0
+G 0 1 0861bf07b5133e24
+W 0
+W 0
+G 0 368 eb329872c8a64c79
+G 0 19 b259da3725cb7533
+G 0 177 cdb0dbb8ce6fcf98
+W 0
+G 0 88 ad216bcc7ab1374b
+W 0
+W 0
+G 0 26 91f5b8b200dd6f1b
+RD 0
+SCENARIO chip-0-8
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 204 f9c38ff2e529937d
+G 0 398 4aa2989733e07d02
+W 0
+RD 0
+W 0
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 250 969b3208dda4b32b
+G 0 300 fc1052a763c83057
+W 0
+G 0 137 53d9dc0964f7a776
+W 0
+G 0 123 bbd818a9ac924254
+W 0
+W 0
+G 0 108 8c89fbf8e6ade891
+W 0
+W 0
+G 0 129 d123a6678906acd6
+G 0 379 57df5b7cbe9fbcbc
+G 0 256 1ce7853b8540f228
+G 0 2 412b7662c746e151
+RD 0
+W 0
+W 0
+W 0
+G 0 2 b76c935047ac0cf9
+G 0 116 b377cd825efe46ae
+G 0 3 d021deafd3801456
+G 0 387 e5ab69cd688d3afe
+G 0 257 cedd244a6fac831a
+G 0 202 ddfa5d4060501a29
+W 0
+G 0 129 aa8b69f6dce9c47d
+W 0
+W 0
+RD 0
+W 0
+G 0 285 300fb1146a4d8cd2
+W 0
+G 0 258 f500035eafd7bbf5
+W 0
+G 0 60 de9fa0da6fc22a85
+W 0
+W 0
+G 0 171 5b0cc97ead59c91f
+G 0 129 900d4f3fa72746a9
+RD 0
+SCENARIO chip-0-9
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 210 1d9cec4e5369d91c
+W 0
+RD 0
+W 0
+W 0
+W 0
+G 0 1 08a99c07b550b84e
+G 0 247 ef102ce507513618
+G 0 21 b2d9adda5a8c491b
+G 0 348 937f99a86876d927
+W 0
+W 0
+W 0
+RD 0
+G 0 41 d5b4057a1d1d86ed
+W 0
+W 0
+G 0 239 49de56e880b2b51d
+W 0
+G 0 271 99274a5df839921d
+W 0
+W 0
+G 0 32 b9b23f3a46fd0825
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 322 5458c8b3c0ec25f5
+G 0 397 e22c0fad1319a6cd
+W 0
+G 0 395 46fc7993bbad547d
+G 0 3 bc64e653151acde3
+G 0 274 e65336733ffe9c2b
+G 0 147 da1bd099d9e373e3
+G 0 171 9278bfa73415a97d
+G 0 2 4d25767f9dce13f5
+RD 0
+RD 0
+G 0 82 db07555c0a2c542b
+W 0
+G 0 274 ffd8150a3220f675
+G 0 359 2539e7ca24eff9dd
+G 0 330 f21cea526b9d9b35
+G 0 90 ed78eedda4cecdb5
+W 0
+W 0
+G 0 281 047342df8fb8e1ad
+W 0
+G 0 87 64d97b2554e0235d
+W 0
+RD 0
+G 0 171 9278bfa73415a97d
+G 0 582 93d98d5dd73747ab
+RD 0
+SCENARIO chip-0-10
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 215 eee96e59ad6d0dce
+G 0 22 6b54ea71af95ef15
+G 0 82 a08684a333bcb875
+W 0
+W 0
+W 0
+RD 0
+W 0
+G 0 3 bc64e653151acde3
+G 0 27 c5d70e2e7111f6fd
+W 0
+W 0
+RD 0
+G 0 380 fcc749f3835481a5
+W 0
+G 0 249 6a5d9570480674ad
+W 0
+W 0
+W 0
+G 0 67 f4389a7c0377420b
+G 0 47 529124af23199cf9
+G 0 350 70cb69b04af13631
+W 0
+G 0 3 d4c55dfa26f53cb3
+RD 0
+W 0
+W 0
+G 0 147 b93ce1bd29947ab3
+W 0
+G 0 231 07941418fb755bd7
+W 0
+G 0 347 941d99afc16cb119
+W 0
+G 0 348 e4067507468979ad
+G 0 3 d7e4fcfa299d713d
+G 0 85 5b73ee87394e6b8b
+G 0 246 7b26c71432cac215
+W 0
+G 0 176 1e9b08fe986dc964
+G 0 121 3870cc196655bf23
+W 0
+G 0 226 2f94400057af9c1b
+G 0 90 6ba41ef043c67849
+G 0 204 e22de9cd4be3e5eb
+G 0 129 cc1557e286e570ad
+RD 0
+W 0
+G 0 119 6c5dc402277ccf1d
+RD 0
+G 0 240 ad0d0f7bca384cf9
+RD 0
+SCENARIO chip-0-11
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 242 76647ae1392bc175
+G 0 367 75ad756e54d1ecc2
+G 0 292 9f3b0710311ed928
+W 0
+W 0
+G 0 387 984c95b1f3275de8
+W 0
+G 0 367 c0a9addf9ac8b4e9
+G 0 213 68fe193fee977086
+G 0 344 ba45374f55395cd2
+G 0 129 8db87fc60776018a
+W 0
+W 0
+W 0
+G 0 118 04e2ef8e6fe7e156
+G 0 186 be4146ef8027b1c7
+W 0
+G 0 197 147b622286140371
+G 0 95 9b1b52edec409393
+W 0
+G 0 230 8cfb8429425cde6e
+W 0
+RD 0
+W 0
+G 0 3 658d36146de92e4d
+G 0 224 10ef7aae6e05367d
+G 0 307 d0f063d99a6e753f
+G 0 35 ad8dab363a3b467e
+G 0 145 bb0547b23af0d6fc
+W 0
+G 0 258 000bdc562a85351e
+RD 0
+G 0 361 7d43a7a297b29467
+G 0 356 c18ecfa8c786cdda
+W 0
+G 0 114 a3e6086f838591f4
+G 0 304 847fa87c8a15dd46
+G 0 188 887822233b04ddbe
+W 0
+G 0 246 ef1a15d10d7c1d06
+W 0
+G 0 3 1bb2e24adeffb3c5
+RD 0
+G 0 182 81728c039ccc3497
+W 0
+RD 0
+RD 0
+W 0
+G 0 137 70426acabc1936d8
+G 0 567 273ad7f02bf41bd7
+RD 0
+SCENARIO chip-0-12
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 261 092eaa12d1b7571a
+W 0
+G 0 349 fe2fd960b9ec6855
+G 0 11 c04d7b8563ada807
+W 0
+RD 0
+G 0 3 652d4c146d970c2b
+W 0
+G 0 2 4ce16c7f9d94362b
+G 0 337 e703ad440de79905
+G 0 286 62b61545b90c2ab9
+RD 0
+G 0 2 3b3d99750091d260
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 113 226797358ac805e4
+G 0 161 b3734d5b206d51c0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 212 764fbaec4d26b2a5
+W 0
+W 0
+G 0 106 78b99984ecb6fd2b
+W 0
+G 0 210 dc2c4f07c88e0acd
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 142 430e06ffe72aa2ab
+G 0 96 ab0c262759a1d225
+W 0
+G 0 1 08328807b4eb6fed
+G 0 291 ba17078b11a25b95
+G 0 135 04ad4c90c59aaedd
+G 0 366 f1aee7a95ac86e41
+G 0 243 e1ee4b8b4788b857
+G 0 48 0243cfa845185aa5
+RD 0
+G 0 217 6253d33ee928f085
+RD 0
+W 0
+G 0 41 5aa4b53301fdd54c
+RD 0
+SCENARIO chip-0-13
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 151eb3b83cbaeac4
+G 0 45 3fbf4c3581c2bb2c
+G 0 180 3d66879629f3976a
+G 0 3 417f954b87169cdf
+G 0 164 c4cd0f398062c6cd
+G 0 212 40c05458079f856a
+RD 0
+W 0
+G 0 2 7aabd83c372d676f
+W 0
+G 0 31 29faeedbeacb26b2
+G 0 251 546178a4da2fc85d
+G 0 88 64de9364c17480e7
+G 0 65 3c996bff4a335de5
+G 0 362 76df5b8df3ba90af
+G 0 384 4771f357060fc397
+G 0 29 d27ec606d4b6b11d
+RD 0
+G 0 1 0a4bc407b6b41d93
+W 0
+W 0
+W 0
+G 0 72 73ad936f7f7183a5
+G 0 220 042e31ef122ad4b7
+G 0 3 ab60562e5ffe327f
+W 0
+G 0 66 88b3a85529016292
+RD 0
+G 0 51 23ee21fa4edcccbd
+G 0 312 833131947760a3e5
+W 0
+W 0
+RD 0
+G 0 53 7e2cf316b28bc30d
+RD 0
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 16 9632b1a3251f0081
+W 0
+G 0 354 bbb9c45dc3f9190f
+RD 0
+G 0 288 0f00fd6b367e0347
+G 0 3 bc64e653151acde3
+G 0 454 341ecb01b3f5e767
+RD 0
+SCENARIO chip-0-14
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 86 07caa007b82ad010
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 113 4416c8e3d6f96c7f
+G 0 193 6253601c65007ded
+G 0 21 2a3129a9c3cff60d
+W 0
+G 0 357 ae6a0aabd619f16d
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 8 88201fb960ff6465
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 207 803e3d5c54c8d81d
+G 0 61 5167519966d6be4d
+W 0
+G 0 2 4ce16c7f9d94362b
+RD 0
+G 0 195 04ae891141d25f3d
+RD 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+G 0 220 08fd0a89c6878385
+G 0 125 1f844a4a4e0bd84d
+W 0
+W 0
+G 0 307 db1bcf9f043cb4bd
+G 0 181 c4e45a689efcf70d
+G 0 219 3b02a718c28964fd
+G 0 215 85c74059cd0ff963
+G 0 168 4d47b914e8ea9225
+RD 0
+G 0 160 aabfd31322f79f25
+G 0 324 d6d7c0c9db5a6bc5
+RD 0
+G 0 322 5458c8b3c0ec25f5
+G 0 253 5ddb4a14d42da3cd
+RD 0
+SCENARIO chip-0-15
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 248 9fa66592e7b859e5
+G 0 202 3b2ef7417203da9c
+RD 0
+W 0
+RD 0
+G 0 163 861c20f0125a0f94
+W 0
+G 0 73 3fcd6e4990f9ee88
+G 0 187 0c10bba13b93879c
+W 0
+G 0 131 9bc8ffccc7a46cef
+W 0
+G 0 175 58f7e4c2d27e87dc
+G 0 201 38bcbea589495566
+G 0 166 caada188c657ffdc
+G 0 285 7ff0b765dd06aab5
+G 0 2 41e4bcb4f2cf201d
+G 0 145 8b885e26c1dd907b
+W 0
+W 0
+W 0
+W 0
+G 0 349 0c4c7dda829ac402
+W 0
+G 0 239 799e042043f5a92f
+W 0
+G 0 22 6cf315af422a86a2
+G 0 303 2839423fb522f895
+W 0
+G 0 2 7b9549fc8fd3fa30
+G 0 1 07fc1307b4bd19ae
+W 0
+G 0 222 831cda093b9d3627
+W 0
+G 0 339 c367bc135cde07ef
+G 0 43 80181408ad0fbc67
+G 0 362 012fdc9184ddbc01
+G 0 117 242d096d2347a28e
+RD 0
+W 0
+W 0
+G 0 361 0c65f2072aa52370
+G 0 322 8722181411128b76
+G 0 2 75da8c8429144474
+W 0
+G 0 273 9bd821fea5c7306b
+G 0 70 fe10db51c4f0638e
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+RD 0
+SCENARIO chip-0-16
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+W 0
+W 0
+G 0 40 1a593e1ddd7d31a5
+W 0
+G 0 147 77b23549301473a1
+G 0 150 c5f8618e83f2910c
+W 0
+W 0
+W 0
+G 0 264 bf41cb8b0ff4d6e7
+G 0 3 d7e4fcfa299d713d
+G 0 386 d36c4f8173d48ff5
+G 0 29 776648f05cefb14d
+G 0 369 de7b700bdb85956d
+G 0 1 08328807b4eb6fed
+G 0 90 ed78eedda4cecdb5
+G 0 296 5783653519a0b165
+W 0
+RD 0
+G 0 225 b1d17439bdeca3ed
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 348 cbae1f6ad0b29785
+G 0 145 b79fcc79eebb5a6d
+G 0 313 5daedcd978dafced
+W 0
+G 0 40 f14b84b8290b8965
+RD 0
+RD 0
+G 0 210 651cfee86b80ee59
+G 0 298 1888b7222f104279
+G 0 359 ea0d8217c6661585
+G 0 3 d7e4fcfa299d713d
+G 0 270 c426bfb17d704079
+W 0
+W 0
+W 0
+G 0 173 6812e13e41361a0d
+G 0 1 08328807b4eb6fed
+G 0 197 5f1a48af7d62c4e4
+W 0
+W 0
+G 0 298 36052b8a86ecb9be
+W 0
+W 0
+G 0 384 b6378433e044c776
+W 0
+RD 0
+G 0 91 51368027e65836e3
+RD 0
+SCENARIO chip-0-17
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 67 3ac1f200b14e79dd
+G 0 3 2be1e056a4028181
+W 0
+G 0 25 828b80d95b3b01e1
+W 0
+G 0 2 55203f67a6492004
+G 0 2 412b7662c746e151
+W 0
+G 0 265 aa32513f380d02ee
+G 0 249 db846b99912a35fa
+W 0
+G 0 248 7073af99d2de0a15
+RD 0
+G 0 68 24d8ab5c91cd824d
+W 0
+W 0
+G 0 265 5562c90d80aa0b2d
+W 0
+G 0 260 c5c2903a23e1a3cd
+W 0
+G 0 94 e0eebbae2419d655
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 361 c72922b2d5193eed
+W 0
+G 0 243 4807024b3a0837e3
+G 0 372 bfdd35cec6ed9345
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+RD 0
+W 0
+W 0
+G 0 131 c6302d25ad77653d
+G 0 198 2ce3d283bf1fd6e9
+G 0 184 9591927a4fd26365
+G 0 68 d8f706edf03243c5
+G 0 47 8b4b6795306a871d
+W 0
+W 0
+G 0 26 5c569877000ae3b5
+G 0 148 5350442c19447045
+G 0 84 35da762063936645
+G 0 207 803e3d5c54c8d81d
+RD 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 163 9b59ef533346623d
+RD 0
+SCENARIO chip-0-18
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 64 a5fd2e3086cc5e44
+G 0 174 230a1874dc37d063
+RD 0
+G 0 3 a85ea6f3ccad2b0b
+W 0
+W 0
+G 0 367 c428cb1918e16a4a
+RD 0
+W 0
+G 0 116 68a7bb598a6ca151
+G 0 137 ad1358305821d9aa
+G 0 1 08328807b4eb6fed
+G 0 310 602516dd5e09f8d5
+G 0 320 90b2da266c771bd0
+G 0 88 ba01a2e85039670a
+RD 0
+G 0 3 d7e4fcfa299d713d
+G 0 3 d7e4fcfa299d713d
+G 0 258 a58835a6d6cccb4d
+G 0 323 ca3f4ff92dd37974
+G 0 216 91970583bc301352
+W 0
+G 0 92 6f6e2ff02aedbfb2
+G 0 104 1a78f7dbdc581904
+G 0 262 19e0873ad61454e3
+RD 0
+W 0
+W 0
+RD 0
+G 0 4 b5d0fc1362f6fd12
+W 0
+G 0 332 6fd83a9d0392cfa5
+G 0 159 35d25b381c4b47f9
+W 0
+W 0
+W 0
+G 0 67 572e4f05230ee8c2
+G 0 340 c7d73ed2d96ec4fe
+G 0 173 76c7d4984211346d
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 96 ab0c262759a1d225
+W 0
+G 0 2 4ce16c7f9d94362b
+RD 0
+W 0
+W 0
+G 0 172 c324c70f506ad3a5
+G 0 317 4879cfcd59ceba6d
+RD 0
+SCENARIO chip-0-19
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 1 0a6a2307b6cdbc8f
+W 0
+G 0 96 d96979e431989136
+G 0 247 8bf7c25472f2ebe4
+W 0
+G 0 214 88421e1231a9e490
+W 0
+G 0 2 6faf567ade6085fb
+W 0
+W 0
+W 0
+G 0 238 42d5cfe37c332ac8
+RD 0
+G 0 99 b3ddc8e9e799912a
+W 0
+W 0
+W 0
+G 0 21 c8f8eed62d5383b3
+G 0 243 fddfee5a37045d31
+RD 0
+G 0 2 43a69362c96224a5
+G 0 3 2e77f7d0e84952e0
+W 0
+RD 0
+W 0
+W 0
+W 0
+G 0 399 e5c87fcf0e77061d
+W 0
+G 0 336 030af047cc61c125
+G 0 2 4d25767f9dce13f5
+G 0 387 e7160b1a289b4d3d
+G 0 324 d6d7c0c9db5a6bc5
+W 0
+W 0
+W 0
+RD 0
+G 0 327 ae7042f89bf15cdd
+W 0
+W 0
+G 0 49 e15bbf685e90d36d
+G 0 174 966c033aa1966ad5
+W 0
+G 0 153 3c666c93affd2dad
+RD 0
+G 0 206 1bbc57bf031dbaab
+W 0
+W 0
+G 0 315 46a92ed29edc9bfd
+G 0 2 4d25767f9dce13f5
+G 0 179 5c0ee2596fa4c0bd
+RD 0
+SCENARIO chip-0-20
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 8 bdf739665482f012
+G 0 213 b8f3365501673254
+G 0 378 c34caee8318bfd3e
+W 0
+G 0 221 9a404f097bb820dd
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 335 dd34b2173e1e4c1d
+W 0
+G 0 137 87e181c9f6c8572d
+W 0
+G 0 261 afa6a909c50d578d
+G 0 276 d63131cb00aa4aa5
+W 0
+G 0 267 336323802ed6607d
+G 0 123 00d8fe472d9b2dfd
+RD 0
+G 0 262 fb113ad07355cfab
+W 0
+G 0 192 c86ec345c0ee8125
+G 0 290 92dcf56c5ea770f5
+G 0 152 1f4561b18cb16ae5
+G 0 161 188d845001c1d0ed
+G 0 122 d4960595a50042b5
+W 0
+RD 0
+RD 0
+G 0 389 9e17321633379d6d
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 58 7f0c54b906c86b2b
+W 0
+G 0 137 9f09ea00de1b0aed
+G 0 275 c3e96b572ebb37bd
+G 0 173 d1dfaf487d9dcbcd
+G 0 3 d7e4fcfa299d713d
+RD 0
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+G 0 31 824addfc3ce8f89d
+W 0
+G 0 385 bee7f1b594698bed
+G 0 137 87e181c9f6c8572d
+W 0
+G 0 71 b9726b4a891074dd
+RD 0
+SCENARIO chip-0-21
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 257 e96027d06f311799
+W 0
+G 0 14 f25208fc8adaf4e6
+G 0 369 01cb0c374d8c2bbb
+G 0 138 0030f240341953b7
+RD 0
+G 0 335 48455284d5ab68be
+G 0 3 edaf22bd5959ad65
+W 0
+RD 0
+W 0
+G 0 3 dada738e2eed515f
+G 0 308 79ae7eec77c01fff
+G 0 362 a543e1e5262d6cfd
+G 0 2 1a9007df8992f3b3
+W 0
+RD 0
+W 0
+W 0
+G 0 177 5040822414a3876d
+W 0
+W 0
+G 0 27 c0507c8becf0934b
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 228 1d912802fa6f5025
+G 0 280 d21a625521fcccfd
+W 0
+G 0 341 51d8340a2b6d4ce7
+W 0
+G 0 311 bd8921ffecf7076e
+W 0
+G 0 146 692a29ae120a2275
+W 0
+G 0 217 c9d0f1a4538107ad
+G 0 2 4d25767f9dce13f5
+G 0 3 d7e4fcfa299d713d
+G 0 214 61de31b95371ed15
+W 0
+W 0
+G 0 350 b62f88cb68f67e55
+RD 0
+SCENARIO chip-0-22
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 330 b80f278bafdb8e32
+RD 0
+W 0
+G 0 3 4751f2daab255b59
+G 0 34 7f5a5dcdd0d1948f
+G 0 2 fba085460dde7960
+W 0
+G 0 344 6a76a350cfdbd30d
+G 0 13 17f8dd1ca2b90acd
+G 0 287 c30e5d3f3b67e09d
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+G 0 358 7fa4607d6e670b95
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+G 0 201 5ce03f8c4cf562ed
+G 0 1 08328807b4eb6fed
+G 0 224 ddedd579bea76625
+G 0 361 c72922b2d5193eed
+W 0
+RD 0
+W 0
+RD 0
+W 0
+RD 0
+W 0
+W 0
+G 0 42 6975f1271857fe35
+G 0 382 9c552a93b701bcab
+W 0
+RD 0
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+RD 0
+G 0 35 f90fd21be2bfb9e3
+G 0 138 950ababcd9bcdd35
+G 0 331 dc8391db3347da7d
+G 0 327 ae7042f89bf15cdd
+G 0 53 afdf7efa65028f6d
+RD 0
+G 0 59 0dbfd236a3764ae3
+W 0
+G 0 334 0830dfdd4193eaab
+G 0 164 b11fcf5763dbd2c5
+RD 0
+SCENARIO chip-0-23
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 21 0b2b6c66a49e62fa
+W 0
+G 0 300 bc483313d0977ecb
+G 0 241 aea1e78745f218ce
+W 0
+G 0 10 0167ae8af1621576
+W 0
+W 0
+RD 0
+G 0 168 e0bcccf259f3d102
+W 0
+W 0
+G 0 108 b4ad875fc4a0a0d5
+W 0
+RD 0
+G 0 358 d24c9bd8f8f61e5e
+G 0 321 3f85c97a53124592
+G 0 253 0049b383fcafaab6
+G 0 47 9b843db9944fba76
+RD 0
+G 0 68 c0d8689c0a31fe28
+W 0
+G 0 1 08328807b4eb6fed
+G 0 343 cf47958402350b5d
+G 0 98 b51ecafe476d5a2b
+G 0 201 dfde35389c5f312d
+G 0 1 08328807b4eb6fed
+G 0 35 f57446da6e786e3d
+G 0 193 6253601c65007ded
+G 0 326 cdc6262ece22e7ab
+W 0
+RD 0
+G 0 334 a08f4fcc66a953d5
+G 0 262 9331746612df0c95
+G 0 16 0c8210784d8af5a5
+W 0
+G 0 264 5be53abc266c8c65
+G 0 2 4d25767f9dce13f5
+G 0 278 42695c51a6b89715
+W 0
+G 0 34 e7d16c6b24f5c8f5
+G 0 11 f84841652498787d
+G 0 388 6d119868d0d675c5
+G 0 106 78b99984ecb6fd2b
+G 0 104 b1e9f32be9d2d365
+W 0
+G 0 362 b4a105f9a6bc9035
+G 0 282 bf72ffb0b8128bb5
+RD 0
+G 0 589 c55a2474cd87f4cd
+RD 0
+SCENARIO chip-0-24
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 239 a6e752ce4435d50c
+G 0 112 9194791a7be94455
+G 0 273 742b3cbed0144778
+W 0
+G 0 119 ce1ca956b0eb321c
+G 0 20 6633c88205bbeaa5
+W 0
+W 0
+W 0
+G 0 124 cb790b077141bae5
+G 0 114 f0d9aff1eae8ed75
+W 0
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+RD 0
+W 0
+G 0 3 911e196738355eed
+W 0
+G 0 130 187e89541fdb76df
+RD 0
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 1 08328807b4eb6fed
+G 0 247 69aaeabb1c35e7ad
+RD 0
+W 0
+RD 0
+RD 0
+G 0 150 397584438edcc16d
+RD 0
+G 0 396 3e85bd6e69a75f05
+G 0 328 42e571fab8b9d665
+G 0 296 5783653519a0b165
+W 0
+G 0 200 2c1b93daafb34265
+W 0
+W 0
+RD 0
+G 0 72 ec32669a74fcae65
+G 0 220 08fd0a89c6878385
+G 0 21 2a3129a9c3cff60d
+G 0 11 f84841652498787d
+G 0 193 6253601c65007ded
+G 0 295 d7568b78e64fbfdd
+G 0 379 b4f59adaf88515fd
+W 0
+G 0 469 f73b0d09cb342c0d
+RD 0
+SCENARIO chip-1-1
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+W 0
+G 0 372 06da96e23a6217bd
+G 0 77 4baccf9bd437306d
+W 0
+W 0
+W 0
+G 0 120 aac3e636b4581802
+RD 0
+G 0 100 573984ae5b01b833
+G 0 389 170379a488508b8d
+G 0 301 3bc2b3b171aa2963
+G 0 275 0640288a57e8af89
+G 0 351 a4d91927f1d54fd6
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 178 6f90381b91df782b
+G 0 208 2b7e288a95a748e9
+W 0
+G 0 190 b78f4caff0ea9279
+G 0 47 8b4b6795306a871d
+W 0
+W 0
+G 0 292 dfc6ec437e50b1e9
+G 0 340 ead2f6865cbe8225
+W 0
+G 0 331 d75bef85f0a35823
+G 0 222 bbb8ceef91b200ab
+G 0 194 3e680852c0b0e619
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+G 0 113 00ff1c705dd2d7f8
+W 0
+W 0
+G 0 219 a7b183023fdf2195
+G 0 204 9e0db0ed608a3944
+G 0 2 4ce16c7f9d94362b
+W 0
+W 0
+W 0
+G 0 28 4e3517339555bda5
+G 0 576 b589418f448e5986
+RD 0
+SCENARIO chip-1-2
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 142 f13df1a3b750979c
+W 0
+W 0
+W 0
+W 0
+G 0 219 d22158a8e3345942
+W 0
+W 0
+W 0
+G 0 3 74ad9600fb0f47e0
+W 0
+G 0 209 9ddcdcdeda2c002d
+G 0 3 bc64e653151acde3
+W 0
+W 0
+G 0 99 037339850c4a62d2
+G 0 215 6a1f640e9d99d759
+G 0 142 ba874b1c3fc4d5d5
+W 0
+RD 0
+W 0
+W 0
+G 0 3 73187e9e32b60f76
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+W 0
+G 0 206 1bbc57bf031dbaab
+W 0
+W 0
+W 0
+W 0
+G 0 95 fc689f1a5ddab29d
+RD 0
+W 0
+G 0 2 4d25767f9dce13f5
+G 0 1 08328807b4eb6fed
+G 0 349 e1dd91418e75666d
+RD 0
+W 0
+RD 0
+G 0 351 16d4f6935e299a9d
+G 0 316 6d604e5247a05285
+RD 0
+RD 0
+G 0 224 ddedd579bea76625
+W 0
+G 0 189 b58563db43ec0a6d
+G 0 546 7f579e6a759918f5
+RD 0
+SCENARIO chip-1-3
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 337 8dff2d74170fc1b1
+G 0 3 c9aa9a1387d3b7ef
+G 0 24 cc3a264800921028
+W 0
+G 0 2 f868767d29cf97f5
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 101 e5eae7ef6f002407
+G 0 3 d7e4fcfa299d713d
+G 0 365 5ee8c3c56a0a96e5
+W 0
+G 0 175 154191b8a9d9d34f
+G 0 187 6709a4f3d34c4b26
+RD 0
+G 0 346 d2892b918b8bf87a
+G 0 289 3aa6b377b888732b
+W 0
+G 0 2 66a4b14ed828ecc0
+W 0
+G 0 197 257d8149ce8d5262
+W 0
+G 0 243 ba57768b2041ae46
+W 0
+G 0 174 31e533cd3719c667
+G 0 37 ad18bc7e4e63f777
+RD 0
+G 0 121 d8d6d7fa993848c7
+W 0
+W 0
+W 0
+W 0
+RD 0
+W 0
+W 0
+G 0 308 03434c5270268ac8
+RD 0
+G 0 3 d2b146bdf3c788c6
+G 0 375 90b638949a687e8a
+W 0
+W 0
+W 0
+G 0 113 a16d6aa069fbaddc
+W 0
+G 0 292 de77c18d23785985
+G 0 3 18bc8ace9b314ac0
+W 0
+G 0 2 0623360a6ff637e0
+G 0 1 0a994907b6f56de3
+RD 0
+SCENARIO chip-1-4
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 2 4d25767f9dce13f5
+G 0 3 9cdf718e85e1c296
+W 0
+G 0 379 9b58f9d370ab6ce0
+RD 0
+G 0 294 2415fe1d70d1bab1
+G 0 278 42695c51a6b89715
+G 0 301 bfb9758bb1ea31fa
+G 0 34 9f6fdb02c45c2451
+G 0 176 9e75518fa8bfeea5
+W 0
+W 0
+G 0 210 805e5df2842b8c75
+W 0
+G 0 307 db1bcf9f043cb4bd
+G 0 203 d627d788c658e67d
+W 0
+G 0 163 4d0f68534c8b69e3
+G 0 55 76c519d78418065d
+W 0
+W 0
+G 0 311 516c541a3684ee5d
+G 0 153 7e3c031798f360f0
+G 0 126 ce060ac3442cb5ec
+G 0 25 2be7e22530a2d335
+G 0 283 3b787607dd360f5d
+G 0 328 60c048b8b14abcb4
+G 0 238 0146f1b2523894d5
+W 0
+G 0 374 3d334905d0001615
+W 0
+W 0
+W 0
+W 0
+G 0 250 969b3208dda4b32b
+RD 0
+W 0
+G 0 71 c21ce97577a27ba9
+W 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 387 e7160b1a289b4d3d
+G 0 44 7479744ad77ee805
+G 0 3 bc64e653151acde3
+RD 0
+SCENARIO chip-1-5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 148 488a18c0d80946fc
+W 0
+G 0 249 9047924f96b99442
+G 0 339 d206163f934aee8f
+W 0
+RD 0
+G 0 310 e8e973d60c98988c
+G 0 9 2922bac91a49c4fe
+G 0 149 630c8379b2cc8aba
+G 0 397 99d9318c3f56aed1
+W 0
+W 0
+RD 0
+W 0
+G 0 153 d78fbf10e93b2bba
+G 0 234 002137203f550443
+W 0
+G 0 128 a3406aa775b8c088
+G 0 204 3aa38cad10a79fa5
+G 0 128 b7f6fb08e89b5325
+G 0 60 f1e3009ea7fc89a5
+W 0
+RD 0
+G 0 2 4d25767f9dce13f5
+G 0 4 8893553ac17e84a5
+G 0 384 9fa9e040e0eedf25
+W 0
+W 0
+W 0
+W 0
+G 0 177 e65550d7c656e1ed
+W 0
+W 0
+G 0 386 d36c4f8173d48ff5
+W 0
+G 0 269 af17f4b3ee2972cd
+G 0 116 60963a2f93896b45
+RD 0
+G 0 102 b14747087aa06395
+G 0 292 660b1dd092ed10c4
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+W 0
+G 0 346 17d61f3a3d34d72b
+G 0 107 e0295dffdf27b57a
+G 0 21 798731606172e36d
+W 0
+G 0 376 90198522809cede5
+RD 0
+SCENARIO chip-1-6
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 22 7508265744f52753
+W 0
+W 0
+W 0
+G 0 54 efcba20c0c70c415
+G 0 77 f6abb1f819c724cd
+G 0 2 4d25767f9dce13f5
+RD 0
+G 0 71 b9726b4a891074dd
+G 0 341 f36843ec04eef80d
+G 0 374 3d334905d0001615
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 300 959b89409c2f9f5c
+RD 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+G 0 382 957f210730d09355
+G 0 3 d7e4fcfa299d713d
+G 0 2 4d25767f9dce13f5
+G 0 306 bced83c5240b2b75
+W 0
+G 0 338 ab8159dec3ea6075
+W 0
+G 0 116 60963a2f93896b45
+G 0 383 c266ea10eab5f79d
+W 0
+G 0 67 22a0906348106b3d
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 185 e515ffb7c5289aad
+W 0
+G 0 266 b92f1b94797eb135
+G 0 202 cf57df77d633c735
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 369 de7b700bdb85956d
+RD 0
+SCENARIO chip-1-7
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 237 e4c6ccda5323d5b4
+G 0 168 bf21278f0f53caf5
+G 0 3 c9aa9a1387d3b7ef
+W 0
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+W 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+RD 0
+G 0 42 6975f1271857fe35
+G 0 363 941dbf4e087c177d
+W 0
+W 0
+W 0
+G 0 57 b6d7e57a00c19ced
+W 0
+W 0
+W 0
+G 0 112 cc6a1ff5f8a224a5
+W 0
+RD 0
+G 0 1 08328807b4eb6fed
+G 0 322 5458c8b3c0ec25f5
+G 0 53 7e2cf316b28bc30d
+W 0
+W 0
+W 0
+G 0 317 5ef40df146e3264d
+W 0
+G 0 49 e15bbf685e90d36d
+W 0
+G 0 227 50748df2561b5c3d
+G 0 302 b15e431e202ebed5
+W 0
+G 0 183 586463c956667a5d
+G 0 112 fd806a90d9a9ad25
+G 0 3 d7e4fcfa299d713d
+G 0 326 0fe0f3802324b695
+W 0
+G 0 178 d03f6d5b5e205775
+W 0
+G 0 223 40c2e688f51a269d
+G 0 3 bc64e653151acde3
+G 0 324 d6d7c0c9db5a6bc5
+RD 0
+SCENARIO chip-1-8
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 93 4ded095c296e9df2
+G 0 151 b21f41039967644b
+G 0 18 2709f7780a15c372
+W 0
+W 0
+G 0 3 a7a136399c52b512
+W 0
+RD 0
+G 0 129 0892fd69731f0c13
+W 0
+G 0 91 f39e203405f54851
+W 0
+RD 0
+W 0
+G 0 309 bd78475ee43e2b0d
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 291 67bbc19883e4563d
+G 0 233 e12decf5302e1e2d
+W 0
+W 0
+W 0
+G 0 339 61f3123af4fb31bd
+W 0
+W 0
+W 0
+G 0 117 2493268451aa5d0d
+W 0
+G 0 54 efcba20c0c70c415
+G 0 151 6228503421075d5d
+G 0 27 c5d70e2e7111f6fd
+G 0 323 5695a8b39764533d
+G 0 121 12d77cce26fec0ad
+W 0
+G 0 143 2044f94c1967ae63
+W 0
+W 0
+W 0
+G 0 254 0319015562663f55
+G 0 260 7270ce3a3ef261c5
+G 0 3 d7e4fcfa299d713d
+W 0
+RD 0
+RD 0
+W 0
+W 0
+G 0 332 6fd83a9d0392cfa5
+G 0 600 74b4429a2fdd70e5
+RD 0
+SCENARIO chip-1-9
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 114 47d73c58acb95cb8
+W 0
+W 0
+G 0 2 503e40df2028eb18
+W 0
+W 0
+G 0 19 6a83ca37bf434fbd
+G 0 188 09e3236b088fb9a5
+W 0
+G 0 317 5ef40df146e3264d
+W 0
+W 0
+G 0 283 a84f34ab0443defd
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 287 185ce85368c29463
+G 0 3 d7e4fcfa299d713d
+G 0 236 94284b3bb6b06ba5
+G 0 112 fd806a90d9a9ad25
+W 0
+W 0
+G 0 3 bc64e653151acde3
+G 0 282 bf72ffb0b8128bb5
+RD 0
+W 0
+G 0 111 49b660f0daee4263
+W 0
+G 0 3 bc64e653151acde3
+W 0
+W 0
+G 0 31 824addfc3ce8f89d
+W 0
+G 0 3 d7e4fcfa299d713d
+RD 0
+W 0
+W 0
+G 0 2 4ce16c7f9d94362b
+G 0 176 9e75518fa8bfeea5
+RD 0
+G 0 3 d7e4fcfa299d713d
+G 0 284 6522f0ef84dc1da5
+G 0 36 3ecb33e15783bec5
+W 0
+G 0 115 90c024dd04c6c6bd
+W 0
+G 0 2 4ce16c7f9d94362b
+G 0 315 46a92ed29edc9bfd
+RD 0
+SCENARIO chip-1-10
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 15 a84ac64eb6639ff9
+W 0
+W 0
+G 0 346 c6fbbb9193637854
+W 0
+W 0
+G 0 213 cb5929f16d0c5ad2
+W 0
+G 0 2 412b7662c746e151
+W 0
+G 0 74 7114711ecb85c57c
+G 0 3 d7e4fcfa299d713d
+G 0 2 4d25767f9dce13f5
+G 0 181 c4e45a689efcf70d
+G 0 50 3b9392683bb3482b
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 174 966c033aa1966ad5
+W 0
+G 0 62 14d3936f5fbcc155
+W 0
+G 0 1 08328807b4eb6fed
+G 0 211 f7a5bd60e16f3dbd
+G 0 350 b62f88cb68f67e55
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 106 23403d134f2a73f3
+G 0 224 b10b985a6a49c1bd
+W 0
+RD 0
+W 0
+W 0
+G 0 317 6fe53219e7094912
+W 0
+G 0 294 ab3f4aada0f76195
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 85 f0afd8b377f7cd05
+G 0 200 8114bcbe5cac602b
+G 0 374 e5c1aa089e8e3c2b
+RD 0
+W 0
+G 0 17 b52ea91c8e5ca66d
+RD 0
+SCENARIO chip-1-11
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 345 324c1f6f79a6f096
+G 0 324 4441cb3205bcbe78
+G 0 294 76d4239893cc4411
+W 0
+W 0
+W 0
+RD 0
+G 0 136 d01afe252fcbde81
+G 0 385 00a9734eee7cee0c
+G 0 237 806480e2cf5587e6
+G 0 335 00cde27378a9c561
+W 0
+W 0
+W 0
+RD 0
+G 0 3 33b7d9dd33e2cfe0
+RD 0
+G 0 18 943cf28841434e75
+G 0 243 b843741b7776babd
+W 0
+W 0
+G 0 3 bc64e653151acde3
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 226 51e1b08187e18a2b
+G 0 1 08328807b4eb6fed
+G 0 95 fc689f1a5ddab29d
+RD 0
+W 0
+W 0
+G 0 226 9dba14187f7d06f5
+W 0
+W 0
+W 0
+G 0 95 f2ffc2913bda0c63
+W 0
+W 0
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+RD 0
+RD 0
+W 0
+G 0 6 5467b0da1d106495
+W 0
+G 0 364 48ce41fb38cb9ba5
+RD 0
+G 0 596 b636c777f20c42a5
+RD 0
+SCENARIO chip-1-12
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 310 7459caa803a309bd
+W 0
+W 0
+G 0 69 aae0767c91ae898d
+W 0
+W 0
+G 0 343 cf47958402350b5d
+G 0 49 eb00ec9bfc5631ed
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 46 11d1b004f84e16d5
+G 0 27 cfb999de57805ee3
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+RD 0
+G 0 278 42695c51a6b89715
+G 0 233 e12decf5302e1e2d
+G 0 320 96554ce2cfb01525
+G 0 2 4d25767f9dce13f5
+G 0 3 bc64e653151acde3
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 36 3ecb33e15783bec5
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 49 e15bbf685e90d36d
+W 0
+G 0 32 b9b23f3a46fd0825
+G 0 155 2dfe1b0f2ec2eafd
+W 0
+RD 0
+W 0
+RD 0
+W 0
+G 0 303 606094ba185d6f1d
+G 0 40 2beb2c83b0756225
+G 0 98 b51ecafe476d5a2b
+G 0 7 8df352d4f9fa3add
+G 0 21 2a3129a9c3cff60d
+G 0 541 bd5024ec6b78814d
+RD 0
+SCENARIO chip-1-13
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 394 cc1d1f349bfe245f
+G 0 371 e96b69532d1a6ab0
+G 0 195 77b39792cfcc55e3
+G 0 369 6b9377a7c0b3e0ba
+W 0
+W 0
+W 0
+W 0
+G 0 165 1fad551431d26934
+G 0 1 07b83507b48386a8
+RD 0
+W 0
+W 0
+G 0 276 71e84e12bf3269e2
+G 0 321 00e6843684178c34
+G 0 56 d925584af188ca82
+W 0
+G 0 383 e45563957ad38be4
+G 0 246 7b26c71432cac215
+G 0 225 ff775fdcc4ac2aed
+G 0 329 9d6142680ba8e52d
+G 0 309 60980b9e89afef6d
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 207 2ad79596519e8663
+G 0 173 d1dfaf487d9dcbcd
+W 0
+W 0
+G 0 315 46a92ed29edc9bfd
+G 0 2 4d25767f9dce13f5
+G 0 338 48ddd509f7a4b42b
+G 0 28 4e3517339555bda5
+W 0
+W 0
+G 0 378 84f2628e45ffeab5
+G 0 1 08328807b4eb6fed
+G 0 80 815b8e3388d794dd
+W 0
+W 0
+G 0 22 2ad085be41b035ab
+W 0
+G 0 259 cd998a1a48122de3
+RD 0
+SCENARIO chip-1-14
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 327 7880df87cf40d360
+RD 0
+W 0
+G 0 38 18cdffdc2462bbfd
+W 0
+G 0 44 622491c62413658e
+G 0 3 c9aa9a1387d3b7ef
+W 0
+G 0 3 c9aa9a1387d3b7ef
+G 0 31 cf44659458f39c87
+G 0 330 64d1a0c39e37dd63
+RD 0
+G 0 214 310a1fb0d425ece6
+G 0 336 3c0e1077a1430f4b
+G 0 142 4c87e7abba62cd9b
+W 0
+W 0
+G 0 328 1f7df4e46cab6c05
+W 0
+G 0 358 87c3d4b01fb8b0c5
+G 0 107 40c88ebbed4f7426
+G 0 280 be77431ba5337893
+G 0 180 b580982ff0e135d7
+G 0 232 d0b5242574ffdd9c
+W 0
+W 0
+G 0 381 9da165b7f5bab03c
+W 0
+G 0 2 f868767d29cf97f5
+G 0 311 8b5ab8786eb7700a
+RD 0
+W 0
+G 0 237 947bb378a63e4063
+RD 0
+G 0 41 09a6a7927ae281eb
+W 0
+RD 0
+G 0 168 a5065703eead6a45
+W 0
+W 0
+RD 0
+G 0 347 3ac043ef22aa5d2f
+W 0
+G 0 229 544f2cc9ecabd41b
+W 0
+G 0 392 02e6e1ae1562eb66
+W 0
+W 0
+W 0
+W 0
+G 0 513 9e42539481de3fed
+RD 0
+SCENARIO chip-1-15
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 c9d6f2260a21641b
+G 0 193 200fa98c3aeb53ff
+W 0
+G 0 183 586463c956667a5d
+W 0
+G 0 2 412b7662c746e151
+W 0
+W 0
+G 0 134 562c2ce482096a66
+RD 0
+W 0
+W 0
+G 0 38 d2dfb2c611a9d9da
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 359 2539e7ca24eff9dd
+G 0 136 b20a3b9d2c8df865
+G 0 35 f57446da6e786e3d
+G 0 146 692a29ae120a2275
+W 0
+G 0 29 776648f05cefb14d
+W 0
+G 0 8 88201fb960ff6465
+G 0 18 943cf28841434e75
+G 0 34 e7d16c6b24f5c8f5
+W 0
+RD 0
+RD 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+W 0
+G 0 92 a098b2259cac6f85
+G 0 320 96554ce2cfb01525
+G 0 155 2dfe1b0f2ec2eafd
+W 0
+W 0
+G 0 314 84e245fb728200b5
+W 0
+W 0
+G 0 100 37027190f725c8c5
+G 0 2 4d25767f9dce13f5
+G 0 16 0c8210784d8af5a5
+W 0
+W 0
+G 0 350 c09ee5bcb74030ab
+W 0
+G 0 394 4d5ad9c83fc5692b
+RD 0
+SCENARIO chip-1-16
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 111 7fb8d3b8eb6308e8
+W 0
+G 0 111 239720ddfad3066f
+W 0
+W 0
+W 0
+G 0 351 38ef616d9261a52f
+G 0 63 1b79da6284c6258b
+W 0
+W 0
+G 0 398 85850c1dffd65c51
+W 0
+W 0
+G 0 336 75dba3fd6017e7c6
+G 0 91 17f4c7f9b36cc568
+G 0 362 55fd84fc34bbfd49
+G 0 340 f59da167b7d1d95c
+G 0 3 d7e4fcfa299d713d
+G 0 70 be986c2b35b8b4dd
+G 0 11 210da65449ed51b9
+W 0
+G 0 143 84450b20e1941dbc
+W 0
+W 0
+G 0 2 e77e2d870b5f44f4
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c9aa9a1387d3b7ef
+W 0
+W 0
+G 0 112 18600daac6f07846
+G 0 3 df0ca967d81081d6
+W 0
+W 0
+W 0
+G 0 135 9d8d8a1b70c5b751
+W 0
+G 0 299 38b7fdd5df7b1890
+G 0 225 f9545f7fc1efef68
+G 0 223 b27c56624a83550a
+W 0
+G 0 2 76bbeb6b0bb6cd06
+W 0
+G 0 200 420c6bc7841499ac
+G 0 13 ca901db7116bee21
+W 0
+W 0
+G 0 228 cb80dbcbbef1d1a3
+G 0 318 d0993bd583c4d558
+G 0 92 9c68a39cc5db0978
+W 0
+G 0 51 514b90595995c682
+RD 0
+SCENARIO chip-2-1
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 3 bc64e653151acde3
+W 0
+W 0
+G 0 265 5562c90d80aa0b2d
+W 0
+W 0
+G 0 361 29794b26202bd22d
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+G 0 320 ec97e70ac7b7392b
+G 0 3 d7e4fcfa299d713d
+G 0 395 0c3611e16e060b05
+W 0
+G 0 377 74dc892c2b9f87eb
+G 0 266 34cc6d2613d9a7f1
+W 0
+G 0 339 75460a48b6a1b2db
+G 0 73 0de9becc7853a547
+W 0
+W 0
+W 0
+G 0 172 8ad73ab2d398e971
+G 0 398 9f6ba88dba0c4c71
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 82 a08684a333bcb875
+RD 0
+G 0 268 f64484bc58de4b05
+G 0 1 08328807b4eb6fed
+W 0
+G 0 350 b62f88cb68f67e55
+W 0
+G 0 100 37027190f725c8c5
+G 0 273 b3ffe96cddea0e6d
+RD 0
+W 0
+G 0 2 4d25767f9dce13f5
+G 0 33 33bf1941cd091ced
+W 0
+G 0 126 2fba1332b14beb55
+G 0 28 8ac123d6f7dce585
+G 0 270 0e5e4752cb0929d5
+W 0
+G 0 76 84019afde146ad05
+W 0
+G 0 318 ad7f694611f16955
+W 0
+G 0 52 8d0350be04626145
+RD 0
+W 0
+W 0
+G 0 133 07d6695d629a238d
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+RD 0
+SCENARIO chip-2-2
+G 0 61 5167519966d6be4d
+G 0 146 5bd4d744a9426c2b
+G 0 60 de9fa0da6fc22a85
+G 0 284 6522f0ef84dc1da5
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 362 98f8cee9b0591115
+W 0
+W 0
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 203 d627d788c658e67d
+RD 0
+W 0
+G 0 133 07d6695d629a238d
+G 0 228 53e49860c5a5dcc5
+W 0
+G 0 80 81b169c331cabfa5
+RD 0
+G 0 128 d80ac658736bb725
+G 0 89 69719faa3d2d53ad
+W 0
+G 0 145 b79fcc79eebb5a6d
+G 0 2 4d25767f9dce13f5
+G 0 38 726320caea41fbab
+W 0
+G 0 203 d627d788c658e67d
+W 0
+G 0 242 ffde149dd13d902b
+W 0
+G 0 155 0d51c0a100e00ee3
+G 0 194 da51ce39c1da9ad5
+G 0 208 ede37eafb0309125
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 315 41936efd2c55aae3
+G 0 115 1ed6ef33df0487e3
+G 0 36 3ecb33e15783bec5
+G 0 118 9bfb50efdee56e15
+W 0
+RD 0
+W 0
+G 0 355 7ff5659da4a1503d
+W 0
+W 0
+W 0
+G 0 300 a74cdc32e42603a5
+W 0
+W 0
+W 0
+G 0 9 77e875b1c7b6a32d
+W 0
+G 0 299 b43eab057e8d34e3
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+G 0 320 01088512e3c5f1bd
+RD 0
+SCENARIO chip-2-3
+W 0
+W 0
+W 0
+W 0
+G 0 155 0d51c0a100e00ee3
+G 0 2 4ce16c7f9d94362b
+G 0 3 bc64e653151acde3
+G 0 102 b14747087aa06395
+W 0
+G 0 359 2539e7ca24eff9dd
+RD 0
+G 0 2 4d25767f9dce13f5
+W 0
+RD 0
+G 0 74 63dff573dc19f335
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 126 2fba1332b14beb55
+W 0
+G 0 129 c4b2d75a6df023ed
+W 0
+G 0 221 2d18439951e2b66d
+RD 0
+W 0
+G 0 156 5066f76b298ff985
+RD 0
+G 0 203 d627d788c658e67d
+G 0 366 a38e3beab378e8d5
+G 0 230 abcbfcbc604143ab
+W 0
+G 0 268 9ff4af0a0e8537a5
+W 0
+G 0 176 9e75518fa8bfeea5
+G 0 231 2a366607d0ca7763
+G 0 84 35da762063936645
+G 0 149 a6a000e063b9936d
+W 0
+RD 0
+W 0
+G 0 385 bee7f1b594698bed
+G 0 393 2b8c2937a55bbf2d
+G 0 372 bfdd35cec6ed9345
+W 0
+G 0 293 980c5964bc4aa48d
+W 0
+G 0 2 4d25767f9dce13f5
+RD 0
+W 0
+RD 0
+W 0
+G 0 388 6d119868d0d675c5
+RD 0
+G 0 187 87ab52a6a167a7fd
+W 0
+G 0 369 de7b700bdb85956d
+G 0 125 1f844a4a4e0bd84d
+W 0
+G 0 393 2b8c2937a55bbf2d
+G 0 46 11d1b004f84e16d5
+G 0 6 0125f34966016fab
+W 0
+G 0 199 b1cd17849798e8dd
+RD 0
+SCENARIO chip-2-4
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 339 61f3123af4fb31bd
+W 0
+W 0
+W 0
+G 0 238 0146f1b2523894d5
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 305 e4aa95aac31791ed
+W 0
+W 0
+W 0
+G 0 3 bc64e653151acde3
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 3 d7e4fcfa299d713d
+G 0 21 2a3129a9c3cff60d
+W 0
+G 0 343 cf47958402350b5d
+W 0
+G 0 2 4ce16c7f9d94362b
+G 0 49 eb00ec9bfc5631ed
+G 0 1 08328807b4eb6fed
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 70 d7f80ba9280e87ab
+W 0
+G 0 189 9fa1a7b65074f24d
+W 0
+G 0 174 966c033aa1966ad5
+W 0
+G 0 396 edef45cc4fd067a5
+W 0
+G 0 396 ef4783e6a6677fc4
+W 0
+G 0 391 03cfb8750319f5fd
+W 0
+G 0 209 c9fc1d28ae66101c
+W 0
+G 0 36 138dd85ed3e54ce3
+W 0
+W 0
+G 0 230 fd642da88381c5f9
+W 0
+G 0 310 627b45bfbb479a29
+W 0
+G 0 2 4d25767f9dce13f5
+G 0 51 6ba8b1ee4b29826d
+W 0
+W 0
+W 0
+G 0 380 981439ed9b4eedaf
+W 0
+W 0
+W 0
+RD 0
+G 0 219 10db6476279633d6
+W 0
+G 0 226 a17e2971f984bf19
+RD 0
+SCENARIO chip-2-5
+G 0 37 5fa04cb853cc3c8d
+G 0 330 f21cea526b9d9b35
+G 0 159 76edbf1b93cce463
+W 0
+G 0 157 66b1f7244559e54d
+W 0
+W 0
+W 0
+G 0 83 614bfa7d11b349bd
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+G 0 96 ab0c262759a1d225
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 363 941dbf4e087c177d
+W 0
+G 0 304 c46994239eb782a5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 391 46211a429e4b96dd
+G 0 362 70562fcc01775d2b
+G 0 159 872b1385a3406c9d
+G 0 38 23eb916bfe80b995
+G 0 335 1590b0bd7f1c3663
+W 0
+W 0
+RD 0
+W 0
+G 0 266 b92f1b94797eb135
+W 0
+W 0
+G 0 387 e7160b1a289b4d3d
+G 0 332 6fd83a9d0392cfa5
+G 0 272 9986ba9af2021da5
+W 0
+G 0 326 0fe0f3802324b695
+W 0
+G 0 163 9b59ef533346623d
+G 0 309 60980b9e89afef6d
+W 0
+G 0 251 9bbb0f6dcf2821fd
+W 0
+RD 0
+G 0 365 c612d2eaca6a19cd
+G 0 91 f0fd324060f070fd
+RD 0
+G 0 260 7270ce3a3ef261c5
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 162 91e5d367078f722b
+W 0
+G 0 595 db70d84ee78319bd
+RD 0
+SCENARIO chip-2-6
+W 0
+W 0
+W 0
+W 0
+G 0 283 a84f34ab0443defd
+W 0
+RD 0
+G 0 210 805e5df2842b8c75
+G 0 376 5e5717d06b0a8025
+G 0 89 69719faa3d2d53ad
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 38 23eb916bfe80b995
+G 0 141 93886064de093ecd
+G 0 248 0ecbd1e10399bda7
+G 0 162 45df8791a9f76027
+W 0
+G 0 220 08fd0a89c6878385
+W 0
+RD 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 142 ba874b1c3fc4d5d5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+G 0 346 37301fb8502675b5
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 392 acce919f8e9b2065
+W 0
+W 0
+W 0
+G 0 89 69719faa3d2d53ad
+W 0
+G 0 235 9aa2eb598599237d
+W 0
+G 0 31 824addfc3ce8f89d
+RD 0
+G 0 2 4ce16c7f9d94362b
+W 0
+G 0 348 cbae1f6ad0b29785
+RD 0
+W 0
+G 0 3 bc64e653151acde3
+G 0 1 08328807b4eb6fed
+G 0 119 29ffc4daff85405d
+W 0
+W 0
+G 0 572 3a7838d160be7a85
+RD 0
+SCENARIO chip-2-7
+G 0 2 4d25767f9dce13f5
+G 0 332 4fa2ef23a238d505
+G 0 354 838c919c0ba5daf5
+W 0
+G 0 363 941dbf4e087c177d
+G 0 2 4ce16c7f9d94362b
+G 0 2 4d25767f9dce13f5
+RD 0
+W 0
+W 0
+W 0
+G 0 185 988a12b6cb6e4ced
+W 0
+G 0 101 458727a9a79dd68d
+G 0 111 49b660f0daee4263
+W 0
+RD 0
+G 0 30 f87b38c6cf34ac55
+W 0
+W 0
+W 0
+W 0
+G 0 91 586466d4b327ceb5
+W 0
+W 0
+RD 0
+W 0
+W 0
+W 0
+RD 0
+G 0 1 08328807b4eb6fed
+W 0
+RD 0
+W 0
+W 0
+G 0 177 87cfc18b9067eaa5
+W 0
+W 0
+W 0
+RD 0
+W 0
+G 0 177 e65550d7c656e1ed
+G 0 249 8bb729eeb5cca4ed
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 46 9b784e630243eac7
+RD 0
+W 0
+W 0
+RD 0
+G 0 90 1042fad830821a21
+G 0 64 1a62ac7d537e7cc8
+G 0 2 4d25767f9dce13f5
+G 0 140 6629f1d51a83e1db
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+G 0 287 fe8244625f938c61
+G 0 158 0d4616dca632e8ab
+G 0 33 33bf1941cd091ced
+W 0
+W 0
+G 0 333 3d5b27ff0a078ccd
+RD 0
+SCENARIO chip-2-8
+G 0 155 2dfe1b0f2ec2eafd
+G 0 209 dd6831bf6ac50ded
+G 0 259 6f7d7dc5ed21593d
+W 0
+W 0
+G 0 122 d4960595a50042b5
+W 0
+G 0 214 61de31b95371ed15
+W 0
+W 0
+W 0
+G 0 364 4fd4b3fd93ad9a05
+G 0 3 d7e4fcfa299d713d
+G 0 253 6dc4cbf5d6120c4d
+G 0 395 46fc7993bbad547d
+G 0 110 4fdcd09a664840d5
+W 0
+G 0 74 63dff573dc19f335
+W 0
+W 0
+G 0 54 efcba20c0c70c415
+G 0 124 e34fb40e08ae21a5
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 287 185ce85368c29463
+W 0
+W 0
+G 0 11 f84841652498787d
+RD 0
+W 0
+G 0 72 6ef94c27e420ae25
+W 0
+W 0
+W 0
+G 0 216 e120542310fbb4e5
+W 0
+G 0 349 e1dd91418e75666d
+G 0 133 07d6695d629a238d
+W 0
+W 0
+W 0
+G 0 375 078c27bad94e4b1b
+G 0 393 d50390a71cbd370f
+W 0
+W 0
+W 0
+W 0
+G 0 57 8cf0874f4d1a6463
+W 0
+W 0
+G 0 148 648386e4cd08dc8f
+W 0
+W 0
+W 0
+G 0 233 f9a99b18ebd06411
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 117 c12f1a899f7bd777
+W 0
+G 0 507 1c9c9c64862156f7
+RD 0
+SCENARIO chip-2-9
+W 0
+G 0 290 abfa7ec62863a22b
+W 0
+W 0
+G 0 150 54191692fe7f4315
+G 0 1 08328807b4eb6fed
+W 0
+G 0 199 b1cd17849798e8dd
+W 0
+W 0
+W 0
+G 0 386 d36c4f8173d48ff5
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+RD 0
+G 0 139 af892ecb11cf6c7d
+G 0 271 99274a5df839921d
+W 0
+W 0
+W 0
+W 0
+G 0 244 b9973041df137f45
+W 0
+G 0 157 66b1f7244559e54d
+W 0
+G 0 324 d6d7c0c9db5a6bc5
+W 0
+W 0
+G 0 259 6f7d7dc5ed21593d
+W 0
+W 0
+G 0 188 09e3236b088fb9a5
+G 0 343 cf47958402350b5d
+G 0 54 09808bb09136c1ab
+W 0
+W 0
+W 0
+W 0
+G 0 364 4fd4b3fd93ad9a05
+W 0
+W 0
+W 0
+G 0 22 6b54ea71af95ef15
+G 0 221 2d18439951e2b66d
+W 0
+W 0
+G 0 270 af82d8ca0140d2ab
+G 0 313 71fcc36317984ead
+G 0 312 441b6865a35be825
+G 0 183 41e5606cc3cf5563
+G 0 83 614bfa7d11b349bd
+W 0
+G 0 165 0675fa879b83e96d
+W 0
+W 0
+W 0
+G 0 120 e7f6c4b09523c5e5
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 144 a12e36865ddff925
+W 0
+W 0
+G 0 135 04ad4c90c59aaedd
+G 0 2 4d25767f9dce13f5
+RD 0
+SCENARIO chip-2-10
+W 0
+G 0 386 d36c4f8173d48ff5
+W 0
+W 0
+G 0 131 c6302d25ad77653d
+G 0 288 b9d0059d61083025
+G 0 202 254993a0afa5212b
+W 0
+RD 0
+W 0
+W 0
+W 0
+G 0 397 0f8bd56ce49d23a1
+W 0
+W 0
+G 0 331 97495aae514aec5f
+W 0
+W 0
+W 0
+RD 0
+G 0 202 7070544d7c6836d9
+W 0
+W 0
+G 0 122 0c27661065cb9135
+G 0 283 a49fa76c5d4a7f47
+W 0
+G 0 16 0c8210784d8af5a5
+W 0
+RD 0
+G 0 216 59e86337e8a8ee79
+W 0
+RD 0
+G 0 136 8246617425e3c91f
+W 0
+W 0
+G 0 157 90340fe8c6b8be19
+W 0
+W 0
+G 0 162 224d709db7235717
+G 0 224 3af14a857d3d96e7
+W 0
+G 0 267 545f323237f93d59
+W 0
+G 0 209 7b222b9df3e20895
+G 0 121 cdb7b362a89eb717
+W 0
+G 0 3 bc64e653151acde3
+W 0
+G 0 276 c76181efb060c3eb
+G 0 147 d4df8b50621199c1
+W 0
+RD 0
+W 0
+G 0 331 291de07deea85caf
+W 0
+G 0 296 3489a8d226b136db
+W 0
+W 0
+G 0 124 cdacd357f6e9b84f
+W 0
+RD 0
+RD 0
+RD 0
+G 0 283 5cbe0cd9ab2a4aae
+RD 0
+W 0
+W 0
+G 0 188 8eed0e9e13893e85
+RD 0
+SCENARIO chip-2-11
+G 0 320 96554ce2cfb01525
+RD 0
+W 0
+W 0
+RD 0
+W 0
+G 0 381 46a859610ae8404d
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 270 0e5e4752cb0929d5
+W 0
+G 0 82 db07555c0a2c542b
+W 0
+W 0
+G 0 58 7f0c54b906c86b2b
+RD 0
+G 0 308 ae0697b2eb768945
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+W 0
+G 0 318 12adf3b6ac4086ed
+RD 0
+G 0 198 b34ce97077252201
+G 0 25 86cb21b4931179ad
+G 0 1 08328807b4eb6fed
+G 0 2 4ce16c7f9d94362b
+W 0
+RD 0
+W 0
+G 0 129 d3ed454ec2779eaf
+W 0
+RD 0
+W 0
+G 0 14 17d9c15239d081d5
+RD 0
+W 0
+W 0
+W 0
+G 0 65 f1fed403f90fc7ed
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+G 0 117 2493268451aa5d0d
+G 0 356 936a37f456ca48a5
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 341 d588f39ca34b9b6d
+G 0 24 a09d945a1cd8d6e5
+G 0 1 08328807b4eb6fed
+W 0
+RD 0
+G 0 334 a08f4fcc66a953d5
+G 0 84 35da762063936645
+G 0 125 42df174e0f02b26d
+W 0
+RD 0
+G 0 257 a597339b4dc4d7ed
+G 0 2 4d25767f9dce13f5
+G 0 567 d551a2f62031d65d
+RD 0
+SCENARIO chip-2-12
+G 0 352 cf58746c2dfcfa25
+W 0
+G 0 43 64ef9888e8eab57d
+W 0
+RD 0
+W 0
+G 0 116 60963a2f93896b45
+W 0
+G 0 244 b9973041df137f45
+W 0
+G 0 388 afcd74e232f0ef95
+G 0 397 117c79cff0be071d
+W 0
+G 0 236 52734bcfa34320e5
+G 0 56 732735998d2cd49d
+W 0
+G 0 232 642e073e22d0178d
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+RD 0
+G 0 128 d80ac658736bb725
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+G 0 153 8d6c36c5798120ed
+RD 0
+W 0
+G 0 113 1fcae920e1c02d6d
+W 0
+W 0
+W 0
+G 0 368 e57e32cd87ac0d25
+RD 0
+W 0
+G 0 2 4d25767f9dce13f5
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 110 4fdcd09a664840d5
+G 0 347 331bb29e1520dcbd
+W 0
+W 0
+W 0
+G 0 31 26d69a0753567b74
+W 0
+W 0
+G 0 202 cf57df77d633c735
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 345 7833410f59a428ed
+W 0
+W 0
+W 0
+G 0 294 ab3f4aada0f76195
+W 0
+G 0 317 5ef40df146e3264d
+G 0 109 e7339fd16bc1b1cd
+G 0 2 4d25767f9dce13f5
+RD 0
+SCENARIO chip-2-13
+W 0
+W 0
+RD 0
+W 0
+W 0
+G 0 221 6ee86629fc5cff4d
+W 0
+G 0 265 5562c90d80aa0b2d
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 267 336323802ed6607d
+W 0
+W 0
+G 0 2 4ce16c7f9d94362b
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 370 e0fdd43d5889c02b
+W 0
+G 0 1 08328807b4eb6fed
+G 0 1 08328807b4eb6fed
+W 0
+G 0 44 d95db4bd596fa3a5
+W 0
+W 0
+W 0
+G 0 116 60963a2f93896b45
+W 0
+W 0
+RD 0
+G 0 18 943cf28841434e75
+W 0
+W 0
+W 0
+RD 0
+W 0
+W 0
+G 0 117 aa00fef80b75ce8b
+W 0
+W 0
+G 0 30 5eeb7d803dc4b8ab
+G 0 85 5c6464f43d8bb3c1
+RD 0
+W 0
+W 0
+G 0 359 7cb88d5a33c19b3d
+W 0
+G 0 153 40de144c09c36ae9
+W 0
+W 0
+G 0 362 9a21a26f4554400d
+W 0
+W 0
+RD 0
+G 0 2 994f76653e2a3951
+G 0 380 22be768a981cdbf9
+W 0
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 558 8bc7e1f9d5f0beab
+RD 0
+SCENARIO chip-2-14
+W 0
+G 0 256 f76aebc2e1d48325
+G 0 320 96554ce2cfb01525
+G 0 3 bc64e653151acde3
+G 0 377 352f3360749954ed
+G 0 389 9e17321633379d6d
+W 0
+G 0 385 769779bdb4157fed
+W 0
+W 0
+G 0 281 047342df8fb8e1ad
+RD 0
+G 0 1 08328807b4eb6fed
+G 0 282 bf72ffb0b8128bb5
+G 0 90 ed78eedda4cecdb5
+W 0
+W 0
+G 0 3 bc64e653151acde3
+W 0
+RD 0
+W 0
+G 0 3 d7e4fcfa299d713d
+W 0
+W 0
+W 0
+W 0
+G 0 289 1623f34f2d4a84ed
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 252 52014397078ac885
+G 0 50 1fc05eb337858375
+G 0 368 daaa74a434914ca5
+RD 0
+G 0 378 84f2628e45ffeab5
+G 0 158 b031f7019c530055
+W 0
+W 0
+G 0 357 75151772d0ec3e8d
+W 0
+G 0 330 f21cea526b9d9b35
+G 0 82 a08684a333bcb875
+G 0 176 9e75518fa8bfeea5
+W 0
+W 0
+G 0 235 9aa2eb598599237d
+W 0
+G 0 170 9694a660fd9dd235
+G 0 116 60963a2f93896b45
+W 0
+W 0
+W 0
+RD 0
+W 0
+RD 0
+G 0 200 7ac3420ea69ba37f
+W 0
+G 0 2 ad319677479e1db6
+W 0
+W 0
+G 0 332 f4258c9f79782ed1
+W 0
+G 0 188 d8fccc94cc3601f1
+G 0 206 602a26d5d4c1b078
+G 0 126 797d1cb2e8e5a56e
+RD 0
+SCENARIO chip-2-15
+W 0
+G 0 54 efcba20c0c70c415
+W 0
+W 0
+W 0
+G 0 104 b1e9f32be9d2d365
+G 0 276 70ab2adcede28445
+G 0 364 4fd4b3fd93ad9a05
+W 0
+W 0
+RD 0
+W 0
+W 0
+G 0 3 bc64e653151acde3
+G 0 173 d1dfaf487d9dcbcd
+W 0
+W 0
+G 0 343 da7e3942bb057163
+G 0 377 0fe129cb9bde28ad
+W 0
+G 0 97 673f720b7c8b76ed
+W 0
+W 0
+G 0 174 966c033aa1966ad5
+W 0
+W 0
+G 0 42 6975f1271857fe35
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 152 671a4aeda50d2c9e
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+W 0
+G 0 136 ab2b9ac298d84a8d
+W 0
+G 0 163 15b48cfef125c838
+W 0
+G 0 145 9c10087fba5ed6f6
+W 0
+G 0 386 b409eb6747630816
+W 0
+W 0
+G 0 13 74905edcb201d86d
+W 0
+W 0
+W 0
+W 0
+G 0 362 9cd81eb6c3e0b407
+W 0
+W 0
+W 0
+G 0 3 d7e196fa299a8e14
+W 0
+G 0 2 adc0447748174aa6
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 31 824addfc3ce8f89d
+RD 0
+SCENARIO chip-2-16
+RD 0
+W 0
+G 0 153 3c666c93affd2dad
+W 0
+G 0 292 9a0094294483e6c5
+W 0
+G 0 231 91e5776b812385dd
+W 0
+W 0
+RD 0
+W 0
+G 0 205 2bd3dccb8cb1e06d
+G 0 18 b3bdc79cb3463c2b
+G 0 210 97358c2421685a63
+G 0 234 5defab59d87ebc35
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 99 799c9e333365683d
+W 0
+G 0 189 b58563db43ec0a6d
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 0 331 ca67f78b3fd920e3
+W 0
+G 0 204 6ede277a6597c105
+W 0
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+G 0 230 67c26852e8e68a39
+W 0
+RD 0
+W 0
+G 0 85 308ae8a272d4900d
+W 0
+W 0
+W 0
+G 0 194 6a3cf2046e825eb7
+W 0
+W 0
+W 0
+G 0 173 9c05b33bf11ed992
+G 0 289 317a4909dbdbf949
+G 0 375 40c7ef2461ea3238
+G 0 386 472b35b9cb2d66bf
+G 0 86 f60cce0ac088eceb
+W 0
+G 0 1 08328807b4eb6fed
+G 0 98 a885e7a9caf79b61
+RD 0
+RD 0
+G 0 96 ab0c262759a1d225
+W 0
+G 0 25 86cb21b4931179ad
+G 0 32 e30324e21e698521
+W 0
+W 0
+RD 0
+G 0 271 c0ea5715eed818e4
+W 0
+W 0
+W 0
+W 0
+G 0 1 08328807b4eb6fed
+W 0
+G 0 209 f0e3e7e5a3769c39
+W 0
+G 0 244 0cec8967b1274724
+G 0 1 08328807b4eb6fed
+RD 0
+SCENARIO chip-3-1
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 294 95d7e7e367a3ed0b
+RD 0
+G 1 11 8e561de86ede5265
+G 1 166 af5927f9331920bd
+RD 0
+W 0
+G 1 68 b356d39f3a3305c6
+G 0 104 b1e9f32be9d2d365
+G 1 271 ba1f7eecd3e1257e
+G 0 297 cc3b15674886e6ed
+W 0
+W 0
+G 0 134 0850a197bf4fb895
+G 1 3 69d9067b5dee8c8f
+W 0
+G 1 206 2154c06c119b5c7d
+G 1 343 cf47958402350b5d
+W 0
+W 0
+W 0
+G 1 257 a597339b4dc4d7ed
+W 0
+W 0
+W 0
+G 0 66 b189d2cab7927df5
+W 0
+W 0
+W 0
+G 1 398 972bcedb1b9d7dd5
+W 0
+W 0
+G 1 45 8aa8aa0fdb1997cd
+RD 0
+W 0
+G 1 2 4d25767f9dce13f5
+W 0
+W 0
+G 1 2 4d25767f9dce13f5
+W 0
+W 0
+W 0
+G 1 72 ec32669a74fcae65
+RD 0
+G 0 2 4d25767f9dce13f5
+G 0 331 611bce171da326fc
+W 0
+G 0 227 193951fed4f941e3
+G 1 36 3ecb33e15783bec5
+G 0 286 9eb952f69f2e7b0e
+G 1 164 b11fcf5763dbd2c5
+G 0 1 0a9dc907b6fa303a
+RD 0
+SCENARIO chip-3-2
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 1 3 59755e962036734c
+W 0
+W 0
+W 0
+W 0
+G 1 124 b8f26294e1f13fbb
+G 0 3 5d658bf585c3238d
+W 0
+G 1 56 8bdd62862e50794d
+G 0 300 56fd854aa6f447ba
+G 0 346 b4a8b47d679f3225
+W 0
+G 0 2 43a69362c96224a5
+G 1 116 2a0da8277c99f0af
+G 0 366 5f2b33b9767898fb
+W 0
+W 0
+G 1 358 7fa4607d6e670b95
+G 1 122 2e3a95fa9e68b925
+G 0 96 fd83941ac467fc86
+G 0 135 a408b8d31dd4ae28
+W 0
+W 0
+G 1 278 5ddb300a2df171ea
+W 0
+G 0 68 8a72c366e2d95a30
+G 1 318 d542bccc81bd2772
+G 1 14 ec9704c9e1ee3f33
+W 0
+W 0
+RD 0
+G 1 138 7e2a96db9072f1c0
+W 0
+W 0
+G 0 163 9b59ef533346623d
+RD 0
+G 0 379 b4f59adaf88515fd
+W 0
+W 0
+W 0
+G 0 249 6a5d9570480674ad
+G 0 211 f7a5bd60e16f3dbd
+G 1 72 2e8082aa9e34bd24
+W 0
+G 0 2 4d25767f9dce13f5
+W 0
+G 1 3 bc64e653151acde3
+RD 0
+G 1 24 a09d945a1cd8d6e5
+G 0 575 4b46977fc2996063
+RD 0
+SCENARIO chip-3-3
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 191 898524595bd0f8f2
+W 0
+W 0
+G 1 267 714b4d5fd3833e39
+G 0 1 0a03bb07b67658a5
+W 0
+RD 0
+W 0
+W 0
+G 0 190 a778d4747a2f1555
+W 0
+G 0 108 adf383e262937205
+W 0
+G 1 285 1cdac0e3b0d40e6d
+G 0 1 08328807b4eb6fed
+W 0
+G 1 48 0243cfa845185aa5
+W 0
+G 0 351 c0e9d3c11b17eff9
+G 0 144 a12e36865ddff925
+G 0 147 da1bd099d9e373e3
+G 1 112 cc6a1ff5f8a224a5
+W 0
+G 1 170 9694a660fd9dd235
+W 0
+G 0 7 9ddffa377b958363
+W 0
+G 1 307 db1bcf9f043cb4bd
+W 0
+W 0
+G 0 255 e4f878eb7d96fb23
+W 0
+RD 0
+G 1 88 ad7f8afd9dfb20e5
+W 0
+G 0 40 ee29781e003cd521
+G 1 158 b031f7019c530055
+RD 0
+G 1 2 4d25767f9dce13f5
+G 0 3 d7e4fcfa299d713d
+G 1 2 4ce16c7f9d94362b
+W 0
+W 0
+W 0
+G 0 317 ac6dc7c9ead4f0a3
+G 0 233 d680a30f2494ea37
+G 0 196 5f6db399b9f3c7f1
+W 0
+G 0 2 994f76653e2a3951
+W 0
+G 0 385 769779bdb4157fed
+RD 0
+SCENARIO chip-3-4
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 394 b06e471cec3f2273
+W 0
+G 1 232 8c33284df79ef2dd
+W 0
+W 0
+G 0 84 6d11bd5ab421cc78
+W 0
+G 0 1 07cf8c07b496f95e
+G 1 332 12ed2b1c7e6245ff
+G 0 344 1bb112837a4c48e5
+W 0
+G 1 3 377f4c288ea6dd89
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 132 0ce7afc851873557
+G 0 37 17cad1d6321cdc4e
+G 0 40 1f6fcc4236d0a81d
+W 0
+W 0
+G 0 4 1fbb543509196132
+G 1 300 bb5fc3b0e830ce75
+G 0 1 09af8e07b62f7f2f
+RD 0
+W 0
+G 1 3 f3ed270c685726e9
+W 0
+W 0
+W 0
+G 1 184 a4b42fb16fad8677
+W 0
+G 1 117 65b6dad92230832d
+G 1 174 966c033aa1966ad5
+W 0
+G 0 291 40327654151719e3
+G 0 55 dddf15e8e07d57a9
+W 0
+G 1 2 4d25767f9dce13f5
+G 0 38 c9c1203220aa0734
+RD 0
+W 0
+W 0
+G 1 4 ddc10a4b51efbadf
+W 0
+W 0
+RD 0
+W 0
+G 0 471 8579463e572f2163
+RD 0
+SCENARIO chip-3-5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 1 3 d72c43a254bd19bf
+RD 0
+G 0 58 875b3c62a9ffa05a
+G 0 191 24e2411494b61609
+G 0 237 93ff4b9e5e939ad3
+G 0 1 0a994907b6f56de3
+G 0 98 a589da5d8aa432f5
+G 1 311 ee78f563b38604d5
+W 0
+W 0
+G 0 3 d7e4fcfa299d713d
+G 1 108 3f50596f699363c0
+G 1 219 22103270f70f1cc0
+G 0 3 d7e4fcfa299d713d
+G 0 45 8aa8aa0fdb1997cd
+G 1 353 2194b6f9830d1c63
+G 1 286 f48755b993f0ff7c
+W 0
+W 0
+G 1 12 8ac1dc7466eaeec6
+W 0
+RD 0
+G 1 216 4e54a8eda5f86a6c
+G 1 369 de7b700bdb85956d
+RD 0
+G 1 202 eb694075a3cd89f4
+G 1 83 f3a4766921344ba3
+G 0 3 d7e4fcfa299d713d
+G 0 315 46a92ed29edc9bfd
+W 0
+RD 0
+G 1 55 76c519d78418065d
+G 0 1 08328807b4eb6fed
+W 0
+RD 0
+G 1 201 5ce03f8c4cf562ed
+G 1 1 08328807b4eb6fed
+RD 0
+W 0
+W 0
+RD 0
+G 0 71 b9726b4a891074dd
+G 0 83 614bfa7d11b349bd
+G 1 214 61de31b95371ed15
+G 0 4 8893553ac17e84a5
+G 0 385 769779bdb4157fed
+W 0
+W 0
+G 1 320 292a60b5e6391b25
+G 0 3 d7e4fcfa299d713d
+G 0 338 48ddd509f7a4b42b
+RD 0
+SCENARIO chip-3-6
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+RD 0
+G 0 392 d96588a9a1647477
+G 1 1 0b09e107b75577e2
+G 0 155 9eb0ab2198e991b8
+W 0
+G 1 309 08fa840f59693617
+G 1 71 bb97640986881711
+W 0
+G 0 1 0abb9307b712d207
+W 0
+W 0
+W 0
+W 0
+W 0
+G 1 154 aa50b6bb90c59ebc
+G 0 332 ffd16c3695b38550
+W 0
+W 0
+RD 0
+G 0 181 3488648a548b1528
+G 0 243 10c787859de8bef9
+G 1 210 6744362918437b51
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 6 dcf14a8edb18c46f
+G 1 164 9348960558e5e5f4
+G 0 99 03c52c169a5e432a
+W 0
+W 0
+G 0 1 0a994907b6f56de3
+G 1 276 96228185f217fcdb
+W 0
+G 1 38 ce8a78ae9190de42
+G 0 215 4f773698cc43773d
+RD 0
+G 0 157 fd14ab911e3116c2
+W 0
+G 1 291 007668f5684f9609
+W 0
+G 0 373 ff1b060ce6822a8a
+G 0 26 c00672956a1dc63c
+RD 0
+W 0
+W 0
+W 0
+G 0 148 33c56a7cb48ad11e
+RD 0
+SCENARIO chip-3-7
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 364 9969b19b8ccaec5d
+G 0 22 1c7418141c9b6013
+G 1 1 099e3607b6207674
+G 1 383 d8a98a454b0ed321
+W 0
+W 0
+G 1 230 347d65ded9d6b170
+G 0 33 c1c7362fa42075d8
+G 0 377 660ba99eaf0c2c48
+W 0
+G 0 3 d8396a74bdd7dbbb
+W 0
+G 1 1 0a994907b6f56de3
+W 0
+G 1 233 60c695ab262dfae5
+W 0
+RD 0
+W 0
+RD 0
+RD 0
+G 1 261 645afcc7ccdf8dbb
+W 0
+G 1 52 6f40e66dbf6c57e9
+G 1 182 f09b4de95525e89c
+G 1 90 1097fbcdc8a4772b
+G 0 397 2a73939ac1cfe78d
+G 0 388 94fa1a7ac78f2473
+G 1 214 61de31b95371ed15
+G 0 89 6f9064636131b016
+W 0
+W 0
+W 0
+G 1 109 0c27b25511d3dc6d
+G 0 315 b7203019d8697a69
+G 0 104 faa0fc5711f2dbdf
+G 0 150 8a7832c0e473077e
+W 0
+RD 0
+W 0
+W 0
+W 0
+W 0
+G 0 219 a71546cf0b22dbbf
+W 0
+G 0 2 deea689b2cd42a3a
+W 0
+G 0 486 c3938dcf8b4a2a51
+RD 0
+SCENARIO chip-3-8
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 132 7d2068f99cb41a28
+G 0 73 0aed8c7227e57d2d
+W 0
+G 1 226 9dba14187f7d06f5
+W 0
+G 0 65 e99f786102090f05
+G 1 130 5d6de848df4b2766
+W 0
+G 0 65 ac51078cd2f9f75c
+W 0
+W 0
+G 0 344 6433d90012b03cdf
+W 0
+G 0 122 0fa8277a6bdc8d77
+W 0
+W 0
+G 1 299 101b98e07f109d7d
+W 0
+G 1 380 4215b679fbc9dc85
+W 0
+G 1 241 2182419dae5f39ed
+W 0
+RD 0
+W 0
+G 1 152 1f4561b18cb16ae5
+W 0
+G 0 1 0a7b5107b6dc7dec
+G 1 208 c38bea895c0653a5
+W 0
+G 1 240 fcfda4c07d71b8a5
+W 0
+W 0
+G 1 327 94445c8dc659bb63
+G 0 263 283bead07cbb1679
+W 0
+G 1 177 5040822414a3876d
+G 1 199 b1cd17849798e8dd
+RD 0
+G 0 267 063afa6acf2eac01
+W 0
+W 0
+W 0
+G 1 181 e7458097f1f93f6d
+G 1 387 6f89eae0cfaddde3
+G 0 336 09738ab1f08463e2
+G 0 256 1040419b1ccd0911
+G 1 2 4d25767f9dce13f5
+W 0
+G 1 222 adc33e39dfe02a55
+RD 0
+G 0 213 c87e9d8c7e1a1891
+RD 0
+SCENARIO chip-4-1
+U 0
+W 0
+U 0
+A 0
+U 0
+T 0 1 3fb4f8b588e368f1
+T 0 0 3f8522a6f3f52fc3
+W 0
+G 0 99 8658acea1bcd91e3
+G 0 170 9694a660fd9dd235
+RD 0
+A 0
+G 0 3 d7e4fcfa299d713d
+RD 0
+U 0
+W 0
+RD 0
+RD 0
+RD 0
+G 0 175 13aea2d9177bfb1d
+U 0
+W 0
+U 0
+W 0
+RD 0
+RD 0
+G 0 199 b1cd17849798e8dd
+U 0
+W 0
+RD 0
+U 0
+W 0
+T 0 0 3f8522a6f3f52fc3
+TO 0
+U 0
+W 0
+U 0
+W 0
+U 0
+A 0
+U 0
+T 0 0 0000000000000000
+W 0
+RD 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+U 0
+W 0
+RD 0
+U 0
+W 0
+U 0
+W 0
+G 0 126 2fba1332b14beb55
+U 0
+W 0
+T 0 1 3f83a92a30553262
+TO 0
+G 0 98 a589da5d8aa432f5
+U 0
+W 0
+U 0
+W 0
+G 0 64 8421ae126c7ced25
+U 0
+A 0
+U 0
+W 0
+U 0
+W 0
+A 0
+U 0
+T 0 1 0000000000000000
+T 0 0 3f8450efdc9c4da9
+W 0
+U 0
+W 0
+RD 0
+G 0 2 4ce16c7f9d94362b
+RD 0
+SCENARIO chip-4-2
+RD 0
+I 0 7 1
+T 0 0 3f9517635d5ec105
+TO 1
+U 0
+W 1
+U 0
+W 1
+U 0
+I 0 7 0
+T 0 0 3f934760d3589c6f
+W 0
+T 0 0 3f934760d3589c6f
+TO 0
+RD 0
+U 0
+T 0 1 3fb517635d5ec105
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+A 0
+U 0
+T 0 1 0000000000000000
+W 0
+U 0
+W 0
+RD 0
+RD 0
+RD 0
+U 0
+W 0
+A 0
+G 0 3 d7e4fcfa299d713d
+RD 0
+U 0
+T 0 1 3fa90bc5fee08536
+W 0
+RD 0
+U 0
+W 0
+G 0 124 e712000d439bb485
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+A 0
+A 0
+G 0 152 1f4561b18cb16ae5
+U 0
+T 0 1 0000000000000000
+W 0
+G 0 26 c9c1196b2df85f2b
+U 0
+W 0
+U 0
+W 0
+RD 0
+I 0 7 1
+T 0 1 3fab5a54dd16e252
+TO 1
+RD 0
+U 0
+I 0 7 0
+T 0 1 3fab5a54dd16e252
+W 0
+U 0
+T 0 0 0000000000000000
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+A 0
+U 0
+T 0 1 0000000000000000
+T 0 0 3f908f5d044f658d
+W 0
+U 0
+T 0 0 0000000000000000
+A 0
+G 0 46 11d1b004f84e16d5
+U 0
+W 0
+U 0
+W 0
+G 0 92 200c50548a6f55a5
+RD 0
+G 0 477 ce5f403e1071674d
+RD 0
+SCENARIO chip-4-3
+I 0 7 1
+T 0 0 3f9517635d5ec105
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+U 0
+T 0 1 3fb517635d5ec105
+T 0 0 3f8a5d3c34b67146
+W 0
+RD 0
+U 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 1 3fa88d39aab04cb0
+TO 1
+U 0
+W 1
+T 0 1 3fb498d7092e887f
+TO 1
+U 0
+A 1
+U 0
+A 1
+U 0
+T 0 1 0000000000000000
+W 1
+G 0 64 8421ae126c7ced25
+U 0
+W 1
+U 0
+T 0 0 0000000000000000
+W 1
+U 0
+I 0 7 0
+A 0
+U 0
+W 0
+U 0
+A 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+A 0
+G 0 136 c684e5cd345b4625
+U 0
+T 0 1 3f9fa3150c0e2188
+T 0 0 3f92c8d47f2863e8
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 0 3f92c8d47f2863e8
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+G 0 153 3c666c93affd2dad
+U 0
+W 0
+T 0 1 3fa8e1973825c7b4
+TO 0
+I 0 7 1
+T 0 0 3f873bc374da60a0
+TO 1
+U 0
+W 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 19 6a83ca37bf434fbd
+U 0
+W 0
+U 0
+W 0
+G 0 1 08328807b4eb6fed
+G 0 28 8ac123d6f7dce585
+RD 0
+SCENARIO chip-4-4
+U 0
+W 0
+G 0 108 668e046751553ba5
+U 0
+W 0
+A 0
+U 0
+W 0
+G 0 16 0c8210784d8af5a5
+U 0
+W 0
+U 0
+T 0 1 3fb517635d5ec105
+T 0 0 3f85419224197e87
+W 0
+U 0
+W 0
+U 0
+T 0 0 0000000000000000
+W 0
+RD 0
+U 0
+W 0
+RD 0
+G 0 139 f862bb9f75e598e3
+U 0
+W 0
+A 0
+T 0 0 3f85c01e7849b70d
+TO 0
+U 0
+W 0
+U 0
+W 0
+U 0
+T 0 1 0000000000000000
+T 0 0 3f85c01e7849b70d
+W 0
+U 0
+W 0
+U 0
+W 0
+T 0 0 3f646ea84273cafd
+TO 0
+T 0 0 3f646ea84273cafd
+TO 0
+U 0
+W 0
+RD 0
+U 0
+W 0
+I 0 7 1
+T 0 1 3f627476f1b2e8e4
+TO 1
+U 0
+W 1
+U 0
+I 0 7 0
+I 0 7 1
+T 0 0 0000000000000000
+W 1
+G 0 60 de9fa0da6fc22a85
+U 0
+I 0 7 0
+W 0
+U 0
+T 0 1 3f627476f1b2e8e4
+W 0
+U 0
+A 0
+U 0
+T 0 1 0000000000000000
+T 0 0 3f7517635d5ec105
+W 0
+U 0
+W 0
+U 0
+W 0
+T 0 0 3f8444797bb90d7b
+TO 0
+U 0
+W 0
+T 0 0 3f923530c79acca1
+TO 0
+U 0
+W 0
+U 0
+W 0
+G 0 111 c4defbfcf4b9411d
+U 0
+W 0
+G 0 3 d7e4fcfa299d713d
+U 0
+T 0 1 3f9d54862dd7c46b
+W 0
+G 0 86 2558617fffe09915
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 400 14d5bceae7b5b1a5
+RD 0
+SCENARIO chip-4-5
+U 0
+W 0
+U 0
+W 0
+U 0
+A 0
+RD 0
+U 0
+T 0 0 3f85ea4d3f04748f
+A 0
+U 0
+W 0
+G 0 92 200c50548a6f55a5
+U 0
+W 0
+U 0
+W 0
+G 0 2 4d25767f9dce13f5
+U 0
+W 0
+T 0 1 3fa39bbe60ce1773
+TO 0
+U 0
+W 0
+U 0
+W 0
+T 0 1 3fa39bbe60ce1773
+TO 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 126 2fba1332b14beb55
+U 0
+W 0
+I 0 7 1
+T 0 0 3f8ab199c22bec4a
+TO 1
+U 0
+I 0 7 0
+A 0
+I 0 7 1
+T 0 0 3f8ab199c22bec4a
+TO 1
+T 0 1 3fa39bbe60ce1773
+TO 1
+U 0
+W 1
+G 0 188 09e3236b088fb9a5
+U 0
+I 0 7 0
+I 0 7 1
+T 0 0 0000000000000000
+W 1
+U 0
+W 1
+RD 0
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 32 b9b23f3a46fd0825
+T 0 0 3f92b3bd1bcb0527
+TO 0
+U 0
+W 0
+U 0
+W 0
+T 0 0 3f92b3bd1bcb0527
+TO 0
+G 0 92 a098b2259cac6f85
+U 0
+W 0
+U 0
+A 0
+U 0
+W 0
+T 0 0 3f92b3bd1bcb0527
+TO 0
+RD 0
+U 0
+W 0
+G 0 98 a589da5d8aa432f5
+I 0 7 1
+T 0 1 3fa5c01e7849b70d
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 1 3fa5c01e7849b70d
+TO 1
+G 0 492 08951bd8d7a6cba5
+RD 160
+SCENARIO chip-4-6
+G 0 126 2fba1332b14beb55
+U 0
+W 0
+U 0
+T 0 0 3f9517635d5ec105
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+T 0 1 3fa935f4c59b42b8
+T 0 0 0000000000000000
+W 0
+G 0 137 87e181c9f6c8572d
+U 0
+T 0 0 3f8444797bb90d7b
+W 0
+U 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 0 3f8444797bb90d7b
+TO 1
+U 0
+T 0 0 0000000000000000
+W 1
+G 0 84 35da762063936645
+T 0 1 3fa935f4c59b42b8
+TO 1
+T 0 1 3fa935f4c59b42b8
+TO 1
+RD 0
+U 0
+W 1
+G 0 2 4d25767f9dce13f5
+RD 0
+U 0
+A 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 96 ab0c262759a1d225
+U 0
+W 0
+I 0 7 1
+T 0 0 3f81775e495277d8
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+T 0 0 3f81775e495277d8
+A 0
+U 0
+W 0
+G 0 28 8ac123d6f7dce585
+RD 0
+U 0
+T 0 0 0000000000000000
+A 0
+U 0
+W 0
+I 0 7 1
+T 0 0 3f81775e495277d8
+TO 1
+U 0
+W 1
+T 0 0 3f81775e495277d8
+TO 1
+U 0
+I 0 7 0
+W 0
+RD 0
+I 0 7 1
+T 0 1 3f93718f9a1359f1
+TO 1
+U 0
+W 1
+T 0 1 3fa14d2f8297ba56
+TO 1
+A 1
+T 0 0 3f81775e495277d8
+TO 1
+U 0
+A 1
+T 0 0 3f81775e495277d8
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+T 0 0 3f81775e495277d8
+W 0
+G 0 359 2539e7ca24eff9dd
+RD 0
+SCENARIO chip-4-7
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+T 0 1 3fb5024bfa016244
+T 0 0 3f5668d99334ad15
+A 0
+I 0 7 1
+T 0 1 3fb5024bfa016244
+TO 1
+A 1
+T 0 0 3f5668d99334ad15
+TO 1
+T 0 0 3f5668d99334ad15
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 1 3fb5024bfa016244
+TO 1
+RD 0
+U 0
+I 0 7 0
+T 0 1 0000000000000000
+T 0 0 0000000000000000
+W 0
+U 0
+W 0
+G 0 35 f57446da6e786e3d
+U 0
+W 0
+RD 0
+U 0
+W 0
+U 0
+T 0 1 3f87ba4fc90a9926
+W 0
+U 0
+T 0 1 0000000000000000
+W 0
+U 0
+T 0 1 3f87ba4fc90a9926
+W 0
+G 0 101 458727a9a79dd68d
+U 0
+W 0
+U 0
+W 0
+G 0 131 c6302d25ad77653d
+U 0
+T 0 1 0000000000000000
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+U 0
+W 0
+G 0 182 6924abb5b3ae1815
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+U 0
+W 0
+G 0 2 4d25767f9dce13f5
+U 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 1 3fa27476f1b2e8e4
+TO 1
+U 0
+W 1
+U 0
+W 1
+U 0
+T 0 0 3f72c8d47f2863e8
+W 1
+T 0 1 3facabcb12ecce63
+TO 1
+U 0
+W 1
+RD 160
+U 0
+I 0 7 0
+W 0
+G 0 399 e5c87fcf0e77061d
+RD 0
+SCENARIO chip-4-8
+U 0
+W 0
+U 0
+W 0
+G 0 136 b20a3b9d2c8df865
+RD 0
+A 0
+U 0
+W 0
+RD 0
+I 0 7 1
+T 0 1 3fab089a02752547
+TO 1
+T 0 1 3fab089a02752547
+TO 1
+U 0
+I 0 7 0
+T 0 0 3f24f8b588e368f1
+W 0
+U 0
+A 0
+U 0
+W 0
+G 0 51 23ee21fa4edcccbd
+U 0
+A 0
+G 0 143 2044f94c1967ae63
+U 0
+W 0
+T 0 1 3fab089a02752547
+TO 0
+U 0
+W 0
+RD 0
+RD 0
+G 0 185 e515ffb7c5289aad
+G 0 3 d7e4fcfa299d713d
+U 0
+T 0 1 3fb21ab4b72c5198
+W 0
+U 0
+W 0
+G 0 174 966c033aa1966ad5
+U 0
+T 0 1 0000000000000000
+T 0 0 0000000000000000
+W 0
+U 0
+W 0
+RD 0
+G 0 181 c4e45a689efcf70d
+U 0
+W 0
+U 0
+W 0
+I 0 7 1
+T 0 0 3f8869835158b829
+TO 1
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+U 0
+W 0
+T 0 1 3fa743e963dc486b
+TO 0
+U 0
+I 0 7 1
+T 0 0 3f6797cc39ffd60f
+W 1
+RD 0
+U 0
+W 1
+U 0
+A 1
+U 0
+W 1
+U 0
+I 0 7 0
+W 0
+A 0
+RD 0
+U 0
+A 0
+G 0 192 c86ec345c0ee8125
+RD 0
+RD 0
+U 0
+A 0
+A 0
+G 0 264 53e4a4a3c8607625
+RD 0
+SCENARIO chip-4-9
+U 0
+W 0
+G 0 2 4ce16c7f9d94362b
+U 0
+W 0
+G 0 137 87e181c9f6c8572d
+U 0
+T 0 0 3f9517635d5ec105
+W 0
+G 0 56 ae655a6400818825
+U 0
+W 0
+U 0
+A 0
+G 0 192 c86ec345c0ee8125
+U 0
+W 0
+U 0
+T 0 1 3f871194ae1fa31d
+W 0
+RD 0
+G 0 147 ff2bc8f4251743bd
+U 0
+W 0
+U 0
+W 0
+RD 0
+U 0
+T 0 1 0000000000000000
+T 0 0 0000000000000000
+W 0
+U 0
+T 0 0 3f76147c05bf3211
+A 0
+G 0 48 0243cfa845185aa5
+U 0
+W 0
+U 0
+W 0
+U 0
+T 0 1 3f6517635d5ec105
+T 0 0 0000000000000000
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 2 4ce16c7f9d94362b
+G 0 29 2af95d596d2eae6d
+RD 0
+G 0 7 9ddffa377b958363
+I 0 7 1
+T 0 0 3f90b98bcb0a230f
+TO 1
+RD 0
+T 0 0 3f90b98bcb0a230f
+TO 1
+RD 192
+U 0
+I 0 7 0
+W 0
+U 0
+T 0 1 0000000000000000
+A 0
+U 0
+A 0
+U 0
+W 0
+U 0
+T 0 1 3fa41a4ab4fe4ff9
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+RD 0
+G 0 119 29ffc4daff85405d
+U 0
+W 0
+T 0 0 3f898a525310bdbc
+TO 0
+U 0
+W 0
+G 0 2 4d25767f9dce13f5
+RD 0
+G 0 42 6975f1271857fe35
+G 0 2 4d25767f9dce13f5
+RD 0
+SCENARIO chip-4-10
+I 0 7 1
+T 0 1 3fb517635d5ec105
+TO 1
+U 0
+T 0 0 3f9517635d5ec105
+W 1
+U 0
+T 0 0 0000000000000000
+W 1
+RD 0
+U 0
+I 0 7 0
+W 0
+I 0 7 1
+T 0 0 3f9517635d5ec105
+TO 1
+U 0
+W 1
+U 0
+I 0 7 0
+W 0
+U 0
+T 0 1 3fb517635d5ec105
+T 0 0 3f7dfd4148c2ba73
+A 0
+U 0
+W 0
+RD 0
+U 0
+T 0 1 0000000000000000
+T 0 0 0000000000000000
+W 0
+I 0 7 1
+T 0 0 3f7dfd4148c2ba73
+TO 1
+U 0
+W 1
+RD 0
+T 0 1 3fa2f30345e3216a
+TO 1
+T 0 0 3f7dfd4148c2ba73
+TO 1
+U 0
+T 0 1 3fa2f30345e3216a
+W 1
+G 0 38 23eb916bfe80b995
+RD 0
+U 0
+W 1
+U 0
+A 1
+A 1
+A 1
+G 0 143 5c2f719b6bcc1e1d
+U 0
+I 0 7 0
+W 0
+U 0
+W 0
+A 0
+U 0
+W 0
+U 0
+A 0
+U 0
+W 0
+U 0
+W 0
+G 0 93 0aeba7299010066d
+U 0
+W 0
+G 0 119 29ffc4daff85405d
+U 0
+W 0
+U 0
+A 0
+U 0
+W 0
+G 0 69 b792d98ea84ae56d
+U 0
+W 0
+U 0
+T 0 1 0000000000000000
+T 0 0 3f8adbc888e6a9cc
+W 0
+U 0
+T 0 1 3fa595efb18ef98b
+T 0 0 0000000000000000
+W 0
+U 0
+T 0 0 3f8adbc888e6a9cc
+W 0
+U 0
+W 0
+RD 0
+RD 0
+U 0
+A 0
+U 0
+W 0
+U 0
+W 0
+U 0
+W 0
+G 0 314 84e245fb728200b5
+RD 0
+SCENARIO chip-5-1
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 bea293f70ca2536b
+G 0 1 0825dc07b4e1744d
+G 0 1 0aeb3607b73b57c2
+G 0 1 089fca07b548b1f3
+G 0 2 74f3807e012f5a37
+G 0 1 08e3ea07b582b51f
+G 0 1 098d3407b611ffdb
+G 0 3 1b8557933acb2b1c
+G 0 3 31a297333431f513
+G 0 3 d2209d99fdad5408
+G 0 3 68685a443a591365
+G 0 2 7226c3ce44bf2ba9
+G 0 3 58bd82769f36bf36
+G 0 2 116362452bfd574a
+G 0 2 e18acda607ff5022
+G 0 3 b8b4fef15042668d
+G 0 1 0a8c0d07b6ea7d93
+G 0 2 c4265971faf345ff
+G 0 2 417ac168bcc3cb6c
+G 0 3 62ae434be335cbcf
+G 0 1 08fda007b5974c19
+G 0 1 07beec07b489294b
+G 0 2 9d2db15c8049e706
+G 0 2 24c639ba09e29749
+G 0 1 0ac93b07b71e79db
+G 0 3 f13b0d0a9f3717e4
+G 0 3 e0f38af65e268d33
+G 0 2 93c5a5ea0d30ff3f
+G 0 1 099e2807b6205eaa
+G 0 3 b008218853b14144
+G 0 3 24110f266b0c8dd7
+G 0 1 0a159007b68635c7
+G 0 3 9c7b1bd3acd31407
+G 0 3 86a5e94ac6405987
+G 0 3 41675af6be473c14
+G 0 1 09efa407b6658886
+G 0 2 a89ce74103c203ca
+G 0 3 e737bc4bf0cdbe1f
+G 0 3 a63bf0921cc4ca15
+G 0 1 0a51d407b6b8a471
+G 0 1 08b9de07b55de8a7
+G 0 2 f7466d7d28d82f47
+G 0 1 08afeb07b555aa39
+G 0 3 8e456b7d101d47fc
+G 0 2 d6bb52b20bf65b6b
+G 0 2 c19a11e54bc08dbf
+G 0 2 d6a48624788b1576
+G 0 3 eb1d4b2b18df697b
+G 0 2 17b8504d2bd085aa
+G 0 1 08a9d807b5511e42
+G 0 3 2df9c89fc1dd8e16
+G 0 1 0a8c2a07b6eaaeda
+G 0 1 0acfe407b72404b4
+G 0 3 fdf25959d0ac300e
+G 0 3 d5d212accce62683
+G 0 2 f77a50a5ea87a9b5
+G 0 1 08c1cf07b565a0d8
+G 0 2 2aaf7f1134a11232
+G 0 2 4aa4147566c01b11
+G 0 2 4d25767f9dce13f5
+G 0 1 095a2d07b5e69a5d
+G 0 2 f682a0eb34028314
+G 0 1 0a0dc907b67ec4f4
+G 0 3 65af92a3f10d76d2
+G 0 2 635463be1a8368b2
+G 0 2 e6eeccb81332bc61
+G 0 1 0990ac07b615019a
+G 0 2 c962ebe19f380eae
+G 0 1 07b82107b48364ac
+G 0 2 b4d61213bd3bc42c
+G 0 1 0ad6f607b72a41f8
+G 0 1 0883c407b5302d09
+G 0 2 b4649cabf6569506
+G 0 2 5b64822268e8501c
+G 0 3 337bebac8c68246e
+G 0 1 09eb9607b66187e5
+G 0 3 a270e66ddb4f18a6
+G 0 3 cb8d2ac176e6af40
+G 0 1 0a15be07b68683f1
+G 0 1 09f2fb07b6685232
+G 0 3 2b4161c2089a436b
+G 0 2 eb025619028c1f54
+G 0 3 b1b3a0eddf62e03f
+G 0 2 2d68559a2a21bb41
+G 0 1 07bee707b48920cc
+G 0 2 499067489faf8398
+G 0 2 23979ae9eeeb9014
+G 0 3 bc64e653151acde3
+G 0 1 0934fb07b5c7292a
+G 0 3 a2e7c84bf0e3ba62
+G 0 137 5a2255cef3f04d43
+RD 0
+SCENARIO chip-5-2
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 2 601d7f700ec5a543
+G 0 1 09908e07b614cea0
+G 0 3 d7e4fcfa299d713d
+G 0 2 57d44090eff0b62f
+G 0 2 b827f4dd20881e1f
+G 0 1 0a117607b68220c2
+G 0 3 156c5d53c988ae59
+G 0 2 8c4fee1436f9f793
+G 0 2 4b507e062227b792
+G 0 1 07ee3a07b4b11e97
+G 0 2 354db16769db8e2e
+G 0 1 0a595c07b6bfaa37
+G 0 1 0ac97107b71ed59d
+G 0 1 0a666807b6ca48f7
+G 0 3 4825330bd86e526c
+G 0 3 99b9a4a086c9e0ae
+G 0 2 139dc2906273ef22
+G 0 3 9dee2328cc8b9e16
+G 0 1 0b171c07b760667f
+G 0 2 93734b3191b3007c
+G 0 1 0a994907b6f56de3
+G 0 3 f9cfa8e3f7041b1f
+G 0 3 2ccb76cee7f9d8fd
+G 0 1 09e8fc07b65fff60
+G 0 3 8e63c79e917d8624
+G 0 1 0835e507b4ee43cb
+G 0 1 08622d07b513f90e
+G 0 3 c0b11f6cb78484fa
+G 0 1 0af8df07b7470149
+G 0 2 c850657991c6e2f3
+G 0 1 0901e807b59baf48
+G 0 3 ab6fd164d1516720
+G 0 2 ebcaca3b693dba37
+G 0 2 b752184db00186f6
+G 0 1 08328807b4eb6fed
+G 0 2 016172e18bb82163
+G 0 2 10301978d4e7ecf8
+G 0 3 b41b93fbc1839561
+G 0 3 044f731f6613944a
+G 0 1 09164307b5acf2f3
+G 0 1 09384107b5c9d5f3
+G 0 3 f34d324bf62ce03c
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 08328807b4eb6fed
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 412b7662c746e151
+G 0 2 e22250d0362b97bf
+G 0 1 09e55d07b65cbb5c
+G 0 2 b82c8d4b183fc81a
+G 0 2 7b08a71a185f57f9
+G 0 2 3201189c8735e0d6
+G 0 3 a7fa469661cadc7a
+G 0 3 d768dd1a3f704cb9
+G 0 3 37373bb687e79af6
+G 0 1 0a33c807b69f927e
+G 0 3 2ad9dbe1e9d601e3
+G 0 1 082bc407b4e5b733
+G 0 3 c62865e4aa9895be
+G 0 1 094c0407b5da1756
+G 0 3 e8472751c28983d2
+G 0 3 1d20e4db94143ad1
+G 0 2 8996ef314eea490d
+G 0 1 09f39207b66952c7
+G 0 2 51b831a7d0d6cf49
+G 0 2 1cc5027d3ee46cd8
+G 0 2 b21f6d1721ba280f
+G 0 3 6aa24da5decd1146
+G 0 3 b70b70a4f05b285f
+G 0 1 08b70e07b55c0460
+G 0 2 c8cb6c94259bf9af
+G 0 3 b9d4e041a60d9b8a
+G 0 2 0b4732f3c37f8727
+G 0 2 ffc732ee8c1e1f0e
+G 0 2 e9a5ec677276971c
+G 0 2 95ea1be4aa98ae1e
+G 0 3 d8214fdb0dea5468
+G 0 2 0d51380f7aec628f
+G 0 3 d0f5f3ec0144c347
+G 0 1 0a261707b693db5f
+G 0 1 0a4b7907b6b39e22
+G 0 1 07ff9d07b4c03a03
+G 0 1 0a0afc07b67ce5c6
+G 0 1 0978c107b6009368
+G 0 3 e81de39a43c90191
+G 0 2 c947219f41413309
+G 0 3 b2cb8554e9c4f3ce
+G 0 2 7452768fde85e1db
+G 0 1 08e3ca07b5827ebf
+RD 0
+SCENARIO chip-5-3
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 0f747e2b70d64928
+G 0 3 b1625674a0ef2a15
+G 0 3 bfff70c876a1fb6b
+G 0 2 b8060f8e27f24562
+G 0 3 d818eda072e31ff8
+G 0 2 18dff8d8d8b62807
+G 0 2 1206b754bcb7c2ff
+G 0 1 08e01f07b57f2657
+G 0 1 080d6107b4cc116b
+G 0 2 45a1774a46ea54f1
+G 0 1 0a994907b6f56de3
+G 0 3 4cf29dd02f025289
+G 0 1 09dea707b6571a6c
+G 0 3 4494ce92acbd819b
+G 0 2 5303a05f7ed7b42c
+G 0 3 eff5788439640a93
+G 0 1 0ab12307b709bf32
+G 0 1 0a377007b6a2e5cd
+G 0 3 6d31c6f6a8b9ddd7
+G 0 2 fbe937f328fc6756
+G 0 3 103b22d06a415fec
+G 0 1 085c0807b50f4e81
+G 0 3 a55e99437a0682da
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 ca79721388831032
+G 0 3 7bd1cd784deb957d
+G 0 2 266a937530a49cfd
+G 0 3 79b48d8bcbbbeabe
+G 0 1 08099e07b4c8903b
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 2 412b7662c746e151
+G 0 3 d7e4fcfa299d713d
+G 0 2 2c5ed104132839df
+G 0 3 bc68ed4e24b02037
+G 0 3 f3a21b8c48c3acd2
+G 0 2 b46a42a9d2f88370
+G 0 2 4d25767f9dce13f5
+G 0 1 0a2ced07b699b2af
+G 0 3 21b4ddafa864fa02
+G 0 3 62c8ec146b8e35df
+G 0 3 91affb252ec800fe
+G 0 2 022c29b68277de16
+G 0 1 09613107b5ecbfd7
+G 0 3 d752998fd573d369
+G 0 1 09af4307b62effbe
+G 0 2 43a69362c96224a5
+G 0 3 c99cf01387c80cb5
+G 0 3 b654ec4f6bf5aacb
+G 0 1 098d6907b61259ea
+G 0 2 1bfd1500463e7b20
+G 0 2 29d56d1ad8ec9cf8
+G 0 1 0a994907b6f56de3
+G 0 1 07c23a07b48be3ac
+G 0 1 08e04307b57f6383
+G 0 3 c613c3aca444434d
+G 0 1 0802f307b4c301fc
+G 0 3 dfbddcfed2a41621
+G 0 2 c545e8810dd7b10b
+G 0 1 09d1eb07b64d039c
+G 0 3 0c0280222e46f31f
+G 0 2 8cabbfada010798f
+G 0 1 09680007b5f28b42
+G 0 3 14d8423c7405919c
+G 0 2 f868767d29cf97f5
+G 0 2 33ae3f060b6185af
+G 0 2 f868767d29cf97f5
+G 0 1 07cfb807b4974422
+G 0 3 a654ad875052f19f
+G 0 3 21acb5042033921a
+G 0 2 412b7662c746e151
+G 0 1 09907107b6149d59
+G 0 3 9fad869431fe41e6
+G 0 1 08328807b4eb6fed
+G 0 3 5441f1c7155b246f
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 08328807b4eb6fed
+G 0 2 43a69362c96224a5
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 7187012f826a241b
+G 0 1 08320807b4ea966d
+G 0 1 08320807b4ea966d
+G 0 2 4ce16c7f9d94362b
+G 0 2 f868767d29cf97f5
+G 0 3 38f82e7094179803
+G 0 2 4d25767f9dce13f5
+G 0 3 d8dcfee851775c1c
+G 0 175 77e4a8287a3d1970
+RD 0
+SCENARIO chip-5-4
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 c792eb7d8bf61f1f
+G 0 3 6905ae0293948b6b
+G 0 2 6d05a9c9a2af9f09
+G 0 1 0821a207b4dd28e8
+G 0 2 c515dddd51cfdb28
+G 0 1 0af8d507b746f04b
+G 0 3 7c721242ca231d06
+G 0 3 bc64e653151acde3
+G 0 1 08aced07b55377c8
+G 0 3 b0798540e8d05f1d
+G 0 2 c48300956f70e27c
+G 0 1 09e90c07b6601a90
+G 0 2 6a2aae85a36cb6cf
+G 0 2 56242efa3f5a462a
+G 0 3 6b4b0ad68a313b12
+G 0 2 3d406bf43c56fd2f
+G 0 1 09789807b6004dbd
+G 0 3 1f8c116cce588f9d
+G 0 3 10ba8b72065c97d1
+G 0 3 f8968b138663ed91
+G 0 3 515e498d6caa5a9e
+G 0 3 9ab5c63e5c4bfc2d
+G 0 2 0a71ccda8387a15b
+G 0 1 090bdd07b5a3f11c
+G 0 2 563311940f57cd39
+G 0 1 096b2907b5f506c4
+G 0 3 edd7e056c54098cf
+G 0 1 09166d07b5ad3a51
+G 0 2 01892e150a961dc0
+G 0 2 426a6c62c8557445
+G 0 3 bc64e653151acde3
+G 0 2 0e5b5e425f07b15c
+G 0 2 48aba75e2d7e18e9
+G 0 3 4d1dafa62fb3311d
+G 0 2 e5cd3366242ddb5e
+G 0 1 09af0807b62e9b7d
+G 0 1 07d69f07b49d3855
+G 0 1 08c12c07b5648bdf
+G 0 2 7a967b999076e873
+G 0 2 17e2b5eaac970fc5
+G 0 3 242993269ffbf8f0
+G 0 1 094c5007b5da987a
+G 0 1 0a994907b6f56de3
+G 0 3 17ac64bfe8973574
+G 0 2 af59bca5ec12f8cd
+G 0 2 478889cf23ddfb7d
+G 0 3 c9a9eb9d3124173f
+G 0 3 2abe1406ccf0e360
+G 0 3 5b27884a6f32bd2d
+G 0 3 c61720060d4ac291
+G 0 1 09e20807b659f516
+G 0 1 07e10f07b4a64b2a
+G 0 1 082fcf07b4e9b2bb
+G 0 2 7dd0a98934b41a91
+G 0 1 0b141607b75e2676
+G 0 3 a0b8ac6d3cb47cd7
+G 0 1 0a074e07b6798845
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 43a69362c96224a5
+G 0 2 a163ee3da3550ca2
+G 0 3 9c86be656278eb15
+G 0 1 08faf907b595ad7d
+G 0 2 942ace37da94e674
+G 0 3 3bc5ebee5c72148a
+G 0 1 08105507b4ce32de
+G 0 2 90bce026742916c8
+G 0 1 08328807b4eb6fed
+G 0 2 068bf2437d1d0cbd
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 2 41f77962c7f44cce
+G 0 1 08dc5607b57b9af5
+G 0 3 cdee85c3aa578daf
+G 0 3 62167c4c100a3b7f
+G 0 2 43a69362c96224a5
+G 0 2 53e61e8acf877b93
+G 0 2 412b7662c746e151
+G 0 3 eea8ed8243af8994
+G 0 2 e586ef79780938bd
+G 0 1 0abf1c07b715f0a9
+G 0 2 41ce6362c7d12258
+G 0 2 1b6254027626bd2b
+G 0 2 14e520b79b9fcd1f
+G 0 3 9c9cd00a6182cb28
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 092a5d07b5bdc82b
+G 0 1 089f8707b548401a
+G 0 2 427b5762c863c3c9
+G 0 1 0a994907b6f56de3
+G 0 302 385cb3ec431abe51
+RD 0
+SCENARIO chip-5-5
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 1 0868f207b519b37b
+G 0 3 296fbed026353fac
+G 0 2 249fe57daa44d681
+G 0 1 084a6907b4ffcd21
+G 0 2 e48a7e19ed6b0cdf
+G 0 3 0bdeb5306daaf341
+G 0 3 9280a75785b5e4b6
+G 0 2 2ee2fe95ac61bcbf
+G 0 1 07b87807b483f881
+G 0 2 b9cf51273e4bdabe
+G 0 3 3b64cc2be044cbf6
+G 0 1 0aa41407b6ff1b59
+G 0 2 43a69362c96224a5
+G 0 1 0a994907b6f56de3
+G 0 3 e493df38afb43694
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c8679a1386c12b26
+G 0 2 0f4b5500d045452e
+G 0 3 295eaa5f854c7452
+G 0 3 342cbe2688801786
+G 0 1 0a590e07b6bf25ad
+G 0 3 046eab7d0aa00a23
+G 0 1 0a994907b6f56de3
+G 0 3 3123d90a2ff896f0
+G 0 2 557c886276873107
+G 0 3 53f3e778c1f85863
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 2 412b7662c746e151
+G 0 3 38ad45288fa70263
+G 0 1 0a994907b6f56de3
+G 0 1 08328807b4eb6fed
+G 0 3 38ad45288fa70263
+G 0 2 412b7662c746e151
+G 0 2 f0e6ea6c16545a88
+G 0 2 43a69362c96224a5
+G 0 1 08625007b5143487
+G 0 3 c7cb7413863ca7f2
+G 0 2 a7987579bbbf38fc
+G 0 2 8754e4fac195c98b
+G 0 1 09864907b60c04dc
+G 0 2 03539213e9d79e3e
+G 0 1 0b0d7a07b758b1b4
+G 0 3 00471045e9bd9819
+G 0 3 d9830b11f7824a35
+G 0 1 0a994907b6f56de3
+G 0 1 0af94b07b747b8cd
+G 0 2 412b7662c746e151
+G 0 1 09645407b5ef3127
+G 0 2 43a69362c96224a5
+G 0 2 da537ec682eaa564
+G 0 3 d7e4fcfa299d713d
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 43a69362c96224a5
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 1 08142607b4d1cbd8
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 d7e4fcfa299d713d
+G 0 2 43a69362c96224a5
+G 0 1 09896d07b60e77df
+G 0 3 0e8ef5b23f3b7c2b
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 38ad45288fa70263
+G 0 3 38ad45288fa70263
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 38ad45288fa70263
+G 0 2 43a69362c96224a5
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 3 38ad45288fa70263
+RD 0
+SCENARIO chip-5-6
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+W 0
+G 0 3 822fb7a94ca0d242
+G 0 3 862a94b3c1e528d5
+G 0 2 0ed9e7135ed22377
+G 0 1 07bb7807b4862e58
+G 0 1 07e78e07b4ab8ea5
+G 0 1 080d6707b4cc1b9d
+G 0 3 ec462faa6cc14ea1
+G 0 3 ce59d423830412a5
+G 0 3 d7e4fcfa299d713d
+G 0 2 c4b9c9e3a3d5c103
+G 0 3 0aa846a82e095d29
+G 0 3 57dce3b4eae35eed
+G 0 1 07b82207b483665f
+G 0 2 0a10d85bceff7c1b
+G 0 2 54d3ed730746d125
+G 0 3 a311c96e750e3cb0
+G 0 2 4d25767f9dce13f5
+G 0 1 09b97007b637a0ba
+G 0 3 69859037fc81eb65
+G 0 3 1e2d2a383b3f9781
+G 0 1 0a998807b6f5d8f0
+G 0 2 58fba524cc8a2ea1
+G 0 1 0a0e6d07b67fdba0
+G 0 1 0a995807b6f58760
+G 0 3 a20cf028e5836639
+G 0 1 09b26107b631688f
+G 0 2 43a69362c96224a5
+G 0 1 09571b07b5e445f0
+G 0 1 09d46907b64e5c8d
+G 0 1 08be4e07b5628fce
+G 0 1 08f44907b59016bf
+G 0 3 c8c39e13870f909f
+G 0 3 828eb080abd97c93
+G 0 1 08328807b4eb6fed
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 43a69362c96224a5
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 2 43a69362c96224a5
+G 0 3 38ad45288fa70263
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 3 218c28fac8710d47
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 412b7662c746e151
+G 0 2 412b7662c746e151
+G 0 1 0a1f2107b68dcdaf
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 2 73114c01f7104d98
+G 0 2 43a69362c96224a5
+G 0 1 0a994907b6f56de3
+G 0 2 f575577f17e2a4d0
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 1 0a884807b6e6f8fd
+G 0 2 43a69362c96224a5
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 38ad45288fa70263
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c9aa9a1387d3b7ef
+G 0 2 574cdf89e2f50713
+G 0 2 412b7662c746e151
+G 0 1 0a994907b6f56de3
+G 0 2 412b7662c746e151
+G 0 3 3ab8ed789230ce02
+G 0 1 08328807b4eb6fed
+G 0 1 0ad02e07b7248272
+G 0 3 38ad45288fa70263
+G 0 1 0a994907b6f56de3
+G 0 2 43a69362c96224a5
+G 0 1 0a994907b6f56de3
+G 0 1 0a994907b6f56de3
+G 0 3 c9aa9a1387d3b7ef
+G 0 3 c9aa9a1387d3b7ef
+G 0 93 b417628ad268d9a5
+RD 0
