@@ -85,6 +85,72 @@ static void DumpItems(Mod* m) {
   }
 }
 
+static void DumpTerrainBody(RuleTerrain* t) {
+  std::vector<std::string> sets;
+  for (size_t i = 0; i < t->_mapDataSets.size(); i++) sets.push_back(t->_mapDataSets[i]->getName());
+  F("mapDataSets", sets);
+  F("name", t->_name); F("script", t->_script); F("civilianTypes", t->_civilianTypes); F("music", t->_music);
+  F("minDepth", t->_minDepth); F("maxDepth", t->_maxDepth); F("ambience", t->_ambience); F("ambientVolume", t->_ambientVolume);
+  F("blocks", t->_mapBlocks.size());
+  for (size_t i = 0; i < t->_mapBlocks.size(); i++) {
+    MapBlock* b = t->_mapBlocks[i];
+    std::string items = "{";
+    bool first = true;
+    for (auto& p : b->_items) {
+      if (!first) items += ",";
+      first = false;
+      items += V(p.first) + ":[";
+      for (size_t k = 0; k < p.second.size(); k++) { if (k) items += ";"; items += V(p.second[k].x) + "/" + V(p.second[k].y) + "/" + V(p.second[k].z); }
+      items += "]";
+    }
+    Line(("block" + std::to_string(i)).c_str(), V(b->_name) + "," + V(b->_size_x) + "," + V(b->_size_y) + "," + V(b->_size_z) + "," + V(b->_groups) + "," + V(b->_revealedFloors) + "," + items + "}");
+  }
+}
+
+static void DumpTerrains(Mod* m) {
+  for (auto& p : m->_terrains) { Begin("terrains", p.first); DumpTerrainBody(p.second); }
+}
+
+static void DumpMapDataSets(Mod* m) {
+  for (auto& p : m->_mapDataSets) { Begin("mapDataSets", p.first); F("name", p.second->_name); }
+}
+
+static void DumpFacilities(Mod* m) {
+  for (auto& p : m->_facilities) {
+    RuleBaseFacility* r = p.second;
+    Begin("facilities", p.first);
+    FM(_type); FM(_requires); FM(_spriteShape); FM(_spriteFacility); FM(_lift); FM(_hyper); FM(_mind); FM(_grav); FM(_size);
+    FM(_buildCost); FM(_buildTime); FM(_monthlyCost); FM(_storage); FM(_personnel); FM(_aliens); FM(_crafts); FM(_labs);
+    FM(_workshops); FM(_psiLabs); FM(_radarRange); FM(_radarChance); FM(_defense); FM(_hitRatio); FM(_fireSound);
+    FM(_hitSound); FM(_mapName); FM(_listOrder);
+  }
+}
+
+static void DumpCrafts(Mod* m) {
+  for (auto& p : m->_crafts) {
+    RuleCraft* r = p.second;
+    Begin("crafts", p.first);
+    FM(_type); FM(_requires); FM(_sprite); FM(_marker); FM(_fuelMax); FM(_damageMax); FM(_speedMax); FM(_accel); FM(_weapons);
+    FM(_soldiers); FM(_vehicles); FM(_costBuy); FM(_costRent); FM(_costSell); FM(_refuelItem); FM(_repairRate); FM(_refuelRate);
+    FM(_radarRange); FM(_radarChance); FM(_sightRange); FM(_transferTime); FM(_score); FM(_deployment); FM(_spacecraft);
+    FM(_listOrder); FM(_maxItems); FM(_maxAltitude);
+    F("hasTerrain", r->_battlescapeTerrainData != 0);
+    if (r->_battlescapeTerrainData) DumpTerrainBody(r->_battlescapeTerrainData);
+  }
+}
+
+static void DumpUfos(Mod* m) {
+  for (auto& p : m->_ufos) {
+    RuleUfo* r = p.second;
+    Begin("ufos", p.first);
+    FM(_type); FM(_size); FM(_sprite); FM(_marker); FM(_markerLand); FM(_markerCrash); FM(_damageMax); FM(_speedMax); FM(_power);
+    FM(_range); FM(_score); FM(_reload); FM(_breakOffTime); FM(_sightRange); FM(_missionScore); FM(_modSprite);
+    F("radius", r->getRadius());
+    F("hasTerrain", r->_battlescapeTerrainData != 0);
+    if (r->_battlescapeTerrainData) DumpTerrainBody(r->_battlescapeTerrainData);
+  }
+}
+
 static void DumpInventories(Mod* m) {
   for (auto& p : m->_invs) {
     RuleInventory* r = p.second;
@@ -161,9 +227,14 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   DumpManifest(m);
   if (Wanted("countries")) DumpCountries(m);
   if (Wanted("regions")) DumpRegions(m);
+  if (Wanted("facilities")) DumpFacilities(m);
+  if (Wanted("crafts")) DumpCrafts(m);
   if (Wanted("craftWeapons")) DumpCraftWeapons(m);
   if (Wanted("items")) DumpItems(m);
+  if (Wanted("ufos")) DumpUfos(m);
   if (Wanted("invs")) DumpInventories(m);
+  if (Wanted("terrains")) DumpTerrains(m);
+  if (Wanted("mapDataSets")) DumpMapDataSets(m);
   if (Wanted("research")) DumpResearch(m);
   if (Wanted("manufacture")) DumpManufacture(m);
   if (Wanted("alienRaces")) DumpAlienRaces(m);

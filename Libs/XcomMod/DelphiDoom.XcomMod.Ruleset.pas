@@ -15,7 +15,9 @@ uses
   DelphiDoom.XcomMod.ModOffsets, DelphiDoom.XcomMod.RuleRegistry, DelphiDoom.XcomMod.RuleCountry,
   DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleResearch,
   DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory,
-  DelphiDoom.XcomMod.RuleMusic, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomMod.RuleItem;
+  DelphiDoom.XcomMod.RuleMusic, DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleCraftWeapon,
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
+  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.MapDataSet;
 
 type
   /// <summary>
@@ -26,25 +28,34 @@ type
   TXcomRuleset = class
   strict private
     FShared: IXcomSharedResources;
-    FMods: TArray<TXcomModData>;
-    FCurrent: Integer;
     FOffsets: TXcomModOffsets;
     FCountries: TXcomRuleRegistry<TXcomRuleCountry>;
     FRegions: TXcomRuleRegistry<TXcomRuleRegion>;
+    FFacilities: TXcomRuleRegistry<TXcomRuleBaseFacility>;
+    FCrafts: TXcomRuleRegistry<TXcomRuleCraft>;
     FCraftWeapons: TXcomRuleRegistry<TXcomRuleCraftWeapon>;
     FItems: TXcomRuleRegistry<TXcomRuleItem>;
+    FUfos: TXcomRuleRegistry<TXcomRuleUfo>;
     FInventories: TXcomRuleRegistry<TXcomRuleInventory>;
+    FTerrains: TXcomRuleRegistry<TXcomRuleTerrain>;
+    FMapDataSets: TXcomRuleRegistry<TXcomMapDataSet>;
     FResearch: TXcomRuleRegistry<TXcomRuleResearch>;
     FManufacture: TXcomRuleRegistry<TXcomRuleManufacture>;
     FAlienRaces: TXcomRuleRegistry<TXcomAlienRace>;
     FUfoTrajectories: TXcomRuleRegistry<TXcomUfoTrajectory>;
     FMusics: TXcomRuleRegistry<TXcomRuleMusic>;
     FCommendations: TXcomStringMap<TXcomRuleCommendations>;
-    FInventoryListOrder: Integer;
+    FFacilityListOrder: Integer;
+    FCraftListOrder: Integer;
     FItemListOrder: Integer;
+    FInventoryListOrder: Integer;
     FResearchListOrder: Integer;
     FManufactureListOrder: Integer;
     FFinalResearch: string;
+    procedure LoadFacilities(const ADocument: IYamlNode);
+    procedure LoadCrafts(const ADocument: IYamlNode);
+    procedure LoadUfos(const ADocument: IYamlNode);
+    procedure LoadTerrains(const ADocument: IYamlNode);
     procedure LoadCommendations(const ADocument: IYamlNode);
     procedure LoadResearch(const ADocument: IYamlNode);
   public
@@ -61,9 +72,15 @@ type
     property Offsets: TXcomModOffsets read FOffsets;
     property Countries: TXcomRuleRegistry<TXcomRuleCountry> read FCountries;
     property Regions: TXcomRuleRegistry<TXcomRuleRegion> read FRegions;
+    property Facilities: TXcomRuleRegistry<TXcomRuleBaseFacility> read FFacilities;
+    property Crafts: TXcomRuleRegistry<TXcomRuleCraft> read FCrafts;
     property CraftWeapons: TXcomRuleRegistry<TXcomRuleCraftWeapon> read FCraftWeapons;
     property Items: TXcomRuleRegistry<TXcomRuleItem> read FItems;
+    property Ufos: TXcomRuleRegistry<TXcomRuleUfo> read FUfos;
     property Inventories: TXcomRuleRegistry<TXcomRuleInventory> read FInventories;
+    property Terrains: TXcomRuleRegistry<TXcomRuleTerrain> read FTerrains;
+    /// <summary>The map data files that the terrains refer to (Mod::getMapDataSet makes them on demand)</summary>
+    property MapDataSets: TXcomRuleRegistry<TXcomMapDataSet> read FMapDataSets;
     property Research: TXcomRuleRegistry<TXcomRuleResearch> read FResearch;
     property Manufacture: TXcomRuleRegistry<TXcomRuleManufacture> read FManufacture;
     property AlienRaces: TXcomRuleRegistry<TXcomAlienRace> read FAlienRaces;
@@ -88,12 +105,22 @@ begin
     function(AType: string): TXcomRuleCountry begin Result := TXcomRuleCountry.Create(AType); end);
   FRegions := TXcomRuleRegistry<TXcomRuleRegion>.Create(
     function(AType: string): TXcomRuleRegion begin Result := TXcomRuleRegion.Create(AType); end);
+  FFacilities := TXcomRuleRegistry<TXcomRuleBaseFacility>.Create(
+    function(AType: string): TXcomRuleBaseFacility begin Result := TXcomRuleBaseFacility.Create(AType); end);
+  FCrafts := TXcomRuleRegistry<TXcomRuleCraft>.Create(
+    function(AType: string): TXcomRuleCraft begin Result := TXcomRuleCraft.Create(AType); end);
   FCraftWeapons := TXcomRuleRegistry<TXcomRuleCraftWeapon>.Create(
     function(AType: string): TXcomRuleCraftWeapon begin Result := TXcomRuleCraftWeapon.Create(AType); end);
   FItems := TXcomRuleRegistry<TXcomRuleItem>.Create(
     function(AType: string): TXcomRuleItem begin Result := TXcomRuleItem.Create(AType); end);
+  FUfos := TXcomRuleRegistry<TXcomRuleUfo>.Create(
+    function(AType: string): TXcomRuleUfo begin Result := TXcomRuleUfo.Create(AType); end);
   FInventories := TXcomRuleRegistry<TXcomRuleInventory>.Create(
     function(AType: string): TXcomRuleInventory begin Result := TXcomRuleInventory.Create(AType); end);
+  FTerrains := TXcomRuleRegistry<TXcomRuleTerrain>.Create(
+    function(AType: string): TXcomRuleTerrain begin Result := TXcomRuleTerrain.Create(AType); end);
+  FMapDataSets := TXcomRuleRegistry<TXcomMapDataSet>.Create(
+    function(AType: string): TXcomMapDataSet begin Result := TXcomMapDataSet.Create(AType); end);
   FResearch := TXcomRuleRegistry<TXcomRuleResearch>.Create(
     function(AType: string): TXcomRuleResearch begin Result := TXcomRuleResearch.Create(AType); end);
   FManufacture := TXcomRuleRegistry<TXcomRuleManufacture>.Create(
@@ -119,9 +146,15 @@ begin
   FAlienRaces.Free;
   FManufacture.Free;
   FResearch.Free;
+  // the terrains refer to the map data files: they go first
+  FUfos.Free;
+  FCrafts.Free;
+  FTerrains.Free;
+  FMapDataSets.Free;
   FInventories.Free;
   FItems.Free;
   FCraftWeapons.Free;
+  FFacilities.Free;
   FRegions.Free;
   FCountries.Free;
   FOffsets.Free;
@@ -130,10 +163,66 @@ end;
 
 procedure TXcomRuleset.SetMods(const AMods: TArray<TXcomModData>; ACurrent: Integer);
 begin
-  FMods := AMods;
-  FCurrent := ACurrent;
   FOffsets.Free;
   FOffsets := TXcomModOffsets.Create(AMods, ACurrent, FShared);
+end;
+
+procedure TXcomRuleset.LoadFacilities(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleBaseFacility;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'facilities').Items do
+  begin
+    LRule := FFacilities.LoadRule(LItem);
+    if Assigned(LRule) then
+    begin
+      Inc(FFacilityListOrder, 100);
+      LRule.Load(LItem, FOffsets, FFacilityListOrder);
+    end;
+  end;
+end;
+
+procedure TXcomRuleset.LoadCrafts(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleCraft;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'crafts').Items do
+  begin
+    LRule := FCrafts.LoadRule(LItem);
+    if Assigned(LRule) then
+    begin
+      Inc(FCraftListOrder, 100);
+      LRule.Load(LItem, FOffsets, FMapDataSets, FCraftListOrder);
+    end;
+  end;
+end;
+
+procedure TXcomRuleset.LoadUfos(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleUfo;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'ufos').Items do
+  begin
+    LRule := FUfos.LoadRule(LItem);
+    if Assigned(LRule) then
+      LRule.Load(LItem, FOffsets, FMapDataSets);
+  end;
+end;
+
+procedure TXcomRuleset.LoadTerrains(const ADocument: IYamlNode);
+var
+  LItem: IYamlNode;
+  LRule: TXcomRuleTerrain;
+begin
+  for LItem in TXcomNodeReader.Field(ADocument, 'terrains').Items do
+  begin
+    LRule := FTerrains.LoadRule(LItem, 'name');
+    if Assigned(LRule) then
+      LRule.Load(LItem, FOffsets, FMapDataSets);
+  end;
 end;
 
 procedure TXcomRuleset.LoadCommendations(const ADocument: IYamlNode);
@@ -198,6 +287,8 @@ begin
     if Assigned(LRegion) then
       LRegion.Load(LItem);
   end;
+  LoadFacilities(ADocument);
+  LoadCrafts(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'craftWeapons').Items do
   begin
     LWeapon := FCraftWeapons.LoadRule(LItem);
@@ -213,6 +304,7 @@ begin
       LItemRule.Load(LItem, FOffsets, FItemListOrder);
     end;
   end;
+  LoadUfos(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'invs').Items do
   begin
     LInventory := FInventories.LoadRule(LItem, 'id');
@@ -222,6 +314,7 @@ begin
       LInventory.Load(LItem, FInventoryListOrder);
     end;
   end;
+  LoadTerrains(ADocument);
   for LItem in TXcomNodeReader.Field(ADocument, 'alienRaces').Items do
   begin
     LRace := FAlienRaces.LoadRule(LItem, 'id');

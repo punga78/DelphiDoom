@@ -42,6 +42,9 @@ type
     /// <summary>as&lt;std::vector&lt;std::vector&lt;double&gt;&gt;&gt;</summary>
     class function ReadDoubleRows(const ANode: IYamlNode; const AKey: string;
       const ADefault: TArray<TArray<Double>>): TArray<TArray<Double>>; static;
+    /// <summary>as&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt;</summary>
+    class function ReadIntegerRows(const ANode: IYamlNode; const AKey: string;
+      const ADefault: TArray<TArray<Integer>>): TArray<TArray<Integer>>; static;
     /// <summary>The text of a node (as&lt;std::string&gt;(): a null node is "null")</summary>
     class function TextOf(const ANode: IYamlNode): string; static;
     /// <summary>as&lt;std::vector&lt;int&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
@@ -190,6 +193,30 @@ begin
     SetLength(Result[LIndex], Length(LCells));
     for LCell := 0 to High(LCells) do
       Result[LIndex][LCell] := LCells[LCell].AsDouble;
+  end;
+end;
+
+class function TXcomNodeReader.ReadIntegerRows(const ANode: IYamlNode; const AKey: string;
+  const ADefault: TArray<TArray<Integer>>): TArray<TArray<Integer>>;
+var
+  LField, LRow: IYamlNode;
+  LItems, LCells: TArray<IYamlNode>;
+  LIndex, LCell: Integer;
+begin
+  LField := Field(ANode, AKey);
+  if not LField.IsDefined or not LField.IsSequence then
+    Exit(ADefault);
+  LItems := LField.Items;
+  SetLength(Result, Length(LItems));
+  for LIndex := 0 to High(LItems) do
+  begin
+    LRow := LItems[LIndex];
+    if not LRow.IsSequence then
+      raise EYamlBadConversion.Create(LRow.Mark, 'bad conversion');
+    LCells := LRow.Items;
+    SetLength(Result[LIndex], Length(LCells));
+    for LCell := 0 to High(LCells) do
+      Result[LIndex][LCell] := LCells[LCell].AsInteger;
   end;
 end;
 

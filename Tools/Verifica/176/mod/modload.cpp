@@ -45,6 +45,7 @@
 #include "Mod/MapDataSet.h"
 #include "Mod/MapData.h"
 #include "Mod/MapScript.h"
+#include "Battlescape/Position.h"
 #include "Mod/MapBlock.h"
 #include "Mod/Unit.h"
 #include "Mod/AlienDeployment.h"

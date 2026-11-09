@@ -33,6 +33,11 @@ type
     ///   removes the rule and its place in the index and gives nil; a node with neither gives nil
     /// </summary>
     function LoadRule(const ANode: IYamlNode; const AKey: string = 'type'; AIndexed: Boolean = True): T;
+    /// <summary>
+    ///   The rule with the name, made and added (without a place in the index) if there is none: what
+    ///   Mod::getMapDataSet does
+    /// </summary>
+    function GetOrCreate(const AName: string): T;
     function Count: Integer;
     /// <summary>The name of the AIndex-th rule in the order of the names</summary>
     function Name(AIndex: Integer): string;
@@ -101,6 +106,15 @@ begin
       if LPosition >= 0 then
         FIndex.Delete(LPosition);
     end;
+  end;
+end;
+
+function TXcomRuleRegistry<T>.GetOrCreate(const AName: string): T;
+begin
+  if not FMap.TryGetValue(AName, Result) then
+  begin
+    Result := FFactory(AName);
+    FMap.SetValue(AName, Result);
   end;
 end;
 

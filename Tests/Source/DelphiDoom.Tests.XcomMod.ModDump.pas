@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Areas,
-  DelphiDoom.XcomMod.Ruleset, DelphiDoom.Tests.XcomMod.DumpWriter;
+  DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.Ruleset, DelphiDoom.Tests.XcomMod.DumpWriter;
 
 type
   /// <summary>
@@ -28,6 +28,12 @@ type
     procedure DumpCountries;
     procedure DumpRegions;
     procedure DumpCraftWeapons;
+    procedure DumpTerrainBody(const ATerrain: TXcomRuleTerrain);
+    procedure DumpTerrains;
+    procedure DumpMapDataSets;
+    procedure DumpFacilities;
+    procedure DumpCrafts;
+    procedure DumpUfos;
     procedure DumpItems;
     procedure DumpInventories;
     procedure DumpResearch;
@@ -51,7 +57,8 @@ uses
   DelphiDoom.XcomMod.RuleCountry, DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleCraftWeapon,
   DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture,
   DelphiDoom.XcomMod.AlienRace, DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomMod.RuleMusic,
-  DelphiDoom.XcomMod.RuleCommendations;
+  DelphiDoom.XcomMod.RuleCommendations, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCraft,
+  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomMod.MapBlock;
 
 { TXcomModDump }
 
@@ -70,8 +77,9 @@ end;
 
 class function TXcomModDump.Sections: TArray<string>;
 begin
-  Result := TArray<string>.Create('countries', 'regions', 'craftWeapons', 'items', 'invs', 'research', 'manufacture',
-    'alienRaces', 'ufoTrajectories', 'musics', 'commendations');
+  Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
+    'invs', 'terrains', 'mapDataSets', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'commendations');
 end;
 
 procedure TXcomModDump.DumpAreas(const AAreas: TXcomGlobeAreas);
@@ -250,6 +258,193 @@ begin
   end;
 end;
 
+procedure TXcomModDump.DumpTerrainBody(const ATerrain: TXcomRuleTerrain);
+var
+  LIndex, LItem, LPosition: Integer;
+  LNames: TArray<string>;
+  LBlock: TXcomMapBlock;
+  LText: string;
+begin
+  SetLength(LNames, ATerrain.MapDataSets.Count);
+  for LIndex := 0 to High(LNames) do
+    LNames[LIndex] := ATerrain.MapDataSets[LIndex].Name;
+  FWriter.Strs('mapDataSets', LNames);
+  FWriter.Str('name', ATerrain.Name);
+  FWriter.Str('script', ATerrain.Script);
+  FWriter.Strs('civilianTypes', ATerrain.CivilianTypes);
+  FWriter.Strs('music', ATerrain.Music);
+  FWriter.Int('minDepth', ATerrain.MinDepth);
+  FWriter.Int('maxDepth', ATerrain.MaxDepth);
+  FWriter.Int('ambience', ATerrain.Ambience);
+  FWriter.Dbl('ambientVolume', ATerrain.AmbientVolume);
+  FWriter.Card('blocks', ATerrain.MapBlocks.Count);
+  for LIndex := 0 to ATerrain.MapBlocks.Count - 1 do
+  begin
+    LBlock := ATerrain.MapBlocks[LIndex];
+    LText := '{';
+    for LItem := 0 to LBlock.Items.Count - 1 do
+    begin
+      if LItem > 0 then
+        LText := LText + ',';
+      LText := LText + TXcomDumpWriter.Quote(LBlock.Items.Key(LItem)) + ':[';
+      for LPosition := 0 to High(LBlock.Items.Value(LItem)) do
+      begin
+        if LPosition > 0 then
+          LText := LText + ';';
+        LText := LText + IntToStr(LBlock.Items.Value(LItem)[LPosition].X) + '/' +
+          IntToStr(LBlock.Items.Value(LItem)[LPosition].Y) + '/' + IntToStr(LBlock.Items.Value(LItem)[LPosition].Z);
+      end;
+      LText := LText + ']';
+    end;
+    FWriter.Line('block' + IntToStr(LIndex), TXcomDumpWriter.Quote(LBlock.Name) + ',' + IntToStr(LBlock.SizeX) +
+      ',' + IntToStr(LBlock.SizeY) + ',' + IntToStr(LBlock.SizeZ) + ',' + TXcomDumpWriter.IntList(LBlock.Groups) +
+      ',' + TXcomDumpWriter.IntList(LBlock.RevealedFloors) + ',' + LText + '}');
+  end;
+end;
+
+procedure TXcomModDump.DumpTerrains;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to FMod.Terrains.Count - 1 do
+  begin
+    FWriter.Begin_('terrains', FMod.Terrains.Name(LIndex));
+    DumpTerrainBody(FMod.Terrains.Rule(LIndex));
+  end;
+end;
+
+procedure TXcomModDump.DumpMapDataSets;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to FMod.MapDataSets.Count - 1 do
+  begin
+    FWriter.Begin_('mapDataSets', FMod.MapDataSets.Name(LIndex));
+    FWriter.Str('name', FMod.MapDataSets.Rule(LIndex).Name);
+  end;
+end;
+
+procedure TXcomModDump.DumpFacilities;
+var
+  LIndex: Integer;
+  LRule: TXcomRuleBaseFacility;
+begin
+  for LIndex := 0 to FMod.Facilities.Count - 1 do
+  begin
+    LRule := FMod.Facilities.Rule(LIndex);
+    FWriter.Begin_('facilities', FMod.Facilities.Name(LIndex));
+    FWriter.Str('type', LRule.FacilityType);
+    FWriter.Strs('requires', LRule.Requirements);
+    FWriter.Int('spriteShape', LRule.SpriteShape);
+    FWriter.Int('spriteFacility', LRule.SpriteFacility);
+    FWriter.Bool('lift', LRule.IsLift);
+    FWriter.Bool('hyper', LRule.IsHyperwave);
+    FWriter.Bool('mind', LRule.IsMindShield);
+    FWriter.Bool('grav', LRule.IsGravShield);
+    FWriter.Int('size', LRule.Size);
+    FWriter.Int('buildCost', LRule.BuildCost);
+    FWriter.Int('buildTime', LRule.BuildTime);
+    FWriter.Int('monthlyCost', LRule.MonthlyCost);
+    FWriter.Int('storage', LRule.Storage);
+    FWriter.Int('personnel', LRule.Personnel);
+    FWriter.Int('aliens', LRule.Aliens);
+    FWriter.Int('crafts', LRule.Crafts);
+    FWriter.Int('labs', LRule.Laboratories);
+    FWriter.Int('workshops', LRule.Workshops);
+    FWriter.Int('psiLabs', LRule.PsiLaboratories);
+    FWriter.Int('radarRange', LRule.RadarRange);
+    FWriter.Int('radarChance', LRule.RadarChance);
+    FWriter.Int('defense', LRule.DefenseValue);
+    FWriter.Int('hitRatio', LRule.HitRatio);
+    FWriter.Int('fireSound', LRule.FireSound);
+    FWriter.Int('hitSound', LRule.HitSound);
+    FWriter.Str('mapName', LRule.MapName);
+    FWriter.Int('listOrder', LRule.ListOrder);
+  end;
+end;
+
+procedure TXcomModDump.DumpCrafts;
+var
+  LIndex, LRow: Integer;
+  LRule: TXcomRuleCraft;
+  LText: string;
+begin
+  for LIndex := 0 to FMod.Crafts.Count - 1 do
+  begin
+    LRule := FMod.Crafts.Rule(LIndex);
+    FWriter.Begin_('crafts', FMod.Crafts.Name(LIndex));
+    FWriter.Str('type', LRule.CraftType);
+    FWriter.Strs('requires', LRule.Requirements);
+    FWriter.Int('sprite', LRule.Sprite);
+    FWriter.Int('marker', LRule.Marker);
+    FWriter.Int('fuelMax', LRule.MaxFuel);
+    FWriter.Int('damageMax', LRule.MaxDamage);
+    FWriter.Int('speedMax', LRule.MaxSpeed);
+    FWriter.Int('accel', LRule.Acceleration);
+    FWriter.Int('weapons', LRule.Weapons);
+    FWriter.Int('soldiers', LRule.Soldiers);
+    FWriter.Int('vehicles', LRule.Vehicles);
+    FWriter.Int('costBuy', LRule.BuyCost);
+    FWriter.Int('costRent', LRule.RentCost);
+    FWriter.Int('costSell', LRule.SellCost);
+    FWriter.Str('refuelItem', LRule.RefuelItem);
+    FWriter.Int('repairRate', LRule.RepairRate);
+    FWriter.Int('refuelRate', LRule.RefuelRate);
+    FWriter.Int('radarRange', LRule.RadarRange);
+    FWriter.Int('radarChance', LRule.RadarChance);
+    FWriter.Int('sightRange', LRule.SightRange);
+    FWriter.Int('transferTime', LRule.TransferTime);
+    FWriter.Int('score', LRule.Score);
+    LText := '[';
+    for LRow := 0 to High(LRule.Deployment) do
+    begin
+      if LRow > 0 then
+        LText := LText + ',';
+      LText := LText + TXcomDumpWriter.IntList(LRule.Deployment[LRow]);
+    end;
+    FWriter.Line('deployment', LText + ']');
+    FWriter.Bool('spacecraft', LRule.Spacecraft);
+    FWriter.Int('listOrder', LRule.ListOrder);
+    FWriter.Int('maxItems', LRule.MaxItems);
+    FWriter.Int('maxAltitude', LRule.MaxAltitude);
+    FWriter.Bool('hasTerrain', Assigned(LRule.BattlescapeTerrainData));
+    if Assigned(LRule.BattlescapeTerrainData) then
+      DumpTerrainBody(LRule.BattlescapeTerrainData);
+  end;
+end;
+
+procedure TXcomModDump.DumpUfos;
+var
+  LIndex: Integer;
+  LRule: TXcomRuleUfo;
+begin
+  for LIndex := 0 to FMod.Ufos.Count - 1 do
+  begin
+    LRule := FMod.Ufos.Rule(LIndex);
+    FWriter.Begin_('ufos', FMod.Ufos.Name(LIndex));
+    FWriter.Str('type', LRule.UfoType);
+    FWriter.Str('size', LRule.Size);
+    FWriter.Int('sprite', LRule.Sprite);
+    FWriter.Int('marker', LRule.Marker);
+    FWriter.Int('markerLand', LRule.LandMarker);
+    FWriter.Int('markerCrash', LRule.CrashMarker);
+    FWriter.Int('damageMax', LRule.MaxDamage);
+    FWriter.Int('speedMax', LRule.MaxSpeed);
+    FWriter.Int('power', LRule.WeaponPower);
+    FWriter.Int('range', LRule.WeaponRange);
+    FWriter.Int('score', LRule.Score);
+    FWriter.Int('reload', LRule.WeaponReload);
+    FWriter.Int('breakOffTime', LRule.BreakOffTime);
+    FWriter.Int('sightRange', LRule.SightRange);
+    FWriter.Int('missionScore', LRule.MissionScore);
+    FWriter.Str('modSprite', LRule.ModSprite);
+    FWriter.Int('radius', LRule.Radius);
+    FWriter.Bool('hasTerrain', Assigned(LRule.BattlescapeTerrainData));
+    if Assigned(LRule.BattlescapeTerrainData) then
+      DumpTerrainBody(LRule.BattlescapeTerrainData);
+  end;
+end;
+
 procedure TXcomModDump.DumpInventories;
 var
   LIndex, LSlot: Integer;
@@ -419,9 +614,14 @@ begin
   FWriter.Lines.Clear;
   DumpCountries;
   DumpRegions;
+  DumpFacilities;
+  DumpCrafts;
   DumpCraftWeapons;
   DumpItems;
+  DumpUfos;
   DumpInventories;
+  DumpTerrains;
+  DumpMapDataSets;
   DumpResearch;
   DumpManufacture;
   DumpAlienRaces;
