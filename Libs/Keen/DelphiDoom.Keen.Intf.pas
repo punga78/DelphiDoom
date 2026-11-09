@@ -580,6 +580,12 @@ type
     procedure BeginPlay;
     /// <summary>godmode = 0: the cheat is off when Keen falls off the world</summary>
     procedure ClearGodMode;
+    /// <summary>godmode: Keen cannot be killed</summary>
+    function IsGodMode: Boolean;
+    /// <summary>jumpcheat: the jump never runs out of time</summary>
+    function IsJumpCheat: Boolean;
+    /// <summary>The window of CheckEnterLevel (less than 12 bombs for King Boobus Tuber), then IN_Ack and RF_ForceRefresh</summary>
+    procedure ShowNeedBombs;
   end;
 
   /// <summary>
@@ -606,6 +612,131 @@ type
     procedure SpawnPeaPod(ATileX, ATileY: Integer);
     procedure SpawnPeaBrain(ATileX, ATileY: Integer);
     procedure SpawnBoobus(ATileX, ATileY: Integer);
+  end;
+
+  /// <summary>What the actors read and change of the play of the level (c, button0held, playstate, gamestate, GivePoints of kd_play.c)</summary>
+  IKeenPlayState = interface
+    ['{2B7D54E1-86A3-4C09-9E5F-D13A70C8B462}']
+    function GetControl: TKeenControlInfo;
+    procedure SetControl(const AValue: TKeenControlInfo);
+    function GetButton0Held: Boolean;
+    procedure SetButton0Held(AValue: Boolean);
+    function GetButton1Held: Boolean;
+    procedure SetButton1Held(AValue: Boolean);
+    function GetPlayState: TKeenExit;
+    procedure SetPlayState(AValue: TKeenExit);
+    function GetGameState: PKeenGameState;
+    function GetMapOn: Integer;
+    procedure SetMapOn(AValue: Integer);
+    /// <summary>GivePoints: an extra life at 20000, 40000, 80000...</summary>
+    procedure GivePoints(APoints: Integer);
+    property Control: TKeenControlInfo read GetControl write SetControl;
+    property Button0Held: Boolean read GetButton0Held write SetButton0Held;
+    property Button1Held: Boolean read GetButton1Held write SetButton1Held;
+    property PlayState: TKeenExit read GetPlayState write SetPlayState;
+    property GameState: PKeenGameState read GetGameState;
+    /// <summary>mapon of id_ca.c: the map that is loaded (gamestate.mapon is the one to go to next)</summary>
+    property MapOn: Integer read GetMapOn write SetMapOn;
+  end;
+
+  /// <summary>What the actors need of the view: the tics of the frame, the time, the origin and the sprites (RF_PlaceSprite, RF_RemoveSprite)</summary>
+  IKeenActionView = interface
+    ['{93C0A1D5-4E78-4B26-8D3F-6A15E2B9C047}']
+    function GetTics: Integer;
+    function GetLastTimeCount: Integer;
+    function GetTimeCount: Integer;
+    function GetOriginXGlobal: Integer;
+    function GetOriginYGlobal: Integer;
+    function GetOriginXTile: Integer;
+    function GetOriginYTile: Integer;
+    function GetOriginXTileMax: Integer;
+    function GetOriginYTileMax: Integer;
+    /// <summary>RF_PlaceSprite with spritedraw</summary>
+    procedure PlaceSprite(var AUser: TKeenSpriteHandle; AGlobalX, AGlobalY, ASpriteChunk, APriority: Integer);
+    procedure RemoveSprite(var AUser: TKeenSpriteHandle);
+    property Tics: Integer read GetTics;
+    property LastTimeCount: Integer read GetLastTimeCount;
+    property TimeCount: Integer read GetTimeCount;
+    property OriginXGlobal: Integer read GetOriginXGlobal;
+    property OriginYGlobal: Integer read GetOriginYGlobal;
+    property OriginXTile: Integer read GetOriginXTile;
+    property OriginYTile: Integer read GetOriginYTile;
+    property OriginXTileMax: Integer read GetOriginXTileMax;
+    property OriginYTileMax: Integer read GetOriginYTileMax;
+  end;
+
+  /// <summary>The motion functions of kd_play.c that the actors call</summary>
+  IKeenActorPhysics = interface
+    ['{5E18B0C7-A2D4-4F93-B761-0C8D3A94F5E2}']
+    procedure ClipToWalls(AObject: PKeenObject);
+    procedure ClipToSprite(APush, ASolid: PKeenObject; ASquish: Boolean);
+    procedure ClipToSpriteSide(APush, ASolid: PKeenObject);
+    procedure NewState(AObject: PKeenObject; AState: Integer);
+  end;
+
+  /// <summary>What every group of actions shares: the parts of the game and the helpers of kd_act1.c (DoGravity, AccelerateX, ChangeState...)</summary>
+  IKeenActionContext = interface
+    ['{C41F7A92-0D63-4B8E-A5C9-27E1B80D4F36}']
+    function GetObjects: IKeenObjectList;
+    function GetStates: IKeenStateTable;
+    function GetRandom: IKeenRandom;
+    function GetEvents: IKeenGameEvents;
+    function GetView: IKeenActionView;
+    function GetPhysics: IKeenActorPhysics;
+    function GetPlay: IKeenPlayState;
+    function GetMap: IKeenWorkingMap;
+    /// <summary>The map of the level that is played</summary>
+    procedure SetMap(const AMap: IKeenWorkingMap);
+    /// <summary>A tile of a plane (mapsegs[plane]); 0 outside the map, where the C reads other memory</summary>
+    function Tile(APlane, ATileX, ATileY: Integer): Integer;
+    /// <summary>tinf[NORTHWALL+tile] and the like; 0 for a tile that the table does not have</summary>
+    function NorthWall(ATile: Integer): Integer;
+    function EastWall(ATile: Integer): Integer;
+    function SouthWall(ATile: Integer): Integer;
+    function WestWall(ATile: Integer): Integer;
+    function InTile(ATile: Integer): Integer;
+    procedure ChangeState(AObject: PKeenObject; AState: Integer);
+    procedure DoGravity(AObject: PKeenObject);
+    procedure AccelerateX(AObject: PKeenObject; ADirection, AMax: Integer);
+    procedure FrictionX(AObject: PKeenObject);
+    procedure ProjectileThink(AObject: PKeenObject);
+    /// <summary>The RF_PlaceSprite of PLACESPRITE: the shape of the actor at its place</summary>
+    procedure PlaceSprite(AObject: PKeenObject; APriority: Integer);
+    /// <summary>The bounce of PowerReact and ProjectileReact: the speeds after the hit on the floor; gives the speed that is left</summary>
+    function BounceOffFloor(AObject: PKeenObject): Cardinal;
+    property Objects: IKeenObjectList read GetObjects;
+    property States: IKeenStateTable read GetStates;
+    property Random: IKeenRandom read GetRandom;
+    property Events: IKeenGameEvents read GetEvents;
+    property View: IKeenActionView read GetView;
+    property Physics: IKeenActorPhysics read GetPhysics;
+    property Play: IKeenPlayState read GetPlay;
+    property Map: IKeenWorkingMap read GetMap;
+  end;
+
+  /// <summary>ChangeToFlower: an enemy that a flower power hits becomes a flower for a while</summary>
+  IKeenFlowerChanger = interface
+    ['{E0B8D3A6-2F91-4C47-83A5-71D9C46B0E18}']
+    procedure ChangeToFlower(AObject: PKeenObject);
+  end;
+
+  /// <summary>The functions of kd_keen.c that the rest of the game calls: the score box and the death of Keen</summary>
+  IKeenPlayerFunctions = interface
+    ['{19C5F7E2-B4A0-4D36-9E81-5A3D08C2F7B4}']
+    /// <summary>SpawnScore</summary>
+    procedure SpawnScore;
+    /// <summary>FixScoreBox</summary>
+    procedure FixScoreBox;
+    /// <summary>KillKeen</summary>
+    procedure KillKeen;
+  end;
+
+  /// <summary>A group of the functions of the states: it says if the function is its own and runs it</summary>
+  IKeenActionGroup = interface
+    ['{7A93E2B4-1C05-4D78-9F6A-B3D81E04C259}']
+    function TryThink(AAction: Word; AObject: PKeenObject): Boolean;
+    function TryContact(AAction: Word; AObject, AOther: PKeenObject): Boolean;
+    function TryReact(AAction: Word; AObject: PKeenObject): Boolean;
   end;
 
 implementation

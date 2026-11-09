@@ -35,6 +35,11 @@ const
   KEEN_SCROLLNORTH = KEEN_TILEGLOBAL * 4;
   /// <summary>The map of the title page, that has no actors</summary>
   KEEN_TITLE_MAP = 20;
+  /// <summary>A pixel in global units (PIXGLOBAL) and the size of a block (BLOCKSIZE) that places the starting actors</summary>
+  KEEN_PIXGLOBAL = 16;
+  KEEN_BLOCKSIZE = 8 * KEEN_PIXGLOBAL;
+  /// <summary>The slot of dummyobj in the list of the actors: the place that takes what does not fit</summary>
+  KEEN_DUMMY_SLOT = KEEN_MAXACTORS;
 
 type
   /// <summary>exittype: how a level ends</summary>
@@ -66,6 +71,8 @@ type
     Lives: SmallInt;
     Difficulty: SmallInt;
   end;
+
+  PKeenGameState = ^TKeenGameState;
 
   PKeenObject = ^TKeenObject;
 
