@@ -618,8 +618,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -647,8 +647,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -676,8 +676,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -705,8 +705,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -734,8 +734,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -763,8 +763,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -792,8 +792,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -821,8 +821,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -850,8 +850,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -879,8 +879,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -908,8 +908,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -937,8 +937,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -966,8 +966,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -995,8 +995,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -1024,8 +1024,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
 
@@ -1053,8 +1053,8 @@ begin
                 ) * FScaleFactor);
 
         Buffer.Append(FChannel, Clip(pcm_sample));
-        inc(Cardinal(dp), 16*4);
-        inc(Cardinal(vp), 16*4);
+        inc(PByte(dp), 16*4);
+        inc(PByte(vp), 16*4);
       end;
     end;
   end;
