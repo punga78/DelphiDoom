@@ -125,6 +125,22 @@ type
     function ToRadians(ADegrees: Integer): Double;
   end;
 
+  /// <summary>
+  ///   What IMG_Load makes of an .LBM file: the indexed picture with its palette (Image.Palette) and the
+  ///   color key of the surface (SDL_SRCCOLORKEY with the transparent color of the BMHD, when masking is 2)
+  /// </summary>
+  TXcomLbmPicture = record
+    Image: TXcomImage;
+    HasColorKey: Boolean;
+    ColorKey: Cardinal;
+  end;
+
+  /// <summary>.LBM files (IFF PBM and ILBM), read like SDL_image does</summary>
+  IXcomLbmReader = interface
+    ['{5E2A9C47-31B8-4D06-A7F1-C94E08B2D5A3}']
+    function Read(const ABytes: TBytes): TXcomLbmPicture;
+  end;
+
   /// <summary>LOFTEMPS.DAT and the other files that are a row of 16 bit numbers (MapDataSet::loadLOFTEMPS)</summary>
   IXcomWordTableReader = interface
     ['{C61F8A27-0D53-4E9B-A4B2-8F7D19E36C05}']

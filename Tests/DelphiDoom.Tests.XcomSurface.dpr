@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom surface library (DUnitX)                  }
 {                                                                              }
@@ -23,12 +23,15 @@ uses
   DelphiDoom.XcomSurface.Types in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Types.pas',
   DelphiDoom.XcomSurface.Sdl in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Sdl.pas',
   DelphiDoom.XcomSurface.Surface in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Surface.pas',
+  DelphiDoom.XcomSurface.GfxFont in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.GfxFont.pas',
+  DelphiDoom.XcomSurface.Gfx in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Gfx.pas',
   DelphiDoom.XcomSurface.Intf in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Intf.pas',
   DelphiDoom.XcomSurface.Shade in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Shade.pas',
   DelphiDoom.XcomSurface.Font in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Font.pas',
   DelphiDoom.XcomSurface.Factory in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Factory.pas',
   DelphiDoom.Tests.XcomSurface.Script in 'Source\DelphiDoom.Tests.XcomSurface.Script.pas',
   DelphiDoom.Tests.XcomSurface.Golden in 'Source\DelphiDoom.Tests.XcomSurface.Golden.pas',
+  DelphiDoom.Tests.XcomSurface.Gfx in 'Source\DelphiDoom.Tests.XcomSurface.Gfx.pas',
   DelphiDoom.Tests.XcomSurface.Surface in 'Source\DelphiDoom.Tests.XcomSurface.Surface.pas';
 
 var

@@ -1,0 +1,502 @@
+// Harness for the objects of Libs\XcomSave (second family: Target, Waypoint, AlienBase, MissionSite, Node,
+// EquipmentLayoutItem, ...): loads random YAML nodes into the REAL OpenXcom classes (linked from the objects of a
+// real OpenXcom build, see build2.cmd) with the real yaml-cpp, saves them and prints the emitted YAML.
+// Contains no OpenXcom code; output stays outside the repository (only the golden is committed).
+#include <yaml-cpp/yaml.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <random>
+#include <set>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <memory>
+#include <utility>
+#define private public
+#include "Savegame/Waypoint.h"
+#include "Savegame/AlienBase.h"
+#include "Savegame/MissionSite.h"
+#include "Savegame/Node.h"
+#include "Savegame/EquipmentLayoutItem.h"
+#include "Savegame/ItemContainer.h"
+#include "Savegame/Vehicle.h"
+#include "Savegame/CraftWeapon.h"
+#include "Savegame/BaseFacility.h"
+#include "Savegame/Production.h"
+#include "Savegame/BattleUnitStatistics.h"
+#include "Savegame/SoldierDeath.h"
+#include "Savegame/GameTime.h"
+#include "Mod/Unit.h"
+#include "Mod/RuleItem.h"
+#include "Mod/RuleCraftWeapon.h"
+#include "Mod/RuleBaseFacility.h"
+#include "Mod/RuleManufacture.h"
+#include "Mod/AlienDeployment.h"
+#include "Mod/RuleAlienMission.h"
+#undef private
+#include "Engine/Exception.h"
+#undef main
+
+using namespace OpenXcom;
+
+static std::mt19937 rng;
+static int R(int n) { return (int)(rng() % (unsigned)n); }
+static int Rg(int lo, int hi) { return lo + R(hi - lo + 1); }
+
+static std::string Esc(const std::string& s) {
+  std::string r;
+  char buf[8];
+  for (unsigned char c : s) {
+    if (c == '\\') r += "\\\\";
+    else if (c == '\n') r += "\\n";
+    else if (c < 32 || c >= 127) { snprintf(buf, sizeof buf, "\\x%02X", c); r += buf; }
+    else r += (char)c;
+  }
+  return r;
+}
+static std::string Num() {
+  switch (R(8)) {
+    case 0: return std::to_string(Rg(-5, 5));
+    case 1: return std::to_string(Rg(0, 300));
+    case 2: return std::to_string(Rg(-100000, 100000));
+    case 3: return "2147483647";
+    case 4: return "-2147483648";
+    case 5: return "0x10";
+    default: return std::to_string(Rg(0, 40));
+  }
+}
+static std::string Bad() {
+  switch (R(5)) {
+    case 0: return "[1, 2]";
+    case 1: return "{k: v}";
+    case 2: return "abc";
+    case 3: return "~";
+    default: return "";
+  }
+}
+static std::string Dbl() {
+  switch (R(9)) {
+    case 0: return "0";
+    case 1: return "1.5";
+    case 2: return "-0.25";
+    case 3: return "3.14159265358979";
+    case 4: return "6.5";
+    case 5: return ".inf";
+    case 6: return "1e3";
+    case 7: return std::to_string(Rg(-700, 700) / 100.0);
+    default: return std::to_string(Rg(0, 628) / 100.0);
+  }
+}
+static std::string Str() {
+  static const char* v[] = {"hello", "STR_FOO", "yes", "123", "a b", "", "with: colon", "#c", "caf\xC3\xA9", "STR_HUMAN", "NONE", "- x", "'q'", "STR_AVALON"};
+  return v[R(14)];
+}
+static bool gStrict = false;  // every field present and valid (the C++ leaves members of some constructors uninitialised)
+static std::string Gen(char kind) {
+  bool bad = !gStrict && R(14) == 0;
+  switch (kind) {
+    case 'i': return bad ? Bad() : Num();
+    case 'b': return bad ? Bad() : (R(2) ? "true" : (R(2) ? "no" : "false"));
+    case 'd': return bad ? Bad() : Dbl();
+    case 's': return bad ? Bad() : Str();
+    case 'I': {
+      if (bad) return Bad();
+      std::string r = "[";
+      int n = R(6);
+      for (int i = 0; i < n; i++) { if (i) r += ", "; r += Num(); }
+      return r + "]";
+    }
+    case 'P': {
+      if (bad) return Bad();
+      if (R(8) == 0) return "[1, 2]";
+      if (R(10) == 0) return "[1, 2, x]";
+      return "[" + std::to_string(Rg(0, 60)) + ", " + std::to_string(Rg(0, 60)) + ", " + std::to_string(Rg(0, 3)) + "]";
+    }
+  }
+  return "";
+}
+struct Field { const char* key; char kind; };
+static std::string Doc(const std::vector<Field>& fields) {
+  std::string out;
+  std::vector<int> order;
+  for (size_t i = 0; i < fields.size(); i++) if (gStrict || R(10) < 8) order.push_back((int)i);
+  for (size_t i = order.size(); i > 1; i--) std::swap(order[i - 1], order[R((int)i)]);
+  for (int i : order) {
+    std::string v = Gen(fields[i].kind);
+    out += std::string(fields[i].key) + ":" + (v.empty() ? "" : " " + v) + "\n";
+  }
+  return out;
+}
+static void Case(std::ostream& corpus, const std::string& header, const std::string& body) {
+  corpus << "%%%%\n" << header << "\n" << body;
+  if (body.empty() || body.back() != '\n') corpus << "\n";
+}
+static std::string Dbits(double v) {
+  unsigned long long b;
+  memcpy(&b, &v, 8);
+  char buf[40];
+  snprintf(buf, sizeof buf, "%016llX", b);
+  return buf;
+}
+static double FromBits(const std::string& s) {
+  unsigned long long b = strtoull(s.c_str(), 0, 16);
+  double v;
+  memcpy(&v, &b, 8);
+  return v;
+}
+static std::string RandAngle() {
+  double v;
+  switch (R(4)) {
+    case 0: v = (R(2001) - 1000) / 100.0; break;
+    case 1: v = (R(200) - 100) / 7.0; break;
+    case 2: v = R(2000) / 1000.0; break;
+    default: v = (R(2001) - 1000) / 1000.0 * 3.14159; break;
+  }
+  return Dbits(v);
+}
+
+static std::vector<Field> TargetFields() { return {{"lon", 'd'}, {"lat", 'd'}, {"id", 'i'}, {"name", 's'}}; }
+
+static std::string SmallInt(int hi) { return R(10) == 0 ? Num() : std::to_string(Rg(0, hi)); }
+// the lines of a kill record (a map), the status, faction, side and body part mostly inside their enumerations
+static std::string KillDoc(bool full = true) {
+  std::string out;
+  const char* keys[] = {"name", "type", "rank", "race", "weapon", "weaponAmmo"};
+  for (int i = 0; i < 6; i++) if (R(10) < 6) out += std::string(keys[i]) + ": " + (R(14) == 0 ? Bad() : Str()) + "\n";
+  if (R(12)) out += "status: " + SmallInt(10) + "\n";
+  if (R(12)) out += "faction: " + SmallInt(2) + "\n";
+  if (R(12)) out += "side: " + SmallInt(4) + "\n";
+  if (R(12)) out += "bodypart: " + SmallInt(5) + "\n";
+  if (full || R(2)) out += "mission: " + std::to_string(Rg(0, 9)) + "\n";
+  if (full || R(2)) out += "turn: " + std::to_string(Rg(0, 40)) + "\n";
+  if (full || R(2)) out += "id: " + std::to_string(Rg(0, 5)) + "\n";
+  return out;
+}
+static std::string Indent(const std::string& block, const std::string& first, const std::string& rest) {
+  std::string out;
+  std::istringstream is(block);
+  std::string line;
+  bool firstLine = true;
+  while (std::getline(is, line)) { out += (firstLine ? first : rest) + line + "\n"; firstLine = false; }
+  return out;
+}
+static std::string StatsDoc() {
+  gStrict = true;
+  std::string out = Doc({{"wasUnconcious", 'b'}, {"shotAtCounter", 'i'}, {"hitCounter", 'i'}, {"shotByFriendlyCounter", 'i'}, {"shotFriendlyCounter", 'i'}, {"loneSurvivor", 'b'}, {"ironMan", 'b'}, {"longDistanceHitCounter", 'i'}, {"lowAccuracyHitCounter", 'i'}, {"shotsFiredCounter", 'i'}, {"shotsLandedCounter", 'i'}, {"nikeCross", 'b'}, {"mercyCross", 'b'}, {"woundsHealed", 'i'}, {"appliedStimulant", 'i'}, {"appliedPainKill", 'i'}, {"revivedSoldier", 'i'}, {"revivedHostile", 'i'}, {"revivedNeutral", 'i'}, {"martyr", 'i'}, {"slaveKills", 'i'}});
+  gStrict = false;
+  int shape = R(12);
+  if (shape == 0) out += "kills: " + Bad() + "\n";
+  else if (shape < 9) {
+    int n = R(4);
+    out += "kills:\n";
+    for (int i = 0; i < n; i++) {
+      std::string k = KillDoc();
+      if (k.empty()) k = "status: 6\nfaction: 1\nside: 0\nbodypart: 0\n";
+      out += Indent(k, "  - ", "    ");
+    }
+    if (n == 0) out += "  []\n";
+  }
+  return out;
+}
+// a map of items and quantities (or something that is not one)
+static std::string ItemMap() {
+  static const char* keys[] = {"STR_RIFLE", "STR_CLIP", "STR_GRENADE", "AAA", "zzz", "STR_ALIEN", "b", "B"};
+  int shape = R(10);
+  if (shape == 0) return Bad();
+  std::string out;
+  int n = R(6);
+  for (int i = 0; i < n; i++) {
+    std::string v = R(14) == 0 ? Bad() : Num();
+    out += std::string(keys[R(8)]) + ":" + (v.empty() ? "" : " " + v) + "\n";
+  }
+  return out;
+}
+
+static void Generate(const char* path, int count, unsigned seed) {
+  rng.seed(seed);
+  std::ofstream o(path, std::ios::binary);
+  o << "# corpus of the saved game objects, second family: a header line (kind, arguments) and a YAML node\n";
+  for (int i = 0; i < count; i++) {
+    switch (R(15)) {
+      case 10: Case(o, "unitstats", Doc({{"tu", 'i'}, {"stamina", 'i'}, {"health", 'i'}, {"bravery", 'i'}, {"reactions", 'i'}, {"firing", 'i'}, {"throwing", 'i'}, {"strength", 'i'}, {"psiStrength", 'i'}, {"psiSkill", 'i'}, {"melee", 'i'}})); break;
+      case 11: Case(o, "kill", KillDoc()); break;
+      case 12: Case(o, "stats", StatsDoc()); break;
+      case 13: {
+        std::string t = Doc({{"second", 'i'}, {"minute", 'i'}, {"hour", 'i'}, {"weekday", 'i'}, {"day", 'i'}, {"month", 'i'}, {"year", 'i'}});
+        std::string body;
+        if (R(10)) body += "time:\n" + Indent(t.empty() ? "second: 5\n" : t, "  ", "  ");
+        if (R(3)) { std::string k = KillDoc(false); body += "cause:\n" + Indent(k.empty() ? "status: 6\nfaction: 0\nside: 1\nbodypart: 2\n" : k, "  ", "  "); }
+        Case(o, "death", body);
+        break;
+      }
+      case 14: Case(o, "kill", KillDoc()); break;
+      case 0: Case(o, "waypoint " + RandAngle() + " " + RandAngle() + " " + RandAngle() + " " + RandAngle(), Doc(TargetFields())); break;
+      case 1: {
+        auto f = TargetFields();
+        f.push_back({"race", 's'}); f.push_back({"inBattlescape", 'b'}); f.push_back({"discovered", 'b'});
+        Case(o, std::string("alienbase STR_AB_MARK ") + std::to_string(Rg(-1, 9)) + " STR_ALIENBASE_DEP", Doc(f));
+        break;
+      }
+      case 2: {
+        auto f = TargetFields();
+        f.push_back({"texture", 'i'}); f.push_back({"secondsRemaining", 'i'}); f.push_back({"race", 's'});
+        f.push_back({"inBattlescape", 'b'}); f.push_back({"detected", 'b'});
+        Case(o, std::string("missionsite STR_SITE_MARK ") + std::to_string(Rg(-1, 9)) + " STR_SITE_DEP STR_MISSION", Doc(f));
+        break;
+      }
+      case 3: Case(o, "node", Doc({{"id", 'i'}, {"position", 'P'}, {"type", 'i'}, {"rank", 'i'}, {"flags", 'i'}, {"reserved", 'i'}, {"priority", 'i'}, {"allocated", 'b'}, {"links", 'I'}, {"dummy", 'b'}})); break;
+      case 4: Case(o, "equip", Doc({{"itemType", 's'}, {"slot", 's'}, {"slotX", 'i'}, {"slotY", 'i'}, {"ammoItem", 's'}, {"fuseTimer", 'i'}})); break;
+      case 5: Case(o, "itemcontainer", ItemMap()); break;
+      case 6: Case(o, "vehicle STR_TANK " + std::to_string(Rg(-2, 100)) + " " + std::to_string(Rg(1, 4)), Doc({{"ammo", 'i'}, {"size", 'i'}})); break;
+      case 7: Case(o, "craftweapon STR_CW " + std::to_string(Rg(0, 200)) + " " + std::to_string(Rg(1, 30)) + " " + std::to_string(Rg(-3, 220)), Doc({{"ammo", 'i'}, {"rearming", 'b'}})); break;
+      case 8: Case(o, "basefacility STR_FAC", Doc({{"x", 'i'}, {"y", 'i'}, {"buildTime", 'i'}})); break;
+      default: Case(o, "production STR_MANU " + std::to_string(Rg(-5, 60)) + " " + std::to_string(Rg(-1000, 90000)) + " " + (R(8) == 0 ? std::string("2147483647") : std::to_string(Rg(-2, 50))), Doc({{"assigned", 'i'}, {"spent", 'i'}, {"amount", 'i'}, {"infinite", 'b'}, {"sell", 'b'}})); break;
+    }
+  }
+}
+
+static void Out(const YAML::Node& node) {
+  YAML::Emitter out;
+  out << node;
+  printf("EMIT %s\n", out.good() ? "good" : ("bad:" + Esc(out.GetLastError())).c_str());
+  std::istringstream is(out.c_str() ? out.c_str() : "");
+  std::string line;
+  while (std::getline(is, line)) printf("| %s\n", Esc(line).c_str());
+  printf("|.\n");
+}
+
+static void TargetOps(Target& t, std::istringstream& hs) {
+  std::string a, b, c, d;
+  hs >> a >> b >> c >> d;
+  printf("ll %s %s id=%d\n", Dbits(t.getLongitude()).c_str(), Dbits(t.getLatitude()).c_str(), t.getId());
+  Out(t.save());
+  Out(t.saveId());
+  t.setLongitude(FromBits(a));
+  t.setLatitude(FromBits(b));
+  printf("set %s %s\n", Dbits(t.getLongitude()).c_str(), Dbits(t.getLatitude()).c_str());
+  printf("dist=%.10g\n", t.getDistance(FromBits(c), FromBits(d)));
+  printf("self=%.10g\n", t.getDistance(t.getLongitude(), t.getLatitude()));
+  printf("marker=%s id=%d\n", Esc(t.getMarkerName()).c_str(), t.getMarkerId());
+}
+
+static void RunCase(const std::string& header, const std::string& body) {
+  std::istringstream hs(header);
+  std::string kind;
+  hs >> kind;
+  YAML::Node node;
+  try {
+    node = YAML::Load(body);
+  } catch (const YAML::Exception&) {
+    printf("PARSE_ERR\n");
+    return;
+  }
+  try {
+    if (kind == "waypoint") {
+      Waypoint w;
+      w.load(node);
+      TargetOps(w, hs);
+      printf("type=%s marker=%d\n", w.getType().c_str(), w.getMarker());
+    } else if (kind == "alienbase") {
+      std::string markerName, depType;
+      int icon;
+      hs >> markerName >> icon >> depType;
+      AlienDeployment dep(depType);
+      dep._markerName = markerName;
+      dep._markerIcon = icon;
+      AlienBase ab(&dep);
+      ab.load(node);
+      printf("race=%s battle=%d disc=%d\n", Esc(ab.getAlienRace()).c_str(), ab.isInBattlescape(), ab.isDiscovered());
+      Out(ab.save());
+      Out(ab.saveId());
+      printf("type=%s marker=%d\n", ab.getType().c_str(), ab.getMarker());
+      ab.setDiscovered(true);
+      printf("marker=%d\n", ab.getMarker());
+      std::string none;
+      TargetOps(ab, hs);
+    } else if (kind == "missionsite") {
+      std::string markerName, depType, missionType;
+      int icon;
+      hs >> markerName >> icon >> depType >> missionType;
+      AlienDeployment dep(depType);
+      dep._markerName = markerName;
+      dep._markerIcon = icon;
+      RuleAlienMission rules(missionType);
+      MissionSite s(&rules, &dep);
+      s.load(node);
+      printf("tex=%d secs=%u race=%s battle=%d det=%d\n", s.getTexture(), (unsigned)s.getSecondsRemaining(), Esc(s.getAlienRace()).c_str(), s.isInBattlescape(), s.getDetected());
+      Out(s.save());
+      Out(s.saveId());
+      printf("type=%s marker=%d\n", s.getType().c_str(), s.getMarker());
+      s.setDetected(true);
+      printf("marker=%d\n", s.getMarker());
+      s.setCity("STR_CITY");
+      printf("city=%s\n", s.getCity().c_str());
+    } else if (kind == "node") {
+      Node n;
+      n.load(node);
+      Position p = n.getPosition();
+      printf("n %d %d,%d,%d %d %d %d %d %d alloc=%d dummy=%d target=%d\n", n.getID(), p.x, p.y, p.z, n.getType(), (int)n.getRank(), n.getFlags(), n._reserved, n.getPriority(), n.isAllocated(), n.isDummy(), n.isTarget());
+      std::string links = "[";
+      for (int x : *n.getNodeLinks()) links += std::to_string(x) + ",";
+      printf("links=%s]\n", links.c_str());
+      Out(n.save());
+      n.allocateNode();
+      printf("alloc=%d\n", n.isAllocated());
+      n.freeNode();
+      printf("alloc=%d\n", n.isAllocated());
+    } else if (kind == "equip") {
+      EquipmentLayoutItem e(node);
+      printf("e %s %s %d %d %s %d\n", Esc(e.getItemType()).c_str(), Esc(e.getSlot()).c_str(), e.getSlotX(), e.getSlotY(), Esc(e.getAmmoItem()).c_str(), e.getFuseTimer());
+      Out(e.save());
+    } else if (kind == "itemcontainer") {
+      ItemContainer c;
+      c.load(node);
+      auto dump = [&]() {
+        std::string s;
+        for (auto& kv : *c.getContents()) s += kv.first + "=" + std::to_string(kv.second) + ";";
+        printf("c %s total=%d\n", s.c_str(), c.getTotalQuantity());
+      };
+      dump();
+      Out(c.save());
+      c.addItem("STR_RIFLE", 3);
+      c.addItem("", 9);
+      c.addItem("NEW", -2);
+      dump();
+      c.removeItem("STR_RIFLE", 2);
+      c.removeItem("NEW", 5);
+      c.removeItem("nothing", 1);
+      c.removeItem("AAA", 100000);
+      dump();
+      printf("get %d %d %d\n", c.getItem("STR_RIFLE"), c.getItem(""), c.getItem("zzz"));
+      Out(c.save());
+    } else if (kind == "vehicle") {
+      std::string type;
+      int ammo, size;
+      hs >> type >> ammo >> size;
+      RuleItem rule(type);
+      Vehicle v(&rule, ammo, size);
+      v.load(node);
+      printf("v %d %d\n", v.getAmmo(), v.getSize());
+      Out(v.save());
+      v.setAmmo(7);
+      printf("after %d\n", v.getAmmo());
+    } else if (kind == "craftweapon") {
+      std::string type;
+      int ammoMax, rearm, ammo;
+      hs >> type >> ammoMax >> rearm >> ammo;
+      RuleCraftWeapon rule(type);
+      rule._ammoMax = ammoMax;
+      rule._rearmRate = rearm;
+      CraftWeapon w(&rule, ammo);
+      w.load(node);
+      printf("w %d %d\n", w.getAmmo(), w.isRearming());
+      Out(w.save());
+      int clips[] = {0, 1, 2, 5};
+      int avail[] = {0, 3, 100, 1};
+      for (int i = 0; i < 4; i++) {
+        int used = w.rearm(avail[i], clips[i]);
+        printf("rearm clip=%d avail=%d -> used=%d ammo=%d rearming=%d\n", clips[i], avail[i], used, w.getAmmo(), w.isRearming());
+      }
+      printf("set %d ", w.setAmmo(-4)); printf("%d ", w.getAmmo());
+      printf("set %d ", w.setAmmo(1000000)); printf("%d\n", w.getAmmo());
+      w.setRearming(true);
+      Out(w.save());
+    } else if (kind == "basefacility") {
+      std::string type;
+      hs >> type;
+      RuleBaseFacility rule(type);
+      BaseFacility f(&rule, 0);
+      f.load(node);
+      printf("f %d %d %d\n", f.getX(), f.getY(), f.getBuildTime());
+      Out(f.save());
+      f.build();
+      f.setX(3);
+      f.setY(4);
+      printf("after %d %d %d\n", f.getX(), f.getY(), f.getBuildTime());
+    } else if (kind == "unitstats") {
+      UnitStats s(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+      s = node.as<UnitStats>(s);
+      auto show = [&](const char* label, const UnitStats& u) {
+        printf("%s %d %d %d %d %d %d %d %d %d %d %d\n", label, u.tu, u.stamina, u.health, u.bravery, u.reactions, u.firing, u.throwing, u.strength, u.psiStrength, u.psiSkill, u.melee);
+      };
+      show("s", s);
+      Out(YAML::convert<UnitStats>::encode(s));
+      UnitStats o2(3, 0, -5, 7, 0, 2, 0, 100, -100, 1, 0);
+      show("add", s + o2);
+      show("sub", s - o2);
+      show("neg", -s);
+      UnitStats m = s;
+      m.merge(o2);
+      show("merge", m);
+      UnitStats p = s;
+      p += o2;
+      p -= o2;
+      show("pm", p);
+    } else if (kind == "kill") {
+      BattleUnitKills k(node);
+      printf("k %s|%s|%s|%s|%s|%s %d %d %d %d %d %d %d\n", Esc(k.name).c_str(), Esc(k.type).c_str(), Esc(k.rank).c_str(), Esc(k.race).c_str(), Esc(k.weapon).c_str(), Esc(k.weaponAmmo).c_str(), (int)k.status, (int)k.faction, k.mission, k.turn, k.id, (int)k.side, (int)k.bodypart);
+      Out(k.save());
+      printf("strings %s %s %s %s %s\n", k.getKillStatusString().c_str(), k.getUnitStatusString().c_str(), k.getUnitFactionString().c_str(), k.getUnitSideString().c_str(), k.getUnitBodyPartString().c_str());
+      printf("hostile=%d\n", k.hostileTurn());
+      printf("unique=%d\n", k.makeTurnUnique());
+      k.setTurn(5, k.faction);
+      printf("turn=%d hostile=%d\n", k.turn, k.hostileTurn());
+    } else if (kind == "stats") {
+      BattleUnitStatistics st(node);
+      printf("st %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d kills=%d\n", st.wasUnconcious, st.shotAtCounter, st.hitCounter, st.shotByFriendlyCounter, st.shotFriendlyCounter, st.loneSurvivor, st.ironMan, st.longDistanceHitCounter, st.lowAccuracyHitCounter, st.shotsFiredCounter, st.shotsLandedCounter, st.nikeCross, st.mercyCross, st.woundsHealed, st.appliedStimulant, st.appliedPainKill, st.revivedSoldier, st.revivedHostile, st.revivedNeutral, st.martyr, st.slaveKills, (int)st.kills.size());
+      Out(st.save());
+      printf("dup %d %d %d friendly=%d\n", st.duplicateEntry(STATUS_DEAD, 0), st.duplicateEntry(STATUS_UNCONSCIOUS, 1), st.duplicateEntry(STATUS_IGNORE_ME, 5), st.hasFriendlyFired());
+    } else if (kind == "death") {
+      SoldierDeath d;
+      d.load(node);
+      const GameTime* t = d.getTime();
+      printf("d %d %d %d %d %d %d %d cause=%d\n", t->getWeekday(), t->getDay(), t->getMonth(), t->getYear(), t->getHour(), t->getMinute(), t->getSecond(), d.getCause() != 0);
+      Out(d.save());
+    } else if (kind == "production") {
+      std::string name;
+      int time, cost, amount;
+      hs >> name >> time >> cost >> amount;
+      RuleManufacture rule(name);
+      rule.load(YAML::Load("time: " + std::to_string(time) + "\ncost: " + std::to_string(cost) + "\n"), 1);
+      Production p(&rule, amount);
+      p.load(node);
+      printf("p %d %d %d %d %d\n", p.getAssignedEngineers(), p.getTimeSpent(), p.getAmountTotal(), p.getInfiniteAmount(), p.getSellItems());
+      Out(p.save());
+      printf("produced=%d\n", p.getAmountProduced());
+      long long funds[] = {0, cost, (long long)cost - 1, -5, 5000000000LL};
+      std::string m;
+      for (long long fd : funds) m += std::to_string(rule.haveEnoughMoneyForOneMoreUnit(fd)) + ",";
+      printf("money=%s\n", m.c_str());
+    }
+  } catch (const YAML::Exception& e) {
+    printf("YAML_ERR %s\n", Esc(e.msg).c_str());
+  } catch (const std::exception&) {
+    printf("STD_ERR\n");
+  }
+}
+
+int main(int argc, char** argv) {
+  std::string mode = argv[1];
+  if (mode == "gen") { Generate(argv[2], atoi(argv[3]), atoi(argv[4])); return 0; }
+  std::ifstream f(argv[2], std::ios::binary);
+  std::string line, header, body;
+  int n = -1;
+  bool inCase = false, haveHeader = false;
+  auto flush = [&]() {
+    if (inCase && haveHeader) { printf("#%d %s\n", n, header.c_str()); RunCase(header, body); }
+  };
+  while (std::getline(f, line)) {
+    if (line == "%%%%") { flush(); n++; inCase = true; haveHeader = false; body.clear(); continue; }
+    if (!inCase) continue;
+    if (!haveHeader) { header = line; haveHeader = true; continue; }
+    body += line + "\n";
+  }
+  flush();
+  return 0;
+}

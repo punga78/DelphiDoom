@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom surface library - the SDL 1.2 operations OpenXcom relies on  }
 {  on 8 bit surfaces (SDL_BlitSurface with a color key, SDL_FillRect)           }
@@ -15,6 +15,11 @@ uses
   System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.XcomSurface.Types;
 
 type
+  /// <summary>The part of a blit that is left after the clipping of SDL_UpperBlit</summary>
+  TXcomBlitClip = record
+    SourceX, SourceY, DestX, DestY, Width, Height: Integer;
+  end;
+
   /// <summary>
   ///   The few SDL 1.2 functions that Surface uses on 8 bit surfaces. A surface is described by its pixels, size and
   ///   palette so this unit does not depend on the Surface class
@@ -36,6 +41,12 @@ type
     /// </summary>
     class procedure FillRect(APixels: PByte; AWidth, AHeight: Integer; const ARect: TXcomRect;
       AColor: Cardinal); static;
+    /// <summary>
+    ///   The clipping of SDL_UpperBlit against the source rectangle (nil: the whole source), the source size and the
+    ///   destination (whose clip rectangle is the whole surface); false when nothing is left to copy
+    /// </summary>
+    class function ClipBlit(ASourceWidth, ASourceHeight: Integer; ASourceRect: PXcomRect;
+      ADestWidth, ADestHeight: Integer; AX, AY: Integer; out AClip: TXcomBlitClip): Boolean; static;
     /// <summary>
     ///   SDL_UpperBlit between two 8 bit surfaces where the source has color key 0 (a pixel of index 0 is
     ///   transparent). If ASourceRect is nil the whole source is copied. AX and AY are the position in the
@@ -121,16 +132,11 @@ begin
     FillChar((APixels + LRow * AWidth + LRect.X)^, LRect.W, Byte(AColor and $FF));
 end;
 
-class procedure TXcomSdl.BlitKeyed(ASourcePixels: PByte; ASourceWidth, ASourceHeight: Integer;
-  const ASourcePalette: TXcomPalette; ASourceRect: PXcomRect; ADestPixels: PByte;
-  ADestWidth, ADestHeight: Integer; const ADestPalette: TXcomPalette; AX, AY: Integer);
+class function TXcomSdl.ClipBlit(ASourceWidth, ASourceHeight: Integer; ASourceRect: PXcomRect;
+  ADestWidth, ADestHeight: Integer; AX, AY: Integer; out AClip: TXcomBlitClip): Boolean;
 var
   LSourceX, LSourceY, LWidth, LHeight, LMax, LDelta: Integer;
   LDestX, LDestY: Integer;
-  LIdentical: Boolean;
-  LMap: array[0..XCOM_SURFACE_COLORS - 1] of Byte;
-  LIndex, LRow, LColumn: Integer;
-  LValue: Byte;
 begin
   LDestX := SmallInt(AX and $FFFF);
   LDestY := SmallInt(AY and $FFFF);
@@ -187,7 +193,26 @@ begin
   LDelta := LDestY + LHeight - ADestHeight;
   if LDelta > 0 then
     Dec(LHeight, LDelta);
-  if (LWidth <= 0) or (LHeight <= 0) then
+  AClip.SourceX := LSourceX;
+  AClip.SourceY := LSourceY;
+  AClip.DestX := LDestX;
+  AClip.DestY := LDestY;
+  AClip.Width := LWidth;
+  AClip.Height := LHeight;
+  Result := (LWidth > 0) and (LHeight > 0);
+end;
+
+class procedure TXcomSdl.BlitKeyed(ASourcePixels: PByte; ASourceWidth, ASourceHeight: Integer;
+  const ASourcePalette: TXcomPalette; ASourceRect: PXcomRect; ADestPixels: PByte;
+  ADestWidth, ADestHeight: Integer; const ADestPalette: TXcomPalette; AX, AY: Integer);
+var
+  LClip: TXcomBlitClip;
+  LIdentical: Boolean;
+  LMap: array[0..XCOM_SURFACE_COLORS - 1] of Byte;
+  LIndex, LRow, LColumn: Integer;
+  LValue: Byte;
+begin
+  if not ClipBlit(ASourceWidth, ASourceHeight, ASourceRect, ADestWidth, ADestHeight, AX, AY, LClip) then
     Exit;
   // SDL_Map1to1: an identical palette needs no map
   LIdentical := False;
@@ -198,15 +223,15 @@ begin
     for LIndex := 0 to ASourcePalette.Count - 1 do
       LMap[LIndex] := FindColor(ADestPalette, ASourcePalette.Colors[LIndex].Red,
         ASourcePalette.Colors[LIndex].Green, ASourcePalette.Colors[LIndex].Blue);
-  for LRow := 0 to LHeight - 1 do
-    for LColumn := 0 to LWidth - 1 do
+  for LRow := 0 to LClip.Height - 1 do
+    for LColumn := 0 to LClip.Width - 1 do
     begin
-      LValue := (ASourcePixels + (LSourceY + LRow) * ASourceWidth + LSourceX + LColumn)^;
+      LValue := (ASourcePixels + (LClip.SourceY + LRow) * ASourceWidth + LClip.SourceX + LColumn)^;
       if LValue <> 0 then
       begin
         if not LIdentical then
           LValue := LMap[LValue];
-        (ADestPixels + (LDestY + LRow) * ADestWidth + LDestX + LColumn)^ := LValue;
+        (ADestPixels + (LClip.DestY + LRow) * ADestWidth + LClip.DestX + LColumn)^ := LValue;
       end;
     end;
 end;

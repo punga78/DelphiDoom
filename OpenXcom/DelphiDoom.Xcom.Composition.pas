@@ -26,6 +26,8 @@ type
     class function CreateImageExporter: TXcomImageExporter; static;
     /// <summary>The reader of .RMP files, that also turns the records into the nodes of a block</summary>
     class function CreateRouteReader: IXcomRouteReader; static;
+    /// <summary>The reader of .LBM files (the battlescape palettes of TFTD)</summary>
+    class function CreateLbmReader: IXcomLbmReader; static;
   end;
 
 implementation
@@ -46,6 +48,11 @@ begin
   Result := TXcomImageExporter.Create(
     TXcomPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client),
     TPlatformFactory.CreateFileStore);
+end;
+
+class function TXcomComposition.CreateLbmReader: IXcomLbmReader;
+begin
+  Result := TXcomFactory.CreateLbmReader;
 end;
 
 class function TXcomComposition.CreateRouteReader: IXcomRouteReader;

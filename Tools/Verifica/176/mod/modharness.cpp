@@ -19,6 +19,9 @@
 #include <sstream>
 #define private public
 #include "Mod/RuleInventory.h"
+#include "Mod/Mod.h"
+#include "Mod/RuleCraftWeapon.h"
+#undef main
 #include "Mod/RuleCountry.h"
 #include "Mod/RuleRegion.h"
 #include "Mod/RuleResearch.h"
@@ -218,7 +221,15 @@ static std::string Gen(char kind) {
       }
       return r + "]";
     }
-    case 'W': {  // weights map string -> size_t
+    case 'O': {  // an offset: a number, or {index, mod}
+      if (bad) return Bad();
+      if (R(3)) return std::to_string(Rg(-3, 60));
+      static const char* mods[] = {"master", "current", "xcom1", "nomod"};
+      std::string r = "{";
+      if (R(10)) r += "index: " + std::to_string(Rg(-3, 700));
+      if (R(10)) r += std::string(r.size() > 1 ? ", " : "") + "mod: " + mods[R(4)];
+      return r + "}";
+    }    case 'W': {  // weights map string -> size_t
       if (bad) return Bad();
       std::string r = "{";
       int n = R(4);
@@ -253,7 +264,7 @@ static void Generate(const char* path, int count, unsigned seed) {
   std::ofstream o(path, std::ios::binary);
   o << "# corpus of the rule classes: a case is a header line (kind, extra arguments) and a YAML node\n";
   for (int i = 0; i < count; i++) {
-    switch (R(10)) {
+    switch (R(11)) {
       case 0: Case(o, "inventory " + std::to_string(Rg(0, 9)), Doc({{"id", 's'}, {"x", 'i'}, {"y", 'i'}, {"type", 'i'}, {"slots", 'L'}, {"costs", 'M'}, {"listOrder", 'i'}})); break;
       case 1: Case(o, "country " + std::string(R(2) ? "STR_USA" : "STR_X"), Doc({{"type", 's'}, {"fundingBase", 'i'}, {"fundingCap", 'i'}, {"labelLon", 'd'}, {"labelLat", 'd'}, {"areas", 'A'}})); break;
       case 2: Case(o, "region STR_R", Doc({{"type", 's'}, {"cost", 'i'}, {"areas", 'A'}, {"missionZones", 'Z'}, {"missionWeights", 'W'}, {"regionWeight", 'i'}, {"missionRegion", 's'}})); break;
@@ -263,6 +274,7 @@ static void Generate(const char* path, int count, unsigned seed) {
       case 6: Case(o, "music STR_MUSIC", Doc({{"name", 's'}, {"catPos", 'i'}, {"normalization", 'F'}})); break;
       case 7: Case(o, "mapblock STR_BLOCK", Doc({{"name", 's'}, {"width", 'i'}, {"length", 'i'}, {"height", 'i'}, {"groups", 'G'}, {"revealedFloors", 'G'}, {"items", 'P'}})); break;
       case 8: Case(o, "commendation", Doc({{"description", 's'}, {"criteria", 'C'}, {"sprite", 'i'}, {"killCriteria", 'K'}})); break;
+      case 9: Case(o, "craftweapon STR_CW " + std::to_string(R(3)), Doc({{"type", 's'}, {"sprite", 'O'}, {"sound", 'O'}, {"damage", 'i'}, {"range", 'i'}, {"accuracy", 'i'}, {"reloadCautious", 'i'}, {"reloadStandard", 'i'}, {"reloadAggressive", 'i'}, {"ammoMax", 'i'}, {"rearmRate", 'i'}, {"projectileType", 'i'}, {"projectileSpeed", 'i'}, {"launcher", 's'}, {"clip", 's'}, {"underwaterOnly", 'b'}})); break;
       default: Case(o, "trajectory STR_T", Doc({{"id", 's'}, {"groundTimer", 'i'}, {"waypoints", 'T'}})); break;
     }
   }
@@ -379,7 +391,23 @@ static void RunCase(const std::string& header, const std::string& body) {
       for (auto& p : r._criteria) { c += Esc(p.first) + ":"; for (int x : p.second) c += std::to_string(x) + ","; c += "|"; }
       for (auto& v : r._killCriteria) { k += "["; for (auto& pr : v) { k += std::to_string(pr.first) + "("; for (auto& s : pr.second) k += Esc(s) + ","; k += ")"; } k += "]"; }
       Line("desc=%s sprite=%d %s %s", Esc(r.getDescription()).c_str(), r.getSprite(), c.c_str(), k.c_str());
-    } else if (kind == "trajectory") {
+    } else if (kind == "craftweapon") {
+      // a Mod with only its offset tables: master (offset 0), xcom1 (1000) and the mod that is loading (2000)
+      static Mod* mod = 0;
+      if (!mod) {
+        mod = (Mod*)calloc(1, sizeof(Mod));
+        new (&mod->_modData) std::vector<ModData>();
+        ModData d;
+        d.info = 0;
+        d.name = "master"; d.offset = 0; d.size = 1000; mod->_modData.push_back(d);
+        d.name = "xcom1"; d.offset = 1000; d.size = 500; mod->_modData.push_back(d);
+        d.name = "mymod"; d.offset = 2000; d.size = 300; mod->_modData.push_back(d);
+      }
+      mod->_modCurrent = &mod->_modData[atoi(a2.c_str())];
+      RuleCraftWeapon r(a1);
+      r.load(node, mod);
+      Line("type=%s sprite=%d sound=%d dmg=%d range=%d acc=%d rc=%d rs=%d ra=%d ammo=%d rearm=%d ptype=%d pspeed=%d water=%d", Esc(r.getType()).c_str(), r.getSprite(), r.getSound(), r.getDamage(), r.getRange(), r.getAccuracy(), r.getCautiousReload(), r.getStandardReload(), r.getAggressiveReload(), r.getAmmoMax(), r.getRearmRate(), (int)r.getProjectileType(), r.getProjectileSpeed(), (int)r._underwaterOnly);
+      Line("launcher=%s clip=%s", Esc(r.getLauncherItem()).c_str(), Esc(r.getClipItem()).c_str());    } else if (kind == "trajectory") {
       UfoTrajectory r(a1);
       r.load(node);
       Line("id=%s timer=%u count=%u", Esc(r.getID()).c_str(), (unsigned)r.groundTimer(), (unsigned)r.getWaypointCount());
