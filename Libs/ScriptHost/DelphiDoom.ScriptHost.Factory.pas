@@ -15,9 +15,12 @@ uses
   DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.ScriptHost.CallbackGroup,
+  DelphiDoom.ScriptHost.Dll.Intf,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Fixed.Functions,
   DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.SectorSpecials.Functions.Intf,
+  DelphiDoom.ScriptHost.SectorSpecials.Intf,
   DelphiDoom.ScriptHost.Serializer.Intf,
   DelphiDoom.ScriptHost.System.Functions,
   DelphiDoom.ScriptHost.System.Intf,
@@ -45,13 +48,24 @@ type
     class function CreateEvents(const AExec: TPSExec; const ALog: ILog): IScriptEvents; static;
     /// <summary>The saver of the global variables of the script of the interpreter (not owned)</summary>
     class function CreateSerializer(const AExec: TPSExec; const ALog: ILog): IScriptSerializer; static;
+    /// <summary>The classes of the specials of the sectors (doors, ceilings, floors, ...) on one gateway</summary>
+    class function CreateSectorSpecialFunctions(
+      const ASpecials: IScriptSectorSpecials): IScriptSectorSpecialFunctions; static;
+    /// <summary>The loader of the DLLs of the PAK files</summary>
+    class function CreateDllLoader(const ASource: IScriptDllSource; const ALibrary: IScriptDllLibrary;
+      const ALog: ILog): IScriptDllLoader; static;
+    /// <summary>LoadLibrary and FreeLibrary of Windows</summary>
+    class function CreateWindowsDllLibrary: IScriptDllLibrary; static;
   end;
 
 implementation
 
 uses
+  DelphiDoom.ScriptHost.Dll.Loader,
+  DelphiDoom.ScriptHost.Dll.WindowsLibrary,
   DelphiDoom.ScriptHost.Events,
   DelphiDoom.ScriptHost.Registry,
+  DelphiDoom.ScriptHost.SectorSpecials.Functions,
   DelphiDoom.ScriptHost.Serializer,
   DelphiDoom.ScriptHost.Variables;
 
@@ -96,6 +110,23 @@ class function TScriptHostFactory.CreateSerializer(const AExec: TPSExec;
   const ALog: ILog): IScriptSerializer;
 begin
   Result := TScriptSerializer.Create(AExec, ALog);
+end;
+
+class function TScriptHostFactory.CreateSectorSpecialFunctions(
+  const ASpecials: IScriptSectorSpecials): IScriptSectorSpecialFunctions;
+begin
+  Result := TScriptSectorSpecialFunctions.Create(ASpecials);
+end;
+
+class function TScriptHostFactory.CreateDllLoader(const ASource: IScriptDllSource;
+  const ALibrary: IScriptDllLibrary; const ALog: ILog): IScriptDllLoader;
+begin
+  Result := TScriptDllLoader.Create(ASource, ALibrary, ALog);
+end;
+
+class function TScriptHostFactory.CreateWindowsDllLibrary: IScriptDllLibrary;
+begin
+  Result := TScriptDllWindowsLibrary.Create;
 end;
 
 end.

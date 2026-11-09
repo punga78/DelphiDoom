@@ -909,7 +909,6 @@ end;
 //==============================================================================
 procedure PS_Init;
 begin
-  PS_InitDLLLoader;
   PS_InitProcLists;
   PS_InitGlobals;
   PS_InitGameImport;

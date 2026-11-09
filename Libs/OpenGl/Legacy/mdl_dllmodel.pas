@@ -127,7 +127,7 @@ end;
 //==============================================================================
 procedure TDLLModel.LoadFrom(const libname: string);
 var
-  handle: LongWord;
+  handle: NativeUInt;
   proc: drawproc_t;
 begin
   proc := nil;

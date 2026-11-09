@@ -33,19 +33,22 @@ unit ps_dll;
 
 interface
 
+uses
+  DelphiDoom.ScriptHost.Dll.Intf;
+
 //==============================================================================
 //
-// PS_InitDLLLoader
+// PS_ConfigureDllLoader
 //
 //==============================================================================
-procedure PS_InitDLLLoader;
+procedure PS_ConfigureDllLoader(const ALoader: IScriptDllLoader);
 
 //==============================================================================
 //
 // PS_PAKLoadDll
 //
 //==============================================================================
-function PS_PAKLoadDll(const dllname: string): LongWord;
+function PS_PAKLoadDll(const dllname: string): NativeUInt;
 
 //==============================================================================
 //
@@ -64,51 +67,32 @@ procedure PS_ShutDownDLLLoader;
 implementation
 
 uses
-  Windows,
-  d_delphi,
-  w_folders,
-  w_pak,
-  doomdef,
-  i_tmp,
   i_system;
 
 var
-  dlls: TDStringList;
-
-type
-  THandleClass = class(TObject)
-  private
-    fHandle: LongWord;
-    fLoadCount: integer;
-    fFilename: string;
-  public
-    constructor Create(const aHandle: LongWord);
-    property Handle: LongWord read fHandle;
-    property LoadCount: integer read fLoadCount write fLoadCount;
-    property Filename: string read fFilename write fFilename;
-  end;
+  // given by the composition root
+  ps_dllloader_ref: IScriptDllLoader = nil;
 
 //==============================================================================
 //
-// THandleClass.Create
+// PS_ConfigureDllLoader
 //
 //==============================================================================
-constructor THandleClass.Create(const aHandle: LongWord);
+procedure PS_ConfigureDllLoader(const ALoader: IScriptDllLoader);
 begin
-  inherited Create;
-  fHandle := aHandle;
-  fLoadCount := 0;
-  fFilename := '';
+  ps_dllloader_ref := ALoader;
 end;
 
 //==============================================================================
 //
-// PS_InitDLLLoader
+// PS_DllLoader
 //
 //==============================================================================
-procedure PS_InitDLLLoader;
+function PS_DllLoader: IScriptDllLoader;
 begin
-  dlls := TDStringList.Create;
+  if ps_dllloader_ref = nil then
+    I_Error('PS_ConfigureDllLoader() was not called: the loader of the DLLs is missing');
+  result := ps_dllloader_ref;
 end;
 
 //==============================================================================
@@ -116,51 +100,9 @@ end;
 // PS_PAKLoadDll
 //
 //==============================================================================
-function PS_PAKLoadDll(const dllname: string): LongWord;
-var
-  ps: TPakStream;
-  dllname2: string;
-  fname: string;
-  tmpname: string;
-  idx: integer;
-  hc: THandleClass;
+function PS_PAKLoadDll(const dllname: string): NativeUInt;
 begin
-  fname := fshortname(dllname);
-  idx := dlls.IndexOf(strupper(fname));
-  if idx >= 0 then
-  begin
-    hc := dlls.Objects[idx] as THandleClass;
-    Result := hc.Handle;
-    hc.LoadCount := hc.LoadCount + 1;
-    Exit;
-  end;
-  dllname2 := dllname;
-  fname := fshortname(dllname);
-  ps := TPakStream.Create(dllname2, pm_prefered, gamedirectories);
-  if ps.IOResult <> 0 then
-  begin
-    ps.Free;
-    ps := TPakStream.Create(fname, pm_short, '', FOLDER_DLL);
-    if ps.IOResult <> 0 then
-    begin
-      ps.Free;
-      Result := 0;
-      exit;
-    end;
-  end;
-
-  tmpname := I_NewTempFile(fname);
-  SaveStreamToFile(ps, tmpname);
-  ps.Free;
-
-  Result := LoadLibrary(PChar(tmpname));
-  if Result = 0 then
-    Exit;
-
-  hc := THandleClass.Create(result);
-  hc.LoadCount := 1;
-  hc.Filename := tmpname;
-  dlls.AddObject(strupper(fname), hc);
+  Result := PS_DllLoader.Load(dllname);
 end;
 
 //==============================================================================
@@ -169,33 +111,8 @@ end;
 //
 //==============================================================================
 function PS_PAKUnLoadDll(const dllname: string): boolean;
-var
-  fname: string;
-  idx: integer;
-  hc: THandleClass;
 begin
-  fname := strupper(fshortname(dllname));
-  idx := dlls.IndexOf(fname);
-  if idx < 0 then
-  begin
-    result := false;
-    exit;
-  end;
-
-  hc := dlls.Objects[idx] as THandleClass;
-  if hc.LoadCount <= 0 then
-    I_Warning('PS_PAKUnLoadDll(): Zero LoadCount on dll "%s"'#13#10, [dlls.Strings[idx]])
-  else
-    hc.LoadCount := hc.LoadCount - 1;
-
-  if hc.LoadCount = 0 then
-  begin
-    FreeLibrary(hc.Handle);
-    hc.Free;
-    dlls.Delete(idx);
-  end;
-
-  Result := True;
+  Result := PS_DllLoader.Unload(dllname);
 end;
 
 //==============================================================================
@@ -204,13 +121,8 @@ end;
 //
 //==============================================================================
 procedure PS_ShutDownDLLLoader;
-var
-  i: integer;
 begin
-  for i := 0 to dlls.Count - 1 do
-    (dlls.Objects[i] as THandleClass).Free;
-  dlls.Free;
+  PS_DllLoader.Shutdown;
 end;
 
 end.
-

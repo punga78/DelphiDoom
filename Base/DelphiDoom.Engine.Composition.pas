@@ -177,15 +177,19 @@ uses
   p_common,
   psi_system,
   psi_globals,
+  psi_map,
+  ps_dll,
   ps_import,
   ps_main,
   DelphiDoom.ScriptHost.Factory,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Intf,
   DelphiDoom.Engine.Script.Console,
+  DelphiDoom.Engine.Script.DllSource,
   DelphiDoom.Engine.Script.Environment,
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
+  DelphiDoom.Engine.Script.SectorSpecials,
   DelphiDoom.Engine.Script.VariablesFailure,
   DelphiDoom.Engine.Script.VariablesFiles,
   w_utils,
@@ -846,9 +850,11 @@ begin
 end;
 
 // The functions that scripts can call: the registry, with the units of script that are classes
-// (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists)
+// (SYSTEM and PS_FIXED); ps_import adds the others when the scripts start (PS_InitProcLists).
+// The specials of the sectors and the loader of the DLLs of the PAK files are given to their facades
 procedure ComposeScriptHost(const ALog: ILog; const AConsole: IEngineConsole;
-  const ADefaults: IEngineDefaults; const ARandom: IGameRandom);
+  const ADefaults: IEngineDefaults; const ARandom: IGameRandom; const APakFiles: IPakFileSystem;
+  const ATempFiles: ITempFiles);
 var
   LRegistry: IScriptFunctionRegistry;
   LSystem: IScriptSystemFunctions;
@@ -863,6 +869,11 @@ begin
   PS_ConfigureScriptRegistry(LRegistry);
   // the events and the serializer of the script state warn through the log
   PS_ConfigureStateServices(ALog);
+  PS_ConfigureSectorSpecials(
+    TScriptHostFactory.CreateSectorSpecialFunctions(TEngineScriptSectorSpecials.Create));
+  PS_ConfigureDllLoader(TScriptHostFactory.CreateDllLoader(
+    TEngineScriptDllSource.Create(APakFiles, ATempFiles),
+    TScriptHostFactory.CreateWindowsDllLibrary, ALog));
 end;
 
 procedure ComposeImaging;
@@ -1305,7 +1316,7 @@ begin
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
-  ComposeScriptHost(LLog, LConsole, LDefaults, LRandom);
+  ComposeScriptHost(LLog, LConsole, LDefaults, LRandom, LPakFiles, LTempFiles);
   ComposeThreading;
   ComposeMathCore(LRandom);
   ComposeSerializer;

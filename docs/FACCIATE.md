@@ -339,14 +339,14 @@ Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch l
 
 ### `Base\i_tmp.pas` - 4 funzioni pubbliche, 12 chiamate
 
-**Ridotta (#159)**: `TEnginePaletteGenerator` e `TEngineVoxelSpriteGenerator` ricevono `ITempFiles` dal costruttore (`ComposeEngine`). Restano i salvataggi (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file) e `ps_dll`, procedure storiche senza un oggetto a cui darlo, e `i_system` per la chiusura.
+**Ridotta (#159)**: `TEnginePaletteGenerator` e `TEngineVoxelSpriteGenerator` ricevono `ITempFiles` dal costruttore (`ComposeEngine`). Restano i salvataggi (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file) (`ps_dll` dalla #172 fetta 2e riceve `ITempFiles` da `TEngineScriptDllSource`), procedure storiche senza un oggetto a cui darlo, e `i_system` per la chiusura.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `I_ConfigureTempFiles` | 1 | DelphiDoom.Engine.Composition |
 | `I_DeclareTempFile` | 0 | - |
 | `I_ShutDownTempFiles` | 2 | i_system (2) |
-| `I_NewTempFile` | 9 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), ps_dll, Strife\p_saveg (2) |
+| `I_NewTempFile` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
 
 ### `Heretic\p_ceilng.pas` - 4 funzioni pubbliche, 15 chiamate
 
@@ -447,7 +447,7 @@ Per toglierla: facciata delle porte a script (#152, Hexen e UDMF): `TDoorRunner`
 |---|---:|---|
 | `EVH_VerticalDoor` | 6 | Hexen\p_spec (3), udmf_spec (3) |
 | `TH_VerticalDoor` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `EVH_DoDoor` | 12 | Hexen\p_spec (4), psi_map (4), udmf_spec (4) |
+| `EVH_DoDoor` | 12 | Hexen\p_spec (4), DelphiDoom.Engine.Script.SectorSpecials (4), udmf_spec (4) |
 
 ### `Heretic\p_lights.pas` - 11 funzioni pubbliche, 28 chiamate
 
@@ -489,7 +489,7 @@ Per toglierla: facciata delle piattaforme a script (#154, Hexen e UDMF): `TUdmfP
 | `EVH_StopPlat` | 2 | Hexen\p_spec, udmf_spec |
 | `PH_AddActivePlat` | 4 | Doom\p_saveg, Heretic\p_saveg, Hexen\sv_save, Strife\p_saveg |
 | `TH_PlatRaise` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
-| `EVH_DoPlat` | 18 | Hexen\p_spec (5), psi_map (8), udmf_spec (5) |
+| `EVH_DoPlat` | 18 | Hexen\p_spec (5), DelphiDoom.Engine.Script.SectorSpecials (8), udmf_spec (5) |
 
 ### `Hexen\d_main.pas` - 25 funzioni pubbliche, 37 chiamate
 
@@ -707,7 +707,7 @@ Per toglierla: facciata degli special a script delle luci (#149, Hexen e UDMF): 
 | `P_SpawnLightSequence` | 4 | Doom\p_spec, Heretic\p_spec, Hexen\p_spec, Strife\p_spec |
 | `TH_Light` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
 | `TH_Phase` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `EVH_SpawnLight` | 24 | Hexen\p_spec (7), psi_map (10), udmf_spec (7) |
+| `EVH_SpawnLight` | 24 | Hexen\p_spec (7), DelphiDoom.Engine.Script.SectorSpecials (10), udmf_spec (7) |
 
 ### `Base\udmf_ceilng.pas` - 4 funzioni pubbliche, 44 chiamate
 
@@ -715,10 +715,10 @@ Per toglierla: soffitti a script: non migrati (#153 ha portato a classi solo il 
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_CeilingCrushStop` | 3 | Hexen\p_spec, psi_map, udmf_spec |
+| `EVH_CeilingCrushStop` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
 | `PH_AddActiveCeiling` | 4 | Doom\p_saveg, Heretic\p_saveg, Hexen\sv_save, Strife\p_saveg |
 | `TH_MoveCeiling` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
-| `EVH_DoCeiling` | 29 | Hexen\p_spec (6), psi_map (15), udmf_floor (2), udmf_spec (6) |
+| `EVH_DoCeiling` | 29 | Hexen\p_spec (6), DelphiDoom.Engine.Script.SectorSpecials (15), udmf_floor (2), udmf_spec (6) |
 
 ### `Strife\p_ceilng.pas` - 5 funzioni pubbliche, 45 chiamate
 
@@ -866,17 +866,17 @@ Per toglierla: `TH_MovePlane` e `TH_FloorWaggle` chiamano `TPlaneMover` e `TPlan
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_OpenPillar` | 3 | Hexen\p_spec, psi_map, udmf_spec |
-| `EVH_FloorCrushStop` | 3 | Hexen\p_spec, psi_map, udmf_spec |
-| `EVH_StartFloorWaggle` | 3 | Hexen\p_spec, psi_map, udmf_spec |
+| `EVH_OpenPillar` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `EVH_FloorCrushStop` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `EVH_StartFloorWaggle` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
 | `TH_MovePlane` | 4 | DelphiDoom.Engine.Door.Host, DelphiDoom.Engine.Plat.UdmfHost, udmf_ceilng (2) |
-| `EVH_BuildPillar` | 6 | Hexen\p_spec (2), psi_map (2), udmf_spec (2) |
-| `EVH_DoFloorAndCeiling` | 6 | Hexen\p_spec (2), psi_map (2), udmf_spec (2) |
+| `EVH_BuildPillar` | 6 | Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
+| `EVH_DoFloorAndCeiling` | 6 | Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
 | `TH_MoveFloor` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
 | `TH_BuildPillar` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
 | `TH_FloorWaggle` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
 | `EVH_BuildStairs` | 8 | Hexen\p_spec (4), udmf_spec (4) |
-| `EVH_DoFloor` | 47 | Hexen\p_enemy (2), Hexen\p_spec (12), psi_map (21), udmf_spec (12) |
+| `EVH_DoFloor` | 47 | Hexen\p_enemy (2), Hexen\p_spec (12), DelphiDoom.Engine.Script.SectorSpecials (21), udmf_spec (12) |
 
 ### `Doom\p_floor.pas` - 8 funzioni pubbliche, 104 chiamate
 
@@ -902,7 +902,7 @@ Per toglierla: gli esecutori `EVH_*` dei thinker non si possono astrarre (savega
 | `P_LineToArgs` | 0 | - |
 | `P_ArgsToLine` | 0 | - |
 | `P_ConfigureLineSpecials` | 1 | DelphiDoom.Engine.Composition |
-| `P_ForceLightning` | 5 | Hexen\p_anim (2), Hexen\p_spec, psi_map (2) |
+| `P_ForceLightning` | 5 | Hexen\p_anim (2), Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials (2) |
 | `P_LightningFlash` | 5 | Doom\p_spec, Heretic\p_spec, Hexen\p_anim (2), Strife\p_spec |
 | `P_InitLightning` | 6 | Doom\DelphiDoom.Engine.Level.DoomRules, Heretic\DelphiDoom.Engine.Level.HereticRules, Hexen\DelphiDoom.Engine.Level.HexenRules, Hexen\p_anim (2), Strife\DelphiDoom.Engine.Level.StrifeRules |
 | `P_FindSectorFromTag2` | 7 | DelphiDoom.Engine.Acs.Host (2), Hexen\p_spec (3), udmf_lights, udmf_plats |
