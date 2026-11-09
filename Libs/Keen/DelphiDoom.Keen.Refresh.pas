@@ -190,6 +190,7 @@ type
     function GetOriginYMin: Integer;
     function GetMapWidth: Integer;
     function GetMapHeight: Integer;
+    function GetLastTimeCount: Integer;
     procedure NewMap(const AMap: IKeenWorkingMap);
     procedure MarkTileGraphics;
     procedure NewPosition(AX, AY: Integer);
@@ -340,6 +341,11 @@ end;
 function TKeenRefresh.GetMapHeight: Integer;
 begin
   Result := FMapHeight;
+end;
+
+function TKeenRefresh.GetLastTimeCount: Integer;
+begin
+  Result := FLastTimeCount;
 end;
 
 function TKeenRefresh.GetOtherPage: Integer;

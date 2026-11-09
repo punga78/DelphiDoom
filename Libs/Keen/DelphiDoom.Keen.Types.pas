@@ -187,6 +187,12 @@ resourcestring
   SKeenDemoOverflow = 'Keen: demo buffer overflow (%d of %d bytes)';
   SKeenDemoExceeded = 'Keen: demo playback exceeded';
   SKeenDemoNotRecording = 'Keen: no demo is being recorded';
+  SKeenStateInvalid = 'Keen: the state %d does not exist (the table has %d)';
+  SKeenObjectListFull = 'Keen: GetNewObj: no free spots in objarray';
+  SKeenObjectRemovePlayer = 'Keen: RemoveObj: tried to remove the player';
+  SKeenActionMissing = 'Keen: the function %s of a state has no code yet';
+  SKeenObjectInvalid = 'Keen: the actor %d does not exist';
+  SKeenNoSpriteShape = 'Keen: the actor has the shape %d, that is not a sprite';
   SKeenInputBadScan = 'Keen: the scan code %d is not valid';
 
 type

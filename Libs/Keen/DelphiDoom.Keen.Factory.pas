@@ -48,6 +48,15 @@ type
     class function CreateRefresh(const AVideo: IKeenVideo; const AGraphics: IKeenGraphics;
       const ATileInfo: IKeenTileInfo; const ASprites: IKeenSpriteCache; const AClock: IKeenClock;
       ACompatibility: Boolean = False): IKeenRefresh; static;
+    /// <summary>The input manager (id_in): AMouse, AJoysticks and APump can be nil</summary>
+    class function CreateInput(const AClock: IKeenClock; const AMouse: IKeenMouse; const AJoysticks: IKeenJoysticks;
+      const APump: IKeenInputPump): IKeenInput; static;
+    /// <summary>The random numbers of the game (US_RndT)</summary>
+    class function CreateRandom: IKeenRandom; static;
+    /// <summary>A copy of the table of the 213 states of the actors</summary>
+    class function CreateGameStateTable: IKeenStateTable; static;
+    /// <summary>The list of the actors (objarray), with the player and the score box</summary>
+    class function CreateObjectList(const ARefresh: IKeenRefresh): IKeenObjectList; static;
     /// <summary>Opens the three files with their headers and dictionaries</summary>
     class function OpenGameData(const AFiles: IKeenDataFiles): IKeenGameData; static;
   end;
@@ -59,7 +68,8 @@ uses
   DelphiDoom.Keen.GraphicsLayout, DelphiDoom.Keen.ExplicitLayout, DelphiDoom.Keen.ChunkSource,
   DelphiDoom.Keen.MapSource, DelphiDoom.Keen.Graphics, DelphiDoom.Keen.MapRenderer,
   DelphiDoom.Keen.GameLoader, DelphiDoom.Keen.EgaMemory, DelphiDoom.Keen.Video, DelphiDoom.Keen.SpriteCache,
-  DelphiDoom.Keen.WorkingMap, DelphiDoom.Keen.Refresh;
+  DelphiDoom.Keen.WorkingMap, DelphiDoom.Keen.Refresh, DelphiDoom.Keen.Input, DelphiDoom.Keen.Random,
+  DelphiDoom.Keen.StateTableCopy, DelphiDoom.Keen.ObjectList;
 
 { TKeenFactory }
 
@@ -138,6 +148,27 @@ class function TKeenFactory.CreateRefresh(const AVideo: IKeenVideo; const AGraph
   ACompatibility: Boolean): IKeenRefresh;
 begin
   Result := TKeenRefresh.Create(AVideo, AGraphics, ATileInfo, ASprites, AClock, ACompatibility);
+end;
+
+class function TKeenFactory.CreateInput(const AClock: IKeenClock; const AMouse: IKeenMouse;
+  const AJoysticks: IKeenJoysticks; const APump: IKeenInputPump): IKeenInput;
+begin
+  Result := TKeenInput.Create(AClock, AMouse, AJoysticks, APump);
+end;
+
+class function TKeenFactory.CreateRandom: IKeenRandom;
+begin
+  Result := TKeenRandom.Create;
+end;
+
+class function TKeenFactory.CreateGameStateTable: IKeenStateTable;
+begin
+  Result := TKeenStateTableCopy.CreateGameStates;
+end;
+
+class function TKeenFactory.CreateObjectList(const ARefresh: IKeenRefresh): IKeenObjectList;
+begin
+  Result := TKeenObjectList.Create(ARefresh);
 end;
 
 class function TKeenFactory.OpenGameData(const AFiles: IKeenDataFiles): IKeenGameData;

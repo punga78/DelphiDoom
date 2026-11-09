@@ -11,7 +11,8 @@ unit DelphiDoom.Keen.Intf;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.Keen.Types, DelphiDoom.Keen.InputTypes;
+  System.SysUtils, System.Classes, DelphiDoom.Keen.Types, DelphiDoom.Keen.InputTypes,
+  DelphiDoom.Keen.GameTypes, DelphiDoom.Keen.StateTypes;
 
 type
   /// <summary>The Huffman expansion of the id engine (CAL_HuffExpand), with the dictionary of a file</summary>
@@ -457,6 +458,7 @@ type
     function GetOriginYMin: Integer;
     function GetMapWidth: Integer;
     function GetMapHeight: Integer;
+    function GetLastTimeCount: Integer;
     /// <summary>RF_NewMap: the map that is played (RF_MarkTileGraphics and RF_NewPosition come next)</summary>
     procedure NewMap(const AMap: IKeenWorkingMap);
     /// <summary>RF_MarkTileGraphics: the animation chains of the tiles of the map (what the C leaves in the info plane)</summary>
@@ -492,6 +494,118 @@ type
     property MapHeight: Integer read GetMapHeight;
     property OtherPage: Integer read GetOtherPage;
     property ScreenPage: Integer read GetScreenPage;
+    /// <summary>lasttimecount: the value of TimeCount at the last refresh (for the gravity of a frame)</summary>
+    property LastTimeCount: Integer read GetLastTimeCount;
+  end;
+
+  /// <summary>US_RndT: the random numbers of the game, a table of 256 bytes that is read one after the other</summary>
+  IKeenRandom = interface
+    ['{8D31F7A2-04C9-4B65-A2E8-5C0A9B17D3E6}']
+    /// <summary>US_InitRndT: where the table starts: the low byte of the time if ARandomize, otherwise 0</summary>
+    procedure Initialize(ARandomize: Boolean; ATime: Integer);
+    /// <summary>The next byte of the table (the index goes up before it is read)</summary>
+    function RndT: Byte;
+  end;
+
+  /// <summary>
+  ///   The states of the actors (statetype[]). The table is a copy that can change: ClipToSprite takes
+  ///   the flag "push to floor" away from a state for the length of a call
+  /// </summary>
+  IKeenStateTable = interface
+    ['{4E9B05C3-D718-4A26-8F31-A7C6E2B09D54}']
+    function GetCount: Integer;
+    function GetDef(AIndex: Integer): TKeenStateDef;
+    procedure SetPushToFloor(AIndex: Integer; AValue: Boolean);
+    property Count: Integer read GetCount;
+    property Defs[AIndex: Integer]: TKeenStateDef read GetDef; default;
+  end;
+
+  /// <summary>
+  ///   The functions that the states call. The C has a pointer in each state; the table has the number of the
+  ///   function (DelphiDoom.Keen.ActionIds) and this contract runs it. A function with no code is an
+  ///   EKeenException when it is called: the game does not go on with a state that does nothing by mistake
+  /// </summary>
+  IKeenActions = interface
+    ['{A17C60E5-3B94-4D82-96F0-C25D8E1B7A39}']
+    /// <summary>think(ob)</summary>
+    procedure Think(AAction: Word; AObject: PKeenObject);
+    /// <summary>contact(ob, hit)</summary>
+    procedure Contact(AAction: Word; AObject, AOther: PKeenObject);
+    /// <summary>react(ob)</summary>
+    procedure React(AAction: Word; AObject: PKeenObject);
+  end;
+
+  /// <summary>The list of the actors (objarray): the player and the score box first, the others as they are made</summary>
+  IKeenObjectList = interface
+    ['{6B0DA9F1-2E57-4C38-B4A6-91F3D87C5E02}']
+    function GetCount: Integer;
+    function GetNew: PKeenObject;
+    function GetPlayer: PKeenObject;
+    function GetScoreObj: PKeenObject;
+    function GetFirst: PKeenObject;
+    function GetObject(ASlot: Integer): PKeenObject;
+    /// <summary>InitObjArray: every actor is free; the player and the score box get the first two places</summary>
+    procedure Init;
+    /// <summary>
+    ///   GetNewObj: a free place at the end of the list, cleared and active. If the list is full the dummy
+    ///   actor, that nothing uses (AUseDummy), or an EKeenException
+    /// </summary>
+    function GetNewObj(AUseDummy: Boolean): PKeenObject;
+    /// <summary>RemoveObj: the actor leaves the list and the refresh manager; its link to the next is not touched</summary>
+    procedure RemoveObj(AGone: PKeenObject);
+    /// <summary>The actor after AObject, nil at the end of the list</summary>
+    function NextOf(AObject: PKeenObject): PKeenObject;
+    property Count: Integer read GetCount;
+    /// <summary>"new" of the C: the last actor that GetNewObj gave</summary>
+    property New: PKeenObject read GetNew;
+    property Player: PKeenObject read GetPlayer;
+    property ScoreObj: PKeenObject read GetScoreObj;
+    /// <summary>The player: the list starts with it</summary>
+    property First: PKeenObject read GetFirst;
+    property Objects[ASlot: Integer]: PKeenObject read GetObject; default;
+  end;
+
+  /// <summary>What happens in the game that is not the motion of the actors: the things that the C calls from the middle of a frame</summary>
+  IKeenGameEvents = interface
+    ['{C28E4D70-9A15-4F63-B0D7-3E58A1F96B24}']
+    /// <summary>KillKeen</summary>
+    procedure KillKeen;
+    /// <summary>SD_PlaySound</summary>
+    procedure PlaySound(ASound: Integer);
+    /// <summary>CheckKeys at the end of a frame (status window, pause, control panel, debug keys)</summary>
+    procedure CheckKeys;
+    /// <summary>loadedgame: a saved game was loaded from the control panel, so the loop of the frames ends</summary>
+    function IsGameLoaded: Boolean;
+    /// <summary>FixScoreBox: the start of the loop of the frames (the bomb and the flower are drawn in the score box)</summary>
+    procedure BeginPlay;
+    /// <summary>godmode = 0: the cheat is off when Keen falls off the world</summary>
+    procedure ClearGodMode;
+  end;
+
+  /// <summary>
+  ///   The functions that put an actor on the map (Spawn* of kd_keen.c, kd_act1.c and kd_act2.c), one for each
+  ///   thing of the info plane. Each takes the next actor of the list ("new") and fills it
+  /// </summary>
+  IKeenActorSpawner = interface
+    ['{F4A6B13D-70C8-4E29-A5B1-08D92C7E3F65}']
+    procedure SpawnKeen(ATileX, ATileY, ADirection: Integer);
+    procedure SpawnWorldKeen(ATileX, ATileY: Integer);
+    procedure SpawnBonus(ATileX, ATileY, AType: Integer);
+    procedure SpawnDoor(ATileX, ATileY: Integer);
+    procedure SpawnBrocco(ATileX, ATileY: Integer);
+    procedure SpawnTomat(ATileX, ATileY: Integer);
+    procedure SpawnCarrot(ATileX, ATileY: Integer);
+    procedure SpawnAspar(ATileX, ATileY: Integer);
+    procedure SpawnGrape(ATileX, ATileY: Integer);
+    procedure SpawnTater(ATileX, ATileY: Integer);
+    procedure SpawnCart(ATileX, ATileY: Integer);
+    procedure SpawnFrenchy(ATileX, ATileY: Integer);
+    procedure SpawnMelon(ATileX, ATileY, ADirection: Integer);
+    procedure SpawnSquasher(ATileX, ATileY: Integer);
+    procedure SpawnApel(ATileX, ATileY: Integer);
+    procedure SpawnPeaPod(ATileX, ATileY: Integer);
+    procedure SpawnPeaBrain(ATileX, ATileY: Integer);
+    procedure SpawnBoobus(ATileX, ATileY: Integer);
   end;
 
 implementation

@@ -88,13 +88,22 @@ begin
   FSeed := ASeed;
   SetLength(FSprites, 4);
   FillChar(LEntry, SizeOf(LEntry), 0);
+  // the hit rectangles (xl, yl, xh, yh) are in 1/16 of a pixel: the sprites 1 and 2 are a whole tile (256)
   LEntry.Width := 3;
   LEntry.Height := 20;
   LEntry.Shifts := 4;
+  LEntry.XL := 32;
+  LEntry.YL := 16;
+  LEntry.XH := 224;
+  LEntry.YH := 240;
   FSprites[0] := LEntry;
   LEntry.Width := 2;
   LEntry.Height := 10;
   LEntry.Shifts := 2;
+  LEntry.XL := 0;
+  LEntry.YL := 0;
+  LEntry.XH := 255;
+  LEntry.YH := 255;
   FSprites[1] := LEntry;
   LEntry.Width := 2;
   LEntry.Height := 8;
@@ -105,6 +114,8 @@ begin
   LEntry.OriginX := -40;
   LEntry.OriginY := 72;
   LEntry.Shifts := 4;
+  LEntry.XH := 127;
+  LEntry.YH := 127;
   FSprites[3] := LEntry;
 end;
 
