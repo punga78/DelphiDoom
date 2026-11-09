@@ -1,0 +1,3983 @@
+M Dec
+I 0
+U 0
+H 0
+W 0
+L 0
+Q 0
+%%%%
+M Dec
+I 1
+U 1
+H 1
+W 1
+L 1
+Q 1
+%%%%
+M Dec
+I -1
+U 4294967295
+H -1
+W 65535
+L -1
+Q 18446744073709551615
+%%%%
+M Dec
+I 7
+U 7
+H 7
+W 7
+L 7
+Q 7
+%%%%
+M Dec
+I 8
+U 8
+H 8
+W 8
+L 8
+Q 8
+%%%%
+M Dec
+I 9
+U 9
+H 9
+W 9
+L 9
+Q 9
+%%%%
+M Dec
+I 10
+U 10
+H 10
+W 10
+L 10
+Q 10
+%%%%
+M Dec
+I 255
+U 255
+H 255
+W 255
+L 255
+Q 255
+%%%%
+M Dec
+I 256
+U 256
+H 256
+W 256
+L 256
+Q 256
+%%%%
+M Dec
+I -255
+U 4294967041
+H -255
+W 65281
+L -255
+Q 18446744073709551361
+%%%%
+M Dec
+I 32767
+U 32767
+H 32767
+W 32767
+L 32767
+Q 32767
+%%%%
+M Dec
+I -32768
+U 4294934528
+H -32768
+W 32768
+L -32768
+Q 18446744073709518848
+%%%%
+M Dec
+I 65535
+U 65535
+H -1
+W 65535
+L 65535
+Q 65535
+%%%%
+M Dec
+I 65536
+U 65536
+H 0
+W 0
+L 65536
+Q 65536
+%%%%
+M Dec
+I 2147483647
+U 2147483647
+H -1
+W 65535
+L 2147483647
+Q 2147483647
+%%%%
+M Dec
+I -2147483648
+U 2147483648
+H 0
+W 0
+L -2147483648
+Q 18446744071562067968
+%%%%
+M Dec
+I -1
+U 4294967295
+H -1
+W 65535
+L 4294967295
+Q 4294967295
+%%%%
+M Dec
+I 0
+U 0
+H 0
+W 0
+L 4294967296
+Q 4294967296
+%%%%
+M Dec
+I -1
+U 4294967295
+H -1
+W 65535
+L 9223372036854775807
+Q 9223372036854775807
+%%%%
+M Dec
+I 0
+U 0
+H 0
+W 0
+L -9223372036854775808
+Q 9223372036854775808
+%%%%
+M Hex
+I 0
+U 0
+H 0
+W 0
+L 0
+Q 0
+%%%%
+M Hex
+I 1
+U 1
+H 1
+W 1
+L 1
+Q 1
+%%%%
+M Hex
+I -1
+U 4294967295
+H -1
+W 65535
+L -1
+Q 18446744073709551615
+%%%%
+M Hex
+I 7
+U 7
+H 7
+W 7
+L 7
+Q 7
+%%%%
+M Hex
+I 8
+U 8
+H 8
+W 8
+L 8
+Q 8
+%%%%
+M Hex
+I 9
+U 9
+H 9
+W 9
+L 9
+Q 9
+%%%%
+M Hex
+I 10
+U 10
+H 10
+W 10
+L 10
+Q 10
+%%%%
+M Hex
+I 255
+U 255
+H 255
+W 255
+L 255
+Q 255
+%%%%
+M Hex
+I 256
+U 256
+H 256
+W 256
+L 256
+Q 256
+%%%%
+M Hex
+I -255
+U 4294967041
+H -255
+W 65281
+L -255
+Q 18446744073709551361
+%%%%
+M Hex
+I 32767
+U 32767
+H 32767
+W 32767
+L 32767
+Q 32767
+%%%%
+M Hex
+I -32768
+U 4294934528
+H -32768
+W 32768
+L -32768
+Q 18446744073709518848
+%%%%
+M Hex
+I 65535
+U 65535
+H -1
+W 65535
+L 65535
+Q 65535
+%%%%
+M Hex
+I 65536
+U 65536
+H 0
+W 0
+L 65536
+Q 65536
+%%%%
+M Hex
+I 2147483647
+U 2147483647
+H -1
+W 65535
+L 2147483647
+Q 2147483647
+%%%%
+M Hex
+I -2147483648
+U 2147483648
+H 0
+W 0
+L -2147483648
+Q 18446744071562067968
+%%%%
+M Hex
+I -1
+U 4294967295
+H -1
+W 65535
+L 4294967295
+Q 4294967295
+%%%%
+M Hex
+I 0
+U 0
+H 0
+W 0
+L 4294967296
+Q 4294967296
+%%%%
+M Hex
+I -1
+U 4294967295
+H -1
+W 65535
+L 9223372036854775807
+Q 9223372036854775807
+%%%%
+M Hex
+I 0
+U 0
+H 0
+W 0
+L -9223372036854775808
+Q 9223372036854775808
+%%%%
+M Oct
+I 0
+U 0
+H 0
+W 0
+L 0
+Q 0
+%%%%
+M Oct
+I 1
+U 1
+H 1
+W 1
+L 1
+Q 1
+%%%%
+M Oct
+I -1
+U 4294967295
+H -1
+W 65535
+L -1
+Q 18446744073709551615
+%%%%
+M Oct
+I 7
+U 7
+H 7
+W 7
+L 7
+Q 7
+%%%%
+M Oct
+I 8
+U 8
+H 8
+W 8
+L 8
+Q 8
+%%%%
+M Oct
+I 9
+U 9
+H 9
+W 9
+L 9
+Q 9
+%%%%
+M Oct
+I 10
+U 10
+H 10
+W 10
+L 10
+Q 10
+%%%%
+M Oct
+I 255
+U 255
+H 255
+W 255
+L 255
+Q 255
+%%%%
+M Oct
+I 256
+U 256
+H 256
+W 256
+L 256
+Q 256
+%%%%
+M Oct
+I -255
+U 4294967041
+H -255
+W 65281
+L -255
+Q 18446744073709551361
+%%%%
+M Oct
+I 32767
+U 32767
+H 32767
+W 32767
+L 32767
+Q 32767
+%%%%
+M Oct
+I -32768
+U 4294934528
+H -32768
+W 32768
+L -32768
+Q 18446744073709518848
+%%%%
+M Oct
+I 65535
+U 65535
+H -1
+W 65535
+L 65535
+Q 65535
+%%%%
+M Oct
+I 65536
+U 65536
+H 0
+W 0
+L 65536
+Q 65536
+%%%%
+M Oct
+I 2147483647
+U 2147483647
+H -1
+W 65535
+L 2147483647
+Q 2147483647
+%%%%
+M Oct
+I -2147483648
+U 2147483648
+H 0
+W 0
+L -2147483648
+Q 18446744071562067968
+%%%%
+M Oct
+I -1
+U 4294967295
+H -1
+W 65535
+L 4294967295
+Q 4294967295
+%%%%
+M Oct
+I 0
+U 0
+H 0
+W 0
+L 4294967296
+Q 4294967296
+%%%%
+M Oct
+I -1
+U 4294967295
+H -1
+W 65535
+L 9223372036854775807
+Q 9223372036854775807
+%%%%
+M Oct
+I 0
+U 0
+H 0
+W 0
+L -9223372036854775808
+Q 9223372036854775808
+%%%%
+GSetIntBase Dec
+M BeginSeq
+I -5
+I 42
+L -5
+U 4000000000
+M EndSeq
+%%%%
+GSetIntBase Hex
+M BeginSeq
+I -5
+I 42
+L -5
+U 4000000000
+M EndSeq
+%%%%
+GSetIntBase Oct
+M BeginSeq
+I -5
+I 42
+L -5
+U 4000000000
+M EndSeq
+%%%%
+M YesNoBool
+M UpperCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat UpperCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M YesNoBool
+M UpperCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat UpperCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M YesNoBool
+M LowerCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat LowerCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M YesNoBool
+M LowerCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat LowerCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M YesNoBool
+M CamelCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat CamelCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M YesNoBool
+M CamelCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat YesNoBool
+GSetBoolFormat CamelCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M TrueFalseBool
+M UpperCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat UpperCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M TrueFalseBool
+M UpperCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat UpperCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M TrueFalseBool
+M LowerCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat LowerCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M TrueFalseBool
+M LowerCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat LowerCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M TrueFalseBool
+M CamelCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat CamelCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M TrueFalseBool
+M CamelCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat TrueFalseBool
+GSetBoolFormat CamelCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M OnOffBool
+M UpperCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat UpperCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M OnOffBool
+M UpperCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat UpperCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M OnOffBool
+M LowerCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat LowerCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M OnOffBool
+M LowerCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat LowerCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M OnOffBool
+M CamelCase
+M LongBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat CamelCase
+GSetBoolFormat LongBool
+B 1
+%%%%
+M OnOffBool
+M CamelCase
+M ShortBool
+M BeginSeq
+B 1
+B 0
+M EndSeq
+B 1
+%%%%
+GSetBoolFormat OnOffBool
+GSetBoolFormat CamelCase
+GSetBoolFormat ShortBool
+B 1
+%%%%
+M LowerNull
+M BeginSeq
+N
+N
+M EndSeq
+N
+%%%%
+GSetNullFormat LowerNull
+N
+%%%%
+M UpperNull
+M BeginSeq
+N
+N
+M EndSeq
+N
+%%%%
+GSetNullFormat UpperNull
+N
+%%%%
+M CamelNull
+M BeginSeq
+N
+N
+M EndSeq
+N
+%%%%
+GSetNullFormat CamelNull
+N
+%%%%
+M TildeNull
+M BeginSeq
+N
+N
+M EndSeq
+N
+%%%%
+GSetNullFormat TildeNull
+N
+%%%%
+D 0000000000000000
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 0
+D 0000000000000000
+PF 0
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 1
+D 0000000000000000
+PF 1
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 2
+D 0000000000000000
+PF 2
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 3
+D 0000000000000000
+PF 3
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 6
+D 0000000000000000
+PF 6
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 9
+D 0000000000000000
+PF 9
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 15
+D 0000000000000000
+PF 15
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 17
+D 0000000000000000
+PF 17
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 18
+D 0000000000000000
+PF 18
+F 00000000
+M BeginSeq
+D 0000000000000000
+F 00000000
+M EndSeq
+%%%%
+D 8000000000000000
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 0
+D 8000000000000000
+PF 0
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 1
+D 8000000000000000
+PF 1
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 2
+D 8000000000000000
+PF 2
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 3
+D 8000000000000000
+PF 3
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 6
+D 8000000000000000
+PF 6
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 9
+D 8000000000000000
+PF 9
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 15
+D 8000000000000000
+PF 15
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 17
+D 8000000000000000
+PF 17
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+PD 18
+D 8000000000000000
+PF 18
+F 80000000
+M BeginSeq
+D 8000000000000000
+F 80000000
+M EndSeq
+%%%%
+D 3ff0000000000000
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 0
+D 3ff0000000000000
+PF 0
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 1
+D 3ff0000000000000
+PF 1
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 2
+D 3ff0000000000000
+PF 2
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 3
+D 3ff0000000000000
+PF 3
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 6
+D 3ff0000000000000
+PF 6
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 9
+D 3ff0000000000000
+PF 9
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 15
+D 3ff0000000000000
+PF 15
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 17
+D 3ff0000000000000
+PF 17
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+PD 18
+D 3ff0000000000000
+PF 18
+F 3f800000
+M BeginSeq
+D 3ff0000000000000
+F 3f800000
+M EndSeq
+%%%%
+D bff0000000000000
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 0
+D bff0000000000000
+PF 0
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 1
+D bff0000000000000
+PF 1
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 2
+D bff0000000000000
+PF 2
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 3
+D bff0000000000000
+PF 3
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 6
+D bff0000000000000
+PF 6
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 9
+D bff0000000000000
+PF 9
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 15
+D bff0000000000000
+PF 15
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 17
+D bff0000000000000
+PF 17
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+PD 18
+D bff0000000000000
+PF 18
+F bf800000
+M BeginSeq
+D bff0000000000000
+F bf800000
+M EndSeq
+%%%%
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 0
+D 3fb999999999999a
+PF 0
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 1
+D 3fb999999999999a
+PF 1
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 2
+D 3fb999999999999a
+PF 2
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 3
+D 3fb999999999999a
+PF 3
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 6
+D 3fb999999999999a
+PF 6
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 9
+D 3fb999999999999a
+PF 9
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 15
+D 3fb999999999999a
+PF 15
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 17
+D 3fb999999999999a
+PF 17
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+PD 18
+D 3fb999999999999a
+PF 18
+F 3dcccccd
+M BeginSeq
+D 3fb999999999999a
+F 3dcccccd
+M EndSeq
+%%%%
+D 3fe0000000000000
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 0
+D 3fe0000000000000
+PF 0
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 1
+D 3fe0000000000000
+PF 1
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 2
+D 3fe0000000000000
+PF 2
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 3
+D 3fe0000000000000
+PF 3
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 6
+D 3fe0000000000000
+PF 6
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 9
+D 3fe0000000000000
+PF 9
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 15
+D 3fe0000000000000
+PF 15
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 17
+D 3fe0000000000000
+PF 17
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+PD 18
+D 3fe0000000000000
+PF 18
+F 3f000000
+M BeginSeq
+D 3fe0000000000000
+F 3f000000
+M EndSeq
+%%%%
+D 3fd5555555555555
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 0
+D 3fd5555555555555
+PF 0
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 1
+D 3fd5555555555555
+PF 1
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 2
+D 3fd5555555555555
+PF 2
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 3
+D 3fd5555555555555
+PF 3
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 6
+D 3fd5555555555555
+PF 6
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 9
+D 3fd5555555555555
+PF 9
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 15
+D 3fd5555555555555
+PF 15
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 17
+D 3fd5555555555555
+PF 17
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+PD 18
+D 3fd5555555555555
+PF 18
+F 3eaaaaab
+M BeginSeq
+D 3fd5555555555555
+F 3eaaaaab
+M EndSeq
+%%%%
+D 3fe5555555555555
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 0
+D 3fe5555555555555
+PF 0
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 1
+D 3fe5555555555555
+PF 1
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 2
+D 3fe5555555555555
+PF 2
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 3
+D 3fe5555555555555
+PF 3
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 6
+D 3fe5555555555555
+PF 6
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 9
+D 3fe5555555555555
+PF 9
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 15
+D 3fe5555555555555
+PF 15
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 17
+D 3fe5555555555555
+PF 17
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+PD 18
+D 3fe5555555555555
+PF 18
+F 3f2aaaab
+M BeginSeq
+D 3fe5555555555555
+F 3f2aaaab
+M EndSeq
+%%%%
+D 400921fb54442d18
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 0
+D 400921fb54442d18
+PF 0
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 1
+D 400921fb54442d18
+PF 1
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 2
+D 400921fb54442d18
+PF 2
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 3
+D 400921fb54442d18
+PF 3
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 6
+D 400921fb54442d18
+PF 6
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 9
+D 400921fb54442d18
+PF 9
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 15
+D 400921fb54442d18
+PF 15
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 17
+D 400921fb54442d18
+PF 17
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+PD 18
+D 400921fb54442d18
+PF 18
+F 40490fdb
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+D 3ee4f8b588e368f1
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 0
+D 3ee4f8b588e368f1
+PF 0
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 1
+D 3ee4f8b588e368f1
+PF 1
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 2
+D 3ee4f8b588e368f1
+PF 2
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 3
+D 3ee4f8b588e368f1
+PF 3
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 6
+D 3ee4f8b588e368f1
+PF 6
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 9
+D 3ee4f8b588e368f1
+PF 9
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 15
+D 3ee4f8b588e368f1
+PF 15
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 17
+D 3ee4f8b588e368f1
+PF 17
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+PD 18
+D 3ee4f8b588e368f1
+PF 18
+F 3727c5ac
+M BeginSeq
+D 3ee4f8b588e368f1
+F 3727c5ac
+M EndSeq
+%%%%
+D 3f1a36e2eb1c432d
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 0
+D 3f1a36e2eb1c432d
+PF 0
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 1
+D 3f1a36e2eb1c432d
+PF 1
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 2
+D 3f1a36e2eb1c432d
+PF 2
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 3
+D 3f1a36e2eb1c432d
+PF 3
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 6
+D 3f1a36e2eb1c432d
+PF 6
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 9
+D 3f1a36e2eb1c432d
+PF 9
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 15
+D 3f1a36e2eb1c432d
+PF 15
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 17
+D 3f1a36e2eb1c432d
+PF 17
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 18
+D 3f1a36e2eb1c432d
+PF 18
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+D 40f86a0000000000
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 0
+D 40f86a0000000000
+PF 0
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 1
+D 40f86a0000000000
+PF 1
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 2
+D 40f86a0000000000
+PF 2
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 3
+D 40f86a0000000000
+PF 3
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 6
+D 40f86a0000000000
+PF 6
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 9
+D 40f86a0000000000
+PF 9
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 15
+D 40f86a0000000000
+PF 15
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 17
+D 40f86a0000000000
+PF 17
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+PD 18
+D 40f86a0000000000
+PF 18
+F 47c35000
+M BeginSeq
+D 40f86a0000000000
+F 47c35000
+M EndSeq
+%%%%
+D 430c6bf526340000
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 0
+D 430c6bf526340000
+PF 0
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 1
+D 430c6bf526340000
+PF 1
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 2
+D 430c6bf526340000
+PF 2
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 3
+D 430c6bf526340000
+PF 3
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 6
+D 430c6bf526340000
+PF 6
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 9
+D 430c6bf526340000
+PF 9
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 15
+D 430c6bf526340000
+PF 15
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 17
+D 430c6bf526340000
+PF 17
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+PD 18
+D 430c6bf526340000
+PF 18
+F 58635fa9
+M BeginSeq
+D 430c6bf526340000
+F 58635fa9
+M EndSeq
+%%%%
+D 4341c37937e08000
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 0
+D 4341c37937e08000
+PF 0
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 1
+D 4341c37937e08000
+PF 1
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 2
+D 4341c37937e08000
+PF 2
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 3
+D 4341c37937e08000
+PF 3
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 6
+D 4341c37937e08000
+PF 6
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 9
+D 4341c37937e08000
+PF 9
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 15
+D 4341c37937e08000
+PF 15
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 17
+D 4341c37937e08000
+PF 17
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+PD 18
+D 4341c37937e08000
+PF 18
+F 5a0e1bca
+M BeginSeq
+D 4341c37937e08000
+F 5a0e1bca
+M EndSeq
+%%%%
+D 4376345785d8a000
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 0
+D 4376345785d8a000
+PF 0
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 1
+D 4376345785d8a000
+PF 1
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 2
+D 4376345785d8a000
+PF 2
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 3
+D 4376345785d8a000
+PF 3
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 6
+D 4376345785d8a000
+PF 6
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 9
+D 4376345785d8a000
+PF 9
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 15
+D 4376345785d8a000
+PF 15
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 17
+D 4376345785d8a000
+PF 17
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+PD 18
+D 4376345785d8a000
+PF 18
+F 5bb1a2bc
+M BeginSeq
+D 4376345785d8a000
+F 5bb1a2bc
+M EndSeq
+%%%%
+D 437b69b4ba630f35
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 0
+D 437b69b4ba630f35
+PF 0
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 1
+D 437b69b4ba630f35
+PF 1
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 2
+D 437b69b4ba630f35
+PF 2
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 3
+D 437b69b4ba630f35
+PF 3
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 6
+D 437b69b4ba630f35
+PF 6
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 9
+D 437b69b4ba630f35
+PF 9
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 15
+D 437b69b4ba630f35
+PF 15
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 17
+D 437b69b4ba630f35
+PF 17
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+PD 18
+D 437b69b4ba630f35
+PF 18
+F 5bdb4da6
+M BeginSeq
+D 437b69b4ba630f35
+F 5bdb4da6
+M EndSeq
+%%%%
+D 7e41eb2d66005835
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 0
+D 7e41eb2d66005835
+PF 0
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 1
+D 7e41eb2d66005835
+PF 1
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 2
+D 7e41eb2d66005835
+PF 2
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 3
+D 7e41eb2d66005835
+PF 3
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 6
+D 7e41eb2d66005835
+PF 6
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 9
+D 7e41eb2d66005835
+PF 9
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 15
+D 7e41eb2d66005835
+PF 15
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 17
+D 7e41eb2d66005835
+PF 17
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+PD 18
+D 7e41eb2d66005835
+PF 18
+F 7f800000
+M BeginSeq
+D 7e41eb2d66005835
+F 7f800000
+M EndSeq
+%%%%
+D 81bac9a7b3b7302f
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 0
+D 81bac9a7b3b7302f
+PF 0
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 1
+D 81bac9a7b3b7302f
+PF 1
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 2
+D 81bac9a7b3b7302f
+PF 2
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 3
+D 81bac9a7b3b7302f
+PF 3
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 6
+D 81bac9a7b3b7302f
+PF 6
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 9
+D 81bac9a7b3b7302f
+PF 9
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 15
+D 81bac9a7b3b7302f
+PF 15
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 17
+D 81bac9a7b3b7302f
+PF 17
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+PD 18
+D 81bac9a7b3b7302f
+PF 18
+F 80000000
+M BeginSeq
+D 81bac9a7b3b7302f
+F 80000000
+M EndSeq
+%%%%
+D 0000000000000001
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 0
+D 0000000000000001
+PF 0
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 1
+D 0000000000000001
+PF 1
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 2
+D 0000000000000001
+PF 2
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 3
+D 0000000000000001
+PF 3
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 6
+D 0000000000000001
+PF 6
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 9
+D 0000000000000001
+PF 9
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 15
+D 0000000000000001
+PF 15
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 17
+D 0000000000000001
+PF 17
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 18
+D 0000000000000001
+PF 18
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+D 7fefffffffffffff
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 0
+D 7fefffffffffffff
+PF 0
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 1
+D 7fefffffffffffff
+PF 1
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 2
+D 7fefffffffffffff
+PF 2
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 3
+D 7fefffffffffffff
+PF 3
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 6
+D 7fefffffffffffff
+PF 6
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 9
+D 7fefffffffffffff
+PF 9
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 15
+D 7fefffffffffffff
+PF 15
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 17
+D 7fefffffffffffff
+PF 17
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+PD 18
+D 7fefffffffffffff
+PF 18
+F 7f800000
+M BeginSeq
+D 7fefffffffffffff
+F 7f800000
+M EndSeq
+%%%%
+D 4059000000000000
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 0
+D 4059000000000000
+PF 0
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 1
+D 4059000000000000
+PF 1
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 2
+D 4059000000000000
+PF 2
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 3
+D 4059000000000000
+PF 3
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 6
+D 4059000000000000
+PF 6
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 9
+D 4059000000000000
+PF 9
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 15
+D 4059000000000000
+PF 15
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 17
+D 4059000000000000
+PF 17
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+PD 18
+D 4059000000000000
+PF 18
+F 42c80000
+M BeginSeq
+D 4059000000000000
+F 42c80000
+M EndSeq
+%%%%
+D 412e848000000000
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 0
+D 412e848000000000
+PF 0
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 1
+D 412e848000000000
+PF 1
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 2
+D 412e848000000000
+PF 2
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 3
+D 412e848000000000
+PF 3
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 6
+D 412e848000000000
+PF 6
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 9
+D 412e848000000000
+PF 9
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 15
+D 412e848000000000
+PF 15
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 17
+D 412e848000000000
+PF 17
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+PD 18
+D 412e848000000000
+PF 18
+F 49742400
+M BeginSeq
+D 412e848000000000
+F 49742400
+M EndSeq
+%%%%
+D 3f1a36e2eb1c432d
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 0
+D 3f1a36e2eb1c432d
+PF 0
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 1
+D 3f1a36e2eb1c432d
+PF 1
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 2
+D 3f1a36e2eb1c432d
+PF 2
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 3
+D 3f1a36e2eb1c432d
+PF 3
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 6
+D 3f1a36e2eb1c432d
+PF 6
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 9
+D 3f1a36e2eb1c432d
+PF 9
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 15
+D 3f1a36e2eb1c432d
+PF 15
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 17
+D 3f1a36e2eb1c432d
+PF 17
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+PD 18
+D 3f1a36e2eb1c432d
+PF 18
+F 38d1b717
+M BeginSeq
+D 3f1a36e2eb1c432d
+F 38d1b717
+M EndSeq
+%%%%
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 0
+D 3ee9e0fcaf9380fc
+PF 0
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 1
+D 3ee9e0fcaf9380fc
+PF 1
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 2
+D 3ee9e0fcaf9380fc
+PF 2
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 3
+D 3ee9e0fcaf9380fc
+PF 3
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 6
+D 3ee9e0fcaf9380fc
+PF 6
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 9
+D 3ee9e0fcaf9380fc
+PF 9
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 15
+D 3ee9e0fcaf9380fc
+PF 15
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 17
+D 3ee9e0fcaf9380fc
+PF 17
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+PD 18
+D 3ee9e0fcaf9380fc
+PF 18
+F 374f07e5
+M BeginSeq
+D 3ee9e0fcaf9380fc
+F 374f07e5
+M EndSeq
+%%%%
+D 40c81cd6e631f8a1
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 0
+D 40c81cd6e631f8a1
+PF 0
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 1
+D 40c81cd6e631f8a1
+PF 1
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 2
+D 40c81cd6e631f8a1
+PF 2
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 3
+D 40c81cd6e631f8a1
+PF 3
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 6
+D 40c81cd6e631f8a1
+PF 6
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 9
+D 40c81cd6e631f8a1
+PF 9
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 15
+D 40c81cd6e631f8a1
+PF 15
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 17
+D 40c81cd6e631f8a1
+PF 17
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+PD 18
+D 40c81cd6e631f8a1
+PF 18
+F 4640e6b7
+M BeginSeq
+D 40c81cd6e631f8a1
+F 4640e6b7
+M EndSeq
+%%%%
+D 412e847f00000000
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 0
+D 412e847f00000000
+PF 0
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 1
+D 412e847f00000000
+PF 1
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 2
+D 412e847f00000000
+PF 2
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 3
+D 412e847f00000000
+PF 3
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 6
+D 412e847f00000000
+PF 6
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 9
+D 412e847f00000000
+PF 9
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 15
+D 412e847f00000000
+PF 15
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 17
+D 412e847f00000000
+PF 17
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+PD 18
+D 412e847f00000000
+PF 18
+F 497423f8
+M BeginSeq
+D 412e847f00000000
+F 497423f8
+M EndSeq
+%%%%
+D 4024000000000000
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 0
+D 4024000000000000
+PF 0
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 1
+D 4024000000000000
+PF 1
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 2
+D 4024000000000000
+PF 2
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 3
+D 4024000000000000
+PF 3
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 6
+D 4024000000000000
+PF 6
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 9
+D 4024000000000000
+PF 9
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 15
+D 4024000000000000
+PF 15
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 17
+D 4024000000000000
+PF 17
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+PD 18
+D 4024000000000000
+PF 18
+F 41200000
+M BeginSeq
+D 4024000000000000
+F 41200000
+M EndSeq
+%%%%
+D 3fd3333333333334
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 0
+D 3fd3333333333334
+PF 0
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 1
+D 3fd3333333333334
+PF 1
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 2
+D 3fd3333333333334
+PF 2
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 3
+D 3fd3333333333334
+PF 3
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 6
+D 3fd3333333333334
+PF 6
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 9
+D 3fd3333333333334
+PF 9
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 15
+D 3fd3333333333334
+PF 15
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 17
+D 3fd3333333333334
+PF 17
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+PD 18
+D 3fd3333333333334
+PF 18
+F 3e99999a
+M BeginSeq
+D 3fd3333333333334
+F 3e99999a
+M EndSeq
+%%%%
+D 0000000000000001
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 0
+D 0000000000000001
+PF 0
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 1
+D 0000000000000001
+PF 1
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 2
+D 0000000000000001
+PF 2
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 3
+D 0000000000000001
+PF 3
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 6
+D 0000000000000001
+PF 6
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 9
+D 0000000000000001
+PF 9
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 15
+D 0000000000000001
+PF 15
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 17
+D 0000000000000001
+PF 17
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+PD 18
+D 0000000000000001
+PF 18
+F 00000000
+M BeginSeq
+D 0000000000000001
+F 00000000
+M EndSeq
+%%%%
+D 0010000000000000
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 0
+D 0010000000000000
+PF 0
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 1
+D 0010000000000000
+PF 1
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 2
+D 0010000000000000
+PF 2
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 3
+D 0010000000000000
+PF 3
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 6
+D 0010000000000000
+PF 6
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 9
+D 0010000000000000
+PF 9
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 15
+D 0010000000000000
+PF 15
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 17
+D 0010000000000000
+PF 17
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+PD 18
+D 0010000000000000
+PF 18
+F 00000000
+M BeginSeq
+D 0010000000000000
+F 00000000
+M EndSeq
+%%%%
+D 7ff0000000000000
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 0
+D 7ff0000000000000
+PF 0
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 1
+D 7ff0000000000000
+PF 1
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 2
+D 7ff0000000000000
+PF 2
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 3
+D 7ff0000000000000
+PF 3
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 6
+D 7ff0000000000000
+PF 6
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 9
+D 7ff0000000000000
+PF 9
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 15
+D 7ff0000000000000
+PF 15
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 17
+D 7ff0000000000000
+PF 17
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+PD 18
+D 7ff0000000000000
+PF 18
+F 7f800000
+M BeginSeq
+D 7ff0000000000000
+F 7f800000
+M EndSeq
+%%%%
+D fff0000000000000
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 0
+D fff0000000000000
+PF 0
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 1
+D fff0000000000000
+PF 1
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 2
+D fff0000000000000
+PF 2
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 3
+D fff0000000000000
+PF 3
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 6
+D fff0000000000000
+PF 6
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 9
+D fff0000000000000
+PF 9
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 15
+D fff0000000000000
+PF 15
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 17
+D fff0000000000000
+PF 17
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+PD 18
+D fff0000000000000
+PF 18
+F ff800000
+M BeginSeq
+D fff0000000000000
+F ff800000
+M EndSeq
+%%%%
+D 7ff8000000000000
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 0
+D 7ff8000000000000
+PF 0
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 1
+D 7ff8000000000000
+PF 1
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 2
+D 7ff8000000000000
+PF 2
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 3
+D 7ff8000000000000
+PF 3
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 6
+D 7ff8000000000000
+PF 6
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 9
+D 7ff8000000000000
+PF 9
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 15
+D 7ff8000000000000
+PF 15
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 17
+D 7ff8000000000000
+PF 17
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+PD 18
+D 7ff8000000000000
+PF 18
+F 7fc00000
+M BeginSeq
+D 7ff8000000000000
+F 7fc00000
+M EndSeq
+%%%%
+GSetDoublePrecision 0
+GSetFloatPrecision 0
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 1
+GSetFloatPrecision 1
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 2
+GSetFloatPrecision 2
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 3
+GSetFloatPrecision 3
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 6
+GSetFloatPrecision 6
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 9
+GSetFloatPrecision 9
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 15
+GSetFloatPrecision 15
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 17
+GSetFloatPrecision 17
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+GSetDoublePrecision 18
+GSetFloatPrecision 18
+D 3fb999999999999a
+F 3dcccccd
+M BeginSeq
+D 400921fb54442d18
+F 40490fdb
+M EndSeq
+%%%%
+C 0
+M EscapeNonAscii
+C 0
+M EscapeAsJson
+C 0
+UC 0
+%%%%
+C 7
+M EscapeNonAscii
+C 7
+M EscapeAsJson
+C 7
+UC 7
+%%%%
+C 8
+M EscapeNonAscii
+C 8
+M EscapeAsJson
+C 8
+UC 8
+%%%%
+C 9
+M EscapeNonAscii
+C 9
+M EscapeAsJson
+C 9
+UC 9
+%%%%
+C 10
+M EscapeNonAscii
+C 10
+M EscapeAsJson
+C 10
+UC 10
+%%%%
+C 12
+M EscapeNonAscii
+C 12
+M EscapeAsJson
+C 12
+UC 12
+%%%%
+C 13
+M EscapeNonAscii
+C 13
+M EscapeAsJson
+C 13
+UC 13
+%%%%
+C 27
+M EscapeNonAscii
+C 27
+M EscapeAsJson
+C 27
+UC 27
+%%%%
+C 32
+M EscapeNonAscii
+C 32
+M EscapeAsJson
+C 32
+UC 32
+%%%%
+C 34
+M EscapeNonAscii
+C 34
+M EscapeAsJson
+C 34
+UC 34
+%%%%
+C 39
+M EscapeNonAscii
+C 39
+M EscapeAsJson
+C 39
+UC 39
+%%%%
+C 65
+M EscapeNonAscii
+C 65
+M EscapeAsJson
+C 65
+UC 65
+%%%%
+C 92
+M EscapeNonAscii
+C 92
+M EscapeAsJson
+C 92
+UC 92
+%%%%
+C 97
+M EscapeNonAscii
+C 97
+M EscapeAsJson
+C 97
+UC 97
+%%%%
+C 122
+M EscapeNonAscii
+C 122
+M EscapeAsJson
+C 122
+UC 122
+%%%%
+C 126
+M EscapeNonAscii
+C 126
+M EscapeAsJson
+C 126
+UC 126
+%%%%
+C 127
+M EscapeNonAscii
+C 127
+M EscapeAsJson
+C 127
+UC 127
+%%%%
+C 128
+M EscapeNonAscii
+C 128
+M EscapeAsJson
+C 128
+UC 128
+%%%%
+C 169
+M EscapeNonAscii
+C 169
+M EscapeAsJson
+C 169
+UC 169
+%%%%
+C 255
+M EscapeNonAscii
+C 255
+M EscapeAsJson
+C 255
+UC 255
+%%%%
+BIN -
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN -
+M EndMap
+%%%%
+BIN 61
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN 61
+M EndMap
+%%%%
+BIN 6162
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN 6162
+M EndMap
+%%%%
+BIN 616263
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN 616263
+M EndMap
+%%%%
+BIN 61626364
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN 61626364
+M EndMap
+%%%%
+BIN 000102030405
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN 000102030405
+M EndMap
+%%%%
+BIN ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+%%%%
+M BeginMap
+M Key
+S 6b
+M Value
+BIN ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+M EndMap

@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: radix library - types                                           }
 {  Copyright (C) 2004-2024 by Jim Valavanis (original DelphiDoom, Rad-X)       }
@@ -55,6 +55,18 @@ type
   end;
 
   /// <summary>An entry that the engine adds to the PAK file system (a picture kept in the DAT)</summary>
+  /// <summary>The names of the lumps that the engine of the game reads under a name of its own</summary>
+  TRadixLumpNames = record
+    PatchNames: string;
+    Textures: string;
+    Palette: string;
+    ColorMap: string;
+    /// <summary>The names of the old game: PNAMES0, TEXTURE0, PALETTE, SHADES</summary>
+    class function Original: TRadixLumpNames; static;
+    /// <summary>The names that the engine of Doom reads: PNAMES, TEXTURE1, PLAYPAL, COLORMAP</summary>
+    class function Doom: TRadixLumpNames; static;
+  end;
+
   TRadixPakEntry = record
     Position: Integer;
     Size: Integer;
@@ -76,5 +88,23 @@ const
   SRadixBadBitmapTable = 'The table of the bitmaps "%s" is not good';
 
 implementation
+
+{ TRadixLumpNames }
+
+class function TRadixLumpNames.Original: TRadixLumpNames;
+begin
+  Result.PatchNames := 'PNAMES0';
+  Result.Textures := 'TEXTURE0';
+  Result.Palette := RADIX_PALETTE_LUMP;
+  Result.ColorMap := RADIX_COLORMAP_LUMP;
+end;
+
+class function TRadixLumpNames.Doom: TRadixLumpNames;
+begin
+  Result.PatchNames := 'PNAMES';
+  Result.Textures := 'TEXTURE1';
+  Result.Palette := 'PLAYPAL';
+  Result.ColorMap := 'COLORMAP';
+end;
 
 end.

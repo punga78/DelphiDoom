@@ -1502,7 +1502,7 @@ begin
 end;
 
 const
-  SYSWAD = 'Doom32.swd';
+  SYSWAD = _GAME + '32.swd';
 
 //==============================================================================
 //
@@ -2081,6 +2081,16 @@ begin
     SUC_SetGameMode('DOOM2: BFG Edition')
   else if customgame = cg_hacx then
     SUC_SetGameMode('HACX');
+{$IFDEF RADIX}
+  // the lumps of Radix come from RADIX.DAT (Libs\Radix): RADIXINF says so. The edition (shareware
+  // or registered) is told by the CRC of the file: not done yet, the shareware rules are used
+  if (gamemode = indetermined) and (W_CheckNumForName('RADIXINF') <> -1) then
+  begin
+    gamemission := doom;
+    gamemode := shareware;
+    SUC_SetGameMode('Radix - beyond the void');
+  end;
+{$ENDIF}
   if gamemode = indetermined then
   begin
     if W_CheckNumForName('e4m1') <> -1 then

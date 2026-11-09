@@ -1,0 +1,525 @@
+a: 1
+%%%%
+a: 1
+b: two
+c: 3.5
+%%%%
+- 1
+- 2
+- three
+%%%%
+key:
+  - a
+  - b
+other:
+  nested:
+    deep: value
+%%%%
+key:
+- a
+- b
+last: x
+%%%%
+# comment
+a: 1 # trailing
+b: "quoted # not comment"
+%%%%
+a: 'single ''quoted'' text'
+b: "double \"quoted\" \\ \n \t \x41 é \U0001F600"
+%%%%
+a: [1, 2, 3]
+b: {x: 1, y: 2}
+c: [a, [b, c], {d: e}]
+%%%%
+[1, 2, 3]
+%%%%
+{a: 1, b: [x, y], c: {d: e}}
+%%%%
+a: |
+  line one
+  line two
+
+  line four
+b: next
+%%%%
+a: |-
+  strip
+b: |+
+  keep
+
+c: >
+  folded
+  text here
+
+  new para
+d: >-
+  folded strip
+  more
+%%%%
+a: |2
+    indented more
+  base
+%%%%
+text: plain
+  continued
+  more lines
+next: 1
+%%%%
+"multi
+  line quoted": 1
+'single
+  multi': 2
+%%%%
+base: &anc
+  x: 1
+  y: 2
+copy: *anc
+list: [*anc, &b 5, *b]
+%%%%
+a: !!str 123
+b: !!int "5"
+c: !custom value
+d: !<tag:example.com,2000:x> val
+%%%%
+a:
+b: ~
+c: null
+d: Null
+e: NULL
+f: ""
+g: 'null'
+%%%%
+? complex
+: value
+? [a, b]
+: seq key
+%%%%
+- - a
+  - b
+- - c
+-
+  - d
+%%%%
+- a: 1
+  b: 2
+- c: 3
+  d:
+    - x
+%%%%
+---
+a: 1
+...
+---
+b: 2
+%%%%
+--- text
+%%%%
+--- |
+  literal doc
+%%%%
+a: 1
+---
+b: 2
+---
+- 3
+%%%%
+%YAML 1.2
+---
+a: 1
+%%%%
+a: 1
+	b: 2
+%%%%
+a: 1
+ b: 2
+%%%%
+a: [1, 2
+%%%%
+a: {x: 1
+%%%%
+a: "unterminated
+%%%%
+a: 'unterminated
+%%%%
+- a
+b: 1
+%%%%
+a: 1
+- b
+%%%%
+a: *missing
+%%%%
+a: @bad
+%%%%
+a: `bad
+%%%%
+a: b: c
+%%%%
+a: - b
+%%%%
+: value
+%%%%
+a: 1
+a: 2
+%%%%
+a: -1
+b: +2
+c: 0x1F
+d: 0o17
+e: 1e3
+f: .inf
+g: -.inf
+h: .nan
+i: 1.5e-3
+j: 0.1
+k: 007
+%%%%
+t: true
+f: false
+y: yes
+n: no
+o: on
+x: off
+c1: True
+c2: FALSE
+c3: Y
+c4: n
+%%%%
+url: http://example.com:8080/path?x=1#frag
+time: 12:30:45
+colon: a:b
+dash: a-b
+star: a*b
+%%%%
+a: "Aß€"
+b: "\0\a\b\e\f\r\v\N\_\L\P"
+c: "\/ \  slash"
+%%%%
+a: "bad escape \q"
+%%%%
+a: "line1\
+  line2"
+%%%%
+- "a
+  b
+
+  c"
+%%%%
+key with spaces: value with spaces
+"quoted key": v
+'single key': w
+? explicit
+%%%%
+a:    spaced
+b:	tabbed
+%%%%
+a: 1
+b: 2
+
+c: 3
+
+
+d: 4
+%%%%
+list:
+  - a
+
+  - b
+%%%%
+a: 1
+ # indented comment
+b: 2
+%%%%
+- #comment
+  a
+%%%%
+a: [
+  1,
+  2,
+  ]
+%%%%
+a: [1,,2]
+%%%%
+a: {x, y: 1, z: }
+%%%%
+a: {"q": 1, 'r': 2, s t: 3}
+%%%%
+[a, b: c, d]
+%%%%
+- [a: b]
+- {a}
+%%%%
+a: &x [1, 2]
+b: &y {k: v}
+c: !t &z val
+%%%%
+&top
+a: 1
+%%%%
+&a x: &b y
+%%%%
+? |
+  block key
+: v
+%%%%
+a: b
+? c
+%%%%
+a: 1
+?
+: 2
+%%%%
+!!map
+a: 1
+%%%%
+!!seq
+- a
+%%%%
+!!null
+%%%%
+a: !!null x
+b: !!bool true
+c: !!float 1.5
+%%%%
+"
+%%%%
+'
+%%%%
+{
+%%%%
+[
+%%%%
+]
+%%%%
+}
+%%%%
+-
+%%%%
+-
+-
+%%%%
+a:
+  -
+  - b
+%%%%
+a:
+ b:
+  c:
+   d: 1
+%%%%
+a:
+    b: 1
+    c: 2
+d:
+  e: 3
+%%%%
+a:
+    b: 1
+  c: 2
+%%%%
+  a: 1
+  b: 2
+%%%%
+  - a
+  - b
+%%%%
+    deep
+%%%%
+just a plain scalar
+%%%%
+"just a quoted scalar"
+%%%%
+
+%%%%
+# only comment
+%%%%
+---
+%%%%
+---
+---
+%%%%
+...
+%%%%
+a: 1
+b: 2
+%%%%
+é: ü
+日本語: テスト
+emoji: "😀"
+%%%%
+a: |
+  tab	inside
+b: >
+  x
+   y
+  z
+%%%%
+a: >
+  one
+  two
+
+  three
+    indented
+  four
+%%%%
+a: |
+b: c
+%%%%
+a: |
+%%%%
+a: >-
+
+b: x
+%%%%
+- |
+  one
+- >
+  two
+- 'three'
+%%%%
+a: -
+%%%%
+- - - deep
+%%%%
+a: [[[[1]]]]
+%%%%
+a: {b: {c: {d: 1}}}
+%%%%
+? - a
+  - b
+: - c
+%%%%
+a: 'it''s'
+b: ''
+c: ""
+d: ''''
+%%%%
+a: "\x4"
+%%%%
+a: "\u00"
+%%%%
+a: !
+%%%%
+a: !<
+%%%%
+a: !!
+%%%%
+%TAG ! tag:example.com,2000:
+---
+a: !foo bar
+%%%%
+%TAG !e! tag:example.com,2000:
+---
+a: !e!foo bar
+%%%%
+a: &
+%%%%
+a: *
+%%%%
+a: &x
+b: *x
+%%%%
+a: [&x 1, *x, *x]
+%%%%
+- &a1 [*a1]
+%%%%
+k: v
+#
+%%%%
+k: v #c
+ #d
+%%%%
+k:v
+%%%%
+k: v:w
+%%%%
+k : v
+%%%%
+k  :  v
+%%%%
+"k": v
+"k" : v
+%%%%
+[a, b] : c
+%%%%
+{a: b}: c
+%%%%
+a: [b]c
+%%%%
+a: "b"c
+%%%%
+a: 'b'c
+%%%%
+a: {b: c}d
+%%%%
+- a: 1
+- b
+  c
+%%%%
+a: b
+  c: d
+%%%%
+a: 1
+   b
+%%%%
+a: [1,
+2]
+%%%%
+a: [1,
+  2]
+b: 1
+%%%%
+a: {x: 1,
+y: 2}
+%%%%
+a: [
+%%%%
+a: {
+b: 1
+%%%%
+ab: |
+ x
+
+  y
+%%%%
+a: |
+   three
+  two
+%%%%
+a: |1
+  x
+%%%%
+a: |0
+  x
+%%%%
+a: |10
+  x
+%%%%
+a: >+
+  x
+
+%%%%
+a: |+
+
+%%%%
+a: |-
+%%%%
+a: |-
+  x
+
+b: 1
+%%%%
+a: >2-
+   x
+%%%%
+a: >-2
+   x
+%%%%
+a: |# c
+  x
+%%%%
+a: | # c
+  x
+%%%%
+a: |x
+  y

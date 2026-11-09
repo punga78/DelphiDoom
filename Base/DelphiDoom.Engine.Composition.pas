@@ -20,6 +20,9 @@ procedure ComposeEngine;
 implementation
 
 uses
+{$IFDEF RADIX}
+  DelphiDoom.Engine.Radix.DataConverter,
+{$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
   DelphiDoom.Logging.Factory,
@@ -274,6 +277,7 @@ uses
   DelphiDoom.GlLevel.Factory,
   DelphiDoom.Engine.GlLevel.FlatWorld,
   DelphiDoom.Engine.GlLevel.FlatLoopSink,
+  DelphiDoom.Engine.GlLevel.SectorWorld,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -873,7 +877,7 @@ var
   LSystem: IScriptSystemFunctions;
   LGame: TScriptGame;
 begin
-  if not TScriptGames.TryFromName(_GAME, LGame) then
+  if not TScriptGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Script), LGame) then
     I_Error('ComposeEngine(): the game %s has no functions of scripts', [_GAME]);
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
@@ -1114,6 +1118,7 @@ procedure ComposeLevelGeometry;
 begin
   gld_ConfigureFlatCarver(TGlLevelFactory.CreateFlatCarver(TEngineGlFlatWorld.Create,
     TEngineGlFlatLoopSink.Create));
+  gld_ConfigureSectorPreprocessor(TGlLevelFactory.CreateSectorPreprocessor(TEngineGlSectorWorld.Create));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
@@ -1387,6 +1392,9 @@ begin
 {$ENDIF}
 
   W_Configure(LWadServices);
+{$IFDEF RADIX}
+  W_ConfigureConverter(TEngineRadixDataConverter.Create(LLog));
+{$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   ComposeStartup(LLog, LCommandLine);

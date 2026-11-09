@@ -1,10 +1,10 @@
-# Libs\Radix - i dati di Radix in un WAD (issue #169, fetta F2 di Rad-X)
+﻿# Libs\Radix - i dati di Radix in un WAD (issue #169, fetta F2 di Rad-X)
 
 > Note per Claude e dettagli: [CLAUDE.md](CLAUDE.md).
 
 Rad-X (`Reference\Rad-X`, fork di DelphiDoom 2.06) fa girare **Radix - beyond the void** (Epic MegaGames, 1995, sparatutto spaziale) sul motore di Doom.
 Il gioco parte da `RADIX.DAT` e genera in memoria un WAD in formato Doom (`Radix\radix_xlat_wad.pas` e le unit `radix_*` che usa, circa 9000 righe
-con i dati dei font). Questa libreria porta a classi **una parte del traduttore**; il resto e' elencato in "Cosa resta".
+con i dati dei font). Questa libreria porta a classi il traduttore (completo, vedi "Cosa e' fatto").
 
 ## Il formato di `RADIX.DAT`
 
@@ -33,28 +33,29 @@ con i dati dei font). Questa libreria porta a classi **una parte del traduttore*
 
 Il costruttore di patch e il WAD in memoria sono quelli di `Libs\GameData` (`TGamePatchOptions.Radix`: buco 254, palette 0..255).
 
-## Cosa e' fatto e cosa resta
+## Cosa e' fatto
 
-Il traduttore e' **parziale**: 814 lump su 2534 (Radix 2.0 shareware) e 737 su 2456 (1.0 shareware) sono identici a quelli del vecchio, byte per byte (`RADIXINF` e' in piu',
-con un sottoinsieme delle righe del vecchio).
-Fatti: palette e SHADES, TRN_*, texture dei muri + cieli + TEXTURE0/PNAMES0, flat, HELPnn, TITLEPIC, M_RADIX, M_BRIEF, RADIXnnn, OBJnnPRI/SEC, SMALLFNT e FNTAnnn,
-musica (`D_INTRO`, `D_EiMj`), testi delle missioni (`MNTEXTij`), briefing (`BRIEF_ij`), fine degli episodi (`CiTEXT`).
+Il traduttore e' **completo**: 2534 lump su 2534 (Radix 2.0 shareware) e 2456 su 2456 (1.0 shareware) sono identici a quelli del vecchio `Radix2WAD_Game`, byte per byte e
+nello stesso ordine, `RADIXINF` compreso (`Tools\Verifica\169\RadixDiff.exe`, e il test di parita' controlla anche il numero dei lump).
 
-Non fatti (restano in `Radix\radix_xlat_wad.pas` del fork, `Reference\Rad-X`):
+| Passo (unit) | Lump |
+|---|---|
+| `PalettePart` | `PALETTE`, `SHADES`, `TRN_RED`, `TRN_GREE`, `TRN_YELL` (i nomi si cambiano con `TRadixLumpNames`) |
+| `TexturePart` | `P_START`..`P_END`, `RDXWnnnn`, cieli, `PNAMES0`, `TEXTURE0` |
+| `LevelPart` (e `DelphiDoom.Radix.Level.*`) | 9 x 17 lump per livello: `E1M1`, `THINGS`, `LINEDEFS`, `SIDEDEFS`, `VERTEXES`, `SECTORS` e i lump di Radix (`RMAP`, `RTHINGS`, `RGRID`, `RACTION`, `RMAPGRID`, `RTRIGGER`); `SEGS`, `SSECTORS`, `NODES`, `REJECT` e `BLOCKMAP` sono vuoti (il vecchio non costruiva nodi: li fa il motore) |
+| `FlatPart` | `F_START`..`F_END`, `RDXFnnnn`, `F_SKY1` |
+| `GraphicsPart` | schermate e immagini dei menu (`HELPnn`, `TITLEPIC`, `RADIXnnn`, `OBJnnPRI`...) |
+| `SmallFontPart`, `BigFontPart`, `DosFontPart` | `SMALLFNT`, `FNTAnnn`, `BIGFA/B/C` (rumore di Perlin), `DOSFA/B`, `DOSSA/B` (i dati dei font in `FontData`) |
+| `MenuTranslationPart` | `TRN_MENU` |
+| `SpritePart` (con `SpriteCatalog`, `SpriteList`, `SpriteData`, `Things`) | `S_START`..`S_END`, `XRnn..`, `Xnnn..`, `PLAY..`, `EXPB..`, `TNT1A0`, `GEAR1A0` |
+| `LumpGroupPart` | `D_INTRO`, `D_EiMj`, `MNTEXTij`, `BRIEF_ij`, `CiTEXT` |
+| `CockpitPart`, `SoundPart` | `COCKPIT`, `DS_nnnnn` e `SNDINFO` |
 
-| Parte | Lump | Dove nel vecchio codice |
-|---|---|---|
-| Livelli | 9 x 17 lump (`E1M1`, `THINGS`, `LINEDEFS`..., `RMAP`, `RTHINGS`, `RGRID`, `RACTION`...) | `GenerateLevels`, `radix_level.pas` (2380 righe: costruisce la mappa Doom e i nodi) |
-| Font grandi | `BIGFA/B/C`, 96 lump ciascuno | `GenerateBigFonts` (rumore di Perlin, tre colori) |
-| Font del terminale | `DOSFA/B`, `DOSSA/B` | `GenerateDosFonts`, `radix_font.pas` (7600 righe, quasi tutte tabelle) |
-| Traduzione dei menu | `TRN_MENU` | `GenerateMenuTranslation` |
-| Sprite | `S_START`.. `XRnnA/B/C`... | `GenerateSprites` (900 righe), `radix_extra_sprites.pas` |
-| Cabina | `COCKPIT` | `GenerateCockpitOverlay` (`TRadixBitmap`) |
-| Suoni | `DS_nnnnn`, `SNDINFO` | `GenerateSounds`, `radix_sounds.pas` (tabella dei nomi) |
-| CSV e modalita' editor | | `GenerateCSVs`, `Convert_Edit`, `Convert` con i flag `R2W_*` |
+**Non portati, di proposito** (non sono parte della conversione di gioco `Convert_Game`, e il golden non li ha): `GenerateExtraSprites` (mai chiamata dal vecchio:
+`IFOG*`, `TFOG*`, chiavi e teschi di `radix_extra_sprites.pas`), `GenerateCSVs` e la modalita' editor (`Convert_Edit`, flag `R2W_*`, strumento VCL `rad2wad`).
 
-`RADIXINF` della libreria contiene gli alias dei passi fatti (un sottoinsieme, nello stesso ordine, di quello del vecchio).
-
+`TRadixLumpNames` (`Original`: `PNAMES0`, `TEXTURE0`, `PALETTE`, `SHADES`; `Doom`: `PNAMES`, `TEXTURE1`, `PLAYPAL`, `COLORMAP`) e `TRadixFactory.CreateTranslator(nomi)` danno al
+motore di Doom (che non e' quello del fork) i nomi che legge; l'uscita con i nomi `Original` e' quella del golden.
 ## Differenze dal vecchio
 
 * Il vecchio `GenerateOpaqueGraphicWithPalette` leggeva il lump in un blocco di `malloc(size)` con `size` **non inizializzato** (riga 1100): sovrascriveva lo heap

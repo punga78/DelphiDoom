@@ -133,7 +133,8 @@ begin
   LTranslator := TRadixFactory.CreateTranslator;
   LActual := Dump(LTranslator.Translate(TRadixFactory.OpenContainer(LPath)));
   LGolden := ReadLines('translation.' + AVersion + '.golden.txt');
-  Assert.IsTrue(Length(LActual) > 500, 'the lumps that are ported');
+  // the translator is complete: the same lumps as the old one, in the same order
+  Assert.AreEqual(Length(LGolden) - 1, Length(LActual), 'the number of lumps');
   // every lump of the library is the next one of the old converter with its name: same size, same bytes
   LGoldenIndex := 1;
   for LLine := 0 to High(LActual) do

@@ -1,0 +1,4439 @@
+# corpus of the saved game classes: a header line (kind, arguments) and a YAML node
+%%%%
+gametime 6 21 5 1999 20 13 17
+day: 17
+month: 0x10
+second: 2147483647
+minute: 2
+weekday: 1
+year: 0x10
+hour: 222
+%%%%
+region
+activityXcom: []
+%%%%
+country gen
+pact: true
+funding: [-68340, 4371]
+newPact: no
+activityXcom: [1, 10, 0x10, 0x10]
+%%%%
+binary 25018 1
+x: 1
+%%%%
+project 104 2
+assigned: 4
+spent: -82177
+cost: 86508
+%%%%
+project 191 26
+assigned: 90
+spent: -63169
+%%%%
+binary 54805 4
+x: 1
+%%%%
+binary 5924 4
+x: 1
+%%%%
+binary -22437 1
+x: 1
+%%%%
+region
+activityXcom: [2147483647, 0x10, -2147483648, -2147483648]
+activityAlien: [0x10, 25029, 0]
+%%%%
+region
+activityXcom: []
+%%%%
+project 13 46
+cost: 0x10
+assigned: -2147483648
+%%%%
+gametime 3 28 1 2001 7 22 44
+weekday: 2147483647
+hour: 28988
+month: 5
+second: -2147483648
+day: 30
+%%%%
+binary -36973 1
+x: 1
+%%%%
+gametime 1 30 5 2004 6 29 39
+year: 0
+second: 0x10
+day: -96747
+minute: 0x10
+weekday: 2
+month: 2147483647
+hour: -42189
+%%%%
+gametime 2 6 11 2001 3 59 58
+second: 27
+year: 1
+minute: -2147483648
+day: 2147483647
+weekday: -63304
+%%%%
+binary 23513 4
+x: 1
+%%%%
+region
+activityXcom: [-60303]
+activityAlien: [18]
+%%%%
+region
+activityXcom: [40, 2, 2147483647, 26]
+activityAlien: [-50254, -3, 2147483647, 2147483647, 0x10]
+%%%%
+binary -37774 4
+x: 1
+%%%%
+project 39 7
+assigned: 40
+spent: 2147483647
+cost: 2147483647
+%%%%
+gametime 3 18 7 2001 19 46 55
+hour: -2147483648
+weekday: 11
+month: 237
+minute: 1
+%%%%
+gametime 6 17 3 1999 6 8 25
+second: 3
+minute: -2147483648
+month: 2147483647
+day: 2
+hour: 1
+weekday: 1
+%%%%
+project 102 42
+
+%%%%
+gametime 6 6 5 1999 5 37 44
+second: -2147483648
+day: -41333
+year: 2147483647
+month: 129
+weekday: 2
+hour: 82
+minute: -2
+%%%%
+gametime 2 25 12 2002 0 46 21
+second: 33
+month: -5
+year: 1
+day: 23821
+minute: 9
+weekday: 35
+%%%%
+gametime 6 9 4 2003 1 42 0
+weekday: 92008
+month: -3
+minute: 40
+day: -2147483648
+hour: -29627
+%%%%
+country nogen
+activityAlien: [-2147483648]
+pact: false
+%%%%
+binary -7960 1
+x: 1
+%%%%
+country nogen
+newPact: true
+activityAlien: []
+funding: [0x10, -4190, 40]
+pact: no
+%%%%
+project 19 19
+spent: -2147483648
+cost: 0x10
+assigned: 2147483647
+%%%%
+country nogen
+activityAlien: abc
+pact: false
+funding: [30, 12, 35]
+activityXcom: [12]
+newPact: true
+%%%%
+gametime 3 2 11 2001 1 43 57
+day: 96010
+weekday: 2147483647
+month: -22824
+year: 2147483647
+hour: 299
+minute: -2147483648
+%%%%
+region
+activityAlien: [0x10, -2147483648, -2147483648, -22719]
+%%%%
+binary -20303 1
+x: 1
+%%%%
+gametime 3 27 10 2002 5 46 56
+month: 5455
+second: 7
+weekday: 11
+minute: 0x10
+hour: 0x10
+%%%%
+binary -67416 2
+x: 1
+%%%%
+country nogen
+activityAlien: [-2147483648, -2147483648, -2147483648]
+pact: true
+activityXcom: [2147483647, 21]
+funding: [4, 2147483647, -67437]
+newPact: true
+%%%%
+gametime 1 16 1 2002 6 4 19
+minute: -3
+month: -4
+year: 0x10
+day: -2147483648
+hour: 0x10
+weekday: 80
+second: 0x10
+%%%%
+country gen
+activityAlien: [-2147483648, 84990, -2147483648, 227, 133]
+newPact: true
+pact: false
+%%%%
+project 186 47
+cost: 0
+spent: -53411
+assigned: 30599
+%%%%
+gametime 5 1 7 2001 3 37 52
+weekday: 40
+day: 32
+second: -2147483648
+month: 25
+minute: 2147483647
+hour: 92
+year: 19
+%%%%
+country nogen
+pact: false
+newPact: true
+activityXcom: [2147483647, 0, 0x10, 109]
+funding: [2147483647]
+%%%%
+region
+activityAlien: [-83144]
+activityXcom: [5, 37, 107]
+%%%%
+binary 38944 4
+x: 1
+%%%%
+binary -46807 4
+x: 1
+%%%%
+gametime 4 25 1 2003 11 50 35
+day: 10
+weekday: 0x10
+minute: 16
+year: -2147483648
+second: 35
+hour: 0x10
+%%%%
+region
+activityXcom: [-2147483648]
+activityAlien: [3, 7]
+%%%%
+project 163 50
+assigned: 49647
+cost: -2147483648
+%%%%
+region
+activityXcom: []
+activityAlien: [19, 0x10, 153, 7]
+%%%%
+gametime 1 25 4 2004 23 13 49
+hour: -2147483648
+month: -3
+day: 2147483647
+second: -2147483648
+%%%%
+region
+activityXcom: [2147483647, 5, 218, 0x10]
+activityAlien: [-2147483648]
+%%%%
+gametime 3 28 2 2001 0 34 21
+weekday: 1
+year: 39
+hour: -49229
+second:
+month: 25
+minute: 8
+%%%%
+project 80 46
+spent: -2147483648
+cost: 119
+%%%%
+region
+activityAlien: [-83783, 8273, 2147483647, 0x10, 8]
+activityXcom: [12, 0x10, -2147483648, -2147483648, -4]
+%%%%
+region
+activityXcom: [-2]
+activityAlien: [273, 0x10, 2147483647, 81233, -1]
+%%%%
+gametime 5 2 4 2004 5 49 46
+minute: -2147483648
+hour: 45080
+second: {k: v}
+year: 174
+day: 0x10
+month: 30
+%%%%
+gametime 7 22 11 2001 19 5 27
+year: 1
+second: 19
+hour: 40
+month: 251
+weekday: 2147483647
+day: 10
+%%%%
+gametime 6 25 4 2002 17 53 43
+day: 67
+weekday: 30
+minute: 1
+hour: -9205
+second: 2
+%%%%
+gametime 2 1 11 1999 12 29 35
+minute: -3
+hour: abc
+second: 2147483647
+weekday: 7
+day: 26
+%%%%
+region
+activityXcom: [2147483647, -10868]
+activityAlien: []
+%%%%
+gametime 4 21 2 2004 10 29 16
+day: 14
+year: 16
+month: 2147483647
+second: -2147483648
+hour: 25
+weekday: 0x10
+%%%%
+gametime 7 30 3 1999 14 52 6
+day: -2147483648
+minute: 1
+weekday: 11
+second: 0x10
+year: 6
+hour: 221
+month: 32
+%%%%
+binary 47174 2
+x: 1
+%%%%
+country gen
+newPact: false
+activityXcom: [-50973, 60631, -2147483648, -13792, -12673]
+pact: no
+activityAlien: [-17899, 2147483647, -11857]
+%%%%
+country gen
+activityXcom: [-2, -2147483648, 3, 0x10]
+newPact: true
+%%%%
+region
+activityAlien: [2147483647, 4]
+%%%%
+binary -16352 2
+x: 1
+%%%%
+gametime 7 28 8 2000 0 31 23
+month: 68320
+weekday: 3
+year: 0
+second: -2147483648
+%%%%
+project 51 33
+cost: 4
+assigned: 4
+%%%%
+project 154 34
+assigned: 2
+spent: 0
+cost: 2147483647
+%%%%
+project 135 47
+assigned: 82
+spent: 7
+cost: 3
+%%%%
+country gen
+funding: [49698, -5729, 69202, 0x10]
+newPact: true
+activityAlien: []
+activityXcom: []
+pact: abc
+%%%%
+country gen
+activityXcom:
+activityAlien: abc
+pact: no
+funding: [2147483647, 143, 0x10, -2147483648, -2]
+%%%%
+project 121 23
+spent: 0x10
+cost: 3
+%%%%
+country gen
+newPact: true
+pact: true
+funding: [133, 0x10, 12, -2147483648]
+activityXcom: ~
+%%%%
+region
+activityAlien: [-2]
+activityXcom: [1, -58207, -2147483648, 0x10, -58188]
+%%%%
+region
+activityXcom: [2147483647]
+%%%%
+binary 11919 1
+x: 1
+%%%%
+project 50 12
+assigned: -2147483648
+spent: 199
+%%%%
+gametime 4 12 1 2004 7 29 33
+hour: -2147483648
+year: -2147483648
+weekday: 28
+month: 62844
+day: 12
+minute: {k: v}
+%%%%
+region
+activityAlien: [2147483647, 209, 2147483647, 72, 19]
+activityXcom: []
+%%%%
+gametime 2 24 8 2001 13 54 42
+month: -3
+year: -2147483648
+minute: 0x10
+weekday: 22
+day: 91
+hour: 5
+%%%%
+region
+activityXcom: [-4, -2147483648, 79, 0x10, -2147483648]
+%%%%
+region
+activityXcom: [-2, 2147483647, -2147483648]
+activityAlien: [-51242, 27, 0]
+%%%%
+region
+activityXcom: [58, 2147483647, 13, 0x10, 2147483647]
+activityAlien: [2147483647, 24, 2147483647]
+%%%%
+binary 13650 2
+x: 1
+%%%%
+country nogen
+newPact: true
+pact: no
+funding: [2147483647, 27369, 0x10, -2, 0x10]
+activityAlien: [0x10, 4, -3, 4]
+%%%%
+binary -14399 2
+x: 1
+%%%%
+region
+activityAlien: [186, 21912, 2147483647, 29]
+activityXcom: [-1]
+%%%%
+country gen
+newPact: no
+pact: false
+activityAlien: [0x10, 24, 2147483647, 172, 203]
+%%%%
+binary 65086 4
+x: 1
+%%%%
+region
+activityXcom: [2147483647, 2147483647, 14, 2147483647]
+%%%%
+gametime 4 8 9 2001 10 4 26
+weekday: 210
+minute: 2792
+year: -1
+%%%%
+gametime 1 19 9 1999 10 24 13
+hour: 4
+second: -2147483648
+minute: 133
+year: [1, 2]
+month: -4
+day: 0x10
+%%%%
+project 17 8
+assigned: 35
+cost: 0
+spent: 27
+%%%%
+gametime 7 21 7 2004 22 48 7
+second: -2147483648
+hour: 0x10
+minute: 110
+%%%%
+country nogen
+activityAlien: [0x10, 2147483647]
+funding: [2147483647, 2147483647, 0x10, 1]
+newPact: no
+pact: false
+activityXcom: [-2147483648, -24154, 34]
+%%%%
+project 97 10
+spent: [1, 2]
+%%%%
+region
+activityXcom: [0x10, 15, 54042, 0, -2147483648]
+activityAlien: []
+%%%%
+project 95 40
+cost: 91274
+spent: 39
+%%%%
+region
+activityXcom: [168, -2]
+%%%%
+country nogen
+funding: [-73841, 0x10, 73908, 1]
+activityXcom: [-2147483648]
+pact: true
+newPact: abc
+%%%%
+project 170 41
+cost: -2147483648
+assigned: 16
+%%%%
+region
+activityXcom: [3, 39, -2147483648, 95904]
+activityAlien: [22, 72, -2147483648, 0]
+%%%%
+project 164 48
+cost: 0x10
+assigned: 7
+%%%%
+binary -16117 1
+x: 1
+%%%%
+country nogen
+pact: no
+activityXcom: [21]
+funding: [0x10, -2147483648, 140]
+%%%%
+gametime 6 12 3 2000 16 54 49
+year: 21
+weekday: 0x10
+minute: -2147483648
+day: -2
+month: 2
+hour: 2147483647
+%%%%
+binary 63568 4
+x: 1
+%%%%
+country nogen
+newPact: true
+activityXcom: [-2147483648]
+pact: abc
+activityAlien: [-2147483648, 7, 2147483647, 0x10, 28]
+%%%%
+region
+activityAlien: [-72509, -1]
+activityXcom: []
+%%%%
+region
+activityXcom: [32, 29]
+%%%%
+country nogen
+pact: true
+activityXcom: [31, 82016, 42, 0x10]
+newPact: true
+%%%%
+country gen
+funding: [3, 28, 2147483647, -27967, -2147483648]
+activityAlien: [-2]
+pact: no
+activityXcom: []
+%%%%
+region
+activityAlien:
+activityXcom: []
+%%%%
+region
+activityAlien: [30]
+%%%%
+gametime 2 23 4 2000 8 20 52
+year: -2147483648
+month: 28091
+hour: 2147483647
+day: 103
+minute: 2147483647
+weekday: 171
+second: -4
+%%%%
+region
+activityXcom: [-1, -35893]
+%%%%
+country gen
+activityAlien: [39, 154, -2147483648, 78]
+newPact: true
+pact: true
+activityXcom: [0x10, 4, -2147483648]
+funding: [289, 25, -74058, 286]
+%%%%
+country gen
+pact: true
+funding: [-2147483648, 88495]
+%%%%
+gametime 6 9 5 2004 4 59 3
+day: 35
+year: 0x10
+month: 2147483647
+weekday: 0x10
+second: 6
+%%%%
+binary 36932 1
+x: 1
+%%%%
+gametime 2 25 3 1999 3 50 34
+month: -2147483648
+second: 215
+day: 196
+hour: 31
+%%%%
+region
+activityXcom: []
+%%%%
+country gen
+activityAlien: [-2147483648, 93, 285]
+newPact: [1, 2]
+funding: [41971, 43428]
+pact: true
+activityXcom: [0x10]
+%%%%
+region
+activityAlien: [-5, 26, 6]
+activityXcom: [-78738, 2147483647, 2147483647, -89600, -2147483648]
+%%%%
+region
+activityAlien: [2147483647]
+activityXcom: [-2147483648]
+%%%%
+binary -48105 1
+x: 1
+%%%%
+country nogen
+funding: [10, 5, 33, 0x10, 2147483647]
+pact: no
+newPact: true
+activityAlien: ~
+%%%%
+binary -18396 1
+x: 1
+%%%%
+region
+activityAlien: [299, 0x10, -2147483648, 2147483647, -2147483648]
+%%%%
+binary 68742 1
+x: 1
+%%%%
+binary -36398 2
+x: 1
+%%%%
+gametime 4 23 9 2003 12 57 26
+year: 156
+weekday: 2147483647
+second: abc
+day: 2147483647
+hour: 5
+month: 2
+minute: 162
+%%%%
+project 154 20
+assigned: -2147483648
+cost: -67603
+%%%%
+project 74 23
+cost: 3
+assigned: 15
+spent: 2147483647
+%%%%
+region
+activityXcom: [140]
+%%%%
+region
+activityAlien: []
+%%%%
+region
+activityXcom: []
+activityAlien: []
+%%%%
+project 58 30
+spent: 219
+assigned: -1337
+cost: -2147483648
+%%%%
+binary 57002 2
+x: 1
+%%%%
+country gen
+activityAlien: []
+pact: ~
+newPact: false
+funding: [1, 2]
+%%%%
+region
+activityAlien: [31, 18, 2147483647]
+%%%%
+country gen
+activityXcom: [31, -28809, 279, 4, -52023]
+pact: no
+newPact: true
+funding: []
+%%%%
+binary -42043 1
+x: 1
+%%%%
+gametime 7 8 10 2003 6 55 36
+hour: 2147483647
+weekday: 0
+second: 13031
+day: -2147483648
+minute: 2147483647
+year: 6
+%%%%
+region
+activityAlien: [2147483647, 0x10, 36, 134]
+activityXcom: [16, 294]
+%%%%
+region
+activityXcom: [2147483647, 203]
+%%%%
+gametime 1 1 3 2004 22 39 0
+weekday: 0
+minute: -12354
+hour: 7
+day: 123
+month: 172
+year: 30303
+%%%%
+project 50 17
+cost: 2147483647
+assigned: 3
+spent: 208
+%%%%
+project 23 32
+cost: -74772
+%%%%
+gametime 7 11 4 2002 6 55 5
+month: 2147483647
+weekday: 5
+minute: -2147483648
+hour: 94997
+year: 247
+day: -1
+%%%%
+project 71 46
+spent: -28004
+assigned: 4
+%%%%
+region
+activityAlien: [43142, 0x10, 30, 0x10]
+activityXcom: [-75421]
+%%%%
+country nogen
+funding: [130, -2147483648, 0x10]
+activityAlien: [0x10, 0x10, 240, 11, 16]
+pact: false
+activityXcom: [2147483647, -73269, 3, 24]
+newPact: true
+%%%%
+gametime 5 9 7 2004 2 25 11
+hour: -95773
+year: 259
+day: 133
+month: 28
+%%%%
+country gen
+pact: true
+activityAlien: [36, 37, 24, -1]
+activityXcom: [2147483647, 102]
+%%%%
+project 62 23
+assigned: ~
+cost: -2147483648
+%%%%
+country nogen
+pact: no
+funding: []
+newPact: true
+activityAlien: [0, 6]
+%%%%
+project 32 32
+spent: 0x10
+cost: abc
+%%%%
+region
+activityXcom: [182, -1, 2147483647, -2147483648, 0x10]
+activityAlien: [24]
+%%%%
+region
+activityXcom: [23]
+activityAlien: [25, -2147483648, 30, 82]
+%%%%
+region
+activityAlien: [0x10, 0x10, 190, 2147483647, 2147483647]
+%%%%
+gametime 2 25 1 1999 3 39 28
+weekday: 0x10
+month: -2147483648
+day: -10935
+second: 1
+minute: 284
+year: -2147483648
+%%%%
+gametime 7 30 2 2000 14 24 24
+hour: ~
+year: 34
+minute: -93658
+month: 9
+day: -98485
+second: 23
+weekday: 1
+%%%%
+gametime 2 12 1 2003 14 34 38
+day: -5
+second: 2147483647
+hour: 30
+month: 2147483647
+minute: -66001
+weekday: 50611
+%%%%
+gametime 1 9 8 2004 8 22 45
+second: 3
+minute: 13
+hour: 3
+year: -84083
+month:
+%%%%
+binary -3496 1
+x: 1
+%%%%
+country gen
+funding: [10, -2147483648]
+newPact: no
+activityAlien: []
+pact: no
+%%%%
+region
+activityAlien: []
+activityXcom: [-2147483648, -61105, 0, 0x10]
+%%%%
+region
+activityXcom: abc
+%%%%
+gametime 1 29 10 1999 10 21 37
+second: 7
+year: -71859
+minute: 2147483647
+day: 2147483647
+hour: 20
+%%%%
+project 104 26
+spent: -2147483648
+cost: -3
+%%%%
+project 148 3
+spent: 84
+assigned: ~
+%%%%
+binary -7704 2
+x: 1
+%%%%
+project 101 34
+cost: 8
+spent: 0x10
+assigned: abc
+%%%%
+gametime 4 11 6 2002 3 55 40
+hour: 291
+month: 2
+year: {k: v}
+weekday:
+day: 68278
+second: 68
+%%%%
+region
+activityXcom: []
+activityAlien: [-42717]
+%%%%
+country gen
+funding: [-5, 3, 75598, 0x10, 2147483647]
+activityXcom: [-2]
+activityAlien: [1, 2]
+newPact: no
+%%%%
+project 188 46
+assigned: -54345
+cost: -2147483648
+spent: -81188
+%%%%
+binary 56882 1
+x: 1
+%%%%
+country nogen
+funding: [97, 2147483647]
+pact: false
+newPact: false
+activityXcom: []
+%%%%
+region
+activityAlien: [9]
+%%%%
+project 169 23
+assigned: -2147483648
+spent: -2147483648
+cost: 87737
+%%%%
+region
+activityXcom: [2147483647, -2, 0x10, 2147483647]
+activityAlien: [94, -2147483648, 269, 107]
+%%%%
+project 67 40
+spent: -25918
+cost: [1, 2]
+assigned: -3
+%%%%
+project 12 39
+cost: 0x10
+spent: 0
+assigned: 0
+%%%%
+gametime 1 4 10 2003 7 2 30
+month: 3
+second: 2147483647
+day: 5
+weekday: 18
+hour: 9
+%%%%
+country nogen
+newPact: no
+funding: []
+pact: true
+activityXcom: []
+activityAlien: [46]
+%%%%
+project 180 48
+cost: -22140
+spent: 25
+assigned: 32
+%%%%
+gametime 6 5 9 2001 4 16 51
+weekday: -75361
+hour: 6177
+year: 91
+minute: 15
+second: 0x10
+%%%%
+project 176 2
+assigned: -2
+spent: -4
+cost: 28
+%%%%
+country gen
+newPact: true
+activityAlien: [9, 97395, 2147483647, -2]
+funding: [-2147483648, 2147483647, 2147483647, 5032, 3]
+activityXcom: [13, 162, 20, 2147483647]
+pact: false
+%%%%
+project 165 27
+assigned: 55
+spent: 17
+cost: 161
+%%%%
+region
+activityXcom:
+%%%%
+region
+activityAlien: [35, -4, 15660, 2147483647, 210]
+activityXcom: []
+%%%%
+country gen
+activityAlien: abc
+pact: false
+newPact: no
+activityXcom: [1, 2]
+funding: [-2147483648, 88199, 271]
+%%%%
+country nogen
+activityXcom: [38, 0x10, 0x10, 6, 33]
+newPact: true
+pact: true
+%%%%
+binary 43241 4
+x: 1
+%%%%
+country nogen
+newPact: no
+activityAlien: [0x10, -53942, 24904]
+activityXcom: [209]
+funding: [3, 36, -2147483648]
+pact: true
+%%%%
+region
+activityAlien: []
+activityXcom: [-1, 1, 23, 2147483647]
+%%%%
+region
+activityAlien: [-4, -2147483648, 1, 19, 0x10]
+activityXcom: [12, -44510, -2147483648, 21, -2147483648]
+%%%%
+gametime 2 19 6 2003 9 43 46
+hour: -2
+minute: 0x10
+month: -5
+day: -1
+year: -2147483648
+weekday: 11
+%%%%
+binary 30338 4
+x: 1
+%%%%
+project 56 41
+cost: 0x10
+spent: 1
+%%%%
+project 72 40
+assigned: -14019
+cost: -2147483648
+spent:
+%%%%
+gametime 3 29 9 2001 6 33 34
+month: 0x10
+year: -2147483648
+hour: 0x10
+minute: -2147483648
+weekday: 0x10
+second: 35
+%%%%
+project 34 9
+spent: 37
+cost: 0x10
+assigned: -35916
+%%%%
+country gen
+activityAlien: [31, 13, 32]
+pact: no
+funding: [111, 2147483647, -2147483648, 4]
+newPact: false
+%%%%
+country nogen
+activityAlien: []
+funding: [-2147483648, 2147483647, 2147483647]
+pact: no
+activityXcom: []
+%%%%
+gametime 2 28 3 2002 22 21 31
+day: 182
+month: 58
+minute: 2147483647
+second: 40
+hour: -71926
+year: 209
+weekday: 9
+%%%%
+country nogen
+activityAlien: [18]
+activityXcom: [-2147483648, 4, 209]
+pact: true
+newPact: false
+funding: []
+%%%%
+country nogen
+activityXcom: []
+funding: [-78787, 2147483647, 12, 2147483647]
+newPact: true
+activityAlien: [2147483647]
+%%%%
+country nogen
+pact: false
+activityAlien: [89548, 8, 2147483647, -2147483648]
+activityXcom: []
+%%%%
+region
+activityXcom: [4, 172, -2147483648, -2147483648, 15]
+%%%%
+region
+activityXcom: [1, -89447, -2147483648]
+%%%%
+country nogen
+newPact: false
+activityAlien: [-2147483648, -2147483648, 0x10, -1, 2147483647]
+activityXcom: [2147483647, 85949, -49646, 17, 286]
+pact: false
+%%%%
+region
+activityXcom: [2147483647, 9]
+activityAlien: [81893, 16, 10]
+%%%%
+country nogen
+activityXcom: []
+activityAlien: []
+newPact: true
+pact: true
+%%%%
+project 138 46
+cost: 4
+assigned: 75361
+spent: -2147483648
+%%%%
+region
+activityXcom: [2147483647, 0x10, -2147483648, 189, 73625]
+%%%%
+binary 40669 4
+x: 1
+%%%%
+country nogen
+pact: false
+activityAlien: [47, 2147483647, 0, -3]
+newPact: true
+activityXcom: [281, 3, 284, 15]
+%%%%
+region
+activityXcom: [-1, 164, 24]
+%%%%
+country nogen
+activityXcom: abc
+activityAlien: []
+funding: [0x10, -2147483648]
+pact: true
+%%%%
+country nogen
+funding: [0x10]
+newPact: true
+pact: no
+activityAlien: [12, 9, -14031, -2147483648, 0x10]
+%%%%
+region
+activityAlien: [-2147483648]
+%%%%
+region
+activityXcom: [0x10, -2147483648, 178]
+activityAlien: [2147483647, 2147483647]
+%%%%
+country nogen
+funding: [2147483647, 296, 261, 2147483647, 32]
+pact: true
+activityAlien: [-2147483648]
+activityXcom: [0x10, -2147483648]
+newPact: false
+%%%%
+gametime 2 25 2 2001 2 33 32
+day: -2147483648
+year: 25
+weekday: -2147483648
+second: abc
+%%%%
+gametime 2 16 5 2000 20 31 9
+weekday: 2
+day: 0x10
+hour: -2147483648
+month: 2147483647
+year: -2147483648
+second: 2147483647
+%%%%
+project 41 16
+spent: -2147483648
+%%%%
+region
+activityXcom: [-2147483648, 115]
+activityAlien: [0x10, 3, -2147483648, 2147483647, -1]
+%%%%
+project 20 36
+assigned: 0x10
+spent: 249
+%%%%
+country nogen
+funding: [9, 286, 4, 38]
+activityXcom: [248, 2147483647, -2147483648]
+pact: true
+activityAlien: [15, 0x10]
+%%%%
+region
+activityXcom: [5, 32, 0, 2147483647, 2147483647]
+activityAlien: [208, 34, 5]
+%%%%
+project 90 43
+cost: 27
+assigned: -86384
+spent: 6
+%%%%
+binary -45595 4
+x: 1
+%%%%
+gametime 2 11 2 1999 2 47 45
+year: -2147483648
+second: -7148
+hour: 199
+weekday: 139
+month: -2147483648
+day: 35
+minute: 54
+%%%%
+project 55 25
+spent: 93753
+assigned: 20
+cost: -79705
+%%%%
+country nogen
+activityXcom: []
+pact: true
+funding: [-3]
+activityAlien: []
+newPact: true
+%%%%
+region
+activityXcom: [1, 2]
+activityAlien: [-2147483648, 24, 35]
+%%%%
+gametime 2 14 6 2001 4 46 42
+day: 25
+month: -2147483648
+hour: -4
+second: -3
+%%%%
+country nogen
+activityAlien: []
+pact: true
+funding: [292]
+activityXcom: [20, 2147483647, 2147483647]
+%%%%
+project 1 39
+cost: 15
+assigned: 0x10
+spent: 50
+%%%%
+binary 32505 2
+x: 1
+%%%%
+gametime 6 24 11 2003 8 48 12
+year: -2147483648
+hour: -32100
+weekday: 7
+minute: 38
+second: 2
+month: 213
+day: -2147483648
+%%%%
+project 4 43
+assigned: 50
+spent: 119
+cost: 11
+%%%%
+binary -53612 1
+x: 1
+%%%%
+binary 55613 2
+x: 1
+%%%%
+gametime 1 31 11 1999 0 46 52
+year: 74
+month: abc
+weekday: -1
+second: 48913
+day: 3
+%%%%
+country gen
+funding: []
+newPact: false
+activityXcom: [2147483647, 2147483647]
+activityAlien: [2147483647, 63, -2147483648, 2147483647, 35]
+%%%%
+project 19 9
+spent: -97273
+assigned: 0
+cost: 9
+%%%%
+region
+
+%%%%
+gametime 5 17 5 2003 13 29 43
+day: -2147483648
+year: 299
+minute: -5
+weekday: -95791
+month: 8
+hour: 0x10
+%%%%
+project 88 31
+spent: 19
+cost: 23166
+assigned: 5
+%%%%
+gametime 5 15 10 1999 7 47 26
+minute: 94315
+month: 0x10
+second: 2147483647
+weekday: 10
+%%%%
+country gen
+pact: no
+funding: [118, 0x10]
+activityAlien: [27, 5, 32, -2147483648, 14]
+%%%%
+project 111 30
+spent: 96
+cost: -2147483648
+%%%%
+region
+activityAlien: []
+activityXcom: [3]
+%%%%
+region
+
+%%%%
+project 192 28
+spent:
+assigned: -2147483648
+cost: ~
+%%%%
+gametime 3 7 6 2002 10 26 56
+minute: 8
+second: -2147483648
+day: 2147483647
+hour: 4
+month: 6070
+%%%%
+gametime 7 12 11 2001 13 19 17
+year: abc
+month: -2147483648
+second: 2147483647
+weekday: 0x10
+%%%%
+region
+activityAlien: [1, 0x10]
+activityXcom: [-2, 2147483647, 20, -2147483648, 11]
+%%%%
+region
+activityAlien: [-60605, 9, 31, 0x10, 251]
+activityXcom: []
+%%%%
+project 105 10
+cost: 0x10
+%%%%
+country nogen
+funding: [-5]
+activityXcom: [-1]
+newPact: no
+pact: true
+%%%%
+binary 26289 4
+x: 1
+%%%%
+gametime 6 18 2 2001 17 7 47
+second: 164
+hour: 2
+month: 2147483647
+minute: 2
+year: -2
+day: 0x10
+%%%%
+project 35 3
+assigned: 2147483647
+cost: ~
+%%%%
+region
+activityXcom: [5]
+activityAlien: [-93825, 36, 5, 4, 94]
+%%%%
+country nogen
+funding: [3, -31329, 0, 2147483647]
+activityAlien: [0x10]
+pact: true
+activityXcom: [86195, 5, 0x10, 23]
+newPact: false
+%%%%
+binary -65516 1
+x: 1
+%%%%
+gametime 1 17 4 2003 21 33 37
+year: -2147483648
+second: 2147483647
+weekday: -4
+hour: -2147483648
+month: 118
+minute: 14
+%%%%
+gametime 5 21 11 1999 1 5 12
+hour: 37
+day: -1
+weekday: -2147483648
+month: [1, 2]
+year: -2147483648
+second: ~
+minute: -1
+%%%%
+region
+activityAlien: [4, -69263, 83006]
+%%%%
+gametime 5 21 5 2003 4 2 7
+second: 2
+weekday: 189
+day: 0x10
+month: abc
+year: 2147483647
+hour: 0x10
+minute: -5
+%%%%
+binary -39646 1
+x: 1
+%%%%
+binary -54342 1
+x: 1
+%%%%
+binary 53945 2
+x: 1
+%%%%
+project 33 23
+assigned: abc
+cost: 5
+%%%%
+country gen
+funding: [-4, 2147483647, -87725]
+activityXcom: [3934, 24, 18, -2147483648, -2]
+pact: true
+newPact: no
+%%%%
+binary 47881 2
+x: 1
+%%%%
+binary 27789 2
+x: 1
+%%%%
+project 115 1
+cost: 168
+spent: 24
+%%%%
+project 104 39
+spent: 39
+%%%%
+project 117 2
+spent: 5
+%%%%
+gametime 7 4 9 2002 16 23 3
+year: 2147483647
+month: 18
+second: 91360
+weekday: 2147483647
+minute: ~
+day: 2147483647
+hour: 1
+%%%%
+binary 5297 2
+x: 1
+%%%%
+binary 39886 2
+x: 1
+%%%%
+country nogen
+activityXcom: [0]
+activityAlien: [2147483647, 95, 34]
+pact: true
+newPact: no
+funding: [5, 0, 22, -5507, 114]
+%%%%
+region
+activityXcom: {k: v}
+activityAlien: [19, 13, 3]
+%%%%
+country nogen
+newPact: true
+activityXcom: [0, 2147483647, 30, 11276]
+activityAlien:
+pact: ~
+%%%%
+project 82 16
+assigned: 277
+%%%%
+gametime 6 20 7 2002 19 42 41
+minute: -5
+second: 2147483647
+day: 9
+month: 2147483647
+year: 187
+weekday: 35
+%%%%
+region
+activityXcom: [27, -4, 32, 2147483647]
+activityAlien: [-55166, 22, 95084]
+%%%%
+region
+activityXcom: [0, -2147483648]
+%%%%
+region
+activityXcom: [2147483647, 2147483647]
+%%%%
+gametime 4 31 10 2003 1 28 40
+hour: 198
+second: -34875
+day: ~
+weekday: 0x10
+year: -2147483648
+minute: 0x10
+month: 87507
+%%%%
+binary -43191 2
+x: 1
+%%%%
+region
+activityAlien: [0x10]
+activityXcom: []
+%%%%
+gametime 1 17 11 2003 2 6 48
+minute: 0x10
+weekday: 265
+year: 0x10
+hour: -2147483648
+day: 0x10
+second: 37
+%%%%
+region
+activityAlien: [0x10, -2147483648, -2147483648, 0x10, 0x10]
+activityXcom: [1, 2]
+%%%%
+gametime 1 17 5 2002 13 53 25
+weekday: -2147483648
+second: 3
+month: -29257
+year: -2147483648
+day: -46926
+hour: abc
+%%%%
+gametime 2 9 7 1999 21 39 13
+second: 18604
+day: 0x10
+month: 2147483647
+year: 36
+minute: 47
+weekday: abc
+%%%%
+project 170 26
+cost: 27
+assigned: -26088
+%%%%
+gametime 1 10 4 2001 5 16 54
+year: 55873
+minute: ~
+month: [1, 2]
+second: [1, 2]
+weekday: 125
+%%%%
+binary 62078 2
+x: 1
+%%%%
+binary -47244 4
+x: 1
+%%%%
+binary -17582 1
+x: 1
+%%%%
+gametime 7 20 8 2004 9 59 30
+year: 2147483647
+second: [1, 2]
+hour: -16729
+weekday: 282
+day: 285
+minute: 2147483647
+%%%%
+country gen
+pact: abc
+activityXcom: [36, 0, 0]
+activityAlien: ~
+newPact: true
+funding: [26, 0x10, -2147483648]
+%%%%
+gametime 1 5 8 1999 20 42 18
+minute: 96316
+weekday: -95386
+year: 8
+hour: -5
+day: -63626
+second: abc
+month: 75363
+%%%%
+binary 41897 1
+x: 1
+%%%%
+region
+activityAlien: [0x10, 33]
+%%%%
+country gen
+pact: no
+activityXcom: {k: v}
+funding: [1, 3, 15]
+newPact: false
+%%%%
+gametime 2 7 8 1999 19 27 3
+month: 0x10
+hour: 57348
+year: -29791
+minute: 5
+second: 83565
+day: 1
+%%%%
+region
+activityAlien: []
+activityXcom: [2147483647, 38, -19027]
+%%%%
+region
+activityAlien: []
+%%%%
+region
+activityAlien: [0x10, 209, -2147483648, 2147483647, 5]
+%%%%
+region
+activityXcom: abc
+%%%%
+project 128 34
+assigned: 3
+spent: 14
+%%%%
+gametime 6 12 2 2001 15 59 41
+day: 89
+month: 0x10
+hour: 2147483647
+year: 0x10
+weekday: [1, 2]
+%%%%
+gametime 7 9 1 2001 1 46 55
+day: 83
+year: 0x10
+weekday: 2147483647
+minute: 95
+hour: -2147483648
+%%%%
+country nogen
+funding: [2147483647]
+activityAlien: [300, 5]
+activityXcom: [3, -77770]
+%%%%
+gametime 6 5 8 1999 23 34 42
+minute: 31
+month: 71
+year: 13
+weekday: -1
+second: 31
+%%%%
+project 18 31
+assigned: 0
+cost: 202
+%%%%
+gametime 2 27 11 2000 20 33 24
+month: 78
+year: 21
+weekday: 81557
+second: 152
+hour: 98
+day: 0x10
+minute: -58897
+%%%%
+project 139 50
+cost: 271
+spent: [1, 2]
+%%%%
+gametime 4 18 7 2003 14 41 23
+year: 2147483647
+minute: 2147483647
+weekday: 2147483647
+hour: 281
+second: 250
+month: 13
+%%%%
+gametime 2 9 9 1999 13 6 31
+hour: 0x10
+second: 24
+month: 0x10
+weekday: 0x10
+year: 128
+%%%%
+gametime 5 5 1 2003 19 28 16
+second: 2147483647
+day:
+month: 21
+minute: 9
+year: 5
+%%%%
+project 142 2
+cost: -4
+spent: 7
+assigned: 126
+%%%%
+region
+activityXcom: [0, -2147483648, 17]
+activityAlien: [9, 2147483647, 31, -2147483648, 0x10]
+%%%%
+gametime 4 23 9 2000 1 26 49
+weekday: 2147483647
+second: -2147483648
+hour: 16
+month: -2147483648
+year: 21
+minute: 158
+day: 0x10
+%%%%
+gametime 5 29 6 2003 18 36 4
+day: 1
+month: -5
+second: 3
+hour: 2147483647
+weekday: 0x10
+%%%%
+country nogen
+activityAlien: {k: v}
+newPact: false
+funding: []
+pact: true
+%%%%
+binary -52527 1
+x: 1
+%%%%
+binary -31723 4
+x: 1
+%%%%
+country nogen
+pact: false
+newPact: false
+funding: []
+%%%%
+region
+activityXcom: [5, 2147483647, 30, 8, 36]
+activityAlien: [6, 2, -34569]
+%%%%
+country nogen
+pact: no
+activityAlien: []
+activityXcom: []
+newPact: no
+%%%%
+binary 58431 2
+x: 1
+%%%%
+region
+activityAlien: [2147483647, 11, -4, 10, 0x10]
+activityXcom: [1, 20, -4]
+%%%%
+binary 54184 4
+x: 1
+%%%%
+project 162 0
+assigned: -2
+cost: -2147483648
+spent: [1, 2]
+%%%%
+binary -45011 1
+x: 1
+%%%%
+country nogen
+newPact: true
+funding: []
+pact: [1, 2]
+%%%%
+binary 41497 2
+x: 1
+%%%%
+region
+activityXcom: [210]
+activityAlien: [1, 2]
+%%%%
+binary 24624 2
+x: 1
+%%%%
+country nogen
+funding: [0x10]
+newPact: true
+activityAlien: [263, 9, 2147483647, 78896]
+pact: false
+%%%%
+binary -4349 2
+x: 1
+%%%%
+binary -5590 1
+x: 1
+%%%%
+binary -65107 1
+x: 1
+%%%%
+region
+activityXcom: [0x10, -2147483648, 0x10, 9]
+activityAlien: [2, 5207, 4]
+%%%%
+country nogen
+pact: true
+newPact: true
+funding: [0x10, 20, 34, -75854]
+%%%%
+binary -20126 1
+x: 1
+%%%%
+country nogen
+activityXcom: [-2147483648, 0x10, -55881]
+%%%%
+region
+
+%%%%
+region
+activityXcom: [1, -2147483648, 227, 297]
+activityAlien: [13, 0x10, -2147483648, 83]
+%%%%
+project 0 22
+assigned: 7
+spent: 24
+%%%%
+gametime 2 7 11 2001 16 23 58
+year: 2147483647
+hour: abc
+day: 37
+second: 4937
+minute: 30538
+month: 150
+%%%%
+country gen
+activityAlien: [39]
+newPact: false
+funding: [2147483647]
+activityXcom: []
+%%%%
+project 125 22
+cost: -5
+%%%%
+project 110 33
+spent:
+cost:
+%%%%
+region
+activityAlien: [168, 33, 2147483647, 31, 0x10]
+activityXcom: [44467, 11]
+%%%%
+binary -55944 2
+x: 1
+%%%%
+project 119 41
+spent: 256
+assigned: 79031
+cost: 15
+%%%%
+project 126 21
+cost: 36
+%%%%
+region
+activityXcom: [1, 2]
+activityAlien: [2147483647, 0x10]
+%%%%
+gametime 3 26 5 2003 4 13 56
+second: -2147483648
+weekday: -5
+hour: 0x10
+day: 288
+minute: 93
+month: -5
+year: -2147483648
+%%%%
+project 40 40
+assigned: [1, 2]
+cost: -2147483648
+spent: 275
+%%%%
+project 100 2
+cost: 0
+assigned: 291
+%%%%
+region
+activityAlien:
+%%%%
+country gen
+activityAlien: [-2147483648]
+funding: [-2147483648, 1, 73680, -2147483648, 26]
+pact: false
+newPact: true
+%%%%
+binary 38340 1
+x: 1
+%%%%
+project 68 7
+cost: 28
+assigned: 112
+%%%%
+region
+activityAlien: [5, 35]
+%%%%
+country gen
+newPact: true
+pact: true
+activityAlien: [299]
+%%%%
+country nogen
+activityAlien: [220]
+newPact: no
+funding: [2147483647, 5]
+pact: true
+%%%%
+project 71 36
+cost: ~
+assigned: 0x10
+%%%%
+gametime 2 5 9 2003 23 4 31
+weekday: 10
+minute: 0x10
+day: 13
+hour: -2147483648
+month: 4
+%%%%
+region
+activityXcom: []
+%%%%
+gametime 5 14 11 2001 3 23 32
+day: 0x10
+weekday: -5
+minute: abc
+hour: -4718
+second: -2147483648
+year: 299
+%%%%
+binary -26700 4
+x: 1
+%%%%
+gametime 1 18 12 2004 2 35 36
+weekday: 40
+minute: 13
+month: 61242
+year: 0x10
+day: 44589
+hour: 1
+second: 164
+%%%%
+binary -44424 2
+x: 1
+%%%%
+country nogen
+funding: []
+activityXcom: [-2147483648, 146, 291, 96508]
+newPact: no
+activityAlien: abc
+%%%%
+project 169 38
+cost: 2147483647
+assigned: 9
+spent: 2147483647
+%%%%
+binary -66187 2
+x: 1
+%%%%
+country gen
+activityAlien: [0x10, 29]
+funding: [-1, -6336, -2147483648]
+newPact: no
+pact: true
+%%%%
+binary 15443 4
+x: 1
+%%%%
+gametime 7 9 10 2004 6 17 51
+weekday: 16
+second: -2147483648
+minute: [1, 2]
+month: -51724
+hour: -1
+year: 37
+%%%%
+project 158 10
+assigned: 10
+cost: 15027
+%%%%
+binary -67969 1
+x: 1
+%%%%
+region
+activityXcom: [-2147483648, 212, 35, -2147483648]
+%%%%
+project 127 45
+cost: 63741
+assigned: -2147483648
+spent: 16
+%%%%
+country gen
+funding: [238, -2147483648]
+activityAlien: [2147483647, -2147483648, -2147483648, 2147483647, 0x10]
+pact: false
+activityXcom: [-2147483648, 5]
+newPact: true
+%%%%
+binary 8704 1
+x: 1
+%%%%
+binary 7507 2
+x: 1
+%%%%
+region
+activityAlien: []
+activityXcom: []
+%%%%
+binary -18792 4
+x: 1
+%%%%
+gametime 4 24 11 1999 14 50 27
+month: 3
+day: -2147483648
+hour: abc
+year: 0
+weekday: 5
+minute: [1, 2]
+%%%%
+gametime 4 4 7 2003 22 38 53
+year: 82
+second: -75239
+hour: 2147483647
+weekday: 99745
+minute: -2147483648
+day:
+%%%%
+project 174 29
+spent: 2147483647
+assigned: 2
+cost: 0x10
+%%%%
+country gen
+activityAlien: [63]
+newPact: false
+activityXcom: [-5, 4, 141, 2147483647]
+pact: false
+funding: [3, 10, -11948, 0x10]
+%%%%
+gametime 5 10 1 1999 20 42 48
+minute: 24
+day: 2147483647
+weekday: -18355
+second: -3
+year: -2147483648
+hour: -2147483648
+%%%%
+region
+activityXcom: [-2147483648]
+activityAlien: [6, 21]
+%%%%
+project 200 38
+spent: 0x10
+cost: -3
+%%%%
+gametime 7 29 5 2001 18 28 36
+weekday:
+day: -5
+year: 0x10
+second: 49240
+minute: abc
+%%%%
+gametime 3 14 6 2002 18 23 58
+hour: 30
+second: -2147483648
+weekday: -2147483648
+month: 105
+year: 36
+day: 24176
+%%%%
+binary 12645 4
+x: 1
+%%%%
+gametime 2 28 1 2002 8 52 20
+day: 7
+month: 0
+year: abc
+minute: 0x10
+hour: 180
+weekday: 22
+second: 40
+%%%%
+region
+activityAlien: [28, -2147483648, 193, 2147483647]
+%%%%
+region
+activityAlien: [1, 2147483647, -73578, 37, -2]
+activityXcom: [2147483647]
+%%%%
+binary -44964 2
+x: 1
+%%%%
+binary 22092 4
+x: 1
+%%%%
+region
+activityXcom: [0x10, 28, 9]
+%%%%
+country nogen
+newPact: no
+pact: true
+funding: [2147483647, 0x10, 53350]
+activityAlien: [5, 0x10, 46, 0x10]
+%%%%
+binary 1231 1
+x: 1
+%%%%
+gametime 2 4 12 2000 9 17 45
+year: 2147483647
+hour: 6
+month: 3
+minute: 2147483647
+second: 23
+day: 13
+%%%%
+binary 30125 1
+x: 1
+%%%%
+country nogen
+newPact: [1, 2]
+activityXcom: []
+activityAlien: [-24200, -2147483648, 2147483647]
+funding: [2, -2]
+%%%%
+binary 61976 4
+x: 1
+%%%%
+region
+activityAlien: [0x10]
+%%%%
+region
+activityXcom: [24, 1, -2, 0x10]
+%%%%
+country nogen
+activityXcom: [2147483647]
+activityAlien: []
+newPact: true
+%%%%
+region
+activityAlien: [73936, -2147483648, 0x10, 142]
+%%%%
+gametime 1 1 3 2000 4 1 49
+hour: ~
+weekday: 21
+month: -72864
+year: 34
+minute: 66864
+day: 2147483647
+%%%%
+region
+activityAlien: [33, 2147483647, 58547, 2, -54208]
+%%%%
+country gen
+activityAlien: [9, -2147483648, 7, -2147483648, 36]
+pact: true
+newPact: no
+%%%%
+binary 5891 4
+x: 1
+%%%%
+binary -3046 4
+x: 1
+%%%%
+binary 3878 2
+x: 1
+%%%%
+project 27 15
+assigned: 34
+spent: 17333
+%%%%
+binary -65701 1
+x: 1
+%%%%
+binary -32532 4
+x: 1
+%%%%
+gametime 3 28 2 2002 17 45 13
+month: 16
+hour: 11
+day: -93708
+second: 30
+year: -2
+%%%%
+region
+activityAlien: [-2147483648, 258]
+activityXcom: [1, 51651, 0x10, 2282, -42109]
+%%%%
+region
+activityAlien: [-2, 0x10, -62526, 94107]
+activityXcom: []
+%%%%
+binary -42293 1
+x: 1
+%%%%
+country nogen
+activityAlien: [-2147483648, 16, 26]
+activityXcom: [151, 51504, -2147483648, 2147483647]
+funding: []
+newPact: true
+pact: false
+%%%%
+country gen
+activityAlien: [29, 2147483647, 0x10, 1, 3]
+newPact: no
+pact: true
+funding: [16, 2147483647, 2819, 150]
+%%%%
+project 103 7
+cost: 0x10
+assigned: 11
+spent: 33
+%%%%
+project 176 40
+assigned: -1
+spent: 20
+cost: 40
+%%%%
+gametime 7 16 7 2004 1 46 43
+second: 2
+month: 33
+minute: 2147483647
+hour: 81356
+weekday: 4
+day: -89297
+%%%%
+country nogen
+activityXcom: [1]
+pact: false
+newPact: false
+funding: [12, 0x10]
+%%%%
+gametime 5 30 6 2000 17 53 46
+minute: abc
+year: 18
+day: 0x10
+hour: -4
+second:
+weekday: -1
+%%%%
+country nogen
+activityXcom: [11, 0x10]
+activityAlien: [23, 176, 3, -2147483648]
+newPact: true
+funding: [0x10, 32, 126]
+pact: false
+%%%%
+binary 47883 2
+x: 1
+%%%%
+region
+activityAlien: []
+%%%%
+region
+activityXcom: [-2147483648, 2147483647, 27, -71400]
+activityAlien: []
+%%%%
+region
+activityXcom: [69394, 4, 2147483647, 0, 18]
+%%%%
+region
+activityXcom: [-42328]
+activityAlien: [0x10, 77, -90212, 122]
+%%%%
+gametime 5 2 11 2002 4 16 46
+month: -2147483648
+minute: 0x10
+day: 2147483647
+year: 33
+weekday: 2147483647
+%%%%
+region
+activityAlien: []
+activityXcom: [17, 12, -5, 32]
+%%%%
+country gen
+pact: no
+newPact: no
+activityXcom: [2147483647]
+funding: [-42340, -2147483648, 0x10]
+%%%%
+binary 60162 2
+x: 1
+%%%%
+gametime 2 16 7 2002 3 44 45
+day: 243
+minute: {k: v}
+second: {k: v}
+hour: 0x10
+%%%%
+country gen
+activityAlien: [27, -14722, 52821, -86554]
+funding: [0x10, 0x10, 39, 0x10]
+activityXcom: [23, 2147483647, 30, 34]
+pact: true
+%%%%
+gametime 2 5 2 2001 9 46 31
+day: 26
+year: 1
+hour: {k: v}
+minute: 14
+month: 1
+weekday: -2147483648
+second: -2147483648
+%%%%
+binary -64281 2
+x: 1
+%%%%
+project 137 49
+spent: -2147483648
+cost: 66684
+assigned: 0x10
+%%%%
+project 47 21
+assigned: 0x10
+spent: -27079
+%%%%
+region
+activityAlien: [33, 7]
+%%%%
+binary -69013 2
+x: 1
+%%%%
+gametime 5 21 9 2003 16 22 45
+hour: 2147483647
+weekday: 33
+year: 3
+day: 2147483647
+second: 34
+minute: -58115
+%%%%
+project 69 17
+cost: 0x10
+spent: 2147483647
+%%%%
+region
+activityXcom: ~
+%%%%
+region
+activityAlien: [-2147483648]
+activityXcom: []
+%%%%
+region
+activityXcom: [-2147483648, 72]
+activityAlien: []
+%%%%
+country nogen
+activityXcom:
+newPact: true
+activityAlien: [18, 3]
+funding: [2147483647, 91, 99586, 7, -66692]
+%%%%
+project 100 34
+spent: 4
+cost: 40
+%%%%
+gametime 1 10 9 2000 23 46 58
+month: 29
+day: 0x10
+weekday: 0x10
+hour: -28070
+second: 2147483647
+minute: 37
+%%%%
+binary -8718 2
+x: 1
+%%%%
+project 102 31
+spent: -2147483648
+assigned: 176
+cost: -4
+%%%%
+gametime 3 28 4 2001 7 20 46
+day: 8
+year: 78484
+weekday: -3
+hour: 2147483647
+second: -33035
+minute: 32
+%%%%
+gametime 6 21 2 2000 8 12 25
+month: 0x10
+year: -12264
+weekday: -68950
+hour: 0x10
+day: 0x10
+second: 37
+%%%%
+region
+activityAlien: []
+activityXcom: []
+%%%%
+region
+activityAlien: []
+activityXcom: [87781]
+%%%%
+country nogen
+activityXcom: [-91816, 12, 9]
+activityAlien: [0x10, -52654, 2147483647, -2147483648]
+newPact: false
+funding: []
+pact: no
+%%%%
+gametime 7 12 6 1999 3 45 19
+minute: 36
+hour: 2147483647
+weekday: 0x10
+second: -2147483648
+year: -3
+day: 3
+%%%%
+region
+activityAlien: [184, 39, -2147483648, 33, 83630]
+activityXcom: ~
+%%%%
+country nogen
+pact: false
+newPact: no
+funding: [123, -2147483648, 5, 22]
+activityXcom: [2]
+%%%%
+country nogen
+activityAlien: {k: v}
+newPact: no
+activityXcom: [-4, 0x10]
+%%%%
+project 65 10
+assigned: -2147483648
+cost: 39
+spent: 34
+%%%%
+project 16 46
+spent: 2147483647
+cost: 2147483647
+%%%%
+binary -21535 4
+x: 1
+%%%%
+project 42 40
+spent: {k: v}
+assigned: 2147483647
+%%%%
+binary -50525 4
+x: 1
+%%%%
+country gen
+pact: false
+activityXcom: [6]
+activityAlien: [32, 15, -3, 0x10]
+%%%%
+country nogen
+activityXcom: [-42142, -2147483648, 2147483647, 36]
+pact: true
+activityAlien: [-2147483648, 0x10, 40, 2147483647]
+newPact: no
+%%%%
+project 24 24
+cost: 2147483647
+spent: 168
+assigned: -2147483648
+%%%%
+gametime 5 28 7 2004 2 15 52
+year: 24
+weekday: -2147483648
+minute: -2147483648
+second: 24
+day: 177
+hour: -8906
+%%%%
+gametime 7 4 2 2002 21 39 53
+weekday: 250
+day: [1, 2]
+minute: 33
+second: 15
+year: -2147483648
+month: -2147483648
+%%%%
+region
+activityAlien: []
+%%%%
+binary 56362 1
+x: 1
+%%%%
+binary 31803 2
+x: 1
+%%%%
+binary -34561 1
+x: 1
+%%%%
+binary 27726 1
+x: 1
+%%%%
+project 143 13
+cost: -2147483648
+spent: 100
+%%%%
+binary -25776 1
+x: 1
+%%%%
+gametime 5 9 3 2004 20 55 17
+minute: 0x10
+month: 0x10
+weekday: -2147483648
+day: 0x10
+hour: 33
+second: 2
+%%%%
+country nogen
+funding: [2147483647, 99735, 10]
+newPact: no
+activityXcom: [188, 21, 12, 238, 25]
+activityAlien: [2147483647]
+%%%%
+project 162 9
+cost: ~
+assigned: 33
+spent: 2147483647
+%%%%
+region
+activityAlien: [0x10]
+activityXcom:
+%%%%
+binary -40006 2
+x: 1
+%%%%
+gametime 4 20 5 2003 20 7 54
+weekday: -2147483648
+hour: -2147483648
+day: 3
+minute: 38377
+second: -18143
+month: 13
+year: 22
+%%%%
+binary -33020 2
+x: 1
+%%%%
+gametime 6 7 7 2000 4 12 18
+month: 22
+hour: [1, 2]
+weekday: 15
+second: 15
+year: -2147483648
+day: 13
+%%%%
+gametime 2 28 10 2000 16 10 43
+month: 23
+second: 21
+weekday: 40
+year: 287
+hour: 26
+minute: 2147483647
+%%%%
+country nogen
+pact: true
+activityAlien: [13, 245, 2147483647]
+newPact: true
+funding: [1, 2]
+%%%%
+binary -18128 2
+x: 1
+%%%%
+country gen
+funding: [2147483647]
+activityXcom: [1, 5, 19, 31]
+%%%%
+country nogen
+pact: true
+newPact: true
+funding: [82, 19, -19991, -2147483648]
+%%%%
+gametime 4 3 8 2000 14 26 0
+second: 252
+month: 0x10
+hour: 3
+year: -4
+weekday: 0x10
+%%%%
+region
+activityAlien: [2]
+%%%%
+country gen
+activityXcom: []
+activityAlien: [18]
+newPact: true
+pact: false
+funding: [-2147483648]
+%%%%
+country nogen
+funding: []
+newPact: true
+activityXcom: ~
+activityAlien: [2147483647, 267]
+pact: no
+%%%%
+project 6 25
+spent: 0x10
+assigned: 17
+cost: -1
+%%%%
+region
+
+%%%%
+region
+activityXcom: [113, 2147483647]
+activityAlien: [103, -5, 2147483647, 7, 0x10]
+%%%%
+region
+activityAlien: [-2147483648, 2147483647]
+activityXcom: [2147483647, -2147483648]
+%%%%
+binary -54276 1
+x: 1
+%%%%
+binary -20520 4
+x: 1
+%%%%
+country gen
+activityXcom: [16633]
+pact: [1, 2]
+newPact: true
+%%%%
+region
+activityAlien: []
+activityXcom: [-2147483648, 2147483647]
+%%%%
+region
+activityXcom: [-2147483648, 5]
+%%%%
+region
+activityXcom: []
+activityAlien: [27, 8, 0x10]
+%%%%
+binary -14220 2
+x: 1
+%%%%
+binary 31961 2
+x: 1
+%%%%
+binary -10280 2
+x: 1
+%%%%
+project 56 20
+spent:
+cost: 2147483647
+%%%%
+project 167 8
+cost: ~
+spent: 213
+assigned:
+%%%%
+region
+activityAlien: []
+activityXcom: [0x10, -15051]
+%%%%
+gametime 6 2 7 2000 6 43 52
+weekday: 61395
+second: 33
+minute: 2147483647
+year: 226
+month: 44710
+day: 0x10
+%%%%
+binary 4121 1
+x: 1
+%%%%
+gametime 2 22 12 2000 19 49 26
+day: 0x10
+second: 34
+month: 136
+minute: -2147483648
+hour: 2147483647
+%%%%
+region
+activityAlien: [1, 2]
+activityXcom: [0x10, -2147483648]
+%%%%
+gametime 3 1 9 2001 4 5 47
+minute: 2147483647
+hour: -2147483648
+month: 158
+year: 2147483647
+weekday: -6647
+second: 0x10
+day: abc
+%%%%
+gametime 5 19 8 2001 3 53 45
+day: -2147483648
+hour: 16
+weekday: 204
+year: -2147483648
+minute: 36932
+month: 16
+%%%%
+binary 68139 2
+x: 1
+%%%%
+binary -39822 1
+x: 1
+%%%%
+gametime 4 12 3 2004 12 55 48
+weekday: 2147483647
+hour: 32
+second: 21
+year: 9
+day: 19
+month: 1
+%%%%
+gametime 7 14 6 2001 12 34 54
+second: 16
+hour: 21
+day: -5
+%%%%
+region
+activityAlien: [114, -2, 4, 32]
+%%%%
+region
+
+%%%%
+country gen
+newPact: no
+activityXcom: [37736]
+activityAlien: [30, -65130, 0x10]
+%%%%
+project 114 22
+assigned: 28
+cost: 29
+spent: 22
+%%%%
+gametime 3 19 8 2002 17 47 43
+month: 2147483647
+second: 32
+weekday: 3
+hour: 40
+day: -2147483648
+%%%%
+region
+activityAlien: ~
+activityXcom: [13, 5, 14, 89394]
+%%%%
+project 39 22
+assigned: 0x10
+cost: 0x10
+spent: -2147483648
+%%%%
+country gen
+activityAlien: []
+funding: abc
+newPact: true
+activityXcom: [-1, -2147483648]
+%%%%
+region
+activityXcom: [28, 42, 17530, 2147483647]
+%%%%
+region
+activityXcom: [-44572]
+activityAlien: [2147483647, 74166, 262, 160, 278]
+%%%%
+project 91 23
+spent: 1
+assigned: -59301
+cost: 23
+%%%%
+gametime 7 6 4 2003 1 26 5
+year: abc
+day: 101
+hour: 104
+minute: 2147483647
+second: -2
+month: 2
+%%%%
+gametime 7 24 3 2000 22 2 44
+day: 0x10
+weekday: 197
+minute: [1, 2]
+second: 124
+month: 31
+hour: 1
+%%%%
+gametime 2 8 9 1999 12 46 1
+hour: 0x10
+day: -2147483648
+second: 39
+minute: -54931
+month: -2147483648
+weekday: -51842
+year: -2147483648
+%%%%
+country nogen
+funding: [0x10, 2147483647, 0x10, 24]
+pact: abc
+newPact: false
+activityAlien: [-95911, 0x10, -2147483648, 4]
+%%%%
+project 110 50
+assigned: 0x10
+spent: -2147483648
+cost: 20
+%%%%
+binary -37696 1
+x: 1
+%%%%
+binary 17359 4
+x: 1
+%%%%
+gametime 5 4 8 2003 16 43 2
+second: -1
+weekday: 18646
+year: 2147483647
+day: 2147483647
+hour: -2147483648
+month: 11
+%%%%
+gametime 2 17 11 2003 11 26 33
+weekday: 31
+day: 36
+second: 24
+hour: 0x10
+month: 35
+year: -3
+%%%%
+gametime 2 6 10 1999 3 54 8
+second: -52385
+hour: 21
+minute: 2147483647
+day: -2147483648
+year: 28
+%%%%
+gametime 5 7 5 2003 3 10 40
+year: 0
+weekday: 0x10
+minute: 157
+second: 5
+month: -2
+%%%%
+binary 51141 1
+x: 1
+%%%%
+region
+activityAlien:
+activityXcom: [-2]
+%%%%
+project 113 43
+spent: 2147483647
+cost: -4
+%%%%
+project 86 14
+assigned: 2147483647
+cost: 2147483647
+%%%%
+binary -58647 2
+x: 1
+%%%%
+project 132 14
+cost: 2147483647
+%%%%
+project 154 23
+cost: 36
+assigned: 29
+%%%%
+region
+activityXcom: [2147483647, 0x10, 0x10]
+activityAlien: []
+%%%%
+gametime 7 2 12 2000 1 24 14
+year: 2147483647
+weekday: -73720
+day: 2
+hour: 219
+minute: -2147483648
+month: 4
+%%%%
+project 35 26
+spent: 229
+assigned: 34
+%%%%
+region
+activityXcom: [1]
+activityAlien: [-27243, 34, 0x10, 57802]
+%%%%
+gametime 1 10 4 2001 18 40 36
+day: -4
+minute: 11
+year: 0x10
+hour: -2147483648
+month: 25
+%%%%
+project 140 16
+assigned: 175
+spent: 37
+cost: 14
+%%%%
+project 111 16
+assigned: 2147483647
+spent: 4
+cost: -2147483648
+%%%%
+binary -40641 1
+x: 1
+%%%%
+binary 45466 2
+x: 1
+%%%%
+region
+activityAlien: [-2147483648]
+%%%%
+gametime 6 13 2 2001 0 54 25
+weekday: {k: v}
+year: 288
+hour: 25
+month: 1
+minute: -2147483648
+second: 2147483647
+day: 0x10
+%%%%
+project 159 12
+spent: 241
+cost: 39
+%%%%
+country nogen
+pact: true
+activityAlien: [0x10, 58881]
+funding: [82]
+activityXcom: []
+newPact: false
+%%%%
+gametime 2 18 12 2000 2 9 16
+day: 24
+year: 0x10
+month: 141
+weekday: -2
+second: -2147483648
+minute: -62949
+hour: 29844
+%%%%
+gametime 4 9 11 2003 21 13 20
+minute: 0x10
+year: -16510
+second: -1
+month: 179
+%%%%
+country nogen
+activityAlien: []
+newPact: false
+pact: true
+activityXcom: [77114]
+funding:
+%%%%
+country nogen
+activityXcom: [27]
+newPact: true
+activityAlien: [5, 0x10, 9]
+funding: [133, 21]
+%%%%
+binary -51277 2
+x: 1
+%%%%
+region
+activityAlien: {k: v}
+%%%%
+gametime 7 18 7 1999 16 6 5
+weekday: -2
+hour: 2147483647
+second: 26
+minute: 14
+day: 4
+month: 24
+%%%%
+region
+activityAlien: [36, 5, 2147483647]
+activityXcom: [2147483647, 0x10]
+%%%%
+country nogen
+funding: [284, 259, -2147483648]
+newPact: no
+activityAlien: [15]
+activityXcom: [12, 64018, -2147483648]
+%%%%
+binary -31652 4
+x: 1
+%%%%
+binary 39824 4
+x: 1
+%%%%
+binary 50371 2
+x: 1
+%%%%
+project 159 40
+assigned: -71449
+spent: 2147483647
+%%%%
+binary -56093 1
+x: 1
+%%%%
+region
+activityAlien: [18, -2147483648, 18, -2147483648]
+%%%%
+binary 60560 1
+x: 1
+%%%%
+binary -57835 2
+x: 1
+%%%%
+project 61 30
+spent: 1
+assigned: 150
+cost: 0x10
+%%%%
+gametime 1 26 2 2003 5 54 26
+hour: -5
+year: 216
+month: 16
+second: 0x10
+day: 89157
+%%%%
+country gen
+activityAlien: [11, 2147483647, 33]
+pact: false
+newPact: [1, 2]
+activityXcom: [-22813, -2147483648, 0]
+%%%%
+region
+
+%%%%
+country nogen
+pact: no
+newPact: true
+activityAlien:
+activityXcom: abc
+%%%%
+binary 940 1
+x: 1
+%%%%
+project 185 33
+assigned:
+%%%%
+gametime 1 15 9 2004 7 44 34
+weekday: 39
+month: 3
+hour: {k: v}
+minute: 2147483647
+second: 0x10
+year: 2147483647
+%%%%
+gametime 6 27 5 2000 11 26 52
+month: 2147483647
+hour: 96
+day: 1
+weekday: 2147483647
+year: 2147483647
+second: 28
+minute: 15720
+%%%%
+gametime 7 6 2 1999 12 56 10
+year: 19
+second: ~
+day: 0x10
+month: 22
+weekday: 10
+minute: 223
+%%%%
+binary -52991 1
+x: 1
+%%%%
+project 72 27
+spent: 38
+cost: -2147483648
+%%%%
+binary 20885 2
+x: 1
+%%%%
+country gen
+newPact: {k: v}
+activityXcom: [0x10, 0x10, 279]
+funding: [213]
+pact: {k: v}
+activityAlien: [-2147483648, -3, 0x10]
+%%%%
+gametime 4 27 4 2000 14 55 43
+hour: 170
+day: 0x10
+minute: -2
+year: 3
+month: 17
+%%%%
+gametime 7 22 4 2002 18 9 29
+day: 16
+month: ~
+weekday: 0x10
+second: 11
+%%%%
+project 192 43
+spent: {k: v}
+cost: 6
+%%%%
+region
+activityAlien: [5, 2147483647]
+activityXcom: [-2]
+%%%%
+binary 67062 1
+x: 1
+%%%%
+project 36 26
+spent: 8
+%%%%
+gametime 5 26 7 2000 2 7 29
+second: 25
+month: 93
+year: 26
+weekday: 2147483647
+hour: 28
+day: 20
+%%%%
+binary -48118 4
+x: 1
+%%%%
+binary 44745 4
+x: 1
+%%%%
+country nogen
+funding: [2147483647]
+activityAlien: []
+pact: true
+newPact: false
+activityXcom: [-63471, 77, 44]
+%%%%
+gametime 4 22 5 2004 2 24 45
+hour: 0x10
+minute: -68522
+weekday: 2
+day: 0x10
+%%%%
+region
+activityXcom: []
+activityAlien: [2147483647, 1047, 28, -2147483648]
+%%%%
+country gen
+activityAlien: [-2147483648, 2147483647, -2147483648, -2147483648]
+funding: [0x10, 2]
+activityXcom: [2, 16]
+pact: true
+newPact: no
+%%%%
+binary -41171 1
+x: 1
+%%%%
+gametime 6 12 12 2002 7 33 33
+day: 29
+minute: 28
+second: 25
+year: abc
+month: 0x10
+weekday: 0x10
+%%%%
+binary 39519 2
+x: 1
+%%%%
+region
+activityAlien: [2147483647, 2147483647]
+activityXcom: [2147483647, 2147483647, 13]
+%%%%
+project 194 11
+assigned: -62440
+spent: 2147483647
+cost: -2147483648
+%%%%
+region
+activityAlien: [2147483647, 2147483647, 0x10, 163]
+activityXcom: [251, 15, 14]
+%%%%
+project 15 42
+cost: 11
+assigned: 0x10
+%%%%
+country nogen
+activityXcom: [2147483647]
+newPact: true
+activityAlien: [32, 0x10]
+funding: []
+pact: no
+%%%%
+binary -69705 1
+x: 1
+%%%%
+country nogen
+funding: []
+activityAlien: [0x10, -1, -40161, 2147483647, 35]
+activityXcom: [39]
+newPact: no
+pact: true
+%%%%
+gametime 3 15 6 1999 13 48 2
+hour: 26
+weekday: -49361
+year: 0x10
+month: 0x10
+second: 0x10
+minute: 2147483647
+%%%%
+region
+activityAlien: [-2147483648, 171, 47292, -3, 12]
+activityXcom: [160, 9, 64, -2147483648, -2147483648]
+%%%%
+binary 58273 4
+x: 1
+%%%%
+gametime 4 21 10 2003 12 6 44
+weekday: -64223
+minute: 3
+second: 227
+month: 79029
+hour: -2147483648
+day: 33
+%%%%
+project 54 27
+cost: 2147483647
+assigned: {k: v}
+spent: -2147483648
+%%%%
+country nogen
+activityXcom: [9, 1, 2147483647, 275, 9]
+newPact: true
+%%%%
+gametime 5 21 6 2004 12 41 12
+second: 25
+month: 0x10
+hour: {k: v}
+minute: 27
+weekday: 19
+%%%%
+region
+activityAlien: [1, 2]
+activityXcom: []
+%%%%
+project 174 34
+cost: {k: v}
+assigned: 25
+spent: 2
+%%%%
+project 164 9
+spent: -2147483648
+cost: -3
+%%%%
+country nogen
+pact: true
+newPact: true
+activityXcom: [15, 21, 2]
+activityAlien: [11]
+%%%%
+binary 37560 1
+x: 1
+%%%%
+country gen
+funding: [0x10, 0x10, 129]
+pact: true
+activityAlien: [3, 2147483647, 18, -2147483648, 3]
+activityXcom: [221, 0x10, -3, -86733]
+newPact: no
+%%%%
+project 124 21
+assigned: 2147483647
+cost: -2147483648
+spent: 98
+%%%%
+project 101 34
+assigned: -2147483648
+%%%%
+gametime 4 15 10 2001 21 54 55
+minute: 199
+month: 1
+hour: -45978
+weekday: 27
+second: 30
+year: -5220
+day: -2147483648
+%%%%
+gametime 7 10 2 2004 10 35 23
+second: 210
+year: 34
+minute: 38246
+day: -1
+hour: 2147483647
+weekday: 2147483647
+%%%%
+gametime 5 14 11 2000 17 47 8
+weekday: 169
+year: 33
+minute: -4010
+day: 2
+month: 3
+%%%%
+project 178 22
+assigned: 26
+cost: 2147483647
+%%%%
+gametime 1 4 12 2002 10 35 14
+day: {k: v}
+minute: -2147483648
+hour: 0x10
+second: [1, 2]
+%%%%
+project 187 12
+cost: -2147483648
+assigned: 5
+spent:
+%%%%
+country nogen
+activityXcom: [-8258]
+pact: false
+%%%%
+gametime 5 29 1 2003 20 33 40
+hour: -34538
+day: -2147483648
+year: -2147483648
+second: 9
+minute:
+month: 18
+%%%%
+gametime 6 13 5 1999 6 12 40
+weekday: 0x10
+hour: -2147483648
+day: 58723
+year: -2147483648
+second: -2147483648
+%%%%
+gametime 3 28 9 1999 17 49 46
+second: -94486
+year: 0x10
+day: 2147483647
+%%%%
+gametime 2 2 2 2002 4 57 45
+hour: -2147483648
+weekday: 24
+%%%%
+country nogen
+pact: no
+activityAlien: {k: v}
+newPact: true
+activityXcom: abc
+funding: [28]
+%%%%
+country gen
+activityXcom: [166, -70458]
+activityAlien: [-3, 2147483647, 5, 2147483647]
+pact: false
+%%%%
+region
+activityAlien: [95292, 120, 0x10, 5, 272]
+%%%%
+project 61 43
+spent: {k: v}
+cost: 219
+%%%%
+country nogen
+funding: []
+pact: false
+activityXcom: [-2147483648, -3]
+activityAlien: [-2147483648, 246, 2147483647, 264, -2147483648]
+%%%%
+gametime 6 26 1 2003 17 33 47
+second: 237
+minute: 39
+month: 12
+day: 226
+year: 1
+%%%%
+region
+activityXcom: [40]
+%%%%
+binary -49393 1
+x: 1
+%%%%
+country gen
+activityAlien: [-2147483648, 0x10, 36, 4]
+funding: []
+newPact: no
+activityXcom: [0x10, 181, 22, 166]
+pact: no
+%%%%
+project 30 17
+spent: 26
+assigned: 10
+cost: 197
+%%%%
+project 93 25
+cost: 0x10
+%%%%
+project 37 45
+spent: -2147483648
+cost: 27
+%%%%
+project 2 14
+cost: 23
+assigned: -2147483648
+%%%%
+region
+activityXcom: [-86274, 0x10, 32, 2147483647, 2147483647]
+activityAlien: [-2147483648, 19, 2147483647]
+%%%%
+country nogen
+newPact: true
+pact: true
+activityXcom: [60911, 30, -1]
+activityAlien: [0x10, 0, 29]
+funding: [38, 218, 0x10]
+%%%%
+binary -36362 4
+x: 1
+%%%%
+project 22 46
+cost: 5
+assigned: 5
+spent: 0x10
+%%%%
+country nogen
+newPact: true
+pact: no
+funding: [-4, 2, -93723, 28]
+%%%%
+binary 6433 1
+x: 1
+%%%%
+project 11 3
+assigned: 2147483647
+cost: -2147483648
+spent: 6
+%%%%
+country gen
+newPact: no
+pact: no
+activityXcom: []
+funding: []
+activityAlien: [-75535, 28, -14303, -2147483648]
+%%%%
+country gen
+pact: no
+funding: [2147483647, 12781, 6, -3, 2147483647]
+activityAlien: [-2147483648, 2147483647, -41107, -13757, 0x10]
+activityXcom: [0x10, 2, 38]
+%%%%
+region
+activityAlien: [32, 27]
+activityXcom: [-40845, 17, 17, 0x10, 0x10]
+%%%%
+gametime 4 27 11 2000 4 8 42
+month: 2147483647
+year: 26
+minute: 2147483647
+second: 0x10
+weekday: 0
+%%%%
+binary -59722 2
+x: 1
+%%%%
+country gen
+funding: []
+activityAlien: [0x10, -2147483648, 2147483647, 29]
+newPact: no
+activityXcom: ~
+%%%%
+project 10 29
+spent: 34
+cost: 0x10
+%%%%
+project 111 29
+spent: -2147483648
+cost: 2147483647
+%%%%
+country gen
+activityXcom: [2147483647, 41, -92262, 2147483647]
+activityAlien: [30, -2147483648, 0x10, 11, 0x10]
+%%%%
+country nogen
+activityXcom: [15, -2147483648, 276]
+funding: [300, 34, 181, 0x10]
+newPact: false
+activityAlien: []
+pact: true
+%%%%
+region
+activityXcom: [3]
+activityAlien: [-2147483648]
+%%%%
+region
+activityAlien: [0x10, 2147483647, 2147483647, 4]
+%%%%
+binary 31253 2
+x: 1
+%%%%
+project 74 7
+cost: 0
+assigned: 2147483647
+%%%%
+country gen
+newPact: true
+pact: true
+activityAlien: [-61502, 25, -4, 2147483647]
+%%%%
+project 165 32
+spent: 33
+assigned: 0x10
+cost: 36
+%%%%
+country nogen
+activityAlien: {k: v}
+funding: [16, 2147483647, 0x10]
+pact: no
+activityXcom: [29, 0x10]
+newPact: {k: v}
+%%%%
+country nogen
+funding: [2]
+activityXcom:
+activityAlien: [36297, 8]
+pact: true
+newPact: no
+%%%%
+gametime 4 18 7 1999 2 27 1
+year: -2147483648
+month: 0x10
+weekday: 2147483647
+hour: -2147483648
+second: 217
+minute: -2147483648
+day: 208
+%%%%
+project 43 4
+cost: 16
+assigned: -2147483648
+spent: 2147483647
+%%%%
+project 25 11
+spent: 0x10
+cost: 26
+assigned: 0x10
+%%%%
+region
+activityXcom: [2147483647, 9, 0x10, -94412, -58972]
+activityAlien: [3, -4, 0x10]
+%%%%
+country gen
+activityXcom: [2147483647, 285, 182, 94077, 25]
+activityAlien: [-2147483648, 5, 33, 243, 0]
+pact: true
+funding: [58417, 4, -2147483648, 2147483647]
+%%%%
+gametime 6 6 9 2001 2 41 46
+month: -2147483648
+year: 5
+weekday: -52583
+second: 2147483647
+day: -2147483648
+hour: 4
+%%%%
+gametime 6 7 8 2000 3 24 9
+minute: 19
+hour: -41343
+year: 39
+month: 3
+%%%%
+gametime 7 21 7 2000 23 53 24
+second: 39
+day: {k: v}
+weekday: 0x10
+year: 3770
+month: 89145
+minute: 0x10
+%%%%
+gametime 7 3 9 2004 3 43 4
+day: 288
+second: 28
+minute: 5
+month: 15
+hour: 25
+%%%%
+region
+activityXcom: [2147483647, 0x10, 26, 0x10]
+activityAlien: [17]
+%%%%
+project 35 9
+spent: 4
+cost: 185
+%%%%
+project 9 6
+spent: 17
+assigned: ~
+cost: 0x10
+%%%%
+gametime 1 5 2 2000 22 47 17
+minute: 12
+day: -2147483648
+month: 40
+second: 37
+hour: 65918
+%%%%
+country nogen
+newPact: true
+funding: [99794, 50862, -2, 37, 2]
+activityXcom: [-2147483648, 10]
+pact: true
+activityAlien: []
+%%%%
+project 59 48
+cost: 2147483647
+spent: 24
+assigned: 0x10
+%%%%
+project 113 35
+spent: ~
+assigned: abc
+cost: -3
+%%%%
+region
+activityXcom: [58, 14, 38, -2147483648]
+activityAlien: [0x10, -5, -1, -97118]
+%%%%
+project 139 40
+spent: 7
+cost: -2147483648
+assigned: -2147483648
+%%%%
+binary 45402 2
+x: 1
+%%%%
+country gen
+pact: false
+funding: [-5, 2147483647, 0x10]
+activityAlien: [2147483647, 255, 0x10, 2147483647]
+%%%%
+country gen
+activityXcom: [23, 134]
+funding: []
+newPact: no
+activityAlien:
+%%%%
+project 141 49
+cost: 253
+assigned: 38
+spent: 88
+%%%%
+country nogen
+activityXcom: [1, 40, -2147483648]
+activityAlien: [73986, 2147483647]
+newPact: no
+funding:
+%%%%
+project 1 27
+spent: 2147483647
+cost: 2147483647
+%%%%
+binary -21227 4
+x: 1
+%%%%
+project 121 39
+cost: 2147483647
+%%%%
+binary -28092 2
+x: 1
+%%%%
+gametime 7 31 5 2001 14 39 56
+second: 129
+day: -5
+weekday: 5
+hour: 0x10
+%%%%
+binary -34397 1
+x: 1
+%%%%
+gametime 2 3 6 2000 1 26 59
+weekday: -5
+month: 161
+year: -2147483648
+day: 0x10
+second: 27
+%%%%
+country nogen
+activityAlien: [-81238]
+pact: no
+newPact: true
+%%%%
+country gen
+activityXcom: [-2147483648, 1, 1, 36]
+newPact: no
+pact: true
+activityAlien: [-22977, 38]
+funding: [0x10, -5, 23]
+%%%%
+binary -5140 4
+x: 1
+%%%%
+project 12 18
+assigned: 250
+cost: 31
+spent: 37
+%%%%
+country nogen
+activityXcom: {k: v}
+pact: no
+activityAlien: []
+funding: [1, -31578, 29, -2147483648]
+%%%%
+gametime 2 5 10 2002 5 59 52
+minute: 157
+day: 4
+second: 36
+month: 2147483647
+year: 0x10
+%%%%
+country nogen
+activityAlien: [40, 0, 0x10]
+activityXcom: [-52928, 31, 2147483647, -68186, 111]
+pact: false
+newPact: false
+%%%%
+binary 23861 2
+x: 1
+%%%%
+country gen
+activityXcom: []
+pact: false
+funding: [28, 192, 9, 251, 25]
+%%%%
+binary -36357 2
+x: 1
+%%%%
+binary -30369 2
+x: 1
+%%%%
+region
+activityAlien: [18, -1]
+activityXcom: []
+%%%%
+gametime 2 21 6 2004 7 55 33
+year: 5
+minute: 2147483647
+hour: 2
+month:
+weekday: 16
+second: 0
+%%%%
+binary 48173 4
+x: 1
+%%%%
+region
+activityAlien: [37, -4, 23249]
+%%%%
+project 66 27
+assigned: 14
+%%%%
+country nogen
+activityXcom: [-2147483648, 0x10, 42452, -2147483648]
+activityAlien:
+funding: []
+%%%%
+gametime 2 25 7 2001 2 50 13
+minute: 1
+second: [1, 2]
+month: 2147483647
+weekday: [1, 2]
+hour: -2147483648
+%%%%
+gametime 5 26 8 1999 18 9 44
+minute: 0
+hour: 2147483647
+weekday: -67507
+year: 19
+month: 240
+day: 40
+%%%%
+project 121 25
+spent: {k: v}
+cost: -42981
+assigned: {k: v}
+%%%%
+project 30 11
+cost: {k: v}
+spent: 239
+%%%%
+gametime 5 25 2 2004 12 52 32
+month: 92691
+weekday: 2147483647
+hour: -3
+day: 255
+second: 2147483647
+year: 34851
+minute: 81819
+%%%%
+country nogen
+newPact: false
+activityAlien: [2147483647, 1, -27160]
+activityXcom: [-2147483648, 14, -2147483648, 2147483647]
+funding: []
+pact: false
+%%%%
+project 103 7
+assigned: 0
+spent: -2147483648
+cost: 146
+%%%%
+gametime 3 25 11 2001 18 9 13
+year: -2147483648
+second: 2147483647
+hour: 2147483647
+day: 0x10
+minute: -2554
+weekday: 25
+%%%%
+region
+activityAlien: [-50485]
+activityXcom: []
+%%%%
+gametime 3 2 1 2000 13 38 57
+second: 152
+weekday: -2147483648
+hour: 56973
+year: 23
+day: 0x10
+%%%%
+project 190 10
+assigned: -4
+cost: 0x10
+spent: 58038
+%%%%
+region
+activityAlien: ~
+activityXcom: [2147483647, 0x10]
+%%%%
+gametime 4 8 5 2001 12 27 9
+second: 28
+year: 2147483647
+weekday: 89
+minute: 91519
+%%%%
+country gen
+activityAlien: [-2147483648, -2147483648]
+pact: no
+activityXcom: [233, 2, 0x10]
+funding: [15, 0x10, 0x10, -2147483648, -2147483648]
+newPact: true
+%%%%
+gametime 6 6 8 1999 12 22 56
+month: 0
+hour: 17889
+day: 3
+weekday: -3
+second: -2147483648
+minute: 2147483647
+%%%%
+binary -66051 4
+x: 1
+%%%%
+binary 52067 1
+x: 1
+%%%%
+region
+activityXcom: [23, 286, 99301, -5, -2147483648]
+%%%%
+project 10 11
+assigned: -1
+spent: -2147483648
+%%%%
+region
+activityXcom: [0, -3, 5]
+activityAlien: [-1, 2147483647]
+%%%%
+region
+activityXcom: [33, 54241]
+activityAlien: [2147483647, 0x10, 7, 0x10, -5]
+%%%%
+binary -35763 1
+x: 1
+%%%%
+gametime 1 4 9 2001 0 49 16
+year: -40762
+month: 51358
+day: 2147483647
+minute: -2147483648
+second: 12
+%%%%
+gametime 6 23 11 2000 17 19 7
+month: -2147483648
+year:
+minute: 19
+weekday: 2147483647
+hour: 17
+%%%%
+project 51 44
+cost: -1
+%%%%
+region
+activityAlien: []
+activityXcom: [0x10, 49, 72]
+%%%%
+region
+activityAlien: [-2147483648, 2147483647, 184, 2147483647]
+activityXcom: [0x10, 2147483647, -2147483648]
+%%%%
+region
+activityAlien: ~
+activityXcom: [0x10, 2147483647, 48351, 6, 3995]
+%%%%
+country gen
+pact: true
+funding: [-2147483648]
+newPact: no
+activityXcom: [1, 2]
+activityAlien: [-24006, 3]
+%%%%
+binary -53851 4
+x: 1
+%%%%
+region
+activityAlien: [3]
+%%%%
+project 143 36
+spent: [1, 2]
+assigned: 84
+cost: 2147483647
+%%%%
+region
+activityAlien: [37257, -98063, -68151]
+%%%%
+project 117 0
+spent: 39
+%%%%
+binary 36459 2
+x: 1
+%%%%
+gametime 7 21 12 2002 7 9 3
+month: 2147483647
+weekday: -17516
+second: 69
+minute: -84632
+hour: -2147483648
+%%%%
+gametime 4 6 10 2002 15 46 0
+day: -2147483648
+second: 2147483647
+weekday: 2147483647
+hour: 0x10
+minute: 6
+month: 28
+%%%%
+binary -27448 4
+x: 1
+%%%%
+region
+activityAlien: {k: v}
+activityXcom: [-2147483648, 0x10, 36]
+%%%%
+gametime 7 20 9 2003 4 28 29
+second: 264
+hour: 2147483647
+month: 18
+minute: 281
+day: -2147483648
+weekday: 2147483647
+%%%%
+gametime 1 26 12 2002 11 13 2
+weekday: 25
+hour: {k: v}
+year: -4
+minute: 8
+day: -2147483648
+month: 1
+%%%%
+project 126 18
+cost: -39061
+assigned: 26
+%%%%
+binary -37403 1
+x: 1
+%%%%
+region
+activityXcom: []
+activityAlien: [1]
+%%%%
+region
+activityXcom: [13, 18, 2147483647]
+activityAlien: [24, 4, -1, 3, 2147483647]
+%%%%
+country nogen
+activityAlien: [96642]
+funding: [39, 62896, 2147483647, 0x10, 0x10]
+pact: false
+newPact: false
+%%%%
+binary -4392 2
+x: 1
+%%%%
+gametime 3 14 2 2004 18 11 23
+weekday: 2147483647
+minute: -98150
+year: 39
+hour: -2147483648
+month: 28
+day: -13884
+%%%%
+region
+activityAlien: [-2147483648, 31, 0, 20]
+%%%%
+gametime 7 2 5 2002 20 13 32
+second: -1
+month: 10
+hour: 2
+weekday: 0x10
+year: 0x10
+day: 256
+%%%%
+gametime 5 18 10 2001 7 47 21
+second: 1
+hour: -2147483648
+day: 11
+weekday: -2147483648
+year: 2147483647
+%%%%
+project 110 44
+assigned: 0
+spent: 0x10
+%%%%
+country gen
+pact: true
+newPact: no
+activityAlien: []
+funding: [0x10, 99218]
+activityXcom: [7133, 92001, -2147483648, 29]
+%%%%
+region
+activityXcom: [45620, 0x10]
+activityAlien: []
+%%%%
+project 130 12
+spent: 8
+assigned: -5
+cost: 4
+%%%%
+country nogen
+funding: [-19653, -30251, 2147483647, 236]
+activityXcom: [9, 2147483647, 52328, -2147483648, 24]
+pact: false
+%%%%
+binary -57503 4
+x: 1
+%%%%
+project 103 12
+spent: 10
+assigned: 0x10
+cost: -2
+%%%%
+binary 58623 1
+x: 1
+%%%%
+region
+activityXcom: [1]
+activityAlien: [1, 2]
+%%%%
+project 46 27
+cost: -4
+spent: 7
+assigned:
+%%%%
+binary 21864 2
+x: 1
+%%%%
+binary -54326 1
+x: 1
+%%%%
+region
+activityXcom: [0x10]
+activityAlien: [180, -2147483648, 24]
+%%%%
+gametime 5 14 6 2000 13 10 17
+month: 0x10
+year: 25
+second: 2
+day: 2147483647
+%%%%
+country gen
+funding: [-5, 99, 0x10, 1]
+activityAlien: [31]
+newPact: no
+pact: no
+%%%%
+binary -28908 4
+x: 1
+%%%%
+project 144 38
+cost: -2147483648
+spent: -2147483648
+assigned: -2147483648
+%%%%
+gametime 3 16 10 2004 16 3 27
+second: 4
+minute: 2147483647
+weekday: -20398
+day: 297
+%%%%
+gametime 4 30 9 2002 9 50 38
+second: 46831
+hour: 2147483647
+day: 4
+weekday: 2147483647
+month: 10
+year: 2
+minute:
+%%%%
+binary 66090 2
+x: 1
+%%%%
+project 156 15
+spent: 2147483647
+cost: 11
+%%%%
+gametime 3 21 3 1999 19 23 32
+hour: 2147483647
+year: 15
+day: 0
+minute: -2147483648
+month: 0x10
+weekday: -1
+%%%%
+project 178 23
+cost: 55860
+assigned: -2147483648
+spent: 75167
+%%%%
+binary -35080 1
+x: 1
+%%%%
+region
+activityXcom: [0, -77362, -1, 2]
+activityAlien: [-2147483648, -57062, -2147483648]
+%%%%
+project 103 9
+cost: 19
+spent: 205
+assigned: 22
+%%%%
+region
+activityAlien: [-2147483648, 0]
+%%%%
+binary 36821 2
+x: 1
+%%%%
+binary 43951 1
+x: 1
+%%%%
+project 11 8
+assigned: -2147483648
+spent: 0x10
+cost: -4
+%%%%
+gametime 2 22 5 1999 17 7 27
+hour: -18670
+weekday: -2147483648
+second: [1, 2]
+year: 2147483647
+day: 34
+%%%%
+country gen
+funding: [270]
+activityXcom: [8, 220, 0x10]
+activityAlien: [-92961]
+newPact: no
+%%%%
+binary 16596 2
+x: 1
+%%%%
+gametime 1 10 11 2004 4 9 31
+hour: 51218
+day: -2147483648
+month: 2147483647
+weekday: -5
+second: 2147483647
+%%%%
+gametime 5 28 12 1999 23 47 45
+weekday: -2147483648
+day: 0x10
+year: 4
+hour: -3
+month: -2147483648
+second: 2147483647
+%%%%
+binary 21259 1
+x: 1
+%%%%
+gametime 4 25 7 2000 14 46 34
+day: 77887
+year: -14671
+minute: 4
+month: 2147483647
+%%%%
+binary -25770 2
+x: 1
+%%%%
+gametime 1 21 12 2003 3 25 11
+month: 21
+minute: 75
+weekday: 103
+year: 0x10
+second: ~
+%%%%
+project 186 37
+cost: 0x10
+spent: 2147483647
+%%%%
+country gen
+newPact: true
+pact: false
+activityXcom: [50, 140, 30]
+activityAlien: [0x10, 80, 2147483647, 27]
+funding: [-868, 0x10, -2, 36, 24]
+%%%%
+gametime 2 29 4 2001 18 50 11
+hour: 248
+year: 254
+second: 24
+month: -45155
+day: 116
+minute: -16584
+weekday: 0x10
+%%%%
+project 166 12
+assigned: ~
+spent: 31
+%%%%
+project 147 6
+spent: 0x10
+assigned: 1
+%%%%
+region
+activityAlien: []
+%%%%
+project 197 25
+spent: 0x10
+assigned: -26809
+cost: 2147483647
+%%%%
+binary 11681 1
+x: 1
+%%%%
+project 136 48
+spent: 0x10
+cost: 9
+assigned: -5
+%%%%
+binary -6678 2
+x: 1
+%%%%
+region
+activityAlien: [2147483647, 26, -18716, -2147483648]
+activityXcom: []
+%%%%
+gametime 6 24 6 2000 16 47 10
+minute: 0x10
+hour: [1, 2]
+year: -2147483648
+day: 37
+weekday: -23653
+month: 0x10
+%%%%
+country nogen
+funding: [21, 2]
+activityXcom: []
+pact: true
+newPact: true
+%%%%
+binary -65949 1
+x: 1
+%%%%
+region
+activityXcom: [4, 2147483647]
+%%%%
+region
+activityXcom: [-2147483648]
+activityAlien: [0x10, 0x10, -4]
+%%%%
+project 164 20
+assigned: abc
+spent: 0x10
+cost: 260
+%%%%
+project 125 11
+cost: 0x10
+spent: 2
+assigned: 86427
+%%%%
+gametime 6 3 2 2004 1 17 59
+month:
+minute: 2147483647
+weekday: 39
+day: -2147483648
+hour: 149
+second: 2147483647
+%%%%
+region
+activityAlien: [138, 0x10, -95840, 0x10, -89193]
+activityXcom: [4]
+%%%%
+project 60 37
+cost: 5
+spent: 83
+assigned: 29
+%%%%
+project 48 34
+spent: 15
+assigned: 8
+%%%%
+region
+activityXcom: [2147483647, 276, -66095]
+%%%%
+binary 27107 4
+x: 1
+%%%%
+gametime 2 5 2 2002 18 28 16
+day: -43506
+year: 4
+second: 7
+hour: [1, 2]
+weekday: 16
+month: 36
+minute: -1
+%%%%
+region
+activityAlien: [151, 40]
+activityXcom: []
+%%%%
+region
+activityXcom: [46581, 2147483647, 11, 8]
+%%%%
+binary 12505 4
+x: 1
+%%%%
+region
+activityXcom: ~
+activityAlien: [182, 115]
+%%%%
+country gen
+newPact: true
+activityXcom: []
+pact: true
+funding: [97992, 2147483647, 36, 16, 2147483647]
+%%%%
+binary -30219 1
+x: 1
+%%%%
+gametime 4 26 6 1999 4 50 31
+month: 24
+hour: 10
+minute: 0
+year: 17
+%%%%
+binary -42074 4
+x: 1
+%%%%
+gametime 2 17 10 1999 6 17 28
+month: -3
+weekday: 0
+day: 2147483647
+minute: 258
+year: -2147483648
+hour: 13376
+%%%%
+project 182 24
+cost: 2147483647
+spent: 10
+assigned: ~
+%%%%
+project 145 28
+spent: -2147483648
+cost: 11669
+%%%%
+region
+activityXcom: [38]
+activityAlien: [5, 7446]
+%%%%
+binary 38698 2
+x: 1
+%%%%
+region
+activityXcom: [18, 2147483647, 0x10]
+activityAlien: [43926, -1]
+%%%%
+region
+activityAlien: []
+activityXcom: [4, 2147483647, 30, 2147483647, -2147483648]
+%%%%
+project 141 35
+cost: -2
+assigned: 30891
+spent: 3
+%%%%
+region
+activityXcom:
+activityAlien: [86749]
+%%%%
+region
+
+%%%%
+region
+activityAlien: [2147483647, 2147483647]
+%%%%
+region
+activityXcom: [2147483647, 2147483647, 0x10]
+%%%%
+country gen
+funding: []
+newPact: ~
+activityXcom: [92798, 0x10, 15, 217, 141]
+%%%%
+region
+activityAlien: [25, 0x10, 24, 9]
+activityXcom:
+%%%%
+binary -30926 4
+x: 1
+%%%%
+region
+activityXcom: [61991, -2147483648, 27]
+%%%%
+region
+activityAlien: []
+%%%%
+binary 43612 4
+x: 1
+%%%%
+region
+activityXcom: [0x10, 0x10, -2147483648, -49033, -78633]
+activityAlien: [0x10, 23]
+%%%%
+gametime 7 21 6 2003 20 49 53
+minute: -4
+hour: 14
+weekday: 2147483647
+year: 7
+month: 47365
+%%%%
+project 132 17
+cost: 0x10
+assigned: abc
+%%%%
+gametime 5 11 4 2002 5 9 5
+month: 2147483647
+day: 1
+hour: ~
+second: 33
+year: 286

@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: radix library - the factory: the composition root               }
 {  Copyright (C) 2004-2024 by Jim Valavanis (original DelphiDoom, Rad-X)       }
@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Radix.Intf;
+  DelphiDoom.Radix.Types, DelphiDoom.Radix.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the library</summary>
@@ -27,7 +27,10 @@ type
     ///   The translator of the game with the steps that are ported, in the order of the old
     ///   converter, and the patch options of Rad-X
     /// </summary>
-    class function CreateTranslator: IRadixTranslator; static;
+    /// <summary>The translator with the names of the old game: PNAMES0 and TEXTURE0</summary>
+    class function CreateTranslator: IRadixTranslator; overload; static;
+    /// <summary>The translator that gives the lumps the names that the engine reads (TRadixLumpNames)</summary>
+    class function CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator; overload; static;
   end;
 
 implementation
@@ -39,7 +42,9 @@ uses
   DelphiDoom.Radix.Context, DelphiDoom.Radix.Container, DelphiDoom.Radix.PaletteBuilder,
   DelphiDoom.Radix.PalettePart, DelphiDoom.Radix.TexturePart, DelphiDoom.Radix.FlatPart,
   DelphiDoom.Radix.GraphicsPart, DelphiDoom.Radix.SmallFontPart, DelphiDoom.Radix.LumpGroupPart,
-  DelphiDoom.Radix.Translator;
+  DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
+  DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
+  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator;
 
 { TRadixFactory }
 
@@ -59,17 +64,29 @@ begin
 end;
 
 class function TRadixFactory.CreateTranslator: IRadixTranslator;
+begin
+  Result := CreateTranslator(TRadixLumpNames.Original);
+end;
+
+class function TRadixFactory.CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator;
 var
   LMatcher: IColorMatcher;
 begin
   LMatcher := TPaletteFactory.CreateColorMatcher;
   Result := TRadixTranslator.Create(
-    [TRadixPalettePart.Create(CreatePaletteBuilder),
-     TRadixTexturePart.Create('PNAMES0', 'TEXTURE0'),
+    [TRadixPalettePart.Create(CreatePaletteBuilder, ANames.Palette, ANames.ColorMap),
+     TRadixTexturePart.Create(ANames.PatchNames, ANames.Textures),
+     TRadixLevelFactory.CreatePart(True),
      TRadixFlatPart.Create(LMatcher, True),
      TRadixGraphicsPart.Create,
      TRadixSmallFontPart.Create,
+     TRadixBigFontPart.Create(LMatcher),
+     TRadixDosFontPart.Create(LMatcher),
+     TRadixMenuTranslationPart.Create,
+     TRadixSpritePart.Create(TRadixSpriteCatalog.Fill),
      TRadixLumpGroupPart.Music,
+     TRadixCockpitPart.Create,
+     TRadixSoundPart.Create,
      TRadixLumpGroupPart.MissionText,
      TRadixLumpGroupPart.MissionBriefing,
      TRadixLumpGroupPart.EndText],
@@ -81,3 +98,5 @@ begin
 end;
 
 end.
+
+

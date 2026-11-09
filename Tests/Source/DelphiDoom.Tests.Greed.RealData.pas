@@ -27,7 +27,10 @@ type
     class function Demo1016Folder: string; static;
     /// <summary>The folder of GREED.BLO and of the .LAY files of the demo 2.0; empty if it is not here</summary>
     class function Demo20Folder: string; static;
-    /// <summary>The folder of GREED.BLO of the full game; empty if it is not on this machine (it is not in the repository)</summary>
+    /// <summary>
+    ///   The folder of GREED.BLO of the complete game (full\GREED.BLO, 2332 lumps and the 32 maps inside the
+    ///   archive); empty if it is not on this machine
+    /// </summary>
     class function FullFolder: string; static;
     /// <summary>A golden file of Tests\Data\Greed</summary>
     class function GoldenPath(const AName: string): string; static;

@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TGameAliases                                           }
 {                                                                              }
@@ -34,9 +34,9 @@ type
     [Test]
     procedure DovrebbeDireCheSoloSpeedEUnAlias;
     [Test]
-    procedure DovrebbeDareIlProfiloDiDoomSoloAPavimentiPorteELuciPerRadix;
+    procedure DovrebbeDareIlProfiloDiDoomATuttiIFormatiEAlleRegolePerRadix;
     [Test]
-    procedure DovrebbeLasciareRadixSenzaProfiloNelleAltreAree;
+    procedure DovrebbeLasciareRadixConIlProprioProfiloIwad;
   end;
 
 implementation
@@ -91,20 +91,22 @@ begin
   Assert.IsTrue(TGameAliases.IsAlias('radix'));
 end;
 
-procedure TTestGameDataAliases.DovrebbeDareIlProfiloDiDoomSoloAPavimentiPorteELuciPerRadix;
+procedure TTestGameDataAliases.DovrebbeDareIlProfiloDiDoomATuttiIFormatiEAlleRegolePerRadix;
 begin
   Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Lights));
   Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Platforms));
   Assert.AreEqual('Doom', TGameAliases.ProfileOf('RADIX', TGameProfileArea.Doors));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Dehacked));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.ActorDef));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.TableExport));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Udmf));
 end;
 
-procedure TTestGameDataAliases.DovrebbeLasciareRadixSenzaProfiloNelleAltreAree;
+procedure TTestGameDataAliases.DovrebbeLasciareRadixConIlProprioProfiloIwad;
 begin
-  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Dehacked));
-  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.ActorDef));
-  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.TableExport));
-  Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Udmf));
   Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Iwad));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Script));
 end;
 
 end.
+
