@@ -3,7 +3,7 @@
 {  TEMPORARY harness of issue #151 (not committed to the engine projects):     }
 {  fingerprints of the level data and of the zone, to compare the engine       }
 {  before and after the move of the level loading to IEngineLumps and          }
-{  IZoneAllocator. Never compiled by the author: see RUN.md.                   }
+{  IZoneAllocator. Never compiled by the author: see docs\RUN.md.                   }
 {                                                                              }
 {******************************************************************************}
 {$I Doom32.inc}

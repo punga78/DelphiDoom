@@ -8,7 +8,7 @@
 
   The golden file goes to Tests\Data\Midi\stream.golden.txt. The folder of the WADs is the bin
   of the repository (bin\Doom, bin\Heretic, bin\Hexen, bin\Strife); without it only the songs
-  in memory are written. See RUN.md in the root of the repository. }
+  in memory are written. See docs\RUN.md. }
 program DumpOldMidi;
 
 {$APPTYPE CONSOLE}
