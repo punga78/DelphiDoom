@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{C0662331-FA2D-4D5F-9D12-E60A9CAB1818}</ProjectGuid>
     </PropertyGroup>
@@ -272,6 +272,9 @@
             <Dependencies/>
         </Projects>
         <Projects Include="Tests\DelphiDoom.Tests.Opl.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Tests\DelphiDoom.Tests.XcomGeoscape.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Tests\DelphiDoom.Tests.XcomSave.dproj">
@@ -1166,6 +1169,15 @@
     </Target>
     <Target Name="DelphiDoom_Tests_Opl:Make">
         <MSBuild Projects="Tests\DelphiDoom.Tests.Opl.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomGeoscape">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomGeoscape.dproj"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomGeoscape:Clean">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomGeoscape.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DelphiDoom_Tests_XcomGeoscape:Make">
+        <MSBuild Projects="Tests\DelphiDoom.Tests.XcomGeoscape.dproj" Targets="Make"/>
     </Target>
     <Target Name="DelphiDoom_Tests_XcomSave">
         <MSBuild Projects="Tests\DelphiDoom.Tests.XcomSave.dproj"/>

@@ -51,6 +51,7 @@ uses
   DelphiDoom.XcomSave.UnitEnums in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitEnums.pas',
   DelphiDoom.XcomSave.RuleAdapters in '..\Libs\XcomSave\DelphiDoom.XcomSave.RuleAdapters.pas',
   DelphiDoom.XcomSave.RulesetRules in '..\Libs\XcomSave\DelphiDoom.XcomSave.RulesetRules.pas',
+  DelphiDoom.XcomSave.BaseCapacity in '..\Libs\XcomSave\DelphiDoom.XcomSave.BaseCapacity.pas',
   DelphiDoom.Tests.XcomSave.RulesetRules in 'Source\DelphiDoom.Tests.XcomSave.RulesetRules.pas',
   DelphiDoom.XcomMod.UnitStats in '..\Libs\XcomMod\DelphiDoom.XcomMod.UnitStats.pas',
   DelphiDoom.XcomSave.UnitStats in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitStats.pas',

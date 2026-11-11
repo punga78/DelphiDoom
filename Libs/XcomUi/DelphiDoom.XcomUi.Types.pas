@@ -26,7 +26,7 @@ type
   TXcomWindowPopup = (wpNone, wpHorizontal, wpVertical, wpBoth);
 
   /// <summary>ArrowShape: the drawing of an arrow button</summary>
-  TXcomArrowShape = (arBigUp, arBigDown, arSmallUp, arSmallDown, arSmallLeft, arSmallRight);
+  TXcomArrowShape = (arNone, arBigUp, arBigDown, arSmallUp, arSmallDown, arSmallLeft, arSmallRight);
 
   /// <summary>ArrowOrientation: the arrows beside the rows of a list</summary>
   TXcomArrowOrientation = (aoVertical, aoHorizontal);

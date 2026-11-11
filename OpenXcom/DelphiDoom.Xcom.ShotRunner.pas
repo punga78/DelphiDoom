@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: XcomGame - runs the game without a window and takes screenshots  }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -27,6 +27,7 @@ type
     FDevice: TXcomMemoryVideoDevice;
     FExporter: TXcomImageExporter;
     FSaved: TStringList;
+    FHoldMilliseconds: Integer;
     procedure Step(const AStep: string);
   public
     /// <summary>None of the arguments is owned</summary>
@@ -43,6 +44,8 @@ type
     procedure Run(const ASteps: TArray<string>);
     /// <summary>The files that were saved</summary>
     function Saved: TStrings;
+    /// <summary>How long a click keeps the button down (40 ms; 80 like the capture script of the real program to compare timers)</summary>
+    property HoldMilliseconds: Integer read FHoldMilliseconds write FHoldMilliseconds;
   end;
 
 implementation
@@ -60,6 +63,7 @@ begin
   FDevice := ADevice;
   FExporter := AExporter;
   FSaved := TStringList.Create;
+  FHoldMilliseconds := 40;
 end;
 
 destructor TXcomShotRunner.Destroy;
@@ -102,7 +106,7 @@ begin
   LEvent.Y := AY;
   LEvent.Button := XCOM_BUTTON_LEFT;
   FEvents.Enqueue(LEvent);
-  Wait(40);
+  Wait(FHoldMilliseconds);
   LEvent.Kind := ekMouseUp;
   FEvents.Enqueue(LEvent);
   Wait(40);
@@ -114,6 +118,9 @@ var
 begin
   LEvent := TXcomInputEvent.Make(ekKeyDown);
   LEvent.Key := AKey;
+  // a printable key also types its character (the unicode field of the SDL event)
+  if (AKey >= 32) and (AKey <= 126) then
+    LEvent.Character := Cardinal(AKey);
   FEvents.Enqueue(LEvent);
   Wait(20);
   LEvent.Kind := ekKeyUp;
@@ -152,6 +159,8 @@ begin
   LValue := Copy(AStep, LPosition + 1, MaxInt);
   if LName = 'wait' then
     Wait(StrToInt(LValue))
+  else if LName = 'hold' then
+    FHoldMilliseconds := StrToInt(LValue)
   else if LName = 'key' then
     Key(StrToInt(LValue))
   else if LName = 'shot' then

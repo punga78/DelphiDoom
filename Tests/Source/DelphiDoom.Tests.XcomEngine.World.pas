@@ -29,6 +29,7 @@ type
     FPalette: array[0..255] of TXcomColor;
     FBack: array[0..255] of TXcomColor;
     FPaletteCalls: Integer;
+    WaveBytes: TBytes;
     function NewFont(AWidth, AHeight: Integer): TXcomFont;
   public
     constructor Create;
@@ -39,6 +40,10 @@ type
     function GetPalette(const AName: string): PXcomColor;
     function CursorColor(const APalette: string): Integer;
     function HasSoundDefinitions: Boolean;
+    function SoundWave(const ASet: string; AIndex: Integer): TBytes;
+    /// <summary>What SoundWave gives (nothing by default)</summary>
+    property Wave: TBytes read WaveBytes write WaveBytes;
+    function Constant(const AName: string; ADefault: Integer): Integer;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     property PaletteCalls: Integer read FPaletteCalls;
   end;
@@ -75,6 +80,8 @@ type
     destructor Destroy; override;
     procedure Wait(AMilliseconds: Integer);
     procedure Click(AX, AY: Integer);
+    /// <summary>A click that keeps the button down for AHoldMilliseconds (the timers of the arrows run while it is down)</summary>
+    procedure ClickHeld(AX, AY, AHoldMilliseconds: Integer);
     function Pixel(AX, AY: Integer): Byte;
     class function Parse(const AText: string): IYamlNode; static;
     property Game: TXcomGame read FGame;
@@ -259,6 +266,16 @@ begin
     Result := 252;
 end;
 
+function TFakeResources.SoundWave(const ASet: string; AIndex: Integer): TBytes;
+begin
+  Result := WaveBytes;
+end;
+
+function TFakeResources.Constant(const AName: string; ADefault: Integer): Integer;
+begin
+  Result := ADefault;
+end;
+
 function TFakeResources.HasSoundDefinitions: Boolean;
 begin
   Result := True;
@@ -328,6 +345,26 @@ begin
   LEvent.Kind := ekMouseUp;
   FEvents.Enqueue(LEvent);
   Wait(20);
+end;
+
+procedure TTestWorld.ClickHeld(AX, AY, AHoldMilliseconds: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  LEvent := TXcomInputEvent.Make(ekMouseMotion);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  FEvents.Enqueue(LEvent);
+  Wait(20);
+  LEvent := TXcomInputEvent.Make(ekMouseDown);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  LEvent.Button := XCOM_BUTTON_LEFT;
+  FEvents.Enqueue(LEvent);
+  Wait(AHoldMilliseconds);
+  LEvent.Kind := ekMouseUp;
+  FEvents.Enqueue(LEvent);
+  Wait(40);
 end;
 
 class function TTestWorld.Parse(const AText: string): IYamlNode;

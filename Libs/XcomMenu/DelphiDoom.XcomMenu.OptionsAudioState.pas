@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - OptionsAudioState of OpenXcom (volumes and   }
 {  preferred formats of music, sounds and videos)                               }
@@ -19,8 +19,7 @@ uses
 type
   /// <summary>
   ///   The audio options: three volume sliders, the preferred formats of music, sounds and videos, and the mute in
-  ///   the background. The sounds that play when a slider is released (the test sound) are not played: the audio is
-  ///   not connected to the menus yet
+  ///   the background. The sounds of the sliders of the sounds and of the interface play a test sound when they are released
   /// </summary>
   TXcomOptionsAudioState = class(TXcomOptionsBaseState)
   strict private
@@ -52,6 +51,8 @@ type
     procedure SoundFormatChange(AAction: TXcomAction);
     procedure VideoFormatChange(AAction: TXcomAction);
     procedure BackgroundMuteClick(AAction: TXcomAction);
+    procedure SoundVolumeRelease(AAction: TXcomAction);
+    procedure UiVolumeRelease(AAction: TXcomAction);
   public
     constructor Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin; const ANavigator: IXcomOptionsNavigator);
   end;
@@ -116,11 +117,13 @@ begin
   FSlrSoundVolume.SetRange(0, MIX_MAX_VOLUME);
   FSlrSoundVolume.SetValue(LOptions.SoundVolume);
   FSlrSoundVolume.OnChange(SoundVolumeChange);
+  FSlrSoundVolume.OnMouseRelease(SoundVolumeRelease);
   Tip(FSlrSoundVolume, 'STR_SFX_VOLUME_DESC');
   FTxtUiVolume.SetText(Tr('STR_UI_VOLUME'));
   FSlrUiVolume.SetRange(0, MIX_MAX_VOLUME);
   FSlrUiVolume.SetValue(LOptions.UiVolume);
   FSlrUiVolume.OnChange(UiVolumeChange);
+  FSlrUiVolume.OnMouseRelease(UiVolumeRelease);
   Tip(FSlrUiVolume, 'STR_UI_VOLUME_DESC');
   FTxtMusicFormat.SetText(Tr('STR_PREFERRED_MUSIC_FORMAT'));
   FCbxMusicFormat.SetOptions([Tr('STR_PREFERRED_FORMAT_AUTO').Text, 'FLAC', 'OGG', 'MP3', 'MOD', 'WAV', 'Adlib', 'GM',
@@ -166,6 +169,18 @@ procedure TXcomOptionsAudioState.SoundVolumeChange(AAction: TXcomAction);
 begin
   Host.Options.SoundVolume := FSlrSoundVolume.GetValue;
   Host.SetVolume(Host.Options.SoundVolume, Host.Options.MusicVolume, Host.Options.UiVolume);
+end;
+
+procedure TXcomOptionsAudioState.SoundVolumeRelease(AAction: TXcomAction);
+begin
+  // the test sound of the sounds: the fire of the ufo (Mod::UFO_FIRE)
+  Host.PlaySound('GEO.CAT', Host.Resources.Constant('ufoFire', 8));
+end;
+
+procedure TXcomOptionsAudioState.UiVolumeRelease(AAction: TXcomAction);
+begin
+  // the sound of a button (TextButton::soundPress, Mod::BUTTON_PRESS)
+  Host.PlaySound('GEO.CAT', Host.Resources.Constant('buttonPress', 0), True);
 end;
 
 procedure TXcomOptionsAudioState.UiVolumeChange(AAction: TXcomAction);

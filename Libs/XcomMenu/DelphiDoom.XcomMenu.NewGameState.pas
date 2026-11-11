@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton,
-  DelphiDoom.XcomUi.ToggleTextButton;
+  DelphiDoom.XcomUi.ToggleTextButton, DelphiDoom.XcomEngine.Session.Intf;
 
 type
   /// <summary>
@@ -121,8 +121,13 @@ begin
 end;
 
 procedure TXcomNewGameState.OkClick(AAction: TXcomAction);
+var
+  LStarter: IXcomNewGameStarter;
 begin
-  // the new game starts a saved game and the geoscape: not ported
+  // NewGameState::btnOkClick: the saved game and the geoscape are made by the starter that the program gave the game
+  LStarter := Host.NewGameStarter;
+  if Assigned(LStarter) then
+    LStarter.StartNewGame(Difficulty, FIronman.GetPressed);
 end;
 
 procedure TXcomNewGameState.CancelClick(AAction: TXcomAction);

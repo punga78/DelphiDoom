@@ -59,6 +59,8 @@ type
     ['{0C58D7E3-6B29-4A14-A3F0-9E81B2C45D76}']
     function IsAvailable: Boolean;
     procedure SetVolume(ASound, AMusic, AUi: Integer);
+    /// <summary>Plays a WAV file now (the volume is already in the samples); a sound that is playing is replaced</summary>
+    procedure PlayWave(const AWave: TBytes);
   end;
 
   /// <summary>The files of the game and of the user, by path (CrossPlatform of OpenXcom: fileExists, readFile...)</summary>

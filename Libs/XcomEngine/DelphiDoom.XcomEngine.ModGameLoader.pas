@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - the loading of the game data of a master   }
 {  mod (Game::loadMods and Game::loadLanguages)                                 }
@@ -42,7 +42,13 @@ type
     FParser: IYamlParser;
     FPng: TPngClient;
     FLog: IXcomLog;
+    FLoadRules: Boolean;
   public
+    /// <summary>
+    ///   Also reads the ruleset of the master mod (IXcomGameRules of the resources), that the strategy screens need.
+    ///   Off by default: the screens of the menu do not use it
+    /// </summary>
+    property LoadRules: Boolean read FLoadRules write FLoadRules;
     /// <param name="APng">Not owned: the client shared by the engine</param>
     constructor Create(const ASettings: TXcomLoaderSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser; APng: TPngClient; const ALog: IXcomLog = nil);
@@ -52,8 +58,9 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.Factory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.ModResources,
-  DelphiDoom.XcomEngine.PngSurfaceLoader;
+  DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.Factory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.ModResources,
+  DelphiDoom.XcomEngine.PngSurfaceLoader, DelphiDoom.XcomEngine.FolderLanguageProvider,
+  DelphiDoom.XcomEngine.LanguageProvider.Intf;
 
 constructor TXcomModGameLoader.Create(const ASettings: TXcomLoaderSettings; const AFiles: IXcomFileSystem;
   const AParser: IYamlParser; APng: TPngClient; const ALog: IXcomLog);
@@ -67,17 +74,13 @@ begin
 end;
 
 procedure TXcomModGameLoader.Load(out AResources: IXcomResources; out ALanguage: TXcomLanguage);
-const
-  DEFAULT_LANGUAGE = 'en-US';
 var
   LMap: TXcomFileMap;
   LModFolder: string;
   LResources: TXcomModResources;
   LReference: IXcomResources;
   LGameData: IXcomGameData;
-  LLanguageId: string;
-  LLanguage: TXcomLanguage;
-  LStrings: TDictionary<string, string>;
+  LProvider: IXcomLanguageProvider;
 begin
   AResources := nil;
   ALanguage := nil;
@@ -96,34 +99,12 @@ begin
     TXcomPngSurfaceLoader.Create(LMap, FPng), TXcomFactory.CreatePaletteReader, LModFolder);
   LReference := LResources;
   LResources.Load;
-  LLanguageId := FSettings.LanguageId;
-  if (LLanguageId = '') or
-    (not FFiles.FileExists(TPath.Combine(TPath.Combine(FSettings.DataFolder, 'common\Language'),
-    LLanguageId + '.yml'))) then
-    LLanguageId := DEFAULT_LANGUAGE;
-  LLanguage := TXcomLanguage.Create(LLanguageId, FSettings.Wordwrap, FFiles, FParser, FLog);
-  try
-    LLanguage.LoadFile(TPath.Combine(FSettings.DataFolder, 'common\Language\' + DEFAULT_LANGUAGE + '.yml'));
-    if LLanguageId <> DEFAULT_LANGUAGE then
-      LLanguage.LoadFile(TPath.Combine(FSettings.DataFolder, 'common\Language\' + LLanguageId + '.yml'));
-    LLanguage.LoadFile(TPath.Combine(LModFolder, 'Language\' + DEFAULT_LANGUAGE + '.yml'));
-    if LLanguageId <> DEFAULT_LANGUAGE then
-      LLanguage.LoadFile(TPath.Combine(LModFolder, 'Language\' + LLanguageId + '.yml'));
-    LStrings := LResources.ExtraStrings(DEFAULT_LANGUAGE);
-    if Assigned(LStrings) then
-      LLanguage.AddStrings(LStrings);
-    if LLanguageId <> DEFAULT_LANGUAGE then
-    begin
-      LStrings := LResources.ExtraStrings(LLanguageId);
-      if Assigned(LStrings) then
-        LLanguage.AddStrings(LStrings);
-    end;
-  except
-    LLanguage.Free;
-    raise;
-  end;
+  if FLoadRules then
+    LResources.LoadRules(TYamlFactory.CreateDiskParser, FPng, FSettings.ModId);
+  // the language is the one of the provider of the menus (Game::loadLanguages): there is no second copy of the code
+  LProvider := TXcomFolderLanguageProvider.Create(FSettings.DataFolder, LModFolder, FFiles, FParser, FLog);
+  ALanguage := LProvider.Load(FSettings.LanguageId, FSettings.Wordwrap, LReference);
   AResources := LReference;
-  ALanguage := LLanguage;
 end;
 
 end.

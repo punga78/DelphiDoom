@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   The main menu: a popup window with the title and the buttons New Game, New Battle, Load, Options, Mods and
-  ///   Quit. Quit and Options work; the other buttons open screens that are not ported yet, and do nothing
+  ///   Quit. Quit, New Game, Load Game and Options work; New Battle and Mods open screens that are not ported yet, and do nothing
   /// </summary>
   TXcomMainMenuState = class(TXcomState)
   strict private
@@ -31,6 +31,7 @@ type
     FVersionText: string;
     procedure NewGameClick(AAction: TXcomAction);
     procedure OptionsClick(AAction: TXcomAction);
+    procedure LoadClick(AAction: TXcomAction);
     procedure QuitClick(AAction: TXcomAction);
   public
     constructor Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -40,7 +41,7 @@ implementation
 
 uses
   DelphiDoom.XcomMenu.NewGameState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsVideoState,
-  DelphiDoom.XcomMenu.MenuOptionsNavigator;
+  DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomMenu.ListLoadState;
 
 
 constructor TXcomMainMenuState.Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -70,6 +71,7 @@ begin
   FNewGame.OnMouseClick(NewGameClick);
   FNewBattle.SetText(Tr('STR_NEW_BATTLE'));
   FLoad.SetText(Tr('STR_LOAD_SAVED_GAME'));
+  FLoad.OnMouseClick(LoadClick);
   FOptions.SetText(Tr('STR_OPTIONS'));
   FOptions.OnMouseClick(OptionsClick);
   FMods.SetText(Tr('STR_MODS'));
@@ -83,6 +85,11 @@ end;
 procedure TXcomMainMenuState.NewGameClick(AAction: TXcomAction);
 begin
   Host.PushState(TXcomNewGameState.Create(Host));
+end;
+
+procedure TXcomMainMenuState.LoadClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomListLoadState.Create(Host, ooMenu));
 end;
 
 procedure TXcomMainMenuState.OptionsClick(AAction: TXcomAction);

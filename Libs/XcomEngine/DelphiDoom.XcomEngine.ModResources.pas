@@ -16,7 +16,10 @@ uses
   DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image, DelphiDoom.Xcom.Intf,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Intf,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap,
-  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf;
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Rules.Intf,
+  DelphiDoom.XcomEngine.GameRules, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset,
+  DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.CatArchive, DelphiDoom.XcomEngine.SoundSet,
+  DelphiDoom.XcomEngine.SoundConverter;
 
 type
   /// <summary>
@@ -33,8 +36,9 @@ type
   ///   and "extraStrings" of the ruleset files. The full screen pictures (BACK01.SCR...) are read the first time they
   ///   are asked for. Not ported: the surface sets, the sounds, the music, the other rules (see the README)
   /// </summary>
-  TXcomModResources = class(TInterfacedObject, IXcomResources)
+  TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules)
   strict private
+    FRules: TXcomGameRules;
     FFiles: TXcomFileMap;
     FGameData: IXcomGameData;
     FParser: IYamlParser;
@@ -56,12 +60,17 @@ type
     FUfopaediaCursor: Integer;
     FGraphsCursor: Integer;
     FHasSoundDefinitions: Boolean;
+    FConstants: TDictionary<string, Integer>;
+    FSoundSets: TObjectDictionary<string, TXcomSoundSet>;
+    FCatalogs: TDictionary<string, IXcomCatArchive>;
     procedure AddPalette(const AName: string; const APalette: TXcomPalette);
     procedure LoadPalettes;
     procedure LoadRulesets;
     procedure LoadRuleset(const ANode: IYamlNode);
+    procedure LoadSoundSet(const ANode: IYamlNode);
     procedure LoadFonts;
     function LoadFullScreen(const AName: string): TXcomSurface;
+    function BuildAltGeoBorder: TXcomSurface;
   public
     /// <param name="AFiles">The resources own the map. The virtual files: the common data (Language\Font.dat), the mod and the game files</param>
     /// <param name="AGameData">The game directory seen with the names that OpenXcom uses (GEODATA\PALETTES.DAT...)</param>
@@ -73,6 +82,8 @@ type
     /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
     procedure Load;
     function HasSoundDefinitions: Boolean;
+    function SoundWave(const ASet: string; AIndex: Integer): TBytes;
+    function Constant(const AName: string; ADefault: Integer): Integer;
     function GetSurface(const AName: string): TXcomSurface;
     function GetFont(const AName: string): TXcomFont;
     function GetInterface(const AId: string): TXcomRuleInterface;
@@ -82,6 +93,15 @@ type
     /// <summary>Mod::getExtraStrings: the strings of a language that the rulesets define (nil when there are none)</summary>
     function ExtraStrings(const ALanguage: string): TDictionary<string, string>;
     function FontName: string;
+    /// <summary>
+    ///   Mod::loadAll for the strategy screens: reads the ruleset of the master mod (the resources own the rules from
+    ///   here). Without this call IXcomGameRules has no ruleset and no surface sets
+    /// </summary>
+    procedure LoadRules(const AParser: IYamlParser; APng: TPngClient; const AModId: string);
+    function HasRules: Boolean;
+    function Ruleset: TXcomRuleset;
+    function ModFiles: IXcomModFiles;
+    function GetSurfaceSet(const AName: string): TXcomSurfaceSet;
   end;
 
 implementation
@@ -112,6 +132,9 @@ begin
   FFonts := TObjectDictionary<string, TXcomFont>.Create([doOwnsValues]);
   FInterfaces := TObjectDictionary<string, TXcomRuleInterface>.Create([doOwnsValues]);
   FExtraStrings := TObjectDictionary<string, TDictionary<string, string>>.Create([doOwnsValues]);
+  FConstants := TDictionary<string, Integer>.Create;
+  FSoundSets := TObjectDictionary<string, TXcomSoundSet>.Create([doOwnsValues]);
+  FCatalogs := TDictionary<string, IXcomCatArchive>.Create;
   FFontName := 'Font.dat';
   // Mod::resetGlobalStatics
   FGeoscapeCursor := 252;
@@ -123,6 +146,10 @@ end;
 
 destructor TXcomModResources.Destroy;
 begin
+  FCatalogs.Free;
+  FSoundSets.Free;
+  FConstants.Free;
+  FRules.Free;
   FFiles.Free;
   FExtraStrings.Free;
   FInterfaces.Free;
@@ -166,6 +193,7 @@ var
   LConstants: IYamlNode;
   LStrings: TDictionary<string, string>;
   LPair: TYamlPair;
+  LNumber: Integer;
 begin
   FFontName := TXcomYamlFields.ReadString(ANode, 'fontName', FFontName);
   LConstants := TXcomYamlFields.Field(ANode, 'constants');
@@ -177,6 +205,12 @@ begin
     FUfopaediaCursor := TXcomYamlFields.ReadInteger(LConstants, 'ufopaediaCursor', FUfopaediaCursor);
     FGraphsCursor := TXcomYamlFields.ReadInteger(LConstants, 'graphsCursor', FGraphsCursor);
   end;
+  if Assigned(LConstants) and LConstants.IsMap then
+    for LPair in LConstants.Pairs do
+      if LPair.Value.TryAsInteger(LNumber) then
+        FConstants.AddOrSetValue(LPair.Key.ScalarString, LNumber);
+  for LItem in TXcomYamlFields.Sequence(ANode, 'soundDefs') do
+    LoadSoundSet(LItem);
   if Length(TXcomYamlFields.Sequence(ANode, 'soundDefs')) > 0 then
     FHasSoundDefinitions := True;
   for LItem in TXcomYamlFields.Sequence(ANode, 'extraStrings') do
@@ -228,6 +262,78 @@ begin
         raise EXcomEngineException.Create(LName + '.rul: ' + E.Message);
     end;
   end;
+end;
+
+procedure TXcomModResources.LoadSoundSet(const ANode: IYamlNode);
+var
+  LType: string;
+  LSet: TXcomSoundSet;
+  LItem: IYamlNode;
+  LPair: TArray<IYamlNode>;
+  LFirst: Integer;
+  LLast: Integer;
+  LValue: Integer;
+  LList: TList<Integer>;
+begin
+  LType := TXcomYamlFields.ReadString(ANode, 'type', '');
+  if LType = '' then
+    Exit;
+  if not FSoundSets.TryGetValue(LType, LSet) then
+  begin
+    LSet := TXcomSoundSet.Create;
+    FSoundSets.Add(LType, LSet);
+  end;
+  LSet.CatFile := TXcomYamlFields.ReadString(ANode, 'file', LSet.CatFile);
+  LList := TList<Integer>.Create;
+  try
+    LList.AddRange(LSet.Sounds);
+    // the ranges (pairs first, last) come before the single numbers, as in SoundDefinition::load
+    for LItem in TXcomYamlFields.Sequence(ANode, 'soundRanges') do
+    begin
+      LPair := LItem.Items;
+      if (Length(LPair) = 2) and LPair[0].TryAsInteger(LFirst) and LPair[1].TryAsInteger(LLast) then
+        for LValue := LFirst to LLast do
+          LList.Add(LValue);
+    end;
+    for LItem in TXcomYamlFields.Sequence(ANode, 'sounds') do
+      if LItem.TryAsInteger(LValue) then
+        LList.Add(LValue)
+      else
+        LList.Add(-1);
+    LSet.Sounds := LList.ToArray;
+  finally
+    LList.Free;
+  end;
+end;
+
+function TXcomModResources.Constant(const AName: string; ADefault: Integer): Integer;
+begin
+  if not FConstants.TryGetValue(AName, Result) then
+    Result := ADefault;
+end;
+
+function TXcomModResources.SoundWave(const ASet: string; AIndex: Integer): TBytes;
+var
+  LSet: TXcomSoundSet;
+  LCatalog: IXcomCatArchive;
+  LEntry: Integer;
+  LPath: string;
+begin
+  Result := nil;
+  if (not FSoundSets.TryGetValue(ASet, LSet)) or (AIndex < 0) or (AIndex >= Length(LSet.Sounds)) then
+    Exit;
+  LEntry := LSet.Sounds[AIndex];
+  LPath := 'SOUND/' + LSet.CatFile;
+  if not FCatalogs.TryGetValue(LPath, LCatalog) then
+  begin
+    if not FGameData.Files.Exists(LPath) then
+      Exit;
+    LCatalog := TXcomCatArchive.Create(FGameData.Files.ReadAll(LPath));
+    FCatalogs.Add(LPath, LCatalog);
+  end;
+  if (LEntry < 0) or (LEntry >= LCatalog.Count) then
+    Exit;
+  Result := TXcomSoundConverter.RawToWave(LCatalog.Load(LEntry));
 end;
 
 function TXcomModResources.HasSoundDefinitions: Boolean;
@@ -288,12 +394,44 @@ begin
   LoadFonts;
 end;
 
+function TXcomModResources.BuildAltGeoBorder: TXcomSurface;
+const
+  NEW_WIDTH = 320 - 64;
+  NEW_HEIGHT = 200;
+var
+  LOld: TXcomSurface;
+  LX, LY: Integer;
+  LPixel: Byte;
+begin
+  // Mod::modResources: the background of the geoscape is made bigger by mirroring the contents
+  LOld := GetSurface('GEOBORD.SCR');
+  Result := TXcomSurface.Create(NEW_WIDTH * 3, NEW_HEIGHT * 3);
+  for LX := 0 to NEW_WIDTH - 1 do
+    for LY := 0 to NEW_HEIGHT - 1 do
+    begin
+      LPixel := LOld.GetPixel(LX, LY);
+      Result.SetPixel(NEW_WIDTH + LX, NEW_HEIGHT + LY, LPixel);
+      Result.SetPixel(NEW_WIDTH - LX - 1, NEW_HEIGHT + LY, LPixel);
+      Result.SetPixel(NEW_WIDTH * 3 - LX - 1, NEW_HEIGHT + LY, LPixel);
+      Result.SetPixel(NEW_WIDTH + LX, NEW_HEIGHT - LY - 1, LPixel);
+      Result.SetPixel(NEW_WIDTH - LX - 1, NEW_HEIGHT - LY - 1, LPixel);
+      Result.SetPixel(NEW_WIDTH * 3 - LX - 1, NEW_HEIGHT - LY - 1, LPixel);
+      Result.SetPixel(NEW_WIDTH + LX, NEW_HEIGHT * 3 - LY - 1, LPixel);
+      Result.SetPixel(NEW_WIDTH - LX - 1, NEW_HEIGHT * 3 - LY - 1, LPixel);
+      Result.SetPixel(NEW_WIDTH * 3 - LX - 1, NEW_HEIGHT * 3 - LY - 1, LPixel);
+    end;
+  if FHasStatePalette then
+    Result.SetColors(FStatePalette);
+end;
+
 function TXcomModResources.LoadFullScreen(const AName: string): TXcomSurface;
 var
   LImage: TXcomImage;
   LPalette: TXcomPalette;
   LPath: string;
 begin
+  if SameText(AName, 'ALTGEOBORD.SCR') then
+    Exit(BuildAltGeoBorder);
   LPalette := TXcomPalette.Create(0);
   if SameText(AName, 'INTERWIN.DAT') then
     LImage := FGameData.LoadImage('GEODATA/INTERWIN.DAT', 160, 600, LPalette)
@@ -320,6 +458,38 @@ begin
     Result := LoadFullScreen(LName);
     FSurfaces.Add(LName, Result);
   end;
+end;
+
+procedure TXcomModResources.LoadRules(const AParser: IYamlParser; APng: TPngClient; const AModId: string);
+begin
+  FRules := TXcomGameRules.Create(FFiles, FGameData, FFileSystem, AParser, APng, FModFolder, AModId);
+  FRules.Load;
+end;
+
+function TXcomModResources.HasRules: Boolean;
+begin
+  Result := Assigned(FRules);
+end;
+
+function TXcomModResources.Ruleset: TXcomRuleset;
+begin
+  Result := nil;
+  if Assigned(FRules) then
+    Result := FRules.Ruleset;
+end;
+
+function TXcomModResources.ModFiles: IXcomModFiles;
+begin
+  Result := nil;
+  if Assigned(FRules) then
+    Result := FRules.ModFiles;
+end;
+
+function TXcomModResources.GetSurfaceSet(const AName: string): TXcomSurfaceSet;
+begin
+  Result := nil;
+  if Assigned(FRules) then
+    Result := FRules.GetSurfaceSet(AName);
 end;
 
 function TXcomModResources.GetFont(const AName: string): TXcomFont;
@@ -375,6 +545,9 @@ begin
       LFont.ImageSurface(LIndex).SetColors(LColors, AFirst);
   for LSurface in FSurfaces.Values do
     LSurface.SetColors(LColors, AFirst);
+  // Mod::setPalette: the sets of sprites too
+  if Assigned(FRules) then
+    FRules.SetPalette(LColors, AFirst);
 end;
 
 function TXcomModResources.ExtraStrings(const ALanguage: string): TDictionary<string, string>;
