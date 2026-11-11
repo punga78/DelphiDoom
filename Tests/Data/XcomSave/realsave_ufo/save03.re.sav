@@ -1,0 +1,906 @@
+name: ""
+version: 1.0
+engine: ""
+build: 4a4bae5fa-dirty
+time:
+  second: 0
+  minute: 0
+  hour: 12
+  weekday: 6
+  day: 1
+  month: 1
+  year: 1999
+mods:
+  - "xcom1 ver: 1.0"
+---
+difficulty: 3
+end: 0
+monthsPassed: -1
+graphRegionToggles: ""
+graphCountryToggles: ""
+graphFinanceToggles: ""
+rng: 4026630449954913226
+funds:
+  - 5988000
+maintenance:
+  - 0
+researchScores:
+  - 0
+incomes:
+  - 5988000
+expenditures:
+  - 0
+warned: false
+globeLon: 0.30000000000000004
+globeLat: -0.15000000000000002
+globeZoom: 3
+ids:
+  ALIEN_MISSIONS: 4
+  STR_ALIEN_BASE: 3
+  STR_INTERCEPTOR: 3
+  STR_LANDING_SITE: 2
+  STR_SKYRANGER: 2
+  STR_SOLDIER: 9
+  STR_UFO: 4
+  STR_WAY_POINT: 2
+countries:
+  - type: STR_USA
+    funding:
+      - 846000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_RUSSIA
+    funding:
+      - 271000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 20
+  - type: STR_UK
+    funding:
+      - 458000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 20
+  - type: STR_FRANCE
+    funding:
+      - 426000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 29
+  - type: STR_GERMANY
+    funding:
+      - 335000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 23
+  - type: STR_ITALY
+    funding:
+      - 223000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 13
+  - type: STR_SPAIN
+    funding:
+      - 166000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 28
+  - type: STR_CHINA
+    funding:
+      - 287000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 21
+  - type: STR_JAPAN
+    funding:
+      - 450000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 6
+  - type: STR_INDIA
+    funding:
+      - 280000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 5
+  - type: STR_BRAZIL
+    funding:
+      - 526000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 26
+  - type: STR_AUSTRALIA
+    funding:
+      - 572000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 1
+  - type: STR_NIGERIA
+    funding:
+      - 207000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 5
+  - type: STR_SOUTH_AFRICA
+    funding:
+      - 292000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 18
+  - type: STR_EGYPT
+    funding:
+      - 292000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 21
+  - type: STR_CANADA
+    funding:
+      - 357000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 19
+regions:
+  - type: STR_NORTH_AMERICA
+    activityXcom:
+      - 20
+    activityAlien:
+      - 9
+  - type: STR_ARCTIC
+    activityXcom:
+      - 22
+    activityAlien:
+      - 25
+  - type: STR_ANTARCTICA
+    activityXcom:
+      - 35
+    activityAlien:
+      - 34
+  - type: STR_SOUTH_AMERICA
+    activityXcom:
+      - 5
+    activityAlien:
+      - 37
+  - type: STR_EUROPE
+    activityXcom:
+      - 8
+    activityAlien:
+      - 23
+  - type: STR_NORTH_AFRICA
+    activityXcom:
+      - 18
+    activityAlien:
+      - 16
+  - type: STR_SOUTHERN_AFRICA
+    activityXcom:
+      - 5
+    activityAlien:
+      - 16
+  - type: STR_CENTRAL_ASIA
+    activityXcom:
+      - 25
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_EAST_ASIA
+    activityXcom:
+      - 39
+    activityAlien:
+      - 14
+  - type: STR_SIBERIA
+    activityXcom:
+      - 9
+    activityAlien:
+      - 10
+  - type: STR_AUSTRALASIA
+    activityXcom:
+      - 27
+    activityAlien:
+      - 0
+  - type: STR_PACIFIC
+    activityXcom:
+      - 31
+    activityAlien:
+      - 5
+  - type: STR_NORTH_ATLANTIC
+    activityXcom:
+      - 5
+    activityAlien:
+      - 32
+  - type: STR_SOUTH_ATLANTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 3
+  - type: STR_INDIAN_OCEAN
+    activityXcom:
+      - 34
+    activityAlien:
+      - 3
+bases:
+  - lon: 0.80000000000000004
+    lat: 0.20000000000000001
+    name: Base 3
+    facilities:
+      - type: STR_ACCESS_LIFT
+        x: 2
+        y: 2
+      - type: STR_HANGAR
+        x: 2
+        y: 0
+      - type: STR_HANGAR
+        x: 0
+        y: 4
+      - type: STR_HANGAR
+        x: 4
+        y: 4
+      - type: STR_LIVING_QUARTERS
+        x: 3
+        y: 2
+      - type: STR_GENERAL_STORES
+        x: 2
+        y: 3
+      - type: STR_LABORATORY
+        x: 3
+        y: 3
+      - type: STR_WORKSHOP
+        x: 4
+        y: 3
+      - type: STR_SMALL_RADAR_SYSTEM
+        x: 1
+        y: 3
+    soldiers:
+      - type: STR_SOLDIER
+        id: 1
+        name: Leo Leclercq
+        initialStats:
+          tu: 56
+          stamina: 55
+          health: 33
+          bravery: 10
+          reactions: 48
+          firing: 67
+          throwing: 57
+          strength: 27
+          psiStrength: 79
+          psiSkill: 0
+          melee: 20
+        currentStats:
+          tu: 56
+          stamina: 55
+          health: 33
+          bravery: 10
+          reactions: 48
+          firing: 67
+          throwing: 57
+          strength: 27
+          psiStrength: 79
+          psiSkill: 0
+          melee: 20
+        rank: 3
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 0
+        missions: 1
+        kills: 4
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          monthsService: 1
+      - type: STR_SOLDIER
+        id: 2
+        name: Fred Kabanda
+        initialStats:
+          tu: 54
+          stamina: 50
+          health: 33
+          bravery: 40
+          reactions: 59
+          firing: 62
+          throwing: 70
+          strength: 38
+          psiStrength: 18
+          psiSkill: 0
+          melee: 25
+        currentStats:
+          tu: 54
+          stamina: 50
+          health: 33
+          bravery: 40
+          reactions: 59
+          firing: 62
+          throwing: 70
+          strength: 38
+          psiStrength: 18
+          psiSkill: 0
+          melee: 25
+        rank: 0
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 3
+        missions: 1
+        kills: 0
+        armor: STR_NONE_UC
+        psiTraining: true
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 14
+            - 17
+          hitCounterTotal: 46
+      - type: STR_SOLDIER
+        id: 3
+        name: Deepti Chopra
+        initialStats:
+          tu: 55
+          stamina: 64
+          health: 29
+          bravery: 30
+          reactions: 32
+          firing: 55
+          throwing: 65
+          strength: 32
+          psiStrength: 42
+          psiSkill: 0
+          melee: 28
+        currentStats:
+          tu: 55
+          stamina: 64
+          health: 29
+          bravery: 30
+          reactions: 32
+          firing: 55
+          throwing: 65
+          strength: 32
+          psiStrength: 42
+          psiSkill: 0
+          melee: 28
+        rank: 3
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 1
+        look: 2
+        missions: 1
+        kills: 3
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 4
+        name: Grigor Iakovos
+        initialStats:
+          tu: 54
+          stamina: 59
+          health: 29
+          bravery: 20
+          reactions: 34
+          firing: 43
+          throwing: 50
+          strength: 21
+          psiStrength: 95
+          psiSkill: 0
+          melee: 25
+        currentStats:
+          tu: 54
+          stamina: 59
+          health: 29
+          bravery: 20
+          reactions: 34
+          firing: 43
+          throwing: 50
+          strength: 21
+          psiStrength: 95
+          psiSkill: 0
+          melee: 25
+        rank: 3
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 2
+        missions: 1
+        kills: 8
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 5
+        name: Susana Mota
+        initialStats:
+          tu: 59
+          stamina: 41
+          health: 31
+          bravery: 30
+          reactions: 37
+          firing: 50
+          throwing: 66
+          strength: 31
+          psiStrength: 7
+          psiSkill: 0
+          melee: 31
+        currentStats:
+          tu: 59
+          stamina: 41
+          health: 31
+          bravery: 30
+          reactions: 37
+          firing: 50
+          throwing: 66
+          strength: 31
+          psiStrength: 7
+          psiSkill: 0
+          melee: 31
+        rank: 0
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 1
+        look: 0
+        missions: 1
+        kills: 4
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 8
+            - 11
+          monthsService: 1
+          hitCounterTotal: 42
+      - type: STR_SOLDIER
+        id: 6
+        name: Hsia Quon
+        initialStats:
+          tu: 53
+          stamina: 52
+          health: 26
+          bravery: 30
+          reactions: 39
+          firing: 54
+          throwing: 77
+          strength: 26
+          psiStrength: 57
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 53
+          stamina: 52
+          health: 26
+          bravery: 30
+          reactions: 39
+          firing: 54
+          throwing: 77
+          strength: 26
+          psiStrength: 57
+          psiSkill: 0
+          melee: 36
+        rank: 3
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 2
+        missions: 1
+        kills: 3
+        armor: STR_NONE_UC
+        psiTraining: true
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 23
+            - 19
+          monthsService: 1
+          hitCounterTotal: 21
+      - type: STR_SOLDIER
+        id: 7
+        name: David Sullivan
+        initialStats:
+          tu: 55
+          stamina: 48
+          health: 37
+          bravery: 60
+          reactions: 53
+          firing: 70
+          throwing: 61
+          strength: 27
+          psiStrength: 2
+          psiSkill: 0
+          melee: 22
+        currentStats:
+          tu: 55
+          stamina: 48
+          health: 37
+          bravery: 60
+          reactions: 53
+          firing: 70
+          throwing: 61
+          strength: 27
+          psiStrength: 2
+          psiSkill: 0
+          melee: 22
+        rank: 1
+        gender: 0
+        look: 0
+        missions: 1
+        kills: 0
+        recovery: 20
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 12
+            - 18
+          monthsService: 1
+      - type: STR_SOLDIER
+        id: 8
+        name: Dorota Zajac
+        initialStats:
+          tu: 60
+          stamina: 61
+          health: 29
+          bravery: 20
+          reactions: 44
+          firing: 57
+          throwing: 53
+          strength: 30
+          psiStrength: 38
+          psiSkill: 0
+          melee: 31
+        currentStats:
+          tu: 60
+          stamina: 61
+          health: 29
+          bravery: 20
+          reactions: 44
+          firing: 57
+          throwing: 53
+          strength: 30
+          psiStrength: 38
+          psiSkill: 0
+          melee: 31
+        rank: 3
+        craft:
+          lon: 0.80000000000000004
+          lat: 0.20000000000000001
+          type: STR_SKYRANGER
+          id: 1
+        gender: 1
+        look: 1
+        missions: 1
+        kills: 1
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+    crafts:
+      - lon: 0.80000000000000004
+        lat: 0.20000000000000001
+        id: 1
+        dest:
+          lon: 0.29999999999999999
+          lat: 0
+          type: STR_UFO
+          id: 1
+        speedLon: -0.00029442267603304104
+        speedLat: -0.00010493822639830749
+        speedRadian: 0.0003070486647027061
+        speed: 760
+        type: STR_SKYRANGER
+        fuel: 551
+        damage: 111
+        items:
+          STR_GRENADE: 8
+          STR_HC_AP_AMMO: 2
+          STR_HC_HE_AMMO: 2
+          STR_HEAVY_CANNON: 1
+          STR_PISTOL: 3
+          STR_PISTOL_CLIP: 5
+          STR_RIFLE: 6
+          STR_RIFLE_CLIP: 12
+        status: STR_OUT
+      - lon: 0.80000000000000004
+        lat: 0.20000000000000001
+        id: 1
+        dest:
+          lon: 2
+          lat: 0.40000000000000002
+          type: STR_WAY_POINT
+          id: 1
+        speedLon: 0.00081263734726814366
+        speedLat: 0.00029254719398972905
+        speedRadian: 0.0008484239419416879
+        speed: 2100
+        type: STR_INTERCEPTOR
+        fuel: 112
+        damage: 29
+        weapons:
+          - type: STR_STINGRAY
+            ammo: 6
+          - type: STR_CANNON_UC
+            ammo: 200
+        items:
+          {}
+        status: STR_OUT
+      - lon: 0.80000000000000004
+        lat: 0.20000000000000001
+        id: 2
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_INTERCEPTOR
+        fuel: 163
+        damage: 74
+        weapons:
+          - type: STR_STINGRAY
+            ammo: 6
+          - type: STR_CANNON_UC
+            ammo: 200
+        items:
+          {}
+        status: STR_READY
+    items:
+      STR_AC_AP_AMMO: 6
+      STR_AUTO_CANNON: 1
+      STR_AVALANCHE_LAUNCHER: 1
+      STR_AVALANCHE_MISSILES: 10
+      STR_CANNON: 2
+      STR_CANNON_ROUNDS_X50: 1
+      STR_GRENADE: 5
+      STR_HC_AP_AMMO: 6
+      STR_HEAVY_CANNON: 1
+      STR_PISTOL: 2
+      STR_PISTOL_CLIP: 8
+      STR_RIFLE: 2
+      STR_RIFLE_CLIP: 8
+      STR_ROCKET_LAUNCHER: 1
+      STR_SMALL_ROCKET: 4
+      STR_SMOKE_GRENADE: 5
+      STR_STINGRAY_LAUNCHER: 1
+      STR_STINGRAY_MISSILES: 25
+    scientists: 10
+    engineers: 10
+waypoints:
+  - lon: 2
+    lat: 0.40000000000000002
+    id: 1
+alienBases:
+  - lon: 1
+    lat: 0
+    id: 1
+    race: STR_SOMETHING_0
+    discovered: true
+    deployment: STR_ALIEN_BASE_ASSAULT
+  - lon: 2
+    lat: 0.29999999999999999
+    id: 2
+    race: STR_SOMETHING_1
+    deployment: STR_ALIEN_BASE_ASSAULT
+alienMissions:
+  - type: STR_ALIEN_INFILTRATION
+    region: STR_SOUTH_AMERICA
+    race: STR_RACE_0
+    nextWave: 0
+    nextUfoCounter: 2
+    spawnCountdown: 600
+    liveUfos: 1
+    uniqueID: 1
+    missionSiteZone: -1
+  - type: STR_ALIEN_BASE
+    region: STR_EUROPE
+    race: STR_RACE_1
+    nextWave: 0
+    nextUfoCounter: 2
+    spawnCountdown: 930
+    liveUfos: 1
+    uniqueID: 2
+    alienBase:
+      lon: 1
+      lat: 0
+      type: STR_ALIEN_BASE
+      id: 1
+    missionSiteZone: -1
+  - type: STR_ALIEN_TERROR
+    region: STR_NORTH_AFRICA
+    race: STR_RACE_2
+    nextWave: 0
+    nextUfoCounter: 3
+    spawnCountdown: 990
+    liveUfos: 1
+    uniqueID: 3
+    missionSiteZone: -1
+ufos:
+  - lon: 0.29999999999999999
+    lat: 0
+    id: 1
+    dest:
+      lon: 1
+      lat: 0
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.0016160456036984534
+    speedLat: 0
+    speedRadian: 0.0016160456036984534
+    speed: 4000
+    type: STR_HARVESTER
+    damage: 467
+    altitude: STR_HIGH_UC
+    direction: STR_EAST
+    status: 2
+    fireCountdown: 0
+    escapeCountdown: 0
+  - lon: 0.59999999999999998
+    lat: 0.10000000000000001
+    id: 2
+    dest:
+      lon: 1.2
+      lat: 0.20000000000000001
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.0017083196187410675
+    speedLat: 0.00035912845749448919
+    speedRadian: 0.0017372490239758373
+    speed: 4300
+    type: STR_ABDUCTOR
+    landId: 1
+    damage: 339
+    altitude: STR_GROUND
+    direction: STR_EAST
+    status: 2
+    detected: true
+    secondsRemaining: 255
+    fireCountdown: 0
+    escapeCountdown: 0
+  - lon: 0.89999999999999991
+    lat: 0.20000000000000001
+    id: 3
+    dest:
+      lon: 1.3999999999999999
+      lat: 0.40000000000000002
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.0017696634359749624
+    speedLat: 0.00086814060175101869
+    speedRadian: 0.0019392547244381439
+    speed: 4800
+    type: STR_TERROR_SHIP
+    damage: 646
+    altitude: STR_VERY_LOW
+    direction: STR_SOUTH_EAST
+    status: 0
+    detected: true
+    fireCountdown: 0
+    escapeCountdown: 0
+alienStrategy:
+  regions:
+    STR_ANTARCTICA: 4
+    STR_ARCTIC: 4
+    STR_AUSTRALASIA: 10
+    STR_CENTRAL_ASIA: 12
+    STR_EUROPE: 16
+    STR_NORTH_AFRICA: 12
+    STR_NORTH_AMERICA: 18
+    STR_PACIFIC: 5
+    STR_SIBERIA: 10
+    STR_SOUTHERN_AFRICA: 8
+    STR_SOUTH_AMERICA: 10
+    STR_SOUTH_EAST_ASIA: 15
+  possibleMissions:
+    - region: STR_ANTARCTICA
+      missions:
+        STR_ALIEN_BASE: 35
+        STR_ALIEN_RESEARCH: 25
+    - region: STR_ARCTIC
+      missions:
+        STR_ALIEN_BASE: 35
+        STR_ALIEN_RESEARCH: 25
+    - region: STR_AUSTRALASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 4
+        STR_ALIEN_BASE: 16
+        STR_ALIEN_HARVEST: 11
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 15
+    - region: STR_CENTRAL_ASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 6
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_HARVEST: 5
+        STR_ALIEN_INFILTRATION: 10
+        STR_ALIEN_RESEARCH: 5
+    - region: STR_EUROPE
+      missions:
+        STR_ALIEN_ABDUCTION: 15
+        STR_ALIEN_BASE: 6
+        STR_ALIEN_HARVEST: 10
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_RESEARCH: 10
+    - region: STR_INDIAN_OCEAN
+      missions: ~
+    - region: STR_NORTH_AFRICA
+      missions:
+        STR_ALIEN_ABDUCTION: 8
+        STR_ALIEN_BASE: 19
+        STR_ALIEN_HARVEST: 8
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 8
+    - region: STR_NORTH_AMERICA
+      missions:
+        STR_ALIEN_ABDUCTION: 20
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_HARVEST: 17
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_RESEARCH: 14
+    - region: STR_NORTH_ATLANTIC
+      missions: ~
+    - region: STR_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 27
+        STR_ALIEN_RESEARCH: 15
+    - region: STR_SIBERIA
+      missions:
+        STR_ALIEN_ABDUCTION: 4
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_RESEARCH: 6
+    - region: STR_SOUTHERN_AFRICA
+      missions:
+        STR_ALIEN_ABDUCTION: 8
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_HARVEST: 8
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 7
+    - region: STR_SOUTH_AMERICA
+      missions:
+        STR_ALIEN_ABDUCTION: 12
+        STR_ALIEN_BASE: 22
+        STR_ALIEN_HARVEST: 24
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_RESEARCH: 10
+    - region: STR_SOUTH_ATLANTIC
+      missions: ~
+    - region: STR_SOUTH_EAST_ASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 21
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_HARVEST: 13
+        STR_ALIEN_INFILTRATION: 13
+        STR_ALIEN_RESEARCH: 8
+  missionLocations:
+    {}
+  missionsRun:
+    {}
