@@ -176,7 +176,14 @@ int main(int argc, char** argv) {
         std::vector<int> r = pf->findReachable(u, tuMax);
         std::vector<int> sorted(r);
         std::sort(sorted.begin(), sorted.end());
-        res << "reach " << id << " " << tuMax << " = " << r.size() << " first=" << (r.empty() ? -1 : r[0]) << " set=";
+        // the list is sorted by cost with std::sort, that does not keep the order of equal costs: when more tiles
+        // have the cost of the first one (a fall costs nothing) which comes first depends on the compiler: "tie"
+        int ties = 0;
+        for (size_t k = 0; k < r.size(); k++)
+          if (pf->_nodes[r[k]].getTUCost(false) == pf->_nodes[r[0]].getTUCost(false)) ties++;
+        res << "reach " << id << " " << tuMax << " = " << r.size() << " first=";
+        if (ties > 1) res << "tie"; else res << (r.empty() ? -1 : r[0]);
+        res << " set=";
         for (size_t k = 0; k < sorted.size(); k++) res << sorted[k] << ",";
         res << "\n";
       }

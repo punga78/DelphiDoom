@@ -151,7 +151,6 @@ begin
   if FUnit.IsOut then
     // unit is drawn as an item
     Exit;
-  LTorso := nil;
   LItemR := nil;
   LItemL := nil;
   LTorsoHandsWeaponY := 0;

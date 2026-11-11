@@ -601,6 +601,11 @@ begin
       LScan.Z := LMinHeight + LIndex;
       for LSlot := 0 to 2 do
       begin
+        // an origin straight above or below the target: the C++ divides by zero, the offsets of the two side
+        // rays are not numbers and as integers they point two billion voxels away: those rays never count (the
+        // real TileEngine answers 100 where three rays to the center would give 300)
+        if (LLength = 0) and (LSlot > 0) then
+          Continue;
         LScan.X := LTarget.X + LSlice[LSlot * 2];
         LScan.Y := LTarget.Y + LSlice[LSlot * 2 + 1];
         LTrajectory.Clear;
