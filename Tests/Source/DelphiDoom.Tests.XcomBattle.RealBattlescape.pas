@@ -38,9 +38,12 @@ type
     FRules: TXcomRulesetRules;
     FVoxels: TArray<Word>;
     FMapsCompared: Integer;
+    FCompareMaps: Boolean;
     class function DataFolder: string; static;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadBytes(const APath: string): TBytes; static;
+    class function MapFiles(const AFolder: string): TArray<string>; static;
+    class function HasMaps(const AFolder: string): Boolean; static;
     class function ReadString(const APath: string): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
@@ -55,6 +58,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLoStessoStatoDelVeroBattlescapeGameDopoGliOrdini;
+    [Test]
+    procedure DovrebbeDisegnareLaMappaComeIlVeroMapDraw;
   end;
 
 implementation
@@ -115,6 +120,30 @@ begin
   finally
     LSource.Free;
   end;
+end;
+
+class function TTestXcomRealBattlescape.MapFiles(const AFolder: string): TArray<string>;
+var
+  LList: TList<string>;
+  LFile: string;
+begin
+  // stepNNN.map or stepNNN.map.gz (a plain .map is ignored by git: it is the extension of the linker maps)
+  LList := TList<string>.Create;
+  try
+    for LFile in TDirectory.GetFiles(AFolder, 'step*.map*') do
+      if LFile.EndsWith('.map') then
+        LList.Add(LFile)
+      else if LFile.EndsWith('.map.gz') then
+        LList.Add(Copy(LFile, 1, Length(LFile) - 3));
+    Result := LList.ToArray;
+  finally
+    LList.Free;
+  end;
+end;
+
+class function TTestXcomRealBattlescape.HasMaps(const AFolder: string): Boolean;
+begin
+  Result := Length(MapFiles(AFolder)) > 0;
 end;
 
 class function TTestXcomRealBattlescape.ReadString(const APath: string): string;
@@ -300,6 +329,7 @@ var
   LMapBytes: TBytes;
   LDumpMap: Boolean;
   LMapDiff: string;
+  LMapDrawn: Boolean;
   LMapUnits: string;
   LTraceList: TStringList;
   LPair: TPair<Integer, Integer>;
@@ -317,9 +347,9 @@ var
       // the size of the map is the one of the screen of the real game: the header of the first dump
       LSettings.Width := 640;
       LSettings.Height := 400;
-      for LFirst in TDirectory.GetFiles(AFolder, 'step*.map') do
+      for LFirst in MapFiles(AFolder) do
       begin
-        LHeader := TFile.ReadAllBytes(LFirst);
+        LHeader := ReadBytes(LFirst);
         LSettings.Width := PInteger(@LHeader[0])^;
         LSettings.Height := PInteger(@LHeader[4])^;
         Break;
@@ -419,7 +449,7 @@ begin
         LFailures := LFailures + LName + ': the battle at the start differs' + sLineBreak;
       LView := TXcomBattleNullView.Create;
       // a scenario with maps has the map, which the game talks to (camera, cursor, the drawings of the units)
-      if Length(TDirectory.GetFiles(AFolder, 'step*.map')) > 0 then
+      if HasMaps(AFolder) then
         LView := TXcomBattleMapView.Create(EnsureMap, LView);
       LBattlescape := TXcomBattlescapeGame.Create(LBattle, LEngine, LPathfinding, FRuleset,
         TXcomBattleOptions.Default, LView, LGame.Difficulty);
@@ -663,12 +693,16 @@ begin
             LMapFile := AFolder + Format('step%.3d.map', [LStep]);
             EnsureMap.CacheUnits;
             LMap.Invalidate;
-            if LMap.Draw <> FileExists(LMapFile) then
+            LMapDrawn := LMap.Draw;
+            if not FCompareMaps then
+              // the drawing has its own test: here it only has to happen, as in the game
+              LMapDiff := ''
+            else if LMapDrawn <> (FileExists(LMapFile) or FileExists(LMapFile + '.gz')) then
               LFailures := LFailures + Format('%s step %d: the map is drawn or not drawn differently', [LName, LStep]) +
                 sLineBreak
-            else if FileExists(LMapFile) then
+            else if LMapDrawn then
             begin
-              LMapBytes := TFile.ReadAllBytes(LMapFile);
+              LMapBytes := ReadBytes(LMapFile);
               LMapDiff := CompareMap(LMapBytes, LMap.Surface);
               if LMapDiff <> '' then
               begin
@@ -759,6 +793,70 @@ begin
     [LCount, FMapsCompared]));
   Assert.IsTrue(LCount > 0, 'Nessuno scenario');
   Assert.AreEqual('', LFailed, 'Battaglie diverse dal vero BattlescapeGame');
+end;
+
+procedure TTestXcomRealBattlescape.DovrebbeDisegnareLaMappaComeIlVeroMapDraw;
+const
+  // known differences of the drawing (scenario:step=most pixels): the list only shrinks, see CLAUDE.md of the library
+  KNOWN_DIFFERENCES: array[0..0] of string = ('none:0=0');
+var
+  LFolder: string;
+  LScenario: string;
+  LCount: Integer;
+  LFailed: string;
+  LLine: string;
+  LMatch: TMatch;
+  LKnown: TDictionary<string, Integer>;
+  LEntry: string;
+  LKey: string;
+  LLimit: Integer;
+  LUnexpected: string;
+begin
+  LFolder := DataFolder;
+  if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
+  begin
+    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    Exit;
+  end;
+  LKnown := TDictionary<string, Integer>.Create;
+  try
+    for LEntry in KNOWN_DIFFERENCES do
+      LKnown.Add(Copy(LEntry, 1, Pos('=', LEntry) - 1), StrToInt(Copy(LEntry, Pos('=', LEntry) + 1, MaxInt)));
+    FCompareMaps := True;
+    LCount := 0;
+    LFailed := '';
+    for LScenario in TDirectory.GetDirectories(LFolder) do
+    begin
+      if (GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY') <> '') and
+        (ExtractFileName(LScenario) <> GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY')) then
+        Continue;
+      if not HasMaps(IncludeTrailingPathDelimiter(LScenario)) then
+        Continue;
+      LFailed := LFailed + RunScenario(IncludeTrailingPathDelimiter(LScenario));
+      Inc(LCount);
+    end;
+    FCompareMaps := False;
+    LUnexpected := '';
+    for LLine in LFailed.Split([sLineBreak]) do
+    begin
+      if LLine = '' then
+        Continue;
+      LMatch := TRegEx.Match(LLine, '^(\S+) step (\d+): map (\d+) pixels differ');
+      if LMatch.Success then
+      begin
+        LKey := LMatch.Groups[1].Value + ':' + LMatch.Groups[2].Value;
+        if LKnown.TryGetValue(LKey, LLimit) and (StrToInt(LMatch.Groups[3].Value) <= LLimit) then
+          Continue;
+      end;
+      LUnexpected := LUnexpected + LLine + sLineBreak;
+    end;
+    TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Scenari con mappe: %d, mappe confrontate: %d',
+      [LCount, FMapsCompared]));
+    Assert.IsTrue(LCount > 0, 'Nessuno scenario con mappe');
+    Assert.AreEqual('', LUnexpected, 'Mappe diverse dal vero Map::draw');
+  finally
+    LKnown.Free;
+  end;
 end;
 
 end.
