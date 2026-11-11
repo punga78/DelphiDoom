@@ -26,6 +26,7 @@ uses
   DelphiDoom.Tests.XcomBattleStates.BattleSaves in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleSaves.pas',
   DelphiDoom.Tests.XcomBattleStates.MedikitScanner in 'Source\DelphiDoom.Tests.XcomBattleStates.MedikitScanner.pas',
   DelphiDoom.Tests.XcomBattleStates.InventoryState in 'Source\DelphiDoom.Tests.XcomBattleStates.InventoryState.pas',
+  DelphiDoom.Tests.XcomBattleStates.BattleInput in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleInput.pas',
   DelphiDoom.Tests.XcomBattleStates.SpecialActions in 'Source\DelphiDoom.Tests.XcomBattleStates.SpecialActions.pas',
   DelphiDoom.Tests.XcomBattleStates.MixerAudio in 'Source\DelphiDoom.Tests.XcomBattleStates.MixerAudio.pas',
   DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas',

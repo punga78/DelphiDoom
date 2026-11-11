@@ -31,6 +31,7 @@ type
     FSets: TDictionary<string, TXcomSurfaceSet>;
     FOwnedSets: TObjectList<TXcomSurfaceSet>;
     FSurfaces: TObjectDictionary<string, TXcomSurface>;
+    FExtraSurfaces: TDictionary<string, TXcomSurface>;
     FPalettes: array[0..3] of TXcomPalette;
     FHasPalette: array[0..3] of Boolean;
     FPalettesRead: Boolean;
@@ -84,6 +85,7 @@ begin
   FSets := TDictionary<string, TXcomSurfaceSet>.Create;
   FOwnedSets := TObjectList<TXcomSurfaceSet>.Create(True);
   FSurfaces := TObjectDictionary<string, TXcomSurface>.Create([doOwnsValues]);
+  FExtraSurfaces := TDictionary<string, TXcomSurface>.Create;
   if Assigned(ABasePalette) then
   begin
     FPalettes[0] := TXcomPalette.Create(XCOM_PALETTE_COLORS);
@@ -94,6 +96,7 @@ end;
 
 destructor TXcomBattleGraphics.Destroy;
 begin
+  FExtraSurfaces.Free;
   FSurfaces.Free;
   FOwnedSets.Free;
   FSets.Free;
@@ -253,13 +256,31 @@ end;
 function TXcomBattleGraphics.Surface(const AName: string): TXcomSurface;
 var
   LKey: string;
+  LExtra: IXcomExtraSurfaces;
 begin
   LKey := UpperCase(AName);
-  if FSurfaces.TryGetValue(LKey, Result) then
+  if FSurfaces.TryGetValue(LKey, Result) and Assigned(Result) then
     Exit;
+  if FExtraSurfaces.TryGetValue(LKey, Result) then
+    Exit;
+  if FSurfaces.ContainsKey(LKey) then
+    Exit(nil);
   Result := LoadScreen(LKey);
   if Assigned(Result) and (Length(FStatePalette) > 0) then
     Result.SetColors(FStatePalette);
+  // a single picture of the extra sprites of the rules (InvCopy, InvPaste...): the rules own it, so it is not
+  // kept in the list of the surfaces to free
+  if (not Assigned(Result)) and Supports(FRules, IXcomExtraSurfaces, LExtra) then
+  begin
+    Result := LExtra.GetExtraSurface(AName);
+    if Assigned(Result) then
+    begin
+      if Length(FStatePalette) > 0 then
+        Result.SetColors(FStatePalette);
+      FExtraSurfaces.AddOrSetValue(LKey, Result);
+      Exit;
+    end;
+  end;
   // a name that the game does not have is remembered too (nil), not to look for the file again
   FSurfaces.Add(LKey, Result);
 end;
@@ -313,6 +334,8 @@ begin
   for LSurface in FSurfaces.Values do
     if Assigned(LSurface) then
       LSurface.SetColors(FStatePalette);
+  for LSurface in FExtraSurfaces.Values do
+    LSurface.SetColors(FStatePalette);
 end;
 
 function TXcomBattleGraphics.VoxelData: TArray<Word>;

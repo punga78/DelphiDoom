@@ -1,4 +1,4 @@
-﻿<#
+<#
   Cattura i frame veri di OpenXcom (il nightly ufficiale) con il suo tasto degli screenshot (F12): sono i pixel del
   gioco, non una cattura dello schermo (che puo' mostrare un'altra finestra). Avvia OpenXcom.exe di <Root>\openxcom con
   una cartella utente propria (options.cfg con lingua en-US, 640x400, senza OpenGL), esegue i passi e copia i file
@@ -6,7 +6,7 @@
 
   Uso: powershell -NoProfile -File Capture-OpenXcomScreen.ps1 -Root <cartella con openxcom\> -Out <cartella> `
          -Steps 'wait:40','click:320,200','wait:2','shot:menu'
-  Passi: wait:s, click:x,y (client 640x400), key:vk (codice virtuale di Windows), shot:nome (premere F12 e copiare il file).
+  Passi: wait:s, click:x,y (client 640x400), key:vk (codice virtuale di Windows), chord:mod,vk (un tasto con un modificatore tenuto: chord:17,68 = Ctrl+D), shot:nome (premere F12 e copiare il file).
   Va eseguito dentro il lock globale dei giochi (come Esegui-gioco.ps1): chi lo chiama prende il mutex
   Global\DelphiDoomEsecuzioneGioco.
 #>
@@ -41,6 +41,7 @@ public class OxcCap {
     SetCursorPos(p.X, p.Y); System.Threading.Thread.Sleep(150);
     mouse_event(2, 0, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(80); mouse_event(4, 0, 0, 0, UIntPtr.Zero);
   }
+  public static void Chord(byte mod, byte vk) { keybd_event(mod, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 2, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(mod, 0, 2, UIntPtr.Zero); }
   public static void Key(byte vk) { keybd_event(vk, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 2, UIntPtr.Zero); }
 }
 "@
@@ -68,6 +69,7 @@ try {
       'wait' { Start-Sleep ([double]$a[1]) }
       'click' { $xy = $a[1].Split(','); [OxcCap]::Click($h, [int]$xy[0], [int]$xy[1]) }
       'key' { [OxcCap]::Key([byte][int]$a[1]) }
+    'chord' { $k = $a[1].Split(','); [OxcCap]::Chord([byte][int]$k[0], [byte][int]$k[1]) }
       'shot' {
         $before = @(Get-ChildItem $user -Recurse -Filter 'screen*.png' -ErrorAction SilentlyContinue | ForEach-Object FullName)
         [OxcCap]::Key(123); Start-Sleep 2

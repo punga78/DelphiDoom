@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Xcom32 - runs the game without a window and takes screenshots   }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -11,13 +11,15 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
-  DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.Xcom.ImageExporter;
+  DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Types,
+  DelphiDoom.Xcom.ImageExporter;
 
 type
   /// <summary>
   ///   Drives a game that runs on a manual clock, a queue of events and a display in memory: it lets the time pass,
   ///   sends clicks and keys, and saves what the display shows as a PNG (-shot). The script is a list of steps:
-  ///   wait:ms, move:x,y, click:x,y, key:sdlkey, shot:file. Coordinates are the ones of the display (the window)
+  ///   wait:ms, move:x,y, click:x,y, rclick:x,y (right button), drag:x1,y1,x2,y2,button, key:sdlkey, ckey:sdlkey
+  ///   (with Ctrl held), shot:file. Coordinates are the ones of the display (the window)
   /// </summary>
   TXcomShotRunner = class
   strict private
@@ -37,8 +39,9 @@ type
     /// <summary>Lets the time pass one millisecond at a time, running a turn of the game for each</summary>
     procedure Wait(AMilliseconds: Integer);
     procedure Move(AX, AY: Integer);
-    procedure Click(AX, AY: Integer);
-    procedure Key(AKey: Integer);
+    procedure Click(AX, AY: Integer; AButton: Integer = XCOM_BUTTON_LEFT);
+    procedure Drag(AFromX, AFromY, AToX, AToY, AButton: Integer);
+    procedure Key(AKey: Integer; AModifiers: Integer = 0);
     /// <summary>Saves the last picture of the display as a PNG; the game runs a frame first if none was drawn yet</summary>
     procedure Shot(const AFileName: string);
     procedure Run(const ASteps: TArray<string>);
@@ -51,7 +54,11 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image, DelphiDoom.XcomEngine.Types;
+  DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image;
+
+const
+  // KMOD_LCTRL of SDL 1.2
+  XCOM_KMOD_LEFT_CTRL = $0040;
 
 constructor TXcomShotRunner.Create(AGame: TXcomGame; AClock: TXcomManualClock; AEvents: TXcomQueueEventSource;
   ADevice: TXcomMemoryVideoDevice; AExporter: TXcomImageExporter);
@@ -96,7 +103,32 @@ begin
   Wait(20);
 end;
 
-procedure TXcomShotRunner.Click(AX, AY: Integer);
+procedure TXcomShotRunner.Drag(AFromX, AFromY, AToX, AToY, AButton: Integer);
+const
+  STEPS = 8;
+var
+  LEvent: TXcomInputEvent;
+  LStep: Integer;
+begin
+  Move(AFromX, AFromY);
+  LEvent := TXcomInputEvent.Make(ekMouseDown);
+  LEvent.X := AFromX;
+  LEvent.Y := AFromY;
+  LEvent.Button := AButton;
+  FEvents.Enqueue(LEvent);
+  Wait(40);
+  for LStep := 1 to STEPS do
+    Move(AFromX + (AToX - AFromX) * LStep div STEPS, AFromY + (AToY - AFromY) * LStep div STEPS);
+  // held long enough not to be taken for a click
+  Wait(400);
+  LEvent.Kind := ekMouseUp;
+  LEvent.X := AToX;
+  LEvent.Y := AToY;
+  FEvents.Enqueue(LEvent);
+  Wait(40);
+end;
+
+procedure TXcomShotRunner.Click(AX, AY: Integer; AButton: Integer);
 var
   LEvent: TXcomInputEvent;
 begin
@@ -104,7 +136,7 @@ begin
   LEvent := TXcomInputEvent.Make(ekMouseDown);
   LEvent.X := AX;
   LEvent.Y := AY;
-  LEvent.Button := XCOM_BUTTON_LEFT;
+  LEvent.Button := AButton;
   FEvents.Enqueue(LEvent);
   Wait(FHoldMilliseconds);
   LEvent.Kind := ekMouseUp;
@@ -112,14 +144,15 @@ begin
   Wait(40);
 end;
 
-procedure TXcomShotRunner.Key(AKey: Integer);
+procedure TXcomShotRunner.Key(AKey: Integer; AModifiers: Integer);
 var
   LEvent: TXcomInputEvent;
 begin
   LEvent := TXcomInputEvent.Make(ekKeyDown);
   LEvent.Key := AKey;
+  LEvent.Modifiers := AModifiers;
   // a printable key also types its character (the unicode field of the SDL event)
-  if (AKey >= 32) and (AKey <= 126) then
+  if (AModifiers = 0) and (AKey >= 32) and (AKey <= 126) then
     LEvent.Character := Cardinal(AKey);
   FEvents.Enqueue(LEvent);
   Wait(20);
@@ -163,15 +196,27 @@ begin
     FHoldMilliseconds := StrToInt(LValue)
   else if LName = 'key' then
     Key(StrToInt(LValue))
+  else if LName = 'ckey' then
+    Key(StrToInt(LValue), XCOM_KMOD_LEFT_CTRL)
   else if LName = 'shot' then
     Shot(LValue)
-  else if (LName = 'click') or (LName = 'move') then
+  else if LName = 'drag' then
+  begin
+    // drag:x1,y1,x2,y2,button
+    LParts := LValue.Split([',']);
+    if Length(LParts) <> 5 then
+      raise Exception.Create('Bad step: ' + AStep);
+    Drag(StrToInt(LParts[0]), StrToInt(LParts[1]), StrToInt(LParts[2]), StrToInt(LParts[3]), StrToInt(LParts[4]));
+  end
+  else if (LName = 'click') or (LName = 'rclick') or (LName = 'move') then
   begin
     LParts := LValue.Split([',']);
     if Length(LParts) <> 2 then
       raise Exception.Create('Bad step: ' + AStep);
     if LName = 'click' then
       Click(StrToInt(LParts[0]), StrToInt(LParts[1]))
+    else if LName = 'rclick' then
+      Click(StrToInt(LParts[0]), StrToInt(LParts[1]), XCOM_BUTTON_RIGHT)
     else
       Move(StrToInt(LParts[0]), StrToInt(LParts[1]));
   end

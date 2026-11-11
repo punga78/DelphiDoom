@@ -37,7 +37,8 @@ type
   ///   are asked for, and so are the sounds: the sets of soundDefs (TFTD) or, without them, the CAT files of UFO
   ///   chosen by the preferred format (ResolveSoundSets, IXcomSoundFormats)
   /// </summary>
-  TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules, IXcomSoundFormats)
+  TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules, IXcomExtraSurfaces,
+    IXcomSoundFormats)
   strict private
     FRules: TXcomGameRules;
     FFiles: TXcomFileMap;
@@ -118,6 +119,8 @@ type
     function Ruleset: TXcomRuleset;
     function ModFiles: IXcomModFiles;
     function GetSurfaceSet(const AName: string): TXcomSurfaceSet;
+    /// <summary>IXcomExtraSurfaces: a single picture of the extra sprites of the rules (nil without rules)</summary>
+    function GetExtraSurface(const AName: string): TXcomSurface;
   end;
 
 implementation
@@ -724,6 +727,13 @@ begin
   Result := nil;
   if Assigned(FRules) then
     Result := FRules.GetSurfaceSet(AName);
+end;
+
+function TXcomModResources.GetExtraSurface(const AName: string): TXcomSurface;
+begin
+  Result := nil;
+  if Assigned(FRules) then
+    Result := FRules.GetExtraSurface(AName);
 end;
 
 function TXcomModResources.GetFont(const AName: string): TXcomFont;

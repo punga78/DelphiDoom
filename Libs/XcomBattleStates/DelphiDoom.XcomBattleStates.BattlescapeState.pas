@@ -31,7 +31,11 @@ type
   ///   the battle ask it for warnings, sounds, the camera and the other screens. The session (the battle and its
   ///   engines) is shared with the screens it opens; the screens and the sounds come from interfaces (nil: the
   ///   button does nothing, no sound). An interface without count: the game holds it and is freed first.
-  ///   Not ported: the scrolling by dragging, the second stage of a mission, the debug keys and the voxel dumps
+  ///   The map scrolls by dragging with the button of Options::battleDragScrollButton (unlike the C++ the mouse
+  ///   cursor is not held still: the movement is read from the positions of the events). With Options::debug the
+  ///   debug keys work: Ctrl+D debug mode, then Ctrl+V, Ctrl+K, Ctrl+J and Ctrl+W.
+  ///   Not ported: the second stage of a mission, the dumps of the voxels and of the AI map (F11, F9, the voxel
+  ///   view key)
   /// </summary>
   TXcomBattlescapeState = class(TXcomState, IXcomBattleView)
   strict private
@@ -70,6 +74,18 @@ type
     FHealthStep: Byte;
     FFinished: Boolean;
     FAutosave: Boolean;
+    FIsMouseScrolling: Boolean;
+    FIsMouseScrolled: Boolean;
+    FMouseScrollStartX: Integer;
+    FMouseScrollStartY: Integer;
+    FMapOffsetBeforeMouseScrolling: TXcomPosition;
+    FTotalMouseMoveX: Integer;
+    FTotalMouseMoveY: Integer;
+    FMouseMovedOverThreshold: Boolean;
+    FMouseScrollingStartTime: Cardinal;
+    function WasShortDrag: Boolean;
+    procedure StopScrolling;
+    procedure HandleDebugKey(AAction: TXcomAction);
     procedure PushSave(AKind: TXcomBattleSaveKind);
     function IsIronman: Boolean;
     function Option(const AId: string): Integer;
@@ -89,6 +105,8 @@ type
     function UnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string): string;
     // handlers
     procedure MapClick(AAction: TXcomAction);
+    procedure MapPress(AAction: TXcomAction);
+    procedure MapOver(AAction: TXcomAction);
     procedure BtnUnitUpClick(AAction: TXcomAction);
     procedure BtnUnitDownClick(AAction: TXcomAction);
     procedure BtnMapUpClick(AAction: TXcomAction);
@@ -161,6 +179,12 @@ type
     property Map: TXcomMapWidget read FMap;
     property Icons: TXcomInteractiveSurface read FIcons;
     property WarningMessage: TXcomWarningMessage read FWarning;
+    /// <summary>The map is being scrolled by dragging (the drag button is down)</summary>
+    property IsMouseScrolling: Boolean read FIsMouseScrolling;
+    /// <summary>clearMouseScrollingState</summary>
+    procedure ClearMouseScrollingState;
+    /// <summary>The line of the debug mode (for the tests)</summary>
+    function DebugText: string;
     /// <summary>The button that launches the guided missile (shown with the first waypoint)</summary>
     property LaunchButton: TXcomBattlescapeButton read FBtnLaunch;
     /// <summary>The button of the psionic attack of a unit with a built-in psi weapon</summary>
@@ -218,6 +242,11 @@ const
   HAND_H = 3;
   SLOT_W = 16;
   SLOT_H = 16;
+  // SDL_BUTTON_X1 and SDL_BUTTON_X2: the side buttons of the mouse
+  BUTTON_X1 = 6;
+  BUTTON_X2 = 7;
+  // what the debug keys do to every alien
+  DEBUG_DAMAGE = 1000;
 
 function TXcomBattlescapeState.QueryInterface(const AGuid: TGUID; out AObject): HResult;
 begin
@@ -474,9 +503,13 @@ begin
       TXcomSurfaceShader.Blit(LFrame, FBtnPsi, FBtnPsi.X, FBtnPsi.Y, 0);
   end;
   FMap.OnMouseClick(MapClick, 0);
+  FMap.OnMousePress(MapPress, 0);
+  FMap.OnMouseOver(MapOver);
   FMap.OnMouseIn(
     procedure(AAction: TXcomAction)
     begin
+      // mapIn
+      FIsMouseScrolling := False;
       FMap.SetButtonPressed(Option('battleDragScrollButton'), False);
     end);
   FMap.IsLaunchAction :=
@@ -701,6 +734,18 @@ begin
     (AAction.Details.Button = XCOM_BUTTON_RIGHT)) then
   begin
     inherited Handle(AAction);
+    if FFinished then
+      Exit;
+    // the side buttons of the mouse
+    if AAction.Details.Kind = ekMouseDown then
+    begin
+      if AAction.Details.Button = BUTTON_X1 then
+        BtnNextSoldierClick(AAction)
+      else if AAction.Details.Button = BUTTON_X2 then
+        BtnPrevSoldierClick(AAction);
+    end;
+    if (AAction.Details.Kind = ekKeyDown) and (Option('debug') <> 0) then
+      HandleDebugKey(AAction);
     // quick save and quick load
     if (AAction.Details.Kind = ekKeyDown) and Assigned(FScreens) and (not FFinished) and (not IsIronman) then
     begin
@@ -710,6 +755,148 @@ begin
         PushScreen(FScreens.QuickLoad(Self));
     end;
   end;
+end;
+
+procedure TXcomBattlescapeState.HandleDebugKey(AAction: TXcomAction);
+var
+  LKey: Integer;
+  LUnit: TXcomBattleUnit;
+  LPosition: TXcomPosition;
+  LTile: TXcomTile;
+begin
+  if (AAction.Details.Modifiers and XCOM_KMOD_CTRL) = 0 then
+    Exit;
+  LKey := AAction.Details.Key;
+  // "ctrl-d" - enable debug mode
+  if LKey = Ord('d') then
+  begin
+    FSave.SetDebugMode;
+    Debug('Debug Mode');
+  end
+  else if not FSave.DebugMode then
+    Exit
+  // "ctrl-v" - reset tile visibility
+  else if LKey = Ord('v') then
+  begin
+    Debug('Resetting tile visibility');
+    FSave.ResetTiles;
+  end
+  // "ctrl-k" - kill all aliens
+  else if LKey = Ord('k') then
+  begin
+    Debug('Influenza bacterium dispersed');
+    for LUnit in FSave.Units.ToArray do
+    begin
+      if (LUnit.OriginalFaction = FACTION_HOSTILE) and (not LUnit.IsOut) then
+        LUnit.Damage(TXcomPosition.Make(0, 0, 0), DEBUG_DAMAGE, TXcomRuleItem.DT_AP, True);
+      FGame.CheckForCasualties(nil, nil, True, False);
+      FGame.HandleState;
+    end;
+  end
+  // "ctrl-j" - stun all aliens
+  else if LKey = Ord('j') then
+  begin
+    Debug('Deploying Celine Dion album');
+    for LUnit in FSave.Units.ToArray do
+      if (LUnit.OriginalFaction = FACTION_HOSTILE) and (not LUnit.IsOut) then
+        LUnit.Damage(TXcomPosition.Make(0, 0, 0), DEBUG_DAMAGE, TXcomRuleItem.DT_STUN, True);
+    FGame.CheckForCasualties(nil, nil, True, False);
+    FGame.HandleState;
+  end
+  // "ctrl-w" - warp unit
+  else if LKey = Ord('w') then
+  begin
+    Debug('Beam me up Scotty');
+    LUnit := FSave.SelectedUnit;
+    LPosition := FMap.Map.SelectorPosition;
+    LTile := FSave.TileAt(LPosition);
+    if Assigned(LUnit) and (LPosition.X >= 0) and Assigned(LTile) and Assigned(LUnit.Tile) then
+    begin
+      LUnit.Tile.SetUnit(nil);
+      LUnit.SetPosition(LPosition);
+      LTile.SetUnit(LUnit);
+      FSession.TileEngine.CalculateUnitLighting;
+      FGame.HandleState;
+    end;
+  end;
+end;
+
+function TXcomBattlescapeState.DebugText: string;
+begin
+  Result := FTxtDebug.GetText;
+end;
+
+procedure TXcomBattlescapeState.ClearMouseScrollingState;
+begin
+  FIsMouseScrolling := False;
+end;
+
+function TXcomBattlescapeState.WasShortDrag: Boolean;
+begin
+  Result := (not FMouseMovedOverThreshold) and
+    (Integer(Host.Clock.Ticks - FMouseScrollingStartTime) <= Option('dragScrollTimeTolerance'));
+end;
+
+procedure TXcomBattlescapeState.StopScrolling;
+begin
+  if Option('battleDragScrollInvert') <> 0 then
+  begin
+    FGame.SetupCursor;
+    if (not Assigned(FGame.CurrentAction.Actor)) and ((FSave.Side = FACTION_PLAYER) or FSave.DebugMode) then
+      FMap.Map.SetCursorType(CT_NORMAL);
+  end
+  else
+    FMap.RefreshSelectorPosition;
+end;
+
+procedure TXcomBattlescapeState.MapPress(AAction: TXcomAction);
+begin
+  // don't handle mouseclicks over the buttons (it overlaps with map surface)
+  if FMouseOverIcons then
+    Exit;
+  if AAction.Details.Button = Option('battleDragScrollButton') then
+  begin
+    FIsMouseScrolling := True;
+    FIsMouseScrolled := False;
+    FMouseScrollStartX := AAction.Details.X;
+    FMouseScrollStartY := AAction.Details.Y;
+    FMapOffsetBeforeMouseScrolling := FMap.Camera.MapOffset;
+    FTotalMouseMoveX := 0;
+    FTotalMouseMoveY := 0;
+    FMouseMovedOverThreshold := False;
+    FMouseScrollingStartTime := Host.Clock.Ticks;
+  end;
+end;
+
+procedure TXcomBattlescapeState.MapOver(AAction: TXcomAction);
+var
+  LTolerance: Integer;
+  LScrollX: Integer;
+  LScrollY: Integer;
+begin
+  if (not FIsMouseScrolling) or (AAction.Details.Kind <> ekMouseMotion) then
+    Exit;
+  FIsMouseScrolled := True;
+  // the C++ adds up the relative movements of a mouse it keeps still: here the distance from where the drag began
+  FTotalMouseMoveX := AAction.Details.X - FMouseScrollStartX;
+  FTotalMouseMoveY := AAction.Details.Y - FMouseScrollStartY;
+  // check the threshold
+  if not FMouseMovedOverThreshold then
+  begin
+    LTolerance := Option('dragScrollPixelTolerance');
+    FMouseMovedOverThreshold := (Abs(FTotalMouseMoveX) > LTolerance) or (Abs(FTotalMouseMoveY) > LTolerance);
+  end;
+  // scrolling
+  FMap.Camera.MapOffset := FMapOffsetBeforeMouseScrolling;
+  LScrollX := Trunc(FTotalMouseMoveX / AAction.XScale);
+  LScrollY := Trunc(FTotalMouseMoveY / AAction.YScale);
+  if Option('battleDragScrollInvert') <> 0 then
+  begin
+    FMap.Camera.ScrollXY(-LScrollX, -LScrollY, True);
+    FMap.Map.SetCursorType(CT_NONE);
+  end
+  else
+    FMap.Camera.ScrollXY(LScrollX, LScrollY, True);
 end;
 
 procedure TXcomBattlescapeState.Popup(AState: TXcomState);
@@ -991,6 +1178,23 @@ var
   LButton: Integer;
 begin
   LButton := AAction.Details.Button;
+  // DragScroll-Button release: release mouse-scroll-mode
+  if FIsMouseScrolling then
+  begin
+    // while scrolling, other buttons are ineffective
+    if LButton <> Option('battleDragScrollButton') then
+      Exit;
+    FIsMouseScrolling := False;
+    StopScrolling;
+    // check if we have to revoke the scrolling, because it was too short in time, so it was a click
+    if WasShortDrag then
+    begin
+      FIsMouseScrolled := False;
+      StopScrolling;
+    end;
+    if FIsMouseScrolled then
+      Exit;
+  end;
   // right-click aborts walking state
   if (LButton = XCOM_BUTTON_RIGHT) and FGame.CancelCurrentAction then
     Exit;
@@ -1001,6 +1205,8 @@ begin
   if (FMap.Map.CursorType = CT_NONE) or FGame.IsBusy then
     Exit;
   LPosition := FMap.Map.SelectorPosition;
+  if FSave.DebugMode then
+    Debug(Format('Clicked (%d,%d,%d)', [LPosition.X, LPosition.Y, LPosition.Z]));
   // don't allow to click into void
   if not Assigned(FSave.TileAt(LPosition)) then
     Exit;

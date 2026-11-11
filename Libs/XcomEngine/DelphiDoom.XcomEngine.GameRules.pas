@@ -14,8 +14,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.Types,
   DelphiDoom.Xcom.Intf,
-  DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModFiles.Intf,
-  DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.Rules.Intf;
+  DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset,
+  DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.Rules.Intf;
 
 type
   /// <summary>
@@ -36,6 +36,7 @@ type
     FModFiles: IXcomModFiles;
     FRuleset: TXcomRuleset;
     FSets: TObjectDictionary<string, TXcomSurfaceSet>;
+    FSingles: TObjectDictionary<string, TXcomSurface>;
     FStatePalette: array[0..255] of TXcomColor;
     FHasStatePalette: Boolean;
     function CreateVanillaSet(const AName: string): TXcomSurfaceSet;
@@ -50,6 +51,11 @@ type
     function Ruleset: TXcomRuleset;
     function ModFiles: IXcomModFiles;
     function GetSurfaceSet(const AName: string): TXcomSurfaceSet;
+    /// <summary>
+    ///   Mod::getSurface for an extra sprite with singleImage: the picture of the last file of the entry, with the
+    ///   state palette; nil when the rules have none of that name. Loaded the first time it is asked for
+    /// </summary>
+    function GetExtraSurface(const AName: string): TXcomSurface;
     /// <summary>Mod::setPalette: the colors go to every set that exists and to the ones that are made later (the state palette)</summary>
     procedure SetPalette(const AColors: TArray<TXcomColor>; AFirst: Integer);
   end;
@@ -59,7 +65,7 @@ implementation
 uses
   System.Classes, System.IOUtils, System.Generics.Defaults, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image,
   DelphiDoom.XcomMod.ModLoader, DelphiDoom.XcomMod.ExtraSprites, DelphiDoom.XcomMod.Types,
-  DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.FileMapModFiles, DelphiDoom.XcomEngine.SharedResources;
+  DelphiDoom.XcomEngine.FileMapModFiles, DelphiDoom.XcomEngine.SharedResources;
 
 constructor TXcomGameRules.Create(AMap: TXcomFileMap; const AGameData: IXcomGameData; const AFiles: IXcomFileSystem;
   const AParser: IYamlParser; APng: TPngClient; const AModFolder, AModId: string);
@@ -74,10 +80,12 @@ begin
   FModId := AModId;
   FModFiles := TXcomFileMapModFiles.Create(AMap, AParser);
   FSets := TObjectDictionary<string, TXcomSurfaceSet>.Create([doOwnsValues]);
+  FSingles := TObjectDictionary<string, TXcomSurface>.Create([doOwnsValues]);
 end;
 
 destructor TXcomGameRules.Destroy;
 begin
+  FSingles.Free;
   FSets.Free;
   FRuleset.Free;
   inherited Destroy;
@@ -251,6 +259,7 @@ end;
 procedure TXcomGameRules.SetPalette(const AColors: TArray<TXcomColor>; AFirst: Integer);
 var
   LSet: TXcomSurfaceSet;
+  LSurface: TXcomSurface;
   LIndex: Integer;
 begin
   for LIndex := 0 to High(AColors) do
@@ -259,6 +268,47 @@ begin
   FHasStatePalette := True;
   for LSet in FSets.Values do
     LSet.SetPalette(AColors, AFirst);
+  for LSurface in FSingles.Values do
+    if Assigned(LSurface) then
+      LSurface.SetColors(AColors, AFirst);
+end;
+
+function TXcomGameRules.GetExtraSurface(const AName: string): TXcomSurface;
+var
+  LList: TObjectList<TXcomExtraSprites>;
+  LSprites: TXcomExtraSprites;
+  LEntry: Integer;
+  LImage: TPngIndexedImage;
+  LColors: TArray<TXcomColor>;
+begin
+  if FSingles.TryGetValue(AName, Result) then
+    Exit;
+  Result := nil;
+  if FRuleset.ExtraSprites.TryGetValue(AName, LList) then
+    for LSprites in LList do
+    begin
+      if not LSprites.SingleImage then
+        Continue;
+      for LEntry := 0 to LSprites.Sprites.Count - 1 do
+      begin
+        if LSprites.Sprites.Value(LEntry).EndsWith('/') then
+          Continue;
+        // a later file (or a later mod) replaces the picture
+        LImage := FPng.DecodeIndexed(FMap.ReadAll(LSprites.Sprites.Value(LEntry)));
+        Result.Free;
+        Result := TXcomSurface.Create(LImage.Info.Width, LImage.Info.Height);
+        if LImage.Info.Width * LImage.Info.Height > 0 then
+          Move(LImage.Pixels[0], Result.PixelPointer(0, 0)^, LImage.Info.Width * LImage.Info.Height);
+      end;
+    end;
+  if Assigned(Result) and FHasStatePalette then
+  begin
+    SetLength(LColors, Length(FStatePalette));
+    Move(FStatePalette[0], LColors[0], SizeOf(FStatePalette));
+    Result.SetColors(LColors, 0);
+  end;
+  // a name the rules do not have is remembered too (nil)
+  FSingles.Add(AName, Result);
 end;
 
 function TXcomGameRules.GetSurfaceSet(const AName: string): TXcomSurfaceSet;
