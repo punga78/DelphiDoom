@@ -200,11 +200,10 @@ var
   LInitial, LCurrent, LWithArmor: TXcomUnitStats;
   LSave: TXcomSavedGame;
   LRuleset: TXcomRuleset;
-  LArmorType, LArmorText, LCraftName, LStatus, LName: string;
+  LArmorType, LArmorText, LCraftName, LStatus: string;
   LCraft: TXcomCraft;
   LPsiRequirements: TArray<string>;
   LPsiVisible: Boolean;
-  LFrame: TXcomWidget;
 begin
   inherited Init;
   if FList.Count = 0 then

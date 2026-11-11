@@ -81,7 +81,6 @@ var
   LUnlocked: TList<TXcomRuleResearch>;
   LDiscovered, LResearch: TXcomRuleResearch;
   LName: string;
-  LProject: TObject;
   LBeingResearched: Boolean;
   LIndex: Integer;
 begin
