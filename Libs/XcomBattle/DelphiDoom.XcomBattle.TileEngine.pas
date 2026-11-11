@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Directions,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.Services.Intf,
   DelphiDoom.XcomBattle.Pathfinding, DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattle.Host.Intf,
-  DelphiDoom.XcomBattle.ThrowRange, DelphiDoom.XcomBattle.Trajectory, DelphiDoom.XcomBattle.ExplosionState;
+  DelphiDoom.XcomBattle.ThrowRange, DelphiDoom.XcomBattle.Trajectory, DelphiDoom.XcomMod.RuleInventory;
 
 type
   /// <summary>
@@ -98,11 +98,27 @@ type
     function Distance(const AFirst, ASecond: TXcomPosition): Integer;
     function DistanceSq(const AFirst, ASecond: TXcomPosition; AConsiderZ: Boolean = True): Integer;
     function CloseUfoDoors: Integer;
+    /// <summary>
+    ///   unitOpensDoor: the unit opens the door it faces (ADirection -1: the direction of the unit); gives -1 when there
+    ///   is none, 0 a normal door, 1 a UFO door, 4 not enough time units, 5 the time units are reserved
+    /// </summary>
+    function UnitOpensDoor(const AUnit: TXcomBattleUnit; ARightClick: Boolean = False; ADirection: Integer = -1)
+      : Integer;
+    /// <summary>setDangerZone: the tiles a grenade that is about to explode would reach are marked dangerous for the AI</summary>
+    procedure SetDangerZone(const APosition: TXcomPosition; ARadius: Integer; const AUnit: TXcomBattleUnit);
+    /// <summary>checkAdjacentDoors: opens the UFO doors that continue a door that was opened</summary>
+    procedure CheckAdjacentDoors(const APosition: TXcomPosition; APart: Integer);
     /// <summary>faceWindow: the direction (0, 2, 4, 6) of a window next to the tile, or -1</summary>
     function FaceWindow(const APosition: TXcomPosition): Integer;
     /// <summary>applyGravity: units and items fall to where there is a floor; gives the tile where the items end up</summary>
     function ApplyGravityTile(const ATile: TXcomTile): TXcomTile;
     procedure ApplyGravity(const ATile: TXcomTile);
+    /// <summary>
+    ///   itemDrop: puts the item on the tile (on the ground slot), lets it fall and lights a flare; ANewItem adds it to
+    ///   the items of the battle, ARemoveItem takes it away from its owner
+    /// </summary>
+    procedure ItemDrop(const ATile: TXcomTile; const AItem: TXcomBattleItem; const AGround: TXcomRuleInventory;
+      ANewItem: Boolean = False; ARemoveItem: Boolean = False);
     /// <summary>checkForTerrainExplosions: a tile with a chained explosion, or nil</summary>
     function CheckForTerrainExplosions: TXcomTile;
     /// <summary>detonate: applies the explosive power of a tile to its parts; true when the objective is destroyed</summary>
@@ -154,6 +170,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.XcomBattle.ExplosionState;
 
 const
   HEIGHT_FROM_CENTER: array[0..10] of Integer = (0, -2, 2, -4, 4, -6, 6, -8, 8, -12, 12);
@@ -1654,6 +1673,276 @@ begin
   Result := -1;
 end;
 
+function TXcomTileEngine.UnitOpensDoor(const AUnit: TXcomBattleUnit; ARightClick: Boolean;
+  ADirection: Integer): Integer;
+type
+  TCheck = record
+    Offset: TXcomPosition;
+    Part: Integer;
+  end;
+var
+  LDoor: Integer;
+  LTuCost: Integer;
+  LSize: Integer;
+  LZ: Integer;
+  LX: Integer;
+  LY: Integer;
+  LTile: TXcomTile;
+  LChecks: TList<TCheck>;
+  LPart: Integer;
+  LIndex: Integer;
+  LBase: TXcomPosition;
+  LVisible: TArray<TXcomBattleUnit>;
+  LOther: TXcomBattleUnit;
+
+  procedure Add(AX, AY, APart: Integer);
+  var
+    LCheck: TCheck;
+  begin
+    LCheck.Offset := TXcomPosition.Make(AX, AY, 0);
+    LCheck.Part := APart;
+    LChecks.Add(LCheck);
+  end;
+
+begin
+  LDoor := -1;
+  LTuCost := 0;
+  LSize := AUnit.Armor.Size;
+  // if we're standing on stairs, check the tile above instead.
+  if AUnit.Tile.GetTerrainLevel < -12 then
+    LZ := 1
+  else
+    LZ := 0;
+  if ADirection = -1 then
+    ADirection := AUnit.Direction;
+  LTile := nil;
+  LChecks := TList<TCheck>.Create;
+  try
+    LX := 0;
+    while (LX < LSize) and (LDoor = -1) do
+    begin
+      LY := 0;
+      while (LY < LSize) and (LDoor = -1) do
+      begin
+        LChecks.Clear;
+        LTile := FSave.TileAt(AUnit.Position + TXcomPosition.Make(LX, LY, LZ));
+        if not Assigned(LTile) then
+        begin
+          Inc(LY);
+          Continue;
+        end;
+        case ADirection of
+          0: // north
+            begin
+              Add(0, 0, XCOM_PART_NORTHWALL);
+              if LX <> 0 then
+                Add(0, -1, XCOM_PART_WESTWALL);
+            end;
+          1: // north east
+            begin
+              Add(0, 0, XCOM_PART_NORTHWALL);
+              Add(1, -1, XCOM_PART_WESTWALL);
+              if ARightClick then
+              begin
+                Add(1, 0, XCOM_PART_WESTWALL);
+                Add(1, 0, XCOM_PART_NORTHWALL);
+              end;
+            end;
+          2: // east
+            Add(1, 0, XCOM_PART_WESTWALL);
+          3: // south-east
+            begin
+              if LY = 0 then
+                Add(1, 1, XCOM_PART_WESTWALL);
+              if LX = 0 then
+                Add(1, 1, XCOM_PART_NORTHWALL);
+              if ARightClick then
+              begin
+                Add(1, 0, XCOM_PART_WESTWALL);
+                Add(0, 1, XCOM_PART_NORTHWALL);
+              end;
+            end;
+          4: // south
+            Add(0, 1, XCOM_PART_NORTHWALL);
+          5: // south-west
+            begin
+              Add(0, 0, XCOM_PART_WESTWALL);
+              Add(-1, 1, XCOM_PART_NORTHWALL);
+              if ARightClick then
+              begin
+                Add(0, 1, XCOM_PART_WESTWALL);
+                Add(0, 1, XCOM_PART_NORTHWALL);
+              end;
+            end;
+          6: // west
+            begin
+              Add(0, 0, XCOM_PART_WESTWALL);
+              if LY <> 0 then
+                Add(-1, 0, XCOM_PART_NORTHWALL);
+            end;
+          7: // north-west
+            begin
+              Add(0, 0, XCOM_PART_WESTWALL);
+              Add(0, 0, XCOM_PART_NORTHWALL);
+              if LX <> 0 then
+                Add(-1, -1, XCOM_PART_WESTWALL);
+              if LY <> 0 then
+                Add(-1, -1, XCOM_PART_NORTHWALL);
+              if ARightClick then
+              begin
+                Add(0, -1, XCOM_PART_WESTWALL);
+                Add(-1, 0, XCOM_PART_NORTHWALL);
+              end;
+            end;
+        end;
+        LPart := XCOM_PART_FLOOR;
+        LIndex := 0;
+        while (LIndex < LChecks.Count) and (LDoor = -1) do
+        begin
+          LBase := AUnit.Position + TXcomPosition.Make(LX, LY, LZ) + LChecks[LIndex].Offset;
+          LTile := FSave.TileAt(LBase);
+          if Assigned(LTile) then
+          begin
+            LDoor := LTile.OpenDoor(LChecks[LIndex].Part, AUnit, FHost.ReservedAction);
+            if LDoor <> -1 then
+            begin
+              LPart := LChecks[LIndex].Part;
+              if LDoor = 1 then
+                CheckAdjacentDoors(LBase, LChecks[LIndex].Part);
+            end;
+          end;
+          Inc(LIndex);
+        end;
+        if (LDoor = 0) and ARightClick then
+        begin
+          if LPart = XCOM_PART_WESTWALL then
+            LPart := XCOM_PART_NORTHWALL
+          else
+            LPart := XCOM_PART_WESTWALL;
+          LTuCost := LTile.GetTuCost(LPart, AUnit.MovementType);
+        end
+        else if (LDoor = 1) or (LDoor = 4) then
+          LTuCost := LTile.GetTuCost(LPart, AUnit.MovementType);
+        Inc(LY);
+      end;
+      Inc(LX);
+    end;
+  finally
+    LChecks.Free;
+  end;
+  if LTuCost <> 0 then
+  begin
+    if FHost.CheckReservedTu(AUnit, LTuCost) then
+    begin
+      if AUnit.SpendTimeUnits(LTuCost) then
+      begin
+        CalculateFovAt(AUnit.Position);
+        // look from the other side
+        LVisible := AUnit.VisibleUnits.ToArray;
+        for LOther in LVisible do
+          CalculateFov(LOther);
+      end
+      else
+        Exit(4);
+    end
+    else
+      Exit(5);
+  end;
+  Result := LDoor;
+end;
+
+procedure TXcomTileEngine.SetDangerZone(const APosition: TXcomPosition; ARadius: Integer;
+  const AUnit: TXcomBattleUnit);
+var
+  LTile: TXcomTile;
+  LOrigin: TXcomPosition;
+  LTarget: TXcomPosition;
+  LX: Integer;
+  LY: Integer;
+  LTrajectory: TList<TXcomPosition>;
+  LCell: TXcomPosition;
+begin
+  LTile := FSave.TileAt(APosition);
+  if not Assigned(LTile) then
+    Exit;
+  // set the epicenter as dangerous
+  LTile.Dangerous := True;
+  LOrigin := (APosition * TXcomPosition.Make(16, 16, 24)) + TXcomPosition.Make(8, 8, 12 + -LTile.GetTerrainLevel);
+  LTrajectory := TList<TXcomPosition>.Create;
+  try
+    // the loops of the C++ stop before +radius
+    LX := -ARadius;
+    while LX <> ARadius do
+    begin
+      LY := -ARadius;
+      while LY <> ARadius do
+      begin
+        // we can skip the epicenter
+        if (LX <> 0) or (LY <> 0) then
+          // make sure we're within the radius
+          if LX * LX + LY * LY <= ARadius * ARadius then
+          begin
+            LCell := APosition + TXcomPosition.Make(LX, LY, 0);
+            LTile := FSave.TileAt(LCell);
+            if Assigned(LTile) then
+            begin
+              LTarget := (LCell * TXcomPosition.Make(16, 16, 24)) +
+                TXcomPosition.Make(8, 8, 12 + -LTile.GetTerrainLevel);
+              LTrajectory.Clear;
+              // we'll trace a line here, ignoring all units, to check if the explosion will reach this point
+              if CalculateLine(LOrigin, LTarget, False, LTrajectory, AUnit, True, False, AUnit) = V_EMPTY then
+                if (LTrajectory.Count > 0) and
+                  ((LTrajectory[LTrajectory.Count - 1] div TXcomPosition.Make(16, 16, 24)) = LCell) then
+                  LTile.Dangerous := True;
+            end;
+          end;
+        Inc(LY);
+      end;
+      Inc(LX);
+    end;
+  finally
+    LTrajectory.Free;
+  end;
+end;
+
+procedure TXcomTileEngine.CheckAdjacentDoors(const APosition: TXcomPosition; APart: Integer);
+var
+  LWestSide: Boolean;
+  LIndex: Integer;
+  LTile: TXcomTile;
+
+  function Offset(AStep: Integer): TXcomPosition;
+  begin
+    if LWestSide then
+      Result := TXcomPosition.Make(0, AStep, 0)
+    else
+      Result := TXcomPosition.Make(AStep, 0, 0);
+  end;
+
+begin
+  LWestSide := APart = XCOM_PART_WESTWALL;
+  LIndex := 1;
+  while True do
+  begin
+    LTile := FSave.TileAt(APosition + Offset(LIndex));
+    if Assigned(LTile) and Assigned(LTile.MapData[APart]) and LTile.MapData[APart].IsUfoDoor then
+      LTile.OpenDoor(APart)
+    else
+      Break;
+    Inc(LIndex);
+  end;
+  LIndex := -1;
+  while True do
+  begin
+    LTile := FSave.TileAt(APosition + Offset(LIndex));
+    if Assigned(LTile) and Assigned(LTile.MapData[APart]) and LTile.MapData[APart].IsUfoDoor then
+      LTile.OpenDoor(APart)
+    else
+      Break;
+    Dec(LIndex);
+  end;
+end;
+
 function TXcomTileEngine.CloseUfoDoors: Integer;
 var
   LIndex: Integer;
@@ -1683,6 +1972,38 @@ end;
 procedure TXcomTileEngine.ApplyGravity(const ATile: TXcomTile);
 begin
   ApplyGravityTile(ATile);
+end;
+
+procedure TXcomTileEngine.ItemDrop(const ATile: TXcomTile; const AItem: TXcomBattleItem;
+  const AGround: TXcomRuleInventory; ANewItem, ARemoveItem: Boolean);
+var
+  LPosition: TXcomPosition;
+begin
+  // don't spawn anything outside of bounds
+  if not Assigned(ATile) then
+    Exit;
+  LPosition := ATile.Position;
+  // don't ever drop fixed items
+  if AItem.Rules.FixedWeapon then
+    Exit;
+  ATile.AddItem(AItem, AGround);
+  if Assigned(AItem.CorpseUnit) then
+    AItem.CorpseUnit.SetPosition(LPosition);
+  if ANewItem then
+    FSave.AddItem(AItem)
+  else if FSave.Side <> FACTION_PLAYER then
+    AItem.TurnFlag := True;
+  if ARemoveItem then
+    AItem.MoveToOwner(nil)
+  else if (AItem.Rules.BattleType <> TXcomRuleItem.BT_GRENADE) and
+    (AItem.Rules.BattleType <> TXcomRuleItem.BT_PROXIMITYGRENADE) then
+    AItem.SetOwner(nil);
+  ApplyGravity(FSave.TileAt(LPosition));
+  if AItem.Rules.BattleType = TXcomRuleItem.BT_FLARE then
+  begin
+    CalculateTerrainLighting;
+    CalculateFovAt(LPosition);
+  end;
 end;
 
 function TXcomTileEngine.ApplyGravityTile(const ATile: TXcomTile): TXcomTile;

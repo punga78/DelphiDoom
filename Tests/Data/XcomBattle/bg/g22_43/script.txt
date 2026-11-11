@@ -1,0 +1,31 @@
+turn 4 37 40 0
+walk 4 28 39 0
+walk 3 42 43 0
+walk 5 42 30 0
+walk 3 29 40 0
+shoot 2 6 40 44 0
+placegrenade 35 33 0 STR_MAGNA_BLAST_GRENADE 1 7
+walk 7 37 35 0
+shoot 8 6 38 41 0
+walk 8 31 38 0
+kneel 1
+shoot 2 8 34 43 0
+explode 35 35 0 STR_MAGNA_PACK_EXPLOSIVE 5 0
+walk 4 32 38 0
+walk 3 31 29 0
+walk 4 32 30 0
+shoot 1 6 38 37 0
+throw 8 28 30 0
+walk 5 35 36 0
+walk 7 41 27 0
+throw 3 40 34 0
+endturn
+endturn
+placegrenade 36 38 0 STR_MAGNA_BLAST_GRENADE 1 3
+walk 8 36 41 0
+shoot 8 6 37 28 0
+walk 2 27 37 0
+placegrenade 37 36 0 STR_MAGNA_BLAST_GRENADE 1 3
+placegrenade 35 36 0 STR_MAGNA_PACK_EXPLOSIVE 1 6
+walk 3 28 39 0
+walk 3 41 43 0
