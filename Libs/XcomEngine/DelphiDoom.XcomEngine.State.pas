@@ -63,6 +63,11 @@ type
     function SaveCatalog: IXcomSaveCatalog; virtual;
     /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
     procedure OpenFolder(const APath: string); virtual;
+    /// <summary>
+    ///   Sound::play of Mod::getSound(set, index): plays the sound of the set (GEO.CAT...) at the volume of the sounds
+    ///   or, when AInterface, of the interface; does nothing without audio device or when the set has no such sound
+    /// </summary>
+    procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
     /// <summary>
@@ -163,6 +168,10 @@ begin
 end;
 
 procedure TXcomStateHost.OpenFolder(const APath: string);
+begin
+end;
+
+procedure TXcomStateHost.PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean);
 begin
 end;
 

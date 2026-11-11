@@ -15,7 +15,7 @@ uses
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
-  DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf,
+  DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf;
 
 type
@@ -89,6 +89,7 @@ type
     procedure SetSaveCatalog(const ACatalog: IXcomSaveCatalog);
     function SaveCatalog: IXcomSaveCatalog; override;
     procedure OpenFolder(const APath: string); override;
+    procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
     function NewGameStarter: IXcomNewGameStarter; override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
     function Session: IInterface; override;
@@ -271,6 +272,21 @@ end;
 function TXcomGame.SaveCatalog: IXcomSaveCatalog;
 begin
   Result := FSaveCatalog;
+end;
+
+procedure TXcomGame.PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean);
+var
+  LWave: TBytes;
+begin
+  if (FAudio = nil) or (not FAudio.IsAvailable) or (Resources = nil) then
+    Exit;
+  LWave := Resources.SoundWave(ASet, AIndex);
+  if Length(LWave) = 0 then
+    Exit;
+  if AInterface then
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.UiVolume))
+  else
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.SoundVolume));
 end;
 
 procedure TXcomGame.OpenFolder(const APath: string);

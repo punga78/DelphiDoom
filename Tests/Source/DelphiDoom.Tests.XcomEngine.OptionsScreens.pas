@@ -49,11 +49,13 @@ type
 
   TFakeAudio = class(TInterfacedObject, IXcomAudioDevice)
   public
+    Waves: Integer;
     Sound: Integer;
     Music: Integer;
     Ui: Integer;
     function IsAvailable: Boolean;
     procedure SetVolume(ASound, AMusic, AUi: Integer);
+    procedure PlayWave(const AWave: TBytes);
   end;
 
   TFakeModes = class(TInterfacedObject, IXcomDisplayModes)
@@ -125,6 +127,14 @@ type
     procedure IlSilenzioInSecondoPianoSiImposta;
     [Test]
     procedure ISlidersPartonoDalleOpzioni;
+    [Test]
+    procedure RilasciareIlCursoreDeiSuoniFaSuonareLaProva;
+    [Test]
+    procedure RilasciareIlCursoreDellInterfacciaFaSuonareIlPulsante;
+    [Test]
+    procedure RilasciareIlCursoreDellaMusicaNonFaSuonareNulla;
+    [Test]
+    procedure SenzaIlSuonoNelleRisorseNonSuonaNulla;
   end;
 
   [TestFixture]
@@ -210,6 +220,11 @@ end;
 function TFakeAudio.IsAvailable: Boolean;
 begin
   Result := True;
+end;
+
+procedure TFakeAudio.PlayWave(const AWave: TBytes);
+begin
+  Inc(Waves);
 end;
 
 procedure TFakeAudio.SetVolume(ASound, AMusic, AUi: Integer);
@@ -459,6 +474,39 @@ procedure TTestXcomOptionsAudio.Open;
 begin
   FWorld.Game.PushState(TXcomOptionsAudioState.Create(FWorld.Game, ooMenu, FNavigatorRef));
   FWorld.Wait(400);
+end;
+
+procedure TTestXcomOptionsAudio.RilasciareIlCursoreDeiSuoniFaSuonareLaProva;
+begin
+  FWorld.Resources.Wave := [1, 2, 3];
+  Open;
+  // the slider of the sounds is at 94,50
+  ClickAt(150, 58);
+  Assert.AreEqual(1, FAudio.Waves);
+end;
+
+procedure TTestXcomOptionsAudio.RilasciareIlCursoreDellInterfacciaFaSuonareIlPulsante;
+begin
+  FWorld.Resources.Wave := [1, 2, 3];
+  Open;
+  // the slider of the interface is at 94,82
+  ClickAt(150, 90);
+  Assert.AreEqual(1, FAudio.Waves);
+end;
+
+procedure TTestXcomOptionsAudio.RilasciareIlCursoreDellaMusicaNonFaSuonareNulla;
+begin
+  FWorld.Resources.Wave := [1, 2, 3];
+  Open;
+  ClickAt(150, 26);
+  Assert.AreEqual(0, FAudio.Waves);
+end;
+
+procedure TTestXcomOptionsAudio.SenzaIlSuonoNelleRisorseNonSuonaNulla;
+begin
+  Open;
+  ClickAt(150, 58);
+  Assert.AreEqual(0, FAudio.Waves);
 end;
 
 procedure TTestXcomOptionsAudio.ISlidersPartonoDalleOpzioni;

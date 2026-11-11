@@ -29,6 +29,7 @@ type
     FPalette: array[0..255] of TXcomColor;
     FBack: array[0..255] of TXcomColor;
     FPaletteCalls: Integer;
+    WaveBytes: TBytes;
     function NewFont(AWidth, AHeight: Integer): TXcomFont;
   public
     constructor Create;
@@ -39,6 +40,10 @@ type
     function GetPalette(const AName: string): PXcomColor;
     function CursorColor(const APalette: string): Integer;
     function HasSoundDefinitions: Boolean;
+    function SoundWave(const ASet: string; AIndex: Integer): TBytes;
+    /// <summary>What SoundWave gives (nothing by default)</summary>
+    property Wave: TBytes read WaveBytes write WaveBytes;
+    function Constant(const AName: string; ADefault: Integer): Integer;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     property PaletteCalls: Integer read FPaletteCalls;
   end;
@@ -259,6 +264,16 @@ begin
     Result := 144
   else
     Result := 252;
+end;
+
+function TFakeResources.SoundWave(const ASet: string; AIndex: Integer): TBytes;
+begin
+  Result := WaveBytes;
+end;
+
+function TFakeResources.Constant(const AName: string; ADefault: Integer): Integer;
+begin
+  Result := ADefault;
 end;
 
 function TFakeResources.HasSoundDefinitions: Boolean;

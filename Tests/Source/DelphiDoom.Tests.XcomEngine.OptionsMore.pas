@@ -15,7 +15,7 @@ uses
   System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options,
   DelphiDoom.XcomEngine.OptionInfo, DelphiDoom.XcomEngine.OptionTable, DelphiDoom.XcomEngine.KeyNames,
-  DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.State,
+  DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Slider, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsNavigator.Intf,
   DelphiDoom.XcomMenu.OptionsControlsState, DelphiDoom.XcomMenu.OptionsAdvancedState,
   DelphiDoom.XcomMenu.OptionsGeoscapeState, DelphiDoom.XcomMenu.OptionsBattlescapeState,
@@ -108,6 +108,22 @@ type
     procedure UnTastoSconosciutoNonSiMostra;
     [Test]
     procedure UnaStringaVuotaRestaVuota;
+  end;
+
+  [TestFixture]
+  [Category('XcomSound')]
+  TTestXcomSoundConverter = class
+  public
+    [Test]
+    procedure UnSuonoGrezzoDiventaUnFileWavA11025Hz;
+    [Test]
+    procedure ILCampioniSiScalanoEGiranoAOttoBit;
+    [Test]
+    procedure UnSuonoTroppoCortoNonDaNulla;
+    [Test]
+    procedure IlVolumeScalaIntornoAlSilenzio;
+    [Test]
+    procedure UnFileNonPcmAOttoBitRestaCom;
   end;
 
   TFakeFolderOpener = class(TInterfacedObject, IXcomFolderOpener)
@@ -552,6 +568,68 @@ begin
   Assert.AreEqual('', TXcomKeyNames.UpperWords(''));
 end;
 
+{ TTestXcomSoundConverter }
+
+procedure TTestXcomSoundConverter.UnSuonoGrezzoDiventaUnFileWavA11025Hz;
+var
+  LWave: TBytes;
+begin
+  // five bytes of garbage, four samples and the null at the end
+  LWave := TXcomSoundConverter.RawToWave([9, 9, 9, 9, 9, 1, 2, 3, 4, 0]);
+  Assert.AreEqual('RIFF', TEncoding.ASCII.GetString(LWave, 0, 4));
+  Assert.AreEqual('WAVE', TEncoding.ASCII.GetString(LWave, 8, 4));
+  Assert.AreEqual(11025, Integer(PCardinal(@LWave[24])^));
+  Assert.AreEqual(8, Integer(PWord(@LWave[34])^));
+  // 4 samples at 8000 Hz are 6 at 11025 Hz
+  Assert.AreEqual(44 + 6, Integer(Length(LWave)));
+  Assert.AreEqual(6, Integer(PCardinal(@LWave[40])^));
+  Assert.AreEqual(6 + 36, Integer(PCardinal(@LWave[4])^));
+end;
+
+procedure TTestXcomSoundConverter.ILCampioniSiScalanoEGiranoAOttoBit;
+var
+  LWave: TBytes;
+begin
+  LWave := TXcomSoundConverter.RawToWave([0, 0, 0, 0, 0, 1, 2, 3, 4, 64, 0]);
+  // the samples are multiplied by 4 keeping the low byte (64 * 4 = 0), and repeated by the change of rate
+  Assert.AreEqual(4, Integer(LWave[44]));
+  Assert.AreEqual(4, Integer(LWave[45]));
+  Assert.AreEqual(8, Integer(LWave[46]));
+  Assert.AreEqual(12, Integer(LWave[47]));
+  Assert.AreEqual(12, Integer(LWave[48]));
+  Assert.AreEqual(16, Integer(LWave[49]));
+end;
+
+procedure TTestXcomSoundConverter.UnSuonoTroppoCortoNonDaNulla;
+begin
+  Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave(nil))));
+  Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave([1, 2, 3, 4, 5]))));
+  Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave([1, 2, 3, 4, 5, 6]))));
+end;
+
+procedure TTestXcomSoundConverter.IlVolumeScalaIntornoAlSilenzio;
+var
+  LWave: TBytes;
+begin
+  LWave := TXcomSoundConverter.RawToWave([0, 0, 0, 0, 0, 63, 0, 0]);
+  // 63 * 4 = 252: 124 over the silence
+  Assert.AreEqual(252, Integer(LWave[44]));
+  Assert.AreEqual(128 + 124 div 2, Integer(TXcomSoundConverter.WithVolume(LWave, 64)[44]));
+  Assert.AreEqual(128, Integer(TXcomSoundConverter.WithVolume(LWave, 0)[44]));
+  Assert.AreEqual(252, Integer(TXcomSoundConverter.WithVolume(LWave, 128)[44]));
+  Assert.AreEqual(252, Integer(TXcomSoundConverter.WithVolume(LWave, 999)[44]));
+end;
+
+procedure TTestXcomSoundConverter.UnFileNonPcmAOttoBitRestaCom;
+var
+  LWave: TBytes;
+begin
+  LWave := TXcomSoundConverter.RawToWave([0, 0, 0, 0, 0, 63, 0, 0]);
+  LWave[34] := 16;
+  Assert.AreEqual(Integer(LWave[44]), Integer(TXcomSoundConverter.WithVolume(LWave, 10)[44]));
+  Assert.AreEqual(3, Integer(Length(TXcomSoundConverter.WithVolume([1, 2, 3], 10))));
+end;
+
 { TFakeFolderOpener }
 
 constructor TFakeFolderOpener.Create;
@@ -914,6 +992,7 @@ initialization
   TDUnitX.RegisterTestFixture(TTestXcomOptionsGeneric);
   TDUnitX.RegisterTestFixture(TTestXcomOptionsFile);
   TDUnitX.RegisterTestFixture(TTestXcomKeyNames);
+  TDUnitX.RegisterTestFixture(TTestXcomSoundConverter);
   TDUnitX.RegisterTestFixture(TTestXcomOptionsMoreScreens);
 
 end.

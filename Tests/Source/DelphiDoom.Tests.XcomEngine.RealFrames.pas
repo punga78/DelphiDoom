@@ -57,6 +57,8 @@ type
     [TestCase('load_list', 'load_list,230:255')]
     [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
+    [Test]
+    procedure ISuoniDeiDatiVeriSonoFileWav;
   end;
 
 implementation
@@ -238,6 +240,47 @@ begin
     Exit;
   end;
   Assert.AreEqual(Golden(AName), Render(AName, ASteps));
+end;
+
+procedure TTestXcomRealFrames.ISuoniDeiDatiVeriSonoFileWav;
+var
+  LSettings: TXcomLoaderSettings;
+  LLoader: IXcomGameLoader;
+  LResources: IXcomResources;
+  LLanguage: TXcomLanguage;
+  LWave: TBytes;
+  LSet: Integer;
+begin
+  if FReference = '' then
+  begin
+    Assert.Pass('no real data');
+    Exit;
+  end;
+  LSettings.DataFolder := FDataFolder;
+  LSettings.GameFolder := FGameFolder;
+  LSettings.ModId := 'xcom2';
+  LSettings.LanguageId := 'en-US';
+  LSettings.Wordwrap := twAuto;
+  LLoader := TXcomModGameLoader.Create(LSettings, TXcomDiskFileSystem.Create, TYamlFactory.CreateParser,
+    TPngProvider.Client);
+  LLoader.Load(LResources, LLanguage);
+  try
+    Assert.AreEqual(5, LResources.Constant('ufoFire', 8));
+    Assert.AreEqual(0, LResources.Constant('buttonPress', 9));
+    Assert.AreEqual(77, LResources.Constant('nope', 77));
+    // the press of a button is the entry 120 of SAMPLE.CAT: an 8 bit mono WAV file at 11025 Hz
+    for LSet in [0, 5] do
+    begin
+      LWave := LResources.SoundWave('GEO.CAT', LSet);
+      Assert.IsTrue(Length(LWave) > 1000, 'sound ' + IntToStr(LSet));
+      Assert.AreEqual('RIFF', TEncoding.ASCII.GetString(LWave, 0, 4));
+      Assert.AreEqual(Integer(Length(LWave) - 44), Integer(PCardinal(@LWave[40])^));
+    end;
+    Assert.AreEqual(0, Integer(Length(LResources.SoundWave('GEO.CAT', 9999))));
+    Assert.AreEqual(0, Integer(Length(LResources.SoundWave('NOPE.CAT', 0))));
+  finally
+    LLanguage.Free;
+  end;
 end;
 
 initialization
