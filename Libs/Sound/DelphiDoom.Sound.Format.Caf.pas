@@ -34,9 +34,8 @@ const
   MAX_CHANNELS = 1024;
 
 var
-  MARKER_CAFF, MARKER_DESC, MARKER_PEAK, MARKER_CHAN, MARKER_FREE, MARKER_DATA,
-  MARKER_KUKI, MARKER_PAKT, MARKER_INFO, MARKER_LPCM, MARKER_ALAW, MARKER_ULAW,
-  MARKER_ALAC: Cardinal;
+  MARKER_CAFF, MARKER_DESC, MARKER_PEAK, MARKER_DATA, MARKER_PAKT, MARKER_INFO,
+  MARKER_LPCM, MARKER_ALAW, MARKER_ULAW, MARKER_ALAC: Cardinal;
 
 function ReadInt64BigEndian(var AReader: TSoundByteReader): Int64;
 var
@@ -86,7 +85,7 @@ begin
     Exit(SNDFILE_ERR_UNRECOGNISED_FORMAT);
 
   LReader.Position := 8;
-  LMarker := LReader.ReadMarker;
+  LReader.ReadMarker;                    // 'desc', checked above
   LChunkSize := ReadInt64BigEndian(LReader);
   LSampleRate := ReadDoubleBigEndian(LReader);
   if LChunkSize < SIZEOF_DESC_CHUNK then
@@ -105,7 +104,6 @@ begin
 
   LHaveData := False;
   LDataOffset := 0;
-  LDataLength := 0;
   LDataEnd := 0;
 
   while True do
@@ -255,10 +253,7 @@ initialization
   MARKER_CAFF := TSoundByteReader.MarkerOf('caff');
   MARKER_DESC := TSoundByteReader.MarkerOf('desc');
   MARKER_PEAK := TSoundByteReader.MarkerOf('peak');
-  MARKER_CHAN := TSoundByteReader.MarkerOf('chan');
-  MARKER_FREE := TSoundByteReader.MarkerOf('free');
   MARKER_DATA := TSoundByteReader.MarkerOf('data');
-  MARKER_KUKI := TSoundByteReader.MarkerOf('kuki');
   MARKER_PAKT := TSoundByteReader.MarkerOf('pakt');
   MARKER_INFO := TSoundByteReader.MarkerOf('info');
   MARKER_LPCM := TSoundByteReader.MarkerOf('lpcm');
