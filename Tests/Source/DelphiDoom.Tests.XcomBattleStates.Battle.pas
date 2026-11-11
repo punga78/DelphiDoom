@@ -90,6 +90,8 @@ type
     function Infobox(AParent: TXcomState; const AMessage: string): TXcomState;
     function InfoboxOk(AParent: TXcomState; const AMessage: string): TXcomState;
     function Debriefing(AParent: TXcomState): TXcomState;
+    function SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+    function QuickLoad(AParent: TXcomState): TXcomState;
   end;
 
   /// <summary>The options of the default configuration of OpenXcom</summary>
@@ -351,6 +353,16 @@ end;
 function TTestBattleScreens.Debriefing(AParent: TXcomState): TXcomState;
 begin
   Result := Take('Debriefing', AParent, nil);
+end;
+
+function TTestBattleScreens.SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+begin
+  Result := Take('SaveGame', AParent, nil);
+end;
+
+function TTestBattleScreens.QuickLoad(AParent: TXcomState): TXcomState;
+begin
+  Result := Take('QuickLoad', AParent, nil);
 end;
 
 { TTestBattleSettings }

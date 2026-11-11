@@ -45,6 +45,8 @@ type
     function Infobox(AParent: TXcomState; const AMessage: string): TXcomState;
     function InfoboxOk(AParent: TXcomState; const AMessage: string): TXcomState;
     function Debriefing(AParent: TXcomState): TXcomState;
+    function SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+    function QuickLoad(AParent: TXcomState): TXcomState;
     /// <summary>The names of the screens asked for, in order ("NextTurn", "Infobox:text"...)</summary>
     property Calls: TStringList read FCalls;
     /// <summary>The state the next call gives (then nil again); the caller of the screens owns it</summary>
@@ -222,6 +224,18 @@ end;
 function TFakeBattleScreens.Debriefing(AParent: TXcomState): TXcomState;
 begin
   Result := Take('Debriefing');
+end;
+
+function TFakeBattleScreens.SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+const
+  NAMES: array[TXcomBattleSaveKind] of string = ('quick', 'auto', 'ironman');
+begin
+  Result := Take('SaveGame:' + NAMES[AKind]);
+end;
+
+function TFakeBattleScreens.QuickLoad(AParent: TXcomState): TXcomState;
+begin
+  Result := Take('QuickLoad');
 end;
 
 { TFakeBattleAudio }

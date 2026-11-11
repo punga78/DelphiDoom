@@ -31,8 +31,7 @@ type
   ///   the battle ask it for warnings, sounds, the camera and the other screens. The session (the battle and its
   ///   engines) is shared with the screens it opens; the screens and the sounds come from interfaces (nil: the
   ///   button does nothing, no sound). An interface without count: the game holds it and is freed first.
-  ///   Not ported: the scrolling by dragging, the second stage of a mission, the debug keys, the voxel dumps and the
-  ///   quick save
+  ///   Not ported: the scrolling by dragging, the second stage of a mission, the debug keys and the voxel dumps
   /// </summary>
   TXcomBattlescapeState = class(TXcomState, IXcomBattleView)
   strict private
@@ -70,6 +69,9 @@ type
     FHealthColor: Byte;
     FHealthStep: Byte;
     FFinished: Boolean;
+    FAutosave: Boolean;
+    procedure PushSave(AKind: TXcomBattleSaveKind);
+    function IsIronman: Boolean;
     function Option(const AId: string): Integer;
     procedure AddIcon(ASurface: TXcomWidget; const AId: string);
     procedure SetupButton(AButton: TXcomInteractiveSurface; const AHandler: TXcomActionHandler; const AKeyOption,
@@ -129,6 +131,8 @@ type
     procedure Init; override;
     procedure Think; override;
     procedure Handle(AAction: TXcomAction); override;
+    /// <summary>autosave: the game is saved the next time the battlescape comes to the front (ironman or Options::autosave)</summary>
+    procedure Autosave;
     /// <summary>popup: the state is pushed at the next think, one at a time (owned until then)</summary>
     procedure Popup(AState: TXcomState);
     /// <summary>selectNextPlayerUnit</summary>
@@ -618,6 +622,33 @@ begin
   FTxtTooltip.SetText('');
   FBtnReserveKneel.Toggle(FSave.KneelReserved);
   FGame.SetKneelReserved(FSave.KneelReserved);
+  if FAutosave then
+  begin
+    FAutosave := False;
+    if IsIronman then
+      PushSave(bskIronman)
+    else if Option('autosave') <> 0 then
+      PushSave(bskAuto);
+  end;
+end;
+
+procedure TXcomBattlescapeState.Autosave;
+begin
+  FAutosave := True;
+end;
+
+function TXcomBattlescapeState.IsIronman: Boolean;
+begin
+  Result := (Host.SavedGameSaver <> nil) and Host.SavedGameSaver.IsIronman;
+end;
+
+procedure TXcomBattlescapeState.PushSave(AKind: TXcomBattleSaveKind);
+begin
+  if not Assigned(FScreens) then
+    Exit;
+  // the saved game takes the battle as it is now
+  FSession.StoreInSavedGame;
+  PushScreen(FScreens.SaveGame(Self, AKind));
 end;
 
 procedure TXcomBattlescapeState.Think;
@@ -664,7 +695,17 @@ begin
     Exit;
   if Host.Cursor.Visible or (((AAction.Details.Kind = ekMouseDown) or (AAction.Details.Kind = ekMouseUp)) and
     (AAction.Details.Button = XCOM_BUTTON_RIGHT)) then
+  begin
     inherited Handle(AAction);
+    // quick save and quick load
+    if (AAction.Details.Kind = ekKeyDown) and Assigned(FScreens) and (not FFinished) and (not IsIronman) then
+    begin
+      if AAction.Details.Key = Option('keyQuickSave') then
+        PushSave(bskQuick)
+      else if AAction.Details.Key = Option('keyQuickLoad') then
+        PushScreen(FScreens.QuickLoad(Self));
+    end;
+  end;
 end;
 
 procedure TXcomBattlescapeState.Popup(AState: TXcomState);

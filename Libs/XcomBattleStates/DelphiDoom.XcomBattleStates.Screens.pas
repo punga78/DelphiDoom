@@ -49,6 +49,8 @@ type
     function Infobox(AParent: TXcomState; const AMessage: string): TXcomState;
     function InfoboxOk(AParent: TXcomState; const AMessage: string): TXcomState;
     function Debriefing(AParent: TXcomState): TXcomState;
+    function SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+    function QuickLoad(AParent: TXcomState): TXcomState;
   end;
 
 implementation
@@ -59,7 +61,8 @@ uses
   DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState,
   DelphiDoom.XcomBattleStates.UnitInfoState,
   DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState,
-  DelphiDoom.XcomBattleStates.InventoryState;
+  DelphiDoom.XcomBattleStates.InventoryState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState,
+  DelphiDoom.XcomMenu.LoadGameState, DelphiDoom.XcomMenu.SaveNames;
 
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
   const AOptions: TXcomBattleOptionsScreen);
@@ -144,6 +147,21 @@ begin
   Result := nil;
   if Assigned(FDebriefing) then
     Result := FDebriefing(AParent);
+end;
+
+function TXcomBattleScreens.SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+const
+  SAVE_TYPES: array[TXcomBattleSaveKind] of TXcomSaveType = (stQuick, stAutoBattlescape, stIronman);
+begin
+  Result := TXcomSaveGameState.Create(AParent.Host, ooBattlescape, SAVE_TYPES[AKind], AParent.Palette);
+end;
+
+function TXcomBattleScreens.QuickLoad(AParent: TXcomState): TXcomState;
+begin
+  Result := nil;
+  // LoadGameState::init: a quick load without a quick save does nothing
+  if (AParent.Host.SaveCatalog <> nil) and AParent.Host.SaveCatalog.SaveExists(TXcomSaveNames.QUICKSAVE) then
+    Result := TXcomLoadGameState.Create(AParent.Host, ooBattlescape, TXcomSaveNames.QUICKSAVE, AParent.Palette);
 end;
 
 end.

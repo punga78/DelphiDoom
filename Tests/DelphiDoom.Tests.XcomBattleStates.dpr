@@ -23,6 +23,7 @@ uses
   DelphiDoom.Tests.XcomBattleStates.Bench in 'Source\DelphiDoom.Tests.XcomBattleStates.Bench.pas',
   DelphiDoom.Tests.XcomBattleStates.BattlescapeState in 'Source\DelphiDoom.Tests.XcomBattleStates.BattlescapeState.pas',
   DelphiDoom.Tests.XcomBattleStates.TurnScreens in 'Source\DelphiDoom.Tests.XcomBattleStates.TurnScreens.pas',
+  DelphiDoom.Tests.XcomBattleStates.BattleSaves in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleSaves.pas',
   DelphiDoom.Tests.XcomBattleStates.MixerAudio in 'Source\DelphiDoom.Tests.XcomBattleStates.MixerAudio.pas',
   DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas',
   DelphiDoom.Tests.XcomBattleStates.BattleWorld in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleWorld.pas',

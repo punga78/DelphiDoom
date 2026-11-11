@@ -151,10 +151,12 @@ var
   LLiveAliens: Integer;
   LLiveSoldiers: Integer;
   LParent: TXcomBattlescapeState;
+  LFrequency: Integer;
 begin
   if FClosed then
     Exit;
   FClosed := True;
+  LFrequency := Host.Options.GetValue('autosaveFrequency');
   // this state is freed by the game after the pop: nothing of it is touched afterwards
   LParent := FParent;
   Host.PopState;
@@ -163,7 +165,13 @@ begin
   if ((LParent.Session.Battle.ObjectiveType <> MUST_DESTROY) and (LLiveAliens = 0)) or (LLiveSoldiers = 0) then
     LParent.FinishBattle(False, LLiveSoldiers)
   else
+  begin
     LParent.CenterOnSelectedUnit;
+    // autosave every set amount of turns
+    if (LParent.Session.Battle.Side = FACTION_PLAYER) and ((LParent.Session.Battle.Turn = 1) or
+      ((LFrequency > 0) and (LParent.Session.Battle.Turn mod LFrequency = 0))) then
+      LParent.Autosave;
+  end;
 end;
 
 end.

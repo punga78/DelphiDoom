@@ -16,6 +16,12 @@ uses
 
 type
   /// <summary>
+  ///   The saves the battlescape asks by itself (SaveType of SaveGameState): the quick save key, the autosave of
+  ///   the turns, the save of an ironman game
+  /// </summary>
+  TXcomBattleSaveKind = (bskQuick, bskAuto, bskIronman);
+
+  /// <summary>
   ///   Makes the screens of the battle. The battlescape state only knows this interface: the factory of the library
   ///   knows the classes, the tests give a fake. Every function gives a state that the caller pushes (and the game
   ///   then owns), or nil when the screen does not exist: the button then does nothing
@@ -54,6 +60,10 @@ type
     function InfoboxOk(AParent: TXcomState; const AMessage: string): TXcomState;
     /// <summary>DebriefingState: the battle is over (the saved game is changed here)</summary>
     function Debriefing(AParent: TXcomState): TXcomState;
+    /// <summary>SaveGameState(OPT_BATTLESCAPE, type, palette): the saved game already has the battle as it is now</summary>
+    function SaveGame(AParent: TXcomState; AKind: TXcomBattleSaveKind): TXcomState;
+    /// <summary>LoadGameState(OPT_BATTLESCAPE, SAVE_QUICK, palette); nil when there is no quick save</summary>
+    function QuickLoad(AParent: TXcomState): TXcomState;
   end;
 
   /// <summary>
