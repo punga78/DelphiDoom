@@ -46,7 +46,7 @@ uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
-  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
+  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost);
 begin
@@ -110,6 +110,10 @@ begin
         FHost.PopState;
         FHost.PushState(TXcomBuildNewBaseState.Create(FHost, TXcomBase.Create, FControl.Globe, False, FControl));
       end;
+    bsResearch:
+      FHost.PushState(TXcomResearchState.Create(FHost, ABase));
+    bsManufacture:
+      FHost.PushState(TXcomManufactureState.Create(FHost, ABase));
     bsFacilities:
       FHost.PushState(TXcomBuildFacilitiesState.Create(FHost, ABase, AParent));
     bsDismantle:

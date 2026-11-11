@@ -26,11 +26,12 @@ type
   strict private
     FRuleset: TXcomRuleset;
     function HaveEnoughMaterialsForOneMoreUnit(const AProduction: TXcomProduction; const ABase: TXcomBase): Boolean;
-    procedure StartItem(const AProduction: TXcomProduction; const ABase: TXcomBase; const AGame: TXcomSavedGame);
     procedure Deliver(const AProduction: TXcomProduction; const ABase: TXcomBase; const AGame: TXcomSavedGame);
   public
     /// <param name="ARuleset">The ruleset of the game (not owned)</param>
     constructor Create(const ARuleset: TXcomRuleset);
+    /// <summary>startItem: a unit starts: its cost leaves the funds and its materials leave the base (crafts included)</summary>
+    procedure StartItem(const AProduction: TXcomProduction; const ABase: TXcomBase; const AGame: TXcomSavedGame);
     /// <summary>
     ///   step: ppComplete when the amount is reached, ppNotEnoughMoney or ppNotEnoughMaterials when a unit
     ///   that is due cannot start. The item of a production that the ruleset does not know is
