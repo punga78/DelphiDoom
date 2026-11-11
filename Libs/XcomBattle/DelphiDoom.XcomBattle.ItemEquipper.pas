@@ -130,7 +130,6 @@ begin
     end;
     Exit(LPlaced);
   end;
-  LKeep := True;
   LFallThrough := False;
   case AItem.Rules.BattleType of
     TXcomRuleItem.BT_FIREARM, TXcomRuleItem.BT_MELEE:

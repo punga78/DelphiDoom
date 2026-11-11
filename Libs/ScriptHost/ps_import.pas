@@ -488,7 +488,7 @@ begin
   end;
 
   if Result then
-    (Sender as TDoomCompiler).unitnames.Add(Name);
+    (Sender as TDoomCompiler).unitnames.Add(string(Name));
 end;
 
 // **** TDoomCompiler ****
@@ -610,7 +610,7 @@ begin
 
   // the game, DEBUG, DEVPARM, the X_OR_Y of the game and OPENGL (TScriptDefines)
   for LDefine in FServices.Defines do
-    FPP.Defines.Add(TbtString(LDefine));
+    FPP.Defines.Add(LDefine);
 
   OnTranslateLineInfo := CompTranslateLineInfo;
   FPP.OnProcessDirective := callObjectOnProcessDirective;
@@ -628,7 +628,7 @@ begin
   else
     ppout := '';
 
-  unitstr := TbtString(FServices.GameName) + #13#10 + funitnames.Text;
+  unitstr := TbtString(FServices.GameName) + #13#10 + TbtString(funitnames.Text);
   len := Length(unitstr);
   pcode := '            ' + unitstr + ppout;
   PLongWord(@pcode[1])^ := ID_DDPS;
@@ -732,7 +732,7 @@ begin
     unitstr[i] := pcode[i + 12];
 
   lst := TStringList.Create;
-  lst.Text := unitstr;
+  lst.Text := string(unitstr);
 
   if lst.Count < 2 then
   begin

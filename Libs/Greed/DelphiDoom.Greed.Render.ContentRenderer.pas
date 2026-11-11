@@ -56,7 +56,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.FixedMath;
+  System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath;
 
 type
   FM = TGreedFixedMath;

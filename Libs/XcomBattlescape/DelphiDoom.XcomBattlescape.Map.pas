@@ -694,7 +694,6 @@ begin
     LBonusWidth := 0
   else
     LBonusWidth := TILE_FLOOR_WIDTH;
-  LTopMargin := 0;
   LBottomMargin := 0;
   // if unit is from below then we draw only the part that is in the tile
   if LFromBelow then

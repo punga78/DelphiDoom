@@ -897,7 +897,6 @@ var
   LResult: TFrameResult;
   LFrames: Int64;
   LCapacity, LChannel, LSample, LShift: Integer;
-  LFrameSamples: Int64;
 begin
   FillChar(AInfo, SizeOf(AInfo), 0);
   AData := nil;
@@ -943,7 +942,6 @@ begin
       if FHeader.Channels <> FInfo.Channels then
         Break;
 
-      LFrameSamples := Int64(FHeader.BlockSize) * FHeader.Channels;
       if (LFrames + FHeader.BlockSize) * FHeader.Channels > LCapacity then
       begin
         LCapacity := Integer((LFrames + FHeader.BlockSize) * FHeader.Channels * 2);

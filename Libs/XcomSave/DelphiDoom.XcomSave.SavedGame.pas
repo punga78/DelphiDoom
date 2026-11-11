@@ -77,8 +77,6 @@ type
     FPoppedResearch: TList<TXcomRuleResearch>;
     FIds: TXcomStringMap<Integer>;
     FLastSelectedArmor: string;
-    FRngSeed: UInt64;
-    FHasRngSeed: Boolean;
     class function ReadInt64s(const ANode: IYamlNode; const AKey: string; const ADefault: TArray<Int64>)
       : TArray<Int64>; static;
     class function Int64Sequence(const AValues: TArray<Int64>): IYamlNode; static;

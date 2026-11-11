@@ -982,7 +982,9 @@ begin
   LExponent := ((LI shr IEEE_FLT_MANTISSA_BITS) and ((1 shl IEEE_FLT_EXPONENT_BITS) - 1)) - IEEE_FLT_EXPONENT_BIAS;
   LMantissa := LI and ((1 shl IEEE_FLT_MANTISSA_BITS) - 1);
   LValue := LSign shl (1 + AExponentBits + AMantissaBits);
-  LValue := LValue or ((((Cardinal(LExponent) shr 31) shl AExponentBits) or
+  // The sign bit of the exponent as an Integer: mixing Cardinal and Integer
+  // would widen the whole expression to Int64 (same low 32 bits)
+  LValue := LValue or (((Integer(Cardinal(LExponent) shr 31) shl AExponentBits) or
     (System.Abs(LExponent) and ((1 shl AExponentBits) - 1))) shl AMantissaBits);
   LValue := LValue or (LMantissa shr (IEEE_FLT_MANTISSA_BITS - AMantissaBits));
   Result := LValue;

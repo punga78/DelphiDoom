@@ -37,7 +37,6 @@ type
     function StandardTable: TBytes;
     procedure FillMap(AWidth, AHeight: Integer);
     function Oracle: TKeenChunkyImage;
-    function Differences(const AExpected: TKeenChunkyImage): Integer;
     procedure ExpectScreen(const AExpected: TKeenChunkyImage; const AWhat: string);
     procedure OverlaySprite(var AImage: TKeenChunkyImage; ASprite, AGlobalX, AGlobalY: Integer);
   public
@@ -246,18 +245,6 @@ begin
   for LY := 0 to Result.Height - 1 do
     for LX := 0 to Result.Width - 1 do
       Result.Pixels[LY * Result.Width + LX] := LFull.Pixels[(LStartY + LY) * LFull.Width + LStartX + LX];
-end;
-
-function TTestKeenRefresh.Differences(const AExpected: TKeenChunkyImage): Integer;
-var
-  LActual: TKeenChunkyImage;
-  LIndex: Integer;
-begin
-  LActual := TKeenDisplayCapture.CaptureVideo(FVideo);
-  Result := 0;
-  for LIndex := 0 to High(LActual.Pixels) do
-    if LActual.Pixels[LIndex] <> AExpected.Pixels[LIndex] then
-      Inc(Result);
 end;
 
 procedure TTestKeenRefresh.ExpectScreen(const AExpected: TKeenChunkyImage; const AWhat: string);

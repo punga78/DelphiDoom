@@ -2909,10 +2909,7 @@ begin
   begin
     LRules := ARuleset.Items.Find(FUnitRules.PsiWeapon);
     if Assigned(LRules) then
-    begin
       FSpecialWeapons[LIndex] := AMake(LRules);
-      Inc(LIndex);
-    end;
   end;
 end;
 

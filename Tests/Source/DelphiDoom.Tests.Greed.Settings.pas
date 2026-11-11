@@ -196,7 +196,7 @@ begin
         else if OLD_DEFAULTS[idx]._type = tBoolean then
           OldBool[idx] := (v <> '0') and (v <> '')
         else
-          OldStr[idx] := v;
+          OldStr[idx] := ShortString(v);
       end;
     end;
     Result := s.Count > 0;

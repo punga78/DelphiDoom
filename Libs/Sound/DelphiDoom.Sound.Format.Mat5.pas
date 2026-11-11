@@ -69,21 +69,21 @@ end;
 /// </summary>
 function ReadArrayHead(var AReader: TSoundByteReader; out ARows, ACols: Integer): Boolean;
 var
-  LType, LSize: Cardinal;
+  LType: Cardinal;
 begin
   Result := False;
   LType := AReader.ReadUInt32;
-  LSize := AReader.ReadUInt32;
+  AReader.ReadUInt32;                    // size
   if LType <> MAT5_TYPE_ARRAY then
     Exit;
   LType := AReader.ReadUInt32;
-  LSize := AReader.ReadUInt32;
+  AReader.ReadUInt32;                    // size
   if LType <> MAT5_TYPE_UINT32 then
     Exit;
   AReader.ReadUInt32;                    // flags
   AReader.ReadUInt32;
   LType := AReader.ReadUInt32;
-  LSize := AReader.ReadUInt32;
+  AReader.ReadUInt32;                    // size
   if LType <> MAT5_TYPE_INT32 then
     Exit;
   ARows := Integer(AReader.ReadUInt32);
@@ -204,7 +204,7 @@ begin
     if not ReadName(LReader) then
       Exit(SNDFILE_ERR_MALFORMED_FILE);
     LType := LReader.ReadUInt32;
-    LSize := LReader.ReadUInt32;
+    LReader.ReadUInt32;                  // size
   end;
 
   if (LRows = 0) and (LCols = 0) then

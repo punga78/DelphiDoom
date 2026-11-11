@@ -14,7 +14,7 @@ unit DelphiDoom.Greed.FixedMath;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.MathCore.Types;
+  System.SysUtils, DelphiDoom.MathCore.Types, DelphiDoom.MathCore.FixedMath;
 
 type
   /// <summary>
@@ -44,9 +44,6 @@ type
   end;
 
 implementation
-
-uses
-  DelphiDoom.MathCore.FixedMath;
 
 { TGreedFixedMath }
 

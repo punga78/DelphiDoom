@@ -399,7 +399,6 @@ var
   end;
 begin
   LSeed := 8675309;
-  LKilled := 0;
   for LScenario := 1 to 300 do
   begin
     LKind := KINDS[LScenario mod Length(KINDS)];

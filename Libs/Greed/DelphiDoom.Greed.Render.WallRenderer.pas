@@ -42,7 +42,8 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Types, DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.FixedMath;
+  System.SysUtils, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Types, DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.FixedMath,
+  DelphiDoom.MathCore.FixedMath;
 
 type
   FM = TGreedFixedMath;

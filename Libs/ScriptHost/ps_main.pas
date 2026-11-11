@@ -348,7 +348,7 @@ begin
 
   clist := TDStringList.Create;
   clist.LoadFromFile(src);
-  if PS_Manager.DoomCompiler.CompileDoomScript(clist.Text, data) then
+  if PS_Manager.DoomCompiler.CompileDoomScript(TbtString(clist.Text), data) then
   begin
     f := TFile.Create(dest, fCreate);
     for i := 1 to Length(data) do
@@ -367,7 +367,7 @@ begin
     begin
       I_Warning('//---------------------------------------------------------'#13#10);
       I_Warning(' Pos: ' + IntToStrZFill(6, PS_Manager.DoomCompiler.Msg[i].Pos) +
-                ' Compiler: ' + PS_Manager.DoomCompiler.Msg[i].MessageToString + #13#10);
+                ' Compiler: ' + string(PS_Manager.DoomCompiler.Msg[i].MessageToString) + #13#10);
       I_Warning(' <<' + Copy(clist.Text, PS_Manager.DoomCompiler.Msg[i].Pos, 80) + '>>'#13#10);
       I_Warning('//---------------------------------------------------------'#13#10);
     end;

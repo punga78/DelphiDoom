@@ -248,7 +248,7 @@ begin
   FVoices[LIndex].Note := ANote;
   FVoices[LIndex].Gain := AVelocity / 127;
   FVoices[LIndex].Age := FClock;
-  FVoices[LIndex].Noise := Cardinal(ANote * 2654435761) or 1;
+  FVoices[LIndex].Noise := Cardinal(Int64(ANote) * 2654435761) or 1;
   FVoices[LIndex].Drum := AChannel = 9;
   if FVoices[LIndex].Drum then
   begin

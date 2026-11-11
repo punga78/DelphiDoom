@@ -109,7 +109,7 @@ end;
 function TEngineScriptMobjInfo.Text(const AType: Integer; const AField: TScriptMobjInfoField): string;
 begin
   case AField of
-    mifName: Result := mobjinfo[AType].name;
+    mifName: Result := string(mobjinfo[AType].name);
     mifSeeSound: Result := S_GetSoundNameForNum(mobjinfo[AType].seesound);
     mifAttackSound: Result := S_GetSoundNameForNum(mobjinfo[AType].attacksound);
     mifPainSound: Result := S_GetSoundNameForNum(mobjinfo[AType].painsound);
@@ -119,8 +119,8 @@ begin
     mifCustomSound2: Result := S_GetSoundNameForNum(mobjinfo[AType].customsound2);
     mifCustomSound3: Result := S_GetSoundNameForNum(mobjinfo[AType].customsound3);
     mifMeleeSound: Result := S_GetSoundNameForNum(mobjinfo[AType].meleesound);
-    mifObituary: Result := mobjinfo[AType].obituary;
-    mifHitObituary: Result := mobjinfo[AType].hitobituary;
+    mifObituary: Result := string(mobjinfo[AType].obituary);
+    mifHitObituary: Result := string(mobjinfo[AType].hitobituary);
     mifRipSound: Result := S_GetSoundNameForNum(mobjinfo[AType].ripsound);
   else
     Result := '';
