@@ -13,20 +13,23 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Navigator.Intf,
   DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomSave.SavedGame;
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Control.Intf;
 
 type
   /// <summary>
   ///   Opens the screens that exist (the bases screen from the geoscape); the others do nothing yet. It is the
   ///   navigator of both the geoscape and the basescape; it does not own the host
   /// </summary>
-  TXcomGameNavigator = class(TInterfacedObject, IXcomGeoscapeNavigator, IXcomBasescapeNavigator)
+  TXcomGameNavigator = class(TInterfacedObject, IXcomGeoscapeNavigator, IXcomBasescapeNavigator,
+    IXcomGeoscapeAware)
   strict private
     FHost: TXcomStateHost;
+    FControl: IXcomGeoscapeControl;
   public
     constructor Create(AHost: TXcomStateHost);
-    procedure OpenIntercept;
+    procedure AttachGeoscape(const AControl: IXcomGeoscapeControl);
     procedure OpenBases(AGlobe: TXcomGlobe);
+    procedure OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
     procedure OpenGraphs;
     procedure OpenUfopaedia;
     procedure OpenOptions;
@@ -40,7 +43,8 @@ implementation
 
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
-  DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState;
+  DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
+  DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost);
 begin
@@ -48,8 +52,14 @@ begin
   FHost := AHost;
 end;
 
-procedure TXcomGameNavigator.OpenIntercept;
+procedure TXcomGameNavigator.AttachGeoscape(const AControl: IXcomGeoscapeControl);
 begin
+  FControl := AControl;
+end;
+
+procedure TXcomGameNavigator.OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
+begin
+  FHost.PushState(TXcomPlaceLiftState.Create(FHost, ABase, AGlobe, Self));
 end;
 
 procedure TXcomGameNavigator.OpenBases(AGlobe: TXcomGlobe);
@@ -90,6 +100,13 @@ end;
 procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
 begin
   case AScreen of
+    bsNewBase:
+      if Assigned(FControl) then
+      begin
+        // BasescapeState::btnNewBaseClick: a new base (that the saved game does not have yet) and the site on the globe
+        FHost.PopState;
+        FHost.PushState(TXcomBuildNewBaseState.Create(FHost, TXcomBase.Create, FControl.Globe, False, FControl));
+      end;
     bsBaseInfo:
       FHost.PushState(TXcomBaseInfoState.Create(FHost, ABase));
     bsSoldiers:

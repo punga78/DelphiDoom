@@ -93,7 +93,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.UfoDetected(const AUfo: TXcomUfo; AHyperDetected: Boolean);
 begin
   if Attached then
-    Show(TXcomUfoDetectedState.Create(FHost, AUfo, FControl, True, AHyperDetected, nil));
+    Show(FControl.Screens.MakeUfoDetected(AUfo, True, AHyperDetected));
 end;
 
 procedure TXcomPopupGeoscapeEvents.UfoLost(const AUfo: TXcomUfo);
@@ -105,14 +105,14 @@ end;
 procedure TXcomPopupGeoscapeEvents.MissionDetected(const ASite: TXcomMissionSite);
 begin
   if Attached then
-    Show(TXcomMissionDetectedState.Create(FHost, ASite, FControl, nil));
+    Show(FControl.Screens.MakeMissionDetected(ASite));
 end;
 
 procedure TXcomPopupGeoscapeEvents.CraftNeedsOrders(const ACraft: TXcomCraft; const AWaypoint: TXcomWaypoint);
 begin
   if Attached then
     // the state owns the waypoint until an order takes it
-    Show(TXcomGeoscapeCraftState.Create(FHost, ACraft, FControl.Globe, AWaypoint, nil))
+    Show(FControl.Screens.MakeGeoscapeCraft(ACraft, AWaypoint))
   else
     inherited CraftNeedsOrders(ACraft, AWaypoint);
 end;
@@ -127,7 +127,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.CraftPatrolling(const ACraft: TXcomCraft);
 begin
   if Attached then
-    Show(TXcomCraftPatrolState.Create(FHost, ACraft, nil));
+    Show(FControl.Screens.MakeCraftPatrol(ACraft));
 end;
 
 procedure TXcomPopupGeoscapeEvents.LowFuel(const ACraft: TXcomCraft);

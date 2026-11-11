@@ -14,7 +14,7 @@ uses
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton,
-  DelphiDoom.XcomGeoscape.Globe;
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf;
 
 type
   /// <summary>
@@ -28,6 +28,7 @@ type
     FBase: TXcomBase;
     FGlobe: TXcomGlobe;
     FFirst: Boolean;
+    FControl: IXcomGeoscapeControl;
     FOldShowRadar: Boolean;
     FOldLat: Double;
     FOldLon: Double;
@@ -50,7 +51,9 @@ type
     procedure ConfigureHold(ASurface: TXcomInteractiveSurface; AKey: Integer; const APress,
       ARelease: TXcomActionHandler);
   public
-    constructor Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
+    /// <param name="AControl">The geoscape, for the confirmation and the lift of a base after the first (nil: none)</param>
+    constructor Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean;
+      const AControl: IXcomGeoscapeControl = nil);
     destructor Destroy; override;
     procedure Init; override;
     procedure Think; override;
@@ -61,14 +64,16 @@ implementation
 
 uses
   System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.Craft,
-  DelphiDoom.XcomMenu.ErrorMessageState, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.BaseNameState;
+  DelphiDoom.XcomMenu.ErrorMessageState, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.BaseNameState,
+  DelphiDoom.XcomGeoscape.ConfirmNewBaseState;
 
 constructor TXcomBuildNewBaseState.Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe;
-  AFirst: Boolean);
+  AFirst: Boolean; const AControl: IXcomGeoscapeControl);
 var
   LDX, LDY: Integer;
 begin
   inherited Create(AHost);
+  FControl := AControl;
   FBase := ABase;
   FGlobe := AGlobe;
   FFirst := AFirst;
@@ -271,8 +276,9 @@ begin
         LCraft.SetLatitude(LLat);
       end;
       if FFirst then
-        Host.PushState(TXcomBaseNameState.Create(Host, FBase, FGlobe, FFirst));
-      // a base after the first asks to confirm (ConfirmNewBaseState): not ported
+        Host.PushState(TXcomBaseNameState.Create(Host, FBase, FGlobe, FFirst, FControl))
+      else
+        Host.PushState(TXcomConfirmNewBaseState.Create(Host, FBase, FGlobe, FControl));
     end
     else
     begin
@@ -293,6 +299,9 @@ end;
 
 procedure TXcomBuildNewBaseState.CancelClick(AAction: TXcomAction);
 begin
+  // BuildNewBaseState::btnCancelClick deletes the base (the one that is not in the game yet)
+  if not FFirst then
+    FreeAndNil(FBase);
   Host.PopState;
 end;
 

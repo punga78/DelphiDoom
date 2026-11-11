@@ -20,7 +20,6 @@ type
   /// </summary>
   IXcomGeoscapeNavigator = interface
     ['{2D8B6F40-1E93-4A57-B0C8-A7E35D1F9264}']
-    procedure OpenIntercept;
     /// <summary>The globe is given because the bases screen can send the player to choose the site of a new base</summary>
     procedure OpenBases(AGlobe: TXcomGlobe);
     procedure OpenGraphs;
@@ -31,6 +30,8 @@ type
     procedure OpenBase(ABase: TXcomBase; AGlobe: TXcomGlobe);
     /// <summary>A screen of a base that a popup opens (ManufactureState(base), ResearchState(base)...)</summary>
     procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+    /// <summary>PlaceLiftState(base, globe, first): where the access lift of a new base goes</summary>
+    procedure OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
   end;
 
 implementation

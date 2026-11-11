@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomGeoscape.Globe,
   DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf,
-  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
 
 type
   /// <summary>
@@ -77,6 +77,7 @@ type
     procedure ConfigureHold(ASurface: TXcomInteractiveSurface; AKey: Integer; const APress,
       ARelease: TXcomActionHandler);
     procedure TimeAdvance;
+    procedure GlobeClick(AAction: TXcomAction);
   public
     /// <param name="ASimulation">What runs with the time; nil: the date advances and nothing else happens</param>
     /// <param name="ANavigator">The screens of the buttons; nil: the buttons do nothing</param>
@@ -94,6 +95,7 @@ type
     /// <summary>The basescape of a base, through the navigator (nothing without one)</summary>
     procedure OpenBase(ABase: TXcomBase);
     procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+    procedure PlaceLift(ABase: TXcomBase; AFirst: Boolean);
     property Globe: TXcomGlobe read FGlobe;
     /// <summary>What the popups ask of this geoscape (valid while the geoscape lives)</summary>
     property Control: IXcomGeoscapeControl read FControl;
@@ -119,18 +121,34 @@ type
   TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl)
   strict private
     FState: TXcomGeoscapeState;
+    FScreens: IXcomGeoscapeScreens;
   public
     constructor Create(AState: TXcomGeoscapeState);
+    function Screens: IXcomGeoscapeScreens;
     procedure Detach;
     procedure TimerReset;
     function Globe: TXcomGlobe;
     procedure Popup(AState: TXcomState);
     procedure OpenBase(ABase: TXcomBase);
     procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+    procedure PlaceLift(ABase: TXcomBase; AFirst: Boolean);
     function Palette: PXcomColors;
   end;
 
 { TXcomGeoscapeControl }
+
+function TXcomGeoscapeControl.Screens: IXcomGeoscapeScreens;
+begin
+  if (FScreens = nil) and Assigned(FState) then
+    FScreens := TXcomGeoscapeScreens.Create(FState.Host, Self);
+  Result := FScreens;
+end;
+
+procedure TXcomGeoscapeControl.PlaceLift(ABase: TXcomBase; AFirst: Boolean);
+begin
+  if Assigned(FState) then
+    FState.PlaceLift(ABase, AFirst);
+end;
 
 function TXcomGeoscapeControl.Palette: PXcomColors;
 begin
@@ -155,6 +173,7 @@ end;
 procedure TXcomGeoscapeControl.Detach;
 begin
   FState := nil;
+  FScreens := nil;
 end;
 
 procedure TXcomGeoscapeControl.TimerReset;
@@ -200,6 +219,8 @@ begin
   FPopups := TList<TXcomState>.Create;
   FControl := TXcomGeoscapeControl.Create(Self);
   if Supports(FSimulation, IXcomGeoscapeAware, LAware) then
+    LAware.AttachGeoscape(FControl);
+  if Supports(FNavigator, IXcomGeoscapeAware, LAware) then
     LAware.AttachGeoscape(FControl);
   FSave := TXcomStrategy.SavedGame(AHost);
   FRules := TXcomStrategy.Rules(AHost);
@@ -295,8 +316,7 @@ begin
   ConfigureButton(FBtnIntercept, 'STR_INTERCEPT', False, KEY_GEO_INTERCEPT,
     procedure(AAction: TXcomAction)
     begin
-      if Assigned(FNavigator) then
-        FNavigator.OpenIntercept;
+      FControl.Screens.OpenIntercept(nil, nil);
     end);
   ConfigureButton(FBtnBases, 'STR_BASES', False, KEY_GEO_BASES,
     procedure(AAction: TXcomAction)
@@ -488,11 +508,7 @@ begin
   inherited Init;
   TimeDisplay;
   // the screens that borrow the globe set their handlers on it: they are replaced by the ones of the geoscape
-  // (globeClick, which looks for the targets under the mouse, is not ported)
-  FGlobe.OnMouseClick(
-    procedure(AAction: TXcomAction)
-    begin
-    end);
+  FGlobe.OnMouseClick(GlobeClick);
   FGlobe.OnMouseOver(nil);
   FGlobe.RotateStop;
   FGlobe.SetFocus(True);
@@ -504,6 +520,21 @@ begin
     FSave.AddMonth;
     if Assigned(FSimulation) then
       FSimulation.StartFirstMonth;
+  end;
+end;
+
+procedure TXcomGeoscapeState.GlobeClick(AAction: TXcomAction);
+var
+  LTargets: TList<TXcomTarget>;
+begin
+  // clicking the markers of the globe (the right click scrolls it: the globe does it)
+  if AAction.Details^.Button = XCOM_BUTTON_LEFT then
+  begin
+    LTargets := FGlobe.GetTargets(Floor(AAction.AbsoluteXMouse), Floor(AAction.AbsoluteYMouse), False);
+    if LTargets.Count > 0 then
+      FControl.Screens.OpenMultipleTargets(LTargets, nil)
+    else
+      LTargets.Free;
   end;
 end;
 
@@ -596,6 +627,12 @@ procedure TXcomGeoscapeState.OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXc
 begin
   if Assigned(FNavigator) then
     FNavigator.OpenBaseScreen(AScreen, ABase);
+end;
+
+procedure TXcomGeoscapeState.PlaceLift(ABase: TXcomBase; AFirst: Boolean);
+begin
+  if Assigned(FNavigator) then
+    FNavigator.OpenPlaceLift(ABase, FGlobe, AFirst);
 end;
 
 procedure TXcomGeoscapeState.OpenBase(ABase: TXcomBase);
