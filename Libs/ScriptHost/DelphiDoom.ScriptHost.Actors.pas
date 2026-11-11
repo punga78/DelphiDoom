@@ -520,8 +520,9 @@ begin
     'function GetActorEditorNumber(const key: LongWord): integer;', acfEditorNumber);
   AddNumberGetter(ATable,
     'function GetActorState(const key: LongWord): integer;', acfState);
-  AddNumberSetter(ATable,
-    'procedure SetActorState(const key: LongWord; const value: Integer);', acfState);
+  ATable.AddMethod(
+    'procedure SetActorState(const key: LongWord; const value: Integer);', Self,
+    @TScriptActors.SetActorState);
   ATable.AddMethod(
     'function IsValidActor(const key: LongWord): boolean;', Self,
     @TScriptActors.IsValidActor);

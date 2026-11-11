@@ -132,9 +132,15 @@ type
     [Test]
     procedure DovrebbeScrivereIValoriDiUnAttore;
     [Test]
+    procedure DovrebbeLeggereOgniNumeroDaiGetterRegistrati;
+    [Test]
+    procedure DovrebbeScrivereOgniNumeroDaiSetterRegistrati;
+    [Test]
     procedure DovrebbeConservareIlDifettoDellIndiceDiTessituraZCheScriveQuelloXY;
     [Test]
     procedure DovrebbeLeggereIlSuonoDiRipComeQuelloDiMischia;
+    [Test]
+    procedure DovrebbeLeggereEScrivereITestiELeRelazioniDaiRegistrati;
     [Test]
     procedure DovrebbeLeggereIlNomeSoloSeLAttoreCe;
     [Test]
@@ -483,6 +489,9 @@ procedure TFakeActorSource.SetNumber(const AKey: Cardinal; const AField: TScript
 var
   LActor: TFakeActor;
 begin
+  // the engine writes none of the read only fields (the state has its own method)
+  if AField in [acfSpawnHealth, acfSector, acfMobjType, acfEditorNumber, acfState] then
+    Exit;
   LActor := Find(AKey);
   if Assigned(LActor) then
     LActor.Numbers[AField] := AValue;
@@ -821,6 +830,101 @@ begin
   FActors.SetActorPosition(555, 1, 2, 3);
 end;
 
+const
+  // the registered numbers: the name of the function without Get or Set and the field it reads and writes
+  // (SetActorWeaveIndexZ writes the XY index, a defect of the old code that is kept)
+  ACTOR_NUMBER_NAMES: array[0..30] of string = (
+    'X', 'Y', 'Z', 'MOMX', 'MOMY', 'MOMZ', 'FloorZ', 'CeilingZ', 'Speed', 'Angle', 'Health', 'Mass',
+    'Height', 'CustomDropItem', 'PushFactor', 'Scale', 'Gravity', 'Special', 'Arg1', 'Arg2', 'Arg3',
+    'Arg4', 'Arg5', 'WeaveIndexXY', 'Friction', 'PainChance', 'SpriteDX', 'SpriteDY',
+    'InfightingGroup', 'ProjectileGroup', 'SplashGroup');
+  ACTOR_NUMBER_FIELDS: array[0..30] of TScriptActorField = (
+    acfX, acfY, acfZ, acfMomX, acfMomY, acfMomZ, acfFloorZ, acfCeilingZ, acfSpeed, acfAngle,
+    acfHealth, acfMass, acfHeight, acfCustomDropItem, acfPushFactor, acfScale, acfGravity,
+    acfSpecial, acfArg1, acfArg2, acfArg3, acfArg4, acfArg5, acfWeaveIndexXY, acfFriction,
+    acfPainChance, acfSpriteDX, acfSpriteDY, acfInfightingGroup, acfProjectileGroup,
+    acfSplashGroup);
+
+procedure TTestScriptHostActors.DovrebbeLeggereOgniNumeroDaiGetterRegistrati;
+var
+  LTable: TFakeFunctionTable;
+  LIndex: Integer;
+  LFunction: Integer;
+  LGet: function(const AKey: Cardinal): Integer of object;
+
+  procedure Bind(const AName: string);
+  begin
+    LFunction := FunctionOf(LTable, AName);
+    Assert.IsTrue(LFunction >= 0, AName);
+    TMethod(LGet).Data := LTable.Instances[LFunction];
+    TMethod(LGet).Code := LTable.Codes[LFunction];
+  end;
+
+begin
+  LTable := DescribeFor(sgDoom);
+  for LIndex := 0 to High(ACTOR_NUMBER_NAMES) do
+  begin
+    FSource.Actors[100].Numbers[ACTOR_NUMBER_FIELDS[LIndex]] := 1000 + LIndex;
+    Bind('GetActor' + ACTOR_NUMBER_NAMES[LIndex]);
+    Assert.AreEqual(1000 + LIndex, LGet(100), ACTOR_NUMBER_NAMES[LIndex]);
+  end;
+  // the numbers that scripts can read and not write
+  FSource.Actors[100].Numbers[acfSpawnHealth] := 11;
+  FSource.Actors[100].Numbers[acfSector] := 12;
+  FSource.Actors[100].Numbers[acfMobjType] := 13;
+  FSource.Actors[100].Numbers[acfEditorNumber] := 14;
+  FSource.Actors[100].Numbers[acfState] := 15;
+  FSource.Actors[100].Numbers[acfWeaveIndexZ] := 16;
+  Bind('GetActorSpawnHealth');
+  Assert.AreEqual(11, LGet(100));
+  Bind('GetActorSector');
+  Assert.AreEqual(12, LGet(100));
+  Bind('GetActorMobjType');
+  Assert.AreEqual(13, LGet(100));
+  Bind('GetActorEditorNumber');
+  Assert.AreEqual(14, LGet(100));
+  Bind('GetActorState');
+  Assert.AreEqual(15, LGet(100));
+  Bind('GetActorWeaveIndexZ');
+  Assert.AreEqual(16, LGet(100));
+end;
+
+procedure TTestScriptHostActors.DovrebbeScrivereOgniNumeroDaiSetterRegistrati;
+var
+  LTable: TFakeFunctionTable;
+  LIndex: Integer;
+  LFunction: Integer;
+  LPut: procedure(const AKey: Cardinal; const AValue: Integer) of object;
+
+  procedure Bind(const AName: string);
+  begin
+    LFunction := FunctionOf(LTable, AName);
+    Assert.IsTrue(LFunction >= 0, AName);
+    TMethod(LPut).Data := LTable.Instances[LFunction];
+    TMethod(LPut).Code := LTable.Codes[LFunction];
+  end;
+
+begin
+  LTable := DescribeFor(sgDoom);
+  for LIndex := 0 to High(ACTOR_NUMBER_NAMES) do
+  begin
+    Bind('SetActor' + ACTOR_NUMBER_NAMES[LIndex]);
+    LPut(100, 2000 + LIndex);
+    Assert.AreEqual(2000 + LIndex, FSource.Actors[100].Numbers[ACTOR_NUMBER_FIELDS[LIndex]],
+      ACTOR_NUMBER_NAMES[LIndex]);
+  end;
+  // the state has its own method, which checks the number of the state (the fake writes no read only field)
+  Bind('SetActorState');
+  LPut(100, 9);
+  Assert.AreEqual(9, FSource.Actors[100].Numbers[acfState]);
+  LPut(100, 500);
+  Assert.AreEqual(9, FSource.Actors[100].Numbers[acfState]);
+  // the Z weave index writes the XY one
+  Bind('SetActorWeaveIndexZ');
+  LPut(100, 77);
+  Assert.AreEqual(77, FSource.Actors[100].Numbers[acfWeaveIndexXY]);
+end;
+
 procedure TTestScriptHostActors.DovrebbeConservareIlDifettoDellIndiceDiTessituraZCheScriveQuelloXY;
 var
   LTable: TFakeFunctionTable;
@@ -850,6 +954,68 @@ begin
   // the old GetActorRipSound read the melee sound of the actor
   Assert.AreEqual('dsmelee', LGet(100));
   Assert.AreEqual('', LGet(555));
+end;
+
+const
+  ACTOR_TEXT_NAMES: array[0..11] of string = (
+    'Translation', 'BloodColor', 'Name', 'SeeSound', 'AttackSound', 'PainSound', 'DeathSound',
+    'ActiveSound', 'CustomSound1', 'CustomSound2', 'CustomSound3', 'MeleeSound');
+  ACTOR_TEXT_FIELDS: array[0..11] of TScriptActorText = (
+    actTranslation, actBloodColor, actName, actSeeSound, actAttackSound, actPainSound,
+    actDeathSound, actActiveSound, actCustomSound1, actCustomSound2, actCustomSound3,
+    actMeleeSound);
+  ACTOR_RELATION_NAMES: array[0..2] of string = ('Target', 'Tracer', 'Master');
+  ACTOR_RELATION_FIELDS: array[0..2] of TScriptActorRelation = (acrTarget, acrTracer, acrMaster);
+
+procedure TTestScriptHostActors.DovrebbeLeggereEScrivereITestiELeRelazioniDaiRegistrati;
+var
+  LTable: TFakeFunctionTable;
+  LIndex: Integer;
+  LFunction: Integer;
+  LGetText: function(const AKey: Cardinal): string of object;
+  LPutText: procedure(const AKey: Cardinal; const AValue: string) of object;
+  LGetKey: function(const AKey: Cardinal): Cardinal of object;
+  LPutKey: procedure(const AKey: Cardinal; const ATargetKey: Cardinal) of object;
+
+  function Bind(const AName: string; out ACode: TMethod): Boolean;
+  begin
+    LFunction := FunctionOf(LTable, AName);
+    Result := LFunction >= 0;
+    if not Result then
+      Exit;
+    ACode.Data := LTable.Instances[LFunction];
+    ACode.Code := LTable.Codes[LFunction];
+  end;
+
+begin
+  LTable := DescribeFor(sgDoom);
+  for LIndex := 0 to High(ACTOR_TEXT_NAMES) do
+  begin
+    FSource.Actors[100].Texts[ACTOR_TEXT_FIELDS[LIndex]] := 'text' + System.SysUtils.IntToStr(LIndex);
+    Assert.IsTrue(Bind('GetActor' + ACTOR_TEXT_NAMES[LIndex], TMethod(LGetText)), ACTOR_TEXT_NAMES[LIndex]);
+    Assert.AreEqual('text' + System.SysUtils.IntToStr(LIndex), LGetText(100), ACTOR_TEXT_NAMES[LIndex]);
+  end;
+  // the sound of the rip is the sound of the melee (kept), the second name does not exist in Doom
+  Assert.IsTrue(Bind('GetActorRipSound', TMethod(LGetText)));
+  Assert.AreEqual('text11', LGetText(100));
+  Assert.IsFalse(Bind('GetActorName2', TMethod(LGetText)));
+  // the two texts that scripts can write
+  Assert.IsTrue(Bind('SetActorTranslation', TMethod(LPutText)));
+  LPutText(100, 'ICE');
+  Assert.AreEqual('ICE', FSource.Actors[100].Texts[actTranslation]);
+  Assert.IsTrue(Bind('SetActorBloodColor', TMethod(LPutText)));
+  LPutText(100, 'BLUE');
+  Assert.AreEqual('BLUE', FSource.Actors[100].Texts[actBloodColor]);
+  // the actors that an actor points to
+  for LIndex := 0 to High(ACTOR_RELATION_NAMES) do
+  begin
+    Assert.IsTrue(Bind('SetActor' + ACTOR_RELATION_NAMES[LIndex], TMethod(LPutKey)), ACTOR_RELATION_NAMES[LIndex]);
+    LPutKey(100, 102 - LIndex);
+    Assert.IsTrue(Bind('GetActor' + ACTOR_RELATION_NAMES[LIndex], TMethod(LGetKey)), ACTOR_RELATION_NAMES[LIndex]);
+    Assert.AreEqual(Cardinal(102 - LIndex), LGetKey(100), ACTOR_RELATION_NAMES[LIndex]);
+    Assert.AreEqual(Cardinal(102 - LIndex), FSource.Actors[100].Relations[ACTOR_RELATION_FIELDS[LIndex]],
+      ACTOR_RELATION_NAMES[LIndex]);
+  end;
 end;
 
 procedure TTestScriptHostActors.DovrebbeLeggereIlNomeSoloSeLAttoreCe;
@@ -1128,6 +1294,8 @@ const
     '  SetActorFlag(100, 9);'#13#10 +
     '  f := CheckActorFlag(100, 9);'#13#10 +
     '  SetActorState(101, 12);'#13#10 +
+    '  SetActorState(101, 99);'#13#10 +
+    '  SetActorState(101, -3);'#13#10 +
     '  sp := SpawnActorType(1, 2, 3, 4);'#13#10 +
     '  RemoveActor(102);'#13#10 +
     '  ActorPlaySound(100, ''x'');'#13#10 +
