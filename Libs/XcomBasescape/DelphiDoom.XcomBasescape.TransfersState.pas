@@ -45,6 +45,8 @@ var
   LTransfer: TXcomTransfer;
 begin
   inherited Create(AHost);
+  // _screen = false: the base information stays visible around the window
+  ToggleScreen;
   FWindow := TXcomWindow.Create(Self, 320, 184, 0, 8, wpBoth);
   FBtnOk := TXcomTextButton.Create(288, 16, 16, 166);
   FTxtTitle := TXcomText.Create(278, 17, 21, 18);
