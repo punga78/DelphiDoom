@@ -157,12 +157,13 @@ begin
   end
   else
   begin
-    // the debriefing reads the battle now: the battlescape (and with it the battle) is freed right after
+    // the debriefing reads the battle now: the battlescape is freed right after, and the session (the battle, its
+    // pictures) goes with the briefing that holds this closure; the message keeps the pictures it draws
     LDebriefing := nil;
     if Assigned(FScreens) then
       LDebriefing := FScreens.Debriefing(LBattlescape);
     LBattlescape.Free;
-    FHost.PushState(TXcomAliensCrashState.Create(FHost, ASession.Graphics.Surface('TAC00.SCR'),
+    FHost.PushState(TXcomAliensCrashState.Create(FHost, ASession.Graphics,
       procedure
       begin
         if Assigned(LDebriefing) then

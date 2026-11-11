@@ -37,7 +37,9 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function ReadExpected(const ABase: string): string; static;
-    function RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
+    function RunScenario(const ABase: string; AWithPathfinder: Boolean; out AActual: string; out ASeed: UInt64)
+      : string;
+    procedure CompareScenarios(AWithPathfinder: Boolean);
   protected
     /// <summary>The golden of Mod::loadAll that tells the mods of the game (TFTD: xcom2, UFO: xcom1)</summary>
     function GoldenName: string; virtual;
@@ -52,6 +54,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
+    [Test]
+    procedure DovrebbeDareLeStesseBattaglieSeLaBattagliaNonHaIlPathfinder;
   end;
 
   [TestFixture]
@@ -192,7 +196,8 @@ begin
   FData.Free;
 end;
 
-function TTestXcomRealGenerator.RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
+function TTestXcomRealGenerator.RunScenario(const ABase: string; AWithPathfinder: Boolean; out AActual: string;
+  out ASeed: UInt64): string;
 var
   LScenario: TStringList;
   LSaveFile: TArray<IYamlNode>;
@@ -234,8 +239,13 @@ begin
       LBattle := TXcomSavedBattleGame.Create(LContext);
       try
         LBattle.MissionType := LScenario.Values['mission'];
-        LPathfinder := TXcomPathfinding.Create(LBattle);
-        LBattle.Pathfinder := LPathfinder;
+        // the game makes the pathfinder of the battle after the generator (the session, once the map has its
+        // size): the generator must place large units and units next to a friend without it
+        if AWithPathfinder then
+        begin
+          LPathfinder := TXcomPathfinding.Create(LBattle);
+          LBattle.Pathfinder := LPathfinder;
+        end;
         LEngine := TXcomTileEngine.Create(LBattle, LContext, FVoxels);
         if LScenario.Values['tileorder'] <> '' then
         begin
@@ -275,6 +285,8 @@ begin
             LGenerator.SetTerrain(FRuleset.Terrains.Find(LScenario.Values['terrain']));
           try
             LGenerator.Run;
+            if not AWithPathfinder then
+              Assert.IsFalse(Assigned(LBattle.Pathfinder), 'the pathfinder of the run must not stay in the battle');
             AActual := string(TYamlFactory.Dump(LBattle.Save));
           except
             on E: EXcomBattleException do
@@ -298,6 +310,16 @@ begin
 end;
 
 procedure TTestXcomRealGenerator.DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
+begin
+  CompareScenarios(True);
+end;
+
+procedure TTestXcomRealGenerator.DovrebbeDareLeStesseBattaglieSeLaBattagliaNonHaIlPathfinder;
+begin
+  CompareScenarios(False);
+end;
+
+procedure TTestXcomRealGenerator.CompareScenarios(AWithPathfinder: Boolean);
 var
   LFolder: string;
   LPath: string;
@@ -324,7 +346,7 @@ begin
   for LPath in TDirectory.GetFiles(LFolder, 'gen*.scn') do
   begin
     LBase := Copy(LPath, 1, Length(LPath) - Length('.scn'));
-    LError := RunScenario(LBase, LActual, LSeed);
+    LError := RunScenario(LBase, AWithPathfinder, LActual, LSeed);
     LScenario := TStringList.Create;
     try
       LScenario.LoadFromFile(LPath);

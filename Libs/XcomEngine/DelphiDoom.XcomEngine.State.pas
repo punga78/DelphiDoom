@@ -329,12 +329,13 @@ begin
       ASurface.Y := AParent.Y + LElement.Y;
     end;
     ASurface.TftdMode := LElement.TftdMode;
+    // a color of the rules can be -1 (messageWindowBorder): it wraps to 8 bits as the Uint8 of the C++
     if LElement.Color <> XCOM_UNSET then
-      ASurface.SetColor(LElement.Color);
+      ASurface.SetColor(Byte(LElement.Color and $FF));
     if LElement.Color2 <> XCOM_UNSET then
-      ASurface.SetSecondaryColor(LElement.Color2);
+      ASurface.SetSecondaryColor(Byte(LElement.Color2 and $FF));
     if LElement.Border <> XCOM_UNSET then
-      ASurface.SetBorderColor(LElement.Border);
+      ASurface.SetBorderColor(Byte(LElement.Border and $FF));
   end;
   if Host.Language <> nil then
     ASurface.InitText(Host.Resources.GetFont('FONT_BIG'), Host.Resources.GetFont('FONT_SMALL'), Host.Language);
