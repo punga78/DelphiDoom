@@ -33,7 +33,9 @@ uses
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
   DelphiDoom.Xcom.Win.VideoDevice in 'DelphiDoom.Xcom.Win.VideoDevice.pas',
   DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
-  DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas';
+  DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
+  DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
+  DelphiDoom.Xcom.Win.AudioDevice in 'DelphiDoom.Xcom.Win.AudioDevice.pas';
 
 const
   DEFAULT_VERSION = '1.0 git 2026-06-05 22:05';
@@ -132,6 +134,8 @@ begin
       AArguments.Settings.DosPath := NextValue
     else if LName = '-listmodes' then
       AArguments.Settings.ListModes := True
+    else if LName = '-seed' then
+      AArguments.Settings.Seed := StrToUInt64(NextValue)
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else

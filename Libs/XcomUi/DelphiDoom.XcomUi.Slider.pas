@@ -35,6 +35,8 @@ type
     FMaxX: Integer;
     FOffsetX: Integer;
     procedure SetPosition(APos: Double);
+    /// <summary>The knob of a value placed with exact integer arithmetic (see SetValue)</summary>
+    procedure SetExactPosition;
   protected
     procedure SetX(AValue: Integer); override;
     procedure SetY(AValue: Integer); override;
@@ -191,7 +193,34 @@ begin
     LPos := 0.0
   else
     LPos := (FValue - FMin) / (FMax - FMin);
-  SetPosition(LPos);
+  FPos := LPos;
+  SetExactPosition;
+end;
+
+procedure TXcomSlider.SetExactPosition;
+var
+  LNumerator: Int64;
+  LDenominator: Int64;
+  LOffset: Int64;
+begin
+  if FMax = FMin then
+  begin
+    FButton.X := FMinX;
+    Exit;
+  end;
+  // floor(minX + (maxX - minX) * (value - min) / (max - min)) with no rounding error: the real program computes it in
+  // the extended precision of the x87, where 78 * 2/3 is exactly 52, while a double gives 51.99999999999999
+  LNumerator := Int64(FMaxX - FMinX) * (FValue - FMin);
+  LDenominator := FMax - FMin;
+  if LDenominator < 0 then
+  begin
+    LNumerator := -LNumerator;
+    LDenominator := -LDenominator;
+  end;
+  LOffset := LNumerator div LDenominator;
+  if (LNumerator mod LDenominator) < 0 then
+    Dec(LOffset);
+  FButton.X := FMinX + Integer(LOffset);
 end;
 
 function TXcomSlider.GetValue: Integer;

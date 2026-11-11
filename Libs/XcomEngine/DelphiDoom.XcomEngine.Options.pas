@@ -10,10 +10,22 @@ unit DelphiDoom.XcomEngine.Options;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.XcomEngine.Language;
+  System.SysUtils, System.Generics.Collections, System.Generics.Defaults, DelphiDoom.Yaml.Types,
+  DelphiDoom.Yaml.Intf, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language,
+  DelphiDoom.XcomEngine.OptionInfo;
 
 type
+  /// <summary>How a registered option is stored in the fields of TXcomOptions (the others live in dictionaries)</summary>
+  TXcomOptionStorage = (osInteger, osBoolean, osString, osWordwrap, osKeyboardMode);
+
+  TXcomOptionField = record
+    Storage: TXcomOptionStorage;
+    Address: Pointer;
+  end;
+
+  PXcomTextWrapping = ^TXcomTextWrapping;
+  PXcomKeyboardMode = ^TXcomKeyboardMode;
+
   /// <summary>
   ///   The options of the game that the engine and the menus read (Options of OpenXcom), with the defaults of the
   ///   Windows build. They are instance fields, not globals: the game and the states receive the instance. Only the
@@ -21,6 +33,14 @@ type
   ///   BaseXResolution and BaseYResolution are the size of the game picture
   /// </summary>
   TXcomOptions = class
+  strict private
+    FFields: TDictionary<string, TXcomOptionField>;
+    FValues: TDictionary<string, Integer>;
+    FTexts: TDictionary<string, string>;
+    FUnknown: TDictionary<string, string>;
+    procedure RegisterFields;
+    procedure ResetRegisteredDefaults;
+    class function YamlScalar(const AValue: string): string; static;
   public
     DisplayWidth: Integer;
     DisplayHeight: Integer;
@@ -91,7 +111,14 @@ type
     WindowedModePositionY: Integer;
     NewWindowedModePositionX: Integer;
     NewWindowedModePositionY: Integer;
+    /// <summary>The folders that the folders screen shows (Options::getUserFolder and the like), set by the program</summary>
+    OriginalDataFolder: string;
+    ModDataFolder: string;
+    UserFolder: string;
+    MasterUserFolder: string;
+    ConfigFolder: string;
     constructor Create;
+    destructor Destroy; override;
     /// <summary>Options::resetDefault for the options of this class</summary>
     procedure ResetDefaults;
     /// <summary>The pending video options start equal to the current ones (what Options::load leaves)</summary>
@@ -103,19 +130,46 @@ type
     ///   or has a bad value keeps what it has
     /// </summary>
     procedure Load(const ADocument: IYamlNode);
-    /// <summary>The "options" part of options.cfg, as the keys that this class has</summary>
+    /// <summary>
+    ///   The "options" part of options.cfg: every registered option and the unknown keys that Load found, sorted by the
+    ///   code of the characters as in the file of OpenXcom
+    /// </summary>
     function Save: string;
+    /// <summary>The value of a registered bool, int or key option by its id (0 if it is not registered)</summary>
+    function GetValue(const AId: string): Integer;
+    procedure SetValue(const AId: string; AValue: Integer);
+    function GetBool(const AId: string): Boolean;
+    procedure SetBool(const AId: string; AValue: Boolean);
+    /// <summary>The value of a registered string option by its id</summary>
+    function GetText(const AId: string): string;
+    procedure SetText(const AId, AValue: string);
+    /// <summary>The keys of options.cfg that are not registered (scalar values), kept to be written back</summary>
+    property UnknownOptions: TDictionary<string, string> read FUnknown;
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomEngine.YamlFields;
+  DelphiDoom.XcomEngine.YamlFields, DelphiDoom.XcomEngine.OptionTable;
 
 constructor TXcomOptions.Create;
 begin
   inherited Create;
+  FFields := TDictionary<string, TXcomOptionField>.Create;
+  FValues := TDictionary<string, Integer>.Create;
+  FTexts := TDictionary<string, string>.Create;
+  FUnknown := TDictionary<string, string>.Create;
+  RegisterFields;
   ResetDefaults;
+end;
+
+destructor TXcomOptions.Destroy;
+begin
+  FUnknown.Free;
+  FTexts.Free;
+  FValues.Free;
+  FFields.Free;
+  inherited Destroy;
 end;
 
 procedure TXcomOptions.ResetDefaults;
@@ -172,6 +226,7 @@ begin
   RootWindowedMode := False;
   WindowedModePositionX := 0;
   WindowedModePositionY := 0;
+  ResetRegisteredDefaults;
   SyncPendingDisplay;
 end;
 
@@ -237,90 +292,259 @@ begin
   SwapBool(Borderless, NewBorderless);
 end;
 
+procedure TXcomOptions.RegisterFields;
+  procedure AddField(const AId: string; AStorage: TXcomOptionStorage; AAddress: Pointer);
+  var
+    LField: TXcomOptionField;
+  begin
+    LField.Storage := AStorage;
+    LField.Address := AAddress;
+    FFields.Add(AId, LField);
+  end;
+begin
+  AddField('displayWidth', osInteger, @DisplayWidth);
+  AddField('displayHeight', osInteger, @DisplayHeight);
+  AddField('fullscreen', osBoolean, @Fullscreen);
+  AddField('geoscapeScale', osInteger, @GeoscapeScale);
+  AddField('battlescapeScale', osInteger, @BattlescapeScale);
+  AddField('keepAspectRatio', osBoolean, @KeepAspectRatio);
+  AddField('nonSquarePixelRatio', osBoolean, @NonSquarePixelRatio);
+  AddField('allowResize', osBoolean, @AllowResize);
+  AddField('borderless', osBoolean, @Borderless);
+  AddField('useOpenGL', osBoolean, @UseOpenGL);
+  AddField('useScaleFilter', osBoolean, @UseScaleFilter);
+  AddField('useHQXFilter', osBoolean, @UseHQXFilter);
+  AddField('useXBRZFilter', osBoolean, @UseXBRZFilter);
+  AddField('cursorInBlackBandsInFullscreen', osBoolean, @CursorInBlackBandsInFullscreen);
+  AddField('cursorInBlackBandsInWindow', osBoolean, @CursorInBlackBandsInWindow);
+  AddField('cursorInBlackBandsInBorderlessWindow', osBoolean, @CursorInBlackBandsInBorderlessWindow);
+  AddField('language', osString, @Language);
+  AddField('wordwrap', osWordwrap, @Wordwrap);
+  AddField('fpsCounter', osBoolean, @FpsCounter);
+  AddField('FPS', osInteger, @FPS);
+  AddField('FPSInactive', osInteger, @FPSInactive);
+  AddField('maxFrameSkip', osInteger, @MaxFrameSkip);
+  AddField('debug', osBoolean, @Debug);
+  AddField('debugUi', osBoolean, @DebugUi);
+  AddField('playIntro', osBoolean, @PlayIntro);
+  AddField('soundVolume', osInteger, @SoundVolume);
+  AddField('musicVolume', osInteger, @MusicVolume);
+  AddField('uiVolume', osInteger, @UiVolume);
+  AddField('keyOk', osInteger, @KeyOk);
+  AddField('keyCancel', osInteger, @KeyCancel);
+  AddField('keyScreenshot', osInteger, @KeyScreenshot);
+  AddField('mousewheelSpeed', osInteger, @MousewheelSpeed);
+  AddField('changeValueByMouseWheel', osInteger, @ChangeValueByMouseWheel);
+  AddField('keyboardMode', osKeyboardMode, @KeyboardMode);
+  AddField('captureMouse', osBoolean, @CaptureMouse);
+  AddField('rootWindowedMode', osBoolean, @RootWindowedMode);
+  AddField('windowedModePositionX', osInteger, @WindowedModePositionX);
+  AddField('windowedModePositionY', osInteger, @WindowedModePositionY);
+  AddField('useOpenGLShader', osString, @UseOpenGLShader);
+  AddField('preferredMusic', osInteger, @PreferredMusic);
+  AddField('preferredSound', osInteger, @PreferredSound);
+  AddField('preferredVideo', osInteger, @PreferredVideo);
+  AddField('backgroundMute', osBoolean, @BackgroundMute);
+end;
+
+function TXcomOptions.GetValue(const AId: string): Integer;
+var
+  LField: TXcomOptionField;
+begin
+  if FFields.TryGetValue(AId, LField) then
+  begin
+    case LField.Storage of
+      osInteger:
+        Result := PInteger(LField.Address)^;
+      osBoolean:
+        Result := Ord(PBoolean(LField.Address)^);
+      osWordwrap:
+        Result := Ord(PXcomTextWrapping(LField.Address)^);
+      osKeyboardMode:
+        Result := Ord(PXcomKeyboardMode(LField.Address)^);
+    else
+      Result := 0;
+    end;
+  end
+  else if not FValues.TryGetValue(AId, Result) then
+    Result := 0;
+end;
+
+procedure TXcomOptions.SetValue(const AId: string; AValue: Integer);
+var
+  LField: TXcomOptionField;
+begin
+  if FFields.TryGetValue(AId, LField) then
+  begin
+    case LField.Storage of
+      osInteger:
+        PInteger(LField.Address)^ := AValue;
+      osBoolean:
+        PBoolean(LField.Address)^ := AValue <> 0;
+      osWordwrap:
+        PXcomTextWrapping(LField.Address)^ := TXcomTextWrapping(AValue);
+      osKeyboardMode:
+        PXcomKeyboardMode(LField.Address)^ := TXcomKeyboardMode(AValue);
+    end;
+  end
+  else
+    FValues.AddOrSetValue(AId, AValue);
+end;
+
+function TXcomOptions.GetBool(const AId: string): Boolean;
+begin
+  Result := GetValue(AId) <> 0;
+end;
+
+procedure TXcomOptions.SetBool(const AId: string; AValue: Boolean);
+begin
+  SetValue(AId, Ord(AValue));
+end;
+
+function TXcomOptions.GetText(const AId: string): string;
+var
+  LField: TXcomOptionField;
+begin
+  if FFields.TryGetValue(AId, LField) then
+  begin
+    if LField.Storage = osString then
+      Result := PString(LField.Address)^
+    else
+      Result := '';
+  end
+  else if not FTexts.TryGetValue(AId, Result) then
+    Result := '';
+end;
+
+procedure TXcomOptions.SetText(const AId, AValue: string);
+var
+  LField: TXcomOptionField;
+begin
+  if FFields.TryGetValue(AId, LField) then
+  begin
+    if LField.Storage = osString then
+      PString(LField.Address)^ := AValue;
+  end
+  else
+    FTexts.AddOrSetValue(AId, AValue);
+end;
+
+procedure TXcomOptions.ResetRegisteredDefaults;
+var
+  LInfo: TXcomOptionInfo;
+begin
+  for LInfo in TXcomOptionTable.All do
+    if LInfo.Kind = okString then
+      SetText(LInfo.Id, LInfo.DefaultText)
+    else
+      SetValue(LInfo.Id, LInfo.DefaultValue);
+end;
+
 procedure TXcomOptions.Load(const ADocument: IYamlNode);
 var
   LNode: IYamlNode;
+  LValue: IYamlNode;
+  LInfo: TXcomOptionInfo;
+  LInteger: Integer;
+  LBoolean: Boolean;
+  LPair: TYamlPair;
+  LKey: string;
 begin
   LNode := TXcomYamlFields.Field(ADocument, 'options');
   if not Assigned(LNode) then
     Exit;
-  DisplayWidth := TXcomYamlFields.ReadInteger(LNode, 'displayWidth', DisplayWidth);
-  DisplayHeight := TXcomYamlFields.ReadInteger(LNode, 'displayHeight', DisplayHeight);
-  Fullscreen := TXcomYamlFields.ReadBoolean(LNode, 'fullscreen', Fullscreen);
-  GeoscapeScale := TXcomYamlFields.ReadInteger(LNode, 'geoscapeScale', GeoscapeScale);
-  BattlescapeScale := TXcomYamlFields.ReadInteger(LNode, 'battlescapeScale', BattlescapeScale);
-  KeepAspectRatio := TXcomYamlFields.ReadBoolean(LNode, 'keepAspectRatio', KeepAspectRatio);
-  NonSquarePixelRatio := TXcomYamlFields.ReadBoolean(LNode, 'nonSquarePixelRatio', NonSquarePixelRatio);
-  AllowResize := TXcomYamlFields.ReadBoolean(LNode, 'allowResize', AllowResize);
-  Borderless := TXcomYamlFields.ReadBoolean(LNode, 'borderless', Borderless);
-  UseOpenGL := TXcomYamlFields.ReadBoolean(LNode, 'useOpenGL', UseOpenGL);
-  UseScaleFilter := TXcomYamlFields.ReadBoolean(LNode, 'useScaleFilter', UseScaleFilter);
-  UseHQXFilter := TXcomYamlFields.ReadBoolean(LNode, 'useHQXFilter', UseHQXFilter);
-  UseXBRZFilter := TXcomYamlFields.ReadBoolean(LNode, 'useXBRZFilter', UseXBRZFilter);
-  CursorInBlackBandsInFullscreen := TXcomYamlFields.ReadBoolean(LNode, 'cursorInBlackBandsInFullscreen',
-    CursorInBlackBandsInFullscreen);
-  CursorInBlackBandsInWindow := TXcomYamlFields.ReadBoolean(LNode, 'cursorInBlackBandsInWindow',
-    CursorInBlackBandsInWindow);
-  CursorInBlackBandsInBorderlessWindow := TXcomYamlFields.ReadBoolean(LNode, 'cursorInBlackBandsInBorderlessWindow',
-    CursorInBlackBandsInBorderlessWindow);
-  Language := TXcomYamlFields.ReadString(LNode, 'language', Language);
-  Wordwrap := TXcomTextWrapping(TXcomYamlFields.ReadInteger(LNode, 'wordwrap', Ord(Wordwrap)));
-  FpsCounter := TXcomYamlFields.ReadBoolean(LNode, 'fpsCounter', FpsCounter);
-  FPS := TXcomYamlFields.ReadInteger(LNode, 'FPS', FPS);
-  FPSInactive := TXcomYamlFields.ReadInteger(LNode, 'FPSInactive', FPSInactive);
-  MaxFrameSkip := TXcomYamlFields.ReadInteger(LNode, 'maxFrameSkip', MaxFrameSkip);
-  Debug := TXcomYamlFields.ReadBoolean(LNode, 'debug', Debug);
-  DebugUi := TXcomYamlFields.ReadBoolean(LNode, 'debugUi', DebugUi);
-  PlayIntro := TXcomYamlFields.ReadBoolean(LNode, 'playIntro', PlayIntro);
-  SoundVolume := TXcomYamlFields.ReadInteger(LNode, 'soundVolume', SoundVolume);
-  MusicVolume := TXcomYamlFields.ReadInteger(LNode, 'musicVolume', MusicVolume);
-  UiVolume := TXcomYamlFields.ReadInteger(LNode, 'uiVolume', UiVolume);
-  KeyOk := TXcomYamlFields.ReadInteger(LNode, 'keyOk', KeyOk);
-  KeyCancel := TXcomYamlFields.ReadInteger(LNode, 'keyCancel', KeyCancel);
-  KeyScreenshot := TXcomYamlFields.ReadInteger(LNode, 'keyScreenshot', KeyScreenshot);
-  MousewheelSpeed := TXcomYamlFields.ReadInteger(LNode, 'mousewheelSpeed', MousewheelSpeed);
-  ChangeValueByMouseWheel := TXcomYamlFields.ReadInteger(LNode, 'changeValueByMouseWheel', ChangeValueByMouseWheel);
-  CaptureMouse := TXcomYamlFields.ReadInteger(LNode, 'captureMouse', Ord(CaptureMouse)) <> 0;
-  RootWindowedMode := TXcomYamlFields.ReadBoolean(LNode, 'rootWindowedMode', RootWindowedMode);
-  WindowedModePositionX := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosX', WindowedModePositionX);
-  WindowedModePositionY := TXcomYamlFields.ReadInteger(LNode, 'windowedModePosY', WindowedModePositionY);
-  UseOpenGLShader := TXcomYamlFields.ReadString(LNode, 'useOpenGLShader', UseOpenGLShader);
-  PreferredMusic := TXcomYamlFields.ReadInteger(LNode, 'preferredMusic', PreferredMusic);
-  PreferredSound := TXcomYamlFields.ReadInteger(LNode, 'preferredSound', PreferredSound);
-  PreferredVideo := TXcomYamlFields.ReadInteger(LNode, 'preferredVideo', PreferredVideo);
-  BackgroundMute := TXcomYamlFields.ReadBoolean(LNode, 'backgroundMute', BackgroundMute);
+  for LInfo in TXcomOptionTable.All do
+  begin
+    LValue := TXcomYamlFields.Field(LNode, LInfo.Id);
+    // a key that is missing or has a bad value keeps what it has
+    if not Assigned(LValue) then
+      Continue;
+    case LInfo.Kind of
+      okBool:
+        if LValue.TryAsBoolean(LBoolean) then
+          SetBool(LInfo.Id, LBoolean);
+      okInt, okKey:
+        if LValue.TryAsInteger(LInteger) then
+          SetValue(LInfo.Id, LInteger);
+      okString:
+        if LValue.IsScalar then
+          SetText(LInfo.Id, LValue.ScalarString);
+    end;
+  end;
+  // the keys that this class does not know are kept to be written back
+  for LPair in LNode.Pairs do
+    if LPair.Key.IsScalar and LPair.Value.IsScalar then
+    begin
+      LKey := LPair.Key.ScalarString;
+      if not TXcomOptionTable.TryFind(LKey, LInfo) then
+        FUnknown.AddOrSetValue(LKey, LPair.Value.ScalarString);
+    end;
   SyncPendingDisplay;
 end;
 
-function TXcomOptions.Save: string;
-  function Flag(AValue: Boolean): string;
-  begin
-    if AValue then
-      Result := 'true'
-    else
-      Result := 'false';
-  end;
+class function TXcomOptions.YamlScalar(const AValue: string): string;
+var
+  LIndex: Integer;
+  LChar: Char;
+  LPlain: Boolean;
 begin
-  Result := 'options:'#10 +
-    '  displayWidth: ' + IntToStr(DisplayWidth) + #10 +
-    '  displayHeight: ' + IntToStr(DisplayHeight) + #10 +
-    '  fullscreen: ' + Flag(Fullscreen) + #10 +
-    '  geoscapeScale: ' + IntToStr(GeoscapeScale) + #10 +
-    '  battlescapeScale: ' + IntToStr(BattlescapeScale) + #10 +
-    '  language: ' + Language + #10 +
-    '  wordwrap: ' + IntToStr(Ord(Wordwrap)) + #10 +
-    '  fpsCounter: ' + Flag(FpsCounter) + #10 +
-    '  mousewheelSpeed: ' + IntToStr(MousewheelSpeed) + #10 +
-    '  changeValueByMouseWheel: ' + IntToStr(ChangeValueByMouseWheel) + #10 +
-    '  captureMouse: ' + IntToStr(Ord(CaptureMouse)) + #10 +
-    '  preferredMusic: ' + IntToStr(PreferredMusic) + #10 +
-    '  preferredSound: ' + IntToStr(PreferredSound) + #10 +
-    '  preferredVideo: ' + IntToStr(PreferredVideo) + #10 +
-    '  backgroundMute: ' + Flag(BackgroundMute) + #10 +
-    '  rootWindowedMode: ' + Flag(RootWindowedMode) + #10 +
-    '  windowedModePosX: ' + IntToStr(WindowedModePositionX) + #10 +
-    '  windowedModePosY: ' + IntToStr(WindowedModePositionY) + #10 +
-    '  useOpenGLShader: ' + UseOpenGLShader + #10;
+  LPlain := AValue <> '';
+  for LIndex := 1 to Length(AValue) do
+  begin
+    LChar := AValue[LIndex];
+    if (LChar < ' ') or (LChar = '"') or (LChar = '#') or (LChar = ':') or (LChar = '\') or (LChar = '''') or
+      (LChar = '{') or (LChar = '[') or (LChar = ',') then
+      LPlain := False;
+  end;
+  if LPlain and ((AValue[1] = ' ') or (AValue[Length(AValue)] = ' ') or (AValue[1] = '-') or (AValue[1] = '&') or
+    (AValue[1] = '*') or (AValue[1] = '!') or (AValue[1] = '|') or (AValue[1] = '>') or (AValue[1] = '%') or
+    (AValue[1] = '@') or (AValue[1] = '`')) then
+    LPlain := False;
+  if LPlain then
+    Exit(AValue);
+  Result := '"' + StringReplace(StringReplace(AValue, '\', '\\', [rfReplaceAll]), '"', '\"', [rfReplaceAll]) + '"';
+end;
+
+function TXcomOptions.Save: string;
+var
+  LLines: TDictionary<string, string>;
+  LInfo: TXcomOptionInfo;
+  LKeys: TArray<string>;
+  LKey: string;
+  LPair: TPair<string, string>;
+  LBuilder: TStringBuilder;
+begin
+  LLines := TDictionary<string, string>.Create;
+  try
+    for LInfo in TXcomOptionTable.All do
+      case LInfo.Kind of
+        okBool:
+          if GetBool(LInfo.Id) then
+            LLines.AddOrSetValue(LInfo.Id, 'true')
+          else
+            LLines.AddOrSetValue(LInfo.Id, 'false');
+        okInt, okKey:
+          LLines.AddOrSetValue(LInfo.Id, IntToStr(GetValue(LInfo.Id)));
+        okString:
+          LLines.AddOrSetValue(LInfo.Id, YamlScalar(GetText(LInfo.Id)));
+      end;
+    for LPair in FUnknown do
+      LLines.AddOrSetValue(LPair.Key, YamlScalar(LPair.Value));
+    LKeys := LLines.Keys.ToArray;
+    // the order of the keys of the real file (the map of yaml-cpp is sorted by the code of the characters)
+    TArray.Sort<string>(LKeys, TStringComparer.Ordinal);
+    LBuilder := TStringBuilder.Create;
+    try
+      LBuilder.Append('options:'#10);
+      for LKey in LKeys do
+        LBuilder.Append('  ').Append(LKey).Append(': ').Append(LLines[LKey]).Append(#10);
+      Result := LBuilder.ToString;
+    finally
+      LBuilder.Free;
+    end;
+  finally
+    LLines.Free;
+  end;
 end;
 
 end.

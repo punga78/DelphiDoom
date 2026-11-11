@@ -1,0 +1,12 @@
+mission=STR_CARGO_SHIP_P1
+kind=0
+race=STR_MIXED_CREW_UNDERWATER
+itemlevel=7
+shade=5
+texture=-1
+terrain=
+craft=0
+base=1
+runseed=1761000
+seedafter=3698129478782863850
+ok=0

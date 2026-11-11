@@ -35,6 +35,13 @@ type
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     /// <summary>Mod::getSoundDefinitions() is not empty: the rulesets define the sounds (TFTD does)</summary>
     function HasSoundDefinitions: Boolean;
+    /// <summary>
+    ///   Mod::getSound(set, index) as a WAV file: the index-th sound of the set (GEO.CAT, BATTLE.CAT) of the soundDefs of
+    ///   the rulesets, read from its CAT file (nil when there is none or it is not readable)
+    /// </summary>
+    function SoundWave(const ASet: string; AIndex: Integer): TBytes;
+    /// <summary>A number of the constants of the rulesets (ufoFire, buttonPress...), or the default</summary>
+    function Constant(const AName: string; ADefault: Integer): Integer;
   end;
 
 implementation

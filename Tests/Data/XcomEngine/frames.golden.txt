@@ -5,3 +5,23 @@ menu_main 640x400 a5775815
 start 640x400 1a5a6bd6
 newgame 640x400 58444485
 # newgame: the difficulty window after a click on New Game at 220,200 (the cursor is drawn there)
+audio 640x400 bfd009c5
+audio_combo 640x400 e9358075
+audio_mute 640x400 8bf13cd5
+audio_slider 640x400 2f3f79d5
+# audio*: Options > Audio (click Options 420,255; Audio 96,72); then the music format combo at 520,116 / Background Mute at 290,244 and the mouse at 300,200 / a click on the music slider at 300,32. options.cfg: music 0, sounds 0, UI 42
+controls 640x400 43c1ddb5
+geoscape 640x400 d1592825
+battlescape 640x400 2678ee45
+advanced 640x400 b967bfe5
+controls_sel 640x400 0d22b7f5
+controls_scroll 640x400 62f63915
+controls_t1 640x400 7b944a45
+controls_t2 640x400 edec3cb5
+controls_t3 640x400 41a86405
+advanced_click 640x400 2c3e7d35
+battle_combo 640x400 f76b4845
+# controls/geoscape/battlescape/advanced: Options, then the category button (96,112/152/192/232); controls_sel: a click on a row; controls_scroll: 14 clicks of 80 ms on the down arrow (608,272); controls_t1..t3: a click on the scroll bar track; advanced_click: clicks on four rows; battle_combo: the edge scroll list open. The folders screen was compared (0 pixels) but its paths depend on the folder of the checkout, so it has no hash
+load_empty 640x400 3ac747e5
+load_list 640x400 23e87515
+# load_empty: Load Game with no saves (click 230,255); load_list: seven files of Reference\_dati\xcom_tftd\saveseed176\xcom2 (quick and auto slots, a battle save, an ironman one, one of another master, one broken)

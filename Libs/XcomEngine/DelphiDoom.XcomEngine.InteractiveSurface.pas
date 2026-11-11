@@ -65,8 +65,9 @@ type
     /// <summary>InteractiveSurface::unpress: releases a pressed button without a real release event</summary>
     procedure Unpress; virtual;
     procedure OnMouseClick(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
-    procedure OnMousePress(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
-    procedure OnMouseRelease(const AHandler: TXcomActionHandler; AButton: Integer = XCOM_BUTTON_LEFT);
+    /// <summary>onMousePress and onMouseRelease: button 0 (the default, as in the C++) is any button</summary>
+    procedure OnMousePress(const AHandler: TXcomActionHandler; AButton: Integer = 0);
+    procedure OnMouseRelease(const AHandler: TXcomActionHandler; AButton: Integer = 0);
     procedure OnMouseIn(const AHandler: TXcomActionHandler);
     procedure OnMouseOver(const AHandler: TXcomActionHandler);
     procedure OnMouseOut(const AHandler: TXcomActionHandler);

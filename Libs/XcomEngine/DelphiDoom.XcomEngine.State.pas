@@ -16,7 +16,9 @@ uses
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
-  DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf;
+  DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
+  DelphiDoom.XcomEngine.SaveCatalog.Intf,
+DelphiDoom.XcomEngine.Session.Intf;
 
 type
   TXcomState = class;
@@ -57,6 +59,23 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>The saved games of the user (nil when the host has no folder of saves)</summary>
+    function SaveCatalog: IXcomSaveCatalog; virtual;
+    /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
+    procedure OpenFolder(const APath: string); virtual;
+    /// <summary>
+    ///   Sound::play of Mod::getSound(set, index): plays the sound of the set (GEO.CAT...) at the volume of the sounds
+    ///   or, when AInterface, of the interface; does nothing without audio device or when the set has no such sound
+    /// </summary>
+    procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
+    /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
+    function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>
+    ///   The saved game and what the strategy screens share (Game::getSavedGame): an object of the geoscape
+    ///   library that the game keeps alive (nil before a game starts)
+    /// </summary>
+    function Session: IInterface; virtual;
+    procedure SetSession(const ASession: IInterface); virtual;
   end;
 
   /// <summary>
@@ -148,9 +167,36 @@ procedure TXcomStateHost.SetVolume(ASound, AMusic, AUi: Integer);
 begin
 end;
 
+procedure TXcomStateHost.OpenFolder(const APath: string);
+begin
+end;
+
+procedure TXcomStateHost.PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean);
+begin
+end;
+
+function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;
+begin
+  Result := nil;
+end;
+
 function TXcomStateHost.CurrentMusicFormat: string;
 begin
   Result := 'Adlib';
+end;
+
+function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.Session: IInterface;
+begin
+  Result := nil;
+end;
+
+procedure TXcomStateHost.SetSession(const ASession: IInterface);
+begin
 end;
 
 { TXcomState }

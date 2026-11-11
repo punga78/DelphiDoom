@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
-  DelphiDoom.XcomEngine.OptionsStore.Intf;
+  DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
+  DelphiDoom.XcomEngine.Session.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -49,6 +50,10 @@ type
     FDisplayModes: IXcomDisplayModes;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
+    FFolderOpener: IXcomFolderOpener;
+    FSaveCatalog: IXcomSaveCatalog;
+    FNewGameStarter: IXcomNewGameStarter;
+    FSession: IInterface;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
     /// <summary>
@@ -80,6 +85,15 @@ type
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
+    procedure SetFolderOpener(const AOpener: IXcomFolderOpener);
+    procedure SetSaveCatalog(const ACatalog: IXcomSaveCatalog);
+    function SaveCatalog: IXcomSaveCatalog; override;
+    procedure OpenFolder(const APath: string); override;
+    procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
+    function NewGameStarter: IXcomNewGameStarter; override;
+    procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
+    function Session: IInterface; override;
+    procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
@@ -115,6 +129,8 @@ destructor TXcomGame.Destroy;
 begin
   FDeleted.Free;
   FStates.Free;
+  // the saved game uses the rules of the data: it goes before them
+  FSession := nil;
   FLanguage.Free;
   // the states hold pieces of the data: the data goes after them
   FResources := nil;
@@ -203,6 +219,26 @@ begin
   FResources := AResources;
 end;
 
+function TXcomGame.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := FNewGameStarter;
+end;
+
+procedure TXcomGame.SetNewGameStarter(const AStarter: IXcomNewGameStarter);
+begin
+  FNewGameStarter := AStarter;
+end;
+
+function TXcomGame.Session: IInterface;
+begin
+  Result := FSession;
+end;
+
+procedure TXcomGame.SetSession(const ASession: IInterface);
+begin
+  FSession := ASession;
+end;
+
 function TXcomGame.LanguageProvider: IXcomLanguageProvider;
 begin
   Result := FLanguageProvider;
@@ -221,6 +257,42 @@ end;
 procedure TXcomGame.SetLanguageProvider(const AProvider: IXcomLanguageProvider);
 begin
   FLanguageProvider := AProvider;
+end;
+
+procedure TXcomGame.SetFolderOpener(const AOpener: IXcomFolderOpener);
+begin
+  FFolderOpener := AOpener;
+end;
+
+procedure TXcomGame.SetSaveCatalog(const ACatalog: IXcomSaveCatalog);
+begin
+  FSaveCatalog := ACatalog;
+end;
+
+function TXcomGame.SaveCatalog: IXcomSaveCatalog;
+begin
+  Result := FSaveCatalog;
+end;
+
+procedure TXcomGame.PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean);
+var
+  LWave: TBytes;
+begin
+  if (FAudio = nil) or (not FAudio.IsAvailable) or (Resources = nil) then
+    Exit;
+  LWave := Resources.SoundWave(ASet, AIndex);
+  if Length(LWave) = 0 then
+    Exit;
+  if AInterface then
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.UiVolume))
+  else
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.SoundVolume));
+end;
+
+procedure TXcomGame.OpenFolder(const APath: string);
+begin
+  if FFolderOpener <> nil then
+    FFolderOpener.Open(APath);
 end;
 
 procedure TXcomGame.SetDisplayModes(const AModes: IXcomDisplayModes);
