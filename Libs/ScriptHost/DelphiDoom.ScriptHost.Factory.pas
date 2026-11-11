@@ -20,6 +20,8 @@ uses
   DelphiDoom.ScriptHost.Fixed.Functions,
   DelphiDoom.ScriptHost.Game.Intf,
   DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.MobjInfo.Intf,
+  DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.SectorSpecials.Functions.Intf,
   DelphiDoom.ScriptHost.SectorSpecials.Intf,
   DelphiDoom.ScriptHost.Serializer.Intf,
@@ -58,6 +60,14 @@ type
     class function CreateSides(const AWorld: IScriptWorld): IScriptSides; static;
     /// <summary>The line functions of PS_GAME (Hexen has no tag and no transparent lines)</summary>
     class function CreateLines(const AWorld: IScriptWorld; const AGame: TScriptGame): IScriptLines; static;
+    /// <summary>The sector functions of PS_GAME (the offsets of the textures exist in Doom and Strife only)</summary>
+    class function CreateSectors(const AWorld: IScriptWorld; const AGame: TScriptGame): IScriptSectors; static;
+    /// <summary>The mobjinfo functions of PS_GAME (Strife has GetMobjInfoName2)</summary>
+    class function CreateMobjInfo(const ASource: IScriptMobjInfoSource;
+      const AGame: TScriptGame): IScriptMobjInfo; static;
+    /// <summary>The player functions of PS_GAME (keys, artifacts, ammunition, mana and quests depend on the game)</summary>
+    class function CreatePlayers(const ASource: IScriptPlayerSource;
+      const AGame: TScriptGame): IScriptPlayers; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -89,6 +99,9 @@ uses
   DelphiDoom.ScriptHost.Serializer,
   DelphiDoom.ScriptHost.Variables,
   DelphiDoom.ScriptHost.World.Lines,
+  DelphiDoom.ScriptHost.MobjInfo,
+  DelphiDoom.ScriptHost.Players,
+  DelphiDoom.ScriptHost.World.Sectors,
   DelphiDoom.ScriptHost.World.Sides,
   DelphiDoom.ScriptHost.World.Vertices;
 
@@ -150,6 +163,24 @@ class function TScriptHostFactory.CreateLines(const AWorld: IScriptWorld;
   const AGame: TScriptGame): IScriptLines;
 begin
   Result := TScriptLines.Create(AWorld, AGame);
+end;
+
+class function TScriptHostFactory.CreateSectors(const AWorld: IScriptWorld;
+  const AGame: TScriptGame): IScriptSectors;
+begin
+  Result := TScriptSectors.Create(AWorld, AGame);
+end;
+
+class function TScriptHostFactory.CreateMobjInfo(const ASource: IScriptMobjInfoSource;
+  const AGame: TScriptGame): IScriptMobjInfo;
+begin
+  Result := TScriptMobjInfo.Create(ASource, AGame);
+end;
+
+class function TScriptHostFactory.CreatePlayers(const ASource: IScriptPlayerSource;
+  const AGame: TScriptGame): IScriptPlayers;
+begin
+  Result := TScriptPlayers.Create(ASource, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

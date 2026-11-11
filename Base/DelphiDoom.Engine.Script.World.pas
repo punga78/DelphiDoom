@@ -45,6 +45,35 @@ type
     procedure SetLineFlag(const AIndex: Integer; const AFlag: TScriptLineFlag; const AValue: Boolean);
     function LineSideNumber(const AIndex: Integer; const ASecond: Boolean): Integer;
     function LineSectorId(const AIndex: Integer; const ASecond: Boolean): Integer;
+    function SectorCount: Integer;
+    function SectorHeight(const AIndex: Integer; const APlane: TScriptPlane): Integer;
+    procedure SetSectorHeight(const AIndex: Integer; const APlane: TScriptPlane; const AValue: Integer);
+    function SectorPicture(const AIndex: Integer; const APlane: TScriptPlane): string;
+    procedure SetSectorPicture(const AIndex: Integer; const APlane: TScriptPlane; const AName: string);
+    function SectorLightLevel(const AIndex: Integer): Integer;
+    procedure SetSectorLightLevel(const AIndex: Integer; const AValue: Integer);
+    function SectorSpecial(const AIndex: Integer): Integer;
+    function SectorTag(const AIndex: Integer): Integer;
+    procedure SetSectorTag(const AIndex: Integer; const AValue: Integer);
+    function SectorActorCount(const AIndex: Integer): Integer;
+    function SectorActorKeys(const AIndex: Integer): TArray<Cardinal>;
+    function SectorLineCount(const AIndex: Integer): Integer;
+    function SectorLineNumber(const AIndex: Integer; const AOrder: Integer): Integer;
+    function SectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset): Integer;
+    procedure SetSectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset; const AValue: Integer);
+    function SectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle): Integer;
+    procedure SetSectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle; const AValue: Integer);
+    function SectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag): Boolean;
+    procedure SetSectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag; const AValue: Boolean);
+    function SectorValue(const AIndex: Integer; const AKind: TScriptSectorValue): Integer;
+    procedure SetSectorValue(const AIndex: Integer; const AKind: TScriptSectorValue; const AValue: Integer);
+    function SectorMidSector(const AIndex: Integer): Integer;
+    function SectorSlopeSectorId(const AIndex: Integer): Integer;
+    function SkyPicture: string;
+    procedure MoveSectorZ(const AIndex: Integer; const ADelta: Integer);
+    procedure PlaySectorSound(const AIndex: Integer; const AName: string);
+    procedure SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+    procedure SetCeilingSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
   end;
 
 implementation
@@ -53,10 +82,22 @@ uses
   d_delphi,
   doomdata,
   psi_game,
+  p_map,
+  p_mobj_h,
   p_setup,
+  p_slopes,
   r_data,
   r_defs,
+  r_sky,
   w_wad;
+
+function FlatNameFromId(const AId: Integer): string;
+begin
+  if (AId >= 0) and (AId < numflats) then
+    Result := char8tostring(flats[AId].name)
+  else
+    Result := '';
+end;
 
 
 function TextureNameFromId(const AId: Integer): string;
@@ -290,6 +331,277 @@ begin
     Result := LSector.iSectorID
   else
     Result := SCRIPT_WORLD_NO_SECTOR;
+end;
+
+function TEngineScriptWorld.SectorCount: Integer;
+begin
+  Result := numsectors;
+end;
+
+function TEngineScriptWorld.SectorHeight(const AIndex: Integer; const APlane: TScriptPlane): Integer;
+begin
+  if APlane = splFloor then
+    Result := sectors[AIndex].floorheight
+  else
+    Result := sectors[AIndex].ceilingheight;
+end;
+
+procedure TEngineScriptWorld.SetSectorHeight(const AIndex: Integer; const APlane: TScriptPlane;
+  const AValue: Integer);
+var
+  LSector: Psector_t;
+begin
+  LSector := @sectors[AIndex];
+  if APlane = splFloor then
+    LSector.floorheight := AValue
+  else
+    LSector.ceilingheight := AValue;
+  P_ChangeSector(LSector, False);
+end;
+
+function TEngineScriptWorld.SectorPicture(const AIndex: Integer; const APlane: TScriptPlane): string;
+begin
+  if APlane = splFloor then
+    Result := FlatNameFromId(sectors[AIndex].floorpic)
+  else
+    Result := FlatNameFromId(sectors[AIndex].ceilingpic);
+end;
+
+procedure TEngineScriptWorld.SetSectorPicture(const AIndex: Integer; const APlane: TScriptPlane;
+  const AName: string);
+var
+  LFlat: Integer;
+begin
+  LFlat := R_SafeFlatNumForName(AName);
+  if (LFlat >= 0) and (LFlat < numflats) then
+    if APlane = splFloor then
+      sectors[AIndex].floorpic := LFlat
+    else
+      sectors[AIndex].ceilingpic := LFlat;
+end;
+
+function TEngineScriptWorld.SectorLightLevel(const AIndex: Integer): Integer;
+begin
+  Result := sectors[AIndex].lightlevel;
+end;
+
+procedure TEngineScriptWorld.SetSectorLightLevel(const AIndex: Integer; const AValue: Integer);
+begin
+  sectors[AIndex].lightlevel := AValue;
+end;
+
+function TEngineScriptWorld.SectorSpecial(const AIndex: Integer): Integer;
+begin
+  Result := sectors[AIndex].special;
+end;
+
+function TEngineScriptWorld.SectorTag(const AIndex: Integer): Integer;
+begin
+  Result := sectors[AIndex].tag;
+end;
+
+procedure TEngineScriptWorld.SetSectorTag(const AIndex: Integer; const AValue: Integer);
+begin
+  sectors[AIndex].tag := AValue;
+end;
+
+function TEngineScriptWorld.SectorActorCount(const AIndex: Integer): Integer;
+var
+  LThing: Pmobj_t;
+begin
+  Result := 0;
+  LThing := sectors[AIndex].thinglist;
+  while LThing <> nil do
+  begin
+    Inc(Result);
+    LThing := LThing.snext;
+  end;
+end;
+
+function TEngineScriptWorld.SectorActorKeys(const AIndex: Integer): TArray<Cardinal>;
+var
+  LList: TActorKeyList;
+  LKeys: TActorArray;
+  LOrder: Integer;
+begin
+  // the same list that the actor functions use (duplicates and order as they have always been)
+  LList := TActorKeyList.Create;
+  try
+    LList.AddAllSector(AIndex);
+    LKeys := LList.GetActorArray;
+  finally
+    LList.Free;
+  end;
+  SetLength(Result, Length(LKeys));
+  for LOrder := 0 to High(LKeys) do
+    Result[LOrder] := LKeys[LOrder];
+end;
+
+function TEngineScriptWorld.SectorLineCount(const AIndex: Integer): Integer;
+begin
+  Result := sectors[AIndex].linecount;
+end;
+
+function TEngineScriptWorld.SectorLineNumber(const AIndex: Integer; const AOrder: Integer): Integer;
+begin
+  Result := pDiff(sectors[AIndex].lines[AOrder], lines, SizeOf(line_t));
+end;
+
+function TEngineScriptWorld.SectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset): Integer;
+begin
+{$IFDEF DOOM_OR_STRIFE}
+  case AKind of
+    ssoFloorX: Result := sectors[AIndex].floor_xoffs;
+    ssoFloorY: Result := sectors[AIndex].floor_yoffs;
+    ssoCeilingX: Result := sectors[AIndex].ceiling_xoffs;
+  else
+    Result := sectors[AIndex].ceiling_yoffs;
+  end;
+{$ELSE}
+  Result := 0; // Heretic and Hexen have no offsets of the textures of a sector
+{$ENDIF}
+end;
+
+procedure TEngineScriptWorld.SetSectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset;
+  const AValue: Integer);
+begin
+{$IFDEF DOOM_OR_STRIFE}
+  case AKind of
+    ssoFloorX: sectors[AIndex].floor_xoffs := AValue;
+    ssoFloorY: sectors[AIndex].floor_yoffs := AValue;
+    ssoCeilingX: sectors[AIndex].ceiling_xoffs := AValue;
+  else
+    sectors[AIndex].ceiling_yoffs := AValue;
+  end;
+{$ENDIF}
+end;
+
+function TEngineScriptWorld.SectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle): Integer;
+begin
+  case AKind of
+    ssaFloor: Result := Integer(sectors[AIndex].floorangle);
+    ssaFloorX: Result := sectors[AIndex].flooranglex;
+    ssaFloorY: Result := sectors[AIndex].floorangley;
+    ssaCeiling: Result := Integer(sectors[AIndex].ceilingangle);
+    ssaCeilingX: Result := sectors[AIndex].ceilinganglex;
+  else
+    Result := sectors[AIndex].ceilingangley;
+  end;
+end;
+
+procedure TEngineScriptWorld.SetSectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle;
+  const AValue: Integer);
+begin
+  case AKind of
+    ssaFloor: sectors[AIndex].floorangle := LongWord(AValue);
+    ssaFloorX: sectors[AIndex].flooranglex := AValue;
+    ssaFloorY: sectors[AIndex].floorangley := AValue;
+    ssaCeiling: sectors[AIndex].ceilingangle := LongWord(AValue);
+    ssaCeilingX: sectors[AIndex].ceilinganglex := AValue;
+  else
+    sectors[AIndex].ceilingangley := AValue;
+  end;
+  sectors[AIndex].renderflags := sectors[AIndex].renderflags or SRF_INTERPOLATE_ROTATE;
+end;
+
+function TEngineScriptWorld.SectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag): Boolean;
+begin
+  case AFlag of
+    ssfRippleFloor: Result := sectors[AIndex].renderflags and SRF_RIPPLE_FLOOR <> 0;
+    ssfRippleCeiling: Result := sectors[AIndex].renderflags and SRF_RIPPLE_CEILING <> 0;
+    ssfInterpolate: Result := sectors[AIndex].renderflags and SRF_NO_INTERPOLATE = 0;
+  else
+    Result := sectors[AIndex].renderflags and SRF_FOG = 0;
+  end;
+end;
+
+procedure TEngineScriptWorld.SetSectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag;
+  const AValue: Boolean);
+var
+  LMask: Integer;
+  LSet: Boolean;
+begin
+  LSet := AValue;
+  case AFlag of
+    ssfRippleFloor: LMask := SRF_RIPPLE_FLOOR;
+    ssfRippleCeiling: LMask := SRF_RIPPLE_CEILING;
+    ssfInterpolate:
+      begin
+        LMask := SRF_NO_INTERPOLATE;
+        LSet := not AValue; // the engine keeps "no interpolation"
+      end;
+  else
+    LMask := SRF_FOG;
+    LSet := not AValue; // the engine keeps the flag of the fog the other way round
+  end;
+  if LSet then
+    sectors[AIndex].renderflags := sectors[AIndex].renderflags or LMask
+  else
+    sectors[AIndex].renderflags := sectors[AIndex].renderflags and not LMask;
+end;
+
+function TEngineScriptWorld.SectorValue(const AIndex: Integer; const AKind: TScriptSectorValue): Integer;
+begin
+  case AKind of
+    ssvGravity: Result := sectors[AIndex].gravity;
+    ssvWindThrust: Result := sectors[AIndex].windthrust;
+  else
+    Result := Integer(sectors[AIndex].windangle);
+  end;
+end;
+
+procedure TEngineScriptWorld.SetSectorValue(const AIndex: Integer; const AKind: TScriptSectorValue;
+  const AValue: Integer);
+begin
+  case AKind of
+    ssvGravity: sectors[AIndex].gravity := AValue;
+    ssvWindThrust: sectors[AIndex].windthrust := AValue;
+  else
+    sectors[AIndex].windangle := LongWord(AValue);
+  end;
+end;
+
+function TEngineScriptWorld.SectorMidSector(const AIndex: Integer): Integer;
+begin
+  Result := sectors[AIndex].midsec;
+end;
+
+function TEngineScriptWorld.SectorSlopeSectorId(const AIndex: Integer): Integer;
+begin
+  if sectors[AIndex].slopesec <> nil then
+    Result := sectors[AIndex].slopesec.iSectorID
+  else
+    Result := SCRIPT_WORLD_NO_SECTOR;
+end;
+
+function TEngineScriptWorld.SkyPicture: string;
+begin
+  Result := FlatNameFromId(skyflatnum);
+end;
+
+procedure TEngineScriptWorld.MoveSectorZ(const AIndex: Integer; const ADelta: Integer);
+var
+  LSector: Psector_t;
+begin
+  LSector := @sectors[AIndex];
+  LSector.floorheight := LSector.floorheight + ADelta;
+  LSector.ceilingheight := LSector.ceilingheight + ADelta;
+  P_ChangeSector(LSector, False);
+end;
+
+procedure TEngineScriptWorld.PlaySectorSound(const AIndex: Integer; const AName: string);
+begin
+  psi_game._playsound(Pmobj_t(@sectors[AIndex].soundorg), AName);
+end;
+
+procedure TEngineScriptWorld.SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+begin
+  p_slopes.PS_SetFloorSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
+end;
+
+procedure TEngineScriptWorld.SetCeilingSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+begin
+  p_slopes.PS_SetCeilingSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
 end;
 
 end.
