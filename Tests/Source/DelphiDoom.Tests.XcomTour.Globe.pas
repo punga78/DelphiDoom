@@ -58,6 +58,8 @@ type
     [Test]
     procedure DovrebbeRuotareEIngrandireIlGloboNellaSceltaDellaBaseNuova;
     [Test]
+    procedure DovrebbeRuotareEIngrandireIlGloboNellaSceltaDellaDestinazione;
+    [Test]
     procedure DovrebbeCentrareIlGloboSullaBaseAlienaScoperta;
     [Test]
     procedure DovrebbeAnnunciareLaProduzioneFinitaEAprireLOfficina;
@@ -299,6 +301,49 @@ begin
   Assert.AreEqual('TXcomBuildNewBaseState', FWorld.Top);
   FWorld.ClickButton('Cancel');
   Assert.AreEqual(GEOSCAPE, FWorld.Top, 'Cancel torna al geoscape');
+end;
+
+procedure TTestXcomTourGlobe.DovrebbeRuotareEIngrandireIlGloboNellaSceltaDellaDestinazione;
+var
+  LGlobe: TXcomGeoscapeState;
+  LLongitude, LLatitude: Double;
+  LZoom: Integer;
+begin
+  if not Ready then
+    Exit;
+  LGlobe := FWorld.Game.TopState as TXcomGeoscapeState;
+  FWorld.Click(TOUR_GEO_BUTTON_X, TOUR_INTERCEPT_Y);
+  FWorld.ClickRow('BARRACUDA-1', 100);
+  Assert.AreEqual('TXcomSelectDestinationState', FWorld.Top);
+  LLongitude := LGlobe.Globe.CenterLongitude;
+  LLatitude := LGlobe.Globe.CenterLatitude;
+  LZoom := LGlobe.Globe.Zoom;
+  FWorld.Press(578, 362);
+  FWorld.Wait(300);
+  FWorld.Release(578, 362);
+  Assert.IsTrue(LGlobe.Globe.CenterLongitude > LLongitude, 'la freccia a destra gira il globo');
+  LLongitude := LGlobe.Globe.CenterLongitude;
+  FWorld.Press(530, 362);
+  FWorld.Wait(300);
+  FWorld.Release(530, 362);
+  Assert.IsTrue(LGlobe.Globe.CenterLongitude < LLongitude, 'e quella a sinistra lo riporta indietro');
+  FWorld.Press(555, 336);
+  FWorld.Wait(300);
+  FWorld.Release(555, 336);
+  Assert.IsTrue(LGlobe.Globe.CenterLatitude < LLatitude, 'la freccia in su');
+  LLatitude := LGlobe.Globe.CenterLatitude;
+  FWorld.Press(555, 386);
+  FWorld.Wait(300);
+  FWorld.Release(555, 386);
+  Assert.IsTrue(LGlobe.Globe.CenterLatitude > LLatitude, 'e quella in giu''');
+  LLatitude := LGlobe.Globe.CenterLatitude;
+  FWorld.Wait(300);
+  Assert.AreEqual(LLatitude, LGlobe.Globe.CenterLatitude, 1E-9, 'al rilascio il globo si ferma');
+  FWorld.Click(613, 335);
+  Assert.AreEqual(LZoom + 1, LGlobe.Globe.Zoom, 'lo zoom avvicina');
+  FWorld.Click(613, 381);
+  Assert.AreEqual(LZoom, LGlobe.Globe.Zoom, 'e allontana');
+  Assert.AreEqual('TXcomSelectDestinationState', FWorld.Top, 'le frecce non scelgono una destinazione');
 end;
 
 procedure TTestXcomTourGlobe.DovrebbeCentrareIlGloboSullaBaseAlienaScoperta;
