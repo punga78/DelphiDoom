@@ -22,3 +22,6 @@ controls_t3 640x400 41a86405
 advanced_click 640x400 2c3e7d35
 battle_combo 640x400 f76b4845
 # controls/geoscape/battlescape/advanced: Options, then the category button (96,112/152/192/232); controls_sel: a click on a row; controls_scroll: 14 clicks of 80 ms on the down arrow (608,272); controls_t1..t3: a click on the scroll bar track; advanced_click: clicks on four rows; battle_combo: the edge scroll list open. The folders screen was compared (0 pixels) but its paths depend on the folder of the checkout, so it has no hash
+load_empty 640x400 3ac747e5
+load_list 640x400 23e87515
+# load_empty: Load Game with no saves (click 230,255); load_list: seven files of Reference\_dati\xcom_tftd\saveseed176\xcom2 (quick and auto slots, a battle save, an ironman one, one of another master, one broken)

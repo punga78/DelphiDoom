@@ -1,4 +1,4 @@
-<#
+﻿<#
   Cattura i frame veri di OpenXcom (il nightly ufficiale) con il suo tasto degli screenshot (F12): sono i pixel del
   gioco, non una cattura dello schermo (che puo' mostrare un'altra finestra). Avvia OpenXcom.exe di <Root>\openxcom con
   una cartella utente propria (options.cfg con lingua en-US, 640x400, senza OpenGL), esegue i passi e copia i file
@@ -16,6 +16,8 @@ param(
   [string[]]$Steps = @(),
   [string]$Language = 'en-US',
   # own user folder per run (unique name): two runs, or two agents, never share screenshots
+  # a folder whose contents (for example saved games in xcom2\) are copied into the user folder before the start
+  [string]$SeedFolder = '',
   [string]$UserName = ('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 )
 $ErrorActionPreference = 'Stop'
@@ -40,6 +42,7 @@ New-Item -ItemType Directory -Force $Out | Out-Null
 $user = Join-Path $Root $UserName
 if (Test-Path $user) { Remove-Item -Recurse -Force $user }
 New-Item -ItemType Directory -Force $user | Out-Null
+if ($SeedFolder -ne '') { Copy-Item -Path (Join-Path $SeedFolder '*') -Destination $user -Recurse -Force }
 $cfg = (Get-Content (Join-Path $Root 'openxcom_user\options.cfg') -Raw) -replace '(?m)^  language: .*$', "  language: $Language"
 Set-Content -Path (Join-Path $user 'options.cfg') -Value $cfg -Encoding ASCII
 $exe = Join-Path $Root 'openxcom\OpenXcom.exe'

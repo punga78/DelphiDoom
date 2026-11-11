@@ -59,7 +59,7 @@ uses
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
-  DelphiDoom.Xcom.Win.FolderOpener;
+  DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog;
 
 const
   KEY_FPS = 288;
@@ -123,7 +123,7 @@ begin
     LOptions.OriginalDataFolder := IncludeTrailingPathDelimiter(ASettings.GameFolder);
     LOptions.ModDataFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.DataFolder, 'common'));
     LOptions.UserFolder := IncludeTrailingPathDelimiter(ASettings.UserFolder);
-    LOptions.MasterUserFolder := LOptions.UserFolder;
+    LOptions.MasterUserFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.UserFolder, ASettings.ModId));
     LOptions.ConfigFolder := LOptions.UserFolder;
     LOptions.BaseXResolution := LOptions.DisplayWidth;
     LOptions.BaseYResolution := LOptions.DisplayHeight;
@@ -152,6 +152,7 @@ begin
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
+    Result.SetSaveCatalog(TXcomDiskSaveCatalog.Create(LOptions.MasterUserFolder, ASettings.ModId, LParser));
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));

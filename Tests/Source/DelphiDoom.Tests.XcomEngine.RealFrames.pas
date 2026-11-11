@@ -16,7 +16,7 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
   DelphiDoom.Xcom.Types, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.Game,
-  DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.FolderLanguageProvider,DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.Png.Provider,
+  DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.FolderLanguageProvider,DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.Png.Provider,
   DelphiDoom.XcomMenu.GoToMainMenuState,DelphiDoom.Tests.XcomEngine.World;
 
 type
@@ -28,12 +28,13 @@ type
     FGameFolder: string;
     FDataFolder: string;
     FOptionsFile: string;
+    FSaveFolder: string;
     function Hash(AWorld: TTestWorld): string;
     function Golden(const AName: string): string;
     /// <summary>Saves the frame as a BMP when the environment variable DD_XCOM_DUMP names a file (to look at a failure)</summary>
     procedure Dump(AWorld: TTestWorld; const AFileName: string);
     ///<summary>Opens the main menu on the real data, clicks the points of the steps ("x,y;x,y") and returns the hash</summary>
-    function Render(const ASteps: string): string;
+    function Render(const AName, ASteps: string): string;
   public
     [Setup]
     procedure Setup;
@@ -52,6 +53,8 @@ type
     [TestCase('controls_t2', 'controls_t2,420:255;96:112;608:258')]
     [TestCase('controls_t3', 'controls_t3,420:255;96:112;608:150')]
     [TestCase('advanced_click', 'advanced_click,420:255;96:232;300:56;300:40;300:104;300:104')]
+    [TestCase('load_empty', 'load_empty,230:255')]
+    [TestCase('load_list', 'load_list,230:255')]
     [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
   end;
@@ -76,8 +79,9 @@ begin
     Exit;
   FGameFolder := TPath.Combine(FReference, '_dati\xcom_tftd\TFTD');
   FDataFolder := TPath.Combine(FReference, 'OpenXcom\bin');
+  FSaveFolder := TPath.Combine(FReference, '_dati\xcom_tftd\saveseed176\xcom2');
   FOptionsFile := TPath.Combine(FReference, '_dati\xcom_tftd\openxcom_user\options.cfg');
-  if not (TDirectory.Exists(TPath.Combine(FDataFolder, 'common')) and TFile.Exists(FOptionsFile)) then
+  if not (TDirectory.Exists(TPath.Combine(FDataFolder, 'common')) and TFile.Exists(FOptionsFile) and TDirectory.Exists(FSaveFolder)) then
     FReference := '';
 end;
 
@@ -167,7 +171,7 @@ begin
   end;
 end;
 
-function TTestXcomRealFrames.Render(const ASteps: string): string;
+function TTestXcomRealFrames.Render(const AName, ASteps: string): string;
 var
   LWorld: TTestWorld;
   LLoader: IXcomGameLoader;
@@ -198,6 +202,9 @@ begin
     LWorld.Game.SetLanguageProvider(TXcomFolderLanguageProvider.Create(FDataFolder,
       TPath.Combine(TPath.Combine(FDataFolder, 'standard'), 'xcom2'), TXcomDiskFileSystem.Create,
       TYamlFactory.CreateParser));
+    // the saves of the seed folder (made for the comparison; their dates are fixed) for the case load_list
+    if AName = 'load_list' then
+      LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(FSaveFolder, 'xcom2', TYamlFactory.CreateParser));
     LWorld.Game.Options.Load(TYamlFactory.CreateParser.Load(TFile.ReadAllBytes(FOptionsFile)));
     LWorld.Game.SetState(TXcomGoToMainMenuState.Create(LWorld.Game, '1.0 git 2026-06-05 22:05'));
     LWorld.Click(5000, 5000);
@@ -230,7 +237,7 @@ begin
     Assert.Pass('no real data');
     Exit;
   end;
-  Assert.AreEqual(Golden(AName), Render(ASteps));
+  Assert.AreEqual(Golden(AName), Render(AName, ASteps));
 end;
 
 initialization

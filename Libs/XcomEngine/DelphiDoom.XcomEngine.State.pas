@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
-  DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf;
+  DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
+  DelphiDoom.XcomEngine.SaveCatalog.Intf;
 
 type
   TXcomState = class;
@@ -57,6 +58,8 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>The saved games of the user (nil when the host has no folder of saves)</summary>
+    function SaveCatalog: IXcomSaveCatalog; virtual;
     /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
     procedure OpenFolder(const APath: string); virtual;
   end;
@@ -152,6 +155,11 @@ end;
 
 procedure TXcomStateHost.OpenFolder(const APath: string);
 begin
+end;
+
+function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;
+begin
+  Result := nil;
 end;
 
 function TXcomStateHost.CurrentMusicFormat: string;
