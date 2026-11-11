@@ -10,7 +10,8 @@ unit DelphiDoom.XcomBattle.AIModule;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Yaml.Intf, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.NodeWriter,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
+  DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.NodeWriter,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Model;
 
 const
@@ -40,6 +41,8 @@ type
   public
     /// <summary>AIModule(save, unit, node)</summary>
     constructor Create(const AUnit: TXcomBattleUnit; const AFromNode: TXcomNode);
+    /// <summary>load: the nodes are looked up in ANodes (the nodes of the saved battle); one that is not there stays</summary>
+    procedure Load(const ANode: IYamlNode; const ANodes: TObjectList<TXcomNode>);
     /// <summary>save: fromNode, toNode, AIMode and wasHitBy</summary>
     function Save: IYamlNode;
     /// <summary>reset: the state that is not saved</summary>
@@ -69,6 +72,22 @@ begin
   FTargetFaction := FACTION_PLAYER;
   if AUnit.OriginalFaction = FACTION_NEUTRAL then
     FTargetFaction := FACTION_HOSTILE;
+end;
+
+procedure TXcomAIModule.Load(const ANode: IYamlNode; const ANodes: TObjectList<TXcomNode>);
+var
+  LFromId: Integer;
+  LToId: Integer;
+begin
+  LFromId := TXcomNodeReader.ReadInteger(ANode, 'fromNode', -1);
+  LToId := TXcomNodeReader.ReadInteger(ANode, 'toNode', -1);
+  FAIMode := TXcomNodeReader.ReadInteger(ANode, 'AIMode', AI_PATROL);
+  FWasHitBy := TXcomNodeReader.ReadIntegers(ANode, 'wasHitBy', FWasHitBy);
+  // the C++ comment: figure out why AI are sometimes left with junk nodes
+  if (LFromId >= 0) and (LFromId < ANodes.Count) then
+    FFromNode := ANodes[LFromId];
+  if (LToId >= 0) and (LToId < ANodes.Count) then
+    FToNode := ANodes[LToId];
 end;
 
 function TXcomAIModule.Save: IYamlNode;

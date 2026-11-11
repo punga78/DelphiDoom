@@ -45,10 +45,14 @@ Cose che la parita' ha mostrato: (1) `int *= double` con il **x87**: `20 * 1.2` 
 
 **Differenze dichiarate dal C++**: `nextStage` e `runInventory` non sono portati; i veicoli della base (`Base::setupDefenses`, `Base::getVehicles`) non esistono nel modello del salvataggio (si usano quelli dei velivoli); l'ordine di `explode` viene dall'harness (vedi sopra); i `Log(LOG_INFO)` dei nodi sbagliati non ci sono; un blocco, un indice o un file `MAP`/`RMP` che il C++ leggerebbe fuori dai limiti o come puntatore nullo e' `EXcomBattleException`.
 
+## Fetta 4: il salvataggio con la battaglia e `AIModule::load` (fatta)
+
+`TXcomSavedGame.BattleGame` (`Libs\XcomSave`) tiene il documento `battleGame` com'e' (`Load` non lo rifiuta piu', `Save` lo riscrive e mette `mission` e `turn` nell'intestazione come `SavedGame::save`; la libreria del salvataggio non dipende da questa). `DelphiDoom.XcomBattle.SaveLink` (**`TXcomBattleSaveLink`**): `LoadBattle` (`SavedBattleGame::load` con i soldati del salvataggio, poi `loadMapResources`: dati dei set MCD e parti delle tegole; nil se non c'e' una battaglia) e `StoreBattle` (`_battleGame = battle`). `SavedBattleGame.Load` crea ora un vero **`TXcomAIModule`** (con `Load` come `AIModule::load`) al posto del nodo grezzo (`RawUnitAI` non serve piu', ma resta nel repository). **Parita'**: `gengen` scrive `genNN.after.sav` (`SavedGame::save` dopo la corsa, con `battleGame`) e `genNN.re.yml` (il vero `load` + `loadMapResources` + `save` della battaglia); `TTestXcomRealSaveLink` legge i 26 salvataggi, riscrive il file (stesso testo, a meno di una lista vuota in stile a blocco o a flusso) e la battaglia caricata e salvata: **26 su 26 identici**. Nel repository 3 scenari (`gen*.after.sav.gz`, `gen*.re.yml.gz`). `SaveConverter` (i salvataggi binari originali `SAVEGAME.DAT`...) **non e' portato**.
+
 ## Test
 
 `Tests\DelphiDoom.Tests.XcomBattle` (`Tools\build.bat Tests\DelphiDoom.Tests.XcomBattle`; da un worktree serve `$env:DCC_UnitSearchPath` con il percorso di DUnitX): `TTestXcomBattleModel` (regole fatte a mano da YAML, generatore a numeri dati `TScriptedRandom`, pathfinder e motore delle tegole finti) e `TTestXcomRealBattle`.
 
 ## Non portato (ancora)
 
-`Projectile`, `ExplosionBState`, `BattlescapeGame`, il pensiero di `AIModule`, il disegno (`Map`, `UnitSprite`...) e gli stati: vedi la sezione "Battlescape" di `docs\INTEGRAZIONE_GIOCHI.md`. L'aggancio al `TXcomSavedGame` (che oggi rifiuta un `.sav` con `battleGame`) non e' fatto: la battaglia si carica dal documento `battleGame` con `TXcomSavedBattleGame.Load`.
+`Projectile`, `ExplosionBState`, `BattlescapeGame`, il pensiero di `AIModule`, il disegno (`Map`, `UnitSprite`...) e gli stati: vedi la sezione "Battlescape" di `docs\INTEGRAZIONE_GIOCHI.md`. L'aggancio al `TXcomSavedGame` e' fatto (`TXcomBattleSaveLink`); manca `SaveConverter`.

@@ -38,6 +38,11 @@
 #include "Savegame/Ufo.h"
 #include "Savegame/Vehicle.h"
 #include "Savegame/Soldier.h"
+#include "Savegame/Tile.h"
+#include "Savegame/Node.h"
+#include "Savegame/BattleUnit.h"
+#include "Savegame/BattleItem.h"
+#include "Mod/MapData.h"
 #include "Savegame/ItemContainer.h"
 #include "Battlescape/BattlescapeGenerator.h"
 #include "Engine/Game.h"
@@ -64,6 +69,20 @@ static void WriteNode(const std::string& path, const YAML::Node& node) {
 static void WriteText(const std::string& path, const std::string& text) {
   std::ofstream o(path.c_str(), std::ios::binary);
   o << text;
+}
+
+// what loadMapResources does without initUtilities and the tile engine
+static void LoadMapResourcesNoEngine(Mod* mod, SavedBattleGame* b) {
+  for (std::vector<MapDataSet*>::const_iterator i = b->_mapDataSets.begin(); i != b->_mapDataSets.end(); ++i)
+    (*i)->loadData(mod->getMCDPatch((*i)->getName()));
+  int mdsID, mdID;
+  for (int i = 0; i < b->_mapsize_z * b->_mapsize_y * b->_mapsize_x; ++i) {
+    for (int part = O_FLOOR; part <= O_OBJECT; part++) {
+      TilePart tp = (TilePart)part;
+      b->_tiles[i]->getMapData(&mdID, &mdsID, tp);
+      if (mdID != -1 && mdsID != -1) b->_tiles[i]->setMapData(b->_mapDataSets[mdsID]->getObject(mdID), mdID, mdsID, tp);
+    }
+  }
 }
 
 template <class T>
@@ -204,6 +223,22 @@ int main(int argc, char** argv) {
       scn << "seedafter=" << RNG::getSeed() << "\nok=" << (ok ? 1 : 0) << "\n";
       WriteText(basePath + ".scn", scn.str());
       if (ok) WriteNode(basePath + ".yml", b->save());
+      if (ok) {
+        // the saved game in the battle (SavedGame::save has the battleGame) and the real load and save of it
+        std::string after = std::string(name) + "a.sav";
+        s->save(after);
+        {
+          std::string from = folder + after;
+          std::ifstream in(from.c_str(), std::ios::binary);
+          std::ofstream o((basePath + ".after.sav").c_str(), std::ios::binary);
+          o << in.rdbuf();
+        }
+        SavedBattleGame* c = new SavedBattleGame();
+        c->load(b->save(), mod, s);
+        LoadMapResourcesNoEngine(mod, c);
+        WriteNode(basePath + ".re.yml", c->save());
+        delete c;
+      }
       free(game);
     }
   } catch (Exception& e) {
