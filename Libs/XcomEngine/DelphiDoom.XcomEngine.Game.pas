@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
-  DelphiDoom.XcomEngine.ModCatalog.Intf;
+  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -234,6 +234,8 @@ begin
 end;
 
 procedure TXcomGame.AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage);
+var
+  LFormats: IXcomSoundFormats;
 begin
   if Assigned(ALanguage) and (ALanguage <> FLanguage) then
   begin
@@ -243,6 +245,12 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+  // Mod::loadExtraResources: the sounds of a game without soundDefs follow the preferred format
+  if Supports(AResources, IXcomSoundFormats, LFormats) then
+  begin
+    LFormats.SetPreferredSound(FOptions.PreferredSound);
+    FOptions.CurrentSound := LFormats.CurrentSound;
+  end;
   if (FMusic <> nil) and (AResources <> nil) then
     FMusic.Reload(AResources);
 end;

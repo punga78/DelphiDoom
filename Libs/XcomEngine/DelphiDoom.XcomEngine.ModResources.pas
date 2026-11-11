@@ -19,7 +19,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Rules.Intf,
   DelphiDoom.XcomEngine.GameRules, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.CatArchive, DelphiDoom.XcomEngine.SoundSet,
-  DelphiDoom.XcomEngine.SoundConverter;
+  DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.SoundFormats.Intf;
 
 type
   /// <summary>
@@ -34,9 +34,10 @@ type
   ///   IXcomResources for a game directory (UFO or TFTD) and the ruleset of a mod: Mod::loadVanillaResources and
   ///   loadExtraResources for the palettes and the fonts, and loadFile for the "interfaces", "constants", "fontName"
   ///   and "extraStrings" of the ruleset files. The full screen pictures (BACK01.SCR...) are read the first time they
-  ///   are asked for. Not ported: the surface sets, the sounds, the music, the other rules (see the README)
+  ///   are asked for, and so are the sounds: the sets of soundDefs (TFTD) or, without them, the CAT files of UFO
+  ///   chosen by the preferred format (ResolveSoundSets, IXcomSoundFormats)
   /// </summary>
-  TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules)
+  TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules, IXcomSoundFormats)
   strict private
     FRules: TXcomGameRules;
     FFiles: TXcomFileMap;
@@ -63,6 +64,9 @@ type
     FConstants: TDictionary<string, Integer>;
     FSoundSets: TObjectDictionary<string, TXcomSoundSet>;
     FCatalogs: TDictionary<string, IXcomCatArchive>;
+    FPreferredSound: Integer;
+    FCurrentSound: Integer;
+    FSoundSetsResolved: Boolean;
     FMusics: TDictionary<string, TXcomMusicRule>;
     procedure LoadMusic(const ANode: IYamlNode);
     procedure AddPalette(const AName: string; const APalette: TXcomPalette);
@@ -70,6 +74,9 @@ type
     procedure LoadRulesets;
     procedure LoadRuleset(const ANode: IYamlNode);
     procedure LoadSoundSet(const ANode: IYamlNode);
+    procedure ResolveSoundSets;
+    procedure AddWholeFileSet(const AName, AFile: string; AFormat: TXcomSoundSetFormat);
+    function SoundCatalog(const AFile: string): IXcomCatArchive;
     procedure LoadFonts;
     function LoadFullScreen(const AName: string): TXcomSurface;
     function BuildAltGeoBorder: TXcomSurface;
@@ -86,6 +93,9 @@ type
     /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
     procedure Load;
     function HasSoundDefinitions: Boolean;
+    /// <summary>IXcomSoundFormats: the sets of a game without soundDefs are chosen again at the next sound</summary>
+    procedure SetPreferredSound(AFormat: Integer);
+    function CurrentSound: Integer;
     function SoundWave(const ASet: string; AIndex: Integer): TBytes;
     function MusicRules: TArray<TXcomMusicRule>;
     function SoundFile(const AName: string): TBytes;
@@ -322,29 +332,115 @@ begin
     Result := ADefault;
 end;
 
+function TXcomModResources.SoundCatalog(const AFile: string): IXcomCatArchive;
+var
+  LBytes: TBytes;
+begin
+  if FCatalogs.TryGetValue(AFile, Result) then
+    Exit;
+  Result := nil;
+  LBytes := SoundFile(AFile);
+  // a file too short to have an index is not a set of sounds
+  if Length(LBytes) < 4 then
+    Exit;
+  Result := TXcomCatArchive.Create(LBytes);
+  FCatalogs.Add(AFile, Result);
+end;
+
+procedure TXcomModResources.AddWholeFileSet(const AName, AFile: string; AFormat: TXcomSoundSetFormat);
+var
+  LSet: TXcomSoundSet;
+begin
+  LSet := TXcomSoundSet.Create;
+  LSet.CatFile := AFile;
+  LSet.Format := AFormat;
+  LSet.WholeFile := True;
+  FSoundSets.AddOrSetValue(AName, LSet);
+end;
+
+procedure TXcomModResources.ResolveSoundSets;
+const
+  SET_NAMES: array[0..1] of string = ('GEO.CAT', 'BATTLE.CAT');
+  // the files by format: XCOM_SOUND_14 and XCOM_SOUND_10
+  SET_FILES: array[XCOM_SOUND_14..XCOM_SOUND_10, 0..1] of string = (('SAMPLE.CAT', 'SAMPLE2.CAT'),
+    ('SOUND2.CAT', 'SOUND1.CAT'));
+var
+  LOrder: TArray<Integer>;
+  LSetIndex: Integer;
+  LFormat: Integer;
+begin
+  if FSoundSetsResolved then
+    Exit;
+  FSoundSetsResolved := True;
+  // Mod::loadExtraResources: without soundDefs the two sets are whole files, the preferred format first and then
+  // the Windows one and the DOS one
+  if not FHasSoundDefinitions then
+  begin
+    if (FPreferredSound = XCOM_SOUND_14) or (FPreferredSound = XCOM_SOUND_10) then
+      LOrder := [FPreferredSound, XCOM_SOUND_14, XCOM_SOUND_10]
+    else
+      LOrder := [XCOM_SOUND_14, XCOM_SOUND_10];
+    FCurrentSound := XCOM_SOUND_AUTO;
+    for LSetIndex := Low(SET_NAMES) to High(SET_NAMES) do
+    begin
+      FSoundSets.Remove(SET_NAMES[LSetIndex]);
+      for LFormat in LOrder do
+        if Length(SoundFile(SET_FILES[LFormat, LSetIndex])) > 0 then
+        begin
+          if LFormat = XCOM_SOUND_14 then
+            AddWholeFileSet(SET_NAMES[LSetIndex], SET_FILES[LFormat, LSetIndex], sfWave)
+          else
+            AddWholeFileSet(SET_NAMES[LSetIndex], SET_FILES[LFormat, LSetIndex], sfDos);
+          FCurrentSound := LFormat;
+          Break;
+        end;
+    end;
+  end;
+  if Length(SoundFile('INTRO.CAT')) > 0 then
+    AddWholeFileSet('INTRO.CAT', 'INTRO.CAT', sfDos);
+  if Length(SoundFile('SAMPLE3.CAT')) > 0 then
+    AddWholeFileSet('SAMPLE3.CAT', 'SAMPLE3.CAT', sfWave);
+end;
+
+procedure TXcomModResources.SetPreferredSound(AFormat: Integer);
+begin
+  if AFormat = FPreferredSound then
+    Exit;
+  FPreferredSound := AFormat;
+  FSoundSetsResolved := False;
+end;
+
+function TXcomModResources.CurrentSound: Integer;
+begin
+  ResolveSoundSets;
+  Result := FCurrentSound;
+end;
+
 function TXcomModResources.SoundWave(const ASet: string; AIndex: Integer): TBytes;
 var
   LSet: TXcomSoundSet;
   LCatalog: IXcomCatArchive;
   LEntry: Integer;
-  LPath: string;
 begin
   Result := nil;
-  if (not FSoundSets.TryGetValue(ASet, LSet)) or (AIndex < 0) or (AIndex >= Length(LSet.Sounds)) then
+  ResolveSoundSets;
+  if (not FSoundSets.TryGetValue(ASet, LSet)) or (AIndex < 0) then
     Exit;
-  LEntry := LSet.Sounds[AIndex];
-  LPath := 'SOUND/' + LSet.CatFile;
-  if not FCatalogs.TryGetValue(LPath, LCatalog) then
-  begin
-    if not FGameData.Files.Exists(LPath) then
-      Exit;
-    LCatalog := TXcomCatArchive.Create(FGameData.Files.ReadAll(LPath));
-    FCatalogs.Add(LPath, LCatalog);
+  if LSet.WholeFile then
+    LEntry := AIndex
+  else if AIndex < Length(LSet.Sounds) then
+    LEntry := LSet.Sounds[AIndex]
+  else
+    Exit;
+  LCatalog := SoundCatalog(LSet.CatFile);
+  if (LCatalog = nil) or (LEntry < 0) or (LEntry >= LCatalog.Count) then
+    Exit;
+  case LSet.Format of
+    // the sets of soundDefs are loaded with SoundSet::loadCatbyIndex (signed samples at 11025 Hz)
+    sfIndexed: Result := TXcomSoundConverter.IndexedToWave(LCatalog.Load(LEntry));
+    sfDos: Result := TXcomSoundConverter.RawToWave(LCatalog.Load(LEntry));
+    sfWave: Result := TXcomSoundConverter.WaveToWave(LCatalog.Load(LEntry));
   end;
-  if (LEntry < 0) or (LEntry >= LCatalog.Count) then
-    Exit;
-  // the sets of soundDefs are loaded with SoundSet::loadCatbyIndex (signed samples at 11025 Hz)
-  Result := TXcomSoundConverter.IndexedToWave(LCatalog.Load(LEntry));
 end;
 
 procedure TXcomModResources.LoadMusic(const ANode: IYamlNode);
