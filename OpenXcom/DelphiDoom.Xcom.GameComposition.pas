@@ -207,7 +207,7 @@ begin
       [ASettings.ModId], LParser));
     if ASettings.AudioOutput <> nil then
     begin
-      TXcomAudioFactory.CreateAudio(LOptions, ASettings.AudioOutput, XCOM_AUDIO_RATE, LAudio, LMusic);
+      TXcomAudioFactory.CreateAudio(LOptions, ASettings.AudioOutput, 0, LAudio, LMusic);
       Result.SetAudioDevice(LAudio);
       Result.SetMusicPlayer(LMusic);
       if Assigned(ASettings.OnAudio) then

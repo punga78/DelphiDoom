@@ -493,7 +493,14 @@ begin
       ekMouseMotion, ekMouseDown, ekMouseUp:
         if FMouseActive then
           Dispatch(LEvent);
-      ekActive, ekResize:
+      ekActive:
+        // SDL_ACTIVEEVENT: with backgroundMute the game is silent while the window has not the focus
+        if FOptions.BackgroundMute then
+          if LEvent.Key <> 0 then
+            SetVolume(FOptions.SoundVolume, FOptions.MusicVolume, FOptions.UiVolume)
+          else
+            SetVolume(0, 0, 0);
+      ekResize:
         ;
     else
       Dispatch(LEvent);

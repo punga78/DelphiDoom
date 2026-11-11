@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Music.Intf,
-  DelphiDoom.XcomEngine.State, DelphiDoom.XcomAdlib.Intf, DelphiDoom.XcomAudio.Intf;
+  DelphiDoom.XcomEngine.State, DelphiDoom.XcomAdlib.Intf, DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomAudio.Factory;
 
 type
   /// <summary>Makes PCM WAV files for the tests</summary>
@@ -21,6 +21,24 @@ type
     class function Make(ARate, AChannels, ABits: Integer; const AData: TBytes): TBytes; static;
     /// <summary>A 22050 Hz mono 8 bit file of AFrames samples that all have the value AValue</summary>
     class function Constant(AValue: Byte; AFrames: Integer): TBytes; static;
+  end;
+
+  /// <summary>The real decoders of the libraries, for the tests of what is built on them</summary>
+  TTestDecoders = class
+  public
+    class function Sound: IXcomSampleDecoder; static;
+    class function Mp3: IXcomSampleDecoder; static;
+  end;
+
+  /// <summary>An IXcomSampleDecoder that counts the decodes and gives them to another one</summary>
+  TCountingDecoder = class(TInterfacedObject, IXcomSampleDecoder)
+  strict private
+    FInner: IXcomSampleDecoder;
+  public
+    Decodes: Integer;
+    constructor Create(const AInner: IXcomSampleDecoder);
+    function Accepts(const AData: TBytes): Boolean;
+    function TryDecode(const AData: TBytes; ARate: Integer; out ASamples: TArray<SmallInt>): Boolean;
   end;
 
   /// <summary>IXcomMusicSettings with fields</summary>
@@ -173,6 +191,33 @@ end;
 function TFakeSettings.PreferredFormat: Integer;
 begin
   Result := Preferred;
+end;
+
+class function TTestDecoders.Sound: IXcomSampleDecoder;
+begin
+  Result := TXcomAudioFactory.CreateSoundDecoder;
+end;
+
+class function TTestDecoders.Mp3: IXcomSampleDecoder;
+begin
+  Result := TXcomAudioFactory.CreateMp3Decoder;
+end;
+
+constructor TCountingDecoder.Create(const AInner: IXcomSampleDecoder);
+begin
+  inherited Create;
+  FInner := AInner;
+end;
+
+function TCountingDecoder.Accepts(const AData: TBytes): Boolean;
+begin
+  Result := FInner.Accepts(AData);
+end;
+
+function TCountingDecoder.TryDecode(const AData: TBytes; ARate: Integer; out ASamples: TArray<SmallInt>): Boolean;
+begin
+  Inc(Decodes);
+  Result := FInner.TryDecode(AData, ARate, ASamples);
 end;
 
 procedure TFakeAdlibPlayer.Load(const ASong: TBytes);

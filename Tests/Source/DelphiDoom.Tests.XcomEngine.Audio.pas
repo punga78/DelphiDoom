@@ -14,8 +14,9 @@ interface
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Volume,
   DelphiDoom.XcomAdlib.Intf, DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomAudio.Types,
-  DelphiDoom.XcomAudio.WaveDecoder, DelphiDoom.XcomAudio.Mixer, DelphiDoom.XcomAudio.ManualOutput,
-  DelphiDoom.XcomAudio.AdlibTrack, DelphiDoom.XcomAudio.WavTrack, DelphiDoom.Tests.XcomEngine.AudioFakes;
+  DelphiDoom.XcomAudio.SndfileDecoder, DelphiDoom.XcomAudio.Resampler, DelphiDoom.XcomAudio.Mixer,
+  DelphiDoom.XcomAudio.ManualOutput, DelphiDoom.XcomAudio.AdlibTrack, DelphiDoom.XcomAudio.DigitalTrack,
+  DelphiDoom.Tests.XcomEngine.AudioFakes;
 
 type
   [TestFixture]
@@ -30,8 +31,13 @@ type
 
   [TestFixture]
   [Category('XcomAudio')]
-  TTestXcomWaveDecoder = class
+  TTestXcomSndfileDecoder = class
+  strict private
+    FDecoder: IXcomSampleDecoder;
+    function Decode(const AData: TBytes; ARate: Integer = 22050): TArray<SmallInt>;
   public
+    [Setup]
+    procedure Setup;
     [Test]
     procedure UnMonoA8BitDa11025A22050RaddoppiaICampioni;
     [Test]
@@ -39,13 +45,43 @@ type
     [Test]
     procedure UnMonoA16BitDiventaStereo;
     [Test]
-    procedure UnFileCheNonEPcmDaEccezione;
+    procedure UnFileCheNonERiconosciutoDaFalso;
     [Test]
-    procedure UnaIntestazioneTroncataDaEccezione;
+    procedure UnaIntestazioneTroncataDaFalso;
+    [Test]
+    procedure UnRateDiUscitaNonValidoDaFalso;
+    [Test]
+    procedure PiuDiDueCanaliTengonoIPrimiDue;
     [Test]
     procedure UnChunkDatiPiuLungoDelFileSiLimitaAlFile;
     [Test]
     procedure UnChunkSconosciutoPrimaDeiDatiSiSalta;
+    [Test]
+    procedure IlRiconoscimentoVaPerContenutoNonPerEstensione;
+    [Test]
+    procedure UnTagId3PrimaDiUnFlacSiSalta;
+    [Test]
+    procedure LaFabbricaSenzaMotoreDaEccezione;
+  end;
+
+  [TestFixture]
+  [Category('XcomAudio')]
+  TTestXcomResampler = class
+  public
+    [Test]
+    procedure LoStessoRateRestituisceGliStessiCampioni;
+    [Test]
+    procedure UnRapportoDiDueRipeteIlCampione;
+    [Test]
+    procedure UnRapportoDiUnMezzoSaltaUnCampione;
+    [Test]
+    procedure UnRapportoQualsiasiInterpolaInLineare;
+    [Test]
+    procedure LeDurateSiConservano;
+    [Test]
+    procedure IlRiconoscimentoDelleDuplicazioniDiSdl;
+    [Test]
+    procedure UnBufferVuotoRestaVuoto;
   end;
 
   [TestFixture]
@@ -121,7 +157,11 @@ type
     [Test]
     procedure UnaTracciaWavApplicaIlVolume;
     [Test]
-    procedure UnaTracciaWavRifiutaUnFileNonPcm;
+    procedure UnaTracciaDigitaleIllegibileNonSuona;
+    [Test]
+    procedure IlFileSiDecodificaSoloQuandoServeEPoiSiLibera;
+    [Test]
+    procedure UnDecodificatoreNilDaEccezione;
     [Test]
     procedure UnaTracciaWavVuotaNonPartePerNulla;
   end;
@@ -149,13 +189,23 @@ begin
   Assert.AreEqual(48, TXcomVolume.Mixer(84));
 end;
 
-{ TTestXcomWaveDecoder }
+{ TTestXcomSndfileDecoder }
 
-procedure TTestXcomWaveDecoder.UnMonoA8BitDa11025A22050RaddoppiaICampioni;
+procedure TTestXcomSndfileDecoder.Setup;
+begin
+  FDecoder := TTestDecoders.Sound;
+end;
+
+function TTestXcomSndfileDecoder.Decode(const AData: TBytes; ARate: Integer): TArray<SmallInt>;
+begin
+  Assert.IsTrue(FDecoder.TryDecode(AData, ARate, Result));
+end;
+
+procedure TTestXcomSndfileDecoder.UnMonoA8BitDa11025A22050RaddoppiaICampioni;
 var
   LSamples: TArray<SmallInt>;
 begin
-  LSamples := TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(11025, 1, 8, TBytes.Create(128, 255)), 22050);
+  LSamples := Decode(TWaveMaker.Make(11025, 1, 8, TBytes.Create(128, 255)));
   // two samples at the half rate: four frames, each sample twice, each frame in both channels
   Assert.AreEqual(8, Length(LSamples));
   Assert.AreEqual(0, Integer(LSamples[0]));
@@ -164,12 +214,11 @@ begin
   Assert.AreEqual(127 * 256, Integer(LSamples[7]));
 end;
 
-procedure TTestXcomWaveDecoder.UnoStereoA16BitPassaCosiComE;
+procedure TTestXcomSndfileDecoder.UnoStereoA16BitPassaCosiComE;
 var
   LSamples: TArray<SmallInt>;
 begin
-  LSamples := TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(22050, 2, 16,
-    TBytes.Create($01, $00, $FF, $FF, $00, $80, $FF, $7F)), 22050);
+  LSamples := Decode(TWaveMaker.Make(22050, 2, 16, TBytes.Create($01, $00, $FF, $FF, $00, $80, $FF, $7F)));
   Assert.AreEqual(4, Length(LSamples));
   Assert.AreEqual(1, Integer(LSamples[0]));
   Assert.AreEqual(-1, Integer(LSamples[1]));
@@ -177,11 +226,11 @@ begin
   Assert.AreEqual(32767, Integer(LSamples[3]));
 end;
 
-procedure TTestXcomWaveDecoder.UnMonoA16BitDiventaStereo;
+procedure TTestXcomSndfileDecoder.UnMonoA16BitDiventaStereo;
 var
   LSamples: TArray<SmallInt>;
 begin
-  LSamples := TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(22050, 1, 16, TBytes.Create($10, $00, $F0, $FF)), 22050);
+  LSamples := Decode(TWaveMaker.Make(22050, 1, 16, TBytes.Create($10, $00, $F0, $FF)));
   Assert.AreEqual(4, Length(LSamples));
   Assert.AreEqual(16, Integer(LSamples[0]));
   Assert.AreEqual(16, Integer(LSamples[1]));
@@ -189,50 +238,44 @@ begin
   Assert.AreEqual(-16, Integer(LSamples[3]));
 end;
 
-procedure TTestXcomWaveDecoder.UnFileCheNonEPcmDaEccezione;
+procedure TTestXcomSndfileDecoder.UnFileCheNonERiconosciutoDaFalso;
 var
-  LWave: TBytes;
+  LSamples: TArray<SmallInt>;
 begin
-  LWave := TWaveMaker.Make(22050, 1, 8, TBytes.Create(1, 2));
-  // the format tag 2 is ADPCM
-  LWave[20] := 2;
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(LWave, 22050);
-    end, EXcomAudioException);
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(22050, 3, 8, TBytes.Create(1, 2, 3)), 22050);
-    end, EXcomAudioException);
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(22050, 1, 12, TBytes.Create(1, 2)), 22050);
-    end, EXcomAudioException);
+  Assert.IsFalse(FDecoder.TryDecode(TBytes.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 22050, LSamples));
+  Assert.AreEqual(0, Length(LSamples));
+  // a RIFF file that is not WAVE
+  Assert.IsFalse(FDecoder.TryDecode(TEncoding.ASCII.GetBytes('RIFF0000AVI LIST0000'), 22050, LSamples));
 end;
 
-procedure TTestXcomWaveDecoder.UnaIntestazioneTroncataDaEccezione;
+procedure TTestXcomSndfileDecoder.UnaIntestazioneTroncataDaFalso;
+var
+  LSamples: TArray<SmallInt>;
 begin
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(TBytes.Create(1, 2, 3), 22050);
-    end, EXcomAudioException);
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(TEncoding.ASCII.GetBytes('RIFF....WAVE'), 22050);
-    end, EXcomAudioException);
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomWaveDecoder.ToStereo16(TWaveMaker.Make(22050, 1, 8, TBytes.Create(1, 2)), 0);
-    end, EXcomAudioException);
+  Assert.IsFalse(FDecoder.TryDecode(TBytes.Create(1, 2, 3), 22050, LSamples));
+  Assert.IsFalse(FDecoder.TryDecode(TEncoding.ASCII.GetBytes('RIFF....WAVE'), 22050, LSamples));
+  Assert.IsFalse(FDecoder.TryDecode(nil, 22050, LSamples));
 end;
 
-procedure TTestXcomWaveDecoder.UnChunkDatiPiuLungoDelFileSiLimitaAlFile;
+procedure TTestXcomSndfileDecoder.UnRateDiUscitaNonValidoDaFalso;
+var
+  LSamples: TArray<SmallInt>;
+begin
+  Assert.IsFalse(FDecoder.TryDecode(TWaveMaker.Make(22050, 1, 8, TBytes.Create(1, 2)), 0, LSamples));
+end;
+
+procedure TTestXcomSndfileDecoder.PiuDiDueCanaliTengonoIPrimiDue;
+var
+  LSamples: TArray<SmallInt>;
+begin
+  // one frame of three channels: 128 (0), 255 (127 * 256), 0 (-128 * 256)
+  LSamples := Decode(TWaveMaker.Make(22050, 3, 8, TBytes.Create(128, 255, 0)));
+  Assert.AreEqual(2, Length(LSamples));
+  Assert.AreEqual(0, Integer(LSamples[0]));
+  Assert.AreEqual(127 * 256, Integer(LSamples[1]));
+end;
+
+procedure TTestXcomSndfileDecoder.UnChunkDatiPiuLungoDelFileSiLimitaAlFile;
 var
   LWave: TBytes;
   LSamples: TArray<SmallInt>;
@@ -241,11 +284,11 @@ begin
   // the size of the data chunk says 1000
   LWave[40] := $E8;
   LWave[41] := $03;
-  LSamples := TXcomWaveDecoder.ToStereo16(LWave, 22050);
+  LSamples := Decode(LWave);
   Assert.AreEqual(8, Length(LSamples));
 end;
 
-procedure TTestXcomWaveDecoder.UnChunkSconosciutoPrimaDeiDatiSiSalta;
+procedure TTestXcomSndfileDecoder.UnChunkSconosciutoPrimaDeiDatiSiSalta;
 var
   LWave: TBytes;
   LExtra: TBytes;
@@ -255,9 +298,117 @@ begin
   // a "LIST" chunk of 3 bytes (plus the byte that makes it even) between the format and the data
   LExtra := TEncoding.ASCII.GetBytes('LIST') + TBytes.Create(3, 0, 0, 0, 1, 2, 3, 0);
   LWave := Copy(LWave, 0, 36) + LExtra + Copy(LWave, 36, Length(LWave) - 36);
-  LSamples := TXcomWaveDecoder.ToStereo16(LWave, 22050);
+  LSamples := Decode(LWave);
   Assert.AreEqual(4, Length(LSamples));
   Assert.AreEqual(127 * 256, Integer(LSamples[0]));
+end;
+
+procedure TTestXcomSndfileDecoder.IlRiconoscimentoVaPerContenutoNonPerEstensione;
+begin
+  Assert.IsTrue(FDecoder.Accepts(TWaveMaker.Constant(128, 4)));
+  Assert.IsTrue(FDecoder.Accepts(TEncoding.ASCII.GetBytes('OggS0000')));
+  Assert.IsTrue(FDecoder.Accepts(TEncoding.ASCII.GetBytes('fLaC0000')));
+  Assert.IsTrue(FDecoder.Accepts(TEncoding.ASCII.GetBytes('FORM0000AIFF')));
+  Assert.IsFalse(FDecoder.Accepts(TEncoding.ASCII.GetBytes('MThd0000')));
+  Assert.IsFalse(FDecoder.Accepts(TEncoding.ASCII.GetBytes('RIFF0000AVI ')));
+  Assert.IsFalse(FDecoder.Accepts(nil));
+end;
+
+procedure TTestXcomSndfileDecoder.UnTagId3PrimaDiUnFlacSiSalta;
+var
+  LData: TBytes;
+begin
+  // ID3v2 of 4 bytes of payload (the size is in 7 bit groups) and then fLaC
+  LData := TEncoding.ASCII.GetBytes('ID3') + TBytes.Create(4, 0, 0, 0, 0, 0, 4, 1, 2, 3, 4) +
+    TEncoding.ASCII.GetBytes('fLaC');
+  Assert.IsTrue(FDecoder.Accepts(LData));
+  // an ID3 tag before anything else is not for this decoder (it may be an MP3)
+  LData := TEncoding.ASCII.GetBytes('ID3') + TBytes.Create(3, 0, 0, 0, 0, 0, 4, 1, 2, 3, 4, 0, 0, 0, 0);
+  Assert.IsFalse(FDecoder.Accepts(LData));
+end;
+
+procedure TTestXcomSndfileDecoder.LaFabbricaSenzaMotoreDaEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TXcomSndfileDecoder.Create(nil);
+    end, EArgumentNilException);
+end;
+
+{ TTestXcomResampler }
+
+procedure TTestXcomResampler.LoStessoRateRestituisceGliStessiCampioni;
+var
+  LSamples: TArray<SmallInt>;
+  LResult: TArray<SmallInt>;
+begin
+  LSamples := [1, 2, 3, 4];
+  LResult := TXcomResampler.Convert(LSamples, 22050, 22050);
+  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual(3, Integer(LResult[2]));
+end;
+
+procedure TTestXcomResampler.UnRapportoDiDueRipeteIlCampione;
+var
+  LResult: TArray<SmallInt>;
+begin
+  LResult := TXcomResampler.Convert([10, 11, 20, 21], 11025, 22050);
+  Assert.AreEqual(8, Length(LResult));
+  Assert.AreEqual(10, Integer(LResult[0]));
+  Assert.AreEqual(10, Integer(LResult[2]));
+  Assert.AreEqual(20, Integer(LResult[4]));
+  Assert.AreEqual(21, Integer(LResult[7]));
+end;
+
+procedure TTestXcomResampler.UnRapportoDiUnMezzoSaltaUnCampione;
+var
+  LResult: TArray<SmallInt>;
+begin
+  LResult := TXcomResampler.Convert([1, 1, 2, 2, 3, 3, 4, 4], 44100, 22050);
+  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual(1, Integer(LResult[0]));
+  Assert.AreEqual(3, Integer(LResult[2]));
+end;
+
+procedure TTestXcomResampler.UnRapportoQualsiasiInterpolaInLineare;
+var
+  LResult: TArray<SmallInt>;
+begin
+  // 10000 Hz to 20000 is a power of two; 10000 to 15000 is not: the sample in between is the mean
+  LResult := TXcomResampler.Convert([0, 0, 300, 300, 600, 600], 10000, 15000);
+  Assert.AreEqual(8, Length(LResult));
+  Assert.AreEqual(0, Integer(LResult[0]));
+  // frame 1 is at 2/3 of the way from sample 0 to sample 1: 200
+  Assert.AreEqual(200, Integer(LResult[2]));
+  Assert.AreEqual(200, Integer(LResult[3]));
+end;
+
+procedure TTestXcomResampler.LeDurateSiConservano;
+var
+  LSamples: TArray<SmallInt>;
+  LResult: TArray<SmallInt>;
+begin
+  SetLength(LSamples, 44100 * 2);
+  LResult := TXcomResampler.Convert(LSamples, 44100, 16000);
+  Assert.AreEqual(16000, Length(LResult) div 2);
+  LResult := TXcomResampler.Convert(LSamples, 44100, 48000);
+  Assert.AreEqual(48000, Length(LResult) div 2);
+end;
+
+procedure TTestXcomResampler.IlRiconoscimentoDelleDuplicazioniDiSdl;
+begin
+  Assert.IsTrue(TXcomResampler.IsPowerOfTwoRatio(11025, 22050));
+  Assert.IsTrue(TXcomResampler.IsPowerOfTwoRatio(44100, 11025));
+  Assert.IsTrue(TXcomResampler.IsPowerOfTwoRatio(22050, 22050));
+  Assert.IsFalse(TXcomResampler.IsPowerOfTwoRatio(11025, 33075));
+  Assert.IsFalse(TXcomResampler.IsPowerOfTwoRatio(22050, 44101));
+  Assert.IsFalse(TXcomResampler.IsPowerOfTwoRatio(0, 22050));
+end;
+
+procedure TTestXcomResampler.UnBufferVuotoRestaVuoto;
+begin
+  Assert.AreEqual(0, Length(TXcomResampler.Convert(nil, 11025, 22050)));
 end;
 
 { TTestXcomMixer }
@@ -266,7 +417,7 @@ procedure TTestXcomMixer.Setup;
 begin
   FOutput := TXcomManualPcmOutput.Create;
   FOutputRef := FOutput;
-  FDevice := TXcomMixer.Create(FOutputRef, RATE);
+  FDevice := TXcomMixer.Create(FOutputRef, RATE, TTestDecoders.Sound);
   FMeter := FDevice as IXcomMixerMeter;
   FSink := FDevice as IXcomMusicSink;
 end;
@@ -294,14 +445,14 @@ procedure TTestXcomMixer.SenzaUscitaNonSuonaNulla;
 var
   LDevice: IXcomAudioDevice;
 begin
-  LDevice := TXcomMixer.Create(nil, RATE);
+  LDevice := TXcomMixer.Create(nil, RATE, TTestDecoders.Sound);
   Assert.IsFalse((LDevice as IXcomMixerMeter).Open);
   Assert.IsFalse(LDevice.IsAvailable);
   LDevice.PlayWave(TWaveMaker.Constant(255, 100));
   Assert.AreEqual(0, (LDevice as IXcomMixerMeter).ActiveChannels);
   LDevice.Close;
   // an output that cannot open (no loudspeaker) gives the same
-  LDevice := TXcomMixer.Create(TXcomManualPcmOutput.Create(False), RATE);
+  LDevice := TXcomMixer.Create(TXcomManualPcmOutput.Create(False), RATE, TTestDecoders.Sound);
   Assert.IsFalse((LDevice as IXcomMixerMeter).Open);
   Assert.IsFalse(LDevice.IsAvailable);
 end;
@@ -662,8 +813,8 @@ var
   LBuffer: TArray<SmallInt>;
 begin
   // 10 frames of 127 * 256
-  LTrack := TXcomWavTrack.Create(TWaveMaker.Constant(255, 10), RATE);
-  Assert.AreEqual('Wav', LTrack.Format);
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TWaveMaker.Constant(255, 10), RATE, 'WAV');
+  Assert.AreEqual('WAV', LTrack.Format);
   Assert.IsFalse(LTrack.IsPlaying);
   LTrack.Start(0);
   Assert.IsTrue(LTrack.IsPlaying);
@@ -681,7 +832,7 @@ var
   LTrack: IXcomMusicTrack;
   LBuffer: TArray<SmallInt>;
 begin
-  LTrack := TXcomWavTrack.Create(TWaveMaker.Constant(255, 10), RATE);
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TWaveMaker.Constant(255, 10), RATE, 'WAV');
   LTrack.Start(-1);
   LBuffer := Buffer(100);
   LTrack.Render(@LBuffer[0], 400, 1);
@@ -696,7 +847,7 @@ var
   LTrack: IXcomMusicTrack;
   LBuffer: TArray<SmallInt>;
 begin
-  LTrack := TXcomWavTrack.Create(TWaveMaker.Constant(255, 10), RATE);
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TWaveMaker.Constant(255, 10), RATE, 'WAV');
   LTrack.Start(3);
   LBuffer := Buffer(100);
   LTrack.Render(@LBuffer[0], 400, 1);
@@ -711,7 +862,7 @@ var
   LTrack: IXcomMusicTrack;
   LBuffer: TArray<SmallInt>;
 begin
-  LTrack := TXcomWavTrack.Create(TWaveMaker.Constant(255, 10), RATE);
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TWaveMaker.Constant(255, 10), RATE, 'WAV');
   LTrack.Start(0);
   LBuffer := Buffer(10);
   LBuffer[0] := 100;
@@ -720,13 +871,46 @@ begin
   Assert.AreEqual(127 * 256 div 2, Integer(LBuffer[1]));
 end;
 
-procedure TTestXcomTracks.UnaTracciaWavRifiutaUnFileNonPcm;
+procedure TTestXcomTracks.UnaTracciaDigitaleIllegibileNonSuona;
+var
+  LTrack: IXcomMusicTrack;
+begin
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TBytes.Create(1, 2, 3), RATE, 'WAV');
+  LTrack.Start(-1);
+  Assert.IsFalse(LTrack.IsPlaying);
+end;
+
+procedure TTestXcomTracks.IlFileSiDecodificaSoloQuandoServeEPoiSiLibera;
+var
+  LDecoder: TCountingDecoder;
+  LDecoderRef: IXcomSampleDecoder;
+  LTrack: IXcomMusicTrack;
+  LPreparation: IXcomMusicPreparation;
+begin
+  LDecoder := TCountingDecoder.Create(TTestDecoders.Sound);
+  LDecoderRef := LDecoder;
+  LTrack := TXcomDigitalTrack.Create(LDecoderRef, TWaveMaker.Constant(255, 10), RATE, 'OGG');
+  Assert.AreEqual(0, LDecoder.Decodes);
+  Assert.IsTrue(Supports(LTrack, IXcomMusicPreparation, LPreparation));
+  LPreparation.Prepare;
+  LPreparation.Prepare;
+  Assert.AreEqual(1, LDecoder.Decodes);
+  LTrack.Start(0);
+  Assert.AreEqual(1, LDecoder.Decodes);
+  LTrack.Stop;
+  // after Stop the samples are gone: a new start decodes again
+  LTrack.Start(0);
+  Assert.AreEqual(2, LDecoder.Decodes);
+  Assert.IsTrue(LTrack.IsPlaying);
+end;
+
+procedure TTestXcomTracks.UnDecodificatoreNilDaEccezione;
 begin
   Assert.WillRaise(
     procedure
     begin
-      TXcomWavTrack.Create(TBytes.Create(1, 2, 3), RATE);
-    end, EXcomAudioException);
+      TXcomDigitalTrack.Create(nil, nil, RATE, 'WAV');
+    end, EArgumentNilException);
 end;
 
 procedure TTestXcomTracks.UnaTracciaWavVuotaNonPartePerNulla;
@@ -734,7 +918,7 @@ var
   LTrack: IXcomMusicTrack;
   LBuffer: TArray<SmallInt>;
 begin
-  LTrack := TXcomWavTrack.Create(TWaveMaker.Make(22050, 1, 8, nil), RATE);
+  LTrack := TXcomDigitalTrack.Create(TTestDecoders.Sound, TWaveMaker.Make(22050, 1, 8, nil), RATE, 'WAV');
   LTrack.Start(-1);
   Assert.IsFalse(LTrack.IsPlaying);
   LBuffer := Buffer(4);
@@ -749,7 +933,8 @@ end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomVolume);
-  TDUnitX.RegisterTestFixture(TTestXcomWaveDecoder);
+  TDUnitX.RegisterTestFixture(TTestXcomSndfileDecoder);
+  TDUnitX.RegisterTestFixture(TTestXcomResampler);
   TDUnitX.RegisterTestFixture(TTestXcomMixer);
   TDUnitX.RegisterTestFixture(TTestXcomTracks);
 
