@@ -1,0 +1,86 @@
+shoot 8 8 45 10 0
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+psi 1000007 12 44 14 0
+psi 1000009 11 1 18 0
+place 1000029 46 16 0
+turn 1000029 45 17 0
+melee 1000029
+psi 1000007 11 14 12 0
+setmorale 8 20
+setmorale 1000014 3
+setmorale 1000026 22
+endturn
+aiturn
+init
+place 1000028 43 16 0
+turn 1000028 44 15 0
+melee 1000028
+psi 1000006 11 44 14 0
+setmorale 1000026 5
+setmorale 1000029 20
+setmorale 1000012 14
+endturn
+aiturn
+init
+place 1000029 31 17 2
+turn 1000029 30 17 2
+melee 1000029
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init

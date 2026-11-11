@@ -1,0 +1,76 @@
+shoot 6 8 27 2 0
+place 2 20 24 1
+turn 2 20 25 1
+melee 2
+setmorale 1000001 18
+setmorale 1000003 3
+setmorale 3 8
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+psi 1000004 11 25 4 0
+kneel 6
+kneel 3
+endturn
+aiturn
+init
+kneel 5
+kneel 6
+kneel 5
+psi 1000006 11 25 4 0
+setmorale 1000002 8
+setmorale 1000004 2
+setmorale 6 17
+endturn
+aiturn
+init
+shoot 7 6 19 7 0
+kneel 8
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init

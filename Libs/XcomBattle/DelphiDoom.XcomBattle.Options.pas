@@ -20,6 +20,8 @@ type
     BattleAutoEnd: Boolean;
     /// <summary>Options::allowPsionicCapture</summary>
     AllowPsionicCapture: Boolean;
+    /// <summary>Options::allowPsiStrengthImprovement</summary>
+    AllowPsiStrengthImprovement: Boolean;
     /// <summary>Options::noAlienPanicMessages</summary>
     NoAlienPanicMessages: Boolean;
     /// <summary>Options::battleXcomSpeed and battleAlienSpeed (the interval of the steps)</summary>
@@ -43,6 +45,7 @@ begin
   Result.BattleNotifyDeath := False;
   Result.BattleAutoEnd := False;
   Result.AllowPsionicCapture := False;
+  Result.AllowPsiStrengthImprovement := False;
   Result.NoAlienPanicMessages := False;
   Result.BattleXcomSpeed := 30;
   Result.BattleAlienSpeed := 30;

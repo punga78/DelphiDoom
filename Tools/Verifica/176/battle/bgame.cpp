@@ -31,6 +31,7 @@
 #include "Engine/Language.h"
 #include "Mod/Mod.h"
 #include "Mod/RuleItem.h"
+#include "Mod/Armor.h"
 #include "Savegame/SavedGame.h"
 #include "Savegame/SavedBattleGame.h"
 #include "Savegame/Tile.h"
@@ -118,15 +119,18 @@ static void Settle(BattlescapeGame* bg, SavedBattleGame* b) {
   }
 }
 
-static void Run(Game* game, BattlescapeState* bs, const std::string& out, const std::vector<std::string>& script) {
+static int g_steps = 0;
+
+// executes one order of the script and writes stepNNN.yml and stepNNN.txt
+static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& out, int n, const std::string& line) {
   SavedBattleGame* b = game->getSavedGame()->getSavedBattle();
   BattlescapeGame* bg = bs->getBattleGame();
   g_map = bs->getMap();
   Mod* mod = game->getMod();
-  for (size_t n = 0; n < script.size(); n++) {
-    std::vector<std::string> w = Split(script[n]);
-    if (w.empty()) continue;
-    g_trace = "# " + script[n] + "\n";
+  {
+    std::vector<std::string> w = Split(line);
+    if (w.empty()) return;
+    g_trace = "# " + line + "\n";
     try {
       if (w[0] == "select") {
         b->setSelectedUnit(FindUnit(b, atoi(w[1].c_str())));
@@ -180,8 +184,73 @@ static void Run(Game* game, BattlescapeState* bs, const std::string& out, const 
       } else if (w[0] == "endturn") {
         bg->_endTurnRequested = true;
         bg->statePushBack(0);
+      } else if (w[0] == "place") {
+        // a unit is put on a free tile (the old tiles are emptied first: setUnitPosition does not do it)
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        Position p(atoi(w[2].c_str()), atoi(w[3].c_str()), atoi(w[4].c_str()));
+        if (u && b->setUnitPosition(u, p, true)) {
+          int size = u->getArmor()->getSize();
+          for (int x = size - 1; x >= 0; x--)
+            for (int y = size - 1; y >= 0; y--) {
+              Tile* t = b->getTile(u->getPosition() + Position(x, y, 0));
+              if (t && t->getUnit() == u) t->setUnit(0);
+            }
+          b->setUnitPosition(u, p);
+          b->getTileEngine()->recalculateFOV();
+        } else g_trace += "PLACEFAILED\n";
+      } else if (w[0] == "melee") {
+        // the menu of the actions (ActionMenuState::btnActionMenuItemClick) for a hit, then handleNonTargetAction
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        if (u) {
+          b->setSelectedUnit(u);
+          BattleAction* a = &bg->_currentAction;
+          a->targeting = false;
+          a->actor = u;
+          a->weapon = u->getMeleeWeapon();
+          a->waypoints.clear();
+          a->result = "";
+          a->type = BA_HIT;
+          if (a->weapon) {
+            a->TU = u->getActionTUs(BA_HIT, a->weapon);
+            std::string usable = b->getItemUsable(a->weapon);
+            if (!usable.empty()) a->result = usable;
+            else if (a->TU > u->getTimeUnits()) a->result = "STR_NOT_ENOUGH_TIME_UNITS";
+            else if (!b->getTileEngine()->validMeleeRange(u->getPosition(), u->getDirection(), u, 0, &a->target)) a->result = "STR_THERE_IS_NO_ONE_THERE";
+            if (!a->result.empty()) a->type = BA_NONE;
+            bg->handleNonTargetAction();
+          } else g_trace += "NOWEAPON\n";
+        }
+      } else if (w[0] == "psi") {
+        // the psi button, then a click on the target
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        if (u && u->getSpecialWeapon(BT_PSIAMP)) {
+          b->setSelectedUnit(u);
+          BattleAction* a = &bg->_currentAction;
+          a->targeting = false;
+          a->type = BA_NONE;
+          a->actor = u;
+          a->weapon = 0;
+          a->waypoints.clear();
+          bg->psiButtonAction();
+          a->type = (BattleActionType)atoi(w[2].c_str());
+          bg->primaryAction(Position(atoi(w[3].c_str()), atoi(w[4].c_str()), atoi(w[5].c_str())));
+        } else g_trace += "NOPSI\n";
+      } else if (w[0] == "setmorale") {
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        if (u) u->moraleChange(atoi(w[2].c_str()) - u->getMorale());
+      } else if (w[0] == "init") {
+        // BattlescapeState::init after the screen of the next turn
+        bg->init();
+      } else if (w[0] == "aiturn") {
+        // the other side plays: think() chooses the AI actions until it ends its turn
+        int guard = 2000;
+        while (b->getSide() != FACTION_PLAYER && guard-- > 0) {
+          bg->think();
+          RunStates(bg);
+        }
+        if (guard <= 0) g_trace += "AIGUARD\n";
       }
-      Settle(bg, b);
+      if (w[0] != "aiturn") Settle(bg, b);
       if (w[0] == "endturn" && getenv("BGAME_AI")) {
         // the other side plays: think() chooses the AI actions until it ends its turn
         int guard = 2000;
@@ -207,6 +276,80 @@ static unsigned long long g_pick = 1;
 static int Pick(int n) {
   g_pick = g_pick * 6364136223846793005ULL + 1442695040888963407ULL;
   return n <= 0 ? 0 : (int)((g_pick >> 33) % (unsigned long long)n);
+}
+
+static std::string Num(int v) { return std::to_string(v); }
+
+// the orders of a "live" script (auto:<count>:<seed>:x) are chosen from the state the battle has NOW: melee next to an
+// enemy, psionics, low morale before a turn change, a whole turn of the AI
+static std::vector<std::string> GenerateLive(SavedBattleGame* b) {
+  std::vector<std::string> r;
+  std::vector<BattleUnit*>& units = b->_units;
+  std::vector<BattleUnit*> alive, mine;
+  for (size_t i = 0; i < units.size(); i++) {
+    if (units[i]->isOut()) continue;
+    alive.push_back(units[i]);
+    if (units[i]->getFaction() == FACTION_PLAYER) mine.push_back(units[i]);
+  }
+  if (b->getSide() != FACTION_PLAYER) { r.push_back("aiturn"); r.push_back("init"); return r; }
+  if (alive.empty() || mine.empty()) { r.push_back("endturn"); r.push_back("aiturn"); r.push_back("init"); return r; }
+  int mode = Pick(100);
+  if (mode < 30) {
+    // melee: an actor with a melee weapon is put next to an enemy (of another faction), turns to it and hits
+    std::vector<BattleUnit*> fighters;
+    for (size_t i = 0; i < alive.size(); i++) if (alive[i]->getMeleeWeapon()) fighters.push_back(alive[i]);
+    BattleUnit* s = fighters.empty() ? alive[0] : fighters[Pick((int)fighters.size())];
+    std::vector<BattleUnit*> foes;
+    for (size_t i = 0; i < alive.size(); i++) if (alive[i]->getFaction() != s->getFaction()) foes.push_back(alive[i]);
+    BattleUnit* e = foes.empty() ? s : foes[Pick((int)foes.size())];
+    if (s != e && s->getFaction() != e->getFaction() && s->getMeleeWeapon()) {
+      int start = Pick(8);
+      for (int k = 0; k < 8; k++) {
+        int d = (start + k) % 8;
+        static const int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1}, dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+        Position p = e->getPosition() + Position(dx[d], dy[d], 0);
+        if (b->getTile(p) && b->setUnitPosition(s, p, true) && p != s->getPosition()) {
+          r.push_back("place " + Num(s->getId()) + " " + Num(p.x) + " " + Num(p.y) + " " + Num(p.z));
+          r.push_back("turn " + Num(s->getId()) + " " + Num(e->getPosition().x) + " " + Num(e->getPosition().y) + " " + Num(e->getPosition().z));
+          break;
+        }
+      }
+      r.push_back("melee " + Num(s->getId()));
+    } else {
+      r.push_back("kneel " + Num(mine[Pick((int)mine.size())]->getId()));
+    }
+  } else if (mode < 45) {
+    // psionics: a unit with a psi amplifier panics or controls a unit of another faction
+    std::vector<BattleUnit*> psi;
+    for (size_t i = 0; i < alive.size(); i++) if (alive[i]->getSpecialWeapon(BT_PSIAMP)) psi.push_back(alive[i]);
+    if (!psi.empty()) {
+      BattleUnit* s = psi[Pick((int)psi.size())];
+      std::vector<BattleUnit*> targets;
+      for (size_t i = 0; i < alive.size(); i++) if (alive[i]->getFaction() != s->getFaction()) targets.push_back(alive[i]);
+      if (!targets.empty()) {
+        BattleUnit* t = targets[Pick((int)targets.size())];
+        r.push_back("psi " + Num(s->getId()) + " " + Num(Pick(2) ? BA_PANIC : BA_MINDCONTROL) + " " + Num(t->getPosition().x) + " " + Num(t->getPosition().y) + " " + Num(t->getPosition().z));
+      }
+    }
+    if (r.empty()) r.push_back("endturn"), r.push_back("aiturn"), r.push_back("init");
+  } else if (mode < 60) {
+    // low morale, then a change of turn: the units panic or go berserk
+    for (int k = 0; k < 3; k++) {
+      BattleUnit* u = alive[Pick((int)alive.size())];
+      r.push_back("setmorale " + Num(u->getId()) + " " + Num(Pick(30)));
+    }
+    r.push_back("endturn"); r.push_back("aiturn"); r.push_back("init");
+  } else if (mode < 75) {
+    r.push_back("endturn"); r.push_back("aiturn"); r.push_back("init");
+  } else {
+    BattleUnit* s = mine[Pick((int)mine.size())];
+    Position farpos = s->getPosition() + Position(Pick(15) - 7, Pick(15) - 7, 0);
+    int kind = Pick(100);
+    if (kind < 45 && b->getTile(farpos)) r.push_back("walk " + Num(s->getId()) + " " + Num(farpos.x) + " " + Num(farpos.y) + " " + Num(farpos.z));
+    else if (kind < 80 && s->getMainHandWeapon() && b->getTile(farpos)) r.push_back("shoot " + Num(s->getId()) + " " + Num(BA_SNAPSHOT + Pick(3)) + " " + Num(farpos.x) + " " + Num(farpos.y) + " " + Num(farpos.z));
+    else r.push_back("kneel " + Num(s->getId()));
+  }
+  return r;
 }
 
 int main(int argc, char** argv) {
@@ -238,11 +381,13 @@ int main(int argc, char** argv) {
     game->pushState(bs);
     bs->init();
     std::vector<std::string> script;
+    int liveCount = 0;
     if (scriptArg.compare(0, 5, "auto:") == 0) {
       int count = 10;
       unsigned long long seed = 1;
       sscanf(scriptArg.c_str(), "auto:%d:%llu", &count, &seed);
       g_pick = seed;
+      if (scriptArg.size() > 2 && scriptArg.compare(scriptArg.size() - 2, 2, ":x") == 0) { liveCount = count; count = 0; }
       std::vector<std::string> grenades;
       const std::vector<std::string>& items = game->getMod()->getItemsList();
       for (size_t i = 0; i < items.size(); i++) {
@@ -308,7 +453,20 @@ int main(int argc, char** argv) {
       for (size_t i = 0; i < byAddress.size(); i++) order += (i ? "," : "") + std::to_string(byAddress[i].second);
       WriteText(out + "/start.txt", "seed=" + std::to_string((unsigned long long)RNG::getSeed()) + "\ntileorder=" + order + "\n");
     }
-    Run(game, bs, out, script);
+    g_map = bs->getMap();
+    std::string done;
+    for (size_t i = 0; i < script.size(); i++) ExecuteOrder(game, bs, out, g_steps++, script[i]);
+    // a live script chooses every order from the state of the battle at that moment; script.txt is written after
+    // every order, so that a crash of the real game leaves a script that matches the steps that were written
+    for (int k = 0; k < liveCount; k++) {
+      std::vector<std::string> orders = GenerateLive(b);
+      for (size_t i = 0; i < orders.size(); i++) {
+        ExecuteOrder(game, bs, out, g_steps, orders[i]);
+        g_steps++;
+        done += orders[i] + "\n";
+        WriteText(out + "/script.txt", done);
+      }
+    }
   } catch (Exception& e) {
     fprintf(stderr, "EXCEPTION: %s\n", e.what());
     return 1;

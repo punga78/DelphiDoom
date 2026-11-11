@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Action,
   DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.TileEngine, DelphiDoom.XcomBattle.Pathfinding,
   DelphiDoom.XcomBattle.Host.Intf, DelphiDoom.XcomBattle.State.Intf, DelphiDoom.XcomBattle.View.Intf,
-  DelphiDoom.XcomBattle.Options, DelphiDoom.XcomBattle.Game.Intf, DelphiDoom.XcomBattle.UnitConverter;
+  DelphiDoom.XcomBattle.Options, DelphiDoom.XcomBattle.Game.Intf, DelphiDoom.XcomBattle.UnitConverter,
+  DelphiDoom.XcomBattle.AIThinker, DelphiDoom.XcomBattle.ItemScavenger;
 
 type
   /// <summary>
@@ -52,10 +53,16 @@ type
     FEndTurnRequested: Boolean;
     FEndTurnProcessed: Boolean;
     FDebugPlay: Boolean;
+    FAISecondMove: Boolean;
+    FPlayedAggroSound: Boolean;
+    FAIThinker: TXcomAIThinker;
+    FScavenger: TXcomItemScavenger;
+    procedure HandleAI(const AUnit: TXcomBattleUnit);
+    function HandlePanickingPlayer: Boolean;
+    function HandlePanickingUnit(const AUnit: TXcomBattleUnit): Boolean;
+    procedure EndAITurnOrSelectNext;
     procedure PushExplosionAndEndTurn(const ACenter: TXcomPosition; const AItem: TXcomBattleItem;
       const AUnit: TXcomBattleUnit; const ATile: TXcomTile);
-    procedure FillKillStatistics(const AKill: TXcomBattleUnitKills; const AUnit: TXcomBattleUnit);
-    function CopyKill(const ASource: TXcomBattleUnitKills): TXcomBattleUnitKills;
     function NoActionsPending(const AUnit: TXcomBattleUnit): Boolean;
   public
     constructor Create(const ASave: TXcomSavedBattleGame; const AEngine: TXcomTileEngine;
@@ -95,12 +102,18 @@ type
     procedure SetupCursor;
     procedure AutoEndBattle;
     function CheckForProximityGrenades(const AUnit: TXcomBattleUnit): Boolean;
+    function GetCurrentAction: TXcomBattleAction;
+    function GetDebugPlay: Boolean;
+    function GetMissionCount: Integer;
     // BattlescapeGame
     /// <summary>init: after a turn the panic of the player's units is to be handled</summary>
     procedure Init;
     /// <summary>handleState: runs the first step (or ends the turn when the first entry is the end of the turn)</summary>
     procedure HandleState;
-    /// <summary>think: nothing is happening, see about units that fall (the AI is not ported)</summary>
+    /// <summary>
+    ///   think: nothing is happening, see about units that fall, the AI turn of the other side (it needs an
+    ///   AIThinker) and the units of the player that panic
+    /// </summary>
     procedure Think;
     /// <summary>endTurn</summary>
     procedure EndTurn;
@@ -109,9 +122,21 @@ type
     /// <summary>
     ///   primaryAction (the left click on the map): aims the action in preparation (a shot or a throw: first the
     ///   unit turns, then the projectile flies), or selects the unit on the tile, or walks the selected unit there.
-    ///   Waypoints, mind probe and psionics are not ported
+    ///   a psionic attack. Waypoints (blaster launcher) and the mind probe are not ported
     /// </summary>
     procedure PrimaryAction(const APosition: TXcomPosition);
+    /// <summary>secondaryAction (the right click on the map): the selected unit turns towards the tile or opens a door</summary>
+    procedure SecondaryAction(const APosition: TXcomPosition);
+    /// <summary>
+    ///   handleNonTargetAction: the result of the actions that need no target (a melee hit chosen from the menu
+    ///   spends the time units and pushes the melee step; priming a grenade; reviving the unconscious)
+    /// </summary>
+    procedure HandleNonTargetAction;
+    /// <summary>
+    ///   psiButtonAction: the selected unit prepares a panic attack with its psi amplifier (the action stays in
+    ///   targeting mode)
+    /// </summary>
+    procedure PsiButtonAction;
     /// <summary>cancelCurrentAction</summary>
     function CancelCurrentAction(AForce: Boolean = False): Boolean;
     /// <summary>playableUnitSelected</summary>
@@ -131,6 +156,12 @@ type
     /// <summary>The number of missions in the saved game (the mission of the kill statistics)</summary>
     property MissionCount: Integer read FMissionCount write FMissionCount;
     property CurrentAction: TXcomBattleAction read FCurrentAction;
+    /// <summary>The thinking of the AI of the units of the other side (not owned); without one that side never plays</summary>
+    property AIThinker: TXcomAIThinker read FAIThinker write FAIThinker;
+    /// <summary>_AISecondMove: the AI units whose id comes before the one that last acted get a second round</summary>
+    property AISecondMove: Boolean read FAISecondMove;
+    /// <summary>_debugPlay</summary>
+    property DebugPlay: Boolean read FDebugPlay;
     property EndTurnRequested: Boolean read FEndTurnRequested write FEndTurnRequested;
   end;
 
@@ -140,7 +171,9 @@ uses
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattle.AIModule,
   DelphiDoom.XcomBattle.ExplosionState,
   DelphiDoom.XcomBattle.UnitDieState, DelphiDoom.XcomBattle.UnitFallState, DelphiDoom.XcomBattle.UnitTurnState,
-  DelphiDoom.XcomBattle.UnitWalkState, DelphiDoom.XcomBattle.ProjectileFlyState;
+  DelphiDoom.XcomBattle.UnitWalkState, DelphiDoom.XcomBattle.ProjectileFlyState, DelphiDoom.XcomBattle.MeleeAttackState,
+  DelphiDoom.XcomBattle.PsiAttackState, DelphiDoom.XcomBattle.UnitPanicState, DelphiDoom.XcomBattle.KillStatistics,
+  System.Math;
 
 const
   END_POINT = 13;
@@ -158,6 +191,7 @@ begin
   FOptions := AOptions;
   FView := AView;
   FConverter := TXcomUnitConverter.Create(ASave, AEngine, ARuleset, ADifficulty);
+  FScavenger := TXcomItemScavenger.Create(Self);
   FStates := TList<IXcomBattleState>.Create;
   FCurrentAction := TXcomBattleAction.Create;
   FPlayerPanicHandled := True;
@@ -170,6 +204,7 @@ begin
   FEngine.Host := nil;
   FStates.Free;
   FCurrentAction.Free;
+  FScavenger.Free;
   FConverter.Free;
   inherited Destroy;
 end;
@@ -323,11 +358,321 @@ begin
       FSave.UnitsFalling := False;
       Exit;
     end;
+    // it's a non player side (ALIENS or CIVILIANS)
     if FSave.Side <> FACTION_PLAYER then
-      raise EXcomBattleException.CreateFmt(SNotPorted, ['the turn of the AI (handleAI)'])
+    begin
+      FSave.ResetUnitHitStates;
+      if not FDebugPlay then
+      begin
+        if Assigned(FSave.SelectedUnit) then
+        begin
+          if not HandlePanickingUnit(FSave.SelectedUnit) then
+            HandleAI(FSave.SelectedUnit);
+        end
+        else
+          EndAITurnOrSelectNext;
+      end;
+    end
     else if not FPlayerPanicHandled then
-      raise EXcomBattleException.CreateFmt(SNotPorted, ['the panic of the player''s units']);
+    begin
+      // it's a player side and we have not handled all panicking units
+      FPlayerPanicHandled := HandlePanickingPlayer;
+      FView.UpdateSoldierInfo;
+    end;
   end;
+end;
+
+procedure TXcomBattlescapeGame.EndAITurnOrSelectNext;
+begin
+  if FSave.SelectNextPlayerUnit(True, FAISecondMove) = nil then
+  begin
+    if not FSave.DebugMode then
+    begin
+      FEndTurnRequested := True;
+      StatePushBack(nil); // end AI turn
+    end
+    else
+    begin
+      FSave.SelectNextPlayerUnit;
+      FDebugPlay := True;
+    end;
+  end;
+end;
+
+procedure TXcomBattlescapeGame.HandleAI(const AUnit: TXcomBattleUnit);
+var
+  LAction: TXcomBattleAction;
+  LWeapon: TXcomBattleItem;
+  LAI: TXcomAIModule;
+begin
+  if not Assigned(FAIThinker) then
+    raise EXcomBattleException.CreateFmt(SNotPorted, ['the turn of the AI without an AIThinker']);
+  if AUnit.TimeUnits <= 5 then
+    AUnit.DontReselect := True;
+  if (FAIActionCounter >= 2) or AUnit.DontReselect then
+  begin
+    EndAITurnOrSelectNext;
+    if Assigned(FSave.SelectedUnit) then
+    begin
+      FView.UpdateSoldierInfo;
+      FView.CenterOnPosition(FSave.SelectedUnit.Position);
+      if FSave.SelectedUnit.Id <= AUnit.Id then
+        FAISecondMove := True;
+    end;
+    FAIActionCounter := 0;
+    Exit;
+  end;
+  AUnit.Visible := False;
+  // might need this populate the visible units of a newly-created alien; it might also help chryssalids realize
+  // they've zombified someone and need to move on, it should also hide units when they've killed the guy
+  // spotting them
+  FEngine.CalculateFovAt(AUnit.Position);
+  if not Assigned(AUnit.AI) then
+    // for some reason the unit had no AI routine assigned
+    AUnit.AI := TXcomAIModule.Create(AUnit, nil);
+  LAI := AUnit.AI as TXcomAIModule;
+  Inc(FAIActionCounter);
+  if FAIActionCounter = 1 then
+  begin
+    FPlayedAggroSound := False;
+    AUnit.IsHiding := False;
+  end;
+  LAction := TXcomBattleAction.Create;
+  try
+    LAction.Actor := AUnit;
+    LAction.Number := FAIActionCounter;
+    AUnit.CheckAmmo;
+    FAIThinker.Think(LAI, LAction);
+    if LAction.ActionType = BA_RETHINK then
+    begin
+      FView.Debug('Rethink');
+      AUnit.CheckAmmo;
+      FAIThinker.Think(LAI, LAction);
+    end;
+    FAIActionCounter := LAction.Number;
+    LWeapon := AUnit.GetMainHandWeapon;
+    if (not Assigned(LWeapon)) or (not Assigned(LWeapon.AmmoItem)) then
+      if (AUnit.OriginalFaction = FACTION_HOSTILE) and (AUnit.VisibleUnits.Count = 0) then
+        FScavenger.FindItem(LAction);
+    if Assigned(AUnit.Charging) then
+      if (AUnit.AggroSound <> -1) and (not FPlayedAggroSound) then
+      begin
+        FView.PlaySound(AUnit.AggroSound, AUnit.Position);
+        FPlayedAggroSound := True;
+      end;
+    if LAction.ActionType = BA_WALK then
+    begin
+      if Assigned(FSave.TileAt(LAction.Target)) then
+        FPathfinding.Calculate(LAction.Actor, LAction.Target);
+      if FPathfinding.GetStartDirection <> -1 then
+        StatePushBack(TXcomUnitWalkState.Create(Self, LAction));
+    end;
+    if (LAction.ActionType = BA_SNAPSHOT) or (LAction.ActionType = BA_AUTOSHOT) or
+      (LAction.ActionType = BA_AIMEDSHOT) or (LAction.ActionType = BA_THROW) or (LAction.ActionType = BA_HIT) or
+      (LAction.ActionType = BA_MINDCONTROL) or (LAction.ActionType = BA_PANIC) or
+      (LAction.ActionType = BA_LAUNCH) then
+    begin
+      LAction.TimeUnits := AUnit.GetActionTus(LAction.ActionType, LAction.Weapon);
+      if (LAction.ActionType = BA_MINDCONTROL) or (LAction.ActionType = BA_PANIC) then
+        StatePushBack(TXcomPsiAttackState.Create(Self, LAction))
+      else
+      begin
+        StatePushBack(TXcomUnitTurnState.Create(Self, LAction));
+        if LAction.ActionType = BA_HIT then
+        begin
+          LAction.Weapon := AUnit.GetMeleeWeapon;
+          StatePushBack(TXcomMeleeAttackState.Create(Self, LAction));
+        end
+        else
+          StatePushBack(TXcomProjectileFlyState.Create(Self, LAction));
+      end;
+    end;
+    if LAction.ActionType = BA_NONE then
+    begin
+      FView.Debug('Idle');
+      FAIActionCounter := 0;
+      EndAITurnOrSelectNext;
+      if Assigned(FSave.SelectedUnit) then
+      begin
+        FView.UpdateSoldierInfo;
+        FView.CenterOnPosition(FSave.SelectedUnit.Position);
+        if FSave.SelectedUnit.Id <= AUnit.Id then
+          FAISecondMove := True;
+      end;
+    end;
+  finally
+    LAction.Free;
+  end;
+end;
+
+function TXcomBattlescapeGame.HandlePanickingPlayer: Boolean;
+var
+  LUnit: TXcomBattleUnit;
+begin
+  // picks the first soldier that is panicking: true when all panicking is over
+  for LUnit in FSave.Units do
+    if (LUnit.Faction = FACTION_PLAYER) and (LUnit.OriginalFaction = FACTION_PLAYER) and HandlePanickingUnit(LUnit) then
+      Exit(False);
+  Result := True;
+end;
+
+function TXcomBattlescapeGame.HandlePanickingUnit(const AUnit: TXcomBattleUnit): Boolean;
+var
+  LStatus: Integer;
+  LFlee: Integer;
+  LAction: TXcomBattleAction;
+  LItem: TXcomBattleItem;
+  LTry: Integer;
+  LRandomY: Integer;
+  LRandomX: Integer;
+  LSlot: string;
+  LTarget: TXcomPosition;
+begin
+  // false when the unit is not in panicking mode
+  LStatus := AUnit.Status;
+  if (LStatus <> STATUS_PANICKING) and (LStatus <> STATUS_BERSERK) then
+    Exit(False);
+  FSave.SelectedUnit := AUnit;
+  FView.SetCursorType(-1);
+  // show a little infobox with the name of the unit and "... is panicking"
+  if AUnit.GetVisible or (not FOptions.NoAlienPanicMessages) then
+  begin
+    FView.CenterOnPosition(AUnit.Position);
+    if LStatus = STATUS_PANICKING then
+      FView.ShowUnitMessage(AUnit, 'STR_HAS_PANICKED', False)
+    else
+      FView.ShowUnitMessage(AUnit, 'STR_HAS_GONE_BERSERK', False);
+  end;
+  LFlee := FSave.Random.Generate(0, 100);
+  LAction := TXcomBattleAction.Create;
+  try
+    LAction.Actor := AUnit;
+    // 1/2 chance to freeze and 1/2 chance try to flee, STATUS_BERSERK is handled in the panic state
+    if (LStatus = STATUS_PANICKING) and (LFlee <= 50) then
+    begin
+      for LSlot in ['STR_RIGHT_HAND', 'STR_LEFT_HAND'] do
+      begin
+        LItem := AUnit.GetItem(LSlot);
+        if Assigned(LItem) then
+          DropItem(AUnit.Position, LItem, False, True);
+      end;
+      AUnit.CacheInvalid := True;
+      // let's try a few times to get a tile to run to
+      for LTry := 0 to 19 do
+      begin
+        // the arguments of Position() are evaluated from the last to the first
+        LRandomY := FSave.Random.Generate(-5, 5);
+        LRandomX := FSave.Random.Generate(-5, 5);
+        LTarget := TXcomPosition.Make(AUnit.Position.X + LRandomX, AUnit.Position.Y + LRandomY, AUnit.Position.Z);
+        // if we've had more than our fair share of failures, try going down
+        if (LTry >= 10) and (LTarget.Z > 0) then
+        begin
+          LTarget.Z := LTarget.Z - 1;
+          // still failing? try further down
+          if (LTry >= 15) and (LTarget.Z > 0) then
+            LTarget.Z := LTarget.Z - 1;
+        end;
+        LAction.Target := LTarget;
+        // sanity check the tile
+        if Assigned(FSave.TileAt(LAction.Target)) then
+        begin
+          FPathfinding.Calculate(LAction.Actor, LAction.Target);
+          // sanity check the path
+          if FPathfinding.GetStartDirection <> -1 then
+          begin
+            StatePushBack(TXcomUnitWalkState.Create(Self, LAction));
+            Break;
+          end;
+        end;
+      end;
+    end;
+    // time units can only be reset after everything else occurs
+    StatePushBack(TXcomUnitPanicState.Create(Self, LAction.Actor));
+    AUnit.MoraleChange(15);
+  finally
+    LAction.Free;
+  end;
+  Result := True;
+end;
+
+procedure TXcomBattlescapeGame.SecondaryAction(const APosition: TXcomPosition);
+begin
+  // turn to or open door
+  FCurrentAction.Target := APosition;
+  FCurrentAction.Actor := FSave.SelectedUnit;
+  FCurrentAction.Strafe := False;
+  StatePushBack(TXcomUnitTurnState.Create(Self, FCurrentAction));
+end;
+
+procedure TXcomBattlescapeGame.HandleNonTargetAction;
+begin
+  if not FCurrentAction.Targeting then
+  begin
+    FCurrentAction.CameraPosition := TXcomPosition.Make(0, 0, -1);
+    if FCurrentAction.ResultText <> '' then
+    begin
+      FView.Warning(FCurrentAction.ResultText);
+      FCurrentAction.ResultText := '';
+    end
+    else if (FCurrentAction.ActionType = BA_PRIME) and (FCurrentAction.Value > -1) then
+    begin
+      if FCurrentAction.Actor.SpendTimeUnits(FCurrentAction.TimeUnits) then
+      begin
+        FView.Warning('STR_GRENADE_IS_ACTIVATED');
+        FCurrentAction.Weapon.FuseTimer := FCurrentAction.Value;
+      end
+      else
+        FView.Warning('STR_NOT_ENOUGH_TIME_UNITS');
+    end
+    else if FCurrentAction.ActionType = BA_HIT then
+    begin
+      if FCurrentAction.Actor.SpendTimeUnits(FCurrentAction.TimeUnits) then
+        StatePushBack(TXcomMeleeAttackState.Create(Self, FCurrentAction))
+      else
+        FView.Warning('STR_NOT_ENOUGH_TIME_UNITS');
+    end;
+    // don't clear the action type if we're meleeing, let the melee action state take care of that
+    if FCurrentAction.ActionType <> BA_HIT then
+      FCurrentAction.ActionType := BA_NONE;
+    FView.UpdateSoldierInfo;
+  end;
+  SetupCursor;
+end;
+
+procedure TXcomBattlescapeGame.PsiButtonAction;
+var
+  LScaled: Single;
+begin
+  // in case waypoints were set with a blaster launcher, avoid accidental misclick
+  if FCurrentAction.Waypoints.Count > 0 then
+    Exit;
+  FCurrentAction.Weapon := FSave.SelectedUnit.GetSpecialWeapon(TXcomRuleItem.BT_PSIAMP);
+  FCurrentAction.Targeting := True;
+  FCurrentAction.ActionType := BA_PANIC;
+  FCurrentAction.TimeUnits := FCurrentAction.Weapon.Rules.TimeUnitsUse;
+  if not FCurrentAction.Weapon.Rules.FlatRate then
+    begin
+      // the C++ computes it in float
+      LScaled := FSave.SelectedUnit.Stats.TimeUnits * FCurrentAction.TimeUnits;
+      LScaled := LScaled / 100.0;
+      FCurrentAction.TimeUnits := Floor(LScaled);
+    end;
+  SetupCursor;
+end;
+
+function TXcomBattlescapeGame.GetCurrentAction: TXcomBattleAction;
+begin
+  Result := FCurrentAction;
+end;
+
+function TXcomBattlescapeGame.GetDebugPlay: Boolean;
+begin
+  Result := FDebugPlay;
+end;
+
+function TXcomBattlescapeGame.GetMissionCount: Integer;
+begin
+  Result := FMissionCount;
 end;
 
 procedure TXcomBattlescapeGame.HandleState;
@@ -626,6 +971,7 @@ begin
   FCurrentAction.Waypoints.Clear;
   FView.ShowLaunchButton(False);
   FCurrentAction.Targeting := False;
+  FAISecondMove := False;
   if not FEndTurnProcessed then
   begin
     if (FEngine.CloseUfoDoors > 0) and (FRuleset.Constants.SlidingDoorClose <> -1) then
@@ -779,9 +1125,27 @@ var
 begin
   if FCurrentAction.Targeting and Assigned(FSave.SelectedUnit) then
   begin
-    if (FCurrentAction.ActionType = BA_LAUNCH) or (FCurrentAction.ActionType = BA_USE) or
-      (FCurrentAction.ActionType = BA_PANIC) or (FCurrentAction.ActionType = BA_MINDCONTROL) then
-      raise EXcomBattleException.CreateFmt(SNotPorted, ['the primary action of waypoints, mind probe and psionics'])
+    if (FCurrentAction.ActionType = BA_LAUNCH) or (FCurrentAction.ActionType = BA_USE) then
+      raise EXcomBattleException.CreateFmt(SNotPorted, ['the primary action of waypoints and the mind probe'])
+    else if (FCurrentAction.ActionType = BA_PANIC) or (FCurrentAction.ActionType = BA_MINDCONTROL) then
+    begin
+      LUnit := FSave.SelectUnit(APosition);
+      if Assigned(LUnit) and (LUnit.Faction <> FSave.SelectedUnit.Faction) and LUnit.GetVisible then
+      begin
+        FCurrentAction.TimeUnits := FCurrentAction.Actor.GetActionTus(FCurrentAction.ActionType,
+          FCurrentAction.Weapon);
+        FCurrentAction.Target := APosition;
+        if (not FCurrentAction.Weapon.Rules.LineOfSightRequired) or
+          (FCurrentAction.Actor.VisibleUnits.IndexOf(LUnit) >= 0) then
+        begin
+          // get the sound/animation started
+          FView.SetCursorType(-1);
+          StatePushBack(TXcomPsiAttackState.Create(Self, FCurrentAction));
+        end
+        else
+          FView.Warning('STR_NO_LINE_OF_FIRE');
+      end;
+    end
     else
     begin
       FCurrentAction.Target := APosition;
@@ -794,7 +1158,7 @@ begin
   begin
     FCurrentAction.Actor := FSave.SelectedUnit;
     LUnit := FSave.SelectUnit(APosition);
-    if Assigned(LUnit) and (LUnit <> FSave.SelectedUnit) and (LUnit.Visible or FDebugPlay) then
+    if Assigned(LUnit) and (LUnit <> FSave.SelectedUnit) and (LUnit.GetVisible or FDebugPlay) then
     begin
       // select unit
       if LUnit.Faction = FSave.Side then
@@ -965,80 +1329,6 @@ begin
   Result := False;
 end;
 
-function TXcomBattlescapeGame.CopyKill(const ASource: TXcomBattleUnitKills): TXcomBattleUnitKills;
-begin
-  Result := TXcomBattleUnitKills.Create;
-  Result.Name := ASource.Name;
-  Result.UnitType := ASource.UnitType;
-  Result.Rank := ASource.Rank;
-  Result.Race := ASource.Race;
-  Result.Weapon := ASource.Weapon;
-  Result.WeaponAmmo := ASource.WeaponAmmo;
-  Result.Faction := ASource.Faction;
-  Result.Status := ASource.Status;
-  Result.Mission := ASource.Mission;
-  Result.Turn := ASource.Turn;
-  Result.Id := ASource.Id;
-  Result.Side := ASource.Side;
-  Result.BodyPart := ASource.BodyPart;
-end;
-
-procedure TXcomBattlescapeGame.FillKillStatistics(const AKill: TXcomBattleUnitKills; const AUnit: TXcomBattleUnit);
-begin
-  // BattleUnitKills::setUnitStats
-  AKill.Name := '';
-  AKill.UnitType := '';
-  if Assigned(AUnit.GeoscapeSoldier) then
-    AKill.Name := AUnit.GeoscapeSoldier.Name
-  else
-    AKill.UnitType := AUnit.UnitType;
-  if AUnit.OriginalFaction = FACTION_PLAYER then
-  begin
-    if Assigned(AUnit.GeoscapeSoldier) then
-    begin
-      if AUnit.RankString <> '' then
-        AKill.Rank := AUnit.RankString
-      else
-        AKill.Rank := 'STR_SOLDIER';
-    end
-    else if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Rank <> '') then
-      AKill.Rank := AUnit.UnitRules.Rank
-    else
-      AKill.Rank := 'STR_HWPS';
-    if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Race <> '') then
-      AKill.Race := AUnit.UnitRules.Race
-    else
-      AKill.Race := 'STR_FRIENDLY';
-  end
-  else if AUnit.OriginalFaction = FACTION_HOSTILE then
-  begin
-    if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Rank <> '') then
-      AKill.Rank := AUnit.UnitRules.Rank
-    else
-      AKill.Rank := 'STR_LIVE_SOLDIER';
-    if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Race <> '') then
-      AKill.Race := AUnit.UnitRules.Race
-    else
-      AKill.Race := 'STR_HOSTILE';
-  end
-  else if AUnit.OriginalFaction = FACTION_NEUTRAL then
-  begin
-    if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Rank <> '') then
-      AKill.Rank := AUnit.UnitRules.Rank
-    else
-      AKill.Rank := 'STR_CIVILIAN';
-    if Assigned(AUnit.UnitRules) and (AUnit.UnitRules.Race <> '') then
-      AKill.Race := AUnit.UnitRules.Race
-    else
-      AKill.Race := 'STR_NEUTRAL';
-  end
-  else
-  begin
-    AKill.Rank := 'STR_UNKNOWN';
-    AKill.Race := 'STR_UNKNOWN';
-  end;
-end;
-
 procedure TXcomBattlescapeGame.CheckForCasualties(const AMurderWeapon: TXcomBattleItem;
   const AMurderer: TXcomBattleUnit; AHiddenExplosion, ATerrainExplosion: Boolean);
 var
@@ -1099,7 +1389,7 @@ begin
     try
       LKill.Mission := FMissionCount;
       LKill.SetTurn(FSave.Turn, FSave.Side);
-      FillKillStatistics(LKill, LVictim);
+      TXcomKillStatistics.Fill(LKill, LVictim);
       LKill.Faction := LVictim.Faction;
       LKill.Side := LVictim.FatalShotSide;
       LKill.BodyPart := LVictim.FatalShotBodyPart;
@@ -1132,7 +1422,7 @@ begin
           for LOther in FSave.Units do
             if (LOther.Id = LMurderer.MindControllerId) and Assigned(LOther.GeoscapeSoldier) then
             begin
-              LOther.Statistics.Kills.Add(CopyKill(LKill));
+              LOther.Statistics.Kills.Add(TXcomKillStatistics.Copy(LKill));
               if LVictim.Faction = FACTION_HOSTILE then
                 LOther.Statistics.SlaveKills := LOther.Statistics.SlaveKills + 1;
               LVictim.MurdererId := LOther.Id;
@@ -1141,7 +1431,7 @@ begin
         end
         else if not LMurderer.Statistics.DuplicateEntry(LKill.Status, LVictim.Id) then
         begin
-          LMurderer.Statistics.Kills.Add(CopyKill(LKill));
+          LMurderer.Statistics.Kills.Add(TXcomKillStatistics.Copy(LKill));
           LVictim.MurdererId := LMurderer.Id;
         end;
       end;

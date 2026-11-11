@@ -1,0 +1,97 @@
+shoot 6 8 4 5 0
+place 1000015 3 6 0
+turn 1000015 3 7 0
+melee 1000015
+setmorale 1000013 18
+setmorale 1000020 3
+setmorale 1000012 8
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+setmorale 1000015 18
+setmorale 1000017 21
+setmorale 1000013 1
+endturn
+aiturn
+init
+setmorale 1000016 19
+setmorale 1000001 19
+setmorale 1000010 3
+endturn
+aiturn
+init
+place 1000008 1 7 0
+turn 1000008 1 8 0
+melee 1000008
+place 1000020 2 7 0
+turn 1000020 1 8 0
+melee 1000020
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init

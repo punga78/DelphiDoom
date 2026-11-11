@@ -255,6 +255,10 @@ var
   LTarget: TXcomPosition;
   LStep2: Integer;
   LTicks: Integer;
+  LX: Integer;
+  LY: Integer;
+  LCount: Integer;
+  LOldTile: TXcomTile;
 
   function FindUnit(AId: Integer): TXcomBattleUnit;
   var
@@ -349,6 +353,7 @@ begin
         LBattlescape.ReactionFire := TXcomReactionFire.Create(LBattlescape, LThinker,
           TXcomReactionFire.ResearchOf(LNames));
         LBattlescape.MissionCount := LGame.MissionStatistics.Count;
+        LBattlescape.AIThinker := LThinker;
         LScript.Text := ReadString(AFolder + 'script.txt');
         for LStep := 0 to LScript.Count - 1 do
         begin
@@ -442,8 +447,105 @@ begin
             begin
               LBattlescape.EndTurnRequested := True;
               LBattlescape.StatePushBack(nil);
+            end
+            else if LWords[0] = 'place' then
+            begin
+              // a unit is put on a free tile (the old tiles are emptied first)
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              LPosition := TXcomPosition.Make(StrToInt(LWords[2]), StrToInt(LWords[3]), StrToInt(LWords[4]));
+              if Assigned(LUnit) and LBattle.SetUnitPosition(LUnit, LPosition, True) then
+              begin
+                for LX := LUnit.Armor.Size - 1 downto 0 do
+                  for LY := LUnit.Armor.Size - 1 downto 0 do
+                  begin
+                    LOldTile := LBattle.TileAt(LUnit.Position + TXcomPosition.Make(LX, LY, 0));
+                    if Assigned(LOldTile) and (LOldTile.CurrentUnit = LUnit) then
+                      LOldTile.SetUnit(nil);
+                  end;
+                LBattle.SetUnitPosition(LUnit, LPosition, False);
+                LEngine.RecalculateFov;
+              end
+              else
+                LTrace := LTrace + 'PLACEFAILED' + #10;
+            end
+            else if LWords[0] = 'melee' then
+            begin
+              // the menu of the actions for a hit, then handleNonTargetAction
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) then
+              begin
+                LBattle.SelectedUnit := LUnit;
+                LAction := LBattlescape.CurrentAction;
+                LAction.Targeting := False;
+                LAction.Actor := LUnit;
+                LAction.Weapon := LUnit.GetMeleeWeapon;
+                LAction.Waypoints.Clear;
+                LAction.ResultText := '';
+                LAction.ActionType := BA_HIT;
+                if Assigned(LAction.Weapon) then
+                begin
+                  LAction.TimeUnits := LUnit.GetActionTus(BA_HIT, LAction.Weapon);
+                  if not LBattle.IsItemUsable(LAction.Weapon) then
+                    LAction.ResultText := 'STR_UNUSABLE'
+                  else if LAction.TimeUnits > LUnit.TimeUnits then
+                    LAction.ResultText := 'STR_NOT_ENOUGH_TIME_UNITS'
+                  else if LEngine.ValidMeleeRange(LUnit.Position, LUnit.Direction, LUnit, nil, LTarget) then
+                    LAction.Target := LTarget
+                  else
+                    LAction.ResultText := 'STR_THERE_IS_NO_ONE_THERE';
+                  if LAction.ResultText <> '' then
+                    LAction.ActionType := BA_NONE;
+                  LBattlescape.HandleNonTargetAction;
+                end
+                else
+                  LTrace := LTrace + 'NOWEAPON' + #10;
+              end;
+            end
+            else if LWords[0] = 'psi' then
+            begin
+              // the psi button, then a click on the target
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) and Assigned(LUnit.GetSpecialWeapon(TXcomRuleItem.BT_PSIAMP)) then
+              begin
+                LBattle.SelectedUnit := LUnit;
+                LAction := LBattlescape.CurrentAction;
+                LAction.Targeting := False;
+                LAction.ActionType := BA_NONE;
+                LAction.Actor := LUnit;
+                LAction.Weapon := nil;
+                LAction.Waypoints.Clear;
+                LBattlescape.PsiButtonAction;
+                LAction.ActionType := StrToInt(LWords[2]);
+                LBattlescape.PrimaryAction(TXcomPosition.Make(StrToInt(LWords[3]), StrToInt(LWords[4]),
+                  StrToInt(LWords[5])));
+              end
+              else
+                LTrace := LTrace + 'NOPSI' + #10;
+            end
+            else if LWords[0] = 'setmorale' then
+            begin
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) then
+                LUnit.MoraleChange(StrToInt(LWords[2]) - LUnit.Morale);
+            end
+            else if LWords[0] = 'init' then
+              // BattlescapeState::init after the screen of the next turn
+              LBattlescape.Init
+            else if LWords[0] = 'aiturn' then
+            begin
+              // the other side plays: think() chooses the AI actions until it ends its turn
+              LCount := 2000;
+              while (LBattle.Side <> FACTION_PLAYER) and (LCount > 0) do
+              begin
+                LBattlescape.Think;
+                RunStates;
+                Dec(LCount);
+              end;
+              if LCount <= 0 then
+                LTrace := LTrace + 'AIGUARD' + #10;
             end;
-            Settle;
+            if LWords[0] <> 'aiturn' then
+              Settle;
           except
             on E: Exception do
               LTrace := LTrace + 'EXCEPTION ' + E.ClassName + ': ' + E.Message + #10;
