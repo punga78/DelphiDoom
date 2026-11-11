@@ -157,6 +157,8 @@ type
     procedure RemovePoppedResearch(const AResearch: TXcomRuleResearch);
     /// <summary>addResearchScore: the points of a finished topic go to the score of the current month</summary>
     procedure AddResearchScore(AScore: Integer);
+    /// <summary>getResearchScores().at(AIndex) += AScore: the score of a month that is not the current one</summary>
+    procedure AddResearchScoreAt(AIndex, AScore: Integer);
     /// <summary>isResearched(name): the topic is in the discovered ones (the debug mode is not ported: AConsiderDebug does nothing)</summary>
     function IsResearched(const AResearch: string; AConsiderDebug: Boolean = True): Boolean; overload;
     /// <summary>isResearched(list): every topic of the list is discovered; an empty list is always researched</summary>
@@ -717,6 +719,11 @@ end;
 procedure TXcomSavedGame.AddResearchScore(AScore: Integer);
 begin
   Inc(FResearchScores[High(FResearchScores)], AScore);
+end;
+
+procedure TXcomSavedGame.AddResearchScoreAt(AIndex, AScore: Integer);
+begin
+  Inc(FResearchScores[AIndex], AScore);
 end;
 
 function TXcomSavedGame.IsResearched(const AResearch: string; AConsiderDebug: Boolean): Boolean;

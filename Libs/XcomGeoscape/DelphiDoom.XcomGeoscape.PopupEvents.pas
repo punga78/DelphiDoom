@@ -53,6 +53,7 @@ type
     procedure ResearchFinished(const ABase: TXcomBase; const AResearchName: string); override;
     procedure ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome); override;
     procedure StorageExceeded(const ABase: TXcomBase); override;
+    procedure MonthlyReport(APsiTraining: Boolean); override;
   end;
 
 implementation
@@ -67,7 +68,8 @@ uses
   DelphiDoom.XcomGeoscape.ItemsArrivingState, DelphiDoom.XcomGeoscape.ProductionCompleteState,
   DelphiDoom.XcomGeoscape.ResearchCompleteState, DelphiDoom.XcomGeoscape.NewPossibleResearchState,
   DelphiDoom.XcomGeoscape.NewPossibleManufactureState, DelphiDoom.XcomGeoscape.ResearchRequiredState,
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleResearch,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.MonthlyReportState,
+  DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleResearch,
   DelphiDoom.XcomMod.RuleItem, System.Generics.Collections, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes;
 
@@ -234,6 +236,23 @@ begin
     for LIndex := 0 to High(LNames) do
       LNames[LIndex] := AOutcome.NewPossibleManufacture[LIndex].Name;
     Show(TXcomNewPossibleManufactureState.Create(FHost, ABase, LNames, FControl));
+  end;
+end;
+
+procedure TXcomPopupGeoscapeEvents.MonthlyReport(APsiTraining: Boolean);
+var
+  LReport: TXcomMonthlyReport;
+begin
+  if not Attached then
+    Exit;
+  // the state of the C++ calculates the month when it is made: the funding of the countries changes now, before
+  // the next random number of the month is drawn
+  LReport := TXcomMonthlyReport.Create(TXcomStrategy.SavedGame(FHost), TXcomStrategy.Ruleset(FHost),
+    TXcomStrategy.Random(FHost));
+  try
+    Show(TXcomMonthlyReportState.Create(FHost, LReport.Calculate));
+  finally
+    LReport.Free;
   end;
 end;
 

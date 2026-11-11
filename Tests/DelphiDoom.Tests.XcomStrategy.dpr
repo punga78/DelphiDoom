@@ -21,6 +21,7 @@ uses
   DelphiDoom.Tests.XcomStrategy.Production in 'Source\DelphiDoom.Tests.XcomStrategy.Production.pas',
   DelphiDoom.Tests.XcomStrategy.Research in 'Source\DelphiDoom.Tests.XcomStrategy.Research.pas',
   DelphiDoom.Tests.XcomStrategy.ResearchUnits in 'Source\DelphiDoom.Tests.XcomStrategy.ResearchUnits.pas',
+  DelphiDoom.Tests.XcomStrategy.Report in 'Source\DelphiDoom.Tests.XcomStrategy.Report.pas',
   DelphiDoom.Tests.XcomStrategy.Mission in 'Source\DelphiDoom.Tests.XcomStrategy.Mission.pas',
   DelphiDoom.Tests.XcomStrategy.Time in 'Source\DelphiDoom.Tests.XcomStrategy.Time.pas',
   DelphiDoom.Tests.XcomStrategy.StatString in 'Source\DelphiDoom.Tests.XcomStrategy.StatString.pas',

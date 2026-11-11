@@ -1003,6 +1003,103 @@ static void ScenarioResearch(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+// The monthly report: MonthlyReportState::calculateChanges and the part of its constructor that judges the rating (the
+// state needs a screen: the code is copied, with the text written as the key of the language). The scenario gives
+// every region and country some activity, some research score and a random amount of funds, closes the month (the real
+// addMonth and monthlyFunding) and lets the council judge; six months
+static std::string Join(const std::vector<std::string>& v) {
+  std::string r;
+  for (size_t i = 0; i < v.size(); i++) { if (i) r += ","; r += v[i]; }
+  return r;
+}
+
+static void ScenarioReport(Mod* mod, SavedGame* s, int v) {
+  // the UFOs that the first saved games have with no mission and no trajectory cannot be saved after a month (the C++
+  // crashes): removed, as the scenarios of the time do
+  for (size_t ui = 0; ui < s->getUfos()->size();) {
+    Ufo* u = (*s->getUfos())[ui];
+    if (u->_mission == 0 || u->_trajectory == 0) { delete u; s->getUfos()->erase(s->getUfos()->begin() + ui); } else ui++;
+  }
+  for (int month = 0; month < 6; month++) {
+    for (std::vector<Region*>::iterator k = s->getRegions()->begin(); k != s->getRegions()->end(); ++k) {
+      (*k)->addActivityAlien(Pick(400));
+      (*k)->addActivityXcom(Pick(400));
+    }
+    for (std::vector<Country*>::iterator k = s->getCountries()->begin(); k != s->getCountries()->end(); ++k) {
+      (*k)->addActivityAlien(Pick(300));
+      (*k)->addActivityXcom(Pick(300));
+    }
+    if (Pick(2) == 0) s->addResearchScore(Pick(300));
+    s->addMonth();
+    s->monthlyFunding();
+    s->setFunds((int64_t)(Pick(7) - 3) * 1000000 + Pick(1000));
+    // calculateChanges
+    int lastMonthsRating = 0, xcomSubTotal = 0, xcomTotal = 0, alienTotal = 0, fundingDiff = 0;
+    std::vector<std::string> happyList, sadList, pactList;
+    int monthOffset = s->getFundsList().size() - 2;
+    int lastMonthOffset = s->getFundsList().size() - 3;
+    if (lastMonthOffset < 0) lastMonthOffset += 2;
+    for (std::vector<Region*>::iterator k = s->getRegions()->begin(); k != s->getRegions()->end(); ++k) {
+      (*k)->newMonth();
+      if ((*k)->getActivityXcom().size() > 2)
+        lastMonthsRating += (*k)->getActivityXcom().at(lastMonthOffset) - (*k)->getActivityAlien().at(lastMonthOffset);
+      xcomSubTotal += (*k)->getActivityXcom().at(monthOffset);
+      alienTotal += (*k)->getActivityAlien().at(monthOffset);
+    }
+    if (s->getMonthsPassed() > 1) s->getResearchScores().at(monthOffset) += 400;
+    xcomTotal = s->getResearchScores().at(monthOffset) + xcomSubTotal;
+    if (s->getResearchScores().size() > 2) lastMonthsRating += s->getResearchScores().at(lastMonthOffset);
+    const RuleAlienMission* infiltration = mod->getRandomMission(OBJECTIVE_INFILTRATION, s->getMonthsPassed());
+    int pactScore = 0;
+    if (infiltration) pactScore = infiltration->getPoints();
+    for (std::vector<Country*>::iterator k = s->getCountries()->begin(); k != s->getCountries()->end(); ++k) {
+      if ((*k)->getNewPact()) pactList.push_back((*k)->getRules()->getType());
+      (*k)->newMonth(xcomTotal, alienTotal, pactScore);
+      fundingDiff += (*k)->getFunding().back() - (*k)->getFunding().at((*k)->getFunding().size() - 2);
+      switch ((*k)->getSatisfaction()) {
+      case 1: sadList.push_back((*k)->getRules()->getType()); break;
+      case 3: happyList.push_back((*k)->getRules()->getType()); break;
+      default: break;
+      }
+    }
+    int ratingTotal = xcomTotal - alienTotal;
+    // the constructor
+    int threshold = mod->getDefeatScore() + 100 * s->getDifficultyCoefficient();
+    std::string rating = "STR_RATING_TERRIBLE";
+    if (ratingTotal > threshold - 300) rating = "STR_RATING_POOR";
+    if (ratingTotal > threshold) rating = "STR_RATING_OK";
+    if (ratingTotal > 0) rating = "STR_RATING_GOOD";
+    if (ratingTotal > 500) rating = "STR_RATING_EXCELLENT";
+    std::string satisfaction = "STR_COUNCIL_IS_DISSATISFIED";
+    bool resetWarning = true, gameOver = false, debts = false;
+    if (ratingTotal > threshold) satisfaction = "STR_COUNCIL_IS_GENERALLY_SATISFIED";
+    if (ratingTotal > 500) satisfaction = "STR_COUNCIL_IS_VERY_PLEASED";
+    if (lastMonthsRating <= threshold && ratingTotal <= threshold) {
+      satisfaction = "STR_YOU_HAVE_NOT_SUCCEEDED";
+      pactList.clear(); happyList.clear(); sadList.clear();
+      gameOver = true;
+    }
+    if (!gameOver) {
+      if (s->getFunds() <= mod->getDefeatFunds()) {
+        if (s->getWarned()) {
+          satisfaction = "STR_YOU_HAVE_NOT_SUCCEEDED";
+          pactList.clear(); happyList.clear(); sadList.clear();
+          gameOver = true;
+        } else {
+          debts = true;
+          s->setWarned(true);
+          resetWarning = false;
+        }
+      }
+    }
+    if (resetWarning && s->getWarned()) s->setWarned(false);
+    fprintf(gOut, "report|%d|%d|rating=%d|last=%d|diff=%d|%s|%s|debts=%d|over=%d|income=%d|maintenance=%d|funds=%lld|happy=%s|sad=%s|pact=%s|infiltration=%s\n",
+      v, month, ratingTotal, lastMonthsRating, fundingDiff, rating.c_str(), satisfaction.c_str(), (int)debts, (int)gameOver,
+      s->getCountryFunding(), (int)s->getBaseMaintenance(), (long long)s->getFunds(), Join(happyList).c_str(), Join(sadList).c_str(),
+      Join(pactList).c_str(), infiltration ? infiltration->getType().c_str() : "");
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -1039,6 +1136,7 @@ int main(int argc, char** argv) {
       else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);
       else if (scenario == "research") ScenarioResearch(mod, s, v);
+      else if (scenario == "report") ScenarioReport(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);
