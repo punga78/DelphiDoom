@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Widget,
-  DelphiDoom.XcomSave.SavedGame,
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Target,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.Globe;
 
 type
@@ -72,6 +72,8 @@ type
     function GlobeZoom: Integer;
     /// <summary>The globe of the geoscape, which must be the state on top</summary>
     function Globe: TXcomGlobe;
+    /// <summary>The point of the window where the globe of the geoscape draws the target</summary>
+    procedure TargetPoint(ATarget: TXcomTarget; out AX, AY: Integer);
     /// <summary>A copy of the picture on the display (640 x 400 palette indexes)</summary>
     function Picture: TBytes;
     /// <summary>A button of the mouse goes down on a point and stays there (a held arrow repeats with the time)</summary>
@@ -337,6 +339,15 @@ end;
 function TXcomTourWorld.Globe: TXcomGlobe;
 begin
   Result := (FGame.TopState as TXcomGeoscapeState).Globe;
+end;
+
+procedure TXcomTourWorld.TargetPoint(ATarget: TXcomTarget; out AX, AY: Integer);
+var
+  LX, LY: SmallInt;
+begin
+  Globe.PolarToCart(ATarget.Longitude, ATarget.Latitude, LX, LY);
+  AX := 2 * LX;
+  AY := 2 * LY;
 end;
 
 function TXcomTourWorld.Picture: TBytes;

@@ -30,6 +30,8 @@ uses
   DelphiDoom.Xcom.NewBattleNavigator in '..\OpenXcom\DelphiDoom.Xcom.NewBattleNavigator.pas',
   DelphiDoom.Tests.XcomTour.NewBattle in 'Source\DelphiDoom.Tests.XcomTour.NewBattle.pas',
   DelphiDoom.Tests.XcomTour.CustomBase in 'Source\DelphiDoom.Tests.XcomTour.CustomBase.pas',
+  DelphiDoom.Tests.XcomTour.Dogfight in 'Source\DelphiDoom.Tests.XcomTour.Dogfight.pas',
+  DelphiDoom.Tests.XcomTour.Globe in 'Source\DelphiDoom.Tests.XcomTour.Globe.pas',
   DelphiDoom.Tests.XcomTour.Hangar in 'Source\DelphiDoom.Tests.XcomTour.Hangar.pas',
   DelphiDoom.Tests.XcomTour.Barracks in 'Source\DelphiDoom.Tests.XcomTour.Barracks.pas',
   DelphiDoom.Tests.XcomTour.Trade in 'Source\DelphiDoom.Tests.XcomTour.Trade.pas',

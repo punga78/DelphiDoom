@@ -242,10 +242,10 @@ begin
   FWorld.Click(612, 380);
   Assert.AreEqual(LZoom, FWorld.GlobeZoom);
   // the four arrows
-  FWorld.Click(540, 330);
-  FWorld.Click(540, 380);
-  FWorld.Click(522, 355);
-  FWorld.Click(558, 355);
+  FWorld.Click(555, 336);
+  FWorld.Click(555, 386);
+  FWorld.Click(530, 362);
+  FWorld.Click(578, 362);
   Assert.AreEqual(GEOSCAPE, FWorld.Top);
 end;
 
