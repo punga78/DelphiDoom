@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom battlescape library - constants and errors                  }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -97,6 +97,14 @@ const
   NODE_TYPE_FLYING = $01;
   NODE_TYPE_SMALL = $02;
   NODE_TYPE_DANGEROUS = $04;
+  /// <summary>VoxelType: what a line of fire meets</summary>
+  V_EMPTY = -1;
+  V_FLOOR = 0;
+  V_WESTWALL = 1;
+  V_NORTHWALL = 2;
+  V_OBJECT = 3;
+  V_UNIT = 4;
+  V_OUTOFBOUNDS = 5;
 
 const
   /// <summary>Node::nodeRank: the node ranks where each rank of alien spawns, in order of preference</summary>
