@@ -1,0 +1,12 @@
+mission=STR_BATTLESHIP
+kind=0
+race=STR_MIXED
+itemlevel=3
+shade=12
+texture=-1
+terrain=DESERT
+craft=0
+base=1
+runseed=1761050
+seedafter=9494072076841364041
+ok=0

@@ -1,0 +1,16 @@
+mission=STR_SMALL_SCOUT
+kind=4
+race=STR_SECTOID
+itemlevel=6
+shade=3
+texture=-1
+terrain=FOREST
+craft=0
+base=1
+ufo=STR_SMALL_SCOUT
+ufostatus=2
+uforlon=4.35634
+uforlat=1.20079
+runseed=1761014
+seedafter=16028014055486945617
+ok=0
