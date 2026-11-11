@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Game,
-  DelphiDoom.Tests.XcomEngine.World;
+  DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.Yaml.Factory, DelphiDoom.Tests.XcomEngine.World;
 
 type
   /// <summary>A state that counts its turns</summary>
@@ -65,6 +65,10 @@ type
     procedure DovrebbeSalvareLeOpzioniConLaMisuraDellaFinestraRidimensionata;
     [Test]
     procedure NonDovrebbeFareNullaSenzaDeposito;
+    [Test]
+    procedure DovrebbeLeggereIModDelFileDiOpenXcom;
+    [Test]
+    procedure DovrebbeRileggereIModCheHaScritto;
   end;
 
 implementation
@@ -177,6 +181,52 @@ begin
   FWorld.Game.SetOptionsStore(nil);
   FWorld.Game.SaveOptions;
   Assert.IsFalse(FWorld.Game.IsQuitting, 'il gioco senza deposito non salva e non si ferma');
+end;
+
+procedure TTestXcomGamePause.DovrebbeLeggereIModDelFileDiOpenXcom;
+var
+  LOptions: TXcomOptions;
+begin
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Load(TTestWorld.Parse('mods:'#10'  - active: true'#10'    id: xcom2'#10'  - active: false'#10 +
+      '    id: Extra_Mod'#10'options:'#10'  mute: false'#10));
+    Assert.AreEqual(2, Integer(Length(LOptions.Mods)));
+    Assert.AreEqual('xcom2', LOptions.Mods[0].Id);
+    Assert.IsTrue(LOptions.Mods[0].Active);
+    Assert.AreEqual('Extra_Mod', LOptions.Mods[1].Id);
+    Assert.IsFalse(LOptions.Mods[1].Active);
+  finally
+    LOptions.Free;
+  end;
+end;
+
+procedure TTestXcomGamePause.DovrebbeRileggereIModCheHaScritto;
+var
+  LFiles: TFakeFileSystem;
+  LFilesRef: IXcomFileSystem;
+  LStore: IXcomOptionsStore;
+  LOptions: TXcomOptions;
+  LText: string;
+begin
+  // the options saved when the game ends must start the next game: the mods are written as OpenXcom writes them
+  LFiles := TFakeFileSystem.Create;
+  LFilesRef := LFiles;
+  LStore := TXcomFileOptionsStore.Create(LFilesRef, TYamlFactory.CreateParser, 'user');
+  FWorld.Game.Options.Mods := [TXcomModSetting.Create('xcom2', True), TXcomModSetting.Create('Extra_Mod', False)];
+  FWorld.Game.SetOptionsStore(LStore);
+  FWorld.Game.SaveOptions;
+  LText := TEncoding.UTF8.GetString(LFiles.ReadAll('user\options.cfg'));
+  Assert.IsTrue(LText.Contains('  - active: true'#10'    id: xcom2'#10), LText);
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Load(TTestWorld.Parse(LText));
+    Assert.AreEqual(2, Integer(Length(LOptions.Mods)));
+    Assert.AreEqual('Extra_Mod', LOptions.Mods[1].Id);
+    Assert.IsTrue(LOptions.Mods[0].Active);
+  finally
+    LOptions.Free;
+  end;
 end;
 
 end.

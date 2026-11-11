@@ -135,7 +135,7 @@ var
   LBrief: TXcomSaveBriefInfo;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
-  LOptionsDoc, LModsNode, LModItem: IYamlNode;
+  LOptionsDoc: IYamlNode;
   LModSettings: TArray<TXcomModSetting>;
   LMasterIndex: Integer;
   LModIndex: Integer;
@@ -151,23 +151,8 @@ begin
     if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
     begin
       LOptionsDoc := LParser.Load(LFiles.ReadAll(LOptionsFile));
+      // with the "mods" section of the file: a save that lists a mod asks for confirmation only when it is not active
       LOptions.Load(LOptionsDoc);
-      // the "mods" section of the file (id and active): a save that lists a mod asks for confirmation only when it
-      // is not active
-      LModsNode := LOptionsDoc.Find(YamlStringToText('mods'));
-      if Assigned(LModsNode) and LModsNode.IsDefined then
-      begin
-        LModSettings := nil;
-        for LModItem in LModsNode.Items do
-          if Assigned(LModItem.Find(YamlStringToText('id'))) then
-          begin
-            SetLength(LModSettings, Length(LModSettings) + 1);
-            LModSettings[High(LModSettings)] := TXcomModSetting.Create(
-              YamlTextToString(LModItem.Find(YamlStringToText('id')).AsString),
-              SameText(YamlTextToString(LModItem.Find(YamlStringToText('active')).AsString), 'true'));
-          end;
-        LOptions.Mods := LModSettings;
-      end;
     end;
     // Options::refreshMods: the master the program runs is always in the list and active. Without it (no options.cfg
     // yet) a save was written with no mods, and the list of the saves takes such a file for one of xcom1

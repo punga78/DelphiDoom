@@ -25,7 +25,7 @@ type
     FPath: string;
     /// <summary>The text of the top-level sections of the file other than "options", in their order, with the place of options</summary>
     function MergeOptions(const AExisting, AOptionsBlock: string; const ASection: string = 'options:'): string;
-    /// <summary>The "mods" section of options.cfg for the mods of the options (a list of one-pair maps)</summary>
+    /// <summary>The "mods" section of options.cfg for the mods of the options (a list of maps with id and active)</summary>
     function ModsBlock(AOptions: TXcomOptions): string;
   public
     constructor Create(const AFiles: IXcomFileSystem; const AParser: IYamlParser; const AUserFolder: string);
@@ -57,7 +57,8 @@ var
 begin
   Result := 'mods:'#10;
   for LMod in AOptions.Mods do
-    Result := Result + '  - ' + LMod.Id + ': ' + LowerCase(BoolToStr(LMod.Active, True)) + #10;
+    // Options::save: a map with id and active for each mod, as the file of OpenXcom has them
+    Result := Result + '  - active: ' + LowerCase(BoolToStr(LMod.Active, True)) + #10'    id: ' + LMod.Id + #10;
 end;
 
 function TXcomFileOptionsStore.MergeOptions(const AExisting, AOptionsBlock: string; const ASection: string): string;
