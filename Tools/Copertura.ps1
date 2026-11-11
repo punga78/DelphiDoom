@@ -4,6 +4,7 @@
   Uso:
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone
     powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Libs\IdLib\Hashing
+    powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Libs\XcomGeoscape,Libs\XcomBasescape"
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SenzaCompilare
     powershell -NoProfile -File Tools\Copertura.ps1 -Tutti
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SoloComando
@@ -68,7 +69,9 @@ $ownedFolders = @{
 # project compiles from the folders it owns (Libs\<Name>, Libs\<A>\<B> for "A.B", or the table above).
 function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit) {
   if ($Explicit -ne '') {
-    return @(Get-ChildItem -LiteralPath (Join-Path $root $Explicit) -Filter *.pas -File -Recurse |
+    # more than one folder, separated by commas: a single run of the tests measures them all
+    return @($Explicit.Split(',') | ForEach-Object {
+      Get-ChildItem -LiteralPath (Join-Path $root $_.Trim()) -Filter *.pas -File -Recurse } |
       ForEach-Object { $_.FullName })
   }
   $dpr = Join-Path $root "Tests\$Project.dpr"
@@ -127,6 +130,30 @@ function New-CodeOnlyMap([string]$Map, [string[]]$Sources, [string]$Target) {
   }
   Set-Content -LiteralPath $Target -Value @($lines | Where-Object { $null -ne $_ }) -Encoding ascii
   return $drop
+}
+
+# One row for each measured folder (the tool only gives the total): the lines of its units in the xml summary.
+function Write-FolderTotals([string]$Out, [string[]]$Files) {
+  $summary = Join-Path $Out 'CodeCoverage_Summary.xml'
+  if (-not (Test-Path -LiteralPath $summary)) { return }
+  $folderOf = @{}
+  foreach ($f in $Files) { $folderOf[(Split-Path -Leaf $f).ToLowerInvariant()] = Split-Path -Parent $f }
+  $totals = @{}
+  $xml = [xml](Get-Content -LiteralPath $summary -Raw)
+  foreach ($src in $xml.SelectNodes('//srcfile')) {
+    $folder = $folderOf[([string]$src.name).ToLowerInvariant()]
+    if (-not $folder) { continue }
+    $cov = $src.SelectSingleNode("coverage[starts-with(@type,'line')]")
+    if (-not $cov -or ([string]$cov.value) -notmatch '\((\d+)/(\d+)\)') { continue }
+    if (-not $totals.ContainsKey($folder)) { $totals[$folder] = @(0, 0) }
+    $totals[$folder][0] += [int]$Matches[1]
+    $totals[$folder][1] += [int]$Matches[2]
+  }
+  foreach ($folder in ($totals.Keys | Sort-Object)) {
+    $t = $totals[$folder]
+    Write-Host ("  {0}: {1}% ({2} righe coperte su {3})" -f $folder.Substring($root.Length + 1),
+      [Math]::Floor(100 * $t[0] / [Math]::Max(1, $t[1])), $t[0], $t[1])
+  }
 }
 
 function Invoke-Coverage([string]$TestName, [string]$Explicit) {
@@ -189,6 +216,7 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
     $line = "{0}: nessun riepilogo, vedi {1}" -f $label, $log
   }
   Write-Host $line
+  if ($Explicit.Contains(',')) { Write-FolderTotals $out $files }
   Write-Host "Report: $out\CodeCoverage_Summary.html"
   return $line
 }

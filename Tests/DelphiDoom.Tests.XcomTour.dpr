@@ -29,7 +29,9 @@ uses
   DelphiDoom.Tests.XcomTour.Missions in 'Source\DelphiDoom.Tests.XcomTour.Missions.pas',
   DelphiDoom.Xcom.NewBattleNavigator in '..\OpenXcom\DelphiDoom.Xcom.NewBattleNavigator.pas',
   DelphiDoom.Tests.XcomTour.NewBattle in 'Source\DelphiDoom.Tests.XcomTour.NewBattle.pas',
-  DelphiDoom.Tests.XcomTour.CustomBase in 'Source\DelphiDoom.Tests.XcomTour.CustomBase.pas';
+  DelphiDoom.Tests.XcomTour.CustomBase in 'Source\DelphiDoom.Tests.XcomTour.CustomBase.pas',
+  DelphiDoom.Tests.XcomTour.Hangar in 'Source\DelphiDoom.Tests.XcomTour.Hangar.pas',
+  DelphiDoom.Tests.XcomTour.Workshop in 'Source\DelphiDoom.Tests.XcomTour.Workshop.pas';
 
 var
   Runner: ITestRunner;

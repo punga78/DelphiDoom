@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
-  DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomSave.SavedGame,
+  DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Widget,
+  DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.Globe;
 
 type
@@ -37,6 +38,7 @@ type
     FGame: TXcomGame;
     class function FindUp(const ARelative: string): string; static;
     function LoadSave(const AFolder, AName: string): Boolean;
+    function TopWidgets: TArray<TXcomWidget>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -72,6 +74,45 @@ type
     function Globe: TXcomGlobe;
     /// <summary>A copy of the picture on the display (640 x 400 palette indexes)</summary>
     function Picture: TBytes;
+    /// <summary>A button of the mouse goes down on a point and stays there (a held arrow repeats with the time)</summary>
+    procedure Press(AX, AY: Integer; AButton: Integer = 1);
+    /// <summary>The button comes up, then the time for the screen to change</summary>
+    procedure Release(AX, AY: Integer; AButton: Integer = 1);
+    /// <summary>A click of the right button</summary>
+    procedure RightClick(AX, AY: Integer);
+    /// <summary>
+    ///   What the screen on top shows, for the message of a failed test: class, place in the window and text of each
+    ///   visible button and text, and the rows of each list
+    /// </summary>
+    function Describe: string;
+    /// <summary>True: the screen on top has a visible button with this text</summary>
+    function HasButton(const AText: string): Boolean;
+    /// <summary>Clicks the middle of the visible button of the screen on top with this text; fails without it</summary>
+    procedure ClickButton(const AText: string);
+    /// <summary>
+    ///   True: a visible text or button of the screen on top contains this text (the characters that change the
+    ///   color of a text do not count)
+    /// </summary>
+    function Shows(const AText: string): Boolean;
+    /// <summary>
+    ///   The row of a list of the screen on top whose first cell is this text (-1: none); the list is scrolled to
+    ///   show it and AY is the middle of the row in the window
+    /// </summary>
+    function FindRow(const AText: string; out AY: Integer): Integer;
+    /// <summary>Clicks the row whose first cell is this text, at this column of the window; fails without it</summary>
+    procedure ClickRow(const AText: string; AX: Integer; AButton: Integer = 1);
+    /// <summary>
+    ///   The middle of an arrow of the rows of the first list with arrows of the screen on top, in the window
+    ///   (ARight: the second arrow)
+    /// </summary>
+    function RowArrowX(ARight: Boolean): Integer;
+    /// <summary>
+    ///   Opens the combo box of the screen on top and clicks the option with this text (its list is scrolled to
+    ///   show it); fails without it
+    /// </summary>
+    procedure ChooseCombo(const AOption: string);
+    /// <summary>The cell of the row whose first cell is this text; fails without it</summary>
+    function RowCell(const AText: string; AColumn: Integer): string;
     property Game: TXcomGame read FGame;
     property UserFolder: string read FUserFolder;
   end;
@@ -100,7 +141,9 @@ const
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState,
+  System.IOUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types,
+  DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextList, DelphiDoom.XcomUi.ComboBox,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState,
   DelphiDoom.Xcom.GameComposition;
 
 class function TXcomTourWorld.FindUp(const ARelative: string): string;
@@ -294,6 +337,275 @@ end;
 function TXcomTourWorld.Picture: TBytes;
 begin
   Result := Copy(FDevice.Pixels);
+end;
+
+procedure TXcomTourWorld.Press(AX, AY, AButton: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  LEvent := TXcomInputEvent.Make(ekMouseMotion);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  FEvents.Enqueue(LEvent);
+  Wait(20);
+  LEvent := TXcomInputEvent.Make(ekMouseDown);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  LEvent.Button := AButton;
+  FEvents.Enqueue(LEvent);
+  Wait(40);
+end;
+
+procedure TXcomTourWorld.Release(AX, AY, AButton: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  LEvent := TXcomInputEvent.Make(ekMouseUp);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  LEvent.Button := AButton;
+  FEvents.Enqueue(LEvent);
+  Wait(500);
+end;
+
+procedure TXcomTourWorld.RightClick(AX, AY: Integer);
+begin
+  Press(AX, AY, XCOM_BUTTON_RIGHT);
+  Release(AX, AY, XCOM_BUTTON_RIGHT);
+end;
+
+// The list does not say how many cells a row has: a column past the last one is an empty text
+function CellText(AList: TXcomTextList; ARow, AColumn: Integer): string;
+begin
+  try
+    Result := AList.GetCellText(ARow, AColumn);
+  except
+    on EArgumentOutOfRangeException do
+      Result := '';
+  end;
+end;
+
+// A text without the characters that change its color or its font
+function Plain(const AText: string): string;
+var
+  LChar: Char;
+begin
+  Result := '';
+  for LChar in AText do
+    if LChar >= ' ' then
+      Result := Result + LChar;
+end;
+
+function TXcomTourWorld.TopWidgets: TArray<TXcomWidget>;
+var
+  LWidgets: TArray<TXcomWidget>;
+begin
+  LWidgets := nil;
+  if FGame.TopState <> nil then
+    FGame.TopState.VisitSurfaces(
+      procedure(AWidget: TXcomWidget)
+      begin
+        LWidgets := LWidgets + [AWidget];
+      end);
+  Result := LWidgets;
+end;
+
+function TXcomTourWorld.Describe: string;
+var
+  LBuilder: TStringBuilder;
+  LWidget: TXcomWidget;
+  LList: TXcomTextList;
+  LRow, LColumn: Integer;
+begin
+  if FGame.TopState = nil then
+    Exit('(nessuno stato)');
+  LBuilder := TStringBuilder.Create;
+  try
+    LBuilder.AppendLine(FGame.TopState.ClassName);
+    for LWidget in TopWidgets do
+    begin
+      if not LWidget.Visible then
+        Continue;
+      if LWidget is TXcomTextButton then
+        LBuilder.AppendFormat('  button (%d,%d) "%s"', [2 * LWidget.X + LWidget.Width, 2 * LWidget.Y + LWidget.Height,
+          TXcomTextButton(LWidget).GetText]).AppendLine
+      else if LWidget is TXcomText then
+        LBuilder.AppendFormat('  text (%d,%d) "%s"', [2 * LWidget.X, 2 * LWidget.Y, TXcomText(LWidget).GetText]).AppendLine
+      else if LWidget is TXcomTextList then
+      begin
+        LList := TXcomTextList(LWidget);
+        LBuilder.AppendFormat('  list (%d,%d) %d x %d, arrows %d..%d, scroll %d', [2 * LList.X, 2 * LList.Y,
+          2 * LList.Width, 2 * LList.Height, 2 * LList.GetArrowsLeftEdge, 2 * LList.GetArrowsRightEdge,
+          LList.GetScroll]).AppendLine;
+        for LRow := 0 to LList.GetTexts - 1 do
+        begin
+          LBuilder.AppendFormat('    %d y=%d:', [LRow, 2 * LList.GetRowY(LRow)]);
+          for LColumn := 0 to 5 do
+            if CellText(LList, LRow, LColumn) <> '' then
+              LBuilder.Append(' [' + CellText(LList, LRow, LColumn) + ']');
+          LBuilder.AppendLine;
+        end;
+      end
+      else
+        LBuilder.AppendFormat('  %s (%d,%d) %d x %d', [LWidget.ClassName, 2 * LWidget.X, 2 * LWidget.Y, 2 * LWidget.Width,
+          2 * LWidget.Height]).AppendLine;
+    end;
+    Result := LBuilder.ToString;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+function TXcomTourWorld.HasButton(const AText: string): Boolean;
+var
+  LWidget: TXcomWidget;
+begin
+  Result := False;
+  if FGame.TopState = nil then
+    Exit;
+  for LWidget in TopWidgets do
+    if LWidget.Visible and (LWidget is TXcomTextButton) and SameText(TXcomTextButton(LWidget).GetText, AText) then
+      Exit(True);
+end;
+
+procedure TXcomTourWorld.ClickButton(const AText: string);
+var
+  LWidget: TXcomWidget;
+begin
+  if FGame.TopState <> nil then
+    for LWidget in TopWidgets do
+      if LWidget.Visible and (LWidget is TXcomTextButton) and SameText(TXcomTextButton(LWidget).GetText, AText) then
+      begin
+        Click(2 * LWidget.X + LWidget.Width, 2 * LWidget.Y + LWidget.Height);
+        Exit;
+      end;
+  Assert.Fail(Format('il pulsante "%s" non c''e'': %s', [AText, Describe]));
+end;
+
+function TXcomTourWorld.Shows(const AText: string): Boolean;
+var
+  LWidget: TXcomWidget;
+begin
+  Result := False;
+  if FGame.TopState = nil then
+    Exit;
+  for LWidget in TopWidgets do
+  begin
+    if not LWidget.Visible then
+      Continue;
+    if (LWidget is TXcomTextButton) and Plain(TXcomTextButton(LWidget).GetText).Contains(AText) then
+      Exit(True);
+    if (LWidget is TXcomText) and Plain(TXcomText(LWidget).GetText).Contains(AText) then
+      Exit(True);
+  end;
+end;
+
+function TXcomTourWorld.FindRow(const AText: string; out AY: Integer): Integer;
+var
+  LWidget: TXcomWidget;
+  LList: TXcomTextList;
+  LRow: Integer;
+begin
+  AY := 0;
+  Result := -1;
+  if FGame.TopState = nil then
+    Exit;
+  for LWidget in TopWidgets do
+  begin
+    if not (LWidget.Visible and (LWidget is TXcomTextList)) then
+      Continue;
+    LList := TXcomTextList(LWidget);
+    for LRow := 0 to LList.GetTexts - 1 do
+      if SameText(LList.GetCellText(LRow, 0), AText) then
+      begin
+        if (LRow < LList.GetScroll) or (LRow >= LList.GetScroll + LList.GetVisibleRows) then
+        begin
+          LList.ScrollTo(LRow);
+          Wait(40);
+        end;
+        // the list gives the place of a row as if it were not scrolled
+        AY := 2 * (LList.GetRowY(LRow) - LList.GetRowY(LList.GetScroll) + LList.GetRowY(0)) + LList.GetTextHeight(LRow);
+        Exit(LRow);
+      end;
+  end;
+end;
+
+procedure TXcomTourWorld.ClickRow(const AText: string; AX, AButton: Integer);
+var
+  LY: Integer;
+begin
+  if FindRow(AText, LY) < 0 then
+    Assert.Fail(Format('la riga "%s" non c''e'': %s', [AText, Describe]));
+  if AButton = XCOM_BUTTON_LEFT then
+    Click(AX, LY)
+  else
+  begin
+    Press(AX, LY, AButton);
+    Release(AX, LY, AButton);
+  end;
+end;
+
+function TXcomTourWorld.RowArrowX(ARight: Boolean): Integer;
+var
+  LWidget: TXcomWidget;
+begin
+  for LWidget in TopWidgets do
+    if LWidget.Visible and (LWidget is TXcomTextList) and (TXcomTextList(LWidget).GetArrowsRightEdge > 0) then
+    begin
+      // two arrows of 11 pixels, the second 12 pixels after the first
+      Result := 2 * TXcomTextList(LWidget).GetArrowsLeftEdge + 10;
+      if ARight then
+        Inc(Result, 24);
+      Exit;
+    end;
+  Assert.Fail('nessuna lista con le frecce: ' + Describe);
+  Result := 0;
+end;
+
+procedure TXcomTourWorld.ChooseCombo(const AOption: string);
+var
+  LWidget: TXcomWidget;
+  LList: TXcomTextList;
+  LRow: Integer;
+begin
+  for LWidget in TopWidgets do
+    if LWidget.Visible and (LWidget is TXcomComboBox) then
+    begin
+      Click(2 * LWidget.X + LWidget.Width, 2 * LWidget.Y + LWidget.Height);
+      LList := TXcomComboBox(LWidget).List;
+      for LRow := 0 to LList.GetTexts - 1 do
+        if SameText(LList.GetCellText(LRow, 0), AOption) then
+        begin
+          if (LRow < LList.GetScroll) or (LRow >= LList.GetScroll + LList.GetVisibleRows) then
+          begin
+            LList.ScrollTo(LRow);
+            Wait(40);
+          end;
+          Click(2 * LList.X + 20, 2 * (LList.GetRowY(LRow) - LList.GetRowY(LList.GetScroll) + LList.GetRowY(0)) +
+            LList.GetTextHeight(LRow));
+          Exit;
+        end;
+    end;
+  Assert.Fail(Format('l''opzione "%s" non c''e'': %s', [AOption, Describe]));
+end;
+
+function TXcomTourWorld.RowCell(const AText: string; AColumn: Integer): string;
+var
+  LWidget: TXcomWidget;
+  LList: TXcomTextList;
+  LRow: Integer;
+begin
+  if FGame.TopState <> nil then
+    for LWidget in TopWidgets do
+      if LWidget.Visible and (LWidget is TXcomTextList) then
+      begin
+        LList := TXcomTextList(LWidget);
+        for LRow := 0 to LList.GetTexts - 1 do
+          if SameText(LList.GetCellText(LRow, 0), AText) then
+            Exit(CellText(LList, LRow, AColumn));
+      end;
+  Assert.Fail(Format('la riga "%s" non c''e'': %s', [AText, Describe]));
+  Result := '';
 end;
 
 function TXcomTourWorld.FirstBase: TXcomBase;

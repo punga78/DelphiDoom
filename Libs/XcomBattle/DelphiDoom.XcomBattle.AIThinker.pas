@@ -327,7 +327,6 @@ var
   LData: TXcomMapData;
   LAttackWeapon: TXcomBattleItem;
   LAmmo: TXcomBattleItem;
-  LPosition: TXcomPosition;
   LModuleTile: TXcomTile;
 begin
   FModule.PatrolAction.TimeUnits := 0;
