@@ -66,6 +66,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomBasescape.PsiRequirements;
+
 { TXcomDebriefingCalculator }
 
 constructor TXcomDebriefingCalculator.Create(const AGame: TXcomSavedGame; const ABattle: TXcomSavedBattleGame;
@@ -536,7 +539,11 @@ begin
           end;
           Inc(LPlayersInExitArea);
           FRecovery.RecoverItems(LUnit.Inventory, LBase);
-          if not Assigned(LSoldier) then
+          if Assigned(LSoldier) then
+            // the stats changed: the stat string is worked out again
+            LSoldier.CalcStatString(FRuleset.StatStrings, FOptions.PsiStrengthEval and
+              FGame.IsResearched(TXcomPsiRequirements.Resolve(FRuleset)))
+          else
             RecoverTank(LUnit, LBase);
         end
         else
