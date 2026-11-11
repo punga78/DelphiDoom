@@ -89,7 +89,7 @@ uses
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
   DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomBattleStates.Factory,
   DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MixerAudio,
-  DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
@@ -186,6 +186,7 @@ var
   LBattleAudio: IXcomBattleAudio;
   LBattleScreens: IXcomBattleScreens;
   LMissionLauncher: IXcomMissionLauncher;
+  LGame: TXcomGame;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -268,11 +269,18 @@ begin
     LBattleAudio := nil;
     if LAudio <> nil then
       LBattleAudio := TXcomBattleMixerAudio.Create(Result, LAudio as IXcomChannelMixer);
+    // an anonymous method cannot capture Result
+    LGame := Result;
     LBattleScreens := TXcomBattleFactory.CreateScreens(Result,
       function(AParent: TXcomState): TXcomState
       begin
         Result := TXcomPauseState.Create(AParent.Host, ooBattlescape,
           TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
+      end,
+      function: TXcomState
+      begin
+        // DebriefingState::btnOkClick of a battle outside a campaign: back to the main menu
+        Result := TXcomMainMenuState.Create(LGame, ASettings.VersionText);
       end);
     LMissionLauncher := ASettings.MissionLauncher;
     if LMissionLauncher = nil then

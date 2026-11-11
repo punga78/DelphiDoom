@@ -35,8 +35,9 @@ type
     ///   The screens of the battle with the classes of the library and the debriefing of LibsXcomDebriefing on the
     ///   saved game of the host; the pause menu comes from the program (nil: the options button does nothing)
     /// </summary>
-    class function CreateScreens(AHost: TXcomStateHost; const AOptions: TXcomBattleOptionsScreen = nil)
-      : IXcomBattleScreens; static;
+    /// <param name="AMainMenu">Makes the main menu that follows the debriefing of a battle outside a campaign; nil: nothing replaces the states</param>
+    class function CreateScreens(AHost: TXcomStateHost; const AOptions: TXcomBattleOptionsScreen = nil;
+      const AMainMenu: TFunc<TXcomState> = nil): IXcomBattleScreens; static;
     /// <summary>new BattlescapeState: the caller pushes it</summary>
     class function CreateBattlescape(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
       const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio): TXcomState; static;
@@ -105,22 +106,27 @@ begin
 end;
 
 class function TXcomBattleFactory.CreateScreens(AHost: TXcomStateHost;
-  const AOptions: TXcomBattleOptionsScreen): IXcomBattleScreens;
-var
-  LDebriefer: IXcomMissionDebriefer;
-  LOptions: TXcomDebriefingOptions;
+  const AOptions: TXcomBattleOptionsScreen; const AMainMenu: TFunc<TXcomState>): IXcomBattleScreens;
 begin
-  LOptions := TXcomDebriefingOptions.Default;
-  LOptions.CraftName :=
-    function(ACraft: TXcomCraft): string
-    begin
-      Result := TXcomTargetNames.Name(ACraft, AHost.Language);
-    end;
-  // one debriefer for all the battles of the game: the screens it makes refer to it
-  LDebriefer := TXcomMissionDebriefer.Create(AHost, LOptions, nil, nil);
   Result := TXcomBattleScreens.Create(
     function(AParent: TXcomState): TXcomState
+    var
+      LDebriefer: IXcomMissionDebriefer;
+      LOptions: TXcomDebriefingOptions;
     begin
+      // the options of the game as they are when the battle ends (the player can change them in the pause menu)
+      LOptions := TXcomDebriefingOptions.Default;
+      LOptions.StorageLimitsEnforced := AHost.Options.GetBool('storageLimitsEnforced');
+      LOptions.FieldPromotions := AHost.Options.GetBool('fieldPromotions');
+      LOptions.PsiStrengthEval := AHost.Options.GetBool('psiStrengthEval');
+      LOptions.CraftName :=
+        function(ACraft: TXcomCraft): string
+        begin
+          Result := TXcomTargetNames.Name(ACraft, AHost.Language);
+        end;
+      // the screen that the debriefer makes keeps what it needs, the debriefer itself can go. After OK the screens
+      // of TXcomDebriefingFollowUp follow (medals, promotions, missing items, containment, sale, autosave)
+      LDebriefer := TXcomMissionDebriefer.Create(AHost, LOptions, nil, nil, AMainMenu);
       Result := LDebriefer.Debrief((AParent as TXcomBattlescapeState).Session.Battle);
     end, AOptions);
 end;
