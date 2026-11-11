@@ -1,0 +1,16 @@
+# explode 24 9 0 STR_DYE_GRENADE 1 0
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+seed=18376713181558704318 side=1 turn=1

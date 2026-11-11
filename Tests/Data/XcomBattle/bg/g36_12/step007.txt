@@ -1,0 +1,28 @@
+# endturn
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+seed=10869707017463499596 side=1 turn=1

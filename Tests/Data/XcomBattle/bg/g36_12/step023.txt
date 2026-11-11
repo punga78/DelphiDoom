@@ -1,0 +1,15 @@
+# explode 46 14 0 STR_MAGNA_BLAST_GRENADE 3 0
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+seed=16084118670207712451 side=2 turn=1

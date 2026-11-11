@@ -1,0 +1,2 @@
+# endturn
+seed=9425710743673310928 side=1 turn=1

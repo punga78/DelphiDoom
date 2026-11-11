@@ -1,0 +1,2 @@
+# placegrenade 25 45 0 STR_DYE_GRENADE 1 1
+seed=168122961078748341 side=1 turn=1

@@ -1,0 +1,2 @@
+# placegrenade 48 35 1 STR_SONIC_PULSER 1 1000006
+seed=755042250733894341 side=1 turn=1

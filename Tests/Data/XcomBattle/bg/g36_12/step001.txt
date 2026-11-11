@@ -1,0 +1,19 @@
+# explode 42 47 1 STR_SONIC_PULSER 1000016 0
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+ExplosionBState
+UnitDieBState
+UnitDieBState
+UnitDieBState
+seed=128074456906959066 side=0 turn=1

@@ -9,6 +9,9 @@ unit DelphiDoom.XcomBattle.State.Intf;
 
 interface
 
+uses
+  DelphiDoom.XcomBattle.Action;
+
 type
   /// <summary>
   ///   One step of what happens on the battlefield (a walk, a shot, an explosion): BattlescapeGame keeps a list of
@@ -26,6 +29,8 @@ type
     procedure Deinit;
     /// <summary>The name of the kind of step (the C++ class name), for the tests and the logs</summary>
     function StateName: string;
+    /// <summary>getAction: the action the step carries out (the actor decides when its time units are spent), or nil</summary>
+    function Action: TXcomBattleAction;
   end;
 
 implementation
