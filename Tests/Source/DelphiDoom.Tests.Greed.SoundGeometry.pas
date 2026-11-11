@@ -36,7 +36,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.Types, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.FixedMath;
+  DelphiDoom.Greed.Types, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath;
 
 const
   FRACUNIT = 65536;

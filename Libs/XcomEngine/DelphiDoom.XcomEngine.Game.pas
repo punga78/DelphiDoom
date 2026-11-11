@@ -59,7 +59,7 @@ type
     FSavedGameLoader: IXcomSavedGameLoader;
     FSavedGameSaver: IXcomSavedGameSaver;
     FSession: IInterface;
-    procedure Dispatch(const AEvent: TXcomInputEvent);
+    procedure DispatchEvent(const AEvent: TXcomInputEvent);
   public
     /// <summary>
     ///   The game owns the options, the screen, the cursor and the fps counter that it receives, and the language
@@ -432,7 +432,7 @@ begin
   FCursor.Visible := AActive;
 end;
 
-procedure TXcomGame.Dispatch(const AEvent: TXcomInputEvent);
+procedure TXcomGame.DispatchEvent(const AEvent: TXcomInputEvent);
 var
   LAction: TXcomAction;
   LX: Integer;
@@ -518,7 +518,7 @@ begin
         Quit;
       ekMouseMotion, ekMouseDown, ekMouseUp:
         if FMouseActive then
-          Dispatch(LEvent);
+          DispatchEvent(LEvent);
       ekActive:
         // SDL_ACTIVEEVENT: with backgroundMute the game is silent while the window has not the focus
         if FOptions.BackgroundMute then
@@ -531,7 +531,7 @@ begin
         if FOptions.AllowResize then
           ResizeDisplay(LEvent.X, LEvent.Y);
     else
-      Dispatch(LEvent);
+      DispatchEvent(LEvent);
     end;
     if not FInit then
       Break;

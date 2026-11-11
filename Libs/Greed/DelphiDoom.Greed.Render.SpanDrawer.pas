@@ -52,7 +52,7 @@ implementation
 
 uses
   System.SysUtils, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Types, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.FixedMath,
-  DelphiDoom.Greed.Render.SpanSorter, DelphiDoom.Greed.Render.WallRenderer;
+  DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.Render.SpanSorter, DelphiDoom.Greed.Render.WallRenderer;
 
 type
   FM = TGreedFixedMath;
@@ -376,7 +376,6 @@ begin
       if (not AOverlay) or (LDest^ = 255) then
         LDest^ := S.Backdrop[LH1 * 256 + LX1];
       LA := LA + S.AFrac;
-      Inc(LPX);
       Dec(LCount);
       Inc(LDest);
     end;

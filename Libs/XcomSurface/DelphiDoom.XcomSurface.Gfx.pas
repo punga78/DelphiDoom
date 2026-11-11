@@ -188,7 +188,7 @@ const
 
 var
   LLeft, LRight, LTop, LBottom: SmallInt;
-  LCode1, LCode2, LCodeTemporary: Integer;
+  LCode1, LCode2: Integer;
   LTemporary: SmallInt;
   LSlope: Single;
   LStep: Single;
@@ -219,9 +219,8 @@ begin
         LTemporary := AY2;
         AY2 := AY1;
         AY1 := LTemporary;
-        LCodeTemporary := LCode2;
-        LCode2 := LCode1;
-        LCode1 := LCodeTemporary;
+        // the codes are computed again at the next turn: only the first one is read below
+        LCode1 := LCode2;
       end;
       // float of the C++: every operation is rounded to a single
       if AX2 <> AX1 then

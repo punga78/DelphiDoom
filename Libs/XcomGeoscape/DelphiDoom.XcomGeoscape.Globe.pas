@@ -1006,8 +1006,6 @@ begin
       LCode := LCode1
     else
       LCode := LCode2;
-    LX := 0;
-    LY := 0;
     if (LCode and 8) <> 0 then
     begin
       LX := AX1 + (AX2 - AX1) * (LBottom - AY1) / (AY2 - AY1);

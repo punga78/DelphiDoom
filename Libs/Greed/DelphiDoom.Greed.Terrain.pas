@@ -33,7 +33,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath;
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath;
 
 const
   TILE_UNIT = 64 * GREED_FRACUNIT;

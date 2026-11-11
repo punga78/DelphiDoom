@@ -54,7 +54,9 @@ type
     class function ReadIntegerRows(const ANode: IYamlNode; const AKey: string;
       const ADefault: TArray<TArray<Integer>>): TArray<TArray<Integer>>; static;
     /// <summary>The text of a node (as&lt;std::string&gt;(): a null node is "null")</summary>
-    class function TextOf(const ANode: IYamlNode): string; static;
+    class function TextOf(const ANode: IYamlNode): string; overload; static;
+    /// <summary>The text of a node with a fallback (as&lt;std::string&gt;(default)), read as UTF-8</summary>
+    class function TextOf(const ANode: IYamlNode; const ADefault: string): string; overload; static;
     /// <summary>as&lt;std::vector&lt;int&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
     class function IntegersOf(const ANode: IYamlNode): TArray<Integer>; static;
     /// <summary>as&lt;std::vector&lt;double&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
@@ -80,6 +82,11 @@ end;
 class function TXcomNodeReader.TextOf(const ANode: IYamlNode): string;
 begin
   Result := YamlTextToString(ANode.AsString);
+end;
+
+class function TXcomNodeReader.TextOf(const ANode: IYamlNode; const ADefault: string): string;
+begin
+  Result := YamlTextToString(ANode.AsString(YamlStringToText(ADefault)));
 end;
 
 class function TXcomNodeReader.BadConversion(const ANode: IYamlNode): EYamlBadConversion;

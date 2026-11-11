@@ -75,7 +75,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.Terrain;
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.Terrain;
 
 const
   TILE_UNIT = 64 * GREED_FRACUNIT;

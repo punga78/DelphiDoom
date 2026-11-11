@@ -141,7 +141,7 @@ begin
   else if ANode.IsMap then
   begin
     AOffset := TXcomNodeReader.Field(ANode, 'index').AsInteger;
-    LName := TXcomNodeReader.Field(ANode, 'mod').AsString;
+    LName := TXcomNodeReader.TextOf(TXcomNodeReader.Field(ANode, 'mod'));
     if LName = MOD_NAME_MASTER then
       LCurrent := 0
     else if LName = MOD_NAME_CURRENT then

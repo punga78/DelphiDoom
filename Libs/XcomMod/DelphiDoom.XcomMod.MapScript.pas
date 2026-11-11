@@ -423,7 +423,7 @@ begin
   LField := TXcomNodeReader.Field(ANode, 'direction');
   if LField.IsDefined then
   begin
-    LDirection := LField.AsString('');
+    LDirection := TXcomNodeReader.TextOf(LField, '');
     if LDirection <> '' then
       case UpCase(LDirection[1]) of
         'V': FDirection := MD_VERTICAL;
@@ -445,7 +445,7 @@ begin
   LField := TXcomNodeReader.Field(ANode, 'type');
   if not LField.IsDefined then
     raise EXcomModException.Create(SMapScriptMissing);
-  LCommand := LField.AsString('');
+  LCommand := TXcomNodeReader.TextOf(LField, '');
   if LCommand = 'addBlock' then
     FType := MSC_ADDBLOCK
   else if LCommand = 'addLine' then

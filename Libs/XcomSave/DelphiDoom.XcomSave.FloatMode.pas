@@ -23,8 +23,14 @@ type
   /// </summary>
   TXcomFloatMode = record
   strict private
-    FPrevious: TFPUPrecisionMode;
-    FMask: TArithmeticExceptionMask;
+    const
+      /// <summary>The precision control field of the x87 control word (bits 8 and 9)</summary>
+      PRECISION_MASK = $0300;
+      /// <summary>The value of the field for a 53 bit mantissa</summary>
+      PRECISION_DOUBLE = $0200;
+    var
+      FPrevious: Word;
+      FMask: TArithmeticExceptionMask;
   public
     /// <summary>Sets the double precision and remembers the one that was set</summary>
     class function Enter: TXcomFloatMode; static;
@@ -37,8 +43,20 @@ implementation
 { TXcomFloatMode }
 
 class function TXcomFloatMode.Enter: TXcomFloatMode;
+{$IFDEF CPUX86}
+var
+  LControl: Word;
+{$ENDIF}
 begin
-  Result.FPrevious := SetPrecisionMode(pmDouble);
+  // the control word is written directly: SetPrecisionMode of System.Math does the same but is marked as
+  // specific to a platform
+{$IFDEF CPUX86}
+  LControl := Get8087CW;
+  Result.FPrevious := LControl and PRECISION_MASK;
+  Set8087CW((LControl and not PRECISION_MASK) or PRECISION_DOUBLE);
+{$ELSE}
+  Result.FPrevious := 0;
+{$ENDIF}
   // the C++ divides by zero and gets an infinity or a not a number, which it tests for: no exceptions
   Result.FMask := SetExceptionMask(exAllArithmeticExceptions);
 end;
@@ -46,7 +64,9 @@ end;
 procedure TXcomFloatMode.Leave;
 begin
   SetExceptionMask(FMask);
-  SetPrecisionMode(FPrevious);
+{$IFDEF CPUX86}
+  Set8087CW((Get8087CW and not PRECISION_MASK) or FPrevious);
+{$ENDIF}
 end;
 
 end.
