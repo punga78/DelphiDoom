@@ -116,3 +116,12 @@ per non aspettare) e scrive per ogni fotogramma l'impronta FNV-1a dei pixel dell
 Durante un filmato il vero OpenXcom non salva schermate con F12 (ogni tasto lo salta): per questo il confronto e'
 sulle impronte e non sui PNG. Le diapositive invece si catturano: `Capture-OpenXcomScreen.ps1 -Option 'playIntro=true'`
 (la diapositiva che si vede dipende dal tempo: ogni cattura si confronta con tutte quelle di `Xcom32`).
+
+## Giro di verifica finale, parte A (2026-11-11)
+
+- `Capture-OpenXcomScreen.ps1 -UserRoot <cartella>`: la cartella utente del vero OpenXcom nasce li' e non dentro i dati del gioco (`Reference\_dati\...` e' in sola lettura); passo `rclick:x,y`. `Compare-XcomScreens.ps1`, `Compare-XcomBattle.ps1`, `Compare-XcomPopups.ps1` la mettono in `<Out>\realuser` e catturano **una volta** (`-Tries n` per riprovare).
+- `Compare-XcomPopups.ps1`: `-SaveFile` (un salvataggio qualsiasi), `-Game 'openxcom\UFO' -ModId xcom1` con `-Data <xcom_ufo>`, `-Option chiave=valore`, `-NoReal` (solo `Xcom32`, nessun clic vero), `-NoDelphi`.
+- `Compare-XcomMenu.ps1`: parte dal menu principale (partita nuova con `-Seed` per `Xcom32`, `-Saves` per una cartella di salvataggi).
+- `Compare-XcomBattle.ps1 -SaveFile`: un salvataggio di battaglia scritto da `Xcom32` (per esempio `_quick_.asav`) caricato in entrambi.
+- Salvataggi sintetici nuovi in `Tests\Data\XcomSave\variants`: `save02_psilab.sav`, `save02_psilab_month.sav` (fine mese), `save02_lost_month.sav` (sconfitta al rapporto mensile), `crash_stores_full.sav`, `crash_containment_full.sav`.
+- Negli script di `Xcom32` il clic dura 40 ms: le frecce delle liste vogliono `hold:80` (scorrono 50 ms dopo la pressione, come nel vero). In PowerShell le variabili non distinguono maiuscole e minuscole (`$s`/`$S`, `$d`/`$D`).
