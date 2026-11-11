@@ -6,7 +6,7 @@
 
   Uso: powershell -NoProfile -File Capture-OpenXcomScreen.ps1 -Root <cartella con openxcom\> -Out <cartella> `
          -Steps 'wait:40','click:320,200','wait:2','shot:menu'
-  Passi: wait:s, click:x,y (client 640x400), key:vk (codice virtuale di Windows), chord:mod,vk (un tasto con un modificatore tenuto: chord:17,68 = Ctrl+D), shot:nome (premere F12 e copiare il file).
+  Passi: wait:s, click:x,y (client 640x400), rclick:x,y (tasto destro), key:vk (codice virtuale di Windows), chord:mod,vk (un tasto con un modificatore tenuto: chord:17,68 = Ctrl+D), shot:nome (premere F12 e copiare il file).
   Va eseguito dentro il lock globale dei giochi (come Esegui-gioco.ps1): chi lo chiama prende il mutex
   Global\DelphiDoomEsecuzioneGioco.
 #>
@@ -24,6 +24,9 @@ param(
   [switch]$NoAudio,
   # before the user folder is deleted, the saved games (*.sav) that the program wrote in it are copied here
   [string]$SaveCopyTo = '',
+  # where the user folder of the run is created; empty = inside -Root (the old behaviour). The game data are read
+  # only: give a folder of your own (for example the -Out of the comparison)
+  [string]$UserRoot = '',
   [string]$UserName =('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 )
 $ErrorActionPreference = 'Stop'
@@ -41,12 +44,19 @@ public class OxcCap {
     SetCursorPos(p.X, p.Y); System.Threading.Thread.Sleep(150);
     mouse_event(2, 0, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(80); mouse_event(4, 0, 0, 0, UIntPtr.Zero);
   }
+  public static void RightClick(IntPtr h, int x, int y) {
+    POINT p = new POINT(); p.X = x; p.Y = y; ClientToScreen(h, ref p);
+    SetCursorPos(p.X, p.Y); System.Threading.Thread.Sleep(150);
+    mouse_event(8, 0, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(80); mouse_event(16, 0, 0, 0, UIntPtr.Zero);
+  }
   public static void Chord(byte mod, byte vk) { keybd_event(mod, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 2, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(mod, 0, 2, UIntPtr.Zero); }
   public static void Key(byte vk) { keybd_event(vk, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); keybd_event(vk, 0, 2, UIntPtr.Zero); }
 }
 "@
 New-Item -ItemType Directory -Force $Out | Out-Null
-$user = Join-Path $Root $UserName
+if ($UserRoot -eq '') { $UserRoot = $Root }
+New-Item -ItemType Directory -Force $UserRoot | Out-Null
+$user = Join-Path $UserRoot $UserName
 if (Test-Path $user) { Remove-Item -Recurse -Force $user }
 New-Item -ItemType Directory -Force $user | Out-Null
 if ($SeedFolder -ne '') { Copy-Item -Path (Join-Path $SeedFolder '*') -Destination $user -Recurse -Force }
@@ -70,6 +80,7 @@ try {
     switch ($a[0]) {
       'wait' { Start-Sleep ([double]$a[1]) }
       'click' { $xy = $a[1].Split(','); [OxcCap]::Click($h, [int]$xy[0], [int]$xy[1]) }
+      'rclick' { $xy = $a[1].Split(','); [OxcCap]::RightClick($h, [int]$xy[0], [int]$xy[1]) }
       'key' { [OxcCap]::Key([byte][int]$a[1]) }
     'chord' { $k = $a[1].Split(','); [OxcCap]::Chord([byte][int]$k[0], [byte][int]$k[1]) }
       'shot' {

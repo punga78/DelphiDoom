@@ -19,14 +19,21 @@ param(
   [string]$Scenario = 'g01_2',
   [string[]]$Real = @(),
   [string[]]$Names = @(),
-  [string[]]$Option = @()
+  [string[]]$Option = @(),
+  # how many times the capture of the real program is tried when a file is missing (real mouse clicks)
+  [int]$Tries = 1,
+  # a saved game to load in place of the one of the scenario (plain text, for example one written by Xcom32)
+  [string]$SaveFile = ''
 )
 $ErrorActionPreference = 'Stop'
 if (Test-Path "$Out\user") { Remove-Item -Recurse -Force "$Out\user" }
 New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
-$gz = New-Object IO.Compression.GZipStream([IO.File]::OpenRead("$Root\Tests\Data\XcomBattle\bg\$Scenario\start.sav.gz"), [IO.Compression.CompressionMode]::Decompress)
-$reader = New-Object IO.StreamReader($gz)
-$t = $reader.ReadToEnd(); $reader.Close()
+if ($SaveFile -ne '') { $t = [IO.File]::ReadAllText($SaveFile) }
+else {
+  $gz = New-Object IO.Compression.GZipStream([IO.File]::OpenRead("$Root\Tests\Data\XcomBattle\bg\$Scenario\start.sav.gz"), [IO.Compression.CompressionMode]::Decompress)
+  $reader = New-Object IO.StreamReader($gz)
+  $t = $reader.ReadToEnd(); $reader.Close()
+}
 $t = $t.Replace("`r`n", "`n")
 $t = [regex]::Replace($t, '(?m)^name: .*$', 'name: "Battle"', 1)
 $t = $t.Replace('  - "xcom2 ver: 1.0"', '  - xcom2')
@@ -49,8 +56,8 @@ $realSteps = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92') + $Real
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)
 try {
-  for ($try = 0; $try -lt 3; $try++) {
-    & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -Steps $realSteps -Option $Option | Out-Null
+  for ($try = 0; $try -lt $Tries; $try++) {
+    & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -UserRoot "$Out\realuser" -Steps $realSteps -Option $Option | Out-Null
     $missing = @($Names | Where-Object { -not (Test-Path "$Out\real\$_.png") })
     if ($missing.Count -eq 0) { break }
   }

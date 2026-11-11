@@ -25,7 +25,10 @@ param(
   [string]$ModId = 'xcom2',
   # seconds the real program gets to show its menu before the first click (more on a busy machine: a click that
   # comes before the menu is lost and every screen after it is the menu)
-  [int]$StartWait = 3
+  [int]$StartWait = 3,
+  # how many times the capture of the real program is tried when a file is missing (real mouse clicks: 1 = never
+  # in a loop)
+  [int]$Tries = 1
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -69,8 +72,8 @@ $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)
 try {
   # the capture of the real program sometimes gives no file: it is repeated (up to three times)
-  for ($try = 0; $try -lt 3; $try++) {
-    & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -Steps $real | Out-Null
+  for ($try = 0; $try -lt $Tries; $try++) {
+    & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -UserRoot "$Out\realuser" -Steps $real | Out-Null
     # a file that exists is not enough: the capture can leave an empty or truncated PNG
     $missing = @($Screens | Where-Object { -not (Test-ValidPng "$Out\real\$($_.Split('=')[0].TrimStart('+')).png") })
     if ($missing.Count -eq 0) { break }
