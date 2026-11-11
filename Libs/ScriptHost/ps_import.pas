@@ -42,7 +42,8 @@ uses
   ps_runtime,
   DelphiDoom.ScriptHost.Classes.Intf,
   DelphiDoom.ScriptHost.Constants.Intf,
-  DelphiDoom.ScriptHost.Intf;
+  DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.Services.Intf;
 
 //==============================================================================
 //
@@ -63,22 +64,37 @@ type
   private
     FPP: TPSPreProcessor;
     funitnames: TDStringList;
+    FServices: IScriptHostServices;
   public
-    constructor CreateDoomCompiler; virtual;
+    /// <summary>With the services given to PS_ConfigureHostServices</summary>
+    constructor CreateDoomCompiler; overload; virtual;
+    constructor CreateDoomCompiler(const AServices: IScriptHostServices); overload; virtual;
+    property Services: IScriptHostServices read FServices;
     function CompileDoomScript(const source: TbtString; var pcode: TbtString): Boolean; virtual;
     destructor Destroy; override;
     property unitnames: TDStringList read funitnames;
   end;
 
   TDoomExec = class(TPSExec)
+  private
+    FServices: IScriptHostServices;
   public
-    constructor CreateDoomExec(const aImporter: TPSRuntimeClassImporter); virtual;
+    /// <summary>
+    ///   The services are the ones of the importer (TPSDoomRuntimeClassImporter) or, if AServices is nil
+    ///   and the importer is another one, the ones given to PS_ConfigureHostServices
+    /// </summary>
+    constructor CreateDoomExec(const aImporter: TPSRuntimeClassImporter;
+      const AServices: IScriptHostServices = nil); virtual;
+    property Services: IScriptHostServices read FServices;
     function LoadData(const pcode: TbtString): Boolean; override;
   end;
 
   TPSDoomRuntimeClassImporter = class(TPSRuntimeClassImporter)
+  private
+    FServices: IScriptHostServices;
   public
-    constructor Create; override;
+    constructor CreateDoomImporter(const AServices: IScriptHostServices); virtual;
+    property Services: IScriptHostServices read FServices;
   end;
 
 const
@@ -86,11 +102,21 @@ const
 
 //==============================================================================
 //
-// PS_ConfigureScriptRegistry
-// The functions that scripts can call, given by the composition root
+// PS_ConfigureHostServices
+// What the compiler and the interpreter of the scripts use (the functions, the
+// classes and the constants that scripts see, the files they include, the game):
+// given by the composition root. The catalog of the classes is filled here with
+// the tables of the units psi_globals and psi_game
 //
 //==============================================================================
-procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
+procedure PS_ConfigureHostServices(const AServices: IScriptHostServices);
+
+//==============================================================================
+//
+// PS_HostServices
+//
+//==============================================================================
+function PS_HostServices: IScriptHostServices;
 
 //==============================================================================
 //
@@ -100,37 +126,6 @@ procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
 //==============================================================================
 procedure PS_ConfigureGameFunctions(const AGameInfo, ATextures, AKeys: IScriptFunctionSection);
 
-//==============================================================================
-//
-// PS_ConfigureClassCatalog
-// The classes that scripts see (Actors, Lines, MapStrings...): the catalog is
-// given by the composition root and filled here with the tables of the units
-// psi_globals and psi_game
-//
-//==============================================================================
-procedure PS_ConfigureClassCatalog(const ACatalog: IScriptClassCatalog);
-
-//==============================================================================
-//
-// PS_ConfigureConstants
-// The constants of the unit SYSTEM (every script can read them)
-//
-//==============================================================================
-procedure PS_ConfigureConstants(const AConstants: IScriptConstantProvider);
-
-//==============================================================================
-//
-// PS_Constants
-//
-//==============================================================================
-function PS_Constants: IScriptConstantProvider;
-
-//==============================================================================
-//
-// PS_ClassCatalog
-//
-//==============================================================================
-function PS_ClassCatalog: IScriptClassCatalog;
 
 //==============================================================================
 //
@@ -192,22 +187,10 @@ uses
 
 var
   // given by the composition root
-  ps_registry_ref: IScriptFunctionRegistry = nil;
+  ps_services_ref: IScriptHostServices = nil;
   ps_gameinfo_ref: IScriptFunctionSection = nil;
   ps_textures_ref: IScriptFunctionSection = nil;
   ps_keys_ref: IScriptFunctionSection = nil;
-  ps_classes_ref: IScriptClassCatalog = nil;
-  ps_constants_ref: IScriptConstantProvider = nil;
-
-//==============================================================================
-//
-// PS_ConfigureScriptRegistry
-//
-//==============================================================================
-procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
-begin
-  ps_registry_ref := ARegistry;
-end;
 
 //==============================================================================
 //
@@ -223,52 +206,31 @@ end;
 
 //==============================================================================
 //
-// PS_ConfigureClassCatalog
+// PS_ConfigureHostServices
 //
 //==============================================================================
-procedure PS_ConfigureClassCatalog(const ACatalog: IScriptClassCatalog);
+procedure PS_ConfigureHostServices(const AServices: IScriptHostServices);
 begin
-  ps_classes_ref := ACatalog;
-  if ACatalog <> nil then
+  ps_services_ref := AServices;
+  if AServices <> nil then
   begin
     // the order of the registration of the compiler: the variables, then the game
-    PS_DescribeGlobalClasses(ACatalog);
-    PS_DescribeGameClasses(ACatalog);
+    PS_DescribeGlobalClasses(AServices.Classes);
+    PS_DescribeGameClasses(AServices.Classes);
+    PS_DescribeOverlayClasses(AServices.Classes);
   end;
 end;
 
 //==============================================================================
 //
-// PS_ConfigureConstants
+// PS_HostServices
 //
 //==============================================================================
-procedure PS_ConfigureConstants(const AConstants: IScriptConstantProvider);
+function PS_HostServices: IScriptHostServices;
 begin
-  ps_constants_ref := AConstants;
-end;
-
-//==============================================================================
-//
-// PS_Constants
-//
-//==============================================================================
-function PS_Constants: IScriptConstantProvider;
-begin
-  if ps_constants_ref = nil then
-    I_Error('PS_ConfigureConstants() was not called: the constants of the scripts are missing');
-  Result := ps_constants_ref;
-end;
-
-//==============================================================================
-//
-// PS_ClassCatalog
-//
-//==============================================================================
-function PS_ClassCatalog: IScriptClassCatalog;
-begin
-  if ps_classes_ref = nil then
-    I_Error('PS_ConfigureClassCatalog() was not called: the classes of the scripts are missing');
-  Result := ps_classes_ref;
+  if ps_services_ref = nil then
+    I_Error('PS_ConfigureHostServices() was not called: the services of the scripts are missing');
+  Result := ps_services_ref;
 end;
 
 //==============================================================================
@@ -278,9 +240,7 @@ end;
 //==============================================================================
 function PS_ScriptRegistry: IScriptFunctionRegistry;
 begin
-  if ps_registry_ref = nil then
-    I_Error('PS_ConfigureScriptRegistry() was not called: the functions of the scripts are missing');
-  Result := ps_registry_ref;
+  Result := PS_HostServices.Registry;
 end;
 
 //==============================================================================
@@ -464,10 +424,10 @@ end;
 procedure PS_ShutDownProcLists;
 begin
   // PS_GAME and PS_OVERLAY are the ones that PS_InitProcLists added
-  if ps_registry_ref <> nil then
+  if ps_services_ref <> nil then
   begin
-    ps_registry_ref.RemoveGroup('PS_GAME');
-    ps_registry_ref.RemoveGroup('PS_OVERLAY');
+    ps_services_ref.Registry.RemoveGroup('PS_GAME');
+    ps_services_ref.Registry.RemoveGroup('PS_OVERLAY');
   end;
 end;
 
@@ -479,12 +439,14 @@ end;
 function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   LName: string;
+  LServices: IScriptHostServices;
 { the OnUses callback function is called for each "uses" in the script.
   It's always called with the parameter 'SYSTEM' at the top of the script.
   For example: uses ii1, ii2;
   This will call this function 3 times. First with 'SYSTEM' then 'II1' and then 'II2'.
 }
 begin
+  LServices := (Sender as TDoomCompiler).Services;
   if Name = 'SYSTEM' then
   begin
     // Functions
@@ -506,25 +468,24 @@ begin
     Sender.AddTypeS('fixed_t', 'integer');
     Sender.AddTypeS('angle_t', 'longword');
     RegisterDateTimeLibrary_C(Sender);
-    PS_ClassCatalog.RegisterCompiler(Sender);
-    SIRegister_TOverlay(Sender);
+    LServices.Classes.RegisterCompiler(Sender);
 
-    PS_ScriptRegistry.RegisterCompiler(string(Name), Sender);
+    LServices.Registry.RegisterCompiler(string(Name), Sender);
 
     // the constants of every script: NaN, the flags of the mobjs, the angles...
-    PS_Constants.Describe(TScriptHostFactory.CreateCompilerConstants(Sender));
+    LServices.Constants.Describe(TScriptHostFactory.CreateCompilerConstants(Sender));
 
     Result := True;
   end
   else if Name = 'ALL' then
   begin
-    for LName in PS_ScriptRegistry.CompilerUnitNames do
+    for LName in LServices.Registry.CompilerUnitNames do
       PS_ScriptOnUses(Sender, TbtString(LName));
     Result := True;
   end
   else
   begin
-    if PS_ScriptRegistry.RegisterCompiler(string(Name), Sender) then
+    if LServices.Registry.RegisterCompiler(string(Name), Sender) then
     begin
       Result := True;
     end
@@ -586,7 +547,7 @@ end;
 //==============================================================================
 function FPPNeedFile(Sender: TPSPreProcessor; const callingfilename: TbtString; var FileName, Output: TbtString): Boolean;
 begin
-  Output := PAK_ReadFileAsString(FileName);
+  Output := TbtString(TDoomCompiler(Sender.Id).Services.Sources.ReadText(string(FileName)));
   Result := Output <> '';
 end;
 
@@ -597,11 +558,22 @@ end;
 //==============================================================================
 constructor TDoomCompiler.CreateDoomCompiler;
 begin
+  CreateDoomCompiler(PS_HostServices);
+end;
+
+//==============================================================================
+//
+// TDoomCompiler.CreateDoomCompiler
+//
+//==============================================================================
+constructor TDoomCompiler.CreateDoomCompiler(const AServices: IScriptHostServices);
+begin
   if dccnt <> 0 then
     I_Error('TDoomCompiler.CreateDoomCompiler(): Compiler is already active!');
 
   Inc(dccnt);
 
+  FServices := AServices;
   inherited Create(@DefaultLookupTable, DEFAULT_KEYWORD_COUNT);
   OnUses := PS_ScriptOnUses;
   OnExternalProc := DllExternalProc;
@@ -639,57 +611,15 @@ var
   ppout: TbtString;
   unitstr: TbtString;
   len: integer;
+  LDefine: string;
 begin
   PS_ResetProcLists;
 
   FPP.Clear;
 
-  FPP.Defines.Add(strupper(_GAME));
-  {$IFDEF DEBUG}
-  FPP.Defines.Add('DEBUG');
-  {$ENDIF}
-  if devparm then
-    FPP.Defines.Add('DEVPARM');
-
-  {$IFDEF DOOM}
-  FPP.Defines.Add('DOOM_OR_HERETIC');
-  FPP.Defines.Add('DOOM_OR_HEXEN');
-  FPP.Defines.Add('DOOM_OR_STRIFE');
-  FPP.Defines.Add('HERETIC_OR_DOOM');
-  FPP.Defines.Add('HEXEN_OR_DOOM');
-  FPP.Defines.Add('STRIFE_OR_DOOM');
-  {$ENDIF}
-
-  {$IFDEF HERETIC}
-  FPP.Defines.Add('HERETIC_OR_DOOM');
-  FPP.Defines.Add('HERETIC_OR_HEXEN');
-  FPP.Defines.Add('HERETIC_OR_STRIFE');
-  FPP.Defines.Add('DOOM_OR_HERETIC');
-  FPP.Defines.Add('HEXEN_OR_HERETIC');
-  FPP.Defines.Add('STRIFE_OR_HERETIC');
-  {$ENDIF}
-
-  {$IFDEF HEXEN}
-  FPP.Defines.Add('HEXEN_OR_DOOM');
-  FPP.Defines.Add('HEXEN_OR_HERETIC');
-  FPP.Defines.Add('HEXEN_OR_STRIFE');
-  FPP.Defines.Add('DOOM_OR_HEXEN');
-  FPP.Defines.Add('HERETIC_OR_HEXEN');
-  FPP.Defines.Add('STRIFE_OR_HEXEN');
-  {$ENDIF}
-
-  {$IFDEF STRIFE}
-  FPP.Defines.Add('STRIFE_OR_DOOM');
-  FPP.Defines.Add('STRIFE_OR_HERETIC');
-  FPP.Defines.Add('STRIFE_OR_HEXEN');
-  FPP.Defines.Add('DOOM_OR_STRIFE');
-  FPP.Defines.Add('HERETIC_OR_STRIFE');
-  FPP.Defines.Add('HEXEN_OR_STRIFE');
-  {$ENDIF}
-
-  {$IFDEF OPENGL}
-  FPP.Defines.Add('OPENGL');
-  {$ENDIF}
+  // the game, DEBUG, DEVPARM, the X_OR_Y of the game and OPENGL (TScriptDefines)
+  for LDefine in FServices.Defines do
+    FPP.Defines.Add(TbtString(LDefine));
 
   OnTranslateLineInfo := CompTranslateLineInfo;
   FPP.OnProcessDirective := callObjectOnProcessDirective;
@@ -707,7 +637,7 @@ begin
   else
     ppout := '';
 
-  unitstr := _GAME + #13#10 + funitnames.Text;
+  unitstr := TbtString(FServices.GameName) + #13#10 + funitnames.Text;
   len := Length(unitstr);
   pcode := '            ' + unitstr + ppout;
   PLongWord(@pcode[1])^ := ID_DDPS;
@@ -723,9 +653,16 @@ end;
 // **** TDoomExec ****
 //
 //==============================================================================
-constructor TDoomExec.CreateDoomExec(const aImporter: TPSRuntimeClassImporter);
+constructor TDoomExec.CreateDoomExec(const aImporter: TPSRuntimeClassImporter;
+  const AServices: IScriptHostServices);
 begin
   inherited Create;
+  FServices := AServices;
+  if FServices = nil then
+    if aImporter is TPSDoomRuntimeClassImporter then
+      FServices := TPSDoomRuntimeClassImporter(aImporter).Services
+    else
+      FServices := PS_HostServices;
   AllowNullClasses := True;
   RegisterDLLRuntime(Self);
   RegisterClassLibraryRuntime(Self, aImporter);
@@ -748,13 +685,13 @@ var
 
   function RegisterRTLUnit(const s: string): boolean;
   begin
-    if PS_ScriptRegistry.RegisterExecutor(s, Self) then
+    if FServices.Registry.RegisterExecutor(s, Self) then
     begin
       Result := True;
     end
     else if s = 'ALL' then
     begin
-      PS_ScriptRegistry.RegisterExecutorForAll(Self);
+      FServices.Registry.RegisterExecutorForAll(Self);
       Result := True;
     end
     else
@@ -813,9 +750,9 @@ begin
     Exit;
   end;
 
-  if lst.Strings[0] <> _GAME then
+  if lst.Strings[0] <> FServices.GameName then
   begin
-    I_Warning('TDoomExec.LoadData(): Can not load "%s" compiled script while playing "%s"'#13#10, [lst.Strings[0], _GAME]);
+    I_Warning('TDoomExec.LoadData(): Can not load "%s" compiled script while playing "%s"'#13#10, [lst.Strings[0], FServices.GameName]);
     lst.Free;
     Result := False;
     Exit;
@@ -831,8 +768,7 @@ begin
   if Result then
   begin
     // JVAL: Must be called after TPSExec.LoadData()
-    PS_ClassCatalog.BindVariables(Self);
-    RIRegisterRTL_TOverlay(Self);
+    FServices.Classes.BindVariables(Self);
   end;
 end;
 
@@ -861,16 +797,16 @@ end;
 // TPSDoomRuntimeClassImporter.Create
 //
 //==============================================================================
-constructor TPSDoomRuntimeClassImporter.Create;
+constructor TPSDoomRuntimeClassImporter.CreateDoomImporter(const AServices: IScriptHostServices);
 begin
-  inherited;
+  inherited Create;
+  FServices := AServices;
   with Add2(TRTLObject, '!TOBJECT') do
   begin
     RegisterConstructor(@TRTLObject.Create, 'Create');
     RegisterMethod(@TRTLObject.FakeFree, 'Free');
   end;
-  PS_ClassCatalog.RegisterRuntime(Self);
-  RIRegister_TOverlay(Self);
+  FServices.Classes.RegisterRuntime(Self);
 end;
 
 end.

@@ -290,3 +290,7 @@ Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo 
 * Helper `TRTL*_R/_W` in `psi_game`: 289 distinti (`TRTLActor` 98, `TRTLMobj*` 71, `TRTLSector` 55, `TRTLLine` 31, `TRTLSide` 24, vertici, collezioni).
 * `RegisterDelphiMethod` nel repository fuori dal nucleo: 0 usi. `RegisterDelphiFunction`: solo `ps_proclist` e `Libs\OpenGl\Legacy\mdl_script_proclist`.
 * Chiamanti esterni: `d_main` x4, `g_game` x4, `p_saveg` x3 + `sv_save`, `p_inter` x4, `p_map` x4, `p_enemy` x4, `Strife\p_mobj`, `Base\p_tick`, `p_common`, `sc_params`, `v_video`, `v_displaymode`, `gl_main`, `ActorDef.Hooks`, `TLevelLoader`, `Composition`, `Scanner.ActorFunctions`, `dd_compiler`, `deh_main` x4, `mdl_script_proclist`, `mdl_dllmodel`.
+
+* **2h: fatta** (issue #172): servizi iniettati in TDoomCompiler/TDoomExec/importer (IScriptHostServices, TScriptDefines, IScriptSourceProvider), TPSExecManager e' TScriptManager e psmanager non esiste piu'. L1 identico, L2 uguale in 5 eseguibili, .ddout di ddc identici, 417 test; dettagli e non provato in Libs\ScriptHost\CLAUDE.md.
+
+* **2i: solo la registrazione della classe Overlay** (nel catalogo, vedi Libs\ScriptHost\CLAUDE.md); IOverlayCanvas e il disegno restano da fare.

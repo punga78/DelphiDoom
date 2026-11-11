@@ -208,6 +208,7 @@ uses
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
   DelphiDoom.Engine.Script.SectorSpecials,
+  DelphiDoom.Engine.Script.SourceProvider,
   DelphiDoom.Engine.Script.VariablesFailure,
   DelphiDoom.Engine.Script.VariablesFiles,
   DelphiDoom.Engine.Script.World,
@@ -921,12 +922,6 @@ begin
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),
     TScriptHostFactory.CreateTextures(TEngineScriptTextures.Create),
     TScriptHostFactory.CreateKeys(TEngineScriptKeyboard.Create(AContext), LGame));
-  // the classes that scripts see (Actors, Lines, MapStrings...) and the constants of SYSTEM:
-  // one table for the compiler and the interpreter
-  PS_ConfigureClassCatalog(TScriptHostFactory.CreateClassCatalog(LGame));
-  PS_ConfigureConstants(TScriptHostFactory.CreateConstants(TEngineScriptMobjConstants.Create,
-    TEngineScriptGameConstants.Create, TEngineScriptWorldConstants.Create,
-    TEngineScriptGroupConstants.Create));
   LRegistry := TScriptHostFactory.CreateRegistry;
   LSystem :=TScriptHostFactory.CreateSystemFunctions(TEngineScriptRoutines.SystemRoutines,
     TEngineScriptOutput.Create, TEngineScriptEnvironment.Create,
@@ -934,7 +929,29 @@ begin
   LRegistry.AddGroup(LSystem as IScriptFunctionGroup);
   LRegistry.AddGroup(TScriptHostFactory.CreateFixedGroup(TEngineScriptRoutines.FixedRoutines));
   PS_ConfigureSystem(LSystem);
-  PS_ConfigureScriptRegistry(LRegistry);
+  // what the compiler and the interpreter of the scripts use: the functions, the classes and the constants
+  // that scripts see (one table for the compiler and the interpreter), the files they include and the game.
+  // The defines are read at each compilation: -devparm is known after the composition
+  PS_ConfigureHostServices(TScriptHostFactory.CreateServices(LRegistry,
+    TScriptHostFactory.CreateClassCatalog(LGame),
+    TScriptHostFactory.CreateConstants(TEngineScriptMobjConstants.Create, TEngineScriptGameConstants.Create,
+      TEngineScriptWorldConstants.Create, TEngineScriptGroupConstants.Create),
+    TEngineScriptSourceProvider.Create(APakFiles), _GAME, LGame,
+    function: TArray<string>
+    begin
+      Result := TScriptHostFactory.CreateDefines(_GAME, LGame,
+{$IFDEF DEBUG}
+        True,
+{$ELSE}
+        False,
+{$ENDIF}
+        devparm,
+{$IFDEF OPENGL}
+        True);
+{$ELSE}
+        False);
+{$ENDIF}
+    end));
   // the events and the serializer of the script state warn through the log
   PS_ConfigureStateServices(ALog);
   PS_ConfigureSectorSpecials(

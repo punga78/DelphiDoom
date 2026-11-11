@@ -1,0 +1,80 @@
+diff --git a/Libs/ScriptHost/ps_main.pas b/Libs/ScriptHost/ps_main.pas
+index ac569421..f727f2aa 100644
+--- a/Libs/ScriptHost/ps_main.pas
++++ b/Libs/ScriptHost/ps_main.pas
+@@ -220,6 +220,7 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
+ implementation
+ 
+ uses
++  HarnessScriptHost,
+   d_delphi,
+   c_cmds,
+   d_main,
+@@ -392,6 +393,8 @@ begin
+       Result := devparm;
+     end);
+   C_AddCmd('compile, compilescript, pscomp', @CmdCompileScript);
++  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);
++  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);
+ end;
+ 
+ //==============================================================================
+@@ -599,6 +602,7 @@ end;
+ procedure PS_EventTick(tick: integer);
+ begin
+   PS_Manager.Events.ProcTick(tick);
++  VSH_AfterTick(tick);
+ end;
+ 
+ //==============================================================================
+diff --git a/Strife/Strife32.dpr b/Strife/Strife32.dpr
+index 24ce67e4..4584e388 100644
+--- a/Strife/Strife32.dpr
++++ b/Strife/Strife32.dpr
+@@ -184,6 +184,8 @@ uses
+   DelphiDoom.Engine.Midi.SongPlayer in '..\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
+   i_net in '..\Base\i_net.pas',
+   i_system in '..\Base\i_system.pas',
++  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
++  harness_sweep in '..\Tools\Verifica\harness\harness_sweep.pas',
+   i_video in '..\Base\i_video.pas',
+   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+diff --git a/Strife/g_game.pas b/Strife/g_game.pas
+index 1c752c4d..82a49da3 100644
+--- a/Strife/g_game.pas
++++ b/Strife/g_game.pas
+@@ -492,6 +492,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
+ implementation
+ 
+ uses
++  harness_sweep,
+   deh_main,
+   c_cmds,
+   z_zone,
+@@ -1504,6 +1505,8 @@ end;
+ // Make ticcmd_ts for the players.
+ //
+ //==============================================================================
++procedure HarnessSaveCheck; forward;
++
+ procedure G_Ticker;
+ var
+   i: integer;
+@@ -1512,6 +1515,7 @@ var
+   msg: string;
+   pl: Pplayer_t;
+ begin
++  HarnessSaveCheck;
+   // do player reborns if needed
+   for i := 0 to MAXPLAYERS - 1 do
+     if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+@@ -3450,6 +3454,8 @@ begin
+   end;
+ end;
+ 
++{$I ..\Tools\Verifica\harness\harness_save_Strife.inc}
++
+ initialization
+ 
+   forwardmove[0] := $19;

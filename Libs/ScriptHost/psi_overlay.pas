@@ -39,7 +39,8 @@ uses
   r_defs,
   p_mobj_h,
   ps_compiler,
-  ps_runtime;
+  ps_runtime,
+  DelphiDoom.ScriptHost.Classes.Intf;
 
 const
   OVERLAYWIDTH = 320;
@@ -271,26 +272,12 @@ var
   overlay: TOverlayDrawer;
 
 //==============================================================================
-// SIRegister_TOverlay
 //
-//------------ Register Overlay to PascalScript --------------------------------
-//
-//==============================================================================
-procedure SIRegister_TOverlay(CL: TPSPascalCompiler);
-
-//==============================================================================
-//
-// RIRegister_TOverlay
+// PS_DescribeOverlayClasses
+// The class Overlay of the scripts, for the compiler and the interpreter
 //
 //==============================================================================
-procedure RIRegister_TOverlay(CL: TPSRuntimeClassImporter);
-
-//==============================================================================
-//
-// RIRegisterRTL_TOverlay
-//
-//==============================================================================
-procedure RIRegisterRTL_TOverlay(Exec: TPSExec);
+procedure PS_DescribeOverlayClasses(const ACatalog: IScriptClassCatalog);
 
 //==============================================================================
 // A_OverlayClear
@@ -2564,64 +2551,33 @@ begin
 end;
 
 //==============================================================================
-// SIRegister_TOverlay
 //
+// PS_DescribeOverlayClasses
 // ---------------------- REGISTRATION ----------------------------------------
 //
 //==============================================================================
-procedure SIRegister_TOverlay(CL: TPSPascalCompiler);
+procedure PS_DescribeOverlayClasses(const ACatalog: IScriptClassCatalog);
+var
+  LClass: IScriptClassDescriptor;
 begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'),'!TOverlay') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterMethod('Procedure Clear');
-    RegisterMethod('Procedure DrawPatch( const ticks: Integer; const patchname: string; const x, y: Integer)');
-    RegisterMethod('Procedure DrawPatchStretched( const ticks: Integer; const patchname: string; const x1, y1, x2, y2: Integer)');
-    RegisterMethod('Procedure DrawPixel( const ticks: Integer; const red, green, blue: byte; const x, y: Integer)');
-    RegisterMethod('Procedure DrawRect( const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer)');
-    RegisterMethod('Procedure DrawLine( const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer)');
-    RegisterMethod('Procedure DrawText( const ticks: Integer; const txt: string; const align: Integer; const x, y: Integer)');
-    RegisterMethod('Procedure DrawLeftText( const ticks: Integer; const txt: string; const x, y: Integer)');
-    RegisterMethod('Procedure DrawRightText( const ticks: Integer; const txt: string; const x, y: Integer)');
-    RegisterMethod('Procedure DrawCenterText( const ticks: Integer; const txt: string; const x, y: Integer)');
-  end;
-  AddImportedClassVariable(CL, 'Overlay', '!TOverlay');
+  LClass := ACatalog.AddClass('!TOverlay', TOverlayDrawer);
+  LClass.AddVirtualConstructor(@TOverlayDrawer.Create);
+  LClass.AddVirtualMethod('Procedure Clear', 'Clear', @TOverlayDrawer.Clear);
+  LClass.AddMethod('Procedure DrawPatch( const ticks: Integer; const patchname: string; const x, y: Integer)', 'DrawPatch', @TOverlayDrawer.AddPatch);
+  LClass.AddMethod('Procedure DrawPatchStretched( const ticks: Integer; const patchname: string; const x1, y1, x2, y2: Integer)', 'DrawPatchStretched', @TOverlayDrawer.AddPatchStretched);
+  LClass.AddMethod('Procedure DrawPixel( const ticks: Integer; const red, green, blue: byte; const x, y: Integer)', 'DrawPixel', @TOverlayDrawer.AddPixel);
+  LClass.AddMethod('Procedure DrawRect( const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer)', 'DrawRect', @TOverlayDrawer.AddRect);
+  LClass.AddMethod('Procedure DrawLine( const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer)', 'DrawLine', @TOverlayDrawer.AddLine);
+  LClass.AddMethod('Procedure DrawText( const ticks: Integer; const txt: string; const align: Integer; const x, y: Integer)', 'DrawText', @TOverlayDrawer.AddText);
+  LClass.AddMethod('Procedure DrawLeftText( const ticks: Integer; const txt: string; const x, y: Integer)', 'DrawLeftText', @TOverlayDrawer.AddLeftText);
+  LClass.AddMethod('Procedure DrawRightText( const ticks: Integer; const txt: string; const x, y: Integer)', 'DrawRightText', @TOverlayDrawer.AddRightText);
+  LClass.AddMethod('Procedure DrawCenterText( const ticks: Integer; const txt: string; const x, y: Integer)', 'DrawCenterText', @TOverlayDrawer.AddCenterText);
+  LClass.AddVariable('Overlay',
+    function: TObject
+    begin
+      Result := overlay;
+    end);
 end;
-
-//==============================================================================
-//
-// RIRegister_TOverlay
-//
-//==============================================================================
-procedure RIRegister_TOverlay(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TOverlayDrawer, '!TOVERLAY') do
-  begin
-    RegisterVirtualConstructor(@TOverlayDrawer.Create, 'Create');
-    RegisterVirtualMethod(@TOverlayDrawer.Clear, 'Clear');
-    RegisterMethod(@TOverlayDrawer.AddPatch, 'DrawPatch');
-    RegisterMethod(@TOverlayDrawer.AddPatchStretched, 'DrawPatchStretched');
-    RegisterMethod(@TOverlayDrawer.AddPixel, 'DrawPixel');
-    RegisterMethod(@TOverlayDrawer.AddRect, 'DrawRect');
-    RegisterMethod(@TOverlayDrawer.AddLine, 'DrawLine');
-    RegisterMethod(@TOverlayDrawer.AddText, 'DrawText');
-    RegisterMethod(@TOverlayDrawer.AddLeftText, 'DrawLeftText');
-    RegisterMethod(@TOverlayDrawer.AddRightText, 'DrawRightText');
-    RegisterMethod(@TOverlayDrawer.AddCenterText, 'DrawCenterText');
-  end;
-end;
-
-//==============================================================================
-// RIRegisterRTL_TOverlay
-//
-// JVAL: Must be called after Loading data.
-//
-//==============================================================================
-procedure RIRegisterRTL_TOverlay(Exec: TPSExec);
-begin
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Overlay')), overlay);
-end;
-
 //==============================================================================
 // A_OverlayClear
 //
