@@ -75,7 +75,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Craft,
   DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.SoldierDeath, DelphiDoom.XcomGeoscape.Strategy,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.Armor,
-  DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SackSoldierState,
+  DelphiDoom.XcomBasescape.PsiRequirements, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SackSoldierState,
   DelphiDoom.XcomBasescape.SoldierArmorState, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomBasescape.SellState;
 
@@ -257,13 +257,7 @@ begin
     FTxtRecovery.SetText('');
   FTxtPsionic.Visible := FSoldier.PsiTraining;
   // Mod::getPsiRequirements: the requirements of the first facility with psionic laboratories
-  LPsiRequirements := nil;
-  for LName in LRuleset.Facilities.Index do
-    if LRuleset.Facilities.Find(LName).PsiLaboratories > 0 then
-    begin
-      LPsiRequirements := LRuleset.Facilities.Find(LName).Requirements;
-      Break;
-    end;
+  LPsiRequirements := TXcomPsiRequirements.Resolve(LRuleset);
   LPsiVisible := (LCurrent.PsiSkill > 0) or (Host.Options.GetBool('psiStrengthEval') and
     LSave.IsResearched(LPsiRequirements));
   if LPsiVisible then
