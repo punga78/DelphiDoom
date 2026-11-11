@@ -70,7 +70,7 @@ try {
         $before = @(Get-ChildItem $user -Recurse -Filter 'screen*.png' -ErrorAction SilentlyContinue | ForEach-Object FullName)
         [OxcCap]::Key(123); Start-Sleep 2
         $new = Get-ChildItem $user -Recurse -Filter 'screen*.png' | Where-Object { $before -notcontains $_.FullName } | Select-Object -First 1
-        if ($new) { Copy-Item $new.FullName (Join-Path $Out ($a[1] + '.png')) -Force; Write-Output (Join-Path $Out ($a[1] + '.png')) }
+        if ($new) { Write-Output ('from ' + $new.FullName); Copy-Item $new.FullName (Join-Path $Out ($a[1] + '.png')) -Force; Write-Output (Join-Path $Out ($a[1] + '.png')) }
         else { Write-Output "NESSUN FILE per $($a[1])" }
       }
     }

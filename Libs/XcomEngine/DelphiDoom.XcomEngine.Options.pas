@@ -15,6 +15,13 @@ uses
   DelphiDoom.XcomEngine.OptionInfo;
 
 type
+  /// <summary>One entry of Options::mods (a std::pair of the id of the mod and whether it is active)</summary>
+  TXcomModSetting = record
+    Id: string;
+    Active: Boolean;
+    class function Create(const AId: string; AActive: Boolean): TXcomModSetting; static;
+  end;
+
   /// <summary>How a registered option is stored in the fields of TXcomOptions (the others live in dictionaries)</summary>
   TXcomOptionStorage = (osInteger, osBoolean, osString, osWordwrap, osKeyboardMode);
 
@@ -117,6 +124,10 @@ type
     UserFolder: string;
     MasterUserFolder: string;
     ConfigFolder: string;
+    /// <summary>Options::mods: the mods of options.cfg in order, each with its id and whether it is active</summary>
+    Mods: TArray<TXcomModSetting>;
+    /// <summary>The mod is in Options::mods and active (std::find of (id, true))</summary>
+    function IsModActive(const AId: string): Boolean;
     constructor Create;
     destructor Destroy; override;
     /// <summary>Options::resetDefault for the options of this class</summary>
@@ -440,6 +451,22 @@ begin
       SetValue(LInfo.Id, LInfo.DefaultValue);
 end;
 
+class function TXcomModSetting.Create(const AId: string; AActive: Boolean): TXcomModSetting;
+begin
+  Result.Id := AId;
+  Result.Active := AActive;
+end;
+
+function TXcomOptions.IsModActive(const AId: string): Boolean;
+var
+  LMod: TXcomModSetting;
+begin
+  for LMod in Mods do
+    if LMod.Active and (LMod.Id = AId) then
+      Exit(True);
+  Result := False;
+end;
+
 procedure TXcomOptions.Load(const ADocument: IYamlNode);
 var
   LNode: IYamlNode;
@@ -449,7 +476,26 @@ var
   LBoolean: Boolean;
   LPair: TYamlPair;
   LKey: string;
+  LModsNode: IYamlNode;
+  LModItem: IYamlNode;
 begin
+  LModsNode := TXcomYamlFields.Field(ADocument, 'mods');
+  if Assigned(LModsNode) and LModsNode.IsSequence then
+  begin
+    // Options::load: "mods" is a list of one-pair maps (id: active)
+    Mods := nil;
+    for LModItem in LModsNode.Items do
+      if LModItem.IsMap then
+        for LPair in LModItem.Pairs do
+        begin
+          if not LPair.Value.TryAsBoolean(LBoolean) then
+            LBoolean := False;
+          SetLength(Mods, Length(Mods) + 1);
+          Mods[High(Mods)].Id := LPair.Key.ScalarString;
+          Mods[High(Mods)].Active := LBoolean;
+          Break;
+        end;
+  end;
   LNode := TXcomYamlFields.Field(ADocument, 'options');
   if not Assigned(LNode) then
     Exit;

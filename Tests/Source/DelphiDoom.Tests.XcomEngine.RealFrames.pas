@@ -57,6 +57,7 @@ type
     [TestCase('load_list', 'load_list,230:255')]
     [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
     [TestCase('noaudio', 'noaudio,420:255;96:72;638:398')]
+    [TestCase('load_confirm', 'load_confirm,230:255;100:107;638:398')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
     [Test]
     procedure ISuoniDeiDatiVeriSonoFileWav;
@@ -208,6 +209,10 @@ begin
     // the saves of the seed folder (made for the comparison; their dates are fixed) for the case load_list
     if AName = 'load_list' then
       LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(FSaveFolder, 'xcom2', TYamlFactory.CreateParser));
+    // two saves, one of them needs a mod that is not active (saveseed176b)
+    if AName = 'load_confirm' then
+      LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(
+        TPath.Combine(FReference, '_dati\xcom_tftd\saveseed176b\xcom2'), 'xcom2', TYamlFactory.CreateParser));
     LWorld.Game.Options.Load(TYamlFactory.CreateParser.Load(TFile.ReadAllBytes(FOptionsFile)));
     // the real game with SDL_AUDIODRIVER set to a driver that does not exist: no audio, Options::mute
     if AName = 'noaudio' then
