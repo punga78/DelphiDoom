@@ -384,6 +384,8 @@ begin
   SetPalette('PAL_BATTLESCAPE', -1);
   SetPalette(ASession.Graphics.Palette(FSave.Depth), 0, 256);
   ASession.Graphics.SetPalette(@Palette^[0]);
+  // the menus opened over the battle take these colors (State.SetInterface with ABattle)
+  Host.SetBattlePalette(Self, @Palette^[0]);
   Add(FMap);
   Add(FIcons);
   // the icons image is 320x200 and only its bottom is needed
@@ -569,6 +571,7 @@ var
 begin
   if Assigned(FAudio) then
     FAudio.StopAmbience;
+  Host.SetBattlePalette(Self, nil);
   FAnimTimer.Free;
   FGameTimer.Free;
   // the steps of the game refer to the projectile and to the view: the game goes first

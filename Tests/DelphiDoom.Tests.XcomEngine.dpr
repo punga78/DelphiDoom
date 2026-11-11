@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom engine library (DUnitX)                  }
 {                                                                              }
@@ -31,6 +31,7 @@ uses
   DelphiDoom.Tests.XcomEngine.OptionsMore in 'Source\DelphiDoom.Tests.XcomEngine.OptionsMore.pas',
   DelphiDoom.Tests.XcomEngine.SaveScreens in 'Source\DelphiDoom.Tests.XcomEngine.SaveScreens.pas',
   DelphiDoom.Tests.XcomEngine.PauseSave in 'Source\DelphiDoom.Tests.XcomEngine.PauseSave.pas',
+  DelphiDoom.Tests.XcomEngine.BattlescapeTheme in 'Source\DelphiDoom.Tests.XcomEngine.BattlescapeTheme.pas',
   DelphiDoom.Tests.XcomEngine.RealAudio in 'Source\DelphiDoom.Tests.XcomEngine.RealAudio.pas',
   DelphiDoom.Tests.XcomEngine.RealSounds in 'Source\DelphiDoom.Tests.XcomEngine.RealSounds.pas',
   DelphiDoom.Tests.XcomEngine.RealUfoMusic in 'Source\DelphiDoom.Tests.XcomEngine.RealUfoMusic.pas',

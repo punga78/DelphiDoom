@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - SetWindowedRootState of OpenXcom (the        }
 {  position of the window on the desktop)                                       }
@@ -40,6 +40,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomMenu.BattlescapeTheme;
+
 constructor TXcomSetWindowedRootState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
   const AOnCancel: TXcomNotify);
 begin
@@ -55,7 +58,7 @@ begin
   FBtnCancel := TXcomTextButton.Create(50, 20, 200, 120);
   FEdtPositionX := TXcomTextEdit.Create(Self, 40, 10, 190, 90);
   FEdtPositionY := TXcomTextEdit.Create(Self, 40, 10, 190, 100);
-  SetInterface('optionsMenu');
+  SetInterface('optionsMenu', False, True);
   Add(FWindow, 'confirmVideo', 'optionsMenu');
   Add(FBtnOk, 'confirmVideo', 'optionsMenu');
   Add(FBtnCancel, 'confirmVideo', 'optionsMenu');
@@ -85,6 +88,8 @@ begin
   FBtnCancel.SetText(Tr('STR_CANCEL'));
   FBtnCancel.OnMouseClick(CancelClick);
   FBtnCancel.OnKeyboardPress(CancelClick, Host.Options.KeyCancel);
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomSetWindowedRootState.OkClick(AAction: TXcomAction);

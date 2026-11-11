@@ -90,6 +90,16 @@ type
     /// </summary>
     function Session: IInterface; virtual;
     procedure SetSession(const ASession: IInterface); virtual;
+    /// <summary>
+    ///   The 256 colors of the battle in progress (what SavedBattleGame::setPaletteByDepth gives to a state of the
+    ///   menus opened over a battle); nil when no battle is on the screen
+    /// </summary>
+    function BattlePalette: PXcomColor; virtual;
+    /// <summary>
+    ///   The battlescape gives (or, with nil, takes back) the colors of its depth. Only the owner that gave the
+    ///   colors last can take them back: a battle that replaces another is made before the old one is freed
+    /// </summary>
+    procedure SetBattlePalette(AOwner: TObject; AColors: PXcomColor); virtual;
   end;
 
   /// <summary>
@@ -116,7 +126,13 @@ type
     /// <summary>The game that runs the state (the static Game pointer of the C++)</summary>
     property Host: TXcomStateHost read FHost;
     /// <summary>State::setInterface: takes the interface of the ruleset and sets the palette of the state</summary>
-    procedure SetInterface(const ACategory: string; AAlterPalette: Boolean = False);
+    /// <param name="ABattle">
+    ///   The battleGame argument of the C++: with a battle in progress (Host.BattlePalette) the state takes the
+    ///   colors of the battle and the cursor color of the battlescape instead of the palette of the interface
+    /// </param>
+    procedure SetInterface(const ACategory: string; AAlterPalette: Boolean = False; ABattle: Boolean = False);
+    /// <summary>Calls the visitor for every surface of the state, in the order they were added</summary>
+    procedure VisitSurfaces(const AVisitor: TProc<TXcomWidget>);
     /// <summary>State::add(surface): the state owns the surface from now on</summary>
     procedure Add(ASurface: TXcomWidget); overload;
     /// <summary>
@@ -154,6 +170,7 @@ implementation
 
 const
   PALETTE_GEOSCAPE = 'PAL_GEOSCAPE';
+  PALETTE_BATTLESCAPE = 'PAL_BATTLESCAPE';
   PALETTE_BACKPALS = 'BACKPALS.DAT';
 
 { TXcomStateHost }
@@ -245,6 +262,15 @@ procedure TXcomStateHost.SetSession(const ASession: IInterface);
 begin
 end;
 
+function TXcomStateHost.BattlePalette: PXcomColor;
+begin
+  Result := nil;
+end;
+
+procedure TXcomStateHost.SetBattlePalette(AOwner: TObject; AColors: PXcomColor);
+begin
+end;
+
 { TXcomState }
 
 constructor TXcomState.Create(AHost: TXcomStateHost);
@@ -263,7 +289,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TXcomState.SetInterface(const ACategory: string; AAlterPalette: Boolean);
+procedure TXcomState.SetInterface(const ACategory: string; AAlterPalette: Boolean; ABattle: Boolean);
 var
   LBackPalette: Integer;
   LPalette: string;
@@ -296,9 +322,24 @@ begin
         LBackPalette := LColor;
     end;
   end;
+  if ABattle and (Host.BattlePalette <> nil) then
+  begin
+    // SavedBattleGame::setPaletteByDepth: the cursor color of the battlescape, then the colors of the depth
+    SetPalette(PALETTE_BATTLESCAPE, -1);
+    SetPalette(Host.BattlePalette, 0, 256);
+    Exit;
+  end;
   if LPalette = '' then
     LPalette := PALETTE_GEOSCAPE;
   SetPalette(LPalette, LBackPalette);
+end;
+
+procedure TXcomState.VisitSurfaces(const AVisitor: TProc<TXcomWidget>);
+var
+  LSurface: TXcomWidget;
+begin
+  for LSurface in FSurfaces do
+    AVisitor(LSurface);
 end;
 
 procedure TXcomState.Add(ASurface: TXcomWidget);

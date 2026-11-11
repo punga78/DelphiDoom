@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - OptionsDefaultsState of OpenXcom (the        }
 {  question "restore the default options?")                                     }
@@ -36,6 +36,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomMenu.BattlescapeTheme;
+
 constructor TXcomOptionsDefaultsState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
   const AOnOk: TXcomActionHandler);
 begin
@@ -48,7 +51,7 @@ begin
   FBtnYes := TXcomTextButton.Create(60, 18, 60, 122);
   FBtnNo := TXcomTextButton.Create(60, 18, 200, 122);
   FTxtTitle := TXcomText.Create(246, 32, 37, 70);
-  SetInterface('optionsMenu');
+  SetInterface('optionsMenu', False, True);
   Add(FWindow, 'confirmDefaults', 'optionsMenu');
   Add(FBtnYes, 'confirmDefaults', 'optionsMenu');
   Add(FBtnNo, 'confirmDefaults', 'optionsMenu');
@@ -65,6 +68,8 @@ begin
   FTxtTitle.SetBig;
   FTxtTitle.SetWordWrap(True);
   FTxtTitle.SetText(Tr('STR_RESTORE_DEFAULTS_QUESTION'));
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomOptionsDefaultsState.YesClick(AAction: TXcomAction);

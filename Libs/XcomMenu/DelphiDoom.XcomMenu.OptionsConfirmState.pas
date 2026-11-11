@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - OptionsConfirmState of OpenXcom (the         }
 {  question "keep the video options?" with a countdown)                         }
@@ -44,6 +44,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomEngine.Screen;
 
 constructor TXcomOptionsConfirmState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
@@ -60,7 +61,7 @@ begin
   FTxtTitle := TXcomText.Create(206, 20, 57, 70);
   FTxtTimer := TXcomText.Create(206, 20, 57, 100);
   FTimer := TXcomTimer.Create(Host.Clock, 1000);
-  SetInterface('optionsMenu');
+  SetInterface('optionsMenu', False, True);
   Add(FWindow, 'confirmVideo', 'optionsMenu');
   Add(FBtnYes, 'confirmVideo', 'optionsMenu');
   Add(FBtnNo, 'confirmVideo', 'optionsMenu');
@@ -85,6 +86,8 @@ begin
       DoCountdown;
     end);
   FTimer.Start;
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 destructor TXcomOptionsConfirmState.Destroy;

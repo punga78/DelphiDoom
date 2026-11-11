@@ -49,6 +49,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomMenu.ListLoadState, DelphiDoom.XcomMenu.ListSaveState, DelphiDoom.XcomMenu.AbandonGameState;
 
 constructor TXcomPauseState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
@@ -71,7 +72,7 @@ begin
   FBtnOptions := TXcomTextButton.Create(180, 18, LX + 18, 122);
   FBtnCancel := TXcomTextButton.Create(180, 18, LX + 18, 150);
   FTxtTitle := TXcomText.Create(206, 17, LX + 5, 32);
-  SetInterface('pauseMenu');
+  SetInterface('pauseMenu', False, True);
   Add(FWindow, 'window', 'pauseMenu');
   Add(FBtnLoad, 'button', 'pauseMenu');
   Add(FBtnSave, 'button', 'pauseMenu');
@@ -96,6 +97,8 @@ begin
   FTxtTitle.SetAlign(haCenter);
   FTxtTitle.SetBig;
   FTxtTitle.SetText(Tr('STR_OPTIONS_UC'));
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
   if (Host.SavedGameSaver <> nil) and Host.SavedGameSaver.IsIronman then
   begin
     FBtnLoad.Visible := False;
@@ -122,10 +125,20 @@ end;
 procedure TXcomPauseState.OptionsClick(AAction: TXcomAction);
 var
   LState: TXcomState;
+  LCategory: TXcomOptionsCategory;
 begin
   if FNavigator = nil then
     Exit;
-  LState := FNavigator.CreateCategory(ocGeoscape, FOrigin, Host);
+  // OptionsGeoscapeState from the geoscape, OptionsBattlescapeState from a battle, OptionsVideoState otherwise
+  case FOrigin of
+    ooGeoscape:
+      LCategory := ocGeoscape;
+    ooBattlescape:
+      LCategory := ocBattlescape;
+  else
+    LCategory := ocVideo;
+  end;
+  LState := FNavigator.CreateCategory(LCategory, FOrigin, Host);
   if LState <> nil then
     Host.PushState(LState);
 end;

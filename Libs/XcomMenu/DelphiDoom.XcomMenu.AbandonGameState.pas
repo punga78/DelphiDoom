@@ -38,6 +38,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomMenu.SaveGameState;
 
 constructor TXcomAbandonGameState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin);
@@ -55,7 +56,7 @@ begin
   FBtnYes := TXcomTextButton.Create(50, 20, LX + 18, 140);
   FBtnNo := TXcomTextButton.Create(50, 20, LX + 148, 140);
   FTxtTitle := TXcomText.Create(206, 17, LX + 5, 70);
-  SetInterface('geoscape');
+  SetInterface('geoscape', False, True);
   Add(FWindow, 'genericWindow', 'geoscape');
   Add(FBtnYes, 'genericButton2', 'geoscape');
   Add(FBtnNo, 'genericButton2', 'geoscape');
@@ -71,6 +72,8 @@ begin
   FTxtTitle.SetAlign(haCenter);
   FTxtTitle.SetBig;
   FTxtTitle.SetText(Tr('STR_ABANDON_GAME_QUESTION'));
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomAbandonGameState.YesClick(AAction: TXcomAction);

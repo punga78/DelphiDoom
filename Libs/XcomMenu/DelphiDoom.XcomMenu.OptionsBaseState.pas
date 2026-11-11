@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - OptionsBaseState of OpenXcom (the frame of   }
 {  every options screen: the category buttons, OK, Cancel and the defaults)     }
@@ -20,8 +20,8 @@ type
   /// <summary>
   ///   The window of the options with the buttons of the categories on the left (the one of the screen is pressed),
   ///   OK, Cancel and Restore Defaults below, and the line where the tooltip of the control under the mouse is
-  ///   shown. The screens of the categories derive from it. The battlescape theme of the C++ (applyBattlescapeTheme)
-  ///   is not ported, so the screens do not change colors when opened from a battle
+  ///   shown. The screens of the categories derive from it. Opened from a battle they take the palette of the
+  ///   battle and the battlescape theme (TXcomBattlescapeTheme) at every Init
   /// </summary>
   TXcomOptionsBaseState = class(TXcomState)
   strict private
@@ -55,6 +55,8 @@ type
     /// <summary>OptionsBaseState::txtTooltipIn: shows the tooltip of the surface that sent the action</summary>
     procedure TooltipIn(AAction: TXcomAction);
     procedure TooltipOut(AAction: TXcomAction);
+    /// <summary>OptionsBaseState::init: the colors of the battlescape when opened from a battle</summary>
+    procedure Init; override;
     procedure Resize(var ADX, ADY: Integer); override;
     property Origin: TXcomOptionsOrigin read FOrigin;
   end;
@@ -62,6 +64,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomMenu.OptionsDefaultsState, DelphiDoom.XcomMenu.OptionsConfirmState;
 
 constructor TXcomOptionsBaseState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
@@ -83,7 +86,7 @@ begin
   FBtnCancel := TXcomTextButton.Create(100, 16, 110, 176);
   FBtnDefault := TXcomTextButton.Create(100, 16, 212, 176);
   FTxtTooltip := TXcomText.Create(305, 25, 8, 148);
-  SetInterface('optionsMenu');
+  SetInterface('optionsMenu', False, True);
   Add(FWindow, 'window', 'optionsMenu');
   Add(FBtnVideo, 'button', 'optionsMenu');
   Add(FBtnAudio, 'button', 'optionsMenu');
@@ -240,6 +243,13 @@ procedure TXcomOptionsBaseState.TooltipOut(AAction: TXcomAction);
 begin
   if FCurrentTooltip = TXcomWidget(AAction.Sender).Tooltip then
     FTxtTooltip.SetText('');
+end;
+
+procedure TXcomOptionsBaseState.Init;
+begin
+  inherited Init;
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomOptionsBaseState.Resize(var ADX, ADY: Integer);

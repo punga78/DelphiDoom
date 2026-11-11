@@ -37,6 +37,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomMenu.LoadGameState;
 
 constructor TXcomConfirmLoadState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
@@ -51,7 +52,7 @@ begin
   FBtnYes := TXcomTextButton.Create(50, 20, 70, 120);
   FBtnNo := TXcomTextButton.Create(50, 20, 200, 120);
   FTxtText := TXcomText.Create(204, 58, 58, 60);
-  SetInterface('saveMenus');
+  SetInterface('saveMenus', False, True);
   Add(FWindow, 'confirmLoad', 'saveMenus');
   Add(FBtnYes, 'confirmLoad', 'saveMenus');
   Add(FBtnNo, 'confirmLoad', 'saveMenus');
@@ -68,6 +69,8 @@ begin
   FTxtText.SetBig;
   FTxtText.SetWordWrap(True);
   FTxtText.SetText(Tr('STR_MISSING_CONTENT_PROMPT'));
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomConfirmLoadState.YesClick(AAction: TXcomAction);

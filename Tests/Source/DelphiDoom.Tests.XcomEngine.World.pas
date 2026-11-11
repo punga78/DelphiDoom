@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the xcom engine - a small game made of fakes: a memory  }
 {  display, a manual clock, a queue of events, and resources with a font drawn  }
@@ -54,6 +54,10 @@ type
     function SoundFile(const AName: string): TBytes;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     property PaletteCalls: Integer read FPaletteCalls;
+    /// <summary>Adds (or replaces) an interface of the ruleset from its YAML</summary>
+    procedure AddInterface(const AId, AYaml: string);
+    /// <summary>Adds a 320x200 picture filled with one color</summary>
+    procedure AddSurface(const AName: string; AColor: Byte);
   end;
 
   /// <summary>IXcomFileSystem in memory: the files are strings by path (case does not matter)</summary>
@@ -324,6 +328,28 @@ end;
 function TFakeResources.HasSoundDefinitions: Boolean;
 begin
   Result := True;
+end;
+
+procedure TFakeResources.AddInterface(const AId, AYaml: string);
+var
+  LRule: TXcomRuleInterface;
+begin
+  LRule := TXcomRuleInterface.Create(AId);
+  LRule.Load(TYamlFactory.CreateParser.Load(UTF8String(AYaml)));
+  FInterfaces.AddOrSetValue(AId, LRule);
+end;
+
+procedure TFakeResources.AddSurface(const AName: string; AColor: Byte);
+var
+  LSurface: TXcomSurface;
+  LX: Integer;
+  LY: Integer;
+begin
+  LSurface := TXcomSurface.Create(320, 200);
+  for LY := 0 to 199 do
+    for LX := 0 to 319 do
+      LSurface.SetPixel(LX, LY, AColor);
+  FSurfaces.AddOrSetValue(AName, LSurface);
 end;
 
 procedure TFakeResources.SetPalette(AColors: PXcomColor; AFirst, ACount: Integer);

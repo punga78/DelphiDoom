@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - DeleteGameState of OpenXcom (asks to delete a saved game)
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -35,6 +35,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomMenu.ErrorMessageState;
 
 constructor TXcomDeleteGameState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin; const AFileName: string);
@@ -48,7 +49,7 @@ begin
   FBtnYes := TXcomTextButton.Create(60, 18, 60, 122);
   FBtnNo := TXcomTextButton.Create(60, 18, 200, 122);
   FTxtMessage := TXcomText.Create(246, 32, 37, 70);
-  SetInterface('saveMenus');
+  SetInterface('saveMenus', False, True);
   Add(FWindow, 'confirmDelete', 'saveMenus');
   Add(FBtnYes, 'confirmDelete', 'saveMenus');
   Add(FBtnNo, 'confirmDelete', 'saveMenus');
@@ -65,6 +66,8 @@ begin
   FTxtMessage.SetBig;
   FTxtMessage.SetWordWrap(True);
   FTxtMessage.SetText(Tr('STR_IS_IT_OK_TO_DELETE_THE_SAVED_GAME'));
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
 end;
 
 procedure TXcomDeleteGameState.NoClick(AAction: TXcomAction);

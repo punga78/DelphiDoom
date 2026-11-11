@@ -64,6 +64,8 @@ type
     FSavedGameLoader: IXcomSavedGameLoader;
     FSavedGameSaver: IXcomSavedGameSaver;
     FSession: IInterface;
+    FBattlePalette: TXcomColors;
+    FBattlePaletteOwner: TObject;
     procedure DispatchEvent(const AEvent: TXcomInputEvent);
   public
     /// <summary>
@@ -118,6 +120,8 @@ type
     procedure SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
     function Session: IInterface; override;
     procedure SetSession(const ASession: IInterface); override;
+    function BattlePalette: PXcomColor; override;
+    procedure SetBattlePalette(AOwner: TObject; AColors: PXcomColor); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
     /// <summary>Game::run on SDL_VIDEORESIZE: the display takes the size of the window, the states recenter</summary>
@@ -359,6 +363,25 @@ end;
 procedure TXcomGame.SetSession(const ASession: IInterface);
 begin
   FSession := ASession;
+end;
+
+function TXcomGame.BattlePalette: PXcomColor;
+begin
+  if Assigned(FBattlePaletteOwner) then
+    Result := @FBattlePalette[0]
+  else
+    Result := nil;
+end;
+
+procedure TXcomGame.SetBattlePalette(AOwner: TObject; AColors: PXcomColor);
+begin
+  if Assigned(AColors) then
+  begin
+    Move(AColors^, FBattlePalette[0], SizeOf(FBattlePalette));
+    FBattlePaletteOwner := AOwner;
+  end
+  else if FBattlePaletteOwner = AOwner then
+    FBattlePaletteOwner := nil;
 end;
 
 function TXcomGame.LanguageProvider: IXcomLanguageProvider;

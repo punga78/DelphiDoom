@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - ListGamesState of OpenXcom (the list of the saved games)
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -67,6 +67,7 @@ type
 implementation
 
 uses
+  DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomMenu.DeleteGameState;
 
 const
@@ -94,7 +95,7 @@ begin
   FTxtDetails := TXcomText.Create(288, 16, 16, 156);
   FSortName := TXcomArrowButton.Create(Host.Clock, arNone, 11, 8, 16, 32);
   FSortDate := TXcomArrowButton.Create(Host.Clock, arNone, 11, 8, 204, 32);
-  SetInterface('geoscape', True);
+  SetInterface('geoscape', True, True);
   Add(FWindow, 'window', 'saveMenus');
   Add(FBtnCancel, 'button', 'saveMenus');
   Add(FTxtTitle, 'text', 'saveMenus');
@@ -134,6 +135,8 @@ end;
 procedure TXcomListGamesState.Init;
 begin
   inherited Init;
+  if FOrigin = ooBattlescape then
+    TXcomBattlescapeTheme.Apply(Self);
   if Host.SaveCatalog <> nil then
     FSaves := Host.SaveCatalog.List(Host.Language, FAutoQuick)
   else
