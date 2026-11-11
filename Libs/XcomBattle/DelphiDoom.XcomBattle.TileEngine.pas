@@ -1933,6 +1933,8 @@ var
   LTile: TXcomTile;
   LAbove: TXcomTile;
   LDistanceFromCenter: Integer;
+  LRounded: Double;
+  LAngle: Double;
 
   function CenterPosition: TXcomPosition;
   begin
@@ -1987,10 +1989,14 @@ begin
       LTe := 0;
       while LTe <= 360 do
       begin
-        LCosTe := Cos(LTe * PI_VALUE / 180.0);
-        LSinTe := Sin(LTe * PI_VALUE / 180.0);
-        LSinFi := Sin(LFi * PI_VALUE / 180.0);
-        LCosFi := Cos(LFi * PI_VALUE / 180.0);
+        // Deg2Rad returns a double and sin/cos take one: the angle is rounded to 53 bits before the x87 function
+        // (the sine of 330 degrees is on the boundary of a tile, so the last bit decides the tile)
+        LAngle := LTe * PI_VALUE / 180.0;
+        LCosTe := Cos(LAngle);
+        LSinTe := Sin(LAngle);
+        LAngle := LFi * PI_VALUE / 180.0;
+        LSinFi := Sin(LAngle);
+        LCosFi := Cos(LAngle);
         LOrigin := FSave.TileAt(CenterPosition);
         LDest := LOrigin;
         LLength := 0;
@@ -2098,9 +2104,14 @@ begin
             end;
           end;
           LLength := LLength + 1.0;
-          LTileX := Floor(LCenterX + LLength * LSinTe * LCosFi);
-          LTileY := Floor(LCenterY + LLength * LCosTe * LCosFi);
-          LTileZ := Floor(LCenterZ + LLength * LSinFi);
+          // the C++ passes a double to floor(): the sum is rounded to 53 bits before the floor (on a boundary
+          // like 0.5 + 0.49999999999999994 the extended value would give the tile below)
+          LRounded := LCenterX + LLength * LSinTe * LCosFi;
+          LTileX := Floor(LRounded);
+          LRounded := LCenterY + LLength * LCosTe * LCosFi;
+          LTileY := Floor(LRounded);
+          LRounded := LCenterZ + LLength * LSinFi;
+          LTileZ := Floor(LRounded);
           LOrigin := LDest;
           LDest := FSave.TileAt(TXcomPosition.Make(LTileX, LTileY, LTileZ));
           if not Assigned(LDest) then

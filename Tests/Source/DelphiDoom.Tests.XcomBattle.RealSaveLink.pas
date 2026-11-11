@@ -168,7 +168,8 @@ begin
     try
       ABattleText := string(TYamlFactory.Dump(LBattle.Save));
       // the saved game keeps the document of the battle as it was read
-      Result := string(LGame.Save(LInfo, LSettings, LRandom));
+      // the bytes of the file are UTF-8: a name with an accent must not be widened byte by byte
+      Result := YamlTextToString(LGame.Save(LInfo, LSettings, LRandom));
     finally
       LBattle.Free;
     end;
