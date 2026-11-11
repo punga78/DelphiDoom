@@ -210,7 +210,7 @@ begin
       LBack.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
   FSurfaces.Add('BACK01.SCR', LBack);
   // the pictures of the popups of the geoscape
-  for LName in ['BACK12.SCR', 'BACK15.SCR'] do
+  for LName in ['BACK12.SCR', 'BACK15.SCR', 'BACK16.SCR'] do
   begin
     LBack := TXcomSurface.Create(320, 200);
     for LY := 0 to 199 do

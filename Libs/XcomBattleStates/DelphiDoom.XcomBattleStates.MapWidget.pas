@@ -134,6 +134,7 @@ begin
   FMap.PreviewSetting := Option('battleNewPreviewPath');
   FMap.SmoothCamera := AState.Host.Options.GetBool('battleSmoothCamera');
   FMap.MessageColor := LMessageColor;
+  FMap.Breathing := True;
   FNumber := TXcomNumberText.Create(15, 15, 20, 30);
   FMap.NumberSource :=
     function(AValue, AColor: Integer; ABordered: Boolean): TXcomSurface

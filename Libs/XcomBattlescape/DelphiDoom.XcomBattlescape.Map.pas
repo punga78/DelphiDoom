@@ -103,6 +103,7 @@ type
     FPathPreviewed: Boolean;
     FNumberSource: TXcomMapNumberSource;
     FMessageColor: Integer;
+    FBreathing: Boolean;
     procedure SetProjectile(const AValue: TXcomProjectile);
     procedure FollowProjectile(out ALowX, ALowY, AHighX, AHighY: Integer);
     procedure DrawProjectile(AItX, AItY, AItZ, ALowX, ALowY, AHighX, AHighY: Integer);
@@ -216,6 +217,11 @@ type
     property NumberSource: TXcomMapNumberSource read FNumberSource write FNumberSource;
     /// <summary>The color of the element messageWindows of the interface battlescape (the numbers of the path are one more)</summary>
     property MessageColor: Integer read FMessageColor write FMessageColor;
+    /// <summary>
+    ///   The units under water breathe bubbles (BattleUnit::breathe at every Animate, drawn over the unit). Off unless
+    ///   the owner turns it on: the bubbles are random and the comparisons with the real program have none
+    /// </summary>
+    property Breathing: Boolean read FBreathing write FBreathing;
     /// <summary>Whether the last UpdateFieldOfView saw the projectile</summary>
     property ProjectileInFov: Boolean read FProjectileInFov;
   end;
@@ -749,12 +755,16 @@ begin
   end;
   // animate certain units (large flying units have a propulsion animation)
   for LUnit in FSave.Units do
+  begin
+    if FBreathing and (FSave.Depth > 0) and (not LUnit.FloorAbove) then
+      LUnit.Breathe(FParticleRandom.Generate(0, 99));
     if not LUnit.IsOut then
       if LUnit.Armor.ConstantAnimation then
       begin
         LUnit.CacheInvalid := True;
         CacheUnit(LUnit);
       end;
+  end;
   if ARedraw then
     FRedraw := True;
 end;
@@ -812,6 +822,7 @@ var
   LUnitShade: Integer;
   LFrame: TXcomSurface;
   LFrameNumber: Integer;
+  LBreath: TXcomSurfaceSet;
 
   function SameXY(const AFirst, ASecond: TXcomPosition): Boolean;
   begin
@@ -945,6 +956,19 @@ begin
     LFrameNumber := 4 + (FAnimFrame div 2);
     LFrame := FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber);
     TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y, 0, LMask);
+  end;
+  if LUnit.BreathFrame > 0 then
+  begin
+    LBreath := FSprites.SurfaceSet('BREATH-1.PCK');
+    if Assigned(LBreath) then
+    begin
+      LFrame := LBreath.GetFrame(LUnit.BreathFrame - 1);
+      // lower the bubbles for shorter or kneeling units
+      LOffset.Y := LOffset.Y + (22 - LUnit.GetHeight);
+      if Assigned(LFrame) then
+        TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y - 30, LTileShade,
+          LMask);
+    end;
   end;
 end;
 
