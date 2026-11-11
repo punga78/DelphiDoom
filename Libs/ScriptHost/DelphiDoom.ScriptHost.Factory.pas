@@ -14,6 +14,7 @@ uses
   ps_runtime,
   DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
+  DelphiDoom.ScriptHost.Actors.Intf,
   DelphiDoom.ScriptHost.CallbackGroup,
   DelphiDoom.ScriptHost.Dll.Intf,
   DelphiDoom.ScriptHost.Events.Intf,
@@ -68,6 +69,9 @@ type
     /// <summary>The player functions of PS_GAME (keys, artifacts, ammunition, mana and quests depend on the game)</summary>
     class function CreatePlayers(const ASource: IScriptPlayerSource;
       const AGame: TScriptGame): IScriptPlayers; static;
+    /// <summary>The actor functions of PS_GAME (the mobjs only through the source; Strife has GetActorName2)</summary>
+    class function CreateActors(const ASource: IScriptActorSource; const AContext: IScriptActorContext;
+      const APlayers: IScriptPlayers; const AGame: TScriptGame): IScriptActors; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -88,6 +92,7 @@ type
 implementation
 
 uses
+  DelphiDoom.ScriptHost.Actors,
   DelphiDoom.ScriptHost.Dll.Loader,
   DelphiDoom.ScriptHost.Dll.WindowsLibrary,
   DelphiDoom.ScriptHost.Events,
@@ -181,6 +186,13 @@ class function TScriptHostFactory.CreatePlayers(const ASource: IScriptPlayerSour
   const AGame: TScriptGame): IScriptPlayers;
 begin
   Result := TScriptPlayers.Create(ASource, AGame);
+end;
+
+class function TScriptHostFactory.CreateActors(const ASource: IScriptActorSource;
+  const AContext: IScriptActorContext; const APlayers: IScriptPlayers;
+  const AGame: TScriptGame): IScriptActors;
+begin
+  Result := TScriptActors.Create(ASource, AContext, APlayers, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

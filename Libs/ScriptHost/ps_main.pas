@@ -681,7 +681,7 @@ begin
   if scid > - 1 then
     if fList[scid].valid then
     begin
-      ps_currentactor := actor;
+      PS_ActorContext.Enter(actor);
       DE := fList[scid].exec;
       result := DE.RunScript;
       if DE.ExceptionCode <> erNoError then
@@ -691,7 +691,7 @@ begin
           itoa(DE.ExceptionProcNo) +
           ' at ' +
           itoa(DE.ExceptionPos));
-      ps_currentactor := nil;
+      PS_ActorContext.Leave;
       exit;
     end;
 
@@ -1049,9 +1049,9 @@ end;
 //==============================================================================
 procedure PS_EventActorDied(actor: Pmobj_t; killer: Pmobj_t);
 begin
-  ps_currentactor := actor;
+  PS_ActorContext.Enter(actor);
   psmanager.Events.ProcActorDied(PS_KeyFromMobj(actor), PS_KeyFromMobj(killer));
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================
@@ -1061,9 +1061,9 @@ end;
 //==============================================================================
 procedure PS_EventPlayerEnter(playerNO: Integer);
 begin
-  ps_currentactor := players[playerNO].mo;
+  PS_ActorContext.Enter(players[playerNO].mo);
   psmanager.Events.ProcPlayerEnter(playerNO);
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================
@@ -1073,9 +1073,9 @@ end;
 //==============================================================================
 procedure PS_EventPlayerDied(playerNO: Integer; killer: Pmobj_t);
 begin
-  ps_currentactor := players[playerNO].mo;
+  PS_ActorContext.Enter(players[playerNO].mo);
   psmanager.Events.ProcPlayerDied(playerNO, PS_KeyFromMobj(killer));
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================
@@ -1085,9 +1085,9 @@ end;
 //==============================================================================
 procedure PS_EventCrossLine(actor: Pmobj_t; line: Integer; oldside: Integer);
 begin
-  ps_currentactor := actor;
+  PS_ActorContext.Enter(actor);
   psmanager.Events.ProcCrossLine(PS_KeyFromMobj(actor), line, oldside);
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================
@@ -1097,9 +1097,9 @@ end;
 //==============================================================================
 procedure PS_EventShootLine(actor: Pmobj_t; line: Integer; side: Integer);
 begin
-  ps_currentactor := actor;
+  PS_ActorContext.Enter(actor);
   psmanager.Events.ProcShootLine(PS_KeyFromMobj(actor), line, side);
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================
@@ -1109,9 +1109,9 @@ end;
 //==============================================================================
 procedure PS_EventUseLine(actor: Pmobj_t; line: Integer; side: Integer);
 begin
-  ps_currentactor := actor;
+  PS_ActorContext.Enter(actor);
   psmanager.Events.ProcUseLine(PS_KeyFromMobj(actor), line, side);
-  ps_currentactor := nil;
+  PS_ActorContext.Leave;
 end;
 
 //==============================================================================

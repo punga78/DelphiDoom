@@ -39,6 +39,8 @@ uses
   p_mobj_h,
   p_mobjlist,
   psi_system,
+  DelphiDoom.Engine.Script.ActorContext.Intf,
+  DelphiDoom.ScriptHost.Actors.Intf,
   DelphiDoom.ScriptHost.MobjInfo.Intf,
   DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.World.Intf,
@@ -110,11 +112,28 @@ function PS_Sectors: IScriptSectors;
 
 //==============================================================================
 //
-// _playsound
-// Plays a sound (or a random list of sounds) by name from an origin
+// PS_ConfigureActorFunctions
+// The class of the actor functions and the implicit actor of the scripts (the
+// properties of the classes of the scripts call the first; PS_Event* and
+// A_RunScript enter and leave the second)
 //
 //==============================================================================
-procedure _playsound(origin: Pointer; snd: string);
+procedure PS_ConfigureActorFunctions(const AActors: IScriptActors;
+  const AContext: IEngineScriptActorContext);
+
+//==============================================================================
+//
+// PS_Actors
+//
+//==============================================================================
+function PS_Actors: IScriptActors;
+
+//==============================================================================
+//
+// PS_ActorContext
+//
+//==============================================================================
+function PS_ActorContext: IEngineScriptActorContext;
 
 // ---------------------------- ACTORS -----------------------------------------
 
@@ -125,854 +144,8 @@ procedure _playsound(origin: Pointer; snd: string);
 //==============================================================================
 function PS_KeyFromMobj(const mo: Pmobj_t): LongWord;
 
-//==============================================================================
-//
-// PS_GetPlayerActor
-// The actor of a player: it stays among the actor functions (until they are
-// classes) and asks the player functions
-//
-//==============================================================================
-function PS_GetPlayerActor(const plnum: Integer): LongWord;
-
-var
-  ps_currentactor: Pmobj_t = nil;
-
-//==============================================================================
-//
-// PS_Actor
-//
-//==============================================================================
-function PS_Actor: LongWord;
-
-//==============================================================================
-//
-// PS_TActor
-//
-//==============================================================================
-function PS_TActor(const key: LongWord): LongWord;
-
-//==============================================================================
-//
-// PS_GetActorTarget
-//
-//==============================================================================
-function PS_GetActorTarget(const key: LongWord): LongWord;
-
-//==============================================================================
-//
-// PS_SetActorTarget
-//
-//==============================================================================
-procedure PS_SetActorTarget(const key: LongWord; const targ: LongWord);
-
-//==============================================================================
-//
-// PS_GetActorTracer
-//
-//==============================================================================
-function PS_GetActorTracer(const key: LongWord): LongWord;
-
-//==============================================================================
-//
-// PS_SetActorTracer
-//
-//==============================================================================
-procedure PS_SetActorTracer(const key: LongWord; const trac: LongWord);
-
-//==============================================================================
-//
-// PS_GetActorMaster
-//
-//==============================================================================
-function PS_GetActorMaster(const key: LongWord): LongWord;
-
-//==============================================================================
-//
-// PS_SetActorMaster
-//
-//==============================================================================
-procedure PS_SetActorMaster(const key: LongWord; const mst: LongWord);
-
-//==============================================================================
-//
-// PS_GetActorX
-//
-//==============================================================================
-function PS_GetActorX(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorX
-//
-//==============================================================================
-procedure PS_SetActorX(const key: LongWord; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetActorY
-//
-//==============================================================================
-function PS_GetActorY(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorY
-//
-//==============================================================================
-procedure PS_SetActorY(const key: LongWord; const y: Integer);
-
-//==============================================================================
-//
-// PS_GetActorZ
-//
-//==============================================================================
-function PS_GetActorZ(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorZ
-//
-//==============================================================================
-procedure PS_SetActorZ(const key: LongWord; const z: Integer);
-
-//==============================================================================
-//
-// PS_SetActorPosition
-//
-//==============================================================================
-procedure PS_SetActorPosition(const key: LongWord; const x, y, z: Integer);
-
-//==============================================================================
-//
-// PS_GetActorMOMX
-//
-//==============================================================================
-function PS_GetActorMOMX(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorMOMX
-//
-//==============================================================================
-procedure PS_SetActorMOMX(const key: LongWord; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetActorMOMY
-//
-//==============================================================================
-function PS_GetActorMOMY(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorMOMY
-//
-//==============================================================================
-procedure PS_SetActorMOMY(const key: LongWord; const y: Integer);
-
-//==============================================================================
-//
-// PS_GetActorMOMZ
-//
-//==============================================================================
-function PS_GetActorMOMZ(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorMOMZ
-//
-//==============================================================================
-procedure PS_SetActorMOMZ(const key: LongWord; const z: Integer);
-
-//==============================================================================
-//
-// PS_GetActorFloorZ
-//
-//==============================================================================
-function PS_GetActorFloorZ(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorFloorZ
-//
-//==============================================================================
-procedure PS_SetActorFloorZ(const key: LongWord; const z: Integer);
-
-//==============================================================================
-//
-// PS_GetActorCeilingZ
-//
-//==============================================================================
-function PS_GetActorCeilingZ(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorCeilingZ
-//
-//==============================================================================
-procedure PS_SetActorCeilingZ(const key: LongWord; const z: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSpeed
-//
-//==============================================================================
-function PS_GetActorSpeed(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorSpeed
-//
-//==============================================================================
-procedure PS_SetActorSpeed(const key: LongWord; const speed: Integer);
-
-//==============================================================================
-//
-// PS_GetActorAngle
-//
-//==============================================================================
-function PS_GetActorAngle(const key: LongWord): LongWord;
-
-//==============================================================================
-//
-// PS_SetActorAngle
-//
-//==============================================================================
-procedure PS_SetActorAngle(const key: LongWord; const angle: LongWord);
-
-//==============================================================================
-//
-// PS_GetActorSector
-//
-//==============================================================================
-function PS_GetActorSector(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorHealth
-//
-//==============================================================================
-function PS_GetActorHealth(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorHealth
-//
-//==============================================================================
-procedure PS_SetActorHealth(const key: LongWord; const h: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSpawnHealth
-//
-//==============================================================================
-function PS_GetActorSpawnHealth(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorMass
-//
-//==============================================================================
-function PS_GetActorMass(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorMass
-//
-//==============================================================================
-procedure PS_SetActorMass(const key: LongWord; const m: Integer);
-
-//==============================================================================
-//
-// PS_GetActorHeight
-//
-//==============================================================================
-function PS_GetActorHeight(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorHeight
-//
-//==============================================================================
-procedure PS_SetActorHeight(const key: LongWord; const h: Integer);
-
-//==============================================================================
-//
-// PS_GetActorCustomParam
-//
-//==============================================================================
-function PS_GetActorCustomParam(const key: LongWord; const parm: string): Integer;
-
-//==============================================================================
-//
-// PS_SetActorCustomParam
-//
-//==============================================================================
-procedure PS_SetActorCustomParam(const key: LongWord; const parm: string; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorCustomDropItem
-//
-//==============================================================================
-function PS_GetActorCustomDropItem(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorCustomDropItem
-//
-//==============================================================================
-procedure PS_SetActorCustomDropItem(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_SetActorDefaultDropItem
-//
-//==============================================================================
-procedure PS_SetActorDefaultDropItem(const key: LongWord);
-
-//==============================================================================
-//
-// PS_CheckActorFlag
-//
-//==============================================================================
-function PS_CheckActorFlag(const key: LongWord; const flag: LongWord): Boolean;
-
-//==============================================================================
-//
-// PS_SetActorFlag
-//
-//==============================================================================
-procedure PS_SetActorFlag(const key: LongWord; const flag: LongWord);
-
-//==============================================================================
-//
-// PS_UnSetActorFlag
-//
-//==============================================================================
-procedure PS_UnSetActorFlag(const key: LongWord; const flag: LongWord);
-
-//==============================================================================
-//
-// PS_GetActorScale
-//
-//==============================================================================
-function PS_GetActorScale(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorScale
-//
-//==============================================================================
-procedure PS_SetActorScale(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorPushFactor
-//
-//==============================================================================
-function PS_GetActorPushFactor(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorPushFactor
-//
-//==============================================================================
-procedure PS_SetActorPushFactor(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorGravity
-//
-//==============================================================================
-function PS_GetActorGravity(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorGravity
-//
-//==============================================================================
-procedure PS_SetActorGravity(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSpecial
-//
-//==============================================================================
-function PS_GetActorSpecial(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorSpecial
-//
-//==============================================================================
-procedure PS_SetActorSpecial(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorArg1
-//
-//==============================================================================
-function PS_GetActorArg1(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorArg1
-//
-//==============================================================================
-procedure PS_SetActorArg1(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorArg2
-//
-//==============================================================================
-function PS_GetActorArg2(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorArg2
-//
-//==============================================================================
-procedure PS_SetActorArg2(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorArg3
-//
-//==============================================================================
-function PS_GetActorArg3(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorArg3
-//
-//==============================================================================
-procedure PS_SetActorArg3(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorArg4
-//
-//==============================================================================
-function PS_GetActorArg4(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorArg4
-//
-//==============================================================================
-procedure PS_SetActorArg4(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorArg5
-//
-//==============================================================================
-function PS_GetActorArg5(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorArg5
-//
-//==============================================================================
-procedure PS_SetActorArg5(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorWeaveIndexXY
-//
-//==============================================================================
-function PS_GetActorWeaveIndexXY(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorWeaveIndexXY
-//
-//==============================================================================
-procedure PS_SetActorWeaveIndexXY(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorWeaveIndexZ
-//
-//==============================================================================
-function PS_GetActorWeaveIndexZ(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorWeaveIndexZ
-//
-//==============================================================================
-procedure PS_SetActorWeaveIndexZ(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorFriction
-//
-//==============================================================================
-function PS_GetActorFriction(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorFriction
-//
-//==============================================================================
-procedure PS_SetActorFriction(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorPainChance
-//
-//==============================================================================
-function PS_GetActorPainChance(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorPainChance
-//
-//==============================================================================
-procedure PS_SetActorPainChance(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSpriteDX
-//
-//==============================================================================
-function PS_GetActorSpriteDX(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorSpriteDX
-//
-//==============================================================================
-procedure PS_SetActorSpriteDX(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSpriteDY
-//
-//==============================================================================
-function PS_GetActorSpriteDY(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorSpriteDY
-//
-//==============================================================================
-procedure PS_SetActorSpriteDY(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorInfightingGroup
-//
-//==============================================================================
-function PS_GetActorInfightingGroup(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorInfightingGroup
-//
-//==============================================================================
-procedure PS_SetActorInfightingGroup(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorProjectileGroup
-//
-//==============================================================================
-function PS_GetActorProjectileGroup(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorProjectileGroup
-//
-//==============================================================================
-procedure PS_SetActorProjectileGroup(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorSplashGroup
-//
-//==============================================================================
-function PS_GetActorSplashGroup(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_SetActorSplashGroup
-//
-//==============================================================================
-procedure PS_SetActorSplashGroup(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetActorTranslation
-//
-//==============================================================================
-function PS_GetActorTranslation(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_SetActorTranslation
-//
-//==============================================================================
-procedure PS_SetActorTranslation(const key: LongWord; const value: string);
-
-//==============================================================================
-//
-// PS_GetActorBloodColor
-//
-//==============================================================================
-function PS_GetActorBloodColor(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_SetActorBloodColor
-//
-//==============================================================================
-procedure PS_SetActorBloodColor(const key: LongWord; const value: string);
-
-//==============================================================================
-//
-// PS_GetActorName
-//
-//==============================================================================
-function PS_GetActorName(const key: LongWord): string;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_GetActorName2
-//
-//==============================================================================
-function PS_GetActorName2(const key: LongWord): string;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetActorDistanceXY
-//
-//==============================================================================
-function PS_GetActorDistanceXY(const key1, key2: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorDistanceXYZ
-//
-//==============================================================================
-function PS_GetActorDistanceXYZ(const key1, key2: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorPlayer
-//
-//==============================================================================
-function PS_GetActorPlayer(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorMobjType
-//
-//==============================================================================
-function PS_GetActorMobjType(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_GetActorEditorNumber
-//
-//==============================================================================
-function PS_GetActorEditorNumber(const key: LongWord): Integer;
-
-//==============================================================================
-//
-// PS_ActorTypeFromName
-//
-//==============================================================================
-function PS_ActorTypeFromName(const name: string): Integer;
-
-//==============================================================================
-//
-// PS_GetActorSeeSound
-//
-//==============================================================================
-function PS_GetActorSeeSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorAttackSound
-//
-//==============================================================================
-function PS_GetActorAttackSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorPainSound
-//
-//==============================================================================
-function PS_GetActorPainSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorDeathSound
-//
-//==============================================================================
-function PS_GetActorDeathSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorActiveSound
-//
-//==============================================================================
-function PS_GetActorActiveSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound1
-//
-//==============================================================================
-function PS_GetActorCustomSound1(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound2
-//
-//==============================================================================
-function PS_GetActorCustomSound2(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound3
-//
-//==============================================================================
-function PS_GetActorCustomSound3(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorMeleeSound
-//
-//==============================================================================
-function PS_GetActorMeleeSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorRipSound
-//
-//==============================================================================
-function PS_GetActorRipSound(const key: LongWord): string;
-
-//==============================================================================
-//
-// PS_GetActorState
-//
-//==============================================================================
-function PS_GetActorState(const key: LongWord): integer;
-
-//==============================================================================
-//
-// PS_SetActorState
-//
-//==============================================================================
-procedure PS_SetActorState(const key: LongWord; const value: Integer);
-
-//==============================================================================
-//
-// PS_IsValidActor
-//
-//==============================================================================
-function PS_IsValidActor(const key: LongWord): Boolean;
-
-//==============================================================================
-//
-// PS_ActorPlaySound
-//
-//==============================================================================
-procedure PS_ActorPlaySound(const key: LongWord; const snd: string);
-
-//==============================================================================
-//
-// PS_PlaySound
-//
-//==============================================================================
-procedure PS_PlaySound(const snd: string);
-
-//==============================================================================
-//
-// PS_SpawnActorType
-//
-//==============================================================================
-function PS_SpawnActorType(x, y, z: Integer; const typ: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_SpawnActorEditorNumber
-//
-//==============================================================================
-function PS_SpawnActorEditorNumber(x, y, z: Integer; const ednum: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_SpawnActorName
-//
-//==============================================================================
-function PS_SpawnActorName(x, y, z: Integer; const name: string): LongWord;
-
-//==============================================================================
-//
-// PS_RemoveActor
-//
-//==============================================================================
-procedure PS_RemoveActor(const key: LongWord);
-
-//==============================================================================
-//
-// PS_CheckActorSight
-//
-//==============================================================================
-function PS_CheckActorSight(const key1, key2: LongWord): Boolean;
-
-//==============================================================================
-//
-// PS_ActorTypeFromEditorNumber
-//
-//==============================================================================
-function PS_ActorTypeFromEditorNumber(const ednum: Integer): Integer;
-
 type
   TActorArray = array of LongWord;
-
-  TActorKeyList = class(TObject)
-  private
-    fList: PLongWordArray;
-    fNumItems: Integer;
-    fRealSize: Integer;
-    fAllowDuplicates: Boolean;
-    function FormatName(const name: string): string;
-  protected
-    function GetActor(Index: Integer): LongWord; virtual;
-    procedure PutActor(Index: Integer; const value: LongWord); virtual;
-    procedure SetAllowDuplicates(const value: Boolean); virtual;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    procedure Add(const value: LongWord);
-    function Delete(const item: LongWord): Boolean;
-    function Exists(const value: LongWord): Boolean;
-    procedure AddAllActors;
-    procedure AddAllMonstersAlive;
-    procedure AddAllMonstersDead;
-    procedure AddAllMonsters;
-    procedure AddAllMissiles;
-    procedure AddAllEdNum(const num: Integer);
-    procedure AddAllSector(const sec: Integer);
-    procedure AddAllSectorTag(const tag: Integer);
-    procedure AddAllType(const typ: Integer);
-    procedure Clear;
-    function GetActorArray: TActorArray;
-    property Count: Integer read fNumItems;
-    property Actors[Index: Integer]: LongWord read GetActor write PutActor; default;
-    property AllowDuplicates: Boolean read fAllowDuplicates write SetAllowDuplicates;
-  end;
 
 // ------------------------------- MAP -----------------------------------------
 
@@ -1027,14 +200,6 @@ function _textureidfromname(const name: string): Integer;
 //
 //==============================================================================
 function PS_GetMobjInfoFlag(const typ: Integer; const flg: integer): Boolean;
-
-//==============================================================================
-//
-// mobj_from_key
-// The mobj of a key of an actor, nil if there is none
-//
-//==============================================================================
-function mobj_from_key(const key: LongWord): Pmobj_t;
 
 // ---------------------- REGISTRATION -----------------------------------------
 
@@ -1174,39 +339,22 @@ uses
   doomdef,
   doomdata,
   d_player,
-  d_event,
-  d_think,
-  {$IFDEF HEXEN}
-  g_demo,
-  {$ENDIF}
   g_game,
   i_system,
   info_h,
   info,
-  info_common,
   m_base,
   m_fixed,
-  m_rnd,
-  p_common,
-  p_inter,
   p_local,
   p_map,
   p_maputl,
   p_mobj,
-  p_params,
   p_setup,
-  p_sight,
   p_slopes,
-  p_tick,
-  p_user,
   r_data,
   r_defs,
   r_main,
   r_sky,
-  r_translations,
-  DelphiDoom.Palette.TranslationBlood,
-  s_sound,
-  sounds,
   tables,
   w_wad;
 
@@ -1218,16 +366,8 @@ var
   ps_sectors_ref: IScriptSectors = nil;
   ps_mobjinfo_ref: IScriptMobjInfo = nil;
   ps_players_ref: IScriptPlayers = nil;
-
-//==============================================================================
-//
-// PS_GetPlayerActor
-//
-//==============================================================================
-function PS_GetPlayerActor(const plnum: Integer): LongWord;
-begin
-  Result := PS_Players.GetPlayerActor(plnum);
-end;
+  ps_actors_ref: IScriptActors = nil;
+  ps_actorcontext_ref: IEngineScriptActorContext = nil;
 
 //==============================================================================
 //
@@ -1328,6 +468,42 @@ begin
   Result := ps_lines_ref;
 end;
 
+//==============================================================================
+//
+// PS_ConfigureActorFunctions
+//
+//==============================================================================
+procedure PS_ConfigureActorFunctions(const AActors: IScriptActors;
+  const AContext: IEngineScriptActorContext);
+begin
+  ps_actors_ref := AActors;
+  ps_actorcontext_ref := AContext;
+end;
+
+//==============================================================================
+//
+// PS_Actors
+//
+//==============================================================================
+function PS_Actors: IScriptActors;
+begin
+  if ps_actors_ref = nil then
+    I_Error('PS_ConfigureActorFunctions() was not called: the actor functions are missing');
+  Result := ps_actors_ref;
+end;
+
+//==============================================================================
+//
+// PS_ActorContext
+//
+//==============================================================================
+function PS_ActorContext: IEngineScriptActorContext;
+begin
+  if ps_actorcontext_ref = nil then
+    I_Error('PS_ConfigureActorFunctions() was not called: the actor context is missing');
+  Result := ps_actorcontext_ref;
+end;
+
 var
   rtlactors: TRTLActors;
   rtlvertexes: TRTLVertexes;
@@ -1351,2622 +527,6 @@ begin
     Result := mo.key;
 end;
 
-//==============================================================================
-//
-// PS_Actor
-//
-//==============================================================================
-function PS_Actor: LongWord;
-begin
-  if ps_currentactor <> nil then
-    Result := ps_currentactor.key
-  else
-    Result := ACTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// mobj_from_key
-//
-//==============================================================================
-function mobj_from_key(const key: LongWord): Pmobj_t;
-begin
-  if key = 0 then
-    Result := ps_currentactor
-  else if key = ACTOR_INVALID then
-    Result := nil
-  else
-    Result := mobjlist.FindMobjFromKey(key);
-end;
-
-//==============================================================================
-//
-// PS_TActor
-//
-//==============================================================================
-function PS_TActor(const key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-  Result := mo.key;
-end;
-
-//==============================================================================
-//
-// PS_GetActorTarget
-//
-//==============================================================================
-function PS_GetActorTarget(const key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
-  tmo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-  tmo := P_ActorTarget(mo);
-  if tmo <> nil then
-    Result := tmo.key
-  else
-    Result := ACTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SetActorTarget
-//
-//==============================================================================
-procedure PS_SetActorTarget(const key: LongWord; const targ: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.target := mobj_from_key(targ);
-end;
-
-//==============================================================================
-//
-// PS_GetActorTracer
-//
-//==============================================================================
-function PS_GetActorTracer(const key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
-  tmo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-  tmo := mo.tracer;
-  if tmo <> nil then
-    Result := tmo.key
-  else
-    Result := ACTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SetActorTracer
-//
-//==============================================================================
-procedure PS_SetActorTracer(const key: LongWord; const trac: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.tracer := mobj_from_key(trac);
-end;
-
-//==============================================================================
-//
-// PS_GetActorMaster
-//
-//==============================================================================
-function PS_GetActorMaster(const key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
-  tmo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-  tmo := mo.master;
-  if tmo <> nil then
-    Result := tmo.key
-  else
-    Result := ACTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SetActorMaster
-//
-//==============================================================================
-procedure PS_SetActorMaster(const key: LongWord; const mst: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.master := mobj_from_key(mst);
-end;
-
-//==============================================================================
-//
-// PS_GetActorX
-//
-//==============================================================================
-function PS_GetActorX(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.x;
-end;
-
-//==============================================================================
-//
-// PS_SetActorX
-//
-//==============================================================================
-procedure PS_SetActorX(const key: LongWord; const x: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  P_UnsetThingPosition(mo);
-  mo.x := x;
-  P_SetThingPosition(mo);
-end;
-
-//==============================================================================
-//
-// PS_GetActorY
-//
-//==============================================================================
-function PS_GetActorY(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.y;
-end;
-
-//==============================================================================
-//
-// PS_SetActorY
-//
-//==============================================================================
-procedure PS_SetActorY(const key: LongWord; const y: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  P_UnsetThingPosition(mo);
-  mo.y := y;
-  P_SetThingPosition(mo);
-end;
-
-//==============================================================================
-//
-// PS_GetActorZ
-//
-//==============================================================================
-function PS_GetActorZ(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.z;
-end;
-
-//==============================================================================
-//
-// PS_SetActorZ
-//
-//==============================================================================
-procedure PS_SetActorZ(const key: LongWord; const z: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.z := z;
-end;
-
-//==============================================================================
-//
-// PS_SetActorPosition
-//
-//==============================================================================
-procedure PS_SetActorPosition(const key: LongWord; const x, y, z: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  P_UnsetThingPosition(mo);
-  mo.x := x;
-  mo.y := y;
-  mo.z := z;
-  P_SetThingPosition(mo);
-end;
-
-//==============================================================================
-//
-// PS_GetActorMOMX
-//
-//==============================================================================
-function PS_GetActorMOMX(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.momx;
-end;
-
-//==============================================================================
-//
-// PS_SetActorMOMX
-//
-//==============================================================================
-procedure PS_SetActorMOMX(const key: LongWord; const x: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.momx := x;
-end;
-
-//==============================================================================
-//
-// PS_GetActorMOMY
-//
-//==============================================================================
-function PS_GetActorMOMY(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.momy;
-end;
-
-//==============================================================================
-//
-// PS_SetActorMOMY
-//
-//==============================================================================
-procedure PS_SetActorMOMY(const key: LongWord; const y: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.momy := y;
-end;
-
-//==============================================================================
-//
-// PS_GetActorMOMZ
-//
-//==============================================================================
-function PS_GetActorMOMZ(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.momz;
-end;
-
-//==============================================================================
-//
-// PS_SetActorMOMZ
-//
-//==============================================================================
-procedure PS_SetActorMOMZ(const key: LongWord; const z: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.momz := z;
-end;
-
-//==============================================================================
-//
-// PS_GetActorFloorZ
-//
-//==============================================================================
-function PS_GetActorFloorZ(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.floorz;
-end;
-
-//==============================================================================
-//
-// PS_SetActorFloorZ
-//
-//==============================================================================
-procedure PS_SetActorFloorZ(const key: LongWord; const z: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.floorz := z;
-end;
-
-//==============================================================================
-//
-// PS_GetActorCeilingZ
-//
-//==============================================================================
-function PS_GetActorCeilingZ(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.ceilingz;
-end;
-
-//==============================================================================
-//
-// PS_SetActorCeilingZ
-//
-//==============================================================================
-procedure PS_SetActorCeilingZ(const key: LongWord; const z: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.ceilingz := z;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSpeed
-//
-//==============================================================================
-function PS_GetActorSpeed(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-  x, y, z: Integer;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  x := mo.momx;
-  y := mo.momy;
-  z := mo.momz;
-  Result := FixedSqrt(FixedMul(x, x) + FixedMul(y, y) + FixedMul(z, z));
-end;
-
-//==============================================================================
-//
-// PS_SetActorSpeed
-//
-//==============================================================================
-procedure PS_SetActorSpeed(const key: LongWord; const speed: Integer);
-var
-  mo: Pmobj_t;
-  x, y, z: Integer;
-  currspeed: Integer;
-  ds: double;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  x := mo.momx;
-  y := mo.momy;
-  z := mo.momz;
-  currspeed := FixedSqrt(FixedMul(x, x) + FixedMul(y, y) + FixedMul(z, z));
-  if currspeed = 0 then
-    Exit;
-  ds := speed / currspeed;
-  mo.momx := Round(x * ds);
-  mo.momy := Round(y * ds);
-  mo.momz := Round(z * ds);
-end;
-
-//==============================================================================
-//
-// PS_GetActorAngle
-//
-//==============================================================================
-function PS_GetActorAngle(const key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.angle;
-end;
-
-//==============================================================================
-//
-// PS_SetActorAngle
-//
-//==============================================================================
-procedure PS_SetActorAngle(const key: LongWord; const angle: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.angle := angle;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSector
-//
-//==============================================================================
-function PS_GetActorSector(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := Psubsector_t(mo.subsector).sector.iSectorID;
-end;
-
-//==============================================================================
-//
-// PS_GetActorHealth
-//
-//==============================================================================
-function PS_GetActorHealth(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.health;
-end;
-
-//==============================================================================
-//
-// PS_SetActorHealth
-//
-//==============================================================================
-procedure PS_SetActorHealth(const key: LongWord; const h: Integer);
-var
-  mo: Pmobj_t;
-  p: Pplayer_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  if h <= 0 then
-    P_DamageMobj(mo, nil, nil, 10000)
-  else
-  begin
-    mo.health := h;
-    p := mo.player;
-    if p <> nil then
-      p.health := h;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSpawnHealth
-//
-//==============================================================================
-function PS_GetActorSpawnHealth(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.info.spawnhealth;
-end;
-
-//==============================================================================
-//
-// PS_GetActorMass
-//
-//==============================================================================
-function PS_GetActorMass(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.mass;
-end;
-
-//==============================================================================
-//
-// PS_SetActorMass
-//
-//==============================================================================
-procedure PS_SetActorMass(const key: LongWord; const m: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.mass := m;
-end;
-
-//==============================================================================
-//
-// PS_GetActorHeight
-//
-//==============================================================================
-function PS_GetActorHeight(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.height;
-end;
-
-//==============================================================================
-//
-// PS_SetActorHeight
-//
-//==============================================================================
-procedure PS_SetActorHeight(const key: LongWord; const h: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.height := h;
-end;
-
-//==============================================================================
-//
-// PS_GetActorCustomParam
-//
-//==============================================================================
-function PS_GetActorCustomParam(const key: LongWord; const parm: string): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := P_GetMobjCustomParamValue(mo, parm);
-end;
-
-//==============================================================================
-//
-// PS_SetActorCustomParam
-//
-//==============================================================================
-procedure PS_SetActorCustomParam(const key: LongWord; const parm: string; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  P_SetMobjCustomParam(mo, parm, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorCustomDropItem
-//
-//==============================================================================
-function PS_GetActorCustomDropItem(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.dropitem;
-end;
-
-//==============================================================================
-//
-// PS_SetActorCustomDropItem
-//
-//==============================================================================
-procedure PS_SetActorCustomDropItem(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.dropitem := value;
-  mo.flags2_ex := mo.flags2_ex or MF2_EX_CUSTOMDROPITEM;
-end;
-
-//==============================================================================
-//
-// PS_SetActorDefaultDropItem
-//
-//==============================================================================
-procedure PS_SetActorDefaultDropItem(const key: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.dropitem := 0;
-  mo.flags2_ex := mo.flags2_ex and not MF2_EX_CUSTOMDROPITEM;
-end;
-
-type
-  TFlagResult = record
-    flags: PInteger;
-    flag: Integer;
-  end;
-
-//==============================================================================
-//
-// _mo_flag_result
-//
-//==============================================================================
-function _mo_flag_result(const mo: Pmobj_t; const flag: LongWord): TFlagResult;
-begin
-  if flag < 32 then
-  begin
-    Result.flags := @mo.flags;
-    Result.flag := (1 shl flag);
-    Exit;
-  end;
-
-  if flag < 64 then
-  begin
-  {$IFDEF HERETIC_OR_HEXEN}
-    Result.flags := @mo.flags2;
-    Result.flag := (1 shl (flag - 32));
-  {$ELSE}
-    Result.flags := nil;
-    Result.flag := 0;
-  {$ENDIF}
-    Exit;
-  end;
-
-  if flag < 96 then
-  begin
-    Result.flags := @mo.flags_ex;
-    Result.flag := (1 shl (flag - 64));
-    Exit;
-  end;
-
-  if flag < 128 then
-  begin
-    Result.flags := @mo.flags2_ex;
-    Result.flag := (1 shl (flag - 96));
-    Exit;
-  end;
-
-  if flag < 160 then
-  begin
-    Result.flags := @mo.flags3_ex;
-    Result.flag := (1 shl (flag - 128));
-    Exit;
-  end;
-
-  if flag < 192 then
-  begin
-    Result.flags := @mo.flags4_ex;
-    Result.flag := (1 shl (flag - 160));
-    Exit;
-  end;
-
-  if flag < 224 then
-  begin
-    Result.flags := @mo.flags5_ex;
-    Result.flag := (1 shl (flag - 192));
-    Exit;
-  end;
-
-  if flag < 256 then
-  begin
-    Result.flags := @mo.flags5_ex;
-    Result.flag := (1 shl (flag - 224));
-    Exit;
-  end;
-
-  Result.flags := nil;
-  Result.flag := 0;
-end;
-
-//==============================================================================
-//
-// _info_flag_result
-//
-//==============================================================================
-function _info_flag_result(const inf: Pmobjinfo_t; const flag: LongWord): TFlagResult;
-begin
-  if flag < 32 then
-  begin
-    Result.flags := @inf.flags;
-    Result.flag := (1 shl flag);
-    Exit;
-  end;
-
-  if flag < 64 then
-  begin
-  {$IFDEF HERETIC_OR_HEXEN}
-    Result.flags := @inf.flags2;
-    Result.flag := (1 shl (flag - 32));
-  {$ELSE}
-    Result.flags := nil;
-    Result.flag := 0;
-  {$ENDIF}
-    Exit;
-  end;
-
-  if flag < 96 then
-  begin
-    Result.flags := @inf.flags_ex;
-    Result.flag := (1 shl (flag - 64));
-    Exit;
-  end;
-
-  if flag < 128 then
-  begin
-    Result.flags := @inf.flags2_ex;
-    Result.flag := (1 shl (flag - 96));
-    Exit;
-  end;
-
-  if flag < 160 then
-  begin
-    Result.flags := @inf.flags3_ex;
-    Result.flag := (1 shl (flag - 128));
-    Exit;
-  end;
-
-  if flag < 192 then
-  begin
-    Result.flags := @inf.flags4_ex;
-    Result.flag := (1 shl (flag - 160));
-    Exit;
-  end;
-
-  if flag < 224 then
-  begin
-    Result.flags := @inf.flags5_ex;
-    Result.flag := (1 shl (flag - 192));
-    Exit;
-  end;
-
-  if flag < 256 then
-  begin
-    Result.flags := @inf.flags6_ex;
-    Result.flag := (1 shl (flag - 224));
-    Exit;
-  end;
-
-  Result.flags := nil;
-  Result.flag := 0;
-end;
-
-//==============================================================================
-//
-// PS_CheckActorFlag
-//
-//==============================================================================
-function PS_CheckActorFlag(const key: LongWord; const flag: LongWord): Boolean;
-var
-  mo: Pmobj_t;
-  flgresult: TFlagResult;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  flgresult := _mo_flag_result(mo, flag);
-  if flgresult.flags = nil then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := flgresult.flags^ and flgresult.flag <> 0;
-end;
-
-//==============================================================================
-//
-// PS_SetActorFlag
-//
-//==============================================================================
-procedure PS_SetActorFlag(const key: LongWord; const flag: LongWord);
-var
-  mo: Pmobj_t;
-  flgresult: TFlagResult;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-
-  flgresult := _mo_flag_result(mo, flag);
-  if flgresult.flags = nil then
-    Exit;
-
-  flgresult.flags^ := flgresult.flags^ or flgresult.flag;
-end;
-
-//==============================================================================
-//
-// PS_UnSetActorFlag
-//
-//==============================================================================
-procedure PS_UnSetActorFlag(const key: LongWord; const flag: LongWord);
-var
-  mo: Pmobj_t;
-  flgresult: TFlagResult;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-
-  flgresult := _mo_flag_result(mo, flag);
-  if flgresult.flags = nil then
-    Exit;
-
-  flgresult.flags^ := flgresult.flags^ and not flgresult.flag;
-end;
-
-//==============================================================================
-//
-// PS_GetActorScale
-//
-//==============================================================================
-function PS_GetActorScale(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.scale;
-end;
-
-//==============================================================================
-//
-// PS_SetActorScale
-//
-//==============================================================================
-procedure PS_SetActorScale(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.scale := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorPushFactor
-//
-//==============================================================================
-function PS_GetActorPushFactor(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.pushfactor;
-end;
-
-//==============================================================================
-//
-// PS_SetActorPushFactor
-//
-//==============================================================================
-procedure PS_SetActorPushFactor(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.pushfactor := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorGravity
-//
-//==============================================================================
-function PS_GetActorGravity(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.gravity;
-end;
-
-//==============================================================================
-//
-// PS_SetActorGravity
-//
-//==============================================================================
-procedure PS_SetActorGravity(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.gravity := value;
-end;
-
-//==============================================================================
-//
-// _GetActorArg
-//
-//==============================================================================
-function _GetActorArg(const idx: integer; const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.args[idx];
-end;
-
-//==============================================================================
-//
-// _SetActorArg
-//
-//==============================================================================
-procedure _SetActorArg(const idx: integer; const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.args[idx] := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSpecial
-//
-//==============================================================================
-function PS_GetActorSpecial(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.special;
-end;
-
-//==============================================================================
-//
-// PS_SetActorSpecial
-//
-//==============================================================================
-procedure PS_SetActorSpecial(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.special := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorArg1
-//
-//==============================================================================
-function PS_GetActorArg1(const key: LongWord): Integer;
-begin
-  Result := _GetActorArg(0, key);
-end;
-
-//==============================================================================
-//
-// PS_SetActorArg1
-//
-//==============================================================================
-procedure PS_SetActorArg1(const key: LongWord; const value: Integer);
-begin
-  _SetActorArg(0, key, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorArg2
-//
-//==============================================================================
-function PS_GetActorArg2(const key: LongWord): Integer;
-begin
-  Result := _GetActorArg(1, key);
-end;
-
-//==============================================================================
-//
-// PS_SetActorArg2
-//
-//==============================================================================
-procedure PS_SetActorArg2(const key: LongWord; const value: Integer);
-begin
-  _SetActorArg(1, key, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorArg3
-//
-//==============================================================================
-function PS_GetActorArg3(const key: LongWord): Integer;
-begin
-  Result := _GetActorArg(2, key);
-end;
-
-//==============================================================================
-//
-// PS_SetActorArg3
-//
-//==============================================================================
-procedure PS_SetActorArg3(const key: LongWord; const value: Integer);
-begin
-  _SetActorArg(2, key, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorArg4
-//
-//==============================================================================
-function PS_GetActorArg4(const key: LongWord): Integer;
-begin
-  Result := _GetActorArg(3, key);
-end;
-
-//==============================================================================
-//
-// PS_SetActorArg4
-//
-//==============================================================================
-procedure PS_SetActorArg4(const key: LongWord; const value: Integer);
-begin
-  _SetActorArg(3, key, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorArg5
-//
-//==============================================================================
-function PS_GetActorArg5(const key: LongWord): Integer;
-begin
-  Result := _GetActorArg(4, key);
-end;
-
-//==============================================================================
-//
-// PS_SetActorArg5
-//
-//==============================================================================
-procedure PS_SetActorArg5(const key: LongWord; const value: Integer);
-begin
-  _SetActorArg(4, key, value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorWeaveIndexXY
-//
-//==============================================================================
-function PS_GetActorWeaveIndexXY(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.WeaveIndexXY;
-end;
-
-//==============================================================================
-//
-// PS_SetActorWeaveIndexXY
-//
-//==============================================================================
-procedure PS_SetActorWeaveIndexXY(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.WeaveIndexXY := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorWeaveIndexZ
-//
-//==============================================================================
-function PS_GetActorWeaveIndexZ(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.WeaveIndexZ;
-end;
-
-//==============================================================================
-//
-// PS_SetActorWeaveIndexZ
-//
-//==============================================================================
-procedure PS_SetActorWeaveIndexZ(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.WeaveIndexXY := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorFriction
-//
-//==============================================================================
-function PS_GetActorFriction(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.friction;
-end;
-
-//==============================================================================
-//
-// PS_SetActorFriction
-//
-//==============================================================================
-procedure PS_SetActorFriction(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.friction := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorPainChance
-//
-//==============================================================================
-function PS_GetActorPainChance(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.painchance;
-end;
-
-//==============================================================================
-//
-// PS_SetActorPainChance
-//
-//==============================================================================
-procedure PS_SetActorPainChance(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.painchance := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSpriteDX
-//
-//==============================================================================
-function PS_GetActorSpriteDX(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.spriteDX;
-end;
-
-//==============================================================================
-//
-// PS_SetActorSpriteDX
-//
-//==============================================================================
-procedure PS_SetActorSpriteDX(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.spriteDX := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSpriteDY
-//
-//==============================================================================
-function PS_GetActorSpriteDY(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mo.spriteDY;
-end;
-
-//==============================================================================
-//
-// PS_SetActorSpriteDY
-//
-//==============================================================================
-procedure PS_SetActorSpriteDY(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.spriteDY := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorInfightingGroup
-//
-//==============================================================================
-function PS_GetActorInfightingGroup(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := IG_DEFAULT;
-    Exit;
-  end;
-  Result := mo.infighting_group;
-end;
-
-//==============================================================================
-//
-// PS_SetActorInfightingGroup
-//
-//==============================================================================
-procedure PS_SetActorInfightingGroup(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.infighting_group := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorProjectileGroup
-//
-//==============================================================================
-function PS_GetActorProjectileGroup(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := PG_DEFAULT;
-    Exit;
-  end;
-  Result := mo.projectile_group;
-end;
-
-//==============================================================================
-//
-// PS_SetActorProjectileGroup
-//
-//==============================================================================
-procedure PS_SetActorProjectileGroup(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.projectile_group := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSplashGroup
-//
-//==============================================================================
-function PS_GetActorSplashGroup(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := SG_DEFAULT;
-    Exit;
-  end;
-  Result := mo.splash_group;
-end;
-
-//==============================================================================
-//
-// PS_SetActorSplashGroup
-//
-//==============================================================================
-procedure PS_SetActorSplashGroup(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.splash_group := value;
-end;
-
-//==============================================================================
-//
-// PS_GetActorTranslation
-//
-//==============================================================================
-function PS_GetActorTranslation(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mo.translationname;
-end;
-
-//==============================================================================
-//
-// PS_SetActorTranslation
-//
-//==============================================================================
-procedure PS_SetActorTranslation(const key: LongWord; const value: string);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.translationname := value;
-  R_InitMobjTranslation(mo);
-end;
-
-//==============================================================================
-//
-// PS_GetActorBloodColor
-//
-//==============================================================================
-function PS_GetActorBloodColor(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := TTranslationBlood.NameOf(mo.bloodcolor);
-end;
-
-//==============================================================================
-//
-// PS_SetActorBloodColor
-//
-//==============================================================================
-procedure PS_SetActorBloodColor(const key: LongWord; const value: string);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-  mo.bloodcolor := TTranslationBlood.IdForName(value);
-end;
-
-//==============================================================================
-//
-// PS_GetActorName
-//
-//==============================================================================
-function PS_GetActorName(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mo.info.name;
-end;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_GetActorName2
-//
-//==============================================================================
-function PS_GetActorName2(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mo.info.name2;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetActorDistanceXY
-//
-//==============================================================================
-function PS_GetActorDistanceXY(const key1, key2: LongWord): Integer;
-var
-  mo1, mo2: Pmobj_t;
-  dx, dy: fixed_t;
-begin
-  mo1 := mobj_from_key(key1);
-  if mo1 = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  mo2 := mobj_from_key(key2);
-  if mo2 = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  dx := mo1.x - mo2.x;
-  dy := mo1.y - mo2.y;
-  Result := FixedSqrt(dx * dx + dy * dy);
-end;
-
-//==============================================================================
-//
-// PS_GetActorDistanceXYZ
-//
-//==============================================================================
-function PS_GetActorDistanceXYZ(const key1, key2: LongWord): Integer;
-var
-  mo1, mo2: Pmobj_t;
-  dx, dy, dz: fixed_t;
-begin
-  mo1 := mobj_from_key(key1);
-  if mo1 = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  mo2 := mobj_from_key(key2);
-  if mo2 = nil then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  dx := mo1.x - mo2.x;
-  dy := mo1.y - mo2.y;
-  dz := mo1.z - mo2.z;
-  Result := FixedSqrt(dx * dx + dy * dy + dz * dz);
-end;
-
-//==============================================================================
-//
-// PS_GetActorPlayer
-//
-//==============================================================================
-function PS_GetActorPlayer(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-  p: Pplayer_t;
-  pnum: Integer;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := PLAYER_INVALID;
-    Exit;
-  end;
-  p := mo.player;
-  if p = nil then
-  begin
-    Result := PLAYER_INVALID;
-    Exit;
-  end;
-  pnum := pDiff(p, @players[0], SizeOf(player_t));
-  if (pnum < 0) or (pnum >= MAXPLAYERS) then
-  begin
-    Result := PLAYER_INVALID;
-    Exit;
-  end;
-  if not playeringame[pnum] then
-  begin
-    Result := PLAYER_INVALID;
-    Exit;
-  end;
-  Result := pnum;
-end;
-
-//==============================================================================
-//
-// PS_GetActorMobjType
-//
-//==============================================================================
-function PS_GetActorMobjType(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := MOBJTYPE_INVALID;
-    Exit;
-  end;
-  Result := mo._type;
-end;
-
-//==============================================================================
-//
-// PS_GetActorEditorNumber
-//
-//==============================================================================
-function PS_GetActorEditorNumber(const key: LongWord): Integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := EDITORNUMBER_INVALID;
-    Exit;
-  end;
-  Result := mo.info.doomednum;
-end;
-
-//==============================================================================
-//
-// PS_GetActorSeeSound
-//
-//==============================================================================
-function PS_GetActorSeeSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.seesound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorAttackSound
-//
-//==============================================================================
-function PS_GetActorAttackSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.attacksound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorPainSound
-//
-//==============================================================================
-function PS_GetActorPainSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.painsound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorDeathSound
-//
-//==============================================================================
-function PS_GetActorDeathSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.deathsound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorActiveSound
-//
-//==============================================================================
-function PS_GetActorActiveSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.activesound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound1
-//
-//==============================================================================
-function PS_GetActorCustomSound1(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.customsound1);
-end;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound2
-//
-//==============================================================================
-function PS_GetActorCustomSound2(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.customsound2);
-end;
-
-//==============================================================================
-//
-// PS_GetActorCustomSound3
-//
-//==============================================================================
-function PS_GetActorCustomSound3(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.customsound3);
-end;
-
-//==============================================================================
-//
-// PS_GetActorMeleeSound
-//
-//==============================================================================
-function PS_GetActorMeleeSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.meleesound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorRipSound
-//
-//==============================================================================
-function PS_GetActorRipSound(const key: LongWord): string;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mo.info.meleesound);
-end;
-
-//==============================================================================
-//
-// PS_GetActorState
-//
-//==============================================================================
-function PS_GetActorState(const key: LongWord): integer;
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := pDiff(mo.state, @states[0], SizeOf(state_t));
-end;
-
-//==============================================================================
-//
-// PS_SetActorState
-//
-//==============================================================================
-procedure PS_SetActorState(const key: LongWord; const value: Integer);
-var
-  mo: Pmobj_t;
-begin
-  if (value < 0) or (value >= numstates) then
-    Exit;
-
-  mo := mobj_from_key(key);
-  if mo = nil then
-    Exit;
-
-  P_SetMobjState(mo, statenum_t(value));
-end;
-
-//==============================================================================
-//
-// PS_IsValidActor
-//
-//==============================================================================
-function PS_IsValidActor(const key: LongWord): Boolean;
-begin
-  Result := mobj_from_key(key) <> nil;
-end;
-
-//==============================================================================
-//
-// _playsound
-//
-//==============================================================================
-procedure _playsound(origin: Pointer; snd: string);
-var
-  randomlist: TDNumberList;
-  soundnum: Integer;
-begin
-  snd := strupper(strtrim(snd));
-  if (snd = '') or (snd = 'DS') then
-    Exit;
-
-  soundnum := S_GetSoundNumForName(snd);
-  randomlist := S_GetRandomSoundList(soundnum);
-  if randomlist <> nil then
-    if randomlist.Count > 0 then
-      soundnum := randomlist[N_Random mod randomlist.Count];
-
-  S_StartSound(origin, soundnum);
-end;
-
-//==============================================================================
-//
-// PS_ActorPlaySound
-//
-//==============================================================================
-procedure PS_ActorPlaySound(const key: LongWord; const snd: string);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo <> nil then
-    _playsound(mo, snd);
-end;
-
-//==============================================================================
-//
-// PS_PlaySound
-//
-//==============================================================================
-procedure PS_PlaySound(const snd: string);
-begin
-  _playsound(nil, snd);
-end;
-
-//==============================================================================
-//
-// PS_SpawnActorType
-//
-//==============================================================================
-function PS_SpawnActorType(x, y, z: fixed_t; const typ: Integer): LongWord;
-var
-  mo: Pmobj_t;
-begin
-  if (typ >= 0) and (typ < nummobjtypes) then
-    mo := P_SpawnMobj(x, y, z, typ)
-  else
-    mo := nil;
-  if mo <> nil then
-    Result := mo.key
-  else
-    Result := ACTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SpawnActorEditorNumber
-//
-//==============================================================================
-function PS_SpawnActorEditorNumber(x, y, z: fixed_t; const ednum: Integer): LongWord;
-var
-  mobjno: Integer;
-begin
-  mobjno := Info_GetMobjNumForDoomNum(ednum);
-  Result := PS_SpawnActorType(x, y, z, mobjno);
-end;
-
-//==============================================================================
-//
-// PS_SpawnActorName
-//
-//==============================================================================
-function PS_SpawnActorName(x, y, z: Integer; const name: string): LongWord;
-var
-  mobjno: Integer;
-begin
-  mobjno := Info_GetMobjNumForName(name);
-  Result := PS_SpawnActorType(x, y, z, mobjno);
-end;
-
-//==============================================================================
-//
-// PS_RemoveActor
-//
-//==============================================================================
-procedure PS_RemoveActor(const key: LongWord);
-var
-  mo: Pmobj_t;
-begin
-  mo := mobj_from_key(key);
-  if mo <> nil then
-    P_RemoveMobj(mo);
-end;
-
-//==============================================================================
-//
-// PS_CheckActorSight
-//
-//==============================================================================
-function PS_CheckActorSight(const key1, key2: LongWord): Boolean;
-var
-  mo1, mo2: Pmobj_t;
-begin
-  mo1 := mobj_from_key(key1);
-  if mo1 = nil then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  mo2 := mobj_from_key(key2);
-  if mo1 = nil then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := P_CheckSight(mo1, mo2);
-end;
-
-//==============================================================================
-//
-// PS_ActorTypeFromEditorNumber
-//
-//==============================================================================
-function PS_ActorTypeFromEditorNumber(const ednum: Integer): Integer;
-begin
-  Result := Info_GetMobjNumForDoomNum(ednum);
-end;
-
-//==============================================================================
-//
-// PS_ActorTypeFromName
-//
-//==============================================================================
-function PS_ActorTypeFromName(const name: string): Integer;
-begin
-  Result := Info_GetMobjNumForName(name);
-end;
-
-// -------------------- TActorKeyList ------------------------------------------
-
-//==============================================================================
-//
-// TActorKeyList.Create
-//
-//==============================================================================
-constructor TActorKeyList.Create;
-begin
-  fList := nil;
-  fNumItems := 0;
-  fRealSize := 0;
-  fAllowDuplicates := false;
-  inherited;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.Destroy
-//
-//==============================================================================
-destructor TActorKeyList.Destroy;
-begin
-  Clear;
-  inherited;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.Add
-//
-//==============================================================================
-procedure TActorKeyList.Add(const value: LongWord);
-var
-  newsize: Integer;
-begin
-  if not fAllowDuplicates then
-    if Exists(value) then // Can not add twice
-      Exit;
-
-  if fNumItems >= fRealSize then
-  begin
-    if fRealSize < 16 then
-      newsize := fRealSize + 4
-    else if fRealSize < 128 then
-      newsize := fRealSize + 16
-    else
-      newsize := fRealSize + 128;
-    realloc(pointer(fList), fRealSize * SizeOf(LongWord), newsize * SizeOf(LongWord));
-    fRealSize := newsize;
-  end;
-  fList[fNumItems] := value;
-  Inc(fNumItems);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.Delete
-//
-//==============================================================================
-function TActorKeyList.Delete(const item: LongWord): Boolean;
-var
-  i: Integer;
-  idxs: TDNumberList;
-  tmpList: PLongWordArray;
-  sz: Integer;
-begin
-  if not fAllowDuplicates then
-  begin
-    for i := 0 to fNumItems - 1 do
-      if fList[i] = item then
-      begin
-        fList[i] := fList[fNumItems - 1];
-        dec(fNumItems);
-        Result := True;
-        Exit;
-      end;
-
-    Result := False;
-    Exit;
-  end;
-
-  if fNumItems = 0 then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := Exists(item);
-  if not Result then
-    Exit;
-
-  idxs := TDNumberList.Create;
-  for i := 0 to fNumItems - 1 do
-    if fList[i] <> item then
-      idxs.Add(i);
-
-  sz := fNumItems * SizeOf(LongWord);
-  tmpList := malloc(sz);
-  for i := 0 to fNumItems - 1 do
-    tmpList[i] := fList[i];
-  fNumItems := 0;
-
-  for i := 0 to idxs.Count - 1 do
-    Add(tmpList[idxs[i]]);
-  memfree(Pointer(tmpList), sz);
-  idxs.Free;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.Exists
-//
-//==============================================================================
-function TActorKeyList.Exists(const value: LongWord): Boolean;
-var
-  i: Integer;
-  l: LongWord;
-begin
-  for i := 0 to fNumItems - 1 do
-    if fList[i] = value then
-    begin
-      if i > 0 then
-      begin
-        l := fList[i];
-        fList[i] := fList[0];
-        fList[0] := l;
-      end;
-      Result := True;
-      Exit;
-    end;
-  Result := False;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.Clear
-//
-//==============================================================================
-procedure TActorKeyList.Clear;
-begin
-  realloc(pointer(fList), fNumItems * SizeOf(LongWord), 0);
-  fList := nil;
-  fNumItems := 0;
-  fRealSize := 0;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.GetActor
-//
-//==============================================================================
-function TActorKeyList.GetActor(Index: Integer): LongWord;
-begin
-  if (Index < 0) or (Index >= fNumItems) then
-    Result := ACTOR_INVALID
-  else
-    Result := fList[Index];
-end;
-
-//==============================================================================
-//
-// TActorKeyList.PutActor
-//
-//==============================================================================
-procedure TActorKeyList.PutActor(Index: Integer; const value: LongWord);
-begin
-  if (Index >= 0) and (Index < fNumItems) then
-    fList[Index] := value;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllActors
-//
-//==============================================================================
-procedure TActorKeyList.AddAllActors;
-var
-  currentthinker: Pthinker_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-      Add(Pmobj_t(currentthinker).key);
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllMonstersAlive
-//
-//==============================================================================
-procedure TActorKeyList.AddAllMonstersAlive;
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      if mo.health > 0 then
-      begin
-        minfo := mo.info;
-        if (minfo.doomednum > MAXPLAYERS) and // Not player
-        {$IFDEF HERETIC}
-           (minfo.doomednum <> 9100) and           // Not player
-           (minfo.doomednum <> 9101) and           // Not player
-           (minfo.doomednum <> 9102) and           // Not player
-           (minfo.doomednum <> 9103) and           // Not player
-        {$ENDIF}
-           (minfo.flags and MF_SHOOTABLE <> 0) and  // Shootable
-          ((minfo.flags and MF_COUNTKILL <> 0) or (minfo.missilestate <> 0) or (minfo.meleestate <> 0)) then  // Count kill or can attack
-          Add(mo.key);
-      end;
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllMonstersDead
-//
-//==============================================================================
-procedure TActorKeyList.AddAllMonstersDead;
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      if mo.health <= 0 then
-      begin
-        minfo := mo.info;
-        if (minfo.doomednum > MAXPLAYERS) and // Not player
-        {$IFDEF HERETIC}
-           (minfo.doomednum <> 9100) and           // Not player
-           (minfo.doomednum <> 9101) and           // Not player
-           (minfo.doomednum <> 9102) and           // Not player
-           (minfo.doomednum <> 9103) and           // Not player
-        {$ENDIF}
-           (minfo.flags and MF_SHOOTABLE <> 0) and  // Shootable
-          ((minfo.flags and MF_COUNTKILL <> 0) or (minfo.missilestate <> 0) or (minfo.meleestate <> 0)) then  // Count kill or can attack
-          Add(mo.key);
-      end;
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllMonsters
-//
-//==============================================================================
-procedure TActorKeyList.AddAllMonsters;
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      minfo := mo.info;
-      if (minfo.doomednum > MAXPLAYERS) and // Not player
-      {$IFDEF HERETIC}
-         (minfo.doomednum <> 9100) and           // Not player
-         (minfo.doomednum <> 9101) and           // Not player
-         (minfo.doomednum <> 9102) and           // Not player
-         (minfo.doomednum <> 9103) and           // Not player
-      {$ENDIF}
-         (minfo.flags and MF_SHOOTABLE <> 0) and  // Shootable
-        ((minfo.flags and MF_COUNTKILL <> 0) or (minfo.missilestate <> 0) or (minfo.meleestate <> 0)) then  // Count kill or can attack
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllMissiles
-//
-//==============================================================================
-procedure TActorKeyList.AddAllMissiles;
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      minfo := mo.info;
-      if (minfo.doomednum > MAXPLAYERS) and // Not player
-      {$IFDEF HERETIC}
-         (minfo.doomednum <> 9100) and           // Not player
-         (minfo.doomednum <> 9101) and           // Not player
-         (minfo.doomednum <> 9102) and           // Not player
-         (minfo.doomednum <> 9103) and           // Not player
-      {$ENDIF}
-         (minfo.flags and MF_MISSILE <> 0) then
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.SetAllowDuplicates
-//
-//==============================================================================
-procedure TActorKeyList.SetAllowDuplicates(const value: Boolean);
-var
-  i: Integer;
-  tmpList: PLongWordArray;
-  sz: Integer;
-begin
-  if fAllowDuplicates <> value then
-  begin
-    fAllowDuplicates := value;
-    if not value then
-      if fNumItems > 1 then
-      begin
-        sz := fNumItems * SizeOf(LongWord);
-        tmpList := malloc(sz);
-        for i := 0 to fNumItems - 1 do
-          tmpList[i] := fList[i];
-        fNumItems := 0;
-        for i := 0 to fNumItems - 1 do
-          Add(tmpList[i]);
-        memfree(Pointer(tmpList), sz);
-      end;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.FormatName
-//
-//==============================================================================
-function TActorKeyList.FormatName(const name: string): string;
-var
-  i: Integer;
-begin
-  Result := '';
-  for i := 1 to Length(name) do
-    if not (name[i] in [' ', ',', ';', '.', '/', '\', '[', ']', '(', ')', '{', '}', #13, #10, #9]) then
-      Result := Result + toupper(name[i]);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllEdNum
-//
-//==============================================================================
-procedure TActorKeyList.AddAllEdNum(const num: Integer);
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-  minfo: Pmobjinfo_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      minfo := mo.info;
-      if minfo.doomednum = num then
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllSector
-//
-//==============================================================================
-procedure TActorKeyList.AddAllSector(const sec: Integer);
-var
-  mo: Pmobj_t;
-begin
-  if (sec < 0) or (sec >= numsectors) then
-    Exit;
-
-  mo := sectors[sec].thinglist;
-  while mo <> nil do
-  begin
-    Add(mo.key);
-    mo := mo.snext;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllSectorTag
-//
-//==============================================================================
-procedure TActorKeyList.AddAllSectorTag(const tag: Integer);
-var
-  i: Integer;
-begin
-  for i := 0 to numsectors - 1 do
-    if sectors[i].tag = tag then
-      AddAllSector(i);
-end;
-
-//==============================================================================
-//
-// TActorKeyList.AddAllType
-//
-//==============================================================================
-procedure TActorKeyList.AddAllType(const typ: Integer);
-var
-  currentthinker: Pthinker_t;
-  mo: Pmobj_t;
-begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
-  begin
-    if (@currentthinker._function.acp1 = @P_MobjThinker) then
-    begin
-      mo := Pmobj_t(currentthinker);
-      if mo._type = typ then
-        Add(mo.key);
-    end;
-    currentthinker := currentthinker.next;
-  end;
-end;
-
-//==============================================================================
-//
-// TActorKeyList.GetActorArray
-//
-//==============================================================================
-function TActorKeyList.GetActorArray: TActorArray;
-var
-  i: Integer;
-begin
-  SetLength(Result, fNumItems);
-  for i := 0 to fNumItems - 1 do
-    Result[i] := fList[i];
-end;
-
 // ------------------------ TRTLActor ------------------------------------------
 
 //==============================================================================
@@ -3976,7 +536,7 @@ end;
 //==============================================================================
 procedure TRTLActor.PlaySound(const snd: string);
 begin
-  PS_ActorPlaySound(LongWord(self), snd);
+  PS_Actors.ActorPlaySound(LongWord(self), snd);
 end;
 
 //==============================================================================
@@ -3986,7 +546,7 @@ end;
 //==============================================================================
 procedure TRTLActor.Remove;
 begin
-  PS_RemoveActor(LongWord(self));
+  PS_Actors.RemoveActor(LongWord(self));
 end;
 
 //==============================================================================
@@ -3996,7 +556,7 @@ end;
 //==============================================================================
 procedure TRTLActor.SetPosition(const x, y, z: Integer);
 begin
-  PS_SetActorPosition(LongWord(self), x, y, z);
+  PS_Actors.SetActorPosition(LongWord(self), x, y, z);
 end;
 
 // ------------------------ TRTLActors -----------------------------------------
@@ -4007,16 +567,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.GetActorKey(key: LongWord): LongWord;
-var
-  mo: Pmobj_t;
 begin
-  mo := mobj_from_key(key);
-  if mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-  Result := mo.key;
+  Result := PS_Actors.TActor(key);
 end;
 
 //==============================================================================
@@ -4025,13 +577,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllActors: TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllActors;
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllActors);
 end;
 
 //==============================================================================
@@ -4040,13 +587,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllMonstersAlive: TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllMonstersAlive;
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllMonstersAlive);
 end;
 
 //==============================================================================
@@ -4055,13 +597,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllMonstersDead: TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllMonstersDead;
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllMonstersDead);
 end;
 
 //==============================================================================
@@ -4070,13 +607,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllMonsters: TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllMonsters;
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllMonsters);
 end;
 
 //==============================================================================
@@ -4085,13 +617,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllMissiles: TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllMissiles;
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllMissiles);
 end;
 
 //==============================================================================
@@ -4100,13 +627,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllAtSector(const sec: Integer): TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllSector(sec);
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllAtSector(sec));
 end;
 
 //==============================================================================
@@ -4115,13 +637,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllAtSectorTag(const tag: Integer): TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllSectorTag(tag);
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllAtSectorTag(tag));
 end;
 
 //==============================================================================
@@ -4130,13 +647,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllEditorNumber(const dn: Integer): TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllEdNum(dn);
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllEditorNumber(dn));
 end;
 
 //==============================================================================
@@ -4145,13 +657,8 @@ end;
 //
 //==============================================================================
 function TRTLActors.AllType(const typ: Integer): TActorArray;
-var
-  akl: TActorKeyList;
 begin
-  akl := TActorKeyList.Create;
-  akl.AddAllType(typ);
-  Result := akl.GetActorArray;
-  akl.Free;
+  Result := TActorArray(PS_Actors.AllType(typ));
 end;
 
 //
@@ -4175,7 +682,7 @@ end;
 //==============================================================================
 procedure TRTLActorTarget_W(Self: TRTLActor; const T: TRTLActor);
 begin
-  PS_SetActorTarget(LongWord(Self), LongWord(T));
+  PS_Actors.SetRelation(LongWord(Self), acrTarget, LongWord(T));
 end;
 
 //==============================================================================
@@ -4185,7 +692,7 @@ end;
 //==============================================================================
 procedure TRTLActorTarget_R(Self: TRTLActor; var T: TRTLActor);
 begin
-  T := TRTLActor(PS_GetActorTarget(LongWord(Self)));
+  T := TRTLActor(PS_Actors.GetRelation(LongWord(Self), acrTarget));
 end;
 
 //==============================================================================
@@ -4195,7 +702,7 @@ end;
 //==============================================================================
 procedure TRTLActorTracer_W(Self: TRTLActor; const T: TRTLActor);
 begin
-  PS_SetActorTracer(LongWord(Self), LongWord(T));
+  PS_Actors.SetRelation(LongWord(Self), acrTracer, LongWord(T));
 end;
 
 //==============================================================================
@@ -4205,7 +712,7 @@ end;
 //==============================================================================
 procedure TRTLActorTracer_R(Self: TRTLActor; var T: TRTLActor);
 begin
-  T := TRTLActor(PS_GetActorTracer(LongWord(Self)));
+  T := TRTLActor(PS_Actors.GetRelation(LongWord(Self), acrTracer));
 end;
 
 //==============================================================================
@@ -4215,7 +722,7 @@ end;
 //==============================================================================
 procedure TRTLActorMaster_W(Self: TRTLActor; const T: TRTLActor);
 begin
-  PS_SetActorMaster(LongWord(Self), LongWord(T));
+  PS_Actors.SetRelation(LongWord(Self), acrMaster, LongWord(T));
 end;
 
 //==============================================================================
@@ -4225,7 +732,7 @@ end;
 //==============================================================================
 procedure TRTLActorMaster_R(Self: TRTLActor; var T: TRTLActor);
 begin
-  T := TRTLActor(PS_GetActorMaster(LongWord(Self)));
+  T := TRTLActor(PS_Actors.GetRelation(LongWord(Self), acrMaster));
 end;
 
 //==============================================================================
@@ -4235,7 +742,7 @@ end;
 //==============================================================================
 procedure TRTLActorX_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorX(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfX, T);
 end;
 
 //==============================================================================
@@ -4245,7 +752,7 @@ end;
 //==============================================================================
 procedure TRTLActorX_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorX(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfX);
 end;
 
 //==============================================================================
@@ -4255,7 +762,7 @@ end;
 //==============================================================================
 procedure TRTLActorY_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorY(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfY, T);
 end;
 
 //==============================================================================
@@ -4265,7 +772,7 @@ end;
 //==============================================================================
 procedure TRTLActorY_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorY(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfY);
 end;
 
 //==============================================================================
@@ -4275,7 +782,7 @@ end;
 //==============================================================================
 procedure TRTLActorZ_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorZ(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfZ, T);
 end;
 
 //==============================================================================
@@ -4285,7 +792,7 @@ end;
 //==============================================================================
 procedure TRTLActorZ_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorZ(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfZ);
 end;
 
 //==============================================================================
@@ -4295,7 +802,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMX_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorMOMX(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfMomX, T);
 end;
 
 //==============================================================================
@@ -4305,7 +812,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMX_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorMOMX(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfMomX);
 end;
 
 //==============================================================================
@@ -4315,7 +822,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMY_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorMOMY(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfMomY, T);
 end;
 
 //==============================================================================
@@ -4325,7 +832,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMY_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorMOMY(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfMomY);
 end;
 
 //==============================================================================
@@ -4335,7 +842,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMZ_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorMOMZ(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfMomZ, T);
 end;
 
 //==============================================================================
@@ -4345,7 +852,7 @@ end;
 //==============================================================================
 procedure TRTLActorMOMZ_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorMOMZ(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfMomZ);
 end;
 
 //==============================================================================
@@ -4355,7 +862,7 @@ end;
 //==============================================================================
 procedure TRTLActorFloorZ_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorFloorZ(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfFloorZ, T);
 end;
 
 //==============================================================================
@@ -4365,7 +872,7 @@ end;
 //==============================================================================
 procedure TRTLActorFloorZ_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorFloorZ(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfFloorZ);
 end;
 
 //==============================================================================
@@ -4375,7 +882,7 @@ end;
 //==============================================================================
 procedure TRTLActorCeilingZ_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorCeilingZ(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfCeilingZ, T);
 end;
 
 //==============================================================================
@@ -4385,7 +892,7 @@ end;
 //==============================================================================
 procedure TRTLActorCeilingZ_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorCeilingZ(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfCeilingZ);
 end;
 
 //==============================================================================
@@ -4395,7 +902,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpeed_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorSpeed(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfSpeed, T);
 end;
 
 //==============================================================================
@@ -4405,7 +912,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpeed_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSpeed(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSpeed);
 end;
 
 //==============================================================================
@@ -4415,7 +922,7 @@ end;
 //==============================================================================
 procedure TRTLActorAngle_W(Self: TRTLActor; const T: LongWord);
 begin
-  PS_SetActorAngle(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfAngle, T);
 end;
 
 //==============================================================================
@@ -4425,7 +932,7 @@ end;
 //==============================================================================
 procedure TRTLActorAngle_R(Self: TRTLActor; var T: LongWord);
 begin
-  T := PS_GetActorAngle(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfAngle);
 end;
 
 //==============================================================================
@@ -4435,7 +942,7 @@ end;
 //==============================================================================
 procedure TRTLActorSector_R(Self: TRTLActor; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetActorSector(LongWord(Self))];
+  T := rtlsectors[PS_Actors.GetNumber(LongWord(Self), acfSector)];
 end;
 
 //==============================================================================
@@ -4445,7 +952,7 @@ end;
 //==============================================================================
 procedure TRTLActorHealth_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorHealth(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfHealth, T);
 end;
 
 //==============================================================================
@@ -4455,7 +962,7 @@ end;
 //==============================================================================
 procedure TRTLActorHealth_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorHealth(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfHealth);
 end;
 
 //==============================================================================
@@ -4465,7 +972,7 @@ end;
 //==============================================================================
 procedure TRTLActorHeight_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorHeight(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfHeight, T);
 end;
 
 //==============================================================================
@@ -4475,7 +982,7 @@ end;
 //==============================================================================
 procedure TRTLActorHeight_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorHeight(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfHeight);
 end;
 
 //==============================================================================
@@ -4485,7 +992,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpawnHealth_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSpawnHealth(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSpawnHealth);
 end;
 
 //==============================================================================
@@ -4495,7 +1002,7 @@ end;
 //==============================================================================
 procedure TRTLActorMass_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorMass(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfMass, T);
 end;
 
 //==============================================================================
@@ -4505,7 +1012,7 @@ end;
 //==============================================================================
 procedure TRTLActorMass_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorMass(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfMass);
 end;
 
 //==============================================================================
@@ -4515,7 +1022,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomParams_W(Self: TRTLActor; const T: Integer; const t1: string);
 begin
-  PS_SetActorCustomParam(LongWord(Self), t1, T);
+  PS_Actors.SetActorCustomParam(LongWord(Self), t1, T);
 end;
 
 //==============================================================================
@@ -4525,7 +1032,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomParams_R(Self: TRTLActor; var T: Integer; const t1: string);
 begin
-  T := PS_GetActorCustomParam(LongWord(Self), t1);
+  T := PS_Actors.GetActorCustomParam(LongWord(Self), t1);
 end;
 
 //==============================================================================
@@ -4535,7 +1042,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomDropItem_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorCustomDropItem(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfCustomDropItem, T);
 end;
 
 //==============================================================================
@@ -4545,7 +1052,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomDropItem_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorCustomDropItem(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfCustomDropItem);
 end;
 
 //==============================================================================
@@ -4555,7 +1062,7 @@ end;
 //==============================================================================
 procedure TRTLActorPushFactor_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorPushFactor(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfPushFactor, T);
 end;
 
 //==============================================================================
@@ -4565,7 +1072,7 @@ end;
 //==============================================================================
 procedure TRTLActorPushFactor_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorPushFactor(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfPushFactor);
 end;
 
 //==============================================================================
@@ -4575,7 +1082,7 @@ end;
 //==============================================================================
 procedure TRTLActorScale_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorScale(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfScale, T);
 end;
 
 //==============================================================================
@@ -4585,7 +1092,7 @@ end;
 //==============================================================================
 procedure TRTLActorScale_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorScale(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfScale);
 end;
 
 //==============================================================================
@@ -4595,7 +1102,7 @@ end;
 //==============================================================================
 procedure TRTLActorGravity_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorGravity(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfGravity, T);
 end;
 
 //==============================================================================
@@ -4605,7 +1112,7 @@ end;
 //==============================================================================
 procedure TRTLActorGravity_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorGravity(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfGravity);
 end;
 
 //==============================================================================
@@ -4615,7 +1122,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpecial_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorSpecial(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfSpecial, T);
 end;
 
 //==============================================================================
@@ -4625,7 +1132,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpecial_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSpecial(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSpecial);
 end;
 
 //==============================================================================
@@ -4635,7 +1142,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg1_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorArg1(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfArg1, T);
 end;
 
 //==============================================================================
@@ -4645,7 +1152,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg1_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorArg1(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfArg1);
 end;
 
 //==============================================================================
@@ -4655,7 +1162,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg2_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorArg2(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfArg2, T);
 end;
 
 //==============================================================================
@@ -4665,7 +1172,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg2_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorArg2(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfArg2);
 end;
 
 //==============================================================================
@@ -4675,7 +1182,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg3_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorArg3(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfArg3, T);
 end;
 
 //==============================================================================
@@ -4685,7 +1192,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg3_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorArg3(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfArg3);
 end;
 
 //==============================================================================
@@ -4695,7 +1202,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg4_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorArg4(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfArg4, T);
 end;
 
 //==============================================================================
@@ -4705,7 +1212,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg4_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorArg4(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfArg4);
 end;
 
 //==============================================================================
@@ -4715,7 +1222,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg5_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorArg5(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfArg5, T);
 end;
 
 //==============================================================================
@@ -4725,7 +1232,7 @@ end;
 //==============================================================================
 procedure TRTLActorArg5_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorArg5(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfArg5);
 end;
 
 //==============================================================================
@@ -4735,7 +1242,7 @@ end;
 //==============================================================================
 procedure TRTLActorWeaveIndexXY_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorWeaveIndexXY(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfWeaveIndexXY, T);
 end;
 
 //==============================================================================
@@ -4745,7 +1252,7 @@ end;
 //==============================================================================
 procedure TRTLActorWeaveIndexXY_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorWeaveIndexXY(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfWeaveIndexXY);
 end;
 
 //==============================================================================
@@ -4755,7 +1262,7 @@ end;
 //==============================================================================
 procedure TRTLActorWeaveIndexZ_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorWeaveIndexZ(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfWeaveIndexXY, T); // the old code wrote the XY index
 end;
 
 //==============================================================================
@@ -4765,7 +1272,7 @@ end;
 //==============================================================================
 procedure TRTLActorWeaveIndexZ_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorWeaveIndexZ(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfWeaveIndexZ);
 end;
 
 //==============================================================================
@@ -4775,7 +1282,7 @@ end;
 //==============================================================================
 procedure TRTLActorFriction_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorFriction(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfFriction, T);
 end;
 
 //==============================================================================
@@ -4785,7 +1292,7 @@ end;
 //==============================================================================
 procedure TRTLActorFriction_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorFriction(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfFriction);
 end;
 
 //==============================================================================
@@ -4795,7 +1302,7 @@ end;
 //==============================================================================
 procedure TRTLActorPainChance_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorPainChance(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfPainChance, T);
 end;
 
 //==============================================================================
@@ -4805,7 +1312,7 @@ end;
 //==============================================================================
 procedure TRTLActorPainChance_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorPainChance(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfPainChance);
 end;
 
 //==============================================================================
@@ -4815,7 +1322,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpriteDX_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorSpriteDX(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfSpriteDX, T);
 end;
 
 //==============================================================================
@@ -4825,7 +1332,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpriteDX_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSpriteDX(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSpriteDX);
 end;
 
 //==============================================================================
@@ -4835,7 +1342,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpriteDY_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorSpriteDY(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfSpriteDY, T);
 end;
 
 //==============================================================================
@@ -4845,7 +1352,7 @@ end;
 //==============================================================================
 procedure TRTLActorSpriteDY_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSpriteDY(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSpriteDY);
 end;
 
 //==============================================================================
@@ -4855,7 +1362,7 @@ end;
 //==============================================================================
 procedure TRTLActorInfightingGroup_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorInfightingGroup(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfInfightingGroup, T);
 end;
 
 //==============================================================================
@@ -4865,7 +1372,7 @@ end;
 //==============================================================================
 procedure TRTLActorInfightingGroup_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorInfightingGroup(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfInfightingGroup);
 end;
 
 //==============================================================================
@@ -4875,7 +1382,7 @@ end;
 //==============================================================================
 procedure TRTLActorProjectileGroup_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorProjectileGroup(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfProjectileGroup, T);
 end;
 
 //==============================================================================
@@ -4885,7 +1392,7 @@ end;
 //==============================================================================
 procedure TRTLActorProjectileGroup_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorProjectileGroup(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfProjectileGroup);
 end;
 
 //==============================================================================
@@ -4895,7 +1402,7 @@ end;
 //==============================================================================
 procedure TRTLActorSplashGroup_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorSplashGroup(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfSplashGroup, T);
 end;
 
 //==============================================================================
@@ -4905,7 +1412,7 @@ end;
 //==============================================================================
 procedure TRTLActorSplashGroup_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorSplashGroup(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfSplashGroup);
 end;
 
 //==============================================================================
@@ -4915,7 +1422,7 @@ end;
 //==============================================================================
 procedure TRTLActorTranslation_W(Self: TRTLActor; const T: string);
 begin
-  PS_SetActorTranslation(LongWord(Self), T);
+  PS_Actors.SetText(LongWord(Self), actTranslation, T);
 end;
 
 //==============================================================================
@@ -4925,7 +1432,7 @@ end;
 //==============================================================================
 procedure TRTLActorTranslation_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorTranslation(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actTranslation);
 end;
 
 //==============================================================================
@@ -4935,7 +1442,7 @@ end;
 //==============================================================================
 procedure TRTLActorBloodColor_W(Self: TRTLActor; const T: string);
 begin
-  PS_SetActorBloodColor(LongWord(Self), T);
+  PS_Actors.SetText(LongWord(Self), actBloodColor, T);
 end;
 
 //==============================================================================
@@ -4945,7 +1452,7 @@ end;
 //==============================================================================
 procedure TRTLActorBloodColor_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorBloodColor(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actBloodColor);
 end;
 
 //==============================================================================
@@ -4956,9 +1463,9 @@ end;
 procedure TRTLActorFlags_W(Self: TRTLActor; const T: Boolean; const t1: LongWord);
 begin
   if T then
-    PS_SetActorFlag(LongWord(Self), t1)
+    PS_Actors.SetActorFlag(LongWord(Self), t1)
   else
-    PS_UnSetActorFlag(LongWord(Self), t1)
+    PS_Actors.UnSetActorFlag(LongWord(Self), t1)
 end;
 
 //==============================================================================
@@ -4968,7 +1475,7 @@ end;
 //==============================================================================
 procedure TRTLActorFlags_R(Self: TRTLActor; var T: Boolean; const t1: LongWord);
 begin
-  T := PS_CheckActorFlag(LongWord(Self), t1);
+  T := PS_Actors.CheckActorFlag(LongWord(Self), t1);
 end;
 
 //==============================================================================
@@ -4978,7 +1485,7 @@ end;
 //==============================================================================
 procedure TRTLActorName_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorName(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actName);
 end;
 
 {$IFDEF STRIFE}
@@ -4990,7 +1497,7 @@ end;
 //==============================================================================
 procedure TRTLActorName2_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorName2(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actName2);
 end;
 {$ENDIF}
 
@@ -5001,7 +1508,7 @@ end;
 //==============================================================================
 procedure TRTLActorPlayer_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorPlayer(LongWord(Self));
+  T := PS_Actors.GetActorPlayer(LongWord(Self));
 end;
 
 //==============================================================================
@@ -5011,7 +1518,7 @@ end;
 //==============================================================================
 procedure TRTLActorMobjType_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorMobjType(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfMobjType);
 end;
 
 //==============================================================================
@@ -5021,7 +1528,7 @@ end;
 //==============================================================================
 procedure TRTLActorEditorNumber_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorEditorNumber(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfEditorNumber);
 end;
 
 //==============================================================================
@@ -5031,7 +1538,7 @@ end;
 //==============================================================================
 procedure TRTLActorSeeSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorSeeSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actSeeSound);
 end;
 
 //==============================================================================
@@ -5041,7 +1548,7 @@ end;
 //==============================================================================
 procedure TRTLActorAttackSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorAttackSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actAttackSound);
 end;
 
 //==============================================================================
@@ -5051,7 +1558,7 @@ end;
 //==============================================================================
 procedure TRTLActorPainSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorPainSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actPainSound);
 end;
 
 //==============================================================================
@@ -5061,7 +1568,7 @@ end;
 //==============================================================================
 procedure TRTLActorDeathSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorDeathSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actDeathSound);
 end;
 
 //==============================================================================
@@ -5071,7 +1578,7 @@ end;
 //==============================================================================
 procedure TRTLActorActiveSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorActiveSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actActiveSound);
 end;
 
 //==============================================================================
@@ -5081,7 +1588,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomSound1_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorCustomSound1(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actCustomSound1);
 end;
 
 //==============================================================================
@@ -5091,7 +1598,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomSound2_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorCustomSound2(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actCustomSound2);
 end;
 
 //==============================================================================
@@ -5101,7 +1608,7 @@ end;
 //==============================================================================
 procedure TRTLActorCustomSound3_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorCustomSound3(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actCustomSound3);
 end;
 
 //==============================================================================
@@ -5111,7 +1618,7 @@ end;
 //==============================================================================
 procedure TRTLActorMeleeSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorMeleeSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actMeleeSound);
 end;
 
 //==============================================================================
@@ -5121,7 +1628,7 @@ end;
 //==============================================================================
 procedure TRTLActorRipSound_R(Self: TRTLActor; var T: string);
 begin
-  T := PS_GetActorRipSound(LongWord(Self));
+  T := PS_Actors.GetText(LongWord(Self), actMeleeSound);
 end;
 
 //==============================================================================
@@ -5131,7 +1638,7 @@ end;
 //==============================================================================
 procedure TRTLActorState_R(Self: TRTLActor; var T: Integer);
 begin
-  T := PS_GetActorState(LongWord(Self));
+  T := PS_Actors.GetNumber(LongWord(Self), acfState);
 end;
 
 //==============================================================================
@@ -5141,7 +1648,7 @@ end;
 //==============================================================================
 procedure TRTLActorState_W(Self: TRTLActor; const T: Integer);
 begin
-  PS_SetActorState(LongWord(Self), T);
+  PS_Actors.SetNumber(LongWord(Self), acfState, T);
 end;
 
 //==============================================================================
@@ -6547,6 +3054,85 @@ end;
 
 
 // ----------------------------- MOBJS -----------------------------------------
+
+type
+  TFlagResult = record
+    flags: PInteger;
+    flag: Integer;
+  end;
+
+//==============================================================================
+//==============================================================================
+//
+// _info_flag_result
+//
+//==============================================================================
+function _info_flag_result(const inf: Pmobjinfo_t; const flag: LongWord): TFlagResult;
+begin
+  if flag < 32 then
+  begin
+    Result.flags := @inf.flags;
+    Result.flag := (1 shl flag);
+    Exit;
+  end;
+
+  if flag < 64 then
+  begin
+  {$IFDEF HERETIC_OR_HEXEN}
+    Result.flags := @inf.flags2;
+    Result.flag := (1 shl (flag - 32));
+  {$ELSE}
+    Result.flags := nil;
+    Result.flag := 0;
+  {$ENDIF}
+    Exit;
+  end;
+
+  if flag < 96 then
+  begin
+    Result.flags := @inf.flags_ex;
+    Result.flag := (1 shl (flag - 64));
+    Exit;
+  end;
+
+  if flag < 128 then
+  begin
+    Result.flags := @inf.flags2_ex;
+    Result.flag := (1 shl (flag - 96));
+    Exit;
+  end;
+
+  if flag < 160 then
+  begin
+    Result.flags := @inf.flags3_ex;
+    Result.flag := (1 shl (flag - 128));
+    Exit;
+  end;
+
+  if flag < 192 then
+  begin
+    Result.flags := @inf.flags4_ex;
+    Result.flag := (1 shl (flag - 160));
+    Exit;
+  end;
+
+  if flag < 224 then
+  begin
+    Result.flags := @inf.flags5_ex;
+    Result.flag := (1 shl (flag - 192));
+    Exit;
+  end;
+
+  if flag < 256 then
+  begin
+    Result.flags := @inf.flags6_ex;
+    Result.flag := (1 shl (flag - 224));
+    Exit;
+  end;
+
+  Result.flags := nil;
+  Result.flag := 0;
+end;
 
 //==============================================================================
 //

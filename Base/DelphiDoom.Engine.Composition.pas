@@ -192,6 +192,9 @@ uses
   DelphiDoom.ScriptHost.System.Intf,
   DelphiDoom.Engine.Script.Console,
   DelphiDoom.Engine.Script.DllSource,
+  DelphiDoom.Engine.Script.ActorContext,
+  DelphiDoom.Engine.Script.ActorContext.Intf,
+  DelphiDoom.Engine.Script.Actors,
   DelphiDoom.Engine.Script.Environment,
   DelphiDoom.Engine.Script.GameInfo,
   DelphiDoom.Engine.Script.Keyboard,
@@ -204,6 +207,7 @@ uses
   DelphiDoom.Engine.Script.VariablesFailure,
   DelphiDoom.Engine.Script.VariablesFiles,
   DelphiDoom.Engine.Script.World,
+  DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.World.Intf,
   w_utils,
 {$IFDEF HEXEN}
@@ -885,6 +889,8 @@ var
   LVertices: IScriptVertices;
   LSides: IScriptSides;
   LLines: IScriptLines;
+  LActorContext: IEngineScriptActorContext;
+  LPlayers: IScriptPlayers;
 begin
   if not TScriptGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Script), LGame) then
     I_Error('ComposeEngine(): the game %s has no functions of scripts', [_GAME]);
@@ -896,10 +902,16 @@ begin
   LLines := TScriptHostFactory.CreateLines(LWorld, LGame);
   PS_ConfigureWorldFunctions(LVertices, LSides, LLines,
     TScriptHostFactory.CreateSectors(LWorld, LGame));
-  // the mobj types and the players: psi_game keeps the first for the properties of the classes of the scripts
+  // the actor that the script runs for (PS_Event* and A_RunScript enter it), the mobj types, the
+  // players and the actors: psi_game keeps them for the properties of the classes of the scripts
+  LActorContext := TEngineScriptActorContext.Create;
+  LPlayers := TScriptHostFactory.CreatePlayers(TEngineScriptPlayers.Create(LActorContext), LGame);
   PS_ConfigureMobjFunctions(
-    TScriptHostFactory.CreateMobjInfo(TEngineScriptMobjInfo.Create, LGame),
-    TScriptHostFactory.CreatePlayers(TEngineScriptPlayers.Create, LGame));
+    TScriptHostFactory.CreateMobjInfo(TEngineScriptMobjInfo.Create, LGame), LPlayers);
+  PS_ConfigureActorFunctions(
+    TScriptHostFactory.CreateActors(TEngineScriptActors.Create(LActorContext), LActorContext,
+      LPlayers, LGame),
+    LActorContext);
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),

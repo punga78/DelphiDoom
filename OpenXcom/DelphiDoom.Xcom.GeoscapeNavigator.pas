@@ -48,7 +48,9 @@ uses
   DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
-  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
+  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
+  DelphiDoom.XcomGeoscape.FundingState, DelphiDoom.XcomBasescape.PurchaseState,DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.TransferBaseState,
+  DelphiDoom.XcomBasescape.CraftInfoState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
@@ -101,10 +103,13 @@ end;
 
 procedure TXcomGameNavigator.OpenFunding;
 begin
+  FHost.PushState(TXcomFundingState.Create(FHost));
 end;
 
 procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility;
   AParent: TXcomState);
+var
+  LCraftIndex: Integer;
 begin
   case AScreen of
     bsNewBase:
@@ -128,6 +133,20 @@ begin
       FHost.PushState(TXcomBaseInfoState.Create(FHost, ABase));
     bsSoldiers:
       FHost.PushState(TXcomSoldiersState.Create(FHost, ABase));
+    bsPurchase:
+      FHost.PushState(TXcomPurchaseState.Create(FHost, ABase));
+    bsCraftInfo:
+      if (AParent is TXcomBasescapeState) and Assigned(AFacility) and
+        (TXcomBasescapeState(AParent).View.CraftOf(AFacility) <> nil) then
+      begin
+        LCraftIndex := ABase.Crafts.IndexOf(TXcomBasescapeState(AParent).View.CraftOf(AFacility));
+        if LCraftIndex >= 0 then
+          FHost.PushState(TXcomCraftInfoState.Create(FHost, ABase, LCraftIndex));
+      end;
+    bsSell:
+      FHost.PushState(TXcomSellState.Create(FHost, ABase));
+    bsTransfer:
+      FHost.PushState(TXcomTransferBaseState.Create(FHost, ABase));
     bsCrafts:
       FHost.PushState(TXcomCraftsState.Create(FHost, ABase));
   end;

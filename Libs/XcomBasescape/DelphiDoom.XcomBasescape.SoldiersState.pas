@@ -33,6 +33,7 @@ type
     FTxtCraft: TXcomText;
     FList: TXcomTextList;
     procedure OkClick(AAction: TXcomAction);
+    procedure ListClick(AAction: TXcomAction);
   public
     /// <param name="ABase">The base (not owned)</param>
     constructor Create(AHost: TXcomStateHost; ABase: TXcomBase);
@@ -44,7 +45,7 @@ implementation
 
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomBasescape.Names;
+  DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SoldierInfoState;
 
 { TXcomSoldiersState }
 
@@ -107,6 +108,7 @@ begin
   FList.SetSelectable(True);
   FList.SetBackground(FWindow);
   FList.SetMargin(8);
+  FList.OnMouseClick(ListClick);
 end;
 
 procedure TXcomSoldiersState.Init;
@@ -127,6 +129,11 @@ begin
   end;
   if (LRow > 0) and (FList.GetScroll >= LRow) then
     FList.ScrollTo(0);
+end;
+
+procedure TXcomSoldiersState.ListClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomSoldierInfoState.Create(Host, FBase, FList.GetSelectedRow));
 end;
 
 procedure TXcomSoldiersState.OkClick(AAction: TXcomAction);
