@@ -177,6 +177,36 @@ begin
   Result := FPckSprites.TerrainFrame(ADataSetName, AIndex);
 end;
 
+// Mod::modResources: the battlescape info screen gets its rows nine pixels apart
+procedure ModifyUnitInfoBackground(ASurface: TXcomSurface);
+var
+  LX, LY: Integer;
+begin
+  // erase the old lines
+  LY := 39;
+  while LY < 199 do
+  begin
+    for LX := 0 to 168 do
+      ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, 30));
+    Inc(LY, 10);
+  end;
+  // draw the new lines, with the bottom row of pixels as a basis
+  LY := 190;
+  while LY > 37 do
+  begin
+    for LX := 0 to 168 do
+      ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, 199));
+    Dec(LY, 9);
+  end;
+  // move the top of the graph down by eight pixels to erase the row that is not needed
+  for LY := 37 downto 30 do
+    for LX := 0 to 319 do
+    begin
+      ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, LY - 8));
+      ASurface.SetPixel(LX, LY - 8, 0);
+    end;
+end;
+
 function TXcomBattleGraphics.LoadScreen(const AName: string): TXcomSurface;
 var
   LBase: string;
@@ -216,6 +246,8 @@ begin
   LImage := LDecoder.Decode(FFiles.LoadBytes('UFOGRAPH/' + LFile), SCREEN_WIDTH, SCREEN_HEIGHT);
   Result := TXcomSurface.Create(LImage.Width, LImage.Height);
   Move(LImage.Pixels[0], Result.PixelPointer(0, 0)^, LImage.Width * LImage.Height);
+  if SameText(AName, 'UNIBORD.PCK') then
+    ModifyUnitInfoBackground(Result);
 end;
 
 function TXcomBattleGraphics.Surface(const AName: string): TXcomSurface;

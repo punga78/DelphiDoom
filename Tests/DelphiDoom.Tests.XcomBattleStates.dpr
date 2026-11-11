@@ -24,7 +24,12 @@ uses
   DelphiDoom.Tests.XcomBattleStates.BattlescapeState in 'Source\DelphiDoom.Tests.XcomBattleStates.BattlescapeState.pas',
   DelphiDoom.Tests.XcomBattleStates.TurnScreens in 'Source\DelphiDoom.Tests.XcomBattleStates.TurnScreens.pas',
   DelphiDoom.Tests.XcomBattleStates.MixerAudio in 'Source\DelphiDoom.Tests.XcomBattleStates.MixerAudio.pas',
-  DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas';
+  DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas',
+  DelphiDoom.Tests.XcomBattleStates.BattleWorld in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleWorld.pas',
+  DelphiDoom.Tests.XcomBattleStates.UnitInfoState in 'Source\DelphiDoom.Tests.XcomBattleStates.UnitInfoState.pas',
+  DelphiDoom.Tests.XcomBattleStates.MiniMapView in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapView.pas',
+  DelphiDoom.Tests.XcomBattleStates.MiniMapState in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapState.pas',
+  DelphiDoom.Tests.XcomBattleStates.AbortMissionState in 'Source\DelphiDoom.Tests.XcomBattleStates.AbortMissionState.pas';
 
 var
   Runner: ITestRunner;

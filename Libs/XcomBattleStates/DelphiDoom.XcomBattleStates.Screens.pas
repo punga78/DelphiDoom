@@ -55,7 +55,9 @@ implementation
 
 uses
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.NextTurnState,
-  DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState;
+  DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState,
+  DelphiDoom.XcomBattleStates.UnitInfoState,
+  DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState;
 
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
   const AOptions: TXcomBattleOptionsScreen);
@@ -91,7 +93,8 @@ end;
 function TXcomBattleScreens.UnitInfo(AParent: TXcomState; const AUnit: TXcomBattleUnit; AFromInventory,
   AMindProbe: Boolean): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomUnitInfoState.Create(AParent.Host, AParent as TXcomBattlescapeState, AUnit, AFromInventory,
+    AMindProbe);
 end;
 
 function TXcomBattleScreens.Inventory(AParent: TXcomState; ATimeUnits: Boolean): TXcomState;
@@ -101,7 +104,7 @@ end;
 
 function TXcomBattleScreens.MiniMap(AParent: TXcomState): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomMiniMapState.Create(AParent.Host, AParent as TXcomBattlescapeState);
 end;
 
 function TXcomBattleScreens.Options(AParent: TXcomState): TXcomState;
@@ -113,7 +116,7 @@ end;
 
 function TXcomBattleScreens.AbortMission(AParent: TXcomState): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomAbortMissionState.Create(AParent.Host, AParent as TXcomBattlescapeState);
 end;
 
 function TXcomBattleScreens.NextTurn(AParent: TXcomState): TXcomState;
