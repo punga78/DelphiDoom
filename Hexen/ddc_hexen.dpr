@@ -970,6 +970,7 @@ uses
   DelphiDoom.ScriptHost.World.Vertices in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Vertices.pas',
   DelphiDoom.ScriptHost.World.Sides in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sides.pas',
   DelphiDoom.ScriptHost.World.Lines in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Lines.pas',
+  DelphiDoom.ScriptHost.World.Sectors in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sectors.pas',
   DelphiDoom.ScriptHost.Keys.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.Table.pas',
   DelphiDoom.ScriptHost.Keys in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.pas',
   DelphiDoom.Engine.Script.Output in '..\Base\DelphiDoom.Engine.Script.Output.pas',

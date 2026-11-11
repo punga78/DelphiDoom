@@ -892,7 +892,8 @@ begin
   LVertices := TScriptHostFactory.CreateVertices(LWorld);
   LSides := TScriptHostFactory.CreateSides(LWorld);
   LLines := TScriptHostFactory.CreateLines(LWorld, LGame);
-  PS_ConfigureWorldFunctions(LVertices, LSides, LLines);
+  PS_ConfigureWorldFunctions(LVertices, LSides, LLines,
+    TScriptHostFactory.CreateSectors(LWorld, LGame));
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),

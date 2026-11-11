@@ -333,70 +333,7 @@ begin
   // ---------------------------- Lines ----------------------------------------
   PS_Lines.Describe(ATable);
 // --------------------------- SECTORS -----------------------------------------
-  ATable.AddWithCustomResult('procedure TSector(const id: Integer);', '!TSector', 'function TSector(const id: Integer): !TSector;', @PS_TSector);
-  ATable.Add('function GetSectorFloorHeight(const sec: Integer): fixed_t;', @PS_GetSectorFloorHeight);
-  ATable.Add('procedure SetSectorFloorHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorFloorHeight);
-  ATable.Add('function GetSectorCeilingHeight(const sec: Integer): fixed_t;', @PS_GetSectorCeilingHeight);
-  ATable.Add('procedure SetSectorCeilingHeight(const sec: Integer; const x: fixed_t);', @PS_SetSectorCeilingHeight);
-  ATable.Add('function GetSectorFloorPicture(const sec: Integer): string;', @PS_GetSectorFloorPicture);
-  ATable.Add('procedure SetSectorFloorPicture(const sec: Integer; const pic: string);', @PS_SetSectorFloorPicture);
-  ATable.Add('function GetSectorCeilingPicture(const sec: Integer): string;', @PS_GetSectorCeilingPicture);
-  ATable.Add('procedure SetSectorCeilingPicture(const sec: Integer; const pic: string);', @PS_SetSectorCeilingPicture);
-  ATable.Add('function GetSectorLightLevel(const sec: Integer): Integer;', @PS_GetSectorLightLevel);
-  ATable.Add('procedure SetSectorLightLevel(const sec: Integer; const x: Integer);', @PS_SetSectorLightLevel);
-  ATable.Add('function GetSectorSpecial(const sec: Integer): Integer;', @PS_GetSectorSpecial);
-  ATable.Add('function GetSectorTag(const sec: Integer): Integer;', @PS_GetSectorTag);
-  ATable.Add('procedure SetSectorTag(const sec: Integer; const x: Integer);', @PS_SetSectorTag);
-  ATable.Add('function GetSectorActors(const sec: Integer): TActorArray;', @PS_GetSectorActors);
-  ATable.Add('function GetSectorNumActors(const sec: Integer): Integer;', @PS_GetSectorNumActors);
-  ATable.Add('function GetSectorLines(const sec: Integer): TIntegerArray;', @PS_GetSectorLines);
-  ATable.Add('function GetSectorNumLines(const sec: Integer): Integer;', @PS_GetSectorNumLines);
-  {$IFDEF DOOM_OR_STRIFE}
-  ATable.Add('function GetSectorFloorXOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorXOffset);
-  ATable.Add('procedure SetSectorFloorXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorXOffset);
-  ATable.Add('function GetSectorFloorYOffset(const sec: Integer): fixed_t;', @PS_GetSectorFloorYOffset);
-  ATable.Add('procedure SetSectorFloorYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorFloorYOffset);
-  ATable.Add('function GetSectorCeilingXOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingXOffset);
-  ATable.Add('procedure SetSectorCeilingXOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingXOffset);
-  ATable.Add('function GetSectorCeilingYOffset(const sec: Integer): fixed_t;', @PS_GetSectorCeilingYOffset);
-  ATable.Add('procedure SetSectorCeilingYOffset(const sec: Integer; const offs: fixed_t);', @PS_SetSectorCeilingYOffset);
-  {$ENDIF}
-  ATable.Add('function GetSectorFloorAngle(const sec: Integer): angle_t;', @PS_GetSectorFloorAngle);
-  ATable.Add('procedure SetSectorFloorAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorFloorAngle);
-  ATable.Add('function GetSectorFloorAngleX(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleX);
-  ATable.Add('procedure SetSectorFloorAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorFloorAngleX);
-  ATable.Add('function GetSectorFloorAngleY(const sec: Integer): fixed_t;', @PS_GetSectorFloorAngleY);
-  ATable.Add('procedure SetSectorFloorAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorFloorAngleY);
-  ATable.Add('function GetSectorCeilingAngle(const sec: Integer): angle_t;', @PS_GetSectorCeilingAngle);
-  ATable.Add('procedure SetSectorCeilingAngle(const sec: Integer; const ang: angle_t);', @PS_SetSectorCeilingAngle);
-  ATable.Add('function GetSectorCeilingAngleX(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleX);
-  ATable.Add('procedure SetSectorCeilingAngleX(const sec: Integer; const angx: fixed_t);', @PS_SetSectorCeilingAngleX);
-  ATable.Add('function GetSectorCeilingAngleY(const sec: Integer): fixed_t;', @PS_GetSectorCeilingAngleY);
-  ATable.Add('procedure SetSectorCeilingAngleY(const sec: Integer; const angy: fixed_t);', @PS_SetSectorCeilingAngleY);
-  ATable.Add('function GetSectorRippleFloor(const sec: Integer): Boolean;', @PS_GetSectorRippleFloor);
-  ATable.Add('procedure SetSectorRippleFloor(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleFloor);
-  ATable.Add('function GetSectorRippleCeiling(const sec: Integer): Boolean;', @PS_GetSectorRippleCeiling);
-  ATable.Add('procedure SetSectorRippleCeiling(const sec: Integer; const rpl: Boolean);', @PS_SetSectorRippleCeiling);
-  ATable.Add('function GetSectorInterpolate(const sec: Integer): Boolean;', @PS_GetSectorInterpolate);
-  ATable.Add('procedure SetSectorInterpolate(const sec: Integer; const intpl: Boolean);', @PS_SetSectorInterpolate);
-  ATable.Add('function GetSectorFog(const sec: Integer): Boolean;', @PS_GetSectorFog);
-  ATable.Add('procedure SetSectorFog(const sec: Integer; const fog: Boolean);', @PS_SetSectorFog);
-  ATable.Add('function GetSectorGravity(const sec: Integer): fixed_t;', @PS_GetSectorGravity);  // JVAL: sector gravity (VERSION 204)
-  ATable.Add('procedure SetSectorGravity(const sec: Integer; const grav: fixed_t);', @PS_SetSectorGravity); // JVAL: sector gravity (VERSION 204)
-  ATable.Add('function GetSectorWindThrust(const sec: Integer): Integer;', @PS_GetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
-  ATable.Add('procedure SetSectorWindThrust(const sec: Integer; const wthrust: Integer);', @PS_SetSectorWindThrust);  // JVAL: 20220223 - Sector WindThrust
-  ATable.Add('function GetSectorWindAngle(const sec: Integer): LongWord;', @PS_GetSectorWindAngle); // JVAL: 20220223 - Sector WindAngle
-  ATable.Add('procedure SetSectorWindAngle(const sec: Integer; const wangle: LongWord);', @PS_SetSectorWindAngle);  // JVAL: 20220223 - Sector WindAngle
-  ATable.Add('function GetSectorMidSector(const sec: Integer): Integer;', @PS_GetSectorMidSector);
-  ATable.Add('function GetSectorSlopeSector(const sec: Integer): Integer;', @PS_GetSectorSlopeSector);
-  ATable.Add('function SkyPicture: string;', @PS_SkyPicture);
-  ATable.Add('function IsValidSector(const sec: Integer): boolean;', @PS_IsValidSector);
-  ATable.Add('function GetSectorCount: Integer;', @PS_GetSectorCount);
-  ATable.Add('function FindSectorsFromTag(const tag: integer): TIntegerArray;', @PS_FindSectorsFromTag);
-  ATable.Add('procedure SectorPlaySound(const secid: integer; const snd: string);', @PS_SectorPlaySound);
-  ATable.Add('procedure SectorMoveZ(const secid: integer; const dz: fixed_t);', @PS_SectorMoveZ);
-  ATable.Add('procedure SetSectorFloorSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetFloorSlope);
-  ATable.Add('procedure SetSectorCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', @PS_SetCeilingSlope);
+  PS_Sectors.Describe(ATable);
 // --------------------------- PLAYERS -----------------------------------------
   ATable.Add('function PlayerInGame(const plnum: integer): boolean;', @PS_PlayerInGame);
   {$IFDEF DOOM_OR_STRIFE}

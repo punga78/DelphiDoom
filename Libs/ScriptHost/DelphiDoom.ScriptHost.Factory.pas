@@ -58,6 +58,8 @@ type
     class function CreateSides(const AWorld: IScriptWorld): IScriptSides; static;
     /// <summary>The line functions of PS_GAME (Hexen has no tag and no transparent lines)</summary>
     class function CreateLines(const AWorld: IScriptWorld; const AGame: TScriptGame): IScriptLines; static;
+    /// <summary>The sector functions of PS_GAME (the offsets of the textures exist in Doom and Strife only)</summary>
+    class function CreateSectors(const AWorld: IScriptWorld; const AGame: TScriptGame): IScriptSectors; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -89,6 +91,7 @@ uses
   DelphiDoom.ScriptHost.Serializer,
   DelphiDoom.ScriptHost.Variables,
   DelphiDoom.ScriptHost.World.Lines,
+  DelphiDoom.ScriptHost.World.Sectors,
   DelphiDoom.ScriptHost.World.Sides,
   DelphiDoom.ScriptHost.World.Vertices;
 
@@ -150,6 +153,12 @@ class function TScriptHostFactory.CreateLines(const AWorld: IScriptWorld;
   const AGame: TScriptGame): IScriptLines;
 begin
   Result := TScriptLines.Create(AWorld, AGame);
+end;
+
+class function TScriptHostFactory.CreateSectors(const AWorld: IScriptWorld;
+  const AGame: TScriptGame): IScriptSectors;
+begin
+  Result := TScriptSectors.Create(AWorld, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

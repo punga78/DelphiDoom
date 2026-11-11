@@ -35,6 +35,21 @@ type
     LineFlags: array[0..3, TScriptLineFlag] of Boolean;
     LineSides: array[0..3, Boolean] of Integer;
     LineSectors: array[0..3, Boolean] of Integer;
+    /// <summary>Three sectors (see the constructor)</summary>
+    SectorHeights: array[0..2, TScriptPlane] of Integer;
+    SectorPictures: array[0..2, TScriptPlane] of string;
+    SectorLights: array[0..2] of Integer;
+    SectorSpecials: array[0..2] of Integer;
+    SectorTags: array[0..2] of Integer;
+    SectorKeys: array[0..2] of TArray<Cardinal>;
+    SectorLines: array[0..2] of TArray<Integer>;
+    SectorOffsets: array[0..2, TScriptSectorOffset] of Integer;
+    SectorAngles: array[0..2, TScriptSectorAngle] of Integer;
+    SectorFlags: array[0..2, TScriptSectorFlag] of Boolean;
+    SectorValues: array[0..2, TScriptSectorValue] of Integer;
+    SectorMids: array[0..2] of Integer;
+    SectorSlopes: array[0..2] of Integer;
+    SkyName: string;
     /// <summary>Every write that reached the world, as text</summary>
     Writes: string;
     constructor Create;
@@ -61,6 +76,35 @@ type
     procedure SetLineFlag(const AIndex: Integer; const AFlag: TScriptLineFlag; const AValue: Boolean);
     function LineSideNumber(const AIndex: Integer; const ASecond: Boolean): Integer;
     function LineSectorId(const AIndex: Integer; const ASecond: Boolean): Integer;
+    function SectorCount: Integer;
+    function SectorHeight(const AIndex: Integer; const APlane: TScriptPlane): Integer;
+    procedure SetSectorHeight(const AIndex: Integer; const APlane: TScriptPlane; const AValue: Integer);
+    function SectorPicture(const AIndex: Integer; const APlane: TScriptPlane): string;
+    procedure SetSectorPicture(const AIndex: Integer; const APlane: TScriptPlane; const AName: string);
+    function SectorLightLevel(const AIndex: Integer): Integer;
+    procedure SetSectorLightLevel(const AIndex: Integer; const AValue: Integer);
+    function SectorSpecial(const AIndex: Integer): Integer;
+    function SectorTag(const AIndex: Integer): Integer;
+    procedure SetSectorTag(const AIndex: Integer; const AValue: Integer);
+    function SectorActorCount(const AIndex: Integer): Integer;
+    function SectorActorKeys(const AIndex: Integer): TArray<Cardinal>;
+    function SectorLineCount(const AIndex: Integer): Integer;
+    function SectorLineNumber(const AIndex: Integer; const AOrder: Integer): Integer;
+    function SectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset): Integer;
+    procedure SetSectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset; const AValue: Integer);
+    function SectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle): Integer;
+    procedure SetSectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle; const AValue: Integer);
+    function SectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag): Boolean;
+    procedure SetSectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag; const AValue: Boolean);
+    function SectorValue(const AIndex: Integer; const AKind: TScriptSectorValue): Integer;
+    procedure SetSectorValue(const AIndex: Integer; const AKind: TScriptSectorValue; const AValue: Integer);
+    function SectorMidSector(const AIndex: Integer): Integer;
+    function SectorSlopeSectorId(const AIndex: Integer): Integer;
+    function SkyPicture: string;
+    procedure MoveSectorZ(const AIndex: Integer; const ADelta: Integer);
+    procedure PlaySectorSound(const AIndex: Integer; const AName: string);
+    procedure SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+    procedure SetCeilingSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
   end;
 
   [TestFixture]
@@ -231,6 +275,11 @@ var
   LKind: TScriptSideOffset;
   LPart: TScriptSidePart;
   LArgument: Integer;
+  LPlane: TScriptPlane;
+  LOffset: TScriptSectorOffset;
+  LAngle: TScriptSectorAngle;
+  LFlag: TScriptSectorFlag;
+  LValue: TScriptSectorValue;
 begin
   inherited Create;
   for LIndex := 0 to 2 do
@@ -264,6 +313,34 @@ begin
   LineSides[2, True] := 99;
   LineTags[1] := 6;
   LineTags[3] := 5;
+  for LIndex := 0 to 2 do
+  begin
+    for LPlane := Low(TScriptPlane) to High(TScriptPlane) do
+    begin
+      SectorHeights[LIndex, LPlane] := 128 * (LIndex + 1) * (Ord(LPlane) + 1);
+      SectorPictures[LIndex, LPlane] := Format('FLAT%d%d', [LIndex, Ord(LPlane)]);
+    end;
+    SectorLights[LIndex] := 100 + LIndex;
+    SectorSpecials[LIndex] := 9 + LIndex;
+    SectorTags[LIndex] := 40;
+    for LOffset := Low(TScriptSectorOffset) to High(TScriptSectorOffset) do
+      SectorOffsets[LIndex, LOffset] := 10 * LIndex + Ord(LOffset);
+    for LAngle := Low(TScriptSectorAngle) to High(TScriptSectorAngle) do
+      SectorAngles[LIndex, LAngle] := 100 * LIndex + Ord(LAngle);
+    for LFlag := Low(TScriptSectorFlag) to High(TScriptSectorFlag) do
+      SectorFlags[LIndex, LFlag] := Odd(LIndex + Ord(LFlag));
+    for LValue := Low(TScriptSectorValue) to High(TScriptSectorValue) do
+      SectorValues[LIndex, LValue] := 5000 * (LIndex + 1) + Ord(LValue);
+    SectorMids[LIndex] := LIndex;
+    SectorSlopes[LIndex] := SCRIPT_WORLD_NO_SECTOR;
+  end;
+  SectorTags[1] := 41;
+  SectorKeys[0] := TArray<Cardinal>.Create(11, 12, 13);
+  SectorLines[0] := TArray<Integer>.Create(2, 0);
+  SectorLines[1] := TArray<Integer>.Create(1);
+  SectorMids[2] := 77;
+  SectorSlopes[2] := 1;
+  SkyName := 'F_SKY1';
 end;
 
 function TFakeWorld.VertexCount: Integer;
@@ -389,6 +466,161 @@ end;
 function TFakeWorld.LineSectorId(const AIndex: Integer; const ASecond: Boolean): Integer;
 begin
   Result := LineSectors[AIndex, ASecond];
+end;
+
+function TFakeWorld.SectorCount: Integer;
+begin
+  Result := 3;
+end;
+
+function TFakeWorld.SectorHeight(const AIndex: Integer; const APlane: TScriptPlane): Integer;
+begin
+  Result := SectorHeights[AIndex, APlane];
+end;
+
+procedure TFakeWorld.SetSectorHeight(const AIndex: Integer; const APlane: TScriptPlane;
+  const AValue: Integer);
+begin
+  SectorHeights[AIndex, APlane] := AValue;
+  Writes := Writes + Format('H(%d,%d,%d)', [AIndex, Ord(APlane), AValue]);
+end;
+
+function TFakeWorld.SectorPicture(const AIndex: Integer; const APlane: TScriptPlane): string;
+begin
+  Result := SectorPictures[AIndex, APlane];
+end;
+
+procedure TFakeWorld.SetSectorPicture(const AIndex: Integer; const APlane: TScriptPlane;
+  const AName: string);
+begin
+  SectorPictures[AIndex, APlane] := AName;
+  Writes := Writes + Format('P(%d,%d,%s)', [AIndex, Ord(APlane), AName]);
+end;
+
+function TFakeWorld.SectorLightLevel(const AIndex: Integer): Integer;
+begin
+  Result := SectorLights[AIndex];
+end;
+
+procedure TFakeWorld.SetSectorLightLevel(const AIndex: Integer; const AValue: Integer);
+begin
+  SectorLights[AIndex] := AValue;
+end;
+
+function TFakeWorld.SectorSpecial(const AIndex: Integer): Integer;
+begin
+  Result := SectorSpecials[AIndex];
+end;
+
+function TFakeWorld.SectorTag(const AIndex: Integer): Integer;
+begin
+  Result := SectorTags[AIndex];
+end;
+
+procedure TFakeWorld.SetSectorTag(const AIndex: Integer; const AValue: Integer);
+begin
+  SectorTags[AIndex] := AValue;
+end;
+
+function TFakeWorld.SectorActorCount(const AIndex: Integer): Integer;
+begin
+  Result := Length(SectorKeys[AIndex]);
+end;
+
+function TFakeWorld.SectorActorKeys(const AIndex: Integer): TArray<Cardinal>;
+begin
+  Result := SectorKeys[AIndex];
+end;
+
+function TFakeWorld.SectorLineCount(const AIndex: Integer): Integer;
+begin
+  Result := Length(SectorLines[AIndex]);
+end;
+
+function TFakeWorld.SectorLineNumber(const AIndex: Integer; const AOrder: Integer): Integer;
+begin
+  Result := SectorLines[AIndex][AOrder];
+end;
+
+function TFakeWorld.SectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset): Integer;
+begin
+  Result := SectorOffsets[AIndex, AKind];
+end;
+
+procedure TFakeWorld.SetSectorOffset(const AIndex: Integer; const AKind: TScriptSectorOffset;
+  const AValue: Integer);
+begin
+  SectorOffsets[AIndex, AKind] := AValue;
+end;
+
+function TFakeWorld.SectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle): Integer;
+begin
+  Result := SectorAngles[AIndex, AKind];
+end;
+
+procedure TFakeWorld.SetSectorAngle(const AIndex: Integer; const AKind: TScriptSectorAngle;
+  const AValue: Integer);
+begin
+  SectorAngles[AIndex, AKind] := AValue;
+end;
+
+function TFakeWorld.SectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag): Boolean;
+begin
+  Result := SectorFlags[AIndex, AFlag];
+end;
+
+procedure TFakeWorld.SetSectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag;
+  const AValue: Boolean);
+begin
+  SectorFlags[AIndex, AFlag] := AValue;
+end;
+
+function TFakeWorld.SectorValue(const AIndex: Integer; const AKind: TScriptSectorValue): Integer;
+begin
+  Result := SectorValues[AIndex, AKind];
+end;
+
+procedure TFakeWorld.SetSectorValue(const AIndex: Integer; const AKind: TScriptSectorValue;
+  const AValue: Integer);
+begin
+  SectorValues[AIndex, AKind] := AValue;
+end;
+
+function TFakeWorld.SectorMidSector(const AIndex: Integer): Integer;
+begin
+  Result := SectorMids[AIndex];
+end;
+
+function TFakeWorld.SectorSlopeSectorId(const AIndex: Integer): Integer;
+begin
+  Result := SectorSlopes[AIndex];
+end;
+
+function TFakeWorld.SkyPicture: string;
+begin
+  Result := SkyName;
+end;
+
+procedure TFakeWorld.MoveSectorZ(const AIndex: Integer; const ADelta: Integer);
+begin
+  Writes := Writes + Format('Z(%d,%d)', [AIndex, ADelta]);
+end;
+
+procedure TFakeWorld.PlaySectorSound(const AIndex: Integer; const AName: string);
+begin
+  Writes := Writes + Format('N(%d,%s)', [AIndex, AName]);
+end;
+
+procedure TFakeWorld.SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+begin
+  Writes := Writes + Format('F(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)',
+    [AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3]);
+end;
+
+procedure TFakeWorld.SetCeilingSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
+begin
+  Writes := Writes + Format('C(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)',
+    [AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3]);
 end;
 
 { TTestScriptHostWorld }

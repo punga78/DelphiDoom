@@ -46,12 +46,13 @@ uses
 //==============================================================================
 //
 // PS_ConfigureWorldFunctions
-// The classes of the vertex, side and line functions (the properties of the
-// classes of the scripts call them)
+// The classes of the vertex, side, line and sector functions (the properties
+// of the classes of the scripts call them)
 //
 //==============================================================================
 procedure PS_ConfigureWorldFunctions(const AVertices: IScriptVertices;
-  const ASides: IScriptSides; const ALines: IScriptLines);
+  const ASides: IScriptSides; const ALines: IScriptLines;
+  const ASectors: IScriptSectors);
 
 //==============================================================================
 //
@@ -73,6 +74,21 @@ function PS_Sides: IScriptSides;
 //
 //==============================================================================
 function PS_Lines: IScriptLines;
+
+//==============================================================================
+//
+// PS_Sectors
+//
+//==============================================================================
+function PS_Sectors: IScriptSectors;
+
+//==============================================================================
+//
+// _playsound
+// Plays a sound (or a random list of sounds) by name from an origin
+//
+//==============================================================================
+procedure _playsound(origin: Pointer; snd: string);
 
 // ---------------------------- ACTORS -----------------------------------------
 
@@ -953,430 +969,6 @@ function PS_R_PointInSubSector(const x: Integer; const y: Integer): Integer;
 // ----------------------------- LINES -----------------------------------------
 
 // --------------------------- SECTORS -----------------------------------------
-
-//==============================================================================
-//
-// PS_TSector
-//
-//==============================================================================
-function PS_TSector(const id: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetSectorFloorHeight
-//
-//==============================================================================
-function PS_GetSectorFloorHeight(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorFloorHeight
-//
-//==============================================================================
-procedure PS_SetSectorFloorHeight(const sec: Integer; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingHeight
-//
-//==============================================================================
-function PS_GetSectorCeilingHeight(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingHeight
-//
-//==============================================================================
-procedure PS_SetSectorCeilingHeight(const sec: Integer; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorFloorPicture
-//
-//==============================================================================
-function PS_GetSectorFloorPicture(const sec: Integer): string;
-
-//==============================================================================
-//
-// PS_SetSectorFloorPicture
-//
-//==============================================================================
-procedure PS_SetSectorFloorPicture(const sec: Integer; const pic: string);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingPicture
-//
-//==============================================================================
-function PS_GetSectorCeilingPicture(const sec: Integer): string;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingPicture
-//
-//==============================================================================
-procedure PS_SetSectorCeilingPicture(const sec: Integer; const pic: string);
-
-//==============================================================================
-//
-// PS_GetSectorLightLevel
-//
-//==============================================================================
-function PS_GetSectorLightLevel(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorLightLevel
-//
-//==============================================================================
-procedure PS_SetSectorLightLevel(const sec: Integer; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorSpecial
-//
-//==============================================================================
-function PS_GetSectorSpecial(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetSectorTag
-//
-//==============================================================================
-function PS_GetSectorTag(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorTag
-//
-//==============================================================================
-procedure PS_SetSectorTag(const sec: Integer; const x: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorActors
-//
-//==============================================================================
-function PS_GetSectorActors(const sec: Integer): TActorArray;
-
-//==============================================================================
-//
-// PS_GetSectorNumActors
-//
-//==============================================================================
-function PS_GetSectorNumActors(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetSectorLines
-//
-//==============================================================================
-function PS_GetSectorLines(const sec: Integer): TDynamicIntegerArray;
-
-//==============================================================================
-//
-// PS_GetSectorNumLines
-//
-//==============================================================================
-function PS_GetSectorNumLines(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SectorMoveZ
-//
-//==============================================================================
-procedure PS_SectorMoveZ(const sec: Integer; const dz: Integer);
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_GetSectorFloorXOffset
-//
-//==============================================================================
-function PS_GetSectorFloorXOffset(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorFloorXOffset
-//
-//==============================================================================
-procedure PS_SetSectorFloorXOffset(const sec: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorFloorYOffset
-//
-//==============================================================================
-function PS_GetSectorFloorYOffset(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorFloorYOffset
-//
-//==============================================================================
-procedure PS_SetSectorFloorYOffset(const sec: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingXOffset
-//
-//==============================================================================
-function PS_GetSectorCeilingXOffset(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingXOffset
-//
-//==============================================================================
-procedure PS_SetSectorCeilingXOffset(const sec: Integer; const offs: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingYOffset
-//
-//==============================================================================
-function PS_GetSectorCeilingYOffset(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingYOffset
-//
-//==============================================================================
-procedure PS_SetSectorCeilingYOffset(const sec: Integer; const offs: Integer);
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngle
-//
-//==============================================================================
-function PS_GetSectorFloorAngle(const sec: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngle
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngle(const sec: Integer; const ang: LongWord);
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngleX
-//
-//==============================================================================
-function PS_GetSectorFloorAngleX(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngleX
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngleX(const sec: Integer; const angx: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngleY
-//
-//==============================================================================
-function PS_GetSectorFloorAngleY(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngleY
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngleY(const sec: Integer; const angy: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngle
-//
-//==============================================================================
-function PS_GetSectorCeilingAngle(const sec: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngle
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngle(const sec: Integer; const ang: LongWord);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngleX
-//
-//==============================================================================
-function PS_GetSectorCeilingAngleX(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngleX
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngleX(const sec: Integer; const angx: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngleY
-//
-//==============================================================================
-function PS_GetSectorCeilingAngleY(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngleY
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngleY(const sec: Integer; const angy: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorRippleFloor
-//
-//==============================================================================
-function PS_GetSectorRippleFloor(const sec: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetSectorRippleFloor
-//
-//==============================================================================
-procedure PS_SetSectorRippleFloor(const sec: Integer; const rpl: Boolean);
-
-//==============================================================================
-//
-// PS_GetSectorRippleCeiling
-//
-//==============================================================================
-function PS_GetSectorRippleCeiling(const sec: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetSectorRippleCeiling
-//
-//==============================================================================
-procedure PS_SetSectorRippleCeiling(const sec: Integer; const rpl: Boolean);
-
-//==============================================================================
-//
-// PS_GetSectorInterpolate
-//
-//==============================================================================
-function PS_GetSectorInterpolate(const sec: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetSectorInterpolate
-//
-//==============================================================================
-procedure PS_SetSectorInterpolate(const sec: Integer; const intpl: Boolean);
-
-//==============================================================================
-//
-// PS_GetSectorFog
-//
-//==============================================================================
-function PS_GetSectorFog(const sec: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_SetSectorFog
-//
-//==============================================================================
-procedure PS_SetSectorFog(const sec: Integer; const fog: Boolean);
-
-//==============================================================================
-// PS_GetSectorGravity
-//
-// JVAL: sector gravity (VERSION 204)
-//
-//==============================================================================
-function PS_GetSectorGravity(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorGravity
-//
-//==============================================================================
-procedure PS_SetSectorGravity(const sec: Integer; const grav: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorWindThrust
-//
-//==============================================================================
-function PS_GetSectorWindThrust(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetSectorWindThrust
-//
-//==============================================================================
-procedure PS_SetSectorWindThrust(const sec: Integer; const wthrust: Integer);
-
-//==============================================================================
-//
-// PS_GetSectorWindAngle
-//
-//==============================================================================
-function PS_GetSectorWindAngle(const sec: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_SetSectorWindAngle
-//
-//==============================================================================
-procedure PS_SetSectorWindAngle(const sec: Integer; const wangle: LongWord);
-
-//==============================================================================
-//
-// PS_GetSectorMidSector
-//
-//==============================================================================
-function PS_GetSectorMidSector(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetSectorSlopeSector
-//
-//==============================================================================
-function PS_GetSectorSlopeSector(const sec: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SkyPicture
-//
-//==============================================================================
-function PS_SkyPicture: string;
-
-//==============================================================================
-//
-// PS_IsValidSector
-//
-//==============================================================================
-function PS_IsValidSector(const sec: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_GetSectorCount
-//
-//==============================================================================
-function PS_GetSectorCount: Integer;
-
-//==============================================================================
-//
-// PS_FindSectorsFromTag
-//
-//==============================================================================
-function PS_FindSectorsFromTag(const tag: integer): TDynamicIntegerArray;
-
-//==============================================================================
-//
-// PS_SectorPlaySound
-//
-//==============================================================================
-procedure PS_SectorPlaySound(const secid: Integer; const snd: string);
 
 // --------------------------- PLAYERS -----------------------------------------
 
@@ -2300,6 +1892,7 @@ var
   ps_vertices_ref: IScriptVertices = nil;
   ps_sides_ref: IScriptSides = nil;
   ps_lines_ref: IScriptLines = nil;
+  ps_sectors_ref: IScriptSectors = nil;
 
 //==============================================================================
 //
@@ -2307,11 +1900,25 @@ var
 //
 //==============================================================================
 procedure PS_ConfigureWorldFunctions(const AVertices: IScriptVertices;
-  const ASides: IScriptSides; const ALines: IScriptLines);
+  const ASides: IScriptSides; const ALines: IScriptLines;
+  const ASectors: IScriptSectors);
 begin
   ps_vertices_ref := AVertices;
   ps_sides_ref := ASides;
   ps_lines_ref := ALines;
+  ps_sectors_ref := ASectors;
+end;
+
+//==============================================================================
+//
+// PS_Sectors
+//
+//==============================================================================
+function PS_Sectors: IScriptSectors;
+begin
+  if ps_sectors_ref = nil then
+    I_Error('PS_ConfigureWorldFunctions() was not called: the sector functions are missing');
+  Result := ps_sectors_ref;
 end;
 
 //==============================================================================
@@ -6930,850 +6537,6 @@ end;
 
 // --------------------------- SECTORS -----------------------------------------
 
-//==============================================================================
-//
-// PS_TSector
-//
-//==============================================================================
-function PS_TSector(const id: Integer): Integer;
-begin
-  if (id >= 0) and (id < numsectors) then
-    Result := id + 1
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFloorHeight
-//
-//==============================================================================
-function PS_GetSectorFloorHeight(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].floorheight
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorHeight
-//
-//==============================================================================
-procedure PS_SetSectorFloorHeight(const sec: Integer; const x: Integer);
-var
-  p: Psector_t;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    p := @sectors[sec];
-    p.floorheight := x;
-    P_ChangeSector(p, false);
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingHeight
-//
-//==============================================================================
-function PS_GetSectorCeilingHeight(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceilingheight
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingHeight
-//
-//==============================================================================
-procedure PS_SetSectorCeilingHeight(const sec: Integer; const x: Integer);
-var
-  p: Psector_t;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    p := @sectors[sec];
-    p.ceilingheight := x;
-    P_ChangeSector(p, false);
-  end;
-end;
-
-//==============================================================================
-//
-// _getnameforflat
-//
-//==============================================================================
-function _getnameforflat(const id: Integer): string;
-begin
-  if (id >= 0) and (id < numflats) then
-    Result := char8tostring(flats[id].name)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFloorPicture
-//
-//==============================================================================
-function PS_GetSectorFloorPicture(const sec: Integer): string;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := _getnameforflat(sectors[sec].floorpic)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorPicture
-//
-//==============================================================================
-procedure PS_SetSectorFloorPicture(const sec: Integer; const pic: string);
-var
-  flat: Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    flat := R_SafeFlatNumForName(pic);
-    if (flat >= 0) and (flat < numflats) then
-      sectors[sec].floorpic := flat;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingPicture
-//
-//==============================================================================
-function PS_GetSectorCeilingPicture(const sec: Integer): string;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := _getnameforflat(sectors[sec].ceilingpic)
-  else
-    Result := '';
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingPicture
-//
-//==============================================================================
-procedure PS_SetSectorCeilingPicture(const sec: Integer; const pic: string);
-var
-  flat: Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    flat := R_SafeFlatNumForName(pic);
-    if (flat >= 0) and (flat < numflats) then
-      sectors[sec].ceilingpic := flat;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorLightLevel
-//
-//==============================================================================
-function PS_GetSectorLightLevel(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].lightlevel
-  else
-    Result := LIGHTLEVEL_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorLightLevel
-//
-//==============================================================================
-procedure PS_SetSectorLightLevel(const sec: Integer; const x: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if (x >= 0) and (x < 256) then
-      sectors[sec].lightlevel := x
-    else if x = 256 then
-      sectors[sec].lightlevel := 255;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorSpecial
-//
-//==============================================================================
-function PS_GetSectorSpecial(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].special
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorTag
-//
-//==============================================================================
-function PS_GetSectorTag(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].tag
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorTag
-//
-//==============================================================================
-procedure PS_SetSectorTag(const sec: Integer; const x: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].tag := x;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorActors
-//
-//==============================================================================
-function PS_GetSectorActors(const sec: Integer): TActorArray;
-var
-  akl: TActorKeyList;
-begin
-  akl := TActorKeyList.Create;
-  akl.AddAllSector(sec);
-  Result := akl.GetActorArray;
-  akl.Free;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorNumActors
-//
-//==============================================================================
-function PS_GetSectorNumActors(const sec: Integer): Integer;
-var
-  mo: Pmobj_t;
-begin
-  Result := 0;
-  if (sec < 0) or (sec >= numsectors) then
-    Exit;
-
-  mo := sectors[sec].thinglist;
-  while mo <> nil do
-  begin
-    Inc(Result);
-    mo := mo.snext;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorLines
-//
-//==============================================================================
-function PS_GetSectorLines(const sec: Integer): TDynamicIntegerArray;
-var
-  i: Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    SetLength(Result, sectors[sec].linecount);
-    for i := 0 to sectors[sec].linecount - 1 do
-      Result[i] := pDiff(sectors[sec].lines[i], lines, SizeOf(line_t));
-  end
-  else
-    SetLength(Result, 0);
-end;
-
-//==============================================================================
-//
-// PS_GetSectorNumLines
-//
-//==============================================================================
-function PS_GetSectorNumLines(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].linecount
-  else
-    Result := 0;
-end;
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_GetSectorFloorXOffset
-//
-//==============================================================================
-function PS_GetSectorFloorXOffset(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].floor_xoffs
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorXOffset
-//
-//==============================================================================
-procedure PS_SetSectorFloorXOffset(const sec: Integer; const offs: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].floor_xoffs := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFloorYOffset
-//
-//==============================================================================
-function PS_GetSectorFloorYOffset(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].floor_yoffs
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorYOffset
-//
-//==============================================================================
-procedure PS_SetSectorFloorYOffset(const sec: Integer; const offs: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].floor_yoffs := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingXOffset
-//
-//==============================================================================
-function PS_GetSectorCeilingXOffset(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceiling_xoffs
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingXOffset
-//
-//==============================================================================
-procedure PS_SetSectorCeilingXOffset(const sec: Integer; const offs: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].ceiling_xoffs := offs;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingYOffset
-//
-//==============================================================================
-function PS_GetSectorCeilingYOffset(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceiling_yoffs
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingYOffset
-//
-//==============================================================================
-procedure PS_SetSectorCeilingYOffset(const sec: Integer; const offs: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].ceiling_yoffs := offs;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngle
-//
-//==============================================================================
-function PS_GetSectorFloorAngle(const sec: Integer): LongWord;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].floorangle
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngle
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngle(const sec: Integer; const ang: LongWord);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].floorangle := ang;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngleX
-//
-//==============================================================================
-function PS_GetSectorFloorAngleX(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].flooranglex
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngleX
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngleX(const sec: Integer; const angx: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].flooranglex := angx;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFloorAngleY
-//
-//==============================================================================
-function PS_GetSectorFloorAngleY(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].floorangley
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFloorAngleY
-//
-//==============================================================================
-procedure PS_SetSectorFloorAngleY(const sec: Integer; const angy: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].floorangley := angy;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngle
-//
-//==============================================================================
-function PS_GetSectorCeilingAngle(const sec: Integer): LongWord;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceilingangle
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngle
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngle(const sec: Integer; const ang: LongWord);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].ceilingangle := ang;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngleX
-//
-//==============================================================================
-function PS_GetSectorCeilingAngleX(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceilinganglex
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngleX
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngleX(const sec: Integer; const angx: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].ceilinganglex := angx;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCeilingAngleY
-//
-//==============================================================================
-function PS_GetSectorCeilingAngleY(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].ceilingangley
-  else
-    Result := 0;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorCeilingAngleY
-//
-//==============================================================================
-procedure PS_SetSectorCeilingAngleY(const sec: Integer; const angy: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    sectors[sec].ceilingangley := angy;
-    sectors[sec].renderflags := sectors[sec].renderflags or SRF_INTERPOLATE_ROTATE;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorRippleFloor
-//
-//==============================================================================
-function PS_GetSectorRippleFloor(const sec: Integer): Boolean;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].renderflags and SRF_RIPPLE_FLOOR <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorRippleFloor
-//
-//==============================================================================
-procedure PS_SetSectorRippleFloor(const sec: Integer; const rpl: Boolean);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if rpl then
-      sectors[sec].renderflags := sectors[sec].renderflags or SRF_RIPPLE_FLOOR
-    else
-      sectors[sec].renderflags := sectors[sec].renderflags and not SRF_RIPPLE_FLOOR
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorRippleCeiling
-//
-//==============================================================================
-function PS_GetSectorRippleCeiling(const sec: Integer): Boolean;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].renderflags and SRF_RIPPLE_CEILING <> 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorRippleCeiling
-//
-//==============================================================================
-procedure PS_SetSectorRippleCeiling(const sec: Integer; const rpl: Boolean);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if rpl then
-      sectors[sec].renderflags := sectors[sec].renderflags or SRF_RIPPLE_CEILING
-    else
-      sectors[sec].renderflags := sectors[sec].renderflags and not SRF_RIPPLE_CEILING
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorInterpolate
-//
-//==============================================================================
-function PS_GetSectorInterpolate(const sec: Integer): Boolean;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].renderflags and SRF_NO_INTERPOLATE = 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorInterpolate
-//
-//==============================================================================
-procedure PS_SetSectorInterpolate(const sec: Integer; const intpl: Boolean);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if intpl then
-      sectors[sec].renderflags := sectors[sec].renderflags and not SRF_NO_INTERPOLATE
-    else
-      sectors[sec].renderflags := sectors[sec].renderflags or SRF_NO_INTERPOLATE
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorFog
-//
-//==============================================================================
-function PS_GetSectorFog(const sec: Integer): Boolean;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].renderflags and SRF_FOG = 0
-  else
-    Result := False;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorFog
-//
-//==============================================================================
-procedure PS_SetSectorFog(const sec: Integer; const fog: Boolean);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if fog then
-      sectors[sec].renderflags := sectors[sec].renderflags and not SRF_FOG
-    else
-      sectors[sec].renderflags := sectors[sec].renderflags or SRF_FOG
-  end;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorGravity
-//
-//==============================================================================
-function PS_GetSectorGravity(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].gravity
-  else
-    Result := GRAVITY;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorGravity
-//
-//==============================================================================
-procedure PS_SetSectorGravity(const sec: Integer; const grav: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].gravity := grav;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorWindThrust
-//
-//==============================================================================
-function PS_GetSectorWindThrust(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].windthrust
-  else
-    Result := GRAVITY;
-end;
-
-//==============================================================================
-//
-// PS_SetSectorWindThrust
-//
-//==============================================================================
-procedure PS_SetSectorWindThrust(const sec: Integer; const wthrust: Integer);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].windthrust := wthrust;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorWindAngle
-//
-//==============================================================================
-function PS_GetSectorWindAngle(const sec: Integer): LongWord;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    Result := sectors[sec].windangle
-  else
-    Result := GRAVITY;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorWindAngle
-//
-//==============================================================================
-procedure PS_SetSectorWindAngle(const sec: Integer; const wangle: LongWord);
-begin
-  if (sec >= 0) and (sec < numsectors) then
-    sectors[sec].windangle := wangle;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorMidSector
-//
-//==============================================================================
-function PS_GetSectorMidSector(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    Result := sectors[sec].midsec;
-    if (Result < 0) or (Result >= numsectors) then
-      Result := SECTOR_INVALID;
-  end
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetSectorSlopeSector
-//
-//==============================================================================
-function PS_GetSectorSlopeSector(const sec: Integer): Integer;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    if sectors[sec].slopesec <> nil then
-      Result := sectors[sec].slopesec.iSectorID
-    else
-      Result := SECTOR_INVALID;
-  end
-  else
-    Result := SECTOR_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_SkyPicture
-//
-//==============================================================================
-function PS_SkyPicture: string;
-begin
-  Result := _getnameforflat(skyflatnum);
-end;
-
-//==============================================================================
-//
-// PS_IsValidSector
-//
-//==============================================================================
-function PS_IsValidSector(const sec: Integer): Boolean;
-begin
-  Result := (sec >= 0) and (sec < numsectors);
-end;
-
-//==============================================================================
-//
-// PS_GetSectorCount
-//
-//==============================================================================
-function PS_GetSectorCount: Integer;
-begin
-  Result := numsectors;
-end;
-
-//==============================================================================
-//
-// PS_FindSectorsFromTag
-//
-//==============================================================================
-function PS_FindSectorsFromTag(const tag: integer): TDynamicIntegerArray;
-var
-  l: TDNumberList;
-  i: integer;
-begin
-  l := TDNumberList.Create;
-  for i := 0 to numsectors - 1 do
-    if sectors[i].tag = tag then
-      l.Add(i);
-  SetLength(Result, l.Count);
-  for i := 0 to l.Count - 1 do
-    Result[i] := l.Numbers[i];
-  l.Free;
-end;
-
-//==============================================================================
-//
-// PS_SectorPlaySound
-//
-//==============================================================================
-procedure PS_SectorPlaySound(const secid: Integer; const snd: string);
-begin
-  if (secid >= 0) and (secid < numsectors) then
-    if snd <> '' then
-      _playsound(Pmobj_t(@sectors[secid].soundorg), snd);
-end;
-
-//==============================================================================
-//
-// PS_SectorMoveZ
-//
-//==============================================================================
-procedure PS_SectorMoveZ(const sec: Integer; const dz: Integer);
-var
-  p: Psector_t;
-begin
-  if (sec >= 0) and (sec < numsectors) then
-  begin
-    p := @sectors[sec];
-    p.floorheight := p.floorheight + dz;
-    p.ceilingheight := p.ceilingheight + dz;
-    P_ChangeSector(p, false);
-  end;
-end;
-
 // ----------------------- TRTLSector ------------------------------------------
 
 //==============================================================================
@@ -7783,7 +6546,7 @@ end;
 //==============================================================================
 procedure TRTLSector.PlaySound(const snd: string);
 begin
-  PS_SectorPlaySound(Integer(self) - 1, snd);
+  PS_Sectors.SectorPlaySound(Integer(self) - 1, snd);
 end;
 
 //==============================================================================
@@ -7793,7 +6556,7 @@ end;
 //==============================================================================
 procedure TRTLSector.MoveZ(const dz: Integer);
 begin
-  PS_SectorMoveZ(Integer(self) - 1, dz);
+  PS_Sectors.SectorMoveZ(Integer(self) - 1, dz);
 end;
 
 //==============================================================================
@@ -7803,7 +6566,7 @@ end;
 //==============================================================================
 procedure TRTLSector.SetFloorSlope(const x1, y1, z1: Integer; const x2, y2, z2: Integer; const x3, y3, z3: Integer);
 begin
-  PS_SetFloorSlope(Integer(self) - 1, x1, y1, z1, x2, y2, z2, x3, y3, z3);
+  PS_Sectors.SetSectorFloorSlope(Integer(self) - 1, x1, y1, z1, x2, y2, z2, x3, y3, z3);
 end;
 
 //==============================================================================
@@ -7813,7 +6576,7 @@ end;
 //==============================================================================
 procedure TRTLSector.SetCeilingSlope(const x1, y1, z1: Integer; const x2, y2, z2: Integer; const x3, y3, z3: Integer);
 begin
-  PS_SetCeilingSlope(Integer(self) - 1, x1, y1, z1, x2, y2, z2, x3, y3, z3);
+  PS_Sectors.SetSectorCeilingSlope(Integer(self) - 1, x1, y1, z1, x2, y2, z2, x3, y3, z3);
 end;
 
 // ---------------------- TRTLSectors ------------------------------------------
@@ -7838,7 +6601,7 @@ end;
 //==============================================================================
 procedure TRTLSectorSlopeSector_R(Self: TRTLSector; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetSectorSlopeSector(Integer(Self) - 1)];
+  T := rtlsectors[PS_Sectors.GetSectorSlopeSector(Integer(Self) - 1)];
 end;
 
 //==============================================================================
@@ -7848,7 +6611,7 @@ end;
 //==============================================================================
 procedure TRTLSectorMidSector_R(Self: TRTLSector; var T: TRTLSector);
 begin
-  T := rtlsectors[PS_GetSectorMidSector(Integer(Self) - 1)];
+  T := rtlsectors[PS_Sectors.GetSectorMidSector(Integer(Self) - 1)];
 end;
 
 {$IFDEF DOOM_OR_STRIFE}
@@ -7860,7 +6623,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingYOffset_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorCeilingYOffset(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingYOffset(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7870,7 +6633,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingYOffset_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorCeilingYOffset(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingYOffset(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -7880,7 +6643,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingXOffset_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorCeilingXOffset(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingXOffset(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7890,7 +6653,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingXOffset_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorCeilingXOffset(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingXOffset(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -7900,7 +6663,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorYOffset_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorFloorYOffset(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorYOffset(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7910,7 +6673,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorYOffset_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorFloorYOffset(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorYOffset(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -7920,7 +6683,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorXOffset_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorFloorXOffset(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorXOffset(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7930,7 +6693,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorXOffset_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorFloorXOffset(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorXOffset(Integer(Self) - 1);
 end;
 {$ENDIF}
 
@@ -7941,7 +6704,7 @@ end;
 //==============================================================================
 procedure TRTLSectorNumLines_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorNumLines(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorNumLines(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -7951,7 +6714,7 @@ end;
 //==============================================================================
 procedure TRTLSectorLines_R(Self: TRTLSector; var T: TDynamicIntegerArray);
 begin
-  T := PS_GetSectorLines(Integer(Self) - 1);
+  T := TDynamicIntegerArray(PS_Sectors.GetSectorLines(Integer(Self) - 1));
 end;
 
 //==============================================================================
@@ -7961,7 +6724,7 @@ end;
 //==============================================================================
 procedure TRTLSectorNumActors_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorNumActors(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorNumActors(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -7971,7 +6734,7 @@ end;
 //==============================================================================
 procedure TRTLSectorActors_R(Self: TRTLSector; var T: TActorArray);
 begin
-  T := PS_GetSectorActors(Integer(Self) - 1);
+  T := TActorArray(PS_Sectors.GetSectorActors(Integer(Self) - 1));
 end;
 
 //==============================================================================
@@ -7981,7 +6744,7 @@ end;
 //==============================================================================
 procedure TRTLSectorTag_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorTag(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorTag(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -7991,7 +6754,7 @@ end;
 //==============================================================================
 procedure TRTLSectorTag_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorTag(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorTag(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8001,7 +6764,7 @@ end;
 //==============================================================================
 procedure TRTLSectorSpecial_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorSpecial(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorSpecial(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8011,7 +6774,7 @@ end;
 //==============================================================================
 procedure TRTLSectorLightLevel_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorLightLevel(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorLightLevel(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8021,7 +6784,7 @@ end;
 //==============================================================================
 procedure TRTLSectorLightLevel_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorLightLevel(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorLightLevel(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8031,7 +6794,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingPicture_W(Self: TRTLSector; const T: string);
 begin
-  PS_SetSectorCeilingPicture(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingPicture(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8041,7 +6804,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingPicture_R(Self: TRTLSector; var T: string);
 begin
-  T := PS_GetSectorCeilingPicture(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingPicture(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8051,7 +6814,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorPicture_W(Self: TRTLSector; const T: string);
 begin
-  PS_SetSectorFloorPicture(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorPicture(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8061,7 +6824,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorPicture_R(Self: TRTLSector; var T: string);
 begin
-  T := PS_GetSectorFloorPicture(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorPicture(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8071,7 +6834,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingHeight_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorCeilingHeight(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingHeight(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8081,7 +6844,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingHeight_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorCeilingHeight(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingHeight(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8091,7 +6854,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorHeight_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorFloorHeight(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorHeight(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8101,7 +6864,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorHeight_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorFloorHeight(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorHeight(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8111,7 +6874,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngle_W(Self: TRTLSector; const T: LongWord);
 begin
-  PS_SetSectorFloorAngle(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorAngle(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8121,7 +6884,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngle_R(Self: TRTLSector; var T: LongWord);
 begin
-  T := PS_GetSectorFloorAngle(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorAngle(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8131,7 +6894,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngleX_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorFloorAngleX(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorAngleX(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8141,7 +6904,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngleX_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorFloorAngleX(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorAngleX(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8151,7 +6914,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngleY_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorFloorAngleY(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFloorAngleY(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8161,7 +6924,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFloorAngleY_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorFloorAngleY(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFloorAngleY(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8171,7 +6934,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngle_W(Self: TRTLSector; const T: LongWord);
 begin
-  PS_SetSectorCeilingAngle(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingAngle(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8181,7 +6944,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngle_R(Self: TRTLSector; var T: LongWord);
 begin
-  T := PS_GetSectorCeilingAngle(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingAngle(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8191,7 +6954,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngleX_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorCeilingAngleX(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingAngleX(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8201,7 +6964,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngleX_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorCeilingAngleX(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingAngleX(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8211,7 +6974,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngleY_W(Self: TRTLSector; const T: Integer);
 begin
-  PS_SetSectorCeilingAngleY(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorCeilingAngleY(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8221,7 +6984,7 @@ end;
 //==============================================================================
 procedure TRTLSectorCeilingAngleY_R(Self: TRTLSector; var T: Integer);
 begin
-  T := PS_GetSectorCeilingAngleY(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorCeilingAngleY(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8231,7 +6994,7 @@ end;
 //==============================================================================
 procedure TRTLSectorRippleFloor_W(Self: TRTLSector; const T: Boolean);
 begin
-  PS_SetSectorRippleFloor(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorRippleFloor(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8241,7 +7004,7 @@ end;
 //==============================================================================
 procedure TRTLSectorRippleFloor_R(Self: TRTLSector; var T: Boolean);
 begin
-  T := PS_GetSectorRippleFloor(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorRippleFloor(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8251,7 +7014,7 @@ end;
 //==============================================================================
 procedure TRTLSectorRippleCeiling_W(Self: TRTLSector; const T: Boolean);
 begin
-  PS_SetSectorRippleCeiling(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorRippleCeiling(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8261,7 +7024,7 @@ end;
 //==============================================================================
 procedure TRTLSectorRippleCeiling_R(Self: TRTLSector; var T: Boolean);
 begin
-  T := PS_GetSectorRippleCeiling(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorRippleCeiling(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8271,7 +7034,7 @@ end;
 //==============================================================================
 procedure TRTLSectorInterpolate_W(Self: TRTLSector; const T: Boolean);
 begin
-  PS_SetSectorInterpolate(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorInterpolate(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8281,7 +7044,7 @@ end;
 //==============================================================================
 procedure TRTLSectorInterpolate_R(Self: TRTLSector; var T: Boolean);
 begin
-  T := PS_GetSectorInterpolate(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorInterpolate(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8292,7 +7055,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFog_W(Self: TRTLSector; const T: Boolean);
 begin
-  PS_SetSectorFog(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorFog(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8302,7 +7065,7 @@ end;
 //==============================================================================
 procedure TRTLSectorFog_R(Self: TRTLSector; var T: Boolean);
 begin
-  T := PS_GetSectorFog(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorFog(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8314,7 +7077,7 @@ end;
 //==============================================================================
 procedure TRTLSectorGravity_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorGravity(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorGravity(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8326,7 +7089,7 @@ end;
 //==============================================================================
 procedure TRTLSectorGravity_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorGravity(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorGravity(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8338,7 +7101,7 @@ end;
 //==============================================================================
 procedure TRTLSectorWindThrust_W(Self: TRTLSector; const T: fixed_t);
 begin
-  PS_SetSectorWindThrust(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorWindThrust(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8350,7 +7113,7 @@ end;
 //==============================================================================
 procedure TRTLSectorWindThrust_R(Self: TRTLSector; var T: fixed_t);
 begin
-  T := PS_GetSectorWindThrust(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorWindThrust(Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8362,7 +7125,7 @@ end;
 //==============================================================================
 procedure TRTLSectorWindAngle_W(Self: TRTLSector; const T: angle_t);
 begin
-  PS_SetSectorWindAngle(Integer(Self) - 1, T);
+  PS_Sectors.SetSectorWindAngle(Integer(Self) - 1, T);
 end;
 
 //==============================================================================
@@ -8374,7 +7137,7 @@ end;
 //==============================================================================
 procedure TRTLSectorWindAngle_R(Self: TRTLSector; var T: angle_t);
 begin
-  T := PS_GetSectorWindAngle(Integer(Self) - 1);
+  T := PS_Sectors.GetSectorWindAngle(Integer(Self) - 1);
 end;
 
 //==============================================================================
