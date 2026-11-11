@@ -71,7 +71,7 @@ var
 begin
   LStepper := TXcomProductionStepper.Create(FSim.Ruleset);
   try
-    LCount := 3 + Pick(5);
+    LCount := 6 + Pick(10);
     for LK := 0 to LCount - 1 do
     begin
       LRule := FSim.Ruleset.Manufacture.Find(FSim.Ruleset.Manufacture.Index[Pick(Length(FSim.Ruleset.Manufacture.Index))]);

@@ -19,17 +19,17 @@ monthsPassed: -1
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 3715410684747270966
+rng: 4984643813830799883
 funds:
-  - 3001169
+  - 2308169
 maintenance:
   - 0
 researchScores:
   - 0
 incomes:
-  - 6484490
+  - 6569490
 expenditures:
-  - 3483321
+  - 4261321
 warned: false
 globeLon: 0
 globeLat: -0
@@ -640,6 +640,7 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
+      STR_AQUA_PLASTICS: 21
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -649,15 +650,17 @@ bases:
       STR_DYE_GRENADE: 5
       STR_GAS_CANNON: 1
       STR_GAUSS_PISTOL_CLIP: 5
+      STR_GAUSS_RIFLE: 1
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
+      STR_HEAVY_GAUSS: 3
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
-      STR_MC_READER: 3
+      STR_MC_READER: 4
       STR_SMALL_TORPEDO: 4
-      STR_SONIC_OSCILLATOR: 2
+      STR_SONIC_OSCILLATOR: 4
       STR_TORPEDO_LAUNCHER: 1
     scientists: 10
     engineers: 10
@@ -670,7 +673,7 @@ bases:
         sell: true
       - item: STR_SONIC_OSCILLATOR
         assigned: 18
-        spent: 1008
+        spent: 2016
         amount: 5
         infinite: false
       - item: STR_CANNON_POWER_CLIP
@@ -681,7 +684,7 @@ bases:
         sell: true
       - item: STR_MC_READER
         assigned: 25
-        spent: 3600
+        spent: 4800
         amount: 4
         infinite: false
       - item: STR_GAUSS_PISTOL_CLIP
@@ -698,6 +701,22 @@ bases:
       - item: STR_GAUSS_RIFLE
         assigned: 31
         spent: 403
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_GAUSS_RIFLE
+        assigned: 1
+        spent: 400
+        amount: 1
+        infinite: false
+      - item: STR_HEAVY_GAUSS
+        assigned: 26
+        spent: 2106
+        amount: 3
+        infinite: false
+      - item: STR_ION_ARMOR
+        assigned: 26
+        spent: 1014
         amount: 1
         infinite: false
         sell: true

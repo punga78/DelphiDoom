@@ -416,8 +416,8 @@ begin
     RunDays(AGame, ASimulation, AVariant, 20);
     Exit;
   end;
-  // the month, then ten days of time; three times
-  for LMonth := 0 to 2 do
+  // the month, then ten days of time; eight times
+  for LMonth := 0 to 7 do
   begin
     ASimulation.Time1Month;
     FLines.Add(Format('month|%d|%d|missions=%d|funds=%d|months=%d', [AVariant, LMonth, AGame.ActiveMissions.Count,

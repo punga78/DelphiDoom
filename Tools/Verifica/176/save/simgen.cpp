@@ -170,7 +170,7 @@ static void ScenarioProduction(Mod* mod, SavedGame* s, int v) {
   const std::vector<std::string>& list = mod->getManufactureList();
   for (std::vector<Base*>::iterator bp = s->getBases()->begin(); bp != s->getBases()->end(); ++bp, ++bi) {
     Base* base = *bp;
-    int n = 3 + Pick(5);
+    int n = 6 + Pick(10);
     for (int k = 0; k < n; k++) {
       RuleManufacture* r = mod->getManufacture(list[Pick((int)list.size())], true);
       Production* p = new Production(r, 1 + Pick(6));
@@ -856,7 +856,7 @@ static void ScenarioMonth(Mod* mod, SavedGame* s, int v) {
   GeoscapeState* gs = (GeoscapeState*)calloc(1, sizeof(GeoscapeState));
   gs->_game = g.game;
   PrepareTime(g, mod, s, v);
-  for (int m = 0; m < 3; m++) {
+  for (int m = 0; m < 8; m++) {
     Time1Month(g, gs);
     fprintf(gOut, "month|%d|%d|missions=%d|funds=%lld|months=%d\n", v, m, (int)s->_activeMissions.size(), (long long)s->getFunds(), s->getMonthsPassed());
     GameTime* t = s->getTime();

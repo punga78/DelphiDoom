@@ -19,17 +19,17 @@ monthsPassed: -1
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 6237376794856023972
+rng: 13729671097230844340
 funds:
-  - 1292806
+  - 470306
 maintenance:
   - 0
 researchScores:
   - 0
 incomes:
-  - 6137800
+  - 7359300
 expenditures:
-  - 4844994
+  - 6888994
 warned: false
 globeLon: 0.40000000000000002
 globeLat: -0.20000000000000001
@@ -666,6 +666,7 @@ bases:
       CIVF_CORPSE: 42
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
+      STR_AQUA_PLASTICS: 55
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -677,14 +678,19 @@ bases:
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
       STR_HJC_AP_AMMO: 6
+      STR_HWP_DISPLACER_PWT: 1
       STR_HYDRO_JET_CANNON: 1
+      STR_ION_BEAM_ACCELERATORS: 22
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_NAVIGATION: 7
+      STR_PISTOL_POWER_CLIP: 2
+      STR_PLASTIC_AQUA_ARMOR: 4
+      STR_PULSE_WAVE_TORPEDOES: 2
       STR_SMALL_TORPEDO: 4
-      STR_SONIC_OSCILLATOR: 6
+      STR_SONIC_OSCILLATOR: 10
       STR_THERMAL_SHOK_BOMB: 3
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 4
     scientists: 4
     engineers: 19
     transfers:
@@ -748,7 +754,7 @@ bases:
     productions:
       - item: STR_SONIC_OSCILLATOR
         assigned: 5
-        spent: 2500
+        spent: 3065
         amount: 10
         infinite: false
       - item: STR_COELACANTH_GAUSS
@@ -758,7 +764,7 @@ bases:
         infinite: true
       - item: STR_SONIC_OSCILLATOR
         assigned: 27
-        spent: 513
+        spent: 2025
         amount: 4
         infinite: false
       - item: STR_THERMAL_SHOK_BOMB
@@ -772,6 +778,48 @@ bases:
         amount: 3
         infinite: false
         sell: true
+      - item: STR_PULSE_WAVE_TORPEDOES
+        assigned: 39
+        spent: 1209
+        amount: 2
+        infinite: false
+      - item: STR_HWP_DISPLACER_PWT
+        assigned: 1
+        spent: 600
+        amount: 5
+        infinite: false
+      - item: STR_PLASTIC_AQUA_ARMOR
+        assigned: 39
+        spent: 3237
+        amount: 4
+        infinite: false
+      - item: STR_LEVIATHAN
+        assigned: 16
+        spent: 9600
+        amount: 3
+        infinite: false
+      - item: STR_MC_DISRUPTOR
+        assigned: 27
+        spent: 3024
+        amount: 6
+        infinite: false
+        sell: true
+      - item: STR_AQUA_PLASTICS
+        assigned: 30
+        spent: 210
+        amount: 2
+        infinite: false
+      - item: STR_PULSE_WAVE_TORPEDOES
+        assigned: 37
+        spent: 629
+        amount: 2
+        infinite: false
+        sell: true
+      - item: STR_PISTOL_POWER_CLIP
+        assigned: 40
+        spent: 120
+        amount: 2
+        infinite: false
 waypoints:
   - lon: 2
     lat: 0.40000000000000002

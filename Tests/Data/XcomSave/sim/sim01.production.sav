@@ -19,17 +19,17 @@ monthsPassed: -1
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 2855059162979458072
+rng: 17911357521109748999
 funds:
-  - 2959330
+  - 1145930
 maintenance:
   - 0
 researchScores:
   - 0
 incomes:
-  - 6755200
+  - 7784800
 expenditures:
-  - 3795870
+  - 6638870
 warned: false
 globeLon: 0.10000000000000001
 globeLat: -0.050000000000000003
@@ -665,31 +665,37 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 30
+      STR_AQUA_PLASTICS: 85
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
       STR_DART_POD: 8
-      STR_DISPLACER_PWT: 1
+      STR_DISPLACER_PWT: 3
       STR_DUP_HEAD_LAUNCHER: 1
       STR_DUP_HEAD_TORPEDOES: 10
       STR_DYE_GRENADE: 5
       STR_GAS_CANNON: 1
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
+      STR_HEAVY_THERMIC_LANCE: 2
       STR_HJC_AP_AMMO: 6
+      STR_HWP_DISPLACER_PWT: 3
       STR_HYDRO_JET_CANNON: 1
+      STR_ION_BEAM_ACCELERATORS: 18
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_NAVIGATION: 0
+      STR_MEDI_KIT: 6
       STR_SMALL_TORPEDO: 4
+      STR_THERMAL_SHOK_LAUNCHER: 4
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 12
+      STR_ZRBITE: 1
     scientists: 10
     engineers: 10
     productions:
       - item: STR_DISPLACER_PWT
         assigned: 29
-        spent: 1421
+        spent: 4205
         amount: 5
         infinite: false
       - item: STR_SONIC_BLASTA_RIFLE
@@ -704,6 +710,47 @@ bases:
         amount: 3
         infinite: false
         sell: true
+      - item: STR_SONIC_CANNON
+        assigned: 40
+        spent: 6000
+        amount: 6
+        infinite: false
+        sell: true
+      - item: STR_HWP_DISPLACER_PWT
+        assigned: 19
+        spent: 1216
+        amount: 6
+        infinite: false
+      - item: STR_THERMAL_SHOK_LAUNCHER
+        assigned: 35
+        spent: 3605
+        amount: 4
+        infinite: false
+      - item: STR_HEAVY_THERMIC_LANCE
+        assigned: 10
+        spent: 600
+        amount: 1
+        infinite: true
+      - item: STR_MEDI_KIT
+        assigned: 16
+        spent: 2528
+        amount: 6
+        infinite: false
+      - item: STR_AQUA_PLASTICS
+        assigned: 37
+        spent: 222
+        amount: 2
+        infinite: false
+      - item: STR_HAMMERHEAD
+        assigned: 5
+        spent: 3000
+        amount: 1
+        infinite: false
+      - item: STR_AQUA_PLASTICS
+        assigned: 16
+        spent: 304
+        amount: 3
+        infinite: false
 alienStrategy:
   regions:
     STR_ANTARCTIC: 10

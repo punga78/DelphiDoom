@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 3663109143792591486
+rng: 6109042702457023044
 funds:
   - 10561000
-  - 2453475
+  - 2985575
 maintenance:
   - 3409000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 7985000
-  - 6076200
+  - 7808300
 expenditures:
   - 0
-  - 11607725
+  - 12807725
 warned: false
 globeLon: 0.5
 globeLat: -0.25
@@ -690,7 +690,8 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 0
+      STR_AQUA_PLASTICS: 44
+      STR_BLASTA_POWER_CLIP: 3
       STR_COELACANTH_GAUSS: 2
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
@@ -702,17 +703,17 @@ bases:
       STR_DUP_HEAD_TORPEDOES: 10
       STR_DYE_GRENADE: 5
       STR_GAS_CANNON: 1
+      STR_GAUSS_RIFLE: 1
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 44
-      STR_HEAVY_GAUSS_CLIP: 2
+      STR_HEAVY_GAUSS_CLIP: 3
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
-      STR_ION_ARMOR: 1
+      STR_ION_ARMOR: 4
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
       STR_SMALL_TORPEDO: 4
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 22
     scientists: 13
     engineers: 12
     transfers:
@@ -781,12 +782,12 @@ bases:
         infinite: false
       - item: STR_DISPLACER_SONIC
         assigned: 3
-        spent: 1202
+        spent: 1880
         amount: 10
         infinite: true
       - item: STR_ION_ARMOR
         assigned: 19
-        spent: 1007
+        spent: 3002
         amount: 3
         infinite: false
       - item: STR_DISRUPTOR_AMMO
@@ -804,6 +805,50 @@ bases:
         assigned: 36
         spent: 144
         amount: 2
+        infinite: false
+      - item: STR_HEAVY_GAUSS_CLIP
+        assigned: 24
+        spent: 72
+        amount: 1
+        infinite: false
+      - item: STR_BLASTA_POWER_CLIP
+        assigned: 6
+        spent: 240
+        amount: 3
+        infinite: false
+      - item: STR_GAUSS_PISTOL_CLIP
+        assigned: 35
+        spent: 35
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_GAUSS_PISTOL_CLIP
+        assigned: 4
+        spent: 20
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_ION_BEAM_ACCELERATORS
+        assigned: 19
+        spent: 4218
+        amount: 4
+        infinite: true
+        sell: true
+      - item: STR_DISPLACER_SONIC
+        assigned: 20
+        spent: 1200
+        amount: 1
+        infinite: true
+        sell: true
+      - item: STR_GAUSS_RIFLE
+        assigned: 31
+        spent: 403
+        amount: 1
+        infinite: false
+      - item: STR_ION_ARMOR
+        assigned: 5
+        spent: 1000
+        amount: 3
         infinite: false
 waypoints:
   - lon: 2

@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 7103150094987530091
+rng: 6553878770860536972
 funds:
   - 8133000
-  - 1821068
+  - 74068
 maintenance:
   - 2889000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 6011000
-  - 6182600
+  - 7340600
 expenditures:
   - 1000000
-  - 9372532
+  - 12277532
 warned: false
 globeLon: 0.60000000000000009
 globeLat: -0.30000000000000004
@@ -674,31 +674,35 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 23
+      STR_AQUA_PLASTICS: 102
       STR_COELACANTH_GAUSS: 1
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
       STR_DART_POD: 8
-      STR_DISPLACER_PWT: 1
-      STR_DISRUPTOR_AMMO: 2
+      STR_DISPLACER_PWT: 2
+      STR_DISRUPTOR_AMMO: 4
       STR_DUP_HEAD_LAUNCHER: 1
       STR_DUP_HEAD_TORPEDOES: 10
       STR_DYE_GRENADE: 5
       STR_GAS_CANNON: 1
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
-      STR_HEAVY_GAUSS_CLIP: 6
+      STR_HEAVY_GAUSS_CLIP: 289
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MC_DISRUPTOR: 3
+      STR_PARTICLE_DISTURBANCE_SENSOR: 2
       STR_PISTOL_POWER_CLIP: 1
+      STR_PLASTIC_AQUA_ARMOR: 3
       STR_SMALL_TORPEDO: 4
-      STR_SONIC_OSCILLATOR: 2
+      STR_SONIC_OSCILLATOR: 8
       STR_SONIC_PULSER: 13
+      STR_THERMAL_SHOK_BOMB: 2
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 1
+      STR_ZRBITE: 2
     scientists: 2
     engineers: 11
     transfers:
@@ -782,7 +786,7 @@ bases:
         infinite: false
       - item: STR_SONIC_OSCILLATOR
         assigned: 37
-        spent: 518
+        spent: 3034
         amount: 6
         infinite: false
       - item: STR_HEAVY_GAUSS_CLIP
@@ -798,12 +802,54 @@ bases:
         sell: true
       - item: STR_DISRUPTOR_AMMO
         assigned: 18
-        spent: 450
+        spent: 882
         amount: 4
         infinite: false
       - item: STR_SONIC_OSCILLATOR
         assigned: 24
-        spent: 504
+        spent: 1008
+        amount: 3
+        infinite: false
+      - item: STR_MC_DISRUPTOR
+        assigned: 23
+        spent: 1518
+        amount: 4
+        infinite: false
+      - item: STR_THERMAL_SHOK_BOMB
+        assigned: 24
+        spent: 408
+        amount: 2
+        infinite: false
+      - item: STR_DISPLACER_PWT
+        assigned: 28
+        spent: 1400
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_DISPLACER_PWT
+        assigned: 38
+        spent: 1406
+        amount: 1
+        infinite: false
+      - item: STR_PARTICLE_DISTURBANCE_SENSOR
+        assigned: 35
+        spent: 455
+        amount: 2
+        infinite: false
+      - item: STR_HEAVY_GAUSS_CLIP
+        assigned: 37
+        spent: 19832
+        amount: 4
+        infinite: true
+      - item: STR_MAGNETIC_ION_ARMOR
+        assigned: 32
+        spent: 1408
+        amount: 3
+        infinite: false
+        sell: true
+      - item: STR_PLASTIC_AQUA_ARMOR
+        assigned: 9
+        spent: 2403
         amount: 3
         infinite: false
 waypoints:

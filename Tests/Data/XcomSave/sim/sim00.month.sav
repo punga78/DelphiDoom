@@ -15,17 +15,27 @@ mods:
 ---
 difficulty: 0
 end: 0
-monthsPassed: 2
+monthsPassed: 7
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 10045245969143000206
+rng: 10663460900068798023
 funds:
   - 9401000
   - 12812000
   - 16223000
-  - 16223000
+  - 19634000
+  - 23045000
+  - 26456000
+  - 29867000
+  - 33278000
+  - 33278000
 maintenance:
+  - 2579000
+  - 2579000
+  - 2579000
+  - 2579000
+  - 2579000
   - 2579000
   - 2579000
   - 2579000
@@ -35,7 +45,17 @@ researchScores:
   - 0
   - 0
   - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
 incomes:
+  - 5990000
+  - 5990000
+  - 5990000
+  - 5990000
+  - 5990000
   - 5990000
   - 5990000
   - 5990000
@@ -45,17 +65,22 @@ expenditures:
   - 2579000
   - 2579000
   - 2579000
+  - 2579000
+  - 2579000
+  - 2579000
+  - 2579000
+  - 2579000
 warned: false
 globeLon: 0
 globeLat: -0
 globeZoom: 0
 ids:
-  ALIEN_MISSIONS: 20
-  STR_ALIEN_BASE: 3
-  STR_ARTIFACT_SITE: 2
+  ALIEN_MISSIONS: 47
+  STR_ALIEN_BASE: 7
+  STR_ARTIFACT_SITE: 3
   STR_BARRACUDA: 3
   STR_SOLDIER: 9
-  STR_TERROR_SITE: 3
+  STR_TERROR_SITE: 8
   STR_TRITON: 2
   STR_WAYPOINT: 2
 countries:
@@ -65,63 +90,64 @@ countries:
     activityXcom:
       - 0
     activityAlien:
-      - 189
+      - 1302
   - type: STR_ALASKA
     funding:
       - 297000
     activityXcom:
       - 0
     activityAlien:
-      - 2
+      - 2005
   - type: STR_EU_SYNDICATE
     funding:
       - 270000
     activityXcom:
       - 0
     activityAlien:
-      - 48
+      - 99
   - type: STR_ARABIAN_BLOC
     funding:
       - 384000
     activityXcom:
       - 0
     activityAlien:
-      - 21
+      - 235
   - type: STR_EGYPTIAN_CARTEL
     funding:
       - 390000
     activityXcom:
       - 0
     activityAlien:
-      - 396
+      - 472
   - type: STR_AFRICA_CORP
     funding:
       - 313000
     activityXcom:
       - 0
     activityAlien:
-      - 141
+      - 178
   - type: STR_BRAZILIAN_UNION
     funding:
       - 248000
     activityXcom:
       - 0
     activityAlien:
-      - 118
+      - 1200
+    newPact: true
   - type: STR_NEW_MEXICO
     funding:
       - 284000
     activityXcom:
       - 0
     activityAlien:
-      - 17
+      - 31
   - type: STR_ASIAN_COALITION
     funding:
       - 751000
     activityXcom:
       - 0
     activityAlien:
-      - 201
+      - 1445
     newPact: true
   - type: STR_SCANDINAVIA
     funding:
@@ -136,118 +162,118 @@ countries:
     activityXcom:
       - 0
     activityAlien:
-      - 16
+      - 415
   - type: STR_FREE_CHINA
     funding:
       - 529000
     activityXcom:
       - 0
     activityAlien:
-      - 189
+      - 906
   - type: STR_AUSTRALASIA
     funding:
       - 202000
     activityXcom:
       - 0
     activityAlien:
-      - 60
+      - 235
   - type: STR_FED_KOREA
     funding:
       - 485000
     activityXcom:
       - 0
     activityAlien:
-      - 1
+      - 23
   - type: STR_EURASIA_UC
     funding:
       - 287000
     activityXcom:
       - 0
     activityAlien:
-      - 10
+      - 20
   - type: STR_ICELANDIC_UNION
     funding:
       - 126000
     activityXcom:
       - 0
     activityAlien:
-      - 9
+      - 18
 regions:
   - type: STR_NORTH_ATLANTIC
     activityXcom:
       - 0
     activityAlien:
-      - 1219
+      - 1350
   - type: STR_SOUTH_ATLANTIC
     activityXcom:
       - 0
     activityAlien:
-      - 1107
+      - 1212
   - type: STR_NORTH_PACIFIC
     activityXcom:
       - 0
     activityAlien:
-      - 21
+      - 3267
   - type: STR_SOUTH_PACIFIC
     activityXcom:
       - 0
     activityAlien:
-      - 2044
+      - 3003
   - type: STR_MEDITERRANEAN
     activityXcom:
       - 0
     activityAlien:
-      - 314
+      - 559
   - type: STR_SOUTH_CHINA_SEA
     activityXcom:
       - 0
     activityAlien:
-      - 2029
+      - 2607
   - type: STR_INDIAN_OCEAN
     activityXcom:
       - 0
     activityAlien:
-      - 398
+      - 3291
   - type: STR_THE_EAST_SEA
     activityXcom:
       - 0
     activityAlien:
-      - 201
+      - 1104
   - type: STR_NORTH_SEA
     activityXcom:
       - 0
     activityAlien:
-      - 80
+      - 88
   - type: STR_CARRIBEAN
     activityXcom:
       - 0
     activityAlien:
-      - 4
+      - 10
   - type: STR_ANTARCTIC
     activityXcom:
       - 0
     activityAlien:
-      - 302
+      - 3435
   - type: STR_ARCTIC
     activityXcom:
       - 0
     activityAlien:
-      - 11
+      - 16
   - type: STR_EURASIA
     activityXcom:
       - 0
     activityAlien:
-      - 22
+      - 38
   - type: STR_NORTH_AMERICA
     activityXcom:
       - 0
     activityAlien:
-      - 0
+      - 3
   - type: STR_AFRICA
     activityXcom:
       - 0
     activityAlien:
-      - 167
+      - 245
 bases:
   - lon: 0.5
     lat: 0.20000000000000001
@@ -690,160 +716,125 @@ alienBases:
     id: 2
     race: STR_AQUATOID
     deployment: STR_ALIEN_BASE_ASSAULT
-alienMissions:
-  - type: STR_ALIEN_INTERDICTION
-    region: STR_SOUTH_ATLANTIC
+  - lon: 5.6140961822422337
+    lat: 1.087498089349449
+    id: 3
     race: STR_GILLMAN
-    nextWave: 8
-    nextUfoCounter: 0
-    spawnCountdown: 30
-    liveUfos: 1
-    uniqueID: 2
-    missionSiteZone: -1
-  - type: STR_ALIEN_RESOURCE_RAID
-    region: STR_THE_EAST_SEA
+    deployment: STR_ALIEN_BASE_ASSAULT
+  - lon: 4.6995974161227743
+    lat: 0.29976613692762022
+    id: 4
     race: STR_AQUATOID
-    nextWave: 3
-    nextUfoCounter: 0
-    spawnCountdown: 4110
-    liveUfos: 1
-    uniqueID: 3
-    missionSiteZone: 0
+    deployment: STR_ALIEN_BASE_ASSAULT
+  - lon: 2.2163516367915852
+    lat: -0.23016373436367576
+    id: 5
+    race: STR_GILLMAN
+    deployment: STR_ALIEN_BASE_ASSAULT
+  - lon: 2.1628164432264931
+    lat: -0.48062848340772879
+    id: 6
+    race: STR_TASOTH
+    deployment: STR_ALIEN_BASE_ASSAULT
+alienMissions:
   - type: STR_ALIEN_INFILTRATION
     region: STR_INDIAN_OCEAN
     race: STR_AQUATOID
-    nextWave: 0
+    nextWave: 1
     nextUfoCounter: 0
-    spawnCountdown: 15750
+    spawnCountdown: 570
     liveUfos: 0
     uniqueID: 4
-    missionSiteZone: -1
-  - type: STR_ALIEN_SURFACE_ATTACK
-    region: STR_ANTARCTIC
-    race: STR_GILLMAN
-    nextWave: 3
-    nextUfoCounter: 0
-    spawnCountdown: 5790
-    liveUfos: 1
-    uniqueID: 6
     missionSiteZone: -1
   - type: STR_ALIEN_INFILTRATION
     region: STR_MEDITERRANEAN
     race: STR_GILLMAN
-    nextWave: 3
+    nextWave: 0
     nextUfoCounter: 0
-    spawnCountdown: 8010
-    liveUfos: 1
+    spawnCountdown: 4320
+    liveUfos: 0
     uniqueID: 14
     missionSiteZone: -1
-  - type: STR_ALIEN_SURFACE_ATTACK
-    region: STR_SOUTH_ATLANTIC
-    race: STR_GILLMAN
-    nextWave: 2
-    nextUfoCounter: 0
-    spawnCountdown: 4710
-    liveUfos: 0
-    uniqueID: 16
-    missionSiteZone: 5
   - type: STR_ALIEN_INFILTRATION
     region: STR_SOUTH_PACIFIC
     race: STR_AQUATOID
     nextWave: 1
     nextUfoCounter: 0
-    spawnCountdown: 11580
+    spawnCountdown: 3600
     liveUfos: 0
     uniqueID: 17
     missionSiteZone: -1
-ufos:
-  - lon: 2.3138919213875528
-    lat: -0.4824990203163036
-    dest:
-      lon: 3.2785401721402381
-      lat: 0.42612602993039445
-      type: STR_WAY_POINT
-      id: 0
-    speedLon: 0
-    speedLat: 0
-    speedRadian: 0
-    speed: 0
-    type: STR_CRUISER
-    damage: 0
-    altitude: STR_GROUND
-    direction: STR_NONE_UC
-    status: 1
-    secondsRemaining: 1080
-    mission: 3
-    trajectory: P3
-    trajectoryPoint: 4
-    fireCountdown: 0
-    escapeCountdown: 0
-  - lon: 0.28329007582104976
-    lat: -0.52854134104139017
-    dest:
-      lon: 0.078832477447448035
-      lat: -0.63582677237373786
-      type: STR_WAY_POINT
-      id: 0
-    speedLon: -0
-    speedLat: -0
-    speedRadian: 0
-    speed: 0
-    type: STR_ESCORT
-    damage: 0
-    altitude: STR_GROUND
-    direction: STR_NONE_UC
-    status: 1
-    secondsRemaining: 4105
-    mission: 14
-    trajectory: P6
-    trajectoryPoint: 4
-    fireCountdown: 0
-    escapeCountdown: 0
-  - lon: 1.7724374366996576
-    lat: 1.0271864189636419
-    dest:
-      lon: 1.7767469230553001
-      lat: 1.015278844209057
-      type: STR_WAY_POINT
-      id: 0
-    speedLon: 0.00028955869629636245
-    speedLat: -0.00078332960897990159
-    speedRadian: 0.00079751850542518672
-    speed: 1974
-    type: STR_BATTLESHIP
-    damage: 0
-    altitude: STR_VERY_LOW
-    direction: STR_NORTH
-    status: 0
-    mission: 6
-    trajectory: P0
-    trajectoryPoint: 3
-    fireCountdown: 0
-    escapeCountdown: 0
-  - lon: 5.7606240768978783
-    lat: 0.19681009346785344
-    dest:
-      lon: 5.6816661323386821
-      lat: 0.0073147040700860576
-      type: STR_WAY_POINT
-      id: 0
-    speedLon: -0.00038300118103535533
-    speedLat: -0.00089392183728743589
-    speedRadian: 0.00096962736221907193
-    speed: 2400
-    type: STR_DREADNOUGHT
-    damage: 0
-    altitude: STR_VERY_LOW
-    direction: STR_NORTH_WEST
-    status: 0
-    mission: 2
-    trajectory: P2
-    trajectoryPoint: 3
-    fireCountdown: 0
-    escapeCountdown: 0
+  - type: STR_ALIEN_PROBE_MISSION
+    region: STR_NORTH_ATLANTIC
+    race: STR_TASOTH
+    nextWave: 2
+    nextUfoCounter: 0
+    spawnCountdown: 2640
+    liveUfos: 0
+    uniqueID: 35
+    missionSiteZone: -1
+  - type: STR_ALIEN_BASE
+    region: STR_NORTH_ATLANTIC
+    race: STR_LOBSTERMAN
+    nextWave: 1
+    nextUfoCounter: 0
+    spawnCountdown: 11520
+    liveUfos: 0
+    uniqueID: 39
+    missionSiteZone: -1
+  - type: STR_ALIEN_INFILTRATION
+    region: STR_SOUTH_CHINA_SEA
+    race: STR_TASOTH
+    nextWave: 0
+    nextUfoCounter: 0
+    spawnCountdown: 8370
+    liveUfos: 0
+    uniqueID: 40
+    missionSiteZone: -1
+  - type: STR_ALIEN_SUPPLY
+    region: STR_SOUTH_PACIFIC
+    race: STR_AQUATOID
+    nextWave: 0
+    nextUfoCounter: 0
+    spawnCountdown: 4230
+    liveUfos: 0
+    uniqueID: 44
+    alienBase:
+      lon: 4.702886733467496
+      lat: 0.31802147556156057
+      type: STR_ALIEN_BASE
+      id: 1
+    missionSiteZone: -1
+  - type: STR_ALIEN_SUPPLY
+    region: STR_INDIAN_OCEAN
+    race: STR_AQUATOID
+    nextWave: 0
+    nextUfoCounter: 0
+    spawnCountdown: 3690
+    liveUfos: 0
+    uniqueID: 45
+    alienBase:
+      lon: 0.96960166135584425
+      lat: 0.20407048809568307
+      type: STR_ALIEN_BASE
+      id: 2
+    missionSiteZone: -1
+  - type: STR_ALIEN_SUPPLY
+    region: STR_SOUTH_CHINA_SEA
+    race: STR_GILLMAN
+    nextWave: 0
+    nextUfoCounter: 0
+    spawnCountdown: 5190
+    liveUfos: 0
+    uniqueID: 46
+    alienBase:
+      lon: 2.2163516367915852
+      lat: -0.23016373436367576
+      type: STR_ALIEN_BASE
+      id: 5
+    missionSiteZone: -1
 alienStrategy:
   regions:
-    STR_ANTARCTIC: 10
     STR_ARCTIC: 5
     STR_CARRIBEAN: 10
     STR_INDIAN_OCEAN: 8
@@ -860,10 +851,6 @@ alienStrategy:
       missions: ~
     - region: SHIPPING_LANES
       missions: ~
-    - region: STR_ANTARCTIC
-      missions:
-        STR_ALIEN_BASE: 22
-        STR_ALIEN_PROBE_MISSION: 15
     - region: STR_ARCTIC
       missions:
         STR_ALIEN_BASE: 28
@@ -892,10 +879,8 @@ alienStrategy:
       missions: ~
     - region: STR_NORTH_ATLANTIC
       missions:
-        STR_ALIEN_BASE: 20
         STR_ALIEN_INFILTRATION: 20
         STR_ALIEN_INTERDICTION: 16
-        STR_ALIEN_PROBE_MISSION: 14
         STR_ALIEN_RESOURCE_RAID: 20
     - region: STR_NORTH_PACIFIC
       missions:
@@ -920,8 +905,6 @@ alienStrategy:
         STR_ALIEN_RESOURCE_RAID: 12
     - region: STR_SOUTH_CHINA_SEA
       missions:
-        STR_ALIEN_BASE: 19
-        STR_ALIEN_INFILTRATION: 8
         STR_ALIEN_INTERDICTION: 8
         STR_ALIEN_PROBE_MISSION: 8
         STR_ALIEN_RESOURCE_RAID: 8
@@ -933,12 +916,22 @@ alienStrategy:
         STR_ALIEN_RESOURCE_RAID: 12
     - region: STR_THE_EAST_SEA
       missions:
-        STR_ALIEN_BASE: 8
         STR_ALIEN_INFILTRATION: 10
         STR_ALIEN_INTERDICTION: 5
         STR_ALIEN_PROBE_MISSION: 5
         STR_ALIEN_RESOURCE_RAID: 6
   missionLocations:
-    {}
+    artifacts:
+      -
+        - ARTIFACT_SITES
+        - 23
+    shippingLanes:
+      -
+        - SHIPPING_LANES
+        - 4
+      -
+        - SHIPPING_LANES
+        - 41
   missionsRun:
-    {}
+    artifacts: 1
+    shippingLanes: 2

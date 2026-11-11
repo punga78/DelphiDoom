@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 12456018061139133437
+rng: 2207158119271646331
 funds:
   - 10972000
-  - 72391
+  - 16711
 maintenance:
   - 3024000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 7998000
-  - 6113000
+  - 6118320
 expenditures:
   - 0
-  - 14038609
+  - 14099609
 warned: false
 globeLon: 1.5
 globeLat: -0.75
@@ -676,6 +676,7 @@ bases:
       STR_GAS_CANNON: 1
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
+      STR_HEAVY_THERMIC_LANCE: 4
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
       STR_ION_BEAM_ACCELERATORS: 39
@@ -689,7 +690,7 @@ bases:
       STR_SMALL_TORPEDO: 4
       STR_THERMAL_SHOK_LAUNCHER: 1
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 3
+      STR_ZRBITE: 13
       XARQUID_CORPSE_4: 38
     scientists: 8
     engineers: 8
@@ -793,6 +794,23 @@ bases:
         spent: 2800
         amount: 2
         infinite: false
+      - item: STR_GAUSS_PISTOL_CLIP
+        assigned: 25
+        spent: 50
+        amount: 2
+        infinite: false
+        sell: true
+      - item: STR_HEAVY_THERMIC_LANCE
+        assigned: 20
+        spent: 1200
+        amount: 5
+        infinite: false
+      - item: STR_HEAVY_GAUSS_CLIP
+        assigned: 30
+        spent: 90
+        amount: 1
+        infinite: false
+        sell: true
 waypoints:
   - lon: 2
     lat: 0.40000000000000002

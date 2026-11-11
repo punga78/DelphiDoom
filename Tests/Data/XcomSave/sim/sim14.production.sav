@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 9742854077623637734
+rng: 16668105864070904407
 funds:
   - 8483000
-  - 2566722
+  - 2522722
 maintenance:
   - 3489000
   - 0
@@ -34,7 +34,7 @@ incomes:
   - 7681000
 expenditures:
   - 0
-  - 11100278
+  - 11144278
 warned: false
 globeLon: 1.4000000000000001
 globeLat: -0.70000000000000007
@@ -631,6 +631,8 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
+      STR_AQUA_PLASTICS: 31
+      STR_BLASTA_POWER_CLIP: 5
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -640,20 +642,22 @@ bases:
       STR_DYE_GRENADE: 5
       STR_GAS_CANNON: 1
       STR_GAUSS_CANNON_AMMO: 3
-      STR_GAUSS_PISTOL: 34
+      STR_GAUSS_PISTOL: 39
       STR_GAUSS_RIFLE: 4
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
       STR_HEAVY_GAUSS_CLIP: 8
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
+      STR_ION_BEAM_ACCELERATORS: 18
       STR_JET_HARPOON: 2
       STR_LOBSTERMAN_TECHNICIAN: 3
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_NAVIGATION: 17
       STR_PARTICLE_DISTURBANCE_SENSOR: 15
       STR_SMALL_TORPEDO: 4
       STR_TORPEDO_LAUNCHER: 1
-      STR_ZRBITE: 5
+      STR_ZRBITE: 1
     scientists: 27
     engineers: 3
     transfers:
@@ -761,6 +765,22 @@ bases:
         assigned: 3
         spent: 1200
         amount: 4
+        infinite: false
+      - item: STR_BLASTA_POWER_CLIP
+        assigned: 26
+        spent: 416
+        amount: 5
+        infinite: false
+      - item: STR_LEVIATHAN
+        assigned: 8
+        spent: 4800
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_GAUSS_PISTOL
+        assigned: 14
+        spent: 1512
+        amount: 5
         infinite: false
 waypoints:
   - lon: 2

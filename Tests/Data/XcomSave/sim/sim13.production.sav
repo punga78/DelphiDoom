@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 16933587070350331871
+rng: 11635967756784678488
 funds:
   - 9972000
-  - 152077
+  - 297477
 maintenance:
   - 3054000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 7013000
-  - 6043400
+  - 7000800
 expenditures:
   - 0
-  - 12904323
+  - 13716323
 warned: false
 globeLon: 1.3
 globeLat: -0.65000000000000002
@@ -614,7 +614,8 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 33
+      STR_AQUA_PLASTICS: 57
+      STR_BLASTA_POWER_CLIP: 1
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -629,12 +630,16 @@ bases:
       STR_HEAVY_GAUSS_CLIP: 17
       STR_HJC_AP_AMMO: 40
       STR_HYDRO_JET_CANNON: 1
-      STR_ION_BEAM_ACCELERATORS: 1
+      STR_ION_BEAM_ACCELERATORS: 17
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_ION_ARMOR: 1
+      STR_MAGNETIC_NAVIGATION: 24
+      STR_PARTICLE_DISTURBANCE_SENSOR: 2
+      STR_PWT_CANNON: 3
       STR_SMALL_TORPEDO: 4
       STR_SONIC_OSCILLATOR: 1
-      STR_THERMIC_LANCE: 58
+      STR_THERMIC_LANCE: 68
       STR_TORPEDO_LAUNCHER: 1
     scientists: 16
     engineers: 0
@@ -709,7 +714,7 @@ bases:
         infinite: true
       - item: STR_THERMIC_LANCE
         assigned: 28
-        spent: 12768
+        spent: 14980
         amount: 5
         infinite: true
       - item: STR_ION_BEAM_ACCELERATORS
@@ -719,13 +724,13 @@ bases:
         infinite: false
       - item: STR_THERMAL_SHOK_BOMB
         assigned: 18
-        spent: 216
+        spent: 414
         amount: 2
         infinite: false
         sell: true
       - item: STR_THERMAL_SHOK_BOMB
         assigned: 31
-        spent: 217
+        spent: 1612
         amount: 4
         infinite: true
         sell: true
@@ -733,6 +738,48 @@ bases:
         assigned: 38
         spent: 532
         amount: 1
+        infinite: false
+      - item: STR_BLASTA_POWER_CLIP
+        assigned: 22
+        spent: 88
+        amount: 2
+        infinite: false
+      - item: STR_MAGNETIC_ION_ARMOR
+        assigned: 40
+        spent: 1400
+        amount: 5
+        infinite: false
+      - item: STR_SONIC_CANNON
+        assigned: 5
+        spent: 1000
+        amount: 1
+        infinite: false
+        sell: true
+      - item: STR_PWT_CANNON
+        assigned: 10
+        spent: 800
+        amount: 2
+        infinite: false
+      - item: STR_PWT_CANNON
+        assigned: 17
+        spent: 408
+        amount: 5
+        infinite: false
+      - item: STR_GAUSS_RIFLE
+        assigned: 12
+        spent: 7200
+        amount: 1
+        infinite: true
+        sell: true
+      - item: STR_PARTICLE_DISTURBANCE_SENSOR
+        assigned: 1
+        spent: 440
+        amount: 2
+        infinite: false
+      - item: STR_MANTA
+        assigned: 22
+        spent: 13200
+        amount: 4
         infinite: false
 waypoints:
   - lon: 2

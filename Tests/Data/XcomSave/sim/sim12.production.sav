@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 10130989616492528843
+rng: 5760839233263468306
 funds:
   - 11904000
-  - 1804664
+  - 545264
 maintenance:
   - 3104000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 9004000
-  - 6132556
+  - 6740056
 expenditures:
   - 0
-  - 13331892
+  - 15198792
 warned: false
 globeLon: 1.2000000000000002
 globeLat: -0.60000000000000009
@@ -672,7 +672,8 @@ bases:
     items:
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 2
+      STR_AQUA_PLASTICS: 23
+      STR_COELACANTH_GAUSS: 3
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -689,12 +690,18 @@ bases:
       STR_HEAVY_THERMIC_LANCE: 4
       STR_HJC_AP_AMMO: 6
       STR_HYDRO_JET_CANNON: 1
+      STR_ION_BEAM_ACCELERATORS: 17
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_NAVIGATION: 34
+      STR_MEDI_KIT: 4
       STR_SMALL_TORPEDO: 4
+      STR_SONIC_BLASTA_RIFLE: 3
       STR_SONIC_OSCILLATOR: 4
-      STR_SONIC_PULSER: 36
+      STR_SONIC_PISTOL: 7
+      STR_SONIC_PULSER: 33
       STR_TORPEDO_LAUNCHER: 1
+      STR_ZRBITE: 1
       TRISCENE_CORPSE_1: 10
     scientists: 8
     engineers: 13
@@ -785,7 +792,7 @@ bases:
         infinite: false
       - item: STR_HWP_DISPLACER_PWT
         assigned: 37
-        spent: 1221
+        spent: 1628
         amount: 4
         infinite: false
         sell: true
@@ -796,9 +803,50 @@ bases:
         infinite: false
       - item: STR_SONIC_PULSER
         assigned: 40
-        spent: 7200
+        spent: 6600
         amount: 1
         infinite: true
+      - item: STR_DISRUPTOR_PULSE_LAUNCHER
+        assigned: 8
+        spent: 4800
+        amount: 6
+        infinite: false
+        sell: true
+      - item: STR_SONIC_PISTOL
+        assigned: 38
+        spent: 3610
+        amount: 6
+        infinite: false
+      - item: STR_MEDI_KIT
+        assigned: 12
+        spent: 420
+        amount: 1
+        infinite: false
+      - item: STR_COELACANTH_GAUSS
+        assigned: 12
+        spent: 3600
+        amount: 3
+        infinite: false
+      - item: STR_MEDI_KIT
+        assigned: 32
+        spent: 1280
+        amount: 3
+        infinite: false
+      - item: STR_SONIC_BLASTA_RIFLE
+        assigned: 31
+        spent: 2480
+        amount: 3
+        infinite: false
+      - item: STR_SONIC_PISTOL
+        assigned: 26
+        spent: 624
+        amount: 1
+        infinite: false
+      - item: STR_MANTA
+        assigned: 18
+        spent: 10800
+        amount: 5
+        infinite: false
 waypoints:
   - lon: 2
     lat: 0.40000000000000002

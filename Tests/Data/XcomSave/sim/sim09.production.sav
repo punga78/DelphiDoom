@@ -19,10 +19,10 @@ monthsPassed: 0
 graphRegionToggles: ""
 graphCountryToggles: ""
 graphFinanceToggles: ""
-rng: 14674732331828673082
+rng: 10712992346058076189
 funds:
   - 11995000
-  - 2569836
+  - 1802836
 maintenance:
   - 3979000
   - 0
@@ -31,10 +31,10 @@ researchScores:
   - 0
 incomes:
   - 9987000
-  - 6181700
+  - 6183700
 expenditures:
   - 0
-  - 13598864
+  - 14367864
 warned: false
 globeLon: 0.90000000000000002
 globeLat: -0.45000000000000001
@@ -623,8 +623,9 @@ bases:
       HALLUCINOID_CORPSE_1: 1
       STR_AJAX_LAUNCHER: 1
       STR_AJAX_TORPEDOES: 25
-      STR_AQUA_PLASTICS: 25
+      STR_AQUA_PLASTICS: 68
       STR_CANNON_POWER_CLIP: 1
+      STR_COELACANTH_GAUSS: 1
       STR_CRAFT_GAS_CANNON: 2
       STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
       STR_DART_PISTOL: 2
@@ -635,16 +636,23 @@ bases:
       STR_GAS_CANNON: 1
       STR_GAUSS_PISTOL: 10
       STR_GAUSS_PISTOL_CLIP: 120
+      STR_GAUSS_RIFLE: 6
       STR_GC_AP_AMMO: 6
       STR_HARPOON_POD: 8
+      STR_HEAVY_THERMIC_LANCE: 1
       STR_HJC_AP_AMMO: 6
+      STR_HWP_DISPLACER_PWT: 1
       STR_HYDRO_JET_CANNON: 1
+      STR_ION_BEAM_ACCELERATORS: 10
       STR_JET_HARPOON: 2
       STR_MAGNA_BLAST_GRENADE: 5
+      STR_MAGNETIC_NAVIGATION: 17
       STR_MC_DISRUPTOR: 1
       STR_PLASTIC_AQUA_ARMOR: 3
       STR_SMALL_TORPEDO: 4
-      STR_SONIC_PULSER: 28
+      STR_SONIC_CANNON: 3
+      STR_SONIC_PISTOL: 5
+      STR_SONIC_PULSER: 58
       STR_TORPEDO_LAUNCHER: 1
     scientists: 20
     engineers: 28
@@ -719,7 +727,7 @@ bases:
         infinite: true
       - item: STR_SONIC_PULSER
         assigned: 30
-        spent: 5610
+        spent: 11610
         amount: 3
         infinite: true
       - item: STR_CANNON_POWER_CLIP
@@ -748,6 +756,47 @@ bases:
         spent: 600
         amount: 3
         infinite: false
+      - item: STR_HWP_DISPLACER_PWT
+        assigned: 12
+        spent: 408
+        amount: 5
+        infinite: false
+      - item: STR_SONIC_CANNON
+        assigned: 5
+        spent: 3000
+        amount: 3
+        infinite: false
+      - item: STR_HEAVY_THERMIC_LANCE
+        assigned: 28
+        spent: 308
+        amount: 3
+        infinite: false
+      - item: STR_COELACANTH_GAUSS
+        assigned: 20
+        spent: 1200
+        amount: 1
+        infinite: false
+      - item: STR_SONIC_PISTOL
+        assigned: 35
+        spent: 3010
+        amount: 5
+        infinite: false
+      - item: STR_GAUSS_RIFLE
+        assigned: 8
+        spent: 2400
+        amount: 6
+        infinite: false
+      - item: STR_HEAVY_THERMIC_LANCE
+        assigned: 20
+        spent: 300
+        amount: 3
+        infinite: false
+        sell: true
+      - item: STR_LEVIATHAN
+        assigned: 8
+        spent: 4800
+        amount: 2
+        infinite: true
 waypoints:
   - lon: 2
     lat: 0.40000000000000002
