@@ -107,9 +107,11 @@ end;
 
 procedure TXcomShotRunner.Wait(AMilliseconds: Integer);
 var
-  LIndex: Integer;
+  LEnd: Cardinal;
 begin
-  for LIndex := 1 to AMilliseconds do
+  // by the clock: the time that the steps of an on: handler take is part of the wait they interrupt
+  LEnd := FClock.Ticks + Cardinal(AMilliseconds);
+  while FClock.Ticks < LEnd do
   begin
     if FGame.IsQuitting then
       Exit;

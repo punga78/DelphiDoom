@@ -39,6 +39,22 @@ foreach ($f in $files) {
     }
   }
 }
+# I file che due archivi hanno con lo stesso nome (Extract-TftdZips.ps1 tiene il primo in _doppi): il LOFTEMPS.DAT
+# lungo (114 forme) e' quello di TERRAIN, il corto (112, quello di UFO) di GEODATA; lo SCANG.DAT del primo archivio
+# (quello dei terreni) va in TERRAIN. Senza _doppi (estrazione fatta col vecchio script) TERRAIN\LOFTEMPS.DAT resta
+# quello corto: lo si dice.
+$dup = Join-Path $Flat '_doppi'
+$lofts = @(Get-ChildItem $Flat -File -Filter 'LOFTEMPS.DAT')
+if (Test-Path $dup) {
+  $lofts += @(Get-ChildItem $dup -File -Filter '*_LOFTEMPS.DAT')
+  foreach ($s in Get-ChildItem $dup -File -Filter '*_SCANG.DAT') { Copy-Item $s.FullName (Join-Path $Out 'TERRAIN\SCANG.DAT') -Force }
+}
+if ($lofts.Count -gt 0) {
+  $sorted = $lofts | Sort-Object Length
+  Copy-Item $sorted[0].FullName (Join-Path $Out 'GEODATA\LOFTEMPS.DAT') -Force
+  Copy-Item $sorted[-1].FullName (Join-Path $Out 'TERRAIN\LOFTEMPS.DAT') -Force
+  if ($sorted[-1].Length -lt 3648) { "ATTENZIONE: TERRAIN\LOFTEMPS.DAT ha $($sorted[-1].Length) byte (112 forme): quello di TFTD ne ha 3648 (114). Rifare l'estrazione con Extract-TftdZips.ps1." }
+}
 Get-ChildItem $Out -Directory | ForEach-Object { '{0}: {1} file' -f $_.Name, (Get-ChildItem $_.FullName -File).Count }
 
 
