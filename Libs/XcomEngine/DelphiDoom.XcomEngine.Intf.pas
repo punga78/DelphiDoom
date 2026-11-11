@@ -24,6 +24,15 @@ type
     procedure SetTitle(const ATitle: string);
   end;
 
+  /// <summary>
+  ///   What a display that is a window can also do (SDL_NOFRAME and SDL_RESIZABLE of SDL_SetVideoMode): asked before
+  ///   SetMode by the screen when the device has it
+  /// </summary>
+  IXcomWindowStyle = interface
+    ['{6E0B7C1D-93A4-4F5E-A2C8-1D7B5E90F3A2}']
+    procedure SetWindowStyle(ABorderless, AResizable: Boolean);
+  end;
+
   /// <summary>Where the events come from (SDL_PollEvent)</summary>
   IXcomEventSource = interface
     ['{B7D30F58-1A6E-4C92-9E45-D81F2B70A3C6}']

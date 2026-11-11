@@ -24,6 +24,8 @@ type
   TXcomGameSettings = record
     /// <summary>The video options list the modes of the display (-listmodes). The reference program (SDL 1.2 over SDL 2) reports none, so by default the arrows of the resolution are hidden as in the reference</summary>
     ListModes: Boolean;
+    /// <summary>The game runs in a real window (not the screenshots without one)</summary>
+    WindowMode: Boolean;
     /// <summary>The folder with common\ and standard\ (-data)</summary>
     DataFolder: string;
     /// <summary>The folder of the original game: UFO or TFTD (-game)</summary>
@@ -214,7 +216,8 @@ begin
         ASettings.OnAudio(LAudio as IXcomMixerMeter);
     end;
     Result.SetSaveCatalog(TXcomDiskSaveCatalog.Create(LOptions.MasterUserFolder, ASettings.ModId, LParser));
-    if ASettings.ListModes then
+    // the list of the modes of the monitor: always with the window (the screenshots of the tests ask for it)
+    if ASettings.ListModes or ASettings.WindowMode then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;

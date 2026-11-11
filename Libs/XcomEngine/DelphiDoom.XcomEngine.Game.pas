@@ -113,6 +113,8 @@ type
     procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
+    /// <summary>Game::run on SDL_VIDEORESIZE: the display takes the size of the window, the states recenter</summary>
+    procedure ResizeDisplay(AWidth, AHeight: Integer);
     /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
     procedure Run;
     function IsQuitting: Boolean;
@@ -451,6 +453,30 @@ begin
   end;
 end;
 
+procedure TXcomGame.ResizeDisplay(AWidth, AHeight: Integer);
+var
+  LDX: Integer;
+  LDY: Integer;
+  LState: TXcomState;
+begin
+  if AWidth < XCOM_ORIGINAL_WIDTH then
+    AWidth := XCOM_ORIGINAL_WIDTH;
+  if AHeight < XCOM_ORIGINAL_HEIGHT then
+    AHeight := XCOM_ORIGINAL_HEIGHT;
+  FOptions.DisplayWidth := AWidth;
+  FOptions.NewDisplayWidth := AWidth;
+  FOptions.DisplayHeight := AHeight;
+  FOptions.NewDisplayHeight := AHeight;
+  LDX := 0;
+  LDY := 0;
+  TXcomScreen.UpdateScale(FOptions, FOptions.BattlescapeScale, FOptions.BaseXBattlescape, FOptions.BaseYBattlescape,
+    False);
+  TXcomScreen.UpdateScale(FOptions, FOptions.GeoscapeScale, FOptions.BaseXGeoscape, FOptions.BaseYGeoscape, False);
+  for LState in FStates do
+    LState.Resize(LDX, LDY);
+  FScreen.ResetDisplay;
+end;
+
 procedure TXcomGame.RunFrame;
 var
   LEvent: TXcomInputEvent;
@@ -501,7 +527,9 @@ begin
           else
             SetVolume(0, 0, 0);
       ekResize:
-        ;
+        // SDL_VIDEORESIZE: the player has dragged the border of a resizable window (X and Y are the new size)
+        if FOptions.AllowResize then
+          ResizeDisplay(LEvent.X, LEvent.Y);
     else
       Dispatch(LEvent);
     end;

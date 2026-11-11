@@ -225,6 +225,7 @@ begin
   LOutput := TXcomWinPcmOutput.Create;
   LOutputRef := LOutput;
   LSettings := AArguments.Settings;
+  LSettings.WindowMode := True;
   LSettings.AudioOutput := LOutputRef;
   LSettings.OnAudio := procedure(const AMeter: IXcomMixerMeter)
     begin

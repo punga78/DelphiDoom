@@ -22,7 +22,7 @@ type
   ///   events that it is given (SDL 1.2 key codes and button numbers); the system cursor is hidden over the window
   ///   because the game draws its own. Everything is done by the thread that created it
   /// </summary>
-  TXcomWinVideoDevice = class(TInterfacedObject, IXcomVideoDevice)
+  TXcomWinVideoDevice = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle)
   strict private
     FHandle: HWND;
     FEvents: TXcomQueueEventSource;
@@ -31,6 +31,9 @@ type
     FHeight: Integer;
     FClosed: Boolean;
     FFullscreen: Boolean;
+    FBorderless: Boolean;
+    FResizable: Boolean;
+    FSettingMode: Boolean;
     class var FClassRegistered: Boolean;
     class function WindowProc(AWindow: HWND; AMessage: UINT; AWParam: WPARAM; ALParam: LPARAM): LRESULT; stdcall; static;
     class procedure RegisterWindowClass; static;
@@ -42,6 +45,8 @@ type
     function PictureRect(out ARect: TRect): Boolean;
     function ScalePoint(ALParam: LPARAM): LPARAM;
     procedure ApplyWindowStyle;
+    function WindowStyle: DWORD;
+    procedure PostResize(AWidth, AHeight: Integer);
   public
     /// <param name="AEvents">Where the events go; not owned</param>
     constructor Create(const ATitle: string; AEvents: TXcomQueueEventSource);
@@ -49,6 +54,8 @@ type
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
     procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
     procedure SetTitle(const ATitle: string);
+    /// <summary>IXcomWindowStyle: taken at the next SetMode</summary>
+    procedure SetWindowStyle(ABorderless, AResizable: Boolean);
     /// <summary>Reads the messages of the window into the queue of events; false once the window has been closed</summary>
     function Pump: Boolean;
   end;
@@ -57,7 +64,6 @@ implementation
 
 const
   WINDOW_CLASS = 'DelphiDoomXcomWindow';
-  WINDOW_STYLE = WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX;
 
 class function TXcomWinVideoDevice.KeyOf(AVirtualKey: WPARAM): Integer;
 begin
@@ -150,6 +156,34 @@ begin
   Result := MakeLParam(Word(LX), Word(LY));
 end;
 
+function TXcomWinVideoDevice.WindowStyle: DWORD;
+begin
+  if FBorderless then
+    Result := WS_POPUP
+  else
+  begin
+    Result := WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX;
+    if FResizable then
+      Result := Result or WS_THICKFRAME or WS_MAXIMIZEBOX;
+  end;
+end;
+
+procedure TXcomWinVideoDevice.SetWindowStyle(ABorderless, AResizable: Boolean);
+begin
+  FBorderless := ABorderless;
+  FResizable := AResizable;
+end;
+
+procedure TXcomWinVideoDevice.PostResize(AWidth, AHeight: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  LEvent := TXcomInputEvent.Make(ekResize);
+  LEvent.X := AWidth;
+  LEvent.Y := AHeight;
+  FEvents.Enqueue(LEvent);
+end;
+
 procedure TXcomWinVideoDevice.ApplyWindowStyle;
 var
   LRect: TRect;
@@ -167,9 +201,9 @@ begin
   end
   else
   begin
-    SetWindowLongPtr(FHandle, GWL_STYLE, LONG_PTR(WINDOW_STYLE or WS_VISIBLE));
+    SetWindowLongPtr(FHandle, GWL_STYLE, LONG_PTR(WindowStyle or WS_VISIBLE));
     LRect := Rect(0, 0, FWidth, FHeight);
-    AdjustWindowRect(LRect, WINDOW_STYLE, False);
+    AdjustWindowRect(LRect, WindowStyle, False);
     SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
       SWP_NOMOVE or SWP_NOZORDER or SWP_FRAMECHANGED);
   end;
@@ -291,6 +325,11 @@ begin
           LSelf.Post(ekQuit, 0, 0, 0);
           Exit(0);
         end;
+      WM_SIZE:
+        // the player has dragged the border (SDL_VIDEORESIZE): not the sizes the game itself asks for
+        if LSelf.FResizable and (not LSelf.FFullscreen) and (not LSelf.FSettingMode) and (AWParam <> SIZE_MINIMIZED) and
+          ((LoWord(ALParam) <> LSelf.FWidth) or (HiWord(ALParam) <> LSelf.FHeight)) then
+          LSelf.PostResize(LoWord(ALParam), HiWord(ALParam));
       WM_ERASEBKGND:
         Exit(1);
     end;
@@ -336,7 +375,7 @@ var
   LStyle: DWORD;
 begin
   RegisterWindowClass;
-  LStyle := WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX;
+  LStyle := WindowStyle;
   LRect := Rect(0, 0, FWidth, FHeight);
   AdjustWindowRect(LRect, LStyle, False);
   FHandle := CreateWindow(WINDOW_CLASS, PChar(FTitle), LStyle, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -349,32 +388,23 @@ begin
 end;
 
 procedure TXcomWinVideoDevice.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
-var
-  LRect: TRect;
 begin
   FWidth := AWidth;
   FHeight := AHeight;
-  if FHandle = 0 then
-  begin
-    FFullscreen := False;
-    CreateWindowHandle;
-    if AFullscreen then
+  // the sizes the window takes here are not a resize of the player
+  FSettingMode := True;
+  try
+    if FHandle = 0 then
     begin
-      FFullscreen := True;
-      ApplyWindowStyle;
+      FFullscreen := False;
+      CreateWindowHandle;
+      if not AFullscreen then
+        Exit;
     end;
-  end
-  else if (AFullscreen <> FFullscreen) or AFullscreen then
-  begin
     FFullscreen := AFullscreen;
     ApplyWindowStyle;
-  end
-  else
-  begin
-    LRect := Rect(0, 0, FWidth, FHeight);
-    AdjustWindowRect(LRect, WINDOW_STYLE, False);
-    SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
-      SWP_NOMOVE or SWP_NOZORDER);
+  finally
+    FSettingMode := False;
   end;
 end;
 

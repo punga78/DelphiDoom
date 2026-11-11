@@ -228,6 +228,7 @@ var
   LPixelRatioY: Double;
   LCursorInBlackBands: Boolean;
   LTarget: Integer;
+  LStyle: IXcomWindowStyle;
 begin
   LWidth := FOptions.DisplayWidth;
   LHeight := FOptions.DisplayHeight;
@@ -240,7 +241,11 @@ begin
     FSurface.SetColors(FDeferredPalette);
   end;
   if AResetVideo or (Length(FDisplay) = 0) then
+  begin
+    if Supports(FDevice, IXcomWindowStyle, LStyle) then
+      LStyle.SetWindowStyle(FOptions.Borderless, FOptions.AllowResize);
     FDevice.SetMode(LWidth, LHeight, FOptions.Fullscreen);
+  end;
   FDisplayWidth := LWidth;
   FDisplayHeight := LHeight;
   SetLength(FDisplay, LWidth * LHeight);
