@@ -307,13 +307,13 @@ begin
   LField := TXcomNodeReader.Field(ANode, 'objectiveComplete');
   if LField.IsDefined then
   begin
-    FObjectiveCompleteText := LField.Find(0).AsString(FObjectiveCompleteText);
+    FObjectiveCompleteText := TXcomNodeReader.TextOf(LField.Find(0), FObjectiveCompleteText);
     FObjectiveCompleteScore := LField.Find(1).AsInteger(FObjectiveCompleteScore);
   end;
   LField := TXcomNodeReader.Field(ANode, 'objectiveFailed');
   if LField.IsDefined then
   begin
-    FObjectiveFailedText := LField.Find(0).AsString(FObjectiveFailedText);
+    FObjectiveFailedText := TXcomNodeReader.TextOf(LField.Find(0), FObjectiveFailedText);
     FObjectiveFailedScore := LField.Find(1).AsInteger(FObjectiveFailedScore);
   end;
   FDespawnPenalty := TXcomNodeReader.ReadInteger(ANode, 'despawnPenalty', FDespawnPenalty);
