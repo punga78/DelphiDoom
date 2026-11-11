@@ -18,7 +18,7 @@ uses
 type
   /// <summary>
   ///   The memorial: the soldiers who died (the latest first) with the rank and the date of the death. A click on a
-  ///   soldier opens his info. The Statistics button of the C++ (StatisticsState) is not ported: it does nothing
+  ///   soldier opens his info. The Statistics button opens StatisticsState
   /// </summary>
   TXcomSoldierMemorialState = class(TXcomState)
   strict private
@@ -34,6 +34,7 @@ type
     FList: TXcomTextList;
     procedure OkClick(AAction: TXcomAction);
     procedure ListClick(AAction: TXcomAction);
+    procedure StatisticsClick(AAction: TXcomAction);
   public
     constructor Create(AHost: TXcomStateHost);
     property List: TXcomTextList read FList;
@@ -44,7 +45,7 @@ implementation
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Soldier,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomBasescape.Names,
-  DelphiDoom.XcomBasescape.SoldierInfoState;
+  DelphiDoom.XcomBasescape.SoldierInfoState, DelphiDoom.XcomBasescape.StatisticsState;
 
 { TXcomSoldierMemorialState }
 
@@ -85,6 +86,7 @@ begin
   FBtnOk.OnMouseClick(OkClick);
   FBtnOk.OnKeyboardPress(OkClick, Host.Options.KeyCancel);
   FBtnStatistics.SetText(Tr('STR_STATISTICS'));
+  FBtnStatistics.OnMouseClick(StatisticsClick);
   FTxtTitle.SetBig;
   FTxtTitle.SetAlign(haCenter);
   FTxtTitle.SetText(Tr('STR_MEMORIAL'));
@@ -120,6 +122,11 @@ procedure TXcomSoldierMemorialState.OkClick(AAction: TXcomAction);
 begin
   Host.PopState;
   Host.PlayMusic('GMGEO');
+end;
+
+procedure TXcomSoldierMemorialState.StatisticsClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomStatisticsState.Create(Host));
 end;
 
 procedure TXcomSoldierMemorialState.ListClick(AAction: TXcomAction);
