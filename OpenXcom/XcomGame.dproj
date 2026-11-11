@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{8E21C4D7-3A59-4F06-9B18-D5E0F7A2C341}</ProjectGuid>
         <MainSource>XcomGame.dpr</MainSource>
@@ -11,7 +11,7 @@
         <AppType>Console</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\XcomGeoscape;..\Libs\XcomBasescape;..\Libs\XcomSave;..\Libs\XcomMod;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\Yaml;..\Libs\XcomFormats;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\XcomAudio;..\Libs\Opl;..\Libs\XcomGeoscape;..\Libs\XcomStrategy;..\Libs\XcomBasescape;..\Libs\XcomSave;..\Libs\XcomMod;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\Yaml;..\Libs\XcomFormats;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\OpenXcom</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\OpenXcom\XcomGame\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

@@ -420,6 +420,12 @@ begin
   Assert.AreEqual(Length(LSong), Length(LTrack));
   for LIndex := 0 to High(LSong) do
     Assert.AreEqual(Integer(LSong[LIndex]), Integer(LTrack[LIndex]));
+  // as AdlibMusic is given it: with the name (a length of 3 and "ABC") in front
+  LTrack := LSource.LoadTrackWithName(0);
+  Assert.AreEqual(Length(LSong) + 4, Length(LTrack));
+  Assert.AreEqual(3, Integer(LTrack[0]));
+  Assert.AreEqual(Integer(Ord('C')), Integer(LTrack[3]));
+  Assert.AreEqual(Integer(LSong[0]), Integer(LTrack[4]));
 end;
 
 end.

@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.Widget,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomGeoscape.Globe,
-  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf;
+  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf,
+  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
 
 type
   /// <summary>
@@ -69,12 +70,14 @@ type
     FGameTimer: TXcomTimer;
     FPause: Boolean;
     FPopups: TList<TXcomState>;
+    FControl: IXcomGeoscapeControl;
     procedure ConfigureButton(AButton: TXcomTextButton; const AText: string; ABig: Boolean; AKey: Integer;
       const AHandler: TXcomActionHandler);
     procedure ConfigureTimeButton(AButton: TXcomTextButton; const AText: string; AKey: Integer);
     procedure ConfigureHold(ASurface: TXcomInteractiveSurface; AKey: Integer; const APress,
       ARelease: TXcomActionHandler);
     procedure TimeAdvance;
+    procedure GlobeClick(AAction: TXcomAction);
   public
     /// <param name="ASimulation">What runs with the time; nil: the date advances and nothing else happens</param>
     /// <param name="ANavigator">The screens of the buttons; nil: the buttons do nothing</param>
@@ -89,7 +92,17 @@ type
     procedure Popup(AState: TXcomState);
     /// <summary>GeoscapeState::timerReset: the clock goes back to 5 seconds</summary>
     procedure TimerReset;
+    /// <summary>The basescape of a base, through the navigator (nothing without one)</summary>
+    procedure OpenBase(ABase: TXcomBase);
+    procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+    procedure PlaceLift(ABase: TXcomBase; AFirst: Boolean);
     property Globe: TXcomGlobe read FGlobe;
+    /// <summary>What the popups ask of this geoscape (valid while the geoscape lives)</summary>
+    property Control: IXcomGeoscapeControl read FControl;
+    /// <summary>The states that wait to be shown (popups of the events)</summary>
+    function PendingPopups: Integer;
+    /// <summary>True while the time is stopped for a popup</summary>
+    function Paused: Boolean;
   end;
 
 implementation
@@ -103,6 +116,94 @@ const
   SIDEBAR_WIDTH = 64;
   ORIGINAL_HEIGHT = 200;
 
+type
+  /// <summary>The geoscape as the popups see it; it does not keep the geoscape alive and is cleared by its destructor</summary>
+  TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl)
+  strict private
+    FState: TXcomGeoscapeState;
+    FScreens: IXcomGeoscapeScreens;
+  public
+    constructor Create(AState: TXcomGeoscapeState);
+    function Screens: IXcomGeoscapeScreens;
+    procedure Detach;
+    procedure TimerReset;
+    function Globe: TXcomGlobe;
+    procedure Popup(AState: TXcomState);
+    procedure OpenBase(ABase: TXcomBase);
+    procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+    procedure PlaceLift(ABase: TXcomBase; AFirst: Boolean);
+    function Palette: PXcomColors;
+  end;
+
+{ TXcomGeoscapeControl }
+
+function TXcomGeoscapeControl.Screens: IXcomGeoscapeScreens;
+begin
+  if (FScreens = nil) and Assigned(FState) then
+    FScreens := TXcomGeoscapeScreens.Create(FState.Host, Self);
+  Result := FScreens;
+end;
+
+procedure TXcomGeoscapeControl.PlaceLift(ABase: TXcomBase; AFirst: Boolean);
+begin
+  if Assigned(FState) then
+    FState.PlaceLift(ABase, AFirst);
+end;
+
+function TXcomGeoscapeControl.Palette: PXcomColors;
+begin
+  if Assigned(FState) then
+    Result := FState.Palette
+  else
+    Result := nil;
+end;
+
+procedure TXcomGeoscapeControl.OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+begin
+  if Assigned(FState) then
+    FState.OpenBaseScreen(AScreen, ABase);
+end;
+
+constructor TXcomGeoscapeControl.Create(AState: TXcomGeoscapeState);
+begin
+  inherited Create;
+  FState := AState;
+end;
+
+procedure TXcomGeoscapeControl.Detach;
+begin
+  FState := nil;
+  FScreens := nil;
+end;
+
+procedure TXcomGeoscapeControl.TimerReset;
+begin
+  if Assigned(FState) then
+    FState.TimerReset;
+end;
+
+function TXcomGeoscapeControl.Globe: TXcomGlobe;
+begin
+  if Assigned(FState) then
+    Result := FState.Globe
+  else
+    Result := nil;
+end;
+
+procedure TXcomGeoscapeControl.Popup(AState: TXcomState);
+begin
+  if Assigned(FState) then
+    FState.Popup(AState)
+  else
+    AState.Free;
+end;
+
+procedure TXcomGeoscapeControl.OpenBase(ABase: TXcomBase);
+begin
+  if Assigned(FState) then
+    FState.OpenBase(ABase);
+end;
+
 { TXcomGeoscapeState }
 
 constructor TXcomGeoscapeState.Create(AHost: TXcomStateHost; const ASimulation: IXcomGeoscapeSimulation;
@@ -110,11 +211,17 @@ constructor TXcomGeoscapeState.Create(AHost: TXcomStateHost; const ASimulation: 
 var
   LScreenWidth, LScreenHeight, LHeight: Integer;
   LAlt, LGeoBorder: TXcomSurface;
+  LAware: IXcomGeoscapeAware;
 begin
   inherited Create(AHost);
   FSimulation := ASimulation;
   FNavigator := ANavigator;
   FPopups := TList<TXcomState>.Create;
+  FControl := TXcomGeoscapeControl.Create(Self);
+  if Supports(FSimulation, IXcomGeoscapeAware, LAware) then
+    LAware.AttachGeoscape(FControl);
+  if Supports(FNavigator, IXcomGeoscapeAware, LAware) then
+    LAware.AttachGeoscape(FControl);
   FSave := TXcomStrategy.SavedGame(AHost);
   FRules := TXcomStrategy.Rules(AHost);
   LScreenWidth := Host.Options.BaseXGeoscape;
@@ -209,8 +316,7 @@ begin
   ConfigureButton(FBtnIntercept, 'STR_INTERCEPT', False, KEY_GEO_INTERCEPT,
     procedure(AAction: TXcomAction)
     begin
-      if Assigned(FNavigator) then
-        FNavigator.OpenIntercept;
+      FControl.Screens.OpenIntercept(nil, nil);
     end);
   ConfigureButton(FBtnBases, 'STR_BASES', False, KEY_GEO_BASES,
     procedure(AAction: TXcomAction)
@@ -339,7 +445,15 @@ begin
 end;
 
 destructor TXcomGeoscapeState.Destroy;
+var
+  LState: TXcomState;
 begin
+  // the popups that were never shown are still ours
+  for LState in FPopups do
+    LState.Free;
+  FPopups.Clear;
+  (FControl as TXcomGeoscapeControl).Detach;
+  FControl := nil;
   inherited Destroy;
   FPopups.Free;
   FGameTimer.Free;
@@ -394,11 +508,7 @@ begin
   inherited Init;
   TimeDisplay;
   // the screens that borrow the globe set their handlers on it: they are replaced by the ones of the geoscape
-  // (globeClick, which looks for the targets under the mouse, is not ported)
-  FGlobe.OnMouseClick(
-    procedure(AAction: TXcomAction)
-    begin
-    end);
+  FGlobe.OnMouseClick(GlobeClick);
   FGlobe.OnMouseOver(nil);
   FGlobe.RotateStop;
   FGlobe.SetFocus(True);
@@ -410,6 +520,21 @@ begin
     FSave.AddMonth;
     if Assigned(FSimulation) then
       FSimulation.StartFirstMonth;
+  end;
+end;
+
+procedure TXcomGeoscapeState.GlobeClick(AAction: TXcomAction);
+var
+  LTargets: TList<TXcomTarget>;
+begin
+  // clicking the markers of the globe (the right click scrolls it: the globe does it)
+  if AAction.Details^.Button = XCOM_BUTTON_LEFT then
+  begin
+    LTargets := FGlobe.GetTargets(Floor(AAction.AbsoluteXMouse), Floor(AAction.AbsoluteYMouse), False);
+    if LTargets.Count > 0 then
+      FControl.Screens.OpenMultipleTargets(LTargets, nil)
+    else
+      LTargets.Free;
   end;
 end;
 
@@ -476,6 +601,8 @@ begin
     end;
     Inc(LIndex);
   end;
+  // dogfights to start and zoom effects (not ported) would keep the pause
+  FPause := False;
   TimeDisplay;
   FGlobe.Draw;
 end;
@@ -484,6 +611,34 @@ procedure TXcomGeoscapeState.Popup(AState: TXcomState);
 begin
   FPause := True;
   FPopups.Add(AState);
+end;
+
+function TXcomGeoscapeState.PendingPopups: Integer;
+begin
+  Result := FPopups.Count;
+end;
+
+function TXcomGeoscapeState.Paused: Boolean;
+begin
+  Result := FPause;
+end;
+
+procedure TXcomGeoscapeState.OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+begin
+  if Assigned(FNavigator) then
+    FNavigator.OpenBaseScreen(AScreen, ABase);
+end;
+
+procedure TXcomGeoscapeState.PlaceLift(ABase: TXcomBase; AFirst: Boolean);
+begin
+  if Assigned(FNavigator) then
+    FNavigator.OpenPlaceLift(ABase, FGlobe, AFirst);
+end;
+
+procedure TXcomGeoscapeState.OpenBase(ABase: TXcomBase);
+begin
+  if Assigned(FNavigator) then
+    FNavigator.OpenBase(ABase, FGlobe);
 end;
 
 procedure TXcomGeoscapeState.TimerReset;

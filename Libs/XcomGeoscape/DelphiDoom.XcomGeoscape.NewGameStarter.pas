@@ -87,7 +87,7 @@ begin
   LSave.Difficulty := ADifficulty;
   LSave.Ironman := AIronman;
   // the saved game is the game's from now on
-  FHost.SetSession(TXcomSavedGameHolder.Create(LSave, LRules));
+  FHost.SetSession(TXcomSavedGameHolder.Create(LSave, LRules, LRandom));
   LSimulation := nil;
   if Assigned(FSimulationFactory) then
     LSimulation := FSimulationFactory(FHost, LSave, LRuleset, LRandom);

@@ -48,6 +48,11 @@ type
     function TrackCount: Integer;
     /// <summary>The bytes of a song (the name of the CAT entry is skipped)</summary>
     function LoadTrack(AIndex: Integer): TBytes;
+    /// <summary>
+    ///   The bytes of a song as AdlibMusic is given them (CatFile::load with the name kept: the sequencer reads the
+    ///   name length itself); this is what IXcomAdlibPlayer.Load takes
+    /// </summary>
+    function LoadTrackWithName(AIndex: Integer): TBytes;
   end;
 
   /// <summary>AdlibMusic: a song played on two chips (left and right) with the sound produced by the caller</summary>

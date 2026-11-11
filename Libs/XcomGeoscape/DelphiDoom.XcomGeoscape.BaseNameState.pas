@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.Text,
-  DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextEdit, DelphiDoom.XcomGeoscape.Globe;
+  DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextEdit, DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf;
 
 type
   /// <summary>
@@ -26,6 +26,7 @@ type
     FBase: TXcomBase;
     FGlobe: TXcomGlobe;
     FFirst: Boolean;
+    FControl: IXcomGeoscapeControl;
     FWindow: TXcomWindow;
     FOk: TXcomTextButton;
     FTitle: TXcomText;
@@ -33,14 +34,18 @@ type
     procedure NameChange(AAction: TXcomAction);
     procedure OkClick(AAction: TXcomAction);
   public
-    constructor Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
+    /// <param name="AControl">Opens the screen that places the access lift after the name (nil: it does not)</param>
+    constructor Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean;
+      const AControl: IXcomGeoscapeControl = nil);
   end;
 
 implementation
 
-constructor TXcomBaseNameState.Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
+constructor TXcomBaseNameState.Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean;
+  const AControl: IXcomGeoscapeControl);
 begin
   inherited Create(AHost);
+  FControl := AControl;
   FBase := ABase;
   FGlobe := AGlobe;
   FFirst := AFirst;
@@ -87,6 +92,14 @@ begin
   begin
     Host.PopState;
     Host.PopState;
+    if not FFirst or Host.Options.GetBool('customInitialBase') then
+    begin
+      // a base built after the first closes also the confirmation of its cost
+      if not FFirst then
+        Host.PopState;
+      if Assigned(FControl) then
+        FControl.PlaceLift(FBase, FFirst);
+    end;
   end;
 end;
 

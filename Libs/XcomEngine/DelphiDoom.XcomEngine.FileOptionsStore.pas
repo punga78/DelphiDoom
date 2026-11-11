@@ -24,7 +24,9 @@ type
     FParser: IYamlParser;
     FPath: string;
     /// <summary>The text of the top-level sections of the file other than "options", in their order, with the place of options</summary>
-    function MergeOptions(const AExisting, AOptionsBlock: string): string;
+    function MergeOptions(const AExisting, AOptionsBlock: string; const ASection: string = 'options:'): string;
+    /// <summary>The "mods" section of options.cfg for the mods of the options (a list of one-pair maps)</summary>
+    function ModsBlock(AOptions: TXcomOptions): string;
   public
     constructor Create(const AFiles: IXcomFileSystem; const AParser: IYamlParser; const AUserFolder: string);
     procedure Load(AOptions: TXcomOptions);
@@ -49,7 +51,16 @@ begin
     AOptions.Load(FParser.Load(FFiles.ReadAll(FPath)));
 end;
 
-function TXcomFileOptionsStore.MergeOptions(const AExisting, AOptionsBlock: string): string;
+function TXcomFileOptionsStore.ModsBlock(AOptions: TXcomOptions): string;
+var
+  LMod: TXcomModSetting;
+begin
+  Result := 'mods:'#10;
+  for LMod in AOptions.Mods do
+    Result := Result + '  - ' + LMod.Id + ': ' + LowerCase(BoolToStr(LMod.Active, True)) + #10;
+end;
+
+function TXcomFileOptionsStore.MergeOptions(const AExisting, AOptionsBlock: string; const ASection: string): string;
 var
   LLines: TArray<string>;
   LLine: string;
@@ -70,7 +81,7 @@ begin
         (LLine[1] <> #9);
       if LTopLevel then
       begin
-        LInOptions := LLine.StartsWith('options:');
+        LInOptions := LLine.StartsWith(ASection);
         if LInOptions then
         begin
           LBuilder.Append(AOptionsBlock);
@@ -101,6 +112,9 @@ begin
   LText := AOptions.Save;
   if FFiles.FileExists(FPath) then
     LText := MergeOptions(TEncoding.UTF8.GetString(FFiles.ReadAll(FPath)), LText);
+  // the mods the user has chosen (the file keeps its own list when the options have none)
+  if Length(AOptions.Mods) > 0 then
+    LText := MergeOptions(LText, ModsBlock(AOptions), 'mods:');
   FFiles.WriteAll(FPath, TEncoding.UTF8.GetBytes(LText));
 end;
 

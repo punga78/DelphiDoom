@@ -46,6 +46,13 @@
 #include "Savegame/ItemContainer.h"
 #include "Battlescape/BattlescapeGenerator.h"
 #include "Engine/Game.h"
+#include "Engine/State.h"
+#include "Battlescape/BattlescapeState.h"
+#include "Battlescape/BattlescapeGame.h"
+#include "Battlescape/AIModule.h"
+#include "Battlescape/Pathfinding.h"
+#include "Battlescape/TileEngine.h"
+#include "Mod/RuleItem.h"
 #include "Engine/Options.h"
 #include "Engine/FileMap.h"
 #include "Engine/Logger.h"
@@ -238,6 +245,73 @@ int main(int argc, char** argv) {
         LoadMapResourcesNoEngine(mod, c);
         WriteNode(basePath + ".re.yml", c->save());
         delete c;
+      }
+      if (ok && getenv("GEN_AI")) {
+        // the thinking of the AI of every unit that has one, in order (they affect each other: nodes, turns), with the real AIModule::think
+        State::_game = game;
+        SavedBattleGame* c2 = new SavedBattleGame();
+        c2->load(b->save(), mod, s);
+        c2->loadMapResources(mod);
+        BattlescapeState* bst = (BattlescapeState*)calloc(1, sizeof(BattlescapeState));
+        c2->_battleState = bst;
+        TileEngine* te = c2->getTileEngine();
+        te->calculateSunShading();
+        te->calculateTerrainLighting();
+        te->calculateUnitLighting();
+        te->recalculateFOV();
+        std::ostringstream ai;
+        int idx = 0;
+        {
+          // the real Pathfinding from every unit that has an AI to every node (before anything moves)
+          std::ostringstream pf;
+          Pathfinding* pfg = c2->getPathfinding();
+          for (size_t ui = 0; ui < c2->_units.size(); ui++) {
+            BattleUnit* pu = c2->_units[ui];
+            if (!pu->getAIModule() || pu->isOut()) continue;
+            for (int dd = 0; dd < 10; dd++) { Position e2; pfg->setUnit(pu); int c = pfg->getTUCost(pu->getPosition(), dd, &e2, pu, 0, false); pf << "tu " << pu->getId() << " " << dd << " = " << c << " " << e2.x << "/" << e2.y << "/" << e2.z << "\n"; }
+            for (size_t ni = 0; ni < c2->getNodes()->size(); ni++) {
+              Node* nd = (*c2->getNodes())[ni];
+              if (nd->isDummy()) continue;
+              pfg->calculate(pu, nd->getPosition());
+              pf << "path " << pu->getId() << " " << nd->getID() << " = " << pfg->getStartDirection() << " " << pfg->getTotalTUCost() << " " << pfg->getPath().size() << " dirs="; { std::vector<int> pp = pfg->getPath(); for (size_t k = pp.size(); k > 0; k--) pf << pp[k - 1]; } pf << "\n";
+              pfg->abortPath();
+            }
+          }
+          WriteText(basePath + ".aip", pf.str());
+        }
+        std::vector<BattleUnit*> thinkers;
+        for (size_t ui = 0; ui < c2->_units.size(); ui++)
+          if (c2->_units[ui]->getAIModule() && !c2->_units[ui]->isOut()) thinkers.push_back(c2->_units[ui]);
+        RNG::setSeed(runSeed * 13 + 5);
+        for (int round = 0; round < 2 * (int)thinkers.size() + 2 && !thinkers.empty(); round++) {
+          BattleUnit* u = thinkers[Pick(thinkers.size())];
+          if (u->isOut()) continue;
+          // most rounds put the unit near a unit of another faction so that it sees and is seen (the real setUnitPosition and recalculateFOV)
+          Position moved(-1, -1, -1);
+          if (round > 0 && Pick(4) != 0) {
+            BattleUnit* other = c2->_units[Pick(c2->_units.size())];
+            if (other->getFaction() != u->getFaction() && !other->isOut()) {
+              Position p = other->getPosition() + Position(Pick(11) - 5, Pick(11) - 5, 0);
+              if (c2->getTile(p) && c2->setUnitPosition(u, p)) { moved = p; te->recalculateFOV(); }
+            }
+          }
+          uint64_t aiSeed = runSeed * 7 + idx;
+          RNG::setSeed(aiSeed);
+          BattleAction act;
+          act.number = 1 + (idx % 3);
+          idx++;
+          AIModule* m = u->getAIModule();
+          u->getAIModule()->think(&act);
+          ai << "think " << u->getId() << " " << aiSeed << " " << (idx - 1) % 3 + 1 << " " << moved.x << "/" << moved.y << "/" << moved.z << " = type=" << (int)act.type << " target=" << act.target.x << "/" << act.target.y << "/" << act.target.z
+             << " weapon=" << (act.weapon ? act.weapon->getId() : 0) << " facing=" << act.finalFacing << " final=" << (act.finalAction ? 1 : 0) << " desperate=" << (act.desperate ? 1 : 0)
+             << " number=" << act.number << " tu=" << act.TU << " wp=" << act.waypoints.size();
+          for (std::list<Position>::iterator w = act.waypoints.begin(); w != act.waypoints.end(); ++w) ai << ":" << w->x << "/" << w->y << "/" << w->z;
+          ai << " mode=" << m->_AIMode << " reserve=" << (int)m->getReserveMode() << " esc=" << m->_escapeTUs << " amb=" << m->_ambushTUs << " to=" << (m->_toNode ? m->_toNode->getID() : -1)
+             << " from=" << (m->_fromNode ? m->_fromNode->getID() : -1) << " pos=" << u->getPosition().x << "/" << u->getPosition().y << "/" << u->getPosition().z << " dir=" << u->getDirection()
+             << " utu=" << u->getTimeUnits() << " charging=" << (u->getCharging() ? u->getCharging()->getId() : 0) << " hiding=" << (u->isHiding() ? 1 : 0)
+             << " aggro=" << (m->getTarget() ? m->getTarget()->getId() : 0) << " known=" << m->_knownEnemies << " vis=" << m->_visibleEnemies << " spot=" << m->_spottingEnemies << " rng=" << RNG::getSeed() << "\n";
+        }
+        WriteText(basePath + ".ai", ai.str());
       }
       free(game);
     }

@@ -28,7 +28,6 @@ type
     FActivityXcom: TArray<Integer>;
     FActivityAlien: TArray<Integer>;
     FSatisfaction: Integer;
-    procedure AddActivityAlien(AActivity: Integer);
     class function LastOf(const AValues: TArray<Integer>): Integer; static;
     class procedure DropFirstIfLong(var AValues: TArray<Integer>); static;
   public
@@ -43,6 +42,10 @@ type
     property ActivityAlien: TArray<Integer> read FActivityAlien write FActivityAlien;
     property Pact: Boolean read FPact write FPact;
     property NewPact: Boolean read FNewPact write FNewPact;
+    /// <summary>addActivityAlien: the activity of the aliens of the current month grows</summary>
+    procedure AddActivityAlien(AActivity: Integer);
+    /// <summary>addActivityXcom: the activity of XCOM of the current month grows (it can be negative)</summary>
+    procedure AddActivityXcom(AActivity: Integer);
     /// <summary>setFunding: the funding of the current month</summary>
     procedure SetFunding(AValue: Integer);
     /// <summary>getSatisfaction: 0 = alien pact, 1 = unhappy, 2 = satisfied, 3 = happy</summary>
@@ -143,6 +146,12 @@ procedure TXcomCountry.AddActivityAlien(AActivity: Integer);
 begin
   LastOf(FActivityAlien);
   Inc(FActivityAlien[High(FActivityAlien)], AActivity);
+end;
+
+procedure TXcomCountry.AddActivityXcom(AActivity: Integer);
+begin
+  LastOf(FActivityXcom);
+  Inc(FActivityXcom[High(FActivityXcom)], AActivity);
 end;
 
 procedure TXcomCountry.NewMonth(AXcomTotal, AAlienTotal, APactScore: Integer; const ARandom: IXcomRandom);

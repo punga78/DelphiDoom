@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - State of OpenXcom (a screen of the game    }
 {  with the surfaces it manages) and the host it asks things to                 }
@@ -18,7 +18,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.SaveCatalog.Intf,
-DelphiDoom.XcomEngine.Session.Intf;
+DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf;
 
 type
   TXcomState = class;
@@ -59,6 +59,12 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>The mods installed in the data folders (nil when the host does not know them)</summary>
+    function ModCatalog: IXcomModCatalog; virtual;
+    /// <summary>Mod::playMusic: starts the music unless it already plays (does nothing without a music player)</summary>
+    procedure PlayMusic(const AName: string; AId: Integer = 0); virtual;
+    /// <summary>Music::stop</summary>
+    procedure StopMusic; virtual;
     /// <summary>The saved games of the user (nil when the host has no folder of saves)</summary>
     function SaveCatalog: IXcomSaveCatalog; virtual;
     /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
@@ -70,6 +76,10 @@ type
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>What loads a saved game that was chosen in the Load Game screen (nil: the load is unsuccessful)</summary>
+    function SavedGameLoader: IXcomSavedGameLoader; virtual;
+    /// <summary>What saves and abandons the saved game in progress, for the pause menu (nil: the save is unsuccessful)</summary>
+    function SavedGameSaver: IXcomSavedGameSaver; virtual;
     /// <summary>
     ///   The saved game and what the strategy screens share (Game::getSavedGame): an object of the geoscape
     ///   library that the game keeps alive (nil before a game starts)
@@ -180,12 +190,35 @@ begin
   Result := nil;
 end;
 
+function TXcomStateHost.ModCatalog: IXcomModCatalog;
+begin
+  Result := nil;
+end;
+
+procedure TXcomStateHost.PlayMusic(const AName: string; AId: Integer);
+begin
+end;
+
+procedure TXcomStateHost.StopMusic;
+begin
+end;
+
 function TXcomStateHost.CurrentMusicFormat: string;
 begin
   Result := 'Adlib';
 end;
 
 function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.SavedGameLoader: IXcomSavedGameLoader;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.SavedGameSaver: IXcomSavedGameSaver;
 begin
   Result := nil;
 end;
@@ -320,6 +353,8 @@ begin
     Host.Resources.SetPalette(@FPalette[0], 0, 256);
   for LSurface in FSurfaces do
     LSurface.StateInitialized;
+  if (FRuleInterface <> nil) and (FRuleInterface.Music <> '') then
+    Host.PlayMusic(FRuleInterface.Music);
 end;
 
 procedure TXcomState.Think;

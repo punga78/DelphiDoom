@@ -10,11 +10,15 @@ unit DelphiDoom.Xcom.GameComposition;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource;
+  System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
+  DelphiDoom.XcomAudio.Intf;
 
 type
   /// <summary>How the loading of the data runs</summary>
   TXcomLoadMode = (lmThread, lmImmediate, lmHeld);
+
+  /// <summary>Receives the meter of the mixer once the audio is open</summary>
+  TXcomAudioReady = reference to procedure(const AMeter: IXcomMixerMeter);
 
   /// <summary>What the program was asked to do (the command line of OpenXcom, reduced)</summary>
   TXcomGameSettings = record
@@ -33,6 +37,10 @@ type
     /// <summary>OPENXCOM_VERSION_SHORT and OPENXCOM_VERSION_GIT written on the screens</summary>
     VersionText: string;
     LoadMode: TXcomLoadMode;
+    /// <summary>The sound output of the machine; nil (the screenshot modes) gives a game without sound</summary>
+    AudioOutput: IXcomPcmOutput;
+    /// <summary>Called with what the mixer plays, once the audio is set up (nil for nothing)</summary>
+    OnAudio: TXcomAudioReady;
     /// <summary>The seed of the random numbers of a new game (-seed); 0 takes it from the clock</summary>
     Seed: UInt64;
   end;
@@ -54,15 +62,20 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
+  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
-  DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.Xcom.Win.AudioDevice,
+  DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
+  DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
+  DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
+  DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
   DelphiDoom.XcomEngine.State;
 
 const
@@ -113,9 +126,16 @@ var
   LLoaderSettings: TXcomLoaderSettings;
   LTask: TXcomGameLoadTask;
   LLoader: IXcomGameLoader;
+  LSimulationFactory: TXcomSimulationFactory;
+  LNavigatorFactory: TXcomNavigatorFactory;
+  LBrief: TXcomSaveBriefInfo;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
+  LOptionsDoc, LModsNode, LModItem: IYamlNode;
+  LModSettings: TArray<TXcomModSetting>;
   LDosPath: string;
+  LAudio: IXcomAudioDevice;
+  LMusic: IXcomMusicPlayer;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -123,7 +143,26 @@ begin
   try
     LOptionsFile := TPath.Combine(ASettings.UserFolder, 'options.cfg');
     if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
-      LOptions.Load(LParser.Load(LFiles.ReadAll(LOptionsFile)));
+    begin
+      LOptionsDoc := LParser.Load(LFiles.ReadAll(LOptionsFile));
+      LOptions.Load(LOptionsDoc);
+      // the "mods" section of the file (id and active): a save that lists a mod asks for confirmation only when it
+      // is not active
+      LModsNode := LOptionsDoc.Find(YamlStringToText('mods'));
+      if Assigned(LModsNode) and LModsNode.IsDefined then
+      begin
+        LModSettings := nil;
+        for LModItem in LModsNode.Items do
+          if Assigned(LModItem.Find(YamlStringToText('id'))) then
+          begin
+            SetLength(LModSettings, Length(LModSettings) + 1);
+            LModSettings[High(LModSettings)] := TXcomModSetting.Create(
+              YamlTextToString(LModItem.Find(YamlStringToText('id')).AsString),
+              SameText(YamlTextToString(LModItem.Find(YamlStringToText('active')).AsString), 'true'));
+          end;
+        LOptions.Mods := LModSettings;
+      end;
+    end;
     // the folders that the options screen shows (in the program of OpenXcom: the user, master user and config folders)
     LOptions.OriginalDataFolder := IncludeTrailingPathDelimiter(ASettings.GameFolder);
     LOptions.ModDataFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.DataFolder, 'common'));
@@ -160,15 +199,45 @@ begin
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
-    Result.SetAudioDevice(TXcomWinAudioDevice.Create);
+    // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
+    Result.SetModCatalog(TXcomDiskModCatalog.Create(
+      [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],
+      [ASettings.ModId], LParser));
+    if ASettings.AudioOutput <> nil then
+    begin
+      TXcomAudioFactory.CreateAudio(LOptions, ASettings.AudioOutput, XCOM_AUDIO_RATE, LAudio, LMusic);
+      Result.SetAudioDevice(LAudio);
+      Result.SetMusicPlayer(LMusic);
+      if Assigned(ASettings.OnAudio) then
+        ASettings.OnAudio(LAudio as IXcomMixerMeter);
+    end;
     Result.SetSaveCatalog(TXcomDiskSaveCatalog.Create(LOptions.MasterUserFolder, ASettings.ModId, LParser));
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
-    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, nil,
+    LSimulationFactory :=
+      function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
+        const ARandom: IXcomRandom): IXcomGeoscapeSimulation
+      var
+        LListener: IXcomGeoscapeEvents;
+      begin
+        // the events are shown as the popups of the geoscape that receives the simulation
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost);
+        Result := TXcomPopupSimulation.Create(
+          TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
+            TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),
+          LListener as IXcomGeoscapeAware);
+      end;
+    LNavigatorFactory :=
       function(AHost: TXcomStateHost): IXcomGeoscapeNavigator
       begin
-        Result := TXcomGameNavigator.Create(AHost);
-      end));
+        Result := TXcomGameNavigator.Create(AHost, TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
+      end;
+    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, LSimulationFactory, LNavigatorFactory));
+    Result.SetSavedGameLoader(TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory));
+    LBrief.Version := '1.0';
+    LBrief.Engine := '';
+    LBrief.Build := '';
+    Result.SetSavedGameSaver(TXcomSavedGameSaver.Create(Result, LBrief, ASettings.VersionText));
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;

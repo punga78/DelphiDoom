@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom geoscape library (DUnitX)                 }
 {                                                                              }
@@ -23,7 +23,11 @@ uses
   DelphiDoom.Tests.XcomGeoscape.Funding in 'Source\DelphiDoom.Tests.XcomGeoscape.Funding.pas',
   DelphiDoom.Tests.XcomGeoscape.BaseViewParity in 'Source\DelphiDoom.Tests.XcomGeoscape.BaseViewParity.pas',
   DelphiDoom.Tests.XcomGeoscape.GlobeParity in 'Source\DelphiDoom.Tests.XcomGeoscape.GlobeParity.pas',
-  DelphiDoom.Tests.XcomGeoscape.Globe in 'Source\DelphiDoom.Tests.XcomGeoscape.Globe.pas';
+  DelphiDoom.Tests.XcomGeoscape.Globe in 'Source\DelphiDoom.Tests.XcomGeoscape.Globe.pas',
+  DelphiDoom.Tests.XcomBasescape.Names in 'Source\DelphiDoom.Tests.XcomBasescape.Names.pas',
+  DelphiDoom.Tests.XcomBasescape.SpaceText in 'Source\DelphiDoom.Tests.XcomBasescape.SpaceText.pas',
+  DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
+  DelphiDoom.Tests.XcomGeoscape.Popups in 'Source\DelphiDoom.Tests.XcomGeoscape.Popups.pas';
 
 var
   Runner: ITestRunner;

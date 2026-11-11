@@ -6,3 +6,8 @@ Provare a mano: `OpenXcom\XcomGame -data <cartella con common\ e standard\> -gam
 Fotogrammi senza finestra: `-script "wait:3000;move:230,210;click:230,210;wait:800;move:238,343;click:238,343;wait:4000;shot:geo.png"`.
 
 Il codice deriva da OpenXcom (GPL v3 o successiva): la licenza dell'opera e' decisa dall'utente; il repository non e' stato cambiato. Dettagli, parita' e differenze in `CLAUDE.md`.
+
+
+## Popup degli eventi e intercettare (issue #176)
+
+Gli eventi della simulazione sono stati di OpenXcom (`TXcomPopupGeoscapeEvents`: UFO rilevato o perso, siti, basi aliene, velivoli, trasferimenti, produzioni, ricerche, rapporto mensile), il clic sui bersagli del globo apre `MultipleTargetsState` e da `InterceptState` si manda un velivolo (`SelectDestinationState`, `ConfirmDestinationState`); `ConfirmNewBaseState` e `PlaceLiftState` fanno le basi dopo la prima. Il dogfight non c'e'. Dettagli, parita' e difetti in `CLAUDE.md`.

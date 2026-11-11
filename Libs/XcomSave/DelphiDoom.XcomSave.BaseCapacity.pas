@@ -37,6 +37,8 @@ type
     /// <summary>Transfer::getQuantity</summary>
     class function QuantityOf(ATransfer: TXcomTransfer): Integer; static;
     function TotalSoldiers(ABase: TXcomBase): Integer;
+    /// <summary>getSoldierCount: the soldiers of the type, those that are being transferred included</summary>
+    function SoldierCount(ABase: TXcomBase; const ASoldierType: string): Integer;
     function AvailableScientists(ABase: TXcomBase): Integer;
     function TotalScientists(ABase: TXcomBase): Integer;
     function AvailableEngineers(ABase: TXcomBase): Integer;
@@ -155,6 +157,20 @@ begin
   for LTransfer in ABase.Transfers do
     if KindOf(LTransfer) = tkSoldier then
       Inc(Result, QuantityOf(LTransfer));
+end;
+
+function TXcomBaseCapacity.SoldierCount(ABase: TXcomBase; const ASoldierType: string): Integer;
+var
+  LTransfer: TXcomTransfer;
+  LSoldier: TXcomSoldier;
+begin
+  Result := 0;
+  for LTransfer in ABase.Transfers do
+    if (KindOf(LTransfer) = tkSoldier) and (LTransfer.Soldier.Rules.SoldierType = ASoldierType) then
+      Inc(Result);
+  for LSoldier in ABase.Soldiers do
+    if LSoldier.Rules.SoldierType = ASoldierType then
+      Inc(Result);
 end;
 
 function TXcomBaseCapacity.AvailableScientists(ABase: TXcomBase): Integer;

@@ -69,6 +69,8 @@ uses
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomSave.RealSave in 'Source\DelphiDoom.Tests.XcomSave.RealSave.pas',
   DelphiDoom.Tests.XcomSave.Strategy in 'Source\DelphiDoom.Tests.XcomSave.Strategy.pas',
+  DelphiDoom.Tests.XcomSave.Sim in 'Source\DelphiDoom.Tests.XcomSave.Sim.pas',
+  DelphiDoom.Tests.XcomSave.CraftScenario in 'Source\DelphiDoom.Tests.XcomSave.CraftScenario.pas',
   DelphiDoom.Tests.XcomSave.Objects in 'Source\DelphiDoom.Tests.XcomSave.Objects.pas';
 
 var

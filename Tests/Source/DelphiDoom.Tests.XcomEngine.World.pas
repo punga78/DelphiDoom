@@ -30,6 +30,8 @@ type
     FBack: array[0..255] of TXcomColor;
     FPaletteCalls: Integer;
     WaveBytes: TBytes;
+    FRules: TArray<TXcomMusicRule>;
+    FSoundFiles: TDictionary<string, TBytes>;
     function NewFont(AWidth, AHeight: Integer): TXcomFont;
   public
     constructor Create;
@@ -43,7 +45,13 @@ type
     function SoundWave(const ASet: string; AIndex: Integer): TBytes;
     /// <summary>What SoundWave gives (nothing by default)</summary>
     property Wave: TBytes read WaveBytes write WaveBytes;
+    /// <summary>What MusicRules gives (nothing by default)</summary>
+    property Rules: TArray<TXcomMusicRule> read FRules write FRules;
+    /// <summary>The files of the SOUND folder that SoundFile finds, by lower case name</summary>
+    property SoundFiles: TDictionary<string, TBytes> read FSoundFiles;
     function Constant(const AName: string; ADefault: Integer): Integer;
+    function MusicRules: TArray<TXcomMusicRule>;
+    function SoundFile(const AName: string): TBytes;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256);
     property PaletteCalls: Integer read FPaletteCalls;
   end;
@@ -176,11 +184,13 @@ var
   LX: Integer;
   LY: Integer;
   LRule: TXcomRuleInterface;
+  LName: string;
 begin
   inherited Create;
   FSurfaces := TObjectDictionary<string, TXcomSurface>.Create([doOwnsValues]);
   FFonts := TObjectDictionary<string, TXcomFont>.Create([doOwnsValues]);
   FInterfaces := TObjectDictionary<string, TXcomRuleInterface>.Create([doOwnsValues]);
+  FSoundFiles := TDictionary<string, TBytes>.Create;
   for LIndex := 0 to 255 do
   begin
     FPalette[LIndex].Red := LIndex;
@@ -199,16 +209,29 @@ begin
     for LX := 0 to 319 do
       LBack.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
   FSurfaces.Add('BACK01.SCR', LBack);
+  // the pictures of the popups of the geoscape
+  for LName in ['BACK12.SCR', 'BACK15.SCR'] do
+  begin
+    LBack := TXcomSurface.Create(320, 200);
+    for LY := 0 to 199 do
+      for LX := 0 to 319 do
+        LBack.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
+    FSurfaces.Add(LName, LBack);
+  end;
   LRule := TXcomRuleInterface.Create('testMenu');
   FInterfaces.Add('testMenu', LRule);
   LRule := TXcomRuleInterface.Create('newGameMenu');
   LRule.Load(TYamlFactory.CreateParser.Load('elements:'#10'  - id: window'#10'    color: 1'#10'  - id: text'#10'    color: 1'#10 +
     '  - id: ironman'#10'    color: 239'#10'  - id: button'#10'    color: 1'#10));
   FInterfaces.Add('newGameMenu', LRule);
+  LRule := TXcomRuleInterface.Create('musicMenu');
+  LRule.Load(TYamlFactory.CreateParser.Load('music: GMTEST'#10'elements:'#10'  - id: window'#10'    color: 1'#10));
+  FInterfaces.Add('musicMenu', LRule);
 end;
 
 destructor TFakeResources.Destroy;
 begin
+  FSoundFiles.Free;
   FInterfaces.Free;
   FFonts.Free;
   FSurfaces.Free;
@@ -274,6 +297,17 @@ end;
 function TFakeResources.Constant(const AName: string; ADefault: Integer): Integer;
 begin
   Result := ADefault;
+end;
+
+function TFakeResources.MusicRules: TArray<TXcomMusicRule>;
+begin
+  Result := FRules;
+end;
+
+function TFakeResources.SoundFile(const AName: string): TBytes;
+begin
+  if not FSoundFiles.TryGetValue(LowerCase(AName), Result) then
+    Result := nil;
 end;
 
 function TFakeResources.HasSoundDefinitions: Boolean;

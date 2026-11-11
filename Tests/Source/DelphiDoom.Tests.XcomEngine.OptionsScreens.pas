@@ -56,6 +56,7 @@ type
     function IsAvailable: Boolean;
     procedure SetVolume(ASound, AMusic, AUi: Integer);
     procedure PlayWave(const AWave: TBytes);
+    procedure Close;
   end;
 
   TFakeModes = class(TInterfacedObject, IXcomDisplayModes)
@@ -225,6 +226,10 @@ end;
 procedure TFakeAudio.PlayWave(const AWave: TBytes);
 begin
   Inc(Waves);
+end;
+
+procedure TFakeAudio.Close;
+begin
 end;
 
 procedure TFakeAudio.SetVolume(ASound, AMusic, AUi: Integer);

@@ -11,7 +11,7 @@ unit DelphiDoom.XcomSave.SavedGameHolder;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
+  System.SysUtils, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.SavedGameHolder.Intf;
 
 type
@@ -23,21 +23,31 @@ type
   strict private
     FSave: TXcomSavedGame;
     FRules: TXcomRulesetRules;
+    FRandom: IXcomRandom;
   public
     /// <param name="ASave">Owned</param>
     /// <param name="ARules">Owned: the adapters that the objects of the saved game use</param>
-    constructor Create(ASave: TXcomSavedGame; ARules: TXcomRulesetRules);
+    /// <param name="ARandom">The generator of the game (shared with the simulation); nil: none</param>
+    constructor Create(ASave: TXcomSavedGame; ARules: TXcomRulesetRules; const ARandom: IXcomRandom = nil);
     destructor Destroy; override;
     function SavedGame: TXcomSavedGame;
+    function Random: IXcomRandom;
   end;
 
 implementation
 
-constructor TXcomSavedGameHolder.Create(ASave: TXcomSavedGame; ARules: TXcomRulesetRules);
+constructor TXcomSavedGameHolder.Create(ASave: TXcomSavedGame; ARules: TXcomRulesetRules;
+  const ARandom: IXcomRandom);
 begin
   inherited Create;
   FSave := ASave;
   FRules := ARules;
+  FRandom := ARandom;
+end;
+
+function TXcomSavedGameHolder.Random: IXcomRandom;
+begin
+  Result := FRandom;
 end;
 
 destructor TXcomSavedGameHolder.Destroy;

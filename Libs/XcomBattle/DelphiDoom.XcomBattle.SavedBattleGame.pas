@@ -83,7 +83,6 @@ type
     procedure LoadUnits(const ANode: IYamlNode; const ARuleset: TXcomRuleset; ADifficulty: Integer;
       const ASoldiers: TXcomSoldierLookup);
     procedure LoadItems(const ANode: IYamlNode; const ARuleset: TXcomRuleset);
-    function MakeSpecialItem(const ARules: TXcomRuleItem; const AUnit: TXcomBattleUnit): TXcomBattleItem;
     function FindUnit(AId: Integer): TXcomBattleUnit;
     /// <summary>node[key].as&lt;char&gt;(default) of the tile field sizes (written as one char by the C++)</summary>
     class function ReadCharCode(const ANode: IYamlNode; const AKey: string; ADefault: Byte): Byte; static;
@@ -92,6 +91,14 @@ type
   public
     constructor Create(const AContext: IXcomBattleContext);
     destructor Destroy; override;
+    /// <summary>
+    ///   createItem of the special weapons: a new item that belongs to the unit, outside its inventory (the
+    ///   C++ calls removeItem on it, which keeps it in the deleted list)
+    /// </summary>
+    function MakeSpecialItem(const ARules: TXcomRuleItem; const AUnit: TXcomBattleUnit): TXcomBattleItem;
+    /// <summary>A new item with the next id of the battle, owned by the saved battle and in none of its lists</summary>
+    function NewItem(const ARules: TXcomRuleItem): TXcomBattleItem;
+    property Context: IXcomBattleContext read FContext;
     /// <summary>
     ///   load: AMapDataSet of the ruleset, the soldiers of the geoscape (a unit with a soldier id and no
     ///   soldier is an error: the C++ crashes), the difficulty for the stat adjustment
@@ -306,6 +313,12 @@ begin
   OwnItem(Result);
   // the item is outside the inventory: the C++ calls removeItem, which keeps it in the deleted list
   FDeleted.Add(Result);
+end;
+
+function TXcomSavedBattleGame.NewItem(const ARules: TXcomRuleItem): TXcomBattleItem;
+begin
+  Result := TXcomBattleItem.Create(ARules, FItemId);
+  OwnItem(Result);
 end;
 
 procedure TXcomSavedBattleGame.LoadTiles(const ANode: IYamlNode);

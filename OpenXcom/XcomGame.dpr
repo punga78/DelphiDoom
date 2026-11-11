@@ -35,7 +35,8 @@ uses
   DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
-  DelphiDoom.Xcom.Win.AudioDevice in 'DelphiDoom.Xcom.Win.AudioDevice.pas';
+  DelphiDoom.Xcom.Win.PcmOutput in 'DelphiDoom.Xcom.Win.PcmOutput.pas',
+  DelphiDoom.XcomAudio.Intf;
 
 const
   DEFAULT_VERSION = '1.0 git 2026-06-05 22:05';
@@ -46,6 +47,10 @@ type
     ShotFile: string;
     Milliseconds: Integer;
     Script: string;
+    /// <summary>Quits by itself after this many milliseconds (0: when the window closes)</summary>
+    QuitAfter: Integer;
+    /// <summary>Prints what the mixer played when the program ends</summary>
+    AudioStatistics: Boolean;
   end;
 
 procedure ShowUsage;
@@ -136,6 +141,10 @@ begin
       AArguments.Settings.ListModes := True
     else if LName = '-seed' then
       AArguments.Settings.Seed := StrToUInt64(NextValue)
+    else if LName = '-quitafter' then
+      AArguments.QuitAfter := StrToInt(NextValue)
+    else if LName = '-audiostats' then
+      AArguments.AudioStatistics := True
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else
@@ -146,27 +155,56 @@ begin
   Result := (AArguments.Settings.DataFolder <> '') and (AArguments.Settings.GameFolder <> '');
 end;
 
-procedure RunWindow(const ASettings: TXcomGameSettings);
+procedure PrintAudio(const AMeter: IXcomMixerMeter; const AOutput: TXcomWinPcmOutput);
+var
+  LStatistics: TXcomMixerStatistics;
+begin
+  LStatistics := AMeter.Statistics;
+  Writeln(Format('audio: %d bytes rendered, rms %.1f, peak %d, sounds %d, buffers completed by the device %d',
+    [LStatistics.RenderedBytes, LStatistics.Rms, LStatistics.Peak, LStatistics.SoundsStarted,
+    AOutput.CompletedBuffers]));
+end;
+
+procedure RunWindow(const AArguments: TArguments);
 var
   LEvents: TXcomQueueEventSource;
   LEventsRef: IXcomEventSource;
   LDevice: TXcomWinVideoDevice;
   LDeviceRef: IXcomVideoDevice;
   LGame: TXcomGame;
+  LSettings: TXcomGameSettings;
+  LOutput: TXcomWinPcmOutput;
+  LOutputRef: IXcomPcmOutput;
+  LMeter: IXcomMixerMeter;
+  LStart: Cardinal;
 begin
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
-  LDevice := TXcomWinVideoDevice.Create('OpenXcom ' + ASettings.VersionText, LEvents);
+  LDevice := TXcomWinVideoDevice.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
   LDeviceRef := LDevice;
-  LGame := TXcomGameComposition.CreateGame(ASettings, LDevice, TXcomWinClock.Create, LEvents);
+  LOutput := TXcomWinPcmOutput.Create;
+  LOutputRef := LOutput;
+  LSettings := AArguments.Settings;
+  LSettings.AudioOutput := LOutputRef;
+  LSettings.OnAudio := procedure(const AMeter: IXcomMixerMeter)
+    begin
+      LMeter := AMeter;
+    end;
+  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomWinClock.Create, LEvents);
+  LStart := GetTickCount;
   try
     while LDevice.Pump and not LGame.IsQuitting do
     begin
       LGame.RunFrame;
       Sleep(1);
+      if (AArguments.QuitAfter > 0) and (GetTickCount - LStart > Cardinal(AArguments.QuitAfter)) then
+        Break;
     end;
+    if AArguments.AudioStatistics and (LMeter <> nil) then
+      PrintAudio(LMeter, LOutput);
   finally
     LGame.Free;
+    LMeter := nil;
   end;
 end;
 
@@ -224,7 +262,7 @@ begin
     if (LArguments.ShotFile <> '') or (LArguments.Script <> '') then
       RunShot(LArguments)
     else
-      RunWindow(LArguments.Settings);
+      RunWindow(LArguments);
   except
     on E: Exception do
     begin

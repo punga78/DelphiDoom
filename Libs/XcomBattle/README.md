@@ -7,3 +7,5 @@ Modello e logica della battaglia tattica di OpenXcom (Battlescape), senza interf
 - Parita': `Tools\Verifica\176\battle` (oggetti di una vera build di OpenXcom collegati a un harness), dati in `Tests\Data\XcomBattle`.
 - Test: `Tests\DelphiDoom.Tests.XcomBattle`.
 - Dettagli per chi lavora sul codice: [CLAUDE.md](CLAUDE.md).
+
+Fatto anche: proiettili (`TXcomProjectile`), tiro e lancio (`getOriginVoxel`, `validateThrow`), colpi (`TileEngine::hit`) e l'intelligenza artificiale (`TXcomAIThinker`), con parita' sul vero OpenXcom. Non fatto: `BattlescapeGame` e gli stati delle azioni, il disegno e gli stati dell'interfaccia (vedi CLAUDE.md).

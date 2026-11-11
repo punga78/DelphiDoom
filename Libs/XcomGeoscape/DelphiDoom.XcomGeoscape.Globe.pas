@@ -142,6 +142,12 @@ type
     /// <summary>getPolygonFromLonLat: the polygon of the land under the point, nil on the sea</summary>
     function GetPolygonFromLonLat(ALon, ALat: Double): TXcomPolygon;
     function InsideLand(ALon, ALat: Double): Boolean;
+    /// <summary>
+    ///   Globe::getTargets: the targets whose marker is within 5 pixels (squared distance 25) of the point; with
+    ///   ACraftOnly only the things a craft can be sent to (no bases and no crafts). The list is the caller's
+    ///   (the targets are not owned)
+    /// </summary>
+    function GetTargets(AX, AY: Integer; ACraftOnly: Boolean): TList<TXcomTarget>;
     procedure RotateLeft;
     procedure RotateRight;
     procedure RotateUp;
@@ -521,6 +527,58 @@ end;
 function TXcomGlobe.InsideLand(ALon, ALat: Double): Boolean;
 begin
   Result := GetPolygonFromLonLat(ALon, ALat) <> nil;
+end;
+
+function TXcomGlobe.GetTargets(AX, AY: Integer; ACraftOnly: Boolean): TList<TXcomTarget>;
+
+  function Near(const ATarget: TXcomTarget): Boolean;
+  var
+    LX, LY: SmallInt;
+  begin
+    // Globe::targetNear (NEAR_RADIUS = 25, compared with the squared distance)
+    if PointBack(ATarget.Longitude, ATarget.Latitude) then
+      Exit(False);
+    PolarToCart(ATarget.Longitude, ATarget.Latitude, LX, LY);
+    Result := Sqr(AX - LX) + Sqr(AY - LY) <= 25;
+  end;
+
+var
+  LBase: TXcomBase;
+  LCraft: TXcomCraft;
+  LUfo: TXcomUfo;
+  LWaypoint: TXcomWaypoint;
+  LSite: TXcomMissionSite;
+  LAlienBase: TXcomAlienBase;
+begin
+  Result := TList<TXcomTarget>.Create;
+  if not ACraftOnly then
+    for LBase in FSave.Bases do
+    begin
+      if (LBase.Longitude = 0.0) and (LBase.Latitude = 0.0) then
+        Continue;
+      if Near(LBase) then
+        Result.Add(LBase);
+      for LCraft in LBase.Crafts do
+      begin
+        if (LCraft.Longitude = LBase.Longitude) and (LCraft.Latitude = LBase.Latitude)
+          and (LCraft.Destination = nil) then
+          Continue;
+        if Near(LCraft) then
+          Result.Add(LCraft);
+      end;
+    end;
+  for LUfo in FSave.Ufos do
+    if LUfo.Detected and Near(LUfo) then
+      Result.Add(LUfo);
+  for LWaypoint in FSave.Waypoints do
+    if Near(LWaypoint) then
+      Result.Add(LWaypoint);
+  for LSite in FSave.MissionSites do
+    if Near(LSite) then
+      Result.Add(LSite);
+  for LAlienBase in FSave.AlienBases do
+    if LAlienBase.Discovered and Near(LAlienBase) then
+      Result.Add(LAlienBase);
 end;
 
 procedure TXcomGlobe.RotateLeft;
