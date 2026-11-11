@@ -78,10 +78,21 @@ function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit)
   $key = if ($TestName -eq '') { 'Zlib' } else { $TestName }
   $owned = if ($ownedFolders.ContainsKey($key)) { $ownedFolders[$key] } else { @('Libs\' + ($key -replace '\.', '\')) }
   $prefixes = @($owned | ForEach-Object { (Join-Path $root $_) + '\' })
-  return @($paths | Where-Object {
+  $listed = @($paths | Where-Object {
     $path = $_
     @($prefixes | Where-Object { $path.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
   })
+  if ($listed.Count -gt 0) { return $listed }
+  # The .dpr names no unit of its library (it finds them through the search path, as XcomDebriefing does): the
+  # units are the ones of the owned folders that the linker put in the map
+  $map = Join-Path $root "bin\Tests\$Project.map"
+  if (-not (Test-Path -LiteralPath $map)) { return @() }
+  $linked = @{}
+  foreach ($m in [regex]::Matches((Get-Content -LiteralPath $map -Raw), 'Line numbers for [^(\r\n]+\(([^)\r\n]+\.pas)\)')) {
+    $linked[(Split-Path -Leaf $m.Groups[1].Value).ToLowerInvariant()] = $true
+  }
+  return @($owned | ForEach-Object { Get-ChildItem -LiteralPath (Join-Path $root $_) -Filter *.pas -File } |
+    Where-Object { $linked.ContainsKey($_.Name.ToLowerInvariant()) } | ForEach-Object { $_.FullName })
 }
 
 # A copy of the map without the line of the closing "end." of the units that have no initialization or
@@ -122,8 +133,6 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   $project = if ($TestName -eq '' -or $TestName -eq 'Zlib') { 'DelphiDoom.Tests' } else { 'DelphiDoom.Tests.' + $TestName }
   $exe = Join-Path $root "bin\Tests\$project.exe"
   $map = Join-Path $root "bin\Tests\$project.map"
-  $files = @(Get-SourceFiles $TestName $project $Explicit)
-  if ($files.Count -eq 0) { throw "Nessuna unit da misurare per $project" }
   $label = if ($TestName -eq '') { 'Zlib' } else { $TestName }
   $out = Join-Path $root "logs\copertura\$label"
 
@@ -135,6 +144,9 @@ function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   }
   if (-not (Test-Path -LiteralPath $exe)) { throw "Eseguibile non trovato: $exe (compila senza -SenzaCompilare)" }
   if (-not (Test-Path -LiteralPath $map)) { throw "File .map non trovato: $map (serve DCC_MapFile = 3, Detailed)" }
+  # after the build: a project that names no unit of its library is measured on the units of the map
+  $files = @(Get-SourceFiles $TestName $project $Explicit)
+  if ($files.Count -eq 0) { throw "Nessuna unit da misurare per $project" }
 
   $units = @($files | ForEach-Object { Split-Path -Leaf $_ } | Sort-Object -Unique)
   $folders = @($files | ForEach-Object { Split-Path -Parent $_ } | Sort-Object -Unique)
