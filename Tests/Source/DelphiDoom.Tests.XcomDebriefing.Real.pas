@@ -15,7 +15,8 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, System.RegularExpressions, System.ZLib, System.Generics.Collections,
   DUnitX.TestFramework, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
-  DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomBattle.Context,
+  DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.Base,
+  DelphiDoom.XcomMod.StatString, DelphiDoom.XcomBattle.Context,
   DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink, DelphiDoom.XcomDebriefing.Types,
   DelphiDoom.XcomDebriefing.Debriefing, DelphiDoom.Tests.XcomBattle.RealBattle, DelphiDoom.Tests.XcomMod.RealData;
 
@@ -38,8 +39,11 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function FirstDifference(const AExpected, AActual: string): string; static;
-    function Describe(const AReport: TXcomDebriefingReport; const AGame: TXcomSavedGame; ASeed: UInt64): string;
-    function RunCase(const APrePath, ABasePath: string): string;
+    function Describe(const AReport: TXcomDebriefingReport; const AGame: TXcomSavedGame; ASeed: UInt64;
+      AWithStatStrings: Boolean): string;
+    procedure CalcAllStatStrings(const AGame: TXcomSavedGame);
+    function RunFolder(const AInputs, ATexts: string; out ACount: Integer): string;
+    function RunCase(const AInputBase, ATextPath: string): string;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -47,6 +51,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLoStessoResocontoEloStessoSalvataggioDelVeroDebriefingState;
+    [Test]
+    procedure DovrebbeRicalcolareLaStatStringDeiSoldatiComeIlVeroDebriefingState;
   end;
 
 implementation
@@ -153,7 +159,7 @@ begin
 end;
 
 function TTestXcomRealDebriefing.Describe(const AReport: TXcomDebriefingReport; const AGame: TXcomSavedGame;
-  ASeed: UInt64): string;
+  ASeed: UInt64; AWithStatStrings: Boolean): string;
 var
   LLines: TStringList;
   LStat: TXcomDebriefingStat;
@@ -162,6 +168,7 @@ var
   LKeys: TArray<Integer>;
   LKey: Integer;
   LCommended: TXcomSoldier;
+  LBase: TXcomBase;
 begin
   LLines := TStringList.Create;
   try
@@ -190,14 +197,38 @@ begin
       LLines.Add('commended|' + IntToStr(LCommended.Id));
     for LCommended in AReport.DeadSoldiersCommended do
       LLines.Add('deadcommended|' + IntToStr(LCommended.Id));
+    if AWithStatStrings then
+      for LBase in AGame.Bases do
+        for LCommended in LBase.Soldiers do
+          LLines.Add(Format('statstring|%d|%s', [LCommended.Id, LCommended.StatString]));
     Result := LLines.Text;
   finally
     LLines.Free;
   end;
 end;
 
-function TTestXcomRealDebriefing.RunCase(const APrePath, ABasePath: string): string;
+procedure TTestXcomRealDebriefing.CalcAllStatStrings(const AGame: TXcomSavedGame);
 var
+  LBase: TXcomBase;
+  LSoldier: TXcomSoldier;
+begin
+  // what Soldier::load does at its end for every soldier (Options::psiStrengthEval is off in the harness)
+  for LBase in AGame.Bases do
+    for LSoldier in LBase.Soldiers do
+      LSoldier.CalcStatString(FRuleset.StatStrings, False);
+end;
+
+function TTestXcomRealDebriefing.RunCase(const AInputBase, ATextPath: string): string;
+const
+  // kStatStrings of debriefgen.cpp (DEBRIEF_STATSTRINGS): the TFTD mods have no stat strings
+  STAT_STRINGS = '- string: "x"'#10'  psiStrength: [~, 30]'#10'- string: "P"'#10'  psiStrength: [80, ~]'#10 +
+    '- string: "K"'#10'  psiSkill: [20, ~]'#10'- string: "b"'#10'  bravery: [60, ~]'#10 +
+    '- string: "F"'#10'  firing: [60, ~]'#10'- string: "r"'#10'  reactions: [50, ~]'#10 +
+    '- string: "S"'#10'  strength: [35, ~]'#10'- string: "t"'#10'  tu: [58, ~]'#10 +
+    '- string: "h"'#10'  health: [0, 30]'#10'- string: "w"'#10'  firing: [0, 45]'#10'  throwing: [0, 60]'#10;
+var
+  LWithStatStrings: Boolean;
+  LStatString: TXcomStatString;
   LFile: TArray<IYamlNode>;
   LBrief, LItem: IYamlNode;
   LGame: TXcomSavedGame;
@@ -217,7 +248,7 @@ var
   LHead, LTail: TStringList;
 begin
   Result := '';
-  LFile := TYamlFactory.CreateParser.LoadAll(ReadText(APrePath));
+  LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AInputBase + '.pre.sav'));
   LBrief := LFile[0];
   LInfo.Version := YamlTextToString(LBrief.Find(YamlStringToText('version')).AsString);
   LInfo.Engine := YamlTextToString(LBrief.Find(YamlStringToText('engine')).AsString);
@@ -229,7 +260,8 @@ begin
     LMods[High(LMods)] := YamlTextToString(LItem.AsString);
   end;
   LInfo.Mods := LMods;
-  LExpected := TEncoding.UTF8.GetString(ReadBytes(ABasePath + '.txt'));
+  LExpected := TEncoding.UTF8.GetString(ReadBytes(ATextPath));
+  LWithStatStrings := LExpected.Contains(#10'statstring|');
   LLines := TStringList.Create;
   try
     LLines.Text := LExpected;
@@ -242,7 +274,16 @@ begin
   LSettings := TXcomBattleDefaultSettings.Create;
   LGame := TXcomSavedGame.Create;
   try
+    if LWithStatStrings then
+      for LItem in TYamlFactory.CreateParser.Load(YamlStringToText(STAT_STRINGS)).Items do
+      begin
+        LStatString := TXcomStatString.Create;
+        FRuleset.StatStrings.Add(LStatString);
+        LStatString.Load(LItem);
+      end;
     LGame.Load(LFile, FRuleset, FRules, LSettings, False, LRandom);
+    if LWithStatStrings then
+      CalcAllStatStrings(LGame);
     LContext := TXcomBattleContext.Create(LRandom);
     LBattle := TXcomBattleSaveLink.LoadBattle(LGame, FRuleset, LContext);
     try
@@ -258,7 +299,7 @@ begin
         end;
       LReport := TXcomDebriefing.Run(LGame, LBattle, FRuleset, FRules, LOptions, nil);
       try
-        LActual := Describe(LReport, LGame, LRandom.Seed);
+        LActual := Describe(LReport, LGame, LRandom.Seed, LWithStatStrings);
         // the expected text without the lines that the port does not give (the first line, the lists, the totals)
         LHead := TStringList.Create;
         LTail := TStringList.Create;
@@ -279,10 +320,10 @@ begin
         if Normalize(LExpected) <> Normalize(LActual) then
           Exit('report: ' + FirstDifference(Normalize(LExpected), Normalize(LActual)));
         LPost := YamlTextToString(LGame.Save(LInfo, LSettings, LRandom));
-        LExpected := TEncoding.UTF8.GetString(ReadBytes(ABasePath + '.post.sav'));
+        LExpected := TEncoding.UTF8.GetString(ReadBytes(AInputBase + '.post.sav'));
         if (GetEnvironmentVariable('DEBRIEF_DUMP') <> '') and (Normalize(LExpected) <> Normalize(LPost)) then
           TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DEBRIEF_DUMP')) +
-            ExtractFileName(ABasePath) + '.actual.sav', Normalize(LPost), TEncoding.UTF8);
+            ExtractFileName(AInputBase) + '.actual.sav', Normalize(LPost), TEncoding.UTF8);
         if Normalize(LExpected) <> Normalize(LPost) then
           Exit('saved game: ' + FirstDifference(Normalize(LExpected), Normalize(LPost)));
       finally
@@ -293,12 +334,32 @@ begin
     end;
   finally
     LGame.Free;
+    // the stat strings of the test do not stay in the ruleset of the fixture
+    if LWithStatStrings then
+      FRuleset.StatStrings.Clear;
+  end;
+end;
+
+function TTestXcomRealDebriefing.RunFolder(const AInputs, ATexts: string; out ACount: Integer): string;
+var
+  LPath, LName, LResult: string;
+begin
+  // a case is a text of ATexts (debNNvV.txt); its saved games, before and after, are in AInputs
+  Result := '';
+  ACount := 0;
+  for LPath in TDirectory.GetFiles(ATexts, 'deb*.txt') do
+  begin
+    LName := ChangeFileExt(ExtractFileName(LPath), '');
+    LResult := RunCase(AInputs + LName, LPath);
+    Inc(ACount);
+    if LResult <> '' then
+      Result := Result + LName + ': ' + LResult + sLineBreak;
   end;
 end;
 
 procedure TTestXcomRealDebriefing.DovrebbeDareLoStessoResocontoEloStessoSalvataggioDelVeroDebriefingState;
 var
-  LFolder, LPath, LBase, LFailed, LResult: string;
+  LFolder, LFailed: string;
   LCount: Integer;
 begin
   LFolder := DataFolder;
@@ -307,20 +368,41 @@ begin
     Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
-  LCount := 0;
-  LFailed := '';
-  for LPath in TDirectory.GetFiles(LFolder, 'deb*.pre.sav*') do
+  LFailed := RunFolder(LFolder, LFolder, LCount);
+  System.Writeln(Format('debriefing parity, %d cases', [LCount]));
+  Assert.IsTrue(LCount > 0, 'Nessun file deb*.txt trovato');
+  Assert.AreEqual('', LFailed, Format('%d casi', [LCount]));
+end;
+
+procedure TTestXcomRealDebriefing.DovrebbeRicalcolareLaStatStringDeiSoldatiComeIlVeroDebriefingState;
+var
+  LFolder, LTexts, LFailed: string;
+  LCount: Integer;
+begin
+  LFolder := DataFolder;
+  if (LFolder = '') or (not Assigned(FRuleset)) then
   begin
-    if LPath.EndsWith('.gz') then
-      LBase := Copy(LPath, 1, Length(LPath) - Length('.pre.sav.gz'))
-    else
-      LBase := Copy(LPath, 1, Length(LPath) - Length('.pre.sav'));
-    LResult := RunCase(LBase + '.pre.sav', LBase);
-    Inc(LCount);
-    if LResult <> '' then
-      LFailed := LFailed + ExtractFileName(LBase) + ': ' + LResult + sLineBreak;
+    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    Exit;
   end;
-  Assert.IsTrue(LCount > 0, 'Nessun file deb*.pre.sav trovato');
+  // DELPHIDOOM_XCOMDEBRIEF_STAT: a folder written by debriefgen with DEBRIEF_STATSTRINGS (texts and saved games);
+  // otherwise the texts of the repository, whose saved games are the ones of the folder above
+  LTexts := GetEnvironmentVariable('DELPHIDOOM_XCOMDEBRIEF_STAT');
+  if LTexts <> '' then
+  begin
+    LTexts := IncludeTrailingPathDelimiter(LTexts);
+    LFolder := LTexts;
+  end
+  else
+    LTexts := LFolder + 'statstring\';
+  if not DirectoryExists(LTexts) then
+  begin
+    Assert.Pass('Nessuna cartella con i testi delle stat string');
+    Exit;
+  end;
+  LFailed := RunFolder(LFolder, LTexts, LCount);
+  System.Writeln(Format('debriefing stat strings, %d cases', [LCount]));
+  Assert.IsTrue(LCount > 0, 'Nessun file deb*.txt trovato in ' + LTexts);
   Assert.AreEqual('', LFailed, Format('%d casi', [LCount]));
 end;
 
