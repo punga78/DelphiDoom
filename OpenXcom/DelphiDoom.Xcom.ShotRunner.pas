@@ -30,6 +30,7 @@ type
     FExporter: TXcomImageExporter;
     FSaved: TStringList;
     FHoldMilliseconds: Integer;
+    FOnTick: TProc;
     procedure Step(const AStep: string);
   public
     /// <summary>None of the arguments is owned</summary>
@@ -47,6 +48,8 @@ type
     procedure Run(const ASteps: TArray<string>);
     /// <summary>The files that were saved</summary>
     function Saved: TStrings;
+    /// <summary>Called after every millisecond that passes (the sound output of a script asks its samples here)</summary>
+    property OnTick: TProc read FOnTick write FOnTick;
     /// <summary>How long a click keeps the button down (40 ms; 80 like the capture script of the real program to compare timers)</summary>
     property HoldMilliseconds: Integer read FHoldMilliseconds write FHoldMilliseconds;
   end;
@@ -89,6 +92,8 @@ begin
       Exit;
     FGame.RunFrame;
     FClock.Advance(1);
+    if Assigned(FOnTick) then
+      FOnTick;
   end;
 end;
 

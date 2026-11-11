@@ -40,7 +40,7 @@ program Xcom32;
 
 uses
   Winapi.Windows,
-  System.SysUtils,
+  System.SysUtils, System.Classes,
   DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Game,
   DelphiDoom.XcomEngine.ManualClock,
@@ -53,6 +53,8 @@ uses
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
   DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
+  DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',
+  DelphiDoom.Xcom.LoggingBattleAudio in 'DelphiDoom.Xcom.LoggingBattleAudio.pas',
   DelphiDoom.Xcom.DelegateLog in 'DelphiDoom.Xcom.DelegateLog.pas',
   DelphiDoom.Xcom.VideoDevice.Types in 'DelphiDoom.Xcom.VideoDevice.Types.pas',
   DelphiDoom.Xcom.VideoDeviceSelector in 'DelphiDoom.Xcom.VideoDeviceSelector.pas',
@@ -80,6 +82,11 @@ type
     QuitAfter: Integer;
     /// <summary>Prints what the mixer played when the program ends</summary>
     AudioStatistics: Boolean;
+    /// <summary>
+    ///   With -script: the file that gets a line for every sound of the battle ("ms play depth sound angle") and,
+    ///   at the end, what the mixer rendered (the sounds go through the mixer, on an output without a device)
+    /// </summary>
+    SoundLog: string;
   end;
 
 /// <summary>
@@ -229,6 +236,8 @@ begin
       AArguments.QuitAfter := StrToInt(NextValue)
     else if LName = '-audiostats' then
       AArguments.AudioStatistics := True
+    else if LName = '-soundlog' then
+      AArguments.SoundLog := NextValue
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else
@@ -316,7 +325,14 @@ var
   LRunner: TXcomShotRunner;
   LExporter: TXcomImageExporter;
   LSettings: TXcomGameSettings;
+  LOutput: TXcomScriptPcmOutput;
+  LOutputRef: IXcomPcmOutput;
+  LMeter: IXcomMixerMeter;
+  LSounds: TStringList;
+  LStatistics: TXcomMixerStatistics;
 begin
+  LOutput := nil;
+  LSounds := nil;
   LClock := TXcomManualClock.Create;
   LClockRef := LClock;
   LEvents := TXcomQueueEventSource.Create;
@@ -327,9 +343,41 @@ begin
   // the loading must be over when the clock says so: the task runs at once unless -hold asks otherwise
   if LSettings.LoadMode <> lmHeld then
     LSettings.LoadMode := lmImmediate;
+  if AArguments.SoundLog <> '' then
+  begin
+    // the sounds go through the real mixer, on an output that asks the samples as the script time passes
+    LSounds := TStringList.Create;
+    LOutput := TXcomScriptPcmOutput.Create;
+    LOutputRef := LOutput;
+    LSettings.AudioOutput := LOutputRef;
+    LSettings.OnAudio := procedure(const AMeter: IXcomMixerMeter)
+      begin
+        LMeter := AMeter;
+      end;
+    LSettings.BattleSoundLog := procedure(const ALine: string)
+      var
+        LActive: Integer;
+        LStarted: Integer;
+      begin
+        LActive := 0;
+        LStarted := 0;
+        if LMeter <> nil then
+        begin
+          LActive := LMeter.ActiveChannels;
+          LStarted := LMeter.Statistics.SoundsStarted;
+        end;
+        LSounds.Add(Format('%d %s (channels playing %d, sounds started %d)', [LClock.Ticks, ALine, LActive,
+          LStarted]));
+      end;
+  end;
   LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
   LExporter := TXcomComposition.CreateImageExporter;
   LRunner := TXcomShotRunner.Create(LGame, LClock, LEvents, LDevice, LExporter);
+  if Assigned(LOutput) then
+    LRunner.OnTick := procedure
+      begin
+        LOutput.Pull(1);
+      end;
   try
     if AArguments.Script <> '' then
       LRunner.Run(AArguments.Script.Split([';']))
@@ -337,10 +385,25 @@ begin
       LRunner.Wait(AArguments.Milliseconds);
     if AArguments.ShotFile <> '' then
       LRunner.Shot(AArguments.ShotFile);
+    if Assigned(LSounds) then
+    begin
+      if LMeter <> nil then
+      begin
+        LStatistics := LMeter.Statistics;
+        LSounds.Add(Format('mixer: %d bytes rendered, rms %.1f, peak %d, sounds started %d',
+          [LStatistics.RenderedBytes, LStatistics.Rms, LStatistics.Peak, LStatistics.SoundsStarted],
+          TFormatSettings.Invariant));
+      end
+      else
+        LSounds.Add('mixer: none');
+      LSounds.SaveToFile(AArguments.SoundLog);
+    end;
   finally
     LRunner.Free;
     LExporter.Free;
     LGame.Free;
+    LMeter := nil;
+    LSounds.Free;
   end;
 end;
 

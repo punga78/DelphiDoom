@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Xcom32 - the composition root of the game                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -11,7 +11,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.Xcom.Win.Window;
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.Xcom.Win.Window,
+  DelphiDoom.Xcom.LoggingBattleAudio;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -43,6 +44,8 @@ type
     AudioOutput: IXcomPcmOutput;
     /// <summary>Called with what the mixer plays, once the audio is set up (nil for nothing)</summary>
     OnAudio: TXcomAudioReady;
+    /// <summary>Every sound the battle asks for is written here as a line (nil: no log)</summary>
+    BattleSoundLog: TXcomSoundLogLine;
     /// <summary>The seed of the random numbers of a new game (-seed); 0 takes it from the clock</summary>
     Seed: UInt64;
     /// <summary>Starts the battle of a mission (the Battlescape's); nil: "Yes" of the landing confirmation does nothing</summary>
@@ -268,6 +271,8 @@ begin
     LBattleAudio := nil;
     if LAudio <> nil then
       LBattleAudio := TXcomBattleMixerAudio.Create(Result, LAudio as IXcomChannelMixer);
+    if Assigned(ASettings.BattleSoundLog) then
+      LBattleAudio := TXcomLoggingBattleAudio.Create(LBattleAudio, ASettings.BattleSoundLog);
     LBattleScreens := TXcomBattleFactory.CreateScreens(Result,
       function(AParent: TXcomState): TXcomState
       begin
