@@ -1,0 +1,12 @@
+mission=STR_ABDUCTOR
+kind=0
+race=STR_SECTOID
+itemlevel=6
+shade=0
+texture=-1
+terrain=JUNGLE
+craft=0
+base=1
+runseed=1761055
+seedafter=2460962666726483500
+ok=0

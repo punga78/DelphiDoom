@@ -1,0 +1,60 @@
+kneel 1
+camera 37 31 1
+dumpmap
+melee 1000023
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 17 33 1
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 17 35 1
+dumpmap
+melee 1000023
+setmorale 7 16
+setmorale 1000004 19
+setmorale 1000012 4
+endturn
+aiturn
+init
+camera 15 45 1
+dumpmap
+place 1000024 33 36 1
+turn 1000024 33 35 1
+melee 1000024
+camera 37 35 1
+dumpmap
+setmorale 6 7
+setmorale 1000020 6
+setmorale 1000015 20
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 18 35 1
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 43 41 1
+dumpmap
+place 1000007 48 31 1
+turn 1000007 47 31 1
+melee 1000007
+kneel 6
+camera 31 37 1
+dumpmap
+shoot 6 6 24 36 1

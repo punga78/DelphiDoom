@@ -63,7 +63,8 @@ var
   LLoaded: TXcomStringMap<Integer>;
   LPair: TYamlPair;
 begin
-  if not ANode.IsMap then
+  // node.as<map>(fallback) of the C++: a missing key (an invalid node) and a node that is no map keep the contents
+  if not ANode.IsDefined or not ANode.IsMap then
     Exit;
   LLoaded := TXcomStringMap<Integer>.Create;
   try

@@ -28,21 +28,25 @@ type
     function PsiStrengthEval: Boolean;
   end;
 
-  [TestFixture]
-  [Category('xcom-save')]
-  [Category('xcom-save-real')]
   TTestXcomRealSave = class(TObject)
   strict private
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
     FRules: TXcomRulesetRules;
     FRulesRef: IInterface;
-    class function SaveFolder: string; static;
+    function SaveFolder: string;
     class function ReadText(const APath: string): TYamlText; static;
     class function SameValue(const ALeft, ARight: string): Boolean; static;
     /// <summary>Equal texts, except the last bit of the speeds of the targets</summary>
     class function SameSave(const AExpected, AActual: TYamlText): Boolean; static;
     function Resave(const AText: TYamlText): TYamlText;
+  protected
+    /// <summary>The golden of Mod::loadAll that tells the mods and the files of the game</summary>
+    function GoldenName: string; virtual;
+    /// <summary>The folder of Tests\Data\XcomSave with the saved games of the real OpenXcom</summary>
+    function SaveFolderName: string; virtual;
+    /// <summary>The file of Tests\Data\XcomSave with the capacities that the real Base gave</summary>
+    function CapacityFileName: string; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -56,6 +60,24 @@ type
     procedure DovrebbeFareLaPartitaNuovaComeIlVeroNewSave;
     [Test]
     procedure DovrebbeSollevareErroreSeIlFileNonHaDueDocumenti;
+  end;
+
+  /// <summary>The same tests with the saved games of the real OpenXcom on the UFO mod xcom1</summary>
+  [TestFixture]
+  [Category('xcom-save')]
+  [Category('xcom-save-real')]
+  TTestXcomRealSaveUfo = class(TTestXcomRealSave)
+  protected
+    function GoldenName: string; override;
+    function SaveFolderName: string; override;
+    function CapacityFileName: string; override;
+  end;
+
+  /// <summary>The tests with the saved games of the real OpenXcom on the TFTD mod xcom2</summary>
+  [TestFixture]
+  [Category('xcom-save')]
+  [Category('xcom-save-real')]
+  TTestXcomRealSaveTftd = class(TTestXcomRealSave)
   end;
 
 implementation
@@ -79,7 +101,22 @@ end;
 
 { TTestXcomRealSave }
 
-class function TTestXcomRealSave.SaveFolder: string;
+function TTestXcomRealSave.GoldenName: string;
+begin
+  Result := 'tftd.xcom2.golden.txt';
+end;
+
+function TTestXcomRealSave.SaveFolderName: string;
+begin
+  Result := 'realsave';
+end;
+
+function TTestXcomRealSave.CapacityFileName: string;
+begin
+  Result := 'capacity.golden.txt';
+end;
+
+function TTestXcomRealSave.SaveFolder: string;
 var
   LFolder: string;
   LLevel: Integer;
@@ -87,8 +124,8 @@ begin
   LFolder := ExtractFilePath(ParamStr(0));
   for LLevel := 0 to 6 do
   begin
-    if DirectoryExists(LFolder + 'Tests\Data\XcomSave\realsave') then
-      Exit(LFolder + 'Tests\Data\XcomSave\realsave\');
+    if DirectoryExists(LFolder + 'Tests\Data\XcomSave\' + SaveFolderName) then
+      Exit(LFolder + 'Tests\Data\XcomSave\' + SaveFolderName + '\');
     LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
   end;
   Result := '';
@@ -96,7 +133,7 @@ end;
 
 procedure TTestXcomRealSave.SetupFixture;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(GoldenName);
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
@@ -220,7 +257,7 @@ var
   LFormat: string;
 begin
   LFolder := SaveFolder;
-  LGoldenPath := LFolder + '..\capacity.golden.txt';
+  LGoldenPath := LFolder + '..\' + CapacityFileName;
   if (LFolder = '') or not Assigned(FRuleset) or not TFile.Exists(LGoldenPath) then
   begin
     Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
@@ -390,7 +427,25 @@ begin
   end;
 end;
 
+{ TTestXcomRealSaveUfo }
+
+function TTestXcomRealSaveUfo.GoldenName: string;
+begin
+  Result := 'ufo.xcom1.golden.txt';
+end;
+
+function TTestXcomRealSaveUfo.SaveFolderName: string;
+begin
+  Result := 'realsave_ufo';
+end;
+
+function TTestXcomRealSaveUfo.CapacityFileName: string;
+begin
+  Result := 'capacity_ufo.golden.txt';
+end;
+
 initialization
-  TDUnitX.RegisterTestFixture(TTestXcomRealSave);
+  TDUnitX.RegisterTestFixture(TTestXcomRealSaveTftd);
+  TDUnitX.RegisterTestFixture(TTestXcomRealSaveUfo);
 
 end.

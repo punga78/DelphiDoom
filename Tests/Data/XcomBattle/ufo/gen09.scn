@@ -1,0 +1,16 @@
+mission=STR_ABDUCTOR
+kind=4
+race=STR_SECTOID
+itemlevel=0
+shade=10
+texture=-1
+terrain=DESERT
+craft=0
+base=1
+ufo=STR_ABDUCTOR
+ufostatus=1
+uforlon=0.169297
+uforlat=-1.50098
+runseed=1761009
+seedafter=4286579091673567777
+ok=0

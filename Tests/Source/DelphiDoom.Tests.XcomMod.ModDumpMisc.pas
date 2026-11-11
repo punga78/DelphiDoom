@@ -384,8 +384,13 @@ begin
     FWriter.Bool('useUfoAudioSequence', LRule.UseUfoAudioSequence);
     FWriter.Strs('videos', LRule.Videos);
     FWriter.Strs('audioTracks', LRule.AudioTracks);
-    FWriter.Line('header', TXcomDumpWriter.Quote(LRule.SlideshowHeader.MusicId) + ',' +
-      IntToStr(LRule.SlideshowHeader.TransitionSeconds));
+    // the C++ leaves transitionSeconds uninitialized when the video has no slideshow node (garbage on the heap):
+    // it is only compared when the header or the slides say that a slideshow was read
+    if (LRule.SlideshowHeader.MusicId = '') and (Length(LRule.Slides) = 0) then
+      FWriter.Line('header', TXcomDumpWriter.Quote(LRule.SlideshowHeader.MusicId) + ',-')
+    else
+      FWriter.Line('header', TXcomDumpWriter.Quote(LRule.SlideshowHeader.MusicId) + ',' +
+        IntToStr(LRule.SlideshowHeader.TransitionSeconds));
     FWriter.Card('slides', Length(LRule.Slides));
     for LSlide := 0 to High(LRule.Slides) do
     begin

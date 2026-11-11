@@ -25,7 +25,8 @@ uses
   DelphiDoom.XcomBattle.ReactionFire, DelphiDoom.XcomBattle.UnitTurnState, DelphiDoom.Tests.XcomBattle.RealBattle,
   DelphiDoom.Tests.XcomMod.RealData, DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomBattlescape.Sprites.Intf, DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattlescape.Map,
-  DelphiDoom.XcomBattlescape.MapView;
+  DelphiDoom.XcomBattlescape.MapView, DelphiDoom.XcomBattlescape.Particle, DelphiDoom.XcomBattlescape.TransparencyTable,
+  DelphiDoom.Xcom.Palette, DelphiDoom.XcomMod.MapDataSet;
 
 type
   [TestFixture]
@@ -38,15 +39,24 @@ type
     FRules: TXcomRulesetRules;
     FVoxels: TArray<Word>;
     FMapsCompared: Integer;
+    FCompareMaps: Boolean;
     class function DataFolder: string; static;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadBytes(const APath: string): TBytes; static;
+    class function MapFiles(const AFolder: string): TArray<string>; static;
+    class function HasMaps(const AFolder: string): Boolean; static;
+    class function HasFile(const APath: string): Boolean; static;
     class function ReadString(const APath: string): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function CompareMap(const AExpected: TBytes; const AActual: TXcomSurface): string; static;
+    class function DiffCount(const AExpected: TBytes; const AActual: TXcomSurface): Integer; static;
+    class function TilesText(ABattle: TXcomSavedBattleGame): string; static;
+    class procedure AlignTileFrames(ABattle: TXcomSavedBattleGame; AMap: TXcomBattleMap;
+      const APath: string); static;
     class function CollapseTrace(const AText: string): string; static;
     class function FirstDifference(const AExpected, AActual: string): string; static;
+    function TransparencyTints(ACount: Integer): TArray<TXcomTransparencyColor>;
     function RunScenario(const AFolder: string): string;
   public
     [SetupFixture]
@@ -55,6 +65,10 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLoStessoStatoDelVeroBattlescapeGameDopoGliOrdini;
+    [Test]
+    procedure DovrebbeCostruireLeTabelleDiTrasparenzaDelVeroMod;
+    [Test]
+    procedure DovrebbeDisegnareLaMappaComeIlVeroMapDraw;
   end;
 
 implementation
@@ -117,6 +131,35 @@ begin
   end;
 end;
 
+class function TTestXcomRealBattlescape.MapFiles(const AFolder: string): TArray<string>;
+var
+  LList: TList<string>;
+  LFile: string;
+begin
+  // stepNNN.map or stepNNN.map.gz (a plain .map is ignored by git: it is the extension of the linker maps)
+  LList := TList<string>.Create;
+  try
+    for LFile in TDirectory.GetFiles(AFolder, 'step*.map*') do
+      if LFile.EndsWith('.map') then
+        LList.Add(LFile)
+      else if LFile.EndsWith('.map.gz') then
+        LList.Add(Copy(LFile, 1, Length(LFile) - 3));
+    Result := LList.ToArray;
+  finally
+    LList.Free;
+  end;
+end;
+
+class function TTestXcomRealBattlescape.HasFile(const APath: string): Boolean;
+begin
+  Result := FileExists(APath) or FileExists(APath + '.gz');
+end;
+
+class function TTestXcomRealBattlescape.HasMaps(const AFolder: string): Boolean;
+begin
+  Result := Length(MapFiles(AFolder)) > 0;
+end;
+
 class function TTestXcomRealBattlescape.ReadString(const APath: string): string;
 begin
   Result := TEncoding.UTF8.GetString(ReadBytes(APath));
@@ -167,6 +210,133 @@ begin
   else
     Result := Format('%d pixels differ, first at (%d,%d) expected %d actual %d', [LDifferent, LFirst mod LWidth,
       LFirst div LWidth, AExpected[8 + LFirst], LActual[LFirst]]);
+end;
+
+class function TTestXcomRealBattlescape.TilesText(ABattle: TXcomSavedBattleGame): string;
+var
+  LBuilder: TStringBuilder;
+  LIndex: Integer;
+  LTile: TXcomTile;
+  LParts: string;
+  LPart: Integer;
+begin
+  // what the drawing reads from every tile, in the format of the .tiles file of the harness
+  LBuilder := TStringBuilder.Create;
+  try
+    for LIndex := 0 to ABattle.MapSizeXyz - 1 do
+    begin
+      LTile := ABattle.TileAt(TXcomPosition.Make(LIndex mod ABattle.MapSizeX,
+        (LIndex div ABattle.MapSizeX) mod ABattle.MapSizeY, LIndex div (ABattle.MapSizeX * ABattle.MapSizeY)));
+      LParts := '';
+      for LPart := 0 to 3 do
+      begin
+        if LPart > 0 then
+          LParts := LParts + '/';
+        if Assigned(LTile.MapData[LPart]) then
+          LParts := LParts + (LTile.MapData[LPart].Dataset as TXcomMapDataSet).Name + ':' +
+            IntToStr(LTile.MapData[LPart].GetSprite(LTile.CurrentFrame[LPart]))
+        else
+          LParts := LParts + '-';
+      end;
+      LBuilder.Append(Format('%d s=%d d=%d f=%d/%d/%d/%d sm=%d fi=%d it=%d sp=%s'#10, [LIndex, LTile.GetShade,
+        Ord(LTile.IsDiscovered(2)), LTile.CurrentFrame[0], LTile.CurrentFrame[1], LTile.CurrentFrame[2],
+        LTile.CurrentFrame[3], LTile.Smoke, LTile.Fire, LTile.GetTopItemSprite, LParts]));
+    end;
+    Result := LBuilder.ToString;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+class procedure TTestXcomRealBattlescape.AlignTileFrames(ABattle: TXcomSavedBattleGame; AMap: TXcomBattleMap;
+  const APath: string);
+var
+  LLine: string;
+  LFields: TArray<string>;
+  LFormat: TFormatSettings;
+  LFrames: TArray<string>;
+  LIndex: Integer;
+  LPart: Integer;
+  LTile: TXcomTile;
+begin
+  // the timer of the real game that animates the tiles runs on real time: the harness writes the frames it had
+  // (the doors of an UFO that is opening are the only ones that move between the calls); without the file nothing changes
+  if (not FileExists(APath)) and (not FileExists(APath + '.gz')) then
+    Exit;
+  LFormat := TFormatSettings.Invariant;
+  AMap.ClearParticles;
+  for LLine in ReadString(APath).Split([#10]) do
+  begin
+    if LLine = '' then
+      Continue;
+    if LLine[1] = 'c' then
+      // c <cursor type> side=<side> selected=<id>: what the map had (a diagnostic of the harness)
+      Continue;
+    if LLine[1] = 'p' then
+    begin
+      // p <tile index> <x> <y> <density> <color> <opacity>: a particle of the vapor, as the real game had it
+      LFields := LLine.Split([' ']);
+      LIndex := StrToInt(LFields[1]);
+      AMap.AddParticle(ABattle.TileAt(TXcomPosition.Make(LIndex mod ABattle.MapSizeX,
+        (LIndex div ABattle.MapSizeX) mod ABattle.MapSizeY, LIndex div (ABattle.MapSizeX * ABattle.MapSizeY))),
+        TXcomParticle.Create(StrToFloat(LFields[2], LFormat), StrToFloat(LFields[3], LFormat),
+        StrToFloat(LFields[4], LFormat), StrToInt(LFields[5]), StrToInt(LFields[6])));
+      Continue;
+    end;
+    LIndex := StrToInt(Copy(LLine, 1, Pos(' ', LLine) - 1));
+    LFrames := Copy(LLine, Pos(' f=', LLine) + 3, MaxInt).Split([' '])[0].Split(['/']);
+    LTile := ABattle.TileAt(TXcomPosition.Make(LIndex mod ABattle.MapSizeX,
+      (LIndex div ABattle.MapSizeX) mod ABattle.MapSizeY, LIndex div (ABattle.MapSizeX * ABattle.MapSizeY)));
+    for LPart := 0 to 3 do
+      LTile.CurrentFrame[LPart] := StrToInt(LFrames[LPart]);
+  end;
+end;
+
+class function TTestXcomRealBattlescape.DiffCount(const AExpected: TBytes; const AActual: TXcomSurface): Integer;
+var
+  LActual: TBytes;
+  LIndex: Integer;
+begin
+  LActual := AActual.Pixels;
+  Result := 0;
+  for LIndex := 0 to AActual.Width * AActual.Height - 1 do
+    if AExpected[8 + LIndex] <> LActual[LIndex] then
+      Inc(Result);
+end;
+
+function TTestXcomRealBattlescape.TransparencyTints(ACount: Integer): TArray<TXcomTransparencyColor>;
+var
+  LPath: string;
+  LText: string;
+  LMatch: TMatch;
+  LList: TList<TXcomTransparencyColor>;
+  LColor: TXcomTransparencyColor;
+begin
+  // the tints of Mod::getTransparencies: the ruleset of the test does not load vars.rul, so they are read from it
+  if Length(FRuleset.Transparencies) > 0 then
+    Exit(FRuleset.Transparencies);
+  LPath := FindUp('Reference\_dati\xcom_tftd\openxcom\standard\xcom2\vars.rul', False);
+  if LPath = '' then
+    Exit(nil);
+  LText := TFile.ReadAllText(LPath);
+  LText := Copy(LText, Pos('transparencyLUTs:', LText), MaxInt);
+  LList := TList<TXcomTransparencyColor>.Create;
+  try
+    for LMatch in TRegEx.Matches(LText, '-\s*\[\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\]') do
+    begin
+      LColor.R := StrToInt(LMatch.Groups[1].Value);
+      LColor.G := StrToInt(LMatch.Groups[2].Value);
+      LColor.B := StrToInt(LMatch.Groups[3].Value);
+      LColor.Unused := StrToInt(LMatch.Groups[4].Value);
+      LList.Add(LColor);
+    end;
+    Result := LList.ToArray;
+    // Mod::_transparencies is resized to the limit of the mods: the entries nobody sets are zero (no tint)
+    if Length(Result) < ACount then
+      SetLength(Result, ACount);
+  finally
+    LList.Free;
+  end;
 end;
 
 class function TTestXcomRealBattlescape.CollapseTrace(const AText: string): string;
@@ -290,6 +460,10 @@ var
   LTarget: TXcomPosition;
   LStep2: Integer;
   LTicks: Integer;
+  LAnimations: Integer;
+  LExpectedTicks: Integer;
+  LMissing: Integer;
+  LLine: string;
   LX: Integer;
   LY: Integer;
   LCount: Integer;
@@ -300,6 +474,8 @@ var
   LMapBytes: TBytes;
   LDumpMap: Boolean;
   LMapDiff: string;
+  LMapDrawn: Boolean;
+  LBisect: TStringList;
   LMapUnits: string;
   LTraceList: TStringList;
   LPair: TPair<Integer, Integer>;
@@ -317,9 +493,9 @@ var
       // the size of the map is the one of the screen of the real game: the header of the first dump
       LSettings.Width := 640;
       LSettings.Height := 400;
-      for LFirst in TDirectory.GetFiles(AFolder, 'step*.map') do
+      for LFirst in MapFiles(AFolder) do
       begin
-        LHeader := TFile.ReadAllBytes(LFirst);
+        LHeader := ReadBytes(LFirst);
         LSettings.Width := PInteger(@LHeader[0])^;
         LSettings.Height := PInteger(@LHeader[4])^;
         Break;
@@ -329,6 +505,9 @@ var
       LSettings.IconHeight := LElement.H;
       LSettings.SmokeOffset := FRuleset.Constants.SmokeOffset;
       LSettings.UnderwaterSmokeOffset := FRuleset.Constants.UnderwaterSmokeOffset;
+      // the transparency table of the depth (Mod::getLUTs()->at(depth)): the harness writes it with the scenario
+      if FileExists(AFolder + 'lut.bin') or FileExists(AFolder + 'lut.bin.gz') then
+        LSettings.Transparencies := ReadBytes(AFolder + 'lut.bin');
       LMap := TXcomBattleMap.Create(LBattle, LSprites, LSettings);
     end;
     Result := LMap;
@@ -354,10 +533,13 @@ var
       Inc(LTicks);
       // the animation timer of the game runs about every third tick of the steps (UFO doors open with it)
       if LTicks mod 3 = 0 then
+      begin
+        Inc(LAnimations);
         if Assigned(LMap) then
           LMap.Animate(False)
         else
           LBattlescape.AnimateTiles;
+      end;
       Dec(LGuard);
     end;
     if LGuard <= 0 then
@@ -385,6 +567,8 @@ begin
   LMap := nil;
   LDumpMap := False;
   LTicks := 0;
+  LAnimations := 0;
+  LExpectedTicks := 0;
   LName := ExtractFileName(ExcludeTrailingPathDelimiter(AFolder));
   LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AFolder + 'start.sav'));
   LRandom := TXcomRandom.Create(1);
@@ -415,11 +599,13 @@ begin
       for LStep := 0 to High(LParts) do
         LOrder2[LStep] := StrToInt(LParts[LStep]);
       LEngine.SetDetonationOrder(LOrder2);
-      if Normalize(string(TYamlFactory.Dump(LBattle.Save))) <> Normalize(ReadString(AFolder + 'start.yml')) then
+      // a scenario for the drawing only (the files of the states are big) has no YAML of the battle: only the maps
+      if HasFile(AFolder + 'start.yml') and
+        (Normalize(string(TYamlFactory.Dump(LBattle.Save))) <> Normalize(ReadString(AFolder + 'start.yml'))) then
         LFailures := LFailures + LName + ': the battle at the start differs' + sLineBreak;
       LView := TXcomBattleNullView.Create;
       // a scenario with maps has the map, which the game talks to (camera, cursor, the drawings of the units)
-      if Length(TDirectory.GetFiles(AFolder, 'step*.map')) > 0 then
+      if HasMaps(AFolder) then
         LView := TXcomBattleMapView.Create(EnsureMap, LView);
       LBattlescape := TXcomBattlescapeGame.Create(LBattle, LEngine, LPathfinding, FRuleset,
         TXcomBattleOptions.Default, LView, LGame.Difficulty);
@@ -618,6 +804,20 @@ begin
                 StrToInt(LWords[3])), False)
             else if LWords[0] = 'viewlevel' then
               EnsureMap.Camera.SetViewLevel(StrToInt(LWords[1]))
+            else if LWords[0] = 'explosion' then
+            begin
+              // explosion vx vy vz frame delay big hit
+              EnsureMap.AddExplosion(TXcomPosition.Make(StrToInt(LWords[1]), StrToInt(LWords[2]), StrToInt(LWords[3])),
+                StrToInt(LWords[4]), StrToInt(LWords[5]), LWords[6] <> '0', LWords[7] <> '0');
+              LMap.ExplosionInFov := True;
+            end
+            else if LWords[0] = 'animexplosions' then
+              EnsureMap.AnimateExplosions
+            else if LWords[0] = 'flash' then
+            begin
+              EnsureMap.FlashScreen := True;
+              LMap.ExplosionInFov := True;
+            end
             else if LWords[0] = 'dumpmap' then
               LDumpMap := True
             else if LWords[0] = 'init' then
@@ -644,6 +844,11 @@ begin
           end;
           LTrace := LTrace + Format('seed=%s side=%d turn=%d', [UIntToStr(LRandom.Seed), LBattle.Side, LBattle.Turn]) + #10;
           LExpected := ReadString(AFolder + Format('step%.3d.txt', [LStep]));
+          // the ticks of the real game: one line of the trace each (an explosion animates for many ticks, here it ends
+          // at the first one: the animation timer is brought back in step before the drawing)
+          for LLine in LExpected.Split([#10]) do
+            if LLine.Contains('@') then
+              Inc(LExpectedTicks);
           if CollapseTrace(LTrace) <> CollapseTrace(LExpected) then
           begin
             LFailures := LFailures + Format('%s step %d (%s): trace, %s', [LName, LStep, LOrder,
@@ -661,14 +866,28 @@ begin
             // the map is drawn after the state of the battle was written, as the harness does
             LDumpMap := False;
             LMapFile := AFolder + Format('step%.3d.map', [LStep]);
+            // the frames of the tiles cycle every 8 timer calls: the missing ones are made up
+            LMissing := ((LExpectedTicks div 3) - LAnimations) mod 8;
+            if LMissing < 0 then
+              Inc(LMissing, 8);
+            for LCount := 1 to LMissing do
+            begin
+              LMap.Animate(False);
+              Inc(LAnimations);
+            end;
+            AlignTileFrames(LBattle, LMap, LMapFile + '.tiles');
             EnsureMap.CacheUnits;
             LMap.Invalidate;
-            if LMap.Draw <> FileExists(LMapFile) then
+            LMapDrawn := LMap.Draw;
+            if not FCompareMaps then
+              // the drawing has its own test: here it only has to happen, as in the game
+              LMapDiff := ''
+            else if LMapDrawn <> (FileExists(LMapFile) or FileExists(LMapFile + '.gz')) then
               LFailures := LFailures + Format('%s step %d: the map is drawn or not drawn differently', [LName, LStep]) +
                 sLineBreak
-            else if FileExists(LMapFile) then
+            else if LMapDrawn then
             begin
-              LMapBytes := TFile.ReadAllBytes(LMapFile);
+              LMapBytes := ReadBytes(LMapFile);
               LMapDiff := CompareMap(LMapBytes, LMap.Surface);
               if LMapDiff <> '' then
               begin
@@ -699,6 +918,43 @@ begin
                     LTraceList.Free;
                   end;
                 end;
+                if GetEnvironmentVariable('DELPHIDOOM_XCOM_BISECT') <> '' then
+                begin
+                  // which blit makes the drawing differ: the diff count of the draw without each one (the lowest first)
+                  LTraceList := TStringList.Create;
+                  try
+                    LMap.Trace := LTraceList;
+                    LMap.Invalidate;
+                    LMap.Draw;
+                    LMap.Trace := nil;
+                    LBisect := TStringList.Create;
+                    try
+                      // DELPHIDOOM_XCOM_BISECT=<number>: every blit with its shade changed by it (0 or other text: skipped)
+                      LMap.ShadeDelta := StrToIntDef(GetEnvironmentVariable('DELPHIDOOM_XCOM_BISECT'), 0);
+                      for LCount := 0 to LMap.BlitCount - 1 do
+                      begin
+                        LMap.SkipBlit := LCount;
+                        LMap.Invalidate;
+                        LMap.Draw;
+                        LBisect.Add(Format('%.6d %s', [DiffCount(LMapBytes, LMap.Surface), LTraceList[LCount]]));
+                      end;
+                      LMap.SkipBlit := -1;
+                      LMap.ShadeDelta := 0;
+                      LBisect.Sort;
+                      LBisect.SaveToFile(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                        Format('%s.step%.3d.bisect', [LName, LStep]));
+                    finally
+                      LBisect.Free;
+                    end;
+                  finally
+                    LTraceList.Free;
+                  end;
+                end;
+                if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
+                  TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                    Format('%s.step%.3d.tiles', [LName, LStep]), TilesText(LBattle) +
+                    Format('c %d side=%d selected=%d'#10, [LMap.CursorType, LBattle.Side,
+                    IfThen(Assigned(LBattle.SelectedUnit), LBattle.SelectedUnit.Id, -1)]));
                 if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
                   TFile.WriteAllBytes(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
                     Format('%s.step%.3d.map', [LName, LStep]), LMap.Surface.Pixels);
@@ -706,8 +962,11 @@ begin
               Inc(FMapsCompared);
             end;
           end;
-          LActualYaml := Normalize(string(TYamlFactory.Dump(LBattle.Save)));
-          if LActualYaml <> Normalize(ReadString(AFolder + Format('step%.3d.yml', [LStep]))) then
+          LActualYaml := '';
+          if HasFile(AFolder + Format('step%.3d.yml', [LStep])) then
+            LActualYaml := Normalize(string(TYamlFactory.Dump(LBattle.Save)));
+          if HasFile(AFolder + Format('step%.3d.yml', [LStep])) and
+            (LActualYaml <> Normalize(ReadString(AFolder + Format('step%.3d.yml', [LStep])))) then
           begin
             LFailures := LFailures + Format('%s step %d (%s): the battle differs', [LName, LStep, LOrder]) + sLineBreak;
             if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
@@ -752,6 +1011,9 @@ begin
     if (GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY') <> '') and
       (ExtractFileName(LScenario) <> GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY')) then
       Continue;
+    // the scenarios for the drawing only have no files of the states: the other test runs them
+    if not HasFile(IncludeTrailingPathDelimiter(LScenario) + 'start.yml') then
+      Continue;
     LFailed := LFailed + RunScenario(IncludeTrailingPathDelimiter(LScenario));
     Inc(LCount);
   end;
@@ -759,6 +1021,85 @@ begin
     [LCount, FMapsCompared]));
   Assert.IsTrue(LCount > 0, 'Nessuno scenario');
   Assert.AreEqual('', LFailed, 'Battaglie diverse dal vero BattlescapeGame');
+end;
+
+procedure TTestXcomRealBattlescape.DovrebbeCostruireLeTabelleDiTrasparenzaDelVeroMod;
+var
+  LFolder: string;
+  LScenario: string;
+  LPalette: TXcomPalette;
+  LColors: TBytes;
+  LReal: TBytes;
+  LActual: TBytes;
+  LIndex: Integer;
+  LCount: Integer;
+begin
+  LFolder := DataFolder;
+  if (LFolder = '') or (not Assigned(FRuleset)) then
+  begin
+    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    Exit;
+  end;
+  LCount := 0;
+  for LScenario in TDirectory.GetDirectories(LFolder) do
+  begin
+    if not (FileExists(IncludeTrailingPathDelimiter(LScenario) + 'lut.bin') or
+      FileExists(IncludeTrailingPathDelimiter(LScenario) + 'lut.bin.gz')) then
+      Continue;
+    LReal := ReadBytes(IncludeTrailingPathDelimiter(LScenario) + 'lut.bin');
+    LColors := ReadBytes(IncludeTrailingPathDelimiter(LScenario) + 'battle.pal');
+    LPalette := TXcomPalette.Create(256);
+    for LIndex := 0 to 255 do
+    begin
+      LPalette.Colors[LIndex].Red := LColors[LIndex * 3];
+      LPalette.Colors[LIndex].Green := LColors[LIndex * 3 + 1];
+      LPalette.Colors[LIndex].Blue := LColors[LIndex * 3 + 2];
+    end;
+    LActual := TXcomTransparencyTable.Build(LPalette, TransparencyTints(Length(LReal) div 1024));
+    Assert.AreEqual(Length(LReal), Length(LActual), ExtractFileName(LScenario) + ': size of the table');
+    for LIndex := 0 to High(LReal) do
+      if LReal[LIndex] <> LActual[LIndex] then
+        Assert.Fail(Format('%s: the table differs at %d (expected %d actual %d)', [ExtractFileName(LScenario), LIndex,
+          LReal[LIndex], LActual[LIndex]]));
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0, 'Nessuno scenario con la tabella');
+end;
+
+procedure TTestXcomRealBattlescape.DovrebbeDisegnareLaMappaComeIlVeroMapDraw;
+var
+  LFolder: string;
+  LScenario: string;
+  LCount: Integer;
+  LFailed: string;
+begin
+  LFolder := DataFolder;
+  if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
+  begin
+    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    Exit;
+  end;
+  FCompareMaps := True;
+  LCount := 0;
+  LFailed := '';
+  try
+    for LScenario in TDirectory.GetDirectories(LFolder) do
+    begin
+      if (GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY') <> '') and
+        (ExtractFileName(LScenario) <> GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY')) then
+        Continue;
+      if not HasMaps(IncludeTrailingPathDelimiter(LScenario)) then
+        Continue;
+      LFailed := LFailed + RunScenario(IncludeTrailingPathDelimiter(LScenario));
+      Inc(LCount);
+    end;
+  finally
+    FCompareMaps := False;
+  end;
+  TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Scenari con mappe: %d, mappe confrontate: %d',
+    [LCount, FMapsCompared]));
+  Assert.IsTrue(LCount > 0, 'Nessuno scenario con mappe');
+  Assert.AreEqual('', LFailed, 'Mappe diverse dal vero Map::draw');
 end;
 
 end.

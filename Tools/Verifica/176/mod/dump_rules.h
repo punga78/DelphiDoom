@@ -436,7 +436,8 @@ static void DumpInterfacesEtc(Mod* m) {
     RuleVideo* r = p.second;
     Begin("videos", p.first);
     FM(_id); FM(_useUfoAudioSequence); FM(_videos); FM(_audioTracks);
-    Line("header", V(r->_slideshowHeader.musicId) + "," + V(r->_slideshowHeader.transitionSeconds));
+    // transitionSeconds is uninitialized in the C++ when the video has no slideshow node: compared only if one was read
+    Line("header", V(r->_slideshowHeader.musicId) + "," + ((r->_slideshowHeader.musicId.empty() && r->_slides.empty()) ? std::string("-") : V(r->_slideshowHeader.transitionSeconds)));
     F("slides", r->_slides.size());
     for (size_t i = 0; i < r->_slides.size(); i++) {
       SlideshowSlide& s = r->_slides[i];

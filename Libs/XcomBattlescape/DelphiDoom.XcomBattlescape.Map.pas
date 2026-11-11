@@ -15,7 +15,8 @@ uses
   System.SysUtils, System.Classes, System.Math, System.Generics.Collections, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Shade,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
-  DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattlescape.Sprites.Intf;
+  DelphiDoom.XcomMod.Random, DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattlescape.Sprites.Intf,
+  DelphiDoom.XcomBattlescape.Particle, DelphiDoom.XcomBattlescape.Explosion;
 
 type
   /// <summary>The numbers the map needs from the rules and the screen that are not in the saved battle</summary>
@@ -29,14 +30,21 @@ type
     /// <summary>Mod::SMOKE_OFFSET and Mod::UNDERWATER_SMOKE_OFFSET</summary>
     SmokeOffset: Integer;
     UnderwaterSmokeOffset: Integer;
+    /// <summary>
+    ///   The transparency tables (TXcomTransparencyTable.Build, 1024 bytes per tint): the particles are drawn through
+    ///   them; empty draws none, as the C++ does for a tint that has no table
+    /// </summary>
+    Transparencies: TBytes;
   end;
 
   /// <summary>
   ///   The picture of the battle: Map::draw clears the surface and draws every tile from the lowest level to the
   ///   one in view, in rows from the back to the front, with its walls, objects, units and effects. It keeps the
   ///   drawings of the units (the cache that BattleUnit holds in the C++) and the frame of the animation.
+  ///   It also keeps the particles of the vapor of the shots under water (that the C++ keeps in the tiles) and
+  ///   draws them through the transparency tables.
   ///   Not drawn: projectiles in flight, explosions, the preview of the path, the waypoints, the message of the
-  ///   hidden movement and the particles
+  ///   hidden movement
   /// </summary>
   TXcomBattleMap = class
   strict private
@@ -47,6 +55,11 @@ type
     FCamera: TXcomCamera;
     FArrow: TXcomSurface;
     FCaches: TObjectDictionary<TXcomBattleUnit, TObjectList<TXcomSurface>>;
+    FParticles: TObjectDictionary<TXcomTile, TObjectList<TXcomParticle>>;
+    FParticleRandom: IXcomRandom;
+    FExplosions: TObjectList<TXcomExplosion>;
+    FExplosionInFov: Boolean;
+    FFlashScreen: Boolean;
     FSpriteWidth: Integer;
     FSpriteHeight: Integer;
     FSelectorX: Integer;
@@ -57,6 +70,11 @@ type
     FUnitDying: Boolean;
     FRedraw: Boolean;
     FWhat: string;
+    FTileText: string;
+    FBlitCount: Integer;
+    FSkipBlit: Integer;
+    FShadeDelta: Integer;
+    FShowObstacles: Boolean;
     FTrace: TStrings;
     procedure CreateArrow;
     function TileSprite(const ATile: TXcomTile; APart: Integer): TXcomSurface;
@@ -64,6 +82,8 @@ type
     procedure DrawUnit(const AUnitTile, ACurrentTile: TXcomTile; const ATileScreen: TXcomPosition; AShade,
       AObstacleShade: Integer; ATopLayer: Boolean);
     procedure DrawTerrain;
+    procedure DrawParticles(const ATile: TXcomTile; const AScreen: TXcomPosition);
+    procedure AnimateParticles(const ATile: TXcomTile);
     procedure BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean = False);
   public
     constructor Create(const ASave: TXcomSavedBattleGame; const ASprites: IXcomBattleSprites;
@@ -83,11 +103,48 @@ type
     procedure SetCursorType(ACursorType: Integer; ASize: Integer = 1);
     procedure SetSelectorPosition(AX, AY: Integer);
     procedure Invalidate;
+    /// <summary>Projectile::addVaporCloud: ADensity particles at the voxel, on the tile that holds it</summary>
+    procedure AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
+    /// <summary>Tile::addParticle (the map keeps them, the tile of the model does not know them)</summary>
+    procedure AddParticle(const ATile: TXcomTile; const AParticle: TXcomParticle);
+    /// <summary>
+    ///   getExplosions()->push_back(new Explosion(...)): the sprite is drawn when ExplosionInFov is set
+    /// </summary>
+    procedure AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig, AHit: Boolean);
+    /// <summary>
+    ///   The step of the animation that ExplosionBState::think does on the list: every explosion advances, those that
+    ///   are over are removed; false when the list is empty
+    /// </summary>
+    function AnimateExplosions: Boolean;
+    /// <summary>setExplosionInFOV</summary>
+    property ExplosionInFov: Boolean read FExplosionInFov write FExplosionInFov;
+    /// <summary>The next draw is the flash of the blast (setBlastFlash): it is off again after the draw</summary>
+    property FlashScreen: Boolean read FFlashScreen write FFlashScreen;
+    property Explosions: TObjectList<TXcomExplosion> read FExplosions;
+    /// <summary>resetObstacles: clears the obstacle marks of the tiles and stops showing them</summary>
+    procedure ResetObstacles;
+    /// <summary>enableObstacles: the tiles that block the shot are drawn with the obstacle shade (the owner stops it)</summary>
+    procedure EnableObstacles;
+    /// <summary>disableObstacles</summary>
+    procedure DisableObstacles;
+    property ShowObstacles: Boolean read FShowObstacles;
+    /// <summary>Removes every particle</summary>
+    procedure ClearParticles;
+    /// <summary>Tile::getParticleCloud: the particles of the tile (not owned), nil if it has none</summary>
+    function ParticlesOf(const ATile: TXcomTile): TObjectList<TXcomParticle>;
+    /// <summary>The generator of the jitter of the particles (RNG::seedless): a time seed unless it is replaced</summary>
+    property ParticleRandom: IXcomRandom read FParticleRandom write FParticleRandom;
     property Camera: TXcomCamera read FCamera;
     property Surface: TXcomSurface read FSurface;
     property CursorType: Integer read FCursorType;
     property AnimFrame: Integer read FAnimFrame;
     property UnitDying: Boolean read FUnitDying write FUnitDying;
+    /// <summary>For the tests that look for a difference: the draw skips the blit with this number (0 based), -1 none</summary>
+    property SkipBlit: Integer read FSkipBlit write FSkipBlit;
+    /// <summary>With SkipBlit set and this not zero, that blit is drawn with the shade changed by this much</summary>
+    property ShadeDelta: Integer read FShadeDelta write FShadeDelta;
+    /// <summary>The number of blits of the last draw (counted from Draw)</summary>
+    property BlitCount: Integer read FBlitCount;
     /// <summary>For the tests and the logs: every blit of a draw is added here (not owned), or nil</summary>
     property Trace: TStrings read FTrace write FTrace;
   end;
@@ -128,6 +185,10 @@ begin
       FRedraw := True;
     end;
   FCaches := TObjectDictionary<TXcomBattleUnit, TObjectList<TXcomSurface>>.Create([doOwnsValues]);
+  FParticles := TObjectDictionary<TXcomTile, TObjectList<TXcomParticle>>.Create([doOwnsValues]);
+  FExplosions := TObjectList<TXcomExplosion>.Create(True);
+  FParticleRandom := TXcomRandom.Create(UInt64(TThread.GetTickCount64) or 1);
+  FSkipBlit := -1;
   FCursorType := CT_NORMAL;
   FCursorSize := 1;
   FRedraw := True;
@@ -136,6 +197,8 @@ end;
 
 destructor TXcomBattleMap.Destroy;
 begin
+  FExplosions.Free;
+  FParticles.Free;
   FCaches.Free;
   FArrow.Free;
   FCamera.Free;
@@ -202,7 +265,15 @@ end;
 procedure TXcomBattleMap.BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean);
 begin
   if Assigned(FTrace) then
-    FTrace.Add(Format('%s x=%d y=%d w=%d h=%d shade=%d', [FWhat, AX, AY, ASource.Width, ASource.Height, AShade]));
+    FTrace.Add(Format('%s x=%d y=%d w=%d h=%d shade=%d tile=%s', [FWhat, AX, AY, ASource.Width, ASource.Height, AShade,
+      FTileText]));
+  Inc(FBlitCount);
+  if FBlitCount - 1 = FSkipBlit then
+  begin
+    if FShadeDelta = 0 then
+      Exit;
+    AShade := EnsureRange(AShade + FShadeDelta, 0, 16);
+  end;
   TXcomSurfaceShader.Blit(ASource, FSurface, AX, AY, AShade, AHalf);
 end;
 
@@ -381,6 +452,131 @@ begin
   end;
 end;
 
+procedure TXcomBattleMap.AddParticle(const ATile: TXcomTile; const AParticle: TXcomParticle);
+var
+  LList: TObjectList<TXcomParticle>;
+begin
+  if not FParticles.TryGetValue(ATile, LList) then
+  begin
+    LList := TObjectList<TXcomParticle>.Create(True);
+    FParticles.Add(ATile, LList);
+  end;
+  LList.Add(AParticle);
+end;
+
+procedure TXcomBattleMap.ResetObstacles;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to FSave.MapSizeXyz - 1 do
+    FSave.TileByIndex(LIndex).ResetObstacle;
+  FShowObstacles := False;
+  FRedraw := True;
+end;
+
+procedure TXcomBattleMap.EnableObstacles;
+begin
+  FShowObstacles := True;
+  FRedraw := True;
+end;
+
+procedure TXcomBattleMap.DisableObstacles;
+begin
+  FShowObstacles := False;
+  FRedraw := True;
+end;
+
+procedure TXcomBattleMap.ClearParticles;
+begin
+  FParticles.Clear;
+end;
+
+function TXcomBattleMap.ParticlesOf(const ATile: TXcomTile): TObjectList<TXcomParticle>;
+begin
+  if not FParticles.TryGetValue(ATile, Result) then
+    Result := nil;
+end;
+
+procedure TXcomBattleMap.AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
+var
+  LTile: TXcomTile;
+  LTilePosition: TXcomPosition;
+  LVoxelPosition: TXcomPosition;
+  LIndex: Integer;
+  LX: Integer;
+  LY: Integer;
+  LDensity: Integer;
+  LOpacity: Integer;
+begin
+  LTile := FSave.TileAt(AVoxel div TXcomPosition.Make(16, 16, 24));
+  if not Assigned(LTile) then
+    Exit;
+  LTilePosition := FCamera.ConvertMapToScreen(AVoxel div TXcomPosition.Make(16, 16, 24)) + FCamera.MapOffset;
+  LVoxelPosition := FCamera.ConvertVoxelToScreen(AVoxel);
+  for LIndex := 1 to ADensity do
+  begin
+    // the arguments of Particle(...) are evaluated from the right: opacity, density, y, x
+    LOpacity := FParticleRandom.Generate(32, 44);
+    LDensity := FParticleRandom.Generate(48, 224);
+    LY := LVoxelPosition.Y - LTilePosition.Y + FParticleRandom.Generate(0, 4) - 2;
+    LX := LVoxelPosition.X - LTilePosition.X + FParticleRandom.Generate(0, 4) - 2;
+    AddParticle(LTile, TXcomParticle.Create(LX, LY, LDensity, AColor, LOpacity));
+  end;
+end;
+
+procedure TXcomBattleMap.AnimateParticles(const ATile: TXcomTile);
+var
+  LList: TObjectList<TXcomParticle>;
+  LIndex: Integer;
+begin
+  if not FParticles.TryGetValue(ATile, LList) then
+    Exit;
+  LIndex := 0;
+  while LIndex < LList.Count do
+    if LList[LIndex].Animate(FParticleRandom) then
+      Inc(LIndex)
+    else
+      LList.Delete(LIndex);
+  if LList.Count = 0 then
+    FParticles.Remove(ATile);
+end;
+
+procedure TXcomBattleMap.DrawParticles(const ATile: TXcomTile; const AScreen: TXcomPosition);
+var
+  LList: TObjectList<TXcomParticle>;
+  LParticle: TXcomParticle;
+  LX: Integer;
+  LY: Integer;
+  LBase: Integer;
+
+  procedure Mix(AX, AY: Integer);
+  begin
+    FSurface.SetPixel(AX, AY, FSettings.Transparencies[LBase + FSurface.GetPixel(AX, AY)]);
+  end;
+
+begin
+  if not FParticles.TryGetValue(ATile, LList) then
+    Exit;
+  for LParticle in LList do
+  begin
+    // int vaporX = screenPosition.x + getX(): the sum is a float, truncated
+    LX := Trunc(Single(AScreen.X + LParticle.XOffset));
+    LY := Trunc(Single(AScreen.Y + LParticle.YOffset));
+    if Length(FSettings.Transparencies) >= (LParticle.Color + 1) * 1024 then
+    begin
+      LBase := LParticle.Color * 1024 + LParticle.OpacityLevel * 256;
+      // the switch of the C++ falls through: a bigger particle also draws the points of the smaller ones
+      if LParticle.Size >= 3 then
+        Mix(LX + 1, LY + 1);
+      if LParticle.Size >= 2 then
+        Mix(LX + 1, LY);
+      if LParticle.Size >= 1 then
+        Mix(LX, LY + 1);
+      Mix(LX, LY);
+    end;
+  end;
+end;
+
 procedure TXcomBattleMap.Animate(ARedraw: Boolean);
 var
   LIndex: Integer;
@@ -391,7 +587,10 @@ begin
     FAnimFrame := 0;
   // animate tiles
   for LIndex := 0 to FSave.MapSizeXyz - 1 do
+  begin
     FSave.TileByIndex(LIndex).Animate;
+    AnimateParticles(FSave.TileByIndex(LIndex));
+  end;
   // animate certain units (large flying units have a propulsion animation)
   for LUnit in FSave.Units do
     if not LUnit.IsOut then
@@ -411,6 +610,7 @@ begin
     Exit;
   // the background is color 15 (black in every palette), not the transparent 0
   FRedraw := False;
+  FBlitCount := 0;
   FSurface.Clear(BLOCK_COLOR_BLACK);
   if (Assigned(FSave.SelectedUnit) and FSave.SelectedUnit.GetVisible) or FUnitDying or
     (not Assigned(FSave.SelectedUnit)) or FSave.DebugMode then
@@ -625,6 +825,7 @@ var
   LSelected: TXcomBattleUnit;
   LOffset: TXcomPosition;
   LShadeOffset: Integer;
+  LExplosion: TXcomExplosion;
 
   function Shade(APart: Integer; ADefault: Integer): Integer;
   begin
@@ -675,12 +876,22 @@ begin
         if not OnScreen then
           Continue;
         LTile := FSave.TileAt(LMapPosition);
+        if Assigned(FTrace) then
+          FTileText := Format('%d,%d,%d', [LItX, LItY, LItZ]);
         if not Assigned(LTile) then
           Continue;
         if LTile.IsDiscovered(2) then
         begin
           LTileShade := LTile.GetShade;
           LObstacleShade := LTileShade;
+          if FShowObstacles and LTile.IsObstacle then
+          begin
+            if LTileShade > 7 then
+              LObstacleShade := 7;
+            if LTileShade < 2 then
+              LObstacleShade := 2;
+            LObstacleShade := LObstacleShade + (ARROW_BOB[FAnimFrame] * 2 - 2);
+          end;
         end
         else
         begin
@@ -789,6 +1000,8 @@ begin
             LFrameNumber := LFrameNumber + (FAnimFrame div 2) + LTile.AnimationOffset;
           BlitShade(FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber), LScreen.X, LScreen.Y, LShade);
         end;
+        // draw particle clouds
+        DrawParticles(LTile, LScreen);
         if not LTile.IsVoid then
         begin
           FWhat := 'object';
@@ -853,6 +1066,55 @@ begin
       BlitShade(FArrow, LScreen.X + LOffset.X + (FSpriteWidth div 2) - (FArrow.Width div 2),
         LScreen.Y + LOffset.Y - FArrow.Height + ARROW_BOB[FAnimFrame], 0);
   end;
+  if FExplosionInFov then
+  begin
+    if FFlashScreen then
+    begin
+      // the screen in the EGA colors of the blast: every pixel loses its shade
+      for LIndex := 0 to FSurface.Width * FSurface.Height - 1 do
+        FSurface.SetPixel(LIndex mod FSurface.Width, LIndex div FSurface.Width,
+          (FSurface.GetPixel(LIndex mod FSurface.Width, LIndex div FSurface.Width) div 16) * 16);
+      FFlashScreen := False;
+    end
+    else
+      for LExplosion in FExplosions do
+      begin
+        LScreen := FCamera.ConvertVoxelToScreen(LExplosion.Position);
+        if LExplosion.IsBig then
+        begin
+          if LExplosion.CurrentFrame >= 0 then
+          begin
+            LFrame := FSprites.SurfaceSet('X1.PCK').GetFrame(LExplosion.CurrentFrame);
+            BlitShade(LFrame, LScreen.X - (LFrame.Width div 2), LScreen.Y - (LFrame.Height div 2), 0);
+          end;
+        end
+        else if LExplosion.IsHit then
+          BlitShade(FSprites.SurfaceSet('HIT.PCK').GetFrame(LExplosion.CurrentFrame), LScreen.X - 15, LScreen.Y - 25, 0)
+        else
+          BlitShade(FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LExplosion.CurrentFrame), LScreen.X - 15,
+            LScreen.Y - 15, 0);
+      end;
+  end;
+end;
+
+procedure TXcomBattleMap.AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig,
+  AHit: Boolean);
+begin
+  FExplosions.Add(TXcomExplosion.Create(ACenter, AStartFrame, AFrameDelay, ABig, AHit));
+end;
+
+function TXcomBattleMap.AnimateExplosions: Boolean;
+var
+  LIndex: Integer;
+begin
+  // ExplosionBState::think: the explosions that are over are removed; true while any is left
+  LIndex := 0;
+  while LIndex < FExplosions.Count do
+    if FExplosions[LIndex].Animate then
+      Inc(LIndex)
+    else
+      FExplosions.Delete(LIndex);
+  Result := FExplosions.Count > 0;
 end;
 
 end.

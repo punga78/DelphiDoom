@@ -59,7 +59,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattle.Trajectory,
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattle.ViewVapor, DelphiDoom.XcomBattle.Trajectory,
   DelphiDoom.XcomBattle.ThrowRange, DelphiDoom.XcomBattle.ExplosionState, DelphiDoom.XcomBattle.AIModule;
 
 constructor TXcomProjectileFlyState.Create(const AGame: IXcomBattlescapeGame; const AAction: TXcomBattleAction;
@@ -179,6 +179,8 @@ begin
   LEndTile := FGame.Save.TileAt(ActionData.Target);
   LDistanceSq := FGame.TileEngine.DistanceUnitToPositionSq(ActionData.Actor, ActionData.Target, False);
   LIsPlayer := FGame.Save.Side = FACTION_PLAYER;
+  if LIsPlayer then
+    FGame.View.ResetObstacles;
   case ActionData.ActionType of
     BA_SNAPSHOT, BA_AIMEDSHOT, BA_AUTOSHOT, BA_LAUNCH:
       begin
@@ -299,7 +301,12 @@ begin
   end;
   LTarget := ActionData.Target;
   if CreateNewProjectile then
+  begin
     FGame.View.SetCursorType(CT_NONE);
+    FGame.View.DisableObstacles;
+  end
+  else if LIsPlayer and ((FTargetVoxel.Z >= 0) or LForceEnableObstacles) then
+    FGame.View.EnableObstacles;
 end;
 
 function TXcomProjectileFlyState.CreateNewProjectile: Boolean;
@@ -309,7 +316,7 @@ begin
   Inc(ActionData.AutoShotCounter);
   // create a new projectile
   FProjectile := TXcomProjectile.Create(FGame.Save, FGame.TileEngine, FGame, ProjectileOptions, ActionData, FOrigin,
-    FTargetVoxel, FAmmo);
+    FTargetVoxel, FAmmo, TXcomViewVapor.Create(FGame.View));
   // add the projectile on the map
   FGame.View.SetProjectile(FProjectile);
   FGame.View.SetStateInterval(16);
@@ -534,7 +541,7 @@ begin
             begin
               // create a projectile, let it trace to the point where it hits
               LProjectile := TXcomProjectile.Create(FGame.Save, FGame.TileEngine, FGame, ProjectileOptions, ActionData,
-                FOrigin, FTargetVoxel, FAmmo);
+                FOrigin, FTargetVoxel, FAmmo, TXcomViewVapor.Create(FGame.View));
               try
                 LSecondary := LProjectile.CalculateTrajectory(Max(0.0, (FUnit.GetFiringAccuracy(ActionData.ActionType,
                   ActionData.Weapon) / 100.0) - LPellet * 5.0));

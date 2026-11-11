@@ -31,6 +31,8 @@ type
     [Test]
     procedure DovrebbeLasciareIlContenutoSeUnaQuantitaNonEIntera;
     [Test]
+    procedure DovrebbeLasciareIlContenutoSeLaChiaveMancaNelNodoPadre;
+    [Test]
     procedure DovrebbeSalvareUnContenitoreVuotoComeMappaVuota;
     [Test]
     procedure DovrebbeDare255ComeMunizioniIllimitateDelVeicolo;
@@ -85,6 +87,21 @@ begin
   try
     LContainer.AddItem('A');
     LContainer.Load(Load('[1, 2]'));
+    Assert.AreEqual(1, LContainer.GetItem('A'));
+  finally
+    LContainer.Free;
+  end;
+end;
+
+procedure TTestXcomSaveHoldings.DovrebbeLasciareIlContenutoSeLaChiaveMancaNelNodoPadre;
+var
+  LContainer: TXcomItemContainer;
+begin
+  // a craft of the starting base of UFO has no "items": node["items"].as<map>(fallback) keeps the contents
+  LContainer := TXcomItemContainer.Create;
+  try
+    LContainer.AddItem('A');
+    LContainer.Load(Load('type: STR_INTERCEPTOR').Find(YamlStringToText('items')));
     Assert.AreEqual(1, LContainer.GetItem('A'));
   finally
     LContainer.Free;

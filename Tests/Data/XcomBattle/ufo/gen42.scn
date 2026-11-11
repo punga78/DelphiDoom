@@ -1,0 +1,16 @@
+mission=STR_HARVESTER
+kind=2
+race=STR_MIXED
+itemlevel=0
+shade=10
+texture=-1
+terrain=XBASE
+craft=1
+base=0
+ufo=STR_HARVESTER
+ufostatus=2
+uforlon=4.1661
+uforlat=-1.35961
+runseed=1761042
+seedafter=11621127483237478135
+ok=0

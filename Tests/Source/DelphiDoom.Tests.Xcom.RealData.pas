@@ -26,16 +26,22 @@ type
   public
     /// <summary>The folder of the real game, or an empty string if it is not on this machine</summary>
     class function Folder: string; static;
+    /// <summary>The folder of the real TFTD data (xcom_tftd\TFTD), or an empty string</summary>
+    class function TftdFolder: string; static;
+    /// <summary>The folder of the real UFO data (xcom_ufo\UFO Enemy Unkown\DOS game), or an empty string</summary>
+    class function UfoFolder: string; static;
+  private
+    class function FindFolder(const ARelative: string): string; static;
   end;
 
-  [TestFixture]
-  [Category('xcom')]
-  [Category('xcom-realdata')]
   TTestXcomRealData = class(TObject)
-  private
+  strict protected
     FFolder: string;
     FData: IXcomGameData;
     procedure SkipIfMissing;
+    function FindGameFolder: string; virtual;
+    /// <summary>The path of LOFTEMPS.DAT in the game folder (TERRAIN in TFTD, GEODATA in UFO)</summary>
+    function LoftempsPath: string; virtual;
   public
     [Setup]
     procedure Setup;
@@ -66,6 +72,30 @@ type
     procedure DovrebbeTrovareNelPckOgniFotogrammaCheUnTerrenoUsa;
   end;
 
+  /// <summary>The same tests on the real TFTD data</summary>
+  [TestFixture]
+  [Category('xcom')]
+  [Category('xcom-realdata')]
+  TTestXcomRealDataTftd = class(TTestXcomRealData)
+  protected
+    function FindGameFolder: string; override;
+  end;
+
+  /// <summary>The same tests on the real UFO: Enemy Unknown data (five palettes, SOUND1/2.CAT, LOFTEMPS in GEODATA)</summary>
+  [TestFixture]
+  [Category('xcom')]
+  [Category('xcom-realdata')]
+  TTestXcomRealDataUfo = class(TTestXcomRealData)
+  protected
+    function FindGameFolder: string; override;
+    function LoftempsPath: string; override;
+  public
+    [Test]
+    procedure DovrebbeAvereCinquePalettiDiUfo;
+    [Test]
+    procedure DovrebbeTrovareICatDelSuonoDiUfo;
+  end;
+
 implementation
 
 uses
@@ -73,24 +103,17 @@ uses
 
 { TXcomRealData }
 
-class function TXcomRealData.Folder: string;
+class function TXcomRealData.FindFolder(const ARelative: string): string;
 var
   LCurrent: string;
   LCandidate: string;
   LParent: string;
 begin
-  Result := GetEnvironmentVariable('DELPHIDOOM_XCOM_DATA');
-  if (Result <> '') and TDirectory.Exists(Result) then
-    Exit;
   Result := '';
   LCurrent := ExtractFilePath(ParamStr(0));
   while LCurrent <> '' do
   begin
-    // UFO (xcom) first, then TFTD (xcom_tftd\TFTD, the floppy install laid out in folders)
-    LCandidate := TPath.Combine(LCurrent, 'Reference\_dati\xcom');
-    if TDirectory.Exists(LCandidate) then
-      Exit(LCandidate);
-    LCandidate := TPath.Combine(LCurrent, 'Reference\_dati\xcom_tftd\TFTD');
+    LCandidate := TPath.Combine(LCurrent, ARelative);
     if TDirectory.Exists(LCandidate) then
       Exit(LCandidate);
     LParent := ExtractFilePath(ExcludeTrailingPathDelimiter(LCurrent));
@@ -100,11 +123,44 @@ begin
   end;
 end;
 
+class function TXcomRealData.TftdFolder: string;
+begin
+  Result := FindFolder('Reference\_dati\xcom_tftd\TFTD');
+end;
+
+class function TXcomRealData.UfoFolder: string;
+begin
+  Result := FindFolder('Reference\_dati\xcom_ufo\UFO Enemy Unkown\DOS game');
+end;
+
+class function TXcomRealData.Folder: string;
+begin
+  Result := GetEnvironmentVariable('DELPHIDOOM_XCOM_DATA');
+  if (Result <> '') and TDirectory.Exists(Result) then
+    Exit;
+  // the first one found: UFO (xcom), TFTD, then the UFO of the DOS install
+  Result := FindFolder('Reference\_dati\xcom');
+  if Result = '' then
+    Result := TftdFolder;
+  if Result = '' then
+    Result := UfoFolder;
+end;
+
 { TTestXcomRealData }
+
+function TTestXcomRealData.FindGameFolder: string;
+begin
+  Result := TXcomRealData.Folder;
+end;
+
+function TTestXcomRealData.LoftempsPath: string;
+begin
+  Result := 'TERRAIN\LOFTEMPS.DAT';
+end;
 
 procedure TTestXcomRealData.Setup;
 begin
-  FFolder := TXcomRealData.Folder;
+  FFolder := FindGameFolder;
   if (FFolder <> '') and TFile.Exists(TPath.Combine(FFolder, 'GEODATA\PALETTES.DAT')) then
     FData := TXcomFactory.CreateGameData(TXcomFactory.CreateFolderFiles([FFolder]));
 end;
@@ -205,7 +261,11 @@ begin
   LCount := 0;
   for LPath in TDirectory.GetFiles(TPath.Combine(FFolder, 'ROUTES'), '*.RMP') do
   begin
-    Assert.IsTrue(Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))) > 0, LPath);
+    // UFO ships four empty files (ROUTES\TEMP.RMP .. TEMP3.RMP, 0 bytes): editor leftovers no terrain uses
+    if TFile.GetSize(LPath) = 0 then
+      Assert.AreEqual(0, Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))), LPath)
+    else
+      Assert.IsTrue(Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))) > 0, LPath);
     Inc(LCount);
   end;
   Assert.IsTrue(LCount > 0, 'nessun file RMP');
@@ -270,7 +330,7 @@ var
   LWords: TArray<Word>;
 begin
   SkipIfMissing;
-  LWords := TXcomFactory.CreateWordTableReader.Read(FData.GetFiles.ReadAll('TERRAIN\LOFTEMPS.DAT'));
+  LWords := TXcomFactory.CreateWordTableReader.Read(FData.GetFiles.ReadAll(LoftempsPath));
   Assert.IsTrue(Length(LWords) > 0);
   // every shape (a voxel layout) is 16 words, one for each layer of 16 x 16 voxels
   Assert.AreEqual(0, Integer(Length(LWords) mod 16));
@@ -344,7 +404,41 @@ begin
   Assert.AreEqual('', LOutside, 'fotogrammi fuori dal PCK');
 end;
 
+{ TTestXcomRealDataTftd }
+
+function TTestXcomRealDataTftd.FindGameFolder: string;
+begin
+  Result := TXcomRealData.TftdFolder;
+end;
+
+{ TTestXcomRealDataUfo }
+
+function TTestXcomRealDataUfo.FindGameFolder: string;
+begin
+  Result := TXcomRealData.UfoFolder;
+end;
+
+function TTestXcomRealDataUfo.LoftempsPath: string;
+begin
+  Result := 'GEODATA\LOFTEMPS.DAT';
+end;
+
+procedure TTestXcomRealDataUfo.DovrebbeAvereCinquePalettiDiUfo;
+begin
+  SkipIfMissing;
+  Assert.AreEqual(5, Integer(TFile.GetSize(TPath.Combine(FFolder, 'GEODATA\PALETTES.DAT'))) div XCOM_PALETTE_STRIDE);
+end;
+
+procedure TTestXcomRealDataUfo.DovrebbeTrovareICatDelSuonoDiUfo;
+begin
+  SkipIfMissing;
+  Assert.IsTrue(TFile.Exists(TPath.Combine(FFolder, 'SOUND\SOUND1.CAT')));
+  Assert.IsTrue(TFile.Exists(TPath.Combine(FFolder, 'SOUND\ROLAND.CAT')));
+  Assert.IsTrue(TFile.Exists(TPath.Combine(FFolder, 'SOUND\ADLIB.CAT')));
+end;
+
 initialization
-  TDUnitX.RegisterTestFixture(TTestXcomRealData);
+  TDUnitX.RegisterTestFixture(TTestXcomRealDataTftd);
+  TDUnitX.RegisterTestFixture(TTestXcomRealDataUfo);
 
 end.

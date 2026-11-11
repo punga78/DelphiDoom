@@ -28,7 +28,8 @@ uses
   DelphiDoom.Tests.XcomBattle.RealProjectile in 'Source\DelphiDoom.Tests.XcomBattle.RealProjectile.pas',
   DelphiDoom.Tests.XcomBattle.Trajectory in 'Source\DelphiDoom.Tests.XcomBattle.Trajectory.pas',
   DelphiDoom.Tests.XcomBattle.RealAI in 'Source\DelphiDoom.Tests.XcomBattle.RealAI.pas',
-  DelphiDoom.Tests.XcomBattle.RealBattlescape in 'Source\DelphiDoom.Tests.XcomBattle.RealBattlescape.pas';
+  DelphiDoom.Tests.XcomBattle.RealBattlescape in 'Source\DelphiDoom.Tests.XcomBattle.RealBattlescape.pas',
+  DelphiDoom.Tests.XcomBattlescape.Particle in 'Source\DelphiDoom.Tests.XcomBattlescape.Particle.pas';
 
 var
   Runner: ITestRunner;

@@ -27,20 +27,24 @@ type
   ///   .scn with the parameters and the seed, the .yml or .err after it) and compares the saved battle, the
   ///   random generator after the run and the errors
   /// </summary>
-  [TestFixture]
-  [Category('xcom-battle')]
-  [Category('xcom-battle-real')]
   TTestXcomRealGenerator = class(TObject)
   strict private
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
     FRules: TXcomRulesetRules;
     FVoxels: TArray<Word>;
-    class function DataFolder: string; static;
+    function DataFolder: string;
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function ReadExpected(const ABase: string): string; static;
     function RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
+  protected
+    /// <summary>The golden of Mod::loadAll that tells the mods of the game (TFTD: xcom2, UFO: xcom1)</summary>
+    function GoldenName: string; virtual;
+    /// <summary>LOFTEMPS.DAT of the game, relative to the Reference folder</summary>
+    function LoftempsRelative: string; virtual;
+    /// <summary>The folder of the scenarios under Tests\Data\XcomBattle (empty: that folder itself)</summary>
+    function ScenarioSubFolder: string; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -50,23 +54,56 @@ type
     procedure DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
   end;
 
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealGeneratorTftd = class(TTestXcomRealGenerator)
+  end;
+
+  /// <summary>The same comparison on the UFO scenarios (mod xcom1, the real generator on the UFO data)</summary>
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealGeneratorUfo = class(TTestXcomRealGenerator)
+  protected
+    function GoldenName: string; override;
+    function LoftempsRelative: string; override;
+    function ScenarioSubFolder: string; override;
+  end;
+
 implementation
 
 { TTestXcomRealGenerator }
 
-class function TTestXcomRealGenerator.DataFolder: string;
+function TTestXcomRealGenerator.GoldenName: string;
+begin
+  Result := 'tftd.xcom2.golden.txt';
+end;
+
+function TTestXcomRealGenerator.LoftempsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT';
+end;
+
+function TTestXcomRealGenerator.ScenarioSubFolder: string;
+begin
+  Result := '';
+end;
+
+function TTestXcomRealGenerator.DataFolder: string;
 var
   LFolder: string;
   LLevel: Integer;
 begin
   LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_GEN');
-  if LFolder <> '' then
+  if (LFolder <> '') and (ScenarioSubFolder = '') then
     Exit(IncludeTrailingPathDelimiter(LFolder));
   LFolder := ExtractFilePath(ParamStr(0));
   for LLevel := 0 to 6 do
   begin
     if DirectoryExists(LFolder + 'Tests\Data\XcomBattle') then
-      Exit(LFolder + 'Tests\Data\XcomBattle\');
+      if (ScenarioSubFolder = '') or DirectoryExists(LFolder + 'Tests\Data\XcomBattle\' + ScenarioSubFolder) then
+        Exit(LFolder + 'Tests\Data\XcomBattle\' + ScenarioSubFolder + '\');
     LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
   end;
   Result := '';
@@ -122,7 +159,7 @@ var
   LFolder: string;
   LLevel: Integer;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(GoldenName);
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
@@ -131,9 +168,9 @@ begin
     LPath := '';
     for LLevel := 0 to 8 do
     begin
-      if FileExists(LFolder + 'Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT') then
+      if FileExists(LFolder + LoftempsRelative) then
       begin
-        LPath := LFolder + 'Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT';
+        LPath := LFolder + LoftempsRelative;
         Break;
       end;
       LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
@@ -323,7 +360,25 @@ begin
   Assert.AreEqual('', LFailed, 'Scenari diversi dal vero generatore');
 end;
 
+{ TTestXcomRealGeneratorUfo }
+
+function TTestXcomRealGeneratorUfo.GoldenName: string;
+begin
+  Result := 'ufo.xcom1.golden.txt';
+end;
+
+function TTestXcomRealGeneratorUfo.LoftempsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_ufo\UFO Enemy Unkown\DOS game\GEODATA\LOFTEMPS.DAT';
+end;
+
+function TTestXcomRealGeneratorUfo.ScenarioSubFolder: string;
+begin
+  Result := 'ufo';
+end;
+
 initialization
-  TDUnitX.RegisterTestFixture(TTestXcomRealGenerator);
+  TDUnitX.RegisterTestFixture(TTestXcomRealGeneratorTftd);
+  TDUnitX.RegisterTestFixture(TTestXcomRealGeneratorUfo);
 
 end.

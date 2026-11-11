@@ -1,0 +1,12 @@
+mission=STR_ABDUCTOR
+kind=0
+race=STR_FLOATER
+itemlevel=6
+shade=6
+texture=-1
+terrain=FOREST
+craft=0
+base=1
+runseed=1761045
+seedafter=18400668312463844193
+ok=0
