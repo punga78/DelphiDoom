@@ -1,15 +1,22 @@
-# Libs\XcomStrategy
+﻿# Libs\XcomStrategy
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
-La logica strategica di **OpenXcom** che non sta negli oggetti del salvataggio (`Libs\XcomSave`): la produzione, i velivoli di una base e le missioni aliene, a classi e senza SDL. Issue #176.
+Il gioco strategico di **OpenXcom** che gira mentre il tempo del geoscape passa, a classi e senza SDL (issue #176): la produzione, i velivoli di una base, le missioni aliene, i radar, gli script delle missioni e i passi del tempo di `GeoscapeState`.
 
 | Unit | Classe | Origine C++ |
 |---|---|---|
-| `DelphiDoom.XcomStrategy.Types` | `EXcomStrategyException`, `TXcomProductionProgress` | `productionProgress_e` |
-| `DelphiDoom.XcomStrategy.BaseCrafts` | `TXcomBaseCrafts` (`Count`, `Remove`) | `Base::getCraftCount`, `Base::removeCraft` |
-| `DelphiDoom.XcomStrategy.ProductionStepper` | `TXcomProductionStepper` | `Production::step`, `startItem`, `haveEnoughMaterialsForOneMoreUnit` |
+| `DelphiDoom.XcomStrategy.Simulation` | `TXcomGeoscapeSimulation` | `GeoscapeState::time5Seconds` ... `time1Month`, `timeAdvance` |
+| `...UfoTracker`, `...CraftTracker`, `...BaseWork`, `...AlienPlanner` | i passi per UFO, velivoli, basi e aliene | le parti di `time*` |
+| `...MissionScriptRunner` | `TXcomMissionScriptRunner` | `determineAlienMissions`, `processCommand` |
+| `...UfoSpawner`, `...MissionSites`, `...MissionThinker`, `...UfoWaypointHandler` | missioni | `AlienMission::spawnUfo`, `think`, `ufoReachedWaypoint`, `ufoLifting`, `spawnMissionSite`, `spawnAlienBase` |
+| `...BaseRadar` | `TXcomBaseRadar` | `Base::detect`, `Base::insideRadarRange` |
+| `...ProductionStepper`, `...BaseCrafts` | produzione e velivoli della base | `Production::step`, `Base::getCraftCount`, `Base::removeCraft` |
+| `...Geography` | `TXcomGeography` | `SavedGame::locateRegion`, `killSoldier`, `Nautical` |
+| `...Events.Intf`, `...NullEvents`, `...Settings.Intf`, `...DefaultSettings` | eventi (i popup) e opzioni | `popup(...)`, `Options::...` |
+| `...LandMap.Intf`, `...PolygonLandMap` | terra del globo | `Globe::insideLand` |
+| `...Factory` | `TXcomStrategyFactory` | composition root |
 
-Le dipendenze (ruleset, generatore casuale) arrivano dal costruttore. Licenza: derivato da OpenXcom, GPL v3 o successiva (la decide l'utente).
+Le dipendenze (ruleset, generatore casuale, eventi, opzioni) arrivano dal costruttore. Dogfight, battaglia di una base e cascata delle ricerche non sono portati (vedi CLAUDE.md). Licenza: derivato da OpenXcom, GPL v3 o successiva (la decide l'utente).
 
 Test: `Tools\build.bat Tests\DelphiDoom.Tests.XcomStrategy`.

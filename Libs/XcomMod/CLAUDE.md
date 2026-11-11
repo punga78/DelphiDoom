@@ -1,4 +1,4 @@
-﻿# Libs\XcomMod - note per Claude
+# Libs\XcomMod - note per Claude
 
 `Libs\XcomMod` (issue #176, fetta "regole") legge le regole di **OpenXcom** da YAML a classi, sopra `Libs\Yaml` (`IYamlNode`). Due strati:
 
@@ -22,3 +22,5 @@
 **Non portato**: `MapData` e `MapDataSet::loadData` (leggono gli MCD a battaglia: `Libs\XcomFormats`), `MapScript::getNextBlock`/`RuleMissionScript::generate`/`getMissionTypes` (logica di gioco con il generatore casuale), il resto di `Mod` (`Mod::loadVanillaResources`, `loadBattlescapeResources`, `loadExtraResources`, `modResources`, palette, font, suoni, musica, `newSave`, `genSoldier`, `getOffset` oltre quanto usato, `ModScript`), `ModInfo`/`Options` (la lista dei mod e i file `metadata.yml`: `TXcomModLoader` riceve gia' nomi, spazio riservato e file) e `FileMap` (`IXcomModFiles`). `startingTime` resta un nodo (`GameTime` e' in `Libs\XcomSave`, che dipende da questa libreria). Gli errori che il C++ riscrive con `Options::getModInfos().at(id).getName()` usano l'id del mod.
 
 Test: `Tests\DelphiDoom.Tests.XcomMod` (79 test, Release Win32; copertura 91%, 3390 righe su 3706 con i dati di TFTD presenti, misurata con `Tools\Copertura.ps1 -Test XcomMod -Cartella Libs\XcomMod`); `Tools\build.bat Tests\DelphiDoom.Tests.XcomMod`. Dal worktree: `$env:DCC_UnitSearchPath` con il percorso di DUnitX.
+
+**Stat string dei soldati (issue #176)**: `TXcomStatStringCalculator.Calculate` (`StatString::calcStatString`: condizioni sui valori correnti, `psiTraining`, una stringa piu' lunga di un byte chiude l'elenco). **Parita'** con il vero `StatString::calcStatString`: 2400 casi casuali in `Tests\Data\XcomSave\sim\*.statstring.txt` (le `statStrings` della mod TFTD sono vuote: le stringhe di prova sono in `simgen.cpp` e nel test, `Tests\Source\DelphiDoom.Tests.XcomStrategy.StatString.pas`), 0 differenze. `TXcomRuleMissionScript.GEN_REGION/GEN_MISSION/GEN_RACE` pubbliche.
