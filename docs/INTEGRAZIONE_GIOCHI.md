@@ -252,3 +252,53 @@ Nuova `Libs\XcomBattleStates` (dettagli e trappole in `Libs\XcomBattleStates\CLA
 ## OpenXcom: un solo eseguibile (issue #180)
 
 `OpenXcom\Xcom32.exe` e' l'unico programma: senza argomenti (o con quelli del gioco) apre il gioco, con `-pck`, `-dat`, `-scr` o `-map` esporta un file di dati come PNG; `XcomGame` non esiste piu' e dove questo documento lo nominava ora dice `Xcom32`. `-data` e' la cartella con `common\` e `standard\` nel gioco e la cartella del gioco nell'esportazione (`-game` e' la cartella del gioco in entrambi). Dettagli e verifica in `Libs\XcomFormats\CLAUDE.md`.
+
+## OpenXcom: stato finale dopo il giro di verifica (issue #176, parte B: il gioco giocato nel programma)
+
+Tutto provato in `Xcom32` senza finestra (`-script`, dati di `Reference\_dati` in sola lettura), salvo dove e' scritto "finestra vera". Strumenti e coordinate: `Tools\Verifica\176\LEGGIMI.md`; dettagli per libreria nei loro `CLAUDE.md`.
+
+### Giocabile (provato)
+
+| Percorso | TFTD | UFO |
+|---|---|---|
+| Partita nuova senza introduzione, prima base, nome | si' | si' |
+| Introduzione (`playIntro`) | si' (diapositive, 265 s) | l'installazione non ha `UFOINTRO`: si passa al menu |
+| Base: struttura costruita (e completata), acquisti con arrivo, vendita, seconda base con ascensore | si' | base vista, non le schermate figlie |
+| Ricerca fino al completamento, articolo dell'Ufopaedia, "We can now produce" | si' | no |
+| Produzione avviata e **completata** (oggetto nei magazzini) | si' | no |
+| Due mesi di tempo, due rapporti mensili, finanziamenti | si' | no |
+| Intercettazione con dogfight, sito di schianto | si' | si' |
+| Missione vinta **con colpi veri** (reazione di fuoco degli alieni compresa), debriefing, promozioni, caduti | si' | un colpo vero e la reazione, poi `Ctrl+K`; debriefing |
+| Contenimento (alieno che muore senza struttura; `ManageAlienContainmentState`), vendita coi magazzini pieni | si' | no |
+| Salva e carica nel geoscape (anche F5/F9) e a meta' battaglia (menu di pausa, F5, autosalvataggio) | si' | si' (geoscape e salvataggio rapido della battaglia) |
+| Sito di terrore, base aliena (2 fasi), nave da carico (2), sito di artefatti (2), difesa della base, base persa | si' (alieni uccisi con `Ctrl+K`) | no (non ci sono salvataggi sintetici di UFO) |
+| Ultima missione (T'leth, 3 fasi) e **vittoria** col filmato e le statistiche | si' (obiettivi distrutti nel salvataggio) | no |
+| **Sconfitta** per due mesi pessimi, filmato, statistiche, menu | si' | no |
+| New Battle: terreno, profondita', tecnologia arrivano al generatore (letti dal salvataggio della battaglia) | si' | si' (Randomize a ripetizione) |
+| Ufopaedia, grafici, relazioni internazionali dal geoscape | si' | no |
+| Programma senza argomenti coi dati accanto, opzioni salvate, finestra che si riapre a misura e posizione | si' (finestra vera) | no |
+
+### Difetti trovati e corretti in questo giro
+
+1. Un oggetto dell'ombra per ogni sprite mai liberato (`Libs\XcomSurface`): 25 000 blocchi per missione, 1,4 milioni in una giocata.
+2. Debriefing lasciato in memoria da `AliensCrashState`; impostazioni dei salvataggi non liberate; ciclo dei metodi anonimi del composition root.
+3. Il tempo restava a "1 Day" dopo il rapporto mensile (`timerReset` di `time1Month`).
+4. Battaglia sulla nave da carico che finiva con "a voxel is outside the LOFT data": `TERRAIN\LOFTEMPS.DAT` dei dati e' quello corto di GEODATA (errore dell'estrazione dei floppy, corretto negli script); il programma ora tratta la forma mancante come vuota.
+5. Aritmetica che avvolge e cadeva con `$R+ $Q+` (cursore, generatore, rumore del globo).
+6. Mancava il salvataggio rapido nel geoscape (F5/F9).
+
+### Robustezza
+
+Semi diversi (il generatore del salvataggio cambiato nella copia), l'IA lasciata giocare per decine di turni: schianto 34 (13 in Debug con `$R+ $Q+`), atterraggio 20, porto 15, base aliena 15, difesa 15, artefatti 10, nave da carico 12: nessuna caduta ne' blocco, memoria finale costante. 40 partite nuove fino alla sconfitta (difficolta' 1 e 5) e 42 battaglie casuali di New Battle (17 TFTD, 25 UFO): nessun errore. `-leaks` dopo ogni scenario: nessun blocco rimasto.
+
+### Non portato
+
+`SaveConverter`/`ListLoadOriginalState` (i salvataggi binari originali), i filtri software Scale/HQx/xBRZ, `ModScript`, il cambio di risoluzione fra geoscape e battlescape, il `cutscene` del briefing, il salvataggio ironman di fine partita, i dump dei voxel (F11, F9 in battaglia), `battleUFOExtenderAccuracy` sul mirino, l'effetto di zoom del dogfight, i dispositivi MIDI di Windows, il trascinamento del globo col tasto centrale.
+
+### Non verificato
+
+- **Lo schermo sporco coi resti di BaseInfo sotto "Select site for new base"**: non riprodotto (percorsi provati in `Libs\XcomBattleStates\CLAUDE.md`); mai provato col mouse vero sulla finestra.
+- Una campagna lunga giocata bene (oltre due mesi senza perdere), le schermate della base e la ricerca **su UFO**, i tipi di missione di UFO oltre allo schianto e alle battaglie casuali.
+- Con il `LOFTEMPS.DAT` giusto (114 forme) le forme 112 e 113 non sono mai state confrontate col vero OpenXcom; le cartelle `Reference\_dati\xcom_tftd\TFTD` e `bin\OpenXcom\TFTD` hanno ancora il file corto (vanno rifatte dall'utente: `Tools\Verifica\176\LEGGIMI.md`).
+- Tutto cio' che vuole orecchio o mano: i suoni all'ascolto, il mouse vero, piu' monitor, una scheda grafica vera, Win64.
+- Le battaglie casuali di New Battle che non finiscono uccidendo gli alieni (missioni con obiettivo da distruggere) sono state lasciate a meta'.
