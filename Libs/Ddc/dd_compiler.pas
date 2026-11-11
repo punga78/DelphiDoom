@@ -316,7 +316,7 @@ begin
       for i := 0 to c.MsgCount - 1 do
       begin
         _msgs := _msgs + ' Pos: ' + IntToStrZFill(6, c.Msg[i].Pos) +
-                         ' Compiler: ' + c.Msg[i].MessageToString + #13#10;
+                         ' Compiler: ' + string(c.Msg[i].MessageToString) + #13#10;
       end;
     finally
       c.Free;
@@ -472,7 +472,7 @@ begin
 
   case p.FType.BaseType of
     btType:
-      Result := p^.ttype.OriginalName;
+      Result := string(p^.ttype.OriginalName);
     {$IFNDEF PS_NOWIDESTRING}
     btWideString:
       Result := TbtWideString(p^.twidestring);
@@ -482,13 +482,13 @@ begin
       Result := p^.twidechar;
     {$ENDIF}
     btSingle:
-      Result := FloatToStr(p^.tsingle);
+      Result := string(FloatToStr(p^.tsingle));
     btDouble:
-      Result := FloatToStr(p^.tdouble);
+      Result := string(FloatToStr(p^.tdouble));
     btExtended:
-      Result := FloatToStr(p^.textended);
+      Result := string(FloatToStr(p^.textended));
     btCurrency:
-      Result := FloatToStr(p^.tcurrency);
+      Result := string(FloatToStr(p^.tcurrency));
     btChar:
       Result := '#' + IntToHex(Ord(p^.tchar) , 2);
     btSet:
@@ -503,24 +503,24 @@ begin
       end;
     btString:
       begin
-        Result := TbtString(p^.tstring);
+        Result := string(TbtString(p^.tstring));
       end;
     btEnum:
       begin
-        Result := IntToStr(p^.tu32);
+        Result := string(IntToStr(p^.tu32));
       end;
     btS8:
-      Result := IntToStr(p^.ts8);
+      Result := string(IntToStr(p^.ts8));
     btU8:
-      Result := IntToStr(p^.tu8);
+      Result := string(IntToStr(p^.tu8));
     btS16:
-      Result := IntToStr(p^.ts16);
+      Result := string(IntToStr(p^.ts16));
     btU16:
-      Result := IntToStr(p^.tu16);
+      Result := string(IntToStr(p^.tu16));
     btS32:
-      Result := IntToStr(p^.ts32);
+      Result := string(IntToStr(p^.ts32));
     btU32:
-      Result := IntToStr(p^.tu32);
+      Result := string(IntToStr(p^.tu32));
     {$IFNDEF PS_NOINT64}
     bts64:
       Result := SysUtils.IntToStr(p^.ts64);
@@ -640,12 +640,12 @@ begin
   for i := 0 to Sender.GetConstCount - 1 do
   begin
     fconst := Sender.GetConst(i);
-    cconsts := cconsts + fconst.OrgName + '=' + IfRVariantStringValue(fconst.Value) + #13#10;
+    cconsts := cconsts + string(fconst.OrgName) + '=' + IfRVariantStringValue(fconst.Value) + #13#10;
   end;
   for i := 0 to Sender.GetVarCount - 1 do
   begin
     fvar := Sender.GetVar(i);
-    cvars := cvars + fvar.OrgName + '=' + fvar.aType.OriginalName + #13#10;
+    cvars := cvars + string(fvar.OrgName) + '=' + string(fvar.aType.OriginalName) + #13#10;
   end;
   for i := 0 to Sender.GetTypeCount - 1 do
   begin
@@ -657,8 +657,8 @@ begin
       else
       basetyp := IfBaseTypeToString(ftyp.BaseType);
       if basetyp = '' then
-        basetyp := 'type #' + IntToStr(ftyp.BaseType);
-      ctypes := ctypes + ftyp.OriginalName + '=' + basetyp + #13#10;
+        basetyp := 'type #' + string(IntToStr(ftyp.BaseType));
+      ctypes := ctypes + string(ftyp.OriginalName) + '=' + basetyp + #13#10;
     end;
   end;
 end;
@@ -685,9 +685,9 @@ begin
     fclass := Sender.Classes[i];
     ficlass := fclass.ClassInheritsFrom;
     if ficlass <> nil then
-      cclasses := cclasses + fclass.RTLClassName + '=Inherits from ' + ficlass.RTLClassName + ';'
+      cclasses := cclasses + string(fclass.RTLClassName) + '=Inherits from ' + string(ficlass.RTLClassName) + ';'
     else
-      cclasses := cclasses + fclass.RTLClassName + '=Inherits from TObject;';
+      cclasses := cclasses + string(fclass.RTLClassName) + '=Inherits from TObject;';
     while fclass <> nil do
     begin
       for j := fclass.Count - 1 downto 0 do
@@ -698,7 +698,7 @@ begin
           if c is TPSDelphiClassItemProperty then
           begin
             tmp := 'property ';
-            decl := Trim(c.RTLDeclaration);
+            decl := Trim(string(c.RTLDeclaration));
             decl := StringReplace(decl, '  ', ' ', [rfReplaceAll]);
             splitstring(decl, s1, sx, ' ');
             splitstring(sx, s2, s3, ' ');
@@ -711,7 +711,7 @@ begin
           else
           begin
             tmp := '';
-            decl := Trim(c.RTLDeclaration);
+            decl := Trim(string(c.RTLDeclaration));
           end;
           tmp := tmp + decl;
           if Length(tmp) > 0 then
@@ -871,7 +871,8 @@ begin
     SetLength(pcode, _inpsize);
     for i := 0 to _inpsize - 1 do
       pcode[i + 1] := _inp[i];
-    if not IFPS3DataToText(pcode, disasm) then
+    // the conversion of the code to 8 bit goes through the system code page, as it always did
+    if not IFPS3DataToText(TbtString(pcode), disasm) then
     begin
       _outsize := 0;
       Exit;
@@ -900,7 +901,8 @@ var
 begin
   estr := '';
   for i := Low(SCRIPT_EVENT_SIGNATURES) to High(SCRIPT_EVENT_SIGNATURES) do
-    estr := estr + SCRIPT_EVENT_SIGNATURES[i].Name + '|' + SCRIPT_EVENT_SIGNATURES[i].Template + #13#10;
+    estr := estr + string(SCRIPT_EVENT_SIGNATURES[i].Name) + '|' +
+      string(SCRIPT_EVENT_SIGNATURES[i].Template) + #13#10;
   DD_CopyStringToPChar(estr, _out, _outsize);
 end;
 
