@@ -65,6 +65,7 @@ type
     FSavedGameLoader: IXcomSavedGameLoader;
     FSavedGameSaver: IXcomSavedGameSaver;
     FUiSounds: IXcomUiSounds;
+    FNewBattleOpener: IXcomNewBattleOpener;
     FSession: IInterface;
     procedure DispatchEvent(const AEvent: TXcomInputEvent);
   public
@@ -113,6 +114,8 @@ type
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
     function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; override;
     function NewGameStarter: IXcomNewGameStarter; override;
+    function NewBattleOpener: IXcomNewBattleOpener; override;
+    procedure SetNewBattleOpener(const AOpener: IXcomNewBattleOpener);
     procedure WarpMouse(AX, AY: Integer); override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
     function SavedGameLoader: IXcomSavedGameLoader; override;
@@ -322,6 +325,16 @@ begin
     Result := FMusic.CurrentFormat
   else
     Result := inherited CurrentMusicFormat;
+end;
+
+function TXcomGame.NewBattleOpener: IXcomNewBattleOpener;
+begin
+  Result := FNewBattleOpener;
+end;
+
+procedure TXcomGame.SetNewBattleOpener(const AOpener: IXcomNewBattleOpener);
+begin
+  FNewBattleOpener := AOpener;
 end;
 
 function TXcomGame.NewGameStarter: IXcomNewGameStarter;

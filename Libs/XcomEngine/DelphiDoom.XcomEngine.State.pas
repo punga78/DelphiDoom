@@ -83,6 +83,8 @@ type
     function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>What opens the New Battle screen (nil: the button of the menu does nothing)</summary>
+    function NewBattleOpener: IXcomNewBattleOpener; virtual;
     /// <summary>SDL_WarpMouse (window pixels; does nothing when the host has no event source)</summary>
     procedure WarpMouse(AX, AY: Integer); virtual;
     /// <summary>What loads a saved game that was chosen in the Load Game screen (nil: the load is unsuccessful)</summary>
@@ -227,6 +229,11 @@ end;
 function TXcomStateHost.CurrentMusicFormat: string;
 begin
   Result := 'Adlib';
+end;
+
+function TXcomStateHost.NewBattleOpener: IXcomNewBattleOpener;
+begin
+  Result := nil;
 end;
 
 function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;

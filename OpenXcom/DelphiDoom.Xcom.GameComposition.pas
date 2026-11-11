@@ -87,6 +87,7 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
+  DelphiDoom.Xcom.NewBattleNavigator,
   DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomBattleStates.Factory,
   DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MixerAudio,
   DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
@@ -277,6 +278,8 @@ begin
     LMissionLauncher := ASettings.MissionLauncher;
     if LMissionLauncher = nil then
       LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);
+    // the New Battle button of the main menu
+    Result.SetNewBattleOpener(TXcomNewBattleNavigator.Create(Result, LMissionLauncher));
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
