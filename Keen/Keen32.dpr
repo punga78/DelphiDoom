@@ -51,6 +51,8 @@ begin
     LPng := '';
     LList := False;
     LView := False;
+    LViewX := 0;
+    LViewY := 0;
     LIndex := 1;
     while LIndex <= ParamCount do
     begin

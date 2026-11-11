@@ -1342,15 +1342,9 @@ begin
     LScreenXH := LBlock.ScreenX + LBlock.Width;
     LScreenYH := LBlock.ScreenY + LBlock.Height;
     if LScreenXH > EGAPORTSCREENWIDE then
-    begin
       LBlock.Width := EGAPORTSCREENWIDE - LBlock.ScreenX;
-      LScreenXH := LBlock.ScreenX + LBlock.Width;
-    end;
     if LScreenYH > PORTSCREENHIGH then
-    begin
       LBlock.Height := PORTSCREENHIGH - LBlock.ScreenY;
-      LScreenYH := LBlock.ScreenY + LBlock.Height;
-    end;
     if (LBlock.Width < 1) or (LBlock.Height < 1) then
       Continue;
     // erase by copying from the master screen
