@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Action,
-  DelphiDoom.XcomBattleStates.Screens.Intf;
+  DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.BattlescapeState,
+  DelphiDoom.XcomBattleStates.ActionMenuState, DelphiDoom.XcomBattleStates.PrimeGrenadeState;
 
 type
   /// <summary>Makes the debriefing screen of the battle of a battlescape state (the saved game is changed there)</summary>
@@ -64,13 +65,14 @@ end;
 function TXcomBattleScreens.ActionMenu(AParent: TXcomState; const AAction: TXcomBattleAction; AX,
   AY: Integer): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomActionMenuState.Create(AParent.Host, AParent as TXcomBattlescapeState, AAction, AX, AY);
 end;
 
 function TXcomBattleScreens.PrimeGrenade(AParent: TXcomState; const AAction: TXcomBattleAction;
   AInInventoryView: Boolean; const AGrenade: TXcomBattleItem): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomPrimeGrenadeState.Create(AParent.Host, AParent as TXcomBattlescapeState, AAction, AInInventoryView,
+    AGrenade);
 end;
 
 function TXcomBattleScreens.Medikit(AParent: TXcomState; const ATarget: TXcomBattleUnit;
