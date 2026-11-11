@@ -19,7 +19,10 @@ param(
   [int]$Save = 2,
   [string]$Back = '476,368',
   [switch]$Geoscape,
-  [string]$SaveFile = ""
+  [string]$SaveFile = "",
+  # the game folder in <Data>\openxcom (TFTD, UFO) and the id of its mod (xcom2, xcom1)
+  [string]$Game = 'TFTD',
+  [string]$ModId = 'xcom2'
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -34,13 +37,13 @@ function Test-ValidPng([string]$Path) {
   }
   catch { return $false }
 }
-New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
+New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\$ModId" | Out-Null
 $name = 'save{0:00}' -f $Save
 $src = if ($SaveFile) { $SaveFile } else { "$Root\Tests\Data\XcomSave\realsave\$name.sav" }
 $t = [IO.File]::ReadAllText($src)
-$t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace('  - "xcom2 ver: 1.0"', '  - xcom2').Replace("`r`n", "`n")
-[IO.File]::WriteAllText("$Out\seed\xcom2\$name.sav", $t)
-Copy-Item "$Out\seed\xcom2" "$Out\user" -Recurse -Force
+$t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace('  - "xcom2 ver: 1.0"', '  - xcom2').Replace('  - "xcom1 ver: 1.0"', '  - xcom1').Replace("`r`n", "`n")
+[IO.File]::WriteAllText("$Out\seed\$ModId\$name.sav", $t)
+Copy-Item "$Out\seed\$ModId" "$Out\user" -Recurse -Force
 Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
 # XcomGame: the steps in milliseconds
 $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000'
@@ -57,7 +60,7 @@ foreach ($s in $Screens) {
   $first = $false
 }
 Push-Location "$Out\delphi"
-& "$Root\bin\OpenXcom\XcomGame.exe" -data "$Data\openxcom" -game "$Data\TFTD" -user "$Out\user" -script $script | Out-Null
+& "$Root\bin\OpenXcom\XcomGame.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
 Pop-Location
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)

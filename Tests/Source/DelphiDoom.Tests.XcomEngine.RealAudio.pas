@@ -47,6 +47,10 @@ type
     procedure IlBranoDelMenuPrincipaleSuonaConUnRmsNonNullo;
     [Test]
     procedure OgniBranoAdlibDiTftdProduceSuono;
+    [Test]
+    procedure IDecoderDeiSuoniDiTftdDannoGliStessiCampioniDiPrima;
+    [Test]
+    procedure OgniBranoMidiDiGmCatDiTftdSiConvertEProduceSuono;
   end;
 
 implementation
@@ -212,6 +216,78 @@ begin
   end;
   // the intro songs that start with a silence can be quiet in the first second: only the tracks with no sound at all fail
   Assert.AreEqual('', LSilent);
+end;
+
+procedure TTestXcomRealAudio.OgniBranoMidiDiGmCatDiTftdSiConvertEProduceSuono;
+var
+  LRule: TXcomMusicRule;
+  LSamples: TBytes;
+  LSilent: string;
+  LCatPositions: Integer;
+begin
+  if not FReady then
+  begin
+    Assert.Pass('no real data');
+    Exit;
+  end;
+  // preferredMusic 7: GM.CAT before ADLIB.CAT
+  FOptions.PreferredMusic := 7;
+  FMusic.Reload(FResources);
+  LCatPositions := 0;
+  for LRule in FResources.MusicRules do
+    if LRule.CatPos <> MaxInt then
+      Inc(LCatPositions);
+  Assert.AreEqual(LCatPositions, FMusic.LoadedCount);
+  FDevice.SetVolume(84, 84, 84);
+  LSilent := '';
+  for LRule in FResources.MusicRules do
+  begin
+    if LRule.CatPos = MaxInt then
+      Continue;
+    FMusic.PlayMusic(LRule.MusicType, 0);
+    Assert.AreEqual('MIDI', FMusic.CurrentFormat, LRule.MusicType);
+    LSamples := FOutput.Pump(22050 * 4 * 6);
+    if Rms(LSamples) < 5 then
+      LSilent := LSilent + ' ' + LRule.MusicType;
+  end;
+  Assert.AreEqual('', LSilent);
+end;
+
+procedure TTestXcomRealAudio.IDecoderDeiSuoniDiTftdDannoGliStessiCampioniDiPrima;
+var
+  LSet: string;
+  LIndex: Integer;
+  LWave: TBytes;
+  LSamples: TArray<SmallInt>;
+  LHash: UInt64;
+  LCount: Integer;
+  LValue: Integer;
+  LDecoder: IXcomSampleDecoder;
+begin
+  if not FReady then
+  begin
+    Assert.Pass('no real data');
+    Exit;
+  end;
+  LDecoder := TXcomAudioFactory.CreateSoundDecoder;
+  LHash :=UInt64($CBF29CE484222325);
+  LCount := 0;
+  for LSet in ['GEO.CAT', 'BATTLE.CAT', 'BATTLE2.CAT'] do
+    for LIndex := 0 to 400 do
+    begin
+      LWave := FResources.SoundWave(LSet, LIndex);
+      if Length(LWave) = 0 then
+        Continue;
+      Assert.IsTrue(LDecoder.TryDecode(LWave, 22050, LSamples));
+      Inc(LCount);
+      LHash := (LHash xor UInt64(Length(LSamples))) * UInt64($100000001B3);
+      for LValue := 0 to High(LSamples) do
+        LHash := (LHash xor UInt64(Word(LSamples[LValue]))) * UInt64($100000001B3);
+    end;
+  // the fingerprint was made with the decoder of WAV files that XcomAudio had before it used Libs\Sound
+  // (TXcomWaveDecoder, deleted): the same 152 sounds of GEO.CAT, BATTLE.CAT and BATTLE2.CAT give the same samples
+  Assert.AreEqual(152, LCount);
+  Assert.AreEqual('FFDDE335E72AB799', IntToHex(Int64(LHash), 16));
 end;
 
 initialization

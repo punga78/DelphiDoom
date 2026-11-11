@@ -144,6 +144,7 @@ type
     FContext: IXcomBattleContext;
     function GetMapData(APart: Integer): TXcomMapData;
     function GetCurrentFrame(APart: Integer): Integer;
+    procedure SetCurrentFrame(APart: Integer; AValue: Integer);
   public
     constructor Create(const APosition: TXcomPosition; const AContext: IXcomBattleContext);
     destructor Destroy; override;
@@ -201,8 +202,11 @@ type
     function IsObstacle: Boolean;
     procedure ResetObstacle;
     property MapData[APart: Integer]: TXcomMapData read GetMapData;
-    /// <summary>The frame of animation of a part (the sprite of the part is GetSprite(CurrentFrame))</summary>
-    property CurrentFrame[APart: Integer]: Integer read GetCurrentFrame;
+    /// <summary>
+    ///   The frame of animation of a part (the sprite of the part is GetSprite(CurrentFrame)). It is writable only for
+    ///   the tests: the timer of the real game that moves it is not deterministic.
+    /// </summary>
+    property CurrentFrame[APart: Integer]: Integer read GetCurrentFrame write SetCurrentFrame;
     property Position: TXcomPosition read FPosition;
     property CurrentUnit: TXcomBattleUnit read FUnit;
     property Inventory: TList<TXcomBattleItem> read FInventory;
@@ -748,6 +752,11 @@ end;
 function TXcomTile.GetCurrentFrame(APart: Integer): Integer;
 begin
   Result := FCurrentFrame[APart];
+end;
+
+procedure TXcomTile.SetCurrentFrame(APart: Integer; AValue: Integer);
+begin
+  FCurrentFrame[APart] := AValue;
 end;
 
 procedure TXcomTile.Load(const ANode: IYamlNode);
@@ -2584,8 +2593,9 @@ begin
   AStatsDiff := AStatsDiff - LStats;
   LCaps := ASoldier.Rules.StatCaps;
   LHealthLoss := FStats.Health - FHealth;
-  // RNG::generate((healthLoss*0.5),(healthLoss*1.5)) converts the doubles to int
-  ASoldier.SetWoundRecovery(FContext.Random.Generate(Integer(Trunc(LHealthLoss * 0.5)), Integer(Trunc(LHealthLoss * 1.5))));
+  // RNG::generate((healthLoss*0.5),(healthLoss*1.5)) is the overload of doubles (a decimal number): the result is
+  // cut to an int by setWoundRecovery
+  ASoldier.SetWoundRecovery(Trunc(FContext.Random.Generate(Double(LHealthLoss * 0.5), Double(LHealthLoss * 1.5))));
   if (FExpBravery <> 0) and (LStats.Bravery < LCaps.Bravery) then
     if FExpBravery > FContext.Random.Generate(0, 10) then
       Inc(LStats.Bravery, 10);

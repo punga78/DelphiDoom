@@ -192,6 +192,9 @@ begin
           SetCursor(0);
           Exit(1);
         end;
+      WM_ACTIVATE:
+        // the window gets or loses the focus, or is minimized (SDL_ACTIVEEVENT): Key is 1 with the focus
+        LSelf.Post(ekActive, Ord((LoWord(AWParam) <> WA_INACTIVE) and (HiWord(AWParam) = 0)), 0, 0);
       WM_CLOSE:
         begin
           LSelf.FClosed := True;

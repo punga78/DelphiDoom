@@ -584,9 +584,11 @@ begin
   // the first month starts when the first base has its name
   if (FSave.MonthsPassed = -1) and (FSave.Bases.Count > 0) and (FSave.Bases.First.Name <> '') then
   begin
-    FSave.AddMonth;
+    // addMonth, determineAlienMissions and the funds: the simulation does the three (it adds the month itself)
     if Assigned(FSimulation) then
-      FSimulation.StartFirstMonth;
+      FSimulation.StartFirstMonth
+    else
+      FSave.AddMonth;
   end;
 end;
 

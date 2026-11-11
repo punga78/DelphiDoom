@@ -59,6 +59,14 @@ type
     procedure AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig, AHit: Boolean);
     /// <summary>Map::setProjectile: the projectile in flight that the map draws (a TXcomProjectile), or nil</summary>
     procedure SetProjectile(const AProjectile: TObject);
+    /// <summary>Projectile::addVaporCloud: particles at a voxel of the trail of a shot under water</summary>
+    procedure AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
+    /// <summary>Map::resetObstacles: the obstacle marks of every tile are cleared and not shown</summary>
+    procedure ResetObstacles;
+    /// <summary>Map::enableObstacles: the tiles that block a shot are shown (the game hides them again after a while)</summary>
+    procedure EnableObstacles;
+    /// <summary>Map::disableObstacles</summary>
+    procedure DisableObstacles;
     /// <summary>Map::setBlastFlash</summary>
     procedure SetBlastFlash(AFlash: Boolean);
     /// <summary>Map::getBlastFlash: the screen is still shown in EGA</summary>

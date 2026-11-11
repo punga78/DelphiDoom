@@ -89,7 +89,12 @@ begin
     if DirectoryExists(Sub('TFTD\GEODATA')) then
       ASettings.GameFolder := Sub('TFTD')
     else if DirectoryExists(Sub('UFO\GEODATA')) then
-      ASettings.GameFolder := Sub('UFO')
+    begin
+      ASettings.GameFolder := Sub('UFO');
+      // The ruleset follows the game found: only UFO next to the executable means xcom1.
+      if SameText(ASettings.ModId, 'xcom2') then
+        ASettings.ModId := 'xcom1';
+    end
     else if DirectoryExists(Sub('GEODATA')) then
       ASettings.GameFolder := LBase;
   end;

@@ -12,23 +12,17 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Resources.Intf,
-  DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAdlib.Intf, DelphiDoom.XcomAudio.Intf;
+  DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Intf;
 
 type
-  /// <summary>Makes the player of the Adlib (two chips) the Adlib tracks share</summary>
-  TXcomAdlibPlayerFactory = reference to function: IXcomAdlibPlayer;
-
-  /// <summary>The songs of the Adlib containers of the game data in use</summary>
-  TXcomAdlibSongsFactory = reference to function(const AResources: IXcomResources): IXcomAdlibSongs;
-
   /// <summary>A number from 0 to AMaximum (RNG::seedless)</summary>
   TXcomMusicRandom = reference to function(AMaximum: Integer): Integer;
 
   /// <summary>
   ///   The musics of the rulesets and which one plays. Mod::loadExtraResources tries, for each music, the preferred
-  ///   format and then FLAC, OGG, MP3, MOD, WAV, Adlib, GM and MIDI, and keeps the first that loads. Here the Adlib
-  ///   (ADLIB.CAT with the intro songs of AINTRO.CAT) and the WAV files of the SOUND folder load; the other formats
-  ///   give nothing, so the next one is tried
+  ///   format and then FLAC, OGG, MP3, MOD, WAV, Adlib, GM and MIDI, and keeps the first that loads: each format is an
+  ///   IXcomMusicFormatLoader that gives the track or nil (a file that is not there or is not readable), so that the
+  ///   next one is tried. A format with no loader gives nothing
   /// </summary>
   TXcomMusicPlayer = class(TInterfacedObject, IXcomMusicPlayer)
   strict private
@@ -40,22 +34,16 @@ type
     var
       FSink: IXcomMusicSink;
       FSettings: IXcomMusicSettings;
-      FAdlibPlayerFactory: TXcomAdlibPlayerFactory;
-      FSongsFactory: TXcomAdlibSongsFactory;
+      FLoaders: TArray<IXcomMusicFormatLoader>;
       FRandom: TXcomMusicRandom;
-      FRate: Integer;
       FEntries: TList<TEntry>;
       FPlayingMusic: string;
-      FAdlibPlayer: IXcomAdlibPlayer;
-    function LoadMusic(AFormat: Integer; const ARule: TXcomMusicRule; const AResources: IXcomResources;
-      const ASongs: IXcomAdlibSongs): IXcomMusicTrack;
-    function LoadAdlib(const ARule: TXcomMusicRule; const ASongs: IXcomAdlibSongs): IXcomMusicTrack;
-    function LoadWave(const ARule: TXcomMusicRule; const AResources: IXcomResources): IXcomMusicTrack;
+    function LoadMusic(AFormat: Integer; const ARule: TXcomMusicRule): IXcomMusicTrack;
     function Find(const AType: string): IXcomMusicTrack;
   public
-    constructor Create(const ASink: IXcomMusicSink; const ASettings: IXcomMusicSettings; ARate: Integer;
-      const AAdlibPlayerFactory: TXcomAdlibPlayerFactory; const ASongsFactory: TXcomAdlibSongsFactory;
-      const ARandom: TXcomMusicRandom = nil);
+    /// <param name="ALoaders">One for each format the player can load, in any order</param>
+    constructor Create(const ASink: IXcomMusicSink; const ASettings: IXcomMusicSettings;
+      const ALoaders: TArray<IXcomMusicFormatLoader>; const ARandom: TXcomMusicRandom = nil);
     destructor Destroy; override;
     procedure Reload(const AResources: IXcomResources);
     procedure PlayMusic(const AName: string; AId: Integer = 0);
@@ -72,20 +60,21 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomAudio.Types, DelphiDoom.XcomAudio.AdlibTrack, DelphiDoom.XcomAudio.WavTrack;
+  DelphiDoom.XcomAudio.Types;
 
 { TXcomMusicPlayer }
 
-constructor TXcomMusicPlayer.Create(const ASink: IXcomMusicSink; const ASettings: IXcomMusicSettings; ARate: Integer;
-  const AAdlibPlayerFactory: TXcomAdlibPlayerFactory; const ASongsFactory: TXcomAdlibSongsFactory;
-  const ARandom: TXcomMusicRandom);
+constructor TXcomMusicPlayer.Create(const ASink: IXcomMusicSink; const ASettings: IXcomMusicSettings;
+  const ALoaders: TArray<IXcomMusicFormatLoader>; const ARandom: TXcomMusicRandom);
 begin
   inherited Create;
+  if not Assigned(ASink) then
+    raise EArgumentNilException.Create('ASink');
+  if not Assigned(ASettings) then
+    raise EArgumentNilException.Create('ASettings');
   FSink := ASink;
   FSettings := ASettings;
-  FRate := ARate;
-  FAdlibPlayerFactory := AAdlibPlayerFactory;
-  FSongsFactory := ASongsFactory;
+  FLoaders := ALoaders;
   FRandom := ARandom;
   if not Assigned(FRandom) then
     FRandom := function(AMaximum: Integer): Integer
@@ -102,65 +91,20 @@ begin
   inherited Destroy;
 end;
 
-function TXcomMusicPlayer.LoadAdlib(const ARule: TXcomMusicRule; const ASongs: IXcomAdlibSongs): IXcomMusicTrack;
+function TXcomMusicPlayer.LoadMusic(AFormat: Integer; const ARule: TXcomMusicRule): IXcomMusicTrack;
 var
-  LTrack: Integer;
-  LSong: TBytes;
+  LLoader: IXcomMusicFormatLoader;
 begin
   Result := nil;
-  if (ASongs = nil) or (ASongs.Count = 0) or (ARule.CatPos < 0) then
-    Exit;
-  LTrack := ARule.CatPos;
-  if LTrack < ASongs.Count then
-    LSong := ASongs.Song(LTrack)
-  else
-  begin
-    Dec(LTrack, ASongs.Count);
-    if LTrack >= ASongs.IntroCount then
-      Exit;
-    LSong := ASongs.IntroSong(LTrack);
-  end;
-  if Length(LSong) = 0 then
-    Exit;
-  if FAdlibPlayer = nil then
-    FAdlibPlayer := FAdlibPlayerFactory();
-  Result := TXcomAdlibTrack.Create(FAdlibPlayer, FSettings, LSong, ARule.Normalization);
-end;
-
-function TXcomMusicPlayer.LoadWave(const ARule: TXcomMusicRule; const AResources: IXcomResources): IXcomMusicTrack;
-var
-  LBytes: TBytes;
-begin
-  Result := nil;
-  LBytes := AResources.SoundFile(LowerCase(ARule.Name) + '.wav');
-  if Length(LBytes) = 0 then
-    Exit;
-  try
-    Result := TXcomWavTrack.Create(LBytes, FRate);
-  except
-    on EXcomAudioException do
-      Result := nil;
-  end;
-end;
-
-function TXcomMusicPlayer.LoadMusic(AFormat: Integer; const ARule: TXcomMusicRule;
-  const AResources: IXcomResources; const ASongs: IXcomAdlibSongs): IXcomMusicTrack;
-begin
-  case TXcomMusicFormat(AFormat) of
-    mfAdlib:
-      Result := LoadAdlib(ARule, ASongs);
-    mfWav:
-      Result := LoadWave(ARule, AResources);
-  else
-    // FLAC, OGG, MP3, MOD (digital decoders), GM and MIDI (the GM.CAT songs) are not played here
-    Result := nil;
-  end;
+  for LLoader in FLoaders do
+    if Ord(LLoader.Format) = AFormat then
+      Exit(LLoader.Load(ARule));
 end;
 
 procedure TXcomMusicPlayer.Reload(const AResources: IXcomResources);
 var
   LRule: TXcomMusicRule;
-  LSongs: IXcomAdlibSongs;
+  LLoader: IXcomMusicFormatLoader;
   LPriority: array[0..8] of Integer;
   LIndex: Integer;
   LTrack: IXcomMusicTrack;
@@ -171,9 +115,8 @@ begin
   FPlayingMusic := '';
   if FSettings.Mute then
     Exit;
-  LSongs := nil;
-  if Assigned(FSongsFactory) then
-    LSongs := FSongsFactory(AResources);
+  for LLoader in FLoaders do
+    LLoader.Reload(AResources);
   // the preferred format first, then the default order
   LPriority[0] := FSettings.PreferredFormat;
   LPriority[1] := Ord(mfFlac);
@@ -190,7 +133,7 @@ begin
     LIndex := 0;
     while (LTrack = nil) and (LIndex <= High(LPriority)) do
     begin
-      LTrack := LoadMusic(LPriority[LIndex], LRule, AResources, LSongs);
+      LTrack := LoadMusic(LPriority[LIndex], LRule);
       Inc(LIndex);
     end;
     if LTrack <> nil then
@@ -218,6 +161,7 @@ var
   LTrack: IXcomMusicTrack;
   LMatches: TList<IXcomMusicTrack>;
   LEntry: TEntry;
+  LPreparation: IXcomMusicPreparation;
 begin
   if FSettings.Mute or (FPlayingMusic = AName) then
     Exit;
@@ -245,6 +189,9 @@ begin
     LTrack := Find(AName + IntToStr(AId));
   if LTrack = nil then
     Exit;
+  // the decoding of a file takes its time: it is done here, not while the mixer holds its lock
+  if Supports(LTrack, IXcomMusicPreparation, LPreparation) then
+    LPreparation.Prepare;
   FSink.PlayTrack(LTrack, LLoop);
   FPlayingMusic := AName;
 end;

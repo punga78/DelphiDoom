@@ -34,6 +34,8 @@ type
   public
     constructor Create(AWeekday, ADay, AMonth, AYear, AHour, AMinute, ASecond: Integer);
     procedure Load(const ANode: IYamlNode);
+    /// <summary>The copy of a time (GameTime has a copy constructor in the C++)</summary>
+    procedure Assign(const AOther: TXcomGameTime);
     /// <summary>The node of the saved game</summary>
     function Save: IYamlNode;
     /// <summary>
@@ -94,6 +96,17 @@ begin
   FDay := TXcomNodeReader.ReadInteger(ANode, 'day', FDay);
   FMonth := TXcomNodeReader.ReadInteger(ANode, 'month', FMonth);
   FYear := TXcomNodeReader.ReadInteger(ANode, 'year', FYear);
+end;
+
+procedure TXcomGameTime.Assign(const AOther: TXcomGameTime);
+begin
+  FSecond := AOther.FSecond;
+  FMinute := AOther.FMinute;
+  FHour := AOther.FHour;
+  FWeekday := AOther.FWeekday;
+  FDay := AOther.FDay;
+  FMonth := AOther.FMonth;
+  FYear := AOther.FYear;
 end;
 
 function TXcomGameTime.Save: IYamlNode;
