@@ -47,6 +47,8 @@ type
     [Test]
     procedure DovrebbeOrdinareISoldatiPerStatistica;
     [Test]
+    procedure DovrebbeTenereTuttiISoldatiConOgniCriterioERitrovareLOrdineOriginale;
+    [Test]
     procedure DovrebbeAprireLaSchedaDelSoldatoColTastoDestro;
     [Test]
     procedure DovrebbeCaricareEScaricareLEquipaggiamento;
@@ -233,6 +235,33 @@ begin
     Assert.IsTrue(FWorld.FirstBase.Soldiers[LIndex - 1].CurrentStats.TimeUnits <= FWorld.FirstBase.Soldiers[LIndex].CurrentStats.TimeUnits,
       Format('i soldati sono in ordine crescente di unita'' di tempo (%d): %s', [LIndex, FWorld.Describe]));
   Assert.AreEqual(99, FWorld.FirstBase.Soldiers.Last.CurrentStats.TimeUnits);
+end;
+
+procedure TTestXcomTourHangar.DovrebbeTenereTuttiISoldatiConOgniCriterioERitrovareLOrdineOriginale;
+var
+  LOriginal: TArray<TXcomSoldier>;
+  LOptions: TArray<string>;
+  LOption: string;
+  LIndex: Integer;
+begin
+  if not Ready then
+    Exit;
+  LOriginal := FWorld.FirstBase.Soldiers.ToArray;
+  OpenCraft('TRITON-1');
+  FWorld.ClickButton('CREW');
+  LOptions := FWorld.ComboOptions;
+  Assert.IsTrue(Length(LOptions) > 10, 'la lista ha i criteri delle statistiche');
+  // every criterion but the first, which is the original order
+  for LIndex := 1 to High(LOptions) do
+  begin
+    LOption := LOptions[LIndex];
+    FWorld.ChooseCombo(LOption);
+    Assert.AreEqual(Length(LOriginal), FWorld.FirstBase.Soldiers.Count, LOption);
+  end;
+  FWorld.ChooseCombo(LOptions[0]);
+  for LIndex := 0 to High(LOriginal) do
+    Assert.AreSame(LOriginal[LIndex], FWorld.FirstBase.Soldiers[LIndex],
+      Format('l''ordine originale torna (%d)', [LIndex]));
 end;
 
 procedure TTestXcomTourHangar.DovrebbeAprireLaSchedaDelSoldatoColTastoDestro;

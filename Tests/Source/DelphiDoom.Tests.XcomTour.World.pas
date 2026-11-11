@@ -90,7 +90,7 @@ type
     /// <summary>Clicks the middle of the visible button of the screen on top with this text; fails without it</summary>
     procedure ClickButton(const AText: string);
     /// <summary>
-    ///   True: a visible text or button of the screen on top contains this text (the characters that change the
+    ///   True: a visible text, button or text field of the screen on top contains this text (the characters that change the
     ///   color of a text do not count)
     /// </summary>
     function Shows(const AText: string): Boolean;
@@ -111,7 +111,12 @@ type
     ///   show it); fails without it
     /// </summary>
     procedure ChooseCombo(const AOption: string);
-    /// <summary>The cell of the row whose first cell is this text; fails without it</summary>
+    /// <summary>The options of the combo box of the screen on top</summary>
+    function ComboOptions: TArray<string>;
+    /// <summary>
+    ///   The cell of the row whose first cell is this text, without the characters that change its color; fails
+    ///   without it
+    /// </summary>
     function RowCell(const AText: string; AColumn: Integer): string;
     property Game: TXcomGame read FGame;
     property UserFolder: string read FUserFolder;
@@ -142,7 +147,7 @@ implementation
 
 uses
   System.IOUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextList, DelphiDoom.XcomUi.ComboBox,
+  DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextList, DelphiDoom.XcomUi.ComboBox, DelphiDoom.XcomUi.TextEdit,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState,
   DelphiDoom.Xcom.GameComposition;
 
@@ -446,6 +451,13 @@ begin
           LBuilder.AppendLine;
         end;
       end
+      else if LWidget is TXcomComboBox then
+      begin
+        LBuilder.AppendFormat('  combo (%d,%d):', [2 * LWidget.X, 2 * LWidget.Y]);
+        for LRow := 0 to TXcomComboBox(LWidget).List.GetTexts - 1 do
+          LBuilder.Append(' [' + TXcomComboBox(LWidget).List.GetCellText(LRow, 0) + ']');
+        LBuilder.AppendLine;
+      end
       else
         LBuilder.AppendFormat('  %s (%d,%d) %d x %d', [LWidget.ClassName, 2 * LWidget.X, 2 * LWidget.Y, 2 * LWidget.Width,
           2 * LWidget.Height]).AppendLine;
@@ -497,6 +509,8 @@ begin
       Exit(True);
     if (LWidget is TXcomText) and Plain(TXcomText(LWidget).GetText).Contains(AText) then
       Exit(True);
+    if (LWidget is TXcomTextEdit) and TXcomTextEdit(LWidget).GetText.Contains(AText) then
+      Exit(True);
   end;
 end;
 
@@ -516,7 +530,7 @@ begin
       Continue;
     LList := TXcomTextList(LWidget);
     for LRow := 0 to LList.GetTexts - 1 do
-      if SameText(LList.GetCellText(LRow, 0), AText) then
+      if SameText(Plain(LList.GetCellText(LRow, 0)), AText) then
       begin
         if (LRow < LList.GetScroll) or (LRow >= LList.GetScroll + LList.GetVisibleRows) then
         begin
@@ -589,6 +603,18 @@ begin
   Assert.Fail(Format('l''opzione "%s" non c''e'': %s', [AOption, Describe]));
 end;
 
+function TXcomTourWorld.ComboOptions: TArray<string>;
+var
+  LWidget: TXcomWidget;
+  LRow: Integer;
+begin
+  Result := nil;
+  for LWidget in TopWidgets do
+    if LWidget.Visible and (LWidget is TXcomComboBox) then
+      for LRow := 0 to TXcomComboBox(LWidget).List.GetTexts - 1 do
+        Result := Result + [TXcomComboBox(LWidget).List.GetCellText(LRow, 0)];
+end;
+
 function TXcomTourWorld.RowCell(const AText: string; AColumn: Integer): string;
 var
   LWidget: TXcomWidget;
@@ -601,8 +627,8 @@ begin
       begin
         LList := TXcomTextList(LWidget);
         for LRow := 0 to LList.GetTexts - 1 do
-          if SameText(LList.GetCellText(LRow, 0), AText) then
-            Exit(CellText(LList, LRow, AColumn));
+          if SameText(Plain(LList.GetCellText(LRow, 0)), AText) then
+            Exit(Plain(CellText(LList, LRow, AColumn)));
       end;
   Assert.Fail(Format('la riga "%s" non c''e'': %s', [AText, Describe]));
   Result := '';
