@@ -194,10 +194,10 @@ var
 begin
   for i := 0 to fNumItems - 1 do
   begin
-    reg := Sender.AddDelphiFunction(fList[i].decl.str);
+    reg := Sender.AddDelphiFunction(AnsiString(fList[i].decl.str));
     if reg <> nil then
     begin
-      fList[i].name.str := reg.Name;
+      fList[i].name.str := string(reg.Name);
       fList[i].iscomputed := true;
     end;
   end;
@@ -214,7 +214,7 @@ var
 begin
   for i := 0 to fNumItems - 1 do
     if fList[i].iscomputed then
-      Sender.RegisterDelphiFunction(fList[i].proc, fList[i].name.str, cdRegister);
+      Sender.RegisterDelphiFunction(fList[i].proc, AnsiString(fList[i].name.str), cdRegister);
 end;
 
 //==============================================================================

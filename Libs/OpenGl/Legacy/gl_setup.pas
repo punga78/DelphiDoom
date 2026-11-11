@@ -206,7 +206,7 @@ begin
   begin
     if num and (1 shl 31) <> 0 then
     begin
-      result := LongWord(num) and LongWord(_SHLW(1, 31) - 1) + firstglvert;
+      result := integer(LongWord(num) and LongWord(_SHLW(1, 31) - 1)) + firstglvert;
       exit;
     end
   end;
