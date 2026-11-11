@@ -70,6 +70,8 @@ type
     procedure DovrebbeSalvareECaricareLaPartita;
     [Test]
     procedure DovrebbeArrivareAlRapportoMensile;
+    [Test]
+    procedure DopoIlRapportoMensileIlTempoDovrebbeTornareACinqueSecondi;
   end;
 
 implementation
@@ -359,6 +361,31 @@ begin
   Assert.AreEqual(2, FWorld.Save.Time.Month);
   FWorld.Key(XCOM_KEY_RETURN);
   Assert.AreNotEqual('TXcomMonthlyReportState', FWorld.Top, 'OK chiude il rapporto');
+end;
+
+procedure TTestXcomTourStrategy.DopoIlRapportoMensileIlTempoDovrebbeTornareACinqueSecondi;
+var
+  LTurn: Integer;
+begin
+  if not Ready then
+    Exit;
+  for LTurn := 1 to 60 do
+  begin
+    // 1 Day
+    FWorld.Click(608, 293);
+    FWorld.Wait(1500);
+    if FWorld.Top = 'TXcomMonthlyReportState' then
+      Break;
+    if FWorld.Top <> GEOSCAPE then
+      FWorld.Key(XCOM_KEY_ESCAPE);
+  end;
+  Assert.AreEqual('TXcomMonthlyReportState', FWorld.Top);
+  FWorld.Key(XCOM_KEY_RETURN);
+  // GeoscapeState::time1Month calls timerReset: at "1 Day" two seconds would be many days
+  FWorld.Wait(2000);
+  Assert.AreEqual(2, FWorld.Save.Time.Month);
+  Assert.AreEqual(1, FWorld.Save.Time.Day, 'il mese nuovo riparte a 5 secondi, non a 1 giorno');
+  Assert.AreEqual(0, FWorld.Save.Time.Hour);
 end;
 
 end.
