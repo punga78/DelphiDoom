@@ -61,6 +61,9 @@
 #include "Engine/Game.h"
 #include "Geoscape/GeoscapeState.h"
 #include "Mod/RuleMissionScript.h"
+#include "Mod/StatString.h"
+#include "Mod/Unit.h"
+#include "Savegame/SavedGame.h"
 #include "Savegame/AlienStrategy.h"
 #include "Engine/Options.h"
 #include "Engine/FileMap.h"
@@ -862,6 +865,37 @@ static void ScenarioMonth(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+// Soldier stat strings: StatString::calcStatString on random stats with the statStrings of the mod
+static void ScenarioStatString(Mod* mod, SavedGame* s, int v) {
+  // the statStrings of the TFTD mod are none: the strings of the test are written here (the Delphi test has the same)
+  static const char* kYaml =
+  "- {string: \"P\", psiStrength: [60, 100], psiSkill: [1, 100]}\n"
+  "- {string: \"!\", psiTraining: [1, 1]}\n"
+  "- {string: \"+\", tu: [70, 100], strength: [40, 100]}\n"
+  "- {string: \"--\", health: [0, 25], bravery: [0, 30]}\n"
+  "- {string: \"-\", reactions: [0, 20]}\n"
+  "- {string: \"b\", bravery: [60, 100]}\n"
+  "- {string: \"s\", stamina: [70, 100]}\n"
+  "- {string: \"f\", firing: [70, 100], throwing: [50, 100]}\n"
+  "- {string: \"m\", melee: [80, 100]}\n"
+  "- {string: \"x\", psiSkill: [1, 100]}\n"
+  "- {string: \"ab\", tu: [0, 100]}\n";
+  YAML::Node doc = YAML::Load(kYaml);
+  std::vector<StatString*> strings;
+  for (size_t i = 0; i < doc.size(); i++) { StatString* st = new StatString(); st->load(doc[i]); strings.push_back(st); }
+  fprintf(gOut, "count|%d|%d\n", v, (int)strings.size());
+  for (int k = 0; k < 150; k++) {
+    UnitStats st;
+    st.tu = Pick(90); st.stamina = Pick(90); st.health = Pick(60); st.bravery = Pick(10) * 10; st.reactions = Pick(80);
+    st.firing = Pick(90); st.throwing = Pick(90); st.strength = Pick(60); st.psiStrength = Pick(100);
+    st.psiSkill = Pick(3) == 0 ? 0 : Pick(70); st.melee = Pick(90);
+    bool eval = Pick(2) == 0, training = Pick(3) == 0;
+    std::string r = StatString::calcStatString(st, strings, eval, training);
+    fprintf(gOut, "stat|%d|%d|%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d|%d|%d|%s\n", v, k, st.tu, st.stamina, st.health, st.bravery, st.reactions,
+      st.firing, st.throwing, st.strength, st.psiStrength, st.psiSkill, st.melee, (int)eval, (int)training, r.c_str());
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -896,8 +930,10 @@ int main(int argc, char** argv) {
       else if (scenario == "mission") ScenarioMission(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
+      else if (scenario == "statstring") ScenarioStatString(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
+      else if (scenario == "statstring") ScenarioStatString(mod, s, v);
       else { fprintf(stderr, "unknown scenario\n"); return 2; }
       fprintf(gOut, "rng|%d|%llu\n", v, (unsigned long long)RNG::getSeed());
       fclose(gOut);

@@ -82,6 +82,14 @@ type
 
 implementation
 
+function LineOrEnd(const ALines: TStringList; AIndex: Integer): string;
+begin
+  if AIndex < ALines.Count then
+    Result := ALines[AIndex]
+  else
+    Result := '<end>';
+end;
+
 { TXcomSim }
 
 constructor TXcomSim.Create;
@@ -269,7 +277,7 @@ begin
       end;
       if not LAccepted then
         Exit(Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
-          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]));
+          LineOrEnd(LActual, LIndex)]));
     end;
     if LActual.Count > LExpected.Count then
       Result := Format('line %d: unexpected "%s"', [LExpected.Count + 1, LActual[LExpected.Count]]);
@@ -338,7 +346,7 @@ begin
       end;
       if not LSame then
         Exit(Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
-          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]));
+          LineOrEnd(LActual, LIndex)]));
     end;
     if LActual.Count > LExpected.Count then
       Result := Format('line %d: unexpected "%s"', [LExpected.Count + 1, LActual[LExpected.Count]])
@@ -394,7 +402,7 @@ begin
       if not LAccepted then
       begin
         Result := Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
-          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]);
+          LineOrEnd(LActual, LIndex)]);
         Break;
       end;
     end;
@@ -428,7 +436,7 @@ begin
       if (LIndex >= LActual.Count) or (LExpected[LIndex] <> LActual[LIndex]) then
       begin
         Result := Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
-          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]);
+          LineOrEnd(LActual, LIndex)]);
         Exit;
       end;
     end;
