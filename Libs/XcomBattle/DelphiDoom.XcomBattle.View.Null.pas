@@ -10,7 +10,8 @@ unit DelphiDoom.XcomBattle.View.Null;
 interface
 
 uses
-  System.Generics.Collections, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.View.Intf;
+  System.Generics.Collections, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.BattleUnitKills,
+  DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.View.Intf;
 
 type
   /// <summary>
@@ -54,7 +55,7 @@ type
     procedure SetBlastFlash(AFlash: Boolean);
     function BlastFlash: Boolean;
     function AnimateExplosions: Boolean;
-    procedure SoldierKilled(const AUnit: TXcomBattleUnit);
+    procedure SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     procedure NextTurn;
@@ -193,9 +194,11 @@ begin
   Result := True;
 end;
 
-procedure TXcomBattleNullView.SoldierKilled(const AUnit: TXcomBattleUnit);
+procedure TXcomBattleNullView.SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
 begin
   Inc(FKilledSoldiers);
+  // nobody keeps the cause of the death
+  ACause.Free;
 end;
 
 procedure TXcomBattleNullView.ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string;

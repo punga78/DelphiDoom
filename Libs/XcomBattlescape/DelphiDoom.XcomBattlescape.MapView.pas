@@ -11,7 +11,8 @@ unit DelphiDoom.XcomBattlescape.MapView;
 interface
 
 uses
-  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.View.Intf,
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattle.View.Intf,
   DelphiDoom.XcomBattlescape.Map;
 
 type
@@ -52,7 +53,7 @@ type
     procedure SetBlastFlash(AFlash: Boolean);
     function BlastFlash: Boolean;
     function AnimateExplosions: Boolean;
-    procedure SoldierKilled(const AUnit: TXcomBattleUnit);
+    procedure SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     procedure NextTurn;
@@ -194,9 +195,9 @@ begin
   Result := FOther.AnimateExplosions;
 end;
 
-procedure TXcomBattleMapView.SoldierKilled(const AUnit: TXcomBattleUnit);
+procedure TXcomBattleMapView.SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
 begin
-  FOther.SoldierKilled(AUnit);
+  FOther.SoldierKilled(AUnit, ACause);
 end;
 
 procedure TXcomBattleMapView.ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string;

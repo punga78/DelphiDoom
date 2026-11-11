@@ -52,10 +52,14 @@ begin
         LBase: TXcomBase;
         LSoldier: TXcomSoldier;
       begin
+        // SavedGame::getSoldier: the soldiers of the bases, then the dead ones (killed earlier in this battle)
         for LBase in AGame.Bases do
           for LSoldier in LBase.Soldiers do
             if LSoldier.Id = AId then
               Exit(LSoldier);
+        for LSoldier in AGame.DeadSoldiers do
+          if LSoldier.Id = AId then
+            Exit(LSoldier);
         Result := nil;
       end);
     LLoader := TXcomMapDataLoader.Create(ARuleset.Files);

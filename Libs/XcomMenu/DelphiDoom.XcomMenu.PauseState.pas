@@ -93,7 +93,9 @@ begin
   FBtnCancel.SetText(Tr('STR_CANCEL_UC'));
   FBtnCancel.OnMouseClick(CancelClick);
   FBtnCancel.OnKeyboardPress(CancelClick, Host.Options.KeyCancel);
-  // keyGeoOptions (Escape) is the same key as keyCancel
+  // keyGeoOptions (Escape) is the same key as keyCancel; the key that opens the options of a battle closes them too
+  if FOrigin = ooBattlescape then
+    FBtnCancel.OnKeyboardPress(CancelClick, Host.Options.GetValue('keyBattleOptions'));
   FTxtTitle.SetAlign(haCenter);
   FTxtTitle.SetBig;
   FTxtTitle.SetText(Tr('STR_OPTIONS_UC'));

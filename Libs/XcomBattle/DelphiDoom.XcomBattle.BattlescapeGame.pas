@@ -1499,6 +1499,7 @@ var
   LVictim: TXcomBattleUnit;
   LMurderer: TXcomBattleUnit;
   LKill: TXcomBattleUnitKills;
+  LDeath: TXcomBattleUnitKills;
   LNoSound: Boolean;
   LNoCorpse: Boolean;
   LModifier: Integer;
@@ -1669,7 +1670,14 @@ begin
           if Assigned(LVictim.GeoscapeSoldier) then
           begin
             LVictim.Statistics.KIA := True;
-            FView.SoldierKilled(LVictim);
+            LDeath := TXcomKillStatistics.Copy(LKill);
+            if Assigned(LMurderer) then
+            begin
+              TXcomKillStatistics.Fill(LDeath, LMurderer);
+              LDeath.Faction := LMurderer.Faction;
+            end;
+            // the view owns the cause from now on
+            FView.SoldierKilled(LVictim, LDeath);
           end;
         end
         else if (LUnit.StunLevel >= LUnit.Health) and (LUnit.Status <> STATUS_UNCONSCIOUS) then

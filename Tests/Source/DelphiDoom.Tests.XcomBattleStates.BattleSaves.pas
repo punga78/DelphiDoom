@@ -13,7 +13,9 @@ interface
 
 uses
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattleStates.Screens.Intf,
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem,
+  DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattleStates.Screens.Intf,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.Tests.XcomBattleStates.Bench;
 
 type
@@ -41,6 +43,8 @@ type
     /// <summary>The turn screen is shown and closed with a click</summary>
     procedure PassTurnScreen;
     function Asked(const ACall: string): Integer;
+    procedure RunUntilIdle;
+    function InABase(ASoldier: TXcomSoldier): Boolean;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -68,6 +72,12 @@ type
     procedure InIronmanITastiRapidiNonFannoNulla;
     [Test]
     procedure LeSchermateVereDannoSalvataggioECaricamentoRapido;
+    [Test]
+    procedure IlSoldatoUccisoDovrebbeAndareNelMemorialeConLAssassino;
+    [Test]
+    procedure IlSoldatoMortoSenzaAssassinoHaSeStessoComeCausa;
+    [Test]
+    procedure UnAlienoUccisoNonToccaIlMemoriale;
   end;
 
 implementation
@@ -292,6 +302,118 @@ begin
   end;
   // the fake game has no catalog of saves: no quick save to load
   Assert.IsNull(LScreens.QuickLoad(FState));
+end;
+
+procedure TTestXcomBattleSaves.RunUntilIdle;
+var
+  LGuard: Integer;
+begin
+  LGuard := 0;
+  FBench.World.Wait(60);
+  while FState.Game.IsBusy and (not FState.Finished) and (LGuard < 1200) do
+  begin
+    FBench.World.Wait(50);
+    Inc(LGuard);
+  end;
+  Assert.IsTrue(LGuard < 1200, 'the battle never came back to idle');
+end;
+
+function TTestXcomBattleSaves.InABase(ASoldier: TXcomSoldier): Boolean;
+var
+  LBase: TXcomBase;
+begin
+  Result := False;
+  for LBase in FBench.SavedGame.Bases do
+    if LBase.Soldiers.IndexOf(ASoldier) >= 0 then
+      Exit(True);
+end;
+
+procedure TTestXcomBattleSaves.IlSoldatoUccisoDovrebbeAndareNelMemorialeConLAssassino;
+var
+  LVictim: TXcomBattleUnit;
+  LAlien: TXcomBattleUnit;
+  LUnit: TXcomBattleUnit;
+  LSoldier: TXcomSoldier;
+  LDead: Integer;
+begin
+  if not Ready then
+    Exit;
+  LVictim := FBench.Session.Battle.SelectedUnit;
+  LSoldier := LVictim.GeoscapeSoldier;
+  Assert.IsNotNull(LSoldier);
+  Assert.IsTrue(InABase(LSoldier));
+  LAlien := nil;
+  for LUnit in FBench.Session.Battle.Units do
+    if (LUnit.OriginalFaction = FACTION_HOSTILE) and (not LUnit.IsOut) then
+    begin
+      LAlien := LUnit;
+      Break;
+    end;
+  Assert.IsNotNull(LAlien);
+  LDead := FBench.SavedGame.DeadSoldiers.Count;
+  LVictim.Damage(TXcomPosition.Make(0, 0, 0), 1000, TXcomRuleItem.DT_AP, True);
+  Assert.AreEqual(0, LVictim.Health);
+  FState.Game.CheckForCasualties(nil, LAlien);
+  // SavedGame::killSoldier at once, before the death is even shown
+  Assert.IsFalse(InABase(LSoldier), 'the soldier left its base');
+  Assert.AreEqual(LDead + 1, FBench.SavedGame.DeadSoldiers.Count);
+  Assert.IsTrue(FBench.SavedGame.DeadSoldiers.IndexOf(LSoldier) >= 0);
+  Assert.IsNotNull(LSoldier.Death);
+  Assert.IsNotNull(LSoldier.Death.Cause, 'the cause of the death');
+  // one of our own died: the murderer is recorded instead of the victim
+  Assert.AreEqual(Integer(FACTION_HOSTILE), LSoldier.Death.Cause.Faction);
+  Assert.AreEqual(LAlien.UnitType, LSoldier.Death.Cause.UnitType);
+  Assert.AreEqual('', LSoldier.Death.Cause.Name);
+  Assert.AreEqual(Integer(STATUS_DEAD), LSoldier.Death.Cause.Status);
+  Assert.AreEqual(FBench.SavedGame.Time.Day, LSoldier.Death.Time.Day);
+  Assert.AreEqual(FBench.SavedGame.Time.Year, LSoldier.Death.Time.Year);
+  Assert.IsTrue(LVictim.Statistics.KIA);
+  Assert.IsTrue(LVictim.GeoscapeSoldier = LSoldier, 'the unit still knows its soldier');
+  RunUntilIdle;
+  // a second check of the casualties does not kill the soldier twice
+  FState.Game.CheckForCasualties(nil, LAlien);
+  Assert.AreEqual(LDead + 1, FBench.SavedGame.DeadSoldiers.Count);
+end;
+
+procedure TTestXcomBattleSaves.IlSoldatoMortoSenzaAssassinoHaSeStessoComeCausa;
+var
+  LVictim: TXcomBattleUnit;
+  LSoldier: TXcomSoldier;
+begin
+  if not Ready then
+    Exit;
+  LVictim := FBench.Session.Battle.SelectedUnit;
+  LSoldier := LVictim.GeoscapeSoldier;
+  LVictim.Damage(TXcomPosition.Make(0, 0, 0), 1000, TXcomRuleItem.DT_AP, True);
+  // no murderer and no explosion: a fatal wound
+  FState.Game.CheckForCasualties(nil, nil);
+  Assert.IsTrue(FBench.SavedGame.DeadSoldiers.IndexOf(LSoldier) >= 0);
+  Assert.IsNotNull(LSoldier.Death.Cause);
+  Assert.AreEqual(LSoldier.Name, LSoldier.Death.Cause.Name, 'the statistics of the kill are the ones of the victim');
+  Assert.AreEqual(Integer(FACTION_PLAYER), LSoldier.Death.Cause.Faction);
+  RunUntilIdle;
+end;
+
+procedure TTestXcomBattleSaves.UnAlienoUccisoNonToccaIlMemoriale;
+var
+  LUnit: TXcomBattleUnit;
+  LAlien: TXcomBattleUnit;
+  LDead: Integer;
+begin
+  if not Ready then
+    Exit;
+  LAlien := nil;
+  for LUnit in FBench.Session.Battle.Units do
+    if (LUnit.OriginalFaction = FACTION_HOSTILE) and (not LUnit.IsOut) then
+    begin
+      LAlien := LUnit;
+      Break;
+    end;
+  LDead := FBench.SavedGame.DeadSoldiers.Count;
+  LAlien.Damage(TXcomPosition.Make(0, 0, 0), 1000, TXcomRuleItem.DT_AP, True);
+  FState.Game.CheckForCasualties(nil, FBench.Session.Battle.SelectedUnit);
+  RunUntilIdle;
+  Assert.AreEqual(LDead, FBench.SavedGame.DeadSoldiers.Count);
 end;
 
 end.

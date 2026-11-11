@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Widget,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Timer,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomUi.Bar, DelphiDoom.XcomUi.BattlescapeButton,
-  DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.View.Intf,
+  DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
+  DelphiDoom.XcomBattle.View.Intf,
   DelphiDoom.XcomBattle.BattlescapeGame, DelphiDoom.XcomBattle.Options, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MapWidget,
   DelphiDoom.XcomBattleStates.WarningMessage;
@@ -216,7 +217,7 @@ type
     procedure SetBlastFlash(AFlash: Boolean);
     function BlastFlash: Boolean;
     function AnimateExplosions: Boolean;
-    procedure SoldierKilled(const AUnit: TXcomBattleUnit);
+    procedure SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     procedure NextTurn;
@@ -233,7 +234,8 @@ implementation
 
 uses
   DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomSurface.Shade, DelphiDoom.XcomEngine.RuleInterface,
-  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Projectile;
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomSave.SoldierDeath, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Projectile;
 
 const
   DEFAULT_ANIM_SPEED = 100;
@@ -1637,9 +1639,25 @@ begin
     Result := not FMap.Map.AnimateExplosions;
 end;
 
-procedure TXcomBattlescapeState.SoldierKilled(const AUnit: TXcomBattleUnit);
+procedure TXcomBattlescapeState.SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
+var
+  LGame: TXcomSavedGame;
+  LSoldier: TXcomSoldier;
+  LBase: TXcomBase;
 begin
-  // the debriefing moves the dead soldiers to the memorial (the cause of death is not recorded here)
+  // SavedGame::killSoldier: the soldier leaves its base for the memorial, with the time and the cause of the death
+  LGame := FSession.SavedGame;
+  LSoldier := AUnit.GeoscapeSoldier;
+  if Assigned(LGame) and Assigned(LSoldier) then
+    for LBase in LGame.Bases do
+      if LBase.Soldiers.IndexOf(LSoldier) >= 0 then
+      begin
+        LSoldier.Die(TXcomSoldierDeath.Create(LGame.Time, ACause));
+        LGame.DeadSoldiers.Add(LBase.Soldiers.Extract(LSoldier));
+        Exit;
+      end;
+  // not a soldier of a base (already in the memorial): nobody keeps the cause
+  ACause.Free;
 end;
 
 function TXcomBattlescapeState.UnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string): string;

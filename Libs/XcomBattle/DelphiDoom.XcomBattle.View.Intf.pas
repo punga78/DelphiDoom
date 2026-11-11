@@ -12,7 +12,7 @@ unit DelphiDoom.XcomBattle.View.Intf;
 interface
 
 uses
-  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Model;
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomBattle.Model;
 
 type
   /// <summary>
@@ -76,8 +76,14 @@ type
     ///   Map::getExplosions()): true when there is nothing left to animate
     /// </summary>
     function AnimateExplosions: Boolean;
-    /// <summary>The player's soldier died: the geoscape forgets it (SavedGame::killSoldier)</summary>
-    procedure SoldierKilled(const AUnit: TXcomBattleUnit);
+    /// <summary>
+    ///   The player's soldier died: it goes to the memorial of the saved game (SavedGame::killSoldier)
+    /// </summary>
+    /// <param name="ACause">
+    ///   The kill that ended his life, with the murderer when there is one (deathStat of the C++): the view owns
+    ///   it from now on (it gives it to the death of the soldier or frees it)
+    /// </param>
+    procedure SoldierKilled(const AUnit: TXcomBattleUnit; ACause: TXcomBattleUnitKills);
     /// <summary>InfoboxState / InfoboxOKState: a message box about a unit (text id, and whether it needs OK)</summary>
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     /// <summary>BattlescapeState::finishBattle</summary>

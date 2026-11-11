@@ -64,3 +64,23 @@ con `Compare-Png.ps1`. Coordinate della finestra 640x400. `-Option chiave=valore
 (per esempio `battleNewPreviewPath=3`). La cartella utente e' `<Out>\user`: mai quella di `bin\OpenXcom`. Le
 animazioni della mappa vanno allineate con piu' scatti a 100 ms. Dettagli e numeri in
 `Libs\XcomBattleStates\CLAUDE.md`.
+
+## Strumenti della sessione "Battlescape dentro la battaglia"
+
+- `Edit-XcomBattleSave.ps1 -In <sav o start.sav.gz> -OutGz <radice>\Tests\Data\XcomBattle\bg\<nome>\start.sav.gz -Edit { ... }`:
+  prepara uno scenario che i salvataggi del repository non hanno (`SetUnit`, `SetUnitList`, `SetItem`, `DropItemKey`:
+  un oggetto in mano, un alieno accanto a un soldato, ferite, unita' morte). Gli scenari preparati non si committano:
+  si mettono in una cartella radice finta (con `bin\OpenXcom\Xcom32.exe` e `Tools\Verifica\176` copiati) e si passa quella
+  come `-Root` a `Compare-XcomBattle.ps1`. Gli oggetti alieni vogliono una lista `discovered:` di primo livello.
+- `Xcom32 -script`: oltre a `wait`, `move`, `click`, `key`, `shot` ci sono `rclick:x,y` (tasto destro),
+  `drag:x1,y1,x2,y2,tasto` e `ckey:sdlkey` (con Ctrl: `ckey:100` = Ctrl+D, il modo di debug con `debug: true` nelle
+  opzioni). `Capture-OpenXcomScreen.ps1` ha `chord:mod,vk` (`chord:17,68` = Ctrl+D nel vero).
+- `Run-XcomBattleSounds.ps1` (`Xcom32 -soundlog <file>`): il registro dei suoni della battaglia col mixer vero su
+  un'uscita senza dispositivo; ogni riga e' `<ms> play <profondita'> <suono> <angolo> (canali, suoni partiti)`, l'ultima
+  le statistiche del mixer (RMS, picco, suoni partiti). Il volume dei suoni delle opzioni di riferimento e' 0:
+  `-Option soundVolume=100`.
+- Quando `Xcom32` cade scrive anche `stack:` con gli indirizzi dei chiamanti nei termini del `.map` (i piu' vicini per
+  primi; sono le parole dello stack che puntano dopo una CALL, qualcuna puo' essere un residuo).
+- Coordinate utili della finestra 640x400 in battaglia: mano destra (592,346), mano sinistra (48,346), inventario
+  (320,304), opzioni (448,330), fine turno (512,304), pulsante di lancio del missile (608,24); le righe del menu delle
+  azioni dal basso: (320,360), (320,280), (320,200). Il mouse lasciato su un bordo scorre la mappa (`battleEdgeScroll`).
