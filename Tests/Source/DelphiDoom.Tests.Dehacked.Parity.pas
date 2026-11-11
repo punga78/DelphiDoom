@@ -306,7 +306,6 @@ begin
   finally
     LOld.Free;
     LSink := nil;
-    LRecorder := nil;
     LGoldenMap.Free;
     LGoldenChanges.Free;
     LGoldenWarnings.Free;
