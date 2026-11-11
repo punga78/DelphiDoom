@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  System.Diagnostics, DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.DefaultSettings,
+  System.Diagnostics, DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomSave.Settings.Intf,
   DelphiDoom.XcomSave.SavedGameHolder, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState,
   DelphiDoom.XcomGeoscape.BuildNewBaseState;
 
@@ -66,6 +66,7 @@ var
   LRuleset: TXcomRuleset;
   LRules: TXcomRulesetRules;
   LRandom: IXcomRandom;
+  LSettings: IXcomSaveSettings;
   LSave: TXcomSavedGame;
   LSeed: UInt64;
   LSimulation: IXcomGeoscapeSimulation;
@@ -78,9 +79,11 @@ begin
   if LSeed = 0 then
     LSeed := UInt64(TStopwatch.GetTimeStamp);
   LRandom := TXcomRandom.Create(LSeed);
+  // held in a variable: an object made in the call of a const interface parameter is never released
+  LSettings := TXcomDefaultSaveSettings.Create;
   LRules := TXcomRulesetRules.Create(LRuleset);
   try
-    LMaker := TXcomNewGame.Create(LRuleset, LRules, TXcomDefaultSaveSettings.Create, LRandom);
+    LMaker := TXcomNewGame.Create(LRuleset, LRules, LSettings, LRandom);
     try
       // Options::customInitialBase: the first base has no facilities, the player places them
       LMaker.CustomInitialBase := FHost.Options.GetBool('customInitialBase');

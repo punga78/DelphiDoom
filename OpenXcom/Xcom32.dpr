@@ -53,6 +53,7 @@ uses
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
   DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
+  DelphiDoom.Xcom.MemoryCount in 'DelphiDoom.Xcom.MemoryCount.pas',
   DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',
   DelphiDoom.Xcom.LoggingBattleAudio in 'DelphiDoom.Xcom.LoggingBattleAudio.pas',
   DelphiDoom.Xcom.DelegateLog in 'DelphiDoom.Xcom.DelegateLog.pas',
@@ -87,6 +88,8 @@ type
     ///   at the end, what the mixer rendered (the sounds go through the mixer, on an output without a device)
     /// </summary>
     SoundLog: string;
+    /// <summary>-memstats: the memory still allocated after the game of a script was freed (to find leaks)</summary>
+    MemoryStatistics: Boolean;
   end;
 
 /// <summary>
@@ -124,7 +127,7 @@ begin
   Say('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
   Say('         [-shot <file.png> [-ms <n>]] [-script wait:ms;click:x,y;key:n;shot:file;...]');
   Say('         [-scriptfile <file with a step per line>]   (also trace:1, state:label, until:Name,ms, on:Name=step+step)');
-  Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]');
+  Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-memstats] [-leaks] [-listmodes]');
   Say('         [-version <text>] [-dospath <text>] [-hold]');
   TXcomExportTool.ShowUsage(
     procedure(AText: string)
@@ -239,6 +242,14 @@ begin
       AArguments.QuitAfter := StrToInt(NextValue)
     else if LName = '-audiostats' then
       AArguments.AudioStatistics := True
+    else if LName = '-memstats' then
+      AArguments.MemoryStatistics := True
+    else if LName = '-leaks' then
+    begin
+      // the report of the memory manager at the end, on the standard error and not in a message box
+      ReportMemoryLeaksOnShutdown := True;
+      IsConsole := True;
+    end
     else if LName = '-soundlog' then
       AArguments.SoundLog := NextValue
     else if LName = '-hold' then
@@ -334,6 +345,8 @@ var
   LSounds: TStringList;
   LStatistics: TXcomMixerStatistics;
 begin
+  if AArguments.MemoryStatistics then
+    TXcomMemoryCount.Install;
   LOutput := nil;
   LSounds := nil;
   LClock := TXcomManualClock.Create;
@@ -411,6 +424,9 @@ begin
     LGame.Free;
     LMeter := nil;
     LSounds.Free;
+    // compared between two scripts, what is left is what leaked (the program keeps a few blocks for itself)
+    if AArguments.MemoryStatistics then
+      Say(Format('memory: %d blocks still allocated after the game was freed', [TXcomMemoryCount.Blocks]));
   end;
 end;
 
