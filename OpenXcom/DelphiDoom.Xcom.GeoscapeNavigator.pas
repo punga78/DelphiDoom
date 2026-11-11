@@ -36,7 +36,8 @@ type
     procedure OpenFunding;
     procedure OpenBase(ABase: TXcomBase; AGlobe: TXcomGlobe);
     procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
-    procedure Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
+    procedure Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility;
+      AParent: TXcomState = nil);
   end;
 
 implementation
@@ -44,7 +45,8 @@ implementation
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
-  DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
+  DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
+  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost);
 begin
@@ -97,7 +99,8 @@ procedure TXcomGameNavigator.OpenFunding;
 begin
 end;
 
-procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
+procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility;
+  AParent: TXcomState);
 begin
   case AScreen of
     bsNewBase:
@@ -107,6 +110,12 @@ begin
         FHost.PopState;
         FHost.PushState(TXcomBuildNewBaseState.Create(FHost, TXcomBase.Create, FControl.Globe, False, FControl));
       end;
+    bsFacilities:
+      FHost.PushState(TXcomBuildFacilitiesState.Create(FHost, ABase, AParent));
+    bsDismantle:
+      if (AParent is TXcomBasescapeState) and Assigned(AFacility) then
+        FHost.PushState(TXcomDismantleFacilityState.Create(FHost, ABase, TXcomBasescapeState(AParent).View,
+          AFacility));
     bsBaseInfo:
       FHost.PushState(TXcomBaseInfoState.Create(FHost, ABase));
     bsSoldiers:

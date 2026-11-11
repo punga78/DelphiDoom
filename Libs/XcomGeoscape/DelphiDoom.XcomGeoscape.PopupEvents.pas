@@ -51,6 +51,7 @@ type
       AProgress: TXcomProductionProgress); override;
     procedure FacilityBuilt(const ABase: TXcomBase; const AFacility: TXcomBaseFacility); override;
     procedure ResearchFinished(const ABase: TXcomBase; const AResearchName: string); override;
+    procedure ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome); override;
     procedure StorageExceeded(const ABase: TXcomBase); override;
   end;
 
@@ -64,7 +65,10 @@ uses
   DelphiDoom.XcomGeoscape.TargetNames, DelphiDoom.XcomGeoscape.GeoscapeCraftState,
   DelphiDoom.XcomGeoscape.ConfirmLandingState,
   DelphiDoom.XcomGeoscape.ItemsArrivingState, DelphiDoom.XcomGeoscape.ProductionCompleteState,
-  DelphiDoom.XcomGeoscape.ResearchCompleteState, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomGeoscape.ResearchCompleteState, DelphiDoom.XcomGeoscape.NewPossibleResearchState,
+  DelphiDoom.XcomGeoscape.NewPossibleManufactureState, DelphiDoom.XcomGeoscape.ResearchRequiredState,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleResearch,
+  DelphiDoom.XcomMod.RuleItem, System.Generics.Collections, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes;
 
 { TXcomPopupGeoscapeEvents }
@@ -194,6 +198,43 @@ procedure TXcomPopupGeoscapeEvents.ResearchFinished(const ABase: TXcomBase; cons
 begin
   if Attached then
     Show(TXcomResearchCompleteState.Create(FHost, AResearchName, nil));
+end;
+
+procedure TXcomPopupGeoscapeEvents.ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome);
+var
+  LRuleset: TXcomRuleset;
+  LNames: TArray<string>;
+  LIndex: Integer;
+  LPossible: TList<TXcomRuleResearch>;
+  LResearch: TXcomRuleResearch;
+  LRule: TXcomRuleItem;
+begin
+  if not Attached then
+    Exit;
+  LRuleset := TXcomStrategy.Ruleset(FHost);
+  // the cutscenes (research and bonus) are not ported
+  Show(TXcomResearchCompleteState.Create(FHost, AOutcome.Research.Name, nil));
+  FControl.TimerReset;
+  if AOutcome.WeaponNeedingAmmo <> '' then
+  begin
+    LRule := LRuleset.Items.Find(AOutcome.WeaponNeedingAmmo);
+    Show(TXcomResearchRequiredState.Create(FHost, LRule.ItemType, LRule.CompatibleAmmo[0]));
+  end;
+  LPossible := TList<TXcomRuleResearch>.Create;
+  try
+    for LResearch in AOutcome.NewPossibleResearch do
+      LPossible.Add(LResearch);
+    Show(TXcomNewPossibleResearchState.Create(FHost, ABase, LPossible, FControl));
+  finally
+    LPossible.Free;
+  end;
+  if Length(AOutcome.NewPossibleManufacture) > 0 then
+  begin
+    SetLength(LNames, Length(AOutcome.NewPossibleManufacture));
+    for LIndex := 0 to High(LNames) do
+      LNames[LIndex] := AOutcome.NewPossibleManufacture[LIndex].Name;
+    Show(TXcomNewPossibleManufactureState.Create(FHost, ABase, LNames, FControl));
+  end;
 end;
 
 procedure TXcomPopupGeoscapeEvents.StorageExceeded(const ABase: TXcomBase);

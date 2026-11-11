@@ -223,7 +223,7 @@ begin
         LListener := TXcomPopupGeoscapeEvents.Create(AHost);
         Result := TXcomPopupSimulation.Create(
           TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
-            TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create),
+            TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),
           LListener as IXcomGeoscapeAware);
       end;
     LNavigatorFactory :=

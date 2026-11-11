@@ -10,7 +10,7 @@ unit DelphiDoom.XcomBasescape.Navigator.Intf;
 interface
 
 uses
-  DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility;
+  DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility;
 
 type
   /// <summary>The screens that the basescape opens for a base</summary>
@@ -25,7 +25,10 @@ type
   IXcomBasescapeNavigator = interface
     ['{B1C46E09-7A25-4D83-9F41-0E58D3A72B96}']
     /// <param name="AFacility">The facility that was clicked (dismantle, craft info), nil otherwise</param>
-    procedure Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
+    /// <param name="AParent">The state that opens the screen (the basescape; nil when it is not one): screens that change
+    /// what it shows ask it to refresh (State::init) and use its base view</param>
+    procedure Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility;
+      AParent: TXcomState = nil);
   end;
 
 implementation

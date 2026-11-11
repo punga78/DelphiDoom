@@ -39,6 +39,7 @@ type
       AProgress: TXcomProductionProgress); virtual;
     procedure FacilityBuilt(const ABase: TXcomBase; const AFacility: TXcomBaseFacility); virtual;
     procedure ResearchFinished(const ABase: TXcomBase; const AResearchName: string); virtual;
+    procedure ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome); virtual;
     procedure StorageExceeded(const ABase: TXcomBase); virtual;
     procedure AlienBaseDiscovered(const ABase: TXcomAlienBase); virtual;
     procedure AutosaveDue(AIronman: Boolean); virtual;
@@ -109,6 +110,10 @@ begin
 end;
 
 procedure TXcomNullGeoscapeEvents.FacilityBuilt(const ABase: TXcomBase; const AFacility: TXcomBaseFacility);
+begin
+end;
+
+procedure TXcomNullGeoscapeEvents.ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome);
 begin
 end;
 
