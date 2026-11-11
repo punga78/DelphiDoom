@@ -73,9 +73,12 @@ var
   LSource: PByte;
   LStart, LFinish: Integer;
   LValue: Byte;
+  LLookup: POverlayLookup;
 begin
   Result := 0;
   AParameters := AParameter;
+  // read once: the loop runs for every pixel of the screen that the overlay covers
+  LLookup := AParameters.Data.Lookup;
 
   LStart := AParameters.Data.FirstLookup[AParameters.Start];
   LDestination := @screens[SCN_FG][LStart];
@@ -83,7 +86,7 @@ begin
   LFinish := AParameters.Data.LastLookup[AParameters.Finish];
 
   repeat
-    LSource := AParameters.Data.Lookup[LStart];
+    LSource := LLookup[LStart];
     if PLongWord(LSource)^ = 0 then
     begin
       Inc(LStart, 4);
@@ -109,9 +112,12 @@ var
   LSource: PByte;
   LStart, LFinish: Integer;
   LValue: Byte;
+  LLookup: POverlayLookup;
 begin
   Result := 0;
   AParameters := AParameter;
+  // read once: the loop runs for every pixel of the screen that the overlay covers
+  LLookup := AParameters.Data.Lookup;
 
   LStart := AParameters.Data.FirstLookup[AParameters.Start];
   LDestination := @screen32[LStart];
@@ -119,7 +125,7 @@ begin
   LFinish := AParameters.Data.LastLookup[AParameters.Finish];
 
   repeat
-    LSource := AParameters.Data.Lookup[LStart];
+    LSource := LLookup[LStart];
     if PLongWord(LSource)^ = 0 then
     begin
       Inc(LStart, 4);

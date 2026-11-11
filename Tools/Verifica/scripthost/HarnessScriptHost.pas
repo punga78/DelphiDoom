@@ -59,6 +59,7 @@ uses
   SysUtils,
   Classes,
   Generics.Collections,
+  System.Diagnostics,
   StrUtils,
   ps_defs,
   ps_utils,
@@ -1366,6 +1367,73 @@ begin
   end;
 end;
 
+// the time of the overlay per frame (verify_scripthost_overlay_bench.txt, in milliseconds for 300 repetitions): drawing
+// the drawers into the buffer, and flashing it over the screen in 32 and 8 bits, with and without threads
+procedure RunOverlayBench(const ALines: TStringList; const APatch: string);
+const
+  REPETITIONS = 300;
+var
+  LWatch: TStopwatch;
+  LIndex: Integer;
+  LThreaded: Integer;
+  LOldThreads: Boolean;
+{$IFNDEF OPENGL}
+  LOldMode: videomode_t;
+{$ENDIF}
+begin
+  overlay.Clear;
+  for LIndex := 0 to 9 do
+    overlay.AddText(100000, 'Benchmark text of the overlay 0123456789', 0, 4, 4 + LIndex * 18);
+  overlay.AddRect(100000, 255, 0, 0, 20, 20, 300, 180);
+  for LIndex := 0 to 4 do
+    overlay.AddLine(100000, 0, 255, 0, 10, 10 + LIndex * 30, 300, 190 - LIndex * 20);
+  if APatch <> '' then
+  begin
+    overlay.AddPatch(100000, APatch, 100, 100);
+    overlay.AddPatchStretched(100000, APatch, 10, 10, 200, 150);
+  end;
+  firstinterpolation := True;
+  LWatch := TStopwatch.StartNew;
+  for LIndex := 1 to REPETITIONS do
+    overlay.DrawDrawers;
+  ALines.Add(Format('drawdrawers x%d: %d ms', [REPETITIONS, LWatch.ElapsedMilliseconds]));
+  // the drawers are drawn: the frames only flash (the tic is not a new one)
+  firstinterpolation := False;
+  overlay.DrawDrawers;
+  LOldThreads := usemultithread;
+  try
+    for LThreaded := 0 to 1 do
+    begin
+      usemultithread := LThreaded = 1;
+{$IFNDEF OPENGL}
+      LOldMode := videomode;
+      try
+        videomode := vm32bit;
+        LWatch := TStopwatch.StartNew;
+        for LIndex := 1 to REPETITIONS do
+          OVR_Drawer;
+        ALines.Add(Format('flash32 threads=%d x%d: %d ms', [LThreaded, REPETITIONS, LWatch.ElapsedMilliseconds]));
+        videomode := vm8bit;
+        LWatch := TStopwatch.StartNew;
+        for LIndex := 1 to REPETITIONS do
+          OVR_Drawer;
+        ALines.Add(Format('flash8 threads=%d x%d: %d ms', [LThreaded, REPETITIONS, LWatch.ElapsedMilliseconds]));
+      finally
+        videomode := LOldMode;
+      end;
+{$ELSE}
+      LWatch := TStopwatch.StartNew;
+      for LIndex := 1 to REPETITIONS do
+        OVR_Drawer;
+      ALines.Add(Format('flash32 threads=%d x%d: %d ms', [LThreaded, REPETITIONS, LWatch.ElapsedMilliseconds]));
+{$ENDIF}
+    end;
+  finally
+    usemultithread := LOldThreads;
+  end;
+  overlay.Clear;
+end;
+
 procedure RunOverlay;
 var
   LPatch: string;
@@ -1445,6 +1513,9 @@ begin
     leveltime := leveltime + 2000;
     OvrStep('allexpired');
     GOverlayLines.SaveToFile('verify_scripthost_overlay.txt');
+    GOverlayLines.Clear;
+    RunOverlayBench(GOverlayLines, LPatch);
+    GOverlayLines.SaveToFile('verify_scripthost_overlay_bench.txt');
   finally
     FreeAndNil(GOverlayLines);
   end;

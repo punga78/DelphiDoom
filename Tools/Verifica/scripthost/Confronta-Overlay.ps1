@@ -49,6 +49,8 @@ foreach ($arguments in $runs) {
     $result = Join-Path $binDir 'verify_scripthost_overlay.txt'
     if (-not (Test-Path $result)) { throw "[$label] nessun risultato (il gioco non e arrivato al livello?)" }
     Move-Item $result (Join-Path $work "run${index}_$label.txt") -Force
+    $bench = Join-Path $binDir 'verify_scripthost_overlay_bench.txt'
+    if (Test-Path $bench) { Move-Item $bench (Join-Path $work "run${index}_${label}_bench.txt") -Force }
   }
   $a = @(Get-Content (Join-Path $work "run${index}_OLD.txt"))
   $b = @(Get-Content (Join-Path $work "run${index}_NEW.txt"))
@@ -76,6 +78,10 @@ foreach ($arguments in $runs) {
     $different++
     Write-Host "[$Game] $arguments : DIVERSO (vecchio $($a.Count) righe, nuovo $($b.Count))"
     $diff | Select-Object -First 20 | ForEach-Object { Write-Host "    $($_.SideIndicator) $($_.InputObject)" }
+  }
+  foreach ($label in 'OLD', 'NEW') {
+    $benchFile = Join-Path $work "run${index}_${label}_bench.txt"
+    if (Test-Path $benchFile) { Write-Host "  tempi $label ($Game, $arguments): $((Get-Content $benchFile) -join '; ')" }
   }
   if ($Save -ne '' -and $index -eq 1) { Copy-Item (Join-Path $work "run${index}_OLD.txt") $Save -Force }
 }
