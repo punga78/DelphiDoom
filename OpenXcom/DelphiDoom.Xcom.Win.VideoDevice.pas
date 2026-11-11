@@ -378,7 +378,7 @@ begin
   LStyle := WindowStyle;
   LRect := Rect(0, 0, FWidth, FHeight);
   AdjustWindowRect(LRect, LStyle, False);
-  FHandle := CreateWindow(WINDOW_CLASS, PChar(FTitle), LStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+  FHandle := CreateWindow(WINDOW_CLASS, PChar(FTitle), LStyle, Integer(CW_USEDEFAULT), Integer(CW_USEDEFAULT),
     LRect.Right - LRect.Left, LRect.Bottom - LRect.Top, 0, 0, HInstance, nil);
   if FHandle = 0 then
     RaiseLastOSError;
