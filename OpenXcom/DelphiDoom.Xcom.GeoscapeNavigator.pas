@@ -48,7 +48,8 @@ uses
   DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
-  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
+  DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
+  DelphiDoom.XcomBasescape.PurchaseState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
@@ -128,6 +129,8 @@ begin
       FHost.PushState(TXcomBaseInfoState.Create(FHost, ABase));
     bsSoldiers:
       FHost.PushState(TXcomSoldiersState.Create(FHost, ABase));
+    bsPurchase:
+      FHost.PushState(TXcomPurchaseState.Create(FHost, ABase));
     bsCrafts:
       FHost.PushState(TXcomCraftsState.Create(FHost, ABase));
   end;

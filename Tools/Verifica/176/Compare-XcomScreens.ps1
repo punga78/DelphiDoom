@@ -1,4 +1,4 @@
-<#
+﻿<#
   Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav, scritto dagli oggetti veri di OpenXcom) sia
   nel vero OpenXcom sia in XcomGame e confronta le schermate pixel per pixel (Compare-Png.ps1).
 
@@ -20,6 +20,18 @@ param(
   [string]$Back = '476,368'
 )
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Drawing
+function Test-ValidPng([string]$Path) {
+  if (-not (Test-Path $Path)) { return $false }
+  if ((Get-Item $Path).Length -lt 100) { return $false }
+  try {
+    $img = [System.Drawing.Image]::FromFile($Path)
+    $ok = $img.Width -gt 0 -and $img.Height -gt 0
+    $img.Dispose()
+    return $ok
+  }
+  catch { return $false }
+}
 New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
 $name = 'save{0:00}' -f $Save
 $t = [IO.File]::ReadAllText("$Root\Tests\Data\XcomSave\realsave\$name.sav")
@@ -48,7 +60,8 @@ try {
   # the capture of the real program sometimes gives no file: it is repeated (up to three times)
   for ($try = 0; $try -lt 3; $try++) {
     & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -Steps $real | Out-Null
-    $missing = @($Screens | Where-Object { -not (Test-Path "$Out\real\$($_.Split('=')[0]).png") })
+    # a file that exists is not enough: the capture can leave an empty or truncated PNG
+    $missing = @($Screens | Where-Object { -not (Test-ValidPng "$Out\real\$($_.Split('=')[0]).png") })
     if ($missing.Count -eq 0) { break }
   }
 }
