@@ -49,6 +49,8 @@ type
     procedure IlBriefingDovrebbeMostrareLaMissioneEChiamareIlSeguitoConOk;
     [Test]
     procedure GliAlieniMortiNelloSchiantoDovrebberoPortareAlSeguitoConOk;
+    [Test]
+    procedure GliAlieniMortiNelloSchiantoDovrebberoTenereVivaLaGraficaFinoAllaChiusura;
   end;
 
 implementation
@@ -56,7 +58,7 @@ implementation
 uses
   DelphiDoom.XcomBattleStates.NextTurnState, DelphiDoom.XcomBattleStates.InfoboxState,
   DelphiDoom.XcomBattleStates.InfoboxOkState, DelphiDoom.XcomBattleStates.BriefingState,
-  DelphiDoom.XcomBattleStates.AliensCrashState;
+  DelphiDoom.XcomBattleStates.AliensCrashState, DelphiDoom.XcomBattleStates.Graphics.Intf;
 
 procedure TTestXcomTurnScreens.SetupFixture;
 begin
@@ -232,7 +234,7 @@ begin
   if not Ready then
     Exit;
   LCalled := False;
-  LCrash := TXcomAliensCrashState.Create(FBench.World.Game, FBench.Session.Graphics.Surface('TAC00.SCR'),
+  LCrash := TXcomAliensCrashState.Create(FBench.World.Game, FBench.Session.Graphics,
     procedure
     begin
       LCalled := True;
@@ -243,6 +245,32 @@ begin
   PressKey(XCOM_KEY_RETURN);
   Assert.IsTrue(LCalled);
   Assert.IsTrue(FBench.World.Game.IsState(FState));
+end;
+
+procedure TTestXcomTurnScreens.GliAlieniMortiNelloSchiantoDovrebberoTenereVivaLaGraficaFinoAllaChiusura;
+var
+  LGraphics: IXcomBattleGraphics;
+  LCounted: TInterfacedObject;
+  LBefore: Integer;
+  LCrash: TXcomState;
+begin
+  if not Ready then
+    Exit;
+  // the launcher shows the message for a battle that does not start: nothing else holds its session, and the
+  // window blits TAC00.SCR of the pictures of that session at every redraw (an access violation in the blit when
+  // the pictures were freed with the briefing)
+  LGraphics := FBench.Session.Graphics;
+  LCounted := LGraphics as TInterfacedObject;
+  LBefore := LCounted.RefCount;
+  LCrash := TXcomAliensCrashState.Create(FBench.World.Game, LGraphics, nil);
+  FBench.World.Game.PushState(LCrash);
+  FBench.World.Wait(400);
+  Assert.AreEqual(LBefore + 1, LCounted.RefCount, 'the message must hold the pictures it draws');
+  PressKey(XCOM_KEY_RETURN);
+  // a popped state is freed at the start of the next turn of the game
+  FBench.World.Wait(40);
+  Assert.IsTrue(FBench.World.Game.IsState(FState));
+  Assert.AreEqual(LBefore, LCounted.RefCount, 'the pictures are let go with the message');
 end;
 
 initialization
