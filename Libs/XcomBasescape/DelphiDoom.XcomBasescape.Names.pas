@@ -12,7 +12,8 @@ unit DelphiDoom.XcomBasescape.Names;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier;
+  System.SysUtils, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomSave.Transfer;
 
 type
   /// <summary>
@@ -32,6 +33,10 @@ type
     ///   Soldier::getCraftString: STR_WOUNDED while the soldier recovers, STR_NONE_UC when it has no craft, else the
     ///   name of the craft
     /// </summary>
+    /// <summary>
+    ///   Transfer::getName: the name of the soldier, of the craft, STR_SCIENTISTS, STR_ENGINEERS or the text of the item
+    /// </summary>
+    class function TransferName(const ATransfer: TXcomTransfer; const ALanguage: TXcomLanguage): string; static;
     class function CraftText(const ASoldier: TXcomSoldier; const ALanguage: TXcomLanguage): string; static;
   end;
 
@@ -66,6 +71,20 @@ begin
     Result := ALanguage.GetString('STR_NONE_UC').Text
   else
     Result := CraftName(TXcomCraft(ASoldier.Craft), ALanguage);
+end;
+
+class function TXcomBaseNames.TransferName(const ATransfer: TXcomTransfer; const ALanguage: TXcomLanguage): string;
+begin
+  if Assigned(ATransfer.Soldier) then
+    Result := ATransfer.Soldier.Name
+  else if Assigned(ATransfer.Craft) then
+    Result := CraftName(ATransfer.Craft, ALanguage)
+  else if ATransfer.Scientists <> 0 then
+    Result := ALanguage.GetString('STR_SCIENTISTS').Text
+  else if ATransfer.Engineers <> 0 then
+    Result := ALanguage.GetString('STR_ENGINEERS').Text
+  else
+    Result := ALanguage.GetString(ATransfer.ItemId).Text;
 end;
 
 end.

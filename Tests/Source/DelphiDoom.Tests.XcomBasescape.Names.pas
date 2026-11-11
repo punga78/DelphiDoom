@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomSave.Craft,
-  DelphiDoom.XcomBasescape.Names;
+  DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomMod.RuleSoldier, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomSave.Transfer, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseCapacity;
 
 type
   [TestFixture]
@@ -32,6 +33,12 @@ type
     procedure DovrebbeDareStringaVuotaPerUnGradoInesistente;
     [Test]
     procedure DovrebbeUsareIlNomeDelVelivoloSeCe;
+    [Test]
+    procedure DovrebbeUsareIlNomeDelSoldatoNelTrasferimento;
+    [Test]
+    procedure DovrebbeUsareIlNomeDelVelivoloNelTrasferimento;
+    [Test]
+    procedure DovrebbeContareISoldatiDiUnTipoConITrasferimenti;
   end;
 
 implementation
@@ -66,6 +73,75 @@ begin
     end;
   finally
     LRules.Free;
+  end;
+end;
+
+procedure TTestXcomBaseNames.DovrebbeUsareIlNomeDelSoldatoNelTrasferimento;
+var
+  LRules: TXcomRuleSoldier;
+  LTransfer: TXcomTransfer;
+begin
+  LRules := TXcomRuleSoldier.Create('STR_SOLDIER');
+  try
+    LTransfer := TXcomTransfer.Create(12);
+    try
+      LTransfer.Soldier := TXcomSoldier.Create(LRules, nil, 0, nil);
+      LTransfer.Soldier.Name := 'Ann';
+      Assert.AreEqual('Ann', TXcomBaseNames.TransferName(LTransfer, nil));
+    finally
+      LTransfer.Free;
+    end;
+  finally
+    LRules.Free;
+  end;
+end;
+
+procedure TTestXcomBaseNames.DovrebbeUsareIlNomeDelVelivoloNelTrasferimento;
+var
+  LRules: TXcomRuleCraft;
+  LTransfer: TXcomTransfer;
+begin
+  LRules := TXcomRuleCraft.Create('STR_TRITON');
+  try
+    LTransfer := TXcomTransfer.Create(12);
+    try
+      LTransfer.Craft := TXcomCraft.Create(LRules, nil, 3);
+      LTransfer.Craft.Name := 'Nautilus';
+      Assert.AreEqual('Nautilus', TXcomBaseNames.TransferName(LTransfer, nil));
+    finally
+      LTransfer.Free;
+    end;
+  finally
+    LRules.Free;
+  end;
+end;
+
+procedure TTestXcomBaseNames.DovrebbeContareISoldatiDiUnTipoConITrasferimenti;
+var
+  LRulesA, LRulesB: TXcomRuleSoldier;
+  LBase: TXcomBase;
+  LTransfer: TXcomTransfer;
+  LCapacity: TXcomBaseCapacity;
+begin
+  LRulesA := TXcomRuleSoldier.Create('STR_A');
+  LRulesB := TXcomRuleSoldier.Create('STR_B');
+  LBase := TXcomBase.Create;
+  LCapacity := TXcomBaseCapacity.Create(nil);
+  try
+    LBase.Soldiers.Add(TXcomSoldier.Create(LRulesA, nil, 0, nil));
+    LBase.Soldiers.Add(TXcomSoldier.Create(LRulesA, nil, 0, nil));
+    LBase.Soldiers.Add(TXcomSoldier.Create(LRulesB, nil, 0, nil));
+    LTransfer := TXcomTransfer.Create(5);
+    LTransfer.Soldier := TXcomSoldier.Create(LRulesA, nil, 0, nil);
+    LBase.Transfers.Add(LTransfer);
+    Assert.AreEqual(3, LCapacity.SoldierCount(LBase, 'STR_A'));
+    Assert.AreEqual(1, LCapacity.SoldierCount(LBase, 'STR_B'));
+    Assert.AreEqual(0, LCapacity.SoldierCount(LBase, 'STR_C'));
+  finally
+    LCapacity.Free;
+    LBase.Free;
+    LRulesB.Free;
+    LRulesA.Free;
   end;
 end;
 
