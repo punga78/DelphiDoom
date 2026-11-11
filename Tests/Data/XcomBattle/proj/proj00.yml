@@ -1,0 +1,198 @@
+width: 20
+length: 20
+height: 1
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - ORGANIC1
+  - ORGANIC2
+  - BLANKS
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 400
+binTiles: AAAAAEgAKQD/////AAAAAP////8AAAABAAAAOwAIAP////8AAAAA/////wUCAAIAAAAmACMA/////wAAAAD/////AAAAAwAAAAAA////////AgD///////8AAAAEAAAACQAAAP//AQABAAAA//8AAAAAAAUAAAAAAP////8PAAIA/////wAAAAAABgAAAAwA////////AAD///////8AAAAHAAAAAAD///////8CAP///////wAAAAgAAAA6AP////8AAAAA/////wEAAAAACQAAADsA/////x8AAAD/////AAAAAAAKAAAAOQD///////8AAP///////wAAAAsAAABHAP////8wAAAA/////wAAAAAADAAAAEcA/////w0AAAD/////AAAAAAANAAAAOAD/////FwAAAP////8AAAAAAA4AAABRAP///////wAA////////AAAADwAAAFIA//8CAAEAAAD//wAAAQAAAAAQAAAARwD/////QQAAAP////8AAAAAABEAAAAFAP////8CAAEA/////wEAAAAAEgAAAEcA////////AAD///////8AAAATAAAAAQD///////8CAP///////wAAABQAAAA5AP///////wAA////////AAAAFQAAADoAWQD//w4AAAAAAP//AAAAAAAWAAAAUAD///////8AAP///////wAAABcAAABSAP///////wAA////////AAAAGAAAADsA/////ycAAAD/////AAACAQAZAAAAWwD//0IA//8AAP//AAD//wAAABoAAAA6AP////89AAAA/////wAAAAAAGwAAAFAAWgD/////AAAAAP////8AAAAcAAAAJgD//0IANgAAAP//AAAAAAAAAB0AAAAMAP///////wAA////////AAAAHgAAAAsA/////w8AAAD/////AAAAAAAfAAAAOgD/////HwAAAP////8AAAAAACAAAAALAFMA/////wAAAAD/////AAAAIQAAAE8A////////AAD///////8AAAAiAAAAJgD///////8AAP///////wAAACMAAABbAP////9AAAAA/////wAAAAAAJAAAADkA/////wIAAAD/////AQAAAAAlAAAAAQAjAP//AwACAAAA//8BAAAAACYAAABEAP////8BAAAA/////wEAAAAAJwAAAE8A////////AAD///////8AAAAoAAAAUgD//1wANAAAAP//AAAAAAAAACkAAABRAP////8GAAAA/////wAAAAAAKgAAAFEAIwD/////AAAAAP////8AAAArAAAAOQAAAP//PgAAAAAA//8AAAAAACwAAABFAP////8gAAAA/////wAAAAAALQAAAEYA////////AAD///////8AAAAuAAAACQD///////8BAP///////wAAAC8AAABSAP//XAD//wAA//8AAP//AAAAMAAAAFEAKQD/////AAAAAP////8AAAAxAAAAUAD/////CAAAAP////8BAAAAADIAAABRAP////8WAAAA/////wAAAAAAMwAAAAAA////////AgD///////8AAAA0AAAAOgD///////8AAP///////wYAADUAAABRAP///////wAA////////AAAANgAAAFsAWQD/////AAAAAP////8AAAA3AAAAUQD/////QAAAAP////8AAAAAADgAAAAAAP////8/AAIA/////wAAAAAAOQAAAAkA////////AQD///////8AAAA6AAAARgD///////8AAP///////wAAADsAAABPAP///////wAA////////AAAAPAAAAAUAQwD/////AQAAAP////8AAAA9AAAAOgD///////8AAP///////wAAAD4AAABFAAAA/////wAAAAD/////AAAAPwAAAEYAWQAsAP//AAAAAAAA//8AAABAAAAAJgD///////8AAP///////wAAAEEAAABHAP///////wAA////////AAAAQgAAADkA/////x0AAAD/////AAAAAABDAAAATwD///////8AAP///////wAAAEQAAAA5AP///////wAA////////AAAARQAAADkA/////zEAAAD/////AAAAAABGAAAAOQD///////8AAP///////wAAAEcAAAAAAAAA//8SAAIAAAD//wAAAAAASAAAAEUA////////AAD///////8AAABJAAAAUAD//ywADQAAAP//AAAAAAAAAEoAAAAAAP////8EAAIA/////wEAAAAASwAAAEcA////////AAD///////8AAABMAAAAUAD///////8AAP///////wAAAE0AAAALAP////9fAAAA/////wAAAAAATgAAAFsA/////18AAAD/////AAAAAABPAAAAAAD//1YA//8CAP//AAD//wAAAFAAAAA4AAAA/////wAAAAD/////AAAAUQAAAAUA////////AQD///////8AAABSAAAARwD///////8AAP///////wAAAFMAAABbAP///////wAA////////AAAAVAAAAAwA//9CAFUAAAD//wAAAAAAAABVAAAAOwAJAP////8AAAAA/////wAAAFYAAAAmAP//VwD//wAA//8AAP//AAAAVwAAAAUAAAD/////AQAAAP////8AAABYAAAAAAD/////IgACAP////8AAAAAAFkAAAAAAP///////wIA////////BQIAWgAAADcA////////AAD///////8AAABbAAAAUQD//10A//8AAP//AAD//wAAAFwAAAAMAP////8WAAAA/////wAAAAAAXQAAAAkA//8sADYAAQD//wAAAAAAAABeAAAAUQD///////8AAP///////wAAAF8AAABQAP////8OAAAA/////wAAAAAAYAAAAAkA/////14AAQD/////AAAEBQBhAAAANwD///////8AAP///////wAAAGIAAABFAEMA//8ZAAAAAAD//wAAAAAAYwAAAFEA////////AAD///////8AAABkAAAARgD///////8AAP///////wAAAGUAAAA3AAgAAgD//wAAAAAAAP//AAAAZgAAAAsA/////1gAAAD/////AAAGBABnAAAAUAD/////WAAAAP////8AAAAAAGgAAAA5AP////8XAAAA/////wAAAAAAaQAAADoA////////AAD///////8AAABqAAAAOwD//10A//8AAP//AAD//wAAAGsAAAAJAP///////wEA////////AAAAbAAAADgA////////AAD///////8AAABtAAAAOQD/////VQAAAP////8AAAAAAG4AAABIAP////9YAAAA/////wAAAgAAbwAAAAAA////////AgD///////8IAgBwAAAAOwBDAP//DgAAAAAA//8AAAAAAHEAAABHAFoA//8FAAAAAAD//wAAAAAAcgAAAEgA/////wcAAAD/////AQAAAABzAAAAAAD///////8CAP///////wAAAHQAAAAMAP////8/AAAA/////wAAAAAAdQAAADkA////////AAD///////8AAAB2AAAANwD///////8AAP///////wAAAHcAAABbAP///////wAA////////AAAAeAAAAEgA////////AAD///////8AAAB5AAAABQD///////8BAP///////wYAAHoAAAA3ACoA//8TAAAAAAD//wAAAAAAewAAAEgA////////AAD///////8AAAB8AAAATwD/////AgAAAP////8BAAAAAH0AAABbAFQA//8bAAAAAAD//wAAAAAAfgAAADgA/////x0AAAD/////AAAAAAB/AAAAOAD///////8AAP///////wAAAIAAAAA4AP///////wAA////////AAAAgQAAADoA////////AAD///////8AAACCAAAARQD///////8AAP///////wAAAIMAAABHAP////8UAAAA/////wAAAAAAhAAAAEUA////////AAD///////8AAACFAAAAUgD///////8AAP///////wAAAIYAAABHAP////89AAAA/////wAAAAAAhwAAAAUA//9cAAYAAQD//wAAAAAAAACIAAAASAD///////8AAP///////wAAAIkAAAAJAP//VgAHAAEA//8AAAEAAAAAigAAACYA////////AAD///////8AAACLAAAAUAD/////BAAAAP////8AAAAAAIwAAAALAP///////wAA////////AwAAjQAAAAwA////////AAD///////8AAACOAAAAOQD///////8AAP///////wAAAI8AAAA3AP///////wAA////////BgAAkAAAADgACQAKAB8AAAAAAAAAAAAAAACRAAAAUgD///////8AAP///////wAAAJIAAABGAP///////wAA////////AAAAkwAAAAkA////////AQD///////8AAACUAAAAUQD//ysA//8AAP//AAD//wAAAJUAAAA7AP//XQAzAAAA//8AAAAAAAAAlgAAAEgA////////AAD///////8AAACXAAAAOwD/////NgAAAP////8AAAAAAJgAAABIAP////8eAAAA/////wAAAAAAmQAAAAUA////////AQD///////8AAACaAAAAUAAjAFYA//8AAAAAAAD//wcAAJsAAAA7AP///////wAA////////AAAAnAAAAE8A////////AAD///////8AAACdAAAADAD///////8AAP///////wAAAJ4AAAALAP////8NAAAA/////wAAAAAAnwAAAFEA//9XAP//AAD//wAA//8AAACgAAAAAAD///////8CAP///////wAAAKEAAAA5AP///////wAA////////AAAAogAAAEUA////////AAD///////8AAACjAAAARAD///////8AAP///////wAAAKQAAAA3ACMA/////wAAAAD/////AAAApQAAAAsA/////w4AAAD/////AAAAAACmAAAATwD//ywA//8AAP//AAD//wAAAKcAAABFAP///////wAA////////AAAAqAAAAAEA/////00AAgD/////AAAAAACpAAAANwBTACUALQAAAAAAAAAAAAAAAKoAAAA5AP////8eAAAA/////wAAAAAAqwAAAEcACAD//zQAAAAAAP//AAAAAACsAAAAUgD/////GwAAAP////8AAAAAAK0AAABRAP///////wAA////////AAAArgAAAFEAIwD//xkAAAAAAP//AAACBQCvAAAAAAD///////8CAP///////wAAALAAAABRAP////8xAAAA/////wAAAAAAsQAAAEUA////////AAD///////8AAACyAAAARwD///////8AAP///////wAAALMAAABIAP///////wAA////////AAAAtAAAADcA/////xgAAAD/////AAAAAAC1AAAARgD/////PAAAAP////8AAAAAALYAAAA6AP///////wAA////////AAAAtwAAAFAA//9dAP//AAD//wAA//8AAAC4AAAAOAD/////NAAAAP////8AAAAAALkAAABQAP///////wAA////////BQAAugAAAEcA////////AAD///////8AAAC7AAAAOwD///////8AAP///////wAAALwAAAA4AP//XABBAAAA//8AAAAAAAAAvQAAADgAAAAHAP//AAAAAAAA//8AAAC+AAAAUQAJAP////8AAAAA/////wAAAL8AAAA4AP///////wAA////////AAAAwAAAADcA/////1UAAAD/////AAAAAADBAAAARwD///////8AAP///////wAAAMIAAAAMAP///////wAA////////AAAAwwAAAEgA////////AAD///////8AAADEAAAAOAD///////8AAP///////wAAAMUAAAA6AP////8iAAAA/////wAAAAAAxgAAAEQAWQD/////AAAAAP////8BAAjHAAAAOAD/////WAAAAP////8AAAAAAMgAAAABAP////8iAAIA/////wAAAAAAyQAAAEcA////////AAD///////8AAADKAAAAAQD/////QQACAP////8AAAAAAMsAAAAFAP////8WAAEA/////wAAAAAAzAAAAEQA/////04AAAD/////AAAAAADNAAAAWwAqAP//WAAAAAAA//8AAAAAAM4AAABEAP///////wAA////////AAAAzwAAAEgA/////0AAAAD/////AAAAAADQAAAASAD/////HgAAAP////8AAAAAANEAAAAMAP///////wAA////////AAAA0gAAAAkA////////AQD///////8AAADTAAAASAD///////8AAP///////wAAANQAAAA7AP///////wAA////////AAAA1QAAADkA////////AAD///////8AAADWAAAASAD///////8AAP///////wAAANcAAABPAP////8FAAAA/////wAAAAAA2AAAAFIA////////AAD///////8AAADZAAAAAAD///////8CAP///////wAAANoAAAA3AP///////wAA////////AAAA2wAAAFIA/////xsAAAD/////AAAAAADcAAAABQD///////8BAP///////wAAAN0AAAAmAP///////wAA////////AAAA3gAAAEgA/////yEAAAD/////AAAAAADfAAAAJgD///////8AAP///////wAAAOAAAAA4AP///////wAA////////AAAA4QAAAEgA/////0wAAAD/////AAACAQDiAAAAUgD//wIAAgAAAP//AAABAAAAAOMAAAAMAEMA//8aAAAAAAD//wAAAAAA5AAAAAkA//8sADAAAQD//wAAAAAAAADlAAAACwD///////8AAP///////wAAAOYAAABbAP///////wAA////////AAAA5wAAAEcA////////AAD///////8AAADoAAAACwD//1cA//8AAP//AAD//wIFAOkAAAALAP//JQD//wAA//8AAP//AAAA6gAAAEQA/////xMAAAD/////AAAAAADrAAAARQD///////8AAP///////wAAAOwAAABRAP////8DAAAA/////wAAAAAA7QAAACYA////////AAD///////8AAADuAAAACwD///////8AAP///////wAAAO8AAABbAP////8YAAAA/////wAAAAAA8AAAAEcA/////zMAAAD/////AAAAAADxAAAADAD///////8AAP///////wAAAPIAAAAAAP//AgBAAAIA//8AAAAAAAAA8wAAADgA/////yQAAAD/////AAAAAAD0AAAARwD///////8AAP///////wAAAPUAAABSAP////8PAAAA/////wAAAAAA9gAAAAkA//9cAP//AQD//wAA//8IAAD3AAAARwD///////8AAP///////wAAAPgAAAAJAAAAXQAXAAEAAAAAAAAAAAAA+QAAAEgA/////yAAAAD/////AAAAAAD6AAAARQD/////SgAAAP////8AAAAAAPsAAAA7AP////8dAAAA/////wAAAAAA/AAAAFEA////////AAD///////8AAAD9AAAAWwD//ywA//8AAP//AAD//wAAAP4AAAALAP//JQAGAAAA//8AAAAAAAAA/wAAAAUA////////AQD///////8AAAAAAQAABQD///////8BAP///////wAAAAEBAABHAP///////wAA////////AAAAAgEAADkA/////wEAAAD/////AQAAAAADAQAAOwD/////IgAAAP////8AAAAAAAQBAAABAP////8bAAIA/////wAAAQAABQEAAAsA/////xMAAAD/////AAAAAAAGAQAAOgD/////QAAAAP////8AAAAAAAcBAABRAP///////wAA////////AAAACAEAAEQA//8KAP//AAD//wAA//8AAAAJAQAACwD///////8AAP///////wEAAAoBAAA3AP///////wAA////////AAAACwEAAFsAKgD/////AAAAAP////8AAAAMAQAAOQD///////8AAP///////wAAAA0BAABEAP///////wAA////////AAAADgEAAEgA/////w4AAAD/////AAAAAAAPAQAAUAD/////MAAAAP////8AAAAAABABAABHAP///////wAA////////AAAAEQEAAAsA/////zUAAAD/////AAAAAAASAQAAWwApACwA//8AAAAAAAD//wgAABMBAAA6AP///////wAA////////AAAAFAEAAAUA//9dAP//AQD//wAA//8AAAAVAQAAOAD///////8AAP///////wAAABYBAABQAP////9YAAAA/////wAAAAAAFwEAAAwA////////AAD///////8AAAAYAQAATwD///////8AAP///////wAAABkBAAAAAP//XAD//wIA//8AAP//AAAAGgEAAFEA//9XABQAAAD//wAAAAAJAAAbAQAAOAD///////8AAP///////wAAABwBAABEACMA//8UAAAAAAD//wAAAAAAHQEAACYA////////AAD///////8AAAAeAQAAJgD//1cAFQAAAP//AAAAAAAAAB8BAABIAP///////wAA////////AwAAIAEAAAkA/////ygAAQD/////AAAAAAAhAQAAOAD/////MQAAAP////8AAAAAACIBAAAAAP///////wIA////////AAAAIwEAADsA/////zwAAAD/////AAAAAAAkAQAAUgD/////PgAAAP////8AAAAAACUBAABRAP///////wAA////////AAAAJgEAAEUA////////AAD///////8AAAAnAQAAUQD///////8AAP///////wAAACgBAABRAAkA//9JAAAAAAD//wAAAAAAKQEAAEgA////////AAD///////8AAAAqAQAARgD/////WAAAAP////8AAAAAACsBAABEAP//QgD//wAA//8AAP//AAAALAEAAEYA////////AAD///////8AAAAtAQAAWwD/////JwAAAP////8AAAAAAC4BAABHAP////8AAAAA/////wEAAAAALwEAADoA////////AAD///////8AAAAwAQAAOAD/////AgAAAP////8BAAAAADEBAABGAP///////wAA////////AAAAMgEAAAkA//8CAP//AQD//wAA//8AAAAzAQAAWwD///////8AAP///////wAAADQBAABQAP//JQD//wAA//8AAP//AAAANQEAAEgA////////AAD///////8AAAA2AQAASAD//wIA//8AAP//AAD//wAAADcBAABHAP///////wAA////////AAAAOAEAAEQA/////yEAAAD/////AAAAAAA5AQAAAQD/////IQACAP////8AAAAAADoBAAAAAP///////wIA////////AAAAOwEAAEUA//8HAB8AAAD//wAAAAAAAAA8AQAAOQD///////8AAP///////wAAAD0BAABbAP//CgD//wAA//8AAP//AAAAPgEAADoA//8KAP//AAD//wAA//8DAAA/AQAAAQBTAP//EQACAAAA//8AAAkBAEABAABPACoA/////wAAAAD/////AAAAQQEAAAEA/////x8AAgD/////AAAAAABCAQAAOAD///////8AAP///////wAAAEMBAABPACkA/////wAAAAD/////AAAARAEAAAEA////////AgD///////8AAABFAQAASAApAP//AwAAAAAA//8BAAAAAEYBAABPAP////8nAAAA/////wAAAAAARwEAAAwA////////AAD///////8AAABIAQAAWwD///////8AAP///////wAAAEkBAABbAFQA/////wAAAAD/////AAAASgEAADkA////////AAD///////8AAABLAQAARwD/////EgAAAP////8AAAAAAEwBAAAAAAkA/////wIAAAD/////AAAATQEAAEcA/////w0AAAD/////AAAAAABOAQAARQD///////8AAP///////wAAAE8BAABSACoABwANAAAAAAAAAAAAAAAAUAEAAFIA////////AAD///////8AAABRAQAAUgD//1YA//8AAP//AAD//wAAAFIBAAAJAP////8+AAEA/////wAAAAAAUwEAADgA/////00AAAD/////AAAAAABUAQAANwApAP//AAAAAAAA//8BAAAAAFUBAABEAFkA//9OAAAAAAD//wAAAAAAVgEAAFsA/////wQAAAD/////AQAAAABXAQAAUQD///////8AAP///////wAAAFgBAABPAP///////wAA////////AAAAWQEAAAkA////////AQD///////8AAABaAQAAAQD///////8CAP///////wAAAFsBAABbAP///////wAA////////AAAAXAEAAEQA/////xUAAAD/////AAAAAABdAQAACQD///////8BAP///////wAAAF4BAABSAP///////wAA////////AAAAXwEAAE8A////////AAD///////8AAABgAQAAAAAjAP//AQACAAAA//8BAAAAAGEBAABSAFMALAD//wAAAAAAAP//AAAAYgEAAFAA/////wgAAAD/////AQAAAABjAQAARAD/////MAAAAP////8AAAAAAGQBAAALAP////80AAAA/////wAAAAAAZQEAAE8A////////AAD///////8AAABmAQAANwD//woA//8AAP//AAD//wAAAGcBAABRAP///////wAA////////CAAAaAEAADcA////////AAD///////8AAABpAQAADAD/////MwAAAP////8AAAAAAGoBAABGAP///////wAA////////AAAAawEAADkA////////AAD///////8AAABsAQAADAD///////8AAP///////wAAAG0BAABbAP////9BAAAA/////wAAAAAAbgEAADcAUwD/////AAAAAP////8AAABvAQAARgD///////8AAP///////wAAAHABAABEAP////8DAAAA/////wEAAAAAcQEAAAsA////////AAD///////8AAAByAQAAWwD//1YAHQAAAP//AAAAAAAAAHMBAAA7ACkA/////wAAAAD/////AAAAdAEAAAsA////////AAD///////8AAAB1AQAAOwD//1YAEgAAAP//AAAAAAAAAHYBAAA7AFoA/////wAAAAD/////AAAAdwEAAE8A/////1UAAAD/////AAADBAB4AQAARQD///////8AAP///////wAAAHkBAABSAAAA/////wAAAAD/////AAAAegEAAAEA////////AgD///////8AAAB7AQAARAD//woA//8AAP//AAD//wYAAHwBAABRAAAAXQBAAAAAAAAAAAAAAAAAfQEAAFIA////////AAD///////8AAAB+AQAAOQD///////8AAP///////wAAAH8BAAAMAP////8zAAAA/////wAAAAAAgAEAACYA////////AAD///////8AAACBAQAAOQBZAP////8AAAAA/////wAAAIIBAABGAAkA//8kAAAAAAD//wAAAAAAgwEAAEQAVAD//zQAAAAAAP//AAAAAACEAQAACQD///////8BAP///////wAAAIUBAAA5AP///////wAA////////AAAAhgEAADgA//8sAP//AAD//wAA//8BAACHAQAARgD///////8AAP///////wAAAIgBAAAMAP////8QAAAA/////wAAAAAAiQEAAFsA/////0sAAAD/////AAAAAACKAQAASAAAAP////8AAAAA/////wAAAIsBAAA5AAgA/////wAAAAD/////AAAAjAEAADoA////////AAD///////8AAACNAQAARgD/////AwAAAP////8BAAAAAI4BAAA5AP////8gAAAA/////wAAAAAAjwEAADoA/////14AAAD/////AAAAAAA=
+units:
+  - id: 1000000
+    genUnitType: STR_AQUATOID_SOLDIER
+    genUnitArmor: AQUATOID_ARMOR0
+    faction: 2
+    status: 0
+    position:
+      - 18
+      - 6
+      - 0
+    direction: 3
+    directionTurret: 3
+    tu: 54
+    health: 30
+    stunlevel: 0
+    energy: 90
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 4
+      - 3
+      - 3
+      - 2
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 5
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_LOBSTERMAN_NAVIGATOR
+    genUnitArmor: LOBSTERMAN_ARMOR1
+    faction: 0
+    status: 0
+    position:
+      - 5
+      - 12
+      - 0
+    direction: 0
+    directionTurret: 0
+    tu: 74
+    health: 120
+    stunlevel: 0
+    energy: 95
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 20
+      - 20
+      - 20
+      - 18
+      - 10
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000002
+    genUnitType: STR_XARQUID_TERRORIST
+    genUnitArmor: XARQUID_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 5
+      - 5
+      - 0
+    direction: 6
+    directionTurret: 6
+    tu: 40
+    health: 114
+    stunlevel: 0
+    energy: 80
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 50
+      - 50
+      - 50
+      - 50
+      - 5
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 0
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20

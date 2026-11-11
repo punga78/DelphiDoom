@@ -44,6 +44,7 @@ static std::string StateText(SavedBattleGame* b) {
   return o.str();
 }
 
+#ifndef NO_ENGINE_MAIN
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: enginegen <data> <user> <out folder> <count> <seed> <LOFTEMPS.DAT>\n"); return 2; }
   std::string data = argv[1], user = argv[2], out = argv[3];
@@ -204,3 +205,4 @@ int main(int argc, char** argv) {
   fprintf(stderr, "ok\n");
   return 0;
 }
+#endif

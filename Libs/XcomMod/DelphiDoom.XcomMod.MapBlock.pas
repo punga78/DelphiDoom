@@ -26,6 +26,10 @@ type
     class operator Subtract(const ALeft, ARight: TXcomPosition): TXcomPosition;
     /// <summary>operator/(int): each coordinate divided like a C++ int (towards zero)</summary>
     class operator IntDivide(const ALeft: TXcomPosition; ADivisor: Integer): TXcomPosition;
+    /// <summary>operator*(Position): each coordinate multiplied by the one of the other</summary>
+    class operator Multiply(const ALeft, ARight: TXcomPosition): TXcomPosition;
+    /// <summary>operator/(Position): each coordinate divided by the one of the other like a C++ int</summary>
+    class operator IntDivide(const ALeft, ARight: TXcomPosition): TXcomPosition;
     class operator Equal(const ALeft, ARight: TXcomPosition): Boolean;
     class operator NotEqual(const ALeft, ARight: TXcomPosition): Boolean;
   end;
@@ -87,6 +91,16 @@ end;
 class operator TXcomPosition.IntDivide(const ALeft: TXcomPosition; ADivisor: Integer): TXcomPosition;
 begin
   Result := Make(ALeft.X div ADivisor, ALeft.Y div ADivisor, ALeft.Z div ADivisor);
+end;
+
+class operator TXcomPosition.Multiply(const ALeft, ARight: TXcomPosition): TXcomPosition;
+begin
+  Result := Make(ALeft.X * ARight.X, ALeft.Y * ARight.Y, ALeft.Z * ARight.Z);
+end;
+
+class operator TXcomPosition.IntDivide(const ALeft, ARight: TXcomPosition): TXcomPosition;
+begin
+  Result := Make(ALeft.X div ARight.X, ALeft.Y div ARight.Y, ALeft.Z div ARight.Z);
 end;
 
 class operator TXcomPosition.Equal(const ALeft, ARight: TXcomPosition): Boolean;
