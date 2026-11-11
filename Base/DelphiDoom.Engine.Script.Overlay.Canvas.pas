@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: engine - the video, the lumps and the font of the overlay       }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }

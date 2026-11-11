@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: engine - the console commands of the overlay                    }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }

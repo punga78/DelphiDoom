@@ -1120,6 +1120,11 @@ const
     '  // an actor made by the script: it is in the savegame with the others'#13#10 +
     '  gspawn := SpawnActorType(GetActorX(GetPlayerActor(0)) + 4194304, GetActorY(GetPlayerActor(0)), GetActorZ(GetPlayerActor(0)), GetActorMobjType(GetPlayerActor(0)));'#13#10 +
     '  SetActorMOMX(gspawn, 65536);'#13#10 +
+    '  // drawers of the overlay that stay alive: they are in the savegame too (fetta 2i)'#13#10 +
+    '  OverlayDrawText(100000, ''Overlay in the savegame'', 0, 10, 10);'#13#10 +
+    '  OverlayDrawRect(100000, 255, 0, 0, 20, 40, 60, 60);'#13#10 +
+    '  OverlayDrawLine(100000, 0, 255, 0, 10, 80, 200, 120);'#13#10 +
+    '  OverlayDrawPixel(100000, 0, 0, 255, 100, 100);'#13#10 +
     'end;'#13#10 +
     'event OnTick(const tick: Integer);'#13#10 +
     'begin'#13#10 +

@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  DelphiDoom is a source port of the game Doom and it is
 //  based on original Linux Doom as published by "id Software"
