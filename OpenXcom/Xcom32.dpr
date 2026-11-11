@@ -190,7 +190,6 @@ begin
   AArguments.Settings.VersionText := DEFAULT_VERSION;
   AArguments.Settings.LoadMode := lmThread;
   AArguments.Milliseconds := 3000;
-  Result := True;
   LIndex := 1;
   while LIndex <= ParamCount do
   begin
