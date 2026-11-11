@@ -320,6 +320,24 @@ static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& ou
       } else if (w[0] == "setmorale") {
         BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
         if (u) u->moraleChange(atoi(w[2].c_str()) - u->getMorale());
+      } else if (w[0] == "debug") {
+        // SavedBattleGame::setDebugMode: every tile discovered and every unit drawn (the sprites of the aliens)
+        b->setDebugMode();
+      } else if (w[0] == "pose") {
+        // a unit in a pose that the drawing routines tell apart, with the methods of BattleUnit that the states call:
+        //   pose <id> face <dir> | pose <id> aim | pose <id> fall <steps> | pose <id> walk <steps> <x> <y> <z>
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        if (u) {
+          if (w[2] == "face") u->setDirection(atoi(w[3].c_str()));
+          else if (w[2] == "aim") u->aim(true);
+          else if (w[2] == "fall") { u->startFalling(); for (int k = 0; k < atoi(w[3].c_str()); k++) u->keepFalling(); }
+          else if (w[2] == "walk") {
+            Tile* below = b->getTile(u->getPosition() + Position(0, 0, -1));
+            u->startWalking(u->getDirection(), Position(atoi(w[4].c_str()), atoi(w[5].c_str()), atoi(w[6].c_str())), below, true);
+            for (int k = 0; k < atoi(w[3].c_str()); k++) u->keepWalking(below, true);
+          }
+          u->setCache(0);
+        }
       } else if (w[0] == "camera") {
         // the camera centers on a tile (no redraw)
         g_map->getCamera()->centerOnPosition(Position(atoi(w[1].c_str()), atoi(w[2].c_str()), atoi(w[3].c_str())), false);

@@ -17,9 +17,12 @@ uses
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
-  DelphiDoom.XcomEngine.ModCatalog.Intf;
+  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf;
 
 type
+  /// <summary>ApplicationState of Game::run: what the pauseMode option makes of a game without the focus</summary>
+  TXcomRunningState = (rsRunning, rsSlowed, rsPaused);
+
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
   TXcomScreenshotHandler = reference to procedure(AScreen: TXcomScreen);
 
@@ -44,11 +47,13 @@ type
     FQuit: Boolean;
     FInit: Boolean;
     FMouseActive: Boolean;
+    FRunningState: TXcomRunningState;
     FTimeOfLastFrame: Cardinal;
     FFrames: Integer;
     FOnScreenshot: TXcomScreenshotHandler;
     FLanguageProvider: IXcomLanguageProvider;
     FDisplayModes: IXcomDisplayModes;
+    FShaderCatalog: IXcomShaderCatalog;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
@@ -83,11 +88,13 @@ type
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); override;
     function LanguageProvider: IXcomLanguageProvider; override;
     function DisplayModes: IXcomDisplayModes; override;
+    function ShaderCatalog: IXcomShaderCatalog; override;
     function OptionsStore: IXcomOptionsStore; override;
     procedure LoadLanguages; override;
     procedure SetVolume(ASound, AMusic, AUi: Integer); override;
     procedure SetLanguageProvider(const AProvider: IXcomLanguageProvider);
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
+    procedure SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
     /// <summary>The music of the game; it is reloaded each time the game adopts data</summary>
@@ -115,8 +122,18 @@ type
     procedure RunFrame;
     /// <summary>Game::run on SDL_VIDEORESIZE: the display takes the size of the window, the states recenter</summary>
     procedure ResizeDisplay(AWidth, AHeight: Integer);
-    /// <summary>Game::run: until quit; waits 1 ms between the turns</summary>
+    /// <summary>Game::run: until quit; waits FrameDelay between the turns and saves the options at the end</summary>
     procedure Run;
+    /// <summary>
+    ///   Options::save at the end of Game::run: the options go to the store (the size of a window that the player
+    ///   resized is among them). A game without a store does nothing. The program that runs its own loop of RunFrame
+    ///   calls it when the loop ends
+    /// </summary>
+    procedure SaveOptions;
+    /// <summary>The milliseconds to wait after a turn: 1 while running, 100 when slowed or paused (pauseMode)</summary>
+    function FrameDelay: Integer;
+    /// <summary>What pauseMode made of the game when the window lost the focus or was minimized</summary>
+    property RunningState: TXcomRunningState read FRunningState;
     function IsQuitting: Boolean;
     /// <summary>The state on top (nil when there is none)</summary>
     function TopState: TXcomState;
@@ -127,6 +144,12 @@ type
   end;
 
 implementation
+
+const
+  /// <summary>kbFocusRun: the game has not the keyboard focus, by pauseMode</summary>
+  NO_FOCUS_RUN: array[0..3] of TXcomRunningState = (rsRunning, rsRunning, rsSlowed, rsPaused);
+  /// <summary>stateRun: the game is minimized, by pauseMode</summary>
+  MINIMIZED_RUN: array[0..3] of TXcomRunningState = (rsSlowed, rsPaused, rsPaused, rsPaused);
 
 constructor TXcomGame.Create(AOptions: TXcomOptions; AScreen: TXcomScreen; ACursor, AFpsCounter: TXcomInteractiveSurface;
   ALanguage: TXcomLanguage; const AClock: IXcomClock; const AEvents: IXcomEventSource);
@@ -234,6 +257,8 @@ begin
 end;
 
 procedure TXcomGame.AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage);
+var
+  LFormats: IXcomSoundFormats;
 begin
   if Assigned(ALanguage) and (ALanguage <> FLanguage) then
   begin
@@ -243,6 +268,12 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+  // Mod::loadExtraResources: the sounds of a game without soundDefs follow the preferred format
+  if Supports(AResources, IXcomSoundFormats, LFormats) then
+  begin
+    LFormats.SetPreferredSound(FOptions.PreferredSound);
+    FOptions.CurrentSound := LFormats.CurrentSound;
+  end;
   if (FMusic <> nil) and (AResources <> nil) then
     FMusic.Reload(AResources);
 end;
@@ -340,6 +371,11 @@ begin
   Result := FDisplayModes;
 end;
 
+function TXcomGame.ShaderCatalog: IXcomShaderCatalog;
+begin
+  Result := FShaderCatalog;
+end;
+
 function TXcomGame.OptionsStore: IXcomOptionsStore;
 begin
   Result := FOptionsStore;
@@ -389,6 +425,11 @@ end;
 procedure TXcomGame.SetDisplayModes(const AModes: IXcomDisplayModes);
 begin
   FDisplayModes := AModes;
+end;
+
+procedure TXcomGame.SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
+begin
+  FShaderCatalog := ACatalog;
 end;
 
 procedure TXcomGame.SetOptionsStore(const AStore: IXcomOptionsStore);
@@ -486,6 +527,7 @@ var
   LIndex: Integer;
   LFirst: Integer;
   LTimeUntilNextFrame: Double;
+  LPauseMode: Integer;
 begin
   FDeleted.Clear;
   if FStates.Count = 0 then
@@ -520,16 +562,31 @@ begin
         if FMouseActive then
           DispatchEvent(LEvent);
       ekActive:
-        // SDL_ACTIVEEVENT: with backgroundMute the game is silent while the window has not the focus
-        if FOptions.BackgroundMute then
+        begin
+          // SDL_ACTIVEEVENT: pauseMode slows or stops a game that is minimized (Button 1) or without the focus
+          LPauseMode := FOptions.GetValue('pauseMode');
+          if (LPauseMode < 0) or (LPauseMode > 3) then
+            LPauseMode := 0;
           if LEvent.Key <> 0 then
-            SetVolume(FOptions.SoundVolume, FOptions.MusicVolume, FOptions.UiVolume)
+            FRunningState := rsRunning
+          else if LEvent.Button <> 0 then
+            FRunningState := MINIMIZED_RUN[LPauseMode]
           else
-            SetVolume(0, 0, 0);
+            FRunningState := NO_FOCUS_RUN[LPauseMode];
+          // with backgroundMute the game is silent while the window has not the focus
+          if FOptions.BackgroundMute then
+            if LEvent.Key <> 0 then
+              SetVolume(FOptions.SoundVolume, FOptions.MusicVolume, FOptions.UiVolume)
+            else
+              SetVolume(0, 0, 0);
+        end;
       ekResize:
-        // SDL_VIDEORESIZE: the player has dragged the border of a resizable window (X and Y are the new size)
-        if FOptions.AllowResize then
-          ResizeDisplay(LEvent.X, LEvent.Y);
+        begin
+          FRunningState := rsRunning;
+          // SDL_VIDEORESIZE: the player has dragged the border of a resizable window (X and Y are the new size)
+          if FOptions.AllowResize then
+            ResizeDisplay(LEvent.X, LEvent.Y);
+        end;
     else
       DispatchEvent(LEvent);
     end;
@@ -538,7 +595,7 @@ begin
   end;
   if FScreen.TakeScreenshotRequest and Assigned(FOnScreenshot) then
     FOnScreenshot(FScreen);
-  if FStates.Count = 0 then
+  if (FStates.Count = 0) or (FRunningState = rsPaused) then
     Exit;
   FStates.Last.Think;
   FFpsCounter.Think;
@@ -568,8 +625,23 @@ begin
   while not FQuit do
   begin
     RunFrame;
-    FClock.Delay(1);
+    FClock.Delay(FrameDelay);
   end;
+  SaveOptions;
+end;
+
+procedure TXcomGame.SaveOptions;
+begin
+  if Assigned(FOptionsStore) then
+    FOptionsStore.Save(FOptions);
+end;
+
+function TXcomGame.FrameDelay: Integer;
+begin
+  if FRunningState = rsRunning then
+    Result := 1
+  else
+    Result := 100;
 end;
 
 end.

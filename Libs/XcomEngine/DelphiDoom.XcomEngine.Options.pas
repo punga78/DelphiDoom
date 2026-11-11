@@ -482,10 +482,17 @@ begin
   LModsNode := TXcomYamlFields.Field(ADocument, 'mods');
   if Assigned(LModsNode) and LModsNode.IsSequence then
   begin
-    // Options::load: "mods" is a list of one-pair maps (id: active)
+    // Options::load: "mods" is a list of maps with id and active; the files this port wrote before had one-pair
+    // maps (id: active), still read
     Mods := nil;
     for LModItem in LModsNode.Items do
-      if LModItem.IsMap then
+      if LModItem.IsMap and Assigned(TXcomYamlFields.Field(LModItem, 'id')) then
+      begin
+        SetLength(Mods, Length(Mods) + 1);
+        Mods[High(Mods)].Id := TXcomYamlFields.ReadString(LModItem, 'id', '');
+        Mods[High(Mods)].Active := TXcomYamlFields.ReadBoolean(LModItem, 'active', False);
+      end
+      else if LModItem.IsMap then
         for LPair in LModItem.Pairs do
         begin
           if not LPair.Value.TryAsBoolean(LBoolean) then

@@ -21,8 +21,9 @@ type
   /// <summary>
   ///   The video options: the resolution (typed or chosen from the modes of the display with the arrows), the
   ///   language, the filter, the display mode, the scales of the geoscape and the battlescape, and three switches.
-  ///   The OpenGL shaders of the Shaders folder are not listed (there is no OpenGL in the port). A change is kept in
-  ///   the pending options (New...) until OK
+  ///   The filter list has the four fixed entries (the software filters Scale, HQx and xBRZ are not ported: they
+  ///   only set their options) and then the OpenGL shaders of the catalog of the host. A change is kept in the
+  ///   pending options (New...) until OK
   /// </summary>
   TXcomOptionsVideoState = class(TXcomOptionsBaseState)
   strict private
@@ -50,6 +51,8 @@ type
     FModes: TArray<TXcomDisplayMode>;
     FResCurrent: Integer;
     FLanguages: TArray<string>;
+    FFilters: TArray<string>;
+    class function UcWords(const AText: string): string; static;
     procedure FindCurrentResolution(AWidth, AHeight: Integer);
     procedure ResolutionUpClick(AAction: TXcomAction);
     procedure ResolutionDownClick(AAction: TXcomAction);
@@ -77,6 +80,29 @@ implementation
 
 uses
   DelphiDoom.XcomMenu.SetWindowedRootState;
+
+const
+  // OptionsVideoState::GL_EXT, GL_FOLDER and GL_STRING
+  GL_EXT = 'OpenGL.shader';
+  GL_FOLDER = 'Shaders/';
+  GL_STRING = '*';
+
+class function TXcomOptionsVideoState.UcWords(const AText: string): string;
+var
+  LIndex: Integer;
+begin
+  // OptionsVideoState::ucWords: a capital first letter; space, dash and underscore become a space before a capital
+  Result := AText;
+  for LIndex := 1 to Length(Result) do
+    if LIndex = 1 then
+      Result[1] := UpCase(Result[1])
+    else if CharInSet(Result[LIndex], [' ', '-', '_']) then
+    begin
+      Result[LIndex] := ' ';
+      if LIndex < Length(Result) then
+        Result[LIndex + 1] := UpCase(Result[LIndex + 1]);
+    end;
+end;
 
 procedure TXcomOptionsVideoState.Tip(ASurface: TXcomInteractiveSurface; const ATooltip: string);
 begin
@@ -107,6 +133,7 @@ var
   LIndex: Integer;
   LFilter: Integer;
   LMode: Integer;
+  LShader: string;
 begin
   inherited Create(AHost, AOrigin, ANavigator);
   LOptions := Host.Options;
@@ -209,8 +236,23 @@ begin
   FCbxLanguage.OnChange(LanguageChange);
   Tip(FCbxLanguage, 'STR_DISPLAY_LANGUAGE_DESC');
   LFilterNames := [Tr('STR_DISABLED').Text, 'Scale', 'HQx', 'xBRZ'];
+  FFilters := ['', '', '', ''];
+  if Host.ShaderCatalog <> nil then
+    for LShader in Host.ShaderCatalog.Files do
+    begin
+      // the name of the file without ".OpenGL.shader", marked with the star of the OpenGL filters
+      LFilterNames := LFilterNames + [UcWords(Copy(LShader, 1, Length(LShader) - Length(GL_EXT) - 1) + GL_STRING)];
+      FFilters := FFilters + [GL_FOLDER + LShader];
+    end;
   LFilter := 0;
-  if LOptions.UseScaleFilter then
+  if LOptions.UseOpenGL then
+  begin
+    // the first path that is the one of the option, compared as it is written (the four fixed entries are empty)
+    for LIndex := High(FFilters) downto 0 do
+      if FFilters[LIndex] = LOptions.UseOpenGLShader then
+        LFilter := LIndex;
+  end
+  else if LOptions.UseScaleFilter then
     LFilter := 1
   else if LOptions.UseHQXFilter then
     LFilter := 2
@@ -306,10 +348,12 @@ var
 begin
   LOptions := Host.Options;
   LSelected := FCbxFilter.GetSelected;
-  LOptions.NewOpenGL := False;
+  LOptions.NewOpenGL := LSelected > 3;
   LOptions.NewScaleFilter := LSelected = 1;
   LOptions.NewHQXFilter := LSelected = 2;
   LOptions.NewXBRZFilter := LSelected = 3;
+  if (LSelected > 3) and (LSelected < Length(FFilters)) then
+    LOptions.NewOpenGLShader := FFilters[LSelected];
 end;
 
 procedure TXcomOptionsVideoState.DisplayModeChange(AAction: TXcomAction);

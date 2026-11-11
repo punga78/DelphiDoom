@@ -34,6 +34,10 @@ type
     UfoExtenderAccuracy: Boolean;
     ForceFire: Boolean;
     ControlHeld: Boolean;
+    /// <summary>Options::battleNewPreviewPath: 0 none, 1 arrows, 2 time units, 3 both (a click previews the path, a second one walks)</summary>
+    PreviewPath: Integer;
+    /// <summary>Options::battleConfirmFireMode: the first click marks the target, the second one fires</summary>
+    ConfirmFireMode: Boolean;
     class function Default: TXcomBattleOptions; static;
   end;
 
@@ -54,6 +58,8 @@ begin
   Result.UfoExtenderAccuracy := False;
   Result.ForceFire := True;
   Result.ControlHeld := False;
+  Result.PreviewPath := 0;
+  Result.ConfirmFireMode := False;
 end;
 
 end.

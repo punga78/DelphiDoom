@@ -8,7 +8,14 @@
 //     debNNvV.txt (the title, the rating, the lists of statistics, soldiers' improvements, missing items, flags,
 //     the commended soldiers, the states that it pushed, the seed after) and debNNvV.post.sav (SavedGame::save after)
 //   - with DEBRIEF_PIXELS also debNNvV.pix: the first page of the screen of the state after init() (width, height, then
-//     the indexes of the colors) and debNNvV.pix2 the second one (soldier stats); and "cannot" for CannotReequipState
+//     the indexes of the colors) and debNNvV.pix2 the second one (soldier stats); and "cannot" for CannotReequipState;
+//     ".promo" PromotionsState (when somebody was promoted), ".contain" ManageAlienContainmentState of the base,
+//     ".comm" CommendationState and ".commlate" CommendationLateState on two medals made here (the TFTD mods have no
+//     commendations): see AwardTestMedals, which the test of the port repeats
+//   - with DEBRIEF_STATSTRINGS the mod gets the stat strings of kStatStrings (the TFTD mods have none) and the text
+//     gets a line "statstring|soldier id|string" for every soldier of every base after the debriefing
+//   - with DEBRIEF_REPLAY=<folder> the outcome is not played: debNNvV.pre.sav and debNNvV.txt (aborted=) of that folder
+//     are the input (the cases that are in the repository can be run again, for the pixels, without the gen folder)
 // Contains no OpenXcom code.
 // usage: debriefgen <data> <user> <gen folder> <out folder> <variants per save> <seed> [first save index] [last]
 #include <yaml-cpp/yaml.h>
@@ -59,6 +66,12 @@
 #include "Savegame/ItemContainer.h"
 #include "Battlescape/DebriefingState.h"
 #include "Battlescape/CannotReequipState.h"
+#include "Battlescape/PromotionsState.h"
+#include "Battlescape/CommendationState.h"
+#include "Battlescape/CommendationLateState.h"
+#include "Basescape/ManageAlienContainmentState.h"
+#include "Mod/RuleCommendations.h"
+#include "Mod/StatString.h"
 #undef protected
 #undef private
 #undef main
@@ -103,6 +116,69 @@ static void DumpState(State* st, Game* game, const std::string& path) {
   for (int i = 0; i < 256; i++) { data.push_back((char)c[i].r); data.push_back((char)c[i].g); data.push_back((char)c[i].b); }
   WriteText(path, data);
   delete screen;
+}
+
+// the stat strings of DEBRIEF_STATSTRINGS (the test of the port has the same text)
+static const char* kStatStrings =
+  "- string: \"x\"\n  psiStrength: [~, 30]\n"
+  "- string: \"P\"\n  psiStrength: [80, ~]\n"
+  "- string: \"K\"\n  psiSkill: [20, ~]\n"
+  "- string: \"b\"\n  bravery: [60, ~]\n"
+  "- string: \"F\"\n  firing: [60, ~]\n"
+  "- string: \"r\"\n  reactions: [50, ~]\n"
+  "- string: \"S\"\n  strength: [35, ~]\n"
+  "- string: \"t\"\n  tu: [58, ~]\n"
+  "- string: \"h\"\n  health: [0, 30]\n"
+  "- string: \"w\"\n  firing: [0, 45]\n  throwing: [0, 60]\n";
+
+// two medals for the screens of the commendations: "STR_NEW_RANK" (plain) and "STR_SPACE_USED" (its text has {0}: a
+// medal with a noun). The first three soldiers of the base and the first two dead soldiers get them
+static void AwardTestMedals(Game* game, Base* base, std::vector<Soldier*>& alive, std::vector<Soldier*>& dead) {
+  Mod* mod = game->getMod();
+  RuleCommendations* a = new RuleCommendations();
+  a->load(YAML::Load("description: A\ncriteria:\n  totalKills: [1, 2, 2, 5]\nsprite: 0\n"));
+  RuleCommendations* b = new RuleCommendations();
+  b->load(YAML::Load("description: B\ncriteria:\n  totalMissions: [3, 3, 6]\nsprite: 1\n"));
+  mod->_commendations["STR_NEW_RANK"] = a;
+  mod->_commendations["STR_SPACE_USED"] = b;
+  std::vector<Soldier*>* bs = base->getSoldiers();
+  for (size_t i = 0; i < bs->size() && i < 3; i++) {
+    Soldier* s = (*bs)[i];
+    std::vector<SoldierCommendations*>* c = s->getDiary()->getSoldierCommendations();
+    if (i == 0) c->push_back(new SoldierCommendations("STR_NEW_RANK", "noNoun"));
+    if (i == 1) {
+      SoldierCommendations* x = new SoldierCommendations("STR_NEW_RANK", "noNoun");
+      x->addDecoration(); x->addDecoration();
+      c->push_back(x);
+      c->push_back(new SoldierCommendations("STR_SPACE_USED", "STR_AQUATOID"));
+    }
+    if (i == 2) {
+      c->push_back(new SoldierCommendations("STR_SPACE_USED", "STR_GILLMAN"));
+      SoldierCommendations* x = new SoldierCommendations("STR_SPACE_USED", "STR_AQUATOID");
+      x->addDecoration();
+      c->push_back(x);
+    }
+    alive.push_back(s);
+  }
+  std::vector<Soldier*>* ds = game->getSavedGame()->getDeadSoldiers();
+  for (size_t i = 0; i < ds->size() && i < 2; i++) {
+    Soldier* s = (*ds)[i];
+    std::vector<SoldierCommendations*>* c = s->getDiary()->getSoldierCommendations();
+    if (i == 0) {
+      SoldierCommendations* x = new SoldierCommendations("STR_NEW_RANK", "noNoun");
+      x->addDecoration();
+      c->push_back(x);
+      c->push_back(new SoldierCommendations("STR_SPACE_USED", "STR_GILLMAN"));
+    }
+    dead.push_back(s);
+  }
+}
+
+static void RemoveTestMedals(Game* game) {
+  Mod* mod = game->getMod();
+  delete mod->_commendations["STR_NEW_RANK"];
+  delete mod->_commendations["STR_SPACE_USED"];
+  mod->_commendations.clear();
 }
 
 static void ApplyOutcome(Game* game, SavedGame* s, SavedBattleGame* b, int variant) {
@@ -303,6 +379,8 @@ int main(int argc, char** argv) {
   int first = argc > 7 ? atoi(argv[7]) : 0;
   int last = argc > 8 ? atoi(argv[8]) : 100000;
   bool pixels = getenv("DEBRIEF_PIXELS") != 0;
+  bool statStrings = getenv("DEBRIEF_STATSTRINGS") != 0;
+  std::string replay = getenv("DEBRIEF_REPLAY") ? getenv("DEBRIEF_REPLAY") : "";
   static char a0[] = "debriefgen", a1[] = "-data", a3[] = "-user", a5[] = "-cfg";
   std::string cfg = user;
   char* args[] = {a0, a1, (char*)data.c_str(), a3, (char*)user.c_str(), a5, (char*)cfg.c_str()};
@@ -318,34 +396,56 @@ int main(int argc, char** argv) {
     game->loadMods();
     game->loadLanguages();
     Options::mute = true;
+    if (statStrings) {
+      YAML::Node list = YAML::Load(kStatStrings);
+      for (YAML::const_iterator i = list.begin(); i != list.end(); ++i) {
+        StatString* ss = new StatString();
+        ss->load(*i);
+        game->getMod()->_statStrings.push_back(ss);
+      }
+    }
     if (!pixels) game->_lang = new Language();  // no texts loaded: tr(key) gives the key, which is what the port compares
     std::string folder = Options::getMasterUserFolder();
     for (int save = first; save <= last; save++) {
       char name[64];
       snprintf(name, sizeof name, "gen%02d.after.sav", save);
       std::string src = gen + "/" + name;
-      if (!std::ifstream(src.c_str(), std::ios::binary)) continue;
+      if (replay.empty() && !std::ifstream(src.c_str(), std::ios::binary)) continue;
       for (int v = 0; v < variants; v++) {
         snprintf(name, sizeof name, "deb%02dv%d", save, v);
         std::string base = out + "/" + name;
-        CopyFileBinary(src, folder + "debin.sav");
-        g_pick = seed * 1000003ULL + save * 101ULL + v;
-        RNG::setSeed(seed * 7919ULL + save * 31ULL + v);
-        SavedGame* s = new SavedGame();
-        fprintf(stderr, "load %s\n", name); s->load("debin.sav", game->getMod()); fprintf(stderr, "loaded\n");
-        game->setSavedGame(s);
-        SavedBattleGame* b = s->getSavedBattle();
-        if (!b) { delete s; continue; }
-        { bool any = false; for (size_t bi = 0; bi < s->getBases()->size(); bi++) { Base* bb = (*s->getBases())[bi]; if (bb->isInBattlescape() && b->getMissionType() == "STR_BASE_DEFENSE") any = true; for (size_t ci = 0; ci < bb->getCrafts()->size(); ci++) if ((*bb->getCrafts())[ci]->isInBattlescape()) any = true; } if (!any) continue; }
-        try { b->loadMapResources(game->getMod()); } catch (std::exception& ex) { fprintf(stderr, "skipped %s (resources): %s\n", name, ex.what()); continue; }
-        // the look of the aliens and the civilians is std::rand (cosmetic): not part of what is compared
-        try { ApplyOutcome(game, s, b, v); } catch (std::exception& ex) { fprintf(stderr, "skipped %s: %s\n", name, ex.what()); continue; }
-        s->save("debpre.sav");
-        CopyFileBinary(folder + "debpre.sav", base + ".pre.sav");
+        SavedGame* s = 0;
+        SavedBattleGame* b = 0;
+        bool aborted = false;
+        if (!replay.empty()) {
+          // the input is a case that was written before: the saved game at the end of the battle and its "aborted"
+          std::string pre = replay + "/" + name + ".pre.sav";
+          if (!std::ifstream(pre.c_str(), std::ios::binary)) continue;
+          CopyFileBinary(pre, folder + "debpre.sav");
+          CopyFileBinary(pre, base + ".pre.sav");
+          std::ifstream txt((replay + "/" + name + ".txt").c_str());
+          std::string line;
+          while (std::getline(txt, line)) if (line.compare(0, 9, "aborted=1") == 0) aborted = true;
+        } else {
+          CopyFileBinary(src, folder + "debin.sav");
+          g_pick = seed * 1000003ULL + save * 101ULL + v;
+          RNG::setSeed(seed * 7919ULL + save * 31ULL + v);
+          s = new SavedGame();
+          fprintf(stderr, "load %s\n", name); s->load("debin.sav", game->getMod()); fprintf(stderr, "loaded\n");
+          game->setSavedGame(s);
+          b = s->getSavedBattle();
+          if (!b) { delete s; continue; }
+          { bool any = false; for (size_t bi = 0; bi < s->getBases()->size(); bi++) { Base* bb = (*s->getBases())[bi]; if (bb->isInBattlescape() && b->getMissionType() == "STR_BASE_DEFENSE") any = true; for (size_t ci = 0; ci < bb->getCrafts()->size(); ci++) if ((*bb->getCrafts())[ci]->isInBattlescape()) any = true; } if (!any) continue; }
+          try { b->loadMapResources(game->getMod()); } catch (std::exception& ex) { fprintf(stderr, "skipped %s (resources): %s\n", name, ex.what()); continue; }
+          // the look of the aliens and the civilians is std::rand (cosmetic): not part of what is compared
+          try { ApplyOutcome(game, s, b, v); } catch (std::exception& ex) { fprintf(stderr, "skipped %s: %s\n", name, ex.what()); continue; }
+          s->save("debpre.sav");
+          CopyFileBinary(folder + "debpre.sav", base + ".pre.sav");
+          aborted = b->isAborted();
+        }
         {
           // the debriefing runs on what the file gives back (the port reads the file): the UFOs have their
           // waypoint, the craft their hangars... what the objects built by hand do not have
-          bool aborted = b->isAborted();
           SavedGame* s2 = new SavedGame();
           s2->load("debpre.sav", game->getMod());
           game->setSavedGame(s2);
@@ -356,6 +456,10 @@ int main(int argc, char** argv) {
         }
         unsigned long long seed0 = RNG::getSeed();
         size_t statesBefore = game->_states.size();
+        // the screens are dumped at the original size: the constructor of DebriefingState sets the resolution of the
+        // geoscape (0 in this harness, which never opened one), and centerAllSurfaces and DumpState read it
+        Options::baseXGeoscape = 320;
+        Options::baseYGeoscape = 200;
         fprintf(stderr, "state\n"); DebriefingState* st = new DebriefingState(); fprintf(stderr, "init\n");
         std::ostringstream t;
         t << "seed0=" << seed0 << "\n" << "aborted=" << (b->isAborted() ? 1 : 0) << "\n";
@@ -382,6 +486,11 @@ int main(int argc, char** argv) {
           t << "special|" << i->first << "|" << i->second->name << "|" << i->second->value << "\n";
         for (size_t i = 0; i < st->_soldiersCommended.size(); i++) t << "commended|" << st->_soldiersCommended[i]->getId() << "\n";
         for (size_t i = 0; i < st->_deadSoldiersCommended.size(); i++) t << "deadcommended|" << st->_deadSoldiersCommended[i]->getId() << "\n";
+        if (statStrings)
+          for (size_t bi = 0; bi < s->getBases()->size(); bi++) {
+            std::vector<Soldier*>* bs = (*s->getBases())[bi]->getSoldiers();
+            for (size_t i = 0; i < bs->size(); i++) t << "statstring|" << (*bs)[i]->getId() << "|" << (*bs)[i]->_statString << "\n";
+          }
         t << "total=" << st->_lstTotal->getCellText(0, 1) << "\n";
         t << "lists=" << st->_lstStats->getRows() << "," << st->_lstRecovery->getRows() << "," << st->_lstSoldierStats->getRows() << "\n";
         WriteText(base + ".txt", t.str());
@@ -398,6 +507,36 @@ int main(int argc, char** argv) {
         }
         s->save("debpost.sav");
         CopyFileBinary(folder + "debpost.sav", base + ".post.sav");
+        if (pixels) {
+          // the screens that btnOkClick pushes, after the save (isPromoted and makeOld change the soldiers)
+          if (st->_promotions) {
+            PromotionsState* ps = new PromotionsState();
+            ps->init();
+            DumpState(ps, game, base + ".promo");
+            delete ps;
+          }
+          if (st->_base && !st->_destroyBase) {
+            ManageAlienContainmentState* ms = new ManageAlienContainmentState(st->_base, OPT_BATTLESCAPE);
+            ms->init();
+            DumpState(ms, game, base + ".contain");
+            delete ms;
+            std::vector<Soldier*> alive, dead;
+            AwardTestMedals(game, st->_base, alive, dead);
+            if (!dead.empty()) {
+              CommendationLateState* cl = new CommendationLateState(dead);
+              cl->init();
+              DumpState(cl, game, base + ".commlate");
+              delete cl;
+            }
+            if (!alive.empty()) {
+              CommendationState* cs = new CommendationState(alive);
+              cs->init();
+              DumpState(cs, game, base + ".comm");
+              delete cs;
+            }
+            RemoveTestMedals(game);
+          }
+        }
         delete st;
         done++;
       }

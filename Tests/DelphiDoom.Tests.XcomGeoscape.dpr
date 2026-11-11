@@ -28,6 +28,7 @@ uses
   DelphiDoom.Tests.XcomBasescape.SpaceText in 'Source\DelphiDoom.Tests.XcomBasescape.SpaceText.pas',
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
   DelphiDoom.Tests.XcomGeoscape.Popups in 'Source\DelphiDoom.Tests.XcomGeoscape.Popups.pas',
+  DelphiDoom.Tests.XcomGeoscape.MonthlyReportState in 'Source\DelphiDoom.Tests.XcomGeoscape.MonthlyReportState.pas',
   DelphiDoom.Tests.XcomGeoscape.MissionLauncher in 'Source\DelphiDoom.Tests.XcomGeoscape.MissionLauncher.pas',
   DelphiDoom.Tests.XcomGeoscape.GraphScale in 'Source\DelphiDoom.Tests.XcomGeoscape.GraphScale.pas';
 

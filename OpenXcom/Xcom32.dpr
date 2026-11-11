@@ -4,7 +4,8 @@
 {  on the data of an installed game (issues 176 and 180). One program, two      }
 {  modes, chosen by the command line                                            }
 {                                                                              }
-{  The game (the default): a window of Windows (GDI) or, with -shot or         }
+{  The game (the default): a window of Windows (GDI, or OpenGL with the option  }
+{  useOpenGL: issue 182) or, with -shot or                                      }
 {  -script, no window and screenshots as PNG files. Without -data and -game     }
 {  the data are next to the executable (common\ and standard\, TFTD\ or UFO\)   }
 {  and the user folder is user\ next to it                                      }
@@ -51,7 +52,14 @@ uses
   DelphiDoom.Xcom.ExportTool in 'DelphiDoom.Xcom.ExportTool.pas',
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
+  DelphiDoom.Xcom.DelegateLog in 'DelphiDoom.Xcom.DelegateLog.pas',
+  DelphiDoom.Xcom.VideoDevice.Types in 'DelphiDoom.Xcom.VideoDevice.Types.pas',
+  DelphiDoom.Xcom.VideoDeviceSelector in 'DelphiDoom.Xcom.VideoDeviceSelector.pas',
+  DelphiDoom.Xcom.Win.Window in 'DelphiDoom.Xcom.Win.Window.pas',
+  DelphiDoom.Xcom.Win.WindowDevice in 'DelphiDoom.Xcom.Win.WindowDevice.pas',
   DelphiDoom.Xcom.Win.VideoDevice in 'DelphiDoom.Xcom.Win.VideoDevice.pas',
+  DelphiDoom.Xcom.Win.OpenGlProgram in 'DelphiDoom.Xcom.Win.OpenGlProgram.pas',
+  DelphiDoom.Xcom.Win.OpenGlVideoDevice in 'DelphiDoom.Xcom.Win.OpenGlVideoDevice.pas',
   DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
@@ -244,8 +252,8 @@ procedure RunWindow(const AArguments: TArguments);
 var
   LEvents: TXcomQueueEventSource;
   LEventsRef: IXcomEventSource;
-  LDevice: TXcomWinVideoDevice;
-  LDeviceRef: IXcomVideoDevice;
+  LWindow: TXcomWinWindow;
+  LDevice: IXcomVideoDevice;
   LGame: TXcomGame;
   LSettings: TXcomGameSettings;
   LOutput: TXcomWinPcmOutput;
@@ -255,8 +263,6 @@ var
 begin
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
-  LDevice := TXcomWinVideoDevice.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
-  LDeviceRef := LDevice;
   LOutput := TXcomWinPcmOutput.Create;
   LOutputRef := LOutput;
   LSettings := AArguments.Settings;
@@ -266,21 +272,34 @@ begin
     begin
       LMeter := AMeter;
     end;
-  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomWinClock.Create, LEvents);
-  LStart := GetTickCount;
+  LGame := nil;
+  LWindow := TXcomWinWindow.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
   try
-    while LDevice.Pump and not LGame.IsQuitting do
+    // GDI, or OpenGL when the options ask for it: which OpenGL is found, or why it is not used, is said
+    LDevice := TXcomGameComposition.CreateWindowDevice(LWindow, LSettings, TXcomDelegateLog.Create(
+      procedure(const ALine: string)
+      begin
+        Say(ALine);
+      end));
+    LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomWinClock.Create, LEvents);
+    LStart := GetTickCount;
+    while LWindow.Pump and not LGame.IsQuitting do
     begin
       LGame.RunFrame;
-      Sleep(1);
+      Sleep(LGame.FrameDelay);
       if (AArguments.QuitAfter > 0) and (GetTickCount - LStart > Cardinal(AArguments.QuitAfter)) then
         Break;
     end;
+    // Options::save at the end of Game::run: also the size of a window that was resized
+    LGame.SaveOptions;
     if AArguments.AudioStatistics and (LMeter <> nil) then
       PrintAudio(LMeter, LOutput);
   finally
     LGame.Free;
     LMeter := nil;
+    // the display draws in the window: its last reference goes before the window
+    LDevice := nil;
+    LWindow.Free;
   end;
 end;
 

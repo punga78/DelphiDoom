@@ -584,8 +584,8 @@ begin
   FWorld.Wait(50);
   Assert.IsFalse(FWorld.Game.TopState is TXcomModListState);
   LText := TEncoding.UTF8.GetString(FFiles.ReadAll('user\options.cfg'));
-  Assert.IsTrue(LText.Contains('- a_first: true'), LText);
-  Assert.IsTrue(LText.Contains('- xcom2: true'), LText);
+  Assert.IsTrue(LText.Contains('- active: true'#10'    id: a_first'), LText);
+  Assert.IsTrue(LText.Contains('- active: true'#10'    id: xcom2'), LText);
   // the options of the file are written too
   Assert.IsTrue(LText.Contains('options:'));
 end;

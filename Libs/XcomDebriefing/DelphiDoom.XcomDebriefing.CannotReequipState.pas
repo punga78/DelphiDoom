@@ -42,7 +42,7 @@ var
   LStat: TXcomReequipStat;
 begin
   inherited Create(AHost);
-  FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0, wpBoth);
+  FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0);
   FBtnOk := TXcomTextButton.Create(120, 18, 100, 174);
   FTxtTitle := TXcomText.Create(220, 32, 50, 8);
   FTxtItem := TXcomText.Create(142, 9, 10, 50);

@@ -32,6 +32,12 @@ type
     /// </summary>
     class function IndexedToWave(const ARaw: TBytes): TBytes; static;
     /// <summary>
+    ///   SoundSet::loadCat for a sound that is a WAV file (SAMPLE.CAT of the Windows version): a file that says
+    ///   8000 Hz becomes an 11025 Hz one (the rate of the header and the samples after the 44 byte header, repeated
+    ///   as convertSampleRate does); any other file is returned as it is
+    /// </summary>
+    class function WaveToWave(const AWave: TBytes): TBytes; static;
+    /// <summary>
     ///   A WAV file with the volume applied (0..128 of 128): the 8 bit samples are unsigned, so they scale around
     ///   128; a file that is not a mono or stereo 8 bit PCM one is returned as it is
     /// </summary>
@@ -104,6 +110,38 @@ begin
     Result[HEADER_SIZE + LIndex] := Byte(ARaw[5 + LIndex] + 128);
   PCardinal(@Result[4])^ := Cardinal(LSize + 36);
   PCardinal(@Result[40])^ := Cardinal(LSize);
+end;
+
+class function TXcomSoundConverter.WaveToWave(const AWave: TBytes): TBytes;
+var
+  LSize: Integer;
+  LStep: Cardinal;
+  LOffset: Cardinal;
+  LCount: Integer;
+begin
+  Result := Copy(AWave);
+  // the rate of the header as four bytes: 8000 is 40 1F 00 00
+  if (Length(AWave) <= HEADER_SIZE) or (PCardinal(@AWave[$18])^ <> 8000) then
+    Exit;
+  LSize := Length(AWave) - HEADER_SIZE;
+  SetLength(Result, HEADER_SIZE + LSize * 2);
+  // the rate and the low bytes of the bytes per second, as the C++ writes them
+  Result[$18] := $11;
+  Result[$19] := $2B;
+  Result[$1C] := $11;
+  Result[$1D] := $2B;
+  LStep := Cardinal((Int64(8000) shl 16) div SAMPLE_RATE);
+  LOffset := 0;
+  LCount := 0;
+  while (LOffset shr 16) < Cardinal(LSize) do
+  begin
+    Result[HEADER_SIZE + LCount] := AWave[HEADER_SIZE + Integer(LOffset shr 16)];
+    Inc(LCount);
+    Inc(LOffset, LStep);
+  end;
+  SetLength(Result, HEADER_SIZE + LCount);
+  // only the size of the data is rewritten: the size of the RIFF stays the one of the file
+  PCardinal(@Result[$28])^ := Cardinal(LCount);
 end;
 
 class function TXcomSoundConverter.WithVolume(const AWave: TBytes; AVolume: Integer): TBytes;

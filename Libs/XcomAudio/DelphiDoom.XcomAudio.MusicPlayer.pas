@@ -24,7 +24,7 @@ type
   ///   IXcomMusicFormatLoader that gives the track or nil (a file that is not there or is not readable), so that the
   ///   next one is tried. A format with no loader gives nothing
   /// </summary>
-  TXcomMusicPlayer = class(TInterfacedObject, IXcomMusicPlayer)
+  TXcomMusicPlayer = class(TInterfacedObject, IXcomMusicPlayer, IXcomMusicCatalog)
   strict private
     type
       TEntry = record

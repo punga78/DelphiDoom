@@ -440,6 +440,13 @@ type
     procedure ToggleFireDamage;
     /// <summary>getVisible: a unit of the player is always visible, the others as the visible flag says</summary>
     function GetVisible: Boolean;
+    /// <summary>
+    ///   breathe: the bubbles of a unit under water. Now and then (more often with a low morale) a cycle of 16 frames
+    ///   starts; a unit that walks or is out makes none. ARoll is RNG::seedless(0, 99): it only decides the look
+    /// </summary>
+    procedure Breathe(ARoll: Integer);
+    /// <summary>getBreathFrame: 0 no bubbles, 1..16 the frame of BREATH-1.PCK plus one; -1 a unit that never breathes</summary>
+    property BreathFrame: Integer read FBreathFrame;
     procedure FreePatrolTarget;
     property Id: Integer read FId;
     property Position: TXcomPosition read FPosition;
@@ -1716,6 +1723,33 @@ begin
   begin
     FBreathing := False;
     FBreathFrame := 0;
+  end;
+end;
+
+procedure TXcomBattleUnit.Breathe(ARoll: Integer);
+begin
+  // a breath frame of -1 means this unit doesn't produce bubbles
+  if (FBreathFrame < 0) or IsOut then
+  begin
+    FBreathing := False;
+    Exit;
+  end;
+  if (not FBreathing) or (FStatus = STATUS_WALKING) then
+  begin
+    // 5% for every animation frame, more with a low morale
+    FBreathing := (FStatus <> STATUS_WALKING) and (ARoll < (105 - FMorale));
+    FBreathFrame := 0;
+  end;
+  if FBreathing then
+  begin
+    // advance the bubble frame; at the end of the cycle the bubbles go away
+    Inc(FBreathFrame);
+    if FBreathFrame >= 17 then
+    begin
+      FBreathFrame := 0;
+      FBreathing := False;
+    end;
+    FCacheInvalid := True;
   end;
 end;
 

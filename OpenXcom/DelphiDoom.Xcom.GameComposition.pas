@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.Xcom.Win.Window;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -59,6 +59,17 @@ type
     /// <summary>The game, with the start state on top; the caller owns it. The devices are not freed by the game</summary>
     class function CreateGame(const ASettings: TXcomGameSettings; const ADevice: IXcomVideoDevice;
       const AClock: IXcomClock; AEvents: TXcomQueueEventSource): TXcomGame; static;
+    /// <summary>
+    ///   The display of the game in a window: GDI, or OpenGL when Options::useOpenGL asks for it and a context can
+    ///   be made (the screen says which at every change of mode). The window is not owned: the caller frees it
+    ///   after the last reference to the display is gone
+    /// </summary>
+    /// <param name="ASettings">The data folder: the shaders of the display filter are in its common\Shaders</param>
+    /// <param name="ALog">Where the version of OpenGL and the reason of a fallback to GDI go; nil for nowhere</param>
+    class function CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
+      const ALog: IXcomLog): IXcomVideoDevice; static;
+    /// <summary>The shaders that the video options list and the OpenGL display reads</summary>
+    class function CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog; static;
     /// <summary>CrossPlatform::getDosPath: the path of the program as a DOS prompt (names cut to 8 characters)</summary>
     class function DosPathOf(const AExecutable: string): string; static;
   end;
@@ -76,14 +87,43 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
-  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomBattleStates.Factory,
+  DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MixerAudio,
+  DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
-  DelphiDoom.XcomEngine.State;
+  DelphiDoom.XcomEngine.State, DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.VideoDeviceSelector,
+  DelphiDoom.Xcom.Win.VideoDevice, DelphiDoom.Xcom.Win.OpenGlVideoDevice, DelphiDoom.XcomEngine.FolderShaderCatalog,
+  DelphiDoom.XcomEngine.ShaderFileReader;
 
 const
   KEY_FPS = 288;
+
+class function TXcomGameComposition.CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog;
+begin
+  Result := TXcomFolderShaderCatalog.Create(TPath.Combine(ASettings.DataFolder, 'common'),
+    TXcomDiskFileSystem.Create);
+end;
+
+class function TXcomGameComposition.CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
+  const ALog: IXcomLog): IXcomVideoDevice;
+var
+  LShaders: IXcomShaderCatalog;
+begin
+  LShaders := CreateShaderCatalog(ASettings);
+  Result := TXcomVideoDeviceSelector.Create(
+    function: IXcomVideoDevice
+    begin
+      Result := TXcomWinVideoDevice.Create(AWindow);
+    end,
+    function: IXcomVideoDevice
+    begin
+      // the device owns its reader
+      Result := TXcomWinOpenGlVideoDevice.Create(AWindow, LShaders,
+        TXcomShaderFileReader.Create(TYamlFactory.CreateParser, ALog), ALog);
+    end, ALog);
+end;
 
 class function TXcomGameComposition.DosPathOf(const AExecutable: string): string;
 var
@@ -135,13 +175,17 @@ var
   LBrief: TXcomSaveBriefInfo;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
-  LOptionsDoc, LModsNode, LModItem: IYamlNode;
+  LOptionsDoc: IYamlNode;
   LModSettings: TArray<TXcomModSetting>;
   LMasterIndex: Integer;
   LModIndex: Integer;
   LDosPath: string;
   LAudio: IXcomAudioDevice;
   LMusic: IXcomMusicPlayer;
+  LSavedGameLoader: TXcomSavedGameLoader;
+  LBattleAudio: IXcomBattleAudio;
+  LBattleScreens: IXcomBattleScreens;
+  LMissionLauncher: IXcomMissionLauncher;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -151,23 +195,8 @@ begin
     if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
     begin
       LOptionsDoc := LParser.Load(LFiles.ReadAll(LOptionsFile));
+      // with the "mods" section of the file: a save that lists a mod asks for confirmation only when it is not active
       LOptions.Load(LOptionsDoc);
-      // the "mods" section of the file (id and active): a save that lists a mod asks for confirmation only when it
-      // is not active
-      LModsNode := LOptionsDoc.Find(YamlStringToText('mods'));
-      if Assigned(LModsNode) and LModsNode.IsDefined then
-      begin
-        LModSettings := nil;
-        for LModItem in LModsNode.Items do
-          if Assigned(LModItem.Find(YamlStringToText('id'))) then
-          begin
-            SetLength(LModSettings, Length(LModSettings) + 1);
-            LModSettings[High(LModSettings)] := TXcomModSetting.Create(
-              YamlTextToString(LModItem.Find(YamlStringToText('id')).AsString),
-              SameText(YamlTextToString(LModItem.Find(YamlStringToText('active')).AsString), 'true'));
-          end;
-        LOptions.Mods := LModSettings;
-      end;
     end;
     // Options::refreshMods: the master the program runs is always in the list and active. Without it (no options.cfg
     // yet) a save was written with no mods, and the list of the saves takes such a file for one of xcom1
@@ -217,6 +246,8 @@ begin
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
+    // the display filters of the video options: listed as in OpenXcom also when the display cannot use them
+    Result.SetShaderCatalog(CreateShaderCatalog(ASettings));
     // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
     Result.SetModCatalog(TXcomDiskModCatalog.Create(
       [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],
@@ -233,6 +264,19 @@ begin
     // the list of the modes of the monitor: always with the window (the screenshots of the tests ask for it)
     if ASettings.ListModes or ASettings.WindowMode then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
+    // the battle: its sounds on the channels of the mixer, its screens and the way into a mission
+    LBattleAudio := nil;
+    if LAudio <> nil then
+      LBattleAudio := TXcomBattleMixerAudio.Create(Result, LAudio as IXcomChannelMixer);
+    LBattleScreens := TXcomBattleFactory.CreateScreens(Result,
+      function(AParent: TXcomState): TXcomState
+      begin
+        Result := TXcomPauseState.Create(AParent.Host, ooBattlescape,
+          TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
+      end);
+    LMissionLauncher := ASettings.MissionLauncher;
+    if LMissionLauncher = nil then
+      LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
@@ -240,7 +284,7 @@ begin
         LListener: IXcomGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LListener := TXcomPopupGeoscapeEvents.Create(AHost, ASettings.MissionLauncher,
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher,
           procedure(AArticleIds: TArray<string>)
           var
             LUfopaedia: IXcomUfopaediaNavigator;
@@ -262,7 +306,14 @@ begin
         Result := TXcomGameNavigator.Create(AHost, TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
       end;
     Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, LSimulationFactory, LNavigatorFactory));
-    Result.SetSavedGameLoader(TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory));
+    LSavedGameLoader := TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory);
+    // a saved game with a battle in progress goes on in the battlescape, over the geoscape
+    LSavedGameLoader.BattleResumer :=
+      procedure(AHost: TXcomStateHost)
+      begin
+        TXcomBattleLauncher.Resume(AHost, LBattleScreens, LBattleAudio);
+      end;
+    Result.SetSavedGameLoader(LSavedGameLoader);
     LBrief.Version := '1.0';
     LBrief.Engine := '';
     LBrief.Build := '';

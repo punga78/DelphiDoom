@@ -55,7 +55,7 @@ type
     FRuleset: TXcomRuleset;
     FVoxels: TArray<Word>;
     FNextItemId: Integer;
-    class function DataFolder: string; static;
+    function DataFolder: string;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function P3(const APosition: TXcomPosition): string; static;
@@ -69,6 +69,9 @@ type
     function AnswerProjectile(const ABattle: TXcomSavedBattleGame; const AEngine: TXcomTileEngine;
       const AHost: TFakeBattleHost; const AParts: TArray<string>; const ALeft: string): string;
     function RunCase(const ABase: string): string;
+  protected
+    /// <summary>The game of the cases: TFTD (mod xcom2) or UFO (mod xcom1)</summary>
+    function IsUfo: Boolean; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -78,7 +81,31 @@ type
     procedure DovrebbeDareLeStesseRisposteDelVeroProjectile;
   end;
 
+  /// <summary>The same comparison on the terrains, the units and the weapons of UFO (projgen on the UFO data)</summary>
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealProjectileUfo = class(TTestXcomRealProjectile)
+  protected
+    function IsUfo: Boolean; override;
+  end;
+
 implementation
+
+uses
+  DelphiDoom.Tests.XcomBattle.GameData;
+
+{ TTestXcomRealProjectileUfo }
+
+function TTestXcomRealProjectileUfo.IsUfo: Boolean;
+begin
+  Result := True;
+end;
+
+function TTestXcomRealProjectile.IsUfo: Boolean;
+begin
+  Result := False;
+end;
 
 { TFakeBattleHost }
 
@@ -155,14 +182,14 @@ begin
   Result := '';
 end;
 
-class function TTestXcomRealProjectile.DataFolder: string;
+function TTestXcomRealProjectile.DataFolder: string;
 var
   LFolder: string;
 begin
-  LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_PROJ');
+  LFolder := GetEnvironmentVariable(TXcomTestGame.FolderVariable('DELPHIDOOM_XCOMBATTLE_PROJ', IsUfo));
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
-  LFolder := FindUp('Tests\Data\XcomBattle\proj', True);
+  LFolder := FindUp('Tests\Data\XcomBattle\' + TXcomTestGame.ScenarioFolder('proj', IsUfo), True);
   if LFolder <> '' then
     LFolder := IncludeTrailingPathDelimiter(LFolder);
   Result := LFolder;
@@ -184,11 +211,11 @@ var
   LBytes: TBytes;
   LIndex: Integer;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(TXcomTestGame.Golden(IsUfo));
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
-    LPath := FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
+    LPath := FindUp(TXcomTestGame.Loftemps(IsUfo), False);
     if LPath <> '' then
     begin
       LBytes := TFile.ReadAllBytes(LPath);
@@ -607,5 +634,6 @@ end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomRealProjectile);
+  TDUnitX.RegisterTestFixture(TTestXcomRealProjectileUfo);
 
 end.

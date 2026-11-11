@@ -16,9 +16,23 @@ uses
   DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Shade,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattlescape.Sprites.Intf,
-  DelphiDoom.XcomBattlescape.Particle, DelphiDoom.XcomBattlescape.Explosion;
+  DelphiDoom.XcomBattlescape.Particle, DelphiDoom.XcomBattlescape.Explosion, DelphiDoom.XcomBattle.TileEngine,
+  DelphiDoom.XcomBattle.Projectile;
+
+const
+  /// <summary>Options::battleNewPreviewPath: the arrows of the previewed path</summary>
+  PATH_ARROWS = 1;
+  /// <summary>Options::battleNewPreviewPath: the time units left on every tile of the previewed path</summary>
+  PATH_TU_COST = 2;
 
 type
+  /// <summary>
+  ///   Gives the picture of a small number (a NumberText of 15x15 with the value drawn, in the color given and with
+  ///   or without the border): the map blits it on the tiles of a previewed path and on the waypoints. The surface
+  ///   is the giver's and is valid until the next call
+  /// </summary>
+  TXcomMapNumberSource = reference to function(AValue, AColor: Integer; ABordered: Boolean): TXcomSurface;
+
   /// <summary>The numbers the map needs from the rules and the screen that are not in the saved battle</summary>
   TXcomBattleMapSettings = record
     /// <summary>The size of the map surface (the whole screen)</summary>
@@ -43,8 +57,8 @@ type
   ///   drawings of the units (the cache that BattleUnit holds in the C++) and the frame of the animation.
   ///   It also keeps the particles of the vapor of the shots under water (that the C++ keeps in the tiles) and
   ///   draws them through the transparency tables.
-  ///   Not drawn: projectiles in flight, explosions, the preview of the path, the waypoints, the message of the
-  ///   hidden movement
+  ///   Not drawn: the message of the hidden movement (Draw says when it is due) and the accuracy on the crosshair of
+  ///   Options::battleUFOExtenderAccuracy
   /// </summary>
   TXcomBattleMap = class
   strict private
@@ -76,6 +90,25 @@ type
     FShadeDelta: Integer;
     FShowObstacles: Boolean;
     FTrace: TStrings;
+    FTileEngine: TXcomTileEngine;
+    FProjectile: TXcomProjectile;
+    FProjectileInFov: Boolean;
+    FLaunch: Boolean;
+    FSmoothCamera: Boolean;
+    FSmoothingEngaged: Boolean;
+    FWaypoints: TList<TXcomPosition>;
+    FNumberedWaypoints: Boolean;
+    FMouseOverIcons: Boolean;
+    FPreviewSetting: Integer;
+    FPathPreviewed: Boolean;
+    FNumberSource: TXcomMapNumberSource;
+    FMessageColor: Integer;
+    FBreathing: Boolean;
+    procedure SetProjectile(const AValue: TXcomProjectile);
+    procedure FollowProjectile(out ALowX, ALowY, AHighX, AHighY: Integer);
+    procedure DrawProjectile(AItX, AItY, AItZ, ALowX, ALowY, AHighX, AHighY: Integer);
+    procedure DrawPathPreview(ABeginX, AEndX, ABeginY, AEndY, ABeginZ, AEndZ: Integer);
+    function PathfindingFrame(AIndex: Integer): TXcomSurface;
     procedure CreateArrow;
     function TileSprite(const ATile: TXcomTile; APart: Integer): TXcomSurface;
     function GetTerrainLevel(const APosition: TXcomPosition; ASize: Integer): Integer;
@@ -84,7 +117,8 @@ type
     procedure DrawTerrain;
     procedure DrawParticles(const ATile: TXcomTile; const AScreen: TXcomPosition);
     procedure AnimateParticles(const ATile: TXcomTile);
-    procedure BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean = False);
+    procedure BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean = False;
+      ANewBaseColor: Integer = 0);
   public
     constructor Create(const ASave: TXcomSavedBattleGame; const ASprites: IXcomBattleSprites;
       const ASettings: TXcomBattleMapSettings);
@@ -102,6 +136,22 @@ type
       out AShadeOffset: Integer);
     procedure SetCursorType(ACursorType: Integer; ASize: Integer = 1);
     procedure SetSelectorPosition(AX, AY: Integer);
+    /// <summary>
+    ///   Map::setSelectorPosition: the tile under a point of the screen becomes the one of the cursor (the map is
+    ///   drawn again when it changes)
+    /// </summary>
+    procedure SetSelectorFromScreen(AScreenX, AScreenY: Integer);
+    /// <summary>Map::getSelectorPosition: the tile of the cursor, on the level in view</summary>
+    function SelectorPosition: TXcomPosition;
+    /// <summary>
+    ///   The first part of Map::draw: whether the projectile and the explosions are where the player sees them
+    ///   (ExplosionInFov is then set). The owner calls it before Draw; the tests set ExplosionInFov themselves
+    /// </summary>
+    procedure UpdateFieldOfView;
+    /// <summary>Map::getSoundAngle: the angle of a sound from a tile, 280 (left) to 440 (right)</summary>
+    function SoundAngle(const APosition: TXcomPosition): Integer;
+    /// <summary>Map::resetCameraSmoothing</summary>
+    procedure ResetCameraSmoothing;
     procedure Invalidate;
     /// <summary>Projectile::addVaporCloud: ADensity particles at the voxel, on the tile that holds it</summary>
     procedure AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
@@ -147,6 +197,33 @@ type
     property BlitCount: Integer read FBlitCount;
     /// <summary>For the tests and the logs: every blit of a draw is added here (not owned), or nil</summary>
     property Trace: TStrings read FTrace write FTrace;
+    /// <summary>The engine of the tiles, for the shadow of a projectile (not owned); without it no projectile is drawn</summary>
+    property TileEngine: TXcomTileEngine read FTileEngine write FTileEngine;
+    /// <summary>Map::setProjectile: the projectile in flight (not owned), or nil</summary>
+    property Projectile: TXcomProjectile read FProjectile write SetProjectile;
+    /// <summary>Options::battleSmoothCamera: the camera follows the projectile instead of jumping a screen at a time</summary>
+    property SmoothCamera: Boolean read FSmoothCamera write FSmoothCamera;
+    /// <summary>Map::getWaypoints: the tiles marked for a guided missile or for the fire to confirm</summary>
+    property Waypoints: TList<TXcomPosition> read FWaypoints;
+    /// <summary>The current action is BA_LAUNCH: the waypoints are numbered</summary>
+    property NumberedWaypoints: Boolean read FNumberedWaypoints write FNumberedWaypoints;
+    /// <summary>BattlescapeState::getMouseOverIcons: the mouse is on the panel and the cursor of the tiles is not drawn</summary>
+    property MouseOverIcons: Boolean read FMouseOverIcons write FMouseOverIcons;
+    /// <summary>Options::battleNewPreviewPath (PATH_ARROWS, PATH_TU_COST)</summary>
+    property PreviewSetting: Integer read FPreviewSetting write FPreviewSetting;
+    /// <summary>Pathfinding::isPathPreviewed: the owner sets it before Draw</summary>
+    property PathPreviewed: Boolean read FPathPreviewed write FPathPreviewed;
+    /// <summary>Draws the numbers of the previewed path and of the waypoints; nil draws none</summary>
+    property NumberSource: TXcomMapNumberSource read FNumberSource write FNumberSource;
+    /// <summary>The color of the element messageWindows of the interface battlescape (the numbers of the path are one more)</summary>
+    property MessageColor: Integer read FMessageColor write FMessageColor;
+    /// <summary>
+    ///   The units under water breathe bubbles (BattleUnit::breathe at every Animate, drawn over the unit). Off unless
+    ///   the owner turns it on: the bubbles are random and the comparisons with the real program have none
+    /// </summary>
+    property Breathing: Boolean read FBreathing write FBreathing;
+    /// <summary>Whether the last UpdateFieldOfView saw the projectile</summary>
+    property ProjectileInFov: Boolean read FProjectileInFov;
   end;
 
 implementation
@@ -161,6 +238,7 @@ const
   PART_NORTH_WALL = 2;
   PART_OBJECT = 3;
   BLOCK_COLOR_BLACK = 15;
+  BULLET_SPRITES = 35;
   ARROW_BOB: array[0..7] of Integer = (0, 1, 2, 1, 0, 1, 2, 1);
 
 constructor TXcomBattleMap.Create(const ASave: TXcomSavedBattleGame; const ASprites: IXcomBattleSprites;
@@ -187,6 +265,7 @@ begin
   FCaches := TObjectDictionary<TXcomBattleUnit, TObjectList<TXcomSurface>>.Create([doOwnsValues]);
   FParticles := TObjectDictionary<TXcomTile, TObjectList<TXcomParticle>>.Create([doOwnsValues]);
   FExplosions := TObjectList<TXcomExplosion>.Create(True);
+  FWaypoints := TList<TXcomPosition>.Create;
   FParticleRandom := TXcomRandom.Create(UInt64(TThread.GetTickCount64) or 1);
   FSkipBlit := -1;
   FCursorType := CT_NORMAL;
@@ -197,6 +276,7 @@ end;
 
 destructor TXcomBattleMap.Destroy;
 begin
+  FWaypoints.Free;
   FExplosions.Free;
   FParticles.Free;
   FCaches.Free;
@@ -232,6 +312,18 @@ begin
       FArrow.SetPixel(LX, LY, Byte(LPixels[LX + LY * 9]));
 end;
 
+function TXcomBattleMap.PathfindingFrame(AIndex: Integer): TXcomSurface;
+var
+  LSet: TXcomSurfaceSet;
+begin
+  // the arrows are extra sprites of the rules: a game without them draws only the numbers
+  LSet := FSprites.SurfaceSet('Pathfinding');
+  if Assigned(LSet) then
+    Result := LSet.GetFrame(AIndex)
+  else
+    Result := nil;
+end;
+
 procedure TXcomBattleMap.Invalidate;
 begin
   FRedraw := True;
@@ -252,6 +344,75 @@ begin
   FSelectorY := AY;
 end;
 
+procedure TXcomBattleMap.SetSelectorFromScreen(AScreenX, AScreenY: Integer);
+var
+  LOldX: Integer;
+  LOldY: Integer;
+begin
+  LOldX := FSelectorX;
+  LOldY := FSelectorY;
+  FCamera.ConvertScreenToMap(AScreenX, AScreenY + FSpriteHeight div 4, FSelectorX, FSelectorY);
+  if (LOldX <> FSelectorX) or (LOldY <> FSelectorY) then
+    FRedraw := True;
+end;
+
+function TXcomBattleMap.SelectorPosition: TXcomPosition;
+begin
+  Result := TXcomPosition.Make(FSelectorX, FSelectorY, FCamera.ViewLevel);
+end;
+
+procedure TXcomBattleMap.SetProjectile(const AValue: TXcomProjectile);
+begin
+  FProjectile := AValue;
+  if Assigned(AValue) and FSmoothCamera then
+    FLaunch := True;
+end;
+
+procedure TXcomBattleMap.ResetCameraSmoothing;
+begin
+  FSmoothingEngaged := False;
+end;
+
+function TXcomBattleMap.SoundAngle(const APosition: TXcomPosition): Integer;
+var
+  LMidPoint: Integer;
+  LRelative: TXcomPosition;
+begin
+  LMidPoint := FSurface.Width div 2;
+  LRelative := FCamera.ConvertMapToScreen(APosition);
+  // cap the position to the screen edges relative to the center: negative is left, positive is right
+  LRelative.X := EnsureRange((LRelative.X + FCamera.MapOffset.X) - LMidPoint, -LMidPoint, LMidPoint);
+  // +-80 degrees instead of +-90, so as not to mute one speaker
+  Result := Trunc(360 + (LRelative.X / (LMidPoint / 80.0)));
+end;
+
+procedure TXcomBattleMap.UpdateFieldOfView;
+var
+  LTile: TXcomTile;
+  LExplosion: TXcomExplosion;
+  LPosition: TXcomPosition;
+begin
+  FProjectileInFov := FSave.DebugMode;
+  if Assigned(FProjectile) then
+  begin
+    LPosition := FProjectile.GetPosition(0);
+    LTile := FSave.TileAt(TXcomPosition.Make(LPosition.X div 16, LPosition.Y div 16, LPosition.Z div 24));
+    if (FSave.Side = FACTION_PLAYER) or (Assigned(LTile) and (LTile.Visible <> 0)) then
+      FProjectileInFov := True;
+  end;
+  FExplosionInFov := FSave.DebugMode;
+  for LExplosion in FExplosions do
+  begin
+    LPosition := LExplosion.Position;
+    LTile := FSave.TileAt(TXcomPosition.Make(LPosition.X div 16, LPosition.Y div 16, LPosition.Z div 24));
+    if Assigned(LTile) and (LExplosion.IsBig or (LTile.Visible <> 0)) then
+    begin
+      FExplosionInFov := True;
+      Break;
+    end;
+  end;
+end;
+
 function TXcomBattleMap.TileSprite(const ATile: TXcomTile; APart: Integer): TXcomSurface;
 var
   LData: TXcomMapData;
@@ -262,7 +423,8 @@ begin
   Result := FSprites.TerrainFrame((LData.Dataset as TXcomMapDataSet).Name, LData.GetSprite(ATile.CurrentFrame[APart]));
 end;
 
-procedure TXcomBattleMap.BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean);
+procedure TXcomBattleMap.BlitShade(const ASource: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean;
+  ANewBaseColor: Integer);
 begin
   if Assigned(FTrace) then
     FTrace.Add(Format('%s x=%d y=%d w=%d h=%d shade=%d tile=%s', [FWhat, AX, AY, ASource.Width, ASource.Height, AShade,
@@ -274,7 +436,7 @@ begin
       Exit;
     AShade := EnsureRange(AShade + FShadeDelta, 0, 16);
   end;
-  TXcomSurfaceShader.Blit(ASource, FSurface, AX, AY, AShade, AHalf);
+  TXcomSurfaceShader.Blit(ASource, FSurface, AX, AY, AShade, AHalf, ANewBaseColor);
 end;
 
 function TXcomBattleMap.GetTerrainLevel(const APosition: TXcomPosition; ASize: Integer): Integer;
@@ -593,12 +755,16 @@ begin
   end;
   // animate certain units (large flying units have a propulsion animation)
   for LUnit in FSave.Units do
+  begin
+    if FBreathing and (FSave.Depth > 0) and (not LUnit.FloorAbove) then
+      LUnit.Breathe(FParticleRandom.Generate(0, 99));
     if not LUnit.IsOut then
       if LUnit.Armor.ConstantAnimation then
       begin
         LUnit.CacheInvalid := True;
         CacheUnit(LUnit);
       end;
+  end;
   if ARedraw then
     FRedraw := True;
 end;
@@ -613,7 +779,7 @@ begin
   FBlitCount := 0;
   FSurface.Clear(BLOCK_COLOR_BLACK);
   if (Assigned(FSave.SelectedUnit) and FSave.SelectedUnit.GetVisible) or FUnitDying or
-    (not Assigned(FSave.SelectedUnit)) or FSave.DebugMode then
+    (not Assigned(FSave.SelectedUnit)) or FSave.DebugMode or FProjectileInFov or FExplosionInFov then
     DrawTerrain
   else
     Result := False;
@@ -656,6 +822,7 @@ var
   LUnitShade: Integer;
   LFrame: TXcomSurface;
   LFrameNumber: Integer;
+  LBreath: TXcomSurfaceSet;
 
   function SameXY(const AFirst, ASecond: TXcomPosition): Boolean;
   begin
@@ -790,6 +957,19 @@ begin
     LFrame := FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber);
     TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y, 0, LMask);
   end;
+  if LUnit.BreathFrame > 0 then
+  begin
+    LBreath := FSprites.SurfaceSet('BREATH-1.PCK');
+    if Assigned(LBreath) then
+    begin
+      LFrame := LBreath.GetFrame(LUnit.BreathFrame - 1);
+      // lower the bubbles for shorter or kneeling units
+      LOffset.Y := LOffset.Y + (22 - LUnit.GetHeight);
+      if Assigned(LFrame) then
+        TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y - 30, LTileShade,
+          LMask);
+    end;
+  end;
 end;
 
 procedure TXcomBattleMap.DrawTerrain;
@@ -825,6 +1005,15 @@ var
   LOffset: TXcomPosition;
   LShadeOffset: Integer;
   LExplosion: TXcomExplosion;
+  LBulletLowX: Integer;
+  LBulletLowY: Integer;
+  LBulletHighX: Integer;
+  LBulletHighY: Integer;
+  LWaypointId: Integer;
+  LWaypointXOffset: Integer;
+  LWaypointYOffset: Integer;
+  LWaypoint: TXcomPosition;
+  LNumber: TXcomSurface;
 
   function Shade(APart: Integer; ADefault: Integer): Integer;
   begin
@@ -843,7 +1032,7 @@ var
   function CursorOnTile: Boolean;
   begin
     Result := (FCursorType <> CT_NONE) and (FSelectorX > LItX - FCursorSize) and (FSelectorY > LItY - FCursorSize) and
-      (FSelectorX < LItX + 1) and (FSelectorY < LItY + 1);
+      (FSelectorX < LItX + 1) and (FSelectorY < LItY + 1) and (not FMouseOverIcons);
   end;
 
 begin
@@ -852,6 +1041,8 @@ begin
     LEndZ := FSave.MapSizeZ - 1
   else
     LEndZ := FCamera.ViewLevel;
+  // if we got bullet, get the highest x and y tiles to draw it on, and keep it in view
+  FollowProjectile(LBulletLowX, LBulletLowY, LBulletHighX, LBulletHighY);
   // get corner map coordinates to give rough boundaries in which tiles to redraw are
   FCamera.ConvertScreenToMap(0, 0, LBeginX, LDummy);
   FCamera.ConvertScreenToMap(FSurface.Width, 0, LDummy, LBeginY);
@@ -972,6 +1163,9 @@ begin
             BlitShade(FSprites.SurfaceSet('FLOOROB.PCK').GetFrame(LSprite), LScreen.X,
               LScreen.Y + LTile.GetTerrainLevel, LTileShade);
         end;
+        // check if we got bullet && it is in Field Of View
+        if Assigned(FProjectile) and FProjectileInFov then
+          DrawProjectile(LItX, LItY, LItZ, LBulletLowX, LBulletLowY, LBulletHighX, LBulletHighY);
         LUnit := LTile.CurrentUnit;
         // draw soldier from this tile or below
         DrawUnit(LTile, LTile, LScreen, LTileShade, LObstacleShade, LTopLayer);
@@ -1001,6 +1195,20 @@ begin
         end;
         // draw particle clouds
         DrawParticles(LTile, LScreen);
+        // draw path preview
+        FWhat := 'preview';
+        if (LTile.Preview <> -1) and LTile.IsDiscovered(0) and ((FPreviewSetting and PATH_ARROWS) <> 0) then
+        begin
+          if (LItZ > 0) and LTile.HasNoFloor(FSave.TileAt(LTile.Position + TXcomPosition.Make(0, 0, -1))) then
+          begin
+            LFrame := PathfindingFrame(11);
+            if Assigned(LFrame) then
+              BlitShade(LFrame, LScreen.X, LScreen.Y + 2, 0, False, LTile.MarkerColor);
+          end;
+          LFrame := PathfindingFrame(LTile.Preview);
+          if Assigned(LFrame) then
+            BlitShade(LFrame, LScreen.X, LScreen.Y + LTile.GetTerrainLevel, 0, False, LTile.MarkerColor);
+        end;
         if not LTile.IsVoid then
         begin
           FWhat := 'object';
@@ -1048,8 +1256,41 @@ begin
               LScreen.Y, 0);
           end;
         end;
+        // draw waypoints if any on this tile
+        FWhat := 'waypoint';
+        LWaypointId := 1;
+        LWaypointXOffset := 2;
+        LWaypointYOffset := 2;
+        for LWaypoint in FWaypoints do
+        begin
+          if LWaypoint = LMapPosition then
+          begin
+            if (LWaypointXOffset = 2) and (LWaypointYOffset = 2) then
+              BlitShade(FSprites.SurfaceSet('CURSOR.PCK').GetFrame(7), LScreen.X, LScreen.Y, 0);
+            if FNumberedWaypoints then
+            begin
+              if Assigned(FNumberSource) then
+              begin
+                LNumber := FNumberSource(LWaypointId, 16, False);
+                BlitShade(LNumber, LScreen.X + LWaypointXOffset, LScreen.Y + LWaypointYOffset, 0);
+              end;
+              if LWaypointId > 9 then
+                Inc(LWaypointXOffset, 8)
+              else
+                Inc(LWaypointXOffset, 6);
+              if LWaypointXOffset >= 26 then
+              begin
+                LWaypointXOffset := 2;
+                Inc(LWaypointYOffset, 8);
+              end;
+            end;
+          end;
+          Inc(LWaypointId);
+        end;
       end;
   end;
+  if FPathPreviewed then
+    DrawPathPreview(LBeginX, LEndX, LBeginY, LEndY, LBeginZ, LEndZ);
   LSelected := FSave.SelectedUnit;
   if Assigned(LSelected) and ((FSave.Side = FACTION_PLAYER) or FSave.DebugMode) and
     (LSelected.Position.Z <= FCamera.ViewLevel) then
@@ -1094,6 +1335,253 @@ begin
             LScreen.Y - 15, 0);
       end;
   end;
+end;
+
+procedure TXcomBattleMap.FollowProjectile(out ALowX, ALowY, AHighX, AHighY: Integer);
+var
+  LHighZ: Integer;
+  LPart: Integer;
+  LIndex: Integer;
+  LPosition: TXcomPosition;
+  LScreen: TXcomPosition;
+  LCamera: TXcomPosition;
+  LEnough: Boolean;
+begin
+  ALowX := 16000;
+  ALowY := 16000;
+  AHighX := 0;
+  AHighY := 0;
+  LHighZ := 0;
+  if (not Assigned(FProjectile)) or (FExplosions.Count > 0) then
+    Exit;
+  if Assigned(FProjectile.Item) then
+    LPart := 0
+  else
+    LPart := BULLET_SPRITES - 1;
+  for LIndex := 0 to LPart do
+  begin
+    LPosition := FProjectile.GetPosition(1 - LIndex);
+    ALowX := Min(ALowX, LPosition.X);
+    ALowY := Min(ALowY, LPosition.Y);
+    AHighX := Max(AHighX, LPosition.X);
+    AHighY := Max(AHighY, LPosition.Y);
+    LHighZ := Max(LHighZ, LPosition.Z);
+  end;
+  // divide by 16 to go from voxel to tile position
+  ALowX := ALowX div 16;
+  ALowY := ALowY div 16;
+  AHighX := AHighX div 16;
+  AHighY := AHighY div 16;
+  LHighZ := LHighZ div 24;
+  if not FProjectileInFov then
+    Exit;
+  // if the projectile is outside the viewport - center it back on it
+  LScreen := FCamera.ConvertVoxelToScreen(FProjectile.GetPosition);
+  LCamera := FCamera.MapOffset;
+  if LCamera.Z <> LHighZ then
+  begin
+    // switch level
+    LCamera.Z := LHighZ;
+    FCamera.MapOffset := LCamera;
+    LScreen := FCamera.ConvertVoxelToScreen(FProjectile.GetPosition);
+  end;
+  if FSmoothCamera then
+  begin
+    if FLaunch then
+    begin
+      FLaunch := False;
+      if (LScreen.X < 1) or (LScreen.X > FSurface.Width - 1) or (LScreen.Y < 1) or
+        (LScreen.Y > FCamera.VisibleMapHeight - 1) then
+      begin
+        FCamera.CenterOnPosition(TXcomPosition.Make(ALowX, ALowY, LHighZ), False);
+        LScreen := FCamera.ConvertVoxelToScreen(FProjectile.GetPosition);
+      end;
+    end;
+    if not FSmoothingEngaged then
+    begin
+      if (LScreen.X < 1) or (LScreen.X > FSurface.Width - 1) or (LScreen.Y < 1) or
+        (LScreen.Y > FCamera.VisibleMapHeight - 1) then
+        FSmoothingEngaged := True;
+    end
+    else
+      FCamera.JumpXY(FSurface.Width div 2 - LScreen.X, FCamera.VisibleMapHeight div 2 - LScreen.Y);
+  end
+  else
+    repeat
+      LEnough := True;
+      if LScreen.X < 0 then
+      begin
+        FCamera.JumpXY(FSurface.Width, 0);
+        LEnough := False;
+      end
+      else if LScreen.X > FSurface.Width then
+      begin
+        FCamera.JumpXY(-FSurface.Width, 0);
+        LEnough := False;
+      end
+      else if LScreen.Y < 0 then
+      begin
+        FCamera.JumpXY(0, FCamera.VisibleMapHeight);
+        LEnough := False;
+      end
+      else if LScreen.Y > FCamera.VisibleMapHeight then
+      begin
+        FCamera.JumpXY(0, -FCamera.VisibleMapHeight);
+        LEnough := False;
+      end;
+      LScreen := FCamera.ConvertVoxelToScreen(FProjectile.GetPosition);
+    until LEnough;
+end;
+
+procedure TXcomBattleMap.DrawProjectile(AItX, AItY, AItZ, ALowX, ALowY, AHighX, AHighY: Integer);
+var
+  LFrame: TXcomSurface;
+  LVoxel: TXcomPosition;
+  LScreen: TXcomPosition;
+  LSet: string;
+  LIndex: Integer;
+  LEnd: Integer;
+  LDirection: Integer;
+
+  function OnTile(AWide: Boolean): Boolean;
+  begin
+    if AWide then
+      Result := (LVoxel.X div 16 >= AItX) and (LVoxel.Y div 16 >= AItY) and (LVoxel.X div 16 <= AItX + 1) and
+        (LVoxel.Y div 16 <= AItY + 1)
+    else
+      Result := (LVoxel.X div 16 = AItX) and (LVoxel.Y div 16 = AItY);
+    Result := Result and (LVoxel.Z div 24 = AItZ) and FTileEngine.IsVoxelVisible(LVoxel);
+  end;
+
+begin
+  if not Assigned(FTileEngine) then
+    Exit;
+  FWhat := 'projectile';
+  if Assigned(FProjectile.Item) then
+  begin
+    LFrame := FSprites.SurfaceSet('FLOOROB.PCK').GetFrame(FProjectile.ItemFloorSprite);
+    if not Assigned(LFrame) then
+      Exit;
+    // draw shadow on the floor
+    LVoxel := FProjectile.GetPosition;
+    LVoxel.Z := FTileEngine.CastedShade(LVoxel);
+    if OnTile(True) then
+    begin
+      LScreen := FCamera.ConvertVoxelToScreen(LVoxel);
+      BlitShade(LFrame, LScreen.X - 16, LScreen.Y - 26, 16);
+    end;
+    // draw thrown object
+    LVoxel := FProjectile.GetPosition;
+    if OnTile(True) then
+    begin
+      LScreen := FCamera.ConvertVoxelToScreen(LVoxel);
+      BlitShade(LFrame, LScreen.X - 16, LScreen.Y - 26, 0);
+    end;
+  end
+  else if (AItX >= ALowX) and (AItX <= AHighX) and (AItY >= ALowY) and (AItY <= AHighY) then
+  begin
+    // draw bullet on the correct tile
+    if FSave.Depth = 0 then
+      LSet := 'Projectiles'
+    else
+      LSet := 'UnderwaterProjectiles';
+    LIndex := 0;
+    LEnd := BULLET_SPRITES;
+    LDirection := 1;
+    if FProjectile.IsReversed then
+    begin
+      LIndex := BULLET_SPRITES - 1;
+      LEnd := -1;
+      LDirection := -1;
+    end;
+    while LIndex <> LEnd do
+    begin
+      LFrame := FSprites.SurfaceSet(LSet).GetFrame(FProjectile.GetParticle(LIndex));
+      if Assigned(LFrame) then
+      begin
+        // draw shadow on the floor
+        LVoxel := FProjectile.GetPosition(1 - LIndex);
+        LVoxel.Z := FTileEngine.CastedShade(LVoxel);
+        if OnTile(False) then
+        begin
+          LScreen := FCamera.ConvertVoxelToScreen(LVoxel);
+          BlitShade(LFrame, LScreen.X - LFrame.Width div 2, LScreen.Y - LFrame.Height div 2, 16);
+        end;
+        // draw bullet itself
+        LVoxel := FProjectile.GetPosition(1 - LIndex);
+        if OnTile(False) then
+        begin
+          LScreen := FCamera.ConvertVoxelToScreen(LVoxel);
+          BlitShade(LFrame, LScreen.X - LFrame.Width div 2, LScreen.Y - LFrame.Height div 2, 0);
+        end;
+      end;
+      Inc(LIndex, LDirection);
+    end;
+  end;
+end;
+
+procedure TXcomBattleMap.DrawPathPreview(ABeginX, AEndX, ABeginY, AEndY, ABeginZ, AEndZ: Integer);
+var
+  LItZ: Integer;
+  LItX: Integer;
+  LItY: Integer;
+  LMapPosition: TXcomPosition;
+  LScreen: TXcomPosition;
+  LTile: TXcomTile;
+  LTileBelow: TXcomTile;
+  LAdjustment: Integer;
+  LFrame: TXcomSurface;
+  LOff: Integer;
+  LNumber: TXcomSurface;
+begin
+  FWhat := 'preview';
+  for LItZ := ABeginZ to AEndZ do
+    for LItX := ABeginX to AEndX do
+      for LItY := ABeginY to AEndY do
+      begin
+        LMapPosition := TXcomPosition.Make(LItX, LItY, LItZ);
+        LScreen := FCamera.ConvertMapToScreen(LMapPosition) + FCamera.MapOffset;
+        // only render cells that are inside the surface
+        if not ((LScreen.X > -FSpriteWidth) and (LScreen.X < FSurface.Width + FSpriteWidth) and
+          (LScreen.Y > -FSpriteHeight) and (LScreen.Y < FSurface.Height + FSpriteHeight)) then
+          Continue;
+        LTile := FSave.TileAt(LMapPosition);
+        LTileBelow := FSave.TileAt(LMapPosition - TXcomPosition.Make(0, 0, 1));
+        if (not Assigned(LTile)) or (not LTile.IsDiscovered(0)) or (LTile.Preview = -1) then
+          Continue;
+        LAdjustment := -LTile.GetTerrainLevel;
+        if (FPreviewSetting and PATH_ARROWS) <> 0 then
+        begin
+          if (LItZ > 0) and LTile.HasNoFloor(LTileBelow) then
+          begin
+            LFrame := PathfindingFrame(23);
+            if Assigned(LFrame) then
+              BlitShade(LFrame, LScreen.X, LScreen.Y + 2, 0, False, LTile.MarkerColor);
+          end;
+          LFrame := PathfindingFrame(LTile.Preview + 12);
+          if Assigned(LFrame) then
+            BlitShade(LFrame, LScreen.X, LScreen.Y - LAdjustment, 0, False, LTile.MarkerColor);
+        end;
+        if ((FPreviewSetting and PATH_TU_COST) <> 0) and (LTile.TuMarker > -1) and Assigned(FNumberSource) then
+        begin
+          if LTile.TuMarker > 9 then
+            LOff := 5
+          else
+            LOff := 3;
+          if Assigned(FSave.SelectedUnit) and (FSave.SelectedUnit.Armor.Size > 1) then
+          begin
+            Inc(LAdjustment);
+            if (FPreviewSetting and PATH_ARROWS) = 0 then
+              Inc(LAdjustment, 7);
+          end;
+          // a border makes the number more visible on snow
+          LNumber := FNumberSource(LTile.TuMarker, FMessageColor + 1, True);
+          if (FPreviewSetting and PATH_ARROWS) = 0 then
+            BlitShade(LNumber, LScreen.X + 16 - LOff, LScreen.Y + (29 - LAdjustment), 0, False, LTile.MarkerColor)
+          else
+            BlitShade(LNumber, LScreen.X + 16 - LOff, LScreen.Y + (22 - LAdjustment), 0);
+        end;
+      end;
 end;
 
 procedure TXcomBattleMap.AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig,

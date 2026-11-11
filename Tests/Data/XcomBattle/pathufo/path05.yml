@@ -1,0 +1,141 @@
+width: 10
+length: 10
+height: 1
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - MARS
+  - DESERT
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 100
+binTiles: AAAAAAEAIwD/////AQAAAP////8AAAABAAAABAAjACIA//8BAAAAAAD//wAAAAIAAAADAP////8ZAAEA/////wAAAAAAAwAAAAEA////////AQD///////8AAAAEAAAAFQD//yIA//8BAP//AAD//wAAAAUAAAAEAP//IgD//wAA//8AAP//AAAABgAAABQAIwD/////AQAAAP////8AAAAHAAAACQD/////DwAAAP////8BAAAAAAgAAAAJAP///////wEA////////AAAACQAAAAAA////////AAD///////8AAAAKAAAAFgAjAP////8AAAAA/////wAAAAsAAAAAAP////9AAAAA/////wEAAAAADAAAAAMAIwD/////AAAAAP////8AAAANAAAACQD//yIA//8BAP//AAD//wAAAA4AAAAAACMAIgD//wEAAAAAAP//AAAADwAAAAAA////////AAD///////8AAAAQAAAAFQAjACIA//8BAAAAAAD//wAAABEAAAAIAP///////wEA////////AAAAEgAAAAkA////////AAD///////8AAAATAAAACAD///////8BAP///////wAAABQAAAAIACMA/////wAAAAD/////AAAAFQAAAAcAIwD/////AQAAAP////8AAAAWAAAACQD/////GAABAP////8BAAAAABcAAAAVAP////8bAAEA/////wAAAAAAGAAAAAcA////////AQD///////8AAAAZAAAABAD//yIA//8BAP//AAD//wAAABoAAAABAP///////wEA////////AAAAGwAAABMA////////AQD///////8AAAAcAAAABQD///////8BAP///////wAAAB0AAAAUAP///////wEA////////AAAAHgAAAAMA////////AQD///////8AAAAfAAAAIQD//yIA//8AAP//AAD//wAAACAAAAAJAP///////wEA////////BAAAIQAAAAQA////////AQD///////8AAAAiAAAACAD///////8AAP///////wAAACMAAAAFAP////8NAAEA/////wEAAAAAJAAAAAQA/////ygAAAD/////AQAAAAAlAAAABgAjAP//DgABAAAA//8BAAAAACYAAAADAP///////wAA////////AAAAJwAAAAIA/////wwAAQD/////AAAAAAAoAAAACQD//yIA//8AAP//AAD//wAAACkAAAAUAP///////wEA////////AAAAKgAAAAAAIwD//xwAAAAAAP//AQAAAAArAAAACAD///////8AAP///////wAAACwAAAAWAP///////wAA////////AAAALQAAAAAA////////AAD///////8AAAAuAAAAAgD//yIANwABAP//AAABAAAAAC8AAAAAAP///////wEA////////AAAAMAAAAAkA////////AAD///////8AAAAxAAAAFAD///////8BAP///////wAAADIAAAACAP////8FAAAA/////wAAAAAAMwAAAAkA/////xcAAAD/////AQAAAAA0AAAAAgD//yIA//8AAP//AAD//wAAADUAAAAGAP//IgAOAAEA//8AAAAAAAAANgAAAAAA////////AQD///////8AAAA3AAAAAgAjACIA//8BAAAAAAD//wAAADgAAAAAAP///////wAA////////AAAAOQAAACEA//8iAA4AAAD//wAAAAACAQA6AAAACAD/////EAAAAP////8BAAYAADsAAAAAAP///////wEA////////AAAAPAAAAAAA////////AAD///////8AAAA9AAAAAQD/////NQABAP////8BAAAAAD4AAAADAP///////wAA////////AAAAPwAAAAYA////////AQD///////8AAABAAAAACAD///////8AAP///////wAAAEEAAAACAP///////wAA////////AAAAQgAAAAEA////////AQD///////8EBABDAAAAAAAjACIA//8AAAAAAAD//wAAAEQAAAAWAP///////wAA////////AAAARQAAAAMA////////AQD///////8AAABGAAAAFQD///////8BAP///////wAAAEcAAAATAP///////wEA////////AAAASAAAABQA////////AQD///////8AAABJAAAAAwD/////HwAAAP////8BAAAAAEoAAAAIAP///////wEA////////AwAASwAAAAgA////////AQD///////8AAABMAAAAAQD///////8AAP///////wAAAE0AAAAEACMA/////wAAAAD/////AAAATgAAAAcA//8iAP//AQD//wAA//8AAABPAAAAAwD///////8AAP///////wAAAFAAAAAWAP///////wAA////////AgAAUQAAAAkAIwD/////AQAAAP////8AAABSAAAACQD/////HQAAAP////8BAAAAAFMAAAAIAP///////wEA////////AAAAVAAAAAMAIwD/////AAAAAP////8AAABVAAAACQD///////8BAP///////wAAAFYAAAAEAP///////wEA////////CAMAVwAAAAgA////////AAD///////8AAABYAAAACQD/////PQABAP////8BAAAAAFkAAAADACMAIgD//wEAAAAAAP//AAAAWgAAAAIA////////AAD///////8AAABbAAAAAwD/////FQABAP////8AAAAAAFwAAAAFAP////8sAAEA/////wEAAAAAXQAAAAgA/////xsAAQD/////AAAAAABeAAAAAgD///////8AAP///////wAAAF8AAAAIAP///////wAA////////AAAAYAAAAAIA////////AQD///////8AAABhAAAAAQD///////8BAP///////wAAAGIAAAABAP///////wEA////////AAAAYwAAAAAA////////AAD///////8AAAA=
+units:
+  - id: 1000000
+    genUnitType: STR_SECTOID_COMMANDER
+    genUnitArmor: SECTOID_ARMOR0
+    faction: 2
+    status: 0
+    position:
+      - 7
+      - 4
+      - 0
+    direction: 6
+    directionTurret: 6
+    tu: 54
+    health: 30
+    stunlevel: 0
+    energy: 90
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 4
+      - 3
+      - 3
+      - 2
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_CHRYSSALID_TERRORIST
+    genUnitArmor: CHRYSSALID_ARMOR
+    faction: 1
+    status: 0
+    position:
+      - 6
+      - 0
+      - 0
+    direction: 4
+    directionTurret: 4
+    tu: 110
+    health: 96
+    stunlevel: 0
+    energy: 140
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 17
+      - 17
+      - 17
+      - 17
+      - 17
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 0
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 1
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20

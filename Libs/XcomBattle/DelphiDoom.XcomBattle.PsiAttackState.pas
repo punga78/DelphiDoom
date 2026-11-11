@@ -101,7 +101,7 @@ begin
   // after the explosion animation is done: make the actual psi attack, and restore the camera and the cursor
   PsiAttack;
   if ActionData.CameraPosition.Z <> -1 then
-    FGame.View.CenterOnPosition(ActionData.CameraPosition, False);
+    FGame.View.SetCameraOffset(ActionData.CameraPosition);
   if (FGame.Save.Side = FACTION_PLAYER) or FGame.Save.DebugMode then
     FGame.SetupCursor;
   FGame.PopState;

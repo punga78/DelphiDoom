@@ -33,6 +33,59 @@ type
     procedure SetWindowStyle(ABorderless, AResizable: Boolean);
   end;
 
+  /// <summary>
+  ///   How the picture goes to the display (Options::useOpenGL, useOpenGLShader, useOpenGLSmoothing and
+  ///   vSyncForOpenGL). Shader is the path of the option ("Shaders/raw.opengl.shader"), empty for none
+  /// </summary>
+  TXcomDisplayFilter = record
+    UseOpenGL: Boolean;
+    Shader: string;
+    Smoothing: Boolean;
+    VSync: Boolean;
+  end;
+
+  /// <summary>The black bands around the game picture in the display, in pixels of the display (Screen::_topBlackBand...)</summary>
+  TXcomBlackBands = record
+    Top: Integer;
+    Bottom: Integer;
+    Left: Integer;
+    Right: Integer;
+  end;
+
+  /// <summary>
+  ///   What a display that can scale the game picture itself also does (SDL_OPENGL of SDL_SetVideoMode and the
+  ///   OpenGL class of OpenXcom): the screen gives the filter before SetMode, reads what the device could do after
+  ///   it, and offers every picture unscaled before it scales it in software
+  /// </summary>
+  IXcomFilteredDisplay = interface
+    ['{C5A1D0E7-48B3-4F29-9D16-2E7B0A63F5D8}']
+    /// <summary>Taken at the next SetMode</summary>
+    procedure SetDisplayFilter(const AFilter: TXcomDisplayFilter);
+    /// <summary>
+    ///   What is in use since the last SetMode: UseOpenGL false when the context could not be made, Shader empty
+    ///   when the shader could not be used
+    /// </summary>
+    function DisplayFilter: TXcomDisplayFilter;
+    /// <summary>
+    ///   Shows the game picture (AWidth x AHeight, not scaled) in a display of ADisplayWidth x ADisplayHeight with
+    ///   the bands around it; false when the device does not scale (the screen then calls Present)
+    /// </summary>
+    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
+      ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+  end;
+
+  /// <summary>The OpenGL shaders of the Shaders folder of the data (FileMap of OpenXcom, for that folder only)</summary>
+  IXcomShaderCatalog = interface
+    ['{2B9E64F1-7D05-4C8A-B3E2-91A6C0D47F35}']
+    /// <summary>
+    ///   FileMap::filterFiles(getVFolderContents("Shaders/"), "OpenGL.shader"): the names of the files in lower
+    ///   case, in the order of their characters
+    /// </summary>
+    function Files: TArray<string>;
+    /// <summary>The bytes of a shader by the path of the option ("Shaders/Raw.OpenGL.shader", any case); false when it is not there</summary>
+    function TryRead(const APath: string; out ABytes: TBytes): Boolean;
+  end;
+
   /// <summary>Where the events come from (SDL_PollEvent)</summary>
   IXcomEventSource = interface
     ['{B7D30F58-1A6E-4C92-9E45-D81F2B70A3C6}']

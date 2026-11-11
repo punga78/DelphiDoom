@@ -55,3 +55,12 @@ sono nei floppy. **Non riuscito**: dopo l'introduzione (anche saltata con Esc) `
 del gioco), altrimenti e' il gioco (`-data` e' la cartella con `common\` e `standard\`, `-game` quella del gioco): gli
 script di questa cartella lo chiamano cosi'. E' un programma GUI: in PowerShell va lanciato con una pipe (`| Out-Null`,
 `| Out-String`) perche' la shell aspetti la fine e riceva il testo; con `> file` non aspetta e il file resta vuoto.
+
+## Battaglia in corso: `Compare-XcomBattle.ps1`
+
+Carica un salvataggio con la battaglia in corso (`Tests\Data\XcomBattle\bg\<scenario>\start.sav.gz`, scritto dal vero
+OpenXcom con `battle\bgame`) in `Xcom32 -script` e, con `-Real`, nel vero OpenXcom (F12), poi confronta le schermate
+con `Compare-Png.ps1`. Coordinate della finestra 640x400. `-Option chiave=valore` cambia `options.cfg` per entrambi
+(per esempio `battleNewPreviewPath=3`). La cartella utente e' `<Out>\user`: mai quella di `bin\OpenXcom`. Le
+animazioni della mappa vanno allineate con piu' scatti a 100 ms. Dettagli e numeri in
+`Libs\XcomBattleStates\CLAUDE.md`.

@@ -334,7 +334,7 @@ begin
   LReport := TXcomMonthlyReport.Create(TXcomStrategy.SavedGame(FHost), TXcomStrategy.Ruleset(FHost),
     TXcomStrategy.Random(FHost));
   try
-    Show(TXcomMonthlyReportState.Create(FHost, LReport.Calculate));
+    Show(TXcomMonthlyReportState.Create(FHost, LReport.Calculate, APsiTraining, FControl));
   finally
     LReport.Free;
   end;

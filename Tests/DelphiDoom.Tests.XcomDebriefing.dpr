@@ -25,7 +25,9 @@ uses
   DelphiDoom.XcomDebriefing.Debriefer in'..\Libs\XcomDebriefing\DelphiDoom.XcomDebriefing.Debriefer.pas',
   DelphiDoom.Tests.XcomDebriefing.States in 'Source\DelphiDoom.Tests.XcomDebriefing.States.pas',
   DelphiDoom.Tests.XcomDebriefing.Statistics in 'Source\DelphiDoom.Tests.XcomDebriefing.Statistics.pas',
-  DelphiDoom.Tests.XcomDebriefing.Real in 'Source\DelphiDoom.Tests.XcomDebriefing.Real.pas';
+  DelphiDoom.Tests.XcomDebriefing.Real in 'Source\DelphiDoom.Tests.XcomDebriefing.Real.pas',
+  DelphiDoom.Tests.XcomDebriefing.Pixels in 'Source\DelphiDoom.Tests.XcomDebriefing.Pixels.pas',
+  DelphiDoom.Tests.XcomDebriefing.FollowUp in 'Source\DelphiDoom.Tests.XcomDebriefing.FollowUp.pas';
 
 var
   Runner: ITestRunner;
