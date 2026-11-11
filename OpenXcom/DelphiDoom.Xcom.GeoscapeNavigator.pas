@@ -31,6 +31,8 @@ type
     procedure OpenUfopaedia;
     procedure OpenOptions;
     procedure OpenFunding;
+    procedure OpenBase(ABase: TXcomBase; AGlobe: TXcomGlobe);
+    procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
     procedure Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
   end;
 
@@ -57,6 +59,16 @@ begin
   LSave := TXcomStrategy.SavedGame(FHost);
   if LSave.Bases.Count > 0 then
     FHost.PushState(TXcomBasescapeState.Create(FHost, LSave.Bases.First, AGlobe, Self));
+end;
+
+procedure TXcomGameNavigator.OpenBase(ABase: TXcomBase; AGlobe: TXcomGlobe);
+begin
+  FHost.PushState(TXcomBasescapeState.Create(FHost, ABase, AGlobe, Self));
+end;
+
+procedure TXcomGameNavigator.OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
+begin
+  Open(AScreen, ABase, nil);
 end;
 
 procedure TXcomGameNavigator.OpenGraphs;

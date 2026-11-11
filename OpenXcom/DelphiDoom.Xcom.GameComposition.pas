@@ -74,7 +74,8 @@ uses
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
   DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
-  DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomStrategy.DefaultSettings,
+  DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
+  DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
   DelphiDoom.XcomEngine.State;
 
 const
@@ -215,10 +216,15 @@ begin
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
+      var
+        LListener: IXcomGeoscapeEvents;
       begin
-        // the screens that the popups open are not ported: the events go nowhere
-        Result := TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil,
-          TXcomNullGeoscapeEvents.Create, TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create);
+        // the events are shown as the popups of the geoscape that receives the simulation
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost);
+        Result := TXcomPopupSimulation.Create(
+          TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
+            TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create),
+          LListener as IXcomGeoscapeAware);
       end;
     LNavigatorFactory :=
       function(AHost: TXcomStateHost): IXcomGeoscapeNavigator

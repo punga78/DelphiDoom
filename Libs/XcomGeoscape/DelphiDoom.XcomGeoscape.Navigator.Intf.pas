@@ -10,7 +10,7 @@ unit DelphiDoom.XcomGeoscape.Navigator.Intf;
 interface
 
 uses
-  DelphiDoom.XcomGeoscape.Globe;
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
 
 type
   /// <summary>
@@ -27,6 +27,10 @@ type
     procedure OpenUfopaedia;
     procedure OpenOptions;
     procedure OpenFunding;
+    /// <summary>The basescape of a base (BasescapeState(base, globe)), from the popups of the events</summary>
+    procedure OpenBase(ABase: TXcomBase; AGlobe: TXcomGlobe);
+    /// <summary>A screen of a base that a popup opens (ManufactureState(base), ResearchState(base)...)</summary>
+    procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
   end;
 
 implementation
