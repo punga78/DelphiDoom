@@ -176,8 +176,6 @@ begin
       end;
     GREED_S_MONSTER6, GREED_S_MONSTER11:
       begin
-        LX := 0;
-        LY := 0;
         for LCount := 0 to 29 do
           FHost.SpawnSprite(GREED_S_METAL_PARTS, LSprite^.X, LSprite^.Y, LSprite^.Z + 64 * GREED_FRACUNIT, 0);
         for LCount := 0 to 9 do

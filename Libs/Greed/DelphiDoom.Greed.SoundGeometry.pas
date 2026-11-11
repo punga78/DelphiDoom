@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath, DelphiDoom.Greed.TrigTables;
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.TrigTables;
 
 const
   MAX_SOUND_DISTANCE_FIXED = GREED_MAX_SOUND_DISTANCE * GREED_FRACUNIT;

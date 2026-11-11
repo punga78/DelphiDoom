@@ -60,7 +60,7 @@ implementation
 
 uses
   DelphiDoom.Greed.Intf, DelphiDoom.Greed.Factory, DelphiDoom.Greed.World, DelphiDoom.Greed.FixedMath,
-  DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.Terrain, DelphiDoom.Tests.Greed.Builders;
+  DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.Terrain, DelphiDoom.Tests.Greed.Builders;
 
 const
   FRACUNIT = 65536;
