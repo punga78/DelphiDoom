@@ -40,6 +40,10 @@ type
     [Test]
     procedure IlCambioDiTurnoSenzaAlieniViviDovrebbeFinireLaBattaglia;
     [Test]
+    procedure IlCambioDiTurnoSenzaSoldatiViviDovrebbeFinireLaBattagliaAncheNellaMissioneFinale;
+    [Test]
+    procedure NellaMissioneFinaleGliAlieniMortiNonFinisconoLaBattaglia;
+    [Test]
     procedure IlMessaggioDovrebbeSparireDopoDueSecondi;
     [Test]
     procedure IlMessaggioDovrebbeSparireConUnTasto;
@@ -56,7 +60,7 @@ implementation
 uses
   DelphiDoom.XcomBattleStates.NextTurnState, DelphiDoom.XcomBattleStates.InfoboxState,
   DelphiDoom.XcomBattleStates.InfoboxOkState, DelphiDoom.XcomBattleStates.BriefingState,
-  DelphiDoom.XcomBattleStates.AliensCrashState;
+  DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattleStates.AliensCrashState;
 
 procedure TTestXcomTurnScreens.SetupFixture;
 begin
@@ -156,6 +160,47 @@ begin
   Assert.AreEqual('Debriefing', FBench.Screens.Calls[FBench.Screens.Calls.Count - 1]);
   FState := nil;
   FBench.World.Wait(40);
+end;
+
+procedure TTestXcomTurnScreens.IlCambioDiTurnoSenzaSoldatiViviDovrebbeFinireLaBattagliaAncheNellaMissioneFinale;
+var
+  LNext: TXcomState;
+  LUnit: TXcomBattleUnit;
+begin
+  if not Ready then
+    Exit;
+  for LUnit in FBench.Session.Battle.Units do
+    if LUnit.OriginalFaction = FACTION_PLAYER then
+      LUnit.InstaKill;
+  // the final mission: the aliens do not matter, the soldiers always do
+  FBench.Session.Battle.ObjectiveType := XCOM_TILE_SPECIAL_MUST_DESTROY;
+  LNext := TXcomNextTurnState.Create(FBench.World.Game, FState);
+  FBench.World.Game.PushState(LNext);
+  FBench.World.Wait(40);
+  FBench.World.Click(320, 100);
+  Assert.IsTrue(FState.Finished);
+  Assert.AreEqual('Debriefing', FBench.Screens.Calls[FBench.Screens.Calls.Count - 1]);
+  FState := nil;
+  FBench.World.Wait(40);
+end;
+
+procedure TTestXcomTurnScreens.NellaMissioneFinaleGliAlieniMortiNonFinisconoLaBattaglia;
+var
+  LNext: TXcomState;
+  LUnit: TXcomBattleUnit;
+begin
+  if not Ready then
+    Exit;
+  for LUnit in FBench.Session.Battle.Units do
+    if LUnit.OriginalFaction = FACTION_HOSTILE then
+      LUnit.InstaKill;
+  FBench.Session.Battle.ObjectiveType := XCOM_TILE_SPECIAL_MUST_DESTROY;
+  LNext := TXcomNextTurnState.Create(FBench.World.Game, FState);
+  FBench.World.Game.PushState(LNext);
+  FBench.World.Wait(40);
+  FBench.World.Click(320, 100);
+  Assert.IsFalse(FState.Finished, 'the objective, not the aliens, ends the final mission');
+  Assert.IsTrue(FBench.World.Game.IsState(FState));
 end;
 
 procedure TTestXcomTurnScreens.IlMessaggioDovrebbeSparireDopoDueSecondi;
