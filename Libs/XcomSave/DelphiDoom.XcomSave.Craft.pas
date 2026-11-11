@@ -137,6 +137,10 @@ type
     ///   The craft does not know its base as a class, so the list of its soldiers is given
     /// </summary>
     function NumSoldiers(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+    /// <summary>getSpaceUsed: the soldiers of the craft and the size of its vehicles</summary>
+    function SpaceUsed(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+    /// <summary>getSpaceAvailable: the soldiers of the rules minus the space used</summary>
+    function SpaceAvailable(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
     /// <summary>
     ///   detect: whether the radar of the craft sees a UFO of the given visibility (Ufo::getVisibility); a radar
     ///   with 100 percent chance sees what is in range without a roll (the C++ asks the UFO, so the visibility is
@@ -690,6 +694,16 @@ begin
   for LSoldier in ABaseSoldiers do
     if LSoldier.Craft = Self then
       Inc(Result);
+end;
+
+function TXcomCraft.SpaceUsed(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+begin
+  Result := NumSoldiers(ABaseSoldiers) + SpaceUsedByVehicles;
+end;
+
+function TXcomCraft.SpaceAvailable(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+begin
+  Result := FRules.Soldiers - SpaceUsed(ABaseSoldiers);
 end;
 
 function TXcomCraft.Detect(const ATarget: TXcomTarget; AUfoVisibility: Integer; const ARandom: IXcomRandom): Boolean;

@@ -31,6 +31,7 @@ type
     function Poll(out AEvent: TXcomInputEvent): Boolean;
     function MouseState(out AX, AY: Integer): Integer;
     function ModifierState: Integer;
+    procedure WarpMouse(AX, AY: Integer);
     procedure SetModifiers(AModifiers: Integer);
     function Pending: Integer;
   end;
@@ -47,6 +48,17 @@ destructor TXcomQueueEventSource.Destroy;
 begin
   FQueue.Free;
   inherited Destroy;
+end;
+
+procedure TXcomQueueEventSource.WarpMouse(AX, AY: Integer);
+var
+  LEvent: TXcomInputEvent;
+begin
+  // SDL generates a motion event for the new position
+  LEvent := TXcomInputEvent.Make(ekMouseMotion);
+  LEvent.X := AX;
+  LEvent.Y := AY;
+  FQueue.Enqueue(LEvent);
 end;
 
 procedure TXcomQueueEventSource.Enqueue(const AEvent: TXcomInputEvent);

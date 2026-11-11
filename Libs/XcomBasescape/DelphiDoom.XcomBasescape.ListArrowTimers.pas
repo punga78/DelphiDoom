@@ -30,6 +30,7 @@ type
     FIncrease: TProc<Integer>;
     FDecrease: TProc<Integer>;
     FSelected: Integer;
+    FWheelReversed: Boolean;
     procedure LeftPress(AAction: TXcomAction);
     procedure LeftRelease(AAction: TXcomAction);
     procedure LeftClick(AAction: TXcomAction);
@@ -44,11 +45,15 @@ type
     /// <param name="AIncrease">Increase the selected row by the quantity</param>
     /// <param name="ADecrease">Decrease the selected row by the quantity</param>
     constructor Create(const AClock: IXcomClock; AOptions: TXcomOptions; AList: TXcomTextList;
-      const AIncrease, ADecrease: TProc<Integer>);
+      const AIncrease, ADecrease: TProc<Integer>; AWheelReversed: Boolean = False);
     destructor Destroy; override;
     procedure Think;
     /// <summary>The increase timer stops (after an error message)</summary>
     procedure StopIncrease;
+    /// <summary>The decrease timer stops (after an error message)</summary>
+    procedure StopDecrease;
+    /// <summary>Selects the row that the arrows act on (_sel)</summary>
+    procedure SelectRow(ARow: Integer);
     /// <summary>The row that the last press of an arrow selected (_sel)</summary>
     property Selected: Integer read FSelected;
   end;
@@ -58,13 +63,14 @@ implementation
 { TXcomListArrowTimers }
 
 constructor TXcomListArrowTimers.Create(const AClock: IXcomClock; AOptions: TXcomOptions; AList: TXcomTextList;
-  const AIncrease, ADecrease: TProc<Integer>);
+  const AIncrease, ADecrease: TProc<Integer>; AWheelReversed: Boolean);
 begin
   inherited Create;
   FList := AList;
   FOptions := AOptions;
   FIncrease := AIncrease;
   FDecrease := ADecrease;
+  FWheelReversed := AWheelReversed;
   FTimerInc := TXcomTimer.Create(AClock, 250);
   FTimerInc.OnTimerState(IncreaseTick);
   FTimerDec := TXcomTimer.Create(AClock, 250);
@@ -89,6 +95,16 @@ procedure TXcomListArrowTimers.Think;
 begin
   FTimerInc.Think(True, False);
   FTimerDec.Think(True, False);
+end;
+
+procedure TXcomListArrowTimers.SelectRow(ARow: Integer);
+begin
+  FSelected := ARow;
+end;
+
+procedure TXcomListArrowTimers.StopDecrease;
+begin
+  FTimerDec.Stop;
 end;
 
 procedure TXcomListArrowTimers.StopIncrease;
@@ -158,7 +174,7 @@ begin
   LOverArrows := (AAction.AbsoluteXMouse >= FList.GetArrowsLeftEdge) and
     (AAction.AbsoluteXMouse <= FList.GetArrowsRightEdge);
   if LOverArrows then
-    if AAction.Details^.Button = XCOM_BUTTON_WHEELUP then
+    if (AAction.Details^.Button = XCOM_BUTTON_WHEELUP) <> FWheelReversed then
       FIncrease(FOptions.ChangeValueByMouseWheel)
     else
       FDecrease(FOptions.ChangeValueByMouseWheel);

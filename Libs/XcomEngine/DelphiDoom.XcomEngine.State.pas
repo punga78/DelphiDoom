@@ -76,6 +76,8 @@ type
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>SDL_WarpMouse (window pixels; does nothing when the host has no event source)</summary>
+    procedure WarpMouse(AX, AY: Integer); virtual;
     /// <summary>What loads a saved game that was chosen in the Load Game screen (nil: the load is unsuccessful)</summary>
     function SavedGameLoader: IXcomSavedGameLoader; virtual;
     /// <summary>What saves and abandons the saved game in progress, for the pause menu (nil: the save is unsuccessful)</summary>
@@ -211,6 +213,10 @@ end;
 function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
 begin
   Result := nil;
+end;
+
+procedure TXcomStateHost.WarpMouse(AX, AY: Integer);
+begin
 end;
 
 function TXcomStateHost.SavedGameLoader: IXcomSavedGameLoader;
