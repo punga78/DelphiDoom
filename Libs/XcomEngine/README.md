@@ -2,7 +2,7 @@
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
-Il motore di **OpenXcom** (`Engine\`: `Game`, `State`, `Action`, `Screen`, `InteractiveSurface`, `Language`, `LocalizedText`, `LanguagePlurality`, `Options`, `Timer`, `FileMap`, e la parte di `Mod` che serve all'interfaccia) a classi e **senza SDL**, issue #176. Il dispositivo (finestra, eventi, orologio, audio, file) sta dietro interfacce; l'implementazione di Windows (GDI) sta in `OpenXcom\XcomGame`. Solo il disegno e le regole che servono ai menu sono portati: vedi "Non portato".
+Il motore di **OpenXcom** (`Engine\`: `Game`, `State`, `Action`, `Screen`, `InteractiveSurface`, `Language`, `LocalizedText`, `LanguagePlurality`, `Options`, `Timer`, `FileMap`, e la parte di `Mod` che serve all'interfaccia) a classi e **senza SDL**, issue #176. Il dispositivo (finestra, eventi, orologio, audio, file) sta dietro interfacce; l'implementazione di Windows (GDI) sta in `OpenXcom\Xcom32`. Solo il disegno e le regole che servono ai menu sono portati: vedi "Non portato".
 
 Non e' un gioco del motore Doom: nessun collegamento a `ComposeEngine` ne' a `TIdTechGeneration`.
 
@@ -35,7 +35,7 @@ Cambiamenti a `Libs\XcomSurface` (le superfici devono essere polimorfiche): `Dra
 
 ## Parita'
 
-Il riferimento e' **il vero OpenXcom** (nightly ufficiale 2026-06-05, `Reference\_dati\_strumenti\openxcom_nightly`) con i dati veri di TFTD: il suo tasto degli screenshot (F12, `Tools\Verifica\176\Capture-OpenXcomScreen.ps1`) salva i pixel del frame a 640x400, e `Tools\Verifica\176\Compare-Png.ps1` li confronta con quelli di `XcomGame -shot`. Risultato: **menu principale 0 pixel diversi su 256000; schermata di avvio 0 diversi** (con il cursore del terminale nella stessa fase). `Tests\Data\XcomEngine\frames.golden.txt` ha l'impronta FNV-1a dei due frame veri e `TTestXcomRealData` la verifica sull'intero percorso (caricamento dei dati, palette, font PNG, regole `interfaces.rul`, lingua, `Window`, `Text`, `TextButton`); i test si saltano se `Reference\_dati\xcom_tftd\TFTD` non c'e'. Non c'e' un harness C++ che ricolleghi `Window.cpp`, `TextButton.cpp`... su SDL: il confronto col programma vero sui frame intelligibili e' piu' forte per cio' che copre, ma **non copre** `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton` (non portati) e gli stati con lo scorrimento o gli effetti.
+Il riferimento e' **il vero OpenXcom** (nightly ufficiale 2026-06-05, `Reference\_dati\_strumenti\openxcom_nightly`) con i dati veri di TFTD: il suo tasto degli screenshot (F12, `Tools\Verifica\176\Capture-OpenXcomScreen.ps1`) salva i pixel del frame a 640x400, e `Tools\Verifica\176\Compare-Png.ps1` li confronta con quelli di `Xcom32 -shot`. Risultato: **menu principale 0 pixel diversi su 256000; schermata di avvio 0 diversi** (con il cursore del terminale nella stessa fase). `Tests\Data\XcomEngine\frames.golden.txt` ha l'impronta FNV-1a dei due frame veri e `TTestXcomRealData` la verifica sull'intero percorso (caricamento dei dati, palette, font PNG, regole `interfaces.rul`, lingua, `Window`, `Text`, `TextButton`); i test si saltano se `Reference\_dati\xcom_tftd\TFTD` non c'e'. Non c'e' un harness C++ che ricolleghi `Window.cpp`, `TextButton.cpp`... su SDL: il confronto col programma vero sui frame intelligibili e' piu' forte per cio' che copre, ma **non copre** `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton` (non portati) e gli stati con lo scorrimento o gli effetti.
 
 ## Differenze volute e difetti conservati
 

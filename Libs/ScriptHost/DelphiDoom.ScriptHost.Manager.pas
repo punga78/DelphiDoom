@@ -351,12 +351,12 @@ begin
         library that has been used at compile time isn't registered at runtime. }
       // JVAL: This could happen if script was compiled with previous version of pscomp
       I_Warning('TScriptManager.Add(): Internal error! Can not load script assembly.'#13#10);
-      I_Warning(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) + #13#10);
+      I_Warning(string(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString)) + #13#10);
     end;
     exit;
   end;
 
-  if compiler.CompileDoomScript(flist[id].source.str, data) then
+  if compiler.CompileDoomScript(TbtString(flist[id].source.str), data) then
   begin
     fList[id].data := TString.Create(PS_BytesToStr(data));
     if fList[id].exec = nil then
@@ -369,7 +369,7 @@ begin
         library that has been used at compile time isn't registered at runtime. }
       // JVAL: This could happen if script was compiled with previous version of pscomp
       I_Warning('TScriptManager.Add(): Internal error! Can not load script assembly.'#13#10);
-      I_Warning(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) + #13#10);
+      I_Warning(string(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString)) + #13#10);
     end;
     if Assigned(FVerbose) and FVerbose() then
     begin
@@ -391,7 +391,7 @@ begin
     begin
       I_Warning('//---------------------------------------------------------'#13#10);
       I_Warning(' Pos: ' + IntToStrZFill(6, compiler.Msg[i].Pos) +
-                ' Compiler: ' + compiler.Msg[i].MessageToString + #13#10);
+                ' Compiler: ' + string(compiler.Msg[i].MessageToString) + #13#10);
       I_Warning(' <<' + Copy(flist[id].source.str, compiler.Msg[i].Pos, 80) + '>>'#13#10);
       I_Warning('//---------------------------------------------------------'#13#10);
     end;
@@ -461,7 +461,7 @@ begin
       result := DE.RunScript;
       if DE.ExceptionCode <> erNoError then
         I_Warning('[Runtime Error] : ' +
-          TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) +
+          string(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString)) +
           ' in ' +
           itoa(DE.ExceptionProcNo) +
           ' at ' +
@@ -543,7 +543,7 @@ begin
   if not feventsexec.LoadData(PS_StrToBytes(fList[idx].data.str)) then
   begin
     I_Warning('TScriptManager.LinkScriptEvents(): Internal error! Can not load script assembly.'#13#10);
-    I_Warning(TIFErrorToString(feventsexec.ExceptionCode, feventsexec.ExceptionString) + #13#10);
+    I_Warning(string(TIFErrorToString(feventsexec.ExceptionCode, feventsexec.ExceptionString)) + #13#10);
     feventsexec.Clear;
     Exit;
   end;
@@ -552,7 +552,7 @@ begin
   for i := 0 to feventsexec.GetVarCount - 1 do
   begin
     V := feventsexec.GetVarNo(I);
-    uS := strupper(V.FType.ExportName);
+    uS := strupper(string(V.FType.ExportName));
     if (uS = '!TACTORS') or
        (uS = '!TMAPFLOATS') or
        (uS = '!TMAPINTEGERS') or

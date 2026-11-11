@@ -1,5 +1,5 @@
 <#
-  Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav) sia nel vero OpenXcom sia in XcomGame, lascia
+  Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav) sia nel vero OpenXcom sia in Xcom32, lascia
   scorrere il tempo e confronta pixel per pixel le schermate dei popup del geoscape (Compare-Png.ps1).
 
   Uso: Compare-XcomPopups.ps1 -Root <worktree> -Data <Reference\_dati\xcom_tftd> -Out <cartella> -Save 5
@@ -7,7 +7,7 @@
          -Real 'wait:3','shot:a','click:320,326','wait:2','shot:b'
          -Names a,b
 
-  -Delphi  il resto dello script di XcomGame dopo il caricamento del salvataggio (millisecondi; il caricamento
+  -Delphi  il resto dello script di Xcom32 dopo il caricamento del salvataggio (millisecondi; il caricamento
            e' gia' fatto: menu, Load Game, il salvataggio)
   -Real    i passi di Capture-OpenXcomScreen.ps1 dopo il caricamento (secondi)
   -Names   i nomi delle schermate da confrontare
@@ -34,7 +34,7 @@ Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
 $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:1000;' + $Delphi
 $realSteps = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92') + $Real
 Push-Location "$Out\delphi"
-& "$Root\bin\OpenXcom\XcomGame.exe" -data "$Data\openxcom" -game "$Data\TFTD" -user "$Out\user" -script $script | Out-Null
+& "$Root\bin\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\TFTD" -user "$Out\user" -script $script | Out-Null
 Pop-Location
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)

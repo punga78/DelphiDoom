@@ -302,7 +302,7 @@ var
 begin
   if not fullscreen then
   begin
-    SetWindowLong(hMainWnd, GWL_STYLE, WINDOW_STYLE_W);
+    SetWindowLong(hMainWnd, GWL_STYLE, Longint(WINDOW_STYLE_W));
     SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, SCREENWIDTH, SCREENHEIGHT, SWP_SHOWWINDOW);
     I_GetWindowClientOffset(dw, dh);
     SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, SCREENWIDTH + dw, SCREENHEIGHT + dh, SWP_SHOWWINDOW);

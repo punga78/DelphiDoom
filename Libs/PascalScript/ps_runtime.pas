@@ -2095,7 +2095,7 @@ begin
   end;
   while Length(PName) > 0 do
   begin
-    i := CharPos(TbtChar('.'), PName);
+    i := PSCharPos(TbtChar('.'), PName);
     if i = 0 then
     begin
       s := Trim(PName);
@@ -3165,7 +3165,7 @@ begin
   if name = '' then
   begin
     fname := proc.Decl;
-    fname := Copy(fname, 1, CharPos(TbtChar(':'), fname) - 1);
+    fname := Copy(fname, 1, PSCharPos(TbtChar(':'), fname) - 1);
     fnh := MakeHash(fname);
     for I := FSpecialProcList.Count - 1 downto 0 do
     begin
@@ -14513,7 +14513,7 @@ begin
     Result := True;
     Exit;
   end;
-  s2 := Copy(S, 1, CharPos(TbtChar('|'), s) - 1);
+  s2 := Copy(S, 1, PSCharPos(TbtChar('|'), s) - 1);
   Delete(s, 1, Length(s2) + 1);
   H := MakeHash(s2);
   ISRead := False;
@@ -14532,7 +14532,7 @@ begin
     Result := False;
     Exit;
   end;
-  s2 := Copy(S, 1, CharPos(TbtChar('|'), s) - 1);
+  s2 := Copy(S, 1, PSCharPos(TbtChar('|'), s) - 1);
   Delete(s, 1, Length(s2) + 1);
   if (s2 <> '') and (s2[Length(s2)] = '@') then
   begin
