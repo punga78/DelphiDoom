@@ -2584,8 +2584,9 @@ begin
   AStatsDiff := AStatsDiff - LStats;
   LCaps := ASoldier.Rules.StatCaps;
   LHealthLoss := FStats.Health - FHealth;
-  // RNG::generate((healthLoss*0.5),(healthLoss*1.5)) converts the doubles to int
-  ASoldier.SetWoundRecovery(FContext.Random.Generate(Integer(Trunc(LHealthLoss * 0.5)), Integer(Trunc(LHealthLoss * 1.5))));
+  // RNG::generate((healthLoss*0.5),(healthLoss*1.5)) is the overload of doubles (a decimal number): the result is
+  // cut to an int by setWoundRecovery
+  ASoldier.SetWoundRecovery(Trunc(FContext.Random.Generate(Double(LHealthLoss * 0.5), Double(LHealthLoss * 1.5))));
   if (FExpBravery <> 0) and (LStats.Bravery < LCaps.Bravery) then
     if FExpBravery > FContext.Random.Generate(0, 10) then
       Inc(LStats.Bravery, 10);
