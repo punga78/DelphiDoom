@@ -32,3 +32,5 @@ Il programma (`OpenXcom\Xcom32`, composition root `OpenXcom\DelphiDoom.Xcom.Game
   pixel.
 
 Dettagli, numeri e differenze dichiarate: `CLAUDE.md` di questa cartella.
+
+Aggiornamento (sessione "collegamenti", #176): TXcomStageLauncher porta alla fase successiva delle missioni in piu' parti (base aliena, navi, siti di artefatti, T'leth) e il debriefing arriva solo alla fine; TXcomMissionLauncher avvia anche la difesa della base e l'ultima missione; la catena dopo il debriefing (medaglie, promozioni, contenimento, autosave) e' collegata in Xcom32. Salvataggi di prova: Tools\Verifica\176\Make-XcomMissionSave.ps1.

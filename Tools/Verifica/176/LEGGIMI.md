@@ -64,3 +64,25 @@ con `Compare-Png.ps1`. Coordinate della finestra 640x400. `-Option chiave=valore
 (per esempio `battleNewPreviewPath=3`). La cartella utente e' `<Out>\user`: mai quella di `bin\OpenXcom`. Le
 animazioni della mappa vanno allineate con piu' scatti a 100 ms. Dettagli e numeri in
 `Libs\XcomBattleStates\CLAUDE.md`.
+
+## Missioni dal geoscape: `Make-XcomMissionSave.ps1` e `Run-XcomMission.ps1`
+
+`Make-XcomMissionSave.ps1 -Root <worktree> -Out <file.sav> -Kind crash|landed|site|alienbase|defense|final` scrive un
+salvataggio (da `Tests\Data\XcomSave\variants\save02_dogfight.sav`, senza dati del gioco) in cui il Triton con sei
+soldati e' gia' sul bersaglio, o un UFO di ritorsione e' sulla base (`-Defenses n`, `-Shield`, `-Undefended`,
+`-Ufo STR_SURVEY_SHIP`), o il Leviathan puo' partire per T'leth (`-Craft STR_LEVIATHAN`, `-Locked` senza la ricerca).
+`-Away 0.01` fa partire il velivolo lontano dal bersaglio. I salvataggi di `Tests\Data\XcomSave\missions` (usati da
+`DelphiDoom.Tests.XcomTour`) sono fatti cosi'. `Run-XcomMission.ps1 -Root .. -Data <xcom_tftd> -Out <cartella tua>
+-Kind .. -Script '<passi>'` lo carica in `Xcom32 -script` (cartella utente `<Out>\user`, ripulita dai salvataggi e
+dagli autosalvataggi) e lascia le schermate in `<Out>\shots`. Coordinate utili (640x400): Yes di ConfirmLanding
+160,320; OK del briefing 320,345; OK dell'inventario 508,22; fine turno 512,304; abbandono 512,336 e il suo OK
+150,235; OK del debriefing 72,372; OK di BaseDefenseState 320,358; OK di BaseDestroyedState 320,305; Intercept
+575,12, prima riga 100,161, pulsante T'leth 420,28, Yes 220,305. Il vero OpenXcom carica gli stessi salvataggi
+(`Capture-OpenXcomScreen.ps1 -SeedFolder`): cosi' sono stati confrontati i pixel delle conferme.
+
+## Harness della battaglia: fasi successive e debriefing
+
+`battle\gengen.cpp`: `GEN_STAGE=1` (vero `nextStage` dopo un esito scritto in `genNN.stage`), `GEN_MISSION=<deployment>`
+(missione degli scenari senza UFO), `GEN_EXTRA=1` (sito o base aliena nel salvataggio, due veicoli nel velivolo).
+`battle\debriefgen.cpp`: `DEBRIEF_ZOMBIES=1` (uno zombie preso con la psi-capture). Un processo per scenario (il vero
+generatore ogni tanto va in crash), una cartella utente per harness.

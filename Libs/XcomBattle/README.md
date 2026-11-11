@@ -9,3 +9,5 @@ Modello e logica della battaglia tattica di OpenXcom (Battlescape), senza interf
 - Dettagli per chi lavora sul codice: [CLAUDE.md](CLAUDE.md).
 
 Fatto anche: proiettili (`TXcomProjectile`), tiro e lancio (`getOriginVoxel`, `validateThrow`), colpi (`TileEngine::hit`) e l'intelligenza artificiale (`TXcomAIThinker`), con parita' sul vero OpenXcom. Non fatto: `BattlescapeGame` e gli stati delle azioni, il disegno e gli stati dell'interfaccia (vedi CLAUDE.md).
+
+Aggiornamento (sessione "collegamenti", #176): `TXcomBattlescapeGenerator.NextStage` (seconda fase di una missione) con parita' sul vero `nextStage` (18 casi, 0 differenze).

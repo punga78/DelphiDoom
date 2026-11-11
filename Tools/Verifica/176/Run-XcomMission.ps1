@@ -23,7 +23,8 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force "$Out\shots", "$Out\user\xcom2" | Out-Null
-Get-ChildItem "$Out\user\xcom2" -Filter *.sav | Remove-Item -Force
+# also the autosaves of a run before: the list of the saved games must have the mission alone
+Get-ChildItem "$Out\user\xcom2" | Where-Object { $_.Extension -in '.sav', '.asav' } | Remove-Item -Force
 if ($SaveFile -ne '') { Copy-Item $SaveFile "$Out\user\xcom2\mission.sav" -Force }
 else { & "$PSScriptRoot\Make-XcomMissionSave.ps1" -Root $Root -Out "$Out\user\xcom2\mission.sav" -Kind $Kind -Deployment $Deployment -Race $Race -Craft $Craft @Make | Out-Null }
 $cfg = Get-Content "$Data\openxcom_user\options.cfg" -Raw
