@@ -17,7 +17,8 @@ uses
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
-  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf;
+  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf,
+  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomEngine.HostUiSounds;
 
 type
   /// <summary>ApplicationState of Game::run: what the pauseMode option makes of a game without the focus</summary>
@@ -63,6 +64,7 @@ type
     FNewGameStarter: IXcomNewGameStarter;
     FSavedGameLoader: IXcomSavedGameLoader;
     FSavedGameSaver: IXcomSavedGameSaver;
+    FUiSounds: IXcomUiSounds;
     FSession: IInterface;
     procedure DispatchEvent(const AEvent: TXcomInputEvent);
   public
@@ -118,6 +120,9 @@ type
     function SavedGameSaver: IXcomSavedGameSaver; override;
     procedure SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
     function Session: IInterface; override;
+    function UiSounds: IXcomUiSounds; override;
+    /// <summary>Replaces what plays the sounds of the widgets (nil: silent); the game starts with TXcomHostUiSounds</summary>
+    procedure SetUiSounds(const ASounds: IXcomUiSounds);
     procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
     procedure RunFrame;
@@ -166,12 +171,15 @@ begin
   FStates := TObjectList<TXcomState>.Create(True);
   FDeleted := TObjectList<TXcomState>.Create(True);
   FMouseActive := True;
+  FUiSounds := TXcomHostUiSounds.Create(Self);
 end;
 
 destructor TXcomGame.Destroy;
 begin
   FDeleted.Free;
   FStates.Free;
+  // the widgets are gone with the states: nothing asks for their sounds any more
+  FUiSounds := nil;
   // the music reads the data of the game: it stops before the data goes
   if FMusic <> nil then
     FMusic.Stop;
@@ -350,6 +358,16 @@ end;
 procedure TXcomGame.SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
 begin
   FSavedGameSaver := ASaver;
+end;
+
+function TXcomGame.UiSounds: IXcomUiSounds;
+begin
+  Result := FUiSounds;
+end;
+
+procedure TXcomGame.SetUiSounds(const ASounds: IXcomUiSounds);
+begin
+  FUiSounds := ASounds;
 end;
 
 function TXcomGame.Session: IInterface;

@@ -18,7 +18,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.SaveCatalog.Intf,
-DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.UiSounds.Intf;
 
 type
   TXcomState = class;
@@ -94,6 +94,8 @@ type
     ///   library that the game keeps alive (nil before a game starts)
     /// </summary>
     function Session: IInterface; virtual;
+    /// <summary>The sounds of the widgets: the click of a button, a window that opens (nil: the widgets are silent)</summary>
+    function UiSounds: IXcomUiSounds; virtual;
     procedure SetSession(const ASession: IInterface); virtual;
   end;
 
@@ -246,6 +248,11 @@ begin
   Result := nil;
 end;
 
+function TXcomStateHost.UiSounds: IXcomUiSounds;
+begin
+  Result := nil;
+end;
+
 function TXcomStateHost.Session: IInterface;
 begin
   Result := nil;
@@ -314,6 +321,7 @@ end;
 procedure TXcomState.Add(ASurface: TXcomWidget);
 begin
   ASurface.SetPalette(@FPalette[0], 0, 256);
+  ASurface.SetUiSounds(Host.UiSounds);
   if (Host.Language <> nil) and (Host.Resources <> nil) then
     ASurface.InitText(Host.Resources.GetFont('FONT_BIG'), Host.Resources.GetFont('FONT_SMALL'), Host.Language);
   FSurfaces.Add(ASurface);
@@ -325,6 +333,7 @@ var
   LElement: TXcomInterfaceElement;
 begin
   ASurface.SetPalette(@FPalette[0], 0, 256);
+  ASurface.SetUiSounds(Host.UiSounds);
   LInterface := Host.Resources.GetInterface(ACategory);
   if Assigned(LInterface) and LInterface.TryGetElement(AId, LElement) then
   begin

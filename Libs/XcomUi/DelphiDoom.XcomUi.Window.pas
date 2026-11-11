@@ -129,6 +129,9 @@ end;
 
 procedure TXcomWindow.DoPopup;
 begin
+  // Window::popup: one of the three sounds when the animation starts
+  if (FPopupStep = 0.0) and (FState.Host.UiSounds <> nil) then
+    FState.Host.UiSounds.PlayWindowPopup;
   if FPopupStep < 1.0 then
     FPopupStep := FPopupStep + POPUP_SPEED
   else

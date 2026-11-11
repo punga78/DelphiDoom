@@ -48,7 +48,8 @@ uses
   DelphiDoom.Tests.XcomEngine.FlcBuilder in 'Source\DelphiDoom.Tests.XcomEngine.FlcBuilder.pas',
   DelphiDoom.Tests.XcomEngine.FlcDecoder in 'Source\DelphiDoom.Tests.XcomEngine.FlcDecoder.pas',
   DelphiDoom.Tests.XcomEngine.Cutscenes in 'Source\DelphiDoom.Tests.XcomEngine.Cutscenes.pas',
-  DelphiDoom.Tests.XcomEngine.RealFlc in 'Source\DelphiDoom.Tests.XcomEngine.RealFlc.pas';
+  DelphiDoom.Tests.XcomEngine.RealFlc in 'Source\DelphiDoom.Tests.XcomEngine.RealFlc.pas',
+  DelphiDoom.Tests.XcomEngine.UiSounds in 'Source\DelphiDoom.Tests.XcomEngine.UiSounds.pas';
 
 var
   Runner: ITestRunner;

@@ -13,7 +13,8 @@ uses
   System.SysUtils, System.Math, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.ComboBoxLink,
+  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomUi.Types,
+  DelphiDoom.XcomUi.ComboBoxLink,
   DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextList, DelphiDoom.XcomUi.Window;
 
 type
@@ -56,6 +57,8 @@ type
     destructor Destroy; override;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256); override;
     procedure InitText(ABig, ASmall: TXcomFont; ALanguage: TXcomLanguage); override;
+    /// <summary>The button of the combo box makes the sound of a button</summary>
+    procedure SetUiSounds(const ASounds: IXcomUiSounds); override;
     /// <summary>The picture of the window of the list (not owned)</summary>
     procedure SetBackground(ABackground: TXcomSurface);
     procedure SetColor(AColor: Byte); override;
@@ -189,6 +192,11 @@ begin
   end;
   FWindow.SetPalette(AColors, AFirst, ACount);
   FList.SetPalette(AColors, AFirst, ACount);
+end;
+
+procedure TXcomComboBox.SetUiSounds(const ASounds: IXcomUiSounds);
+begin
+  FButton.SetUiSounds(ASounds);
 end;
 
 procedure TXcomComboBox.InitText(ABig, ASmall: TXcomFont; ALanguage: TXcomLanguage);
