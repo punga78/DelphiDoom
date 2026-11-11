@@ -173,7 +173,7 @@ begin
     FGame.Save.RemoveItem(FAmmo);
     ActionData.Weapon.SetAmmoItem(nil);
   end;
-  FGame.View.SetCursorType(-1);
+  FGame.View.SetCursorType(CT_NONE);
   // make an explosion animation
   FGame.StatePushFront(TXcomExplosionState.Create(FGame, FVoxel, ActionData.Weapon, ActionData.Actor, nil, True,
     True));

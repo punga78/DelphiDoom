@@ -533,7 +533,7 @@ begin
   if (LStatus <> STATUS_PANICKING) and (LStatus <> STATUS_BERSERK) then
     Exit(False);
   FSave.SelectedUnit := AUnit;
-  FView.SetCursorType(-1);
+  FView.SetCursorType(CT_NONE);
   // show a little infobox with the name of the unit and "... is panicking"
   if AUnit.GetVisible or (not FOptions.NoAlienPanicMessages) then
   begin
@@ -745,14 +745,22 @@ begin
   if FCurrentAction.Targeting then
   begin
     if FCurrentAction.ActionType = BA_THROW then
-      FView.SetCursorType(1)
+      FView.SetCursorType(CT_THROW)
+    else if (FCurrentAction.ActionType = BA_MINDCONTROL) or (FCurrentAction.ActionType = BA_PANIC) or
+      (FCurrentAction.ActionType = BA_USE) then
+      FView.SetCursorType(CT_PSI)
+    else if FCurrentAction.ActionType = BA_LAUNCH then
+      FView.SetCursorType(CT_WAYPOINT)
     else
-      FView.SetCursorType(0);
+      FView.SetCursorType(CT_AIM);
   end
   else if FCurrentAction.ActionType <> BA_HIT then
   begin
     FCurrentAction.Actor := FSave.SelectedUnit;
-    FView.SetCursorType(0);
+    if Assigned(FCurrentAction.Actor) then
+      FView.SetCursorType(CT_NORMAL, FCurrentAction.Actor.Armor.Size)
+    else
+      FView.SetCursorType(CT_NORMAL);
   end;
 end;
 
@@ -869,7 +877,7 @@ begin
   begin
     FCurrentAction.Targeting := False;
     FCurrentAction.ActionType := BA_NONE;
-    FView.SetCursorType(0, 1);
+    FView.SetCursorType(CT_NORMAL, 1);
     if FSave.Side = FACTION_PLAYER then
       FSave.SelectedUnit := nil
     else
@@ -1021,7 +1029,7 @@ begin
   if FSave.Side = FACTION_PLAYER then
     SetupCursor
   else
-    FView.SetCursorType(-1);
+    FView.SetCursorType(CT_NONE);
   CheckForCasualties(nil, nil, False, False);
   // turn off MCed alien lighting.
   FEngine.CalculateUnitLighting;
@@ -1139,7 +1147,7 @@ begin
           (FCurrentAction.Actor.VisibleUnits.IndexOf(LUnit) >= 0) then
         begin
           // get the sound/animation started
-          FView.SetCursorType(-1);
+          FView.SetCursorType(CT_NONE);
           StatePushBack(TXcomPsiAttackState.Create(Self, FCurrentAction));
         end
         else
@@ -1149,7 +1157,7 @@ begin
     else
     begin
       FCurrentAction.Target := APosition;
-      FView.SetCursorType(-1);
+      FView.SetCursorType(CT_NONE);
       FStates.Add(TXcomProjectileFlyState.Create(Self, FCurrentAction));
       StatePushFront(TXcomUnitTurnState.Create(Self, FCurrentAction)); // first of all turn towards the target
     end;
@@ -1179,7 +1187,7 @@ begin
       if FPathfinding.GetStartDirection <> -1 then
       begin
         // start walking
-        FView.SetCursorType(-1);
+        FView.SetCursorType(CT_NONE);
         StatePushBack(TXcomUnitWalkState.Create(Self, FCurrentAction));
       end;
     end;

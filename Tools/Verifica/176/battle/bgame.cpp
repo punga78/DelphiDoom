@@ -120,6 +120,38 @@ static void Settle(BattlescapeGame* bg, SavedBattleGame* b) {
 }
 
 static int g_steps = 0;
+static bool g_dumpMap = false;
+
+// the pixels of the map after Map::draw(): width, height (32 bit) and the indexes of the colors, row by row
+static void DumpMap(const std::string& path, SavedBattleGame* b) {
+  // the animation of the breathing of the units under water uses the seedless RNG: not compared
+  for (size_t i = 0; i < b->_units.size(); i++) b->_units[i]->_breathFrame = 0;
+  BattleUnit* sel = b->getSelectedUnit();
+  // when no terrain is drawn (the screen of the hidden movement) there is no file
+  if (!(sel == 0 || sel->getVisible() || b->getDebugMode())) return;
+  {
+    std::string t;
+    for (size_t i = 0; i < b->_units.size(); i++) {
+      BattleUnit* u = b->_units[i];
+      char tb[200];
+      snprintf(tb, sizeof tb, "%d f=%d pos=%d/%d/%d dir=%d st=%d routine=%d recolor=", u->getId(), (int)u->getFaction(), u->getPosition().x, u->getPosition().y, u->getPosition().z, u->getDirection(), (int)u->getStatus(), u->getArmor()->getDrawingRoutine());
+      t += tb;
+      for (size_t k = 0; k < u->_recolor.size(); k++) t += std::to_string(u->_recolor[k].first) + ">" + std::to_string(u->_recolor[k].second) + ",";
+      t += "\n";
+    }
+    WriteText(path + ".units", t);
+  }
+  g_map->cacheUnits();
+  g_map->invalidate();
+  g_map->draw();
+  SDL_Surface* s = g_map->getSurface();
+  std::string data;
+  int w = s->w, h = s->h;
+  data.append((const char*)&w, 4);
+  data.append((const char*)&h, 4);
+  for (int y = 0; y < h; y++) data.append((const char*)s->pixels + y * s->pitch, w);
+  WriteText(path, data);
+}
 
 // executes one order of the script and writes stepNNN.yml and stepNNN.txt
 static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& out, int n, const std::string& line) {
@@ -238,6 +270,13 @@ static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& ou
       } else if (w[0] == "setmorale") {
         BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
         if (u) u->moraleChange(atoi(w[2].c_str()) - u->getMorale());
+      } else if (w[0] == "camera") {
+        // the camera centers on a tile (no redraw)
+        g_map->getCamera()->centerOnPosition(Position(atoi(w[1].c_str()), atoi(w[2].c_str()), atoi(w[3].c_str())), false);
+      } else if (w[0] == "viewlevel") {
+        g_map->getCamera()->setViewLevel(atoi(w[1].c_str()));
+      } else if (w[0] == "dumpmap") {
+        g_dumpMap = true;
       } else if (w[0] == "init") {
         // BattlescapeState::init after the screen of the next turn
         bg->init();
@@ -268,6 +307,7 @@ static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& ou
     std::ostringstream t;
     t << g_trace << "seed=" << RNG::getSeed() << " side=" << (int)b->getSide() << " turn=" << b->getTurn() << "\n";
     WriteText(out + name + ".txt", t.str());
+    if (g_dumpMap) { g_dumpMap = false; DumpMap(out + name + ".map", b); }
   }
 }
 
@@ -282,7 +322,7 @@ static std::string Num(int v) { return std::to_string(v); }
 
 // the orders of a "live" script (auto:<count>:<seed>:x) are chosen from the state the battle has NOW: melee next to an
 // enemy, psionics, low morale before a turn change, a whole turn of the AI
-static std::vector<std::string> GenerateLive(SavedBattleGame* b) {
+static std::vector<std::string> GenerateLiveCore(SavedBattleGame* b) {
   std::vector<std::string> r;
   std::vector<BattleUnit*>& units = b->_units;
   std::vector<BattleUnit*> alive, mine;
@@ -352,6 +392,21 @@ static std::vector<std::string> GenerateLive(SavedBattleGame* b) {
   return r;
 }
 
+// the live orders, with now and then a look at the map from a random unit (and level) before them (DUMPMAPS=0: none)
+static std::vector<std::string> GenerateLive(SavedBattleGame* b) {
+  std::vector<std::string> r;
+  std::vector<BattleUnit*>& units = b->_units;
+  if (!getenv("DUMPMAPS") && !units.empty() && Pick(100) < 40) {
+    BattleUnit* c = units[Pick((int)units.size())];
+    r.push_back("camera " + Num(c->getPosition().x) + " " + Num(c->getPosition().y) + " " + Num(c->getPosition().z));
+    if (Pick(4) == 0) r.push_back("viewlevel " + Num(Pick(b->getMapSizeZ())));
+    r.push_back("dumpmap");
+  }
+  std::vector<std::string> core = GenerateLiveCore(b);
+  r.insert(r.end(), core.begin(), core.end());
+  return r;
+}
+
 int main(int argc, char** argv) {
   if (argc < 6) { fprintf(stderr, "usage: bgame <data> <user> <save> <out> <script|auto:count:seed>\n"); return 2; }
   _putenv("SDL_VIDEODRIVER=dummy");
@@ -376,6 +431,22 @@ int main(int argc, char** argv) {
     SavedBattleGame* b = s->getSavedBattle();
     if (!b) { fprintf(stderr, "no battle in the saved game\n"); return 4; }
     b->loadMapResources(game->getMod());
+    // the look (colors of face, hair, utile, rank) of the aliens and the civilians comes from std::rand in the
+    // constructor: not reproducible, the port uses look 0 (and the rank of the alien): so does the harness
+    {
+      static const char* ranks[7] = {"STR_LIVE_SOLDIER", "STR_LIVE_ENGINEER", "STR_LIVE_MEDIC", "STR_LIVE_NAVIGATOR", "STR_LIVE_LEADER", "STR_LIVE_COMMANDER", "STR_LIVE_TERRORIST"};
+      for (size_t i = 0; i < b->_units.size(); i++) {
+        BattleUnit* u = b->_units[i];
+        if (u->getGeoscapeSoldier()) continue;
+        int general = 0;
+        if (u->getOriginalFaction() == FACTION_HOSTILE)
+          for (int k = 0; k < 7; k++) if (u->getRankString() == ranks[k]) { general = k; break; }
+        u->_recolor.clear();
+        u->setRecolor(0, 0, general);
+      }
+    }
+    // Tile::load takes the offset of the animation of fire and smoke from std::rand (not reproducible): 0
+    for (int i = 0; i < b->getMapSizeXYZ(); i++) b->_tiles[i]->_animationOffset = 0;
     BattlescapeState* bs = new BattlescapeState();
     b->setBattleState(bs);
     game->pushState(bs);
