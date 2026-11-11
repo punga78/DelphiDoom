@@ -274,6 +274,7 @@ var
   LCursorInBlackBands: Boolean;
   LTarget: Integer;
   LStyle: IXcomWindowStyle;
+  LPlacement: IXcomWindowPlacement;
 begin
   LWidth := FOptions.DisplayWidth;
   LHeight := FOptions.DisplayHeight;
@@ -289,6 +290,10 @@ begin
   begin
     if Supports(FDevice, IXcomWindowStyle, LStyle) then
       LStyle.SetWindowStyle(FOptions.Borderless, FOptions.AllowResize);
+    if Supports(FDevice, IXcomWindowPlacement, LPlacement) then
+      LPlacement.SetWindowPlacement((not FOptions.Fullscreen) and FOptions.RootWindowedMode,
+        FOptions.WindowedModePositionX, FOptions.WindowedModePositionY,
+        (not FOptions.RootWindowedMode) and FOptions.Borderless);
     GiveDisplayFilter;
     FDevice.SetMode(LWidth, LHeight, FOptions.Fullscreen);
     TakeDisplayFilter;

@@ -38,6 +38,10 @@ type
     FSettingMode: Boolean;
     FHasPosition: Boolean;
     FPosition: TPoint;
+    FPlacementFixed: Boolean;
+    FPlacementCentered: Boolean;
+    FPlacement: TPoint;
+    function PlacementPosition(AWindowWidth, AWindowHeight: Integer; out APosition: TPoint): Boolean;
     class var FClassRegistered: Boolean;
     class function WindowProc(AWindow: HWND; AMessage: UINT; AWParam: WPARAM; ALParam: LPARAM): LRESULT; stdcall; static;
     class procedure RegisterWindowClass; static;
@@ -56,6 +60,12 @@ type
     destructor Destroy; override;
     /// <summary>SDL_NOFRAME and SDL_RESIZABLE: taken at the next SetMode</summary>
     procedure SetStyle(ABorderless, AResizable: Boolean);
+    /// <summary>
+    ///   SDL_VIDEO_WINDOW_POS and SDL_VIDEO_CENTERED, taken at the next SetMode: AFixed puts the corner of the
+    ///   window at (AX, AY) (ignored when no monitor shows that point: the window would be out of reach),
+    ///   ACentered puts it in the middle of the work area; neither leaves it where it is
+    /// </summary>
+    procedure SetPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
     /// <summary>
     ///   Makes the window if there is none and gives it the size of the picture; full screen is a window without
     ///   borders over the whole monitor (the display mode of the system is not changed)
@@ -197,6 +207,36 @@ begin
   FResizable := AResizable;
 end;
 
+procedure TXcomWinWindow.SetPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+begin
+  FPlacementFixed := AFixed;
+  FPlacement := Point(AX, AY);
+  FPlacementCentered := ACentered;
+end;
+
+function TXcomWinWindow.PlacementPosition(AWindowWidth, AWindowHeight: Integer; out APosition: TPoint): Boolean;
+const
+  // a point of the title bar that must be on a monitor for the window to be reachable
+  GRIP_X = 32;
+  GRIP_Y = 8;
+var
+  LWork: TRect;
+begin
+  Result := False;
+  APosition := Point(0, 0);
+  if FPlacementFixed then
+  begin
+    APosition := FPlacement;
+    Result := MonitorFromPoint(Point(FPlacement.X + GRIP_X, FPlacement.Y + GRIP_Y), MONITOR_DEFAULTTONULL) <> 0;
+  end
+  else if FPlacementCentered and SystemParametersInfo(SPI_GETWORKAREA, 0, @LWork, 0) then
+  begin
+    APosition.X := LWork.Left + ((LWork.Right - LWork.Left) - AWindowWidth) div 2;
+    APosition.Y := LWork.Top + ((LWork.Bottom - LWork.Top) - AWindowHeight) div 2;
+    Result := True;
+  end;
+end;
+
 procedure TXcomWinWindow.PostResize(AWidth, AHeight: Integer);
 var
   LEvent: TXcomInputEvent;
@@ -211,6 +251,7 @@ procedure TXcomWinWindow.ApplyWindowStyle;
 var
   LRect: TRect;
   LMonitor: TMonitorInfo;
+  LPlace: TPoint;
 begin
   if FFullscreen then
   begin
@@ -227,8 +268,12 @@ begin
     SetWindowLongPtr(FHandle, GWL_STYLE, LONG_PTR(WindowStyle or WS_VISIBLE));
     LRect := Rect(0, 0, FWidth, FHeight);
     AdjustWindowRect(LRect, WindowStyle, False);
-    SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
-      SWP_NOMOVE or SWP_NOZORDER or SWP_FRAMECHANGED);
+    if PlacementPosition(LRect.Right - LRect.Left, LRect.Bottom - LRect.Top, LPlace) then
+      SetWindowPos(FHandle, 0, LPlace.X, LPlace.Y, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
+        SWP_NOZORDER or SWP_FRAMECHANGED)
+    else
+      SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
+        SWP_NOMOVE or SWP_NOZORDER or SWP_FRAMECHANGED);
   end;
 end;
 
@@ -419,6 +464,7 @@ var
   LStyle: DWORD;
   LLeft: Integer;
   LTop: Integer;
+  LPlace: TPoint;
 begin
   RegisterWindowClass;
   LStyle := WindowStyle;
@@ -426,7 +472,12 @@ begin
   AdjustWindowRect(LRect, LStyle, False);
   LLeft := Integer(CW_USEDEFAULT);
   LTop := Integer(CW_USEDEFAULT);
-  if FHasPosition then
+  if PlacementPosition(LRect.Right - LRect.Left, LRect.Bottom - LRect.Top, LPlace) then
+  begin
+    LLeft := LPlace.X;
+    LTop := LPlace.Y;
+  end
+  else if FHasPosition then
   begin
     LLeft := FPosition.X;
     LTop := FPosition.Y;

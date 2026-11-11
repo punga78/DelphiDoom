@@ -23,7 +23,8 @@ type
   ///   plain display takes its place (DisplayFilter then says that OpenGL is not in use). A display is released
   ///   before the other is made, because they share the window
   /// </summary>
-  TXcomVideoDeviceSelector = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle, IXcomFilteredDisplay)
+  TXcomVideoDeviceSelector = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle, IXcomWindowPlacement,
+    IXcomFilteredDisplay)
   strict private
     FPlainFactory: TXcomVideoDeviceFactory;
     FOpenGlFactory: TXcomVideoDeviceFactory;
@@ -34,6 +35,11 @@ type
     FHasStyle: Boolean;
     FBorderless: Boolean;
     FResizable: Boolean;
+    FHasPlacement: Boolean;
+    FPlacementFixed: Boolean;
+    FPlacementCentered: Boolean;
+    FPlacementX: Integer;
+    FPlacementY: Integer;
     FHasTitle: Boolean;
     FTitle: string;
     procedure Use(AOpenGl: Boolean);
@@ -46,6 +52,8 @@ type
     procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
     procedure SetTitle(const ATitle: string);
     procedure SetWindowStyle(ABorderless, AResizable: Boolean);
+    /// <summary>IXcomWindowPlacement: kept and given to the display that takes the next mode</summary>
+    procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
     procedure SetDisplayFilter(const AFilter: TXcomDisplayFilter);
     function DisplayFilter: TXcomDisplayFilter;
     function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
@@ -74,6 +82,7 @@ end;
 procedure TXcomVideoDeviceSelector.Use(AOpenGl: Boolean);
 var
   LStyle: IXcomWindowStyle;
+  LPlacement: IXcomWindowPlacement;
   LFiltered: IXcomFilteredDisplay;
 begin
   if (not Assigned(FDevice)) or (AOpenGl <> FDeviceIsOpenGl) then
@@ -90,6 +99,8 @@ begin
   end;
   if FHasStyle and Supports(FDevice, IXcomWindowStyle, LStyle) then
     LStyle.SetWindowStyle(FBorderless, FResizable);
+  if FHasPlacement and Supports(FDevice, IXcomWindowPlacement, LPlacement) then
+    LPlacement.SetWindowPlacement(FPlacementFixed, FPlacementX, FPlacementY, FPlacementCentered);
   if Supports(FDevice, IXcomFilteredDisplay, LFiltered) then
     LFiltered.SetDisplayFilter(FFilter);
 end;
@@ -139,6 +150,15 @@ begin
   FBorderless := ABorderless;
   FResizable := AResizable;
   FHasStyle := True;
+end;
+
+procedure TXcomVideoDeviceSelector.SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+begin
+  FPlacementFixed := AFixed;
+  FPlacementX := AX;
+  FPlacementY := AY;
+  FPlacementCentered := ACentered;
+  FHasPlacement := True;
 end;
 
 procedure TXcomVideoDeviceSelector.SetDisplayFilter(const AFilter: TXcomDisplayFilter);
