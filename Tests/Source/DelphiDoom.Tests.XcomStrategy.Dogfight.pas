@@ -32,6 +32,7 @@ type
     procedure CraftDamaged;
     procedure AmmoChanged(AWeapon, AAmmo: Integer);
     procedure CannotEngage(const AReason: string);
+    procedure Animating;
     function InsideLand(ALongitude, ALatitude: Double): Boolean;
   end;
 
@@ -96,6 +97,10 @@ end;
 procedure TDogfightRecorder.AmmoChanged(AWeapon, AAmmo: Integer);
 begin
   // the text of the ammunition: the harness has it in the line of the step
+end;
+
+procedure TDogfightRecorder.Animating;
+begin
 end;
 
 procedure TDogfightRecorder.CannotEngage(const AReason: string);

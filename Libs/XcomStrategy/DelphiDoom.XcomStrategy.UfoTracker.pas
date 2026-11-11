@@ -144,7 +144,11 @@ begin
   LIndex := 0;
   while LIndex < FGame.Ufos.Count do
     if FGame.Ufos[LIndex].Status = TXcomUfo.STATUS_DESTROYED then
-      FGame.Ufos.Delete(LIndex)
+    begin
+      // the dogfights that use the UFO end before it goes
+      FEvents.UfoRemoving(FGame.Ufos[LIndex]);
+      FGame.Ufos.Delete(LIndex);
+    end
     else
       Inc(LIndex);
 end;

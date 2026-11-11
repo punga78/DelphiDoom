@@ -272,7 +272,9 @@ procedure TXcomDogfightEngine.Animate;
 var
   LLastHitFrame: Boolean;
 begin
-  // the radar and the blobs are the window's; here what the animation changes in the game
+  // the radar waves, the UFO and the projectiles are drawn by the window
+  if Assigned(FListener) then
+    FListener.Animating;
   if FTimeout = 0 then
   begin
     // the text is cleared after a while (once: the window keeps it clear)

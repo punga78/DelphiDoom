@@ -39,7 +39,10 @@ type
     procedure UfoLost(const AUfo: TXcomUfo); override;
     procedure MissionDetected(const ASite: TXcomMissionSite); override;
     procedure CraftNeedsOrders(const ACraft: TXcomCraft; const AWaypoint: TXcomWaypoint); override;
+    procedure DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo); override;
     procedure DogfightImpossible(const ACraft: TXcomCraft; const AReason: string); override;
+    function ActiveDogfights: Integer; override;
+    procedure UfoRemoving(const AUfo: TXcomUfo); override;
     procedure CraftPatrolling(const ACraft: TXcomCraft); override;
     procedure LowFuel(const ACraft: TXcomCraft); override;
     procedure CraftShortage(const ABase: TXcomBase; const ACraft: TXcomCraft; const AItem: string;
@@ -123,8 +126,38 @@ begin
     inherited CraftNeedsOrders(ACraft, AWaypoint);
 end;
 
-procedure TXcomPopupGeoscapeEvents.DogfightImpossible(const ACraft: TXcomCraft; const AReason: string);
+procedure TXcomPopupGeoscapeEvents.DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
+var
+  LControl: IXcomDogfightControl;
 begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.StartDogfight(ACraft, AUfo);
+end;
+
+function TXcomPopupGeoscapeEvents.ActiveDogfights: Integer;
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    Result := LControl.DogfightCount
+  else
+    Result := -1;
+end;
+
+procedure TXcomPopupGeoscapeEvents.UfoRemoving(const AUfo: TXcomUfo);
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.UfoRemoving(AUfo);
+end;
+
+procedure TXcomPopupGeoscapeEvents.DogfightImpossible(const ACraft: TXcomCraft; const AReason: string);
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.DogfightImpossible(ACraft, AReason);
   if Attached then
     Show(TXcomDogfightErrorState.Create(FHost, ACraft, TXcomTargetNames.Name(ACraft, FHost.Language),
       FHost.Language.GetString(AReason).Text));

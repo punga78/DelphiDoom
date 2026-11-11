@@ -45,6 +45,10 @@ type
     procedure DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
     /// <summary>DogfightErrorState: the craft cannot engage (AReason: STR_UNABLE_TO_ENGAGE_DEPTH or _AIRBORNE)</summary>
     procedure DogfightImpossible(const ACraft: TXcomCraft; const AReason: string);
+    /// <summary>How many dogfights are open or waiting to open (the screen counts them), -1 when the screen does not: the logic counts the ones it asked for</summary>
+    function ActiveDogfights: Integer;
+    /// <summary>A destroyed UFO is about to be removed from the game: the dogfights that use it must go</summary>
+    procedure UfoRemoving(const AUfo: TXcomUfo);
     /// <summary>ConfirmLandingState: a craft with soldiers reached a UFO on the ground, a site or an alien base</summary>
     procedure LandingPossible(const ACraft: TXcomCraft; const ATarget: TXcomTarget);
     /// <summary>CraftPatrolState: a craft reached its waypoint</summary>

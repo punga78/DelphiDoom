@@ -33,6 +33,8 @@ type
     procedure AmmoChanged(AWeapon, AAmmo: Integer);
     /// <summary>The window of the dogfight asks the geoscape for a popup (DogfightErrorState)</summary>
     procedure CannotEngage(const AReason: string);
+    /// <summary>animate: the window moves the radar waves and draws the UFO and the projectiles of this step</summary>
+    procedure Animating;
   end;
 
 implementation
