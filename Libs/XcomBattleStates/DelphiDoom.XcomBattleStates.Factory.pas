@@ -36,9 +36,11 @@ type
     ///   saved game of the host; the pause menu comes from the program (nil: the options button does nothing)
     /// </summary>
     /// <param name="AMainMenu">Makes the main menu that follows the debriefing of a battle outside a campaign; nil: nothing replaces the states</param>
+    /// <param name="ACutscene">Makes the cutscene of that id (winCutscene, loseCutscene, abortCutscene of the deployment), shown over the debriefing; nil: no cutscene</param>
     /// <param name="AAudio">The sounds of the battlescape of the next stage of a mission in more parts (nil: silent)</param>
     class function CreateScreens(AHost: TXcomStateHost; const AOptions: TXcomBattleOptionsScreen = nil;
-      const AMainMenu: TFunc<TXcomState> = nil; const AAudio: IXcomBattleAudio = nil): IXcomBattleScreens; static;
+      const AMainMenu: TFunc<TXcomState> = nil; const AAudio: IXcomBattleAudio = nil;
+      const ACutscene: TFunc<string, TXcomState> = nil): IXcomBattleScreens; static;
     /// <summary>new BattlescapeState: the caller pushes it</summary>
     class function CreateBattlescape(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
       const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio): TXcomState; static;
@@ -52,8 +54,16 @@ uses
   DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattleStates.Graphics, DelphiDoom.XcomBattleStates.Session,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomGeoscape.TargetNames,
   DelphiDoom.XcomDebriefing.Types, DelphiDoom.XcomDebriefing.Debriefer.Intf, DelphiDoom.XcomDebriefing.Debriefer,
-  DelphiDoom.XcomBattleStates.StageLauncher, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.UnitConverter, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomBattleStates.StageLauncher, DelphiDoom.XcomDebriefing.DebriefingState, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.UnitConverter, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes;
+
+const
+  /// <summary>GameEnding END_WIN and END_LOSE of the saved game</summary>
+  GAME_END_WIN = 1;
+  GAME_END_LOSE = 2;
+  /// <summary>CutsceneState::WIN_GAME and LOSE_GAME</summary>
+  XCOM_CUTSCENE_WIN_GAME = 'winGame';
+  XCOM_CUTSCENE_LOSE_GAME = 'loseGame';
 
 class function TXcomBattleFactory.CreateGraphics(AHost: TXcomStateHost): IXcomBattleGraphics;
 var
@@ -110,7 +120,7 @@ end;
 
 class function TXcomBattleFactory.CreateScreens(AHost: TXcomStateHost;
   const AOptions: TXcomBattleOptionsScreen; const AMainMenu: TFunc<TXcomState>;
-  const AAudio: IXcomBattleAudio): IXcomBattleScreens;
+  const AAudio: IXcomBattleAudio; const ACutscene: TFunc<string, TXcomState>): IXcomBattleScreens;
 begin
   Result := TXcomBattleScreens.Create(
     function(AParent: TXcomState): TXcomState
@@ -118,6 +128,8 @@ begin
       LDebriefer: IXcomMissionDebriefer;
       LOptions: TXcomDebriefingOptions;
       LSession: IXcomBattleSession;
+      LCutsceneId: string;
+      LSave: TXcomSavedGame;
     begin
       // BattlescapeState::finishBattle: a mission in more parts goes on with its next stage, and the debriefing
       // comes at the end of the last one
@@ -162,7 +174,25 @@ begin
             LConverter.Free;
           end;
         end, AMainMenu);
-      Result := LDebriefer.Debrief((AParent as TXcomBattlescapeState).Session.Battle);
+      // BattlescapeState::finishBattle: the cutscene of the deployment, read before the debriefing changes the game
+      LCutsceneId := '';
+      LSave := TXcomStrategy.SavedGame(AHost);
+      if Assigned(ACutscene) and (AParent as TXcomBattlescapeState).Finished then
+        LCutsceneId := TXcomStageLauncher.EndCutsceneOf(TXcomStrategy.Ruleset(AHost), LSave, LSession.Battle,
+          TXcomStageLauncher.SoldiersLeft(AParent));
+      Result := LDebriefer.Debrief(LSession.Battle);
+      if LCutsceneId <> '' then
+      begin
+        if LCutsceneId = XCOM_CUTSCENE_WIN_GAME then
+          LSave.EndingKind := GAME_END_WIN
+        else if LCutsceneId = XCOM_CUTSCENE_LOSE_GAME then
+          LSave.EndingKind := GAME_END_LOSE;
+        (Result as TXcomDebriefingState).Cutscene :=
+          procedure
+          begin
+            AHost.PushState(ACutscene(LCutsceneId));
+          end;
+      end;
     end, AOptions);
 end;
 

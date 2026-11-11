@@ -48,6 +48,16 @@ type
     procedure AbandonGame;
   end;
 
+  /// <summary>
+  ///   What the New Battle button of the main menu does (the mission generator: NewBattleState). The screen needs
+  ///   the saved game, the battle generator and the screens of a craft, that the menu library does not know: the
+  ///   program gives the game the object that opens it
+  /// </summary>
+  IXcomNewBattleOpener = interface
+    ['{7E3B90D4-1C68-4A25-B9F0-176000000303}']
+    procedure OpenNewBattle;
+  end;
+
 implementation
 
 end.

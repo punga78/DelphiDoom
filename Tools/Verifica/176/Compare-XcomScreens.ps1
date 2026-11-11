@@ -1,4 +1,4 @@
-﻿<#
+<#
   Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav, scritto dagli oggetti veri di OpenXcom) sia
   nel vero OpenXcom sia in Xcom32 e confronta le schermate pixel per pixel (Compare-Png.ps1).
 
@@ -22,7 +22,10 @@ param(
   [string]$SaveFile = "",
   # the game folder in <Data>\openxcom (TFTD, UFO) and the id of its mod (xcom2, xcom1)
   [string]$Game = 'TFTD',
-  [string]$ModId = 'xcom2'
+  [string]$ModId = 'xcom2',
+  # seconds the real program gets to show its menu before the first click (more on a busy machine: a click that
+  # comes before the menu is lost and every screen after it is the menu)
+  [int]$StartWait = 3
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -47,7 +50,7 @@ Copy-Item "$Out\seed\$ModId" "$Out\user" -Recurse -Force
 Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
 # Xcom32: the steps in milliseconds
 $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000'
-$real = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92', 'wait:10')
+$real = @("wait:$StartWait", 'click:220,256', 'wait:3', 'click:80,92', 'wait:10')
 if (-not $Geoscape) { $script += ';move:575,34;click:575,34;wait:2000'; $real += 'click:575,34', 'wait:4' } else { $script += ';wait:1000'; $real += 'wait:2' }
 $first = $true
 foreach ($s in $Screens) {

@@ -38,6 +38,12 @@ type
     procedure CancelClick(AAction: TXcomAction);
     procedure ViewClick(AAction: TXcomAction);
     procedure ShowError(const AKey: string);
+  protected
+    property Base: TXcomBase read FBase;
+    property Rule: TXcomRuleBaseFacility read FRule;
+    /// <summary>The texts of the cost and of the construction time</summary>
+    property CostText: TXcomText read FNumCost;
+    property TimeText: TXcomText read FNumTime;
   public
     /// <param name="ABase">The base (not owned)</param>
     /// <param name="ARule">The facility to build (not owned)</param>

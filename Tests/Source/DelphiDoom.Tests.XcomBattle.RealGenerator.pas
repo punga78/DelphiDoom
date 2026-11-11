@@ -38,19 +38,19 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function ReadExpected(const ABase: string): string; static;
-    function RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string; overload;
     /// <summary>
     ///   AStage: after the run the outcome of ABase.stage is given to the battle (units killed, soldiers moved to the
     ///   exit, aborted) and NextStage makes the next part; the results are then the ones of the next part
     /// </summary>
-    function RunScenario(const ABase: string; AStage: Boolean; out AActual: string; out ASeed: UInt64): string;
-      overload;
+    function RunScenario(const ABase: string; AWithPathfinder, AStage: Boolean; out AActual: string;
+      out ASeed: UInt64): string;
     procedure ApplyOutcome(const ABattle: TXcomSavedBattleGame; const AActions: string);
     /// <summary>
     ///   The two saved battles are the same, but for the nodes of the AI of the dead units: the C++ keeps pointing
     ///   at the nodes of the old map, which are freed, and saves whatever id that memory holds afterwards
     /// </summary>
     class function SameButStaleNodes(const AExpected, AActual: string): Boolean; static;
+    procedure CompareScenarios(AWithPathfinder: Boolean);
   protected
     /// <summary>The golden of Mod::loadAll that tells the mods of the game (TFTD: xcom2, UFO: xcom1)</summary>
     function GoldenName: string; virtual;
@@ -65,6 +65,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
+    [Test]
+    procedure DovrebbeDareLeStesseBattaglieSeLaBattagliaNonHaIlPathfinder;
     [Test]
     procedure DovrebbeDareLaStessaParteSuccessivaDelVeroGeneratore;
   end;
@@ -207,11 +209,6 @@ begin
   FData.Free;
 end;
 
-function TTestXcomRealGenerator.RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
-begin
-  Result := RunScenario(ABase, False, AActual, ASeed);
-end;
-
 class function TTestXcomRealGenerator.SameButStaleNodes(const AExpected, AActual: string): Boolean;
 const
   DEAD = '    status: 6';
@@ -268,8 +265,8 @@ begin
   end;
 end;
 
-function TTestXcomRealGenerator.RunScenario(const ABase: string; AStage: Boolean; out AActual: string;
-  out ASeed: UInt64): string;
+function TTestXcomRealGenerator.RunScenario(const ABase: string; AWithPathfinder, AStage: Boolean;
+  out AActual: string; out ASeed: UInt64): string;
 var
   LStage: TStringList;
   LStageSeed: UInt64;
@@ -315,8 +312,13 @@ begin
       LBattle := TXcomSavedBattleGame.Create(LContext);
       try
         LBattle.MissionType := LScenario.Values['mission'];
-        LPathfinder := TXcomPathfinding.Create(LBattle);
-        LBattle.Pathfinder := LPathfinder;
+        // the game makes the pathfinder of the battle after the generator (the session, once the map has its
+        // size): the generator must place large units and units next to a friend without it
+        if AWithPathfinder then
+        begin
+          LPathfinder := TXcomPathfinding.Create(LBattle);
+          LBattle.Pathfinder := LPathfinder;
+        end;
         LEngine := TXcomTileEngine.Create(LBattle, LContext, FVoxels);
         if LScenario.Values['tileorder'] <> '' then
         begin
@@ -356,6 +358,8 @@ begin
             LGenerator.SetTerrain(FRuleset.Terrains.Find(LScenario.Values['terrain']));
           try
             LGenerator.Run;
+            if not AWithPathfinder then
+              Assert.IsFalse(Assigned(LBattle.Pathfinder), 'the pathfinder of the run must not stay in the battle');
             AActual := string(TYamlFactory.Dump(LBattle.Save));
           except
             on E: EXcomBattleException do
@@ -414,6 +418,16 @@ begin
 end;
 
 procedure TTestXcomRealGenerator.DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
+begin
+  CompareScenarios(True);
+end;
+
+procedure TTestXcomRealGenerator.DovrebbeDareLeStesseBattaglieSeLaBattagliaNonHaIlPathfinder;
+begin
+  CompareScenarios(False);
+end;
+
+procedure TTestXcomRealGenerator.CompareScenarios(AWithPathfinder: Boolean);
 var
   LFolder: string;
   LPath: string;
@@ -440,7 +454,7 @@ begin
   for LPath in TDirectory.GetFiles(LFolder, 'gen*.scn') do
   begin
     LBase := Copy(LPath, 1, Length(LPath) - Length('.scn'));
-    LError := RunScenario(LBase, LActual, LSeed);
+    LError := RunScenario(LBase, AWithPathfinder, False, LActual, LSeed);
     LScenario := TStringList.Create;
     try
       LScenario.LoadFromFile(LPath);
@@ -506,7 +520,7 @@ begin
   for LPath in TDirectory.GetFiles(LFolder, '*.stage') do
   begin
     LBase := Copy(LPath, 1, Length(LPath) - Length('.stage'));
-    LError := RunScenario(LBase, True, LActual, LSeed);
+    LError := RunScenario(LBase, True, True, LActual, LSeed);
     LStage := TStringList.Create;
     try
       LStage.LoadFromFile(LPath);

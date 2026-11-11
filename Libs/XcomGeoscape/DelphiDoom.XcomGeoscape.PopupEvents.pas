@@ -30,13 +30,17 @@ type
     FControl: IXcomGeoscapeControl;
     FLauncher: IXcomMissionLauncher;
     FOnMedals: TProc<TList<TXcomSoldier>>;
+    FArticleOpener: TProc<TArray<string>>;
+    function ReportOf(const AArticleIds: TArray<string>): TProc;
     procedure Show(AState: TXcomState);
     function Attached: Boolean;
     procedure HandleBaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo);
   public
     /// <param name="AHost">The game that runs the states (not owned)</param>
     /// <param name="ALauncher">What "Yes" of the landing confirmation starts: the battle (the Battlescape's; nil: nothing)</param>
-    constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil);
+    /// <param name="AArticleOpener">What "View reports" of a finished research opens: the Ufopaedia articles with these ids, in order (nil: nothing)</param>
+    constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil;
+      const AArticleOpener: TProc<TArray<string>> = nil);
     property Launcher: IXcomMissionLauncher read FLauncher write FLauncher;
     /// <summary>
     ///   Shows the soldiers that the month of service gave a medal to (CommendationState, of another library); nil:
@@ -94,11 +98,31 @@ uses
 
 { TXcomPopupGeoscapeEvents }
 
-constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher);
+constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher;
+  const AArticleOpener: TProc<TArray<string>>);
 begin
   inherited Create;
   FHost := AHost;
   FLauncher := ALauncher;
+  FArticleOpener := AArticleOpener;
+end;
+
+function TXcomPopupGeoscapeEvents.ReportOf(const AArticleIds: TArray<string>): TProc;
+var
+  LOpener: TProc<TArray<string>>;
+  LIds: TArray<string>;
+begin
+  Result := nil;
+  if not Assigned(FArticleOpener) then
+    Exit;
+  // the popup can outlive these events: it holds the opener and the ids, not Self
+  LOpener := FArticleOpener;
+  LIds := AArticleIds;
+  Result :=
+    procedure
+    begin
+      LOpener(LIds);
+    end;
 end;
 
 procedure TXcomPopupGeoscapeEvents.AttachGeoscape(const AControl: IXcomGeoscapeControl);
@@ -352,7 +376,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.ResearchFinished(const ABase: TXcomBase; const AResearchName: string);
 begin
   if Attached then
-    Show(TXcomResearchCompleteState.Create(FHost, AResearchName, nil));
+    Show(TXcomResearchCompleteState.Create(FHost, AResearchName, ReportOf([AResearchName])));
 end;
 
 procedure TXcomPopupGeoscapeEvents.ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome);
@@ -368,7 +392,15 @@ begin
     Exit;
   LRuleset := TXcomStrategy.Ruleset(FHost);
   // the cutscenes (research and bonus) are not ported
-  Show(TXcomResearchCompleteState.Create(FHost, AOutcome.Research.Name, nil));
+  // ResearchCompleteState::btnReportClick: the article of the bonus, then the one of the research over it
+  LNames := [AOutcome.Research.Name];
+  if AOutcome.Research.Lookup <> '' then
+    LNames := [AOutcome.Research.Lookup];
+  if Assigned(AOutcome.Bonus) and (AOutcome.Bonus.Lookup <> '') then
+    LNames := [AOutcome.Bonus.Lookup] + LNames
+  else if Assigned(AOutcome.Bonus) then
+    LNames := [AOutcome.Bonus.Name] + LNames;
+  Show(TXcomResearchCompleteState.Create(FHost, AOutcome.Research.Name, ReportOf(LNames)));
   FControl.TimerReset;
   if AOutcome.WeaponNeedingAmmo <> '' then
   begin

@@ -51,6 +51,7 @@ type
     FCurrentTooltip: string;
     FInitDone: Boolean;
     FMusic: string;
+    FCutscene: TProc;
     function InterfaceColor(const AElement: string): Integer;
     procedure WatchTooltip(AHeading: TXcomText; const ATooltip: string);
     procedure OkClick(AAction: TXcomAction);
@@ -76,6 +77,12 @@ type
     ///   (the one of the rules for a mission that went well or badly); empty: the music goes on as it is
     /// </summary>
     property Music: string read FMusic write FMusic;
+    /// <summary>
+    ///   BattlescapeState::finishBattle pushes the cutscene of the deployment over the debriefing: the first time
+    ///   the state comes to the front this is called once (it pushes the cutscene) and nothing else happens; the
+    ///   music and the message come when the state is in front again, after the cutscene. Nil: no cutscene
+    /// </summary>
+    property Cutscene: TProc read FCutscene write FCutscene;
     property StatsList: TXcomTextList read FLstStats;
     property RecoveryList: TXcomTextList read FLstRecovery;
     property TotalList: TXcomTextList read FLstTotal;
@@ -294,10 +301,19 @@ begin
 end;
 
 procedure TXcomDebriefingState.Init;
+var
+  LCutscene: TProc;
 begin
   inherited Init;
   if FInitDone then
     Exit;
+  if Assigned(FCutscene) then
+  begin
+    LCutscene := FCutscene;
+    FCutscene := nil;
+    LCutscene();
+    Exit;
+  end;
   FInitDone := True;
   if FMusic <> '' then
     Host.PlayMusic(FMusic);

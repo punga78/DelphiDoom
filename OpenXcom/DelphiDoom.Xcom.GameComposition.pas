@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Xcom32 - the composition root of the game                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -77,8 +77,9 @@ type
 implementation
 
 uses
-  System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
+  System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomMenu.CutsceneState,
+  DelphiDoom.XcomBasescape.StatisticsState,
+  DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.XcomUfopaedia.Factory, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
@@ -88,6 +89,7 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
+  DelphiDoom.Xcom.NewBattleNavigator,
   DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomBattleStates.Factory,
   DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MixerAudio,
   DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
@@ -282,10 +284,22 @@ begin
       begin
         // DebriefingState::btnOkClick of a battle outside a campaign: back to the main menu
         Result := TXcomMainMenuState.Create(LGame, ASettings.VersionText);
-      end, LBattleAudio);
+      end, LBattleAudio,
+      function(ACutsceneId: string): TXcomState
+      begin
+        // the cutscene of a deployment over the debriefing; the ones of the end of the game leave the statistics
+        // as the only state (as the lost game of the monthly report does)
+        Result := TXcomCutsceneState.Create(LGame, ACutsceneId, nil,
+          procedure
+          begin
+            LGame.SetState(TXcomStatisticsState.Create(LGame));
+          end);
+      end);
     LMissionLauncher := ASettings.MissionLauncher;
     if LMissionLauncher = nil then
       LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);
+    // the New Battle button of the main menu
+    Result.SetNewBattleOpener(TXcomNewBattleNavigator.Create(Result, LMissionLauncher));
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
@@ -294,7 +308,17 @@ begin
         LEvents: TXcomPopupGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LEvents := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher);
+        LEvents := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher,
+          procedure(AArticleIds: TArray<string>)
+          var
+            LUfopaedia: IXcomUfopaediaNavigator;
+            LId: string;
+          begin
+            // one navigator for the articles of one report (Ufopaedia::openArticle of each)
+            LUfopaedia := TXcomUfopaediaFactory.CreateNavigator(AHost);
+            for LId in AArticleIds do
+              LUfopaedia.OpenArticle(LId);
+          end);
         // MonthlyReportState::btnOkClick: the soldiers that the month of service gave a medal to
         LEvents.OnMedals :=
           procedure(ASoldiers: TList<TXcomSoldier>)

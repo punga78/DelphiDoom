@@ -151,6 +151,8 @@ begin
   // the same game at every run: funds, soldiers and alien missions
   LSettings.Seed := 176;
   FGame := TXcomGameComposition.CreateGame(LSettings, FDeviceRef, FClockRef, FEvents);
+  // the tour starts from the main menu: no introduction (playIntro is on by default)
+  FGame.Options.PlayIntro := False;
 end;
 
 destructor TXcomTourWorld.Destroy;

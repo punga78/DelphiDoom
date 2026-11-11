@@ -43,6 +43,17 @@ type
     /// </summary>
     class function TryNextStage(AHost: TXcomStateHost; AParent: TXcomState; const AAudio: IXcomBattleAudio)
       : TXcomState; static;
+    /// <summary>
+    ///   The number that finishBattle receives, worked out from the battle of the battlescape AParent: the soldiers
+    ///   on the exit after an abort, the ones alive otherwise
+    /// </summary>
+    class function SoldiersLeft(AParent: TXcomState): Integer; static;
+    /// <summary>
+    ///   The cutscene of the deployment that follows the end of the mission (abortCutscene after an abort,
+    ///   loseCutscene with no soldier left, winCutscene otherwise); '' when there is none
+    /// </summary>
+    class function EndCutsceneOf(const ARuleset: TXcomRuleset; const ASavedGame: TXcomSavedGame;
+      const ABattle: TXcomSavedBattleGame; ASoldiersLeft: Integer): string; static;
   end;
 
 implementation
@@ -51,7 +62,7 @@ uses
   DelphiDoom.XcomMod.AlienDeployment, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomSave.Ufo,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf,
   DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.TileEngine,
-  DelphiDoom.XcomBattle.Pathfinding, DelphiDoom.XcomBattle.Generator, DelphiDoom.XcomBattle.LegacyRandom,
+  DelphiDoom.XcomBattle.Generator, DelphiDoom.XcomBattle.LegacyRandom,
   DelphiDoom.XcomBattleStates.Graphics.Intf, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.Session, DelphiDoom.XcomBattleStates.Factory,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.BriefingState,
@@ -82,6 +93,43 @@ begin
     Result := LDeployment.NextStage;
 end;
 
+class function TXcomStageLauncher.SoldiersLeft(AParent: TXcomState): Integer;
+var
+  LBattlescape: TXcomBattlescapeState;
+  LLiveAliens: Integer;
+begin
+  LBattlescape := AParent as TXcomBattlescapeState;
+  if LBattlescape.Session.Battle.Aborted then
+    Result := UnitsInExit(LBattlescape.Session.Battle)
+  else
+    LBattlescape.Game.TallyUnits(LLiveAliens, Result);
+end;
+
+class function TXcomStageLauncher.EndCutsceneOf(const ARuleset: TXcomRuleset; const ASavedGame: TXcomSavedGame;
+  const ABattle: TXcomSavedBattleGame; ASoldiersLeft: Integer): string;
+var
+  LDeployment: TXcomAlienDeployment;
+  LUfo: TXcomUfo;
+begin
+  Result := '';
+  LDeployment := ARuleset.AlienDeployments.Find(ABattle.MissionType);
+  if not Assigned(LDeployment) then
+    for LUfo in ASavedGame.Ufos do
+      if LUfo.InBattlescape then
+      begin
+        LDeployment := ARuleset.AlienDeployments.Find(LUfo.Rules.UfoType);
+        Break;
+      end;
+  if not Assigned(LDeployment) then
+    Exit;
+  if ABattle.Aborted then
+    Result := LDeployment.AbortCutscene
+  else if ASoldiersLeft = 0 then
+    Result := LDeployment.LoseCutscene
+  else
+    Result := LDeployment.WinCutscene;
+end;
+
 class function TXcomStageLauncher.UnitsInExit(const ABattle: TXcomSavedBattleGame): Integer;
 var
   LUnit: TXcomBattleUnit;
@@ -109,19 +157,17 @@ var
   LGraphics: IXcomBattleGraphics;
   LEngine: IXcomGeneratorTileEngine;
   LEngineRef: IXcomBattleTileEngine;
-  LPathfinder: IXcomBattlePathfinder;
   LLegacy: TXcomLegacyRandom;
   LGenerator: TXcomBattlescapeGenerator;
   LTileEngine: TXcomTileEngine;
 begin
   LGraphics := TXcomBattleFactory.CreateGraphics(AHost);
-  // the engines of the generator: the session makes its own once the new map has its size
+  // the engine of the generator (which makes its own pathfinding for the stage): the session makes its own once
+  // the new map has its size
   LTileEngine := TXcomTileEngine.Create(ABattle, ABattle.Context, LGraphics.VoxelData);
   LEngine := LTileEngine;
   LEngineRef := LTileEngine;
   ABattle.TileEngine := LEngineRef;
-  LPathfinder := TXcomPathfinding.Create(ABattle);
-  ABattle.Pathfinder := LPathfinder;
   try
     LLegacy := TXcomLegacyRandom.Create(Cardinal(AHost.Clock.Ticks));
     try
@@ -137,7 +183,6 @@ begin
     end;
   finally
     ABattle.TileEngine := nil;
-    ABattle.Pathfinder := nil;
   end;
 end;
 
@@ -147,7 +192,7 @@ var
   LBattlescape: TXcomBattlescapeState;
   LBattle: TXcomSavedBattleGame;
   LNextStage: string;
-  LInExit, LLiveAliens, LLiveSoldiers: Integer;
+  LInExit: Integer;
   LSession: IXcomBattleSession;
   LScreens: IXcomBattleScreens;
   LAudio: IXcomBattleAudio;
@@ -161,13 +206,7 @@ begin
   LNextStage := NextStageOf(TXcomStrategy.Ruleset(AHost), TXcomStrategy.SavedGame(AHost), LBattle);
   if LNextStage = '' then
     Exit;
-  if LBattle.Aborted then
-    LInExit := UnitsInExit(LBattle)
-  else
-  begin
-    LBattlescape.Game.TallyUnits(LLiveAliens, LLiveSoldiers);
-    LInExit := LLiveSoldiers;
-  end;
+  LInExit := SoldiersLeft(AParent);
   if LInExit = 0 then
     Exit;
   LBattle.MissionType := LNextStage;

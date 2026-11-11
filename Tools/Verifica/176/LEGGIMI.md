@@ -86,3 +86,13 @@ dagli autosalvataggi) e lascia le schermate in `<Out>\shots`. Coordinate utili (
 (missione degli scenari senza UFO), `GEN_EXTRA=1` (sito o base aliena nel salvataggio, due veicoli nel velivolo).
 `battle\debriefgen.cpp`: `DEBRIEF_ZOMBIES=1` (uno zombie preso con la psi-capture). Un processo per scenario (il vero
 generatore ogni tanto va in crash), una cartella utente per harness.
+
+## Filmati FLI/FLC: `battle\flcgen.cpp`
+
+`battle\build.cmd <cartella> flcgen` collega il vero `FlcPlayer` di OpenXcom; `flcgen <dati> <utente> <file .FLI/.FLC>
+<uscita> [skiplast]` decodifica il file un fotogramma alla volta (un vero `Game` sui driver finti di SDL, velocita' 0
+per non aspettare) e scrive per ogni fotogramma l'impronta FNV-1a dei pixel dello schermo e della palette. L'uscita di
+`UFOINTRO\UFOINT.FLI` e' `Tests\Data\XcomEngine\flc\ufoint.txt` (891 fotogrammi), confrontata da `TTestXcomRealFlc`.
+Durante un filmato il vero OpenXcom non salva schermate con F12 (ogni tasto lo salta): per questo il confronto e'
+sulle impronte e non sui PNG. Le diapositive invece si catturano: `Capture-OpenXcomScreen.ps1 -Option 'playIntro=true'`
+(la diapositiva che si vede dipende dal tempo: ogni cattura si confronta con tutte quelle di `Xcom32`).

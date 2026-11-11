@@ -47,7 +47,6 @@ implementation
 uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy,
   DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.TileEngine,
-  DelphiDoom.XcomBattle.Pathfinding,
   DelphiDoom.XcomBattle.Generator, DelphiDoom.XcomBattle.LegacyRandom, DelphiDoom.XcomBattleStates.Graphics.Intf,
   DelphiDoom.XcomBattleStates.Factory, DelphiDoom.XcomBattleStates.BattlescapeState,
   DelphiDoom.XcomBattleStates.BriefingState, DelphiDoom.XcomBattleStates.AliensCrashState,
@@ -96,7 +95,6 @@ var
   LSession: IXcomBattleSession;
   LCraft: TXcomCraft;
   LBase: TXcomBase;
-  LPathfinder: IXcomBattlePathfinder;
   LHost: TXcomStateHost;
   LScreens: IXcomBattleScreens;
   LAudio: IXcomBattleAudio;
@@ -108,12 +106,11 @@ begin
   LBattle := TXcomSavedBattleGame.Create(LContext);
   try
     LBattle.MissionType := ARequest.MissionType;
+    // NewBattleState: a depth that was chosen stays (the generator only works out one that is 0)
+    if ARequest.Depth > 0 then
+      LBattle.Depth := ARequest.Depth;
     // the engine of the generator: the session makes its own once the map has its size
     LEngine := TXcomTileEngine.Create(LBattle, LContext, LGraphics.VoxelData);
-    // SavedBattleGame::setUnitPosition asks the pathfinding whether a large unit fits: without one, a battle with
-    // a 2x2 unit (a tank, a large alien) was an access violation. The session makes its own afterwards too
-    LPathfinder := TXcomPathfinding.Create(LBattle);
-    LBattle.Pathfinder := LPathfinder;
     // the colors of the units come from the rand() of the C library: any seed does
     LLegacy := TXcomLegacyRandom.Create(Cardinal(FHost.Clock.Ticks));
     try
@@ -133,6 +130,9 @@ begin
         else if Assigned(ARequest.AlienBase) then
           LGenerator.SetAlienBase(ARequest.AlienBase);
         LGenerator.SetAlienRace(ARequest.AlienRace);
+        LGenerator.SetAlienItemLevel(ARequest.AlienItemLevel);
+        if ARequest.Terrain <> '' then
+          LGenerator.SetTerrain(LRuleset.Terrains.Find(ARequest.Terrain));
         LGenerator.Run;
       finally
         LGenerator.Free;
@@ -142,8 +142,6 @@ begin
     end;
     LBattle.TileEngine := nil;
     LEngine := nil;
-    LBattle.Pathfinder := nil;
-    LPathfinder := nil;
   except
     LBattle.Free;
     raise;
@@ -191,12 +189,13 @@ begin
   end
   else
   begin
-    // the debriefing reads the battle now: the battlescape (and with it the battle) is freed right after
+    // the debriefing reads the battle now: the battlescape is freed right after, and the session (the battle, its
+    // pictures) goes with the briefing that holds this closure; the message keeps the pictures it draws
     LDebriefing := nil;
     if Assigned(AScreens) then
       LDebriefing := AScreens.Debriefing(LBattlescape);
     LBattlescape.Free;
-    AHost.PushState(TXcomAliensCrashState.Create(AHost, ASession.Graphics.Surface('TAC00.SCR'),
+    AHost.PushState(TXcomAliensCrashState.Create(AHost, ASession.Graphics,
       procedure
       begin
         if Assigned(LDebriefing) then

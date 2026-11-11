@@ -30,6 +30,7 @@ type
     FTitle: TXcomText;
     FVersionText: string;
     procedure NewGameClick(AAction: TXcomAction);
+    procedure NewBattleClick(AAction: TXcomAction);
     procedure OptionsClick(AAction: TXcomAction);
     procedure LoadClick(AAction: TXcomAction);
     procedure ModsClick(AAction: TXcomAction);
@@ -70,6 +71,7 @@ begin
   FWindow.SetBackground(Host.Resources.GetSurface('BACK01.SCR'));
   FNewGame.SetText(Tr('STR_NEW_GAME'));
   FNewGame.OnMouseClick(NewGameClick);
+  FNewBattle.OnMouseClick(NewBattleClick);
   FNewBattle.SetText(Tr('STR_NEW_BATTLE'));
   FLoad.SetText(Tr('STR_LOAD_SAVED_GAME'));
   FLoad.OnMouseClick(LoadClick);
@@ -87,6 +89,13 @@ end;
 procedure TXcomMainMenuState.NewGameClick(AAction: TXcomAction);
 begin
   Host.PushState(TXcomNewGameState.Create(Host));
+end;
+
+procedure TXcomMainMenuState.NewBattleClick(AAction: TXcomAction);
+begin
+  // the mission generator is not of this library: the program opens it
+  if Host.NewBattleOpener <> nil then
+    Host.NewBattleOpener.OpenNewBattle;
 end;
 
 procedure TXcomMainMenuState.LoadClick(AAction: TXcomAction);

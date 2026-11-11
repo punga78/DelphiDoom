@@ -35,6 +35,12 @@ type
     WorldTexture: Integer;
     /// <summary>setWorldShade: 0..15</summary>
     WorldShade: Integer;
+    /// <summary>setTerrain: the terrain of the battle, chosen by name (New Battle); empty: the generator chooses it</summary>
+    Terrain: string;
+    /// <summary>SavedBattleGame::setDepth before the run (New Battle): 1..3 under water; 0: the generator works it out</summary>
+    Depth: Integer;
+    /// <summary>setAlienItemlevel: the row of alienItemLevels (New Battle); 0 for the missions of the geoscape</summary>
+    AlienItemLevel: Integer;
   end;
 
   /// <summary>

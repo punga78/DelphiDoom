@@ -52,7 +52,7 @@ implementation
 
 uses
   System.Classes, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Screen,
-  DelphiDoom.XcomEngine.TerminalFont, DelphiDoom.XcomMenu.GoToMainMenuState;
+  DelphiDoom.XcomEngine.TerminalFont, DelphiDoom.XcomMenu.GoToMainMenuState, DelphiDoom.XcomMenu.CutsceneState;
 
 constructor TXcomStartState.Create(AHost: TXcomStateHost; ATask: TXcomGameLoadTask; const ADosPath,
   AVersionText: string);
@@ -160,6 +160,9 @@ begin
         Host.FpsCounter.Visible := Host.Options.FpsCounter;
         // SetState frees this state at the start of the next turn
         Host.SetState(TXcomGoToMainMenuState.Create(Host, FVersionText));
+        // the master is new for this run (there is no reload of the mods): the introduction plays over the menu
+        if Host.Options.PlayIntro then
+          Host.PushState(TXcomCutsceneState.Create(Host, XCOM_CUTSCENE_INTRO));
       end;
   end;
 end;

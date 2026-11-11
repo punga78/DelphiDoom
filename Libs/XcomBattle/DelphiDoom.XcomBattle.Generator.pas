@@ -41,6 +41,8 @@ type
     procedure SortItems(AAliensAlive: Integer; const ATakeToNextStage: TList<TXcomBattleItem>);
     procedure PlaceSurvivors;
     function ScriptOf(const ADeployment: TXcomAlienDeployment): TObjectList<TXcomMapScript>;
+    procedure Generate;
+    procedure GenerateNextStage;
   public
     /// <param name="ASave">The empty saved battle that gets the battle; its mission type says what to make</param>
     /// <param name="ALegacyRandom">The C library rand() (srand done by the caller): only the look of the units</param>
@@ -65,7 +67,10 @@ type
     procedure SetAlienRace(const ARace: string);
     procedure SetAlienItemLevel(ALevel: Integer);
     procedure SetTerrain(const ATerrain: TXcomRuleTerrain);
-    /// <summary>run</summary>
+    /// <summary>
+    ///   run. Placing a large unit, or a unit next to a friend, asks the pathfinder of the battle whether a step is
+    ///   blocked (SavedBattleGame::initUtilities gives it in the C++): a battle that has none gets one for the run
+    /// </summary>
     procedure Run;
     /// <summary>
     ///   nextStage: the saved battle keeps its X-COM units that are alive (after an abort only the ones on the exit),
@@ -78,6 +83,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.XcomBattle.Pathfinding;
 
 const
   SNoDeployment = 'Alien deployment %s not found.';
@@ -224,6 +232,25 @@ begin
 end;
 
 procedure TXcomBattlescapeGenerator.Run;
+var
+  LPathfinder: IXcomBattlePathfinder;
+begin
+  if Assigned(FState.Save.Pathfinder) then
+  begin
+    Generate;
+    Exit;
+  end;
+  // the blocked steps do not read the nodes of the pathfinder: it can be made before the map has its size
+  LPathfinder := TXcomPathfinding.Create(FState.Save);
+  FState.Save.Pathfinder := LPathfinder;
+  try
+    Generate;
+  finally
+    FState.Save.Pathfinder := nil;
+  end;
+end;
+
+procedure TXcomBattlescapeGenerator.Generate;
 var
   LDeployment: TXcomAlienDeployment;
   LName: string;
@@ -524,6 +551,25 @@ begin
 end;
 
 procedure TXcomBattlescapeGenerator.NextStage;
+var
+  LPathfinder: IXcomBattlePathfinder;
+begin
+  if Assigned(FState.Save.Pathfinder) then
+  begin
+    GenerateNextStage;
+    Exit;
+  end;
+  // as Run: the survivors and the new aliens are placed with a pathfinder that lasts as long as the stage is made
+  LPathfinder := TXcomPathfinding.Create(FState.Save);
+  FState.Save.Pathfinder := LPathfinder;
+  try
+    GenerateNextStage;
+  finally
+    FState.Save.Pathfinder := nil;
+  end;
+end;
+
+procedure TXcomBattlescapeGenerator.GenerateNextStage;
 var
   LAliensAlive: Integer;
   LTakeToNextStage: TList<TXcomBattleItem>;
