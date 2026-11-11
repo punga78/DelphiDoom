@@ -12,7 +12,9 @@
 
 **Trappola dei confronti col programma vero**: `Capture-OpenXcomScreen.ps1` ora usa una cartella utente propria per ogni esecuzione (`-UserName`, nome unico, cancellata alla fine) e puo' copiarvi dei salvataggi (`-SeedFolder`); controllare comunque lingua e risoluzione dell'immagine prima di fidarsi. Ogni tanto la cattura non produce il file o mostra uno schermo nero: si rilancia. `Hash-Png.ps1` calcola l'impronta dei golden. La rotella e i clic lunghi: `hold:ms` nello script di `XcomGame -script` fissa quanto resta premuto il pulsante (80 come lo script di cattura)
 
-**Non portato**: musica MIDI/ogg/mp3/flac/mod (vedi `Libs\XcomAudio`), filtri di `Zoom`, OpenGL, `FlcPlayer`, `OptionInfo`/`ModInfo`, `Mod` e le `Rule*`, `SurfaceSet`; i controlli sono in `Libs\XcomUi`. Aggiunti: `IXcomSaveCatalog`/`TXcomDiskSaveCatalog`/`TXcomSaveInfo` (i salvataggi), `IXcomFolderOpener`, `TXcomKeyNames`.
+**Fuoco della finestra** (`ekActive`, `Key` 1 con il fuoco): `TXcomGame.RunFrame` con `backgroundMute` mette i volumi a 0 e al ritorno quelli delle opzioni (`Game::run`, `SDL_ACTIVEEVENT`); `TXcomWinVideoDevice` lo posta da `WM_ACTIVATE`. `pauseMode` non c'e'.
+
+**Non portato**: filtri di `Zoom`, OpenGL, `FlcPlayer`, `OptionInfo`/`ModInfo`, `Mod` e le `Rule*`, `SurfaceSet`; i controlli sono in `Libs\XcomUi`. Aggiunti: `IXcomSaveCatalog`/`TXcomDiskSaveCatalog`/`TXcomSaveInfo` (i salvataggi), `IXcomFolderOpener`, `TXcomKeyNames`.
 
 Test: `Tests\DelphiDoom.Tests.XcomEngine` (209 con `XcomUi` e `XcomMenu`, copertura 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.
 
