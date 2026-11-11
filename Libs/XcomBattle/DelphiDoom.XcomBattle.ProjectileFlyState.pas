@@ -452,9 +452,15 @@ begin
     LUnitCanFly := ActionData.Actor.MovementType = MT_FLY;
     if (ActionData.ActionType = BA_AUTOSHOT) and (ActionData.AutoShotCounter < ActionData.Weapon.Rules.AutoShots) and
       (not ActionData.Actor.IsOut) and (FAmmo.AmmoQuantity <> 0) and (LHasFloor or LUnitCanFly) then
-      CreateNewProjectile
+    begin
+      CreateNewProjectile;
+      if ActionData.CameraPosition.Z <> -1 then
+        FGame.View.SetCameraOffset(ActionData.CameraPosition);
+    end
     else
     begin
+      if (ActionData.CameraPosition.Z <> -1) and (ActionData.Waypoints.Count <= 1) then
+        FGame.View.SetCameraOffset(ActionData.CameraPosition);
       if (not FGame.Save.UnitsFalling) and FGame.PanicHandled then
         FGame.CheckReactionFire(FUnit);
       if not FUnit.IsOut then

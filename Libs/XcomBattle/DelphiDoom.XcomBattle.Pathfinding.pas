@@ -13,7 +13,8 @@ uses
   System.SysUtils, System.Math, System.Generics.Collections, System.Generics.Defaults, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Directions,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.Services.Intf,
-  DelphiDoom.XcomBattle.PathfindingNode, DelphiDoom.XcomBattle.PathfindingOpenSet;
+  DelphiDoom.XcomBattle.PathfindingNode, DelphiDoom.XcomBattle.PathfindingOpenSet,
+  DelphiDoom.XcomBattle.Host.Intf;
 
 const
   /// <summary>Pathfinding::bigWallTypes and O_BIGWALL</summary>
@@ -31,8 +32,8 @@ const
 type
   /// <summary>
   ///   Finds the shortest path of a unit on the map with a fast straight line first and A* if that fails, and the
-  ///   tiles a unit can reach (Pathfinding). Holds the saved battle without owning it. The path preview (it
-  ///   draws on the tiles through BattlescapeGame) and the strafing move (it reads the keyboard) are not ported
+  ///   tiles a unit can reach (Pathfinding). Holds the saved battle without owning it. The strafing move (it
+  ///   reads the keyboard) is not ported
   /// </summary>
   TXcomPathfinding = class(TInterfacedObject, IXcomBattlePathfinder)
   strict private
@@ -43,6 +44,15 @@ type
     FMovementType: Integer;
     FSneakyAi: Boolean;
     FPath: TList<Integer>;
+    FPathPreviewed: Boolean;
+    FModifierUsed: Boolean;
+    FPreviewHost: Pointer;
+    FPreviewRed: Integer;
+    FPreviewYellow: Integer;
+    FPreviewGreen: Integer;
+    function DoPreviewPath(ARemove: Boolean): Boolean;
+    function GetPreviewHost: IXcomBattleHost;
+    procedure SetPreviewHost(const AValue: IXcomBattleHost);
     function GetNode(const APosition: TXcomPosition): TXcomPathfindingNode;
     class function NeedTile(const ATile: TXcomTile): TXcomTile; static;
     function IsBlockedPart(const ATile: TXcomTile; APart: Integer; const AMissileTarget: TXcomBattleUnit;
@@ -79,6 +89,26 @@ type
     property TotalTuCost: Integer read FTotalTuCost;
     /// <summary>The path in the order of the walk (the C++ keeps it reversed)</summary>
     function Path: TArray<Integer>;
+    /// <summary>
+    ///   Pathfinding::previewPath: marks the tiles of the calculated path with the direction of the next step, the
+    ///   time units left and the color (green: the reserve holds, yellow: it does not, red: not enough time units or
+    ///   energy). False without a path, or when a path is already previewed. It asks PreviewHost about the reserve
+    /// </summary>
+    function PreviewPath: Boolean;
+    /// <summary>Pathfinding::removePreview: unmarks the tiles; false when nothing was previewed</summary>
+    function RemovePreview: Boolean;
+    /// <summary>Pathfinding::isPathPreviewed</summary>
+    property PathPreviewed: Boolean read FPathPreviewed;
+    /// <summary>Pathfinding::isModifierUsed: Ctrl was held when the path was previewed (always false: no strafing)</summary>
+    property ModifierUsed: Boolean read FModifierUsed;
+    /// <summary>The game in progress, which says whether the reserved time units hold (not owned, not counted)</summary>
+    property PreviewHost: IXcomBattleHost read GetPreviewHost write SetPreviewHost;
+    /// <summary>Pathfinding::red: the color of a mark the unit cannot reach (the interface "pathfinding" sets it)</summary>
+    property PreviewRed: Integer read FPreviewRed write FPreviewRed;
+    /// <summary>Pathfinding::yellow: reachable, but the reserved time units do not hold</summary>
+    property PreviewYellow: Integer read FPreviewYellow write FPreviewYellow;
+    /// <summary>Pathfinding::green: reachable with the reserve</summary>
+    property PreviewGreen: Integer read FPreviewGreen write FPreviewGreen;
   end;
 
 implementation
@@ -94,6 +124,9 @@ begin
   FSave := ASave;
   FSneakyAi := ASneakyAi;
   FMovementType := MT_WALK;
+  FPreviewRed := 3;
+  FPreviewYellow := 10;
+  FPreviewGreen := 4;
   FPath := TList<Integer>.Create;
   FNodes := TObjectList<TXcomPathfindingNode>.Create(True);
   for LIndex := 0 to FSave.MapSizeXyz - 1 do
@@ -129,6 +162,135 @@ begin
   SetLength(Result, FPath.Count);
   for LIndex := 0 to FPath.Count - 1 do
     Result[LIndex] := FPath[FPath.Count - 1 - LIndex];
+end;
+
+function TXcomPathfinding.GetPreviewHost: IXcomBattleHost;
+begin
+  Result := IXcomBattleHost(FPreviewHost);
+end;
+
+procedure TXcomPathfinding.SetPreviewHost(const AValue: IXcomBattleHost);
+begin
+  // the game in progress uses the pathfinding and outlives the preview: the reference is not counted
+  FPreviewHost := Pointer(AValue);
+end;
+
+function TXcomPathfinding.PreviewPath: Boolean;
+begin
+  Result := DoPreviewPath(False);
+end;
+
+function TXcomPathfinding.RemovePreview: Boolean;
+begin
+  if not FPathPreviewed then
+    Exit(False);
+  DoPreviewPath(True);
+  Result := True;
+end;
+
+function TXcomPathfinding.DoPreviewPath(ARemove: Boolean): Boolean;
+var
+  LPosition: TXcomPosition;
+  LDestination: TXcomPosition;
+  LTimeUnits: Integer;
+  LEnergy: Integer;
+  LSize: Integer;
+  LTotal: Integer;
+  LSwitchBack: Boolean;
+  LIndex: Integer;
+  LDirection: Integer;
+  LCost: Integer;
+  LEnergyUse: Integer;
+  LReserve: Boolean;
+  LX: Integer;
+  LY: Integer;
+  LTile: TXcomTile;
+  LTileAbove: TXcomTile;
+  LHost: IXcomBattleHost;
+  LColor: Integer;
+begin
+  if FPath.Count = 0 then
+    Exit(False);
+  if (not ARemove) and FPathPreviewed then
+    Exit(False);
+  FPathPreviewed := not ARemove;
+  LHost := GetPreviewHost;
+  LPosition := FUnit.Position;
+  LTimeUnits := FUnit.TimeUnits;
+  if FUnit.IsKneeled then
+    Dec(LTimeUnits, 8);
+  LEnergy := FUnit.Energy;
+  LSize := FUnit.Armor.Size - 1;
+  if FUnit.IsKneeled then
+    LTotal := 8
+  else
+    LTotal := 0;
+  LSwitchBack := False;
+  if FSave.TuReserved = BA_NONE then
+  begin
+    LSwitchBack := True;
+    FSave.TuReserved := BA_AUTOSHOT;
+  end;
+  // Options::strafe is off: no modifier and no running
+  FModifierUsed := False;
+  try
+    // the path is kept in reverse order: the last element is the first step
+    for LIndex := FPath.Count - 1 downto 0 do
+    begin
+      LDirection := FPath[LIndex];
+      // gets tu cost, but also gets the destination position
+      LCost := GetTuCost(LPosition, LDirection, LDestination, FUnit, nil, False);
+      LEnergyUse := LCost;
+      if LDirection >= DIR_UP then
+        LEnergyUse := 0;
+      Dec(LEnergy, LEnergyUse div 2);
+      Dec(LTimeUnits, LCost);
+      Inc(LTotal, LCost);
+      LReserve := Assigned(LHost) and LHost.CheckReservedTu(FUnit, LTotal, True);
+      LPosition := LDestination;
+      for LX := LSize downto 0 do
+        for LY := LSize downto 0 do
+        begin
+          LTile := FSave.TileAt(LPosition + TXcomPosition.Make(LX, LY, 0));
+          LTileAbove := FSave.TileAt(LPosition + TXcomPosition.Make(LX, LY, 1));
+          if not Assigned(LTile) then
+            Continue;
+          if not ARemove then
+          begin
+            if LIndex = 0 then
+              LTile.Preview := 10
+            else
+              LTile.Preview := FPath[LIndex - 1];
+            if ((LX <> 0) and (LY <> 0)) or (LSize = 0) then
+              LTile.TuMarker := Max(0, LTimeUnits);
+            // unit fell down, retroactively make the tile above's direction marker to DOWN
+            if Assigned(LTileAbove) and (LTileAbove.Preview = 0) and (LCost = 0) and (FMovementType <> MT_FLY) then
+              LTileAbove.Preview := DIR_DOWN;
+          end
+          else
+          begin
+            LTile.Preview := -1;
+            LTile.TuMarker := -1;
+          end;
+          if ARemove then
+            LColor := 0
+          else if (LTimeUnits >= 0) and (LEnergy >= 0) then
+          begin
+            if LReserve then
+              LColor := FPreviewGreen
+            else
+              LColor := FPreviewYellow;
+          end
+          else
+            LColor := FPreviewRed;
+          LTile.MarkerColor := LColor;
+        end;
+    end;
+  finally
+    if LSwitchBack then
+      FSave.TuReserved := BA_NONE;
+  end;
+  Result := True;
 end;
 
 procedure TXcomPathfinding.SetUnit(const AUnit: TXcomBattleUnit);

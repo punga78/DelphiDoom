@@ -143,7 +143,7 @@ begin
   else
   begin
     if ActionData.CameraPosition.Z <> -1 then
-      FGame.View.CenterOnPosition(ActionData.CameraPosition, False);
+      FGame.View.SetCameraOffset(ActionData.CameraPosition);
     // melee doesn't trigger a reaction
     if FUnit.Faction = FGame.Save.Side then
       // not a reaction attack: this restores the cursor

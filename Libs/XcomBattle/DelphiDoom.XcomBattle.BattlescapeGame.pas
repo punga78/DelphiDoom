@@ -139,6 +139,18 @@ type
     procedure PsiButtonAction;
     /// <summary>cancelCurrentAction</summary>
     function CancelCurrentAction(AForce: Boolean = False): Boolean;
+    /// <summary>cancelAllActions: the preview, the waypoints and the chosen action are dropped</summary>
+    procedure CancelAllActions;
+    /// <summary>launchAction: the launch button of a guided missile, after its waypoints were clicked</summary>
+    procedure LaunchAction;
+    /// <summary>moveUpDown: the selected unit goes one level up (DIR_UP) or down (a lift or a flying unit)</summary>
+    procedure MoveUpDown(const AUnit: TXcomBattleUnit; ADirection: Integer);
+    /// <summary>setTUReserved: the reserve buttons</summary>
+    procedure SetTuReserved(AAction: Integer);
+    /// <summary>getKneelReserved</summary>
+    function GetKneelReserved: Boolean;
+    /// <summary>setKneelReserved</summary>
+    procedure SetKneelReserved(AReserved: Boolean);
     /// <summary>playableUnitSelected</summary>
     function PlayableUnitSelected: Boolean;
     procedure TallyUnits(out ALiveAliens, ALiveSoldiers: Integer);
@@ -196,12 +208,14 @@ begin
   FCurrentAction := TXcomBattleAction.Create;
   FPlayerPanicHandled := True;
   FEngine.Host := Self;
+  FPathfinding.PreviewHost := Self;
   CheckForCasualties(nil, nil, True);
 end;
 
 destructor TXcomBattlescapeGame.Destroy;
 begin
   FEngine.Host := nil;
+  FPathfinding.PreviewHost := nil;
   FStates.Free;
   FCurrentAction.Free;
   FScavenger.Free;
@@ -817,6 +831,7 @@ begin
           FCurrentAction.ActionType := BA_NONE;
         end;
         // setupCursor() is called for every action (the parity of the drawing found it missing after a shot)
+        FView.ShowCursor(True);
         SetupCursor;
       end;
     end
@@ -850,6 +865,11 @@ begin
           if Assigned(FSave.SelectedUnit) then
             FView.CenterOnPosition(FSave.SelectedUnit.Position);
         end;
+      if FDebugPlay then
+      begin
+        FView.ShowCursor(True);
+        SetupCursor;
+      end;
     end;
   end;
   if FStates.Count > 0 then
@@ -881,6 +901,7 @@ begin
     FCurrentAction.Targeting := False;
     FCurrentAction.ActionType := BA_NONE;
     FView.SetCursorType(CT_NORMAL, 1);
+    FView.ShowCursor(True);
     if FSave.Side = FACTION_PLAYER then
       FSave.SelectedUnit := nil
     else
@@ -1105,6 +1126,8 @@ end;
 function TXcomBattlescapeGame.CancelCurrentAction(AForce: Boolean): Boolean;
 begin
   Result := False;
+  if FPathfinding.RemovePreview and (FOptions.PreviewPath <> 0) then
+    Exit(True);
   if (FStates.Count = 0) or AForce then
   begin
     if FCurrentAction.Targeting then
@@ -1112,13 +1135,21 @@ begin
       if (FCurrentAction.ActionType = BA_LAUNCH) and (FCurrentAction.Waypoints.Count > 0) then
       begin
         FCurrentAction.Waypoints.Delete(FCurrentAction.Waypoints.Count - 1);
+        FView.RemoveLastWaypoint;
         if FCurrentAction.Waypoints.Count = 0 then
           FView.ShowLaunchButton(False);
+        Exit(True);
+      end;
+      if FOptions.ConfirmFireMode and (FCurrentAction.Waypoints.Count > 0) then
+      begin
+        FCurrentAction.Waypoints.Delete(FCurrentAction.Waypoints.Count - 1);
+        FView.RemoveLastWaypoint;
         Exit(True);
       end;
       FCurrentAction.Targeting := False;
       FCurrentAction.ActionType := BA_NONE;
       SetupCursor;
+      FView.ShowCursor(True);
       Exit(True);
     end;
   end
@@ -1132,12 +1163,47 @@ end;
 procedure TXcomBattlescapeGame.PrimaryAction(const APosition: TXcomPosition);
 var
   LUnit: TXcomBattleUnit;
+  LPreviewed: Boolean;
+  LMaxWaypoints: Integer;
 begin
+  LPreviewed := FOptions.PreviewPath <> 0;
   FView.ResetObstacles;
   if FCurrentAction.Targeting and Assigned(FSave.SelectedUnit) then
   begin
-    if (FCurrentAction.ActionType = BA_LAUNCH) or (FCurrentAction.ActionType = BA_USE) then
-      raise EXcomBattleException.CreateFmt(SNotPorted, ['the primary action of waypoints and the mind probe'])
+    if FCurrentAction.ActionType = BA_LAUNCH then
+    begin
+      LMaxWaypoints := FCurrentAction.Weapon.Rules.Waypoints;
+      if LMaxWaypoints = 0 then
+        LMaxWaypoints := FCurrentAction.Weapon.AmmoItem.Rules.Waypoints;
+      if (FCurrentAction.Waypoints.Count < LMaxWaypoints) or (LMaxWaypoints = -1) then
+      begin
+        FView.ShowLaunchButton(True);
+        FCurrentAction.Waypoints.Add(APosition);
+        FView.AddWaypoint(APosition);
+      end;
+    end
+    else if (FCurrentAction.ActionType = BA_USE) and
+      (FCurrentAction.Weapon.Rules.BattleType = TXcomRuleItem.BT_MINDPROBE) then
+    begin
+      LUnit := FSave.SelectUnit(APosition);
+      if Assigned(LUnit) and (LUnit.Faction <> FSave.SelectedUnit.Faction) and LUnit.GetVisible then
+      begin
+        if (not FCurrentAction.Weapon.Rules.LineOfSightRequired) or
+          (FCurrentAction.Actor.VisibleUnits.IndexOf(LUnit) >= 0) then
+        begin
+          if FCurrentAction.Actor.SpendTimeUnits(FCurrentAction.TimeUnits) then
+          begin
+            FView.PlaySound(FCurrentAction.Weapon.Rules.HitSound, APosition);
+            FView.ShowUnitInfo(LUnit);
+            CancelCurrentAction;
+          end
+          else
+            FView.Warning('STR_NOT_ENOUGH_TIME_UNITS');
+        end
+        else
+          FView.Warning('STR_NO_LINE_OF_FIRE');
+      end;
+    end
     else if (FCurrentAction.ActionType = BA_PANIC) or (FCurrentAction.ActionType = BA_MINDCONTROL) then
     begin
       LUnit := FSave.SelectUnit(APosition);
@@ -1151,16 +1217,33 @@ begin
         begin
           // get the sound/animation started
           FView.SetCursorType(CT_NONE);
+          FView.ShowCursor(False);
+          FCurrentAction.CameraPosition := FView.CameraOffset;
           StatePushBack(TXcomPsiAttackState.Create(Self, FCurrentAction));
         end
         else
           FView.Warning('STR_NO_LINE_OF_FIRE');
       end;
     end
+    else if FOptions.ConfirmFireMode and ((FCurrentAction.Waypoints.Count = 0) or
+      (APosition <> FCurrentAction.Waypoints.First)) then
+    begin
+      FCurrentAction.Waypoints.Clear;
+      FCurrentAction.Waypoints.Add(APosition);
+      FView.ClearWaypoints;
+      FView.AddWaypoint(APosition);
+    end
     else
     begin
       FCurrentAction.Target := APosition;
       FView.SetCursorType(CT_NONE);
+      if FOptions.ConfirmFireMode then
+      begin
+        FCurrentAction.Waypoints.Clear;
+        FView.ClearWaypoints;
+      end;
+      FView.ShowCursor(False);
+      FCurrentAction.CameraPosition := FView.CameraOffset;
       FStates.Add(TXcomProjectileFlyState.Create(Self, FCurrentAction));
       StatePushFront(TXcomUnitTurnState.Create(Self, FCurrentAction)); // first of all turn towards the target
     end;
@@ -1183,22 +1266,86 @@ begin
     end
     else if PlayableUnitSelected then
     begin
+      // no strafing: the modifier is never pressed
+      if LPreviewed and ((FCurrentAction.Target <> APosition) or FPathfinding.ModifierUsed) then
+        FPathfinding.RemovePreview;
       FCurrentAction.Target := APosition;
       FPathfinding.Calculate(FCurrentAction.Actor, FCurrentAction.Target);
       FCurrentAction.Run := False;
       FCurrentAction.Strafe := False;
-      if FPathfinding.GetStartDirection <> -1 then
+      if LPreviewed and (not FPathfinding.PreviewPath) and (FPathfinding.GetStartDirection <> -1) then
+      begin
+        FPathfinding.RemovePreview;
+        LPreviewed := False;
+      end;
+      if (not LPreviewed) and (FPathfinding.GetStartDirection <> -1) then
       begin
         // start walking
         FView.SetCursorType(CT_NONE);
+        FView.ShowCursor(False);
         StatePushBack(TXcomUnitWalkState.Create(Self, FCurrentAction));
       end;
     end;
   end;
 end;
 
+procedure TXcomBattlescapeGame.CancelAllActions;
+begin
+  FPathfinding.RemovePreview;
+  FCurrentAction.Waypoints.Clear;
+  FView.ClearWaypoints;
+  FView.ShowLaunchButton(False);
+  FCurrentAction.Targeting := False;
+  FCurrentAction.ActionType := BA_NONE;
+  SetupCursor;
+  FView.ShowCursor(True);
+end;
+
+procedure TXcomBattlescapeGame.LaunchAction;
+begin
+  FView.ShowLaunchButton(False);
+  FView.ClearWaypoints;
+  FCurrentAction.Target := FCurrentAction.Waypoints.First;
+  FView.SetCursorType(CT_NONE);
+  FView.ShowCursor(False);
+  FCurrentAction.CameraPosition := FView.CameraOffset;
+  FStates.Add(TXcomProjectileFlyState.Create(Self, FCurrentAction));
+  StatePushFront(TXcomUnitTurnState.Create(Self, FCurrentAction)); // first of all turn towards the target
+end;
+
+procedure TXcomBattlescapeGame.MoveUpDown(const AUnit: TXcomBattleUnit; ADirection: Integer);
+begin
+  FCurrentAction.Target := AUnit.Position;
+  if ADirection = DIR_UP then
+    Inc(FCurrentAction.Target.Z)
+  else
+    Dec(FCurrentAction.Target.Z);
+  FView.SetCursorType(CT_NONE);
+  FView.ShowCursor(False);
+  if FSave.SelectedUnit.IsKneeled then
+    Kneel(FSave.SelectedUnit);
+  FPathfinding.Calculate(FCurrentAction.Actor, FCurrentAction.Target);
+  StatePushBack(TXcomUnitWalkState.Create(Self, FCurrentAction));
+end;
+
+procedure TXcomBattlescapeGame.SetTuReserved(AAction: Integer);
+begin
+  FSave.TuReserved := AAction;
+end;
+
+function TXcomBattlescapeGame.GetKneelReserved: Boolean;
+begin
+  Result := FSave.KneelReserved;
+end;
+
+procedure TXcomBattlescapeGame.SetKneelReserved(AReserved: Boolean);
+begin
+  FSave.KneelReserved := AReserved;
+end;
+
 procedure TXcomBattlescapeGame.RequestEndTurn;
 begin
+  CancelCurrentAction;
   if not FEndTurnRequested then
   begin
     FEndTurnRequested := True;

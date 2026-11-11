@@ -84,6 +84,20 @@ type
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     /// <summary>The NextTurnState that BattlescapeGame::endTurn pushes</summary>
     procedure NextTurn;
+    /// <summary>Game::getCursor()->setVisible: the mouse pointer is hidden while an action runs</summary>
+    procedure ShowCursor(AVisible: Boolean);
+    /// <summary>Camera::getMapOffset: where the camera is, to come back after an action (Z -1: no screen)</summary>
+    function CameraOffset: TXcomPosition;
+    /// <summary>Camera::setMapOffset and Map::invalidate</summary>
+    procedure SetCameraOffset(const AOffset: TXcomPosition);
+    /// <summary>Map::getWaypoints()->push_back: a waypoint of a guided missile, or the target to confirm</summary>
+    procedure AddWaypoint(const APosition: TXcomPosition);
+    /// <summary>Map::getWaypoints()->pop_back (nothing when there is none)</summary>
+    procedure RemoveLastWaypoint;
+    /// <summary>Map::getWaypoints()->clear</summary>
+    procedure ClearWaypoints;
+    /// <summary>The UnitInfoState of a unit read with the mind probe</summary>
+    procedure ShowUnitInfo(const AUnit: TXcomBattleUnit);
   end;
 
 implementation

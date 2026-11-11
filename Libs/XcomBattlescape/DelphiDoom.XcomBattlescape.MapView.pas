@@ -56,6 +56,13 @@ type
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     procedure NextTurn;
+    procedure ShowCursor(AVisible: Boolean);
+    function CameraOffset: TXcomPosition;
+    procedure SetCameraOffset(const AOffset: TXcomPosition);
+    procedure AddWaypoint(const APosition: TXcomPosition);
+    procedure RemoveLastWaypoint;
+    procedure ClearWaypoints;
+    procedure ShowUnitInfo(const AUnit: TXcomBattleUnit);
   end;
 
 implementation
@@ -206,6 +213,43 @@ end;
 procedure TXcomBattleMapView.NextTurn;
 begin
   FOther.NextTurn;
+end;
+
+procedure TXcomBattleMapView.ShowCursor(AVisible: Boolean);
+begin
+  FOther.ShowCursor(AVisible);
+end;
+
+function TXcomBattleMapView.CameraOffset: TXcomPosition;
+begin
+  Result := FMap.Camera.MapOffset;
+end;
+
+procedure TXcomBattleMapView.SetCameraOffset(const AOffset: TXcomPosition);
+begin
+  FMap.Camera.MapOffset := AOffset;
+  FMap.Invalidate;
+end;
+
+procedure TXcomBattleMapView.AddWaypoint(const APosition: TXcomPosition);
+begin
+  FMap.Waypoints.Add(APosition);
+end;
+
+procedure TXcomBattleMapView.RemoveLastWaypoint;
+begin
+  if FMap.Waypoints.Count > 0 then
+    FMap.Waypoints.Delete(FMap.Waypoints.Count - 1);
+end;
+
+procedure TXcomBattleMapView.ClearWaypoints;
+begin
+  FMap.Waypoints.Clear;
+end;
+
+procedure TXcomBattleMapView.ShowUnitInfo(const AUnit: TXcomBattleUnit);
+begin
+  FOther.ShowUnitInfo(AUnit);
 end;
 
 end.

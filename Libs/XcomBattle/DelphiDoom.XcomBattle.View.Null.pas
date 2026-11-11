@@ -58,6 +58,13 @@ type
     procedure ShowUnitMessage(const AUnit: TXcomBattleUnit; const AMessage: string; ANeedsConfirmation: Boolean);
     procedure FinishBattle(AAbort: Boolean; AInExitArea: Integer);
     procedure NextTurn;
+    procedure ShowCursor(AVisible: Boolean);
+    function CameraOffset: TXcomPosition;
+    procedure SetCameraOffset(const AOffset: TXcomPosition);
+    procedure AddWaypoint(const APosition: TXcomPosition);
+    procedure RemoveLastWaypoint;
+    procedure ClearWaypoints;
+    procedure ShowUnitInfo(const AUnit: TXcomBattleUnit);
     /// <summary>The warnings shown so far, in order</summary>
     property Warnings: TList<string> read FWarnings;
     /// <summary>finishBattle was called</summary>
@@ -206,6 +213,36 @@ end;
 procedure TXcomBattleNullView.NextTurn;
 begin
   Inc(FNextTurns);
+end;
+
+procedure TXcomBattleNullView.ShowCursor(AVisible: Boolean);
+begin
+end;
+
+function TXcomBattleNullView.CameraOffset: TXcomPosition;
+begin
+  // no screen: an action never comes back to a camera position
+  Result := TXcomPosition.Make(0, 0, -1);
+end;
+
+procedure TXcomBattleNullView.SetCameraOffset(const AOffset: TXcomPosition);
+begin
+end;
+
+procedure TXcomBattleNullView.AddWaypoint(const APosition: TXcomPosition);
+begin
+end;
+
+procedure TXcomBattleNullView.RemoveLastWaypoint;
+begin
+end;
+
+procedure TXcomBattleNullView.ClearWaypoints;
+begin
+end;
+
+procedure TXcomBattleNullView.ShowUnitInfo(const AUnit: TXcomBattleUnit);
+begin
 end;
 
 end.
