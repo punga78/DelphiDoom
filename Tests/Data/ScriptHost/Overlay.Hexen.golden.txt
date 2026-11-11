@@ -1,0 +1,75 @@
+screen 1920x1080 patch=UNKNA0
+empty screen bytes=64000 fnv=38C165C5
+empty saved=0 (4 bytes) fnv=4B95F515
+empty flash8 1920x1080 threads=0 bytes=2073600 fnv=B35195C5
+empty flash32 1920x1080 threads=0 bytes=8294400 fnv=6D4E29ED
+empty flash8 1920x1080 threads=1 bytes=2073600 fnv=B35195C5
+empty flash32 1920x1080 threads=1 bytes=8294400 fnv=6D4E29ED
+text screen bytes=64000 fnv=2912B858
+text saved=4 (1172 bytes) fnv=F83B49F8
+text flash8 1920x1080 threads=0 bytes=2073600 fnv=0DA6E7DB
+text flash32 1920x1080 threads=0 bytes=8294400 fnv=631D851C
+text flash8 1920x1080 threads=1 bytes=2073600 fnv=E1A42F0F
+text flash32 1920x1080 threads=1 bytes=8294400 fnv=631D851C
+patch screen bytes=64000 fnv=78C7403F
+patch saved=7 (2048 bytes) fnv=93F83AF1
+patch flash8 1920x1080 threads=0 bytes=2073600 fnv=868054C4
+patch flash32 1920x1080 threads=0 bytes=8294400 fnv=6F6A2762
+patch flash8 1920x1080 threads=1 bytes=2073600 fnv=0A3D9AE4
+patch flash32 1920x1080 threads=1 bytes=8294400 fnv=6F6A2762
+stretched screen bytes=64000 fnv=B07A549C
+stretched saved=10 (2924 bytes) fnv=4414006B
+stretched flash8 1920x1080 threads=0 bytes=2073600 fnv=6E7B0ECB
+stretched flash32 1920x1080 threads=0 bytes=8294400 fnv=024EEBEF
+stretched flash8 1920x1080 threads=1 bytes=2073600 fnv=B052D7EB
+stretched flash32 1920x1080 threads=1 bytes=8294400 fnv=024EEBEF
+pixel screen bytes=64000 fnv=7EC76B90
+pixel saved=14 (4092 bytes) fnv=A66C2179
+pixel flash8 1920x1080 threads=0 bytes=2073600 fnv=19B5BF3A
+pixel flash32 1920x1080 threads=0 bytes=8294400 fnv=97F9B332
+pixel flash8 1920x1080 threads=1 bytes=2073600 fnv=71FB1FFC
+pixel flash32 1920x1080 threads=1 bytes=8294400 fnv=97F9B332
+rect screen bytes=64000 fnv=A9CC5F68
+rect saved=17 (4968 bytes) fnv=A393AD8B
+rect flash8 1920x1080 threads=0 bytes=2073600 fnv=116D4D94
+rect flash32 1920x1080 threads=0 bytes=8294400 fnv=AC014AB6
+rect flash8 1920x1080 threads=1 bytes=2073600 fnv=116D4D94
+rect flash32 1920x1080 threads=1 bytes=8294400 fnv=AC014AB6
+line screen bytes=64000 fnv=A35C005F
+line saved=24 (7012 bytes) fnv=08FD7AA1
+line flash8 1920x1080 threads=0 bytes=2073600 fnv=454678A4
+line flash32 1920x1080 threads=0 bytes=8294400 fnv=CD31E62D
+line flash8 1920x1080 threads=1 bytes=2073600 fnv=454678A4
+line flash32 1920x1080 threads=1 bytes=8294400 fnv=CD31E62D
+short screen bytes=64000 fnv=AE63CAB4
+short saved=26 (7596 bytes) fnv=C803B1E3
+short flash8 1920x1080 threads=0 bytes=2073600 fnv=5D6B946E
+short flash32 1920x1080 threads=0 bytes=8294400 fnv=D3077794
+short flash8 1920x1080 threads=1 bytes=2073600 fnv=5D6B946E
+short flash32 1920x1080 threads=1 bytes=8294400 fnv=D3077794
+save consumed=7596
+cleared screen bytes=64000 fnv=38C165C5
+cleared saved=0 (4 bytes) fnv=4B95F515
+cleared flash8 1920x1080 threads=0 bytes=2073600 fnv=B35195C5
+cleared flash32 1920x1080 threads=0 bytes=8294400 fnv=6D4E29ED
+cleared flash8 1920x1080 threads=1 bytes=2073600 fnv=B35195C5
+cleared flash32 1920x1080 threads=1 bytes=8294400 fnv=6D4E29ED
+load consumed=7596 size=7596
+loaded screen bytes=64000 fnv=AE63CAB4
+loaded saved=26 (7596 bytes) fnv=C803B1E3
+loaded flash8 1920x1080 threads=0 bytes=2073600 fnv=5D6B946E
+loaded flash32 1920x1080 threads=0 bytes=8294400 fnv=D3077794
+loaded flash8 1920x1080 threads=1 bytes=2073600 fnv=5D6B946E
+loaded flash32 1920x1080 threads=1 bytes=8294400 fnv=D3077794
+expired screen bytes=64000 fnv=A35C005F
+expired saved=24 (7012 bytes) fnv=08FD7AA1
+expired flash8 1920x1080 threads=0 bytes=2073600 fnv=454678A4
+expired flash32 1920x1080 threads=0 bytes=8294400 fnv=CD31E62D
+expired flash8 1920x1080 threads=1 bytes=2073600 fnv=454678A4
+expired flash32 1920x1080 threads=1 bytes=8294400 fnv=CD31E62D
+allexpired screen bytes=64000 fnv=38C165C5
+allexpired saved=0 (4 bytes) fnv=4B95F515
+allexpired flash8 1920x1080 threads=0 bytes=2073600 fnv=B35195C5
+allexpired flash32 1920x1080 threads=0 bytes=8294400 fnv=6D4E29ED
+allexpired flash8 1920x1080 threads=1 bytes=2073600 fnv=B35195C5
+allexpired flash32 1920x1080 threads=1 bytes=8294400 fnv=6D4E29ED

@@ -1,0 +1,51 @@
+screen 1024x576 patch=UNKNA0
+empty screen bytes=64000 fnv=38C165C5
+empty saved=0 (4 bytes) fnv=4B95F515
+empty flash32 1024x576 threads=0 bytes=2359296 fnv=7EAFFBEE
+empty flash32 1024x576 threads=1 bytes=2359296 fnv=7EAFFBEE
+text screen bytes=64000 fnv=372F6176
+text saved=4 (1172 bytes) fnv=F83B49F8
+text flash32 1024x576 threads=0 bytes=2359296 fnv=71A10BA5
+text flash32 1024x576 threads=1 bytes=2359296 fnv=71A10BA5
+patch screen bytes=64000 fnv=1852AB43
+patch saved=7 (2048 bytes) fnv=AE59C5F6
+patch flash32 1024x576 threads=0 bytes=2359296 fnv=0B3B6126
+patch flash32 1024x576 threads=1 bytes=2359296 fnv=0B3B6126
+stretched screen bytes=64000 fnv=9118E336
+stretched saved=10 (2924 bytes) fnv=D8D5EC4D
+stretched flash32 1024x576 threads=0 bytes=2359296 fnv=9CEF00B6
+stretched flash32 1024x576 threads=1 bytes=2359296 fnv=9CEF00B6
+pixel screen bytes=64000 fnv=FC0FA57A
+pixel saved=14 (4092 bytes) fnv=7EB8E63F
+pixel flash32 1024x576 threads=0 bytes=2359296 fnv=77E68253
+pixel flash32 1024x576 threads=1 bytes=2359296 fnv=77E68253
+rect screen bytes=64000 fnv=9D259D9C
+rect saved=17 (4968 bytes) fnv=B6306D39
+rect flash32 1024x576 threads=0 bytes=2359296 fnv=DC44A51C
+rect flash32 1024x576 threads=1 bytes=2359296 fnv=DC44A51C
+line screen bytes=64000 fnv=8673FA91
+line saved=24 (7012 bytes) fnv=D8E43BA3
+line flash32 1024x576 threads=0 bytes=2359296 fnv=4F596325
+line flash32 1024x576 threads=1 bytes=2359296 fnv=4F596325
+short screen bytes=64000 fnv=B12C06D3
+short saved=26 (7596 bytes) fnv=791E92ED
+short flash32 1024x576 threads=0 bytes=2359296 fnv=A7D19ADD
+short flash32 1024x576 threads=1 bytes=2359296 fnv=A7D19ADD
+save consumed=7596
+cleared screen bytes=64000 fnv=38C165C5
+cleared saved=0 (4 bytes) fnv=4B95F515
+cleared flash32 1024x576 threads=0 bytes=2359296 fnv=7EAFFBEE
+cleared flash32 1024x576 threads=1 bytes=2359296 fnv=7EAFFBEE
+load consumed=7596 size=7596
+loaded screen bytes=64000 fnv=B12C06D3
+loaded saved=26 (7596 bytes) fnv=791E92ED
+loaded flash32 1024x576 threads=0 bytes=2359296 fnv=A7D19ADD
+loaded flash32 1024x576 threads=1 bytes=2359296 fnv=A7D19ADD
+expired screen bytes=64000 fnv=8673FA91
+expired saved=24 (7012 bytes) fnv=D8E43BA3
+expired flash32 1024x576 threads=0 bytes=2359296 fnv=4F596325
+expired flash32 1024x576 threads=1 bytes=2359296 fnv=4F596325
+allexpired screen bytes=64000 fnv=38C165C5
+allexpired saved=0 (4 bytes) fnv=4B95F515
+allexpired flash32 1024x576 threads=0 bytes=2359296 fnv=7EAFFBEE
+allexpired flash32 1024x576 threads=1 bytes=2359296 fnv=7EAFFBEE

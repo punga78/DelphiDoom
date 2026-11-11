@@ -75,7 +75,16 @@ uses
   p_mobj,
   p_mobjlist,
   p_tick,
-  p_setup;
+  p_setup,
+  doomdef,
+  d_net,
+  i_system,
+  v_data,
+  v_video,
+  {$IFNDEF OPENGL}
+  r_hires,
+  {$ENDIF}
+  psi_overlay;
 
 type
   TVshParameter = record
@@ -1146,8 +1155,265 @@ begin
   end;
 end;
 
+// ---- -vsh overlay (fetta 2i): the bytes of the overlay, of the record that a savegame stores and of the frame -----
+
+var
+  GOverlayLines: TStringList = nil;
+
+procedure OvrLine(const AText: string);
+begin
+  GOverlayLines.Add(AText);
+end;
+
+procedure OvrHashBytes(const AName: string; const ABytes: PByte; ACount: Integer);
+var
+  LIndex: Integer;
+begin
+  FnvReset;
+  for LIndex := 0 to ACount - 1 do
+    FnvByte((ABytes + LIndex)^);
+  OvrLine(Format('%s bytes=%d fnv=%.8x', [AName, ACount, GFnv]));
+end;
+
+// the fields of a drawer that its kind uses (the others were never written by the old class: garbage in memory)
+procedure OvrHashSave(const AName: string);
+var
+  LBuffer: Pointer;
+  LCursor: Pointer;
+  LCount, LIndex, LKind, LPos: Integer;
+  LRecord: PByte;
+  LLength: Integer;
+  function Int(AOffset: Integer): Integer;
+  begin
+    Result := PInteger(LRecord + AOffset)^;
+  end;
+begin
+  GetMem(LBuffer, overlay.SaveSize);
+  try
+    LCursor := LBuffer;
+    overlay.SaveToBuffer(LCursor);
+    LCount := PInteger(LBuffer)^;
+    FnvReset;
+    FnvInt(LCount);
+    for LIndex := 0 to LCount - 1 do
+    begin
+      LRecord := PByte(LBuffer) + 4 + LIndex * 292;
+      LKind := Int(0);
+      FnvInt(LKind);
+      FnvInt(Int(4));
+      FnvInt(Int(264));
+      FnvInt(Int(268));
+      case LKind of
+        1:
+          begin
+            LLength := LRecord[8];
+            for LPos := 8 to 8 + LLength do
+              FnvByte(LRecord[LPos]);
+            FnvInt(Int(272));
+          end;
+        2, 6:
+          begin
+            LLength := LRecord[8];
+            for LPos := 8 to 8 + LLength do
+              FnvByte(LRecord[LPos]);
+            FnvInt(Int(272));
+            FnvInt(Int(284));
+            FnvInt(Int(288));
+          end;
+        3:
+          begin
+            FnvInt(Int(272));
+            FnvInt(Int(276));
+            FnvInt(Int(280));
+          end;
+        4, 5:
+          begin
+            FnvInt(Int(272));
+            FnvInt(Int(276));
+            FnvInt(Int(280));
+            FnvInt(Int(284));
+            FnvInt(Int(288));
+          end;
+      end;
+    end;
+    OvrLine(Format('%s saved=%d (%d bytes) fnv=%.8x', [AName, LCount, overlay.SaveSize, GFnv]));
+  finally
+    FreeMem(LBuffer);
+  end;
+end;
+
+procedure OvrFlash(const AName: string);
+var
+  LWidth, LHeight, LIndex: Integer;
+  LThreaded: Integer;
+  LOldThreads: Boolean;
+{$IFNDEF OPENGL}
+  LOldMode: videomode_t;
+{$ENDIF}
+  procedure Fill;
+  var
+    LPixel: Integer;
+  begin
+    for LPixel := 0 to LWidth * LHeight - 1 do
+    begin
+      screens[SCN_FG][LPixel] := Byte(LPixel * 7 + 3);
+      screen32[LPixel] := LongWord(LPixel) * 2654435761 + 17;
+    end;
+  end;
+begin
+  LWidth := V_GetScreenWidth(SCN_FG);
+  LHeight := V_GetScreenHeight(SCN_FG);
+  LOldThreads := usemultithread;
+  try
+    for LThreaded := 0 to 1 do
+    begin
+      usemultithread := LThreaded = 1;
+{$IFNDEF OPENGL}
+      LOldMode := videomode;
+      try
+        videomode := vm8bit;
+        Fill;
+        OVR_Drawer;
+        OvrHashBytes(Format('%s flash8 %dx%d threads=%d', [AName, LWidth, LHeight, LThreaded]),
+          PByte(screens[SCN_FG]), LWidth * LHeight);
+        videomode := vm32bit;
+        Fill;
+        OVR_Drawer;
+        OvrHashBytes(Format('%s flash32 %dx%d threads=%d', [AName, LWidth, LHeight, LThreaded]),
+          PByte(screen32), LWidth * LHeight * 4);
+      finally
+        videomode := LOldMode;
+      end;
+{$ELSE}
+      Fill;
+      OVR_Drawer;
+      OvrHashBytes(Format('%s flash32 %dx%d threads=%d', [AName, LWidth, LHeight, LThreaded]),
+        PByte(screen32), LWidth * LHeight * 4);
+{$ENDIF}
+    end;
+  finally
+    usemultithread := LOldThreads;
+  end;
+  LIndex := 0;
+end;
+
+procedure OvrStep(const AName: string);
+begin
+  overlay.DrawDrawers;
+  OvrHashBytes(AName + ' screen', PByte(overlay.overlayscreen), 64000);
+  OvrHashSave(AName);
+  OvrFlash(AName);
+end;
+
+function OvrPatchName: string;
+var
+  LName: string;
+  LLump: Integer;
+begin
+  Result := '';
+  // the first sprite or patch with some pixels (the lumps of that type are the ones AddPatch finds)
+  for LLump := 0 to W_NumLumps - 1 do
+  begin
+    LName := char8tostring(W_GetNameForNum(LLump));
+    if (W_LumpLength(LLump) > 400) and (W_LumpLength(LLump) < 3000) and
+       (W_CheckNumForName(LName, TYPE_PATCH or TYPE_SPRITE) = LLump) then
+    begin
+      Result := LName;
+      Exit;
+    end;
+  end;
+end;
+
+procedure RunOverlay;
+var
+  LPatch: string;
+  LBuffer: Pointer;
+  LCursor: Pointer;
+  LSaved: Integer;
+begin
+  GOverlayLines := TStringList.Create;
+  try
+    gamestate := GS_LEVEL;
+    firstinterpolation := True;
+    LPatch := OvrPatchName;
+    OvrLine('screen ' + IntToStr(V_GetScreenWidth(SCN_FG)) + 'x' + IntToStr(V_GetScreenHeight(SCN_FG)) +
+      ' patch=' + LPatch);
+    overlay.Clear;
+    OvrStep('empty');
+
+    overlay.AddText(1000, 'Hello World 123', OVR_ALIGN_LEFT, 10, 10);
+    overlay.AddRightText(1000, 'right ~ text [x]', 310, 30);
+    overlay.AddCenterText(1000, 'Centered', 160, 50);
+    overlay.AddText(1000, 'lowercase and symbols !?:;', OVR_ALIGN_LEFT, 5, 70);
+    OvrStep('text');
+
+    if LPatch <> '' then
+    begin
+      overlay.AddPatch(1000, LPatch, 100, 100);
+      overlay.AddPatch(1000, LPatch, -5, 190);
+      overlay.AddPatch(1000, LPatch, 315, -10);
+      OvrStep('patch');
+      overlay.AddPatchStretched(1000, LPatch, 20, 20, 120, 90);
+      overlay.AddPatchStretched(1000, LPatch, 200, 150, 150, 100);
+      overlay.AddPatchStretched(1000, LPatch, 10, 150, 60, 190);
+      OvrStep('stretched');
+    end;
+
+    overlay.AddPixel(1000, 255, 0, 0, 5, 5);
+    overlay.AddPixel(1000, 0, 255, 0, 319, 199);
+    overlay.AddPixel(1000, 0, 0, 255, 400, 10);
+    overlay.AddPixel(1000, 255, 255, 255, -1, -1);
+    OvrStep('pixel');
+    overlay.AddRect(1000, 255, 0, 0, 10, 100, 60, 130);
+    overlay.AddRect(1000, 0, 255, 0, -10, -10, 30, 20);
+    overlay.AddRect(1000, 0, 0, 255, 300, 150, 250, 160);
+    OvrStep('rect');
+    overlay.AddLine(1000, 255, 255, 0, 10, 10, 200, 10);
+    overlay.AddLine(1000, 255, 0, 255, 50, 20, 50, 190);
+    overlay.AddLine(1000, 0, 255, 255, 10, 10, 250, 120);
+    overlay.AddLine(1000, 200, 100, 50, 30, 190, 280, 40);
+    overlay.AddLine(1000, 100, 200, 50, 100, 20, 120, 180);
+    overlay.AddLine(1000, 50, 100, 200, 300, 100, 400, 150);
+    overlay.AddLine(1000, 90, 90, 90, 200, 50, 20, 60);
+    OvrStep('line');
+
+    // short drawers that expire, a record round trip
+    overlay.AddText(5, 'short', OVR_ALIGN_LEFT, 150, 150);
+    overlay.AddRect(0, 255, 0, 0, 1, 1, 8, 8);
+    OvrStep('short');
+    GetMem(LBuffer, overlay.SaveSize);
+    try
+      LSaved := overlay.SaveSize;
+      LCursor := LBuffer;
+      overlay.SaveToBuffer(LCursor);
+      OvrLine(Format('save consumed=%d', [PByte(LCursor) - PByte(LBuffer)]));
+      overlay.Clear;
+      OvrStep('cleared');
+      LCursor := LBuffer;
+      overlay.LoadFromBuffer(LCursor);
+      OvrLine(Format('load consumed=%d size=%d', [PByte(LCursor) - PByte(LBuffer), LSaved]));
+    finally
+      FreeMem(LBuffer);
+    end;
+    OvrStep('loaded');
+    // the drawers that are over disappear
+    leveltime := leveltime + 6;
+    OvrStep('expired');
+    leveltime := leveltime + 2000;
+    OvrStep('allexpired');
+    GOverlayLines.SaveToFile('verify_scripthost_overlay.txt');
+  finally
+    FreeAndNil(GOverlayLines);
+  end;
+end;
+
 procedure VSH_AfterLevel(const AMapName: string);
 begin
+  if GMode = 'overlay' then
+  begin
+    RunOverlay;
+    Halt(0);
+  end;
   if GMode <> 'l2' then
     Exit;
   RunContext;
