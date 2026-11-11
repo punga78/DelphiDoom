@@ -18,7 +18,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.SaveCatalog.Intf,
-DelphiDoom.XcomEngine.Session.Intf;
+DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf;
 
 type
   TXcomState = class;
@@ -59,6 +59,8 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>The mods installed in the data folders (nil when the host does not know them)</summary>
+    function ModCatalog: IXcomModCatalog; virtual;
     /// <summary>Mod::playMusic: starts the music unless it already plays (does nothing without a music player)</summary>
     procedure PlayMusic(const AName: string; AId: Integer = 0); virtual;
     /// <summary>Music::stop</summary>
@@ -180,6 +182,11 @@ begin
 end;
 
 function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.ModCatalog: IXcomModCatalog;
 begin
   Result := nil;
 end;

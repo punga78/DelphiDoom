@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
-  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
+  DelphiDoom.XcomEngine.ModCatalog.Intf;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -51,6 +52,7 @@ type
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
+    FModCatalog: IXcomModCatalog;
     FFolderOpener: IXcomFolderOpener;
     FSaveCatalog: IXcomSaveCatalog;
     FNewGameStarter: IXcomNewGameStarter;
@@ -90,6 +92,8 @@ type
     procedure SetMusicPlayer(const AMusic: IXcomMusicPlayer);
     procedure PlayMusic(const AName: string; AId: Integer = 0); override;
     procedure StopMusic; override;
+    function ModCatalog: IXcomModCatalog; override;
+    procedure SetModCatalog(const ACatalog: IXcomModCatalog);
     function CurrentMusicFormat: string; override;
     procedure SetFolderOpener(const AOpener: IXcomFolderOpener);
     procedure SetSaveCatalog(const ACatalog: IXcomSaveCatalog);
@@ -232,6 +236,16 @@ begin
   FResources := AResources;
   if (FMusic <> nil) and (AResources <> nil) then
     FMusic.Reload(AResources);
+end;
+
+function TXcomGame.ModCatalog: IXcomModCatalog;
+begin
+  Result := FModCatalog;
+end;
+
+procedure TXcomGame.SetModCatalog(const ACatalog: IXcomModCatalog);
+begin
+  FModCatalog := ACatalog;
 end;
 
 procedure TXcomGame.SetMusicPlayer(const AMusic: IXcomMusicPlayer);

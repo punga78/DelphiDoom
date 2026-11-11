@@ -70,7 +70,7 @@ uses
   DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
-  DelphiDoom.XcomAudio.Types,
+  DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
   DelphiDoom.XcomEngine.State;
 
@@ -171,6 +171,10 @@ begin
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
+    // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
+    Result.SetModCatalog(TXcomDiskModCatalog.Create(
+      [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],
+      [ASettings.ModId], LParser));
     if ASettings.AudioOutput <> nil then
     begin
       TXcomAudioFactory.CreateAudio(LOptions, ASettings.AudioOutput, XCOM_AUDIO_RATE, LAudio, LMusic);

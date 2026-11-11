@@ -27,3 +27,6 @@ load_list 640x400 23e87515
 # load_empty: Load Game with no saves (click 230,255); load_list: seven files of Reference\_dati\xcom_tftd\saveseed176\xcom2 (quick and auto slots, a battle save, an ironman one, one of another master, one broken)
 noaudio 640x400 8024c2b5
 load_confirm 640x400 7dca2335
+mods 640x400 7dbf9785
+mods_toggle 640x400 0ad601e5
+mods_arrow 640x400 8c581605
