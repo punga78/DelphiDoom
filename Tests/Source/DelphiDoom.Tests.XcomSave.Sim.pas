@@ -1,0 +1,264 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: unit tests of the xcom saved game library - the support of the  }
+{  scenarios that run on the real saved games (load, change, save, compare     }
+{  with what the real OpenXcom objects did: Tools\Verifica\176\save\simgen)    }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{  (the library itself is derived from OpenXcom, GPL v3 or later)               }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.Tests.XcomSave.Sim;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.IOUtils, System.AnsiStrings, System.StrUtils, DelphiDoom.Yaml.Types,
+  DelphiDoom.Yaml.Intf,
+  DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
+  DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.ItemContainer,
+  DelphiDoom.Tests.XcomSave.RealSave, DelphiDoom.Tests.XcomMod.RealData;
+
+type
+  /// <summary>
+  ///   What a scenario test needs: the ruleset of the TFTD data, the saved games of realsave loaded as
+  ///   SavedGame::load does, and the comparison of the text that the library writes with the one of the real code
+  /// </summary>
+  TXcomSim = class
+  strict private
+    FData: TXcomRealData;
+    FRuleset: TXcomRuleset;
+    FRules: TXcomRulesetRules;
+    FSettings: IXcomSaveSettings;
+    FInfo: TXcomSaveBriefInfo;
+    class function ReadText(const APath: string): TYamlText; static;
+    class function FindFolder(const ARelative: string): string; static;
+    class function SameValue(const ALeft, ARight: string): Boolean; static;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    /// <summary>False without the data of TFTD (Reference\_dati): the scenarios then pass without comparing</summary>
+    function Available: Boolean;
+    property Ruleset: TXcomRuleset read FRuleset;
+    property Rules: TXcomRulesetRules read FRules;
+    property Settings: IXcomSaveSettings read FSettings;
+    /// <summary>The golden folder of a library (Tests\Data\XcomSave\sim, ...)</summary>
+    class function GoldenFolder(const ARelative: string): string; static;
+    /// <summary>The saved games the C++ started from</summary>
+    class function RealSaveFolder: string; static;
+    /// <summary>Loads saveNN.sav of realsave; the caller frees the game</summary>
+    function LoadSave(AIndex: Integer; const ARandom: IXcomRandom): TXcomSavedGame;
+    /// <summary>SavedGame::save of the game, as text with LF</summary>
+    function SaveText(const AGame: TXcomSavedGame; const ARandom: IXcomRandom): TYamlText;
+    /// <summary>The text of a golden file with LF only (the C++ wrote CRLF)</summary>
+    class function GoldenText(const APath: string): TYamlText; static;
+    /// <summary>Equal texts, except the last bit of the speeds of the targets (x87)</summary>
+    class function SameSave(const AExpected, AActual: TYamlText): Boolean; static;
+    /// <summary>'' when SameSave, else the first line that differs (the message of a failure)</summary>
+    class function SaveDifference(const AExpected, AActual: TYamlText): string; static;
+    /// <summary>The first line that differs, for the message of a failure</summary>
+    class function FirstDifference(const AExpected, AActual: string): string; static;
+    /// <summary>The storage of a base as the harness prints it: item=quantity; in the order of the names</summary>
+    class function StorageText(const AItems: TXcomItemContainer): string; static;
+  end;
+
+implementation
+
+{ TXcomSim }
+
+constructor TXcomSim.Create;
+var
+  LFile: TArray<IYamlNode>;
+  LBrief, LItem: IYamlNode;
+  LMods: TArray<string>;
+begin
+  inherited Create;
+  FSettings := TXcomDefaultSettings.Create;
+  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  if FData.DataFolder = '' then
+    Exit;
+  FRuleset := FData.Load;
+  FRules := TXcomRulesetRules.Create(FRuleset);
+  if RealSaveFolder = '' then
+    Exit;
+  LFile := TYamlFactory.CreateParser.LoadAll(GoldenText(RealSaveFolder + 'save00.sav'));
+  LBrief := LFile[0];
+  FInfo.Version := YamlTextToString(LBrief.Find(YamlStringToText('version')).AsString);
+  FInfo.Engine := YamlTextToString(LBrief.Find(YamlStringToText('engine')).AsString);
+  FInfo.Build := YamlTextToString(LBrief.Find(YamlStringToText('build')).AsString);
+  SetLength(LMods, 0);
+  for LItem in LBrief.Find(YamlStringToText('mods')).Items do
+  begin
+    SetLength(LMods, Length(LMods) + 1);
+    LMods[High(LMods)] := YamlTextToString(LItem.AsString);
+  end;
+  FInfo.Mods := LMods;
+end;
+
+destructor TXcomSim.Destroy;
+begin
+  FRules.Free;
+  FRuleset.Free;
+  FData.Free;
+  inherited Destroy;
+end;
+
+function TXcomSim.Available: Boolean;
+begin
+  Result := Assigned(FRuleset) and (RealSaveFolder <> '');
+end;
+
+class function TXcomSim.FindFolder(const ARelative: string): string;
+var
+  LFolder: string;
+  LLevel: Integer;
+begin
+  LFolder := ExtractFilePath(ParamStr(0));
+  for LLevel := 0 to 7 do
+  begin
+    if DirectoryExists(LFolder + ARelative) then
+      Exit(LFolder + ARelative + '\');
+    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
+  end;
+  Result := '';
+end;
+
+class function TXcomSim.GoldenFolder(const ARelative: string): string;
+begin
+  Result := FindFolder('Tests\Data\' + ARelative);
+end;
+
+class function TXcomSim.RealSaveFolder: string;
+begin
+  Result := FindFolder('Tests\Data\XcomSave\realsave');
+end;
+
+class function TXcomSim.ReadText(const APath: string): TYamlText;
+var
+  LBytes: TBytes;
+begin
+  LBytes := TFile.ReadAllBytes(APath);
+  SetLength(Result, Length(LBytes));
+  if Length(LBytes) > 0 then
+    Move(LBytes[0], Result[1], Length(LBytes));
+end;
+
+class function TXcomSim.GoldenText(const APath: string): TYamlText;
+begin
+  Result := System.AnsiStrings.StringReplace(ReadText(APath), #13#10, #10, [rfReplaceAll]);
+end;
+
+function TXcomSim.LoadSave(AIndex: Integer; const ARandom: IXcomRandom): TXcomSavedGame;
+var
+  LFile: TArray<IYamlNode>;
+begin
+  LFile := TYamlFactory.CreateParser.LoadAll(GoldenText(RealSaveFolder + Format('save%.2d.sav', [AIndex])));
+  Result := TXcomSavedGame.Create;
+  try
+    Result.Load(LFile, FRuleset, FRules, FSettings, False, ARandom);
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+function TXcomSim.SaveText(const AGame: TXcomSavedGame; const ARandom: IXcomRandom): TYamlText;
+begin
+  Result := AGame.Save(FInfo, FSettings, ARandom);
+end;
+
+class function TXcomSim.SameValue(const ALeft, ARight: string): Boolean;
+var
+  LLeft, LRight: Double;
+  LFormat: TFormatSettings;
+begin
+  LFormat := TFormatSettings.Invariant;
+  if not TryStrToFloat(Trim(Copy(ALeft, Pos(':', ALeft) + 1, MaxInt)), LLeft, LFormat) or
+    not TryStrToFloat(Trim(Copy(ARight, Pos(':', ARight) + 1, MaxInt)), LRight, LFormat) then
+    Exit(False);
+  Result := Abs(LLeft - LRight) <= 1E-15 * Abs(LLeft);
+end;
+
+class function TXcomSim.SameSave(const AExpected, AActual: TYamlText): Boolean;
+const
+  TOLERATED: array[0..2] of string = ('speedLon:', 'speedLat:', 'speedRadian:');
+var
+  LExpected, LActual: TStringList;
+  LIndex, LKey: Integer;
+  LLine: string;
+begin
+  if AExpected = AActual then
+    Exit(True);
+  LExpected := TStringList.Create;
+  LActual := TStringList.Create;
+  try
+    LExpected.Text := string(AExpected);
+    LActual.Text := string(AActual);
+    if LExpected.Count <> LActual.Count then
+      Exit(False);
+    for LIndex := 0 to LExpected.Count - 1 do
+    begin
+      if LExpected[LIndex] = LActual[LIndex] then
+        Continue;
+      LLine := Trim(LExpected[LIndex]);
+      Result := False;
+      for LKey := 0 to High(TOLERATED) do
+        if LLine.StartsWith(TOLERATED[LKey]) and SameValue(LExpected[LIndex], LActual[LIndex]) then
+          Result := True;
+      if not Result then
+        Exit(False);
+    end;
+    Result := True;
+  finally
+    LActual.Free;
+    LExpected.Free;
+  end;
+end;
+
+class function TXcomSim.SaveDifference(const AExpected, AActual: TYamlText): string;
+begin
+  if SameSave(AExpected, AActual) then
+    Result := ''
+  else
+    Result := FirstDifference(string(AExpected), string(AActual));
+end;
+
+class function TXcomSim.FirstDifference(const AExpected, AActual: string): string;
+var
+  LExpected, LActual: TStringList;
+  LIndex: Integer;
+begin
+  LExpected := TStringList.Create;
+  LActual := TStringList.Create;
+  try
+    LExpected.Text := AExpected;
+    LActual.Text := AActual;
+    for LIndex := 0 to LExpected.Count - 1 do
+    begin
+      if (LIndex >= LActual.Count) or (LExpected[LIndex] <> LActual[LIndex]) then
+      begin
+        Result := Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
+          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]);
+        Exit;
+      end;
+    end;
+    if LActual.Count > LExpected.Count then
+      Result := Format('line %d: unexpected "%s"', [LExpected.Count + 1, LActual[LExpected.Count]])
+    else
+      Result := '';
+  finally
+    LActual.Free;
+    LExpected.Free;
+  end;
+end;
+
+class function TXcomSim.StorageText(const AItems: TXcomItemContainer): string;
+var
+  LIndex: Integer;
+begin
+  Result := '';
+  for LIndex := 0 to AItems.Contents.Count - 1 do
+    Result := Result + AItems.Contents.Key(LIndex) + '=' + IntToStr(AItems.Contents.Value(LIndex)) + ';';
+end;
+
+end.

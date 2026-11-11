@@ -1,0 +1,997 @@
+name: ""
+version: 1.0
+engine: ""
+build: 4a4bae5fa-dirty
+time:
+  second: 5
+  minute: 0
+  hour: 12
+  weekday: 1
+  day: 1
+  month: 1
+  year: 2040
+mods:
+  - "xcom2 ver: 1.0"
+---
+difficulty: 0
+end: 0
+monthsPassed: 0
+graphRegionToggles: ""
+graphCountryToggles: ""
+graphFinanceToggles: ""
+rng: 14702361039778894485
+funds:
+  - 10972000
+  - 10972000
+maintenance:
+  - 3024000
+  - 0
+researchScores:
+  - 0
+  - 0
+incomes:
+  - 7998000
+  - 5998000
+expenditures:
+  - 0
+  - 3024000
+warned: false
+globeLon: 1.5
+globeLat: -0.75
+globeZoom: 3
+ids:
+  ALIEN_MISSIONS: 4
+  STR_ALIEN_BASE: 3
+  STR_BARRACUDA: 3
+  STR_LANDING_SITE: 2
+  STR_SOLDIER: 10
+  STR_TRITON: 2
+  STR_UFO: 4
+  STR_WAY_POINT: 2
+countries:
+  - type: STR_USA
+    funding:
+      - 1031000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 18
+  - type: STR_ALASKA
+    funding:
+      - 338000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 2
+  - type: STR_EU_SYNDICATE
+    funding:
+      - 277000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 15
+  - type: STR_ARABIAN_BLOC
+    funding:
+      - 397000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 15
+  - type: STR_EGYPTIAN_CARTEL
+    funding:
+      - 332000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 10
+  - type: STR_AFRICA_CORP
+    funding:
+      - 284000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 26
+  - type: STR_BRAZILIAN_UNION
+    funding:
+      - 185000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 24
+  - type: STR_NEW_MEXICO
+    funding:
+      - 407000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 9
+  - type: STR_ASIAN_COALITION
+    funding:
+      - 443000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 15
+  - type: STR_SCANDINAVIA
+    funding:
+      - 209000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 19
+  - type: STR_NEO_JAPAN
+    funding:
+      - 467000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_FREE_CHINA
+    funding:
+      - 340000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 19
+  - type: STR_AUSTRALASIA
+    funding:
+      - 268000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 25
+  - type: STR_FED_KOREA
+    funding:
+      - 549000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 28
+  - type: STR_EURASIA_UC
+    funding:
+      - 240000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 6
+  - type: STR_ICELANDIC_UNION
+    funding:
+      - 231000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 11
+regions:
+  - type: STR_NORTH_ATLANTIC
+    activityXcom:
+      - 39
+    activityAlien:
+      - 16
+  - type: STR_SOUTH_ATLANTIC
+    activityXcom:
+      - 4
+    activityAlien:
+      - 18
+  - type: STR_NORTH_PACIFIC
+    activityXcom:
+      - 29
+    activityAlien:
+      - 28
+  - type: STR_SOUTH_PACIFIC
+    activityXcom:
+      - 25
+    activityAlien:
+      - 19
+  - type: STR_MEDITERRANEAN
+    activityXcom:
+      - 1
+    activityAlien:
+      - 8
+  - type: STR_SOUTH_CHINA_SEA
+    activityXcom:
+      - 3
+    activityAlien:
+      - 1
+  - type: STR_INDIAN_OCEAN
+    activityXcom:
+      - 16
+    activityAlien:
+      - 23
+  - type: STR_THE_EAST_SEA
+    activityXcom:
+      - 31
+    activityAlien:
+      - 30
+  - type: STR_NORTH_SEA
+    activityXcom:
+      - 22
+    activityAlien:
+      - 22
+  - type: STR_CARRIBEAN
+    activityXcom:
+      - 33
+    activityAlien:
+      - 36
+  - type: STR_ANTARCTIC
+    activityXcom:
+      - 13
+    activityAlien:
+      - 11
+  - type: STR_ARCTIC
+    activityXcom:
+      - 13
+    activityAlien:
+      - 32
+  - type: STR_EURASIA
+    activityXcom:
+      - 20
+    activityAlien:
+      - 35
+  - type: STR_NORTH_AMERICA
+    activityXcom:
+      - 21
+    activityAlien:
+      - 18
+  - type: STR_AFRICA
+    activityXcom:
+      - 15
+    activityAlien:
+      - 32
+bases:
+  - lon: 2
+    lat: 0.20000000000000001
+    name: Base 15
+    facilities:
+      - type: STR_AIR_LOCK
+        x: 2
+        y: 2
+      - type: STR_SUB_PEN
+        x: 2
+        y: 0
+      - type: STR_SUB_PEN
+        x: 0
+        y: 4
+      - type: STR_SUB_PEN
+        x: 4
+        y: 4
+      - type: STR_LIVING_QUARTERS
+        x: 3
+        y: 2
+      - type: STR_GENERAL_STORES
+        x: 2
+        y: 3
+      - type: STR_LABORATORY
+        x: 3
+        y: 3
+      - type: STR_WORKSHOP
+        x: 4
+        y: 3
+      - type: STR_STANDARD_SONAR
+        x: 1
+        y: 3
+    soldiers:
+      - type: STR_SOLDIER
+        id: 1
+        name: Canan Karabulut
+        initialStats:
+          tu: 55
+          stamina: 44
+          health: 33
+          bravery: 10
+          reactions: 59
+          firing: 55
+          throwing: 58
+          strength: 28
+          psiStrength: 25
+          psiSkill: 0
+          melee: 35
+        currentStats:
+          tu: 55
+          stamina: 44
+          health: 33
+          bravery: 10
+          reactions: 59
+          firing: 55
+          throwing: 58
+          strength: 28
+          psiStrength: 25
+          psiSkill: 0
+          melee: 35
+        rank: 3
+        gender: 1
+        look: 1
+        missions: 1
+        kills: 7
+        recovery: 5
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 26
+            - 11
+      - type: STR_SOLDIER
+        id: 2
+        name: Mechela Alemu
+        initialStats:
+          tu: 58
+          stamina: 66
+          health: 35
+          bravery: 40
+          reactions: 51
+          firing: 47
+          throwing: 78
+          strength: 21
+          psiStrength: 39
+          psiSkill: 0
+          melee: 40
+        currentStats:
+          tu: 58
+          stamina: 66
+          health: 35
+          bravery: 40
+          reactions: 51
+          firing: 47
+          throwing: 78
+          strength: 21
+          psiStrength: 39
+          psiSkill: 0
+          melee: 40
+        rank: 0
+        gender: 0
+        look: 3
+        missions: 1
+        kills: 4
+        recovery: 10
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 7
+            - 26
+      - type: STR_SOLDIER
+        id: 3
+        name: Bernardo Amaro
+        initialStats:
+          tu: 52
+          stamina: 62
+          health: 39
+          bravery: 30
+          reactions: 33
+          firing: 45
+          throwing: 73
+          strength: 23
+          psiStrength: 19
+          psiSkill: 0
+          melee: 22
+        currentStats:
+          tu: 52
+          stamina: 62
+          health: 39
+          bravery: 30
+          reactions: 33
+          firing: 45
+          throwing: 73
+          strength: 23
+          psiStrength: 19
+          psiSkill: 0
+          melee: 22
+        rank: 0
+        gender: 0
+        look: 0
+        missions: 1
+        kills: 3
+        recovery: 19
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 4
+        name: Mathis Marcelle
+        initialStats:
+          tu: 52
+          stamina: 46
+          health: 33
+          bravery: 60
+          reactions: 35
+          firing: 60
+          throwing: 60
+          strength: 39
+          psiStrength: 48
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 52
+          stamina: 46
+          health: 33
+          bravery: 60
+          reactions: 35
+          firing: 60
+          throwing: 60
+          strength: 39
+          psiStrength: 48
+          psiSkill: 0
+          melee: 36
+        rank: 0
+        gender: 0
+        look: 0
+        missions: 1
+        kills: 2
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 10
+            - 28
+          monthsService: 1
+      - type: STR_SOLDIER
+        id: 5
+        name: Kinaya Wa Wanjau
+        initialStats:
+          tu: 60
+          stamina: 44
+          health: 29
+          bravery: 60
+          reactions: 38
+          firing: 58
+          throwing: 69
+          strength: 31
+          psiStrength: 34
+          psiSkill: 0
+          melee: 32
+        currentStats:
+          tu: 60
+          stamina: 44
+          health: 29
+          bravery: 60
+          reactions: 38
+          firing: 58
+          throwing: 69
+          strength: 31
+          psiStrength: 34
+          psiSkill: 0
+          melee: 32
+        rank: 3
+        gender: 1
+        look: 3
+        missions: 1
+        kills: 4
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 6
+        name: Dos Mwanankesa
+        initialStats:
+          tu: 52
+          stamina: 59
+          health: 34
+          bravery: 40
+          reactions: 42
+          firing: 40
+          throwing: 58
+          strength: 24
+          psiStrength: 60
+          psiSkill: 0
+          melee: 23
+        currentStats:
+          tu: 52
+          stamina: 59
+          health: 34
+          bravery: 40
+          reactions: 42
+          firing: 40
+          throwing: 58
+          strength: 24
+          psiStrength: 60
+          psiSkill: 0
+          melee: 23
+        rank: 1
+        gender: 0
+        look: 3
+        missions: 1
+        kills: 0
+        recovery: 6
+        armor: STR_NONE_UC
+        psiTraining: true
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 17
+            - 26
+      - type: STR_SOLDIER
+        id: 7
+        name: Hugo Pesek
+        initialStats:
+          tu: 53
+          stamina: 50
+          health: 35
+          bravery: 30
+          reactions: 41
+          firing: 56
+          throwing: 65
+          strength: 36
+          psiStrength: 20
+          psiSkill: 0
+          melee: 40
+        currentStats:
+          tu: 53
+          stamina: 50
+          health: 35
+          bravery: 30
+          reactions: 41
+          firing: 56
+          throwing: 65
+          strength: 36
+          psiStrength: 20
+          psiSkill: 0
+          melee: 40
+        rank: 2
+        gender: 0
+        look: 1
+        missions: 1
+        kills: 5
+        armor: STR_NONE_UC
+        psiTraining: true
+        improvement: 0
+        psiStrImprovement: 0
+        diary:
+          missionIdList:
+            - 2
+            - 3
+          monthsService: 1
+      - type: STR_SOLDIER
+        id: 8
+        name: Zahari Vasilev
+        initialStats:
+          tu: 57
+          stamina: 59
+          health: 35
+          bravery: 50
+          reactions: 36
+          firing: 64
+          throwing: 77
+          strength: 31
+          psiStrength: 7
+          psiSkill: 0
+          melee: 34
+        currentStats:
+          tu: 57
+          stamina: 59
+          health: 35
+          bravery: 50
+          reactions: 36
+          firing: 64
+          throwing: 77
+          strength: 31
+          psiStrength: 7
+          psiSkill: 0
+          melee: 34
+        rank: 2
+        gender: 0
+        look: 0
+        missions: 1
+        kills: 0
+        recovery: 11
+        armor: STR_NONE_UC
+        psiTraining: true
+        improvement: 0
+        psiStrImprovement: 0
+    crafts:
+      - lon: 1.0959999999999999
+        lat: 0.24000000000000002
+        id: 1
+        dest:
+          lon: 0.29999999999999999
+          lat: 0
+          type: STR_UFO
+          id: 1
+        speedLon: -0.00032555264111966994
+        speedLat: 8.2358393929161125e-06
+        speedRadian: 0.0003191690067304445
+        speed: 790
+        type: STR_TRITON
+        fuel: 288
+        damage: 146
+        items:
+          STR_DART_PISTOL: 3
+          STR_DART_POD: 5
+          STR_GAS_CANNON: 1
+          STR_GC_AP_AMMO: 2
+          STR_GC_HE_AMMO: 2
+          STR_HARPOON_POD: 12
+          STR_JET_HARPOON: 6
+          STR_MAGNA_BLAST_GRENADE: 8
+        status: STR_REFUELLING
+      - lon: 0.97999999999999987
+        lat: 0.35999999999999999
+        id: 1
+        dest:
+          lon: 2
+          lat: 0.40000000000000002
+          type: STR_WAY_POINT
+          id: 1
+        speedLon: 0
+        speedLat: 0.00096962736221907193
+        speedRadian: 0.00096962736221907193
+        speed: 2400
+        type: STR_BARRACUDA
+        fuel: 736
+        damage: 118
+        weapons:
+          - type: STR_AJAX
+            ammo: 2
+            rearming: true
+          - type: STR_CRAFT_GAS_CANNON_UC
+            ammo: 142
+        items:
+          {}
+        status: STR_REARMING
+      - lon: 0.94399999999999995
+        lat: 0.084000000000000005
+        id: 2
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_BARRACUDA
+        fuel: 79
+        damage: 48
+        weapons:
+          - type: 0
+          - type: 0
+        items:
+          {}
+        status: STR_REARMING
+    items:
+      STR_AJAX_LAUNCHER: 2
+      STR_AJAX_TORPEDOES: 44
+      STR_CRAFT_GAS_CANNON: 3
+      STR_CRAFT_GAS_CANNON_ROUNDS_X50: 18
+      STR_DART_PISTOL: 5
+      STR_DART_POD: 13
+      STR_DUP_HEAD_LAUNCHER: 1
+      STR_DUP_HEAD_TORPEDOES: 10
+      STR_DYE_GRENADE: 5
+      STR_GAS_CANNON: 2
+      STR_GC_AP_AMMO: 8
+      STR_GC_HE_AMMO: 2
+      STR_HARPOON_POD: 20
+      STR_HJC_AP_AMMO: 6
+      STR_HYDRO_JET_CANNON: 1
+      STR_JET_HARPOON: 8
+      STR_MAGNA_BLAST_GRENADE: 13
+      STR_SMALL_TORPEDO: 4
+      STR_TORPEDO_LAUNCHER: 1
+      XARQUID_CORPSE_4: 38
+    scientists: 8
+    engineers: 8
+    transfers:
+      - hours: 34
+        itemId: STR_JET_HARPOON
+        itemQty: 6
+      - hours: 12
+        scientists: 3
+      - hours: 18
+        engineers: 2
+      - hours: 30
+        soldier:
+          type: STR_SOLDIER
+          id: 9
+          name: Agata Mikusova
+          initialStats:
+            tu: 55
+            stamina: 64
+            health: 37
+            bravery: 30
+            reactions: 34
+            firing: 65
+            throwing: 57
+            strength: 28
+            psiStrength: 2
+            psiSkill: 0
+            melee: 32
+          currentStats:
+            tu: 55
+            stamina: 64
+            health: 37
+            bravery: 30
+            reactions: 34
+            firing: 65
+            throwing: 57
+            strength: 28
+            psiStrength: 2
+            psiSkill: 0
+            melee: 32
+          rank: 0
+          gender: 1
+          look: 0
+          missions: 0
+          kills: 0
+          armor: STR_NONE_UC
+          improvement: 0
+          psiStrImprovement: 0
+    research:
+      - project: STR_PLASTIC_AQUA_ARMOR
+        assigned: 3
+        spent: 0
+        cost: 180
+      - project: STR_ION_ARMOR
+        assigned: 2
+        spent: 18
+        cost: 205
+      - project: STR_MAGNETIC_ION_ARMOR
+        assigned: 4
+        spent: 1
+        cost: 330
+    productions:
+      - item: STR_PARTICLE_DISTURBANCE_SENSOR
+        assigned: 1
+        spent: 71
+        amount: 4
+        infinite: false
+      - item: STR_MEDI_KIT
+        assigned: 4
+        spent: 0
+        amount: 8
+        infinite: true
+waypoints:
+  - lon: 2
+    lat: 0.40000000000000002
+    id: 1
+alienBases:
+  - lon: 1
+    lat: 0
+    id: 1
+    race: STR_SOMETHING_0
+    discovered: true
+    deployment: STR_ALIEN_BASE_ASSAULT
+  - lon: 2
+    lat: 0.29999999999999999
+    id: 2
+    race: STR_SOMETHING_1
+    discovered: true
+    deployment: STR_ALIEN_BASE_ASSAULT
+alienMissions:
+  - type: STR_ALIEN_SURFACE_ATTACK
+    region: STR_NORTH_ATLANTIC
+    race: STR_RACE_0
+    nextWave: 0
+    nextUfoCounter: 2
+    spawnCountdown: 8790
+    liveUfos: 1
+    uniqueID: 1
+    missionSiteZone: 0
+  - type: STR_ALIEN_SHIP_ATTACK
+    region: STR_SOUTH_ATLANTIC
+    race: STR_RACE_1
+    nextWave: 0
+    nextUfoCounter: 1
+    spawnCountdown: 0
+    liveUfos: 1
+    uniqueID: 2
+    alienBase:
+      lon: 1
+      lat: 0
+      type: STR_ALIEN_BASE
+      id: 1
+    missionSiteZone: 0
+  - type: STR_ALIEN_RETALIATION
+    region: ARTIFACT_SITES
+    race: STR_RACE_2
+    nextWave: 0
+    nextUfoCounter: 3
+    spawnCountdown: 870
+    liveUfos: 1
+    uniqueID: 3
+    missionSiteZone: 1
+ufos:
+  - lon: 0.29999999999999999
+    lat: 0
+    id: 1
+    dest:
+      lon: 1
+      lat: 0
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.0013736387631436853
+    speedLat: 0
+    speedRadian: 0.0013736387631436853
+    speed: 3400
+    type: STR_FLEET_SUPPLY_CRUISER
+    damage: 418
+    altitude: STR_HIGH_UC
+    direction: STR_EAST
+    status: 0
+    mission: 1
+    trajectory: P2
+    trajectoryPoint: 0
+    fireCountdown: 0
+    escapeCountdown: 0
+  - lon: 0.59999999999999998
+    lat: 0.10000000000000001
+    id: 2
+    dest:
+      lon: 1.2
+      lat: 0.20000000000000001
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.00079455191003969595
+    speedLat: 0.00016703649185790195
+    speedRadian: 0.0008080228018492267
+    speed: 2000
+    type: STR_SURVEY_SHIP
+    landId: 1
+    damage: 47
+    altitude: STR_GROUND
+    direction: STR_EAST
+    status: 2
+    hyperDetected: true
+    secondsRemaining: 380
+    mission: 2
+    trajectory: P3
+    trajectoryPoint: 3
+    fireCountdown: 0
+    escapeCountdown: 0
+  - lon: 0.89999999999999991
+    lat: 0.20000000000000001
+    id: 3
+    dest:
+      lon: 1.3999999999999999
+      lat: 0.40000000000000002
+      type: STR_WAY_POINT
+      id: 0
+    speedLon: 0.0010322277125437115
+    speedLat: 0.00050641535102142761
+    speedRadian: 0.0011312319225889173
+    speed: 2800
+    type: STR_ESCORT
+    damage: 203
+    altitude: STR_VERY_LOW
+    direction: STR_SOUTH_EAST
+    status: 0
+    mission: 3
+    trajectory: P4
+    trajectoryPoint: 0
+    fireCountdown: 0
+    escapeCountdown: 0
+discovered:
+  - STR_ALIEN_ORIGINS
+alienStrategy:
+  regions:
+    STR_ANTARCTIC: 10
+    STR_ARCTIC: 5
+    STR_CARRIBEAN: 10
+    STR_INDIAN_OCEAN: 8
+    STR_MEDITERRANEAN: 16
+    STR_NORTH_ATLANTIC: 18
+    STR_NORTH_PACIFIC: 4
+    STR_NORTH_SEA: 15
+    STR_SOUTH_ATLANTIC: 4
+    STR_SOUTH_CHINA_SEA: 12
+    STR_SOUTH_PACIFIC: 10
+    STR_THE_EAST_SEA: 12
+  possibleMissions:
+    - region: ARTIFACT_SITES
+      missions: ~
+    - region: SHIPPING_LANES
+      missions: ~
+    - region: STR_AFRICA
+      missions: ~
+    - region: STR_ANTARCTIC
+      missions:
+        STR_ALIEN_BASE: 22
+        STR_ALIEN_PROBE_MISSION: 15
+    - region: STR_ARCTIC
+      missions:
+        STR_ALIEN_BASE: 28
+        STR_ALIEN_PROBE_MISSION: 15
+    - region: STR_CARRIBEAN
+      missions:
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_PROBE_MISSION: 6
+        STR_ALIEN_RESOURCE_RAID: 4
+    - region: STR_EURASIA
+      missions: ~
+    - region: STR_INDIAN_OCEAN
+      missions:
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_INTERDICTION: 8
+        STR_ALIEN_PROBE_MISSION: 7
+        STR_ALIEN_RESOURCE_RAID: 8
+    - region: STR_MEDITERRANEAN
+      missions:
+        STR_ALIEN_BASE: 6
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 10
+        STR_ALIEN_PROBE_MISSION: 10
+        STR_ALIEN_RESOURCE_RAID: 15
+    - region: STR_NORTH_AMERICA
+      missions: ~
+    - region: STR_NORTH_ATLANTIC
+      missions:
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 16
+        STR_ALIEN_PROBE_MISSION: 14
+        STR_ALIEN_RESOURCE_RAID: 20
+    - region: STR_NORTH_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 18
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_INTERDICTION: 16
+        STR_ALIEN_PROBE_MISSION: 25
+        STR_ALIEN_RESOURCE_RAID: 21
+    - region: STR_NORTH_SEA
+      missions:
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_INFILTRATION: 13
+        STR_ALIEN_INTERDICTION: 13
+        STR_ALIEN_PROBE_MISSION: 8
+        STR_ALIEN_RESOURCE_RAID: 21
+    - region: STR_SOUTH_ATLANTIC
+      missions:
+        STR_ALIEN_BASE: 25
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 22
+        STR_ALIEN_PROBE_MISSION: 25
+        STR_ALIEN_RESOURCE_RAID: 12
+    - region: STR_SOUTH_CHINA_SEA
+      missions:
+        STR_ALIEN_BASE: 19
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_INTERDICTION: 8
+        STR_ALIEN_PROBE_MISSION: 8
+        STR_ALIEN_RESOURCE_RAID: 8
+    - region: STR_SOUTH_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_INTERDICTION: 24
+        STR_ALIEN_PROBE_MISSION: 10
+        STR_ALIEN_RESOURCE_RAID: 12
+    - region: STR_THE_EAST_SEA
+      missions:
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_INFILTRATION: 10
+        STR_ALIEN_INTERDICTION: 5
+        STR_ALIEN_PROBE_MISSION: 5
+        STR_ALIEN_RESOURCE_RAID: 6
+  missionLocations:
+    loc2:
+      -
+        - STR_EURASIA
+        - 3
+      -
+        - STR_EURASIA
+        - 0
+  missionsRun:
+    var0: 3
+missionStatistics:
+  - id: 1
+    markerName: STR_UFO_
+    markerId: 8
+    time:
+      second: 5
+      minute: 0
+      hour: 12
+      weekday: 1
+      day: 1
+      month: 1
+      year: 2040
+    region: ARTIFACT_SITES
+    country: STR_COUNTRY_X
+    type: STR_UFO_CRASH_RECOVERY
+    ufo: STR_SMALL_SCOUT
+    success: false
+    score: 43
+    rating: STR_EXCELLENT
+    alienRace: STR_SECTOID
+    daylight: 9
+    injuryList:
+      0: 0
+    lootValue: 1597

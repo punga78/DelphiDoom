@@ -14,7 +14,9 @@ uses
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomSave.NodeWriter,
   DelphiDoom.XcomSave.Rules.Intf, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Target,
   DelphiDoom.XcomSave.MovingTarget, DelphiDoom.XcomSave.ItemContainer, DelphiDoom.XcomSave.CraftWeapon,
-  DelphiDoom.XcomSave.Vehicle, DelphiDoom.XcomSave.TargetLookup.Intf, DelphiDoom.XcomSave.Types;
+  DelphiDoom.XcomSave.Vehicle, DelphiDoom.XcomSave.TargetLookup.Intf, DelphiDoom.XcomSave.Types,
+  DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleCraftWeapon,
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.Soldier;
 
 type
   /// <summary>CraftId: the type and the id that identify a craft</summary>
@@ -124,7 +126,33 @@ type
     /// <summary>insideRadarRange: whether the target is within the radar range (nautical miles)</summary>
     function InsideRadarRange(const ATarget: TXcomTarget): Boolean;
     /// <summary>reuseItem</summary>
-    procedure ReuseItem(const AItem: string);
+    procedure ReuseItem(const AItem: string); overload;
+    /// <summary>reuseItem with the clip items of the weapons (from the ruleset): ammunition rearms the craft</summary>
+    procedure ReuseItem(const AItem: string; const ARuleset: TXcomRuleset); overload;
+    /// <summary>
+    ///   getNumSoldiers: the soldiers of the base that are assigned to this craft (0 if the rules carry none).
+    ///   The craft does not know its base as a class, so the list of its soldiers is given
+    /// </summary>
+    function NumSoldiers(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+    /// <summary>
+    ///   detect: whether the radar of the craft sees a UFO of the given visibility (Ufo::getVisibility); a radar
+    ///   with 100 percent chance sees what is in range without a roll (the C++ asks the UFO, so the visibility is
+    ///   given here because the craft does not know the UFO class)
+    /// </summary>
+    function Detect(const ATarget: TXcomTarget; AUfoVisibility: Integer; const ARandom: IXcomRandom): Boolean;
+    /// <summary>
+    ///   rearm: one step of rearming from the storage of the base: the first weapon that is rearming gets its
+    ///   clips (items of the ruleset give the clip size); returns the clip that is missing, or ''. When no weapon
+    ///   is left to rearm the status becomes STR_REFUELLING
+    /// </summary>
+    function Rearm(const AStorage: TXcomItemContainer; const ARuleset: TXcomRuleset): string;
+    /// <summary>
+    ///   unload: everything the craft carries goes back to the storage of the base (launchers and clips of the
+    ///   weapons, which are freed, the items, the vehicles with their ammunition); the soldiers of the base
+    ///   assigned to this craft are released
+    /// </summary>
+    procedure Unload(const AStorage: TXcomItemContainer; const ABaseSoldiers: TObjectList<TXcomSoldier>;
+      const ARuleset: TXcomRuleset);
   end;
 
 implementation
@@ -618,6 +646,139 @@ begin
   // weapon rules the saved game sees have no clip item
   if (AItem = FRules.RefuelItem) and (FFuel < FRules.MaxFuel) then
     FStatus := 'STR_REFUELLING';
+end;
+
+procedure TXcomCraft.ReuseItem(const AItem: string; const ARuleset: TXcomRuleset);
+var
+  LWeapon: TXcomCraftWeapon;
+  LWeaponRule: TXcomRuleCraftWeapon;
+begin
+  if FStatus <> 'STR_READY' then
+    Exit;
+  // ammunition reloads the craft
+  for LWeapon in FWeapons do
+  begin
+    if not Assigned(LWeapon) then
+      Continue;
+    LWeaponRule := ARuleset.CraftWeapons.Find(LWeapon.Rules.WeaponType);
+    if Assigned(LWeaponRule) and (AItem = LWeaponRule.ClipItem) and (LWeapon.Ammo < LWeapon.Rules.AmmoMax) then
+    begin
+      LWeapon.Rearming := True;
+      FStatus := 'STR_REARMING';
+    end;
+  end;
+  // fuel refuels it
+  if (AItem = FRules.RefuelItem) and (FFuel < FRules.MaxFuel) then
+    FStatus := 'STR_REFUELLING';
+end;
+
+function TXcomCraft.NumSoldiers(const ABaseSoldiers: TObjectList<TXcomSoldier>): Integer;
+var
+  LSoldier: TXcomSoldier;
+begin
+  Result := 0;
+  if FRules.Soldiers = 0 then
+    Exit;
+  for LSoldier in ABaseSoldiers do
+    if LSoldier.Craft = Self then
+      Inc(Result);
+end;
+
+function TXcomCraft.Detect(const ATarget: TXcomTarget; AUfoVisibility: Integer; const ARandom: IXcomRandom): Boolean;
+var
+  LChance: Integer;
+begin
+  if (FRules.RadarRange = 0) or not InsideRadarRange(ATarget) then
+    Exit(False);
+  // backward compatibility with vanilla
+  if FRules.RadarChance = 100 then
+    Exit(True);
+  LChance := FRules.RadarChance * (100 + AUfoVisibility) div 100;
+  // RNG::percent
+  Result := ARandom.Generate(0, 99) < LChance;
+end;
+
+function TXcomCraft.Rearm(const AStorage: TXcomItemContainer; const ARuleset: TXcomRuleset): string;
+var
+  LWeapon: TXcomCraftWeapon;
+  LClip: string;
+  LAvailable, LUsed: Integer;
+  LItem: TXcomRuleItem;
+begin
+  Result := '';
+  for LWeapon in FWeapons do
+  begin
+    if not Assigned(LWeapon) or not LWeapon.Rearming then
+      Continue;
+    LClip := ARuleset.CraftWeapons.Find(LWeapon.Rules.WeaponType).ClipItem;
+    LAvailable := AStorage.GetItem(LClip);
+    if LClip = '' then
+      LWeapon.Rearm(0, 0)
+    else if LAvailable > 0 then
+    begin
+      LItem := ARuleset.Items.Find(LClip);
+      LUsed := LWeapon.Rearm(LAvailable, LItem.ClipSize);
+      if (LUsed = LAvailable) and LWeapon.Rearming then
+      begin
+        Result := LClip;
+        LWeapon.Rearming := False;
+      end;
+      AStorage.RemoveItem(LClip, LUsed);
+    end
+    else
+    begin
+      Result := LClip;
+      LWeapon.Rearming := False;
+    end;
+    // only the first weapon that is rearming is served in a step
+    Exit;
+  end;
+  FStatus := 'STR_REFUELLING';
+end;
+
+procedure TXcomCraft.Unload(const AStorage: TXcomItemContainer; const ABaseSoldiers: TObjectList<TXcomSoldier>;
+  const ARuleset: TXcomRuleset);
+var
+  LIndex: Integer;
+  LWeaponRule: TXcomRuleCraftWeapon;
+  LClip: TXcomRuleItem;
+  LClipsLoaded: Integer;
+  LVehicle: TXcomVehicle;
+  LItemRule: TXcomRuleItem;
+  LSoldier: TXcomSoldier;
+begin
+  // weapons
+  for LIndex := 0 to FWeapons.Count - 1 do
+  begin
+    if not Assigned(FWeapons[LIndex]) then
+      Continue;
+    LWeaponRule := ARuleset.CraftWeapons.Find(FWeapons[LIndex].Rules.WeaponType);
+    AStorage.AddItem(LWeaponRule.LauncherItem);
+    // getClipsLoaded: the rate of rearming unless the clip item has a size
+    LClip := ARuleset.Items.Find(LWeaponRule.ClipItem);
+    if Assigned(LClip) and (LClip.ClipSize > 0) then
+      LClipsLoaded := Floor(FWeapons[LIndex].Ammo / LClip.ClipSize)
+    else
+      LClipsLoaded := Floor(FWeapons[LIndex].Ammo / FWeapons[LIndex].Rules.RearmRate);
+    AStorage.AddItem(LWeaponRule.ClipItem, LClipsLoaded);
+    FWeapons[LIndex] := nil;
+  end;
+  // items (they stay in the craft, as in the C++)
+  for LIndex := 0 to FItems.Contents.Count - 1 do
+    AStorage.AddItem(FItems.Contents.Key(LIndex), FItems.Contents.Value(LIndex));
+  // vehicles
+  for LVehicle in FVehicles do
+  begin
+    AStorage.AddItem(LVehicle.Rules.ItemType);
+    LItemRule := ARuleset.Items.Find(LVehicle.Rules.ItemType);
+    if Assigned(LItemRule) and (Length(LItemRule.CompatibleAmmo) > 0) then
+      AStorage.AddItem(LItemRule.CompatibleAmmo[0], LVehicle.Ammo);
+  end;
+  FVehicles.Clear;
+  // soldiers
+  for LSoldier in ABaseSoldiers do
+    if LSoldier.Craft = Self then
+      LSoldier.Craft := nil;
 end;
 
 end.
