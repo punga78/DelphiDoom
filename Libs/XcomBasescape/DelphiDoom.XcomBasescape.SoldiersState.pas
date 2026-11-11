@@ -34,6 +34,7 @@ type
     FList: TXcomTextList;
     procedure OkClick(AAction: TXcomAction);
     procedure ListClick(AAction: TXcomAction);
+    procedure MemorialClick(AAction: TXcomAction);
   public
     /// <param name="ABase">The base (not owned)</param>
     constructor Create(AHost: TXcomStateHost; ABase: TXcomBase);
@@ -45,7 +46,8 @@ implementation
 
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SoldierInfoState;
+  DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SoldierInfoState,
+  DelphiDoom.XcomBasescape.SoldierMemorialState;
 
 { TXcomSoldiersState }
 
@@ -98,6 +100,7 @@ begin
   FBtnPsiTraining.SetText(Tr('STR_PSI_TRAINING'));
   FBtnPsiTraining.Visible := LPsiButtonVisible;
   FBtnMemorial.SetText(Tr('STR_MEMORIAL'));
+  FBtnMemorial.OnMouseClick(MemorialClick);
   FTxtTitle.SetBig;
   FTxtTitle.SetAlign(haCenter);
   FTxtTitle.SetText(Tr('STR_SOLDIER_LIST'));
@@ -134,6 +137,11 @@ end;
 procedure TXcomSoldiersState.ListClick(AAction: TXcomAction);
 begin
   Host.PushState(TXcomSoldierInfoState.Create(Host, FBase, FList.GetSelectedRow));
+end;
+
+procedure TXcomSoldiersState.MemorialClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomSoldierMemorialState.Create(Host));
 end;
 
 procedure TXcomSoldiersState.OkClick(AAction: TXcomAction);
