@@ -4163,7 +4163,7 @@ begin
     texitem := @modeltexturemanager.items[info.texture];
     if texitem.tex = 0 then
     begin
-      texitem.tex := gld_LoadExternalTexture(texitem.name, true, GL_REPEAT);
+      texitem.tex := gld_LoadExternalTexture(string(texitem.name), true, GL_REPEAT);
       if texitem.tex = 0 then
         I_DevError('gld_DrawModel(): Can not load texture %s'#13#10, [texitem.name]);
     end;
@@ -4177,7 +4177,7 @@ begin
   if modelinf.model = nil then
   begin
     modelinf.model :=
-      TModel.Create(modelinf.name, modelinf.proc,
+      TModel.Create(string(modelinf.name), string(modelinf.proc),
         modelinf.xoffset, modelinf.yoffset, modelinf.zoffset,
         modelinf.xscale, modelinf.yscale, modelinf.zscale,
         modelinf.framemerge
@@ -4853,7 +4853,7 @@ begin
   if sprite.cm < 0 then
     sprite.cm := Ord(CR_LIMIT) +
       {$IFDEF HEXEN}vspr._class * ((MAXPLAYERS - 1)) + {$ENDIF}
-      ((pSpr.flags and MF_TRANSLATION) shr MF_TRANSSHIFT);
+      integer((LongWord(pSpr.flags) and LongWord(MF_TRANSLATION)) shr MF_TRANSSHIFT);
   if not IsIntegerInRange(sprite.cm, 0, CR_INVUL) then
     sprite.cm := Ord(CR_LIMIT);
   sprite.gltexture := gld_RegisterPatch(vspr.patch + firstspritelump, sprite.cm);

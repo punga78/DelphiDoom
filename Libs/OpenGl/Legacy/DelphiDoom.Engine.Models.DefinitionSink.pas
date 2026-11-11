@@ -47,8 +47,8 @@ var
   LItem: modelmanageritem_t;
   LIndex: Integer;
 begin
-  LItem.name := AItem.Name;
-  LItem.proc := AItem.Proc;
+  LItem.name := ShortString(AItem.Name);
+  LItem.proc := ShortString(AItem.Proc);
   LItem.xoffset := AItem.XOffset;
   LItem.yoffset := AItem.YOffset;
   LItem.zoffset := AItem.ZOffset;
