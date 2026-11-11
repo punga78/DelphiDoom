@@ -11,3 +11,5 @@ Il codice deriva da OpenXcom (GPL v3 o successiva): la licenza dell'opera e' dec
 ## Popup degli eventi e intercettare (issue #176)
 
 Gli eventi della simulazione sono stati di OpenXcom (`TXcomPopupGeoscapeEvents`: UFO rilevato o perso, siti, basi aliene, velivoli, trasferimenti, produzioni, ricerche, rapporto mensile), il clic sui bersagli del globo apre `MultipleTargetsState` e da `InterceptState` si manda un velivolo (`SelectDestinationState`, `ConfirmDestinationState`); `ConfirmNewBaseState` e `PlaceLiftState` fanno le basi dopo la prima. Il dogfight non c'e'. Dettagli, parita' e difetti in `CLAUDE.md`.
+
+Aggiornamento (sessione "partita completa", #176): c'e' anche `TXcomGraphsState` (i grafici), il dogfight (`TXcomDogfightState`) e l'uscita verso la battaglia `IXcomMissionLauncher` (il Battlescape la implementa; senza, "Yes" di `ConfirmLandingState` chiude e basta). Vedi `CLAUDE.md`.

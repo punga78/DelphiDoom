@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomAudio.Intf;
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -43,6 +43,8 @@ type
     OnAudio: TXcomAudioReady;
     /// <summary>The seed of the random numbers of a new game (-seed); 0 takes it from the clock</summary>
     Seed: UInt64;
+    /// <summary>Starts the battle of a mission (the Battlescape's); nil: "Yes" of the landing confirmation does nothing</summary>
+    MissionLauncher: IXcomMissionLauncher;
   end;
 
   /// <summary>
@@ -221,7 +223,7 @@ begin
         LListener: IXcomGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LListener := TXcomPopupGeoscapeEvents.Create(AHost);
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost, ASettings.MissionLauncher);
         Result := TXcomPopupSimulation.Create(
           TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
             TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),
