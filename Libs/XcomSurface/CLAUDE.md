@@ -11,3 +11,5 @@
 **Non portato**: `loadTerminal`, le sottoclassi con disegno proprio (`XcomUi`).
 
 Test: `Tests\DelphiDoom.Tests.XcomSurface` (54; la copertura 99% era prima di SDL_gfx, da rimisurare); `Tools\build.bat Tests\DelphiDoom.Tests.XcomSurface`.
+
+**Ombra condivisa (issue #176, giro di verifica finale)**: `TXcomSurfaceShader.Blit` usa due istanze condivise delle funzioni d'ombra (`class var`, create dal costruttore di classe; non hanno stato). Prima ogni chiamata faceva `TXcomStandardShade.Create` dentro l'argomento di un parametro `const AFunction: IXcomShadeFunction`: con `const` il compilatore non conta il riferimento e l'oggetto non si libera mai (un blocco per ogni sprite della mappa tattica: 25 000 in una missione breve). Test: `TTestXcomTourMemory.UnaCopiaConOmbraNonDovrebbeLasciareMemoria` (in `DelphiDoom.Tests.XcomTour`, dove c'e' il contatore dei blocchi `TXcomMemoryCount`).

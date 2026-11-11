@@ -81,9 +81,10 @@ begin
     Inc(LY1, 2);
     Dec(LY2);
     Dec(LX2);
-    Inc(LColor);
+    // a Uint8 of the C++: the color wraps at 255 (a range error with the checks on)
+    LColor := Byte(LColor + 1);
   end;
-  Dec(LColor);
+  LColor := Byte(LColor - 1);
   SetPixel(4, 8, LColor);
 end;
 

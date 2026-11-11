@@ -19,7 +19,11 @@ type
   ///   Drives a game that runs on a manual clock, a queue of events and a display in memory: it lets the time pass,
   ///   sends clicks and keys, and saves what the display shows as a PNG (-shot). The script is a list of steps:
   ///   wait:ms, move:x,y, click:x,y, rclick:x,y (right button), drag:x1,y1,x2,y2,button, key:sdlkey, ckey:sdlkey
-  ///   (with Ctrl held), shot:file. Coordinates are the ones of the display (the window)
+  ///   (with Ctrl held), shot:file. Coordinates are the ones of the display (the window).
+  ///   To play without looking at every picture: trace:1 says every change of the state on top, state:label says it
+  ///   now, until:Name,ms waits until the class of the state on top contains Name (or ms pass), and
+  ///   on:Name=step+step runs the steps whenever such a state has been on top for 300 ms (again every second while
+  ///   it stays; on:Name= forgets it)
   /// </summary>
   TXcomShotRunner = class
   strict private
@@ -31,7 +35,18 @@ type
     FSaved: TStringList;
     FHoldMilliseconds: Integer;
     FOnTick: TProc;
+    FOnSay: TProc<string>;
+    FHandlers: TStringList;
+    FTrace: Boolean;
+    FInHandler: Boolean;
+    FLastTop: TObject;
+    FLastTopName: string;
+    FTopSince: Cardinal;
+    FHandledAt: Cardinal;
     procedure Step(const AStep: string);
+    procedure Say(const AText: string);
+    procedure WaitUntil(const AValue: string);
+    procedure Watch;
   public
     /// <summary>None of the arguments is owned</summary>
     constructor Create(AGame: TXcomGame; AClock: TXcomManualClock; AEvents: TXcomQueueEventSource;
@@ -46,10 +61,16 @@ type
     /// <summary>Saves the last picture of the display as a PNG; the game runs a frame first if none was drawn yet</summary>
     procedure Shot(const AFileName: string);
     procedure Run(const ASteps: TArray<string>);
+    /// <summary>
+    ///   The steps of a script written one per line, joined with ';' (blank lines and what follows a # are skipped)
+    /// </summary>
+    class function ScriptOfFile(const AFileName: string): string; static;
     /// <summary>The files that were saved</summary>
     function Saved: TStrings;
     /// <summary>Called after every millisecond that passes (the sound output of a script asks its samples here)</summary>
     property OnTick: TProc read FOnTick write FOnTick;
+    /// <summary>Receives the lines of trace:, state: and until: (each begins with the time of the script)</summary>
+    property OnSay: TProc<string> read FOnSay write FOnSay;
     /// <summary>How long a click keeps the button down (40 ms; 80 like the capture script of the real program to compare timers)</summary>
     property HoldMilliseconds: Integer read FHoldMilliseconds write FHoldMilliseconds;
   end;
@@ -73,20 +94,24 @@ begin
   FDevice := ADevice;
   FExporter := AExporter;
   FSaved := TStringList.Create;
+  FHandlers := TStringList.Create;
   FHoldMilliseconds := 40;
 end;
 
 destructor TXcomShotRunner.Destroy;
 begin
+  FHandlers.Free;
   FSaved.Free;
   inherited Destroy;
 end;
 
 procedure TXcomShotRunner.Wait(AMilliseconds: Integer);
 var
-  LIndex: Integer;
+  LEnd: Cardinal;
 begin
-  for LIndex := 1 to AMilliseconds do
+  // by the clock: the time that the steps of an on: handler take is part of the wait they interrupt
+  LEnd := FClock.Ticks + Cardinal(AMilliseconds);
+  while FClock.Ticks < LEnd do
   begin
     if FGame.IsQuitting then
       Exit;
@@ -94,7 +119,76 @@ begin
     FClock.Advance(1);
     if Assigned(FOnTick) then
       FOnTick;
+    Watch;
   end;
+end;
+
+procedure TXcomShotRunner.Say(const AText: string);
+begin
+  if Assigned(FOnSay) then
+    FOnSay(Format('%d %s', [FClock.Ticks, AText]));
+end;
+
+procedure TXcomShotRunner.Watch;
+const
+  SETTLE_MILLISECONDS = 300;
+  AGAIN_MILLISECONDS = 1000;
+var
+  LTop: TObject;
+  LIndex: Integer;
+  LStep: string;
+begin
+  LTop := FGame.TopState;
+  // the class too: a new state can take the address of the one that was freed
+  if (LTop <> FLastTop) or (Assigned(LTop) and (LTop.ClassName <> FLastTopName)) then
+  begin
+    FLastTop := LTop;
+    if Assigned(LTop) then
+      FLastTopName := LTop.ClassName
+    else
+      FLastTopName := '';
+    FTopSince := FClock.Ticks;
+    FHandledAt := 0;
+    if FTrace then
+      Say('top ' + FLastTopName);
+  end;
+  if FInHandler or (FHandlers.Count = 0) or (FLastTopName = '') then
+    Exit;
+  if FClock.Ticks - FTopSince < SETTLE_MILLISECONDS then
+    Exit;
+  if (FHandledAt <> 0) and (FClock.Ticks - FHandledAt < AGAIN_MILLISECONDS) then
+    Exit;
+  for LIndex := 0 to FHandlers.Count - 1 do
+    if FLastTopName.ToLowerInvariant.Contains(FHandlers.Names[LIndex]) then
+    begin
+      FHandledAt := FClock.Ticks;
+      FInHandler := True;
+      try
+        for LStep in FHandlers.ValueFromIndex[LIndex].Split(['+']) do
+          Step(LStep);
+      finally
+        FInHandler := False;
+      end;
+      Break;
+    end;
+end;
+
+procedure TXcomShotRunner.WaitUntil(const AValue: string);
+var
+  LParts: TArray<string>;
+  LLimit: Integer;
+  LStart: Cardinal;
+begin
+  // until:Name,ms
+  LParts := AValue.Split([',']);
+  if Length(LParts) <> 2 then
+    raise Exception.Create('Bad step: until:' + AValue);
+  LLimit := StrToInt(LParts[1]);
+  LStart := FClock.Ticks;
+  while (Integer(FClock.Ticks - LStart) < LLimit) and not FGame.IsQuitting
+    and not FLastTopName.ToLowerInvariant.Contains(LParts[0].ToLowerInvariant) do
+    Wait(1);
+  Say(Format('until %s: %d ms, top %s', [LParts[0], FClock.Ticks - LStart, FLastTopName]));
 end;
 
 procedure TXcomShotRunner.Move(AX, AY: Integer);
@@ -205,6 +299,24 @@ begin
     Key(StrToInt(LValue), XCOM_KMOD_LEFT_CTRL)
   else if LName = 'shot' then
     Shot(LValue)
+  else if LName = 'trace' then
+    FTrace := LValue <> '0'
+  else if LName = 'state' then
+    Say('state ' + FLastTopName + ' ' + LValue)
+  else if LName = 'until' then
+    WaitUntil(LValue)
+  else if LName = 'on' then
+  begin
+    // on:Name=step+step
+    LPosition := Pos('=', LValue);
+    if LPosition = 0 then
+      raise Exception.Create('Bad step: ' + AStep);
+    LParts := [Copy(LValue, 1, LPosition - 1).ToLowerInvariant, Copy(LValue, LPosition + 1, MaxInt)];
+    if FHandlers.IndexOfName(LParts[0]) >= 0 then
+      FHandlers.Delete(FHandlers.IndexOfName(LParts[0]));
+    if LParts[1] <> '' then
+      FHandlers.Add(LParts[0] + '=' + LParts[1]);
+  end
   else if LName = 'drag' then
   begin
     // drag:x1,y1,x2,y2,button
@@ -235,6 +347,34 @@ var
 begin
   for LStep in ASteps do
     Step(LStep);
+end;
+
+class function TXcomShotRunner.ScriptOfFile(const AFileName: string): string;
+var
+  LLines: TStringList;
+  LLine: string;
+  LStep: string;
+  LPosition: Integer;
+begin
+  Result := '';
+  LLines := TStringList.Create;
+  try
+    LLines.LoadFromFile(AFileName);
+    for LLine in LLines do
+    begin
+      LPosition := Pos('#', LLine);
+      if LPosition = 0 then
+        LPosition := Length(LLine) + 1;
+      LStep := Trim(Copy(LLine, 1, LPosition - 1));
+      if LStep = '' then
+        Continue;
+      if Result <> '' then
+        Result := Result + ';';
+      Result := Result + LStep;
+    end;
+  finally
+    LLines.Free;
+  end;
 end;
 
 function TXcomShotRunner.Saved: TStrings;

@@ -44,7 +44,7 @@ implementation
 
 uses
   System.IOUtils, System.AnsiStrings, DelphiDoom.Yaml.Types, DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.ModInfo,
-  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomGeoscape.Strategy,
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomGeoscape.Strategy,
   DelphiDoom.XcomMenu.GoToMainMenuState;
 
 resourcestring
@@ -95,13 +95,16 @@ end;
 procedure TXcomSavedGameSaver.SaveGame(const AFileName: string);
 var
   LInfo: TXcomSaveBriefInfo;
+  LSettings: IXcomSaveSettings;
   LText: TYamlText;
   LBytes: TBytes;
   LPath, LTemp: string;
 begin
   LInfo := FBrief;
   LInfo.Mods := ActiveMods;
-  LText := TXcomStrategy.SavedGame(FHost).Save(LInfo, TXcomDefaultSaveSettings.Create,
+  // held in a variable: an object made in the call of a const interface parameter is never released
+  LSettings := TXcomDefaultSaveSettings.Create;
+  LText := TXcomStrategy.SavedGame(FHost).Save(LInfo, LSettings,
     TXcomStrategy.Random(FHost));
   // the C++ writes the file in text mode: CRLF on Windows
   LText := System.AnsiStrings.StringReplace(LText, #10, #13#10, [rfReplaceAll]);

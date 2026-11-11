@@ -46,6 +46,12 @@ type
 
   /// <summary>The shaded blits of Surface (blitNShade) without the Surface class depending on the shading code</summary>
   TXcomSurfaceShader = class
+  strict private
+    // One of each for every blit: the functions have no state, and an object made in the call and given to a
+    // const interface parameter is never released (a blit of the battle map leaked one object per sprite)
+    class var FStandard: IXcomShadeFunction;
+    class var FColorReplace: IXcomShadeFunction;
+    class constructor Create;
   public
     /// <summary>
     ///   Surface::blitNShade(surface, x, y, shade, half, newBaseColor): draws ASource on ADestination with the
@@ -64,6 +70,12 @@ implementation
 
 { TXcomSurfaceShader }
 
+class constructor TXcomSurfaceShader.Create;
+begin
+  FStandard := TXcomStandardShade.Create;
+  FColorReplace := TXcomColorReplaceShade.Create;
+end;
+
 class procedure TXcomSurfaceShader.Blit(ASource, ADestination: TXcomSurface; AX, AY, AShade: Integer; AHalf: Boolean;
   ANewBaseColor: Integer);
 var
@@ -79,18 +91,18 @@ begin
     Dec(ANewBaseColor);
     ANewBaseColor := ANewBaseColor shl 4;
     TXcomShadeDrawer.Draw(ADestination, LDestinationDomain, ASource, LSourceDomain, AX, AY,
-      TXcomColorReplaceShade.Create, AShade, ANewBaseColor);
+      FColorReplace, AShade, ANewBaseColor);
   end
   else
     TXcomShadeDrawer.Draw(ADestination, LDestinationDomain, ASource, LSourceDomain, AX, AY,
-      TXcomStandardShade.Create, AShade, 0);
+      FStandard, AShade, 0);
 end;
 
 class procedure TXcomSurfaceShader.Blit(ASource, ADestination: TXcomSurface; AX, AY, AShade: Integer;
   const ARange: TXcomGraphSubset);
 begin
   TXcomShadeDrawer.Draw(ADestination, ARange, ASource,
-    TXcomGraphSubset.Make(0, ASource.Width, 0, ASource.Height), AX, AY, TXcomStandardShade.Create, AShade, 0);
+    TXcomGraphSubset.Make(0, ASource.Width, 0, ASource.Height), AX, AY, FStandard, AShade, 0);
 end;
 
 { TXcomStandardShade }

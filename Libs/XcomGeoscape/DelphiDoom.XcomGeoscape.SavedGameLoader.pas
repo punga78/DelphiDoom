@@ -46,7 +46,7 @@ implementation
 uses
   System.IOUtils, System.AnsiStrings, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame,
-  DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomSave.SavedGameHolder,
+  DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.SavedGameHolder,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState, DelphiDoom.XcomGeoscape.Navigator.Intf,
   DelphiDoom.XcomGeoscape.Simulation.Intf;
 
@@ -66,6 +66,7 @@ var
   LRuleset: TXcomRuleset;
   LRules: TXcomRulesetRules;
   LRandom: IXcomRandom;
+  LSettings: IXcomSaveSettings;
   LSave: TXcomSavedGame;
   LBytes: TBytes;
   LText: TYamlText;
@@ -84,10 +85,12 @@ begin
   LFile := TYamlFactory.CreateParser.LoadAll(LText);
   // the generator takes the seed of the file
   LRandom := TXcomRandom.Create(1);
+  // held in a variable: an object made in the call of a const interface parameter is never released
+  LSettings := TXcomDefaultSaveSettings.Create;
   LRules := TXcomRulesetRules.Create(LRuleset);
   LSave := TXcomSavedGame.Create;
   try
-    LSave.Load(LFile, LRuleset, LRules, TXcomDefaultSaveSettings.Create, False, LRandom);
+    LSave.Load(LFile, LRuleset, LRules, LSettings, False, LRandom);
   except
     LSave.Free;
     LRules.Free;

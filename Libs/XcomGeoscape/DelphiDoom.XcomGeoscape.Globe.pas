@@ -216,7 +216,8 @@ end;
 
 function TXcomCRandom.Next: Integer;
 begin
-  FSeed := FSeed * 214013 + 2531011;
+  // 32 bit arithmetic that wraps, as the unsigned of the C runtime
+  FSeed := Cardinal((UInt64(FSeed) * 214013 + 2531011) and $FFFFFFFF);
   Result := (FSeed shr 16) and $7FFF;
 end;
 

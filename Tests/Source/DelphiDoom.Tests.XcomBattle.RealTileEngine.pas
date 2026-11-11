@@ -48,6 +48,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroTileEngine;
+    [Test]
+    procedure UnaFormaCheLoftempsNonHaDovrebbeEssereVuota;
   end;
 
   /// <summary>The same comparison on the terrains and the units of UFO (enginegen on the UFO data)</summary>
@@ -491,6 +493,75 @@ begin
   end;
   Assert.IsTrue(LCount > 0, 'Nessun file del motore delle tegole');
   Assert.AreEqual('', LFailed, 'Risposte diverse dal vero OpenXcom');
+end;
+
+procedure TTestXcomRealTileEngine.UnaFormaCheLoftempsNonHaDovrebbeEssereVuota;
+var
+  LFiles: TArray<string>;
+  LBattle: TXcomSavedBattleGame;
+  LContext: TXcomBattleContext;
+  LLoader: TXcomMapDataLoader;
+  LSet: TXcomMapDataSet;
+  LPatch: TXcomMcdPatch;
+  LEngine: TXcomTileEngine;
+  LEngineRef: IInterface;
+  LIndex: Integer;
+  LTile: TXcomTile;
+  LHeight: Integer;
+  LChecked: Integer;
+begin
+  if (DataFolder = '') or not Assigned(FRuleset) or (Length(FVoxels) = 0) then
+  begin
+    Assert.Pass('Senza i dati del gioco la prova non si fa');
+    Exit;
+  end;
+  LFiles := TDirectory.GetFiles(DataFolder, 'engine*.txt');
+  Assert.IsTrue(Length(LFiles) > 0);
+  LContext := TXcomBattleContext.Create(TXcomRandom.Create(1), False, False, FRuleset.Constants.FireDamageRange[0],
+    FRuleset.Constants.FireDamageRange[1], FRuleset.Constants.DamageRange, FRuleset.Constants.ExplosiveDamageRange, 0);
+  LBattle := TXcomSavedBattleGame.Create(LContext);
+  try
+    LBattle.Load(TYamlFactory.CreateParser.Load(ReadText(Copy(LFiles[0], 1, Length(LFiles[0]) - 4) + '.yml')),
+      FRuleset, 0,
+      function(AId: Integer): TXcomSoldier
+      begin
+        Result := nil;
+      end);
+    LLoader := TXcomMapDataLoader.Create(FRuleset.Files);
+    try
+      for LSet in LBattle.MapDataSets do
+      begin
+        if not FRuleset.McdPatches.TryGetValue(LSet.Name, LPatch) then
+          LPatch := nil;
+        LLoader.LoadData(LSet, LPatch);
+      end;
+    finally
+      LLoader.Free;
+    end;
+    LBattle.ResolveMapData;
+    // a LOFTEMPS.DAT with one shape only (the TFTD of the floppies copied the short file of GEODATA over the one
+    // of TERRAIN, and a battle on the cargo ship ended with "a voxel is outside the LOFT data")
+    LEngine := TXcomTileEngine.Create(LBattle, LContext, Copy(FVoxels, 0, 16));
+    LEngineRef := LEngine;
+    LBattle.TileEngine := LEngine;
+    LChecked := 0;
+    for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+    begin
+      LTile := LBattle.TileAt(TXcomPosition.Make(LIndex mod LBattle.MapSizeX,
+        (LIndex div LBattle.MapSizeX) mod LBattle.MapSizeY, LIndex div (LBattle.MapSizeX * LBattle.MapSizeY)));
+      if LTile.IsVoid then
+        Continue;
+      for LHeight := 0 to 11 do
+      begin
+        LEngine.VoxelCheck(TXcomPosition.Make(LTile.Position.X * 16 + 8, LTile.Position.Y * 16 + 8,
+          LTile.Position.Z * 24 + LHeight * 2), nil, True);
+        Inc(LChecked);
+      end;
+    end;
+    Assert.IsTrue(LChecked > 0, 'la mappa ha tegole con parti');
+  finally
+    LBattle.Free;
+  end;
 end;
 
 initialization

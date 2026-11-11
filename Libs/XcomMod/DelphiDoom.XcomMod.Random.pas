@@ -8,6 +8,10 @@
 {******************************************************************************}
 unit DelphiDoom.XcomMod.Random;
 
+// xorshift64* multiplies and shifts 64 bit numbers on purpose out of their range
+{$Q-}
+{$R-}
+
 interface
 
 uses

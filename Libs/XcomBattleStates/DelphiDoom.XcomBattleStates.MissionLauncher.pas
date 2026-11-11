@@ -170,6 +170,7 @@ var
   LLiveSoldiers: Integer;
   LDebriefing: TXcomState;
   LNext: TXcomState;
+  LCrash: TXcomAliensCrashState;
 begin
   LBattlescape := TXcomBattleFactory.CreateBattlescape(AHost, ASession, AScreens, AAudio) as TXcomBattlescapeState;
   LBattlescape.Game.TallyUnits(LLiveAliens, LLiveSoldiers);
@@ -195,12 +196,10 @@ begin
     if Assigned(AScreens) then
       LDebriefing := AScreens.Debriefing(LBattlescape);
     LBattlescape.Free;
-    AHost.PushState(TXcomAliensCrashState.Create(AHost, ASession.Graphics,
-      procedure
-      begin
-        if Assigned(LDebriefing) then
-          AHost.PushState(LDebriefing);
-      end));
+    // the message owns the debriefing until OK pushes it (a closure would leave it behind if the game closes here)
+    LCrash := TXcomAliensCrashState.Create(AHost, ASession.Graphics, nil);
+    LCrash.SetNext(LDebriefing);
+    AHost.PushState(LCrash);
   end;
 end;
 

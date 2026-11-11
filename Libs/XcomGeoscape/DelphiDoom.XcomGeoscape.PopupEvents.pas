@@ -431,6 +431,8 @@ var
 begin
   if not Attached then
     Exit;
+  // GeoscapeState::time1Month: timerReset before the funding and the report (the month starts at 5 seconds)
+  FControl.TimerReset;
   // the state of the C++ calculates the month when it is made: the funding of the countries changes now, before
   // the next random number of the month is drawn
   LReport := TXcomMonthlyReport.Create(TXcomStrategy.SavedGame(FHost), TXcomStrategy.Ruleset(FHost),

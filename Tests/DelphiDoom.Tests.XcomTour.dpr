@@ -37,7 +37,9 @@ uses
   DelphiDoom.Tests.XcomTour.Barracks in 'Source\DelphiDoom.Tests.XcomTour.Barracks.pas',
   DelphiDoom.Tests.XcomTour.Ironman in 'Source\DelphiDoom.Tests.XcomTour.Ironman.pas',
   DelphiDoom.Tests.XcomTour.Trade in 'Source\DelphiDoom.Tests.XcomTour.Trade.pas',
-  DelphiDoom.Tests.XcomTour.Workshop in 'Source\DelphiDoom.Tests.XcomTour.Workshop.pas';
+  DelphiDoom.Tests.XcomTour.Workshop in 'Source\DelphiDoom.Tests.XcomTour.Workshop.pas',
+  DelphiDoom.Xcom.MemoryCount in '..\OpenXcom\DelphiDoom.Xcom.MemoryCount.pas',
+  DelphiDoom.Tests.XcomTour.Memory in 'Source\DelphiDoom.Tests.XcomTour.Memory.pas';
 
 var
   Runner: ITestRunner;

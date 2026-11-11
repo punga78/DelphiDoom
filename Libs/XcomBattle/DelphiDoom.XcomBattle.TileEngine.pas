@@ -1533,8 +1533,11 @@ begin
       LX := 15 - AVoxel.X mod 16;
       LY := AVoxel.Y mod 16;
       LOffset := LPart.GetLoftId((AVoxel.Z mod 24) div 2) * 16 + LY;
+      // A shape that LOFTEMPS.DAT does not have is empty. The C++ throws (vector::at) and the game is lost: it
+      // happens with the LOFTEMPS.DAT of GEODATA (112 shapes) in the place of the one of TERRAIN of TFTD (114:
+      // the cargo ship and other terrains use the shapes 112 and 113)
       if (LOffset < 0) or (LOffset >= Length(FVoxelData)) then
-        raise EXcomBattleException.Create('Xcom: a voxel is outside the LOFT data');
+        Continue;
       if (FVoxelData[LOffset] and (1 shl LX)) <> 0 then
         Exit(LIndex);
     end;
@@ -1575,7 +1578,8 @@ begin
         end;
         LOffset := LUnit.GetLoftemps(LLarge) * 16 + LY;
         if (LOffset < 0) or (LOffset >= Length(FVoxelData)) then
-          raise EXcomBattleException.Create('Xcom: a voxel is outside the LOFT data');
+          raise EXcomBattleException.CreateFmt('Xcom: a voxel is outside the LOFT data (unit %d loft %d of %d)',
+            [LUnit.Id, LUnit.GetLoftemps(LLarge), Length(FVoxelData) div 16]);
         if (FVoxelData[LOffset] and (1 shl LX)) <> 0 then
           Exit(V_UNIT);
       end;

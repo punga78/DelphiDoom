@@ -167,6 +167,33 @@ begin
   end;
 end;
 
+function CreateBattleScreens(AGame: TXcomGame; const AVersionText: string;
+  const ABattleAudio: IXcomBattleAudio): IXcomBattleScreens;
+begin
+  // In a function of its own: the anonymous methods of one routine share one frame, and in CreateGame that frame
+  // also holds the screens that hold the methods (a cycle that was never released)
+  Result := TXcomBattleFactory.CreateScreens(AGame,
+    function(AParent: TXcomState): TXcomState
+    begin
+      Result := TXcomPauseState.Create(AParent.Host, ooBattlescape, TXcomMenuOptionsNavigator.Create(AVersionText));
+    end,
+    function: TXcomState
+    begin
+      // DebriefingState::btnOkClick of a battle outside a campaign: back to the main menu
+      Result := TXcomMainMenuState.Create(AGame, AVersionText);
+    end, ABattleAudio,
+    function(ACutsceneId: string): TXcomState
+    begin
+      // the cutscene of a deployment over the debriefing; the ones of the end of the game leave the statistics
+      // as the only state (as the lost game of the monthly report does)
+      Result := TXcomCutsceneState.Create(AGame, ACutsceneId, nil,
+        procedure
+        begin
+          AGame.SetState(TXcomStatisticsState.Create(AGame));
+        end);
+    end);
+end;
+
 class function TXcomGameComposition.CreateGame(const ASettings: TXcomGameSettings; const ADevice: IXcomVideoDevice;
   const AClock: IXcomClock; AEvents: TXcomQueueEventSource): TXcomGame;
 var
@@ -192,7 +219,6 @@ var
   LBattleAudio: IXcomBattleAudio;
   LBattleScreens: IXcomBattleScreens;
   LMissionLauncher: IXcomMissionLauncher;
-  LGame: TXcomGame;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -277,29 +303,7 @@ begin
       LBattleAudio := TXcomBattleMixerAudio.Create(Result, LAudio as IXcomChannelMixer);
     if Assigned(ASettings.BattleSoundLog) then
       LBattleAudio := TXcomLoggingBattleAudio.Create(LBattleAudio, ASettings.BattleSoundLog);
-    // an anonymous method cannot capture Result
-    LGame := Result;
-    LBattleScreens := TXcomBattleFactory.CreateScreens(Result,
-      function(AParent: TXcomState): TXcomState
-      begin
-        Result := TXcomPauseState.Create(AParent.Host, ooBattlescape,
-          TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
-      end,
-      function: TXcomState
-      begin
-        // DebriefingState::btnOkClick of a battle outside a campaign: back to the main menu
-        Result := TXcomMainMenuState.Create(LGame, ASettings.VersionText);
-      end, LBattleAudio,
-      function(ACutsceneId: string): TXcomState
-      begin
-        // the cutscene of a deployment over the debriefing; the ones of the end of the game leave the statistics
-        // as the only state (as the lost game of the monthly report does)
-        Result := TXcomCutsceneState.Create(LGame, ACutsceneId, nil,
-          procedure
-          begin
-            LGame.SetState(TXcomStatisticsState.Create(LGame));
-          end);
-      end);
+    LBattleScreens := CreateBattleScreens(Result, ASettings.VersionText, LBattleAudio);
     LMissionLauncher := ASettings.MissionLauncher;
     if LMissionLauncher = nil then
       LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);
