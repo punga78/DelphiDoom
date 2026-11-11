@@ -137,6 +137,8 @@ type
     /// <summary>selectPreviousPlayerUnit</summary>
     procedure SelectPreviousPlayerUnit(ACheckReselect: Boolean = False; ASetReselect: Boolean = False;
       ACheckInventory: Boolean = False);
+    /// <summary>btnCenterClick: the camera goes to the selected unit</summary>
+    procedure CenterOnSelectedUnit;
     /// <summary>playableUnitSelected</summary>
     function PlayableUnitSelected: Boolean;
     /// <summary>allowButtons: not in the middle of a shot, of the alien turn or of a panic</summary>
@@ -1028,13 +1030,18 @@ begin
   end;
 end;
 
-procedure TXcomBattlescapeState.BtnCenterClick(AAction: TXcomAction);
+procedure TXcomBattlescapeState.CenterOnSelectedUnit;
 begin
   if PlayableUnitSelected then
   begin
     FMap.Camera.CenterOnPosition(FSave.SelectedUnit.Position);
     FMap.RefreshSelectorPosition;
   end;
+end;
+
+procedure TXcomBattlescapeState.BtnCenterClick(AAction: TXcomAction);
+begin
+  CenterOnSelectedUnit;
 end;
 
 procedure TXcomBattlescapeState.BtnNextSoldierClick(AAction: TXcomAction);

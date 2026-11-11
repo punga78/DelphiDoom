@@ -53,6 +53,10 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.NextTurnState,
+  DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState;
+
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
   const AOptions: TXcomBattleOptionsScreen);
 begin
@@ -114,17 +118,17 @@ end;
 
 function TXcomBattleScreens.NextTurn(AParent: TXcomState): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomNextTurnState.Create(AParent.Host, AParent as TXcomBattlescapeState);
 end;
 
 function TXcomBattleScreens.Infobox(AParent: TXcomState; const AMessage: string): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomInfoboxState.Create(AParent.Host, @AParent.Palette^[0], AMessage);
 end;
 
 function TXcomBattleScreens.InfoboxOk(AParent: TXcomState; const AMessage: string): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomInfoboxOkState.Create(AParent.Host, @AParent.Palette^[0], AMessage);
 end;
 
 function TXcomBattleScreens.Debriefing(AParent: TXcomState): TXcomState;
