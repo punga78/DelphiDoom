@@ -1,4 +1,4 @@
-﻿<#
+<#
   Cattura i frame veri di OpenXcom (il nightly ufficiale) con il suo tasto degli screenshot (F12): sono i pixel del
   gioco, non una cattura dello schermo (che puo' mostrare un'altra finestra). Avvia OpenXcom.exe di <Root>\openxcom con
   una cartella utente propria (options.cfg con lingua en-US, 640x400, senza OpenGL), esegue i passi e copia i file
@@ -64,6 +64,8 @@ try {
   [OxcCap]::SetForegroundWindow($h) | Out-Null; Start-Sleep 1
   foreach ($s in $Steps) {
     $a = $s.Split(':')
+    # another program can take the focus while the steps run (the window of another test): clicks and F12 would go to it
+    if ($a[0] -ne 'wait') { [OxcCap]::SetForegroundWindow($h) | Out-Null; Start-Sleep -Milliseconds 120 }
     switch ($a[0]) {
       'wait' { Start-Sleep ([double]$a[1]) }
       'click' { $xy = $a[1].Split(','); [OxcCap]::Click($h, [int]$xy[0], [int]$xy[1]) }
