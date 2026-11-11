@@ -35,7 +35,7 @@ uses
   DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.XcomMenu.OptionsVideoState, DelphiDoom.XcomMenu.OptionsAudioState,
   DelphiDoom.XcomMenu.OptionsControlsState, DelphiDoom.XcomMenu.OptionsGeoscapeState,
   DelphiDoom.XcomMenu.OptionsBattlescapeState, DelphiDoom.XcomMenu.OptionsAdvancedState,
-  DelphiDoom.XcomMenu.OptionsFoldersState;
+  DelphiDoom.XcomMenu.OptionsFoldersState, DelphiDoom.XcomMenu.OptionsNoAudioState;
 
 constructor TXcomMenuOptionsNavigator.Create(const AVersionText: string);
 begin
@@ -50,7 +50,11 @@ begin
     ocVideo:
       Result := TXcomOptionsVideoState.Create(AHost, AOrigin, Self);
     ocAudio:
-      Result := TXcomOptionsAudioState.Create(AHost, AOrigin, Self);
+      // OptionsBaseState::btnGroupPress: without audio (Options::mute) the screen only says so
+      if AHost.Options.Mute then
+        Result := TXcomOptionsNoAudioState.Create(AHost, AOrigin, Self)
+      else
+        Result := TXcomOptionsAudioState.Create(AHost, AOrigin, Self);
     ocControls:
       Result := TXcomOptionsControlsState.Create(AHost, AOrigin, Self);
     ocGeoscape:

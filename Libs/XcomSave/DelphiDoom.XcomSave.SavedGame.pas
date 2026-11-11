@@ -38,8 +38,8 @@ type
   ///   The saved game of the geoscape: the time, funds, countries, regions, bases, UFOs, waypoints, sites,
   ///   alien bases, missions and strategy, research, dead soldiers and statistics (SavedGame). It owns what it
   ///   holds. The battlescape (SavedBattleGame: tiles, units, items), the save list and the screens'
-  ///   queries (research available, promotions...) are not ported: a file with a "battleGame" is
-  ///   EXcomSaveException
+  ///   queries (research available, promotions...) are not ported; the "battleGame" document is kept as it is read
+  ///   (BattleGame) and Libs.XcomBattle turns it into a battle
   /// </summary>
   TXcomSavedGame = class
   strict private
@@ -72,6 +72,7 @@ type
     FAlienStrategy: TXcomAlienStrategy;
     FDeadSoldiers: TObjectList<TXcomSoldier>;
     FMissionStatistics: TObjectList<TXcomMissionStatistics>;
+    FBattleGame: IYamlNode;
     FDiscovered: TList<TXcomRuleResearch>;
     FPoppedResearch: TList<TXcomRuleResearch>;
     FIds: TXcomStringMap<Integer>;
@@ -90,7 +91,7 @@ type
     ///   load: AFile is the two documents of a .sav (the brief header and the data). The rules are the
     ///   ruleset and its small interfaces; the lists are read in the order that the C++ needs (alien bases
     ///   before missions, missions before UFOs, discoveries before bases). An unknown type is dropped (the
-    ///   C++ logs it); a "battleGame" is EXcomSaveException; fewer than two documents is EXcomSaveException
+    ///   C++ logs it); a "battleGame" is kept in BattleGame; fewer than two documents is EXcomSaveException
     /// </summary>
     procedure Load(const AFile: TArray<IYamlNode>; const ARuleset: TXcomRuleset; const ARules: TXcomRulesetRules;
       const ASettings: IXcomSaveSettings; ANewSeedOnLoad: Boolean; const ARandom: IXcomRandom);
@@ -121,6 +122,12 @@ type
     property AlienStrategy: TXcomAlienStrategy read FAlienStrategy;
     property DeadSoldiers: TObjectList<TXcomSoldier> read FDeadSoldiers;
     property MissionStatistics: TObjectList<TXcomMissionStatistics> read FMissionStatistics;
+    /// <summary>
+    ///   The "battleGame" document of a saved game in a battle (SavedBattleGame::save), kept as read and written
+    ///   back; nil if the game is not in a battle. LibsXcomBattle reads and writes it (this library does not
+    ///   depend on it)
+    /// </summary>
+    property BattleGame: IYamlNode read FBattleGame write FBattleGame;
     property Discovered: TList<TXcomRuleResearch> read FDiscovered;
     property PoppedResearch: TList<TXcomRuleResearch> read FPoppedResearch;
     property Ids: TXcomStringMap<Integer> read FIds;
@@ -172,7 +179,6 @@ type
 
 const
   SNeedsTwoDocuments = 'Xcom: the file is not a valid save file';
-  SBattleGame = 'Xcom: a saved game in a battle (battleGame) is not supported';
 
 { TXcomSavedGameLookup }
 
@@ -520,7 +526,7 @@ begin
     FMissionStatistics.Add(LStatistics);
   end;
   if TXcomNodeReader.Field(LDoc, 'battleGame').IsDefined then
-    raise EXcomSaveException.Create(SBattleGame);
+    FBattleGame := TXcomNodeReader.Field(LDoc, 'battleGame');
 end;
 
 function TXcomSavedGame.Save(const AInfo: TXcomSaveBriefInfo; const ASettings: IXcomSaveSettings;
@@ -552,7 +558,11 @@ begin
     Delete(LBuild, 1, 1);
   TXcomNodeWriter.SetString(LBrief, 'build', LBuild);
   TXcomNodeWriter.SetNode(LBrief, 'time', FTime.Save);
-  // a battle game would add "mission" and "turn" here (not ported)
+  if Assigned(FBattleGame) then
+  begin
+    TXcomNodeWriter.SetString(LBrief, 'mission', TXcomNodeReader.ReadString(FBattleGame, 'missionType', ''));
+    TXcomNodeWriter.SetInteger(LBrief, 'turn', TXcomNodeReader.ReadInteger(FBattleGame, 'turn', 0));
+  end;
   LMods := TXcomNodeWriter.NewSequence;
   for LMod in AInfo.Mods do
     LMods.Add(YamlStringToText(LMod));
@@ -612,6 +622,8 @@ begin
   if ASettings.SoldierDiaries then
     for LStatistics in FMissionStatistics do
       TXcomNodeWriter.PushBack(LNode, 'missionStatistics', LStatistics.Save);
+  if Assigned(FBattleGame) then
+    TXcomNodeWriter.SetNode(LNode, 'battleGame', FBattleGame);
   LEmitter := TYamlFactory.CreateEmitter;
   LEmitter.WriteNode(LBrief);
   LEmitter.Manip(ymBeginDoc);

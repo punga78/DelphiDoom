@@ -30,7 +30,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMenu.LoadGameState;
+  DelphiDoom.XcomEngine.ModNames, DelphiDoom.XcomMenu.LoadGameState, DelphiDoom.XcomMenu.ConfirmLoadState;
 
 constructor TXcomListLoadState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin);
 begin
@@ -46,13 +46,28 @@ end;
 procedure TXcomListLoadState.SavePress(AAction: TXcomAction);
 var
   LRow: Integer;
+  LMod: string;
+  LConfirm: Boolean;
 begin
   inherited SavePress(AAction);
   if AAction.Details^.Button = XCOM_BUTTON_LEFT then
   begin
     LRow := FList.GetSelectedRow;
     if (LRow >= 0) and (LRow < Length(FSaves)) then
-      Host.PushState(TXcomLoadGameState.Create(Host, FOrigin, FSaves[LRow].FileName, Palette));
+    begin
+      // a save that lists a mod that is not in the active ones asks first (the missing content prompt)
+      LConfirm := False;
+      for LMod in FSaves[LRow].Mods do
+        if not Host.Options.IsModActive(TXcomModNames.Sanitize(LMod)) then
+        begin
+          LConfirm := True;
+          Break;
+        end;
+      if LConfirm then
+        Host.PushState(TXcomConfirmLoadState.Create(Host, FOrigin, FSaves[LRow].FileName))
+      else
+        Host.PushState(TXcomLoadGameState.Create(Host, FOrigin, FSaves[LRow].FileName, Palette));
+    end;
   end;
 end;
 

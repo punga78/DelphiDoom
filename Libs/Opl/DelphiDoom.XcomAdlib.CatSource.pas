@@ -22,6 +22,7 @@ type
     constructor Create(const AArchive: IXcomCatArchive);
     function TrackCount: Integer;
     function LoadTrack(AIndex: Integer): TBytes;
+    function LoadTrackWithName(AIndex: Integer): TBytes;
   end;
 
 implementation
@@ -42,6 +43,11 @@ end;
 function TXcomCatAdlibSource.LoadTrack(AIndex: Integer): TBytes;
 begin
   Result := FArchive.Load(AIndex, False);
+end;
+
+function TXcomCatAdlibSource.LoadTrackWithName(AIndex: Integer): TBytes;
+begin
+  Result := FArchive.Load(AIndex, True);
 end;
 
 end.

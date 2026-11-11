@@ -61,6 +61,28 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer);
     /// <summary>Plays a WAV file now (the volume is already in the samples); a sound that is playing is replaced</summary>
     procedure PlayWave(const AWave: TBytes);
+    /// <summary>Mix_CloseAudio: the device stops using the game (the game calls it before it releases the device)</summary>
+    procedure Close;
+  end;
+
+  /// <summary>
+  ///   Where the mixer takes the sound to play (what the SDL audio callback asks for): 16 bit samples, left and
+  ///   right, at the rate the output was opened with
+  /// </summary>
+  IXcomPcmSource = interface
+    ['{6A2F90C4-1D75-4E38-B8A6-3C0E97D15F42}']
+    /// <summary>Fills ABytes bytes (a multiple of 4) of ABuffer with samples; what has no sound is silence</summary>
+    procedure Render(ABuffer: PByte; ABytes: Integer);
+  end;
+
+  /// <summary>The output of the sound of the machine (SDL_OpenAudio): it asks the source for samples while it is open</summary>
+  IXcomPcmOutput = interface
+    ['{D81B3E57-4C09-4A62-9F14-B7E5A20C6D38}']
+    /// <summary>Opens the device at the rate (16 bit stereo); false when there is no device that can play</summary>
+    function Open(ARate: Integer; const ASource: IXcomPcmSource): Boolean;
+    /// <summary>Stops asking for samples and closes the device</summary>
+    procedure Close;
+    function IsOpen: Boolean;
   end;
 
   /// <summary>The files of the game and of the user, by path (CrossPlatform of OpenXcom: fileExists, readFile...)</summary>

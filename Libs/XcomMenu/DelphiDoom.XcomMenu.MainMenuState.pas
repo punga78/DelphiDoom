@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   The main menu: a popup window with the title and the buttons New Game, New Battle, Load, Options, Mods and
-  ///   Quit. Quit, New Game, Load Game and Options work; New Battle and Mods open screens that are not ported yet, and do nothing
+  ///   Quit. Quit, New Game, Load Game, Options and Mods work; New Battle opens a screen that is not ported yet, and does nothing
   /// </summary>
   TXcomMainMenuState = class(TXcomState)
   strict private
@@ -32,6 +32,7 @@ type
     procedure NewGameClick(AAction: TXcomAction);
     procedure OptionsClick(AAction: TXcomAction);
     procedure LoadClick(AAction: TXcomAction);
+    procedure ModsClick(AAction: TXcomAction);
     procedure QuitClick(AAction: TXcomAction);
   public
     constructor Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -41,7 +42,7 @@ implementation
 
 uses
   DelphiDoom.XcomMenu.NewGameState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsVideoState,
-  DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomMenu.ListLoadState;
+  DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomMenu.ListLoadState, DelphiDoom.XcomMenu.ModListState;
 
 
 constructor TXcomMainMenuState.Create(AHost: TXcomStateHost; const AVersionText: string);
@@ -75,6 +76,7 @@ begin
   FOptions.SetText(Tr('STR_OPTIONS'));
   FOptions.OnMouseClick(OptionsClick);
   FMods.SetText(Tr('STR_MODS'));
+  FMods.OnMouseClick(ModsClick);
   FQuit.SetText(Tr('STR_QUIT'));
   FQuit.OnMouseClick(QuitClick);
   FTitle.SetAlign(haCenter);
@@ -95,6 +97,13 @@ end;
 procedure TXcomMainMenuState.OptionsClick(AAction: TXcomAction);
 begin
   Host.PushState(TXcomOptionsVideoState.Create(Host, ooMenu, TXcomMenuOptionsNavigator.Create(FVersionText)));
+end;
+
+procedure TXcomMainMenuState.ModsClick(AAction: TXcomAction);
+begin
+  // without a catalog of the mods there is nothing to show
+  if Host.ModCatalog <> nil then
+    Host.PushState(TXcomModListState.Create(Host));
 end;
 
 procedure TXcomMainMenuState.QuitClick(AAction: TXcomAction);

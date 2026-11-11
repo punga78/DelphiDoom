@@ -1,4 +1,4 @@
-# Piano: `Libs\ScriptHost` a classi (issue #172, fetta 2)
+﻿# Piano: `Libs\ScriptHost` a classi (issue #172, fetta 2)
 
 Analisi in sola lettura, fatta sul sorgente di `master` (919a19ef). Conteggi ricavati con `grep`/`wc`/`awk` sulle unit di `Libs\ScriptHost`; dove un numero e una stima lo dico. Nessun file di codice e stato modificato, nessuna build e stata eseguita.
 
@@ -222,6 +222,10 @@ XS 25m, S 1h30, M 3h, L 1d, XL 2d+. Ogni fetta: collegare, verificare, **poi** c
 * **2f-1: fatta** (issue #172): `TScriptGameInfo` (6 funzioni), `TScriptTextures` (3) e `TScriptKeys` (3 con parametro + 56 da tabella dati) in `DelphiDoom.ScriptHost.*`, con `IScriptFunctionSection` e `IScriptFunctionTable.AddMethod`: **strada B** (`RegisterDelphiMethod`, la spike della 2a-0), quindi i 68 `PS_*` di `psi_game` sono stati cancellati senza thunk; la tastiera e' una tabella + un oggetto per riga (stesso metodo, `Self` diverso). Nel motore `Base\DelphiDoom.Engine.Script.GameInfo/Textures/Keyboard`; `ps_import` le riceve da `PS_ConfigureGameFunctions`. Dettagli e verifica in `Libs\ScriptHost\CLAUDE.md`.
 
 * **2f-2: fatta** (issue #172): `TScriptVertices` (5 funzioni), `TScriptSides` (26) e `TScriptLines` (34, 29 in Hexen) in `DelphiDoom.ScriptHost.World.*` su un solo gateway `IScriptWorld` (nel motore `TEngineScriptWorld`), strada B con `AddMethod` e il nuovo `AddMethodWithCustomResult` per `TVertex/TSide/TLine`; i 65 `PS_*` cancellati, i 67 helper delle classi di script restano in `psi_game` e chiamano le interfacce. Difetto conservato: `Get/SetSideMidRowOffset` usano `bottomrowoffset`. L1 uguale, L2 vecchio contro nuovo uguale in 5 eseguibili, 222 test. Dettagli in `Libs\ScriptHost\CLAUDE.md`.
+
+* **2f-3: fatta** (issue #172): TScriptSectors (62 funzioni, 54 in Heretic e Hexen) in DelphiDoom.ScriptHost.World.Sectors, sullo stesso gateway IScriptWorld esteso (TEngineScriptWorld legge sectors[]), strada B; i PS_*Sector* cancellati, i 55 helper TRTLSector* chiamano PS_Sectors. Difetti conservati: vento e angolo del vento di un settore che non c'e' danno GRAVITY; fog e interpolate sono il contrario del flag. L1 uguale, L2 vecchio contro nuovo uguale in 5 eseguibili, 253 test, copertura 97%. Dettagli in Libs\ScriptHost\CLAUDE.md.
+
+* **2f-4: fatta** (issue #172): TScriptMobjInfo (71 funzioni, 65 da una tabella dati SCRIPT_MOBJINFO_FUNCTIONS) e TScriptPlayers (19-22 funzioni) in DelphiDoom.ScriptHost.MobjInfo/Players, con due sorgenti (IScriptMobjInfoSource, IScriptPlayerSource, nel motore TEngineScriptMobjInfo/Players), strada B; i PS_*MobjInfo* e PS_*Player* cancellati, i 71 helper TRTLMobjInfoItem* chiamano PS_MobjInfo. Difetto conservato: SetPlayerHasWeapon ignora il valore. L1 uguale, L2 vecchio contro nuovo uguale in 5 eseguibili (e -vshtypes per 20 tipi), 297 test, copertura 97%. Dettagli in Libs\ScriptHost\CLAUDE.md.
 Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo fermare in qualsiasi fetta perche ogni facciata `PS_*` resta quella di prima.
 
 ### 5.1 Perche questo ordine

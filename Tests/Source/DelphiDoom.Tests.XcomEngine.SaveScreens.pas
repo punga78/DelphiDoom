@@ -103,11 +103,40 @@ type
     procedure UnClicSinistroAvviaIlCaricamentoCheFallisceSenzaLaGeoscape;
     [Test]
     procedure UnTastoSenzaGestoreNonFaNulla;
+    [Test]
+    procedure UnSalvataggioCheUsaUnModNonAttivoChiedeConferma;
+    [Test]
+    procedure UnSalvataggioCheUsaSoloModAttiviCaricaSenzaChiedere;
+    [Test]
+    procedure LaConfermaNoChiudeLaDomanda;
+    [Test]
+    procedure LaConfermaSiAvviaIlCaricamento;
+  end;
+
+  [TestFixture]
+  [Category('XcomSaves')]
+  TTestXcomModSupport = class
+  public
+    [Test]
+    [TestCase('con versione', 'xcom2 ver: 1.0,xcom2')]
+    [TestCase('senza versione', 'xcom2,xcom2')]
+    [TestCase('versione vuota', 'a ver: ,a')]
+    [TestCase('solo il primo taglio', 'a ver: 1 ver: 2,a')]
+    procedure SanitizeTagliaIlTestoDopoVer(const AName, AExpected: string);
+    [Test]
+    procedure LeOpzioniLeggonoLaListaDeiMod;
+    [Test]
+    procedure UnModSenzaValoreBooleanoNonEAttivo;
+    [Test]
+    procedure SenzaLaSezioneModLaListaNonCambia;
+    [Test]
+    procedure UnModAttivoSiTrovaPerId;
   end;
 
 implementation
 
 uses
+  DelphiDoom.XcomEngine.ModNames, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomMenu.ConfirmLoadState,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomMenu.ListLoadState,
   DelphiDoom.XcomMenu.ListGamesState, DelphiDoom.XcomMenu.DeleteGameState, DelphiDoom.XcomMenu.LoadGameState,
   DelphiDoom.XcomMenu.ErrorMessageState;
@@ -500,8 +529,142 @@ begin
   Assert.IsTrue(FWorld.Game.TopState is TXcomListLoadState);
 end;
 
+procedure TTestXcomSaveScreens.UnSalvataggioCheUsaUnModNonAttivoChiedeConferma;
+var
+  LState: TXcomListLoadState;
+  LInfo: TXcomSaveInfo;
+  LX: Integer;
+  LY: Integer;
+begin
+  FWorld.Game.Options.Mods := [];
+  LInfo := Info('a', 40000);
+  LInfo.Mods := ['extra ver: 2'];
+  FCatalog.Saves := [LInfo];
+  LState := TXcomListLoadState.Create(FWorld.Game, ooMenu);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  HoverFirstRow(LState.List, LX, LY);
+  FWorld.Click(Round(LX * FWorld.Game.Screen.XScale), Round(LY * FWorld.Game.Screen.YScale));
+  FWorld.Wait(400);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomConfirmLoadState);
+end;
+
+procedure TTestXcomSaveScreens.UnSalvataggioCheUsaSoloModAttiviCaricaSenzaChiedere;
+var
+  LState: TXcomListLoadState;
+  LInfo: TXcomSaveInfo;
+  LX: Integer;
+  LY: Integer;
+begin
+  FWorld.Game.Options.Mods := [TXcomModSetting.Create('xcom2', True), TXcomModSetting.Create('off', False)];
+  LInfo := Info('a', 40000);
+  LInfo.Mods := ['xcom2 ver: 1.0'];
+  FCatalog.Saves := [LInfo];
+  LState := TXcomListLoadState.Create(FWorld.Game, ooMenu);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  HoverFirstRow(LState.List, LX, LY);
+  FWorld.Click(Round(LX * FWorld.Game.Screen.XScale), Round(LY * FWorld.Game.Screen.YScale));
+  FWorld.Wait(400);
+  // it went straight to the loading, which fails here without the geoscape
+  Assert.IsTrue(FWorld.Game.TopState is TXcomErrorMessageState);
+end;
+
+procedure TTestXcomSaveScreens.LaConfermaNoChiudeLaDomanda;
+begin
+  FWorld.Game.PushState(TXcomConfirmLoadState.Create(FWorld.Game, ooMenu, 'a.sav'));
+  FWorld.Wait(400);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomConfirmLoadState);
+  // No is at 200,120 (50 x 20) in the popup
+  FWorld.Click(Round(225 * FWorld.Game.Screen.XScale), Round(130 * FWorld.Game.Screen.YScale));
+  FWorld.Wait(50);
+  Assert.IsFalse(FWorld.Game.TopState is TXcomConfirmLoadState);
+end;
+
+procedure TTestXcomSaveScreens.LaConfermaSiAvviaIlCaricamento;
+begin
+  FWorld.Game.PushState(TXcomConfirmLoadState.Create(FWorld.Game, ooMenu, 'a.sav'));
+  FWorld.Wait(400);
+  // Yes is at 70,120
+  FWorld.Click(Round(95 * FWorld.Game.Screen.XScale), Round(130 * FWorld.Game.Screen.YScale));
+  // the loading closes itself after ten turns and, without the geoscape, ends in the error window
+  Assert.IsFalse(FWorld.Game.TopState is TXcomConfirmLoadState);
+  FWorld.Wait(100);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomErrorMessageState);
+end;
+
+{ TTestXcomModSupport }
+
+procedure TTestXcomModSupport.SanitizeTagliaIlTestoDopoVer(const AName, AExpected: string);
+begin
+  Assert.AreEqual(AExpected, TXcomModNames.Sanitize(AName));
+end;
+
+procedure TTestXcomModSupport.LeOpzioniLeggonoLaListaDeiMod;
+var
+  LOptions: TXcomOptions;
+begin
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Load(TTestWorld.Parse('mods:'#10'  - xcom2: true'#10'  - extra: false'#10'options:'#10'  mute: false'#10));
+    Assert.AreEqual(2, Integer(Length(LOptions.Mods)));
+    Assert.AreEqual('xcom2', LOptions.Mods[0].Id);
+    Assert.IsTrue(LOptions.Mods[0].Active);
+    Assert.AreEqual('extra', LOptions.Mods[1].Id);
+    Assert.IsFalse(LOptions.Mods[1].Active);
+  finally
+    LOptions.Free;
+  end;
+end;
+
+procedure TTestXcomModSupport.UnModSenzaValoreBooleanoNonEAttivo;
+var
+  LOptions: TXcomOptions;
+begin
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Load(TTestWorld.Parse('mods:'#10'  - xcom2: banana'#10'  - plain'#10));
+    // the item that is not a map is skipped; the bad value is not active
+    Assert.AreEqual(1, Integer(Length(LOptions.Mods)));
+    Assert.IsFalse(LOptions.Mods[0].Active);
+  finally
+    LOptions.Free;
+  end;
+end;
+
+procedure TTestXcomModSupport.SenzaLaSezioneModLaListaNonCambia;
+var
+  LOptions: TXcomOptions;
+begin
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Mods := [TXcomModSetting.Create('keep', True)];
+    LOptions.Load(TTestWorld.Parse('options:'#10'  mute: false'#10));
+    Assert.AreEqual(1, Integer(Length(LOptions.Mods)));
+    Assert.AreEqual('keep', LOptions.Mods[0].Id);
+  finally
+    LOptions.Free;
+  end;
+end;
+
+procedure TTestXcomModSupport.UnModAttivoSiTrovaPerId;
+var
+  LOptions: TXcomOptions;
+begin
+  LOptions := TXcomOptions.Create;
+  try
+    LOptions.Mods := [TXcomModSetting.Create('a', True), TXcomModSetting.Create('b', False)];
+    Assert.IsTrue(LOptions.IsModActive('a'));
+    Assert.IsFalse(LOptions.IsModActive('b'));
+    Assert.IsFalse(LOptions.IsModActive('c'));
+  finally
+    LOptions.Free;
+  end;
+end;
+
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomDiskSaveCatalog);
   TDUnitX.RegisterTestFixture(TTestXcomSaveScreens);
+  TDUnitX.RegisterTestFixture(TTestXcomModSupport);
 
 end.

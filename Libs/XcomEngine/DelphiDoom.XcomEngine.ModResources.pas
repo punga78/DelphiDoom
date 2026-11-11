@@ -63,6 +63,8 @@ type
     FConstants: TDictionary<string, Integer>;
     FSoundSets: TObjectDictionary<string, TXcomSoundSet>;
     FCatalogs: TDictionary<string, IXcomCatArchive>;
+    FMusics: TDictionary<string, TXcomMusicRule>;
+    procedure LoadMusic(const ANode: IYamlNode);
     procedure AddPalette(const AName: string; const APalette: TXcomPalette);
     procedure LoadPalettes;
     procedure LoadRulesets;
@@ -83,6 +85,8 @@ type
     procedure Load;
     function HasSoundDefinitions: Boolean;
     function SoundWave(const ASet: string; AIndex: Integer): TBytes;
+    function MusicRules: TArray<TXcomMusicRule>;
+    function SoundFile(const AName: string): TBytes;
     function Constant(const AName: string; ADefault: Integer): Integer;
     function GetSurface(const AName: string): TXcomSurface;
     function GetFont(const AName: string): TXcomFont;
@@ -107,7 +111,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.XcomEngine.YamlFields;
+  System.IOUtils, System.Generics.Defaults, DelphiDoom.XcomEngine.YamlFields;
 
 const
   PALETTE_NAMES: array[0..4] of string = ('PAL_GEOSCAPE', 'PAL_BASESCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA',
@@ -135,6 +139,7 @@ begin
   FConstants := TDictionary<string, Integer>.Create;
   FSoundSets := TObjectDictionary<string, TXcomSoundSet>.Create([doOwnsValues]);
   FCatalogs := TDictionary<string, IXcomCatArchive>.Create;
+  FMusics := TDictionary<string, TXcomMusicRule>.Create;
   FFontName := 'Font.dat';
   // Mod::resetGlobalStatics
   FGeoscapeCursor := 252;
@@ -146,6 +151,7 @@ end;
 
 destructor TXcomModResources.Destroy;
 begin
+  FMusics.Free;
   FCatalogs.Free;
   FSoundSets.Free;
   FConstants.Free;
@@ -213,6 +219,8 @@ begin
     LoadSoundSet(LItem);
   if Length(TXcomYamlFields.Sequence(ANode, 'soundDefs')) > 0 then
     FHasSoundDefinitions := True;
+  for LItem in TXcomYamlFields.Sequence(ANode, 'musics') do
+    LoadMusic(LItem);
   for LItem in TXcomYamlFields.Sequence(ANode, 'extraStrings') do
   begin
     LId := TXcomYamlFields.ReadString(LItem, 'type', '');
@@ -253,7 +261,7 @@ begin
     // the files that have none of the keys that are read here are not parsed (the big rulesets of the items...)
     LText := TEncoding.UTF8.GetString(LBytes);
     if (Pos('interfaces:', LText) = 0) and (Pos('constants:', LText) = 0) and (Pos('fontName:', LText) = 0) and
-      (Pos('extraStrings:', LText) = 0) and (Pos('soundDefs:', LText) = 0) then
+      (Pos('extraStrings:', LText) = 0) and (Pos('soundDefs:', LText) = 0) and (Pos('musics:', LText) = 0) then
       Continue;
     try
       LoadRuleset(FParser.Load(LBytes));
@@ -334,6 +342,68 @@ begin
   if (LEntry < 0) or (LEntry >= LCatalog.Count) then
     Exit;
   Result := TXcomSoundConverter.RawToWave(LCatalog.Load(LEntry));
+end;
+
+procedure TXcomModResources.LoadMusic(const ANode: IYamlNode);
+var
+  LType: string;
+  LRule: TXcomMusicRule;
+begin
+  // Mod::loadFile "musics": loadRule by type, then RuleMusic::load over what is there
+  LType := TXcomYamlFields.ReadString(ANode, 'type', '');
+  if LType = '' then
+    Exit;
+  if not FMusics.TryGetValue(LType, LRule) then
+  begin
+    LRule.MusicType := LType;
+    LRule.Name := '';
+    LRule.CatPos := MaxInt;
+    LRule.Normalization := 0.76;
+  end;
+  LRule.Name := TXcomYamlFields.ReadString(ANode, 'name', LRule.Name);
+  LRule.CatPos := TXcomYamlFields.ReadInteger(ANode, 'catPos', LRule.CatPos);
+  if Assigned(TXcomYamlFields.Field(ANode, 'normalization')) then
+    LRule.Normalization := TXcomYamlFields.Field(ANode, 'normalization').AsSingle(LRule.Normalization);
+  FMusics.AddOrSetValue(LType, LRule);
+end;
+
+function TXcomModResources.MusicRules: TArray<TXcomMusicRule>;
+var
+  LList: TList<TXcomMusicRule>;
+  LRule: TXcomMusicRule;
+  LSource: TXcomMusicRule;
+begin
+  LList := TList<TXcomMusicRule>.Create;
+  try
+    for LSource in FMusics.Values do
+    begin
+      LRule := LSource;
+      if LRule.Name = '' then
+        LRule.Name := LRule.MusicType;
+      LList.Add(LRule);
+    end;
+    // std::map order: the keys are compared as bytes
+    LList.Sort(TComparer<TXcomMusicRule>.Construct(
+      function(const ALeft, ARight: TXcomMusicRule): Integer
+      begin
+        Result := CompareStr(ALeft.MusicType, ARight.MusicType);
+      end));
+    Result := LList.ToArray;
+  finally
+    LList.Free;
+  end;
+end;
+
+function TXcomModResources.SoundFile(const AName: string): TBytes;
+var
+  LPath: string;
+begin
+  Result := nil;
+  if FFiles.Exists('SOUND/' + AName) then
+    Exit(FFiles.ReadAll('SOUND/' + AName));
+  LPath := 'SOUND/' + AName;
+  if FGameData.Files.Exists(LPath) then
+    Result := FGameData.Files.ReadAll(LPath);
 end;
 
 function TXcomModResources.HasSoundDefinitions: Boolean;

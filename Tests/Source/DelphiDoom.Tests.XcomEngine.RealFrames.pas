@@ -16,7 +16,7 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
   DelphiDoom.Xcom.Types, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.Game,
-  DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.FolderLanguageProvider,DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.Png.Provider,
+  DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.FolderLanguageProvider,DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.DiskModCatalog, DelphiDoom.Png.Provider,
   DelphiDoom.XcomMenu.GoToMainMenuState,DelphiDoom.Tests.XcomEngine.World;
 
 type
@@ -56,6 +56,11 @@ type
     [TestCase('load_empty', 'load_empty,230:255')]
     [TestCase('load_list', 'load_list,230:255')]
     [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
+    [TestCase('noaudio', 'noaudio,420:255;96:72;638:398')]
+    [TestCase('load_confirm', 'load_confirm,230:255;100:107;638:398')]
+    [TestCase('mods', 'mods,220:312;638:398')]
+    [TestCase('mods_toggle', 'mods_toggle,220:312;100:106;638:398')]
+    [TestCase('mods_arrow', 'mods_arrow,220:312;100:106;638:398;543:90;638:398')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
     [Test]
     procedure ISuoniDeiDatiVeriSonoFileWav;
@@ -207,7 +212,18 @@ begin
     // the saves of the seed folder (made for the comparison; their dates are fixed) for the case load_list
     if AName = 'load_list' then
       LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(FSaveFolder, 'xcom2', TYamlFactory.CreateParser));
+    // the mods of the data folder: the Mods screen
+    if AName.StartsWith('mods') then
+      LWorld.Game.SetModCatalog(TXcomDiskModCatalog.Create([TPath.Combine(FDataFolder, 'standard')], ['xcom2'],
+        TYamlFactory.CreateParser));
+    // two saves, one of them needs a mod that is not active (saveseed176b)
+    if AName = 'load_confirm' then
+      LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(
+        TPath.Combine(FReference, '_dati\xcom_tftd\saveseed176b\xcom2'), 'xcom2', TYamlFactory.CreateParser));
     LWorld.Game.Options.Load(TYamlFactory.CreateParser.Load(TFile.ReadAllBytes(FOptionsFile)));
+    // the real game with SDL_AUDIODRIVER set to a driver that does not exist: no audio, Options::mute
+    if AName = 'noaudio' then
+      LWorld.Game.Options.Mute := True;
     LWorld.Game.SetState(TXcomGoToMainMenuState.Create(LWorld.Game, '1.0 git 2026-06-05 22:05'));
     LWorld.Click(5000, 5000);
     LWorld.Wait(500);
