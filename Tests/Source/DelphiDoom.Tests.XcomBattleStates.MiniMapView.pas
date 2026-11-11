@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.MiniMapView;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Intf,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.ManualClock, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattleStates.MiniMapView,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
@@ -133,7 +133,7 @@ begin
   LWorld := TBattleTestWorld.TryCreate;
   if not Assigned(LWorld) then
   begin
-    Assert.Pass('The data of the real game are not on this machine');
+    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
     Exit;
   end;
   try
@@ -171,7 +171,7 @@ begin
   LWorld := TBattleTestWorld.TryCreate;
   if not Assigned(LWorld) then
   begin
-    Assert.Pass('The data of the real game are not on this machine');
+    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
     Exit;
   end;
   try

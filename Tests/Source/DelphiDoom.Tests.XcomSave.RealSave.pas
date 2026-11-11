@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomSave.RealSave;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.AnsiStrings, DUnitX.TestFramework, DelphiDoom.Yaml.Types,
+  System.SysUtils, System.Classes, System.IOUtils, System.AnsiStrings, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf,
   DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseCapacity,
@@ -258,7 +258,7 @@ begin
   LGoldenPath := LFolder + '..\' + CapacityFileName;
   if (LFolder = '') or not Assigned(FRuleset) or not TFile.Exists(LGoldenPath) then
   begin
-    Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD o i salvataggi il confronto non si fa');
     Exit;
   end;
   LGolden := TStringList.Create;
@@ -326,7 +326,7 @@ begin
   LFolder := SaveFolder;
   if (LFolder = '') or not Assigned(FRuleset) then
   begin
-    Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD o i salvataggi il confronto non si fa');
     Exit;
   end;
   LCount := 0;
@@ -363,7 +363,7 @@ begin
   LFolder := SaveFolder;
   if (LFolder = '') or not Assigned(FRuleset) then
   begin
-    Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD o i salvataggi il confronto non si fa');
     Exit;
   end;
   // save00.sav is Mod::newSave() with the generator seeded with 1761, and then the changes of Play(0) of savegen.cpp
@@ -410,7 +410,7 @@ var
 begin
   if not Assigned(FRuleset) then
   begin
-    Assert.Pass('senza i dati di TFTD il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il confronto non si fa');
     Exit;
   end;
   LGame := TXcomSavedGame.Create;

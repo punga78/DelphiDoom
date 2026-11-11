@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Demolition;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomDebriefing.BaseFacilityRemover, DelphiDoom.Tests.XcomTour.World;
 
 type
@@ -82,7 +82,7 @@ begin
   Result := FWorld.HasData;
   if not Result then
   begin
-    Assert.Pass('i dati di TFTD non ci sono');
+    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
     Exit;
   end;
   FWorld.StartNewGame;

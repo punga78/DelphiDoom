@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.MiniMapState;
 interface
 
 uses
-  System.SysUtils, System.Math, DUnitX.TestFramework, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Types,
+  System.SysUtils, System.Math, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattleStates.MiniMapState,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
 
@@ -82,7 +82,7 @@ function TTestXcomMiniMapState.Available: Boolean;
 begin
   Result := Assigned(FWorld);
   if not Result then
-    Assert.Pass('The data of the real game are not on this machine');
+    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
 end;
 
 function TTestXcomMiniMapState.Camera: TXcomCamera;
@@ -125,7 +125,7 @@ var
   LState: TXcomMiniMapState;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   Assert.IsTrue(FWorld.World.Game.IsState(LState));
   Assert.AreEqual(VIEW_WIDTH, LState.MiniMapView.Width);
@@ -143,7 +143,7 @@ var
   LLevel: Integer;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LLevel := Camera.ViewLevel;
   FWorld.ClickButton(LEVEL_UP_X, LEVEL_UP_Y, XCOM_BUTTON_LEFT);
@@ -161,7 +161,7 @@ var
   LLevel: Integer;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   LLevel := Camera.ViewLevel;
   Button(ekMouseDown, 10, 190, XCOM_BUTTON_WHEELUP);
@@ -177,7 +177,7 @@ var
   LFrame: Integer;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LFrame := LState.MiniMapView.Frame;
   FWorld.World.Wait(125);
@@ -193,7 +193,7 @@ var
   LBefore: TXcomPosition;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   Camera.CenterOnPosition(TXcomPosition.Make(10, 10, Camera.ViewLevel));
   LBefore := Camera.CenterPosition;
@@ -211,7 +211,7 @@ var
   LBefore: TXcomPosition;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   Camera.CenterOnPosition(TXcomPosition.Make(10, 10, Camera.ViewLevel));
   LBefore := Camera.CenterPosition;
@@ -229,7 +229,7 @@ end;
 procedure TTestXcomMiniMapState.DovrebbeChiudersiConOk;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.ClickButton(OK_X, OK_Y, XCOM_BUTTON_LEFT);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));
@@ -238,7 +238,7 @@ end;
 procedure TTestXcomMiniMapState.DovrebbeChiudersiColPulsanteDestroSullaMappa;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.ClickButton(VIEW_X + 100, VIEW_Y + 70, XCOM_BUTTON_RIGHT);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));
@@ -247,7 +247,7 @@ end;
 procedure TTestXcomMiniMapState.DovrebbeChiudersiColTastoAnnulla;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.PressKey(FWorld.World.Game.Options.KeyCancel);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));

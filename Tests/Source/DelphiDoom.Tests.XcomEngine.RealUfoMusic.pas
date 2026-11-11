@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the music of the xcom game against the real Mod of      }
 {  OpenXcom (Tools\Verifica\176\battle\musicgen.cpp): which music of the rules  }
@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomEngine.RealUfoMusic;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.ModGameLoader,
   DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Music.Intf,
@@ -225,7 +225,7 @@ procedure TTestXcomRealUfoMusic.LeMusicheDiUfoSonoQuelleCheCaricaIlVeroMod;
 begin
   if not Open('_dati\xcom_ufo\UFO Enemy Unkown\DOS game', 'xcom1') then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   // 14 of the 32 rules: the others (GMGEO3..10, GMTACTIC1..10) have no catPos and UFO has no file for them
@@ -236,7 +236,7 @@ procedure TTestXcomRealUfoMusic.LeMusicheDiTftdSonoQuelleCheCaricaIlVeroMod;
 begin
   if not Open('_dati\xcom_tftd\TFTD', 'xcom2') then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.AreEqual(23, CheckMusic('tftd_music.txt'));
@@ -251,7 +251,7 @@ var
 begin
   if not Open('_dati\xcom_ufo\UFO Enemy Unkown\DOS game', 'xcom1') then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.IsTrue(Supports(FMusic, IXcomMusicCatalog, LCatalog));
@@ -276,7 +276,7 @@ procedure TTestXcomRealUfoMusic.UnBranoDiUfoSenzaCatPosNonParte;
 begin
   if not Open('_dati\xcom_ufo\UFO Enemy Unkown\DOS game', 'xcom1') then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   FMusic.PlayMusic('GMGEO', 3);

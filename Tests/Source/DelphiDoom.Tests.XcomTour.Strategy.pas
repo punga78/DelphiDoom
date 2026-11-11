@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomTour.Strategy;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -97,7 +97,7 @@ begin
   if Result then
     FWorld.StartNewGame
   else
-    Assert.Pass('i dati di TFTD non ci sono');
+    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
 end;
 
 procedure TTestXcomTourStrategy.OpenBases;

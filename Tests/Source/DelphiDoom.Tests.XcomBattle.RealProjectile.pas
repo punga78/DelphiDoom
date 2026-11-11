@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom battlescape library - the answers of the  }
 {  real Projectile, getOriginVoxel, validateThrow and TileEngine::hit of       }
@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomBattle.RealProjectile;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework,
+  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapDataLoader,
   DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomMod.McdPatch, DelphiDoom.XcomMod.RuleItem,
@@ -618,7 +618,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or not Assigned(FRuleset) or (Length(FVoxels) = 0) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

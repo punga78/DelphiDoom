@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Ironman;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>The tests do nothing when the data of the game is not there</summary>
@@ -78,7 +78,7 @@ function TTestXcomTourIronman.NewGame(AIronman: Boolean): Boolean;
 begin
   Result := FWorld.HasData;
   if not Result then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   // the start screen, then the main menu
   FWorld.Wait(5000);
   FWorld.Click(NEW_GAME_X, NEW_GAME_Y);

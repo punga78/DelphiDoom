@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom battlescape library - the thinking of the  }
 {  AI against the real AIModule::think of OpenXcom                              }
@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattle.RealAI;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework,
+  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomBattle.Types,
@@ -428,7 +428,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;
@@ -453,7 +453,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

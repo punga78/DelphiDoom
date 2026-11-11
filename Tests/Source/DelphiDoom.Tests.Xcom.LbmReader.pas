@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the xcom formats library - .LBM files                  }
 {                                                                              }
@@ -18,7 +18,7 @@ unit DelphiDoom.Tests.Xcom.LbmReader;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Xcom.Intf;
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Xcom.Intf;
 
 type
   [TestFixture]
@@ -208,13 +208,13 @@ begin
   LFolder := TXcomRealData.Folder;
   if LFolder = '' then
   begin
-    Assert.Pass('the real data of TFTD are not on this machine');
+    TXcomTestSkip.Ignore('the real data of TFTD are not on this machine');
     Exit;
   end;
   LGoldenFile := TPath.GetFullPath(TPath.Combine(LFolder, '..\lbm_golden.txt'));
   if not TFile.Exists(LGoldenFile) then
   begin
-    Assert.Pass('no lbm_golden.txt (lbmharness file) next to the data');
+    TXcomTestSkip.Ignore('no lbm_golden.txt (lbmharness file) next to the data');
     Exit;
   end;
   LGolden := TStringList.Create;

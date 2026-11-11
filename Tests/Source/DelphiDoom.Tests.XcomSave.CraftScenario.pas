@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomSave.CraftScenario;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.XcomMod.Random,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Soldier,
   DelphiDoom.Tests.XcomSave.Sim;
@@ -198,7 +198,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    Assert.Pass('senza i dati di TFTD o i golden il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   FLines := TStringList.Create;

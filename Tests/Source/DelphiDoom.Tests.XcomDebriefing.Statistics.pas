@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomDebriefing.Statistics;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomBasescape.GameStatistics, DelphiDoom.Tests.XcomMod.RealData,
   DelphiDoom.Tests.XcomBattle.RealBattle;
@@ -114,7 +114,7 @@ begin
   LExpectedFolder := FindUp('Tests\Data\XcomDebriefing\stat');
   if (LSaves = '') or (LExpectedFolder = '') or (not Assigned(FRuleset)) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

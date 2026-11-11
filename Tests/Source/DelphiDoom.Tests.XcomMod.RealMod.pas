@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomMod.RealMod;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework;
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip;
 
 type
   [TestFixture]
@@ -52,7 +52,7 @@ begin
   try
     if LData.DataFolder = '' then
     begin
-      Assert.Pass('dati del nightly TFTD/UFO non trovati (Reference\_dati\xcom_tftd\openxcom, xcom_ufo\openxcom)');
+      TXcomTestSkip.Ignore('dati del nightly TFTD/UFO non trovati (Reference\_dati\xcom_tftd\openxcom, xcom_ufo\openxcom)');
       Exit;
     end;
     LMod := LData.Load;

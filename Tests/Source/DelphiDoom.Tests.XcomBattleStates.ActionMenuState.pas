@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.ActionMenuState;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomBattle.Types,
   DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattleStates.Screens.Intf,
@@ -148,7 +148,7 @@ function TTestXcomActionMenuState.Skip: Boolean;
 begin
   Result := not FBattle.Available;
   if Result then
-    Assert.Pass('the data of TFTD is not on this machine');
+    TXcomTestSkip.Ignore('the data of TFTD is not on this machine');
 end;
 
 procedure TTestXcomActionMenuState.OpenMenu(AActor: TXcomBattleUnit; AWeapon: TXcomBattleItem);
@@ -318,7 +318,7 @@ begin
   LWeapon := FBattle.FindItem(TEST_BATTLE_SONIC_CANNON);
   if FBattle.Session.SavedGame.IsResearched(LWeapon.Rules.Requirements) then
   begin
-    Assert.Pass('the sonic cannon is researched in this saved game');
+    TXcomTestSkip.Ignore('the sonic cannon is researched in this saved game');
     Exit;
   end;
   OpenSoldierMenu(TEST_BATTLE_SONIC_CANNON);
@@ -369,7 +369,7 @@ begin
   LActor := FindActor(LKit, False);
   if not Assigned(LActor) then
   begin
-    Assert.Pass('no unit of this battle may use the medi-kit with nobody in front');
+    TXcomTestSkip.Ignore('no unit of this battle may use the medi-kit with nobody in front');
     Exit;
   end;
   OpenMenu(LActor, LKit);
@@ -392,7 +392,7 @@ begin
   LActor := FindActor(LKit, True);
   if not Assigned(LActor) then
   begin
-    Assert.Pass('no unit of this battle may use the medi-kit on someone in front');
+    TXcomTestSkip.Ignore('no unit of this battle may use the medi-kit on someone in front');
     Exit;
   end;
   LScreen := TXcomState.Create(FWorld.Game);
@@ -527,7 +527,7 @@ begin
   LActor := FindActor(LLance, False);
   if not Assigned(LActor) then
   begin
-    Assert.Pass('every unit of this battle that may use the lance has someone in front');
+    TXcomTestSkip.Ignore('every unit of this battle that may use the lance has someone in front');
     Exit;
   end;
   OpenMenu(LActor, LLance);

@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.UnitInfoState;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomBattle.Model,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattleStates.UnitInfoState,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
 
@@ -65,7 +65,7 @@ function TTestXcomUnitInfoState.Available: Boolean;
 begin
   Result := Assigned(FWorld);
   if not Result then
-    Assert.Pass('The data of the real game are not on this machine');
+    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
 end;
 
 function TTestXcomUnitInfoState.Open(AMindProbe: Boolean): TXcomUnitInfoState;
@@ -82,7 +82,7 @@ var
   LUnit: TXcomBattleUnit;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LUnit := FWorld.Battle.SelectedUnit;
   Assert.AreSame(LUnit, LState.CurrentUnit);
@@ -108,7 +108,7 @@ var
   LUnit: TXcomBattleUnit;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LUnit := FWorld.Battle.SelectedUnit;
   Assert.AreEqual(IntToStr((LUnit.Stats.Firing * LUnit.Health) div LUnit.Stats.Health),
@@ -130,7 +130,7 @@ var
   LSide: Integer;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LUnit := FWorld.Battle.SelectedUnit;
   for LSide := SIDE_FRONT to SIDE_UNDER do
@@ -147,7 +147,7 @@ var
   LSkilled: Boolean;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   // psiStrengthEval is off: both rows follow the psionic skill of the unit
   LSkilled := FWorld.Battle.SelectedUnit.Stats.PsiSkill > 0;
@@ -165,7 +165,7 @@ var
   LNext: TXcomBattleUnit;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LFirst := LState.CurrentUnit;
   FWorld.ClickButton(310, 10, XCOM_BUTTON_LEFT);
@@ -183,7 +183,7 @@ var
   LState: TXcomUnitInfoState;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open(True);
   Assert.IsNull(LState.BtnPrev);
   Assert.IsNull(LState.BtnNext);
@@ -192,7 +192,7 @@ end;
 procedure TTestXcomUnitInfoState.DovrebbeChiudersiConUnClic;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.ClickButton(160, 100, XCOM_BUTTON_LEFT);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));
@@ -201,7 +201,7 @@ end;
 procedure TTestXcomUnitInfoState.DovrebbeChiudersiColPulsanteDestro;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   // on the row of the name, where the surface of the exit does not reach
   FWorld.ClickButton(160, 10, XCOM_BUTTON_RIGHT);
@@ -211,7 +211,7 @@ end;
 procedure TTestXcomUnitInfoState.DovrebbeChiudersiColTastoAnnulla;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.PressKey(FWorld.World.Game.Options.KeyCancel);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));

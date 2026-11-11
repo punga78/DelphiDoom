@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Barracks;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomSave.Base, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Base, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -92,7 +92,7 @@ function TTestXcomTourBarracks.Ready(const AVariant: string): Boolean;
 begin
   Result := FWorld.HasData and FWorld.LoadVariant(AVariant);
   if not Result then
-    Assert.Pass('i dati di TFTD o il salvataggio non ci sono');
+    TXcomTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
 end;
 
 procedure TTestXcomTourBarracks.OpenBases;

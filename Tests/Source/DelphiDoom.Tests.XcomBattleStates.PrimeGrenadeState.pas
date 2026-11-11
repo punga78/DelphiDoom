@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattleStates.PrimeGrenadeState,
   DelphiDoom.Tests.XcomEngine.World, DelphiDoom.Tests.XcomBattleStates.Battle;
 
@@ -94,7 +94,7 @@ function TTestXcomPrimeGrenadeState.Skip: Boolean;
 begin
   Result := not FBattle.Available;
   if Result then
-    Assert.Pass('the data of TFTD is not on this machine');
+    TXcomTestSkip.Ignore('the data of TFTD is not on this machine');
 end;
 
 function TTestXcomPrimeGrenadeState.Grenade: TXcomBattleItem;

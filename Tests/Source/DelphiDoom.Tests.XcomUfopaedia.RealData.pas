@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomUfopaedia.RealData;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.Tests.XcomGeoscape.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.Tests.XcomGeoscape.World;
 
 type
   [TestFixture]
@@ -66,7 +66,7 @@ end;
 procedure TTestXcomUfopaediaRealData.DovrebbeDareLeNoveSezioniDiTftdNellOrdineDeiPulsanti;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Assert.AreEqual(
     'STR_XCOM_CRAFT_ARMAMENT,STR_HEAVY_WEAPONS_PLATFORMS,STR_WEAPONS_AND_EQUIPMENT,STR_ALIEN_ARTIFACTS,' +
     'STR_BASE_FACILITIES,STR_ALIEN_LIFE_FORMS,STR_ALIEN_RESEARCH_UC,STR_UFO_COMPONENTS,STR_UFOS',
@@ -80,7 +80,7 @@ var
   LId: string;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LCatalog := Catalog(False);
   LArticles := LCatalog.AvailableArticles;
   // the first article of a new game is the first submarine
@@ -100,7 +100,7 @@ var
   LTotal: Integer;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LCatalog := Catalog(True);
   // 133 articles of ufopaedia.rul, 11 of them without a section (the ammunition)
   Assert.AreEqual(133, FWorld.Rules.Ruleset.Articles.Count);
@@ -120,7 +120,7 @@ var
   LMissing: string;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LRules := FWorld.Rules.Ruleset;
   LMissing := '';
   for LArticle in Catalog(True).AvailableArticles do

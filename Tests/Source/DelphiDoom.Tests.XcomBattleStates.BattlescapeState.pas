@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomBattleStates.BattlescapeState;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.State, DelphiDoom.XcomMod.MapBlock,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.State, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattleStates.BattlescapeState,
   DelphiDoom.Tests.XcomBattleStates.Bench;
 
@@ -103,7 +103,7 @@ function TTestXcomBattlescapeState.Ready: Boolean;
 begin
   Result := Assigned(FState);
   if not Result then
-    Assert.Pass('the data of TFTD are not here');
+    TXcomTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomBattlescapeState.ClickPanel(AX, AY: Integer);
@@ -291,7 +291,7 @@ begin
   if not Ready then
     Exit;
   if not Assigned(FState.RightHandItem(FBench.Session.Battle.SelectedUnit)) then
-    Assert.Pass('the selected soldier has an empty right hand');
+    TXcomTestSkip.Ignore('the selected soldier has an empty right hand');
   ClickPanel(280 + 16, 4 + 24);
   FBench.World.Wait(40);
   Assert.AreEqual('ActionMenu:0,160', FBench.Screens.Calls[FBench.Screens.Calls.Count - 1]);

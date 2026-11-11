@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomDebriefing.Pixels;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework,
+  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Types,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Resources.Intf,
@@ -413,7 +413,7 @@ var
 begin
   if not Assigned(FWorld) then
   begin
-    Assert.Pass('Senza i dati di TFTD il confronto dei pixel non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD il confronto dei pixel non si fa');
     Exit;
   end;
   // DELPHIDOOM_XCOMDEBRIEF_PIXELS: a folder written by debriefgen (the dumps with their .pre.sav and .txt); otherwise

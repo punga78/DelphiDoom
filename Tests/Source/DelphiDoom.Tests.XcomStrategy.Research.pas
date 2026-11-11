@@ -14,7 +14,7 @@ unit DelphiDoom.Tests.XcomStrategy.Research;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.XcomMod.Random,
+  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.RuleResearch, DelphiDoom.XcomMod.RuleManufacture, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.ResearchProject, DelphiDoom.XcomStrategy.Types,
   DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomStrategy.ResearchRules,
@@ -145,7 +145,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    Assert.Pass('senza i dati di TFTD o i golden il confronto non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   LLines := TStringList.Create;

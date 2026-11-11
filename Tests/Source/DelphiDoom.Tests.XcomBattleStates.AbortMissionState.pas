@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomBattleStates.AbortMissionState;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomBattle.Model,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattleStates.AbortMissionState,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
 
@@ -58,7 +58,7 @@ function TTestXcomAbortMissionState.Available: Boolean;
 begin
   Result := Assigned(FWorld);
   if not Result then
-    Assert.Pass('The data of the real game are not on this machine');
+    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
 end;
 
 function TTestXcomAbortMissionState.Open: TXcomAbortMissionState;
@@ -75,7 +75,7 @@ var
   LAlive: Integer;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   LAlive := 0;
   for LUnit in FWorld.Battle.Units do
@@ -91,7 +91,7 @@ var
   LState: TXcomAbortMissionState;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LState := Open;
   Assert.IsFalse(LState.IsScreen, 'a window over the battlescape');
 end;
@@ -99,7 +99,7 @@ end;
 procedure TTestXcomAbortMissionState.DovrebbeTornareAllaBattagliaConAnnulla;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.ClickButton(244, 118, XCOM_BUTTON_LEFT);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));
@@ -110,7 +110,7 @@ end;
 procedure TTestXcomAbortMissionState.DovrebbeTornareAllaBattagliaColTastoAnnulla;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.PressKey(FWorld.World.Game.Options.KeyCancel);
   Assert.IsTrue(FWorld.World.Game.IsState(FWorld.Parent));
@@ -120,7 +120,7 @@ end;
 procedure TTestXcomAbortMissionState.DovrebbeFinireLaBattagliaComeAbbandonataConOk;
 begin
   if not Available then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Open;
   FWorld.ClickButton(76, 118, XCOM_BUTTON_LEFT);
   Assert.IsTrue(FWorld.Battle.Aborted, 'the battle is aborted');

@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomStrategy.Units;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.Ufo,
   DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.AlienBase, DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.BaseFacility,
   DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomStrategy.NullEvents,
@@ -98,7 +98,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);
@@ -143,7 +143,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);
@@ -180,7 +180,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);
@@ -216,7 +216,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);
@@ -246,7 +246,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);
@@ -282,7 +282,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   LGame := Load(2);

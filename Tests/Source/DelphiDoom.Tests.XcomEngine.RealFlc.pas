@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomEngine.RealFlc;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Xcom.Types,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Xcom.Types,
   DelphiDoom.Xcom.FlcDecoder;
 
 type
@@ -87,7 +87,7 @@ var
 begin
   if (FUfoFolder = '') or (FGoldenFolder = '') then
   begin
-    Assert.Pass('i dati di UFO non ci sono: test saltato');
+    TXcomTestSkip.Ignore('i dati di UFO non ci sono: test saltato');
     Exit;
   end;
   SetLength(LScreen, SCREEN_WIDTH * SCREEN_HEIGHT);

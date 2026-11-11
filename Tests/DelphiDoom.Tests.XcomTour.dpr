@@ -35,6 +35,7 @@ uses
   DelphiDoom.Tests.XcomTour.Globe in 'Source\DelphiDoom.Tests.XcomTour.Globe.pas',
   DelphiDoom.Tests.XcomTour.Hangar in 'Source\DelphiDoom.Tests.XcomTour.Hangar.pas',
   DelphiDoom.Tests.XcomTour.Barracks in 'Source\DelphiDoom.Tests.XcomTour.Barracks.pas',
+  DelphiDoom.Tests.XcomTour.Ironman in 'Source\DelphiDoom.Tests.XcomTour.Ironman.pas',
   DelphiDoom.Tests.XcomTour.Trade in 'Source\DelphiDoom.Tests.XcomTour.Trade.pas',
   DelphiDoom.Tests.XcomTour.Workshop in 'Source\DelphiDoom.Tests.XcomTour.Workshop.pas';
 

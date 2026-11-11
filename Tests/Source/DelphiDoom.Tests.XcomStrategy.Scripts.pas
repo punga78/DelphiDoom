@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomStrategy.Scripts;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.RuleMissionScript, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.MissionScriptRunner, DelphiDoom.Tests.XcomSave.Sim;
 
@@ -118,7 +118,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   Run([COMMON + ', regionWeights: {0: {STR_NOWHERE: 10}}, missionWeights: {0: {STR_ALIEN_PROBE_MISSION: 10}}'],
@@ -132,7 +132,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   Run([COMMON + ', regionWeights: {0: {STR_NORTH_PACIFIC: 10}}, missionWeights: {0: {STR_NO_MISSION: 10}}'],
@@ -146,7 +146,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   Run([COMMON + ', regionWeights: {0: {STR_NORTH_PACIFIC: 10}}, missionWeights: {0: {STR_ALIEN_PROBE_MISSION: 10}}, ' +
@@ -160,7 +160,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   Run([COMMON + ', label: 5, executionOdds: 0', COMMON + ', label: 5, executionOdds: 0'], LMessage);
@@ -175,7 +175,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   FRandom := TXcomRandom.Create(1);
@@ -207,7 +207,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   FRandom := TXcomRandom.Create(1);
@@ -237,7 +237,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   FRandom := TXcomRandom.Create(1);
@@ -269,7 +269,7 @@ var
 begin
   if not FSim.Available then
   begin
-    Assert.Pass('senza i dati di TFTD il test non si fa');
+    TXcomTestSkip.Ignore('senza i dati di TFTD il test non si fa');
     Exit;
   end;
   FRandom := TXcomRandom.Create(1);

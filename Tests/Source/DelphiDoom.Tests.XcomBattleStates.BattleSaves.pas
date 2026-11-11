@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.BattleSaves;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem,
   DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.Model,
@@ -156,7 +156,7 @@ function TTestXcomBattleSaves.Ready: Boolean;
 begin
   Result := Assigned(FState);
   if not Result then
-    Assert.Pass('the data of TFTD are not here');
+    TXcomTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomBattleSaves.PressKey(AKey: Integer);
@@ -228,7 +228,7 @@ begin
   // a frequency that the turn of the scenario is not a multiple of (and it is not the first turn)
   if FBench.Session.Battle.Turn = 1 then
   begin
-    Assert.Pass('the scenario is at its first turn, always saved');
+    TXcomTestSkip.Ignore('the scenario is at its first turn, always saved');
     Exit;
   end;
   FBench.World.Game.Options.SetValue('autosaveFrequency', FBench.Session.Battle.Turn + 1);

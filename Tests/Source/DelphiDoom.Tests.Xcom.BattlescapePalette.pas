@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.Xcom.BattlescapePalette;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip;
 
 type
   [TestFixture]
@@ -210,13 +210,13 @@ begin
   LFolder := TXcomRealData.Folder;
   if LFolder = '' then
   begin
-    Assert.Pass('the real data are not on this machine');
+    TXcomTestSkip.Ignore('the real data are not on this machine');
     Exit;
   end;
   LData := TXcomFactory.CreateGameData(TXcomFactory.CreateFolderFiles([LFolder]));
   if not LData.Files.Exists('UFOGRAPH/D0.LBM') then
   begin
-    Assert.Pass('this game (UFO) has no battlescape LBM');
+    TXcomTestSkip.Ignore('this game (UFO) has no battlescape LBM');
     Exit;
   end;
   for LIndex := 0 to TXcomBattlescapePalette.COUNT - 1 do

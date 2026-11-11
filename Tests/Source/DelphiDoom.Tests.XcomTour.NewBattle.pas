@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomTour.NewBattle;
 interface
 
 uses
-  System.SysUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  System.SysUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
   DelphiDoom.XcomMenu.NewBattleState, DelphiDoom.Tests.XcomTour.World;
 
 type
@@ -75,7 +75,7 @@ function TTestXcomTourNewBattle.Open: Boolean;
 begin
   Result := FWorld.HasData;
   if not Result then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   FWorld.Wait(5000);
   FWorld.Click(MENU_NEW_BATTLE_X, MENU_NEW_BATTLE_Y);
   FWorld.Wait(500);

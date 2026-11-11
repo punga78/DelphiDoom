@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomGeoscape.GameRules;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.XcomGeoscape.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomGeoscape.World;
 
 type
   [TestFixture]
@@ -55,7 +55,7 @@ end;
 procedure TTestXcomGameRules.DovrebbeLeggereIlRegolamentoDelModPrincipale;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Assert.IsTrue(FWorld.Rules.Ruleset.Facilities.Count > 0);
   Assert.IsTrue(FWorld.Rules.Ruleset.Regions.Count > 0);
 end;
@@ -63,7 +63,7 @@ end;
 procedure TTestXcomGameRules.DovrebbeDareIlGloboDiTftd;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Assert.AreEqual(733, FWorld.Rules.Ruleset.Globe.Polygons.Count);
   Assert.AreEqual(19, FWorld.Rules.Ruleset.Globe.Polylines.Count);
 end;
@@ -73,7 +73,7 @@ var
   LSet: TXcomSurfaceSet;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LSet := FWorld.Rules.GetSurfaceSet('TEXTURE.DAT');
   Assert.IsNotNull(LSet);
   Assert.AreEqual(32, LSet.Width);
@@ -85,7 +85,7 @@ var
   LSet: TXcomSurfaceSet;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   LSet := FWorld.Rules.GetSurfaceSet('GlobeMarkers');
   Assert.IsNotNull(LSet);
   // globe_tftd.png is 27 x 3 pixels cut in squares of 3: nine markers
@@ -96,7 +96,7 @@ end;
 procedure TTestXcomGameRules.DovrebbeDareNilPerUnInsiemeSconosciuto;
 begin
   if not FWorld.HasData then
-    Exit;
+    TXcomTestSkip.Ignore('the data of the game is not on this machine');
   Assert.IsNull(FWorld.Rules.GetSurfaceSet('NON_ESISTE.PCK'));
 end;
 

@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomEngine.Menu;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Factory,
   DelphiDoom.Xcom.Types,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf,
@@ -552,7 +552,7 @@ var
 begin
   if FReference = '' then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   LSettings.DataFolder := FDataFolder;
@@ -585,7 +585,7 @@ var
 begin
   if FReference = '' then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   LWorld := TTestWorld.Create;
@@ -615,7 +615,7 @@ var
 begin
   if FReference = '' then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   LSettings.DataFolder := FDataFolder;
@@ -650,7 +650,7 @@ var
 begin
   if FReference = '' then
   begin
-    Assert.Pass('no real data');
+    TXcomTestSkip.Ignore('no real data');
     Exit;
   end;
   LSettings.DataFolder := FDataFolder;

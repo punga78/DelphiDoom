@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom battlescape library - BattlescapeGame     }
 {  and its steps against the real BattlescapeGame of OpenXcom (with a real     }
@@ -14,7 +14,7 @@ interface
 
 uses
   System.SysUtils, System.Math, System.Classes, System.IOUtils, System.ZLib, System.RegularExpressions,
-  System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
+  System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Context,
@@ -1124,7 +1124,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;
@@ -1161,7 +1161,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;
@@ -1203,7 +1203,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   FCompareMaps := True;

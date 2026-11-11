@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Globe;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -95,7 +95,7 @@ begin
   if Result then
     FWorld.StartNewGame
   else
-    Assert.Pass('i dati di TFTD non ci sono');
+    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
 end;
 
 function TTestXcomTourGlobe.Craft: TXcomCraft;
@@ -352,7 +352,7 @@ var
 begin
   if not (FWorld.HasData and FWorld.LoadMission('alienbase')) then
   begin
-    Assert.Pass('i dati di TFTD o il salvataggio non ci sono');
+    TXcomTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
     Exit;
   end;
   if FWorld.Top <> GEOSCAPE then

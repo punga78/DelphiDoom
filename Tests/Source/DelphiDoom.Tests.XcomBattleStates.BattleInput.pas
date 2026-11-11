@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.BattleInput;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.Tests.XcomBattleStates.Bench;
 
@@ -113,7 +113,7 @@ function TTestXcomBattleInput.Ready: Boolean;
 begin
   Result := Assigned(FState);
   if not Result then
-    Assert.Pass('the data of TFTD are not here');
+    TXcomTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomBattleInput.Mouse(AKind: TXcomEventKind; AX, AY, AButton: Integer);
@@ -356,19 +356,33 @@ procedure TTestXcomBattleInput.CtrlWDovrebbePortareIlSoldatoSottoIlCursore;
 var
   LUnit: TXcomBattleUnit;
   LTarget: TXcomPosition;
+  LX, LY: Integer;
+  LFree: Boolean;
 begin
   if not Ready then
     Exit;
   FBench.World.Game.Options.SetValue('debug', 1);
   LUnit := FBench.Session.Battle.SelectedUnit;
   PressKey(Ord('d'), True);
-  // the cursor of the tiles goes two tiles away, on a free tile of the map
-  Mouse(ekMouseMotion, 300, 120, 0);
-  LTarget := FState.Map.Map.SelectorPosition;
-  if (not Assigned(FBench.Session.Battle.TileAt(LTarget))) or
-    Assigned(FBench.Session.Battle.TileAt(LTarget).CurrentUnit) then
+  // the cursor of the tiles goes over the map until it is on a free tile
+  LFree := False;
+  LY := 20;
+  while (not LFree) and (LY <= 130) do
   begin
-    Assert.Pass('the tile under the middle of the screen is not free in this scenario');
+    LX := 40;
+    while (not LFree) and (LX <= 300) do
+    begin
+      Mouse(ekMouseMotion, LX, LY, 0);
+      LTarget := FState.Map.Map.SelectorPosition;
+      LFree := Assigned(FBench.Session.Battle.TileAt(LTarget)) and
+        (not Assigned(FBench.Session.Battle.TileAt(LTarget).CurrentUnit)) and not (LTarget = LUnit.Position);
+      Inc(LX, 20);
+    end;
+    Inc(LY, 10);
+  end;
+  if not LFree then
+  begin
+    TXcomTestSkip.Ignore('no tile on the screen is free in this scenario');
     Exit;
   end;
   PressKey(Ord('w'), True);
@@ -410,7 +424,7 @@ begin
     Exit;
   if FBench.Session.Battle.MapSizeZ < 2 then
   begin
-    Assert.Pass('the map of the scenario has one level');
+    TXcomTestSkip.Ignore('the map of the scenario has one level');
     Exit;
   end;
   Mouse(ekMouseMotion, 300, 120, 0);
