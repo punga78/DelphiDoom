@@ -2800,6 +2800,7 @@ end;
 procedure TXcomBattleUnit.AdjustStats(const AAdjustment: TXcomStatAdjustment);
 var
   LIndex: Integer;
+  LProduct: Double;
 begin
   FStats.TimeUnits := FStats.TimeUnits + AAdjustment.StatGrowth.TimeUnits * AAdjustment.GrowthMultiplier *
     FStats.TimeUnits div 100;
@@ -2824,9 +2825,15 @@ begin
   FStats.Melee := FStats.Melee + AAdjustment.StatGrowth.Melee * AAdjustment.GrowthMultiplier *
     FStats.Melee div 100;
   // int *= double: the product is a double that is truncated
-  FStats.Firing := Trunc(FStats.Firing * AAdjustment.AimAndArmorMultiplier);
+  // the product is stored as a Double before the truncation: the x87 would keep 64 bits of mantissa and
+  // truncate 20 * 1.2 to 23, where the C++ (SSE, 53 bits) rounds it to 24.0
+  LProduct := FStats.Firing * AAdjustment.AimAndArmorMultiplier;
+  FStats.Firing := Trunc(LProduct);
   for LIndex := 0 to 4 do
-    FMaxArmor[LIndex] := Trunc(FMaxArmor[LIndex] * AAdjustment.AimAndArmorMultiplier);
+  begin
+    LProduct := FMaxArmor[LIndex] * AAdjustment.AimAndArmorMultiplier;
+    FMaxArmor[LIndex] := Trunc(LProduct);
+  end;
 end;
 
 function TXcomBattleUnit.HasInventory: Boolean;

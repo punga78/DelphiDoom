@@ -1,0 +1,12 @@
+mission=STR_CRUISER
+kind=0
+race=STR_LOBSTERMAN
+itemlevel=6
+shade=13
+texture=-1
+terrain=ENTRY
+craft=0
+base=1
+runseed=1761025
+seedafter=2156966204697533189
+ok=0

@@ -22,7 +22,8 @@ uses
   DelphiDoom.Tests.XcomBattle.Model in 'Source\DelphiDoom.Tests.XcomBattle.Model.pas',
   DelphiDoom.Tests.XcomBattle.RealTileEngine in 'Source\DelphiDoom.Tests.XcomBattle.RealTileEngine.pas',
   DelphiDoom.Tests.XcomBattle.RealPathfinding in 'Source\DelphiDoom.Tests.XcomBattle.RealPathfinding.pas',
-  DelphiDoom.Tests.XcomBattle.RealBattle in 'Source\DelphiDoom.Tests.XcomBattle.RealBattle.pas';
+  DelphiDoom.Tests.XcomBattle.RealBattle in 'Source\DelphiDoom.Tests.XcomBattle.RealBattle.pas',
+  DelphiDoom.Tests.XcomBattle.RealGenerator in 'Source\DelphiDoom.Tests.XcomBattle.RealGenerator.pas';
 
 var
   Runner: ITestRunner;

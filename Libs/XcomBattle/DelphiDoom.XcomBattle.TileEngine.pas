@@ -34,7 +34,7 @@ type
   ///   (TileEngine). It holds the saved battle without owning it. What needs the battle in progress
   ///   (BattlescapeGame: reaction fire, the throw, the hit that pushes states) is not here
   /// </summary>
-  TXcomTileEngine = class(TInterfacedObject, IXcomBattleTileEngine)
+  TXcomTileEngine = class(TInterfacedObject, IXcomGeneratorTileEngine, IXcomBattleTileEngine)
   strict private
     const
       MAX_VIEW_DISTANCE = 20;
@@ -105,6 +105,8 @@ type
     function Distance(const AFirst, ASecond: TXcomPosition): Integer;
     function DistanceSq(const AFirst, ASecond: TXcomPosition; AConsiderZ: Boolean = True): Integer;
     function CloseUfoDoors: Integer;
+    /// <summary>faceWindow: the direction (0, 2, 4, 6) of a window next to the tile, or -1</summary>
+    function FaceWindow(const APosition: TXcomPosition): Integer;
     /// <summary>applyGravity: units and items fall to where there is a floor; gives the tile where the items end up</summary>
     function ApplyGravityTile(const ATile: TXcomTile): TXcomTile;
     procedure ApplyGravity(const ATile: TXcomTile);
@@ -1604,6 +1606,29 @@ begin
   else
     LZ := 0;
   Result := LX * LX + LY * LY + LZ * LZ;
+end;
+
+function TXcomTileEngine.FaceWindow(const APosition: TXcomPosition): Integer;
+var
+  LTile: TXcomTile;
+begin
+  LTile := FSave.TileAt(APosition);
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_NORTHWALL]) and
+    (LTile.MapData[XCOM_PART_NORTHWALL].GetBlock(0) = 0) then
+    Exit(0);
+  LTile := FSave.TileAt(APosition + TXcomPosition.Make(1, 0, 0));
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_WESTWALL]) and
+    (LTile.MapData[XCOM_PART_WESTWALL].GetBlock(0) = 0) then
+    Exit(2);
+  LTile := FSave.TileAt(APosition + TXcomPosition.Make(0, 1, 0));
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_NORTHWALL]) and
+    (LTile.MapData[XCOM_PART_NORTHWALL].GetBlock(0) = 0) then
+    Exit(4);
+  LTile := FSave.TileAt(APosition);
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_WESTWALL]) and
+    (LTile.MapData[XCOM_PART_WESTWALL].GetBlock(0) = 0) then
+    Exit(6);
+  Result := -1;
 end;
 
 function TXcomTileEngine.CloseUfoDoors: Integer;

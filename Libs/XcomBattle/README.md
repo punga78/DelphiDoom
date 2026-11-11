@@ -1,6 +1,6 @@
 # XcomBattle
 
-Modello e logica della battaglia tattica di OpenXcom (Battlescape), senza interfaccia: tegole, unita', oggetti, battaglia salvata e, nelle fette successive, percorsi, luce e visibilita', esplosioni, intelligenza artificiale e generazione della mappa.
+Modello e logica della battaglia tattica di OpenXcom (Battlescape), senza interfaccia: tegole, unita', oggetti, battaglia salvata, percorsi, luce e visibilita', esplosioni e generazione di una missione (mappa dallo script, UFO e velivoli, X-COM, alieni, civili); nelle fette successive proiettili, azioni, intelligenza artificiale.
 
 - **Derivato da OpenXcom** (GPL v3 o successiva). La licenza del derivato la decide l'utente (README di `Libs\XcomFormats`).
 - Dipende da `Libs\XcomMod`, `Libs\XcomSave` e `Libs\Yaml`.

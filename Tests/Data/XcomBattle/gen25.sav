@@ -1,0 +1,798 @@
+name: ""
+version: 1.0
+engine: ""
+build: 4a4bae5fa-dirty
+time:
+  second: 0
+  minute: 0
+  hour: 12
+  weekday: 1
+  day: 1
+  month: 1
+  year: 2040
+mods:
+  - "xcom2 ver: 1.0"
+---
+difficulty: 4
+end: 0
+monthsPassed: -1
+graphRegionToggles: ""
+graphCountryToggles: ""
+graphFinanceToggles: ""
+rng: 461737719334113055
+funds:
+  - 6000000
+maintenance:
+  - 0
+researchScores:
+  - 0
+incomes:
+  - 6000000
+expenditures:
+  - 0
+warned: false
+globeLon: 0
+globeLat: 0
+globeZoom: 0
+ids:
+  STR_BARRACUDA: 3
+  STR_SOLDIER: 9
+  STR_TRITON: 2
+countries:
+  - type: STR_USA
+    funding:
+      - 879000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ALASKA
+    funding:
+      - 256000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EU_SYNDICATE
+    funding:
+      - 300000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ARABIAN_BLOC
+    funding:
+      - 405000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EGYPTIAN_CARTEL
+    funding:
+      - 304000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_AFRICA_CORP
+    funding:
+      - 199000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_BRAZILIAN_UNION
+    funding:
+      - 239000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NEW_MEXICO
+    funding:
+      - 445000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ASIAN_COALITION
+    funding:
+      - 521000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SCANDINAVIA
+    funding:
+      - 277000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NEO_JAPAN
+    funding:
+      - 342000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_FREE_CHINA
+    funding:
+      - 492000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_AUSTRALASIA
+    funding:
+      - 332000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_FED_KOREA
+    funding:
+      - 518000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EURASIA_UC
+    funding:
+      - 304000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ICELANDIC_UNION
+    funding:
+      - 187000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+regions:
+  - type: STR_NORTH_ATLANTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_ATLANTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NORTH_PACIFIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_PACIFIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_MEDITERRANEAN
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_CHINA_SEA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_INDIAN_OCEAN
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_THE_EAST_SEA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NORTH_SEA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_CARRIBEAN
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ANTARCTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ARCTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EURASIA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NORTH_AMERICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_AFRICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+bases:
+  - lon: 0
+    lat: 0
+    facilities:
+      - type: STR_AIR_LOCK
+        x: 2
+        y: 2
+      - type: STR_SUB_PEN
+        x: 2
+        y: 0
+      - type: STR_SUB_PEN
+        x: 0
+        y: 4
+      - type: STR_SUB_PEN
+        x: 4
+        y: 4
+      - type: STR_LIVING_QUARTERS
+        x: 3
+        y: 2
+      - type: STR_GENERAL_STORES
+        x: 2
+        y: 3
+      - type: STR_LABORATORY
+        x: 3
+        y: 3
+      - type: STR_WORKSHOP
+        x: 4
+        y: 3
+      - type: STR_STANDARD_SONAR
+        x: 1
+        y: 3
+    soldiers:
+      - type: STR_SOLDIER
+        id: 1
+        name: Vivien Bori
+        initialStats:
+          tu: 52
+          stamina: 68
+          health: 34
+          bravery: 20
+          reactions: 52
+          firing: 52
+          throwing: 68
+          strength: 22
+          psiStrength: 18
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 52
+          stamina: 68
+          health: 34
+          bravery: 20
+          reactions: 52
+          firing: 52
+          throwing: 68
+          strength: 22
+          psiStrength: 18
+          psiSkill: 0
+          melee: 36
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 1
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 2
+        name: Ludvik Sichy
+        initialStats:
+          tu: 57
+          stamina: 65
+          health: 25
+          bravery: 60
+          reactions: 59
+          firing: 47
+          throwing: 77
+          strength: 21
+          psiStrength: 51
+          psiSkill: 0
+          melee: 40
+        currentStats:
+          tu: 57
+          stamina: 65
+          health: 25
+          bravery: 60
+          reactions: 59
+          firing: 47
+          throwing: 77
+          strength: 21
+          psiStrength: 51
+          psiSkill: 0
+          melee: 40
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 3
+        name: Csaba Liptak
+        initialStats:
+          tu: 53
+          stamina: 51
+          health: 33
+          bravery: 20
+          reactions: 43
+          firing: 64
+          throwing: 51
+          strength: 37
+          psiStrength: 20
+          psiSkill: 0
+          melee: 38
+        currentStats:
+          tu: 53
+          stamina: 51
+          health: 33
+          bravery: 20
+          reactions: 43
+          firing: 64
+          throwing: 51
+          strength: 37
+          psiStrength: 20
+          psiSkill: 0
+          melee: 38
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 4
+        name: Pavlina Lyubomirova
+        initialStats:
+          tu: 50
+          stamina: 48
+          health: 29
+          bravery: 10
+          reactions: 34
+          firing: 50
+          throwing: 53
+          strength: 29
+          psiStrength: 51
+          psiSkill: 0
+          melee: 31
+        currentStats:
+          tu: 50
+          stamina: 48
+          health: 29
+          bravery: 10
+          reactions: 34
+          firing: 50
+          throwing: 53
+          strength: 29
+          psiStrength: 51
+          psiSkill: 0
+          melee: 31
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 1
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 5
+        name: Pete Salomon
+        initialStats:
+          tu: 59
+          stamina: 50
+          health: 34
+          bravery: 40
+          reactions: 33
+          firing: 41
+          throwing: 55
+          strength: 30
+          psiStrength: 89
+          psiSkill: 0
+          melee: 35
+        currentStats:
+          tu: 59
+          stamina: 50
+          health: 34
+          bravery: 40
+          reactions: 33
+          firing: 41
+          throwing: 55
+          strength: 30
+          psiStrength: 89
+          psiSkill: 0
+          melee: 35
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 3
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 6
+        name: Rastislav Nagy
+        initialStats:
+          tu: 54
+          stamina: 65
+          health: 25
+          bravery: 60
+          reactions: 56
+          firing: 56
+          throwing: 77
+          strength: 38
+          psiStrength: 35
+          psiSkill: 0
+          melee: 23
+        currentStats:
+          tu: 54
+          stamina: 65
+          health: 25
+          bravery: 60
+          reactions: 56
+          firing: 56
+          throwing: 77
+          strength: 38
+          psiStrength: 35
+          psiSkill: 0
+          melee: 23
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 7
+        name: Steven Childers
+        initialStats:
+          tu: 55
+          stamina: 56
+          health: 25
+          bravery: 40
+          reactions: 30
+          firing: 42
+          throwing: 62
+          strength: 27
+          psiStrength: 10
+          psiSkill: 0
+          melee: 32
+        currentStats:
+          tu: 55
+          stamina: 56
+          health: 25
+          bravery: 40
+          reactions: 30
+          firing: 42
+          throwing: 62
+          strength: 27
+          psiStrength: 10
+          psiSkill: 0
+          melee: 32
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 0
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 8
+        name: Rastislav Gregor
+        initialStats:
+          tu: 51
+          stamina: 52
+          health: 38
+          bravery: 60
+          reactions: 57
+          firing: 63
+          throwing: 78
+          strength: 35
+          psiStrength: 63
+          psiSkill: 0
+          melee: 40
+        currentStats:
+          tu: 51
+          stamina: 52
+          health: 38
+          bravery: 60
+          reactions: 57
+          firing: 63
+          throwing: 78
+          strength: 35
+          psiStrength: 63
+          psiSkill: 0
+          melee: 40
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_TRITON
+          id: 1
+        gender: 0
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+    crafts:
+      - lon: 0
+        lat: 0
+        id: 1
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_TRITON
+        fuel: 1400
+        damage: 0
+        items:
+          STR_BLASTA_POWER_CLIP: 1
+          STR_COELACANTH_GAUSS: 3
+          STR_DART_PISTOL: 3
+          STR_DART_POD: 5
+          STR_DISRUPTOR_AMMO: 1
+          STR_DYE_GRENADE: 3
+          STR_GAS_CANNON: 1
+          STR_GAUSS_CANNON_AMMO: 3
+          STR_GAUSS_RIFLE: 3
+          STR_GAUSS_RIFLE_CLIP: 1
+          STR_GC_AP_AMMO: 2
+          STR_GC_HE_AMMO: 2
+          STR_HARPOON_POD: 12
+          STR_JET_HARPOON: 6
+          STR_LARGE_TORPEDO: 1
+          STR_LOBSTERMAN_MELEE_WEAPON: 3
+          STR_MAGNA_BLAST_GRENADE: 11
+          STR_SONIC_BLASTA_RIFLE: 2
+          STR_THERMAL_SHOK_BOMB: 1
+        status: STR_READY
+      - lon: 0
+        lat: 0
+        id: 1
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_BARRACUDA
+        fuel: 800
+        damage: 0
+        weapons:
+          - type: STR_AJAX
+            ammo: 6
+          - type: STR_CRAFT_GAS_CANNON_UC
+            ammo: 200
+        items:
+          STR_BIODRONE_MELEE_WEAPON: 3
+          STR_BLASTA_POWER_CLIP: 1
+          STR_DYE_GRENADE: 1
+          STR_GAUSS_PISTOL_CLIP: 3
+          STR_GAUSS_RIFLE: 3
+          STR_GAUSS_RIFLE_CLIP: 4
+          STR_HARPOON_POD: 3
+          STR_LARGE_TORPEDO: 3
+          STR_PHOSPHOROUS_TORPEDO: 3
+          STR_SMALL_TORPEDO: 2
+          STR_SONIC_BLASTA_RIFLE: 2
+          STR_TORPEDO_LAUNCHER: 1
+        status: STR_READY
+      - lon: 0
+        lat: 0
+        id: 2
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_BARRACUDA
+        fuel: 800
+        damage: 0
+        weapons:
+          - type: STR_AJAX
+            ammo: 6
+          - type: STR_CRAFT_GAS_CANNON_UC
+            ammo: 200
+        items:
+          STR_BLASTA_POWER_CLIP: 3
+          STR_COELACANTH_GAUSS: 1
+          STR_DISPLACER_PWT: 4
+          STR_DISRUPTOR_AMMO: 3
+          STR_DISRUPTOR_PULSE_LAUNCHER: 2
+          STR_GAUSS_CANNON_AMMO: 3
+          STR_GAUSS_PISTOL_CLIP: 1
+          STR_HJC_HE_AMMO: 1
+          STR_HJC_P_AMMO: 2
+          STR_HWP_DISPLACER_PWT: 5
+          STR_SONIC_PULSER: 1
+          STR_THERMAL_SHOK_BOMB: 1
+          STR_VIBRO_BLADE: 6
+        status: STR_READY
+    items:
+      STR_AJAX_LAUNCHER: 1
+      STR_AJAX_TORPEDOES: 25
+      STR_CRAFT_GAS_CANNON: 2
+      STR_CRAFT_GAS_CANNON_ROUNDS_X50: 1
+      STR_DART_PISTOL: 2
+      STR_DART_POD: 8
+      STR_DUP_HEAD_LAUNCHER: 1
+      STR_DUP_HEAD_TORPEDOES: 10
+      STR_DYE_GRENADE: 5
+      STR_GAS_CANNON: 1
+      STR_GC_AP_AMMO: 6
+      STR_HARPOON_POD: 8
+      STR_HJC_AP_AMMO: 6
+      STR_HYDRO_JET_CANNON: 1
+      STR_JET_HARPOON: 2
+      STR_MAGNA_BLAST_GRENADE: 5
+      STR_SMALL_TORPEDO: 4
+      STR_TORPEDO_LAUNCHER: 1
+    scientists: 10
+    engineers: 10
+alienStrategy:
+  regions:
+    STR_ANTARCTIC: 10
+    STR_ARCTIC: 5
+    STR_CARRIBEAN: 10
+    STR_INDIAN_OCEAN: 8
+    STR_MEDITERRANEAN: 16
+    STR_NORTH_ATLANTIC: 18
+    STR_NORTH_PACIFIC: 4
+    STR_NORTH_SEA: 15
+    STR_SOUTH_ATLANTIC: 4
+    STR_SOUTH_CHINA_SEA: 12
+    STR_SOUTH_PACIFIC: 10
+    STR_THE_EAST_SEA: 12
+  possibleMissions:
+    - region: ARTIFACT_SITES
+      missions: ~
+    - region: SHIPPING_LANES
+      missions: ~
+    - region: STR_AFRICA
+      missions: ~
+    - region: STR_ANTARCTIC
+      missions:
+        STR_ALIEN_BASE: 22
+        STR_ALIEN_PROBE_MISSION: 15
+    - region: STR_ARCTIC
+      missions:
+        STR_ALIEN_BASE: 28
+        STR_ALIEN_PROBE_MISSION: 15
+    - region: STR_CARRIBEAN
+      missions:
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_PROBE_MISSION: 6
+        STR_ALIEN_RESOURCE_RAID: 4
+    - region: STR_EURASIA
+      missions: ~
+    - region: STR_INDIAN_OCEAN
+      missions:
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_INTERDICTION: 8
+        STR_ALIEN_PROBE_MISSION: 7
+        STR_ALIEN_RESOURCE_RAID: 8
+    - region: STR_MEDITERRANEAN
+      missions:
+        STR_ALIEN_BASE: 6
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 10
+        STR_ALIEN_PROBE_MISSION: 10
+        STR_ALIEN_RESOURCE_RAID: 15
+    - region: STR_NORTH_AMERICA
+      missions: ~
+    - region: STR_NORTH_ATLANTIC
+      missions:
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 16
+        STR_ALIEN_PROBE_MISSION: 14
+        STR_ALIEN_RESOURCE_RAID: 20
+    - region: STR_NORTH_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 18
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_INTERDICTION: 16
+        STR_ALIEN_PROBE_MISSION: 25
+        STR_ALIEN_RESOURCE_RAID: 21
+    - region: STR_NORTH_SEA
+      missions:
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_INFILTRATION: 13
+        STR_ALIEN_INTERDICTION: 13
+        STR_ALIEN_PROBE_MISSION: 8
+        STR_ALIEN_RESOURCE_RAID: 21
+    - region: STR_SOUTH_ATLANTIC
+      missions:
+        STR_ALIEN_BASE: 25
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_INTERDICTION: 22
+        STR_ALIEN_PROBE_MISSION: 25
+        STR_ALIEN_RESOURCE_RAID: 12
+    - region: STR_SOUTH_CHINA_SEA
+      missions:
+        STR_ALIEN_BASE: 19
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_INTERDICTION: 8
+        STR_ALIEN_PROBE_MISSION: 8
+        STR_ALIEN_RESOURCE_RAID: 8
+    - region: STR_SOUTH_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_INTERDICTION: 24
+        STR_ALIEN_PROBE_MISSION: 10
+        STR_ALIEN_RESOURCE_RAID: 12
+    - region: STR_THE_EAST_SEA
+      missions:
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_INFILTRATION: 10
+        STR_ALIEN_INTERDICTION: 5
+        STR_ALIEN_PROBE_MISSION: 5
+        STR_ALIEN_RESOURCE_RAID: 6
+  missionLocations:
+    {}
+  missionsRun:
+    {}
