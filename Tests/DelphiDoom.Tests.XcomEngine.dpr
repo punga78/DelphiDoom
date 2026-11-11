@@ -28,7 +28,11 @@ uses
   DelphiDoom.Tests.XcomEngine.OptionsScreens in 'Source\DelphiDoom.Tests.XcomEngine.OptionsScreens.pas',
   DelphiDoom.Tests.XcomEngine.RealFrames in 'Source\DelphiDoom.Tests.XcomEngine.RealFrames.pas',
   DelphiDoom.Tests.XcomEngine.OptionsMore in 'Source\DelphiDoom.Tests.XcomEngine.OptionsMore.pas',
-  DelphiDoom.Tests.XcomEngine.SaveScreens in 'Source\DelphiDoom.Tests.XcomEngine.SaveScreens.pas';
+  DelphiDoom.Tests.XcomEngine.SaveScreens in 'Source\DelphiDoom.Tests.XcomEngine.SaveScreens.pas',
+  DelphiDoom.Tests.XcomEngine.RealAudio in 'Source\DelphiDoom.Tests.XcomEngine.RealAudio.pas',
+  DelphiDoom.Tests.XcomEngine.AudioFakes in 'Source\DelphiDoom.Tests.XcomEngine.AudioFakes.pas',
+  DelphiDoom.Tests.XcomEngine.Audio in 'Source\DelphiDoom.Tests.XcomEngine.Audio.pas',
+  DelphiDoom.Tests.XcomEngine.AudioMusic in 'Source\DelphiDoom.Tests.XcomEngine.AudioMusic.pas';
 
 var
   Runner: ITestRunner;

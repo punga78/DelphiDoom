@@ -15,6 +15,18 @@ uses
   DelphiDoom.XcomEngine.RuleInterface;
 
 type
+  /// <summary>One entry of the "musics" of the rulesets (RuleMusic): its type, file name, place in the CAT and volume</summary>
+  TXcomMusicRule = record
+    /// <summary>The key of the music (GMSTORY, GMGEO1...)</summary>
+    MusicType: string;
+    /// <summary>RuleMusic::getName: the name of the file in SOUND (without extension)</summary>
+    Name: string;
+    /// <summary>The position in ADLIB.CAT/GM.CAT; MaxInt when the music is not in the original files</summary>
+    CatPos: Integer;
+    /// <summary>The volume the Adlib music is normalized to (0.76 by default)</summary>
+    Normalization: Single;
+  end;
+
   /// <summary>
   ///   The graphics, fonts, palettes and interface rules of the game in use: Mod::getSurface, getFont, getPalette,
   ///   getInterface and setPalette. What it returns is owned by the implementation (the states never free it)
@@ -42,6 +54,13 @@ type
     function SoundWave(const ASet: string; AIndex: Integer): TBytes;
     /// <summary>A number of the constants of the rulesets (ufoFire, buttonPress...), or the default</summary>
     function Constant(const AName: string; ADefault: Integer): Integer;
+    /// <summary>The "musics" of the rulesets (Mod::getMusicDefs), sorted by type like the std::map of the C++</summary>
+    function MusicRules: TArray<TXcomMusicRule>;
+    /// <summary>
+    ///   A file of the SOUND folder of the game or of the mod (CAT or music file) by name without case; nil when
+    ///   there is none (FileMap::getVFolderContents("SOUND") and getFilePath)
+    /// </summary>
+    function SoundFile(const AName: string): TBytes;
   end;
 
 implementation

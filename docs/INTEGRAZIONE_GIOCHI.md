@@ -198,3 +198,8 @@ Fatti di rilievo per le fette 1:
 
 - **Fatto**: `Libs\XcomGeoscape` (globo, `GeoscapeState`, scelta del sito della prima base, nome, avvio della partita nuova), `Libs\XcomBasescape` (schermata della base, griglia, mini mappe), `IXcomGameRules` (ruleset e set di sprite), `TXcomBaseCapacity` in `Libs\XcomSave`. Da `XcomGame`: Menu, New Game, difficolta', globo con la scelta del sito (solo mare in TFTD), nome, geoscape, Bases, basescape. Pixel: globo spiegato interamente dal rumore (0 pixel non spiegati su oltre 40000), sidebar e basescape uguali al vero OpenXcom (restano solo i fondi, casuali), capacita' delle basi 0 differenze su 16 salvataggi.
 - **Non fatto**: logica del tempo (`AlienMission::think/spawnUfo`, UFO, rilevazione, `Craft` radar/rearm, `Production::step`, medaglie), `Mod` suoni/musica/ModScript, stat string, `GeoscapeState` (dogfight, popup, click sui bersagli), `ConfirmNewBaseState`, tutte le schermate figlie del basescape.
+
+## OpenXcom: audio (issue #176, sessione audio e menu)
+
+- **Fatto**: `Libs\XcomAudio` (mixer a 16 canali, player della musica con le regole `musics:`, brani Adlib di `ADLIB.CAT`/`AINTRO.CAT` sopra `Libs\Opl`, brani WAV, effetti da `SAMPLE.CAT`), uscita waveOut (`OpenXcom\DelphiDoom.Xcom.Win.PcmOutput`), `TXcomVolume` (curva di `Game::volumeExponent`). Il menu principale di TFTD suona (`GMWAITLO`), tutte le 23 musiche di `music.rul` producono suono (RMS), e in finestra `XcomGame -audiostats` mostra byte, RMS e buffer completati dal dispositivo. **Non verificato con l orecchio.**
+- **Non fatto**: musica digitale FLAC/OGG/MP3/MOD, `GM.CAT` (MIDI), canali della battaglia, pausa al cambio di fuoco. Dettagli: `Libs\XcomAudio\CLAUDE.md`.

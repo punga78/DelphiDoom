@@ -59,6 +59,10 @@ type
     procedure SetVolume(ASound, AMusic, AUi: Integer); virtual;
     /// <summary>The name of the format of the music that plays (Mix_GetMusicType; with no audio device it is the first, Adlib)</summary>
     function CurrentMusicFormat: string; virtual;
+    /// <summary>Mod::playMusic: starts the music unless it already plays (does nothing without a music player)</summary>
+    procedure PlayMusic(const AName: string; AId: Integer = 0); virtual;
+    /// <summary>Music::stop</summary>
+    procedure StopMusic; virtual;
     /// <summary>The saved games of the user (nil when the host has no folder of saves)</summary>
     function SaveCatalog: IXcomSaveCatalog; virtual;
     /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
@@ -178,6 +182,14 @@ end;
 function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;
 begin
   Result := nil;
+end;
+
+procedure TXcomStateHost.PlayMusic(const AName: string; AId: Integer);
+begin
+end;
+
+procedure TXcomStateHost.StopMusic;
+begin
 end;
 
 function TXcomStateHost.CurrentMusicFormat: string;
@@ -320,6 +332,8 @@ begin
     Host.Resources.SetPalette(@FPalette[0], 0, 256);
   for LSurface in FSurfaces do
     LSurface.StateInitialized;
+  if (FRuleInterface <> nil) and (FRuleInterface.Music <> '') then
+    Host.PlayMusic(FRuleInterface.Music);
 end;
 
 procedure TXcomState.Think;

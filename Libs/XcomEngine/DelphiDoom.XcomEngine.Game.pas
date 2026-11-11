@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
-  DelphiDoom.XcomEngine.Session.Intf;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume;
 
 type
   /// <summary>The handler of the screenshot key: it receives the screen to save</summary>
@@ -50,6 +50,7 @@ type
     FDisplayModes: IXcomDisplayModes;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
+    FMusic: IXcomMusicPlayer;
     FFolderOpener: IXcomFolderOpener;
     FSaveCatalog: IXcomSaveCatalog;
     FNewGameStarter: IXcomNewGameStarter;
@@ -85,6 +86,11 @@ type
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
+    /// <summary>The music of the game; it is reloaded each time the game adopts data</summary>
+    procedure SetMusicPlayer(const AMusic: IXcomMusicPlayer);
+    procedure PlayMusic(const AName: string; AId: Integer = 0); override;
+    procedure StopMusic; override;
+    function CurrentMusicFormat: string; override;
     procedure SetFolderOpener(const AOpener: IXcomFolderOpener);
     procedure SetSaveCatalog(const ACatalog: IXcomSaveCatalog);
     function SaveCatalog: IXcomSaveCatalog; override;
@@ -129,6 +135,13 @@ destructor TXcomGame.Destroy;
 begin
   FDeleted.Free;
   FStates.Free;
+  // the music reads the data of the game: it stops before the data goes
+  if FMusic <> nil then
+    FMusic.Stop;
+  FMusic := nil;
+  if FAudio <> nil then
+    FAudio.Close;
+  FAudio := nil;
   // the saved game uses the rules of the data: it goes before them
   FSession := nil;
   FLanguage.Free;
@@ -217,6 +230,35 @@ begin
     FOptions.Language := ALanguage.LanguageId;
   end;
   FResources := AResources;
+  if (FMusic <> nil) and (AResources <> nil) then
+    FMusic.Reload(AResources);
+end;
+
+procedure TXcomGame.SetMusicPlayer(const AMusic: IXcomMusicPlayer);
+begin
+  FMusic := AMusic;
+  if (FMusic <> nil) and (FResources <> nil) then
+    FMusic.Reload(FResources);
+end;
+
+procedure TXcomGame.PlayMusic(const AName: string; AId: Integer);
+begin
+  if (FMusic <> nil) and not FOptions.Mute then
+    FMusic.PlayMusic(AName, AId);
+end;
+
+procedure TXcomGame.StopMusic;
+begin
+  if FMusic <> nil then
+    FMusic.Stop;
+end;
+
+function TXcomGame.CurrentMusicFormat: string;
+begin
+  if FMusic <> nil then
+    Result := FMusic.CurrentFormat
+  else
+    Result := inherited CurrentMusicFormat;
 end;
 
 function TXcomGame.NewGameStarter: IXcomNewGameStarter;
@@ -284,9 +326,9 @@ begin
   if Length(LWave) = 0 then
     Exit;
   if AInterface then
-    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.UiVolume))
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.UiVolume)))
   else
-    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, Options.SoundVolume));
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.SoundVolume)));
 end;
 
 procedure TXcomGame.OpenFolder(const APath: string);
