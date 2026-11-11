@@ -62,8 +62,6 @@ type
     procedure DrillModules(const AData: TXcomTunnelData; const ARects: TArray<TXcomScriptRect>; ADirection: Integer);
     function RemoveBlocks(const ACommand: TXcomMapScript): Boolean;
     function ModuleData(const AReplacement: TXcomMcdReplacement): TXcomMapData;
-    procedure LoadTerrainSets(const ATerrain: TXcomRuleTerrain);
-    class function InGroups(const ABlock: TXcomMapBlock; const AGroups: TArray<Integer>): Boolean; static;
   public
     constructor Create(const AState: TXcomGeneratorState);
     destructor Destroy; override;
@@ -138,33 +136,9 @@ begin
   FState.Save.InitMap(FState.MapSizeX, FState.MapSizeY, FState.MapSizeZ, AResetTerrain);
 end;
 
-class function TXcomMapGenerator.InGroups(const ABlock: TXcomMapBlock; const AGroups: TArray<Integer>): Boolean;
-var
-  LGroup: Integer;
-begin
-  for LGroup in AGroups do
-    if ABlock.IsInGroup(LGroup) then
-      Exit(True);
-  Result := False;
-end;
-
 function TXcomMapGenerator.ModuleData(const AReplacement: TXcomMcdReplacement): TXcomMapData;
 begin
   Result := FState.Terrain.MapDataSets[AReplacement.TileSet].GetObject(AReplacement.Entry);
-end;
-
-procedure TXcomMapGenerator.LoadTerrainSets(const ATerrain: TXcomRuleTerrain);
-var
-  LSet: TXcomMapDataSet;
-  LPatch: TXcomMcdPatch;
-begin
-  for LSet in ATerrain.MapDataSets do
-  begin
-    if not FState.Ruleset.McdPatches.TryGetValue(LSet.Name, LPatch) then
-      LPatch := nil;
-    FState.MapLoader.LoadData(LSet, LPatch);
-    FState.Save.MapDataSets.Add(LSet);
-  end;
 end;
 
 function TXcomMapGenerator.LoadMap(const ABlock: TXcomMapBlock; AXOffset, AYOffset: Integer;

@@ -25,7 +25,6 @@ type
   TXcomGeneratorState = class
   strict private
     FEquipper: TXcomItemEquipper;
-    FItemOwnerSave: TXcomSavedBattleGame;
   public
     Ruleset: TXcomRuleset;
     Save: TXcomSavedBattleGame;

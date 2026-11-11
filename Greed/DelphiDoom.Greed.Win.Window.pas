@@ -115,7 +115,7 @@ begin
   LRect := Rect(0, 0, AWidth * AScale, AHeight * AScale);
   AdjustWindowRect(LRect, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX, False);
   FHandle := CreateWindow(WINDOW_CLASS, PChar(ATitle), WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX,
-    CW_USEDEFAULT, CW_USEDEFAULT, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top, 0, 0, HInstance, nil);
+    Integer(CW_USEDEFAULT), Integer(CW_USEDEFAULT), LRect.Right - LRect.Left, LRect.Bottom - LRect.Top, 0, 0, HInstance, nil);
   if FHandle = 0 then
     RaiseLastOSError;
   SetWindowLongPtr(FHandle, GWLP_USERDATA, LONG_PTR(Self));

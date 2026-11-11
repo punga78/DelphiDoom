@@ -1130,7 +1130,6 @@ begin
     LTile := FSave.TileAt(LPosition);
     if (not Assigned(LTile)) or (not Contains(FModule.ReachableWithAttack, FSave.TileIndex(LPosition))) then
       Continue;
-    LScore := 0;
     LOrigin := (LPosition * TXcomPosition.Make(16, 16, 24)) +
       TXcomPosition.Make(8, 8, FUnit.GetHeight + FUnit.FloatHeight - LTile.GetTerrainLevel - 4);
     if FEngine.CanTargetUnit(LOrigin, FModule.AggroTarget.Tile, LTarget, FUnit, False) then

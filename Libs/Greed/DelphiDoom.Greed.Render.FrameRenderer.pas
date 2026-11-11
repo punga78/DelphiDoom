@@ -65,7 +65,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath, DelphiDoom.Greed.TrigTables, DelphiDoom.Greed.Render.Tables;
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.TrigTables,
+  DelphiDoom.Greed.Render.Tables;
 
 type
   FM = TGreedFixedMath;

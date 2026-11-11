@@ -82,7 +82,7 @@ var
   LReader: TSoundByteReader;
   LFileLength: Int64;
   LMarker, LNameSize: Cardinal;
-  LRows, LCols, LImaginary, LSampleRate, LCodec, LByteWidth: Integer;
+  LRows, LCols, LSampleRate, LCodec, LByteWidth: Integer;
   LBigEndian: Boolean;
   LValue: Double;
   LDataOffset, LDataEnd, LDataLength, LExpected: Int64;
@@ -106,7 +106,7 @@ begin
   // The matrix of the sample rate
   LRows := Integer(LReader.ReadUInt32);
   LCols := Integer(LReader.ReadUInt32);
-  LImaginary := Integer(LReader.ReadUInt32);
+  LReader.ReadUInt32;                    // imaginary flag
   LNameSize := LReader.ReadUInt32;
   if LNameSize >= NAME_BUFFER then
     Exit(SNDFILE_ERR_MALFORMED_FILE);
@@ -120,7 +120,7 @@ begin
   LMarker := ReadFileMarker(LReader);
   LRows := Integer(LReader.ReadUInt32);
   LCols := Integer(LReader.ReadUInt32);
-  LImaginary := Integer(LReader.ReadUInt32);
+  LReader.ReadUInt32;                    // imaginary flag
   LNameSize := LReader.ReadUInt32;
   if LNameSize >= NAME_BUFFER then
     Exit(SNDFILE_ERR_MALFORMED_FILE);

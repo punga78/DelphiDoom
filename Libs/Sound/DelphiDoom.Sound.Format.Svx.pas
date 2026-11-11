@@ -85,7 +85,6 @@ begin
   LByteCount := 0;
   LNameLength := 0;
   LDataOffset := 0;
-  LDataLength := 0;
   LCodec := 0;
 
   while not LDone do

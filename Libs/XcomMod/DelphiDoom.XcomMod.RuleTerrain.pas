@@ -181,7 +181,7 @@ begin
   begin
     SetLength(FMusic, Length(FMusic) + 1);
     // (*i).as<std::string>(""): an item that is not a scalar gives ""
-    FMusic[High(FMusic)] := LItem.AsString('');
+    FMusic[High(FMusic)] := TXcomNodeReader.TextOf(LItem, '');
   end;
   LField := TXcomNodeReader.Field(ANode, 'depth');
   if LField.IsDefined then

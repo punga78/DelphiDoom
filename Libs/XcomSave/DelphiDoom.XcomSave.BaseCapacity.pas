@@ -228,7 +228,6 @@ var
   LCraft: TXcomCraft;
   LVehicle: TXcomVehicle;
   LTransfer: TXcomTransfer;
-  LIndex: Integer;
   LTotal, LPart: Double;
   LMode: TXcomFloatMode;
 

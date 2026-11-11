@@ -16,7 +16,7 @@ unit DelphiDoom.Tests.Greed.FixedMath;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Greed.FixedMath;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath;
 
 type
   [TestFixture]
