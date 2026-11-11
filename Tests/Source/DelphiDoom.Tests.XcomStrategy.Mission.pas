@@ -35,7 +35,6 @@ type
     FThinker: TXcomMissionThinker;
     FHandler: TXcomUfoWaypointHandler;
     function Pick(AValue: Integer): Integer;
-    function RegionOk(const ARule: TXcomRuleAlienMission; const ARegion: TXcomRuleRegion): Boolean;
     function Real17(AValue: Double): string;
     procedure PrintUfo(AVariant, AMission, ARound, AIndex: Integer; const AAction: string; const AUfo: TXcomUfo);
     procedure Run(const AGame: TXcomSavedGame; AVariant: Integer);
@@ -78,40 +77,6 @@ begin
   Result := string(TYamlConvert.FormatGeneral(AValue, 17));
 end;
 
-function TTestXcomMissionScenario.RegionOk(const ARule: TXcomRuleAlienMission; const ARegion: TXcomRuleRegion): Boolean;
-var
-  LZones: TList<Cardinal>;
-  LWave: TXcomMissionWave;
-  LTrajectory: TXcomUfoTrajectory;
-  LPoint: TXcomTrajectoryWaypoint;
-  LZone: Cardinal;
-begin
-  Result := False;
-  LZones := TList<Cardinal>.Create;
-  try
-    if ARule.SpawnZone >= 0 then
-      LZones.Add(Cardinal(ARule.SpawnZone));
-    for LWave in ARule.Waves do
-    begin
-      LTrajectory := FSim.Ruleset.UfoTrajectories.Find(LWave.Trajectory);
-      if not Assigned(LTrajectory) then
-        Exit;
-      for LPoint in LTrajectory.Waypoints do
-        LZones.Add(LPoint.Zone);
-    end;
-    LTrajectory := FSim.Ruleset.UfoTrajectories.Find(TXcomUfoTrajectory.RETALIATION_ASSAULT_RUN);
-    if Assigned(LTrajectory) then
-      for LPoint in LTrajectory.Waypoints do
-        LZones.Add(LPoint.Zone);
-    for LZone in LZones do
-      if (LZone >= Cardinal(Length(ARegion.MissionZones))) or (Length(ARegion.MissionZones[LZone].Areas) = 0) then
-        Exit;
-    Result := True;
-  finally
-    LZones.Free;
-  end;
-end;
-
 procedure TTestXcomMissionScenario.PrintUfo(AVariant, AMission, ARound, AIndex: Integer; const AAction: string;
   const AUfo: TXcomUfo);
 begin
@@ -145,7 +110,7 @@ begin
           LEffective := FSim.Ruleset.Regions.Index[LR]
         else
           LEffective := LRegionRule.MissionRegion;
-        if RegionOk(LRule, FSim.Ruleset.Regions.Find(LEffective)) then
+        if FSim.RegionOk(LRule, FSim.Ruleset.Regions.Find(LEffective)) then
           LOk.Add(FSim.Ruleset.Regions.Index[LR]);
       end;
       if LOk.Count = 0 then
@@ -235,7 +200,7 @@ begin
   for LMission := 0 to AGame.ActiveMissions.Count - 1 do
   begin
     // the missions of the saved game have a region chosen at random: the ones that lack a zone are skipped
-    if not RegionOk(AGame.ActiveMissions[LMission].Rule,
+    if not FSim.RegionOk(AGame.ActiveMissions[LMission].Rule,
       FSim.Ruleset.Regions.Find(AGame.ActiveMissions[LMission].Region)) then
     begin
       FLines.Add(Format('skipmission|%d|%d', [AVariant, LMission]));

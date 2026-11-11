@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom strategy library (DUnitX)                }
 {                                                                              }
@@ -19,7 +19,8 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Tests.XcomSave.Sim in 'Source\DelphiDoom.Tests.XcomSave.Sim.pas',
   DelphiDoom.Tests.XcomStrategy.Production in 'Source\DelphiDoom.Tests.XcomStrategy.Production.pas',
-  DelphiDoom.Tests.XcomStrategy.Mission in 'Source\DelphiDoom.Tests.XcomStrategy.Mission.pas';
+  DelphiDoom.Tests.XcomStrategy.Mission in 'Source\DelphiDoom.Tests.XcomStrategy.Mission.pas',
+  DelphiDoom.Tests.XcomStrategy.Time in 'Source\DelphiDoom.Tests.XcomStrategy.Time.pas';
 
 var
   Runner: ITestRunner;
