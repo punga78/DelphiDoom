@@ -56,6 +56,7 @@ type
     [TestCase('load_empty', 'load_empty,230:255')]
     [TestCase('load_list', 'load_list,230:255')]
     [TestCase('battle_combo', 'battle_combo,420:255;96:192;300:36')]
+    [TestCase('noaudio', 'noaudio,420:255;96:72;638:398')]
     procedure LaSchermataELaStessaDiOpenXcomVero(const AName, ASteps: string);
     [Test]
     procedure ISuoniDeiDatiVeriSonoFileWav;
@@ -208,6 +209,9 @@ begin
     if AName = 'load_list' then
       LWorld.Game.SetSaveCatalog(TXcomDiskSaveCatalog.Create(FSaveFolder, 'xcom2', TYamlFactory.CreateParser));
     LWorld.Game.Options.Load(TYamlFactory.CreateParser.Load(TFile.ReadAllBytes(FOptionsFile)));
+    // the real game with SDL_AUDIODRIVER set to a driver that does not exist: no audio, Options::mute
+    if AName = 'noaudio' then
+      LWorld.Game.Options.Mute := True;
     LWorld.Game.SetState(TXcomGoToMainMenuState.Create(LWorld.Game, '1.0 git 2026-06-05 22:05'));
     LWorld.Click(5000, 5000);
     LWorld.Wait(500);
