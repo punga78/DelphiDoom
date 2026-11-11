@@ -50,7 +50,9 @@ uses
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
   DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
   DelphiDoom.XcomGeoscape.FundingState, DelphiDoom.XcomBasescape.PurchaseState,DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.TransferBaseState,
-  DelphiDoom.XcomBasescape.CraftInfoState, DelphiDoom.XcomGeoscape.GraphsState;
+  DelphiDoom.XcomBasescape.CraftInfoState, DelphiDoom.XcomGeoscape.GraphsState,
+  DelphiDoom.XcomBasescape.PsiTrainingState, DelphiDoom.XcomBasescape.AllocatePsiTrainingState,
+  DelphiDoom.XcomBasescape.StatisticsState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
@@ -150,6 +152,15 @@ begin
       FHost.PushState(TXcomTransferBaseState.Create(FHost, ABase));
     bsCrafts:
       FHost.PushState(TXcomCraftsState.Create(FHost, ABase));
+    bsPsiTraining:
+      // without a base: the bases with laboratories, after the monthly report
+      if Assigned(ABase) then
+        FHost.PushState(TXcomAllocatePsiTrainingState.Create(FHost, ABase))
+      else
+        FHost.PushState(TXcomPsiTrainingState.Create(FHost));
+    bsStatistics:
+      // the end of the game: the statistics are the only state left
+      FHost.SetState(TXcomStatisticsState.Create(FHost));
   end;
 end;
 
