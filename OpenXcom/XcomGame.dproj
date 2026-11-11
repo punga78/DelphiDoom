@@ -8,7 +8,7 @@
         <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
-        <AppType>Console</AppType>
+        <AppType>Application</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_UnitSearchPath>..\Libs\XcomAudio;..\Libs\Sound;..\Libs\Ogg;..\Libs\Sndfile;..\Libs\Mp3;..\Libs\Mp3\Shim;..\Libs\Mp3\Decoder;..\Libs\Mikmod;..\Libs\Midi;..\Libs\M2m;..\Libs\Logging;..\Libs\Opl;..\Libs\XcomGeoscape;..\Libs\XcomStrategy;..\Libs\XcomBasescape;..\Libs\XcomSave;..\Libs\XcomMod;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\Yaml;..\Libs\XcomFormats;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -16,7 +16,7 @@
         <DCC_DcuOutput>..\dcu\OpenXcom\XcomGame\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
-        <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
+        <DCC_ConsoleTarget>false</DCC_ConsoleTarget>
         <DCC_E>false</DCC_E>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>

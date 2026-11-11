@@ -27,6 +27,11 @@ type
     /// <summary>The WAV file (11025 Hz, mono, 8 bit); empty when the sound is too short</summary>
     class function RawToWave(const ARaw: TBytes): TBytes; static;
     /// <summary>
+    ///   SoundSet::loadCatbyIndex (the sounds of a soundDefs set, as in TFTD): signed 8 bit samples at 11025 Hz; the
+    ///   five bytes at the start and the last one go away, the samples become unsigned (plus 128), no resampling
+    /// </summary>
+    class function IndexedToWave(const ARaw: TBytes): TBytes; static;
+    /// <summary>
     ///   A WAV file with the volume applied (0..128 of 128): the 8 bit samples are unsigned, so they scale around
     ///   128; a file that is not a mono or stereo 8 bit PCM one is returned as it is
     /// </summary>
@@ -72,6 +77,33 @@ begin
     Result[HEADER_SIZE + LIndex] := LData[LIndex];
   PCardinal(@Result[4])^ := Cardinal(LCount + 36);
   PCardinal(@Result[40])^ := Cardinal(LCount);
+end;
+
+class function TXcomSoundConverter.IndexedToWave(const ARaw: TBytes): TBytes;
+const
+  HEADER: array[0..43] of Byte = (Ord('R'), Ord('I'), Ord('F'), Ord('F'), 0, 0, 0, 0, Ord('W'), Ord('A'), Ord('V'),
+    Ord('E'), Ord('f'), Ord('m'), Ord('t'), Ord(' '), $10, 0, 0, 0, 1, 0, 1, 0, $11, $2B, 0, 0, $11, $2B, 0, 0, 1, 0, 8,
+    0, Ord('d'), Ord('a'), Ord('t'), Ord('a'), 0, 0, 0, 0);
+var
+  LSize: Integer;
+  LIndex: Integer;
+begin
+  LSize := Length(ARaw);
+  if LSize = 0 then
+    Exit(nil);
+  if LSize > 5 then
+    Dec(LSize, 5);
+  if LSize > 0 then
+    Dec(LSize);
+  // the C++ reads from byte 5 whatever the size: a sound of five bytes or fewer has nothing to read
+  if Length(ARaw) < 5 + LSize then
+    LSize := 0;
+  SetLength(Result, HEADER_SIZE + LSize);
+  Move(HEADER[0], Result[0], HEADER_SIZE);
+  for LIndex := 0 to LSize - 1 do
+    Result[HEADER_SIZE + LIndex] := Byte(ARaw[5 + LIndex] + 128);
+  PCardinal(@Result[4])^ := Cardinal(LSize + 36);
+  PCardinal(@Result[40])^ := Cardinal(LSize);
 end;
 
 class function TXcomSoundConverter.WithVolume(const AWave: TBytes; AVolume: Integer): TBytes;

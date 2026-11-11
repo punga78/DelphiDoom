@@ -17,7 +17,7 @@
 {******************************************************************************}
 program XcomGame;
 
-{$APPTYPE CONSOLE}
+{$APPTYPE GUI}
 
 uses
   Winapi.Windows,
@@ -53,12 +53,41 @@ type
     AudioStatistics: Boolean;
   end;
 
+/// <summary>
+/// The program has no console of its own (no black window behind the game): a line goes to the standard output when
+/// there is one (redirected, or the console of the parent), otherwise nowhere.
+/// </summary>
+procedure Say(const AText: string; AError: Boolean = False);
+var
+  LHandle: THandle;
+  LBytes: TBytes;
+  LWritten: DWORD;
+begin
+  if AError then
+    LHandle := GetStdHandle(STD_ERROR_HANDLE)
+  else
+    LHandle := GetStdHandle(STD_OUTPUT_HANDLE);
+  if (LHandle = 0) or (LHandle = INVALID_HANDLE_VALUE) then
+  begin
+    if not AttachConsole(ATTACH_PARENT_PROCESS) then
+      Exit;
+    if AError then
+      LHandle := GetStdHandle(STD_ERROR_HANDLE)
+    else
+      LHandle := GetStdHandle(STD_OUTPUT_HANDLE);
+    if (LHandle = 0) or (LHandle = INVALID_HANDLE_VALUE) then
+      Exit;
+  end;
+  LBytes := TEncoding.UTF8.GetBytes(AText + sLineBreak);
+  WriteFile(LHandle, LBytes[0], Length(LBytes), LWritten, nil);
+end;
+
 procedure ShowUsage;
 begin
-  Writeln('XcomGame [-data <common+standard folder>] [-game <game folder>] [-user <folder>] [-mod xcom2]');
-  Writeln('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
-  Writeln('         [-shot <file.png> [-ms <n>] [-script wait:ms;click:x,y;key:n;shot:file;...]]');
-  Writeln('         [-version <text>] [-dospath <text>] [-hold]');
+  Say('XcomGame [-data <common+standard folder>] [-game <game folder>] [-user <folder>] [-mod xcom2]');
+  Say('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
+  Say('         [-shot <file.png> [-ms <n>] [-script wait:ms;click:x,y;key:n;shot:file;...]]');
+  Say('         [-version <text>] [-dospath <text>] [-hold]');
 end;
 
 /// <summary>
@@ -97,6 +126,12 @@ begin
     end
     else if DirectoryExists(Sub('GEODATA')) then
       ASettings.GameFolder := LBase;
+  end;
+  // options.cfg and the saved games: the user folder next to the executable, as OpenXcom does when it is there
+  if ASettings.UserFolder = '' then
+  begin
+    ASettings.UserFolder := Sub('user');
+    ForceDirectories(ASettings.UserFolder);
   end;
 end;
 
@@ -165,7 +200,7 @@ var
   LStatistics: TXcomMixerStatistics;
 begin
   LStatistics := AMeter.Statistics;
-  Writeln(Format('audio: %d bytes rendered, rms %.1f, peak %d, sounds %d, buffers completed by the device %d',
+  Say(Format('audio: %d bytes rendered, rms %.1f, peak %d, sounds %d, buffers completed by the device %d',
     [LStatistics.RenderedBytes, LStatistics.Rms, LStatistics.Peak, LStatistics.SoundsStarted,
     AOutput.CompletedBuffers]));
 end;
@@ -271,10 +306,13 @@ begin
   except
     on E: Exception do
     begin
-      Writeln(ErrOutput, E.ClassName, ': ', E.Message);
+      Say(E.ClassName + ': ' + E.Message, True);
       // the address in the terms of the .map of the executable (the image can be relocated)
       if ExceptAddr <> nil then
-        Writeln(ErrOutput, 'map address: ', IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8));
+        Say('map address: ' + IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8), True);
+      // in the window mode nobody reads the standard error: the player must see why the game closed
+      if (LArguments.ShotFile = '') and (LArguments.Script = '') then
+        MessageBox(0, PChar(E.ClassName + ': ' + E.Message), 'OpenXcom', MB_OK or MB_ICONERROR);
       System.ExitCode := 1;
     end;
   end;

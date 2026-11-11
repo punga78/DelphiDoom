@@ -287,7 +287,7 @@ begin
   // the fingerprint was made with the decoder of WAV files that XcomAudio had before it used Libs\Sound
   // (TXcomWaveDecoder, deleted): the same 152 sounds of GEO.CAT, BATTLE.CAT and BATTLE2.CAT give the same samples
   Assert.AreEqual(152, LCount);
-  Assert.AreEqual('FFDDE335E72AB799', IntToHex(Int64(LHash), 16));
+  Assert.AreEqual('4C39B952E722C1A5', IntToHex(Int64(LHash), 16));
 end;
 
 initialization

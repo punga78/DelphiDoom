@@ -13,7 +13,7 @@ unit DelphiDoom.Xcom.Win.VideoDevice;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.Types, System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
+  Winapi.Windows, Winapi.Messages, Winapi.MultiMon, System.Types, System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.QueueEventSource;
 
 type
@@ -30,6 +30,7 @@ type
     FWidth: Integer;
     FHeight: Integer;
     FClosed: Boolean;
+    FFullscreen: Boolean;
     class var FClassRegistered: Boolean;
     class function WindowProc(AWindow: HWND; AMessage: UINT; AWParam: WPARAM; ALParam: LPARAM): LRESULT; stdcall; static;
     class procedure RegisterWindowClass; static;
@@ -37,6 +38,10 @@ type
     procedure Post(AKind: TXcomEventKind; AKey, AButton: Integer; ALParam: LPARAM; ACharacter: Cardinal = 0);
     procedure CreateWindowHandle;
     function Modifiers: Integer;
+    function CharacterOf(AVirtualKey: WPARAM; ALParam: LPARAM): Cardinal;
+    function PictureRect(out ARect: TRect): Boolean;
+    function ScalePoint(ALParam: LPARAM): LPARAM;
+    procedure ApplyWindowStyle;
   public
     /// <param name="AEvents">Where the events go; not owned</param>
     constructor Create(const ATitle: string; AEvents: TXcomQueueEventSource);
@@ -52,6 +57,7 @@ implementation
 
 const
   WINDOW_CLASS = 'DelphiDoomXcomWindow';
+  WINDOW_STYLE = WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX;
 
 class function TXcomWinVideoDevice.KeyOf(AVirtualKey: WPARAM): Integer;
 begin
@@ -91,6 +97,84 @@ begin
     Result := Result or XCOM_KMOD_ALT;
 end;
 
+function TXcomWinVideoDevice.CharacterOf(AVirtualKey: WPARAM; ALParam: LPARAM): Cardinal;
+var
+  LState: TKeyboardState;
+  LBuffer: array[0..3] of WideChar;
+begin
+  // the unicode field of the key event of SDL 1.2: what the key types with the current layout and shift state
+  Result := 0;
+  if not GetKeyboardState(LState) then
+    Exit;
+  if ToUnicode(UINT(AVirtualKey), (UINT(ALParam) shr 16) and $FF, LState, LBuffer, Length(LBuffer), 0) = 1 then
+    if Ord(LBuffer[0]) >= 32 then
+      Result := Ord(LBuffer[0]);
+end;
+
+function TXcomWinVideoDevice.PictureRect(out ARect: TRect): Boolean;
+var
+  LClient: TRect;
+  LWidth: Integer;
+  LHeight: Integer;
+begin
+  // full screen: the picture keeps its proportions in the middle of the monitor, black bands around it
+  Result := FFullscreen and (FHandle <> 0) and (FWidth > 0) and (FHeight > 0) and GetClientRect(FHandle, LClient) and
+    (LClient.Right > 0) and (LClient.Bottom > 0);
+  if not Result then
+    Exit;
+  LWidth := LClient.Right;
+  LHeight := MulDiv(LWidth, FHeight, FWidth);
+  if LHeight > LClient.Bottom then
+  begin
+    LHeight := LClient.Bottom;
+    LWidth := MulDiv(LHeight, FWidth, FHeight);
+  end;
+  ARect.Left := (LClient.Right - LWidth) div 2;
+  ARect.Top := (LClient.Bottom - LHeight) div 2;
+  ARect.Right := ARect.Left + LWidth;
+  ARect.Bottom := ARect.Top + LHeight;
+end;
+
+function TXcomWinVideoDevice.ScalePoint(ALParam: LPARAM): LPARAM;
+var
+  LPicture: TRect;
+  LX: Integer;
+  LY: Integer;
+begin
+  // full screen: the picture is stretched, the game wants the position in the picture
+  Result := ALParam;
+  if not PictureRect(LPicture) then
+    Exit;
+  LX := MulDiv(SmallInt(LoWord(ALParam)) - LPicture.Left, FWidth, LPicture.Right - LPicture.Left);
+  LY := MulDiv(SmallInt(HiWord(ALParam)) - LPicture.Top, FHeight, LPicture.Bottom - LPicture.Top);
+  Result := MakeLParam(Word(LX), Word(LY));
+end;
+
+procedure TXcomWinVideoDevice.ApplyWindowStyle;
+var
+  LRect: TRect;
+  LMonitor: TMonitorInfo;
+begin
+  if FFullscreen then
+  begin
+    // a window without borders over the whole monitor: the display mode of the system is not changed
+    LMonitor.cbSize := SizeOf(LMonitor);
+    GetMonitorInfo(MonitorFromWindow(FHandle, MONITOR_DEFAULTTONEAREST), @LMonitor);
+    SetWindowLongPtr(FHandle, GWL_STYLE, LONG_PTR(WS_POPUP or WS_VISIBLE));
+    SetWindowPos(FHandle, HWND_TOP, LMonitor.rcMonitor.Left, LMonitor.rcMonitor.Top,
+      LMonitor.rcMonitor.Right - LMonitor.rcMonitor.Left, LMonitor.rcMonitor.Bottom - LMonitor.rcMonitor.Top,
+      SWP_FRAMECHANGED);
+  end
+  else
+  begin
+    SetWindowLongPtr(FHandle, GWL_STYLE, LONG_PTR(WINDOW_STYLE or WS_VISIBLE));
+    LRect := Rect(0, 0, FWidth, FHeight);
+    AdjustWindowRect(LRect, WINDOW_STYLE, False);
+    SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
+      SWP_NOMOVE or SWP_NOZORDER or SWP_FRAMECHANGED);
+  end;
+end;
+
 procedure TXcomWinVideoDevice.Post(AKind: TXcomEventKind; AKey, AButton: Integer; ALParam: LPARAM;
   ACharacter: Cardinal);
 var
@@ -103,6 +187,7 @@ begin
   LEvent.Modifiers := Modifiers;
   if AKind in [ekMouseMotion, ekMouseDown, ekMouseUp] then
   begin
+    ALParam := ScalePoint(ALParam);
     LEvent.X := SmallInt(LoWord(ALParam));
     LEvent.Y := SmallInt(HiWord(ALParam));
   end;
@@ -117,6 +202,7 @@ var
   LKey: Integer;
   LWheelX: Integer;
   LWheelY: Integer;
+  LCharacter: Cardinal;
 begin
   LSelf := TXcomWinVideoDevice(GetWindowLongPtr(AWindow, GWLP_USERDATA));
   if Assigned(LSelf) then
@@ -124,8 +210,12 @@ begin
       WM_KEYDOWN, WM_SYSKEYDOWN:
         begin
           LKey := KeyOf(AWParam);
-          if LKey <> 0 then
-            LSelf.Post(ekKeyDown, LKey, 0, 0);
+          LCharacter := LSelf.CharacterOf(AWParam, ALParam);
+          // SDL 1.2: the key of a printable character without a name of its own is its lower case ASCII code
+          if (LKey = 0) and (LCharacter >= 32) and (LCharacter < 127) then
+            LKey := Ord(LowerCase(string(Char(LCharacter)))[1]);
+          if (LKey <> 0) or (LCharacter <> 0) then
+            LSelf.Post(ekKeyDown, LKey, 0, 0, LCharacter);
           if AMessage = WM_KEYDOWN then
             Exit(0);
         end;
@@ -265,11 +355,24 @@ begin
   FWidth := AWidth;
   FHeight := AHeight;
   if FHandle = 0 then
-    CreateWindowHandle
+  begin
+    FFullscreen := False;
+    CreateWindowHandle;
+    if AFullscreen then
+    begin
+      FFullscreen := True;
+      ApplyWindowStyle;
+    end;
+  end
+  else if (AFullscreen <> FFullscreen) or AFullscreen then
+  begin
+    FFullscreen := AFullscreen;
+    ApplyWindowStyle;
+  end
   else
   begin
     LRect := Rect(0, 0, FWidth, FHeight);
-    AdjustWindowRect(LRect, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX, False);
+    AdjustWindowRect(LRect, WINDOW_STYLE, False);
     SetWindowPos(FHandle, 0, 0, 0, LRect.Right - LRect.Left, LRect.Bottom - LRect.Top,
       SWP_NOMOVE or SWP_NOZORDER);
   end;
@@ -285,6 +388,8 @@ var
   LInfo: TInfo;
   LDevice: HDC;
   LIndex: Integer;
+  LClient: TRect;
+  LWhole: TRect;
 begin
   if (FHandle = 0) or (Length(APixels) < AWidth * AHeight) then
     Exit;
@@ -305,8 +410,23 @@ begin
   end;
   LDevice := GetDC(FHandle);
   try
-    SetDIBitsToDevice(LDevice, 0, 0, AWidth, AHeight, 0, 0, 0, AHeight, @APixels[0], PBitmapInfo(@LInfo)^,
-      DIB_RGB_COLORS);
+    if PictureRect(LClient) then
+    begin
+      // the bands beside the picture (nothing erases the background of this window)
+      if GetClientRect(FHandle, LWhole) then
+      begin
+        PatBlt(LDevice, 0, 0, LClient.Left, LWhole.Bottom, BLACKNESS);
+        PatBlt(LDevice, LClient.Right, 0, LWhole.Right - LClient.Right, LWhole.Bottom, BLACKNESS);
+        PatBlt(LDevice, 0, 0, LWhole.Right, LClient.Top, BLACKNESS);
+        PatBlt(LDevice, 0, LClient.Bottom, LWhole.Right, LWhole.Bottom - LClient.Bottom, BLACKNESS);
+      end;
+      SetStretchBltMode(LDevice, COLORONCOLOR);
+      StretchDIBits(LDevice, LClient.Left, LClient.Top, LClient.Right - LClient.Left, LClient.Bottom - LClient.Top,
+        0, 0, AWidth, AHeight, @APixels[0], PBitmapInfo(@LInfo)^, DIB_RGB_COLORS, SRCCOPY);
+    end
+    else
+      SetDIBitsToDevice(LDevice, 0, 0, AWidth, AHeight, 0, 0, 0, AHeight, @APixels[0], PBitmapInfo(@LInfo)^,
+        DIB_RGB_COLORS);
   finally
     ReleaseDC(FHandle, LDevice);
   end;

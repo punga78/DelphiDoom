@@ -122,6 +122,8 @@ type
     [Test]
     procedure UnSuonoTroppoCortoNonDaNulla;
     [Test]
+    procedure UnSuonoPerIndiceHaCampioniConSegnoA11025HzSenzaRicampionare;
+    [Test]
     procedure IlVolumeScalaIntornoAlSilenzio;
     [Test]
     procedure UnFileNonPcmAOttoBitRestaCom;
@@ -616,6 +618,25 @@ begin
   Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave(nil))));
   Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave([1, 2, 3, 4, 5]))));
   Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.RawToWave([1, 2, 3, 4, 5, 6]))));
+end;
+
+procedure TTestXcomSoundConverter.UnSuonoPerIndiceHaCampioniConSegnoA11025HzSenzaRicampionare;
+var
+  LWave: TBytes;
+begin
+  // SoundSet::loadCatbyIndex: five bytes of name, signed samples, a null at the end
+  LWave := TXcomSoundConverter.IndexedToWave([9, 9, 9, 9, 9, 0, 1, 127, 128, 255, 0]);
+  Assert.AreEqual(44 + 5, Integer(Length(LWave)));
+  Assert.AreEqual(11025, Integer(PCardinal(@LWave[24])^));
+  Assert.AreEqual(5, Integer(PCardinal(@LWave[40])^));
+  Assert.AreEqual(128, Integer(LWave[44]));
+  Assert.AreEqual(129, Integer(LWave[45]));
+  Assert.AreEqual(255, Integer(LWave[46]));
+  Assert.AreEqual(0, Integer(LWave[47]));
+  Assert.AreEqual(127, Integer(LWave[48]));
+  Assert.AreEqual(0, Integer(Length(TXcomSoundConverter.IndexedToWave(nil))));
+  // five bytes or fewer: only the header, as the C++ that then fails to load it
+  Assert.AreEqual(44, Integer(Length(TXcomSoundConverter.IndexedToWave([1, 2, 3]))));
 end;
 
 procedure TTestXcomSoundConverter.IlVolumeScalaIntornoAlSilenzio;

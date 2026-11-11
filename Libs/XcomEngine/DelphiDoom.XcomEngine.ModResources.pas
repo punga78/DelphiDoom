@@ -343,7 +343,8 @@ begin
   end;
   if (LEntry < 0) or (LEntry >= LCatalog.Count) then
     Exit;
-  Result := TXcomSoundConverter.RawToWave(LCatalog.Load(LEntry));
+  // the sets of soundDefs are loaded with SoundSet::loadCatbyIndex (signed samples at 11025 Hz)
+  Result := TXcomSoundConverter.IndexedToWave(LCatalog.Load(LEntry));
 end;
 
 procedure TXcomModResources.LoadMusic(const ANode: IYamlNode);
