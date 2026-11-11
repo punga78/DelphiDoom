@@ -34,7 +34,7 @@ type
   ///   (TileEngine). It holds the saved battle without owning it. What needs the battle in progress
   ///   (BattlescapeGame: reaction fire, the throw, the hit that pushes states) is not here
   /// </summary>
-  TXcomTileEngine = class(TInterfacedObject, IXcomBattleTileEngine)
+  TXcomTileEngine = class(TInterfacedObject, IXcomGeneratorTileEngine, IXcomBattleTileEngine)
   strict private
     const
       MAX_VIEW_DISTANCE = 20;
@@ -105,6 +105,8 @@ type
     function Distance(const AFirst, ASecond: TXcomPosition): Integer;
     function DistanceSq(const AFirst, ASecond: TXcomPosition; AConsiderZ: Boolean = True): Integer;
     function CloseUfoDoors: Integer;
+    /// <summary>faceWindow: the direction (0, 2, 4, 6) of a window next to the tile, or -1</summary>
+    function FaceWindow(const APosition: TXcomPosition): Integer;
     /// <summary>applyGravity: units and items fall to where there is a floor; gives the tile where the items end up</summary>
     function ApplyGravityTile(const ATile: TXcomTile): TXcomTile;
     procedure ApplyGravity(const ATile: TXcomTile);
@@ -1606,6 +1608,29 @@ begin
   Result := LX * LX + LY * LY + LZ * LZ;
 end;
 
+function TXcomTileEngine.FaceWindow(const APosition: TXcomPosition): Integer;
+var
+  LTile: TXcomTile;
+begin
+  LTile := FSave.TileAt(APosition);
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_NORTHWALL]) and
+    (LTile.MapData[XCOM_PART_NORTHWALL].GetBlock(0) = 0) then
+    Exit(0);
+  LTile := FSave.TileAt(APosition + TXcomPosition.Make(1, 0, 0));
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_WESTWALL]) and
+    (LTile.MapData[XCOM_PART_WESTWALL].GetBlock(0) = 0) then
+    Exit(2);
+  LTile := FSave.TileAt(APosition + TXcomPosition.Make(0, 1, 0));
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_NORTHWALL]) and
+    (LTile.MapData[XCOM_PART_NORTHWALL].GetBlock(0) = 0) then
+    Exit(4);
+  LTile := FSave.TileAt(APosition);
+  if Assigned(LTile) and Assigned(LTile.MapData[XCOM_PART_WESTWALL]) and
+    (LTile.MapData[XCOM_PART_WESTWALL].GetBlock(0) = 0) then
+    Exit(6);
+  Result := -1;
+end;
+
 function TXcomTileEngine.CloseUfoDoors: Integer;
 var
   LIndex: Integer;
@@ -1908,6 +1933,8 @@ var
   LTile: TXcomTile;
   LAbove: TXcomTile;
   LDistanceFromCenter: Integer;
+  LRounded: Double;
+  LAngle: Double;
 
   function CenterPosition: TXcomPosition;
   begin
@@ -1962,10 +1989,14 @@ begin
       LTe := 0;
       while LTe <= 360 do
       begin
-        LCosTe := Cos(LTe * PI_VALUE / 180.0);
-        LSinTe := Sin(LTe * PI_VALUE / 180.0);
-        LSinFi := Sin(LFi * PI_VALUE / 180.0);
-        LCosFi := Cos(LFi * PI_VALUE / 180.0);
+        // Deg2Rad returns a double and sin/cos take one: the angle is rounded to 53 bits before the x87 function
+        // (the sine of 330 degrees is on the boundary of a tile, so the last bit decides the tile)
+        LAngle := LTe * PI_VALUE / 180.0;
+        LCosTe := Cos(LAngle);
+        LSinTe := Sin(LAngle);
+        LAngle := LFi * PI_VALUE / 180.0;
+        LSinFi := Sin(LAngle);
+        LCosFi := Cos(LAngle);
         LOrigin := FSave.TileAt(CenterPosition);
         LDest := LOrigin;
         LLength := 0;
@@ -2073,9 +2104,14 @@ begin
             end;
           end;
           LLength := LLength + 1.0;
-          LTileX := Floor(LCenterX + LLength * LSinTe * LCosFi);
-          LTileY := Floor(LCenterY + LLength * LCosTe * LCosFi);
-          LTileZ := Floor(LCenterZ + LLength * LSinFi);
+          // the C++ passes a double to floor(): the sum is rounded to 53 bits before the floor (on a boundary
+          // like 0.5 + 0.49999999999999994 the extended value would give the tile below)
+          LRounded := LCenterX + LLength * LSinTe * LCosFi;
+          LTileX := Floor(LRounded);
+          LRounded := LCenterY + LLength * LCosTe * LCosFi;
+          LTileY := Floor(LRounded);
+          LRounded := LCenterZ + LLength * LSinFi;
+          LTileZ := Floor(LRounded);
           LOrigin := LDest;
           LDest := FSave.TileAt(TXcomPosition.Make(LTileX, LTileY, LTileZ));
           if not Assigned(LDest) then

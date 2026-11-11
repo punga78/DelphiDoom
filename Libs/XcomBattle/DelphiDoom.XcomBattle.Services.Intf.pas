@@ -11,7 +11,7 @@ unit DelphiDoom.XcomBattle.Services.Intf;
 interface
 
 uses
-  DelphiDoom.XcomBattle.Model;
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Model;
 
 type
   /// <summary>
@@ -36,6 +36,19 @@ type
     /// <summary>horizontalBlockage(startTile, endTile, type)</summary>
     function HorizontalBlockage(const AStart, AEnd: TXcomTile; ADamageType: Integer): Integer;
     procedure ApplyGravity(const ATile: TXcomTile);
+  end;
+
+  /// <summary>
+  ///   What BattlescapeGenerator asks of the tile engine besides the light and the field of view: the window a unit
+  ///   faces, distances and explosions (crashed UFO power sources)
+  /// </summary>
+  IXcomGeneratorTileEngine = interface(IXcomBattleTileEngine)
+    ['{5E2A7C90-3B14-4D68-A0F7-18C9D6E4B253}']
+    function FaceWindow(const APosition: TXcomPosition): Integer;
+    function Distance(const AFirst, ASecond: TXcomPosition): Integer;
+    procedure Explode(const ACenter: TXcomPosition; APower, ADamageType, AMaxRadius: Integer;
+      const AUnit: TXcomBattleUnit = nil);
+    function CheckForTerrainExplosions: TXcomTile;
   end;
 
 implementation

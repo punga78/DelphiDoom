@@ -18,7 +18,7 @@ uses
   DelphiDoom.XcomSave.PositionCodec, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.NodeWriter,
   DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.Directions,
-  DelphiDoom.XcomBattle.RawUnitAI;
+  DelphiDoom.XcomBattle.AIModule;
 
 type
   /// <summary>Looks up a soldier of the geoscape by id (SavedGame::getSoldier)</summary>
@@ -374,6 +374,7 @@ var
   LUnitRules: TXcomRuleUnit;
   LArmor: TXcomArmor;
   LAI: IYamlNode;
+  LModule: TXcomAIModule;
   LSelected: Integer;
   LCreated: TXcomBattleUnit;
 begin
@@ -415,7 +416,11 @@ begin
     begin
       LAI := TXcomNodeReader.Field(LItem, 'AI');
       if LAI.IsDefined and (LFaction <> FACTION_PLAYER) then
-        LUnit.AI := TXcomRawUnitAI.Create(LAI);
+        begin
+          LModule := TXcomAIModule.Create(LUnit, nil);
+          LModule.Load(LAI, FNodes);
+          LUnit.AI := LModule;
+        end;
     end;
   end;
 end;

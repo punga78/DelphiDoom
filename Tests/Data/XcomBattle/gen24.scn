@@ -1,0 +1,16 @@
+mission=STR_HUNTER
+kind=4
+race=STR_GILLMAN_UNDERWATER
+itemlevel=8
+shade=7
+texture=-1
+terrain=GRUNGE
+craft=0
+base=1
+ufo=STR_HUNTER
+ufostatus=2
+uforlon=6.20988
+uforlat=-1.13621
+runseed=1761024
+seedafter=4787413487147041589
+ok=0

@@ -86,6 +86,8 @@ type
   end;
 
 const
+  /// a step of the plan that does not repeat the function for the values of "typ"
+  NO_TYPE_VALUE = -2147483647;
   // functions that would end the level or the game, or need names that depend on the game
   DEFAULT_SKIP = ',G_EXITLEVEL,G_SECRETEXITLEVEL,CONSOLECOMMAND,PLAYSOUND,ACTORPLAYSOUND,SECTORPLAYSOUND,' +
     'SPAWNACTORNAME,';
@@ -95,6 +97,9 @@ var
   GSkip: string = DEFAULT_SKIP;
   GFrom: Integer = 0;
   GOnly: string = '';
+  // -vshtypes 0,1,2,-1: the values of the parameter "typ" (mobj types) that the functions of mobjinfo are called with
+  GTypeValues: TList<Integer> = nil;
+  GTypeArg: Integer = 1;
   GCompiler: TPSPascalCompiler = nil;
   GImporter: TPSRuntimeClassImporter = nil;
   GFnv: Cardinal;
@@ -369,6 +374,8 @@ begin
         Exit(IntToStr(GKeys[2]));
       Exit('1');
     end;
+    if LName = 'typ' then
+      Exit(IntToStr(GTypeArg));
     if StartsText('pl', LName) then
       Exit('0');
     if AParameter.BaseType = btS32 then
@@ -482,6 +489,16 @@ begin
     Result := True;
 end;
 
+function HasTypeParameter(const AFunction: TVshFunction): Boolean;
+var
+  LParameter: TVshParameter;
+begin
+  Result := False;
+  for LParameter in AFunction.Parameters do
+    if SameText(LParameter.Name, 'typ') then
+      Exit(True);
+end;
+
 procedure WriteProgress(const AText: string);
 var
   LFile: TextFile;
@@ -503,6 +520,10 @@ var
   LExec: TDoomExec;
   LText: string;
   LOk: Boolean;
+  LPlan: TList<TPair<Integer, Integer>>;
+  LStep: Integer;
+  LValue: Integer;
+  LSuffix: string;
 begin
   LResults := TStringList.Create;
   LScripts := TStringList.Create;
@@ -518,8 +539,24 @@ begin
     LResults.Add(Format('# functions=%d keys=%d,%d,%d texture=%s flat=%s', [GFunctions.Count, GKeys[0], GKeys[1],
       GKeys[2], GTextureName, GFlatName]));
     LResults.Add(Format('# initial state=%.8x', [StateFingerprint]));
+    // one step for each function; with -vshtypes a function that has a parameter "typ" has one step for each value
+    LPlan := TList<TPair<Integer, Integer>>.Create;
     for LIndex := 0 to GFunctions.Count - 1 do
+      if (GTypeValues.Count > 0) and HasTypeParameter(GFunctions[LIndex]) and not IsSkipped(GFunctions[LIndex]) then
+        for LValue in GTypeValues do
+          LPlan.Add(TPair<Integer, Integer>.Create(LIndex, LValue))
+      else
+        LPlan.Add(TPair<Integer, Integer>.Create(LIndex, NO_TYPE_VALUE));
+    for LStep := 0 to LPlan.Count - 1 do
     begin
+      LIndex := LPlan[LStep].Key;
+      GTypeArg := 1;
+      LSuffix := '';
+      if LPlan[LStep].Value <> NO_TYPE_VALUE then
+      begin
+        GTypeArg := LPlan[LStep].Value;
+        LSuffix := Format('[typ=%d]', [GTypeArg]);
+      end;
       LFunction := GFunctions[LIndex];
       if LIndex < GFrom then
         Continue;
@@ -574,7 +611,7 @@ begin
             LText := 'EXCEPTION: ' + E.ClassName;
         end;
       end;
-      LResults.Add(Format('%d %s.%s %s state=%.8x', [LIndex, LFunction.UnitName, LFunction.Name, LText,
+      LResults.Add(Format('%d %s.%s%s %s state=%.8x', [LIndex, LFunction.UnitName, LFunction.Name, LSuffix, LText,
         StateFingerprint]));
     end;
     LResults.SaveToFile('verify_scripthost_L2.txt');
@@ -642,7 +679,9 @@ end;
 procedure Initialize;
 var
   LIndex: Integer;
+  LValue: string;
 begin
+  GTypeValues := TList<Integer>.Create;
   for LIndex := 1 to ParamCount do
   begin
     if SameText(ParamStr(LIndex), '-vsh') and (LIndex < ParamCount) then
@@ -651,6 +690,11 @@ begin
       GSkip := GSkip + UpperCase(ParamStr(LIndex + 1)) + ','
     else if SameText(ParamStr(LIndex), '-vshfrom') and (LIndex < ParamCount) then
       GFrom := StrToIntDef(ParamStr(LIndex + 1), 0)
+    else if SameText(ParamStr(LIndex), '-vshtypes') and (LIndex < ParamCount) then
+    begin
+      for LValue in ParamStr(LIndex + 1).Split([',']) do
+        GTypeValues.Add(StrToIntDef(LValue, 0));
+    end
     else if SameText(ParamStr(LIndex), '-vshonly') and (LIndex < ParamCount) then
       GOnly := ParamStr(LIndex + 1);
   end;

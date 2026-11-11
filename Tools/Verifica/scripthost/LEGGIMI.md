@@ -36,6 +36,7 @@ nel vecchio (usa `PS_ImportUnits`/`TProcedureList`) e nel nuovo (`PS_ScriptRegis
 * Salta di default `G_ExitLevel`, `G_SecretExitLevel`, `ConsoleCommand`, `PlaySound`, `ActorPlaySound`,
   `SectorPlaySound`, `SpawnActorName` e tutta la famiglia `Polyobj_*` (con gli argomenti fissi dà `I_Error` se il livello non ha quel polyobj); altre con `-vshskip A,B`; `-vshfrom N`, `-vshonly <testo>`. `Confronta.ps1` ha un ciclo automatico: se un exe muore senza risultato legge il file di avanzamento, aggiunge la funzione alla lista dei salti (la stessa per vecchio, nuovo e ripetizioni: si riparte finché vecchio e nuovo finiscono con la lista invariata), rilancia (massimo 80 aggiunte, `-MaxRepetitions`), e stampa e salva (`skipped.txt`) l'elenco delle funzioni saltate; se muore due volte sulla stessa funzione si ferma. Se il gioco muore
   (un `I_Error` di una funzione chiamata con un argomento sbagliato) `verify_scripthost_L2_progress.txt` dice quale.
+* `-vshtypes 0,1,...,19,-1,99999` (fetta 2f-4): una funzione con un parametro `typ` (i `GetMobjInfo*`, `GetEditorNumberFromMobjType`) si chiama una volta per ogni valore, e la riga del risultato porta il suffisso `[typ=N]`; con `Confronta.ps1 -Extra '-vshonly Mobj -vshtypes ...'` si provano le `GetMobjInfo*` per venti tipi, uno non valido e uno fuori dai limiti.
 * `-vsh save`: aggiunge ai testi dei livelli E1M1, E1M2, MAP01, MAP02 uno script con variabili globali e gli eventi
   `OnMapStart`/`OnTick`, che scrive `mapvars` e `worldvars` a ogni tic: i salvataggi contengono lo stato degli script.
 

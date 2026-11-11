@@ -61,6 +61,11 @@ type
     property Costs: TXcomStringMap<Integer> read FCosts;
     /// <summary>checkSlotInPosition: whether the point (screen coordinates) is over a slot of the section</summary>
     function IsSlotInPosition(AMouseX, AMouseY: Integer): Boolean;
+    /// <summary>
+    ///   fitItemInSlot: whether an item of AItemWidth x AItemHeight slots fits with its corner at slot (AX, AY) of
+    ///   this section (the caller gives the size of the item: this unit does not know the item rules)
+    /// </summary>
+    function FitItemInSlot(AItemWidth, AItemHeight, AX, AY: Integer): Boolean;
     /// <summary>Whether the section has a cost for moving an item to the section with this id</summary>
     function HasCostFor(const AId: string): Boolean;
     /// <summary>getCost: the time units to move an item to another section (0 for the same one)</summary>
@@ -117,6 +122,45 @@ begin
   FSlots := ReadSlots(ANode, 'slots', FSlots);
   TXcomNodeReader.ReadStringIntMap(ANode, 'costs', FCosts);
   FListOrder := TXcomNodeReader.ReadInteger(ANode, 'listOrder', AListOrder);
+end;
+
+function TXcomRuleInventory.FitItemInSlot(AItemWidth, AItemHeight, AX, AY: Integer): Boolean;
+var
+  LWidth: Integer;
+  LHeight: Integer;
+  LOffset: Integer;
+  LColumn: Integer;
+  LRow: Integer;
+  LTotal: Integer;
+  LFound: Integer;
+  LIndex: Integer;
+begin
+  if FType = INV_HAND then
+    Exit(True);
+  if FType = INV_GROUND then
+  begin
+    LWidth := (320 - FX) div INV_SLOT_WIDTH;
+    LHeight := (200 - FY) div INV_SLOT_HEIGHT;
+    LOffset := 0;
+    while AX >= LOffset + LWidth do
+      Inc(LOffset, LWidth);
+    for LColumn := AX to AX + AItemWidth - 1 do
+      for LRow := AY to AY + AItemHeight - 1 do
+        if not ((LColumn >= LOffset) and (LColumn < LOffset + LWidth) and (LRow >= 0) and (LRow < LHeight)) then
+          Exit(False);
+    Exit(True);
+  end;
+  LTotal := AItemWidth * AItemHeight;
+  LFound := 0;
+  LIndex := 0;
+  while (LIndex < Length(FSlots)) and (LFound < LTotal) do
+  begin
+    if (FSlots[LIndex].X >= AX) and (FSlots[LIndex].X < AX + AItemWidth) and (FSlots[LIndex].Y >= AY) and
+      (FSlots[LIndex].Y < AY + AItemHeight) then
+      Inc(LFound);
+    Inc(LIndex);
+  end;
+  Result := LFound = LTotal;
 end;
 
 function TXcomRuleInventory.IsSlotInPosition(AMouseX, AMouseY: Integer): Boolean;

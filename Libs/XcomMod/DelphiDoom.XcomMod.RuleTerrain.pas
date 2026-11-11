@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
   DelphiDoom.XcomMod.ModOffsets, DelphiDoom.XcomMod.RuleRegistry, DelphiDoom.XcomMod.MapDataSet,
-  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Random;
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.Random;
 
 type
   /// <summary>
@@ -48,6 +48,12 @@ type
       AForce: Boolean = True): TXcomMapBlock;
     /// <summary>getMapBlock: a block by name; nil if there is none</summary>
     function GetMapBlock(const AName: string): TXcomMapBlock;
+    /// <summary>
+    ///   getMapData: the part AId counted over the sets of the terrain in order; AId becomes the index in its
+    ///   set and AMapDataSetId counts the sets passed. A reference past the last set is BLANKS part 0. The sets
+    ///   must be loaded
+    /// </summary>
+    function GetMapData(var AId: Cardinal; var AMapDataSetId: Integer): TXcomMapData;
     property Name: string read FName;
     property Script: string read FScript;
     property MapDataSets: TList<TXcomMapDataSet> read FMapDataSets;
@@ -80,6 +86,32 @@ begin
   finally
     LCompliant.Free;
   end;
+end;
+
+function TXcomRuleTerrain.GetMapData(var AId: Cardinal; var AMapDataSetId: Integer): TXcomMapData;
+var
+  LIndex: Integer;
+  LSet: TXcomMapDataSet;
+begin
+  LSet := nil;
+  LIndex := 0;
+  while LIndex < FMapDataSets.Count do
+  begin
+    LSet := FMapDataSets[LIndex];
+    if AId < Cardinal(LSet.Size) then
+      Break;
+    Dec(AId, Cardinal(LSet.Size));
+    Inc(AMapDataSetId);
+    Inc(LIndex);
+  end;
+  if LIndex = FMapDataSets.Count then
+  begin
+    // a broken tile reference of the original maps: BLANKS part 0
+    LSet := FMapDataSets[0];
+    AId := 0;
+    AMapDataSetId := 0;
+  end;
+  Result := LSet.GetObject(AId);
 end;
 
 function TXcomRuleTerrain.GetMapBlock(const AName: string): TXcomMapBlock;
