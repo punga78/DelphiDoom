@@ -83,6 +83,7 @@ end;
 function TXcomMapDataSet.AddObject: TXcomMapData;
 begin
   Result := TXcomMapData.Create;
+  Result.Dataset := Self;
   FObjects.Add(Result);
 end;
 

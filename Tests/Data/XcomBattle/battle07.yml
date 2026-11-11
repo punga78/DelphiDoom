@@ -1,0 +1,853 @@
+objectivesDestroyed: 0
+objectivesNeeded: 1
+objectiveType: 6
+width: 10
+length: 10
+height: 2
+missionType: STR_ALIEN_BASE_ASSAULT
+globalshade: 5
+turn: 10
+selectedUnit: 2
+mapdatasets:
+  - MSUNK2
+  - UINT1
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 170
+binTiles: AAAAAP////8GAAUA/////wAAAAAAAAYCAAAA//8VAP///////wAA/////wAABgMAAAAXAAcA/////wAAAAD/////AAAABAAAAP//HQAhAP////8BAAEA//8AAAAGAAAAGgAmACMA//8AAAEAAQD//wAABwgAAAD//xsA//8NAP//AQD//wAABgAHCQAAAP////8aABcA/////wAAAQAAAAQKAAAA/////////////////////w8AAQsAAAD//xsA////////AAD/////AAADDQAAAP//HAD///////8AAP////8AAAUOAAAA////////GAD///////8AAAAABBAAAAD///////8XAP///////wEAAAAAEQAAABYA//8jAP//AAD//wEA//8AAAESAAAAAQAWAP////8AAAAA/////wAABhMAAAD/////EQAUAP////8AAAEAAAAGFAAAAP//DgD//wQA//8AAP//AQAAAAQWAAAA/////wQABAD/////AQABAAAIBBcAAAD//x0A////////AQD/////AAAFGAAAAP//FgD///////8AAP////8AAAIZAAAACAAHABoA//8BAAAAAAD//wAABBoAAAAeAP///////wEA////////AAAEGwAAAP//CgAXAP////8AAAEA//8AAAAcAAAA/////wcAEQD/////AAABAAAAAx0AAAAHAP///////wEA////////AAAEHgAAAP////////////////////8EAgEfAAAACwATAP//EAAAAAEA//8BAAAAACAAAAD//wgA////////AAD/////AAAEIwAAAP//HAAOAP////8AAAEA//8AAAQkAAAA/////wgA////////AAD//wAABCYAAAD//xsA//8VAP//AQD//wAAAAACJwAAAAAA////////AAD///////8AAAIoAAAA////////AAD///////8BAAAAACoAAAD//w8A//8jAP//AQD//wEAAAABKwAAAAQA//8WAP//AQD//wAA//8AAAEsAAAA//8cAP///////wAA/////wAAAC4AAAD//wMAIwAFAP//AQABAAAAAAAALwAAAP//DwABAP////8AAAEA//8AAAYwAAAAIwAnAAsA//8BAAEAAAD//wAAADEAAAAGAB8AAAD//wAAAQABAP//AAACMgAAAP////8NAP///////wEA//8IAAAzAAAA//8WAB8A/////wAAAQD//wAAATQAAAD//xQA////////AQD/////AAAANQAAAP//KAD///////8BAP////8AAAM2AAAAGQD//w4AEAAAAP//AAAAAAAAATcAAAASAP///////wEA////////AAEDOAAAAAAA//8ZAA0AAAD//wEAAAAJAAE5AAAA//8YAP///////wAA/////wAABToAAAAKACgAFAAPAAEAAQAAAAAAAAACOwAAAP//BgAnACcA//8AAAEAAQAAAAA9AAAA//8cAP//FwD//wAA//8BAAAAAz4AAAD///////8OAP///////wAAAAIFPwAAAAMACwAHABkAAQAAAAAAAQAAAABAAAAA/////wMA////////AAD//wAAAEEAAAD//wsADQAEAP//AAAAAAEAAAAGQgAAACUA////////AQD///////8AAABEAAAAFQD///////8AAP///////wAAB0YAAAD/////DAAZAP////8AAAAAAAACRwAAABYA////////AAD///////8AAAFIAAAA//8GABwA/////wAAAAD//wAKAEkAAAAoAP///////wEA////////AAAESgAAAAgAGQAaACUAAQAAAAEAAQAAAAdLAAAA//8EAP//EAD//wEA//8AAAAAAUwAAAD/////AQD///////8AAP//AAAATQAAACAA/////xQAAQD/////AAAGAABPAAAA/////xwA////////AAD//wAGBFAAAAAbAP//GgD//wEA//8AAP//AAAEUgAAAP//KAAQAP////8BAAEA//8AAAFTAAAAFAAMAP////8BAAEA/////wAAAFQAAAD//wEA//8SAP//AQD//wEAAAADVQAAABcA/////xAAAQD/////AAAAAAZWAAAAAQD///////8BAP///////wAABlcAAAARAP///////wAA////////AAAAWAAAAP///////xoA////////AQAAAAFZAAAA/////////////////////wQABFoAAAD///////8oAP///////wEAAAAAWwAAAP////8CABsA/////wAAAAAAAAFcAAAAFAAoAB4A//8BAAEAAQD//wAAAF0AAAD//xkAAAD/////AQABAP//BAIAXwAAAP//AwD///////8AAP////8AAAZgAAAAGgD//xEAKAAAAP//AAABAAAAAGEAAAD//w8AGQD/////AQABAP//AAABYgAAAP//DAD///////8BAP////8AAAJjAAAA//8VAAAABwD//wEAAQAAAAAAAmQAAAD//w8ACgD/////AQAAAP//BAkAZgAAAA8A/////ycAAQD/////AQAAAABnAAAACwD/////GQAAAP////8AAAAAAWgAAAD/////FQD///////8AAP//AAAAaQAAABAA/////yUAAQD/////AQAAAANqAAAADgD//xAA//8BAP//AAD//wAAA2sAAAD/////EgD///////8BAP//AAAFbAAAAP////8YAP///////wEA//8AAABtAAAA//8XABQA/////wAAAAD//wAAAW4AAAD//xEAEwD/////AQAAAP//AAkBbwAAAAQAFwAjACcAAQABAAEAAQAAAABwAAAA/////xIAFQD/////AAABAAAABHEAAAAEAP//AgAmAAAA//8BAAEAAAABcgAAABIA//8AACQAAAD//wEAAQAAAAZzAAAAIQD//xEA//8BAP//AAD//wAAB3QAAAAOAAMA/////wEAAQD/////AAAAdQAAAA8A//8AACcAAAD//wAAAQAAAAJ2AAAABQAkAP//AwAAAAEA//8AAAAAA3cAAAAFAP////8VAAEA/////wEAAAABeAAAABwAEwD//woAAAABAP//AAAAAAZ6AAAAKAD/////BwABAP////8AAAAAB3sAAAACAP///////wEA////////BwABfQAAABkA//8cAP//AAD//wEA//8AAAB+AAAABwAbAP////8AAAEA/////wAABn8AAAAFAAUA//8TAAEAAAD//wAAAAAEgAAAAAcAEQD/////AAABAP////8AAACBAAAA/////xUACAD/////AAAAAAYAAoIAAAAfAAAA//8IAAEAAAD//wEABAACgwAAACUAEgD/////AQABAP////8AAQCEAAAA////////HAD///////8AAAAAAIUAAAD/////////////////////BwAEhwAAAP////8IAAYA/////wEAAAAAAASIAAAA//8dAP///////wEA/////wAAAYkAAAD//xoAJAD/////AQABAP//AAAHigAAAAoAFAD/////AQAAAP////8AAQGLAAAAEAD///////8AAP///////wwAAY0AAAAnAP//EQATAAEA//8AAAAAAAAEjgAAAAMA//8KAP//AAD//wAA//8AAAGPAAAAGwASAP////8BAAEA/////wAAAJAAAAADAP///////wEA////////AAAGkQAAACYABQD/////AQAAAP////8AAAWVAAAA//8UABUA/////wAAAAD//wAABJYAAAD/////FAD///////8BAP//AAAFlwAAAP//EQAHAAkA//8BAAEAAAAAAAaYAAAACgAAAP////8AAAEA/////wkABJkAAAD/////FgD///////8AAP//AAADmgAAAP//DQAIABgA//8BAAAAAQAAAAebAAAA/////wIA////////AAD//wYABJwAAAAeAAYA/////wEAAQD/////AAACnQAAAP///////woA////////AQAAAAGeAAAAAgARABMA//8AAAAAAQD//wAABqAAAAD/////IQAAAP////8BAAAAAAAEoQAAABUA////////AAD///////8AAAGiAAAACAD//xwA//8AAP//AAD//wAABKMAAAD//xMA////////AAD/////AAADpAAAAP////8oAP///////wEA//8AAAClAAAAAQD//wsA//8BAP//AAD//wAAAaYAAAAYAAEA/////wAAAQD/////AAADpwAAAP///////xgA////////AQAAAASoAAAA/////wkA////////AQD//wIAAaoAAAD//xIABgAJAP//AQAAAAEAAAAGqwAAABcA/////w0AAAD/////AAAAAASsAAAA//8AAP///////wEA/////wAAAq0AAAD/////////////////////AAADrgAAAP////8aAP///////wAA//8AAASvAAAA//8KAP//CAD//wAA//8BAAAAAbAAAAD/////GQARAP////8BAAEACwAGsQAAABYA////////AQD///////8ABwCyAAAA//8RABoA/////wAAAAD//wADAbUAAAAEAP//AQD//wEA//8AAP//AAAFtgAAAAgABgAVAP//AQAAAAAA//8AAAW3AAAAAwAIAP////8AAAAA/////wAAAbgAAAAGAAwABQAaAAEAAQAAAAEAAAAEuQAAABAA/////wUAAAD/////AAAAAAC6AAAA//8PAP///////wAA/////wUAArsAAAD//xsA//8PAP//AAD//wEACgAAvAAAAAwA/////wQAAAD/////AAAAAAC9AAAA//8WAP///////wAA/////wAABL4AAAD/////CgD///////8AAP//AAAEvwAAAB8A//8cAP//AQD//wAA//8AAAHBAAAA//8WAP///////wEA/////wAAAMIAAAD///////8MAP///////wEAAAAAwwAAACIA/////xAAAQD/////AAAPAATEAAAA/////xkA////////AAD//wAABcUAAAAGAP////8BAAAA/////wAAAAADxgAAABwA//8nAP//AAD//wEA//8ABQTHAAAAGgD///////8AAP///////wAAAA==
+units:
+  - id: 1
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 2
+    status: 4
+    position:
+      - 0
+      - 8
+      - 0
+    direction: 0
+    directionTurret: 0
+    tu: 58
+    health: 19
+    stunlevel: 41
+    energy: 31
+    morale: 97
+    kneeled: false
+    floating: false
+    armor:
+      - 12
+      - 8
+      - 6
+      - 5
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 3
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 1
+    expFiring: 1
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 1
+    moraleRestored: 0
+    killedBy: 0
+    originalFaction: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_LEFT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+      shotsFiredCounter: 4
+    murdererId: 0
+    fatalShotSide: 3
+    fatalShotBodyPart: 1
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 64
+      -
+        - 64
+        - 198
+    mindControllerID: 0
+  - id: 2
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 0
+    status: 0
+    position:
+      - 6
+      - 0
+      - 1
+    direction: 7
+    directionTurret: 7
+    tu: 54
+    health: 0
+    stunlevel: 65
+    energy: 45
+    morale: 42
+    kneeled: false
+    floating: false
+    armor:
+      - 12
+      - 8
+      - 7
+      - 1
+      - 2
+    fatalWounds:
+      - 0
+      - 2
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+      shotsFiredCounter: 2
+    murdererId: 0
+    fatalShotSide: 2
+    fatalShotBodyPart: 2
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 160
+      -
+        - 64
+        - 64
+    mindControllerID: 0
+  - id: 3
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 0
+    status: 0
+    position:
+      - 1
+      - 7
+      - 0
+    direction: 3
+    directionTurret: 3
+    tu: 56
+    health: 0
+    stunlevel: 5
+    energy: 44
+    morale: 97
+    kneeled: false
+    floating: false
+    armor:
+      - 12
+      - 2
+      - 8
+      - 5
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 3
+    fire: 1
+    expBravery: 0
+    expReactions: 0
+    expFiring: 1
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    kills: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 1
+    fatalShotBodyPart: 5
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 160
+      -
+        - 64
+        - 160
+    mindControllerID: 0
+  - id: 4
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 0
+    status: 0
+    position:
+      - 4
+      - 5
+      - 0
+    direction: 3
+    directionTurret: 3
+    tu: 58
+    health: 0
+    stunlevel: 22
+    energy: 62
+    morale: 99
+    kneeled: true
+    floating: false
+    armor:
+      - 4
+      - 8
+      - 8
+      - 5
+      - 2
+    fatalWounds:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 1
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 160
+      -
+        - 64
+        - 130
+    mindControllerID: 0
+  - id: 5
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 0
+    status: 0
+    position:
+      - 7
+      - 7
+      - 1
+    direction: 1
+    directionTurret: 1
+    tu: 57
+    health: 0
+    stunlevel: 101
+    energy: 48
+    morale: 97
+    kneeled: false
+    floating: false
+    armor:
+      - 5
+      - 8
+      - 8
+      - 5
+      - 2
+    fatalWounds:
+      - 3
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 1
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    kills: 1
+    spawnUnit: STR_ZOMBIE
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 98
+    fatalShotSide: 3
+    fatalShotBodyPart: 1
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 64
+      -
+        - 64
+        - 201
+    mindControllerID: 41
+  - id: 6
+    genUnitType: SOLDIER
+    genUnitArmor: STR_NONE_UC
+    faction: 0
+    status: 9
+    position:
+      - 8
+      - 6
+      - 0
+    direction: 4
+    directionTurret: 4
+    tu: 50
+    health: 0
+    stunlevel: 46
+    energy: 29
+    morale: 99
+    kneeled: false
+    floating: false
+    armor:
+      - 8
+      - 8
+      - 8
+      - 5
+      - 2
+    fatalWounds:
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 1
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 14
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 1
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    recolor:
+      -
+        - 224
+        - 160
+      -
+        - 64
+        - 130
+    mindControllerID: 0
+  - id: 1000000
+    genUnitType: FEMALE_CIVILIAN
+    genUnitArmor: BIKINI_GIRL_ARMOR
+    faction: 2
+    status: 0
+    position:
+      - 9
+      - 3
+      - 0
+    direction: 3
+    directionTurret: 3
+    tu: 5
+    health: 30
+    stunlevel: 0
+    energy: 55
+    morale: 100
+    kneeled: true
+    floating: false
+    armor:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 1
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: 0
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_BIODRONE_TERRORIST
+    genUnitArmor: BIODRONE_ARMOR0
+    faction: 1
+    status: 0
+    position:
+      - 1
+      - 0
+      - 0
+    direction: 6
+    directionTurret: 6
+    tu: 71
+    health: 111
+    stunlevel: 0
+    energy: 120
+    morale: 97
+    kneeled: false
+    floating: false
+    armor:
+      - 10
+      - 6
+      - 6
+      - 4
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 1
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: 0
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+      hitCounter: 3
+    murdererId: 0
+    fatalShotSide: 2
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000002
+    genUnitType: STR_AQUATOID_TECHNICIAN
+    genUnitArmor: AQUATOID_ARMOR0
+    faction: 2
+    status: 0
+    position:
+      - 4
+      - 1
+      - 1
+    direction: 6
+    directionTurret: 6
+    tu: 22
+    health: 0
+    stunlevel: 0
+    energy: 90
+    morale: 42
+    kneeled: true
+    floating: false
+    armor:
+      - 4
+      - 2
+      - 0
+      - 2
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_LEFT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 1
+    fatalShotBodyPart: 3
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000003
+    genUnitType: STR_GILLMAN_TECHNICIAN
+    genUnitArmor: GILLMAN_ARMOR0
+    faction: 2
+    status: 0
+    position:
+      - 6
+      - 4
+      - 0
+    direction: 7
+    directionTurret: 7
+    tu: 45
+    health: 24
+    stunlevel: 2
+    energy: 80
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 15
+      - 10
+      - 11
+      - 14
+      - 12
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: STR_WEAPON_6
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000004
+    genUnitType: STR_AQUATOID_SQUAD_LEADER
+    genUnitArmor: AQUATOID_ARMOR0
+    faction: 1
+    status: 0
+    position:
+      - 9
+      - 9
+      - 0
+    direction: 2
+    directionTurret: 2
+    tu: 48
+    health: 0
+    stunlevel: 4
+    energy: 90
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 3
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 3
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000005
+    genUnitType: STR_LOBSTERMAN_NAVIGATOR
+    genUnitArmor: LOBSTERMAN_ARMOR1
+    faction: 2
+    status: 0
+    position:
+      - 1
+      - 6
+      - 1
+    direction: 6
+    directionTurret: 6
+    tu: 31
+    health: 120
+    stunlevel: 0
+    energy: 95
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 20
+      - 20
+      - 20
+      - 18
+      - 10
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 163
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: true
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 2
+    fatalShotBodyPart: 4
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+items:
+  - id: 0
+    type: STR_AJAX_LAUNCHER
+    owner: 4
+    previousOwner: 4
+    inventoryslot: STR_LEFT_HAND
+    inventoryX: 6
+    inventoryY: 4
+  - id: 1
+    type: STR_AQUATOID_CORPSE
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 7
+      - 5
+      - 0
+    fuseTimer: 2
+    droppedOnAlienTurn: true
+  - id: 2
+    type: STR_PISTOL_POWER_CLIP
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 3
+      - 7
+      - 1
+    ammoqty: 20
+  - id: 4
+    type: STR_TRISCENE_TERRORIST
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 1
+      - 9
+      - 1
+  - id: 7
+    type: STR_HALLUCINOID_CORPSE
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 5
+      - 3
+      - 0
+  - id: 10
+    type: STR_GILLMAN_COMMANDER
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 4
+      - 9
+      - 1
+  - id: 11
+    type: STR_CANNON_POWER_CLIP
+    owner: 4
+    previousOwner: 4
+    inventoryslot: STR_BACK_PACK
+    inventoryX: 6
+    inventoryY: 9
+    ammoqty: 10
+    droppedOnAlienTurn: true
+  - id: 12
+    type: HALLUCINOID_CORPSE_1
+    unit: 2
+    inventoryslot: STR_GROUND
+    inventoryX: 0
+    inventoryY: 0
+    position:
+      - 6
+      - 3
+      - 1
+tuReserved: 11
+kneelReserved: true
+depth: 0
+ambience: 1
+ambientVolume: 0.30000000000000004
+recoverGuaranteed:
+  - id: 5
+    type: STR_TRISCENE_CORPSE
+    inventoryX: 0
+    inventoryY: 0
+    XCOMProperty: true
+recoverConditional:
+  - id: 3
+    type: STR_TASOTH_SOLDIER
+    inventoryX: 0
+    inventoryY: 0
+  - id: 6
+    type: STR_LOBSTERMAN_TECHNICIAN
+    inventoryX: 0
+    inventoryY: 0
+  - id: 8
+    type: STR_THERMAL_SHOK_LAUNCHER
+    inventoryX: 0
+    inventoryY: 0
+    ammoItem: 9
+    droppedOnAlienTurn: true
+  - id: 9
+    type: STR_THERMAL_SHOK_BOMB
+    inventoryX: 0
+    inventoryY: 0
+music: ""
+turnLimit: 20
+chronoTrigger: 0
+cheatTurn: 28

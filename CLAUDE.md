@@ -131,6 +131,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Voxel** — Lettura dei file dei voxel e del lump VOXELDEF. [CLAUDE.md](Libs/Voxel/CLAUDE.md), [README.md](Libs/Voxel/README.md)
 - **VoxelEditor** — Editor di voxel (modulo Voxel di DD_Tools): cubo, viste, strumenti, formati DDVOX/KVX/VOX/DDMESH, presenter. [CLAUDE.md](Libs/VoxelEditor/CLAUDE.md), [README.md](Libs/VoxelEditor/README.md)
 - **Wad** — Lettura e scrittura di WAD, PAK, ZIP e cartelle; directory dei lump del motore. [CLAUDE.md](Libs/Wad/CLAUDE.md), [README.md](Libs/Wad/README.md)
+- **XcomBattle** — Battlescape di OpenXcom (modello e logica senza UI): tegole, oggetti, unita', battaglia salvata, pathfinding, motore delle tegole (luce, vista, linee, esplosioni); parita' sul vero OpenXcom. [CLAUDE.md](Libs/XcomBattle/CLAUDE.md), [README.md](Libs/XcomBattle/README.md)
 - **XcomEngine** — Motore di OpenXcom a classi senza SDL (gioco, stato, schermo, lingua, opzioni, risorse del mod, dispositivi dietro interfacce); parita' sui pixel col vero OpenXcom. [CLAUDE.md](Libs/XcomEngine/CLAUDE.md), [README.md](Libs/XcomEngine/README.md)
 - **XcomFormats** — Lettura dei formati di dati di UFO: Enemy Unknown e Terror from the Deep. [CLAUDE.md](Libs/XcomFormats/CLAUDE.md), [README.md](Libs/XcomFormats/README.md)
 - **XcomBasescape** — Basescape di OpenXcom a classi senza SDL (schermata della base, griglia delle strutture, mini mappe); parita' sui pixel col vero OpenXcom. [CLAUDE.md](Libs/XcomBasescape/CLAUDE.md), [README.md](Libs/XcomBasescape/README.md)

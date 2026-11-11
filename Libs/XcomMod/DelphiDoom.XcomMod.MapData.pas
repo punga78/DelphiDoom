@@ -73,6 +73,7 @@ type
     FBlock: array[0..XCOM_MAPDATA_BLOCKS - 1] of Integer;
     FLoftId: array[0..XCOM_MAPDATA_LOFTS - 1] of Integer;
     FMiniMapIndex: Word;
+    FDataset: TObject;
     class procedure CheckRange(AIndex, ACount: Integer); static;
   public
     constructor Create;
@@ -130,6 +131,11 @@ type
     property Explosive: Integer read FExplosive write FExplosive;
     property ExplosiveType: Integer read FExplosiveType write FExplosiveType;
     property MiniMapIndex: Word read FMiniMapIndex write FMiniMapIndex;
+    /// <summary>
+    ///   getDataset: the TXcomMapDataSet that owns the part (a TObject because that unit uses this one); nil
+    ///   for a part made by hand
+    /// </summary>
+    property Dataset: TObject read FDataset write FDataset;
   end;
 
 implementation
