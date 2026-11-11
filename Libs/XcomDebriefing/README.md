@@ -18,3 +18,5 @@ La fine di una missione di **OpenXcom** a classi e senza SDL (issue #176): `Debr
 Parita' col vero `DebriefingState` su 93 esiti (0 differenze su resoconto, seme e salvataggio). Licenza: derivato da OpenXcom, GPL v3 o successiva (la decide l'utente).
 
 Test: `Tools\build.bat Tests\DelphiDoom.Tests.XcomDebriefing`.
+
+Schermate e collegamento: `...DebriefingState` (`TXcomDebriefingState`), `...CannotReequipState` (`TXcomCannotReequipState`), `...Debriefer.Intf` / `...Debriefer` (`IXcomMissionDebriefer`, `TXcomMissionDebriefer`: la facciata che il Battlescape chiama a battaglia finita). Pixel delle schermate non confrontati col vero (vedi CLAUDE.md).
