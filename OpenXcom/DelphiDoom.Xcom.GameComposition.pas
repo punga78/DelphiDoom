@@ -137,6 +137,8 @@ var
   LOptionsFile: string;
   LOptionsDoc, LModsNode, LModItem: IYamlNode;
   LModSettings: TArray<TXcomModSetting>;
+  LMasterIndex: Integer;
+  LModIndex: Integer;
   LDosPath: string;
   LAudio: IXcomAudioDevice;
   LMusic: IXcomMusicPlayer;
@@ -167,6 +169,18 @@ begin
         LOptions.Mods := LModSettings;
       end;
     end;
+    // Options::refreshMods: the master the program runs is always in the list and active. Without it (no options.cfg
+    // yet) a save was written with no mods, and the list of the saves takes such a file for one of xcom1
+    LMasterIndex := -1;
+    LModSettings := LOptions.Mods;
+    for LModIndex := 0 to High(LModSettings) do
+      if LModSettings[LModIndex].Id = ASettings.ModId then
+        LMasterIndex := LModIndex;
+    if LMasterIndex < 0 then
+      LModSettings := [TXcomModSetting.Create(ASettings.ModId, True)] + LModSettings
+    else
+      LModSettings[LMasterIndex].Active := True;
+    LOptions.Mods := LModSettings;
     // the folders that the options screen shows (in the program of OpenXcom: the user, master user and config folders)
     LOptions.OriginalDataFolder := IncludeTrailingPathDelimiter(ASettings.GameFolder);
     LOptions.ModDataFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.DataFolder, 'common'));
