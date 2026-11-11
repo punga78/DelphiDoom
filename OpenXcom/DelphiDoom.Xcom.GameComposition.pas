@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Xcom32 - the composition root of the game                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -66,7 +66,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
+  System.IOUtils, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.XcomUfopaedia.Factory, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
@@ -240,7 +240,17 @@ begin
         LListener: IXcomGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LListener := TXcomPopupGeoscapeEvents.Create(AHost, ASettings.MissionLauncher);
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost, ASettings.MissionLauncher,
+          procedure(AArticleIds: TArray<string>)
+          var
+            LUfopaedia: IXcomUfopaediaNavigator;
+            LId: string;
+          begin
+            // one navigator for the articles of one report (Ufopaedia::openArticle of each)
+            LUfopaedia := TXcomUfopaediaFactory.CreateNavigator(AHost);
+            for LId in AArticleIds do
+              LUfopaedia.OpenArticle(LId);
+          end);
         Result := TXcomPopupSimulation.Create(
           TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
             TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),

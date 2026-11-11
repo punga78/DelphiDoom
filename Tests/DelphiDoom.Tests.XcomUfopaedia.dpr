@@ -23,6 +23,7 @@ uses
   DelphiDoom.Tests.XcomUfopaedia.Catalog in 'Source\DelphiDoom.Tests.XcomUfopaedia.Catalog.pas',
   DelphiDoom.Tests.XcomUfopaedia.ArticleFormat in 'Source\DelphiDoom.Tests.XcomUfopaedia.ArticleFormat.pas',
   DelphiDoom.Tests.XcomUfopaedia.Screens in 'Source\DelphiDoom.Tests.XcomUfopaedia.Screens.pas',
+  DelphiDoom.Tests.XcomUfopaedia.Report in 'Source\DelphiDoom.Tests.XcomUfopaedia.Report.pas',
   DelphiDoom.Tests.XcomUfopaedia.RealData in 'Source\DelphiDoom.Tests.XcomUfopaedia.RealData.pas';
 
 var
