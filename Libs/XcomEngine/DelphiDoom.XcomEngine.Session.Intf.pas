@@ -21,6 +21,16 @@ type
     procedure StartNewGame(ADifficulty: Integer; AIronman: Boolean);
   end;
 
+  /// <summary>
+  ///   What LoadGameState does when it has drawn its screen: loads the file as the saved game of the game and sets the
+  ///   geoscape as the state (Game::setSavedGame and Game::setState). A file that cannot be loaded is an exception:
+  ///   the message goes in the error window. The menu does not know the geoscape: the program gives the game this
+  /// </summary>
+  IXcomSavedGameLoader = interface
+    ['{4A9E21C7-5D03-4B86-A1F8-6C27E0B93D16}']
+    procedure LoadGame(const AFileName: string);
+  end;
+
 implementation
 
 end.

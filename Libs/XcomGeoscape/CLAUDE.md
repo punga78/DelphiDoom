@@ -13,3 +13,5 @@
 **Non portato**: dogfight, effetti di zoom, popup degli eventi, modo debug, salvataggio veloce, `ConfirmNewBaseState` e `PlaceLiftState` (basi dopo la prima), `GeoscapeCraftState`, `InterceptState`, `UfoDetectedState` ecc. (vedi `docs\INTEGRAZIONE_GIOCHI.md`).
 
 Test: `Tests\DelphiDoom.Tests.XcomGeoscape`; `Tools\build.bat Tests\DelphiDoom.Tests.XcomGeoscape`.
+
+**Caricamento di un salvataggio (issue #176)**: `TXcomSavedGameLoader` (`IXcomSavedGameLoader` di `Libs\XcomEngine`): `LoadGameState` lo chiede al gioco dopo dieci giri; legge il file dalla cartella del master attivo (`Options.MasterUserFolder`), `SavedGame::load` con il generatore che prende il seme dal file, il salvataggio nel `TXcomSavedGameHolder` della sessione e il geoscape come unico stato, con le stesse factory di simulazione e navigatore della partita nuova. Un salvataggio con `battleGame` e' `EXcomSaveException` e la finestra d'errore ne mostra il messaggio. Con la simulazione di `Libs\XcomStrategy` (factory del composition root `OpenXcom\DelphiDoom.Xcom.GameComposition.pas`, eventi nulli) il tempo del geoscape adesso fa succedere le cose; non provato a lungo nel programma.

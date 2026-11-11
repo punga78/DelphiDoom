@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - State of OpenXcom (a screen of the game    }
 {  with the surfaces it manages) and the host it asks things to                 }
@@ -70,6 +70,8 @@ type
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>What loads a saved game that was chosen in the Load Game screen (nil: the load is unsuccessful)</summary>
+    function SavedGameLoader: IXcomSavedGameLoader; virtual;
     /// <summary>
     ///   The saved game and what the strategy screens share (Game::getSavedGame): an object of the geoscape
     ///   library that the game keeps alive (nil before a game starts)
@@ -186,6 +188,11 @@ begin
 end;
 
 function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.SavedGameLoader: IXcomSavedGameLoader;
 begin
   Result := nil;
 end;

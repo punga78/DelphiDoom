@@ -26,7 +26,8 @@ type
   public
     /// <summary>
     ///   The simulation of the strategic game of AGame. The land checks come from the polygons of the globe of
-    ///   the ruleset when ALand is nil. The saved game, ruleset and rules are borrowed: they must outlive it
+    ///   the ruleset when ALand is nil. ARules nil: the simulation makes (and owns) its own adapters of the rules.
+    ///   The saved game, ruleset and rules are borrowed: they must outlive it
     /// </summary>
     class function CreateSimulation(const AGame: TXcomSavedGame; const ARuleset: TXcomRuleset;
       const ARules: TXcomRulesetRules; const ARandom: IXcomRandom; const ALand: IXcomLandMap;
@@ -55,13 +56,18 @@ var
   LAliens: TXcomAlienPlanner;
   LScripts: TXcomMissionScriptRunner;
   LCapacity: TXcomBaseCapacity;
+  LRules: TXcomRulesetRules;
+  LHelpers: TArray<TObject>;
 begin
   LLand := ALand;
+  LRules := ARules;
+  if not Assigned(LRules) then
+    LRules := TXcomRulesetRules.Create(ARuleset);
   if not Assigned(LLand) then
     LLand := TXcomPolygonLandMap.Create(ARuleset.Globe);
   // the spawner, sites, thinker, handler and radar are used by the trackers: the simulation owns them too
   LSpawner := TXcomUfoSpawner.Create(ARuleset, LLand, ARandom);
-  LSites := TXcomMissionSites.Create(ARuleset, ARules, ARandom);
+  LSites := TXcomMissionSites.Create(ARuleset, LRules, ARandom);
   LThinker := TXcomMissionThinker.Create(ARuleset, LLand, ARandom, LSpawner, LSites);
   LHandler := TXcomUfoWaypointHandler.Create(ARuleset, LLand, LSpawner, LSites);
   LRadar := TXcomBaseRadar.Create(ARuleset, ARandom);
@@ -71,8 +77,11 @@ begin
   LAliens := TXcomAlienPlanner.Create(AGame, ARuleset, ARandom, LThinker, ASettings);
   LScripts := TXcomMissionScriptRunner.Create(AGame, ARuleset, ARandom);
   LCapacity := TXcomBaseCapacity.Create(ARuleset);
+  LHelpers := TArray<TObject>.Create(LSpawner, LSites, LThinker, LHandler, LRadar);
+  if LRules <> ARules then
+    LHelpers := LHelpers + [LRules];
   Result := TXcomGeoscapeSimulation.Create(AGame, ARandom, AEvents, ASettings, ASaveSettings, LUfos, LCrafts, LBases,
-    LAliens, LScripts, LCapacity, TArray<TObject>.Create(LSpawner, LSites, LThinker, LHandler, LRadar));
+    LAliens, LScripts, LCapacity, LHelpers);
 end;
 
 end.

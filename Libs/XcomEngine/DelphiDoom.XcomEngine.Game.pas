@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - Game of OpenXcom (the main loop and the    }
 {  stack of states)                                                             }
@@ -53,6 +53,7 @@ type
     FFolderOpener: IXcomFolderOpener;
     FSaveCatalog: IXcomSaveCatalog;
     FNewGameStarter: IXcomNewGameStarter;
+    FSavedGameLoader: IXcomSavedGameLoader;
     FSession: IInterface;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
@@ -92,6 +93,8 @@ type
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
     function NewGameStarter: IXcomNewGameStarter; override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
+    function SavedGameLoader: IXcomSavedGameLoader; override;
+    procedure SetSavedGameLoader(const ALoader: IXcomSavedGameLoader);
     function Session: IInterface; override;
     procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
@@ -227,6 +230,16 @@ end;
 procedure TXcomGame.SetNewGameStarter(const AStarter: IXcomNewGameStarter);
 begin
   FNewGameStarter := AStarter;
+end;
+
+function TXcomGame.SavedGameLoader: IXcomSavedGameLoader;
+begin
+  Result := FSavedGameLoader;
+end;
+
+procedure TXcomGame.SetSavedGameLoader(const ALoader: IXcomSavedGameLoader);
+begin
+  FSavedGameLoader := ALoader;
 end;
 
 function TXcomGame.Session: IInterface;

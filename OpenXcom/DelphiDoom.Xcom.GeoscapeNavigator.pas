@@ -37,7 +37,8 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState;
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
+  DelphiDoom.XcomBasescape.CraftsState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost);
 begin
@@ -76,6 +77,12 @@ end;
 
 procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AFacility: TXcomBaseFacility);
 begin
+  case AScreen of
+    bsSoldiers:
+      FHost.PushState(TXcomSoldiersState.Create(FHost, ABase));
+    bsCrafts:
+      FHost.PushState(TXcomCraftsState.Create(FHost, ABase));
+  end;
 end;
 
 end.

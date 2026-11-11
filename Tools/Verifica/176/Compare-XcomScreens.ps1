@@ -1,0 +1,52 @@
+<#
+  Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav, scritto dagli oggetti veri di OpenXcom) sia
+  nel vero OpenXcom sia in XcomGame e confronta le schermate pixel per pixel (Compare-Png.ps1).
+
+  Uso: Compare-XcomScreens.ps1 -Root <worktree> -Data <cartella di Reference\_dati\xcom_tftd> -Out <cartella>
+         -Screens 'soldiers=512,180','crafts=512,206' [-Save 2]
+
+  -Screens  elenco nome=x,y: dalla schermata di base (menu, Load Game, il salvataggio, Bases) si fa clic in (x,y) e
+            si salva la schermata col nome; coordinate del client 640x400 (la base 320x200 raddoppiata). Il clic
+            sull'OK della schermata aperta ((476,368) per le liste con OK in basso a destra) torna alla base.
+  Il salvataggio e' copiato con l'intestazione adattata al catalogo (nome "Save NN", mods: xcom2) in una cartella
+  nuova (-UserName unico). Prende il lock globale dei giochi (Global\DelphiDoomEsecuzioneGioco).
+#>
+param(
+  [Parameter(Mandatory = $true)][string]$Root,
+  [Parameter(Mandatory = $true)][string]$Data,
+  [Parameter(Mandatory = $true)][string]$Out,
+  [string[]]$Screens = @(),
+  [int]$Save = 2,
+  [string]$Back = '476,368'
+)
+$ErrorActionPreference = 'Stop'
+New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
+$name = 'save{0:00}' -f $Save
+$t = [IO.File]::ReadAllText("$Root\Tests\Data\XcomSave\realsave\$name.sav")
+$t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace('  - "xcom2 ver: 1.0"', '  - xcom2').Replace("`r`n", "`n")
+[IO.File]::WriteAllText("$Out\seed\xcom2\$name.sav", $t)
+Copy-Item "$Out\seed\xcom2" "$Out\user" -Recurse -Force
+Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
+# XcomGame: the steps in milliseconds
+$script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000;move:575,34;click:575,34;wait:2000'
+$real = @('wait:2', 'click:220,256', 'wait:2', 'click:80,92', 'wait:8', 'click:575,34', 'wait:3')
+$first = $true
+foreach ($s in $Screens) {
+  $n, $xy = $s.Split('=')
+  if (-not $first) { $script += ";move:$Back;click:$Back;wait:1500"; $real += "click:$Back", 'wait:2' }
+  $script += ";move:$xy;click:$xy;wait:2000;shot:$n.png"
+  $real += "click:$xy", 'wait:3', "shot:$n"
+  $first = $false
+}
+Push-Location "$Out\delphi"
+& "$Root\bin\OpenXcom\XcomGame.exe" -data "$Data\openxcom" -game "$Data\TFTD" -user "$Out\user" -script $script | Out-Null
+Pop-Location
+$m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
+$got = $m.WaitOne(300000)
+try { & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -Steps $real | Out-Null }
+finally { if ($got) { $m.ReleaseMutex() } }
+foreach ($s in $Screens) {
+  $n = $s.Split('=')[0]
+  Write-Output "== $n"
+  & "$Root\Tools\Verifica\176\Compare-Png.ps1" -A "$Out\real\$n.png" -B "$Out\delphi\$n.png" 2>&1 | Select-Object -First 4
+}

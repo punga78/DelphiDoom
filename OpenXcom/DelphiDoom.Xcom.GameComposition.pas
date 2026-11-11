@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: XcomGame - the composition root of the game                      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -63,6 +63,9 @@ uses
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.Xcom.Win.AudioDevice,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
+  DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomStrategy.DefaultSettings,
   DelphiDoom.XcomEngine.State;
 
 const
@@ -113,6 +116,8 @@ var
   LLoaderSettings: TXcomLoaderSettings;
   LTask: TXcomGameLoadTask;
   LLoader: IXcomGameLoader;
+  LSimulationFactory: TXcomSimulationFactory;
+  LNavigatorFactory: TXcomNavigatorFactory;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
   LDosPath: string;
@@ -164,11 +169,21 @@ begin
     Result.SetSaveCatalog(TXcomDiskSaveCatalog.Create(LOptions.MasterUserFolder, ASettings.ModId, LParser));
     if ASettings.ListModes then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
-    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, nil,
+    LSimulationFactory :=
+      function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
+        const ARandom: IXcomRandom): IXcomGeoscapeSimulation
+      begin
+        // the screens that the popups open are not ported: the events go nowhere
+        Result := TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil,
+          TXcomNullGeoscapeEvents.Create, TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create);
+      end;
+    LNavigatorFactory :=
       function(AHost: TXcomStateHost): IXcomGeoscapeNavigator
       begin
         Result := TXcomGameNavigator.Create(AHost);
-      end));
+      end;
+    Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, LSimulationFactory, LNavigatorFactory));
+    Result.SetSavedGameLoader(TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory));
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;
