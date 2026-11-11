@@ -25,7 +25,7 @@ type
   /// <summary>
   ///   The two pages of the debriefing: the score of the mission (the statistics, the recovered objects, the total and
   ///   the rating) and the improvement of the soldiers. The report is the one that TXcomDebriefing.Run gave
-  ///   (not owned: the caller frees it after the state). The tooltips of the headings of the second page are not ported
+  ///   (not owned unless AOwnsReport). The name of a stat shows under the list while the mouse is on its heading
   /// </summary>
   TXcomDebriefingState = class(TXcomState)
   strict private
@@ -47,6 +47,11 @@ type
     FLstTotal: TXcomTextList;
     FSoldierHeadings: array[0..11] of TXcomText;
     FLstSoldierStats: TXcomTextList;
+    FTxtTooltip: TXcomText;
+    FCurrentTooltip: string;
+    FInitDone: Boolean;
+    function InterfaceColor(const AElement: string): Integer;
+    procedure WatchTooltip(AHeading: TXcomText; const ATooltip: string);
     procedure OkClick(AAction: TXcomAction);
     procedure StatsClick(AAction: TXcomAction);
     procedure ApplyVisibility;
@@ -58,6 +63,13 @@ type
     constructor Create(AHost: TXcomStateHost; const AReport: TXcomDebriefingReport;
       const AOnFinished: TXcomDebriefingFinished; AOwnsReport: Boolean = False);
     destructor Destroy; override;
+    /// <summary>Shows the page of the soldiers (true) or the one of the score, as the Stats/Score button does</summary>
+    procedure ShowPage(ASoldierStats: Boolean);
+    /// <summary>
+    ///   The first time the state comes to the front, a live alien that died because the base has no containment is
+    ///   told with a message (the C++ pushes it at the end of init)
+    /// </summary>
+    procedure Init; override;
     property StatsList: TXcomTextList read FLstStats;
     property RecoveryList: TXcomTextList read FLstRecovery;
     property TotalList: TXcomTextList read FLstTotal;
@@ -70,11 +82,17 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomMenu.ErrorMessageState;
+
 const
   SOLDIER_HEADINGS: array[0..10] of string = ('STR_TIME_UNITS_ABBREVIATION', 'STR_STAMINA_ABBREVIATION',
     'STR_HEALTH_ABBREVIATION', 'STR_BRAVERY_ABBREVIATION', 'STR_REACTIONS_ABBREVIATION',
     'STR_FIRING_ACCURACY_ABBREVIATION', 'STR_THROWING_ACCURACY_ABBREVIATION', 'STR_MELEE_ACCURACY_ABBREVIATION',
     'STR_STRENGTH_ABBREVIATION', 'STR_PSIONIC_STRENGTH_ABBREVIATION', 'STR_PSIONIC_SKILL_ABBREVIATION');
+  SOLDIER_TOOLTIPS: array[0..10] of string = ('STR_TIME_UNITS', 'STR_STAMINA', 'STR_HEALTH', 'STR_BRAVERY',
+    'STR_REACTIONS', 'STR_FIRING_ACCURACY', 'STR_THROWING_ACCURACY', 'STR_MELEE_ACCURACY', 'STR_STRENGTH',
+    'STR_PSIONIC_STRENGTH', 'STR_PSIONIC_SKILL');
   HEADING_X: array[0..10] of Integer = (106, 124, 142, 160, 178, 196, 214, 232, 250, 268, 286);
 
 { TXcomDebriefingState }
@@ -88,7 +106,7 @@ begin
   FReport := AReport;
   FOnFinished := AOnFinished;
   FOwnsReport := AOwnsReport;
-  FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0, wpBoth);
+  FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0);
   FBtnOk := TXcomTextButton.Create(40, 12, 16, 180);
   FBtnStats := TXcomTextButton.Create(40, 12, 264, 180);
   FTxtTitle := TXcomText.Create(300, 17, 16, 8);
@@ -105,6 +123,7 @@ begin
   for LIndex := 0 to 10 do
     FSoldierHeadings[LIndex + 1] := TXcomText.Create(18, 9, HEADING_X[LIndex], 24);
   FLstSoldierStats := TXcomTextList.Create(Host.Options, Host.Clock, 288, 128, 16, 32);
+  FTxtTooltip := TXcomText.Create(200, 9, 64, 180);
   SetInterface('debriefing');
   Add(FWindow, 'window', 'debriefing');
   Add(FBtnOk, 'button', 'debriefing');
@@ -121,6 +140,7 @@ begin
   for LIndex := 0 to 11 do
     Add(FSoldierHeadings[LIndex], 'text', 'debriefing');
   Add(FLstSoldierStats, 'list', 'debriefing');
+  Add(FTxtTooltip, 'text', 'debriefing');
   CenterAllSurfaces;
   FWindow.SetBackground(Host.Resources.GetSurface('BACK01.SCR'));
   FBtnOk.SetText(Tr('STR_OK'));
@@ -144,6 +164,7 @@ begin
   begin
     FSoldierHeadings[LIndex + 1].SetAlign(haCenter);
     FSoldierHeadings[LIndex + 1].SetText(Tr(SOLDIER_HEADINGS[LIndex]));
+    WatchTooltip(FSoldierHeadings[LIndex + 1], SOLDIER_TOOLTIPS[LIndex]);
   end;
   // the last column (a dummy that makes the dots reach the end of the line) is 1 wide: a surface cannot be 0 wide
   FLstSoldierStats.SetColumns([90, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 1]);
@@ -152,6 +173,26 @@ begin
   FLstSoldierStats.SetDot(True);
   FillLists;
   ApplyVisibility;
+end;
+
+procedure TXcomDebriefingState.WatchTooltip(AHeading: TXcomText; const ATooltip: string);
+var
+  LTooltip: string;
+begin
+  // a copy for the closures: the parameter cannot be captured
+  LTooltip := ATooltip;
+  AHeading.OnMouseIn(
+    procedure(AAction: TXcomAction)
+    begin
+      FCurrentTooltip := LTooltip;
+      FTxtTooltip.SetText(Tr(LTooltip));
+    end);
+  AHeading.OnMouseOut(
+    procedure(AAction: TXcomAction)
+    begin
+      if FCurrentTooltip = LTooltip then
+        FTxtTooltip.SetText('');
+    end);
 end;
 
 class function TXcomDebriefingState.SoldierString(AStat: Integer): string;
@@ -228,10 +269,39 @@ begin
   for LIndex := 0 to 11 do
     FSoldierHeadings[LIndex].Visible := FShowSoldierStats;
   FLstSoldierStats.Visible := FShowSoldierStats;
+  FTxtTooltip.Visible := FShowSoldierStats;
   if FShowSoldierStats then
     FBtnStats.SetText(Tr('STR_SCORE'))
   else
     FBtnStats.SetText(Tr('STR_STATS'));
+end;
+
+function TXcomDebriefingState.InterfaceColor(const AElement: string): Integer;
+var
+  LInterface: TXcomRuleInterface;
+  LElement: TXcomInterfaceElement;
+begin
+  Result := 0;
+  LInterface := Host.Resources.GetInterface('debriefing');
+  if (LInterface <> nil) and LInterface.TryGetElement(AElement, LElement) then
+    Result := LElement.Color;
+end;
+
+procedure TXcomDebriefingState.Init;
+begin
+  inherited Init;
+  if FInitDone then
+    Exit;
+  FInitDone := True;
+  if FReport.NoContainment then
+    Host.PushState(TXcomErrorMessageState.Create(Host, Tr('STR_ALIEN_DIES_NO_ALIEN_CONTAINMENT_FACILITY').Text,
+      Palette, Byte(InterfaceColor('errorMessage')), 'BACK01.SCR', InterfaceColor('errorPalette')));
+end;
+
+procedure TXcomDebriefingState.ShowPage(ASoldierStats: Boolean);
+begin
+  FShowSoldierStats := ASoldierStats;
+  ApplyVisibility;
 end;
 
 procedure TXcomDebriefingState.StatsClick(AAction: TXcomAction);
