@@ -49,6 +49,7 @@ type
     FOnScreenshot: TXcomScreenshotHandler;
     FLanguageProvider: IXcomLanguageProvider;
     FDisplayModes: IXcomDisplayModes;
+    FShaderCatalog: IXcomShaderCatalog;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
@@ -83,11 +84,13 @@ type
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); override;
     function LanguageProvider: IXcomLanguageProvider; override;
     function DisplayModes: IXcomDisplayModes; override;
+    function ShaderCatalog: IXcomShaderCatalog; override;
     function OptionsStore: IXcomOptionsStore; override;
     procedure LoadLanguages; override;
     procedure SetVolume(ASound, AMusic, AUi: Integer); override;
     procedure SetLanguageProvider(const AProvider: IXcomLanguageProvider);
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
+    procedure SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
     /// <summary>The music of the game; it is reloaded each time the game adopts data</summary>
@@ -340,6 +343,11 @@ begin
   Result := FDisplayModes;
 end;
 
+function TXcomGame.ShaderCatalog: IXcomShaderCatalog;
+begin
+  Result := FShaderCatalog;
+end;
+
 function TXcomGame.OptionsStore: IXcomOptionsStore;
 begin
   Result := FOptionsStore;
@@ -389,6 +397,11 @@ end;
 procedure TXcomGame.SetDisplayModes(const AModes: IXcomDisplayModes);
 begin
   FDisplayModes := AModes;
+end;
+
+procedure TXcomGame.SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
+begin
+  FShaderCatalog := ACatalog;
 end;
 
 procedure TXcomGame.SetOptionsStore(const AStore: IXcomOptionsStore);

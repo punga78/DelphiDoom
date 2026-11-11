@@ -36,7 +36,10 @@ uses
   DelphiDoom.Tests.XcomEngine.AudioMusic in 'Source\DelphiDoom.Tests.XcomEngine.AudioMusic.pas',
   DelphiDoom.Tests.XcomEngine.AudioFiles in 'Source\DelphiDoom.Tests.XcomEngine.AudioFiles.pas',
   DelphiDoom.Tests.XcomEngine.AudioFormats in 'Source\DelphiDoom.Tests.XcomEngine.AudioFormats.pas',
-  DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas';
+  DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas',
+  DelphiDoom.Xcom.VideoDevice.Types in '..\OpenXcom\DelphiDoom.Xcom.VideoDevice.Types.pas',
+  DelphiDoom.Xcom.VideoDeviceSelector in '..\OpenXcom\DelphiDoom.Xcom.VideoDeviceSelector.pas',
+  DelphiDoom.Tests.XcomEngine.VideoDeviceSelector in 'Source\DelphiDoom.Tests.XcomEngine.VideoDeviceSelector.pas';
 
 var
   Runner: ITestRunner;
