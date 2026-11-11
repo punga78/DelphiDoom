@@ -734,6 +734,8 @@ end;
 // ---- -vsh demo: the state of the first player at the last tick (a -timedemo run) -----------------------
 
 var
+  GPadding: Pointer = nil;
+  GExitFile: TextFile;
   GDemoLine: string = '';
 
 procedure WriteDemoLine;
@@ -743,6 +745,20 @@ begin
   AssignFile(LFile, 'verify_scripthost_demo.txt');
   Rewrite(LFile);
   Writeln(LFile, GDemoLine);
+  CloseFile(LFile);
+end;
+
+// one line every 35 tics: the tick and the FNV-1a of the state of the level (to find where two runs part)
+procedure WriteTrace(ATick: Integer);
+var
+  LFile: TextFile;
+begin
+  AssignFile(LFile, 'verify_scripthost_demo_trace.txt');
+  if ATick <= 35 then
+    Rewrite(LFile)
+  else
+    Append(LFile);
+  Writeln(LFile, Format('%d %.8x x=%d y=%d z=%d momx=%d momy=%d angle=%d health=%d state=%d cons=%d gt=%d', [ATick, StateFingerprint, players[0].mo.x, players[0].mo.y, players[0].mo.z, players[0].mo.momx, players[0].mo.momy, Integer(players[0].mo.angle), players[0].health, Ord(players[0].playerstate), consoleplayer, gametic]));
   CloseFile(LFile);
 end;
 
@@ -762,6 +778,8 @@ begin
   GDemoLine := GDemoLine + Format(' kills=%d items=%d secrets=%d', [players[0].killcount,
     players[0].itemcount, players[0].secretcount]);
 {$ENDIF}
+  if (ATick mod 35 = 0) or (ATick >= 4255) then
+    WriteTrace(ATick);
   if ATick mod 700 = 0 then
     WriteDemoLine;
 end;
@@ -837,6 +855,77 @@ begin
   Halt(0);
 end;
 
+type
+  PVshExceptionRecord = ^TVshExceptionRecord;
+  TVshExceptionRecord = record
+    ExceptionCode: Cardinal;
+    ExceptionFlags: Cardinal;
+    ExceptionRecord: Pointer;
+    ExceptionAddress: Pointer;
+    NumberParameters: Cardinal;
+    ExceptionInformation: array[0..14] of NativeUInt;
+  end;
+  PVshExceptionPointers = ^TVshExceptionPointers;
+  TVshExceptionPointers = record
+    ExceptionRecord: PVshExceptionRecord;
+    ContextRecord: Pointer;
+  end;
+
+type
+  TVshMemoryInfo = record
+    BaseAddress: Pointer;
+    AllocationBase: Pointer;
+    AllocationProtect: Cardinal;
+    RegionSize: NativeUInt;
+    State: Cardinal;
+    Protect: Cardinal;
+    MemType: Cardinal;
+  end;
+
+function VirtualQuery(AAddress: Pointer; var ABuffer: TVshMemoryInfo; ALength: NativeUInt): NativeUInt; stdcall; external 'kernel32.dll';
+
+function AddVectoredExceptionHandler(AFirst: Cardinal; AHandler: Pointer): Pointer; stdcall; external 'kernel32.dll';
+
+// -vsh demo: every exception that is raised (Delphi or not) goes to a file with its class and message
+function VshExceptionHandler(AInfo: PVshExceptionPointers): LongInt; stdcall;
+var
+  LFile: TextFile;
+  LObject: TObject;
+  LText: string;
+  LMemory: TVshMemoryInfo;
+begin
+  Result := 0;
+  try
+    LText := Format('code=%.8x address=%p', [AInfo.ExceptionRecord.ExceptionCode, AInfo.ExceptionRecord.ExceptionAddress]);
+    if AInfo.ExceptionRecord.ExceptionCode = $C0000005 then
+      LText := LText + Format(' write=%d data=%.8x', [AInfo.ExceptionRecord.ExceptionInformation[0], AInfo.ExceptionRecord.ExceptionInformation[1]]);
+    if AInfo.ExceptionRecord.ExceptionCode = $C0000005 then
+    begin
+      FillChar(LMemory, SizeOf(LMemory), 0);
+      VirtualQuery(Pointer(AInfo.ExceptionRecord.ExceptionInformation[1] - 1), LMemory, SizeOf(LMemory));
+      LText := LText + Format(' below: base=%p allocbase=%p size=%d state=%.8x type=%.8x', [LMemory.BaseAddress, LMemory.AllocationBase, LMemory.RegionSize, LMemory.State, LMemory.MemType]);
+      FillChar(LMemory, SizeOf(LMemory), 0);
+      VirtualQuery(Pointer(AInfo.ExceptionRecord.ExceptionInformation[1]), LMemory, SizeOf(LMemory));
+      LText := LText + Format(' at: base=%p state=%.8x', [LMemory.BaseAddress, LMemory.State]);
+    end;
+    if AInfo.ExceptionRecord.ExceptionCode = $0EEDFADE then
+    begin
+      LObject := TObject(AInfo.ExceptionRecord.ExceptionInformation[1]);
+      LText := LText + ' ' + LObject.ClassName;
+      if LObject is Exception then
+        LText := LText + ': ' + Exception(LObject).Message;
+    end;
+    AssignFile(LFile, 'verify_scripthost_demo_exceptions.txt');
+    if FileExists('verify_scripthost_demo_exceptions.txt') then
+      Append(LFile)
+    else
+      Rewrite(LFile);
+    Writeln(LFile, LText);
+    CloseFile(LFile);
+  except
+  end;
+end;
+
 procedure Initialize;
 var
   LIndex: Integer;
@@ -857,14 +946,31 @@ begin
         GTypeValues.Add(StrToIntDef(LValue, 0));
     end
     else if SameText(ParamStr(LIndex), '-vshonly') and (LIndex < ParamCount) then
-      GOnly := ParamStr(LIndex + 1);
+      GOnly := ParamStr(LIndex + 1)
+    else if SameText(ParamStr(LIndex), '-vshpad') and (LIndex < ParamCount) then
+    begin
+      // -vshpad N: N KB of memory taken at the start (it moves what is allocated after it: for the runs of -vsh demo,
+      // where a read past the end of a block of the renderer depends on the layout of the memory)
+      GetMem(GPadding, StrToIntDef(ParamStr(LIndex + 1), 0) * 1024);
+    end;
   end;
+  if GMode = 'demo' then
+    AddVectoredExceptionHandler(1, @VshExceptionHandler);
 end;
 
 initialization
   Initialize;
 
 finalization
+  if GMode = 'demo' then
+  begin
+    AssignFile(GExitFile, 'verify_scripthost_demo_exit.txt');
+    Rewrite(GExitFile);
+    Writeln(GExitFile, 'ExitCode=' + IntToStr(ExitCode));
+    if ExceptObject <> nil then
+      Writeln(GExitFile, TObject(ExceptObject).ClassName);
+    CloseFile(GExitFile);
+  end;
   if (GMode = 'demo') and (GDemoLine <> '') then
     WriteDemoLine;
 

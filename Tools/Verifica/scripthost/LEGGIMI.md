@@ -101,3 +101,14 @@ rapporto in `docs\SCRIPTHOST_PIANO.md` (sezione 5, fetta 2a-0).
   byte dei salvataggi contengono un attore creato da uno script; `Confronta-Salvataggi.ps1 -Game Hexen` (poi gli altri tre).
 * La patch si rifa' con `Genera-Patch.ps1` **da un albero pulito** (fa `git checkout` dei file che tocca): si e' lanciata nell'albero
   del vecchio commit e le patch copiate qui.
+* **`-vshpad N`** (con `-vsh demo`) prende N KB di memoria all'avvio; il gestore di eccezioni di `-vsh demo` scrive in
+  `verify_scripthost_demo_exceptions.txt` ogni eccezione (codice, indirizzo, e per un accesso non valido l'indirizzo dei dati
+  e la `VirtualQuery`), `verify_scripthost_demo_trace.txt` uno stato ogni 35 tic (ogni tic dal 4255) e
+  `verify_scripthost_demo_exit.txt` l'uscita. Servono per il difetto latente di `R_ReadDC32InternalCache` (`docs\PENDING_ISSUES.md`):
+  `Confronta-Demo.ps1 -Pad 300` (e `-OldLabel BASE_b7155edf` per confrontare con il commit prima della fetta).
+* **Salvataggi di Hexen**: il vecchio da usare e' il commit **prima della fetta** (`Compila-ScriptHost.ps1 -Variant Save -Which Old
+  -OldCommit b7155edf -OldTree <worktree>`), non `919a19ef` (che ha ancora il `StructureSize` sbagliato della 2b: 23 e 31 byte in
+  meno). I salvataggi contengono indirizzi grezzi (thinker `prev`/`next`, `function`, `state`): i byte di questi campi cambiano anche
+  tra due esecuzioni dello stesso eseguibile, e il rumore di due esecuzioni non li copre tutti; la prima esecuzione dopo una
+  ricompilazione puo' avere una dimensione diversa dalle altre (si vede dalle dimensioni dei `.hxs`). `Confronta-Salvataggi.ps1`
+  ora funziona anche quando il rumore e' vuoto (`Union-Offsets` dava `$null`).
