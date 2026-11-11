@@ -139,6 +139,15 @@ type
     /// </summary>
     function Hit(const ACenter: TXcomPosition; APower, ADamageType: Integer;
       const AUnit: TXcomBattleUnit): TXcomBattleUnit;
+    /// <summary>validMeleeRange(attacker, target, dir): the attacker may hit the target from where it stands</summary>
+    function ValidMeleeRange(const AAttacker, ATarget: TXcomBattleUnit; ADirection: Integer): Boolean; overload;
+    /// <summary>
+    ///   validMeleeRange(pos, direction, attacker, target, dest): a unit (the target, or any when nil) within reach
+    ///   of the tile in a direction; ADestination gets its position when there is one. The target that is chosen
+    ///   among several is an enemy (preferEnemy) or the friend with most wounds
+    /// </summary>
+    function ValidMeleeRange(const APosition: TXcomPosition; ADirection: Integer; const AAttacker, ATarget: TXcomBattleUnit;
+      out ADestination: TXcomPosition; APreferEnemy: Boolean = True): Boolean; overload;
     /// <summary>The game in progress that the hit asks for the action being carried out and the list of steps</summary>
     property Host: IXcomBattleHost read FHost write FHost;
     property PersonalLighting: Boolean read FPersonalLighting;
@@ -2382,6 +2391,89 @@ begin
     Exit(False);
   ACurve := LCurvature;
   Result := True;
+end;
+
+function TXcomTileEngine.ValidMeleeRange(const AAttacker, ATarget: TXcomBattleUnit; ADirection: Integer): Boolean;
+var
+  LDestination: TXcomPosition;
+begin
+  Result := ValidMeleeRange(AAttacker.Position, ADirection, AAttacker, ATarget, LDestination);
+end;
+
+function TXcomTileEngine.ValidMeleeRange(const APosition: TXcomPosition; ADirection: Integer;
+  const AAttacker, ATarget: TXcomBattleUnit; out ADestination: TXcomPosition; APreferEnemy: Boolean): Boolean;
+var
+  LPotential: TList<TXcomBattleUnit>;
+  LChosen: TXcomBattleUnit;
+  LVector: TXcomPosition;
+  LSize: Integer;
+  LX: Integer;
+  LY: Integer;
+  LOrigin: TXcomTile;
+  LTargetTile: TXcomTile;
+  LAbove: TXcomTile;
+  LBelow: TXcomTile;
+  LOriginVoxel: TXcomPosition;
+  LTargetVoxel: TXcomPosition;
+  LUnit: TXcomBattleUnit;
+begin
+  ADestination := TXcomPosition.Make(0, 0, 0);
+  if (ADirection < 0) or (ADirection > 7) then
+    Exit(False);
+  LPotential := TList<TXcomBattleUnit>.Create;
+  try
+    LChosen := nil;
+    LSize := AAttacker.Armor.Size - 1;
+    LVector := TXcomDirections.ToVector(ADirection);
+    for LX := 0 to LSize do
+      for LY := 0 to LSize do
+      begin
+        LOrigin := FSave.TileAt(APosition + TXcomPosition.Make(LX, LY, 0));
+        LTargetTile := FSave.TileAt(APosition + TXcomPosition.Make(LX, LY, 0) + LVector);
+        LAbove := FSave.TileAt(APosition + TXcomPosition.Make(LX, LY, 1) + LVector);
+        LBelow := FSave.TileAt(APosition + TXcomPosition.Make(LX, LY, -1) + LVector);
+        if Assigned(LTargetTile) and Assigned(LOrigin) then
+        begin
+          if (LOrigin.GetTerrainLevel <= -16) and Assigned(LAbove) and (not LAbove.HasNoFloor(LTargetTile)) then
+            LTargetTile := LAbove
+          else if Assigned(LBelow) and LTargetTile.HasNoFloor(LBelow) and (not Assigned(LTargetTile.CurrentUnit)) and
+            (LBelow.GetTerrainLevel <= -16) then
+            LTargetTile := LBelow;
+          if Assigned(LTargetTile.CurrentUnit) then
+          begin
+            if (not Assigned(ATarget)) or (LTargetTile.CurrentUnit = ATarget) then
+            begin
+              LOriginVoxel := LOrigin.Position * TXcomPosition.Make(16, 16, 24) +
+                TXcomPosition.Make(8, 8, AAttacker.GetHeight + AAttacker.FloatHeight - 4 - LOrigin.GetTerrainLevel);
+              if CanTargetUnit(LOriginVoxel, LTargetTile, LTargetVoxel, AAttacker, False) then
+              begin
+                ADestination := LTargetTile.Position;
+                if Assigned(ATarget) then
+                  Exit(True);
+                LPotential.Add(LTargetTile.CurrentUnit);
+              end;
+            end;
+          end;
+        end;
+      end;
+    for LUnit in LPotential do
+    begin
+      // if there is actually something there, this is a success
+      if not Assigned(LChosen) then
+        LChosen := LUnit
+      // but a target of a different faction is prioritized
+      else if (APreferEnemy and (LUnit.Faction <> AAttacker.Faction)) or
+        // or, with a medikit, whichever friend is wounded the most
+        ((not APreferEnemy) and (LUnit.Faction = AAttacker.Faction) and
+        (LUnit.GetFatalWounds > LChosen.GetFatalWounds)) then
+        LChosen := LUnit;
+    end;
+    if Assigned(LChosen) then
+      ADestination := LChosen.Position;
+    Result := Assigned(LChosen);
+  finally
+    LPotential.Free;
+  end;
 end;
 
 function TXcomTileEngine.Hit(const ACenter: TXcomPosition; APower, ADamageType: Integer;

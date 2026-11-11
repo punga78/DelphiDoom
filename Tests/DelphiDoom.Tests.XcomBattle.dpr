@@ -26,7 +26,8 @@ uses
   DelphiDoom.Tests.XcomBattle.RealGenerator in 'Source\DelphiDoom.Tests.XcomBattle.RealGenerator.pas',
   DelphiDoom.Tests.XcomBattle.RealSaveLink in 'Source\DelphiDoom.Tests.XcomBattle.RealSaveLink.pas',
   DelphiDoom.Tests.XcomBattle.RealProjectile in 'Source\DelphiDoom.Tests.XcomBattle.RealProjectile.pas',
-  DelphiDoom.Tests.XcomBattle.Trajectory in 'Source\DelphiDoom.Tests.XcomBattle.Trajectory.pas';
+  DelphiDoom.Tests.XcomBattle.Trajectory in 'Source\DelphiDoom.Tests.XcomBattle.Trajectory.pas',
+  DelphiDoom.Tests.XcomBattle.RealAI in 'Source\DelphiDoom.Tests.XcomBattle.RealAI.pas';
 
 var
   Runner: ITestRunner;

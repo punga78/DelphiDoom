@@ -12,7 +12,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
   DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.NodeWriter,
-  DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Model;
+  DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattle.Action;
 
 const
   /// <summary>AIMode</summary>
@@ -24,8 +25,9 @@ const
 type
   /// <summary>
   ///   The AI state of one unit (AIModule): the mode, the patrol nodes and the units that hit it, what the saved
-  ///   battle keeps. The nodes belong to the saved battle. The thinking (think, the four behaviours) is in
-  ///   TXcomAIThinker
+  ///   battle keeps, and what the thinking keeps from one cycle to the next (the target, the five planned
+  ///   actions, the tiles it can reach). The nodes belong to the saved battle. The thinking itself (think and
+  ///   the behaviours) is in TXcomAIThinker, which reads and writes this state
   /// </summary>
   TXcomAIModule = class(TInterfacedObject, IXcomUnitAI)
   strict private
@@ -38,9 +40,27 @@ type
     FEscapeTus: Integer;
     FAmbushTus: Integer;
     FTargetFaction: Integer;
+    FAggroTarget: TXcomBattleUnit;
+    FKnownEnemies: Integer;
+    FVisibleEnemies: Integer;
+    FSpottingEnemies: Integer;
+    FClosestDistance: Integer;
+    FEscapeAction: TXcomBattleAction;
+    FAmbushAction: TXcomBattleAction;
+    FAttackAction: TXcomBattleAction;
+    FPatrolAction: TXcomBattleAction;
+    FPsiAction: TXcomBattleAction;
+    FRifle: Boolean;
+    FMelee: Boolean;
+    FBlaster: Boolean;
+    FDidPsi: Boolean;
+    FReserve: Integer;
+    FReachable: TArray<Integer>;
+    FReachableWithAttack: TArray<Integer>;
   public
     /// <summary>AIModule(save, unit, node)</summary>
     constructor Create(const AUnit: TXcomBattleUnit; const AFromNode: TXcomNode);
+    destructor Destroy; override;
     /// <summary>load: the nodes are looked up in ANodes (the nodes of the saved battle); one that is not there stays</summary>
     procedure Load(const ANode: IYamlNode; const ANodes: TObjectList<TXcomNode>);
     /// <summary>save: fromNode, toNode, AIMode and wasHitBy</summary>
@@ -49,6 +69,10 @@ type
     procedure Reset;
     /// <summary>freePatrolTarget</summary>
     procedure FreePatrolTarget;
+    /// <summary>setWasHitBy: notes the attacker of another faction that has not hit this unit yet</summary>
+    procedure SetWasHitBy(const AAttacker: TXcomBattleUnit);
+    /// <summary>getWasHitBy</summary>
+    function GetWasHitBy(AAttacker: Integer): Boolean;
     property Owner: TXcomBattleUnit read FUnit;
     property FromNode: TXcomNode read FFromNode write FFromNode;
     property ToNode: TXcomNode read FToNode write FToNode;
@@ -58,6 +82,25 @@ type
     property EscapeTus: Integer read FEscapeTus write FEscapeTus;
     property AmbushTus: Integer read FAmbushTus write FAmbushTus;
     property TargetFaction: Integer read FTargetFaction;
+    /// <summary>The target of the last selection (getTarget)</summary>
+    property AggroTarget: TXcomBattleUnit read FAggroTarget write FAggroTarget;
+    property KnownEnemies: Integer read FKnownEnemies write FKnownEnemies;
+    property VisibleEnemies: Integer read FVisibleEnemies write FVisibleEnemies;
+    property SpottingEnemies: Integer read FSpottingEnemies write FSpottingEnemies;
+    property ClosestDistance: Integer read FClosestDistance write FClosestDistance;
+    property EscapeAction: TXcomBattleAction read FEscapeAction;
+    property AmbushAction: TXcomBattleAction read FAmbushAction;
+    property AttackAction: TXcomBattleAction read FAttackAction;
+    property PatrolAction: TXcomBattleAction read FPatrolAction;
+    property PsiAction: TXcomBattleAction read FPsiAction;
+    property Rifle: Boolean read FRifle write FRifle;
+    property Melee: Boolean read FMelee write FMelee;
+    property Blaster: Boolean read FBlaster write FBlaster;
+    property DidPsi: Boolean read FDidPsi write FDidPsi;
+    /// <summary>getReserveMode: the time units reservation (BA_*) the unit asks for after its action</summary>
+    property ReserveMode: Integer read FReserve write FReserve;
+    property Reachable: TArray<Integer> read FReachable write FReachable;
+    property ReachableWithAttack: TArray<Integer> read FReachableWithAttack write FReachableWithAttack;
   end;
 
 implementation
@@ -69,9 +112,26 @@ begin
   FFromNode := AFromNode;
   FAIMode := AI_PATROL;
   FIntelligence := AUnit.Intelligence;
+  FClosestDistance := 100;
+  FReserve := BA_NONE;
+  FEscapeAction := TXcomBattleAction.Create;
+  FAmbushAction := TXcomBattleAction.Create;
+  FAttackAction := TXcomBattleAction.Create;
+  FPatrolAction := TXcomBattleAction.Create;
+  FPsiAction := TXcomBattleAction.Create;
   FTargetFaction := FACTION_PLAYER;
   if AUnit.OriginalFaction = FACTION_NEUTRAL then
     FTargetFaction := FACTION_HOSTILE;
+end;
+
+destructor TXcomAIModule.Destroy;
+begin
+  FEscapeAction.Free;
+  FAmbushAction.Free;
+  FAttackAction.Free;
+  FPatrolAction.Free;
+  FPsiAction.Free;
+  inherited Destroy;
 end;
 
 procedure TXcomAIModule.Load(const ANode: IYamlNode; const ANodes: TObjectList<TXcomNode>);
@@ -118,6 +178,22 @@ procedure TXcomAIModule.FreePatrolTarget;
 begin
   if Assigned(FToNode) then
     FToNode.Deallocate;
+end;
+
+procedure TXcomAIModule.SetWasHitBy(const AAttacker: TXcomBattleUnit);
+begin
+  if (AAttacker.Faction <> FUnit.Faction) and (not GetWasHitBy(AAttacker.Id)) then
+    FWasHitBy := FWasHitBy + [AAttacker.Id];
+end;
+
+function TXcomAIModule.GetWasHitBy(AAttacker: Integer): Boolean;
+var
+  LId: Integer;
+begin
+  Result := False;
+  for LId in FWasHitBy do
+    if LId = AAttacker then
+      Exit(True);
 end;
 
 end.
