@@ -53,7 +53,24 @@ foreach ($arguments in $runs) {
   $a = @(Get-Content (Join-Path $work "run${index}_OLD.txt"))
   $b = @(Get-Content (Join-Path $work "run${index}_NEW.txt"))
   $diff = @(Compare-Object $a $b -SyncWindow 0)
-  if ($a.Count -eq $b.Count -and $diff.Count -eq 0) {
+  # the old 8 bit flash without threads started at the wrong pixel (corrected in 2i): its lines may differ, and
+  # then the new "threads=0" frame must be the old "threads=1" one (the path that was right)
+  $fixed = 0
+  if ($diff.Count -gt 0 -and @($diff | Where-Object { $_.InputObject -notmatch ' flash8 .* threads=0 ' }).Count -eq 0) {
+    $ok = $true
+    foreach ($line in $a) {
+      if ($line -match '^(\S+) flash8 (\S+) threads=0 bytes=\d+ fnv=(\w+)$') {
+        $step = $Matches[1]; $size = $Matches[2]
+        $oldThreaded = @($a | Where-Object { $_ -match "^$step flash8 $size threads=1 " })[0] -replace '^.* fnv=', ''
+        $newSingle = @($b | Where-Object { $_ -match "^$step flash8 $size threads=0 " })[0] -replace '^.* fnv=', ''
+        if ($oldThreaded -ne $newSingle) { $ok = $false; Write-Host "    $step : nuovo senza thread $newSingle, vecchio con thread $oldThreaded" }
+      }
+    }
+    if ($ok) { $fixed = $diff.Count / 2 }
+  }
+  if ($fixed -gt 0) {
+    Write-Host "[$Game] $arguments : UGUALE salvo $fixed fotogrammi a 8 bit senza thread (difetto corretto: ora uguali a quelli con thread del vecchio)"
+  } elseif ($a.Count -eq $b.Count -and $diff.Count -eq 0) {
     Write-Host "[$Game] $arguments : UGUALE ($($a.Count) righe)"
   } else {
     $different++

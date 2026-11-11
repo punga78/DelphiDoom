@@ -543,6 +543,7 @@ uses
   am_map,
   mt_utils,
   psi_overlay,
+  DelphiDoom.ScriptHost.Overlay.Drawer,
   r_hires,
   r_precalc,
   r_data,
@@ -5369,7 +5370,7 @@ begin
       if (sz > 0) and TTexturePatchInspector.IsValid(patchbytes, sz) then
         if (p.width > 0) and (p.height > 0) then
         begin
-          ovr := TOverlayDrawer.Create;
+          ovr := PS_CreateOverlayDrawer;
 
           if p.leftoffset = 0 then
             xstart := 0

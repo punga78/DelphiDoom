@@ -1341,10 +1341,11 @@ begin
     overlay.Clear;
     OvrStep('empty');
 
-    overlay.AddText(1000, 'Hello World 123', OVR_ALIGN_LEFT, 10, 10);
+    // 0 is OVR_ALIGN_LEFT (the constants moved from psi_overlay to the library in the new tree)
+    overlay.AddText(1000, 'Hello World 123', 0, 10, 10);
     overlay.AddRightText(1000, 'right ~ text [x]', 310, 30);
     overlay.AddCenterText(1000, 'Centered', 160, 50);
-    overlay.AddText(1000, 'lowercase and symbols !?:;', OVR_ALIGN_LEFT, 5, 70);
+    overlay.AddText(1000, 'lowercase and symbols !?:;', 0, 5, 70);
     OvrStep('text');
 
     if LPatch <> '' then
@@ -1378,7 +1379,7 @@ begin
     OvrStep('line');
 
     // short drawers that expire, a record round trip
-    overlay.AddText(5, 'short', OVR_ALIGN_LEFT, 150, 150);
+    overlay.AddText(5, 'short', 0, 150, 150);
     overlay.AddRect(0, 255, 0, 0, 1, 1, 8, 8);
     OvrStep('short');
     GetMem(LBuffer, overlay.SaveSize);

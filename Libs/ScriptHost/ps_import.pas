@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //
 //  DelphiDoom is a source port of the game Doom and it is
 //  based on original Linux Doom as published by "id Software"
@@ -382,16 +382,7 @@ end;
 //==============================================================================
 procedure PS_DescribeOverlayFunctions(const ATable: IScriptFunctionTable);
 begin
-  ATable.Add('procedure OverlayClear;', @PS_OverlayClear);
-  ATable.Add('procedure OverlayDrawPatch(const ticks: Integer; const patchname: string; const x, y: Integer);', @PS_OverlayDrawPatch);
-  ATable.Add('procedure OverlayDrawPatchStretched(const ticks: Integer; const patchname: string; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawPatchStretched);
-  ATable.Add('procedure OverlayDrawPixel(const ticks: Integer; const red, green, blue : byte; const x, y : Integer);', @PS_OverlayDrawPixel);
-  ATable.Add('procedure OverlayDrawRect(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawRect);
-  ATable.Add('procedure OverlayDrawLine(const ticks: Integer; const red, green, blue: byte; const x1, y1, x2, y2: Integer);', @PS_OverlayDrawLine);
-  ATable.Add('procedure OverlayDrawText(const ticks: Integer; const txt: string; const align: Integer; const x, y: Integer);', @PS_OverlayDrawText);
-  ATable.Add('procedure OverlayDrawLeftText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawLeftText);
-  ATable.Add('procedure OverlayDrawRightText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawRightText);
-  ATable.Add('procedure OverlayDrawCenterText(const ticks: Integer; const txt: string; const x, y: Integer);', @PS_OverlayDrawCenterText);
+  PS_OverlayFunctions.Describe(ATable);
 end;
 
 //==============================================================================

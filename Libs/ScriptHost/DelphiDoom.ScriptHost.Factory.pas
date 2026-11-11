@@ -28,6 +28,8 @@ uses
   DelphiDoom.ScriptHost.Game.Intf,
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.MobjInfo.Intf,
+  DelphiDoom.ScriptHost.Overlay.Drawer,
+  DelphiDoom.ScriptHost.Overlay.Intf,
   DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.SectorSpecials.Functions.Intf,
   DelphiDoom.ScriptHost.SectorSpecials.Intf,
@@ -106,6 +108,11 @@ type
     /// <summary>The classes of the specials of the sectors (doors, ceilings, floors, ...) on one gateway</summary>
     class function CreateSectorSpecialFunctions(
       const ASpecials: IScriptSectorSpecials): IScriptSectorSpecialFunctions; static;
+    /// <summary>The overlay of the game (what scripts draw over it) over a canvas</summary>
+    class function CreateOverlayDrawer(const ACanvas: IOverlayCanvas): TOverlayDrawer; static;
+    /// <summary>The functions of the unit PS_OVERLAY, on the overlay that the function gives (it may be nil)</summary>
+    class function CreateOverlayFunctions(
+      const AOverlay: TFunc<TOverlayDrawer>): IScriptFunctionSection; static;
     /// <summary>The loader of the DLLs of the PAK files</summary>
     class function CreateDllLoader(const ASource: IScriptDllSource; const ALibrary: IScriptDllLibrary;
       const ALog: ILog): IScriptDllLoader; static;
@@ -136,6 +143,7 @@ uses
   DelphiDoom.ScriptHost.Variables,
   DelphiDoom.ScriptHost.World.Lines,
   DelphiDoom.ScriptHost.MobjInfo,
+  DelphiDoom.ScriptHost.Overlay.Functions,
   DelphiDoom.ScriptHost.Players,
   DelphiDoom.ScriptHost.World.Sectors,
   DelphiDoom.ScriptHost.World.Sides,
@@ -280,6 +288,17 @@ class function TScriptHostFactory.CreateSectorSpecialFunctions(
   const ASpecials: IScriptSectorSpecials): IScriptSectorSpecialFunctions;
 begin
   Result := TScriptSectorSpecialFunctions.Create(ASpecials);
+end;
+
+class function TScriptHostFactory.CreateOverlayDrawer(const ACanvas: IOverlayCanvas): TOverlayDrawer;
+begin
+  Result := TOverlayDrawer.CreateWithCanvas(ACanvas);
+end;
+
+class function TScriptHostFactory.CreateOverlayFunctions(
+  const AOverlay: TFunc<TOverlayDrawer>): IScriptFunctionSection;
+begin
+  Result := TScriptOverlayFunctions.Create(AOverlay);
 end;
 
 class function TScriptHostFactory.CreateDllLoader(const ASource: IScriptDllSource;

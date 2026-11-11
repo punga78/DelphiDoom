@@ -44,7 +44,7 @@ uses
   m_fixed,
   p_mobj_h,
   psi_game,
-  psi_overlay,
+  DelphiDoom.ScriptHost.Overlay.Types,
   TypInfo;
 
 { TEngineScriptMobjConstants }

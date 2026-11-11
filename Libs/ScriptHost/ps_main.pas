@@ -236,6 +236,7 @@ uses
   psi_game,
   psi_globals,
   psi_overlay,
+  DelphiDoom.Engine.Script.Overlay.Commands,
   w_folders,
   w_pak,
   ps_defs,
@@ -459,6 +460,7 @@ end;
 procedure PS_CompileAllScripts;
 begin
   PS_InitOverlay;
+  OVR_RegisterCommands;
   PS_Manager.CompileAllScripts;
 end;
 

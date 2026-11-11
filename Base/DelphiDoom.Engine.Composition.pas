@@ -179,6 +179,7 @@ uses
   p_tick,
   p_common,
   psi_game,
+  psi_overlay,
   psi_system,
   psi_globals,
   psi_map,
@@ -203,6 +204,7 @@ uses
   DelphiDoom.Engine.Script.GameInfo,
   DelphiDoom.Engine.Script.Keyboard,
   DelphiDoom.Engine.Script.MobjInfo,
+  DelphiDoom.Engine.Script.Overlay.Canvas,
   DelphiDoom.Engine.Script.Players,
   DelphiDoom.Engine.Script.Textures,
   DelphiDoom.Engine.Script.Output,
@@ -917,6 +919,8 @@ begin
     TScriptHostFactory.CreateActors(TEngineScriptActors.Create(LActorContext), LActorContext,
       LPlayers, LGame),
     LActorContext);
+  // PS_OVERLAY: the overlay is made by PS_Init with this canvas (screen, lumps, font and level time of the engine)
+  PS_ConfigureOverlay(TEngineOverlayCanvas.Create);
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),
