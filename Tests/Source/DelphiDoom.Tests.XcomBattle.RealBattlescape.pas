@@ -40,7 +40,7 @@ type
     FVoxels: TArray<Word>;
     FMapsCompared: Integer;
     FCompareMaps: Boolean;
-    class function DataFolder: string; static;
+    function DataFolder: string;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadBytes(const APath: string): TBytes; static;
     class function MapFiles(const AFolder: string): TArray<string>; static;
@@ -58,6 +58,19 @@ type
     class function FirstDifference(const AExpected, AActual: string): string; static;
     function TransparencyTints(ACount: Integer): TArray<TXcomTransparencyColor>;
     function RunScenario(const AFolder: string): string;
+  protected
+    /// <summary>The golden of Mod::loadAll that tells the mods of the game (TFTD: xcom2, UFO: xcom1)</summary>
+    function GoldenName: string; virtual;
+    /// <summary>LOFTEMPS.DAT of the game, relative to the folder above Reference</summary>
+    function LoftempsRelative: string; virtual;
+    /// <summary>vars.rul of the mod (the tints of the transparency tables)</summary>
+    function VarsRelative: string; virtual;
+    /// <summary>The folder of the scenarios under Tests\Data\XcomBattle</summary>
+    function ScenarioFolder: string; virtual;
+    /// <summary>The environment variable that gives another folder of scenarios</summary>
+    function FolderVariable: string; virtual;
+    /// <summary>Mod::createTransparencyLUT runs only with the palettes of TFTD (d0.lbm)</summary>
+    function HasTransparencyTables: Boolean; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -71,9 +84,88 @@ type
     procedure DovrebbeDisegnareLaMappaComeIlVeroMapDraw;
   end;
 
+  /// <summary>
+  ///   The same comparisons on the battles of UFO: Enemy Unknown (mod xcom1): the drawing routines of the units
+  ///   that only UFO has (floaters, snakemen, chryssalids, cyberdiscs, reapers, sectopods, silacoids, celatids)
+  /// </summary>
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealBattlescapeUfo = class(TTestXcomRealBattlescape)
+  protected
+    function GoldenName: string; override;
+    function LoftempsRelative: string; override;
+    function VarsRelative: string; override;
+    function ScenarioFolder: string; override;
+    function FolderVariable: string; override;
+    function HasTransparencyTables: Boolean; override;
+  end;
+
 implementation
 
+{ TTestXcomRealBattlescapeUfo }
+
+function TTestXcomRealBattlescapeUfo.GoldenName: string;
+begin
+  Result := 'ufo.xcom1.golden.txt';
+end;
+
+function TTestXcomRealBattlescapeUfo.LoftempsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_ufo\UFO Enemy Unkown\DOS game\GEODATA\LOFTEMPS.DAT';
+end;
+
+function TTestXcomRealBattlescapeUfo.VarsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_ufo\openxcom\standard\xcom1\vars.rul';
+end;
+
+function TTestXcomRealBattlescapeUfo.ScenarioFolder: string;
+begin
+  Result := 'bgufo';
+end;
+
+function TTestXcomRealBattlescapeUfo.FolderVariable: string;
+begin
+  Result := 'DELPHIDOOM_XCOMBATTLE_BGUFO';
+end;
+
+function TTestXcomRealBattlescapeUfo.HasTransparencyTables: Boolean;
+begin
+  Result := False;
+end;
+
 { TTestXcomRealBattlescape }
+
+function TTestXcomRealBattlescape.GoldenName: string;
+begin
+  Result := 'tftd.xcom2.golden.txt';
+end;
+
+function TTestXcomRealBattlescape.LoftempsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT';
+end;
+
+function TTestXcomRealBattlescape.VarsRelative: string;
+begin
+  Result := 'Reference\_dati\xcom_tftd\openxcom\standard\xcom2\vars.rul';
+end;
+
+function TTestXcomRealBattlescape.ScenarioFolder: string;
+begin
+  Result := 'bg';
+end;
+
+function TTestXcomRealBattlescape.FolderVariable: string;
+begin
+  Result := 'DELPHIDOOM_XCOMBATTLE_BG';
+end;
+
+function TTestXcomRealBattlescape.HasTransparencyTables: Boolean;
+begin
+  Result := True;
+end;
 
 class function TTestXcomRealBattlescape.FindUp(const ARelative: string; AFolder: Boolean): string;
 var
@@ -91,14 +183,14 @@ begin
   Result := '';
 end;
 
-class function TTestXcomRealBattlescape.DataFolder: string;
+function TTestXcomRealBattlescape.DataFolder: string;
 var
   LFolder: string;
 begin
-  LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG');
+  LFolder := GetEnvironmentVariable(FolderVariable);
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
-  LFolder := FindUp('Tests\Data\XcomBattle\bg', True);
+  LFolder := FindUp('Tests\Data\XcomBattle\' + ScenarioFolder, True);
   if LFolder <> '' then
     LFolder := IncludeTrailingPathDelimiter(LFolder);
   Result := LFolder;
@@ -315,7 +407,7 @@ begin
   // the tints of Mod::getTransparencies: the ruleset of the test does not load vars.rul, so they are read from it
   if Length(FRuleset.Transparencies) > 0 then
     Exit(FRuleset.Transparencies);
-  LPath := FindUp('Reference\_dati\xcom_tftd\openxcom\standard\xcom2\vars.rul', False);
+  LPath := FindUp(VarsRelative, False);
   if LPath = '' then
     Exit(nil);
   LText := TFile.ReadAllText(LPath);
@@ -397,12 +489,12 @@ var
   LBytes: TBytes;
   LIndex: Integer;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(GoldenName);
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
     FRules := TXcomRulesetRules.Create(FRuleset);
-    LPath := FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
+    LPath := FindUp(LoftempsRelative, False);
     if LPath <> '' then
     begin
       LBytes := TFile.ReadAllBytes(LPath);
@@ -423,6 +515,7 @@ end;
 function TTestXcomRealBattlescape.RunScenario(const AFolder: string): string;
 var
   LFile: TArray<IYamlNode>;
+  LPoseBelow: TXcomTile;
   LGame: TXcomSavedGame;
   LRandom: IXcomRandom;
   LSettings: IXcomSaveSettings;
@@ -799,6 +892,37 @@ begin
               if Assigned(LUnit) then
                 LUnit.MoraleChange(StrToInt(LWords[2]) - LUnit.Morale);
             end
+            else if LWords[0] = 'debug' then
+              LBattle.SetDebugMode
+            else if LWords[0] = 'pose' then
+            begin
+              // pose <id> face <dir> | aim | fall <steps> | walk <steps> <x> <y> <z>: the methods of the unit that
+              // the states call, so that the drawing routines see every pose
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) then
+              begin
+                if LWords[2] = 'face' then
+                  LUnit.SetDirection(StrToInt(LWords[3]))
+                else if LWords[2] = 'aim' then
+                  LUnit.Aim(True)
+                else if LWords[2] = 'fall' then
+                begin
+                  LUnit.StartFalling;
+                  for LCount := 1 to StrToInt(LWords[3]) do
+                    LUnit.KeepFalling;
+                end
+                else if LWords[2] = 'walk' then
+                begin
+                  LPoseBelow := LBattle.TileAt(TXcomPosition.Make(LUnit.Position.X, LUnit.Position.Y,
+                    LUnit.Position.Z - 1));
+                  LUnit.StartWalking(LUnit.Direction, TXcomPosition.Make(StrToInt(LWords[4]), StrToInt(LWords[5]),
+                    StrToInt(LWords[6])), LPoseBelow, True);
+                  for LCount := 1 to StrToInt(LWords[3]) do
+                    LUnit.KeepWalking(LPoseBelow, True);
+                end;
+                LUnit.CacheInvalid := True;
+              end;
+            end
             else if LWords[0] = 'camera' then
               EnsureMap.Camera.CenterOnPosition(TXcomPosition.Make(StrToInt(LWords[1]), StrToInt(LWords[2]),
                 StrToInt(LWords[3])), False)
@@ -1063,7 +1187,10 @@ begin
           LReal[LIndex], LActual[LIndex]]));
     Inc(LCount);
   end;
-  Assert.IsTrue(LCount > 0, 'Nessuno scenario con la tabella');
+  if HasTransparencyTables then
+    Assert.IsTrue(LCount > 0, 'Nessuno scenario con la tabella')
+  else
+    Assert.AreEqual(0, LCount, 'UFO non ha tabelle di trasparenza');
 end;
 
 procedure TTestXcomRealBattlescape.DovrebbeDisegnareLaMappaComeIlVeroMapDraw;

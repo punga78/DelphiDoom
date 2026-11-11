@@ -1,0 +1,40 @@
+endturn
+aiturn
+init
+camera 28 9 0
+viewlevel 3
+dumpmap
+shoot 6 6 47 18 1
+kneel 2
+kneel 8
+kneel 4
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+kneel 8
+camera 44 10 1
+dumpmap
+kneel 4
+camera 33 7 0
+viewlevel 2
+dumpmap
+kneel 6
+walk 3 38 14 1
+endturn
+aiturn
+init
+camera 40 32 1
+dumpmap
+kneel 4
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 29 11 1
+dumpmap
+shoot 4 8 44 15 1

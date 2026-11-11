@@ -193,7 +193,6 @@ end;
 
 procedure TXcomMissionRecovery.StoreClips(const ABase: TXcomBase);
 var
-  LPair: TPair<string, Integer>;
   LClips: Integer;
   LRules: TXcomRuleItem;
   LNames: TArray<string>;

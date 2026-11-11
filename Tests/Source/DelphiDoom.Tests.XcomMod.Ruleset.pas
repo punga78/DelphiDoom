@@ -628,7 +628,7 @@ begin
   LFiles.Add('mission.rul', 'missionScripts: [{type: S, missionWeights: {0: {NOPE: 1}}}]');
   LLoader := TXcomModLoader.Create(TYamlFactory.CreateParser(LFiles), TXcomFixedShared.Create, LFiles);
   try
-    LRuleset := LLoader.LoadAll(TArray<TXcomModSource>.Create(
+    LLoader.LoadAll(TArray<TXcomModSource>.Create(
       TXcomModSource.Make('master', 1, nil)));
     Assert.Fail('master e'' un nome riservato');
   except

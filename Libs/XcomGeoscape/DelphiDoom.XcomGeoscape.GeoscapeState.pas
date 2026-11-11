@@ -574,6 +574,8 @@ procedure TXcomGeoscapeState.Init;
 begin
   inherited Init;
   TimeDisplay;
+  // the options screen of the pause menu may have changed it
+  FGlobe.FlightPaths := Host.Options.GetBool('globeFlightPaths');
   // the screens that borrow the globe set their handlers on it: they are replaced by the ones of the geoscape
   FGlobe.OnMouseClick(GlobeClick);
   FGlobe.OnMouseOver(nil);

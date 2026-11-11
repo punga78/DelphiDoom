@@ -127,7 +127,6 @@ end;
 
 function RaiseJob(AParameter: Pointer): Integer; stdcall;
 begin
-  Result := 0;
   raise EInvalidOpException.Create('job failed on purpose');
 end;
 

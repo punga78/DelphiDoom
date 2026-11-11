@@ -358,7 +358,7 @@ begin
     Assert.AreEqual('a b', LOptions.UnknownOptions['newThing']);
     Assert.AreEqual(2, LOptions.UnknownOptions.Count);
     Assert.AreEqual(800, LOptions.DisplayWidth);
-    LCopy.Load(TYamlFactory.CreateParser.Load(LOptions.Save));
+    LCopy.Load(TTestWorld.Parse(LOptions.Save));
     Assert.AreEqual('17', LCopy.UnknownOptions['ambienceVolume']);
     Assert.AreEqual('a b', LCopy.UnknownOptions['newThing']);
   finally
@@ -401,7 +401,7 @@ begin
     LOptions.SetBool('globeSeasons', True);
     LOptions.SetValue('windowedModePositionX', 77);
     LOptions.SetText('language', 'de');
-    LCopy.Load(TYamlFactory.CreateParser.Load(LOptions.Save));
+    LCopy.Load(TTestWorld.Parse(LOptions.Save));
     Assert.AreEqual(12, LCopy.GetValue('battleXcomSpeed'));
     Assert.AreEqual(99, LCopy.GetValue('keyGeoBases'));
     Assert.IsTrue(LCopy.GetBool('globeSeasons'));

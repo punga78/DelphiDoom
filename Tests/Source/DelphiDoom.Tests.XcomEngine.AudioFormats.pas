@@ -1008,9 +1008,7 @@ begin
   FRef.Send($90, 64, 127);
   FRef.Send($90, 67, 127);
   FRef.Render(@LBuffer[0], 1600);
-  // it adds to what is there and never goes beyond the 16 bits
-  for LIndex := 0 to 399 do
-    Assert.IsTrue((LBuffer[LIndex] >= -32768) and (LBuffer[LIndex] <= 32767));
+  // it adds to what is there: a wrap-around past 16 bits would lower the RMS
   Assert.IsTrue(TAudioFiles.Rms(LBuffer) > 25000);
 end;
 

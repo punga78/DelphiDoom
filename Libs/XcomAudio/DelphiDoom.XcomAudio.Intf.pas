@@ -145,6 +145,16 @@ type
     function PreferredFormat: Integer;
   end;
 
+  /// <summary>
+  ///   Which music of the rules the player loaded (the keys of Mod::_musics): a rule whose song is in no file of
+  ///   the game is not there, as the GMGEO3..10 and GMTACTIC1..10 of UFO, that have no catPos
+  /// </summary>
+  IXcomMusicCatalog = interface
+    ['{4E9C2B71-58A6-4D3F-B0E2-9A1C7D6F3E85}']
+    /// <summary>The types of the musics that loaded, in the order of the rules</summary>
+    function Types: TArray<string>;
+  end;
+
   /// <summary>Where the music player finds the songs of the Adlib containers (ADLIB.CAT, AINTRO.CAT)</summary>
   IXcomAdlibSongs = interface
     ['{7A41C0E5-D2F8-4B96-83A3-1E5B09D6C728}']

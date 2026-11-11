@@ -21,6 +21,7 @@ uses
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
   DelphiDoom.Tests.XcomEngine.Core in 'Source\DelphiDoom.Tests.XcomEngine.Core.pas',
   DelphiDoom.Tests.XcomEngine.Game in 'Source\DelphiDoom.Tests.XcomEngine.Game.pas',
+  DelphiDoom.Tests.XcomEngine.GamePause in 'Source\DelphiDoom.Tests.XcomEngine.GamePause.pas',
   DelphiDoom.Tests.XcomEngine.Ui in 'Source\DelphiDoom.Tests.XcomEngine.Ui.pas',
   DelphiDoom.Tests.XcomEngine.Menu in 'Source\DelphiDoom.Tests.XcomEngine.Menu.pas',
   DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas',
@@ -31,12 +32,19 @@ uses
   DelphiDoom.Tests.XcomEngine.SaveScreens in 'Source\DelphiDoom.Tests.XcomEngine.SaveScreens.pas',
   DelphiDoom.Tests.XcomEngine.PauseSave in 'Source\DelphiDoom.Tests.XcomEngine.PauseSave.pas',
   DelphiDoom.Tests.XcomEngine.RealAudio in 'Source\DelphiDoom.Tests.XcomEngine.RealAudio.pas',
+  DelphiDoom.Tests.XcomEngine.RealSounds in 'Source\DelphiDoom.Tests.XcomEngine.RealSounds.pas',
+  DelphiDoom.Tests.XcomEngine.RealUfoMusic in 'Source\DelphiDoom.Tests.XcomEngine.RealUfoMusic.pas',
   DelphiDoom.Tests.XcomEngine.AudioFakes in 'Source\DelphiDoom.Tests.XcomEngine.AudioFakes.pas',
   DelphiDoom.Tests.XcomEngine.Audio in 'Source\DelphiDoom.Tests.XcomEngine.Audio.pas',
   DelphiDoom.Tests.XcomEngine.AudioMusic in 'Source\DelphiDoom.Tests.XcomEngine.AudioMusic.pas',
   DelphiDoom.Tests.XcomEngine.AudioFiles in 'Source\DelphiDoom.Tests.XcomEngine.AudioFiles.pas',
   DelphiDoom.Tests.XcomEngine.AudioFormats in 'Source\DelphiDoom.Tests.XcomEngine.AudioFormats.pas',
-  DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas';
+  DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas',
+  DelphiDoom.Xcom.VideoDevice.Types in '..\OpenXcom\DelphiDoom.Xcom.VideoDevice.Types.pas',
+  DelphiDoom.Xcom.VideoDeviceSelector in '..\OpenXcom\DelphiDoom.Xcom.VideoDeviceSelector.pas',
+  DelphiDoom.Tests.XcomEngine.VideoDeviceSelector in 'Source\DelphiDoom.Tests.XcomEngine.VideoDeviceSelector.pas',
+  DelphiDoom.Tests.XcomEngine.ShaderFileReader in 'Source\DelphiDoom.Tests.XcomEngine.ShaderFileReader.pas',
+  DelphiDoom.Tests.XcomEngine.FolderShaderCatalog in 'Source\DelphiDoom.Tests.XcomEngine.FolderShaderCatalog.pas';
 
 var
   Runner: ITestRunner;

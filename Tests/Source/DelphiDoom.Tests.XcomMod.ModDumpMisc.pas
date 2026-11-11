@@ -25,7 +25,6 @@ type
     FMod: TXcomRuleset;
     class function MapText(const AValues: TXcomIntStringMap): string; static;
     class function ModText(const AMod: TXcomModData): string; static;
-    class function PairsText(const AChanges: TArray<Cardinal>; const AValues: TArray<Integer>): string; static;
     procedure DumpArticles;
     procedure DumpMapScripts;
     procedure DumpMcdPatches;
@@ -92,20 +91,6 @@ end;
 class function TXcomModDumpMisc.ModText(const AMod: TXcomModData): string;
 begin
   Result := AMod.Name + ':' + UIntToStr(AMod.Offset) + ':' + UIntToStr(AMod.Size);
-end;
-
-class function TXcomModDumpMisc.PairsText(const AChanges: TArray<Cardinal>; const AValues: TArray<Integer>): string;
-var
-  LIndex: Integer;
-begin
-  Result := '[';
-  for LIndex := 0 to High(AChanges) do
-  begin
-    if LIndex > 0 then
-      Result := Result + ',';
-    Result := Result + '(' + UIntToStr(AChanges[LIndex]) + ',' + IntToStr(AValues[LIndex]) + ')';
-  end;
-  Result := Result + ']';
 end;
 
 procedure TXcomModDumpMisc.DumpArticles;

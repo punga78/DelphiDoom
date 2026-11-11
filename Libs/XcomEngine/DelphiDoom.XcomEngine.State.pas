@@ -51,6 +51,8 @@ type
     function LanguageProvider: IXcomLanguageProvider; virtual;
     /// <summary>The full screen modes of the display (nil when the host cannot list them)</summary>
     function DisplayModes: IXcomDisplayModes; virtual;
+    /// <summary>The OpenGL shaders that the video options list (nil when the host has none)</summary>
+    function ShaderCatalog: IXcomShaderCatalog; virtual;
     /// <summary>Where the options are kept (nil: Options::save and load do nothing)</summary>
     function OptionsStore: IXcomOptionsStore; virtual;
     /// <summary>Game::loadLanguages: loads the language of Options::language and replaces the current one</summary>
@@ -162,6 +164,11 @@ begin
 end;
 
 function TXcomStateHost.DisplayModes: IXcomDisplayModes;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.ShaderCatalog: IXcomShaderCatalog;
 begin
   Result := nil;
 end;

@@ -12,7 +12,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
   DelphiDoom.XcomMod.Types, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomMod.RuleSoldier,
-  DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.Types, DelphiDoom.XcomSave.NodeWriter,
+  DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.StatString,
+  DelphiDoom.XcomSave.Types, DelphiDoom.XcomSave.NodeWriter,
   DelphiDoom.XcomSave.UnitStats, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.EquipmentLayoutItem,
   DelphiDoom.XcomSave.SoldierDeath, DelphiDoom.XcomSave.SoldierDiary, DelphiDoom.XcomSave.Settings.Intf;
 
@@ -20,7 +21,9 @@ type
   /// <summary>
   ///   A soldier of the player: name, stats, rank, armor, equipment layout, death and diary (Soldier). The craft
   ///   it is in is a reference to the target of the craft (not owned); the rules, armor and ruleset belong to
-  ///   the ruleset. The stat string (calcStatString) and the names for the user interface are not ported
+  ///   the ruleset. The stat string is worked out only when CalcStatString is called (the C++ also does it at the
+  ///   end of load, which here is for the caller: Load does not know the options nor the researches); the names
+  ///   for the user interface are not ported
   /// </summary>
   TXcomSoldier = class
   public
@@ -54,6 +57,7 @@ type
     FEquipmentLayout: TObjectList<TXcomEquipmentLayoutItem>;
     FDeath: TXcomSoldierDeath;
     FDiary: TXcomSoldierDiary;
+    FStatString: string;
   public
     /// <summary>
     ///   Soldier(rules, armor, id): with an id other than 0 the stats, name, gender and look are made at random
@@ -105,9 +109,19 @@ type
     procedure TrainPsi(const ASettings: IXcomSaveSettings; const ARandom: IXcomRandom);
     /// <summary>trainPsi1Day: the daily psionic training</summary>
     procedure TrainPsiOneDay(const ASettings: IXcomSaveSettings; const ARandom: IXcomRandom);
+    /// <summary>
+    ///   calcStatString: works out the stat string from the current stats with the rules of the mod (not saved)
+    /// </summary>
+    /// <param name="APsiStrengthEval">Options::psiStrengthEval and the psi requirements are researched</param>
+    procedure CalcStatString(const AStatStrings: TObjectList<TXcomStatString>; APsiStrengthEval: Boolean);
+    /// <summary>_statString: what CalcStatString worked out last (empty before)</summary>
+    property StatString: string read FStatString;
   end;
 
 implementation
+
+uses
+  DelphiDoom.XcomMod.StatStringCalculator;
 
 const
   SBadLoad = 'Xcom: a soldier needs a name and a rank';
@@ -282,6 +296,11 @@ function TXcomSoldier.IsPromoted: Boolean;
 begin
   Result := FRecentlyPromoted;
   FRecentlyPromoted := False;
+end;
+
+procedure TXcomSoldier.CalcStatString(const AStatStrings: TObjectList<TXcomStatString>; APsiStrengthEval: Boolean);
+begin
+  FStatString := TXcomStatStringCalculator.Calculate(FCurrentStats, AStatStrings, APsiStrengthEval, FPsiTraining);
 end;
 
 procedure TXcomSoldier.AddMissionCount;

@@ -29,6 +29,7 @@ type
     function LoadSet(const AFolder, AName: string; AWidth, AHeight: Integer): TXcomSurfaceSet;
     function FindSet(const AName: string): TXcomSurfaceSet;
     procedure FixTftdArmor(const ASet: TXcomSurfaceSet; AArmor: Integer);
+    procedure FixUfoArmor(const ASet: TXcomSurfaceSet);
   public
     constructor Create(const AFiles: IXcomModFiles);
     destructor Destroy; override;
@@ -170,6 +171,53 @@ begin
     end;
 end;
 
+procedure TXcomModSprites.FixUfoArmor(const ASet: TXcomSurfaceSet);
+const
+  HAIR = 9 shl 4;
+  FACE = 6 shl 4;
+  SHADE_MAX = 15;
+var
+  LFrame: TXcomSurface;
+  LIndex: Integer;
+
+  // HairXCOM1: the colors of the face above the cutoff become the hair color of the man of XCOM_0.PCK
+  procedure Recolor(const AFrame: TXcomSurface; AFirstRow, ALastRow, AFirstColumn, ALastColumn: Integer;
+    ACutoff: Byte);
+  var
+    LColumn: Integer;
+    LRow: Integer;
+    LValue: Byte;
+  begin
+    for LRow := AFirstRow to Min(ALastRow, AFrame.Height - 1) do
+      for LColumn := AFirstColumn to Min(ALastColumn, AFrame.Width - 1) do
+      begin
+        LValue := AFrame.GetPixel(LColumn, LRow);
+        if (LValue > ACutoff) and (LValue <= FACE + SHADE_MAX) then
+          AFrame.SetPixel(LColumn, LRow, Byte(HAIR + (LValue and SHADE_MAX) - 6));
+      end;
+  end;
+
+begin
+  // Mod::loadBattlescapeResources: the personal armor of UFO (XCOM_1.PCK) with Options::battleHairBleach
+  for LIndex := 0 to 7 do
+  begin
+    // chest frame
+    LFrame := ASet.GetFrame(4 * 8 + LIndex);
+    if not Assigned(LFrame) then
+      Continue;
+    Recolor(LFrame, 6, 8, 0, LFrame.Width - 1, FACE + 5);
+    Recolor(LFrame, 9, 9, 0, LFrame.Width - 1, FACE + 6);
+  end;
+  for LIndex := 0 to 2 do
+  begin
+    // fall frame
+    LFrame := ASet.GetFrame(264 + LIndex);
+    if not Assigned(LFrame) then
+      Continue;
+    Recolor(LFrame, 0, 23, 11, 19, FACE + 6);
+  end;
+end;
+
 function TXcomModSprites.FindSet(const AName: string): TXcomSurfaceSet;
 var
   LWidth: Integer;
@@ -192,6 +240,8 @@ begin
       LName := UpperCase(AName);
       if (Length(LName) = 12) and (Copy(LName, 1, 7) = 'TDXCOM_') and (LName[8] >= '0') and (LName[8] <= '2') then
         FixTftdArmor(Result, Ord(LName[8]) - Ord('0'));
+      if LName = 'XCOM_1.PCK' then
+        FixUfoArmor(Result);
       Exit;
     except
       // the files of the mod say "not found" with the exception of their own library: any of them means "not here"

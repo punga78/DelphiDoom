@@ -28,7 +28,7 @@ type
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
     FVoxels: TArray<Word>;
-    class function DataFolder: string; static;
+    function DataFolder: string;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function MapText(const ABattle: TXcomSavedBattleGame; AWhat: Integer): string; static;
@@ -38,6 +38,9 @@ type
     function Answer(const ABattle: TXcomSavedBattleGame; const AEngine: TXcomTileEngine; const AUnits: TList<TXcomBattleUnit>;
       const AQuestion: string): string;
     function RunCase(const ABase: string): string;
+  protected
+    /// <summary>The game of the cases: TFTD (mod xcom2) or UFO (mod xcom1)</summary>
+    function IsUfo: Boolean; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -47,7 +50,31 @@ type
     procedure DovrebbeDareLeStesseRisposteDelVeroTileEngine;
   end;
 
+  /// <summary>The same comparison on the terrains and the units of UFO (enginegen on the UFO data)</summary>
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealTileEngineUfo = class(TTestXcomRealTileEngine)
+  protected
+    function IsUfo: Boolean; override;
+  end;
+
 implementation
+
+uses
+  DelphiDoom.Tests.XcomBattle.GameData;
+
+{ TTestXcomRealTileEngineUfo }
+
+function TTestXcomRealTileEngineUfo.IsUfo: Boolean;
+begin
+  Result := True;
+end;
+
+function TTestXcomRealTileEngine.IsUfo: Boolean;
+begin
+  Result := False;
+end;
 
 { TTestXcomRealTileEngine }
 
@@ -67,14 +94,14 @@ begin
   Result := '';
 end;
 
-class function TTestXcomRealTileEngine.DataFolder: string;
+function TTestXcomRealTileEngine.DataFolder: string;
 var
   LFolder: string;
 begin
-  LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_ENGINE');
+  LFolder := GetEnvironmentVariable(TXcomTestGame.FolderVariable('DELPHIDOOM_XCOMBATTLE_ENGINE', IsUfo));
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
-  LFolder := FindUp('Tests\Data\XcomBattle\engine', True);
+  LFolder := FindUp('Tests\Data\XcomBattle\' + TXcomTestGame.ScenarioFolder('engine', IsUfo), True);
   if LFolder <> '' then
     LFolder := IncludeTrailingPathDelimiter(LFolder);
   Result := LFolder;
@@ -96,11 +123,11 @@ var
   LBytes: TBytes;
   LIndex: Integer;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(TXcomTestGame.Golden(IsUfo));
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
-    LPath := FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
+    LPath := FindUp(TXcomTestGame.Loftemps(IsUfo), False);
     if LPath <> '' then
     begin
       LBytes := TFile.ReadAllBytes(LPath);
@@ -376,7 +403,6 @@ begin
     LCount := AEngine.CloseUfoDoors;
     Result := Format('doors = %d map=%s', [LCount, MapText(ABattle, 1)]);
   end;
-  LIndex := 0;
 end;
 
 function TTestXcomRealTileEngine.RunCase(const ABase: string): string;
@@ -469,5 +495,6 @@ end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomRealTileEngine);
+  TDUnitX.RegisterTestFixture(TTestXcomRealTileEngineUfo);
 
 end.

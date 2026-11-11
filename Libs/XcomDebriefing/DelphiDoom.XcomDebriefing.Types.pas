@@ -64,6 +64,8 @@ type
   TXcomDebriefingOptions = record
     StorageLimitsEnforced: Boolean;
     FieldPromotions: Boolean;
+    /// <summary>Options::psiStrengthEval: the stat string counts the psionic strength once the psi lab is researched</summary>
+    PsiStrengthEval: Boolean;
     CraftName: TFunc<TXcomCraft, string>;
     /// <summary>The defaults of Options.cpp: limits off, promotions for everybody, the craft is named by its type</summary>
     class function Default: TXcomDebriefingOptions; static;
@@ -158,6 +160,7 @@ class function TXcomDebriefingOptions.Default: TXcomDebriefingOptions;
 begin
   Result.StorageLimitsEnforced := False;
   Result.FieldPromotions := False;
+  Result.PsiStrengthEval := False;
   Result.CraftName :=
     function(ACraft: TXcomCraft): string
     begin

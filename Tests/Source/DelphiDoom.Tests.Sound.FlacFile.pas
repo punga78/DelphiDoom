@@ -226,10 +226,10 @@ var
 
   procedure WriteResidual(const AResidual: TArray<Integer>; AOrder, ABlockSize: Integer);
   var
-    LPartitions, LPartitionSamples, LPartition, LFrom, LCount, LK, LParam, LMaxBits,
+    LPartitions, LPartitionSamples, LPartition, LFrom, LCount, LParam, LMaxBits,
     LIndexRes, LParamBits, LEscape: Integer;
     LSum: Int64;
-    LValue, LUnsigned: Cardinal;
+    LUnsigned: Cardinal;
   begin
     LPartitions := 1 shl AOptions.PartitionOrder;
     LPartitionSamples := ABlockSize shr AOptions.PartitionOrder;
@@ -270,7 +270,6 @@ var
         LSum := 0;
         for LIndexRes := LFrom to LFrom + LCount - 1 do
         begin
-          LValue := Cardinal(AResidual[LIndexRes]);
           if AResidual[LIndexRes] < 0 then
             LUnsigned := ((Cardinal(not AResidual[LIndexRes])) shl 1) or 1
           else
@@ -295,7 +294,6 @@ var
       end;
       Inc(LFrom, LCount);
     end;
-    LK := 0;
   end;
 
   procedure WriteSubframe(const AData: TArray<Integer>; AOffset, ABlockSize, ABits: Integer);

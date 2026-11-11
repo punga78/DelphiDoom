@@ -27,12 +27,15 @@ type
   strict private
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
-    class function DataFolder: string; static;
+    function DataFolder: string;
     class function ReadText(const APath: string): TYamlText; static;
     function RunCase(const ABase: string): string;
     function Answer(const ABattle: TXcomSavedBattleGame; const APathfinding: TXcomPathfinding;
       const AQuestion: string): string;
     class function FindUnit(const ABattle: TXcomSavedBattleGame; AId: Integer): TXcomBattleUnit; static;
+  protected
+    /// <summary>The game of the cases: TFTD (mod xcom2) or UFO (mod xcom1)</summary>
+    function IsUfo: Boolean; virtual;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -42,24 +45,50 @@ type
     procedure DovrebbeTrovareGliStessiPercorsiDelVeroOpenXcom;
   end;
 
+  /// <summary>The same comparison on the terrains and the units of UFO (pathgen on the UFO data)</summary>
+  [TestFixture]
+  [Category('xcom-battle')]
+  [Category('xcom-battle-real')]
+  TTestXcomRealPathfindingUfo = class(TTestXcomRealPathfinding)
+  protected
+    function IsUfo: Boolean; override;
+  end;
+
 implementation
+
+uses
+  DelphiDoom.Tests.XcomBattle.GameData;
+
+{ TTestXcomRealPathfindingUfo }
+
+function TTestXcomRealPathfindingUfo.IsUfo: Boolean;
+begin
+  Result := True;
+end;
+
+function TTestXcomRealPathfinding.IsUfo: Boolean;
+begin
+  Result := False;
+end;
 
 { TTestXcomRealPathfinding }
 
-class function TTestXcomRealPathfinding.DataFolder: string;
+function TTestXcomRealPathfinding.DataFolder: string;
 var
   LFolder: string;
   LLevel: Integer;
+  LName: string;
 begin
   // a folder of cases to look at (for example the exhaustive steps of a unit) instead of the committed ones
-  LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_PATH');
+  LFolder := GetEnvironmentVariable(TXcomTestGame.FolderVariable('DELPHIDOOM_XCOMBATTLE_PATH', IsUfo));
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
+  LName := 'Tests\Data\XcomBattle\' + TXcomTestGame.ScenarioFolder('path', IsUfo);
   LFolder := ExtractFilePath(ParamStr(0));
   for LLevel := 0 to 6 do
   begin
-    if DirectoryExists(LFolder + 'Tests\Data\XcomBattle\path') then
-      Exit(LFolder + 'Tests\Data\XcomBattle\path\');
+    if DirectoryExists(LFolder + LName) then
+      Exit(LFolder + LName + '\');
     LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
   end;
   Result := '';
@@ -77,7 +106,7 @@ end;
 
 procedure TTestXcomRealPathfinding.SetupFixture;
 begin
-  FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
+  FData := TXcomRealData.Create(TXcomTestGame.Golden(IsUfo));
   if FData.DataFolder <> '' then
     FRuleset := FData.Load;
 end;
@@ -158,7 +187,11 @@ begin
     TArray.Sort<Integer>(LReach);
     for LStep in LReach do
       LSet := LSet + IntToStr(LStep) + ',';
-    Result := Format('reach %s %s = %d first=%d set=%s', [LParts[1], LParts[2], Length(LReach), LValue, LSet]);
+    // "first=tie": more tiles have the cost of the first one and std::sort does not say which comes first
+    if Pos(' first=tie ', AQuestion) > 0 then
+      Result := Format('reach %s %s = %d first=tie set=%s', [LParts[1], LParts[2], Length(LReach), LSet])
+    else
+      Result := Format('reach %s %s = %d first=%d set=%s', [LParts[1], LParts[2], Length(LReach), LValue, LSet]);
   end;
 end;
 
@@ -243,5 +276,6 @@ end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomRealPathfinding);
+  TDUnitX.RegisterTestFixture(TTestXcomRealPathfindingUfo);
 
 end.

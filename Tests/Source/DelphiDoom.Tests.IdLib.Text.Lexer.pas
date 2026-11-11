@@ -21,8 +21,6 @@ type
   [TestFixture]
   [Category('idlib')]
   TTestIdLibLexer = class(TObject)
-  private
-    FPrecision: TFPUPrecisionMode;
   public
     /// <summary>
     ///   The C++ goldens were made with SSE2 doubles (53 bits). The x87 of a Win32 Delphi program

@@ -106,7 +106,7 @@ const
 implementation
 
 uses
-  DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter;
+  DelphiDoom.Yaml.Types, DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter;
 
 { TFakeFileSystem }
 
@@ -209,8 +209,8 @@ begin
     for LX := 0 to 319 do
       LBack.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
   FSurfaces.Add('BACK01.SCR', LBack);
-  // the pictures of the popups of the geoscape
-  for LName in ['BACK12.SCR', 'BACK15.SCR', 'BACK16.SCR'] do
+  // the pictures of the popups of the geoscape and of the medals of the dead
+  for LName in ['BACK02.SCR', 'BACK12.SCR', 'BACK15.SCR', 'BACK16.SCR'] do
   begin
     LBack := TXcomSurface.Create(320, 200);
     for LY := 0 to 199 do
@@ -256,9 +256,20 @@ begin
 end;
 
 function TFakeResources.GetSurface(const AName: string): TXcomSurface;
+var
+  LX: Integer;
+  LY: Integer;
 begin
-  if not FSurfaces.TryGetValue(AName, Result) then
+  if FSurfaces.TryGetValue(AName, Result) then
+    Exit;
+  // every background picture of the game (BACKnn.SCR) exists: the screens of the strategy use many
+  if not (AName.StartsWith('BACK') and AName.EndsWith('.SCR')) then
     raise EXcomEngineException.Create('no surface ' + AName);
+  Result := TXcomSurface.Create(320, 200);
+  for LY := 0 to 199 do
+    for LX := 0 to 319 do
+      Result.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
+  FSurfaces.Add(AName, Result);
 end;
 
 function TFakeResources.GetFont(const AName: string): TXcomFont;
@@ -403,7 +414,8 @@ end;
 
 class function TTestWorld.Parse(const AText: string): IYamlNode;
 begin
-  Result := TYamlFactory.CreateParser.Load(AText);
+  // the parser reads bytes: the text of a test goes to it as UTF-8
+  Result := TYamlFactory.CreateParser.Load(YamlStringToText(AText));
 end;
 
 function TTestWorld.Pixel(AX, AY: Integer): Byte;
