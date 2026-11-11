@@ -27,7 +27,13 @@ type
     FExec: TPSExec;
   public
     /// <summary>Compiles and loads the script; with ARun the main block runs too (the variables get their values)</summary>
-    constructor Create(const ASource: string; const ARun: Boolean);
+    constructor Create(const ASource: string; const ARun: Boolean); overload;
+    /// <summary>
+    ///   The same with the OnUses of the compiler given, a step before the data are loaded (the
+    ///   classes of the interpreter are registered there) and one after (the variables are bound)
+    /// </summary>
+    constructor Create(const ASource: string; const ARun: Boolean; const AOnUses: TPSOnUses;
+      const ABeforeLoad, AAfterLoad: TProc<TPSExec>); overload;
     destructor Destroy; override;
     /// <summary>The value of the variable of the position, as an integer</summary>
     function IntegerOf(const AIndex: Integer): Integer;
@@ -48,6 +54,12 @@ end;
 { TTestInterpreter }
 
 constructor TTestInterpreter.Create(const ASource: string; const ARun: Boolean);
+begin
+  Create(ASource, ARun, OnUsesOnlySystem, nil, nil);
+end;
+
+constructor TTestInterpreter.Create(const ASource: string; const ARun: Boolean;
+  const AOnUses: TPSOnUses; const ABeforeLoad, AAfterLoad: TProc<TPSExec>);
 var
   LCompiler: TPSPascalCompiler;
   LBytes: TbtString;
@@ -55,7 +67,7 @@ begin
   inherited Create;
   LCompiler := TPSPascalCompiler.Create(PRTabArray(@DefaultLookupTable), DEFAULT_KEYWORD_COUNT);
   try
-    LCompiler.OnUses := OnUsesOnlySystem;
+    LCompiler.OnUses := AOnUses;
     if not LCompiler.Compile(TbtString(ASource)) then
     begin
       if LCompiler.MsgCount > 0 then
@@ -67,8 +79,12 @@ begin
     LCompiler.Free;
   end;
   FExec := TPSExec.Create;
+  if Assigned(ABeforeLoad) then
+    ABeforeLoad(FExec);
   if not FExec.LoadData(LBytes) then
     raise Exception.Create('load');
+  if Assigned(AAfterLoad) then
+    AAfterLoad(FExec);
   if ARun and not FExec.RunScript then
     raise Exception.Create('run');
 end;

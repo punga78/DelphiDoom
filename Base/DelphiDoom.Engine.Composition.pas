@@ -191,6 +191,10 @@ uses
   DelphiDoom.ScriptHost.Intf,
   DelphiDoom.ScriptHost.System.Intf,
   DelphiDoom.Engine.Script.Console,
+  DelphiDoom.Engine.Script.Constants.Game,
+  DelphiDoom.Engine.Script.Constants.Groups,
+  DelphiDoom.Engine.Script.Constants.Mobj,
+  DelphiDoom.Engine.Script.Constants.World,
   DelphiDoom.Engine.Script.DllSource,
   DelphiDoom.Engine.Script.ActorContext,
   DelphiDoom.Engine.Script.ActorContext.Intf,
@@ -917,8 +921,14 @@ begin
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),
     TScriptHostFactory.CreateTextures(TEngineScriptTextures.Create),
     TScriptHostFactory.CreateKeys(TEngineScriptKeyboard.Create(AContext), LGame));
+  // the classes that scripts see (Actors, Lines, MapStrings...) and the constants of SYSTEM:
+  // one table for the compiler and the interpreter
+  PS_ConfigureClassCatalog(TScriptHostFactory.CreateClassCatalog(LGame));
+  PS_ConfigureConstants(TScriptHostFactory.CreateConstants(TEngineScriptMobjConstants.Create,
+    TEngineScriptGameConstants.Create, TEngineScriptWorldConstants.Create,
+    TEngineScriptGroupConstants.Create));
   LRegistry := TScriptHostFactory.CreateRegistry;
-  LSystem := TScriptHostFactory.CreateSystemFunctions(TEngineScriptRoutines.SystemRoutines,
+  LSystem :=TScriptHostFactory.CreateSystemFunctions(TEngineScriptRoutines.SystemRoutines,
     TEngineScriptOutput.Create, TEngineScriptEnvironment.Create,
     TEngineScriptConsole.Create(AConsole, ADefaults), ARandom);
   LRegistry.AddGroup(LSystem as IScriptFunctionGroup);
