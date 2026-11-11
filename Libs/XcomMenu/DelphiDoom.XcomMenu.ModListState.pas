@@ -39,6 +39,7 @@ type
     function MakeTooltip(AInfo: TXcomModInfo): string;
     procedure MasterHover(AAction: TXcomAction);
     procedure MasterChange(AAction: TXcomAction);
+    procedure ChangeMasterMod;
     procedure ModsRefresh(AScrollLocation: Integer);
     procedure ModsHover(AAction: TXcomAction);
     procedure ModsClick(AAction: TXcomAction);
@@ -67,7 +68,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomUi.Types;
+  DelphiDoom.XcomUi.Types, DelphiDoom.XcomMenu.ModConfirmExtendedState;
 
 constructor TXcomModListState.Create(AHost: TXcomStateHost);
 var
@@ -202,18 +203,33 @@ end;
 procedure TXcomModListState.MasterChange(AAction: TXcomAction);
 var
   LInfo: TXcomModInfo;
+begin
+  LInfo := FMasters[FCbxMasters.GetSelected];
+  // when changing a master mod, check if it requires an extended engine: the player confirms or goes back
+  if not LInfo.EngineOk then
+  begin
+    Host.PushState(TXcomModConfirmExtendedState.Create(Host, LInfo.RequiredExtendedEngine,
+      procedure
+      begin
+        ChangeMasterMod;
+      end,
+      procedure
+      begin
+        // revertMasterMod
+        FCbxMasters.SetSelected(FCurrentMasterIndex);
+      end));
+    Exit;
+  end;
+  ChangeMasterMod;
+end;
+
+procedure TXcomModListState.ChangeMasterMod;
+var
   LMods: TArray<TXcomModSetting>;
   LIndex: Integer;
   LMasterId: string;
 begin
-  LInfo := FMasters[FCbxMasters.GetSelected];
-  // a master that needs an extended engine cannot be chosen here (ModConfirmExtendedState is not ported)
-  if not LInfo.EngineOk then
-  begin
-    FCbxMasters.SetSelected(FCurrentMasterIndex);
-    Exit;
-  end;
-  LMasterId := LInfo.Id;
+  LMasterId := FMasters[FCbxMasters.GetSelected].Id;
   LMods := Host.Options.Mods;
   for LIndex := 0 to High(LMods) do
     if LMods[LIndex].Id = LMasterId then
@@ -273,9 +289,16 @@ begin
   LRow := FLstMods.GetSelectedRow;
   if (LRow < 0) or (LRow >= FMods.Count) then
     Exit;
-  // switching on a mod that needs an extended engine would ask first (ModConfirmExtendedState is not ported)
+  // when activating a mod, check if it requires an extended engine: the player confirms first
   if (not FMods[LRow].Active) and Host.ModCatalog.TryGetInfo(FMods[LRow].Id, LInfo) and not LInfo.EngineOk then
+  begin
+    Host.PushState(TXcomModConfirmExtendedState.Create(Host, LInfo.RequiredExtendedEngine,
+      procedure
+      begin
+        ToggleMod;
+      end));
     Exit;
+  end;
   ToggleMod;
 end;
 

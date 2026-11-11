@@ -19,8 +19,8 @@ uses
 type
   /// <summary>
   ///   The base grid with "Select position for access lift": a click puts the lift there, closes this screen and
-  ///   opens the basescape of the base. The base is not owned (the saved game has it). Not ported: the choice of the
-  ///   starting facilities of a custom initial base (SelectStartFacilityState, option customInitialBase)
+  ///   opens the basescape of the base. The base is not owned (the saved game has it). For the first base of a game
+  ///   (AFirst, option customInitialBase) the list of the starting facilities to place opens over the basescape
   /// </summary>
   TXcomPlaceLiftState = class(TXcomState)
   strict private
@@ -30,10 +30,11 @@ type
     FLift: TXcomRuleBaseFacility;
     FView: TXcomBaseView;
     FTxtTitle: TXcomText;
+    FFirst: Boolean;
     procedure ViewClick(AAction: TXcomAction);
   public
     constructor Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe;
-      const ANavigator: IXcomBasescapeNavigator);
+      const ANavigator: IXcomBasescapeNavigator; AFirst: Boolean = False);
     property View: TXcomBaseView read FView;
     /// <summary>Puts the lift at the selected square (the click of the view)</summary>
     procedure PlaceAt(AX, AY: Integer);
@@ -43,12 +44,12 @@ implementation
 
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.BaseFacility, DelphiDoom.XcomSave.RuleAdapters,
-  DelphiDoom.XcomBasescape.BasescapeState;
+  DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SelectStartFacilityState;
 
 { TXcomPlaceLiftState }
 
 constructor TXcomPlaceLiftState.Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe;
-  const ANavigator: IXcomBasescapeNavigator);
+  const ANavigator: IXcomBasescapeNavigator; AFirst: Boolean);
 var
   LName: string;
   LRuleset: TXcomRuleset;
@@ -57,6 +58,7 @@ begin
   FBase := ABase;
   FGlobe := AGlobe;
   FNavigator := ANavigator;
+  FFirst := AFirst;
   LRuleset := TXcomStrategy.Ruleset(AHost);
   FView := TXcomBaseView.Create(Host.Clock, LRuleset, 192, 192, 0, 8);
   FTxtTitle := TXcomText.Create(320, 9, 0, 0);
@@ -85,13 +87,28 @@ end;
 procedure TXcomPlaceLiftState.PlaceAt(AX, AY: Integer);
 var
   LFacility: TXcomBaseFacility;
+  LHost: TXcomStateHost;
+  LBase: TXcomBase;
+  LGlobe: TXcomGlobe;
+  LNavigator: IXcomBasescapeNavigator;
+  LFirst: Boolean;
+  LBasescape: TXcomBasescapeState;
 begin
   LFacility := TXcomBaseFacility.Create(TXcomFacilityRuleAdapter.Create(FLift));
   LFacility.X := AX;
   LFacility.Y := AY;
   FBase.Facilities.Add(LFacility);
   Host.PopState;
-  Host.PushState(TXcomBasescapeState.Create(Host, FBase, FGlobe, FNavigator));
+  LHost := Host;
+  LBase := FBase;
+  LGlobe := FGlobe;
+  LNavigator := FNavigator;
+  LFirst := FFirst;
+  LBasescape := TXcomBasescapeState.Create(LHost, LBase, LGlobe, LNavigator);
+  LHost.PushState(LBasescape);
+  // the first base of a game with customInitialBase: the player places the facilities of the starting base
+  if LFirst then
+    LHost.PushState(TXcomSelectStartFacilityState.Create(LHost, LBase, LBasescape, LGlobe, LNavigator));
 end;
 
 end.

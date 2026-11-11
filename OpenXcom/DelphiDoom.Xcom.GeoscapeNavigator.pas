@@ -69,7 +69,7 @@ end;
 
 procedure TXcomGameNavigator.OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
 begin
-  FHost.PushState(TXcomPlaceLiftState.Create(FHost, ABase, AGlobe, Self));
+  FHost.PushState(TXcomPlaceLiftState.Create(FHost, ABase, AGlobe, Self, AFirst));
 end;
 
 procedure TXcomGameNavigator.OpenBases(AGlobe: TXcomGlobe);
