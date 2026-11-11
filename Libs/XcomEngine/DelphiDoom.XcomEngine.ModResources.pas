@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom engine library - the game data of a mod as the interface    }
 {  needs it (a part of Mod of OpenXcom: palettes, full screen pictures, fonts,  }
@@ -560,6 +560,9 @@ begin
   else
   begin
     LPath := 'GEOGRAPH/' + AName;
+    // the pictures of the inventory (Mod::loadBattlescapeResources reads UFOGRAPH/*.SPK and *.BDY by name)
+    if not FGameData.Files.Exists(LPath) and FGameData.Files.Exists('UFOGRAPH/' + AName) then
+      LPath := 'UFOGRAPH/' + AName;
     if not FGameData.Files.Exists(LPath) then
       raise EXcomEngineException.Create('Surface ' + AName + ' not found');
     LImage := FGameData.LoadImage(LPath, SCREEN_WIDTH, SCREEN_HEIGHT, LPalette);

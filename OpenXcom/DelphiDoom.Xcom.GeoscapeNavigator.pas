@@ -50,7 +50,8 @@ uses
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
   DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
   DelphiDoom.XcomGeoscape.FundingState, DelphiDoom.XcomBasescape.PurchaseState,DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.TransferBaseState,
-  DelphiDoom.XcomBasescape.CraftInfoState, DelphiDoom.XcomGeoscape.GraphsState;
+  DelphiDoom.XcomBasescape.CraftInfoState, DelphiDoom.XcomGeoscape.GraphsState,
+  DelphiDoom.XcomUfopaedia.Factory;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
@@ -95,6 +96,8 @@ end;
 
 procedure TXcomGameNavigator.OpenUfopaedia;
 begin
+  // Ufopaedia::open: one navigator for the whole visit (it keeps the article on the screen)
+  TXcomUfopaediaFactory.CreateNavigator(FHost).Open;
 end;
 
 procedure TXcomGameNavigator.OpenOptions;

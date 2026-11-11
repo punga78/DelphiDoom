@@ -1,12 +1,15 @@
 <#
   Confronta due PNG pixel per pixel (RGB, anche se uno e' a palette e l'altro a 24 bit): stampa dimensioni, numero di
   pixel diversi, riquadro che li contiene e i primi diversi. Esce con codice 0 se sono uguali, 1 altrimenti.
-  Uso: Compare-Png.ps1 -A <png> -B <png> [-Ignore x,y,w,h]   (la zona da ignorare, ad esempio il cursore)
+  Uso: Compare-Png.ps1 -A <png> -B <png> [-Ignore x,y,w,h] [-Only x,y,w,h]   (la zona da ignorare, ad esempio il
+  cursore; la sola zona da confrontare, ad esempio una finestra sopra il geoscape)
 #>
 param(
   [Parameter(Mandatory = $true)][string]$A,
   [Parameter(Mandatory = $true)][string]$B,
-  [int[]]$Ignore = @()
+  [int[]]$Ignore = @(),
+  # only this zone is compared (for a window over a screen that changes with time, like the geoscape)
+  [int[]]$Only = @()
 )
 Add-Type -AssemblyName System.Drawing
 Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @"
@@ -34,6 +37,7 @@ $diff = 0; $minx = 99999; $miny = 99999; $maxx = -1; $maxy = -1; $first = @()
 for ($y = 0; $y -lt $ha; $y++) {
   for ($x = 0; $x -lt $wa; $x++) {
     if ($Ignore.Count -eq 4 -and $x -ge $Ignore[0] -and $x -lt $Ignore[0] + $Ignore[2] -and $y -ge $Ignore[1] -and $y -lt $Ignore[1] + $Ignore[3]) { continue }
+    if ($Only.Count -eq 4 -and ($x -lt $Only[0] -or $x -ge $Only[0] + $Only[2] -or $y -lt $Only[1] -or $y -ge $Only[1] + $Only[3])) { continue }
     $i = ($y * $wa + $x) * 3
     if ($da[$i] -ne $db[$i] -or $da[$i + 1] -ne $db[$i + 1] -or $da[$i + 2] -ne $db[$i + 2]) {
       $diff++
