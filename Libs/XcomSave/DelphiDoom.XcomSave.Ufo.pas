@@ -33,7 +33,6 @@ type
         'STR_VERY_HIGH');
   strict private
     FRules: TXcomRuleUfo;
-    FId2: Integer;
     FCrashId: Integer;
     FLandId: Integer;
     FDamage: Integer;
