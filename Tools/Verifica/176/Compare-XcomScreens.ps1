@@ -18,7 +18,8 @@ param(
   [string[]]$Screens = @(),
   [int]$Save = 2,
   [string]$Back = '476,368',
-  [switch]$Geoscape
+  [switch]$Geoscape,
+  [string]$SaveFile = ""
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -35,7 +36,8 @@ function Test-ValidPng([string]$Path) {
 }
 New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
 $name = 'save{0:00}' -f $Save
-$t = [IO.File]::ReadAllText("$Root\Tests\Data\XcomSave\realsave\$name.sav")
+$src = if ($SaveFile) { $SaveFile } else { "$Root\Tests\Data\XcomSave\realsave\$name.sav" }
+$t = [IO.File]::ReadAllText($src)
 $t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace('  - "xcom2 ver: 1.0"', '  - xcom2').Replace("`r`n", "`n")
 [IO.File]::WriteAllText("$Out\seed\xcom2\$name.sav", $t)
 Copy-Item "$Out\seed\xcom2" "$Out\user" -Recurse -Force
