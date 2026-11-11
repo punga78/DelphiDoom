@@ -299,7 +299,7 @@ begin
   end;
   LTarget := ActionData.Target;
   if CreateNewProjectile then
-    FGame.View.SetCursorType(-1);
+    FGame.View.SetCursorType(CT_NONE);
 end;
 
 function TXcomProjectileFlyState.CreateNewProjectile: Boolean;

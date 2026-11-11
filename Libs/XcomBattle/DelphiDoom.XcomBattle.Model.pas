@@ -143,6 +143,7 @@ type
     FObstacle: Integer;
     FContext: IXcomBattleContext;
     function GetMapData(APart: Integer): TXcomMapData;
+    function GetCurrentFrame(APart: Integer): Integer;
   public
     constructor Create(const APosition: TXcomPosition; const AContext: IXcomBattleContext);
     destructor Destroy; override;
@@ -200,6 +201,8 @@ type
     function IsObstacle: Boolean;
     procedure ResetObstacle;
     property MapData[APart: Integer]: TXcomMapData read GetMapData;
+    /// <summary>The frame of animation of a part (the sprite of the part is GetSprite(CurrentFrame))</summary>
+    property CurrentFrame[APart: Integer]: Integer read GetCurrentFrame;
     property Position: TXcomPosition read FPosition;
     property CurrentUnit: TXcomBattleUnit read FUnit;
     property Inventory: TList<TXcomBattleItem> read FInventory;
@@ -515,6 +518,8 @@ type
     property ExpPsiSkill: Integer read FExpPsiSkill;
     property ExpPsiStrength: Integer read FExpPsiStrength;
     property ExpMelee: Integer read FExpMelee;
+    /// <summary>getFallingPhase: the frame of the death animation</summary>
+    property FallingPhase: Integer read FFallPhase;
   end;
 
 implementation
@@ -738,6 +743,11 @@ end;
 function TXcomTile.GetMapData(APart: Integer): TXcomMapData;
 begin
   Result := FObjects[APart];
+end;
+
+function TXcomTile.GetCurrentFrame(APart: Integer): Integer;
+begin
+  Result := FCurrentFrame[APart];
 end;
 
 procedure TXcomTile.Load(const ANode: IYamlNode);

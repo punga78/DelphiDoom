@@ -23,7 +23,9 @@ uses
   DelphiDoom.XcomBattle.View.Intf, DelphiDoom.XcomBattle.View.Null, DelphiDoom.XcomBattle.ExplosionState,
   DelphiDoom.XcomBattle.BattlescapeGame, DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattle.AIThinker,
   DelphiDoom.XcomBattle.ReactionFire, DelphiDoom.XcomBattle.UnitTurnState, DelphiDoom.Tests.XcomBattle.RealBattle,
-  DelphiDoom.Tests.XcomMod.RealData;
+  DelphiDoom.Tests.XcomMod.RealData, DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomSurface.Surface,
+  DelphiDoom.XcomBattlescape.Sprites.Intf, DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattlescape.Map,
+  DelphiDoom.XcomBattlescape.MapView;
 
 type
   [TestFixture]
@@ -35,12 +37,14 @@ type
     FRuleset: TXcomRuleset;
     FRules: TXcomRulesetRules;
     FVoxels: TArray<Word>;
+    FMapsCompared: Integer;
     class function DataFolder: string; static;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadBytes(const APath: string): TBytes; static;
     class function ReadString(const APath: string): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
+    class function CompareMap(const AExpected: TBytes; const AActual: TXcomSurface): string; static;
     class function CollapseTrace(const AText: string): string; static;
     class function FirstDifference(const AExpected, AActual: string): string; static;
     function RunScenario(const AFolder: string): string;
@@ -132,6 +136,37 @@ class function TTestXcomRealBattlescape.Normalize(const AText: string): string;
 begin
   // an empty list that yaml-cpp wrote as a block is the same list that the parser gives back in flow style
   Result := TRegEx.Replace(AText.Replace(#13#10, #10).TrimRight([#10]), ':\n\s+\[\]', ': []');
+end;
+
+class function TTestXcomRealBattlescape.CompareMap(const AExpected: TBytes; const AActual: TXcomSurface): string;
+var
+  LWidth: Integer;
+  LHeight: Integer;
+  LActual: TBytes;
+  LIndex: Integer;
+  LDifferent: Integer;
+  LFirst: Integer;
+begin
+  // the file of the harness: width and height (32 bit) and the indexes of the colors
+  LWidth := PInteger(@AExpected[0])^;
+  LHeight := PInteger(@AExpected[4])^;
+  if (LWidth <> AActual.Width) or (LHeight <> AActual.Height) then
+    Exit(Format('size %dx%d expected %dx%d', [AActual.Width, AActual.Height, LWidth, LHeight]));
+  LActual := AActual.Pixels;
+  LDifferent := 0;
+  LFirst := -1;
+  for LIndex := 0 to LWidth * LHeight - 1 do
+    if AExpected[8 + LIndex] <> LActual[LIndex] then
+    begin
+      Inc(LDifferent);
+      if LFirst < 0 then
+        LFirst := LIndex;
+    end;
+  if LDifferent = 0 then
+    Result := ''
+  else
+    Result := Format('%d pixels differ, first at (%d,%d) expected %d actual %d', [LDifferent, LFirst mod LWidth,
+      LFirst div LWidth, AExpected[8 + LFirst], LActual[LFirst]]);
 end;
 
 class function TTestXcomRealBattlescape.CollapseTrace(const AText: string): string;
@@ -255,6 +290,49 @@ var
   LTarget: TXcomPosition;
   LStep2: Integer;
   LTicks: Integer;
+  LX: Integer;
+  LY: Integer;
+  LCount: Integer;
+  LOldTile: TXcomTile;
+  LMap: TXcomBattleMap;
+  LSprites: IXcomBattleSprites;
+  LMapFile: string;
+  LMapBytes: TBytes;
+  LDumpMap: Boolean;
+  LMapDiff: string;
+  LMapUnits: string;
+  LTraceList: TStringList;
+  LPair: TPair<Integer, Integer>;
+
+  function EnsureMap: TXcomBattleMap;
+  var
+    LSettings: TXcomBattleMapSettings;
+    LElement: TXcomInterfaceElement;
+    LFirst: string;
+    LHeader: TBytes;
+  begin
+    if not Assigned(LMap) then
+    begin
+      LSprites := TXcomModSprites.Create(FData.CreateFiles);
+      // the size of the map is the one of the screen of the real game: the header of the first dump
+      LSettings.Width := 640;
+      LSettings.Height := 400;
+      for LFirst in TDirectory.GetFiles(AFolder, 'step*.map') do
+      begin
+        LHeader := TFile.ReadAllBytes(LFirst);
+        LSettings.Width := PInteger(@LHeader[0])^;
+        LSettings.Height := PInteger(@LHeader[4])^;
+        Break;
+      end;
+      FRuleset.Interfaces.Find('battlescape').Elements.TryGetValue('icons', LElement);
+      LSettings.IconWidth := LElement.W;
+      LSettings.IconHeight := LElement.H;
+      LSettings.SmokeOffset := FRuleset.Constants.SmokeOffset;
+      LSettings.UnderwaterSmokeOffset := FRuleset.Constants.UnderwaterSmokeOffset;
+      LMap := TXcomBattleMap.Create(LBattle, LSprites, LSettings);
+    end;
+    Result := LMap;
+  end;
 
   function FindUnit(AId: Integer): TXcomBattleUnit;
   var
@@ -276,7 +354,10 @@ var
       Inc(LTicks);
       // the animation timer of the game runs about every third tick of the steps (UFO doors open with it)
       if LTicks mod 3 = 0 then
-        LBattlescape.AnimateTiles;
+        if Assigned(LMap) then
+          LMap.Animate(False)
+        else
+          LBattlescape.AnimateTiles;
       Dec(LGuard);
     end;
     if LGuard <= 0 then
@@ -301,6 +382,8 @@ var
 
 begin
   LFailures := '';
+  LMap := nil;
+  LDumpMap := False;
   LTicks := 0;
   LName := ExtractFileName(ExcludeTrailingPathDelimiter(AFolder));
   LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AFolder + 'start.sav'));
@@ -335,6 +418,9 @@ begin
       if Normalize(string(TYamlFactory.Dump(LBattle.Save))) <> Normalize(ReadString(AFolder + 'start.yml')) then
         LFailures := LFailures + LName + ': the battle at the start differs' + sLineBreak;
       LView := TXcomBattleNullView.Create;
+      // a scenario with maps has the map, which the game talks to (camera, cursor, the drawings of the units)
+      if Length(TDirectory.GetFiles(AFolder, 'step*.map')) > 0 then
+        LView := TXcomBattleMapView.Create(EnsureMap, LView);
       LBattlescape := TXcomBattlescapeGame.Create(LBattle, LEngine, LPathfinding, FRuleset,
         TXcomBattleOptions.Default, LView, LGame.Difficulty);
       LConfig.DifficultyCoefficient := FRuleset.Settings.DifficultyCoefficient[LGame.Difficulty];
@@ -349,6 +435,10 @@ begin
         LBattlescape.ReactionFire := TXcomReactionFire.Create(LBattlescape, LThinker,
           TXcomReactionFire.ResearchOf(LNames));
         LBattlescape.MissionCount := LGame.MissionStatistics.Count;
+        LBattlescape.AIThinker := LThinker;
+        // BattlescapeState::init: the units are drawn for the first time
+        if Assigned(LMap) then
+          LMap.CacheUnits;
         LScript.Text := ReadString(AFolder + 'script.txt');
         for LStep := 0 to LScript.Count - 1 do
         begin
@@ -442,8 +532,112 @@ begin
             begin
               LBattlescape.EndTurnRequested := True;
               LBattlescape.StatePushBack(nil);
+            end
+            else if LWords[0] = 'place' then
+            begin
+              // a unit is put on a free tile (the old tiles are emptied first)
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              LPosition := TXcomPosition.Make(StrToInt(LWords[2]), StrToInt(LWords[3]), StrToInt(LWords[4]));
+              if Assigned(LUnit) and LBattle.SetUnitPosition(LUnit, LPosition, True) then
+              begin
+                for LX := LUnit.Armor.Size - 1 downto 0 do
+                  for LY := LUnit.Armor.Size - 1 downto 0 do
+                  begin
+                    LOldTile := LBattle.TileAt(LUnit.Position + TXcomPosition.Make(LX, LY, 0));
+                    if Assigned(LOldTile) and (LOldTile.CurrentUnit = LUnit) then
+                      LOldTile.SetUnit(nil);
+                  end;
+                LBattle.SetUnitPosition(LUnit, LPosition, False);
+                LEngine.RecalculateFov;
+              end
+              else
+                LTrace := LTrace + 'PLACEFAILED' + #10;
+            end
+            else if LWords[0] = 'melee' then
+            begin
+              // the menu of the actions for a hit, then handleNonTargetAction
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) then
+              begin
+                LBattle.SelectedUnit := LUnit;
+                LAction := LBattlescape.CurrentAction;
+                LAction.Targeting := False;
+                LAction.Actor := LUnit;
+                LAction.Weapon := LUnit.GetMeleeWeapon;
+                LAction.Waypoints.Clear;
+                LAction.ResultText := '';
+                LAction.ActionType := BA_HIT;
+                if Assigned(LAction.Weapon) then
+                begin
+                  LAction.TimeUnits := LUnit.GetActionTus(BA_HIT, LAction.Weapon);
+                  if not LBattle.IsItemUsable(LAction.Weapon) then
+                    LAction.ResultText := 'STR_UNUSABLE'
+                  else if LAction.TimeUnits > LUnit.TimeUnits then
+                    LAction.ResultText := 'STR_NOT_ENOUGH_TIME_UNITS'
+                  else if LEngine.ValidMeleeRange(LUnit.Position, LUnit.Direction, LUnit, nil, LTarget) then
+                    LAction.Target := LTarget
+                  else
+                    LAction.ResultText := 'STR_THERE_IS_NO_ONE_THERE';
+                  if LAction.ResultText <> '' then
+                    LAction.ActionType := BA_NONE;
+                  LBattlescape.HandleNonTargetAction;
+                end
+                else
+                  LTrace := LTrace + 'NOWEAPON' + #10;
+              end;
+            end
+            else if LWords[0] = 'psi' then
+            begin
+              // the psi button, then a click on the target
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) and Assigned(LUnit.GetSpecialWeapon(TXcomRuleItem.BT_PSIAMP)) then
+              begin
+                LBattle.SelectedUnit := LUnit;
+                LAction := LBattlescape.CurrentAction;
+                LAction.Targeting := False;
+                LAction.ActionType := BA_NONE;
+                LAction.Actor := LUnit;
+                LAction.Weapon := nil;
+                LAction.Waypoints.Clear;
+                LBattlescape.PsiButtonAction;
+                LAction.ActionType := StrToInt(LWords[2]);
+                LBattlescape.PrimaryAction(TXcomPosition.Make(StrToInt(LWords[3]), StrToInt(LWords[4]),
+                  StrToInt(LWords[5])));
+              end
+              else
+                LTrace := LTrace + 'NOPSI' + #10;
+            end
+            else if LWords[0] = 'setmorale' then
+            begin
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              if Assigned(LUnit) then
+                LUnit.MoraleChange(StrToInt(LWords[2]) - LUnit.Morale);
+            end
+            else if LWords[0] = 'camera' then
+              EnsureMap.Camera.CenterOnPosition(TXcomPosition.Make(StrToInt(LWords[1]), StrToInt(LWords[2]),
+                StrToInt(LWords[3])), False)
+            else if LWords[0] = 'viewlevel' then
+              EnsureMap.Camera.SetViewLevel(StrToInt(LWords[1]))
+            else if LWords[0] = 'dumpmap' then
+              LDumpMap := True
+            else if LWords[0] = 'init' then
+              // BattlescapeState::init after the screen of the next turn
+              LBattlescape.Init
+            else if LWords[0] = 'aiturn' then
+            begin
+              // the other side plays: think() chooses the AI actions until it ends its turn
+              LCount := 2000;
+              while (LBattle.Side <> FACTION_PLAYER) and (LCount > 0) do
+              begin
+                LBattlescape.Think;
+                RunStates;
+                Dec(LCount);
+              end;
+              if LCount <= 0 then
+                LTrace := LTrace + 'AIGUARD' + #10;
             end;
-            Settle;
+            if LWords[0] <> 'aiturn' then
+              Settle;
           except
             on E: Exception do
               LTrace := LTrace + 'EXCEPTION ' + E.ClassName + ': ' + E.Message + #10;
@@ -462,6 +656,56 @@ begin
                 Format('%s.step%.3d.act.txt', [LName, LStep]), CollapseTrace(LTrace));
             end;
           end;
+          if LDumpMap then
+          begin
+            // the map is drawn after the state of the battle was written, as the harness does
+            LDumpMap := False;
+            LMapFile := AFolder + Format('step%.3d.map', [LStep]);
+            EnsureMap.CacheUnits;
+            LMap.Invalidate;
+            if LMap.Draw <> FileExists(LMapFile) then
+              LFailures := LFailures + Format('%s step %d: the map is drawn or not drawn differently', [LName, LStep]) +
+                sLineBreak
+            else if FileExists(LMapFile) then
+            begin
+              LMapBytes := TFile.ReadAllBytes(LMapFile);
+              LMapDiff := CompareMap(LMapBytes, LMap.Surface);
+              if LMapDiff <> '' then
+              begin
+                LFailures := LFailures + Format('%s step %d: map %s', [LName, LStep, LMapDiff]) + sLineBreak;
+                if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
+                begin
+                  LMapUnits := '';
+                  for LUnit in LBattle.Units do
+                  begin
+                    LMapUnits := LMapUnits + Format('%d f=%d pos=%d/%d/%d dir=%d st=%d routine=%d recolor=',
+                      [LUnit.Id, LUnit.Faction, LUnit.Position.X, LUnit.Position.Y, LUnit.Position.Z, LUnit.Direction,
+                      LUnit.Status, LUnit.Armor.DrawingRoutine]);
+                    for LPair in LUnit.RecolorPairs do
+                      LMapUnits := LMapUnits + Format('%d>%d,', [LPair.Key, LPair.Value]);
+                    LMapUnits := LMapUnits + sLineBreak;
+                  end;
+                  TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                    Format('%s.step%.3d.units', [LName, LStep]), LMapUnits);
+                  LTraceList := TStringList.Create;
+                  try
+                    LMap.Trace := LTraceList;
+                    LMap.Invalidate;
+                    LMap.Draw;
+                    LMap.Trace := nil;
+                    LTraceList.SaveToFile(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                      Format('%s.step%.3d.trace', [LName, LStep]));
+                  finally
+                    LTraceList.Free;
+                  end;
+                end;
+                if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
+                  TFile.WriteAllBytes(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                    Format('%s.step%.3d.map', [LName, LStep]), LMap.Surface.Pixels);
+              end;
+              Inc(FMapsCompared);
+            end;
+          end;
           LActualYaml := Normalize(string(TYamlFactory.Dump(LBattle.Save)));
           if LActualYaml <> Normalize(ReadString(AFolder + Format('step%.3d.yml', [LStep]))) then
           begin
@@ -472,6 +716,7 @@ begin
           end;
         end;
       finally
+        LMap.Free;
         LBattlescape.Free;
         LThinker.Free;
         LView := nil;
@@ -510,7 +755,8 @@ begin
     LFailed := LFailed + RunScenario(IncludeTrailingPathDelimiter(LScenario));
     Inc(LCount);
   end;
-  TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Scenari confrontati: %d', [LCount]));
+  TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Scenari confrontati: %d, mappe confrontate: %d',
+    [LCount, FMapsCompared]));
   Assert.IsTrue(LCount > 0, 'Nessuno scenario');
   Assert.AreEqual('', LFailed, 'Battaglie diverse dal vero BattlescapeGame');
 end;
