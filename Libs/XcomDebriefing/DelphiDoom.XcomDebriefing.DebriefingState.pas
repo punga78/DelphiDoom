@@ -50,6 +50,7 @@ type
     FTxtTooltip: TXcomText;
     FCurrentTooltip: string;
     FInitDone: Boolean;
+    FMusic: string;
     function InterfaceColor(const AElement: string): Integer;
     procedure WatchTooltip(AHeading: TXcomText; const ATooltip: string);
     procedure OkClick(AAction: TXcomAction);
@@ -70,6 +71,11 @@ type
     ///   told with a message (the C++ pushes it at the end of init)
     /// </summary>
     procedure Init; override;
+    /// <summary>
+    ///   Mod::playMusic of DebriefingState::init: the music that starts the first time the state comes to the front
+    ///   (the one of the rules for a mission that went well or badly); empty: the music goes on as it is
+    /// </summary>
+    property Music: string read FMusic write FMusic;
     property StatsList: TXcomTextList read FLstStats;
     property RecoveryList: TXcomTextList read FLstRecovery;
     property TotalList: TXcomTextList read FLstTotal;
@@ -293,6 +299,8 @@ begin
   if FInitDone then
     Exit;
   FInitDone := True;
+  if FMusic <> '' then
+    Host.PlayMusic(FMusic);
   if FReport.NoContainment then
     Host.PushState(TXcomErrorMessageState.Create(Host, Tr('STR_ALIEN_DIES_NO_ALIEN_CONTAINMENT_FACILITY').Text,
       Palette, Byte(InterfaceColor('errorMessage')), 'BACK01.SCR', InterfaceColor('errorPalette')));

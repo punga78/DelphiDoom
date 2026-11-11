@@ -36,6 +36,8 @@ type
     FTimePersonnel: Integer;
     FInitialFunding: Integer;
     FTurnAIUseGrenade: Integer;
+    FGoodDebriefingMusic: string;
+    FBadDebriefingMusic: string;
     FTurnAIUseBlaster: Integer;
     FDefeatScore: Integer;
     FDefeatFunds: Integer;
@@ -59,6 +61,9 @@ type
     property TimePersonnel: Integer read FTimePersonnel;
     property InitialFunding: Integer read FInitialFunding;
     property TurnAIUseGrenade: Integer read FTurnAIUseGrenade;
+    /// <summary>Mod::DEBRIEF_MUSIC_GOOD and DEBRIEF_MUSIC_BAD: the music of the debriefing of a mission that went well or badly</summary>
+    property GoodDebriefingMusic: string read FGoodDebriefingMusic;
+    property BadDebriefingMusic: string read FBadDebriefingMusic;
     property TurnAIUseBlaster: Integer read FTurnAIUseBlaster;
     property DefeatScore: Integer read FDefeatScore;
     property DefeatFunds: Integer read FDefeatFunds;
@@ -83,6 +88,8 @@ var
 begin
   inherited Create;
   FTurnAIUseGrenade := 3;
+  FGoodDebriefingMusic := 'GMMARS';
+  FBadDebriefingMusic := 'GMMARS';
   FTurnAIUseBlaster := 3;
   FStatAdjustment[0].AimAndArmorMultiplier := 0.5;
   FStatAdjustment[0].GrowthMultiplier := 0;
@@ -130,6 +137,8 @@ begin
   ReadAlienFuel(ADocument);
   FFontName := TXcomNodeReader.ReadString(ADocument, 'fontName', FFontName);
   FTurnAIUseGrenade := TXcomNodeReader.ReadInteger(ADocument, 'turnAIUseGrenade', FTurnAIUseGrenade);
+  FGoodDebriefingMusic := TXcomNodeReader.ReadString(ADocument, 'goodDebriefingMusic', FGoodDebriefingMusic);
+  FBadDebriefingMusic := TXcomNodeReader.ReadString(ADocument, 'badDebriefingMusic', FBadDebriefingMusic);
   FTurnAIUseBlaster := TXcomNodeReader.ReadInteger(ADocument, 'turnAIUseBlaster', FTurnAIUseBlaster);
   FDefeatScore := TXcomNodeReader.ReadInteger(ADocument, 'defeatScore', FDefeatScore);
   FDefeatFunds := TXcomNodeReader.ReadInteger(ADocument, 'defeatFunds', FDefeatFunds);

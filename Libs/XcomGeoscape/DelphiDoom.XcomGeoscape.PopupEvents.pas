@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.MissionSite,
   DelphiDoom.XcomSave.AlienBase, DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.BaseFacility,
   DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomGeoscape.Control.Intf,
-  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomStrategy.BaseDefense.Intf;
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomStrategy.BaseDefense.Intf,
+  System.Generics.Collections, DelphiDoom.XcomSave.Soldier;
 
 type
   /// <summary>
@@ -28,6 +29,7 @@ type
     FHost: TXcomStateHost;
     FControl: IXcomGeoscapeControl;
     FLauncher: IXcomMissionLauncher;
+    FOnMedals: TProc<TList<TXcomSoldier>>;
     procedure Show(AState: TXcomState);
     function Attached: Boolean;
     procedure HandleBaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo);
@@ -36,6 +38,11 @@ type
     /// <param name="ALauncher">What "Yes" of the landing confirmation starts: the battle (the Battlescape's; nil: nothing)</param>
     constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil);
     property Launcher: IXcomMissionLauncher read FLauncher write FLauncher;
+    /// <summary>
+    ///   Shows the soldiers that the month of service gave a medal to (CommendationState, of another library); nil:
+    ///   the medals of the end of the month are not awarded
+    /// </summary>
+    property OnMedals: TProc<TList<TXcomSoldier>> read FOnMedals write FOnMedals;
     procedure AttachGeoscape(const AControl: IXcomGeoscapeControl);
     procedure UfoDetected(const AUfo: TXcomUfo; AHyperDetected: Boolean); override;
     procedure UfoLost(const AUfo: TXcomUfo); override;
@@ -81,7 +88,7 @@ uses
   DelphiDoom.XcomGeoscape.NewPossibleManufactureState, DelphiDoom.XcomGeoscape.ResearchRequiredState,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.MonthlyReportState,
   DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleResearch,
-  DelphiDoom.XcomMod.RuleItem, System.Generics.Collections, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.RulesetDiaryRules, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomGeoscape.BaseDefenseState,
   DelphiDoom.XcomGeoscape.BaseDestroyedState;
 
@@ -388,6 +395,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.MonthlyReport(APsiTraining: Boolean);
 var
   LReport: TXcomMonthlyReport;
+  LState: TXcomMonthlyReportState;
 begin
   if not Attached then
     Exit;
@@ -396,7 +404,10 @@ begin
   LReport := TXcomMonthlyReport.Create(TXcomStrategy.SavedGame(FHost), TXcomStrategy.Ruleset(FHost),
     TXcomStrategy.Random(FHost));
   try
-    Show(TXcomMonthlyReportState.Create(FHost, LReport.Calculate, APsiTraining, FControl));
+    LState := TXcomMonthlyReportState.Create(FHost, LReport.Calculate, APsiTraining, FControl);
+    if Assigned(FOnMedals) then
+      LState.SetMedals(TXcomRulesetDiaryRules.Create(TXcomStrategy.Ruleset(FHost)), FOnMedals);
+    Show(LState);
   finally
     LReport.Free;
   end;

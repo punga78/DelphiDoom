@@ -111,6 +111,11 @@ begin
       if Assigned(LOnFinished) then
         LOnFinished(AReport);
     end, True);
+  // DebriefingState::init: the music of a mission that went well, or badly
+  if LReport.PositiveScore then
+    LState.Music := LRuleset.Settings.GoodDebriefingMusic
+  else
+    LState.Music := LRuleset.Settings.BadDebriefingMusic;
   Result := LState;
 end;
 

@@ -77,7 +77,8 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
+  System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
@@ -290,9 +291,17 @@ begin
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
       var
         LListener: IXcomGeoscapeEvents;
+        LEvents: TXcomPopupGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LListener := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher);
+        LEvents := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher);
+        // MonthlyReportState::btnOkClick: the soldiers that the month of service gave a medal to
+        LEvents.OnMedals :=
+          procedure(ASoldiers: TList<TXcomSoldier>)
+          begin
+            AHost.PushState(TXcomCommendationState.Create(AHost, ASoldiers, ARuleset.Commendations));
+          end;
+        LListener := LEvents;
         Result := TXcomPopupSimulation.Create(
           TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
             TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),
