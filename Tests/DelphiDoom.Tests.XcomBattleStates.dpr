@@ -20,7 +20,12 @@ uses
   DelphiDoom.Tests.XcomMod.DiskModFiles in 'Source\DelphiDoom.Tests.XcomMod.DiskModFiles.pas',
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
-  DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas';
+  DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas',
+  DelphiDoom.Tests.XcomBattleStates.BattleWorld in 'Source\DelphiDoom.Tests.XcomBattleStates.BattleWorld.pas',
+  DelphiDoom.Tests.XcomBattleStates.UnitInfoState in 'Source\DelphiDoom.Tests.XcomBattleStates.UnitInfoState.pas',
+  DelphiDoom.Tests.XcomBattleStates.MiniMapView in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapView.pas',
+  DelphiDoom.Tests.XcomBattleStates.MiniMapState in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapState.pas',
+  DelphiDoom.Tests.XcomBattleStates.AbortMissionState in 'Source\DelphiDoom.Tests.XcomBattleStates.AbortMissionState.pas';
 
 var
   Runner: ITestRunner;
