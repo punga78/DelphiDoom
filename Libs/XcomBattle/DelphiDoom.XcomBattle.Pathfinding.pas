@@ -373,7 +373,6 @@ begin
         begin
           Inc(AEnd.Z);
           LDestination := FSave.TileAt(AEnd + LOffset);
-          LBelow := FSave.TileAt(AEnd + TXcomPosition.Make(LX, LY, -1));
           LTriedStairs := True;
         end;
       end
@@ -385,7 +384,6 @@ begin
         begin
           Dec(AEnd.Z);
           LDestination := FSave.TileAt(AEnd + LOffset);
-          LBelow := FSave.TileAt(AEnd + TXcomPosition.Make(LX, LY, -1));
           LFellDown := True;
         end;
       end

@@ -126,7 +126,6 @@ end;
 function TXcomUnitDeployer.IsResearched(const ARequirements: TArray<string>): Boolean;
 var
   LMatches: TList<string>;
-  LResearch: TObject;
   LName: string;
   LIndex: Integer;
   LItem: Integer;

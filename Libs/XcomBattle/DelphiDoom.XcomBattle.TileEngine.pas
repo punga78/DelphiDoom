@@ -47,7 +47,6 @@ type
     function Blockage(const ATile: TXcomTile; APart: Integer; ADamageType: Integer; ADirection: Integer = -1;
       ACheckingFromOrigin: Boolean = False): Integer;
     class function VoxelToTile(const AVoxel: TXcomPosition): TXcomPosition; static;
-    function SightVoxelTile(const AVoxel: TXcomPosition): TXcomTile;
   public
     /// <param name="AVoxelData">The LOFT templates: the words of LOFTEMPS.DAT (Mod::getVoxelData)</param>
     constructor Create(const ASave: TXcomSavedBattleGame; const AContext: IXcomBattleContext;
@@ -194,11 +193,6 @@ end;
 class function TXcomTileEngine.VoxelToTile(const AVoxel: TXcomPosition): TXcomPosition;
 begin
   Result := TXcomPosition.Make(AVoxel.X div 16, AVoxel.Y div 16, AVoxel.Z div 24);
-end;
-
-function TXcomTileEngine.SightVoxelTile(const AVoxel: TXcomPosition): TXcomTile;
-begin
-  Result := FSave.TileAt(VoxelToTile(AVoxel));
 end;
 
 procedure TXcomTileEngine.CalculateSunShading;
@@ -832,7 +826,6 @@ begin
   begin
     if ARememberObstacles then
     begin
-      LMinZFound := True;
       LMinZ := 10;
       LDummy := True;
     end
@@ -858,7 +851,6 @@ begin
   begin
     if ARememberObstacles then
     begin
-      LMaxZFound := True;
       LMaxZ := 10;
       LDummy := True;
     end
@@ -1715,7 +1707,6 @@ begin
     LZ := 0;
   if ADirection = -1 then
     ADirection := AUnit.Direction;
-  LTile := nil;
   LChecks := TList<TCheck>.Create;
   try
     LX := 0;
@@ -2023,7 +2014,6 @@ begin
   if not Assigned(ATile) or ((ATile.Inventory.Count = 0) and not Assigned(ATile.CurrentUnit)) then
     Exit(ATile);
   LPosition := ATile.Position;
-  LTarget := ATile;
   LOccupant := ATile.CurrentUnit;
   if Assigned(LOccupant) then
   begin
@@ -2678,7 +2668,6 @@ begin
     Exit(False);
   LTrajectory := TList<TXcomPosition>.Create;
   try
-    LTest := V_OUTOFBOUNDS;
     while (not LFoundCurve) and (LCurvature < 5.0) do
     begin
       LTrajectory.Clear;

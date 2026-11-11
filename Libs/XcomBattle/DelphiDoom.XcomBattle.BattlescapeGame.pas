@@ -913,7 +913,6 @@ begin
       Exit(ATimeUnits <= AUnit.TimeUnits);
     end;
   end;
-  LReserveTu := 0;
   // check TUs against slowest weapon if we have two weapons
   LSlowest := AUnit.GetMainHandWeapon(False);
   // if the weapon has no autoshot, reserve TUs for snapshot
