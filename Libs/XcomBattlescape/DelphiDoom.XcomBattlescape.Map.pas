@@ -107,6 +107,7 @@ type
     procedure FollowProjectile(out ALowX, ALowY, AHighX, AHighY: Integer);
     procedure DrawProjectile(AItX, AItY, AItZ, ALowX, ALowY, AHighX, AHighY: Integer);
     procedure DrawPathPreview(ABeginX, AEndX, ABeginY, AEndY, ABeginZ, AEndZ: Integer);
+    function PathfindingFrame(AIndex: Integer): TXcomSurface;
     procedure CreateArrow;
     function TileSprite(const ATile: TXcomTile; APart: Integer): TXcomSurface;
     function GetTerrainLevel(const APosition: TXcomPosition; ASize: Integer): Integer;
@@ -303,6 +304,18 @@ begin
   for LY := 0 to 8 do
     for LX := 0 to 8 do
       FArrow.SetPixel(LX, LY, Byte(LPixels[LX + LY * 9]));
+end;
+
+function TXcomBattleMap.PathfindingFrame(AIndex: Integer): TXcomSurface;
+var
+  LSet: TXcomSurfaceSet;
+begin
+  // the arrows are extra sprites of the rules: a game without them draws only the numbers
+  LSet := FSprites.SurfaceSet('Pathfinding');
+  if Assigned(LSet) then
+    Result := LSet.GetFrame(AIndex)
+  else
+    Result := nil;
 end;
 
 procedure TXcomBattleMap.Invalidate;
@@ -1164,11 +1177,11 @@ begin
         begin
           if (LItZ > 0) and LTile.HasNoFloor(FSave.TileAt(LTile.Position + TXcomPosition.Make(0, 0, -1))) then
           begin
-            LFrame := FSprites.SurfaceSet('Pathfinding').GetFrame(11);
+            LFrame := PathfindingFrame(11);
             if Assigned(LFrame) then
               BlitShade(LFrame, LScreen.X, LScreen.Y + 2, 0, False, LTile.MarkerColor);
           end;
-          LFrame := FSprites.SurfaceSet('Pathfinding').GetFrame(LTile.Preview);
+          LFrame := PathfindingFrame(LTile.Preview);
           if Assigned(LFrame) then
             BlitShade(LFrame, LScreen.X, LScreen.Y + LTile.GetTerrainLevel, 0, False, LTile.MarkerColor);
         end;
@@ -1517,11 +1530,11 @@ begin
         begin
           if (LItZ > 0) and LTile.HasNoFloor(LTileBelow) then
           begin
-            LFrame := FSprites.SurfaceSet('Pathfinding').GetFrame(23);
+            LFrame := PathfindingFrame(23);
             if Assigned(LFrame) then
               BlitShade(LFrame, LScreen.X, LScreen.Y + 2, 0, False, LTile.MarkerColor);
           end;
-          LFrame := FSprites.SurfaceSet('Pathfinding').GetFrame(LTile.Preview + 12);
+          LFrame := PathfindingFrame(LTile.Preview + 12);
           if Assigned(LFrame) then
             BlitShade(LFrame, LScreen.X, LScreen.Y - LAdjustment, 0, False, LTile.MarkerColor);
         end;

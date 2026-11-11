@@ -20,6 +20,8 @@ uses
   DelphiDoom.Tests.XcomMod.DiskModFiles in 'Source\DelphiDoom.Tests.XcomMod.DiskModFiles.pas',
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
+  DelphiDoom.Tests.XcomBattleStates.Bench in 'Source\DelphiDoom.Tests.XcomBattleStates.Bench.pas',
+  DelphiDoom.Tests.XcomBattleStates.BattlescapeState in 'Source\DelphiDoom.Tests.XcomBattleStates.BattlescapeState.pas',
   DelphiDoom.Tests.XcomBattleStates.WarningMessage in 'Source\DelphiDoom.Tests.XcomBattleStates.WarningMessage.pas';
 
 var
