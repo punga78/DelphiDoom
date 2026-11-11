@@ -1075,6 +1075,15 @@ procedure VSH_AfterTick(ATick: Integer);
 var
   LMobj: Pmobj_t;
 begin
+  if GMode = 'shot' then
+  begin
+    // -vsh shot: a screenshot at tic 70 (taken by the next G_Ticker), then the end
+    if ATick = 70 then
+      G_ScreenShot;
+    if ATick = 80 then
+      Halt(0);
+    Exit;
+  end;
   if GMode <> 'demo' then
     Exit;
   LMobj := players[0].mo;
@@ -1141,6 +1150,31 @@ begin
   GRunner := ARunner;
 end;
 
+function OvrPatchName: string; forward;
+
+// -vsh shot: the script that draws on the overlay (text, rectangle, line, pixel, patches) for the screenshot
+function ShotScript: string;
+var
+  LPatch: string;
+begin
+  Result :=
+    'uses all;'#13#10 +
+    'event OnMapStart;'#13#10 +
+    'begin'#13#10 +
+    '  OverlayDrawText(100000, ''Overlay screenshot test 0123'', 0, 10, 10);'#13#10 +
+    '  OverlayDrawCenterText(100000, ''centered text'', 160, 30);'#13#10 +
+    '  OverlayDrawRightText(100000, ''right text'', 310, 50);'#13#10 +
+    '  OverlayDrawRect(100000, 255, 0, 0, 20, 70, 60, 90);'#13#10 +
+    '  OverlayDrawLine(100000, 0, 255, 0, 10, 100, 200, 140);'#13#10 +
+    '  OverlayDrawPixel(100000, 0, 0, 255, 100, 100);'#13#10;
+  LPatch := OvrPatchName;
+  if LPatch <> '' then
+    Result := Result +
+      '  OverlayDrawPatch(100000, ''' + LPatch + ''', 200, 100);'#13#10 +
+      '  OverlayDrawPatchStretched(100000, ''' + LPatch + ''', 240, 10, 300, 70);'#13#10;
+  Result := Result + 'end;'#13#10 + 'begin'#13#10 + 'end.'#13#10;
+end;
+
 procedure VSH_AfterPSInit(ACompiler: TPSPascalCompiler; AImporter: TPSRuntimeClassImporter);
 var
   LName: string;
@@ -1151,6 +1185,9 @@ begin
     // the maps that the runs of the savegame comparison load (E1M1, E1M2, MAP01, MAP02)
     for LName in ['E1M1', 'E1M2', 'MAP01', 'MAP02'] do
       PS_AddSourceScript(LName, SAVE_SCRIPT, pst_normal);
+  if GMode = 'shot' then
+    for LName in ['E1M1', 'E1M2', 'MAP01', 'MAP02'] do
+      PS_AddSourceScript(LName, ShotScript, pst_normal);
   if GMode = 'l2' then
   begin
     // the event script of the map (for PS_Event*) and a normal script (for PS_DoRunScript): see RunContext
