@@ -100,7 +100,7 @@ begin
   begin
     LSave.SetFunds(LSave.Funds - FCost);
     LSave.Bases.Add(FBase);
-    Host.PushState(TXcomBaseNameState.Create(Host, FBase, FGlobe, False));
+    Host.PushState(TXcomBaseNameState.Create(Host, FBase, FGlobe, False, FControl));
   end
   else
     Host.PushState(TXcomErrorMessageState.ForOrigin(Host, ooGeoscape, Tr('STR_NOT_ENOUGH_MONEY'), Palette));
