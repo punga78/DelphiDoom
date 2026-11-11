@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.Xcom.Win.Window;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -59,6 +59,17 @@ type
     /// <summary>The game, with the start state on top; the caller owns it. The devices are not freed by the game</summary>
     class function CreateGame(const ASettings: TXcomGameSettings; const ADevice: IXcomVideoDevice;
       const AClock: IXcomClock; AEvents: TXcomQueueEventSource): TXcomGame; static;
+    /// <summary>
+    ///   The display of the game in a window: GDI, or OpenGL when Options::useOpenGL asks for it and a context can
+    ///   be made (the screen says which at every change of mode). The window is not owned: the caller frees it
+    ///   after the last reference to the display is gone
+    /// </summary>
+    /// <param name="ASettings">The data folder: the shaders of the display filter are in its common\Shaders</param>
+    /// <param name="ALog">Where the version of OpenGL and the reason of a fallback to GDI go; nil for nowhere</param>
+    class function CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
+      const ALog: IXcomLog): IXcomVideoDevice; static;
+    /// <summary>The shaders that the video options list and the OpenGL display reads</summary>
+    class function CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog; static;
     /// <summary>CrossPlatform::getDosPath: the path of the program as a DOS prompt (names cut to 8 characters)</summary>
     class function DosPathOf(const AExecutable: string): string; static;
   end;
@@ -80,10 +91,37 @@ DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, 
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
-  DelphiDoom.XcomEngine.State;
+  DelphiDoom.XcomEngine.State, DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.VideoDeviceSelector,
+  DelphiDoom.Xcom.Win.VideoDevice, DelphiDoom.Xcom.Win.OpenGlVideoDevice, DelphiDoom.XcomEngine.FolderShaderCatalog,
+  DelphiDoom.XcomEngine.ShaderFileReader;
 
 const
   KEY_FPS = 288;
+
+class function TXcomGameComposition.CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog;
+begin
+  Result := TXcomFolderShaderCatalog.Create(TPath.Combine(ASettings.DataFolder, 'common'),
+    TXcomDiskFileSystem.Create);
+end;
+
+class function TXcomGameComposition.CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
+  const ALog: IXcomLog): IXcomVideoDevice;
+var
+  LShaders: IXcomShaderCatalog;
+begin
+  LShaders := CreateShaderCatalog(ASettings);
+  Result := TXcomVideoDeviceSelector.Create(
+    function: IXcomVideoDevice
+    begin
+      Result := TXcomWinVideoDevice.Create(AWindow);
+    end,
+    function: IXcomVideoDevice
+    begin
+      // the device owns its reader
+      Result := TXcomWinOpenGlVideoDevice.Create(AWindow, LShaders,
+        TXcomShaderFileReader.Create(TYamlFactory.CreateParser, ALog), ALog);
+    end, ALog);
+end;
 
 class function TXcomGameComposition.DosPathOf(const AExecutable: string): string;
 var
@@ -202,6 +240,8 @@ begin
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
+    // the display filters of the video options: listed as in OpenXcom also when the display cannot use them
+    Result.SetShaderCatalog(CreateShaderCatalog(ASettings));
     // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
     Result.SetModCatalog(TXcomDiskModCatalog.Create(
       [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],

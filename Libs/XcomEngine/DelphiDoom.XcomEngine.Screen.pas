@@ -26,13 +26,16 @@ type
   /// <summary>
   ///   The picture where every state draws (the base surface, 8 bits with a palette) and how it goes to the window:
   ///   scaled by the nearest pixel (Zoom::_zoomSurfaceY, the software scaler without filters) with black bands when
-  ///   the aspect ratio is kept. The filters (HQX, xBRZ, Scale2x) and OpenGL are not ported. The palette is
-  ///   deferred as in the C++: it reaches the display with the next flip
+  ///   the aspect ratio is kept. The software filters (HQX, xBRZ, Scale2x) are not ported. With Options::useOpenGL
+  ///   a device that is an IXcomFilteredDisplay receives the base surface and scales it itself (the OpenGL class of
+  ///   the C++); the scaled picture is made all the same, for DisplayPixels. The palette is deferred as in the
+  ///   C++: it reaches the display with the next flip
   /// </summary>
   TXcomScreen = class
   strict private
     FOptions: TXcomOptions;
     FDevice: IXcomVideoDevice;
+    FFiltered: IXcomFilteredDisplay;
     FSurface: TXcomSurface;
     FDisplay: TBytes;
     FDisplayWidth: Integer;
@@ -50,6 +53,8 @@ type
     FDeferredPalette: TXcomColors;
     FScreenshotRequested: Boolean;
     procedure Zoom(ADestWidth, ADestHeight, ALeft, ATop: Integer);
+    procedure GiveDisplayFilter;
+    procedure TakeDisplayFilter;
   public
     constructor Create(AOptions: TXcomOptions; const ADevice: IXcomVideoDevice);
     destructor Destroy; override;
@@ -91,6 +96,7 @@ begin
   inherited Create;
   FOptions := AOptions;
   FDevice := ADevice;
+  Supports(FDevice, IXcomFilteredDisplay, FFiltered);
   FBaseWidth := XCOM_ORIGINAL_WIDTH;
   FBaseHeight := XCOM_ORIGINAL_HEIGHT;
   FScaleX := 1.0;
@@ -175,15 +181,54 @@ begin
   end;
 end;
 
+procedure TXcomScreen.GiveDisplayFilter;
+var
+  LFilter: TXcomDisplayFilter;
+begin
+  if not Assigned(FFiltered) then
+    Exit;
+  LFilter.UseOpenGL := FOptions.UseOpenGL;
+  LFilter.Shader := FOptions.UseOpenGLShader;
+  LFilter.Smoothing := FOptions.GetBool('useOpenGLSmoothing');
+  LFilter.VSync := FOptions.GetBool('vSyncForOpenGL');
+  FFiltered.SetDisplayFilter(LFilter);
+end;
+
+procedure TXcomScreen.TakeDisplayFilter;
+var
+  LFilter: TXcomDisplayFilter;
+begin
+  // Screen::resetDisplay: a display that cannot be made with OpenGL is made without it and the option is turned
+  // off; a shader that cannot be used is forgotten
+  if not (Assigned(FFiltered) and FOptions.UseOpenGL) then
+    Exit;
+  LFilter := FFiltered.DisplayFilter;
+  if not LFilter.UseOpenGL then
+    FOptions.UseOpenGL := False
+  else if LFilter.Shader = '' then
+    FOptions.UseOpenGLShader := '';
+end;
+
 procedure TXcomScreen.Flip;
 var
   LWidth: Integer;
   LHeight: Integer;
+  LBands: TXcomBlackBands;
 begin
   LWidth := FDisplayWidth - FLeftBlackBand - FRightBlackBand;
   LHeight := FDisplayHeight - FTopBlackBand - FBottomBlackBand;
   if (LWidth > 0) and (LHeight > 0) then
     Zoom(LWidth, LHeight, FLeftBlackBand, FTopBlackBand);
+  if Assigned(FFiltered) and FOptions.UseOpenGL then
+  begin
+    LBands.Top := FTopBlackBand;
+    LBands.Bottom := FBottomBlackBand;
+    LBands.Left := FLeftBlackBand;
+    LBands.Right := FRightBlackBand;
+    if FFiltered.PresentUnscaled(FSurface.Pixels, FSurface.Width, FSurface.Height, FDeferredPalette, FDisplayWidth,
+      FDisplayHeight, LBands) then
+      Exit;
+  end;
   FDevice.Present(FDisplay, FDisplayWidth, FDisplayHeight, FDeferredPalette);
 end;
 
@@ -244,7 +289,9 @@ begin
   begin
     if Supports(FDevice, IXcomWindowStyle, LStyle) then
       LStyle.SetWindowStyle(FOptions.Borderless, FOptions.AllowResize);
+    GiveDisplayFilter;
     FDevice.SetMode(LWidth, LHeight, FOptions.Fullscreen);
+    TakeDisplayFilter;
   end;
   FDisplayWidth := LWidth;
   FDisplayHeight := LHeight;
