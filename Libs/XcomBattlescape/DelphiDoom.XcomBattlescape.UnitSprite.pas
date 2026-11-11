@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet,
-  DelphiDoom.XcomBattle.Model;
+  DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattlescape.UnitSpriteUfo;
 
 type
   EXcomBattlescapeDrawException = class(Exception);
@@ -22,24 +22,11 @@ type
   ///   Draws a unit on a surface of two tiles of width: the torso, legs, arms and the objects in the hands in the
   ///   order that depends on the direction, or the one sprite of the aliens. The frames of the sets are shared and
   ///   the C++ moves them (setX, setY) before it blits them: so does this class, and the position they keep
-  ///   afterwards is part of what is drawn next
+  ///   afterwards is part of what is drawn next. The routines of the soldiers and of TFTD are here, those that only
+  ///   UFO has (1 to 3, 5 to 9, 22) in TXcomUnitSpriteUfo, the state in TXcomUnitSpriteBase
   /// </summary>
-  TXcomUnitSprite = class
+  TXcomUnitSprite = class(TXcomUnitSpriteUfo)
   strict private
-    FUnit: TXcomBattleUnit;
-    FItemR: TXcomBattleItem;
-    FItemL: TXcomBattleItem;
-    FUnitSurface: TXcomSurfaceSet;
-    FItemSurfaceR: TXcomSurfaceSet;
-    FItemSurfaceL: TXcomSurfaceSet;
-    FPart: Integer;
-    FAnimationFrame: Integer;
-    FDrawingRoutine: Integer;
-    FHelmet: Boolean;
-    FTarget: TXcomSurface;
-    procedure DrawRecolored(const ASource: TXcomSurface);
-    procedure Blit(const ASource: TXcomSurface);
-    procedure SortRifles;
     procedure DrawRoutine0;
     procedure DrawRoutine4;
     procedure DrawRoutine11;
@@ -48,14 +35,6 @@ type
     procedure DrawRoutine20;
     procedure DrawRoutine21;
   public
-    /// <param name="AHelmet">Whether the battle is underwater (the aquanauts wear a helmet)</param>
-    constructor Create(AHelmet: Boolean);
-    /// <summary>setBattleUnit</summary>
-    procedure SetBattleUnit(const AUnit: TXcomBattleUnit; APart: Integer);
-    /// <summary>setSurfaces</summary>
-    procedure SetSurfaces(const AUnitSurface, AItemSurfaceR, AItemSurfaceL: TXcomSurfaceSet);
-    /// <summary>setAnimationFrame</summary>
-    procedure SetAnimationFrame(AFrame: Integer);
     /// <summary>draw: the unit on ATarget (a surface of 64 x 40 that the caller has cleared)</summary>
     procedure Draw(const ATarget: TXcomSurface);
   end;
@@ -66,91 +45,23 @@ uses
   DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types;
 
 const
-  OFF_X_SPRITE = 16;
   // ForcedTorso: TORSO_USE_GENDER = 0 (TXcomArmor), then these
   TORSO_ALWAYS_MALE = 1;
   TORSO_ALWAYS_FEMALE = 2;
-
-constructor TXcomUnitSprite.Create(AHelmet: Boolean);
-begin
-  inherited Create;
-  FHelmet := AHelmet;
-end;
-
-procedure TXcomUnitSprite.SetSurfaces(const AUnitSurface, AItemSurfaceR, AItemSurfaceL: TXcomSurfaceSet);
-begin
-  FUnitSurface := AUnitSurface;
-  FItemSurfaceR := AItemSurfaceR;
-  FItemSurfaceL := AItemSurfaceL;
-end;
-
-procedure TXcomUnitSprite.SetAnimationFrame(AFrame: Integer);
-begin
-  FAnimationFrame := AFrame;
-end;
-
-procedure TXcomUnitSprite.SetBattleUnit(const AUnit: TXcomBattleUnit; APart: Integer);
-begin
-  FUnit := AUnit;
-  FDrawingRoutine := FUnit.Armor.DrawingRoutine;
-  FPart := APart;
-  FItemR := FUnit.GetItem('STR_RIGHT_HAND');
-  if Assigned(FItemR) and FItemR.Rules.FixedWeapon then
-    FItemR := nil;
-  FItemL := FUnit.GetItem('STR_LEFT_HAND');
-  if Assigned(FItemL) and FItemL.Rules.FixedWeapon then
-    FItemL := nil;
-end;
-
-procedure TXcomUnitSprite.Blit(const ASource: TXcomSurface);
-begin
-  ASource.Blit(FTarget);
-end;
-
-procedure TXcomUnitSprite.DrawRecolored(const ASource: TXcomSurface);
-var
-  LPairs: TArray<TPair<Integer, Integer>>;
-  LX: Integer;
-  LY: Integer;
-  LSource: Byte;
-  LDestX: Integer;
-  LDestY: Integer;
-  LIndex: Integer;
-  LFound: Boolean;
-begin
-  LPairs := FUnit.RecolorPairs;
-  if Length(LPairs) = 0 then
-  begin
-    Blit(ASource);
-    Exit;
-  end;
-  // ColorReplace: the pixels of a color group in the list take the new group, the others stay
-  for LY := 0 to ASource.Height - 1 do
-    for LX := 0 to ASource.Width - 1 do
-    begin
-      LSource := ASource.GetPixel(LX, LY);
-      LDestX := LX + ASource.X;
-      LDestY := LY + ASource.Y;
-      if (LSource = 0) or (LDestX < 0) or (LDestY < 0) or (LDestX >= FTarget.Width) or (LDestY >= FTarget.Height) then
-        Continue;
-      LFound := False;
-      for LIndex := 0 to High(LPairs) do
-        if (LSource and $F0) = LPairs[LIndex].Key then
-        begin
-          FTarget.SetPixel(LDestX, LDestY, Byte(LPairs[LIndex].Value + (LSource and $0F)));
-          LFound := True;
-          Break;
-        end;
-      if not LFound then
-        FTarget.SetPixel(LDestX, LDestY, LSource);
-    end;
-end;
 
 procedure TXcomUnitSprite.Draw(const ATarget: TXcomSurface);
 begin
   FTarget := ATarget;
   case FDrawingRoutine of
     0, 10, 13, 14, 15: DrawRoutine0;
+    1: DrawRoutine1;
+    2: DrawRoutine2;
+    3, 22: DrawRoutine3;
+    5: DrawRoutine5;
+    6: DrawRoutine6;
+    7: DrawRoutine7;
+    8: DrawRoutine8;
+    9: DrawRoutine9;
     4, 17, 18: DrawRoutine4;
     11: DrawRoutine11;
     12, 16: DrawRoutine12;
@@ -159,26 +70,6 @@ begin
     21: DrawRoutine21;
   else
     raise EXcomBattlescapeDrawException.CreateFmt('The drawing routine %d is not ported', [FDrawingRoutine]);
-  end;
-end;
-
-procedure TXcomUnitSprite.SortRifles;
-begin
-  if Assigned(FItemR) and FItemR.Rules.TwoHanded then
-  begin
-    if Assigned(FItemL) and FItemL.Rules.TwoHanded then
-    begin
-      if FUnit.GetActiveHand = 'STR_LEFT_HAND' then
-        FItemR := FItemL;
-      FItemL := nil;
-    end
-    else if FUnit.Status <> STATUS_AIMING then
-      FItemL := nil;
-  end
-  else if Assigned(FItemL) and FItemL.Rules.TwoHanded then
-  begin
-    if FUnit.Status <> STATUS_AIMING then
-      FItemR := nil;
   end;
 end;
 

@@ -1,0 +1,19 @@
+debug
+camera 44 51 0
+viewlevel 0
+dumpmap
+pose 1000020 face 7
+dumpmap
+pose 1000020 aim
+dumpmap
+pose 1000020 fall 1
+dumpmap
+camera 11 54 0
+viewlevel 0
+dumpmap
+pose 1000021 face 5
+dumpmap
+pose 1000021 aim
+dumpmap
+pose 1000021 walk 2 10 55 0
+dumpmap
