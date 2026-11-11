@@ -110,6 +110,10 @@ type
     property GlobeZoom: Integer read FGlobeZoom write FGlobeZoom;
     property Warned: Boolean read FWarned write FWarned;
     property MonthsPassed: Integer read FMonthsPassed write FMonthsPassed;
+    /// <summary>getGraphRegionToggles: one '0' or '1' per region and the total (the buttons of GraphsState)</summary>
+    property GraphRegionToggles: string read FGraphRegionToggles write FGraphRegionToggles;
+    property GraphCountryToggles: string read FGraphCountryToggles write FGraphCountryToggles;
+    property GraphFinanceToggles: string read FGraphFinanceToggles write FGraphFinanceToggles;
     property Time: TXcomGameTime read FTime;
     property Countries: TObjectList<TXcomCountry> read FCountries;
     property Regions: TObjectList<TXcomRegion> read FRegions;
