@@ -27,11 +27,18 @@ type
     FTxtTitle: TXcomText;
     FGraphics: IXcomBattleGraphics;
     FOnOk: TProc;
+    FNext: TXcomState;
     procedure BtnOkClick(AAction: TXcomAction);
   public
     /// <param name="AGraphics">The pictures of the battle (TAC00.SCR is the background); can be nil</param>
     /// <param name="AOnOk">Called after the state was popped; can be nil</param>
     constructor Create(AHost: TXcomStateHost; const AGraphics: IXcomBattleGraphics; const AOnOk: TProc);
+    destructor Destroy; override;
+    /// <summary>
+    ///   The state that OK pushes (the debriefing that was made while the battle was still there). The message
+    ///   owns it until then: a game that closes with the message on the screen must not leave it behind
+    /// </summary>
+    procedure SetNext(AState: TXcomState);
   end;
 
 implementation
@@ -77,12 +84,29 @@ begin
   FTxtTitle.SetWordWrap(True);
 end;
 
+destructor TXcomAliensCrashState.Destroy;
+begin
+  FNext.Free;
+  inherited Destroy;
+end;
+
+procedure TXcomAliensCrashState.SetNext(AState: TXcomState);
+begin
+  FNext.Free;
+  FNext := AState;
+end;
+
 procedure TXcomAliensCrashState.BtnOkClick(AAction: TXcomAction);
 var
   LOnOk: TProc;
+  LNext: TXcomState;
 begin
   LOnOk := FOnOk;
+  LNext := FNext;
+  FNext := nil;
   Host.PopState;
+  if Assigned(LNext) then
+    Host.PushState(LNext);
   if Assigned(LOnOk) then
     LOnOk();
 end;

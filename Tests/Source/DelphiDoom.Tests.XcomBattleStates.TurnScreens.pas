@@ -55,6 +55,10 @@ type
     procedure GliAlieniMortiNelloSchiantoDovrebberoPortareAlSeguitoConOk;
     [Test]
     procedure GliAlieniMortiNelloSchiantoDovrebberoTenereVivaLaGraficaFinoAllaChiusura;
+    [Test]
+    procedure IlMessaggioDelloSchiantoDovrebbeMostrareLoStatoSeguenteConOk;
+    [Test]
+    procedure IlMessaggioDelloSchiantoChiusoSenzaOkDovrebbeLiberareLoStatoSeguente;
   end;
 
 implementation
@@ -317,6 +321,76 @@ begin
   FBench.World.Wait(40);
   Assert.IsTrue(FBench.World.Game.IsState(FState));
   Assert.AreEqual(LBefore, LCounted.RefCount, 'the pictures are let go with the message');
+end;
+
+type
+  /// <summary>A state that says when it is freed</summary>
+  TXcomFlaggedState = class(TXcomState)
+  strict private
+    FOnFree: TProc;
+  public
+    constructor Create(AHost: TXcomStateHost; const AOnFree: TProc);
+    destructor Destroy; override;
+  end;
+
+constructor TXcomFlaggedState.Create(AHost: TXcomStateHost; const AOnFree: TProc);
+begin
+  inherited Create(AHost);
+  FOnFree := AOnFree;
+end;
+
+destructor TXcomFlaggedState.Destroy;
+begin
+  FOnFree();
+  inherited Destroy;
+end;
+
+procedure TTestXcomTurnScreens.IlMessaggioDelloSchiantoDovrebbeMostrareLoStatoSeguenteConOk;
+var
+  LCrash: TXcomAliensCrashState;
+  LNext: TXcomState;
+  LFreed: Boolean;
+begin
+  if not Ready then
+    Exit;
+  LFreed := False;
+  LNext := TXcomFlaggedState.Create(FBench.World.Game,
+    procedure
+    begin
+      LFreed := True;
+    end);
+  LCrash := TXcomAliensCrashState.Create(FBench.World.Game, FBench.Session.Graphics, nil);
+  LCrash.SetNext(LNext);
+  FBench.World.Game.PushState(LCrash);
+  FBench.World.Wait(400);
+  PressKey(XCOM_KEY_RETURN);
+  FBench.World.Wait(40);
+  Assert.IsTrue(FBench.World.Game.IsState(LNext), 'OK mostra il debriefing preparato');
+  Assert.IsFalse(LFreed);
+  FBench.World.Game.PopState;
+  FBench.World.Wait(40);
+end;
+
+procedure TTestXcomTurnScreens.IlMessaggioDelloSchiantoChiusoSenzaOkDovrebbeLiberareLoStatoSeguente;
+var
+  LCrash: TXcomAliensCrashState;
+  LFreed: Boolean;
+begin
+  if not Ready then
+    Exit;
+  // the game closed (or the save loaded) with the message on the screen: the debriefing that waited was left behind
+  LFreed := False;
+  LCrash := TXcomAliensCrashState.Create(FBench.World.Game, FBench.Session.Graphics, nil);
+  LCrash.SetNext(TXcomFlaggedState.Create(FBench.World.Game,
+    procedure
+    begin
+      LFreed := True;
+    end));
+  FBench.World.Game.PushState(LCrash);
+  FBench.World.Wait(400);
+  FBench.World.Game.PopState;
+  FBench.World.Wait(40);
+  Assert.IsTrue(LFreed, 'il messaggio possiede lo stato che non ha mostrato');
 end;
 
 initialization
