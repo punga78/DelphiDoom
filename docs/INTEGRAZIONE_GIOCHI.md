@@ -192,3 +192,8 @@ Fatti di rilievo per le fette 1:
 - **Keen**: sorgente 1.93 e dati shareware 1.13 coincidono per grafica e audio; le mappe 1.13 richiedono `MAPHEAD`/`MAPDICT` estratti dall'EXE.
 - **OpenXcom**: l'originale compila in circa 3 minuti con la toolchain portatile; senza dati UFO/TFTD non si va oltre il controllo dei file.
 - Il rapporto elenca ancora cosa serve all'utente: giocare Keen e Greed a mano, decidere su Mars (acquisto), dati commerciali per UFO/TFTD.
+
+## OpenXcom: geoscape e basescape (issue #176, sessione strategia)
+
+- **Fatto**: `Libs\XcomGeoscape` (globo, `GeoscapeState`, scelta del sito della prima base, nome, avvio della partita nuova), `Libs\XcomBasescape` (schermata della base, griglia, mini mappe), `IXcomGameRules` (ruleset e set di sprite), `TXcomBaseCapacity` in `Libs\XcomSave`. Da `XcomGame`: Menu, New Game, difficolta', globo con la scelta del sito (solo mare in TFTD), nome, geoscape, Bases, basescape. Pixel: globo spiegato interamente dal rumore (0 pixel non spiegati su oltre 40000), sidebar e basescape uguali al vero OpenXcom (restano solo i fondi, casuali), capacita' delle basi 0 differenze su 16 salvataggi.
+- **Non fatto**: logica del tempo (`AlienMission::think/spawnUfo`, UFO, rilevazione, `Craft` radar/rearm, `Production::step`, medaglie), `Mod` suoni/musica/ModScript, stat string, `GeoscapeState` (dogfight, popup, click sui bersagli), `ConfirmNewBaseState`, tutte le schermate figlie del basescape.
