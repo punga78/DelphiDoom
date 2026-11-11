@@ -12,6 +12,7 @@ unit DelphiDoom.Engine.Script.Players;
 interface
 
 uses
+  DelphiDoom.Engine.Script.ActorContext.Intf,
   DelphiDoom.ScriptHost.Players.Intf;
 
 type
@@ -21,7 +22,11 @@ type
   ///   ammunition; the library checks the player and the indexes, so here nothing is checked
   /// </summary>
   TEngineScriptPlayers = class(TInterfacedObject, IScriptPlayerSource)
+  strict private
+    FContext: IEngineScriptActorContext;
   public
+    /// <exception cref="EArgumentNilException">If the context is nil</exception>
+    constructor Create(const AContext: IEngineScriptActorContext);
     function MaxPlayers: Integer;
     function InGame(const APlayer: Integer): Boolean;
     function KeyCount: Integer;
@@ -57,6 +62,7 @@ type
 implementation
 
 uses
+  System.SysUtils,
   d_player,
   doomdef,
   g_game,
@@ -66,6 +72,14 @@ uses
   psi_game;
 
 { TEngineScriptPlayers }
+
+constructor TEngineScriptPlayers.Create(const AContext: IEngineScriptActorContext);
+begin
+  inherited Create;
+  if not Assigned(AContext) then
+    raise EArgumentNilException.Create('AContext');
+  FContext := AContext;
+end;
 
 function TEngineScriptPlayers.MaxPlayers: Integer;
 begin
@@ -302,7 +316,7 @@ var
 {$ENDIF}
 begin
 {$IFDEF DOOM_OR_STRIFE}
-  LActor := mobj_from_key(AActorKey);
+  LActor := FContext.MobjFromKey(AActorKey);
   if LActor = nil then
     Exit;
   P_PlayerFaceMobj(@players[APlayer], LActor, ATicks);

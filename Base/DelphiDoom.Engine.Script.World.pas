@@ -80,6 +80,9 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.Engine.Script.Actors,
+  DelphiDoom.ScriptHost.Actors.Intf,
+  DelphiDoom.ScriptHost.Actors.KeyList,
   doomdata,
   psi_game,
   p_map,
@@ -420,21 +423,16 @@ end;
 
 function TEngineScriptWorld.SectorActorKeys(const AIndex: Integer): TArray<Cardinal>;
 var
-  LList: TActorKeyList;
-  LKeys: TActorArray;
-  LOrder: Integer;
+  LList: TScriptActorKeyList;
 begin
   // the same list that the actor functions use (duplicates and order as they have always been)
-  LList := TActorKeyList.Create;
+  LList := TScriptActorKeyList.Create;
   try
-    LList.AddAllSector(AIndex);
-    LKeys := LList.GetActorArray;
+    TEngineScriptActors.CollectKeys(acsSector, AIndex, LList);
+    Result := LList.ToArray;
   finally
     LList.Free;
   end;
-  SetLength(Result, Length(LKeys));
-  for LOrder := 0 to High(LKeys) do
-    Result[LOrder] := LKeys[LOrder];
 end;
 
 function TEngineScriptWorld.SectorLineCount(const AIndex: Integer): Integer;
@@ -591,7 +589,7 @@ end;
 
 procedure TEngineScriptWorld.PlaySectorSound(const AIndex: Integer; const AName: string);
 begin
-  psi_game._playsound(Pmobj_t(@sectors[AIndex].soundorg), AName);
+  TEngineScriptActors.PlaySoundAt(@sectors[AIndex].soundorg, AName);
 end;
 
 procedure TEngineScriptWorld.SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);

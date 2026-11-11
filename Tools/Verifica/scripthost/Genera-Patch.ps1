@@ -67,7 +67,8 @@ function Save-Patch([string[]]$Files, [string]$Name) {
 
 function Hook-PsMain {
   Add-ImplementationUses 'Libs\ScriptHost\ps_main.pas' 'HarnessScriptHost'
-  Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2'
+  Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
+  Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
 }
 
 # ---- L2 ----

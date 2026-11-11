@@ -83,3 +83,21 @@ esempio una funzione che legge il tempo di sistema), non una differenza tra vecc
 `spike\Spike173.dpr`, `spike\build.cmd` (dcc32 e dcc64, `Libs\Script\Shim` al posto di `d_delphi`). Cinque casi
 (risultato `string`, `array of const`, array dinamico, `Extended`/`Double`/`Single`, `Self` letto da un campo): vedi il
 rapporto in `docs\SCRIPTHOST_PIANO.md` (sezione 5, fetta 2a-0).
+
+### Dopo la fetta 2f-5 (attori, issue #172): cosa c'e' di nuovo
+
+* **Contesto implicito** (`verify_scripthost_L2_context.txt`, scritto da `-vsh l2` prima della batteria): lo script di evento della mappa
+  (`OnPlayerEnter`, `OnActorDied`, `OnUseLine`: `Actor`, `GetActorX(0)`, `SetActorMOMX(0, ...)`) e lo script normale `VSHRUN`
+  vengono eseguiti per i **due percorsi** del contesto, con l'impronta dello stato dopo ogni passo: `PS_EventPlayerEnter`,
+  `PS_EventActorDied`, `PS_EventUseLine` (gli eventi) e `psmanager.RunScript` (il percorso di `A_RunScript`), la seconda volta con
+  un attore diverso e la terza con `nil` (senza attore, `Actor` da il numero non valido). `Confronta.ps1` lo confronta come gli altri file.
+  `RunScript` non e' nell'interfaccia di `ps_main`: la patch (`Genera-Patch.ps1`, `Hook-PsMain`) lo da' al harness con `VSH_SetScriptRunner`.
+* **Una seconda esecuzione per le funzioni che cambiano il mondo**: `Confronta.ps1 -Game <gioco> -Twice -Extra '-vshskip RemoveActor'`
+  (nuovo e vecchio con spawn e spostamenti, ma senza che l'attore tolto falsi le funzioni seguenti), poi `-Extra '-vshonly RemoveActor'`
+  (solo la rimozione) e la batteria intera.
+* **`-vsh demo`** (hook `VSH_AfterTick` in `PS_EventTick`) e `Confronta-Demo.ps1`: l'ultimo stato del primo giocatore di un
+  `-timedemo demo1/2/3` di Doom (gametic, tempo del livello, posizione, angolo, salute, uccisioni), vecchio contro nuovo.
+* **Salvataggi**: lo script di `-vsh save` ora fa nascere un attore (`SpawnActorType` del tipo del giocatore, con una velocita'), cosi' i
+  byte dei salvataggi contengono un attore creato da uno script; `Confronta-Salvataggi.ps1 -Game Hexen` (poi gli altri tre).
+* La patch si rifa' con `Genera-Patch.ps1` **da un albero pulito** (fa `git checkout` dei file che tocca): si e' lanciata nell'albero
+  del vecchio commit e le patch copiate qui.
