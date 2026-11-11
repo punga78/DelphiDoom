@@ -1,6 +1,6 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - the composition root of the game                      }
+{  DelphiDoom: Xcom32 - the composition root of the game                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - the screens that the buttons of the geoscape and of   }
+{  DelphiDoom: Xcom32 - the screens that the buttons of the geoscape and of    }
 {  the basescape open (part of the composition root: it knows the classes)      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }

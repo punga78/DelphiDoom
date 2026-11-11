@@ -966,7 +966,7 @@ begin
       exit;
   end;
 
-  if gld_LoadHiresTexture(gltexture, textures[gltexture.index].name, -1) then
+  if gld_LoadHiresTexture(gltexture, string(textures[gltexture.index].name), -1) then
     exit;
 
   buffer := malloc(gltexture.buffer_size);
@@ -1133,7 +1133,7 @@ begin
 
   if cm = Ord(CR_DEFAULT) then
   begin
-    if gld_LoadHiresTexture(gltexture, _fix_sprite_name(W_GetNameForNum(gltexture.index)), -1) then
+    if gld_LoadHiresTexture(gltexture, _fix_sprite_name(string(W_GetNameForNum(gltexture.index))), -1) then
       exit;
     trans := nil;
   end
@@ -1293,7 +1293,7 @@ begin
     end;
   end;
 
-  if gld_LoadHiresTexture(gltexture, W_GetNameForNum(gltexture.index), ripple) then
+  if gld_LoadHiresTexture(gltexture, string(W_GetNameForNum(gltexture.index)), ripple) then
     exit;
 
   flat := W_CacheLumpNum(gltexture.index, PU_STATIC);

@@ -23,6 +23,8 @@ Origine: Pascal Script di RemObjects (Carlo Kok), nella versione adattata dal pr
 - le unit `ps_defs` e `ps_keywords` includono `Doom32.inc` (opzioni di codice del progetto);
 - in `ps_compiler` i 13 `asm int 3` (solo `DEBUG`) sono `PS_DebugBreak` (chiama `DebugBreak` di kernel32);
 - `ps_runtime` usa `x86.inc`/`x64.inc` (`asm`) per le chiamate native, con un ramo per `CPUX64` (il motore le usa solo da `Libs\OpenGl\Legacy\mdl_script_proclist.pas`, `RegisterDelphiFunction`; vedi `docs\PENDING_ISSUES.md`);
+- `ps_utils.PSCharPos(TbtChar, TbtString)` (issue #181) cerca un carattere sui byte di un `TbtString`: sostituisce nelle unit del nucleo le chiamate a `d_delphi.CharPos(Char, string)`, che convertivano ogni argomento in `UnicodeString` (un W1057 per chiamata); con una code page a un byte le posizioni sono le stesse. `uses d_delphi` resta nelle unit (ordine di inizializzazione invariato);
+- zero hint e warning del compilatore nei progetti che la compilano (giochi, `ddc`, `ddc_*`, DD_IDE, DDScript, test): le conversioni tra `TbtString` e `string` sono cast espliciti;
 - `arm.inc` e `powerpc.inc` non sono usati (nessun target).
 
 ## Come si usa

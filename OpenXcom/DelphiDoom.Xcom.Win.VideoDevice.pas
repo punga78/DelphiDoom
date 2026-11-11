@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - the window of Windows                                 }
+{  DelphiDoom: Xcom32 - the window of Windows                                  }
 {  What SDL_SetVideoMode, SDL_Flip and the SDL event loop did, on GDI: the      }
 {  picture of 8 bit pixels goes to the window with its palette (no conversion   }
 {  to colors), and the messages of the window become events of the game         }

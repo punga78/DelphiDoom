@@ -50,3 +50,8 @@ sono nei floppy. **Non riuscito**: dopo l'introduzione (anche saltata con Esc) `
 `Tests\DelphiDoom.Tests.Xcom` trova la cartella `Reference\_dati\xcom_tftd\TFTD` risalendo dall'eseguibile (o
 `DELPHIDOOM_XCOM_DATA`) ed esegue `DelphiDoom.Tests.Xcom.RealData`. `Xcom32 -data ...\TFTD -pal 0 -pck TERRAIN\PORT01.PCK
 -png x.png` esporta gli sprite.
+
+`Xcom32.exe` e' l'unico programma (issue #180): con `-pck`, `-dat`, `-scr` o `-map` esporta (e `-data` e' la cartella
+del gioco), altrimenti e' il gioco (`-data` e' la cartella con `common\` e `standard\`, `-game` quella del gioco): gli
+script di questa cartella lo chiamano cosi'. E' un programma GUI: in PowerShell va lanciato con una pipe (`| Out-Null`,
+`| Out-String`) perche' la shell aspetti la fine e riceva il testo; con `> file` non aspetta e il file resta vuoto.

@@ -45,7 +45,8 @@ uses
   DelphiDoom.Xcom.PngEncoder in '..\Libs\XcomFormats\DelphiDoom.Xcom.PngEncoder.pas',
   DelphiDoom.Xcom.ImageExporter in '..\Libs\XcomFormats\DelphiDoom.Xcom.ImageExporter.pas',
   DelphiDoom.Xcom.Factory in '..\Libs\XcomFormats\DelphiDoom.Xcom.Factory.pas',
-  DelphiDoom.Tests.Xcom.Builders in 'Source\DelphiDoom.Tests.Xcom.Builders.pas',
+  DelphiDoom.Xcom.ExportArguments in '..\OpenXcom\DelphiDoom.Xcom.ExportArguments.pas',
+  DelphiDoom.Tests.Xcom.Builders in'Source\DelphiDoom.Tests.Xcom.Builders.pas',
   DelphiDoom.Tests.Xcom.Cases in 'Source\DelphiDoom.Tests.Xcom.Cases.pas',
   DelphiDoom.Tests.Xcom.Types in 'Source\DelphiDoom.Tests.Xcom.Types.pas',
   DelphiDoom.Tests.Xcom.BinaryReader in 'Source\DelphiDoom.Tests.Xcom.BinaryReader.pas',
@@ -72,7 +73,8 @@ uses
   DelphiDoom.Tests.Xcom.ImageExporter in 'Source\DelphiDoom.Tests.Xcom.ImageExporter.pas',
   DelphiDoom.Tests.Xcom.LbmReader in 'Source\DelphiDoom.Tests.Xcom.LbmReader.pas',
   DelphiDoom.Tests.Xcom.BattlescapePalette in 'Source\DelphiDoom.Tests.Xcom.BattlescapePalette.pas',
-  DelphiDoom.Tests.Xcom.RealData in 'Source\DelphiDoom.Tests.Xcom.RealData.pas',
+  DelphiDoom.Tests.Xcom.ExportArguments in 'Source\DelphiDoom.Tests.Xcom.ExportArguments.pas',
+  DelphiDoom.Tests.Xcom.RealData in'Source\DelphiDoom.Tests.Xcom.RealData.pas',
   DelphiDoom.Tests.Xcom.Golden in 'Source\DelphiDoom.Tests.Xcom.Golden.pas';
 
 var

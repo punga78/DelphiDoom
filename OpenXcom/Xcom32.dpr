@@ -1,16 +1,33 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
-{  Xcom32: the data files of UFO: Enemy Unknown and Terror from the Deep        }
-{  (Microprose 1994/1995) read with the formats of OpenXcom. For now a program  }
-{  that decodes a picture, a set of sprites or a block of the battlescape and   }
-{  saves them as a PNG (a proof of the data layer, first slice of the issue     }
-{  176): no window, no game yet                                                 }
+{  Xcom32: OpenXcom (UFO: Enemy Unknown and Terror from the Deep) without SDL,  }
+{  on the data of an installed game (issues 176 and 180). One program, two      }
+{  modes, chosen by the command line                                            }
 {                                                                              }
-{  Usage:  Xcom32 [-data <folder>]... [-pal <n>] [-png <file>]                  }
-{                 -pck <file> [-tab <file>] [-w <n>] [-h <n>] [-columns <n>]   }
-{               | -dat <file> [-w <n>] [-h <n>] [-columns <n>]                  }
-{               | -scr <file> [-w <n>] [-h <n>]     (.SCR, .SPK or .BDY)        }
-{               | -map <file> [-rmp <file>] [-z <n>]                            }
+{  The game (the default): a window of Windows (GDI) or, with -shot or         }
+{  -script, no window and screenshots as PNG files. Without -data and -game     }
+{  the data are next to the executable (common\ and standard\, TFTD\ or UFO\)   }
+{  and the user folder is user\ next to it                                      }
+{                                                                              }
+{    Xcom32 [-data <folder with common\ and standard\>]                         }
+{           [-game <folder of the game: GEODATA, GEOGRAPH...>]                  }
+{           [-user <folder with options.cfg>] [-mod xcom2|xcom1]                }
+{           [-shot <file.png> [-ms <n>]] [-script step;step...]                 }
+{           [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]            }
+{           [-version <text>] [-dospath <text>] [-hold]                         }
+{                                                                              }
+{  The export: when the command line has -pck, -dat, -scr or -map, a data file  }
+{  of the game is decoded and saved as a PNG. Here -data (it can be repeated)   }
+{  is a folder of the game, the same as -game: see TXcomExportArguments         }
+{                                                                              }
+{    Xcom32 [-data <folder of the game>]... [-pal <n>] [-png <file>]            }
+{           -pck <file> [-tab <file>] [-w <n>] [-h <n>] [-columns <n>]         }
+{         | -dat <file> [-w <n>] [-h <n>] [-columns <n>]                        }
+{         | -scr <file> [-w <n>] [-h <n>]     (.SCR, .SPK or .BDY)              }
+{         | -map <file> [-rmp <file>] [-z <n>]                                  }
+{                                                                              }
+{  The program has no console: what it says goes to the standard output when    }
+{  there is one (redirected, or the console of the parent)                      }
 {                                                                              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this program                   }
@@ -18,54 +35,143 @@
 {******************************************************************************}
 program Xcom32;
 
-{$APPTYPE CONSOLE}
+{$APPTYPE GUI}
 
 uses
+  Winapi.Windows,
   System.SysUtils,
-  DelphiDoom.Xcom.Types in '..\Libs\XcomFormats\DelphiDoom.Xcom.Types.pas',
-  DelphiDoom.Xcom.Palette in '..\Libs\XcomFormats\DelphiDoom.Xcom.Palette.pas',
-  DelphiDoom.Xcom.Image in '..\Libs\XcomFormats\DelphiDoom.Xcom.Image.pas',
-  DelphiDoom.Xcom.Map in '..\Libs\XcomFormats\DelphiDoom.Xcom.Map.pas',
-  DelphiDoom.Xcom.Intf in '..\Libs\XcomFormats\DelphiDoom.Xcom.Intf.pas',
-  DelphiDoom.Xcom.SpriteSheet in '..\Libs\XcomFormats\DelphiDoom.Xcom.SpriteSheet.pas',
-  DelphiDoom.Xcom.MapPicture in '..\Libs\XcomFormats\DelphiDoom.Xcom.MapPicture.pas',
-  DelphiDoom.Xcom.ImageExporter in '..\Libs\XcomFormats\DelphiDoom.Xcom.ImageExporter.pas',
-  DelphiDoom.Xcom.BattlescapePalette in '..\Libs\XcomFormats\DelphiDoom.Xcom.BattlescapePalette.pas',
-  DelphiDoom.Xcom.Composition in 'DelphiDoom.Xcom.Composition.pas';
+  DelphiDoom.XcomEngine.Intf,
+  DelphiDoom.XcomEngine.Game,
+  DelphiDoom.XcomEngine.ManualClock,
+  DelphiDoom.XcomEngine.QueueEventSource,
+  DelphiDoom.XcomEngine.MemoryVideoDevice,
+  DelphiDoom.Xcom.ImageExporter,
+  DelphiDoom.Xcom.Composition in 'DelphiDoom.Xcom.Composition.pas',
+  DelphiDoom.Xcom.ExportArguments in 'DelphiDoom.Xcom.ExportArguments.pas',
+  DelphiDoom.Xcom.ExportTool in 'DelphiDoom.Xcom.ExportTool.pas',
+  DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
+  DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
+  DelphiDoom.Xcom.Win.VideoDevice in 'DelphiDoom.Xcom.Win.VideoDevice.pas',
+  DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
+  DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
+  DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
+  DelphiDoom.Xcom.Win.PcmOutput in 'DelphiDoom.Xcom.Win.PcmOutput.pas',
+  DelphiDoom.XcomAudio.Intf;
+
+const
+  DEFAULT_VERSION = '1.0 git 2026-06-05 22:05';
 
 type
-  TXcomMode = (xmNone, xmPck, xmDat, xmScr, xmMap);
-
-  TXcomArguments = record
-    Folders: TArray<string>;
-    Mode: TXcomMode;
-    InputFile: string;
-    TabFile: string;
-    RouteFile: string;
-    PngFile: string;
-    PaletteIndex: Integer;
-    Width: Integer;
-    Height: Integer;
-    Columns: Integer;
-    Layer: Integer;
+  TArguments = record
+    Settings: TXcomGameSettings;
+    ShotFile: string;
+    Milliseconds: Integer;
+    Script: string;
+    /// <summary>Quits by itself after this many milliseconds (0: when the window closes)</summary>
+    QuitAfter: Integer;
+    /// <summary>Prints what the mixer played when the program ends</summary>
+    AudioStatistics: Boolean;
   end;
+
+/// <summary>
+/// The program has no console of its own (no black window behind the game): a line goes to the standard output when
+/// there is one (redirected, or the console of the parent), otherwise nowhere.
+/// </summary>
+procedure Say(const AText: string; AError: Boolean = False);
+var
+  LHandle: THandle;
+  LBytes: TBytes;
+  LWritten: DWORD;
+begin
+  if AError then
+    LHandle := GetStdHandle(STD_ERROR_HANDLE)
+  else
+    LHandle := GetStdHandle(STD_OUTPUT_HANDLE);
+  if (LHandle = 0) or (LHandle = INVALID_HANDLE_VALUE) then
+  begin
+    if not AttachConsole(ATTACH_PARENT_PROCESS) then
+      Exit;
+    if AError then
+      LHandle := GetStdHandle(STD_ERROR_HANDLE)
+    else
+      LHandle := GetStdHandle(STD_OUTPUT_HANDLE);
+    if (LHandle = 0) or (LHandle = INVALID_HANDLE_VALUE) then
+      Exit;
+  end;
+  LBytes := TEncoding.UTF8.GetBytes(AText + sLineBreak);
+  WriteFile(LHandle, LBytes[0], Length(LBytes), LWritten, nil);
+end;
 
 procedure ShowUsage;
 begin
-  Writeln('Xcom32 [-data <folder>]... [-pal <n>] [-png <file>] <what>');
-  Writeln('  -data     a folder of the game (the one that has GEODATA\PALETTES.DAT), default: the current one');
-  Writeln('  -pal      the palette of GEODATA\PALETTES.DAT (0 geoscape, 1 basescape, 2 graphs, 3 ufopaedia, 4 battlescape), default 0;');
-  Writeln('            4..7 are the battlescape palettes of UFOGRAPH\D0..D3.LBM when the game has them (TFTD)');
-  Writeln('  -png      the file to write (default xcom.png)');
-  Writeln('  -pck      the sprites of a .PCK with its .TAB (-tab, default the same name); -w and -h are the size of a frame (32 x 40)');
-  Writeln('  -dat      the frames of a .DAT of raw pictures; -w and -h are the size of a frame');
-  Writeln('  -scr      a full picture: .SCR, .SPK or .BDY by the extension; -w and -h default 320 x 200');
-  Writeln('  -map      a block of the battlescape (.MAP, with -rmp the routes of it): its cells are written, and a picture');
-  Writeln('            of the layer -z (default 0, the lowest) goes into the PNG');
-  Writeln('  -columns  frames in a row of the sheet of sprites (default 16)');
+  Say('Xcom32 [-data <common+standard folder>] [-game <game folder>] [-user <folder>] [-mod xcom2]      (the game)');
+  Say('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
+  Say('         [-shot <file.png> [-ms <n>]] [-script wait:ms;click:x,y;key:n;shot:file;...]');
+  Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]');
+  Say('         [-version <text>] [-dospath <text>] [-hold]');
+  TXcomExportTool.ShowUsage(
+    procedure(AText: string)
+    begin
+      Say(AText);
+    end);
 end;
 
-function ParseArguments(out AArguments: TXcomArguments): Boolean;
+/// <summary>The arguments of the program, without its name</summary>
+function CommandLineArguments: TArray<string>;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, ParamCount);
+  for LIndex := 1 to ParamCount do
+    Result[LIndex - 1] := ParamStr(LIndex);
+end;
+
+/// <summary>
+/// Without -data and -game, looks next to the executable: the data folder is the one that has common\ and
+/// standard\ (the executable folder or its data\ subfolder), the game folder is TFTD\, UFO\ or the executable
+/// folder itself when it has GEODATA\.
+/// </summary>
+procedure ApplyDefaultFolders(var ASettings: TXcomGameSettings);
+var
+  LBase: string;
+
+  function Sub(const AName: string): string;
+  begin
+    Result := LBase + AName;
+  end;
+
+begin
+  LBase := ExtractFilePath(ParamStr(0));
+  if ASettings.DataFolder = '' then
+  begin
+    if DirectoryExists(Sub('common')) and DirectoryExists(Sub('standard')) then
+      ASettings.DataFolder := LBase
+    else if DirectoryExists(Sub('data\common')) and DirectoryExists(Sub('data\standard')) then
+      ASettings.DataFolder := Sub('data');
+  end;
+  if ASettings.GameFolder = '' then
+  begin
+    if DirectoryExists(Sub('TFTD\GEODATA')) then
+      ASettings.GameFolder := Sub('TFTD')
+    else if DirectoryExists(Sub('UFO\GEODATA')) then
+    begin
+      ASettings.GameFolder := Sub('UFO');
+      // The ruleset follows the game found: only UFO next to the executable means xcom1.
+      if SameText(ASettings.ModId, 'xcom2') then
+        ASettings.ModId := 'xcom1';
+    end
+    else if DirectoryExists(Sub('GEODATA')) then
+      ASettings.GameFolder := LBase;
+  end;
+  // options.cfg and the saved games: the user folder next to the executable, as OpenXcom does when it is there
+  if ASettings.UserFolder = '' then
+  begin
+    ASettings.UserFolder := Sub('user');
+    ForceDirectories(ASettings.UserFolder);
+  end;
+end;
+
+function ParseArguments(out AArguments: TArguments): Boolean;
 var
   LIndex: Integer;
   LName: string;
@@ -79,183 +185,203 @@ var
   end;
 
 begin
-  AArguments := Default(TXcomArguments);
-  AArguments.Width := 0;
-  AArguments.Columns := 16;
-  AArguments.PngFile := 'xcom.png';
+  AArguments := Default(TArguments);
+  AArguments.Settings.ModId := 'xcom2';
+  AArguments.Settings.VersionText := DEFAULT_VERSION;
+  AArguments.Settings.LoadMode := lmThread;
+  AArguments.Milliseconds := 3000;
   LIndex := 1;
   while LIndex <= ParamCount do
   begin
     LName := ParamStr(LIndex).ToLowerInvariant;
     if LName = '-data' then
-    begin
-      SetLength(AArguments.Folders, Length(AArguments.Folders) + 1);
-      AArguments.Folders[High(AArguments.Folders)] := NextValue;
-    end
-    else if LName = '-pal' then
-      AArguments.PaletteIndex := StrToInt(NextValue)
-    else if LName = '-png' then
-      AArguments.PngFile := NextValue
-    else if LName = '-tab' then
-      AArguments.TabFile := NextValue
-    else if LName = '-rmp' then
-      AArguments.RouteFile := NextValue
-    else if LName = '-w' then
-      AArguments.Width := StrToInt(NextValue)
-    else if LName = '-h' then
-      AArguments.Height := StrToInt(NextValue)
-    else if LName = '-columns' then
-      AArguments.Columns := StrToInt(NextValue)
-    else if LName = '-z' then
-      AArguments.Layer := StrToInt(NextValue)
-    else if LName = '-pck' then
-    begin
-      AArguments.Mode := xmPck;
-      AArguments.InputFile := NextValue;
-    end
-    else if LName = '-dat' then
-    begin
-      AArguments.Mode := xmDat;
-      AArguments.InputFile := NextValue;
-    end
-    else if LName = '-scr' then
-    begin
-      AArguments.Mode := xmScr;
-      AArguments.InputFile := NextValue;
-    end
-    else if LName = '-map' then
-    begin
-      AArguments.Mode := xmMap;
-      AArguments.InputFile := NextValue;
-    end
+      AArguments.Settings.DataFolder := NextValue
+    else if LName = '-game' then
+      AArguments.Settings.GameFolder := NextValue
+    else if LName = '-user' then
+      AArguments.Settings.UserFolder := NextValue
+    else if LName = '-mod' then
+      AArguments.Settings.ModId := NextValue
+    else if LName = '-shot' then
+      AArguments.ShotFile := NextValue
+    else if LName = '-ms' then
+      AArguments.Milliseconds := StrToInt(NextValue)
+    else if LName = '-script' then
+      AArguments.Script := NextValue
+    else if LName = '-version' then
+      AArguments.Settings.VersionText := NextValue
+    else if LName = '-dospath' then
+      AArguments.Settings.DosPath := NextValue
+    else if LName = '-listmodes' then
+      AArguments.Settings.ListModes := True
+    else if LName = '-seed' then
+      AArguments.Settings.Seed := StrToUInt64(NextValue)
+    else if LName = '-quitafter' then
+      AArguments.QuitAfter := StrToInt(NextValue)
+    else if LName = '-audiostats' then
+      AArguments.AudioStatistics := True
+    else if LName = '-hold' then
+      AArguments.Settings.LoadMode := lmHeld
     else
       Exit(False);
     Inc(LIndex);
   end;
-  Result := AArguments.Mode <> xmNone;
-  if Length(AArguments.Folders) = 0 then
-    AArguments.Folders := [GetCurrentDir];
+  ApplyDefaultFolders(AArguments.Settings);
+  Result := (AArguments.Settings.DataFolder <> '') and (AArguments.Settings.GameFolder <> '');
 end;
 
-procedure WriteMap(const AMap: TXcomMap; const ARecords: TArray<TXcomRmpRecord>; const AResolver: IXcomRouteReader);
+procedure PrintAudio(const AMeter: IXcomMixerMeter; const AOutput: TXcomWinPcmOutput);
 var
-  LX: Integer;
-  LY: Integer;
-  LZ: Integer;
-  LCell: TXcomMapCell;
-  LNodes: TArray<TXcomRouteNode>;
-  LCulled: TArray<Integer>;
-  LNode: TXcomRouteNode;
+  LStatistics: TXcomMixerStatistics;
 begin
-  Writeln(Format('Map %d x %d x %d (x, y, layers); %d cells in the file', [AMap.SizeX, AMap.SizeY, AMap.SizeZ,
-    Length(AMap.Cells)]));
-  Writeln('x   y   z   floor west north object');
-  for LZ := 0 to AMap.SizeZ - 1 do
-    for LY := 0 to AMap.SizeY - 1 do
-      for LX := 0 to AMap.SizeX - 1 do
-      begin
-        LCell := AMap.CellAt(LX, LY, LZ);
-        if (LCell.Floor or LCell.WestWall or LCell.NorthWall or LCell.Obj) <> 0 then
-          Writeln(Format('%-3d %-3d %-3d %-5d %-4d %-5d %d', [LX, LY, LZ, LCell.Floor, LCell.WestWall,
-            LCell.NorthWall, LCell.Obj]));
-      end;
-  if Assigned(AResolver) then
-  begin
-    LNodes := AResolver.Resolve(ARecords, AMap.SizeX, AMap.SizeY, AMap.SizeZ, 0, 0, 0, LCulled);
-    Writeln(Format('%d nodes (%d outside the block)', [Length(LNodes), Length(LCulled)]));
-    for LNode in LNodes do
-      if LNode.IsDummy then
-        Writeln(Format('node %d: outside the block', [LNode.Index]))
-      else
-        Writeln(Format('node %d: (%d, %d, %d) type %d rank %d flags %d priority %d links %d %d %d %d %d',
-          [LNode.Index, LNode.X, LNode.Y, LNode.Z, LNode.NodeType, LNode.Rank, LNode.Flags, LNode.Priority,
-          LNode.Links[0], LNode.Links[1], LNode.Links[2], LNode.Links[3], LNode.Links[4]]));
+  LStatistics := AMeter.Statistics;
+  Say(Format('audio: %d bytes rendered, rms %.1f, peak %d, sounds %d, buffers completed by the device %d',
+    [LStatistics.RenderedBytes, LStatistics.Rms, LStatistics.Peak, LStatistics.SoundsStarted,
+    AOutput.CompletedBuffers]));
+end;
+
+procedure RunWindow(const AArguments: TArguments);
+var
+  LEvents: TXcomQueueEventSource;
+  LEventsRef: IXcomEventSource;
+  LDevice: TXcomWinVideoDevice;
+  LDeviceRef: IXcomVideoDevice;
+  LGame: TXcomGame;
+  LSettings: TXcomGameSettings;
+  LOutput: TXcomWinPcmOutput;
+  LOutputRef: IXcomPcmOutput;
+  LMeter: IXcomMixerMeter;
+  LStart: Cardinal;
+begin
+  LEvents := TXcomQueueEventSource.Create;
+  LEventsRef := LEvents;
+  LDevice := TXcomWinVideoDevice.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
+  LDeviceRef := LDevice;
+  LOutput := TXcomWinPcmOutput.Create;
+  LOutputRef := LOutput;
+  LSettings := AArguments.Settings;
+  LSettings.WindowMode := True;
+  LSettings.AudioOutput := LOutputRef;
+  LSettings.OnAudio := procedure(const AMeter: IXcomMixerMeter)
+    begin
+      LMeter := AMeter;
+    end;
+  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomWinClock.Create, LEvents);
+  LStart := GetTickCount;
+  try
+    while LDevice.Pump and not LGame.IsQuitting do
+    begin
+      LGame.RunFrame;
+      Sleep(1);
+      if (AArguments.QuitAfter > 0) and (GetTickCount - LStart > Cardinal(AArguments.QuitAfter)) then
+        Break;
+    end;
+    if AArguments.AudioStatistics and (LMeter <> nil) then
+      PrintAudio(LMeter, LOutput);
+  finally
+    LGame.Free;
+    LMeter := nil;
+  end;
+end;
+
+procedure RunShot(const AArguments: TArguments);
+var
+  LClock: TXcomManualClock;
+  LClockRef: IXcomClock;
+  LEvents: TXcomQueueEventSource;
+  LEventsRef: IXcomEventSource;
+  LDevice: TXcomMemoryVideoDevice;
+  LDeviceRef: IXcomVideoDevice;
+  LGame: TXcomGame;
+  LRunner: TXcomShotRunner;
+  LExporter: TXcomImageExporter;
+  LSettings: TXcomGameSettings;
+begin
+  LClock := TXcomManualClock.Create;
+  LClockRef := LClock;
+  LEvents := TXcomQueueEventSource.Create;
+  LEventsRef := LEvents;
+  LDevice := TXcomMemoryVideoDevice.Create;
+  LDeviceRef := LDevice;
+  LSettings := AArguments.Settings;
+  // the loading must be over when the clock says so: the task runs at once unless -hold asks otherwise
+  if LSettings.LoadMode <> lmHeld then
+    LSettings.LoadMode := lmImmediate;
+  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
+  LExporter := TXcomComposition.CreateImageExporter;
+  LRunner := TXcomShotRunner.Create(LGame, LClock, LEvents, LDevice, LExporter);
+  try
+    if AArguments.Script <> '' then
+      LRunner.Run(AArguments.Script.Split([';']))
+    else
+      LRunner.Wait(AArguments.Milliseconds);
+    if AArguments.ShotFile <> '' then
+      LRunner.Shot(AArguments.ShotFile);
+  finally
+    LRunner.Free;
+    LExporter.Free;
+    LGame.Free;
+  end;
+end;
+
+/// <summary>The export mode: a data file of the game as a PNG, no window and no game</summary>
+procedure RunExport(const AArguments: TXcomExportArguments);
+var
+  LTool: TXcomExportTool;
+begin
+  LTool := TXcomExportTool.Create(
+    procedure(AText: string)
+    begin
+      Say(AText);
+    end, ExtractFilePath(ParamStr(0)));
+  try
+    LTool.Run(AArguments);
+  finally
+    LTool.Free;
   end;
 end;
 
 var
-  LArguments: TXcomArguments;
-  LData: IXcomGameData;
-  LPalette: TXcomPalette;
-  LImage: TXcomImage;
-  LFrames: TArray<TXcomImage>;
-  LMap: TXcomMap;
-  LRoute: TArray<TXcomRmpRecord>;
-  LRouteReader: IXcomRouteReader;
-  LExporter: TXcomImageExporter;
+  LArguments: TArguments;
+  LExportArguments: TXcomExportArguments;
+  LExport: Boolean;
 
 begin
+  LExport := False;
   try
+    // -pck, -dat, -scr or -map choose the export; there -data is a folder of the game (TXcomExportArguments)
+    LExport := TXcomExportArguments.IsExport(CommandLineArguments);
+    if LExport then
+    begin
+      if TXcomExportArguments.TryParse(CommandLineArguments, LExportArguments) then
+        RunExport(LExportArguments)
+      else
+      begin
+        ShowUsage;
+        System.ExitCode := 2;
+      end;
+      Exit;
+    end;
     if not ParseArguments(LArguments) then
     begin
       ShowUsage;
       System.ExitCode := 2;
       Exit;
     end;
-    LData := TXcomComposition.OpenGameData(LArguments.Folders);
-    if (LArguments.PaletteIndex < 4) or (LArguments.PaletteIndex > 4 + TXcomBattlescapePalette.COUNT - 1) then
-      LPalette := LData.LoadPalette(LArguments.PaletteIndex)
-    else if not TXcomBattlescapePalette.TryLoad(LData.Files, TXcomComposition.CreateLbmReader,
-      LArguments.PaletteIndex - 4, LPalette) then
-    begin
-      // no UFOGRAPH\D0.LBM (UFO: Enemy Unknown): the battlescape palette of PALETTES.DAT, as Mod does
-      if LArguments.PaletteIndex <> 4 then
-        raise EXcomFileNotFoundException.CreateFmt(SXcomFileMissing, [TXcomBattlescapePalette.FileName(
-          LArguments.PaletteIndex - 4)]);
-      LPalette := LData.LoadPalette(4);
-      LPalette.ApplyBattlescapeGradient;
-    end;
-    if LPalette.Count = 0 then
-      raise EXcomDataException.CreateFmt(SXcomPaletteBadCount, [0, XCOM_PALETTE_COLORS]);
-    LExporter := TXcomComposition.CreateImageExporter;
-    try
-      case LArguments.Mode of
-        xmPck, xmDat:
-          begin
-            if LArguments.Width = 0 then
-              LArguments.Width := 32;
-            if LArguments.Height = 0 then
-              LArguments.Height := 40;
-            LFrames := LData.LoadImageSet(LArguments.InputFile, LArguments.TabFile, LArguments.Width,
-              LArguments.Height, LPalette);
-            LImage := TXcomSpriteSheet.Compose(LFrames, LArguments.Columns);
-            Writeln(Length(LFrames), ' frames of ', LArguments.Width, ' x ', LArguments.Height);
-            LExporter.Save(LImage, LArguments.PngFile, True);
-          end;
-        xmScr:
-          begin
-            if LArguments.Width = 0 then
-              LArguments.Width := 320;
-            if LArguments.Height = 0 then
-              LArguments.Height := 200;
-            LImage := LData.LoadImage(LArguments.InputFile, LArguments.Width, LArguments.Height, LPalette);
-            LExporter.Save(LImage, LArguments.PngFile, False);
-          end;
-        xmMap:
-          begin
-            LMap := LData.LoadMap(LArguments.InputFile);
-            LRouteReader := nil;
-            LRoute := nil;
-            if LArguments.RouteFile <> '' then
-            begin
-              LRoute := LData.LoadRoute(LArguments.RouteFile);
-              LRouteReader := TXcomComposition.CreateRouteReader;
-            end;
-            WriteMap(LMap, LRoute, LRouteReader);
-            LImage := TXcomMapPicture.Render(LMap, LArguments.Layer);
-            LImage.Palette := LPalette;
-            LImage.HasPalette := True;
-            LExporter.Save(LImage, LArguments.PngFile, False);
-          end;
-      end;
-    finally
-      LExporter.Free;
-    end;
-    Writeln('Saved in ', LArguments.PngFile);
+    if (LArguments.ShotFile <> '') or (LArguments.Script <> '') then
+      RunShot(LArguments)
+    else
+      RunWindow(LArguments);
   except
     on E: Exception do
     begin
-      Writeln(ErrOutput, E.ClassName, ': ', E.Message);
+      Say(E.ClassName + ': ' + E.Message, True);
+      // the address in the terms of the .map of the executable (the image can be relocated)
+      if ExceptAddr <> nil then
+        Say('map address: ' + IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8), True);
+      // in the window mode nobody reads the standard error: the player must see why the game closed
+      if not LExport and (LArguments.ShotFile = '') and (LArguments.Script = '') then
+        MessageBox(0, PChar(E.ClassName + ': ' + E.Message), 'OpenXcom', MB_OK or MB_ICONERROR);
       System.ExitCode := 1;
     end;
   end;

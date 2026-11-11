@@ -452,6 +452,13 @@ function StrToFloat(const s: TbtString): Extended;
 
 //==============================================================================
 //
+// PSCharPos
+//
+//==============================================================================
+function PSCharPos(const ch: TbtChar; const s: TbtString): integer;
+
+//==============================================================================
+//
 // FastUpperCase
 //
 //==============================================================================
@@ -1040,6 +1047,28 @@ end;
 
 //==============================================================================
 //
+// PSCharPos
+//
+// Position (1 based) of the first ch in s, 0 if missing. Works on the bytes of
+// the TbtString: d_delphi.CharPos takes Char and string and converted every
+// argument to UnicodeString (W1057 at each call).
+//
+//==============================================================================
+function PSCharPos(const ch: TbtChar; const s: TbtString): integer;
+var
+  i: integer;
+begin
+  for i := 1 to Length(s) do
+    if s[i] = ch then
+    begin
+      result := i;
+      exit;
+    end;
+  result := 0;
+end;
+
+//==============================================================================
+//
 // Fw
 //
 //==============================================================================
@@ -1047,7 +1076,7 @@ function Fw(const S: TbtString): TbtString; //  First word
 var
   x: integer;
 begin
-  x := CharPos(TbtChar(' '), s);
+  x := PSCharPos(TbtChar(' '), s);
   if x > 0 then
     Result := Copy(S, 1, x - 1)
   else
