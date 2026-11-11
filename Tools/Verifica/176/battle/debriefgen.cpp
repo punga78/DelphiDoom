@@ -323,6 +323,25 @@ static void ApplyOutcome(Game* game, SavedGame* s, SavedBattleGame* b, int varia
       }
     }
   }
+  // DEBRIEF_ZOMBIES: a unit that turns into another when it dies (a zombie), taken by psi-capture: the debriefing does
+  // not recover it, it converts it (SavedBattleGame::convertUnit) and recovers what it becomes
+  if (getenv("DEBRIEF_ZOMBIES")) {
+    Unit* zr = 0;
+    for (std::map<std::string, Unit*>::iterator i = mod->_units.begin(); i != mod->_units.end() && !zr; ++i)
+      if (!i->second->getSpawnUnit().empty() && mod->getUnit(i->second->getSpawnUnit())) zr = i->second;
+    for (int tries = 0; zr && tries < 50; tries++) {
+      Position p(Pick(b->_mapsize_x), Pick(b->_mapsize_y), 0);
+      Tile* t = b->getTile(p);
+      if (!t || t->getUnit() || !t->getMapData(O_FLOOR) || t->getMapData(O_OBJECT)) continue;
+      BattleUnit* z = new BattleUnit(zr, FACTION_HOSTILE, units.back()->getId() + 1, mod->getArmor(zr->getArmor(), true), mod->getStatAdjustment(s->getDifficulty()), b->getDepth());
+      z->setPosition(p);
+      z->setTile(t, b->getTile(p + Position(0, 0, -1)));
+      t->setUnit(z, b->getTile(p + Position(0, 0, -1)));
+      z->_faction = FACTION_PLAYER;
+      units.push_back(z);
+      break;
+    }
+  }
   // kills: the statistics of the units
   for (size_t i = 0; i < units.size(); i++) {
     if (!units[i]->getGeoscapeSoldier() && Pick(2)) continue;

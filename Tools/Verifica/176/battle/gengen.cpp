@@ -11,6 +11,9 @@
 // or won: the "actions" of genNN.stage, which the test repeats) and the REAL BattlescapeGenerator::nextStage runs:
 //   genNN.stage      the outcome, the seed before and after nextStage, or its error
 //   genNN.stage.yml  what SavedBattleGame::save writes after nextStage
+// With GEN_EXTRA=1 a scenario with a craft gets what the debriefing harness needs and the plain scenarios lack: the
+// mission site or the alien base of its deployment in the saved game (the destination of the craft, in the
+// battlescape) and two vehicles in the craft.
 // usage: gengen <data folder> <user folder> <output folder> <count> <seed> [first]
 #include <yaml-cpp/yaml.h>
 #include <utility>
@@ -43,6 +46,10 @@
 #include "Savegame/Craft.h"
 #include "Savegame/Ufo.h"
 #include "Savegame/Vehicle.h"
+#include "Savegame/MissionSite.h"
+#include "Savegame/AlienBase.h"
+#include "Mod/RuleAlienMission.h"
+#include "Mod/Unit.h"
 #include "Savegame/Soldier.h"
 #include "Savegame/Tile.h"
 #include "Savegame/Node.h"
@@ -174,6 +181,19 @@ int main(int argc, char** argv) {
           if (!r->getCompatibleAmmo()->empty()) allCrafts[c]->getItems()->addItem(r->getCompatibleAmmo()->front(), 1 + Pick(3));
         }
       }
+      if (getenv("GEN_EXTRA") && craft) {
+        // two vehicles: the first fixed weapons of the rules that have a unit (a tank), with a full clip
+        int added = 0;
+        for (std::map<std::string, RuleItem*>::iterator i = mod->_items.begin(); i != mod->_items.end() && added < 2; ++i) {
+          RuleItem* r = i->second;
+          if (!r->isFixed() || !mod->getUnit(i->first)) continue;
+          int clip = r->getClipSize();
+          if (!r->getCompatibleAmmo()->empty()) clip = mod->getItem(r->getCompatibleAmmo()->front(), true)->getClipSize();
+          int size = mod->getArmor(mod->getUnit(i->first)->getArmor(), true)->getSize();
+          craft->getVehicles()->push_back(new Vehicle(r, clip, size * size));
+          added++;
+        }
+      }
       char name[64];
       snprintf(name, sizeof name, "gen%02d", v);
       std::string basePath = out + "/" + name;
@@ -194,6 +214,31 @@ int main(int argc, char** argv) {
       if (ufo) gen.setUfo(ufo);
       std::string race = races[Pick(races.size())];
       gen.setAlienRace(race);
+      if (getenv("GEN_EXTRA") && craft && !ufo) {
+        AlienDeployment* dep = mod->getDeployment(mission, true);
+        if (dep->isAlienBase()) {
+          AlienBase* ab = new AlienBase(dep);
+          ab->setId(s->getId(dep->getMarkerName()));
+          ab->setAlienRace(race);
+          ab->setLongitude(0.5);
+          ab->setLatitude(0.1);
+          ab->setDiscovered(true);
+          s->getAlienBases()->push_back(ab);
+          gen.setAlienBase(ab);
+          craft->setDestination(ab);
+        } else if (!dep->getMarkerName().empty()) {
+          MissionSite* ms = new MissionSite(mod->getAlienMission("STR_ALIEN_SURFACE_ATTACK", true), dep);
+          ms->setId(s->getId(dep->getMarkerName()));
+          ms->setAlienRace(race);
+          ms->setSecondsRemaining(3600);
+          ms->setLongitude(0.5);
+          ms->setLatitude(0.1);
+          ms->setDetected(true);
+          s->getMissionSites()->push_back(ms);
+          gen.setMissionSite(ms);
+          craft->setDestination(ms);
+        }
+      }
       int itemLevel = Pick(10);
       gen.setAlienItemlevel(itemLevel);
       int shade = Pick(16);

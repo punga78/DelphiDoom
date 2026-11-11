@@ -52,7 +52,7 @@ uses
   DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattleStates.Graphics, DelphiDoom.XcomBattleStates.Session,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomGeoscape.TargetNames,
   DelphiDoom.XcomDebriefing.Types, DelphiDoom.XcomDebriefing.Debriefer.Intf, DelphiDoom.XcomDebriefing.Debriefer,
-  DelphiDoom.XcomBattleStates.StageLauncher, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomBattleStates.StageLauncher, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.UnitConverter, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes;
 
 class function TXcomBattleFactory.CreateGraphics(AHost: TXcomStateHost): IXcomBattleGraphics;
@@ -117,6 +117,7 @@ begin
     var
       LDebriefer: IXcomMissionDebriefer;
       LOptions: TXcomDebriefingOptions;
+      LSession: IXcomBattleSession;
     begin
       // BattlescapeState::finishBattle: a mission in more parts goes on with its next stage, and the debriefing
       // comes at the end of the last one
@@ -145,7 +146,22 @@ begin
         end;
       // the screen that the debriefer makes keeps what it needs, the debriefer itself can go. After OK the screens
       // of TXcomDebriefingFollowUp follow (medals, promotions, missing items, containment, sale, autosave)
-      LDebriefer := TXcomMissionDebriefer.Create(AHost, LOptions, nil, nil, AMainMenu);
+      // DebriefingState::recoverAlien: a zombie that psi-capture took is not recovered, it becomes what it turns
+      // into (SavedBattleGame::convertUnit), with the engines of the battle that is ending
+      LSession := (AParent as TXcomBattlescapeState).Session;
+      LDebriefer := TXcomMissionDebriefer.Create(AHost, LOptions, nil,
+        function(AUnit: TXcomBattleUnit): TXcomBattleUnit
+        var
+          LConverter: TXcomUnitConverter;
+        begin
+          LConverter := TXcomUnitConverter.Create(LSession.Battle, LSession.TileEngine, LSession.Ruleset,
+            LSession.SavedGame.Difficulty);
+          try
+            Result := LConverter.Convert(AUnit);
+          finally
+            LConverter.Free;
+          end;
+        end, AMainMenu);
       Result := LDebriefer.Debrief((AParent as TXcomBattlescapeState).Session.Battle);
     end, AOptions);
 end;
