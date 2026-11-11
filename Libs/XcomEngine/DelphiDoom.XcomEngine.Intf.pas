@@ -34,6 +34,17 @@ type
   end;
 
   /// <summary>
+  ///   Where the window goes, for a display that has one (an optional interface of the device that the screen asks
+  ///   for before SetMode, as Screen::makeVideoFlags sets SDL_VIDEO_WINDOW_POS and SDL_VIDEO_CENTERED): AFixed
+  ///   puts it at (AX, AY) (Options::rootWindowedMode, not at full screen), ACentered in the middle of the screen
+  ///   (a borderless window); neither leaves the window where the system or the player put it
+  /// </summary>
+  IXcomWindowPlacement = interface
+    ['{9A4C27E1-60B5-4D38-8F12-176000000306}']
+    procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+  end;
+
+  /// <summary>
   ///   How the picture goes to the display (Options::useOpenGL, useOpenGLShader, useOpenGLSmoothing and
   ///   vSyncForOpenGL). Shader is the path of the option ("Shaders/raw.opengl.shader"), empty for none
   /// </summary>

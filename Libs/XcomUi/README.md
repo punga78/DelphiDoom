@@ -14,3 +14,5 @@ I widget di `Interface\` di **OpenXcom** a classi e senza SDL (issue #176): deri
 | `TextList`, `ComboBox`, `TextEdit`, `Slider`, `ScrollBar`, `ArrowButton`, `Bar`, `ImageButton`, `BattlescapeButton` | | **non portati** |
 
 Differenze: il suono dei pulsanti e dei popup non c'e'; `TextButton.SetGroup` prende un `TXcomButtonGroup` (il `TextButton **` del C++); `SetComboToggle` prende una chiusura (il `ComboBox *`). Test e copertura: `Tests\DelphiDoom.Tests.XcomEngine` (96%).
+
+Aggiornamento (sessione "schermate mancanti", #176): il suono dei pulsanti e dei popup ora c'e' (`IXcomUiSounds`). Vedi `CLAUDE.md`.

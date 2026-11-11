@@ -45,7 +45,8 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
+  DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.CutsceneState,
+  DelphiDoom.XcomGeoscape.Strategy,DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
   DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
@@ -68,7 +69,7 @@ end;
 
 procedure TXcomGameNavigator.OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
 begin
-  FHost.PushState(TXcomPlaceLiftState.Create(FHost, ABase, AGlobe, Self));
+  FHost.PushState(TXcomPlaceLiftState.Create(FHost, ABase, AGlobe, Self, AFirst));
 end;
 
 procedure TXcomGameNavigator.OpenBases(AGlobe: TXcomGlobe);
@@ -115,6 +116,7 @@ procedure TXcomGameNavigator.Open(AScreen: TXcomBaseScreen; ABase: TXcomBase; AF
   AParent: TXcomState);
 var
   LCraftIndex: Integer;
+  LHost: TXcomStateHost;
 begin
   case AScreen of
     bsNewBase:
@@ -161,8 +163,16 @@ begin
       else
         FHost.PushState(TXcomPsiTrainingState.Create(FHost));
     bsStatistics:
-      // the end of the game: the statistics are the only state left
-      FHost.SetState(TXcomStatisticsState.Create(FHost));
+      begin
+        // the end of the game (the only caller is the monthly report: the game is lost): the cutscene takes
+        // itself away, leaves the statistics as the only state and plays over them
+        LHost := FHost;
+        FHost.PushState(TXcomCutsceneState.Create(FHost, XCOM_CUTSCENE_LOSE_GAME, nil,
+          procedure
+          begin
+            LHost.SetState(TXcomStatisticsState.Create(LHost));
+          end));
+      end;
   end;
 end;
 

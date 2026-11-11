@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font,
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language;
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.UiSounds.Intf;
 
 type
   /// <summary>
@@ -46,6 +46,11 @@ type
     procedure SetSecondaryColor(AColor: Byte); virtual;
     procedure SetBorderColor(AColor: Byte); virtual;
     procedure SetHighContrast(AContrast: Boolean); virtual;
+    /// <summary>
+    ///   What plays the sounds of the widget (a state gives it to every surface it adds); the base class has none.
+    ///   A widget that owns other widgets passes it on
+    /// </summary>
+    procedure SetUiSounds(const ASounds: IXcomUiSounds); virtual;
     /// <summary>Surface::invalidate: the surface must be drawn again before it is blitted</summary>
     procedure Invalidate(AValid: Boolean = True);
     /// <summary>The key of the tooltip string (Surface::setTooltip)</summary>
@@ -103,6 +108,10 @@ begin
 end;
 
 procedure TXcomWidget.SetHighContrast(AContrast: Boolean);
+begin
+end;
+
+procedure TXcomWidget.SetUiSounds(const ASounds: IXcomUiSounds);
 begin
 end;
 

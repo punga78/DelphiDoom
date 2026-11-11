@@ -223,6 +223,8 @@ var
   LStrings: TDictionary<string, string>;
   LPair: TYamlPair;
   LNumber: Integer;
+  LItems: TArray<IYamlNode>;
+  LIndex: Integer;
 begin
   FFontName := TXcomYamlFields.ReadString(ANode, 'fontName', FFontName);
   LConstants := TXcomYamlFields.Field(ANode, 'constants');
@@ -237,7 +239,15 @@ begin
   if Assigned(LConstants) and LConstants.IsMap then
     for LPair in LConstants.Pairs do
       if LPair.Value.TryAsInteger(LNumber) then
-        FConstants.AddOrSetValue(LPair.Key.ScalarString, LNumber);
+        FConstants.AddOrSetValue(LPair.Key.ScalarString, LNumber)
+      else if LPair.Value.IsSequence then
+      begin
+        // a list of numbers (windowPopup: [1, 1, 1]) is kept an item at a time: "windowPopup.0", "windowPopup.1"...
+        LItems := LPair.Value.Items;
+        for LIndex := 0 to High(LItems) do
+          if LItems[LIndex].TryAsInteger(LNumber) then
+            FConstants.AddOrSetValue(LPair.Key.ScalarString + '.' + IntToStr(LIndex), LNumber);
+      end;
   for LItem in TXcomYamlFields.Sequence(ANode, 'soundDefs') do
     LoadSoundSet(LItem);
   if Length(TXcomYamlFields.Sequence(ANode, 'soundDefs')) > 0 then

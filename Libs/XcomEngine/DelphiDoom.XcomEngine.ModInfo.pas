@@ -27,6 +27,7 @@ type
     FIsMaster: Boolean;
     FReservedSpace: Integer;
     FEngineOk: Boolean;
+    FRequiredExtendedEngine: string;
   public
     /// <param name="APath">The folder of the mod: its name is the default name and id</param>
     constructor Create(const APath: string);
@@ -48,6 +49,8 @@ type
     property ReservedSpace: Integer read FReservedSpace;
     /// <summary>The engine this program is can run the mod: it asks for no extended engine (OPENXCOM_VERSION_ENGINE is empty)</summary>
     property EngineOk: Boolean read FEngineOk;
+    /// <summary>getRequiredExtendedEngine: the name of the extended engine the mod asks for (empty: none)</summary>
+    property RequiredExtendedEngine: string read FRequiredExtendedEngine;
   end;
 
 implementation
@@ -86,6 +89,7 @@ begin
   LEngine := TXcomYamlFields.ReadString(ADocument, 'requiredExtendedEngine', LEngine);
   // the engine of this program is "" and the supported engines are it and "" (every engine runs the base game)
   FEngineOk := LEngine = '';
+  FRequiredExtendedEngine := LEngine;
   if FReservedSpace < 1 then
     FReservedSpace := 1
   else if FReservedSpace > 100 then

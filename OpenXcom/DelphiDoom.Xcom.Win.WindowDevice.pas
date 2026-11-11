@@ -18,7 +18,8 @@ type
   ///   is shown by the class that derives from this one (GDI or OpenGL). The window is not owned and outlives the
   ///   device
   /// </summary>
-  TXcomWinWindowDevice = class abstract(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle)
+  TXcomWinWindowDevice = class abstract(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle,
+    IXcomWindowPlacement)
   strict private
     FWindow: TXcomWinWindow;
   strict protected
@@ -30,6 +31,8 @@ type
     procedure SetTitle(const ATitle: string);
     /// <summary>IXcomWindowStyle: taken at the next SetMode</summary>
     procedure SetWindowStyle(ABorderless, AResizable: Boolean);
+    /// <summary>IXcomWindowPlacement: taken at the next SetMode</summary>
+    procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
   end;
 
 implementation
@@ -55,6 +58,11 @@ end;
 procedure TXcomWinWindowDevice.SetWindowStyle(ABorderless, AResizable: Boolean);
 begin
   FWindow.SetStyle(ABorderless, AResizable);
+end;
+
+procedure TXcomWinWindowDevice.SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+begin
+  FWindow.SetPlacement(AFixed, AX, AY, ACentered);
 end;
 
 end.

@@ -52,3 +52,5 @@ Il riferimento e' **il vero OpenXcom** (nightly ufficiale 2026-06-05, `Reference
 `Sound`, `Music`, `SoundSet`, `CatFile`, `GMCat`, `AdlibMusic` (sopra `Libs\Audio`/`Libs\Opl`: il collegamento al dispositivo audio e' la prossima fetta), `Zoom` con i filtri, `OpenGL`, `FlcPlayer`, `Options` completo con `OptionInfo`, `ModInfo` e la scoperta dei mod, `CrossPlatform`, `Mod` e le sue `Rule*`, `SurfaceSet`, `Unicode` (solo i token e i test usati da `Text`).
 
 Test: `Tests\DelphiDoom.Tests.XcomEngine` (209 test con `XcomUi` e `XcomMenu`; copertura `XcomEngine` 93%, `XcomUi` 96%, `XcomMenu` 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.
+
+Aggiornamento (sessione "schermate mancanti", #176): suoni dei widget (`IXcomUiSounds`), posizione della finestra (`IXcomWindowPlacement`), `PlaySoundAt`, `NewBattleOpener`; `FlcPlayer` e' portato in `Libs\XcomFormats` e `Libs\XcomMenu`. Vedi `CLAUDE.md`.

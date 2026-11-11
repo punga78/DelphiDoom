@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface,
-  DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text;
+  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text;
 
 type
   TXcomTextButton = class;
@@ -35,6 +35,7 @@ type
     FContrast: Boolean;
     FGeoscapeButton: Boolean;
     FToggleCombo: TXcomNotify;
+    FUiSounds: IXcomUiSounds;
   protected
     procedure MousePress(AAction: TXcomAction); override;
     procedure MouseRelease(AAction: TXcomAction); override;
@@ -54,6 +55,8 @@ type
     function GetFont: TXcomFont;
     procedure InitText(ABig, ASmall: TXcomFont; ALanguage: TXcomLanguage); override;
     procedure SetHighContrast(AContrast: Boolean); override;
+    /// <summary>What plays TextButton::soundPress when the button is pressed (nil: silent)</summary>
+    procedure SetUiSounds(const ASounds: IXcomUiSounds); override;
     procedure SetText(const AText: string);
     function GetText: string;
     /// <summary>TextButton::setGroup: the button is pressed while it is the selected one of the group</summary>
@@ -254,11 +257,20 @@ begin
   end;
   if IsButtonHandled(AAction.Details^.Button) then
   begin
+    // TextButton::soundPress: not for the buttons of a group, nor for the wheel
+    if Assigned(FUiSounds) and (FGroup = nil) and (AAction.Details^.Button <> XCOM_BUTTON_WHEELUP) and
+      (AAction.Details^.Button <> XCOM_BUTTON_WHEELDOWN) then
+      FUiSounds.PlayButtonPress;
     if Assigned(FToggleCombo) then
       FToggleCombo();
     Draw;
   end;
   inherited MousePress(AAction);
+end;
+
+procedure TXcomTextButton.SetUiSounds(const ASounds: IXcomUiSounds);
+begin
+  FUiSounds := ASounds;
 end;
 
 procedure TXcomTextButton.InteractiveMousePress(AAction: TXcomAction);
