@@ -102,3 +102,13 @@ Nel motore: `Base\DelphiDoom.Engine.Script.ActorContext(.Intf)` (`TEngineScriptA
 | `DelphiDoom.ScriptHost.Constants.Basic` / `.Generalized` | `NaN`, `Infinity`, `NegInfinity`, `MAXINT` e le 81 costanti dei tipi generalizzati di Boom (tabella) |
 
 Nel motore: `psi_game` (`PS_DescribeGameClasses`) e `psi_globals` (`PS_DescribeGlobalClasses`) descrivono le classi con i loro helper; `Base\DelphiDoom.Engine.Script.Constants.Mobj/Game/World/Groups` danno le altre costanti (flag, stati, tipi, enum del gioco, `p_local`, `tables`, gruppi MBF21; le `{$IFDEF}` di tipo restano li'). `ComposeScriptHost` crea il catalogo (`TScriptHostFactory.CreateClassCatalog`) e la catena (`CreateConstants`) e li da' a `PS_ConfigureClassCatalog` e `PS_ConfigureConstants` (`ps_import`). `SIRegister_Game`, `RIRegister_Game`, `SIRegister_GlobalVars`, `RIRegister_GlobalVars` e le `RIRegisterRTL_*` non esistono piu'. Test: `Tests\Source\DelphiDoom.Tests.ScriptHost.ClassCatalog`, `...ConstantsBasic`, `...ConstantsGeneralized`, `...ConstantChain`, `...ConstantsCompiler`.
+## Servizi, define e manager degli script (issue #172, fetta 2h)
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.ScriptHost.Services.Intf` / `.Services` | `IScriptHostServices`: registro, catalogo delle classi, costanti, file, nome e gioco e define di un compilatore e di un interprete; `TScriptHostServices` li tiene (i define sono una funzione chiesta a ogni compilazione) |
+| `DelphiDoom.ScriptHost.Source.Intf` | `IScriptSourceProvider`: i file degli script (nel motore `Base\DelphiDoom.Engine.Script.SourceProvider`, sopra il file system dei PAK) |
+| `DelphiDoom.ScriptHost.Defines` | `TScriptDefines.ForGame`: i define del preprocessore degli script per un gioco |
+| `DelphiDoom.ScriptHost.Manager` | `TScriptManager` (ex `TPSExecManager`): sorgenti, codice compilato e interpreti degli script; `ps_main` lo crea in `PS_Init` e lo da' con `PS_Manager` |
+
+`ComposeScriptHost` crea i servizi e li da' a `PS_ConfigureHostServices`. Test: `...Tests.ScriptHost.Services`, `...Defines`.

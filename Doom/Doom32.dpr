@@ -949,6 +949,7 @@ uses
   DelphiDoom.ScriptHost.FunctionList in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.FunctionList.pas',
   DelphiDoom.ScriptHost.Registry in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Registry.pas',
   DelphiDoom.ScriptHost.CallbackGroup in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.CallbackGroup.pas',
+  DelphiDoom.ScriptHost.Manager in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Manager.pas',
   DelphiDoom.ScriptHost.Defines in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Defines.pas',
   DelphiDoom.ScriptHost.Source.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Source.Intf.pas',
   DelphiDoom.ScriptHost.Services.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Services.Intf.pas',

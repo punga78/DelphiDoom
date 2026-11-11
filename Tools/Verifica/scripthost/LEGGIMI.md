@@ -112,3 +112,7 @@ rapporto in `docs\SCRIPTHOST_PIANO.md` (sezione 5, fetta 2a-0).
   tra due esecuzioni dello stesso eseguibile, e il rumore di due esecuzioni non li copre tutti; la prima esecuzione dopo una
   ricompilazione puo' avere una dimensione diversa dalle altre (si vede dalle dimensioni dei `.hxs`). `Confronta-Salvataggi.ps1`
   ora funziona anche quando il rumore e' vuoto (`Union-Offsets` dava `$null`).
+
+### Dopo la fetta 2h (issue #172)
+
+`psmanager` non esiste piu' (`PS_Manager`, `TScriptManager`): gli `hook-*.patch` si applicano al commit vecchio, i `hook-*.new.patch` al nuovo (`Genera-Patch.ps1 -New`, da un albero pulito); `Compila-ScriptHost.ps1 -Which New` sceglie da solo. `Confronta.ps1` ora confronta anche `verify_scripthost_L2_props.txt` e `..._props_scripts.txt` (batteria delle proprieta' delle classi, fetta 2g).

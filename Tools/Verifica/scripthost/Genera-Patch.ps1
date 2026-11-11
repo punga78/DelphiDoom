@@ -10,6 +10,7 @@
 # in Doom\, Heretic\, ...). Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays.
 #
 #   .\Tools\Verifica\scripthost\Genera-Patch.ps1
+param([switch]$New)  # -New: for the tree after fetta 2h (PS_Manager instead of psmanager): writes hook-*.new.patch
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 Set-Location $root
@@ -59,6 +60,7 @@ function Edit-Implementation([string]$Path, [string]$Pattern, [string]$Replaceme
 }
 
 function Save-Patch([string[]]$Files, [string]$Name) {
+  if ($New) { $Name = $Name -replace '\.patch$', '.new.patch' }
   $out = Join-Path $PSScriptRoot $Name
   & git diff -- $Files | Out-File -FilePath $out -Encoding ascii
   & git checkout -- $Files
@@ -67,8 +69,13 @@ function Save-Patch([string[]]$Files, [string]$Name) {
 
 function Hook-PsMain {
   Add-ImplementationUses 'Libs\ScriptHost\ps_main.pas' 'HarnessScriptHost'
-  Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
-  Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+  if ($New) {
+    Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  ps_manager_ref := TScriptManager\.Create\([\s\S]*?end\);(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);$2'
+    Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  PS_Manager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+  } else {
+    Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
+    Edit-Once 'Libs\ScriptHost\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+  }
 }
 
 # ---- L2 ----
