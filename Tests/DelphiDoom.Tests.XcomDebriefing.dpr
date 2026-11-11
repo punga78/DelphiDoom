@@ -20,6 +20,9 @@ uses
   DelphiDoom.Tests.XcomMod.DiskModFiles in 'Source\DelphiDoom.Tests.XcomMod.DiskModFiles.pas',
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomBattle.RealBattle in 'Source\DelphiDoom.Tests.XcomBattle.RealBattle.pas',
+  DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
+  DelphiDoom.XcomDebriefing.Debriefer in '..\Libs\XcomDebriefing\DelphiDoom.XcomDebriefing.Debriefer.pas',
+  DelphiDoom.Tests.XcomDebriefing.States in 'Source\DelphiDoom.Tests.XcomDebriefing.States.pas',
   DelphiDoom.Tests.XcomDebriefing.Real in 'Source\DelphiDoom.Tests.XcomDebriefing.Real.pas';
 
 var
