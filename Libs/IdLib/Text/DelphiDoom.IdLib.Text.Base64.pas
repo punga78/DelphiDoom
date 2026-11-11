@@ -163,7 +163,6 @@ begin
         Inc(LJ);
       end;
       LI := 0;
-      LWord := 0;
     end;
   end;
   SetLength(Result, LOut);
