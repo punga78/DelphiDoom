@@ -263,8 +263,8 @@ Tutto provato in `Xcom32` senza finestra (`-script`, dati di `Reference\_dati` i
 |---|---|---|
 | Partita nuova senza introduzione, prima base, nome | si' | si' |
 | Introduzione (`playIntro`) | si' (diapositive, 265 s) | l'installazione non ha `UFOINTRO`: si passa al menu |
-| Base: struttura costruita (e completata), acquisti con arrivo, vendita, seconda base con ascensore | si' | base vista, non le schermate figlie |
-| Ricerca fino al completamento, articolo dell'Ufopaedia, "We can now produce" | si' | no |
+| Base: struttura costruita (e completata), acquisti con arrivo, vendita, seconda base con ascensore | si' | struttura posata, acquisti con arrivo |
+| Ricerca fino al completamento, articolo dell'Ufopaedia, "We can now produce" | si' | ricerca completata (Laser Weapons) e "We can now research" |
 | Produzione avviata e **completata** (oggetto nei magazzini) | si' | no |
 | Due mesi di tempo, due rapporti mensili, finanziamenti | si' | no |
 | Intercettazione con dogfight, sito di schianto | si' | si' |
@@ -289,7 +289,7 @@ Tutto provato in `Xcom32` senza finestra (`-script`, dati di `Reference\_dati` i
 
 ### Robustezza
 
-Semi diversi (il generatore del salvataggio cambiato nella copia), l'IA lasciata giocare per decine di turni: schianto 34 (13 in Debug con `$R+ $Q+`), atterraggio 20, porto 15, base aliena 15, difesa 15, artefatti 10, nave da carico 12: nessuna caduta ne' blocco, memoria finale costante. 40 partite nuove fino alla sconfitta (difficolta' 1 e 5) e 42 battaglie casuali di New Battle (17 TFTD, 25 UFO): nessun errore. `-leaks` dopo ogni scenario: nessun blocco rimasto.
+Semi diversi (il generatore del salvataggio cambiato nella copia), l'IA lasciata giocare per decine di turni: schianto 34 (13 in Debug con `$R+ $Q+`), atterraggio 20, porto 15, base aliena 15, difesa 15, artefatti 10, nave da carico 12, piu' due semi per ognuno degli altri sei tipi e tutti i sedici scenari una volta in Debug con `$R+ $Q+`: nessuna caduta ne' blocco, memoria finale costante. 40 partite nuove fino alla sconfitta (difficolta' 1 e 5) e 42 battaglie casuali di New Battle (17 TFTD, 25 UFO): nessun errore. `-leaks` dopo ogni scenario: nessun blocco rimasto.
 
 ### Non portato
 
@@ -298,7 +298,7 @@ Semi diversi (il generatore del salvataggio cambiato nella copia), l'IA lasciata
 ### Non verificato
 
 - **Lo schermo sporco coi resti di BaseInfo sotto "Select site for new base"**: non riprodotto (percorsi provati in `Libs\XcomBattleStates\CLAUDE.md`); mai provato col mouse vero sulla finestra.
-- Una campagna lunga giocata bene (oltre due mesi senza perdere), le schermate della base e la ricerca **su UFO**, i tipi di missione di UFO oltre allo schianto e alle battaglie casuali.
+- Una campagna lunga giocata bene (oltre due mesi senza perdere), **su UFO** la produzione, i rapporti mensili, le altre schermate della base e i tipi di missione oltre allo schianto e alle battaglie casuali.
 - Con il `LOFTEMPS.DAT` giusto (114 forme) le forme 112 e 113 non sono mai state confrontate col vero OpenXcom; le cartelle `Reference\_dati\xcom_tftd\TFTD` e `bin\OpenXcom\TFTD` hanno ancora il file corto (vanno rifatte dall'utente: `Tools\Verifica\176\LEGGIMI.md`).
 - Tutto cio' che vuole orecchio o mano: i suoni all'ascolto, il mouse vero, piu' monitor, una scheda grafica vera, Win64.
 - Le battaglie casuali di New Battle che non finiscono uccidendo gli alieni (missioni con obiettivo da distruggere) sono state lasciate a meta'.
