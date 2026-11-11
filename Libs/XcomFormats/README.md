@@ -88,3 +88,5 @@ L'utente ha fornito X-COM: Terror from the Deep su floppy (`disk1..4.img`: il gi
 ## Un solo eseguibile (issue #180)
 
 `Xcom32.exe` e' anche il gioco (prima `XcomGame.exe`). Il modo dipende dalla riga di comando: con `-pck`, `-dat`, `-scr` o `-map` esporta, altrimenti apre il gioco. `-data` nell'esportazione e' la cartella del gioco (ripetibile, e `-game` vale lo stesso); nel gioco e' la cartella con `common\` e `standard\`. Il programma e' GUI: il testo dell'esportazione si legge con una pipe (`Xcom32 ... | Out-String` in PowerShell). Dettagli e verifica in `CLAUDE.md` di questa cartella.
+
+Aggiornamento (sessione "schermate mancanti", #176): `TXcomFlcDecoder` legge le animazioni FLI/FLC (il decoder di `FlcPlayer`); 891 fotogrammi di `UFOINT.FLI` uguali al vero. Vedi `CLAUDE.md`.
