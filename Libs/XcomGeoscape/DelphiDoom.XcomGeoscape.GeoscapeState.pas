@@ -135,7 +135,8 @@ implementation
 uses
   System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSave.GameTime,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomMenu.OptionsTypes,
+  DelphiDoom.XcomMenu.SaveGameState, DelphiDoom.XcomMenu.LoadGameState, DelphiDoom.XcomMenu.SaveNames;
 
 const
   GEO_CLOCK_SPEED = 80;
@@ -666,6 +667,14 @@ var
 begin
   if FDogfights.Count = FMinimizedDogfights then
     inherited Handle(AAction);
+  // GeoscapeState::handle: quick save and quick load (not in an ironman game), as popups
+  if (AAction.Details.Kind = ekKeyDown) and not FSave.Ironman then
+  begin
+    if AAction.Details.Key = Host.Options.GetValue('keyQuickSave') then
+      Popup(TXcomSaveGameState.Create(Host, ooGeoscape, stQuick, Palette))
+    else if AAction.Details.Key = Host.Options.GetValue('keyQuickLoad') then
+      Popup(TXcomLoadGameState.Create(Host, ooGeoscape, TXcomSaveNames.QUICKSAVE, Palette));
+  end;
   if FDogfights.Count > 0 then
   begin
     for LDogfight in FDogfights.ToArray do

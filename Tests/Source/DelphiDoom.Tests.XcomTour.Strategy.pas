@@ -71,6 +71,8 @@ type
     [Test]
     procedure DovrebbeArrivareAlRapportoMensile;
     [Test]
+    procedure IlSalvataggioRapidoDelGeoscapeDovrebbeScrivereERileggereLaPartita;
+    [Test]
     procedure DopoIlRapportoMensileIlTempoDovrebbeTornareACinqueSecondi;
   end;
 
@@ -361,6 +363,34 @@ begin
   Assert.AreEqual(2, FWorld.Save.Time.Month);
   FWorld.Key(XCOM_KEY_RETURN);
   Assert.AreNotEqual('TXcomMonthlyReportState', FWorld.Top, 'OK chiude il rapporto');
+end;
+
+procedure TTestXcomTourStrategy.IlSalvataggioRapidoDelGeoscapeDovrebbeScrivereERileggereLaPartita;
+const
+  // SDLK_F5 and SDLK_F9: keyQuickSave and keyQuickLoad of Options.cpp
+  KEY_QUICK_SAVE = 286;
+  KEY_QUICK_LOAD = 290;
+var
+  LFile: string;
+begin
+  if not Ready then
+    Exit;
+  FWorld.Key(KEY_QUICK_SAVE);
+  FWorld.Wait(1000);
+  LFile := TPath.Combine(FWorld.UserFolder, 'xcom2\_quick_.asav');
+  Assert.IsTrue(TFile.Exists(LFile), 'F5 nel geoscape scrive il salvataggio rapido');
+  Assert.AreEqual(GEOSCAPE, FWorld.Top);
+  Assert.AreEqual(1, FWorld.Save.Time.Day);
+  // two days at "1 Day", then the quick load brings the first day back
+  FWorld.Click(608, 293);
+  FWorld.Wait(200);
+  Assert.IsTrue(FWorld.Save.Time.Day > 1);
+  if FWorld.Top <> GEOSCAPE then
+    FWorld.Key(XCOM_KEY_ESCAPE);
+  FWorld.Key(KEY_QUICK_LOAD);
+  FWorld.Wait(2500);
+  Assert.AreEqual(GEOSCAPE, FWorld.Top);
+  Assert.AreEqual(1, FWorld.Save.Time.Day, 'F9 rilegge la partita salvata');
 end;
 
 procedure TTestXcomTourStrategy.DopoIlRapportoMensileIlTempoDovrebbeTornareACinqueSecondi;

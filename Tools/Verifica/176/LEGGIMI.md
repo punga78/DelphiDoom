@@ -116,3 +116,46 @@ per non aspettare) e scrive per ogni fotogramma l'impronta FNV-1a dei pixel dell
 Durante un filmato il vero OpenXcom non salva schermate con F12 (ogni tasto lo salta): per questo il confronto e'
 sulle impronte e non sui PNG. Le diapositive invece si catturano: `Capture-OpenXcomScreen.ps1 -Option 'playIntro=true'`
 (la diapositiva che si vede dipende dal tempo: ogni cattura si confronta con tutte quelle di `Xcom32`).
+
+## Giocare senza guardare ogni schermata (giro di verifica finale, parte B)
+
+`Xcom32 -script` ha altri passi, pensati per giocare una partita intera e per ripeterla con semi diversi:
+
+- `trace:1` scrive sullo standard output ogni cambio dello stato in cima (`<ms> top TXcomUfoDetectedState`): la
+  cronaca di una corsa si legge come testo, le schermate (`shot:`) servono solo dove si vuole guardare.
+- `state:etichetta` scrive lo stato in cima adesso; `until:Nome,ms` aspetta finche' la classe dello stato in cima
+  contiene `Nome` (o passano i millisecondi) e scrive quanto ha aspettato.
+- `on:Nome=passo+passo` risponde a uno stato ogni volta che compare (dopo 300 ms che e' in cima, e di nuovo ogni
+  secondo finche' resta): `on:ItemsArriving=click:172,346`, `on:NextTurn=key:13`. I nomi si cercano come parte del
+  nome della classe, nell'ordine in cui sono stati dati: `Briefing` prende anche `TXcomDebriefingState` (usare
+  `XcomBriefing`). `on:Nome=` lo toglie. Il tempo dei passi fa parte dell'attesa che interrompono.
+- `-scriptfile <file>`: i passi uno per riga, `#` per i commenti.
+- `-memstats`: alla fine scrive quanti blocchi di memoria sono rimasti dopo che il gioco e' stato liberato (il
+  programma ne tiene circa 80 per se': due corse si confrontano). `-leaks`: il rapporto del gestore della memoria
+  sullo standard error, con le classi rimaste.
+- In battaglia con `debug: true` nelle opzioni: `ckey:100` (Ctrl+D) accende il modo di debug, il clic su una tegola
+  scrive "Clicked (x,y,z)", `ckey:119` (Ctrl+W) porta il soldato scelto sulla tegola sotto il mouse, `ckey:107`
+  uccide gli alieni, `ckey:106` li stordisce; `key:286` (F5) e' il salvataggio rapido, da cui si leggono le posizioni
+  di tutte le unita'. **Dove sta una tegola sullo schermo** (finestra 640x400): dopo "centra sull'unita'" (316,346)
+  o un clic sulla mini mappa la tegola al centro `C` e' in (352,208) e una tegola `T` in
+  `(352 + 32*((Tx-Cx) - (Ty-Cy)), 208 + 16*((Tx-Cx) + (Ty-Cy)) - 48*(Tz-Cz))`. Un clic sulla mini mappa (252,300)
+  in `(304 + 8*(Tx-Cx), 174 + 8*(Ty-Cy))` porta la camera sulla tegola `T`. Cosi' si porta un soldato accanto a un
+  alieno e gli si spara con un colpo vero (mano destra 592,346; righe del menu: mirato 120, rapido 200, raffica 280,
+  lancio 360). Pannello: fila in alto y=300, in basso y=346; colonne 124 (unita' su/giu'), 188 (livello), 252 (mini
+  mappa, in ginocchio), 316 (inventario, centra), 380 (soldato dopo), 444, 508 (fine turno, abbandona).
+- Coordinate del geoscape e della base: New Game 220,200, New Battle 420,200, OK della difficolta' 238,344; pulsanti
+  della base x=510, y=128+26*n; acquisti: freccia "piu'" 480, righe da y=114 ogni 16; ricerca: New Project 164,368,
+  "piu'" 402,212, Start 428,304; produzione: "piu' tecnici" 278,238, OK 480,324; velocita' del tempo 5 Mins 544,266,
+  1 Hour 544,292, 1 Day 608,292; UfoDetected: Intercept 256,246, Centre 256,278, Cancel 256,310; assetto aggressivo
+  del dogfight 436,158; Options del geoscape 575,106, Save Game 256,166, Load Game 256,122.
+
+**I due file con lo stesso nome dei floppy di TFTD.** `LOFTEMPS.DAT` e `SCANG.DAT` stanno in due archivi diversi
+(quello dei terreni e quello di GEODATA) con contenuto diverso: l'estrazione in una cartella sola teneva l'ultimo, e
+`TERRAIN\LOFTEMPS.DAT` era quello corto di GEODATA (3584 byte, 112 forme) al posto di quello dei terreni (3648, 114).
+I terreni che usano le forme 112 e 113 (la nave da carico) facevano finire la battaglia con un'eccezione, e il vero
+OpenXcom con gli stessi dati lancia da `vector::at`. `Extract-TftdZips.ps1` ora tiene il primo in `_doppi` e
+`Make-TftdLayout.ps1` mette quello lungo in `TERRAIN` (e avvisa se non c'e'). **Le cartelle gia' fatte
+(`Reference\_dati\xcom_tftd\TFTD`, `bin\OpenXcom\TFTD`) hanno ancora il file corto**: per correggerle si rifa'
+l'estrazione e si copia `_doppi\03_LOFTEMPS.DAT` su `TERRAIN\LOFTEMPS.DAT` (non fatto qui: `Reference` e `bin` non si
+toccano). Il programma non cade piu' (la forma mancante e' vuota), ma con il file corto quegli oggetti non fermano
+ne' la vista ne' i colpi.
