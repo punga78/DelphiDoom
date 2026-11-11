@@ -61,7 +61,8 @@ uses
   DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState,
   DelphiDoom.XcomBattleStates.UnitInfoState,
   DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState,
-  DelphiDoom.XcomBattleStates.InventoryState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState,
+  DelphiDoom.XcomBattleStates.InventoryState, DelphiDoom.XcomBattleStates.MedikitState,
+  DelphiDoom.XcomBattleStates.ScannerState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState,
   DelphiDoom.XcomMenu.LoadGameState, DelphiDoom.XcomMenu.SaveNames;
 
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
@@ -88,12 +89,12 @@ end;
 function TXcomBattleScreens.Medikit(AParent: TXcomState; const ATarget: TXcomBattleUnit;
   const AAction: TXcomBattleAction): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomMedikitState.Create(AParent.Host, (AParent as TXcomBattlescapeState).Session, ATarget, AAction);
 end;
 
 function TXcomBattleScreens.Scanner(AParent: TXcomState; const AAction: TXcomBattleAction): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomScannerState.Create(AParent.Host, (AParent as TXcomBattlescapeState).Session, AAction);
 end;
 
 function TXcomBattleScreens.UnitInfo(AParent: TXcomState; const AUnit: TXcomBattleUnit; AFromInventory,

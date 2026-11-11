@@ -39,6 +39,10 @@ type
 
 implementation
 
+const
+  HANDOB_RIGHT = 'HANDOB.PCK';
+  HANDOB_LEFT = 'HANDOB2.PCK';
+
 constructor TXcomModSprites.Create(const AFiles: IXcomModFiles);
 begin
   inherited Create;
@@ -258,7 +262,16 @@ begin
   LKey := UpperCase(AName);
   if not FSets.TryGetValue(LKey, Result) then
   begin
-    Result := FindSet(LKey);
+    // Mod::loadBattlescapeResources: HANDOB2.PCK, the set of the items of the left hand, is a copy of HANDOB.PCK
+    // (the frames of a set are shared and moved before they are drawn: the two hands need their own)
+    if LKey = HANDOB_LEFT then
+    begin
+      Result := SurfaceSet(HANDOB_RIGHT);
+      if Assigned(Result) then
+        Result := Result.Clone;
+    end
+    else
+      Result := FindSet(LKey);
     if Assigned(Result) then
       FSets.Add(LKey, Result);
   end;

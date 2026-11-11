@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  Xcom32: OpenXcom (UFO: Enemy Unknown and Terror from the Deep) without SDL,  }
 {  on the data of an installed game (issues 176 and 180). One program, two      }
@@ -52,6 +52,7 @@ uses
   DelphiDoom.Xcom.ExportTool in 'DelphiDoom.Xcom.ExportTool.pas',
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
+  DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
   DelphiDoom.Xcom.DelegateLog in 'DelphiDoom.Xcom.DelegateLog.pas',
   DelphiDoom.Xcom.VideoDevice.Types in 'DelphiDoom.Xcom.VideoDevice.Types.pas',
   DelphiDoom.Xcom.VideoDeviceSelector in 'DelphiDoom.Xcom.VideoDeviceSelector.pas',
@@ -367,6 +368,7 @@ var
 
 begin
   LExport := False;
+  TXcomStackScan.Install;
   try
     // -pck, -dat, -scr or -map choose the export; there -data is a folder of the game (TXcomExportArguments)
     LExport := TXcomExportArguments.IsExport(CommandLineArguments);
@@ -398,6 +400,9 @@ begin
       // the address in the terms of the .map of the executable (the image can be relocated)
       if ExceptAddr <> nil then
         Say('map address: ' + IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8), True);
+      // the callers, nearest first (return addresses found on the stack when the exception was raised)
+      if TXcomStackScan.MapAddresses(E) <> '' then
+        Say('stack: ' + TXcomStackScan.MapAddresses(E), True);
       // in the window mode nobody reads the standard error: the player must see why the game closed
       if not LExport and (LArguments.ShotFile = '') and (LArguments.Script = '') then
         MessageBox(0, PChar(E.ClassName + ': ' + E.Message), 'OpenXcom', MB_OK or MB_ICONERROR);

@@ -138,9 +138,6 @@ begin
   Show(FScreens.NextTurn(FState), 'TXcomNextTurnState');
   Show(FScreens.Infobox(FState, 'x'), 'TXcomInfoboxState');
   Show(FScreens.InfoboxOk(FState, 'x'), 'TXcomInfoboxOkState');
-  // not ported: no screen
-  Assert.IsNull(FScreens.Medikit(FState, FBench.Session.Battle.SelectedUnit, FState.Game.CurrentAction));
-  Assert.IsNull(FScreens.Scanner(FState, FState.Game.CurrentAction));
 end;
 
 procedure TTestXcomBattleScreens.DovrebbeChiedereDebriefingEPausaAlProgramma;
