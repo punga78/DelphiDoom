@@ -58,6 +58,7 @@ uses
   DelphiDoom.Xcom.Win.Window in 'DelphiDoom.Xcom.Win.Window.pas',
   DelphiDoom.Xcom.Win.WindowDevice in 'DelphiDoom.Xcom.Win.WindowDevice.pas',
   DelphiDoom.Xcom.Win.VideoDevice in 'DelphiDoom.Xcom.Win.VideoDevice.pas',
+  DelphiDoom.Xcom.Win.OpenGlProgram in 'DelphiDoom.Xcom.Win.OpenGlProgram.pas',
   DelphiDoom.Xcom.Win.OpenGlVideoDevice in 'DelphiDoom.Xcom.Win.OpenGlVideoDevice.pas',
   DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
@@ -275,7 +276,7 @@ begin
   LWindow := TXcomWinWindow.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
   try
     // GDI, or OpenGL when the options ask for it: which OpenGL is found, or why it is not used, is said
-    LDevice := TXcomGameComposition.CreateWindowDevice(LWindow, TXcomDelegateLog.Create(
+    LDevice := TXcomGameComposition.CreateWindowDevice(LWindow, LSettings, TXcomDelegateLog.Create(
       procedure(const ALine: string)
       begin
         Say(ALine);

@@ -14,8 +14,9 @@ interface
 
 uses
   Winapi.Windows, System.Types, System.SysUtils, System.Math, dglOpenGL, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.XcomEngine.Intf, DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.Win.Window,
-  DelphiDoom.Xcom.Win.WindowDevice;
+  DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Shader.Types, DelphiDoom.XcomEngine.ShaderFileReader,
+  DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.Win.Window, DelphiDoom.Xcom.Win.WindowDevice,
+  DelphiDoom.Xcom.Win.OpenGlProgram;
 
 type
   /// <summary>
@@ -23,13 +24,17 @@ type
   ///   EXcomVideoDeviceException, with the reason, when it cannot. The picture is turned into colors with its
   ///   palette, loaded in a texture and drawn in the rectangle the GDI display uses (the picture rectangle of a full
   ///   screen window, the black bands of the screen), with the nearest pixel or the linear filter and the vertical
-  ///   sync of the options. When the device goes away the window handle goes with it: a window that had an OpenGL
-  ///   pixel format cannot be drawn by GDI again. The floating point exceptions are masked while OpenGL is called
-  ///   and only then
+  ///   sync of the options, through the GLSL program of the shader file of the options when there is one (a file
+  ///   says by itself whether it wants the linear filter). When the device goes away the window handle goes with
+  ///   it: a window that had an OpenGL pixel format cannot be drawn by GDI again. The floating point exceptions are
+  ///   masked while OpenGL is called and only then
   /// </summary>
   TXcomWinOpenGlVideoDevice = class(TXcomWinWindowDevice, IXcomFilteredDisplay)
   strict private
     FLog: IXcomLog;
+    FShaders: IXcomShaderCatalog;
+    FReader: TXcomShaderFileReader;
+    FProgram: TXcomWinOpenGlProgram;
     FContextWindow: HWND;
     FDeviceContext: HDC;
     FContext: HGLRC;
@@ -47,13 +52,17 @@ type
     procedure DestroyContext;
     procedure InitializeState;
     procedure ApplyFilter;
+    function LoadShader(const APath: string): Boolean;
     procedure ResizeTexture(AWidth, AHeight: Integer);
     procedure Draw(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
       ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands);
   public
     /// <param name="AWindow">The window of the game; not owned</param>
+    /// <param name="AShaders">Where the shader of the options is read; nil: no shader is ever used</param>
+    /// <param name="AReader">Reads the shader files; owned (freed with the device). nil: no shader is ever used</param>
     /// <param name="ALog">Where the version of OpenGL and the problems go; nil for nowhere</param>
-    constructor Create(AWindow: TXcomWinWindow; const ALog: IXcomLog = nil);
+    constructor Create(AWindow: TXcomWinWindow; const AShaders: IXcomShaderCatalog = nil;
+      AReader: TXcomShaderFileReader = nil; const ALog: IXcomLog = nil);
     destructor Destroy; override;
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean); override;
     /// <summary>The picture already scaled by the screen: it fills the rectangle, no bands</summary>
@@ -68,6 +77,11 @@ implementation
 
 const
   SLogInfo = 'INFO';
+  SLogError = 'ERROR';
+  SNoShaderSupport = 'This OpenGL has no GLSL programs: the shader is not used';
+  SShaderNotFound = 'requested file not found: %s';
+  SShaderInUse = 'OpenGL shader in use: %s';
+  SShaderIncomplete = 'OpenGL shader in use without the part that did not compile: %s';
   SNoLibrary = 'opengl32.dll could not be loaded';
   SNoDeviceContext = 'GetDC failed: %s';
   SNoPixelFormat = 'ChoosePixelFormat found no OpenGL pixel format: %s';
@@ -98,9 +112,13 @@ begin
   Result := Format('%s (%d)', [SysErrorMessage(LCode), LCode]);
 end;
 
-constructor TXcomWinOpenGlVideoDevice.Create(AWindow: TXcomWinWindow; const ALog: IXcomLog);
+constructor TXcomWinOpenGlVideoDevice.Create(AWindow: TXcomWinWindow; const AShaders: IXcomShaderCatalog;
+  AReader: TXcomShaderFileReader; const ALog: IXcomLog);
 begin
+  // the reader is owned from here on, also when the window is missing
+  FReader := AReader;
   inherited Create(AWindow);
+  FShaders := AShaders;
   FLog := ALog;
 end;
 
@@ -114,6 +132,7 @@ begin
   finally
     SetExceptionMask(LMask);
   end;
+  FReader.Free;
   inherited Destroy;
 end;
 
@@ -162,6 +181,8 @@ procedure TXcomWinOpenGlVideoDevice.DestroyContext;
 begin
   if FContext <> 0 then
   begin
+    // the program is deleted in its context
+    FreeAndNil(FProgram);
     if FTexture <> 0 then
       glDeleteTextures(1, @FTexture);
     dglOpenGL.wglMakeCurrent(0, 0);
@@ -201,10 +222,49 @@ begin
   // Screen::resetDisplay after OpenGL::init
   FActive := FWanted;
   FActive.UseOpenGL := True;
+  // the smoothing of the options; a shader file that is used says it instead
   FLinear := FWanted.Smoothing;
+  FreeAndNil(FProgram);
+  if (FWanted.Shader <> '') and not LoadShader(FWanted.Shader) then
+    FActive.Shader := '';
   // OpenGL::setVSync
   if Assigned(wglSwapIntervalEXT) then
     wglSwapIntervalEXT(Ord(FWanted.VSync));
+end;
+
+function TXcomWinOpenGlVideoDevice.LoadShader(const APath: string): Boolean;
+var
+  LBytes: TBytes;
+  LSource: TXcomShaderSource;
+begin
+  // OpenGL::set_shader: false when there is no program to draw with (the screen then forgets the shader)
+  Result := False;
+  if not (Assigned(FShaders) and Assigned(FReader)) then
+    Exit;
+  if not TXcomWinOpenGlProgram.IsSupported then
+  begin
+    Log(SLogError, SNoShaderSupport);
+    Exit;
+  end;
+  if not FShaders.TryRead(APath, LBytes) then
+  begin
+    Log(SLogError, Format(SShaderNotFound, [APath]));
+    Exit;
+  end;
+  if not FReader.TryRead(APath, LBytes, LSource) then
+    Exit;
+  FProgram := TXcomWinOpenGlProgram.Create(FLog);
+  if not FProgram.Build(LSource) then
+  begin
+    FreeAndNil(FProgram);
+    Exit;
+  end;
+  FLinear := LSource.Linear;
+  if FProgram.Incomplete then
+    Log(SLogError, Format(SShaderIncomplete, [APath]))
+  else
+    Log(SLogInfo, Format(SShaderInUse, [APath]));
+  Result := True;
 end;
 
 procedure TXcomWinOpenGlVideoDevice.ResizeTexture(AWidth, AHeight: Integer);
@@ -277,6 +337,9 @@ begin
   glViewport(0, 0, LClient.Right, LClient.Bottom);
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
+  // the output size the shader computes with is the one in real pixels (a full screen picture is stretched)
+  if Assigned(FProgram) then
+    FProgram.Use(AWidth, AHeight, LOutput.Width, LOutput.Height, FTextureWidth, FTextureHeight);
   if FLinear then
     LFilter := GL_LINEAR
   else
@@ -322,6 +385,8 @@ begin
     glVertex3i(ADisplayWidth - ABands.Right, ABands.Bottom, 0);
     glEnd;
   end;
+  if Assigned(FProgram) then
+    FProgram.Unuse;
   SwapBuffers(FDeviceContext);
 end;
 
