@@ -62,7 +62,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
+  System.IOUtils, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
@@ -129,6 +129,8 @@ var
   LNavigatorFactory: TXcomNavigatorFactory;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
+  LOptionsDoc, LModsNode, LModItem: IYamlNode;
+  LModSettings: TArray<TXcomModSetting>;
   LDosPath: string;
   LAudio: IXcomAudioDevice;
   LMusic: IXcomMusicPlayer;
@@ -139,7 +141,26 @@ begin
   try
     LOptionsFile := TPath.Combine(ASettings.UserFolder, 'options.cfg');
     if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
-      LOptions.Load(LParser.Load(LFiles.ReadAll(LOptionsFile)));
+    begin
+      LOptionsDoc := LParser.Load(LFiles.ReadAll(LOptionsFile));
+      LOptions.Load(LOptionsDoc);
+      // the "mods" section of the file (id and active): a save that lists a mod asks for confirmation only when it
+      // is not active
+      LModsNode := LOptionsDoc.Find(YamlStringToText('mods'));
+      if Assigned(LModsNode) and LModsNode.IsDefined then
+      begin
+        LModSettings := nil;
+        for LModItem in LModsNode.Items do
+          if Assigned(LModItem.Find(YamlStringToText('id'))) then
+          begin
+            SetLength(LModSettings, Length(LModSettings) + 1);
+            LModSettings[High(LModSettings)] := TXcomModSetting.Create(
+              YamlTextToString(LModItem.Find(YamlStringToText('id')).AsString),
+              SameText(YamlTextToString(LModItem.Find(YamlStringToText('active')).AsString), 'true'));
+          end;
+        LOptions.Mods := LModSettings;
+      end;
+    end;
     // the folders that the options screen shows (in the program of OpenXcom: the user, master user and config folders)
     LOptions.OriginalDataFolder := IncludeTrailingPathDelimiter(ASettings.GameFolder);
     LOptions.ModDataFolder := IncludeTrailingPathDelimiter(TPath.Combine(ASettings.DataFolder, 'common'));
