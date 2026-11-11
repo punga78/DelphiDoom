@@ -32,6 +32,7 @@ uses
   DelphiDoom.Tests.XcomEngine.PauseSave in 'Source\DelphiDoom.Tests.XcomEngine.PauseSave.pas',
   DelphiDoom.Tests.XcomEngine.RealAudio in 'Source\DelphiDoom.Tests.XcomEngine.RealAudio.pas',
   DelphiDoom.Tests.XcomEngine.RealSounds in 'Source\DelphiDoom.Tests.XcomEngine.RealSounds.pas',
+  DelphiDoom.Tests.XcomEngine.RealUfoMusic in 'Source\DelphiDoom.Tests.XcomEngine.RealUfoMusic.pas',
   DelphiDoom.Tests.XcomEngine.AudioFakes in 'Source\DelphiDoom.Tests.XcomEngine.AudioFakes.pas',
   DelphiDoom.Tests.XcomEngine.Audio in 'Source\DelphiDoom.Tests.XcomEngine.Audio.pas',
   DelphiDoom.Tests.XcomEngine.AudioMusic in 'Source\DelphiDoom.Tests.XcomEngine.AudioMusic.pas',
