@@ -31,6 +31,23 @@ type
     procedure LoadGame(const AFileName: string);
   end;
 
+  /// <summary>
+  ///   What the pause menu needs of the saved game in progress (Game::getSavedGame() of ListSaveState, SaveGameState
+  ///   and AbandonGameState): its name and ironman flag, writing it to a file of the folder of the saved games, and
+  ///   leaving it for the main menu. The menu does not know the saved game: the program gives the game this
+  /// </summary>
+  IXcomSavedGameSaver = interface
+    ['{4A9E21C7-5D03-4B86-A1F8-6C27E0B93D17}']
+    function IsIronman: Boolean;
+    /// <summary>SavedGame::setName</summary>
+    procedure SetName(const AName: string);
+    function GetName: string;
+    /// <summary>SavedGame::save: an error is an exception whose message the error window shows</summary>
+    procedure SaveGame(const AFileName: string);
+    /// <summary>Game::setState(MainMenuState) and Game::setSavedGame(0): the saved game in progress is gone</summary>
+    procedure AbandonGame;
+  end;
+
 implementation
 
 end.

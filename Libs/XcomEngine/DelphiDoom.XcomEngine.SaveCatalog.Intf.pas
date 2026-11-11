@@ -22,6 +22,10 @@ type
     function List(ALanguage: TXcomLanguage; AAutoQuick: Boolean): TArray<TXcomSaveInfo>;
     /// <summary>CrossPlatform::deleteFile on a save of the folder; False if it could not be deleted</summary>
     function DeleteSave(const AFileName: string): Boolean;
+    /// <summary>CrossPlatform::fileExists on a save of the folder</summary>
+    function SaveExists(const AFileName: string): Boolean;
+    /// <summary>CrossPlatform::moveFile: renames a save of the folder (the new one is replaced)</summary>
+    function RenameSave(const AOldName, ANewName: string): Boolean;
     /// <summary>Unicode::naturalCompare: A comes before B (numbers inside the names count as numbers)</summary>
     function NameBefore(const AFirst, ASecond: string): Boolean;
   end;

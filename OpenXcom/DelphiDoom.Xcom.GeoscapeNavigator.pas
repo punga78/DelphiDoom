@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Navigator.Intf,
   DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Control.Intf;
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomMenu.OptionsNavigator.Intf;
 
 type
   /// <summary>
@@ -25,8 +25,10 @@ type
   strict private
     FHost: TXcomStateHost;
     FControl: IXcomGeoscapeControl;
+    FOptionsNavigator: IXcomOptionsNavigator;
   public
-    constructor Create(AHost: TXcomStateHost);
+    /// <param name="AOptionsNavigator">Makes the screens of the options of the pause menu (nil: Game Options does nothing)</param>
+    constructor Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator = nil);
     procedure AttachGeoscape(const AControl: IXcomGeoscapeControl);
     procedure OpenBases(AGlobe: TXcomGlobe);
     procedure OpenPlaceLift(ABase: TXcomBase; AGlobe: TXcomGlobe; AFirst: Boolean);
@@ -43,15 +45,16 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
+  DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.BasescapeState, DelphiDoom.XcomBasescape.SoldiersState,
   DelphiDoom.XcomBasescape.CraftsState, DelphiDoom.XcomBasescape.BaseInfoState,
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
   DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState;
 
-constructor TXcomGameNavigator.Create(AHost: TXcomStateHost);
+constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
   inherited Create;
   FHost := AHost;
+  FOptionsNavigator := AOptionsNavigator;
 end;
 
 procedure TXcomGameNavigator.AttachGeoscape(const AControl: IXcomGeoscapeControl);
@@ -93,6 +96,7 @@ end;
 
 procedure TXcomGameNavigator.OpenOptions;
 begin
+  FHost.PushState(TXcomPauseState.Create(FHost, ooGeoscape, FOptionsNavigator));
 end;
 
 procedure TXcomGameNavigator.OpenFunding;

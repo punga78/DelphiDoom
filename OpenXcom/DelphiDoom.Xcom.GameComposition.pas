@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: XcomGame - the composition root of the game                      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -72,7 +72,7 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
-  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
@@ -128,6 +128,7 @@ var
   LLoader: IXcomGameLoader;
   LSimulationFactory: TXcomSimulationFactory;
   LNavigatorFactory: TXcomNavigatorFactory;
+  LBrief: TXcomSaveBriefInfo;
   LModLoader: TXcomModGameLoader;
   LOptionsFile: string;
   LOptionsDoc, LModsNode, LModItem: IYamlNode;
@@ -229,10 +230,14 @@ begin
     LNavigatorFactory :=
       function(AHost: TXcomStateHost): IXcomGeoscapeNavigator
       begin
-        Result := TXcomGameNavigator.Create(AHost);
+        Result := TXcomGameNavigator.Create(AHost, TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
       end;
     Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, LSimulationFactory, LNavigatorFactory));
     Result.SetSavedGameLoader(TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory));
+    LBrief.Version := '1.0';
+    LBrief.Engine := '';
+    LBrief.Build := '';
+    Result.SetSavedGameSaver(TXcomSavedGameSaver.Create(Result, LBrief, ASettings.VersionText));
     Result.SetState(TXcomStartState.Create(Result, LTask, LDosPath, ASettings.VersionText));
   except
     LOptions.Free;

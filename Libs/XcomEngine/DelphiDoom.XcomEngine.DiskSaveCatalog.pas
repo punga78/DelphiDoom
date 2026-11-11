@@ -36,6 +36,8 @@ type
     constructor Create(const AFolder, AActiveMaster: string; const AParser: IYamlParser);
     function List(ALanguage: TXcomLanguage; AAutoQuick: Boolean): TArray<TXcomSaveInfo>;
     function DeleteSave(const AFileName: string): Boolean;
+    function SaveExists(const AFileName: string): Boolean;
+    function RenameSave(const AOldName, ANewName: string): Boolean;
     function NameBefore(const AFirst, ASecond: string): Boolean;
   end;
 
@@ -62,6 +64,16 @@ end;
 function TXcomDiskSaveCatalog.DeleteSave(const AFileName: string): Boolean;
 begin
   Result := System.SysUtils.DeleteFile(FFolder + AFileName);
+end;
+
+function TXcomDiskSaveCatalog.SaveExists(const AFileName: string): Boolean;
+begin
+  Result := FileExists(FFolder + AFileName);
+end;
+
+function TXcomDiskSaveCatalog.RenameSave(const AOldName, ANewName: string): Boolean;
+begin
+  Result := MoveFileEx(PChar(FFolder + AOldName), PChar(FFolder + ANewName), MOVEFILE_REPLACE_EXISTING);
 end;
 
 function TXcomDiskSaveCatalog.MatchesMaster(const AInfo: TXcomSaveInfo): Boolean;

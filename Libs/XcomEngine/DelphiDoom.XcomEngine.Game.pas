@@ -57,6 +57,7 @@ type
     FSaveCatalog: IXcomSaveCatalog;
     FNewGameStarter: IXcomNewGameStarter;
     FSavedGameLoader: IXcomSavedGameLoader;
+    FSavedGameSaver: IXcomSavedGameSaver;
     FSession: IInterface;
     procedure Dispatch(const AEvent: TXcomInputEvent);
   public
@@ -105,6 +106,8 @@ type
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
     function SavedGameLoader: IXcomSavedGameLoader; override;
     procedure SetSavedGameLoader(const ALoader: IXcomSavedGameLoader);
+    function SavedGameSaver: IXcomSavedGameSaver; override;
+    procedure SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
     function Session: IInterface; override;
     procedure SetSession(const ASession: IInterface); override;
     /// <summary>One turn of the loop of Game::run: events, think and, when the frame rate allows, the drawing</summary>
@@ -296,6 +299,16 @@ end;
 procedure TXcomGame.SetSavedGameLoader(const ALoader: IXcomSavedGameLoader);
 begin
   FSavedGameLoader := ALoader;
+end;
+
+function TXcomGame.SavedGameSaver: IXcomSavedGameSaver;
+begin
+  Result := FSavedGameSaver;
+end;
+
+procedure TXcomGame.SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
+begin
+  FSavedGameSaver := ASaver;
 end;
 
 function TXcomGame.Session: IInterface;
