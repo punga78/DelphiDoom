@@ -76,6 +76,9 @@ uses
   DelphiDoom.ScriptHost.MobjInfo in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.pas',
   DelphiDoom.ScriptHost.Players.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Players.Intf.pas',
   DelphiDoom.ScriptHost.Players in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Players.pas',
+  DelphiDoom.ScriptHost.Actors.KeyList in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Actors.KeyList.pas',
+  DelphiDoom.ScriptHost.Actors.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Actors.Intf.pas',
+  DelphiDoom.ScriptHost.Actors in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Actors.pas',
   DelphiDoom.ScriptHost.Keys.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.Table.pas',
   DelphiDoom.ScriptHost.Keys in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.pas',
   DelphiDoom.ScriptHost.Factory in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Factory.pas',
@@ -98,7 +101,8 @@ uses
   DelphiDoom.Tests.ScriptHost.World in 'Source\DelphiDoom.Tests.ScriptHost.World.pas',
   DelphiDoom.Tests.ScriptHost.Sectors in 'Source\DelphiDoom.Tests.ScriptHost.Sectors.pas',
   DelphiDoom.Tests.ScriptHost.MobjInfo in 'Source\DelphiDoom.Tests.ScriptHost.MobjInfo.pas',
-  DelphiDoom.Tests.ScriptHost.Players in 'Source\DelphiDoom.Tests.ScriptHost.Players.pas';
+  DelphiDoom.Tests.ScriptHost.Players in 'Source\DelphiDoom.Tests.ScriptHost.Players.pas',
+  DelphiDoom.Tests.ScriptHost.Actors in 'Source\DelphiDoom.Tests.ScriptHost.Actors.pas';
 
 var
   Runner: ITestRunner;
