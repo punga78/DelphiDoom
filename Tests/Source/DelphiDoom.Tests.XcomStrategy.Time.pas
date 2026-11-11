@@ -51,6 +51,8 @@ type
     procedure ResearchFinished(const ABase: TXcomBase; const AResearchName: string); override;
     procedure StorageExceeded(const ABase: TXcomBase); override;
     procedure AutosaveDue(AIronman: Boolean); override;
+    procedure MonthlyReport(APsiTraining: Boolean); override;
+    procedure AlienBaseDiscovered(const ABase: TXcomAlienBase); override;
   end;
 
   [TestFixture]
@@ -66,7 +68,11 @@ type
     procedure SetClock(const AGame: TXcomSavedGame);
     procedure CreateMissions(const AGame: TXcomSavedGame);
     procedure LaunchCrafts(const AGame: TXcomSavedGame; AVariant: Integer);
-    procedure Run(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation; AVariant: Integer);
+    procedure Prepare(const AGame: TXcomSavedGame; AVariant: Integer);
+    procedure RunDays(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation; AVariant, ADays: Integer);
+    procedure RunScenario(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation; AVariant: Integer;
+      AMonths: Boolean);
+    procedure Compare(const AScenario: string; AMonths: Boolean);
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -74,6 +80,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeFareVentiGiorniComeIlCodiceDiGeoscapeStateSuiVeriOggetti;
+    [Test]
+    procedure DovrebbeFareTreMesiComeIlCodiceDiGeoscapeStateSuiVeriOggetti;
   end;
 
 implementation
@@ -206,6 +214,16 @@ begin
     FLines.Add('ev|Autosave|auto');
 end;
 
+procedure TXcomRecordingEvents.MonthlyReport(APsiTraining: Boolean);
+begin
+  FLines.Add(Format('ev|MonthlyReport|%d', [Ord(APsiTraining)]));
+end;
+
+procedure TXcomRecordingEvents.AlienBaseDiscovered(const ABase: TXcomAlienBase);
+begin
+  FLines.Add('ev|AlienBaseDiscovered');
+end;
+
 { TTestXcomTimeScenario }
 
 procedure TTestXcomTimeScenario.SetupFixture;
@@ -325,10 +343,8 @@ begin
     end;
 end;
 
-procedure TTestXcomTimeScenario.Run(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation;
-  AVariant: Integer);
+procedure TTestXcomTimeScenario.Prepare(const AGame: TXcomSavedGame; AVariant: Integer);
 var
-  LTick, LDay: Integer;
   LUfo, LMission: Integer;
 begin
   FStage := 'clock';
@@ -357,8 +373,15 @@ begin
   CreateMissions(AGame);
   FStage := 'launch';
   LaunchCrafts(AGame, AVariant);
+end;
+
+procedure TTestXcomTimeScenario.RunDays(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation;
+  AVariant, ADays: Integer);
+var
+  LTick, LDay, LUfo: Integer;
+begin
   LDay := 0;
-  for LTick := 0 to 20 * 24 * 720 - 1 do
+  for LTick := 0 to ADays * 24 * 720 - 1 do
   begin
     if LTick < 3 then
       FStage := Format('tick %d (%s)', [LTick, ASimulation.Stage]);
@@ -382,15 +405,36 @@ begin
       AGame.Ufos[LUfo].Speed, Ord(AGame.Ufos[LUfo].Destination <> nil)]));
 end;
 
-procedure TTestXcomTimeScenario.DovrebbeFareVentiGiorniComeIlCodiceDiGeoscapeStateSuiVeriOggetti;
+procedure TTestXcomTimeScenario.RunScenario(const AGame: TXcomSavedGame; const ASimulation: TXcomGeoscapeSimulation;
+  AVariant: Integer; AMonths: Boolean);
 var
-  LFolder: string;
+  LMonth: Integer;
+begin
+  Prepare(AGame, AVariant);
+  if not AMonths then
+  begin
+    RunDays(AGame, ASimulation, AVariant, 20);
+    Exit;
+  end;
+  // the month, then ten days of time; three times
+  for LMonth := 0 to 2 do
+  begin
+    ASimulation.Time1Month;
+    FLines.Add(Format('month|%d|%d|missions=%d|funds=%d|months=%d', [AVariant, LMonth, AGame.ActiveMissions.Count,
+      AGame.Funds, AGame.MonthsPassed]));
+    SetClock(AGame);
+    RunDays(AGame, ASimulation, AVariant, 10);
+  end;
+end;
+
+procedure TTestXcomTimeScenario.Compare(const AScenario: string; AMonths: Boolean);
+var
+  LFolder, LLast: string;
   LVariant: Integer;
   LGame: TXcomSavedGame;
   LSimulation: TXcomGeoscapeSimulation;
   LEvents: IXcomGeoscapeEvents;
   LHolder: IInterface;
-  LLast: string;
 begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
@@ -412,7 +456,7 @@ begin
       try
         FRandom.SetSeed(5000 + LVariant);
         try
-          Run(LGame, LSimulation, LVariant);
+          RunScenario(LGame, LSimulation, LVariant, AMonths);
         except
           on E: Exception do
           begin
@@ -421,14 +465,15 @@ begin
               LLast := FLines[FLines.Count - 1]
             else
               LLast := '-';
-            raise Exception.CreateFmt('%s: %s (variant %d, stage %s, after: %s)', [E.ClassName, E.Message, LVariant, FStage + '/' + LSimulation.Stage,
-              LLast]);
+            raise Exception.CreateFmt('%s: %s (variant %d, stage %s, after: %s)', [E.ClassName, E.Message, LVariant,
+              FStage + '/' + LSimulation.Stage, LLast]);
           end;
         end;
         FLines.Add(Format('rng|%d|%s', [LVariant, UIntToStr(FRandom.Seed)]));
         Assert.AreEqual('', TXcomSim.FirstDifferenceTolerant(string(TXcomSim.GoldenText(LFolder +
-          Format('sim%.2d.time.txt', [LVariant]))), FLines.Text, POSITION_TOLERANCE), Format('risposte del salvataggio %d', [LVariant]));
-        Assert.AreEqual('', TXcomSim.CompareSaveTolerant(LFolder + Format('sim%.2d.time.sav', [LVariant]),
+          Format('sim%.2d.%s.txt', [LVariant, AScenario]))), FLines.Text, POSITION_TOLERANCE),
+          Format('risposte del salvataggio %d', [LVariant]));
+        Assert.AreEqual('', TXcomSim.CompareSaveTolerant(LFolder + Format('sim%.2d.%s.sav', [LVariant, AScenario]),
           FSim.SaveText(LGame, FRandom), POSITION_TOLERANCE), Format('stato finale del salvataggio %d', [LVariant]));
       finally
         LHolder := nil;
@@ -442,6 +487,15 @@ begin
   end;
 end;
 
+procedure TTestXcomTimeScenario.DovrebbeFareVentiGiorniComeIlCodiceDiGeoscapeStateSuiVeriOggetti;
+begin
+  Compare('time', False);
+end;
+
+procedure TTestXcomTimeScenario.DovrebbeFareTreMesiComeIlCodiceDiGeoscapeStateSuiVeriOggetti;
+begin
+  Compare('month', True);
+end;
 initialization
   TDUnitX.RegisterTestFixture(TTestXcomTimeScenario);
 

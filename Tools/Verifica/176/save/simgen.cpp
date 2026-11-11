@@ -59,6 +59,9 @@
 #include "Mod/RuleBaseFacility.h"
 #include "Geoscape/Globe.h"
 #include "Engine/Game.h"
+#include "Geoscape/GeoscapeState.h"
+#include "Mod/RuleMissionScript.h"
+#include "Savegame/AlienStrategy.h"
 #include "Engine/Options.h"
 #include "Engine/FileMap.h"
 #include "Engine/Logger.h"
@@ -719,16 +722,7 @@ static void Tick(Clock& g) {
   }
 }
 
-static void ScenarioTime(Mod* mod, SavedGame* s, int v) {
-  Clock g;
-  g.game = (Game*)calloc(1, sizeof(Game));
-  g.game->_save = s;
-  g.game->_mod = mod;
-  g.globe = (Globe*)calloc(1, sizeof(Globe));
-  g.globe->_rules = mod->getGlobe();
-  g.save = s;
-  g.mod = mod;
-  g.dogfights = 0;
+static void PrepareTime(Clock& g, Mod* mod, SavedGame* s, int v) {
   // the clock: day 2 at midnight, so that 20 days do not reach the end of the month
   GameTime* t = s->getTime();
   t->_second = 0; t->_minute = 0; t->_hour = 0; t->_day = 2; t->_weekday = 3;
@@ -790,8 +784,12 @@ static void ScenarioTime(Mod* mod, SavedGame* s, int v) {
       Ev("launch|%d|%d|%d", v, bi, (int)ci);
     }
   }
+}
+
+static void RunDays(Clock& g, int v, int days) {
+  SavedGame* s = g.save;
   int day = 0;
-  for (int tick = 0; tick < 20 * 24 * 720; tick++) {
+  for (int tick = 0; tick < days * 24 * 720; tick++) {
     Tick(g);
     if (tick % (24 * 720) == 24 * 720 - 1) {
       day++;
@@ -803,6 +801,65 @@ static void ScenarioTime(Mod* mod, SavedGame* s, int v) {
   }
   // the end: positions and states of the targets
   for (size_t ui = 0; ui < s->getUfos()->size(); ui++) PrintUfo(v, 0, 0, (int)ui, "final", (*s->getUfos())[ui]);
+}
+
+static Clock MakeClock(Mod* mod, SavedGame* s) {
+  Clock g;
+  g.game = (Game*)calloc(1, sizeof(Game));
+  g.game->_save = s;
+  g.game->_mod = mod;
+  g.globe = (Globe*)calloc(1, sizeof(Globe));
+  g.globe->_rules = mod->getGlobe();
+  g.save = s;
+  g.mod = mod;
+  g.dogfights = 0;
+  return g;
+}
+
+static void ScenarioTime(Mod* mod, SavedGame* s, int v) {
+  Clock g = MakeClock(mod, s);
+  PrepareTime(g, mod, s, v);
+  RunDays(g, v, 20);
+}
+
+// The month: GeoscapeState::time1Month with the real determineAlienMissions (a member that only reads _game, called on a
+// GeoscapeState that was never constructed), then ten days of time; three times
+static void Time1Month(Clock& g, GeoscapeState* gs) {
+  SavedGame* sg = g.save;
+  sg->addMonth();
+  gs->determineAlienMissions();
+  bool psi = false;
+  if (!Options::anytimePsiTraining) {
+    for (std::vector<Base*>::const_iterator b = sg->getBases()->begin(); b != sg->getBases()->end(); ++b) {
+      if ((*b)->getAvailablePsiLabs() > 0) {
+        psi = true;
+        for (std::vector<Soldier*>::const_iterator s = (*b)->getSoldiers()->begin(); s != (*b)->getSoldiers()->end(); ++s) {
+          if ((*s)->isInPsiTraining()) (*s)->trainPsi();
+        }
+      }
+    }
+  }
+  sg->monthlyFunding();
+  Ev("MonthlyReport|%d", (int)psi);
+  if (!sg->getAlienBases()->empty() && RNG::percent(20)) {
+    for (std::vector<AlienBase*>::const_iterator b = sg->getAlienBases()->begin(); b != sg->getAlienBases()->end(); ++b) {
+      if (!(*b)->isDiscovered()) { (*b)->setDiscovered(true); Ev("AlienBaseDiscovered"); break; }
+    }
+  }
+}
+
+static void ScenarioMonth(Mod* mod, SavedGame* s, int v) {
+  Clock g = MakeClock(mod, s);
+  GeoscapeState* gs = (GeoscapeState*)calloc(1, sizeof(GeoscapeState));
+  gs->_game = g.game;
+  PrepareTime(g, mod, s, v);
+  for (int m = 0; m < 3; m++) {
+    Time1Month(g, gs);
+    fprintf(gOut, "month|%d|%d|missions=%d|funds=%lld|months=%d\n", v, m, (int)s->_activeMissions.size(), (long long)s->getFunds(), s->getMonthsPassed());
+    GameTime* t = s->getTime();
+    t->_second = 0; t->_minute = 0; t->_hour = 0; t->_day = 2; t->_weekday = 3;
+    RunDays(g, v, 10);
+  }
 }
 
 int main(int argc, char** argv) {
@@ -838,7 +895,9 @@ int main(int argc, char** argv) {
       else if (scenario == "production") ScenarioProduction(mod, s, v);
       else if (scenario == "mission") ScenarioMission(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
+      else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
+      else if (scenario == "month") ScenarioMonth(mod, s, v);
       else { fprintf(stderr, "unknown scenario\n"); return 2; }
       fprintf(gOut, "rng|%d|%llu\n", v, (unsigned long long)RNG::getSeed());
       fclose(gOut);
