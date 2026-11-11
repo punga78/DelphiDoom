@@ -145,6 +145,43 @@ static void ScenarioCraft(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+// Production: new productions of random rules and the steps of every production of every base
+static void ScenarioProduction(Mod* mod, SavedGame* s, int v) {
+  int bi = 0;
+  s->setFunds(1000000 + Pick(3000000));
+  const std::vector<std::string>& list = mod->getManufactureList();
+  for (std::vector<Base*>::iterator bp = s->getBases()->begin(); bp != s->getBases()->end(); ++bp, ++bi) {
+    Base* base = *bp;
+    int n = 3 + Pick(5);
+    for (int k = 0; k < n; k++) {
+      RuleManufacture* r = mod->getManufacture(list[Pick((int)list.size())], true);
+      Production* p = new Production(r, 1 + Pick(6));
+      p->setAssignedEngineers(1 + Pick(40));
+      p->setInfiniteAmount(Pick(8) == 0);
+      p->setSellItems(Pick(3) == 0);
+      for (std::map<std::string, int>::const_iterator i = r->getRequiredItems().begin(); i != r->getRequiredItems().end(); ++i) {
+        if (mod->getItem(i->first) != 0) base->getStorageItems()->addItem(i->first, Pick(40));
+        else if (mod->getCraft(i->first) != 0 && Pick(2) == 0) base->getCrafts()->push_back(new Craft(mod->getCraft(i->first, true), base, s->getId(i->first)));
+      }
+      base->addProduction(p);
+    }
+    fprintf(gOut, "base|%d|%d|productions=%d|funds=%lld|%s\n", v, bi, (int)base->_productions.size(), (long long)s->getFunds(), Storage(base).c_str());
+    for (size_t pi = 0; pi < base->_productions.size(); pi++) {
+      Production* p = base->_productions[pi];
+      int steps = 0;
+      productionProgress_e res = PROGRESS_NOT_COMPLETE;
+      while (steps < 600) {
+        res = p->step(base, s, mod);
+        steps++;
+        if (res != PROGRESS_NOT_COMPLETE) break;
+      }
+      fprintf(gOut, "prod|%d|%d|%d|%s|steps=%d|res=%d|spent=%d|produced=%d|funds=%lld|crafts=%d|%s\n", v, bi, (int)pi,
+        p->getRules()->getName().c_str(), steps, (int)res, p->getTimeSpent(), p->getAmountProduced(), (long long)s->getFunds(),
+        (int)base->getCrafts()->size(), Storage(base).c_str());
+    }
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -175,6 +212,7 @@ int main(int argc, char** argv) {
       snprintf(name, sizeof name, "%s/sim%02d.%s.txt", out.c_str(), v, scenario.c_str());
       gOut = fopen(name, "wb");
       if (scenario == "craft") ScenarioCraft(mod, s, v);
+      else if (scenario == "production") ScenarioProduction(mod, s, v);
       else { fprintf(stderr, "unknown scenario\n"); return 2; }
       fprintf(gOut, "rng|%d|%llu\n", v, (unsigned long long)RNG::getSeed());
       fclose(gOut);
