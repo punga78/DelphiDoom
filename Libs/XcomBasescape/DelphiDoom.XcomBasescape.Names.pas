@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomSave.Transfer;
+  DelphiDoom.XcomSave.Transfer, DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomSave.MissionStatistics;
 
 type
   /// <summary>
@@ -38,6 +38,12 @@ type
     /// </summary>
     class function TransferName(const ATransfer: TXcomTransfer; const ALanguage: TXcomLanguage): string; static;
     class function CraftText(const ASoldier: TXcomSoldier; const ALanguage: TXcomLanguage): string; static;
+    /// <summary>BattleUnitKills::getUnitName: the name, else the type, else the race and the rank</summary>
+    class function KillUnitName(const AKill: TXcomBattleUnitKills; const ALanguage: TXcomLanguage): string; static;
+    /// <summary>MissionStatistics::getMissionName: the marker with its id, else the type</summary>
+    class function MissionName(const AMission: TXcomMissionStatistics; const ALanguage: TXcomLanguage): string; static;
+    /// <summary>MissionStatistics::getRatingString: "Victory - rating" or "Defeat - rating"</summary>
+    class function RatingString(const AMission: TXcomMissionStatistics; const ALanguage: TXcomLanguage): string; static;
   end;
 
 implementation
@@ -50,6 +56,35 @@ begin
     Exit(ACraft.Name);
   Result := ALanguage.GetString('STR_CRAFTNAME').Arg(ALanguage.GetString(ACraft.TargetType).Text)
     .Arg(ACraft.Id).Text;
+end;
+
+class function TXcomBaseNames.KillUnitName(const AKill: TXcomBattleUnitKills; const ALanguage: TXcomLanguage): string;
+begin
+  if AKill.Name <> '' then
+    Result := AKill.Name
+  else if AKill.UnitType <> '' then
+    Result := ALanguage.GetString(AKill.UnitType).Text
+  else
+    Result := ALanguage.GetString(AKill.Race).Text + ' ' + ALanguage.GetString(AKill.Rank).Text;
+end;
+
+class function TXcomBaseNames.MissionName(const AMission: TXcomMissionStatistics;
+  const ALanguage: TXcomLanguage): string;
+begin
+  if AMission.MarkerName <> '' then
+    Result := ALanguage.GetString(AMission.MarkerName).Arg(AMission.MarkerId).Text
+  else
+    Result := ALanguage.GetString(AMission.MissionType).Text;
+end;
+
+class function TXcomBaseNames.RatingString(const AMission: TXcomMissionStatistics;
+  const ALanguage: TXcomLanguage): string;
+begin
+  if AMission.Success then
+    Result := ALanguage.GetString('STR_VICTORY').Text
+  else
+    Result := ALanguage.GetString('STR_DEFEAT').Text;
+  Result := Result + ' - ' + ALanguage.GetString(AMission.Rating).Text;
 end;
 
 class function TXcomBaseNames.RankKey(ARank: Integer): string;

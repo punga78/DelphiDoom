@@ -71,6 +71,8 @@ type
     function IsUfoMission: Boolean;
     /// <summary>isDarkness: the daylight is above TileEngine::MAX_DARKNESS_TO_SEE_UNITS (9)</summary>
     function IsDarkness: Boolean;
+    /// <summary>getDaylightString: STR_NIGHT or STR_DAY</summary>
+    function DaylightString: string;
     /// <summary>getLocationString: the region when the country is unknown, otherwise the country</summary>
     function LocationString: string;
   end;
@@ -184,6 +186,14 @@ end;
 function TXcomMissionStatistics.IsDarkness: Boolean;
 begin
   Result := FDaylight > 9;
+end;
+
+function TXcomMissionStatistics.DaylightString: string;
+begin
+  if IsDarkness then
+    Result := 'STR_NIGHT'
+  else
+    Result := 'STR_DAY';
 end;
 
 function TXcomMissionStatistics.LocationString: string;

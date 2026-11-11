@@ -21,7 +21,7 @@ type
   ///   The soldier of a base (or a dead one, when there is no base: the memorial): the eleven stats with their bars
   ///   (the stat with the armor, the maximum, the stat at the start), the rank, missions, kills, craft, wound
   ///   recovery and psionic training. The name can be edited; the buttons go to the previous and next soldier,
-  ///   change the armor and sack the soldier. The diary is not ported
+  ///   change the armor and sack the soldier, or open the diary
   /// </summary>
   TXcomSoldierInfoState = class(TXcomState)
   strict private
@@ -60,6 +60,7 @@ type
     procedure SackClick(AAction: TXcomAction);
     procedure EditChange(AAction: TXcomAction);
     procedure EditPress(AAction: TXcomAction);
+    procedure DiaryClick(AAction: TXcomAction);
   public
     /// <param name="ABase">The base; nil for the dead soldiers (not owned)</param>
     /// <param name="ASoldierId">The index in the list (for the dead, counted from the last)</param>
@@ -77,7 +78,7 @@ uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.Armor,
   DelphiDoom.XcomBasescape.PsiRequirements, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.SackSoldierState,
   DelphiDoom.XcomBasescape.SoldierArmorState, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomMenu.ErrorMessageState,
-  DelphiDoom.XcomBasescape.SellState;
+  DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.SoldierDiaryOverviewState;
 
 { TXcomSoldierInfoState }
 
@@ -170,6 +171,7 @@ begin
   FBtnSack.SetText(Tr('STR_SACK'));
   FBtnSack.OnMouseClick(SackClick);
   FBtnDiary.SetText(Tr('STR_DIARY'));
+  FBtnDiary.OnMouseClick(DiaryClick);
   FTxtPsionic.SetText(Tr('STR_IN_PSIONIC_TRAINING'));
 end;
 
@@ -280,10 +282,23 @@ begin
     LStatus := 'STR_MISSING_IN_ACTION';
     if Assigned(FSoldier.Death) and Assigned(FSoldier.Death.Cause) then
       LStatus := 'STR_KILLED_IN_ACTION';
-    FTxtDead.SetText(Tr(LStatus, FSoldier.Gender).Text);
+    // tr(id, SoldierGender) is the text with the suffix _MALE or _FEMALE (not the plural form of a number)
+    if FSoldier.Gender = 0 then
+      FTxtDead.SetText(Tr(LStatus + '_MALE').Text)
+    else
+      FTxtDead.SetText(Tr(LStatus + '_FEMALE').Text);
   end
   else
     FTxtDead.Visible := False;
+end;
+
+procedure TXcomSoldierInfoState.DiaryClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomSoldierDiaryOverviewState.Create(Host, FBase, FSoldierId,
+    procedure(ASoldierId: Integer)
+    begin
+      FSoldierId := ASoldierId;
+    end));
 end;
 
 procedure TXcomSoldierInfoState.EditPress(AAction: TXcomAction);
