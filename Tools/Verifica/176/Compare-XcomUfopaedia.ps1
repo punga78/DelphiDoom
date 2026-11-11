@@ -6,7 +6,7 @@
        Compare-XcomUfopaedia.ps1 -Root <worktree> -Data <Reference\_dati\xcom_ufo> -Out <cartella> -Section 0 -Count 11 -Ufo
 
   Dal geoscape: pulsante Ufopaedia (schermata "start"), il pulsante della sezione -Section (0 = il primo; "listN"),
-  la prima riga della lista (sN_00), poi -Count - 1 clic su ">>" (sN_01 ...). Usa Compare-XcomScreens.ps1 (che prende
+  la riga -FirstRow della lista (sN_00 se e' la prima), poi -Count - 1 clic su ">>" (sN_01 ...). Usa Compare-XcomScreens.ps1 (che prende
   il lock dei giochi) e poi accoppia le schermate **per contenuto**: se un clic si perde in uno dei due programmi (la
   finestra di un altro processo prende il fuoco) la sequenza si sposta di uno, e il confronto per nome darebbe tutto
   diverso. Per ogni schermata del vero stampa quella di Xcom32 piu' simile, i pixel diversi e quelli diversi fuori
@@ -20,7 +20,11 @@ param(
   [Parameter(Mandatory = $true)][string]$Out,
   [int]$Section = 0,
   [int]$Count = 1,
+  # the row of the list to open first (0 to 12: the rows visible without scrolling), to start in the middle of a section
+  [int]$FirstRow = 0,
   [switch]$Ufo,
+  # seconds before the first click on the menu of the real program (see Compare-XcomScreens.ps1)
+  [int]$StartWait = 12,
   [int[]]$Cursor = @()
 )
 $ErrorActionPreference = 'Stop'
@@ -58,10 +62,10 @@ public static class UfopaediaPng {
 $next = if ($Ufo) { '180,24' } else { '585,368' }
 if ($Cursor.Count -ne 4) { $Cursor = if ($Ufo) { @(170, 14, 64, 44) } else { @(576, 360, 64, 40) } }
 $save = if ($Ufo) { "$Root\Tests\Data\XcomSave\variants\ufo_save02_ufopaedia.sav" } else { "$Root\Tests\Data\XcomSave\variants\save02_ufopaedia.sav" }
-$screens = @('start=576,82', ("+list{0}=320,{1}" -f $Section, (112 + 26 * $Section)), ("+s{0}_00=320,108" -f $Section))
-for ($i = 1; $i -lt $Count; $i++) { $screens += ("+s{0}_{1:00}=$next" -f $Section, $i) }
+$screens = @('start=576,82', ("+list{0}=320,{1}" -f $Section, (112 + 26 * $Section)), ("+s{0}_{1:00}=320,{2}" -f $Section, $FirstRow, (108 + 16 * $FirstRow)))
+for ($i = 1; $i -lt $Count; $i++) { $screens += ("+s{0}_{1:00}=$next" -f $Section, ($FirstRow + $i)) }
 if (Test-Path $Out) { Remove-Item -Recurse -Force $Out }
-$common = @{ Root = $Root; Data = $Data; Out = $Out; Geoscape = $true; SaveFile = $save; Screens = $screens }
+$common = @{ Root = $Root; Data = $Data; Out = $Out; Geoscape = $true; SaveFile = $save; Screens = $screens; StartWait = $StartWait }
 if ($Ufo) { $common.Game = 'openxcom\UFO'; $common.ModId = 'xcom1' }
 & "$Root\Tools\Verifica\176\Compare-XcomScreens.ps1" @common | Out-Null
 foreach ($n in 'start', "list$Section") {
