@@ -376,7 +376,6 @@ begin
     LCount := AEngine.CloseUfoDoors;
     Result := Format('doors = %d map=%s', [LCount, MapText(ABattle, 1)]);
   end;
-  LIndex := 0;
 end;
 
 function TTestXcomRealTileEngine.RunCase(const ABase: string): string;

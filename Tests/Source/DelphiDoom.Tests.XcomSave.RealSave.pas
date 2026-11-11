@@ -217,7 +217,6 @@ var
   LInfo: TXcomSaveBriefInfo;
   LBrief, LItem: IYamlNode;
   LMods: TArray<string>;
-  LIndex: Integer;
 begin
   LFile := TYamlFactory.CreateParser.LoadAll(AText);
   LBrief := LFile[0];
@@ -231,7 +230,6 @@ begin
     LMods[High(LMods)] := YamlTextToString(LItem.AsString);
   end;
   LInfo.Mods := LMods;
-  LIndex := 0;
   LRandom := TXcomRandom.Create(1);
   LSettings := TXcomDefaultSettings.Create;
   LGame := TXcomSavedGame.Create;

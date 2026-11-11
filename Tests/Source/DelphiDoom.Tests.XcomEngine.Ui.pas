@@ -1159,8 +1159,6 @@ var
   LColors: TArray<TXcomColor>;
   LFont: TXcomFont;
   LGlyph: TXcomSurface;
-  LIndex: Integer;
-  LCount: Integer;
 begin
   LColors := TXcomTerminalFont.Colors;
   Assert.AreEqual(2, Length(LColors));
@@ -1169,11 +1167,7 @@ begin
   LFont := TXcomTerminalFont.Create;
   try
     LGlyph := LFont.GetChar(Ord('A'));
-    LCount := 0;
-    for LIndex := 0 to Length(LGlyph.Pixels) - 1 do
-      if LGlyph.Pixels[LIndex] = 1 then
-        Inc(LCount);
-    // the glyph of the whole picture of the font: many pixels of color 1
+    // the glyph has the palette of the whole picture of the font
     Assert.AreEqual(185, Integer(LGlyph.Palette.Colors[1].Red));
   finally
     LFont.Free;
