@@ -135,7 +135,8 @@ implementation
 uses
   System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSave.GameTime,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomMenu.OptionsTypes,
+  DelphiDoom.XcomMenu.ListSaveState;
 
 const
   GEO_CLOCK_SPEED = 80;
@@ -597,6 +598,10 @@ begin
   FGlobe.RotateStop;
   FGlobe.SetFocus(True);
   FGlobe.Draw;
+  // a new ironman game asks where to save as soon as the geoscape is in front: until it has a name the list comes
+  // back at every init, as in GeoscapeState::init
+  if FSave.Ironman and (FSave.Name = '') then
+    Popup(TXcomListSaveState.Create(Host, ooGeoscape));
   FGlobe.SetNewBaseHover(False);
   // the first month starts when the first base has its name
   if (FSave.MonthsPassed = -1) and (FSave.Bases.Count > 0) and (FSave.Bases.First.Name <> '') then
