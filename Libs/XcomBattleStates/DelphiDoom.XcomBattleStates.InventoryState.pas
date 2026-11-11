@@ -11,9 +11,11 @@ unit DelphiDoom.XcomBattleStates.InventoryState;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types,
+  DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.BattlescapeButton, DelphiDoom.XcomMod.RuleInventory,
+  DelphiDoom.XcomSave.EquipmentLayoutItem,
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.Inventory;
 
@@ -23,9 +25,11 @@ type
   ///   parent, never nil). With ATimeUnits the moves cost time units; without (the debug mode) they are free, a
   ///   right click primes the grenades and OK prepares the units as before the first turn. Leaving the screen lets
   ///   the dropped items fall and computes the light and the field of view again.
-  ///   Not ported: the inventory before a battle or from the base (no parent), the equipment templates
-  ///   (InvCopy, InvPaste, clear, auto-equip), Options::maximizeInfoScreens, the mouse refresh after a change of
-  ///   soldier and the psi strength shown by Options::psiStrengthEval
+  ///   Without time units the two buttons of the equipment template are shown: the first copies the equipment
+  ///   of the soldier, the second gives it to the soldier on screen from the items on the ground (with no
+  ///   template it empties the inventory); the keys of Options clear the inventory and equip automatically.
+  ///   Not ported: the inventory from the base (no parent), Options::maximizeInfoScreens, the mouse refresh after
+  ///   a change (SDL_WarpMouse) and the psi strength shown by Options::psiStrengthEval
   /// </summary>
   TXcomInventoryState = class(TXcomState)
   strict private
@@ -37,7 +41,9 @@ type
     FBg: TXcomWidget;
     FSoldier: TXcomWidget;
     FTxtName, FTxtItem, FTxtAmmo, FTxtWeight, FTxtTus, FTxtFAcc, FTxtReact, FTxtPSkill, FTxtPStr: TXcomText;
-    FBtnOk, FBtnPrev, FBtnNext, FBtnUnload, FBtnGround, FBtnRank: TXcomBattlescapeButton;
+    FBtnOk, FBtnPrev, FBtnNext, FBtnUnload, FBtnGround, FBtnRank, FBtnCreateTemplate,
+      FBtnApplyTemplate: TXcomBattlescapeButton;
+    FTemplate: TObjectList<TXcomEquipmentLayoutItem>;
     FSelAmmo: TXcomWidget;
     FInv: TXcomInventory;
     FCurrentTooltip: string;
@@ -56,6 +62,14 @@ type
     procedure CloseFromInventory;
     procedure Leave;
     procedure SaveEquipmentLayout;
+    /// <summary>_updateTemplateButtons: the pictures of the two buttons (empty or active template), or nothing</summary>
+    procedure UpdateTemplateButtons(AVisible: Boolean);
+    /// <summary>_clearInventory: everything but the fixed weapons goes to the ground</summary>
+    procedure ClearInventory(const AUnit: TXcomBattleUnit; const AGroundTile: TXcomTile);
+    /// <summary>Inventory::overlapItems</summary>
+    function OverlapItems(const AUnit: TXcomBattleUnit; const AItem: TXcomBattleItem;
+      const ASlot: TXcomRuleInventory; AX, AY: Integer): Boolean;
+    procedure RefreshAfterChange;
     // handlers
     procedure BtnOkClick(AAction: TXcomAction);
     procedure BtnPrevClick(AAction: TXcomAction);
@@ -63,6 +77,10 @@ type
     procedure BtnUnloadClick(AAction: TXcomAction);
     procedure BtnGroundClick(AAction: TXcomAction);
     procedure BtnRankClick(AAction: TXcomAction);
+    procedure BtnCreateTemplateClick(AAction: TXcomAction);
+    procedure BtnApplyTemplateClick(AAction: TXcomAction);
+    procedure ClearInventoryPress(AAction: TXcomAction);
+    procedure AutoEquipPress(AAction: TXcomAction);
     procedure InvClick(AAction: TXcomAction);
     procedure InvMouseOver(AAction: TXcomAction);
     procedure InvMouseOut(AAction: TXcomAction);
@@ -72,6 +90,7 @@ type
     /// <param name="AParent">The battlescape that opens the screen: its session, its screens and its sounds are used</param>
     /// <param name="ATimeUnits">Does the inventory use up time units?</param>
     constructor Create(AHost: TXcomStateHost; AParent: TXcomBattlescapeState; ATimeUnits: Boolean);
+    destructor Destroy; override;
     /// <summary>init: the soldier selected in the battle is shown (the first with an inventory); none closes the screen</summary>
     procedure Init; override;
     procedure Handle(AAction: TXcomAction); override;
@@ -79,6 +98,12 @@ type
     procedure UpdateStats;
     /// <summary>The view of the inventory (for the tests)</summary>
     property Inventory: TXcomInventory read FInv;
+    /// <summary>The button that copies the equipment of the soldier into the template</summary>
+    property CreateTemplateButton: TXcomBattlescapeButton read FBtnCreateTemplate;
+    /// <summary>The button that applies the template (or, with no template, clears the inventory)</summary>
+    property ApplyTemplateButton: TXcomBattlescapeButton read FBtnApplyTemplate;
+    /// <summary>How many items the current template has</summary>
+    function TemplateCount: Integer;
     /// <summary>The text under the soldier: the item under the mouse or a tooltip (for the tests)</summary>
     function ItemText: string;
     /// <summary>The text of the ammunition of the item under the mouse (for the tests)</summary>
@@ -92,10 +117,10 @@ type
 implementation
 
 uses
-  System.Generics.Collections, System.Generics.Defaults, DelphiDoom.XcomSurface.SurfaceSet,
+  System.Generics.Defaults, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomSurface.Shade, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomSave.EquipmentLayoutItem, DelphiDoom.XcomBattle.Types;
+  DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.ItemEquipper;
 
 const
   HAND_PIXELS_W = INV_HAND_WIDTH * INV_SLOT_WIDTH;
@@ -106,6 +131,11 @@ const
   RANK_SPRITE = 20;
   AMMO_BACKGROUND = 15;
   LOOK_SUFFIX: array[0..3] of string = ('0', '1', '2', '3');
+  TEMPLATE_BUTTON_X = 288;
+  CREATE_TEMPLATE_BUTTON_Y = 90;
+  APPLY_TEMPLATE_BUTTON_Y = 113;
+  GROUND_SECTION = 'STR_GROUND';
+  NO_AMMO = 'NONE';
 
 constructor TXcomInventoryState.Create(AHost: TXcomStateHost; AParent: TXcomBattlescapeState; ATimeUnits: Boolean);
 var
@@ -134,6 +164,9 @@ begin
   FBtnUnload := TXcomBattlescapeButton.Create(32, 25, 288, 32);
   FBtnGround := TXcomBattlescapeButton.Create(32, 15, 289, 137);
   FBtnRank := TXcomBattlescapeButton.Create(26, 23, 0, 0);
+  FBtnCreateTemplate := TXcomBattlescapeButton.Create(32, 22, TEMPLATE_BUTTON_X, CREATE_TEMPLATE_BUTTON_Y);
+  FBtnApplyTemplate := TXcomBattlescapeButton.Create(32, 22, TEMPLATE_BUTTON_X, APPLY_TEMPLATE_BUTTON_Y);
+  FTemplate := TObjectList<TXcomEquipmentLayoutItem>.Create(True);
   FSelAmmo := TXcomWidget.Create(HAND_PIXELS_W, HAND_PIXELS_H, 272, 88);
   FInv := TXcomInventory.Create(Host.Clock, SortedInventories, FSession.Graphics, Translate, ReadStyle, 320, 200, 0,
     0, False);
@@ -165,6 +198,8 @@ begin
   AddButton(FBtnUnload, 'buttonUnload');
   AddButton(FBtnGround, 'buttonGround');
   AddButton(FBtnRank, 'rank');
+  AddButton(FBtnCreateTemplate, 'buttonCreate');
+  AddButton(FBtnApplyTemplate, 'buttonApply');
   Add(FSelAmmo);
   Add(FInv);
   LMoreStats := Host.Options.GetBool('showMoreStatsInInventoryView');
@@ -193,6 +228,20 @@ begin
   SetupButton(FBtnUnload, BtnUnloadClick, 'STR_UNLOAD_WEAPON');
   SetupButton(FBtnGround, BtnGroundClick, 'STR_SCROLL_RIGHT');
   SetupButton(FBtnRank, BtnRankClick, 'STR_UNIT_STATS');
+  SetupButton(FBtnCreateTemplate, BtnCreateTemplateClick, 'STR_CREATE_INVENTORY_TEMPLATE');
+  FBtnCreateTemplate.OnKeyboardPress(BtnCreateTemplateClick, Host.Options.GetValue('keyInvCreateTemplate'));
+  SetupButton(FBtnApplyTemplate, BtnApplyTemplateClick, 'STR_APPLY_INVENTORY_TEMPLATE');
+  FBtnApplyTemplate.OnKeyboardPress(BtnApplyTemplateClick, Host.Options.GetValue('keyInvApplyTemplate'));
+  FBtnApplyTemplate.OnKeyboardPress(ClearInventoryPress, Host.Options.GetValue('keyInvClear'));
+  FBtnApplyTemplate.OnKeyboardPress(AutoEquipPress, Host.Options.GetValue('keyInvAutoEquip'));
+  // only use copy/paste buttons in setup (i.e. non-tu) mode
+  if FTimeUnits then
+  begin
+    FBtnCreateTemplate.Visible := False;
+    FBtnApplyTemplate.Visible := False;
+  end
+  else
+    UpdateTemplateButtons(True);
   FInv.OnSound := PlayInventorySound;
   FInv.OnClose := CloseFromInventory;
   FInv.OnPrimeGrenade := PrimeGrenade;
@@ -208,6 +257,289 @@ begin
   FTxtReact.Visible := LMoreStats and (not FTimeUnits);
   FTxtPSkill.Visible := LMoreStats and (not FTimeUnits);
   FTxtPStr.Visible := LMoreStats and (not FTimeUnits);
+end;
+
+destructor TXcomInventoryState.Destroy;
+begin
+  inherited Destroy;
+  FTemplate.Free;
+end;
+
+function TXcomInventoryState.TemplateCount: Integer;
+begin
+  Result := FTemplate.Count;
+end;
+
+procedure TXcomInventoryState.UpdateTemplateButtons(AVisible: Boolean);
+
+  procedure Paint(AButton: TXcomBattlescapeButton; const AName: string);
+  var
+    LPicture: TXcomSurface;
+  begin
+    LPicture := FSession.Graphics.Surface(AName);
+    if Assigned(LPicture) then
+      LPicture.Blit(AButton);
+    AButton.InitSurfaces;
+  end;
+
+begin
+  if not AVisible then
+  begin
+    FBtnCreateTemplate.Clear;
+    FBtnApplyTemplate.Clear;
+    Exit;
+  end;
+  if FTemplate.Count = 0 then
+  begin
+    // use "empty template" icons
+    Paint(FBtnCreateTemplate, 'InvCopy');
+    Paint(FBtnApplyTemplate, 'InvPasteEmpty');
+    FBtnApplyTemplate.Tooltip := 'STR_CLEAR_INVENTORY';
+  end
+  else
+  begin
+    // use "active template" icons
+    Paint(FBtnCreateTemplate, 'InvCopyActive');
+    Paint(FBtnApplyTemplate, 'InvPaste');
+    FBtnApplyTemplate.Tooltip := 'STR_APPLY_INVENTORY_TEMPLATE';
+  end;
+end;
+
+procedure TXcomInventoryState.ClearInventory(const AUnit: TXcomBattleUnit; const AGroundTile: TXcomTile);
+var
+  LGround: TXcomRuleInventory;
+  LIndex: Integer;
+  LItem: TXcomBattleItem;
+begin
+  LGround := FSession.Ruleset.Inventories.Find(GROUND_SECTION);
+  LIndex := 0;
+  while LIndex < AUnit.Inventory.Count do
+  begin
+    LItem := AUnit.Inventory[LIndex];
+    // don't drop fixed weapons
+    if LItem.Rules.FixedWeapon then
+    begin
+      Inc(LIndex);
+      Continue;
+    end;
+    LItem.SetOwner(nil);
+    AGroundTile.AddItem(LItem, LGround);
+    AUnit.Inventory.Delete(LIndex);
+  end;
+end;
+
+function TXcomInventoryState.OverlapItems(const AUnit: TXcomBattleUnit; const AItem: TXcomBattleItem;
+  const ASlot: TXcomRuleInventory; AX, AY: Integer): Boolean;
+var
+  LItem: TXcomBattleItem;
+begin
+  Result := False;
+  if ASlot.InventoryType <> INV_GROUND then
+  begin
+    for LItem in AUnit.Inventory do
+      if (LItem.Slot = ASlot) and LItem.OccupiesSlot(AX, AY, AItem) then
+        Exit(True);
+  end
+  else if Assigned(AUnit.Tile) then
+    for LItem in AUnit.Tile.Inventory do
+      if LItem.OccupiesSlot(AX, AY, AItem) then
+        Exit(True);
+end;
+
+procedure TXcomInventoryState.RefreshAfterChange;
+begin
+  // refresh ui
+  FInv.ArrangeGround(False);
+  UpdateStats;
+  // give audio feedback
+  PlayInventorySound(isDrop);
+end;
+
+procedure TXcomInventoryState.BtnCreateTemplateClick(AAction: TXcomAction);
+var
+  LUnit: TXcomBattleUnit;
+  LItem: TXcomBattleItem;
+  LAmmo: string;
+begin
+  // don't accept clicks when moving items
+  if Assigned(FInv.SelectedItem) then
+    Exit;
+  LUnit := FBattle.SelectedUnit;
+  if not Assigned(LUnit) then
+    Exit;
+  // clear current template
+  FTemplate.Clear;
+  // copy inventory instead of just keeping a pointer to it. that way create/apply can be used as an undo button
+  // for a single unit and will also work as expected if inventory is modified after 'create' is clicked
+  for LItem in LUnit.Inventory do
+  begin
+    // don't copy fixed weapons into the template
+    if LItem.Rules.FixedWeapon or (not Assigned(LItem.Slot)) then
+      Continue;
+    if LItem.NeedsAmmo and Assigned(LItem.AmmoItem) then
+      LAmmo := LItem.AmmoItem.Rules.ItemType
+    else
+      LAmmo := NO_AMMO;
+    FTemplate.Add(TXcomEquipmentLayoutItem.Create(LItem.Rules.ItemType, LItem.Slot.Id, LItem.SlotX, LItem.SlotY,
+      LAmmo, LItem.FuseTimer));
+  end;
+  // give audio feedback
+  PlayInventorySound(isDrop);
+  // the mouse refresh of the C++ shows the new pictures: here they are drawn at once
+  UpdateTemplateButtons(True);
+end;
+
+procedure TXcomInventoryState.BtnApplyTemplateClick(AAction: TXcomAction);
+var
+  LUnit: TXcomBattleUnit;
+  LGroundTile: TXcomTile;
+  LGroundInventory: TList<TXcomBattleItem>;
+  LGround: TXcomRuleInventory;
+  LTemplateItem: TXcomEquipmentLayoutItem;
+  LRule: TXcomRuleItem;
+  LSlot: TXcomRuleInventory;
+  LGroundItem, LMatchedWeapon, LMatchedAmmo, LLoadedAmmo: TXcomBattleItem;
+  LNeedsAmmo, LFound, LRescan, LItemMissing: Boolean;
+  LIndex: Integer;
+  LGroundItemName: string;
+begin
+  // don't accept clicks when moving items; it's ok if the template is empty: it will just result in clearing
+  // the unit's inventory
+  if Assigned(FInv.SelectedItem) then
+    Exit;
+  LUnit := FBattle.SelectedUnit;
+  if (not Assigned(LUnit)) or (not Assigned(LUnit.Tile)) then
+    Exit;
+  LGroundTile := LUnit.Tile;
+  LGroundInventory := LGroundTile.Inventory;
+  LGround := FSession.Ruleset.Inventories.Find(GROUND_SECTION);
+  ClearInventory(LUnit, LGroundTile);
+  // attempt to replicate inventory template by grabbing corresponding items from the ground. if any item is not
+  // found on the ground, display warning message, but continue attempting to fulfill the template as best we can
+  LItemMissing := False;
+  for LTemplateItem in FTemplate do
+  begin
+    // search for template item in ground inventory
+    LRule := FSession.Ruleset.Items.Find(LTemplateItem.ItemType);
+    LSlot := FSession.Ruleset.Inventories.Find(LTemplateItem.Slot);
+    if (not Assigned(LRule)) or (not Assigned(LSlot)) then
+    begin
+      LItemMissing := True;
+      Continue;
+    end;
+    LNeedsAmmo := Length(LRule.CompatibleAmmo) > 0;
+    LFound := False;
+    LRescan := True;
+    while LRescan do
+    begin
+      LRescan := False;
+      LMatchedWeapon := nil;
+      LMatchedAmmo := nil;
+      LIndex := 0;
+      while LIndex < LGroundInventory.Count do
+      begin
+        LGroundItem := LGroundInventory[LIndex];
+        Inc(LIndex);
+        // if we find the appropriate ammo, remember it for later for if we find the right weapon but with the
+        // wrong ammo
+        LGroundItemName := LGroundItem.Rules.ItemType;
+        if LNeedsAmmo and (LTemplateItem.AmmoItem = LGroundItemName) then
+          LMatchedAmmo := LGroundItem;
+        if LTemplateItem.ItemType <> LGroundItemName then
+          Continue;
+        // if the template item would overlap with an existing item (i.e. a fixed weapon that didn't get cleared
+        // in ClearInventory above), skip it; don't display 'item not found' warning message
+        if OverlapItems(LUnit, LGroundItem, LSlot, LTemplateItem.SlotX, LTemplateItem.SlotY) then
+        begin
+          LFound := True;
+          Break;
+        end;
+        // if the loaded ammo doesn't match the template item's, remember the weapon for later and continue
+        // scanning
+        LLoadedAmmo := LGroundItem.AmmoItem;
+        if (LNeedsAmmo and Assigned(LLoadedAmmo) and (LTemplateItem.AmmoItem <> LLoadedAmmo.Rules.ItemType)) or
+          (LNeedsAmmo and (not Assigned(LLoadedAmmo))) then
+        begin
+          // remember the last matched weapon for simplicity (but prefer empty weapons if any are found)
+          if (not Assigned(LMatchedWeapon)) or Assigned(LMatchedWeapon.AmmoItem) then
+            LMatchedWeapon := LGroundItem;
+          Continue;
+        end;
+        // move matched item from ground to the appropriate inv slot
+        LGroundItem.SetOwner(LUnit);
+        LGroundItem.Tile := nil;
+        LGroundItem.Slot := LSlot;
+        LGroundItem.SlotX := LTemplateItem.SlotX;
+        LGroundItem.SlotY := LTemplateItem.SlotY;
+        LGroundItem.FuseTimer := LTemplateItem.FuseTimer;
+        LUnit.Inventory.Add(LGroundItem);
+        LGroundInventory.Remove(LGroundItem);
+        LFound := True;
+        Break;
+      end;
+      // if we failed to find an exact match, but found unloaded ammo and the right weapon, unload the target
+      // weapon, load the right ammo, and use it
+      if (not LFound) and Assigned(LMatchedWeapon) and ((not LNeedsAmmo) or Assigned(LMatchedAmmo)) then
+      begin
+        // unload the existing ammo (if any) from the weapon
+        LLoadedAmmo := LMatchedWeapon.AmmoItem;
+        if Assigned(LLoadedAmmo) then
+        begin
+          LGroundTile.AddItem(LLoadedAmmo, LGround);
+          LMatchedWeapon.SetAmmoItem(nil);
+        end;
+        // load the correct ammo into the weapon
+        if Assigned(LMatchedAmmo) then
+        begin
+          LMatchedWeapon.SetAmmoItem(LMatchedAmmo);
+          LGroundTile.RemoveItem(LMatchedAmmo);
+        end;
+        // rescan and pick up the newly-loaded/unloaded weapon
+        LRescan := True;
+      end;
+    end;
+    if not LFound then
+      LItemMissing := True;
+  end;
+  if LItemMissing then
+    FInv.ShowWarning(Tr('STR_NOT_ENOUGH_ITEMS_FOR_TEMPLATE').Text);
+  RefreshAfterChange;
+end;
+
+procedure TXcomInventoryState.ClearInventoryPress(AAction: TXcomAction);
+var
+  LUnit: TXcomBattleUnit;
+begin
+  // don't act when moving items
+  if Assigned(FInv.SelectedItem) then
+    Exit;
+  LUnit := FBattle.SelectedUnit;
+  if (not Assigned(LUnit)) or (not Assigned(LUnit.Tile)) then
+    Exit;
+  ClearInventory(LUnit, LUnit.Tile);
+  RefreshAfterChange;
+end;
+
+procedure TXcomInventoryState.AutoEquipPress(AAction: TXcomAction);
+var
+  LUnit: TXcomBattleUnit;
+  LEquipper: TXcomItemEquipper;
+begin
+  // don't act when moving items
+  if Assigned(FInv.SelectedItem) then
+    Exit;
+  LUnit := FBattle.SelectedUnit;
+  if (not Assigned(LUnit)) or (not Assigned(LUnit.Tile)) then
+    Exit;
+  // BattlescapeGenerator::autoEquip of the items of the ground, nothing is added to the saved battle
+  LEquipper := TXcomItemEquipper.Create(FSession.Ruleset, nil, True);
+  try
+    LEquipper.AutoEquip([LUnit], LUnit.Tile.Inventory, FSession.Ruleset.Inventories.Find(GROUND_SECTION),
+      FBattle.GlobalShade, True);
+  finally
+    LEquipper.Free;
+  end;
+  RefreshAfterChange;
 end;
 
 function TXcomInventoryState.SortedInventories: TArray<TXcomRuleInventory>;
@@ -555,6 +887,7 @@ begin
       FTxtItem.SetText('');
     FTxtAmmo.SetText('');
     FSelAmmo.Clear;
+    UpdateTemplateButtons(not FTimeUnits);
     Exit;
   end;
   if Assigned(LItem.CorpseUnit) and (LItem.CorpseUnit.Status = STATUS_UNCONSCIOUS) then
@@ -582,9 +915,14 @@ begin
       TXcomSurfaceShader.Blit(LFrame, FSelAmmo,
         FSelAmmo.X + (INV_HAND_WIDTH - LItem.AmmoItem.Rules.InventoryWidth) * INV_SLOT_WIDTH div 2,
         FSelAmmo.Y + (INV_HAND_HEIGHT - LItem.AmmoItem.Rules.InventoryHeight) * INV_SLOT_HEIGHT div 2, 0);
+    // the picture of the clip takes the place of the buttons of the template
+    UpdateTemplateButtons(False);
   end
   else
+  begin
     FSelAmmo.Clear;
+    UpdateTemplateButtons(not FTimeUnits);
+  end;
   if (LItem.AmmoQuantity <> 0) and LItem.NeedsAmmo then
     LText := Tr('STR_AMMO_ROUNDS_LEFT').Arg(LItem.AmmoQuantity).Text
   else if LItem.Rules.BattleType = TXcomRuleItem.BT_MEDIKIT then
@@ -598,6 +936,7 @@ begin
   FTxtItem.SetText('');
   FTxtAmmo.SetText('');
   FSelAmmo.Clear;
+  UpdateTemplateButtons(not FTimeUnits);
 end;
 
 procedure TXcomInventoryState.Handle(AAction: TXcomAction);
