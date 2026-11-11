@@ -34,7 +34,8 @@ uses
   DelphiDoom.Tests.XcomBattleStates.ActionMenuItem in 'Source\DelphiDoom.Tests.XcomBattleStates.ActionMenuItem.pas',
   DelphiDoom.Tests.XcomBattleStates.ActionMenuState in 'Source\DelphiDoom.Tests.XcomBattleStates.ActionMenuState.pas',
   DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState in 'Source\DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState.pas',
-  DelphiDoom.Tests.XcomBattleStates.Inventory in 'Source\DelphiDoom.Tests.XcomBattleStates.Inventory.pas';
+  DelphiDoom.Tests.XcomBattleStates.Inventory in 'Source\DelphiDoom.Tests.XcomBattleStates.Inventory.pas',
+  DelphiDoom.Tests.XcomBattleStates.Screens in 'Source\DelphiDoom.Tests.XcomBattleStates.Screens.pas';
 
 var
   Runner: ITestRunner;

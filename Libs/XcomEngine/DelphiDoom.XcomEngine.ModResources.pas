@@ -113,7 +113,8 @@ type
 implementation
 
 uses
-  System.IOUtils, System.Generics.Defaults, DelphiDoom.XcomEngine.YamlFields;
+  System.IOUtils, System.Generics.Defaults, DelphiDoom.XcomEngine.YamlFields, DelphiDoom.Xcom.Factory,
+  DelphiDoom.Xcom.BattlescapePalette;
 
 const
   PALETTE_NAMES: array[0..4] of string = ('PAL_GEOSCAPE', 'PAL_BASESCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA',
@@ -188,6 +189,16 @@ begin
   LPalette := FGameData.LoadPalette(4);
   LPalette.ApplyBattlescapeGradient;
   AddPalette('PAL_BATTLESCAPE', LPalette);
+  // Mod::loadBattlescapeResources: a game with UFOGRAPH D0..D3.LBM (TFTD) takes the battlescape palettes of the
+  // depths from them, and the first one replaces PAL_BATTLESCAPE
+  for LIndex := 0 to TXcomBattlescapePalette.COUNT - 1 do
+    if TXcomBattlescapePalette.TryLoad(FGameData.Files, TXcomFactory.CreateLbmReader, LIndex, LPalette) then
+    begin
+      if LIndex = 0 then
+        AddPalette('PAL_BATTLESCAPE', LPalette)
+      else
+        AddPalette(Format('PAL_BATTLESCAPE_%d', [LIndex]), LPalette);
+    end;
   // BACKPALS.DAT: 128 colors, the blocks of 16 that the windows take as their background colors
   LBackPalettes := FPaletteReader.Read(FGameData.Files.ReadAll('GEODATA/BACKPALS.DAT'), 128, 0);
   AddPalette('BACKPALS.DAT', LBackPalettes);
