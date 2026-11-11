@@ -19,7 +19,8 @@ uses
   DelphiDoom.XcomUi.Slider, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsNavigator.Intf,
   DelphiDoom.XcomMenu.OptionsControlsState, DelphiDoom.XcomMenu.OptionsAdvancedState,
   DelphiDoom.XcomMenu.OptionsGeoscapeState, DelphiDoom.XcomMenu.OptionsBattlescapeState,
-  DelphiDoom.XcomMenu.OptionsFoldersState, DelphiDoom.XcomMenu.MenuOptionsNavigator,
+  DelphiDoom.XcomMenu.OptionsFoldersState, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomMenu.MainMenuState,
+  DelphiDoom.XcomMenu.SetWindowedRootState,
   DelphiDoom.Tests.XcomEngine.World;
 
 type
@@ -187,6 +188,16 @@ type
     procedure FoldersUnClicChiedeDiAprireLaCartella;
     [Test]
     procedure SliderUnaGammaAlContrarioPosizionaIlCursoreEsatto;
+    [Test]
+    procedure GeoscapeITreCursoriEIMenuCambianoLeOpzioni;
+    [Test]
+    procedure BattlescapeICursoriEIPulsantiCambianoLeOpzioni;
+    [Test]
+    procedure IlNavigatoreDelMenuRiportaAlMenuPrincipale;
+    [Test]
+    procedure LaPosizioneDellaFinestraSiImpostaConOk;
+    [Test]
+    procedure LaPosizioneDellaFinestraAnnullaChiamaIlGestore;
   end;
 
 implementation
@@ -985,6 +996,84 @@ begin
   finally
     LSlider.Free;
   end;
+end;
+
+procedure TTestXcomOptionsMoreScreens.GeoscapeITreCursoriEIMenuCambianoLeOpzioni;
+begin
+  FWorld.Game.PushState(TXcomOptionsGeoscapeState.Create(FWorld.Game, ooMenu, FNavigator));
+  FWorld.Wait(400);
+  // scroll speed (94,18) from 100 to 10; clock speed (94,50) from 250 to 10; right ends
+  ClickAt(94 + 102, 26);
+  Assert.AreEqual(10, FWorld.Game.Options.GetValue('geoScrollSpeed'));
+  ClickAt(94 + 102, 58);
+  Assert.AreEqual(10, FWorld.Game.Options.GetValue('geoClockSpeed'));
+  // the radars and the flight paths of the globe (94,110 and 94,128)
+  ClickAt(150, 118);
+  Assert.IsFalse(FWorld.Game.Options.GetBool('globeRadarLines'));
+  ClickAt(150, 136);
+  Assert.IsFalse(FWorld.Game.Options.GetBool('globeFlightPaths'));
+end;
+
+procedure TTestXcomOptionsMoreScreens.BattlescapeICursoriEIPulsantiCambianoLeOpzioni;
+begin
+  FWorld.Game.PushState(TXcomOptionsBattlescapeState.Create(FWorld.Game, ooMenu, FNavigator));
+  FWorld.Wait(400);
+  // scroll (94,50) 2..20, fire (206,50) 1..20, player (94,82) 40..1, computer (206,82) 40..1
+  ClickAt(94 + 102, 58);
+  Assert.AreEqual(20, FWorld.Game.Options.GetValue('battleScrollSpeed'));
+  ClickAt(206 + 102, 58);
+  Assert.AreEqual(20, FWorld.Game.Options.GetValue('battleFireSpeed'));
+  ClickAt(94 + 102, 90);
+  Assert.AreEqual(1, FWorld.Game.Options.GetValue('battleXcomSpeed'));
+  ClickAt(206 + 102, 90);
+  Assert.AreEqual(1, FWorld.Game.Options.GetValue('battleAlienSpeed'));
+  // tooltips (206,110) start on, the death notifications (206,128) start off
+  ClickAt(250, 118);
+  Assert.IsFalse(FWorld.Game.Options.GetBool('battleTooltips'));
+  ClickAt(250, 136);
+  Assert.IsTrue(FWorld.Game.Options.GetBool('battleNotifyDeath'));
+end;
+
+procedure TTestXcomOptionsMoreScreens.IlNavigatoreDelMenuRiportaAlMenuPrincipale;
+var
+  LNavigator: IXcomOptionsNavigator;
+begin
+  LNavigator := TXcomMenuOptionsNavigator.Create('v');
+  LNavigator.Restart(ooMenu, FWorld.Game);
+  FWorld.Wait(400);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
+  // the geoscape and the battlescape are not ported: nothing happens
+  LNavigator.Restart(ooGeoscape, FWorld.Game);
+  FWorld.Wait(100);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
+end;
+
+procedure TTestXcomOptionsMoreScreens.LaPosizioneDellaFinestraSiImpostaConOk;
+begin
+  FWorld.Game.Options.NewWindowedModePositionX := 7;
+  FWorld.Game.PushState(TXcomSetWindowedRootState.Create(FWorld.Game, ooMenu, nil));
+  FWorld.Wait(400);
+  PressKey(FWorld.Game.Options.KeyOk);
+  FWorld.Wait(50);
+  Assert.IsTrue(FWorld.Game.Options.NewRootWindowedMode);
+  Assert.AreEqual(7, FWorld.Game.Options.NewWindowedModePositionX);
+end;
+
+procedure TTestXcomOptionsMoreScreens.LaPosizioneDellaFinestraAnnullaChiamaIlGestore;
+var
+  LCalled: Boolean;
+begin
+  LCalled := False;
+  FWorld.Game.PushState(TXcomSetWindowedRootState.Create(FWorld.Game, ooMenu,
+    procedure
+    begin
+      LCalled := True;
+    end));
+  FWorld.Wait(400);
+  PressKey(FWorld.Game.Options.KeyCancel);
+  FWorld.Wait(50);
+  Assert.IsTrue(LCalled);
+  Assert.IsFalse(FWorld.Game.TopState is TXcomSetWindowedRootState);
 end;
 
 initialization
