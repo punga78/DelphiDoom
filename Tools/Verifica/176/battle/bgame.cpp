@@ -47,6 +47,11 @@
 #include "Battlescape/Map.h"
 #include "Battlescape/Camera.h"
 #include "Battlescape/Projectile.h"
+#include "Battlescape/Particle.h"
+#include "Battlescape/Explosion.h"
+#include "Mod/MapDataSet.h"
+#include "Mod/MapData.h"
+#include "Engine/Palette.h"
 #undef protected
 #undef private
 #undef main
@@ -144,6 +149,51 @@ static void DumpMap(const std::string& path, SavedBattleGame* b) {
   g_map->cacheUnits();
   g_map->invalidate();
   g_map->draw();
+  {
+    // what the drawing reads from every tile: shade, discovered, frames of the parts, smoke, fire, top item
+    std::string t;
+    for (int i = 0; i < b->getMapSizeXYZ(); i++) {
+      Tile* tl = b->_tiles[i];
+      char tb[400];
+      std::string sp;
+      for (int p = 0; p < 4; p++) {
+        if (p) sp += "/";
+        if (tl->_objects[p]) sp += tl->_objects[p]->getDataset()->getName() + ":" + std::to_string(tl->_objects[p]->getSprite(tl->_currentFrame[p]));
+        else sp += "-";
+      }
+      snprintf(tb, sizeof tb, "%d s=%d d=%d f=%d/%d/%d/%d sm=%d fi=%d it=%d sp=%s\n", i, tl->getShade(), tl->isDiscovered(2) ? 1 : 0, tl->_currentFrame[0], tl->_currentFrame[1], tl->_currentFrame[2], tl->_currentFrame[3], tl->getSmoke(), tl->getFire(), tl->getTopItemSprite(), sp.c_str());
+      t += tb;
+    }
+    // the particles of the vapor (their jitter comes from RNG::seedless: not reproducible, so they are dumped)
+    for (int i = 0; i < b->getMapSizeXYZ(); i++) {
+      std::list<Particle*>* pc = b->_tiles[i]->getParticleCloud();
+      for (std::list<Particle*>::iterator it = pc->begin(); it != pc->end(); ++it) {
+        char tb[200];
+        snprintf(tb, sizeof tb, "p %d %.9g %.9g %.9g %d %d\n", i, (double)(*it)->_xOffset, (double)(*it)->_yOffset, (double)(*it)->_density, (int)(*it)->_color, (int)(*it)->_opacity);
+        t += tb;
+      }
+    }
+    {
+      char cb[200];
+      snprintf(cb, sizeof cb, "c %d side=%d selected=%d\n", (int)g_map->getCursorType(), (int)b->getSide(), b->getSelectedUnit() ? b->getSelectedUnit()->getId() : -1);
+      t += cb;
+    }
+    WriteText(path + ".tiles", t);
+    // the transparency table of the depth and the palette it was made from (once per scenario)
+    std::string folder = path.substr(0, path.find_last_of("/\\"));
+    if (b->getDepth() >= 0 && b->getDepth() < (int)g_map->_game->getMod()->getLUTs()->size()) {
+      const std::vector<Uint8>& lut = g_map->_game->getMod()->getLUTs()->at(b->getDepth());
+      std::string d((const char*)(lut.empty() ? "" : (const char*)&lut[0]), lut.size());
+      WriteText(folder + "/lut.bin", d);
+      static const char* palNames[] = { "PAL_BATTLESCAPE", "PAL_BATTLESCAPE_1", "PAL_BATTLESCAPE_2", "PAL_BATTLESCAPE_3" };
+      Palette* pal = g_map->_game->getMod()->getPalette(palNames[b->getDepth() & 3], false);
+      if (pal) {
+        std::string pd;
+        for (int c = 0; c < 256; c++) { SDL_Color* col = pal->getColors(c); pd.push_back((char)col->r); pd.push_back((char)col->g); pd.push_back((char)col->b); }
+        WriteText(folder + "/battle.pal", pd);
+      }
+    }
+  }
   SDL_Surface* s = g_map->getSurface();
   std::string data;
   int w = s->w, h = s->h;
@@ -275,6 +325,18 @@ static void ExecuteOrder(Game* game, BattlescapeState* bs, const std::string& ou
         g_map->getCamera()->centerOnPosition(Position(atoi(w[1].c_str()), atoi(w[2].c_str()), atoi(w[3].c_str())), false);
       } else if (w[0] == "viewlevel") {
         g_map->getCamera()->setViewLevel(atoi(w[1].c_str()));
+      } else if (w[0] == "explosion") {
+        // a sprite of the animation of an explosion, a bullet hit or a melee hit at a voxel: explosion vx vy vz frame delay big hit
+        g_map->_explosions.push_back(new Explosion(Position(atoi(w[1].c_str()), atoi(w[2].c_str()), atoi(w[3].c_str())), atoi(w[4].c_str()), atoi(w[5].c_str()), atoi(w[6].c_str()) != 0, atoi(w[7].c_str()) != 0));
+        g_map->_explosionInFOV = true;
+      } else if (w[0] == "animexplosions") {
+        // one step of the list, as ExplosionBState::think does it
+        for (std::list<Explosion*>::iterator it = g_map->_explosions.begin(); it != g_map->_explosions.end();) {
+          if (!(*it)->animate()) { delete *it; it = g_map->_explosions.erase(it); } else ++it;
+        }
+      } else if (w[0] == "flash") {
+        g_map->_flashScreen = true;
+        g_map->_explosionInFOV = true;
       } else if (w[0] == "dumpmap") {
         g_dumpMap = true;
       } else if (w[0] == "init") {

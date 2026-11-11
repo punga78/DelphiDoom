@@ -1,0 +1,41 @@
+setmorale 1000004 0
+setmorale 1 5
+setmorale 1000006 22
+endturn
+aiturn
+init
+setmorale 4 22
+setmorale 1000004 0
+setmorale 1000006 22
+endturn
+aiturn
+init
+shoot 5 8 25 38 0
+camera 24 46 0
+viewlevel 0
+dumpmap
+endturn
+aiturn
+init
+camera 25 45 0
+dumpmap
+endturn
+aiturn
+init
+camera 40 17 0
+dumpmap
+kneel 1
+endturn
+aiturn
+init
+camera 42 43 0
+dumpmap
+endturn
+aiturn
+init
+camera 54 44 0
+dumpmap
+kneel 4
+place 1000000 24 46 0
+turn 1000000 25 47 0
+melee 1000000

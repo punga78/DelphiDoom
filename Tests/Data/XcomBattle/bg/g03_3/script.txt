@@ -1,0 +1,57 @@
+endturn
+aiturn
+init
+camera 31 37 1
+viewlevel 3
+dumpmap
+shoot 8 6 33 44 1
+place 5 25 26 1
+turn 5 24 25 1
+melee 5
+shoot 5 6 19 24 1
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+place 1000018 32 36 1
+turn 1000018 31 37 1
+melee 1000018
+endturn
+aiturn
+init
+camera 46 40 1
+dumpmap
+endturn
+aiturn
+init
+camera 25 26 1
+dumpmap
+place 1000019 38 26 1
+turn 1000019 37 27 1
+melee 1000019
+setmorale 1000007 16
+setmorale 1000021 5
+setmorale 1000012 11
+endturn
+aiturn
+init
+camera 24 17 2
+viewlevel 1
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 47 31 1
+dumpmap
+shoot 2 8 46 36 1

@@ -807,15 +807,18 @@ begin
       if LTargeting and Assigned(FSave.SelectedUnit) and (not LActionFailed) then
         LActor.SpendTimeUnits(LTimeUnits);
       if FSave.Side = FACTION_PLAYER then
-        // after throwing the cursor returns to default cursor
+      begin
+        // after throwing the cursor returns to default cursor, after shooting it stays in targeting mode
         if ((LType = BA_THROW) or (LType = BA_LAUNCH)) and (not LActionFailed) then
         begin
           if LType = BA_LAUNCH then
             FCurrentAction.Waypoints.Clear;
           FCurrentAction.Targeting := False;
           FCurrentAction.ActionType := BA_NONE;
-          SetupCursor;
         end;
+        // setupCursor() is called for every action (the parity of the drawing found it missing after a shot)
+        SetupCursor;
+      end;
     end
     else
     begin
@@ -1131,6 +1134,7 @@ procedure TXcomBattlescapeGame.PrimaryAction(const APosition: TXcomPosition);
 var
   LUnit: TXcomBattleUnit;
 begin
+  FView.ResetObstacles;
   if FCurrentAction.Targeting and Assigned(FSave.SelectedUnit) then
   begin
     if (FCurrentAction.ActionType = BA_LAUNCH) or (FCurrentAction.ActionType = BA_USE) then

@@ -1,0 +1,56 @@
+kneel 1
+camera 7 4 0
+dumpmap
+place 1000009 4 7 0
+turn 1000009 3 7 0
+melee 1000009
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 3 7 0
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 28 6 0
+dumpmap
+endturn
+aiturn
+init
+camera 7 4 0
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+camera 29 23 1
+dumpmap
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init
+endturn
+aiturn
+init

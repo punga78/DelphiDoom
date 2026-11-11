@@ -44,6 +44,10 @@ type
     procedure SetCursorType(ACursorType: Integer; ASize: Integer = 1);
     procedure PlaySound(ASound: Integer; const APosition: TXcomPosition);
     procedure AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig, AHit: Boolean);
+    procedure AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
+    procedure ResetObstacles;
+    procedure EnableObstacles;
+    procedure DisableObstacles;
     procedure SetProjectile(const AProjectile: TObject);
     procedure SetBlastFlash(AFlash: Boolean);
     function BlastFlash: Boolean;
@@ -141,6 +145,26 @@ procedure TXcomBattleMapView.AddExplosion(const ACenter: TXcomPosition; AStartFr
   AHit: Boolean);
 begin
   FOther.AddExplosion(ACenter, AStartFrame, AFrameDelay, ABig, AHit);
+end;
+
+procedure TXcomBattleMapView.AddVaporCloud(const AVoxel: TXcomPosition; ADensity, AColor: Integer);
+begin
+  FMap.AddVaporCloud(AVoxel, ADensity, AColor);
+end;
+
+procedure TXcomBattleMapView.ResetObstacles;
+begin
+  FMap.ResetObstacles;
+end;
+
+procedure TXcomBattleMapView.EnableObstacles;
+begin
+  FMap.EnableObstacles;
+end;
+
+procedure TXcomBattleMapView.DisableObstacles;
+begin
+  FMap.DisableObstacles;
 end;
 
 procedure TXcomBattleMapView.SetProjectile(const AProjectile: TObject);
