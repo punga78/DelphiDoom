@@ -141,7 +141,7 @@ var
     for T := 0 to i.FTypes.Count -1 do
     begin
       if PIFTypeRec(i.FTypes[t]).ExportName <> '' then
-        WriteOutPut('Type [' + IntToStr(t) + ']: ' + BT2S(PIFTypeRec(i.FTypes[t])) + ' Export: ' + PIFTypeRec(i.FTypes[t]).ExportName)
+        WriteOutPut('Type [' + IntToStr(t) + ']: ' + BT2S(PIFTypeRec(i.FTypes[t])) + ' Export: ' + string(PIFTypeRec(i.FTypes[t]).ExportName))
       else
         WriteOutPut('Type [' + IntToStr(t) + ']: ' + BT2S(PIFTypeRec(i.FTypes[t])));
     end;
@@ -170,7 +170,7 @@ var
     WriteOutPut('[VARS]');
     for t := 0 to i.FGlobalVars.count -1 do
     begin
-      WriteOutPut('Var [' + IntToStr(t) + ']: ' + IntToStr(FindType(PIFVariant(i.FGlobalVars[t])^.FType)) + ' ' + BT2S(PIFVariant(i.FGlobalVars[t])^.Ftype) + ' ' + PIFVariant(i.FGlobalVars[t])^.Ftype.ExportName);
+      WriteOutPut('Var [' + IntToStr(t) + ']: ' + IntToStr(FindType(PIFVariant(i.FGlobalVars[t])^.FType)) + ' ' + BT2S(PIFVariant(i.FGlobalVars[t])^.Ftype) + ' ' + string(PIFVariant(i.FGlobalVars[t])^.Ftype.ExportName));
     end;
   end;
 
@@ -322,14 +322,14 @@ var
                 SetLength(s, l);
                 if not ReadData(s[1], l) then
                   Exit;
-                Result := MakeString(s);
+                Result := string(MakeString(s));
               end;
             btSet:
               begin
                 SetLength(s, TPSTypeRec_Set(f).aByteSize);
                 if not ReadData(s[1], Length(s)) then
                   Exit;
-                Result := MakeString(s);
+                Result := string(MakeString(s));
               end;
             btChar:
               begin
@@ -351,7 +351,7 @@ var
                 SetLength(ws, l);
                 if not ReadData(ws[1], l * 2) then
                   Exit;
-                Result := MakeWString(ws);
+                Result := string(MakeWString(ws));
               end;
             {$ENDIF}
           end;
@@ -605,15 +605,15 @@ var
       if TPSProcRec(i.FProcs[t]).ClassType = TIFExternalProcRec then
       begin
         if TPSExternalProcRec(i.FProcs[t]). Decl = '' then
-          WriteOutPut('Proc [' + IntToStr(t) + ']: External: ' + TPSExternalProcRec(i.FProcs[t]).Name)
+          WriteOutPut('Proc [' + IntToStr(t) + ']: External: ' + string(TPSExternalProcRec(i.FProcs[t]).Name))
         else
-          WriteOutPut('Proc [' + IntToStr(t) + ']: External Decl: ' + Debug2Str(TIFExternalProcRec(i.FProcs[t]).Decl) + ' ' + TIFExternalProcRec(i.FProcs[t]).Name);
+          WriteOutPut('Proc [' + IntToStr(t) + ']: External Decl: ' + Debug2Str(string(TIFExternalProcRec(i.FProcs[t]).Decl)) + ' ' + string(TIFExternalProcRec(i.FProcs[t]).Name));
       end
       else
       begin
         if TPSInternalProcRec(i.FProcs[t]).ExportName <> '' then
         begin
-          WriteOutPut('Proc [' + IntToStr(t) + '] Export: ' + TPSInternalProcRec(i.FProcs[t]).ExportName + ' ' + TPSInternalProcRec(i.FProcs[t]).ExportDecl);
+          WriteOutPut('Proc [' + IntToStr(t) + '] Export: ' + string(TPSInternalProcRec(i.FProcs[t]).ExportName) + ' ' + string(TPSInternalProcRec(i.FProcs[t]).ExportDecl));
         end
         else
           WriteOutPut('Proc [' + IntToStr(t) + ']');
