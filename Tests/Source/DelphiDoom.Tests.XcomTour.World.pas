@@ -36,6 +36,7 @@ type
     FDeviceRef: IXcomVideoDevice;
     FGame: TXcomGame;
     class function FindUp(const ARelative: string): string; static;
+    function LoadSave(const AFolder, AName: string): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -56,6 +57,11 @@ type
     ///   is adapted to the catalog of the saved games, as the scripts of Tools\Verifica\176 do). False: no file
     /// </summary>
     function LoadVariant(const AName: string): Boolean;
+    /// <summary>
+    ///   The same for a saved game of Tests\Data\XcomSave\missions (Tools\Verifica\176\Make-XcomMissionSave.ps1: a
+    ///   craft with soldiers over its target, a UFO over the base). False: no file
+    /// </summary>
+    function LoadMission(const AName: string): Boolean;
     /// <summary>The class of the state on top ('' when there is none)</summary>
     function Top: string;
     function Save: TXcomSavedGame;
@@ -230,11 +236,21 @@ begin
 end;
 
 function TXcomTourWorld.LoadVariant(const AName: string): Boolean;
+begin
+  Result := LoadSave('Tests\Data\XcomSave\variants', AName);
+end;
+
+function TXcomTourWorld.LoadMission(const AName: string): Boolean;
+begin
+  Result := LoadSave('Tests\Data\XcomSave\missions', AName);
+end;
+
+function TXcomTourWorld.LoadSave(const AFolder, AName: string): Boolean;
 var
   LFolder: string;
   LText: string;
 begin
-  LFolder := FindUp('Tests\Data\XcomSave\variants');
+  LFolder := FindUp(AFolder);
   Result := (LFolder <> '') and TFile.Exists(TPath.Combine(LFolder, AName + '.sav'));
   if not Result then
     Exit;

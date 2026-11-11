@@ -12,7 +12,7 @@ unit DelphiDoom.XcomBattleStates.MissionLauncher;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Craft,
+  System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.Screens.Intf;
 
@@ -31,6 +31,7 @@ type
     FAudio: IXcomBattleAudio;
     procedure StartBattle(const ASession: IXcomBattleSession);
     procedure Generate(const ARequest: TXcomMissionRequest);
+    function Describe(const AError: Exception): string;
   public
     constructor Create(AHost: TXcomStateHost; const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio);
     procedure BeginMission(const ARequest: TXcomMissionRequest);
@@ -41,6 +42,7 @@ implementation
 uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy,
   DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.TileEngine,
+  DelphiDoom.XcomBattle.Pathfinding,
   DelphiDoom.XcomBattle.Generator, DelphiDoom.XcomBattle.LegacyRandom, DelphiDoom.XcomBattleStates.Graphics.Intf,
   DelphiDoom.XcomBattleStates.Factory, DelphiDoom.XcomBattleStates.BattlescapeState,
   DelphiDoom.XcomBattleStates.BriefingState, DelphiDoom.XcomBattleStates.AliensCrashState,
@@ -55,6 +57,15 @@ begin
   FAudio := AAudio;
 end;
 
+function TXcomMissionLauncher.Describe(const AError: Exception): string;
+begin
+  Result := AError.Message;
+  // a defect of the program, not a mission that the rules cannot make: the address in the terms of the .map of the
+  // executable (the image can be relocated) says where
+  if (AError is EAccessViolation) and (ExceptAddr <> nil) then
+    Result := Result + ' [map ' + IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8) + ']';
+end;
+
 procedure TXcomMissionLauncher.BeginMission(const ARequest: TXcomMissionRequest);
 begin
   try
@@ -62,7 +73,7 @@ begin
   except
     // a mission that cannot be generated must not end the game: the player reads why
     on E: Exception do
-      FHost.PushState(TXcomErrorMessageState.ForOrigin(FHost, ooGeoscape, E.Message,
+      FHost.PushState(TXcomErrorMessageState.ForOrigin(FHost, ooGeoscape, Describe(E),
         PXcomColors(FHost.Resources.GetPalette('PAL_GEOSCAPE'))));
   end;
 end;
@@ -79,6 +90,8 @@ var
   LLegacy: TXcomLegacyRandom;
   LSession: IXcomBattleSession;
   LCraft: TXcomCraft;
+  LBase: TXcomBase;
+  LPathfinder: IXcomBattlePathfinder;
 begin
   LRuleset := TXcomStrategy.Ruleset(FHost);
   LSave := TXcomStrategy.SavedGame(FHost);
@@ -89,6 +102,10 @@ begin
     LBattle.MissionType := ARequest.MissionType;
     // the engine of the generator: the session makes its own once the map has its size
     LEngine := TXcomTileEngine.Create(LBattle, LContext, LGraphics.VoxelData);
+    // SavedBattleGame::setUnitPosition asks the pathfinding whether a large unit fits: without one, a battle with
+    // a 2x2 unit (a tank, a large alien) was an access violation. The session makes its own afterwards too
+    LPathfinder := TXcomPathfinding.Create(LBattle);
+    LBattle.Pathfinder := LPathfinder;
     // the colors of the units come from the rand() of the C library: any seed does
     LLegacy := TXcomLegacyRandom.Create(Cardinal(FHost.Clock.Ticks));
     try
@@ -97,7 +114,10 @@ begin
         if ARequest.WorldTexture >= 0 then
           LGenerator.SetWorldTexture(LRuleset.Globe.GetTexture(ARequest.WorldTexture));
         LGenerator.SetWorldShade(ARequest.WorldShade);
-        LGenerator.SetCraft(ARequest.Craft);
+        if Assigned(ARequest.Craft) then
+          LGenerator.SetCraft(ARequest.Craft);
+        if Assigned(ARequest.Base) then
+          LGenerator.SetBase(ARequest.Base);
         if Assigned(ARequest.Ufo) then
           LGenerator.SetUfo(ARequest.Ufo)
         else if Assigned(ARequest.Site) then
@@ -114,6 +134,8 @@ begin
     end;
     LBattle.TileEngine := nil;
     LEngine := nil;
+    LBattle.Pathfinder := nil;
+    LPathfinder := nil;
   except
     LBattle.Free;
     raise;
@@ -122,7 +144,8 @@ begin
   LSession := TXcomBattleFactory.CreateSession(FHost, LBattle, LContext, LGraphics);
   LSession.StoreInSavedGame;
   LCraft := ARequest.Craft;
-  FHost.PushState(TXcomBriefingState.Create(FHost, LRuleset, ARequest.MissionType, LCraft, nil,
+  LBase := ARequest.Base;
+  FHost.PushState(TXcomBriefingState.Create(FHost, LRuleset, ARequest.MissionType, LCraft, LBase,
     procedure
     begin
       StartBattle(LSession);

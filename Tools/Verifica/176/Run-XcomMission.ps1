@@ -17,13 +17,15 @@ param(
   [string]$Race = 'STR_AQUATOID',
   [string]$Craft = 'STR_TRITON',
   [string]$SaveFile = '',
+  # passed on to Make-XcomMissionSave.ps1 (for example @{ Defenses = 2; Ufo = 'STR_SURVEY_SHIP' })
+  [hashtable]$Make = @{},
   [string[]]$Option = @()
 )
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force "$Out\shots", "$Out\user\xcom2" | Out-Null
 Get-ChildItem "$Out\user\xcom2" -Filter *.sav | Remove-Item -Force
 if ($SaveFile -ne '') { Copy-Item $SaveFile "$Out\user\xcom2\mission.sav" -Force }
-else { & "$PSScriptRoot\Make-XcomMissionSave.ps1" -Root $Root -Out "$Out\user\xcom2\mission.sav" -Kind $Kind -Deployment $Deployment -Race $Race -Craft $Craft | Out-Null }
+else { & "$PSScriptRoot\Make-XcomMissionSave.ps1" -Root $Root -Out "$Out\user\xcom2\mission.sav" -Kind $Kind -Deployment $Deployment -Race $Race -Craft $Craft @Make | Out-Null }
 $cfg = Get-Content "$Data\openxcom_user\options.cfg" -Raw
 foreach ($o in $Option) {
   $kv = $o.Split('=', 2)

@@ -24,7 +24,15 @@ param(
   [string]$Name = 'Mission',
   [int]$Soldiers = 6,
   # the transport starts this far (radians of longitude) from the target and flies there
-  [double]$Away = 0
+  [double]$Away = 0,
+  # defense: how many torpedo defenses the base has (0: the battle starts at once), a bombardment shield, no soldiers
+  [int]$Defenses = 0,
+  [switch]$Shield,
+  [switch]$Undefended,
+  # final: the research that unlocks the last mission is not done
+  [switch]$Locked,
+  # defense: the type of the UFO that attacks (a survey ship is destroyed by one hit)
+  [string]$Ufo = 'STR_BATTLESHIP'
 )
 $ErrorActionPreference = 'Stop'
 $t = [IO.File]::ReadAllText("$Root\Tests\Data\XcomSave\variants\save02_dogfight.sav").Replace("`r`n", "`n")
@@ -34,7 +42,7 @@ $t = [regex]::Replace($t, 'STR_RACE_\d|STR_SOMETHING_\d', $Race)
 switch ($Kind) {
   'crash' { $lon = '0.80000000000000004'; $lat = '0.20000000000000001'; $destType = 'STR_UFO'; $destId = 1 }
   'landed' { $lon = '0.80000000000000004'; $lat = '0.20000000000000001'; $destType = 'STR_UFO'; $destId = 1 }
-  'site' { $lon = '0.90000000000000002'; $lat = '0.29999999999999999'; $destType = 'STR_MISSION_SITE'; $destId = 1 }
+  'site' { $lon = '0.90000000000000002'; $lat = '0.29999999999999999'; $destType = $(if ($Deployment -like 'STR_ARTIFACT*') { 'STR_ARTIFACT_SITE' } else { 'STR_TERROR_SITE' }); $destId = 1 }
   'alienbase' { $lon = '2'; $lat = '0.29999999999999999'; $destType = 'STR_ALIEN_BASE'; $destId = 2 }
   default { $lon = '0.69999999999999996'; $lat = '0.20000000000000001'; $destType = ''; $destId = 0 }
 }
@@ -82,12 +90,23 @@ switch ($Kind) {
     $marker = if ($Deployment -like 'STR_ARTIFACT*') { 'STR_ARTIFACT_SITE' } else { 'STR_TERROR_SITE' }
     $t = $t.Replace("  STR_BARRACUDA: 3`n", "  STR_BARRACUDA: 3`n  ${marker}: 2`n")
   }
+  'final' {
+    # the research that unlocks the last mission
+    $final = if ($Locked) { '' } else { "discovered:`n  - STR_TLETH_ALIEN_CITY`n" }
+    $t = $t.Replace("alienStrategy:`n", $final + "alienStrategy:`n")
+  }
   'defense' {
-    # the UFO of a retaliation one step away from the base, on its assault run
+    # the UFO of a retaliation over the base, on its assault run (a loaded UFO flies to a waypoint: the base is found there)
     $t = $t.Replace("  - lon: 0.80000000000000004`n    lat: 0.20000000000000001`n    id: 1`n    speedLon: 0`n    speedLat: 0`n    speedRadian: 0`n    speed: 1500`n    type: STR_SURVEY_SHIP",
-      "  - lon: 0.70009999999999994`n    lat: 0.20000000000000001`n    dest:`n      lon: 0.69999999999999996`n      lat: 0.20000000000000001`n      type: STR_BASE`n      id: 0`n    id: 1`n    speedLon: 0`n    speedLat: 0`n    speedRadian: 0`n    speed: 1500`n    type: STR_BATTLESHIP")
+      "  - lon: 0.69999999999999996`n    lat: 0.20000000000000001`n    dest:`n      lon: 0.69999999999999996`n      lat: 0.20000000000000001`n      type: STR_BASE`n      id: 0`n    id: 1`n    speedLon: 0`n    speedLat: 0`n    speedRadian: 0`n    speed: 1500`n    type: $Ufo")
     $t = $t.Replace("    mission: 1`n    trajectory: P0`n    trajectoryPoint: 1`n", "    mission: 1`n    trajectory: __RETALIATION_ASSAULT_RUN`n    trajectoryPoint: 0`n")
     $t = $t.Replace("  - type: STR_ALIEN_RESOURCE_RAID`n    region: STR_NORTH_ATLANTIC", "  - type: STR_ALIEN_RETALIATION`n    region: STR_NORTH_ATLANTIC")
+    $cells = @(@(4, 2), @(5, 2), @(5, 3), @(0, 2), @(1, 2), @(0, 3))
+    $extra = ''
+    for ($i = 0; $i -lt [Math]::Min($Defenses, 5); $i++) { $extra += "      - type: STR_TORPEDO_DEFENSES`n        x: $($cells[$i][0])`n        y: $($cells[$i][1])`n" }
+    if ($Shield) { $extra += "      - type: STR_BOMBARDMENT_SHIELD`n        x: 0`n        y: 3`n" }
+    $t = $t.Replace("    soldiers:`n      - type: STR_SOLDIER`n        id: 1`n", $extra + "    soldiers:`n      - type: STR_SOLDIER`n        id: 1`n")
+    if ($Undefended) { $t = [regex]::Replace($t, '(?s)    soldiers:\n.*?\n    crafts:\n', "    crafts:`n") }
   }
 }
 New-Item -ItemType Directory -Force (Split-Path $Out) | Out-Null

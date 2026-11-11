@@ -20,7 +20,8 @@ type
   /// <summary>
   ///   The globe with a small window on top: a click on a target (or a point of the globe, which becomes a new
   ///   waypoint) chooses the destination of the craft. For a craft that is in its base the range is drawn on the globe.
-  ///   The Cydonia button (the last mission of X-COM: Enemy Unknown) is not shown: it needs the final research
+  ///   The Cydonia button (the last mission) shows for a craft that can make the journey once the final research
+  ///   is done
   /// </summary>
   TXcomSelectDestinationState = class(TXcomState)
   strict private
@@ -31,29 +32,35 @@ type
     FWindow: TXcomWindow;
     FBtnCancel: TXcomTextButton;
     FTxtTitle: TXcomText;
+    FBtnCydonia: TXcomTextButton;
+    FOnCydonia: TProc<TXcomCraft>;
+    procedure CydoniaClick(AAction: TXcomAction);
     procedure GlobeClick(AAction: TXcomAction);
     procedure CancelClick(AAction: TXcomAction);
   public
     /// <param name="ACraft">The craft to send (not owned)</param>
     /// <param name="AGlobe">The globe (not owned)</param>
     /// <param name="AOnTargets">Shows the choice among the targets that were clicked (the callee takes the list)</param>
+    /// <param name="AOnCydonia">Shows the confirmation of the last mission for the craft; nil: no Cydonia button</param>
     constructor Create(AHost: TXcomStateHost; ACraft: TXcomCraft; AGlobe: TXcomGlobe;
-      const AOnTargets: TProc<TList<TXcomTarget>, TXcomCraft>);
+      const AOnTargets: TProc<TList<TXcomTarget>, TXcomCraft>; const AOnCydonia: TProc<TXcomCraft> = nil);
     destructor Destroy; override;
     procedure Init; override;
     procedure Think; override;
     procedure Handle(AAction: TXcomAction); override;
+    property CydoniaButton: TXcomTextButton read FBtnCydonia;
   end;
 
 implementation
 
 uses
-  System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomSave.Waypoint;
+  System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.Base,
+  DelphiDoom.XcomGeoscape.Strategy;
 
 { TXcomSelectDestinationState }
 
 constructor TXcomSelectDestinationState.Create(AHost: TXcomStateHost; ACraft: TXcomCraft; AGlobe: TXcomGlobe;
-  const AOnTargets: TProc<TList<TXcomTarget>, TXcomCraft>);
+  const AOnTargets: TProc<TList<TXcomTarget>, TXcomCraft>; const AOnCydonia: TProc<TXcomCraft>);
 var
   LDX, LDY: Integer;
 begin
@@ -61,6 +68,7 @@ begin
   FCraft := ACraft;
   FGlobe := AGlobe;
   FOnTargets := AOnTargets;
+  FOnCydonia := AOnCydonia;
   LDX := Host.Screen.DX;
   LDY := Host.Screen.DY;
   ToggleScreen;
@@ -68,11 +76,13 @@ begin
   FWindow.X := LDX;
   FWindow.SetDY(0);
   FBtnCancel := TXcomTextButton.Create(60, 12, 110 + LDX, 8);
+  FBtnCydonia := TXcomTextButton.Create(60, 12, 180 + LDX, 8);
   FTxtTitle := TXcomText.Create(100, 16, 10 + LDX, 6);
   SetInterface('geoscape');
   FControls := TXcomGlobeControls.Create(Self, FGlobe, LDX, LDY);
   Add(FWindow, 'genericWindow', 'geoscape');
   Add(FBtnCancel, 'genericButton1', 'geoscape');
+  Add(FBtnCydonia, 'genericButton1', 'geoscape');
   Add(FTxtTitle, 'genericText', 'geoscape');
   FGlobe.OnMouseClick(GlobeClick);
   FWindow.SetBackground(Host.Resources.GetSurface('BACK01.SCR'));
@@ -82,6 +92,15 @@ begin
   FTxtTitle.SetText(Tr('STR_SELECT_DESTINATION'));
   FTxtTitle.SetVerticalAlign(vaMiddle);
   FTxtTitle.SetWordWrap(True);
+  // the craft is asked first: a craft that cannot make the journey never looks at the research
+  if (not Assigned(FOnCydonia)) or (not FCraft.Rules.Spacecraft) or
+    (not TXcomStrategy.SavedGame(Host).IsResearched(TXcomStrategy.Ruleset(Host).FinalResearch)) then
+    FBtnCydonia.Visible := False
+  else
+  begin
+    FBtnCydonia.SetText(Tr('STR_CYDONIA'));
+    FBtnCydonia.OnMouseClick(CydoniaClick);
+  end;
   if FCraft.Status <> 'STR_OUT' then
   begin
     FGlobe.SetCraftRange(FCraft.Longitude, FCraft.Latitude, FCraft.BaseRange);
@@ -147,6 +166,12 @@ begin
       LTargets.Free;
     end;
   end;
+end;
+
+procedure TXcomSelectDestinationState.CydoniaClick(AAction: TXcomAction);
+begin
+  if (FCraft.NumSoldiers(TXcomBase(FCraft.Base).Soldiers) > 0) or (FCraft.NumVehicles > 0) then
+    FOnCydonia(FCraft);
 end;
 
 procedure TXcomSelectDestinationState.CancelClick(AAction: TXcomAction);

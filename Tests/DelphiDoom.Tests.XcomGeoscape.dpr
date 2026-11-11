@@ -30,7 +30,8 @@ uses
   DelphiDoom.Tests.XcomGeoscape.Popups in 'Source\DelphiDoom.Tests.XcomGeoscape.Popups.pas',
   DelphiDoom.Tests.XcomGeoscape.MonthlyReportState in 'Source\DelphiDoom.Tests.XcomGeoscape.MonthlyReportState.pas',
   DelphiDoom.Tests.XcomGeoscape.MissionLauncher in 'Source\DelphiDoom.Tests.XcomGeoscape.MissionLauncher.pas',
-  DelphiDoom.Tests.XcomGeoscape.GraphScale in 'Source\DelphiDoom.Tests.XcomGeoscape.GraphScale.pas';
+  DelphiDoom.Tests.XcomGeoscape.GraphScale in 'Source\DelphiDoom.Tests.XcomGeoscape.GraphScale.pas',
+  DelphiDoom.Tests.XcomGeoscape.BaseDefense in 'Source\DelphiDoom.Tests.XcomGeoscape.BaseDefense.pas';
 
 var
   Runner: ITestRunner;
