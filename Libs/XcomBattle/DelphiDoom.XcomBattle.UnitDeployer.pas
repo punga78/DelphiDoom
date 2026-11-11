@@ -37,7 +37,6 @@ type
     function CanPlaceXcomUnit(const ATile: TXcomTile): Boolean;
     function AddAlien(const ARules: TXcomRuleUnit; AAlienRank: Integer; AOutside: Boolean): TXcomBattleUnit;
     function AddCivilian(const ARules: TXcomRuleUnit): TXcomBattleUnit;
-    function PlaceUnitNearFriend(const AUnit: TXcomBattleUnit): Boolean;
     procedure AddBuiltInWeapons(const AUnit: TXcomBattleUnit; const ARules: TXcomRuleUnit; ALevel: Integer);
     function IsResearched(const ARequirements: TArray<string>): Boolean;
     function UnitRules(const AType: string): TXcomRuleUnit;
@@ -47,6 +46,8 @@ type
     constructor Create(const AState: TXcomGeneratorState);
     /// <summary>deployXCOM: the soldiers, vehicles and equipment of the craft (or base) onto the map</summary>
     procedure DeployXcom;
+    /// <summary>placeUnitNearFriend: next to a unit of its side that is on the map (up to ten tries)</summary>
+    function PlaceUnitNearFriend(const AUnit: TXcomBattleUnit): Boolean;
     /// <summary>deployAliens</summary>
     procedure DeployAliens(const ADeployment: TXcomAlienDeployment);
     /// <summary>deployCivilians</summary>

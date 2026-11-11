@@ -6,6 +6,11 @@
 //   genNN.err  (instead of .yml) the message of the Exception that run threw, when it threw
 // The Game that the generator asks for the saved game and the mod is a block of zeroed memory with only those two
 // fields set: the generator reads nothing else of it. Contains no OpenXcom code.
+// With GEN_STAGE=1, for a mission whose deployment has a next stage (GEN_MISSION=<deployment> forces the mission of the
+// scenarios without a UFO), the first stage is given an outcome (units killed, soldiers put on the exit tiles, aborted
+// or won: the "actions" of genNN.stage, which the test repeats) and the REAL BattlescapeGenerator::nextStage runs:
+//   genNN.stage      the outcome, the seed before and after nextStage, or its error
+//   genNN.stage.yml  what SavedBattleGame::save writes after nextStage
 // usage: gengen <data folder> <user folder> <output folder> <count> <seed> [first]
 #include <yaml-cpp/yaml.h>
 #include <utility>
@@ -31,6 +36,7 @@
 #include "Mod/AlienDeployment.h"
 #include "Mod/AlienRace.h"
 #include "Mod/RuleTerrain.h"
+#include "Mod/Armor.h"
 #include "Savegame/SavedGame.h"
 #include "Savegame/SavedBattleGame.h"
 #include "Savegame/Base.h"
@@ -140,6 +146,7 @@ int main(int argc, char** argv) {
       int kind = v % 5;  // 0 no craft, 1 craft on a terrain mission, 2 craft and ufo, 3 base defense, 4 ufo without craft
       std::string mission = deployments[Pick(deployments.size())];
       if (kind == 3) mission = "STR_BASE_DEFENSE";
+      if (getenv("GEN_MISSION") && (kind == 0 || kind == 1)) mission = getenv("GEN_MISSION");
       if ((kind == 1 || kind == 2) && !base->getCrafts()->empty()) craft = base->getCrafts()->front();
       if (kind == 2 || kind == 4) {
         // a ufo: its type is the deployment
@@ -245,6 +252,70 @@ int main(int argc, char** argv) {
         LoadMapResourcesNoEngine(mod, c);
         WriteNode(basePath + ".re.yml", c->save());
         delete c;
+      }
+      if (ok && getenv("GEN_STAGE") && !rd->getNextStage().empty()) {
+        // the outcome of the first stage, then the real nextStage on the same saved battle
+        uint64_t stageSeed = runSeed * 31 + 7;
+        RNG::setSeed(stageSeed);
+        std::ostringstream st, acts;
+        std::vector<Tile*> exits;
+        for (int i = 0; i < b->getMapSizeXYZ(); i++) {
+          Tile* t = b->_tiles[i];
+          if (t->getMapData(O_FLOOR) && t->getMapData(O_FLOOR)->getSpecialType() == END_POINT && !t->getUnit()) exits.push_back(t);
+        }
+        int mode = (exits.empty() || Pick(2) == 0) ? 0 : 1;  // 0 every alien dies (the stage is won), 1 aborted with soldiers on the exit
+        size_t nextExit = 0;
+        int inExit = 0, soldiers = 0;
+        bool firstSoldier = true;
+        for (size_t ui = 0; ui < b->_units.size(); ui++) {
+          BattleUnit* u = b->_units[ui];
+          if (u->isOut()) continue;
+          if (u->getOriginalFaction() == FACTION_HOSTILE) {
+            if (mode == 0 || Pick(3) == 0) { u->instaKill(); acts << "kill:" << u->getId() << ";"; }
+          } else if (u->getOriginalFaction() == FACTION_NEUTRAL) {
+            if (Pick(2) == 0) { u->instaKill(); acts << "kill:" << u->getId() << ";"; }
+          } else {
+            // the first soldier always lives (and goes to the exit when the mission is aborted): somebody must go on
+            bool keep = firstSoldier;
+            firstSoldier = false;
+            if (!keep && Pick(5) == 0) { u->instaKill(); acts << "kill:" << u->getId() << ";"; continue; }
+            soldiers++;
+            if (mode == 1 && (keep || Pick(3) != 0) && u->getArmor()->getSize() == 1) {
+              while (nextExit < exits.size()) {
+                Tile* old = u->getTile();
+                Position p = exits[nextExit++]->getPosition();
+                if (b->setUnitPosition(u, p)) {
+                  if (old && old != u->getTile()) old->setUnit(0);
+                  acts << "move:" << u->getId() << ":" << p.x << ":" << p.y << ":" << p.z << ";";
+                  inExit++;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        if (soldiers > 0 && (mode == 0 || inExit > 0)) {
+          b->setAborted(mode == 1);
+          std::string next = rd->getNextStage();
+          b->setMissionType(next);
+          uint64_t genSeed = stageSeed * 3 + 1;
+          RNG::setSeed(genSeed);
+          srand((unsigned)genSeed);
+          bool ok2 = true;
+          std::string err;
+          try {
+            BattlescapeGenerator gen2(game);
+            gen2.nextStage();
+          } catch (Exception& e) {
+            ok2 = false;
+            err = e.what();
+          }
+          st << "mission=" << next << "\naborted=" << (mode == 1 ? 1 : 0) << "\ninexit=" << inExit << "\nactions=" << acts.str() << "\nstageseed=" << genSeed
+             << "\nseedafter=" << RNG::getSeed() << "\nok=" << (ok2 ? 1 : 0) << "\n";
+          if (!ok2) st << "error=" << err << "\n";
+          WriteText(basePath + ".stage", st.str());
+          if (ok2) WriteNode(basePath + ".stage.yml", b->save());
+        }
       }
       if (ok && getenv("GEN_AI")) {
         // the thinking of the AI of every unit that has one, in order (they affect each other: nodes, turns), with the real AIModule::think

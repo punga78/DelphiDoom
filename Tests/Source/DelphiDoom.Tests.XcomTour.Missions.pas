@@ -39,6 +39,12 @@ type
     procedure LandAndComeBack(const AMissionType: string);
     /// <summary>Lets the defenses of the base fire until OK shows, and clicks it</summary>
     procedure WatchTheDefenses;
+    /// <summary>Puts the soldiers of the battlescape on top onto the tiles of the exit; how many found a place</summary>
+    function MoveSoldiersToExit: Integer;
+    /// <summary>Soldiers on the exit, the mission aborted: the briefing of the next stage must follow</summary>
+    procedure GoOnToStage(const AMissionType: string);
+    /// <summary>Every alien of the battlescape on top dies, then the turn is ended until the battle is over</summary>
+    procedure WinTheBattle;
   public
     [Setup]
     procedure Setup;
@@ -66,12 +72,24 @@ type
     procedure DovrebbePartirePerLUltimaMissione;
     [Test]
     procedure DovrebbeNascondereIlPulsanteDellUltimaMissioneSenzaLaRicerca;
+    [Test]
+    procedure DovrebbePassareAllaSecondaParteDellaBaseAliena;
+    [Test]
+    procedure DovrebbePassareAllaSecondaParteDiUnaNave;
+    [Test]
+    procedure DovrebbePassareAllaSecondaParteDiUnSitoDiArtefatti;
+    [Test]
+    procedure DovrebbeFareLeTrePartiDellUltimaMissione;
+    [Test]
+    procedure DovrebbeFareIlDebriefingSeNessunoEAllUscita;
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomSave.Ufo;
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.MapData,
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattleStates.BattlescapeState;
 
 const
   GEOSCAPE = 'TXcomGeoscapeState';
@@ -80,6 +98,8 @@ const
   DEBRIEFING = 'TXcomDebriefingState';
   CONFIRM_LANDING = 'TXcomConfirmLandingState';
   BASE_DEFENSE = 'TXcomBaseDefenseState';
+  /// <summary>SpecialTileType END_POINT</summary>
+  END_POINT = 13;
 
 procedure TTestXcomTourMissions.Setup;
 begin
@@ -294,6 +314,161 @@ begin
   Assert.AreEqual('TXcomSelectDestinationState', FWorld.Top);
   FWorld.Click(420, 28);
   Assert.AreEqual('TXcomSelectDestinationState', FWorld.Top);
+end;
+
+function TTestXcomTourMissions.MoveSoldiersToExit: Integer;
+var
+  LBattle: TXcomSavedBattleGame;
+  LExits: TArray<TXcomTile>;
+  LIndex, LNext: Integer;
+  LTile: TXcomTile;
+  LFloor: TXcomMapData;
+  LUnit: TXcomBattleUnit;
+begin
+  LBattle := (FWorld.Game.TopState as TXcomBattlescapeState).Session.Battle;
+  LExits := nil;
+  for LIndex := 0 to LBattle.MapSizeXyz - 1 do
+  begin
+    LTile := LBattle.TileByIndex(LIndex);
+    LFloor := LTile.MapData[XCOM_PART_FLOOR];
+    if Assigned(LFloor) and (LFloor.SpecialType = END_POINT) and not Assigned(LTile.CurrentUnit) then
+      LExits := LExits + [LTile];
+  end;
+  Result := 0;
+  LNext := 0;
+  for LUnit in LBattle.Units do
+    if (LUnit.OriginalFaction = FACTION_PLAYER) and (not LUnit.IsOut) and (LUnit.Armor.Size = 1) then
+      while LNext <= High(LExits) do
+      begin
+        LTile := LUnit.Tile;
+        if LBattle.SetUnitPosition(LUnit, LExits[LNext].Position) then
+        begin
+          // the tile the unit has left
+          if Assigned(LTile) and (LTile <> LUnit.Tile) then
+            LTile.SetUnit(nil);
+          Inc(Result);
+          Inc(LNext);
+          Break;
+        end;
+        Inc(LNext);
+      end;
+end;
+
+procedure TTestXcomTourMissions.WinTheBattle;
+var
+  LUnit: TXcomBattleUnit;
+  LTurn: Integer;
+begin
+  for LUnit in (FWorld.Game.TopState as TXcomBattlescapeState).Session.Battle.Units do
+    if (LUnit.OriginalFaction = FACTION_HOSTILE) and not LUnit.IsOut then
+      LUnit.InstaKill;
+  // the end turn button of the panel; the screens of the turns close with a click
+  FWorld.Click(512, 304);
+  for LTurn := 1 to 30 do
+  begin
+    if (FWorld.Top <> BATTLESCAPE) and (FWorld.Top <> 'TXcomNextTurnState') then
+      Exit;
+    if FWorld.Top = 'TXcomNextTurnState' then
+      FWorld.Click(320, 200);
+    FWorld.Wait(1000);
+  end;
+end;
+
+procedure TTestXcomTourMissions.GoOnToStage(const AMissionType: string);
+var
+  LSoldiers: Integer;
+begin
+  Assert.AreEqual(BATTLESCAPE, FWorld.Top);
+  LSoldiers := MoveSoldiersToExit;
+  Assert.IsTrue(LSoldiers > 0, 'la mappa ha un''uscita con posto per un soldato');
+  FWorld.Click(512, 336);
+  Assert.AreEqual('TXcomAbortMissionState', FWorld.Top);
+  FWorld.Click(150, 235);
+  FWorld.Wait(1000);
+  // no debriefing yet: the briefing of the next stage, with the battle still in the saved game
+  Assert.AreEqual(BRIEFING, FWorld.Top);
+  Assert.AreEqual(AMissionType, MissionType);
+  EnterBattle;
+  Assert.AreEqual(AMissionType, (FWorld.Game.TopState as TXcomBattlescapeState).Session.Battle.MissionType);
+end;
+
+procedure TTestXcomTourMissions.DovrebbePassareAllaSecondaParteDellaBaseAliena;
+begin
+  if not Mission('alienbase') then
+    Exit;
+  FWorld.Wait(1500);
+  FWorld.Click(160, 320);
+  FWorld.Wait(500);
+  EnterBattle;
+  GoOnToStage('STR_ALIEN_COLONY_P2');
+  // the second part is the last: abandoned, the mission ends with its debriefing
+  AbortBattle;
+  LeaveDebriefing;
+end;
+
+procedure TTestXcomTourMissions.DovrebbePassareAllaSecondaParteDiUnaNave;
+begin
+  if not Mission('site_cargo') then
+    Exit;
+  FWorld.Wait(1500);
+  FWorld.Click(160, 320);
+  FWorld.Wait(500);
+  Assert.AreEqual('STR_CARGO_SHIP_P1', MissionType);
+  EnterBattle;
+  // the deck of the ship has no exit: the second part comes when every alien of the first is dead
+  Assert.AreEqual(0, MoveSoldiersToExit);
+  WinTheBattle;
+  Assert.AreEqual(BRIEFING, FWorld.Top);
+  Assert.AreEqual('STR_CARGO_SHIP_P2', MissionType);
+  EnterBattle;
+  AbortBattle;
+  LeaveDebriefing;
+  Assert.AreEqual(0, FWorld.Save.MissionSites.Count);
+end;
+
+procedure TTestXcomTourMissions.DovrebbePassareAllaSecondaParteDiUnSitoDiArtefatti;
+begin
+  if not Mission('site_artifact') then
+    Exit;
+  FWorld.Wait(1500);
+  FWorld.Click(160, 320);
+  FWorld.Wait(500);
+  Assert.AreEqual('STR_ARTIFACT_SITE_P1', MissionType);
+  EnterBattle;
+  GoOnToStage('STR_ARTIFACT_SITE_P2');
+  AbortBattle;
+  LeaveDebriefing;
+end;
+
+procedure TTestXcomTourMissions.DovrebbeFareLeTrePartiDellUltimaMissione;
+var
+  LSoldiers: Integer;
+begin
+  if not Mission('final') then
+    Exit;
+  FWorld.Click(575, 12);
+  FWorld.Click(100, 161);
+  FWorld.Click(420, 28);
+  FWorld.Click(220, 305);
+  FWorld.Wait(500);
+  EnterBattle;
+  LSoldiers := (FWorld.Game.TopState as TXcomBattlescapeState).Session.Battle.Units.Count;
+  Assert.IsTrue(LSoldiers > 0);
+  GoOnToStage('STR_TLETH_P2');
+  GoOnToStage('STR_TLETH_P3');
+end;
+
+procedure TTestXcomTourMissions.DovrebbeFareIlDebriefingSeNessunoEAllUscita;
+begin
+  if not Mission('site_cargo') then
+    Exit;
+  FWorld.Wait(1500);
+  FWorld.Click(160, 320);
+  FWorld.Wait(500);
+  EnterBattle;
+  // the soldiers are still in the craft: the mission is abandoned, the second part never comes
+  AbortBattle;
+  LeaveDebriefing;
 end;
 
 end.

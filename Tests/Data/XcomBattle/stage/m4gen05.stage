@@ -1,0 +1,7 @@
+mission=STR_TLETH_P2
+aborted=1
+inexit=5
+actions=move:1:22:52:1;move:3:23:52:1;move:4:24:52:1;move:5:25:52:1;kill:6;move:8:26:52:1;kill:1000006;kill:1000007;kill:1000009;kill:1000010;kill:1000012;kill:1000013;
+stageseed=394506487
+seedafter=8686758889483098599
+ok=1

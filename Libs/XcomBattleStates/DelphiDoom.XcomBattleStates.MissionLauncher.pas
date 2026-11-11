@@ -29,12 +29,17 @@ type
     FHost: TXcomStateHost;
     FScreens: IXcomBattleScreens;
     FAudio: IXcomBattleAudio;
-    procedure StartBattle(const ASession: IXcomBattleSession);
     procedure Generate(const ARequest: TXcomMissionRequest);
     function Describe(const AError: Exception): string;
   public
     constructor Create(AHost: TXcomStateHost; const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio);
     procedure BeginMission(const ARequest: TXcomMissionRequest);
+    /// <summary>
+    ///   BriefingState::btnOkClick: the battlescape of the session, the screen of the first turn and the inventory
+    ///   (or, with no alien alive, the message of the crash and the debriefing). Also for the next stage of a mission
+    /// </summary>
+    class procedure StartBattle(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
+      const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio); static;
   end;
 
 implementation
@@ -92,6 +97,9 @@ var
   LCraft: TXcomCraft;
   LBase: TXcomBase;
   LPathfinder: IXcomBattlePathfinder;
+  LHost: TXcomStateHost;
+  LScreens: IXcomBattleScreens;
+  LAudio: IXcomBattleAudio;
 begin
   LRuleset := TXcomStrategy.Ruleset(FHost);
   LSave := TXcomStrategy.SavedGame(FHost);
@@ -145,51 +153,54 @@ begin
   LSession.StoreInSavedGame;
   LCraft := ARequest.Craft;
   LBase := ARequest.Base;
+  // the briefing can outlive the launcher: its closure keeps what it needs, not Self
+  LHost := FHost;
+  LScreens := FScreens;
+  LAudio := FAudio;
   FHost.PushState(TXcomBriefingState.Create(FHost, LRuleset, ARequest.MissionType, LCraft, LBase,
     procedure
     begin
-      StartBattle(LSession);
+      StartBattle(LHost, LSession, LScreens, LAudio);
     end));
 end;
 
-procedure TXcomMissionLauncher.StartBattle(const ASession: IXcomBattleSession);
+class procedure TXcomMissionLauncher.StartBattle(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
+  const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio);
 var
   LBattlescape: TXcomBattlescapeState;
   LLiveAliens: Integer;
   LLiveSoldiers: Integer;
   LDebriefing: TXcomState;
-  LHost: TXcomStateHost;
   LNext: TXcomState;
 begin
-  LHost := FHost;
-  LBattlescape := TXcomBattleFactory.CreateBattlescape(FHost, ASession, FScreens, FAudio) as TXcomBattlescapeState;
+  LBattlescape := TXcomBattleFactory.CreateBattlescape(AHost, ASession, AScreens, AAudio) as TXcomBattlescapeState;
   LBattlescape.Game.TallyUnits(LLiveAliens, LLiveSoldiers);
   if LLiveAliens > 0 then
   begin
-    FHost.PushState(LBattlescape);
-    if Assigned(FScreens) then
+    AHost.PushState(LBattlescape);
+    if Assigned(AScreens) then
     begin
-      LNext := FScreens.NextTurn(LBattlescape);
+      LNext := AScreens.NextTurn(LBattlescape);
       if Assigned(LNext) then
-        FHost.PushState(LNext);
+        AHost.PushState(LNext);
       // the soldiers are equipped before the first turn, without spending time units
-      LNext := FScreens.Inventory(LBattlescape, False);
+      LNext := AScreens.Inventory(LBattlescape, False);
       if Assigned(LNext) then
-        FHost.PushState(LNext);
+        AHost.PushState(LNext);
     end;
   end
   else
   begin
     // the debriefing reads the battle now: the battlescape (and with it the battle) is freed right after
     LDebriefing := nil;
-    if Assigned(FScreens) then
-      LDebriefing := FScreens.Debriefing(LBattlescape);
+    if Assigned(AScreens) then
+      LDebriefing := AScreens.Debriefing(LBattlescape);
     LBattlescape.Free;
-    FHost.PushState(TXcomAliensCrashState.Create(FHost, ASession.Graphics.Surface('TAC00.SCR'),
+    AHost.PushState(TXcomAliensCrashState.Create(AHost, ASession.Graphics.Surface('TAC00.SCR'),
       procedure
       begin
         if Assigned(LDebriefing) then
-          LHost.PushState(LDebriefing);
+          AHost.PushState(LDebriefing);
       end));
   end;
 end;

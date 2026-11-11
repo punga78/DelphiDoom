@@ -36,8 +36,9 @@ type
     ///   saved game of the host; the pause menu comes from the program (nil: the options button does nothing)
     /// </summary>
     /// <param name="AMainMenu">Makes the main menu that follows the debriefing of a battle outside a campaign; nil: nothing replaces the states</param>
+    /// <param name="AAudio">The sounds of the battlescape of the next stage of a mission in more parts (nil: silent)</param>
     class function CreateScreens(AHost: TXcomStateHost; const AOptions: TXcomBattleOptionsScreen = nil;
-      const AMainMenu: TFunc<TXcomState> = nil): IXcomBattleScreens; static;
+      const AMainMenu: TFunc<TXcomState> = nil; const AAudio: IXcomBattleAudio = nil): IXcomBattleScreens; static;
     /// <summary>new BattlescapeState: the caller pushes it</summary>
     class function CreateBattlescape(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
       const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio): TXcomState; static;
@@ -50,7 +51,9 @@ uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.SaveLink,
   DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattleStates.Graphics, DelphiDoom.XcomBattleStates.Session,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomGeoscape.TargetNames,
-  DelphiDoom.XcomDebriefing.Types, DelphiDoom.XcomDebriefing.Debriefer.Intf, DelphiDoom.XcomDebriefing.Debriefer;
+  DelphiDoom.XcomDebriefing.Types, DelphiDoom.XcomDebriefing.Debriefer.Intf, DelphiDoom.XcomDebriefing.Debriefer,
+  DelphiDoom.XcomBattleStates.StageLauncher, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomMenu.OptionsTypes;
 
 class function TXcomBattleFactory.CreateGraphics(AHost: TXcomStateHost): IXcomBattleGraphics;
 var
@@ -106,7 +109,8 @@ begin
 end;
 
 class function TXcomBattleFactory.CreateScreens(AHost: TXcomStateHost;
-  const AOptions: TXcomBattleOptionsScreen; const AMainMenu: TFunc<TXcomState>): IXcomBattleScreens;
+  const AOptions: TXcomBattleOptionsScreen; const AMainMenu: TFunc<TXcomState>;
+  const AAudio: IXcomBattleAudio): IXcomBattleScreens;
 begin
   Result := TXcomBattleScreens.Create(
     function(AParent: TXcomState): TXcomState
@@ -114,6 +118,21 @@ begin
       LDebriefer: IXcomMissionDebriefer;
       LOptions: TXcomDebriefingOptions;
     begin
+      // BattlescapeState::finishBattle: a mission in more parts goes on with its next stage, and the debriefing
+      // comes at the end of the last one
+      try
+        Result := TXcomStageLauncher.TryNextStage(AHost, AParent, AAudio);
+      except
+        on E: Exception do
+        begin
+          // the battle cannot go on and cannot be debriefed (its map is gone): the player reads why
+          TXcomStrategy.SavedGame(AHost).BattleGame := nil;
+          Exit(TXcomErrorMessageState.ForOrigin(AHost, ooGeoscape, E.Message,
+            PXcomColors(AHost.Resources.GetPalette('PAL_GEOSCAPE'))));
+        end;
+      end;
+      if Assigned(Result) then
+        Exit;
       // the options of the game as they are when the battle ends (the player can change them in the pause menu)
       LOptions := TXcomDebriefingOptions.Default;
       LOptions.StorageLimitsEnforced := AHost.Options.GetBool('storageLimitsEnforced');

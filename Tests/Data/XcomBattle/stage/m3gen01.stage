@@ -1,0 +1,7 @@
+mission=STR_ALIEN_COLONY_P2
+aborted=1
+inexit=5
+actions=move:1:29:27:0;move:2:30:27:0;kill:3;move:4:28:28:0;move:5:29:28:0;kill:6;move:7:30:28:0;kill:1000000;kill:1000001;kill:1000002;kill:1000010;kill:1000014;kill:1000018;
+stageseed=394506115
+seedafter=14989247262793983589
+ok=1

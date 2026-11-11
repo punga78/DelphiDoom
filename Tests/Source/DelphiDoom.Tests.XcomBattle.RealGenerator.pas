@@ -19,6 +19,7 @@ uses
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBattle.Context,
   DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.TileEngine, DelphiDoom.XcomBattle.Pathfinding,
   DelphiDoom.XcomBattle.Generator, DelphiDoom.XcomBattle.LegacyRandom, DelphiDoom.XcomBattle.Types,
+  DelphiDoom.XcomBattle.Model, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.Tests.XcomBattle.RealBattle, DelphiDoom.Tests.XcomMod.RealData;
 
 type
@@ -37,7 +38,19 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function ReadExpected(const ABase: string): string; static;
-    function RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
+    function RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string; overload;
+    /// <summary>
+    ///   AStage: after the run the outcome of ABase.stage is given to the battle (units killed, soldiers moved to the
+    ///   exit, aborted) and NextStage makes the next part; the results are then the ones of the next part
+    /// </summary>
+    function RunScenario(const ABase: string; AStage: Boolean; out AActual: string; out ASeed: UInt64): string;
+      overload;
+    procedure ApplyOutcome(const ABattle: TXcomSavedBattleGame; const AActions: string);
+    /// <summary>
+    ///   The two saved battles are the same, but for the nodes of the AI of the dead units: the C++ keeps pointing
+    ///   at the nodes of the old map, which are freed, and saves whatever id that memory holds afterwards
+    /// </summary>
+    class function SameButStaleNodes(const AExpected, AActual: string): Boolean; static;
   protected
     /// <summary>The golden of Mod::loadAll that tells the mods of the game (TFTD: xcom2, UFO: xcom1)</summary>
     function GoldenName: string; virtual;
@@ -52,6 +65,8 @@ type
     procedure TearDownFixture;
     [Test]
     procedure DovrebbeDareLeStesseBattaglieDelVeroGeneratore;
+    [Test]
+    procedure DovrebbeDareLaStessaParteSuccessivaDelVeroGeneratore;
   end;
 
   [TestFixture]
@@ -193,7 +208,73 @@ begin
 end;
 
 function TTestXcomRealGenerator.RunScenario(const ABase: string; out AActual: string; out ASeed: UInt64): string;
+begin
+  Result := RunScenario(ABase, False, AActual, ASeed);
+end;
+
+class function TTestXcomRealGenerator.SameButStaleNodes(const AExpected, AActual: string): Boolean;
+const
+  DEAD = '    status: 6';
 var
+  LExpected, LActual: TArray<string>;
+  LIndex: Integer;
+  LDead: Boolean;
+begin
+  LExpected := Normalize(AExpected).Split([#10]);
+  LActual := Normalize(AActual).Split([#10]);
+  if Length(LExpected) <> Length(LActual) then
+    Exit(False);
+  LDead := False;
+  for LIndex := 0 to High(LExpected) do
+  begin
+    // the status of a unit comes before its AI
+    if LExpected[LIndex].StartsWith('    status: ') then
+      LDead := LExpected[LIndex] = DEAD;
+    if LExpected[LIndex] <> LActual[LIndex] then
+      if not (LDead and (LExpected[LIndex].StartsWith('      fromNode: ') or
+        LExpected[LIndex].StartsWith('      toNode: ')) and
+        (LActual[LIndex].StartsWith('      fromNode: ') or LActual[LIndex].StartsWith('      toNode: '))) then
+        Exit(False);
+  end;
+  Result := True;
+end;
+
+procedure TTestXcomRealGenerator.ApplyOutcome(const ABattle: TXcomSavedBattleGame; const AActions: string);
+var
+  LAction: string;
+  LParts: TArray<string>;
+  LUnit, LCandidate: TXcomBattleUnit;
+  LOld: TXcomTile;
+begin
+  for LAction in AActions.Split([';'], TStringSplitOptions.ExcludeEmpty) do
+  begin
+    LParts := LAction.Split([':']);
+    LUnit := nil;
+    for LCandidate in ABattle.Units do
+      if LCandidate.Id = StrToInt(LParts[1]) then
+        LUnit := LCandidate;
+    Assert.IsTrue(Assigned(LUnit), 'l''unita'' dell''esito c''e''');
+    if LParts[0] = 'kill' then
+      LUnit.InstaKill
+    else
+    begin
+      // the harness puts the soldier on an exit tile and clears the tile it has left
+      LOld := LUnit.Tile;
+      Assert.IsTrue(ABattle.SetUnitPosition(LUnit, TXcomPosition.Make(StrToInt(LParts[2]), StrToInt(LParts[3]),
+        StrToInt(LParts[4]))), 'il soldato va sull''uscita come nel vero');
+      if Assigned(LOld) and (LOld <> LUnit.Tile) then
+        LOld.SetUnit(nil);
+    end;
+  end;
+end;
+
+function TTestXcomRealGenerator.RunScenario(const ABase: string; AStage: Boolean; out AActual: string;
+  out ASeed: UInt64): string;
+var
+  LStage: TStringList;
+  LStageSeed: UInt64;
+  LStageLegacy: TXcomLegacyRandom;
+  LStageGenerator: TXcomBattlescapeGenerator;
   LScenario: TStringList;
   LSaveFile: TArray<IYamlNode>;
   LGame: TXcomSavedGame;
@@ -281,6 +362,41 @@ begin
               Result := E.Message;
           end;
           ASeed := LRandom.Seed;
+          if AStage and (Result = '') then
+          begin
+            LStage := TStringList.Create;
+            try
+              LStage.LoadFromFile(ABase + '.stage');
+              ApplyOutcome(LBattle, LStage.Values['actions']);
+              LBattle.Aborted := LStage.Values['aborted'] = '1';
+              LBattle.MissionType := LStage.Values['mission'];
+              LStageSeed := StrToUInt64(LStage.Values['stageseed']);
+            finally
+              LStage.Free;
+            end;
+            LRandom.SetSeed(LStageSeed);
+            LStageLegacy := TXcomLegacyRandom.Create(Cardinal(LStageSeed));
+            try
+              // a new generator, as BattlescapeState::finishBattle makes one: no craft, no UFO, no base
+              LStageGenerator := TXcomBattlescapeGenerator.Create(FRuleset, LBattle, LGame, LContext, LEngine,
+                LStageLegacy);
+              try
+                AActual := '';
+                try
+                  LStageGenerator.NextStage;
+                  AActual := string(TYamlFactory.Dump(LBattle.Save));
+                except
+                  on E: EXcomBattleException do
+                    Result := E.Message;
+                end;
+                ASeed := LRandom.Seed;
+              finally
+                LStageGenerator.Free;
+              end;
+            finally
+              LStageLegacy.Free;
+            end;
+          end;
         finally
           LGenerator.Free;
         end;
@@ -357,6 +473,72 @@ begin
   TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Scenari: %d, identici: %d', [LCount, LOk]));
   Assert.IsTrue(LCount > 0, 'Nessun file di scenario');
   Assert.AreEqual('', LFailed, 'Scenari diversi dal vero generatore');
+end;
+
+procedure TTestXcomRealGenerator.DovrebbeDareLaStessaParteSuccessivaDelVeroGeneratore;
+var
+  LFolder: string;
+  LPath: string;
+  LBase: string;
+  LCount: Integer;
+  LOk: Integer;
+  LFailed: string;
+  LActual: string;
+  LError: string;
+  LSeed: UInt64;
+  LStage: TStringList;
+  LDumpFolder: string;
+begin
+  LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_STAGE');
+  if LFolder = '' then
+    LFolder := DataFolder + 'stage';
+  if (ScenarioSubFolder <> '') or (not DirectoryExists(LFolder)) or (not Assigned(FRuleset)) or
+    (Length(FVoxels) = 0) then
+  begin
+    Assert.Pass('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    Exit;
+  end;
+  LFolder := IncludeTrailingPathDelimiter(LFolder);
+  LDumpFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_GEN_DUMP');
+  LCount := 0;
+  LOk := 0;
+  LFailed := '';
+  for LPath in TDirectory.GetFiles(LFolder, '*.stage') do
+  begin
+    LBase := Copy(LPath, 1, Length(LPath) - Length('.stage'));
+    LError := RunScenario(LBase, True, LActual, LSeed);
+    LStage := TStringList.Create;
+    try
+      LStage.LoadFromFile(LPath);
+      if LStage.Values['ok'] <> '1' then
+      begin
+        if LError <> LStage.Values['error'] then
+          LFailed := LFailed + ExtractFileName(LBase) + '(errore: ' + LError + ') '
+        else
+          Inc(LOk);
+      end
+      else if LError <> '' then
+        LFailed := LFailed + ExtractFileName(LBase) + '(errore inatteso: ' + LError + ') '
+      else
+      begin
+        if LDumpFolder <> '' then
+          TFile.WriteAllText(IncludeTrailingPathDelimiter(LDumpFolder) + ExtractFileName(LBase) + '.stage.actual.yml',
+            LActual, TEncoding.UTF8);
+        if not SameButStaleNodes(ReadExpected(LBase + '.stage'), LActual) then
+          LFailed := LFailed + ExtractFileName(LBase) + '(yml) '
+        else if LSeed <> StrToUInt64(LStage.Values['seedafter']) then
+          LFailed := LFailed + ExtractFileName(LBase) + '(seme) '
+        else
+          Inc(LOk);
+      end;
+    finally
+      LStage.Free;
+    end;
+    Inc(LCount);
+  end;
+  TDUnitX.CurrentRunner.Log(TLogLevel.Information, Format('Parti successive: %d, identiche: %d', [LCount, LOk]));
+  Assert.IsTrue(LCount > 0, 'Nessun file di scenario');
+  Assert.AreEqual('', LFailed, 'Parti successive diverse dal vero generatore');
 end;
 
 { TTestXcomRealGeneratorUfo }

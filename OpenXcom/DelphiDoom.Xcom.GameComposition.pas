@@ -281,7 +281,7 @@ begin
       begin
         // DebriefingState::btnOkClick of a battle outside a campaign: back to the main menu
         Result := TXcomMainMenuState.Create(LGame, ASettings.VersionText);
-      end);
+      end, LBattleAudio);
     LMissionLauncher := ASettings.MissionLauncher;
     if LMissionLauncher = nil then
       LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);

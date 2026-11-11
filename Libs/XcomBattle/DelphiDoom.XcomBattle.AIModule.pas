@@ -34,6 +34,8 @@ type
     FUnit: TXcomBattleUnit;
     FFromNode: TXcomNode;
     FToNode: TXcomNode;
+    FForgottenFromId: Integer;
+    FForgottenToId: Integer;
     FAIMode: Integer;
     FWasHitBy: TArray<Integer>;
     FIntelligence: Integer;
@@ -65,6 +67,12 @@ type
     procedure Load(const ANode: IYamlNode; const ANodes: TObjectList<TXcomNode>);
     /// <summary>save: fromNode, toNode, AIMode and wasHitBy</summary>
     function Save: IYamlNode;
+    /// <summary>
+    ///   The nodes of the map are about to be freed (the next stage of a mission makes a new map) and this unit
+    ///   stays in the battle (a dead one): the nodes are let go. Their ids are still what Save writes, as the C++
+    ///   does (it keeps pointing at the freed nodes)
+    /// </summary>
+    procedure ForgetNodes;
     /// <summary>reset: the state that is not saved</summary>
     procedure Reset;
     /// <summary>freePatrolTarget</summary>
@@ -110,6 +118,8 @@ begin
   inherited Create;
   FUnit := AUnit;
   FFromNode := AFromNode;
+  FForgottenFromId := -1;
+  FForgottenToId := -1;
   FAIMode := AI_PATROL;
   FIntelligence := AUnit.Intelligence;
   FClosestDistance := 100;
@@ -155,17 +165,29 @@ var
   LFromId: Integer;
   LToId: Integer;
 begin
-  LFromId := -1;
-  LToId := -1;
   if Assigned(FFromNode) then
-    LFromId := FFromNode.Id;
+    LFromId := FFromNode.Id
+  else
+    LFromId := FForgottenFromId;
   if Assigned(FToNode) then
-    LToId := FToNode.Id;
+    LToId := FToNode.Id
+  else
+    LToId := FForgottenToId;
   Result := TXcomNodeWriter.NewMap;
   TXcomNodeWriter.SetInteger(Result, 'fromNode', LFromId);
   TXcomNodeWriter.SetInteger(Result, 'toNode', LToId);
   TXcomNodeWriter.SetInteger(Result, 'AIMode', FAIMode);
   TXcomNodeWriter.SetIntegers(Result, 'wasHitBy', FWasHitBy);
+end;
+
+procedure TXcomAIModule.ForgetNodes;
+begin
+  if Assigned(FFromNode) then
+    FForgottenFromId := FFromNode.Id;
+  if Assigned(FToNode) then
+    FForgottenToId := FToNode.Id;
+  FFromNode := nil;
+  FToNode := nil;
 end;
 
 procedure TXcomAIModule.Reset;
