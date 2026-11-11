@@ -15,7 +15,7 @@ Conclusione: di duplicato vero c'è soprattutto l'infrastruttura intorno ai gioc
 | Orologio | `IKeenClock`, `IXcomClock`, `IGreedRenderClock`, `IIdeClock`, due `ManualClock` gemelli, `Xcom.Win.Clock` | `IClock` di `Libs\Clock`, con un solo orologio manuale per i test |
 | Log | `IXcomLog`, `IIdeLog`, `IIdLibLog` | `ILog` di `Libs\Logging` |
 | Impostazioni su file | `Greed.SettingsStore`, `ISettingsStore` di `ToolsCore`, `Libs\Configuration` | Greed può usare `ToolsCore`; le opzioni di OpenXcom sono YAML e restano a parte |
-| Riga di comando degli eseguibili | `Keen32`, `Greed32`, `Speed32`, `Xcom32`, `XcomGame`: ognuno scorre `ParamStr` a mano | `ICommandLine` di `Libs\CommandLine` |
+| Riga di comando degli eseguibili | `Keen32`, `Greed32`, `Speed32`, `Xcom32`: ognuno scorre `ParamStr` a mano | `ICommandLine` di `Libs\CommandLine` |
 | Supporto dei test | FNV-1a riscritta in 34 unit di test, `FindUp` in 7, una decina di lettori di golden (`*.Golden.pas`) | Una unit comune di test: impronta, ricerca dei dati, confronto riga per riga |
 | Mixer audio | `XcomAudio.Mixer` (543 righe), `Tracker.Mixer`, i canali di `TSfxPlayer`, i 64 canali di Greed | Solo in parte: il mixer di XcomAudio può servire anche Greed e Keen |
 

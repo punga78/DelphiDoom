@@ -4,7 +4,7 @@
 
 Lettori in Delphi dei **formati dei dati originali di UFO: Enemy Unknown e X-COM: Terror from the Deep** (Microprose 1994/1995), nella forma in cui li legge **OpenXcom** (`Reference\OpenXcom`). Solo classi pure: niente SDL, YAML né finestra. Issue #176, prima fetta del port di OpenXcom (analisi in `Reference\_analisi\openxcom.md`).
 
-Non è un gioco del motore Doom: ha il suo eseguibile di prova (`OpenXcom\Xcom32.dpr`, composition root `OpenXcom\DelphiDoom.Xcom.Composition.pas`) e **non tocca** `ComposeEngine` né `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`) e `Libs\Platform` (`IFileStore`).
+Non è un gioco del motore Doom: ha il suo eseguibile (`OpenXcom\Xcom32.dpr`, che e' anche il gioco: issue #180; composition root dell'esportazione `OpenXcom\DelphiDoom.Xcom.Composition.pas`) e **non tocca** `ComposeEngine` né `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`) e `Libs\Platform` (`IFileStore`).
 
 ## Licenza (da decidere)
 
@@ -31,9 +31,9 @@ OpenXcom è **GPL v3 o successiva** (le intestazioni dei suoi sorgenti); il repo
 
 Supporto: `TXcomBinaryReader` (le abitudini di `std::ifstream`: lettura che fallisce copia i byte che ci sono, dopo il primo fallimento non si legge più), `TXcomImage` (immagine a 8 bit con palette opzionale: `Surface` senza SDL), `TXcomSpriteSheet` (i fotogrammi in una griglia), `TXcomMapPicture` (vista schematica di un piano del blocco), `TXcomGameData` (`IXcomGameData`: i file di UFO/TFTD per nome), `TXcomFolderFiles` e `TXcomMemoryFiles` (`IXcomDataFiles`), `TXcomPngEncoder` (`IXcomImageEncoder`, sopra `IPaletteConverter` e `TPngClient`) e `TXcomImageExporter`. `TXcomFactory` è l'unico punto che conosce le classi. Tipi e record `packed` senza puntatori (con `SizeOf` coperto da test) in `DelphiDoom.Xcom.Types`; interfacce piccole in `DelphiDoom.Xcom.Intf`.
 
-## Programma di prova
+## Esportazione (`Xcom32`)
 
-`OpenXcom\Xcom32.dpr` (`Tools\Build.bat Xcom32`, uscita in `bin\OpenXcom`):
+`OpenXcom\Xcom32.dpr` (`Tools\Build.bat Xcom32`, uscita in `bin\OpenXcom`) e' l'unico eseguibile di OpenXcom (issue #180): senza argomenti, o con quelli del gioco, apre il gioco (vedi `Libs\XcomEngine`); **quando la riga di comando ha `-pck`, `-dat`, `-scr` o `-map`** esporta un file di dati come PNG (`TXcomExportArguments`, `TXcomExportTool` in `OpenXcom\`):
 
 ```
 Xcom32 [-data <cartella>]... [-pal <n>] [-png <file>]
@@ -43,7 +43,7 @@ Xcom32 [-data <cartella>]... [-pal <n>] [-png <file>]
      | -map <file> [-rmp <file>] [-z n]                        celle e nodi su stdout, un piano come PNG
 ```
 
-`-data` è la cartella del gioco (quella con `GEODATA\PALETTES.DAT`); `-pal 4` è la palette del battlescape con il gradiente grigio degli ultimi 16 colori. Provato su file sintetici (palette, SCR, PCK/TAB con trasparenze, MAP e RMP con un nodo fuori blocco) e, dalla seconda prova, **sui dati veri di TFTD** (vedi "Dati veri" sotto): `BACK01.SCR` con la palette 0 e i terreni (`PORT01.PCK`) escono giusti.
+`-data` nell'esportazione (ripetibile; `-game` vale lo stesso) è la cartella del gioco (quella con `GEODATA\PALETTES.DAT`); `-pal 4` è la palette del battlescape con il gradiente grigio degli ultimi 16 colori. Provato su file sintetici (palette, SCR, PCK/TAB con trasparenze, MAP e RMP con un nodo fuori blocco) e, dalla seconda prova, **sui dati veri di TFTD** (vedi "Dati veri" sotto): `BACK01.SCR` con la palette 0 e i terreni (`PORT01.PCK`) escono giusti.
 
 ## Verifica e parità
 
@@ -84,3 +84,7 @@ L'utente ha fornito X-COM: Terror from the Deep su floppy (`disk1..4.img`: il gi
 - **Test sui dati veri** (`DelphiDoom.Tests.Xcom.RealData`, ora 11): **201 test passano** (196 di prima + 5 nuovi) con TFTD. Ogni `.PCK` con il suo `.TAB`, ogni `.SCR`, 298 `.MAP`, 297 `.RMP`, ogni `.MCD`, ogni `.CAT` del suono (le voci stanno dentro il file), `WORLD.DAT` (più di 100 poligoni di 3 o 4 punti con texture 0..31), `LOFTEMPS.DAT` (parole in multipli di 16), ogni `.BDY` e `.SPK` (320x200 con dati) e i fotogrammi degli oggetti dei terreni dentro il rispettivo `.PCK`. Il confronto con le immagini del gioco (a mano, sui PNG di `Xcom32`): `BACK01.SCR` è lo sfondo del menu del gioco con la palette 0; `PORT01.PCK` mostra i blocchi del porto subacqueo; `TDXCOM_0.PCK` i soldati.
 - **Cosa hanno trovato i dati veri**: (1) `PALETTES.DAT` di TFTD ha **tre** palette (2322 byte = 3 x 774), non cinque come UFO: il test che ne chiedeva cinque era sbagliato (non la libreria: una palette oltre la fine del file è tutta alfa 0) e ora conta quelle del file; la palette del battlescape di TFTD non sta in `PALETTES.DAT` ma in un `.LBM` (`BACKG.LBM`, il motore la prende da lì), perciò `Xcom32 -pal 4` colora male i soldati e i terreni di TFTD (le forme sono giuste); (2) gli oggetti 39, 40 e 41 di `XBASES05.MCD` hanno fotogrammi (74, 75, 76) oltre i 74 del suo `.PCK`: è un difetto dei dati originali (il gioco non li disegna mai), il test lo ammette solo lì. Nessun difetto della libreria è emerso.
 - **Non provato**: i dati di UFO: Enemy Unknown (non ci sono), le animazioni (`ANIMS`) e i campioni `SAMPLE2.CAT` che il gioco floppy non ha, la lettura dei `.LBM` (non è in questa libreria), il battlescape di OpenXcom (non lo si è avviato).
+
+## Un solo eseguibile (issue #180)
+
+`Xcom32.exe` e' anche il gioco (prima `XcomGame.exe`). Il modo dipende dalla riga di comando: con `-pck`, `-dat`, `-scr` o `-map` esporta, altrimenti apre il gioco. `-data` nell'esportazione e' la cartella del gioco (ripetibile, e `-game` vale lo stesso); nel gioco e' la cartella con `common\` e `standard\`. Il programma e' GUI: il testo dell'esportazione si legge con una pipe (`Xcom32 ... | Out-String` in PowerShell). Dettagli e verifica in `CLAUDE.md` di questa cartella.

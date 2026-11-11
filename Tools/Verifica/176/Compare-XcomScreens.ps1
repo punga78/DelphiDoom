@@ -1,6 +1,6 @@
 ﻿<#
   Carica un salvataggio vero (Tests\Data\XcomSave\realsave\saveNN.sav, scritto dagli oggetti veri di OpenXcom) sia
-  nel vero OpenXcom sia in XcomGame e confronta le schermate pixel per pixel (Compare-Png.ps1).
+  nel vero OpenXcom sia in Xcom32 e confronta le schermate pixel per pixel (Compare-Png.ps1).
 
   Uso: Compare-XcomScreens.ps1 -Root <worktree> -Data <cartella di Reference\_dati\xcom_tftd> -Out <cartella>
          -Screens 'soldiers=512,180','crafts=512,206','stores=512,154>344,374' [-Save 2]
@@ -45,7 +45,7 @@ $t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace(
 [IO.File]::WriteAllText("$Out\seed\$ModId\$name.sav", $t)
 Copy-Item "$Out\seed\$ModId" "$Out\user" -Recurse -Force
 Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
-# XcomGame: the steps in milliseconds
+# Xcom32: the steps in milliseconds
 $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000'
 $real = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92', 'wait:10')
 if (-not $Geoscape) { $script += ';move:575,34;click:575,34;wait:2000'; $real += 'click:575,34', 'wait:4' } else { $script += ';wait:1000'; $real += 'wait:2' }
@@ -60,7 +60,7 @@ foreach ($s in $Screens) {
   $first = $false
 }
 Push-Location "$Out\delphi"
-& "$Root\bin\OpenXcom\XcomGame.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
+& "$Root\bin\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
 Pop-Location
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)

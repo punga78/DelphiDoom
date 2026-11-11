@@ -1,7 +1,7 @@
 <#
-  Avvia XcomGame con la finestra vera (GDI), esegue dei passi (attese, clic, tasti) e salva schermate della finestra con
+  Avvia Xcom32 con la finestra vera (GDI), esegue dei passi (attese, clic, tasti) e salva schermate della finestra con
   PrintWindow (il contenuto della finestra, anche se un'altra le sta sopra). Prende il lock globale dei giochi.
-  Uso: Run-XcomGameWindow.ps1 -Exe <XcomGame.exe> -Args '<argomenti>' -Out <cartella> -Steps 'wait:6','shot:a','click:420,312'
+  Uso: Run-XcomGameWindow.ps1 -Exe <Xcom32.exe> -Args '<argomenti>' -Out <cartella> -Steps 'wait:6','shot:a','click:420,312'
   Passi: wait:s, click:x,y (client), move:x,y, key:vk, shot:nome. Stampa se il processo e' ancora vivo alla fine.
 #>
 param(

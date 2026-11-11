@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - the clock of Windows (SDL_GetTicks and SDL_Delay)     }
+{  DelphiDoom: Xcom32 - the clock of Windows (SDL_GetTicks and SDL_Delay)      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
