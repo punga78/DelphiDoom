@@ -34,7 +34,6 @@ type
     FMinX: Integer;
     FMaxX: Integer;
     FOffsetX: Integer;
-    procedure SetPosition(APos: Double);
     /// <summary>The knob of a value placed with exact integer arithmetic (see SetValue)</summary>
     procedure SetExactPosition;
   protected
@@ -166,12 +165,6 @@ begin
     if Assigned(FChange) then
       FChange(AAction);
   end;
-end;
-
-procedure TXcomSlider.SetPosition(APos: Double);
-begin
-  FPos := APos;
-  FButton.X := Floor(FMinX + (FMaxX - FMinX) * FPos);
 end;
 
 procedure TXcomSlider.SetRange(AMin, AMax: Integer);
