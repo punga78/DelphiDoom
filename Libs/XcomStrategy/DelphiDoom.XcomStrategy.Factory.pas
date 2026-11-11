@@ -32,7 +32,7 @@ type
     class function CreateSimulation(const AGame: TXcomSavedGame; const ARuleset: TXcomRuleset;
       const ARules: TXcomRulesetRules; const ARandom: IXcomRandom; const ALand: IXcomLandMap;
       const AEvents: IXcomGeoscapeEvents; const ASettings: IXcomStrategySettings;
-      const ASaveSettings: IXcomSaveSettings): TXcomGeoscapeSimulation; static;
+      const ASaveSettings: IXcomSaveSettings; AResearchCascade: Boolean = False): TXcomGeoscapeSimulation; static;
   end;
 
 implementation
@@ -42,7 +42,7 @@ implementation
 class function TXcomStrategyFactory.CreateSimulation(const AGame: TXcomSavedGame; const ARuleset: TXcomRuleset;
   const ARules: TXcomRulesetRules; const ARandom: IXcomRandom; const ALand: IXcomLandMap;
   const AEvents: IXcomGeoscapeEvents; const ASettings: IXcomStrategySettings;
-  const ASaveSettings: IXcomSaveSettings): TXcomGeoscapeSimulation;
+  const ASaveSettings: IXcomSaveSettings; AResearchCascade: Boolean): TXcomGeoscapeSimulation;
 var
   LLand: IXcomLandMap;
   LSpawner: TXcomUfoSpawner;
@@ -74,6 +74,8 @@ begin
   LUfos := TXcomUfoTracker.Create(AGame, ARandom, LHandler, LRadar, AEvents);
   LCrafts := TXcomCraftTracker.Create(AGame, ARuleset, ARandom, LLand, AEvents);
   LBases := TXcomBaseWork.Create(AGame, ARuleset, ARandom, AEvents, ASettings, ASaveSettings);
+  if AResearchCascade then
+    LBases.EnableResearchCascade;
   LAliens := TXcomAlienPlanner.Create(AGame, ARuleset, ARandom, LThinker, ASettings);
   LScripts := TXcomMissionScriptRunner.Create(AGame, ARuleset, ARandom);
   LCapacity := TXcomBaseCapacity.Create(ARuleset);

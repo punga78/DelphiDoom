@@ -62,6 +62,12 @@ type
     procedure FacilityBuilt(const ABase: TXcomBase; const AFacility: TXcomBaseFacility);
     /// <summary>ResearchCompleteState: a project was finished and taken off the base</summary>
     procedure ResearchFinished(const ABase: TXcomBase; const AResearchName: string);
+    /// <summary>
+    ///   A project was finished and its discoveries were added (the research cascade is on): the popups of
+    ///   time1Day for it, in order (ResearchCompleteState, ResearchRequiredState, NewPossibleResearchState,
+    ///   NewPossibleManufactureState). Replaces ResearchFinished, which is not called then
+    /// </summary>
+    procedure ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome);
     /// <summary>The storage of the base is over its capacity (ErrorMessageState and SellState)</summary>
     procedure StorageExceeded(const ABase: TXcomBase);
     /// <summary>AlienBaseState: an alien base was discovered</summary>

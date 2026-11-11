@@ -18,7 +18,8 @@ uses
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Production,
   DelphiDoom.XcomSave.ResearchProject, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.MissionSite,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.Events.Intf,
-  DelphiDoom.XcomStrategy.Settings.Intf, DelphiDoom.XcomStrategy.ProductionStepper;
+  DelphiDoom.XcomStrategy.Settings.Intf, DelphiDoom.XcomStrategy.ProductionStepper,
+  DelphiDoom.XcomStrategy.ResearchCompletion;
 
 type
   /// <summary>
@@ -37,6 +38,7 @@ type
     FSaveSettings: IXcomSaveSettings;
     FStepper: TXcomProductionStepper;
     FCapacity: TXcomBaseCapacity;
+    FCompletion: TXcomResearchCompletion;
     procedure AdvanceTransfer(const ATransfer: TXcomTransfer; const ABase: TXcomBase);
     procedure ReceiveArrivedTransfers;
     procedure StepProductions(const ABase: TXcomBase);
@@ -46,6 +48,12 @@ type
       const AEvents: IXcomGeoscapeEvents; const ASettings: IXcomStrategySettings;
       const ASaveSettings: IXcomSaveSettings);
     destructor Destroy; override;
+    /// <summary>
+    ///   Turns the research cascade on: a finished project discovers its free topic and its lookup, and reports the new
+    ///   topics and items (ResearchCompleted) instead of only ResearchFinished. Off by default: the parity scenarios of
+    ///   the time were made without it
+    /// </summary>
+    procedure EnableResearchCascade;
     /// <summary>
     ///   The base parts of time1Hour: the transfers advance (and what arrived is received), the productions
     ///   step, a storage that is too full is announced, the first mission site that is not shown is announced
@@ -74,8 +82,15 @@ begin
   FCapacity := TXcomBaseCapacity.Create(ARuleset);
 end;
 
+procedure TXcomBaseWork.EnableResearchCascade;
+begin
+  if FCompletion = nil then
+    FCompletion := TXcomResearchCompletion.Create(FGame, FRuleset, FRandom, FEvents);
+end;
+
 destructor TXcomBaseWork.Destroy;
 begin
+  FCompletion.Free;
   FCapacity.Free;
   FStepper.Free;
   inherited Destroy;
@@ -218,6 +233,11 @@ var
   LProject: TXcomResearchProject;
   LName: string;
 begin
+  if Assigned(FCompletion) then
+  begin
+    FCompletion.Daily(ABase);
+    Exit;
+  end;
   LFinished := TList<TXcomResearchProject>.Create;
   try
     for LProject in ABase.Research do

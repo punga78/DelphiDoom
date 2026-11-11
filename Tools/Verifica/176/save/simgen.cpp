@@ -896,6 +896,210 @@ static void ScenarioStatString(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+// The research cascade: GeoscapeState::time1Day, the part about the science projects (steps 1 to 3j), with the popups
+// written as ev| lines. The scenario puts projects of the topics that can be researched in the first base, one step
+// from the end, and lets eight days go; the real SavedGame functions (getAvailableResearchProjects,
+// addFinishedResearch, getNewlyAvailableResearchProjects, getDependableManufacture) and the real RNG do the work.
+static std::string Names(const std::vector<RuleResearch*>& v) {
+  std::string r;
+  for (size_t i = 0; i < v.size(); i++) { if (i) r += ","; r += v[i]->getName(); }
+  return r;
+}
+
+static void ResearchDay(Mod* mod, SavedGame* sg, Base* base, int bi) {
+  std::vector<ResearchProject*> finished;
+  for (std::vector<ResearchProject*>::const_iterator iter = base->getResearch().begin(); iter != base->getResearch().end(); ++iter) {
+    if ((*iter)->step()) finished.push_back(*iter);
+  }
+  std::vector<RuleResearch*> before;
+  if (!finished.empty()) sg->getAvailableResearchProjects(before, mod, base);
+  for (std::vector<ResearchProject*>::iterator iter = finished.begin(); iter != finished.end(); ++iter) {
+    const RuleResearch* bonus = 0;
+    const RuleResearch* research = (*iter)->getRules();
+    base->removeResearch(*iter);
+    (*iter) = 0;
+    if (!research->getGetOneFree().empty()) {
+      std::vector<std::string> possibilities;
+      for (std::vector<std::string>::const_iterator f = research->getGetOneFree().begin(); f != research->getGetOneFree().end(); ++f) {
+        if (!sg->isResearched(*f, false)) possibilities.push_back(*f);
+      }
+      if (!possibilities.empty()) {
+        size_t pick = RNG::generate(0, possibilities.size() - 1);
+        std::string sel = possibilities.at(pick);
+        bonus = mod->getResearch(sel, true);
+        sg->addFinishedResearch(bonus, mod, base);
+        if (!bonus->getLookup().empty()) sg->addFinishedResearch(mod->getResearch(bonus->getLookup(), true), mod, base);
+      }
+    }
+    const RuleResearch* newResearch = research;
+    std::string name = research->getLookup().empty() ? research->getName() : research->getLookup();
+    if (sg->isResearched(name, false)) newResearch = 0;
+    sg->addFinishedResearch(research, mod, base);
+    if (!research->getLookup().empty()) sg->addFinishedResearch(mod->getResearch(research->getLookup(), true), mod, base);
+    std::string weapon;
+    if (newResearch) {
+      RuleItem* item = mod->getItem(newResearch->getName());
+      if (item && item->getBattleType() == BT_FIREARM && !item->getCompatibleAmmo()->empty()) {
+        RuleManufacture* man = mod->getManufacture(item->getType());
+        if (man && !man->getRequirements().empty()) {
+          const std::vector<std::string>& req = man->getRequirements();
+          RuleItem* ammo = mod->getItem(item->getCompatibleAmmo()->front());
+          if (ammo && std::find(req.begin(), req.end(), ammo->getType()) != req.end() && !sg->isResearched(req, true)) weapon = item->getType();
+        }
+      }
+    }
+    std::vector<RuleResearch*> after;
+    sg->getAvailableResearchProjects(after, mod, base);
+    std::vector<RuleResearch*> newPossibleResearch;
+    sg->getNewlyAvailableResearchProjects(before, after, newPossibleResearch);
+    std::vector<RuleManufacture*> newPossibleManufacture;
+    sg->getDependableManufacture(newPossibleManufacture, research, mod, base);
+    std::string manufacture;
+    for (size_t m = 0; m < newPossibleManufacture.size(); m++) { if (m) manufacture += ","; manufacture += newPossibleManufacture[m]->getName(); }
+    Ev("research|%d|%s|bonus=%s|new=%s|weapon=%s|possible=%s|manufacture=%s", bi, research->getName().c_str(),
+      bonus ? bonus->getName().c_str() : "", newResearch ? newResearch->getName().c_str() : "", weapon.c_str(),
+      Names(newPossibleResearch).c_str(), manufacture.c_str());
+    for (std::vector<Base*>::iterator j = sg->getBases()->begin(); j != sg->getBases()->end(); ++j) {
+      for (std::vector<ResearchProject*>::const_iterator iter2 = (*j)->getResearch().begin(); iter2 != (*j)->getResearch().end(); ++iter2) {
+        if (research->getName() == (*iter2)->getRules()->getName()) {
+          if (!sg->isResearched(research->getGetOneFree(), false)) {
+          } else if (sg->hasUndiscoveredProtectedUnlock(research, mod)) {
+          } else {
+            (*j)->removeResearch(*iter2);
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+static void ScenarioResearch(Mod* mod, SavedGame* s, int v) {
+  if (s->getBases()->empty()) return;
+  Base* base = s->getBases()->front();
+  for (int round = 0; round < 12; round++) {
+    std::vector<RuleResearch*> avail;
+    s->getAvailableResearchProjects(avail, mod, base);
+    fprintf(gOut, "avail|%d|%d|%s\n", v, round, Names(avail).c_str());
+    std::vector<RuleManufacture*> prod;
+    s->getAvailableProductions(prod, mod, base);
+    fprintf(gOut, "productions|%d|%d|%d\n", v, round, (int)prod.size());
+    int added = 0;
+    while (added < 3 && !avail.empty()) {
+      size_t pick = Pick((int)avail.size());
+      RuleResearch* r = avail[pick];
+      avail.erase(avail.begin() + pick);
+      // the topics with "requires" are not shown to the player
+      if (!r->getRequirements().empty()) continue;
+      ResearchProject* p = new ResearchProject(r, r->getCost());
+      p->setAssigned(1);
+      p->setSpent(r->getCost());
+      base->addResearch(p);
+      added++;
+    }
+    ResearchDay(mod, s, base, 0);
+    fprintf(gOut, "day|%d|%d|discovered=%d|popped=%d|score=%d\n", v, round, (int)s->getDiscoveredResearch().size(),
+      (int)s->_poppedResearch.size(), s->_researchScores.back());
+  }
+}
+
+// The monthly report: MonthlyReportState::calculateChanges and the part of its constructor that judges the rating (the
+// state needs a screen: the code is copied, with the text written as the key of the language). The scenario gives
+// every region and country some activity, some research score and a random amount of funds, closes the month (the real
+// addMonth and monthlyFunding) and lets the council judge; six months
+static std::string Join(const std::vector<std::string>& v) {
+  std::string r;
+  for (size_t i = 0; i < v.size(); i++) { if (i) r += ","; r += v[i]; }
+  return r;
+}
+
+static void ScenarioReport(Mod* mod, SavedGame* s, int v) {
+  // the UFOs that the first saved games have with no mission and no trajectory cannot be saved after a month (the C++
+  // crashes): removed, as the scenarios of the time do
+  for (size_t ui = 0; ui < s->getUfos()->size();) {
+    Ufo* u = (*s->getUfos())[ui];
+    if (u->_mission == 0 || u->_trajectory == 0) { delete u; s->getUfos()->erase(s->getUfos()->begin() + ui); } else ui++;
+  }
+  for (int month = 0; month < 6; month++) {
+    for (std::vector<Region*>::iterator k = s->getRegions()->begin(); k != s->getRegions()->end(); ++k) {
+      (*k)->addActivityAlien(Pick(400));
+      (*k)->addActivityXcom(Pick(400));
+    }
+    for (std::vector<Country*>::iterator k = s->getCountries()->begin(); k != s->getCountries()->end(); ++k) {
+      (*k)->addActivityAlien(Pick(300));
+      (*k)->addActivityXcom(Pick(300));
+    }
+    if (Pick(2) == 0) s->addResearchScore(Pick(300));
+    s->addMonth();
+    s->monthlyFunding();
+    s->setFunds((int64_t)(Pick(7) - 3) * 1000000 + Pick(1000));
+    // calculateChanges
+    int lastMonthsRating = 0, xcomSubTotal = 0, xcomTotal = 0, alienTotal = 0, fundingDiff = 0;
+    std::vector<std::string> happyList, sadList, pactList;
+    int monthOffset = s->getFundsList().size() - 2;
+    int lastMonthOffset = s->getFundsList().size() - 3;
+    if (lastMonthOffset < 0) lastMonthOffset += 2;
+    for (std::vector<Region*>::iterator k = s->getRegions()->begin(); k != s->getRegions()->end(); ++k) {
+      (*k)->newMonth();
+      if ((*k)->getActivityXcom().size() > 2)
+        lastMonthsRating += (*k)->getActivityXcom().at(lastMonthOffset) - (*k)->getActivityAlien().at(lastMonthOffset);
+      xcomSubTotal += (*k)->getActivityXcom().at(monthOffset);
+      alienTotal += (*k)->getActivityAlien().at(monthOffset);
+    }
+    if (s->getMonthsPassed() > 1) s->getResearchScores().at(monthOffset) += 400;
+    xcomTotal = s->getResearchScores().at(monthOffset) + xcomSubTotal;
+    if (s->getResearchScores().size() > 2) lastMonthsRating += s->getResearchScores().at(lastMonthOffset);
+    const RuleAlienMission* infiltration = mod->getRandomMission(OBJECTIVE_INFILTRATION, s->getMonthsPassed());
+    int pactScore = 0;
+    if (infiltration) pactScore = infiltration->getPoints();
+    for (std::vector<Country*>::iterator k = s->getCountries()->begin(); k != s->getCountries()->end(); ++k) {
+      if ((*k)->getNewPact()) pactList.push_back((*k)->getRules()->getType());
+      (*k)->newMonth(xcomTotal, alienTotal, pactScore);
+      fundingDiff += (*k)->getFunding().back() - (*k)->getFunding().at((*k)->getFunding().size() - 2);
+      switch ((*k)->getSatisfaction()) {
+      case 1: sadList.push_back((*k)->getRules()->getType()); break;
+      case 3: happyList.push_back((*k)->getRules()->getType()); break;
+      default: break;
+      }
+    }
+    int ratingTotal = xcomTotal - alienTotal;
+    // the constructor
+    int threshold = mod->getDefeatScore() + 100 * s->getDifficultyCoefficient();
+    std::string rating = "STR_RATING_TERRIBLE";
+    if (ratingTotal > threshold - 300) rating = "STR_RATING_POOR";
+    if (ratingTotal > threshold) rating = "STR_RATING_OK";
+    if (ratingTotal > 0) rating = "STR_RATING_GOOD";
+    if (ratingTotal > 500) rating = "STR_RATING_EXCELLENT";
+    std::string satisfaction = "STR_COUNCIL_IS_DISSATISFIED";
+    bool resetWarning = true, gameOver = false, debts = false;
+    if (ratingTotal > threshold) satisfaction = "STR_COUNCIL_IS_GENERALLY_SATISFIED";
+    if (ratingTotal > 500) satisfaction = "STR_COUNCIL_IS_VERY_PLEASED";
+    if (lastMonthsRating <= threshold && ratingTotal <= threshold) {
+      satisfaction = "STR_YOU_HAVE_NOT_SUCCEEDED";
+      pactList.clear(); happyList.clear(); sadList.clear();
+      gameOver = true;
+    }
+    if (!gameOver) {
+      if (s->getFunds() <= mod->getDefeatFunds()) {
+        if (s->getWarned()) {
+          satisfaction = "STR_YOU_HAVE_NOT_SUCCEEDED";
+          pactList.clear(); happyList.clear(); sadList.clear();
+          gameOver = true;
+        } else {
+          debts = true;
+          s->setWarned(true);
+          resetWarning = false;
+        }
+      }
+    }
+    if (resetWarning && s->getWarned()) s->setWarned(false);
+    fprintf(gOut, "report|%d|%d|rating=%d|last=%d|diff=%d|%s|%s|debts=%d|over=%d|income=%d|maintenance=%d|funds=%lld|happy=%s|sad=%s|pact=%s|infiltration=%s\n",
+      v, month, ratingTotal, lastMonthsRating, fundingDiff, rating.c_str(), satisfaction.c_str(), (int)debts, (int)gameOver,
+      s->getCountryFunding(), (int)s->getBaseMaintenance(), (long long)s->getFunds(), Join(happyList).c_str(), Join(sadList).c_str(),
+      Join(pactList).c_str(), infiltration ? infiltration->getType().c_str() : "");
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -931,6 +1135,8 @@ int main(int argc, char** argv) {
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);
+      else if (scenario == "research") ScenarioResearch(mod, s, v);
+      else if (scenario == "report") ScenarioReport(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);

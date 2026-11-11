@@ -46,6 +46,8 @@ type
     procedure SetRow(AIndex: Integer; const ANumber: string; AMax, AValue: Double);
     procedure OkClick(AAction: TXcomAction);
     procedure StoresClick(AAction: TXcomAction);
+    procedure TransfersClick(AAction: TXcomAction);
+    procedure MonthlyCostsClick(AAction: TXcomAction);
     procedure MiniClick(AAction: TXcomAction);
     procedure EditBaseChange(AAction: TXcomAction);
   public
@@ -59,7 +61,8 @@ implementation
 
 uses
   System.Math, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMod.RuleBaseFacility,
-  DelphiDoom.XcomSave.BaseFacility, DelphiDoom.XcomBasescape.StoresState;
+  DelphiDoom.XcomSave.BaseFacility, DelphiDoom.XcomBasescape.StoresState,
+  DelphiDoom.XcomBasescape.TransfersState, DelphiDoom.XcomBasescape.MonthlyCostsState;
 
 const
   // the rows: soldiers, engineers, scientists, quarters, stores, laboratories, workshops, containment, hangars,
@@ -153,9 +156,11 @@ begin
   FBtnOk.OnMouseClick(OkClick);
   FBtnOk.OnKeyboardPress(OkClick, Host.Options.KeyCancel);
   FBtnTransfers.SetText(Tr('STR_TRANSFERS_UC'));
+  FBtnTransfers.OnMouseClick(TransfersClick);
   FBtnStores.SetText(Tr('STR_STORES_UC'));
   FBtnStores.OnMouseClick(StoresClick);
   FBtnMonthlyCosts.SetText(Tr('STR_MONTHLY_COSTS'));
+  FBtnMonthlyCosts.OnMouseClick(MonthlyCostsClick);
   FEdtBase.SetBig;
   FEdtBase.OnChange(EditBaseChange);
   FTxtPersonnel.SetText(Tr('STR_PERSONNEL_AVAILABLE_PERSONNEL_TOTAL'));
@@ -251,6 +256,16 @@ end;
 procedure TXcomBaseInfoState.StoresClick(AAction: TXcomAction);
 begin
   Host.PushState(TXcomStoresState.Create(Host, FBase));
+end;
+
+procedure TXcomBaseInfoState.TransfersClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomTransfersState.Create(Host, FBase));
+end;
+
+procedure TXcomBaseInfoState.MonthlyCostsClick(AAction: TXcomAction);
+begin
+  Host.PushState(TXcomMonthlyCostsState.Create(Host, FBase));
 end;
 
 procedure TXcomBaseInfoState.MiniClick(AAction: TXcomAction);

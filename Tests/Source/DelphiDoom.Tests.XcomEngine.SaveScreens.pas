@@ -21,11 +21,17 @@ type
   public
     Saves: TArray<TXcomSaveInfo>;
     Deleted: TStringList;
+    /// <summary>The files that exist for SaveExists</summary>
+    Existing: TStringList;
+    /// <summary>The renames asked, "old>new"</summary>
+    Renamed: TStringList;
     CanDelete: Boolean;
     constructor Create;
     destructor Destroy; override;
     function List(ALanguage: TXcomLanguage; AAutoQuick: Boolean): TArray<TXcomSaveInfo>;
     function DeleteSave(const AFileName: string): Boolean;
+    function SaveExists(const AFileName: string): Boolean;
+    function RenameSave(const AOldName, ANewName: string): Boolean;
     function NameBefore(const AFirst, ASecond: string): Boolean;
   end;
 
@@ -147,11 +153,15 @@ constructor TFakeCatalog.Create;
 begin
   inherited Create;
   Deleted := TStringList.Create;
+  Existing := TStringList.Create;
+  Renamed := TStringList.Create;
   CanDelete := True;
 end;
 
 destructor TFakeCatalog.Destroy;
 begin
+  Renamed.Free;
+  Existing.Free;
   Deleted.Free;
   inherited Destroy;
 end;
@@ -165,6 +175,17 @@ function TFakeCatalog.DeleteSave(const AFileName: string): Boolean;
 begin
   Deleted.Add(AFileName);
   Result := CanDelete;
+end;
+
+function TFakeCatalog.SaveExists(const AFileName: string): Boolean;
+begin
+  Result := Existing.IndexOf(AFileName) >= 0;
+end;
+
+function TFakeCatalog.RenameSave(const AOldName, ANewName: string): Boolean;
+begin
+  Renamed.Add(AOldName + '>' + ANewName);
+  Result := True;
 end;
 
 function TFakeCatalog.NameBefore(const AFirst, ASecond: string): Boolean;

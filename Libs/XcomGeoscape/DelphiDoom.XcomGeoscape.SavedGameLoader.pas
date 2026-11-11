@@ -87,7 +87,7 @@ begin
     LRules.Free;
     raise;
   end;
-  FHost.SetSession(TXcomSavedGameHolder.Create(LSave, LRules));
+  FHost.SetSession(TXcomSavedGameHolder.Create(LSave, LRules, LRandom));
   LSimulation := nil;
   if Assigned(FSimulationFactory) then
     LSimulation := FSimulationFactory(FHost, LSave, LRuleset, LRandom);

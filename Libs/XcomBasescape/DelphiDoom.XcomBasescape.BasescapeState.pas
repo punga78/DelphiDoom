@@ -64,6 +64,8 @@ type
       const ANavigator: IXcomBasescapeNavigator);
     procedure Init; override;
     property Base: TXcomBase read FBase;
+    /// <summary>The grid of the base (the screens that change it ask it to redraw)</summary>
+    property View: TXcomBaseView read FView;
   end;
 
 implementation
@@ -156,7 +158,7 @@ end;
 procedure TXcomBasescapeState.Open(AScreen: TXcomBaseScreen; AFacility: TXcomBaseFacility);
 begin
   if Assigned(FNavigator) then
-    FNavigator.Open(AScreen, FBase, AFacility);
+    FNavigator.Open(AScreen, FBase, AFacility, Self);
 end;
 
 procedure TXcomBasescapeState.SetBase(ABase: TXcomBase);

@@ -11,7 +11,7 @@ unit DelphiDoom.XcomSave.SavedGameHolder.Intf;
 interface
 
 uses
-  DelphiDoom.XcomSave.SavedGame;
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomMod.Random;
 
 type
   /// <summary>
@@ -21,6 +21,8 @@ type
   IXcomSavedGameHolder = interface
     ['{E5C04B72-9A13-4D68-B2F7-31D8A6E0C459}']
     function SavedGame: TXcomSavedGame;
+    /// <summary>The generator of the game (the RNG of the C++ that the screens use, for example for the cost of a research); nil if the holder has none</summary>
+    function Random: IXcomRandom;
   end;
 
 implementation
