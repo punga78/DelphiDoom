@@ -76,6 +76,11 @@ type
     ///   or, when AInterface, of the interface; does nothing without audio device or when the set has no such sound
     /// </summary>
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
+    /// <summary>
+    ///   Sound::play on a channel followed by Mix_Volume(channel, AVolume): the sound of the set at a mixer volume
+    ///   (0..128) that the caller chose. False when the set has no such sound (Mod::getSound gives none)
+    /// </summary>
+    function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
     /// <summary>SDL_WarpMouse (window pixels; does nothing when the host has no event source)</summary>
@@ -192,6 +197,11 @@ end;
 
 procedure TXcomStateHost.PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean);
 begin
+end;
+
+function TXcomStateHost.PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean;
+begin
+  Result := False;
 end;
 
 function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;

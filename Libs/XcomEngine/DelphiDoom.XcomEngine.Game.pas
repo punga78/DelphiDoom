@@ -109,6 +109,7 @@ type
     function SaveCatalog: IXcomSaveCatalog; override;
     procedure OpenFolder(const APath: string); override;
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
+    function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; override;
     function NewGameStarter: IXcomNewGameStarter; override;
     procedure WarpMouse(AX, AY: Integer); override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
@@ -414,6 +415,18 @@ begin
     FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.UiVolume)))
   else
     FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.SoundVolume)));
+end;
+
+function TXcomGame.PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean;
+var
+  LWave: TBytes;
+begin
+  if Resources = nil then
+    Exit(False);
+  LWave := Resources.SoundWave(ASet, AIndex);
+  Result := Length(LWave) > 0;
+  if Result and (FAudio <> nil) and FAudio.IsAvailable then
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, AVolume));
 end;
 
 procedure TXcomGame.OpenFolder(const APath: string);
