@@ -30,8 +30,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomBattleStates.Session.Intf, DelphiDoom.XcomBattleStates.Factory,
-  DelphiDoom.XcomBattleStates.Screens;
+  DelphiDoom.XcomBattleStates.Session.Intf, DelphiDoom.XcomBattleStates.Factory;
 
 class procedure TXcomBattleLauncher.Resume(AHost: TXcomStateHost; const AScreens: IXcomBattleScreens;
   const AAudio: IXcomBattleAudio);
@@ -44,7 +43,7 @@ begin
     Exit;
   LScreens := AScreens;
   if not Assigned(LScreens) then
-    LScreens := TXcomBattleScreens.Create;
+    LScreens := TXcomBattleFactory.CreateScreens(AHost);
   AHost.PushState(TXcomBattleFactory.CreateBattlescape(AHost, LSession, LScreens, AAudio));
 end;
 

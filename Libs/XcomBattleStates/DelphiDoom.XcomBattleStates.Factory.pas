@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattleStates.Graphics.Intf, DelphiDoom.XcomBattleStates.Session.Intf,
-  DelphiDoom.XcomBattleStates.Screens.Intf;
+  DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.Screens;
 
 type
   /// <summary>Assembles the battle of the game of a host (its saved game, its rules, its files)</summary>
@@ -30,7 +30,13 @@ type
     class function LoadSession(AHost: TXcomStateHost): IXcomBattleSession; static;
     /// <summary>A session around a battle that the generator has just made (owned by the session from now on)</summary>
     class function CreateSession(AHost: TXcomStateHost; ABattle: TXcomSavedBattleGame;
-      const AContext: IXcomBattleContext): IXcomBattleSession; static;
+      const AContext: IXcomBattleContext; const AGraphics: IXcomBattleGraphics = nil): IXcomBattleSession; static;
+    /// <summary>
+    ///   The screens of the battle with the classes of the library and the debriefing of LibsXcomDebriefing on the
+    ///   saved game of the host; the pause menu comes from the program (nil: the options button does nothing)
+    /// </summary>
+    class function CreateScreens(AHost: TXcomStateHost; const AOptions: TXcomBattleOptionsScreen = nil)
+      : IXcomBattleScreens; static;
     /// <summary>new BattlescapeState: the caller pushes it</summary>
     class function CreateBattlescape(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
       const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio): TXcomState; static;
@@ -42,7 +48,8 @@ uses
   DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.SaveLink,
   DelphiDoom.XcomBattlescape.ModSprites, DelphiDoom.XcomBattleStates.Graphics, DelphiDoom.XcomBattleStates.Session,
-  DelphiDoom.XcomBattleStates.BattlescapeState;
+  DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomGeoscape.TargetNames,
+  DelphiDoom.XcomDebriefing.Types, DelphiDoom.XcomDebriefing.Debriefer.Intf, DelphiDoom.XcomDebriefing.Debriefer;
 
 class function TXcomBattleFactory.CreateGraphics(AHost: TXcomStateHost): IXcomBattleGraphics;
 var
@@ -86,10 +93,36 @@ begin
 end;
 
 class function TXcomBattleFactory.CreateSession(AHost: TXcomStateHost; ABattle: TXcomSavedBattleGame;
-  const AContext: IXcomBattleContext): IXcomBattleSession;
+  const AContext: IXcomBattleContext; const AGraphics: IXcomBattleGraphics): IXcomBattleSession;
+var
+  LGraphics: IXcomBattleGraphics;
 begin
+  LGraphics := AGraphics;
+  if not Assigned(LGraphics) then
+    LGraphics := CreateGraphics(AHost);
   Result := TXcomBattleSession.Create(TXcomStrategy.SavedGame(AHost), ABattle, TXcomStrategy.Ruleset(AHost),
-    TXcomStrategy.Random(AHost), AContext, CreateGraphics(AHost), False);
+    TXcomStrategy.Random(AHost), AContext, LGraphics, False);
+end;
+
+class function TXcomBattleFactory.CreateScreens(AHost: TXcomStateHost;
+  const AOptions: TXcomBattleOptionsScreen): IXcomBattleScreens;
+var
+  LDebriefer: IXcomMissionDebriefer;
+  LOptions: TXcomDebriefingOptions;
+begin
+  LOptions := TXcomDebriefingOptions.Default;
+  LOptions.CraftName :=
+    function(ACraft: TXcomCraft): string
+    begin
+      Result := TXcomTargetNames.Name(ACraft, AHost.Language);
+    end;
+  // one debriefer for all the battles of the game: the screens it makes refer to it
+  LDebriefer := TXcomMissionDebriefer.Create(AHost, LOptions, nil, nil);
+  Result := TXcomBattleScreens.Create(
+    function(AParent: TXcomState): TXcomState
+    begin
+      Result := LDebriefer.Debrief((AParent as TXcomBattlescapeState).Session.Battle);
+    end, AOptions);
 end;
 
 class function TXcomBattleFactory.CreateBattlescape(AHost: TXcomStateHost; const ASession: IXcomBattleSession;

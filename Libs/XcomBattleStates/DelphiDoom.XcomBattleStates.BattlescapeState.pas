@@ -1079,7 +1079,11 @@ end;
 procedure TXcomBattlescapeState.BtnHelpClick(AAction: TXcomAction);
 begin
   if AllowButtons(True) and Assigned(FScreens) then
+  begin
+    // a game saved from the pause menu takes the battle as it is now
+    FSession.StoreInSavedGame;
     PushScreen(FScreens.Options(Self));
+  end;
 end;
 
 procedure TXcomBattlescapeState.BtnEndTurnClick(AAction: TXcomAction);

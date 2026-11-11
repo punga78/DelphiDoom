@@ -76,7 +76,9 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
-  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomBattleStates.Factory,
+  DelphiDoom.XcomBattleStates.Screens.Intf, DelphiDoom.XcomBattleStates.MixerAudio,
+  DelphiDoom.XcomBattleStates.MissionLauncher, DelphiDoom.XcomMenu.PauseState, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
@@ -143,6 +145,9 @@ var
   LAudio: IXcomAudioDevice;
   LMusic: IXcomMusicPlayer;
   LSavedGameLoader: TXcomSavedGameLoader;
+  LBattleAudio: IXcomBattleAudio;
+  LBattleScreens: IXcomBattleScreens;
+  LMissionLauncher: IXcomMissionLauncher;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -234,6 +239,19 @@ begin
     // the list of the modes of the monitor: always with the window (the screenshots of the tests ask for it)
     if ASettings.ListModes or ASettings.WindowMode then
       Result.SetDisplayModes(TXcomWinDisplayModes.Create);
+    // the battle: its sounds on the channels of the mixer, its screens and the way into a mission
+    LBattleAudio := nil;
+    if LAudio <> nil then
+      LBattleAudio := TXcomBattleMixerAudio.Create(Result, LAudio as IXcomChannelMixer);
+    LBattleScreens := TXcomBattleFactory.CreateScreens(Result,
+      function(AParent: TXcomState): TXcomState
+      begin
+        Result := TXcomPauseState.Create(AParent.Host, ooBattlescape,
+          TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
+      end);
+    LMissionLauncher := ASettings.MissionLauncher;
+    if LMissionLauncher = nil then
+      LMissionLauncher := TXcomMissionLauncher.Create(Result, LBattleScreens, LBattleAudio);
     LSimulationFactory :=
       function(AHost: TXcomStateHost; ASave: TXcomSavedGame; ARuleset: TXcomRuleset;
         const ARandom: IXcomRandom): IXcomGeoscapeSimulation
@@ -241,7 +259,7 @@ begin
         LListener: IXcomGeoscapeEvents;
       begin
         // the events are shown as the popups of the geoscape that receives the simulation
-        LListener := TXcomPopupGeoscapeEvents.Create(AHost, ASettings.MissionLauncher);
+        LListener := TXcomPopupGeoscapeEvents.Create(AHost, LMissionLauncher);
         Result := TXcomPopupSimulation.Create(
           TXcomStrategyFactory.CreateSimulation(ASave, ARuleset, nil, ARandom, nil, LListener,
             TXcomDefaultStrategySettings.Create, TXcomDefaultSaveSettings.Create, True),
@@ -258,7 +276,7 @@ begin
     LSavedGameLoader.BattleResumer :=
       procedure(AHost: TXcomStateHost)
       begin
-        TXcomBattleLauncher.Resume(AHost);
+        TXcomBattleLauncher.Resume(AHost, LBattleScreens, LBattleAudio);
       end;
     Result.SetSavedGameLoader(LSavedGameLoader);
     LBrief.Version := '1.0';
