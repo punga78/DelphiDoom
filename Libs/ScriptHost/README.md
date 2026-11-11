@@ -10,7 +10,7 @@ Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCR
 | `ps_main` | avvio, ciclo di compilazione/esecuzione degli script del gioco |
 | `ps_proclist` | elenco delle funzioni host e delle dichiarazioni |
 | `ps_dll` | DLL contenute in un PAK, copiate su file prima di `LoadLibrary` |
-| `psi_game`, `psi_overlay`, `psi_map`, `psi_globals`, `psi_system` | le circa 1.600 funzioni `PS_*` che gli script chiamano (giocatori, mobj, overlay, mappa, sistema) |
+| `psi_game`, `psi_overlay`, `psi_map`, `psi_globals`, `psi_system` | le facciate `PS_*` che gli script chiamavano (giocatori, mobj, mappa, sistema); `psi_overlay` e' ora la sola facciata dell'overlay (vedi sotto) |
 
 ## Registro delle funzioni (issue #173, fetta 2a)
 
@@ -51,7 +51,7 @@ Le funzioni che gli script chiamano stanno in un **registro a gruppi** (schema d
 
 `TScriptHostFactory` crea le tre cose (`CreateVariables`, `CreateEvents`, `CreateSerializer`). **Collegamento**: `PS_ConfigureVariables` (`psi_globals`, chiamata da `ComposePlatform` con `TEngineScriptVariablesFiles` e `TEngineScriptVariablesFailure` di `Base\`) e `PS_ConfigureStateServices` (`ps_main`, chiamata da `ComposeScriptHost` con l'`ILog`); senza di esse `I_Error`. `psi_globals` resta la facciata: `mapvars`/`worldvars` (`IScriptVariables`), `TGlobalVariablesList` (alias dell'interfaccia), le `PS_Get/SetMap/World*` e le sei classi `TMapStrings`...`TWorldFloats` che Pascal Script importa. **Verifica**: golden L1 invariati nei 4 giochi; `Tests\DelphiDoom.Tests.ScriptHost` ha 134 test (copertura 95% di `Libs\ScriptHost`; le unit nuove 91-100%): byte del salvataggio scritti a mano, `StructureSize` uguale ai byte scritti, nomi non ASCII e lunghi, buffer e file malformati, hash (valori dei vecchi `Hash`), eventi e serializzatore sul compilatore e sull'interprete veri. Non provato a runtime: L2 e un salvataggio con variabili degli script (`Tools\Verifica\scripthost\LEGGIMI.md`).
 
-La **fetta 2d e le seguenti** (`docs\SCRIPTHOST_PIANO.md`, sezione 5): speciali di settore, `ps_dll`, e per ultime `psi_game` (attori, linee, settori...), `ps_import`/`ps_main` e l'overlay. La spike di `RegisterDelphiMethod` (`Tools\Verifica\scripthost\spike`) passa a 32 e 64 bit: le fette seguenti possono togliere i thunk. Il nucleo dell'interprete sta in `Libs\PascalScript`; il compilatore da riga di comando in `Libs\Ddc`.
+La **fetta 2** della #172 e' conclusa (`docs\SCRIPTHOST_PIANO.md`, sezione 5): dalle fette 2d in poi speciali di settore, `ps_dll`, `psi_game` (attori, linee, settori...), `ps_import`/`ps_main` e l'overlay sono classi della libreria. La spike di `RegisterDelphiMethod` (`Tools\Verifica\scripthost\spike`) passa a 32 e 64 bit: le fette seguenti possono togliere i thunk. Il nucleo dell'interprete sta in `Libs\PascalScript`; il compilatore da riga di comando in `Libs\Ddc`.
 
 ## Speciali di settore e DLL dei PAK (issue #172, fette 2d e 2e)
 
@@ -112,3 +112,14 @@ Nel motore: `psi_game` (`PS_DescribeGameClasses`) e `psi_globals` (`PS_DescribeG
 | `DelphiDoom.ScriptHost.Manager` | `TScriptManager` (ex `TPSExecManager`): sorgenti, codice compilato e interpreti degli script; `ps_main` lo crea in `PS_Init` e lo da' con `PS_Manager` |
 
 `ComposeScriptHost` crea i servizi e li da' a `PS_ConfigureHostServices`. Test: `...Tests.ScriptHost.Services`, `...Defines`.
+## Overlay (issue #172, fetta 2i)
+
+| Unit | Ruolo |
+|---|---|
+| `DelphiDoom.ScriptHost.Overlay.Types` | costanti (320x200, allineamenti, generi dei drawer), `TOverlayDrawerRecord` (il record dei salvataggi: `packed`, 292 byte, `string[255]`), header delle patch, `TOverlayFlashData` |
+| `DelphiDoom.ScriptHost.Overlay.Intf` | `IOverlayCanvas`: schermo, tempo del livello, colore, lump e patch, font, avvisi, flash |
+| `DelphiDoom.ScriptHost.Overlay.NullCanvas` | `TOverlayNullCanvas`: il canvas di un overlay fatto da uno script (`TOverlay.Create`) |
+| `DelphiDoom.ScriptHost.Overlay.Drawer` | `TOverlayDrawer`: buffer 320x200, drawer, tabella dei pixel dello schermo, salvataggio; la classe `Overlay` degli script |
+| `DelphiDoom.ScriptHost.Overlay.Functions` | `TScriptOverlayFunctions`: le 10 funzioni di `PS_OVERLAY` (`OverlayClear`, `OverlayDraw*`) |
+
+Nel motore: `Base\DelphiDoom.Engine.Script.Overlay.Canvas` (`TEngineOverlayCanvas`: video, palette, lump, font e thread del flash) e `...Overlay.Commands` (comandi `overlaydraw*` della console). `ComposeScriptHost` da' il canvas con `PS_ConfigureOverlay`; `psi_overlay` e' la facciata (`overlay`, `OVR_Drawer`, `A_Overlay*`). Formato dei salvataggi invariato. Dettagli, difetti e verifica: [CLAUDE.md](CLAUDE.md), fetta 2i.

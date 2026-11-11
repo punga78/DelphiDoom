@@ -116,3 +116,18 @@ rapporto in `docs\SCRIPTHOST_PIANO.md` (sezione 5, fetta 2a-0).
 ### Dopo la fetta 2h (issue #172)
 
 `psmanager` non esiste piu' (`PS_Manager`, `TScriptManager`): gli `hook-*.patch` si applicano al commit vecchio, i `hook-*.new.patch` al nuovo (`Genera-Patch.ps1 -New`, da un albero pulito); `Compila-ScriptHost.ps1 -Which New` sceglie da solo. `Confronta.ps1` ora confronta anche `verify_scripthost_L2_props.txt` e `..._props_scripts.txt` (batteria delle proprieta' delle classi, fetta 2g).
+
+### Fetta 2i (overlay): cosa eseguire
+
+L'harness ha tre modi in piu', tutti con gli eseguibili `Compila-ScriptHost.ps1 -Variant L2` (vecchio = un albero del commit prima della fetta, costruito con gli stessi hook: `git worktree add --detach ..\ovr-old <commit>`, copiare `HarnessScriptHost.pas` e usare `-Which New` li' dentro; poi copiare gli exe in `harness_out\ovr\<Gioco>_OLD.exe` e `_NEW.exe`, o in `harness_out\shot\`):
+
+```
+# 1. i byte dell'overlay: buffer 320x200, record dei salvataggi, fotogramma a 8 e 32 bit con e senza thread (-vsh overlay)
+.\Tools\Verifica\scripthost\Confronta-Overlay.ps1 -Game Doom      # poi Heretic, Hexen, Strife, GLDoom; -Save <file> scrive il golden del vecchio
+# 2. la schermata con l'overlay, vecchio contro nuovo (-vsh shot: screenshot al tic 70); GLDoom ha rumore proprio (il volto dello status bar)
+.\Tools\Verifica\scripthost\Confronta-Screenshot.ps1 -Game Doom   # e GLDoom
+# 3. i tempi del -timedemo di Doom (mediane di esecuzioni alternate) e il banco dell'overlay (in Confronta-Overlay)
+.\Tools\Verifica\scripthost\Confronta-Tempi.ps1 -Demos demo1,demo2,demo3 -Runs 3
+```
+
+I golden dell'overlay del vecchio codice stanno in `Tests\Data\ScriptHost\Overlay.<Gioco>.golden.txt`. Lo script `-vsh save` lascia anche 4 drawer dell'overlay vivi, quindi `Confronta-Salvataggi.ps1` prova anche i byte dell'overlay nei salvataggi (nell'area dell'overlay, il conteggio e i record da 292 byte, vecchio e nuovo sono uguali; i campi che un genere non usa nel vecchio erano la memoria com'era).

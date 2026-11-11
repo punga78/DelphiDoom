@@ -114,7 +114,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Scanner** — Scanner dei testi degli script, preprocessore, valutatore di espressioni, AUTOLOAD. [CLAUDE.md](Libs/Scanner/CLAUDE.md), [README.md](Libs/Scanner/README.md)
 - **Screenshot** — Scrittura degli screenshot (TGA, PNG, JPEG). [CLAUDE.md](Libs/Screenshot/CLAUDE.md), [README.md](Libs/Screenshot/README.md)
 - **Script** — Fetta verticale di Pascal Script (compilare, eseguire, funzioni host, globali). [CLAUDE.md](Libs/Script/CLAUDE.md), [README.md](Libs/Script/README.md) (paragrafo in `Libs\Png`)
-- **ScriptHost** — Collegamento di Pascal Script al motore: registro delle funzioni, variabili, eventi, serializzatore. [CLAUDE.md](Libs/ScriptHost/CLAUDE.md), [README.md](Libs/ScriptHost/README.md)
+- **ScriptHost** — Collegamento di Pascal Script al motore: registro delle funzioni, variabili, eventi, serializzatore, speciali, attori, mondo, catalogo delle classi, overlay (fetta 2 della #172 conclusa). [CLAUDE.md](Libs/ScriptHost/CLAUDE.md), [README.md](Libs/ScriptHost/README.md)
 - **Serializer** — Serializzatore dei record dei salvataggi. [CLAUDE.md](Libs/Serializer/CLAUDE.md), [README.md](Libs/Serializer/README.md)
 - **Sndfile** — Contratto `ISndfile` e provider che usa il motore di `LibsSound`. [CLAUDE.md](Libs/Sndfile/CLAUDE.md), [README.md](Libs/Sndfile/README.md) (paragrafo in `Libs\Sound`)
 - **Sound** — Sostituto in Pascal di libsndfile, libvorbis e libflac. [CLAUDE.md](Libs/Sound/CLAUDE.md), [README.md](Libs/Sound/README.md)
