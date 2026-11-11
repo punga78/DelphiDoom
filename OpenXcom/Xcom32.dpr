@@ -272,10 +272,12 @@ begin
     while LDevice.Pump and not LGame.IsQuitting do
     begin
       LGame.RunFrame;
-      Sleep(1);
+      Sleep(LGame.FrameDelay);
       if (AArguments.QuitAfter > 0) and (GetTickCount - LStart > Cardinal(AArguments.QuitAfter)) then
         Break;
     end;
+    // Options::save at the end of Game::run: also the size of a window that was resized
+    LGame.SaveOptions;
     if AArguments.AudioStatistics and (LMeter <> nil) then
       PrintAudio(LMeter, LOutput);
   finally

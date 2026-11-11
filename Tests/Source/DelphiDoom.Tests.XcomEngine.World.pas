@@ -256,9 +256,20 @@ begin
 end;
 
 function TFakeResources.GetSurface(const AName: string): TXcomSurface;
+var
+  LX: Integer;
+  LY: Integer;
 begin
-  if not FSurfaces.TryGetValue(AName, Result) then
+  if FSurfaces.TryGetValue(AName, Result) then
+    Exit;
+  // every background picture of the game (BACKnn.SCR) exists: the screens of the strategy use many
+  if not (AName.StartsWith('BACK') and AName.EndsWith('.SCR')) then
     raise EXcomEngineException.Create('no surface ' + AName);
+  Result := TXcomSurface.Create(320, 200);
+  for LY := 0 to 199 do
+    for LX := 0 to 319 do
+      Result.SetPixel(LX, LY, Byte(((LX div 8) + (LY div 8)) and 7) + 40);
+  FSurfaces.Add(AName, Result);
 end;
 
 function TFakeResources.GetFont(const AName: string): TXcomFont;

@@ -13,9 +13,13 @@ uses
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility;
 
 type
-  /// <summary>The screens that the basescape opens for a base</summary>
+  /// <summary>
+  ///   The screens that the basescape opens for a base. bsPsiTraining without a base is PsiTrainingState (the bases
+  ///   with laboratories, at the end of the month); bsStatistics has no base and replaces every state of the game
+  ///   (Game::setState(StatisticsState), after the game is lost or won)
+  /// </summary>
   TXcomBaseScreen = (bsNewBase, bsBaseInfo, bsSoldiers, bsCrafts, bsFacilities, bsResearch, bsManufacture,
-    bsTransfer, bsPurchase, bsSell, bsPsiTraining, bsAlienContainment, bsCraftInfo, bsDismantle);
+    bsTransfer, bsPurchase, bsSell, bsPsiTraining, bsAlienContainment, bsCraftInfo, bsDismantle, bsStatistics);
 
   /// <summary>
   ///   Opens the screens of the buttons and of the facilities of the basescape (btnSoldiersClick, viewRightClick...). The

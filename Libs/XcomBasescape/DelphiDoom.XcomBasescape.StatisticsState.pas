@@ -17,8 +17,9 @@ uses
 
 type
   /// <summary>
-  ///   The list of the statistics of the game (TXcomGameStatistics) with the title and the date. The screen of the end
-  ///   of the game (a victory or a defeat, which leaves for the main menu) is not ported: OK closes the screen
+  ///   The list of the statistics of the game (TXcomGameStatistics) with the title and the date. While the game goes
+  ///   on OK closes the screen; when the game has ended (a victory or a defeat) OK leaves the saved game and goes to
+  ///   the main menu (Game::setSavedGame(0) and GoToMainMenuState), through the saver of the host
   /// </summary>
   TXcomStatisticsState = class(TXcomState)
   strict private
@@ -36,7 +37,12 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomBasescape.GameStatistics;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomSave.SavedGame,
+  DelphiDoom.XcomBasescape.GameStatistics;
+
+const
+  /// <summary>GameEnding::END_NONE</summary>
+  END_NONE = 0;
 
 { TXcomStatisticsState }
 
@@ -80,8 +86,20 @@ begin
 end;
 
 procedure TXcomStatisticsState.OkClick(AAction: TXcomAction);
+var
+  LSaver: IXcomSavedGameSaver;
 begin
-  Host.PopState;
+  if TXcomStrategy.SavedGame(Host).EndingKind = END_NONE then
+    Host.PopState
+  else
+  begin
+    LSaver := Host.SavedGameSaver;
+    // a host that cannot leave the game (a test without a saver) closes the screen
+    if LSaver <> nil then
+      LSaver.AbandonGame
+    else
+      Host.PopState;
+  end;
 end;
 
 end.

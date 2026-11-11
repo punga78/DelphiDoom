@@ -91,6 +91,7 @@ type
     FBlink: Integer;
     FDetail: Boolean;
     FRadarLines: Boolean;
+    FFlightPaths: Boolean;
     FAllRadarsOnBaseBuild: Boolean;
     FSeasons: Boolean;
     FScrollSpeed: Integer;
@@ -105,6 +106,8 @@ type
     procedure DrawOcean;
     procedure DrawLand;
     procedure DrawRadars;
+    procedure DrawFlights;
+    procedure DrawPath(ASurface: TXcomSurface; ALon1, ALat1, ALon2, ALat2: Double);
     procedure DrawShadow;
     procedure DrawMarkers;
     procedure DrawDetail;
@@ -187,6 +190,8 @@ type
     property Radius: Double read FRadius;
     property Detail: Boolean read FDetail write FDetail;
     property RadarLines: Boolean read FRadarLines write FRadarLines;
+    /// <summary>Options::globeFlightPaths: the paths of the crafts that are out, to their destination</summary>
+    property FlightPaths: Boolean read FFlightPaths write FFlightPaths;
     property Seasons: Boolean read FSeasons write FSeasons;
     property AllRadarsOnBaseBuild: Boolean read FAllRadarsOnBaseBuild write FAllRadarsOnBaseBuild;
     property ScrollSpeed: Integer read FScrollSpeed write FScrollSpeed;
@@ -345,6 +350,7 @@ begin
   FBlink := -1;
   FDetail := True;
   FRadarLines := True;
+  FFlightPaths := True;
   FAllRadarsOnBaseBuild := True;
   FScrollSpeed := 20;
   FCountries := TXcomSurface.Create(AWidth, AHeight, AX, AY);
@@ -819,6 +825,7 @@ begin
     DrawOcean;
     DrawLand;
     DrawRadars;
+    DrawFlights;
     DrawShadow;
     DrawMarkers;
     DrawDetail;
@@ -1139,6 +1146,100 @@ begin
     end;
     LAzimuth := LAzimuth + LSegment;
   end;
+end;
+
+procedure TXcomGlobe.DrawPath(ASurface: TXcomSurface; ALon1, ALat1, ALon2, ALat2: Double);
+var
+  LA, LB: TXcomCord;
+  LLength, LInverse: Double;
+  LCount: SmallInt;
+  LIndex: Integer;
+  LX1, LY1, LX2, LY2: Double;
+  LLon1, LLat1, LLon2, LLat2: Double;
+
+  function ToCord(ALon, ALat: Double): TXcomCord;
+  begin
+    Result.X := Sin(ALon) * Cos(ALat);
+    Result.Y := Sin(ALat);
+    Result.Z := Cos(ALon) * Cos(ALat);
+  end;
+
+  procedure ToPolar(const ACord: TXcomCord; out ALon, ALat: Double);
+  var
+    LNorm: Double;
+  begin
+    LNorm := 1 / Sqrt(ACord.X * ACord.X + ACord.Y * ACord.Y + ACord.Z * ACord.Z);
+    ALat := ArcSin(ACord.Y * LNorm);
+    ALon := ArcTan2(ACord.X, ACord.Z);
+  end;
+
+begin
+  LA := ToCord(ALon1, ALat1);
+  LB := ToCord(ALon2, ALat2);
+  // the opposite point of the globe: there is no shortest path
+  if AreSame(-LB.X, LA.X) and AreSame(-LB.Y, LA.Y) and AreSame(-LB.Z, LA.Z) then
+    Exit;
+  LB.X := LB.X - LA.X;
+  LB.Y := LB.Y - LA.Y;
+  LB.Z := LB.Z - LA.Z;
+  // a longer path has more parts
+  LLength := Sqrt(LB.X * LB.X + LB.Y * LB.Y + LB.Z * LB.Z);
+  LLength := LLength * LLength * 15;
+  LCount := Trunc(LLength + 1);
+  LInverse := 1.0 / LCount;
+  LB.X := LB.X * LInverse;
+  LB.Y := LB.Y * LInverse;
+  LB.Z := LB.Z * LInverse;
+  ToPolar(LA, LLon1, LLat1);
+  PolarToCart(LLon1, LLat1, LX1, LY1);
+  for LIndex := 0 to LCount - 1 do
+  begin
+    LA.X := LA.X + LB.X;
+    LA.Y := LA.Y + LB.Y;
+    LA.Z := LA.Z + LB.Z;
+    ToPolar(LA, LLon2, LLat2);
+    PolarToCart(LLon2, LLat2, LX2, LY2);
+    if not PointBack(LLon1, LLat1) and not PointBack(LLon2, LLat2) then
+      XuLine(ASurface, Self, LX1, LY1, LX2, LY2, 8);
+    LLon1 := LLon2;
+    LLat1 := LLat2;
+    LX1 := LX2;
+    LY1 := LY2;
+  end;
+end;
+
+procedure TXcomGlobe.DrawFlights;
+var
+  LBase: TXcomBase;
+  LCraft: TXcomCraft;
+  LLon1, LLat1, LLon2, LLat2: Double;
+begin
+  if not FFlightPaths then
+    Exit;
+  for LBase in FSave.Bases do
+    for LCraft in LBase.Crafts do
+    begin
+      // the crafts docked at the base have no path
+      if (LCraft.Status <> 'STR_OUT') or (LCraft.Destination = nil) then
+        Continue;
+      LLon1 := LCraft.Longitude;
+      LLat1 := LCraft.Latitude;
+      LLon2 := LCraft.Destination.Longitude;
+      LLat2 := LCraft.Destination.Latitude;
+      if LCraft.MeetCalculated then
+      begin
+        LLon2 := LCraft.MeetLongitude;
+        LLat2 := LCraft.MeetLatitude;
+      end;
+      DrawPath(FRadars, LLon1, LLat1, LLon2, LLat2);
+      // from the point where the craft meets its target to where the target is now
+      if LCraft.MeetCalculated then
+      begin
+        LLon1 := LCraft.Destination.Longitude;
+        LLat1 := LCraft.Destination.Latitude;
+        DrawPath(FRadars, LLon1, LLat1, LLon2, LLat2);
+      end;
+    end;
 end;
 
 procedure TXcomGlobe.DrawRadars;

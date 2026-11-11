@@ -317,8 +317,10 @@ begin
           Exit(1);
         end;
       WM_ACTIVATE:
-        // the window gets or loses the focus, or is minimized (SDL_ACTIVEEVENT): Key is 1 with the focus
-        LSelf.Post(ekActive, Ord((LoWord(AWParam) <> WA_INACTIVE) and (HiWord(AWParam) = 0)), 0, 0);
+        // the window gets or loses the focus, or is minimized (SDL_ACTIVEEVENT): Key is 1 with the focus, Button is
+        // 1 when the window is minimized (pauseMode tells the two apart)
+        LSelf.Post(ekActive, Ord((LoWord(AWParam) <> WA_INACTIVE) and (HiWord(AWParam) = 0)),
+          Ord(HiWord(AWParam) <> 0), 0);
       WM_CLOSE:
         begin
           LSelf.FClosed := True;

@@ -13,19 +13,24 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton,
-  DelphiDoom.XcomStrategy.MonthlyReport;
+  DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomGeoscape.Control.Intf;
 
 type
   /// <summary>
   ///   The report: the month, the rating, the income with its change, the maintenance, the balance and the words
   ///   of the council with the countries that are pleased, unhappy or that signed a pact. The month is calculated when
   ///   the state is made (it changes the funding of the countries), as in the C++. When the game is lost the first OK
-  ///   shows "You have failed". Not ported: the medals that the soldiers get for their service, the psi training
-  ///   screen, the autosave and the cutscene of the lost game
+  ///   shows "You have failed" and the second leaves for the statistics of the game (the film and the slides of
+  ///   CutsceneState are not ported: what follows them is). After a month that goes on, OK counts the month of
+  ///   service of every soldier, opens the psi training of the bases with laboratories and saves the game (the
+  ///   autosave of the options or the save of an ironman game). Not ported: the medals for the service
+  ///   (manageCommendations and CommendationState)
   /// </summary>
   TXcomMonthlyReportState = class(TXcomState)
   strict private
     FResult: TXcomMonthlyReportResult;
+    FPsi: Boolean;
+    FControl: IXcomGeoscapeControl;
     FWindow: TXcomWindow;
     FBtnOk: TXcomTextButton;
     FBtnBigOk: TXcomTextButton;
@@ -38,10 +43,15 @@ type
     FTxtDesc: TXcomText;
     FTxtFailure: TXcomText;
     procedure OkClick(AAction: TXcomAction);
+    procedure AddMonthlyService;
+    procedure SaveAfterMonth;
     function CountryList(const ACountries: TArray<string>; const ASingular, APlural: string): string;
   public
     /// <param name="AResult">What the council decided (calculated by TXcomMonthlyReport, which changed the game)</param>
-    constructor Create(AHost: TXcomStateHost; const AResult: TXcomMonthlyReportResult);
+    /// <param name="APsi">A base has psi laboratories: the psi training screen follows the report</param>
+    /// <param name="AControl">The geoscape, which opens the screens that follow the report (nil: none is opened)</param>
+    constructor Create(AHost: TXcomStateHost; const AResult: TXcomMonthlyReportResult; APsi: Boolean = False;
+      const AControl: IXcomGeoscapeControl = nil);
     procedure Init; override;
     property Result: TXcomMonthlyReportResult read FResult;
     property Description: TXcomText read FTxtDesc;
@@ -50,8 +60,10 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding,
-  DelphiDoom.XcomEngine.LocalizedText;
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Session.Intf,
+  DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState;
 
 const
   MONTHS: array[1..12] of string = ('STR_JAN', 'STR_FEB', 'STR_MAR', 'STR_APR', 'STR_MAY', 'STR_JUN', 'STR_JUL',
@@ -60,7 +72,8 @@ const
 
 { TXcomMonthlyReportState }
 
-constructor TXcomMonthlyReportState.Create(AHost: TXcomStateHost; const AResult: TXcomMonthlyReportResult);
+constructor TXcomMonthlyReportState.Create(AHost: TXcomStateHost; const AResult: TXcomMonthlyReportResult;
+  APsi: Boolean; const AControl: IXcomGeoscapeControl);
 var
   LSave: TXcomSavedGame;
   LMonth, LYear: Integer;
@@ -68,6 +81,8 @@ var
 begin
   inherited Create(AHost);
   FResult := AResult;
+  FPsi := APsi;
+  FControl := AControl;
   LSave := TXcomStrategy.SavedGame(AHost);
   FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0, wpNone);
   FBtnOk := TXcomTextButton.Create(50, 12, 135, 180);
@@ -171,13 +186,57 @@ begin
     TXcomStrategy.SavedGame(Host).EndingKind := END_LOSE;
 end;
 
+procedure TXcomMonthlyReportState.AddMonthlyService;
+var
+  LBase: TXcomBase;
+  LSoldier: TXcomSoldier;
+begin
+  for LBase in TXcomStrategy.SavedGame(Host).Bases do
+    for LSoldier in LBase.Soldiers do
+      LSoldier.Diary.AddMonthlyService;
+end;
+
+procedure TXcomMonthlyReportState.SaveAfterMonth;
+var
+  LSaver: IXcomSavedGameSaver;
+begin
+  LSaver := Host.SavedGameSaver;
+  if LSaver = nil then
+    Exit;
+  if LSaver.IsIronman then
+    Host.PushState(TXcomSaveGameState.Create(Host, ooGeoscape, stIronman, Palette))
+  else if not FResult.GameOver and Host.Options.GetBool('autosave') then
+    Host.PushState(TXcomSaveGameState.Create(Host, ooGeoscape, stAutoGeoscape, Palette));
+end;
+
 procedure TXcomMonthlyReportState.OkClick(AAction: TXcomAction);
+var
+  LElement: TXcomInterfaceElement;
+  LInterface: TXcomRuleInterface;
 begin
   if not FResult.GameOver then
-    Host.PopState
-  else if not FTxtFailure.Visible then
+  begin
+    Host.PopState;
+    AddMonthlyService;
+    if FPsi and Assigned(FControl) then
+      FControl.OpenBaseScreen(bsPsiTraining, nil);
+    SaveAfterMonth;
+  end
+  else if FTxtFailure.Visible then
+  begin
+    // CutsceneState(LOSE_GAME): it takes itself away and sets the statistics of the game as the only state
+    if Assigned(FControl) then
+    begin
+      FControl.OpenBaseScreen(bsStatistics, nil);
+      SaveAfterMonth;
+    end;
+  end
+  else
   begin
     // the failure replaces the report
+    LInterface := Host.Resources.GetInterface('monthlyReport');
+    if (LInterface <> nil) and LInterface.TryGetElement('window', LElement) and (LElement.Color2 <> XCOM_UNSET) then
+      FWindow.SetColor(LElement.Color2);
     FTxtTitle.Visible := False;
     FTxtMonth.Visible := False;
     FTxtRating.Visible := False;
