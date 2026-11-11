@@ -33,6 +33,8 @@ type
     function MouseState(out AX, AY: Integer): Integer;
     /// <summary>The modifier keys that are down (SDL_GetModState)</summary>
     function ModifierState: Integer;
+    /// <summary>SDL_WarpMouse: the mouse goes to the position (window pixels) and a motion event is produced</summary>
+    procedure WarpMouse(AX, AY: Integer);
   end;
 
   /// <summary>A size of the display that the video options list (an SDL_Rect of SDL_ListModes)</summary>

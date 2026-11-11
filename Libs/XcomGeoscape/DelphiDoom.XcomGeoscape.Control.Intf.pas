@@ -65,6 +65,22 @@ type
   end;
 
   /// <summary>
+  ///   What the events of the simulation ask of the geoscape about the dogfights (the geoscape owns them). A second
+  ///   interface of the control, so that the popups and their fakes do not change
+  /// </summary>
+  IXcomDogfightControl = interface
+    ['{3C71D9A4-5E20-4B86-9F13-176000000204}']
+    /// <summary>A craft reached a UFO it can engage: the window opens (the time stops and the globe goes to the craft)</summary>
+    procedure StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
+    /// <summary>The craft cannot engage yet (AReason: STR_UNABLE_TO_ENGAGE_DEPTH or _AIRBORNE): the window waits minimized</summary>
+    procedure DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
+    /// <summary>The dogfights that are open or waiting to open</summary>
+    function DogfightCount: Integer;
+    /// <summary>A UFO is about to be removed from the game: the dogfights with it are dropped</summary>
+    procedure UfoRemoving(AUfo: TXcomUfo);
+  end;
+
+  /// <summary>
   ///   Receives the geoscape when it is created: the simulation that is given to a geoscape can implement this to
   ///   open popups on it
   /// </summary>

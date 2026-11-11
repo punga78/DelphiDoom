@@ -1100,6 +1100,12 @@ static void ScenarioReport(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+#define private public
+#define protected public
+#include "simdogfight.inc"
+#undef protected
+#undef private
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -1137,6 +1143,7 @@ int main(int argc, char** argv) {
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);
       else if (scenario == "research") ScenarioResearch(mod, s, v);
       else if (scenario == "report") ScenarioReport(mod, s, v);
+      else if (scenario == "dogfight") ScenarioDogfight(mod, s, v);
       else if (scenario == "time") ScenarioTime(mod, s, v);
       else if (scenario == "month") ScenarioMonth(mod, s, v);
       else if (scenario == "statstring") ScenarioStatString(mod, s, v);

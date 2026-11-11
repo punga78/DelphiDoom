@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom strategy library - what the council decides at the end of   }
 {  a month (MonthlyReportState::calculateChanges and the judgment of its        }
@@ -60,13 +60,10 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.Country, DelphiDoom.XcomMod.RulesetSettings;
+  DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.Country, DelphiDoom.XcomMod.RulesetSettings,
+  DelphiDoom.XcomStrategy.RandomMission;
 
-type
-  TWeightedMission = record
-    Total: Integer;
-    Rule: TXcomRuleAlienMission;
-  end;
+
 
 { TXcomMonthlyReport }
 
@@ -79,46 +76,8 @@ begin
 end;
 
 function TXcomMonthlyReport.RandomMission(AObjective: Integer; AMonthsPassed: Cardinal): TXcomRuleAlienMission;
-var
-  LNames: TArray<string>;
-  LName: string;
-  LRule: TXcomRuleAlienMission;
-  LPossible: TList<TWeightedMission>;
-  LEntry: TWeightedMission;
-  LTotal, LPick: Integer;
 begin
-  Result := nil;
-  // Mod::_alienMissions is a std::map: the missions go by name
-  LNames := Copy(FRuleset.AlienMissions.Index);
-  TArray.Sort<string>(LNames, TComparer<string>.Construct(
-    function(const ALeft, ARight: string): Integer
-    begin
-      Result := CompareStr(ALeft, ARight);
-    end));
-  LPossible := TList<TWeightedMission>.Create;
-  try
-    LTotal := 0;
-    for LName in LNames do
-    begin
-      LRule := FRuleset.AlienMissions.Find(LName);
-      if (LRule.Objective = AObjective) and (LRule.GetWeight(AMonthsPassed) > 0) then
-      begin
-        Inc(LTotal, LRule.GetWeight(AMonthsPassed));
-        LEntry.Total := LTotal;
-        LEntry.Rule := LRule;
-        LPossible.Add(LEntry);
-      end;
-    end;
-    if LTotal > 0 then
-    begin
-      LPick := FRandom.Generate(1, LTotal);
-      for LEntry in LPossible do
-        if LPick <= LEntry.Total then
-          Exit(LEntry.Rule);
-    end;
-  finally
-    LPossible.Free;
-  end;
+  Result := TXcomRandomMission.Choose(FRuleset, FRandom, AObjective, AMonthsPassed);
 end;
 
 function TXcomMonthlyReport.Calculate: TXcomMonthlyReportResult;

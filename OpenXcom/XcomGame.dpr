@@ -267,6 +267,9 @@ begin
     on E: Exception do
     begin
       Writeln(ErrOutput, E.ClassName, ': ', E.Message);
+      // the address in the terms of the .map of the executable (the image can be relocated)
+      if ExceptAddr <> nil then
+        Writeln(ErrOutput, 'map address: ', IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8));
       System.ExitCode := 1;
     end;
   end;

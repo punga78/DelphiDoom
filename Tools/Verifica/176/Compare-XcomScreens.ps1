@@ -17,7 +17,9 @@ param(
   [Parameter(Mandatory = $true)][string]$Out,
   [string[]]$Screens = @(),
   [int]$Save = 2,
-  [string]$Back = '476,368'
+  [string]$Back = '476,368',
+  [switch]$Geoscape,
+  [string]$SaveFile = ""
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -34,18 +36,21 @@ function Test-ValidPng([string]$Path) {
 }
 New-Item -ItemType Directory -Force "$Out\real", "$Out\delphi", "$Out\user", "$Out\seed\xcom2" | Out-Null
 $name = 'save{0:00}' -f $Save
-$t = [IO.File]::ReadAllText("$Root\Tests\Data\XcomSave\realsave\$name.sav")
+$src = if ($SaveFile) { $SaveFile } else { "$Root\Tests\Data\XcomSave\realsave\$name.sav" }
+$t = [IO.File]::ReadAllText($src)
 $t = $t.Replace('name: ""', 'name: "Save ' + ('{0:00}' -f $Save) + '"').Replace('  - "xcom2 ver: 1.0"', '  - xcom2').Replace("`r`n", "`n")
 [IO.File]::WriteAllText("$Out\seed\xcom2\$name.sav", $t)
 Copy-Item "$Out\seed\xcom2" "$Out\user" -Recurse -Force
 Copy-Item "$Data\openxcom_user\options.cfg" "$Out\user\options.cfg" -Force
 # XcomGame: the steps in milliseconds
-$script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000;move:575,34;click:575,34;wait:2000'
-$real = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92', 'wait:10', 'click:575,34', 'wait:4')
+$script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:4000'
+$real = @('wait:3', 'click:220,256', 'wait:3', 'click:80,92', 'wait:10')
+if (-not $Geoscape) { $script += ';move:575,34;click:575,34;wait:2000'; $real += 'click:575,34', 'wait:4' } else { $script += ';wait:1000'; $real += 'wait:2' }
 $first = $true
 foreach ($s in $Screens) {
   $n, $xy = $s.Split('=')
-  if (-not $first) { $script += ";move:$Back;click:$Back;wait:1500"; $real += "click:$Back", 'wait:3' }
+  $cont = $n.StartsWith('+'); if ($cont) { $n = $n.Substring(1) }
+  if (-not $first -and -not $cont) { $script += ";move:$Back;click:$Back;wait:1500"; $real += "click:$Back", 'wait:3' }
   # name=x,y or name=x1,y1>x2,y2 (a chain of clicks: the screen of a screen)
   foreach ($part in $xy.Split('>')) { $script += ";move:$part;click:$part;wait:2000"; $real += "click:$part", 'wait:5' }
   $script += ";shot:$n.png"; $real += "shot:$n"
@@ -61,13 +66,13 @@ try {
   for ($try = 0; $try -lt 3; $try++) {
     & "$Root\Tools\Verifica\176\Capture-OpenXcomScreen.ps1" -Root $Data -Out "$Out\real" -SeedFolder "$Out\seed" -Steps $real | Out-Null
     # a file that exists is not enough: the capture can leave an empty or truncated PNG
-    $missing = @($Screens | Where-Object { -not (Test-ValidPng "$Out\real\$($_.Split('=')[0]).png") })
+    $missing = @($Screens | Where-Object { -not (Test-ValidPng "$Out\real\$($_.Split('=')[0].TrimStart('+')).png") })
     if ($missing.Count -eq 0) { break }
   }
 }
 finally { if ($got) { $m.ReleaseMutex() } }
 foreach ($s in $Screens) {
-  $n = $s.Split('=')[0]
+  $n = $s.Split('=')[0].TrimStart('+')
   Write-Output "== $n"
   & "$Root\Tools\Verifica\176\Compare-Png.ps1" -A "$Out\real\$n.png" -B "$Out\delphi\$n.png" 2>&1 | Select-Object -First 4
 }

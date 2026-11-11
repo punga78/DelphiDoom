@@ -17,3 +17,5 @@
 Test: `Tests\DelphiDoom.Tests.XcomEngine` (209 con `XcomUi` e `XcomMenu`, copertura 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.
 
 **`IXcomSavedGameLoader`** (`DelphiDoom.XcomEngine.Session.Intf`, issue #176): cio' che `LoadGameState` fa quando ha disegnato la sua schermata (`Game::setSavedGame` e `setState`); `TXcomStateHost.SavedGameLoader` (nil: caricamento non riuscito) e `TXcomGame.SetSavedGameLoader`; il menu non conosce il geoscape, il programma da' l'oggetto (`TXcomSavedGameLoader` in `Libs\XcomGeoscape`). Non va confuso con `IXcomGameLoader` (il caricamento dei dati all'avvio).
+
+**`IXcomEventSource.WarpMouse`** (`SDL_WarpMouse`: posizione in pixel della finestra e un evento di movimento; `TXcomStateHost.WarpMouse`, nessun effetto senza sorgente di eventi): serve alle frecce di riordino di `CraftSoldiersState`. `TXcomModResources`: `Mod::modResources` per `BACK06.SCR` e `ALTBACK07.SCR`. `XcomGame` stampa l'indirizzo dell'eccezione nei termini del `.map`.

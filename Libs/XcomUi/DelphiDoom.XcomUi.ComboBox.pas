@@ -380,7 +380,10 @@ begin
     FToggled := True;
   if FList.Visible then
   begin
-    if FSel < FList.GetVisibleRows div 2 then
+    // _sel is a size_t in the C++: -1 (nothing selected) is a huge number and the list scrolls to the end
+    if FSel < 0 then
+      FList.ScrollTo(MaxInt)
+    else if FSel < FList.GetVisibleRows div 2 then
       FList.ScrollTo(0)
     else
       FList.ScrollTo(FSel - FList.GetVisibleRows div 2);

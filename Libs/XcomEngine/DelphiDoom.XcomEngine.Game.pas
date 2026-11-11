@@ -103,6 +103,7 @@ type
     procedure OpenFolder(const APath: string); override;
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
     function NewGameStarter: IXcomNewGameStarter; override;
+    procedure WarpMouse(AX, AY: Integer); override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
     function SavedGameLoader: IXcomSavedGameLoader; override;
     procedure SetSavedGameLoader(const ALoader: IXcomSavedGameLoader);
@@ -284,6 +285,12 @@ end;
 function TXcomGame.NewGameStarter: IXcomNewGameStarter;
 begin
   Result := FNewGameStarter;
+end;
+
+procedure TXcomGame.WarpMouse(AX, AY: Integer);
+begin
+  if Assigned(FEvents) then
+    FEvents.WarpMouse(AX, AY);
 end;
 
 procedure TXcomGame.SetNewGameStarter(const AStarter: IXcomNewGameStarter);

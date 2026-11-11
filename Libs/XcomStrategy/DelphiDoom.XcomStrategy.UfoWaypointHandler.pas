@@ -188,6 +188,13 @@ end;
 procedure TXcomUfoWaypointHandler.UfoLifting(const AMission: TXcomAlienMission; const AUfo: TXcomUfo;
   const AGame: TXcomSavedGame);
 begin
+  if not Assigned(AMission) then
+  begin
+    // declared difference: the C++ dereferences a null mission (crash); a UFO without a mission just leaves
+    AUfo.Detected := False;
+    AUfo.Status := TXcomUfo.STATUS_DESTROYED;
+    Exit;
+  end;
   case AUfo.Status of
     TXcomUfo.STATUS_FLYING:
       raise EXcomStrategyException.Create(SUfoIsFlying);
