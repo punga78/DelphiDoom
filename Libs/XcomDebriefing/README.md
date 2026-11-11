@@ -19,4 +19,20 @@ Parita' col vero `DebriefingState` su 93 esiti (0 differenze su resoconto, seme 
 
 Test: `Tools\build.bat Tests\DelphiDoom.Tests.XcomDebriefing`.
 
-Schermate e collegamento: `...DebriefingState` (`TXcomDebriefingState`), `...CannotReequipState` (`TXcomCannotReequipState`), `...Debriefer.Intf` / `...Debriefer` (`IXcomMissionDebriefer`, `TXcomMissionDebriefer`: la facciata che il Battlescape chiama a battaglia finita). Pixel delle schermate non confrontati col vero (vedi CLAUDE.md).
+Schermate e collegamento:
+
+| Unit | Classe | Origine C++ |
+|---|---|---|
+| `...DebriefingState` | `TXcomDebriefingState` | `DebriefingState` (le due pagine, il messaggio dell'alieno morto senza contenimento, i tooltip) |
+| `...CannotReequipState` | `TXcomCannotReequipState` | `CannotReequipState` |
+| `...CommendationState` | `TXcomCommendationState` | `CommendationState` (medaglie) |
+| `...CommendationLateState` | `TXcomCommendationLateState` | `CommendationLateState` (medaglie dei caduti) |
+| `...CommendationNames` | `TXcomCommendationNames` | il nome del livello di una medaglia (il ciclo `skipCounter` delle due schermate) |
+| `...PromotionsState` | `TXcomPromotionsState` | `PromotionsState` |
+| `...ManageAlienContainmentState` | `TXcomManageAlienContainmentState` | `Basescape\ManageAlienContainmentState` |
+| `...FollowUp` | `TXcomDebriefingFollowUp` | `DebriefingState::btnOkClick` (quali schermate seguono e in che ordine, salvataggio ironman o automatico) |
+| `...Debriefer.Intf`, `...Debriefer` | `IXcomMissionDebriefer`, `TXcomMissionDebriefer` | la facciata che il Battlescape chiama a battaglia finita |
+
+`Soldier::calcStatString` e' in `TXcomSoldier.CalcStatString` (`Libs\XcomSave`) e il debriefing lo richiama per i soldati che tornano.
+
+Parita' dei pixel col vero OpenXcom (risorse vere di TFTD, `debriefgen` con `DEBRIEF_PIXELS=1`): le due pagine del debriefing, `CannotReequipState`, `PromotionsState`, `ManageAlienContainmentState`, `CommendationState` e `CommendationLateState` a **0 pixel diversi** su 93 casi (569 schermate, 36,4 milioni di pixel); 5 casi sono nel repository (`Tests\Data\XcomDebriefing\pixels`). Cosa non e' confrontato: vedi CLAUDE.md.
