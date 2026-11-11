@@ -347,9 +347,9 @@ begin
   fGlobalInterface := '';
   fGlobalImplementation := '';
   fGlobalInitialization := '';
-  compiler := TDoomCompiler.CreateDoomCompiler;
+  compiler := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
   compiler.OnExportCheck := ScriptOnExportCheck;
-  importer := TPSDoomRuntimeClassImporter.Create;
+  importer := TPSDoomRuntimeClassImporter.CreateDoomImporter(PS_HostServices);
   globalexec := nil;
   feventsexec := TDoomExec.CreateDoomExec(importer);
   fevents := TScriptHostFactory.CreateEvents(feventsexec, PS_StateLog);
@@ -745,12 +745,12 @@ begin
   idx := IndexOf(mapname);
   if idx < 0 then
   begin
-    data := PAK_ReadFileAsString(mapname + '.ddout');
+    data := PS_HostServices.Sources.ReadText(mapname + '.ddout');
     if data <> '' then
       idx := AddCompiledFile(mapname, data);
     if idx < 0 then
     begin
-      data := PAK_ReadFileAsString(mapname + '.ddscript');
+      data := PS_HostServices.Sources.ReadText(mapname + '.ddscript');
       if data <> '' then
         idx := AddNormalSourceFile(mapname, data);
       if idx < 0 then
