@@ -37,6 +37,8 @@ type
     [Test]
     procedure DovrebbeMandareUnVelivoloAUnPuntoDelGlobo;
     [Test]
+    procedure DovrebbeDisegnareLaRottaDiUnVelivoloInVolo;
+    [Test]
     procedure DovrebbeSmantellareUnaStruttura;
     [Test]
     procedure DovrebbeRicevereGliAcquistiDopoTreGiorni;
@@ -125,6 +127,33 @@ begin
   Assert.IsTrue(RunUntil('TXcomCraftPatrolState', SPEED_30_MINUTES_Y, 40), 'il velivolo arriva al punto');
   FWorld.Key(XCOM_KEY_ESCAPE);
   Assert.AreEqual(GEOSCAPE, FWorld.Top);
+end;
+
+procedure TTestXcomTourFlows.DovrebbeDisegnareLaRottaDiUnVelivoloInVolo;
+var
+  LWith, LWithout: TBytes;
+  LIndex, LDifferent: Integer;
+begin
+  if not NewGame then
+    Exit;
+  FWorld.Click(TOUR_GEO_BUTTON_X, TOUR_INTERCEPT_Y);
+  FWorld.Click(100, 180);
+  FWorld.Click(300, 150);
+  FWorld.Key(XCOM_KEY_RETURN);
+  // the craft leaves the base: its path goes to the point that was chosen
+  FWorld.Wait(1000);
+  LWith := FWorld.Picture;
+  FWorld.Globe.FlightPaths := False;
+  FWorld.Globe.Redraw := True;
+  FWorld.Wait(40);
+  LWithout := FWorld.Picture;
+  LDifferent := 0;
+  // the globe is the left part of the 640 x 400 window (the clock at its right goes on)
+  for LIndex := 0 to High(LWith) do
+    if (LWith[LIndex] <> LWithout[LIndex]) and (LIndex mod 640 < 512) then
+      Inc(LDifferent);
+  Assert.IsTrue(LDifferent > 20, Format('la rotta e'' disegnata (%d pixel)', [LDifferent]));
+  Assert.IsTrue(LDifferent < 2000, Format('solo la rotta cambia (%d pixel)', [LDifferent]));
 end;
 
 procedure TTestXcomTourFlows.DovrebbeSmantellareUnaStruttura;

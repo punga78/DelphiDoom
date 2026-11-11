@@ -19,6 +19,10 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Xcom.GameComposition in '..\OpenXcom\DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.GeoscapeNavigator in '..\OpenXcom\DelphiDoom.Xcom.GeoscapeNavigator.pas',
+  DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
+  DelphiDoom.Tests.XcomGeoscape.Popups in 'Source\DelphiDoom.Tests.XcomGeoscape.Popups.pas',
+  DelphiDoom.Tests.XcomGeoscape.MonthlyReportState in 'Source\DelphiDoom.Tests.XcomGeoscape.MonthlyReportState.pas',
+  DelphiDoom.Tests.XcomGeoscape.MissionLauncher in 'Source\DelphiDoom.Tests.XcomGeoscape.MissionLauncher.pas',
   DelphiDoom.Tests.XcomTour.World in 'Source\DelphiDoom.Tests.XcomTour.World.pas',
   DelphiDoom.Tests.XcomTour.Strategy in 'Source\DelphiDoom.Tests.XcomTour.Strategy.pas',
   DelphiDoom.Tests.XcomTour.Flows in 'Source\DelphiDoom.Tests.XcomTour.Flows.pas';

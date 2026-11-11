@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomSave.SavedGame,
-  DelphiDoom.XcomSave.Base;
+  DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.Globe;
 
 type
   /// <summary>
@@ -62,6 +62,10 @@ type
     function FirstBase: TXcomBase;
     /// <summary>The zoom of the globe of the geoscape, which must be the state on top</summary>
     function GlobeZoom: Integer;
+    /// <summary>The globe of the geoscape, which must be the state on top</summary>
+    function Globe: TXcomGlobe;
+    /// <summary>A copy of the picture on the display (640 x 400 palette indexes)</summary>
+    function Picture: TBytes;
     property Game: TXcomGame read FGame;
     property UserFolder: string read FUserFolder;
   end;
@@ -261,7 +265,17 @@ end;
 
 function TXcomTourWorld.GlobeZoom: Integer;
 begin
-  Result := (FGame.TopState as TXcomGeoscapeState).Globe.Zoom;
+  Result := Globe.Zoom;
+end;
+
+function TXcomTourWorld.Globe: TXcomGlobe;
+begin
+  Result := (FGame.TopState as TXcomGeoscapeState).Globe;
+end;
+
+function TXcomTourWorld.Picture: TBytes;
+begin
+  Result := Copy(FDevice.Pixels);
 end;
 
 function TXcomTourWorld.FirstBase: TXcomBase;
