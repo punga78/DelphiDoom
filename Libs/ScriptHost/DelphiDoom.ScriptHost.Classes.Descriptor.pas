@@ -26,7 +26,7 @@ type
   TScriptClassDescriptor = class(TInterfacedObject, IScriptClassDescriptor)
   strict private
     type
-      TMemberKind = (mkProperty, mkDefaultProperty, mkMethod, mkConstructor);
+      TMemberKind = (mkProperty, mkDefaultProperty, mkMethod, mkConstructor, mkVirtualMethod, mkVirtualConstructor);
 
       TMember = record
         Kind: TMemberKind;
@@ -62,7 +62,9 @@ type
     procedure AddRuntimeProperty(const AName: string; const AReader, AWriter: Pointer);
     procedure AddDefaultProperty(const AName: string);
     procedure AddMethod(const ADeclaration, AName: string; const ACode: Pointer);
+    procedure AddVirtualMethod(const ADeclaration, AName: string; const ACode: Pointer);
     procedure AddConstructor(const ACode: Pointer);
+    procedure AddVirtualConstructor(const ACode: Pointer);
     procedure AddVariable(const AName: string; const AInstance: TScriptInstanceProvider);
     function CompilerProperties(const AGame: TScriptGame): TArray<string>;
     function RuntimeProperties(const AGame: TScriptGame): TArray<string>;
@@ -161,6 +163,26 @@ begin
   AddMember(LMember);
 end;
 
+procedure TScriptClassDescriptor.AddVirtualMethod(const ADeclaration, AName: string; const ACode: Pointer);
+var
+  LMember: TMember;
+begin
+  AddMethod(ADeclaration, AName, ACode);
+  LMember := FMembers.Last;
+  LMember.Kind := mkVirtualMethod;
+  FMembers[FMembers.Count - 1] := LMember;
+end;
+
+procedure TScriptClassDescriptor.AddVirtualConstructor(const ACode: Pointer);
+var
+  LMember: TMember;
+begin
+  AddConstructor(ACode);
+  LMember := FMembers.Last;
+  LMember.Kind := mkVirtualConstructor;
+  FMembers[FMembers.Count - 1] := LMember;
+end;
+
 procedure TScriptClassDescriptor.AddConstructor(const ACode: Pointer);
 var
   LMember: TMember;
@@ -234,7 +256,7 @@ begin
         AClass.RegisterProperty(TbtString(LMember.Name), TbtString(LMember.PropertyType), LMember.Access);
       mkDefaultProperty:
         AClass.SetDefaultPropery(TbtString(LMember.Name));
-      mkMethod, mkConstructor:
+      mkMethod, mkConstructor, mkVirtualMethod, mkVirtualConstructor:
         AClass.RegisterMethod(TbtString(LMember.Declaration));
     end;
   end;
@@ -258,6 +280,10 @@ begin
         AClass.RegisterMethod(LMember.Code, TbtString(LMember.Name));
       mkConstructor:
         AClass.RegisterConstructor(LMember.Code, TbtString(LMember.Name));
+      mkVirtualMethod:
+        AClass.RegisterVirtualMethod(LMember.Code, TbtString(LMember.Name));
+      mkVirtualConstructor:
+        AClass.RegisterVirtualConstructor(LMember.Code, TbtString(LMember.Name));
     end;
   end;
 end;

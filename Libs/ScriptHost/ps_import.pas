@@ -217,6 +217,7 @@ begin
     // the order of the registration of the compiler: the variables, then the game
     PS_DescribeGlobalClasses(AServices.Classes);
     PS_DescribeGameClasses(AServices.Classes);
+    PS_DescribeOverlayClasses(AServices.Classes);
   end;
 end;
 
@@ -468,7 +469,6 @@ begin
     Sender.AddTypeS('angle_t', 'longword');
     RegisterDateTimeLibrary_C(Sender);
     LServices.Classes.RegisterCompiler(Sender);
-    SIRegister_TOverlay(Sender);
 
     LServices.Registry.RegisterCompiler(string(Name), Sender);
 
@@ -769,7 +769,6 @@ begin
   begin
     // JVAL: Must be called after TPSExec.LoadData()
     FServices.Classes.BindVariables(Self);
-    RIRegisterRTL_TOverlay(Self);
   end;
 end;
 
@@ -808,7 +807,6 @@ begin
     RegisterMethod(@TRTLObject.FakeFree, 'Free');
   end;
   FServices.Classes.RegisterRuntime(Self);
-  RIRegister_TOverlay(Self);
 end;
 
 end.

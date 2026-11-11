@@ -50,8 +50,12 @@ type
     procedure AddDefaultProperty(const AName: string);
     /// <summary>Adds a method: the declaration for the compiler, the name and the address for the interpreter</summary>
     procedure AddMethod(const ADeclaration, AName: string; const ACode: Pointer);
+    /// <summary>Adds a virtual method (the interpreter registers it with RegisterVirtualMethod)</summary>
+    procedure AddVirtualMethod(const ADeclaration, AName: string; const ACode: Pointer);
     /// <summary>Adds the constructor Create, with its address for the interpreter</summary>
     procedure AddConstructor(const ACode: Pointer);
+    /// <summary>Adds the virtual constructor Create (the interpreter registers it with RegisterVirtualConstructor)</summary>
+    procedure AddVirtualConstructor(const ACode: Pointer);
     /// <summary>
     ///   Adds a variable of the class that every script has (Actors, MapStrings...): the compiler
     ///   knows the name, the interpreter binds the object that AInstance gives to it. The object
