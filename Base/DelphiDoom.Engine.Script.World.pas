@@ -516,7 +516,7 @@ end;
 procedure TEngineScriptWorld.SetSectorFlag(const AIndex: Integer; const AFlag: TScriptSectorFlag;
   const AValue: Boolean);
 var
-  LMask: Integer;
+  LMask: LongWord;
   LSet: Boolean;
 begin
   LSet := AValue;

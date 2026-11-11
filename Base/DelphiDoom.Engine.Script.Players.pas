@@ -229,12 +229,12 @@ end;
 
 function TEngineScriptPlayers.Message(const APlayer: Integer): string;
 begin
-  Result := players[APlayer]._message;
+  Result := string(players[APlayer]._message);
 end;
 
 procedure TEngineScriptPlayers.SetMessage(const APlayer: Integer; const AText: string);
 begin
-  players[APlayer]._message := AText;
+  players[APlayer]._message := ShortString(AText);
 end;
 
 function TEngineScriptPlayers.ExtraLight(const APlayer: Integer): Integer;
