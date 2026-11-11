@@ -76,7 +76,7 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
 DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, DelphiDoom.Xcom.GeoscapeNavigator,
-  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
+  DelphiDoom.XcomGeoscape.SavedGameLoader, DelphiDoom.XcomBattleStates.Launcher, DelphiDoom.XcomGeoscape.SavedGameSaver, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
@@ -142,6 +142,7 @@ var
   LDosPath: string;
   LAudio: IXcomAudioDevice;
   LMusic: IXcomMusicPlayer;
+  LSavedGameLoader: TXcomSavedGameLoader;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -252,7 +253,14 @@ begin
         Result := TXcomGameNavigator.Create(AHost, TXcomMenuOptionsNavigator.Create(ASettings.VersionText));
       end;
     Result.SetNewGameStarter(TXcomNewGameStarter.Create(Result, ASettings.Seed, LSimulationFactory, LNavigatorFactory));
-    Result.SetSavedGameLoader(TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory));
+    LSavedGameLoader := TXcomSavedGameLoader.Create(Result, LSimulationFactory, LNavigatorFactory);
+    // a saved game with a battle in progress goes on in the battlescape, over the geoscape
+    LSavedGameLoader.BattleResumer :=
+      procedure(AHost: TXcomStateHost)
+      begin
+        TXcomBattleLauncher.Resume(AHost);
+      end;
+    Result.SetSavedGameLoader(LSavedGameLoader);
     LBrief.Version := '1.0';
     LBrief.Engine := '';
     LBrief.Build := '';

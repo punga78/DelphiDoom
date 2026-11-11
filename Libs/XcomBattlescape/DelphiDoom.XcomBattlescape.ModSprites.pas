@@ -194,7 +194,8 @@ begin
         FixTftdArmor(Result, Ord(LName[8]) - Ord('0'));
       Exit;
     except
-      on EXcomModException do
+      // the files of the mod say "not found" with the exception of their own library: any of them means "not here"
+      on Exception do
         Continue;
     end;
   Result := nil;
