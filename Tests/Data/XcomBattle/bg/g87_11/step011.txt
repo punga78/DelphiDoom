@@ -1,2 +1,0 @@
-# placegrenade 25 7 0 STR_MAGNA_PACK_EXPLOSIVE 1 3
-seed=18376713181558704318 side=1 turn=1

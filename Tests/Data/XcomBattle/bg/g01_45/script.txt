@@ -1,0 +1,36 @@
+placegrenade 28 36 0 STR_DYE_GRENADE 0 1000010
+endturn
+endturn
+walk 1 2 7 0
+endturn
+endturn
+walk 4 4 4 0
+explode 29 35 0 STR_SONIC_PULSER 1000010 0
+walk 5 3 15 0
+walk 8 1 7 0
+walk 3 2 8 0
+endturn
+endturn
+walk 3 4 2 0
+walk 4 14 9 0
+walk 2 4 2 0
+walk 4 0 5 0
+walk 1 2 2 0
+shoot 8 6 7 8 0
+explode 28 20 1 STR_MAGNA_BLAST_GRENADE 1000021 0
+walk 3 7 4 0
+throw 4 3 1 0
+explode 29 22 0 STR_DYE_GRENADE 1000009 0
+endturn
+endturn
+walk 6 2 9 0
+shoot 4 8 6 7 0
+placegrenade 8 3 0 STR_MAGNA_BLAST_GRENADE 1 4
+endturn
+endturn
+placegrenade 2 7 0 STR_MAGNA_BLAST_GRENADE 0 3
+walk 8 10 5 0
+throw 1 5 5 0
+walk 4 13 8 0
+endturn
+endturn

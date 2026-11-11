@@ -1,2 +1,0 @@
-# endturn
-seed=11493709997567682498 side=1 turn=1

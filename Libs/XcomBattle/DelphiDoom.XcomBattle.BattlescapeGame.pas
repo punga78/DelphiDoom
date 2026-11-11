@@ -57,7 +57,6 @@ type
     procedure FillKillStatistics(const AKill: TXcomBattleUnitKills; const AUnit: TXcomBattleUnit);
     function CopyKill(const ASource: TXcomBattleUnitKills): TXcomBattleUnitKills;
     function NoActionsPending(const AUnit: TXcomBattleUnit): Boolean;
-    procedure SetupCursor;
   public
     constructor Create(const ASave: TXcomSavedBattleGame; const AEngine: TXcomTileEngine;
       const APathfinding: TXcomPathfinding; const ARuleset: TXcomRuleset; const AOptions: TXcomBattleOptions;
@@ -89,9 +88,11 @@ type
     procedure DropItem(const APosition: TXcomPosition; const AItem: TXcomBattleItem; ANewItem: Boolean = False;
       ARemoveItem: Boolean = False);
     function ConvertUnit(const AUnit: TXcomBattleUnit): TXcomBattleUnit;
+    function ConvertInfected: Boolean;
     procedure KnockOut(const AUnit: TXcomBattleUnit);
     function CheckReactionFire(const AUnit: TXcomBattleUnit): Boolean;
     function Kneel(const AUnit: TXcomBattleUnit): Boolean;
+    procedure SetupCursor;
     procedure AutoEndBattle;
     function CheckForProximityGrenades(const AUnit: TXcomBattleUnit): Boolean;
     // BattlescapeGame
@@ -105,9 +106,22 @@ type
     procedure EndTurn;
     /// <summary>requestEndTurn</summary>
     procedure RequestEndTurn;
+    /// <summary>
+    ///   primaryAction (the left click on the map): aims the action in preparation (a shot or a throw: first the
+    ///   unit turns, then the projectile flies), or selects the unit on the tile, or walks the selected unit there.
+    ///   Waypoints, mind probe and psionics are not ported
+    /// </summary>
+    procedure PrimaryAction(const APosition: TXcomPosition);
+    /// <summary>cancelCurrentAction</summary>
+    function CancelCurrentAction(AForce: Boolean = False): Boolean;
+    /// <summary>playableUnitSelected</summary>
+    function PlayableUnitSelected: Boolean;
     procedure TallyUnits(out ALiveAliens, ALiveSoldiers: Integer);
-    /// <summary>convertInfected: the units that carry a spawn unit and survive turn into it</summary>
-    function ConvertInfected: Boolean;
+    /// <summary>
+    ///   The tile part of Map::animate (the timer of the animation of the game): the doors of the UFOs open and close
+    ///   a frame at a time and the steps wait for them
+    /// </summary>
+    procedure AnimateTiles;
     /// <summary>isBusy: there are steps to run</summary>
     function IsBusy: Boolean;
     /// <summary>The name of the first step ('EndTurn' for the end of the turn), or ''</summary>
@@ -126,7 +140,7 @@ uses
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomBattle.AIModule,
   DelphiDoom.XcomBattle.ExplosionState,
   DelphiDoom.XcomBattle.UnitDieState, DelphiDoom.XcomBattle.UnitFallState, DelphiDoom.XcomBattle.UnitTurnState,
-  DelphiDoom.XcomBattle.UnitWalkState;
+  DelphiDoom.XcomBattle.UnitWalkState, DelphiDoom.XcomBattle.ProjectileFlyState;
 
 const
   END_POINT = 13;
@@ -228,6 +242,14 @@ begin
   Result := FSave.Depth;
 end;
 
+procedure TXcomBattlescapeGame.AnimateTiles;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to FSave.MapSizeXyz - 1 do
+    FSave.TileByIndex(LIndex).Animate;
+end;
+
 function TXcomBattlescapeGame.IsBusy: Boolean;
 begin
   Result := FStates.Count > 0;
@@ -238,7 +260,13 @@ begin
   if FStates.Count = 0 then
     Result := ''
   else if Assigned(FStates[0]) then
-    Result := FStates[0].StateName
+  begin
+    Result := FStates[0].StateName;
+    if FStates[0] is TXcomExplosionState then
+      Result := Result + '[' + (FStates[0] as TXcomExplosionState).Description + ']';
+    if FStates[0] is TXcomProjectileFlyState then
+      Result := Result + '[' + (FStates[0] as TXcomProjectileFlyState).ProjectileText + ']';
+  end
   else
     Result := 'EndTurn';
 end;
@@ -711,6 +739,87 @@ begin
   if ((FSave.Side <> FACTION_NEUTRAL) or (LLiveAliens = 0) or (LLiveSoldiers = 0)) and FEndTurnRequested then
     FView.NextTurn;
   FEndTurnRequested := False;
+end;
+
+function TXcomBattlescapeGame.PlayableUnitSelected: Boolean;
+begin
+  Result := Assigned(FSave.SelectedUnit) and ((FSave.Side = FACTION_PLAYER) or FSave.DebugMode);
+end;
+
+function TXcomBattlescapeGame.CancelCurrentAction(AForce: Boolean): Boolean;
+begin
+  Result := False;
+  if (FStates.Count = 0) or AForce then
+  begin
+    if FCurrentAction.Targeting then
+    begin
+      if (FCurrentAction.ActionType = BA_LAUNCH) and (FCurrentAction.Waypoints.Count > 0) then
+      begin
+        FCurrentAction.Waypoints.Delete(FCurrentAction.Waypoints.Count - 1);
+        if FCurrentAction.Waypoints.Count = 0 then
+          FView.ShowLaunchButton(False);
+        Exit(True);
+      end;
+      FCurrentAction.Targeting := False;
+      FCurrentAction.ActionType := BA_NONE;
+      SetupCursor;
+      Exit(True);
+    end;
+  end
+  else if Assigned(FStates[0]) then
+  begin
+    FStates[0].Cancel;
+    Exit(True);
+  end;
+end;
+
+procedure TXcomBattlescapeGame.PrimaryAction(const APosition: TXcomPosition);
+var
+  LUnit: TXcomBattleUnit;
+begin
+  if FCurrentAction.Targeting and Assigned(FSave.SelectedUnit) then
+  begin
+    if (FCurrentAction.ActionType = BA_LAUNCH) or (FCurrentAction.ActionType = BA_USE) or
+      (FCurrentAction.ActionType = BA_PANIC) or (FCurrentAction.ActionType = BA_MINDCONTROL) then
+      raise EXcomBattleException.CreateFmt(SNotPorted, ['the primary action of waypoints, mind probe and psionics'])
+    else
+    begin
+      FCurrentAction.Target := APosition;
+      FView.SetCursorType(-1);
+      FStates.Add(TXcomProjectileFlyState.Create(Self, FCurrentAction));
+      StatePushFront(TXcomUnitTurnState.Create(Self, FCurrentAction)); // first of all turn towards the target
+    end;
+  end
+  else
+  begin
+    FCurrentAction.Actor := FSave.SelectedUnit;
+    LUnit := FSave.SelectUnit(APosition);
+    if Assigned(LUnit) and (LUnit <> FSave.SelectedUnit) and (LUnit.Visible or FDebugPlay) then
+    begin
+      // select unit
+      if LUnit.Faction = FSave.Side then
+      begin
+        FSave.SelectedUnit := LUnit;
+        FView.UpdateSoldierInfo;
+        CancelCurrentAction;
+        SetupCursor;
+        FCurrentAction.Actor := LUnit;
+      end;
+    end
+    else if PlayableUnitSelected then
+    begin
+      FCurrentAction.Target := APosition;
+      FPathfinding.Calculate(FCurrentAction.Actor, FCurrentAction.Target);
+      FCurrentAction.Run := False;
+      FCurrentAction.Strafe := False;
+      if FPathfinding.GetStartDirection <> -1 then
+      begin
+        // start walking
+        FView.SetCursorType(-1);
+        StatePushBack(TXcomUnitWalkState.Create(Self, FCurrentAction));
+      end;
+    end;
+  end;
 end;
 
 procedure TXcomBattlescapeGame.RequestEndTurn;

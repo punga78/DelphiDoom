@@ -50,6 +50,8 @@ type
     procedure Deinit;
     function StateName: string;
     function Action: TXcomBattleAction;
+    /// <summary>The power and whether it hits an area, as the init decided (for the traces)</summary>
+    function Description: string;
     property Center: TXcomPosition read FCenter;
     property Item: TXcomBattleItem read FItem;
     property CausingUnit: TXcomBattleUnit read FUnit;
@@ -93,6 +95,11 @@ begin
   Result := nil;
 end;
 
+function TXcomExplosionState.Description: string;
+begin
+  Result := Format('p=%d aoe=%d c=%d/%d/%d', [FPower, Ord(FAreaOfEffect), FCenter.X, FCenter.Y, FCenter.Z]);
+end;
+
 procedure TXcomExplosionState.Init;
 var
   LGame: IXcomBattlescapeGame;
@@ -116,7 +123,7 @@ begin
     // this usually only applies to melee, but as a concession for modders it is here in case they want a bow
     if FItem.Rules.StrengthApplied and Assigned(FUnit) then
       Inc(FPower, FUnit.Stats.Strength);
-    FAreaOfEffect := (FItem.Rules.BattleType <> TXcomRuleItem.BT_MELEE) and (FItem.Rules.BlastRadius <> 0) and
+    FAreaOfEffect := (FItem.Rules.BattleType <> TXcomRuleItem.BT_MELEE) and (FItem.Rules.ExplosionRadius <> 0) and
       (not FCosmetic);
   end
   else if Assigned(FTile) then
@@ -217,7 +224,7 @@ begin
       FUnit := FItem.PreviousOwner;
     LVictim := nil;
     if FAreaOfEffect then
-      LGame.TileEngine.Explode(FCenter, FPower, FItem.Rules.DamageType, FItem.Rules.BlastRadius, FUnit)
+      LGame.TileEngine.Explode(FCenter, FPower, FItem.Rules.DamageType, FItem.Rules.ExplosionRadius, FUnit)
     else if not FCosmetic then
       LVictim := LGame.TileEngine.Hit(FCenter, FPower, FItem.Rules.DamageType, FUnit);
     // check if this unit turns others into zombies
@@ -250,7 +257,7 @@ begin
     // explosion not caused by terrain or an item, must be by a unit (cyberdisc)
     if Assigned(FUnit) and ((FUnit.SpecialAbility = SPECAB_EXPLODEONDEATH) or
       (FUnit.SpecialAbility = SPECAB_BURN_AND_EXPLODE)) then
-      LRadius := LGame.Ruleset.Items.Find(FUnit.Armor.CorpseGeoscape).BlastRadius;
+      LRadius := LGame.Ruleset.Items.Find(FUnit.Armor.CorpseGeoscape).ExplosionRadius;
     LGame.TileEngine.Explode(FCenter, FPower, TXcomRuleItem.DT_HE, LRadius);
     LTerrainExplosion := True;
   end;

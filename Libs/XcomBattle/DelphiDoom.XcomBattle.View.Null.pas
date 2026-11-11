@@ -46,6 +46,7 @@ type
     procedure SetCursorType(ACursorType: Integer; ASize: Integer = 1);
     procedure PlaySound(ASound: Integer; const APosition: TXcomPosition);
     procedure AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig, AHit: Boolean);
+    procedure SetProjectile(const AProjectile: TObject);
     procedure SetBlastFlash(AFlash: Boolean);
     function BlastFlash: Boolean;
     function AnimateExplosions: Boolean;
@@ -143,6 +144,10 @@ procedure TXcomBattleNullView.AddExplosion(const ACenter: TXcomPosition; AStartF
   ABig, AHit: Boolean);
 begin
   Inc(FExplosionSprites);
+end;
+
+procedure TXcomBattleNullView.SetProjectile(const AProjectile: TObject);
+begin
 end;
 
 procedure TXcomBattleNullView.SetBlastFlash(AFlash: Boolean);

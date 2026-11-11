@@ -79,6 +79,9 @@ type
     ///   is nothing to do). The action keeps its number and the actor is set
     /// </summary>
     procedure Think(const AModule: TXcomAIModule; const AAction: TXcomBattleAction);
+    /// <summary>explosiveEfficacy (public: the reaction fire of the hostile units asks it)</summary>
+    function WorthExploding(const ATargetPosition: TXcomPosition; const AAttackingUnit: TXcomBattleUnit;
+      ARadius, ADifficulty: Integer): Boolean;
   end;
 
 implementation
@@ -1156,6 +1159,12 @@ begin
     Exit(True);
   end;
   Result := False;
+end;
+
+function TXcomAIThinker.WorthExploding(const ATargetPosition: TXcomPosition; const AAttackingUnit: TXcomBattleUnit;
+  ARadius, ADifficulty: Integer): Boolean;
+begin
+  Result := ExplosiveEfficacy(ATargetPosition, AAttackingUnit, ARadius, ADifficulty);
 end;
 
 function TXcomAIThinker.ExplosiveEfficacy(const ATargetPosition: TXcomPosition;

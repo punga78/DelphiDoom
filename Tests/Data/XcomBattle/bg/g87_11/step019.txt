@@ -1,2 +1,0 @@
-# placegrenade 23 5 0 STR_SONIC_PULSER 1 1
-seed=17246288397687401162 side=1 turn=1

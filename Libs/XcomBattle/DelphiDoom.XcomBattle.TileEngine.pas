@@ -104,6 +104,8 @@ type
     /// </summary>
     function UnitOpensDoor(const AUnit: TXcomBattleUnit; ARightClick: Boolean = False; ADirection: Integer = -1)
       : Integer;
+    /// <summary>setDangerZone: the tiles a grenade that is about to explode would reach are marked dangerous for the AI</summary>
+    procedure SetDangerZone(const APosition: TXcomPosition; ARadius: Integer; const AUnit: TXcomBattleUnit);
     /// <summary>checkAdjacentDoors: opens the UFO doors that continue a door that was opened</summary>
     procedure CheckAdjacentDoors(const APosition: TXcomPosition; APart: Integer);
     /// <summary>faceWindow: the direction (0, 2, 4, 6) of a window next to the tile, or -1</summary>
@@ -1847,6 +1849,60 @@ begin
       Exit(5);
   end;
   Result := LDoor;
+end;
+
+procedure TXcomTileEngine.SetDangerZone(const APosition: TXcomPosition; ARadius: Integer;
+  const AUnit: TXcomBattleUnit);
+var
+  LTile: TXcomTile;
+  LOrigin: TXcomPosition;
+  LTarget: TXcomPosition;
+  LX: Integer;
+  LY: Integer;
+  LTrajectory: TList<TXcomPosition>;
+  LCell: TXcomPosition;
+begin
+  LTile := FSave.TileAt(APosition);
+  if not Assigned(LTile) then
+    Exit;
+  // set the epicenter as dangerous
+  LTile.Dangerous := True;
+  LOrigin := (APosition * TXcomPosition.Make(16, 16, 24)) + TXcomPosition.Make(8, 8, 12 + -LTile.GetTerrainLevel);
+  LTrajectory := TList<TXcomPosition>.Create;
+  try
+    // the loops of the C++ stop before +radius
+    LX := -ARadius;
+    while LX <> ARadius do
+    begin
+      LY := -ARadius;
+      while LY <> ARadius do
+      begin
+        // we can skip the epicenter
+        if (LX <> 0) or (LY <> 0) then
+          // make sure we're within the radius
+          if LX * LX + LY * LY <= ARadius * ARadius then
+          begin
+            LCell := APosition + TXcomPosition.Make(LX, LY, 0);
+            LTile := FSave.TileAt(LCell);
+            if Assigned(LTile) then
+            begin
+              LTarget := (LCell * TXcomPosition.Make(16, 16, 24)) +
+                TXcomPosition.Make(8, 8, 12 + -LTile.GetTerrainLevel);
+              LTrajectory.Clear;
+              // we'll trace a line here, ignoring all units, to check if the explosion will reach this point
+              if CalculateLine(LOrigin, LTarget, False, LTrajectory, AUnit, True, False, AUnit) = V_EMPTY then
+                if (LTrajectory.Count > 0) and
+                  ((LTrajectory[LTrajectory.Count - 1] div TXcomPosition.Make(16, 16, 24)) = LCell) then
+                  LTile.Dangerous := True;
+            end;
+          end;
+        Inc(LY);
+      end;
+      Inc(LX);
+    end;
+  finally
+    LTrajectory.Free;
+  end;
 end;
 
 procedure TXcomTileEngine.CheckAdjacentDoors(const APosition: TXcomPosition; APart: Integer);

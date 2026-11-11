@@ -1,2 +1,0 @@
-# placegrenade 24 49 0 STR_MAGNA_BLAST_GRENADE 1 2
-seed=4489785926700351951 side=0 turn=1

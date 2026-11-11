@@ -25,6 +25,13 @@ type
     /// <summary>Options::battleXcomSpeed and battleAlienSpeed (the interval of the steps)</summary>
     BattleXcomSpeed: Integer;
     BattleAlienSpeed: Integer;
+    /// <summary>Options::battleInstantGrenade: a hot grenade explodes where it lands</summary>
+    BattleInstantGrenade: Boolean;
+    /// <summary>Options::battleFireSpeed, battleUFOExtenderAccuracy, forceFire and the control key</summary>
+    FireSpeed: Integer;
+    UfoExtenderAccuracy: Boolean;
+    ForceFire: Boolean;
+    ControlHeld: Boolean;
     class function Default: TXcomBattleOptions; static;
   end;
 
@@ -39,6 +46,11 @@ begin
   Result.NoAlienPanicMessages := False;
   Result.BattleXcomSpeed := 30;
   Result.BattleAlienSpeed := 30;
+  Result.BattleInstantGrenade := False;
+  Result.FireSpeed := 6;
+  Result.UfoExtenderAccuracy := False;
+  Result.ForceFire := True;
+  Result.ControlHeld := False;
 end;
 
 end.

@@ -57,6 +57,8 @@ type
     ///   first frame, the delay in frames, and whether it is a big (area) explosion, a hit or a bullet
     /// </summary>
     procedure AddExplosion(const ACenter: TXcomPosition; AStartFrame, AFrameDelay: Integer; ABig, AHit: Boolean);
+    /// <summary>Map::setProjectile: the projectile in flight that the map draws (a TXcomProjectile), or nil</summary>
+    procedure SetProjectile(const AProjectile: TObject);
     /// <summary>Map::setBlastFlash</summary>
     procedure SetBlastFlash(AFlash: Boolean);
     /// <summary>Map::getBlastFlash: the screen is still shown in EGA</summary>

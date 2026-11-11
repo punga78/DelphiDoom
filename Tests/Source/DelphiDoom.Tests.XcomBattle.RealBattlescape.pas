@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom battlescape library - BattlescapeGame     }
 {  and its steps against the real BattlescapeGame of OpenXcom (with a real     }
@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomBattle.RealBattlescape;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.RegularExpressions,
+  System.SysUtils, System.Math, System.Classes, System.IOUtils, System.ZLib, System.RegularExpressions,
   System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock,
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
@@ -21,7 +21,9 @@ uses
   DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink,
   DelphiDoom.XcomBattle.TileEngine, DelphiDoom.XcomBattle.Pathfinding, DelphiDoom.XcomBattle.Options,
   DelphiDoom.XcomBattle.View.Intf, DelphiDoom.XcomBattle.View.Null, DelphiDoom.XcomBattle.ExplosionState,
-  DelphiDoom.XcomBattle.BattlescapeGame, DelphiDoom.Tests.XcomBattle.RealBattle, DelphiDoom.Tests.XcomMod.RealData;
+  DelphiDoom.XcomBattle.BattlescapeGame, DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattle.AIThinker,
+  DelphiDoom.XcomBattle.ReactionFire, DelphiDoom.XcomBattle.UnitTurnState, DelphiDoom.Tests.XcomBattle.RealBattle,
+  DelphiDoom.Tests.XcomMod.RealData;
 
 type
   [TestFixture]
@@ -40,6 +42,7 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function CollapseTrace(const AText: string): string; static;
+    class function FirstDifference(const AExpected, AActual: string): string; static;
     function RunScenario(const AFolder: string): string;
   public
     [SetupFixture]
@@ -157,6 +160,32 @@ begin
   end;
 end;
 
+class function TTestXcomRealBattlescape.FirstDifference(const AExpected, AActual: string): string;
+var
+  LExpected: TArray<string>;
+  LActual: TArray<string>;
+  LIndex: Integer;
+  LLeft: string;
+  LRight: string;
+begin
+  LExpected := AExpected.Split([#10]);
+  LActual := AActual.Split([#10]);
+  for LIndex := 0 to Max(High(LExpected), High(LActual)) do
+  begin
+    if LIndex <= High(LExpected) then
+      LLeft := LExpected[LIndex]
+    else
+      LLeft := '(end)';
+    if LIndex <= High(LActual) then
+      LRight := LActual[LIndex]
+    else
+      LRight := '(end)';
+    if LLeft <> LRight then
+      Exit(Format('line %d expected [%s] actual [%s]', [LIndex, LLeft, LRight]));
+  end;
+  Result := 'no difference';
+end;
+
 procedure TTestXcomRealBattlescape.SetupFixture;
 var
   LPath: string;
@@ -218,6 +247,14 @@ var
   LSeed: string;
   LParts: TArray<string>;
   LOrder2: TArray<Integer>;
+  LThinker: TXcomAIThinker;
+  LConfig: TXcomAIConfig;
+  LNames: TArray<string>;
+  LDiscovered: Integer;
+  LAction: TXcomBattleAction;
+  LTarget: TXcomPosition;
+  LStep2: Integer;
+  LTicks: Integer;
 
   function FindUnit(AId: Integer): TXcomBattleUnit;
   var
@@ -234,8 +271,12 @@ var
     LGuard := 3000;
     while LBattlescape.IsBusy and (LGuard > 0) do
     begin
-      LTrace := LTrace + LBattlescape.FrontStateName + #10;
+      LTrace := LTrace + LBattlescape.FrontStateName + '@' + UIntToStr(LRandom.Seed) + #10;
       LBattlescape.HandleState;
+      Inc(LTicks);
+      // the animation timer of the game runs about every third tick of the steps (UFO doors open with it)
+      if LTicks mod 3 = 0 then
+        LBattlescape.AnimateTiles;
       Dec(LGuard);
     end;
     if LGuard <= 0 then
@@ -260,6 +301,7 @@ var
 
 begin
   LFailures := '';
+  LTicks := 0;
   LName := ExtractFileName(ExcludeTrailingPathDelimiter(AFolder));
   LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AFolder + 'start.sav'));
   LRandom := TXcomRandom.Create(1);
@@ -295,7 +337,17 @@ begin
       LView := TXcomBattleNullView.Create;
       LBattlescape := TXcomBattlescapeGame.Create(LBattle, LEngine, LPathfinding, FRuleset,
         TXcomBattleOptions.Default, LView, LGame.Difficulty);
+      LConfig.DifficultyCoefficient := FRuleset.Settings.DifficultyCoefficient[LGame.Difficulty];
+      LConfig.TurnUseGrenade := FRuleset.Settings.TurnAIUseGrenade;
+      LConfig.TurnUseBlaster := FRuleset.Settings.TurnAIUseBlaster;
+      LConfig.ExplosionHeight := 0;
+      LThinker := TXcomAIThinker.Create(LBattle, LEngine, LPathfinding, LConfig);
+      SetLength(LNames, LGame.Discovered.Count);
+      for LDiscovered := 0 to LGame.Discovered.Count - 1 do
+        LNames[LDiscovered] := LGame.Discovered[LDiscovered].Name;
       try
+        LBattlescape.ReactionFire := TXcomReactionFire.Create(LBattlescape, LThinker,
+          TXcomReactionFire.ResearchOf(LNames));
         LBattlescape.MissionCount := LGame.MissionStatistics.Count;
         LScript.Text := ReadString(AFolder + 'script.txt');
         for LStep := 0 to LScript.Count - 1 do
@@ -336,6 +388,56 @@ begin
                   TXcomPosition.Make(LPosition.X * 16 + 8, LPosition.Y * 16 + 8, LPosition.Z * 24 + 10), LItem, LUnit,
                   nil));
             end
+            else if (LWords[0] = 'walk') or (LWords[0] = 'shoot') or (LWords[0] = 'throw') or (LWords[0] = 'kneel') or
+              (LWords[0] = 'turn') then
+            begin
+              // what the player does with the mouse: select a soldier, choose the action, click on the map
+              LUnit := FindUnit(StrToInt(LWords[1]));
+              LBattle.SelectedUnit := LUnit;
+              LAction := LBattlescape.CurrentAction;
+              LAction.Targeting := False;
+              LAction.ActionType := BA_NONE;
+              LAction.Actor := LUnit;
+              LAction.Weapon := nil;
+              LAction.Waypoints.Clear;
+              LAction.AutoShotCounter := 0;
+              LStep2 := 2;
+              if LWords[0] = 'shoot' then
+              begin
+                LAction.ActionType := StrToInt(LWords[2]);
+                Inc(LStep2);
+                LAction.Weapon := LUnit.GetMainHandWeapon;
+              end
+              else if LWords[0] = 'throw' then
+              begin
+                LAction.ActionType := BA_THROW;
+                LAction.Weapon := LUnit.GetGrenadeFromBelt;
+                if Assigned(LAction.Weapon) then
+                  LAction.Weapon.FuseTimer := 0;
+              end;
+              if (LWords[0] = 'shoot') or (LWords[0] = 'throw') then
+              begin
+                if Assigned(LAction.Weapon) then
+                  LAction.TimeUnits := LUnit.GetActionTus(LAction.ActionType, LAction.Weapon)
+                else
+                  LAction.TimeUnits := 0;
+                LAction.Targeting := Assigned(LAction.Weapon);
+              end;
+              if LWords[0] = 'kneel' then
+                LBattlescape.Kneel(LUnit)
+              else if LWords[0] = 'turn' then
+              begin
+                LAction.Target := TXcomPosition.Make(StrToInt(LWords[2]), StrToInt(LWords[3]), StrToInt(LWords[4]));
+                LBattlescape.StatePushBack(TXcomUnitTurnState.Create(LBattlescape, LAction));
+              end
+              else if ((LWords[0] <> 'shoot') or Assigned(LAction.Weapon)) and
+                ((LWords[0] <> 'throw') or Assigned(LAction.Weapon)) then
+              begin
+                LTarget := TXcomPosition.Make(StrToInt(LWords[LStep2]), StrToInt(LWords[LStep2 + 1]),
+                  StrToInt(LWords[LStep2 + 2]));
+                LBattlescape.PrimaryAction(LTarget);
+              end;
+            end
             else if LWords[0] = 'endturn' then
             begin
               LBattlescape.EndTurnRequested := True;
@@ -349,9 +451,17 @@ begin
           LTrace := LTrace + Format('seed=%s side=%d turn=%d', [UIntToStr(LRandom.Seed), LBattle.Side, LBattle.Turn]) + #10;
           LExpected := ReadString(AFolder + Format('step%.3d.txt', [LStep]));
           if CollapseTrace(LTrace) <> CollapseTrace(LExpected) then
-            LFailures := LFailures + Format('%s step %d (%s): trace%s   expected %s%s   actual   %s%s',
-              [LName, LStep, LOrder, sLineBreak, sLineBreak, StringReplace(CollapseTrace(LExpected), #10, ' | ', [rfReplaceAll]),
-              sLineBreak, StringReplace(CollapseTrace(LTrace), #10, ' | ', [rfReplaceAll])]) + sLineBreak;
+          begin
+            LFailures := LFailures + Format('%s step %d (%s): trace, %s', [LName, LStep, LOrder,
+              FirstDifference(CollapseTrace(LExpected), CollapseTrace(LTrace))]) + sLineBreak;
+            if GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS') <> '' then
+            begin
+              TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                Format('%s.step%.3d.exp.txt', [LName, LStep]), CollapseTrace(LExpected));
+              TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DELPHIDOOM_XCOM_FAILS')) +
+                Format('%s.step%.3d.act.txt', [LName, LStep]), CollapseTrace(LTrace));
+            end;
+          end;
           LActualYaml := Normalize(string(TYamlFactory.Dump(LBattle.Save)));
           if LActualYaml <> Normalize(ReadString(AFolder + Format('step%.3d.yml', [LStep]))) then
           begin
@@ -363,6 +473,7 @@ begin
         end;
       finally
         LBattlescape.Free;
+        LThinker.Free;
         LView := nil;
       end;
     finally
@@ -392,6 +503,10 @@ begin
   LFailed := '';
   for LScenario in TDirectory.GetDirectories(LFolder) do
   begin
+    // DELPHIDOOM_XCOMBATTLE_BG_ONLY=<name>: only the scenario with this folder name
+    if (GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY') <> '') and
+      (ExtractFileName(LScenario) <> GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_BG_ONLY')) then
+      Continue;
     LFailed := LFailed + RunScenario(IncludeTrailingPathDelimiter(LScenario));
     Inc(LCount);
   end;

@@ -1,2 +1,0 @@
-# placegrenade 37 52 0 STR_DYE_GRENADE 1 1000017
-seed=755042250733894341 side=1 turn=1

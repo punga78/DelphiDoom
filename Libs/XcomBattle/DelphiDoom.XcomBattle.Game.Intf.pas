@@ -44,6 +44,10 @@ type
     function Kneel(const AUnit: TXcomBattleUnit): Boolean;
     /// <summary>TileEngine::checkReactionFire: true when a unit reacted</summary>
     function CheckReactionFire(const AUnit: TXcomBattleUnit): Boolean;
+    /// <summary>convertInfected: the units that carry a spawn unit and survive turn into it</summary>
+    function ConvertInfected: Boolean;
+    /// <summary>setupCursor: the cursor of the current action (and the actor of the action when not targeting)</summary>
+    procedure SetupCursor;
     /// <summary>autoEndBattle</summary>
     procedure AutoEndBattle;
     /// <summary>checkForProximityGrenades</summary>

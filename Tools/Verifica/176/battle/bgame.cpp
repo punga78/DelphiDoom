@@ -42,8 +42,10 @@
 #include "Battlescape/BattlescapeGame.h"
 #include "Battlescape/BattleState.h"
 #include "Battlescape/ExplosionBState.h"
+#include "Battlescape/UnitTurnBState.h"
 #include "Battlescape/Map.h"
 #include "Battlescape/Camera.h"
+#include "Battlescape/Projectile.h"
 #undef protected
 #undef private
 #undef main
@@ -83,6 +85,7 @@ static std::string StateName(BattleState* s) {
 
 static std::string g_trace;
 static Map* g_map = 0;
+static int g_tick = 0;
 
 // runs the states until none is left (the end of the turn of the other side included); a guard stops a loop
 static void RunStates(BattlescapeGame* bg, int guard = 3000) {
@@ -90,8 +93,15 @@ static void RunStates(BattlescapeGame* bg, int guard = 3000) {
     if (bg->_states.empty()) break;
     BattleState* f = bg->_states.front();
     g_trace += f ? StateName(f) : std::string("EndTurn");
+    if (f && StateName(f) == "ProjectileFlyBState") {
+      Projectile* pr = g_map->getProjectile();
+      if (pr) { Position pp = pr->getPosition(); char tb[96]; snprintf(tb, sizeof tb, "[%d/%d/%d n=%d]", pp.x, pp.y, pp.z, (int)pr->_trajectory.size()); g_trace += tb; } else g_trace += "[none]";
+    }
+    if (f && StateName(f) == "ExplosionBState") { ExplosionBState* ex = (ExplosionBState*)f; char tb[96]; snprintf(tb, sizeof tb, "[p=%d aoe=%d c=%d/%d/%d]", ex->_power, ex->_areaOfEffect ? 1 : 0, ex->_center.x, ex->_center.y, ex->_center.z); g_trace += tb; }
+    g_trace += "@" + std::to_string((unsigned long long)RNG::getSeed());
     g_trace += "\n";
     bg->handleState();
+    if (++g_tick % 3 == 0) g_map->animate(false);  // the animation timer of the game runs about every third tick of the states (UFO doors open with it)
     if (g_map->getBlastFlash()) g_map->draw();  // the real loop draws after every tick: drawTerrain ends the blast flash
   }
   if (guard <= 0) g_trace += "GUARD\n";
@@ -132,6 +142,41 @@ static void Run(Game* game, BattlescapeState* bs, const std::string& out, const 
         BattleItem* it = new BattleItem(mod->getItem(w[4], true), b->getCurrentItemId());
         Position c(p.x * 16 + 8, p.y * 16 + 8, p.z * 24 + 10);
         bg->statePushBack(new ExplosionBState(bg, c, it, FindUnit(b, atoi(w[5].c_str())), atoi(w[6].c_str()) ? b->getTile(p) : 0));
+      } else if (w[0] == "walk" || w[0] == "shoot" || w[0] == "throw" || w[0] == "kneel" || w[0] == "turn") {
+        // what the player does with the mouse: select a soldier, choose the action, click on the map (primaryAction)
+        BattleUnit* u = FindUnit(b, atoi(w[1].c_str()));
+        b->setSelectedUnit(u);
+        BattleAction* a = &bg->_currentAction;
+        a->targeting = false;
+        a->type = BA_NONE;
+        a->actor = u;
+        a->weapon = 0;
+        a->waypoints.clear();
+        a->autoShotCounter = 0;
+        size_t at = 2;
+        if (w[0] == "shoot" || w[0] == "throw") {
+          if (w[0] == "shoot") {
+            a->type = (BattleActionType)atoi(w[at++].c_str());
+            a->weapon = u->getMainHandWeapon();
+          } else {
+            a->type = BA_THROW;
+            a->weapon = u->getGrenadeFromBelt();
+            if (a->weapon) a->weapon->setFuseTimer(0);
+          }
+          a->TU = a->weapon ? u->getActionTUs(a->type, a->weapon) : 0;
+          a->targeting = a->weapon != 0;
+        }
+        if (w[0] == "kneel") {
+          bg->kneel(u);
+        } else if (w[0] == "turn") {
+          // the turn of a unit towards a tile (the right click on the map)
+          Position t(atoi(w[2].c_str()), atoi(w[3].c_str()), atoi(w[4].c_str()));
+          a->target = t;
+          bg->statePushBack(new UnitTurnBState(bg, *a));
+        } else if (w[0] != "shoot" || a->weapon) {
+          if (w[0] != "throw" || a->weapon)
+            bg->primaryAction(Position(atoi(w[at].c_str()), atoi(w[at + 1].c_str()), atoi(w[at + 2].c_str())));
+        }
       } else if (w[0] == "endturn") {
         bg->_endTurnRequested = true;
         bg->statePushBack(0);
@@ -212,11 +257,31 @@ int main(int argc, char** argv) {
         Position p = u->getPosition() + Position(Pick(5) - 2, Pick(5) - 2, 0);
         const std::string& g = grenades[Pick((int)grenades.size())];
         int fuse = Pick(2);
-        if (what == 0) o << "endturn";
+        // a soldier of the player for the orders of the mouse
+        std::vector<BattleUnit*> mine;
+        for (size_t q = 0; q < units.size(); q++)
+          if (units[q]->getFaction() == FACTION_PLAYER && !units[q]->isOut()) mine.push_back(units[q]);
+        BattleUnit* s = mine.empty() ? u : mine[Pick((int)mine.size())];
+        Position farpos = s->getPosition() + Position(Pick(15) - 7, Pick(15) - 7, 0);
+        int mode = Pick(100);
+        bool hasMouse = !mine.empty() && b->getTile(farpos);
+        if (hasMouse && mode < 40) o << "walk " << s->getId() << " " << farpos.x << " " << farpos.y << " " << farpos.z;
+        else if (hasMouse && mode < 65 && s->getMainHandWeapon()) o << "shoot " << s->getId() << " " << (BA_SNAPSHOT + Pick(3)) << " " << farpos.x << " " << farpos.y << " " << farpos.z;
+        else if (hasMouse && mode < 75 && s->getGrenadeFromBelt()) o << "throw " << s->getId() << " " << farpos.x << " " << farpos.y << " " << farpos.z;
+        else if (hasMouse && mode < 80) o << "kneel " << s->getId();
+        else if (hasMouse && mode < 85) o << "turn " << s->getId() << " " << farpos.x << " " << farpos.y << " " << farpos.z;
+        else if (mode < 90) o << "endturn\nendturn";
         else if (!b->getTile(p)) o << "select " << u->getId();
         else if (what == 1) o << "explode " << p.x << " " << p.y << " " << p.z << " " << g << " " << u->getId() << " 0";
         else o << "placegrenade " << p.x << " " << p.y << " " << p.z << " " << g << " " << fuse << " " << u->getId();
-        script.push_back(o.str());
+        std::string str = o.str();
+        size_t nl = str.find('\n');
+        if (nl != std::string::npos) {
+          script.push_back(str.substr(0, nl));
+          script.push_back(str.substr(nl + 1));
+        } else {
+          script.push_back(str);
+        }
       }
       std::string all;
       for (size_t i = 0; i < script.size(); i++) all += script[i] + "\n";
