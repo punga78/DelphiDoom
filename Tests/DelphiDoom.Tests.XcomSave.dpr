@@ -71,7 +71,13 @@ uses
   DelphiDoom.Tests.XcomSave.Strategy in 'Source\DelphiDoom.Tests.XcomSave.Strategy.pas',
   DelphiDoom.Tests.XcomSave.Sim in 'Source\DelphiDoom.Tests.XcomSave.Sim.pas',
   DelphiDoom.Tests.XcomSave.CraftScenario in 'Source\DelphiDoom.Tests.XcomSave.CraftScenario.pas',
-  DelphiDoom.Tests.XcomSave.Objects in 'Source\DelphiDoom.Tests.XcomSave.Objects.pas';
+  DelphiDoom.Tests.XcomSave.Objects in 'Source\DelphiDoom.Tests.XcomSave.Objects.pas',
+  DelphiDoom.XcomSave.DiaryRules.Intf in '..\Libs\XcomSave\DelphiDoom.XcomSave.DiaryRules.Intf.pas',
+  DelphiDoom.XcomSave.CommendationManager in '..\Libs\XcomSave\DelphiDoom.XcomSave.CommendationManager.pas',
+  DelphiDoom.XcomSave.RulesetDiaryRules in '..\Libs\XcomSave\DelphiDoom.XcomSave.RulesetDiaryRules.pas',
+  DelphiDoom.Tests.XcomSave.FakeDiaryRules in 'Source\DelphiDoom.Tests.XcomSave.FakeDiaryRules.pas',
+  DelphiDoom.Tests.XcomSave.DiaryScenario in 'Source\DelphiDoom.Tests.XcomSave.DiaryScenario.pas',
+  DelphiDoom.Tests.XcomSave.Diary in 'Source\DelphiDoom.Tests.XcomSave.Diary.pas';
 
 var
   Runner: ITestRunner;
