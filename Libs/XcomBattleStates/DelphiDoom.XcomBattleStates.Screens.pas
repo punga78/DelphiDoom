@@ -53,6 +53,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.InventoryState;
+
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
   const AOptions: TXcomBattleOptionsScreen);
 begin
@@ -93,6 +96,8 @@ end;
 function TXcomBattleScreens.Inventory(AParent: TXcomState; ATimeUnits: Boolean): TXcomState;
 begin
   Result := nil;
+  if AParent is TXcomBattlescapeState then
+    Result := TXcomInventoryState.Create(AParent.Host, TXcomBattlescapeState(AParent), ATimeUnits);
 end;
 
 function TXcomBattleScreens.MiniMap(AParent: TXcomState): TXcomState;
