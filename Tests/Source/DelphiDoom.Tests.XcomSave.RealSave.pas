@@ -15,7 +15,8 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, System.AnsiStrings, DUnitX.TestFramework, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf,
-  DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.Craft,
+  DelphiDoom.XcomSave.NewGame, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseCapacity,
+  DelphiDoom.Yaml.Convert,
   DelphiDoom.Tests.XcomMod.RealData;
 
 type
@@ -47,6 +48,8 @@ type
     procedure SetupFixture;
     [TearDownFixture]
     procedure TearDownFixture;
+    [Test]
+    procedure DovrebbeDareLeCapacitaDelleBasiDelVeroOpenXcom;
     [Test]
     procedure DovrebbeDareLeStesseSalvatagiDelVeroOpenXcom;
     [Test]
@@ -200,6 +203,80 @@ begin
     Result := LGame.Save(LInfo, LSettings, LRandom);
   finally
     LGame.Free;
+  end;
+end;
+
+procedure TTestXcomRealSave.DovrebbeDareLeCapacitaDelleBasiDelVeroOpenXcom;
+var
+  LFolder, LGoldenPath, LText: string;
+  LGolden, LActual: TStringList;
+  LFile: TArray<IYamlNode>;
+  LGame: TXcomSavedGame;
+  LRandom: IXcomRandom;
+  LSettings: IXcomSaveSettings;
+  LCapacity: TXcomBaseCapacity;
+  LBase: TXcomBase;
+  LSave, LIndex: Integer;
+  LFormat: string;
+begin
+  LFolder := SaveFolder;
+  LGoldenPath := LFolder + '..\capacity.golden.txt';
+  if (LFolder = '') or not Assigned(FRuleset) or not TFile.Exists(LGoldenPath) then
+  begin
+    Assert.Pass('senza i dati di TFTD o i salvataggi il confronto non si fa');
+    Exit;
+  end;
+  LGolden := TStringList.Create;
+  LActual := TStringList.Create;
+  LCapacity := TXcomBaseCapacity.Create(FRuleset);
+  try
+    LGolden.LoadFromFile(LGoldenPath);
+    LRandom := TXcomRandom.Create(1);
+    LSettings := TXcomDefaultSettings.Create;
+    for LSave := 0 to 15 do
+    begin
+      LFile := TYamlFactory.CreateParser.LoadAll(ReadText(LFolder + Format('save%.2d.sav', [LSave])));
+      LGame := TXcomSavedGame.Create;
+      try
+        LGame.Load(LFile, FRuleset, FRules, LSettings, False, LRandom);
+        LActual.Add(Format('save|%d|bases=%d|maintenance=%d', [LSave, LGame.Bases.Count,
+          LCapacity.BaseMaintenance(LGame)]));
+        for LIndex := 0 to LGame.Bases.Count - 1 do
+        begin
+          LBase := LGame.Bases[LIndex];
+          LText := Format('base|%d|%d|', [LSave, LIndex]);
+          LActual.Add(LText + Format('soldiers=%d,%d,%d,%d|scientists=%d,%d,%d|engineers=%d,%d,%d|quarters=%d,%d',
+            [LBase.AvailableSoldiers(False), LBase.AvailableSoldiers(True), LCapacity.TotalSoldiers(LBase),
+            LBase.Soldiers.Count, LCapacity.AvailableScientists(LBase), LCapacity.TotalScientists(LBase),
+            LBase.Scientists, LCapacity.AvailableEngineers(LBase), LCapacity.TotalEngineers(LBase), LBase.Engineers,
+            LCapacity.UsedQuarters(LBase), LCapacity.AvailableQuarters(LBase)]));
+          LFormat := string(TYamlConvert.FormatGeneral(LCapacity.UsedStores(LBase), 17));
+          LActual.Add(LText + Format('stores=%s,%d,%s,%d|laboratories=%d,%d,%d|workshops=%d,%d,%d|hangars=%d,%d',
+            [LFormat, LCapacity.AvailableStores(LBase),
+            string(TYamlConvert.FormatGeneral(LCapacity.IgnoredStores(LBase), 17)),
+            Ord(LCapacity.StoresOverfull(LBase, 0)), LCapacity.UsedLaboratories(LBase),
+            LCapacity.AvailableLaboratories(LBase), LCapacity.FreeLaboratories(LBase),
+            LCapacity.UsedWorkshops(LBase), LCapacity.AvailableWorkshops(LBase), LCapacity.FreeWorkshops(LBase),
+            LCapacity.UsedHangars(LBase), LCapacity.AvailableHangars(LBase)]));
+          LActual.Add(LText + Format('psi=%d,%d|containment=%d,%d|defense=%d|gravs=%d|detection=%d',
+            [LCapacity.UsedPsiLabs(LBase), LCapacity.AvailablePsiLabs(LBase), LCapacity.UsedContainment(LBase),
+            LCapacity.AvailableContainment(LBase), LCapacity.DefenseValue(LBase), LCapacity.GravShields(LBase),
+            LCapacity.DetectionChance(LBase)]));
+          LActual.Add(LText + Format('maintenance=%d,%d,%d,%d', [LCapacity.CraftMaintenance(LBase),
+            LCapacity.PersonnelMaintenance(LBase), LCapacity.FacilityMaintenance(LBase),
+            LCapacity.MonthlyMaintenance(LBase)]));
+        end;
+      finally
+        LGame.Free;
+      end;
+    end;
+    Assert.AreEqual(LGolden.Count, LActual.Count, 'numero di righe');
+    for LIndex := 0 to LGolden.Count - 1 do
+      Assert.AreEqual(LGolden[LIndex], LActual[LIndex], 'riga ' + IntToStr(LIndex + 1));
+  finally
+    LCapacity.Free;
+    LActual.Free;
+    LGolden.Free;
   end;
 end;
 
