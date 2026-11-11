@@ -73,6 +73,8 @@ type
     procedure LoadFonts;
     function LoadFullScreen(const AName: string): TXcomSurface;
     function BuildAltGeoBorder: TXcomSurface;
+    function BuildAltBack07: TXcomSurface;
+    procedure ModifySoldierBackground(ASurface: TXcomSurface);
   public
     /// <param name="AFiles">The resources own the map. The virtual files: the common data (Language\Font.dat), the mod and the game files</param>
     /// <param name="AGameData">The game directory seen with the names that OpenXcom uses (GEODATA\PALETTES.DAT...)</param>
@@ -494,6 +496,53 @@ begin
     Result.SetColors(FStatePalette);
 end;
 
+function TXcomModResources.BuildAltBack07: TXcomSurface;
+var
+  LX, LY: Integer;
+begin
+  // Mod::modResources: the "alternate" background of the base information screen (one more row of bars)
+  Result := LoadFullScreen('BACK07.SCR');
+  for LY := 172 downto 152 do
+    for LX := 5 to 314 do
+      Result.SetPixel(LX, LY + 4, Result.GetPixel(LX, LY));
+  for LY := 147 downto 134 do
+    for LX := 5 to 314 do
+      Result.SetPixel(LX, LY + 9, Result.GetPixel(LX, LY));
+  for LY := 132 downto 109 do
+    for LX := 5 to 314 do
+      Result.SetPixel(LX, LY + 10, Result.GetPixel(LX, LY));
+end;
+
+procedure TXcomModResources.ModifySoldierBackground(ASurface: TXcomSurface);
+var
+  LX, LY: Integer;
+begin
+  // Mod::modResources: the soldier stats screen gets one more row by shrinking all of them one pixel;
+  // erase the old lines, copying from a +2 offset to account for the dithering
+  LY := 91;
+  while LY < 199 do
+  begin
+    for LX := 0 to 148 do
+      ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, LY + 2));
+    Inc(LY, 12);
+  end;
+  // new lines: the bottom row of pixels is the basis
+  LY := 89;
+  while LY < 199 do
+  begin
+    for LX := 0 to 148 do
+      ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, 199));
+    Inc(LY, 11);
+  end;
+  // finally the top of the graph moves up by one pixel (the last row again offset for the dithering)
+  for LY := 72 to 79 do
+    for LX := 0 to 319 do
+      if LY = 79 then
+        ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, LY + 2))
+      else
+        ASurface.SetPixel(LX, LY, ASurface.GetPixel(LX, LY + 1));
+end;
+
 function TXcomModResources.LoadFullScreen(const AName: string): TXcomSurface;
 var
   LImage: TXcomImage;
@@ -502,6 +551,8 @@ var
 begin
   if SameText(AName, 'ALTGEOBORD.SCR') then
     Exit(BuildAltGeoBorder);
+  if SameText(AName, 'ALTBACK07.SCR') and not FGameData.Files.Exists('GEOGRAPH/ALTBACK07.SCR') then
+    Exit(BuildAltBack07);
   LPalette := TXcomPalette.Create(0);
   if SameText(AName, 'INTERWIN.DAT') then
     LImage := FGameData.LoadImage('GEODATA/INTERWIN.DAT', 160, 600, LPalette)
@@ -514,6 +565,8 @@ begin
   end;
   Result := TXcomSurface.Create(LImage.Width, LImage.Height);
   Move(LImage.Pixels[0], Result.PixelPointer(0, 0)^, LImage.Width * LImage.Height);
+  if SameText(AName, 'BACK06.SCR') then
+    ModifySoldierBackground(Result);
   if FHasStatePalette then
     Result.SetColors(FStatePalette);
 end;
