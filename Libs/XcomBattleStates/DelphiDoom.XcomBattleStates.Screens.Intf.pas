@@ -24,6 +24,17 @@ type
     ['{3C71D9A4-5E20-4B86-9F13-176000000403}']
     /// <summary>ActionMenuState: the actions of the item of a hand; AParent is the battlescape state</summary>
     function ActionMenu(AParent: TXcomState; const AAction: TXcomBattleAction; AX, AY: Integer): TXcomState;
+    /// <summary>
+    ///   PrimeGrenadeState: the choice of the turns of the fuse. AInInventoryView: opened from the inventory, on
+    ///   AGrenade (the action is then not used and can be nil)
+    /// </summary>
+    function PrimeGrenade(AParent: TXcomState; const AAction: TXcomBattleAction; AInInventoryView: Boolean;
+      const AGrenade: TXcomBattleItem): TXcomState;
+    /// <summary>MedikitState: the medi-kit of the action on the unit in front of its actor</summary>
+    function Medikit(AParent: TXcomState; const ATarget: TXcomBattleUnit; const AAction: TXcomBattleAction)
+      : TXcomState;
+    /// <summary>ScannerState: the motion scanner of the action</summary>
+    function Scanner(AParent: TXcomState; const AAction: TXcomBattleAction): TXcomState;
     /// <summary>UnitInfoState</summary>
     function UnitInfo(AParent: TXcomState; const AUnit: TXcomBattleUnit; AFromInventory, AMindProbe: Boolean)
       : TXcomState;
