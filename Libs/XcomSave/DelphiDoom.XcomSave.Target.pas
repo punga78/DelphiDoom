@@ -27,6 +27,12 @@ type
     FName: string;
     FFollowers: TList<TXcomTarget>;
     class function AreSame(ALeft, ARight: Double): Boolean; static;
+  protected
+    /// <summary>
+    ///   The target that this one was following is going away: a craft returns to its base (the destructor of
+    ///   Target makes the crafts that chase it return to their base); the others do nothing
+    /// </summary>
+    procedure FollowedTargetGone; virtual;
   public
     constructor Create;
     destructor Destroy; override;
@@ -90,9 +96,19 @@ begin
 end;
 
 destructor TXcomTarget.Destroy;
+var
+  LFollower: TXcomTarget;
 begin
+  // make sure no crafts are chasing this target (a copy: the crafts leave the list as they return)
+  for LFollower in FFollowers.ToArray do
+    LFollower.FollowedTargetGone;
   FFollowers.Free;
   inherited Destroy;
+end;
+
+procedure TXcomTarget.FollowedTargetGone;
+begin
+  // only a craft reacts
 end;
 
 class function TXcomTarget.SameAngle(ALeft, ARight: Double): Boolean;

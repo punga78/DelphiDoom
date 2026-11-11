@@ -56,6 +56,11 @@ type
     class function SameSave(const AExpected, AActual: TYamlText): Boolean; static;
     /// <summary>'' when SameSave, else the first line that differs (the message of a failure)</summary>
     class function SaveDifference(const AExpected, AActual: TYamlText): string; static;
+    /// <summary>
+    ///   SaveDifference of a golden file; when they differ the actual text is written next to the executable
+    ///   (actual.sav) to look at it
+    /// </summary>
+    class function CompareSave(const AGoldenPath: string; const AActual: TYamlText): string; static;
     /// <summary>The first line that differs, for the message of a failure</summary>
     class function FirstDifference(const AExpected, AActual: string): string; static;
     /// <summary>The storage of a base as the harness prints it: item=quantity; in the order of the names</summary>
@@ -176,51 +181,69 @@ begin
   if not TryStrToFloat(Trim(Copy(ALeft, Pos(':', ALeft) + 1, MaxInt)), LLeft, LFormat) or
     not TryStrToFloat(Trim(Copy(ARight, Pos(':', ARight) + 1, MaxInt)), LRight, LFormat) then
     Exit(False);
-  Result := Abs(LLeft - LRight) <= 1E-15 * Abs(LLeft);
+  // the speeds come from a difference of terms that cancel when the UFO is near its destination: one ulp of
+  // the x87 of the C++ build (extended intermediates) becomes a few thousand ulps of a speed of 1e-4 radians
+  Result := Abs(LLeft - LRight) <= 1E-11 * Abs(LLeft);
 end;
 
 class function TXcomSim.SameSave(const AExpected, AActual: TYamlText): Boolean;
+begin
+  Result := SaveDifference(AExpected, AActual) = '';
+end;
+
+class function TXcomSim.SaveDifference(const AExpected, AActual: TYamlText): string;
 const
   TOLERATED: array[0..2] of string = ('speedLon:', 'speedLat:', 'speedRadian:');
 var
   LExpected, LActual: TStringList;
   LIndex, LKey: Integer;
   LLine: string;
+  LAccepted: Boolean;
 begin
+  Result := '';
   if AExpected = AActual then
-    Exit(True);
+    Exit;
   LExpected := TStringList.Create;
   LActual := TStringList.Create;
   try
     LExpected.Text := string(AExpected);
     LActual.Text := string(AActual);
-    if LExpected.Count <> LActual.Count then
-      Exit(False);
     for LIndex := 0 to LExpected.Count - 1 do
     begin
-      if LExpected[LIndex] = LActual[LIndex] then
+      if (LIndex < LActual.Count) and (LExpected[LIndex] = LActual[LIndex]) then
         Continue;
-      LLine := Trim(LExpected[LIndex]);
-      Result := False;
-      for LKey := 0 to High(TOLERATED) do
-        if LLine.StartsWith(TOLERATED[LKey]) and SameValue(LExpected[LIndex], LActual[LIndex]) then
-          Result := True;
-      if not Result then
-        Exit(False);
+      LAccepted := False;
+      if LIndex < LActual.Count then
+      begin
+        LLine := Trim(LExpected[LIndex]);
+        for LKey := 0 to High(TOLERATED) do
+          if LLine.StartsWith(TOLERATED[LKey]) and SameValue(LExpected[LIndex], LActual[LIndex]) then
+            LAccepted := True;
+      end;
+      if not LAccepted then
+        Exit(Format('line %d: expected "%s" got "%s"', [LIndex + 1, LExpected[LIndex],
+          IfThen(LIndex < LActual.Count, LActual[LIndex], '<end>')]));
     end;
-    Result := True;
+    if LActual.Count > LExpected.Count then
+      Result := Format('line %d: unexpected "%s"', [LExpected.Count + 1, LActual[LExpected.Count]]);
   finally
     LActual.Free;
     LExpected.Free;
   end;
 end;
 
-class function TXcomSim.SaveDifference(const AExpected, AActual: TYamlText): string;
+class function TXcomSim.CompareSave(const AGoldenPath: string; const AActual: TYamlText): string;
+var
+  LBytes: TBytes;
 begin
-  if SameSave(AExpected, AActual) then
-    Result := ''
-  else
-    Result := FirstDifference(string(AExpected), string(AActual));
+  Result := SaveDifference(GoldenText(AGoldenPath), AActual);
+  if Result <> '' then
+  begin
+    SetLength(LBytes, Length(AActual));
+    if Length(LBytes) > 0 then
+      Move(AActual[1], LBytes[0], Length(LBytes));
+    TFile.WriteAllBytes(ExtractFilePath(ParamStr(0)) + 'actual.sav', LBytes);
+  end;
 end;
 
 class function TXcomSim.FirstDifference(const AExpected, AActual: string): string;

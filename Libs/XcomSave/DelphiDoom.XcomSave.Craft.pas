@@ -50,6 +50,9 @@ type
     FTakeoff: Integer;
     procedure ClearWeaponSlots;
     procedure FillWeaponSlots;
+  protected
+    procedure FollowedTargetGone; override;
+  strict private
     procedure FindDestination(const ANode: IYamlNode; const ATargets: IXcomTargetLookup);
   public
     /// <param name="ARules">The rules of the craft (owned by the ruleset)</param>
@@ -503,6 +506,11 @@ end;
 procedure TXcomCraft.ReturnToBase;
 begin
   SetDestination(FBase);
+end;
+
+procedure TXcomCraft.FollowedTargetGone;
+begin
+  ReturnToBase;
 end;
 
 procedure TXcomCraft.Think;

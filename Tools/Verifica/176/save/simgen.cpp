@@ -182,6 +182,93 @@ static void ScenarioProduction(Mod* mod, SavedGame* s, int v) {
   }
 }
 
+// Whether every zone that a mission and its trajectories use exists (with areas) in the region
+static bool RegionOk(Mod* mod, const RuleAlienMission& rule, const RuleRegion* region) {
+  const std::vector<MissionZone>& z = region->getMissionZones();
+  std::set<size_t> zones;
+  if (rule.getSpawnZone() >= 0) zones.insert((size_t)rule.getSpawnZone());
+  for (size_t w = 0; w < rule.getWaveCount(); w++) {
+    const UfoTrajectory* t = mod->getUfoTrajectory(rule.getWave(w).trajectory);
+    if (!t) return false;
+    for (size_t k = 0; k < t->getWaypointCount(); k++) zones.insert(t->getZone(k));
+  }
+  const UfoTrajectory* a = mod->getUfoTrajectory(UfoTrajectory::RETALIATION_ASSAULT_RUN);
+  if (a) for (size_t k = 0; k < a->getWaypointCount(); k++) zones.insert(a->getZone(k));
+  for (std::set<size_t>::iterator i = zones.begin(); i != zones.end(); ++i)
+    if (*i >= z.size() || z[*i].areas.empty()) return false;
+  return true;
+}
+
+static void PrintUfo(int v, int mi, int round, int ui, const char* action, Ufo* u) {
+  fprintf(gOut, "ufo|%d|%d|%d|%d|%s|status=%d|tp=%d|lon=%.17g|lat=%.17g|alt=%s|secs=%u|land=%d|det=%d|speed=%d|dest=%d\n", v, mi, round, ui,
+    action, (int)u->getStatus(), (int)u->getTrajectoryPoint(), u->getLongitude(), u->getLatitude(), u->getAltitude().c_str(),
+    (unsigned)u->getSecondsRemaining(), u->getLandId(), (int)u->getDetected(), u->getSpeed(), (int)(u->getDestination() != 0));
+}
+
+// AlienMission: new missions of every type in regions that have the zones, then rounds of think and of the UFOs of the
+// mission arriving at a waypoint or lifting off
+static void ScenarioMission(Mod* mod, SavedGame* s, int v) {
+  Game* game = (Game*)calloc(1, sizeof(Game));
+  game->_save = s;
+  game->_mod = mod;
+  Globe* globe = (Globe*)calloc(1, sizeof(Globe));
+  globe->_rules = mod->getGlobe();
+  const std::vector<std::string>& missions = mod->getAlienMissionList();
+  const std::vector<std::string>& regions = mod->getRegionsList();
+  if (!s->getBases()->empty()) s->getBases()->front()->setRetaliationTarget(true);
+  for (size_t k = 0; k < missions.size(); k++) {
+    const RuleAlienMission* rule = mod->getAlienMission(missions[k]);
+    // the regions where the mission can run, in the order of the list
+    std::vector<std::string> ok;
+    for (size_t r = 0; r < regions.size(); r++) {
+      const RuleRegion* rr = mod->getRegion(regions[r]);
+      std::string eff = rr->getMissionRegion().empty() ? regions[r] : rr->getMissionRegion();
+      if (RegionOk(mod, *rule, mod->getRegion(eff))) ok.push_back(regions[r]);
+    }
+    if (ok.empty()) { fprintf(gOut, "skip|%d|%s\n", v, missions[k].c_str()); continue; }
+    AlienMission* m = new AlienMission(*rule);
+    m->setId(s->getId("ALIEN_MISSIONS"));
+    m->setRegion(ok[Pick((int)ok.size())], *mod);
+    m->setRace(rule->generateRace(s->getMonthsPassed() < 0 ? 0 : s->getMonthsPassed()));
+    m->start(Pick(2) == 0 ? 0 : 30 * (1 + Pick(5)));
+    if (Pick(3) == 0) m->setMissionSiteZone(0);
+    if (!s->getAlienBases()->empty() && Pick(2) == 0) m->setAlienBase(s->getAlienBases()->front());
+    s->_activeMissions.push_back(m);
+    fprintf(gOut, "mission|%d|%s|region=%s|race=%s|countdown=%u\n", v, missions[k].c_str(), m->getRegion().c_str(), m->getRace().c_str(), (unsigned)m->_spawnCountdown);
+  }
+  for (size_t mi = 0; mi < s->_activeMissions.size(); mi++) {
+    AlienMission* m = s->_activeMissions[mi];
+    // the missions of the saved game have a region chosen at random: the ones that lack a zone are skipped
+    if (!RegionOk(mod, m->_rule, mod->getRegion(m->getRegion()))) { fprintf(gOut, "skipmission|%d|%d\n", v, (int)mi); continue; }
+    for (int round = 0; round < 40; round++) {
+      if (m->_spawnCountdown > 30 && Pick(2) == 0) m->_spawnCountdown = 30;
+      m->think(*game, *globe);
+      fprintf(gOut, "think|%d|%d|%d|wave=%u|ctr=%u|cd=%u|live=%u|ufos=%d|sites=%d|bases=%d\n", v, (int)mi, round, (unsigned)m->_nextWave,
+        (unsigned)m->_nextUfoCounter, (unsigned)m->_spawnCountdown, (unsigned)m->_liveUfos, (int)s->getUfos()->size(),
+        (int)s->getMissionSites()->size(), (int)s->getAlienBases()->size());
+      for (size_t ui = 0; ui < s->getUfos()->size();) {
+        Ufo* u = (*s->getUfos())[ui];
+        if (u->getMission() != m || Pick(3) == 0) { ui++; continue; }
+        const char* action = "none";
+        if (u->getStatus() == Ufo::FLYING) {
+          if (Pick(2) == 0) u->setDetected(true);
+          m->ufoReachedWaypoint(*u, *game, *globe);
+          action = "reach";
+        } else if (u->getStatus() == Ufo::LANDED || u->getStatus() == Ufo::CRASHED) {
+          if (u->getStatus() == Ufo::LANDED && Pick(8) == 0) u->setStatus(Ufo::CRASHED);
+          m->ufoLifting(*u, *s);
+          action = "lift";
+        }
+        PrintUfo(v, (int)mi, round, (int)ui, action, u);
+        if (u->getStatus() == Ufo::DESTROYED) {
+          delete u;
+          s->getUfos()->erase(s->getUfos()->begin() + ui);
+        } else ui++;
+      }
+    }
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: simgen <data> <user> <saves> <out> <count> <scenario>\n"); return 2; }
   std::string data = argv[1], user = argv[2], saves = argv[3], out = argv[4];
@@ -213,6 +300,7 @@ int main(int argc, char** argv) {
       gOut = fopen(name, "wb");
       if (scenario == "craft") ScenarioCraft(mod, s, v);
       else if (scenario == "production") ScenarioProduction(mod, s, v);
+      else if (scenario == "mission") ScenarioMission(mod, s, v);
       else { fprintf(stderr, "unknown scenario\n"); return 2; }
       fprintf(gOut, "rng|%d|%llu\n", v, (unsigned long long)RNG::getSeed());
       fclose(gOut);
