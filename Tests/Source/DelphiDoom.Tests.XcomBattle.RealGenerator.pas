@@ -249,7 +249,6 @@ begin
         LBattle.TileEngine := LEngine;
         LGenerator := TXcomBattlescapeGenerator.Create(FRuleset, LBattle, LGame, LContext, LEngine, LLegacy);
         try
-          LCraft := nil;
           if LScenario.Values['craft'] = '1' then
           begin
             LCraft := LGame.Bases[0].Crafts[0];

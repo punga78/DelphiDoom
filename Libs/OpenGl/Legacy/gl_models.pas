@@ -262,7 +262,7 @@ begin
   end
   else
     modelinf.framemerge := nil;
-  modelinf.model := TModel.Create(modelinf.name, modelinf.proc,
+  modelinf.model := TModel.Create(string(modelinf.name), string(modelinf.proc),
     modelinf.xoffset, modelinf.yoffset, modelinf.zoffset,
     modelinf.xscale, modelinf.yscale, modelinf.zscale,
     modelinf.framemerge);
@@ -300,7 +300,7 @@ begin
   i := 0;
   while i < modeltexturemanager.size do
   begin
-    if modeltexturemanager.items[i].name = texturename then
+    if string(modeltexturemanager.items[i].name) = texturename then
     begin
       result := i;
       exit;
@@ -309,7 +309,7 @@ begin
   end;
   realloc(pointer(modeltexturemanager.items), modeltexturemanager.size * SizeOf(texturemanagetitem_t), (1 + modeltexturemanager.size) * SizeOf(texturemanagetitem_t));
   result := modeltexturemanager.size;
-  modeltexturemanager.items[result].name := texturename;
+  modeltexturemanager.items[result].name := ShortString(texturename);
   if gl_precachemodeltextures then
     modeltexturemanager.items[result].tex := gld_LoadExternalTexture(texturename, true, GL_REPEAT)
   else

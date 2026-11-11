@@ -23,7 +23,6 @@ type
   TTestXcomSaveObjects = class(TObject)
   private
     function Node(const AText: string): IYamlNode;
-    function Dump(const ANode: IYamlNode): string;
   public
     [Test]
     procedure DovrebbeScrivereIlNodoConGliAssegnamenti;
@@ -80,11 +79,6 @@ implementation
 function TTestXcomSaveObjects.Node(const AText: string): IYamlNode;
 begin
   Result := TYamlFactory.CreateParser.Load(YamlStringToText(AText));
-end;
-
-function TTestXcomSaveObjects.Dump(const ANode: IYamlNode): string;
-begin
-  Result := YamlTextToString(TYamlFactory.Dump(ANode));
 end;
 
 procedure TTestXcomSaveObjects.DovrebbeScrivereIlNodoConGliAssegnamenti;

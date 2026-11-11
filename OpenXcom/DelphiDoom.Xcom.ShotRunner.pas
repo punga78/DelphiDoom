@@ -1,6 +1,6 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - runs the game without a window and takes screenshots  }
+{  DelphiDoom: Xcom32 - runs the game without a window and takes screenshots   }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }

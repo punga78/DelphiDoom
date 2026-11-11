@@ -57,6 +57,7 @@ implementation
 
 uses
   System.SysUtils,
+  System.Classes,
   System.Generics.Collections,
   DelphiDoom.ScriptHost.Constants.Generalized;
 

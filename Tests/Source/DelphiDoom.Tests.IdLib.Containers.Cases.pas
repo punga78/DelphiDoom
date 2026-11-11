@@ -479,8 +479,8 @@ begin
   ALines.Add('== btree');
   GRandom := 31337;
   LTree := TIdBTree<TTreeObject, Integer>.Create(5);
+  LCount := 0;
   try
-    LCount := 0;
     for LStep := 0 to 399 do
     begin
       LOp := Rnd mod 5;

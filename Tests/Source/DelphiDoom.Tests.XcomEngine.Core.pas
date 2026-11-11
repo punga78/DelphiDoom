@@ -632,7 +632,7 @@ begin
   try
     LOptions.DisplayWidth := 800;
     LOptions.Language := 'de';
-    LCopy.Load(TYamlFactory.CreateParser.Load(LOptions.Save));
+    LCopy.Load(TTestWorld.Parse(LOptions.Save));
     Assert.AreEqual(800, LCopy.DisplayWidth);
     Assert.AreEqual('de', LCopy.Language);
   finally
@@ -646,7 +646,7 @@ end;
 function TTestXcomRuleInterface.Load(const AText: string): TXcomRuleInterface;
 begin
   Result := TXcomRuleInterface.Create('x');
-  Result.Load(TYamlFactory.CreateParser.Load(AText));
+  Result.Load(TTestWorld.Parse(AText));
 end;
 
 procedure TTestXcomRuleInterface.LeggePaletteGenitoreEMusica;

@@ -521,6 +521,7 @@ begin
     FRuleset.Constants.FireDamageRange[1], FRuleset.Constants.DamageRange, FRuleset.Constants.ExplosiveDamageRange, 0);
   LBattle := TXcomSavedBattleGame.Create(LContext);
   LLines := TStringList.Create;
+  LEngine := nil;
   try
     LBattle.Load(TYamlFactory.CreateParser.Load(ReadText(ABase + '.yml')), FRuleset, 0,
       function(AId: Integer): TXcomSoldier
@@ -570,7 +571,9 @@ begin
     end;
   finally
     LLines.Free;
-    LEngine.Host := nil;
+    // the engine is not there when the load of the battle fails
+    if Assigned(LEngine) then
+      LEngine.Host := nil;
     LBattle.Free;
   end;
   if LFailures > 6 then

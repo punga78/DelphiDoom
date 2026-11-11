@@ -1,6 +1,6 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: XcomGame - the sound output of Windows (waveOut) that asks the   }
+{  DelphiDoom: Xcom32 - the sound output of Windows (waveOut) that asks the    }
 {  mixer for samples, as the audio callback of SDL does                         }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }

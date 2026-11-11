@@ -477,7 +477,6 @@ begin
           FSim.SaveText(LGame, FRandom), POSITION_TOLERANCE), Format('stato finale del salvataggio %d', [LVariant]));
       finally
         LHolder := nil;
-        LSimulation := nil;
         LEvents := nil;
         LGame.Free;
       end;

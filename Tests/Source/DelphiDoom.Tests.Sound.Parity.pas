@@ -1346,16 +1346,9 @@ end;
 
 procedure TTestSoundParity.TestFlac;
 var
-  LReal: TBytes;
-  LSound: ISoundFile;
-  LCode: Integer;
-  LInfo2: TSoundFileInfo;
-  LText: string;
-  LVariant: Integer;
   LOptions: TSoundTestFlacOptions;
   LBits, LChannels, LAssignment, LOrder: Integer;
   LSignals: TArray<TArray<Integer>>;
-  LKind: TSoundTestFlacSubframe;
 begin
   // Depths, channels and the ways to code two channels
   for LBits in [8, 16, 24] do

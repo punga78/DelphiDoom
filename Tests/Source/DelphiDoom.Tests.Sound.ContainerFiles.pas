@@ -503,7 +503,6 @@ class function TSoundTestContainerFile.BuildMat5(ABigEndian: Boolean;
 var
   LSink: TSink;
   LText: AnsiString;
-  LIndex: Integer;
   LBits: Int64;
   LRate: Double;
 
