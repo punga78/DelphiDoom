@@ -14,7 +14,7 @@ uses
   System.Generics.Collections, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft,
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Waypoint,
   DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomGeoscape.Globe,
-  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomEngine.Types;
+  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 
 type
   /// <summary>
@@ -78,6 +78,17 @@ type
     function DogfightCount: Integer;
     /// <summary>A UFO is about to be removed from the game: the dogfights with it are dropped</summary>
     procedure UfoRemoving(AUfo: TXcomUfo);
+  end;
+
+  /// <summary>
+  ///   The way into a battle as the screens over the globe find it (the confirmation of the last mission). A third
+  ///   interface of the control: whoever gives the events to the geoscape gives it the launcher too
+  /// </summary>
+  IXcomMissionControl = interface
+    ['{3C71D9A4-5E20-4B86-9F13-176000000206}']
+    procedure SetMissionLauncher(const ALauncher: IXcomMissionLauncher);
+    /// <summary>nil: no battle can be started</summary>
+    function MissionLauncher: IXcomMissionLauncher;
   end;
 
   /// <summary>

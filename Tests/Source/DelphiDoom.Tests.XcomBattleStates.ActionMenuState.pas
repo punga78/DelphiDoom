@@ -412,6 +412,7 @@ var
   LActor: TXcomBattleUnit;
   LScreen: TXcomState;
   LBefore: Integer;
+  LCost: Integer;
 begin
   if Skip then
     Exit;
@@ -424,10 +425,12 @@ begin
   FScreens.Next := LScreen;
   OpenMenu(LActor, LScanner);
   LBefore := LActor.TimeUnits;
-  Assert.IsTrue(FMenu.Item(1).TimeUnits > 0);
+  // read before the click: the menu is popped by it and freed at the next frame
+  LCost := FMenu.Item(1).TimeUnits;
+  Assert.IsTrue(LCost > 0);
   ClickItem(1);
   Assert.AreEqual('Scanner;', FScreens.Calls);
-  Assert.AreEqual(LBefore - FMenu.Item(1).TimeUnits, LActor.TimeUnits);
+  Assert.AreEqual(LBefore - LCost, LActor.TimeUnits);
   Assert.AreSame(LScreen, FWorld.Game.TopState);
 end;
 

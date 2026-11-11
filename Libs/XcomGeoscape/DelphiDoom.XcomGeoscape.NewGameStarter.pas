@@ -71,6 +71,7 @@ var
   LSimulation: IXcomGeoscapeSimulation;
   LNavigator: IXcomGeoscapeNavigator;
   LGeoscape: TXcomGeoscapeState;
+  LMaker: TXcomNewGame;
 begin
   LRuleset := TXcomStrategy.Ruleset(FHost);
   LSeed := FSeed;
@@ -79,7 +80,14 @@ begin
   LRandom := TXcomRandom.Create(LSeed);
   LRules := TXcomRulesetRules.Create(LRuleset);
   try
-    LSave := TXcomNewGame.Create(LRuleset, LRules, TXcomDefaultSaveSettings.Create, LRandom).NewSave;
+    LMaker := TXcomNewGame.Create(LRuleset, LRules, TXcomDefaultSaveSettings.Create, LRandom);
+    try
+      // Options::customInitialBase: the first base has no facilities, the player places them
+      LMaker.CustomInitialBase := FHost.Options.GetBool('customInitialBase');
+      LSave := LMaker.NewSave;
+    finally
+      LMaker.Free;
+    end;
   except
     LRules.Free;
     raise;
@@ -97,7 +105,8 @@ begin
   LGeoscape := TXcomGeoscapeState.Create(FHost, LSimulation, LNavigator);
   FHost.SetState(LGeoscape);
   LGeoscape.Init;
-  FHost.PushState(TXcomBuildNewBaseState.Create(FHost, LSave.Bases.Last, LGeoscape.Globe, True));
+  // the control of the geoscape: with customInitialBase the name of the base is followed by the access lift
+  FHost.PushState(TXcomBuildNewBaseState.Create(FHost, LSave.Bases.Last, LGeoscape.Globe, True, LGeoscape.Control));
 end;
 
 end.

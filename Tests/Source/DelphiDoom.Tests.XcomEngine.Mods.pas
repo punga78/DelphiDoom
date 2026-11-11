@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.ModInfo, DelphiDoom.XcomEngine.ModCatalog.Intf,
   DelphiDoom.XcomEngine.DiskModCatalog, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsStore.Intf,
-  DelphiDoom.XcomMenu.ModListState, DelphiDoom.Tests.XcomEngine.World;
+  DelphiDoom.XcomMenu.ModListState, DelphiDoom.XcomMenu.ModConfirmExtendedState, DelphiDoom.Tests.XcomEngine.World;
 
 type
   [TestFixture]
@@ -623,10 +623,28 @@ begin
 end;
 
 procedure TTestXcomModScreen.IlModCheServeUnMotoreEstesoNonSiAccende;
+var
+  LList: TXcomModListState;
 begin
   Open;
+  LList := State;
   ClickAt(60, 40 + 16 + 4);
-  Assert.AreEqual('STR_NO', State.List.GetCellText(2, 2));
+  // ModConfirmExtendedState: the question with the name of the engine, over the list
+  Assert.IsTrue(FWorld.Game.TopState is TXcomModConfirmExtendedState, 'prima chiede conferma');
+  Assert.AreEqual('STR_OXCE_REQUIRED_QUESTION', TXcomModConfirmExtendedState(FWorld.Game.TopState).Title.GetText,
+    'la domanda (senza lingua resta la chiave)');
+  Assert.AreEqual('STR_NO', LList.List.GetCellText(2, 2));
+  FWorld.Wait(400);
+  // No
+  ClickAt(230, 131);
+  Assert.AreSame(LList, FWorld.Game.TopState);
+  Assert.AreEqual('STR_NO', State.List.GetCellText(2, 2), 'con No il mod resta spento');
+  ClickAt(60, 40 + 16 + 4);
+  FWorld.Wait(400);
+  // Yes
+  ClickAt(90, 131);
+  Assert.AreSame(LList, FWorld.Game.TopState);
+  Assert.AreEqual('STR_YES', State.List.GetCellText(2, 2), 'con Si'' si accende');
 end;
 
 procedure TTestXcomModScreen.LoSpostamentoCambiaLOrdineDelleOpzioni;

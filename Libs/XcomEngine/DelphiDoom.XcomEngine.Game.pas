@@ -17,7 +17,8 @@ uses
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.LanguageProvider.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
-  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf;
+  DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf,
+  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomEngine.HostUiSounds;
 
 type
   /// <summary>ApplicationState of Game::run: what the pauseMode option makes of a game without the focus</summary>
@@ -63,6 +64,8 @@ type
     FNewGameStarter: IXcomNewGameStarter;
     FSavedGameLoader: IXcomSavedGameLoader;
     FSavedGameSaver: IXcomSavedGameSaver;
+    FUiSounds: IXcomUiSounds;
+    FNewBattleOpener: IXcomNewBattleOpener;
     FSession: IInterface;
     FBattlePalette: TXcomColors;
     FBattlePaletteOwner: TObject;
@@ -111,7 +114,10 @@ type
     function SaveCatalog: IXcomSaveCatalog; override;
     procedure OpenFolder(const APath: string); override;
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); override;
+    function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; override;
     function NewGameStarter: IXcomNewGameStarter; override;
+    function NewBattleOpener: IXcomNewBattleOpener; override;
+    procedure SetNewBattleOpener(const AOpener: IXcomNewBattleOpener);
     procedure WarpMouse(AX, AY: Integer); override;
     procedure SetNewGameStarter(const AStarter: IXcomNewGameStarter);
     function SavedGameLoader: IXcomSavedGameLoader; override;
@@ -119,6 +125,9 @@ type
     function SavedGameSaver: IXcomSavedGameSaver; override;
     procedure SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
     function Session: IInterface; override;
+    function UiSounds: IXcomUiSounds; override;
+    /// <summary>Replaces what plays the sounds of the widgets (nil: silent); the game starts with TXcomHostUiSounds</summary>
+    procedure SetUiSounds(const ASounds: IXcomUiSounds);
     procedure SetSession(const ASession: IInterface); override;
     function BattlePalette: PXcomColor; override;
     procedure SetBattlePalette(AOwner: TObject; AColors: PXcomColor); override;
@@ -169,12 +178,15 @@ begin
   FStates := TObjectList<TXcomState>.Create(True);
   FDeleted := TObjectList<TXcomState>.Create(True);
   FMouseActive := True;
+  FUiSounds := TXcomHostUiSounds.Create(Self);
 end;
 
 destructor TXcomGame.Destroy;
 begin
   FDeleted.Free;
   FStates.Free;
+  // the widgets are gone with the states: nothing asks for their sounds any more
+  FUiSounds := nil;
   // the music reads the data of the game: it stops before the data goes
   if FMusic <> nil then
     FMusic.Stop;
@@ -319,6 +331,16 @@ begin
     Result := inherited CurrentMusicFormat;
 end;
 
+function TXcomGame.NewBattleOpener: IXcomNewBattleOpener;
+begin
+  Result := FNewBattleOpener;
+end;
+
+procedure TXcomGame.SetNewBattleOpener(const AOpener: IXcomNewBattleOpener);
+begin
+  FNewBattleOpener := AOpener;
+end;
+
 function TXcomGame.NewGameStarter: IXcomNewGameStarter;
 begin
   Result := FNewGameStarter;
@@ -353,6 +375,16 @@ end;
 procedure TXcomGame.SetSavedGameSaver(const ASaver: IXcomSavedGameSaver);
 begin
   FSavedGameSaver := ASaver;
+end;
+
+function TXcomGame.UiSounds: IXcomUiSounds;
+begin
+  Result := FUiSounds;
+end;
+
+procedure TXcomGame.SetUiSounds(const ASounds: IXcomUiSounds);
+begin
+  FUiSounds := ASounds;
 end;
 
 function TXcomGame.Session: IInterface;
@@ -437,6 +469,18 @@ begin
     FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.UiVolume)))
   else
     FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, TXcomVolume.Mixer(Options.SoundVolume)));
+end;
+
+function TXcomGame.PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean;
+var
+  LWave: TBytes;
+begin
+  if Resources = nil then
+    Exit(False);
+  LWave := Resources.SoundWave(ASet, AIndex);
+  Result := Length(LWave) > 0;
+  if Result and (FAudio <> nil) and FAudio.IsAvailable then
+    FAudio.PlayWave(TXcomSoundConverter.WithVolume(LWave, AVolume));
 end;
 
 procedure TXcomGame.OpenFolder(const APath: string);

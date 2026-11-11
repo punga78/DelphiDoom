@@ -24,6 +24,7 @@ type
     FName: string;
     FLoaded: Boolean;
     FObjects: TObjectList<TXcomMapData>;
+    FUsers: TList<TObject>;
   public
     constructor Create(const AName: string);
     destructor Destroy; override;
@@ -44,6 +45,16 @@ type
     /// <summary>unloadData: frees the parts; the set can be loaded again</summary>
     procedure Unload;
     /// <summary>
+    ///   A battle says that its tiles point to the parts of the set (the sets belong to the rules and are shared:
+    ///   a battle loaded while another is still alive uses the same parts). Not owned, counted once
+    /// </summary>
+    procedure Retain(AUser: TObject);
+    /// <summary>
+    ///   The battle that ends lets the set go: the parts are freed (Unload) only when no other battle uses them.
+    ///   The C++ deletes the old battle before it loads the map of the new one; here the old one can die later
+    /// </summary>
+    procedure Release(AUser: TObject);
+    /// <summary>
     ///   getBlankFloorTile / getScorchedEarthTile: the first and second parts of the set called BLANKS, or nil
     ///   (the C++ keeps them in statics; here they belong to the set)
     /// </summary>
@@ -60,10 +71,12 @@ begin
   inherited Create;
   FName := AName;
   FObjects := TObjectList<TXcomMapData>.Create(True);
+  FUsers := TList<TObject>.Create;
 end;
 
 destructor TXcomMapDataSet.Destroy;
 begin
+  FUsers.Free;
   FObjects.Free;
   inherited Destroy;
 end;
@@ -100,6 +113,19 @@ begin
     FObjects.Clear;
     FLoaded := False;
   end;
+end;
+
+procedure TXcomMapDataSet.Retain(AUser: TObject);
+begin
+  if FUsers.IndexOf(AUser) < 0 then
+    FUsers.Add(AUser);
+end;
+
+procedure TXcomMapDataSet.Release(AUser: TObject);
+begin
+  FUsers.Remove(AUser);
+  if FUsers.Count = 0 then
+    Unload;
 end;
 
 function TXcomMapDataSet.BlankFloorTile: TXcomMapData;

@@ -14,7 +14,9 @@ interface
 uses
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem,
-  DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf, DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink,
   DelphiDoom.XcomBattleStates.Screens.Intf,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.Tests.XcomBattleStates.Bench;
 
@@ -78,6 +80,8 @@ type
     procedure IlSoldatoMortoSenzaAssassinoHaSeStessoComeCausa;
     [Test]
     procedure UnAlienoUccisoNonToccaIlMemoriale;
+    [Test]
+    procedure UnaBattagliaCheMuoreNonDovrebbeScaricareLeTegoleDellAltra;
   end;
 
 implementation
@@ -414,6 +418,48 @@ begin
   FState.Game.CheckForCasualties(nil, FBench.Session.Battle.SelectedUnit);
   RunUntilIdle;
   Assert.AreEqual(LDead, FBench.SavedGame.DeadSoldiers.Count);
+end;
+
+procedure TTestXcomBattleSaves.UnaBattagliaCheMuoreNonDovrebbeScaricareLeTegoleDellAltra;
+var
+  LContext: IXcomBattleContext;
+  LOther: TXcomSavedBattleGame;
+  LSet: TXcomMapDataSet;
+  LSizes: TArray<Integer>;
+  LIndex: Integer;
+  LTile: TXcomTile;
+begin
+  if not Ready then
+    Exit;
+  // a load from the pause menu: the new battle is loaded while the old one is still alive, and the old one is
+  // freed a frame later. The map data sets belong to the rules and are shared: the battle that dies must not
+  // free the parts the tiles of the other point to (it was an intermittent access violation in the map draw)
+  FBench.Session.StoreInSavedGame;
+  LContext := TXcomBattleContext.Create(FBench.Session.Random, False, False,
+    FBench.Ruleset.Constants.FireDamageRange[0], FBench.Ruleset.Constants.FireDamageRange[1],
+    FBench.Ruleset.Constants.DamageRange, FBench.Ruleset.Constants.ExplosiveDamageRange, 0);
+  SetLength(LSizes, FBench.Session.Battle.MapDataSets.Count);
+  for LIndex := 0 to High(LSizes) do
+    LSizes[LIndex] := FBench.Session.Battle.MapDataSets[LIndex].Size;
+  LOther := TXcomBattleSaveLink.LoadBattle(FBench.SavedGame, FBench.Ruleset, LContext);
+  try
+    Assert.IsTrue(LOther.MapDataSets.Count > 0);
+    Assert.IsTrue(LOther.MapDataSets[0] = FBench.Session.Battle.MapDataSets[0], 'the two battles share the sets');
+  finally
+    LOther.Free;
+  end;
+  for LIndex := 0 to High(LSizes) do
+  begin
+    LSet := FBench.Session.Battle.MapDataSets[LIndex];
+    Assert.IsTrue(LSet.Loaded, LSet.Name + ' is still loaded');
+    Assert.AreEqual(LSizes[LIndex], LSet.Size, LSet.Name + ' still has its parts');
+  end;
+  LTile := FBench.Session.Battle.SelectedUnit.Tile;
+  Assert.IsNotNull(LTile.MapData[XCOM_PART_FLOOR]);
+  Assert.IsTrue(LTile.MapData[XCOM_PART_FLOOR].Dataset is TXcomMapDataSet);
+  // the battlescape still draws
+  FBench.World.Wait(200);
+  Assert.IsTrue(FBench.World.Game.IsState(FState));
 end;
 
 end.

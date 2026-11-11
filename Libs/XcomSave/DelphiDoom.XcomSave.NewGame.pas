@@ -33,6 +33,7 @@ type
     FRules: TXcomRulesetRules;
     FSettings: IXcomSaveSettings;
     FRandom: IXcomRandom;
+    FCustomInitialBase: Boolean;
     function StartingBaseNode: IYamlNode;
     function RandomSoldierTypes(const ANode: IYamlNode; const ABase: TXcomBase): TArray<string>;
     procedure AdjustFunding(const ASave: TXcomSavedGame);
@@ -45,6 +46,11 @@ type
     ///   starting soldiers that need a type is EXcomSaveException (the C++ divides by zero or reads past a vector)
     /// </summary>
     function NewSave: TXcomSavedGame;
+    /// <summary>
+    ///   Options::customInitialBase: the first base starts without facilities (Base::load skips them) and the
+    ///   player places the ones of the starting base. False unless set before NewSave
+    /// </summary>
+    property CustomInitialBase: Boolean read FCustomInitialBase write FCustomInitialBase;
     /// <summary>
     ///   genSoldier: a soldier of the type (the first type if ''), with a name that no other soldier of the bases
     ///   has (it gives up after 10 tries, as the original game does). The caller owns the soldier
@@ -233,7 +239,7 @@ begin
   // set up the starting base
   LBase := TXcomBase.Create;
   ASave.Bases.Add(LBase);
-  LBase.Load(StartingBaseNode, FRuleset, FRules, nil, FSettings, True, False, False);
+  LBase.Load(StartingBaseNode, FRuleset, FRules, nil, FSettings, True, FCustomInitialBase, False);
   // correct the ids
   for LCraft in LBase.Crafts do
     ASave.GetId(LCraft.Rules.CraftType);

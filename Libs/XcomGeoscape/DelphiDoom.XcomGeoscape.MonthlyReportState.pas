@@ -13,7 +13,8 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton,
-  DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomGeoscape.Control.Intf;
+  DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomGeoscape.Control.Intf, System.Generics.Collections,
+  DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.DiaryRules.Intf;
 
 type
   /// <summary>
@@ -23,8 +24,9 @@ type
   ///   shows "You have failed" and the second leaves for the statistics of the game (the film and the slides of
   ///   CutsceneState are not ported: what follows them is). After a month that goes on, OK counts the month of
   ///   service of every soldier, opens the psi training of the bases with laboratories and saves the game (the
-  ///   autosave of the options or the save of an ironman game). Not ported: the medals for the service
-  ///   (manageCommendations and CommendationState)
+  ///   autosave of the options or the save of an ironman game). With SetMedals the soldiers that the month of
+  ///   service gives a medal to are told to the caller (manageCommendations; CommendationState is of another
+  ///   library)
   /// </summary>
   TXcomMonthlyReportState = class(TXcomState)
   strict private
@@ -42,6 +44,8 @@ type
     FTxtBalance: TXcomText;
     FTxtDesc: TXcomText;
     FTxtFailure: TXcomText;
+    FDiaryRules: IXcomDiaryRules;
+    FOnMedals: TProc<TList<TXcomSoldier>>;
     procedure OkClick(AAction: TXcomAction);
     procedure AddMonthlyService;
     procedure SaveAfterMonth;
@@ -53,6 +57,12 @@ type
     constructor Create(AHost: TXcomStateHost; const AResult: TXcomMonthlyReportResult; APsi: Boolean = False;
       const AControl: IXcomGeoscapeControl = nil);
     procedure Init; override;
+    /// <summary>
+    ///   The medals of the end of the month: after the month of service every soldier of the bases is checked against
+    ///   the commendations of the rules (SoldierDiary::manageCommendations), and the ones that got a medal are given
+    ///   to AOnMedals, which shows them (the list is freed after the call). Without rules only the month is counted
+    /// </summary>
+    procedure SetMedals(const ADiaryRules: IXcomDiaryRules; const AOnMedals: TProc<TList<TXcomSoldier>>);
     property Result: TXcomMonthlyReportResult read FResult;
     property Description: TXcomText read FTxtDesc;
   end;
@@ -60,7 +70,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.CommendationManager,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomBasescape.Navigator.Intf,
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Session.Intf,
   DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState;
@@ -188,12 +198,41 @@ end;
 
 procedure TXcomMonthlyReportState.AddMonthlyService;
 var
+  LSave: TXcomSavedGame;
   LBase: TXcomBase;
   LSoldier: TXcomSoldier;
+  LMedalled: TList<TXcomSoldier>;
+  LManager: TXcomCommendationManager;
 begin
-  for LBase in TXcomStrategy.SavedGame(Host).Bases do
-    for LSoldier in LBase.Soldiers do
-      LSoldier.Diary.AddMonthlyService;
+  LSave := TXcomStrategy.SavedGame(Host);
+  LMedalled := TList<TXcomSoldier>.Create;
+  try
+    for LBase in LSave.Bases do
+      for LSoldier in LBase.Soldiers do
+      begin
+        LSoldier.Diary.AddMonthlyService;
+        if not Assigned(FDiaryRules) then
+          Continue;
+        LManager := TXcomCommendationManager.Create(LSoldier.Diary, FDiaryRules, LSave.MissionStatistics);
+        try
+          if LManager.Manage then
+            LMedalled.Add(LSoldier);
+        finally
+          LManager.Free;
+        end;
+      end;
+    if (LMedalled.Count > 0) and Assigned(FOnMedals) then
+      FOnMedals(LMedalled);
+  finally
+    LMedalled.Free;
+  end;
+end;
+
+procedure TXcomMonthlyReportState.SetMedals(const ADiaryRules: IXcomDiaryRules;
+  const AOnMedals: TProc<TList<TXcomSoldier>>);
+begin
+  FDiaryRules := ADiaryRules;
+  FOnMedals := AOnMedals;
 end;
 
 procedure TXcomMonthlyReportState.SaveAfterMonth;

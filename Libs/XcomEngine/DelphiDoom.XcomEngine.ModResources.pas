@@ -226,6 +226,8 @@ var
   LStrings: TDictionary<string, string>;
   LPair: TYamlPair;
   LNumber: Integer;
+  LItems: TArray<IYamlNode>;
+  LIndex: Integer;
 begin
   FFontName := TXcomYamlFields.ReadString(ANode, 'fontName', FFontName);
   LConstants := TXcomYamlFields.Field(ANode, 'constants');
@@ -240,7 +242,15 @@ begin
   if Assigned(LConstants) and LConstants.IsMap then
     for LPair in LConstants.Pairs do
       if LPair.Value.TryAsInteger(LNumber) then
-        FConstants.AddOrSetValue(LPair.Key.ScalarString, LNumber);
+        FConstants.AddOrSetValue(LPair.Key.ScalarString, LNumber)
+      else if LPair.Value.IsSequence then
+      begin
+        // a list of numbers (windowPopup: [1, 1, 1]) is kept an item at a time: "windowPopup.0", "windowPopup.1"...
+        LItems := LPair.Value.Items;
+        for LIndex := 0 to High(LItems) do
+          if LItems[LIndex].TryAsInteger(LNumber) then
+            FConstants.AddOrSetValue(LPair.Key.ScalarString + '.' + IntToStr(LIndex), LNumber);
+      end;
   for LItem in TXcomYamlFields.Sequence(ANode, 'soundDefs') do
     LoadSoundSet(LItem);
   if Length(TXcomYamlFields.Sequence(ANode, 'soundDefs')) > 0 then
@@ -670,8 +680,9 @@ begin
   else
   begin
     LPath := 'GEOGRAPH/' + AName;
-    // the screens of the battlescape (TAC00.SCR, the background of the menus opened over a battle)
-    if not FGameData.Files.Exists(LPath) then
+    // the pictures of the inventory (Mod::loadBattlescapeResources reads UFOGRAPH/*.SPK and *.BDY by name) and the
+    // screens of the battlescape (TAC00.SCR, the background of the menus opened over a battle)
+    if not FGameData.Files.Exists(LPath) and FGameData.Files.Exists('UFOGRAPH/' + AName) then
       LPath := 'UFOGRAPH/' + AName;
     if not FGameData.Files.Exists(LPath) then
       raise EXcomEngineException.Create('Surface ' + AName + ' not found');

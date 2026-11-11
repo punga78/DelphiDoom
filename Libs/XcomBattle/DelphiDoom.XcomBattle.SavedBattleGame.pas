@@ -76,6 +76,7 @@ type
     FChronoTrigger: Integer;
     FBeforeGame: Boolean;
     FScorchedEarth: TXcomMapData;
+    procedure MapDataSetNotify(ASender: TObject; const AItem: TXcomMapDataSet; AAction: TCollectionNotification);
     function SelectPlayerUnit(ADirection: Integer; ACheckReselect, ASetReselect, ACheckInventory: Boolean)
       : TXcomBattleUnit;
     function GetTileCount: Integer;
@@ -211,6 +212,8 @@ begin
   inherited Create;
   FContext := AContext;
   FMapDataSets := TList<TXcomMapDataSet>.Create;
+  // every set the battle takes is marked as used by it (see the destructor)
+  FMapDataSets.OnNotify := MapDataSetNotify;
   FTiles := TObjectList<TXcomTile>.Create(True);
   FNodes := TObjectList<TXcomNode>.Create(True);
   FUnits := TObjectList<TXcomBattleUnit>.Create(True);
@@ -256,10 +259,18 @@ begin
   FRecoverConditional.Free;
   FFallingUnits.Free;
   FStorageSpace.Free;
+  // the sets are shared with a battle that was loaded while this one was still alive: only the last one unloads
   for LSet in FMapDataSets do
-    LSet.Unload;
+    LSet.Release(Self);
   FMapDataSets.Free;
   inherited Destroy;
+end;
+
+procedure TXcomSavedBattleGame.MapDataSetNotify(ASender: TObject; const AItem: TXcomMapDataSet;
+  AAction: TCollectionNotification);
+begin
+  if (AAction = cnAdded) and Assigned(AItem) then
+    AItem.Retain(Self);
 end;
 
 function TXcomSavedBattleGame.Random: IXcomRandom;

@@ -34,6 +34,7 @@ type
     FPathfinding: TXcomPathfinding;
     FPathfindingRef: IXcomBattlePathfinder;
     FThinker: TXcomAIThinker;
+    FBattleReleased: Boolean;
   public
     /// <param name="ABattle">The battle, loaded or generated, with the data of its map: owned from now on</param>
     /// <param name="AContext">The context the battle was made with (the generator, the damage ranges)</param>
@@ -54,6 +55,12 @@ type
     function SavedGame: TXcomSavedGame;
     function CreateGame(const AView: IXcomBattleView; const AOptions: TXcomBattleOptions): TXcomBattlescapeGame;
     procedure StoreInSavedGame;
+    /// <summary>
+    ///   The battle goes on in another session (the next stage of a mission: a new map needs new engines). This
+    ///   session takes its engines off the battle and does not free it any more; Battle still gives it to the
+    ///   screens that are closing, so the new owner must live longer than this session
+    /// </summary>
+    function ReleaseBattle: TXcomSavedBattleGame;
   end;
 
 implementation
@@ -96,15 +103,16 @@ end;
 destructor TXcomBattleSession.Destroy;
 begin
   FThinker.Free;
-  // the battle refers to its engines: it lets them go first
-  if Assigned(FBattle) then
+  // the battle refers to its engines: it lets them go first (a battle that was released has other engines now)
+  if Assigned(FBattle) and not FBattleReleased then
   begin
     FBattle.TileEngine := nil;
     FBattle.Pathfinder := nil;
   end;
   FPathfindingRef := nil;
   FEngineRef := nil;
-  FBattle.Free;
+  if not FBattleReleased then
+    FBattle.Free;
   inherited Destroy;
 end;
 
@@ -162,6 +170,16 @@ begin
     Result.Free;
     raise;
   end;
+end;
+
+function TXcomBattleSession.ReleaseBattle: TXcomSavedBattleGame;
+begin
+  Result := FBattle;
+  if FBattleReleased then
+    Exit;
+  FBattle.TileEngine := nil;
+  FBattle.Pathfinder := nil;
+  FBattleReleased := True;
 end;
 
 procedure TXcomBattleSession.StoreInSavedGame;

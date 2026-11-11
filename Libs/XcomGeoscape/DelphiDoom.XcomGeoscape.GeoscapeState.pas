@@ -134,7 +134,8 @@ implementation
 
 uses
   System.Math, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSave.GameTime,
-  DelphiDoom.XcomUi.Types, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.Strategy;
+  DelphiDoom.XcomUi.Types, DelphiDoom.XcomGeoscape.Keys, DelphiDoom.XcomGeoscape.Strategy,
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 
 const
   GEO_CLOCK_SPEED = 80;
@@ -143,10 +144,11 @@ const
 
 type
   /// <summary>The geoscape as the popups see it; it does not keep the geoscape alive and is cleared by its destructor</summary>
-  TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl, IXcomDogfightControl)
+  TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl, IXcomDogfightControl, IXcomMissionControl)
   strict private
     FState: TXcomGeoscapeState;
     FScreens: IXcomGeoscapeScreens;
+    FLauncher: IXcomMissionLauncher;
   public
     constructor Create(AState: TXcomGeoscapeState);
     function Screens: IXcomGeoscapeScreens;
@@ -162,9 +164,21 @@ type
     procedure DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
     function DogfightCount: Integer;
     procedure UfoRemoving(AUfo: TXcomUfo);
+    procedure SetMissionLauncher(const ALauncher: IXcomMissionLauncher);
+    function MissionLauncher: IXcomMissionLauncher;
   end;
 
 { TXcomGeoscapeControl }
+
+procedure TXcomGeoscapeControl.SetMissionLauncher(const ALauncher: IXcomMissionLauncher);
+begin
+  FLauncher := ALauncher;
+end;
+
+function TXcomGeoscapeControl.MissionLauncher: IXcomMissionLauncher;
+begin
+  Result := FLauncher;
+end;
 
 procedure TXcomGeoscapeControl.StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
 begin
@@ -229,6 +243,7 @@ procedure TXcomGeoscapeControl.Detach;
 begin
   FState := nil;
   FScreens := nil;
+  FLauncher := nil;
 end;
 
 procedure TXcomGeoscapeControl.TimerReset;

@@ -18,7 +18,7 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.SaveCatalog.Intf,
-DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.UiSounds.Intf;
 
 type
   TXcomState = class;
@@ -76,8 +76,15 @@ type
     ///   or, when AInterface, of the interface; does nothing without audio device or when the set has no such sound
     /// </summary>
     procedure PlaySound(const ASet: string; AIndex: Integer; AInterface: Boolean = False); virtual;
+    /// <summary>
+    ///   Sound::play on a channel followed by Mix_Volume(channel, AVolume): the sound of the set at a mixer volume
+    ///   (0..128) that the caller chose. False when the set has no such sound (Mod::getSound gives none)
+    /// </summary>
+    function PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean; virtual;
     /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
     function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>What opens the New Battle screen (nil: the button of the menu does nothing)</summary>
+    function NewBattleOpener: IXcomNewBattleOpener; virtual;
     /// <summary>SDL_WarpMouse (window pixels; does nothing when the host has no event source)</summary>
     procedure WarpMouse(AX, AY: Integer); virtual;
     /// <summary>What loads a saved game that was chosen in the Load Game screen (nil: the load is unsuccessful)</summary>
@@ -89,6 +96,8 @@ type
     ///   library that the game keeps alive (nil before a game starts)
     /// </summary>
     function Session: IInterface; virtual;
+    /// <summary>The sounds of the widgets: the click of a button, a window that opens (nil: the widgets are silent)</summary>
+    function UiSounds: IXcomUiSounds; virtual;
     procedure SetSession(const ASession: IInterface); virtual;
     /// <summary>
     ///   The 256 colors of the battle in progress (what SavedBattleGame::setPaletteByDepth gives to a state of the
@@ -211,6 +220,11 @@ procedure TXcomStateHost.PlaySound(const ASet: string; AIndex: Integer; AInterfa
 begin
 end;
 
+function TXcomStateHost.PlaySoundAt(const ASet: string; AIndex, AVolume: Integer): Boolean;
+begin
+  Result := False;
+end;
+
 function TXcomStateHost.SaveCatalog: IXcomSaveCatalog;
 begin
   Result := nil;
@@ -234,6 +248,11 @@ begin
   Result := 'Adlib';
 end;
 
+function TXcomStateHost.NewBattleOpener: IXcomNewBattleOpener;
+begin
+  Result := nil;
+end;
+
 function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
 begin
   Result := nil;
@@ -249,6 +268,11 @@ begin
 end;
 
 function TXcomStateHost.SavedGameSaver: IXcomSavedGameSaver;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.UiSounds: IXcomUiSounds;
 begin
   Result := nil;
 end;
@@ -345,6 +369,7 @@ end;
 procedure TXcomState.Add(ASurface: TXcomWidget);
 begin
   ASurface.SetPalette(@FPalette[0], 0, 256);
+  ASurface.SetUiSounds(Host.UiSounds);
   if (Host.Language <> nil) and (Host.Resources <> nil) then
     ASurface.InitText(Host.Resources.GetFont('FONT_BIG'), Host.Resources.GetFont('FONT_SMALL'), Host.Language);
   FSurfaces.Add(ASurface);
@@ -356,6 +381,7 @@ var
   LElement: TXcomInterfaceElement;
 begin
   ASurface.SetPalette(@FPalette[0], 0, 256);
+  ASurface.SetUiSounds(Host.UiSounds);
   LInterface := Host.Resources.GetInterface(ACategory);
   if Assigned(LInterface) and LInterface.TryGetElement(AId, LElement) then
   begin
@@ -370,12 +396,13 @@ begin
       ASurface.Y := AParent.Y + LElement.Y;
     end;
     ASurface.TftdMode := LElement.TftdMode;
+    // a color of the rules can be -1 (messageWindowBorder): it wraps to 8 bits as the Uint8 of the C++
     if LElement.Color <> XCOM_UNSET then
-      ASurface.SetColor(LElement.Color);
+      ASurface.SetColor(Byte(LElement.Color and $FF));
     if LElement.Color2 <> XCOM_UNSET then
-      ASurface.SetSecondaryColor(LElement.Color2);
+      ASurface.SetSecondaryColor(Byte(LElement.Color2 and $FF));
     if LElement.Border <> XCOM_UNSET then
-      ASurface.SetBorderColor(LElement.Border);
+      ASurface.SetBorderColor(Byte(LElement.Border and $FF));
   end;
   if Host.Language <> nil then
     ASurface.InitText(Host.Resources.GetFont('FONT_BIG'), Host.Resources.GetFont('FONT_SMALL'), Host.Language);

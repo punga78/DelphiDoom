@@ -25,3 +25,5 @@ Test: `Tools\build.bat Tests\DelphiDoom.Tests.XcomStrategy`.
 ## Ricerca e rapporto mensile (issue #176)
 
 `TXcomResearchRules`, `TXcomResearchCompletion` (la cascata delle ricerche finite, spenta di default) e `TXcomMonthlyReport`, con parita' sugli oggetti veri di OpenXcom (scenari `research` e `report` di `Tools\Verifica\176\save\simgen.cpp`). Dettagli in `CLAUDE.md`.
+
+Aggiornamento (sessione "collegamenti", #176): `IXcomBaseDefenseEvents`: l'attacco di un UFO a una base passa allo schermo (difese, battaglia nella base, base distrutta).

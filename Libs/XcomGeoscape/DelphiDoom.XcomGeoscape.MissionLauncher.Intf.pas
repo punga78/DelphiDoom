@@ -11,24 +11,36 @@ unit DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 interface
 
 uses
-  DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.AlienBase;
+  DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.AlienBase,
+  DelphiDoom.XcomSave.Base;
 
 type
-  /// <summary>What a mission is made of: exactly one of Ufo, Site and AlienBase is set</summary>
+  /// <summary>
+  ///   What a mission is made of. A landing has the craft and exactly one of Ufo, Site and AlienBase; the defense
+  ///   of a base has Base and no craft; the last mission has only the craft
+  /// </summary>
   TXcomMissionRequest = record
-    /// <summary>The craft that lands (not owned)</summary>
+    /// <summary>The craft that lands (not owned); nil for the defense of a base</summary>
     Craft: TXcomCraft;
     /// <summary>SavedBattleGame::setMissionType: STR_UFO_CRASH_RECOVERY, STR_UFO_GROUND_ASSAULT or the deployment type</summary>
     MissionType: string;
     Ufo: TXcomUfo;
     Site: TXcomMissionSite;
     AlienBase: TXcomAlienBase;
+    /// <summary>setBase: the X-COM base that is attacked (STR_BASE_DEFENSE); not owned</summary>
+    Base: TXcomBase;
     /// <summary>setAlienRace</summary>
     AlienRace: string;
     /// <summary>setWorldTexture: the id of a texture of the globe; -1 none (an alien base has none)</summary>
     WorldTexture: Integer;
     /// <summary>setWorldShade: 0..15</summary>
     WorldShade: Integer;
+    /// <summary>setTerrain: the terrain of the battle, chosen by name (New Battle); empty: the generator chooses it</summary>
+    Terrain: string;
+    /// <summary>SavedBattleGame::setDepth before the run (New Battle): 1..3 under water; 0: the generator works it out</summary>
+    Depth: Integer;
+    /// <summary>setAlienItemlevel: the row of alienItemLevels (New Battle); 0 for the missions of the geoscape</summary>
+    AlienItemLevel: Integer;
   end;
 
   /// <summary>

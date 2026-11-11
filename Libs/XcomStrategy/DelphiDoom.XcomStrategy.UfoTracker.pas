@@ -51,6 +51,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.XcomStrategy.BaseDefense.Intf;
+
 { TXcomUfoTracker }
 
 constructor TXcomUfoTracker.Create(const AGame: TXcomSavedGame; const ARandom: IXcomRandom;
@@ -72,6 +75,7 @@ var
   LDetected: Boolean;
   LSite: TXcomMissionSite;
   LBase: TXcomBase;
+  LDefense: IXcomBaseDefenseEvents;
 begin
   Result := True;
   for LIndex := 0 to FGame.Ufos.Count - 1 do
@@ -106,9 +110,18 @@ begin
               LMission.SetWaveCountdown(Cardinal(30 * (FRandom.Generate(0, 400) + 48)));
               LBase := TXcomBase(LUfo.Destination);
               LUfo.SetDestination(nil);
-              FEvents.BaseAttacked(LBase, LUfo);
-              LUfo.Status := TXcomUfo.STATUS_DESTROYED;
-              Exit(False);
+              if Supports(FEvents, IXcomBaseDefenseEvents, LDefense) then
+              begin
+                // the screen: the defenses fire first and the loop goes on, or the attack is handled at once
+                if not LDefense.BaseDefense(LBase, LUfo) then
+                  Exit(False);
+              end
+              else
+              begin
+                FEvents.BaseAttacked(LBase, LUfo);
+                LUfo.Status := TXcomUfo.STATUS_DESTROYED;
+                Exit(False);
+              end;
             end;
           end;
         end;

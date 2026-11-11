@@ -64,12 +64,21 @@ type
     procedure DovrebbeMostrareIlFallimentoAlPrimoOkEAprireLeStatisticheAlSecondo;
     [Test]
     procedure DovrebbeSegnareLaSconfittaNelSalvataggio;
+    [Test]
+    procedure DovrebbeDareLeMedaglieDelMeseDiServizio;
+    [Test]
+    procedure NonDovrebbeChiamareNessunoSeNessunoHaUnaMedaglia;
+    [Test]
+    procedure DovrebbeContareIlMeseDiServizioAncheSenzaRegoleDelleMedaglie;
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomSave.SavedGameHolder, DelphiDoom.XcomGeoscape.MonthlyReportState;
+  System.Generics.Collections, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Types,
+  DelphiDoom.XcomMod.ModOffsets, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Soldier,
+  DelphiDoom.XcomSave.RulesetDiaryRules, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomSave.SavedGameHolder,
+  DelphiDoom.XcomGeoscape.MonthlyReportState;
 
 { TFakeSaver }
 
@@ -204,6 +213,116 @@ procedure TTestXcomMonthlyReportState.DovrebbeSegnareLaSconfittaNelSalvataggio;
 begin
   Push(True, False);
   Assert.AreEqual(2, FSave.EndingKind, 'END_LOSE');
+end;
+
+type
+  /// <summary>The sizes of the shared sets that a ruleset asks for (none of the rules of the test uses them)</summary>
+  TMedalShared = class(TInterfacedObject, IXcomSharedResources)
+  public
+    function MaxSharedSounds(const ASet: string): Integer;
+    function MaxSharedFrames(const ASet: string): Integer;
+  end;
+
+function TMedalShared.MaxSharedSounds(const ASet: string): Integer;
+begin
+  Result := 20;
+end;
+
+function TMedalShared.MaxSharedFrames(const ASet: string): Integer;
+begin
+  Result := 100;
+end;
+
+/// <summary>The rules of a medal for a number of months of service</summary>
+function MedalRules(AMonths: Integer): TXcomRuleset;
+begin
+  Result := TXcomRuleset.Create(TMedalShared.Create);
+  Result.SetMods(TArray<TXcomModData>.Create(TXcomModData.Make('master', 0, 1000)), 0);
+  Result.LoadFile(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes(Format(
+    '{commendations: [{type: STR_MEDAL_SERVICE, criteria: {totalMonthlyService: [%d]}}]}', [AMonths]))));
+end;
+
+procedure TTestXcomMonthlyReportState.DovrebbeDareLeMedaglieDelMeseDiServizio;
+var
+  LRuleset: TXcomRuleset;
+  LBase: TXcomBase;
+  LSoldier: TXcomSoldier;
+  LState: TXcomMonthlyReportState;
+  LCalls: Integer;
+  LNames: string;
+begin
+  LRuleset := MedalRules(1);
+  try
+    LBase := TXcomBase.Create;
+    FSave.Bases.Add(LBase);
+    // id 0: a soldier as a saved game loads it, with no rules to roll its statistics from
+    LSoldier := TXcomSoldier.Create(nil, nil, 0, nil);
+    LSoldier.Name := 'Ada';
+    LBase.Soldiers.Add(LSoldier);
+    LCalls := 0;
+    LState := Push(False, False) as TXcomMonthlyReportState;
+    LState.SetMedals(TXcomRulesetDiaryRules.Create(LRuleset),
+      procedure(ASoldiers: TList<TXcomSoldier>)
+      var
+        LMedalled: TXcomSoldier;
+      begin
+        Inc(LCalls);
+        for LMedalled in ASoldiers do
+          LNames := LNames + LMedalled.Name;
+      end);
+    PressOk;
+    Assert.AreEqual(1, LCalls);
+    Assert.AreEqual('Ada', LNames);
+    Assert.AreEqual(1, LSoldier.Diary.Commendations.Count);
+    Assert.AreEqual('STR_MEDAL_SERVICE', LSoldier.Diary.Commendations[0].CommendationType);
+  finally
+    LRuleset.Free;
+  end;
+end;
+
+procedure TTestXcomMonthlyReportState.NonDovrebbeChiamareNessunoSeNessunoHaUnaMedaglia;
+var
+  LRuleset: TXcomRuleset;
+  LBase: TXcomBase;
+  LSoldier: TXcomSoldier;
+  LState: TXcomMonthlyReportState;
+  LCalls: Integer;
+begin
+  // the medal wants three months: the first one is not enough
+  LRuleset := MedalRules(3);
+  try
+    LBase := TXcomBase.Create;
+    FSave.Bases.Add(LBase);
+    LSoldier := TXcomSoldier.Create(nil, nil, 0, nil);
+    LBase.Soldiers.Add(LSoldier);
+    LCalls := 0;
+    LState := Push(False, False) as TXcomMonthlyReportState;
+    LState.SetMedals(TXcomRulesetDiaryRules.Create(LRuleset),
+      procedure(ASoldiers: TList<TXcomSoldier>)
+      begin
+        Inc(LCalls);
+      end);
+    PressOk;
+    Assert.AreEqual(0, LCalls);
+    Assert.AreEqual(0, LSoldier.Diary.Commendations.Count);
+    Assert.AreEqual(1, LSoldier.Diary.Counter('monthsService'));
+  finally
+    LRuleset.Free;
+  end;
+end;
+
+procedure TTestXcomMonthlyReportState.DovrebbeContareIlMeseDiServizioAncheSenzaRegoleDelleMedaglie;
+var
+  LBase: TXcomBase;
+  LSoldier: TXcomSoldier;
+begin
+  LBase := TXcomBase.Create;
+  FSave.Bases.Add(LBase);
+  LSoldier := TXcomSoldier.Create(nil, nil, 0, nil);
+  LBase.Soldiers.Add(LSoldier);
+  Push(False, False);
+  PressOk;
+  Assert.AreEqual(1, LSoldier.Diary.Counter('monthsService'));
 end;
 
 end.

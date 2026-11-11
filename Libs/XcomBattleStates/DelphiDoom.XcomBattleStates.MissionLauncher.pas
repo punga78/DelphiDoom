@@ -12,7 +12,7 @@ unit DelphiDoom.XcomBattleStates.MissionLauncher;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Craft,
+  System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.Screens.Intf;
 
@@ -29,11 +29,17 @@ type
     FHost: TXcomStateHost;
     FScreens: IXcomBattleScreens;
     FAudio: IXcomBattleAudio;
-    procedure StartBattle(const ASession: IXcomBattleSession);
     procedure Generate(const ARequest: TXcomMissionRequest);
+    function Describe(const AError: Exception): string;
   public
     constructor Create(AHost: TXcomStateHost; const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio);
     procedure BeginMission(const ARequest: TXcomMissionRequest);
+    /// <summary>
+    ///   BriefingState::btnOkClick: the battlescape of the session, the screen of the first turn and the inventory
+    ///   (or, with no alien alive, the message of the crash and the debriefing). Also for the next stage of a mission
+    /// </summary>
+    class procedure StartBattle(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
+      const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio); static;
   end;
 
 implementation
@@ -55,6 +61,15 @@ begin
   FAudio := AAudio;
 end;
 
+function TXcomMissionLauncher.Describe(const AError: Exception): string;
+begin
+  Result := AError.Message;
+  // a defect of the program, not a mission that the rules cannot make: the address in the terms of the .map of the
+  // executable (the image can be relocated) says where
+  if (AError is EAccessViolation) and (ExceptAddr <> nil) then
+    Result := Result + ' [map ' + IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8) + ']';
+end;
+
 procedure TXcomMissionLauncher.BeginMission(const ARequest: TXcomMissionRequest);
 begin
   try
@@ -62,7 +77,7 @@ begin
   except
     // a mission that cannot be generated must not end the game: the player reads why
     on E: Exception do
-      FHost.PushState(TXcomErrorMessageState.ForOrigin(FHost, ooGeoscape, E.Message,
+      FHost.PushState(TXcomErrorMessageState.ForOrigin(FHost, ooGeoscape, Describe(E),
         PXcomColors(FHost.Resources.GetPalette('PAL_GEOSCAPE'))));
   end;
 end;
@@ -79,6 +94,10 @@ var
   LLegacy: TXcomLegacyRandom;
   LSession: IXcomBattleSession;
   LCraft: TXcomCraft;
+  LBase: TXcomBase;
+  LHost: TXcomStateHost;
+  LScreens: IXcomBattleScreens;
+  LAudio: IXcomBattleAudio;
 begin
   LRuleset := TXcomStrategy.Ruleset(FHost);
   LSave := TXcomStrategy.SavedGame(FHost);
@@ -87,6 +106,9 @@ begin
   LBattle := TXcomSavedBattleGame.Create(LContext);
   try
     LBattle.MissionType := ARequest.MissionType;
+    // NewBattleState: a depth that was chosen stays (the generator only works out one that is 0)
+    if ARequest.Depth > 0 then
+      LBattle.Depth := ARequest.Depth;
     // the engine of the generator: the session makes its own once the map has its size
     LEngine := TXcomTileEngine.Create(LBattle, LContext, LGraphics.VoxelData);
     // the colors of the units come from the rand() of the C library: any seed does
@@ -97,7 +119,10 @@ begin
         if ARequest.WorldTexture >= 0 then
           LGenerator.SetWorldTexture(LRuleset.Globe.GetTexture(ARequest.WorldTexture));
         LGenerator.SetWorldShade(ARequest.WorldShade);
-        LGenerator.SetCraft(ARequest.Craft);
+        if Assigned(ARequest.Craft) then
+          LGenerator.SetCraft(ARequest.Craft);
+        if Assigned(ARequest.Base) then
+          LGenerator.SetBase(ARequest.Base);
         if Assigned(ARequest.Ufo) then
           LGenerator.SetUfo(ARequest.Ufo)
         else if Assigned(ARequest.Site) then
@@ -105,6 +130,9 @@ begin
         else if Assigned(ARequest.AlienBase) then
           LGenerator.SetAlienBase(ARequest.AlienBase);
         LGenerator.SetAlienRace(ARequest.AlienRace);
+        LGenerator.SetAlienItemLevel(ARequest.AlienItemLevel);
+        if ARequest.Terrain <> '' then
+          LGenerator.SetTerrain(LRuleset.Terrains.Find(ARequest.Terrain));
         LGenerator.Run;
       finally
         LGenerator.Free;
@@ -122,51 +150,56 @@ begin
   LSession := TXcomBattleFactory.CreateSession(FHost, LBattle, LContext, LGraphics);
   LSession.StoreInSavedGame;
   LCraft := ARequest.Craft;
-  FHost.PushState(TXcomBriefingState.Create(FHost, LRuleset, ARequest.MissionType, LCraft, nil,
+  LBase := ARequest.Base;
+  // the briefing can outlive the launcher: its closure keeps what it needs, not Self
+  LHost := FHost;
+  LScreens := FScreens;
+  LAudio := FAudio;
+  FHost.PushState(TXcomBriefingState.Create(FHost, LRuleset, ARequest.MissionType, LCraft, LBase,
     procedure
     begin
-      StartBattle(LSession);
+      StartBattle(LHost, LSession, LScreens, LAudio);
     end));
 end;
 
-procedure TXcomMissionLauncher.StartBattle(const ASession: IXcomBattleSession);
+class procedure TXcomMissionLauncher.StartBattle(AHost: TXcomStateHost; const ASession: IXcomBattleSession;
+  const AScreens: IXcomBattleScreens; const AAudio: IXcomBattleAudio);
 var
   LBattlescape: TXcomBattlescapeState;
   LLiveAliens: Integer;
   LLiveSoldiers: Integer;
   LDebriefing: TXcomState;
-  LHost: TXcomStateHost;
   LNext: TXcomState;
 begin
-  LHost := FHost;
-  LBattlescape := TXcomBattleFactory.CreateBattlescape(FHost, ASession, FScreens, FAudio) as TXcomBattlescapeState;
+  LBattlescape := TXcomBattleFactory.CreateBattlescape(AHost, ASession, AScreens, AAudio) as TXcomBattlescapeState;
   LBattlescape.Game.TallyUnits(LLiveAliens, LLiveSoldiers);
   if LLiveAliens > 0 then
   begin
-    FHost.PushState(LBattlescape);
-    if Assigned(FScreens) then
+    AHost.PushState(LBattlescape);
+    if Assigned(AScreens) then
     begin
-      LNext := FScreens.NextTurn(LBattlescape);
+      LNext := AScreens.NextTurn(LBattlescape);
       if Assigned(LNext) then
-        FHost.PushState(LNext);
+        AHost.PushState(LNext);
       // the soldiers are equipped before the first turn, without spending time units
-      LNext := FScreens.Inventory(LBattlescape, False);
+      LNext := AScreens.Inventory(LBattlescape, False);
       if Assigned(LNext) then
-        FHost.PushState(LNext);
+        AHost.PushState(LNext);
     end;
   end
   else
   begin
-    // the debriefing reads the battle now: the battlescape (and with it the battle) is freed right after
+    // the debriefing reads the battle now: the battlescape is freed right after, and the session (the battle, its
+    // pictures) goes with the briefing that holds this closure; the message keeps the pictures it draws
     LDebriefing := nil;
-    if Assigned(FScreens) then
-      LDebriefing := FScreens.Debriefing(LBattlescape);
+    if Assigned(AScreens) then
+      LDebriefing := AScreens.Debriefing(LBattlescape);
     LBattlescape.Free;
-    FHost.PushState(TXcomAliensCrashState.Create(FHost, ASession.Graphics.Surface('TAC00.SCR'),
+    AHost.PushState(TXcomAliensCrashState.Create(AHost, ASession.Graphics,
       procedure
       begin
         if Assigned(LDebriefing) then
-          LHost.PushState(LDebriefing);
+          AHost.PushState(LDebriefing);
       end));
   end;
 end;

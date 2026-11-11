@@ -45,13 +45,18 @@ type
     [Test]
     procedure DovrebbeChiudersiEChiamareLaFineConOk;
     [Test]
+    procedure DovrebbeSuonareLaMusicaDelDebriefingUnaVoltaSola;
+    [Test]
+    procedure NonDovrebbeCambiareMusicaSenzaUnNome;
+    [Test]
     procedure DovrebbeElencareGliOggettiCheMancanoAlVelivolo;
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomDebriefing.DebriefingState, DelphiDoom.XcomDebriefing.CannotReequipState;
+  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomDebriefing.DebriefingState,
+  DelphiDoom.XcomDebriefing.CannotReequipState;
 
 procedure TTestXcomDebriefingStates.Setup;
 var
@@ -183,6 +188,102 @@ begin
   ClickButton(FindButton(LState, 0));
   Assert.IsTrue(LCalled);
   Assert.IsFalse(FWorld.Game.IsState(LState));
+end;
+
+type
+  /// <summary>IXcomMusicPlayer that writes down the music it is asked for</summary>
+  TRecordingMusic = class(TInterfacedObject, IXcomMusicPlayer)
+  public
+    Names: string;
+    procedure Reload(const AResources: IXcomResources);
+    procedure PlayMusic(const AName: string; AId: Integer = 0);
+    procedure Stop;
+    procedure Pause;
+    procedure Resume;
+    function IsPlaying: Boolean;
+    function CurrentFormat: string;
+    function LoadedCount: Integer;
+  end;
+
+procedure TRecordingMusic.Reload(const AResources: IXcomResources);
+begin
+end;
+
+procedure TRecordingMusic.PlayMusic(const AName: string; AId: Integer);
+begin
+  Names := Names + AName + ';';
+end;
+
+procedure TRecordingMusic.Stop;
+begin
+end;
+
+procedure TRecordingMusic.Pause;
+begin
+end;
+
+procedure TRecordingMusic.Resume;
+begin
+end;
+
+function TRecordingMusic.IsPlaying: Boolean;
+begin
+  Result := Names <> '';
+end;
+
+function TRecordingMusic.CurrentFormat: string;
+begin
+  Result := 'Adlib';
+end;
+
+function TRecordingMusic.LoadedCount: Integer;
+begin
+  Result := 0;
+end;
+
+procedure TTestXcomDebriefingStates.DovrebbeSuonareLaMusicaDelDebriefingUnaVoltaSola;
+var
+  LMusic: TRecordingMusic;
+  LMusicRef: IXcomMusicPlayer;
+  LState: TXcomDebriefingState;
+  LOver: TXcomState;
+begin
+  LMusic := TRecordingMusic.Create;
+  LMusicRef := LMusic;
+  FWorld.Game.SetMusicPlayer(LMusicRef);
+  try
+    LState := TXcomDebriefingState.Create(FWorld.Game, FReport, nil);
+    LState.Music := 'GMDEBGOO';
+    FWorld.Game.PushState(LState);
+    FWorld.Wait(100);
+    Assert.AreEqual('GMDEBGOO;', LMusic.Names);
+    // a screen over the debriefing and back: the music does not start again
+    LOver := TXcomState.Create(FWorld.Game);
+    FWorld.Game.PushState(LOver);
+    FWorld.Wait(100);
+    FWorld.Game.PopState;
+    FWorld.Wait(100);
+    Assert.AreEqual('GMDEBGOO;', LMusic.Names);
+  finally
+    FWorld.Game.SetMusicPlayer(nil);
+  end;
+end;
+
+procedure TTestXcomDebriefingStates.NonDovrebbeCambiareMusicaSenzaUnNome;
+var
+  LMusic: TRecordingMusic;
+  LMusicRef: IXcomMusicPlayer;
+begin
+  LMusic := TRecordingMusic.Create;
+  LMusicRef := LMusic;
+  FWorld.Game.SetMusicPlayer(LMusicRef);
+  try
+    FWorld.Game.PushState(TXcomDebriefingState.Create(FWorld.Game, FReport, nil));
+    FWorld.Wait(100);
+    Assert.AreEqual('', LMusic.Names);
+  finally
+    FWorld.Game.SetMusicPlayer(nil);
+  end;
 end;
 
 procedure TTestXcomDebriefingStates.DovrebbeElencareGliOggettiCheMancanoAlVelivolo;

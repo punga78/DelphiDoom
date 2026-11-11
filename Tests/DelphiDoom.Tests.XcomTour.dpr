@@ -25,7 +25,11 @@ uses
   DelphiDoom.Tests.XcomGeoscape.MissionLauncher in 'Source\DelphiDoom.Tests.XcomGeoscape.MissionLauncher.pas',
   DelphiDoom.Tests.XcomTour.World in 'Source\DelphiDoom.Tests.XcomTour.World.pas',
   DelphiDoom.Tests.XcomTour.Strategy in 'Source\DelphiDoom.Tests.XcomTour.Strategy.pas',
-  DelphiDoom.Tests.XcomTour.Flows in 'Source\DelphiDoom.Tests.XcomTour.Flows.pas';
+  DelphiDoom.Tests.XcomTour.Flows in 'Source\DelphiDoom.Tests.XcomTour.Flows.pas',
+  DelphiDoom.Tests.XcomTour.Missions in 'Source\DelphiDoom.Tests.XcomTour.Missions.pas',
+  DelphiDoom.Xcom.NewBattleNavigator in '..\OpenXcom\DelphiDoom.Xcom.NewBattleNavigator.pas',
+  DelphiDoom.Tests.XcomTour.NewBattle in 'Source\DelphiDoom.Tests.XcomTour.NewBattle.pas',
+  DelphiDoom.Tests.XcomTour.CustomBase in 'Source\DelphiDoom.Tests.XcomTour.CustomBase.pas';
 
 var
   Runner: ITestRunner;

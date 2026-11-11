@@ -11,32 +11,44 @@ unit DelphiDoom.XcomBattleStates.AliensCrashState;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.TextButton;
+  System.SysUtils, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State, DelphiDoom.XcomUi.Text,
+  DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomBattleStates.Graphics.Intf;
 
 type
-  /// <summary>The message shown instead of the battle; OK pops it and calls AOnOk (the debriefing)</summary>
+  /// <summary>
+  ///   The message shown instead of the battle; OK pops it and calls AOnOk (the debriefing). The state keeps the
+  ///   pictures of the battle alive: its window blits their TAC00.SCR at every redraw, and by then the session of
+  ///   the battle that was not started is gone
+  /// </summary>
   TXcomAliensCrashState = class(TXcomState)
   strict private
     FWindow: TXcomWindow;
     FBtnOk: TXcomTextButton;
     FTxtTitle: TXcomText;
+    FGraphics: IXcomBattleGraphics;
     FOnOk: TProc;
     procedure BtnOkClick(AAction: TXcomAction);
   public
-    /// <param name="ABackground">TAC00.SCR (not owned); can be nil</param>
+    /// <param name="AGraphics">The pictures of the battle (TAC00.SCR is the background); can be nil</param>
     /// <param name="AOnOk">Called after the state was popped; can be nil</param>
-    constructor Create(AHost: TXcomStateHost; ABackground: TXcomSurface; const AOnOk: TProc);
+    constructor Create(AHost: TXcomStateHost; const AGraphics: IXcomBattleGraphics; const AOnOk: TProc);
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomUi.Types;
+  DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomUi.Types;
 
-constructor TXcomAliensCrashState.Create(AHost: TXcomStateHost; ABackground: TXcomSurface; const AOnOk: TProc);
+const
+  BACKGROUND_NAME = 'TAC00.SCR';
+
+constructor TXcomAliensCrashState.Create(AHost: TXcomStateHost; const AGraphics: IXcomBattleGraphics;
+  const AOnOk: TProc);
+var
+  LBackground: TXcomSurface;
 begin
   inherited Create(AHost);
+  FGraphics := AGraphics;
   FOnOk := AOnOk;
   FWindow := TXcomWindow.Create(Self, 256, 160, 32, 20);
   FBtnOk := TXcomTextButton.Create(120, 18, 100, 154);
@@ -47,8 +59,11 @@ begin
   Add(FTxtTitle, 'messageWindows', 'battlescape');
   CenterAllSurfaces;
   FWindow.SetHighContrast(True);
-  if Assigned(ABackground) then
-    FWindow.SetBackground(ABackground);
+  LBackground := nil;
+  if Assigned(FGraphics) then
+    LBackground := FGraphics.Surface(BACKGROUND_NAME);
+  if Assigned(LBackground) then
+    FWindow.SetBackground(LBackground);
   FBtnOk.SetHighContrast(True);
   FBtnOk.SetText(Tr('STR_OK').Text);
   FBtnOk.OnMouseClick(BtnOkClick);

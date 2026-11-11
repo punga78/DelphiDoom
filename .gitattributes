@@ -12,3 +12,4 @@ Tests/Data/XcomBattle/ufo/** -text
 Tests/Data/XcomSave/realsave_ufo/** -text
 
 Tests/Data/XcomDebriefing/** -text
+Tests/Data/XcomBattle/stage/** -text

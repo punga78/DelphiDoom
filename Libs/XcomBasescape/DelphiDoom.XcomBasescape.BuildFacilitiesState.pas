@@ -32,6 +32,13 @@ type
     FTxtTitle: TXcomText;
     procedure OkClick(AAction: TXcomAction);
     procedure FacilitiesClick(AAction: TXcomAction);
+  protected
+    property Base: TXcomBase read FBase;
+    /// <summary>The facilities of the list, in the order of its rows</summary>
+    property Facilities: TList<TXcomRuleBaseFacility> read FFacilities;
+    property OkButton: TXcomTextButton read FBtnOk;
+    /// <summary>BuildFacilitiesState::populateBuildList: the rows of the list from Facilities</summary>
+    procedure PopulateBuildList; virtual;
   public
     /// <param name="ABase">The base (not owned)</param>
     /// <param name="AParent">The basescape to refresh when this state is on top again (not owned; nil: none)</param>
@@ -89,6 +96,14 @@ begin
     if TXcomStrategy.SavedGame(AHost).IsResearched(LRule.Requirements) and not LRule.IsLift then
       FFacilities.Add(LRule);
   end;
+  PopulateBuildList;
+end;
+
+procedure TXcomBuildFacilitiesState.PopulateBuildList;
+var
+  LRule: TXcomRuleBaseFacility;
+begin
+  FLstFacilities.ClearList;
   for LRule in FFacilities do
     FLstFacilities.AddRow([Tr(LRule.FacilityType).Text]);
 end;

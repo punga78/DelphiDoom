@@ -156,6 +156,12 @@ begin
     LImages := FGameData.LoadImageSet('GEODATA/' + AName, '', 4, 4, LPalette);
     Result := TXcomSurfaceSet.Create(4, 4);
   end
+  else if AName = 'BIGOBS.PCK' then
+  begin
+    // the items in the hands (Mod::loadBattlescapeResources), for the Ufopaedia
+    LImages := FGameData.LoadImageSet('UNITS/BIGOBS.PCK', 'UNITS/BIGOBS.TAB', 32, 48, LPalette);
+    Result := TXcomSurfaceSet.Create(32, 48);
+  end
   else if AName = 'GlobeMarkers' then
     Result := TXcomSurfaceSet.Create(3, 3);
   if Assigned(Result) then

@@ -65,6 +65,8 @@ try {
   [OxcCap]::SetForegroundWindow($h) | Out-Null; Start-Sleep 1
   foreach ($s in $Steps) {
     $a = $s.Split(':')
+    # another program can take the focus while the steps run (the window of another test): clicks and F12 would go to it
+    if ($a[0] -ne 'wait') { [OxcCap]::SetForegroundWindow($h) | Out-Null; Start-Sleep -Milliseconds 120 }
     switch ($a[0]) {
       'wait' { Start-Sleep ([double]$a[1]) }
       'click' { $xy = $a[1].Split(','); [OxcCap]::Click($h, [int]$xy[0], [int]$xy[1]) }

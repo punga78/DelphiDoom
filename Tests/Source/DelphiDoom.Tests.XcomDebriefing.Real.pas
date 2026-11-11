@@ -17,7 +17,9 @@ uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomMod.StatString, DelphiDoom.XcomBattle.Context,
-  DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink, DelphiDoom.XcomDebriefing.Types,
+  DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomBattle.Services.Intf, DelphiDoom.XcomBattle.TileEngine, DelphiDoom.XcomBattle.Pathfinding,
+  DelphiDoom.XcomBattle.UnitConverter, DelphiDoom.XcomDebriefing.Types,
   DelphiDoom.XcomDebriefing.Debriefing, DelphiDoom.Tests.XcomBattle.RealBattle, DelphiDoom.Tests.XcomMod.RealData;
 
 type
@@ -34,6 +36,9 @@ type
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
     FRules: TXcomRulesetRules;
+    /// <summary>LOFTEMPS.DAT of the game: the tile engine of the zombie that the debriefing converts</summary>
+    FVoxels: TArray<Word>;
+    procedure LoadVoxels;
     class function DataFolder: string; static;
     class function ReadBytes(const APath: string): TBytes; static;
     class function ReadText(const APath: string): TYamlText; static;
@@ -148,6 +153,30 @@ begin
   begin
     FRuleset := FData.Load;
     FRules := TXcomRulesetRules.Create(FRuleset);
+    LoadVoxels;
+  end;
+end;
+
+procedure TTestXcomRealDebriefing.LoadVoxels;
+const
+  LOFTEMPS = 'Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT';
+var
+  LFolder: string;
+  LLevel, LIndex: Integer;
+  LBytes: TBytes;
+begin
+  LFolder := ExtractFilePath(ParamStr(0));
+  for LLevel := 0 to 8 do
+  begin
+    if FileExists(LFolder + LOFTEMPS) then
+    begin
+      LBytes := TFile.ReadAllBytes(LFolder + LOFTEMPS);
+      SetLength(FVoxels, Length(LBytes) div 2);
+      for LIndex := 0 to High(FVoxels) do
+        FVoxels[LIndex] := Word(LBytes[LIndex * 2]) or (Word(LBytes[LIndex * 2 + 1]) shl 8);
+      Exit;
+    end;
+    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
   end;
 end;
 
@@ -246,6 +275,10 @@ var
   LPost: string;
   LLine: string;
   LHead, LTail: TStringList;
+  LEngine: TXcomTileEngine;
+  LEngineRef: IXcomBattleTileEngine;
+  LPathfinder: IXcomBattlePathfinder;
+  LConverter: TFunc<TXcomBattleUnit, TXcomBattleUnit>;
 begin
   Result := '';
   LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AInputBase + '.pre.sav'));
@@ -297,7 +330,25 @@ begin
         begin
           Result := 'STR_CRAFTNAME';
         end;
-      LReport := TXcomDebriefing.Run(LGame, LBattle, FRuleset, FRules, LOptions, nil);
+      // SavedBattleGame::convertUnit for a zombie that psi-capture took: it needs the engines of the battle
+      LEngine := TXcomTileEngine.Create(LBattle, LContext, FVoxels);
+      LEngineRef := LEngine;
+      LBattle.TileEngine := LEngineRef;
+      LPathfinder := TXcomPathfinding.Create(LBattle);
+      LBattle.Pathfinder := LPathfinder;
+      LConverter :=
+        function(AUnit: TXcomBattleUnit): TXcomBattleUnit
+        var
+          LUnitConverter: TXcomUnitConverter;
+        begin
+          LUnitConverter := TXcomUnitConverter.Create(LBattle, LEngine, FRuleset, LGame.Difficulty);
+          try
+            Result := LUnitConverter.Convert(AUnit);
+          finally
+            LUnitConverter.Free;
+          end;
+        end;
+      LReport := TXcomDebriefing.Run(LGame, LBattle, FRuleset, FRules, LOptions, LConverter);
       try
         LActual := Describe(LReport, LGame, LRandom.Seed, LWithStatStrings);
         // the expected text without the lines that the port does not give (the first line, the lists, the totals)
@@ -330,6 +381,8 @@ begin
         LReport.Free;
       end;
     finally
+      LBattle.TileEngine := nil;
+      LBattle.Pathfinder := nil;
       LBattle.Free;
     end;
   finally

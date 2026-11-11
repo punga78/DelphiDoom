@@ -36,3 +36,5 @@ Schermate e collegamento:
 `Soldier::calcStatString` e' in `TXcomSoldier.CalcStatString` (`Libs\XcomSave`) e il debriefing lo richiama per i soldati che tornano.
 
 Parita' dei pixel col vero OpenXcom (risorse vere di TFTD, `debriefgen` con `DEBRIEF_PIXELS=1`): le due pagine del debriefing, `CannotReequipState`, `PromotionsState`, `ManageAlienContainmentState`, `CommendationState` e `CommendationLateState` a **0 pixel diversi** su 93 casi (569 schermate, 36,4 milioni di pixel); 5 casi sono nel repository (`Tests\Data\XcomDebriefing\pixels`). Cosa non e' confrontato: vedi CLAUDE.md.
+
+Aggiornamento (sessione "collegamenti", #176): parita' col vero `DebriefingState` anche su siti di missione, basi aliene, carri e zombie (48 casi nuovi, 0 differenze); musica del debriefing (`TXcomDebriefingState.Music`).

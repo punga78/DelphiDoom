@@ -58,7 +58,8 @@ uses
   DelphiDoom.XcomGeoscape.ConfirmDestinationState, DelphiDoom.XcomGeoscape.MultipleTargetsState,
   DelphiDoom.XcomGeoscape.TargetInfoState, DelphiDoom.XcomGeoscape.UfoDetectedState,
   DelphiDoom.XcomGeoscape.MissionDetectedState, DelphiDoom.XcomGeoscape.GeoscapeCraftState,
-  DelphiDoom.XcomGeoscape.CraftPatrolState;
+  DelphiDoom.XcomGeoscape.CraftPatrolState, DelphiDoom.XcomGeoscape.ConfirmCydoniaState,
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomGeoscape.Strategy;
 
 { TXcomGeoscapeScreens }
 
@@ -88,6 +89,17 @@ begin
     procedure(ATargets: TList<TXcomTarget>; ACraftToSend: TXcomCraft)
     begin
       OpenMultipleTargets(ATargets, ACraftToSend);
+    end,
+    procedure(ACraftToSend: TXcomCraft)
+    var
+      LMission: IXcomMissionControl;
+      LLauncher: IXcomMissionLauncher;
+    begin
+      // SelectDestinationState::btnCydoniaClick: the battle is started by the launcher that the geoscape was given
+      LLauncher := nil;
+      if Supports(FControl, IXcomMissionControl, LMission) then
+        LLauncher := LMission.MissionLauncher;
+      FHost.PushState(TXcomConfirmCydoniaState.Create(FHost, ACraftToSend, TXcomStrategy.Ruleset(FHost), LLauncher));
     end));
 end;
 

@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.MissionSite,
   DelphiDoom.XcomSave.AlienBase, DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.BaseFacility,
   DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomGeoscape.Control.Intf,
-  DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomStrategy.BaseDefense.Intf,
+  System.Generics.Collections, DelphiDoom.XcomSave.Soldier;
 
 type
   /// <summary>
@@ -23,21 +24,38 @@ type
   ///   C++ does when it notices the event) and gives it to the geoscape, which shows it and stops the time. Before a
   ///   geoscape is attached (AttachGeoscape) the events go nowhere
   /// </summary>
-  TXcomPopupGeoscapeEvents = class(TXcomNullGeoscapeEvents, IXcomGeoscapeAware)
+  TXcomPopupGeoscapeEvents = class(TXcomNullGeoscapeEvents, IXcomGeoscapeAware, IXcomBaseDefenseEvents)
   strict private
     FHost: TXcomStateHost;
     FControl: IXcomGeoscapeControl;
     FLauncher: IXcomMissionLauncher;
+    FOnMedals: TProc<TList<TXcomSoldier>>;
+    FArticleOpener: TProc<TArray<string>>;
+    function ReportOf(const AArticleIds: TArray<string>): TProc;
     procedure Show(AState: TXcomState);
     function Attached: Boolean;
+    procedure HandleBaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo);
   public
     /// <param name="AHost">The game that runs the states (not owned)</param>
     /// <param name="ALauncher">What "Yes" of the landing confirmation starts: the battle (the Battlescape's; nil: nothing)</param>
-    constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil);
+    /// <param name="AArticleOpener">What "View reports" of a finished research opens: the Ufopaedia articles with these ids, in order (nil: nothing)</param>
+    constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil;
+      const AArticleOpener: TProc<TArray<string>> = nil);
     property Launcher: IXcomMissionLauncher read FLauncher write FLauncher;
+    /// <summary>
+    ///   Shows the soldiers that the month of service gave a medal to (CommendationState, of another library); nil:
+    ///   the medals of the end of the month are not awarded
+    /// </summary>
+    property OnMedals: TProc<TList<TXcomSoldier>> read FOnMedals write FOnMedals;
     procedure AttachGeoscape(const AControl: IXcomGeoscapeControl);
     procedure UfoDetected(const AUfo: TXcomUfo; AHyperDetected: Boolean); override;
     procedure UfoLost(const AUfo: TXcomUfo); override;
+    /// <summary>
+    ///   The UFO loop of GeoscapeState::time5Seconds for a UFO that reached a base: BaseDefenseState when the base
+    ///   has defenses (True), else handleBaseDefense at once (False). Without a geoscape the UFO is destroyed and
+    ///   nothing else happens
+    /// </summary>
+    function BaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo): Boolean;
     procedure MissionDetected(const ASite: TXcomMissionSite); override;
     procedure CraftNeedsOrders(const ACraft: TXcomCraft; const AWaypoint: TXcomWaypoint); override;
     procedure DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo); override;
@@ -74,21 +92,128 @@ uses
   DelphiDoom.XcomGeoscape.NewPossibleManufactureState, DelphiDoom.XcomGeoscape.ResearchRequiredState,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.MonthlyReportState,
   DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleResearch,
-  DelphiDoom.XcomMod.RuleItem, System.Generics.Collections, DelphiDoom.XcomMenu.ErrorMessageState,
-  DelphiDoom.XcomMenu.OptionsTypes;
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomSave.RulesetDiaryRules, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomGeoscape.BaseDefenseState,
+  DelphiDoom.XcomGeoscape.BaseDestroyedState;
 
 { TXcomPopupGeoscapeEvents }
 
-constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher);
+constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher;
+  const AArticleOpener: TProc<TArray<string>>);
 begin
   inherited Create;
   FHost := AHost;
   FLauncher := ALauncher;
+  FArticleOpener := AArticleOpener;
+end;
+
+function TXcomPopupGeoscapeEvents.ReportOf(const AArticleIds: TArray<string>): TProc;
+var
+  LOpener: TProc<TArray<string>>;
+  LIds: TArray<string>;
+begin
+  Result := nil;
+  if not Assigned(FArticleOpener) then
+    Exit;
+  // the popup can outlive these events: it holds the opener and the ids, not Self
+  LOpener := FArticleOpener;
+  LIds := AArticleIds;
+  Result :=
+    procedure
+    begin
+      LOpener(LIds);
+    end;
 end;
 
 procedure TXcomPopupGeoscapeEvents.AttachGeoscape(const AControl: IXcomGeoscapeControl);
+var
+  LMission: IXcomMissionControl;
 begin
   FControl := AControl;
+  // the screens over the globe start the last mission with the same launcher
+  if Supports(AControl, IXcomMissionControl, LMission) then
+    LMission.SetMissionLauncher(FLauncher);
+end;
+
+function TXcomPopupGeoscapeEvents.BaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo): Boolean;
+var
+  LRuleset: TXcomRuleset;
+  LFacility: TXcomBaseFacility;
+  LRule: TXcomRuleBaseFacility;
+  LDefenses: TArray<TXcomRuleBaseFacility>;
+  LGravShields: Integer;
+begin
+  Result := False;
+  if not Attached then
+  begin
+    AUfo.Status := TXcomUfo.STATUS_DESTROYED;
+    Exit;
+  end;
+  // Base::setupDefenses and getGravShields: the facilities that are built
+  LRuleset := TXcomStrategy.Ruleset(FHost);
+  LDefenses := nil;
+  LGravShields := 0;
+  for LFacility in ABase.Facilities do
+  begin
+    LRule := LRuleset.Facilities.Find(LFacility.Rules.FacilityType);
+    if (LFacility.BuildTime <> 0) or not Assigned(LRule) then
+      Continue;
+    if LRule.DefenseValue <> 0 then
+      LDefenses := LDefenses + [LRule];
+    if LRule.IsGravShield then
+      Inc(LGravShields);
+  end;
+  FControl.TimerReset;
+  if Length(LDefenses) > 0 then
+  begin
+    Show(TXcomBaseDefenseState.Create(FHost, ABase, AUfo, LDefenses, LGravShields, TXcomStrategy.Random(FHost),
+      procedure
+      begin
+        HandleBaseDefense(ABase, AUfo);
+      end));
+    Result := True;
+  end
+  else
+    HandleBaseDefense(ABase, AUfo);
+end;
+
+procedure TXcomPopupGeoscapeEvents.HandleBaseDefense(const ABase: TXcomBase; const AUfo: TXcomUfo);
+var
+  LRequest: TXcomMissionRequest;
+  LCraft: TXcomCraft;
+  LVehicles: Boolean;
+  LControl: IXcomDogfightControl;
+begin
+  // whatever happens in the base defense, the UFO has finished its duty
+  AUfo.Status := TXcomUfo.STATUS_DESTROYED;
+  // Base::getVehicles of the C++ after setupDefenses: here the vehicles of the crafts that are in the base
+  LVehicles := False;
+  for LCraft in ABase.Crafts do
+    if (LCraft.Status <> 'STR_OUT') and (LCraft.NumVehicles > 0) then
+      LVehicles := True;
+  if (ABase.AvailableSoldiers(True) > 0) or LVehicles then
+  begin
+    // without a launcher (the battle is another library's) the attack ends here and the base stays
+    if not Assigned(FLauncher) then
+      Exit;
+    LRequest := Default(TXcomMissionRequest);
+    LRequest.MissionType := 'STR_BASE_DEFENSE';
+    LRequest.Base := ABase;
+    LRequest.AlienRace := AUfo.AlienRace;
+    LRequest.WorldTexture := -1;
+    FLauncher.BeginMission(LRequest);
+  end
+  else if Attached then
+  begin
+    // please garrison your bases in future
+    Supports(FControl, IXcomDogfightControl, LControl);
+    Show(TXcomBaseDestroyedState.Create(FHost, TXcomStrategy.SavedGame(FHost), ABase,
+      procedure(AUfoToRemove: TXcomUfo)
+      begin
+        if Assigned(LControl) then
+          LControl.UfoRemoving(AUfoToRemove);
+      end));
+  end;
 end;
 
 function TXcomPopupGeoscapeEvents.Attached: Boolean;
@@ -251,7 +376,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.ResearchFinished(const ABase: TXcomBase; const AResearchName: string);
 begin
   if Attached then
-    Show(TXcomResearchCompleteState.Create(FHost, AResearchName, nil));
+    Show(TXcomResearchCompleteState.Create(FHost, AResearchName, ReportOf([AResearchName])));
 end;
 
 procedure TXcomPopupGeoscapeEvents.ResearchCompleted(const ABase: TXcomBase; const AOutcome: TXcomResearchOutcome);
@@ -267,7 +392,15 @@ begin
     Exit;
   LRuleset := TXcomStrategy.Ruleset(FHost);
   // the cutscenes (research and bonus) are not ported
-  Show(TXcomResearchCompleteState.Create(FHost, AOutcome.Research.Name, nil));
+  // ResearchCompleteState::btnReportClick: the article of the bonus, then the one of the research over it
+  LNames := [AOutcome.Research.Name];
+  if AOutcome.Research.Lookup <> '' then
+    LNames := [AOutcome.Research.Lookup];
+  if Assigned(AOutcome.Bonus) and (AOutcome.Bonus.Lookup <> '') then
+    LNames := [AOutcome.Bonus.Lookup] + LNames
+  else if Assigned(AOutcome.Bonus) then
+    LNames := [AOutcome.Bonus.Name] + LNames;
+  Show(TXcomResearchCompleteState.Create(FHost, AOutcome.Research.Name, ReportOf(LNames)));
   FControl.TimerReset;
   if AOutcome.WeaponNeedingAmmo <> '' then
   begin
@@ -294,6 +427,7 @@ end;
 procedure TXcomPopupGeoscapeEvents.MonthlyReport(APsiTraining: Boolean);
 var
   LReport: TXcomMonthlyReport;
+  LState: TXcomMonthlyReportState;
 begin
   if not Attached then
     Exit;
@@ -302,7 +436,10 @@ begin
   LReport := TXcomMonthlyReport.Create(TXcomStrategy.SavedGame(FHost), TXcomStrategy.Ruleset(FHost),
     TXcomStrategy.Random(FHost));
   try
-    Show(TXcomMonthlyReportState.Create(FHost, LReport.Calculate, APsiTraining, FControl));
+    LState := TXcomMonthlyReportState.Create(FHost, LReport.Calculate, APsiTraining, FControl);
+    if Assigned(FOnMedals) then
+      LState.SetMedals(TXcomRulesetDiaryRules.Create(TXcomStrategy.Ruleset(FHost)), FOnMedals);
+    Show(LState);
   finally
     LReport.Free;
   end;
