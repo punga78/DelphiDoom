@@ -161,6 +161,10 @@ type
     property Map: TXcomMapWidget read FMap;
     property Icons: TXcomInteractiveSurface read FIcons;
     property WarningMessage: TXcomWarningMessage read FWarning;
+    /// <summary>The button that launches the guided missile (shown with the first waypoint)</summary>
+    property LaunchButton: TXcomBattlescapeButton read FBtnLaunch;
+    /// <summary>The button of the psionic attack of a unit with a built-in psi weapon</summary>
+    property PsiButton: TXcomBattlescapeButton read FBtnPsi;
     /// <summary>finishBattle was called: the debriefing took the place of this screen</summary>
     property Finished: Boolean read FFinished;
     // IXcomBattleView

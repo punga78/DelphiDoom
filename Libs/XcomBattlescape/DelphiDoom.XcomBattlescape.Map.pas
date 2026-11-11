@@ -1439,6 +1439,7 @@ var
   LVoxel: TXcomPosition;
   LScreen: TXcomPosition;
   LSet: string;
+  LBullets: TXcomSurfaceSet;
   LIndex: Integer;
   LEnd: Integer;
   LDirection: Integer;
@@ -1494,9 +1495,13 @@ begin
       LEnd := -1;
       LDirection := -1;
     end;
+    // the set comes from the extra sprites of the rules: a game without it shows no bullet
+    LBullets := FSprites.SurfaceSet(LSet);
+    if not Assigned(LBullets) then
+      Exit;
     while LIndex <> LEnd do
     begin
-      LFrame := FSprites.SurfaceSet(LSet).GetFrame(FProjectile.GetParticle(LIndex));
+      LFrame := LBullets.GetFrame(FProjectile.GetParticle(LIndex));
       if Assigned(LFrame) then
       begin
         // draw shadow on the floor
