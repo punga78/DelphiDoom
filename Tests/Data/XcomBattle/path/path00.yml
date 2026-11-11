@@ -1,0 +1,141 @@
+width: 10
+length: 10
+height: 1
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - CRYPT3
+  - PORT02
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 100
+binTiles: AAAAACQA//8UAP//AQD//wEA//8AAAABAAAAJAAXAP////8BAAEA/////wAAAAIAAAAkAP//AgD//wEA//8BAP//AAAAAwAAACEA////////AQD///////8AAAAEAAAAHgD//xEA//8BAP//AQD//wAAAAUAAAAhAP//GwBCAAEA//8BAAEACQAABgAAACQA/////wgAAQD/////AAAAAAAHAAAAIAAFAAMACgABAAAAAQABAAAAAAgAAAAeAP////8nAAEA/////wEAAAAACQAAAB8A/////wsAAQD/////AQAAAAAKAAAAHwD//xwA//8BAP//AQD//wAAAAsAAAAkAP//GwAvAAEA//8BAAEAAAAADAAAACQAIgD/////AQABAP////8AAAANAAAAJAD///////8BAP///////wAAAA4AAAAgAP///////wEA////////AAAADwAAACAA////////AQD///////8AAAAQAAAAIAAPAP////8BAAEA/////wAAABEAAAAkAP///////wEA////////AAAAEgAAAB8A////////AQD///////8AAAATAAAAIAD/////NgABAP////8BAAAAABQAAAAgAP//BQD//wEA//8BAP//AAAAFQAAACAA//8DAP//AQD//wEA//8AAAAWAAAAHwD/////CgABAP////8AAAAAABcAAAAfAP///////wEA////////AAAAGAAAAB4AGgD/////AQABAP////8AAAAZAAAAIAD/////LAABAP////8BAAAAABoAAAAkAP///////wEA////////AAAAGwAAACEABQD/////AQAAAP////8AAAAcAAAAIQAaAP////8BAAEA/////wAAAB0AAAAfAP///////wEA////////AAAAHgAAACQA////////AQD///////8AAAAfAAAAIAD//yMA//8BAP//AQD//wAAACAAAAAkAP///////wEA////////AAAAIQAAACAA////////AQD///////8AAAAiAAAAIQD//wYAQQABAP//AAABAAAAACMAAAAkAP////8rAAEA/////wEAAAAAJAAAACQAFwD/////AQABAP////8AAAAlAAAAJAD//xQA//8BAP//AQD//wAAACYAAAAgAP////86AAEA/////wEAAAAAJwAAAB4AFgD/////AQABAP////8AAAAoAAAAIAD///////8BAP///////wAAACkAAAAgAP////8LAAEA/////wAAAAAAKgAAACEA//8OAP//AQD//wEA//8AAAArAAAAIAD///////8BAP///////wAAACwAAAAgAP///////wEA////////AAAALQAAAB8AHQD/////AQABAP////8AAAAuAAAAIAD///////8BAP///////wAAAC8AAAAkAP///////wEA////////AAAAMAAAACAAAwBLAP//AQAAAAEA//8AAAAxAAAAIQD//wIA//8BAP//AQD//wAAADIAAAAkAP//BwBBAAEA//8BAAEAAAAAMwAAACAA////////AQD///////8AAAA0AAAAHwD///////8BAP///////wAAADUAAAAfAP///////wEA////////AAAANgAAACAA//8YAP//AQD//wEA//8AAAA3AAAAIQAZAP////8BAAEA/////wAAADgAAAAkAP///////wEA////////AAAAOQAAAB8A////////AQD///////8AAAA6AAAAIQD/////MgABAP////8BAAAAADsAAAAfAP///////wEA////////BgAAPAAAAB4A////////AQD///////8AAAA9AAAAJAD///////8BAP///////wAAAD4AAAAhAB0A/////wEAAQD/////AAAAPwAAACAA/////zYAAQD/////AQAAAABAAAAAHwD///////8BAP///////wAAAEEAAAAgAP//BgD//wEA//8AAP//AAAAQgAAAB8A////////AQD///////8AAABDAAAAJAD///////8BAP///////wAAAEQAAAAgAP////82AAEA/////wEAAAAARQAAAB4A////////AQD///////8AAABGAAAAHgD/////QQABAP////8BAAAAAEcAAAAgAAQA//80AAEAAQD//wEAAAAASAAAACEA////////AQD///////8AAABJAAAAIAD//xEA//8BAP//AQD//wAAAEoAAAAfACIA//8oAAEAAQD//wEAAAAASwAAACQA//8YAP//AQD//wEA//8AAABMAAAAHwD/////RQABAP////8BAAAAAE0AAAAkAP////84AAEA/////wEAAAAATgAAACQA////////AQD///////8AAABPAAAAJAD///////8BAP///////wAAAFAAAAAkAP//BwAEAAEA//8BAAAAAAAAUQAAAB4AAwBMAP//AQAAAAEA//8AAABSAAAAHwD/////QAABAP////8BAAAAAFMAAAAgAP///////wEA////////AAAAVAAAACQAEAD//0gAAQABAP//AQAAAABVAAAAJAD/////RQABAP////8BAAAAAFYAAAAfAP////80AAEA/////wEAAAAAVwAAAB8A/////wAAAQD/////AAAAAABYAAAAIAD///////8BAP///////wAAAFkAAAAhAP///////wEA////////AAAAWgAAACAA////////AQD///////8AAABbAAAAJAD/////KAABAP////8BAAAAAFwAAAAeAP//FQD//wEA//8BAP//AAAAXQAAACAABQD//zAAAQAAAP//AQAAAABeAAAAHwD///////8BAP///////wAAAF8AAAAfAP///////wEA////////AAAAYAAAACAA//8jAP//AQD//wEA//8AAABhAAAAIQD///////8BAP///////wAAAGIAAAAgAP///////wEA////////AAAAYwAAAB8A////////AQD///////8AAAA=
+units:
+  - id: 1000000
+    genUnitType: STR_COELACANTH_GAS_CANNON
+    genUnitArmor: COELACANTH_ARMOR
+    faction: 1
+    status: 0
+    position:
+      - 4
+      - 0
+      - 0
+    direction: 5
+    directionTurret: 5
+    tu: 70
+    health: 90
+    stunlevel: 0
+    energy: 100
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 36
+      - 30
+      - 30
+      - 24
+      - 24
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 1
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_GILLMAN_SOLDIER
+    genUnitArmor: GILLMAN_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 9
+      - 4
+      - 0
+    direction: 5
+    directionTurret: 5
+    tu: 40
+    health: 45
+    stunlevel: 0
+    energy: 80
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 15
+      - 12
+      - 12
+      - 14
+      - 12
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 3
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 3
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20

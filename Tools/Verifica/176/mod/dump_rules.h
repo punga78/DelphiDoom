@@ -111,6 +111,94 @@ static void DumpTerrains(Mod* m) {
   for (auto& p : m->_terrains) { Begin("terrains", p.first); DumpTerrainBody(p.second); }
 }
 
+// The picks of the mission scripts and map scripts with the generator of the game seeded with 176. Both sides make the
+// same calls in the same order. Calls that the C++ leaves undefined (no weights for the month) are not made
+static bool HasWeightAtOrBefore(const std::vector<std::pair<size_t, WeightedOptions*> >& v, size_t month) {
+  for (size_t i = 0; i < v.size(); i++) if (v[i].first <= month) return true;
+  return false;
+}
+static void DumpPicks(Mod* m) {
+  RNG::setSeed(176);
+  static const int months[] = {0, 1, 5, 12, 24, 48};
+  static const int typeMonths[] = {-3, 0, 7, 30};
+  for (auto& p : m->_missionScripts) {
+    RuleMissionScript* r = p.second;
+    Begin("picks", "mission|" + p.first);
+    for (int t = 0; t < 3; t++) {
+      const std::vector<std::pair<size_t, WeightedOptions*> >& v = t == 0 ? r->_regionWeights : (t == 1 ? r->_missionWeights : r->_raceWeights);
+      if (v.empty()) continue;
+      for (int mo : months) {
+        if (!HasWeightAtOrBefore(v, (size_t)mo)) continue;
+        Line(("gen" + std::to_string(t) + "_" + std::to_string(mo)).c_str(), V(r->generate((size_t)mo, (GenerationType)t)));
+      }
+    }
+    for (int mo : typeMonths) {
+      if (!r->_missionWeights.empty()) Line(("types" + std::to_string(mo)).c_str(), V(r->getMissionTypes(mo)));
+      if (!r->_regionWeights.empty()) Line(("regions" + std::to_string(mo)).c_str(), V(r->getRegions(mo)));
+    }
+  }
+  for (auto& p : m->_mapScripts) {
+    RuleTerrain* terrain = 0;
+    for (auto& t : m->_terrains) if (t.second->_script == p.first) { terrain = t.second; break; }
+    for (size_t i = 0; i < p.second.size(); i++) {
+      MapScript* c = p.second[i];
+      Begin("picks", "map|" + p.first + "|" + std::to_string(i));
+      c->init();
+      std::vector<int> groups, blocks;
+      for (int k = 0; k < 6; k++) groups.push_back(c->getGroupNumber());
+      c->init();
+      for (int k = 0; k < 6; k++) blocks.push_back(c->getBlockNumber());
+      Line("groups", V(groups));
+      Line("blocks", V(blocks));
+      if (terrain) {
+        c->init();
+        std::string names = "[";
+        for (int k = 0; k < 4; k++) {
+          MapBlock* b = c->getNextBlock(terrain);
+          names += (k ? "," : "") + V(b ? b->getName() : std::string("0"));
+        }
+        Line("next", names + "]");
+      }
+    }
+  }
+}
+
+// loadData of every set (MapDataSet::loadData with the patch of the mods): one hash of all the parts of a set and the
+// first and last parts in full. FNV-1a 64 over the ints of every part in a fixed order
+static void DumpMapData(Mod* m) {
+  for (auto& p : m->_mapDataSets) {
+    MapDataSet* s = p.second;
+    Begin("mapData", p.first);
+    std::string error;
+    try { s->loadData(m->getMCDPatch(p.first)); } catch (Exception& e) { error = e.what(); }
+    // the sprites (PCK and TAB) are not ported: their errors are not compared
+    if (error.find("MCD") == std::string::npos) error = "";
+    F("size", s->_objects.size());
+    Line("error", V(error));
+    unsigned long long h = 14695981039346656037ULL;
+    auto mix = [&h](int v) { unsigned char b[4]; memcpy(b, &v, 4); for (int k = 0; k < 4; k++) { h ^= b[k]; h *= 1099511628211ULL; } };
+    for (size_t i = 0; i < s->_objects.size(); i++) {
+      MapData* d = s->_objects[i];
+      std::string t;
+      auto add = [&](int v) { mix(v); t += (t.empty() ? "" : ",") + std::to_string(v); };
+      for (int k = 0; k < 8; k++) add(d->getSprite(k));
+      add(d->getYOffset()); add((int)d->getSpecialType()); add((int)d->getObjectType());
+      add(d->_TUWalk); add(d->_TUFly); add(d->_TUSlide);
+      add(d->isUFODoor()); add(d->_stopLOS); add(d->isNoFloor()); add(d->isGravLift()); add(d->isDoor()); add(d->_blockFire); add(d->_blockSmoke); add(d->isBaseModule());
+      add(d->getBigWall()); add(d->getTerrainLevel()); add(d->getFootstepSound()); add(d->getAltMCD()); add(d->getDieMCD());
+      add(d->_lightSource); add(d->getLightSource()); add(d->getArmor()); add(d->getFlammable()); add(d->getFuel());
+      add(d->getExplosive()); add(d->getExplosiveType()); add((int)d->getMiniMapIndex());
+      for (int k = 0; k < 6; k++) add(d->_block[k]);
+      for (int k = 0; k < 12; k++) add(d->getLoftID(k));
+      for (int k = 0; k < 10; k++) add(d->getBlock((ItemDamageType)k));
+      for (int k = 0; k < 5; k++) add(d->getTUCost((MovementType)k));
+      if (i < 2 || i + 2 >= s->_objects.size()) Line(("part" + std::to_string(i)).c_str(), t);
+    }
+    char hb[32]; snprintf(hb, sizeof hb, "%016llX", h); Line("hash", hb);
+    F("blank", s->getName() == "BLANKS" && s->_objects.size() > 0 ? 1 : 0);
+  }
+}
+
 static void DumpMapDataSets(Mod* m) {
   for (auto& p : m->_mapDataSets) { Begin("mapDataSets", p.first); F("name", p.second->_name); }
 }
@@ -355,6 +443,58 @@ static void DumpInterfacesEtc(Mod* m) {
       Line(("slide" + std::to_string(i)).c_str(), V(s.imagePath) + "," + V(s.caption) + "," + V(s.w) + "," + V(s.h) + "," + V(s.x) + "," + V(s.y) + "," + V(s.color) + "," + V((int)s.align) + "," + V(s.transitionSeconds));
     }
   }
+  RuleGlobe* gl = m->_globe;
+  Begin("globe", "data");
+  {
+    // FNV-1a 64 over the points of every polygon (count, texture, longitudes and latitudes as bits)
+    unsigned long long h = 14695981039346656037ULL;
+    auto mix = [&h](const void* p, size_t n) { const unsigned char* b = (const unsigned char*)p; for (size_t k = 0; k < n; k++) { h ^= b[k]; h *= 1099511628211ULL; } };
+    size_t first = 0;
+    for (std::list<Polygon*>::iterator i = gl->_polygons.begin(); i != gl->_polygons.end(); ++i, first++) {
+      Polygon* pg = *i;
+      int pts = pg->_points, tex = pg->_texture;
+      mix(&pts, 4); mix(&tex, 4);
+      for (int k = 0; k < pts; k++) { mix(&pg->_lon[k], 8); mix(&pg->_lat[k], 8); }
+      if (first < 3 || first + 3 >= gl->_polygons.size()) {
+        std::string t = V(pts) + "," + V(tex);
+        for (int k = 0; k < pts; k++) t += "," + V(pg->_lon[k]) + "," + V(pg->_lat[k]);
+        Line(("polygon" + std::to_string(first)).c_str(), t);
+      }
+    }
+    F("polygons", gl->_polygons.size());
+    char hb[32]; snprintf(hb, sizeof hb, "%016llX", h); Line("polygonHash", hb);
+    h = 14695981039346656037ULL;
+    for (std::list<Polyline*>::iterator i = gl->_polylines.begin(); i != gl->_polylines.end(); ++i) {
+      Polyline* pl = *i;
+      int pts = pl->_points;
+      mix(&pts, 4);
+      for (int k = 0; k < pts; k++) { mix(&pl->_lon[k], 8); mix(&pl->_lat[k], 8); }
+    }
+    F("polylines", gl->_polylines.size());
+    snprintf(hb, sizeof hb, "%016llX", h); Line("polylineHash", hb);
+  }
+  F("countryColor", (int)Globe::COUNTRY_LABEL_COLOR); F("cityColor", (int)Globe::CITY_LABEL_COLOR);
+  F("baseColor", (int)Globe::BASE_LABEL_COLOR); F("lineColor", (int)Globe::LINE_COLOR);
+  F("oceanColor", (int)Globe::OCEAN_COLOR); F("oceanShading", Globe::OCEAN_SHADING);
+  for (std::map<int, Texture*>::iterator i = gl->_textures.begin(); i != gl->_textures.end(); ++i) {
+    Texture* t = i->second;
+    Begin("textures", std::to_string(i->first));
+    F("id", t->_id); F("deployments", t->_deployments);
+    Line("count", V((int)t->_terrain.size()));
+    for (size_t k = 0; k < t->_terrain.size(); k++) {
+      TerrainCriteria& c = t->_terrain[k];
+      Line(("t" + std::to_string(k)).c_str(), V(c.name) + "," + V(c.weight) + "," + V(c.lonMin) + "," + V(c.lonMax) + "," + V(c.latMin) + "," + V(c.latMax));
+    }
+  }
+  {
+    // getTerrains("") and the terrains of every deployment of the textures
+    std::set<std::string> names;
+    for (std::map<int, Texture*>::iterator i = gl->_textures.begin(); i != gl->_textures.end(); ++i)
+      for (std::map<std::string, int>::const_iterator d = i->second->_deployments.begin(); d != i->second->_deployments.end(); ++d) names.insert(d->first);
+    Begin("globeTerrains", "all");
+    Line("none", V(gl->getTerrains("")));
+    for (std::set<std::string>::iterator n = names.begin(); n != names.end(); ++n) Line(("d_" + Esc(*n)).c_str(), V(gl->getTerrains(*n)));
+  }
   RuleConverter* c = m->_converter;
   Begin("converter", "data");
   F("offsets", c->_offsets); F("markers", c->_markers); F("countries", c->_countries); F("regions", c->_regions);
@@ -474,6 +614,8 @@ static void DumpAll(Mod* m, const std::set<std::string>& only) {
   if (Wanted("invs")) DumpInventories(m);
   if (Wanted("terrains")) DumpTerrains(m);
   if (Wanted("mapDataSets")) DumpMapDataSets(m);
+  if (Wanted("mapData")) DumpMapData(m);
+  if (Wanted("picks")) DumpPicks(m);
   if (Wanted("armors")) DumpArmors(m);
   if (Wanted("soldiers")) DumpSoldiers(m);
   if (Wanted("units")) DumpUnits(m);

@@ -19,6 +19,15 @@ type
     X: Integer;
     Y: Integer;
     Z: Integer;
+    /// <summary>Position(x, y, z)</summary>
+    class function Make(AX, AY, AZ: Integer): TXcomPosition; static; inline;
+    /// <summary>operator+ and operator- of Position</summary>
+    class operator Add(const ALeft, ARight: TXcomPosition): TXcomPosition;
+    class operator Subtract(const ALeft, ARight: TXcomPosition): TXcomPosition;
+    /// <summary>operator/(int): each coordinate divided like a C++ int (towards zero)</summary>
+    class operator IntDivide(const ALeft: TXcomPosition; ADivisor: Integer): TXcomPosition;
+    class operator Equal(const ALeft, ARight: TXcomPosition): Boolean;
+    class operator NotEqual(const ALeft, ARight: TXcomPosition): Boolean;
   end;
 
   /// <summary>
@@ -55,6 +64,40 @@ type
   end;
 
 implementation
+
+{ TXcomPosition }
+
+class function TXcomPosition.Make(AX, AY, AZ: Integer): TXcomPosition;
+begin
+  Result.X := AX;
+  Result.Y := AY;
+  Result.Z := AZ;
+end;
+
+class operator TXcomPosition.Add(const ALeft, ARight: TXcomPosition): TXcomPosition;
+begin
+  Result := Make(ALeft.X + ARight.X, ALeft.Y + ARight.Y, ALeft.Z + ARight.Z);
+end;
+
+class operator TXcomPosition.Subtract(const ALeft, ARight: TXcomPosition): TXcomPosition;
+begin
+  Result := Make(ALeft.X - ARight.X, ALeft.Y - ARight.Y, ALeft.Z - ARight.Z);
+end;
+
+class operator TXcomPosition.IntDivide(const ALeft: TXcomPosition; ADivisor: Integer): TXcomPosition;
+begin
+  Result := Make(ALeft.X div ADivisor, ALeft.Y div ADivisor, ALeft.Z div ADivisor);
+end;
+
+class operator TXcomPosition.Equal(const ALeft, ARight: TXcomPosition): Boolean;
+begin
+  Result := (ALeft.X = ARight.X) and (ALeft.Y = ARight.Y) and (ALeft.Z = ARight.Z);
+end;
+
+class operator TXcomPosition.NotEqual(const ALeft, ARight: TXcomPosition): Boolean;
+begin
+  Result := not (ALeft = ARight);
+end;
 
 { TXcomMapBlock }
 

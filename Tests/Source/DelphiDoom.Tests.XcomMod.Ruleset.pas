@@ -27,6 +27,7 @@ type
   TXcomMemoryFiles = class(TInterfacedObject, IYamlFileSource, IXcomModFiles)
   strict private
     FFiles: TDictionary<string, string>;
+    FBinary: TDictionary<string, TBytes>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -34,6 +35,8 @@ type
     function TryReadAllBytes(const AFileName: string; out ABytes: TBytes): Boolean;
     function FolderContents(const AVirtualFolder: string): TArray<string>;
     function LoadYaml(const AVirtualFile: string): IYamlNode;
+    function LoadBytes(const AVirtualFile: string): TBytes;
+    procedure AddBytes(const AName: string; const ABytes: TBytes);
   end;
 
   [TestFixture]
@@ -124,10 +127,12 @@ constructor TXcomMemoryFiles.Create;
 begin
   inherited Create;
   FFiles := TDictionary<string, string>.Create;
+  FBinary := TDictionary<string, TBytes>.Create;
 end;
 
 destructor TXcomMemoryFiles.Destroy;
 begin
+  FBinary.Free;
   FFiles.Free;
   inherited Destroy;
 end;
@@ -160,6 +165,17 @@ begin
   finally
     LList.Free;
   end;
+end;
+
+procedure TXcomMemoryFiles.AddBytes(const AName: string; const ABytes: TBytes);
+begin
+  FBinary.AddOrSetValue(AName, ABytes);
+end;
+
+function TXcomMemoryFiles.LoadBytes(const AVirtualFile: string): TBytes;
+begin
+  if not FBinary.TryGetValue(AVirtualFile, Result) then
+    raise EXcomModException.CreateFmt('File %s not found', [AVirtualFile]);
 end;
 
 function TXcomMemoryFiles.LoadYaml(const AVirtualFile: string): IYamlNode;

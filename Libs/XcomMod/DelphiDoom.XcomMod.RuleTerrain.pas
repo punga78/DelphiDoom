@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.NodeReader,
   DelphiDoom.XcomMod.ModOffsets, DelphiDoom.XcomMod.RuleRegistry, DelphiDoom.XcomMod.MapDataSet,
-  DelphiDoom.XcomMod.MapBlock;
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Random;
 
 type
   /// <summary>
@@ -40,6 +40,14 @@ type
     /// </summary>
     procedure Load(const ANode: IYamlNode; const AOffsets: TXcomModOffsets;
       const AMapDataSets: TXcomRuleRegistry<TXcomMapDataSet>);
+    /// <summary>
+    ///   getRandomMapBlock: a block at random among those of the right size (an exact size, or smaller if
+    ///   AForce is false; the C++ default is true) that are in the group; nil if there is none
+    /// </summary>
+    function GetRandomMapBlock(AMaxSizeX, AMaxSizeY, AGroup: Integer; const ARandom: IXcomRandom;
+      AForce: Boolean = True): TXcomMapBlock;
+    /// <summary>getMapBlock: a block by name; nil if there is none</summary>
+    function GetMapBlock(const AName: string): TXcomMapBlock;
     property Name: string read FName;
     property Script: string read FScript;
     property MapDataSets: TList<TXcomMapDataSet> read FMapDataSets;
@@ -53,6 +61,36 @@ type
   end;
 
 implementation
+
+function TXcomRuleTerrain.GetRandomMapBlock(AMaxSizeX, AMaxSizeY, AGroup: Integer; const ARandom: IXcomRandom;
+  AForce: Boolean): TXcomMapBlock;
+var
+  LBlock: TXcomMapBlock;
+  LCompliant: TList<TXcomMapBlock>;
+begin
+  LCompliant := TList<TXcomMapBlock>.Create;
+  try
+    for LBlock in FMapBlocks do
+      if ((LBlock.SizeX = AMaxSizeX) or (not AForce and (LBlock.SizeX < AMaxSizeX))) and
+        ((LBlock.SizeY = AMaxSizeY) or (not AForce and (LBlock.SizeY < AMaxSizeY))) and LBlock.IsInGroup(AGroup) then
+        LCompliant.Add(LBlock);
+    if LCompliant.Count = 0 then
+      Exit(nil);
+    Result := LCompliant[ARandom.Generate(0, LCompliant.Count - 1)];
+  finally
+    LCompliant.Free;
+  end;
+end;
+
+function TXcomRuleTerrain.GetMapBlock(const AName: string): TXcomMapBlock;
+var
+  LBlock: TXcomMapBlock;
+begin
+  for LBlock in FMapBlocks do
+    if LBlock.Name = AName then
+      Exit(LBlock);
+  Result := nil;
+end;
 
 const
   /// <summary>The default of ambientVolume (0.5)</summary>

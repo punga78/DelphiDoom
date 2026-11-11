@@ -57,6 +57,8 @@ type
     class function TextOf(const ANode: IYamlNode): string; static;
     /// <summary>as&lt;std::vector&lt;int&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
     class function IntegersOf(const ANode: IYamlNode): TArray<Integer>; static;
+    /// <summary>as&lt;std::vector&lt;double&gt;&gt;() of a node, without a fallback: a node that is not a sequence raises</summary>
+    class function DoublesOf(const ANode: IYamlNode): TArray<Double>; static;
     /// <summary>as&lt;std::vector&lt;std::string&gt;&gt;() of a node, without a fallback</summary>
     class function StringsOf(const ANode: IYamlNode): TArray<string>; static;
     /// <summary>as&lt;std::vector&lt;int&gt;&gt;(fallback) of a field</summary>
@@ -96,6 +98,19 @@ begin
   SetLength(Result, Length(LItems));
   for LIndex := 0 to High(LItems) do
     Result[LIndex] := LItems[LIndex].AsInteger;
+end;
+
+class function TXcomNodeReader.DoublesOf(const ANode: IYamlNode): TArray<Double>;
+var
+  LItems: TArray<IYamlNode>;
+  LIndex: Integer;
+begin
+  if not ANode.IsSequence then
+    raise BadConversion(ANode);
+  LItems := ANode.Items;
+  SetLength(Result, Length(LItems));
+  for LIndex := 0 to High(LItems) do
+    Result[LIndex] := LItems[LIndex].AsDouble;
 end;
 
 class function TXcomNodeReader.StringsOf(const ANode: IYamlNode): TArray<string>;

@@ -17,7 +17,8 @@ uses
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
-  DelphiDoom.XcomEngine.SaveCatalog.Intf;
+  DelphiDoom.XcomEngine.SaveCatalog.Intf,
+DelphiDoom.XcomEngine.Session.Intf;
 
 type
   TXcomState = class;
@@ -62,6 +63,14 @@ type
     function SaveCatalog: IXcomSaveCatalog; virtual;
     /// <summary>CrossPlatform::openExplorer: shows a folder (does nothing when the host has no opener)</summary>
     procedure OpenFolder(const APath: string); virtual;
+    /// <summary>What starts a new game when the difficulty is chosen (nil: the menu does nothing)</summary>
+    function NewGameStarter: IXcomNewGameStarter; virtual;
+    /// <summary>
+    ///   The saved game and what the strategy screens share (Game::getSavedGame): an object of the geoscape
+    ///   library that the game keeps alive (nil before a game starts)
+    /// </summary>
+    function Session: IInterface; virtual;
+    procedure SetSession(const ASession: IInterface); virtual;
   end;
 
   /// <summary>
@@ -165,6 +174,20 @@ end;
 function TXcomStateHost.CurrentMusicFormat: string;
 begin
   Result := 'Adlib';
+end;
+
+function TXcomStateHost.NewGameStarter: IXcomNewGameStarter;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.Session: IInterface;
+begin
+  Result := nil;
+end;
+
+procedure TXcomStateHost.SetSession(const ASession: IInterface);
+begin
 end;
 
 { TXcomState }

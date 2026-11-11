@@ -32,6 +32,10 @@ type
     procedure DumpExtras;
     procedure DumpInterfaces;
     procedure DumpVideos;
+    class procedure Mix(var AHash: UInt64; const AData; ASize: Integer); static;
+    procedure DumpGlobe;
+    procedure DumpMapData;
+    procedure DumpPicks;
     procedure DumpConverter;
     procedure DumpConstants;
     procedure DumpSettings;
@@ -49,7 +53,11 @@ uses
   DelphiDoom.XcomMod.ArticleDefinition, DelphiDoom.XcomMod.MapScript, DelphiDoom.XcomMod.McdPatch,
   DelphiDoom.XcomMod.ExtraSprites, DelphiDoom.XcomMod.ExtraSounds, DelphiDoom.XcomMod.ExtraStrings,
   DelphiDoom.XcomMod.StatString, DelphiDoom.XcomMod.RuleInterface, DelphiDoom.XcomMod.RuleVideo,
-  DelphiDoom.XcomMod.RuleConverter, DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings;
+  DelphiDoom.XcomMod.RuleConverter, DelphiDoom.XcomMod.ModConstants, DelphiDoom.XcomMod.RulesetSettings,
+  System.Generics.Defaults, DelphiDoom.XcomMod.RuleGlobe, DelphiDoom.XcomMod.Polygon, DelphiDoom.XcomMod.Polyline,
+  DelphiDoom.XcomMod.Texture, DelphiDoom.XcomMod.MapData, DelphiDoom.XcomMod.MapDataSet,
+  DelphiDoom.XcomMod.MapDataLoader, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.WeightedOptions,
+  DelphiDoom.XcomMod.RuleMissionScript, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleTerrain;
 
 { TXcomModDumpMisc }
 
@@ -63,8 +71,8 @@ end;
 class function TXcomModDumpMisc.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('ufopaedia', 'mapScripts', 'mcdPatches', 'extraSprites', 'extraSounds',
-    'extraStrings', 'statStrings', 'interfaces', 'videos', 'converter', 'constants', 'settings', 'startingBase',
-    'indexes');
+    'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures', 'globeTerrains', 'mapData', 'picks',
+    'converter', 'constants', 'settings', 'startingBase', 'indexes');
 end;
 
 class function TXcomModDumpMisc.MapText(const AValues: TXcomIntStringMap): string;
@@ -389,6 +397,321 @@ begin
   end;
 end;
 
+class procedure TXcomModDumpMisc.Mix(var AHash: UInt64; const AData; ASize: Integer);
+var
+  LBytes: PByte;
+  LIndex: Integer;
+begin
+  LBytes := @AData;
+  for LIndex := 0 to ASize - 1 do
+  begin
+    AHash := AHash xor LBytes^;
+    AHash := AHash * UInt64(1099511628211);
+    Inc(LBytes);
+  end;
+end;
+
+procedure TXcomModDumpMisc.DumpPicks;
+const
+  MONTHS: array[0..5] of Integer = (0, 1, 5, 12, 24, 48);
+  TYPE_MONTHS: array[0..3] of Integer = (-3, 0, 7, 30);
+var
+  LRandom: IXcomRandom;
+  LIndex, LType, LMonth, LCommand, LStep, LTerrain: Integer;
+  LRule: TXcomRuleMissionScript;
+  LMonthList: TList<Cardinal>;
+  LWeights: TObjectList<TXcomWeightedOptions>;
+  LName: string;
+  LCommands: TObjectList<TXcomMapScript>;
+  LScript: TXcomMapScript;
+  LTerrainRule, LFound: TXcomRuleTerrain;
+  LGroups, LBlocks: TArray<Integer>;
+  LText: string;
+  LBlock: TXcomMapBlock;
+  function AtOrBefore(AMonths: TList<Cardinal>; AMonth: Integer): Boolean;
+  var
+    LEntry: Cardinal;
+  begin
+    for LEntry in AMonths do
+      if LEntry <= Cardinal(AMonth) then
+        Exit(True);
+    Result := False;
+  end;
+begin
+  LRandom := TXcomRandom.Create(176);
+  for LIndex := 0 to FMod.MissionScripts.Count - 1 do
+  begin
+    LRule := FMod.MissionScripts.Rule(LIndex);
+    FWriter.Begin_('picks', 'mission|' + FMod.MissionScripts.Name(LIndex));
+    for LType := 0 to 2 do
+    begin
+      case LType of
+        0: begin LMonthList := LRule.RegionMonths; LWeights := LRule.RegionWeights; end;
+        1: begin LMonthList := LRule.MissionMonths; LWeights := LRule.MissionWeights; end;
+      else
+        LMonthList := LRule.RaceMonths;
+        LWeights := LRule.RaceWeights;
+      end;
+      if LWeights.Count = 0 then
+        Continue;
+      for LMonth in MONTHS do
+      begin
+        if not AtOrBefore(LMonthList, LMonth) then
+          Continue;
+        FWriter.Str('gen' + IntToStr(LType) + '_' + IntToStr(LMonth), LRule.Generate(Cardinal(LMonth), LType, LRandom));
+      end;
+    end;
+    for LMonth in TYPE_MONTHS do
+    begin
+      if LRule.MissionWeights.Count > 0 then
+        FWriter.Strs('types' + IntToStr(LMonth), LRule.GetMissionTypes(LMonth));
+      if LRule.RegionWeights.Count > 0 then
+        FWriter.Strs('regions' + IntToStr(LMonth), LRule.GetRegions(LMonth));
+    end;
+  end;
+  for LIndex := 0 to FMod.MapScripts.Count - 1 do
+  begin
+    LName := FMod.MapScripts.Key(LIndex);
+    LCommands := FMod.MapScripts.Value(LIndex);
+    LFound := nil;
+    for LTerrain := 0 to FMod.Terrains.Count - 1 do
+    begin
+      LTerrainRule := FMod.Terrains.Rule(LTerrain);
+      if LTerrainRule.Script = LName then
+      begin
+        LFound := LTerrainRule;
+        Break;
+      end;
+    end;
+    for LCommand := 0 to LCommands.Count - 1 do
+    begin
+      LScript := LCommands[LCommand];
+      FWriter.Begin_('picks', 'map|' + LName + '|' + IntToStr(LCommand));
+      LScript.Init;
+      SetLength(LGroups, 6);
+      for LStep := 0 to 5 do
+        LGroups[LStep] := LScript.GetGroupNumber(LRandom);
+      LScript.Init;
+      SetLength(LBlocks, 6);
+      for LStep := 0 to 5 do
+        LBlocks[LStep] := LScript.GetBlockNumber(LRandom);
+      FWriter.Ints('groups', LGroups);
+      FWriter.Ints('blocks', LBlocks);
+      if Assigned(LFound) then
+      begin
+        LScript.Init;
+        LText := '[';
+        for LStep := 0 to 3 do
+        begin
+          LBlock := LScript.GetNextBlock(LFound, LRandom);
+          if LStep > 0 then
+            LText := LText + ',';
+          if Assigned(LBlock) then
+            LText := LText + TXcomDumpWriter.Quote(LBlock.Name)
+          else
+            LText := LText + TXcomDumpWriter.Quote('0');
+        end;
+        FWriter.Line('next', LText + ']');
+      end;
+    end;
+  end;
+end;
+
+procedure TXcomModDumpMisc.DumpMapData;
+const
+  FNV_BASIS: UInt64 = 14695981039346656037;
+var
+  LIndex, LPart, LItem: Integer;
+  LSet: TXcomMapDataSet;
+  LPatch: TXcomMcdPatch;
+  LLoader: TXcomMapDataLoader;
+  LHash: UInt64;
+  LError, LText: string;
+  LData: TXcomMapData;
+  procedure Add(AValue: Integer);
+  begin
+    Mix(LHash, AValue, 4);
+    if LText <> '' then
+      LText := LText + ',';
+    LText := LText + IntToStr(AValue);
+  end;
+begin
+  LLoader := TXcomMapDataLoader.Create(FMod.Files);
+  try
+    for LIndex := 0 to FMod.MapDataSets.Count - 1 do
+    begin
+      LSet := FMod.MapDataSets.Rule(LIndex);
+      FWriter.Begin_('mapData', FMod.MapDataSets.Name(LIndex));
+      if not FMod.McdPatches.TryGetValue(LSet.Name, LPatch) then
+        LPatch := nil;
+      LError := '';
+      try
+        LLoader.LoadData(LSet, LPatch);
+      except
+        on E: EXcomModException do
+          LError := E.Message;
+      end;
+      // the sprites are not ported: only the messages of the MCD file are compared
+      if Pos('MCD', LError) = 0 then
+        LError := '';
+      FWriter.Card('size', LSet.Size);
+      FWriter.Str('error', LError);
+      LHash := FNV_BASIS;
+      for LPart := 0 to LSet.Size - 1 do
+      begin
+        LData := LSet.GetObject(LPart);
+        LText := '';
+        for LItem := 0 to 7 do
+          Add(LData.GetSprite(LItem));
+        Add(LData.YOffset);
+        Add(LData.SpecialType);
+        Add(LData.ObjectType);
+        Add(LData.TuWalk);
+        Add(LData.TuFly);
+        Add(LData.TuSlide);
+        Add(Ord(LData.IsUfoDoor));
+        Add(Ord(LData.StopLos));
+        Add(Ord(LData.IsNoFloor));
+        Add(Ord(LData.IsGravLift));
+        Add(Ord(LData.IsDoor));
+        Add(Ord(LData.BlockFire));
+        Add(Ord(LData.BlockSmoke));
+        Add(Ord(LData.IsBaseModule));
+        Add(LData.BigWall);
+        Add(LData.TerrainLevel);
+        Add(LData.FootstepSound);
+        Add(LData.AltMcd);
+        Add(LData.DieMcd);
+        Add(LData.LightSource);
+        Add(LData.GetLightSource);
+        Add(LData.Armor);
+        Add(LData.Flammable);
+        Add(LData.Fuel);
+        Add(LData.Explosive);
+        Add(LData.ExplosiveType);
+        Add(LData.MiniMapIndex);
+        for LItem := 0 to 5 do
+          Add(LData.BlockValue(LItem));
+        for LItem := 0 to 11 do
+          Add(LData.GetLoftId(LItem));
+        for LItem := 0 to 9 do
+          Add(LData.GetBlock(LItem));
+        for LItem := 0 to 4 do
+          Add(LData.GetTuCost(LItem));
+        if (LPart < 2) or (LPart + 2 >= LSet.Size) then
+          FWriter.Line('part' + IntToStr(LPart), LText);
+      end;
+      FWriter.Line('hash', IntToHex(LHash, 16));
+      if (LSet.Name = 'BLANKS') and (LSet.Size > 0) then
+        FWriter.Int('blank', 1)
+      else
+        FWriter.Int('blank', 0);
+    end;
+  finally
+    LLoader.Free;
+  end;
+end;
+
+procedure TXcomModDumpMisc.DumpGlobe;
+const
+  FNV_BASIS: UInt64 = 14695981039346656037;
+var
+  LGlobe: TXcomRuleGlobe;
+  LHash: UInt64;
+  LIndex, LPoint, LPoints, LTexture: Integer;
+  LValue: Double;
+  LPolygon: TXcomPolygon;
+  LPolyline: TXcomPolyline;
+  LText: string;
+  LId, LTerrain: Integer;
+  LRule: TXcomTexture;
+  LDeployment: TXcomTerrainCriteria;
+  LNames: TList<string>;
+begin
+  LGlobe := FMod.Globe;
+  FWriter.Begin_('globe', 'data');
+  LHash := FNV_BASIS;
+  for LIndex := 0 to LGlobe.Polygons.Count - 1 do
+  begin
+    LPolygon := LGlobe.Polygons[LIndex];
+    LPoints := LPolygon.Points;
+    LTexture := LPolygon.Texture;
+    Mix(LHash, LPoints, 4);
+    Mix(LHash, LTexture, 4);
+    for LPoint := 0 to LPoints - 1 do
+    begin
+      LValue := LPolygon.GetLongitude(LPoint);
+      Mix(LHash, LValue, 8);
+      LValue := LPolygon.GetLatitude(LPoint);
+      Mix(LHash, LValue, 8);
+    end;
+    if (LIndex < 3) or (LIndex + 3 >= LGlobe.Polygons.Count) then
+    begin
+      LText := IntToStr(LPoints) + ',' + IntToStr(LTexture);
+      for LPoint := 0 to LPoints - 1 do
+        LText := LText + ',' + TXcomDumpWriter.HexDouble(LPolygon.GetLongitude(LPoint)) + ',' +
+          TXcomDumpWriter.HexDouble(LPolygon.GetLatitude(LPoint));
+      FWriter.Line('polygon' + IntToStr(LIndex), LText);
+    end;
+  end;
+  FWriter.Int('polygons', LGlobe.Polygons.Count);
+  FWriter.Line('polygonHash', IntToHex(LHash, 16));
+  LHash := FNV_BASIS;
+  for LIndex := 0 to LGlobe.Polylines.Count - 1 do
+  begin
+    LPolyline := LGlobe.Polylines[LIndex];
+    LPoints := LPolyline.Points;
+    Mix(LHash, LPoints, 4);
+    for LPoint := 0 to LPoints - 1 do
+    begin
+      LValue := LPolyline.GetLongitude(LPoint);
+      Mix(LHash, LValue, 8);
+      LValue := LPolyline.GetLatitude(LPoint);
+      Mix(LHash, LValue, 8);
+    end;
+  end;
+  FWriter.Int('polylines', LGlobe.Polylines.Count);
+  FWriter.Line('polylineHash', IntToHex(LHash, 16));
+  FWriter.Int('countryColor', LGlobe.CountryLabelColor);
+  FWriter.Int('cityColor', LGlobe.CityLabelColor);
+  FWriter.Int('baseColor', LGlobe.BaseLabelColor);
+  FWriter.Int('lineColor', LGlobe.LineColor);
+  FWriter.Int('oceanColor', LGlobe.OceanColor);
+  FWriter.Bool('oceanShading', LGlobe.OceanShading);
+  for LId in LGlobe.TextureIds do
+  begin
+    LRule := LGlobe.GetTexture(LId);
+    FWriter.Begin_('textures', IntToStr(LId));
+    FWriter.Int('id', LRule.Id);
+    FWriter.IntMap('deployments', LRule.Deployments);
+    FWriter.Int('count', Length(LRule.Terrain));
+    for LTerrain := 0 to High(LRule.Terrain) do
+    begin
+      LDeployment := LRule.Terrain[LTerrain];
+      FWriter.Line('t' + IntToStr(LTerrain), TXcomDumpWriter.Quote(LDeployment.Name) + ',' +
+        IntToStr(LDeployment.Weight) + ',' + TXcomDumpWriter.HexDouble(LDeployment.LonMin) + ',' +
+        TXcomDumpWriter.HexDouble(LDeployment.LonMax) + ',' + TXcomDumpWriter.HexDouble(LDeployment.LatMin) + ',' +
+        TXcomDumpWriter.HexDouble(LDeployment.LatMax));
+    end;
+  end;
+  FWriter.Begin_('globeTerrains', 'all');
+  FWriter.Strs('none', LGlobe.GetTerrains(''));
+  LNames := TList<string>.Create;
+  try
+    for LId in LGlobe.TextureIds do
+      for LIndex := 0 to LGlobe.GetTexture(LId).Deployments.Count - 1 do
+        if not LNames.Contains(LGlobe.GetTexture(LId).Deployments.Key(LIndex)) then
+          LNames.Add(LGlobe.GetTexture(LId).Deployments.Key(LIndex));
+    // std::set<std::string>: the order of the bytes of the UTF-8 text
+    LNames.Sort(TComparer<string>.Construct(
+      function(const AFirst, ASecond: string): Integer begin Result := XcomCompareUtf8(AFirst, ASecond); end));
+    for LText in LNames do
+      FWriter.Strs('d_' + TXcomDumpWriter.Escape(LText), LGlobe.GetTerrains(LText));
+  finally
+    LNames.Free;
+  end;
+end;
+
 procedure TXcomModDumpMisc.DumpConverter;
 var
   LName: string;
@@ -519,6 +842,9 @@ begin
   DumpExtras;
   DumpInterfaces;
   DumpVideos;
+  DumpGlobe;
+  DumpMapData;
+  DumpPicks;
   DumpConverter;
   DumpConstants;
   DumpSettings;

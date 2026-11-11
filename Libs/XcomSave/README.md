@@ -54,3 +54,8 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 ## Test
 
 `Tests\DelphiDoom.Tests.XcomSave` (61 test: parita' sui 900 casi della prima famiglia e sui 2400 della seconda, e gli oggetti uno per uno; Release Win32; copertura 98%, 1068 righe su 1079). Win64 non provato.
+
+## Salvataggio strategico (seconda tornata)
+
+TXcomSavedGame, TXcomBase, TXcomCraft, TXcomUfo, TXcomMovingTarget, TXcomSoldier, TXcomSoldierDiary, TXcomTransfer, TXcomAlienStrategy, TXcomAlienMission, TXcomMissionStatistics: carica e salva i .sav del geoscape. Parita' con 16 salvataggi scritti dagli oggetti veri di OpenXcom (0 differenze, salvo l'ultimo bit delle velocita' dei bersagli). Non portato: il battlescape salvato (SavedBattleGame), SaveConverter, AlienMission::think e le capacita' delle basi. Dettagli, trappole e come rigenerare i salvataggi: CLAUDE.md.
+

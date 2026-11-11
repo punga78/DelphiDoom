@@ -51,6 +51,7 @@ uses
   DelphiDoom.XcomSave.UnitEnums in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitEnums.pas',
   DelphiDoom.XcomSave.RuleAdapters in '..\Libs\XcomSave\DelphiDoom.XcomSave.RuleAdapters.pas',
   DelphiDoom.XcomSave.RulesetRules in '..\Libs\XcomSave\DelphiDoom.XcomSave.RulesetRules.pas',
+  DelphiDoom.XcomSave.BaseCapacity in '..\Libs\XcomSave\DelphiDoom.XcomSave.BaseCapacity.pas',
   DelphiDoom.Tests.XcomSave.RulesetRules in 'Source\DelphiDoom.Tests.XcomSave.RulesetRules.pas',
   DelphiDoom.XcomMod.UnitStats in '..\Libs\XcomMod\DelphiDoom.XcomMod.UnitStats.pas',
   DelphiDoom.XcomSave.UnitStats in '..\Libs\XcomSave\DelphiDoom.XcomSave.UnitStats.pas',
@@ -64,6 +65,10 @@ uses
   DelphiDoom.Tests.XcomSave.Targets in 'Source\DelphiDoom.Tests.XcomSave.Targets.pas',
   DelphiDoom.Tests.XcomSave.Scenario in 'Source\DelphiDoom.Tests.XcomSave.Scenario.pas',
   DelphiDoom.Tests.XcomSave.Golden in 'Source\DelphiDoom.Tests.XcomSave.Golden.pas',
+  DelphiDoom.Tests.XcomMod.DiskModFiles in 'Source\DelphiDoom.Tests.XcomMod.DiskModFiles.pas',
+  DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
+  DelphiDoom.Tests.XcomSave.RealSave in 'Source\DelphiDoom.Tests.XcomSave.RealSave.pas',
+  DelphiDoom.Tests.XcomSave.Strategy in 'Source\DelphiDoom.Tests.XcomSave.Strategy.pas',
   DelphiDoom.Tests.XcomSave.Objects in 'Source\DelphiDoom.Tests.XcomSave.Objects.pas';
 
 var

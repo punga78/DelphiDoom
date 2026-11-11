@@ -92,8 +92,8 @@ class function TXcomModDump.Sections: TArray<string>;
 begin
   Result := TArray<string>.Create('countries', 'regions', 'facilities', 'crafts', 'craftWeapons', 'items', 'ufos',
     'invs', 'terrains', 'mapDataSets', 'armors', 'soldiers', 'units', 'alienDeployments', 'alienMissions', 'missionScripts', 'ufopaedia', 'mapScripts', 'mcdPatches',
-    'extraSprites', 'extraSounds', 'extraStrings', 'statStrings', 'interfaces', 'videos', 'converter', 'constants',
-    'settings', 'startingBase', 'indexes', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
+    'extraSprites', 'extraSounds', 'extraStrings', 'statStrings', 'interfaces', 'videos', 'globe', 'textures',
+    'globeTerrains', 'mapData', 'picks', 'converter', 'constants', 'settings', 'startingBase', 'indexes', 'research', 'manufacture', 'alienRaces', 'ufoTrajectories', 'musics',
     'commendations');
 end;
 

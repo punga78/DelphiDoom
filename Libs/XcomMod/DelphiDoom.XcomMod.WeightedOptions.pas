@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.XcomMod.Types,
-  DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.Random;
+  DelphiDoom.XcomMod.NodeReader, DelphiDoom.XcomMod.Random, DelphiDoom.Yaml.Factory;
 
 type
   /// <summary>
@@ -38,6 +38,12 @@ type
     function Choose(const ARandom: IXcomRandom): string;
     /// <summary>getNames: the options in the order of the keys</summary>
     function Names: TArray<string>;
+    /// <summary>save: a map of the weights by name in the order of the names; an empty list is a null node</summary>
+    function Save: IYamlNode;
+    /// <summary>Removes every option</summary>
+    procedure Clear;
+    /// <summary>The copy constructor: a new object with the same weights (the caller frees it)</summary>
+    function Copy: TXcomWeightedOptions;
     /// <summary>The options and their weights (_choices)</summary>
     property Choices: TXcomStringMap<Cardinal> read FChoices;
   end;
@@ -62,6 +68,9 @@ procedure TXcomWeightedOptions.Load(const ANode: IYamlNode);
 var
   LPair: TYamlPair;
 begin
+  // a node that is not there (node["key"] of a const node) has an empty iteration
+  if not ANode.IsDefined then
+    Exit;
   // the C++ walks a sequence with a map iterator: the first element has no key (an invalid node)
   if ANode.IsSequence then
   begin
@@ -116,6 +125,31 @@ begin
   end;
   // the C++ always finds an option here
   Result := FChoices.Key(FChoices.Count - 1);
+end;
+
+function TXcomWeightedOptions.Save: IYamlNode;
+var
+  LIndex: Integer;
+begin
+  Result := TYamlFactory.CreateNode;
+  for LIndex := 0 to FChoices.Count - 1 do
+    Result.Child(YamlStringToText(FChoices.Key(LIndex))).AssignScalar(
+      YamlStringToText(UIntToStr(FChoices.Value(LIndex))));
+end;
+
+procedure TXcomWeightedOptions.Clear;
+begin
+  FChoices.Clear;
+  FTotalWeight := 0;
+end;
+
+function TXcomWeightedOptions.Copy: TXcomWeightedOptions;
+var
+  LIndex: Integer;
+begin
+  Result := TXcomWeightedOptions.Create;
+  for LIndex := 0 to FChoices.Count - 1 do
+    Result.SetWeight(FChoices.Key(LIndex), FChoices.Value(LIndex));
 end;
 
 function TXcomWeightedOptions.Names: TArray<string>;

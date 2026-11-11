@@ -1,0 +1,253 @@
+width: 10
+length: 10
+height: 1
+missionType: STR_TERROR_MISSION
+globalshade: 0
+turn: 1
+selectedUnit: -1
+mapdatasets:
+  - DEBRIS
+  - UFOBITS
+tileIndexSize: "\x04"
+tileTotalBytesPer: 23
+tileFireSize: "\x01"
+tileSmokeSize: "\x01"
+tileIDSize: "\x02"
+tileSetIDSize: "\x02"
+tileBoolFieldsSize: "\x01"
+totalTiles: 36
+binTiles: AQAAAP///////ycA////////AAAAAAACAAAA////////EwD///////8AAAAAAAkAAAD///////8IAP///////wAAAAAADQAAAP///////w8A////////AAAAAAAOAAAA/////////////////////wEAABMAAAD///////8AAP///////wAAAAAAFgAAAP///////y8A////////AAAAAAAYAAAA////////AwD///////8BAAAAAB4AAAD///////8JAP///////wAAAAAAHwAAAP///////zEA////////AAAAAAAkAAAA////////KAD///////8AAAAAACUAAAD///////8lAP///////wAAAAAAJgAAAP///////wMA////////AAAAAAAnAAAA////////LwD///////8AAAAAACkAAAD///////8DAP///////wEAAAAAKwAAAP///////zEA////////AAAAAAAsAAAA////////AgD///////8BAAAAAC0AAAD///////8tAP///////wAAAAAAMQAAAP///////xAA////////AAAAAAA1AAAA////////HAD///////8AAAAAADoAAAD///////8dAP///////wAAAAAAOwAAAP///////xQA////////AAAAAAA+AAAA////////IAD///////8AAAAAAEcAAAD///////8nAP///////wAAAAAASQAAAP///////wAA////////AQAAAABKAAAA////////HgD///////8AAAAAAEwAAAD///////8EAP///////wEAAAAATgAAAP///////wIA////////AQAAAABRAAAA////////IgD///////8AAAAAAFQAAAD///////8HAP///////wAAAAAAVQAAAP///////y4A////////AAAAAABYAAAA////////LQD///////8AAAAAAFsAAAD///////8BAP///////wAAAAAAXQAAAP///////x0A////////AAAAAABgAAAA////////JwD///////8AAAAAAGIAAAD///////8gAP///////wAAAAAA
+units:
+  - id: 1000000
+    genUnitType: STR_COELACANTH_GAS_CANNON
+    genUnitArmor: COELACANTH_ARMOR
+    faction: 2
+    status: 0
+    position:
+      - 4
+      - 7
+      - 0
+    direction: 5
+    directionTurret: 5
+    tu: 70
+    health: 90
+    stunlevel: 0
+    energy: 100
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 90
+      - 75
+      - 75
+      - 60
+      - 60
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: false
+    turnsSinceSpotted: 5
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 2
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000001
+    genUnitType: STR_AQUATOID_COMMANDER
+    genUnitArmor: AQUATOID_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 0
+      - 5
+      - 0
+    direction: 6
+    directionTurret: 6
+    tu: 54
+    health: 35
+    stunlevel: 0
+    energy: 100
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 4
+      - 3
+      - 3
+      - 2
+      - 2
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000002
+    genUnitType: STR_TENTACULAT_TERRORIST
+    genUnitArmor: TENTACULAT_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 1
+      - 2
+      - 0
+    direction: 1
+    directionTurret: 1
+    tu: 99
+    health: 96
+    stunlevel: 0
+    energy: 140
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 45
+      - 25
+      - 25
+      - 15
+      - 5
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 1
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+  - id: 1000003
+    genUnitType: STR_GILLMAN_SQUAD_LEADER
+    genUnitArmor: GILLMAN_ARMOR0
+    faction: 0
+    status: 0
+    position:
+      - 2
+      - 9
+      - 0
+    direction: 5
+    directionTurret: 5
+    tu: 45
+    health: 50
+    stunlevel: 0
+    energy: 80
+    morale: 100
+    kneeled: false
+    floating: false
+    armor:
+      - 15
+      - 12
+      - 12
+      - 14
+      - 12
+    fatalWounds:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    fire: 0
+    expBravery: 0
+    expReactions: 0
+    expFiring: 0
+    expThrowing: 0
+    expPsiSkill: 0
+    expPsiStrength: 0
+    expMelee: 0
+    turretType: -1
+    visible: true
+    turnsSinceSpotted: 255
+    rankInt: 0
+    moraleRestored: 0
+    killedBy: 0
+    motionPoints: 0
+    respawn: false
+    activeHand: STR_RIGHT_HAND
+    tempUnitStatistics:
+      wasUnconcious: false
+    murdererId: 0
+    fatalShotSide: 0
+    fatalShotBodyPart: 0
+    murdererWeapon: ""
+    murdererWeaponAmmo: ""
+    mindControllerID: 0
+tuReserved: 0
+kneelReserved: false
+depth: 0
+ambience: -1
+ambientVolume: 0.5
+music: ""
+turnLimit: 0
+chronoTrigger: 0
+cheatTurn: 20
