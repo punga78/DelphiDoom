@@ -35,6 +35,7 @@ type
     FTxtHwp: TXcomText;
     FList: TXcomTextList;
     procedure OkClick(AAction: TXcomAction);
+    procedure ListClick(AAction: TXcomAction);
   public
     /// <param name="ABase">The base (not owned)</param>
     constructor Create(AHost: TXcomStateHost; ABase: TXcomBase);
@@ -45,7 +46,9 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomSave.Craft, DelphiDoom.XcomBasescape.Names;
+  DelphiDoom.XcomSave.Craft, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomSave.BaseCapacity,
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.CraftInfoState;
 
 { TXcomCraftsState }
 
@@ -93,6 +96,7 @@ begin
   FList.SetSelectable(True);
   FList.SetBackground(FWindow);
   FList.SetMargin(8);
+  FList.OnMouseClick(ListClick);
 end;
 
 procedure TXcomCraftsState.Init;
@@ -107,9 +111,44 @@ begin
       IntToStr(LCraft.NumSoldiers(FBase.Soldiers)), IntToStr(LCraft.NumVehicles)]);
 end;
 
+procedure TXcomCraftsState.ListClick(AAction: TXcomAction);
+begin
+  if FBase.Crafts[FList.GetSelectedRow].Status <> 'STR_OUT' then
+    Host.PushState(TXcomCraftInfoState.Create(Host, FBase, FList.GetSelectedRow));
+end;
+
 procedure TXcomCraftsState.OkClick(AAction: TXcomAction);
+var
+  LCapacity: TXcomBaseCapacity;
+  LInterface: TXcomRuleInterface;
+  LMessage, LPalette: TXcomInterfaceElement;
+  LOverfull: Boolean;
 begin
   Host.PopState;
+  if (TXcomStrategy.SavedGame(Host).MonthsPassed > -1) and Host.Options.GetBool('storageLimitsEnforced') then
+  begin
+    LCapacity := TXcomBaseCapacity.Create(TXcomStrategy.Ruleset(Host));
+    try
+      LOverfull := LCapacity.StoresOverfull(FBase, 0);
+    finally
+      LCapacity.Free;
+    end;
+    if LOverfull then
+    begin
+      LMessage := Default(TXcomInterfaceElement);
+      LPalette := Default(TXcomInterfaceElement);
+      LPalette.Color := -1;
+      LInterface := Host.Resources.GetInterface('craftSelect');
+      if LInterface <> nil then
+      begin
+        LInterface.TryGetElement('errorMessage', LMessage);
+        LInterface.TryGetElement('errorPalette', LPalette);
+      end;
+      Host.PushState(TXcomSellState.Create(Host, FBase));
+      Host.PushState(TXcomErrorMessageState.Create(Host, Tr('STR_STORAGE_EXCEEDED').Arg(FBase.Name), Palette,
+        Byte(LMessage.Color), 'BACK01.SCR', LPalette.Color));
+    end;
+  end;
 end;
 
 end.
