@@ -13,7 +13,7 @@ interface
 uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomBattle.TileEngine, DelphiDoom.XcomBattle.Pathfinding, DelphiDoom.XcomBattle.Host.Intf,
-  DelphiDoom.XcomBattle.View.Intf, DelphiDoom.XcomBattle.Options;
+  DelphiDoom.XcomBattle.View.Intf, DelphiDoom.XcomBattle.Options, DelphiDoom.XcomBattle.Action;
 
 type
   /// <summary>
@@ -52,6 +52,12 @@ type
     procedure AutoEndBattle;
     /// <summary>checkForProximityGrenades</summary>
     function CheckForProximityGrenades(const AUnit: TXcomBattleUnit): Boolean;
+    /// <summary>getCurrentAction</summary>
+    function GetCurrentAction: TXcomBattleAction;
+    /// <summary>_debugPlay: the player plays the aliens (debug mode)</summary>
+    function GetDebugPlay: Boolean;
+    /// <summary>The number of missions in the saved game (the mission of the kill statistics)</summary>
+    function GetMissionCount: Integer;
   end;
 
 implementation

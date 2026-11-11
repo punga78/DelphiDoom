@@ -3,6 +3,7 @@
 #   verify_scripthost_L2.txt          one line per host function: the result of the script that calls it and the FNV-1a
 #                                     of the state of the level (sectors, lines, sides, mobjs, player) after the call
 #   verify_scripthost_L2_scripts.txt  the generated scripts (the generator is the same unit, so they must be equal)
+#   verify_scripthost_L2_context.txt  the implicit actor (fetta 2f-5): events and RunScript, see LEGGIMI.md
 #   verify_scripthost_L2_progress.txt the function being run when the game ended (only if it crashed)
 #
 #   .\Tools\Verifica\scripthost\Confronta.ps1 -Game Doom|Heretic|Hexen|Strife|GLDoom [-BinDir <cartella>] [-Seconds 600]
@@ -133,7 +134,7 @@ try {
     $skipFile = Join-Path $work "run${index}_skipped.txt"
     $script:skips | Set-Content $skipFile
     Write-Host "[$Game] $arguments : funzioni saltate dal ciclo automatico, oltre a Polyobj_* e alla lista di default ($($script:skips.Count)): $($script:skips -join ', ')  -> $skipFile"
-    foreach ($name in 'verify_scripthost_L2.txt', 'verify_scripthost_L2_scripts.txt') {
+    foreach ($name in 'verify_scripthost_L2.txt', 'verify_scripthost_L2_scripts.txt', 'verify_scripthost_L2_context.txt', 'verify_scripthost_L2_props.txt', 'verify_scripthost_L2_props_scripts.txt') {
       $different += Compare-Files "[$Game] $arguments $name" (Join-Path $work "run${index}_old\$name") (Join-Path $work "run${index}_new\$name") 'vecchio' 'nuovo'
       if ($Twice) {
         $noiseOld = Compare-Files "[$Game] $arguments $name (vecchio contro vecchio, rumore)" (Join-Path $work "run${index}_old\$name") (Join-Path $work "run${index}_old2\$name") 'vecchio' 'vecchio2'

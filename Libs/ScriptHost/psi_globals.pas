@@ -39,6 +39,7 @@ uses
   Classes,
   ps_compiler,
   ps_runtime,
+  DelphiDoom.ScriptHost.Classes.Intf,
   DelphiDoom.ScriptHost.Variables.Intf;
 
 // The variables of the scripts of the map and of the world (Delphi Doom ScriptHost library:
@@ -222,24 +223,12 @@ type
 
 //==============================================================================
 //
-// SIRegister_GlobalVars
+// PS_DescribeGlobalClasses
+// The classes of the variables of the scripts (MapStrings, WorldIntegers...)
+// for the compiler and the interpreter
 //
 //==============================================================================
-procedure SIRegister_GlobalVars(CL: TPSPascalCompiler);
-
-//==============================================================================
-//
-// RIRegister_GlobalVars
-//
-//==============================================================================
-procedure RIRegister_GlobalVars(CL: TPSRuntimeClassImporter);
-
-//==============================================================================
-//
-// RIRegisterRTL_GlobalVars
-//
-//==============================================================================
-procedure RIRegisterRTL_GlobalVars(Exec: TPSExec);
+procedure PS_DescribeGlobalClasses(const ACatalog: IScriptClassCatalog);
 
 //==============================================================================
 //
@@ -732,117 +721,6 @@ begin
   inherited Create(worldvars);
 end;
 
-//==============================================================================
-//
-// SIRegister_TWorldFloats
-//
-//==============================================================================
-procedure SIRegister_TWorldFloats(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TWorldFloats') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'single string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'WorldFloats', '!TWorldFloats');
-end;
-
-//==============================================================================
-//
-// SIRegister_TMapFloats
-//
-//==============================================================================
-procedure SIRegister_TMapFloats(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TMapFloats') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'single string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'MapFloats', '!TMapFloats');
-end;
-
-//==============================================================================
-//
-// SIRegister_TWorldIntegers
-//
-//==============================================================================
-procedure SIRegister_TWorldIntegers(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TWorldIntegers') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'integer string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'WorldIntegers', '!TWorldIntegers');
-end;
-
-//==============================================================================
-//
-// SIRegister_TMapIntegers
-//
-//==============================================================================
-procedure SIRegister_TMapIntegers(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TMapIntegers') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'integer string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'MapIntegers', '!TMapIntegers');
-end;
-
-//==============================================================================
-//
-// SIRegister_TWorldStrings
-//
-//==============================================================================
-procedure SIRegister_TWorldStrings(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TWorldStrings') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'string string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'WorldStrings', '!TWorldStrings');
-end;
-
-//==============================================================================
-//
-// SIRegister_TMapStrings
-//
-//==============================================================================
-procedure SIRegister_TMapStrings(CL: TPSPascalCompiler);
-begin
-  with CL.AddClassN(CL.FindClass('!TOBJECT'), '!TMapStrings') do
-  begin
-    RegisterMethod('Constructor Create');
-    RegisterProperty('value', 'string string', iptRW);
-    SetDefaultPropery('value');
-  end;
-  AddImportedClassVariable(CL, 'MapStrings', '!TMapStrings');
-end;
-
-//==============================================================================
-//
-// SIRegister_GlobalVars
-//
-//==============================================================================
-procedure SIRegister_GlobalVars(CL: TPSPascalCompiler);
-begin
-  SIRegister_TMapStrings(CL);
-  SIRegister_TWorldStrings(CL);
-  SIRegister_TMapIntegers(CL);
-  SIRegister_TWorldIntegers(CL);
-  SIRegister_TMapFloats(CL);
-  SIRegister_TWorldFloats(CL);
-end;
-
 (* === run-time registration functions === *)
 
 //==============================================================================
@@ -967,117 +845,73 @@ end;
 
 //==============================================================================
 //
-// RIRegister_TWorldFloats
+// PS_DescribeGlobalClasses
+// The classes of the variables of the scripts (MapStrings, WorldIntegers...)
 //
 //==============================================================================
-procedure RIRegister_TWorldFloats(CL: TPSRuntimeClassImporter);
+procedure PS_DescribeGlobalClasses(const ACatalog: IScriptClassCatalog);
+var
+  LClass: IScriptClassDescriptor;
 begin
-  with CL.Add2(TWorldFloats, '!TWORLDFLOATS') do
-  begin
-    RegisterConstructor(@TWorldFloats.Create, 'Create');
-    RegisterPropertyHelper(@TWorldFloatsvalue_R, @TWorldFloatsvalue_W, 'value');
-  end;
-end;
+  LClass := ACatalog.AddClass('!TMapStrings', TMapStrings);
+  LClass.AddConstructor(@TMapStrings.Create);
+  LClass.AddProperty('value', 'string string', iptRW, @TMapStringsvalue_R, @TMapStringsvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('MapStrings',
+    function: TObject
+    begin
+      Result := RTL_MapVarS;
+    end);
 
-//==============================================================================
-//
-// RIRegister_TMapFloats
-//
-//==============================================================================
-procedure RIRegister_TMapFloats(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TMapFloats, '!TMAPFLOATS') do
-  begin
-    RegisterConstructor(@TMapFloats.Create, 'Create');
-    RegisterPropertyHelper(@TMapFloatsvalue_R, @TMapFloatsvalue_W, 'value');
-  end;
-end;
+  LClass := ACatalog.AddClass('!TWorldStrings', TWorldStrings);
+  LClass.AddConstructor(@TWorldStrings.Create);
+  LClass.AddProperty('value', 'string string', iptRW, @TWorldStringsvalue_R, @TWorldStringsvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('WorldStrings',
+    function: TObject
+    begin
+      Result := RTL_WorldVarS;
+    end);
 
-//==============================================================================
-//
-// RIRegister_TWorldIntegers
-//
-//==============================================================================
-procedure RIRegister_TWorldIntegers(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TWorldIntegers, '!TWORLDINTEGERS') do
-  begin
-    RegisterConstructor(@TWorldIntegers.Create, 'Create');
-    RegisterPropertyHelper(@TWorldIntegersvalue_R, @TWorldIntegersvalue_W, 'value');
-  end;
-end;
+  LClass := ACatalog.AddClass('!TMapIntegers', TMapIntegers);
+  LClass.AddConstructor(@TMapIntegers.Create);
+  LClass.AddProperty('value', 'integer string', iptRW, @TMapIntegersvalue_R, @TMapIntegersvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('MapIntegers',
+    function: TObject
+    begin
+      Result := RTL_MapVarI;
+    end);
 
-//==============================================================================
-//
-// RIRegister_TMapIntegers
-//
-//==============================================================================
-procedure RIRegister_TMapIntegers(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TMapIntegers, '!TMAPINTEGERS') do
-  begin
-    RegisterConstructor(@TMapIntegers.Create, 'Create');
-    RegisterPropertyHelper(@TMapIntegersvalue_R, @TMapIntegersvalue_W, 'value');
-  end;
-end;
+  LClass := ACatalog.AddClass('!TWorldIntegers', TWorldIntegers);
+  LClass.AddConstructor(@TWorldIntegers.Create);
+  LClass.AddProperty('value', 'integer string', iptRW, @TWorldIntegersvalue_R, @TWorldIntegersvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('WorldIntegers',
+    function: TObject
+    begin
+      Result := RTL_WorldVarI;
+    end);
 
-//==============================================================================
-//
-// RIRegister_TWorldStrings
-//
-//==============================================================================
-procedure RIRegister_TWorldStrings(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TWorldStrings, '!TWORLDSTRINGS') do
-  begin
-    RegisterConstructor(@TWorldStrings.Create, 'Create');
-    RegisterPropertyHelper(@TWorldStringsvalue_R, @TWorldStringsvalue_W, 'value');
-  end;
-end;
+  LClass := ACatalog.AddClass('!TMapFloats', TMapFloats);
+  LClass.AddConstructor(@TMapFloats.Create);
+  LClass.AddProperty('value', 'single string', iptRW, @TMapFloatsvalue_R, @TMapFloatsvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('MapFloats',
+    function: TObject
+    begin
+      Result := RTL_MapVarF;
+    end);
 
-//==============================================================================
-//
-// RIRegister_TMapStrings
-//
-//==============================================================================
-procedure RIRegister_TMapStrings(CL: TPSRuntimeClassImporter);
-begin
-  with CL.Add2(TMapStrings, '!TMAPSTRINGS') do
-  begin
-    RegisterConstructor(@TMapStrings.Create, 'Create');
-    RegisterPropertyHelper(@TMapStringsvalue_R, @TMapStringsvalue_W, 'value');
-  end;
-end;
-
-//==============================================================================
-//
-// RIRegister_GlobalVars
-//
-//==============================================================================
-procedure RIRegister_GlobalVars(CL: TPSRuntimeClassImporter);
-begin
-  RIRegister_TMapStrings(CL);
-  RIRegister_TWorldStrings(CL);
-  RIRegister_TMapIntegers(CL);
-  RIRegister_TWorldIntegers(CL);
-  RIRegister_TMapFloats(CL);
-  RIRegister_TWorldFloats(CL);
-end;
-
-//==============================================================================
-// RIRegisterRTL_GlobalVars
-//
-// JVAL: Must be called after Loading data.
-//
-//==============================================================================
-procedure RIRegisterRTL_GlobalVars(Exec: TPSExec);
-begin
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('MapStrings')), RTL_MapVarS);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('WorldStrings')), RTL_WorldVarS);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('MapIntegers')), RTL_MapVarI);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('WorldIntegers')), RTL_WorldVarI);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('MapFloats')), RTL_MapVarF);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('WorldFloats')), RTL_WorldVarF);
+  LClass := ACatalog.AddClass('!TWorldFloats', TWorldFloats);
+  LClass.AddConstructor(@TWorldFloats.Create);
+  LClass.AddProperty('value', 'single string', iptRW, @TWorldFloatsvalue_R, @TWorldFloatsvalue_W);
+  LClass.AddDefaultProperty('value');
+  LClass.AddVariable('WorldFloats',
+    function: TObject
+    begin
+      Result := RTL_WorldVarF;
+    end);
 end;
 
 end.

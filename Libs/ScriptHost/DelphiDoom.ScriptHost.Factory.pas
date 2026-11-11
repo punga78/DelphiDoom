@@ -11,10 +11,14 @@ unit DelphiDoom.ScriptHost.Factory;
 interface
 
 uses
+  ps_compiler,
   ps_runtime,
   DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
+  DelphiDoom.ScriptHost.Actors.Intf,
   DelphiDoom.ScriptHost.CallbackGroup,
+  DelphiDoom.ScriptHost.Classes.Intf,
+  DelphiDoom.ScriptHost.Constants.Intf,
   DelphiDoom.ScriptHost.Dll.Intf,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Fixed.Functions,
@@ -37,6 +41,16 @@ type
   public
     /// <summary>A registry with no units</summary>
     class function CreateRegistry: IScriptFunctionRegistry; static;
+    /// <summary>A catalog of the classes that scripts see, with no classes yet, for a game</summary>
+    class function CreateClassCatalog(const AGame: TScriptGame): IScriptClassCatalog; static;
+    /// <summary>
+    ///   The constants of the unit SYSTEM: the basic ones, the four parts that the engine gives
+    ///   (mobjs, game, world, groups) and the generalized linedef types between the last two, in
+    ///   the order of the old PS_ScriptOnUses
+    /// </summary>
+    class function CreateConstants(const AMobjs, AGame, AWorld, AGroups: IScriptConstantProvider): IScriptConstantProvider; static;
+    /// <summary>The table of constants that writes in a compiler of scripts</summary>
+    class function CreateCompilerConstants(const ACompiler: TPSPascalCompiler): IScriptConstantTable; static;
     /// <summary>The unit SYSTEM of the scripts: for the registry ask it for an IScriptFunctionGroup</summary>
     class function CreateSystemFunctions(const ARoutines: TScriptSystemRoutines;
       const AOutput: IScriptSystemOutput; const AEnvironment: IScriptSystemEnvironment;
@@ -68,6 +82,9 @@ type
     /// <summary>The player functions of PS_GAME (keys, artifacts, ammunition, mana and quests depend on the game)</summary>
     class function CreatePlayers(const ASource: IScriptPlayerSource;
       const AGame: TScriptGame): IScriptPlayers; static;
+    /// <summary>The actor functions of PS_GAME (the mobjs only through the source; Strife has GetActorName2)</summary>
+    class function CreateActors(const ASource: IScriptActorSource; const AContext: IScriptActorContext;
+      const APlayers: IScriptPlayers; const AGame: TScriptGame): IScriptActors; static;
     /// <summary>The variables of the scripts (of a map or of the world), empty</summary>
     class function CreateVariables(const AFiles: IScriptVariablesFiles;
       const AFailure: IScriptVariablesFailure): IScriptVariables; static;
@@ -88,6 +105,12 @@ type
 implementation
 
 uses
+  DelphiDoom.ScriptHost.Actors,
+  DelphiDoom.ScriptHost.Classes.Catalog,
+  DelphiDoom.ScriptHost.Constants.Basic,
+  DelphiDoom.ScriptHost.Constants.Chain,
+  DelphiDoom.ScriptHost.Constants.Compiler,
+  DelphiDoom.ScriptHost.Constants.Generalized,
   DelphiDoom.ScriptHost.Dll.Loader,
   DelphiDoom.ScriptHost.Dll.WindowsLibrary,
   DelphiDoom.ScriptHost.Events,
@@ -110,6 +133,24 @@ uses
 class function TScriptHostFactory.CreateRegistry: IScriptFunctionRegistry;
 begin
   Result := TScriptFunctionRegistry.Create;
+end;
+
+class function TScriptHostFactory.CreateClassCatalog(const AGame: TScriptGame): IScriptClassCatalog;
+begin
+  Result := TScriptClassCatalog.Create(AGame);
+end;
+
+class function TScriptHostFactory.CreateConstants(const AMobjs, AGame, AWorld,
+  AGroups: IScriptConstantProvider): IScriptConstantProvider;
+begin
+  Result := TScriptConstantChain.Create([TScriptBasicConstants.Create, AMobjs, AGame, AWorld,
+    TScriptGeneralizedConstants.Create, AGroups]);
+end;
+
+class function TScriptHostFactory.CreateCompilerConstants(
+  const ACompiler: TPSPascalCompiler): IScriptConstantTable;
+begin
+  Result := TScriptCompilerConstants.Create(ACompiler);
 end;
 
 class function TScriptHostFactory.CreateSystemFunctions(const ARoutines: TScriptSystemRoutines;
@@ -181,6 +222,13 @@ class function TScriptHostFactory.CreatePlayers(const ASource: IScriptPlayerSour
   const AGame: TScriptGame): IScriptPlayers;
 begin
   Result := TScriptPlayers.Create(ASource, AGame);
+end;
+
+class function TScriptHostFactory.CreateActors(const ASource: IScriptActorSource;
+  const AContext: IScriptActorContext; const APlayers: IScriptPlayers;
+  const AGame: TScriptGame): IScriptActors;
+begin
+  Result := TScriptActors.Create(ASource, AContext, APlayers, AGame);
 end;
 
 class function TScriptHostFactory.CreateVariables(const AFiles: IScriptVariablesFiles;

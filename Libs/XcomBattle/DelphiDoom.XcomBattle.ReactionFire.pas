@@ -60,10 +60,9 @@ implementation
 
 uses
   DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattle.TileEngine,
-  DelphiDoom.XcomBattle.AIModule, DelphiDoom.XcomBattle.ProjectileFlyState;
+  DelphiDoom.XcomBattle.AIModule, DelphiDoom.XcomBattle.ProjectileFlyState, DelphiDoom.XcomBattle.MeleeAttackState;
 
 const
-  SNotPorted = 'Not ported yet: %s';
   /// <summary>TileEngine::MAX_VIEW_DISTANCE_SQR (20 tiles)</summary>
   MAX_VIEW_DISTANCE_SQR = 20 * 20;
 
@@ -293,7 +292,7 @@ begin
       begin
         LAction.TimeUnits := 0;
         if LAction.ActionType = BA_HIT then
-          raise EXcomBattleException.CreateFmt(SNotPorted, ['the melee reaction (MeleeAttackBState)'])
+          FGame.StatePushBack(TXcomMeleeAttackState.Create(FGame, LAction))
         else
           FGame.StatePushBack(TXcomProjectileFlyState.Create(FGame, LAction));
         Result := True;

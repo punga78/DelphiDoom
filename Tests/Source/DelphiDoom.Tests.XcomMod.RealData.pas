@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.XcomMod.ModOffsets,
-  DelphiDoom.XcomMod.ModLoader, DelphiDoom.XcomMod.Ruleset;
+  DelphiDoom.XcomMod.ModLoader, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModFiles.Intf;
 
 type
   /// <summary>The sizes of the common sets that the real Mod had when the golden was written</summary>
@@ -49,6 +49,8 @@ type
     function DataFolder: string;
     /// <summary>Loads the mods of the manifest; the caller frees the ruleset</summary>
     function Load: TXcomRuleset;
+    /// <summary>The virtual files of the mods and the game (what Load reads the ruleset from)</summary>
+    function CreateFiles: IXcomModFiles;
     /// <summary>The golden lines of the sections in ASections, in the order of the golden</summary>
     function RuleLines(const ASections: TArray<string>): TStringList;
     property Golden: TStringList read FGolden;
@@ -208,34 +210,49 @@ begin
   Result := FDataFolder;
 end;
 
-function TXcomRealData.Load: TXcomRuleset;
+function TXcomRealData.CreateFiles: IXcomModFiles;
 var
-  LLoader: TXcomModLoader;
   LSources: TArray<TXcomModSource>;
-  LIndex, LFile: Integer;
+  LIndex: Integer;
   LRoots: TList<string>;
+  LFolder: string;
 begin
   LSources := FSources.ToArray;
   LRoots := TList<string>.Create;
   try
     for LIndex := 0 to High(LSources) do
-    begin
-      LSources[LIndex].Files := Copy(LSources[LIndex].Files);
-      for LFile := 0 to High(LSources[LIndex].Files) do
-        LSources[LIndex].Files[LFile] := IncludeTrailingPathDelimiter(FDataFolder) +
-          StringReplace(LSources[LIndex].Files[LFile], '/', '\', [rfReplaceAll]);
       // the folder of the mod: the later a mod, the sooner its files are found
       if Length(LSources[LIndex].Files) > 0 then
-        LRoots.Insert(0, ExtractFilePath(LSources[LIndex].Files[0]));
-    end;
+      begin
+        LFolder := ExtractFilePath(IncludeTrailingPathDelimiter(FDataFolder) +
+          StringReplace(LSources[LIndex].Files[0], '/', '\', [rfReplaceAll]));
+        LRoots.Insert(0, LFolder);
+      end;
     LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'common');
     // the data folder of the game (GEODATA\WORLD.DAT of the globe)
     LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'TFTD');
-    LLoader := TXcomModLoader.Create(TYamlFactory.CreateDiskParser, TXcomGoldenShared.Create(FSprites, FSounds),
-      TXcomDiskModFiles.Create(LRoots.ToArray, TYamlFactory.CreateDiskParser));
+    Result := TXcomDiskModFiles.Create(LRoots.ToArray, TYamlFactory.CreateDiskParser);
   finally
     LRoots.Free;
   end;
+end;
+
+function TXcomRealData.Load: TXcomRuleset;
+var
+  LLoader: TXcomModLoader;
+  LSources: TArray<TXcomModSource>;
+  LIndex, LFile: Integer;
+begin
+  LSources := FSources.ToArray;
+  for LIndex := 0 to High(LSources) do
+  begin
+    LSources[LIndex].Files := Copy(LSources[LIndex].Files);
+    for LFile := 0 to High(LSources[LIndex].Files) do
+      LSources[LIndex].Files[LFile] := IncludeTrailingPathDelimiter(FDataFolder) +
+        StringReplace(LSources[LIndex].Files[LFile], '/', '\', [rfReplaceAll]);
+  end;
+  LLoader := TXcomModLoader.Create(TYamlFactory.CreateDiskParser, TXcomGoldenShared.Create(FSprites, FSounds),
+    CreateFiles);
   try
     Result := LLoader.LoadAll(LSources);
   finally

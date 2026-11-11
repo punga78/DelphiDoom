@@ -121,7 +121,7 @@ function Union-Offsets([int[]]$A, [int[]]$B) {
   $h = New-Object 'System.Collections.Generic.HashSet[int]'
   foreach ($x in $A) { [void]$h.Add($x) }
   foreach ($x in $B) { [void]$h.Add($x) }
-  return $h
+  return ,$h
 }
 
 # --- the runs ---

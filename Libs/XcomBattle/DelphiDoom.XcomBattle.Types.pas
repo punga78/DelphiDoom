@@ -57,6 +57,14 @@ const
   BA_MINDCONTROL = 11;
   BA_PANIC = 12;
   BA_RETHINK = 13;
+
+  // CursorType of the map
+  CT_NONE = 0;
+  CT_NORMAL = 1;
+  CT_AIM = 2;
+  CT_PSI = 3;
+  CT_WAYPOINT = 4;
+  CT_THROW = 5;
   /// <summary>InventoryType</summary>
   INV_SLOT = 0;
   INV_HAND = 1;

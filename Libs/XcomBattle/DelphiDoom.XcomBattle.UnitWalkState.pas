@@ -41,10 +41,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.UnitFallState;
-
-const
-  SNotPorted = 'Not ported yet: %s';
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.UnitFallState, DelphiDoom.XcomBattle.MeleeAttackState;
 
 constructor TXcomUnitWalkState.Create(const AGame: IXcomBattlescapeGame; const AAction: TXcomBattleAction);
 begin
@@ -119,6 +116,7 @@ end;
 procedure TXcomUnitWalkState.PostPathProcedures;
 var
   LDirection: Integer;
+  LMelee: TXcomBattleAction;
 begin
   ActionData.TimeUnits := 0;
   if FUnit.Faction <> FACTION_PLAYER then
@@ -130,7 +128,21 @@ begin
     begin
       LDirection := FGame.TileEngine.GetDirectionTo(FUnit.Position, FUnit.Charging.Position);
       if FGame.TileEngine.ValidMeleeRange(FUnit, ActionData.Actor.Charging, LDirection) then
-        raise EXcomBattleException.CreateFmt(SNotPorted, ['the melee attack of a charging unit (MeleeAttackBState)']);
+      begin
+        LMelee := TXcomBattleAction.Create;
+        try
+          LMelee.Actor := FUnit;
+          LMelee.Target := FUnit.Charging.Position;
+          LMelee.Weapon := FUnit.GetMeleeWeapon;
+          LMelee.ActionType := BA_HIT;
+          LMelee.TimeUnits := FUnit.GetActionTus(LMelee.ActionType, LMelee.Weapon);
+          LMelee.Targeting := True;
+          FUnit.Charging := nil;
+          FGame.StatePushBack(TXcomMeleeAttackState.Create(FGame, LMelee));
+        finally
+          LMelee.Free;
+        end;
+      end;
     end
     else if FUnit.IsHiding then
     begin
