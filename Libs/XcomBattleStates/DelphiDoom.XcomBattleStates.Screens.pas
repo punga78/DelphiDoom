@@ -58,7 +58,8 @@ uses
   DelphiDoom.XcomBattleStates.ActionMenuState, DelphiDoom.XcomBattleStates.PrimeGrenadeState,
   DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState,
   DelphiDoom.XcomBattleStates.UnitInfoState,
-  DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState;
+  DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState,
+  DelphiDoom.XcomBattleStates.InventoryState;
 
 constructor TXcomBattleScreens.Create(const ADebriefing: TXcomBattleDebriefing;
   const AOptions: TXcomBattleOptionsScreen);
@@ -102,6 +103,8 @@ end;
 function TXcomBattleScreens.Inventory(AParent: TXcomState; ATimeUnits: Boolean): TXcomState;
 begin
   Result := nil;
+  if AParent is TXcomBattlescapeState then
+    Result := TXcomInventoryState.Create(AParent.Host, TXcomBattlescapeState(AParent), ATimeUnits);
 end;
 
 function TXcomBattleScreens.MiniMap(AParent: TXcomState): TXcomState;
