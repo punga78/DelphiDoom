@@ -83,6 +83,11 @@ uses
   DelphiDoom.ScriptHost.World.Sides in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sides.pas',
   DelphiDoom.ScriptHost.World.Lines in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Lines.pas',
   DelphiDoom.ScriptHost.World.Sectors in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sectors.pas',
+  DelphiDoom.ScriptHost.Overlay.Types in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Overlay.Types.pas',
+  DelphiDoom.ScriptHost.Overlay.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Overlay.Intf.pas',
+  DelphiDoom.ScriptHost.Overlay.NullCanvas in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Overlay.NullCanvas.pas',
+  DelphiDoom.ScriptHost.Overlay.Drawer in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Overlay.Drawer.pas',
+  DelphiDoom.ScriptHost.Overlay.Functions in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Overlay.Functions.pas',
   DelphiDoom.ScriptHost.MobjInfo.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.Intf.pas',
   DelphiDoom.ScriptHost.MobjInfo.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.Table.pas',
   DelphiDoom.ScriptHost.MobjInfo in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.pas',
@@ -122,7 +127,11 @@ uses
   DelphiDoom.Tests.ScriptHost.Sectors in 'Source\DelphiDoom.Tests.ScriptHost.Sectors.pas',
   DelphiDoom.Tests.ScriptHost.MobjInfo in 'Source\DelphiDoom.Tests.ScriptHost.MobjInfo.pas',
   DelphiDoom.Tests.ScriptHost.Players in 'Source\DelphiDoom.Tests.ScriptHost.Players.pas',
-  DelphiDoom.Tests.ScriptHost.Actors in 'Source\DelphiDoom.Tests.ScriptHost.Actors.pas';
+  DelphiDoom.Tests.ScriptHost.Actors in 'Source\DelphiDoom.Tests.ScriptHost.Actors.pas',
+  DelphiDoom.Tests.ScriptHost.OverlayFakes in 'Source\DelphiDoom.Tests.ScriptHost.OverlayFakes.pas',
+  DelphiDoom.Tests.ScriptHost.OverlayDrawer in 'Source\DelphiDoom.Tests.ScriptHost.OverlayDrawer.pas',
+  DelphiDoom.Tests.ScriptHost.OverlayFunctions in 'Source\DelphiDoom.Tests.ScriptHost.OverlayFunctions.pas',
+  DelphiDoom.Tests.ScriptHost.OverlayNullCanvas in 'Source\DelphiDoom.Tests.ScriptHost.OverlayNullCanvas.pas';
 
 var
   Runner: ITestRunner;
