@@ -55,6 +55,7 @@ implementation
 
 uses
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.NextTurnState,
+  DelphiDoom.XcomBattleStates.ActionMenuState, DelphiDoom.XcomBattleStates.PrimeGrenadeState,
   DelphiDoom.XcomBattleStates.InfoboxState, DelphiDoom.XcomBattleStates.InfoboxOkState,
   DelphiDoom.XcomBattleStates.UnitInfoState,
   DelphiDoom.XcomBattleStates.MiniMapState, DelphiDoom.XcomBattleStates.AbortMissionState;
@@ -70,13 +71,14 @@ end;
 function TXcomBattleScreens.ActionMenu(AParent: TXcomState; const AAction: TXcomBattleAction; AX,
   AY: Integer): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomActionMenuState.Create(AParent.Host, AParent as TXcomBattlescapeState, AAction, AX, AY);
 end;
 
 function TXcomBattleScreens.PrimeGrenade(AParent: TXcomState; const AAction: TXcomBattleAction;
   AInInventoryView: Boolean; const AGrenade: TXcomBattleItem): TXcomState;
 begin
-  Result := nil;
+  Result := TXcomPrimeGrenadeState.Create(AParent.Host, AParent as TXcomBattlescapeState, AAction, AInInventoryView,
+    AGrenade);
 end;
 
 function TXcomBattleScreens.Medikit(AParent: TXcomState; const ATarget: TXcomBattleUnit;

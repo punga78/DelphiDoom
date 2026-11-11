@@ -29,7 +29,11 @@ uses
   DelphiDoom.Tests.XcomBattleStates.UnitInfoState in 'Source\DelphiDoom.Tests.XcomBattleStates.UnitInfoState.pas',
   DelphiDoom.Tests.XcomBattleStates.MiniMapView in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapView.pas',
   DelphiDoom.Tests.XcomBattleStates.MiniMapState in 'Source\DelphiDoom.Tests.XcomBattleStates.MiniMapState.pas',
-  DelphiDoom.Tests.XcomBattleStates.AbortMissionState in 'Source\DelphiDoom.Tests.XcomBattleStates.AbortMissionState.pas';
+  DelphiDoom.Tests.XcomBattleStates.AbortMissionState in 'Source\DelphiDoom.Tests.XcomBattleStates.AbortMissionState.pas',
+  DelphiDoom.Tests.XcomBattleStates.Battle in 'Source\DelphiDoom.Tests.XcomBattleStates.Battle.pas',
+  DelphiDoom.Tests.XcomBattleStates.ActionMenuItem in 'Source\DelphiDoom.Tests.XcomBattleStates.ActionMenuItem.pas',
+  DelphiDoom.Tests.XcomBattleStates.ActionMenuState in 'Source\DelphiDoom.Tests.XcomBattleStates.ActionMenuState.pas',
+  DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState in 'Source\DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState.pas';
 
 var
   Runner: ITestRunner;
