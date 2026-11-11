@@ -69,6 +69,8 @@ type
     [Test]
     procedure LoScannerDovrebbeMostrareChiSiEMosso;
     [Test]
+    procedure LoScannerDovrebbeSegnareChiSiEGirato;
+    [Test]
     procedure LoScannerDovrebbeLampeggiareOgni125Millisecondi;
     [Test]
     procedure LoScannerSiChiudeConUnClicColTastoDestroEConEsc;
@@ -456,6 +458,63 @@ begin
     Assert.AreEqual(0, LCount, 'nobody moved: no blip away from the middle')
   else
     Assert.IsTrue(LCount > 0, 'a unit that moved is a blip');
+end;
+
+procedure TTestXcomMedikitScanner.LoScannerDovrebbeSegnareChiSiEGirato;
+var
+  LScreen: TXcomScannerState;
+  LView: TXcomScannerView;
+  LX: Integer;
+  LY: Integer;
+  LCenterX: Integer;
+  LCenterY: Integer;
+  LCount: Integer;
+  LStart: TXcomPosition;
+  LGuard: Integer;
+  LWait: Integer;
+  LWalker: TXcomBattleUnit;
+begin
+  if not Ready then
+    Exit;
+  // the selected soldier walks a tile: every step is motion that the scanner of another soldier sees
+  LStart := FActor.Position;
+  LGuard := 0;
+  while (FActor.Position = LStart) and (LGuard < 4) do
+  begin
+    case LGuard of
+      0: FBench.ClickTile(FState, LStart.X + 1, LStart.Y);
+      1: FBench.ClickTile(FState, LStart.X, LStart.Y + 1);
+      2: FBench.ClickTile(FState, LStart.X - 1, LStart.Y);
+      3: FBench.ClickTile(FState, LStart.X, LStart.Y - 1);
+    end;
+    LWait := 0;
+    FBench.World.Wait(60);
+    while FState.Game.IsBusy and (LWait < 200) do
+    begin
+      FBench.World.Wait(50);
+      Inc(LWait);
+    end;
+    Inc(LGuard);
+  end;
+  Assert.IsTrue(FActor.MotionPoints > 0, 'walking leaves motion points');
+  // the scanner is in the hands of the other soldier
+  LWalker := FActor;
+  FActor := FTarget;
+  FTarget := LWalker;
+  FAction.Actor := FActor;
+  Assert.IsTrue((Abs(FTarget.Position.X - FActor.Position.X) <= TXcomScannerView.RANGE) and
+    (Abs(FTarget.Position.Y - FActor.Position.Y) <= TXcomScannerView.RANGE), 'the soldiers of the craft are near');
+  LScreen := OpenScanner;
+  LView := LScreen.ScannerView;
+  // the blip is drawn in the cell of the soldier, eight pixels a tile around the middle
+  LCenterX := (TXcomScannerView.RANGE + FTarget.Position.X - FActor.Position.X) * TXcomScannerView.CELL;
+  LCenterY := (TXcomScannerView.RANGE + FTarget.Position.Y - FActor.Position.Y) * TXcomScannerView.CELL;
+  LCount := 0;
+  for LY := LCenterY - 4 to LCenterY + 11 do
+    for LX := LCenterX - 4 to LCenterX + 11 do
+      if (LX >= 0) and (LY >= 0) and (LX < LView.Width) and (LY < LView.Height) and (LView.GetPixel(LX, LY) <> 0) then
+        Inc(LCount);
+  Assert.IsTrue(LCount > 0, 'a blip where the soldier that moved is');
 end;
 
 procedure TTestXcomMedikitScanner.LoScannerDovrebbeLampeggiareOgni125Millisecondi;

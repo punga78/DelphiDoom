@@ -65,6 +65,14 @@ type
     procedure NelModoDiDebugIlClicDovrebbeDireLaTegola;
     [Test]
     procedure NelModoDiDebugLInventarioNonCostaUnitaDiTempo;
+    [Test]
+    procedure LaRotellaDovrebbeCambiareIlLivelloDellaVista;
+    [Test]
+    procedure ITastiDelleFrecceDovrebberoScorrereLaMappaFinoAlRilascio;
+    [Test]
+    procedure IlMouseSulBordoDovrebbeScorrereLaMappa;
+    [Test]
+    procedure ConLoScorrimentoAGrillettoServeIlTastoPremuto;
   end;
 
 implementation
@@ -392,6 +400,110 @@ begin
   PressKey(Ord('d'), True);
   PressKey(FBench.World.Game.Options.GetValue('keyBattleInventory'));
   Assert.AreEqual('Inventory', FBench.Screens.Calls[FBench.Screens.Calls.Count - 1]);
+end;
+
+procedure TTestXcomBattleInput.LaRotellaDovrebbeCambiareIlLivelloDellaVista;
+var
+  LLevel: Integer;
+begin
+  if not Ready then
+    Exit;
+  if FBench.Session.Battle.MapSizeZ < 2 then
+  begin
+    Assert.Pass('the map of the scenario has one level');
+    Exit;
+  end;
+  Mouse(ekMouseMotion, 300, 120, 0);
+  LLevel := FState.Map.Camera.ViewLevel;
+  Mouse(ekMouseDown, 300, 120, XCOM_BUTTON_WHEELUP);
+  Mouse(ekMouseUp, 300, 120, XCOM_BUTTON_WHEELUP);
+  Assert.AreEqual(LLevel + 1, FState.Map.Camera.ViewLevel);
+  Mouse(ekMouseDown, 300, 120, XCOM_BUTTON_WHEELDOWN);
+  Mouse(ekMouseUp, 300, 120, XCOM_BUTTON_WHEELDOWN);
+  Assert.AreEqual(LLevel, FState.Map.Camera.ViewLevel);
+end;
+
+procedure TTestXcomBattleInput.ITastiDelleFrecceDovrebberoScorrereLaMappaFinoAlRilascio;
+var
+  LBefore: TXcomPosition;
+  LAfter: TXcomPosition;
+  LEvent: TXcomInputEvent;
+  LKey: Integer;
+begin
+  if not Ready then
+    Exit;
+  Mouse(ekMouseMotion, 300, 120, 0);
+  for LKey in [FBench.World.Game.Options.GetValue('keyBattleRight'),
+    FBench.World.Game.Options.GetValue('keyBattleDown'), FBench.World.Game.Options.GetValue('keyBattleLeft'),
+    FBench.World.Game.Options.GetValue('keyBattleUp')] do
+  begin
+    LBefore := FState.Map.Camera.MapOffset;
+    LEvent := TXcomInputEvent.Make(ekKeyDown);
+    LEvent.Key := LKey;
+    FBench.World.Events.Enqueue(LEvent);
+    FBench.World.Wait(200);
+    LAfter := FState.Map.Camera.MapOffset;
+    Assert.IsFalse(LAfter = LBefore, 'the map scrolls while the key is down');
+    LEvent.Kind := ekKeyUp;
+    FBench.World.Events.Enqueue(LEvent);
+    FBench.World.Wait(40);
+    LBefore := FState.Map.Camera.MapOffset;
+    FBench.World.Wait(200);
+    Assert.IsTrue(FState.Map.Camera.MapOffset = LBefore, 'and stops when it is released');
+  end;
+end;
+
+procedure TTestXcomBattleInput.IlMouseSulBordoDovrebbeScorrereLaMappa;
+var
+  LBefore: TXcomPosition;
+begin
+  if not Ready then
+    Exit;
+  // battleEdgeScroll 2: the mouse on a border is enough
+  FBench.World.Game.Options.SetValue('battleEdgeScroll', 2);
+  Mouse(ekMouseMotion, 300, 120, 0);
+  LBefore := FState.Map.Camera.MapOffset;
+  FBench.World.Wait(200);
+  Assert.IsTrue(FState.Map.Camera.MapOffset = LBefore, 'in the middle nothing scrolls');
+  Mouse(ekMouseMotion, 2, 120, 0);
+  FBench.World.Wait(300);
+  Assert.IsFalse(FState.Map.Camera.MapOffset = LBefore, 'the left border scrolls');
+  Mouse(ekMouseMotion, 300, 120, 0);
+  LBefore := FState.Map.Camera.MapOffset;
+  FBench.World.Wait(200);
+  Assert.IsTrue(FState.Map.Camera.MapOffset = LBefore, 'back in the middle it stops');
+  Mouse(ekMouseMotion, 637, 120, 0);
+  FBench.World.Wait(300);
+  Assert.IsFalse(FState.Map.Camera.MapOffset = LBefore, 'the right border scrolls');
+end;
+
+procedure TTestXcomBattleInput.ConLoScorrimentoAGrillettoServeIlTastoPremuto;
+var
+  LBefore: TXcomPosition;
+begin
+  if not Ready then
+    Exit;
+  // battleEdgeScroll 1: the border scrolls only while the left button is down
+  // the mouse of the test starts in the corner, which scrolls in the automatic mode: it goes to the middle first
+  // (as in the C++ a change of the option does not stop a scroll that is already going)
+  Mouse(ekMouseMotion, 300, 120, 0);
+  FBench.World.Game.Options.SetValue('battleEdgeScroll', 1);
+  LBefore := FState.Map.Camera.MapOffset;
+  FBench.World.Wait(300);
+  Assert.IsTrue(FState.Map.Camera.MapOffset = LBefore, 'in the middle nothing scrolls');
+  Mouse(ekMouseMotion, 2, 120, 0);
+  LBefore := FState.Map.Camera.MapOffset;
+  FBench.World.Wait(300);
+  Assert.AreEqual(LBefore.X, FState.Map.Camera.MapOffset.X, 'without the button nothing scrolls (x)');
+  Assert.AreEqual(LBefore.Y, FState.Map.Camera.MapOffset.Y, 'without the button nothing scrolls (y)');
+  Mouse(ekMouseDown, 2, 120, XCOM_BUTTON_LEFT);
+  FBench.World.Wait(300);
+  Assert.IsFalse(FState.Map.Camera.MapOffset = LBefore, 'with the button down it scrolls');
+  Mouse(ekMouseUp, 2, 120, XCOM_BUTTON_LEFT);
+  LBefore := FState.Map.Camera.MapOffset;
+  FBench.World.Wait(300);
+  Assert.IsTrue(FState.Map.Camera.MapOffset = LBefore, 'the release stops it');
+  Assert.IsFalse(FState.Game.IsBusy, 'and is not a click on the map');
 end;
 
 end.

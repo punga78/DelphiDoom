@@ -1,8 +1,9 @@
 # Libs\XcomBattleStates
 
 Gli stati del Battlescape di **OpenXcom** a classi, senza SDL: lo schermo della battaglia (`BattlescapeState`), le
-schermate che apre (menu delle azioni, timer della granata, inventario, statistiche dell'unita', minimappa, abbandono,
-cambio di turno, messaggi), il briefing e l'ingresso nella battaglia dal geoscape o da un salvataggio.
+schermate che apre (menu delle azioni, timer della granata, inventario coi modelli di equipaggiamento, statistiche
+dell'unita', minimappa, medikit, sensore di movimento, abbandono, cambio di turno, messaggi), i salvataggi in battaglia
+(rapido, autosalvataggio, ironman), il briefing e l'ingresso nella battaglia dal geoscape o da un salvataggio.
 
 Sta sopra `Libs\XcomBattle` (modello e regole della battaglia), `Libs\XcomBattlescape` (disegno della mappa),
 `Libs\XcomEngine`, `Libs\XcomUi`, `Libs\XcomDebriefing` (fine della missione), `Libs\XcomGeoscape` (contratto
@@ -29,6 +30,8 @@ Il programma (`OpenXcom\Xcom32`, composition root `OpenXcom\DelphiDoom.Xcom.Game
   `Tests\Data\XcomBattle\bg\g01_2` con le regole e la grafica vere di TFTD (`Reference\_dati\xcom_tftd`); senza i dati
   passano senza controllare.
 - `Tools\Verifica\176\Compare-XcomBattle.ps1`: lo stesso salvataggio in `Xcom32` e nel vero OpenXcom, confronto dei
-  pixel.
+  pixel; `Edit-XcomBattleSave.ps1` prepara gli scenari che mancano; `Run-XcomBattleSounds.ps1` scrive il registro dei
+  suoni col mixer vero.
+- Copertura: `Tools\Copertura.ps1 -Test XcomBattleStates -Cartella Libs\XcomBattleStates` (90%, 203 test).
 
 Dettagli, numeri e differenze dichiarate: `CLAUDE.md` di questa cartella.

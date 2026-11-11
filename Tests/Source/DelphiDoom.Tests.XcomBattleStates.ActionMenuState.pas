@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
+  DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomBattle.Types,
+  DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattleStates.Screens.Intf,
   DelphiDoom.XcomBattleStates.ActionMenuState, DelphiDoom.Tests.XcomEngine.World,
   DelphiDoom.Tests.XcomBattleStates.Battle;
@@ -39,6 +40,7 @@ type
     function NewItem(const AType: string): TXcomBattleItem;
     function MayUse(AUnit: TXcomBattleUnit; AItem: TXcomBattleItem): Boolean;
     function FindActor(AItem: TXcomBattleItem; AWithSomeoneInFront: Boolean): TXcomBattleUnit;
+    function AnAlien: TXcomBattleUnit;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -78,6 +80,22 @@ type
     procedure DovrebbeNonSpendereTuSenzaLoSchermoDelloScanner;
     [Test]
     procedure DovrebbeDireCheMancanoITuPerLoScanner;
+    [Test]
+    procedure IlLanciamissiliScaricoDovrebbeDireCheNonHaMunizioni;
+    [Test]
+    procedure IlLanciamissiliSenzaTuDovrebbeDireCheMancano;
+    [Test]
+    procedure IlColpoCorpoACorpoSenzaNessunoDavantiDovrebbeDirlo;
+    [Test]
+    procedure IlColpoCorpoACorpoSenzaTuDovrebbeDireCheMancano;
+    [Test]
+    procedure IlBastoneStordenteDovrebbeOffrireLoStordimento;
+    [Test]
+    procedure LoPsiAmpDovrebbeOffrireControlloEPanicoAChiHaLAbilita;
+    [Test]
+    procedure LoPsiAmpSenzaAbilitaPsionicaOffreSoloIlLancio;
+    [Test]
+    procedure LaSondaMentaleDovrebbeAspettareIlBersaglio;
   end;
 
 implementation
@@ -450,6 +468,148 @@ begin
   ClickItem(1);
   Assert.AreEqual('STR_NOT_ENOUGH_TIME_UNITS', FAction.ResultText);
   Assert.AreEqual('', FScreens.Calls);
+  Assert.AreSame(FBase, FWorld.Game.TopState);
+end;
+
+function TTestXcomActionMenuState.AnAlien: TXcomBattleUnit;
+var
+  LUnit: TXcomBattleUnit;
+begin
+  // an alien may use every item: the research of the player does not matter
+  for LUnit in FBattle.Session.Battle.Units do
+    if (LUnit.OriginalFaction = FACTION_HOSTILE) and Assigned(LUnit.Tile) and (not LUnit.IsOut) then
+      Exit(LUnit);
+  Result := nil;
+end;
+
+procedure TTestXcomActionMenuState.IlLanciamissiliScaricoDovrebbeDireCheNonHaMunizioni;
+var
+  LActor: TXcomBattleUnit;
+begin
+  if Skip then
+    Exit;
+  LActor := AnAlien;
+  Assert.IsNotNull(LActor);
+  OpenMenu(LActor, NewItem('STR_DISRUPTOR_PULSE_LAUNCHER'));
+  Assert.AreEqual(BA_LAUNCH, FMenu.Item(1).ActionType);
+  ClickItem(1);
+  Assert.AreEqual('STR_NO_AMMUNITION_LOADED', FAction.ResultText);
+  Assert.IsFalse(FAction.Targeting);
+  Assert.AreSame(FBase, FWorld.Game.TopState);
+end;
+
+procedure TTestXcomActionMenuState.IlLanciamissiliSenzaTuDovrebbeDireCheMancano;
+var
+  LActor: TXcomBattleUnit;
+begin
+  if Skip then
+    Exit;
+  LActor := AnAlien;
+  OpenMenu(LActor, NewItem('STR_DISRUPTOR_PULSE_LAUNCHER'));
+  LActor.SetTimeUnits(0);
+  ClickItem(1);
+  Assert.AreEqual('STR_NOT_ENOUGH_TIME_UNITS', FAction.ResultText);
+  Assert.IsFalse(FAction.Targeting);
+end;
+
+procedure TTestXcomActionMenuState.IlColpoCorpoACorpoSenzaNessunoDavantiDovrebbeDirlo;
+var
+  LLance: TXcomBattleItem;
+  LActor: TXcomBattleUnit;
+begin
+  if Skip then
+    Exit;
+  LLance := NewItem('STR_HEAVY_THERMIC_LANCE');
+  Assert.AreEqual(TXcomRuleItem.BT_MELEE, LLance.Rules.BattleType);
+  LActor := FindActor(LLance, False);
+  if not Assigned(LActor) then
+  begin
+    Assert.Pass('every unit of this battle that may use the lance has someone in front');
+    Exit;
+  end;
+  OpenMenu(LActor, LLance);
+  Assert.AreEqual(BA_HIT, FMenu.Item(1).ActionType);
+  ClickItem(1);
+  Assert.AreEqual('STR_THERE_IS_NO_ONE_THERE', FAction.ResultText);
+  // MeleeAttackBState will not be there to clear the action: the menu does
+  Assert.AreEqual(BA_NONE, FAction.ActionType);
+  Assert.AreSame(FBase, FWorld.Game.TopState);
+end;
+
+procedure TTestXcomActionMenuState.IlColpoCorpoACorpoSenzaTuDovrebbeDireCheMancano;
+var
+  LActor: TXcomBattleUnit;
+begin
+  if Skip then
+    Exit;
+  LActor := AnAlien;
+  OpenMenu(LActor, NewItem('STR_HEAVY_THERMIC_LANCE'));
+  LActor.SetTimeUnits(0);
+  ClickItem(1);
+  Assert.AreEqual('STR_NOT_ENOUGH_TIME_UNITS', FAction.ResultText);
+  Assert.AreEqual(BA_NONE, FAction.ActionType);
+end;
+
+procedure TTestXcomActionMenuState.IlBastoneStordenteDovrebbeOffrireLoStordimento;
+var
+  LTazer: TXcomBattleItem;
+begin
+  if Skip then
+    Exit;
+  LTazer := NewItem('STR_THERMAL_TAZER');
+  OpenMenu(AnAlien, LTazer);
+  Assert.AreEqual(BA_HIT, FMenu.Item(1).ActionType);
+  Assert.AreEqual(Integer(TXcomRuleItem.DT_STUN), Integer(LTazer.Rules.DamageType));
+  Assert.AreEqual(2, FMenu.ItemCount, 'throw and stun');
+end;
+
+procedure TTestXcomActionMenuState.LoPsiAmpDovrebbeOffrireControlloEPanicoAChiHaLAbilita;
+var
+  LActor: TXcomBattleUnit;
+  LStats: TXcomUnitStats;
+begin
+  if Skip then
+    Exit;
+  LActor := AnAlien;
+  LStats := LActor.Stats;
+  LStats.PsiSkill := 60;
+  LActor.Stats := LStats;
+  OpenMenu(LActor, NewItem('STR_MC_DISRUPTOR'));
+  Assert.AreEqual(3, FMenu.ItemCount, 'throw, mind control and panic');
+  Assert.AreEqual(BA_MINDCONTROL, FMenu.Item(1).ActionType);
+  Assert.AreEqual(BA_PANIC, FMenu.Item(2).ActionType);
+  ClickItem(2);
+  Assert.AreEqual(BA_PANIC, FAction.ActionType);
+  Assert.IsTrue(FAction.Targeting, 'the attack waits for its target');
+  Assert.AreEqual('', FAction.ResultText);
+  Assert.AreSame(FBase, FWorld.Game.TopState);
+end;
+
+procedure TTestXcomActionMenuState.LoPsiAmpSenzaAbilitaPsionicaOffreSoloIlLancio;
+var
+  LActor: TXcomBattleUnit;
+  LStats: TXcomUnitStats;
+begin
+  if Skip then
+    Exit;
+  LActor := AnAlien;
+  LStats := LActor.Stats;
+  LStats.PsiSkill := 0;
+  LActor.Stats := LStats;
+  OpenMenu(LActor, NewItem('STR_MC_DISRUPTOR'));
+  Assert.AreEqual(1, FMenu.ItemCount);
+  Assert.AreEqual(BA_THROW, FMenu.Item(0).ActionType);
+end;
+
+procedure TTestXcomActionMenuState.LaSondaMentaleDovrebbeAspettareIlBersaglio;
+begin
+  if Skip then
+    Exit;
+  OpenMenu(AnAlien, NewItem('STR_MC_READER'));
+  Assert.AreEqual(BA_USE, FMenu.Item(1).ActionType);
+  ClickItem(1);
+  Assert.AreEqual(BA_USE, FAction.ActionType);
+  Assert.IsTrue(FAction.Targeting);
   Assert.AreSame(FBase, FWorld.Game.TopState);
 end;
 
