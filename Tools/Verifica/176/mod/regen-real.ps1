@@ -1,5 +1,6 @@
 # Rewrites Tests\Data\XcomMod\tftd.*.golden.txt: builds modload.exe (build3.cmd: the real OpenXcom objects) and runs
 # the real Mod::loadAll on the mods of the TFTD nightly (Reference\_dati\xcom_tftd\openxcom).
+# and, if Reference\_dati\xcom_ufo\openxcom (the nightly with the UFO data in UFO\) exists, on the mod xcom1 of UFO (ufo.xcom1.golden.txt.gz)
 # usage: .\regen-real.ps1 [-Work <folder>]   (Work: where obj.a and the exe go; default: %TEMP%\modload)
 param([string]$Work = (Join-Path $env:TEMP 'modload'))
 $ErrorActionPreference = 'Stop'
@@ -19,12 +20,24 @@ $extra = 'Aliens_Pick_Up_Weapons_TFTD', 'Limit_Craft_Item_Capacities_TFTD', 'Xco
 $runs = @(, @('user1', 'tftd.xcom2.golden.txt', $cfg))
 foreach ($m in $extra) { $cfg = $cfg -replace "active: false(\r?\n\s+id: $m\r?\n)", 'active: true$1' }
 $runs += , @('user2', 'tftd.mods.golden.txt', $cfg)
+$ufo = 'C:\Progetti\DelphiDoom\Reference\_dati\xcom_ufo'
+if (Test-Path "$ufo\openxcom_user\options.cfg") {
+  $ucfg = Get-Content "$ufo\openxcom_user\options.cfg" -Raw
+  $runs += , @('user3', 'ufo.xcom1.golden.txt', $ucfg, "$ufo\openxcom")
+  # xcom1 and the UFO mods that delete and overwrite rules
+  foreach ($m in 'Aliens_Pick_Up_Weapons', 'Limit_Craft_Item_Capacities', 'XcomUtil_Fighter_Transports', 'XcomUtil_Improved_Gauss',
+    'XcomUtil_Improved_Ground_Tanks', 'XcomUtil_Improved_Heavy_Laser', 'XcomUtil_High_Explosive_Damage', 'XcomUtil_No_Psionics',
+    'Demigod_Difficulty', 'UFOextender_Gun_Melee', 'UFOextender_Psionic_Line_Of_Fire', 'OpenXCom_Unlimited_Waypoints') {
+    $ucfg = $ucfg -replace "active: false(\r?\n\s+id: $m\r?\n)", 'active: true$1'
+  }
+  $runs += , @('user4', 'ufo.mods.golden.txt', $ucfg, "$ufo\openxcom")
+}
 foreach ($r in $runs) {
   $user = Join-Path $Work $r[0]
   New-Item -ItemType Directory -Force $user | Out-Null
   Set-Content (Join-Path $user 'options.cfg') $r[2] -NoNewline
   $raw = Join-Path $Work $r[1]
-  $p = Start-Process -FilePath "$Work\modload.exe" -ArgumentList $data, $user, $raw -Wait -PassThru -NoNewWindow
+  $p = Start-Process -FilePath "$Work\modload.exe" -ArgumentList $(if ($r.Count -gt 3) { $r[3] } else { $data }), $user, $raw -Wait -PassThru -NoNewWindow
   if ($p.ExitCode -ne 0) { throw "modload failed for $($r[1])" }
   # the golden is committed gzipped (the dump is a few MB of text)
   $in = [IO.File]::OpenRead($raw)

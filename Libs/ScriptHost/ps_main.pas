@@ -227,6 +227,7 @@ uses
   i_system,
   p_common,
   ps_import,
+  DelphiDoom.ScriptHost.Manager,
   ps_dll,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Events.Table,
@@ -239,50 +240,6 @@ uses
   w_pak,
   ps_defs,
   ps_utils;
-
-type
-  psscriptitem_t = record
-    exec: TDoomExec;
-    id: TString;
-    source: TString;
-    data: TString;
-    scripttype: psscripttype_t;
-    valid: Boolean;
-  end;
-  Ppsscriptitem_t = ^psscriptitem_t;
-  psscriptitem_tArray = array[0..$FFF] of psscriptitem_t;
-  Ppsscriptitem_tArray = ^psscriptitem_tArray;
-
-  TPSExecManager = class
-  private
-    fList: Ppsscriptitem_tArray;
-    fNumItems: integer;
-    compiler: TDoomCompiler;
-    importer: TPSDoomRuntimeClassImporter;
-    globalexec: TDoomExec;
-    feventsexec: TDoomExec;
-    fevents: IScriptEvents;
-    globalindex: integer;
-    fGlobalInterface: string;
-    fGlobalImplementation: string;
-    fGlobalInitialization: string;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    function IndexOf(const id: string): integer;
-    function AddNormalSourceFile(const id: string; const value: string): integer; virtual;
-    function AddGlobalSourceFile(const id: string; const value: string): integer; virtual;
-    function AddSourceFile(const id: string; const value: string;
-      const typ: psscripttype_t): integer; virtual;
-    function AddCompiledFile(const id: string; const value: string): integer; virtual;
-    procedure CompileScript(const id: Integer);
-    procedure CompileAllScripts;
-    function RunScript(actor: Pmobj_t; const scid: integer): boolean;
-    procedure LinkScriptEvents(const mapname: string);
-    property Count: integer read fNumItems;
-    property Events: IScriptEvents read fevents;
-    property EventsExec: TDoomExec read feventsexec;
-  end;
 
 var
   // given by the composition root
@@ -334,503 +291,20 @@ begin
       end;
 end;
 
-//==============================================================================
-//
-// TPSExecManager.Create
-//
-//==============================================================================
-constructor TPSExecManager.Create;
-begin
-  fList := nil;
-  fNumItems := 0;
-  globalindex := -1;
-  fGlobalInterface := '';
-  fGlobalImplementation := '';
-  fGlobalInitialization := '';
-  compiler := TDoomCompiler.CreateDoomCompiler;
-  compiler.OnExportCheck := ScriptOnExportCheck;
-  importer := TPSDoomRuntimeClassImporter.Create;
-  globalexec := nil;
-  feventsexec := TDoomExec.CreateDoomExec(importer);
-  fevents := TScriptHostFactory.CreateEvents(feventsexec, PS_StateLog);
-  AddNormalSourceFile('GLOBAL', '');
-end;
-
-//==============================================================================
-//
-// TPSExecManager.Destroy
-//
-//==============================================================================
-destructor TPSExecManager.Destroy;
 var
-  i: integer;
+  ps_manager_ref: TScriptManager = nil;
+
+//==============================================================================
+//
+// PS_Manager
+//
+//==============================================================================
+function PS_Manager: TScriptManager;
 begin
-  if fNumItems > 0 then
-  begin
-    for i := 0 to fNumItems - 1 do
-    begin
-      fList[i].source.Free;
-      fList[i].data.Free;
-      fList[i].id.Free;
-      fList[i].exec.Free;
-    end;
-    memfree(pointer(fList), fNumItems * SizeOf(psscriptitem_t));
-  end;
-  compiler.Free;
-  importer.Free;
-  fevents := nil;
-  feventsexec.Free;
+  if ps_manager_ref = nil then
+    I_Error('PS_Init() was not called: the manager of the scripts is missing');
+  Result := ps_manager_ref;
 end;
-
-//==============================================================================
-//
-// TPSExecManager.AddNormalSourceFile
-//
-//==============================================================================
-function TPSExecManager.AddNormalSourceFile(const id: string; const value: string): integer;
-var
-  uid: string;
-begin
-  uid := strupper(id);
-  Result := IndexOf(uid);
-  if Result <> - 1 then
-  begin
-    I_Warning('TPSExecManager.AddNormalSourceFile(): Script id="' + uid + '" already exists.'#13#10);
-    exit;
-  end;
-
-  realloc(pointer(fList), fNumItems * SizeOf(psscriptitem_t), (fNumItems + 1) * SizeOf(psscriptitem_t));
-  fList[fNumItems].source := TString.Create(value);
-  fList[fNumItems].exec := nil;
-  fList[fNumItems].id := TString.Create(uid);
-  fList[fNumItems].data := nil;
-  fList[fNumItems].scripttype := pst_normal;
-  fList[fNumItems].valid := False;
-  Result := fNumItems;
-
-  inc(fNumItems);
-end;
-
-//==============================================================================
-//
-// TPSExecManager.AddGlobalSourceFile
-//
-//==============================================================================
-function TPSExecManager.AddGlobalSourceFile(const id: string; const value: string): integer;
-var
-  slist: TDStringList;
-  i: integer;
-  section: integer;
-  s, token: string;
-begin
-  slist := TDStringList.Create;
-  slist.Text := value;
-
-  // JVAL: Split the input source to sections
-  fGlobalInterface :=
-    fGlobalInterface +
-      '// --- "' + id + '" Interface --- '#13#10;
-  fGlobalImplementation :=
-    fGlobalImplementation +
-      '// --- "' + id + '" Implementation --- '#13#10;
-  fGlobalInitialization :=
-    fGlobalInitialization +
-      '// --- "' + id + '" Initialization --- '#13#10;
-
-  section := 0; // Means "interface"
-  for i := 0 to slist.Count - 1 do
-  begin
-    s := slist.Strings[i];
-    token := strupper(strtrim(s));
-    if token = 'INTERFACE' then
-      section := 0
-    else if token = 'IMPLEMENTATION' then
-      section := 1
-    else if token = 'INITIALIZATION' then
-      section := 2
-    else
-    begin
-      case section of
-        0:
-          begin
-            fGlobalInterface := fGlobalInterface + s + #13#10;
-          end;
-        1:
-          begin
-            fGlobalImplementation := fGlobalImplementation + s + #13#10;
-          end;
-        2:
-          begin
-            if strupper(strtrim(s)) <> 'END.' then
-              fGlobalInitialization := fGlobalInitialization + s + #13#10;
-          end;
-      end;
-    end;
-  end;
-  slist.Free;
-  Result := IndexOf('GLOBAL');
-end;
-
-//==============================================================================
-//
-// TPSExecManager.AddSourceFile
-//
-//==============================================================================
-function TPSExecManager.AddSourceFile(const id: string; const value: string;
-      const typ: psscripttype_t): integer;
-begin
-  if typ = pst_global then
-    result := AddGlobalSourceFile(id, value)
-  else if typ = pst_normal then
-    result := AddNormalSourceFile(id, value)
-  else
-  begin
-    I_Warning('TPSExecManager.AddSourceFile(): Internal error! Unidentified script type.'#13#10);
-    Result := -1;
-  end;
-end;
-
-//==============================================================================
-//
-// TPSExecManager.AddCompiledFile
-//
-//==============================================================================
-function TPSExecManager.AddCompiledFile(const id: string; const value: string): integer;
-var
-  uid: string;
-begin
-  uid := strupper(id);
-  Result := IndexOf(uid);
-  if Result <> - 1 then
-  begin
-    I_Warning('TPSExecManager.AddCompiledFile(): Script id="' + uid + '" already exists.'#13#10);
-    exit;
-  end;
-
-  realloc(pointer(fList), fNumItems * SizeOf(psscriptitem_t), (fNumItems + 1) * SizeOf(psscriptitem_t));
-  fList[fNumItems].source := nil;
-  fList[fNumItems].exec := nil;
-  fList[fNumItems].id := TString.Create(uid);
-  fList[fNumItems].data := TString.Create(value);
-  fList[fNumItems].scripttype := pst_normal;
-  fList[fNumItems].valid := False;
-  Result := fNumItems;
-
-  inc(fNumItems);
-end;
-
-//==============================================================================
-//
-// PS_BytesToStr
-// Compiled script bytecode is binary: keep a 1:1 mapping between byte values
-// and character codes, independently of the system code page.
-//
-//==============================================================================
-function PS_BytesToStr(const a: TbtString): string;
-var
-  i: integer;
-begin
-  SetLength(Result, Length(a));
-  for i := 1 to Length(a) do
-    Result[i] := Char(Ord(a[i]));
-end;
-
-//==============================================================================
-//
-// PS_StrToBytes
-//
-//==============================================================================
-function PS_StrToBytes(const s: string): TbtString;
-var
-  i: integer;
-begin
-  SetLength(Result, Length(s));
-  for i := 1 to Length(s) do
-    Result[i] := TbtChar(Ord(s[i]));
-end;
-
-//==============================================================================
-//
-// TPSExecManager.CompileScript
-//
-//==============================================================================
-procedure TPSExecManager.CompileScript(const id: Integer);
-var
-  clist: TDStringList;
-  i: integer;
-  data: TbtString;
-  DE: TDoomExec;
-begin
-  if fList[id].valid then
-    exit;
-
-  if flist[id].source = nil then
-  begin
-    if fList[id].exec = nil then
-      fList[id].exec := TDoomExec.CreateDoomExec(importer);
-    DE := fList[id].exec;
-    fList[id].valid := DE.LoadData(PS_StrToBytes(fList[id].data.str)); // Load the data from the Data string.
-    if not fList[id].valid then
-    begin
-      { For some reason the script could not be loaded. This is usually the case when a
-        library that has been used at compile time isn't registered at runtime. }
-      // JVAL: This could happen if script was compiled with previous version of pscomp
-      I_Warning('TPSExecManager.Add(): Internal error! Can not load script assembly.'#13#10);
-      I_Warning(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) + #13#10);
-    end;
-    exit;
-  end;
-
-  if compiler.CompileDoomScript(flist[id].source.str, data) then
-  begin
-    fList[id].data := TString.Create(PS_BytesToStr(data));
-    if fList[id].exec = nil then
-      fList[id].exec := TDoomExec.CreateDoomExec(importer);
-    DE := fList[id].exec;
-    fList[id].valid := DE.LoadData(data); // Load the data from the Data string.
-    if not fList[id].valid then
-    begin
-      { For some reason the script could not be loaded. This is usually the case when a
-        library that has been used at compile time isn't registered at runtime. }
-      // JVAL: This could happen if script was compiled with previous version of pscomp
-      I_Warning('TPSExecManager.Add(): Internal error! Can not load script assembly.'#13#10);
-      I_Warning(TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) + #13#10);
-    end;
-    if devparm then
-    begin
-      clist := TDStringList.Create;
-      clist.Text := flist[id].source.str;
-      for i := 0 to clist.Count - 1 do
-        printf(IntToStrZfill(6, i + 1) + ': ' + clist.Strings[i] + #13#10);
-      clist.Free;
-    end;
-  end
-  else
-  begin
-    I_Warning('TPSExecManager.Add(): Can not compile script:'#13#10);
-    clist := TDStringList.Create;
-    clist.Text := flist[id].source.str;
-    for i := 0 to clist.Count - 1 do
-      I_Warning(IntToStrZfill(6, i + 1) + ': ' + clist.Strings[i] + #13#10);
-    for i := 0 to compiler.MsgCount - 1 do
-    begin
-      I_Warning('//---------------------------------------------------------'#13#10);
-      I_Warning(' Pos: ' + IntToStrZFill(6, compiler.Msg[i].Pos) +
-                ' Compiler: ' + compiler.Msg[i].MessageToString + #13#10);
-      I_Warning(' <<' + Copy(flist[id].source.str, compiler.Msg[i].Pos, 80) + '>>'#13#10);
-      I_Warning('//---------------------------------------------------------'#13#10);
-    end;
-    clist.Free;
-  end;
-end;
-
-//==============================================================================
-//
-// TPSExecManager.CompileAllScripts
-//
-//==============================================================================
-procedure TPSExecManager.CompileAllScripts;
-var
-  i: integer;
-  globalsource: string;
-begin
-  globalindex := IndexOf('GLOBAL');
-  if globalindex < 0 then // JVAL: Should not happen
-    I_Warning('TPSExecManager.CompileAllScripts(): GLOBAL Script not found.'#13#10)
-  else
-  begin
-    globalsource :=
-      'uses all;'#13#10 +
-      fGlobalInterface +
-      fGlobalImplementation +
-      'begin'#13#10 +
-      fGlobalInitialization +
-      'end.'#13#10;
-    fList[globalindex].source.str := globalsource;
-    fList[globalindex].exec := globalexec;
-    fList[globalindex].data := nil;
-    fList[globalindex].scripttype := pst_global;
-    fList[globalindex].valid := False;
-  end;
-
-  for i := 0 to fNumItems - 1 do
-  begin
-    CompileScript(i);
-    if fList[i].valid then
-      printf(' "%s"...success'#13#10, [fList[i].id.str])
-    else
-    begin
-      I_Warning(' "%s"...failed'#13#10, [fList[i].id.str]);
-      I_Warning('//---------------------------------------------------------'#13#10);
-      I_Warning(#13#10);
-    end;
-  end;
-
-  globalexec := fList[globalindex].exec;
-end;
-
-//==============================================================================
-//
-// TPSExecManager.RunScript
-//
-//==============================================================================
-function TPSExecManager.RunScript(actor: Pmobj_t; const scid: integer): boolean;
-var
-  DE: TDoomExec;
-begin
-  if scid > - 1 then
-    if fList[scid].valid then
-    begin
-      PS_ActorContext.Enter(actor);
-      DE := fList[scid].exec;
-      result := DE.RunScript;
-      if DE.ExceptionCode <> erNoError then
-        I_Warning('[Runtime Error] : ' +
-          TIFErrorToString(DE.ExceptionCode, DE.ExceptionString) +
-          ' in ' +
-          itoa(DE.ExceptionProcNo) +
-          ' at ' +
-          itoa(DE.ExceptionPos));
-      PS_ActorContext.Leave;
-      exit;
-    end;
-
-  result := false;
-end;
-
-//==============================================================================
-//
-// TPSExecManager.LinkScriptEvents
-//
-//==============================================================================
-procedure TPSExecManager.LinkScriptEvents(const mapname: string);
-var
-  idx: Integer;
-
-  function ValidateVarType(aType: TPSTypeRec): string;
-  var
-    I: Integer;
-  begin
-    //Check against our set of allowed types
-    if not (aType.BaseType in SCRIPT_SERIALIZABLE_TYPES) then
-    begin
-      sprintf(Result, 'TPSExecManager.LinkScriptEvents(): Unsupported global variable type %d (%s)'#13#10,
-        [aType.BaseType, aType.ExportName]);
-      Exit;
-    end;
-
-    //Check elements of arrays/records are valid too
-    case aType.BaseType of
-      btArray,
-      btStaticArray:
-        Result := ValidateVarType(TPSTypeRec_Array(aType).ArrayType);
-      btRecord:
-        begin
-          Result := '';
-          for I := 0 to TPSTypeRec_Record(aType).FieldTypes.Count - 1 do
-            Result := Result + ValidateVarType(TPSTypeRec_Record(aType).FieldTypes[I]);
-        end;
-    end;
-  end;
-
-var
-  i, j: integer;
-  V: PIFVariant;
-  errstr: string;
-  errlst: TDStringList;
-  data: string;
-  uS: string;
-begin
-  fevents.Clear;
-  idx := IndexOf(mapname);
-  if idx < 0 then
-  begin
-    data := PAK_ReadFileAsString(mapname + '.ddout');
-    if data <> '' then
-      idx := AddCompiledFile(mapname, data);
-    if idx < 0 then
-    begin
-      data := PAK_ReadFileAsString(mapname + '.ddscript');
-      if data <> '' then
-        idx := AddNormalSourceFile(mapname, data);
-      if idx < 0 then
-      begin
-        feventsexec.Clear;
-        Exit;
-      end;
-      CompileScript(idx);
-    end;
-  end;
-
-  if not fList[idx].valid then
-    Exit;
-
-  if not feventsexec.LoadData(PS_StrToBytes(fList[idx].data.str)) then
-  begin
-    I_Warning('TPSExecManager.LinkScriptEvents(): Internal error! Can not load script assembly.'#13#10);
-    I_Warning(TIFErrorToString(feventsexec.ExceptionCode, feventsexec.ExceptionString) + #13#10);
-    feventsexec.Clear;
-    Exit;
-  end;
-
-  errstr := '';
-  for i := 0 to feventsexec.GetVarCount - 1 do
-  begin
-    V := feventsexec.GetVarNo(I);
-    uS := strupper(V.FType.ExportName);
-    if (uS = '!TACTORS') or
-       (uS = '!TMAPFLOATS') or
-       (uS = '!TMAPINTEGERS') or
-       (uS = '!TMAPSTRINGS') or
-       (uS = '!TWORLDFLOATS') or
-       (uS = '!TWORLDINTEGERS') or
-       (uS = '!TWORLDSTRINGS') or
-       (uS = '!TVERTEXES') or
-       (uS = '!TSIDES') or
-       (uS = '!TLINES') or
-       (uS = '!TSECTORS') or
-       (uS = '!TOVERLAY') or
-       (uS = '!TMOBJINFO') then
-      Continue;
-
-    errstr := ValidateVarType(V.FType);
-    if errstr <> '' then
-    begin
-      errlst := TDStringList.Create;
-      errlst.Text := errstr;
-      for j := 0 to errlst.Count - 1 do
-        I_Warning(errlst.Strings[j]);
-      errlst.Free;
-      //Don't allow the script to run
-      feventsexec.Clear;
-      Exit;
-    end;
-  end;
-  fevents.LinkEvents;
-end;
-
-//==============================================================================
-//
-// TPSExecManager.IndexOf
-//
-//==============================================================================
-function TPSExecManager.IndexOf(const id: string): integer;
-var
-  check: string;
-  i: integer;
-begin
-  check := strupper(id);
-  for i := 0 to fNumItems - 1 do
-    if flist[i].id.str = check then
-    begin
-      result := i;
-      exit;
-    end;
-  result := -1;
-end;
-
-var
-  psmanager: TPSExecManager = nil;
 
 //==============================================================================
 //
@@ -865,7 +339,7 @@ begin
     Exit;
   end;
 
-  if psmanager = nil then
+  if ps_manager_ref = nil then
   begin
     printf('Compiler not initialized.'#13#10);
     Exit;
@@ -873,7 +347,7 @@ begin
 
   clist := TDStringList.Create;
   clist.LoadFromFile(src);
-  if psmanager.compiler.CompileDoomScript(clist.Text, data) then
+  if PS_Manager.DoomCompiler.CompileDoomScript(clist.Text, data) then
   begin
     f := TFile.Create(dest, fCreate);
     for i := 1 to Length(data) do
@@ -888,12 +362,12 @@ begin
     begin
       I_Warning(IntToStrZfill(6, i + 1) + ': ' + clist.Strings[i] + #13#10);
     end;
-    for i := 0 to psmanager.compiler.MsgCount - 1 do
+    for i := 0 to PS_Manager.DoomCompiler.MsgCount - 1 do
     begin
       I_Warning('//---------------------------------------------------------'#13#10);
-      I_Warning(' Pos: ' + IntToStrZFill(6, psmanager.compiler.Msg[i].Pos) +
-                ' Compiler: ' + psmanager.compiler.Msg[i].MessageToString + #13#10);
-      I_Warning(' <<' + Copy(clist.Text, psmanager.compiler.Msg[i].Pos, 80) + '>>'#13#10);
+      I_Warning(' Pos: ' + IntToStrZFill(6, PS_Manager.DoomCompiler.Msg[i].Pos) +
+                ' Compiler: ' + PS_Manager.DoomCompiler.Msg[i].MessageToString + #13#10);
+      I_Warning(' <<' + Copy(clist.Text, PS_Manager.DoomCompiler.Msg[i].Pos, 80) + '>>'#13#10);
       I_Warning('//---------------------------------------------------------'#13#10);
     end;
     I_Warning(' "%s"...failed'#13#10, [src]);
@@ -912,7 +386,11 @@ begin
   PS_InitProcLists;
   PS_InitGlobals;
   PS_InitGameImport;
-  psmanager := TPSExecManager.Create;
+  ps_manager_ref := TScriptManager.Create(PS_HostServices, PS_ActorContext, PS_StateLog, ScriptOnExportCheck,
+    function: Boolean
+    begin
+      Result := devparm;
+    end);
   C_AddCmd('compile, compilescript, pscomp', @CmdCompileScript);
 end;
 
@@ -923,8 +401,7 @@ end;
 //==============================================================================
 procedure PS_ShutDown;
 begin
-  psmanager.Free;
-  psmanager := nil;
+  FreeAndNil(ps_manager_ref);
   PS_ShutDownGameImport;
   PS_ShutDownOverlay;
   PS_ShutDownGlobals;
@@ -941,7 +418,7 @@ procedure PS_AddSourceScript(const sname: string; const sc: string;
   const typ: psscripttype_t);
 begin
   printf('PS_AddSourceScript(): Adding script "%s"'#13#10, [sname]);
-  psmanager.AddSourceFile(sname, sc, typ);
+  PS_Manager.AddSourceFile(sname, sc, TScriptKind(Ord(typ)));
 end;
 
 //==============================================================================
@@ -971,7 +448,7 @@ begin
     memfree(pointer(b), size);
   end;
   strm.Free;
-  psmanager.AddCompiledFile(sname, data);
+  PS_Manager.AddCompiledFile(sname, data);
 end;
 
 //==============================================================================
@@ -982,7 +459,7 @@ end;
 procedure PS_CompileAllScripts;
 begin
   PS_InitOverlay;
-  psmanager.CompileAllScripts;
+  PS_Manager.CompileAllScripts;
 end;
 
 //==============================================================================
@@ -992,7 +469,7 @@ end;
 //==============================================================================
 procedure PS_DoRunScript(actor: Pmobj_t; const scid: integer);
 begin
-  psmanager.RunScript(actor, scid);
+  PS_Manager.RunScript(actor, scid);
 end;
 
 //==============================================================================
@@ -1002,7 +479,7 @@ end;
 //==============================================================================
 function PS_GetScriptIDFromName(const scname: string): integer;
 begin
-  result := psmanager.IndexOf(scname);
+  result := PS_Manager.IndexOf(scname);
 end;
 
 //==============================================================================
@@ -1015,7 +492,7 @@ begin
   worldvars.Clear;
   mapvars.Clear;
   overlay.Clear;
-  psmanager.Events.Clear;
+  PS_Manager.Events.Clear;
 end;
 
 //==============================================================================
@@ -1027,7 +504,7 @@ procedure PS_NewMap;
 begin
   mapvars.Clear;
   overlay.Clear;
-  psmanager.Events.Clear;
+  PS_Manager.Events.Clear;
 end;
 
 //==============================================================================
@@ -1037,7 +514,7 @@ end;
 //==============================================================================
 procedure PS_LinkScriptEvents(const mapname: string);
 begin
-  psmanager.LinkScriptEvents(mapname);
+  PS_Manager.LinkScriptEvents(mapname);
 end;
 
 // Events
@@ -1050,7 +527,7 @@ end;
 procedure PS_EventActorDied(actor: Pmobj_t; killer: Pmobj_t);
 begin
   PS_ActorContext.Enter(actor);
-  psmanager.Events.ProcActorDied(PS_KeyFromMobj(actor), PS_KeyFromMobj(killer));
+  PS_Manager.Events.ProcActorDied(PS_KeyFromMobj(actor), PS_KeyFromMobj(killer));
   PS_ActorContext.Leave;
 end;
 
@@ -1062,7 +539,7 @@ end;
 procedure PS_EventPlayerEnter(playerNO: Integer);
 begin
   PS_ActorContext.Enter(players[playerNO].mo);
-  psmanager.Events.ProcPlayerEnter(playerNO);
+  PS_Manager.Events.ProcPlayerEnter(playerNO);
   PS_ActorContext.Leave;
 end;
 
@@ -1074,7 +551,7 @@ end;
 procedure PS_EventPlayerDied(playerNO: Integer; killer: Pmobj_t);
 begin
   PS_ActorContext.Enter(players[playerNO].mo);
-  psmanager.Events.ProcPlayerDied(playerNO, PS_KeyFromMobj(killer));
+  PS_Manager.Events.ProcPlayerDied(playerNO, PS_KeyFromMobj(killer));
   PS_ActorContext.Leave;
 end;
 
@@ -1086,7 +563,7 @@ end;
 procedure PS_EventCrossLine(actor: Pmobj_t; line: Integer; oldside: Integer);
 begin
   PS_ActorContext.Enter(actor);
-  psmanager.Events.ProcCrossLine(PS_KeyFromMobj(actor), line, oldside);
+  PS_Manager.Events.ProcCrossLine(PS_KeyFromMobj(actor), line, oldside);
   PS_ActorContext.Leave;
 end;
 
@@ -1098,7 +575,7 @@ end;
 procedure PS_EventShootLine(actor: Pmobj_t; line: Integer; side: Integer);
 begin
   PS_ActorContext.Enter(actor);
-  psmanager.Events.ProcShootLine(PS_KeyFromMobj(actor), line, side);
+  PS_Manager.Events.ProcShootLine(PS_KeyFromMobj(actor), line, side);
   PS_ActorContext.Leave;
 end;
 
@@ -1110,7 +587,7 @@ end;
 procedure PS_EventUseLine(actor: Pmobj_t; line: Integer; side: Integer);
 begin
   PS_ActorContext.Enter(actor);
-  psmanager.Events.ProcUseLine(PS_KeyFromMobj(actor), line, side);
+  PS_Manager.Events.ProcUseLine(PS_KeyFromMobj(actor), line, side);
   PS_ActorContext.Leave;
 end;
 
@@ -1121,7 +598,7 @@ end;
 //==============================================================================
 procedure PS_EventTick(tick: integer);
 begin
-  psmanager.Events.ProcTick(tick);
+  PS_Manager.Events.ProcTick(tick);
 end;
 
 //==============================================================================
@@ -1131,7 +608,7 @@ end;
 //==============================================================================
 procedure PS_EventTimerEverySecond(second: integer);
 begin
-  psmanager.Events.ProcTimerEverySecond(second);
+  PS_Manager.Events.ProcTimerEverySecond(second);
 end;
 
 //==============================================================================
@@ -1141,7 +618,7 @@ end;
 //==============================================================================
 procedure PS_EventTimerEveryMinute(minute: integer);
 begin
-  psmanager.Events.ProcTimerEveryMinute(minute);
+  PS_Manager.Events.ProcTimerEveryMinute(minute);
 end;
 
 //==============================================================================
@@ -1151,7 +628,7 @@ end;
 //==============================================================================
 procedure PS_EventMapStart;
 begin
-  psmanager.Events.ProcMapStart;
+  PS_Manager.Events.ProcMapStart;
 end;
 
 //-------------------- Map Script Serialization --------------------------------
@@ -1165,7 +642,7 @@ function PS_MapScriptSaveToFile(const fname: string): boolean;
 var
   psser: IScriptSerializer;
 begin
-  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  psser := TScriptHostFactory.CreateSerializer(PS_Manager.EventsExec, PS_StateLog);
   result := psser.SaveToFile(fname);
 end;
 
@@ -1178,7 +655,7 @@ function PS_MapScriptSaveSize: integer;
 var
   psser: IScriptSerializer;
 begin
-  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  psser := TScriptHostFactory.CreateSerializer(PS_Manager.EventsExec, PS_StateLog);
   Result := psser.SaveSize;
 end;
 
@@ -1191,7 +668,7 @@ function PS_MapScriptLoadFromFile(const fname: string): boolean;
 var
   psser: IScriptSerializer;
 begin
-  psser := TScriptHostFactory.CreateSerializer(psmanager.EventsExec, PS_StateLog);
+  psser := TScriptHostFactory.CreateSerializer(PS_Manager.EventsExec, PS_StateLog);
   result := psser.LoadFromFile(fname);
 end;
 

@@ -1,0 +1,16 @@
+mission=STR_SUPPLY_SHIP
+kind=4
+race=STR_SNAKEMAN
+itemlevel=2
+shade=3
+texture=-1
+terrain=MARS
+craft=0
+base=1
+ufo=STR_SUPPLY_SHIP
+ufostatus=2
+uforlon=6.20988
+uforlat=-1.13621
+runseed=1761024
+seedafter=14515874498463826511
+ok=0

@@ -1,4 +1,4 @@
-﻿# Libs\XcomUi - note per Claude
+# Libs\XcomUi - note per Claude
 
 `Libs\XcomUi` (issue #176, fetta "interfaccia") e' `Interface\` di **OpenXcom** a classi senza SDL: `TXcomText` (con `TXcomPaletteShift`, il `ShaderDraw<PaletteShift>` dei caratteri), `TXcomWindow`, `TXcomTextButton` (+ `TXcomButtonGroup`), `TXcomToggleTextButton`, `TXcomFrame`, `TXcomNumberText`, `TXcomCursor`, `TXcomFpsCounter`; tipi in `DelphiDoom.XcomUi.Types` (`TXcomTextHAlign`, `TXcomTextVAlign`, `TXcomWindowPopup`, `TXcomArrowShape`, `TXcomArrowOrientation`, i token `#1` colore alternato e `#2` nuova riga piccola). Sopra `Libs\XcomEngine` e `Libs\XcomSurface`. **Non tocca** `ComposeEngine` ne' `TIdTechGeneration`. **Licenza**: derivato da OpenXcom, GPL v3 o successiva; la decide l'utente.
 
@@ -13,3 +13,5 @@
 **Parita' dei controlli**: `TextList`, `ComboBox`, `ScrollBar`, `ArrowButton`, `TextEdit` (testo grande), `ToggleTextButton` sono nei frame confrontati col vero OpenXcom (schermata video delle opzioni e lista delle lingue aperta, 0 pixel diversi su 256000). `Slider` (schermate audio, geoscape e battlescape: 0 pixel diversi) e `TextList` con la scroll bar nelle liste di tasti e di opzioni sono nei frame confrontati; `Bar`, `ImageButton`, `BattlescapeButton` hanno solo i test sul comportamento. `Slider.SetValue` posiziona il cursore con interi esatti (il programma vero calcola in estesa x87: con un double, 78 * 2/3 da' 51,99 e il cursore e' un pixel prima).
 
 Test: `Tests\DelphiDoom.Tests.XcomEngine` (319 test con i controlli e le opzioni).
+
+**ComboBox**: con nessuna selezione (`_sel = -1`, un `size_t` enorme nel C++) la lista si apre scorsa in fondo (`CraftSoldiersState` dopo il riordino con le frecce: 0 pixel diversi dal vero OpenXcom).

@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the xcom ruleset library - the rules of the real TFTD   }
 {  mods against what the real OpenXcom (Mod::loadAll) holds                     }
@@ -27,6 +27,8 @@ type
     [Test]
     [TestCase('xcom2', 'tftd.xcom2.golden.txt')]
     [TestCase('xcom2 con i mod TFTD', 'tftd.mods.golden.txt')]
+    [TestCase('xcom1 (UFO)', 'ufo.xcom1.golden.txt')]
+    [TestCase('xcom1 con i mod di UFO', 'ufo.mods.golden.txt')]
     procedure DovrebbeDareLeStesseRegoleDelModVero(const AGolden: string);
   end;
 
@@ -50,7 +52,7 @@ begin
   try
     if LData.DataFolder = '' then
     begin
-      Assert.Pass('dati del nightly TFTD non trovati (Reference\_dati\xcom_tftd\openxcom)');
+      Assert.Pass('dati del nightly TFTD/UFO non trovati (Reference\_dati\xcom_tftd\openxcom, xcom_ufo\openxcom)');
       Exit;
     end;
     LMod := LData.Load;

@@ -40,7 +40,10 @@ uses
   ps_compiler,
   uPSPreProcessor,
   ps_runtime,
-  DelphiDoom.ScriptHost.Intf;
+  DelphiDoom.ScriptHost.Classes.Intf,
+  DelphiDoom.ScriptHost.Constants.Intf,
+  DelphiDoom.ScriptHost.Intf,
+  DelphiDoom.ScriptHost.Services.Intf;
 
 //==============================================================================
 //
@@ -61,22 +64,37 @@ type
   private
     FPP: TPSPreProcessor;
     funitnames: TDStringList;
+    FServices: IScriptHostServices;
   public
-    constructor CreateDoomCompiler; virtual;
+    /// <summary>With the services given to PS_ConfigureHostServices</summary>
+    constructor CreateDoomCompiler; overload; virtual;
+    constructor CreateDoomCompiler(const AServices: IScriptHostServices); overload; virtual;
+    property Services: IScriptHostServices read FServices;
     function CompileDoomScript(const source: TbtString; var pcode: TbtString): Boolean; virtual;
     destructor Destroy; override;
     property unitnames: TDStringList read funitnames;
   end;
 
   TDoomExec = class(TPSExec)
+  private
+    FServices: IScriptHostServices;
   public
-    constructor CreateDoomExec(const aImporter: TPSRuntimeClassImporter); virtual;
+    /// <summary>
+    ///   The services are the ones of the importer (TPSDoomRuntimeClassImporter) or, if AServices is nil
+    ///   and the importer is another one, the ones given to PS_ConfigureHostServices
+    /// </summary>
+    constructor CreateDoomExec(const aImporter: TPSRuntimeClassImporter;
+      const AServices: IScriptHostServices = nil); virtual;
+    property Services: IScriptHostServices read FServices;
     function LoadData(const pcode: TbtString): Boolean; override;
   end;
 
   TPSDoomRuntimeClassImporter = class(TPSRuntimeClassImporter)
+  private
+    FServices: IScriptHostServices;
   public
-    constructor Create; override;
+    constructor CreateDoomImporter(const AServices: IScriptHostServices); virtual;
+    property Services: IScriptHostServices read FServices;
   end;
 
 const
@@ -84,11 +102,21 @@ const
 
 //==============================================================================
 //
-// PS_ConfigureScriptRegistry
-// The functions that scripts can call, given by the composition root
+// PS_ConfigureHostServices
+// What the compiler and the interpreter of the scripts use (the functions, the
+// classes and the constants that scripts see, the files they include, the game):
+// given by the composition root. The catalog of the classes is filled here with
+// the tables of the units psi_globals and psi_game
 //
 //==============================================================================
-procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
+procedure PS_ConfigureHostServices(const AServices: IScriptHostServices);
+
+//==============================================================================
+//
+// PS_HostServices
+//
+//==============================================================================
+function PS_HostServices: IScriptHostServices;
 
 //==============================================================================
 //
@@ -97,6 +125,7 @@ procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
 //
 //==============================================================================
 procedure PS_ConfigureGameFunctions(const AGameInfo, ATextures, AKeys: IScriptFunctionSection);
+
 
 //==============================================================================
 //
@@ -158,20 +187,10 @@ uses
 
 var
   // given by the composition root
-  ps_registry_ref: IScriptFunctionRegistry = nil;
+  ps_services_ref: IScriptHostServices = nil;
   ps_gameinfo_ref: IScriptFunctionSection = nil;
   ps_textures_ref: IScriptFunctionSection = nil;
   ps_keys_ref: IScriptFunctionSection = nil;
-
-//==============================================================================
-//
-// PS_ConfigureScriptRegistry
-//
-//==============================================================================
-procedure PS_ConfigureScriptRegistry(const ARegistry: IScriptFunctionRegistry);
-begin
-  ps_registry_ref := ARegistry;
-end;
 
 //==============================================================================
 //
@@ -187,14 +206,41 @@ end;
 
 //==============================================================================
 //
+// PS_ConfigureHostServices
+//
+//==============================================================================
+procedure PS_ConfigureHostServices(const AServices: IScriptHostServices);
+begin
+  ps_services_ref := AServices;
+  if AServices <> nil then
+  begin
+    // the order of the registration of the compiler: the variables, then the game
+    PS_DescribeGlobalClasses(AServices.Classes);
+    PS_DescribeGameClasses(AServices.Classes);
+    PS_DescribeOverlayClasses(AServices.Classes);
+  end;
+end;
+
+//==============================================================================
+//
+// PS_HostServices
+//
+//==============================================================================
+function PS_HostServices: IScriptHostServices;
+begin
+  if ps_services_ref = nil then
+    I_Error('PS_ConfigureHostServices() was not called: the services of the scripts are missing');
+  Result := ps_services_ref;
+end;
+
+//==============================================================================
+//
 // PS_ScriptRegistry
 //
 //==============================================================================
 function PS_ScriptRegistry: IScriptFunctionRegistry;
 begin
-  if ps_registry_ref = nil then
-    I_Error('PS_ConfigureScriptRegistry() was not called: the functions of the scripts are missing');
-  Result := ps_registry_ref;
+  Result := PS_HostServices.Registry;
 end;
 
 //==============================================================================
@@ -378,10 +424,10 @@ end;
 procedure PS_ShutDownProcLists;
 begin
   // PS_GAME and PS_OVERLAY are the ones that PS_InitProcLists added
-  if ps_registry_ref <> nil then
+  if ps_services_ref <> nil then
   begin
-    ps_registry_ref.RemoveGroup('PS_GAME');
-    ps_registry_ref.RemoveGroup('PS_OVERLAY');
+    ps_services_ref.Registry.RemoveGroup('PS_GAME');
+    ps_services_ref.Registry.RemoveGroup('PS_OVERLAY');
   end;
 end;
 
@@ -392,20 +438,15 @@ end;
 //==============================================================================
 function PS_ScriptOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
-  i: integer;
-  lst: TDStringList;
-  m: integer;
-  uT_integer: TPSType;
-  uT_longword: TPSType;
-  uT_extended: TPSType;
   LName: string;
-  flgcount: LongWord;
+  LServices: IScriptHostServices;
 { the OnUses callback function is called for each "uses" in the script.
   It's always called with the parameter 'SYSTEM' at the top of the script.
   For example: uses ii1, ii2;
   This will call this function 3 times. First with 'SYSTEM' then 'II1' and then 'II2'.
 }
 begin
+  LServices := (Sender as TDoomCompiler).Services;
   if Name = 'SYSTEM' then
   begin
     // Functions
@@ -427,388 +468,24 @@ begin
     Sender.AddTypeS('fixed_t', 'integer');
     Sender.AddTypeS('angle_t', 'longword');
     RegisterDateTimeLibrary_C(Sender);
-    SIRegister_GlobalVars(Sender);
-    SIRegister_Game(Sender);
-    SIRegister_TOverlay(Sender);
+    LServices.Classes.RegisterCompiler(Sender);
 
-    PS_ScriptRegistry.RegisterCompiler(string(Name), Sender);
+    LServices.Registry.RegisterCompiler(string(Name), Sender);
 
-    { This will register the function to the script engine. Now it can be used from within the script. }
-    uT_extended := Sender.FindType('extended');
-    uT_integer := Sender.FindType('integer');
-    uT_longword := Sender.FindType('longword');
-    Sender.AddConstant('NaN', uT_extended).Value.textended := 0.0 / 0.0;
-    Sender.AddConstant('Infinity', uT_extended).Value.textended := 1.0 / 0.0;
-    Sender.AddConstant('NegInfinity', uT_extended).Value.textended := - 1.0 / 0.0;
-    Sender.AddConstant('MAXINT', uT_integer).Value.ts32 := MAXINT;
-
-    // Overlay drawing
-    Sender.AddConstant('alLeft', uT_integer).Value.ts32 := OVR_ALIGN_LEFT;
-    Sender.AddConstant('alRight', uT_integer).Value.ts32 := OVR_ALIGN_RIGHT;
-    Sender.AddConstant('alCenter', uT_integer).Value.ts32 := OVR_ALIGN_CENTER;
-
-    // mobj flags
-    flgcount := 0;
-    for i := 0 to mobj_flags.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    {$IFDEF HERETIC_OR_HEXEN}
-    // mobj flags2
-    flgcount := 32;
-    for i := 0 to mobj_flags2.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags2[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-    {$ENDIF}
-
-    // mobj flags_ex
-    flgcount := 64;
-    for i := 0 to mobj_flags_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // mobj flags2_ex
-    flgcount := 96;
-    for i := 0 to mobj_flags2_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags2_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // mobj flags3_ex
-    flgcount := 128;
-    for i := 0 to mobj_flags3_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags3_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // mobj flags4_ex
-    flgcount := 160;
-    for i := 0 to mobj_flags4_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags4_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // mobj flags5_ex
-    flgcount := 192;
-    for i := 0 to mobj_flags5_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags5_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // mobj flags6_ex
-    flgcount := 224;
-    for i := 0 to mobj_flags6_ex.Count - 1 do
-    begin
-      Sender.AddConstant(mobj_flags6_ex[i], uT_longword).Value.tu32 := flgcount;
-      Inc(flgcount);
-    end;
-
-    // states
-    lst := statenames.AllTokensWithIndex;
-    for i := 0 to lst.Count - 1 do
-    begin
-      Sender.AddConstant(lst[i], uT_integer).Value.ts32 := (lst.Objects[i] as TInteger).intnum;
-      (lst.Objects[i] as TInteger).Free;
-    end;
-    lst.Free;
-
-    // mobj types
-    for m := 0 to Ord(DO_NUMMOBJTYPES) - 1 do
-      Sender.AddConstant(GetENumName(TypeInfo(mobjtype_t), m), uT_integer).Value.ts32 := m;
-
-    // consts doomdef
-    Sender.AddConstant('MAXPLAYERS', uT_integer).Value.ts32 := MAXPLAYERS;
-
-    for m := 0 to Ord(sk_nightmare) do
-      Sender.AddConstant(GetENumName(TypeInfo(skill_t), m), uT_integer).Value.ts32 := m;
-
-    {$IFDEF DOOM_OR_STRIFE}
-    for m := 0 to Ord(NUMCARDS) do
-      Sender.AddConstant(GetENumName(TypeInfo(card_t), m), uT_integer).Value.ts32 := m;
-    {$ELSE}
-    for m := 0 to Ord(NUMKEYCARDS) do
-      Sender.AddConstant(GetENumName(TypeInfo(keytype_t), m), uT_integer).Value.ts32 := m;
-    {$ENDIF}
-
-    {$IFDEF HEXEN}
-    for m := 0 to Ord(NUMCLASSES) do
-      Sender.AddConstant(GetENumName(TypeInfo(pclass_t), m), uT_integer).Value.ts32 := m;
-    {$ENDIF}
-
-    for m := 0 to Ord(NUMWEAPONS) do
-      Sender.AddConstant(GetENumName(TypeInfo(weapontype_t), m), uT_integer).Value.ts32 := m;
-
-    for m := 0 to Ord(NUMMOBJRENDERSTYLES) do
-      Sender.AddConstant(GetENumName(TypeInfo(mobjrenderstyle_t), m), uT_integer).Value.ts32 := m;
-
-    for m := 0 to Ord(NUMGENDERS) do
-      Sender.AddConstant(GetENumName(TypeInfo(gender_t), m), uT_integer).Value.ts32 := m;
-
-    {$IFDEF HEXEN}
-    for m := 0 to Ord(NUMMANA) do
-      Sender.AddConstant(GetENumName(TypeInfo(manatype_t), m), uT_integer).Value.ts32 := m;
-    Sender.AddConstant('MAX_MANA', uT_integer).Value.ts32 := MAX_MANA;
-    {$ELSE}
-    for m := 0 to Ord(NUMAMMO) do
-      Sender.AddConstant(GetENumName(TypeInfo(ammotype_t), m), uT_integer).Value.ts32 := m;
-    {$ENDIF}
-
-    for m := 0 to Ord(NUMPOWERS) do
-      Sender.AddConstant(GetENumName(TypeInfo(powertype_t), m), uT_integer).Value.ts32 := m;
-
-    {$IFDEF HERETIC_OR_HEXEN}
-    for m := 0 to Ord(NUMARTIFACTS) do
-      Sender.AddConstant(GetENumName(TypeInfo(artitype_t), m), uT_integer).Value.ts32 := m;
-    {$ENDIF}
-
-    {$IFDEF HEXEN}
-    Sender.AddConstant('arti_firstpuzzitem', uT_integer).Value.ts32 := arti_firstpuzzitem;
-    {$ENDIF}
-
-    {$IFDEF STRIFE}
-    for m := 0 to Ord(tk_numquests) do
-      Sender.AddConstant(GetENumName(TypeInfo(questtype_t), m), uT_integer).Value.ts32 := m;
-
-    Sender.AddConstant('QF_QUEST1', uT_longword).Value.tu32 := QF_QUEST1;
-    Sender.AddConstant('QF_QUEST2', uT_longword).Value.tu32 := QF_QUEST2;
-    Sender.AddConstant('QF_QUEST3', uT_longword).Value.tu32 := QF_QUEST3;
-    Sender.AddConstant('QF_QUEST4', uT_longword).Value.tu32 := QF_QUEST4;
-    Sender.AddConstant('QF_QUEST5', uT_longword).Value.tu32 := QF_QUEST5;
-    Sender.AddConstant('QF_QUEST6', uT_longword).Value.tu32 := QF_QUEST6;
-    Sender.AddConstant('QF_QUEST7', uT_longword).Value.tu32 := QF_QUEST7;
-    Sender.AddConstant('QF_QUEST8', uT_longword).Value.tu32 := QF_QUEST8;
-    Sender.AddConstant('QF_QUEST9', uT_longword).Value.tu32 := QF_QUEST9;
-    Sender.AddConstant('QF_QUEST10', uT_longword).Value.tu32 := QF_QUEST10;
-    Sender.AddConstant('QF_QUEST11', uT_longword).Value.tu32 := QF_QUEST11;
-    Sender.AddConstant('QF_QUEST12', uT_longword).Value.tu32 := QF_QUEST12;
-    Sender.AddConstant('QF_QUEST13', uT_longword).Value.tu32 := QF_QUEST13;
-    Sender.AddConstant('QF_QUEST14', uT_longword).Value.tu32 := QF_QUEST14;
-    Sender.AddConstant('QF_QUEST15', uT_longword).Value.tu32 := QF_QUEST15;
-    Sender.AddConstant('QF_QUEST16', uT_longword).Value.tu32 := QF_QUEST16;
-    Sender.AddConstant('QF_QUEST17', uT_longword).Value.tu32 := QF_QUEST17;
-    Sender.AddConstant('QF_QUEST18', uT_longword).Value.tu32 := QF_QUEST18;
-    Sender.AddConstant('QF_QUEST19', uT_longword).Value.tu32 := QF_QUEST19;
-    Sender.AddConstant('QF_QUEST20', uT_longword).Value.tu32 := QF_QUEST20;
-    Sender.AddConstant('QF_QUEST21', uT_longword).Value.tu32 := QF_QUEST21;
-    Sender.AddConstant('QF_QUEST22', uT_longword).Value.tu32 := QF_QUEST22;
-    Sender.AddConstant('QF_QUEST23', uT_longword).Value.tu32 := QF_QUEST23;
-    Sender.AddConstant('QF_QUEST24', uT_longword).Value.tu32 := QF_QUEST24;
-    Sender.AddConstant('QF_QUEST25', uT_longword).Value.tu32 := QF_QUEST25;
-    Sender.AddConstant('QF_QUEST26', uT_longword).Value.tu32 := QF_QUEST26;
-    Sender.AddConstant('QF_QUEST27', uT_longword).Value.tu32 := QF_QUEST27;
-    Sender.AddConstant('QF_QUEST28', uT_longword).Value.tu32 := QF_QUEST28;
-    Sender.AddConstant('QF_QUEST29', uT_longword).Value.tu32 := QF_QUEST29;
-    Sender.AddConstant('QF_QUEST30', uT_longword).Value.tu32 := QF_QUEST30;
-    Sender.AddConstant('QF_QUEST31', uT_longword).Value.tu32 := QF_QUEST31;
-    Sender.AddConstant('QF_ALLQUESTS', uT_longword).Value.tu32 := QF_ALLQUESTS;
-    {$ENDIF}
-
-    // consts p_local
-    Sender.AddConstant('ONFLOORZ', uT_integer).Value.ts32 := ONFLOORZ;
-    Sender.AddConstant('FLOORZ', uT_integer).Value.ts32 := ONFLOORZ;
-    Sender.AddConstant('ONCEILINGZ', uT_integer).Value.ts32 := ONCEILINGZ;
-    Sender.AddConstant('CEILINGZ', uT_integer).Value.ts32 := ONCEILINGZ;
-    Sender.AddConstant('ONFLOATZ', uT_integer).Value.ts32 := {$IFDEF HEXEN}FLOATRANDZ{$ELSE}ONFLOATZ{$ENDIF};
-    Sender.AddConstant('FLOATZ', uT_integer).Value.ts32 := {$IFDEF HEXEN}FLOATRANDZ{$ELSE}ONFLOATZ{$ENDIF};
-    {$IFDEF HEXEN}
-    Sender.AddConstant('FLOATRANDZ', uT_integer).Value.ts32 := FLOATRANDZ;
-    {$ENDIF}
-    Sender.AddConstant('TICRATE', uT_integer).Value.ts32 := TICRATE;
-    Sender.AddConstant('FRACUNIT', uT_integer).Value.ts32 := FRACUNIT;
-    Sender.AddConstant('ACTOR_INVALID', uT_integer).Value.ts32 := ACTOR_INVALID;
-    Sender.AddConstant('PLAYER_INVALID', uT_integer).Value.ts32 := PLAYER_INVALID;
-    Sender.AddConstant('MOBJTYPE_INVALID', uT_integer).Value.ts32 := MOBJTYPE_INVALID;
-    Sender.AddConstant('STATE_INVALID', uT_integer).Value.ts32 := STATE_INVALID;
-    Sender.AddConstant('EDITORNUMBER_INVALID', uT_integer).Value.ts32 := EDITORNUMBER_INVALID;
-    Sender.AddConstant('EDITORNUMBER_UNKNOWN', uT_integer).Value.ts32 := EDITORNUMBER_UNKNOWN;
-    Sender.AddConstant('TEXTURE_INVALID', uT_integer).Value.ts32 := TEXTURE_INVALID;
-    Sender.AddConstant('FLAT_INVALID', uT_integer).Value.ts32 := FLAT_INVALID;
-    Sender.AddConstant('SECTOR_INVALID', uT_integer).Value.ts32 := SECTOR_INVALID;
-    Sender.AddConstant('LINE_INVALID', uT_integer).Value.ts32 := LINE_INVALID;
-    Sender.AddConstant('SIDE_INVALID', uT_integer).Value.ts32 := SIDE_INVALID;
-    Sender.AddConstant('VERTEX_INVALID', uT_integer).Value.ts32 := VERTEX_INVALID;
-    Sender.AddConstant('LIGHTLEVEL_INVALID', uT_integer).Value.ts32 := LIGHTLEVEL_INVALID;
-
-    // consts tables
-    Sender.AddConstant('D_PI', uT_extended).Value.textended := D_PI;
-    Sender.AddConstant('ANGLE_T_TO_RAD', uT_extended).Value.textended := ANGLE_T_TO_RAD;
-    Sender.AddConstant('ANGLETOFINESHIFT', uT_longword).Value.tu32 := ANGLETOFINESHIFT;
-    Sender.AddConstant('ANGLETOFINEUNIT', uT_longword).Value.tu32 := ANGLETOFINEUNIT;
-    Sender.AddConstant('FINEANGLES', uT_longword).Value.tu32 := FINEANGLES;
-    Sender.AddConstant('FINEMASK', uT_longword).Value.tu32 := FINEMASK;
-    Sender.AddConstant('DIR256ANGLES', uT_longword).Value.tu32 := DIR256ANGLES;
-    Sender.AddConstant('DIR256TOANGLEUNIT', uT_longword).Value.tu32 := DIR256TOANGLEUNIT;
-    Sender.AddConstant('DIR256TOANGLESHIFT', uT_longword).Value.tu32 := DIR256TOANGLESHIFT;
-    Sender.AddConstant('ANG1', uT_longword).Value.tu32 := ANG1;
-{    for i := 2 to 4 do
-      Sender.AddConstant('ANG' + itoa(i), uT_longword).Value.tu32 := ANG1 * i;}
-    Sender.AddConstant('ANG5', uT_longword).Value.tu32 := ANG5;
-    Sender.AddConstant('ANG30', uT_longword).Value.tu32 := ANG60 div 2;
-    Sender.AddConstant('ANG45', uT_longword).Value.tu32 := ANG45;
-    Sender.AddConstant('ANG60', uT_longword).Value.tu32 := ANG60;
-    Sender.AddConstant('ANG90', uT_longword).Value.tu32 := ANG90;
-    Sender.AddConstant('ANG120', uT_longword).Value.tu32 := ANG120;
-    Sender.AddConstant('ANG180', uT_longword).Value.tu32 := ANG180;
-    Sender.AddConstant('ANG240', uT_longword).Value.tu32 := ANG240;
-    Sender.AddConstant('ANG270', uT_longword).Value.tu32 := ANG270;
-    Sender.AddConstant('ANG300', uT_longword).Value.tu32 := ANG300;
-    Sender.AddConstant('ANG315', uT_longword).Value.tu32 := ANG315;
-    Sender.AddConstant('ANG355', uT_longword).Value.tu32 := ANG355;
-    Sender.AddConstant('ANGLE_MAX', uT_longword).Value.tu32 := ANGLE_MAX;
-    Sender.AddConstant('SLOPEBITS', uT_longword).Value.tu32 := SLOPEBITS;
-    Sender.AddConstant('SLOPERANGE', uT_longword).Value.tu32 := SLOPERANGE;
-    Sender.AddConstant('DBITS', uT_longword).Value.tu32 := DBITS;
-    Sender.AddConstant('DRANGE', uT_longword).Value.tu32 := DRANGE;
-
-    // Generalized constants
-    Sender.AddConstant('DAMAGE_MASK', uT_integer).Value.ts32 := $60;
-    Sender.AddConstant('DAMAGE_SHIFT', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('SECRET_MASK', uT_integer).Value.ts32 := $80;
-    Sender.AddConstant('SECRET_SHIFT', uT_integer).Value.ts32 := 7;
-    Sender.AddConstant('FRICTION_MASK', uT_integer).Value.ts32 := $100;
-    Sender.AddConstant('FRICTION_SHIFT', uT_integer).Value.ts32 := 8;
-    Sender.AddConstant('PUSH_MASK', uT_integer).Value.ts32 := $200;
-    Sender.AddConstant('PUSH_SHIFT', uT_integer).Value.ts32 := 9;
-
-    Sender.AddConstant('CGENFLOORBASE', uT_integer).Value.ts32 := $6000;
-    Sender.AddConstant('CGENCEILINGBASE', uT_integer).Value.ts32 := $4000;
-    Sender.AddConstant('CGENDOORBASE', uT_integer).Value.ts32 := $3C00;
-    Sender.AddConstant('CGENLOCKEDBASE', uT_integer).Value.ts32 := $3800;
-    Sender.AddConstant('CGENLIFTBASE', uT_integer).Value.ts32 := $3400;
-    Sender.AddConstant('CGENSTAIRSBASE', uT_integer).Value.ts32 := $3000;
-    Sender.AddConstant('CGENCRUSHERBASE', uT_integer).Value.ts32 := $2F80;
-
-    Sender.AddConstant('TriggerType', uT_integer).Value.ts32 := $0007;
-    Sender.AddConstant('TriggerTypeShift', uT_integer).Value.ts32 := 0;
-
-    Sender.AddConstant('gen_FloorCrush', uT_integer).Value.ts32 := $1000;
-    Sender.AddConstant('gen_FloorChange', uT_integer).Value.ts32 := $0C00;
-    Sender.AddConstant('gen_FloorTarget', uT_integer).Value.ts32 := $0380;
-    Sender.AddConstant('gen_FloorDirection', uT_integer).Value.ts32 := $0040;
-    Sender.AddConstant('gen_FloorModel', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('gen_FloorSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('FloorCrushShift', uT_integer).Value.ts32 := 12;
-    Sender.AddConstant('FloorChangeShift', uT_integer).Value.ts32 := 10;
-    Sender.AddConstant('FloorTargetShift', uT_integer).Value.ts32 := 7;
-    Sender.AddConstant('FloorDirectionShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('FloorModelShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('FloorSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('CeilingCrush', uT_integer).Value.ts32 := $1000;
-    Sender.AddConstant('CeilingChange', uT_integer).Value.ts32 := $0C00;
-    Sender.AddConstant('CeilingTarget', uT_integer).Value.ts32 := $0380;
-    Sender.AddConstant('CeilingDirection', uT_integer).Value.ts32 := $0040;
-    Sender.AddConstant('CeilingModel', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('CeilingSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('CeilingCrushShift', uT_integer).Value.ts32 := 12;
-    Sender.AddConstant('CeilingChangeShift', uT_integer).Value.ts32 := 10;
-    Sender.AddConstant('CeilingTargetShift', uT_integer).Value.ts32 := 7;
-    Sender.AddConstant('CeilingDirectionShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('CeilingModelShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('CeilingSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('LiftTarget', uT_integer).Value.ts32 := $0300;
-    Sender.AddConstant('LiftDelay', uT_integer).Value.ts32 := $00C0;
-    Sender.AddConstant('LiftMonster', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('LiftSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('LiftTargetShift', uT_integer).Value.ts32 := 8;
-    Sender.AddConstant('LiftDelayShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('LiftMonsterShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('LiftSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('StairIgnore', uT_integer).Value.ts32 := $0200;
-    Sender.AddConstant('StairDirection', uT_integer).Value.ts32 := $0100;
-    Sender.AddConstant('StairStep', uT_integer).Value.ts32 := $00c0;
-    Sender.AddConstant('StairMonster', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('StairSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('StairIgnoreShift', uT_integer).Value.ts32 := 9;
-    Sender.AddConstant('StairDirectionShift', uT_integer).Value.ts32 := 8;
-    Sender.AddConstant('StairStepShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('StairMonsterShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('StairSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('CrusherSilent', uT_integer).Value.ts32 := $0040;
-    Sender.AddConstant('CrusherMonster', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('CrusherSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('CrusherSilentShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('CrusherMonsterShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('CrusherSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('DoorDelay', uT_integer).Value.ts32 := $0300;
-    Sender.AddConstant('DoorMonster', uT_integer).Value.ts32 := $0080;
-    Sender.AddConstant('DoorKind', uT_integer).Value.ts32 := $0060;
-    Sender.AddConstant('DoorSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('DoorDelayShift', uT_integer).Value.ts32 := 8;
-    Sender.AddConstant('DoorMonsterShift', uT_integer).Value.ts32 := 7;
-    Sender.AddConstant('DoorKindShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('DoorSpeedShift', uT_integer).Value.ts32 := 3;
-
-    Sender.AddConstant('LockedNKeys', uT_integer).Value.ts32 := $0200;
-    Sender.AddConstant('LockedKey', uT_integer).Value.ts32 := $01c0;
-    Sender.AddConstant('LockedKind', uT_integer).Value.ts32 := $0020;
-    Sender.AddConstant('LockedSpeed', uT_integer).Value.ts32 := $0018;
-
-    Sender.AddConstant('LockedNKeysShift', uT_integer).Value.ts32 := 9;
-    Sender.AddConstant('LockedKeyShift', uT_integer).Value.ts32 := 6;
-    Sender.AddConstant('LockedKindShift', uT_integer).Value.ts32 := 5;
-    Sender.AddConstant('LockedSpeedShift', uT_integer).Value.ts32 := 3;
-
-    // MBF21 groups
-    // infighting groups
-    Sender.AddConstant('IG_INVALID', uT_integer).Value.ts32 := IG_INVALID;
-    for i := 0 to infighting_groups.Count - 1 do
-      Sender.AddConstant(infighting_groups.Strings[i], uT_integer).Value.ts32 := i;
-    Sender.AddConstant('IG_END', uT_integer).Value.ts32 := IG_END;
-
-    // projectile groups
-    Sender.AddConstant('PG_INVALID', uT_integer).Value.ts32 := PG_INVALID;
-    Sender.AddConstant('PG_GROUPLESS', uT_integer).Value.ts32 := PG_GROUPLESS;
-    for i := 0 to projectile_groups.Count - 1 do
-      Sender.AddConstant(projectile_groups.Strings[i], uT_integer).Value.ts32 := i;
-    Sender.AddConstant('PG_END', uT_integer).Value.ts32 := PG_END;
-
-    // Splash groups
-    Sender.AddConstant('SG_INVALID', uT_integer).Value.ts32 := SG_INVALID;
-    for i := 0 to splash_groups.Count - 1 do
-      Sender.AddConstant(splash_groups.Strings[i], uT_integer).Value.ts32 := i;
-    Sender.AddConstant('SG_END', uT_integer).Value.ts32 := SG_END;
-
-    // MBF21 Weapon Flags
-    Sender.AddConstant('WPF_NOFLAG', uT_integer).Value.ts32 := WPF_NOFLAG;
-    Sender.AddConstant('WPF_NOTHRUST', uT_integer).Value.ts32 := WPF_NOTHRUST;
-    Sender.AddConstant('WPF_SILENT', uT_integer).Value.ts32 := WPF_SILENT;
-    Sender.AddConstant('WPF_NOAUTOFIRE', uT_integer).Value.ts32 := WPF_NOAUTOFIRE;
-    Sender.AddConstant('WPF_FLEEMELEE', uT_integer).Value.ts32 := WPF_FLEEMELEE;
-    Sender.AddConstant('WPF_AUTOSWITCHFROM', uT_integer).Value.ts32 := WPF_AUTOSWITCHFROM;
-    Sender.AddConstant('WPF_NOAUTOSWITCHTO', uT_integer).Value.ts32 := WPF_NOAUTOSWITCHTO;
+    // the constants of every script: NaN, the flags of the mobjs, the angles...
+    LServices.Constants.Describe(TScriptHostFactory.CreateCompilerConstants(Sender));
 
     Result := True;
   end
   else if Name = 'ALL' then
   begin
-    for LName in PS_ScriptRegistry.CompilerUnitNames do
+    for LName in LServices.Registry.CompilerUnitNames do
       PS_ScriptOnUses(Sender, TbtString(LName));
     Result := True;
   end
   else
   begin
-    if PS_ScriptRegistry.RegisterCompiler(string(Name), Sender) then
+    if LServices.Registry.RegisterCompiler(string(Name), Sender) then
     begin
       Result := True;
     end
@@ -870,7 +547,7 @@ end;
 //==============================================================================
 function FPPNeedFile(Sender: TPSPreProcessor; const callingfilename: TbtString; var FileName, Output: TbtString): Boolean;
 begin
-  Output := PAK_ReadFileAsString(FileName);
+  Output := TbtString(TDoomCompiler(Sender.Id).Services.Sources.ReadText(string(FileName)));
   Result := Output <> '';
 end;
 
@@ -881,11 +558,22 @@ end;
 //==============================================================================
 constructor TDoomCompiler.CreateDoomCompiler;
 begin
+  CreateDoomCompiler(PS_HostServices);
+end;
+
+//==============================================================================
+//
+// TDoomCompiler.CreateDoomCompiler
+//
+//==============================================================================
+constructor TDoomCompiler.CreateDoomCompiler(const AServices: IScriptHostServices);
+begin
   if dccnt <> 0 then
     I_Error('TDoomCompiler.CreateDoomCompiler(): Compiler is already active!');
 
   Inc(dccnt);
 
+  FServices := AServices;
   inherited Create(@DefaultLookupTable, DEFAULT_KEYWORD_COUNT);
   OnUses := PS_ScriptOnUses;
   OnExternalProc := DllExternalProc;
@@ -923,57 +611,15 @@ var
   ppout: TbtString;
   unitstr: TbtString;
   len: integer;
+  LDefine: string;
 begin
   PS_ResetProcLists;
 
   FPP.Clear;
 
-  FPP.Defines.Add(strupper(_GAME));
-  {$IFDEF DEBUG}
-  FPP.Defines.Add('DEBUG');
-  {$ENDIF}
-  if devparm then
-    FPP.Defines.Add('DEVPARM');
-
-  {$IFDEF DOOM}
-  FPP.Defines.Add('DOOM_OR_HERETIC');
-  FPP.Defines.Add('DOOM_OR_HEXEN');
-  FPP.Defines.Add('DOOM_OR_STRIFE');
-  FPP.Defines.Add('HERETIC_OR_DOOM');
-  FPP.Defines.Add('HEXEN_OR_DOOM');
-  FPP.Defines.Add('STRIFE_OR_DOOM');
-  {$ENDIF}
-
-  {$IFDEF HERETIC}
-  FPP.Defines.Add('HERETIC_OR_DOOM');
-  FPP.Defines.Add('HERETIC_OR_HEXEN');
-  FPP.Defines.Add('HERETIC_OR_STRIFE');
-  FPP.Defines.Add('DOOM_OR_HERETIC');
-  FPP.Defines.Add('HEXEN_OR_HERETIC');
-  FPP.Defines.Add('STRIFE_OR_HERETIC');
-  {$ENDIF}
-
-  {$IFDEF HEXEN}
-  FPP.Defines.Add('HEXEN_OR_DOOM');
-  FPP.Defines.Add('HEXEN_OR_HERETIC');
-  FPP.Defines.Add('HEXEN_OR_STRIFE');
-  FPP.Defines.Add('DOOM_OR_HEXEN');
-  FPP.Defines.Add('HERETIC_OR_HEXEN');
-  FPP.Defines.Add('STRIFE_OR_HEXEN');
-  {$ENDIF}
-
-  {$IFDEF STRIFE}
-  FPP.Defines.Add('STRIFE_OR_DOOM');
-  FPP.Defines.Add('STRIFE_OR_HERETIC');
-  FPP.Defines.Add('STRIFE_OR_HEXEN');
-  FPP.Defines.Add('DOOM_OR_STRIFE');
-  FPP.Defines.Add('HERETIC_OR_STRIFE');
-  FPP.Defines.Add('HEXEN_OR_STRIFE');
-  {$ENDIF}
-
-  {$IFDEF OPENGL}
-  FPP.Defines.Add('OPENGL');
-  {$ENDIF}
+  // the game, DEBUG, DEVPARM, the X_OR_Y of the game and OPENGL (TScriptDefines)
+  for LDefine in FServices.Defines do
+    FPP.Defines.Add(TbtString(LDefine));
 
   OnTranslateLineInfo := CompTranslateLineInfo;
   FPP.OnProcessDirective := callObjectOnProcessDirective;
@@ -991,7 +637,7 @@ begin
   else
     ppout := '';
 
-  unitstr := _GAME + #13#10 + funitnames.Text;
+  unitstr := TbtString(FServices.GameName) + #13#10 + funitnames.Text;
   len := Length(unitstr);
   pcode := '            ' + unitstr + ppout;
   PLongWord(@pcode[1])^ := ID_DDPS;
@@ -1007,9 +653,16 @@ end;
 // **** TDoomExec ****
 //
 //==============================================================================
-constructor TDoomExec.CreateDoomExec(const aImporter: TPSRuntimeClassImporter);
+constructor TDoomExec.CreateDoomExec(const aImporter: TPSRuntimeClassImporter;
+  const AServices: IScriptHostServices);
 begin
   inherited Create;
+  FServices := AServices;
+  if FServices = nil then
+    if aImporter is TPSDoomRuntimeClassImporter then
+      FServices := TPSDoomRuntimeClassImporter(aImporter).Services
+    else
+      FServices := PS_HostServices;
   AllowNullClasses := True;
   RegisterDLLRuntime(Self);
   RegisterClassLibraryRuntime(Self, aImporter);
@@ -1032,13 +685,13 @@ var
 
   function RegisterRTLUnit(const s: string): boolean;
   begin
-    if PS_ScriptRegistry.RegisterExecutor(s, Self) then
+    if FServices.Registry.RegisterExecutor(s, Self) then
     begin
       Result := True;
     end
     else if s = 'ALL' then
     begin
-      PS_ScriptRegistry.RegisterExecutorForAll(Self);
+      FServices.Registry.RegisterExecutorForAll(Self);
       Result := True;
     end
     else
@@ -1097,9 +750,9 @@ begin
     Exit;
   end;
 
-  if lst.Strings[0] <> _GAME then
+  if lst.Strings[0] <> FServices.GameName then
   begin
-    I_Warning('TDoomExec.LoadData(): Can not load "%s" compiled script while playing "%s"'#13#10, [lst.Strings[0], _GAME]);
+    I_Warning('TDoomExec.LoadData(): Can not load "%s" compiled script while playing "%s"'#13#10, [lst.Strings[0], FServices.GameName]);
     lst.Free;
     Result := False;
     Exit;
@@ -1115,9 +768,7 @@ begin
   if Result then
   begin
     // JVAL: Must be called after TPSExec.LoadData()
-    RIRegisterRTL_GlobalVars(Self);
-    RIRegisterRTL_Game(Self);
-    RIRegisterRTL_TOverlay(Self);
+    FServices.Classes.BindVariables(Self);
   end;
 end;
 
@@ -1146,17 +797,16 @@ end;
 // TPSDoomRuntimeClassImporter.Create
 //
 //==============================================================================
-constructor TPSDoomRuntimeClassImporter.Create;
+constructor TPSDoomRuntimeClassImporter.CreateDoomImporter(const AServices: IScriptHostServices);
 begin
-  inherited;
+  inherited Create;
+  FServices := AServices;
   with Add2(TRTLObject, '!TOBJECT') do
   begin
     RegisterConstructor(@TRTLObject.Create, 'Create');
     RegisterMethod(@TRTLObject.FakeFree, 'Free');
   end;
-  RIRegister_GlobalVars(Self);
-  RIRegister_Game(Self);
-  RIRegister_TOverlay(Self);
+  FServices.Classes.RegisterRuntime(Self);
 end;
 
 end.

@@ -50,7 +50,7 @@ uses
   DelphiDoom.XcomBasescape.PlaceLiftState, DelphiDoom.XcomBasescape.BuildFacilitiesState,
   DelphiDoom.XcomBasescape.DismantleFacilityState, DelphiDoom.XcomBasescape.ResearchState, DelphiDoom.XcomBasescape.ManufactureState, DelphiDoom.XcomGeoscape.BuildNewBaseState,
   DelphiDoom.XcomGeoscape.FundingState, DelphiDoom.XcomBasescape.PurchaseState,DelphiDoom.XcomBasescape.SellState, DelphiDoom.XcomBasescape.TransferBaseState,
-  DelphiDoom.XcomBasescape.CraftInfoState;
+  DelphiDoom.XcomBasescape.CraftInfoState, DelphiDoom.XcomGeoscape.GraphsState;
 
 constructor TXcomGameNavigator.Create(AHost: TXcomStateHost; const AOptionsNavigator: IXcomOptionsNavigator);
 begin
@@ -90,6 +90,7 @@ end;
 
 procedure TXcomGameNavigator.OpenGraphs;
 begin
+  FHost.PushState(TXcomGraphsState.Create(FHost));
 end;
 
 procedure TXcomGameNavigator.OpenUfopaedia;

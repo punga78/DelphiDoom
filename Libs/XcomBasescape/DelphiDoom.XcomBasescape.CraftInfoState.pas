@@ -67,7 +67,8 @@ implementation
 
 uses
   DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMod.RuleCraftWeapon,
-  DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.CraftWeaponsState;
+  DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomBasescape.CraftWeaponsState,
+  DelphiDoom.XcomBasescape.CraftSoldiersState, DelphiDoom.XcomBasescape.CraftArmorState, DelphiDoom.XcomBasescape.CraftEquipmentState;
 
 { TXcomCraftInfoState }
 
@@ -288,17 +289,17 @@ end;
 
 procedure TXcomCraftInfoState.CrewClick(AAction: TXcomAction);
 begin
-  // CraftSoldiersState is not ported
+  Host.PushState(TXcomCraftSoldiersState.Create(Host, FBase, FCraftId));
 end;
 
 procedure TXcomCraftInfoState.EquipClick(AAction: TXcomAction);
 begin
-  // CraftEquipmentState is not ported
+  Host.PushState(TXcomCraftEquipmentState.Create(Host, FBase, FCraftId));
 end;
 
 procedure TXcomCraftInfoState.ArmorClick(AAction: TXcomAction);
 begin
-  // CraftArmorState is not ported
+  Host.PushState(TXcomCraftArmorState.Create(Host, FBase, FCraftId));
 end;
 
 procedure TXcomCraftInfoState.CraftChange(AAction: TXcomAction);

@@ -143,6 +143,13 @@ type
     function GetPolygonFromLonLat(ALon, ALat: Double): TXcomPolygon;
     function InsideLand(ALon, ALat: Double): Boolean;
     /// <summary>
+    ///   getPolygonTextureAndShade: the texture id of the land under the point (-1 on the sea) and the shade of the
+    ///   place at this time, converted from the 32 levels of the geoscape to the 16 of the battlescape
+    /// </summary>
+    procedure GetPolygonTextureAndShade(ALon, ALat: Double; out ATexture, AShade: Integer);
+    /// <summary>Mod::getGlobe()->getTexture(id) &lt;&gt; 0: the globe has the texture</summary>
+    function HasTexture(AId: Integer): Boolean;
+    /// <summary>
     ///   Globe::getTargets: the targets whose marker is within 5 pixels (squared distance 25) of the point; with
     ///   ACraftOnly only the things a craft can be sent to (no bases and no crafts). The list is the caller's
     ///   (the targets are not owned)
@@ -843,6 +850,30 @@ begin
     if Assigned(LTexture) then
       TXcomGfx.DrawTexturedPolygon(Self, Slice(LX, LPolygon.Points), Slice(LY, LPolygon.Points), LTexture, 0, 0);
   end;
+end;
+
+procedure TXcomGlobe.GetPolygonTextureAndShade(ALon, ALat: Double; out ATexture, AShade: Integer);
+const
+  WORLD_SHADES: array[0..31] of Integer = (0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 11,
+    11, 12, 12, 13, 13, 14, 15, 15);
+var
+  LEarth: TXcomCord;
+  LPolygon: TXcomPolygon;
+begin
+  LEarth.X := 0;
+  LEarth.Y := 0;
+  LEarth.Z := 1;
+  AShade := WORLD_SHADES[ShadowValue(LEarth, SunDirection(ALon, ALat), 0)];
+  LPolygon := GetPolygonFromLonLat(ALon, ALat);
+  if LPolygon = nil then
+    ATexture := -1
+  else
+    ATexture := LPolygon.Texture;
+end;
+
+function TXcomGlobe.HasTexture(AId: Integer): Boolean;
+begin
+  Result := FRules.GetTexture(AId) <> nil;
 end;
 
 function TXcomGlobe.SunDirection(ALon, ALat: Double): TXcomCord;

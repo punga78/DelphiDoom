@@ -1,0 +1,16 @@
+mission=STR_SUPPLY_SHIP
+kind=4
+race=STR_FLOATER
+itemlevel=0
+shade=11
+texture=7
+terrain=
+craft=0
+base=1
+ufo=STR_SUPPLY_SHIP
+ufostatus=2
+uforlon=1.58999
+uforlat=-1.31598
+runseed=1761034
+seedafter=14177172393302686708
+ok=0

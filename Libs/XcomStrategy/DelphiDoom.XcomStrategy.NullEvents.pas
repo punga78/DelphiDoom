@@ -29,6 +29,8 @@ type
     procedure CraftNeedsOrders(const ACraft: TXcomCraft; const AWaypoint: TXcomWaypoint); virtual;
     procedure DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo); virtual;
     procedure DogfightImpossible(const ACraft: TXcomCraft; const AReason: string); virtual;
+    function ActiveDogfights: Integer; virtual;
+    procedure UfoRemoving(const AUfo: TXcomUfo); virtual;
     procedure LandingPossible(const ACraft: TXcomCraft; const ATarget: TXcomTarget); virtual;
     procedure CraftPatrolling(const ACraft: TXcomCraft); virtual;
     procedure LowFuel(const ACraft: TXcomCraft); virtual;
@@ -76,6 +78,15 @@ begin
 end;
 
 procedure TXcomNullGeoscapeEvents.DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
+begin
+end;
+
+function TXcomNullGeoscapeEvents.ActiveDogfights: Integer;
+begin
+  Result := -1;
+end;
+
+procedure TXcomNullGeoscapeEvents.UfoRemoving(const AUfo: TXcomUfo);
 begin
 end;
 

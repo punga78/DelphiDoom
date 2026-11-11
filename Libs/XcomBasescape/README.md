@@ -10,3 +10,5 @@ Il codice deriva da OpenXcom (GPL v3 o successiva): la licenza dell'opera e' dec
 ## Costruire, ricerca e produzione (issue #176)
 
 `TXcomPlaceLiftState`, `TXcomBuildFacilitiesState`, `TXcomPlaceFacilityState`, `TXcomDismantleFacilityState`, le tre schermate della ricerca e le quattro della produzione. Acquisti, vendite, trasferimenti e le schermate di soldati e velivoli (oltre quelle di prima) non ci sono ancora. Dettagli in `CLAUDE.md`.
+
+Aggiornamento (sessione "partita completa", #176): acquisti, vendite, trasferimenti, soldati, velivoli, equipaggio, `TXcomSoldierMemorialState`, `TXcomAllocatePsiTrainingState` e `TXcomPsiTrainingState` ci sono; mancano il diario dei soldati, `SelectStartFacilityState` e `ManufactureDependenciesTreeState`. Vedi `CLAUDE.md`.

@@ -96,6 +96,19 @@ type
     ResultElement: Byte;
   end;
 
+  /// a member (property or method) of a class that scripts see (Actors, Lines, MapStrings...), as the compiler has it
+  TVshMember = record
+    ClassName: string;
+    Name: string;
+    IsProperty: Boolean;
+    Writable: Boolean;
+    Parameters: TArray<TVshParameter>;
+    HasResult: Boolean;
+    ResultTypeName: string;
+    ResultBase: Byte;
+    ResultElement: Byte;
+  end;
+
 const
   /// a step of the plan that does not repeat the function for the values of "typ"
   NO_TYPE_VALUE = -2147483647;
@@ -116,6 +129,7 @@ var
   GImporter: TPSRuntimeClassImporter = nil;
   GFnv: Cardinal;
   GFunctions: TList<TVshFunction> = nil;
+  GMembers: TList<TVshMember> = nil;
   GCaptureUnit: string;
   GCaptureFrom: Integer;
   GKeys: array[0..2] of LongWord;
@@ -318,6 +332,57 @@ begin
   end;
 end;
 
+// the properties and methods of the classes of the scripts (the ones with a "!" in the name), read inside the OnUses
+// callback: the compiler frees its tables after Compile
+procedure CaptureClasses(ACompiler: TPSPascalCompiler);
+var
+  LType: Integer;
+  LItem: Integer;
+  LParam: Integer;
+  LClassType: TPSClassType;
+  LClassItem: TPSDelphiClassItem;
+  LMember: TVshMember;
+begin
+  if (GMembers = nil) or (GMembers.Count > 0) then
+    Exit;
+  for LType := 0 to ACompiler.GetTypeCount - 1 do
+  begin
+    if not (ACompiler.GetType(LType) is TPSClassType) then
+      Continue;
+    LClassType := TPSClassType(ACompiler.GetType(LType));
+    if (LClassType.Cl = nil) or (Copy(string(LClassType.Cl.RTLClassName), 1, 1) <> '!') then
+      Continue;
+    for LItem := 0 to LClassType.Cl.Count - 1 do
+    begin
+      LClassItem := LClassType.Cl.Items[LItem];
+      if not ((LClassItem is TPSDelphiClassItemProperty) or (LClassItem is TPSDelphiClassItemMethod)) then
+        Continue;
+      if LClassItem.Decl = nil then
+        Continue;
+      LMember.ClassName := UpperCase(string(LClassType.Cl.RTLClassName));
+      LMember.Name := string(LClassItem.OrgName);
+      LMember.IsProperty := LClassItem is TPSDelphiClassItemProperty;
+      LMember.Writable := LMember.IsProperty and (TPSDelphiClassItemProperty(LClassItem).AccessType in [iptRW, iptW]);
+      SetLength(LMember.Parameters, LClassItem.Decl.ParamCount);
+      for LParam := 0 to LClassItem.Decl.ParamCount - 1 do
+        LMember.Parameters[LParam] := ParameterOf(LClassItem.Decl, LParam);
+      LMember.HasResult := LClassItem.Decl.Result <> nil;
+      LMember.ResultTypeName := '';
+      LMember.ResultBase := 0;
+      LMember.ResultElement := 0;
+      if LMember.HasResult then
+      begin
+        LMember.ResultTypeName := string(LClassItem.Decl.Result.Name);
+        LMember.ResultBase := Byte(LClassItem.Decl.Result.BaseType);
+        if LClassItem.Decl.Result is TPSArrayType then
+          if TPSArrayType(LClassItem.Decl.Result).ArrayTypeNo <> nil then
+            LMember.ResultElement := Byte(TPSArrayType(LClassItem.Decl.Result).ArrayTypeNo.BaseType);
+      end;
+      GMembers.Add(LMember);
+    end;
+  end;
+end;
+
 function CaptureOnUses(Sender: TPSPascalCompiler; const Name: TbtString): Boolean;
 var
   LFrom: Integer;
@@ -325,6 +390,8 @@ var
 begin
   LFrom := Sender.GetRegProcCount;
   Result := PS_ScriptOnUses(Sender, Name);
+  if (string(Name) = 'SYSTEM') and (GCaptureUnit = 'SYSTEM') then
+    CaptureClasses(Sender);
   if string(Name) = 'SYSTEM' then
   begin
     // the host functions of SYSTEM follow the ones of the Pascal Script library and of its
@@ -534,6 +601,224 @@ begin
   CloseFile(LFile);
 end;
 
+// ---- the properties of the classes of the scripts (fetta 2g) --------------------------------------------
+// one script for every property and method: it reads the property, writes it back (changed, when that is safe) and reads
+// it again; the result and the FNV-1a of the state are written for each
+
+function InstanceOf(const AClassName: string): string;
+begin
+  if AClassName = '!TACTOR' then
+    Result := 'Actors[' + IntToStr(GKeys[0]) + ']'
+  else if AClassName = '!TVERTEX' then
+    Result := 'Vertexes[1]'
+  else if AClassName = '!TSIDE' then
+    Result := 'Sides[1]'
+  else if AClassName = '!TLINE' then
+    Result := 'Lines[1]'
+  else if AClassName = '!TSECTOR' then
+    Result := 'Sectors[1]'
+  else if AClassName = '!TMOBJINFOITEM' then
+    Result := 'MobjInfo[3]'
+  else if AClassName = '!TOVERLAY' then
+    Result := 'Overlay'
+  else if (AClassName = '!TACTORS') or (AClassName = '!TVERTEXES') or (AClassName = '!TSIDES') or
+    (AClassName = '!TLINES') or (AClassName = '!TSECTORS') or (AClassName = '!TMOBJINFO') or
+    (AClassName = '!TMAPSTRINGS') or (AClassName = '!TWORLDSTRINGS') or (AClassName = '!TMAPINTEGERS') or
+    (AClassName = '!TWORLDINTEGERS') or (AClassName = '!TMAPFLOATS') or (AClassName = '!TWORLDFLOATS') then
+  begin
+    // the variable of the script that has the class: Actors, Vertexes, ..., MapStrings...
+    Result := Copy(AClassName, 3, MaxInt);
+    if AClassName = '!TVERTEXES' then Result := 'Vertexes';
+    if AClassName = '!TSIDES' then Result := 'Sides';
+    if AClassName = '!TLINES' then Result := 'Lines';
+    if AClassName = '!TSECTORS' then Result := 'Sectors';
+    if AClassName = '!TMOBJINFO' then Result := 'MobjInfo';
+    if AClassName = '!TACTORS' then Result := 'Actors';
+  end
+  else
+    Result := '';
+end;
+
+function IsVariableClass(const AClassName: string): Boolean;
+begin
+  Result := (AClassName = '!TMAPSTRINGS') or (AClassName = '!TWORLDSTRINGS') or (AClassName = '!TMAPINTEGERS') or
+    (AClassName = '!TWORLDINTEGERS') or (AClassName = '!TMAPFLOATS') or (AClassName = '!TWORLDFLOATS');
+end;
+
+// '' if no script can be made for the member
+function BuildMemberScript(const AMember: TVshMember): string;
+var
+  LInstance: string;
+  LTarget: string;
+  LArguments: string;
+  LLiteral: string;
+  LIndex: Integer;
+  LRead: string;
+  LStringOf: string;
+  LNewValue: string;
+  LDeclared: string;
+  LIsClass: Boolean;
+  LIdName: string;
+begin
+  Result := '';
+  LInstance := InstanceOf(AMember.ClassName);
+  if LInstance = '' then
+    Exit;
+  LArguments := '';
+  for LIndex := 0 to Length(AMember.Parameters) - 1 do
+  begin
+    LLiteral := ArgumentLiteral(AMember.Parameters[LIndex]);
+    if LLiteral = '' then
+      Exit;
+    if LIndex > 0 then
+      LArguments := LArguments + ', ';
+    LArguments := LArguments + LLiteral;
+  end;
+  if AMember.IsProperty then
+  begin
+    LTarget := LInstance + '.' + AMember.Name;
+    if LArguments <> '' then
+      LTarget := LTarget + '[' + LArguments + ']';
+  end
+  else
+  begin
+    LTarget := LInstance + '.' + AMember.Name;
+    if LArguments <> '' then
+      LTarget := LTarget + '(' + LArguments + ')';
+  end;
+  LIsClass := AMember.ResultBase = btClass;
+  LIdName := 'ID';
+  if AMember.ResultTypeName = '!TACTOR' then
+    LIdName := 'key';
+  LDeclared := AMember.ResultTypeName;
+  if (LDeclared <> '') and (LDeclared[1] = '!') then
+    LDeclared := Copy(LDeclared, 2, MaxInt);
+  if not AMember.HasResult then
+  begin
+    Result := 'uses all;'#13#10'begin'#13#10'  ' + LTarget + ';'#13#10'  SetMapString(''vsh_result'', ''void'');'#13#10'end.'#13#10;
+    Exit;
+  end;
+  if LIsClass then
+  begin
+    // the classes of the scripts have a name with ! : a script cannot declare a variable of the type, it chains
+    Result := 'uses all;'#13#10'var'#13#10'  vshs: string;'#13#10'begin'#13#10'  vshs := IntToStr(' + LTarget + '.' + LIdName +
+      ');'#13#10'  SetMapString(''vsh_result'', vshs);'#13#10'end.'#13#10;
+    Exit;
+  end;
+  if AMember.ResultTypeName = 'BOOLEAN' then
+    LStringOf := 'IFS(vshr, ''T'', ''F'')'
+  else if IsIntegerBase(AMember.ResultBase) or (AMember.ResultBase = btEnum) then
+    LStringOf := 'IntToStr(vshr)'
+  else if IsFloatBase(AMember.ResultBase) then
+    LStringOf := 'FloatToStr(vshr)'
+  else if IsStringBase(AMember.ResultBase) then
+    LStringOf := 'vshr'
+  else if AMember.ResultBase = btArray then
+    LStringOf := 'IntToStr(GetArrayLength(vshr))'
+  else
+    Exit;
+  LRead := '  vshr := ' + LTarget + ';'#13#10'  vshs := ' + LStringOf + ';'#13#10;
+  if AMember.IsProperty and AMember.Writable and not LIsClass and (AMember.ResultBase <> btArray) and
+     (UpperCase(AMember.Name) <> 'STATE') then
+  begin
+    if AMember.ResultTypeName = 'BOOLEAN' then
+      LNewValue := 'not vshr'
+    else if IsIntegerBase(AMember.ResultBase) then
+      LNewValue := 'vshr + 1'
+    else if IsFloatBase(AMember.ResultBase) then
+      LNewValue := 'vshr + 1.5'
+    else if IsVariableClass(AMember.ClassName) then
+      LNewValue := 'vshr + ''x'''
+    else
+      // a name of a texture or a flat that does not exist is an error of the engine: the same text is written back
+      LNewValue := 'vshr';
+    LRead := LRead + '  ' + LTarget + ' := ' + LNewValue + ';'#13#10'  vshr := ' + LTarget + ';'#13#10 +
+      '  vshs := vshs + '','' + ' + LStringOf + ';'#13#10;
+  end;
+  Result := 'uses all;'#13#10'var'#13#10'  vshr: ' + LDeclared + ';'#13#10'  vshs: string;'#13#10'begin'#13#10 + LRead +
+    '  SetMapString(''vsh_result'', vshs);'#13#10'end.'#13#10;
+end;
+
+procedure RunProperties(AResults, AScripts: TStringList);
+var
+  LIndex: Integer;
+  LMember: TVshMember;
+  LName: string;
+  LScript: string;
+  LPCode: TbtString;
+  LExec: TDoomExec;
+  LText: string;
+  LOk: Boolean;
+begin
+  AResults.Add(Format('# members=%d', [GMembers.Count]));
+  for LIndex := 0 to GMembers.Count - 1 do
+  begin
+    LMember := GMembers[LIndex];
+    LName := Copy(LMember.ClassName, 2, MaxInt) + '_' + LMember.Name;
+    if ContainsText(GSkip, ',' + LName + ',') or ContainsText(GSkip, ',' + LMember.Name + ',') then
+    begin
+      AResults.Add(Format('%d PROP.%s SKIPPED', [LIndex, LName]));
+      Continue;
+    end;
+    if (GOnly <> '') and not ContainsText(LName, GOnly) then
+      Continue;
+    // PlaySound makes noise and Remove takes the actor out of the level: the others do not
+    if SameText(LMember.Name, 'PlaySound') or SameText(LMember.Name, 'Remove') or SameText(LMember.Name, 'Free') or
+       SameText(LMember.Name, 'Create') then
+    begin
+      AResults.Add(Format('%d PROP.%s SKIPPED', [LIndex, LName]));
+      Continue;
+    end;
+    LScript := BuildMemberScript(LMember);
+    if LScript = '' then
+    begin
+      AResults.Add(Format('%d PROP.%s NOSCRIPT', [LIndex, LName]));
+      Continue;
+    end;
+    AScripts.Add(Format('// ---- %d PROP.%s', [LIndex, LName]));
+    AScripts.Add(LScript);
+    WriteProgress(Format('%d PROP.%s', [LIndex, LName]));
+    PS_SetMapStr('vsh_result', '');
+    LText := '';
+    LOk := False;
+    LExec := nil;
+    LPCode := '';
+    try
+      LOk := (GCompiler as TDoomCompiler).CompileDoomScript(TbtString(LScript), LPCode);
+      if not LOk then
+        LText := 'COMPILE: ' + string(GCompiler.Msg[0].MessageToString);
+    except
+      on E: Exception do
+        LText := 'COMPILE-EXC: ' + E.ClassName;
+    end;
+    if LOk then
+    begin
+      try
+        LExec := TDoomExec.CreateDoomExec(GImporter);
+        try
+          SetContext(players[0].mo);
+          if LExec.LoadData(LPCode) then
+          begin
+            if LExec.RunScript then
+              LText := 'result=' + PS_GetMapStr('vsh_result')
+            else
+              LText := 'RUNTIME: ' + string(TIFErrorToString(LExec.ExceptionCode, LExec.ExceptionString));
+          end
+          else
+            LText := 'LOAD-FAILED';
+        finally
+          SetContext(nil);
+          LExec.Free;
+        end;
+      except
+        on E: Exception do
+          LText := 'EXCEPTION: ' + E.ClassName;
+      end;
+    end;
+    AResults.Add(Format('%d PROP.%s %s state=%.8x', [LIndex, LName, LText, StateFingerprint]));
+  end;
+end;
+
 procedure RunBattery;
 var
   LResults: TStringList;
@@ -549,6 +834,8 @@ var
   LStep: Integer;
   LValue: Integer;
   LSuffix: string;
+  LPropResults: TStringList;
+  LPropScripts: TStringList;
 begin
   LResults := TStringList.Create;
   LScripts := TStringList.Create;
@@ -556,6 +843,7 @@ begin
     FindKeys;
     FindNames;
     GFunctions := TList<TVshFunction>.Create;
+    GMembers := TList<TVshMember>.Create;
     // the same units as the compiler gives: SYSTEM first, then the others in the order of the names
     CaptureUnit('', 'SYSTEM');
     CaptureUnit('PS_FIXED', 'PS_FIXED');
@@ -638,6 +926,18 @@ begin
       end;
       LResults.Add(Format('%d %s.%s%s %s state=%.8x', [LIndex, LFunction.UnitName, LFunction.Name, LSuffix, LText,
         StateFingerprint]));
+    end;
+    // the properties of the classes of the scripts: before the result file of the functions is written, so that a run
+    // that dies in one of them has no result file (Confronta.ps1 then skips it and runs again)
+    LPropResults := TStringList.Create;
+    LPropScripts := TStringList.Create;
+    try
+      RunProperties(LPropResults, LPropScripts);
+      LPropResults.SaveToFile('verify_scripthost_L2_props.txt');
+      LPropScripts.SaveToFile('verify_scripthost_L2_props_scripts.txt');
+    finally
+      LPropScripts.Free;
+      LPropResults.Free;
     end;
     LResults.SaveToFile('verify_scripthost_L2.txt');
     LScripts.SaveToFile('verify_scripthost_L2_scripts.txt');

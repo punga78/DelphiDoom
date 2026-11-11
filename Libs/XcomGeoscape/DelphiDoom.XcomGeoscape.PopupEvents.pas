@@ -14,7 +14,8 @@ uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft,
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.MissionSite,
   DelphiDoom.XcomSave.AlienBase, DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomGeoscape.Control.Intf;
+  DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.NullEvents, DelphiDoom.XcomGeoscape.Control.Intf,
+  DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 
 type
   /// <summary>
@@ -26,20 +27,23 @@ type
   strict private
     FHost: TXcomStateHost;
     FControl: IXcomGeoscapeControl;
-    FOnBeginMission: TProc<TXcomCraft>;
+    FLauncher: IXcomMissionLauncher;
     procedure Show(AState: TXcomState);
     function Attached: Boolean;
   public
     /// <param name="AHost">The game that runs the states (not owned)</param>
-    constructor Create(AHost: TXcomStateHost);
-    /// <summary>What "Yes" of the landing confirmation does: starts the battle (the Battlescape's; nil: nothing)</summary>
-    property OnBeginMission: TProc<TXcomCraft> read FOnBeginMission write FOnBeginMission;
+    /// <param name="ALauncher">What "Yes" of the landing confirmation starts: the battle (the Battlescape's; nil: nothing)</param>
+    constructor Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher = nil);
+    property Launcher: IXcomMissionLauncher read FLauncher write FLauncher;
     procedure AttachGeoscape(const AControl: IXcomGeoscapeControl);
     procedure UfoDetected(const AUfo: TXcomUfo; AHyperDetected: Boolean); override;
     procedure UfoLost(const AUfo: TXcomUfo); override;
     procedure MissionDetected(const ASite: TXcomMissionSite); override;
     procedure CraftNeedsOrders(const ACraft: TXcomCraft; const AWaypoint: TXcomWaypoint); override;
+    procedure DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo); override;
     procedure DogfightImpossible(const ACraft: TXcomCraft; const AReason: string); override;
+    function ActiveDogfights: Integer; override;
+    procedure UfoRemoving(const AUfo: TXcomUfo); override;
     procedure CraftPatrolling(const ACraft: TXcomCraft); override;
     procedure LowFuel(const ACraft: TXcomCraft); override;
     procedure CraftShortage(const ABase: TXcomBase; const ACraft: TXcomCraft; const AItem: string;
@@ -59,7 +63,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomGeoscape.UfoDetectedState, DelphiDoom.XcomGeoscape.UfoLostState,
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.UfoDetectedState, DelphiDoom.XcomGeoscape.UfoLostState,
   DelphiDoom.XcomGeoscape.MissionDetectedState, DelphiDoom.XcomGeoscape.DogfightErrorState,
   DelphiDoom.XcomGeoscape.CraftPatrolState, DelphiDoom.XcomGeoscape.LowFuelState,
   DelphiDoom.XcomGeoscape.CraftErrorState, DelphiDoom.XcomGeoscape.AlienBaseState,
@@ -75,10 +79,11 @@ uses
 
 { TXcomPopupGeoscapeEvents }
 
-constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost);
+constructor TXcomPopupGeoscapeEvents.Create(AHost: TXcomStateHost; const ALauncher: IXcomMissionLauncher);
 begin
   inherited Create;
   FHost := AHost;
+  FLauncher := ALauncher;
 end;
 
 procedure TXcomPopupGeoscapeEvents.AttachGeoscape(const AControl: IXcomGeoscapeControl);
@@ -123,8 +128,38 @@ begin
     inherited CraftNeedsOrders(ACraft, AWaypoint);
 end;
 
-procedure TXcomPopupGeoscapeEvents.DogfightImpossible(const ACraft: TXcomCraft; const AReason: string);
+procedure TXcomPopupGeoscapeEvents.DogfightRequested(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
+var
+  LControl: IXcomDogfightControl;
 begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.StartDogfight(ACraft, AUfo);
+end;
+
+function TXcomPopupGeoscapeEvents.ActiveDogfights: Integer;
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    Result := LControl.DogfightCount
+  else
+    Result := -1;
+end;
+
+procedure TXcomPopupGeoscapeEvents.UfoRemoving(const AUfo: TXcomUfo);
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.UfoRemoving(AUfo);
+end;
+
+procedure TXcomPopupGeoscapeEvents.DogfightImpossible(const ACraft: TXcomCraft; const AReason: string);
+var
+  LControl: IXcomDogfightControl;
+begin
+  if Attached and Supports(FControl, IXcomDogfightControl, LControl) then
+    LControl.DogfightImpossible(ACraft, AReason);
   if Attached then
     Show(TXcomDogfightErrorState.Create(FHost, ACraft, TXcomTargetNames.Name(ACraft, FHost.Language),
       FHost.Language.GetString(AReason).Text));
@@ -164,12 +199,29 @@ begin
 end;
 
 procedure TXcomPopupGeoscapeEvents.LandingPossible(const ACraft: TXcomCraft; const ATarget: TXcomTarget);
+var
+  LTexture, LShade: Integer;
+  LGlobe: TXcomGlobe;
 begin
+  if not Attached then
+    Exit;
+  // GeoscapeState::handle: the texture of the polygon under the target (a site can ask for its own), the shade there
+  LTexture := -1;
+  LShade := 0;
+  // a control without a globe (the fakes of the tests) has no texture to look up
+  LGlobe := FControl.Globe;
+  if Assigned(ATarget) and (LGlobe <> nil) then
+  begin
+    LGlobe.GetPolygonTextureAndShade(ATarget.Longitude, ATarget.Latitude, LTexture, LShade);
+    if (ATarget is TXcomMissionSite) and LGlobe.HasTexture(TXcomMissionSite(ATarget).Texture) then
+      LTexture := TXcomMissionSite(ATarget).Texture;
+    if not LGlobe.HasTexture(LTexture) then
+      LTexture := -1;
+  end;
+  // timerReset first, as the C++ does; the battle itself is the Battlescape's (the launcher)
+  FControl.TimerReset;
   if Attached then
-    // timerReset first, as the C++ does; the battle itself is the Battlescape's (FOnBeginMission)
-    FControl.TimerReset;
-  if Attached then
-    Show(TXcomConfirmLandingState.Create(FHost, ACraft, FOnBeginMission));
+    Show(TXcomConfirmLandingState.Create(FHost, ACraft, FLauncher, LTexture, LShade));
 end;
 
 procedure TXcomPopupGeoscapeEvents.ItemsArriving;

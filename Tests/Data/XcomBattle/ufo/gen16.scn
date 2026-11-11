@@ -1,0 +1,12 @@
+mission=STR_BATTLESHIP
+kind=1
+race=STR_MUTON
+itemlevel=0
+shade=11
+texture=-1
+terrain=XBASE
+craft=1
+base=0
+runseed=1761016
+seedafter=12401024966490366093
+ok=0

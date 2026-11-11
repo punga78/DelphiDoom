@@ -1,0 +1,779 @@
+name: ""
+version: 1.0
+engine: ""
+build: 4a4bae5fa-dirty
+time:
+  second: 0
+  minute: 0
+  hour: 12
+  weekday: 6
+  day: 1
+  month: 1
+  year: 1999
+mods:
+  - "xcom1 ver: 1.0"
+---
+difficulty: 3
+end: 0
+monthsPassed: -1
+graphRegionToggles: ""
+graphCountryToggles: ""
+graphFinanceToggles: ""
+rng: 1689159464142330801
+funds:
+  - 5992000
+maintenance:
+  - 0
+researchScores:
+  - 0
+incomes:
+  - 5992000
+expenditures:
+  - 0
+warned: false
+globeLon: 0
+globeLat: 0
+globeZoom: 0
+ids:
+  STR_INTERCEPTOR: 3
+  STR_SKYRANGER: 2
+  STR_SOLDIER: 9
+countries:
+  - type: STR_USA
+    funding:
+      - 675000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_RUSSIA
+    funding:
+      - 351000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_UK
+    funding:
+      - 253000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_FRANCE
+    funding:
+      - 584000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_GERMANY
+    funding:
+      - 338000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ITALY
+    funding:
+      - 234000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SPAIN
+    funding:
+      - 204000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_CHINA
+    funding:
+      - 456000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_JAPAN
+    funding:
+      - 679000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_INDIA
+    funding:
+      - 244000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_BRAZIL
+    funding:
+      - 329000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_AUSTRALIA
+    funding:
+      - 326000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NIGERIA
+    funding:
+      - 331000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_AFRICA
+    funding:
+      - 326000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EGYPT
+    funding:
+      - 263000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_CANADA
+    funding:
+      - 399000
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+regions:
+  - type: STR_NORTH_AMERICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ARCTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_ANTARCTICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_AMERICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_EUROPE
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NORTH_AFRICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTHERN_AFRICA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_CENTRAL_ASIA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_EAST_ASIA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SIBERIA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_AUSTRALASIA
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_PACIFIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_NORTH_ATLANTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_SOUTH_ATLANTIC
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+  - type: STR_INDIAN_OCEAN
+    activityXcom:
+      - 0
+    activityAlien:
+      - 0
+bases:
+  - lon: 0
+    lat: 0
+    facilities:
+      - type: STR_ACCESS_LIFT
+        x: 2
+        y: 2
+      - type: STR_HANGAR
+        x: 2
+        y: 0
+      - type: STR_HANGAR
+        x: 0
+        y: 4
+      - type: STR_HANGAR
+        x: 4
+        y: 4
+      - type: STR_LIVING_QUARTERS
+        x: 3
+        y: 2
+      - type: STR_GENERAL_STORES
+        x: 2
+        y: 3
+      - type: STR_LABORATORY
+        x: 3
+        y: 3
+      - type: STR_WORKSHOP
+        x: 4
+        y: 3
+      - type: STR_SMALL_RADAR_SYSTEM
+        x: 1
+        y: 3
+    soldiers:
+      - type: STR_SOLDIER
+        id: 1
+        name: Samuel Elliot
+        initialStats:
+          tu: 57
+          stamina: 42
+          health: 34
+          bravery: 10
+          reactions: 31
+          firing: 59
+          throwing: 74
+          strength: 26
+          psiStrength: 45
+          psiSkill: 0
+          melee: 21
+        currentStats:
+          tu: 57
+          stamina: 42
+          health: 34
+          bravery: 10
+          reactions: 31
+          firing: 59
+          throwing: 74
+          strength: 26
+          psiStrength: 45
+          psiSkill: 0
+          melee: 21
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 3
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 2
+        name: Karsten Mogensen
+        initialStats:
+          tu: 59
+          stamina: 58
+          health: 32
+          bravery: 60
+          reactions: 36
+          firing: 43
+          throwing: 76
+          strength: 23
+          psiStrength: 36
+          psiSkill: 0
+          melee: 40
+        currentStats:
+          tu: 59
+          stamina: 58
+          health: 32
+          bravery: 60
+          reactions: 36
+          firing: 43
+          throwing: 76
+          strength: 23
+          psiStrength: 36
+          psiSkill: 0
+          melee: 40
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 0
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 3
+        name: Evan Kirk
+        initialStats:
+          tu: 55
+          stamina: 68
+          health: 29
+          bravery: 60
+          reactions: 39
+          firing: 56
+          throwing: 54
+          strength: 20
+          psiStrength: 70
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 55
+          stamina: 68
+          health: 29
+          bravery: 60
+          reactions: 39
+          firing: 56
+          throwing: 54
+          strength: 20
+          psiStrength: 70
+          psiSkill: 0
+          melee: 36
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 1
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 4
+        name: Viola Albanese
+        initialStats:
+          tu: 57
+          stamina: 63
+          health: 26
+          bravery: 20
+          reactions: 37
+          firing: 61
+          throwing: 75
+          strength: 24
+          psiStrength: 53
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 57
+          stamina: 63
+          health: 26
+          bravery: 20
+          reactions: 37
+          firing: 61
+          throwing: 75
+          strength: 24
+          psiStrength: 53
+          psiSkill: 0
+          melee: 36
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 1
+        look: 0
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 5
+        name: Chriss Lumbombo
+        initialStats:
+          tu: 53
+          stamina: 63
+          health: 25
+          bravery: 60
+          reactions: 41
+          firing: 41
+          throwing: 54
+          strength: 39
+          psiStrength: 54
+          psiSkill: 0
+          melee: 36
+        currentStats:
+          tu: 53
+          stamina: 63
+          health: 25
+          bravery: 60
+          reactions: 41
+          firing: 41
+          throwing: 54
+          strength: 39
+          psiStrength: 54
+          psiSkill: 0
+          melee: 36
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 3
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 6
+        name: Cristiano Fitas
+        initialStats:
+          tu: 50
+          stamina: 43
+          health: 25
+          bravery: 50
+          reactions: 58
+          firing: 48
+          throwing: 80
+          strength: 34
+          psiStrength: 97
+          psiSkill: 0
+          melee: 32
+        currentStats:
+          tu: 50
+          stamina: 43
+          health: 25
+          bravery: 50
+          reactions: 58
+          firing: 48
+          throwing: 80
+          strength: 34
+          psiStrength: 97
+          psiSkill: 0
+          melee: 32
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 0
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 7
+        name: John Lind
+        initialStats:
+          tu: 55
+          stamina: 45
+          health: 27
+          bravery: 10
+          reactions: 36
+          firing: 55
+          throwing: 68
+          strength: 28
+          psiStrength: 91
+          psiSkill: 0
+          melee: 29
+        currentStats:
+          tu: 55
+          stamina: 45
+          health: 27
+          bravery: 10
+          reactions: 36
+          firing: 55
+          throwing: 68
+          strength: 28
+          psiStrength: 91
+          psiSkill: 0
+          melee: 29
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 0
+        look: 3
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+      - type: STR_SOLDIER
+        id: 8
+        name: Amma Ganguly
+        initialStats:
+          tu: 52
+          stamina: 66
+          health: 37
+          bravery: 60
+          reactions: 49
+          firing: 46
+          throwing: 56
+          strength: 29
+          psiStrength: 84
+          psiSkill: 0
+          melee: 29
+        currentStats:
+          tu: 52
+          stamina: 66
+          health: 37
+          bravery: 60
+          reactions: 49
+          firing: 46
+          throwing: 56
+          strength: 29
+          psiStrength: 84
+          psiSkill: 0
+          melee: 29
+        rank: 0
+        craft:
+          lon: 0
+          lat: 0
+          type: STR_SKYRANGER
+          id: 1
+        gender: 1
+        look: 2
+        missions: 0
+        kills: 0
+        armor: STR_NONE_UC
+        improvement: 0
+        psiStrImprovement: 0
+    crafts:
+      - lon: 0
+        lat: 0
+        id: 1
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_SKYRANGER
+        fuel: 1500
+        damage: 0
+        items:
+          CYBERDISC_WEAPON: 3
+          STR_AC_HE_AMMO: 1
+          STR_BLASTER_BOMB: 3
+          STR_BLASTER_LAUNCHER: 2
+          STR_GRENADE: 8
+          STR_HC_AP_AMMO: 2
+          STR_HC_HE_AMMO: 2
+          STR_HEAVY_CANNON: 1
+          STR_HOVERTANK_PLASMA: 2
+          STR_INCENDIARY_ROCKET: 1
+          STR_LASER_RIFLE: 1
+          STR_PISTOL: 3
+          STR_PISTOL_CLIP: 5
+          STR_RIFLE: 6
+          STR_RIFLE_CLIP: 12
+        status: STR_READY
+      - lon: 0
+        lat: 0
+        id: 1
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_INTERCEPTOR
+        fuel: 1000
+        damage: 0
+        weapons:
+          - type: STR_STINGRAY
+            ammo: 6
+          - type: STR_CANNON_UC
+            ammo: 200
+        items:
+          CHRYSSALID_WEAPON: 3
+          CYBERDISC_WEAPON: 1
+          STR_HC_I_AMMO: 6
+          STR_PLASMA_PISTOL: 3
+          STR_PLASMA_PISTOL_CLIP: 1
+          STR_PLASMA_RIFLE: 1
+          STR_PLASMA_RIFLE_CLIP: 3
+          STR_SMOKE_GRENADE: 1
+        status: STR_READY
+      - lon: 0
+        lat: 0
+        id: 2
+        speedLon: 0
+        speedLat: 0
+        speedRadian: 0
+        speed: 0
+        type: STR_INTERCEPTOR
+        fuel: 1000
+        damage: 0
+        weapons:
+          - type: STR_STINGRAY
+            ammo: 6
+          - type: STR_CANNON_UC
+            ammo: 200
+        items:
+          CHRYSSALID_WEAPON: 2
+          STR_BLASTER_BOMB: 2
+          STR_BLASTER_LAUNCHER: 1
+          STR_HEAVY_PLASMA: 2
+          STR_HEAVY_PLASMA_CLIP: 1
+          STR_LARGE_ROCKET: 2
+          STR_SMALL_LAUNCHER: 2
+          STR_STUN_BOMB: 2
+          ZOMBIE_WEAPON: 3
+        status: STR_READY
+    items:
+      STR_AC_AP_AMMO: 6
+      STR_AUTO_CANNON: 1
+      STR_AVALANCHE_LAUNCHER: 1
+      STR_AVALANCHE_MISSILES: 10
+      STR_CANNON: 2
+      STR_CANNON_ROUNDS_X50: 1
+      STR_GRENADE: 5
+      STR_HC_AP_AMMO: 6
+      STR_HEAVY_CANNON: 1
+      STR_PISTOL: 2
+      STR_PISTOL_CLIP: 8
+      STR_RIFLE: 2
+      STR_RIFLE_CLIP: 8
+      STR_ROCKET_LAUNCHER: 1
+      STR_SMALL_ROCKET: 4
+      STR_SMOKE_GRENADE: 5
+      STR_STINGRAY_LAUNCHER: 1
+      STR_STINGRAY_MISSILES: 25
+    scientists: 10
+    engineers: 10
+alienStrategy:
+  regions:
+    STR_ANTARCTICA: 4
+    STR_ARCTIC: 4
+    STR_AUSTRALASIA: 10
+    STR_CENTRAL_ASIA: 12
+    STR_EUROPE: 16
+    STR_NORTH_AFRICA: 12
+    STR_NORTH_AMERICA: 18
+    STR_PACIFIC: 5
+    STR_SIBERIA: 10
+    STR_SOUTHERN_AFRICA: 8
+    STR_SOUTH_AMERICA: 10
+    STR_SOUTH_EAST_ASIA: 15
+  possibleMissions:
+    - region: STR_ANTARCTICA
+      missions:
+        STR_ALIEN_BASE: 35
+        STR_ALIEN_RESEARCH: 25
+    - region: STR_ARCTIC
+      missions:
+        STR_ALIEN_BASE: 35
+        STR_ALIEN_RESEARCH: 25
+    - region: STR_AUSTRALASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 4
+        STR_ALIEN_BASE: 16
+        STR_ALIEN_HARVEST: 11
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 15
+    - region: STR_CENTRAL_ASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 6
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_HARVEST: 5
+        STR_ALIEN_INFILTRATION: 10
+        STR_ALIEN_RESEARCH: 5
+    - region: STR_EUROPE
+      missions:
+        STR_ALIEN_ABDUCTION: 15
+        STR_ALIEN_BASE: 6
+        STR_ALIEN_HARVEST: 10
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_RESEARCH: 10
+    - region: STR_INDIAN_OCEAN
+      missions: ~
+    - region: STR_NORTH_AFRICA
+      missions:
+        STR_ALIEN_ABDUCTION: 8
+        STR_ALIEN_BASE: 19
+        STR_ALIEN_HARVEST: 8
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 8
+    - region: STR_NORTH_AMERICA
+      missions:
+        STR_ALIEN_ABDUCTION: 20
+        STR_ALIEN_BASE: 20
+        STR_ALIEN_HARVEST: 17
+        STR_ALIEN_INFILTRATION: 20
+        STR_ALIEN_RESEARCH: 14
+    - region: STR_NORTH_ATLANTIC
+      missions: ~
+    - region: STR_PACIFIC
+      missions:
+        STR_ALIEN_BASE: 27
+        STR_ALIEN_RESEARCH: 15
+    - region: STR_SIBERIA
+      missions:
+        STR_ALIEN_ABDUCTION: 4
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_RESEARCH: 6
+    - region: STR_SOUTHERN_AFRICA
+      missions:
+        STR_ALIEN_ABDUCTION: 8
+        STR_ALIEN_BASE: 9
+        STR_ALIEN_HARVEST: 8
+        STR_ALIEN_INFILTRATION: 8
+        STR_ALIEN_RESEARCH: 7
+    - region: STR_SOUTH_AMERICA
+      missions:
+        STR_ALIEN_ABDUCTION: 12
+        STR_ALIEN_BASE: 22
+        STR_ALIEN_HARVEST: 24
+        STR_ALIEN_INFILTRATION: 18
+        STR_ALIEN_RESEARCH: 10
+    - region: STR_SOUTH_ATLANTIC
+      missions: ~
+    - region: STR_SOUTH_EAST_ASIA
+      missions:
+        STR_ALIEN_ABDUCTION: 21
+        STR_ALIEN_BASE: 8
+        STR_ALIEN_HARVEST: 13
+        STR_ALIEN_INFILTRATION: 13
+        STR_ALIEN_RESEARCH: 8
+  missionLocations:
+    {}
+  missionsRun:
+    {}

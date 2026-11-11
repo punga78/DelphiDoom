@@ -17,7 +17,8 @@ uses
   DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomAdlib.Intf,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomAudio.Mixer, DelphiDoom.XcomAudio.ManualOutput,
   DelphiDoom.XcomAudio.MusicPlayer, DelphiDoom.XcomAudio.CatSongs, DelphiDoom.XcomAudio.Factory,
-  DelphiDoom.XcomAudio.OptionsSettings, DelphiDoom.Tests.XcomEngine.World,
+  DelphiDoom.XcomAudio.OptionsSettings, DelphiDoom.XcomAudio.Types, DelphiDoom.XcomAudio.AdlibMusicLoader,
+  DelphiDoom.XcomAudio.DigitalMusicLoader, DelphiDoom.Tests.XcomEngine.World,
   DelphiDoom.Tests.XcomEngine.AudioFakes;
 
 type
@@ -212,15 +213,17 @@ begin
   FResourcesRef := FResources;
   FRandomMaximum := -1;
   FRandomPick := 0;
-  FMusic := TXcomMusicPlayer.Create(FSinkRef, FSettingsRef, RATE,
-    function: IXcomAdlibPlayer
-    begin
-      Result := FPlayerRef;
-    end,
-    function(const AResources: IXcomResources): IXcomAdlibSongs
-    begin
-      Result := FSongsRef;
-    end,
+  FMusic := TXcomMusicPlayer.Create(FSinkRef, FSettingsRef,
+    [TXcomDigitalMusicLoader.Create(mfWav, '.wav', 'WAV', TTestDecoders.Sound, RATE),
+    TXcomAdlibMusicLoader.Create(FSettingsRef,
+      function: IXcomAdlibPlayer
+      begin
+        Result := FPlayerRef;
+      end,
+      function(const AResources: IXcomResources): IXcomAdlibSongs
+      begin
+        Result := FSongsRef;
+      end)],
     function(AMaximum: Integer): Integer
     begin
       FRandomMaximum := AMaximum;
@@ -284,7 +287,7 @@ begin
   Build([Rule('GMWAV', 0), Rule('GMADLIB', 1)]);
   Assert.AreEqual(2, FMusic.LoadedCount);
   FMusic.PlayMusic('GMWAV', 0);
-  Assert.AreEqual('Wav', FMusic.CurrentFormat);
+  Assert.AreEqual('WAV', FMusic.CurrentFormat);
   FMusic.PlayMusic('GMADLIB', 0);
   Assert.AreEqual('Adlib', FMusic.CurrentFormat);
   Assert.AreEqual(2, Integer(FPlayer.Loaded[0]));
@@ -407,7 +410,7 @@ begin
   FResources.SoundFiles.Add('gmw.wav', TWaveMaker.Constant(255, 100));
   Build([Rule('GMW', 0)]);
   FMusic.PlayMusic('GMW', 0);
-  Assert.AreEqual('Wav', FMusic.CurrentFormat);
+  Assert.AreEqual('WAV', FMusic.CurrentFormat);
 end;
 
 procedure TTestXcomMusicPlayer.IlPlayerAdlibNascePrimaDelPrimoBrano;
@@ -416,16 +419,17 @@ var
   LMusic: IXcomMusicPlayer;
 begin
   LMade := 0;
-  LMusic := TXcomMusicPlayer.Create(FSinkRef, FSettingsRef, RATE,
-    function: IXcomAdlibPlayer
-    begin
-      Inc(LMade);
-      Result := FPlayerRef;
-    end,
-    function(const AResources: IXcomResources): IXcomAdlibSongs
-    begin
-      Result := FSongsRef;
-    end);
+  LMusic := TXcomMusicPlayer.Create(FSinkRef, FSettingsRef,
+    [TXcomAdlibMusicLoader.Create(FSettingsRef,
+      function: IXcomAdlibPlayer
+      begin
+        Inc(LMade);
+        Result := FPlayerRef;
+      end,
+      function(const AResources: IXcomResources): IXcomAdlibSongs
+      begin
+        Result := FSongsRef;
+      end)]);
   FResources.Rules := [Rule('A', 0), Rule('B', 1)];
   LMusic.Reload(FResourcesRef);
   // the two chips are made once, and shared by the songs
@@ -627,7 +631,7 @@ var
 begin
   LOutput := TXcomManualPcmOutput.Create;
   LOutputRef := LOutput;
-  LDevice := TXcomMixer.Create(LOutputRef, RATE);
+  LDevice := TXcomMixer.Create(LOutputRef, RATE, TTestDecoders.Sound);
   Assert.IsTrue((LDevice as IXcomMixerMeter).Open);
   FWorld.Game.SetAudioDevice(LDevice);
   FWorld.Resources.Wave := TWaveMaker.Constant(255, 50);

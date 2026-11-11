@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomGeoscape.Globe,
   DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf,
-  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomGeoscape.DogfightState;
 
 type
   /// <summary>
@@ -71,6 +72,16 @@ type
     FPause: Boolean;
     FPopups: TList<TXcomState>;
     FControl: IXcomGeoscapeControl;
+    FDogfights: TObjectList<TXcomDogfightState>;
+    FDogfightsToStart: TObjectList<TXcomDogfightState>;
+    FDogfightTimer: TXcomTimer;
+    FDogfightStartTimer: TXcomTimer;
+    FMinimizedDogfights: Integer;
+    FZoomOld: Integer;
+    procedure HandleDogfights;
+    procedure StartDogfightNow;
+    function FirstFreeDogfightSlot: Integer;
+    function MinimizedDogfightsCount: Integer;
     procedure ConfigureButton(AButton: TXcomTextButton; const AText: string; ABig: Boolean; AKey: Integer;
       const AHandler: TXcomActionHandler);
     procedure ConfigureTimeButton(AButton: TXcomTextButton; const AText: string; AKey: Integer);
@@ -86,6 +97,20 @@ type
     destructor Destroy; override;
     procedure Init; override;
     procedure Think; override;
+    /// <summary>GeoscapeState::blit: the dogfights are drawn over the globe</summary>
+    procedure Blit; override;
+    /// <summary>GeoscapeState::handle: the dogfights get the events too (the geoscape only when all are minimized)</summary>
+    procedure Handle(AAction: TXcomAction); override;
+    /// <summary>
+    ///   A craft reached a UFO it can engage: a DogfightState is made, the time stops and the globe centers on the craft.
+    ///   Declared difference: the zoom in and out effects are not ported, the globe goes to the dogfight zoom at once
+    /// </summary>
+    procedure StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
+    /// <summary>The dogfight of the craft waits minimized (the craft cannot engage yet)</summary>
+    procedure DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
+    function DogfightCount: Integer;
+    /// <summary>The dogfights with the UFO end (it is about to be deleted)</summary>
+    procedure UfoRemoving(AUfo: TXcomUfo);
     /// <summary>GeoscapeState::timeDisplay: the clock of the side bar</summary>
     procedure TimeDisplay;
     /// <summary>GeoscapeState::popup: the state is shown when the geoscape thinks next, and stops the time</summary>
@@ -118,7 +143,7 @@ const
 
 type
   /// <summary>The geoscape as the popups see it; it does not keep the geoscape alive and is cleared by its destructor</summary>
-  TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl)
+  TXcomGeoscapeControl = class(TInterfacedObject, IXcomGeoscapeControl, IXcomDogfightControl)
   strict private
     FState: TXcomGeoscapeState;
     FScreens: IXcomGeoscapeScreens;
@@ -133,9 +158,39 @@ type
     procedure OpenBaseScreen(AScreen: TXcomBaseScreen; ABase: TXcomBase);
     procedure PlaceLift(ABase: TXcomBase; AFirst: Boolean);
     function Palette: PXcomColors;
+    procedure StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
+    procedure DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
+    function DogfightCount: Integer;
+    procedure UfoRemoving(AUfo: TXcomUfo);
   end;
 
 { TXcomGeoscapeControl }
+
+procedure TXcomGeoscapeControl.StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
+begin
+  if Assigned(FState) then
+    FState.StartDogfight(ACraft, AUfo);
+end;
+
+procedure TXcomGeoscapeControl.DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
+begin
+  if Assigned(FState) then
+    FState.DogfightImpossible(ACraft, AReason);
+end;
+
+function TXcomGeoscapeControl.DogfightCount: Integer;
+begin
+  if Assigned(FState) then
+    Result := FState.DogfightCount
+  else
+    Result := 0;
+end;
+
+procedure TXcomGeoscapeControl.UfoRemoving(AUfo: TXcomUfo);
+begin
+  if Assigned(FState) then
+    FState.UfoRemoving(AUfo);
+end;
 
 function TXcomGeoscapeControl.Screens: IXcomGeoscapeScreens;
 begin
@@ -237,6 +292,11 @@ begin
   FBackground.Y := (FGlobe.Height - FBackground.Height) div 2;
   FTimeSpeed := TXcomButtonGroup.Create;
   FGameTimer := TXcomTimer.Create(Host.Clock, GEO_CLOCK_SPEED);
+  FZoomOld := -1;
+  FDogfights := TObjectList<TXcomDogfightState>.Create(True);
+  FDogfightsToStart := TObjectList<TXcomDogfightState>.Create(False);
+  FDogfightTimer := TXcomTimer.Create(Host.Clock, Host.Options.GetValue('dogfightSpeed'));
+  FDogfightStartTimer := TXcomTimer.Create(Host.Clock, Host.Options.GetValue('dogfightSpeed'));
   FBtnIntercept := TXcomTextButton.Create(63, 11, LScreenWidth - 63, LScreenHeight div 2 - 100);
   FBtnBases := TXcomTextButton.Create(63, 11, LScreenWidth - 63, LScreenHeight div 2 - 88);
   FBtnGraphs := TXcomTextButton.Create(63, 11, LScreenWidth - 63, LScreenHeight div 2 - 76);
@@ -441,6 +501,8 @@ begin
 
   FGameTimer.OnTimerState(TimeAdvance);
   FGameTimer.Start;
+  FDogfightStartTimer.OnTimerState(StartDogfightNow);
+  FDogfightTimer.OnTimerState(HandleDogfights);
   TimeDisplay;
 end;
 
@@ -448,6 +510,11 @@ destructor TXcomGeoscapeState.Destroy;
 var
   LState: TXcomState;
 begin
+  // the dogfights use the crafts and the UFOs of the saved game, which outlives the states
+  FDogfights.Free;
+  FDogfightsToStart.Free;
+  FDogfightTimer.Free;
+  FDogfightStartTimer.Free;
   // the popups that were never shown are still ours
   for LState in FPopups do
     LState.Free;
@@ -517,9 +584,11 @@ begin
   // the first month starts when the first base has its name
   if (FSave.MonthsPassed = -1) and (FSave.Bases.Count > 0) and (FSave.Bases.First.Name <> '') then
   begin
-    FSave.AddMonth;
+    // addMonth, determineAlienMissions and the funds: the simulation does the three (it adds the month itself)
     if Assigned(FSimulation) then
-      FSimulation.StartFirstMonth;
+      FSimulation.StartFirstMonth
+    else
+      FSave.AddMonth;
   end;
 end;
 
@@ -541,13 +610,208 @@ end;
 procedure TXcomGeoscapeState.Think;
 begin
   inherited Think;
-  if FPopups.Count = 0 then
+  FDogfightStartTimer.Think(True, False);
+  if (FPopups.Count = 0) and (FDogfights.Count = 0) then
     FGameTimer.Think(True, False)
   else
   begin
-    FGlobe.RotateStop;
-    Host.PushState(FPopups.First);
-    FPopups.Delete(0);
+    if (FDogfights.Count > 0) or (FMinimizedDogfights <> 0) then
+    begin
+      // if all the dogfights are minimized the globe rotates and the time goes on
+      if FDogfights.Count = FMinimizedDogfights then
+      begin
+        FPause := False;
+        FGameTimer.Think(True, False);
+      end;
+      FDogfightTimer.Think(True, False);
+    end;
+    if FPopups.Count > 0 then
+    begin
+      FGlobe.RotateStop;
+      Host.PushState(FPopups.First);
+      FPopups.Delete(0);
+    end;
+  end;
+end;
+
+procedure TXcomGeoscapeState.Blit;
+var
+  LDogfight: TXcomDogfightState;
+begin
+  inherited Blit;
+  for LDogfight in FDogfights do
+    LDogfight.Blit;
+end;
+
+procedure TXcomGeoscapeState.Handle(AAction: TXcomAction);
+var
+  LDogfight: TXcomDogfightState;
+begin
+  if FDogfights.Count = FMinimizedDogfights then
+    inherited Handle(AAction);
+  if FDogfights.Count > 0 then
+  begin
+    for LDogfight in FDogfights.ToArray do
+      LDogfight.Handle(AAction);
+    FMinimizedDogfights := MinimizedDogfightsCount;
+  end;
+end;
+
+function TXcomGeoscapeState.MinimizedDogfightsCount: Integer;
+var
+  LDogfight: TXcomDogfightState;
+begin
+  Result := 0;
+  for LDogfight in FDogfights do
+    if LDogfight.Engine.Minimized then
+      Inc(Result);
+end;
+
+function TXcomGeoscapeState.FirstFreeDogfightSlot: Integer;
+var
+  LDogfight: TXcomDogfightState;
+begin
+  Result := 1;
+  for LDogfight in FDogfights do
+    if LDogfight.Engine.InterceptionNumber = Result then
+      Inc(Result);
+end;
+
+procedure TXcomGeoscapeState.StartDogfightNow;
+var
+  LDogfight: TXcomDogfightState;
+begin
+  // startDogfight without the zoom effect: the globe goes to the dogfight zoom
+  if FGlobe.Zoom < 3 then
+  begin
+    if FZoomOld < 0 then
+      FZoomOld := FGlobe.Zoom;
+    FGlobe.SetZoom(3);
+  end;
+  FDogfightStartTimer.Stop;
+  FDogfightTimer.Start;
+  TimerReset;
+  while FDogfightsToStart.Count > 0 do
+  begin
+    LDogfight := FDogfightsToStart.Last;
+    FDogfightsToStart.Extract(LDogfight);
+    FDogfights.Add(LDogfight);
+    LDogfight.SetInterceptionNumber(FirstFreeDogfightSlot);
+    LDogfight.SetInterceptionsCount(FDogfights.Count + FDogfightsToStart.Count);
+  end;
+  // the right number of interceptions for every dogfight
+  for LDogfight in FDogfights do
+    LDogfight.SetInterceptionsCount(FDogfights.Count);
+end;
+
+procedure TXcomGeoscapeState.StartDogfight(ACraft: TXcomCraft; AUfo: TXcomUfo);
+begin
+  FDogfightsToStart.Add(TXcomDogfightState.Create(Host, FControl, ACraft, AUfo));
+  if not FDogfightStartTimer.IsRunning then
+  begin
+    FPause := True;
+    TimerReset;
+    FGlobe.Center(ACraft.Longitude, ACraft.Latitude);
+    StartDogfightNow;
+    FDogfightStartTimer.Start;
+  end;
+end;
+
+procedure TXcomGeoscapeState.DogfightImpossible(ACraft: TXcomCraft; const AReason: string);
+var
+  LDogfight: TXcomDogfightState;
+begin
+  for LDogfight in FDogfightsToStart.ToArray + FDogfights.ToArray do
+    if LDogfight.Craft = ACraft then
+    begin
+      LDogfight.SetMinimized(True);
+      if AReason = 'STR_UNABLE_TO_ENGAGE_DEPTH' then
+        LDogfight.Engine.SetWaitForAltitude(True)
+      else
+        LDogfight.Engine.SetWaitForPoly(True);
+      Break;
+    end;
+end;
+
+function TXcomGeoscapeState.DogfightCount: Integer;
+begin
+  Result := FDogfights.Count + FDogfightsToStart.Count;
+end;
+
+procedure TXcomGeoscapeState.UfoRemoving(AUfo: TXcomUfo);
+var
+  LIndex: Integer;
+begin
+  // clean up the dogfights of a dead UFO (they were minimized)
+  LIndex := 0;
+  while LIndex < FDogfights.Count do
+    if FDogfights[LIndex].Ufo = AUfo then
+      FDogfights.Delete(LIndex)
+    else
+      Inc(LIndex);
+  LIndex := 0;
+  while LIndex < FDogfightsToStart.Count do
+    if FDogfightsToStart[LIndex].Ufo = AUfo then
+    begin
+      FDogfightsToStart[LIndex].Free;
+      FDogfightsToStart.Delete(LIndex);
+    end
+    else
+      Inc(LIndex);
+  FMinimizedDogfights := MinimizedDogfightsCount;
+end;
+
+procedure TXcomGeoscapeState.HandleDogfights;
+var
+  LIndex: Integer;
+  LDogfight: TXcomDogfightState;
+  LUfo: TXcomUfo;
+begin
+  FMinimizedDogfights := 0;
+  for LDogfight in FDogfights do
+    LDogfight.Ufo.InterceptionProcessed := False;
+  LIndex := 0;
+  while LIndex < FDogfights.Count do
+  begin
+    LDogfight := FDogfights[LIndex];
+    LUfo := LDogfight.Ufo;
+    if LDogfight.Engine.Minimized then
+    begin
+      if LDogfight.Engine.WaitForPoly and FGlobe.InsideLand(LUfo.Longitude, LUfo.Latitude) then
+      begin
+        LDogfight.SetMinimized(False);
+        LDogfight.Engine.SetWaitForPoly(False);
+      end
+      else if LDogfight.Engine.WaitForAltitude and (LUfo.AltitudeInt <= LDogfight.Craft.Rules.MaxAltitude) then
+      begin
+        LDogfight.SetMinimized(False);
+        LDogfight.Engine.SetWaitForAltitude(False);
+      end
+      else
+        Inc(FMinimizedDogfights);
+    end
+    else
+      FGlobe.RotateStop;
+    LDogfight.Think;
+    if LDogfight.Engine.Ended then
+    begin
+      if LDogfight.Engine.Minimized then
+        Dec(FMinimizedDogfights);
+      FDogfights.Delete(LIndex);
+    end
+    else
+      Inc(LIndex);
+  end;
+  if FDogfights.Count = 0 then
+  begin
+    FDogfightTimer.Stop;
+    // zoomOutEffect: the globe goes back to the zoom it had (if the dogfight zoomed it)
+    if FZoomOld >= 0 then
+    begin
+      FGlobe.SetZoom(FZoomOld);
+      FZoomOld := -1;
+    end;
+    FGlobe.Draw;
   end;
 end;
 
@@ -601,8 +865,8 @@ begin
     end;
     Inc(LIndex);
   end;
-  // dogfights to start and zoom effects (not ported) would keep the pause
-  FPause := False;
+  // the dogfights that wait to start keep the pause (the zoom effects are not ported)
+  FPause := FDogfightsToStart.Count > 0;
   TimeDisplay;
   FGlobe.Draw;
 end;

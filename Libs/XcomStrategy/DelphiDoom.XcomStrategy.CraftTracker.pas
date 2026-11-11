@@ -37,6 +37,7 @@ type
     procedure LoseCraft(const ABase: TXcomBase; const ACraft: TXcomCraft);
     procedure FollowUfo(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
     procedure ReachTarget(const ACraft: TXcomCraft);
+    function DogfightLimitReached: Boolean;
     procedure ReachUfo(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
   public
     constructor Create(const AGame: TXcomSavedGame; const ARuleset: TXcomRuleset; const ARandom: IXcomRandom;
@@ -124,13 +125,24 @@ begin
     ACraft.ReturnToBase;
 end;
 
+function TXcomCraftTracker.DogfightLimitReached: Boolean;
+var
+  LActive: Integer;
+begin
+  // not more than four interceptions at a time: the screen counts the open ones, without a screen the requests
+  LActive := FEvents.ActiveDogfights;
+  if LActive < 0 then
+    LActive := FDogfights;
+  Result := LActive >= 4;
+end;
+
 procedure TXcomCraftTracker.ReachUfo(const ACraft: TXcomCraft; const AUfo: TXcomUfo);
 begin
   case AUfo.Status of
     TXcomUfo.STATUS_FLYING:
       begin
         // at most four dogfights at the same time
-        if FDogfights >= 4 then
+        if DogfightLimitReached then
           Exit;
         if not ACraft.InDogfight and (AUfo.Speed <= ACraft.Rules.MaxSpeed) then
         begin
@@ -220,7 +232,7 @@ begin
       begin
         // too many dogfights: the craft waits (the C++ skips it with the next index)
         if (LCraft.Destination is TXcomUfo) and (TXcomUfo(LCraft.Destination).Status = TXcomUfo.STATUS_FLYING) and
-          (FDogfights >= 4) then
+          DogfightLimitReached then
         begin
           Inc(LIndex);
           Continue;

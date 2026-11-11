@@ -87,4 +87,4 @@ Reference/
 
 # log di compilazione scritti nella radice dai worktree
 logs_build_*.txt
-lb*.txt
+/lb*.txt

@@ -34,6 +34,8 @@ uses
   DelphiDoom.Tests.XcomEngine.AudioFakes in 'Source\DelphiDoom.Tests.XcomEngine.AudioFakes.pas',
   DelphiDoom.Tests.XcomEngine.Audio in 'Source\DelphiDoom.Tests.XcomEngine.Audio.pas',
   DelphiDoom.Tests.XcomEngine.AudioMusic in 'Source\DelphiDoom.Tests.XcomEngine.AudioMusic.pas',
+  DelphiDoom.Tests.XcomEngine.AudioFiles in 'Source\DelphiDoom.Tests.XcomEngine.AudioFiles.pas',
+  DelphiDoom.Tests.XcomEngine.AudioFormats in 'Source\DelphiDoom.Tests.XcomEngine.AudioFormats.pas',
   DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas';
 
 var

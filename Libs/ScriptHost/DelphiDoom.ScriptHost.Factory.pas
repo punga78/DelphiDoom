@@ -11,12 +11,18 @@ unit DelphiDoom.ScriptHost.Factory;
 interface
 
 uses
+  System.SysUtils,
+  ps_compiler,
   ps_runtime,
   DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.ScriptHost.Actors.Intf,
   DelphiDoom.ScriptHost.CallbackGroup,
+  DelphiDoom.ScriptHost.Classes.Intf,
+  DelphiDoom.ScriptHost.Constants.Intf,
   DelphiDoom.ScriptHost.Dll.Intf,
+  DelphiDoom.ScriptHost.Services.Intf,
+  DelphiDoom.ScriptHost.Source.Intf,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Fixed.Functions,
   DelphiDoom.ScriptHost.Game.Intf,
@@ -38,6 +44,24 @@ type
   public
     /// <summary>A registry with no units</summary>
     class function CreateRegistry: IScriptFunctionRegistry; static;
+    /// <summary>A catalog of the classes that scripts see, with no classes yet, for a game</summary>
+    class function CreateClassCatalog(const AGame: TScriptGame): IScriptClassCatalog; static;
+    /// <summary>The services of the compiler and the interpreter of the scripts (see IScriptHostServices)</summary>
+    class function CreateServices(const ARegistry: IScriptFunctionRegistry;
+      const AClasses: IScriptClassCatalog; const AConstants: IScriptConstantProvider;
+      const ASources: IScriptSourceProvider; const AGameName: string; const AGame: TScriptGame;
+      const ADefines: TFunc<TArray<string>>): IScriptHostServices; static;
+    /// <summary>The defines of the preprocessor of the scripts for a game (see TScriptDefines)</summary>
+    class function CreateDefines(const AGameName: string; const AGame: TScriptGame; const ADebug,
+      ADevParm, AOpenGL: Boolean): TArray<string>; static;
+    /// <summary>
+    ///   The constants of the unit SYSTEM: the basic ones, the four parts that the engine gives
+    ///   (mobjs, game, world, groups) and the generalized linedef types between the last two, in
+    ///   the order of the old PS_ScriptOnUses
+    /// </summary>
+    class function CreateConstants(const AMobjs, AGame, AWorld, AGroups: IScriptConstantProvider): IScriptConstantProvider; static;
+    /// <summary>The table of constants that writes in a compiler of scripts</summary>
+    class function CreateCompilerConstants(const ACompiler: TPSPascalCompiler): IScriptConstantTable; static;
     /// <summary>The unit SYSTEM of the scripts: for the registry ask it for an IScriptFunctionGroup</summary>
     class function CreateSystemFunctions(const ARoutines: TScriptSystemRoutines;
       const AOutput: IScriptSystemOutput; const AEnvironment: IScriptSystemEnvironment;
@@ -93,6 +117,13 @@ implementation
 
 uses
   DelphiDoom.ScriptHost.Actors,
+  DelphiDoom.ScriptHost.Classes.Catalog,
+  DelphiDoom.ScriptHost.Constants.Basic,
+  DelphiDoom.ScriptHost.Constants.Chain,
+  DelphiDoom.ScriptHost.Constants.Compiler,
+  DelphiDoom.ScriptHost.Constants.Generalized,
+  DelphiDoom.ScriptHost.Defines,
+  DelphiDoom.ScriptHost.Services,
   DelphiDoom.ScriptHost.Dll.Loader,
   DelphiDoom.ScriptHost.Dll.WindowsLibrary,
   DelphiDoom.ScriptHost.Events,
@@ -115,6 +146,39 @@ uses
 class function TScriptHostFactory.CreateRegistry: IScriptFunctionRegistry;
 begin
   Result := TScriptFunctionRegistry.Create;
+end;
+
+class function TScriptHostFactory.CreateServices(const ARegistry: IScriptFunctionRegistry;
+  const AClasses: IScriptClassCatalog; const AConstants: IScriptConstantProvider;
+  const ASources: IScriptSourceProvider; const AGameName: string; const AGame: TScriptGame;
+  const ADefines: TFunc<TArray<string>>): IScriptHostServices;
+begin
+  Result := TScriptHostServices.Create(ARegistry, AClasses, AConstants, ASources, AGameName, AGame,
+    ADefines);
+end;
+
+class function TScriptHostFactory.CreateDefines(const AGameName: string; const AGame: TScriptGame;
+  const ADebug, ADevParm, AOpenGL: Boolean): TArray<string>;
+begin
+  Result := TScriptDefines.ForGame(AGameName, AGame, ADebug, ADevParm, AOpenGL);
+end;
+
+class function TScriptHostFactory.CreateClassCatalog(const AGame: TScriptGame): IScriptClassCatalog;
+begin
+  Result := TScriptClassCatalog.Create(AGame);
+end;
+
+class function TScriptHostFactory.CreateConstants(const AMobjs, AGame, AWorld,
+  AGroups: IScriptConstantProvider): IScriptConstantProvider;
+begin
+  Result := TScriptConstantChain.Create([TScriptBasicConstants.Create, AMobjs, AGame, AWorld,
+    TScriptGeneralizedConstants.Create, AGroups]);
+end;
+
+class function TScriptHostFactory.CreateCompilerConstants(
+  const ACompiler: TPSPascalCompiler): IScriptConstantTable;
+begin
+  Result := TScriptCompilerConstants.Create(ACompiler);
 end;
 
 class function TScriptHostFactory.CreateSystemFunctions(const ARoutines: TScriptSystemRoutines;

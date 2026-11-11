@@ -1,4 +1,4 @@
-﻿# Piano: `Libs\ScriptHost` a classi (issue #172, fetta 2)
+# Piano: `Libs\ScriptHost` a classi (issue #172, fetta 2)
 
 Analisi in sola lettura, fatta sul sorgente di `master` (919a19ef). Conteggi ricavati con `grep`/`wc`/`awk` sulle unit di `Libs\ScriptHost`; dove un numero e una stima lo dico. Nessun file di codice e stato modificato, nessuna build e stata eseguita.
 
@@ -228,6 +228,8 @@ XS 25m, S 1h30, M 3h, L 1d, XL 2d+. Ogni fetta: collegare, verificare, **poi** c
 * **2f-4: fatta** (issue #172): TScriptMobjInfo (71 funzioni, 65 da una tabella dati SCRIPT_MOBJINFO_FUNCTIONS) e TScriptPlayers (19-22 funzioni) in DelphiDoom.ScriptHost.MobjInfo/Players, con due sorgenti (IScriptMobjInfoSource, IScriptPlayerSource, nel motore TEngineScriptMobjInfo/Players), strada B; i PS_*MobjInfo* e PS_*Player* cancellati, i 71 helper TRTLMobjInfoItem* chiamano PS_MobjInfo. Difetto conservato: SetPlayerHasWeapon ignora il valore. L1 uguale, L2 vecchio contro nuovo uguale in 5 eseguibili (e -vshtypes per 20 tipi), 297 test, copertura 97%. Dettagli in Libs\ScriptHost\CLAUDE.md.
 * **2f-5: fatta** (issue #172): `TScriptActors` (114 funzioni, 115 in Strife) e `TScriptActorKeyList` in `DelphiDoom.ScriptHost.Actors*`, un solo gateway `IScriptActorSource` (nel motore `TEngineScriptActors`, l'unica classe che tocca `mobj_t` per queste funzioni) e `ps_currentactor` diventato `IScriptActorContext` (nel motore `IEngineScriptActorContext`, usato dai due percorsi `PS_Event*` e `A_RunScript`); strada B con un oggetto per campo (numeri, testi, relazioni); i `PS_*Actor*`, `PS_Spawn*`, `PS_RemoveActor`, `PS_PlaySound`, `mobj_from_key`, `_playsound` e `TActorKeyList` cancellati (`psi_game` da 7905 a 4429 righe). Difetti corretti: `CheckActorSight` (crash con il secondo attore che non c'e') e `TActorKeyList.SetAllowDuplicates` (svuotava la lista); conservati: `SetActorWeaveIndexZ` scrive l'indice XY, `GetActorRipSound` legge il suono di mischia, `flags5_ex` per i flag 224..255. Verifica e numeri in `Libs\ScriptHost\CLAUDE.md`.
 
+* **2g: fatta** (issue #172): catalogo dati delle classi degli script (IScriptClassCatalog, 12 classi con 202 proprieta' di PS_DescribeGameClasses e le 6 di PS_DescribeGlobalClasses) che alimenta compilatore e interprete, e le costanti di SYSTEM in IScriptConstantProvider (catena Basic, Mobj, Game, World, Generalized, Groups: stesso ordine di prima). L1 identico nei 4 giochi, L2 con la batteria delle proprieta', 402 test; difetti conservati e non provato in Libs\ScriptHost\CLAUDE.md.
+
 Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo fermare in qualsiasi fetta perche ogni facciata `PS_*` resta quella di prima.
 
 ### 5.1 Perche questo ordine
@@ -288,3 +290,7 @@ Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo 
 * Helper `TRTL*_R/_W` in `psi_game`: 289 distinti (`TRTLActor` 98, `TRTLMobj*` 71, `TRTLSector` 55, `TRTLLine` 31, `TRTLSide` 24, vertici, collezioni).
 * `RegisterDelphiMethod` nel repository fuori dal nucleo: 0 usi. `RegisterDelphiFunction`: solo `ps_proclist` e `Libs\OpenGl\Legacy\mdl_script_proclist`.
 * Chiamanti esterni: `d_main` x4, `g_game` x4, `p_saveg` x3 + `sv_save`, `p_inter` x4, `p_map` x4, `p_enemy` x4, `Strife\p_mobj`, `Base\p_tick`, `p_common`, `sc_params`, `v_video`, `v_displaymode`, `gl_main`, `ActorDef.Hooks`, `TLevelLoader`, `Composition`, `Scanner.ActorFunctions`, `dd_compiler`, `deh_main` x4, `mdl_script_proclist`, `mdl_dllmodel`.
+
+* **2h: fatta** (issue #172): servizi iniettati in TDoomCompiler/TDoomExec/importer (IScriptHostServices, TScriptDefines, IScriptSourceProvider), TPSExecManager e' TScriptManager e psmanager non esiste piu'. L1 identico, L2 uguale in 5 eseguibili, .ddout di ddc identici, 417 test; dettagli e non provato in Libs\ScriptHost\CLAUDE.md.
+
+* **2i: solo la registrazione della classe Overlay** (nel catalogo, vedi Libs\ScriptHost\CLAUDE.md); IOverlayCanvas e il disegno restano da fare.

@@ -22,6 +22,8 @@ param(
   [string[]]$Option = @(),
   # makes SDL fail to open the audio (a driver that does not exist): OpenXcom runs with Options::mute on
   [switch]$NoAudio,
+  # before the user folder is deleted, the saved games (*.sav) that the program wrote in it are copied here
+  [string]$SaveCopyTo = '',
   [string]$UserName =('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 )
 $ErrorActionPreference = 'Stop'
@@ -79,5 +81,9 @@ try {
   if ($NoAudio) { Remove-Item Env:SDL_AUDIODRIVER -ErrorAction SilentlyContinue }
   Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
   Start-Sleep 1
+  if ($SaveCopyTo -ne '') {
+    New-Item -ItemType Directory -Force $SaveCopyTo | Out-Null
+    Get-ChildItem $user -Recurse -Filter '*.sav' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item $_.FullName (Join-Path $SaveCopyTo $_.Name) -Force }
+  }
   Remove-Item -Recurse -Force $user -ErrorAction SilentlyContinue
 }

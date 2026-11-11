@@ -89,7 +89,12 @@ begin
     if DirectoryExists(Sub('TFTD\GEODATA')) then
       ASettings.GameFolder := Sub('TFTD')
     else if DirectoryExists(Sub('UFO\GEODATA')) then
-      ASettings.GameFolder := Sub('UFO')
+    begin
+      ASettings.GameFolder := Sub('UFO');
+      // The ruleset follows the game found: only UFO next to the executable means xcom1.
+      if SameText(ASettings.ModId, 'xcom2') then
+        ASettings.ModId := 'xcom1';
+    end
     else if DirectoryExists(Sub('GEODATA')) then
       ASettings.GameFolder := LBase;
   end;
@@ -267,6 +272,9 @@ begin
     on E: Exception do
     begin
       Writeln(ErrOutput, E.ClassName, ': ', E.Message);
+      // the address in the terms of the .map of the executable (the image can be relocated)
+      if ExceptAddr <> nil then
+        Writeln(ErrOutput, 'map address: ', IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8));
       System.ExitCode := 1;
     end;
   end;

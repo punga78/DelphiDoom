@@ -55,6 +55,7 @@ foreach ($g in $Game) {
     $project = "${g}32"
     $folder = $g
   }
+  if (($Which -eq 'New') -and (Test-Path ($patch -replace '\.patch$', '.new.patch'))) { $patch = $patch -replace '\.patch$', '.new.patch' }
   git apply $patch
   if ($LASTEXITCODE -ne 0) { throw "git apply $patch fallito in $tree" }
   try {

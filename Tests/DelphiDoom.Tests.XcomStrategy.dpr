@@ -26,7 +26,9 @@ uses
   DelphiDoom.Tests.XcomStrategy.Time in 'Source\DelphiDoom.Tests.XcomStrategy.Time.pas',
   DelphiDoom.Tests.XcomStrategy.StatString in 'Source\DelphiDoom.Tests.XcomStrategy.StatString.pas',
   DelphiDoom.Tests.XcomStrategy.Units in 'Source\DelphiDoom.Tests.XcomStrategy.Units.pas',
-  DelphiDoom.Tests.XcomStrategy.Scripts in 'Source\DelphiDoom.Tests.XcomStrategy.Scripts.pas';
+  DelphiDoom.Tests.XcomStrategy.Scripts in 'Source\DelphiDoom.Tests.XcomStrategy.Scripts.pas',
+  DelphiDoom.Tests.XcomStrategy.Dogfight in 'Source\DelphiDoom.Tests.XcomStrategy.Dogfight.pas',
+  DelphiDoom.Tests.XcomStrategy.Projectile in 'Source\DelphiDoom.Tests.XcomStrategy.Projectile.pas';
 
 var
   Runner: ITestRunner;

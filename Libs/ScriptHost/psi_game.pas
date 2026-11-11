@@ -41,6 +41,7 @@ uses
   psi_system,
   DelphiDoom.Engine.Script.ActorContext.Intf,
   DelphiDoom.ScriptHost.Actors.Intf,
+  DelphiDoom.ScriptHost.Classes.Intf,
   DelphiDoom.ScriptHost.MobjInfo.Intf,
   DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.World.Intf,
@@ -205,24 +206,12 @@ function PS_GetMobjInfoFlag(const typ: Integer; const flg: integer): Boolean;
 
 //==============================================================================
 //
-// SIRegister_Game
+// PS_DescribeGameClasses
+// The classes of the scripts of the game (Actors, Lines, Sectors...) for the
+// compiler and the interpreter
 //
 //==============================================================================
-procedure SIRegister_Game(C: TPSPascalCompiler);
-
-//==============================================================================
-//
-// RIRegister_Game
-//
-//==============================================================================
-procedure RIRegister_Game(CLI: TPSRuntimeClassImporter);
-
-//==============================================================================
-//
-// RIRegisterRTL_Game
-//
-//==============================================================================
-procedure RIRegisterRTL_Game(Exec: TPSExec);
+procedure PS_DescribeGameClasses(const ACatalog: IScriptClassCatalog);
 
 //==============================================================================
 //
@@ -356,7 +345,8 @@ uses
   r_main,
   r_sky,
   tables,
-  w_wad;
+  w_wad,
+  DelphiDoom.ScriptHost.Types;
 
 var
   // given by the composition root
@@ -1488,7 +1478,6 @@ begin
   T := PS_Actors.GetText(LongWord(Self), actName);
 end;
 
-{$IFDEF STRIFE}
 
 //==============================================================================
 //
@@ -1499,7 +1488,6 @@ procedure TRTLActorName2_R(Self: TRTLActor; var T: string);
 begin
   T := PS_Actors.GetText(LongWord(Self), actName2);
 end;
-{$ENDIF}
 
 //==============================================================================
 //
@@ -2114,7 +2102,6 @@ begin
   T := rtlsides[PS_Lines.GetLineFrontSide(Integer(Self) - 1)];
 end;
 
-{$IFNDEF HEXEN}
 
 //==============================================================================
 //
@@ -2136,7 +2123,6 @@ begin
   T := PS_Lines.GetLineTag(Integer(Self) - 1);
 end;
 
-{$ENDIF}
 
 //==============================================================================
 //
@@ -2238,7 +2224,6 @@ begin
   T := PS_Lines.GetLineArgument(Integer(Self) - 1, 0);
 end;
 
-{$IFNDEF HEXEN}
 
 //==============================================================================
 //
@@ -2259,7 +2244,6 @@ procedure TRTLLineTransparent_R(Self: TRTLLine; var T: Boolean);
 begin
   T := PS_Lines.GetLineFlag(Integer(Self) - 1, slfTransparent);
 end;
-{$ENDIF}
 
 //==============================================================================
 //
@@ -2492,7 +2476,6 @@ begin
   T := rtlsectors[PS_Sectors.GetSectorMidSector(Integer(Self) - 1)];
 end;
 
-{$IFDEF DOOM_OR_STRIFE}
 
 //==============================================================================
 //
@@ -2573,7 +2556,6 @@ procedure TRTLSectorFloorXOffset_R(Self: TRTLSector; var T: fixed_t);
 begin
   T := PS_Sectors.GetSectorFloorXOffset(Integer(Self) - 1);
 end;
-{$ENDIF}
 
 //==============================================================================
 //
@@ -3204,7 +3186,6 @@ begin
   T := PS_MobjInfo.GetText(mifName, Integer(Self) - 1);
 end;
 
-{$IFDEF STRIFE}
 
 //==============================================================================
 //
@@ -3215,7 +3196,6 @@ procedure TRTLMobjInfoItemName2_R(Self: TRTLMobjInfoItem; var T: string);
 begin
   T := PS_MobjInfo.GetText(mifName, Integer(Self) - 1);
 end;
-{$ENDIF}
 
 //==============================================================================
 //
@@ -3882,579 +3862,309 @@ end;
 
 //==============================================================================
 //
-// SIRegister_Game
+// PS_DescribeGameClasses
 //
-// Compiler Registration
+// The classes of the scripts of the game (Actors, Lines...): one table for the
+// compiler and the interpreter
 //
 //==============================================================================
-procedure SIRegister_Game(C: TPSPascalCompiler);
+procedure PS_DescribeGameClasses(const ACatalog: IScriptClassCatalog);
 var
-  cactor: TPSCompileTimeClass;
-  cactors: TPSCompileTimeClass;
-  cvertex: TPSCompileTimeClass;
-  cvertexes: TPSCompileTimeClass;
-  cside: TPSCompileTimeClass;
-  csides: TPSCompileTimeClass;
-  cline: TPSCompileTimeClass;
-  clines: TPSCompileTimeClass;
-  csector: TPSCompileTimeClass;
-  csectors: TPSCompileTimeClass;
-  cmobjinfoitem: TPSCompileTimeClass;
-  cmobjinfo: TPSCompileTimeClass;
+  cactor: IScriptClassDescriptor;
+  cactors: IScriptClassDescriptor;
+  cvertex: IScriptClassDescriptor;
+  cvertexes: IScriptClassDescriptor;
+  cside: IScriptClassDescriptor;
+  csides: IScriptClassDescriptor;
+  cline: IScriptClassDescriptor;
+  clines: IScriptClassDescriptor;
+  csector: IScriptClassDescriptor;
+  csectors: IScriptClassDescriptor;
+  cmobjinfoitem: IScriptClassDescriptor;
+  cmobjinfo: IScriptClassDescriptor;
 begin
-  cactor := C.AddClassN(C.FindClass('!TOBJECT'), '!TActor');
-  cactors := C.AddClassN(C.FindClass('!TOBJECT'), '!TActors');
-  cvertex := C.AddClassN(C.FindClass('!TOBJECT'), '!TVertex');
-  cvertexes := C.AddClassN(C.FindClass('!TOBJECT'), '!TVertexes');
-  cside := C.AddClassN(C.FindClass('!TOBJECT'), '!TSide');
-  csides := C.AddClassN(C.FindClass('!TOBJECT'), '!TSides');
-  cline := C.AddClassN(C.FindClass('!TOBJECT'), '!TLine');
-  clines := C.AddClassN(C.FindClass('!TOBJECT'), '!TLines');
-  csector := C.AddClassN(C.FindClass('!TOBJECT'), '!TSector');
-  csectors := C.AddClassN(C.FindClass('!TOBJECT'), '!TSectors');
-  cmobjinfoitem := C.AddClassN(C.FindClass('!TOBJECT'),'!TMobjInfoItem');
-  cmobjinfo := C.AddClassN(C.FindClass('!TOBJECT'),'!TMobjInfo');
+  cactor := ACatalog.AddClass('!TActor', TRTLActor);
+  cactors := ACatalog.AddClass('!TActors', TRTLActors);
+  cvertex := ACatalog.AddClass('!TVertex', TRTLVertex);
+  cvertexes := ACatalog.AddClass('!TVertexes', TRTLVertexes);
+  cside := ACatalog.AddClass('!TSide', TRTLSide);
+  csides := ACatalog.AddClass('!TSides', TRTLSides);
+  cline := ACatalog.AddClass('!TLine', TRTLLine);
+  clines := ACatalog.AddClass('!TLines', TRTLLines);
+  csector := ACatalog.AddClass('!TSector', TRTLLine);
+  csectors := ACatalog.AddClass('!TSectors', TRTLLines);
+  cmobjinfoitem := ACatalog.AddClass('!TMobjInfoItem', TRTLMobjInfoItem);
+  cmobjinfo := ACatalog.AddClass('!TMobjInfo', TRTLMobjInfo);
 
-  cactor.RegisterProperty('key', 'LongWord', iptR);
-  cactor.RegisterProperty('Target', '!TActor', iptRW);
-  cactor.RegisterProperty('Tracer', '!TActor', iptRW);
-  cactor.RegisterProperty('Master', '!TActor', iptRW);
-  cactor.RegisterProperty('X', 'fixed_t', iptRW);
-  cactor.RegisterProperty('Y', 'fixed_t', iptRW);
-  cactor.RegisterProperty('Z', 'fixed_t', iptRW);
-  cactor.RegisterProperty('MOMX', 'fixed_t', iptRW);
-  cactor.RegisterProperty('MOMY', 'fixed_t', iptRW);
-  cactor.RegisterProperty('MOMZ', 'fixed_t', iptRW);
-  cactor.RegisterProperty('FloorZ', 'fixed_t', iptRW);
-  cactor.RegisterProperty('CeilingZ', 'fixed_t', iptRW);
-  cactor.RegisterProperty('Speed', 'fixed_t', iptRW);
-  cactor.RegisterProperty('Angle', 'angle_t', iptRW);
-  cactor.RegisterProperty('Sector', '!TSector', iptR);
-  cactor.RegisterProperty('Health', 'Integer', iptRW);
-  cactor.RegisterProperty('SpawnHealth', 'Integer', iptR);
-  cactor.RegisterProperty('Mass', 'Integer', iptRW);
-  cactor.RegisterProperty('Gravity', 'fixed_t', iptRW);
-  cactor.RegisterProperty('Special', 'Integer', iptRW);
-  cactor.RegisterProperty('Arg1', 'Integer', iptRW);
-  cactor.RegisterProperty('Arg2', 'Integer', iptRW);
-  cactor.RegisterProperty('Arg3', 'Integer', iptRW);
-  cactor.RegisterProperty('Arg4', 'Integer', iptRW);
-  cactor.RegisterProperty('Arg5', 'Integer', iptRW);
-  cactor.RegisterProperty('Height', 'fixed_t', iptRW);
-  cactor.RegisterProperty('WeaveIndexXY', 'Integer', iptRW);
-  cactor.RegisterProperty('WeaveIndexZ', 'Integer', iptRW);
-  cactor.RegisterProperty('Friction', 'fixed_t', iptRW);
-  cactor.RegisterProperty('PainChance', 'fixed_t', iptRW);
-  cactor.RegisterProperty('SpriteDX', 'fixed_t', iptRW);
-  cactor.RegisterProperty('SpriteDY', 'fixed_t', iptRW);
-  cactor.RegisterProperty('InfightingGroup', 'Integer', iptRW);
-  cactor.RegisterProperty('ProjectileGroup', 'Integer', iptRW);
-  cactor.RegisterProperty('SplashGroup', 'Integer', iptRW);
-  cactor.RegisterProperty('Translation', 'string', iptRW);
-  cactor.RegisterProperty('BloodColor', 'string', iptRW);
-  cactor.RegisterProperty('CustomDropItem', 'Integer', iptRW);
-  cactor.RegisterProperty('CustomParams', 'Integer String', iptRW);
-  cactor.RegisterProperty('Flag', 'Boolean LongWord', iptRW);
-  cactor.RegisterProperty('Name', 'String', iptR);
-  {$IFDEF STRIFE}
-  cactor.RegisterProperty('Name2', 'String', iptR);
-  {$ENDIF}
-  cactor.RegisterProperty('Player', 'Integer', iptR);
-  cactor.RegisterProperty('MobjType', 'Integer', iptR);
-  cactor.RegisterProperty('EditorNumber', 'Integer', iptR);
-  cactor.RegisterProperty('SeeSound', 'string', iptR);
-  cactor.RegisterProperty('AttackSound', 'string', iptR);
-  cactor.RegisterProperty('PainSound', 'string', iptR);
-  cactor.RegisterProperty('DeathSound', 'string', iptR);
-  cactor.RegisterProperty('ActiveSound', 'string', iptR);
-  cactor.RegisterProperty('CustomSound1', 'string', iptR);
-  cactor.RegisterProperty('CustomSound2', 'string', iptR);
-  cactor.RegisterProperty('CustomSound3', 'string', iptR);
-  cactor.RegisterProperty('MeleeSound', 'string', iptR);
-  cactor.RegisterProperty('RipSound', 'string', iptR);
-  cactor.RegisterProperty('State', 'Integer', iptRW);
+  cactor.AddProperty('key', 'LongWord', iptR, @TRTLActorkey_R, nil);
+  cactor.AddProperty('Target', '!TActor', iptRW, @TRTLActorTarget_R, @TRTLActorTarget_W);
+  cactor.AddProperty('Tracer', '!TActor', iptRW, @TRTLActorTracer_R, @TRTLActorTracer_W);
+  cactor.AddProperty('Master', '!TActor', iptRW, @TRTLActorMaster_R, @TRTLActorMaster_W);
+  cactor.AddProperty('X', 'fixed_t', iptRW, @TRTLActorX_R, @TRTLActorX_W);
+  cactor.AddProperty('Y', 'fixed_t', iptRW, @TRTLActorY_R, @TRTLActorY_W);
+  cactor.AddProperty('Z', 'fixed_t', iptRW, @TRTLActorZ_R, @TRTLActorZ_W);
+  cactor.AddProperty('MOMX', 'fixed_t', iptRW, @TRTLActorMOMX_R, @TRTLActorMOMX_W);
+  cactor.AddProperty('MOMY', 'fixed_t', iptRW, @TRTLActorMOMY_R, @TRTLActorMOMY_W);
+  cactor.AddProperty('MOMZ', 'fixed_t', iptRW, @TRTLActorMOMZ_R, @TRTLActorMOMZ_W);
+  cactor.AddProperty('FloorZ', 'fixed_t', iptRW, @TRTLActorFloorZ_R, @TRTLActorFloorZ_W);
+  cactor.AddProperty('CeilingZ', 'fixed_t', iptRW, @TRTLActorCeilingZ_R, @TRTLActorCeilingZ_W);
+  cactor.AddProperty('Speed', 'fixed_t', iptRW, @TRTLActorSpeed_R, @TRTLActorSpeed_W);
+  cactor.AddProperty('Angle', 'angle_t', iptRW, @TRTLActorAngle_R, @TRTLActorAngle_W);
+  cactor.AddProperty('Sector', '!TSector', iptR, @TRTLActorSector_R, nil);
+  cactor.AddProperty('Health', 'Integer', iptRW, @TRTLActorHealth_R, @TRTLActorHealth_W);
+  cactor.AddProperty('SpawnHealth', 'Integer', iptR, @TRTLActorSpawnHealth_R, nil);
+  cactor.AddProperty('Mass', 'Integer', iptRW, @TRTLActorMass_R, @TRTLActorMass_W);
+  cactor.AddProperty('Gravity', 'fixed_t', iptRW, @TRTLActorGravity_R, @TRTLActorGravity_W);
+  cactor.AddProperty('Special', 'Integer', iptRW, @TRTLActorSpecial_R, @TRTLActorSpecial_W);
+  cactor.AddProperty('Arg1', 'Integer', iptRW, @TRTLActorArg1_R, @TRTLActorArg1_W);
+  cactor.AddProperty('Arg2', 'Integer', iptRW, @TRTLActorArg2_R, @TRTLActorArg2_W);
+  cactor.AddProperty('Arg3', 'Integer', iptRW, @TRTLActorArg3_R, @TRTLActorArg3_W);
+  cactor.AddProperty('Arg4', 'Integer', iptRW, @TRTLActorArg4_R, @TRTLActorArg4_W);
+  cactor.AddProperty('Arg5', 'Integer', iptRW, @TRTLActorArg5_R, @TRTLActorArg5_W);
+  cactor.AddProperty('Height', 'fixed_t', iptRW, @TRTLActorHeight_R, @TRTLActorHeight_W);
+  cactor.AddProperty('WeaveIndexXY', 'Integer', iptRW, @TRTLActorWeaveIndexXY_R, @TRTLActorWeaveIndexXY_W);
+  cactor.AddProperty('WeaveIndexZ', 'Integer', iptRW, @TRTLActorWeaveIndexZ_R, @TRTLActorWeaveIndexZ_W);
+  cactor.AddProperty('Friction', 'fixed_t', iptRW, @TRTLActorFriction_R, @TRTLActorFriction_W);
+  cactor.AddProperty('PainChance', 'fixed_t', iptRW, @TRTLActorPainChance_R, @TRTLActorPainChance_W);
+  cactor.AddProperty('SpriteDX', 'fixed_t', iptRW, @TRTLActorSpriteDX_R, @TRTLActorSpriteDX_W);
+  cactor.AddProperty('SpriteDY', 'fixed_t', iptRW, @TRTLActorSpriteDY_R, @TRTLActorSpriteDY_W);
+  cactor.AddProperty('InfightingGroup', 'Integer', iptRW, @TRTLActorInfightingGroup_R, @TRTLActorInfightingGroup_W);
+  cactor.AddProperty('ProjectileGroup', 'Integer', iptRW, @TRTLActorProjectileGroup_R, @TRTLActorProjectileGroup_W);
+  cactor.AddProperty('SplashGroup', 'Integer', iptRW, @TRTLActorSplashGroup_R, @TRTLActorSplashGroup_W);
+  cactor.AddProperty('Translation', 'string', iptRW, @TRTLActorTranslation_R, @TRTLActorTranslation_W);
+  cactor.AddProperty('BloodColor', 'string', iptRW, @TRTLActorBloodColor_R, @TRTLActorBloodColor_W);
+  cactor.AddProperty('CustomDropItem', 'Integer', iptRW, @TRTLActorCustomDropItem_R, @TRTLActorCustomDropItem_W);
+  cactor.AddProperty('CustomParams', 'Integer String', iptRW, @TRTLActorCustomParams_R, @TRTLActorCustomParams_W);
+  cactor.AddProperty('Flag', 'Boolean LongWord', iptRW, @TRTLActorFlags_R, @TRTLActorFlags_W);
+  cactor.AddProperty('Name', 'String', iptR, @TRTLActorName_R, nil);
+  cactor.AddProperty('Name2', 'String', iptR, @TRTLActorName2_R, nil, [sgStrife]);
+  cactor.AddProperty('Player', 'Integer', iptR, @TRTLActorPlayer_R, nil);
+  cactor.AddProperty('MobjType', 'Integer', iptR, @TRTLActorMobjType_R, nil);
+  cactor.AddProperty('EditorNumber', 'Integer', iptR, @TRTLActorEditorNumber_R, nil);
+  cactor.AddProperty('SeeSound', 'string', iptR, @TRTLActorSeeSound_R, nil);
+  cactor.AddProperty('AttackSound', 'string', iptR, @TRTLActorAttackSound_R, nil);
+  cactor.AddProperty('PainSound', 'string', iptR, @TRTLActorPainSound_R, nil);
+  cactor.AddProperty('DeathSound', 'string', iptR, @TRTLActorDeathSound_R, nil);
+  cactor.AddProperty('ActiveSound', 'string', iptR, @TRTLActorActiveSound_R, nil);
+  cactor.AddProperty('CustomSound1', 'string', iptR, @TRTLActorCustomSound1_R, nil);
+  cactor.AddProperty('CustomSound2', 'string', iptR, @TRTLActorCustomSound2_R, nil);
+  cactor.AddProperty('CustomSound3', 'string', iptR, @TRTLActorCustomSound3_R, nil);
+  cactor.AddProperty('MeleeSound', 'string', iptR, @TRTLActorMeleeSound_R, nil);
+  cactor.AddProperty('RipSound', 'string', iptR, @TRTLActorRipSound_R, nil);
+  cactor.AddProperty('State', 'Integer', iptRW, @TRTLActorState_R, @TRTLActorState_W);
+  cactor.AddMethod('procedure PlaySound(const snd: string);', 'PlaySound', @TRTLActor.PlaySound);
+  cactor.AddMethod('procedure Remove;', 'Remove', @TRTLActor.Remove);
+  cactor.AddMethod('procedure SetPosition(const x, y, z: fixed_t)', 'SetPosition', @TRTLActor.SetPosition);
+  cactor.AddRuntimeProperty('PushFactor', @TRTLActorPushFactor_R, @TRTLActorPushFactor_W);
+  cactor.AddRuntimeProperty('Scale', @TRTLActorScale_R, @TRTLActorScale_W);
 
-  cactor.RegisterMethod('procedure PlaySound(const snd: string);');
-  cactor.RegisterMethod('procedure Remove;');
-  cactor.RegisterMethod('procedure SetPosition(const x, y, z: fixed_t)');
+  cactors.AddMethod('function AllActors: TActorArray;', 'AllActors', @TRTLActors.AllActors);
+  cactors.AddMethod('function AllMonstersAlive: TActorArray;', 'AllMonstersAlive', @TRTLActors.AllMonstersAlive);
+  cactors.AddMethod('function AllMonstersDead: TActorArray;', 'AllMonstersDead', @TRTLActors.AllMonstersDead);
+  cactors.AddMethod('function AllMonsters: TActorArray;', 'AllMonsters', @TRTLActors.AllMonsters);
+  cactors.AddMethod('function AllMissiles: TActorArray;', 'AllMissiles', @TRTLActors.AllMissiles);
+  cactors.AddMethod('function AllAtSector(const sec: Integer): TActorArray;', 'AllAtSector', @TRTLActors.AllAtSector);
+  cactors.AddMethod('function AllAtSectorTag(const tag: Integer): TActorArray;', 'AllAtSectorTag', @TRTLActors.AllAtSectorTag);
+  cactors.AddMethod('function AllEditorNumber(const dn: Integer): TActorArray;', 'AllEditorNumber', @TRTLActors.AllEditorNumber);
+  cactors.AddMethod('function AllType(const typ: Integer): TActorArray;', 'AllType', @TRTLActors.AllType);
+  cactors.AddProperty('Actor', '!TActor LongWord', iptR, @TRTLActorsActor_R, nil);
+  cactors.AddDefaultProperty('Actor');
 
-  cactors.RegisterMethod('function AllActors: TActorArray;');
-  cactors.RegisterMethod('function AllMonstersAlive: TActorArray;');
-  cactors.RegisterMethod('function AllMonstersDead: TActorArray;');
-  cactors.RegisterMethod('function AllMonsters: TActorArray;');
-  cactors.RegisterMethod('function AllMissiles: TActorArray;');
-  cactors.RegisterMethod('function AllAtSector(const sec: Integer): TActorArray;');
-  cactors.RegisterMethod('function AllAtSectorTag(const tag: Integer): TActorArray;');
-  cactors.RegisterMethod('function AllEditorNumber(const dn: Integer): TActorArray;');
-  cactors.RegisterMethod('function AllType(const typ: Integer): TActorArray;');
-  cactors.RegisterProperty('Actor', '!TActor LongWord', iptR);
-  cactors.SetDefaultPropery('Actor');
+  cvertex.AddProperty('X', 'Integer', iptR, @TRTLVertexX_R, nil);
+  cvertex.AddProperty('Y', 'Integer', iptR, @TRTLVertexY_R, nil);
+  cvertex.AddProperty('ID', 'Integer', iptR, @TRTLVertexID_R, nil);
 
-  cvertex.RegisterProperty('X', 'Integer', iptR);
-  cvertex.RegisterProperty('Y', 'Integer', iptR);
-  cvertex.RegisterProperty('ID', 'Integer', iptR);
+  cvertexes.AddProperty('Vertex', '!TVertex Integer', iptR, @TRTLVertexesVertex_R, nil);
+  cvertexes.AddDefaultProperty('Vertex');
+  cvertexes.AddProperty('Count', 'Integer', iptR, @TRTLVertexesCount_R, nil);
 
-  cvertexes.RegisterProperty('Vertex', '!TVertex Integer', iptR);
-  cvertexes.SetDefaultPropery('Vertex');
-  cvertexes.RegisterProperty('Count', 'Integer', iptR);
+  cside.AddProperty('TextureOffset', 'fixed_t', iptRW, @TRTLSideTextureOffset_R, @TRTLSideTextureOffset_W);
+  cside.AddProperty('TopTextureOffset', 'fixed_t', iptRW, @TRTLSideTopTextureOffset_R, @TRTLSideTopTextureOffset_W);
+  cside.AddProperty('BottomTextureOffset', 'fixed_t', iptRW, @TRTLSideBottomTextureOffset_R, @TRTLSideBottomTextureOffset_W);
+  cside.AddProperty('MidTextureOffset', 'fixed_t', iptRW, @TRTLSideMidTextureOffset_R, @TRTLSideMidTextureOffset_W);
+  cside.AddProperty('RowOffset', 'fixed_t', iptRW, @TRTLSideRowOffset_R, @TRTLSideRowOffset_W);
+  cside.AddProperty('TopRowOffset', 'fixed_t', iptRW, @TRTLSideTopRowOffset_R, @TRTLSideTopRowOffset_W);
+  cside.AddProperty('BottomRowOffset', 'fixed_t', iptRW, @TRTLSideBottomRowOffset_R, @TRTLSideBottomRowOffset_W);
+  cside.AddProperty('MidRowOffset', 'fixed_t', iptRW, @TRTLSideMidRowOffset_R, @TRTLSideMidRowOffset_W);
+  cside.AddProperty('TopTexture', 'string', iptRW, @TRTLSideTopTexture_R, @TRTLSideTopTexture_W);
+  cside.AddProperty('BottomTexture', 'string', iptRW, @TRTLSideBottomTexture_R, @TRTLSideBottomTexture_W);
+  cside.AddProperty('MiddleTexture', 'string', iptRW, @TRTLSideMiddleTexture_R, @TRTLSideMiddleTexture_W);
+  cside.AddProperty('Sector', '!TSector', iptR, @TRTLSideSector_R, nil);
+  cside.AddProperty('ID', 'Integer', iptR, @TRTLSideID_R, nil);
 
-  cside.RegisterProperty('TextureOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('TopTextureOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('BottomTextureOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('MidTextureOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('RowOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('TopRowOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('BottomRowOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('MidRowOffset', 'fixed_t', iptRW);
-  cside.RegisterProperty('TopTexture', 'string', iptRW);
-  cside.RegisterProperty('BottomTexture', 'string', iptRW);
-  cside.RegisterProperty('MiddleTexture', 'string', iptRW);
-  cside.RegisterProperty('Sector', '!TSector', iptR);
-  cside.RegisterProperty('ID', 'Integer', iptR);
+  csides.AddProperty('Side', '!TSide Integer', iptR, @TRTLSidesSides_R, nil);
+  csides.AddDefaultProperty('Side');
+  csides.AddProperty('Count', 'Integer', iptR, @TRTLSidesCount_R, nil);
 
-  csides.RegisterProperty('Side', '!TSide Integer', iptR);
-  csides.SetDefaultPropery('Side');
-  csides.RegisterProperty('Count', 'Integer', iptR);
+  cline.AddProperty('Vertex1', '!TVertex', iptR, @TRTLLineVertex1_R, nil);
+  cline.AddProperty('Vertex2', '!TVertex', iptR, @TRTLLineVertex2_R, nil);
+  cline.AddProperty('DX', 'fixed_t', iptR, @TRTLLineDX_R, nil);
+  cline.AddProperty('DY', 'fixed_t', iptR, @TRTLLineDY_R, nil);
+  cline.AddProperty('Special', 'Integer', iptRW, @TRTLLineSpecial_R, @TRTLLineSpecial_W);
+  cline.AddProperty('Arg1', 'byte', iptRW, @TRTLLineArg1_R, @TRTLLineArg1_W);
+  cline.AddProperty('Arg2', 'byte', iptRW, @TRTLLineArg2_R, @TRTLLineArg2_W);
+  cline.AddProperty('Arg3', 'byte', iptRW, @TRTLLineArg3_R, @TRTLLineArg3_W);
+  cline.AddProperty('Arg4', 'byte', iptRW, @TRTLLineArg4_R, @TRTLLineArg4_W);
+  cline.AddProperty('Arg5', 'byte', iptRW, @TRTLLineArg5_R, @TRTLLineArg5_W);
+  cline.AddProperty('Tag', 'Integer', iptRW, @TRTLLineTag_R, @TRTLLineTag_W, [sgDoom, sgHeretic, sgStrife]);
+  cline.AddProperty('Transparent', 'Boolean', iptRW, @TRTLLineTransparent_R, @TRTLLineTransparent_W, [sgDoom, sgHeretic, sgStrife]);
+  cline.AddProperty('IsBlocking', 'Boolean', iptRW, @TRTLLineIsBlocking_R, @TRTLLineIsBlocking_W);
+  cline.AddProperty('IsBlockingMonsters', 'Boolean', iptRW, @TRTLLineIsBlockingMonsters_R, @TRTLLineIsBlockingMonsters_W);
+  cline.AddProperty('TriggerScripts', 'Boolean', iptRW, @TRTLLineTriggerScripts_R, @TRTLLineTriggerScripts_W);
+  cline.AddProperty('FrontSide', '!TSide', iptR, @TRTLLineFrontSide_R, nil);
+  cline.AddProperty('BackSide', '!TSide', iptR, @TRTLLineBackSide_R, nil);
+  cline.AddProperty('FrontSector', '!TSector', iptR, @TRTLLineFrontSector_R, nil);
+  cline.AddProperty('BackSector', '!TSector', iptR, @TRTLLineBackSector_R, nil);
+  cline.AddProperty('ID', 'Integer', iptR, @TRTLLineID_R, nil);
 
-  cline.RegisterProperty('Vertex1', '!TVertex', iptR);
-  cline.RegisterProperty('Vertex2', '!TVertex', iptR);
-  cline.RegisterProperty('DX', 'fixed_t', iptR);
-  cline.RegisterProperty('DY', 'fixed_t', iptR);
-  cline.RegisterProperty('Special', 'Integer', iptRW);
-  cline.RegisterProperty('Arg1', 'byte', iptRW);
-  cline.RegisterProperty('Arg2', 'byte', iptRW);
-  cline.RegisterProperty('Arg3', 'byte', iptRW);
-  cline.RegisterProperty('Arg4', 'byte', iptRW);
-  cline.RegisterProperty('Arg5', 'byte', iptRW);
-  {$IFNDEF HEXEN}
-  cline.RegisterProperty('Tag', 'Integer', iptRW);
-  cline.RegisterProperty('Transparent', 'Boolean', iptRW);
-  {$ENDIF}
-  cline.RegisterProperty('IsBlocking', 'Boolean', iptRW);
-  cline.RegisterProperty('IsBlockingMonsters', 'Boolean', iptRW);
-  cline.RegisterProperty('TriggerScripts', 'Boolean', iptRW);
-  cline.RegisterProperty('FrontSide', '!TSide', iptR);
-  cline.RegisterProperty('BackSide', '!TSide', iptR);
-  cline.RegisterProperty('FrontSector', '!TSector', iptR);
-  cline.RegisterProperty('BackSector', '!TSector', iptR);
-  cline.RegisterProperty('ID', 'Integer', iptR);
+  clines.AddProperty('Line', '!TLine Integer', iptR, @TRTLLinesLine_R, nil);
+  clines.AddDefaultProperty('Line');
+  clines.AddProperty('Count', 'Integer', iptR, @TRTLLinesCount_R, nil);
 
-  clines.RegisterProperty('Line', '!TLine Integer', iptR);
-  clines.SetDefaultPropery('Line');
-  clines.RegisterProperty('Count', 'Integer', iptR);
+  csector.AddProperty('FloorHeight', 'fixed_t', iptRW, @TRTLSectorFloorHeight_R, @TRTLSectorFloorHeight_W);
+  csector.AddProperty('CeilingHeight', 'fixed_t', iptRW, @TRTLSectorCeilingHeight_R, @TRTLSectorCeilingHeight_W);
+  csector.AddProperty('FloorPicture', 'string', iptRW, @TRTLSectorFloorPicture_R, @TRTLSectorFloorPicture_W);
+  csector.AddProperty('CeilingPicture', 'string', iptRW, @TRTLSectorCeilingPicture_R, @TRTLSectorCeilingPicture_W);
+  csector.AddProperty('LightLevel', 'Integer', iptRW, @TRTLSectorLightLevel_R, @TRTLSectorLightLevel_W);
+  csector.AddProperty('Special', 'Integer', iptR, @TRTLSectorSpecial_R, nil);
+  csector.AddProperty('Tag', 'Integer', iptRW, @TRTLSectorTag_R, @TRTLSectorTag_W);
+  csector.AddProperty('Actors', 'TActorArray', iptR, @TRTLSectorActors_R, nil);
+  csector.AddProperty('NumActors', 'Integer', iptR, @TRTLSectorNumActors_R, nil);
+  csector.AddProperty('Lines', 'TIntegerArray', iptR, @TRTLSectorLines_R, nil);
+  csector.AddProperty('NumLines', 'Integer', iptR, @TRTLSectorNumLines_R, nil);
+  csector.AddProperty('FloorXOffset', 'fixed_t', iptRW, @TRTLSectorFloorXOffset_R, @TRTLSectorFloorXOffset_W, [sgDoom, sgStrife]);
+  csector.AddProperty('FloorYOffset', 'fixed_t', iptRW, @TRTLSectorFloorYOffset_R, @TRTLSectorFloorYOffset_W, [sgDoom, sgStrife]);
+  csector.AddProperty('CeilingXOffset', 'fixed_t', iptRW, @TRTLSectorCeilingXOffset_R, @TRTLSectorCeilingXOffset_W, [sgDoom, sgStrife]);
+  csector.AddProperty('CeilingYOffset', 'fixed_t', iptRW, @TRTLSectorCeilingYOffset_R, @TRTLSectorCeilingYOffset_W, [sgDoom, sgStrife]);
+  csector.AddProperty('MidSector', '!TSector', iptR, @TRTLSectorMidSector_R, nil);
+  csector.AddProperty('SlopeSector', '!TSector', iptR, @TRTLSectorSlopeSector_R, nil);
+  csector.AddProperty('ID', 'Integer', iptR, @TRTLSectorID_R, nil);
+  csector.AddProperty('FloorAngle', 'angle_t', iptRW, @TRTLSectorFloorAngle_R, @TRTLSectorFloorAngle_W);
+  csector.AddProperty('FloorAngleX', 'fixed_t', iptRW, @TRTLSectorFloorAngleX_R, @TRTLSectorFloorAngleX_W);
+  csector.AddProperty('FloorAngleY', 'fixed_t', iptRW, @TRTLSectorFloorAngleY_R, @TRTLSectorFloorAngleY_W);
+  csector.AddProperty('CeilingAngle', 'angle_t', iptRW, @TRTLSectorCeilingAngle_R, @TRTLSectorCeilingAngle_W);
+  csector.AddProperty('CeilingAngleX', 'fixed_t', iptRW, @TRTLSectorCeilingAngleX_R, @TRTLSectorCeilingAngleX_W);
+  csector.AddProperty('CeilingAngleY', 'fixed_t', iptRW, @TRTLSectorCeilingAngleY_R, @TRTLSectorCeilingAngleY_W);
+  csector.AddProperty('RippleFloor', 'boolean', iptRW, @TRTLSectorRippleFloor_R, @TRTLSectorRippleFloor_W);
+  csector.AddProperty('RippleCeiling', 'boolean', iptRW, @TRTLSectorRippleCeiling_R, @TRTLSectorRippleCeiling_W);
+  csector.AddProperty('Interpolate', 'boolean', iptRW, @TRTLSectorInterpolate_R, @TRTLSectorInterpolate_W);
+  csector.AddProperty('Fog', 'boolean', iptRW, @TRTLSectorFog_R, @TRTLSectorFog_W);
+  csector.AddProperty('Gravity', 'fixed_t', iptRW, @TRTLSectorGravity_R, @TRTLSectorGravity_W);
+  csector.AddProperty('WindThrust', 'fixed_t', iptRW, @TRTLSectorWindThrust_R, @TRTLSectorWindThrust_W);
+  csector.AddProperty('WindAngle', 'angle_t', iptRW, @TRTLSectorWindAngle_R, @TRTLSectorWindAngle_W);
+  csector.AddMethod('procedure PlaySound(const snd: string);', 'PlaySound', @TRTLSector.PlaySound);
+  csector.AddMethod('procedure MoveZ(const dz: fixed_t);', 'MoveZ', @TRTLSector.MoveZ);
+  csector.AddMethod('procedure SetFloorSlope(const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', 'SetFloorSlope', @TRTLSector.SetFloorSlope);
+  csector.AddMethod('procedure SetCeilingSlope(const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);', 'SetCeilingSlope', @TRTLSector.SetCeilingSlope);
 
-  csector.RegisterProperty('FloorHeight', 'fixed_t', iptRW);
-  csector.RegisterProperty('CeilingHeight', 'fixed_t', iptRW);
-  csector.RegisterProperty('FloorPicture', 'string', iptRW);
-  csector.RegisterProperty('CeilingPicture', 'string', iptRW);
-  csector.RegisterProperty('LightLevel', 'Integer', iptRW);
-  csector.RegisterProperty('Special', 'Integer', iptR);
-  csector.RegisterProperty('Tag', 'Integer', iptRW);
-  csector.RegisterProperty('Actors', 'TActorArray', iptR);
-  csector.RegisterProperty('NumActors', 'Integer', iptR);
-  csector.RegisterProperty('Lines', 'TIntegerArray', iptR);
-  csector.RegisterProperty('NumLines', 'Integer', iptR);
-  {$IFDEF DOOM_OR_STRIFE}
-  csector.RegisterProperty('FloorXOffset', 'fixed_t', iptRW);
-  csector.RegisterProperty('FloorYOffset', 'fixed_t', iptRW);
-  csector.RegisterProperty('CeilingXOffset', 'fixed_t', iptRW);
-  csector.RegisterProperty('CeilingYOffset', 'fixed_t', iptRW);
-  {$ENDIF}
-  csector.RegisterProperty('MidSector', '!TSector', iptR);
-  csector.RegisterProperty('SlopeSector', '!TSector', iptR);
-  csector.RegisterProperty('ID', 'Integer', iptR);
-  csector.RegisterProperty('FloorAngle', 'angle_t', iptRW);
-  csector.RegisterProperty('FloorAngleX', 'fixed_t', iptRW);
-  csector.RegisterProperty('FloorAngleY', 'fixed_t', iptRW);
-  csector.RegisterProperty('CeilingAngle', 'angle_t', iptRW);
-  csector.RegisterProperty('CeilingAngleX', 'fixed_t', iptRW);
-  csector.RegisterProperty('CeilingAngleY', 'fixed_t', iptRW);
-  csector.RegisterProperty('RippleFloor', 'boolean', iptRW);
-  csector.RegisterProperty('RippleCeiling', 'boolean', iptRW);
-  csector.RegisterProperty('Interpolate', 'boolean', iptRW);
-  csector.RegisterProperty('Fog', 'boolean', iptRW);
-  csector.RegisterProperty('Gravity', 'fixed_t', iptRW);
-  csector.RegisterProperty('WindThrust', 'fixed_t', iptRW);
-  csector.RegisterProperty('WindAngle', 'angle_t', iptRW);
-  csector.RegisterMethod('procedure PlaySound(const snd: string);');
-  csector.RegisterMethod('procedure MoveZ(const dz: fixed_t);');
-  csector.RegisterMethod('procedure SetFloorSlope(const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);');
-  csector.RegisterMethod('procedure SetCeilingSlope(const x1, y1, z1: fixed_t; const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);');
+  csectors.AddProperty('Sector', '!TSector Integer', iptR, @TRTLSectorsSector_R, nil);
+  csectors.AddDefaultProperty('Sector');
+  csectors.AddProperty('Count', 'Integer', iptR, @TRTLSectorsCount_R, nil);
 
-  csectors.RegisterProperty('Sector', '!TSector Integer', iptR);
-  csectors.SetDefaultPropery('Sector');
-  csectors.RegisterProperty('Count', 'Integer', iptR);
+  cmobjinfoitem.AddProperty('Name', 'string', iptR, @TRTLMobjInfoItemName_R, nil);
+  cmobjinfoitem.AddProperty('Name2', 'string', iptR, @TRTLMobjInfoItemName2_R, nil,
+    SCRIPT_ALL_GAMES, [sgStrife]);
+  cmobjinfoitem.AddProperty('InheritsFrom', 'Integer', iptR, @TRTLMobjInfoItemInheritsFrom_R, nil);
+  cmobjinfoitem.AddProperty('DoomEdNum', 'Integer', iptR, @TRTLMobjInfoItemDoomEdNum_R, nil);
+  cmobjinfoitem.AddProperty('SpawnState', 'Integer', iptR, @TRTLMobjInfoItemSpawnState_R, nil);
+  cmobjinfoitem.AddProperty('SpawnHealth', 'Integer', iptR, @TRTLMobjInfoItemSpawnHealth_R, nil);
+  cmobjinfoitem.AddProperty('SeeState', 'Integer', iptR, @TRTLMobjInfoItemSeeState_R, nil);
+  cmobjinfoitem.AddProperty('SeeSound', 'string', iptR, @TRTLMobjInfoItemSeeSound_R, nil);
+  cmobjinfoitem.AddProperty('ReactionTime', 'Integer', iptR, @TRTLMobjInfoItemReactionTime_R, nil);
+  cmobjinfoitem.AddProperty('AttackSound', 'string', iptR, @TRTLMobjInfoItemAttackSound_R, nil);
+  cmobjinfoitem.AddProperty('PainState', 'Integer', iptR, @TRTLMobjInfoItemPainState_R, nil);
+  cmobjinfoitem.AddProperty('PainChance', 'Integer', iptR, @TRTLMobjInfoItemPainChance_R, nil);
+  cmobjinfoitem.AddProperty('PainSound', 'string', iptR, @TRTLMobjInfoItemPainSound_R, nil);
+  cmobjinfoitem.AddProperty('MeleeState', 'Integer', iptR, @TRTLMobjInfoItemMeleeState_R, nil);
+  cmobjinfoitem.AddProperty('MissileState', 'Integer', iptR, @TRTLMobjInfoItemMissileState_R, nil);
+  cmobjinfoitem.AddProperty('DeathState', 'Integer', iptR, @TRTLMobjInfoItemDeathState_R, nil);
+  cmobjinfoitem.AddProperty('XdeathState', 'Integer', iptR, @TRTLMobjInfoItemXdeathState_R, nil);
+  cmobjinfoitem.AddProperty('DeathSound', 'string', iptR, @TRTLMobjInfoItemDeathSound_R, nil);
+  cmobjinfoitem.AddProperty('Speed', 'Integer', iptR, @TRTLMobjInfoItemSpeed_R, nil);
+  cmobjinfoitem.AddProperty('Radius', 'Integer', iptR, @TRTLMobjInfoItemRadius_R, nil);
+  cmobjinfoitem.AddProperty('Height', 'Integer', iptR, @TRTLMobjInfoItemHeight_R, nil);
+  cmobjinfoitem.AddProperty('Mass', 'Integer', iptR, @TRTLMobjInfoItemMass_R, nil);
+  cmobjinfoitem.AddProperty('Damage', 'Integer', iptR, @TRTLMobjInfoItemDamage_R, nil);
+  cmobjinfoitem.AddProperty('ActiveSound', 'string', iptR, @TRTLMobjInfoItemActiveSound_R, nil);
+  cmobjinfoitem.AddProperty('Flag', 'Boolean Integer', iptR, @TRTLMobjInfoItemFlag_R, nil);
+  cmobjinfoitem.AddProperty('RaiseState', 'Integer', iptR, @TRTLMobjInfoItemRaiseState_R, nil);
+  cmobjinfoitem.AddProperty('CustomSound1', 'string', iptR, @TRTLMobjInfoItemCustomSound1_R, nil);
+  cmobjinfoitem.AddProperty('CustomSound2', 'string', iptR, @TRTLMobjInfoItemCustomSound2_R, nil);
+  cmobjinfoitem.AddProperty('CustomSound3', 'string', iptR, @TRTLMobjInfoItemCustomSound3_R, nil);
+  cmobjinfoitem.AddProperty('MeleeSound', 'string', iptR, @TRTLMobjInfoItemMeleeSound_R, nil);
+  cmobjinfoitem.AddProperty('DropItem', 'Integer', iptR, @TRTLMobjInfoItemDropItem_R, nil);
+  cmobjinfoitem.AddProperty('MissileType', 'Integer', iptR, @TRTLMobjInfoItemMissileType_R, nil);
+  cmobjinfoitem.AddProperty('ExplosionDamage', 'Integer', iptR, @TRTLMobjInfoItemExplosionDamage_R, nil);
+  cmobjinfoitem.AddProperty('ExplosionRadius', 'Integer', iptR, @TRTLMobjInfoItemExplosionRadius_R, nil);
+  cmobjinfoitem.AddProperty('MeleeDamage', 'Integer', iptR, @TRTLMobjInfoItemMeleeDamage_R, nil);
+  cmobjinfoitem.AddProperty('RenderStyle', 'Integer', iptR, @TRTLMobjInfoItemRenderStyle_R, nil);
+  cmobjinfoitem.AddProperty('Alpha', 'Integer', iptR, @TRTLMobjInfoItemAlpha_R, nil);
+  cmobjinfoitem.AddProperty('HealState', 'Integer', iptR, @TRTLMobjInfoItemHealState_R, nil);
+  cmobjinfoitem.AddProperty('CrashState', 'Integer', iptR, @TRTLMobjInfoItemCrashState_R, nil);
+  cmobjinfoitem.AddProperty('CrushState', 'Integer', iptR, @TRTLMobjInfoItemCrushState_R, nil);
+  cmobjinfoitem.AddProperty('InteractState', 'Integer', iptR, @TRTLMobjInfoItemInteractState_R, nil);
+  cmobjinfoitem.AddProperty('MissileHeight', 'Integer', iptR, @TRTLMobjInfoItemMissileHeight_R, nil);
+  cmobjinfoitem.AddProperty('VSpeed', 'Integer', iptR, @TRTLMobjInfoItemVSpeed_R, nil);
+  cmobjinfoitem.AddProperty('MinMissileChance', 'Integer', iptR, @TRTLMobjInfoItemMinMissileChance_R, nil);
+  cmobjinfoitem.AddProperty('PushFactor', 'Integer', iptR, @TRTLMobjInfoItemPushFactor_R, nil);
+  cmobjinfoitem.AddProperty('Scale', 'Integer', iptR, @TRTLMobjInfoItemScale_R, nil);
+  cmobjinfoitem.AddProperty('Gravity', 'Integer', iptR, @TRTLMobjInfoItemGravity_R, nil);
+  cmobjinfoitem.AddProperty('FloatSpeed', 'Integer', iptR, @TRTLMobjInfoItemFloatSpeed_R, nil);
+  cmobjinfoitem.AddProperty('NormalSpeed', 'Integer', iptR, @TRTLMobjInfoItemNormalSpeed_R, nil);
+  cmobjinfoitem.AddProperty('FastSpeed', 'Integer', iptR, @TRTLMobjInfoItemFastSpeed_R, nil);
+  cmobjinfoitem.AddProperty('Obituary', 'String', iptR, @TRTLMobjInfoItemObituary_R, nil);
+  cmobjinfoitem.AddProperty('HitObituary', 'String', iptR, @TRTLMobjInfoItemHitObituary_R, nil);
+  cmobjinfoitem.AddProperty('Gender', 'Integer', iptR, @TRTLMobjInfoItemGender_R, nil);
+  cmobjinfoitem.AddProperty('MeleeRange', 'Integer', iptR, @TRTLMobjInfoItemMeleeRange_R, nil);
+  cmobjinfoitem.AddProperty('MaxStepHeight', 'Integer', iptR, @TRTLMobjInfoItemMaxStepHeight_R, nil);
+  cmobjinfoitem.AddProperty('MaxDropOffHeight', 'Integer', iptR, @TRTLMobjInfoItemMaxDropOffHeight_R, nil);
+  cmobjinfoitem.AddProperty('GibHealth', 'Integer', iptR, @TRTLMobjInfoItemGibHealth_R, nil);
+  cmobjinfoitem.AddProperty('MaxTargetRange', 'Integer', iptR, @TRTLMobjInfoItemMaxTargetRange_R, nil);
+  cmobjinfoitem.AddProperty('WeaveIndexXY', 'Integer', iptR, @TRTLMobjInfoItemWeaveIndexXY_R, nil);
+  cmobjinfoitem.AddProperty('WeaveIndexZ', 'Integer', iptR, @TRTLMobjInfoItemWeaveIndexZ_R, nil);
+  cmobjinfoitem.AddProperty('Friction', 'Integer', iptR, @TRTLMobjInfoItemFriction_R, nil);
+  cmobjinfoitem.AddProperty('SpriteDX', 'Integer', iptR, @TRTLMobjInfoItemSpriteDX_R, nil);
+  cmobjinfoitem.AddProperty('SpriteDY', 'Integer', iptR, @TRTLMobjInfoItemSpriteDY_R, nil);
+  cmobjinfoitem.AddProperty('InfightingGroup', 'Integer', iptRW, @TRTLMobjInfoItemInfightingGroup_R, nil);
+  cmobjinfoitem.AddProperty('ProjectileGroup', 'Integer', iptRW, @TRTLMobjInfoItemProjectileGroup_R, nil);
+  cmobjinfoitem.AddProperty('SplashGroup', 'Integer', iptRW, @TRTLMobjInfoItemSplashGroup_R, nil);
+  cmobjinfoitem.AddProperty('RipSound', 'string', iptRW, @TRTLMobjInfoItemRipSound_R, nil);
+  cmobjinfoitem.AddProperty('MeleeThreshold', 'Integer', iptRW, @TRTLMobjInfoItemMeleeThreshold_R, nil);
 
-  cmobjinfoitem.RegisterProperty('Name', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('Name2', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('InheritsFrom', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('DoomEdNum', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SpawnState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SpawnHealth', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SeeState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SeeSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('ReactionTime', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('AttackSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('PainState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('PainChance', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('PainSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('MeleeState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MissileState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('DeathState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('XdeathState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('DeathSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('Speed', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Radius', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Height', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Mass', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Damage', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('ActiveSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('Flag', 'Boolean Integer', iptR);
-  cmobjinfoitem.RegisterProperty('RaiseState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('CustomSound1', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('CustomSound2', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('CustomSound3', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('MeleeSound', 'string', iptR);
-  cmobjinfoitem.RegisterProperty('DropItem', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MissileType', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('ExplosionDamage', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('ExplosionRadius', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MeleeDamage', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('RenderStyle', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Alpha', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('HealState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('CrashState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('CrushState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('InteractState', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MissileHeight', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('VSpeed', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MinMissileChance', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('PushFactor', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Scale', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Gravity', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('FloatSpeed', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('NormalSpeed', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('FastSpeed', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Obituary', 'String', iptR);
-  cmobjinfoitem.RegisterProperty('HitObituary', 'String', iptR);
-  cmobjinfoitem.RegisterProperty('Gender', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MeleeRange', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MaxStepHeight', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MaxDropOffHeight', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('GibHealth', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('MaxTargetRange', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('WeaveIndexXY', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('WeaveIndexZ', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('Friction', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SpriteDX', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('SpriteDY', 'Integer', iptR);
-  cmobjinfoitem.RegisterProperty('InfightingGroup', 'Integer', iptRW);
-  cmobjinfoitem.RegisterProperty('ProjectileGroup', 'Integer', iptRW);
-  cmobjinfoitem.RegisterProperty('SplashGroup', 'Integer', iptRW);
-  cmobjinfoitem.RegisterProperty('RipSound', 'string', iptRW);
-  cmobjinfoitem.RegisterProperty('MeleeThreshold', 'Integer', iptRW);
+  cmobjinfo.AddProperty('Item', '!TMobjInfoItem integer', iptR, @TRTLMobjInfoItem_R, nil);
+  cmobjinfo.AddDefaultProperty('Item');
+  cmobjinfo.AddProperty('Count', 'Integer', iptR, @TRTLMobjInfoCount_R, nil);
 
-  cmobjinfo.RegisterProperty('Item', '!TMobjInfoItem integer', iptR);
-  cmobjinfo.SetDefaultPropery('Item');
-  cmobjinfo.RegisterProperty('Count', 'Integer', iptR);
-
-  AddImportedClassVariable(C, 'Actors', '!TActors');
-  AddImportedClassVariable(C, 'Vertexes', '!TVertexes');
-  AddImportedClassVariable(C, 'Sides', '!TSides');
-  AddImportedClassVariable(C, 'Lines', '!TLines');
-  AddImportedClassVariable(C, 'Sectors', '!TSectors');
-  AddImportedClassVariable(C, 'MobjInfo', '!TMobjInfo');
-end;
-
-//==============================================================================
-// RIRegister_Game
-//
-// Runtime Registration
-//
-//==============================================================================
-procedure RIRegister_Game(CLI: TPSRuntimeClassImporter);
-var
-  ractor: TPSRuntimeClass;
-  ractors: TPSRuntimeClass;
-  rvertex: TPSRuntimeClass;
-  rvertexes: TPSRuntimeClass;
-  rside: TPSRuntimeClass;
-  rsides: TPSRuntimeClass;
-  rline: TPSRuntimeClass;
-  rlines: TPSRuntimeClass;
-  rsector: TPSRuntimeClass;
-  rsectors: TPSRuntimeClass;
-  rmobjinfoitem: TPSRuntimeClass;
-  rmobjinfo: TPSRuntimeClass;
-begin
-  ractor := CLI.Add2(TRTLActor, '!TACTOR');
-  ractors := CLI.Add2(TRTLActors, '!TACTORS');
-  rvertex := CLI.Add2(TRTLVertex, '!TVERTEX');
-  rvertexes := CLI.Add2(TRTLVertexes, '!TVERTEXES');
-  rside := CLI.Add2(TRTLSide, '!TSIDE');
-  rsides := CLI.Add2(TRTLSides, '!TSIDES');
-  rline := CLI.Add2(TRTLLine, '!TLINE');
-  rlines := CLI.Add2(TRTLLines, '!TLINES');
-  rsector := CLI.Add2(TRTLLine, '!TSECTOR');
-  rsectors := CLI.Add2(TRTLLines, '!TSECTORS');
-  rmobjinfoitem := CLI.Add2(TRTLMobjInfoItem, '!TMOBJINFOITEM');
-  rmobjinfo := CLI.Add2(TRTLMobjInfo, '!TMOBJINFO');
-
-  ractor.RegisterPropertyHelper(@TRTLActorkey_R, nil, 'key');
-  ractor.RegisterPropertyHelper(@TRTLActorTarget_R, @TRTLActorTarget_W, 'Target');
-  ractor.RegisterPropertyHelper(@TRTLActorTracer_R, @TRTLActorTracer_W, 'Tracer');
-  ractor.RegisterPropertyHelper(@TRTLActorMaster_R, @TRTLActorMaster_W, 'Master');
-  ractor.RegisterPropertyHelper(@TRTLActorX_R, @TRTLActorX_W, 'X');
-  ractor.RegisterPropertyHelper(@TRTLActorY_R, @TRTLActorY_W, 'Y');
-  ractor.RegisterPropertyHelper(@TRTLActorZ_R, @TRTLActorZ_W, 'Z');
-  ractor.RegisterPropertyHelper(@TRTLActorMOMX_R, @TRTLActorMOMX_W, 'MOMX');
-  ractor.RegisterPropertyHelper(@TRTLActorMOMY_R, @TRTLActorMOMY_W, 'MOMY');
-  ractor.RegisterPropertyHelper(@TRTLActorMOMZ_R, @TRTLActorMOMZ_W, 'MOMZ');
-  ractor.RegisterPropertyHelper(@TRTLActorFloorZ_R, @TRTLActorFloorZ_W, 'FloorZ');
-  ractor.RegisterPropertyHelper(@TRTLActorCeilingZ_R, @TRTLActorCeilingZ_W, 'CeilingZ');
-  ractor.RegisterPropertyHelper(@TRTLActorSpeed_R, @TRTLActorSpeed_W, 'Speed');
-  ractor.RegisterPropertyHelper(@TRTLActorAngle_R, @TRTLActorAngle_W, 'Angle');
-  ractor.RegisterPropertyHelper(@TRTLActorSector_R, nil, 'Sector');
-  ractor.RegisterPropertyHelper(@TRTLActorHealth_R, @TRTLActorHealth_W, 'Health');
-  ractor.RegisterPropertyHelper(@TRTLActorSpawnHealth_R, nil, 'SpawnHealth');
-  ractor.RegisterPropertyHelper(@TRTLActorMass_R, @TRTLActorMass_W, 'Mass');
-  ractor.RegisterPropertyHelper(@TRTLActorHeight_R, @TRTLActorHeight_W, 'Height');
-  ractor.RegisterPropertyHelper(@TRTLActorCustomDropItem_R, @TRTLActorCustomDropItem_W, 'CustomDropItem');
-  ractor.RegisterPropertyHelper(@TRTLActorPushFactor_R, @TRTLActorPushFactor_W, 'PushFactor');
-  ractor.RegisterPropertyHelper(@TRTLActorScale_R, @TRTLActorScale_W, 'Scale');
-  ractor.RegisterPropertyHelper(@TRTLActorGravity_R, @TRTLActorGravity_W, 'Gravity');
-  ractor.RegisterPropertyHelper(@TRTLActorSpecial_R, @TRTLActorSpecial_W, 'Special');
-  ractor.RegisterPropertyHelper(@TRTLActorArg1_R, @TRTLActorArg1_W, 'Arg1');
-  ractor.RegisterPropertyHelper(@TRTLActorArg2_R, @TRTLActorArg2_W, 'Arg2');
-  ractor.RegisterPropertyHelper(@TRTLActorArg3_R, @TRTLActorArg3_W, 'Arg3');
-  ractor.RegisterPropertyHelper(@TRTLActorArg4_R, @TRTLActorArg4_W, 'Arg4');
-  ractor.RegisterPropertyHelper(@TRTLActorArg5_R, @TRTLActorArg5_W, 'Arg5');
-  ractor.RegisterPropertyHelper(@TRTLActorWeaveIndexXY_R, @TRTLActorWeaveIndexXY_W, 'WeaveIndexXY');
-  ractor.RegisterPropertyHelper(@TRTLActorWeaveIndexZ_R, @TRTLActorWeaveIndexZ_W, 'WeaveIndexZ');
-  ractor.RegisterPropertyHelper(@TRTLActorFriction_R, @TRTLActorFriction_W, 'Friction');
-  ractor.RegisterPropertyHelper(@TRTLActorPainChance_R, @TRTLActorPainChance_W, 'PainChance');
-  ractor.RegisterPropertyHelper(@TRTLActorSpriteDX_R, @TRTLActorSpriteDX_W, 'SpriteDX');
-  ractor.RegisterPropertyHelper(@TRTLActorSpriteDY_R, @TRTLActorSpriteDY_W, 'SpriteDY');
-  ractor.RegisterPropertyHelper(@TRTLActorInfightingGroup_R, @TRTLActorInfightingGroup_W, 'InfightingGroup');
-  ractor.RegisterPropertyHelper(@TRTLActorProjectileGroup_R, @TRTLActorProjectileGroup_W, 'ProjectileGroup');
-  ractor.RegisterPropertyHelper(@TRTLActorSplashGroup_R, @TRTLActorSplashGroup_W, 'SplashGroup');
-  ractor.RegisterPropertyHelper(@TRTLActorTranslation_R, @TRTLActorTranslation_W, 'Translation');
-  ractor.RegisterPropertyHelper(@TRTLActorBloodColor_R, @TRTLActorBloodColor_W, 'BloodColor');
-  ractor.RegisterPropertyHelper(@TRTLActorCustomParams_R, @TRTLActorCustomParams_W, 'CustomParams');
-  ractor.RegisterPropertyHelper(@TRTLActorFlags_R, @TRTLActorFlags_W, 'Flag');
-  ractor.RegisterPropertyHelper(@TRTLActorName_R, nil, 'Name');
-  {$IFDEF STRIFE}
-  ractor.RegisterPropertyHelper(@TRTLActorName2_R, nil, 'Name2');
-  {$ENDIF}
-  ractor.RegisterPropertyHelper(@TRTLActorPlayer_R, nil, 'Player');
-  ractor.RegisterPropertyHelper(@TRTLActorMobjType_R, nil, 'MobjType');
-  ractor.RegisterPropertyHelper(@TRTLActorEditorNumber_R, nil, 'EditorNumber');
-  ractor.RegisterPropertyHelper(@TRTLActorSeeSound_R, nil, 'SeeSound');
-  ractor.RegisterPropertyHelper(@TRTLActorAttackSound_R, nil, 'AttackSound');
-  ractor.RegisterPropertyHelper(@TRTLActorPainSound_R, nil, 'PainSound');
-  ractor.RegisterPropertyHelper(@TRTLActorDeathSound_R, nil, 'DeathSound');
-  ractor.RegisterPropertyHelper(@TRTLActorActiveSound_R, nil, 'ActiveSound');
-  ractor.RegisterPropertyHelper(@TRTLActorCustomSound1_R, nil, 'CustomSound1');
-  ractor.RegisterPropertyHelper(@TRTLActorCustomSound2_R, nil, 'CustomSound2');
-  ractor.RegisterPropertyHelper(@TRTLActorCustomSound3_R, nil, 'CustomSound3');
-  ractor.RegisterPropertyHelper(@TRTLActorMeleeSound_R, nil, 'MeleeSound');
-  ractor.RegisterPropertyHelper(@TRTLActorRipSound_R, nil, 'RipSound');
-  ractor.RegisterPropertyHelper(@TRTLActorState_R, @TRTLActorState_W, 'State');
-  ractor.RegisterMethod(@TRTLActor.PlaySound, 'PlaySound');
-  ractor.RegisterMethod(@TRTLActor.Remove, 'Remove');
-  ractor.RegisterMethod(@TRTLActor.SetPosition, 'SetPosition');
-
-  ractors.RegisterMethod(@TRTLActors.AllActors, 'AllActors');
-  ractors.RegisterMethod(@TRTLActors.AllMonstersAlive, 'AllMonstersAlive');
-  ractors.RegisterMethod(@TRTLActors.AllMonstersDead, 'AllMonstersDead');
-  ractors.RegisterMethod(@TRTLActors.AllMonsters, 'AllMonsters');
-  ractors.RegisterMethod(@TRTLActors.AllMissiles, 'AllMissiles');
-  ractors.RegisterMethod(@TRTLActors.AllAtSector, 'AllAtSector');
-  ractors.RegisterMethod(@TRTLActors.AllAtSectorTag, 'AllAtSectorTag');
-  ractors.RegisterMethod(@TRTLActors.AllEditorNumber, 'AllEditorNumber');
-  ractors.RegisterMethod(@TRTLActors.AllType, 'AllType');
-  ractors.RegisterPropertyHelper(@TRTLActorsActor_R, nil, 'actor');
-
-  rvertex.RegisterPropertyHelper(@TRTLVertexX_R, nil, 'X');
-  rvertex.RegisterPropertyHelper(@TRTLVertexY_R, nil, 'Y');
-  rvertex.RegisterPropertyHelper(@TRTLVertexID_R, nil, 'ID');
-
-  rvertexes.RegisterPropertyHelper(@TRTLVertexesVertex_R, nil, 'Vertex');
-  rvertexes.RegisterPropertyHelper(@TRTLVertexesCount_R, nil, 'Count');
-
-  rside.RegisterPropertyHelper(@TRTLSideTextureOffset_R, @TRTLSideTextureOffset_W, 'TextureOffset');
-  rside.RegisterPropertyHelper(@TRTLSideTopTextureOffset_R, @TRTLSideTopTextureOffset_W, 'TopTextureOffset');
-  rside.RegisterPropertyHelper(@TRTLSideBottomTextureOffset_R, @TRTLSideBottomTextureOffset_W, 'BottomTextureOffset');
-  rside.RegisterPropertyHelper(@TRTLSideMidTextureOffset_R, @TRTLSideMidTextureOffset_W, 'MidTextureOffset');
-  rside.RegisterPropertyHelper(@TRTLSideRowOffset_R, @TRTLSideRowOffset_W, 'RowOffset');
-  rside.RegisterPropertyHelper(@TRTLSideTopRowOffset_R, @TRTLSideTopRowOffset_W, 'TopRowOffset');
-  rside.RegisterPropertyHelper(@TRTLSideBottomRowOffset_R, @TRTLSideBottomRowOffset_W, 'BottomRowOffset');
-  rside.RegisterPropertyHelper(@TRTLSideMidRowOffset_R, @TRTLSideMidRowOffset_W, 'MidRowOffset');
-  rside.RegisterPropertyHelper(@TRTLSideTopTexture_R, @TRTLSideTopTexture_W, 'TopTexture');
-  rside.RegisterPropertyHelper(@TRTLSideBottomTexture_R, @TRTLSideBottomTexture_W, 'BottomTexture');
-  rside.RegisterPropertyHelper(@TRTLSideMiddleTexture_R, @TRTLSideMiddleTexture_W, 'MiddleTexture');
-  rside.RegisterPropertyHelper(@TRTLSideSector_R, nil, 'Sector');
-  rside.RegisterPropertyHelper(@TRTLSideID_R, nil, 'ID');
-
-  rsides.RegisterPropertyHelper(@TRTLSidesSides_R, nil, 'Side');
-  rsides.RegisterPropertyHelper(@TRTLSidesCount_R, nil, 'Count');
-
-  rline.RegisterPropertyHelper(@TRTLLineVertex1_R, nil, 'Vertex1');
-  rline.RegisterPropertyHelper(@TRTLLineVertex2_R, nil, 'Vertex2');
-  rline.RegisterPropertyHelper(@TRTLLineDX_R, nil, 'DX');
-  rline.RegisterPropertyHelper(@TRTLLineDY_R, nil, 'DY');
-  rline.RegisterPropertyHelper(@TRTLLineSpecial_R, @TRTLLineSpecial_W, 'Special');
-  rline.RegisterPropertyHelper(@TRTLLineArg1_R, @TRTLLineArg1_W, 'Arg1');
-  rline.RegisterPropertyHelper(@TRTLLineArg2_R, @TRTLLineArg2_W, 'Arg2');
-  rline.RegisterPropertyHelper(@TRTLLineArg3_R, @TRTLLineArg3_W, 'Arg3');
-  rline.RegisterPropertyHelper(@TRTLLineArg4_R, @TRTLLineArg4_W, 'Arg4');
-  rline.RegisterPropertyHelper(@TRTLLineArg5_R, @TRTLLineArg5_W, 'Arg5');
-  {$IFNDEF HEXEN}
-  rline.RegisterPropertyHelper(@TRTLLineTag_R, @TRTLLineTag_W, 'Tag');
-  rline.RegisterPropertyHelper(@TRTLLineTransparent_R, @TRTLLineTransparent_W, 'Transparent');
-  {$ENDIF}
-  rline.RegisterPropertyHelper(@TRTLLineIsBlocking_R, @TRTLLineIsBlocking_W, 'IsBlocking');
-  rline.RegisterPropertyHelper(@TRTLLineIsBlockingMonsters_R, @TRTLLineIsBlockingMonsters_W, 'IsBlockingMonsters');
-  rline.RegisterPropertyHelper(@TRTLLineTriggerScripts_R, @TRTLLineTriggerScripts_W, 'TriggerScripts');
-  rline.RegisterPropertyHelper(@TRTLLineFrontSide_R, nil, 'FrontSide');
-  rline.RegisterPropertyHelper(@TRTLLineBackSide_R, nil, 'BackSide');
-  rline.RegisterPropertyHelper(@TRTLLineFrontSector_R, nil, 'FrontSector');
-  rline.RegisterPropertyHelper(@TRTLLineBackSector_R, nil, 'BackSector');
-  rline.RegisterPropertyHelper(@TRTLLineID_R, nil, 'ID');
-
-  rlines.RegisterPropertyHelper(@TRTLLinesLine_R, nil, 'Line');
-  rlines.RegisterPropertyHelper(@TRTLLinesCount_R, nil, 'Count');
-
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorHeight_R, @TRTLSectorFloorHeight_W, 'FloorHeight');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingHeight_R, @TRTLSectorCeilingHeight_W, 'CeilingHeight');
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorPicture_R, @TRTLSectorFloorPicture_W, 'FloorPicture');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingPicture_R, @TRTLSectorCeilingPicture_W, 'CeilingPicture');
-  rsector.RegisterPropertyHelper(@TRTLSectorLightLevel_R, @TRTLSectorLightLevel_W, 'LightLevel');
-  rsector.RegisterPropertyHelper(@TRTLSectorSpecial_R, nil, 'Special');
-  rsector.RegisterPropertyHelper(@TRTLSectorTag_R, @TRTLSectorTag_W, 'Tag');
-  rsector.RegisterPropertyHelper(@TRTLSectorActors_R, nil, 'Actors');
-  rsector.RegisterPropertyHelper(@TRTLSectorNumActors_R, nil, 'NumActors');
-  rsector.RegisterPropertyHelper(@TRTLSectorLines_R, nil, 'Lines');
-  rsector.RegisterPropertyHelper(@TRTLSectorNumLines_R, nil, 'NumLines');
-  {$IFDEF DOOM_OR_STRIFE}
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorXOffset_R, @TRTLSectorFloorXOffset_W, 'FloorXOffset');
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorYOffset_R, @TRTLSectorFloorYOffset_W, 'FloorYOffset');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingXOffset_R, @TRTLSectorCeilingXOffset_W, 'CeilingXOffset');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingYOffset_R, @TRTLSectorCeilingYOffset_W, 'CeilingYOffset');
-  {$ENDIF}
-  rsector.RegisterPropertyHelper(@TRTLSectorMidSector_R, nil, 'MidSector');
-  rsector.RegisterPropertyHelper(@TRTLSectorSlopeSector_R, nil, 'SlopeSector');
-  rsector.RegisterPropertyHelper(@TRTLSectorID_R, nil, 'ID');
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorAngle_R, @TRTLSectorFloorAngle_W, 'FloorAngle');
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorAngleX_R, @TRTLSectorFloorAngleX_W, 'FloorAngleX');
-  rsector.RegisterPropertyHelper(@TRTLSectorFloorAngleY_R, @TRTLSectorFloorAngleY_W, 'FloorAngleY');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingAngle_R, @TRTLSectorCeilingAngle_W, 'CeilingAngle');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingAngleX_R, @TRTLSectorCeilingAngleX_W, 'CeilingAngleX');
-  rsector.RegisterPropertyHelper(@TRTLSectorCeilingAngleY_R, @TRTLSectorCeilingAngleY_W, 'CeilingAngleY');
-  rsector.RegisterPropertyHelper(@TRTLSectorRippleFloor_R, @TRTLSectorRippleFloor_W, 'RippleFloor');
-  rsector.RegisterPropertyHelper(@TRTLSectorRippleCeiling_R, @TRTLSectorRippleCeiling_W, 'RippleCeiling');
-  rsector.RegisterPropertyHelper(@TRTLSectorInterpolate_R, @TRTLSectorInterpolate_W, 'Interpolate');
-  rsector.RegisterPropertyHelper(@TRTLSectorFog_R, @TRTLSectorFog_W, 'Fog');
-  rsector.RegisterPropertyHelper(@TRTLSectorGravity_R, @TRTLSectorGravity_W, 'Gravity');
-  rsector.RegisterPropertyHelper(@TRTLSectorWindThrust_R, @TRTLSectorWindThrust_W, 'WindThrust');
-  rsector.RegisterPropertyHelper(@TRTLSectorWindAngle_R, @TRTLSectorWindAngle_W, 'WindAngle');
-  rsector.RegisterMethod(@TRTLSector.PlaySound, 'PlaySound');
-  rsector.RegisterMethod(@TRTLSector.MoveZ, 'MoveZ');
-  rsector.RegisterMethod(@TRTLSector.SetFloorSlope, 'SetFloorSlope');
-  rsector.RegisterMethod(@TRTLSector.SetCeilingSlope, 'SetCeilingSlope');
-
-  rsectors.RegisterPropertyHelper(@TRTLSectorsSector_R, nil, 'Sector');
-  rsectors.RegisterPropertyHelper(@TRTLSectorsCount_R, nil, 'Count');
-
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemName_R, nil, 'Name');
-  {$IFDEF STRIFE}
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemName2_R, nil, 'Name2');
-  {$ENDIF}
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemInheritsFrom_R, nil, 'InheritsFrom');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemDoomEdNum_R, nil, 'DoomEdNum');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSpawnState_R, nil, 'SpawnState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSpawnHealth_R, nil, 'SpawnHealth');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSeeState_R, nil, 'SeeState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSeeSound_R, nil, 'SeeSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemReactionTime_R, nil, 'ReactionTime');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemAttackSound_R, nil, 'AttackSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemPainState_R, nil, 'PainState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemPainChance_R, nil, 'PainChance');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemPainSound_R, nil, 'PainSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMeleeState_R, nil, 'MeleeState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMissileState_R, nil, 'MissileState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemDeathState_R, nil, 'DeathState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemXdeathState_R, nil, 'XdeathState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemDeathSound_R, nil, 'DeathSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSpeed_R, nil, 'Speed');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemVSpeed_R, nil, 'VSpeed');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMinMissileChance_R, nil, 'MinMissileChance');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemPushFactor_R, nil, 'PushFactor');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemScale_R, nil, 'Scale');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemGravity_R, nil, 'Gravity');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemRadius_R, nil, 'Radius');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemHeight_R, nil, 'Height');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMass_R, nil, 'Mass');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemDamage_R, nil, 'Damage');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemActiveSound_R, nil, 'ActiveSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemFlag_R, nil, 'Flag');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemRaiseState_R, nil, 'RaiseState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemCustomSound1_R, nil, 'CustomSound1');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemCustomSound2_R, nil, 'CustomSound2');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemCustomSound3_R, nil, 'CustomSound3');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMeleeSound_R, nil, 'MeleeSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemDropItem_R, nil, 'DropItem');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMissileType_R, nil, 'MissileType');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemExplosionDamage_R, nil, 'ExplosionDamage');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemExplosionRadius_R, nil, 'ExplosionRadius');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMeleeDamage_R, nil, 'MeleeDamage');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemRenderStyle_R, nil, 'RenderStyle');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemAlpha_R, nil, 'Alpha');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemHealState_R, nil, 'HealState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemCrashState_R, nil, 'CrashState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemCrushState_R, nil, 'CrushState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemFloatSpeed_R, nil, 'FloatSpeed');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemNormalSpeed_R, nil, 'NormalSpeed');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemFastSpeed_R, nil, 'FastSpeed');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemObituary_R, nil, 'Obituary');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemHitObituary_R, nil, 'HitObituary');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemGender_R, nil, 'Gender');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMeleeRange_R, nil, 'MeleeRange');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMaxStepHeight_R, nil, 'MaxStepHeight');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMaxDropOffHeight_R, nil, 'MaxDropOffHeight');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemGibHealth_R, nil, 'GibHealth');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMaxTargetRange_R, nil, 'MaxTargetRange');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemWeaveIndexXY_R, nil, 'WeaveIndexXY');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemWeaveIndexZ_R, nil, 'WeaveIndexZ');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemFriction_R, nil, 'Friction');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSpriteDX_R, nil, 'SpriteDX');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSpriteDY_R, nil, 'SpriteDY');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemInfightingGroup_R, nil, 'InfightingGroup');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemProjectileGroup_R, nil, 'ProjectileGroup');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemSplashGroup_R, nil, 'SplashGroup');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemRipSound_R, nil, 'RipSound');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemInteractState_R, nil, 'InteractState');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMissileHeight_R, nil, 'MissileHeight');
-  rmobjinfoitem.RegisterPropertyHelper(@TRTLMobjInfoItemMeleeThreshold_R, nil, 'MeleeThreshold');
-
-  rmobjinfo.RegisterPropertyHelper(@TRTLMobjInfoItem_R, nil, 'Item');
-  rmobjinfo.RegisterPropertyHelper(@TRTLMobjInfoCount_R, nil, 'Count');
-
-end;
-
-//==============================================================================
-//
-// RIRegisterRTL_Game
-//
-//==============================================================================
-procedure RIRegisterRTL_Game(Exec: TPSExec);
-begin
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Actors')), rtlactors);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Vertexes')), rtlvertexes);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Sides')), rtlsides);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Lines')), rtllines);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('Sectors')), rtlsectors);
-  SetVariantToClass(Exec.GetVarNo(Exec.GetVar('MobjInfo')), rtlmobjinfo);
+  cactors.AddVariable('Actors',
+    function: TObject
+    begin
+      Result := rtlactors;
+    end);
+  cvertexes.AddVariable('Vertexes',
+    function: TObject
+    begin
+      Result := rtlvertexes;
+    end);
+  csides.AddVariable('Sides',
+    function: TObject
+    begin
+      Result := rtlsides;
+    end);
+  clines.AddVariable('Lines',
+    function: TObject
+    begin
+      Result := rtllines;
+    end);
+  csectors.AddVariable('Sectors',
+    function: TObject
+    begin
+      Result := rtlsectors;
+    end);
+  cmobjinfo.AddVariable('MobjInfo',
+    function: TObject
+    begin
+      Result := rtlmobjinfo;
+    end);
 end;
 
 //==============================================================================

@@ -63,6 +63,8 @@ type
   );
 
 const
+  /// <summary>All the games</summary>
+  SCRIPT_ALL_GAMES: TScriptGameSet = [sgDoom, sgHeretic, sgHexen, sgStrife];
   /// <summary>The unit of the scripts that every script has</summary>
   SCRIPT_UNIT_SYSTEM = 'SYSTEM';
   /// <summary>The name that a script uses to load all the units but SYSTEM</summary>
@@ -72,6 +74,8 @@ resourcestring
   SScriptUnitAlreadyRegistered = 'The unit of script "%s" is already registered';
   SScriptUnitWithoutName = 'A group of script functions needs a name';
   SScriptGroupIsNil = 'The group of script functions is nil';
+  SScriptClassWithoutName = 'A class of scripts needs a name';
+  SScriptClassAlreadyAdded = 'The class of scripts "%s" is already in the catalog';
 
 implementation
 

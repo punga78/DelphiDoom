@@ -1,6 +1,6 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the xcom ruleset library - the real mods of TFTD        }
+{  DelphiDoom: tests of the xcom ruleset library - the real mods of TFTD and UFO       }
 {  (the manifest of a golden of modload.exe and the files it names)             }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -38,6 +38,7 @@ type
     FSounds: TDictionary<string, Integer>;
     FSources: TList<TXcomModSource>;
     FDataFolder: string;
+    FGameFolder: string;
     class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ParseList(const AText: string): TArray<string>; static;
     procedure ParseManifest;
@@ -142,7 +143,17 @@ begin
   finally
     LSource.Free;
   end;
-  FDataFolder := FindUp('Reference\_dati\xcom_tftd\openxcom', True);
+  // the goldens of UFO (ufo.*) come from Reference\_dati\xcom_ufo\openxcom, the others from the TFTD one
+  if Copy(AGoldenName, 1, 4) = 'ufo.' then
+  begin
+    FDataFolder := FindUp('Reference\_dati\xcom_ufo\openxcom', True);
+    FGameFolder := 'UFO';
+  end
+  else
+  begin
+    FDataFolder := FindUp('Reference\_dati\xcom_tftd\openxcom', True);
+    FGameFolder := 'TFTD';
+  end;
   ParseManifest;
 end;
 
@@ -230,7 +241,7 @@ begin
       end;
     LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'common');
     // the data folder of the game (GEODATA\WORLD.DAT of the globe)
-    LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + 'TFTD');
+    LRoots.Add(IncludeTrailingPathDelimiter(FDataFolder) + FGameFolder);
     Result := TXcomDiskModFiles.Create(LRoots.ToArray, TYamlFactory.CreateDiskParser);
   finally
     LRoots.Free;
