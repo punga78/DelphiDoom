@@ -35,7 +35,6 @@ type
     FOldStrings: TDictionary<string, string>;
     procedure SetValue(const AHeader, AField, AValue: string);
     procedure Soft(const AHeader: string);
-    function StateValue(const ARef: Integer; AKind: Integer; AIsNew: Boolean): Integer;
     function FlagsText(const ANames: TArray<string>; AMask: Integer): string;
     procedure ApplyThing(ASection: TDehackedSection);
     procedure ApplyFrame(ASection: TDehackedSection);
@@ -125,16 +124,6 @@ procedure TDumpApplier.Soft(const AHeader: string);
 begin
   if not FSoftHeaders.Contains(AHeader) then
     FSoftHeaders.Add(AHeader);
-end;
-
-function TDumpApplier.StateValue(const ARef: Integer; AKind: Integer; AIsNew: Boolean): Integer;
-begin
-  case TDehackedStateRefKind(AKind) of
-    srNew: Result := FBase + ARef;
-    srOriginal: Result := ARef;
-  else
-    Result := ARef;
-  end;
 end;
 
 function TDumpApplier.FlagsText(const ANames: TArray<string>; AMask: Integer): string;

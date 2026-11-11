@@ -106,7 +106,7 @@ const
 implementation
 
 uses
-  DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter;
+  DelphiDoom.Yaml.Types, DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter;
 
 { TFakeFileSystem }
 
@@ -414,7 +414,8 @@ end;
 
 class function TTestWorld.Parse(const AText: string): IYamlNode;
 begin
-  Result := TYamlFactory.CreateParser.Load(AText);
+  // the parser reads bytes: the text of a test goes to it as UTF-8
+  Result := TYamlFactory.CreateParser.Load(YamlStringToText(AText));
 end;
 
 function TTestWorld.Pixel(AX, AY: Integer): Byte;
