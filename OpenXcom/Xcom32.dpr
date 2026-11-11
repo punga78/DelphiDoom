@@ -123,6 +123,7 @@ begin
   Say('Xcom32 [-data <common+standard folder>] [-game <game folder>] [-user <folder>] [-mod xcom2]      (the game)');
   Say('  without -data and -game: common + standard and TFTD (or UFO) next to the executable');
   Say('         [-shot <file.png> [-ms <n>]] [-script wait:ms;click:x,y;key:n;shot:file;...]');
+  Say('         [-scriptfile <file with a step per line>]   (also trace:1, state:label, until:Name,ms, on:Name=step+step)');
   Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]');
   Say('         [-version <text>] [-dospath <text>] [-hold]');
   TXcomExportTool.ShowUsage(
@@ -224,6 +225,8 @@ begin
       AArguments.Milliseconds := StrToInt(NextValue)
     else if LName = '-script' then
       AArguments.Script := NextValue
+    else if LName = '-scriptfile' then
+      AArguments.Script := TXcomShotRunner.ScriptOfFile(NextValue)
     else if LName = '-version' then
       AArguments.Settings.VersionText := NextValue
     else if LName = '-dospath' then
@@ -373,6 +376,10 @@ begin
   LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
   LExporter := TXcomComposition.CreateImageExporter;
   LRunner := TXcomShotRunner.Create(LGame, LClock, LEvents, LDevice, LExporter);
+  LRunner.OnSay := procedure(ALine: string)
+    begin
+      Say(ALine);
+    end;
   if Assigned(LOutput) then
     LRunner.OnTick := procedure
       begin
