@@ -71,6 +71,11 @@ uses
   DelphiDoom.ScriptHost.World.Sides in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sides.pas',
   DelphiDoom.ScriptHost.World.Lines in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Lines.pas',
   DelphiDoom.ScriptHost.World.Sectors in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.World.Sectors.pas',
+  DelphiDoom.ScriptHost.MobjInfo.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.Intf.pas',
+  DelphiDoom.ScriptHost.MobjInfo.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.Table.pas',
+  DelphiDoom.ScriptHost.MobjInfo in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.MobjInfo.pas',
+  DelphiDoom.ScriptHost.Players.Intf in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Players.Intf.pas',
+  DelphiDoom.ScriptHost.Players in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Players.pas',
   DelphiDoom.ScriptHost.Keys.Table in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.Table.pas',
   DelphiDoom.ScriptHost.Keys in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Keys.pas',
   DelphiDoom.ScriptHost.Factory in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Factory.pas',
@@ -91,7 +96,9 @@ uses
   DelphiDoom.Tests.ScriptHost.FixedFunctions in 'Source\DelphiDoom.Tests.ScriptHost.FixedFunctions.pas',
   DelphiDoom.Tests.ScriptHost.GameSections in 'Source\DelphiDoom.Tests.ScriptHost.GameSections.pas',
   DelphiDoom.Tests.ScriptHost.World in 'Source\DelphiDoom.Tests.ScriptHost.World.pas',
-  DelphiDoom.Tests.ScriptHost.Sectors in 'Source\DelphiDoom.Tests.ScriptHost.Sectors.pas';
+  DelphiDoom.Tests.ScriptHost.Sectors in 'Source\DelphiDoom.Tests.ScriptHost.Sectors.pas',
+  DelphiDoom.Tests.ScriptHost.MobjInfo in 'Source\DelphiDoom.Tests.ScriptHost.MobjInfo.pas',
+  DelphiDoom.Tests.ScriptHost.Players in 'Source\DelphiDoom.Tests.ScriptHost.Players.pas';
 
 var
   Runner: ITestRunner;

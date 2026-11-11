@@ -39,9 +39,35 @@ uses
   p_mobj_h,
   p_mobjlist,
   psi_system,
+  DelphiDoom.ScriptHost.MobjInfo.Intf,
+  DelphiDoom.ScriptHost.Players.Intf,
   DelphiDoom.ScriptHost.World.Intf,
   ps_compiler,
   ps_runtime;
+
+//==============================================================================
+//
+// PS_ConfigureMobjFunctions
+// The classes of the mobjinfo and player functions (the properties of the
+// classes of the scripts call the first)
+//
+//==============================================================================
+procedure PS_ConfigureMobjFunctions(const AMobjInfo: IScriptMobjInfo;
+  const APlayers: IScriptPlayers);
+
+//==============================================================================
+//
+// PS_MobjInfo
+//
+//==============================================================================
+function PS_MobjInfo: IScriptMobjInfo;
+
+//==============================================================================
+//
+// PS_Players
+//
+//==============================================================================
+function PS_Players: IScriptPlayers;
 
 //==============================================================================
 //
@@ -98,6 +124,15 @@ procedure _playsound(origin: Pointer; snd: string);
 //
 //==============================================================================
 function PS_KeyFromMobj(const mo: Pmobj_t): LongWord;
+
+//==============================================================================
+//
+// PS_GetPlayerActor
+// The actor of a player: it stays among the actor functions (until they are
+// classes) and asks the player functions
+//
+//==============================================================================
+function PS_GetPlayerActor(const plnum: Integer): LongWord;
 
 var
   ps_currentactor: Pmobj_t = nil;
@@ -972,226 +1007,6 @@ function PS_R_PointInSubSector(const x: Integer; const y: Integer): Integer;
 
 // --------------------------- PLAYERS -----------------------------------------
 
-//==============================================================================
-//
-// PS_PlayerInGame
-//
-//==============================================================================
-function PS_PlayerInGame(const plnum: Integer): Boolean;
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_PlayerFaceMobj
-//
-//==============================================================================
-procedure PS_PlayerFaceMobj(const plnum: Integer; const actor: LongWord; const ticks: Integer);
-{$ENDIF}
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_SetPlayerHasCard
-//
-//==============================================================================
-procedure PS_SetPlayerHasCard(const plnum: Integer; const card: Integer; const value: Boolean);
-
-//==============================================================================
-//
-// PS_GetPlayerHasCard
-//
-//==============================================================================
-function PS_GetPlayerHasCard(const plnum: Integer; const card: Integer): Boolean;
-{$ENDIF}
-
-{$IFDEF HERETIC_OR_HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerHasKey
-//
-//==============================================================================
-procedure PS_SetPlayerHasKey(const plnum: Integer; const key: Integer; const value: Boolean);
-
-//==============================================================================
-//
-// PS_GetPlayerHasKey
-//
-//==============================================================================
-function PS_GetPlayerHasKey(const plnum: Integer; const key: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_PlayerUseArtifact
-//
-//==============================================================================
-procedure PS_PlayerUseArtifact(const plnum: Integer; const arti: Integer);
-
-//==============================================================================
-//
-// PS_GiveArtifactToPlayer
-//
-//==============================================================================
-function PS_GiveArtifactToPlayer(const plnum: Integer; const arti: Integer): Boolean;
-
-//==============================================================================
-//
-// PS_CheckPlayerArtifact
-//
-//==============================================================================
-function PS_CheckPlayerArtifact(const plnum: Integer; const arti: Integer): Integer;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_SetPlayerHasWeapon
-//
-//==============================================================================
-procedure PS_SetPlayerHasWeapon(const plnum: Integer; const weapon: Integer; const value: Boolean);
-
-//==============================================================================
-//
-// PS_GetPlayerHasWeapon
-//
-//==============================================================================
-function PS_GetPlayerHasWeapon(const plnum: Integer; const weapon: Integer): Boolean;
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerAmmo
-//
-//==============================================================================
-procedure PS_SetPlayerAmmo(const plnum: Integer; const ammotype: Integer; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetPlayerAmmo
-//
-//==============================================================================
-function PS_GetPlayerAmmo(const plnum: Integer; const ammotype: Integer): Integer;
-{$ENDIF}
-
-{$IFDEF HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerMana
-//
-//==============================================================================
-procedure PS_SetPlayerMana(const plnum: Integer; const mana: Integer; const value: Integer);
-
-//==============================================================================
-//
-// PS_GetPlayerMana
-//
-//==============================================================================
-function PS_GetPlayerMana(const plnum: Integer; const mana: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetPlayerClass
-//
-//==============================================================================
-function PS_GetPlayerClass(const plnum: Integer): Integer;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_SetPlayerMessage
-//
-//==============================================================================
-procedure PS_SetPlayerMessage(const plnum: Integer; const msg: string);
-
-//==============================================================================
-//
-// PS_GetPlayerMessage
-//
-//==============================================================================
-function PS_GetPlayerMessage(const plnum: Integer): string;
-
-//==============================================================================
-//
-// PS_SetPlayerExtraLight
-//
-//==============================================================================
-procedure PS_SetPlayerExtraLight(const plnum: Integer; const l: Integer);
-
-//==============================================================================
-//
-// PS_GetPlayerExtraLight
-//
-//==============================================================================
-function PS_GetPlayerExtraLight(const plnum: Integer): Integer;
-
-//==============================================================================
-//
-// PS_SetPlayerPowerTicks
-//
-//==============================================================================
-procedure PS_SetPlayerPowerTicks(const plnum: Integer; const powertype: Integer; const ticks: Integer);
-
-//==============================================================================
-//
-// PS_GetPlayerPowerTicks
-//
-//==============================================================================
-function PS_GetPlayerPowerTicks(const plnum: Integer; const powertype: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetPlayerViewZ
-//
-//==============================================================================
-function PS_GetPlayerViewZ(const plnum: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetPlayerViewHeight
-//
-//==============================================================================
-function PS_GetPlayerViewHeight(const plnum: Integer): Integer;
-
-//==============================================================================
-//
-// PS_GetPlayerActor
-//
-//==============================================================================
-function PS_GetPlayerActor(const plnum: Integer): LongWord;
-
-//==============================================================================
-//
-// PS_ConsolePlayer
-//
-//==============================================================================
-function PS_ConsolePlayer: Integer;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_CheckPlayerQuest
-//
-//==============================================================================
-function PS_CheckPlayerQuest(const plnum: Integer; const quest: LongWord): Boolean;
-
-//==============================================================================
-//
-// PS_SetPlayerQuest
-//
-//==============================================================================
-procedure PS_SetPlayerQuest(const plnum: Integer; const quest: LongWord);
-
-//==============================================================================
-//
-// PS_UnSetPlayerQuest
-//
-//==============================================================================
-procedure PS_UnSetPlayerQuest(const plnum: Integer; const quest: LongWord);
-{$ENDIF}
 
 // -------------------------- TEXTURES -----------------------------------------
 
@@ -1208,240 +1023,6 @@ function _textureidfromname(const name: string): Integer;
 
 //==============================================================================
 //
-// PS_IsValidMobjType
-//
-//==============================================================================
-function PS_IsValidMobjType(const typ: integer): Boolean;
-
-//==============================================================================
-//
-// PS_GetMobjTypeFromEditorNumber
-//
-//==============================================================================
-function PS_GetMobjTypeFromEditorNumber(const en: integer): integer;
-
-//==============================================================================
-//
-// PS_GetEditorNumberFromMobjType
-//
-//==============================================================================
-function PS_GetEditorNumberFromMobjType(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCount
-//
-//==============================================================================
-function PS_GetMobjInfoCount: integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoName
-//
-//==============================================================================
-function PS_GetMobjInfoName(const typ: integer): string;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_GetMobjInfoName2
-//
-//==============================================================================
-function PS_GetMobjInfoName2(const typ: integer): string;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetMobjInfoInheritsFrom
-//
-//==============================================================================
-function PS_GetMobjInfoInheritsFrom(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDoomEdNum
-//
-//==============================================================================
-function PS_GetMobjInfoDoomEdNum(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpawnState
-//
-//==============================================================================
-function PS_GetMobjInfoSpawnState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpawnHealth
-//
-//==============================================================================
-function PS_GetMobjInfoSpawnHealth(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSeeState
-//
-//==============================================================================
-function PS_GetMobjInfoSeeState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSeeSound
-//
-//==============================================================================
-function PS_GetMobjInfoSeeSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoReactionTime
-//
-//==============================================================================
-function PS_GetMobjInfoReactionTime(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoAttackSound
-//
-//==============================================================================
-function PS_GetMobjInfoAttackSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainState
-//
-//==============================================================================
-function PS_GetMobjInfoPainState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainChance
-//
-//==============================================================================
-function PS_GetMobjInfoPainChance(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainSound
-//
-//==============================================================================
-function PS_GetMobjInfoPainSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeState
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissileState
-//
-//==============================================================================
-function PS_GetMobjInfoMissileState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDeathState
-//
-//==============================================================================
-function PS_GetMobjInfoDeathState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoXdeathState
-//
-//==============================================================================
-function PS_GetMobjInfoXdeathState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDeathSound
-//
-//==============================================================================
-function PS_GetMobjInfoDeathSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoSpeed(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoVSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoVSpeed(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMinMissileChance
-//
-//==============================================================================
-function PS_GetMobjInfoMinMissileChance(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPushFactor
-//
-//==============================================================================
-function PS_GetMobjInfoPushFactor(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoScale
-//
-//==============================================================================
-function PS_GetMobjInfoScale(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGravity
-//
-//==============================================================================
-function PS_GetMobjInfoGravity(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRadius
-//
-//==============================================================================
-function PS_GetMobjInfoRadius(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHeight
-//
-//==============================================================================
-function PS_GetMobjInfoHeight(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMass
-//
-//==============================================================================
-function PS_GetMobjInfoMass(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDamage
-//
-//==============================================================================
-function PS_GetMobjInfoDamage(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoActiveSound
-//
-//==============================================================================
-function PS_GetMobjInfoActiveSound(const typ: integer): string;
-
-//==============================================================================
-//
 // PS_GetMobjInfoFlag
 //
 //==============================================================================
@@ -1449,269 +1030,11 @@ function PS_GetMobjInfoFlag(const typ: Integer; const flg: integer): Boolean;
 
 //==============================================================================
 //
-// PS_GetMobjInfoRaiseState
+// mobj_from_key
+// The mobj of a key of an actor, nil if there is none
 //
 //==============================================================================
-function PS_GetMobjInfoRaiseState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound1
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound1(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound2
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound2(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound3
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound3(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDropItem
-//
-//==============================================================================
-function PS_GetMobjInfoDropItem(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissiletype
-//
-//==============================================================================
-function PS_GetMobjInfoMissiletype(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoExplosionDamage
-//
-//==============================================================================
-function PS_GetMobjInfoExplosionDamage(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoExplosionRadius
-//
-//==============================================================================
-function PS_GetMobjInfoExplosionRadius(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeDamage
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeDamage(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeSound
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRenderStyle
-//
-//==============================================================================
-function PS_GetMobjInfoRenderStyle(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoAlpha
-//
-//==============================================================================
-function PS_GetMobjInfoAlpha(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHealState
-//
-//==============================================================================
-function PS_GetMobjInfoHealState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCrashState
-//
-//==============================================================================
-function PS_GetMobjInfoCrashState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCrushState
-//
-//==============================================================================
-function PS_GetMobjInfoCrushState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFloatSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoFloatSpeed(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoNormalSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoNormalSpeed(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFastSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoFastSpeed(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoObituary
-//
-//==============================================================================
-function PS_GetMobjInfoObituary(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHitObituary
-//
-//==============================================================================
-function PS_GetMobjInfoHitObituary(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGender
-//
-//==============================================================================
-function PS_GetMobjInfoGender(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeRange
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeRange(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxStepHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMaxStepHeight(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxDropOffHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMaxDropOffHeight(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGibHealth
-//
-//==============================================================================
-function PS_GetMobjInfoGibHealth(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxTargetRange
-//
-//==============================================================================
-function PS_GetMobjInfoMaxTargetRange(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoWeaveIndexXY
-//
-//==============================================================================
-function PS_GetMobjInfoWeaveIndexXY(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoWeaveIndexZ
-//
-//==============================================================================
-function PS_GetMobjInfoWeaveIndexZ(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpriteDX
-//
-//==============================================================================
-function PS_GetMobjInfoSpriteDX(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpriteDY
-//
-//==============================================================================
-function PS_GetMobjInfoSpriteDY(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFriction
-//
-//==============================================================================
-function PS_GetMobjInfoFriction(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoInteractState
-//
-//==============================================================================
-function PS_GetMobjInfoInteractState(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoInfightingGroup
-//
-//==============================================================================
-function PS_GetMobjInfoInfightingGroup(const typ: integer): Integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoProjectileGroup
-//
-//==============================================================================
-function PS_GetMobjInfoProjectileGroup(const typ: integer): Integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSplashGroup
-//
-//==============================================================================
-function PS_GetMobjInfoSplashGroup(const typ: integer): Integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRipSound
-//
-//==============================================================================
-function PS_GetMobjInfoRipSound(const typ: integer): string;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissileHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMissileHeight(const typ: integer): integer;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeThreshold
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeThreshold(const typ: integer): integer;
+function mobj_from_key(const key: LongWord): Pmobj_t;
 
 // ---------------------- REGISTRATION -----------------------------------------
 
@@ -1893,6 +1216,54 @@ var
   ps_sides_ref: IScriptSides = nil;
   ps_lines_ref: IScriptLines = nil;
   ps_sectors_ref: IScriptSectors = nil;
+  ps_mobjinfo_ref: IScriptMobjInfo = nil;
+  ps_players_ref: IScriptPlayers = nil;
+
+//==============================================================================
+//
+// PS_GetPlayerActor
+//
+//==============================================================================
+function PS_GetPlayerActor(const plnum: Integer): LongWord;
+begin
+  Result := PS_Players.GetPlayerActor(plnum);
+end;
+
+//==============================================================================
+//
+// PS_ConfigureMobjFunctions
+//
+//==============================================================================
+procedure PS_ConfigureMobjFunctions(const AMobjInfo: IScriptMobjInfo;
+  const APlayers: IScriptPlayers);
+begin
+  ps_mobjinfo_ref := AMobjInfo;
+  ps_players_ref := APlayers;
+end;
+
+//==============================================================================
+//
+// PS_MobjInfo
+//
+//==============================================================================
+function PS_MobjInfo: IScriptMobjInfo;
+begin
+  if ps_mobjinfo_ref = nil then
+    I_Error('PS_ConfigureMobjFunctions() was not called: the mobjinfo functions are missing');
+  Result := ps_mobjinfo_ref;
+end;
+
+//==============================================================================
+//
+// PS_Players
+//
+//==============================================================================
+function PS_Players: IScriptPlayers;
+begin
+  if ps_players_ref = nil then
+    I_Error('PS_ConfigureMobjFunctions() was not called: the player functions are missing');
+  Result := ps_players_ref;
+end;
 
 //==============================================================================
 //
@@ -7174,1053 +6545,8 @@ end;
 
 // --------------------------- PLAYERS -----------------------------------------
 
-//==============================================================================
-//
-// PS_PlayerInGame
-//
-//==============================================================================
-function PS_PlayerInGame(const plnum: Integer): Boolean;
-begin
-  if plnum >= 0 then
-    if plnum < MAXPLAYERS then
-    begin
-      Result := playeringame[plnum];
-      Exit;
-    end;
-  Result := False;
-end;
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_PlayerFaceMobj
-//
-//==============================================================================
-procedure PS_PlayerFaceMobj(const plnum: Integer; const actor: LongWord; const ticks: Integer);
-var
-  mo: Pmobj_t;
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if ticks <= 0 then
-    Exit;
-
-  mo := mobj_from_key(actor);
-  if mo = nil then
-    Exit;
-
-  P_PlayerFaceMobj(@players[plnum], mo, ticks);
-end;
-{$ENDIF}
-
-{$IFDEF DOOM_OR_STRIFE}
-
-//==============================================================================
-//
-// PS_SetPlayerHasCard
-//
-//==============================================================================
-procedure PS_SetPlayerHasCard(const plnum: Integer; const card: Integer; const value: Boolean);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (card < 0) or (card >= Ord(NUMCARDS)) then
-    Exit;
-
-  players[plnum].cards[card] := value;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerHasCard
-//
-//==============================================================================
-function PS_GetPlayerHasCard(const plnum: Integer; const card: Integer): Boolean;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  if (card < 0) or (card >= Ord(NUMCARDS)) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := players[plnum].cards[card];
-end;
-{$ENDIF}
-
-{$IFDEF HERETIC_OR_HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerHasKey
-//
-//==============================================================================
-procedure PS_SetPlayerHasKey(const plnum: Integer; const key: Integer; const value: Boolean);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (key < 0) or (key >= Ord(NUMKEYCARDS)) then
-    Exit;
-
-  {$IFDEF HERETIC}
-  players[plnum].keys[key] := value;
-  {$ENDIF}
-  {$IFDEF HEXEN}
-  if value then
-    players[plnum].keys := players[plnum].keys or (1 shl key)
-  else
-    players[plnum].keys := players[plnum].keys and not (1 shl key);
-  {$ENDIF}
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerHasKey
-//
-//==============================================================================
-function PS_GetPlayerHasKey(const plnum: Integer; const key: Integer): Boolean;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  if (key < 0) or (key >= Ord(NUMKEYCARDS)) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  {$IFDEF HERETIC}
-  Result := players[plnum].keys[key];
-  {$ENDIF}
-  {$IFDEF HEXEN}
-  Result := players[plnum].keys and (1 shl key) <> 0;
-  {$ENDIF}
-end;
-
-//==============================================================================
-//
-// PS_PlayerUseArtifact
-//
-//==============================================================================
-procedure PS_PlayerUseArtifact(const plnum: Integer; const arti: Integer);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (arti < 0) or (arti >= Ord(NUMARTIFACTS)) then
-    Exit;
-
-  P_PlayerUseArtifact(@players[plnum], artitype_t(arti));
-end;
-
-//==============================================================================
-//
-// PS_GiveArtifactToPlayer
-//
-//==============================================================================
-function PS_GiveArtifactToPlayer(const plnum: Integer; const arti: Integer): Boolean;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  if (arti < 0) or (arti >= Ord(NUMARTIFACTS)) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := P_GiveArtifact(@players[plnum], artitype_t(arti), nil);
-end;
-
-//==============================================================================
-//
-// PS_CheckPlayerArtifact
-//
-//==============================================================================
-function PS_CheckPlayerArtifact(const plnum: Integer; const arti: Integer): Integer;
-var
-  i: integer;
-  p: Pplayer_t;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  if (arti < 0) or (arti >= Ord(NUMARTIFACTS)) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  p := @players[plnum];
-  for i := 0 to p.inventorySlotNum - 1 do
-    if p.inventory[i]._type = Ord(arti) then
-    begin
-      Result := p.inventory[i].Count;
-      Exit;
-    end;
-
-  Result := 0;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_SetPlayerHasWeapon
-//
-//==============================================================================
-procedure PS_SetPlayerHasWeapon(const plnum: Integer; const weapon: Integer; const value: Boolean);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (weapon < 0) or (weapon >= Ord(NUMWEAPONS)) then
-    Exit;
-
-  players[plnum].weaponowned[weapon] := {$IFDEF DOOM_OR_HERETIC}1{$ELSE}true{$ENDIF};
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerHasWeapon
-//
-//==============================================================================
-function PS_GetPlayerHasWeapon(const plnum: Integer; const weapon: Integer): Boolean;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  if (weapon < 0) or (weapon >= Ord(NUMWEAPONS)) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := players[plnum].weaponowned[weapon]{$IFDEF DOOM_OR_HERETIC} <> 0{$ENDIF};
-end;
-
-{$IFNDEF HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerAmmo
-//
-//==============================================================================
-procedure PS_SetPlayerAmmo(const plnum: Integer; const ammotype: Integer; const value: Integer);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (ammotype < 0) or (ammotype >= Ord(NUMAMMO)) then
-    Exit;
-
-  players[plnum].ammo[ammotype] := value;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerAmmo
-//
-//==============================================================================
-function PS_GetPlayerAmmo(const plnum: Integer; const ammotype: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  if (ammotype < 0) or (ammotype >= Ord(NUMAMMO)) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].ammo[ammotype];
-end;
-{$ENDIF}
-
-{$IFDEF HEXEN}
-
-//==============================================================================
-//
-// PS_SetPlayerMana
-//
-//==============================================================================
-procedure PS_SetPlayerMana(const plnum: Integer; const mana: Integer; const value: Integer);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (mana < 0) or (mana >= Ord(NUMMANA)) then
-    Exit;
-
-  players[plnum].mana[mana] := value;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerMana
-//
-//==============================================================================
-function PS_GetPlayerMana(const plnum: Integer; const mana: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  if (mana < 0) or (mana >= Ord(NUMMANA)) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].mana[mana];
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerClass
-//
-//==============================================================================
-function PS_GetPlayerClass(const plnum: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := Ord(players[plnum]._class);
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_SetPlayerMessage
-//
-//==============================================================================
-procedure PS_SetPlayerMessage(const plnum: Integer; const msg: string);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  players[plnum]._message := msg;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerMessage
-//
-//==============================================================================
-function PS_GetPlayerMessage(const plnum: Integer): string;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := '';
-    Exit;
-  end;
-
-  Result := players[plnum]._message;
-end;
-
-//==============================================================================
-//
-// PS_SetPlayerExtraLight
-//
-//==============================================================================
-procedure PS_SetPlayerExtraLight(const plnum: Integer; const l: Integer);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  players[plnum].extralight := l;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerExtraLight
-//
-//==============================================================================
-function PS_GetPlayerExtraLight(const plnum: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].extralight;
-end;
-
-//==============================================================================
-//
-// PS_SetPlayerPowerTicks
-//
-//==============================================================================
-procedure PS_SetPlayerPowerTicks(const plnum: Integer; const powertype: Integer; const ticks: Integer);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  if (powertype < 0) or (powertype >= Ord(NUMPOWERS)) then
-    Exit;
-
-  players[plnum].powers[powertype] := ticks;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerPowerTicks
-//
-//==============================================================================
-function PS_GetPlayerPowerTicks(const plnum: Integer; const powertype: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  if (powertype < 0) or (powertype >= Ord(NUMPOWERS)) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].powers[powertype];
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerViewZ
-//
-//==============================================================================
-function PS_GetPlayerViewZ(const plnum: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].viewz;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerViewHeight
-//
-//==============================================================================
-function PS_GetPlayerViewHeight(const plnum: Integer): Integer;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  Result := players[plnum].viewheight;
-end;
-
-//==============================================================================
-//
-// PS_GetPlayerActor
-//
-//==============================================================================
-function PS_GetPlayerActor(const plnum: Integer): LongWord;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-
-  if players[plnum].mo = nil then
-  begin
-    Result := ACTOR_INVALID;
-    Exit;
-  end;
-
-  try
-    Result := players[plnum].mo.key;
-  except
-    Result := ACTOR_INVALID;
-  end;
-end;
-
-//==============================================================================
-//
-// PS_ConsolePlayer
-//
-//==============================================================================
-function PS_ConsolePlayer: Integer;
-begin
-  Result := consoleplayer;
-end;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_CheckPlayerQuest
-//
-//==============================================================================
-function PS_CheckPlayerQuest(const plnum: Integer; const quest: LongWord): Boolean;
-begin
-  if not PS_PlayerInGame(plnum) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Result := players[plnum].questflags and quest <> 0;
-end;
-
-//==============================================================================
-//
-// PS_SetPlayerQuest
-//
-//==============================================================================
-procedure PS_SetPlayerQuest(const plnum: Integer; const quest: LongWord);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  players[plnum].questflags := players[plnum].questflags or quest;
-end;
-
-//==============================================================================
-//
-// PS_UnSetPlayerQuest
-//
-//==============================================================================
-procedure PS_UnSetPlayerQuest(const plnum: Integer; const quest: LongWord);
-begin
-  if not PS_PlayerInGame(plnum) then
-    Exit;
-
-  players[plnum].questflags := players[plnum].questflags and not quest;
-end;
-{$ENDIF}
 
 // ----------------------------- MOBJS -----------------------------------------
-
-//==============================================================================
-//
-// PS_IsValidMobjType
-//
-//==============================================================================
-function PS_IsValidMobjType(const typ: integer): Boolean;
-begin
-  Result := (typ >= 0) and (typ < nummobjtypes);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjTypeFromEditorNumber
-//
-//==============================================================================
-function PS_GetMobjTypeFromEditorNumber(const en: integer): integer;
-begin
-  if en < 0 then
-  begin
-    Result := MOBJTYPE_INVALID;
-    Exit;
-  end;
-
-  Result := Info_GetMobjNumForDoomNum(en);
-  if (Result < 0) or (Result >= nummobjtypes) then
-    Result := MOBJTYPE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetEditorNumberFromMobjType
-//
-//==============================================================================
-function PS_GetEditorNumberFromMobjType(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := EDITORNUMBER_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].doomednum;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCount
-//
-//==============================================================================
-function PS_GetMobjInfoCount: integer;
-begin
-  Result := nummobjtypes;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoName
-//
-//==============================================================================
-function PS_GetMobjInfoName(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mobjinfo[typ].name;
-end;
-
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// PS_GetMobjInfoName2
-//
-//==============================================================================
-function PS_GetMobjInfoName2(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mobjinfo[typ].name;
-end;
-
-{$ENDIF}
-
-//==============================================================================
-//
-// PS_GetMobjInfoInheritsFrom
-//
-//==============================================================================
-function PS_GetMobjInfoInheritsFrom(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := MOBJTYPE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].inheritsfrom;
-  if Result < 0 then
-    Result := MOBJTYPE_INVALID;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDoomEdNum
-//
-//==============================================================================
-function PS_GetMobjInfoDoomEdNum(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := EDITORNUMBER_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].doomednum;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpawnState
-//
-//==============================================================================
-function PS_GetMobjInfoSpawnState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].spawnstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpawnHealth
-//
-//==============================================================================
-function PS_GetMobjInfoSpawnHealth(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].spawnhealth;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSeeState
-//
-//==============================================================================
-function PS_GetMobjInfoSeeState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].seestate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSeeSound
-//
-//==============================================================================
-function PS_GetMobjInfoSeeSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].seesound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoReactionTime
-//
-//==============================================================================
-function PS_GetMobjInfoReactionTime(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].reactiontime;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoAttackSound
-//
-//==============================================================================
-function PS_GetMobjInfoAttackSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].attacksound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainState
-//
-//==============================================================================
-function PS_GetMobjInfoPainState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].painstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainChance
-//
-//==============================================================================
-function PS_GetMobjInfoPainChance(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].painchance;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPainSound
-//
-//==============================================================================
-function PS_GetMobjInfoPainSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].painsound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeState
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].meleestate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissileState
-//
-//==============================================================================
-function PS_GetMobjInfoMissileState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].missilestate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDeathState
-//
-//==============================================================================
-function PS_GetMobjInfoDeathState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].deathstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoXdeathState
-//
-//==============================================================================
-function PS_GetMobjInfoXdeathState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].xdeathstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDeathSound
-//
-//==============================================================================
-function PS_GetMobjInfoDeathSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].deathsound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoSpeed(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].speed;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoVSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoVSpeed(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].vspeed;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMinMissileChance
-//
-//==============================================================================
-function PS_GetMobjInfoMinMissileChance(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].minmissilechance;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoPushFactor
-//
-//==============================================================================
-function PS_GetMobjInfoPushFactor(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].pushfactor;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoScale
-//
-//==============================================================================
-function PS_GetMobjInfoScale(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].scale;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGravity
-//
-//==============================================================================
-function PS_GetMobjInfoGravity(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].gravity;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRadius
-//
-//==============================================================================
-function PS_GetMobjInfoRadius(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].radius;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHeight
-//
-//==============================================================================
-function PS_GetMobjInfoHeight(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].height;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMass
-//
-//==============================================================================
-function PS_GetMobjInfoMass(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].mass;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDamage
-//
-//==============================================================================
-function PS_GetMobjInfoDamage(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].damage;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoActiveSound
-//
-//==============================================================================
-function PS_GetMobjInfoActiveSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].activesound);
-end;
 
 //==============================================================================
 //
@@ -8245,576 +6571,6 @@ begin
   end;
 
   Result := flgresult.flags^ and flgresult.flag <> 0;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRaiseState
-//
-//==============================================================================
-function PS_GetMobjInfoRaiseState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].raisestate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound1
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound1(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].customsound1);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound2
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound2(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].customsound2);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCustomSound3
-//
-//==============================================================================
-function PS_GetMobjInfoCustomSound3(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].customsound3);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoDropItem
-//
-//==============================================================================
-function PS_GetMobjInfoDropItem(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := MOBJTYPE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].dropitem;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissiletype
-//
-//==============================================================================
-function PS_GetMobjInfoMissiletype(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := MOBJTYPE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].missiletype;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoExplosionDamage
-//
-//==============================================================================
-function PS_GetMobjInfoExplosionDamage(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].explosiondamage;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoExplosionRadius
-//
-//==============================================================================
-function PS_GetMobjInfoExplosionRadius(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].explosionradius;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeDamage
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeDamage(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].meleedamage;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeSound
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].meleesound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRenderStyle
-//
-//==============================================================================
-function PS_GetMobjInfoRenderStyle(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := Ord(mobjinfo[typ].renderstyle);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoAlpha
-//
-//==============================================================================
-function PS_GetMobjInfoAlpha(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].alpha;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHealState
-//
-//==============================================================================
-function PS_GetMobjInfoHealState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].healstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCrashState
-//
-//==============================================================================
-function PS_GetMobjInfoCrashState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].crashstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoCrushState
-//
-//==============================================================================
-function PS_GetMobjInfoCrushState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].crushstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFloatSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoFloatSpeed(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].floatspeed;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoNormalSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoNormalSpeed(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].normalspeed;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFastSpeed
-//
-//==============================================================================
-function PS_GetMobjInfoFastSpeed(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].fastspeed;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoObituary
-//
-//==============================================================================
-function PS_GetMobjInfoObituary(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mobjinfo[typ].obituary;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoHitObituary
-//
-//==============================================================================
-function PS_GetMobjInfoHitObituary(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := mobjinfo[typ].hitobituary;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGender
-//
-//==============================================================================
-function PS_GetMobjInfoGender(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := Ord(mobjinfo[typ].gender);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeRange
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeRange(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].meleerange;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxStepHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMaxStepHeight(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].maxstepheight;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxDropOffHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMaxDropOffHeight(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].maxdropoffheight;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoGibHealth
-//
-//==============================================================================
-function PS_GetMobjInfoGibHealth(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].gibhealth;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMaxTargetRange
-//
-//==============================================================================
-function PS_GetMobjInfoMaxTargetRange(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].maxtargetrange;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoWeaveIndexXY
-//
-//==============================================================================
-function PS_GetMobjInfoWeaveIndexXY(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].WeaveIndexXY;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoWeaveIndexZ
-//
-//==============================================================================
-function PS_GetMobjInfoWeaveIndexZ(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].WeaveIndexZ;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoFriction
-//
-//==============================================================================
-function PS_GetMobjInfoFriction(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].friction;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpriteDX
-//
-//==============================================================================
-function PS_GetMobjInfoSpriteDX(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].spriteDX;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSpriteDY
-//
-//==============================================================================
-function PS_GetMobjInfoSpriteDY(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].spriteDY;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoInteractState
-//
-//==============================================================================
-function PS_GetMobjInfoInteractState(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := STATE_INVALID;
-    Exit;
-  end;
-  Result := mobjinfo[typ].interactstate;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoInfightingGroup
-//
-//==============================================================================
-function PS_GetMobjInfoInfightingGroup(const typ: integer): Integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := IG_DEFAULT;
-    Exit;
-  end;
-  Result := mobjinfo[typ].infighting_group;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoProjectileGroup
-//
-//==============================================================================
-function PS_GetMobjInfoProjectileGroup(const typ: integer): Integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := PG_DEFAULT;
-    Exit;
-  end;
-  Result := mobjinfo[typ].projectile_group;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoSplashGroup
-//
-//==============================================================================
-function PS_GetMobjInfoSplashGroup(const typ: integer): Integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := SG_DEFAULT;
-    Exit;
-  end;
-  Result := mobjinfo[typ].splash_group;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoRipSound
-//
-//==============================================================================
-function PS_GetMobjInfoRipSound(const typ: integer): string;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  Result := S_GetSoundNameForNum(mobjinfo[typ].ripsound);
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMissileHeight
-//
-//==============================================================================
-function PS_GetMobjInfoMissileHeight(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].missileheight;
-end;
-
-//==============================================================================
-//
-// PS_GetMobjInfoMeleeThreshold
-//
-//==============================================================================
-function PS_GetMobjInfoMeleeThreshold(const typ: integer): integer;
-begin
-  if (typ < 0) or (typ >= nummobjtypes) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  Result := mobjinfo[typ].meleethreshold;
 end;
 
 // --------------------- TRTLMobjInfo ------------------------------------------
@@ -8859,7 +6615,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemName_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoName(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifName, Integer(Self) - 1);
 end;
 
 {$IFDEF STRIFE}
@@ -8871,7 +6627,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemName2_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoName2(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifName, Integer(Self) - 1);
 end;
 {$ENDIF}
 
@@ -8882,7 +6638,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemInheritsFrom_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoInheritsFrom(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifInheritsFrom, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8892,7 +6648,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemDoomEdNum_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoDoomEdNum(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifDoomEdNum, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8902,7 +6658,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSpawnState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSpawnState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSpawnState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8912,7 +6668,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSpawnHealth_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSpawnHealth(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSpawnHealth, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8922,7 +6678,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSeeState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSeeState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSeeState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8932,7 +6688,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSeeSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoSeeSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifSeeSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8942,7 +6698,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemReactionTime_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoReactionTime(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifReactionTime, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8952,7 +6708,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemAttackSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoAttackSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifAttackSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8962,7 +6718,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemPainState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoPainState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifPainState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8972,7 +6728,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemPainChance_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoPainChance(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifPainChance, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8982,7 +6738,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemPainSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoPainSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifPainSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -8992,7 +6748,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMeleeState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMeleeState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMeleeState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9002,7 +6758,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMissileState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMissileState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMissileState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9012,7 +6768,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemDeathState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoDeathState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifDeathState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9022,7 +6778,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemXdeathState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoXdeathState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifXdeathState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9032,7 +6788,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemDeathSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoDeathSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifDeathSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9042,7 +6798,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSpeed_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSpeed(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSpeed, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9052,7 +6808,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemVSpeed_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoVSpeed(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifVSpeed, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9062,7 +6818,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMinMissileChance_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMinMissileChance(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMinMissileChance, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9072,7 +6828,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemPushFactor_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoPushFactor(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifPushFactor, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9082,7 +6838,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemScale_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoScale(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifScale, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9092,7 +6848,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemGravity_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoGravity(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifGravity, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9102,7 +6858,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemRadius_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoRadius(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifRadius, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9112,7 +6868,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemHeight_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoHeight(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifHeight, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9122,7 +6878,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMass_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMass(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMass, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9132,7 +6888,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemDamage_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoDamage(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifDamage, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9142,7 +6898,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemActiveSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoActiveSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifActiveSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9152,7 +6908,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemFlag_R(Self: TRTLMobjInfoItem; var T: Boolean; const t1: integer);
 begin
-  T := PS_GetMobjInfoFlag(Integer(Self) - 1, t1);
+  T := PS_MobjInfo.GetMobjInfoFlag(Integer(Self) - 1, t1);
 end;
 
 //==============================================================================
@@ -9162,7 +6918,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemRaiseState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoRaiseState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifRaiseState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9172,7 +6928,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemCustomSound1_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoCustomSound1(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifCustomSound1, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9182,7 +6938,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemCustomSound2_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoCustomSound2(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifCustomSound2, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9192,7 +6948,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemCustomSound3_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoCustomSound3(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifCustomSound3, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9202,7 +6958,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMeleeSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoMeleeSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifMeleeSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9212,7 +6968,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemDropItem_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoDropItem(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifDropItem, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9222,7 +6978,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMissileType_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMissiletype(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMissiletype, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9232,7 +6988,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemExplosionDamage_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoExplosionDamage(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifExplosionDamage, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9242,7 +6998,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemExplosionRadius_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoExplosionRadius(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifExplosionRadius, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9252,7 +7008,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMeleeDamage_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMeleeDamage(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMeleeDamage, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9262,7 +7018,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemRenderStyle_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoRenderStyle(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifRenderStyle, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9272,7 +7028,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemAlpha_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoAlpha(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifAlpha, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9282,7 +7038,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemHealState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoHealState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifHealState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9292,7 +7048,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemCrashState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoCrashState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifCrashState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9302,7 +7058,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemCrushState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoCrushState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifCrushState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9312,7 +7068,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemFloatSpeed_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoFloatSpeed(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifFloatSpeed, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9322,7 +7078,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemNormalSpeed_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoNormalSpeed(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifNormalSpeed, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9332,7 +7088,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemFastSpeed_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoFastSpeed(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifFastSpeed, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9342,7 +7098,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemObituary_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoObituary(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifObituary, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9352,7 +7108,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemHitObituary_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoHitObituary(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifHitObituary, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9362,7 +7118,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemGender_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoGender(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifGender, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9372,7 +7128,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMeleeRange_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMeleeRange(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMeleeRange, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9382,7 +7138,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMaxStepHeight_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMaxStepHeight(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMaxStepHeight, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9392,7 +7148,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMaxDropOffHeight_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMaxDropOffHeight(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMaxDropOffHeight, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9402,7 +7158,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemGibHealth_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoGibHealth(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifGibHealth, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9412,7 +7168,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMaxTargetRange_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMaxTargetRange(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMaxTargetRange, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9422,7 +7178,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemWeaveIndexXY_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoWeaveIndexXY(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifWeaveIndexXY, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9432,7 +7188,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemWeaveIndexZ_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoWeaveIndexZ(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifWeaveIndexZ, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9442,7 +7198,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemFriction_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoFriction(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifFriction, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9452,7 +7208,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSpriteDX_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSpriteDX(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSpriteDX, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9462,7 +7218,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSpriteDY_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSpriteDY(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSpriteDY, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9472,7 +7228,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemInfightingGroup_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoInfightingGroup(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifInfightingGroup, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9482,7 +7238,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemProjectileGroup_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoProjectileGroup(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifProjectileGroup, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9492,7 +7248,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemSplashGroup_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoSplashGroup(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifSplashGroup, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9502,7 +7258,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemRipSound_R(Self: TRTLMobjInfoItem; var T: string);
 begin
-  T := PS_GetMobjInfoRipSound(Integer(Self) - 1);
+  T := PS_MobjInfo.GetText(mifRipSound, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9512,7 +7268,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemInteractState_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoInteractState(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifInteractState, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9522,7 +7278,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMissileHeight_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMissileHeight(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMissileHeight, Integer(Self) - 1);
 end;
 
 //==============================================================================
@@ -9532,7 +7288,7 @@ end;
 //==============================================================================
 procedure TRTLMobjInfoItemMeleeThreshold_R(Self: TRTLMobjInfoItem; var T: integer);
 begin
-  T := PS_GetMobjInfoMeleeThreshold(Integer(Self) - 1);
+  T := PS_MobjInfo.GetNumber(mifMeleeThreshold, Integer(Self) - 1);
 end;
 
 

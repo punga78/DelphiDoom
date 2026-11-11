@@ -195,6 +195,8 @@ uses
   DelphiDoom.Engine.Script.Environment,
   DelphiDoom.Engine.Script.GameInfo,
   DelphiDoom.Engine.Script.Keyboard,
+  DelphiDoom.Engine.Script.MobjInfo,
+  DelphiDoom.Engine.Script.Players,
   DelphiDoom.Engine.Script.Textures,
   DelphiDoom.Engine.Script.Output,
   DelphiDoom.Engine.Script.Routines,
@@ -894,6 +896,10 @@ begin
   LLines := TScriptHostFactory.CreateLines(LWorld, LGame);
   PS_ConfigureWorldFunctions(LVertices, LSides, LLines,
     TScriptHostFactory.CreateSectors(LWorld, LGame));
+  // the mobj types and the players: psi_game keeps the first for the properties of the classes of the scripts
+  PS_ConfigureMobjFunctions(
+    TScriptHostFactory.CreateMobjInfo(TEngineScriptMobjInfo.Create, LGame),
+    TScriptHostFactory.CreatePlayers(TEngineScriptPlayers.Create, LGame));
   // PS_GAME is a group of the unit ps_import: it asks these parts for the functions that are classes
   PS_ConfigureGameFunctions(
     TScriptHostFactory.CreateGameInfo(TEngineScriptGameInfo.Create, LGame),
