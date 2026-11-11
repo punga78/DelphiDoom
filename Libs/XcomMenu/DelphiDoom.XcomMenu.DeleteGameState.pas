@@ -42,7 +42,9 @@ begin
   inherited Create(AHost);
   FOrigin := AOrigin;
   FFileName := AFileName;
-  FWindow := TXcomWindow.Create(Self, 256, 100, 32, 50, wpBoth);
+  // _screen = false: the list stays visible around the window
+  ToggleScreen;
+  FWindow :=TXcomWindow.Create(Self, 256, 100, 32, 50, wpBoth);
   FBtnYes := TXcomTextButton.Create(60, 18, 60, 122);
   FBtnNo := TXcomTextButton.Create(60, 18, 200, 122);
   FTxtMessage := TXcomText.Create(246, 32, 37, 70);

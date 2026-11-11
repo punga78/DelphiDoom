@@ -42,15 +42,15 @@ type
     FResearchTriggers: TXcomStringMap<Boolean>;
     FUseTable: Boolean;
     FSiteType: Boolean;
+    class procedure AppendWeights(const ANode: IYamlNode; AMonths: TList<Cardinal>;
+      AWeights: TObjectList<TXcomWeightedOptions>); static;
+    procedure ReadResearchTriggers(const ANode: IYamlNode);
+  public
     const
       /// <summary>GenerationType</summary>
       GEN_REGION = 0;
       GEN_MISSION = 1;
       GEN_RACE = 2;
-    class procedure AppendWeights(const ANode: IYamlNode; AMonths: TList<Cardinal>;
-      AWeights: TObjectList<TXcomWeightedOptions>); static;
-    procedure ReadResearchTriggers(const ANode: IYamlNode);
-  public
     constructor Create(const AType: string);
     destructor Destroy; override;
     /// <summary>

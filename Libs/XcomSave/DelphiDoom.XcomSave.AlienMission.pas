@@ -45,7 +45,7 @@ type
     property Rule: TXcomRuleAlienMission read FRule;
     property Region: string read FRegion;
     property Race: string read FRace write FRace;
-    property NextWave: Cardinal read FNextWave;
+    property NextWave: Cardinal read FNextWave write FNextWave;
     property NextUfoCounter: Cardinal read FNextUfoCounter write FNextUfoCounter;
     property SpawnCountdown: Cardinal read FSpawnCountdown write FSpawnCountdown;
     property LiveUfos: Cardinal read FLiveUfos;

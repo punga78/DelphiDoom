@@ -166,6 +166,7 @@ end;
 procedure TXcomMovingTarget.CalculateSpeedValues;
 var
   LDeltaLon, LDeltaLat, LLength, LTerm1, LTerm2, LDifference, LArgument: Double;
+  LSinDifference, LCosDifference, LSinMeet, LCosMeet, LSinLat, LCosLat: Double;
 begin
   CalculateMeetPoint;
   if Assigned(FDestination) then
@@ -174,14 +175,18 @@ begin
     // is compiled for the x87 with -O3, whose extended intermediates cannot be reproduced: the last bit of a
     // speed can differ (the tests of the real saved games compare the speeds with a tolerance of 1e-15)
     LDifference := FMeetPointLon - Longitude;
-    LTerm1 := Sin(LDifference);
-    LTerm2 := Cos(FMeetPointLat);
-    LDeltaLon := LTerm1 * LTerm2;
-    LTerm1 := Cos(Latitude);
-    LTerm1 := LTerm1 * Sin(FMeetPointLat);
-    LTerm2 := Sin(Latitude);
-    LTerm2 := LTerm2 * Cos(FMeetPointLat);
-    LTerm2 := LTerm2 * Cos(LDifference);
+    // the sines and cosines are rounded to a double before they are multiplied: a craft that is already at its
+    // destination then gets a difference of exactly zero (the speeds are zero), not a rounding residue
+    LSinDifference := Sin(LDifference);
+    LCosDifference := Cos(LDifference);
+    LSinMeet := Sin(FMeetPointLat);
+    LCosMeet := Cos(FMeetPointLat);
+    LSinLat := Sin(Latitude);
+    LCosLat := Cos(Latitude);
+    LDeltaLon := LSinDifference * LCosMeet;
+    LTerm1 := LCosLat * LSinMeet;
+    LTerm2 := LSinLat * LCosMeet;
+    LTerm2 := LTerm2 * LCosDifference;
     LDeltaLat := LTerm1 - LTerm2;
     LTerm1 := LDeltaLon * LDeltaLon;
     LTerm2 := LDeltaLat * LDeltaLat;

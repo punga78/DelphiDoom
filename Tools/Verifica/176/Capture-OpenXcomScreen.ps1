@@ -18,7 +18,11 @@ param(
   # own user folder per run (unique name): two runs, or two agents, never share screenshots
   # a folder whose contents (for example saved games in xcom2\) are copied into the user folder before the start
   [string]$SeedFolder = '',
-  [string]$UserName = ('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+  # option overrides written into the options.cfg of the run, as 'key=value' (for example 'mute=true')
+  [string[]]$Option = @(),
+  # makes SDL fail to open the audio (a driver that does not exist): OpenXcom runs with Options::mute on
+  [switch]$NoAudio,
+  [string]$UserName =('openxcom_user_cmp_' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @"
@@ -44,8 +48,13 @@ if (Test-Path $user) { Remove-Item -Recurse -Force $user }
 New-Item -ItemType Directory -Force $user | Out-Null
 if ($SeedFolder -ne '') { Copy-Item -Path (Join-Path $SeedFolder '*') -Destination $user -Recurse -Force }
 $cfg = (Get-Content (Join-Path $Root 'openxcom_user\options.cfg') -Raw) -replace '(?m)^  language: .*$', "  language: $Language"
+foreach ($o in $Option) {
+  $kv = $o.Split('=', 2)
+  $cfg = $cfg -replace ('(?m)^  ' + [regex]::Escape($kv[0]) + ': .*$'), ('  ' + $kv[0] + ': ' + $kv[1])
+}
 Set-Content -Path (Join-Path $user 'options.cfg') -Value $cfg -Encoding ASCII
 $exe = Join-Path $Root 'openxcom\OpenXcom.exe'
+if ($NoAudio) { $env:SDL_AUDIODRIVER = 'nonexistentdriver' }
 $p = Start-Process $exe -ArgumentList "-data `"$(Join-Path $Root 'openxcom')`" -user `"$user`"" -WorkingDirectory (Join-Path $Root 'openxcom') -PassThru
 try {
   Start-Sleep 8
@@ -61,12 +70,13 @@ try {
         $before = @(Get-ChildItem $user -Recurse -Filter 'screen*.png' -ErrorAction SilentlyContinue | ForEach-Object FullName)
         [OxcCap]::Key(123); Start-Sleep 2
         $new = Get-ChildItem $user -Recurse -Filter 'screen*.png' | Where-Object { $before -notcontains $_.FullName } | Select-Object -First 1
-        if ($new) { Copy-Item $new.FullName (Join-Path $Out ($a[1] + '.png')) -Force; Write-Output (Join-Path $Out ($a[1] + '.png')) }
+        if ($new) { Write-Output ('from ' + $new.FullName); Copy-Item $new.FullName (Join-Path $Out ($a[1] + '.png')) -Force; Write-Output (Join-Path $Out ($a[1] + '.png')) }
         else { Write-Output "NESSUN FILE per $($a[1])" }
       }
     }
   }
 } finally {
+  if ($NoAudio) { Remove-Item Env:SDL_AUDIODRIVER -ErrorAction SilentlyContinue }
   Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
   Start-Sleep 1
   Remove-Item -Recurse -Force $user -ErrorAction SilentlyContinue

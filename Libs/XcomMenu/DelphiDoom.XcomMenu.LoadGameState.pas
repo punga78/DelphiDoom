@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom menu library - LoadGameState of OpenXcom (loading a saved game)
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
@@ -14,9 +14,9 @@ uses
 
 type
   /// <summary>
-  ///   The "Loading game" screen. After ten turns (so that it is drawn) it closes itself and asks the host to load the
-  ///   file; the geoscape and the saved game are not ported, so the host has no loader and the answer is the error
-  ///   window "Load unsuccessful" (a loader gives the saved game to the host and the state that goes on)
+  ///   The "Loading game" screen. After ten turns (so that it is drawn) it closes itself and asks the host's loader to load
+  ///   the file (the loader gives the saved game to the host and sets the geoscape as the state); a host with no loader,
+  ///   or a file that cannot be loaded, gives the error window "Load unsuccessful"
   /// </summary>
   TXcomLoadGameState = class(TXcomState)
   strict private
@@ -66,8 +66,17 @@ begin
   else
   begin
     Host.PopState;
-    Host.PushState(TXcomErrorMessageState.ForOrigin(Host, FOrigin,
-      Tr('STR_LOAD_UNSUCCESSFUL').Text + #2 + 'The geoscape is not ported', Palette));
+    if Host.SavedGameLoader = nil then
+      Host.PushState(TXcomErrorMessageState.ForOrigin(Host, FOrigin,
+        Tr('STR_LOAD_UNSUCCESSFUL').Text + #2 + 'The geoscape is not ported', Palette))
+    else
+      try
+        Host.SavedGameLoader.LoadGame(FFileName);
+      except
+        on E: Exception do
+          Host.PushState(TXcomErrorMessageState.ForOrigin(Host, FOrigin,
+            Tr('STR_LOAD_UNSUCCESSFUL').Text + #2 + E.Message, Palette));
+      end;
   end;
 end;
 
