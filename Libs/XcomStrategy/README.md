@@ -20,3 +20,8 @@ Il gioco strategico di **OpenXcom** che gira mentre il tempo del geoscape passa,
 Le dipendenze (ruleset, generatore casuale, eventi, opzioni) arrivano dal costruttore. Dogfight, battaglia di una base e cascata delle ricerche non sono portati (vedi CLAUDE.md). Licenza: derivato da OpenXcom, GPL v3 o successiva (la decide l'utente).
 
 Test: `Tools\build.bat Tests\DelphiDoom.Tests.XcomStrategy`.
+
+
+## Ricerca e rapporto mensile (issue #176)
+
+`TXcomResearchRules`, `TXcomResearchCompletion` (la cascata delle ricerche finite, spenta di default) e `TXcomMonthlyReport`, con parita' sugli oggetti veri di OpenXcom (scenari `research` e `report` di `Tools\Verifica\176\save\simgen.cpp`). Dettagli in `CLAUDE.md`.
