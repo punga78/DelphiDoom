@@ -67,6 +67,8 @@ type
   /// </summary>
   TGreedComposition = class
   strict private
+    class function RunProgramOn(const AArchive: IGreedArchive; const AFolders: array of string;
+      const ADataFolder: string; const AOptions: TGreedPlayOptions; ALoadedAsDemo: Boolean): Integer; static;
     class function PlayOn(const AArchive: IGreedArchive; const AFolders: array of string;
       const AOptions: TGreedPlayOptions; ADemo: Boolean): Integer; static;
   public
@@ -805,11 +807,25 @@ end;
 
 class function TGreedComposition.RunProgram(const AArchive: IGreedArchive; const AFolders: array of string;
   const ADataFolder: string; const AOptions: TGreedPlayOptions): Integer;
+var
+  LMapLump: Integer;
+begin
+  // a demo has its maps in files next to the archive (its map lumps are empty) and does not have every lump that
+  // the game names: the demo archive answers for them
+  LMapLump := AArchive.RequireIndexOf(GREED_LUMP_MAP) + 1;
+  if (LMapLump < AArchive.LumpCount) and (AArchive.GetLumpSize(LMapLump) = 0) then
+    Result := RunProgramOn(TGreedDemoArchive.Create(AArchive), AFolders, ADataFolder, AOptions, True)
+  else
+    Result := RunProgramOn(AArchive, AFolders, ADataFolder, AOptions, False);
+end;
+
+class function TGreedComposition.RunProgramOn(const AArchive: IGreedArchive; const AFolders: array of string;
+  const ADataFolder: string; const AOptions: TGreedPlayOptions; ALoadedAsDemo: Boolean): Integer;
 const
   HEADLESS_DEFAULT_TICS = 70 * 60 * 20;
 var
   LPalette: TBytes;
-  LFrameWidth, LFrameHeight, LScale, LIndex, LFirstMap, LMapLump: Integer;
+  LFrameWidth, LFrameHeight, LScale, LIndex, LFirstMap: Integer;
   LDemo: Boolean;
   LFiles, LMovies: IGreedExternalFiles;
   LMovieFolders: TArray<string>;
@@ -878,9 +894,7 @@ begin
     LFrameHeight := 400;
     LScale := 1;
   end;
-  // a demo has its maps in files next to the archive: its map lumps are empty
-  LMapLump := AArchive.RequireIndexOf(GREED_LUMP_MAP) + 1;
-  LDemo := (LMapLump < AArchive.LumpCount) and (AArchive.GetLumpSize(LMapLump) = 0);
+  LDemo := ALoadedAsDemo;
   LFiles := TGreedFactory.CreateFolderFiles(AFolders);
   SetLength(LMovieFolders, Length(AFolders) * 2);
   for LIndex := 0 to High(AFolders) do

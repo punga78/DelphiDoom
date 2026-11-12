@@ -48,6 +48,11 @@ begin
   Writeln('  -seed   with -play: where the game starts in its table of random numbers');
   Writeln('  -ticks  with -play: stops after that number of tics (70 a second)');
   Writeln('  -autoplay  with -play: the player walks, turns, uses and shoots by itself');
+  Writeln('  -script with the game (no -play): a file of keys for the menus and the game, a line "tic key down|up" where the');
+  Writeln('          tic is the one of the program (the first is 1, 70 a second, every screen counts) and the key is up, down,');
+  Writeln('          left, right, enter, esc, backspace, space, a letter or a digit (the keys of the menus) or one of the');
+  Writeln('          commands below (the keys of the game); "tic type TEXT" types a secret code. The same keys with -dump');
+  Writeln('          show where the program is (application.mode, screens.menu.level and cursor, ...)');
   Writeln('  -script with -play: a file of commands, a line "tic command down|up" or "tic type TEXT" each');
   Writeln('          (the commands: north east south west fire strafe use run jump useitem lookup lookdown');
   Writeln('          centerview slideleft slideright inventoryleft inventoryright weapon1..weapon5 mapmode');
