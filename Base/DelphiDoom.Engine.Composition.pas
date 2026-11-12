@@ -294,6 +294,9 @@ uses
   DelphiDoom.Engine.GlLevel.FlatWorld,
   DelphiDoom.Engine.GlLevel.FlatLoopSink,
   DelphiDoom.Engine.GlLevel.SectorWorld,
+  gl_automap,
+  DelphiDoom.GlAutomap.Factory,
+  DelphiDoom.Engine.GlAutomap.Painter,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
@@ -1185,9 +1188,17 @@ begin
   gld_ConfigureSectorPreprocessor(TGlLevelFactory.CreateSectorPreprocessor(TEngineGlSectorWorld.Create));
 end;
 
+procedure ComposeGlAutomap;
+begin
+  // Hexen maps a flat by its real size; the other games by 64 units
+  gld_ConfigureAutomap(TGlAutomapFactory.CreateDisplayList,
+    TEngineGlAutomapPainter.Create({$IFDEF HEXEN}True{$ELSE}False{$ENDIF}));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
+  ComposeGlAutomap;
 end;
 {$ENDIF}
 
