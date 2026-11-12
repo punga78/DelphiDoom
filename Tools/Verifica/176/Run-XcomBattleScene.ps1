@@ -19,7 +19,11 @@ param(
   [double]$Scale = 2,
   [switch]$TrueColor,
   [string[]]$Option = @(),
-  [string]$ExtraArgs = ''
+  [string]$ExtraArgs = '',
+  # no saved game: the script starts at the main menu (the steps are then the whole script)
+  [switch]$NoLoad,
+  # writes the CPU seconds of the process as "cpu=<seconds>" (the frames of a script run as fast as they can)
+  [switch]$Measure
 )
 $ErrorActionPreference = 'Stop'
 $modId = if ($Game -eq 'UFO') { 'xcom1' } else { 'xcom2' }
@@ -49,11 +53,13 @@ function ScaleStep([string]$step) {
   return $step
 }
 $load = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:1000'
-$script = (($load + ';' + $Steps).Split(';') | ForEach-Object { ScaleStep $_ }) -join ';'
+$whole = if ($NoLoad) { $Steps } else { $load + ';' + $Steps }
+$script = (($whole).Split(';') | ForEach-Object { ScaleStep $_ }) -join ';'
 New-Item -ItemType Directory -Force $Out | Out-Null
 $argList = "-data `"$Data\openxcom`" -game `"$Data\$GameDir`" -mod $modId -user `"$Out\user`" -script $script $ExtraArgs"
 if ($TrueColor) { $argList = '-truecolor ' + $argList }
 Push-Location $Out
 $p = Start-Process $Exe -ArgumentList $argList -RedirectStandardError "$Out\stderr.txt" -RedirectStandardOutput "$Out\stdout.txt" -PassThru -Wait
 Pop-Location
-Get-Content "$Out\stderr.txt", "$Out\stdout.txt"
+if ($Measure) { Write-Output ('cpu=' + [Math]::Round($p.TotalProcessorTime.TotalSeconds, 3).ToString([Globalization.CultureInfo]::InvariantCulture)) }
+else { Get-Content "$Out\stderr.txt", "$Out\stdout.txt" }
