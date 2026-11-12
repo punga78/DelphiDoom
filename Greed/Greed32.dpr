@@ -18,6 +18,8 @@ program Greed32;
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Greed.Types in '..\Libs\Greed\DelphiDoom.Greed.Types.pas',
   DelphiDoom.Greed.Intf in '..\Libs\Greed\DelphiDoom.Greed.Intf.pas',
   DelphiDoom.Greed.Composition in 'DelphiDoom.Greed.Composition.pas';
@@ -48,8 +50,8 @@ var
   LLump: string;
   LPng: string;
   LList: Boolean;
-  LIndex: Integer;
   LArgument: string;
+  LCursor: ICommandLineCursor;
   LArchive: IGreedArchive;
   LClassifier: IGreedLumpClassifier;
   LNumber: Integer;
@@ -71,46 +73,26 @@ begin
     LLump := '';
     LPng := '';
     LList := False;
-    LIndex := 1;
-    while LIndex <= ParamCount do
+    LCursor := TProgramCommandLineFactory.CreateCursor(TProgramCommandLineFactory.CreateProcessCommandLine);
+    while LCursor.Next(LArgument) do
     begin
-      LArgument := ParamStr(LIndex).ToLowerInvariant;
-      if (LArgument = '-data') and (LIndex < ParamCount) then
+      if (LArgument = '-data') and (LCursor.Remaining >= 1) then
       begin
-        Inc(LIndex);
         SetLength(LFolders, Length(LFolders) + 1);
-        LFolders[High(LFolders)] := ParamStr(LIndex);
+        LFolders[High(LFolders)] := LCursor.Value;
       end
-      else if (LArgument = '-map') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LMapNumber := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-lump') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LLump := ParamStr(LIndex);
-      end
-      else if (LArgument = '-png') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LPng := ParamStr(LIndex);
-      end
-      else if (LArgument = '-play') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LPlayMap := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-ticks') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LTicks := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-shot') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LShot := ParamStr(LIndex);
-      end
+      else if (LArgument = '-map') and (LCursor.Remaining >= 1) then
+        LMapNumber := StrToInt(LCursor.Value)
+      else if (LArgument = '-lump') and (LCursor.Remaining >= 1) then
+        LLump := LCursor.Value
+      else if (LArgument = '-png') and (LCursor.Remaining >= 1) then
+        LPng := LCursor.Value
+      else if (LArgument = '-play') and (LCursor.Remaining >= 1) then
+        LPlayMap := StrToInt(LCursor.Value)
+      else if (LArgument = '-ticks') and (LCursor.Remaining >= 1) then
+        LTicks := StrToInt(LCursor.Value)
+      else if (LArgument = '-shot') and (LCursor.Remaining >= 1) then
+        LShot := LCursor.Value
       else if LArgument = '-autoplay' then
         LAutoPlay := True
       else if LArgument = '-topdown' then
@@ -123,7 +105,6 @@ begin
         System.ExitCode := 2;
         Exit;
       end;
-      Inc(LIndex);
     end;
     if Length(LFolders) = 0 then
       LFolders := [GetCurrentDir];

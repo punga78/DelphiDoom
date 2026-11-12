@@ -17,6 +17,8 @@ program Keen32;
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Keen.Types in '..\Libs\Keen\DelphiDoom.Keen.Types.pas',
   DelphiDoom.Keen.Intf in '..\Libs\Keen\DelphiDoom.Keen.Intf.pas',
   DelphiDoom.Keen.Composition in 'DelphiDoom.Keen.Composition.pas';
@@ -39,8 +41,8 @@ var
   LView: Boolean;
   LViewX: Integer;
   LViewY: Integer;
-  LIndex: Integer;
   LArgument: string;
+  LCursor: ICommandLineCursor;
   LData: IKeenGameData;
   LMap: IKeenMap;
   LNumber: Integer;
@@ -53,33 +55,24 @@ begin
     LView := False;
     LViewX := 0;
     LViewY := 0;
-    LIndex := 1;
-    while LIndex <= ParamCount do
+    LCursor := TProgramCommandLineFactory.CreateCursor(TProgramCommandLineFactory.CreateProcessCommandLine);
+    while LCursor.Next(LArgument) do
     begin
-      LArgument := ParamStr(LIndex).ToLowerInvariant;
-      if (LArgument = '-data') and (LIndex < ParamCount) then
+      if (LArgument = '-data') and (LCursor.Remaining >= 1) then
       begin
-        Inc(LIndex);
         SetLength(LFolders, Length(LFolders) + 1);
-        LFolders[High(LFolders)] := ParamStr(LIndex);
+        LFolders[High(LFolders)] := LCursor.Value;
       end
-      else if (LArgument = '-map') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LMapNumber := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-png') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LPng := ParamStr(LIndex);
-      end
-      else if (LArgument = '-view') and (LIndex + 2 <= ParamCount) then
+      else if (LArgument = '-map') and (LCursor.Remaining >= 1) then
+        LMapNumber := StrToInt(LCursor.Value)
+      else if (LArgument = '-png') and (LCursor.Remaining >= 1) then
+        LPng := LCursor.Value
+      else if (LArgument = '-view') and (LCursor.Remaining >= 2) then
       begin
         // the screen of the game with the origin at a tile of the map
         LView := True;
-        LViewX := StrToInt(ParamStr(LIndex + 1)) * 256;
-        LViewY := StrToInt(ParamStr(LIndex + 2)) * 256;
-        Inc(LIndex, 2);
+        LViewX := StrToInt(LCursor.Value) * 256;
+        LViewY := StrToInt(LCursor.Value) * 256;
       end
       else if LArgument = '-list' then
         LList := True
@@ -89,7 +82,6 @@ begin
         System.ExitCode := 2;
         Exit;
       end;
-      Inc(LIndex);
     end;
     if Length(LFolders) = 0 then
       LFolders := [GetCurrentDir];

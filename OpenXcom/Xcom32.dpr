@@ -65,6 +65,8 @@ uses
   DelphiDoom.Clock.Intf,
   DelphiDoom.Clock.Factory,
   DelphiDoom.Clock.ManualClock,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
   DelphiDoom.Xcom.HostPcmOutput in 'DelphiDoom.Xcom.HostPcmOutput.pas',
@@ -138,13 +140,13 @@ begin
 end;
 
 /// <summary>The arguments of the program, without its name</summary>
-function CommandLineArguments: TArray<string>;
+function ArgumentsOf(const ACommandLine: ICommandLine): TArray<string>;
 var
   LIndex: Integer;
 begin
-  SetLength(Result, ParamCount);
-  for LIndex := 1 to ParamCount do
-    Result[LIndex - 1] := ParamStr(LIndex);
+  SetLength(Result, ACommandLine.Count - 1);
+  for LIndex := 1 to ACommandLine.Count - 1 do
+    Result[LIndex - 1] := ACommandLine[LIndex];
 end;
 
 /// <summary>
@@ -152,7 +154,7 @@ end;
 /// standard\ (the executable folder or its data\ subfolder), the game folder is TFTD\, UFO\ or the executable
 /// folder itself when it has GEODATA\.
 /// </summary>
-procedure ApplyDefaultFolders(var ASettings: TXcomGameSettings);
+procedure ApplyDefaultFolders(const AProgramFile: string; var ASettings: TXcomGameSettings);
 var
   LBase: string;
 
@@ -162,7 +164,7 @@ var
   end;
 
 begin
-  LBase := ExtractFilePath(ParamStr(0));
+  LBase := ExtractFilePath(AProgramFile);
   if ASettings.DataFolder = '' then
   begin
     if DirectoryExists(Sub('common')) and DirectoryExists(Sub('standard')) then
@@ -192,17 +194,17 @@ begin
   end;
 end;
 
-function ParseArguments(out AArguments: TArguments): Boolean;
+function ParseArguments(const ACommandLine: ICommandLine; out AArguments: TArguments): Boolean;
 var
-  LIndex: Integer;
+  LCursor: ICommandLineCursor;
   LName: string;
 
   function NextValue: string;
   begin
-    if LIndex >= ParamCount then
+    // the message and the class the program has always printed for an argument without its value
+    if LCursor.Remaining = 0 then
       raise Exception.CreateFmt('%s needs a value', [LName]);
-    Inc(LIndex);
-    Result := ParamStr(LIndex);
+    Result := LCursor.Value;
   end;
 
 begin
@@ -211,10 +213,9 @@ begin
   AArguments.Settings.VersionText := DEFAULT_VERSION;
   AArguments.Settings.LoadMode := lmThread;
   AArguments.Milliseconds := 3000;
-  LIndex := 1;
-  while LIndex <= ParamCount do
+  LCursor := TProgramCommandLineFactory.CreateCursor(ACommandLine);
+  while LCursor.Next(LName) do
   begin
-    LName := ParamStr(LIndex).ToLowerInvariant;
     if LName = '-data' then
       AArguments.Settings.DataFolder := NextValue
     else if LName = '-game' then
@@ -257,9 +258,8 @@ begin
       AArguments.Settings.LoadMode := lmHeld
     else
       Exit(False);
-    Inc(LIndex);
   end;
-  ApplyDefaultFolders(AArguments.Settings);
+  ApplyDefaultFolders(ACommandLine[0], AArguments.Settings);
   Result := (AArguments.Settings.DataFolder <> '') and (AArguments.Settings.GameFolder <> '');
 end;
 
@@ -438,7 +438,7 @@ begin
 end;
 
 /// <summary>The export mode: a data file of the game as a PNG, no window and no game</summary>
-procedure RunExport(const AArguments: TXcomExportArguments);
+procedure RunExport(const AProgramFile: string; const AArguments: TXcomExportArguments);
 var
   LTool: TXcomExportTool;
 begin
@@ -446,7 +446,7 @@ begin
     procedure(AText: string)
     begin
       Say(AText);
-    end, ExtractFilePath(ParamStr(0)));
+    end, ExtractFilePath(AProgramFile));
   try
     LTool.Run(AArguments);
   finally
@@ -458,17 +458,20 @@ var
   LArguments: TArguments;
   LExportArguments: TXcomExportArguments;
   LExport: Boolean;
+  LCommandLine: ICommandLine;
 
 begin
   LExport := False;
   TXcomStackScan.Install;
   try
+    // the arguments as they were written: -version is drawn in the menu, -script names states and files
+    LCommandLine := TProgramCommandLineFactory.CreateProcessCommandLine;
     // -pck, -dat, -scr or -map choose the export; there -data is a folder of the game (TXcomExportArguments)
-    LExport := TXcomExportArguments.IsExport(CommandLineArguments);
+    LExport := TXcomExportArguments.IsExport(ArgumentsOf(LCommandLine));
     if LExport then
     begin
-      if TXcomExportArguments.TryParse(CommandLineArguments, LExportArguments) then
-        RunExport(LExportArguments)
+      if TXcomExportArguments.TryParse(ArgumentsOf(LCommandLine), LExportArguments) then
+        RunExport(LCommandLine[0], LExportArguments)
       else
       begin
         ShowUsage;
@@ -476,7 +479,7 @@ begin
       end;
       Exit;
     end;
-    if not ParseArguments(LArguments) then
+    if not ParseArguments(LCommandLine, LArguments) then
     begin
       ShowUsage;
       System.ExitCode := 2;

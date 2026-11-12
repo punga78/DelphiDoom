@@ -25,6 +25,9 @@ uses
   DelphiDoom.CommandLine.Factory in '..\Libs\CommandLine\DelphiDoom.CommandLine.Factory.pas',
   DelphiDoom.CommandLine.ResponseFile in '..\Libs\CommandLine\DelphiDoom.CommandLine.ResponseFile.pas',
   DelphiDoom.CommandLine.FileList in '..\Libs\CommandLine\DelphiDoom.CommandLine.FileList.pas',
+  DelphiDoom.CommandLine.Verbatim in '..\Libs\CommandLine\DelphiDoom.CommandLine.Verbatim.pas',
+  DelphiDoom.CommandLine.Cursor in '..\Libs\CommandLine\DelphiDoom.CommandLine.Cursor.pas',
+  DelphiDoom.CommandLine.ProgramFactory in '..\Libs\CommandLine\DelphiDoom.CommandLine.ProgramFactory.pas',
   DelphiDoom.Logging.Types in '..\Libs\Logging\DelphiDoom.Logging.Types.pas',
   DelphiDoom.Logging.Intf in '..\Libs\Logging\DelphiDoom.Logging.Intf.pas',
   DelphiDoom.Tests.CommandLine.Arguments in 'Source\DelphiDoom.Tests.CommandLine.Arguments.pas',
@@ -33,7 +36,9 @@ uses
   DelphiDoom.Tests.CommandLine.ResponseFile in 'Source\DelphiDoom.Tests.CommandLine.ResponseFile.pas',
   DelphiDoom.Tests.CommandLine.FileList in 'Source\DelphiDoom.Tests.CommandLine.FileList.pas',
   DelphiDoom.Tests.CommandLine.Queried in 'Source\DelphiDoom.Tests.CommandLine.Queried.pas',
-  DelphiDoom.Tests.CommandLine.SaveFileNames in 'Source\DelphiDoom.Tests.CommandLine.SaveFileNames.pas';
+  DelphiDoom.Tests.CommandLine.SaveFileNames in 'Source\DelphiDoom.Tests.CommandLine.SaveFileNames.pas',
+  DelphiDoom.Tests.CommandLine.Verbatim in 'Source\DelphiDoom.Tests.CommandLine.Verbatim.pas',
+  DelphiDoom.Tests.CommandLine.Cursor in 'Source\DelphiDoom.Tests.CommandLine.Cursor.pas';
 
 var
   Runner: ITestRunner;

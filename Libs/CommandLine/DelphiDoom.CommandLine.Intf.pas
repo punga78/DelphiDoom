@@ -109,6 +109,25 @@ type
     function Expand(const AArguments: TArray<string>; AMaxArguments: Integer): TArray<string>;
   end;
 
+  /// <summary>
+  ///   Reads a command line from the first argument to the last, for the programs whose arguments have an order
+  ///   and can be repeated (-data a -data b): the name of each parameter, then the values it wants
+  /// </summary>
+  ICommandLineCursor = interface
+    ['{7D3C9A52-E1B4-4F60-8A27-5C90D4E6B138}']
+    /// <summary>The next argument in lower case (the name of a parameter); False when there are no more</summary>
+    function Next(out AName: string): Boolean;
+    /// <summary>The arguments not read yet</summary>
+    function Remaining: Integer;
+    /// <summary>
+    ///   The next argument as it was written (the value of the parameter given by the last Next); raises
+    ///   ECommandLineException when there is none
+    /// </summary>
+    function Value: string;
+    /// <summary>The next argument as a whole number; raises ECommandLineException when it is missing or not one</summary>
+    function IntegerValue: Integer;
+  end;
+
 implementation
 
 end.

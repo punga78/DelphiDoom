@@ -18,6 +18,8 @@ program Speed32;
 
 uses
   System.SysUtils,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.CommandLine.ProgramFactory,
   System.Classes,
   System.IOUtils,
   DelphiDoom.Logging.Intf,
@@ -61,6 +63,7 @@ var
   LList: Boolean;
   LIndex: Integer;
   LArgument: string;
+  LCursor: ICommandLineCursor;
   LOptions: TSpeedRaceOptions;
   LWad: IGameWadComposer;
   LLog: ILog;
@@ -76,43 +79,26 @@ begin
     LOptions.Laps := 2;
     LOptions.CarCount := 8;
     LOptions.MaxTics := 20000;
-    LIndex := 1;
-    while LIndex <= ParamCount do
+    LCursor := TProgramCommandLineFactory.CreateCursor(TProgramCommandLineFactory.CreateProcessCommandLine);
+    while LCursor.Next(LArgument) do
     begin
-      LArgument := ParamStr(LIndex).ToLowerInvariant;
-      if (LArgument = '-jcl') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LJcl := ParamStr(LIndex);
-      end
+      if (LArgument = '-jcl') and (LCursor.Remaining >= 1) then
+        LJcl := LCursor.Value
       else if LArgument = '-list' then
         LList := True
-      else if (LArgument = '-level') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LOptions.Level := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-laps') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LOptions.Laps := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-cars') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LOptions.CarCount := StrToInt(ParamStr(LIndex));
-      end
-      else if (LArgument = '-tics') and (LIndex < ParamCount) then
-      begin
-        Inc(LIndex);
-        LOptions.MaxTics := StrToInt(ParamStr(LIndex));
-      end
+      else if (LArgument = '-level') and (LCursor.Remaining >= 1) then
+        LOptions.Level := StrToInt(LCursor.Value)
+      else if (LArgument = '-laps') and (LCursor.Remaining >= 1) then
+        LOptions.Laps := StrToInt(LCursor.Value)
+      else if (LArgument = '-cars') and (LCursor.Remaining >= 1) then
+        LOptions.CarCount := StrToInt(LCursor.Value)
+      else if (LArgument = '-tics') and (LCursor.Remaining >= 1) then
+        LOptions.MaxTics := StrToInt(LCursor.Value)
       else
       begin
         ShowUsage;
         Halt(1);
       end;
-      Inc(LIndex);
     end;
     LJcl := FindJcl(LJcl);
     Writeln('Translating ', LJcl, ' ...');
