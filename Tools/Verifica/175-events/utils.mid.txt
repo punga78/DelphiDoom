@@ -9,6 +9,11 @@ procedure newmap(const map: integer; const activate: integer);
 procedure resetengine;
 procedure ActivateSpritesFromMap;
 procedure LoadNewMap(const lump: integer);
+// loadweapon of the original under another name (the routines above call the one that writes in the log) and
+// its two variables
+procedure H_loadweapon(const n: integer);
+function H_weaponlump: integer;
+function H_numweaponlumps: integer;
 
 implementation
 

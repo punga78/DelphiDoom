@@ -5,7 +5,8 @@
 #                  completo, events.full.golden.txt
 #   SessionGolden  newmap, LoadNewMap, ActivateSpritesFromMap, resetengine, respawnplayer, SaveGame e LoadGame di
 #                  utils.pas (ritagliati dall'originale) con event.pas, sugli scenari di
-#                  Tests\Source\DelphiDoom.Tests.Greed.SessionScenarios -> mapsession.golden.txt
+#                  Tests\Source\DelphiDoom.Tests.Greed.SessionScenarios -> mapsession.golden.txt; e loadweapon
+#                  (ritagliata, con il nome H_loadweapon) per una sequenza di armi -> weaponpictures.golden.txt
 # Il codice originale resta in Reference\xGreed (sola lettura): event.pas, constant.pas, protos_h.pas, r_public_h.pas,
 # r_refdef.pas e d_ints_h.pas si compilano come sono. Copie generate, fuori dal repository:
 #   g_delphi.pas      con i soli cambi che Delphi 11 richiede (FormatSettings)
@@ -23,11 +24,12 @@
 # DoPlayFLI, FN_PrintCentered, StartWait, UpdateWait, EndWait, StopMusic) annotate nel registro; d_disk da' i nomi e i
 # testi dei lump degli scenari oppure, con -Dati, quelli del GREED.BLO del gioco completo letto con la libreria.
 # Le copie generate, gli eseguibili e i salvataggi di prova stanno in %TEMP%\EventsGolden.
-# Uso: .\Compila.ps1 [-Golden <file>] [-GoldenSessione <file>] [-Dati <cartella di GREED.BLO> [-GoldenCompleto <file>]]
+# Uso: .\Compila.ps1 [-Golden <file>] [-GoldenSessione <file>] [-GoldenArmi <file>] [-Dati <cartella di GREED.BLO> [-GoldenCompleto <file>]]
 param(
   [string]$Golden = '',
   [string]$GoldenCompleto = '',
   [string]$GoldenSessione = '',
+  [string]$GoldenArmi = '',
   [string]$Dati = 'C:\Progetti\DelphiDoom\Reference\_dati\greed\full',
   [string]$Riferimento = 'C:\Progetti\DelphiDoom\Reference\xGreed'
 )
@@ -35,6 +37,7 @@ $radice = Resolve-Path "$PSScriptRoot\..\..\.."
 if ($Golden -eq '') { $Golden = Join-Path $radice 'Tests\Data\Greed\events.golden.txt' }
 if ($GoldenCompleto -eq '') { $GoldenCompleto = Join-Path $radice 'Tests\Data\Greed\events.full.golden.txt' }
 if ($GoldenSessione -eq '') { $GoldenSessione = Join-Path $radice 'Tests\Data\Greed\mapsession.golden.txt' }
+if ($GoldenArmi -eq '') { $GoldenArmi = Join-Path $radice 'Tests\Data\Greed\weaponpictures.golden.txt' }
 $uscita = Join-Path $env:TEMP 'EventsGolden'
 New-Item -ItemType Directory -Force $uscita, "$uscita\src", "$uscita\session", "$uscita\dcu_e", "$uscita\dcu_s" | Out-Null
 
@@ -82,7 +85,11 @@ $mappa = $t.Substring($inizioMappa, $t.LastIndexOf('var', $inizioArmi) - $inizio
 $salva = Ritaglia $t 'procedure SaveGame(' 'procedure selectsong(' $impl
 $nuova = Ritaglia $t 'procedure newmap(' 'procedure heal(' $impl
 $rinasce = Ritaglia $t 'procedure respawnplayer;' 'procedure MissionBriefing(' $impl
-Set-Content "$uscita\session\utils.pas" ((Get-Content "$PSScriptRoot\utils.head.txt" -Raw) + $globali + (Get-Content "$PSScriptRoot\utils.mid.txt" -Raw) + $nome + $sprite + $mappa + $salva + $nuova + $rinasce + "end.`r`n")
+# loadweapon con un altro nome (le routine sopra chiamano quella che annota la chiamata) e le sue due variabili,
+# dichiarate come nell'originale
+$arma = Ritaglia $t 'procedure loadweapon(const n: integer);' '// this must be updated' $impl
+$arma = "var`r`n  weaponlump: integer = 0;`r`n  numweaponlumps: integer = 0;`r`n`r`n" + $arma.Replace('procedure loadweapon(const n: integer);', 'procedure H_loadweapon(const n: integer);') + "function H_weaponlump: integer;`r`nbegin`r`n  Result := weaponlump;`r`nend;`r`n`r`nfunction H_numweaponlumps: integer;`r`nbegin`r`n  Result := numweaponlumps;`r`nend;`r`n`r`n"
+Set-Content "$uscita\session\utils.pas" ((Get-Content "$PSScriptRoot\utils.head.txt" -Raw) + $globali + (Get-Content "$PSScriptRoot\utils.mid.txt" -Raw) + $nome + $sprite + $mappa + $salva + $nuova + $rinasce + $arma + "end.`r`n")
 
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
 $comuni = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-spawn\stubs;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
@@ -99,5 +106,5 @@ if (Test-Path (Join-Path $Dati 'GREED.BLO')) {
   cmd /c "`"$uscita\EventsGolden.exe`" `"$Golden`""
 }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-cmd /c "`"$uscita\SessionGolden.exe`" `"$GoldenSessione`""
+cmd /c "`"$uscita\SessionGolden.exe`" `"$GoldenSessione`" `"$GoldenArmi`""
 exit $LASTEXITCODE

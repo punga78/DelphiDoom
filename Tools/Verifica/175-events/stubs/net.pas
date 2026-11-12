@@ -7,7 +7,11 @@ var
   greedcomdata: greedcom_t;
   greedcom: Pgreedcom_t = @greedcomdata;
 procedure NetNewPlayerData;
+procedure NetGetData;
 implementation
+procedure NetGetData;
+begin
+end;
 procedure NetNewPlayerData;
 begin
 end;

@@ -288,6 +288,15 @@ begin
     Game.Calls.AddCall(EVENT_CALL_SCRIPT, [AIndex]);
     Result := Script;
   end
+  else if Lenient and (AIndex >= 1000) then
+  begin
+    // a picture: only the size of its header matters
+    SetLength(Result, 8);
+    Result[0] := Byte(TSessionScenarios.PictureWidth(AIndex));
+    Result[1] := Byte(TSessionScenarios.PictureWidth(AIndex) shr 8);
+    Result[2] := Byte(TSessionScenarios.PictureHeight(AIndex));
+    Result[3] := Byte(TSessionScenarios.PictureHeight(AIndex) shr 8);
+  end
   else
     raise EGreedNotFoundException.CreateFmt(SGreedLumpInvalid, [AIndex, 0]);
 end;

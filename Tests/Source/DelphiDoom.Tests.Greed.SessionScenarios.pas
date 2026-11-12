@@ -41,6 +41,9 @@ const
   SESSION_MAX_ELEVATORS = 14;
   /// <summary>What the clocks and the delays of the game have before a map starts: resetengine must clear it</summary>
   SESSION_DIRTY = 17;
+  /// <summary>How many times a weapon is loaded, one after the other, for the parity of TGreedWeaponPictures</summary>
+  SESSION_WEAPON_STEPS = 400;
+  SESSION_WEAPON_PICTURES = 7;
 
 type
   TSessionSprite = record
@@ -106,6 +109,17 @@ type
     class function GoldenLine(const ACase: TSessionCase; ANewMapFailed, ARespawnFailed, ASaveFailed,
       ALoadFailed: Boolean; ASprites, AElevators: Integer; ANewMapHash, ARespawnHash, ASaveHash,
       ALoadHash: Cardinal): string; static;
+    /// <summary>The weapon that is loaded at a step (0 .. 18)</summary>
+    class function WeaponStep(AStep: Integer): Integer; static;
+    /// <summary>The size that the picture of a lump has in both programs</summary>
+    class function PictureWidth(ALump: Integer): Integer; static;
+    class function PictureHeight(ALump: Integer): Integer; static;
+    /// <summary>
+    ///   The line of the golden file of a step: APictures has the lump, the width and the height of each of the 7
+    ///   places of the pictures of the weapon (-1, 0, 0 for a place that was never filled)
+    /// </summary>
+    class function WeaponLine(AStep, AWeapon, AFirstLump, ALumpCount, ACharge, AChargeTime: Integer;
+      const APictures: array of Integer): string; static;
   end;
 
 implementation
@@ -330,6 +344,37 @@ begin
   Result := Format('S %d %d %d %d %d %d %d %d %d %s %s %s %s', [ACase.Index, ACase.Map, ACase.Activate,
     Ord(ANewMapFailed), Ord(ARespawnFailed), Ord(ASaveFailed), Ord(ALoadFailed), ASprites, AElevators,
     IntToHex(ANewMapHash, 8), IntToHex(ARespawnHash, 8), IntToHex(ASaveHash, 8), IntToHex(ALoadHash, 8)]);
+end;
+
+class function TSessionScenarios.WeaponStep(AStep: Integer): Integer;
+var
+  LSeed: Cardinal;
+begin
+  // the first steps are every weapon in its order, then they come as they come
+  if AStep < 19 then
+    Exit(AStep);
+  LSeed := Cardinal(AStep) * 2654435761 + 99;
+  Result := NextRandom(LSeed) mod 19;
+end;
+
+class function TSessionScenarios.PictureWidth(ALump: Integer): Integer;
+begin
+  Result := 20 + (ALump * 7) mod 300;
+end;
+
+class function TSessionScenarios.PictureHeight(ALump: Integer): Integer;
+begin
+  Result := 10 + (ALump * 13) mod 190;
+end;
+
+class function TSessionScenarios.WeaponLine(AStep, AWeapon, AFirstLump, ALumpCount, ACharge, AChargeTime: Integer;
+  const APictures: array of Integer): string;
+var
+  LIndex: Integer;
+begin
+  Result := Format('W %d %d %d %d %d %d', [AStep, AWeapon, AFirstLump, ALumpCount, ACharge, AChargeTime]);
+  for LIndex := 0 to High(APictures) do
+    Result := Result + ' ' + IntToStr(APictures[LIndex]);
 end;
 
 end.

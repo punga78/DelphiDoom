@@ -2,6 +2,7 @@ unit d_disk;
 // stub of the harness: the names and the texts of the lumps come from the program (the scenarios or the archive of
 // the complete game); cachehandle is a real file, opened by the program, where event.pas reads the sky
 interface
+uses d_video;
 type
   lumpinfo_t = packed record
     filepos: integer;
@@ -14,6 +15,11 @@ var
   cachehandle: file;
   DiskNumber: function(const name: string): integer;
   DiskText: function(const lump: integer): AnsiString;
+  // the pictures that CA_CacheLump gives: only their size, which the program decides
+  DiskPictureWidth, DiskPictureHeight: function(const lump: integer): integer;
+  pictures: array[0..$FFF] of pic_t;
+function CA_CacheLump(const lump: integer): pointer;
+procedure CA_FreeLump(const lump: integer);
 function CA_GetNamedNum(const name: string): integer;
 function CA_LumpName(const lump: integer): string;
 function CA_LumpAsText(const lump: integer): string;
@@ -27,6 +33,15 @@ begin
   Result := DiskNumber(name);
   if Result < 0 then
     MS_Error('CA_GetNamedNum: %s not found!', [name]);
+end;
+function CA_CacheLump(const lump: integer): pointer;
+begin
+  pictures[lump].width := DiskPictureWidth(lump);
+  pictures[lump].height := DiskPictureHeight(lump);
+  Result := @pictures[lump];
+end;
+procedure CA_FreeLump(const lump: integer);
+begin
 end;
 function CA_LumpName(const lump: integer): string;
 begin

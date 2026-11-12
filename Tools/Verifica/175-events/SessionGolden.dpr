@@ -490,13 +490,57 @@ begin
   Reset(cachehandle, 1);
 end;
 
+function PictureWidthOf(const lump: integer): integer;
+begin
+  Result := TSessionScenarios.PictureWidth(lump);
+end;
+
+function PictureHeightOf(const lump: integer): integer;
+begin
+  Result := TSessionScenarios.PictureHeight(lump);
+end;
+
+// loadweapon of the original for a sequence of weapons: the lumps and the sizes of the pictures it leaves
+procedure RunWeapons(const AGolden: TStrings);
+var
+  step, n, k: integer;
+  pics: array[0..SESSION_WEAPON_PICTURES * 3 - 1] of integer;
+begin
+  Move(InitialWeapons[0], weapons, SizeOf(weapons));
+  for k := 0 to SESSION_WEAPON_PICTURES - 1 do
+    weaponpic[k] := nil;
+  for step := 0 to SESSION_WEAPON_STEPS - 1 do
+  begin
+    timecount := step * 7 + 1;
+    n := TSessionScenarios.WeaponStep(step);
+    H_loadweapon(n);
+    for k := 0 to SESSION_WEAPON_PICTURES - 1 do
+      if weaponpic[k] = nil then
+      begin
+        pics[k * 3] := -1;
+        pics[k * 3 + 1] := 0;
+        pics[k * 3 + 2] := 0;
+      end
+      else
+      begin
+        pics[k * 3] := (NativeInt(weaponpic[k]) - NativeInt(@pictures[0])) div SizeOf(pictures[0]);
+        pics[k * 3 + 1] := weaponpic[k].width;
+        pics[k * 3 + 2] := weaponpic[k].height;
+      end;
+    AGolden.Add(TSessionScenarios.WeaponLine(step, n, H_weaponlump, H_numweaponlumps, weapons[n].charge,
+      weapons[n].chargetime, pics));
+  end;
+end;
+
 var
   LGolden: TStringList;
   i: integer;
 begin
   try
     if ParamCount < 1 then
-      raise Exception.Create('SessionGolden <golden file>');
+      raise Exception.Create('SessionGolden <golden file> [<golden file of the weapons> [<case> <trace file>]]');
+    DiskPictureWidth := PictureWidthOf;
+    DiskPictureHeight := PictureHeightOf;
     SetCurrentDir(ExtractFilePath(ParamStr(0)));
     SetLength(InitialWeapons, SizeOf(weapons));
     Move(weapons, InitialWeapons[0], SizeOf(weapons));
@@ -508,11 +552,11 @@ begin
     try
       LGolden.Add('# utils.pas of xGreed (Tools\Verifica\175-events, SessionGolden): S case map activate newmapfailed respawnfailed savefailed loadfailed sprites elevators fingerprint-after-newmap -respawn -save -load');
       // with a case number and a file: only that case, with the fingerprint after each part of the state
-      if ParamCount >= 3 then
+      if ParamCount >= 4 then
       begin
         EventHashTrace := TStringList.Create;
-        RunCase(TSessionScenarios.CaseAt(StrToInt(ParamStr(2))));
-        EventHashTrace.SaveToFile(ParamStr(3));
+        RunCase(TSessionScenarios.CaseAt(StrToInt(ParamStr(3))));
+        EventHashTrace.SaveToFile(ParamStr(4));
         Halt(0);
       end;
       for i := 0 to SESSION_CASES - 1 do
@@ -520,6 +564,14 @@ begin
       LGolden.SaveToFile(ParamStr(1));
       Writeln(Format('%d cases (new map, respawn, save, load): %d steps stopped with an error',
         [SESSION_CASES, Failures]));
+      if ParamCount >= 2 then
+      begin
+        LGolden.Clear;
+        LGolden.Add('# loadweapon of utils.pas of xGreed (Tools\Verifica\175-events, SessionGolden): W step weapon weaponlump numweaponlumps charge chargetime, then lump width height of the 7 pictures');
+        RunWeapons(LGolden);
+        LGolden.SaveToFile(ParamStr(2));
+        Writeln(Format('%d weapons loaded one after the other', [SESSION_WEAPON_STEPS]));
+      end;
     finally
       LGolden.Free;
     end;
