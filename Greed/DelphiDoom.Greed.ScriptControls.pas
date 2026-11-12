@@ -21,7 +21,7 @@ type
   ///                            down or up at that tic; "space" is use and restart, "shift" is run and shift,
   ///                            "alt" is strafe and alt, as the keys of the original
   ///     tic type TEXT          the characters are typed, one for each reading (a secret code)
-  ///   Empty lines and the ones that start with # are skipped. The game reads the controls on the odd tics: the
+  ///   Empty lines and the ones that start with # are skipped; the lines are served in the order of their tics. The game reads the controls on the odd tics: the
   ///   tic of a reading is counted here (the first reading is the tic 1, the next the tic 3 ...). With an inner
   ///   source (the keyboard) a command is pressed if the script or the inner source says so.
   ///   EGreedException with the number of the line if a line is not understood
@@ -29,9 +29,10 @@ type
   TGreedScriptControls = class(TInterfacedObject, IGreedCommandSource)
   strict private
     type
+      TGreedCommandSet = set of TGreedCommand;
       TStep = record
         Tic: Integer;
-        Commands: set of TGreedCommand;
+        Commands: TGreedCommandSet;
         Down: Boolean;
         Text: string;
       end;
@@ -43,7 +44,7 @@ type
       FPressed: set of TGreedCommand;
       FTyping: string;
       FTypedInReading: Boolean;
-    class function CommandsOf(const AName: string; out ACommands: TStep): Boolean; static;
+    class function CommandsOf(const AName: string; out ACommands: TGreedCommandSet): Boolean; static;
     function GetTic: Integer;
   public
     /// <summary>AInner can be nil (the script alone)</summary>
@@ -75,7 +76,7 @@ const
 
 constructor TGreedScriptControls.Create(const AScript: TStrings; const AInner: IGreedCommandSource);
 var
-  LIndex: Integer;
+  LIndex, LPosition: Integer;
   LLine: string;
   LWords: TArray<string>;
   LStep: TStep;
@@ -98,14 +99,18 @@ begin
       LStep.Text := UpperCase(LWords[2])
     else
     begin
-      if not CommandsOf(LWords[1], LStep) then
+      if not CommandsOf(LWords[1], LStep.Commands) then
         raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
       if SameText(LWords[2], WORD_DOWN) then
         LStep.Down := True
       else if not SameText(LWords[2], WORD_UP) then
         raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
     end;
-    FSteps.Add(LStep);
+    // the lines can be in any order of tics: a step goes after the last one that is not later than it
+    LPosition := FSteps.Count;
+    while (LPosition > 0) and (FSteps[LPosition - 1].Tic > LStep.Tic) do
+      Dec(LPosition);
+    FSteps.Insert(LPosition, LStep);
   end;
 end;
 
@@ -115,24 +120,24 @@ begin
   inherited Destroy;
 end;
 
-class function TGreedScriptControls.CommandsOf(const AName: string; out ACommands: TStep): Boolean;
+class function TGreedScriptControls.CommandsOf(const AName: string; out ACommands: TGreedCommandSet): Boolean;
 var
   LValue: Integer;
 begin
-  ACommands := Default(TStep);
+  ACommands := [];
   Result := True;
   if SameText(AName, 'space') then
-    ACommands.Commands := [gcUse, gcRestart]
+    ACommands := [gcUse, gcRestart]
   else if SameText(AName, 'shift') then
-    ACommands.Commands := [gcRun, gcShift]
+    ACommands := [gcRun, gcShift]
   else if SameText(AName, 'alt') then
-    ACommands.Commands := [gcStrafe, gcAlt]
+    ACommands := [gcStrafe, gcAlt]
   else
   begin
     LValue := GetEnumValue(TypeInfo(TGreedCommand), 'gc' + AName);
     Result := LValue >= 0;
     if Result then
-      ACommands.Commands := [TGreedCommand(LValue)];
+      ACommands := [TGreedCommand(LValue)];
   end;
 end;
 

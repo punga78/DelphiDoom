@@ -386,33 +386,46 @@ begin
   end;
 end;
 
-// The commands of -autoplay as a script: the player walks, turns left for a while every 200 tics, uses what is
-// in front of it and shoots
-procedure AddAutoPlay(AScript: TStrings; AMaxTics: Integer);
+// The commands of -autoplay as a script: the player walks forward and now and then runs, turns (left or right for
+// a while), steps aside, shoots in bursts and uses what is in front of it. The lengths come from a linear
+// congruential generator of the seed, so the same seed gives the same game
+procedure AddAutoPlay(AScript: TStrings; AMaxTics, ASeed: Integer);
 const
-  PERIOD = 200;
   DEFAULT_TICS = 70 * 60 * 10;
+  COMMANDS: array[0..6] of string = ('north', 'shift', 'east', 'west', 'fire', 'slideleft', 'slideright');
 var
-  LStart: Integer;
+  LState: Cardinal;
+  LStart, LLength, LCommand: Integer;
+
+  function Roll(ALow, AHigh: Integer): Integer;
+  begin
+    LState := LState * 1664525 + 1013904223;
+    Result := ALow + Integer((LState shr 8) mod Cardinal(AHigh - ALow + 1));
+  end;
+
 begin
   if AMaxTics <= 0 then
     AMaxTics := DEFAULT_TICS;
-  LStart := 0;
+  LState := Cardinal(ASeed) * 2654435761 + 12345;
+  // walking: held down for the whole game, the other commands come and go on top
+  AScript.Add('1 north down');
+  LStart := 3;
   while LStart < AMaxTics do
   begin
-    AScript.Add(Format('%d north down', [LStart + 1]));
-    AScript.Add(Format('%d space down', [LStart + 31]));
-    AScript.Add(Format('%d space up', [LStart + 35]));
-    AScript.Add(Format('%d west down', [LStart + 61]));
-    AScript.Add(Format('%d west up', [LStart + 91]));
-    AScript.Add(Format('%d fire down', [LStart + 101]));
-    AScript.Add(Format('%d fire up', [LStart + 141]));
-    AScript.Add(Format('%d space down', [LStart + 151]));
-    AScript.Add(Format('%d space up', [LStart + 155]));
-    Inc(LStart, PERIOD);
+    LCommand := Roll(1, High(COMMANDS));
+    LLength := Roll(6, 60);
+    if (LCommand = 4) or (LCommand = 1) then
+      LLength := Roll(20, 100);
+    AScript.Add(Format('%d %s down', [LStart, COMMANDS[LCommand]]));
+    AScript.Add(Format('%d %s up', [LStart + LLength, COMMANDS[LCommand]]));
+    if Roll(0, 5) = 0 then
+    begin
+      AScript.Add(Format('%d space down', [LStart + LLength + 2]));
+      AScript.Add(Format('%d space up', [LStart + LLength + 6]));
+    end;
+    Inc(LStart, LLength + Roll(2, 40));
   end;
 end;
-
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
   const AOptions: TGreedPlayOptions): Integer;
 var
@@ -516,7 +529,7 @@ begin
     if AOptions.ScriptPath <> '' then
       LScript.LoadFromFile(AOptions.ScriptPath);
     if AOptions.AutoPlay then
-      AddAutoPlay(LScript, AOptions.MaxTics);
+      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
     if LScript.Count > 0 then
       LSource := TGreedScriptControls.Create(LScript, LSource);
 

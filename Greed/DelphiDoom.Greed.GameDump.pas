@@ -53,6 +53,8 @@ begin
   ALines.Add(Format('timecount=%d', [S.TimeCount]));
   ALines.Add(Format('rndofs=%d', [ARandomOffset]));
   ALines.Add(Format('quitgame=%d', [Ord(S.QuitGame)]));
+  ALines.Add(Format('warping=%d lighting=%d changelight=%d exitexists=%d godmode=%d', [S.Warping, S.Lighting,
+    S.ChangeLight, Ord(S.ExitExists), Ord(S.GodMode)]));
   ALines.Add(Format('player.x=%d', [S.Player.X]));
   ALines.Add(Format('player.y=%d', [S.Player.Y]));
   ALines.Add(Format('player.z=%d', [S.Player.Z]));
