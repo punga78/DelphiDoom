@@ -224,3 +224,34 @@ Strumenti (`Tools\Verifica\176`): `Make-XcomSmokeScenario.ps1` (fumo e fuoco nei
    - (c) **Particelle del vapore: non fatte.** `DrawParticles` scrive l'indice che da' la tabella di trasparenza (`Mod::createTransparencyLUT`: il colore piu' vicino della palette alla miscela esatta di fondo e tinta); il velo a colori differirebbe dal gioco al piu' dell'errore di quantizzazione della palette e la nube e' fatta di punti da 1 o 2 pixel di gioco, solo sott'acqua e con un generatore non riproducibile: il guadagno non si vede.
    - (d) **Shader diversi da `Raw` con `-truecolor`** (OpenGL, 2x, scena senza fumo): `Scale2x`, `CRT-simple`, `scanline-3x` e `Curvature`. Lo shader riceve il fotogramma **gia' alla misura della finestra** (a 8 bit riceve l'immagine del gioco 320x200 e la ingrandisce lui). `Scale2x`: a 8 bit smussa le diagonali del pixel del gioco (14129 pixel diversi da `Raw`), a 32 bit lisci a meta' grana (6045): l'effetto c'e' ma e' piu' sottile, non sbagliato. `CRT-simple`: a 8 bit le righe di scansione sono una per riga del gioco, a 32 bit una per riga della finestra, piu' fitte, l'immagine e' piu' scura e meno sfocata (233997 pixel diversi tra i due modi). `scanline-3x`: dipende dalla posizione sullo schermo e non dalla misura dell'ingresso, quasi uguale (616 pixel). `Curvature`: non compila su Mesa (limite gia' noto, vedi `Libs\XcomEngine\CLAUDE.md`): a 8 bit si vede senza filtro ma sfocato (lineare), a 32 bit identico a `Raw`. **Giudizio**: e' accettabile e non serve ingrandire a monte; chi vuole l'aspetto originale di uno shader (righe grosse, sfocatura) spegne "32-bit drawing" nelle opzioni avanzate (e' per questo una voce a parte); ingrandire a monte (dare allo shader l'immagine del gioco e fare il 32 bit dopo) vuol dire rinunciare al dettaglio fine che il 32 bit esiste per dare.
 5. **Prestazioni finali**: PERF_TABLE
+## 9. Prestazioni finali e chiusura (ultimo giro, 2026-11-12)
+
+Misura: `-script` su TFTD con orologio manuale, millisecondi di CPU per fotogramma da 1/60 s calcolati come (CPU di una corsa da 12 s di orologio - CPU di una da 1,2 s) / 648 fotogrammi, cosi' il caricamento si toglie; tre corse per configurazione, ordine ruotato (riferimento, opzione spenta, opzione accesa), macchina scarica e nessuna build in corso. Riferimento = `Xcom32` compilato da `git archive 142d954e` (il master prima della #183); "off" = il binario nuovo senza `-truecolor`; "on" = con `-truecolor`. Minimo (mediana) in ms. Schermate: menu principale, Geoscape e Basescape dal salvataggio `save02`, Battlescape `g03_2` (senza fumo) e lo stesso con fumo e fuoco su 98 tegole (`Make-XcomSmokeScenario.ps1`).
+
+| scena | scala | riferimento | off | on |
+|---|---|---|---|---|
+| menu | 1x | 0,07 (0,12) | 0,10 (0,17) | 0,05 (0,05) |
+| menu | 2x | 0,53 (0,56) | 0,41 (0,55) | 0,36 (0,41) |
+| menu | 3x | 1,13 (1,13) | 1,30 (1,35) | 0,56 (0,92) |
+| menu | 4x | 2,39 (2,41) | 2,34 (2,44) | 1,30 (1,40) |
+| geoscape | 1x | 0,94 (0,99) | 1,01 (1,04) | 0,87 (0,92) |
+| geoscape | 2x | 1,37 (1,45) | 1,33 (1,40) | 1,40 (1,42) |
+| geoscape | 3x | 2,10 (2,12) | 2,10 (2,15) | 1,90 (1,90) |
+| geoscape | 4x | 3,16 (3,18) | 3,01 (3,11) | 2,73 (2,75) |
+| basescape | 1x | 0,19 (0,19) | 0,12 (0,22) | 0,07 (0,07) |
+| basescape | 2x | 0,53 (0,53) | 0,58 (0,63) | 0,36 (0,48) |
+| basescape | 3x | 1,33 (1,35) | 1,30 (1,33) | 0,72 (0,79) |
+| basescape | 4x | 2,31 (2,31) | 2,29 (2,31) | 1,33 (1,37) |
+| battaglia | 1x | 20,35 (20,47) | 20,28 (20,42) | 20,21 (20,25) |
+| battaglia | 2x | 20,88 (21,51) | 22,21 (22,96) | 21,97 (22,81) |
+| battaglia | 3x | 22,11 (22,98) | 21,85 (22,04) | 21,99 (22,14) |
+| battaglia | 4x | 23,29 (23,97) | 22,98 (23,08) | 22,16 (22,59) |
+| battaglia con fumo | 1x | 22,43 (22,62) | 22,38 (22,59) | 23,61 (23,63) |
+| battaglia con fumo | 2x | 22,59 (23,15) | 22,81 (22,86) | 24,26 (24,33) |
+| battaglia con fumo | 3x | 23,22 (23,61) | 24,50 (24,86) | 24,26 (24,60) |
+| battaglia con fumo | 4x | 24,67 (24,86) | 24,93 (24,93) | 25,56 (25,63) |
+
+- La battaglia a 2x senza 32 bit era l'unico punto sospetto (+1,3 ms): ripetuta con **sei** corse per configurazione, mediane 20,94 (riferimento), 21,10 (off), 21,00 (on): e' rumore, nessuna regressione a 8 bit.
+- Menu e Basescape sono schermate ferme: il compositore a 32 bit ricompone solo le righe cambiate e costa **meno** dell'ingrandimento a indici (1,3 contro 2,4 ms a 4x). Il Geoscape a 4x e' 2,7 ms (era 15 prima del globo con cache per righe: §7 punto 1). **Costo dell'opzione**: solo la battaglia con fumo (+1,2 ms a 1x, +1,7 ms a 2x, +0,6 ms a 4x, su 22-25: il 3-7%, la sfumatura per pixel), dentro il budget dei 16,7 ms non c'e' comunque: la battaglia vale 20 ms gia' a 8 bit (il riferimento), per la mappa e non per il compositore.
+- **Parita' a 8 bit**: PNG di menu, Geoscape, Basescape, battaglia e battaglia con fumo a 1x, 2x e 3x: **15 su 15 identici byte per byte** al binario di `142d954e` (dopo la correzione dell'OK delle opzioni).
+- Suite (Release, una alla volta): XcomEngine 1048, XcomSurface 158, XcomGeoscape 104, XcomUfopaedia 82, XcomTour 179, XcomBattleStates 203 (+4 ignorati), Xcom 248, GameHost 41; 0 errori e 0 avvisi su Xcom32.
