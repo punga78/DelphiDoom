@@ -39,6 +39,11 @@ type
     Name: string;
     /// <summary>A .ttf file to register for this program only; empty for a font that is installed</summary>
     FileName: string;
+    /// <summary>
+    ///   Which font of a collection file (.ttc) when no name is given: the family of that font is used (0, the
+    ///   default, the first one). A single font file has only the index 0
+    /// </summary>
+    FaceIndex: Integer;
     /// <summary>The height of the em square in pixels of the 320 x 200 screen</summary>
     Size: Integer;
     Bold: Boolean;

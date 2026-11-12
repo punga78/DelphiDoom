@@ -16,7 +16,8 @@ uses
 type
   /// <summary>
   ///   A font registered from a file is then asked for by its family name, which is in the "name" table of the
-  ///   file (name id 1). Only single fonts (.ttf, .otf), not collections (.ttc)
+  ///   file (name id 1). Single fonts (.ttf, .otf) and collections (.ttc: Windows registers every font of the file
+  ///   and the family tells which one is used; without a name the family of font Index is read)
   /// </summary>
   TXcomTtfFamilyName = class sealed
   strict private
@@ -29,11 +30,18 @@ type
     class function WordAt(const AData: TBytes; AOffset: Integer; out AValue: Integer): Boolean; static;
     class function LongAt(const AData: TBytes; AOffset: Integer; out AValue: Int64): Boolean; static;
   public
+    /// <summary>The bytes are a collection of fonts (.ttc: they start with "ttcf")</summary>
+    class function IsCollection(const AData: TBytes): Boolean; static;
+    /// <summary>How many fonts the file has: the count of a collection, 1 for a single font</summary>
+    class function FaceCount(const AData: TBytes): Integer; static;
     /// <summary>
     ///   False when the bytes are not a font or have no family name. The Windows name in English is preferred,
-    ///   then any Windows or Unicode name (UTF-16 big endian), then a Macintosh one (one byte per character)
+    ///   then any Windows or Unicode name (UTF-16 big endian), then a Macintosh one (one byte per character).
+    ///   The first font of a collection
     /// </summary>
-    class function TryRead(const AData: TBytes; out AName: string): Boolean; static;
+    class function TryRead(const AData: TBytes; out AName: string): Boolean; overload; static;
+    /// <summary>The family of font AIndex of a collection (0 for a single font); false for an index the file does not have</summary>
+    class function TryRead(const AData: TBytes; AIndex: Integer; out AName: string): Boolean; overload; static;
   end;
 
 implementation
@@ -55,8 +63,30 @@ begin
       AData[AOffset + 3];
 end;
 
-class function TXcomTtfFamilyName.TryRead(const AData: TBytes; out AName: string): Boolean;
+class function TXcomTtfFamilyName.FaceCount(const AData: TBytes): Integer;
 var
+  LCount: Int64;
+begin
+  Result := 1;
+  if IsCollection(AData) and LongAt(AData, 8, LCount) and (LCount > 0) and (LCount < 1024) then
+    Result := Integer(LCount);
+end;
+
+class function TXcomTtfFamilyName.IsCollection(const AData: TBytes): Boolean;
+begin
+  Result := (Length(AData) >= 16) and (AData[0] = Ord('t')) and (AData[1] = Ord('t')) and (AData[2] = Ord('c')) and
+    (AData[3] = Ord('f'));
+end;
+
+class function TXcomTtfFamilyName.TryRead(const AData: TBytes; out AName: string): Boolean;
+begin
+  Result := TryRead(AData, 0, AName);
+end;
+
+class function TXcomTtfFamilyName.TryRead(const AData: TBytes; AIndex: Integer; out AName: string): Boolean;
+var
+  LBase: Integer;
+  LOffset32: Int64;
   LTableCount: Integer;
   LTable: Integer;
   LRecord: Integer;
@@ -77,12 +107,23 @@ var
   LChar: Integer;
 begin
   AName := '';
-  if not WordAt(AData, 4, LTableCount) then
+  LBase := 0;
+  if IsCollection(AData) then
+  begin
+    // a collection: the offsets of the fonts follow the count; the tables of each are addressed from the file start
+    if (AIndex < 0) or (AIndex >= FaceCount(AData)) or not LongAt(AData, 12 + AIndex * 4, LOffset32) or
+      (LOffset32 > Length(AData)) then
+      Exit(False);
+    LBase := Integer(LOffset32);
+  end
+  else if AIndex <> 0 then
+    Exit(False);
+  if not WordAt(AData, LBase + 4, LTableCount) then
     Exit(False);
   LTableOffset := -1;
   for LTable := 0 to LTableCount - 1 do
   begin
-    LRecord := 12 + LTable * 16;
+    LRecord := LBase + 12 + LTable * 16;
     if LRecord + 16 > Length(AData) then
       Exit(False);
     if (AData[LRecord] = Ord('n')) and (AData[LRecord + 1] = Ord('a')) and (AData[LRecord + 2] = Ord('m')) and

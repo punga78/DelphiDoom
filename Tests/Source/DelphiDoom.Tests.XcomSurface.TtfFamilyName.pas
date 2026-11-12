@@ -27,7 +27,9 @@ type
       end;
     class function Name(APlatform, ALanguage, ANameId: Integer; const AText: string): TName; static;
     /// <summary>A font file with one table, "name" (or ATable), and the given records</summary>
-    class function FontFile(const ANames: array of TName; const ATable: AnsiString = 'name'): TBytes; static;
+    class function FontFile(const ANames: array of TName; const ATable: AnsiString = 'name'; ABase: Integer = 0): TBytes; static;
+    /// <summary>A collection of two fonts, as a .ttc: "ttcf", the version, the count and the offsets of the fonts</summary>
+    class function Collection(const AFirst, ASecond: array of TName): TBytes; static;
   public
     [Test]
     procedure DovrebbeLeggereIlNomeDiWindowsInInglese;
@@ -43,6 +45,18 @@ type
     procedure DovrebbeDareFalsoSeIBytesNonSonoUnFont;
     [Test]
     procedure DovrebbeDareFalsoSeIlFileETroncato;
+    [Test]
+    procedure UnaRaccoltaDovrebbeDareLaFamigliaDelFontCheSiChiede;
+    [Test]
+    procedure SenzaIndiceUnaRaccoltaDovrebbeDareLaPrimaFamiglia;
+    [Test]
+    procedure UnIndiceCheLaRaccoltaNonHaDovrebbeDareFalso;
+    [Test]
+    procedure UnFontSingoloDovrebbeAvereSoloLIndiceZero;
+    [Test]
+    procedure DovrebbeContareIFontDelFile;
+    [Test]
+    procedure UnaRaccoltaTroncataDovrebbeDareFalso;
   end;
 
 implementation
@@ -57,7 +71,7 @@ begin
 end;
 
 class function TTestXcomSurfaceTtfFamilyName.FontFile(const ANames: array of TName;
-  const ATable: AnsiString): TBytes;
+  const ATable: AnsiString; ABase: Integer): TBytes;
 const
   TABLE_OFFSET = 28;
 var
@@ -70,19 +84,19 @@ var
 
   procedure PutWord(AOffset, AValue: Integer);
   begin
-    Result[AOffset] := Byte(AValue shr 8);
-    Result[AOffset + 1] := Byte(AValue and $FF);
+    Result[ABase + AOffset] := Byte(AValue shr 8);
+    Result[ABase + AOffset + 1] := Byte(AValue and $FF);
   end;
 
 begin
   LStrings := nil;
-  SetLength(Result, TABLE_OFFSET + 6 + Length(ANames) * 12);
+  SetLength(Result, ABase + TABLE_OFFSET + 6 + Length(ANames) * 12);
   FillChar(Result[0], Length(Result), 0);
   // the offset table: version 1.0 and one table
   PutWord(0, 1);
   PutWord(4, 1);
-  Move(ATable[1], Result[12], 4);
-  PutWord(22, TABLE_OFFSET);
+  Move(ATable[1], Result[ABase + 12], 4);
+  PutWord(22, ABase + TABLE_OFFSET);
   // the name table: format 0, the count and where the strings start
   PutWord(TABLE_OFFSET + 2, Length(ANames));
   PutWord(TABLE_OFFSET + 4, 6 + Length(ANames) * 12);
@@ -113,6 +127,100 @@ begin
     LStrings := LStrings + LText;
   end;
   Result := Result + LStrings;
+end;
+
+class function TTestXcomSurfaceTtfFamilyName.Collection(const AFirst, ASecond: array of TName): TBytes;
+const
+  HEADER = 20;
+var
+  LFirst: TBytes;
+
+  procedure PutLong(AOffset: Integer; AValue: Integer);
+  begin
+    Result[AOffset] := Byte(AValue shr 24);
+    Result[AOffset + 1] := Byte(AValue shr 16);
+    Result[AOffset + 2] := Byte(AValue shr 8);
+    Result[AOffset + 3] := Byte(AValue and $FF);
+  end;
+
+begin
+  // the offset tables follow the header; the tables of each font are addressed from the start of the file
+  LFirst := FontFile(AFirst, 'name', HEADER);
+  Result := FontFile(ASecond, 'name', Length(LFirst));
+  Move(LFirst[HEADER], Result[HEADER], Length(LFirst) - HEADER);
+  Result[0] := Ord('t');
+  Result[1] := Ord('t');
+  Result[2] := Ord('c');
+  Result[3] := Ord('f');
+  PutLong(4, $10000);
+  PutLong(8, 2);
+  PutLong(12, HEADER);
+  PutLong(16, Length(LFirst));
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.UnaRaccoltaDovrebbeDareLaFamigliaDelFontCheSiChiede;
+var
+  LName: string;
+  LFile: TBytes;
+begin
+  LFile := Collection([Name(3, $409, 1, 'Primo')], [Name(3, $409, 1, 'Secondo')]);
+  Assert.IsTrue(TXcomTtfFamilyName.TryRead(LFile, 0, LName));
+  Assert.AreEqual('Primo', LName);
+  Assert.IsTrue(TXcomTtfFamilyName.TryRead(LFile, 1, LName));
+  Assert.AreEqual('Secondo', LName);
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.SenzaIndiceUnaRaccoltaDovrebbeDareLaPrimaFamiglia;
+var
+  LName: string;
+begin
+  Assert.IsTrue(TXcomTtfFamilyName.TryRead(Collection([Name(3, $409, 1, 'Primo')], [Name(3, $409, 1, 'Secondo')]),
+    LName));
+  Assert.AreEqual('Primo', LName);
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.UnIndiceCheLaRaccoltaNonHaDovrebbeDareFalso;
+var
+  LName: string;
+  LFile: TBytes;
+begin
+  LFile := Collection([Name(3, $409, 1, 'Primo')], [Name(3, $409, 1, 'Secondo')]);
+  Assert.IsFalse(TXcomTtfFamilyName.TryRead(LFile, 2, LName));
+  Assert.IsFalse(TXcomTtfFamilyName.TryRead(LFile, -1, LName));
+  Assert.AreEqual('', LName);
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.UnFontSingoloDovrebbeAvereSoloLIndiceZero;
+var
+  LName: string;
+  LFile: TBytes;
+begin
+  LFile := FontFile([Name(3, $409, 1, 'My Font')]);
+  Assert.IsTrue(TXcomTtfFamilyName.TryRead(LFile, 0, LName));
+  Assert.IsFalse(TXcomTtfFamilyName.TryRead(LFile, 1, LName));
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.DovrebbeContareIFontDelFile;
+var
+  LCollection: TBytes;
+begin
+  LCollection := Collection([Name(3, $409, 1, 'Primo')], [Name(3, $409, 1, 'Secondo')]);
+  Assert.AreEqual(2, TXcomTtfFamilyName.FaceCount(LCollection));
+  Assert.IsTrue(TXcomTtfFamilyName.IsCollection(LCollection));
+  Assert.AreEqual(1, TXcomTtfFamilyName.FaceCount(FontFile([Name(3, $409, 1, 'My Font')])));
+  Assert.IsFalse(TXcomTtfFamilyName.IsCollection(FontFile([Name(3, $409, 1, 'My Font')])));
+  Assert.AreEqual(1, TXcomTtfFamilyName.FaceCount(nil));
+end;
+
+procedure TTestXcomSurfaceTtfFamilyName.UnaRaccoltaTroncataDovrebbeDareFalso;
+var
+  LName: string;
+  LFile: TBytes;
+begin
+  LFile := Collection([Name(3, $409, 1, 'Primo')], [Name(3, $409, 1, 'Secondo')]);
+  // the offsets are there but the second font is not
+  SetLength(LFile, 40);
+  Assert.IsFalse(TXcomTtfFamilyName.TryRead(LFile, 1, LName));
 end;
 
 procedure TTestXcomSurfaceTtfFamilyName.DovrebbeLeggereIlNomeDiWindowsInInglese;

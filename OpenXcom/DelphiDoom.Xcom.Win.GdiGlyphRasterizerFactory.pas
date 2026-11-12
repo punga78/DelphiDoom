@@ -96,7 +96,8 @@ begin
   begin
     if not Register(AFace.FileName, AReason) then
       Exit;
-    if (LName = '') and not TXcomTtfFamilyName.TryRead(TFile.ReadAllBytes(AFace.FileName), LName) then
+    // a collection (.ttc) is registered whole; without a name the family of the font Index of the file is asked
+    if (LName = '') and not TXcomTtfFamilyName.TryRead(TFile.ReadAllBytes(AFace.FileName), AFace.FaceIndex, LName) then
     begin
       AReason := Format(SNoFamily, [AFace.FileName]);
       Exit;

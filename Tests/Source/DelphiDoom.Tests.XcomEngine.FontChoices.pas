@@ -703,6 +703,7 @@ begin
   LSettings.Tolerance := 0;
   LSettings.Shrink := True;
   LSettings.OffsetY := 2;
+  LSettings.Face.FaceIndex := 3;
   LText := TXcomFontSettingsWriter.Write([LSettings, TXcomFontOverlaySettings.Make('FONT_SMALL', 'Tahoma', 8)]);
   LBack := TXcomFontSettingsReader.Read(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes(LText)));
   Assert.AreEqual(2, Length(LBack));
@@ -717,6 +718,8 @@ begin
   Assert.AreEqual(0, LBack[0].Tolerance);
   Assert.IsTrue(LBack[0].Shrink);
   Assert.AreEqual(2, LBack[0].OffsetY);
+  Assert.AreEqual(3, LBack[0].Face.FaceIndex);
+  Assert.AreEqual(0, LBack[1].Face.FaceIndex);
   Assert.AreEqual('Tahoma', LBack[1].Face.Name);
 end;
 
@@ -743,6 +746,7 @@ begin
   Assert.IsFalse(LText.Contains('spacing'));
   Assert.IsFalse(LText.Contains('tolerance'));
   Assert.IsFalse(LText.Contains('offsetY'));
+  Assert.IsFalse(LText.Contains('index'));
   Assert.IsFalse(LText.Contains('file'));
 end;
 

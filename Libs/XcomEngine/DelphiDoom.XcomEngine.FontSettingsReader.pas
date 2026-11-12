@@ -22,6 +22,7 @@ type
   ///     - id: FONT_SMALL      # the id of Font.dat
   ///       name: Tahoma        # a font of Windows, or
   ///       file: C:\x\my.ttf   # a file (with "name" when the family is not the one written in the file)
+  ///       index: 0            # a collection (.ttc) without "name": the font of the file whose family is used
   ///       size: 8             # height of the em square in pixels of the 320 x 200 screen
   ///       bold: false
   ///       antialias: true     # false: the pixels of the system, on or off (bitmap fonts, sizes the font is hinted for)
@@ -73,6 +74,7 @@ begin
       LSettings := TXcomFontOverlaySettings.Make(TXcomYamlFields.ReadString(LItem, 'id', ''),
         TXcomYamlFields.ReadString(LItem, 'name', ''), TXcomYamlFields.ReadInteger(LItem, 'size', 0));
       LSettings.Face.FileName := TXcomYamlFields.ReadString(LItem, 'file', '');
+      LSettings.Face.FaceIndex := TXcomYamlFields.ReadInteger(LItem, 'index', 0);
       LSettings.Face.Bold := TXcomYamlFields.ReadBoolean(LItem, 'bold', False);
       LSettings.Face.Antialias := TXcomYamlFields.ReadBoolean(LItem, 'antialias', True);
       if TXcomYamlFields.Exists(LItem, 'outline') then

@@ -58,6 +58,8 @@ begin
         LBuilder.Append('    name: ').Append(Quoted(LSettings.Face.Name)).Append(#10);
       if LSettings.Face.FileName <> '' then
         LBuilder.Append('    file: ').Append(Quoted(LSettings.Face.FileName)).Append(#10);
+      if LSettings.Face.FaceIndex <> 0 then
+        LBuilder.Append('    index: ').Append(LSettings.Face.FaceIndex).Append(#10);
       LBuilder.Append('    size: ').Append(LSettings.Face.Size).Append(#10);
       LBuilder.Append('    bold: ').Append(YesNo(LSettings.Face.Bold)).Append(#10);
       LBuilder.Append('    antialias: ').Append(YesNo(LSettings.Face.Antialias)).Append(#10);
