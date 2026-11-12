@@ -1,0 +1,131 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: xcom engine library - the fonts of the system chosen in the      }
+{  options, laid over the fonts of the game when they fit                       }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.XcomEngine.RasterFontOverlay;
+
+interface
+
+uses
+  System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Glyph.Types,
+  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf;
+
+type
+  /// <summary>
+  ///   IXcomFontOverlay for the fonts listed in the options: opens the font of the system, checks at the start
+  ///   that it fits the cells of the original font and adds its characters. A font that is not there, or is too
+  ///   tall or too wide, leaves the original font as it is, with a warning in the log; so does a single character
+  ///   that the font does not have. The rasterizer of a font lives only during its Apply (the loading thread)
+  /// </summary>
+  TXcomRasterFontOverlay = class(TInterfacedObject, IXcomFontOverlay)
+  strict private
+    FSettings: TArray<TXcomFontOverlaySettings>;
+    FFactory: IXcomGlyphRasterizerFactory;
+    FLog: IXcomLog;
+    procedure Say(const ALevel, AText: string);
+    class function Describe(const AFace: TXcomFontFace): string; static;
+  public
+    /// <param name="ALog">nil for no log</param>
+    constructor Create(const ASettings: TArray<TXcomFontOverlaySettings>; const AFactory: IXcomGlyphRasterizerFactory;
+      const ALog: IXcomLog);
+    procedure Apply(const AFontId: string; AFont: TXcomFont);
+  end;
+
+implementation
+
+uses
+  DelphiDoom.XcomSurface.FontOverlayBuilder;
+
+const
+  SLevelWarning = 'WARN';
+  SLevelInfo = 'INFO';
+  SNotFound = 'font %s: %s not used (%s): the original font stays';
+  STooTall = 'font %s: %s is %d pixels tall and the limit is %d: the original font stays';
+  STooWide = 'font %s: %s has letters %d pixels wide and the limit is %d: the original font stays';
+  SNoGlyphs = 'font %s: %s has none of the characters of the font: the original font stays';
+  SApplied = 'font %s: %s, %d characters (%d x %d); from the original font: %d missing, %d too wide; %d cut';
+  SPartial = 'font %s: %d characters are not in %s or are too wide and stay the original ones';
+
+constructor TXcomRasterFontOverlay.Create(const ASettings: TArray<TXcomFontOverlaySettings>;
+  const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog);
+begin
+  inherited Create;
+  if not Assigned(AFactory) then
+    raise EArgumentNilException.Create('AFactory');
+  FSettings := ASettings;
+  FFactory := AFactory;
+  FLog := ALog;
+end;
+
+procedure TXcomRasterFontOverlay.Say(const ALevel, AText: string);
+begin
+  if Assigned(FLog) then
+    FLog.Write(ALevel, AText);
+end;
+
+class function TXcomRasterFontOverlay.Describe(const AFace: TXcomFontFace): string;
+begin
+  Result := AFace.Name;
+  if Result = '' then
+    Result := AFace.FileName;
+  Result := Format('"%s" %d', [Result, AFace.Size]);
+  if AFace.Bold then
+    Result := Result + ' bold';
+end;
+
+procedure TXcomRasterFontOverlay.Apply(const AFontId: string; AFont: TXcomFont);
+var
+  LSettings: TXcomFontOverlaySettings;
+  LFound: Boolean;
+  LCandidate: TXcomFontOverlaySettings;
+  LRasterizer: IXcomGlyphRasterizer;
+  LReason: string;
+  LBuilder: TXcomFontOverlayBuilder;
+  LReport: TXcomFontOverlayReport;
+  LName: string;
+begin
+  LFound := False;
+  // the last entry of a font wins, as a key written twice
+  for LCandidate in FSettings do
+    if SameText(LCandidate.FontId, AFontId) then
+    begin
+      LSettings := LCandidate;
+      LFound := True;
+    end;
+  if not LFound then
+    Exit;
+  LName := Describe(LSettings.Face);
+  LRasterizer := FFactory.CreateRasterizer(LSettings.Face, 1, LReason);
+  if not Assigned(LRasterizer) then
+  begin
+    Say(SLevelWarning, Format(SNotFound, [AFontId, LName, LReason]));
+    Exit;
+  end;
+  LBuilder := TXcomFontOverlayBuilder.Create;
+  try
+    if LBuilder.Apply(AFont, LRasterizer, LSettings, LReport) then
+    begin
+      Say(SLevelInfo, Format(SApplied, [AFontId, LName, LReport.Replaced, LReport.Width, LReport.Height,
+        LReport.Missing, LReport.TooWide, LReport.Clipped]));
+      if LReport.Missing + LReport.TooWide > 0 then
+        Say(SLevelWarning, Format(SPartial, [AFontId, LReport.Missing + LReport.TooWide, LName]));
+    end
+    else
+      case LReport.Refusal of
+        frTooTall:
+          Say(SLevelWarning, Format(STooTall, [AFontId, LName, LReport.Height, LReport.HeightLimit]));
+        frTooWide:
+          Say(SLevelWarning, Format(STooWide, [AFontId, LName, LReport.Width, LReport.WidthLimit]));
+      else
+        Say(SLevelWarning, Format(SNoGlyphs, [AFontId, LName]));
+      end;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+end.

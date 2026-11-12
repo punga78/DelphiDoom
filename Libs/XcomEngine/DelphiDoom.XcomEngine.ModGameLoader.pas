@@ -13,7 +13,8 @@ interface
 uses
   System.SysUtils, System.IOUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Png.Client,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Language,
-  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf;
+  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf,
+  DelphiDoom.XcomSurface.FontOverlay.Intf;
 
 type
   /// <summary>Where the data is and what to load (the parts of Options and of the mod infos that the loading reads)</summary>
@@ -27,6 +28,8 @@ type
     /// <summary>Options::language; empty means the default en-US</summary>
     LanguageId: string;
     Wordwrap: TXcomTextWrapping;
+    /// <summary>Folders laid over the data, the last one first: a Language\Font.dat in one of them replaces the fonts</summary>
+    ExtraFolders: TArray<string>;
   end;
 
   /// <summary>
@@ -43,12 +46,15 @@ type
     FPng: TPngClient;
     FLog: IXcomLog;
     FLoadRules: Boolean;
+    FFontOverlay: IXcomFontOverlay;
   public
     /// <summary>
     ///   Also reads the ruleset of the master mod (IXcomGameRules of the resources), that the strategy screens need.
     ///   Off by default: the screens of the menu do not use it
     /// </summary>
     property LoadRules: Boolean read FLoadRules write FLoadRules;
+    /// <summary>Given to the resources: the characters of the fonts from another source (nil: the pictures of the game)</summary>
+    property FontOverlay: IXcomFontOverlay read FFontOverlay write FFontOverlay;
     /// <param name="APng">Not owned: the client shared by the engine</param>
     constructor Create(const ASettings: TXcomLoaderSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser; APng: TPngClient; const ALog: IXcomLog = nil);
@@ -81,6 +87,7 @@ var
   LReference: IXcomResources;
   LGameData: IXcomGameData;
   LProvider: IXcomLanguageProvider;
+  LExtraFolder: string;
 begin
   AResources := nil;
   ALanguage := nil;
@@ -93,11 +100,14 @@ begin
   LMap.AddRoot(TPath.Combine(FSettings.DataFolder, 'common'));
   LMap.AddRoot(FSettings.GameFolder);
   LMap.AddRoot(LModFolder);
+  for LExtraFolder in FSettings.ExtraFolders do
+    LMap.AddRoot(LExtraFolder);
   LGameData := TXcomFactory.CreateGameData(TXcomFactory.CreateFolderFiles([FSettings.GameFolder]));
   // the resources own the map from here
   LResources := TXcomModResources.Create(LMap, LGameData, FFiles, FParser,
     TXcomPngSurfaceLoader.Create(LMap, FPng), TXcomFactory.CreatePaletteReader, LModFolder);
   LReference := LResources;
+  LResources.FontOverlay := FFontOverlay;
   LResources.Load;
   if FLoadRules then
     LResources.LoadRules(TYamlFactory.CreateDiskParser, FPng, FSettings.ModId);

@@ -15,6 +15,7 @@ uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image, DelphiDoom.Xcom.Intf,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Intf,
+  DelphiDoom.XcomSurface.FontOverlay.Intf,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.FileMap,
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Rules.Intf,
   DelphiDoom.XcomEngine.GameRules, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset,
@@ -45,6 +46,7 @@ type
     FGameData: IXcomGameData;
     FParser: IYamlParser;
     FFontLoader: IXcomSurfaceLoader;
+    FFontOverlay: IXcomFontOverlay;
     FPaletteReader: IXcomPaletteReader;
     FModFolder: string;
     FFileSystem: IXcomFileSystem;
@@ -91,6 +93,11 @@ type
       const AParser: IYamlParser; const AFontLoader: IXcomSurfaceLoader; const APaletteReader: IXcomPaletteReader;
       const AModFolder: string);
     destructor Destroy; override;
+    /// <summary>
+    ///   A second source of the characters, called for every font after its pictures are loaded (to set before
+    ///   Load); nil, the default: the fonts are the pictures of the game
+    /// </summary>
+    property FontOverlay: IXcomFontOverlay read FFontOverlay write FFontOverlay;
     /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
     procedure Load;
     function HasSoundDefinitions: Boolean;
@@ -572,6 +579,8 @@ begin
     LFont := TXcomFont.Create;
     try
       LFont.Load(LDefinition, FFontLoader);
+      if Assigned(FFontOverlay) then
+        FFontOverlay.Apply(TXcomYamlFields.ReadString(LItem, 'id', ''), LFont);
     except
       LFont.Free;
       raise;
