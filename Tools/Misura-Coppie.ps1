@@ -29,7 +29,7 @@ param(
   [double]$MaxDispersione = 3,
   [double]$Soglia = 5,
   [string]$Game = '',
-  [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = ''
 )
 . (Join-Path $PSScriptRoot 'Verifica\185\Parity-Common.ps1')

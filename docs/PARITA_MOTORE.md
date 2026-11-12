@@ -27,7 +27,7 @@ powershell -NoProfile -File Tools\Verifica\185\Registra-Demo.ps1  -Name 'a_*'   
 powershell -NoProfile -File Tools\Verifica\185\Registra-Golden.ps1 -Exe "Doom=C:\...\Doom32.exe;Heretic=...;Hexen=...;Strife=..."
 ```
 
-I golden si registrano **con un eseguibile del codice di partenza** (il commit prima della fase che si sta per fare, piu' gli strumenti), mai con quello che si vuole provare; conservare quell'eseguibile come riferimento (serve a `-RefExe`). I WAD non sono nel repository: gli script li prendono da `-DataRoot` (predefinito: `bin` del repository principale). Cartella di lavoro: `-WorkRoot` (predefinita `%TEMP%\ddparity`). Le demo del pilota stanno in `Tests\Data\Parity\<Gioco>\*.lmp` (solo ticcmd, nessun dato del gioco); servono il WAD e la mappa di `Corpus.psd1`.
+I golden si registrano **con un eseguibile del codice di partenza** (il commit prima della fase che si sta per fare, piu' gli strumenti), mai con quello che si vuole provare; conservare quell'eseguibile come riferimento (serve a `-RefExe`). I WAD non sono nel repository: gli script li prendono da `-DataRoot` (predefinito: `bin` del repository principale). Cartella di lavoro: `-WorkRoot` (predefinita `C:\ddparity`: stesso percorso su ogni macchina, perche' la lunghezza degli argomenti puo' spostare i blocchi di memoria, vedi i limiti). Le demo del pilota stanno in `Tests\Data\Parity\<Gioco>\*.lmp` (solo ticcmd, nessun dato del gioco); servono il WAD e la mappa di `Corpus.psd1`.
 
 ## 3. Confrontare e localizzare una differenza
 

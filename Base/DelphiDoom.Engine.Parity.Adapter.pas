@@ -20,6 +20,7 @@ uses
   DelphiDoom.MathCore.Intf,
   DelphiDoom.Parity.FrameHashWriter,
   DelphiDoom.Parity.Intf,
+  DelphiDoom.Parity.MemoryZeroing,
   DelphiDoom.Parity.SwitchClock,
   DelphiDoom.Parity.Types,
   d_ticcmd;
@@ -54,12 +55,13 @@ type
     procedure Activate;
     procedure DumpFrame;
   public
-    /// <summary>
-    ///   AClock: the clock of the engine that is virtual when the tools are on (it must be told when a
-    ///   frame ends); the adapter does not own it
-    /// </summary>
-    constructor Create(const ACommandLine: ICommandLine; const AShutdown: IEngineShutdown);
+    constructor Create(const AShutdown: IEngineShutdown);
     destructor Destroy; override;
+    /// <summary>
+    ///   Gives the adapter the command line (it is made after the zone, which already needs the adapter's
+    ///   switch); until then the tools are off
+    /// </summary>
+    procedure AttachCommandLine(const ACommandLine: ICommandLine);
     /// <summary>Gives the adapter the random numbers of the game (they are made after it: they use its switch)</summary>
     procedure AttachRandom(const ARandom: IGameRandom);
     /// <summary>Gives the adapter the clock that it must move at the end of every frame</summary>
@@ -87,15 +89,17 @@ uses
 
 { TEngineParity }
 
-constructor TEngineParity.Create(const ACommandLine: ICommandLine; const AShutdown: IEngineShutdown);
+constructor TEngineParity.Create(const AShutdown: IEngineShutdown);
 begin
   inherited Create;
-  if not Assigned(ACommandLine) then
-    raise EArgumentNilException.Create('ACommandLine');
   if not Assigned(AShutdown) then
     raise EArgumentNilException.Create('AShutdown');
-  FCommandLine := ACommandLine;
   FShutdown := AShutdown;
+end;
+
+procedure TEngineParity.AttachCommandLine(const ACommandLine: ICommandLine);
+begin
+  FCommandLine := ACommandLine;
 end;
 
 procedure TEngineParity.AttachRandom(const ARandom: IGameRandom);
@@ -129,7 +133,7 @@ var
   LIndex: Integer;
 begin
   // until the arguments are attached the command line is empty: ask again later
-  if FCommandLine.Count = 0 then
+  if (FCommandLine = nil) or (FCommandLine.Count = 0) then
     Exit;
   FResolved := True;
   SetLength(LArguments, FCommandLine.Count);
@@ -152,6 +156,8 @@ procedure TEngineParity.Activate;
 var
   LSink: IParityStateSink;
 begin
+  // memory the engine reads without having written it must be the same in every run
+  TParityMemoryZeroing.Install;
   if FOptions.StateHashFile <> '' then
   begin
     FStateLog := TParityFactory.CreateFileLog(FOptions.StateHashFile);

@@ -21,7 +21,7 @@ param(
   [string]$Name = '*',
   [int[]]$Modes = @(8, 32),
   [switch]$NoFrames,
-  [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = '',
   [object]$Exe = @{},
   [object]$RefExe = @{},

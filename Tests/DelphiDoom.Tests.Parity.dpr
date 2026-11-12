@@ -33,6 +33,7 @@ uses
   DelphiDoom.Parity.SwitchClock in '..\Libs\Parity\DelphiDoom.Parity.SwitchClock.pas',
   DelphiDoom.Parity.SwitchEntropy in '..\Libs\Parity\DelphiDoom.Parity.SwitchEntropy.pas',
   DelphiDoom.Parity.LogComparer in '..\Libs\Parity\DelphiDoom.Parity.LogComparer.pas',
+  DelphiDoom.Parity.MemoryZeroing in '..\Libs\Parity\DelphiDoom.Parity.MemoryZeroing.pas',
   DelphiDoom.Parity.Factory in '..\Libs\Parity\DelphiDoom.Parity.Factory.pas',
   DelphiDoom.Tests.Parity.Fakes in 'Source\DelphiDoom.Tests.Parity.Fakes.pas',
   DelphiDoom.Tests.Parity.Hasher in 'Source\DelphiDoom.Tests.Parity.Hasher.pas',
@@ -47,6 +48,7 @@ uses
   DelphiDoom.Tests.Parity.SwitchClock in 'Source\DelphiDoom.Tests.Parity.SwitchClock.pas',
   DelphiDoom.Tests.Parity.SwitchEntropy in 'Source\DelphiDoom.Tests.Parity.SwitchEntropy.pas',
   DelphiDoom.Tests.Parity.LogComparer in 'Source\DelphiDoom.Tests.Parity.LogComparer.pas',
+  DelphiDoom.Tests.Parity.MemoryZeroing in 'Source\DelphiDoom.Tests.Parity.MemoryZeroing.pas',
   DelphiDoom.Tests.Parity.Factory in 'Source\DelphiDoom.Tests.Parity.Factory.pas';
 
 var

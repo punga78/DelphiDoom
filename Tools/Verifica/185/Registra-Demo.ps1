@@ -13,7 +13,7 @@
 param(
   [string[]]$Game = @(),
   [string]$Name = 'a_*',
-  [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = '',
   [object]$Exe = @{},
   [switch]$NoVerify

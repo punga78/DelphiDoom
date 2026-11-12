@@ -11,7 +11,7 @@ param(
   [string[]]$Game = @(),
   [string]$Name = '*',
   [int[]]$Modes = @(8, 32),
-  [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = '',
   [object]$Exe = @{}
 )

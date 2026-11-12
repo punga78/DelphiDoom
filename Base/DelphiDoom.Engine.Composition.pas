@@ -100,6 +100,7 @@ uses
   DelphiDoom.Engine.Parity.Adapter,
   DelphiDoom.Engine.Parity.InputGate,
   DelphiDoom.Engine.Parity.LogSink,
+  DelphiDoom.Engine.Parity.Zone,
   m_rnd,
   DelphiDoom.Thinkers.Light.Types,
   DelphiDoom.Thinkers.Light.Games,
@@ -1436,8 +1437,12 @@ begin
   // how a class of the engine stops the game: I_Error and I_Quit of i_system
   LShutdown := TEngineShutdown.Create;
   LScreens := TEngineScreens.Create;
+  // The parity tools (-statehash, -framehash, -autodemo...) are built when the command line says so: until
+  // then their switch is off and the zone, the clock, the input gate and the random numbers are the real ones
+  LParity := TEngineParity.Create(LShutdown);
+  LParitySwitch := LParity;
   // The zone first: whatever is built next can already allocate from it
-  LZoneCore := TZoneFactory.CreateAllocator(TEngineZoneMemory.Create);
+  LZoneCore := TEngineParityZone.Create(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create), LParitySwitch);
   Z_ConfigureZone(LZoneCore);
   // the classes of the engine use the same allocator, with the I_Error of the Z_* functions
   LZone := TEngineZoneAllocator.Create(LZoneCore, LShutdown);
@@ -1459,10 +1464,7 @@ begin
       LStore.EnsureDirectory(APath);
     end, CD_WORKDIR);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder, LCommandLine, LSaveFileNames);
-  // The parity tools (-statehash, -framehash, -autodemo...) are built when the command line says so: until
-  // then their switch is off and the clock, the input gate and the random numbers are the real ones
-  LParity := TEngineParity.Create(LCommandLine, LShutdown);
-  LParitySwitch := LParity;
+  LParity.AttachCommandLine(LCommandLine);
   LRandom := TMathCoreFactory.CreateGameRandom(TParitySwitchEntropy.Create(
     TSystemEntropySource.Create(True), LParitySwitch, PARITY_ENTROPY_SEED));
   LParity.AttachRandom(LRandom);

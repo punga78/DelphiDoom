@@ -30,9 +30,22 @@ type
   /// </summary>
   TEngineParityStateSource = class
   strict private
+    type
+      TReference = record
+        Target: Pointer;
+        TargetKey: Cardinal;
+      end;
+      // what a mobj pointed to (target, tracer) when it was last seen
+      THolder = record
+        Key: Cardinal;
+        Refs: array[0..1] of TReference;
+      end;
+  strict private
     FSink: IParityStateSink;
     FRandom: IGameRandom;
     FMobjIndexes: TDictionary<Pointer, Integer>;
+    FHolders: TDictionary<Pointer, THolder>;
+    FKeys: TDictionary<Pointer, Cardinal>;
     FRegistering: Boolean;
     FNames: TArray<string>;
     FFieldIndex: Integer;
@@ -45,6 +58,7 @@ type
     procedure PutIndexed(const APrefix: string; AIndex: Integer; AValue: Int64);
     function StateIndex(AState: Pstate_t): Integer;
     function MobjIndex(AMobj: Pmobj_t): Integer;
+    function RefIndex(const AHolder: mobj_t; ASlot: Integer; ARef: Pmobj_t): Integer;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     function MobjOrValue(AValue: Integer): Int64;
 {$IFEND}
@@ -98,12 +112,16 @@ begin
   FSink := ASink;
   FRandom := ARandom;
   FMobjIndexes := TDictionary<Pointer, Integer>.Create;
+  FHolders := TDictionary<Pointer, THolder>.Create;
+  FKeys := TDictionary<Pointer, Cardinal>.Create;
   RegisterCategories;
 end;
 
 destructor TEngineParityStateSource.Destroy;
 begin
   FMobjIndexes.Free;
+  FHolders.Free;
+  FKeys.Free;
   inherited Destroy;
 end;
 
@@ -146,6 +164,35 @@ begin
     Result := -2;
 end;
 
+function TEngineParityStateSource.RefIndex(const AHolder: mobj_t; ASlot: Integer; ARef: Pmobj_t): Integer;
+var
+  LHolder: THolder;
+  LFound: Boolean;
+begin
+  if ARef = nil then
+    Exit(-1);
+  if FRegistering or not FMobjIndexes.TryGetValue(ARef, Result) then
+    Exit(-2);
+  // The engine does not clear every target or tracer when a mobj is removed: such a reference is left pointing
+  // to freed memory, and when a new mobj is allocated at that address the reference seems to point to it, or
+  // not, according to where the allocator puts the block. A reference counts while the mobj at that address has
+  // the same key (the number given to a mobj when it is made) as when the reference was first seen
+  LFound := FHolders.TryGetValue(@AHolder, LHolder) and (LHolder.Key = Cardinal(AHolder.key));
+  if not LFound then
+  begin
+    LHolder := Default(THolder);
+    LHolder.Key := AHolder.key;
+  end;
+  if LHolder.Refs[ASlot].Target <> ARef then
+  begin
+    LHolder.Refs[ASlot].Target := ARef;
+    LHolder.Refs[ASlot].TargetKey := ARef.key;
+  end
+  else if LHolder.Refs[ASlot].TargetKey <> Cardinal(ARef.key) then
+    Result := -2;
+  FHolders.AddOrSetValue(@AHolder, LHolder);
+end;
+
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
 function TEngineParityStateSource.MobjOrValue(AValue: Integer): Int64;
 var
@@ -153,7 +200,10 @@ var
 begin
   // the specials of Heretic and Hexen hold sometimes the address of a mobj (a 32 bit address as an integer):
   // an address changes from run to run, the number of the mobj does not
-  if (AValue <> 0) and FMobjIndexes.TryGetValue(Pointer(AValue), LIndex) then
+  LIndex := -2;
+  if AValue <> 0 then
+    LIndex := MobjIndex(Pmobj_t(AValue));
+  if LIndex >= 0 then
     Result := -MOBJ_LINK_BASE - LIndex
   else
     Result := AValue;
@@ -190,8 +240,8 @@ begin
   Put('gravity', AMobj.gravity);
   Put('tid', AMobj.tid);
   Put('special', AMobj.special);
-  Put('target', MobjIndex(AMobj.target));
-  Put('tracer', MobjIndex(AMobj.tracer));
+  Put('target', RefIndex(AMobj, 0, AMobj.target));
+  Put('tracer', RefIndex(AMobj, 1, AMobj.tracer));
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   Put('flags2', AMobj.flags2);
   Put('special1', MobjOrValue(AMobj.special1));
@@ -365,11 +415,16 @@ var
   LThinkerCount: Integer;
   LMobjCount: Integer;
   LIndex: Integer;
+  LPair: TPair<Pointer, THolder>;
+  LKey: Cardinal;
+  LGone: TArray<Pointer>;
+  LHolderKey: Pointer;
 begin
   FSink.BeginTic(ATic);
 
   // first the numbers of the mobjs (in the order of the thinkers), then their fields
   FMobjIndexes.Clear;
+  FKeys.Clear;
   LThinkerCount := 0;
   LMobjCount := 0;
   LThinker := thinkercap.next;
@@ -381,6 +436,7 @@ begin
       if @LThinker._function.acp1 = @P_MobjThinker then
       begin
         FMobjIndexes.Add(LThinker, LMobjCount);
+        FKeys.Add(LThinker, Pmobj_t(LThinker).key);
         Inc(LMobjCount);
       end;
     end;
@@ -455,6 +511,14 @@ begin
   FSink.Scalar('rnd', FRandom.MenuIndex);
   FSink.Scalar('prnd', FRandom.PlayIndex);
   FSink.EndTic;
+
+  // the references of the mobjs that are gone (or that are another mobj at the same address) are forgotten
+  LGone := nil;
+  for LPair in FHolders do
+    if not FKeys.TryGetValue(LPair.Key, LKey) or (LKey <> LPair.Value.Key) then
+      LGone := LGone + [LPair.Key];
+  for LHolderKey in LGone do
+    FHolders.Remove(LHolderKey);
 end;
 
 end.

@@ -83,7 +83,7 @@ function New-ParityConfigText {
     $Header, '', '[Display]',
     'soft_screenwidth=640', 'soft_screenheight=480', 'soft_fullscreen=0', 'soft_windowxpos=0', 'soft_windowypos=0',
     'interpolate=0', 'interpolateoncapped=0', 'screenblocks=10', "detaillevel=$detail", 'displaydiskbusyicon=0',
-    'drawfps=0', 'usemultithread=0', 'r_bltasync=0'
+    'drawfps=0', 'usemultithread=0', 'r_bltasync=0', 'useglnodesifavailable=0', 'autoloadgwafiles=0'
   ) -join "`r`n"
 }
 
@@ -163,10 +163,18 @@ function Invoke-ParityEntry {
     Copy-Item $lmp (Join-Path $RunDir ($demo + '.lmp')) -Force
   }
   Remove-Item $StateFile, $FrameFile -ErrorAction SilentlyContinue
-  # i file dei log stanno nella cartella di lavoro e si passano per nome
+  # La riga di comando e' sempre la stessa (nomi fissi dei log, che poi si rinominano): il renderer legge a volte
+  # memoria oltre la fine di un buffer (un pixel a un tic di d1_demo3 e di x_map02) e cio' che trova dipende da dove
+  # l'allocatore ha messo i blocchi, cioe' anche dalla lunghezza degli argomenti.
+  $fixedState = Join-Path $RunDir 'ps.txt'
+  $fixedFrame = Join-Path $RunDir 'pf.txt'
+  Remove-Item $fixedState, $fixedFrame -ErrorAction SilentlyContinue
   $arguments = "-iwad $($Entry.Iwad) -config p$Mode.ini -dontsavedefaults -nomusic -nosound -noblit -timedemo $demo " +
-    "-statehash $(Split-Path -Leaf $StateFile) -framehash $(Split-Path -Leaf $FrameFile) $Extra"
-  Invoke-ParityGame -Exe (Join-Path $RunDir $ExeName) -Arguments $arguments -WorkDir $RunDir -TimeoutSeconds $TimeoutSeconds
+    "-statehash ps.txt -framehash pf.txt $Extra"
+  $run = Invoke-ParityGame -Exe (Join-Path $RunDir $ExeName) -Arguments $arguments -WorkDir $RunDir -TimeoutSeconds $TimeoutSeconds
+  if (Test-Path $fixedState) { Move-Item $fixedState $StateFile -Force }
+  if (Test-Path $fixedFrame) { Move-Item $fixedFrame $FrameFile -Force }
+  $run
 }
 
 # Che cosa ha visitato una demo (dal log dello stato): tic, celle di 128x128 unita' attraversate dal primo giocatore,
