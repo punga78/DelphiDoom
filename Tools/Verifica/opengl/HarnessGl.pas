@@ -20,6 +20,9 @@
 {  executable compiled with GLRECORD (Compila.ps1 does it).                    }
 {    -glrecord <n>       record n consecutive tics, then Halt(0)               }
 {    -glrecordstart <t>  first tic to record (default 35: one second of game)  }
+{    -glautomap          opens the automap (textured, grid, one mark) at the   }
+{                        first frame after a level; works without -glrecord    }
+{                        too (for -timedemo with the automap open)             }
 {                                                                              }
 {  For each tic the harness keeps only the FIRST frame drawn with that tic:    }
 {  the number of frames per tic depends on the speed of the machine, the       }
@@ -32,12 +35,17 @@ unit HarnessGl;
 interface
 
 uses
-  DelphiDoom.Clock.Intf;
+  DelphiDoom.Clock.Intf,
+  DelphiDoom.Input.Intf;
 
 /// With -glrecord the clock of the program is a virtual one that advances by one tic at every end of a
 /// frame (and at every Sleep/Wait): the sequence of tics and frames does not depend on the speed of the
 /// machine (two runs of one executable are then identical). Without -glrecord the real clock is returned.
 function HarnessGl_Clock(const AReal: IClock): IClock;
+
+/// With -glrecord the program does not listen to keyboard, mouse and joystick: a key pressed by whoever is
+/// using the computer would open the menu during a demo (the recording of two runs would differ).
+function HarnessGl_InputGate(const AReal: IInputGate): IInputGate;
 
 procedure HarnessGl_AfterExtensions;
 
@@ -54,6 +62,8 @@ uses
   SysUtils,
   Classes,
   g_game,
+  d_event,
+  am_map,
   doomdef,
   doomdata,
   d_player,
@@ -81,6 +91,8 @@ var
   GRecorder: IGlCallRecorder = nil;
   GVirtualTic: Integer = 0;
   GVirtualReads: Integer = 0;
+  GAutomap: Boolean = False;
+  GAutomapPending: Boolean = False;
 
 type
   TVirtualClock = class(TInterfacedObject, IClock)
@@ -163,6 +175,25 @@ begin
   GlRecorderUninstall;
   GRecorder := nil;
   Halt(0);
+end;
+
+type
+  TClosedInputGate = class(TInterfacedObject, IInputGate)
+  public
+    function IsInputAllowed: Boolean;
+  end;
+
+function TClosedInputGate.IsInputAllowed: Boolean;
+begin
+  Result := False;
+end;
+
+function HarnessGl_InputGate(const AReal: IInputGate): IInputGate;
+begin
+  if GEnabled then
+    Result := TClosedInputGate.Create
+  else
+    Result := AReal;
 end;
 
 procedure HarnessGl_AfterExtensions;
@@ -389,6 +420,7 @@ procedure HarnessGl_AfterLevel(const AMapName: string; const ALoader: TObject; A
 var
   LLoader: ILevelLoader;
 begin
+  GAutomapPending := GAutomap;
   if GFingerprintFile <> '' then
   begin
     if GSeenMaps.IndexOf(AMapName) < 0 then
@@ -412,11 +444,35 @@ begin
   GRecorder.BeginFrame;
 end;
 
+procedure OpenAutomap;
+var
+  LEvent: event_t;
+begin
+  // the same path as the keys of the player: TAB opens the map, M puts a mark; the options are set, not
+  // toggled, so that the state does not depend on the .ini
+  FillChar(LEvent, SizeOf(LEvent), 0);
+  LEvent._type := ev_keydown;
+  LEvent.data1 := AM_TONGLEKEY;
+  if amstate = am_inactive then
+    AM_Responder(@LEvent);
+  amstate := am_only;
+  texturedautomap := True;
+  automapgrid := True;
+  allowautomaprotate := False;
+  LEvent.data1 := AM_MARKKEY;
+  AM_Responder(@LEvent);
+end;
+
 procedure HarnessGl_FrameEnd;
 var
   LTic: Integer;
 begin
   Inc(GVirtualTic);
+  if GAutomapPending then
+  begin
+    GAutomapPending := False;
+    OpenAutomap;
+  end;
   if not GArmed then
     Exit;
   LTic := g_game.gametic;
@@ -449,6 +505,8 @@ begin
       GLimit := StrToIntDef(ParamStr(LIndex + 1), 0);
       GEnabled := (GLimit > 0) and GL_RECORDER_COMPILED;
     end;
+    if SameText(ParamStr(LIndex), '-glautomap') and GL_RECORDER_COMPILED then
+      GAutomap := True;
     if SameText(ParamStr(LIndex), '-glrecordstart') and (LIndex < ParamCount) then
       GStartTic := StrToIntDef(ParamStr(LIndex + 1), 35);
     if SameText(ParamStr(LIndex), '-glfingerprint') and (LIndex < ParamCount) and GL_RECORDER_COMPILED then
