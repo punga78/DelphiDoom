@@ -29,7 +29,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 | `Font::loadTerminal` e `DosFont.h` | `TXcomTerminalFont`, `DelphiDoom.XcomEngine.DosFontData` |
 | `Surface::loadImage` (i PNG dei font) | `TXcomPngSurfaceLoader` |
 | il thread di `StartState::load` | `TXcomGameLoadTask` (`TXcomThreadLoadTask`, `TXcomImmediateLoadTask`, `TXcomHeldLoadTask`) sopra `IXcomGameLoader` (`TXcomModGameLoader`) |
-| SDL (finestra, eventi, tempo) | `IXcomVideoDevice`, `IXcomEventSource`, `IXcomClock`, `IXcomAudioDevice`, `IXcomFileSystem`, `IXcomLog`; finti: `TXcomMemoryVideoDevice`, `TXcomQueueEventSource`, `TXcomManualClock`; file: `TXcomDiskFileSystem` |
+| SDL (finestra, eventi, tempo) | `IXcomVideoDevice`, `IXcomEventSource`, `IClock` di `Libs\Clock` (con `TXcomTicks`), `IXcomAudioDevice`, `IXcomFileSystem`, `IXcomLog`; finti: `TXcomMemoryVideoDevice`, `TXcomQueueEventSource`, `TManualClock` di `Libs\Clock`; file: `TXcomDiskFileSystem` |
 
 Cambiamenti a `Libs\XcomSurface` (le superfici devono essere polimorfiche): `Draw`, `Blit`, `SetWidth`, `SetHeight`, `SetX`, `SetY`, `SetVisible` virtuali; `TXcomFont.GetChar` imposta il crop come `Font::getChar` (prima non lo faceva: i testi non si disegnavano giusti); `ImageCount`/`ImageSurface` per `Font::setPalette` e `getPalette`.
 

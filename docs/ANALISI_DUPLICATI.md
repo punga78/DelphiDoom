@@ -44,3 +44,21 @@ Rischio basso: sono parti senza parità con gli originali; bastano build, suite 
 ## Stato (issue #179, 2026-11-12)
 
 Fatto in `Libs\GameHost`: finestra, eventi e dispositivi video GDI/OpenGL (Xcom32 e Greed32), uscita PCM waveOut di Xcom32, orologio di sistema di Xcom32 su `IClock`. Non fatto: `Tracker.WaveOutDevice` (lo usano gli eseguibili di Doom), sostituzione di `IKeenClock`/`IXcomClock`/`IGreedRenderClock` (sono il tempo del gioco, non orologi di sistema), file su piu' cartelle e riga di comando (`ICommandLine` mette in maiuscolo gli argomenti: serve prima una versione che conservi le maiuscole), immagine a 8 bit, encoder PNG e unit comune dei test. Dettagli in `Libs\GameHost\CLAUDE.md`.
+
+## Stato dopo la seconda parte (issue #179, 2026-11-12)
+
+| Voce della tabella | Esito | Dove |
+|---|---|---|
+| Encoder PNG | **Unificato**: un solo encoder, PNG identici byte per byte | `TPngIndexedEncoder` in `Libs\Png`; i tre dei giochi tengono solo le regole del gioco |
+| Immagine a 8 bit | **In parte**: record comune `TIndexedImage`; `TKeenChunkyImage` e' lui; `TGreedImage` (origine) e `TXcomImage` (palette e metodi) si avvolgono all'encoder; `TSpeedBitmap`, `TRadixBitmap` e `TFontImage` restano (Speed non scrive PNG, Radix e' una classe con operazioni, Font e' a 32 bit) | `Libs\Png` |
+| File da una o piu' cartelle | **Unificato per Keen, Greed e i dati di X-COM**: `IFolderFiles` | `Libs\Platform`; restano `IXcomFileSystem`/`TXcomFileMap` (regole di OpenXcom), `IIdeFileSystem`, `IIwadFileSystem`, i tool |
+| Finestra | Unificata nella prima parte | `Libs\GameHost` |
+| Uscita PCM | Unificata per Xcom32; `TTrackerWaveOutDevice` **resta separato per scelta** (contratto a scrittura contro contratto a richiesta, lo usano Doom, Heretic, Hexen e `DDMikmod`) | `Libs\GameHost\CLAUDE.md` |
+| Orologio | **`IXcomClock` sostituito da `IClock`**, un solo orologio manuale per X-COM (`TManualClock`); `IKeenClock` e `IGreedRenderClock` **restano per scelta** (tempo del gioco, scrivibile o derivato dal ciclo: non orologi); `IIdeClock` non toccato | `Libs\Clock`, `Libs\XcomEngine` |
+| Log | Xcom32 passa da `ILog` con un adattatore (prima parte); `IXcomLog`, `IIdeLog`, `IIdLibLog` restano | - |
+| Impostazioni su file | Non toccato | - |
+| Riga di comando | **Unificata**: i quattro programmi leggono un `ICommandLine` che conserva le maiuscole con un cursore | `Libs\CommandLine` |
+| Supporto dei test | **In parte**: `DelphiDoom.Tests.Shared.*` (FNV su byte, `FindUp`, file dei dati, confronto delle righe, salto) nelle suite dei giochi; restano le impronte su valori non byte, i lettori di golden con formato proprio e le suite delle librerie del motore di Doom | `Tests\Source` |
+| Mixer audio | Non toccato | - |
+
+Le aggiunte a `Libs\CommandLine`, `Libs\Platform`, `Libs\Clock` e `Libs\Png` sono solo unit nuove: `Doom32` e `GLDoom32` compilano come prima e `Doom32 -timedemo demo3` da' ancora 2134 gametic.

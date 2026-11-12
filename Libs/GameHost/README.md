@@ -31,7 +31,7 @@ Adattatori dei giochi (restano nella cartella del gioco):
 - `OpenXcom\`: `DelphiDoom.Xcom.HostVideoDevice` (`IXcomVideoDevice`, `IXcomWindowStyle`, `IXcomWindowPlacement`, `IXcomFilteredDisplay` sopra un `IGameHostVideoDevice`), `DelphiDoom.Xcom.HostEventSink` (eventi neutri -> `TXcomQueueEventSource` con i codici SDL 1.2), `DelphiDoom.Xcom.HostShaderLoader` (catalogo e lettore degli shader di XcomEngine), `DelphiDoom.Xcom.HostLog` (`ILog` -> `IXcomLog`), `DelphiDoom.Xcom.HostClock` (`IXcomClock` sopra `IClock` di `Libs\Clock`), `DelphiDoom.Xcom.HostPcmOutput` (`IXcomPcmOutput` sopra `IGameHostPcmOutput`).
 - `Greed\`: `DelphiDoom.Greed.HostWindow` (`IGreedFramePresenter` e `IGreedInput` sopra il dispositivo GDI e `IGameHostKeyState`).
 
-Fette non fatte (vedi CLAUDE.md per il perché): file su più cartelle (`IFileStore`), riga di comando (`ICommandLine`), immagine a 8 bit ed encoder PNG, unit comune dei test; l'orologio è fatto solo per l'orologio di sistema di Xcom32.
+Seconda parte della #179 (dettagli in CLAUDE.md): l'orologio dei giochi e' `IClock` di `Libs\Clock` (`TManualClock` per screenshot e test), la riga di comando e' `TVerbatimCommandLine` e `ICommandLineCursor` di `Libs\CommandLine`, i file su piu' cartelle sono `IFolderFiles` di `Libs\Platform`, l'immagine a 8 bit e l'encoder PNG sono `TIndexedImage` e `TPngIndexedEncoder` di `Libs\Png`, il codice comune dei test e' `Tests\Source\DelphiDoom.Tests.Shared.*`. Restano separati per scelta `IKeenClock`, `IGreedRenderClock` e l'uscita waveOut dei moduli tracker.
 
 ## Prova
 
