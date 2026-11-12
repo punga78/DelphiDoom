@@ -105,9 +105,9 @@ const
     'is the font of the game. It is applied when the options are confirmed.';
   SSizeDescription = 'Size in pixels of the %s (of the 320 x 200 screen). Click: larger, right click: smaller. ' +
     'Choose a font first.';
-  SBoldDescription = 'Bold letters for the %s. Choose a font first.';
+  SBoldDescription = 'Bold letters for the %s. It counts once a font of Windows is chosen.';
   SSmoothDescription = 'Gray edges for the %s. Without them the pixels are the ones of the system: right for ' +
-    'bitmap fonts and sizes the font is hinted for. Choose a font first.';
+    'bitmap fonts and sizes the font is hinted for. It counts once a font of Windows is chosen.';
   SShrinkDescription = 'A font that is too large for the %s is tried one pixel smaller until it fits. ' +
     'Choose a font first.';
   FONT_IDS: array[0..3] of string = ('FONT_BIG', 'FONT_SMALL', 'FONT_GEO_BIG', 'FONT_GEO_SMALL');

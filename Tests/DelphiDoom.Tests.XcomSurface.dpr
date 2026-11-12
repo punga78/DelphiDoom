@@ -38,6 +38,7 @@ uses
   DelphiDoom.Tests.XcomSurface.FakeRasterizer in 'Source\DelphiDoom.Tests.XcomSurface.FakeRasterizer.pas',
   DelphiDoom.Tests.XcomSurface.GlyphLevels in 'Source\DelphiDoom.Tests.XcomSurface.GlyphLevels.pas',
   DelphiDoom.Tests.XcomSurface.FontOverlayBuilder in 'Source\DelphiDoom.Tests.XcomSurface.FontOverlayBuilder.pas',
+  DelphiDoom.Tests.XcomSurface.FontRestore in 'Source\DelphiDoom.Tests.XcomSurface.FontRestore.pas',
   DelphiDoom.Tests.XcomSurface.TtfFamilyName in 'Source\DelphiDoom.Tests.XcomSurface.TtfFamilyName.pas',
   DelphiDoom.Tests.XcomSurface.Script in 'Source\DelphiDoom.Tests.XcomSurface.Script.pas',
   DelphiDoom.Tests.XcomSurface.Golden in 'Source\DelphiDoom.Tests.XcomSurface.Golden.pas',
