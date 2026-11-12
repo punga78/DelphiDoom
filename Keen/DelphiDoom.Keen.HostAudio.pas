@@ -33,7 +33,7 @@ type
       FPumpStarted: Boolean;
   public
     /// <param name="AOutput">The device; nil for a game without a sound device</param>
-    /// <param name="AClock">The time for the sound when there is no device</param>
+    /// <param name="AClock">The time for the sound when there is no device; nil if the program gives the time itself (it renders the mixer)</param>
     constructor Create(const AMixer: IKeenAudioMixer; const AOutput: IGameHostPcmOutput; const AClock: IClock);
     destructor Destroy; override;
     /// <summary>Opens the device at the rate of the mixer; false when there is none (the sound then goes on with Pump)</summary>
@@ -57,8 +57,6 @@ begin
   inherited Create;
   if not Assigned(AMixer) then
     raise EArgumentNilException.Create('AMixer');
-  if not Assigned(AClock) then
-    raise EArgumentNilException.Create('AClock');
   FMixer := AMixer;
   FOutput := AOutput;
   FClock := AClock;
@@ -104,7 +102,7 @@ var
   LNow: Integer;
   LFrames: Integer;
 begin
-  if IsOpen then
+  if IsOpen or not Assigned(FClock) then
     Exit;
   LNow := FClock.Steps(FMixer.Rate);
   if not FPumpStarted then

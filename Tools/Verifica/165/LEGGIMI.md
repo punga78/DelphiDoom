@@ -60,3 +60,11 @@ Lo script e' testo: `S nome tipo`, `D suono lunghezza priorita' 17 byte (strumen
 installato, i servizi li chiama lo script), `X` (`SD_StopSound`), `Q` (`SD_SoundPlaying`), `E`. All'inizio di ogni script il
 harness mette il modo a spento senza scrivere nel log. Per vedere una differenza: `DELPHIDOOM_KEEN_ADLIB_PORT_OUT=<file>` e
 il test `ScriviIlRisultatoDelPorting`, poi un diff con `OUT.TXT`.
+
+## K12: LZH (`lzh\`)
+
+`lzharn.c` comprime sette buffer inventati con il `lzhuf.c` originale (Open Watcom 16 bit, DOSBox); `Build-LzhHarness.cmd` compila, `Run-LzhParity.ps1` esegue e scrive `Tests\Data\Keen\lzh.golden.txt`. Nella copia del harness il puntatore `key` del compressore e' `far` (con `near` nel modello medium i casi 3 e 4 davano stream sbagliati). Il porting (`TKeenLzh`) riespande i 7 stream uguali.
+
+## Il gioco in finestra (`Prova-Finestra.ps1`)
+
+Avvia `Keen32`, trova la finestra del processo, manda i tasti con `PostMessage` (`WM_KEYDOWN`/`WM_KEYUP`, nessun clic e nessun tasto vero) e prende le immagini con `PrintWindow`; un gioco alla volta (blocco `Global\DelphiDoomEsecuzioneGioco`). Passi: `wait:<ms>`, `key:<vk>[:<ms>]`, `down:<vk>`, `up:<vk>`, `shot:<nome>`, `close`. Senza finestra: `Keen32 -script <file> -shots <cartella> -report` (un tic per attesa, deterministico).

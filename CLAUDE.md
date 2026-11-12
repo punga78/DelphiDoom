@@ -91,7 +91,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Input** — Tastiera, mouse e joystick: dispositivi, poller e mappa dei tasti. [CLAUDE.md](Libs/Input/CLAUDE.md), [README.md](Libs/Input/README.md)
 - **Iwad** — Ricerca e riconoscimento degli IWAD. [CLAUDE.md](Libs/Iwad/CLAUDE.md), [README.md](Libs/Iwad/README.md)
 - **Jpeg** — Decoder JPEG a classi (port della decompressione di libjpeg 6b). [CLAUDE.md](Libs/Jpeg/CLAUDE.md), [README.md](Libs/Jpeg/README.md)
-- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli, azioni del giocatore e dei nemici). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
+- **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli, azioni del giocatore e dei nemici, audio AdLib, ID_US e salvataggi, schermate di avvio, ciclo di gioco: `Keen32` e' il gioco in finestra). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
 - **Logging** — Log del motore: `ILog`, canali e sink. [CLAUDE.md](Libs/Logging/CLAUDE.md), [README.md](Libs/Logging/README.md)
 - **M2m** — Convertitore MIDI in MUS. [CLAUDE.md](Libs/M2m/CLAUDE.md), [README.md](Libs/M2m/README.md) (paragrafo in `Libs\Zlib`)
 - **MapInfo** — Lettura di UMAPINFO e catalogo delle mappe. [CLAUDE.md](Libs/MapInfo/CLAUDE.md), [README.md](Libs/MapInfo/README.md)
