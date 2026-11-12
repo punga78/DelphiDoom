@@ -30,7 +30,7 @@ type
   ///   The rectangle of an ink layer is always composed again (the ink is mixed over what is under it)
   /// </summary>
   TXcomTrueColorComposer = class(TInterfacedObject, IXcomFrameComposer, IXcomDetailLayers, IXcomBlendLayers,
-    IXcomInkLayers)
+    IXcomInkLayers, IXcomLastFrame)
   public
     const
       /// <summary>The largest scale the detail layers are used at</summary>
@@ -125,6 +125,7 @@ type
     function BeginInk(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer): Boolean;
     procedure EndInk(ABase: TXcomSurface; const AInk: TXcomInkBuffer; const AUnder: TBytes);
     /// <summary>The last frame that was composed (the size of the display)</summary>
+    function LastFrame(out AWidth, AHeight: Integer): TXcomTrueColorPixels;
     property Frame: TXcomTrueColorPixels read FFrame;
     /// <summary>How many rows of the game picture the last frame composed again (all of them: its height)</summary>
     property ComposedRows: Integer read FComposedRows;
@@ -203,6 +204,13 @@ begin
     and (ADisplayHeight mod ABaseHeight = 0) and (ADisplayWidth div ABaseWidth = ADisplayHeight div ABaseHeight)
     and (ADisplayWidth div ABaseWidth <= MAX_DETAIL_SCALE) then
     FDetailScale := ADisplayWidth div ABaseWidth;
+end;
+
+function TXcomTrueColorComposer.LastFrame(out AWidth, AHeight: Integer): TXcomTrueColorPixels;
+begin
+  AWidth := FDisplayWidth;
+  AHeight := FDisplayHeight;
+  Result := FFrame;
 end;
 
 function TXcomTrueColorComposer.DetailLayers: IXcomDetailLayers;

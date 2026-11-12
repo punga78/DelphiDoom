@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomEngine.TrueColorOption;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Xcom.Types, DelphiDoom.XcomEngine.Intf,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Xcom.Types, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.ExtraOptions.Intf,
   DelphiDoom.XcomEngine.TrueColor.Intf, DelphiDoom.XcomEngine.TrueColorComposer,
   DelphiDoom.XcomEngine.MemoryTrueColorVideoDevice, DelphiDoom.Xcom.TrueColorOption;
@@ -52,6 +52,10 @@ type
     procedure LoSchermoDovrebbeTornareAOttoBitQuandoLaSorgenteNonDaNulla;
     [Test]
     procedure SenzaSorgenteLoSchermoDovrebbeTenereIlCompositoreDelCostruttore;
+    [Test]
+    procedure LaFotografiaDovrebbeEssereIlFotogrammaDelCompositore;
+    [Test]
+    procedure SenzaCompositoreLaFotografiaDovrebbeEssereGliIndiciConLaPaletta;
   end;
 
 implementation
@@ -183,6 +187,47 @@ begin
   FScreen.ResetDisplay;
   FScreen.Flip;
   Assert.AreEqual(1, FDevice.TrueColorPresented);
+end;
+
+procedure TTestXcomTrueColorOption.LaFotografiaDovrebbeEssereIlFotogrammaDelCompositore;
+var
+  LPixels: TXcomTrueColorPixels;
+  LWidth: Integer;
+  LHeight: Integer;
+  LIndex: Integer;
+begin
+  FOptions.UnknownOptions.AddOrSetValue('trueColor', 'true');
+  FScreen := TXcomScreen.Create(FOptions, FDeviceRef);
+  FScreen.ComposerSource := SourceOf(FOptions, FDevice);
+  FScreen.ResetDisplay;
+  FScreen.GetSurface.DrawRect(0, 0, 320, 200, 5);
+  FScreen.Flip;
+  Assert.IsTrue(FScreen.Snapshot(LPixels, LWidth, LHeight));
+  Assert.AreEqual(640, LWidth);
+  Assert.AreEqual(400, LHeight);
+  for LIndex := 0 to High(LPixels) do
+    if LPixels[LIndex] <> FDevice.TrueColorPixels[LIndex] then
+      Assert.Fail(Format('pixel %d', [LIndex]));
+end;
+
+procedure TTestXcomTrueColorOption.SenzaCompositoreLaFotografiaDovrebbeEssereGliIndiciConLaPaletta;
+var
+  LPixels: TXcomTrueColorPixels;
+  LWidth: Integer;
+  LHeight: Integer;
+  LColors: TXcomColors;
+begin
+  FScreen := TXcomScreen.Create(FOptions, FDeviceRef);
+  FillChar(LColors, SizeOf(LColors), 0);
+  LColors[5].Red := 10;
+  LColors[5].Green := 20;
+  LColors[5].Blue := 30;
+  FScreen.SetPalette(@LColors[0], 0, 256);
+  FScreen.GetSurface.DrawRect(0, 0, 320, 200, 5);
+  FScreen.Flip;
+  Assert.IsTrue(FScreen.Snapshot(LPixels, LWidth, LHeight));
+  Assert.AreEqual(640 * 400, Length(LPixels));
+  Assert.AreEqual(Cardinal($FF0A141E), LPixels[1000]);
 end;
 
 end.

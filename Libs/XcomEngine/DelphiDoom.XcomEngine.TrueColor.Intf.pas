@@ -83,6 +83,15 @@ type
   end;
 
   /// <summary>
+  ///   An optional interface of the composer: the last frame of colors it made (the size of the display), for the
+  ///   screenshot key
+  /// </summary>
+  IXcomLastFrame = interface
+    ['{7F3B1C90-5A2E-4D67-8B14-183000000005}']
+    function LastFrame(out AWidth, AHeight: Integer): TXcomTrueColorPixels;
+  end;
+
+  /// <summary>
   ///   Gives the screen its composer each time the display is reset (the options can turn the composition in true
   ///   color on and off while the game runs); nil: the 8 bit path
   /// </summary>
