@@ -14,7 +14,10 @@
 # renderer (r_*) si compila com'e'. Le copie generate e l'eseguibile stanno in %TEMP%\MenuParity, fuori dal repository.
 # -Parte fli: FliParity.dpr, i filmati (playfli.pas ORIGINALE copiato com'e') contro TGreedFliPlayer; -Dati e' allora
 # la cartella dei *.FLI del gioco.
-# Uso: .\Compila.ps1 [-Parte menu|fli] [-Dati <cartella con GREED.BLO>] [-Golden <file>]
+# -Parte intro: IntroParity.dpr, dointro (intro.pas), MissionBriefing e EndGame1..3 (utils.pas) ORIGINALI ritagliati
+# contro TGreedIntro, TGreedBriefing e TGreedEndGame sugli scenari di Tests\Source\DelphiDoom.Tests.Greed.IntroScenarios;
+# -Dati e' la cartella di GREED.BLO (golden intro.full / intro.demo20), -Golden va dato con percorso assoluto.
+# Uso: .\Compila.ps1 [-Parte menu|fli|intro] [-Dati <cartella con GREED.BLO>] [-Golden <file>]
 #   senza -Dati usa l'archivio sintetico degli scenari (font e immagini generati)
 param(
   [ValidateSet('menu', 'fli', 'intro')][string]$Parte = 'menu',
@@ -110,6 +113,81 @@ end;
 end.
 "@
 
+# -Parte intro: dointro con la sua schermata di avvio (MainIntro, DemoIntro, ShowPortrait, IntroCommand, DoIntroMenu,
+# CheckDemoExit, charinfo) e le routine di utils.pas MissionBriefing, EndGame1..3 ritagliate com'e' (IntroParity.dpr).
+# Le copie stanno in $uscita\intro, che precede gli stub: la unit intro sostituisce quella di sola loadscreen e la unit
+# utils e' lo stub di stubs\utils.pas con i tre punti //...-EXTRA riempiti. Wait resta quella dello stub (HarnessTic);
+# selectsong e loadweapon annotano la chiamata nel registro (22 e 23 li annota modplay)
+if ($Parte -eq 'intro') {
+  New-Item -ItemType Directory -Force "$uscita\intro" | Out-Null
+  $tabella = Ritaglia $n "const`r`n  charinfo:" '(**** VARIABLES ****)' 0
+  $portrait = Ritaglia $n 'procedure ShowPortrait(' 'procedure LoadMiscData;' $impl
+  Set-Content "$uscita\intro\intro.pas" @"
+{`$I xGreed.inc}
+unit intro;
+// GENERATA da Tools\Verifica\175-menu\Compila.ps1 (-Parte intro): charinfo, loadscreen, ShowPortrait, IntroCommand,
+// DoIntroMenu, CheckDemoExit, DemoIntroFlis, DemoIntro, MainIntro e dointro sono ritagliate, senza cambi, da
+// Reference\xGreed\Greed\intro.pas; Wait non aspetta: chiama HarnessTic una volta per tic. Non modificare, non mettere
+// nel repository.
+interface
+$tabella
+var
+  colors: array[0..767] of byte;
+  nextchar: boolean;
+  nointro, nobriefing: boolean;
+function loadscreen(const s: string): boolean;
+procedure DoIntroMenu;
+procedure Wait(time: integer; sleeptime: integer = 0);
+procedure dointro;
+implementation
+uses
+  g_delphi, i_windows, i_video, constant, d_font, d_ints_h, d_misc, d_video, d_disk, d_ints, menu, modplay, protos_h,
+  playfli, raven, r_public_h, r_render, utils;
+
+$schermo
+procedure Wait(time: integer; sleeptime: integer = 0);
+var
+  i: integer;
+begin
+  for i := 1 to time do
+    HarnessTic;
+end;
+
+$portrait
+end.
+"@
+  $u = Get-Content "$Riferimento\Greed\utils.pas" -Raw
+  $uimpl = $u.IndexOf("`nimplementation")
+  $fine = Ritaglia $u 'procedure EndGame1;' 'procedure newmap(' $uimpl
+  $briefing = Ritaglia $u 'procedure MissionBriefing(const map: integer);' "`r`nend." $uimpl
+  $stub = Get-Content "$PSScriptRoot\stubs\utils.pas" -Raw
+  $stub = $stub.Replace('//INTERFACE-EXTRA', @"
+var
+  levelscore: integer = 0;
+procedure MissionBriefing(const map: integer);
+procedure EndGame1;
+procedure EndGame2;
+procedure EndGame3;
+procedure selectsong(const asongmap: integer);
+procedure loadweapon(const n: integer);
+"@)
+  $stub = $stub.Replace('//USES-EXTRA', ', intro, playfli, i_windows, timer, constant, d_font, d_video, d_ints, d_ints_h, d_misc, d_disk, i_video, modplay, protos_h, r_render, DelphiDoom.Tests.Greed.IntroScenarios')
+  $stub = $stub.Replace('//IMPLEMENTATION-EXTRA', @"
+procedure selectsong(const asongmap: integer);
+begin
+  HTrace.Add(INTRO_TRACE_SELECT_SONG); HTrace.Add(asongmap);
+end;
+// the original loadweapon is not of this piece: the start of an episode (the library: StartEpisode) in the trace
+procedure loadweapon(const n: integer);
+begin
+  HTrace.Add(INTRO_TRACE_START_EPISODE);
+end;
+$fine
+$briefing
+"@)
+  Set-Content "$uscita\intro\utils.pas" $stub
+}
+
 # raven: le variabili
 $r = Get-Content "$Riferimento\Greed\raven.pas" -Raw
 $impl = $r.IndexOf("`nimplementation")
@@ -141,9 +219,11 @@ end.
 $programma = @{ menu = 'MenuParity'; fli = 'FliParity'; intro = 'IntroParity' }[$Parte]
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
 $libs = 'Greed', 'Platform', 'MathCore', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
-$u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"
+$primo = ''
+if ($Parte -eq 'intro') { $primo = "$uscita\intro;" }
+$u = "$primo$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
-& $dcc -B -Q -CC -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\$programma.dpr" | Select-String 'Error|Fatal'
+& $dcc -B -Q -CC -GD -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\$programma.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }
 # attraverso cmd: l'eseguibile ha il sottosistema GUI di xGreed.inc e PowerShell non ne aspetta l'uscita
 cmd /c "`"$uscita\$programma.exe`" `"$Dati`" `"$Golden`""

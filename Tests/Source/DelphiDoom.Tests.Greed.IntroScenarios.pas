@@ -29,7 +29,7 @@ uses
 
 const
   INTRO_SEED = 20261115;
-  INTRO_SCENARIOS = 44;
+  INTRO_SCENARIOS = 48;
   /// <summary>The codes of the calls to the game in the trace (after those of the menu)</summary>
   INTRO_TRACE_SELECT_SONG = 20;
   INTRO_TRACE_START_EPISODE = 21;
@@ -61,6 +61,11 @@ type
     /// <summary>The lumps of the menu and the screens of the intro, of the briefings and of the endings</summary>
     class function SyntheticArchive(ASparse: Boolean): IGreedArchive; static;
     class function Scenario(AIndex: Integer): TIntroScenario; static;
+    /// <summary>
+    ///   HELP.DAT of the Assassinator edition (64000 bytes of screen, 768 of palette): the menu of the original
+    ///   reads it from the folder of the game when the help is asked, in the Assassinator scenarios
+    /// </summary>
+    class function HelpData: TBytes; static;
   end;
 
   TIntroMoviesFake = class(TInterfacedObject, IGreedExternalFiles)
@@ -216,6 +221,17 @@ begin
   finally
     LBlo.Free;
   end;
+end;
+
+class function TIntroScenarios.HelpData: TBytes;
+var
+  LScreen, LPalette: TBytes;
+begin
+  LScreen := TMenuScenarios.RandomBytes(64000, 9100, 256);
+  LPalette := TMenuScenarios.RandomBytes(768, 9101, 256);
+  SetLength(Result, 64768);
+  Move(LScreen[0], Result[0], 64000);
+  Move(LPalette[0], Result[64000], 768);
 end;
 
 procedure AddKey(var AScenario: TIntroScenario; ATic, AScanCode, AHold: Integer);
@@ -379,6 +395,22 @@ begin
         end;
         if LRandom.Chance(35) then
           AddKey(Result, 150 + LRandom.Next(900), GREED_SC_ESCAPE, 3);
+      end;
+    44..47:
+      begin
+        // the menu of the intro left through the question of the quit: enter opens it, down goes to Quit, enter
+        // asks, Y answers (the last one answers N and the intro goes on)
+        Result.Kind := ikIntro;
+        Result.Redo := True;
+        Result.Base.MaxTics := 1200;
+        LTic := 80 + (AIndex - 44) * 23;
+        AddKey(Result, LTic, GREED_SC_ENTER, 3);
+        AddKey(Result, LTic + 40, GREED_SC_DOWNARROW, 3);
+        AddKey(Result, LTic + 60, GREED_SC_ENTER, 3);
+        if AIndex = 47 then
+          AddKey(Result, LTic + 200, GREED_SC_N, 3)
+        else
+          AddKey(Result, LTic + 200, GREED_SC_Y, 3);
       end;
   else
     Result.Kind := ikEndGame;
@@ -618,7 +650,9 @@ begin
   LMovies := TIntroMoviesFake.Create(AScenario.MovieNames, AScenario.MovieBytes);
   FMenu := TGreedMenu.Create(FDisplay, FInput, FPrinter, FFont, FSettings, FHost, FSaveGames, FHostRef,
     AScenario.Base.Demo);
-  FIntro := TGreedIntro.Create(FDisplay, FInput, FPrinter, FFont, FPlayer, LMovies, FMenu, FHost,
+  if AScenario.Assassinator then
+    FMenu.HelpData := TIntroScenarios.HelpData;
+  FIntro :=TGreedIntro.Create(FDisplay, FInput, FPrinter, FFont, FPlayer, LMovies, FMenu, FHost,
     AScenario.Assassinator);
   FBriefing := TGreedBriefing.Create(FDisplay, FInput, FPrinter, FFont, FPlayer, LMovies, FHost,
     AScenario.Base.Demo, FSettings.GetGameVariant);

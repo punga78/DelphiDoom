@@ -136,6 +136,7 @@ uses
   DelphiDoom.Tests.Greed.PlayerControl in 'Source\DelphiDoom.Tests.Greed.PlayerControl.pas',
   DelphiDoom.Tests.Greed.Doors in 'Source\DelphiDoom.Tests.Greed.Doors.pas',
   DelphiDoom.Tests.Greed.GameTables in 'Source\DelphiDoom.Tests.Greed.GameTables.pas',
+  DelphiDoom.Tests.Greed.IntroParity in 'Source\DelphiDoom.Tests.Greed.IntroParity.pas',
   DelphiDoom.Tests.Greed.MenuScenarios in 'Source\DelphiDoom.Tests.Greed.MenuScenarios.pas',
   DelphiDoom.Tests.Greed.Menu in 'Source\DelphiDoom.Tests.Greed.Menu.pas',
   DelphiDoom.Tests.Greed.FliScenarios in 'Source\DelphiDoom.Tests.Greed.FliScenarios.pas',
