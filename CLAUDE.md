@@ -78,6 +78,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Font** — Logica del creatore di font DD_FONT. [CLAUDE.md](Libs/Font/CLAUDE.md), [README.md](Libs/Font/README.md)
 - **FontEditor** — Presenter e viste del creatore di font (modulo Font di DD_Tools). [CLAUDE.md](Libs/FontEditor/CLAUDE.md), [README.md](Libs/FontEditor/README.md) (paragrafo in `Libs\Font`)
 - **GameData** — Parte comune dei fork Mars3D, Rad-X e Speed: costruttore di patch e compositore di WAD. [CLAUDE.md](Libs/GameData/CLAUDE.md), [README.md](Libs/GameData/README.md)
+- **GameHost** — Piattaforma comune dei giochi fuori dal motore di Doom (Keen, Greed, OpenXcom, Speed): finestra di Windows, eventi, dispositivi video GDI e OpenGL, uscita PCM waveOut; adattatori nelle cartelle dei giochi. [CLAUDE.md](Libs/GameHost/CLAUDE.md), [README.md](Libs/GameHost/README.md)
 - **GameState** — `IGameContext`: ciò che una classe può chiedere del gioco in corso senza leggere i globali. [CLAUDE.md](Libs/GameState/CLAUDE.md), [README.md](Libs/GameState/README.md)
 - **Geometry** — Tipi geometrici di base (vettori, matrici, piani, bounds, winding, trace model) usati da Collision. [CLAUDE.md](Libs/Geometry/CLAUDE.md), [README.md](Libs/Geometry/README.md) (paragrafo in `Libs\Collision`)
 - **GlMath** — Geometria del renderer OpenGL a classi (clipper degli angoli, angolo del frustum). [CLAUDE.md](Libs/GlMath/CLAUDE.md), [README.md](Libs/GlMath/README.md)

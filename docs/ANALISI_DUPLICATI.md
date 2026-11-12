@@ -40,3 +40,7 @@ Conclusione: di duplicato vero c'è soprattutto l'infrastruttura intorno ai gioc
 3. Unit comune per i test.
 
 Rischio basso: sono parti senza parità con gli originali; bastano build, suite e un avvio per gioco.
+
+## Stato (issue #179, 2026-11-12)
+
+Fatto in `Libs\GameHost`: finestra, eventi e dispositivi video GDI/OpenGL (Xcom32 e Greed32), uscita PCM waveOut di Xcom32, orologio di sistema di Xcom32 su `IClock`. Non fatto: `Tracker.WaveOutDevice` (lo usano gli eseguibili di Doom), sostituzione di `IKeenClock`/`IXcomClock`/`IGreedRenderClock` (sono il tempo del gioco, non orologi di sistema), file su piu' cartelle e riga di comando (`ICommandLine` mette in maiuscolo gli argomenti: serve prima una versione che conservi le maiuscole), immagine a 8 bit, encoder PNG e unit comune dei test. Dettagli in `Libs\GameHost\CLAUDE.md`.

@@ -6,13 +6,14 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 
 ## Progetto
 
-La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Logging` (`ILog`) e `Libs\OpenGl\dglOpenGL` (di terzi, non modificato). Ogni gioco tiene in casa propria gli **adattatori** verso i suoi contratti.
+La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Logging` (`ILog`) e `Libs\OpenGl\Binding\dglOpenGL` (di terzi, non modificato). Ogni gioco tiene in casa propria gli **adattatori** verso i suoi contratti.
 
 | Unit | Ruolo |
 |---|---|
 | `DelphiDoom.GameHost.Types` | colori e palette, evento di input neutro (tasto virtuale di Windows, carattere, pulsante, posizione nell'immagine), filtro del display, bande nere, sorgente di uno shader, eccezioni |
 | `DelphiDoom.GameHost.Video.Intf` | `IGameHostVideoDevice` (modo, fotogramma, titolo), `IGameHostWindowStyle`, `IGameHostWindowPlacement`, `IGameHostFilteredDisplay`, `IGameHostShaderLoader` |
-| `DelphiDoom.GameHost.Events.Intf` | `IGameHostEventSink` (dove vanno gli eventi), `IGameHostKeyboard` (modificatori e carattere di un tasto), `IGameHostPictureArea` (dove sta l'immagine nell'area client) |
+| `DelphiDoom.GameHost.Events.Intf` | `IGameHostEventSink` (dove vanno gli eventi), `IGameHostKeyboard` (modificatori e carattere di un tasto), `IGameHostKeyState` (tasti premuti), `TGameHostPump` |
+| `DelphiDoom.GameHost.Audio.Intf` | `IGameHostPcmSource`, `IGameHostPcmOutput` |
 | `DelphiDoom.GameHost.PictureLayout` | geometria pura: rettangolo dell'immagine a schermo intero, punto dell'area client -> punto dell'immagine |
 | `DelphiDoom.GameHost.Win.MessageTranslator` | messaggi di Windows -> eventi neutri (senza finestra: si prova con finti) |
 | `DelphiDoom.GameHost.Win.Keyboard` | `IGameHostKeyboard` su `GetKeyState`/`ToUnicode` |
@@ -22,13 +23,15 @@ La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Loggin
 | `DelphiDoom.GameHost.Win.OpenGlProgram`, `...Win.OpenGlVideoDevice` | fotogramma con OpenGL (WGL), programma GLSL facoltativo |
 | `DelphiDoom.GameHost.VideoDeviceSelector` | sceglie GDI o OpenGL a ogni `SetMode`, con ripiego su GDI e avviso nel log |
 | `DelphiDoom.GameHost.KeyState` | `IGameHostEventSink` che ricorda i tasti premuti (per i giochi che interrogano lo stato) |
+| `DelphiDoom.GameHost.Win.PcmOutput` | uscita PCM waveOut a richiesta (16 bit stereo, un thread chiede i campioni alla sorgente) |
+| `DelphiDoom.GameHost.Factory`, `...OpenGl.Factory` | gli unici punti che conoscono le classi (finestra, GDI, PCM; OpenGL e selettore a parte, per non linkare OpenGL dove non serve) |
 
 Adattatori dei giochi (restano nella cartella del gioco):
 
-- `OpenXcom\`: `DelphiDoom.Xcom.HostVideoDevice` (`IXcomVideoDevice`, `IXcomWindowStyle`, `IXcomWindowPlacement`, `IXcomFilteredDisplay` sopra un `IGameHostVideoDevice`), `DelphiDoom.Xcom.HostEventSink` (eventi neutri -> `TXcomQueueEventSource` con i codici SDL 1.2), `DelphiDoom.Xcom.HostShaderLoader` (catalogo e lettore degli shader di XcomEngine), `DelphiDoom.Xcom.HostLog` (`ILog` -> `IXcomLog`).
-- `Greed\`: `DelphiDoom.Greed.HostPresenter` (`IGreedFramePresenter`) e `DelphiDoom.Greed.HostInput` (`IGreedInput` sopra `TGameHostKeyState`).
+- `OpenXcom\`: `DelphiDoom.Xcom.HostVideoDevice` (`IXcomVideoDevice`, `IXcomWindowStyle`, `IXcomWindowPlacement`, `IXcomFilteredDisplay` sopra un `IGameHostVideoDevice`), `DelphiDoom.Xcom.HostEventSink` (eventi neutri -> `TXcomQueueEventSource` con i codici SDL 1.2), `DelphiDoom.Xcom.HostShaderLoader` (catalogo e lettore degli shader di XcomEngine), `DelphiDoom.Xcom.HostLog` (`ILog` -> `IXcomLog`), `DelphiDoom.Xcom.HostClock` (`IXcomClock` sopra `IClock` di `Libs\Clock`), `DelphiDoom.Xcom.HostPcmOutput` (`IXcomPcmOutput` sopra `IGameHostPcmOutput`).
+- `Greed\`: `DelphiDoom.Greed.HostWindow` (`IGreedFramePresenter` e `IGreedInput` sopra il dispositivo GDI e `IGameHostKeyState`).
 
-Fette successive (vedi CLAUDE.md per lo stato): orologio (`IClock` di `Libs\Clock`), uscita PCM waveOut, file su più cartelle (`IFileStore`), riga di comando (`ICommandLine`), immagine a 8 bit ed encoder PNG, unit comune dei test.
+Fette non fatte (vedi CLAUDE.md per il perché): file su più cartelle (`IFileStore`), riga di comando (`ICommandLine`), immagine a 8 bit ed encoder PNG, unit comune dei test; l'orologio è fatto solo per l'orologio di sistema di Xcom32.
 
 ## Prova
 
