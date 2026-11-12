@@ -15,7 +15,8 @@ Set-Location $root
 $crlf = "`r`n"
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
-$dirty = git status --porcelain --untracked-files=no
+# the harness itself (ToolsVerifica) may be being edited: only the files the patch touches have to be clean
+$dirty = git status --porcelain --untracked-files=no -- Doom Heretic Hexen Strife Libs Base
 if ($dirty) { throw "L'albero non e' pulito: $dirty" }
 
 function Edit-File([string]$relative, [scriptblock]$edit) {
@@ -79,7 +80,8 @@ Edit-File 'Libs\OpenGl\Legacy\gl_render.pas' {
 Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
-  Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
+  $t = Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
+  Replace-Once $t "    TEngineInputGate.Create, TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineInputGate.Create), TEngineScreenSize.Create,"
 }
 
 Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)

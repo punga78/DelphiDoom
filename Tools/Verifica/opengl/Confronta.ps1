@@ -18,7 +18,12 @@ param(
   [int]$Seconds = 120,
   [int]$ShowLines = 8,
   [switch]$SkipNoise,
-  [switch]$StrictOverlay
+  [switch]$StrictOverlay,
+  # other runs than the default ones of the game, e.g. -Scenario "-iwad DOOM1.WAD -timedemo demo1" (with -WithMonsters)
+  [string[]]$Scenario = @(),
+  # more arguments for every run, e.g. -More "-glautomap" (the automap open: textured, grid, one mark)
+  [string]$More = "",
+  [switch]$WithMonsters
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -37,7 +42,9 @@ switch ($Game) {
   'GLStrife'  { $runs = @('-iwad STRIFE0.WAD -warp 2') }
 }
 # fixed state: no monsters, no sound, no interpolation, no mouse (the view would follow the cursor), a window;\r\n# the program clock is a virtual one (HarnessGl_Clock): one tic per frame, so the speed of the machine does not matter
-$extra = "-nomonsters -nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"
+if ($Scenario.Count -gt 0) { $runs = $Scenario }
+$monsters = if ($WithMonsters) { "" } else { "-nomonsters " }
+$extra = "$More ${monsters}-nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"
 
 function Clear-Files {
   Get-ChildItem $BinDir -Filter 'glrecord_*.txt' -ErrorAction SilentlyContinue | Remove-Item -Force

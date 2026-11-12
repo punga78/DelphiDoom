@@ -1,5 +1,5 @@
 diff --git a/Base/DelphiDoom.Engine.Composition.pas b/Base/DelphiDoom.Engine.Composition.pas
-index c5b1b6b5..94a80add 100644
+index e9c1edf2..8381a85e 100644
 --- a/Base/DelphiDoom.Engine.Composition.pas
 +++ b/Base/DelphiDoom.Engine.Composition.pas
 @@ -20,6 +20,7 @@ procedure ComposeEngine;
@@ -7,10 +7,19 @@ index c5b1b6b5..94a80add 100644
  
  uses
 +  HarnessGl,
-   System.SysUtils,
-   DelphiDoom.GameData.Aliases,
-   DelphiDoom.Logging.Factory,
-@@ -1357,6 +1358,7 @@ begin
+ {$IFDEF RADIX}
+   DelphiDoom.Engine.Radix.DataConverter,
+ {$ENDIF}
+@@ -534,7 +535,7 @@ begin
+   // Windows: the choice of DirectInput (usedirectinput) was never set by anything
+   LPoller := TInputFactory.CreatePoller(TInputFactory.CreateWindowsKeyboard,
+     TInputFactory.CreateWindowsMouse, TInputFactory.CreateWindowsJoystick(LWindow),
+-    TEngineInputGate.Create, TEngineScreenSize.Create, TEngineKeyMap.Create,
++    HarnessGl_InputGate(TEngineInputGate.Create), TEngineScreenSize.Create, TEngineKeyMap.Create,
+     TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
+   I_ConfigureInput(LPoller);
+   G_ConfigureInput(LPoller);
+@@ -1426,6 +1427,7 @@ begin
    ComposeOpenGl(LPreprocessor);
  {$ENDIF}
    LClock := TClockFactory.CreateClock(LLog);
@@ -39,7 +48,7 @@ index 09b2234c..df4949b3 100644
  
  end.
 diff --git a/Doom/GLDoom32.dpr b/Doom/GLDoom32.dpr
-index f186e3e7..6e4b48cd 100644
+index 21153b0e..653fc4d6 100644
 --- a/Doom/GLDoom32.dpr
 +++ b/Doom/GLDoom32.dpr
 @@ -53,6 +53,19 @@ uses
@@ -63,7 +72,7 @@ index f186e3e7..6e4b48cd 100644
    gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
 diff --git a/Heretic/GLHeretic32.dpr b/Heretic/GLHeretic32.dpr
-index 3cc04ecb..557ff602 100644
+index 35ee34e7..987f3210 100644
 --- a/Heretic/GLHeretic32.dpr
 +++ b/Heretic/GLHeretic32.dpr
 @@ -55,6 +55,19 @@ uses
@@ -87,7 +96,7 @@ index 3cc04ecb..557ff602 100644
    gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
 diff --git a/Hexen/GLHexen32.dpr b/Hexen/GLHexen32.dpr
-index eb6d7b0f..ff0b73e9 100644
+index dc82c2c0..cf04ecdb 100644
 --- a/Hexen/GLHexen32.dpr
 +++ b/Hexen/GLHexen32.dpr
 @@ -55,6 +55,19 @@ uses
@@ -111,7 +120,7 @@ index eb6d7b0f..ff0b73e9 100644
    gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
 diff --git a/Libs/OpenGl/Legacy/gl_main.pas b/Libs/OpenGl/Legacy/gl_main.pas
-index 36ff21bc..1adc1040 100644
+index 3b06483a..778d7ab1 100644
 --- a/Libs/OpenGl/Legacy/gl_main.pas
 +++ b/Libs/OpenGl/Legacy/gl_main.pas
 @@ -184,6 +184,7 @@ procedure GL_ConfigureConsole(const AConsole: IEngineConsole);
@@ -131,10 +140,10 @@ index 36ff21bc..1adc1040 100644
    // Settings to ensure that the window is the topmost window
    ShowWindow(hMainWnd, SW_SHOW);
 diff --git a/Libs/OpenGl/Legacy/gl_render.pas b/Libs/OpenGl/Legacy/gl_render.pas
-index 470c61d5..2647a448 100644
+index 9cdb6cdd..38e6ef1d 100644
 --- a/Libs/OpenGl/Legacy/gl_render.pas
 +++ b/Libs/OpenGl/Legacy/gl_render.pas
-@@ -222,6 +222,7 @@ procedure R_ShutDownOpenGL;
+@@ -232,6 +232,7 @@ procedure R_ShutDownOpenGL;
  implementation
  
  uses
@@ -142,7 +151,7 @@ index 470c61d5..2647a448 100644
    doomstat,
    d_main,
    i_system,
-@@ -1211,6 +1212,7 @@ begin
+@@ -1221,6 +1222,7 @@ begin
      glFinish;
    glFlush;
    SwapBuffers(h_DC);
@@ -150,7 +159,7 @@ index 470c61d5..2647a448 100644
  end;
  
  {*****************
-@@ -5444,6 +5446,7 @@ begin
+@@ -5377,6 +5379,7 @@ begin
      gld_Precache;
    gld_PreprocessSectors;
    gld_PreprocessSegs;
@@ -159,7 +168,7 @@ index 470c61d5..2647a448 100644
    glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
    glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
 diff --git a/Strife/GLStrife32.dpr b/Strife/GLStrife32.dpr
-index ffcfa643..b5aa422c 100644
+index 155a74af..9062503d 100644
 --- a/Strife/GLStrife32.dpr
 +++ b/Strife/GLStrife32.dpr
 @@ -53,6 +53,19 @@ uses
