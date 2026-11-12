@@ -37,7 +37,8 @@ begin
   Writeln('  -ticks  with -play: stops after that number of tics (70 a second)');
   Writeln('  -autoplay  with -play: the player walks by itself');
   Writeln('  -topdown   with -play: the view from above instead of the first person view');
-  Writeln('  -topdown   with -play: the view from above instead of the first person view');
+  Writeln('  -musicvol, -sfxvol  with -play: the volumes of the music and of the effects, 0..255');
+  Writeln('  -audiostats  with -play: writes at the end what the mixer of the sound did');
   Writeln('  -shot   with -play: saves the last picture as a PNG');
 end;
 
@@ -58,6 +59,10 @@ var
   LLumpIndex: Integer;
   LPlayMap: Integer;
   LTicks: Integer;
+  LMusicVolume: Integer;
+  LSfxVolume: Integer;
+  LAudioStatistics: Boolean;
+  LPlayed: Integer;
   LAutoPlay: Boolean;
   LTopDown: Boolean;
   LShot: string;
@@ -66,6 +71,9 @@ begin
   try
     LPlayMap := -1;
     LTicks := 0;
+    LMusicVolume := -1;
+    LSfxVolume := -1;
+    LAudioStatistics := False;
     LAutoPlay := False;
     LTopDown := False;
     LShot := '';
@@ -97,6 +105,12 @@ begin
         LAutoPlay := True
       else if LArgument = '-topdown' then
         LTopDown := True
+      else if LArgument = '-musicvol' then
+        LMusicVolume := StrToInt(LCursor.Value)
+      else if LArgument = '-sfxvol' then
+        LSfxVolume := StrToInt(LCursor.Value)
+      else if LArgument = '-audiostats' then
+        LAudioStatistics := True
       else if LArgument = '-list' then
         LList := True
       else
@@ -118,7 +132,9 @@ begin
     LArchive := TGreedComposition.OpenArchive(LFolders);
     if LPlayMap >= 0 then
     begin
-      Writeln('Played ', TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot, not LTopDown), ' tics');
+      LPlayed := TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot, not LTopDown,
+        LMusicVolume, LSfxVolume, LAudioStatistics);
+      Writeln('Played ', LPlayed, ' tics');
       Exit;
     end;
     if LList then
