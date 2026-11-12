@@ -109,6 +109,26 @@ type
       const ATires: TI3dTireState): Integer;
   end;
 
+  /// <summary>
+  ///   A target that keeps what is drawn instead of drawing it: the faces of a model become
+  ///   triangles, with the matrices already applied, grouped by texture and color. The adapter of
+  ///   a graphics API (or a software rasterizer) draws the batches with no knowledge of the format
+  ///   of the models.
+  /// </summary>
+  II3dMeshBuilder = interface(II3dRenderTarget)
+    ['{9D4F1B62-A735-4C08-8E21-3B6A0F5D7C94}']
+    function GetBatchCount: Integer;
+    function GetBatch(const AIndex: Integer): TI3dMeshBatch;
+    function GetTriangleCount: Integer;
+    /// <summary>Forgets the batches, the matrices and the state: ready for another model</summary>
+    procedure Clear;
+    property BatchCount: Integer read GetBatchCount;
+    /// <summary>The batches in the order in which they were opened; EModelsException for a wrong index</summary>
+    property Batches[const AIndex: Integer]: TI3dMeshBatch read GetBatch;
+    /// <summary>The triangles of all the batches</summary>
+    property TriangleCount: Integer read GetTriangleCount;
+  end;
+
 implementation
 
 end.

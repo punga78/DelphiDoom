@@ -38,7 +38,8 @@ uses
   d_delphi,
   DelphiDoom.Wad.Intf,
   DelphiDoom.Engine.Wad.Intf,
-  DelphiDoom.Engine.Wad.Converter.Intf;
+  DelphiDoom.Engine.Wad.Converter.Intf,
+  DelphiDoom.Engine.Wad.Aliases.Intf;
 
 //
 // TYPES
@@ -132,10 +133,19 @@ procedure W_Configure(const AServices: IEngineWadServices);
 //
 // W_ConfigureConverter
 // Gives the unit the converter of the data container of the game (Radix:
-// RADIX.DAT); a game whose data are WADs does not call it
+// RADIX.DAT, Speed: SPEEDH.JCL); a game whose data are WADs does not call it
 //
 //==============================================================================
 procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
+
+//==============================================================================
+//
+// W_ConfigureAliases
+// Gives the unit the other names of the lumps of the game (Radix: the names of
+// RADIX.DAT, longer than 8 characters); a game without them does not call it
+//
+//==============================================================================
+procedure W_ConfigureAliases(const AAliases: IEngineLumpAliases);
 
 //==============================================================================
 //
@@ -346,6 +356,7 @@ var
 
   wad_services: IEngineWadServices = nil;
   wad_converter: IEngineWadConverter = nil;
+  wad_aliases: IEngineLumpAliases = nil;
   wad_directory: IWadDirectory = nil;
   wad_finder: IWadFinder = nil;
   wad_reader: ILumpReader = nil;
@@ -477,6 +488,8 @@ begin
   end;
 
   numlumps := count;
+  if Assigned(wad_aliases) then
+    wad_aliases.Reset;
 end;
 
 //==============================================================================
@@ -548,7 +561,8 @@ begin
     exit;
   end;
 
-  if Assigned(wad_converter) and (strupper(fext(filename)) = '.DAT') and
+  if Assigned(wad_converter) and
+    ((strupper(fext(filename)) = '.DAT') or (strupper(fext(filename)) = '.JCL')) and
     wad_converter.TryConvert(filename, converted) then
   begin
     // the data of the game are not a WAD: the translated lumps are one, in memory
@@ -878,6 +892,16 @@ end;
 
 //==============================================================================
 //
+// W_ConfigureAliases
+//
+//==============================================================================
+procedure W_ConfigureAliases(const AAliases: IEngineLumpAliases);
+begin
+  wad_aliases := AAliases;
+end;
+
+//==============================================================================
+//
 // W_InitMultipleFiles
 // Pass a null terminated list of files to use.
 // All files are optional, but at least one file
@@ -987,6 +1011,16 @@ var
   lname: string;
 begin
   lname := name;
+  // a game can call a lump with another name (Radix: the name of the picture in RADIX.DAT)
+  if Assigned(wad_aliases) and (Length(lname) > 8) then
+  begin
+    if wad_aliases.TryResolve(name, lname) then
+      result := wad_finder.CheckNumForName(lname, flags)
+    else
+      result := -1;
+    exit;
+  end;
+
   if Length(lname) > 8 then // JVAL: Original an I_Error ocurred. Now we call I_DevError
   begin
     I_Warning('W_CheckNumForName(): name string has more than 8 characters: %s'#13#10, [name]);
@@ -995,6 +1029,9 @@ begin
 
   // the last lump with the name takes precedence (case insensitive)
   result := wad_finder.CheckNumForName(lname, flags);
+  if (result = -1) and Assigned(wad_aliases) then
+    if wad_aliases.TryResolve(name, lname) then
+      result := wad_finder.CheckNumForName(lname, flags);
 end;
 
 //==============================================================================

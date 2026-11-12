@@ -71,7 +71,8 @@ resourcestring
   SModelsI3dOutside = 'The I3D model is truncated: %s is outside the image (offset %d, size %d)';
   SModelsI3dInvalidReference = 'The face %d of the I3D model uses the %s at %d, that does not exist';
   SModelsI3dTextureTruncated = 'The I3D model is truncated: the texture of the material %d is not in the file';
-  SModelsI3dCorrectionText = 'Invalid I3D corrections: expected %s near "%s"';
+  SModelsI3dMeshStackEmpty = 'The matrix stack of the I3D mesh is empty: PopMatrix without PushMatrix';
+  SModelsI3dCorrectionText ='Invalid I3D corrections: expected %s near "%s"';
 
 type
   /// <summary>The name of the texture of a material, as the bytes of the file</summary>
@@ -285,6 +286,33 @@ type
     R: Single;
     G: Single;
     B: Single;
+  end;
+
+  /// <summary>
+  ///   A vertex of a model ready to be drawn: the position after the matrices (the turning of the
+  ///   tires included) and the point of the texture. 20 bytes, the layout of a vertex array
+  /// </summary>
+  TI3dMeshVertex = packed record
+    X: Single;
+    Y: Single;
+    Z: Single;
+    U: Single;
+    V: Single;
+  end;
+
+  /// <summary>
+  ///   The triangles of a model that are drawn with the same state: three vertexes for a triangle,
+  ///   one texture (the position in the textures of the model) or none, one color
+  /// </summary>
+  TI3dMeshBatch = record
+    Textured: Boolean;
+    /// <summary>-1 when the batch has no texture</summary>
+    TextureIndex: Integer;
+    Red: Single;
+    Green: Single;
+    Blue: Single;
+    Alpha: Single;
+    Vertices: TArray<TI3dMeshVertex>;
   end;
 
 implementation

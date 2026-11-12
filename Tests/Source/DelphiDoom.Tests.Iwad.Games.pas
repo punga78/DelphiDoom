@@ -27,6 +27,8 @@ type
     [Test]
     procedure DovrebbeDareIlProfiloDiRadixConIlFileDeiDati;
     [Test]
+    procedure DovrebbeDareIlProfiloDiSpeedConIlContenitoreDeiDati;
+    [Test]
     procedure DovrebbeDareFalsoPerUnNomeSconosciuto;
     [Test]
     procedure DovrebbeDareIlProfiloDiDoomConGliIwadNellOrdineDelVecchioCodice;
@@ -93,6 +95,22 @@ begin
   Assert.AreEqual('RADIX', LProfile.GameName);
   Assert.AreEqual('radix.dat', LProfile.Entries[0].FileName);
   Assert.AreEqual('RADIXWADDIR', LProfile.DirectoryVariables[0]);
+end;
+
+procedure TTestIwadGames.DovrebbeDareIlProfiloDiSpeedConIlContenitoreDeiDati;
+var
+  LGame: TIwadGame;
+  LProfile: IIwadProfile;
+begin
+  Assert.IsTrue(TIwadGames.TryFromName('Speed', LGame));
+  Assert.IsTrue(LGame = igSpeed);
+  Assert.AreEqual('SPEED', TIwadGames.NameOf(igSpeed));
+  LProfile := TIwadGames.CreateProfile(igSpeed);
+  Assert.AreEqual('SPEED', LProfile.GameName);
+  Assert.AreEqual(1, Integer(Length(LProfile.Entries)));
+  Assert.AreEqual('speedh.jcl', LProfile.Entries[0].FileName);
+  Assert.AreEqual('SPEEDWADDIR', LProfile.DirectoryVariables[0]);
+  Assert.AreEqual('DOOMWADPATH', LProfile.PathVariables[1]);
 end;
 
 procedure TTestIwadGames.DovrebbeDareFalsoPerUnNomeSconosciuto;

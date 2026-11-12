@@ -615,7 +615,12 @@ begin
 {$ENDIF}
   begin
 {$IF DEFINED(DOOM)}
+{$IFDEF RADIX}
+    // the marks are the digits of the small font of Radix
+    sprintf(namebuf, 'FNTA%.3d', [i + Ord('0')]);
+{$ELSE}
     sprintf(namebuf, 'AMMNUM%d', [i]);
+{$ENDIF}
     marknumsid[i] := W_GetNumForName(namebuf);
     marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
   end;
