@@ -58,6 +58,8 @@ type
     property FaceName: string read FFaceName;
     function HasGlyph(ACode: Cardinal): Boolean;
     function Rasterize(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+    /// <summary>The ascent of the font: Top is counted from the top of the line in both ways of drawing</summary>
+    function Baseline: Integer;
   end;
 
 implementation
@@ -212,6 +214,11 @@ begin
     Result := RasterizeOutline(ACode, AGlyph)
   else
     Result := RasterizeText(ACode, AGlyph);
+end;
+
+function TXcomGdiGlyphRasterizer.Baseline: Integer;
+begin
+  Result := FAscent;
 end;
 
 function TXcomGdiGlyphRasterizer.RasterizeText(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;

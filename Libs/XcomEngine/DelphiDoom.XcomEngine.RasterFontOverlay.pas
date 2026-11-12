@@ -12,33 +12,40 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Glyph.Types,
-  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf;
+  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf,
+  DelphiDoom.XcomSurface.FontDetail.Intf, DelphiDoom.XcomEngine.TrueColor.Intf;
 
 type
   /// <summary>
   ///   IXcomFontOverlay for the fonts listed in the options: opens the font of the system, checks at the start
   ///   that it fits the cells of the original font and adds its characters. A font that is not there, or is too
-  ///   tall or too wide, leaves the original font as it is, with a warning in the log; so does a single character
-  ///   that the font does not have. The rasterizer of a font lives only during its Apply (the loading thread)
+  ///   tall or too wide (and not allowed to shrink until it fits), leaves the original font as it is, with a
+  ///   warning in the log; so does a single character that the font does not have. The rasterizer of a font lives only during its Apply (the loading thread)
   /// </summary>
   TXcomRasterFontOverlay = class(TInterfacedObject, IXcomFontOverlay)
   strict private
     FSettings: TArray<TXcomFontOverlaySettings>;
     FFactory: IXcomGlyphRasterizerFactory;
     FLog: IXcomLog;
+    FDisplay: IXcomDetailLayers;
+    FLayers: IXcomInkLayers;
     procedure Say(const ALevel, AText: string);
     class function Describe(const AFace: TXcomFontFace): string; static;
   public
     /// <param name="ALog">nil for no log</param>
+    /// <param name="ADisplay">
+    ///   With ALayers: the fonts also get their characters at the resolution of the display (IXcomFontDetail),
+    ///   for a screen that composes in true color at a whole scale. nil, the default: only the pictures
+    /// </param>
     constructor Create(const ASettings: TArray<TXcomFontOverlaySettings>; const AFactory: IXcomGlyphRasterizerFactory;
-      const ALog: IXcomLog);
+      const ALog: IXcomLog; const ADisplay: IXcomDetailLayers = nil; const ALayers: IXcomInkLayers = nil);
     procedure Apply(const AFontId: string; AFont: TXcomFont);
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomSurface.FontOverlayBuilder;
+  DelphiDoom.XcomSurface.FontOverlayBuilder, DelphiDoom.XcomEngine.DetailFont;
 
 const
   SLevelWarning = 'WARN';
@@ -49,9 +56,11 @@ const
   SNoGlyphs = 'font %s: %s has none of the characters of the font: the original font stays';
   SApplied = 'font %s: %s, %d characters (%d x %d); from the original font: %d missing, %d too wide; %d cut';
   SPartial = 'font %s: %d characters are not in %s or are too wide and stay the original ones';
+  SShrunk = 'font %s: too large for the cells at %d pixels, reduced to %d';
 
 constructor TXcomRasterFontOverlay.Create(const ASettings: TArray<TXcomFontOverlaySettings>;
-  const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog);
+  const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog; const ADisplay: IXcomDetailLayers;
+  const ALayers: IXcomInkLayers);
 begin
   inherited Create;
   if not Assigned(AFactory) then
@@ -59,6 +68,8 @@ begin
   FSettings := ASettings;
   FFactory := AFactory;
   FLog := ALog;
+  FDisplay := ADisplay;
+  FLayers := ALayers;
 end;
 
 procedure TXcomRasterFontOverlay.Say(const ALevel, AText: string);
@@ -87,6 +98,9 @@ var
   LBuilder: TXcomFontOverlayBuilder;
   LReport: TXcomFontOverlayReport;
   LName: string;
+  LAsked: Integer;
+  LApplied: Boolean;
+  LRetry: Boolean;
 begin
   LFound := False;
   // the last entry of a font wins, as a key written twice
@@ -98,21 +112,35 @@ begin
     end;
   if not LFound then
     Exit;
-  LName := Describe(LSettings.Face);
-  LRasterizer := FFactory.CreateRasterizer(LSettings.Face, 1, LReason);
-  if not Assigned(LRasterizer) then
-  begin
-    Say(SLevelWarning, Format(SNotFound, [AFontId, LName, LReason]));
-    Exit;
-  end;
+  LAsked := LSettings.Face.Size;
   LBuilder := TXcomFontOverlayBuilder.Create;
   try
-    if LBuilder.Apply(AFont, LRasterizer, LSettings, LReport) then
+    repeat
+      LName := Describe(LSettings.Face);
+      LRasterizer := FFactory.CreateRasterizer(LSettings.Face, 1, LReason);
+      if not Assigned(LRasterizer) then
+      begin
+        Say(SLevelWarning, Format(SNotFound, [AFontId, LName, LReason]));
+        Exit;
+      end;
+      LApplied := LBuilder.Apply(AFont, LRasterizer, LSettings, LReport);
+      // the option of the font: one pixel smaller until it fits the cells, instead of the refusal
+      LRetry := (not LApplied) and LSettings.Shrink and (LReport.Refusal in [frTooTall, frTooWide])
+        and (LSettings.Face.Size > XCOM_FONT_SMALLEST_SIZE);
+      if LRetry then
+        Dec(LSettings.Face.Size);
+    until not LRetry;
+    if LApplied then
     begin
+      if LSettings.Face.Size <> LAsked then
+        Say(SLevelInfo, Format(SShrunk, [AFontId, LAsked, LSettings.Face.Size]));
       Say(SLevelInfo, Format(SApplied, [AFontId, LName, LReport.Replaced, LReport.Width, LReport.Height,
         LReport.Missing, LReport.TooWide, LReport.Clipped]));
       if LReport.Missing + LReport.TooWide > 0 then
         Say(SLevelWarning, Format(SPartial, [AFontId, LReport.Missing + LReport.TooWide, LName]));
+      // the same font draws the text again at the resolution of the display, when the screen has one
+      if Assigned(FDisplay) and Assigned(FLayers) then
+        AFont.Detail := TXcomDetailFont.Create(AFont, LSettings.Face, LReport, FFactory, FDisplay, FLayers, FLog);
     end
     else
       case LReport.Refusal of

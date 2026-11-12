@@ -13,7 +13,8 @@ uses
   System.SysUtils, System.Math, System.Generics.Collections, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomUi.Types,
-  DelphiDoom.XcomUi.PaletteShift;
+  DelphiDoom.XcomUi.PaletteShift, DelphiDoom.XcomUi.TextInk, DelphiDoom.XcomSurface.Ink.Types,
+  DelphiDoom.XcomSurface.FontDetail.Intf;
 
 type
   /// <summary>
@@ -42,6 +43,11 @@ type
     FLineWidth: TList<Integer>;
     FLineHeight: TList<Integer>;
     FDebugUi: Boolean;
+    FInk: TXcomTextInk;
+    FInkScale: Integer;
+    FInkBuffer: TXcomInkBuffer;
+    FInkBufferValid: Boolean;
+    procedure PrepareInk;
     procedure ProcessText;
     function LineX(ALine: Integer): Integer;
     class function IsLineBreak(ACode: Cardinal): Boolean; static; inline;
@@ -82,6 +88,26 @@ type
     procedure SetScrollable(AScroll: Boolean);
     procedure Draw; override;
     procedure RedrawText; override;
+    /// <summary>
+    ///   Surface::blit. On the picture of a screen that composes in true color, with a font that has its characters
+    ///   at the resolution of the display (issue 184), the text also leaves them to the screen: they are shown
+    ///   in place of the ones of the picture, on the same cells
+    /// </summary>
+    procedure Blit(ATarget: TXcomSurface); override;
+    /// <summary>
+    ///   The characters of the last Draw for the resolution of the display, for a widget that draws this text on
+    ///   itself; nil when the fonts only have their pictures
+    /// </summary>
+    function Ink: TXcomTextInk;
+    /// <summary>True when the scale of the display is not the one the text was drawn for: it must be drawn again</summary>
+    function IsInkStale: Boolean;
+    /// <summary>The scale the fonts of the text have their characters at now (0: only the pictures)</summary>
+    function DetailScale: Integer;
+    /// <summary>
+    ///   Draws the text on a surface of indexes that is AScale times finer than the game, its corner at (AX, AY):
+    ///   false, and nothing drawn, when the text has no characters at that scale
+    /// </summary>
+    function DrawDetail(ATarget: TXcomSurface; AX, AY, AScale: Integer): Boolean;
     /// <summary>Options::debugUi: a frame is drawn around the text</summary>
     property DebugUi: Boolean read FDebugUi write FDebugUi;
   end;
@@ -98,6 +124,7 @@ end;
 
 destructor TXcomText.Destroy;
 begin
+  FInk.Free;
   FLineHeight.Free;
   FLineWidth.Free;
   FProcessed.Free;
@@ -154,6 +181,16 @@ begin
   if (FText <> '') and (FFont = FBig) and
     ((GetTextWidth > Width) or (GetTextHeight > Height)) and (FText[Length(FText)] <> '.') then
   begin
+    // Issue 184: a big font that got the characters of a font of the system is a little wider than the
+    // pictures of the game. A text that fitted with those is drawn with them, before going to the small font
+    // (the six time buttons of the geoscape: their small font has no lower case letters)
+    if Assigned(FBig.Original) then
+    begin
+      FFont := FBig.Original;
+      ProcessText;
+      if (GetTextWidth <= Width) and (GetTextHeight <= Height) then
+        Exit;
+    end;
     FFont := FSmall;
     ProcessText;
   end;
@@ -419,6 +456,7 @@ var
   LGlyph: TXcomSurface;
 begin
   inherited Draw;
+  PrepareInk;
   if (FText = '') or (FFont = nil) then
     Exit;
   if FDebugUi then
@@ -480,6 +518,8 @@ begin
       LGlyph.X := LX;
       LGlyph.Y := LY;
       TXcomPaletteShift.Draw(Self, LGlyph, LColor, LMultiplier, LMiddle);
+      if Assigned(FInk) then
+        FInk.Add(LFont, LCode, LX, LY, LColor, LMultiplier, LMiddle);
       if LDirection > 0 then
         Inc(LX, LDirection * LFont.GetCharSize(LCode).W);
     end;
@@ -489,6 +529,77 @@ end;
 procedure TXcomText.RedrawText;
 begin
   Draw;
+end;
+
+procedure TXcomText.PrepareInk;
+var
+  LDetail: IXcomFontDetail;
+begin
+  // nothing new unless a font of the text has its characters at the resolution of the display
+  FreeAndNil(FInk);
+  FInkBufferValid := False;
+  FInkBuffer := Default(TXcomInkBuffer);
+  FInkScale := 0;
+  LDetail := TXcomTextInk.DetailOf(FFont, FSmall);
+  if Assigned(LDetail) then
+  begin
+    FInk := TXcomTextInk.Create(LDetail);
+    FInkScale := FInk.Scale;
+  end;
+end;
+
+function TXcomText.Ink: TXcomTextInk;
+begin
+  Result := FInk;
+end;
+
+function TXcomText.IsInkStale: Boolean;
+begin
+  Result := DetailScale <> FInkScale;
+end;
+
+function TXcomText.DetailScale: Integer;
+begin
+  Result := TXcomTextInk.ScaleOf(FFont, FSmall);
+end;
+
+procedure TXcomText.Blit(ATarget: TXcomSurface);
+begin
+  if Visible and not Hidden then
+  begin
+    // the window changed size after the text was drawn
+    if IsInkStale then
+      Redraw := True;
+    if Redraw then
+      Draw;
+    // the text of the picture is drawn as always: it tells the screen where the text is still seen. On another
+    // surface (a button, a list) BeginInk says no, and the owner of that surface leaves the ink
+    if Assigned(FInk) and (FInk.Count > 0) and (Crop.W = 0) and (Crop.H = 0)
+      and FInk.Layers.BeginInk(ATarget, X, Y, Width, Height) then
+    begin
+      inherited Blit(ATarget);
+      if not FInkBufferValid then
+      begin
+        FInkBuffer := TXcomInkBuffer.Make(Width, Height, FInk.Scale);
+        FInk.PaintTo(FInkBuffer, 0, 0, Width, Height);
+        FInkBufferValid := True;
+      end;
+      FInk.Layers.EndInk(ATarget, FInkBuffer, nil);
+      Exit;
+    end;
+  end;
+  inherited Blit(ATarget);
+end;
+
+function TXcomText.DrawDetail(ATarget: TXcomSurface; AX, AY, AScale: Integer): Boolean;
+begin
+  if IsInkStale then
+    Redraw := True;
+  if Redraw then
+    Draw;
+  Result := Assigned(FInk) and (FInk.Scale = AScale) and Visible and not Hidden;
+  if Result then
+    FInk.DrawTo(ATarget, AX, AY);
 end;
 
 procedure TXcomText.SetScrollable(AScroll: Boolean);

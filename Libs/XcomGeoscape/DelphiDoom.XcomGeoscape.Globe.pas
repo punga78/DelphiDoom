@@ -1745,8 +1745,12 @@ begin
     ALabel.Blit(FCountries);
     Exit;
   end;
-  // The hook of issue 184 (text at the true resolution): until then a label of the finer globe is the text of the
-  // game enlarged by the nearest pixel, centered on the same point
+  // Issue 184 (text at the true resolution): with a font that has its characters at this scale the label is drawn
+  // with them, on the same cells (this surface has indexes and no alpha: the levels of the game, not ink)
+  if ALabel.DrawDetail(FCountries, AAnchorX - 50 * FDetailScale, AAnchorY + ADown * FDetailScale, FDetailScale) then
+    Exit;
+  // otherwise a label of the finer globe is the text of the game enlarged by the nearest pixel, centered on the
+  // same point
   LPicture := TXcomSurface.Create(ALabel.Width, ALabel.Height);
   try
     LPicture.SetColors(FColors);

@@ -88,9 +88,12 @@ end;
 
 class function TXcomFontOverlayBuilder.Limit(ASize, ATolerance: Integer): Integer;
 begin
-  if ATolerance < 0 then
-    ATolerance := 0;
-  Result := ASize * (100 + ATolerance) div 100;
+  if ATolerance >= 0 then
+    Exit(ASize * (100 + ATolerance) div 100);
+  // nothing said: a quarter more, or two pixels for the narrow cells of the fonts of the geoscape
+  Result := ASize * (100 + XCOM_FONT_DEFAULT_TOLERANCE) div 100;
+  if Result < ASize + XCOM_FONT_DEFAULT_ALLOWANCE then
+    Result := ASize + XCOM_FONT_DEFAULT_ALLOWANCE;
 end;
 
 class function TXcomFontOverlayBuilder.IsOutlined(AFont: TXcomFont): Boolean;
@@ -306,6 +309,12 @@ begin
       AReport.Refusal := frTooWide;
     if AReport.Refusal <> frNone then
       Exit(False);
+    AReport.FirstImage := LImageCount;
+    AReport.LineTop := LTop - ASettings.OffsetY;
+    AReport.Baseline := ARasterizer.Baseline;
+    AReport.Outlined := LOutline;
+    // a text that no longer fits can still be drawn with the pictures of the game (TXcomFont.Original)
+    AFont.KeepOriginal;
     for LImage := 0 to LImageCount - 1 do
     begin
       LSpacing := ASettings.Spacing;

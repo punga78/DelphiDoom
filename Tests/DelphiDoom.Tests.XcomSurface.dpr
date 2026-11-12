@@ -49,7 +49,13 @@ uses
   DelphiDoom.XcomSurface.Stroke in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Stroke.pas',
   DelphiDoom.Tests.XcomSurface.Stroke in 'Source\DelphiDoom.Tests.XcomSurface.Stroke.pas',
   DelphiDoom.XcomSurface.BlendOverlay in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.BlendOverlay.pas',
-  DelphiDoom.Tests.XcomSurface.BlendOverlay in 'Source\DelphiDoom.Tests.XcomSurface.BlendOverlay.pas';
+  DelphiDoom.Tests.XcomSurface.BlendOverlay in 'Source\DelphiDoom.Tests.XcomSurface.BlendOverlay.pas',
+  DelphiDoom.XcomSurface.Ink.Types in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Ink.Types.pas',
+  DelphiDoom.XcomSurface.FontDetail.Intf in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.FontDetail.Intf.pas',
+  DelphiDoom.XcomSurface.DetailGlyphBuilder in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.DetailGlyphBuilder.pas',
+  DelphiDoom.XcomSurface.InkPainter in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.InkPainter.pas',
+  DelphiDoom.Tests.XcomSurface.DetailGlyphBuilder in 'Source\DelphiDoom.Tests.XcomSurface.DetailGlyphBuilder.pas',
+  DelphiDoom.Tests.XcomSurface.InkPainter in 'Source\DelphiDoom.Tests.XcomSurface.InkPainter.pas';
 
 var
   Runner: ITestRunner;

@@ -24,6 +24,11 @@ type
     ///   character has no ink (a space) or cannot be drawn. Top is counted from the same row for every character
     /// </summary>
     function Rasterize(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+    /// <summary>
+    ///   The row of the baseline of the font, counted as Top is: the same text drawn at another scale is lined
+    ///   up on it
+    /// </summary>
+    function Baseline: Integer;
   end;
 
   /// <summary>Opens the fonts of the system</summary>

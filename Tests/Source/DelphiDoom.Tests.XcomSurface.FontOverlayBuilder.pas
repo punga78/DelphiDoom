@@ -18,7 +18,8 @@ uses
 type
   /// <summary>
   ///   The original font of the tests has cells of 6 x 8 in rows of four; the fake rasterizer draws every
-  ///   character as a rectangle of 3 x 5 on the row 2, so with the tolerance of 25% the limits are 7 x 10
+  ///   character as a rectangle of 3 x 5 on the row 2; with nothing said about the tolerance the limits are 8 x 10
+  ///   (a quarter more, or two pixels where they are more)
   /// </summary>
   [TestFixture]
   [Category('xcom-surface')]
@@ -50,6 +51,14 @@ type
     procedure DovrebbeLasciareIlFontComeEraSeLeLettereSonoTroppoLarghe;
     [Test]
     procedure DovrebbeAccettareUnFontPiuGrandeEntroLaTolleranza;
+    [Test]
+    procedure SenzaTolleranzaDovrebbeConcedereDuePixelAlleCelleStrette;
+    [Test]
+    procedure LaTolleranzaScrittaDovrebbeValereDaSola;
+    [Test]
+    procedure DovrebbeTenereIlFontOriginaleAccantoAiCaratteriNuovi;
+    [Test]
+    procedure UnFontRifiutatoNonDovrebbeAvereUnOriginale;
     [Test]
     procedure DovrebbeRifiutareSeMancanoICaratteriDiRiferimento;
     [Test]
@@ -232,12 +241,68 @@ end;
 procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeLasciareIlFontComeEraSeLeLettereSonoTroppoLarghe;
 begin
   MakeFont('AB?', False);
-  FRasterizer.Define(Ord('B'), 8, 5, 2);
+  FRasterizer.Define(Ord('B'), 9, 5, 2);
   Assert.IsFalse(Apply);
   Assert.AreEqual(Ord(frTooWide), Ord(FReport.Refusal));
-  Assert.AreEqual(8, FReport.Width);
-  Assert.AreEqual(7, FReport.WidthLimit);
+  Assert.AreEqual(9, FReport.Width);
+  Assert.AreEqual(8, FReport.WidthLimit);
   Assert.AreEqual(1, FFont.ImageCount);
+end;
+
+procedure TTestXcomSurfaceFontOverlayBuilder.SenzaTolleranzaDovrebbeConcedereDuePixelAlleCelleStrette;
+begin
+  // cells of 6 x 8: a quarter of 6 is one pixel, and the fonts of the geoscape (5 pixels) would refuse everything
+  MakeFont('AB?', False);
+  FRasterizer.DefaultWidth := 8;
+  Assert.AreEqual(XCOM_FONT_AUTO_TOLERANCE, FSettings.Tolerance);
+  Assert.IsTrue(Apply);
+  Assert.AreEqual(8, FReport.WidthLimit);
+  // a quarter of 8 is already two pixels
+  Assert.AreEqual(10, FReport.HeightLimit);
+end;
+
+procedure TTestXcomSurfaceFontOverlayBuilder.LaTolleranzaScrittaDovrebbeValereDaSola;
+begin
+  MakeFont('AB?', False);
+  FRasterizer.DefaultWidth := 8;
+  FSettings.Tolerance := 25;
+  Assert.IsFalse(Apply);
+  Assert.AreEqual(7, FReport.WidthLimit);
+  FSettings.Tolerance := 0;
+  FRasterizer.DefaultWidth := 7;
+  Assert.IsFalse(Apply);
+  Assert.AreEqual(6, FReport.WidthLimit);
+end;
+
+procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeTenereIlFontOriginaleAccantoAiCaratteriNuovi;
+var
+  LChar: TXcomFontChar;
+  LOldWidth: Integer;
+begin
+  MakeFont('AB?', False);
+  LOldWidth := FFont.GetCharSize(Ord('A')).W;
+  Assert.IsTrue(FFont.Original = nil);
+  Assert.IsTrue(Apply);
+  Assert.IsTrue(FFont.Original <> nil);
+  // the font draws A with the new picture, its original with the picture of the game
+  Assert.AreEqual(1, CharOf(Ord('A')).ImageIndex);
+  Assert.IsTrue(FFont.Original.TryGetChar(Ord('A'), LChar));
+  Assert.AreEqual(0, LChar.ImageIndex);
+  Assert.AreEqual(LOldWidth, Integer(FFont.Original.GetCharSize(Ord('A')).W));
+  Assert.IsTrue(FFont.Original.GetChar(Ord('A')) = FFont.ImageSurface(0));
+  Assert.AreEqual(FFont.Height, FFont.Original.Height);
+  // asked again, the original stays the first one
+  FFont.KeepOriginal;
+  Assert.IsTrue(FFont.Original.TryGetChar(Ord('A'), LChar));
+  Assert.AreEqual(0, LChar.ImageIndex);
+end;
+
+procedure TTestXcomSurfaceFontOverlayBuilder.UnFontRifiutatoNonDovrebbeAvereUnOriginale;
+begin
+  MakeFont('AB?', False);
+  FRasterizer.DefaultHeight := 20;
+  Assert.IsFalse(Apply);
+  Assert.IsTrue(FFont.Original = nil);
 end;
 
 procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeAccettareUnFontPiuGrandeEntroLaTolleranza;

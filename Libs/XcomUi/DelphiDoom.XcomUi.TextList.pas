@@ -17,7 +17,8 @@ uses
   DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomUi.ScrollableList, DelphiDoom.XcomUi.ComboBoxLink, DelphiDoom.XcomUi.Text,
-  DelphiDoom.XcomUi.ArrowButton, DelphiDoom.XcomUi.ScrollBar;
+  DelphiDoom.XcomUi.ArrowButton, DelphiDoom.XcomUi.ScrollBar, DelphiDoom.XcomUi.TextInk,
+  DelphiDoom.XcomUi.WidgetInk;
 
 type
   /// <summary>
@@ -38,6 +39,7 @@ type
     FScroll: Integer;
     FVisibleRows: Integer;
     FSelRow: Integer;
+    FInk: TXcomWidgetInk;
     FColor: Byte;
     FColor2: Byte;
     FAlign: TDictionary<Integer, TXcomTextHAlign>;
@@ -171,6 +173,7 @@ begin
   FTexts := TObjectList<TObjectList<TXcomText>>.Create(True);
   FColumns := TList<Integer>.Create;
   FRows := TList<Integer>.Create;
+  FInk := TXcomWidgetInk.Create;
   FAlign := TDictionary<Integer, TXcomTextHAlign>.Create;
   FArrowLeft := TObjectList<TXcomArrowButton>.Create(True);
   FArrowRight := TObjectList<TXcomArrowButton>.Create(True);
@@ -200,6 +203,7 @@ begin
   FArrowRight.Free;
   FArrowLeft.Free;
   FTexts.Free;
+  FInk.Free;
   FAlign.Free;
   FRows.Free;
   FColumns.Free;
@@ -815,6 +819,7 @@ var
   LText: TXcomText;
 begin
   inherited Draw;
+  FInk.Reset(Width, Height, TXcomTextInk.ScaleOf(FBig, FSmall));
   if FRows.Count > 0 then
   begin
     LY := FirstVisibleY(0);
@@ -825,6 +830,7 @@ begin
       begin
         LText.Y := LY;
         LText.Blit(Self);
+        FInk.Add(LText.Ink, LText.X, LText.Y, LText.Width, LText.Height);
       end;
       Inc(LY, RowHeightOf(LIndex));
       Inc(LIndex);
@@ -839,8 +845,22 @@ var
   LIndex: Integer;
 begin
   if Visible and not Hidden then
+  begin
+    // the window changed size after the list was drawn
+    if TXcomTextInk.ScaleOf(FBig, FSmall) <> FInk.Scale then
+      Redraw := True;
+    if Redraw then
+      Draw;
     FSelector.Blit(ATarget);
-  inherited Blit(ATarget);
+  end;
+  // on the screen the rows also leave their characters at the resolution of the display (issue 184)
+  if Visible and (not Hidden) and FInk.BeginLayer(ATarget, X, Y) then
+  begin
+    inherited Blit(ATarget);
+    FInk.EndLayer(ATarget);
+  end
+  else
+    inherited Blit(ATarget);
   if Visible and not Hidden then
   begin
     if (FArrowPos <> -1) and (FRows.Count > 0) then
