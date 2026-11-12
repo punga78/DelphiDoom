@@ -15,7 +15,7 @@ unit DelphiDoom.Keen.Refresh;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf;
+  System.SysUtils, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf, DelphiDoom.Keen.UserIntf;
 
 type
   /// <summary>
@@ -28,7 +28,7 @@ type
   ///   as a pointer into allanims[] in the info plane of the map is here a separate array: the info plane keeps
   ///   what the actors need
   /// </summary>
-  TKeenRefresh = class(TInterfacedObject, IKeenRefresh)
+  TKeenRefresh = class(TInterfacedObject, IKeenRefresh, IKeenUpdateBlocks, IKeenRefreshTiming)
   strict private
     const
       SCREENSPACE = KEEN_SCREENWIDTH * 240;
@@ -204,6 +204,9 @@ type
     function UpdateSnapshot(APage: Integer): TBytes;
     function GetOtherPage: Integer;
     function GetScreenPage: Integer;
+    function MarkUpdateBlock(AX1, AY1, AX2, AY2: Integer): Boolean;
+    procedure UpdateScreenBlocks;
+    procedure ResetTiming;
   end;
 
 implementation
@@ -1531,6 +1534,86 @@ begin
   NewPosition(FOriginXGlobal, FOriginYGlobal);
   Refresh;
   Refresh;
+end;
+
+function TKeenRefresh.MarkUpdateBlock(AX1, AY1, AX2, AY2: Integer): Boolean;
+var
+  LXT1: Integer;
+  LYT1: Integer;
+  LXT2: Integer;
+  LYT2: Integer;
+  LX: Integer;
+  LY: Integer;
+  LMark: Integer;
+begin
+  // pixels to tiles: an arithmetic shift, a negative coordinate stays negative
+  LXT1 := TKeenArithmetic.ShiftRight(AX1, 4);
+  LYT1 := TKeenArithmetic.ShiftRight(AY1, 4);
+  LXT2 := TKeenArithmetic.ShiftRight(AX2, 4);
+  LYT2 := TKeenArithmetic.ShiftRight(AY2, 4);
+  if LXT1 < 0 then
+    LXT1 := 0
+  else if LXT1 >= KEEN_UPDATEWIDE - 1 then
+    Exit(False);
+  if LYT1 < 0 then
+    LYT1 := 0
+  else if LYT1 > KEEN_UPDATEHIGH then
+    Exit(False);
+  if LXT2 < 0 then
+    Exit(False)
+  else if LXT2 >= KEEN_UPDATEWIDE - 1 then
+    LXT2 := KEEN_UPDATEWIDE - 2;
+  if LYT2 < 0 then
+    Exit(False)
+  else if LYT2 >= KEEN_UPDATEHIGH then
+    LYT2 := KEEN_UPDATEHIGH - 1;
+  // the C lets a block that starts at the row after the last one through (yt1 > UPDATEHIGH, not >=) and reads
+  // uwidthtable past its end: such a block marks nothing here
+  for LY := LYT1 to LYT2 do
+  begin
+    LMark := FUpdatePtr + FUWidthTable[LY] + LXT1;
+    for LX := LXT1 to LXT2 do
+    begin
+      FUpdate[FUpdatePage][LMark] := 1;
+      Inc(LMark);
+    end;
+  end;
+  Result := True;
+end;
+
+procedure TKeenRefresh.UpdateScreenBlocks;
+var
+  LTile: Integer;
+  LRow: Integer;
+  LMemory: IKeenEgaMemory;
+  LSource: Integer;
+  LDest: Integer;
+  LPage: TBytes;
+begin
+  // every tile marked 1 is copied with the latches from the buffer page to the page that is shown; the C copies
+  // the tiles in a row as one block, which gives the same bytes because VW_MarkUpdateBlock never marks the last
+  // column. Then the whole array is cleared (the terminator after it stays)
+  LMemory := FVideo.Memory;
+  LPage := FUpdate[FUpdatePage];
+  for LTile := 0 to KEEN_UPDATEWIDE * KEEN_UPDATEHIGH - 1 do
+    if LPage[FUpdatePtr + LTile] = 1 then
+    begin
+      LSource := (FBlockStarts[LTile] + FVideo.BufferOfs) and $FFFF;
+      LDest := (FBlockStarts[LTile] + FVideo.DisplayOfs) and $FFFF;
+      for LRow := 0 to 15 do
+      begin
+        LMemory.CopyByte(LSource, LDest);
+        LMemory.CopyByte((LSource + 1) and $FFFF, (LDest + 1) and $FFFF);
+        LSource := (LSource + FVideo.LineWidth) and $FFFF;
+        LDest := (LDest + FVideo.LineWidth) and $FFFF;
+      end;
+    end;
+  FillChar(LPage[FUpdatePtr], KEEN_UPDATEWIDE * KEEN_UPDATEHIGH, 0);
+end;
+
+procedure TKeenRefresh.ResetTiming;
+begin
+  FLastTimeCount := FClock.TimeCount;
 end;
 
 end.
