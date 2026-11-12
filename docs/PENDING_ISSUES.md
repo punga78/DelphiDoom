@@ -251,3 +251,9 @@ Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e num
 - Restano: 6 (lightmap dei voxel: manca un livello di prova con voxel e luci dinamiche), 7 (finestra e contesto: prove a mano di schermo intero, Alt+Tab, cambio di modo), 9 e 10 (la scena: raccolta e disegno, il percorso caldo vero), 11 (modelli), 12 (facciate, poi `Libs\OpenGl\Legacy` vuota).
 - Non verificato della fetta 8: pavimenti ruotati o con scorrimento nell'automap a texture, automap in sovrapposizione, Win64.
 - Le misure di `-timedemo` sono fatte con l'OpenGL della VM (Mesa/SVGA3D, 12-14 fotogrammi al secondo) e con altri processi sul PC: la dispersione tra due esecuzioni uguali arriva al 2-3%.
+
+## Radix (#169)
+
+- `Radix32 -warp 1 1`: `Z_CheckHeap(): Block 1303 of the table has the index 909128244 in its header` alla fine del caricamento del livello. Lo heap della zona e' sano dopo `M_Init` e rovinato alla fine di `R_Init` (controlli temporanei, non nel repository): da cercare tra i passi di `R_Init` con i dati di Radix (texture SKY oltre 64k, flat da 16384 byte, sprite, tabelle). Senza `-warp` il difetto non si vede.
+- Il comando `menu_main` in un file `-con` non lascia aperto il menu (visto in Radix32; non provato negli altri giochi).
+- Non verificati a runtime in Radix32: menu principale e menu delle opzioni (non catturati), carica/salva, le pagine di aiuto, l'automap, tutto cio' che viene dopo il caricamento di un livello. Stato e piano: `Libs\Radix\CLAUDE.md`.
