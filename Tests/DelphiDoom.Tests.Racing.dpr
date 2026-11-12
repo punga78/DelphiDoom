@@ -49,7 +49,9 @@ uses
   DelphiDoom.Tests.Racing.ScoreTable in 'Source\DelphiDoom.Tests.Racing.ScoreTable.pas',
   DelphiDoom.Tests.Racing.GridAssigner in 'Source\DelphiDoom.Tests.Racing.GridAssigner.pas',
   DelphiDoom.Tests.Racing.PathReader in 'Source\DelphiDoom.Tests.Racing.PathReader.pas',
-  DelphiDoom.Tests.Racing.CarData in 'Source\DelphiDoom.Tests.Racing.CarData.pas';
+  DelphiDoom.Tests.Racing.CarData in 'Source\DelphiDoom.Tests.Racing.CarData.pas',
+  DelphiDoom.Racing.TextFormat in '..\Libs\Racing\DelphiDoom.Racing.TextFormat.pas',
+  DelphiDoom.Tests.Racing.TextFormat in 'Source\DelphiDoom.Tests.Racing.TextFormat.pas';
 
 var
   Runner: ITestRunner;

@@ -32,11 +32,13 @@ interface
 
 const
 {$IFDEF DOOM}
-{$IFDEF RADIX}
+{$IF DEFINED(RADIX)}
   _GAME = 'Radix';
+{$ELSEIF DEFINED(SPEED)}
+  _GAME = 'Speed';
 {$ELSE}
   _GAME = 'Doom';
-{$ENDIF}
+{$IFEND}
 {$ENDIF}
 {$IFDEF HERETIC}
   _GAME = 'Heretic';

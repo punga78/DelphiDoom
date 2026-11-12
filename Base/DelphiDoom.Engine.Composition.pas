@@ -23,6 +23,10 @@ uses
 {$IFDEF RADIX}
   DelphiDoom.Engine.Radix.DataConverter,
 {$ENDIF}
+{$IFDEF SPEED}
+  DelphiDoom.Engine.Speed.DataConverter,
+  DelphiDoom.Engine.Level.SpeedRules,
+{$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
   DelphiDoom.Logging.Factory,
@@ -732,6 +736,11 @@ begin
       TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
       TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)),
     LAnimDefs, TEngineVanillaNodes.Create(ANodesSource), AContext, ARandom);
+{$IFDEF SPEED}
+  // Speed Haste loads a level as Doom does and then reads the track of the race from its lumps
+  Result := TSpeedLevelRules.Create(Result, Result as ILevelGeometryRules,
+    Result as ILevelThingRules, ALumps, ALog);
+{$ENDIF}
 {$ELSEIF DEFINED(HERETIC)}
   Result := THereticLevelRules.Create(LAnimDefs, ARandom);
 {$ELSEIF DEFINED(HEXEN)}
@@ -1486,6 +1495,9 @@ begin
   W_Configure(LWadServices);
 {$IFDEF RADIX}
   W_ConfigureConverter(TEngineRadixDataConverter.Create(LLog));
+{$ENDIF}
+{$IFDEF SPEED}
+  W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));
 {$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);

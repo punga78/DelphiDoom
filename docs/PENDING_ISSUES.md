@@ -252,3 +252,10 @@ Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e num
 - Non verificato della fetta 8: pavimenti ruotati o con scorrimento nell'automap a texture, automap in sovrapposizione, Win64.
 - Non verificato della fetta 9: 3d floor, flat ruotati, luci dinamiche da GLDEFS (rami senza chiamate GL nei livelli di prova), Win64; le classi di raccolta non hanno test DUnitX (leggono i record del motore): la prova e' il flusso GL. `gl_setup` e `gl_slopes` della fetta 4 restano come sono. Le `-timedemo` dei passi 9c e 9d sono state misurate con il PC carico (dispersione fino al 40%): da rifare a PC scarico.
 - Le misure di `-timedemo` sono fatte con l'OpenGL della VM (Mesa/SVGA3D, 12-14 fotogrammi al secondo) e con altri processi sul PC: la dispersione tra due esecuzioni uguali arriva al 2-3%.
+
+## Speed Haste sul motore (#168, 2026-11-12)
+
+- **Eccezione inghiottita nei `.dpr` dei giochi**: `try DoomMain except I_FlashCachedOutput; end;` (`Doom32.dpr`, `GLDoom32.dpr`, `Radix32.dpr`, `SpeedHaste32.dpr`...) cattura un'eccezione del ciclo principale in Release, non chiama il crash logger (`i_crashlog`) e il programma esce con codice 0 senza `crash.txt` ne' righe di chiusura. Trovato con `SpeedHaste32` (access violation in `R_DrawPSprite`). Proposta: nell'`except` scrivere classe e indirizzo su stderr e uscire con un codice diverso da 0. Non fatto: tocca i `.dpr` di tutti i giochi.
+- **`R_DrawPSprite` senza controllo dei fotogrammi** (`Base\r_things.pas`): uno sprite dell'arma senza fotogrammi (`numframes = 0`, `spriteframes = nil`) e' letto lo stesso; `R_ProjectSprite` ha gia' il ripiego. Ora la protezione c'e' solo sotto `{$IFDEF SPEED}` (per non cambiare il codice compilato degli altri giochi senza rifare le demo); va resa generale con una prova `-timedemo`.
+- **`Invalid WAD file speedh.jcl` / `Unknown file type`**: due avvisi all'avvio di `SpeedHaste32` (e di `Radix32` per `radix.dat`): dopo la traduzione il file dei dati e' proposto anche al lettore dei WAD e al file system PAK. Innocui, non indagati.
+- Speed: che cosa manca per il gioco e' in `Libs\Speed\CLAUDE.md` ("Cosa resta").
