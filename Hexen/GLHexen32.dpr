@@ -1094,6 +1094,7 @@ uses
   DelphiDoom.GlScene.Light in '..\Libs\GlScene\DelphiDoom.GlScene.Light.pas',
   DelphiDoom.Engine.GlScene.Types in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.Types.pas',
   DelphiDoom.Engine.GlScene.FlatCollector in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatCollector.pas',
+  DelphiDoom.Engine.GlScene.WallCollector in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallCollector.pas',
   DelphiDoom.GlAutomap.Types in '..\Libs\GlAutomap\DelphiDoom.GlAutomap.Types.pas',
   DelphiDoom.GlAutomap.Intf in '..\Libs\GlAutomap\DelphiDoom.GlAutomap.Intf.pas',
   DelphiDoom.GlAutomap.DisplayList in '..\Libs\GlAutomap\DelphiDoom.GlAutomap.DisplayList.pas',

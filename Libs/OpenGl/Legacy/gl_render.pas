@@ -45,7 +45,8 @@ uses
   DelphiDoom.GlScene.Types,
   DelphiDoom.GlScene.DrawList,
   DelphiDoom.Engine.GlScene.Types,
-  DelphiDoom.Engine.GlScene.FlatCollector;
+  DelphiDoom.Engine.GlScene.FlatCollector,
+  DelphiDoom.Engine.GlScene.WallCollector;
 
 //==============================================================================
 //
@@ -95,6 +96,26 @@ function gld_LightTable: PGlSceneLightTable;
 //
 //==============================================================================
 procedure gld_ConfigureFlatCollector(const ACollector: TEngineGlSceneFlatCollector);
+
+//==============================================================================
+//
+// gld_FlatCollector
+//
+// The collector given with gld_ConfigureFlatCollector: the walls give it the planes that fill
+// the gaps of the missing textures
+//
+//==============================================================================
+function gld_FlatCollector: TEngineGlSceneFlatCollector;
+
+//==============================================================================
+//
+// gld_ConfigureWallCollector
+//
+// The class that collects the walls of a frame (gld_AddWall): gl_render owns it from then on.
+// Without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureWallCollector(const ACollector: TEngineGlSceneWallCollector);
 
 //==============================================================================
 //
@@ -1335,9 +1356,6 @@ type
     loop: GLLoopDef; // the loops itself
   end;
 
-var
-  gl_segs: PGLSegArray = nil;
-
 type
   gl_strip_coords_t = record
     v: array[0..3] of array [0..2] of GLfloat;
@@ -1350,12 +1368,13 @@ var
   gld_drawlist: TGlSceneDrawList = nil;
   // collects the flats of the frame, given by the composition root (gld_ConfigureFlatCollector)
   gld_flats: TEngineGlSceneFlatCollector = nil;
+  // collects the walls of the frame, given by the composition root (gld_ConfigureWallCollector)
+  gld_walls: TEngineGlSceneWallCollector = nil;
 
 // this is the list for all sectors to the loops
   sectorloops: PGLSectorArray;
 
   rendermarker: byte = 0;
-  segrendered: PByteArray; // true if sector rendered (only here for malloc)
 
 {*****************************
  *
@@ -1452,6 +1471,28 @@ end;
 
 //==============================================================================
 //
+// gld_FlatCollector
+//
+//==============================================================================
+function gld_FlatCollector: TEngineGlSceneFlatCollector;
+begin
+  result := gld_flats;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureWallCollector
+//
+//==============================================================================
+procedure gld_ConfigureWallCollector(const ACollector: TEngineGlSceneWallCollector);
+begin
+  if gld_walls <> ACollector then
+    gld_walls.Free;
+  gld_walls := ACollector;
+end;
+
+//==============================================================================
+//
 // gld_AddFlatLoop
 //
 // A convex polygon of a flat (a fan of the points) is added to the vertex arrays and to the
@@ -1540,11 +1581,6 @@ begin
 
   gld_flats.BeginLevel(numsectors);
 
-  segrendered := Z_Malloc2(numsegs * SizeOf(byte), PU_LEVEL, nil);
-  if segrendered = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array segrendered');
-  ZeroMemory(segrendered, numsegs * SizeOf(byte));
-
   gld_vertexes := nil;
   gld_texcoords := nil;
   gld_max_vertexes := 0;
@@ -1617,7 +1653,6 @@ begin
 end;
 
 var
-  dodrawsky: boolean;
   didfirstscreensync: boolean = false;
 
 var
@@ -1725,7 +1760,7 @@ begin
   inc(rendermarker);
   gld_drawlist.BeginFrame(rendermarker);
   gld_flats.BeginFrame(rendermarker);
-  dodrawsky := false;
+  gld_walls.BeginFrame(rendermarker, yaw, zCamera);
   numdlitems := 0;
 
   if gl_renderwireframe then
@@ -1854,278 +1889,6 @@ end;
  * Walls         *
  *               *
  *****************)
-
-const
-  SMALLDELTA = 0.001;
-
-//==============================================================================
-//
-// CALC_Y_VALUES
-//
-//==============================================================================
-procedure CALC_Y_VALUES(w: PGLWall; var lineheight: float; floor_height, ceiling_height: integer);
-begin
-  w.ytop := ceiling_height / MAP_SCALE + SMALLDELTA;
-  w.ybottom := floor_height / MAP_SCALE - SMALLDELTA;
-  lineheight := abs((ceiling_height - floor_height) / FRACUNIT);
-end;
-
-//==============================================================================
-//
-// CALC_Y_VALUES2
-//
-//==============================================================================
-procedure CALC_Y_VALUES2(w: PGLWall; var lineheight: float; floor_height, ceiling_height: integer);
-begin
-  w.ytop := ceiling_height / MAP_SCALE + SMALLDELTA;
-  w.ybottom := floor_height / MAP_SCALE - SMALLDELTA;
-  lineheight := (ceiling_height - floor_height) / FRACUNIT;
-end;
-
-//==============================================================================
-//
-// OU_MID
-//
-//==============================================================================
-function OU_MID(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.textureoffset + sd.midtextureoffset + seg.offset) / FRACUNIT) * tex.inv_buffer_width;
-end;
-
-//==============================================================================
-//
-// OU_BOT
-//
-//==============================================================================
-function OU_BOT(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.textureoffset + sd.bottomtextureoffset + seg.offset) / FRACUNIT) * tex.inv_buffer_width;
-end;
-
-//==============================================================================
-//
-// OU_TOP
-//
-//==============================================================================
-function OU_TOP(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.textureoffset + sd.toptextureoffset + seg.offset) / FRACUNIT) * tex.inv_buffer_width;
-end;
-
-//==============================================================================
-//
-// OV_MID
-//
-//==============================================================================
-function OV_MID(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.rowoffset + sd.midrowoffset) / FRACUNIT) * tex.inv_buffer_height;
-end;
-
-//==============================================================================
-//
-// OV_BOT
-//
-//==============================================================================
-function OV_BOT(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.rowoffset + sd.bottomrowoffset) / FRACUNIT) * tex.inv_buffer_height;
-end;
-
-//==============================================================================
-//
-// OV_TOP
-//
-//==============================================================================
-function OV_TOP(tex: PGLTexture; seg: Pseg_t): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.rowoffset + sd.toprowoffset) / FRACUNIT) * tex.inv_buffer_height;
-end;
-
-//==============================================================================
-//
-// OV_PEG
-//
-//==============================================================================
-function OV_PEG(tex: PGLTexture; seg: Pseg_t; v_offset: integer): float;
-var
-  sd: Pside_t;
-begin
-  sd := seg.sidedef;
-  result := ((sd.rowoffset + sd.bottomrowoffset - v_offset) / FRACUNIT) * tex.inv_buffer_height;
-end;
-
-//==============================================================================
-//
-// CALC_TEX_VALUES_TOP
-//
-//==============================================================================
-procedure CALC_TEX_VALUES_TOP(w: PGLWall; seg: Pseg_t; peg: boolean; linelength, lineheight: float);
-var
-  tex: PGLTexture;
-begin
-  w.flag := GLDWF_TOP;
-  tex := w.gltexture;
-  w.ul := OU_TOP(tex, seg);
-  w.ur := w.ul + (linelength * tex.inv_buffer_width);
-  if peg then
-  begin
-    w.vb := OV_TOP(tex, seg) + (tex.height / tex.tex_height);
-    w.vt := w.vb - (lineheight * tex.inv_buffer_height);
-  end
-  else
-  begin
-    w.vt := OV_TOP(tex, seg);
-    w.vb := w.vt + (lineheight * tex.inv_buffer_height);
-  end;
-end;
-
-//==============================================================================
-//
-// CALC_TEX_VALUES_MIDDLE1S
-//
-//==============================================================================
-procedure CALC_TEX_VALUES_MIDDLE1S(w: PGLWall; seg: Pseg_t; peg: boolean; linelength, lineheight: float);
-var
-  tex: PGLTexture;
-begin
-  w.flag := GLDWF_M1S;
-  tex := w.gltexture;
-  w.ul := OU_MID(tex, seg);
-  w.ur := w.ul + (linelength * tex.inv_buffer_width);
-  if peg then
-  begin
-    w.vb := OV_MID(tex, seg) + tex.heightscale;
-    w.vt := w.vb - (lineheight * tex.inv_buffer_height);
-  end
-  else
-  begin
-    w.vt := OV_MID(tex, seg);
-    w.vb := w.vt + (lineheight * tex.inv_buffer_height);
-  end;
-end;
-
-//==============================================================================
-//
-// CALC_TEX_VALUES_MIDDLETS
-//
-//==============================================================================
-procedure CALC_TEX_VALUES_MIDDLETS(w: PGLWall; seg: Pseg_t; peg: boolean; linelength, lineheight: float);
-var
-  tex: PGLTexture;
-begin
-  w.flag := GLDWF_MTS;
-  tex := w.gltexture;
-  w.ul := OU_MID(tex, seg);
-  w.ur := w.ul + (linelength * tex.inv_buffer_width);
-  if peg then
-  begin
-    w.vb := OV_MID(tex, seg) + tex.heightscale;
-    w.vt := w.vb - (lineheight * tex.inv_buffer_height);
-  end
-  else
-  begin
-    w.vt := OV_MID(tex, seg);
-    w.vb := w.vt + (lineheight * tex.inv_buffer_height);
-  end;
-end;
-
-//==============================================================================
-//
-// CALC_TEX_VALUES_BOTTOM
-//
-//==============================================================================
-procedure CALC_TEX_VALUES_BOTTOM(w: PGLWall; seg: Pseg_t; peg: boolean; linelength, lineheight: float; v_offset: integer);
-var
-  tex: PGLTexture;
-begin
-  w.flag := GLDWF_BOT;
-  tex := w.gltexture;
-  w.ul := OU_BOT(tex, seg);
-  w.ur := w.ul + (linelength / tex.realtexwidth);
-  if peg then
-  begin
-    w.vb := OV_PEG(tex, seg, v_offset) + tex.heightscale;
-    w.vt := w.vb - lineheight * tex.inv_buffer_height;
-  end
-  else
-  begin
-    w.vt := OV_BOT(tex, seg);
-    w.vb := w.vt + lineheight * tex.inv_buffer_height;
-  end;
-end;
-
-{$IFDEF DOOM}
-
-//==============================================================================
-//
-// gld_GetSkyTexture
-//
-//==============================================================================
-function gld_GetSkyTexture(const w: PGLWall): integer;
-begin
-  result := skytexture;
-  if w.glseg.frontsector.sky and PL_SKYFLAT <> 0 then
-    result := texturetranslation[sides[lines[frontsector.sky and not PL_SKYFLAT].sidenum[0]].toptexture];
-end;
-
-//==============================================================================
-//
-// gld_GetSkyTextureFlag
-//
-//==============================================================================
-function gld_GetSkyTextureFlag(const w: PGLWall): integer;
-begin
-  result := GLDWF_SKY;
-  if w.glseg.frontsector.sky and PL_SKYFLAT <> 0 then
-    if lines[frontsector.sky and not PL_SKYFLAT].special = 271 then
-      result := GLDWF_SKYFLIP;
-end;
-{$ENDIF}
-
-//==============================================================================
-//
-// ADDSKYTEXTURE
-//
-//==============================================================================
-procedure ADDSKYTEXTURE(wall: PGLWall);
-begin
-  wall.gltexture := gld_RegisterTexture({$IFDEF DOOM}gld_GetSkyTexture(wall){$ELSE}skytexture{$ENDIF}, false);
-  wall.gltexture.textype := GLDT_SKY;
-  wall.skyyaw := -2.0 * ((yaw + 90.0) / 90.0);
-  wall.skyymid := 200.0 / 319.5;
-  wall.flag := {$IFDEF DOOOM}gld_GetSkyTextureFlag(wall){$ELSE}GLDWF_SKY{$ENDIF};
-  dodrawsky := true;
-end;
-
-//==============================================================================
-//
-// ADDWALL
-//
-//==============================================================================
-procedure ADDWALL(wall: PGLWall);
-begin
-  wall.blend := not ((wall.flag in [GLDWF_SKY, GLDWF_SKYFLIP, GLDWF_TOP, GLDWF_M1S, GLDWF_BOT]) or (wall.alpha > 0.999));
-  PGLWall(gld_drawlist.AddWall)^ := wall^;
-end;
 
 //==============================================================================
 // gld_SetupFloodStencil
@@ -2680,486 +2443,13 @@ begin
 end;
 
 //==============================================================================
-// gld_AddMidWall
-//
-// JVAL: 3d floors
-//
-//==============================================================================
-procedure gld_AddMidWall(seg: Pseg_t; const ssec, msec: Psector_t);
-var
-  wall: GLWall;
-  temptex: PGLTexture;
-  rellight: integer;
-  texid: integer;
-  line: Pline_t;
-  other: Psector_t;
-begin
-  wall.glseg := @gl_segs[seg.iSegID];
-
-  if gl_fakecontrast and (seg.sidedef.flags and SDF_NOFAKECONTRAST = 0) then
-  begin
-    if seg.linedef.dx = 0 then
-      rellight := 16 // 8
-    else if seg.linedef.dy = 0 then
-      rellight := -16 // -8
-    else
-      rellight := 0;
-  end
-  else
-    rellight := 0;
-
-  wall.light := gld_CalcLightLevel(ssec.lightlevel + rellight + (extralight shl 5));
-  wall.whitefog := ssec.renderflags and SRF_FOG <> 0;
-
-  if ssec = seg.frontsector then
-    other := seg.backsector
-  else
-    other := nil;
-  if other = nil then
-  begin
-    wall.light2 := wall.light;
-    wall.whitefog2 := wall.whitefog;
-    wall.doublelight := False;
-  end
-  else if other.midsec < 0 then
-  begin
-    wall.light2 := wall.light;
-    wall.whitefog2 := wall.whitefog;
-    wall.doublelight := False;
-  end
-  else
-  begin
-    other := @sectors[other.midsec];
-    wall.light2 := gld_CalcLightLevel(other.lightlevel + rellight + (extralight shl 5));
-    wall.whitefog2 := other.renderflags and SRF_FOG <> 0;
-    wall.doublelight := true;
-    wall.ymid := (other.floorheight / MAP_SCALE + other.ceilingheight / MAP_SCALE) / 2;
-  end;
-
-  {$IFDEF DOOM}
-  if seg.linedef.renderflags and LRF_TRANSPARENT <> 0 then
-    wall.alpha := 0.5
-  else
-  {$ENDIF}
-    wall.alpha := 1.0;
-
-  wall.gltexture := nil;
-
-  wall.glseg.x1 := -seg.v1.x / MAP_SCALE;
-  wall.glseg.z1 :=  seg.v1.y / MAP_SCALE;
-  wall.glseg.x2 := -seg.v2.x / MAP_SCALE;
-  wall.glseg.z2 :=  seg.v2.y / MAP_SCALE;
-  wall.ytop := msec.floorheight / MAP_SCALE;
-  wall.ybottom := msec.ceilingheight / MAP_SCALE;
-
-  line := @lines[ssec.midline];
-
-  if line.sidenum[0] > -1 then
-    texid := sides[line.sidenum[0]].midtexture
-  else if line.sidenum[1] > -1 then
-    texid := sides[line.sidenum[1]].midtexture
-  else
-    exit;
-
-  temptex := gld_RegisterTexture(texturetranslation[texid], true);
-  if temptex <> nil then
-  begin
-    wall.gltexture := temptex;
-    CALC_TEX_VALUES_MIDDLETS(
-      @wall, seg, false,
-      seg.length, (msec.ceilingheight - msec.floorheight) / FRACUNIT
-    );
-    ADDWALL(@wall);
-  end;
-end;
-
-//==============================================================================
 //
 // gld_AddWall
 //
 //==============================================================================
 procedure gld_AddWall(seg: Pseg_t; const ispolyobj: boolean = false; const ssec: Psector_t = nil);
-var
-  wall: GLWall;
-  temptex: PGLTexture;
-  frontsector: Psector_t;
-  backsector: Psector_t;
-  lineheight: float;
-  rellight: integer;
-  floor_height, ceiling_height: integer;
-  floormax, ceilingmin, linelen: integer;
-  mip: float;
-  other: Psector_t;
-{$IFDEF DOOM_OR_STRIFE}
-  ftempsec: sector_t; // needed for R_FakeFlat
-  btempsec: sector_t; // needed for R_FakeFlat
-{$ENDIF}
-label
-  bottomtexture;
 begin
-  // mark the segment as visible for auto map
-  seg.linedef.flags := seg.linedef.flags or ML_MAPPED;
-
-  if segrendered = nil then
-    exit;
-
-  if segrendered[seg.iSegID] = rendermarker then
-    exit;
-
-  segrendered[seg.iSegID] := rendermarker;
-
-  if seg.frontsector = nil then
-    exit;
-
-  {$IFDEF DOOM_OR_STRIFE}
-  frontsector := R_FakeFlat(seg.frontsector, @ftempsec, nil, nil, false); // for boom effects
-  {$ELSE}
-  frontsector := seg.frontsector;
-  {$ENDIF}
-  wall.glseg := @gl_segs[seg.iSegID];
-
-  if gl_fakecontrast and (seg.sidedef.flags and SDF_NOFAKECONTRAST = 0) then
-  begin
-    if seg.linedef.dx = 0 then
-      rellight := 16 // 8
-    else if seg.linedef.dy = 0 then
-      rellight := -16 // -8
-    else
-      rellight := 0;
-  end
-  else
-    rellight := 0;
-
-  wall.light := gld_CalcLightLevel(frontsector.lightlevel + rellight + (extralight shl 5));
-  wall.whitefog := frontsector.renderflags and SRF_FOG <> 0;
-
-// JVAL: 3d floors
-  if seg.frontsector.midsec >= 0 then
-  begin
-    other := @sectors[seg.frontsector.midsec];
-    gld_AddMidWall(seg, seg.frontsector, other);
-    wall.light2 := gld_CalcLightLevel(other.lightlevel + rellight + (extralight shl 5));
-    wall.whitefog2 := other.renderflags and SRF_FOG <> 0;
-    wall.doublelight := true;
-    wall.ymid := (other.floorheight / MAP_SCALE + other.ceilingheight / MAP_SCALE) / 2;
-  end
-  else
-  begin
-    wall.light2 := wall.light;
-    wall.whitefog2 := wall.whitefog;
-    wall.doublelight := False;
-  end;
-
-  if seg.backsector <> nil then
-    if seg.backsector.midsec >= 0 then
-      gld_AddMidWall(seg, seg.backsector, @sectors[seg.backsector.midsec]);
-
-  {$IFNDEF HEXEN}
-  if seg.linedef.renderflags and LRF_TRANSPARENT <> 0 then
-    wall.alpha := 0.5
-  else
-  {$ENDIF}
-  {$IFDEF STRIFE}
-    if (seg.linedef.flags and ML_TRANSPARENT1 <> 0) or (seg.linedef.flags and ML_TRANSPARENT2 <> 0) then
-      wall.alpha := 0.75
-    else
-  {$ENDIF}
-    wall.alpha := 1.0;
-
-  wall.gltexture := nil;
-
-  if ispolyobj then
-  begin
-    wall.glseg.x1 := -seg.v1.x / MAP_SCALE;
-    wall.glseg.z1 :=  seg.v1.y / MAP_SCALE;
-    wall.glseg.x2 := -seg.v2.x / MAP_SCALE;
-    wall.glseg.z2 :=  seg.v2.y / MAP_SCALE;
-    wall.ytop := ssec.ceilingheight / MAP_SCALE;
-    wall.ybottom := ssec.floorheight / MAP_SCALE;
-    temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.midtexture], true);
-    if temptex <> nil then
-    begin
-      wall.gltexture := temptex;
-      CALC_TEX_VALUES_MIDDLE1S(
-        @wall, seg, false,
-        seg.length, (ssec.ceilingheight - ssec.floorheight) / FRACUNIT
-      );
-      ADDWALL(@wall);
-    end;
-    exit;
-  end;
-
-  if seg.backsector = nil then // onesided
-  begin
-    if frontsector.ceilingpic = skyflatnum then
-    begin
-      wall.ytop := 255.0;
-      wall.ybottom := frontsector.ceilingheight / MAP_SCALE;
-      ADDSKYTEXTURE(@wall);
-      ADDWALL(@wall);
-    end;
-    if frontsector.floorpic = skyflatnum then
-    begin
-      wall.ytop := frontsector.floorheight / MAP_SCALE;
-      wall.ybottom := -255.0;
-      ADDSKYTEXTURE(@wall);
-      ADDWALL(@wall);
-    end;
-    temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.midtexture], true);
-    if (temptex <> nil) and (frontsector.ceilingheight > frontsector.floorheight) then
-    begin
-      wall.gltexture := temptex;
-      CALC_Y_VALUES(@wall, lineheight, frontsector.floorheight, frontsector.ceilingheight);
-      CALC_TEX_VALUES_MIDDLE1S(
-        @wall, seg, seg.linedef.flags and ML_DONTPEGBOTTOM <> 0,
-        seg.length, lineheight
-      );
-      ADDWALL(@wall);
-    end;
-  end
-  // JVAL: This corrects some problems with MAP18 from Doom2 and other similar maps
-  else if seg.backsector.linecount = 1 then
-  begin
-    if frontsector.ceilingpic = skyflatnum then
-    begin
-      wall.ytop := 255.0;
-      wall.ybottom := frontsector.ceilingheight / MAP_SCALE;
-      ADDSKYTEXTURE(@wall);
-      ADDWALL(@wall);
-    end;
-    if frontsector.floorpic = skyflatnum then
-    begin
-      wall.ytop := frontsector.floorheight / MAP_SCALE;
-      wall.ybottom := -255.0;
-      ADDSKYTEXTURE(@wall);
-      ADDWALL(@wall);
-    end;
-    temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.toptexture], true);
-    if temptex <> nil then
-    begin
-      wall.gltexture := temptex;
-      CALC_Y_VALUES(@wall, lineheight, frontsector.floorheight, frontsector.ceilingheight);
-      CALC_TEX_VALUES_MIDDLE1S(
-        @wall, seg, seg.linedef.flags and ML_DONTPEGBOTTOM <> 0,
-        seg.length, lineheight
-      );
-      ADDWALL(@wall);
-    end;
-  end
-  else // twosided
-  begin
-    {$IFDEF DOOM_OR_STRIFE}
-    backsector := R_FakeFlat(seg.backsector, @btempsec, nil, nil, true); // for boom effects
-    {$ELSE}
-    backsector := seg.backsector;
-    {$ENDIF}
-    // toptexture
-    ceiling_height := frontsector.ceilingheight;
-    floor_height := backsector.ceilingheight;
-    if frontsector.ceilingpic = skyflatnum then
-    begin
-      wall.ytop := 255.0;
-      if  // e6y
-          // Fix for HOM in the starting area on Memento Mori map29 and on map30.
-          // old code: (backsector.ceilingheight==backsector.floorheight) &&
-          ((backsector.ceilingheight = backsector.floorheight) or (backsector.ceilingheight <= frontsector.floorheight)) and
-           (backsector.ceilingpic = skyflatnum) then
-      begin
-        if seg.sidedef.rowoffset > 0 then
-          wall.ybottom := (backsector.floorheight + seg.sidedef.rowoffset) / MAP_SCALE
-        else
-          wall.ybottom := backsector.floorheight / MAP_SCALE;
-        ADDSKYTEXTURE(@wall);
-        ADDWALL(@wall);
-      end
-      else
-      begin
-        if texturetranslation[seg.sidedef.toptexture] <> NO_TEXTURE then
-        begin
-          // e6y
-          // It corrects some problem with sky, but I do not remember which one
-          // old code: wall.ybottom= frontsector.ceilingheight/MAP_SCALE;
-          if frontsector.ceilingheight > backsector.ceilingheight then
-            wall.ybottom := frontsector.ceilingheight / MAP_SCALE
-          else
-            wall.ybottom := backsector.ceilingheight / MAP_SCALE;
-
-          ADDSKYTEXTURE(@wall);
-          ADDWALL(@wall);
-        end
-        else if (backsector.ceilingheight <= frontsector.floorheight) or
-                (backsector.ceilingpic <> skyflatnum) then
-        begin
-          wall.ybottom := backsector.ceilingheight / MAP_SCALE;
-          ADDSKYTEXTURE(@wall);
-          ADDWALL(@wall);
-        end;
-      end;
-    end;
-
-    if (floor_height < ceiling_height) or
-       (backsector.renderflags and SRF_SLOPED <> 0) or // JVAL: Slopes
-       (frontsector.renderflags and SRF_SLOPED <> 0) then
-    begin
-      if not ((frontsector.ceilingpic = skyflatnum) and (backsector.ceilingpic = skyflatnum)) then
-      begin
-        temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.toptexture], true);
-        if temptex <> nil then
-        begin
-          wall.gltexture := temptex;
-          CALC_Y_VALUES2(@wall, lineheight, floor_height, ceiling_height);
-          CALC_TEX_VALUES_TOP(
-            @wall, seg, (seg.linedef.flags and ML_DONTPEGTOP) = 0,
-            seg.length, lineheight
-          );
-          ADDWALL(@wall);
-        end
-        else if (backsector <> nil) and (seg.linedef.renderflags and LRF_ISOLATED = 0) and
-                (frontsector.ceilingpic <> skyflatnum) and (backsector.ceilingpic <> skyflatnum) then
-        begin
-          wall.ytop := ceiling_height / MAP_SCALE + SMALLDELTA;
-          wall.ybottom := floor_height / MAP_SCALE - SMALLDELTA;
-          temptex := gld_RegisterFlat(R_GetLumpForFlat(seg.backsector.ceilingpic), true, seg.backsector.ceilingpic);
-          if temptex <> nil then
-          begin
-            wall.flag := GLDWF_TOPFLUD;
-            wall.gltexture := temptex;
-            ADDWALL(@wall);
-          end;
-//          gld_AddFlat_Extra(seg.frontsector.iSectorID, seg.backsector.ceilingpic, seg.frontsector.floorheight, true, false); // here SOS SOS JVAL 20200105
-        end
-      end;
-    end;
-
-    // midtexture
-    temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.midtexture], true);
-    if temptex <> nil then
-    begin
-      wall.gltexture := temptex;
-      if seg.linedef.flags and ML_DONTPEGBOTTOM > 0 then
-      begin
-        if seg.backsector.ceilingheight <= seg.frontsector.floorheight then
-          goto bottomtexture;
-        floor_height := gl_i_max(seg.frontsector.floorheight, seg.backsector.floorheight) + seg.sidedef.rowoffset;
-        ceiling_height := floor_height + (temptex.realtexheight * FRACUNIT);
-      end
-      else
-      begin
-        if seg.backsector.ceilingheight <= seg.frontsector.floorheight then
-          goto bottomtexture;
-        ceiling_height := gl_i_min(seg.frontsector.ceilingheight, seg.backsector.ceilingheight) + seg.sidedef.rowoffset;
-        floor_height := ceiling_height - (temptex.realtexheight * FRACUNIT);
-      end;
-
-      mip := temptex.realtexheight * temptex.inv_buffer_height;
-      if seg.sidedef.bottomtexture <> 0 then
-        floormax := gl_i_max(seg.frontsector.floorheight, seg.backsector.floorheight)
-      else
-        floormax := floor_height;
-      if seg.sidedef.toptexture <> 0 then
-        ceilingmin := gl_i_min(seg.frontsector.ceilingheight, seg.backsector.ceilingheight)
-      else
-        ceilingmin := ceiling_height;
-      linelen := abs(ceiling_height - floor_height);
-      wall.ytop := gl_i_min(ceilingmin, ceiling_height) / MAP_SCALE;
-      wall.ybottom := gl_i_max(floormax, floor_height) / MAP_SCALE;
-      wall.flag := GLDWF_M2S;
-      wall.ul := OU_MID(temptex, seg);
-      wall.ur := wall.ul + (seg.length * temptex.inv_buffer_width);
-      if floormax <= floor_height then
-        wall.vb := mip
-      else
-        wall.vb := mip * (ceiling_height - floormax) / linelen;
-      if ceilingmin >= ceiling_height then
-        wall.vt := 0.0
-      else
-        wall.vt := mip * (ceiling_height - ceilingmin) / linelen;
-{      if (seg.linedef.tranlump >= 0) and general_translucency)
-        wall.alpha= tran_filter_pct/100.0;}
-      ADDWALL(@wall);
-//      wall.alpha := 1.0;
-    end;
-
-bottomtexture:
-    ceiling_height := backsector.floorheight;
-    floor_height := frontsector.floorheight;
-    if frontsector.floorpic = skyflatnum then
-    begin
-      wall.ybottom := -255.0;
-      if (
-          (backsector.ceilingheight = backsector.floorheight) and
-          (backsector.floorpic = skyflatnum)
-         ) then
-      begin
-        wall.ytop := backsector.floorheight / MAP_SCALE;
-        ADDSKYTEXTURE(@wall);
-        ADDWALL(@wall);
-      end
-      else
-      begin
-        if texturetranslation[seg.sidedef.bottomtexture] <> NO_TEXTURE then
-        begin
-          wall.ytop := frontsector.floorheight / MAP_SCALE;
-          ADDSKYTEXTURE(@wall);
-          ADDWALL(@wall);
-        end
-        else
-          if (backsector.floorheight >= frontsector.ceilingheight) or
-             (backsector.floorpic <> skyflatnum) then
-          begin
-            wall.ytop := backsector.floorheight / MAP_SCALE;
-            ADDSKYTEXTURE(@wall);
-            ADDWALL(@wall);
-          end;
-      end;
-    end;
-    if (floor_height < ceiling_height) or
-       (backsector.renderflags and SRF_SLOPED <> 0) or
-       (frontsector.renderflags and SRF_SLOPED <> 0) then // JVAL: Slopes
-    begin
-      if (frontsector.floorpic <> skyflatnum) and // JVAL 21/5/2011
-         (backsector.floorheight > frontsector.floorheight) and
-         (texturetranslation[seg.sidedef.bottomtexture] = NO_TEXTURE) then
-      begin
-        wall.ytop := ceiling_height / MAP_SCALE + SMALLDELTA;
-        wall.ybottom := floor_height / MAP_SCALE - SMALLDELTA;
-        if wall.ytop <= zCamera then
-        begin
-          temptex := gld_RegisterFlat(R_GetLumpForFlat(seg.backsector.floorpic), true, seg.backsector.floorpic);
-          if temptex <> nil then
-          begin
-            wall.flag := GLDWF_BOTFLUD;
-            wall.gltexture := temptex;
-            ADDWALL(@wall);
-          end;
-        end;
-        //gld_AddFlat_Extra(seg.frontsector.iSectorID, seg.backsector.floorpic, seg.backsector.floorheight, true, false); // here
-      end
-      else
-      begin
-        temptex := gld_RegisterTexture(texturetranslation[seg.sidedef.bottomtexture], true);
-        if temptex <> nil then
-        begin
-          wall.gltexture := temptex;
-          CALC_Y_VALUES2(@wall, lineheight, floor_height, ceiling_height);
-          CALC_TEX_VALUES_BOTTOM(
-            @wall, seg, (seg.linedef.flags and ML_DONTPEGBOTTOM) <> 0,
-            seg.length, lineheight,
-            floor_height - frontsector.ceilingheight
-          );
-          ADDWALL(@wall);
-        end
-        else if (backsector <> nil) and (seg.linedef.renderflags and LRF_ISOLATED = 0) and
-                (frontsector.ceilingpic <> skyflatnum) and (backsector.ceilingpic <> skyflatnum) then
-        begin
-          gld_flats.AddExtra(
-            seg.frontsector.iSectorID, seg.backsector.floorpic, seg.frontsector.floorheight,
-            False, seg.frontsector.renderflags and SRF_RIPPLE_CEILING <> 0,
-            seg.backsector.floorangle, seg.backsector.flooranglex, seg.backsector.floorangley);
-        end;
-      end;
-    end;
-  end;
+  gld_walls.Add(seg, ispolyobj, ssec);
 end;
 
 //==============================================================================
@@ -3168,19 +2458,8 @@ end;
 //
 //==============================================================================
 procedure gld_PreprocessSegs;
-var
-  i: integer;
 begin
-  gl_segs := Z_Malloc(numsegs * SizeOf(TGLSeg), PU_LEVEL, nil);
-  for i := 0 to numsegs - 1 do
-  begin
-    gl_segs[i].x1 := -segs[i].v1.x / MAP_SCALE;
-    gl_segs[i].z1 :=  segs[i].v1.y / MAP_SCALE;
-    gl_segs[i].x2 := -segs[i].v2.x / MAP_SCALE;
-    gl_segs[i].z2 :=  segs[i].v2.y / MAP_SCALE;
-    gl_segs[i].frontsector := segs[i].frontsector;
-    gl_segs[i].backsector := segs[i].backsector;
-  end;
+  gld_walls.BeginLevel(numsegs);
 end;
 
 (*****************
@@ -4676,7 +3955,7 @@ begin
   if zaxisshift then
   begin
     wallrange := GLDWF_BOTFLUD;
-    if not gl_stencilsky and dodrawsky then
+    if not gl_stencilsky and gld_walls.SkyMet then
     begin
       if pitch <= -35.0 then
         gld_DrawSky(true, false)
@@ -4782,7 +4061,7 @@ begin
 
   if zaxisshift then
   begin
-    if gl_drawsky and dodrawsky then
+    if gl_drawsky and gld_walls.SkyMet then
     begin
 
       if gl_stencilsky then
@@ -4876,6 +4155,8 @@ begin
     I_Error('gld_PreprocessLevel(): the draw list is not configured (ComposeEngine was not called)');
   if gld_flats = nil then
     I_Error('gld_PreprocessLevel(): the flat collector is not configured (ComposeEngine was not called)');
+  if gld_walls = nil then
+    I_Error('gld_PreprocessLevel(): the wall collector is not configured (ComposeEngine was not called)');
 
   // preload graphics
   // JVAL
@@ -4946,6 +4227,7 @@ initialization
 
 finalization
   // the collectors use the draw list: they go first
+  gld_ConfigureWallCollector(nil);
   gld_ConfigureFlatCollector(nil);
   gld_ConfigureDrawList(nil);
 
