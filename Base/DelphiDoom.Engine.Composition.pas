@@ -296,6 +296,11 @@ uses
   DelphiDoom.Engine.GlLevel.SectorWorld,
   gl_automap,
   DelphiDoom.GlAutomap.Factory,
+  DelphiDoom.GlScene.Factory,
+  DelphiDoom.Engine.GlScene.FlatCollector,
+  DelphiDoom.Engine.GlScene.WallCollector,
+  DelphiDoom.Engine.GlScene.LightMarker,
+  DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
@@ -680,6 +685,9 @@ begin
     TDynLightFactory.CreateAnimator(LRegistry, LServices));
 {$IFDEF OPENGL}
   gld_ConfigureDynamicLights(LCache);
+  // the sprites of the OpenGL scene mark their lights in the same cache (the draw list is there: ComposeOpenGl)
+  gld_ConfigureSpriteCollector(TEngineGlSceneSpriteCollector.Create(gld_SceneDrawList, gld_LightTable,
+    TEngineGlSceneLightMarker.Create(LCache)));
 {$ELSE}
   R_ConfigureDynamicLights(LCache);
   R_ConfigureSoftLights(LCache);
@@ -1195,10 +1203,19 @@ begin
     TEngineGlAutomapPainter.Create({$IFDEF HEXEN}True{$ELSE}False{$ENDIF}));
 end;
 
+procedure ComposeGlScene;
+begin
+  // classes and not interfaces: gl_render calls them for every wall, flat and sprite of a frame, and owns them
+  gld_ConfigureDrawList(TGlSceneFactory.CreateDrawList(gld_SceneItemSizes));
+  gld_ConfigureFlatCollector(TEngineGlSceneFlatCollector.Create(gld_SceneDrawList, gld_LightTable));
+  gld_ConfigureWallCollector(TEngineGlSceneWallCollector.Create(gld_SceneDrawList, gld_LightTable, gld_FlatCollector));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
   ComposeGlAutomap;
+  ComposeGlScene;
 end;
 {$ENDIF}
 
