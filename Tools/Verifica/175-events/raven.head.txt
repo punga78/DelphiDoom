@@ -1,0 +1,11 @@
+unit raven;
+// made by Compila.ps1: the variables of the interface of raven.pas of xGreed, cut out of the original file as they
+// are (the routines of utils.pas that start, save and load a map read and write them)
+interface
+uses
+  g_delphi,
+  d_ints_h,
+  d_video,
+  protos_h,
+  r_public_h;
+

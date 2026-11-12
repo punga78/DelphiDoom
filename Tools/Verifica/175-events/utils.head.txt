@@ -1,0 +1,13 @@
+unit utils;
+// made by Compila.ps1: the routines of utils.pas of xGreed that start, save and load a map, cut out of the original
+// file as they are (SAVENAME, ActivateSpritesFromMap, ActivateSlopes, DoLoadMapData, LoadNewMap, SaveGame,
+// resetengine, newmap, LoadGame, respawnplayer), after the variables of its interface (cut out too). The routines
+// of the game that they call and that belong to other parts (selectsong, MissionBriefing, EndGame1..3,
+// LoadTextures, loadweapon, ResetMouse) write the call in the log
+interface
+uses
+  protos_h,
+  r_public_h;
+
+function SAVENAME: string;
+
