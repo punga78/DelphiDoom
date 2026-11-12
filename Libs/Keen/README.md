@@ -22,7 +22,12 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Keen\Keen32.dpr`, compos
 | K8b | le azioni degli stati: le **67 funzioni** think, contact e react di `kd_keen.c` (il giocatore, i fiori e le bombe, la scatola dei punti, Keen della mappa del mondo), `kd_act1.c` e `kd_act2.c` (i nemici) e i 16 `Spawn*`; una classe per gruppo coerente, dietro `IKeenActions` e `IKeenActorSpawner` | `ActionContext`, `ActionAdapters`, `PlayState`, `UnmanagedObject`, `PlayerActions`, `ScoreBox`, `CommonActions`, `Act1Actions`, `Act2Actions`, `GameActions` |
 | K9 | i suoni dell'altoparlante del PC (`id_sd.c`): `SDL_PCPlaySound`/`SDL_PCStopSound`/`SDL_PCService` e `SD_PlaySound`/`SD_StopSound`/`SD_SoundPlaying`/`SD_WaitSoundDone` con la priorita'; i 28 suoni sono i primi 28 chunk di `KDREAMS.AUD` | `PcSpeaker`, `SoundManager` (`IKeenSpeaker`, `IKeenSoundManager`) |
 
-**Non fatto**: `CheckKeys`/`DebugKeys`/`GameLoop`/`HandleDeath` e `kd_main.c` (partenza e ciclo di gioco: vanno con `ID_US`), audio digitalizzato (Sound Blaster e Sound Source di `id_sd.c`) e l'AdLib (K10: serve un emulatore OPL2; la musica non esiste: `SD_StartMusic` di Keen Dreams non e' scritta), `ID_US` (menu, finestre, `KDREAMS.CFG`, salvataggi, `NewGame`/`SaveGame`/`LoadGame` di `kd_demo.c`: K11), schermate di avvio (`KDREAMS.CMP`: `lzhuf.c`, `jam_io.c`, `soft.c`: K12), i caratteri proporzionali di `ID_VW` (`VW_DrawPropString`) e il doppio buffer dei menu (`VW_MarkUpdateBlock`, `VW_UpdateScreen`), dissolvenze e cursore. `ID_MM` (memoria XMS/EMS) **non si porta**: array dinamici.
+| K10 | gli effetti AdLib (`SDL_AL*`, `SD_SetSoundMode`, `SD_Default`) sopra l'emulatore di `Libs\Opl`, l'altoparlante come onda quadra, il timer 0 come mixer a 140 servizi al secondo | `AdLibSound`, `AdLibPlayer`, `SoundManager`, `OplAdLib`, `SpeakerSynth`, `AudioMixer`, `AudioLock`, `LockedSoundManager`, `SoundJournal` |
+| K11 | `ID_US` e cio' che gli serve di `ID_VW`: font proporzionale, doppio buffer e cursore, dissolvenze, finestre e stampa, editor di riga, `KDREAMS.CFG`, punteggi, salvataggi `SAVEGMn.KDR`, pannello di controllo con il lettore dell'aiuto, `SaveGame`/`LoadGame` | `Font`, `BufferedVideo`, `Fader`, `UserWindows`, `UserState`, `UserFiles`, `ConfigStore`, `HighScores`, `SaveSlots`, `ControlPanel`, `GameSaver`, `HelpFiles`, `UserTypes`, `UserIntf` |
+| K12 | la libreria SoftLib `KDREAMS.CMP`, l'LZH, l'immagine ILBM del titolo, `DemoLoop` (titolo, punteggi, pannello: **Keen Dreams non ha demo registrate**) | `Lzh`, `ShapeLibrary`, `Shape`, `DemoLoop` |
+| ciclo di gioco | `SetupGameLevel`, `GameLoop`, `HandleDeath`, `GameFinale`, `CheckKeys`, `DebugKeys`, `NewGame`, `StatusWindow`, `GameOver`; il gioco assemblato; lo script di tasti per le esecuzioni senza giocatore | `LevelSetup`, `Game`, `GameFactory` (`TKeenGameSet`), `LateActions`, `LateEvents`, `ScreenPicture`, `Script`, `ScriptedHost`; in `Keen\`: `GameRunner`, `HostClock`, `HostEvents`, `HostAudio`, `Composition` |
+
+**Non fatto**: audio digitalizzato (Sound Blaster e Sound Source di `id_sd.c`: lo shareware non ne ha i dati) e la musica (`SD_StartMusic` di Keen Dreams non e' scritta e non ci sono brani), lo schermo di testo dell'avvio (`US_TextScreen`), `TestSprites`/`DebugMemory` (`FRILLS`), mouse e joystick come dispositivi di gioco in `Keen32` (gli adattatori di K7 esistono, non sono collegati). `ID_MM` (memoria XMS/EMS) **non si porta**: array dinamici. Il censimento file per file e' in [CLAUDE.md](CLAUDE.md).
 
 ## Mappa nome C -> Delphi
 
@@ -65,6 +70,27 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Keen\Keen32.dpr`, compos
 | il `switch` sul numero di funzione e i `Spawn*` | `TKeenGameActions` (`IKeenActions`, `IKeenActorSpawner`, `IKeenPlayerFunctions`: `SpawnScore`, `FixScoreBox`, `KillKeen`) |
 | `c`, `button0held`, `playstate`, `gamestate`, `mapon`, `GivePoints` | `TKeenPlayState` (`IKeenPlayState`) |
 | i 213 `statetype`, le funzioni think/contact/react, `graphkdr.h`, `audiokdr.h` | `StateTable`, `ActionIds` (id numerici), `GraphicsIds`, `AudioIds` (generati da `Tools\Keen\GenerateKeenTables.pl`) |
+
+| `AdLibSound`, `Instrument`, `alOut`, `SDL_ALPlaySound/StopSound/SoundService`, `SDL_StartAL/ShutAL` | `TKeenAdLibSound`, `TKeenAdLibInstrument`, `IKeenAdLibPort`, `TKeenAdLibPlayer` |
+| `SD_SetSoundMode`, `SD_Default`, `AdLibPresent`, `SDL_t0Service` | `TKeenSoundManager.TrySetMode/SetDefault/AdLibPresent`, `TKeenAudioMixer` |
+| `fontstruct`, `VW_MeasurePropString`, `VW_DrawPropString`, `ShiftPropChar`, `BufferToScreen`, `px`, `py`, `fontcolor` | `TKeenFont`, `TKeenBufferedVideo.MeasureString/DrawString/Px/Py/FontColor` |
+| `VWB_*`, `VW_MarkUpdateBlock`, `VWL_UpdateScreenBlocks`, `VW_UpdateScreen`, `VW_InitDoubleBuffer`, `VW_FixRefreshBuffer`, `VW_SetCursor/ShowCursor/HideCursor/MoveCursor`, `VW_WaitVBL` | `TKeenBufferedVideo` (`IKeenBufferedVideo`), `TKeenRefresh.MarkUpdateBlock/UpdateScreenBlocks` (`IKeenUpdateBlocks`) |
+| `colors[][]`, `VW_FadeIn/Out/Up/Down`, `VW_SetDefaultColors`, `screenfaded` | `TKeenFader` (`IKeenFader`) |
+| `US_Print*`, `US_CPrint*`, `US_DrawWindow`, `US_CenterWindow`, `US_ClearWindow`, `US_SaveWindow/RestoreWindow`, `US_LineInput`, `WindowX..`, `PrintX/Y` | `TKeenUserWindows` (`IKeenUserWindows`), `TKeenWindowRec` |
+| `ingame`, `abortgame`, `loadedgame`, `restartgame` | `TKeenUserState` (`IKeenUserState`) |
+| `USL_ReadConfig`, `USL_WriteConfig`, `HighScore`, `Scores[]`, `US_DisplayHighScores`, `US_CheckHighScore` | `TKeenConfigStore`, `TKeenConfigRecord` (656 byte), `TKeenHighScores` (`IKeenHighScores`) |
+| `SaveGame` (la struttura), `Games[]`, `USL_GiveSaveName`, `USL_CheckSavedGames` | `TKeenSaveHeader` (39 byte), `TKeenSaveSlots` (`IKeenSaveSlots`) |
+| `US_ControlPanel`, `USL_*` (item, cursore, `USL_FindRect`, `USL_DoHelp`, i `USL_Ctl*ButtonCustom`), `US_SetLoadSaveHooks` | `TKeenControlPanel` (`IKeenControlPanel`, `IKeenGameHooks`, `IKeenHelpTexts`) |
+| `SaveGame`, `LoadGame` (`kd_demo.c`), `gametype`, `objtype` sul file | `TKeenGameSaver`, `TKeenSaveGameState` (60 byte), `TKeenSaveObject` (76 byte) |
+| `CA_RLEWCompress` | `TKeenRlew.Compress` |
+| `lzhDecompress`, `StartHuff`, `reconst`, `update`, `GetBit`, `GetByte`, `DecodeChar`, `DecodePosition`, `d_code`, `d_len` | `TKeenLzh` |
+| `LoadLIBFile`, `SoftLibHdr`, `FileEntryHdr`, `ChunkHeader` | `TKeenShapeLibrary`, `TKeenSoftLibHeader/Entry/Chunk` |
+| `LoadLIBShape` (la parte ILBM), `struct Shape`, `UnpackEGAShapeToScreen`, `MoveGfxDst` | `TKeenShapeReader.Parse/UnpackToScreen/MoveGfxDst`, `TKeenShape` |
+| `DemoLoop` | `TKeenDemoLoop` |
+| `SetupGameLevel`, `FadeAndUnhook`, `fadecount` | `TKeenLevelSetup` (`IKeenLevelSetup`) |
+| `GameLoop`, `HandleDeath`, `GameFinale`, `CheckKeys`, `DebugKeys`, `NewGame`, `ResetGame`, `StatusWindow`, `GameOver`, `levelnames[]`, `singlestep`, `jumpcheat`, `godmode` | `TKeenGame` (`IKeenGame`, `IKeenGameEvents`, `IKeenGameHooks`) |
+| `InitGame`, `US_Startup`, `US_Setup`, `US_Shutdown` | `TKeenGameSet` (`TKeenGameFactory.CreateGame`, `LoadConfig`, `SaveConfig`) |
+| `Quit(nil)` | `EKeenQuitException` |
 
 Interfacce piccole in `DelphiDoom.Keen.Intf` (`IKeenHuffman`, `IKeenRlew`, `IKeenDataFiles`, `IKeenOffsetTable`, `IKeenChunkLayout`, `IKeenChunkSource`, `IKeenMap`, `IKeenTileInfo`, `IKeenMapSource`, `IKeenGraphics`, `IKeenGameData`, `IKeenMapRenderer`, `IKeenImageEncoder`, `IKeenMapExporter`); `TKeenFactory` e' l'unico punto che conosce le classi.
 

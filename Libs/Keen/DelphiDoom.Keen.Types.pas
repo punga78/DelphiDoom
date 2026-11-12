@@ -143,6 +143,18 @@ const
   KEEN_UPDATEWIDE = KEEN_PORTTILESWIDE + 1;
   KEEN_UPDATEHIGH = KEEN_PORTTILESHIGH;
 
+  // ---- id_vw.h: the colors of the font, that is drawn with XOR over a white window ----
+
+  KEEN_F_WHITE = 0;
+  KEEN_F_BLACK = 15;
+  KEEN_F_FIRSTCOLOR = 14;
+  KEEN_F_SECONDCOLOR = 3;
+  /// <summary>BUFFWIDTH and BUFFHEIGHT of id_vw_ae.asm: the buffer where a string is put together</summary>
+  KEEN_FONT_BUFFER_WIDTH = 50;
+  KEEN_FONT_MAX_HEIGHT = 32;
+  /// <summary>TickBase: tics of TimeCount in a second</summary>
+  KEEN_TICKBASE = 70;
+
 resourcestring
   SKeenDictionaryTooShort = 'Keen: the Huffman dictionary has %d bytes, %d needed';
   SKeenDictionaryBadNode = 'Keen: the node %d of the Huffman dictionary points to %d';
@@ -198,6 +210,22 @@ resourcestring
   SKeenSoundNotCached = 'Keen: SD_PlaySound() - Attempted to play an uncached sound (%d)';
   SKeenAdLibSuspicious = 'Keen: SDL_ALPlaySound() - Seriously suspicious instrument';
   SKeenSoundModeRefused = 'Keen: the device of the sound mode is not there';
+  SKeenFontTooShort = 'Keen: the chunk of a font has %d bytes, %d needed at least';
+  SKeenFontBadHeight = 'Keen: the font says it is %d rows high';
+  SKeenStringTooWide = 'Keen: the string is %d bytes wide and the buffer of the font has %d';
+  SKeenPrintTooWide = 'Keen: US_CPrintLine() - String exceeds width';
+  SKeenCursorNotSet = 'Keen: the cursor has no sprite (VW_SetCursor)';
+  SKeenQuit = 'Keen: the player left the game';
+  SKeenConfigTooShort = 'Keen: the configuration file has %d bytes, %d needed';
+  SKeenSaveTruncated = 'Keen: the saved game ends too soon (%s)';
+  SKeenSaveBadSignature = 'Keen: the file is not a saved game of Keen Dreams';
+  SKeenSaveBadMap = 'Keen: the saved game is of the map %d, that does not exist';
+  SKeenSaveBadState = 'Keen: the saved game has an actor in the state %d, that does not exist';
+  SKeenSaveBadSlot = 'Keen: the saved game %d does not exist (0..%d)';
+  SKeenLzhTruncated = 'Keen: the LZH data end after %d of %d bytes';
+  SKeenLibraryBad = 'Keen: %s is not a library of the SoftLib kind (%s)';
+  SKeenLibraryNoFile = 'Keen: the library has no file %s';
+  SKeenShapeBad = 'Keen: the picture is not an ILBM that the game can show (%s)';
 
 type
   /// <summary>Something wrong with the data or the arguments of the keen library</summary>
@@ -208,6 +236,9 @@ type
 
   /// <summary>A data file that is not in any of the folders</summary>
   EKeenFileNotFoundException = class(EKeenException);
+
+  /// <summary>Quit(nil) of the C and the window that the player closes: the program ends, it is not an error</summary>
+  EKeenQuitException = class(EKeenException);
 
   /// <summary>
   ///   A node of a Huffman dictionary (huffnode): the two values it gives for a 0 and a 1 bit.
