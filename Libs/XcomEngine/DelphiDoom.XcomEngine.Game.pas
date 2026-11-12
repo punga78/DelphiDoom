@@ -19,7 +19,8 @@ uses
   DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.SaveCatalog.Intf, DelphiDoom.XcomEngine.SoundConverter,
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
   DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf,
-  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomEngine.HostUiSounds;
+  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomEngine.HostUiSounds,
+  DelphiDoom.XcomEngine.ExtraOptions.Intf;
 
 type
   /// <summary>ApplicationState of Game::run: what the pauseMode option makes of a game without the focus</summary>
@@ -56,6 +57,7 @@ type
     FLanguageProvider: IXcomLanguageProvider;
     FDisplayModes: IXcomDisplayModes;
     FShaderCatalog: IXcomShaderCatalog;
+    FExtraOptions: IXcomExtraOptions;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
@@ -95,12 +97,14 @@ type
     function LanguageProvider: IXcomLanguageProvider; override;
     function DisplayModes: IXcomDisplayModes; override;
     function ShaderCatalog: IXcomShaderCatalog; override;
+    function ExtraOptions: IXcomExtraOptions; override;
     function OptionsStore: IXcomOptionsStore; override;
     procedure LoadLanguages; override;
     procedure SetVolume(ASound, AMusic, AUi: Integer); override;
     procedure SetLanguageProvider(const AProvider: IXcomLanguageProvider);
     procedure SetDisplayModes(const AModes: IXcomDisplayModes);
     procedure SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
+    procedure SetExtraOptions(const AOptions: IXcomExtraOptions);
     procedure SetOptionsStore(const AStore: IXcomOptionsStore);
     procedure SetAudioDevice(const AAudio: IXcomAudioDevice);
     /// <summary>The music of the game; it is reloaded each time the game adopts data</summary>
@@ -432,6 +436,11 @@ begin
   Result := FShaderCatalog;
 end;
 
+function TXcomGame.ExtraOptions: IXcomExtraOptions;
+begin
+  Result := FExtraOptions;
+end;
+
 function TXcomGame.OptionsStore: IXcomOptionsStore;
 begin
   Result := FOptionsStore;
@@ -498,6 +507,11 @@ end;
 procedure TXcomGame.SetShaderCatalog(const ACatalog: IXcomShaderCatalog);
 begin
   FShaderCatalog := ACatalog;
+end;
+
+procedure TXcomGame.SetExtraOptions(const AOptions: IXcomExtraOptions);
+begin
+  FExtraOptions := AOptions;
 end;
 
 procedure TXcomGame.SetOptionsStore(const AStore: IXcomOptionsStore);

@@ -52,13 +52,14 @@ program Xcom32;
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
+  System.SysUtils, System.Classes, System.IOUtils,
   DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Game,
   DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.MemoryVideoDevice,
   DelphiDoom.XcomEngine.MemoryTrueColorVideoDevice,
   DelphiDoom.XcomEngine.TrueColor.Intf,
+  DelphiDoom.XcomEngine.Screen,
   DelphiDoom.Png.Provider,
   DelphiDoom.Platform.Factory,
   DelphiDoom.Xcom.ImageExporter,
@@ -68,6 +69,7 @@ uses
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
   DelphiDoom.Xcom.TrueColorShot in 'DelphiDoom.Xcom.TrueColorShot.pas',
+  DelphiDoom.Xcom.TrueColorOption in 'DelphiDoom.Xcom.TrueColorOption.pas',
   DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
   DelphiDoom.Xcom.MemoryCount in 'DelphiDoom.Xcom.MemoryCount.pas',
   DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',
@@ -318,7 +320,9 @@ var
   LMeter: IXcomMixerMeter;
   LClock: IClock;
   LStart: Double;
+  LShot: TXcomTrueColorShot;
 begin
+  LShot := nil;
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
   // waveOut of Libs\GameHost, which the mixer of the game sees through its adapter
@@ -345,6 +349,26 @@ begin
     // the clock of Libs\Clock, for the game and for the loop
     LClock := TClockFactory.CreateClock(nil);
     LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
+    // the screenshot key (F12 by default): screenNNN.png in the folder of the user, as OpenXcom does
+    LShot := TXcomTrueColorShot.Create(TPngProvider.Client, TPlatformFactory.CreateFileStore);
+    LGame.OnScreenshot := procedure(AScreen: TXcomScreen)
+      var
+        LPixels: TXcomTrueColorPixels;
+        LWidth: Integer;
+        LHeight: Integer;
+        LNumber: Integer;
+        LName: string;
+      begin
+        if not AScreen.Snapshot(LPixels, LWidth, LHeight) then
+          Exit;
+        LNumber := 0;
+        repeat
+          LName := TPath.Combine(LSettings.UserFolder, Format('screen%.3d.png', [LNumber]));
+          Inc(LNumber);
+        until not TFile.Exists(LName);
+        LShot.Save(LName, LPixels, LWidth, LHeight);
+        Say('Screenshot saved: ' + LName);
+      end;
     LStart := LClock.Seconds;
     while LWindow.Pump and not LGame.IsQuitting do
     begin
@@ -359,6 +383,7 @@ begin
       PrintAudio(LMeter, LOutput);
   finally
     LGame.Free;
+    LShot.Free;
     LMeter := nil;
     // the display draws in the window: its last reference goes before the window
     LDevice := nil;

@@ -19,7 +19,7 @@ uses
 type
   /// <summary>
   ///   The font of the fixtures has cells of 6 x 8 and the fake rasterizer draws rectangles of 3 x 5: with the
-  ///   default tolerance a font fits up to 7 x 10
+  ///   default tolerance a font fits up to 8 x 10
   /// </summary>
   [TestFixture]
   [Category('XcomEngine')]
@@ -58,6 +58,12 @@ type
     procedure DovrebbeRipiegareSullOriginaleSeIlFontNonHaICaratteri;
     [Test]
     procedure DovrebbeAvvisareDeiCaratteriRimastiOriginali;
+    [Test]
+    procedure ConLaRiduzioneDovrebbeProvareMisurePiuPiccoleFinoAEntrare;
+    [Test]
+    procedure ConLaRiduzioneNonDovrebbeScendereSottoLaMisuraMinima;
+    [Test]
+    procedure SenzaLaRiduzioneUnFontTroppoAltoDovrebbeEssereChiestoUnaVolta;
     [Test]
     procedure DovrebbeFunzionareSenzaLog;
     [Test]
@@ -173,10 +179,10 @@ end;
 
 procedure TTestXcomRasterFontOverlay.DovrebbeRipiegareSullOriginaleSeIlFontETroppoLargo;
 begin
-  FRasterizer.DefaultWidth := 8;
+  FRasterizer.DefaultWidth := 9;
   Overlay([Small]).Apply('FONT_SMALL', FFont);
   Assert.AreEqual(1, FFont.ImageCount);
-  Assert.AreEqual(1, FLog.Count('WARN', 'has letters 8 pixels wide and the limit is 7: the original font stays'));
+  Assert.AreEqual(1, FLog.Count('WARN', 'has letters 9 pixels wide and the limit is 8: the original font stays'));
 end;
 
 procedure TTestXcomRasterFontOverlay.DovrebbeRipiegareSullOriginaleSeIlFontNonHaICaratteri;
@@ -187,6 +193,53 @@ begin
   Overlay([Small]).Apply('FONT_SMALL', FFont);
   Assert.AreEqual(1, FFont.ImageCount);
   Assert.AreEqual(1, FLog.Count('WARN', 'has none of the characters of the font: the original font stays'));
+end;
+
+procedure TTestXcomRasterFontOverlay.ConLaRiduzioneDovrebbeProvareMisurePiuPiccoleFinoAEntrare;
+var
+  LSettings: TXcomFontOverlaySettings;
+  LTall: IXcomGlyphRasterizer;
+  LChar: TXcomFontChar;
+begin
+  // at 8 and at 7 pixels the font is 11 rows tall (the limit is 10); at 6 it is the one of the fixture
+  LTall := TFakeGlyphRasterizer.Create(3, 11, 2);
+  FFactory.BySize := [nil, nil, nil, nil, nil, nil, nil, LTall, LTall];
+  LSettings := Small('Tahoma', 8);
+  LSettings.Shrink := True;
+  Overlay([LSettings]).Apply('FONT_SMALL', FFont);
+  Assert.AreEqual(3, FFactory.Calls);
+  Assert.AreEqual(6, FFactory.LastFace.Size);
+  Assert.AreEqual(2, FFont.ImageCount);
+  Assert.IsTrue(FFont.TryGetChar(Ord('A'), LChar));
+  Assert.AreEqual(1, LChar.ImageIndex);
+  Assert.AreEqual(1, FLog.Count('INFO', 'font FONT_SMALL: too large for the cells at 8 pixels, reduced to 6'));
+  Assert.AreEqual(1, FLog.Count('INFO', 'font FONT_SMALL: "Tahoma" 6, 3 characters'));
+  Assert.AreEqual(2, FLog.Lines.Count);
+end;
+
+procedure TTestXcomRasterFontOverlay.ConLaRiduzioneNonDovrebbeScendereSottoLaMisuraMinima;
+var
+  LSettings: TXcomFontOverlaySettings;
+begin
+  FRasterizer.DefaultHeight := 11;
+  LSettings := Small('Tahoma', 8);
+  LSettings.Shrink := True;
+  Overlay([LSettings]).Apply('FONT_SMALL', FFont);
+  // 8, 7, 6, 5 and 4
+  Assert.AreEqual(5, FFactory.Calls);
+  Assert.AreEqual(XCOM_FONT_SMALLEST_SIZE, FFactory.LastFace.Size);
+  Assert.AreEqual(1, FFont.ImageCount);
+  Assert.AreEqual(1, FLog.Count('WARN', '"Tahoma" 4 is 11 pixels tall and the limit is 10: the original font stays'));
+  // said once, for the last size tried
+  Assert.AreEqual(1, FLog.Lines.Count);
+end;
+
+procedure TTestXcomRasterFontOverlay.SenzaLaRiduzioneUnFontTroppoAltoDovrebbeEssereChiestoUnaVolta;
+begin
+  FRasterizer.DefaultHeight := 11;
+  Overlay([Small]).Apply('FONT_SMALL', FFont);
+  Assert.AreEqual(1, FFactory.Calls);
+  Assert.AreEqual(8, FFactory.LastFace.Size);
 end;
 
 procedure TTestXcomRasterFontOverlay.DovrebbeAvvisareDeiCaratteriRimastiOriginali;

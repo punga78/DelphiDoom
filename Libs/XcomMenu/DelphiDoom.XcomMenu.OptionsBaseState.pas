@@ -59,6 +59,8 @@ type
     procedure Init; override;
     procedure Resize(var ADX, ADY: Integer); override;
     property Origin: TXcomOptionsOrigin read FOrigin;
+    /// <summary>The text the tooltip shows now</summary>
+    function TooltipText: string;
   end;
 
 implementation
@@ -66,6 +68,11 @@ implementation
 uses
   DelphiDoom.XcomMenu.BattlescapeTheme,
   DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomMenu.OptionsDefaultsState, DelphiDoom.XcomMenu.OptionsConfirmState;
+
+function TXcomOptionsBaseState.TooltipText: string;
+begin
+  Result := FTxtTooltip.GetText;
+end;
 
 constructor TXcomOptionsBaseState.Create(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin;
   const ANavigator: IXcomOptionsNavigator);

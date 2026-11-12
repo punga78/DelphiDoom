@@ -13,7 +13,8 @@ uses
   System.SysUtils, System.Math, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text;
+  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text,
+  DelphiDoom.XcomUi.WidgetInk;
 
 type
   /// <summary>TextEditConstraint: what can be typed</summary>
@@ -38,6 +39,7 @@ type
     FConstraint: TXcomTextEditConstraint;
     FChange: TXcomActionHandler;
     FState: TXcomState;
+    FInk: TXcomWidgetInk;
     function ExceedsMaxWidth(ACode: Integer): Boolean;
     function IsValidChar(ACode: Integer): Boolean;
     procedure DoBlink;
@@ -68,6 +70,8 @@ type
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256); override;
     procedure Think; override;
     procedure Draw; override;
+    /// <summary>Surface::blit; on the screen the box also leaves its characters at the resolution of the display (issue 184)</summary>
+    procedure Blit(ATarget: TXcomSurface); override;
     procedure OnChange(const AHandler: TXcomActionHandler);
   end;
 
@@ -92,10 +96,12 @@ begin
     end);
   FCaret := TXcomText.Create(16, 17, 0, 0);
   FCaret.SetText('|');
+  FInk := TXcomWidgetInk.Create;
 end;
 
 destructor TXcomTextEdit.Destroy;
 begin
+  FInk.Free;
   FText.Free;
   FCaret.Free;
   FTimer.Free;
@@ -261,6 +267,8 @@ begin
   FText.SetText(LNewValue);
   Clear;
   FText.Blit(Self);
+  FInk.Reset(Width, Height, FText.DetailScale);
+  FInk.Add(FText.Ink, FText.X, FText.Y, FText.Width, FText.Height);
   if FState.Host.Options.KeyboardMode = kmOn then
   begin
     if IsFocused and FBlink then
@@ -288,6 +296,7 @@ begin
       end;
       FCaret.Y := LY;
       FCaret.Blit(Self);
+      FInk.Add(FCaret.Ink, FCaret.X, FCaret.Y, FCaret.Width, FCaret.Height);
     end;
   end;
 end;
@@ -427,6 +436,25 @@ begin
   if Assigned(FChange) then
     FChange(AAction);
   inherited KeyboardPress(AAction);
+end;
+
+procedure TXcomTextEdit.Blit(ATarget: TXcomSurface);
+begin
+  if Visible and not Hidden then
+  begin
+    // the window changed size after the box was drawn
+    if FText.DetailScale <> FInk.Scale then
+      Redraw := True;
+    if Redraw then
+      Draw;
+    if FInk.BeginLayer(ATarget, X, Y) then
+    begin
+      inherited Blit(ATarget);
+      FInk.EndLayer(ATarget);
+      Exit;
+    end;
+  end;
+  inherited Blit(ATarget);
 end;
 
 procedure TXcomTextEdit.OnChange(const AHandler: TXcomActionHandler);

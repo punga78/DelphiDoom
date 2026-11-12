@@ -45,7 +45,17 @@ uses
   DelphiDoom.Tests.XcomSurface.Surface in 'Source\DelphiDoom.Tests.XcomSurface.Surface.pas',
   DelphiDoom.XcomSurface.SurfaceSet in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.SurfaceSet.pas',
   DelphiDoom.XcomSurface.Enlarger in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Enlarger.pas',
-  DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas';
+  DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas',
+  DelphiDoom.XcomSurface.Stroke in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Stroke.pas',
+  DelphiDoom.Tests.XcomSurface.Stroke in 'Source\DelphiDoom.Tests.XcomSurface.Stroke.pas',
+  DelphiDoom.XcomSurface.BlendOverlay in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.BlendOverlay.pas',
+  DelphiDoom.Tests.XcomSurface.BlendOverlay in 'Source\DelphiDoom.Tests.XcomSurface.BlendOverlay.pas',
+  DelphiDoom.XcomSurface.Ink.Types in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Ink.Types.pas',
+  DelphiDoom.XcomSurface.FontDetail.Intf in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.FontDetail.Intf.pas',
+  DelphiDoom.XcomSurface.DetailGlyphBuilder in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.DetailGlyphBuilder.pas',
+  DelphiDoom.XcomSurface.InkPainter in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.InkPainter.pas',
+  DelphiDoom.Tests.XcomSurface.DetailGlyphBuilder in 'Source\DelphiDoom.Tests.XcomSurface.DetailGlyphBuilder.pas',
+  DelphiDoom.Tests.XcomSurface.InkPainter in 'Source\DelphiDoom.Tests.XcomSurface.InkPainter.pas';
 
 var
   Runner: ITestRunner;

@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Surface,
-  DelphiDoom.XcomSurface.Intf;
+  DelphiDoom.XcomSurface.Intf, DelphiDoom.XcomSurface.FontDetail.Intf;
 
 type
   /// <summary>One picture of a font: the size of a character cell, its spacing and the surface with the cells</summary>
@@ -55,11 +55,29 @@ type
     FImages: TList<TXcomFontImage>;
     FChars: TDictionary<Cardinal, TXcomFontChar>;
     FMonospace: Boolean;
+    FDetail: IXcomFontDetail;
+    FOriginal: TXcomFont;
+    FSharesImages: Boolean;
     function EntryOf(ACode: Cardinal): TXcomFontChar;
   public
     constructor Create;
     destructor Destroy; override;
     property Monospace: Boolean read FMonospace write FMonospace;
+    /// <summary>
+    ///   The same characters at the resolution of the display (not in the C++; issue 184): nil, the default, for a
+    ///   font that only has its pictures. Who draws a text asks it; the pictures and the sizes do not change
+    /// </summary>
+    property Detail: IXcomFontDetail read FDetail write FDetail;
+    /// <summary>
+    ///   Remembers the characters as they are now, before other pictures take their place (not in the C++; issue
+    ///   184): Original then draws them. The first call counts; the pictures stay the ones of this font
+    /// </summary>
+    procedure KeepOriginal;
+    /// <summary>
+    ///   The font as it was at KeepOriginal (the pictures of the game under a font of the system), owned by this
+    ///   font; nil, the default, when nothing was laid over it
+    /// </summary>
+    property Original: TXcomFont read FOriginal;
     /// <summary>Adds a picture (taking its ownership) and returns its index</summary>
     function AddImage(AWidth, AHeight, ASpacing: Integer; ASurface: TXcomSurface): Integer;
     /// <summary>
@@ -117,11 +135,30 @@ destructor TXcomFont.Destroy;
 var
   LImage: TXcomFontImage;
 begin
-  for LImage in FImages do
-    LImage.Surface.Free;
+  FOriginal.Free;
+  // the font kept as the original draws from the pictures of the font that keeps it
+  if not FSharesImages then
+    for LImage in FImages do
+      LImage.Surface.Free;
   FImages.Free;
   FChars.Free;
   inherited Destroy;
+end;
+
+procedure TXcomFont.KeepOriginal;
+var
+  LImage: TXcomFontImage;
+  LPair: TPair<Cardinal, TXcomFontChar>;
+begin
+  if Assigned(FOriginal) then
+    Exit;
+  FOriginal := TXcomFont.Create;
+  FOriginal.FSharesImages := True;
+  FOriginal.FMonospace := FMonospace;
+  for LImage in FImages do
+    FOriginal.FImages.Add(LImage);
+  for LPair in FChars do
+    FOriginal.FChars.Add(LPair.Key, LPair.Value);
 end;
 
 function TXcomFont.AddImage(AWidth, AHeight, ASpacing: Integer; ASurface: TXcomSurface): Integer;

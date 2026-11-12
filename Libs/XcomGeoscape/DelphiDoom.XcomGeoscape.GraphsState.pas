@@ -13,6 +13,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface,
+  DelphiDoom.XcomEngine.LineWidget,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextList, DelphiDoom.XcomUi.ToggleTextButton,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.GraphScale;
 
@@ -67,16 +68,16 @@ type
     FBtnFinances: TList<TXcomToggleTextButton>;
     FBtnRegionTotal: TXcomToggleTextButton;
     FBtnCountryTotal: TXcomToggleTextButton;
-    FAlienRegionLines: TList<TXcomWidget>;
-    FXcomRegionLines: TList<TXcomWidget>;
-    FAlienCountryLines: TList<TXcomWidget>;
-    FXcomCountryLines: TList<TXcomWidget>;
-    FIncomeLines: TList<TXcomWidget>;
-    FFinanceLines: TList<TXcomWidget>;
+    FAlienRegionLines: TList<TXcomLineWidget>;
+    FXcomRegionLines: TList<TXcomLineWidget>;
+    FAlienCountryLines: TList<TXcomLineWidget>;
+    FXcomCountryLines: TList<TXcomLineWidget>;
+    FIncomeLines: TList<TXcomLineWidget>;
+    FFinanceLines: TList<TXcomLineWidget>;
     FRegionToggles: TObjectList<TXcomGraphButtonInfo>;
     FCountryToggles: TObjectList<TXcomGraphButtonInfo>;
     FFinanceToggles: TList<Boolean>;
-    function AddLines(AList: TList<TXcomWidget>): TXcomWidget;
+    function AddLines(AList: TList<TXcomLineWidget>): TXcomLineWidget;
     function ElementColor(const AElement: string; ASecond: Boolean): Integer;
     procedure GeoscapeClick(AAction: TXcomAction);
     procedure UfoRegionClick(AAction: TXcomAction);
@@ -131,9 +132,9 @@ end;
 
 { TXcomGraphsState }
 
-function TXcomGraphsState.AddLines(AList: TList<TXcomWidget>): TXcomWidget;
+function TXcomGraphsState.AddLines(AList: TList<TXcomLineWidget>): TXcomLineWidget;
 begin
-  Result := TXcomWidget.Create(320, 200, 0, 0);
+  Result := TXcomLineWidget.Create(Host, 320, 200, 0, 0);
   Add(Result);
   AList.Add(Result);
 end;
@@ -165,12 +166,12 @@ begin
   FBtnRegions := TList<TXcomToggleTextButton>.Create;
   FBtnCountries := TList<TXcomToggleTextButton>.Create;
   FBtnFinances := TList<TXcomToggleTextButton>.Create;
-  FAlienRegionLines := TList<TXcomWidget>.Create;
-  FXcomRegionLines := TList<TXcomWidget>.Create;
-  FAlienCountryLines := TList<TXcomWidget>.Create;
-  FXcomCountryLines := TList<TXcomWidget>.Create;
-  FIncomeLines := TList<TXcomWidget>.Create;
-  FFinanceLines := TList<TXcomWidget>.Create;
+  FAlienRegionLines := TList<TXcomLineWidget>.Create;
+  FXcomRegionLines := TList<TXcomLineWidget>.Create;
+  FAlienCountryLines := TList<TXcomLineWidget>.Create;
+  FXcomCountryLines := TList<TXcomLineWidget>.Create;
+  FIncomeLines := TList<TXcomLineWidget>.Create;
+  FFinanceLines := TList<TXcomLineWidget>.Create;
   FRegionToggles := TObjectList<TXcomGraphButtonInfo>.Create(True);
   FCountryToggles := TObjectList<TXcomGraphButtonInfo>.Create(True);
   FFinanceToggles := TList<Boolean>.Create;
@@ -568,7 +569,7 @@ end;
 
 procedure TXcomGraphsState.ResetScreen;
 var
-  LWidget: TXcomWidget;
+  LWidget: TXcomLineWidget;
   LButton: TXcomToggleTextButton;
 begin
   for LWidget in FAlienRegionLines do
@@ -614,7 +615,7 @@ procedure TXcomGraphsState.DrawEntityLines;
 var
   LSeries: TArray<TArray<Integer>>;
   LToggles: TObjectList<TXcomGraphButtonInfo>;
-  LTargets: TList<TXcomWidget>;
+  LTargets: TList<TXcomLineWidget>;
   LTotals: array[0..11] of Integer;
   LEntry, LIter, LEntity, LValue, LTotal, LUpper, LLower, LFirstCell, LX, LY: Integer;
   LValues: TArray<Integer>;
@@ -707,7 +708,7 @@ begin
   try
     for LEntity := 0 to High(LSeries) do
     begin
-      LTargets[LEntity].Clear;
+      LTargets[LEntity].ClearLines;
       LValues := LSeries[LEntity];
       LPoints.Clear;
       for LIter := 0 to 11 do
@@ -726,13 +727,13 @@ begin
         if LPoints.Count > 1 then
         begin
           LColor := Byte(LToggles[LEntity].Color + 4);
-          TXcomGfx.DrawLine(LTargets[LEntity], LX, LY, LX + 17, LPoints[LPoints.Count - 2], LColor);
+          LTargets[LEntity].Line(LX, LY, LX + 17, LPoints[LPoints.Count - 2], LColor);
         end;
       end;
       LTargets[LEntity].Visible := LToggles[LEntity].Pushed;
     end;
     // the "total" line has its own surface, the last of the list
-    LTargets.Last.Clear;
+    LTargets.Last.ClearLines;
     if FCountry then
       LColor := Byte(ElementColor('countryTotal', True))
     else
@@ -744,7 +745,7 @@ begin
       LY := LScale.PointY(LTotals[LIter]);
       LPoints.Add(LY);
       if LPoints.Count > 1 then
-        TXcomGfx.DrawLine(LTargets.Last, LX, LY, LX + 17, LPoints[LPoints.Count - 2], LColor);
+        LTargets.Last.Line(LX, LY, LX + 17, LPoints[LPoints.Count - 2], LColor);
     end;
     LTargets.Last.Visible := LToggles.Last.Pushed;
   finally
@@ -824,7 +825,7 @@ begin
   for LButton := 0 to 4 do
   begin
     FFinanceLines[LButton].Visible := FFinanceToggles[LButton];
-    FFinanceLines[LButton].Clear;
+    FFinanceLines[LButton].ClearLines;
   end;
   LPoints := TList<Integer>.Create;
   try
@@ -849,7 +850,7 @@ begin
         else
           LOffset := 0;
         if LPoints.Count > 1 then
-          TXcomGfx.DrawLine(FFinanceLines[LButton], LX, LY, LX + 17, LPoints[LPoints.Count - 2],
+          FFinanceLines[LButton].Line(LX, LY, LX + 17, LPoints[LPoints.Count - 2],
             Byte(((LButton div 2) + 1) * 16 + LOffset));
       end;
     end;

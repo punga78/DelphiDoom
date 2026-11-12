@@ -20,8 +20,17 @@ const
   /// <summary>The outline of the fonts of the game: the pixels beside the body and the ones on its corners</summary>
   XCOM_GLYPH_LEVEL_OUTLINE = 4;
   XCOM_GLYPH_LEVEL_CORNER = 5;
-  /// <summary>How much larger than the cells of the original font a font may be, in percent, when nothing is said</summary>
+  /// <summary>
+  ///   How much larger than the cells of the original font a font may be when nothing is said: this percent, or
+  ///   this many pixels when they are more (the fonts of the geoscape have cells 5 pixels wide: a quarter of them
+  ///   is one pixel, and no font of the system fits)
+  /// </summary>
   XCOM_FONT_DEFAULT_TOLERANCE = 25;
+  XCOM_FONT_DEFAULT_ALLOWANCE = 2;
+  /// <summary>The value of Tolerance that asks for the default above</summary>
+  XCOM_FONT_AUTO_TOLERANCE = -1;
+  /// <summary>The smallest size a font is reduced to when it is asked to shrink until it fits</summary>
+  XCOM_FONT_SMALLEST_SIZE = 4;
 
 type
   /// <summary>The font that replaces the pictures: a font of Windows by name, or a file to register first</summary>
@@ -69,8 +78,16 @@ type
     /// <summary>The pixels between two characters; used only with HasSpacing, otherwise derived from the original</summary>
     Spacing: Integer;
     HasSpacing: Boolean;
-    /// <summary>How much taller or wider than the original cell the font may be, in percent</summary>
+    /// <summary>
+    ///   How much taller or wider than the original cell the font may be, in percent; XCOM_FONT_AUTO_TOLERANCE (what
+    ///   Make gives): the default percent or the default pixels, whichever allows more
+    /// </summary>
     Tolerance: Integer;
+    /// <summary>
+    ///   A font too tall or too wide for the cells is tried again one pixel smaller, down to
+    ///   XCOM_FONT_SMALLEST_SIZE, instead of being refused at once
+    /// </summary>
+    Shrink: Boolean;
     /// <summary>Rows added to the position of every character (positive: lower)</summary>
     OffsetY: Integer;
     class function Make(const AFontId, AName: string; ASize: Integer): TXcomFontOverlaySettings; static;
@@ -96,6 +113,15 @@ type
     /// <summary>The limits they were compared with</summary>
     HeightLimit: Integer;
     WidthLimit: Integer;
+    /// <summary>
+    ///   What the same text drawn at another scale needs to fall on the same cells: the first picture that was
+    ///   added, the row of the rasterizer that is the first row of a cell, the row of its baseline, and whether
+    ///   the characters got the outline
+    /// </summary>
+    FirstImage: Integer;
+    LineTop: Integer;
+    Baseline: Integer;
+    Outlined: Boolean;
   end;
 
 implementation
@@ -128,7 +154,7 @@ begin
   Result.Face.Size := ASize;
   Result.Face.Antialias := True;
   Result.Outline := goAuto;
-  Result.Tolerance := XCOM_FONT_DEFAULT_TOLERANCE;
+  Result.Tolerance := XCOM_FONT_AUTO_TOLERANCE;
 end;
 
 end.

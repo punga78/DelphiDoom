@@ -15,6 +15,7 @@ uses
   System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options,
   DelphiDoom.XcomEngine.OptionInfo, DelphiDoom.XcomEngine.OptionTable, DelphiDoom.XcomEngine.KeyNames,
+  DelphiDoom.XcomEngine.ExtraOptions.Intf,
   DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.FolderOpener.Intf, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Slider, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsNavigator.Intf,
   DelphiDoom.XcomMenu.OptionsControlsState, DelphiDoom.XcomMenu.OptionsAdvancedState,
@@ -137,6 +138,18 @@ type
     procedure Open(const APath: string);
   end;
 
+  /// <summary>Two settings that OpenXcom does not have, the second one on</summary>
+  TFakeExtraOptions = class(TInterfacedObject, IXcomExtraOptions)
+  public
+    Values: array[0..1] of Boolean;
+    function Heading: string;
+    function Count: Integer;
+    function Title(AIndex: Integer): string;
+    function Description(AIndex: Integer): string;
+    function IsOn(AIndex: Integer): Boolean;
+    procedure SetOn(AIndex: Integer; AValue: Boolean);
+  end;
+
   TFakeNav = class(TInterfacedObject, IXcomOptionsNavigator)
   public
     function CreateCategory(ACategory: TXcomOptionsCategory; AOrigin: TXcomOptionsOrigin;
@@ -180,6 +193,14 @@ type
     procedure AdvancedIlTastoDestroAbbassa;
     [Test]
     procedure AdvancedLeVelocitaSaltanoDiDieci;
+[Test]
+    procedure AdvancedSenzaImpostazioniInPiuHaLeRigheDiOpenXcom;
+    [Test]
+    procedure AdvancedLeImpostazioniInPiuSeguonoLUltimaSezione;
+    [Test]
+    procedure AdvancedUnClicSuUnaImpostazioneInPiuLaInverte;
+    [Test]
+    procedure AdvancedUnaImpostazioneInPiuHaLaSuaDescrizione;
     [Test]
     procedure GeoscapeIlCursoreDellaVelocitaCambiaLOpzione;
     [Test]
@@ -662,6 +683,38 @@ begin
   Assert.AreEqual(3, Integer(Length(TXcomSoundConverter.WithVolume([1, 2, 3], 10))));
 end;
 
+{ TFakeExtraOptions }
+
+function TFakeExtraOptions.Heading: string;
+begin
+  Result := 'EXTRA';
+end;
+
+function TFakeExtraOptions.Count: Integer;
+begin
+  Result := Length(Values);
+end;
+
+function TFakeExtraOptions.Title(AIndex: Integer): string;
+begin
+  Result := 'Setting ' + IntToStr(AIndex);
+end;
+
+function TFakeExtraOptions.Description(AIndex: Integer): string;
+begin
+  Result := 'What the setting ' + IntToStr(AIndex) + ' does';
+end;
+
+function TFakeExtraOptions.IsOn(AIndex: Integer): Boolean;
+begin
+  Result := Values[AIndex];
+end;
+
+procedure TFakeExtraOptions.SetOn(AIndex: Integer; AValue: Boolean);
+begin
+  Values[AIndex] := AValue;
+end;
+
 { TFakeFolderOpener }
 
 constructor TFakeFolderOpener.Create;
@@ -881,6 +934,104 @@ begin
   Assert.IsFalse(FWorld.Game.Options.GetBool('autosave'));
   ClickRow(LState.List, 2);
   Assert.IsTrue(FWorld.Game.Options.GetBool('autosave'));
+end;
+
+procedure TTestXcomOptionsMoreScreens.AdvancedSenzaImpostazioniInPiuHaLeRigheDiOpenXcom;
+var
+  LState: TXcomOptionsAdvancedState;
+  LInfo: TXcomOptionInfo;
+  LRows: Integer;
+begin
+  LState := TXcomOptionsAdvancedState.Create(FWorld.Game, ooMenu, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  // three headings, two empty rows between the sections and a row for every setting with a description
+  LRows := 5;
+  for LInfo in TXcomOptionTable.All do
+    if (LInfo.Kind <> okKey) and (LInfo.Description <> '') and ((LInfo.Category = 'STR_GENERAL')
+      or (LInfo.Category = 'STR_GEOSCAPE') or (LInfo.Category = 'STR_BATTLESCAPE')) then
+      Inc(LRows);
+  Assert.AreEqual(LRows, LState.List.GetRows);
+end;
+
+procedure TTestXcomOptionsMoreScreens.AdvancedLeImpostazioniInPiuSeguonoLUltimaSezione;
+var
+  LState: TXcomOptionsAdvancedState;
+  LExtra: TFakeExtraOptions;
+  LExtraRef: IXcomExtraOptions;
+  LPlain: Integer;
+  LRows: Integer;
+begin
+  LState := TXcomOptionsAdvancedState.Create(FWorld.Game, ooMenu, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  LPlain := LState.List.GetRows;
+  FWorld.Game.PopState;
+  LExtra := TFakeExtraOptions.Create;
+  LExtraRef := LExtra;
+  LExtra.Values[1] := True;
+  FWorld.Game.SetExtraOptions(LExtraRef);
+  LState := TXcomOptionsAdvancedState.Create(FWorld.Game, ooMenu, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  LRows := LState.List.GetRows;
+  // an empty row, the heading and the two settings; the rows of OpenXcom are where they were
+  Assert.AreEqual(LPlain + 4, LRows);
+  Assert.AreEqual('', LState.List.GetCellText(LPlain, 0));
+  Assert.AreEqual('EXTRA', LState.List.GetCellText(LPlain + 1, 0));
+  Assert.AreEqual('Setting 0', LState.List.GetCellText(LPlain + 2, 0));
+  Assert.AreEqual(FWorld.Game.Language.GetString('STR_NO').Text, LState.List.GetCellText(LPlain + 2, 1));
+  Assert.AreEqual('Setting 1', LState.List.GetCellText(LPlain + 3, 0));
+  Assert.AreEqual(FWorld.Game.Language.GetString('STR_YES').Text, LState.List.GetCellText(LPlain + 3, 1));
+end;
+
+procedure TTestXcomOptionsMoreScreens.AdvancedUnClicSuUnaImpostazioneInPiuLaInverte;
+var
+  LState: TXcomOptionsAdvancedState;
+  LExtra: TFakeExtraOptions;
+  LExtraRef: IXcomExtraOptions;
+  LLast: Integer;
+begin
+  LExtra := TFakeExtraOptions.Create;
+  LExtraRef := LExtra;
+  FWorld.Game.SetExtraOptions(LExtraRef);
+  LState := TXcomOptionsAdvancedState.Create(FWorld.Game, ooMenu, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  LState.List.ScrollDown(True);
+  LLast := LState.List.GetRows - 1;
+  ClickRow(LState.List, LLast);
+  Assert.IsTrue(LExtra.Values[1]);
+  Assert.IsFalse(LExtra.Values[0]);
+  Assert.AreEqual(FWorld.Game.Language.GetString('STR_YES').Text, LState.List.GetCellText(LLast, 1));
+  ClickRow(LState.List, LLast);
+  Assert.IsFalse(LExtra.Values[1]);
+  // the heading and the empty row before it are not settings
+  ClickRow(LState.List, LLast - 2);
+  Assert.IsFalse(LExtra.Values[0] or LExtra.Values[1]);
+end;
+
+procedure TTestXcomOptionsMoreScreens.AdvancedUnaImpostazioneInPiuHaLaSuaDescrizione;
+var
+  LState: TXcomOptionsAdvancedState;
+  LExtraRef: IXcomExtraOptions;
+  LY: Integer;
+begin
+  LExtraRef := TFakeExtraOptions.Create;
+  FWorld.Game.SetExtraOptions(LExtraRef);
+  LState := TXcomOptionsAdvancedState.Create(FWorld.Game, ooMenu, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  LState.List.ScrollDown(True);
+  LY := LState.List.Y;
+  while LY < LState.List.Y + LState.List.Height do
+  begin
+    MoveTo(LState.List.X + 20, LY);
+    if LState.List.GetSelectedRow = LState.List.GetRows - 2 then
+      Break;
+    Inc(LY);
+  end;
+  Assert.AreEqual('What the setting 0 does', LState.TooltipText);
 end;
 
 procedure TTestXcomOptionsMoreScreens.AdvancedUnNumeroSaleEGira;

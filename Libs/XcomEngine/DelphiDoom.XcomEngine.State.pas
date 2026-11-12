@@ -19,7 +19,8 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf,
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.SaveCatalog.Intf,
-  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.UiSounds.Intf;
+  DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.UiSounds.Intf,
+  DelphiDoom.XcomEngine.ExtraOptions.Intf;
 
 type
   TXcomState = class;
@@ -54,6 +55,8 @@ type
     function DisplayModes: IXcomDisplayModes; virtual;
     /// <summary>The OpenGL shaders that the video options list (nil when the host has none)</summary>
     function ShaderCatalog: IXcomShaderCatalog; virtual;
+    /// <summary>The settings the program adds to the ones of OpenXcom (nil when the host has none)</summary>
+    function ExtraOptions: IXcomExtraOptions; virtual;
     /// <summary>Where the options are kept (nil: Options::save and load do nothing)</summary>
     function OptionsStore: IXcomOptionsStore; virtual;
     /// <summary>Game::loadLanguages: loads the language of Options::language and replaces the current one</summary>
@@ -196,6 +199,11 @@ begin
 end;
 
 function TXcomStateHost.ShaderCatalog: IXcomShaderCatalog;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.ExtraOptions: IXcomExtraOptions;
 begin
   Result := nil;
 end;

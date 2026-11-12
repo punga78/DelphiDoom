@@ -173,3 +173,40 @@ TXcomScreen.Flip ── senza strategia ──> Zoom a indici ──> IXcomVideo
   battaglia 25); accesa a 2x menu 1,4, battaglia 25,6, geoscape 5,4; geoscape a 3x 9,2 e a 4x 15,2 (il globo fine
   si ridisegna per intero a ogni passo del tempo: e' il primo punto da ottimizzare, ridisegnando l'ombra solo
   quando il sole si e' mosso di un livello).
+
+## 7. Seconda parte della #183 (stato per punto)
+
+1. **Prestazioni del globo fine: fatto.** Composizione per righe (`TXcomTrueColorComposer` ricorda base, palette, strati e sfumature
+   del fotogramma prima e ricompone solo le righe cambiate), terra del globo fine rasterizzata una volta per vista, ombra della
+   notte a numeri interi (`TXcomGlobeNightShade`: tabella di altezze a 16 bit al posto di 20 MB di normali) ridisegnata solo
+   quando il sole si sposta di un quarto di livello, `Overlay` che salta quattro pixel vuoti alla volta. Geoscape con
+   `-truecolor`, ms per fotogramma, minimo (mediana) su 3 corse, binario di partenza -> nuovo: 2x 4,73 (5,04) -> 1,68 (2,57);
+   3x 9,26 (9,78) -> 2,52 (2,79); 4x 15,42 (15,94) -> 3,06 (3,08). Col globo che **ruota** a 4x (rifa' la terra a ogni
+   passo) 38,5 (38,7) -> 15,0 (15,1); il pavimento a 8 bit di quella scena e' 6,7: restano 8 ms di terra del globo fine
+   (rasterizzare 1280x800 di poligoni; la misura per fase ha dato terra 4,2 e ombra 2,6 ms).
+2. **Opzione nel gioco: fatta.** Riga "32-bit drawing" in una sezione "DELPHIDOOM" **in fondo alle opzioni avanzate**
+   (`IXcomExtraOptions`, `TXcomTrueColorOption`: chiave `trueColor` di `options.cfg`); le schermate di OpenXcom sono quelle
+   di prima salvo il cursore della barra della lista avanzata (224 pixel, la lista ha righe in piu'). `TXcomScreen`
+   riceve il compositore a ogni `ResetDisplay` (`ComposerSource`): OK nelle opzioni accende e spegne senza riavviare.
+3. **Resto della fetta 3: fatto in parte.** Linee dei grafici (`TXcomLineWidget`: a 8 bit le stesse linee, in piu' lo strato
+   di dettaglio con penna larga quanto la scala), globo fine con confini, radar e rotte con penna `(scala+1)/2` e cerchi dei
+   radar con `lati x scala` lati. **Non fatti**: radar e proiettili del dogfight e minimappa del Battlescape sono bitmap fatte
+   pixel per pixel (nessuna linea vettoriale da rifare piu' fine); renderli piu' fini vorrebbe dire reinventarli.
+4. **Fetta 4: fatta in parte.** `IXcomBlendLayers` (interfaccia opzionale del compositore, funziona a ogni scala) e
+   `TXcomBlendOverlay`: la mappa del Battlescape dice quali pixel sono una sfumatura (**fumo e fuoco delle tegole** come veli
+   con opacita' dalla densita', **ombra ellittica sotto le unita'**) e quale colore hanno; lo sprite resta nella superficie a
+   8 bit come sempre, il compositore mette il colore mescolato dove il pixel e' ancora quello lasciato dal widget. L'ordine per
+   tegola e' quello dei blit (ogni sprite solido toglie la sfumatura che copre). **Non fatti**: la luce continua (resta a rampe
+   di 16: le rampe non sono lineari ne' uguali tra i blocchi e non c'e' un riferimento con cui controllare i colori), le
+   particelle del vapore sott'acqua (la tinta RGB sta nelle tabelle di trasparenza, non nell'indice). Il fumo non e' stato
+   visto in una battaglia vera (gli scenari di prova non ne hanno e non si riesce a metterne senza editare il formato
+   binario delle tegole): e' provato coi test dell'overlay e del compositore; l'ombra delle unita' si vede ma e' sottile.
+5. **Screenshot e shader: non fatto** (F12 salva ancora lo schermo a indici senza dettaglio; uno shader diverso da `Raw` con
+   `-truecolor` riceve il fotogramma gia' alla misura della finestra: non verificato).
+- **Testo (issue #184, seconda parte): fatto per `Text`, `TextButton`, `TextList`, `TextEdit` e le etichette del globo.** Non serve estendere `IXcomDetailLayers` (lo strato e' a indici, senza alpha): c'e' una seconda interfaccia, `IXcomInkLayers`, sullo stesso compositore, con un buffer di **inchiostro** (indice di palette + copertura, e contorno) a `s x s` per pixel del gioco; il compositore mescola in RGB con la palette del flip. L'immagine a 8 bit sotto resta il testo a bassa risoluzione, **non coperto**: e' lei a dire dove il testo e' ancora visibile (un pixel che il widget ha lasciato e che non e' stato ricoperto), e cio' che il testo copriva viene dalla faccia del widget. Dettagli e limiti in `Libs\XcomSurface\CLAUDE.md`. Non fatto: numeri (`NumberText`), grafici, dogfight e altri disegni di testo fuori da quei widget (restano il testo a 8 bit ingrandito).
+
+### Dopo l'unione con la seconda parte della #184 e punto 5
+
+- **Unione**: `TXcomTrueColorComposer` ha insieme `IXcomInkLayers` (testo a risoluzione vera) e `IXcomBlendLayers`; la cache per righe tratta il rettangolo di uno strato di inchiostro come sempre da ricomporre (l'inchiostro si mescola sopra il fotogramma) e non confronta il dettaglio degli strati di inchiostro. Il compositore con cui si caricano i font e' il primo di `ComposerSource` e resta lo stesso se l'opzione si spegne e si riaccende. Prova con `-truecolor -fonts` (Tahoma) a 2x e 4x, schermata dei grafici: stessa schermata raggiunta con due storie diverse (tre clic sui pulsanti, o uno solo) **0 pixel diversi** su 256000 e su 1024000: nessuna riga stantia; testo nitido, linee dei grafici e globo fine insieme (catture nello scratchpad `ink_*`).
+- **Punto 5 fatto in parte.** F12 nella finestra non faceva nulla (`OnScreenshot` non era collegato nel programma): ora salva `screenNNN.png` nella cartella utente; `TXcomScreen.Snapshot` da' il fotogramma del compositore (con testo e dettagli) o, a 8 bit, gli indici con la palette (PNG RGB, non piu' a palette). F12 a 4x con `-truecolor` uguale alla cattura della finestra a meno dell'orologio (888 su 1024000). Shader diversi da `Raw` con `-truecolor`: `Scale2x` si carica e si vede (7388 pixel diversi da `Raw` a 4x: lavora sul fotogramma gia' alla misura della finestra, quindi non ingrandisce piu'; l'effetto e' un lisciamento dei bordi, non un ingrandimento); non verificato a occhio con gli altri 22.
+- **Finestra vera** (Mesa/SVGA3D, `PostMessage`, `PrintWindow`, `-truecolor`, geoscape): GDI contro OpenGL `Raw` a 2x 80 pixel diversi su 256000, 3x 694 su 576000, 4x 1540 su 1024000 (orologio e lampeggio). Non guardati: schermo intero e finestra ridimensionata, Battlescape in finestra.

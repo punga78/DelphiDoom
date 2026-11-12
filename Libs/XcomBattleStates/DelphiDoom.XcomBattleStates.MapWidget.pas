@@ -15,7 +15,8 @@ uses
   System.SysUtils, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Timer,
   DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomBattlescape.Map, DelphiDoom.XcomBattlescape.Camera,
-  DelphiDoom.XcomBattleStates.Session.Intf, DelphiDoom.XcomBattleStates.BattlescapeMessage;
+  DelphiDoom.XcomBattleStates.Session.Intf, DelphiDoom.XcomBattleStates.BattlescapeMessage,
+  DelphiDoom.XcomSurface.BlendOverlay, DelphiDoom.XcomEngine.TrueColor.Intf, DelphiDoom.XcomEngine.Screen;
 
 type
   /// <summary>
@@ -46,6 +47,10 @@ type
     FVisibleMapHeight: Integer;
     FIsLaunchAction: TFunc<Boolean>;
     FHiddenMovement: Boolean;
+    /// <summary>The blends of the map, made when the screen composes in true color (nil otherwise)</summary>
+    FOverlay: TXcomBlendOverlay;
+    procedure PrepareOverlay;
+    procedure LeaveBlends(ATarget: TXcomSurface);
     procedure CameraMouseOver(AAction: TXcomAction);
     procedure UpdateKeyTimer;
     function Option(const AId: string): Integer;
@@ -175,6 +180,8 @@ end;
 
 destructor TXcomMapWidget.Destroy;
 begin
+  FMap.BlendOverlay := nil;
+  FOverlay.Free;
   FObstacleTimer.Free;
   FScrollKeyTimer.Free;
   FScrollMouseTimer.Free;
@@ -223,6 +230,7 @@ end;
 procedure TXcomMapWidget.Draw;
 begin
   Redraw := False;
+  PrepareOverlay;
   FMap.UpdateFieldOfView;
   FMap.PathPreviewed := FSession.Pathfinding.PathPreviewed;
   FMap.NumberedWaypoints := Assigned(FIsLaunchAction) and FIsLaunchAction();
@@ -238,10 +246,46 @@ begin
     Move(FMap.Surface.PixelPointer(0, 0)^, PixelPointer(0, 0)^, Width * Height);
 end;
 
+procedure TXcomMapWidget.PrepareOverlay;
+var
+  LScreen: TXcomScreen;
+begin
+  LScreen := FState.Host.Screen;
+  if (LScreen = nil) or (LScreen.BlendLayers = nil) then
+  begin
+    // the 8 bit path: the map draws what it always drew and tells nobody
+    FMap.BlendOverlay := nil;
+    Exit;
+  end;
+  if (not Assigned(FOverlay)) or (FOverlay.Width <> Width) or (FOverlay.Height <> Height) then
+  begin
+    FOverlay.Free;
+    FOverlay := TXcomBlendOverlay.Create(Width, Height);
+  end;
+  // the palette of the screen as it is now (a fade changes it, the map is drawn again at every frame)
+  FOverlay.SetPalette(LScreen.Palette^);
+  FMap.BlendOverlay := FOverlay;
+end;
+
+procedure TXcomMapWidget.LeaveBlends(ATarget: TXcomSurface);
+var
+  LScreen: TXcomScreen;
+  LLayers: IXcomBlendLayers;
+begin
+  LScreen := FState.Host.Screen;
+  if (FOverlay = nil) or (FMap.BlendOverlay = nil) or (not FOverlay.HasBlends) or FHiddenMovement or (not Visible)
+    or Hidden or (LScreen = nil) or (ATarget <> LScreen.GetSurface) then
+    Exit;
+  LLayers := LScreen.BlendLayers;
+  if Assigned(LLayers) then
+    LLayers.AddBlendLayer(ATarget, X, Y, Width, Height, FOverlay.Valid, FOverlay.Colors, Width);
+end;
+
 procedure TXcomMapWidget.Blit(ATarget: TXcomSurface);
 begin
   Redraw := True;
   inherited Blit(ATarget);
+  LeaveBlends(ATarget);
 end;
 
 procedure TXcomMapWidget.RefreshSelectorPosition;

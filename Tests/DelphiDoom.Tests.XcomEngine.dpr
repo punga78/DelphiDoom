@@ -58,11 +58,19 @@ uses
   DelphiDoom.Tests.XcomEngine.WindowPlacement in 'Source\DelphiDoom.Tests.XcomEngine.WindowPlacement.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorComposer in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorComposer.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorDisplay in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorDisplay.pas',
+  DelphiDoom.Xcom.TrueColorOption in '..\OpenXcom\DelphiDoom.Xcom.TrueColorOption.pas',
+  DelphiDoom.Tests.XcomEngine.TrueColorOption in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorOption.pas',
+  DelphiDoom.Tests.XcomEngine.LineWidget in 'Source\DelphiDoom.Tests.XcomEngine.LineWidget.pas',
   DelphiDoom.Tests.XcomSurface.FakeRasterizer in 'Source\DelphiDoom.Tests.XcomSurface.FakeRasterizer.pas',
   DelphiDoom.Tests.XcomEngine.FontFakes in 'Source\DelphiDoom.Tests.XcomEngine.FontFakes.pas',
   DelphiDoom.Tests.XcomEngine.FontSettingsReader in 'Source\DelphiDoom.Tests.XcomEngine.FontSettingsReader.pas',
   DelphiDoom.Tests.XcomEngine.RasterFontOverlay in 'Source\DelphiDoom.Tests.XcomEngine.RasterFontOverlay.pas',
-  DelphiDoom.Tests.XcomEngine.FontGridGenerator in 'Source\DelphiDoom.Tests.XcomEngine.FontGridGenerator.pas';
+  DelphiDoom.Tests.XcomEngine.FontGridGenerator in 'Source\DelphiDoom.Tests.XcomEngine.FontGridGenerator.pas',
+  DelphiDoom.Tests.XcomEngine.DetailFakes in 'Source\DelphiDoom.Tests.XcomEngine.DetailFakes.pas',
+  DelphiDoom.Tests.XcomEngine.DetailFont in 'Source\DelphiDoom.Tests.XcomEngine.DetailFont.pas',
+  DelphiDoom.Tests.XcomEngine.InkComposer in 'Source\DelphiDoom.Tests.XcomEngine.InkComposer.pas',
+  DelphiDoom.Tests.XcomEngine.TextDetail in 'Source\DelphiDoom.Tests.XcomEngine.TextDetail.pas',
+  DelphiDoom.Tests.XcomEngine.TextOriginal in 'Source\DelphiDoom.Tests.XcomEngine.TextOriginal.pas';
 
 var
   Runner: ITestRunner;

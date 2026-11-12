@@ -39,6 +39,7 @@ type
     FDevice: IXcomVideoDevice;
     FFiltered: IXcomFilteredDisplay;
     FComposer: IXcomFrameComposer;
+    FComposerSource: TXcomFrameComposerSource;
     FSurface: TXcomSurface;
     FDisplay: TBytes;
     FDisplayWidth: Integer;
@@ -97,6 +98,22 @@ type
     ///   composer (a widget then draws only on the game picture)
     /// </summary>
     function DetailLayers: IXcomDetailLayers;
+    /// <summary>
+    ///   The picture the last flip showed as colors, for the screenshot key: the frame of the composer when it
+    ///   showed it (with the finer drawings and the true color texts), else the indexes of the display with the
+    ///   palette. Before the first flip it is a black picture
+    /// </summary>
+    function Snapshot(out APixels: TXcomTrueColorPixels; out AWidth, AHeight: Integer): Boolean;
+    /// <summary>
+    ///   Where a widget leaves the colors of its pixels that are blends (smoke over what is behind it); nil when
+    ///   the screen has no composer or the composer has no such thing
+    /// </summary>
+    function BlendLayers: IXcomBlendLayers;
+    /// <summary>
+    ///   Asked for the composer at every ResetDisplay from when it is given (the options are confirmed with one):
+    ///   without a source the screen keeps the composer of its constructor
+    /// </summary>
+    property ComposerSource: TXcomFrameComposerSource read FComposerSource write FComposerSource;
     /// <summary>Screen::updateScale: the size of the game picture for a scale type</summary>
     class procedure UpdateScale(AOptions: TXcomOptions; AType: Integer; var AWidth, AHeight: Integer;
       AChange: Boolean); static;
@@ -298,6 +315,8 @@ var
   LStyle: IXcomWindowStyle;
   LPlacement: IXcomWindowPlacement;
 begin
+  if Assigned(FComposerSource) then
+    FComposer := FComposerSource();
   LWidth := FOptions.DisplayWidth;
   LHeight := FOptions.DisplayHeight;
   FBaseWidth := FOptions.BaseXResolution;
@@ -381,6 +400,37 @@ begin
   LBands.Left := FLeftBlackBand;
   LBands.Right := FRightBlackBand;
   FComposer.SetGeometry(FBaseWidth, FBaseHeight, FDisplayWidth, FDisplayHeight, LBands);
+end;
+
+function TXcomScreen.Snapshot(out APixels: TXcomTrueColorPixels; out AWidth, AHeight: Integer): Boolean;
+var
+  LLast: IXcomLastFrame;
+  LIndexes: TBytes;
+  LIndex: Integer;
+begin
+  Result := False;
+  APixels := nil;
+  AWidth := FDisplayWidth;
+  AHeight := FDisplayHeight;
+  if FDisplayStale and Supports(FComposer, IXcomLastFrame, LLast) then
+  begin
+    APixels := LLast.LastFrame(AWidth, AHeight);
+    Exit(Length(APixels) = AWidth * AHeight);
+  end;
+  LIndexes := DisplayPixels;
+  if Length(LIndexes) <> AWidth * AHeight then
+    Exit;
+  SetLength(APixels, Length(LIndexes));
+  for LIndex := 0 to High(LIndexes) do
+    APixels[LIndex] := $FF000000 or (Cardinal(FDeferredPalette[LIndexes[LIndex]].Red) shl 16) or
+      (Cardinal(FDeferredPalette[LIndexes[LIndex]].Green) shl 8) or Cardinal(FDeferredPalette[LIndexes[LIndex]].Blue);
+  Result := True;
+end;
+
+function TXcomScreen.BlendLayers: IXcomBlendLayers;
+begin
+  if not Supports(FComposer, IXcomBlendLayers, Result) then
+    Result := nil;
 end;
 
 function TXcomScreen.DetailLayers: IXcomDetailLayers;
