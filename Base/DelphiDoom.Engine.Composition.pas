@@ -299,6 +299,8 @@ uses
   DelphiDoom.GlScene.Factory,
   DelphiDoom.Engine.GlScene.FlatCollector,
   DelphiDoom.Engine.GlScene.WallCollector,
+  DelphiDoom.Engine.GlScene.LightMarker,
+  DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
@@ -683,6 +685,9 @@ begin
     TDynLightFactory.CreateAnimator(LRegistry, LServices));
 {$IFDEF OPENGL}
   gld_ConfigureDynamicLights(LCache);
+  // the sprites of the OpenGL scene mark their lights in the same cache (the draw list is there: ComposeOpenGl)
+  gld_ConfigureSpriteCollector(TEngineGlSceneSpriteCollector.Create(gld_SceneDrawList, gld_LightTable,
+    TEngineGlSceneLightMarker.Create(LCache)));
 {$ELSE}
   R_ConfigureDynamicLights(LCache);
   R_ConfigureSoftLights(LCache);

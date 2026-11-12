@@ -46,7 +46,8 @@ uses
   DelphiDoom.GlScene.DrawList,
   DelphiDoom.Engine.GlScene.Types,
   DelphiDoom.Engine.GlScene.FlatCollector,
-  DelphiDoom.Engine.GlScene.WallCollector;
+  DelphiDoom.Engine.GlScene.WallCollector,
+  DelphiDoom.Engine.GlScene.SpriteCollector;
 
 //==============================================================================
 //
@@ -116,6 +117,16 @@ function gld_FlatCollector: TEngineGlSceneFlatCollector;
 //
 //==============================================================================
 procedure gld_ConfigureWallCollector(const ACollector: TEngineGlSceneWallCollector);
+
+//==============================================================================
+//
+// gld_ConfigureSpriteCollector
+//
+// The class that collects the sprites of a frame (gld_AddSprite): gl_render owns it from then on.
+// Without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureSpriteCollector(const ACollector: TEngineGlSceneSpriteCollector);
 
 //==============================================================================
 //
@@ -1370,6 +1381,8 @@ var
   gld_flats: TEngineGlSceneFlatCollector = nil;
   // collects the walls of the frame, given by the composition root (gld_ConfigureWallCollector)
   gld_walls: TEngineGlSceneWallCollector = nil;
+  // collects the sprites of the frame, given by the composition root (gld_ConfigureSpriteCollector)
+  gld_sprites: TEngineGlSceneSpriteCollector = nil;
 
 // this is the list for all sectors to the loops
   sectorloops: PGLSectorArray;
@@ -1489,6 +1502,18 @@ begin
   if gld_walls <> ACollector then
     gld_walls.Free;
   gld_walls := ACollector;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureSpriteCollector
+//
+//==============================================================================
+procedure gld_ConfigureSpriteCollector(const ACollector: TEngineGlSceneSpriteCollector);
+begin
+  if gld_sprites <> ACollector then
+    gld_sprites.Free;
+  gld_sprites := ACollector;
 end;
 
 //==============================================================================
@@ -2732,93 +2757,6 @@ begin
   gld_flats.AddPlane(subsectornum, floor, ceiling);
 end;
 
-(**********************************
- *                                *
- * Dynamic Lights / shadows       *
- *                                *
- **********************************)
-
-//==============================================================================
-//
-// gld_MarkDShadow
-//
-//==============================================================================
-procedure gld_MarkDShadow(sprite: PGLSprite);
-var
-  olddlitems: integer;
-  dx, dy, dz: single;
-  xdist, ydist, zdist: single;
-  psl: Pdlsortitem_t;
-begin
-  xdist := camera.position[0] - sprite.x;
-  ydist := camera.position[1] - sprite.y;
-  zdist := camera.position[2] - sprite.z;
-
-  if numdlitems >= realdlitems then
-  begin
-    olddlitems := realdlitems;
-    realdlitems := numdlitems + 32;
-    realloc(pointer(dlbuffer), olddlitems * SizeOf(dlsortitem_t), realdlitems * SizeOf(dlsortitem_t));
-  end;
-
-  psl := @dlbuffer[numdlitems];
-  psl.l := gld_GetDynamicShadow(sprite.mo.info.radius div FRACUNIT);
-  dx := xdist;
-  dy := ydist;
-  dz := zdist;
-  psl.squaredist := dx * dx + dy * dy + dz * dz;
-  psl.x := sprite.x;
-  psl.y := sprite.mo.floorz / MAP_SCALE;
-  psl.z := sprite.z;
-  inc(numdlitems);
-end;
-
-//==============================================================================
-//
-// gld_MarkDLights
-//
-//==============================================================================
-procedure gld_MarkDLights(sprite: PGLSprite);
-var
-  olddlitems: integer;
-  l: PGLDRenderLight;
-  i: integer;
-  dx, dy, dz: single;
-  xdist, ydist, zdist: single;
-  psl: Pdlsortitem_t;
-begin
-  if sprite.dlights = nil then
-    exit;
-
-  xdist := camera.position[0] - sprite.x;
-  ydist := camera.position[1] - sprite.y;
-  zdist := camera.position[2] - sprite.z;
-
-  for i := 0 to sprite.dlights.Count - 1 do
-    if sprite.dlights[i].num1 = sprite.mo._type then
-    begin
-      l := gl_dynlights.GetLight(sprite.dlights[i].num2, leveltime);
-      if numdlitems >= realdlitems then
-      begin
-        olddlitems := realdlitems;
-        realdlitems := numdlitems + 32;
-        realloc(pointer(dlbuffer), olddlitems * SizeOf(dlsortitem_t), realdlitems * SizeOf(dlsortitem_t));
-      end;
-
-      psl := @dlbuffer[numdlitems];
-      psl.l := l;
-//    Psubsector_t(sprite.mo.subsector).sector.floorheight
-      dx := xdist - l.x;
-      dy := ydist - l.y;
-      dz := zdist - l.z;
-      psl.squaredist := dx * dx + dy * dy + dz * dz;
-      psl.x := sprite.x + l.x;
-      psl.y := sprite.y + l.y;
-      psl.z := sprite.z + l.z;
-      inc(numdlitems);
-    end;
-end;
-
 (*****************
  *               *
  * Sprites       *
@@ -3600,154 +3538,8 @@ end;
 //
 //==============================================================================
 procedure gld_AddSprite(vspr: Pvissprite_t);
-var
-  pSpr: Pmobj_t;
-  i: integer;
-  sprite: GLSprite;
-  voff, hoff: float;
-  tex: PGLTexture;
-  sec: Psector_t;
 begin
-  pSpr := vspr.mo;
-  sprite.scale := vspr.scale;
-  if pSpr.frame and FF_FULLBRIGHT <> 0 then
-    sprite.light := 1.0
-  else
-  begin
-    sec := Psubsector_t(pSpr.subsector).sector;
-    if sec.midsec < 0 then
-      sprite.light := gld_CalcLightLevel(sec.lightlevel + (extralight shl 5))
-    else if P_3dFloorNumber(pSpr) = 0 then
-      sprite.light := gld_CalcLightLevel(sectors[sec.midsec].lightlevel + (extralight shl 5))
-    else
-      sprite.light := gld_CalcLightLevel(sec.lightlevel + (extralight shl 5));
-  end;
-  sprite.cm := -1;
-  if pSpr.translationtable <> nil then
-    for i := 0 to Ord(CR_LIMIT) - 1 do
-      if colorregions[i] = pSpr.translationtable then
-      begin
-        sprite.cm := i;
-        break;
-      end;
-  if sprite.cm < 0 then
-    sprite.cm := Ord(CR_LIMIT) +
-      {$IFDEF HEXEN}vspr._class * ((MAXPLAYERS - 1)) + {$ENDIF}
-      integer((LongWord(pSpr.flags) and LongWord(MF_TRANSLATION)) shr MF_TRANSSHIFT);
-  if not IsIntegerInRange(sprite.cm, 0, CR_INVUL) then
-    sprite.cm := Ord(CR_LIMIT);
-  sprite.gltexture := gld_RegisterPatch(vspr.patch + firstspritelump, sprite.cm);
-  if sprite.gltexture = nil then
-    exit;
-
-  tex := sprite.gltexture;
-
-  sprite.alpha := 0.0;
-  sprite.flags := 0;
-  {$IFDEF STRIFE}
-  if pSpr.flags and MF_SHADOW <> 0 then
-  begin
-    sprite.flags := sprite.flags or GLS_TRANSPARENT;
-    sprite.alpha := 33 / 100;
-  end;
-  if pSpr.flags and MF_MVIS <> 0 then
-  begin
-    sprite.flags := sprite.flags or GLS_TRANSPARENT;
-    sprite.alpha := 66 / 100;
-  end;
-  {$ELSE}
-  if pSpr.flags and MF_SHADOW <> 0 then
-    sprite.flags := GLS_SHADOW;
-  {$ENDIF}
-  if pSpr.flags_ex and MF_EX_TRANSPARENT <> 0 then // JVAL -> alpha here!!!!
-  begin
-    sprite.flags := sprite.flags or GLS_TRANSPARENT;
-    sprite.alpha := tran_filter_pct / 100;
-  end;
-  if pSpr.renderstyle = mrs_translucent then
-  begin
-    sprite.flags := sprite.flags or GLS_TRANSPARENT;
-    sprite.alpha := pSpr.alpha / FRACUNIT;
-  end
-  else if pSpr.renderstyle = mrs_add then
-  begin
-    sprite.flags := sprite.flags or GLS_ADDITIVE;
-    sprite.alpha := pSpr.alpha / FRACUNIT;
-  end
-  else if pSpr.renderstyle = mrs_subtract then
-  begin
-    sprite.flags := sprite.flags or GLS_SUBTRACTIVE;
-    sprite.alpha := pSpr.alpha / FRACUNIT;
-  end;
-
-  if pSpr.flags_ex and MF_EX_LIGHT <> 0 then
-  begin
-    if pSpr.flags_ex and MF_EX_WHITELIGHT <> 0 then
-      sprite.flags := sprite.flags or GLS_WHITELIGHT;
-    if pSpr.flags_ex and MF_EX_REDLIGHT <> 0 then
-      sprite.flags := sprite.flags or GLS_REDLIGHT;
-    if pSpr.flags_ex and MF_EX_GREENLIGHT <> 0 then
-      sprite.flags := sprite.flags or GLS_GREENLIGHT;
-    if pSpr.flags_ex and MF_EX_BLUELIGHT <> 0 then
-      sprite.flags := sprite.flags or GLS_BLUELIGHT;
-    if pSpr.flags_ex and MF_EX_YELLOWLIGHT <> 0 then
-      sprite.flags := sprite.flags or GLS_YELLOWLIGHT;
-  end;
-
-  sprite.dlights := vspr.mo.state.dlights;
-  sprite.models := vspr.mo.state.models;
-  sprite.voxels := vspr.mo.state.voxels;
-  sprite.mo := pSpr;
-  sprite.aproxdist := P_AproxDistance(pSpr.x - viewx, pSpr.y - viewy);
-
-  sprite.x := -pSpr.x / MAP_SCALE;
-  sprite.y :=  (pSpr.z{$IFNDEF HERETIC} - pSpr.floorclip{$ENDIF}) / MAP_SCALE;
-  sprite.z :=  pSpr.y / MAP_SCALE;
-
-  sprite.vt := 0.0;
-  sprite.vb := tex.height / tex.tex_height;
-  if vspr.flip then
-  begin
-    sprite.ul := 0.0;
-    sprite.ur := tex.width / tex.tex_width;
-  end
-  else
-  begin
-    sprite.ul := tex.width / tex.tex_width;
-    sprite.ur := 0.0;
-  end;
-  hoff := tex.leftoffset / MAP_COEFF;
-  voff := tex.topoffset / MAP_COEFF;
-  sprite.x1 := hoff - (tex.realtexwidth / MAP_COEFF);
-  sprite.x2 := hoff;
-  sprite.y1 := voff;
-  sprite.y2 := voff - (tex.realtexheight / MAP_COEFF);
-
-  if vspr.infoscale <> FRACUNIT then
-  begin
-    sprite.x1 := sprite.x1 * vspr.infoscale / FRACUNIT;
-    sprite.x2 := sprite.x2 * vspr.infoscale / FRACUNIT;
-    sprite.y1 := sprite.y1 * vspr.infoscale / FRACUNIT;
-    sprite.y2 := sprite.y2 * vspr.infoscale / FRACUNIT;
-  end;
-
-  if (sprite.y2 < 0) and (vspr.mobjflags and (MF_SPAWNCEILING or MF_FLOAT or MF_MISSILE or MF_NOGRAVITY) = 0) then
-  begin
-    sprite.y1 := sprite.y1 - sprite.y2;
-    sprite.y2 := 0.0;
-    sprite.flags := sprite.flags or GLS_CLIPPED;
-  end;
-
-  PGLSprite(gld_drawlist.AddSprite)^ := sprite;
-
-  // JVAL: Mark the dynamic lights of the sprite
-  if sprite.aproxdist < DLIGHTSDRAWRANGE then
-    gld_MarkDLights(@sprite);
-
-  if gl_drawshadows and (sprite.dlights = nil) then
-    if sprite.aproxdist < SHADOWSDRAWRANGE then
-      if pSpr.flags2_ex and MF2_EX_DONOTRENDERSHADOW = 0 then // JVAL: VERSION 204
-        gld_MarkDShadow(@sprite);
+  gld_sprites.Add(vspr);
 end;
 
 (*****************
@@ -4157,6 +3949,8 @@ begin
     I_Error('gld_PreprocessLevel(): the flat collector is not configured (ComposeEngine was not called)');
   if gld_walls = nil then
     I_Error('gld_PreprocessLevel(): the wall collector is not configured (ComposeEngine was not called)');
+  if gld_sprites = nil then
+    I_Error('gld_PreprocessLevel(): the sprite collector is not configured (ComposeEngine was not called)');
 
   // preload graphics
   // JVAL
@@ -4227,6 +4021,7 @@ initialization
 
 finalization
   // the collectors use the draw list: they go first
+  gld_ConfigureSpriteCollector(nil);
   gld_ConfigureWallCollector(nil);
   gld_ConfigureFlatCollector(nil);
   gld_ConfigureDrawList(nil);
