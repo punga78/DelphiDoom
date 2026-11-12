@@ -7,6 +7,10 @@
 {******************************************************************************}
 unit DelphiDoom.Greed.GameDump;
 
+// the fingerprint of a plane wraps around on purpose
+{$Q-}
+{$R-}
+
 interface
 
 uses
@@ -41,6 +45,9 @@ var
   LIndex, LKind, LCount, LActive, LDead, LOpen: Integer;
   LSprite: PGreedSprite;
   LText: string;
+  LPlane: TGreedPlane;
+  LBytes: TBytes;
+  LHash: Cardinal;
 begin
   if not Assigned(AGame) then
     raise EArgumentNilException.Create('AGame');
@@ -116,6 +123,16 @@ begin
   ALines.Add(Format('doors=%d', [AGame.World.DoorCount]));
   ALines.Add(Format('doors.open=%d', [LOpen]));
   ALines.Add(Format('spawnareas=%d', [AGame.World.SpawnAreaCount]));
+  // a fingerprint of each plane of the map (FNV-1a), to compare a map before and after a saved game is loaded
+  for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
+  begin
+    SetLength(LBytes, GREED_MAP_TILES);
+    AGame.World.CopyPlane(LPlane, @LBytes[0]);
+    LHash := 2166136261;
+    for LIndex := 0 to High(LBytes) do
+      LHash := (LHash xor LBytes[LIndex]) * 16777619;
+    ALines.Add(Format('plane.%d=%x', [Ord(LPlane), LHash]));
+  end;
   ALines.Add(Format('numprocesses=%d', [S.NumProcesses]));
   ALines.Add(Format('numzones=%d', [S.NumZones]));
 end;
