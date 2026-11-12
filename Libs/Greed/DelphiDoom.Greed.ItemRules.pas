@@ -48,7 +48,9 @@ type
   ///   not on the tile changes the weapon in the hand without giving it.
   ///   Differences: a tile outside the map reads 0 and is not written, a weapon number outside the table is a
   ///   weapon of zeros, and a bonus item without its sprite does not remove it (the original used the memory near
-  ///   the arrays and a nil pointer)
+  ///   the arrays and a nil pointer); a weapon whose ammunition kind has no slot (the weapon 6 of the table, the
+  ///   grenade launcher, has the kind 3) is left where it is: the original read player.ammo[0] as the slot 5 and
+  ///   gave the ammunition to player.bodycount
   /// </summary>
   TGreedItemRules = class
   strict private
