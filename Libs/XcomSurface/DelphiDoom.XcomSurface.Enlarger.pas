@@ -123,14 +123,26 @@ var
   LSource: TBytes;
   LTarget: TBytes;
   LIndex: Integer;
+  LCount: Integer;
 begin
   if (ASource.Width <> ATarget.Width) or (ASource.Height <> ATarget.Height) then
     raise EXcomSurfaceException.Create(SBadOverlay);
   LSource := ASource.Pixels;
   LTarget := ATarget.Pixels;
-  for LIndex := 0 to ASource.Width * ASource.Height - 1 do
+  LCount := ASource.Width * ASource.Height;
+  LIndex := 0;
+  while LIndex < LCount do
+  begin
+    // an overlay is mostly empty: four pixels with nothing are passed at once
+    if (LIndex + SizeOf(Cardinal) <= LCount) and (PCardinal(@LSource[LIndex])^ = 0) then
+    begin
+      Inc(LIndex, SizeOf(Cardinal));
+      Continue;
+    end;
     if LSource[LIndex] <> 0 then
       LTarget[LIndex] := LSource[LIndex];
+    Inc(LIndex);
+  end;
 end;
 
 end.

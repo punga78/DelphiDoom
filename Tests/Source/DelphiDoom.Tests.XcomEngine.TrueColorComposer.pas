@@ -76,6 +76,27 @@ type
     procedure AScalaUnoGliStratiDovrebberoEssereIgnorati;
     [Test]
     procedure SenzaDispositivoDovrebbeSollevare;
+    [Test]
+    [TestCase('doppio', '640,400')]
+    [TestCase('non intero', '500,333')]
+    [TestCase('con bande', '800,400')]
+    procedure UnFotogrammaUgualeNonDovrebbeRicomporreNessunaRiga(ADisplayWidth, ADisplayHeight: Integer);
+    [Test]
+    [TestCase('doppio', '640,400')]
+    [TestCase('quadruplo', '1280,800')]
+    [TestCase('non intero', '500,333')]
+    [TestCase('con bande', '640,600')]
+    procedure UnPixelCambiatoDovrebbeRicomporreSoloLaSuaRiga(ADisplayWidth, ADisplayHeight: Integer);
+    [Test]
+    procedure UnaPalettaCambiataDovrebbeRicomporreTutteLeRighe;
+    [Test]
+    procedure UnDettaglioCambiatoDovrebbeRicomporreSoloLeSueRighe;
+    [Test]
+    procedure UnoStratoRimastoUgualeNonDovrebbeRicomporreNulla;
+    [Test]
+    procedure UnoStratoCheSparisceDovrebbeRicomporreTutteLeRighe;
+    [Test]
+    procedure DopoUnCambioDiMisuraIlFotogrammaDovrebbeEssereRicompostoIntero;
   end;
 
 implementation
@@ -393,6 +414,150 @@ begin
     begin
       TXcomTrueColorComposer.Create(nil);
     end, EArgumentNilException);
+end;
+
+procedure TTestXcomTrueColorComposer.UnFotogrammaUgualeNonDovrebbeRicomporreNessunaRiga(ADisplayWidth,
+  ADisplayHeight: Integer);
+begin
+  MakeScreen(ADisplayWidth, ADisplayHeight, 320, 200);
+  FillBase;
+  FScreen.Flip;
+  Assert.AreEqual(200, FComposer.ComposedRows, 'il primo fotogramma si compone intero');
+  FScreen.Flip;
+  Assert.AreEqual(0, FComposer.ComposedRows);
+  Assert.AreEqual(2, FDevice.TrueColorPresented, 'il fotogramma si mostra comunque');
+  AssertFrameIsDisplayAfterPalette;
+end;
+
+procedure TTestXcomTrueColorComposer.UnPixelCambiatoDovrebbeRicomporreSoloLaSuaRiga(ADisplayWidth,
+  ADisplayHeight: Integer);
+begin
+  MakeScreen(ADisplayWidth, ADisplayHeight, 320, 200);
+  FillBase;
+  FScreen.Flip;
+  FScreen.GetSurface.SetPixel(17, 93, 254);
+  FScreen.GetSurface.SetPixel(319, 199, 253);
+  FScreen.Flip;
+  Assert.AreEqual(2, FComposer.ComposedRows);
+  AssertFrameIsDisplayAfterPalette;
+end;
+
+procedure TTestXcomTrueColorComposer.UnaPalettaCambiataDovrebbeRicomporreTutteLeRighe;
+begin
+  MakeScreen(800, 400, 320, 200);
+  FillBase;
+  FScreen.Flip;
+  // the color 0 too: it is the one of the bands
+  FPalette[0].Red := 90;
+  FPalette[7].Blue := 91;
+  FScreen.SetPalette(@FPalette[0], 0, 256);
+  FScreen.Flip;
+  Assert.AreEqual(200, FComposer.ComposedRows);
+  AssertFrameIsDisplayAfterPalette;
+end;
+
+procedure TTestXcomTrueColorComposer.UnDettaglioCambiatoDovrebbeRicomporreSoloLeSueRighe;
+var
+  LWidget: TXcomSurface;
+  LDetail: TXcomSurface;
+  LFrame: Integer;
+begin
+  MakeScreen(640, 400, 320, 200);
+  FillBase;
+  LWidget := TXcomSurface.Create(4, 4, 10, 20);
+  LDetail := TXcomSurface.Create(8, 8);
+  try
+    LWidget.DrawRect(0, 0, 4, 4, 200);
+    LDetail.DrawRect(0, 0, 8, 8, 200);
+    for LFrame := 0 to 1 do
+    begin
+      // the second frame: the same picture of the game, a finer drawing that moved
+      if LFrame = 1 then
+        LDetail.SetPixel(3, 5, 202);
+      // the states draw the whole picture again at every frame
+      FillBase;
+      FScreen.DetailLayers.BeginLayer(FScreen.GetSurface, 10, 20, 4, 4);
+      LWidget.Blit(FScreen.GetSurface);
+      FScreen.DetailLayers.EndLayer(FScreen.GetSurface, LDetail);
+      FScreen.Flip;
+    end;
+    Assert.AreEqual(1, FComposer.ComposedRows);
+    Assert.AreEqual(ColorOf(202), FDevice.TrueColorPixels[45 * 640 + 23]);
+    Assert.AreEqual(ColorOf(200), FDevice.TrueColorPixels[45 * 640 + 22]);
+    Assert.AreEqual(ColorOf(200), FDevice.TrueColorPixels[44 * 640 + 23]);
+  finally
+    LDetail.Free;
+    LWidget.Free;
+  end;
+end;
+
+procedure TTestXcomTrueColorComposer.UnoStratoRimastoUgualeNonDovrebbeRicomporreNulla;
+var
+  LWidget: TXcomSurface;
+  LDetail: TXcomSurface;
+  LFrame: Integer;
+begin
+  MakeScreen(960, 600, 320, 200);
+  FillBase;
+  LWidget := TXcomSurface.Create(4, 4, 10, 20);
+  LDetail := TXcomSurface.Create(12, 12);
+  try
+    LWidget.DrawRect(0, 0, 4, 4, 200);
+    LDetail.DrawRect(0, 0, 12, 12, 200);
+    LDetail.SetPixel(4, 4, 201);
+    for LFrame := 0 to 2 do
+    begin
+      FillBase;
+      FScreen.DetailLayers.BeginLayer(FScreen.GetSurface, 10, 20, 4, 4);
+      LWidget.Blit(FScreen.GetSurface);
+      FScreen.DetailLayers.EndLayer(FScreen.GetSurface, LDetail);
+      FScreen.Flip;
+    end;
+    Assert.AreEqual(0, FComposer.ComposedRows);
+    Assert.AreEqual(ColorOf(201), FDevice.TrueColorPixels[(60 + 4) * 960 + 30 + 4]);
+  finally
+    LDetail.Free;
+    LWidget.Free;
+  end;
+end;
+
+procedure TTestXcomTrueColorComposer.UnoStratoCheSparisceDovrebbeRicomporreTutteLeRighe;
+var
+  LWidget: TXcomSurface;
+  LDetail: TXcomSurface;
+begin
+  MakeScreen(640, 400, 320, 200);
+  FillBase;
+  LWidget := TXcomSurface.Create(4, 4, 10, 20);
+  LDetail := TXcomSurface.Create(8, 8);
+  try
+    LWidget.DrawRect(0, 0, 4, 4, 200);
+    LDetail.DrawRect(0, 0, 8, 8, 201);
+    FScreen.DetailLayers.BeginLayer(FScreen.GetSurface, 10, 20, 4, 4);
+    LWidget.Blit(FScreen.GetSurface);
+    FScreen.DetailLayers.EndLayer(FScreen.GetSurface, LDetail);
+    FScreen.Flip;
+    // the same picture of the game, the widget no longer leaves its finer drawing
+    FScreen.Flip;
+    Assert.AreEqual(200, FComposer.ComposedRows);
+    AssertFrameIsDisplayAfterPalette;
+  finally
+    LDetail.Free;
+    LWidget.Free;
+  end;
+end;
+
+procedure TTestXcomTrueColorComposer.DopoUnCambioDiMisuraIlFotogrammaDovrebbeEssereRicompostoIntero;
+begin
+  MakeScreen(640, 400, 320, 200);
+  FillBase;
+  FScreen.Flip;
+  FOptions.DisplayWidth := 960;
+  FOptions.DisplayHeight := 600;
+  FScreen.ResetDisplay;
+  FScreen.Flip;
+  Assert.AreEqual(200, FComposer.ComposedRows);
+  AssertFrameIsDisplayAfterPalette;
 end;
 
 end.

@@ -32,7 +32,8 @@ uses
   DelphiDoom.Tests.XcomGeoscape.MissionLauncher in 'Source\DelphiDoom.Tests.XcomGeoscape.MissionLauncher.pas',
   DelphiDoom.Tests.XcomGeoscape.GraphScale in 'Source\DelphiDoom.Tests.XcomGeoscape.GraphScale.pas',
   DelphiDoom.Tests.XcomGeoscape.BaseDefense in 'Source\DelphiDoom.Tests.XcomGeoscape.BaseDefense.pas',
-  DelphiDoom.Tests.XcomGeoscape.GlobeDetail in 'Source\DelphiDoom.Tests.XcomGeoscape.GlobeDetail.pas';
+  DelphiDoom.Tests.XcomGeoscape.GlobeDetail in 'Source\DelphiDoom.Tests.XcomGeoscape.GlobeDetail.pas',
+  DelphiDoom.Tests.XcomGeoscape.GlobeNightShade in 'Source\DelphiDoom.Tests.XcomGeoscape.GlobeNightShade.pas';
 
 var
   Runner: ITestRunner;

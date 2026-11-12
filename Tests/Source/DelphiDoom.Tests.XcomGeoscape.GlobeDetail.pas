@@ -78,6 +78,12 @@ type
     procedure AScalaUnoNonDovrebbeEsserciDettaglio;
     [Test]
     procedure IlDettaglioDovrebbeSeguireLoZoomELaRotazione;
+    [Test]
+    procedure LaTerraDovrebbeEssereRasterizzataUnaVoltaPerVista;
+    [Test]
+    procedure LOmbraDovrebbeEssereRidisegnataSoloQuandoIlSoleSiSposta;
+    [Test]
+    procedure UnPassoDelTempoSenzaNovitaNonDovrebbeRicomporreIlFotogramma;
   end;
 
 implementation
@@ -338,6 +344,78 @@ begin
   for LIndex := 0 to High(LMoved) do
     if LMoved[LIndex] <> FDevice.TrueColorPixels[LIndex] then
       Assert.Fail(Format('pixel %d', [LIndex]));
+end;
+
+procedure TTestXcomGlobeDetail.LaTerraDovrebbeEssereRasterizzataUnaVoltaPerVista;
+var
+  LStep: Integer;
+begin
+  NeedData;
+  Make(4, True);
+  Frame;
+  Assert.AreEqual(1, FGlobe.DetailLandDraws);
+  // the time passes: the globe of the game is drawn again at every step, the land of the finer one is not
+  for LStep := 1 to 5 do
+  begin
+    FSave.Time.Advance;
+    FGlobe.Draw;
+    Frame;
+  end;
+  Assert.AreEqual(1, FGlobe.DetailLandDraws);
+  FGlobe.Center(FGlobe.CenterLongitude + 0.1, FGlobe.CenterLatitude);
+  Frame;
+  Assert.AreEqual(2, FGlobe.DetailLandDraws);
+  FGlobe.ZoomIn;
+  Frame;
+  Assert.AreEqual(3, FGlobe.DetailLandDraws);
+end;
+
+procedure TTestXcomGlobeDetail.LOmbraDovrebbeEssereRidisegnataSoloQuandoIlSoleSiSposta;
+var
+  LStep: Integer;
+begin
+  NeedData;
+  Make(4, True);
+  Frame;
+  Assert.AreEqual(1, FGlobe.DetailShadeDraws);
+  // five seconds: the sun moves by a fiftieth of a degree
+  FSave.Time.Advance;
+  FGlobe.Draw;
+  Frame;
+  Assert.AreEqual(1, FGlobe.DetailShadeDraws, 'dopo cinque secondi');
+  // five minutes
+  for LStep := 1 to 60 do
+    FSave.Time.Advance;
+  FGlobe.Draw;
+  Frame;
+  Assert.AreEqual(2, FGlobe.DetailShadeDraws, 'dopo cinque minuti');
+  // a turn of the globe moves the sun of the view
+  FGlobe.Center(FGlobe.CenterLongitude + 0.1, FGlobe.CenterLatitude);
+  Frame;
+  Assert.AreEqual(3, FGlobe.DetailShadeDraws, 'dopo una rotazione');
+end;
+
+procedure TTestXcomGlobeDetail.UnPassoDelTempoSenzaNovitaNonDovrebbeRicomporreIlFotogramma;
+var
+  LComposer: TXcomTrueColorComposer;
+  LBefore: TBytes;
+begin
+  NeedData;
+  Make(4, True);
+  LComposer := FComposer as TXcomTrueColorComposer;
+  Frame;
+  Assert.AreEqual(200, LComposer.ComposedRows);
+  LBefore := Copy(FScreen.GetSurface.Pixels);
+  FSave.Time.Advance;
+  FGlobe.Draw;
+  Frame;
+  // the rows composed again are at most the ones where the picture of the game itself changed
+  if CompareMem(@LBefore[0], @FScreen.GetSurface.Pixels[0], Length(LBefore)) then
+    Assert.AreEqual(0, LComposer.ComposedRows)
+  else
+    Assert.IsTrue(LComposer.ComposedRows < 200, Format('righe ricomposte: %d', [LComposer.ComposedRows]));
+  Frame;
+  Assert.AreEqual(0, LComposer.ComposedRows, 'un fotogramma uguale al precedente');
 end;
 
 end.

@@ -16,7 +16,7 @@ uses
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.City,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.TrueColor.Intf,
-  DelphiDoom.XcomUi.Text;
+  DelphiDoom.XcomUi.Text, DelphiDoom.XcomGeoscape.GlobeNightShade;
 
 type
   /// <summary>A vector of the unit sphere (Cord of Globe.cpp)</summary>
@@ -110,6 +110,24 @@ type
     FDetailGlobe: TXcomGlobe;
     FDetailPending: TDetailParts;
     FComposite: TXcomSurface;
+    /// <summary>
+    ///   What Globe::XuLine reads the color under a line from: the globe itself, that at that point of Draw has no
+    ///   shadow yet. A globe that is the detail of another keeps the land without the shadow in a picture of its
+    ///   own (FLandPicture): it rasterizes the polygons only when the view changes, and draws the shadow on it
+    ///   again only when the sun moved by TXcomGlobeNightShade.SUN_STEP
+    /// </summary>
+    FLineSource: TXcomSurface;
+    FLandPicture: TXcomSurface;
+    FNightShade: TXcomGlobeNightShade;
+    FLandValid: Boolean;
+    FLandLon: Double;
+    FLandLat: Double;
+    FLandZoom: Integer;
+    FShadeValid: Boolean;
+    FShadeSun: TXcomCord;
+    FShadeNoise: Pointer;
+    FLandDraws: Integer;
+    FShadeDraws: Integer;
     class var FShadeGradient: array[0..239] of SmallInt;
     class constructor CreateClass;
     procedure SetupRadii(AWidth, AHeight: Integer);
@@ -136,6 +154,7 @@ type
     class function Nautical(AValue: Double): Double; static;
     procedure SetCenterValue(ALon, ALat: Double);
     constructor CreateDetail(ASource: TXcomGlobe; AScale: Integer);
+    procedure DrawLandDetail;
     procedure DrawShadowDetail;
     procedure BlitLabel(ALabel: TXcomText; AAnchorX, AAnchorY, ADown: Integer);
     procedure CopyViewFrom(ASource: TXcomGlobe);
@@ -217,6 +236,10 @@ type
     property Seasons: Boolean read FSeasons write FSeasons;
     property AllRadarsOnBaseBuild: Boolean read FAllRadarsOnBaseBuild write FAllRadarsOnBaseBuild;
     property ScrollSpeed: Integer read FScrollSpeed write FScrollSpeed;
+    /// <summary>How many times the finer globe rasterized its land (0 without one): once for every view</summary>
+    function DetailLandDraws: Integer;
+    /// <summary>How many times the finer globe drew its shadow (0 without one): when the view or the sun changed</summary>
+    function DetailShadeDraws: Integer;
   end;
 
 implementation
@@ -365,6 +388,7 @@ begin
   inherited Create(AWidth, AHeight, AX, AY);
   FDetailScale := 1;
   FDetailPending := [dpAll];
+  FLineSource := Self;
   FHost := AHost;
   FSave := ASave;
   FRuleset := ARuleset;
@@ -406,6 +430,8 @@ end;
 destructor TXcomGlobe.Destroy;
 begin
   FDetailGlobe.Free;
+  FNightShade.Free;
+  FLandPicture.Free;
   FComposite.Free;
   FCities.Free;
   FCacheLand.Free;
@@ -1181,7 +1207,7 @@ begin
     else
     begin
       if (not PointBack(LLon1, LLat1)) and (LIndex mod AFraction = 0) then
-        XuLine(FRadars, Self, LX, LY, LX2, LY2, 6);
+        XuLine(FRadars, FLineSource, LX, LY, LX2, LY2, 6);
       LX2 := LX;
       LY2 := LY;
       Inc(LIndex);
@@ -1242,7 +1268,7 @@ begin
     ToPolar(LA, LLon2, LLat2);
     PolarToCart(LLon2, LLat2, LX2, LY2);
     if not PointBack(LLon1, LLat1) and not PointBack(LLon2, LLat2) then
-      XuLine(ASurface, Self, LX1, LY1, LX2, LY2, 8);
+      XuLine(ASurface, FLineSource, LX1, LY1, LX2, LY2, 8);
     LLon1 := LLon2;
     LLat1 := LLat2;
     LX1 := LX2;
@@ -1548,6 +1574,10 @@ begin
   FMarkers := TXcomSurface.Create(Width, Height);
   FRadars := TXcomSurface.Create(Width, Height);
   FComposite := TXcomSurface.Create(Width, Height);
+  FLandPicture := TXcomSurface.Create(Width, Height);
+  FLineSource := FLandPicture;
+  FNightShade := TXcomGlobeNightShade.Create(Width, Height, AScale, FRules.OceanColor, FRules.OceanShading,
+    FShadeGradient);
   // no timers: this globe never thinks, it follows the one it is the detail of
   FCacheLand := TObjectList<TXcomPolygon>.Create(True);
   FCities := TObjectList<TXcomCity>.Create(True);
@@ -1600,14 +1630,12 @@ begin
     CopyViewFrom(ASource);
     if dpAll in AParts then
     begin
-      // Draw of the other globe, with the shadow computed for every pixel of this one
-      CachePolygons;
-      Clear;
-      DrawOcean;
-      DrawLand;
+      // Draw of the other globe. The land and its shadow are drawn again only when they changed; the lines of the
+      // radars and of the flights read the land without the shadow, as in Draw, from the picture that keeps it
+      DrawLandDetail;
+      DrawShadowDetail;
       DrawRadars;
       DrawFlights;
-      DrawShadowDetail;
       DrawMarkers;
       DrawDetail;
     end
@@ -1615,7 +1643,15 @@ begin
     begin
       // what the other globe redrew by itself, in the order it did
       if dpRadars in AParts then
-        DrawRadars;
+      begin
+        // drawn outside Draw the lines read the globe with its shadow, as the ones of the game do
+        FLineSource := Self;
+        try
+          DrawRadars;
+        finally
+          FLineSource := FLandPicture;
+        end;
+      end;
       if dpMarkers in AParts then
         DrawMarkers;
       if dpCountries in AParts then
@@ -1655,62 +1691,60 @@ begin
   end;
 end;
 
+procedure TXcomGlobe.DrawLandDetail;
+begin
+  // the sea and the polygons of the land depend only on the view
+  if FLandValid and (FLandLon = FCenLon) and (FLandLat = FCenLat) and (FLandZoom = FZoom) then
+    Exit;
+  CachePolygons;
+  Clear;
+  DrawOcean;
+  DrawLand;
+  System.Move(Pixels[0], FLandPicture.Pixels[0], Width * Height);
+  FLandLon := FCenLon;
+  FLandLat := FCenLat;
+  FLandZoom := FZoom;
+  FLandValid := True;
+  FShadeValid := False;
+  Inc(FLandDraws);
+end;
+
 procedure TXcomGlobe.DrawShadowDetail;
 var
-  LEarth: TArray<TXcomCord>;
   LSun: TXcomCord;
-  LX, LY, LShadow, LSplit, LEnd, LGroup, LTableX, LTableY, LOffsetX, LOffsetY, LNoiseRow: Integer;
-  LNoiseColumn: TArray<Integer>;
-  LDest: PByte;
-  LOcean: Byte;
-  LOceanShading: Boolean;
+  LTarget: TBytes;
 begin
   // DrawShadow for a globe that is the detail of another: the same shade for every pixel of this one, with the
-  // noise of the game enlarged (a cell of noise covers a pixel of the game). Only the table of the zoom in use
-  // is kept: it is the square of the scale times the one of the game
-  LEarth := EarthData(FZoom);
+  // noise of the game enlarged (a cell of noise covers a pixel of the game), from the land that was kept. A sun
+  // that moved less than a quarter of a level of shade leaves the shadow as it is
   LSun := SunDirection(FCenLon, FCenLat);
-  LOcean := FRules.OceanColor;
-  LOceanShading := FRules.OceanShading;
-  LOffsetX := FCenX - Width div 2;
-  LOffsetY := FCenY - Height div 2;
-  SetLength(LNoiseColumn, Width);
-  for LX := 0 to Width - 1 do
-    LNoiseColumn[LX] := (LX div FDetailScale) mod NOISE_SIZE;
-  for LY := 0 to Height - 1 do
-  begin
-    LTableY := LY - LOffsetY;
-    if (LTableY < 0) or (LTableY >= Height) then
-      Continue;
-    LNoiseRow := ((LY div FDetailScale) mod NOISE_SIZE) * NOISE_SIZE;
-    LDest := PixelPointer(0, LY);
-    for LX := 0 to Width - 1 do
-    begin
-      LTableX := LX - LOffsetX;
-      if (LTableX >= 0) and (LTableX < Width) then
-      begin
-        if (LDest^ <> 0) and (LEarth[LTableY * Width + LTableX].Z <> 0) then
-        begin
-          LShadow := ShadowValue(LEarth[LTableY * Width + LTableX], LSun, FNoise[LNoiseRow + LNoiseColumn[LX]]);
-          if LOceanShading and (LDest^ >= LOcean) and (LDest^ < LOcean + 32) then
-            LDest^ := Byte(LOcean + LShadow)
-          else if LShadow <> 0 then
-          begin
-            LSplit := LShadow div 3;
-            LEnd := LDest^ + LSplit;
-            LGroup := LDest^ and $F0;
-            if LEnd > LGroup + $0F then
-              LDest^ := Byte(LGroup + $0F)
-            else
-              LDest^ := Byte(LEnd);
-          end;
-        end
-        else
-          LDest^ := 0;
-      end;
-      Inc(LDest);
-    end;
-  end;
+  if FShadeValid and (FShadeNoise = Pointer(FNoise)) and TXcomGlobeNightShade.SameSun(LSun.X, LSun.Y, LSun.Z,
+    FShadeSun.X, FShadeSun.Y, FShadeSun.Z) then
+    Exit;
+  FNightShade.SetRadius(FRadius);
+  LTarget := Pixels;
+  FNightShade.Shade(FLandPicture.Pixels, LTarget, FCenX - Width div 2, FCenY - Height div 2, LSun.X, LSun.Y, LSun.Z,
+    FNoise);
+  FShadeSun := LSun;
+  FShadeNoise := Pointer(FNoise);
+  FShadeValid := True;
+  Inc(FShadeDraws);
+end;
+
+function TXcomGlobe.DetailLandDraws: Integer;
+begin
+  if Assigned(FDetailGlobe) then
+    Result := FDetailGlobe.FLandDraws
+  else
+    Result := 0;
+end;
+
+function TXcomGlobe.DetailShadeDraws: Integer;
+begin
+  if Assigned(FDetailGlobe) then
+    Result := FDetailGlobe.FShadeDraws
+  else
+    Result := 0;
 end;
 
 procedure TXcomGlobe.MouseClick(AAction: TXcomAction);
