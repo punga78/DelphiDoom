@@ -75,6 +75,16 @@ if (-not $SenzaCompilare) {
   $s = $s -replace 's: AnsiString;(\s+begin\s+sprintf)', 's: string;$1'
   Set-Content "$uscita\src\scriptengine.pas" $s
 
+  # r_render.pas: reallight is followed in memory by actionflag, and the light of a sprite on the last row writes past
+  # the end of the array (sprites.pas: reallight[mapspot + 64 + j] with mapspot on the row 63): the original then has a
+  # garbage actionflag, so the renderer runs fireweapon in a turn where the player did not shoot (map 29, seed 2, turn
+  # 1029: actionflag = -512). The library does not write outside the map. Here the array gets room for the three
+  # rows that the light can reach, so that the original does not depend on what follows it
+  $q = Get-Content "$Riferimento\Greed\r_render.pas" -Raw
+  $q2 = $q.Replace("reallight: array[0..MAPROWS * MAPCOLS - 1] of integer;", "reallight: array[0..MAPROWS * MAPCOLS - 1 + 3 * MAPCOLS] of integer;")
+  if ($q2 -eq $q) { Write-Error 'r_render.pas: reallight non e'' dove era'; exit 1 }
+  Set-Content "$uscita\src\r_render.pas" $q2
+
   $d = Get-Content "$Riferimento\Greed\d_ints.pas" -Raw
   $i = $d.IndexOf("`nimplementation")
   if ($i -lt 0) { Write-Error 'd_ints.pas: implementation non trovata'; exit 1 }
