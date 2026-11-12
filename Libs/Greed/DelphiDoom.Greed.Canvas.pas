@@ -18,8 +18,8 @@ const
   /// <summary>MAX_VIEW_WIDTH and MAX_VIEW_HEIGHT: the size of the viewbuffer of the original</summary>
   GREED_CANVAS_WIDTH = 320;
   GREED_CANVAS_HEIGHT = 200;
-  /// <summary>The lump TRANSPARENCY: 256 tables of 256 colors</summary>
-  GREED_TRANSPARENCY_BYTES = 256 * 256;
+  /// <summary>The lump TRANSPARENCY: a table of 256 colors for each color from 1 to 255</summary>
+  GREED_TRANSPARENCY_BYTES = 255 * 256;
 
 type
   /// <summary>
@@ -29,8 +29,11 @@ type
   ///   picture of the level shows through it (ComposeOnto), which is why the original turns the 0 of a solid picture
   ///   into the color of the palette nearest to the color 0 (ApproxZero). A picture is the lump as it is (pic_t:
   ///   width, height, origin x and y as words, then the rows).
-  ///   Difference from the original: what falls outside the buffer is not drawn (the original has no check in most
-  ///   routines: a pixel beyond the right edge lands on the next row and one beyond the last row outside the buffer)
+  ///   As in the original most routines do not check the columns: the rows follow each other in memory, so a pixel
+  ///   beyond the right edge of a row lands at the start of the next one (and one before the left edge at the end
+  ///   of the row above). That is kept: it is what the original shows.
+  ///   Difference from the original: what falls outside the buffer, or on a row that does not exist, is not drawn
+  ///   (the original writes in the memory around the buffer)
   /// </summary>
   TGreedCanvas = class
   strict private
@@ -45,10 +48,12 @@ type
     constructor Create(AWidth: Integer = GREED_CANVAS_WIDTH; AHeight: Integer = GREED_CANVAS_HEIGHT);
     /// <summary>memset(viewbuffer, 0): what SetupFrame does before each picture</summary>
     procedure Clear;
-    /// <summary>ylookup[y][x]; 0 outside the buffer</summary>
+    /// <summary>ylookup[y][x]: the byte x places after the start of the row y; 0 outside the buffer</summary>
     function GetPixel(AX, AY: Integer): Byte; inline;
-    /// <summary>ylookup[y][x] := value (the low byte of the value); nothing outside the buffer</summary>
+    /// <summary>ylookup[y][x] := value (the low byte of the value); nothing outside the buffer or the rows</summary>
     procedure PutPixel(AX, AY, AValue: Integer); inline;
+    /// <summary>The byte at that place of the buffer, counted from its start; nothing outside the buffer</summary>
+    procedure PutLinear(AOffset, AValue: Integer); inline;
     /// <summary>
     ///   memset(@ylookup[y][x], value, count): bytes that follow each other in the buffer (past the end of a row
     ///   they go on in the next one, as in the original); the part outside the buffer is not written
@@ -85,7 +90,7 @@ type
     ///   it stands for (the frame is a whole number of times as large: 640 x 400 for 320 x 200)
     /// </summary>
     procedure ComposeOnto(var AFrame: TGreedFrame);
-    /// <summary>The lump TRANSPARENCY (65536 bytes), for DrawTransPicToBuffer</summary>
+    /// <summary>The lump TRANSPARENCY (65280 bytes), for DrawTransPicToBuffer</summary>
     procedure SetTransparency(const ATable: TBytes);
     /// <summary>pic.width and pic.height of a picture lump; 0 if the lump has no header</summary>
     class function PictureWidth(const APicture: TBytes): Integer; static;
@@ -123,16 +128,24 @@ end;
 
 function TGreedCanvas.GetPixel(AX, AY: Integer): Byte;
 begin
-  if (AX < 0) or (AX >= FWidth) or (AY < 0) or (AY >= FHeight) then
+  AX := AY * FWidth + AX;
+  if (AY < 0) or (AY >= FHeight) or (AX < 0) or (AX >= Length(FPixels)) then
     Result := 0
   else
-    Result := FPixels[AY * FWidth + AX];
+    Result := FPixels[AX];
 end;
 
 procedure TGreedCanvas.PutPixel(AX, AY, AValue: Integer);
 begin
-  if (AX >= 0) and (AX < FWidth) and (AY >= 0) and (AY < FHeight) then
-    FPixels[AY * FWidth + AX] := Byte(AValue and $FF);
+  AX := AY * FWidth + AX;
+  if (AY >= 0) and (AY < FHeight) and (AX >= 0) and (AX < Length(FPixels)) then
+    FPixels[AX] := Byte(AValue and $FF);
+end;
+
+procedure TGreedCanvas.PutLinear(AOffset, AValue: Integer);
+begin
+  if (AOffset >= 0) and (AOffset < Length(FPixels)) then
+    FPixels[AOffset] := Byte(AValue and $FF);
 end;
 
 procedure TGreedCanvas.FillRow(AX, AY, ACount, AValue: Integer);
@@ -202,26 +215,18 @@ procedure TGreedCanvas.DrawSolid(AX, AY: Integer; const APicture: TBytes);
 var
   LWidth, LHeight, LOriginX, LOriginY: Integer;
   LRow: Integer;
-  LFirst: Integer;
-  LCount: Integer;
-  LY: Integer;
+  LColumn: Integer;
+  LDest: Integer;
 begin
   ReadHeader(APicture, LWidth, LHeight, LOriginX, LOriginY);
-  // the part of each row that is inside the buffer
-  LFirst := 0;
-  if AX < 0 then
-    LFirst := -AX;
-  LCount := LWidth - LFirst;
-  if AX + LWidth > FWidth then
-    LCount := FWidth - AX - LFirst;
-  if LCount <= 0 then
+  // ylookup[y] of a row that does not exist is not a place of the buffer
+  if (AY < 0) or (AY >= FHeight) then
     Exit;
   for LRow := 0 to LHeight - 1 do
   begin
-    LY := AY + LRow;
-    if (LY >= 0) and (LY < FHeight) then
-      Move(APicture[GREED_PICTURE_HEADER_BYTES + LRow * LWidth + LFirst], FPixels[LY * FWidth + AX + LFirst],
-        LCount);
+    LDest := (AY + LRow) * FWidth + AX;
+    for LColumn := 0 to LWidth - 1 do
+      PutLinear(LDest + LColumn, APicture[GREED_PICTURE_HEADER_BYTES + LRow * LWidth + LColumn]);
   end;
 end;
 
@@ -300,12 +305,12 @@ begin
     begin
       LX := AX + LColumn;
       LColor := APicture[LSource + LColumn];
-      if (LColor <> 0) and (LX >= 0) and (LX < FWidth) then
+      if LColor <> 0 then
       begin
         LColor := PByte(NativeUInt(AColormap) + LColor)^;
         if LColor = 0 then
           LColor := FApproxZero;
-        FPixels[LY * FWidth + LX] := LColor;
+        PutLinear(LY * FWidth + LX, LColor);
       end;
     end;
   end;
@@ -336,11 +341,9 @@ begin
     begin
       LX := AX + LColumn;
       LColor := APicture[LSource + LColumn];
-      if (LColor <> 0) and (LX >= 0) and (LX < FWidth) then
-      begin
-        LDest := LY * FWidth + LX;
+      LDest := LY * FWidth + LX;
+      if (LColor <> 0) and (LDest >= 0) and (LDest < Length(FPixels)) then
         FPixels[LDest] := FTransparency[(LColor - 1) * 256 + FPixels[LDest]];
-      end;
     end;
   end;
 end;

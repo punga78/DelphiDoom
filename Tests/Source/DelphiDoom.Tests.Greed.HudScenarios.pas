@@ -19,10 +19,10 @@ interface
 uses
   System.SysUtils, System.Classes, DelphiDoom.Greed.Types, DelphiDoom.Greed.Intf, DelphiDoom.Greed.SaveTypes,
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf,
-  DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State, DelphiDoom.Greed.Render.Assets.Intf,
+  DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.Render.Assets.Intf,
   DelphiDoom.Greed.Render.State, DelphiDoom.Greed.Canvas, DelphiDoom.Greed.PaletteFader, DelphiDoom.Greed.Font,
   DelphiDoom.Greed.TextPrinter, DelphiDoom.Greed.MessageLine, DelphiDoom.Greed.Inventory,
-  DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.Hud, DelphiDoom.Greed.WeaponLight, DelphiDoom.Greed.WeaponPictures;
+  DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.Hud, DelphiDoom.Greed.WeaponLight, DelphiDoom.Greed.WeaponPictures, DelphiDoom.Greed.WeaponPainter;
 
 const
   HUD_SEED = 20261112;
@@ -211,6 +211,7 @@ type
     FHud: TGreedHud;
     FWeapons: TGreedWeaponPictures;
     FWeaponsIntf: IGreedWeaponView;
+    FPainter: TGreedWeaponPainter;
     FPictures: TArray<TBytes>;
     FLoaded: TArray<Boolean>;
     function Picture(ALump: Integer): TBytes;
@@ -226,12 +227,15 @@ type
     /// <summary>One frame; the trace has what the step left in the state</summary>
     procedure RunFrame(const AStep: THudStep);
     function PixelHash: Cardinal;
+    /// <summary>The pictures are read again from the archive (the original: the lumps leave the cache)</summary>
+    procedure FlushPictures;
     property Canvas: TGreedCanvas read FCanvas;
     property Printer: TGreedTextPrinter read FPrinter;
     property State: TGreedGameState read FState;
     property Hud: TGreedHud read FHud;
     property Inventory: TGreedInventory read FInventory;
     property Weapons: TGreedWeaponPictures read FWeapons;
+    property Painter: TGreedWeaponPainter read FPainter;
     property Messages: TGreedMessageLine read FMessages;
   end;
 
@@ -247,6 +251,21 @@ implementation
 
 uses
   DelphiDoom.Greed.World, DelphiDoom.Greed.Render.Types, DelphiDoom.Tests.Greed.Builders;
+
+type
+  THudWeaponLumps = record
+    Name: string;
+    Count: Integer;
+  end;
+
+function WeaponLumps(AWeapon: Integer): THudWeaponLumps;
+begin
+  if not TGreedWeaponPictures.PicturesOf(AWeapon, Result.Name, Result.Count) then
+  begin
+    Result.Name := '';
+    Result.Count := 0;
+  end;
+end;
 
 function HudFnv(AHash: Cardinal; const AData; ASize: Integer): Cardinal;
 var
@@ -403,7 +422,7 @@ class function THudScenarios.SyntheticArchive: IGreedArchive;
 var
   LBlo: TGreedBlo;
   LIndex, LWeapon, LPicture: Integer;
-  LLumps: TGreedWeaponLumps;
+  LLumps: THudWeaponLumps;
   LName: string;
 begin
   LBlo := TGreedBlo.Create;
@@ -450,7 +469,7 @@ begin
     end;
     for LWeapon := 0 to 18 do
     begin
-      LLumps := TGreedWeaponPictures.LumpsOf(LWeapon);
+      LLumps := WeaponLumps(LWeapon);
       for LPicture := 0 to LLumps.Count - 1 do
       begin
         if LPicture = 0 then
@@ -475,7 +494,7 @@ end;
 class function THudScenarios.Describe(const AArchive: IGreedArchive): THudData;
 var
   LIndex, LWeapon, LPicture, LFirst: Integer;
-  LLumps: TGreedWeaponLumps;
+  LLumps: THudWeaponLumps;
   LLights: TBytes;
 
   procedure AddPicture(ALump: Integer);
@@ -495,7 +514,7 @@ begin
     AddPicture(LFirst + LIndex);
   for LWeapon := 0 to 18 do
   begin
-    LLumps := TGreedWeaponPictures.LumpsOf(LWeapon);
+    LLumps := WeaponLumps(LWeapon);
     if (LLumps.Count > 0) and (AArchive.IndexOf(LLumps.Name) >= 0) then
     begin
       SetLength(Result.Weapons, Length(Result.Weapons) + 1);
@@ -605,6 +624,9 @@ begin
     LLump := AData.Archive.ReadLump(Result.Operations[LIndex].Lump);
     LWidth := TGreedCanvas.PictureWidth(LLump);
     LHeight := TGreedCanvas.PictureHeight(LLump);
+    // a picture almost as wide as the screen has no room for the two routines that do not check the columns
+    if (LWidth > 290) and (Result.Operations[LIndex].Kind in [hcoTrans, hcoLit]) then
+      Result.Operations[LIndex].Kind := hcoMasked;
     case Result.Operations[LIndex].Kind of
       hcoSolid, hcoSolidUntranslated:
         begin
@@ -620,7 +642,7 @@ begin
         end;
     else
       // the original checks the rows and not the columns (and the lit one only the bottom)
-      Result.Operations[LIndex].X := 8 + LRandom.Next(GREED_CANVAS_WIDTH - LWidth - 15);
+      Result.Operations[LIndex].X := 14 + LRandom.Next(GREED_CANVAS_WIDTH - LWidth - 28);
       if Result.Operations[LIndex].Kind = hcoTrans then
         Result.Operations[LIndex].Y := LRandom.Next(GREED_CANVAS_HEIGHT + LHeight) - LHeight + 5
       else
@@ -703,10 +725,9 @@ end;
 class function THudScenarios.Frames(const AData: THudData; AScenario: Integer): TArray<THudStep>;
 var
   LRandom: THudRandom;
-  LFrame, LIndex, LCount, LTime, LViewSize, LWeapon: Integer;
+  LFrame, LIndex, LCount, LTime, LViewSize: Integer;
   LDelta: Boolean;
   LStep: THudStep;
-  LLump: TBytes;
   LNames: array[0..7] of string;
 
   function ItemPicture: Integer;
@@ -761,7 +782,13 @@ begin
       LStep.Player.MaxAngst := 100 + LRandom.Next(400);
       LStep.Player.CharType := LRandom.Next(6);
       for LIndex := 0 to 4 do
+      begin
         LStep.Player.Weapons[LIndex] := LRandom.Next(19);
+        // the weapon 6 of the table has the ammunition type 3, which does not exist: the original reads outside
+        // player.ammo and ammonames (the library counts it as the type 0)
+        if LStep.Player.Weapons[LIndex] = 6 then
+          LStep.Player.Weapons[LIndex] := 7;
+      end;
       FillChar(LStep.Player.NorthMap, SizeOf(LStep.Player.NorthMap), 0);
       FillChar(LStep.Player.WestMap, SizeOf(LStep.Player.WestMap), 0);
       for LIndex := 0 to 600 + LRandom.Next(1200) do
@@ -903,7 +930,6 @@ begin
       if (Length(AData.Weapons) > 0) and (LStep.First or LRandom.Chance(85)) then
         LStep.LoadWeapon := AData.Weapons[LRandom.Next(Length(AData.Weapons))];
     end;
-    LWeapon := LStep.LoadWeapon;
     // ---- what is drawn ----
     LStep.DrawHolo := (not LDelta) and LRandom.Chance(50);
     LStep.DrawRear := (not LDelta) and LRandom.Chance(35);
@@ -913,8 +939,6 @@ begin
     if LRandom.Chance(40) then
       LStep.WeapMode := LRandom.Next(2);
     // the place of the weapon is as UpdateWeaponView gives it: centered, more or less, and on the bottom edge
-    if LWeapon >= 0 then
-      LLump := AData.Archive.ReadLump(AData.Archive.IndexOf(TGreedWeaponPictures.LumpsOf(AData.Weapons[0]).Name));
     LStep.WeaponX := 100 + LRandom.Next(40);
     LStep.WeaponY := 90 + LRandom.Next(100);
     Result[LFrame] := LStep;
@@ -1049,8 +1073,9 @@ begin
   FLight := TGreedWeaponLight.Create(FRenderState);
   FLightIntf := FLight;
   FHud := TGreedHud.Create(FState, FCanvas, FPrinter, FInventory, AData.Archive, FLight, FFonts[2], FFonts[3]);
-  FWeapons := TGreedWeaponPictures.Create(FState, AData.Archive, FCanvas, FLightIntf);
+  FWeapons := TGreedWeaponPictures.Create(FState, AData.Archive);
   FWeaponsIntf := FWeapons;
+  FPainter := TGreedWeaponPainter.Create(FState, FWeapons, AData.Archive, FCanvas, FLightIntf);
   SetLength(FPictures, AData.Archive.LumpCount);
   SetLength(FLoaded, AData.Archive.LumpCount);
   Trace.Clear;
@@ -1060,6 +1085,7 @@ destructor THudLibraryRunner.Destroy;
 var
   LIndex: Integer;
 begin
+  FPainter.Free;
   FWeaponsIntf := nil;
   FHud.Free;
   FLightIntf := nil;
@@ -1088,6 +1114,14 @@ begin
   Result := FPictures[ALump];
 end;
 
+procedure THudLibraryRunner.FlushPictures;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(FLoaded) do
+    FLoaded[LIndex] := False;
+end;
+
 function THudLibraryRunner.PixelHash: Cardinal;
 begin
   Result := HudFnv(HUD_FNV_START, FCanvas.Pixels[0], Length(FCanvas.Pixels));
@@ -1096,17 +1130,36 @@ end;
 procedure THudLibraryRunner.RunPalette(const ACase: THudPaletteCase; out AApproxZero: Byte; out AHash: Cardinal);
 var
   LFader: TGreedPaletteFader;
+  LShown: TBytes;
+
+  procedure AddShown;
+  var
+    LPalette: TBytes;
+  begin
+    // what the screen shows: I_SetPalette of the original always makes the color 0 black
+    LPalette := Copy(LFader.Current);
+    LPalette[0] := 0;
+    LPalette[1] := 0;
+    LPalette[2] := 0;
+    AHash := HudFnv(AHash, LPalette[0], GREED_FADE_PALETTE_BYTES);
+  end;
+
 begin
   AApproxZero := TGreedPaletteFader.ApproximateZero(ACase.Shown);
   AHash := HUD_FNV_START;
+  // the palette the fades start from is the one read back from the screen (I_GetPalette)
+  LShown := Copy(ACase.Shown);
+  LShown[0] := 0;
+  LShown[1] := 0;
+  LShown[2] := 0;
   LFader := TGreedPaletteFader.Create;
   try
-    LFader.StartFadeOut(ACase.Shown, ACase.Start, ACase.Stop, ACase.Red, ACase.Green, ACase.Blue, ACase.Steps);
+    LFader.StartFadeOut(LShown, ACase.Start, ACase.Stop, ACase.Red, ACase.Green, ACase.Blue, ACase.Steps);
     while LFader.Step do
-      AHash := HudFnv(AHash, LFader.Current[0], GREED_FADE_PALETTE_BYTES);
-    LFader.StartFadeIn(ACase.Shown, ACase.Target, ACase.Start, ACase.Stop, ACase.Steps);
+      AddShown;
+    LFader.StartFadeIn(LShown, ACase.Target, ACase.Start, ACase.Stop, ACase.Steps);
     while LFader.Step do
-      AHash := HudFnv(AHash, LFader.Current[0], GREED_FADE_PALETTE_BYTES);
+      AddShown;
   finally
     LFader.Free;
   end;
@@ -1291,7 +1344,7 @@ begin
     FHud.DrawRearView(LRear);
   end;
   if AStep.DrawWeapon then
-    FWeapons.Draw(AStep.WeaponX, AStep.WeaponY, FHud.WindowHeight);
+    FPainter.Draw(AStep.WeaponX, AStep.WeaponY, FHud.WindowHeight);
   FHud.DrawOverlay;
   FMessages.Rewrite(FHud.CurrentViewSize);
   // what the frame left behind
@@ -1360,6 +1413,7 @@ begin
         LRunner.RunText(THudScenarios.TextCase(LData, LIndex));
         Result.Add(Format('T %d %s %s', [LIndex, IntToHex(LRunner.PixelHash, 8), IntToHex(LRunner.Trace.Hash, 8)]));
       end;
+      LRunner.FlushPictures;
       for LIndex := 0 to HUD_SCENARIOS - 1 do
       begin
         LFrames := THudScenarios.Frames(LData, LIndex);

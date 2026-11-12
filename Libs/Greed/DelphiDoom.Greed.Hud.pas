@@ -42,7 +42,9 @@ type
   ///   that is not cleared): xGreed never reaches them (MAXVIEWSIZE is 5) but they are ported.
   ///   Not ported: the net game (displaynetbonusitem1 and 2, the pictures of the players).
   ///   Differences from the original, all where it reads or writes outside its arrays: a pixel outside the
-  ///   canvas is not drawn; a weapon number outside the table counts as one without ammunition; a health below 0
+  ///   canvas is not drawn (one beyond the edge of its row lands on the next row, as in the original: see
+  ///   TGreedCanvas); a weapon number outside the table counts as one without ammunition, and the ammunition type 3
+  ///   of the weapon 6 of the table (there are three types) counts as the type 0; a health below 0
   ///   shows the first heart; a goal item below -1 draws nothing; a sprite lump that is missing or too short is
   ///   not drawn; the rotating map with a zoom other than 4, 8 or 16 has no tile offset (the original leaves it
   ///   undefined)
@@ -64,7 +66,7 @@ type
     FPrimaryLump: Integer;
     FSecondaryLump: Integer;
     function Lump(AIndex: Integer): TBytes;
-    procedure DrawSprite(ALump, AX, ABase: Integer);
+    procedure DrawSprite(ALump, AX, ABase: Integer; ACheckTop: Boolean = False);
     procedure PrintAt(AX, AY: Integer; const AText: string; ABackground: Boolean);
     function HeartIndex: Integer;
     procedure CurrentWeaponAmmo(out AAmmo, AMaxShots, AShots, AAmmoType: Integer);
@@ -344,7 +346,7 @@ begin
   ResetDisplay;
 end;
 
-procedure TGreedHud.DrawSprite(ALump, AX, ABase: Integer);
+procedure TGreedHud.DrawSprite(ALump, AX, ABase: Integer; ACheckTop: Boolean);
 var
   LPicture: TBytes;
   LWidth: Integer;
@@ -375,7 +377,8 @@ begin
         if LOffset + 2 + LRow < Length(LPicture) then
         begin
           LColor := LPicture[LOffset + 2 + LRow];
-          if LColor <> 0 then
+          // only DrawHolo checks the top; the others would write before the row 0 (not drawn here either way)
+          if (LColor <> 0) and ((LY >= 0) or not ACheckTop) then
             FCanvas.PutPixel(AX, LY, LColor);
         end;
         Inc(LY);
@@ -1579,7 +1582,7 @@ end;
 procedure TGreedHud.DrawHolo;
 begin
   if FState.Player.HoloPic <> 0 then
-    DrawSprite(FState.Player.HoloPic, 5, WindowHeight - 5);
+    DrawSprite(FState.Player.HoloPic, 5, WindowHeight - 5, True);
 end;
 
 procedure TGreedHud.DrawRearView(const ARearBuffer: TBytes);

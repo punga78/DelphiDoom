@@ -23,6 +23,7 @@ type
   ///   canvas (the rows of the view buffer are windowWidth apart, 320 when the HUD is drawn).
   ///   The printf of the original is not here: the caller gives the text already made (FN_Printf = Print,
   ///   FN_CenterPrintf = PrintCentered, FN_BlockCenterPrintf = BlockCenterPrint).
+  ///   As in the original a text longer than its row goes on at the start of the next row.
   ///   Differences from the original: the pixels outside the canvas are not drawn, and a print without a font
   ///   raises (the original follows a nil pointer)
   /// </summary>
@@ -106,10 +107,16 @@ var
   LRow: Integer;
   LPixel: Byte;
   LZero: Byte;
+  LDest: Integer;
+  LVisible: Boolean;
 begin
   RequireFont;
   LHeight := FFont.Height;
   LZero := FCanvas.ApproxZero;
+  // dest := @ylookup[printy][printx]: from there the columns and the rows are places that follow each other in
+  // the buffer; a row that does not exist is not a place of the buffer and nothing is drawn (PrintX still moves)
+  LVisible := (FPrintY >= 0) and (FPrintY < FCanvas.Height);
+  LDest := FPrintY * FCanvas.Width + FPrintX;
   for LIndex := 1 to Length(AText) do
   begin
     LWidth := FFont.CharWidth(AText[LIndex]);
@@ -120,14 +127,18 @@ begin
       begin
         LPixel := FFont.DataAt(LSource);
         Inc(LSource);
+        if not LVisible then
+          Continue;
         if LPixel <> 0 then
-          FCanvas.PutPixel(FPrintX, FPrintY + LRow, FBaseColor + LPixel)
+          FCanvas.PutLinear(LDest + LRow * FCanvas.Width, FBaseColor + LPixel)
         else if ABackground then
-          FCanvas.PutPixel(FPrintX, FPrintY + LRow, LZero);
+          FCanvas.PutLinear(LDest + LRow * FCanvas.Width, LZero);
       end;
+      Inc(LDest);
       Inc(FPrintX);
       Dec(LWidth);
     end;
+    LDest := LDest + FSpacing;
     FPrintX := FPrintX + FSpacing;
   end;
 end;
