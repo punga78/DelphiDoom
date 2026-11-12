@@ -27,11 +27,14 @@ type
     class function CreateCorrectionReader: II3dCorrectionReader; static;
     /// <summary>The drawing of an I3D model on a target; it has no state</summary>
     class function CreateRenderer: II3dModelRenderer; static;
+    /// <summary>A target that turns what the renderer draws into batches of triangles</summary>
+    class function CreateMeshBuilder: II3dMeshBuilder; static;
   end;
 
 implementation
 
 uses
+  DelphiDoom.Models.I3d.MeshBuilder,
   DelphiDoom.Models.I3d.Parser,
   DelphiDoom.Models.I3d.CorrectionReader,
   DelphiDoom.Models.I3d.Renderer;
@@ -51,6 +54,11 @@ end;
 class function TI3dFactory.CreateRenderer: II3dModelRenderer;
 begin
   Result := TI3dModelRenderer.Create;
+end;
+
+class function TI3dFactory.CreateMeshBuilder: II3dMeshBuilder;
+begin
+  Result := TI3dMeshBuilder.Create;
 end;
 
 end.

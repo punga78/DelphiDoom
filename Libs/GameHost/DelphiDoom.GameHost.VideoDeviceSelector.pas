@@ -13,7 +13,8 @@ unit DelphiDoom.GameHost.VideoDeviceSelector;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf;
+  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf,
+  DelphiDoom.GameHost.TrueColor.Intf;
 
 type
   /// <summary>
@@ -21,10 +22,11 @@ type
   ///   the filter the screen gave before it. The plain display is the default; the OpenGL one is made when the
   ///   filter asks for it, and when its SetMode raises EGameHostVideoDeviceException the reason goes to the log and
   ///   the plain display takes its place (DisplayFilter then says that OpenGL is not in use). A display is released
-  ///   before the other is made, because they share the window
+  ///   before the other is made, because they share the window. A picture of colors goes to the display in use
+  ///   when it is an IGameHostTrueColorDisplay
   /// </summary>
   TGameHostVideoDeviceSelector = class(TInterfacedObject, IGameHostVideoDevice, IGameHostWindowStyle,
-    IGameHostWindowPlacement, IGameHostFilteredDisplay)
+    IGameHostWindowPlacement, IGameHostFilteredDisplay, IGameHostTrueColorDisplay)
   strict private
     FPlainFactory: TGameHostVideoDeviceFactory;
     FOpenGlFactory: TGameHostVideoDeviceFactory;
@@ -58,6 +60,7 @@ type
     function DisplayFilter: TGameHostDisplayFilter;
     function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
       ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
+    function PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth, AHeight: Integer): Boolean;
     /// <summary>The display in use is the OpenGL one</summary>
     property IsOpenGl: Boolean read FDeviceIsOpenGl;
   end;
@@ -187,6 +190,15 @@ var
 begin
   Result := FDeviceIsOpenGl and Supports(FDevice, IGameHostFilteredDisplay, LFiltered) and
     LFiltered.PresentUnscaled(APixels, AWidth, AHeight, APalette, ADisplayWidth, ADisplayHeight, ABands);
+end;
+
+function TGameHostVideoDeviceSelector.PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth,
+  AHeight: Integer): Boolean;
+var
+  LTrueColor: IGameHostTrueColorDisplay;
+begin
+  Result := Supports(FDevice, IGameHostTrueColorDisplay, LTrueColor) and
+    LTrueColor.PresentTrueColor(APixels, AWidth, AHeight);
 end;
 
 end.

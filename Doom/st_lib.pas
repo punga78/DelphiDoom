@@ -260,7 +260,12 @@ begin
     oldversion := true;
 
   if oldsharewareversion or oldversion then
+{$IFDEF RADIX}
+    // the minus of the small font of Radix (FNTAnnn stands for STCFNnnn)
+    sttminus := W_CacheLumpName('FNTA045', PU_STATIC)
+{$ELSE}
     sttminus := W_CacheLumpName('STCFN046', PU_STATIC)
+{$ENDIF}
   else
     sttminus := W_CacheLumpNum(lump, PU_STATIC);
 end;

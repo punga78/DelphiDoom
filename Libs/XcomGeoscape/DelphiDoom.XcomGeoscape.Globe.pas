@@ -15,7 +15,8 @@ uses
   DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Polygon, DelphiDoom.XcomMod.RuleGlobe,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.City,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer,
-  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomUi.Text;
+  DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.TrueColor.Intf,
+  DelphiDoom.XcomUi.Text;
 
 type
   /// <summary>A vector of the unit sphere (Cord of Globe.cpp)</summary>
@@ -41,9 +42,18 @@ type
   ///   The globe: draws the sea, the land (polygons with the textures of the zoom), the radars and the flight
   ///   lines, the shadow of the night (with noise), the markers of the targets and, from the zoom 1, the borders,
   ///   the names of countries and cities. It reads the saved game (time, bases, UFOs...) and does not change it
-  ///   but for the center and the zoom
+  ///   but for the center and the zoom.
+  ///   When the screen composes its frame in true color at a whole scale (issue 183) the globe also keeps a
+  ///   second globe that many times larger (the same class and the same routines: polygons, circles and lines are
+  ///   rasterized at the true resolution, the textures, the markers and the labels are the original pictures
+  ///   enlarged) and leaves its picture to the screen as a detail layer. The picture of the game is not touched
   /// </summary>
   TXcomGlobe = class(TXcomInteractiveSurface)
+  strict private
+    type
+      /// <summary>What the globe redrew since its detail was last brought up to date</summary>
+      TDetailPart = (dpAll, dpRadars, dpMarkers, dpCountries);
+      TDetailParts = set of TDetailPart;
   public
     const
       ROTATE_LONGITUDE = 0.10;
@@ -95,6 +105,11 @@ type
     FAllRadarsOnBaseBuild: Boolean;
     FSeasons: Boolean;
     FScrollSpeed: Integer;
+    /// <summary>1 for the globe of the game; the scale of a globe that is the detail of another</summary>
+    FDetailScale: Integer;
+    FDetailGlobe: TXcomGlobe;
+    FDetailPending: TDetailParts;
+    FComposite: TXcomSurface;
     class var FShadeGradient: array[0..239] of SmallInt;
     class constructor CreateClass;
     procedure SetupRadii(AWidth, AHeight: Integer);
@@ -120,6 +135,13 @@ type
     class function ShadowValue(const AEarth, ASun: TXcomCord; ANoise: Integer): Byte; static;
     class function Nautical(AValue: Double): Double; static;
     procedure SetCenterValue(ALon, ALat: Double);
+    constructor CreateDetail(ASource: TXcomGlobe; AScale: Integer);
+    procedure DrawShadowDetail;
+    procedure BlitLabel(ALabel: TXcomText; AAnchorX, AAnchorY, ADown: Integer);
+    procedure CopyViewFrom(ASource: TXcomGlobe);
+    procedure RefreshDetail(ASource: TXcomGlobe; AParts: TDetailParts);
+    function DetailLayersOf(ATarget: TXcomSurface): IXcomDetailLayers;
+    function DetailPicture(AScale: Integer): TXcomSurface;
   protected
     procedure MouseClick(AAction: TXcomAction); override;
   public
@@ -205,7 +227,8 @@ uses
   DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCountry,
   DelphiDoom.XcomMod.Polyline, DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.Country, DelphiDoom.XcomSave.Ufo,
   DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.AlienBase,
-  DelphiDoom.XcomSurface.Gfx, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomUi.Types;
+  DelphiDoom.XcomSurface.Gfx, DelphiDoom.XcomSurface.Enlarger, DelphiDoom.XcomEngine.Language,
+  DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomUi.Types;
 
 { TXcomCRandom }
 
@@ -340,6 +363,8 @@ var
   LIndex: Integer;
 begin
   inherited Create(AWidth, AHeight, AX, AY);
+  FDetailScale := 1;
+  FDetailPending := [dpAll];
   FHost := AHost;
   FSave := ASave;
   FRuleset := ARuleset;
@@ -380,6 +405,8 @@ end;
 
 destructor TXcomGlobe.Destroy;
 begin
+  FDetailGlobe.Free;
+  FComposite.Free;
   FCities.Free;
   FCacheLand.Free;
   FRotTimer.Free;
@@ -427,6 +454,10 @@ begin
   // the C++ fills the six tables when it is built; here a table is made the first time its zoom is drawn
   if Length(FEarthData[AZoom]) = 0 then
   begin
+    // a globe that is the detail of another has large tables: it keeps one
+    if FDetailScale > 1 then
+      for LX := 0 to High(FEarthData) do
+        FEarthData[LX] := nil;
     SetLength(FEarthData[AZoom], Width * Height);
     for LY := 0 to Height - 1 do
       for LX := 0 to Width - 1 do
@@ -695,12 +726,14 @@ procedure TXcomGlobe.ToggleDetail;
 begin
   FDetail := not FDetail;
   DrawDetail;
+  Include(FDetailPending, dpCountries);
 end;
 
 procedure TXcomGlobe.ToggleRadarLines;
 begin
   FRadarLines := not FRadarLines;
   DrawRadars;
+  Include(FDetailPending, dpRadars);
 end;
 
 procedure TXcomGlobe.SetNewBaseHover(AHover: Boolean);
@@ -725,6 +758,7 @@ end;
 procedure TXcomGlobe.DrawRadarsNow;
 begin
   DrawRadars;
+  Include(FDetailPending, dpRadars);
 end;
 
 procedure TXcomGlobe.SetNoise(const ANoise: TArray<SmallInt>);
@@ -787,6 +821,10 @@ begin
   FCountries.SetColors(LColors, AFirst);
   FMarkers.SetColors(LColors, AFirst);
   FRadars.SetColors(LColors, AFirst);
+  if Assigned(FComposite) then
+    FComposite.SetColors(LColors, AFirst);
+  if Assigned(FDetailGlobe) then
+    FDetailGlobe.SetPalette(AColors, AFirst, ACount);
 end;
 
 procedure TXcomGlobe.Think;
@@ -805,6 +843,7 @@ begin
     if LIndex <> CITY_MARKER then
       FMarkerSet.GetFrame(LIndex).Offset(FBlink);
   DrawMarkers;
+  Include(FDetailPending, dpMarkers);
 end;
 
 procedure TXcomGlobe.Rotate;
@@ -833,11 +872,13 @@ begin
   finally
     LMode.Leave;
   end;
+  FDetailPending := [dpAll];
 end;
 
 procedure TXcomGlobe.DrawOcean;
 begin
-  TXcomGfx.DrawCircle(Self, FCenX + 1, FCenY, Trunc(FRadius + 20), FRules.OceanColor);
+  // the detail scale is 1 for the globe of the game
+  TXcomGfx.DrawCircle(Self, FCenX + FDetailScale, FCenY, Trunc(FRadius + 20 * FDetailScale), FRules.OceanColor);
 end;
 
 procedure TXcomGlobe.DrawLand;
@@ -1401,7 +1442,7 @@ begin
         LLabel.X := LLabelX - 50;
         LLabel.Y := LLabelY;
         LLabel.SetText(FHost.Language.GetString(LCountry.Rules.CountryType));
-        LLabel.Blit(FCountries);
+        BlitLabel(LLabel, LLabelX, LLabelY, 0);
       end;
     finally
       LLabel.Free;
@@ -1424,7 +1465,7 @@ begin
         LLabel.X := LLabelX - 50;
         LLabel.Y := LLabelY + 2;
         LLabel.SetText(FHost.Language.GetString(LCity.CityName));
-        LLabel.Blit(FCountries);
+        BlitLabel(LLabel, LLabelX, LLabelY, 2);
       end;
       for LBase in FSave.Bases do
       begin
@@ -1435,7 +1476,7 @@ begin
         LLabel.Y := LLabelY + 2;
         LLabel.SetColor(FRules.BaseLabelColor);
         LLabel.SetText(LBase.Name);
-        LLabel.Blit(FCountries);
+        BlitLabel(LLabel, LLabelX, LLabelY, 2);
       end;
     finally
       LLabel.Free;
@@ -1444,11 +1485,232 @@ begin
 end;
 
 procedure TXcomGlobe.Blit(ATarget: TXcomSurface);
+var
+  LLayers: IXcomDetailLayers;
 begin
+  // nil unless the screen composes in true color at a whole scale: then nothing below is new
+  LLayers := DetailLayersOf(ATarget);
+  if Assigned(LLayers) then
+    LLayers.BeginLayer(ATarget, X, Y, Width, Height);
   inherited Blit(ATarget);
   FRadars.Blit(ATarget);
   FCountries.Blit(ATarget);
   FMarkers.Blit(ATarget);
+  if Assigned(LLayers) then
+    LLayers.EndLayer(ATarget, DetailPicture(LLayers.DetailScale));
+end;
+
+function TXcomGlobe.DetailLayersOf(ATarget: TXcomSurface): IXcomDetailLayers;
+begin
+  Result := nil;
+  // only the globe of the game, when it is seen, and only on the picture of the screen
+  if (FDetailScale <> 1) or (not Visible) or Hidden or (not Assigned(FHost)) or (FHost.Screen = nil)
+    or (ATarget <> FHost.Screen.GetSurface) then
+    Exit;
+  Result := FHost.Screen.DetailLayers;
+  if Assigned(Result) and (Result.DetailScale < 2) then
+    Result := nil;
+end;
+
+function TXcomGlobe.DetailPicture(AScale: Integer): TXcomSurface;
+begin
+  if Assigned(FDetailGlobe) and ((FDetailGlobe.FDetailScale <> AScale) or (FDetailGlobe.Width <> Width * AScale)
+    or (FDetailGlobe.Height <> Height * AScale)) then
+    FreeAndNil(FDetailGlobe);
+  if not Assigned(FDetailGlobe) then
+  begin
+    FDetailGlobe := TXcomGlobe.CreateDetail(Self, AScale);
+    FDetailPending := [dpAll];
+  end;
+  if FDetailPending <> [] then
+  begin
+    FDetailGlobe.RefreshDetail(Self, FDetailPending);
+    FDetailPending := [];
+  end;
+  Result := FDetailGlobe.FComposite;
+end;
+
+constructor TXcomGlobe.CreateDetail(ASource: TXcomGlobe; AScale: Integer);
+begin
+  inherited Create(ASource.Width * AScale, ASource.Height * AScale, 0, 0);
+  FDetailScale := AScale;
+  FHost := ASource.FHost;
+  FSave := ASource.FSave;
+  FRuleset := ASource.FRuleset;
+  FRules := ASource.FRules;
+  // the original pictures, enlarged by the nearest pixel (the markers as they blink now)
+  FTexture := TXcomSurfaceEnlarger.EnlargeSet(ASource.FTexture, AScale);
+  FMarkerSet := TXcomSurfaceEnlarger.EnlargeSet(ASource.FMarkerSet, AScale);
+  FBlink := ASource.FBlink;
+  FCenX := ASource.FCenX * AScale;
+  FCenY := ASource.FCenY * AScale;
+  FCountries := TXcomSurface.Create(Width, Height);
+  FMarkers := TXcomSurface.Create(Width, Height);
+  FRadars := TXcomSurface.Create(Width, Height);
+  FComposite := TXcomSurface.Create(Width, Height);
+  // no timers: this globe never thinks, it follows the one it is the detail of
+  FCacheLand := TObjectList<TXcomPolygon>.Create(True);
+  FCities := TObjectList<TXcomCity>.Create(True);
+  BuildCities;
+  FZoom := ASource.FZoom;
+  SetupRadii(Width, Height);
+  SetPalette(@ASource.FColors[0], 0, 256);
+  CopyViewFrom(ASource);
+end;
+
+procedure TXcomGlobe.CopyViewFrom(ASource: TXcomGlobe);
+var
+  LIndex: Integer;
+begin
+  FCenLon := ASource.FCenLon;
+  FCenLat := ASource.FCenLat;
+  // SetZoom without its effects on the saved game
+  FZoom := ASource.FZoom;
+  FZoomTexture := (2 - Floor(FZoom / 2.0)) * (FTexture.TotalFrames div 3);
+  FRadius := FZoomRadius[FZoom];
+  FHover := ASource.FHover;
+  FHoverLon := ASource.FHoverLon;
+  FHoverLat := ASource.FHoverLat;
+  FCraft := ASource.FCraft;
+  FCraftLon := ASource.FCraftLon;
+  FCraftLat := ASource.FCraftLat;
+  FCraftRange := ASource.FCraftRange;
+  FDetail := ASource.FDetail;
+  FRadarLines := ASource.FRadarLines;
+  FFlightPaths := ASource.FFlightPaths;
+  FAllRadarsOnBaseBuild := ASource.FAllRadarsOnBaseBuild;
+  FSeasons := ASource.FSeasons;
+  FNoise := ASource.FNoise;
+  // Blink of the other globe, done here to the enlarged markers
+  if FBlink <> ASource.FBlink then
+  begin
+    FBlink := ASource.FBlink;
+    for LIndex in FMarkerSet.Indexes do
+      if LIndex <> CITY_MARKER then
+        FMarkerSet.GetFrame(LIndex).Offset(FBlink);
+  end;
+end;
+
+procedure TXcomGlobe.RefreshDetail(ASource: TXcomGlobe; AParts: TDetailParts);
+var
+  LMode: TXcomFloatMode;
+begin
+  LMode := TXcomFloatMode.Enter;
+  try
+    CopyViewFrom(ASource);
+    if dpAll in AParts then
+    begin
+      // Draw of the other globe, with the shadow computed for every pixel of this one
+      CachePolygons;
+      Clear;
+      DrawOcean;
+      DrawLand;
+      DrawRadars;
+      DrawFlights;
+      DrawShadowDetail;
+      DrawMarkers;
+      DrawDetail;
+    end
+    else
+    begin
+      // what the other globe redrew by itself, in the order it did
+      if dpRadars in AParts then
+        DrawRadars;
+      if dpMarkers in AParts then
+        DrawMarkers;
+      if dpCountries in AParts then
+        DrawDetail;
+    end;
+  finally
+    LMode.Leave;
+  end;
+  // Blit of the other globe: the land, the radars, the borders and names, the markers
+  System.Move(Pixels[0], FComposite.Pixels[0], Width * Height);
+  TXcomSurfaceEnlarger.Overlay(FRadars, FComposite);
+  TXcomSurfaceEnlarger.Overlay(FCountries, FComposite);
+  TXcomSurfaceEnlarger.Overlay(FMarkers, FComposite);
+end;
+
+procedure TXcomGlobe.BlitLabel(ALabel: TXcomText; AAnchorX, AAnchorY, ADown: Integer);
+var
+  LPicture: TXcomSurface;
+begin
+  if FDetailScale = 1 then
+  begin
+    ALabel.Blit(FCountries);
+    Exit;
+  end;
+  // The hook of issue 184 (text at the true resolution): until then a label of the finer globe is the text of the
+  // game enlarged by the nearest pixel, centered on the same point
+  LPicture := TXcomSurface.Create(ALabel.Width, ALabel.Height);
+  try
+    LPicture.SetColors(FColors);
+    ALabel.X := 0;
+    ALabel.Y := 0;
+    ALabel.Blit(LPicture);
+    TXcomSurfaceEnlarger.BlitEnlarged(LPicture, FCountries, AAnchorX - 50 * FDetailScale,
+      AAnchorY + ADown * FDetailScale, FDetailScale);
+  finally
+    LPicture.Free;
+  end;
+end;
+
+procedure TXcomGlobe.DrawShadowDetail;
+var
+  LEarth: TArray<TXcomCord>;
+  LSun: TXcomCord;
+  LX, LY, LShadow, LSplit, LEnd, LGroup, LTableX, LTableY, LOffsetX, LOffsetY, LNoiseRow: Integer;
+  LNoiseColumn: TArray<Integer>;
+  LDest: PByte;
+  LOcean: Byte;
+  LOceanShading: Boolean;
+begin
+  // DrawShadow for a globe that is the detail of another: the same shade for every pixel of this one, with the
+  // noise of the game enlarged (a cell of noise covers a pixel of the game). Only the table of the zoom in use
+  // is kept: it is the square of the scale times the one of the game
+  LEarth := EarthData(FZoom);
+  LSun := SunDirection(FCenLon, FCenLat);
+  LOcean := FRules.OceanColor;
+  LOceanShading := FRules.OceanShading;
+  LOffsetX := FCenX - Width div 2;
+  LOffsetY := FCenY - Height div 2;
+  SetLength(LNoiseColumn, Width);
+  for LX := 0 to Width - 1 do
+    LNoiseColumn[LX] := (LX div FDetailScale) mod NOISE_SIZE;
+  for LY := 0 to Height - 1 do
+  begin
+    LTableY := LY - LOffsetY;
+    if (LTableY < 0) or (LTableY >= Height) then
+      Continue;
+    LNoiseRow := ((LY div FDetailScale) mod NOISE_SIZE) * NOISE_SIZE;
+    LDest := PixelPointer(0, LY);
+    for LX := 0 to Width - 1 do
+    begin
+      LTableX := LX - LOffsetX;
+      if (LTableX >= 0) and (LTableX < Width) then
+      begin
+        if (LDest^ <> 0) and (LEarth[LTableY * Width + LTableX].Z <> 0) then
+        begin
+          LShadow := ShadowValue(LEarth[LTableY * Width + LTableX], LSun, FNoise[LNoiseRow + LNoiseColumn[LX]]);
+          if LOceanShading and (LDest^ >= LOcean) and (LDest^ < LOcean + 32) then
+            LDest^ := Byte(LOcean + LShadow)
+          else if LShadow <> 0 then
+          begin
+            LSplit := LShadow div 3;
+            LEnd := LDest^ + LSplit;
+            LGroup := LDest^ and $F0;
+            if LEnd > LGroup + $0F then
+              LDest^ := Byte(LGroup + $0F)
+            else
+              LDest^ := Byte(LEnd);
+          end;
+        end
+        else
+          LDest^ := 0;
+      end;
+      Inc(LDest);
+    end;
+  end;
 end;
 
 procedure TXcomGlobe.MouseClick(AAction: TXcomAction);

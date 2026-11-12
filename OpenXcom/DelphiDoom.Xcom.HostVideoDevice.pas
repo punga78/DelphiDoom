@@ -10,18 +10,19 @@ unit DelphiDoom.Xcom.HostVideoDevice;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.GameHost.Types,
-  DelphiDoom.GameHost.Video.Intf;
+  System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.TrueColor.Intf,
+  DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.TrueColor.Intf;
 
 type
   /// <summary>
   ///   IXcomVideoDevice, and the optional interfaces of a window that the screen asks for, on a display of
   ///   Libs\GameHost (the window with GDI or OpenGL): the same calls with the types of the game turned into the
   ///   neutral ones. What the display of the host does not have is ignored (a display that does not scale never
-  ///   presents an unscaled picture and says that OpenGL is not in use)
+  ///   presents an unscaled picture and says that OpenGL is not in use; one that shows no pictures of colors
+  ///   refuses the frames in true color, and the screen presents the 8 bit picture)
   /// </summary>
   TXcomHostVideoDevice = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle, IXcomWindowPlacement,
-    IXcomFilteredDisplay)
+    IXcomFilteredDisplay, IXcomTrueColorDisplay)
   strict private
     FDevice: IGameHostVideoDevice;
     FFilter: TXcomDisplayFilter;
@@ -39,6 +40,7 @@ type
     function DisplayFilter: TXcomDisplayFilter;
     function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
       ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+    function PresentTrueColor(const APixels: TXcomTrueColorPixels; AWidth, AHeight: Integer): Boolean;
   end;
 
 implementation
@@ -149,6 +151,16 @@ begin
   LBands.Bottom := ABands.Bottom;
   Result := LFiltered.PresentUnscaled(APixels, AWidth, AHeight, PaletteOf(APalette), ADisplayWidth,
     ADisplayHeight, LBands);
+end;
+
+function TXcomHostVideoDevice.PresentTrueColor(const APixels: TXcomTrueColorPixels; AWidth,
+  AHeight: Integer): Boolean;
+var
+  LTrueColor: IGameHostTrueColorDisplay;
+begin
+  // the two types are the same array of colors: nothing is copied
+  Result := Supports(FDevice, IGameHostTrueColorDisplay, LTrueColor) and
+    LTrueColor.PresentTrueColor(APixels, AWidth, AHeight);
 end;
 
 end.

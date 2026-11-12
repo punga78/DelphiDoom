@@ -12,9 +12,13 @@ interface
 uses
   System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Game, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.Xcom.ImageExporter;
+  DelphiDoom.Xcom.ImageExporter, DelphiDoom.XcomEngine.TrueColor.Intf;
 
 type
+  /// <summary>Saves a frame of colors as a picture file</summary>
+  TXcomTrueColorSaver = reference to procedure(const AFileName: string; const APixels: TXcomTrueColorPixels;
+    AWidth, AHeight: Integer);
+
   /// <summary>
   ///   Drives a game that runs on a manual clock, a queue of events and a display in memory: it lets the time pass,
   ///   sends clicks and keys, and saves what the display shows as a PNG (-shot). The script is a list of steps:
@@ -36,6 +40,7 @@ type
     FHoldMilliseconds: Integer;
     FOnTick: TProc;
     FOnSay: TProc<string>;
+    FTrueColorSaver: TXcomTrueColorSaver;
     FHandlers: TStringList;
     FTrace: Boolean;
     FInHandler: Boolean;
@@ -71,6 +76,11 @@ type
     property OnTick: TProc read FOnTick write FOnTick;
     /// <summary>Receives the lines of trace:, state: and until: (each begins with the time of the script)</summary>
     property OnSay: TProc<string> read FOnSay write FOnSay;
+    /// <summary>
+    ///   With it, when the display holds a frame of colors (the game composes in true color), a shot is that frame;
+    ///   without it, or with the 8 bit path, a shot is the indexed picture and its palette as always
+    /// </summary>
+    property TrueColorSaver: TXcomTrueColorSaver read FTrueColorSaver write FTrueColorSaver;
     /// <summary>How long a click keeps the button down (40 ms; 80 like the capture script of the real program to compare timers)</summary>
     property HoldMilliseconds: Integer read FHoldMilliseconds write FHoldMilliseconds;
   end;
@@ -78,7 +88,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image;
+  DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image,
+  DelphiDoom.XcomEngine.MemoryTrueColorVideoDevice;
 
 const
   // KMOD_LCTRL of SDL 1.2
@@ -264,9 +275,24 @@ procedure TXcomShotRunner.Shot(const AFileName: string);
 var
   LImage: TXcomImage;
   LIndex: Integer;
+  LTrueColor: TXcomMemoryTrueColorVideoDevice;
 begin
-  if FDevice.Presented = 0 then
+  LTrueColor := nil;
+  if FDevice is TXcomMemoryTrueColorVideoDevice then
+    LTrueColor := TXcomMemoryTrueColorVideoDevice(FDevice);
+  // a frame of colors is a picture too: the script must take the same time on both paths
+  if (FDevice.Presented = 0) and ((LTrueColor = nil) or (LTrueColor.TrueColorPresented = 0)) then
     Wait(40);
+  if Assigned(FTrueColorSaver) and Assigned(LTrueColor) then
+  begin
+    if LTrueColor.TrueColorPresented > 0 then
+    begin
+      FTrueColorSaver(AFileName, LTrueColor.TrueColorPixels, LTrueColor.TrueColorWidth,
+        LTrueColor.TrueColorHeight);
+      FSaved.Add(AFileName);
+      Exit;
+    end;
+  end;
   LImage := TXcomImage.Create(FDevice.Width, FDevice.Height);
   System.Move(FDevice.Pixels[0], LImage.Pixels[0], Length(LImage.Pixels));
   LImage.HasPalette := True;

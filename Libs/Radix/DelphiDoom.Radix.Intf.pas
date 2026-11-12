@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types;
+  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.MapInfo.Types;
 
 type
   /// <summary>
@@ -69,6 +69,36 @@ type
     function GetTextureNames: TArray<string>;
     property PakEntries: TArray<TRadixPakEntry> read GetPakEntries;
     property TextureNames: TArray<string> read GetTextureNames;
+  end;
+
+  /// <summary>Tells whether the WAD has a lump with that name (the aliases of missing lumps are dropped)</summary>
+  TRadixLumpExists = reference to function(const ALumpName: string): Boolean;
+
+  /// <summary>
+  ///   The names that the pictures have in RADIX.DAT ("MainMenuButton1", longer than the 8
+  ///   characters of a lump) brought to the lumps of the translated WAD (Rad-X: radix_alias)
+  /// </summary>
+  IRadixLumpAliases = interface
+    ['{5C0B7E19-84D3-4A6F-9E21-3B7A60D4C8F2}']
+    function GetCount: Integer;
+    /// <summary>
+    ///   Adds the lines "LUMP=name" of a lump RADIXINF. A name already known is not changed.
+    ///   AExists (it can be nil: every line is taken) drops the lines of the lumps that are not there
+    /// </summary>
+    procedure AddText(const AText: string; const AExists: TRadixLumpExists);
+    /// <summary>The lump of a name of RADIX.DAT, without case; false when the table does not have it</summary>
+    function TryResolve(const ARadixName: string; out ALumpName: string): Boolean;
+    property Count: Integer read GetCount;
+  end;
+
+  /// <summary>
+  ///   Reads the lump RMAP that the translation writes for every level: what a sector and a wall
+  ///   of Radix have more than those of Doom (Rad-X: RX_LoadRadixMapInfo)
+  /// </summary>
+  IRadixMapInfoReader = interface
+    ['{B81F3D06-2A9C-4E57-9D40-6C3E1F7A85B9}']
+    /// <summary>ERadixException when a statement has no number where it wants one</summary>
+    function Read(const AText: string): TRadixMapInfo;
   end;
 
 implementation

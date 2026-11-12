@@ -33,6 +33,7 @@ uses
   DelphiDoom.Models.I3d.Parser in '..\Libs\Models\DelphiDoom.Models.I3d.Parser.pas',
   DelphiDoom.Models.I3d.CorrectionReader in '..\Libs\Models\DelphiDoom.Models.I3d.CorrectionReader.pas',
   DelphiDoom.Models.I3d.Renderer in '..\Libs\Models\DelphiDoom.Models.I3d.Renderer.pas',
+  DelphiDoom.Models.I3d.MeshBuilder in '..\Libs\Models\DelphiDoom.Models.I3d.MeshBuilder.pas',
   DelphiDoom.Models.Intf in '..\Libs\Models\DelphiDoom.Models.Intf.pas',
   DelphiDoom.Models.Md2Model in '..\Libs\Models\DelphiDoom.Models.Md2Model.pas',
   DelphiDoom.Models.Md2Parser in '..\Libs\Models\DelphiDoom.Models.Md2Parser.pas',
@@ -56,7 +57,8 @@ uses
   DelphiDoom.Tests.Models.I3dCoordinates in 'Source\DelphiDoom.Tests.Models.I3dCoordinates.pas',
   DelphiDoom.Tests.Models.I3dPalette in 'Source\DelphiDoom.Tests.Models.I3dPalette.pas',
   DelphiDoom.Tests.Models.I3dTireAnimator in 'Source\DelphiDoom.Tests.Models.I3dTireAnimator.pas',
-  DelphiDoom.Tests.Models.I3dCorrections in 'Source\DelphiDoom.Tests.Models.I3dCorrections.pas';
+  DelphiDoom.Tests.Models.I3dCorrections in 'Source\DelphiDoom.Tests.Models.I3dCorrections.pas',
+  DelphiDoom.Tests.Models.I3dMeshBuilder in 'Source\DelphiDoom.Tests.Models.I3dMeshBuilder.pas';
 
 var
   Runner: ITestRunner;
