@@ -449,7 +449,8 @@ begin
     APrint.Block(PLANE_NAMES[LPlane], @LBytes[0], SizeOf(LBytes));
   end;
   AGame.World.CopyMapFlags(@LBytes[0]);
-  APrint.Block('mapflags', @LBytes[0], SizeOf(LBytes));
+  // the last 320 bytes are not printed (see the harness: the original writes there with reallight[-n])
+  APrint.Block('mapflags', @LBytes[0], SizeOf(LBytes) - 320);
 
   FillChar(LEvents, SizeOf(LEvents), 0);
   LEvents.Triggers := S.Triggers;
@@ -552,6 +553,7 @@ begin
   end;
   LGlobals.InventoryCursor := AGame.Inventory.Cursor;
   LGlobals.FireGrenade := AGame.Inventory.FireGrenade;
+  LGlobals.FirePending := AGame.Parts.Control.FirePending;
   LGlobals.WarpActive := AGame.Parts.Items.WarpActive;
   LGlobals.BloodCount := AGame.Parts.Spawner.BloodCount;
   LGlobals.MetalCount := AGame.Parts.Spawner.MetalCount;

@@ -45,7 +45,7 @@ type
     /// <summary>The place of the sprite of the bonus item in the list of the sprites; -1 if it has none</summary>
     BonusSprite: Integer;
     InventoryCursor: Integer;
-    FireGrenade: Boolean;
+    FireGrenade, FirePending: Boolean;
     WarpActive: Integer;
     BloodCount, MetalCount: Integer;
     MouseDX, MouseDY: Integer;
@@ -116,6 +116,19 @@ implementation
 const
   FNV_OFFSET = 2166136261;
   FNV_PRIME = 16777619;
+
+// RF_GetFloorZ of the original reads the memory that follows its arrays for a place outside the map (a shot that
+// flew out of it): the value is of what the program has there, not of the game. The library reads 0. Both sides
+// print 0 for the floor of a sprite that is outside the map
+function OutsideZero(const ASprite: TGreedSprite; AValue: Integer): Integer;
+const
+  MAP_UNITS = 64 * 64 * 65536;
+begin
+  if (ASprite.X < 0) or (ASprite.Y < 0) or (ASprite.X >= MAP_UNITS) or (ASprite.Y >= MAP_UNITS) then
+    Result := 0
+  else
+    Result := AValue;
+end;
 
 function FnvOf(AData: PByte; ACount: Integer): Cardinal;
 var
@@ -323,14 +336,14 @@ begin
   Int('oldz', ASprite.OldZ);
   Int('oldangle', ASprite.OldAngle);
   Int('oldangle2', ASprite.OldAngle2);
-  Int('oldfloorz', ASprite.OldFloorZ);
+  Int('oldfloorz', OutsideZero(ASprite, ASprite.OldFloorZ));
   Int('newx', ASprite.NewX);
   Int('newy', ASprite.NewY);
   Int('newz', ASprite.NewZ);
   Int('newangle', ASprite.NewAngle);
   Int('newangle2', ASprite.NewAngle2);
-  Int('newfloorz', ASprite.NewFloorZ);
-  Bool('grounded', ASprite.Grounded);
+  Int('newfloorz', OutsideZero(ASprite, ASprite.NewFloorZ));
+  Bool('grounded', ASprite.Grounded and (OutsideZero(ASprite, 1) = 1));
 end;
 
 procedure TWorldPrint.Elevator(AIndex: Integer; const AElevator: TGreedElevator);
@@ -502,6 +515,7 @@ begin
   Int('bonus.sprite', AGlobals.BonusSprite);
   Int('inventorycursor', AGlobals.InventoryCursor);
   Bool('firegrenade', AGlobals.FireGrenade);
+  Bool('actionflag', AGlobals.FirePending);
   Int('warpactive', AGlobals.WarpActive);
   Int('bloodcount', AGlobals.BloodCount);
   Int('metalcount', AGlobals.MetalCount);

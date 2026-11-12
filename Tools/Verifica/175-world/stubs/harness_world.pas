@@ -256,7 +256,9 @@ begin
   // mapslopes is not in the fingerprint: it is read only when the map is loaded (ActivateSlopes turns it into
   // mapflags, which is here), and the original writes in it when a sprite is put past the end of mapsprites
   // (the map 10: a sprite of the script outside the map); the library does not write outside the map
-  Plane('mapflags', @mapflags);
+  // the last 320 bytes of mapflags are not printed: reallight, that follows it, is written at a negative index by the
+  // light of a sprite on the first row (sprites.pas), which in the original lands on them
+  Print.Block('mapflags', @mapflags, MAPROWS * MAPCOLS - 320);
 
   FillChar(ev, SizeOf(ev), 0);
   Move(triggers, ev.Triggers, SizeOf(ev.Triggers));
@@ -372,6 +374,7 @@ begin
   end;
   g.InventoryCursor := inventorycursor;
   g.FireGrenade := firegrenade;
+  g.FirePending := actionflag <> 0;
   g.WarpActive := warpActive;
   g.BloodCount := bloodcount;
   g.MetalCount := metalcount;

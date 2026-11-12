@@ -58,12 +58,16 @@ procedure TTestGreedWorldParity.CheckGolden(const AFolder, AGoldenName: string);
 var
   LGolden, LGame, LMine: TStringList;
   LRunner: TLibraryWorldRunner;
-  LIndex, LLine, LMap, LSeed, LFrames, LEvery, LGames, LTotalFrames, LColumn: Integer;
-  LParts, LMineParts, LTrace: TArray<string>;
-  LKey, LDifferent: string;
-  LSection: TWorldSection;
+  LIndex, LMap, LSeed, LFrames, LEvery, LGames, LTotalFrames: Integer;
+  LParts, LTrace: TArray<string>;
+  LKey: string;
 
   procedure PlayGame;
+  var
+    LLine, LColumn: Integer;
+    LParts, LMineParts: TArray<string>;
+    LDifferent: string;
+    LSection: TWorldSection;
   begin
     if LGame.Count = 0 then
       Exit;
