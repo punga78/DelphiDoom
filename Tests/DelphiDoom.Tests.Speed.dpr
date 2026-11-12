@@ -74,7 +74,9 @@ uses
   DelphiDoom.Engine.Wad.Converter.Intf in '..\Base\DelphiDoom.Engine.Wad.Converter.Intf.pas',
   DelphiDoom.Engine.Speed.DataConverter in '..\Base\DelphiDoom.Engine.Speed.DataConverter.pas',
   DelphiDoom.Tests.Speed.DoomFontAliases in 'Source\DelphiDoom.Tests.Speed.DoomFontAliases.pas',
-  DelphiDoom.Tests.Speed.EngineDataConverter in 'Source\DelphiDoom.Tests.Speed.EngineDataConverter.pas';
+  DelphiDoom.Tests.Speed.EngineDataConverter in 'Source\DelphiDoom.Tests.Speed.EngineDataConverter.pas',
+  DelphiDoom.Speed.MapInfoReader in '..\Libs\Speed\DelphiDoom.Speed.MapInfoReader.pas',
+  DelphiDoom.Tests.Speed.MapInfoReader in 'Source\DelphiDoom.Tests.Speed.MapInfoReader.pas';
 
 var
   Runner: ITestRunner;
