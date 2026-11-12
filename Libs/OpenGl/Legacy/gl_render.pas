@@ -41,7 +41,29 @@ uses
   m_fixed,
   DelphiDoom.DynLights.Intf,
   DelphiDoom.GlLevel.Types,
-  DelphiDoom.GlLevel.Intf;
+  DelphiDoom.GlLevel.Intf,
+  DelphiDoom.GlScene.Types,
+  DelphiDoom.GlScene.DrawList;
+
+//==============================================================================
+//
+// gld_SceneItemSizes
+//
+// The sizes of the records of a wall, a flat and a sprite of gl_render: the composition
+// root creates the draw list (Libs\GlScene) for them
+//
+//==============================================================================
+function gld_SceneItemSizes: TGlSceneItemSizes;
+
+//==============================================================================
+//
+// gld_ConfigureDrawList
+//
+// The walls, flats and sprites of a frame (Libs\GlScene): the composition root gives the
+// list here and gl_render owns it from then on. Without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureDrawList(const ADrawList: TGlSceneDrawList);
 
 //==============================================================================
 //
@@ -1383,39 +1405,6 @@ type
   GLSpriteArray = array[0..$FFFF] of GLSprite;
   PGLSpriteArray = ^GLSpriteArray;
 
-  GLDrawItemType = (
-    GLDIT_NONE,
-    GLDIT_WALL,
-    GLDIT_FLAT,
-    GLDIT_SPRITE,
-    GLDIT_DLIGHT
-  );
-
-  GLDrawItem = record
-    itemtype: GLDrawItemType;
-    itemcount: integer;
-    firstitemindex: integer;
-    rendermarker: byte;
-  end;
-  PGLDrawItem = ^GLDrawItem;
-  GLDrawItemArray = array[0..$FFFF] of GLDrawItem;
-  PGLDrawItemArray = ^GLDrawItemArray;
-
-  GLDrawInfo = record
-    walls: PGLWallArray;
-    num_walls: integer;
-    max_walls: integer;
-    flats: PGLFlatArray;
-    num_flats: integer;
-    max_flats: integer;
-    sprites: PGLSpriteArray;
-    num_sprites: integer;
-    max_sprites: integer;
-    drawitems: PGLDrawItemArray;
-    num_drawitems: integer;
-    max_drawitems: integer;
-  end;
-
 type
   gl_strip_coords_t = record
     v: array[0..3] of array [0..2] of GLfloat;
@@ -1424,7 +1413,8 @@ type
   Pgl_strip_coords_t = ^gl_strip_coords_t;
 
 var
-  gld_drawinfo: GLDrawInfo;
+  // the walls, flats and sprites of the frame (Libs\GlScene), given by the composition root (gld_ConfigureDrawList)
+  gld_drawlist: TGlSceneDrawList = nil;
 
 // this is the list for all sectors to the loops
   sectorloops: PGLSectorArray;
@@ -1471,6 +1461,30 @@ end;
 procedure gld_ConfigureSectorPreprocessor(const APreprocessor: IGlSectorPreprocessor);
 begin
   gld_sectorpreprocessor := APreprocessor;
+end;
+
+//==============================================================================
+//
+// gld_SceneItemSizes
+//
+//==============================================================================
+function gld_SceneItemSizes: TGlSceneItemSizes;
+begin
+  result.Wall := SizeOf(GLWall);
+  result.Flat := SizeOf(GLFlat);
+  result.Sprite := SizeOf(GLSprite);
+end;
+
+//==============================================================================
+//
+// gld_ConfigureDrawList
+//
+//==============================================================================
+procedure gld_ConfigureDrawList(const ADrawList: TGlSceneDrawList);
+begin
+  if gld_drawlist <> ADrawList then
+    gld_drawlist.Free;
+  gld_drawlist := ADrawList;
 end;
 
 //==============================================================================
@@ -1764,10 +1778,7 @@ begin
   camera.position[2] := yCamera;
 
   inc(rendermarker);
-  gld_drawinfo.num_walls := 0;
-  gld_drawinfo.num_flats := 0;
-  gld_drawinfo.num_sprites := 0;
-  gld_drawinfo.num_drawitems := 0;
+  gld_drawlist.BeginFrame(rendermarker);
   dodrawsky := false;
   numdlitems := 0;
 
@@ -1890,53 +1901,6 @@ begin
   scissoron := false;
   if gl_shared_texture_palette then
     glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
-end;
-
-//==============================================================================
-//
-// gld_AddDrawItem
-//
-//==============================================================================
-procedure gld_AddDrawItem(itemtype: GLDrawItemType; itemindex: integer);
-var
-  item: PGLDrawItem;
-begin
-  if gld_drawinfo.num_drawitems >= gld_drawinfo.max_drawitems then
-  begin
-    gld_drawinfo.max_drawitems := gld_drawinfo.max_drawitems + 64;
-    gld_drawinfo.drawitems := Z_Realloc(gld_drawinfo.drawitems, gld_drawinfo.max_drawitems * SizeOf(GLDrawItem), PU_LEVEL, nil);
-    item := @gld_drawinfo.drawitems[gld_drawinfo.num_drawitems];
-    item.itemtype := itemtype;
-    item.itemcount := 1;
-    item.firstitemindex := itemindex;
-    item.rendermarker := rendermarker;
-    exit;
-  end;
-  item := @gld_drawinfo.drawitems[gld_drawinfo.num_drawitems];
-  if item.rendermarker <> rendermarker then
-  begin
-    item.itemtype := GLDIT_NONE;
-    item.rendermarker := rendermarker;
-  end;
-  if item.itemtype <> itemtype then
-  begin
-    if item.itemtype <> GLDIT_NONE then
-    begin
-      inc(gld_drawinfo.num_drawitems);
-    end;
-    if gld_drawinfo.num_drawitems >= gld_drawinfo.max_drawitems then
-    begin
-      gld_drawinfo.max_drawitems := gld_drawinfo.max_drawitems + 64;
-      gld_drawinfo.drawitems := Z_Realloc(gld_drawinfo.drawitems, gld_drawinfo.max_drawitems * SizeOf(GLDrawItem), PU_LEVEL, nil);
-    end;
-    item := @gld_drawinfo.drawitems[gld_drawinfo.num_drawitems];
-    item.itemtype := itemtype;
-    item.itemcount := 1;
-    item.firstitemindex := itemindex;
-    item.rendermarker := rendermarker;
-    exit;
-  end;
-  inc(item.itemcount);
 end;
 
 (*****************
@@ -2213,15 +2177,8 @@ end;
 //==============================================================================
 procedure ADDWALL(wall: PGLWall);
 begin
-  if gld_drawinfo.num_walls >= gld_drawinfo.max_walls then
-  begin
-    gld_drawinfo.max_walls := gld_drawinfo.max_walls + 128;
-    gld_drawinfo.walls := Z_Realloc(gld_drawinfo.walls, gld_drawinfo.max_walls * SizeOf(GLWall), PU_LEVEL, nil);
-  end;
   wall.blend := not ((wall.flag in [GLDWF_SKY, GLDWF_SKYFLIP, GLDWF_TOP, GLDWF_M1S, GLDWF_BOT]) or (wall.alpha > 0.999));
-  gld_AddDrawItem(GLDIT_WALL, gld_drawinfo.num_walls);
-  gld_drawinfo.walls[gld_drawinfo.num_walls] := wall^;
-  inc(gld_drawinfo.num_walls);
+  PGLWall(gld_drawlist.AddWall)^ := wall^;
 end;
 
 //==============================================================================
@@ -2869,14 +2826,7 @@ begin
 
   flat.whitefog := sector.renderflags and SRF_FOG <> 0; // JVAL: Mars fog sectors
 
-  if gld_drawinfo.num_flats >= gld_drawinfo.max_flats then
-  begin
-    gld_drawinfo.max_flats := gld_drawinfo.max_flats + 128;
-    gld_drawinfo.flats := Z_Realloc(gld_drawinfo.flats, gld_drawinfo.max_flats * SizeOf(GLFlat), PU_LEVEL, nil);
-  end;
-  gld_AddDrawItem(GLDIT_FLAT, gld_drawinfo.num_flats);
-  gld_drawinfo.flats[gld_drawinfo.num_flats] := flat;
-  inc(gld_drawinfo.num_flats);
+  PGLFlat(gld_drawlist.AddFlat)^ := flat;
 end;
 
 //==============================================================================
@@ -2961,14 +2911,7 @@ begin
 
   flat.whitefog := whitefog; // JVAL: Mars fog sectors
 
-  if gld_drawinfo.num_flats >= gld_drawinfo.max_flats then
-  begin
-    gld_drawinfo.max_flats := gld_drawinfo.max_flats + 128;
-    gld_drawinfo.flats := Z_Realloc(gld_drawinfo.flats, gld_drawinfo.max_flats * SizeOf(GLFlat), PU_LEVEL, nil);
-  end;
-  gld_AddDrawItem(GLDIT_FLAT, gld_drawinfo.num_flats);
-  gld_drawinfo.flats[gld_drawinfo.num_flats] := flat;
-  inc(gld_drawinfo.num_flats);
+  PGLFlat(gld_drawlist.AddFlat)^ := flat;
 end;
 
 //==============================================================================
@@ -3887,14 +3830,7 @@ begin
   // get height from plane
   flat.z := plane.height / MAP_SCALE;
 
-  if gld_drawinfo.num_flats >= gld_drawinfo.max_flats then
-  begin
-    gld_drawinfo.max_flats := gld_drawinfo.max_flats + 128;
-    gld_drawinfo.flats := Z_Realloc(gld_drawinfo.flats, gld_drawinfo.max_flats * SizeOf(GLFlat), PU_LEVEL, nil);
-  end;
-  gld_AddDrawItem(GLDIT_FLAT, gld_drawinfo.num_flats);
-  gld_drawinfo.flats[gld_drawinfo.num_flats] := flat;
-  inc(gld_drawinfo.num_flats);
+  PGLFlat(gld_drawlist.AddFlat)^ := flat;
 end;
 
 //==============================================================================
@@ -4958,14 +4894,7 @@ begin
     sprite.flags := sprite.flags or GLS_CLIPPED;
   end;
 
-  if gld_drawinfo.num_sprites >= gld_drawinfo.max_sprites then
-  begin
-    gld_drawinfo.max_sprites := gld_drawinfo.max_sprites + 128;
-    gld_drawinfo.sprites := Z_Realloc(gld_drawinfo.sprites, gld_drawinfo.max_sprites * SizeOf(GLSprite), PU_LEVEL, nil);
-  end;
-  gld_AddDrawItem(GLDIT_SPRITE, gld_drawinfo.num_sprites);
-  gld_drawinfo.sprites[gld_drawinfo.num_sprites] := sprite;
-  inc(gld_drawinfo.num_sprites);
+  PGLSprite(gld_drawlist.AddSprite)^ := sprite;
 
   // JVAL: Mark the dynamic lights of the sprite
   if sprite.aproxdist < DLIGHTSDRAWRANGE then
@@ -5107,17 +5036,20 @@ end;
 procedure gld_DrawWalls(const wallrange: integer; const fblend: boolean);
 var
   i, j, k, count: integer;
-  pglitem: PGLDrawItem;
+  pglitem: PGlSceneRun;
+  walls: PGLWallArray;
 begin
-  for i := gld_drawinfo.num_drawitems downto 0 do
+  // the blocks do not move while the frame is drawn
+  walls := gld_drawlist.Walls;
+  for i := gld_drawlist.LastRun downto 0 do
   begin
-    pglitem := @gld_drawinfo.drawitems[i];
-    if pglitem.itemtype = GLDIT_WALL then
+    pglitem := @gld_drawlist.Runs[i];
+    if pglitem.Kind = gskWall then
     begin
       count := 0;
       for k := GLDWF_TOP to wallrange do
       begin
-        if count >= pglitem.itemcount then
+        if count >= pglitem.Count then
           continue;
         if gl_drawsky and (k >= GLDWF_SKY) then
         begin
@@ -5130,14 +5062,14 @@ begin
           glDisable(GL_FOG);
           glColor4fv(@gl_whitecolor);
         end;
-        for j := pglitem.itemcount - 1 downto 0 do
-          if gld_drawinfo.walls[j + pglitem.firstitemindex].flag = k then
+        for j := pglitem.Count - 1 downto 0 do
+          if walls[j + pglitem.First].flag = k then
           begin
             {$IFDEF DEBUG}
             inc(rendered_segs);
             {$ENDIF}
             inc(count);
-            gld_DrawWall(@gld_drawinfo.walls[j + pglitem.firstitemindex], fblend);
+            gld_DrawWall(@walls[j + pglitem.First], fblend);
           end;
         if gl_drawsky and (k >= GLDWF_SKY) then
         begin
@@ -5164,10 +5096,18 @@ var
   i, j, k: integer;
   max_scale: fixed_t;
   wallrange: integer;
-  pglitem: PGLDrawItem;
+  pglitem: PGlSceneRun;
   wall: PGLWall;
   seg: PGLSeg;
+  walls: PGLWallArray;
+  flats: PGLFlatArray;
+  sprites: PGLSpriteArray;
 begin
+  // the blocks do not move while the frame is drawn
+  walls := gld_drawlist.Walls;
+  flats := gld_drawlist.Flats;
+  sprites := gld_drawlist.Sprites;
+
   if zaxisshift then
   begin
     wallrange := GLDWF_BOTFLUD;
@@ -5208,16 +5148,16 @@ begin
 
   // Floors and ceilings
   glDisable(GL_BLEND);
-  for i := gld_drawinfo.num_drawitems downto 0 do
+  for i := gld_drawlist.LastRun downto 0 do
   begin
-    pglitem := @gld_drawinfo.drawitems[i];
-    if pglitem.itemtype = GLDIT_FLAT then
+    pglitem := @gld_drawlist.Runs[i];
+    if pglitem.Kind = gskFlat then
     begin
       {$IFDEF DEBUG}
-      rendered_visplanes := rendered_visplanes + pglitem.itemcount;
+      rendered_visplanes := rendered_visplanes + pglitem.Count;
       {$ENDIF}
-      for j := pglitem.itemcount - 1 downto 0 do
-        gld_DrawFlat(@gld_drawinfo.flats[j + pglitem.firstitemindex]);
+      for j := pglitem.Count - 1 downto 0 do
+        gld_DrawFlat(@flats[j + pglitem.First]);
     end;
   end;
   glEnable(GL_BLEND);
@@ -5227,37 +5167,37 @@ begin
 //  glCullFace(GL_BACK);
   // Walls
   // Sprites
-  if gld_drawinfo.num_sprites > 100 then
+  if gld_drawlist.SpriteCount > 100 then
   begin
-    for i := 0 to gld_drawinfo.num_sprites - 1 do
+    for i := 0 to gld_drawlist.SpriteCount - 1 do
     begin
       {$IFDEF DEBUG}
       inc(rendered_vissprites);
       {$ENDIF}
-      gld_DrawSprite(@gld_drawinfo.sprites[i]);
+      gld_DrawSprite(@sprites[i]);
     end;
   end
-  else for i := gld_drawinfo.num_drawitems downto 0 do
+  else for i := gld_drawlist.LastRun downto 0 do
   begin
-    pglitem := @gld_drawinfo.drawitems[i];
-    if pglitem.itemtype = GLDIT_SPRITE then
+    pglitem := @gld_drawlist.Runs[i];
+    if pglitem.Kind = gskSprite then
     begin
       repeat
         max_scale := MAXINT;
         k := -1;
-        for j := pglitem.itemcount - 1 downto 0 do
-          if gld_drawinfo.sprites[j + pglitem.firstitemindex].scale < max_scale then
+        for j := pglitem.Count - 1 downto 0 do
+          if sprites[j + pglitem.First].scale < max_scale then
           begin
-            max_scale := gld_drawinfo.sprites[j + pglitem.firstitemindex].scale;
-            k := j + pglitem.firstitemindex;
+            max_scale := sprites[j + pglitem.First].scale;
+            k := j + pglitem.First;
           end;
         if k >= 0 then
         begin
           {$IFDEF DEBUG}
           inc(rendered_vissprites);
           {$ENDIF}
-          gld_DrawSprite(@gld_drawinfo.sprites[k]);
-          gld_drawinfo.sprites[k].scale := MAXINT;
+          gld_DrawSprite(@sprites[k]);
+          sprites[k].scale := MAXINT;
         end;
       until max_scale = MAXINT;
     end;
@@ -5289,10 +5229,10 @@ begin
         glStencilFunc(GL_ALWAYS, 1, 1); // Setup the stencil buffer to write
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  // a 1 everywhere the plane is.
 
-        for j := 0 to gld_drawinfo.num_walls - 1 do
-          if gld_drawinfo.walls[j].flag >= GLDWF_SKY then
+        for j := 0 to gld_drawlist.WallCount - 1 do
+          if walls[j].flag >= GLDWF_SKY then
           begin
-            wall := @gld_drawinfo.walls[j];
+            wall := @walls[j];
             seg := wall.glseg;
             glBegin(GL_TRIANGLE_STRIP);
               glVertex3f(seg.x1, wall.ytop, seg.z1);
@@ -5367,6 +5307,9 @@ end;
 //==============================================================================
 procedure gld_PreprocessLevel;
 begin
+  if gld_drawlist = nil then
+    I_Error('gld_PreprocessLevel(): the draw list is not configured (ComposeEngine was not called)');
+
   // preload graphics
   // JVAL
   // Precache if we have external textures
@@ -5377,7 +5320,7 @@ begin
     gld_Precache;
   gld_PreprocessSectors;
   gld_PreprocessSegs;
-  ZeroMemory(@gld_drawinfo, SizeOf(GLDrawInfo));
+  gld_drawlist.Release;
   glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
   glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
 end;
@@ -5432,5 +5375,9 @@ begin
   end;
 end;
 
-end.
+initialization
 
+finalization
+  gld_ConfigureDrawList(nil);
+
+end.

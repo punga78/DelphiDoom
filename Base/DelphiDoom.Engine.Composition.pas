@@ -296,6 +296,7 @@ uses
   DelphiDoom.Engine.GlLevel.SectorWorld,
   gl_automap,
   DelphiDoom.GlAutomap.Factory,
+  DelphiDoom.GlScene.Factory,
   DelphiDoom.Engine.GlAutomap.Painter,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
@@ -1195,10 +1196,17 @@ begin
     TEngineGlAutomapPainter.Create({$IFDEF HEXEN}True{$ELSE}False{$ENDIF}));
 end;
 
+procedure ComposeGlScene;
+begin
+  // a class and not an interface: gl_render calls it for every wall, flat and sprite of a frame, and owns it
+  gld_ConfigureDrawList(TGlSceneFactory.CreateDrawList(gld_SceneItemSizes));
+end;
+
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
 begin
   GL_ConfigureClipper(TGlMathFactory.CreateAngleClipper);
   ComposeGlAutomap;
+  ComposeGlScene;
 end;
 {$ENDIF}
 
