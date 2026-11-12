@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomEngine.LanguageProvider.Intf, DelphiDoom.XcomEngine.FileOptionsStore,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.XcomMenu.OptionsTypes,
   DelphiDoom.XcomMenu.OptionsNavigator.Intf, DelphiDoom.XcomMenu.OptionsVideoState, DelphiDoom.XcomMenu.OptionsAudioState,
-  DelphiDoom.XcomMenu.OptionsConfirmState, DelphiDoom.Tests.XcomEngine.World;
+  DelphiDoom.XcomMenu.OptionsConfirmState, DelphiDoom.XcomMenu.MainMenuState, DelphiDoom.Tests.XcomEngine.World;
 
 type
   TFlatState = class(TXcomState)
@@ -180,6 +180,8 @@ type
     procedure RipristinareIPredefinitiChiedeEFa;
     [Test]
     procedure UnaCategoriaNonPortataNonChiudeLaSchermata;
+    [Test]
+    procedure ApriLeOpzioniDalMenuPrincipaleRiallineaLeImpostazioniVideoNuove;
   end;
 
 implementation
@@ -737,6 +739,25 @@ begin
   ClickAt(40, 36);
   Assert.AreEqual(Ord(ocAudio), Ord(FNavigator.Created));
   Assert.IsTrue(FWorld.Game.TopState is TXcomOptionsVideoState);
+end;
+
+procedure TTestXcomOptionsScreens.ApriLeOpzioniDalMenuPrincipaleRiallineaLeImpostazioniVideoNuove;
+begin
+  // what a previous OK left in the new values (the old ones, swapped) must not come back at the next OK
+  FWorld.Game.Options.Fullscreen := False;
+  FWorld.Game.Options.NewFullscreen := True;
+  FWorld.Game.Options.GeoscapeScale := 1;
+  FWorld.Game.Options.NewGeoscapeScale := 3;
+  FWorld.Game.Options.UseOpenGLShader := 'Shaders/Raw.OpenGL.shader';
+  FWorld.Game.Options.NewOpenGLShader := 'Shaders/Old.OpenGL.shader';
+  FWorld.Game.SetState(TXcomMainMenuState.Create(FWorld.Game, 'v'));
+  FWorld.Wait(400);
+  // Options is the button at 164,118 of 92x20
+  ClickAt(210, 128);
+  Assert.IsTrue(FWorld.Game.TopState is TXcomOptionsVideoState);
+  Assert.IsFalse(FWorld.Game.Options.NewFullscreen);
+  Assert.AreEqual(1, FWorld.Game.Options.NewGeoscapeScale);
+  Assert.AreEqual('Shaders/Raw.OpenGL.shader', FWorld.Game.Options.NewOpenGLShader);
 end;
 
 end.

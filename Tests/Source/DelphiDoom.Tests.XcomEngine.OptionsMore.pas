@@ -21,7 +21,7 @@ uses
   DelphiDoom.XcomMenu.OptionsControlsState, DelphiDoom.XcomMenu.OptionsAdvancedState,
   DelphiDoom.XcomMenu.OptionsGeoscapeState, DelphiDoom.XcomMenu.OptionsBattlescapeState,
   DelphiDoom.XcomMenu.OptionsFoldersState, DelphiDoom.XcomMenu.MenuOptionsNavigator, DelphiDoom.XcomMenu.MainMenuState,
-  DelphiDoom.XcomMenu.SetWindowedRootState,
+  DelphiDoom.XcomMenu.SetWindowedRootState, DelphiDoom.XcomMenu.PauseState,
   DelphiDoom.Tests.XcomEngine.World;
 
 type
@@ -223,6 +223,8 @@ type
     procedure LaPosizioneDellaFinestraSiImpostaConOk;
     [Test]
     procedure LaPosizioneDellaFinestraAnnullaChiamaIlGestore;
+    [Test]
+    procedure ApriLeOpzioniDallaPausaRiallineaLeImpostazioniVideoNuove;
   end;
 
 implementation
@@ -1267,6 +1269,23 @@ begin
   FWorld.Wait(50);
   Assert.IsTrue(LCalled);
   Assert.IsFalse(FWorld.Game.TopState is TXcomSetWindowedRootState);
+end;
+
+procedure TTestXcomOptionsMoreScreens.ApriLeOpzioniDallaPausaRiallineaLeImpostazioniVideoNuove;
+var
+  LState: TXcomPauseState;
+begin
+  FWorld.Game.Options.Fullscreen := False;
+  FWorld.Game.Options.NewFullscreen := True;
+  FWorld.Game.Options.DisplayWidth := 800;
+  FWorld.Game.Options.NewDisplayWidth := 640;
+  LState := TXcomPauseState.Create(FWorld.Game, ooGeoscape, FNavigator);
+  FWorld.Game.PushState(LState);
+  FWorld.Wait(400);
+  FWorld.Click(Round((LState.OptionsButton.X + 5) * FWorld.Game.Screen.XScale),
+    Round((LState.OptionsButton.Y + 5) * FWorld.Game.Screen.YScale));
+  Assert.IsFalse(FWorld.Game.Options.NewFullscreen);
+  Assert.AreEqual(800, FWorld.Game.Options.NewDisplayWidth);
 end;
 
 initialization
