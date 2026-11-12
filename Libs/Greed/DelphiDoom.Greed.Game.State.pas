@@ -150,7 +150,7 @@ type
     Weapons: array[0..18] of TGreedWeaponInfo;
     /// <summary>slumps: the lump of each sprite that the game makes (GREED_S_START .. GREED_S_END)</summary>
     SpriteLumps: array[0..GREED_S_END - GREED_S_START] of Integer;
-    /// <summary>playernum and greedcom.numplayers of the net game: 0 and 1</summary>
+    /// <summary>playernum and greedcom.numplayers of the net game: 1 and 1 in a game of one player</summary>
     PlayerNum: Integer;
     NumPlayers: Integer;
     /// <summary>DEMO, GAME1 .. GAME3 and ASSASSINATOR of constant.pas</summary>
