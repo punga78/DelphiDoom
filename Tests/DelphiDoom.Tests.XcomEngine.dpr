@@ -57,7 +57,12 @@ uses
   DelphiDoom.Tests.XcomEngine.UiSounds in 'Source\DelphiDoom.Tests.XcomEngine.UiSounds.pas',
   DelphiDoom.Tests.XcomEngine.WindowPlacement in 'Source\DelphiDoom.Tests.XcomEngine.WindowPlacement.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorComposer in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorComposer.pas',
-  DelphiDoom.Tests.XcomEngine.TrueColorDisplay in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorDisplay.pas';
+  DelphiDoom.Tests.XcomEngine.TrueColorDisplay in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorDisplay.pas',
+  DelphiDoom.Tests.XcomSurface.FakeRasterizer in 'Source\DelphiDoom.Tests.XcomSurface.FakeRasterizer.pas',
+  DelphiDoom.Tests.XcomEngine.FontFakes in 'Source\DelphiDoom.Tests.XcomEngine.FontFakes.pas',
+  DelphiDoom.Tests.XcomEngine.FontSettingsReader in 'Source\DelphiDoom.Tests.XcomEngine.FontSettingsReader.pas',
+  DelphiDoom.Tests.XcomEngine.RasterFontOverlay in 'Source\DelphiDoom.Tests.XcomEngine.RasterFontOverlay.pas',
+  DelphiDoom.Tests.XcomEngine.FontGridGenerator in 'Source\DelphiDoom.Tests.XcomEngine.FontGridGenerator.pas';
 
 var
   Runner: ITestRunner;

@@ -15,7 +15,15 @@
 {           [-user <folder with options.cfg>] [-mod xcom2|xcom1]                }
 {           [-shot <file.png> [-ms <n>]] [-script step;step...]                 }
 {           [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]            }
-{           [-version <text>] [-dospath <text>] [-hold] [-truecolor]            }
+{           [-version <text>] [-dospath <text>] [-hold]                         }
+{           [-fonts <file>] [-modfolder <folder>]... [-fontgrid <folder>]      }
+{           [-truecolor]                                                       }
+{                                                                              }
+{  -fonts: the fonts of Windows that replace the pictures of the characters     }
+{  (default: fonts.cfg of the user folder; see Libs\XcomSurface\CLAUDE.md).     }
+{  -modfolder: a folder laid over the data (a Language\Font.dat of its own).    }
+{  -fontgrid: no game; writes those fonts as the pictures and the Font.dat of   }
+{  a mod in <folder>\Language (to load with -modfolder <folder>)                }
 {                                                                              }
 {  -truecolor (or "trueColor: true" in options.cfg; issue 183): the game stays   }
 {  at 8 bits and the screen composes the final frame in true color; a shot is   }
@@ -78,6 +86,8 @@ uses
   DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
+  DelphiDoom.Xcom.Win.GdiGlyphRasterizer in 'DelphiDoom.Xcom.Win.GdiGlyphRasterizer.pas',
+  DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory in 'DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory.pas',
   DelphiDoom.Xcom.HostPcmOutput in 'DelphiDoom.Xcom.HostPcmOutput.pas',
   DelphiDoom.GameHost.Audio.Intf,
   DelphiDoom.XcomAudio.Intf;
@@ -102,6 +112,8 @@ type
     SoundLog: string;
     /// <summary>-memstats: the memory still allocated after the game of a script was freed (to find leaks)</summary>
     MemoryStatistics: Boolean;
+    /// <summary>-fontgrid: no game; the fonts of the options are written in this folder as pictures and a Font.dat</summary>
+    FontGridFolder: string;
   end;
 
 /// <summary>
@@ -140,7 +152,10 @@ begin
   Say('         [-shot <file.png> [-ms <n>]] [-script wait:ms;click:x,y;key:n;shot:file;...]');
   Say('         [-scriptfile <file with a step per line>]   (also trace:1, state:label, until:Name,ms, on:Name=step+step)');
   Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-memstats] [-leaks] [-listmodes]');
-  Say('         [-version <text>] [-dospath <text>] [-hold] [-truecolor]');
+  Say('         [-version <text>] [-dospath <text>] [-hold]');
+  Say('         [-fonts <fonts.cfg: fonts of Windows in place of the pictures>] [-modfolder <folder over the data>]...');
+  Say('         [-fontgrid <folder>]   (no game: the fonts of fonts.cfg as pictures and a Font.dat in <folder>\Language)');
+  Say('         [-truecolor]   (the final frame composed in true color; default: the 8 bit path)');
   TXcomExportTool.ShowUsage(
     procedure(AText: string)
     begin
@@ -265,6 +280,12 @@ begin
       AArguments.SoundLog := NextValue
     else if LName = '-truecolor' then
       AArguments.Settings.TrueColor := True
+    else if LName = '-fonts' then
+      AArguments.Settings.FontsFile := NextValue
+    else if LName = '-modfolder' then
+      AArguments.Settings.ModFolders := AArguments.Settings.ModFolders + [NextValue]
+    else if LName = '-fontgrid' then
+      AArguments.FontGridFolder := NextValue
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else
@@ -503,6 +524,19 @@ begin
     begin
       ShowUsage;
       System.ExitCode := 2;
+      Exit;
+    end;
+    // what the start has to say (a font of the options that is not used) goes to the standard output
+    LArguments.Settings.Log := TXcomDelegateLog.Create(
+      procedure(const ALine: string)
+      begin
+        Say(ALine);
+      end);
+    if LArguments.FontGridFolder <> '' then
+    begin
+      Say(Format('fontgrid: %d pictures and Font.dat written in %s\Language', [
+        TXcomGameComposition.GenerateFontGrids(LArguments.Settings, LArguments.FontGridFolder),
+        LArguments.FontGridFolder]));
       Exit;
     end;
     if (LArguments.ShotFile <> '') or (LArguments.Script <> '') then

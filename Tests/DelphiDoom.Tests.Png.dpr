@@ -47,6 +47,8 @@ uses
   DelphiDoom.Png.IndexedImage in '..\Libs\Png\DelphiDoom.Png.IndexedImage.pas',
   DelphiDoom.Png.IndexedEncoder.Intf in '..\Libs\Png\DelphiDoom.Png.IndexedEncoder.Intf.pas',
   DelphiDoom.Png.IndexedEncoder in '..\Libs\Png\DelphiDoom.Png.IndexedEncoder.pas',
+  DelphiDoom.Png.PaletteEncoder.Intf in '..\Libs\Png\DelphiDoom.Png.PaletteEncoder.Intf.pas',
+  DelphiDoom.Png.PaletteEncoder in '..\Libs\Png\DelphiDoom.Png.PaletteEncoder.pas',
   DelphiDoom.Texture.PngFileWriter in '..\Libs\Texture\DelphiDoom.Texture.PngFileWriter.pas',
   DelphiDoom.Tests.Png.Samples in 'Source\DelphiDoom.Tests.Png.Samples.pas',
   DelphiDoom.Tests.Png.Engine in 'Source\DelphiDoom.Tests.Png.Engine.pas',
@@ -54,6 +56,7 @@ uses
   DelphiDoom.Tests.Png.Loader in 'Source\DelphiDoom.Tests.Png.Loader.pas',
   DelphiDoom.Tests.Png.Provider in 'Source\DelphiDoom.Tests.Png.Provider.pas',
   DelphiDoom.Tests.Png.IndexedEncoder in 'Source\DelphiDoom.Tests.Png.IndexedEncoder.pas',
+  DelphiDoom.Tests.Png.PaletteEncoder in 'Source\DelphiDoom.Tests.Png.PaletteEncoder.pas',
   DelphiDoom.Tests.Texture.PngFileWriter in 'Source\DelphiDoom.Tests.Texture.PngFileWriter.pas';
 
 var

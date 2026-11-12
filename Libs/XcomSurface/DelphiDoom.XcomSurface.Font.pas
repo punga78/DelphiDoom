@@ -88,6 +88,10 @@ type
     function ImageCount: Integer;
     /// <summary>The surface of a picture (Font::getPalette and setPalette work on these); owned by the font</summary>
     function ImageSurface(AIndex: Integer): TXcomSurface;
+    /// <summary>A picture with the size of its cells and its spacing; the surface stays owned by the font</summary>
+    function Image(AIndex: Integer): TXcomFontImage;
+    /// <summary>The characters that are drawn from a picture, in ascending order of code (not in the C++)</summary>
+    function CodesOfImage(AIndex: Integer): TArray<Cardinal>;
     /// <summary>The code points of a string (a surrogate pair is one code point), as Unicode::convUtf8ToUtf32</summary>
     class function CodePoints(const AText: string): TArray<Cardinal>; static;
   end;
@@ -283,6 +287,28 @@ end;
 function TXcomFont.ImageSurface(AIndex: Integer): TXcomSurface;
 begin
   Result := FImages[AIndex].Surface;
+end;
+
+function TXcomFont.Image(AIndex: Integer): TXcomFontImage;
+begin
+  Result := FImages[AIndex];
+end;
+
+function TXcomFont.CodesOfImage(AIndex: Integer): TArray<Cardinal>;
+var
+  LPair: TPair<Cardinal, TXcomFontChar>;
+  LCount: Integer;
+begin
+  SetLength(Result, FChars.Count);
+  LCount := 0;
+  for LPair in FChars do
+    if LPair.Value.ImageIndex = AIndex then
+    begin
+      Result[LCount] := LPair.Key;
+      Inc(LCount);
+    end;
+  SetLength(Result, LCount);
+  TArray.Sort<Cardinal>(Result);
 end;
 
 class function TXcomFont.CodePoints(const AText: string): TArray<Cardinal>;
