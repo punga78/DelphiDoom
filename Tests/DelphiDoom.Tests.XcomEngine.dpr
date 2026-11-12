@@ -69,6 +69,7 @@ uses
   DelphiDoom.Tests.XcomEngine.DetailFakes in 'Source\DelphiDoom.Tests.XcomEngine.DetailFakes.pas',
   DelphiDoom.Tests.XcomEngine.DetailFont in 'Source\DelphiDoom.Tests.XcomEngine.DetailFont.pas',
   DelphiDoom.Tests.XcomEngine.InkComposer in 'Source\DelphiDoom.Tests.XcomEngine.InkComposer.pas',
+  DelphiDoom.Tests.XcomEngine.TrueColorStale in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorStale.pas',
   DelphiDoom.Tests.XcomEngine.TextDetail in 'Source\DelphiDoom.Tests.XcomEngine.TextDetail.pas',
   DelphiDoom.Tests.XcomEngine.TextOriginal in 'Source\DelphiDoom.Tests.XcomEngine.TextOriginal.pas';
 
