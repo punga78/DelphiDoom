@@ -152,6 +152,16 @@ type
     function GetSpriteMoveTime: Integer;
   end;
 
+  /// <summary>
+  ///   RF_CheckActionFlag of r_public.pas: the original calls it four times while it draws a view (before
+  ///   SetupFrame, before FlowView, before the sprites and after the spans); the game runs a TimeUpdate there and
+  ///   the action that the player asked for (the shot)
+  /// </summary>
+  IGreedRenderActionHook = interface
+    ['{6F0C2B91-4E7D-4A35-9B18-D3A5C07E2F64}']
+    procedure CheckActionFlag;
+  end;
+
   /// <summary>A wrong request to the renderer</summary>
   EGreedRenderException = class(EGreedException);
 

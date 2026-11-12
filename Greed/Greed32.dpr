@@ -1,12 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  Greed32: In Pursuit of Greed (Raven 3D engine, Softdisk 1996), the source    }
-{  port xGreed of Jim Valavanis in the class system of DelphiDoom. For now a    }
-{  program that opens GREED.BLO and saves a map or an image as a PNG (a proof   }
-{  of the data layer, slices G0-G4 of the issue 175): no window, no game yet    }
+{  port xGreed of Jim Valavanis in the class system of DelphiDoom. It opens     }
+{  GREED.BLO, saves a map or an image as a PNG, or plays a map with the game    }
+{  of Libs\Greed (issue 175): the level with its monsters, items, doors,        }
+{  elevators, scripts, weapons and sounds; no status bar and no menus yet       }
 {                                                                              }
 {  Usage:  Greed32 [-data <folder>]... [-list] [-map <number>] [-lump <name>]   }
-{                  [-png <file>]                                                }
+{                  [-png <file>] [-play <number> ...]                           }
 {          the folders hold GREED.BLO and, for the demos, the LEVEL*.LAY files  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -32,14 +33,26 @@ begin
   Writeln('  -map    the map to draw as a PNG (the first is 0)');
   Writeln('  -lump   a picture, flat, wall or sprite to save as a PNG, by name or by number');
   Writeln('  -png    the file to write (default greed_map<number>.png or greed_<lump>.png)');
-  Writeln('  -play   opens a window and plays the map (the first is 0), seen from above: arrows or W S, Q E to turn,');
-  Writeln('          A D to step aside, Shift to run, Escape to quit. The first person view; -topdown shows the map from above');
+  Writeln('  -play   opens a window and plays the map (the first is 0) with the keys of the original: arrows to');
+  Writeln('          walk and turn, Ctrl fires, Space uses, Alt strafes, Shift runs, Z jumps, 1..5 the weapons,');
+  Writeln('          X uses the item of the inventory (Insert and Delete choose it), Escape quits');
+  Writeln('  -character, -difficulty  with -play: the character (0..5) and the difficulty of the new player');
+  Writeln('  -seed   with -play: where the game starts in its table of random numbers');
   Writeln('  -ticks  with -play: stops after that number of tics (70 a second)');
-  Writeln('  -autoplay  with -play: the player walks by itself');
+  Writeln('  -autoplay  with -play: the player walks, turns, uses and shoots by itself');
+  Writeln('  -script with -play: a file of commands, a line "tic command down|up" or "tic type TEXT" each');
+  Writeln('          (the commands: north east south west fire strafe use run jump useitem lookup lookdown');
+  Writeln('          centerview slideleft slideright inventoryleft inventoryright weapon1..weapon5 mapmode');
+  Writeln('          heatmode goalitem menu ...; space is use and restart, shift run, alt strafe)');
+  Writeln('  -headless  with -play: no window, no sound device and no clock: as fast as the machine goes, and');
+  Writeln('          the same options always give the same game');
+  Writeln('  -lowres    with -play: the view is 320 x 200 instead of 640 x 400');
   Writeln('  -topdown   with -play: the view from above instead of the first person view');
   Writeln('  -musicvol, -sfxvol  with -play: the volumes of the music and of the effects, 0..255');
   Writeln('  -audiostats  with -play: writes at the end what the mixer of the sound did');
+  Writeln('  -messages  with -play: writes the messages of the game on the console');
   Writeln('  -shot   with -play: saves the last picture as a PNG');
+  Writeln('  -dump   with -play: writes the state of the game at the end in a text file');
 end;
 
 const
@@ -57,26 +70,16 @@ var
   LClassifier: IGreedLumpClassifier;
   LNumber: Integer;
   LLumpIndex: Integer;
-  LPlayMap: Integer;
-  LTicks: Integer;
-  LMusicVolume: Integer;
-  LSfxVolume: Integer;
-  LAudioStatistics: Boolean;
+  LPlay: TGreedPlayOptions;
   LPlayed: Integer;
-  LAutoPlay: Boolean;
-  LTopDown: Boolean;
-  LShot: string;
 
 begin
+{$IFDEF DEBUG}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   try
-    LPlayMap := -1;
-    LTicks := 0;
-    LMusicVolume := -1;
-    LSfxVolume := -1;
-    LAudioStatistics := False;
-    LAutoPlay := False;
-    LTopDown := False;
-    LShot := '';
+    LPlay := TGreedPlayOptions.Standard;
+    LPlay.MapNumber := -1;
     LMapNumber := -1;
     LLump := '';
     LPng := '';
@@ -96,21 +99,37 @@ begin
       else if (LArgument = '-png') and (LCursor.Remaining >= 1) then
         LPng := LCursor.Value
       else if (LArgument = '-play') and (LCursor.Remaining >= 1) then
-        LPlayMap := StrToInt(LCursor.Value)
+        LPlay.MapNumber := StrToInt(LCursor.Value)
       else if (LArgument = '-ticks') and (LCursor.Remaining >= 1) then
-        LTicks := StrToInt(LCursor.Value)
+        LPlay.MaxTics := StrToInt(LCursor.Value)
+      else if (LArgument = '-character') and (LCursor.Remaining >= 1) then
+        LPlay.Character := StrToInt(LCursor.Value)
+      else if (LArgument = '-difficulty') and (LCursor.Remaining >= 1) then
+        LPlay.Difficulty := StrToInt(LCursor.Value)
+      else if (LArgument = '-seed') and (LCursor.Remaining >= 1) then
+        LPlay.Seed := StrToInt(LCursor.Value)
+      else if (LArgument = '-script') and (LCursor.Remaining >= 1) then
+        LPlay.ScriptPath := LCursor.Value
       else if (LArgument = '-shot') and (LCursor.Remaining >= 1) then
-        LShot := LCursor.Value
+        LPlay.ShotPath := LCursor.Value
+      else if (LArgument = '-dump') and (LCursor.Remaining >= 1) then
+        LPlay.DumpPath := LCursor.Value
       else if LArgument = '-autoplay' then
-        LAutoPlay := True
+        LPlay.AutoPlay := True
+      else if LArgument = '-headless' then
+        LPlay.Headless := True
+      else if LArgument = '-lowres' then
+        LPlay.LowResolution := True
       else if LArgument = '-topdown' then
-        LTopDown := True
-      else if LArgument = '-musicvol' then
-        LMusicVolume := StrToInt(LCursor.Value)
-      else if LArgument = '-sfxvol' then
-        LSfxVolume := StrToInt(LCursor.Value)
+        LPlay.TopDown := True
+      else if (LArgument = '-musicvol') and (LCursor.Remaining >= 1) then
+        LPlay.MusicVolume := StrToInt(LCursor.Value)
+      else if (LArgument = '-sfxvol') and (LCursor.Remaining >= 1) then
+        LPlay.SfxVolume := StrToInt(LCursor.Value)
       else if LArgument = '-audiostats' then
-        LAudioStatistics := True
+        LPlay.AudioStatistics := True
+      else if LArgument = '-messages' then
+        LPlay.EchoMessages := True
       else if LArgument = '-list' then
         LList := True
       else
@@ -122,7 +141,7 @@ begin
     end;
     if Length(LFolders) = 0 then
       LFolders := [GetCurrentDir];
-    if (not LList) and (LMapNumber < 0) and (LLump = '') and (LPlayMap < 0) then
+    if (not LList) and (LMapNumber < 0) and (LLump = '') and (LPlay.MapNumber < 0) then
     begin
       ShowUsage;
       System.ExitCode := 2;
@@ -130,10 +149,9 @@ begin
     end;
 
     LArchive := TGreedComposition.OpenArchive(LFolders);
-    if LPlayMap >= 0 then
+    if LPlay.MapNumber >= 0 then
     begin
-      LPlayed := TGreedComposition.Play(LArchive, LFolders, LPlayMap, LTicks, LAutoPlay, LShot, not LTopDown,
-        LMusicVolume, LSfxVolume, LAudioStatistics);
+      LPlayed := TGreedComposition.Play(LArchive, LFolders, LPlay);
       Writeln('Played ', LPlayed, ' tics');
       Exit;
     end;

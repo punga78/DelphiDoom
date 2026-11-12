@@ -527,6 +527,13 @@ end;
 
 procedure TGreedEvents.LoadScript(ALump: Integer; ANewGame: Boolean);
 begin
+  // the archive of the demo 2.0 has no scripts (no SUX lump: its maps are files next to it): the original,
+  // made for the full game, stops with "not found"; a demo plays its maps without a script
+  if FState.Demo and (FArchive.IndexOf(LUMP_SCRIPT) < 0) then
+  begin
+    LoadScriptText(nil, ANewGame);
+    Exit;
+  end;
   LoadScriptText(FArchive.ReadLumpRaw(ScriptLumpOf(ALump)), ANewGame);
 end;
 

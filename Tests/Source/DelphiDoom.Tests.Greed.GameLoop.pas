@@ -13,9 +13,8 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Greed.Types, DelphiDoom.Greed.SaveTypes,
-  DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf,
-  DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.GameLoop,
-  DelphiDoom.Clock.Intf;
+  DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.PlayerControl.Intf,
+  DelphiDoom.Greed.GameLoop, DelphiDoom.Clock.Intf, DelphiDoom.Tests.Greed.GameFakes;
 
 type
   [TestFixture]
@@ -44,41 +43,31 @@ type
   [Category('greed')]
   TTestGreedGameLoop = class(TObject)
   private
-    FWorld: IGreedWorld;
-    FPool: TGreedLinkedPool<TGreedElevator>;
-    FMovement: TGreedPlayerMovement;
+    FSetup: TFakeGameSetup;
     FLoop: TGreedGameLoop;
     FInput: IGreedInput;
     FClock: IClock;
     FPresenter: IGreedFramePresenter;
-    procedure Build(AWithStart: Boolean);
+    procedure Build;
   public
     [Setup]
     procedure Setup;
     [TearDown]
     procedure TearDown;
     [Test]
-    procedure DovrebbeMettereIlGiocatoreSulPuntoDiPartenza;
-    [Test]
-    procedure DovrebbeSollevareSenzaPuntoDiPartenza;
-    [Test]
-    procedure DovrebbeAndareAvantiVersoNord;
-    [Test]
-    procedure DovrebbeCorrereAPassoPiuLungo;
-    [Test]
-    procedure DovrebbeGirareESpostarsiDiLato;
-    [Test]
-    procedure DovrebbeFermarsiControUnMuro;
-    [Test]
     procedure DovrebbeGiocareITicDelRelogioEMostrareLeImmagini;
     [Test]
     procedure DovrebbeFermarsiQuandoLaFinestraSiChiude;
     [Test]
-    procedure DovrebbeFermarsiConIlTastoDiUscita;
+    procedure DovrebbeFermarsiQuandoIlGiocoFinisce;
     [Test]
     procedure DovrebbeSaltareITicPersiSeLaFinestraELenta;
     [Test]
     procedure DovrebbeAttenderePrimaDelProssimoTic;
+    [Test]
+    procedure DovrebbeGiocareSenzaOrologioDueTicPerImmagine;
+    [Test]
+    procedure DovrebbeFarAvanzareIlGiocoAOgniTic;
     [Test]
     procedure DovrebbeSollevareConDipendenzeNulle;
   end;
@@ -99,12 +88,6 @@ type
     function IsDown(AKey: TGreedKey): Boolean;
   end;
 
-  TQuietHost = class(TInterfacedObject, IGreedMovementHost)
-  public
-    function GetNetMode: Boolean;
-    procedure NetOpenDoor(AX, AY: TGreedFixed);
-  end;
-
   TFakeClock = class(TInterfacedObject, IClock)
   public
     StepsNow: Integer;
@@ -123,15 +106,6 @@ type
     LastColors: TGreedColors;
     procedure Present(const AFrame: TGreedFrame; const AColors: TGreedColors);
   end;
-
-function TQuietHost.GetNetMode: Boolean;
-begin
-  Result := False;
-end;
-
-procedure TQuietHost.NetOpenDoor(AX, AY: TGreedFixed);
-begin
-end;
 
 constructor TFakeInput.Create;
 begin
@@ -284,160 +258,66 @@ end;
 
 procedure TTestGreedGameLoop.Setup;
 begin
-  FPool := TGreedLinkedPool<TGreedElevator>.Create(GREED_MAX_ELEVATORS, 'elevators');
+  FSetup := TFakeGameSetup.Create;
 end;
 
 procedure TTestGreedGameLoop.TearDown;
 begin
   FreeAndNil(FLoop);
-  FreeAndNil(FMovement);
-  FreeAndNil(FPool);
+  FreeAndNil(FSetup);
 end;
 
-procedure TTestGreedGameLoop.Build(AWithStart: Boolean);
+procedure TTestGreedGameLoop.Build;
 var
   LColors: TGreedColors;
 begin
-  FWorld := RoomWorld(AWithStart, -1);
+  FSetup.CreateGame;
+  FSetup.Game.NewGame(0, 0, 2);
   FInput := TFakeInput.Create;
   FClock := TFakeClock.Create;
   FPresenter := TFakePresenter.Create;
   FillChar(LColors, SizeOf(LColors), 0);
   LColors[1] := $00112233;
   FreeAndNil(FLoop);
-  FreeAndNil(FMovement);
-  FMovement := TGreedPlayerMovement.Create(FWorld, TQuietHost.Create);
-  FLoop := TGreedGameLoop.Create(FWorld, FMovement, FPool, TGreedTopDownRenderer.Create, FPresenter, FInput,
-    FClock, LColors, 320, 200);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeMettereIlGiocatoreSulPuntoDiPartenza;
-begin
-  Build(True);
-  FLoop.Start(0);
-  Assert.AreEqual((10 * 64 + 32) * GREED_FRACUNIT, FLoop.Player.X);
-  Assert.AreEqual((10 * 64 + 32) * GREED_FRACUNIT, FLoop.Player.Y);
-  Assert.AreEqual(256, FLoop.Player.Angle);
-  Assert.AreEqual(10 * 64 + 10, FLoop.Player.MapSpot);
-  Assert.AreEqual(0, Integer(FWorld.GetValue(gpMapSprites, 10 * 64 + 10)), 'the start is taken away from the map');
-  Assert.AreEqual(FLoop.Player.Height, FLoop.Player.Z);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeSollevareSenzaPuntoDiPartenza;
-var
-  LRaised: Boolean;
-begin
-  Build(False);
-  LRaised := False;
-  try
-    FLoop.Start(3);
-  except
-    on EGreedException do
-      LRaised := True;
-  end;
-  Assert.IsTrue(LRaised);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeAndareAvantiVersoNord;
-var
-  LY: Integer;
-begin
-  Build(True);
-  FLoop.Start(0);
-  LY := FLoop.Player.Y;
-  TFakeInput(FInput as TObject).Keys := [gkForward];
-  FLoop.Tick;
-  Assert.AreEqual(LY - GREED_LOOP_WALK_SPEED, FLoop.Player.Y);
-  Assert.AreEqual(1, FLoop.Tics);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeCorrereAPassoPiuLungo;
-var
-  LY: Integer;
-begin
-  Build(True);
-  FLoop.Start(0);
-  LY := FLoop.Player.Y;
-  TFakeInput(FInput as TObject).Keys := [gkForward, gkRun];
-  FLoop.Tick;
-  Assert.AreEqual(LY - GREED_LOOP_RUN_SPEED, FLoop.Player.Y);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeGirareESpostarsiDiLato;
-var
-  LX: Integer;
-begin
-  Build(True);
-  FLoop.Start(0);
-  LX := FLoop.Player.X;
-  TFakeInput(FInput as TObject).Keys := [gkTurnLeft];
-  FLoop.Tick;
-  Assert.AreEqual(256 + GREED_LOOP_TURN_SPEED, FLoop.Player.Angle);
-  TFakeInput(FInput as TObject).Keys := [gkTurnRight, gkTurnRight];
-  FLoop.Tick;
-  Assert.AreEqual(256, FLoop.Player.Angle);
-  // to the right of a player that looks north is the east
-  TFakeInput(FInput as TObject).Keys := [gkStrafeRight];
-  FLoop.Tick;
-  Assert.IsTrue(FLoop.Player.X > LX);
-  TFakeInput(FInput as TObject).Keys := [gkBackward];
-  FLoop.Tick;
-  Assert.IsTrue(FLoop.Player.Y > (10 * 64 + 32) * GREED_FRACUNIT);
-end;
-
-procedure TTestGreedGameLoop.DovrebbeFermarsiControUnMuro;
-var
-  LIndex: Integer;
-  LColors: TGreedColors;
-begin
-  FWorld := RoomWorld(True, 10 * 64 + 10);
-  FInput := TFakeInput.Create;
-  FClock := TFakeClock.Create;
-  FPresenter := TFakePresenter.Create;
-  FillChar(LColors, SizeOf(LColors), 0);
-  FMovement := TGreedPlayerMovement.Create(FWorld, TQuietHost.Create);
-  FLoop := TGreedGameLoop.Create(FWorld, FMovement, FPool, TGreedTopDownRenderer.Create, FPresenter, FInput,
-    FClock, LColors, 320, 200);
-  FLoop.Start(0);
-  TFakeInput(FInput as TObject).Keys := [gkForward];
-  for LIndex := 1 to 200 do
-    FLoop.Tick;
-  Assert.IsTrue(FLoop.Player.Y >= 10 * 64 * GREED_FRACUNIT, 'the wall stops the player');
-  Assert.IsTrue(FLoop.Player.Y < (10 * 64 + 32) * GREED_FRACUNIT);
+  FLoop := TGreedGameLoop.Create(FSetup.Game, FPresenter, FInput, FClock, LColors, 320, 200);
 end;
 
 procedure TTestGreedGameLoop.DovrebbeGiocareITicDelRelogioEMostrareLeImmagini;
 begin
-  Build(True);
-  FLoop.Start(0);
+  Build;
   TFakeClock(FClock as TObject).StepsEachCall := 3;
   Assert.AreEqual(30, FLoop.Run(30));
   Assert.AreEqual(30, FLoop.Tics);
   Assert.AreEqual(10, TFakePresenter(FPresenter as TObject).Count, 'a picture every 3 tics');
+  Assert.AreEqual(10, FLoop.Frames);
+  Assert.AreEqual(10, FSetup.Renderer.Views, 'every picture is a turn of the game');
   Assert.AreEqual(Cardinal($00112233), TFakePresenter(FPresenter as TObject).LastColors[1]);
+  Assert.AreEqual(320, FLoop.FrameBuffer.Width);
+  Assert.AreEqual(200, FLoop.FrameBuffer.Height);
 end;
 
 procedure TTestGreedGameLoop.DovrebbeFermarsiQuandoLaFinestraSiChiude;
 begin
-  Build(True);
-  FLoop.Start(0);
+  Build;
   TFakeClock(FClock as TObject).StepsEachCall := 1;
   TFakeInput(FInput as TObject).PumpsLeft := 5;
   Assert.AreEqual(5, FLoop.Run(0));
 end;
 
-procedure TTestGreedGameLoop.DovrebbeFermarsiConIlTastoDiUscita;
+procedure TTestGreedGameLoop.DovrebbeFermarsiQuandoIlGiocoFinisce;
 begin
-  Build(True);
-  FLoop.Start(0);
-  TFakeInput(FInput as TObject).Keys := [gkQuit];
-  Assert.AreEqual(0, FLoop.Run(0));
+  Build;
+  TFakeClock(FClock as TObject).StepsEachCall := 1;
+  FSetup.View.QuitFromMenu := True;
+  FSetup.Commands.Pressed := [gcMenu];
+  // the menu is asked at the first tic and served by the first turn of the game
+  Assert.AreEqual(1, FLoop.Run(0));
+  Assert.IsTrue(FSetup.Game.QuitGame);
 end;
 
 procedure TTestGreedGameLoop.DovrebbeSaltareITicPersiSeLaFinestraELenta;
 begin
-  Build(True);
-  FLoop.Start(0);
+  Build;
   TFakeClock(FClock as TObject).StepsEachCall := 500;
   TFakeInput(FInput as TObject).PumpsLeft := 1;
   Assert.AreEqual(GREED_LOOP_MAX_CATCH_UP, FLoop.Run(0));
@@ -445,12 +325,37 @@ end;
 
 procedure TTestGreedGameLoop.DovrebbeAttenderePrimaDelProssimoTic;
 begin
-  Build(True);
-  FLoop.Start(0);
+  Build;
   TFakeClock(FClock as TObject).StepsEachCall := 0;
   TFakeInput(FInput as TObject).PumpsLeft := 4;
   Assert.AreEqual(0, FLoop.Run(0));
   Assert.AreEqual(4, TFakeClock(FClock as TObject).Waits);
+  Assert.AreEqual(4, FLoop.Frames, 'the game still turns while it waits for a tic');
+end;
+
+procedure TTestGreedGameLoop.DovrebbeGiocareSenzaOrologioDueTicPerImmagine;
+begin
+  Build;
+  FLoop.FreeRunning := True;
+  Assert.AreEqual(100, FLoop.Run(100));
+  Assert.AreEqual(50, FLoop.Frames);
+  Assert.AreEqual(0, TFakeClock(FClock as TObject).StepsNow, 'the clock is not read');
+  Assert.AreEqual(0, TFakeClock(FClock as TObject).Waits);
+  FLoop.TicsPerFrame := 5;
+  Assert.AreEqual(10, FLoop.Run(10));
+  Assert.AreEqual(52, FLoop.Frames);
+end;
+
+procedure TTestGreedGameLoop.DovrebbeFarAvanzareIlGiocoAOgniTic;
+begin
+  Build;
+  FLoop.Tick;
+  FLoop.Tick;
+  Assert.AreEqual(2, FSetup.Game.State.TimeCount);
+  Assert.AreEqual(2, FLoop.Tics);
+  FLoop.Frame;
+  Assert.AreEqual(1, FSetup.Game.State.Frames);
+  Assert.AreEqual(1, TFakePresenter(FPresenter as TObject).Count);
 end;
 
 procedure TTestGreedGameLoop.DovrebbeSollevareConDipendenzeNulle;
@@ -458,16 +363,24 @@ var
   LColors: TGreedColors;
   LRaised: Boolean;
 begin
-  Build(True);
+  Build;
   FillChar(LColors, SizeOf(LColors), 0);
   LRaised := False;
   try
-    TGreedGameLoop.Create(FWorld, FMovement, FPool, nil, FPresenter, FInput, FClock, LColors, 320, 200).Free;
+    TGreedGameLoop.Create(nil, FPresenter, FInput, FClock, LColors, 320, 200).Free;
   except
     on EArgumentNilException do
       LRaised := True;
   end;
   Assert.IsTrue(LRaised);
+  LRaised := False;
+  try
+    TGreedGameLoop.Create(FSetup.Game, FPresenter, FInput, nil, LColors, 320, 200).Free;
+  except
+    on EArgumentNilException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'the clock');
 end;
 
 end.
